@@ -5,6 +5,10 @@ on:
     branches: [main, 'claude/**']
   workflow_dispatch:
     inputs:
+      ses_duzelt:
+        description: 'Sadece sorunlu kayıtları yeniden üret (kısa kelimeler + hızlı olanlar + eksikler)'
+        type: boolean
+        default: false
       ses_karsilastir:
         description: 'Model karşılaştırma kayıtları üret (ses-deneme.html)'
         type: boolean
@@ -46,7 +50,7 @@ jobs:
         timeout-minutes: 180
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-        run: npx vite-node scripts/seslendir.ts
+        run: npx vite-node scripts/seslendir.ts -- ${{ inputs.ses_duzelt && '--duzelt' || '' }}
 
       - name: Yeni görsel ve sesleri repoya kaydet
         continue-on-error: true

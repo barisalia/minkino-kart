@@ -117,7 +117,8 @@ if (KARSILASTIR) {
   process.exit(0);
 }
 
-if (ayar.otomatik === false && !argv.includes('--zorla')) {
+const DUZELT = argv.includes('--duzelt');
+if (ayar.otomatik === false && !argv.includes('--zorla') && !DUZELT) {
   console.log('content/seslendirme.json → otomatik: false — seslendirme bekletiliyor.');
   process.exit(0);
 }
@@ -139,6 +140,25 @@ if (manifest.ses_id !== sesId || (manifest.model !== imza && manifest.model !== 
 }
 
 const cumleler = tumCumleler();
+
+if (DUZELT) {
+  // Sadece sorunlu kayıtları yeniden üret: kısa (1-2 kelime, İngilizceye kayabilen) ve fazla hızlı olanlar
+  const harfSay = (t: string) => [...t].filter((c) => /\p{L}/u.test(c)).length;
+  const kbps = Number(ayar.bicim.split('_')[2] ?? 64);
+  let silinen = 0;
+  for (const c of cumleler) {
+    const f = manifest.dosyalar[c];
+    if (!f || !fs.existsSync(path.join(klasor, f))) continue;
+    const kisa = c.split(/\s+/).length <= 2;
+    const sure = (fs.statSync(path.join(klasor, f)).size * 8) / (kbps * 1000);
+    const hizli = harfSay(c) >= 6 && harfSay(c) / sure > 14;
+    if (kisa || hizli) {
+      delete manifest.dosyalar[c];
+      silinen++;
+    }
+  }
+  console.log(`Düzeltme: ${silinen} kayıt yeniden üretilecek.`);
+}
 const eksik = cumleler.filter((c) => !manifest.dosyalar[c] || !fs.existsSync(path.join(klasor, manifest.dosyalar[c]))).slice(0, SINIR);
 const karakter = eksik.reduce((t, c) => t + c.length, 0);
 console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karakter)`);
