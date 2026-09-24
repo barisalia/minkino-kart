@@ -1,0 +1,62 @@
+name: Yayınla (GitHub Pages)
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: yayinla
+  cancel-in-progress: true
+
+jobs:
+  yayinla:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Recraft görsellerini indir
+        run: node scripts/gorsel-indir.mjs
+
+      - name: Yeni görselleri repoya kaydet
+        continue-on-error: true
+        run: |
+          git add assets
+          if ! git diff --cached --quiet; then
+            git -c user.name="minkino-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Recraft görselleri indirildi [skip ci]"
+            git push
+          fi
+
+      - name: Birim testleri
+        continue-on-error: true
+        run: npm test
+
+      - run: npm run build
+
+      - name: gh-pages dalına yayınla
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          force_orphan: true
+          commit_message: 'Yayın: ${{ github.sha }}'
+
+      - name: Pages'i etkinleştirmeyi dene (ilk sefer)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/pages >/dev/null 2>&1 \
+            || gh api -X POST repos/${{ github.repository }}/pages -f 'source[branch]=gh-pages' -f 'source[path]=/'

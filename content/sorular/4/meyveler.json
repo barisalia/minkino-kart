@@ -1,0 +1,21 @@
+{
+  "yas": 4,
+  "tema": "meyveler",
+  "sorular": [
+    { "tip": "BUL", "soru_metni": "Hangisi sebze?", "soru_ses": "Burada iki meyve, bir sebze var. Sebze hangisi?", "kartlar": ["elma", "havuc", "muz"], "dogru": "havuc", "ipucu": "Bu sebze turuncu ve toprağın altında büyür.", "dogru_ses": "Evet! Havuç bir sebze. Elma ile muz meyve." },
+    { "tip": "BUL", "soru_metni": "Hangisi meyve?", "soru_ses": "Burada iki sebze, bir meyve var. Meyve hangisi?", "kartlar": ["brokoli", "patlican", "cilek"], "dogru": "cilek", "ipucu": "Bu meyve kırmızı, üstünde minik noktalar var.", "dogru_ses": "Evet! Çilek bir meyve. Brokoli ile patlıcan sebze." },
+    { "tip": "BUL", "soru_metni": "Kırmızı olan hangisi?", "soru_ses": "Kıpkırmızı olan hangisi? Göster bakalım!", "kartlar": ["salatalik", "muz", "elma"], "dogru": "elma", "ipucu": "Bu meyve yuvarlak ve kıpkırmızı." },
+    { "tip": "BUL", "soru_metni": "Sarı olan hangisi?", "soru_ses": "Güneş gibi sapsarı olan hangisi?", "kartlar": ["limon", "uzum", "karpuz"], "dogru": "limon", "ipucu": "Bu meyve sapsarı ve çok ekşi." },
+    { "tip": "BUL", "soru_metni": "Mor olan hangisi?", "soru_ses": "Mor renkli sebze hangisi?", "kartlar": ["portakal", "patlican", "limon"], "dogru": "patlican", "ipucu": "Bu sebze uzun ve parlak mor renkli." },
+    { "tip": "BUL", "soru_metni": "En büyük hangisi?", "soru_ses": "Bak bakalım, en büyük meyve hangisi?", "kartlar": ["kiraz", "uzum", "karpuz"], "dogru": "karpuz", "ipucu": "Bu meyve kocaman, dışı yeşil, içi kırmızı.", "dogru_ses": "Evet! Karpuz kocaman bir meyve." },
+    { "tip": "BUL", "soru_metni": "En küçük armut hangisi?", "soru_ses": "Üç armut var. En küçük armut hangisi?", "kartlar": [{ "kart": "armut", "olcek": 0.75 }, { "kart": "armut", "olcek": 1 }, { "kart": "armut", "olcek": 0.5 }], "dogru": 2, "ipucu": "Armutların boylarına bak. Minicik olanı bul!" },
+    { "tip": "BUL", "soru_metni": "Maymun hangisini sever?", "soru_ses": "Maymun çok acıkmış! En sevdiği meyve hangisi?", "kartlar": ["biber", "muz", "patates"], "dogru": "muz", "ipucu": "Bu meyve sarı ve uzun, kabuğu soyulur.", "dogru_ses": "Evet! Maymunlar muzu çok sever." },
+    { "tip": "ESLESTIR", "soru_metni": "Bu gölge kimin?", "soru_ses": "Bu gölge hangi meyvenin? Doğru kartı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "ananas", "bicim": "golge" }], "kartlar": ["ananas", "elma", "muz"], "dogru": "ananas", "ipucu": "Bu gölgenin tepesinde sivri yapraklar var." },
+    { "tip": "ESLESTIR", "soru_metni": "Muzun gölgesi hangisi?", "soru_ses": "Bu gölge kimin? Kartı gölgesine sürükle!", "gosterge": [{ "kart": "muz", "bicim": "golge" }], "kartlar": ["cilek", "armut", "muz"], "dogru": "muz", "ipucu": "Bu gölge uzun ve kıvrık, tıpkı bir ay gibi." },
+    { "tip": "ESLESTIR", "soru_metni": "Turuncu olanı sepete koy", "soru_ses": "Bu sepet turuncu! Turuncu olanı sepete sürükle.", "gosterge": [{ "kart": "renk-turuncu", "bicim": "renk" }], "kartlar": ["uzum", "portakal", "salatalik"], "dogru": "portakal", "ipucu": "Turuncu olan meyve yuvarlak ve sulu." },
+    { "tip": "SAY", "soru_metni": "Kaç elma var?", "soru_ses": "Elmaları sayalım! Kaç elma var?", "gosterge": [{ "kart": "elma", "adet": 2 }], "kartlar": ["sayi-4", "sayi-2", "sayi-1"], "dogru": "sayi-2", "ipucu": "Her elmaya bir kez dokun ve say." },
+    { "tip": "SAY", "soru_metni": "Kaç çilek var?", "soru_ses": "Mmm, çilekler! Hadi sayalım, kaç çilek var?", "gosterge": [{ "kart": "cilek", "adet": 4 }], "kartlar": ["sayi-2", "sayi-5", "sayi-4"], "dogru": "sayi-4", "ipucu": "Parmağınla tek tek dokunarak say: bir, iki, üç..." },
+    { "tip": "HAFIZA", "soru_metni": "Aynı kartları bul!", "soru_ses": "Kartları çevir, aynı meyveleri bul!", "kartlar": ["elma", "muz"], "ipucu": "Hangi kartın nerede olduğunu aklında tut." },
+    { "tip": "HAFIZA", "soru_metni": "Aynı kartları bul!", "soru_ses": "Kartları çevir, eşlerini bul!", "kartlar": ["havuc", "cilek"], "ipucu": "Açtığın kartları aklında tut." }
+  ]
+}

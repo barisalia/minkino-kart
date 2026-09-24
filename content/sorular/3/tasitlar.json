@@ -1,0 +1,21 @@
+{
+  "yas": 3,
+  "tema": "tasitlar",
+  "sorular": [
+    { "tip": "BUL", "soru_metni": "Araba hangisi?", "soru_ses": "Düt düt! Araba hangisi?", "kartlar": ["araba", "ucak"], "dogru": "araba", "ipucu": "Araba yolda gider, dört tekerleği var." },
+    { "tip": "BUL", "soru_metni": "Uçak hangisi?", "soru_ses": "Vıııınn! Uçak hangisi?", "kartlar": ["tren", "ucak"], "dogru": "ucak", "ipucu": "Uçak gökyüzünde uçar, kanatları var." },
+    { "tip": "BUL", "soru_metni": "Gemi hangisi?", "soru_ses": "Vuuuu! Gemi hangisi?", "kartlar": ["gemi", "bisiklet"], "dogru": "gemi", "ipucu": "Gemi denizde yüzer." },
+    { "tip": "BUL", "soru_metni": "Tren hangisi?", "soru_ses": "Çuf çuf! Tren hangisi?", "kartlar": ["helikopter", "tren"], "dogru": "tren", "ipucu": "Tren raylarda gider, vagonları var." },
+    { "tip": "BUL", "soru_metni": "Otobüs hangisi?", "soru_ses": "Koca otobüs hangisi?", "kartlar": ["otobus", "motosiklet"], "dogru": "otobus", "ipucu": "Otobüs uzun, bir sürü penceresi var." },
+    { "tip": "BUL", "soru_metni": "Bisiklet hangisi?", "soru_ses": "Zırr zırr! Bisiklet hangisi?", "kartlar": ["kamyon", "bisiklet"], "dogru": "bisiklet", "ipucu": "Bisikletin iki tekerleği var, pedal çevrilir." },
+    { "tip": "BUL", "soru_metni": "Helikopter hangisi?", "soru_ses": "Pat pat pat! Helikopter hangisi?", "kartlar": ["helikopter", "araba"], "dogru": "helikopter", "ipucu": "Helikopterin tepesinde dönen pervanesi var." },
+    { "tip": "BUL", "soru_metni": "İtfaiye hangisi?", "soru_ses": "Viyu viyu! İtfaiye hangisi?", "kartlar": ["yelkenli", "itfaiye"], "dogru": "itfaiye", "ipucu": "İtfaiye kırmızı, yangını söndürür." },
+    { "tip": "BUL", "soru_metni": "Traktör hangisi?", "soru_ses": "Tak tak tak! Traktör hangisi?", "kartlar": ["traktor", "roket"], "dogru": "traktor", "ipucu": "Traktör tarlada çalışır, kocaman tekerlekleri var." },
+    { "tip": "BUL", "soru_metni": "Ambulans hangisi?", "soru_ses": "Ambulans hangisi? Ambulansı bulur musun?", "kartlar": ["ucanbalon", "ambulans"], "dogru": "ambulans", "ipucu": "Ambulans hastalara yardım eder, viyu viyu öter." },
+    { "tip": "BUL", "soru_metni": "Roket hangisi?", "soru_ses": "Üç, iki, bir! Roket hangisi?", "kartlar": ["roket", "otobus"], "dogru": "roket", "ipucu": "Roket gökyüzüne doğru fırlar." },
+    { "tip": "ESLESTIR", "soru_metni": "Uçağı gölgesine götür", "soru_ses": "Bu kimin gölgesi? Doğru kartı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "ucak", "bicim": "golge" }], "kartlar": ["araba", "ucak"], "dogru": "ucak", "ipucu": "Bu gölgenin iki geniş kanadı var." },
+    { "tip": "ESLESTIR", "soru_metni": "Bisikleti gölgesine götür", "soru_ses": "Bu gölge hangi taşıtın? Kartı gölgesine sürükle!", "gosterge": [{ "kart": "bisiklet", "bicim": "golge" }], "kartlar": ["bisiklet", "tren"], "dogru": "bisiklet", "ipucu": "Bu gölgenin iki yuvarlak tekerleği var." },
+    { "tip": "ESLESTIR", "soru_metni": "Gemiyi yuvasına koy", "soru_ses": "Gemi yerini arıyor! Gemiyi yuvasına sürükle.", "gosterge": [{ "kart": "gemi", "bicim": "yuva" }], "kartlar": ["polis", "gemi"], "dogru": "gemi", "ipucu": "Gemi denizde yüzer." },
+    { "tip": "ESLESTIR", "soru_metni": "Helikopteri gölgesine götür", "soru_ses": "Pat pat pat! Bu gölge kimin? Doğru kartı gölgeye sürükle.", "gosterge": [{ "kart": "helikopter", "bicim": "golge" }], "kartlar": ["helikopter", "kamyon"], "dogru": "helikopter", "ipucu": "Bu gölgenin tepesinde pervane var." }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "yas": 3,
+  "tema": "meyveler",
+  "sorular": [
+    { "tip": "BUL", "soru_metni": "Elma hangisi?", "soru_ses": "Elma hangisi? Elmayı bulur musun?", "kartlar": ["elma", "muz"], "dogru": "elma", "ipucu": "Elma kırmızı ve yuvarlak." },
+    { "tip": "BUL", "soru_metni": "Muz hangisi?", "soru_ses": "Ham ham! Muz hangisi?", "kartlar": ["cilek", "muz"], "dogru": "muz", "ipucu": "Muz sarı ve upuzun." },
+    { "tip": "BUL", "soru_metni": "Çilek hangisi?", "soru_ses": "Minik çilek hangisi?", "kartlar": ["cilek", "karpuz"], "dogru": "cilek", "ipucu": "Çilek kırmızı, üstünde minik noktalar var." },
+    { "tip": "BUL", "soru_metni": "Portakal hangisi?", "soru_ses": "Portakal hangisi? Portakalı bul!", "kartlar": ["uzum", "portakal"], "dogru": "portakal", "ipucu": "Portakal turuncu ve yuvarlak." },
+    { "tip": "BUL", "soru_metni": "Üzüm hangisi?", "soru_ses": "Üzüm nerede? Üzüm hangisi?", "kartlar": ["uzum", "ananas"], "dogru": "uzum", "ipucu": "Üzümün minicik, yuvarlak taneleri var." },
+    { "tip": "BUL", "soru_metni": "Karpuz hangisi?", "soru_ses": "Kocaman karpuz hangisi?", "kartlar": ["kiraz", "karpuz"], "dogru": "karpuz", "ipucu": "Karpuz kocaman, dışı yeşil." },
+    { "tip": "BUL", "soru_metni": "Havuç hangisi?", "soru_ses": "Tavşanlar bunu çok sever! Havuç hangisi?", "kartlar": ["havuc", "elma"], "dogru": "havuc", "ipucu": "Havuç turuncu ve uzun." },
+    { "tip": "BUL", "soru_metni": "Domates hangisi?", "soru_ses": "Domates hangisi? Domatesi bulur musun?", "kartlar": ["misir", "domates"], "dogru": "domates", "ipucu": "Domates kırmızı ve yuvarlak." },
+    { "tip": "BUL", "soru_metni": "Mısır hangisi?", "soru_ses": "Mısır hangisi? Hadi bulalım!", "kartlar": ["misir", "brokoli"], "dogru": "misir", "ipucu": "Mısırın sarı sarı taneleri var." },
+    { "tip": "BUL", "soru_metni": "Brokoli hangisi?", "soru_ses": "Yeşil brokoli hangisi?", "kartlar": ["patates", "brokoli"], "dogru": "brokoli", "ipucu": "Brokoli minik bir ağaca benzer." },
+    { "tip": "BUL", "soru_metni": "Ananas hangisi?", "soru_ses": "Ananas hangisi? Ananası bul!", "kartlar": ["ananas", "armut"], "dogru": "ananas", "ipucu": "Ananasın tepesinde yeşil yaprakları var." },
+    { "tip": "ESLESTIR", "soru_metni": "Muzu gölgesine götür", "soru_ses": "Bu kimin gölgesi? Doğru kartı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "muz", "bicim": "golge" }], "kartlar": ["uzum", "muz"], "dogru": "muz", "ipucu": "Bu gölge uzun ve kıvrık." },
+    { "tip": "ESLESTIR", "soru_metni": "Armudu gölgesine götür", "soru_ses": "Bu gölge hangi meyvenin? Kartı gölgesine sürükle!", "gosterge": [{ "kart": "armut", "bicim": "golge" }], "kartlar": ["armut", "cilek"], "dogru": "armut", "ipucu": "Bu gölgenin altı tombul, üstü ince." },
+    { "tip": "ESLESTIR", "soru_metni": "Havucu yuvasına koy", "soru_ses": "Havuç yerini arıyor! Havucu yuvasına sürükle.", "gosterge": [{ "kart": "havuc", "bicim": "yuva" }], "kartlar": ["patlican", "havuc"], "dogru": "havuc", "ipucu": "Havuç turuncu renkli." },
+    { "tip": "ESLESTIR", "soru_metni": "Kırmızı meyveyi sepete koy", "soru_ses": "Bu sepet kırmızı! Kırmızı meyveyi sepete sürükle.", "gosterge": [{ "kart": "renk-kirmizi", "bicim": "renk" }], "kartlar": ["muz", "elma"], "dogru": "elma", "ipucu": "Sepetin rengine bak. Aynı renk meyveyi bul." }
+  ]
+}

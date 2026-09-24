@@ -1,0 +1,20 @@
+{
+  "yas": 4,
+  "tema": "tasitlar",
+  "sorular": [
+    { "tip": "BUL", "soru_metni": "Hangisi havada gider?", "soru_ses": "Gökyüzünde uçan taşıt hangisi?", "kartlar": ["araba", "ucak", "gemi"], "dogru": "ucak", "ipucu": "Bu taşıtın kocaman kanatları var.", "dogru_ses": "Evet! Uçak havada uçar. Araba yolda, gemi denizde gider." },
+    { "tip": "BUL", "soru_metni": "Hangisi denizde gider?", "soru_ses": "Denizde yüzen taşıt hangisi?", "kartlar": ["tren", "bisiklet", "gemi"], "dogru": "gemi", "ipucu": "Bu taşıt dalgaların üstünde gider.", "dogru_ses": "Evet! Gemi denizde gider." },
+    { "tip": "BUL", "soru_metni": "Hangisi rayda gider?", "soru_ses": "Raylarda giden taşıt hangisi?", "kartlar": ["otobus", "tren", "helikopter"], "dogru": "tren", "ipucu": "Bu taşıt çuf çuf der, vagonları var.", "dogru_ses": "Evet! Tren raylarda gider." },
+    { "tip": "BUL", "soru_metni": "Yangını hangisi söndürür?", "soru_ses": "Yangın var! Hangi taşıt yardıma gelir?", "kartlar": ["traktor", "ambulans", "itfaiye"], "dogru": "itfaiye", "ipucu": "Bu taşıtın uzun bir merdiveni ve su hortumu var.", "dogru_ses": "Evet! İtfaiye yangınları söndürür." },
+    { "tip": "BUL", "soru_metni": "Hastaları hangisi taşır?", "soru_ses": "Birisi hastalanmış! Onu hastaneye hangisi götürür?", "kartlar": ["ambulans", "kamyon", "polis"], "dogru": "ambulans", "ipucu": "Bu taşıt beyaz, üstünde kırmızı işaretler var.", "dogru_ses": "Evet! Ambulans hastaları hastaneye götürür." },
+    { "tip": "BUL", "soru_metni": "Tarlada hangisi çalışır?", "soru_ses": "Tarlada çiftçiye yardım eden taşıt hangisi?", "kartlar": ["roket", "traktor", "yelkenli"], "dogru": "traktor", "ipucu": "Bu taşıtın kocaman arka tekerlekleri var.", "dogru_ses": "Evet! Traktör tarlada çalışır." },
+    { "tip": "BUL", "soru_metni": "Hangisi uzaya gider?", "soru_ses": "Yıldızlara, uzaya giden taşıt hangisi?", "kartlar": ["motosiklet", "ucanbalon", "roket"], "dogru": "roket", "ipucu": "Bu taşıt sivri burunlu, arkasından ateş çıkar.", "dogru_ses": "Evet! Roket uzaya gider." },
+    { "tip": "BUL", "soru_metni": "En büyük otobüs hangisi?", "soru_ses": "Üç otobüs var. En büyük otobüs hangisi?", "kartlar": [{ "kart": "otobus", "olcek": 0.5 }, { "kart": "otobus", "olcek": 1 }, { "kart": "otobus", "olcek": 0.75 }], "dogru": 1, "ipucu": "Otobüslerin boylarına bak. Kocaman olanı bul!" },
+    { "tip": "ESLESTIR", "soru_metni": "Bu gölge kimin?", "soru_ses": "Bu gölge hangi taşıtın? Doğru kartı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "helikopter", "bicim": "golge" }], "kartlar": ["araba", "helikopter", "tren"], "dogru": "helikopter", "ipucu": "Bu gölgenin tepesinde dönen pervaneler var." },
+    { "tip": "ESLESTIR", "soru_metni": "Bisikletin gölgesi hangisi?", "soru_ses": "Bu gölge kimin? Kartı gölgesine sürükle!", "gosterge": [{ "kart": "bisiklet", "bicim": "golge" }], "kartlar": ["gemi", "ucak", "bisiklet"], "dogru": "bisiklet", "ipucu": "Bu gölgenin iki yuvarlak tekerleği var." },
+    { "tip": "ESLESTIR", "soru_metni": "Yelkenliyi gölgesine götür", "soru_ses": "Bu gölge hangi taşıtın? Doğru kartı gölgeye sürükle!", "gosterge": [{ "kart": "yelkenli", "bicim": "golge" }], "kartlar": ["yelkenli", "otobus", "roket"], "dogru": "yelkenli", "ipucu": "Bu gölgenin üçgen bir yelkeni var." },
+    { "tip": "SAY", "soru_metni": "Kaç araba var?", "soru_ses": "Vın vın! Arabaları sayalım. Kaç araba var?", "gosterge": [{ "kart": "araba", "adet": 3 }], "kartlar": ["sayi-3", "sayi-1", "sayi-5"], "dogru": "sayi-3", "ipucu": "Her arabaya bir kez dokun ve say." },
+    { "tip": "SAY", "soru_metni": "Kaç uçan balon var?", "soru_ses": "Gökyüzünde uçan balonlar var! Kaç tane?", "gosterge": [{ "kart": "ucanbalon", "adet": 2 }], "kartlar": ["sayi-4", "sayi-3", "sayi-2"], "dogru": "sayi-2", "ipucu": "Parmağınla tek tek dokunarak say." },
+    { "tip": "HAFIZA", "soru_metni": "Aynı kartları bul!", "soru_ses": "Kartları çevir, aynı taşıtları bul!", "kartlar": ["ucak", "gemi"], "ipucu": "Hangi kartın nerede olduğunu aklında tut." }
+  ]
+}

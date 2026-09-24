@@ -1,0 +1,20 @@
+{
+  "yas": 4,
+  "tema": "hayvanlar",
+  "sorular": [
+    { "tip": "BUL", "soru_metni": "Hangisi çiftlikte yaşar?", "soru_ses": "Çiftlikte hangi hayvan yaşar? Hadi bulalım!", "kartlar": ["aslan", "inek", "penguen"], "dogru": "inek", "ipucu": "Bu hayvan bize süt verir.", "dogru_ses": "Evet! İnek çiftlikte yaşar. Aslan ile penguen çiftlikte yaşamaz." },
+    { "tip": "BUL", "soru_metni": "Hangisi uçar?", "soru_ses": "Gökyüzünde kim uçar? Uçan hayvanı bul!", "kartlar": ["kaplumbaga", "fil", "kus"], "dogru": "kus", "ipucu": "Bu hayvanın kanatları ve tüyleri var.", "dogru_ses": "Evet! Kuş kanatlarını çırpıp uçar." },
+    { "tip": "BUL", "soru_metni": "Hangisi suda yüzer?", "soru_ses": "Hangi hayvan suda yüzer? Göster bakalım!", "kartlar": ["zurafa", "at", "balik"], "dogru": "balik", "ipucu": "Bu hayvan blup blup der, yüzgeçleri var.", "dogru_ses": "Evet! Balık suda yaşar ve yüzer." },
+    { "tip": "BUL", "soru_metni": "Hangisi bal yapar?", "soru_ses": "Tatlı tatlı bal yapan hayvan hangisi?", "kartlar": ["kelebek", "ari", "kurbaga"], "dogru": "ari", "ipucu": "Bu minik hayvan vızzz diye uçar.", "dogru_ses": "Evet! Arı çiçeklerden bal yapar." },
+    { "tip": "BUL", "soru_metni": "Hangisi bize yün verir?", "soru_ses": "Kabarık yünüyle bizi ısıtan hayvan hangisi?", "kartlar": ["kedi", "maymun", "koyun"], "dogru": "koyun", "ipucu": "Bu hayvan meee der, pamuk gibi tüyleri var.", "dogru_ses": "Evet! Koyunun yününden kazak yapılır." },
+    { "tip": "BUL", "soru_metni": "En büyük hayvan hangisi?", "soru_ses": "Bak bakalım, en büyük hayvan hangisi?", "kartlar": ["fare", "civciv", "fil"], "dogru": "fil", "ipucu": "Bu hayvanın kocaman kulakları ve upuzun hortumu var.", "dogru_ses": "Evet! Fil kocaman bir hayvan." },
+    { "tip": "BUL", "soru_metni": "En küçük ayı hangisi?", "soru_ses": "Üç ayıcık var. En küçük ayı hangisi?", "kartlar": [{ "kart": "ayi", "olcek": 1 }, { "kart": "ayi", "olcek": 0.5 }, { "kart": "ayi", "olcek": 0.75 }], "dogru": 1, "ipucu": "Ayıların boylarına bak. Minicik olanı bul!" },
+    { "tip": "BUL", "soru_metni": "Mutlu olan hangisi?", "soru_ses": "Hangi yüz mutlu? Gülümseyen yüzü bul!", "kartlar": ["duygu-uzgun", "duygu-kizgin", "duygu-mutlu"], "dogru": "duygu-mutlu", "ipucu": "Mutlu olan kocaman gülümsüyor." },
+    { "tip": "ESLESTIR", "soru_metni": "Bu gölge kimin?", "soru_ses": "Bu gölge kimin? Doğru hayvanı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "fil", "bicim": "golge" }], "kartlar": ["zurafa", "fil", "tavsan"], "dogru": "fil", "ipucu": "Gölgenin uzun bir hortumu var." },
+    { "tip": "ESLESTIR", "soru_metni": "Penguenin gölgesi hangisi?", "soru_ses": "Paytak paytak yürüyen kimin gölgesi bu? Kartı gölgeye sürükle!", "gosterge": [{ "kart": "penguen", "bicim": "golge" }], "kartlar": ["kus", "kedi", "penguen"], "dogru": "penguen", "ipucu": "Bu hayvan buzların üstünde paytak paytak yürür." },
+    { "tip": "ESLESTIR", "soru_metni": "Atı yuvasına koy", "soru_ses": "At yuvasını arıyor! Atı bul ve yuvasına sürükle.", "gosterge": [{ "kart": "at", "bicim": "yuva" }], "kartlar": ["maymun", "at", "aslan"], "dogru": "at", "ipucu": "At ihihiii diye kişner, dörtnala koşar." },
+    { "tip": "SAY", "soru_metni": "Kaç civciv var?", "soru_ses": "Cik cik! Civcivleri sayalım. Kaç civciv var?", "gosterge": [{ "kart": "civciv", "adet": 3 }], "kartlar": ["sayi-2", "sayi-3", "sayi-4"], "dogru": "sayi-3", "ipucu": "Parmağınla tek tek dokunarak say: bir, iki..." },
+    { "tip": "SAY", "soru_metni": "Kaç balık var?", "soru_ses": "Blup blup! Balıkları sayalım. Kaç balık var?", "gosterge": [{ "kart": "balik", "adet": 5 }], "kartlar": ["sayi-1", "sayi-3", "sayi-5"], "dogru": "sayi-5", "ipucu": "Her balığa bir kez dokun ve yavaş yavaş say." },
+    { "tip": "HAFIZA", "soru_metni": "Aynı kartları bul!", "soru_ses": "Kartları çevir, aynı hayvanları bul!", "kartlar": ["kedi", "kopek"], "ipucu": "Hangi kartın nerede olduğunu aklında tut." }
+  ]
+}

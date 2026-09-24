@@ -1,0 +1,20 @@
+{
+  "yas": 4,
+  "tema": "sayilar",
+  "sorular": [
+    { "tip": "SAY", "soru_metni": "Kaç elma var?", "soru_ses": "Elmaları sayalım! Kaç elma var?", "gosterge": [{ "kart": "elma", "adet": 3 }], "kartlar": ["sayi-1", "sayi-3", "sayi-5"], "dogru": "sayi-3", "ipucu": "Her elmaya bir kez dokun: bir, iki..." },
+    { "tip": "SAY", "soru_metni": "Kaç kuş var?", "soru_ses": "Cik cik! Kaç kuş var?", "gosterge": [{ "kart": "kus", "adet": 1 }], "kartlar": ["sayi-2", "sayi-4", "sayi-1"], "dogru": "sayi-1", "ipucu": "Dikkatli bak, burada tek bir kuş var mı?" },
+    { "tip": "SAY", "soru_metni": "Kaç top var?", "soru_ses": "Zıp zıp toplar! Hadi sayalım, kaç top var?", "gosterge": [{ "kart": "top", "adet": 5 }], "kartlar": ["sayi-2", "sayi-5", "sayi-4"], "dogru": "sayi-5", "ipucu": "Parmağınla tek tek dokunarak yavaş yavaş say." },
+    { "tip": "SAY", "soru_metni": "Kaç kelebek var?", "soru_ses": "Kelebekler uçuşuyor! Kaç kelebek var?", "gosterge": [{ "kart": "kelebek", "adet": 2 }], "kartlar": ["sayi-5", "sayi-3", "sayi-2"], "dogru": "sayi-2", "ipucu": "Her kelebeğe bir kez dokun ve say." },
+    { "tip": "SAY", "soru_metni": "Kaç çilek var?", "soru_ses": "Mmm, çilekler! Kaç çilek var?", "gosterge": [{ "kart": "cilek", "adet": 4 }], "kartlar": ["sayi-4", "sayi-1", "sayi-2"], "dogru": "sayi-4", "ipucu": "Parmağınla tek tek dokunarak say: bir, iki, üç..." },
+    { "tip": "BUL", "soru_metni": "Hangisinde üç elma var?", "soru_ses": "Hangi kartta üç elma var? Sayarak bul!", "kartlar": [{ "kart": "elma", "adet": 1 }, { "kart": "elma", "adet": 3 }, { "kart": "elma", "adet": 5 }], "dogru": 1, "ipucu": "Her karttaki elmaları say. Bir, iki, üç!", "dogru_ses": "Evet! Bu kartta üç elma var." },
+    { "tip": "BUL", "soru_metni": "Hangisinde iki balon var?", "soru_ses": "Hangi kartta iki balon var? Sayarak bul!", "kartlar": [{ "kart": "balon", "adet": 4 }, { "kart": "balon", "adet": 1 }, { "kart": "balon", "adet": 2 }], "dogru": 2, "ipucu": "Her karttaki balonları say. Bir, iki!", "dogru_ses": "Evet! Bu kartta iki balon var." },
+    { "tip": "BUL", "soru_metni": "En çok muz hangisinde?", "soru_ses": "Hangi kartta en çok muz var?", "kartlar": [{ "kart": "muz", "adet": 2 }, { "kart": "muz", "adet": 5 }, { "kart": "muz", "adet": 1 }], "dogru": 1, "ipucu": "Muzları say. En kalabalık kartı bul!", "dogru_ses": "Evet! Burada beş muz var, en çok bu kartta." },
+    { "tip": "BUL", "soru_metni": "Üç hangisi?", "soru_ses": "Üç sayısı hangisi? Göster bakalım!", "kartlar": ["sayi-1", "sayi-5", "sayi-3"], "dogru": "sayi-3", "ipucu": "Üç, iki tane kıvrımı olan bir sayı." },
+    { "tip": "BUL", "soru_metni": "Bir hangisi?", "soru_ses": "Bir sayısı hangisi? Göster bakalım!", "kartlar": ["sayi-4", "sayi-1", "sayi-2"], "dogru": "sayi-1", "ipucu": "Bir, dimdik duran bir çubuk gibi." },
+    { "tip": "BUL", "soru_metni": "Beş hangisi?", "soru_ses": "Beş sayısı hangisi? Elinde de beş parmak var!", "kartlar": ["sayi-5", "sayi-3", "sayi-2"], "dogru": "sayi-5", "ipucu": "Beşin tepesinde düz bir şapka var." },
+    { "tip": "ESLESTIR", "soru_metni": "Dördü yerine koy", "soru_ses": "Dört sayısı yerini arıyor! Dördü bul ve yerine sürükle.", "gosterge": [{ "kart": "sayi-4", "bicim": "yuva" }], "kartlar": ["sayi-2", "sayi-1", "sayi-4"], "dogru": "sayi-4", "ipucu": "Yerin şekline dikkatli bak, aynısını bul." },
+    { "tip": "HAFIZA", "soru_metni": "Aynı kartları bul!", "soru_ses": "Kartları çevir, aynı sayıları bul!", "kartlar": ["sayi-1", "sayi-2"], "ipucu": "Hangi sayının nerede olduğunu aklında tut." },
+    { "tip": "HAFIZA", "soru_metni": "Aynı kartları bul!", "soru_ses": "Kartları çevir, eş sayıları bul!", "kartlar": ["sayi-3", "sayi-5"], "ipucu": "Açtığın kartları aklında tut." }
+  ]
+}

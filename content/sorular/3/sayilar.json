@@ -1,0 +1,21 @@
+{
+  "yas": 3,
+  "tema": "sayilar",
+  "sorular": [
+    { "tip": "BUL", "soru_metni": "Bir elma hangisinde?", "soru_ses": "Bir tane elma olan hangisi?", "kartlar": [{ "kart": "elma", "adet": 1 }, { "kart": "elma", "adet": 3 }], "dogru": 0, "ipucu": "Bir tane, yani tek başına bir elma." },
+    { "tip": "BUL", "soru_metni": "Çok çilek hangisinde?", "soru_ses": "Çok çilek olan hangisi? Bir sürü çilek!", "kartlar": [{ "kart": "cilek", "adet": 1 }, { "kart": "cilek", "adet": 5 }], "dogru": 1, "ipucu": "Çok olanda bir sürü çilek var." },
+    { "tip": "BUL", "soru_metni": "Az top hangisinde?", "soru_ses": "Az top olan hangisi?", "kartlar": [{ "kart": "top", "adet": 4 }, { "kart": "top", "adet": 1 }], "dogru": 1, "ipucu": "Az olanda topları hemen sayarsın." },
+    { "tip": "BUL", "soru_metni": "İki top hangisinde?", "soru_ses": "Hangisinde iki top var? Bir, iki!", "kartlar": [{ "kart": "top", "adet": 1 }, { "kart": "top", "adet": 2 }], "dogru": 1, "ipucu": "Bir, iki! İki top yan yana durur." },
+    { "tip": "BUL", "soru_metni": "Bir hangisi?", "soru_ses": "Bir hangisi? Bir sayısını bul!", "kartlar": ["sayi-1", "sayi-3"], "dogru": "sayi-1", "ipucu": "Bir, dimdik duran bir çubuk gibi." },
+    { "tip": "BUL", "soru_metni": "Bir balon hangisinde?", "soru_ses": "Bir tane balon olan hangisi?", "kartlar": [{ "kart": "balon", "adet": 4 }, { "kart": "balon", "adet": 1 }], "dogru": 1, "ipucu": "Tek bir balon ara." },
+    { "tip": "BUL", "soru_metni": "Çok muz hangisinde?", "soru_ses": "Çok muz olan hangisi?", "kartlar": [{ "kart": "muz", "adet": 6 }, { "kart": "muz", "adet": 1 }], "dogru": 0, "ipucu": "Çok olanda bir sürü muz var." },
+    { "tip": "BUL", "soru_metni": "İki kedi hangisinde?", "soru_ses": "Miyav miyav! Hangisinde iki kedi var?", "kartlar": [{ "kart": "kedi", "adet": 2 }, { "kart": "kedi", "adet": 1 }], "dogru": 0, "ipucu": "Bir kedi, iki kedi! İki kedi yan yana." },
+    { "tip": "BUL", "soru_metni": "Az civciv hangisinde?", "soru_ses": "Cik cik! Az civciv olan hangisi?", "kartlar": [{ "kart": "civciv", "adet": 1 }, { "kart": "civciv", "adet": 5 }], "dogru": 0, "ipucu": "Az olanda sadece bir civciv var." },
+    { "tip": "BUL", "soru_metni": "Çok balık hangisinde?", "soru_ses": "Blup blup! Çok balık olan hangisi?", "kartlar": [{ "kart": "balik", "adet": 2 }, { "kart": "balik", "adet": 7 }], "dogru": 1, "ipucu": "Çok olanda bir sürü balık yüzüyor." },
+    { "tip": "BUL", "soru_metni": "Bir araba hangisinde?", "soru_ses": "Düt düt! Bir tane araba olan hangisi?", "kartlar": [{ "kart": "araba", "adet": 3 }, { "kart": "araba", "adet": 1 }], "dogru": 1, "ipucu": "Tek başına bir araba ara." },
+    { "tip": "BUL", "soru_metni": "Bir sayısı hangisi?", "soru_ses": "Bir! Bir sayısını bulur musun?", "kartlar": ["sayi-4", "sayi-1"], "dogru": "sayi-1", "ipucu": "Bir, upuzun ince bir çizgi gibi." },
+    { "tip": "ESLESTIR", "soru_metni": "İkiyi gölgesine götür", "soru_ses": "Bu hangi sayının gölgesi? Doğru kartı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "sayi-2", "bicim": "golge" }], "kartlar": ["sayi-2", "sayi-1"], "dogru": "sayi-2", "ipucu": "Bu gölge kıvrık, yüzen bir kuğuya benzer." },
+    { "tip": "ESLESTIR", "soru_metni": "Bir sayısını yuvasına koy", "soru_ses": "Bir, yerini arıyor! Bir sayısını yuvasına sürükle.", "gosterge": [{ "kart": "sayi-1", "bicim": "yuva" }], "kartlar": ["sayi-3", "sayi-1"], "dogru": "sayi-1", "ipucu": "Bir dimdik, ince bir çizgi." },
+    { "tip": "ESLESTIR", "soru_metni": "İki elmayı gölgesine götür", "soru_ses": "Bu gölgede kaç elma var? Aynı kartı gölgeye sürükle!", "gosterge": [{ "kart": "elma", "adet": 2, "bicim": "golge" }], "kartlar": [{ "kart": "elma", "adet": 2 }, { "kart": "elma", "adet": 1 }], "dogru": 0, "ipucu": "Gölgede iki elma var. Bir, iki!" }
+  ]
+}

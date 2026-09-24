@@ -1,0 +1,1088 @@
+{
+ "kartlar": [
+  {
+   "id": "kedi",
+   "ad": "Kedi",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/kedi.webp",
+   "ses": "Miyav miyav!"
+  },
+  {
+   "id": "kopek",
+   "ad": "Köpek",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/kopek.webp",
+   "ses": "Hav hav!"
+  },
+  {
+   "id": "inek",
+   "ad": "İnek",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/inek.webp",
+   "ses": "Möö!"
+  },
+  {
+   "id": "tavuk",
+   "ad": "Tavuk",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/tavuk.webp",
+   "ses": "Gıt gıt gıdak!"
+  },
+  {
+   "id": "koyun",
+   "ad": "Koyun",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/koyun.webp",
+   "ses": "Meee!"
+  },
+  {
+   "id": "at",
+   "ad": "At",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/at.webp",
+   "ses": "İhihiii!"
+  },
+  {
+   "id": "ordek",
+   "ad": "Ördek",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/ordek.webp",
+   "ses": "Vak vak!"
+  },
+  {
+   "id": "balik",
+   "ad": "Balık",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/balik.webp",
+   "ses": "Blup blup!"
+  },
+  {
+   "id": "kus",
+   "ad": "Kuş",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/kus.webp",
+   "ses": "Cik cik!"
+  },
+  {
+   "id": "fil",
+   "ad": "Fil",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/fil.webp",
+   "ses": "Pırrruuu!"
+  },
+  {
+   "id": "aslan",
+   "ad": "Aslan",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/aslan.webp",
+   "ses": "Grrrr!"
+  },
+  {
+   "id": "zurafa",
+   "ad": "Zürafa",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/zurafa.webp",
+   "ses": "Boynum çok uzun!"
+  },
+  {
+   "id": "maymun",
+   "ad": "Maymun",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/maymun.webp",
+   "ses": "U u a a!"
+  },
+  {
+   "id": "tavsan",
+   "ad": "Tavşan",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/tavsan.webp",
+   "ses": "Hop hop!"
+  },
+  {
+   "id": "kaplumbaga",
+   "ad": "Kaplumbağa",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/kaplumbaga.webp",
+   "ses": "Yavaş yavaş!"
+  },
+  {
+   "id": "fare",
+   "ad": "Fare",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/fare.webp",
+   "ses": "Vik vik!"
+  },
+  {
+   "id": "ari",
+   "ad": "Arı",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/ari.webp",
+   "ses": "Vızzzz!"
+  },
+  {
+   "id": "kelebek",
+   "ad": "Kelebek",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/kelebek.webp",
+   "ses": "Pır pır!"
+  },
+  {
+   "id": "ayi",
+   "ad": "Ayı",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/ayi.webp",
+   "ses": "Hımm, bal!"
+  },
+  {
+   "id": "penguen",
+   "ad": "Penguen",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/penguen.webp",
+   "ses": "Paytak paytak!"
+  },
+  {
+   "id": "kurbaga",
+   "ad": "Kurbağa",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/kurbaga.webp",
+   "ses": "Vrak vrak!"
+  },
+  {
+   "id": "civciv",
+   "ad": "Civciv",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/civciv.webp",
+   "ses": "Cik cik cik!"
+  },
+  {
+   "id": "duygu-mutlu",
+   "ad": "Mutlu",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/duygu-mutlu.webp",
+   "ses": "Hihi, çok mutluyum!",
+   "album": false
+  },
+  {
+   "id": "duygu-uzgun",
+   "ad": "Üzgün",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/duygu-uzgun.webp",
+   "ses": "Ühü, biraz üzgünüm.",
+   "album": false
+  },
+  {
+   "id": "duygu-saskin",
+   "ad": "Şaşkın",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/duygu-saskin.webp",
+   "ses": "Aaa! Çok şaşırdım!",
+   "album": false
+  },
+  {
+   "id": "duygu-kizgin",
+   "ad": "Kızgın",
+   "tema": "hayvanlar",
+   "tur": "resim",
+   "gorsel": "hayvanlar/duygu-kizgin.webp",
+   "ses": "Hıh! Kızgınım!",
+   "album": false
+  },
+  {
+   "id": "elma",
+   "ad": "Elma",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/elma.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "kırmızı",
+   "grup": "meyve"
+  },
+  {
+   "id": "muz",
+   "ad": "Muz",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/muz.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "sarı",
+   "grup": "meyve"
+  },
+  {
+   "id": "cilek",
+   "ad": "Çilek",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/cilek.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "kırmızı",
+   "grup": "meyve"
+  },
+  {
+   "id": "portakal",
+   "ad": "Portakal",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/portakal.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "turuncu",
+   "grup": "meyve"
+  },
+  {
+   "id": "uzum",
+   "ad": "Üzüm",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/uzum.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "mor",
+   "grup": "meyve"
+  },
+  {
+   "id": "karpuz",
+   "ad": "Karpuz",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/karpuz.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "yeşil",
+   "grup": "meyve"
+  },
+  {
+   "id": "armut",
+   "ad": "Armut",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/armut.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "yeşil",
+   "grup": "meyve"
+  },
+  {
+   "id": "limon",
+   "ad": "Limon",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/limon.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "sarı",
+   "grup": "meyve"
+  },
+  {
+   "id": "kiraz",
+   "ad": "Kiraz",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/kiraz.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "kırmızı",
+   "grup": "meyve"
+  },
+  {
+   "id": "ananas",
+   "ad": "Ananas",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/ananas.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "sarı",
+   "grup": "meyve"
+  },
+  {
+   "id": "nar",
+   "ad": "Nar",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/nar.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "kırmızı",
+   "grup": "meyve"
+  },
+  {
+   "id": "havuc",
+   "ad": "Havuç",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/havuc.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "turuncu",
+   "grup": "sebze"
+  },
+  {
+   "id": "domates",
+   "ad": "Domates",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/domates.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "kırmızı",
+   "grup": "sebze"
+  },
+  {
+   "id": "salatalik",
+   "ad": "Salatalık",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/salatalik.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "yeşil",
+   "grup": "sebze"
+  },
+  {
+   "id": "misir",
+   "ad": "Mısır",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/misir.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "sarı",
+   "grup": "sebze"
+  },
+  {
+   "id": "patlican",
+   "ad": "Patlıcan",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/patlican.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "mor",
+   "grup": "sebze"
+  },
+  {
+   "id": "brokoli",
+   "ad": "Brokoli",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/brokoli.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "yeşil",
+   "grup": "sebze"
+  },
+  {
+   "id": "biber",
+   "ad": "Biber",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/biber.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "yeşil",
+   "grup": "sebze"
+  },
+  {
+   "id": "patates",
+   "ad": "Patates",
+   "tema": "meyveler",
+   "tur": "resim",
+   "gorsel": "meyveler/patates.webp",
+   "ses": "Ham ham, çok lezzetli!",
+   "renk": "kahverengi",
+   "grup": "sebze"
+  },
+  {
+   "id": "araba",
+   "ad": "Araba",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/araba.webp",
+   "ses": "Düt düt!",
+   "grup": "kara"
+  },
+  {
+   "id": "otobus",
+   "ad": "Otobüs",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/otobus.webp",
+   "ses": "Düüüt!",
+   "grup": "kara"
+  },
+  {
+   "id": "tren",
+   "ad": "Tren",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/tren.webp",
+   "ses": "Çuf çuf!",
+   "grup": "kara"
+  },
+  {
+   "id": "ucak",
+   "ad": "Uçak",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/ucak.webp",
+   "ses": "Vıııınn!",
+   "grup": "hava"
+  },
+  {
+   "id": "gemi",
+   "ad": "Gemi",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/gemi.webp",
+   "ses": "Vuuuu!",
+   "grup": "deniz"
+  },
+  {
+   "id": "bisiklet",
+   "ad": "Bisiklet",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/bisiklet.webp",
+   "ses": "Zırr zırr!",
+   "grup": "kara"
+  },
+  {
+   "id": "helikopter",
+   "ad": "Helikopter",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/helikopter.webp",
+   "ses": "Pat pat pat!",
+   "grup": "hava"
+  },
+  {
+   "id": "itfaiye",
+   "ad": "İtfaiye",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/itfaiye.webp",
+   "ses": "Viyu viyu!",
+   "grup": "kara"
+  },
+  {
+   "id": "ambulans",
+   "ad": "Ambulans",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/ambulans.webp",
+   "ses": "Viyu viyu!",
+   "grup": "kara"
+  },
+  {
+   "id": "polis",
+   "ad": "Polis Arabası",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/polis.webp",
+   "ses": "Viyu viyu!",
+   "grup": "kara"
+  },
+  {
+   "id": "traktor",
+   "ad": "Traktör",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/traktor.webp",
+   "ses": "Tak tak tak!",
+   "grup": "kara"
+  },
+  {
+   "id": "kamyon",
+   "ad": "Kamyon",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/kamyon.webp",
+   "ses": "Brrrrm!",
+   "grup": "kara"
+  },
+  {
+   "id": "motosiklet",
+   "ad": "Motosiklet",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/motosiklet.webp",
+   "ses": "Vınnn!",
+   "grup": "kara"
+  },
+  {
+   "id": "roket",
+   "ad": "Roket",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/roket.webp",
+   "ses": "Üç, iki, bir, fırla!",
+   "grup": "hava"
+  },
+  {
+   "id": "yelkenli",
+   "ad": "Yelkenli",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/yelkenli.webp",
+   "ses": "Rüzgârla gider!",
+   "grup": "deniz"
+  },
+  {
+   "id": "ucanbalon",
+   "ad": "Uçan Balon",
+   "tema": "tasitlar",
+   "tur": "resim",
+   "gorsel": "tasitlar/ucanbalon.webp",
+   "ses": "Süzülüyorum!",
+   "grup": "hava"
+  },
+  {
+   "id": "top",
+   "ad": "Top",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/top.webp",
+   "renk": "kırmızı",
+   "album": false
+  },
+  {
+   "id": "balon",
+   "ad": "Balon",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/balon.webp",
+   "renk": "kırmızı",
+   "album": false
+  },
+  {
+   "id": "hediye",
+   "ad": "Hediye Kutusu",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/hediye.webp",
+   "renk": "mavi",
+   "album": false
+  },
+  {
+   "id": "gunes",
+   "ad": "Güneş",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/gunes.webp",
+   "renk": "sarı",
+   "album": false
+  },
+  {
+   "id": "kardanadam",
+   "ad": "Kardan Adam",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/kardanadam.webp",
+   "renk": "beyaz",
+   "album": false
+  },
+  {
+   "id": "dondurma",
+   "ad": "Dondurma",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/dondurma.webp",
+   "renk": "pembe",
+   "album": false
+  },
+  {
+   "id": "corba",
+   "ad": "Çorba",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/corba.webp",
+   "renk": "turuncu",
+   "album": false
+  },
+  {
+   "id": "semsiye",
+   "ad": "Şemsiye",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/semsiye.webp",
+   "renk": "kırmızı",
+   "album": false
+  },
+  {
+   "id": "pizza",
+   "ad": "Pizza",
+   "tema": "renkler",
+   "tur": "resim",
+   "gorsel": "renkler/pizza.webp",
+   "renk": "sarı",
+   "album": false
+  },
+  {
+   "id": "renk-kirmizi",
+   "ad": "Kırmızı",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#F0413F"
+  },
+  {
+   "id": "renk-mavi",
+   "ad": "Mavi",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#3E9DF2"
+  },
+  {
+   "id": "renk-sari",
+   "ad": "Sarı",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#FFC72C"
+  },
+  {
+   "id": "renk-yesil",
+   "ad": "Yeşil",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#5DBE3F"
+  },
+  {
+   "id": "renk-turuncu",
+   "ad": "Turuncu",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#FF8A2B"
+  },
+  {
+   "id": "renk-mor",
+   "ad": "Mor",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#9B5CE0"
+  },
+  {
+   "id": "renk-pembe",
+   "ad": "Pembe",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#FF7EB6"
+  },
+  {
+   "id": "renk-kahverengi",
+   "ad": "Kahverengi",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#8B5A2B"
+  },
+  {
+   "id": "renk-siyah",
+   "ad": "Siyah",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#2B2B2B"
+  },
+  {
+   "id": "renk-beyaz",
+   "ad": "Beyaz",
+   "tema": "renkler",
+   "tur": "renk",
+   "deger": "#FFFFFF"
+  },
+  {
+   "id": "sekil-daire",
+   "ad": "Daire",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "daire",
+   "renk": "#F0413F"
+  },
+  {
+   "id": "sekil-kare",
+   "ad": "Kare",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "kare",
+   "renk": "#3E9DF2"
+  },
+  {
+   "id": "sekil-ucgen",
+   "ad": "Üçgen",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "ucgen",
+   "renk": "#5DBE3F"
+  },
+  {
+   "id": "sekil-dikdortgen",
+   "ad": "Dikdörtgen",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "dikdortgen",
+   "renk": "#FF8A2B"
+  },
+  {
+   "id": "sekil-yildiz",
+   "ad": "Yıldız",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "yildiz",
+   "renk": "#FFC72C"
+  },
+  {
+   "id": "sekil-kalp",
+   "ad": "Kalp",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "kalp",
+   "renk": "#FF7EB6"
+  },
+  {
+   "id": "sekil-oval",
+   "ad": "Oval",
+   "tema": "renkler",
+   "tur": "sekil",
+   "deger": "oval",
+   "renk": "#9B5CE0"
+  },
+  {
+   "id": "sayi-0",
+   "ad": "Sıfır",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "0",
+   "album": false
+  },
+  {
+   "id": "sayi-1",
+   "ad": "Bir",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "1"
+  },
+  {
+   "id": "sayi-2",
+   "ad": "İki",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "2"
+  },
+  {
+   "id": "sayi-3",
+   "ad": "Üç",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "3"
+  },
+  {
+   "id": "sayi-4",
+   "ad": "Dört",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "4"
+  },
+  {
+   "id": "sayi-5",
+   "ad": "Beş",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "5"
+  },
+  {
+   "id": "sayi-6",
+   "ad": "Altı",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "6"
+  },
+  {
+   "id": "sayi-7",
+   "ad": "Yedi",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "7"
+  },
+  {
+   "id": "sayi-8",
+   "ad": "Sekiz",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "8"
+  },
+  {
+   "id": "sayi-9",
+   "ad": "Dokuz",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "9"
+  },
+  {
+   "id": "sayi-10",
+   "ad": "On",
+   "tema": "sayilar",
+   "tur": "sayi",
+   "deger": "10"
+  },
+  {
+   "id": "harf-a",
+   "ad": "A",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "A",
+   "ornek": "ari",
+   "ses": "A, arı!"
+  },
+  {
+   "id": "harf-b",
+   "ad": "B",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "B",
+   "ornek": "balik",
+   "ses": "B, balık!"
+  },
+  {
+   "id": "harf-c",
+   "ad": "C",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "C",
+   "ornek": "civciv",
+   "ses": "C, civciv!"
+  },
+  {
+   "id": "harf-c2",
+   "ad": "Ç",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Ç",
+   "ornek": "cilek",
+   "ses": "Ç, çilek!"
+  },
+  {
+   "id": "harf-d",
+   "ad": "D",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "D",
+   "ornek": "domates",
+   "ses": "D, domates!"
+  },
+  {
+   "id": "harf-e",
+   "ad": "E",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "E",
+   "ornek": "elma",
+   "ses": "E, elma!"
+  },
+  {
+   "id": "harf-f",
+   "ad": "F",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "F",
+   "ornek": "fil",
+   "ses": "F, fil!"
+  },
+  {
+   "id": "harf-g",
+   "ad": "G",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "G",
+   "ornek": "gemi",
+   "ses": "G, gemi!"
+  },
+  {
+   "id": "harf-g2",
+   "ad": "Ğ",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Ğ"
+  },
+  {
+   "id": "harf-h",
+   "ad": "H",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "H",
+   "ornek": "havuc",
+   "ses": "H, havuç!"
+  },
+  {
+   "id": "harf-i",
+   "ad": "I",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "I"
+  },
+  {
+   "id": "harf-i2",
+   "ad": "İ",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "İ",
+   "ornek": "inek",
+   "ses": "İ, inek!"
+  },
+  {
+   "id": "harf-j",
+   "ad": "J",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "J"
+  },
+  {
+   "id": "harf-k",
+   "ad": "K",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "K",
+   "ornek": "kedi",
+   "ses": "K, kedi!"
+  },
+  {
+   "id": "harf-l",
+   "ad": "L",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "L",
+   "ornek": "limon",
+   "ses": "L, limon!"
+  },
+  {
+   "id": "harf-m",
+   "ad": "M",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "M",
+   "ornek": "muz",
+   "ses": "M, muz!"
+  },
+  {
+   "id": "harf-n",
+   "ad": "N",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "N",
+   "ornek": "nar",
+   "ses": "N, nar!"
+  },
+  {
+   "id": "harf-o",
+   "ad": "O",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "O",
+   "ornek": "otobus",
+   "ses": "O, otobüs!"
+  },
+  {
+   "id": "harf-o2",
+   "ad": "Ö",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Ö",
+   "ornek": "ordek",
+   "ses": "Ö, ördek!"
+  },
+  {
+   "id": "harf-p",
+   "ad": "P",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "P",
+   "ornek": "portakal",
+   "ses": "P, portakal!"
+  },
+  {
+   "id": "harf-r",
+   "ad": "R",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "R",
+   "ornek": "roket",
+   "ses": "R, roket!"
+  },
+  {
+   "id": "harf-s",
+   "ad": "S",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "S",
+   "ornek": "salatalik",
+   "ses": "S, salatalık!"
+  },
+  {
+   "id": "harf-s2",
+   "ad": "Ş",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Ş",
+   "ornek": "semsiye",
+   "ses": "Ş, şemsiye!"
+  },
+  {
+   "id": "harf-t",
+   "ad": "T",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "T",
+   "ornek": "tavsan",
+   "ses": "T, tavşan!"
+  },
+  {
+   "id": "harf-u",
+   "ad": "U",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "U",
+   "ornek": "ucak",
+   "ses": "U, uçak!"
+  },
+  {
+   "id": "harf-u2",
+   "ad": "Ü",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Ü",
+   "ornek": "uzum",
+   "ses": "Ü, üzüm!"
+  },
+  {
+   "id": "harf-v",
+   "ad": "V",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "V"
+  },
+  {
+   "id": "harf-y",
+   "ad": "Y",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Y",
+   "ornek": "yelkenli",
+   "ses": "Y, yelkenli!"
+  },
+  {
+   "id": "harf-z",
+   "ad": "Z",
+   "tema": "harfler",
+   "tur": "harf",
+   "deger": "Z",
+   "ornek": "zurafa",
+   "ses": "Z, zürafa!"
+  }
+ ]
+}

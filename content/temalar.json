@@ -1,0 +1,10 @@
+{
+  "temalar": [
+    { "id": "hayvanlar", "ad": "Hayvanlar", "kapak": "kedi", "renk": "#FF8A2B", "acilis_kart": 0, "ucretsiz": true },
+    { "id": "meyveler", "ad": "Meyveler ve Sebzeler", "kapak": "elma", "renk": "#5DBE3F", "acilis_kart": 0, "ucretsiz": true },
+    { "id": "tasitlar", "ad": "Taşıtlar", "kapak": "araba", "renk": "#3E9DF2", "acilis_kart": 6, "ucretsiz": false },
+    { "id": "renkler", "ad": "Renkler ve Şekiller", "kapak": "sekil-yildiz", "renk": "#9B5CE0", "acilis_kart": 14, "ucretsiz": false },
+    { "id": "sayilar", "ad": "Sayılar", "kapak": "sayi-3", "renk": "#F0413F", "acilis_kart": 22, "ucretsiz": false },
+    { "id": "harfler", "ad": "Harfler", "kapak": "harf-a", "renk": "#FFC72C", "acilis_kart": 30, "ucretsiz": false }
+  ]
+}
