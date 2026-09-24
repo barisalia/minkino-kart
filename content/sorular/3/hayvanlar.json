@@ -14,8 +14,8 @@
     { "tip": "BUL", "soru_metni": "Civciv hangisi?", "soru_ses": "Cik cik cik! Minik civciv hangisi?", "kartlar": ["penguen", "civciv"], "dogru": "civciv", "ipucu": "Civciv sapsarı ve minicik." },
     { "tip": "BUL", "soru_metni": "Maymun hangisi?", "soru_ses": "U u a a! Maymun hangisi?", "kartlar": ["maymun", "zurafa"], "dogru": "maymun", "ipucu": "Maymun ağaçlarda sallanır." },
     { "tip": "ESLESTIR", "soru_metni": "Kediyi gölgesine götür", "soru_ses": "Bu kimin gölgesi? Doğru kartı gölgenin üstüne sürükle!", "gosterge": [{ "kart": "kedi", "bicim": "golge" }], "kartlar": ["kedi", "fil"], "dogru": "kedi", "ipucu": "Gölgenin sivri kulakları ve uzun bir kuyruğu var." },
-    { "tip": "ESLESTIR", "soru_metni": "Köpeği gölgesine götür", "soru_ses": "Bu gölge kimin? Kartı gölgesine sürükle!", "gosterge": [{ "kart": "zurafa", "bicim": "golge" }], "kartlar": ["kopek", "zurafa"], "dogru": "zurafa", "ipucu": "Bu gölgenin upuzun bir boynu var!" },
+    { "tip": "ESLESTIR", "soru_metni": "Zürafayı gölgesine götür", "soru_ses": "Bu gölge kimin? Kartı gölgesine sürükle!", "gosterge": [{ "kart": "zurafa", "bicim": "golge" }], "kartlar": ["kopek", "zurafa"], "dogru": "zurafa", "ipucu": "Bu gölgenin upuzun bir boynu var!" },
     { "tip": "ESLESTIR", "soru_metni": "Tavuğu yuvasına koy", "soru_ses": "Tavuk yuvasını arıyor! Tavuğu yuvasına sürükle.", "gosterge": [{ "kart": "tavuk", "bicim": "yuva" }], "kartlar": ["inek", "tavuk"], "dogru": "tavuk", "ipucu": "Tavuk gıt gıt gıdak der." },
-    { "tip": "ESLESTIR", "soru_metni": "Kurbağa kimin gölgesi?", "soru_ses": "Vrak vrak! Bu gölge kimin? Doğru kartı gölgeye sürükle.", "gosterge": [{ "kart": "kurbaga", "bicim": "golge" }], "kartlar": ["kurbaga", "at"], "dogru": "kurbaga", "ipucu": "Bu gölge zıplayan küçük bir hayvan." }
+    { "tip": "ESLESTIR", "soru_metni": "Kurbağayı gölgesine götür", "soru_ses": "Vrak vrak! Bu gölge kimin? Doğru kartı gölgeye sürükle.", "gosterge": [{ "kart": "kurbaga", "bicim": "golge" }], "kartlar": ["kurbaga", "at"], "dogru": "kurbaga", "ipucu": "Bu gölge zıplayan küçük bir hayvan." }
   ]
 }

@@ -3,7 +3,7 @@
   "tema": "sayilar",
   "sorular": [
     { "tip": "SAY", "soru_metni": "Kaç elma var?", "soru_ses": "Elmaları sayalım! Kaç elma var?", "gosterge": [{ "kart": "elma", "adet": 3 }], "kartlar": ["sayi-1", "sayi-3", "sayi-5"], "dogru": "sayi-3", "ipucu": "Her elmaya bir kez dokun: bir, iki..." },
-    { "tip": "SAY", "soru_metni": "Kaç kuş var?", "soru_ses": "Cik cik! Kaç kuş var?", "gosterge": [{ "kart": "kus", "adet": 1 }], "kartlar": ["sayi-2", "sayi-4", "sayi-1"], "dogru": "sayi-1", "ipucu": "Dikkatli bak, burada tek bir kuş var mı?" },
+    { "tip": "SAY", "soru_metni": "Kaç kuş var?", "soru_ses": "Cik cik! Kaç kuş var?", "gosterge": [{ "kart": "kus", "adet": 1 }], "kartlar": ["sayi-2", "sayi-4", "sayi-1"], "dogru": "sayi-1", "ipucu": "Kuşlara parmağınla dokunarak say." },
     { "tip": "SAY", "soru_metni": "Kaç top var?", "soru_ses": "Zıp zıp toplar! Hadi sayalım, kaç top var?", "gosterge": [{ "kart": "top", "adet": 5 }], "kartlar": ["sayi-2", "sayi-5", "sayi-4"], "dogru": "sayi-5", "ipucu": "Parmağınla tek tek dokunarak yavaş yavaş say." },
     { "tip": "SAY", "soru_metni": "Kaç kelebek var?", "soru_ses": "Kelebekler uçuşuyor! Kaç kelebek var?", "gosterge": [{ "kart": "kelebek", "adet": 2 }], "kartlar": ["sayi-5", "sayi-3", "sayi-2"], "dogru": "sayi-2", "ipucu": "Her kelebeğe bir kez dokun ve say." },
     { "tip": "SAY", "soru_metni": "Kaç çilek var?", "soru_ses": "Mmm, çilekler! Kaç çilek var?", "gosterge": [{ "kart": "cilek", "adet": 4 }], "kartlar": ["sayi-4", "sayi-1", "sayi-2"], "dogru": "sayi-4", "ipucu": "Parmağınla tek tek dokunarak say: bir, iki, üç..." },

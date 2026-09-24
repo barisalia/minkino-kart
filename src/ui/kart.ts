@@ -93,8 +93,11 @@ export function sepetSvg(renk: string): string {
 // ---------- Kart içeriği ----------
 function resimEl(k: Kart, sinif = 'kart-resim'): HTMLElement {
   const url = gorselUrl(k);
-  if (url) return h('img', { class: sinif, src: url, alt: k.ad, draggable: 'false', decoding: 'async' });
-  return h('div.yer-tutucu', { 'data-bekliyor': k.id }, h('span', {}, k.ad));
+  const yerTutucu = () => h('div.yer-tutucu', { 'data-bekliyor': k.id }, h('span', {}, k.ad));
+  if (!url) return yerTutucu();
+  const img = h('img', { class: sinif, src: url, alt: k.ad, draggable: 'false', decoding: 'async' });
+  img.addEventListener('error', () => img.replaceWith(yerTutucu()), { once: true });
+  return img;
 }
 
 function sayiRengi(n: number): string {

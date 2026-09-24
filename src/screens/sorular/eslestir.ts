@@ -1,7 +1,8 @@
 import { efekt } from '../../audio/ses';
 import { refCoz } from '../../engine/katalog';
 import { dogruIndeks } from '../../engine/soru';
-import { h, TEST_MODU } from '../../ui/dom';
+import { h, svg, TEST_MODU } from '../../ui/dom';
+import { IKON } from '../../ui/ikonlar';
 import { izgaraSigdir, merkez } from '../../ui/hareket';
 import { kartEl } from '../../ui/kart';
 import type { SoruBaglam } from '../oyun';
@@ -140,6 +141,30 @@ export function eslestirCiz(b: SoruBaglam) {
     izgara.append(el);
   });
   b.temizlik(() => b.app.kok.querySelectorAll('.surukle-klon').forEach((k) => k.remove()));
+
+  // Küçük çocuklar için: kısa bir süre dokunulmazsa, kartı hedefe taşıyan el animasyonu
+  if (!TEST_MODU) {
+    const el = h('div.el-ipucu', { 'aria-hidden': 'true' }, svg(IKON.el));
+    let zaman = window.setTimeout(goster, 4500);
+    function goster() {
+      if (bitti || !hedef.isConnected) return;
+      const a = izgara.getBoundingClientRect();
+      const t = hedef.getBoundingClientRect();
+      const k = b.alan.getBoundingClientRect();
+      el.style.setProperty('--x0', `${a.left + a.width / 2 - k.left}px`);
+      el.style.setProperty('--y0', `${a.top + a.height / 2 - k.top}px`);
+      el.style.setProperty('--x1', `${t.left + t.width / 2 - k.left}px`);
+      el.style.setProperty('--y1', `${t.top + t.height / 2 - k.top}px`);
+      b.alan.append(el);
+      zaman = window.setTimeout(() => el.remove(), 3200);
+    }
+    const dur = () => {
+      clearTimeout(zaman);
+      el.remove();
+    };
+    b.alan.addEventListener('pointerdown', dur, { once: true });
+    b.temizlik(dur);
+  }
   b.temizlik(izgaraSigdir(b.secenek, izgara, s.kartlar.length, { enBuyuk: s.kartlar.length <= 2 ? 260 : 220 }));
   b.secenek.append(izgara);
 }

@@ -7,3 +7,4 @@ tests/screens/*.png
 .DS_Store
 *.log
 scripts/gecici
+dist-tek

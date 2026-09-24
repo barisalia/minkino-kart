@@ -53,7 +53,13 @@ export class Uygulama {
     if (this.aktifAd && this.aktifAd !== ad) this.gecmis.push({ ad: this.aktifAd, param: this.sonParam });
     if (this.gecmis.length > 10) this.gecmis.shift();
     this.sonParam = param;
-    const yeni = f(this, param);
+    let yeni: Ekran;
+    try {
+      yeni = f(this, param);
+    } catch (hata) {
+      console.warn('Ekran açılamadı', ad, hata);
+      yeni = this.hataEkrani();
+    }
     yeni.el.classList.add('ekran');
     yeni.el.dataset.ekran = ad;
     this.kok.append(yeni.el);
@@ -61,6 +67,13 @@ export class Uygulama {
     this.aktifAd = ad;
   }
   private sonParam: unknown;
+
+  /** Beklenmedik bir hatada çocuğu boş ekranda bırakmayan toparlanma ekranı. */
+  private hataEkrani(): Ekran {
+    const dugme = h('button.dugme', { type: 'button' }, 'Baştan başla');
+    dugme.addEventListener('click', () => this.git('acilis'));
+    return { el: h('div.yukleniyor', {}, h('div', { style: 'display:grid;gap:18px;justify-items:center;text-align:center' }, h('div', {}, 'Hımm, bir şey ters gitti.'), dugme)) };
+  }
 
   /** Bir önceki ekrana dön (yoksa temalar). */
   geri() {
