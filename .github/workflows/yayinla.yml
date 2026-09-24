@@ -55,7 +55,7 @@ jobs:
       - name: Yeni görsel ve sesleri repoya kaydet
         continue-on-error: true
         run: |
-          git add assets public/ses public/ses-ornek 2>/dev/null || git add assets public/ses
+          git add assets public/ses public/ses-ornek karakter-kaynak 2>/dev/null || git add assets public/ses
           if ! git diff --cached --quiet; then
             git -c user.name="minkino-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
               commit -m "Görsel/ses dosyaları güncellendi [skip ci]"

@@ -17,11 +17,21 @@ let yeni = 0;
 let hata = 0;
 for (const [anahtar, url] of Object.entries(liste)) {
   const hedef = path.join(kok, 'assets', `${anahtar}.webp`);
-  if (!hepsi && fs.existsSync(hedef)) continue;
+  // Karakter çizimlerinin vektör (SVG) asıllarını da sakla: animasyon için parçalara ayrılacak
+  const kaynakSvg = path.join(kok, 'karakter-kaynak', `${path.basename(anahtar)}.svg`);
+  const svgGerek = anahtar.startsWith('karakter/') && !fs.existsSync(kaynakSvg);
+  if (!hepsi && fs.existsSync(hedef) && !svgGerek) continue;
   try {
     const yanit = await fetch(url);
     if (!yanit.ok) throw new Error(`HTTP ${yanit.status}`);
     const girdi = Buffer.from(await yanit.arrayBuffer());
+    const tur = yanit.headers.get('content-type') ?? '';
+    if (anahtar.startsWith('karakter/') && (tur.includes('svg') || girdi.subarray(0, 200).toString().includes('<svg'))) {
+      fs.mkdirSync(path.dirname(kaynakSvg), { recursive: true });
+      fs.writeFileSync(kaynakSvg, girdi);
+      console.log('✓ svg', anahtar);
+    }
+    if (!hepsi && fs.existsSync(hedef)) continue;
     const kirpik = await sharp(girdi).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     await sharp(kirpik)
