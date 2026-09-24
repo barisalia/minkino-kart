@@ -112,10 +112,11 @@ export const efekt = {
     hisirti(0, 0.08, 2500, 1200, 0.12, 2);
     can(NOTA(88), 0.06, 0.08, 0.3);
   },
-  konfeti() {
-    hisirti(0, 0.18, 1800, 600, 0.22, 0.7);
+  konfeti(sade = false) {
+    hisirti(0, 0.16, 1800, 600, sade ? 0.12 : 0.22, 0.7);
     const penta = [79, 81, 84, 86, 88, 91, 93, 96];
-    for (let i = 0; i < 9; i++) can(NOTA(penta[Math.floor(Math.random() * penta.length)]), 0.05 + Math.random() * 0.55, 0.07, 0.25);
+    const adet = sade ? 4 : 9;
+    for (let i = 0; i < adet; i++) can(NOTA(penta[Math.floor(Math.random() * penta.length)]), 0.04 + Math.random() * (sade ? 0.25 : 0.55), sade ? 0.05 : 0.07, 0.22);
   },
   yildiz(sira: number) {
     const n = [76, 79, 84][sira] ?? 84;

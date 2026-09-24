@@ -28,8 +28,9 @@ export function sesMotorunuAc(): AudioContext | null {
       ctx = new AC({ latencyHint: 'interactive' });
       ana = ctx.createGain();
       const comp = ctx.createDynamicsCompressor();
-      comp.threshold.value = -14;
-      comp.ratio.value = 4;
+      comp.threshold.value = -12;
+      comp.knee.value = 12;
+      comp.ratio.value = 3;
       ana.connect(comp).connect(ctx.destination);
       efektKanal = ctx.createGain();
       muzikKanal = ctx.createGain();
@@ -56,9 +57,11 @@ export function seviyeleriUygula() {
 
 /** Konuşma sırasında müziği kısar. */
 export function muzikKis(kis: boolean) {
-  if (!ctx || !muzikKanal) return;
-  const hedef = durum.i.ayarlar.muzik ? (kis ? 0.35 : 1) : 0;
-  muzikKanal.gain.setTargetAtTime(hedef, ctx.currentTime, kis ? 0.08 : 0.4);
+  if (!ctx || !muzikKanal || !efektKanal) return;
+  const a = durum.i.ayarlar;
+  muzikKanal.gain.setTargetAtTime(a.muzik ? (kis ? 0.3 : 1) : 0, ctx.currentTime, kis ? 0.08 : 0.4);
+  // Konuşma sırasında efektler de geri planda kalsın (ses anlaşılır olsun, cızırdamasın)
+  efektKanal.gain.setTargetAtTime(a.efekt ? (kis ? 0.45 : 0.9) : 0, ctx.currentTime, kis ? 0.05 : 0.3);
 }
 
 document.addEventListener('visibilitychange', () => {

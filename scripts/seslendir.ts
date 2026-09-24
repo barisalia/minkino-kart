@@ -20,6 +20,10 @@ interface Uretim {
   ayarlar?: Record<string, number | boolean>;
 }
 interface Ayar extends Uretim {
+  otomatik?: boolean;
+  es_zaman?: number;
+  bekleme_ms?: number;
+  en_hizli_harf_sn?: number;
   ses_id: string;
   bicim: string;
   ayarlar: Record<string, number | boolean>;
@@ -113,6 +117,11 @@ if (KARSILASTIR) {
   process.exit(0);
 }
 
+if (ayar.otomatik === false && !argv.includes('--zorla')) {
+  console.log('content/seslendirme.json → otomatik: false — seslendirme bekletiliyor.');
+  process.exit(0);
+}
+
 const sesId = process.env.ELEVENLABS_VOICE_ID || ayar.ses_id;
 if (!sesId) {
   console.log('content/seslendirme.json içinde ses_id boş — seslendirme atlandı.');
@@ -136,10 +145,35 @@ console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karak
 
 let tamam = 0;
 const kaydet = () => fs.writeFileSync(manifestYolu, JSON.stringify(manifest, null, 0));
+const bekle = (ms: number) => new Promise((c) => setTimeout(c, ms));
+/** mp3 (sabit bit hızı) süresi → saniyedeki harf sayısı */
+function hiz(metin: string, dosya: string): number {
+  const kbps = Number(ayar.bicim.split('_')[2] ?? 64);
+  const sure = (fs.statSync(dosya).size * 8) / (kbps * 1000);
+  return [...metin].filter((c) => /\p{L}/u.test(c)).length / Math.max(0.3, sure);
+}
+const SINIR_HIZ = ayar.en_hizli_harf_sn ?? 15;
+let yeniden = 0;
+
 try {
-  await havuz(eksik, 3, async (c) => {
+  await havuz(eksik, ayar.es_zaman ?? 1, async (c) => {
     const f = dosyaAdi(c);
-    await uret(sesId, c, path.join(klasor, f));
+    const hedef = path.join(klasor, f);
+    await uret(sesId, c, hedef);
+    // Aceleye gelmiş (fazla hızlı) kayıtları en çok 2 kez yeniden üret, en yavaşını tut
+    const harf = [...c].filter((x) => /\p{L}/u.test(x)).length;
+    if (harf >= 6) {
+      let en = { h: hiz(c, hedef), veri: fs.readFileSync(hedef) };
+      for (let d = 0; d < 2 && en.h > SINIR_HIZ; d++) {
+        yeniden++;
+        await bekle(ayar.bekleme_ms ?? 400);
+        await uret(sesId, c, hedef);
+        const h = hiz(c, hedef);
+        if (h < en.h) en = { h, veri: fs.readFileSync(hedef) };
+      }
+      fs.writeFileSync(hedef, en.veri);
+    }
+    await bekle(ayar.bekleme_ms ?? 400);
     manifest.dosyalar[c] = f;
     if (++tamam % 25 === 0) {
       kaydet();
@@ -159,4 +193,4 @@ for (const k of Object.keys(manifest.dosyalar)) if (!gecerli.has(k)) delete mani
 const kullanilan = new Set(Object.values(manifest.dosyalar));
 for (const f of fs.readdirSync(klasor)) if (f.endsWith('.mp3') && !kullanilan.has(f)) fs.unlinkSync(path.join(klasor, f));
 kaydet();
-console.log(`Bitti: ${tamam} yeni kayıt.`);
+console.log(`Bitti: ${tamam} yeni kayıt, hız nedeniyle ${yeniden} yeniden üretim.`);

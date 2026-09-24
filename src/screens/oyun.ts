@@ -163,13 +163,14 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     efekt.dogru();
     const m = merkez(hedefEl ?? alan);
     konfetiPatlat(app.kok, m.x, m.y, 80);
-    setTimeout(() => efekt.konfeti(), 120);
+    setTimeout(() => efekt.konfeti(true), 90);
     const nokta = ilerleme.children[sira];
     nokta?.classList.add('tamam');
 
     const sahip = new Set([...durum.i.album, ...yeniKartlar]);
     const odul = odulKartiSec(s, tema.id, sahip);
-    const konusma = konus([metin('dogru'), ...aciklama]);
+    // Çan ve konfeti sesi önce, övgü hemen ardından (üst üste binip cızırdamasın)
+    const konusma = bekle(sure(380)).then(() => (kapandi ? undefined : konus(aciklama)));
     let ucus: Promise<void> = Promise.resolve();
     if (odul) {
       yeniKartlar.push(odul);

@@ -70,7 +70,10 @@ export type Soylenecek = string | undefined | null | (string | undefined | null)
 export function konus(girdi: Soylenecek): Promise<void> {
   sus();
   const benim = sayac;
-  const parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
+  let parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
+  // Birleşik cümlenin tek parça kaydı varsa onu çal (daha doğal, arada boşluk yok)
+  const butun = normal(parcalar.join(' '));
+  if (parcalar.length > 1 && kayitVar(butun)) parcalar = [butun];
   if (!parcalar.length) return Promise.resolve();
   if (TEST_MODU) return new Promise((r) => setTimeout(r, 5));
   if (!durum.i.ayarlar.konusma) return new Promise((r) => setTimeout(r, 250));

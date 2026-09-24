@@ -5,7 +5,7 @@ import { h, TEST_MODU } from '../../ui/dom';
 import { izgaraSigdir, ucur } from '../../ui/hareket';
 import { diziOrani, kartEl } from '../../ui/kart';
 import type { SoruBaglam } from '../oyun';
-import { aciklama } from './ortak';
+import { dogruCumlesi } from '../../audio/cumleler';
 
 /** BUL, SAY, FARKLI ve SIRADAKI: gösterge + dokunarak seçilen kartlar. */
 export function secmeliCiz(b: SoruBaglam) {
@@ -77,11 +77,11 @@ export function secmeliCiz(b: SoruBaglam) {
           void ucur(b.app.kok, klon, el, yuva, oran, 450).then(() => {
             const yeni = kartEl(g, { sinif: 'dogru-oldu' });
             yuva!.replaceWith(yeni);
-            b.dogru(yeni, aciklama(s, g));
+            b.dogru(yeni, dogruCumlesi(s, g));
           });
         } else {
           el.classList.add('dogru-oldu');
-          b.dogru(el, aciklama(s, g));
+          b.dogru(el, dogruCumlesi(s, g));
         }
       } else {
         b.yanlis(el, elemanlar[dogru]);

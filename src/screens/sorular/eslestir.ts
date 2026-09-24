@@ -6,7 +6,7 @@ import { IKON } from '../../ui/ikonlar';
 import { izgaraSigdir, merkez } from '../../ui/hareket';
 import { kartEl } from '../../ui/kart';
 import type { SoruBaglam } from '../oyun';
-import { aciklama } from './ortak';
+import { dogruCumlesi } from '../../audio/cumleler';
 
 /** EŞLEŞTİR: doğru kartı sürükleyip hedefe (gölge / yuva / renk sepeti) bırak. Dokunmak da kartı hedefe gönderir. */
 export function eslestirCiz(b: SoruBaglam) {
@@ -45,7 +45,7 @@ export function eslestirCiz(b: SoruBaglam) {
         hedef.replaceWith(yeni);
         hedef = yeni;
         elemanlar.forEach((e) => e !== el && e.classList.add('soluk'));
-        b.dogru(yeni, aciklama(s, g));
+        b.dogru(yeni, dogruCumlesi(s, g));
       };
       let tasiyici: HTMLElement | null = klon;
       if (TEST_MODU) return son();

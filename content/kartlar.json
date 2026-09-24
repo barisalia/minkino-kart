@@ -552,7 +552,7 @@
    "tema": "renkler",
    "tur": "resim",
    "gorsel": "renkler/top.webp",
-   "renk": "kırmızı",
+   "renk": "rengarenk (kırmızı-mavi-sarı)",
    "album": false
   },
   {
@@ -570,7 +570,7 @@
    "tema": "renkler",
    "tur": "resim",
    "gorsel": "renkler/hediye.webp",
-   "renk": "mavi",
+   "renk": "mavi (sarı kurdele)",
    "album": false
   },
   {
@@ -624,7 +624,7 @@
    "tema": "renkler",
    "tur": "resim",
    "gorsel": "renkler/pizza.webp",
-   "renk": "sarı",
+   "renk": "sarı-kırmızı",
    "album": false
   },
   {

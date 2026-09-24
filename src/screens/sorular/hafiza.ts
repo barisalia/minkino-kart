@@ -1,5 +1,6 @@
 import { efekt, konus } from '../../audio/ses';
 import { metin } from '../../audio/metin';
+import { eslestiCumlesi } from '../../audio/cumleler';
 import { refCoz } from '../../engine/katalog';
 import { bekle, h, karistir, sure, TEST_MODU } from '../../ui/dom';
 import { izgaraSigdir } from '../../ui/hareket';
@@ -45,7 +46,7 @@ export function hafizaCiz(b: SoruBaglam) {
           b.dogru(c, [metin('hafiza_bitti')]);
           return;
         }
-        void konus([metin('hafiza_eslesti'), `${refAdi(g)}!`]);
+        void konus(eslestiCumlesi(refAdi(g)));
         kilit = false;
       } else {
         await bekle(sure(1000));

@@ -8,7 +8,7 @@
     "similarity_boost": 0.8,
     "style": 0.35,
     "use_speaker_boost": true,
-    "speed": 0.95
+    "speed": 0.9
   },
   "baglam": true,
   "dil": null,
@@ -49,7 +49,7 @@
           "similarity_boost": 0.8,
           "style": 0.35,
           "use_speaker_boost": true,
-          "speed": 0.95
+          "speed": 0.9
         }
       },
       {
@@ -60,5 +60,9 @@
         "dil": "tr"
       }
     ]
-  }
+  },
+  "otomatik": false,
+  "es_zaman": 1,
+  "bekleme_ms": 400,
+  "en_hizli_harf_sn": 15
 }

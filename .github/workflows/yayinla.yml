@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: yayinla
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   yayinla:
@@ -43,7 +43,7 @@ jobs:
       - name: Eksik seslendirmeleri üret (ElevenLabs)
         if: ${{ !inputs.ses_karsilastir }}
         continue-on-error: true
-        timeout-minutes: 60
+        timeout-minutes: 180
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: npx vite-node scripts/seslendir.ts

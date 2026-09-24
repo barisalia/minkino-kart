@@ -25,6 +25,30 @@ export function aciklamaParcalari(s: Soru, g: KartGirdi | undefined): string[] {
   return k.ses && k.tur === 'resim' ? [`${k.ad}!`, k.ses] : [`${k.ad}!`];
 }
 
+function ozet(t: string): number {
+  let h = 0;
+  for (const c of t) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
+const dizi = (a: string) => [M[a]].flat() as string[];
+
+/** Soruya sabit bir övgü seçer (her soru için tek, bütün hâlinde kaydedilebilsin diye). */
+export function ovgu(s: Soru): string {
+  const d = dizi('dogru');
+  return d[ozet(s.soru_metni + (s.soru_ses ?? '')) % d.length];
+}
+
+/** Doğru cevap cümlesi: övgü + açıklama (tek kayıt olarak üretilir). */
+export function dogruCumlesi(s: Soru, g: KartGirdi | undefined): string[] {
+  return [ovgu(s), ...aciklamaParcalari(s, g)];
+}
+
+/** Hafızada eşleşme cümlesi: karta göre sabit bir övgü + kart adı. */
+export function eslestiCumlesi(ad: string): string[] {
+  const d = dizi('hafiza_eslesti');
+  return [d[ozet(ad) % d.length], `${ad}!`];
+}
+
 /** Bir kartın adı + sesi (albümde dokununca). */
 export function kartSesi(id: string): string[] {
   const k = kart(id);
@@ -72,6 +96,29 @@ export function tumCumleler(): string[] {
           ekle(r.yazi ? `${r.yazi}!` : `${kart(r.kart ?? '')?.ad ?? ''}!`);
         }
       } else aciklamaParcalari(s, s.kartlar[dogruIndeks(s)]).forEach(ekle);
+    }
+  }
+  // Birleşik cümleler: oyun bunları varsa tek parça çalar (doğal tonlama, parçalar arası boşluk yok)
+  const birlesik = (p: (string | undefined | null)[]) => {
+    const parcalar = p.filter((x): x is string => !!x && !!normal(x));
+    if (parcalar.length > 1) ekle(parcalar.join(' '));
+  };
+  for (const k of KARTLAR) birlesik(kartSesi(k.id));
+  for (const t of dizi('tekrar_dene')) birlesik([t, M.ipucu_genel as string]);
+  birlesik([M.acilis as string, M.yas_sor as string]);
+  for (const t of TEMALAR) birlesik([`${t.ad}.`, M.album_bos as string]);
+  for (const t of dizi('tur_sonu'))
+    for (const y of [1, 2, 3])
+      for (const yeni of [true, false]) birlesik([t, buyukHarfBas((M.yildiz as string).replace('{yildiz}', sayiAdi(y))), yeni ? (M.yeni_kartlar as string) : '']);
+  for (const d of tumIcerikDosyalari()) {
+    for (const s of d.sorular) {
+      if (s.tip === 'HAFIZA') {
+        for (const g of s.kartlar) {
+          const r = refCoz(g);
+          birlesik(eslestiCumlesi(r.yazi ?? kart(r.kart ?? '')?.ad ?? ''));
+        }
+        for (const t of dizi('hafiza_eslesti')) ekle(t);
+      } else birlesik(dogruCumlesi(s, s.kartlar[dogruIndeks(s)]));
     }
   }
   return [...set];
