@@ -7,6 +7,7 @@ import type { Tema } from '../engine/types';
 import { h, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { kartEl } from '../ui/kart';
+import { kartSesi } from '../audio/cumleler';
 import { sinifOynat } from '../ui/hareket';
 import { baslikBalon, yuvarlakDugme } from '../ui/ortak';
 import type { Ekran, Uygulama } from '../uygulama';
@@ -33,7 +34,7 @@ export function albumSayfasi(t: Tema, sec: { yeni?: string[] } = {}): HTMLElemen
       if (var_) {
         efekt.secim();
         void sinifOynat(el, 'ziplat', 500);
-        void konus(`${k.ad}!${k.ses ? ' ' + k.ses : ''}`);
+        void konus(kartSesi(k.id));
       } else {
         efekt.kilitli();
         void sinifOynat(el, 'sallan', 500);
@@ -65,7 +66,7 @@ export function albumEkrani(app: Uygulama, param?: { tema?: string }): Ekran {
     kaydir.scrollTop = 0;
     if (konusma) {
       const bos = !albumKartlari(t.id).some((k) => durum.i.album.includes(k.id));
-      void konus(`${t.ad}. ${bos ? metin('album_bos') : ''}`);
+      void konus([`${t.ad}.`, bos ? metin('album_bos') : '']);
     }
   }
 

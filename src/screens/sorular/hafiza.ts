@@ -42,10 +42,10 @@ export function hafizaCiz(b: SoruBaglam) {
         efekt.eslesti();
         bulunan++;
         if (bulunan === s.kartlar.length) {
-          b.dogru(c, metin('hafiza_bitti'));
+          b.dogru(c, [metin('hafiza_bitti')]);
           return;
         }
-        void konus(`${metin('hafiza_eslesti')} ${refAdi(g)}!`);
+        void konus([metin('hafiza_eslesti'), `${refAdi(g)}!`]);
         kilit = false;
       } else {
         await bekle(sure(1000));

@@ -4,6 +4,11 @@ on:
   push:
     branches: [main, 'claude/**']
   workflow_dispatch:
+    inputs:
+      ses_ornek:
+        description: 'Aday seslerle deneme kayıtları üret (ses-deneme.html)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -29,13 +34,25 @@ jobs:
       - name: Recraft görsellerini indir
         run: node scripts/gorsel-indir.mjs
 
-      - name: Yeni görselleri repoya kaydet
+      - name: Aday ses denemeleri (ElevenLabs)
+        if: ${{ inputs.ses_ornek }}
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: npx vite-node scripts/seslendir.ts -- --ornek
+
+      - name: Eksik seslendirmeleri üret (ElevenLabs)
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: npx vite-node scripts/seslendir.ts
+
+      - name: Yeni görsel ve sesleri repoya kaydet
         continue-on-error: true
         run: |
-          git add assets
+          git add assets public/ses public/ses-ornek 2>/dev/null || git add assets public/ses
           if ! git diff --cached --quiet; then
             git -c user.name="minkino-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -m "Recraft görselleri indirildi [skip ci]"
+              commit -m "Görsel/ses dosyaları güncellendi [skip ci]"
+            git pull --rebase -q origin "${GITHUB_REF_NAME}" || true
             git push
           fi
 

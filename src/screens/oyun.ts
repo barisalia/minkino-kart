@@ -1,4 +1,5 @@
 import { efekt, konus } from '../audio/ses';
+import { onYukle } from '../audio/kayit';
 import { metin } from '../audio/metin';
 import { durum, kaydetDurum } from '../engine/ilerleme';
 import { sorular as tumSorular, temaBul } from '../engine/katalog';
@@ -24,7 +25,7 @@ export interface SoruBaglam {
   gosterge: HTMLElement;
   secenek: HTMLElement;
   /** Doğru cevap. `el`: ödül kartının uçacağı yer; `aciklama`: övgüden sonra söylenecek cümle. */
-  dogru(el: HTMLElement | null, aciklama: string): void;
+  dogru(el: HTMLElement | null, aciklama: string[]): void;
   /** Yanlış cevap. `el` sallanır, `dogruEl` ışıldar. */
   yanlis(el: HTMLElement, dogruEl: HTMLElement | null, soldur?: boolean): void;
   temizlik(fn: () => void): void;
@@ -149,7 +150,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
         efekt.yanlis();
         void sinifOynat(yEl, 'sallan', 500).then(() => soldur && yEl.classList.add('soluk'));
         dogruEl?.classList.add('isilti');
-        const ipucu = s.ipucu && yanlisSayisi === 1 ? s.ipucu : `${metin('tekrar_dene')} ${metin('ipucu_genel')}`;
+        const ipucu = s.ipucu && yanlisSayisi === 1 ? [s.ipucu] : [metin('tekrar_dene'), metin('ipucu_genel')];
         void konus(ipucu);
       },
     };
@@ -158,7 +159,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     bostaSayaci();
   }
 
-  async function dogruAkisi(s: Soru, hedefEl: HTMLElement | null, aciklama: string) {
+  async function dogruAkisi(s: Soru, hedefEl: HTMLElement | null, aciklama: string[]) {
     efekt.dogru();
     const m = merkez(hedefEl ?? alan);
     konfetiPatlat(app.kok, m.x, m.y, 80);
@@ -168,7 +169,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
 
     const sahip = new Set([...durum.i.album, ...yeniKartlar]);
     const odul = odulKartiSec(s, tema.id, sahip);
-    const konusma = konus(`${metin('dogru')} ${aciklama}`.trim());
+    const konusma = konus([metin('dogru'), ...aciklama]);
     let ucus: Promise<void> = Promise.resolve();
     if (odul) {
       yeniKartlar.push(odul);
@@ -209,6 +210,8 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     const sonuc: TurSonucu = { tema: tema.id, yildiz, yeniKartlar, acilanTemalar: acilan };
     app.git('turSonu', sonuc);
   }
+
+  onYukle(sorular.flatMap((q) => [q.soru_ses ?? q.soru_metni, q.ipucu]));
 
   if (sorular.length === 0) {
     alan.append(h('div.yukleniyor', {}, 'Bu paket yakında!'));

@@ -1,5 +1,7 @@
 import { durum } from '../engine/ilerleme';
 import { TEST_MODU } from '../ui/dom';
+import { normal } from './cumleler';
+import { kayitCal, kayitDurdur, kayitVar, onYukle } from './kayit';
 import { muzikKis } from './motor';
 
 /**
@@ -47,6 +49,7 @@ export function konusmaMotorunuAc() {
 
 export function sus() {
   sayac++;
+  kayitDurdur();
   if (destek()) speechSynthesis.cancel();
   if (aktifDosya) {
     aktifDosya.pause();
@@ -58,25 +61,42 @@ export function sus() {
 
 const DOSYA = /\.(mp3|m4a|ogg|wav|aac)$/i;
 
-/** Metni söyler; bittiğinde (veya güvenli bir süre sonra) çözülür. */
-export function konus(metin: string | undefined | null): Promise<void> {
+export type Soylenecek = string | undefined | null | (string | undefined | null)[];
+
+/**
+ * Metni (ya da parçalarını sırayla) söyler; bittiğinde çözülür.
+ * Her parça için önce gerçek kayıt aranır (public/ses), yoksa cihazın Türkçe sesi kullanılır.
+ */
+export function konus(girdi: Soylenecek): Promise<void> {
   sus();
   const benim = sayac;
-  if (!metin?.trim()) return Promise.resolve();
-  const ayar = durum.i.ayarlar;
+  const parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
+  if (!parcalar.length) return Promise.resolve();
   if (TEST_MODU) return new Promise((r) => setTimeout(r, 5));
-  if (!ayar.konusma) return new Promise((r) => setTimeout(r, 250));
+  if (!durum.i.ayarlar.konusma) return new Promise((r) => setTimeout(r, 250));
 
+  onYukle(parcalar);
+  muzikKis(true);
+  return (async () => {
+    for (const p of parcalar) {
+      if (benim !== sayac) return;
+      const calindi = kayitVar(p) && (await kayitCal(p, () => benim !== sayac));
+      if (!calindi && benim === sayac) await tekParca(p, benim);
+    }
+    if (benim === sayac) muzikKis(false);
+  })();
+}
+
+function tekParca(metin: string, benim: number): Promise<void> {
+  const ayar = durum.i.ayarlar;
   return new Promise<void>((coz) => {
     let bitti = false;
     const son = () => {
       if (bitti) return;
       bitti = true;
-      if (benim === sayac) muzikKis(false);
       coz();
     };
     bitir = son;
-    muzikKis(true);
     const emniyet = setTimeout(son, 1800 + metin.length * 95);
 
     if (DOSYA.test(metin)) {

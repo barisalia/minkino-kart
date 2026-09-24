@@ -1,3 +1,4 @@
+import { kayitlariHazirla } from './audio/kayit';
 import { sesiAc, sus } from './audio/ses';
 import { h, sure, TEST_MODU } from './ui/dom';
 
@@ -33,6 +34,7 @@ export class Uygulama {
     kok.classList.add('mk-kok');
     if (TEST_MODU) kok.classList.add('test-modu');
     kok.replaceChildren(h('div.zemin'));
+    void kayitlariHazirla();
     // İlk dokunuşta ses motorlarını aç (iOS kuralı)
     const ac = () => sesiAc();
     kok.addEventListener('pointerdown', ac, { capture: true });

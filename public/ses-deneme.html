@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Minkino Ses Denemesi</title>
+<style>
+  :root { --kontur: #5a3617; --krem: #fff4dd; --sari: #ffc72c; }
+  body { margin: 0; padding: 20px 16px 40px; background: var(--krem); color: var(--kontur); font: 500 16px/1.4 ui-rounded, system-ui, sans-serif; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  p.alt { margin: 0 0 20px; opacity: .75; }
+  .ses { background: #fff; border: 3px solid var(--kontur); border-radius: 20px; padding: 14px; margin-bottom: 16px; box-shadow: 0 5px 0 rgba(90,54,23,.18); }
+  .ses h2 { margin: 0 0 4px; font-size: 1.2rem; }
+  .ses code { font-size: .8rem; opacity: .7; user-select: all; }
+  .satir { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 2px dashed rgba(90,54,23,.15); }
+  button { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--kontur); background: var(--sari); font-size: 18px; cursor: pointer; }
+  .hepsi { width: auto; border-radius: 14px; padding: 0 14px; margin-top: 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>Minkino ses denemesi</h1>
+<p class="alt">Her aday ses aynı cümleleri okuyor. Beğendiğin sesin adını ve kimliğini (ID) Claude'a yaz.</p>
+<div id="liste">Yükleniyor…</div>
+<script>
+  const kutu = document.getElementById('liste');
+  let calan = null;
+  function cal(src) { if (calan) calan.pause(); calan = new Audio(src); return calan.play().then(() => new Promise((r) => (calan.onended = r))); }
+  fetch('./ses-ornek/liste.json').then((r) => r.json()).then((d) => {
+    kutu.textContent = '';
+    for (const s of d.sesler) {
+      const k = document.createElement('section');
+      k.className = 'ses';
+      k.innerHTML = `<h2></h2><code></code>`;
+      k.querySelector('h2').textContent = s.ad;
+      k.querySelector('code').textContent = s.ses_id;
+      const hepsi = document.createElement('button');
+      hepsi.className = 'hepsi';
+      hepsi.textContent = '▶ Hepsini sırayla dinle';
+      hepsi.onclick = async () => { for (const f of s.dosyalar) await cal('./ses-ornek/' + f.dosya); };
+      k.append(hepsi);
+      for (const f of s.dosyalar) {
+        const satir = document.createElement('div');
+        satir.className = 'satir';
+        const b = document.createElement('button');
+        b.textContent = '▶';
+        b.setAttribute('aria-label', 'Dinle');
+        b.onclick = () => cal('./ses-ornek/' + f.dosya);
+        const t = document.createElement('span');
+        t.textContent = f.metin;
+        satir.append(b, t);
+        k.append(satir);
+      }
+      kutu.append(k);
+    }
+  }).catch(() => { kutu.textContent = 'Henüz deneme kaydı yok.'; });
+</script>
+</body>
+</html>

@@ -34,8 +34,11 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
     const r = yildizlar.getBoundingClientRect();
     konfetiPatlat(app.kok, r.left + r.width / 2, r.top + r.height / 2, 120, 1.2);
     efekt.konfeti();
-    const cumle = `${metin('tur_sonu')} ${buyukHarfBas(metin('yildiz', { yildiz: sayiAdi(p.yildiz) }))} ${p.yeniKartlar.length ? metin('yeni_kartlar') : ''}`;
-    const konusma = konus(cumle);
+    const konusma = konus([
+      metin('tur_sonu'),
+      buyukHarfBas(metin('yildiz', { yildiz: sayiAdi(p.yildiz) })),
+      p.yeniKartlar.length ? metin('yeni_kartlar') : '',
+    ]);
     for (let i = 0; i < p.yildiz; i++) {
       await bekle(sure(380));
       if (kapandi) return;

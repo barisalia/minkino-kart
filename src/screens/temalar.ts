@@ -57,7 +57,7 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string }): E
       if (!d.acik) {
         efekt.kilitli();
         void sinifOynat(el, 'titre', 500);
-        void konus(d.sebep === 'abonelik' ? metin('tema_abonelik') : `${t.ad}. ${metin('tema_kilitli', { kalan: d.kalan })}`);
+        void konus(d.sebep === 'abonelik' ? metin('tema_abonelik') : [`${t.ad}.`, metin('tema_kilitli', { kalan: d.kalan })]);
         return;
       }
       kilit = true;

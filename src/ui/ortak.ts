@@ -43,7 +43,7 @@ export function sesDugmesi(): HTMLButtonElement {
 }
 
 /** Başlık balonu: hoparlör + metin; hoparlöre dokununca cümle tekrar okunur. */
-export function baslikBalon(metin: string, ses: string): HTMLElement {
+export function baslikBalon(metin: string, ses: string | string[]): HTMLElement {
   const hop = yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(ses), 'kucuk');
   return h('div.baslik-balon', {}, hop, h('span', {}, metin));
 }

@@ -5,6 +5,7 @@ let ctx: AudioContext | null = null;
 let ana: GainNode | null = null;
 let efektKanal: GainNode | null = null;
 let muzikKanal: GainNode | null = null;
+let konusmaKanal: GainNode | null = null;
 
 export function baglam(): AudioContext | null {
   return ctx;
@@ -14,6 +15,9 @@ export function efektCikisi(): GainNode | null {
 }
 export function muzikCikisi(): GainNode | null {
   return muzikKanal;
+}
+export function konusmaCikisi(): GainNode | null {
+  return konusmaKanal;
 }
 
 export function sesMotorunuAc(): AudioContext | null {
@@ -29,8 +33,11 @@ export function sesMotorunuAc(): AudioContext | null {
       ana.connect(comp).connect(ctx.destination);
       efektKanal = ctx.createGain();
       muzikKanal = ctx.createGain();
+      konusmaKanal = ctx.createGain();
+      konusmaKanal.gain.value = 1.15;
       efektKanal.connect(ana);
       muzikKanal.connect(ana);
+      konusmaKanal.connect(ana);
       seviyeleriUygula();
     }
     if (ctx.state === 'suspended') void ctx.resume();

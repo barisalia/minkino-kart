@@ -46,6 +46,6 @@ export function yasEkrani(app: Uygulama, param?: { sonra?: 'ebeveyn' }): Ekran {
     ),
     izgara,
   );
-  void konus(`${durum.i.album.length ? '' : metin('acilis') + ' '}${metin('yas_sor')}`);
+  void konus([durum.i.album.length ? '' : metin('acilis'), metin('yas_sor')]);
   return { el };
 }
