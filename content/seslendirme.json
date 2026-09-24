@@ -61,9 +61,9 @@
       }
     ]
   },
-  "otomatik": false,
+  "otomatik": true,
   "es_zaman": 1,
   "bekleme_ms": 400,
   "en_hizli_harf_sn": 15,
-  "butce_karakter": 60000
+  "butce_karakter": 25000
 }
