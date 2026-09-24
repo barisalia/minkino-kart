@@ -170,7 +170,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     const sahip = new Set([...durum.i.album, ...yeniKartlar]);
     const odul = odulKartiSec(s, tema.id, sahip);
     // Çan ve konfeti sesi önce, övgü hemen ardından (üst üste binip cızırdamasın)
-    const konusma = bekle(sure(380)).then(() => (kapandi ? undefined : konus(aciklama)));
+    const konusma = bekle(sure(250)).then(() => (kapandi ? undefined : konus(aciklama)));
     let ucus: Promise<void> = Promise.resolve();
     if (odul) {
       yeniKartlar.push(odul);
@@ -186,7 +186,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
         album.artir();
       });
     }
-    await Promise.all([konusma, ucus, bekle(sure(1500))]);
+    await Promise.all([konusma, ucus, bekle(sure(1100))]);
     if (kapandi) return;
     sira++;
     if (sira < sorular.length) {

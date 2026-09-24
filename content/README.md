@@ -52,7 +52,7 @@ Ortak alanlar:
 | `dogru` | ✔* | Doğru seçenek: kart id'si **veya** seçenek sırası (0'dan başlar). HAFIZA'da yok. |
 | `gosterge` | | Ortadaki büyük kart(lar) |
 | `ipucu` | | Yanlış cevapta söylenen yardımcı cümle |
-| `dogru_ses` | | Doğru cevaptan sonra söylenen açıklama (örn. "Havuç bir sebze!") |
+| `dogru_ses` | | (Kullanılmıyor — doğru cevapta sadece kısa bir övgü söylenir: "Aferin!") |
 | `ikon` | | Soru balonundaki küçük ikon (kart id) |
 | `odul` | | Bu soru için albüme verilecek kart (yoksa doğru cevabın kartı) |
 
@@ -78,7 +78,7 @@ Seçeneklerde aynı kart birden fazla kez geçiyorsa (`top` büyük/küçük gib
 - **ESLESTIR**: `gosterge` = tek hedef (`bicim`: golge/yuva/renk). Çocuk doğru kartı hedefe sürükler.
 - **SAY**: `gosterge` = sayılacak kart(lar) (`adet` ile). `kartlar` = sayı kartları (`sayi-3`). Toplama için iki gösterge + `"islem": "+"`;
   çıkarma için tek gösterge + `carpi` + `"islem": "-"`.
-- **FARKLI**: `kartlar` = 4 kart, `dogru` = farklı olan. `dogru_ses` ile nedenini söyleyin.
+- **FARKLI**: `kartlar` = 4 kart, `dogru` = farklı olan.
 - **SIRADAKI**: `gosterge` = örüntü dizisi (sonuna oyun otomatik "?" ekler), `kartlar` = seçenekler.
 - **HAFIZA**: `kartlar` = çift sayısı kadar farklı kart (4 kart için 2, 6 için 3, 8 için 4 id). Oyun her birini ikiler ve karıştırır.
 
@@ -90,5 +90,10 @@ Seçeneklerde aynı kart birden fazla kez geçiyorsa (`top` büyük/küçük gib
 | 4 | BUL, ESLESTIR, SAY, HAFIZA | 3 | SAY 1-5, HAFIZA 2 çift (4 kart) |
 | 5 | hepsi | 4 | SAY 1-10, HAFIZA 3 çift (6 kart) |
 | 6 | hepsi | 4 | toplama/çıkarma 10'a kadar, HAFIZA 4 çift (8 kart) |
+
+**Kısa konuşma kuralı** (testler denetler — ElevenLabs uzun cümlelerde takılıyor, çocuklar da kısa cümleyi seviyor):
+- `soru_ses`: tek kısa cümle, hedef en fazla 4 kelime; kesin sınır 6 kelime / 45 karakter.
+- `ipucu`: en fazla 4 kelime / 30 karakter.
+- `metinler.json` cümleleri: en fazla 30 karakter.
 
 Her yaş × tema dosyasında en az 12 soru olmalı. Bir turda bu havuzdan rastgele 8 soru seçilir.

@@ -4,7 +4,6 @@
  */
 import metinler from '../../content/metinler.json';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
-import { dogruIndeks } from '../engine/soru';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
 
@@ -38,9 +37,9 @@ export function ovgu(s: Soru): string {
   return d[ozet(s.soru_metni + (s.soru_ses ?? '')) % d.length];
 }
 
-/** Doğru cevap cümlesi: övgü + açıklama (tek kayıt olarak üretilir). */
-export function dogruCumlesi(s: Soru, g: KartGirdi | undefined): string[] {
-  return [ovgu(s), ...aciklamaParcalari(s, g)];
+/** Doğru cevapta söylenen: sadece kısa bir övgü ("Aferin!") — uzatmadan sonraki soruya geçilir. */
+export function dogruCumlesi(s: Soru, _g?: KartGirdi): string[] {
+  return [ovgu(s)];
 }
 
 /** Hafızada eşleşme cümlesi: karta göre sabit bir övgü + kart adı. */
@@ -95,7 +94,7 @@ export function tumCumleler(): string[] {
           const r = refCoz(g);
           ekle(r.yazi ? `${r.yazi}!` : `${kart(r.kart ?? '')?.ad ?? ''}!`);
         }
-      } else aciklamaParcalari(s, s.kartlar[dogruIndeks(s)]).forEach(ekle);
+      }
     }
   }
   // Birleşik cümleler: oyun bunları varsa tek parça çalar (doğal tonlama, parçalar arası boşluk yok)
@@ -118,7 +117,7 @@ export function tumCumleler(): string[] {
           birlesik(eslestiCumlesi(r.yazi ?? kart(r.kart ?? '')?.ad ?? ''));
         }
         for (const t of dizi('hafiza_eslesti')) ekle(t);
-      } else birlesik(dogruCumlesi(s, s.kartlar[dogruIndeks(s)]));
+      }
     }
   }
   return [...set];

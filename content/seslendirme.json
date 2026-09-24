@@ -61,7 +61,7 @@
       }
     ]
   },
-  "otomatik": true,
+  "otomatik": false,
   "es_zaman": 1,
   "bekleme_ms": 400,
   "en_hizli_harf_sn": 15,
