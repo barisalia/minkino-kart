@@ -3,56 +3,73 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Minkino Ses Denemesi</title>
+<title>Minkino Ses Karşılaştırma</title>
 <style>
-  :root { --kontur: #5a3617; --krem: #fff4dd; --sari: #ffc72c; }
+  :root { --kontur: #5a3617; --krem: #fff4dd; --sari: #ffc72c; --mavi: #3e9df2; --yesil: #5dbe3f; --mor: #9b5ce0; }
   body { margin: 0; padding: 20px 16px 40px; background: var(--krem); color: var(--kontur); font: 500 16px/1.4 ui-rounded, system-ui, sans-serif; }
-  h1 { font-size: 1.5rem; margin: 0 0 4px; }
-  p.alt { margin: 0 0 20px; opacity: .75; }
-  .ses { background: #fff; border: 3px solid var(--kontur); border-radius: 20px; padding: 14px; margin-bottom: 16px; box-shadow: 0 5px 0 rgba(90,54,23,.18); }
-  .ses h2 { margin: 0 0 4px; font-size: 1.2rem; }
-  .ses code { font-size: .8rem; opacity: .7; user-select: all; }
-  .satir { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 2px dashed rgba(90,54,23,.15); }
-  button { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--kontur); background: var(--sari); font-size: 18px; cursor: pointer; }
-  .hepsi { width: auto; border-radius: 14px; padding: 0 14px; margin-top: 8px; font-weight: 600; }
+  h1 { font-size: 1.45rem; margin: 0 0 6px; text-wrap: balance; }
+  .alt { margin: 0 0 16px; opacity: .8; max-width: 60ch; }
+  .secenekler { display: grid; gap: 8px; margin-bottom: 18px; }
+  .secenek { display: flex; gap: 10px; align-items: center; background: #fff; border: 3px solid var(--kontur); border-radius: 16px; padding: 8px 12px; }
+  .rozet { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; border: 3px solid var(--kontur); }
+  .hata { color: #c62f2d; font-size: .85rem; }
+  .satir { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; background: #fff; border: 3px solid var(--kontur); border-radius: 18px; padding: 10px 12px; margin-bottom: 10px; box-shadow: 0 4px 0 rgba(90,54,23,.15); }
+  .metin { font-weight: 600; }
+  .dugmeler { display: flex; gap: 8px; }
+  button { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--kontur); color: #fff; font: 700 17px/1 ui-rounded, system-ui, sans-serif; cursor: pointer; }
+  button:disabled { opacity: .3; }
+  button.caliyor { outline: 4px solid var(--sari); }
+  button:focus-visible { outline: 4px solid var(--kontur); }
 </style>
 </head>
 <body>
-<h1>Minkino ses denemesi</h1>
-<p class="alt">Her aday ses aynı cümleleri okuyor. Beğendiğin sesin adını ve kimliğini (ID) Claude'a yaz.</p>
+<h1>Minkino ses karşılaştırma</h1>
+<p class="alt">Her satırda aynı cümleyi üç farklı ayarla dinle (A, B, C). Hangisi hem Türkçe hem en doğal geliyorsa o harfi Claude'a yaz.</p>
+<div class="secenekler" id="secenekler"></div>
 <div id="liste">Yükleniyor…</div>
 <script>
-  const kutu = document.getElementById('liste');
-  let calan = null;
-  function cal(src) { if (calan) calan.pause(); calan = new Audio(src); return calan.play().then(() => new Promise((r) => (calan.onended = r))); }
+  const RENK = { A: '#3e9df2', B: '#9b5ce0', C: '#5dbe3f' };
+  let calan = null, calanDugme = null;
+  function cal(src, dugme) {
+    if (calan) calan.pause();
+    calanDugme?.classList.remove('caliyor');
+    calan = new Audio(src); calanDugme = dugme;
+    dugme.classList.add('caliyor');
+    calan.onended = () => dugme.classList.remove('caliyor');
+    calan.play().catch(() => dugme.classList.remove('caliyor'));
+  }
   fetch('./ses-ornek/liste.json').then((r) => r.json()).then((d) => {
-    kutu.textContent = '';
+    const secKutu = document.getElementById('secenekler');
     for (const s of d.sesler) {
-      const k = document.createElement('section');
-      k.className = 'ses';
-      k.innerHTML = `<h2></h2><code></code>`;
-      k.querySelector('h2').textContent = s.ad;
-      k.querySelector('code').textContent = s.ses_id;
-      const hepsi = document.createElement('button');
-      hepsi.className = 'hepsi';
-      hepsi.textContent = '▶ Hepsini sırayla dinle';
-      hepsi.onclick = async () => { for (const f of s.dosyalar) await cal('./ses-ornek/' + f.dosya); };
-      k.append(hepsi);
-      for (const f of s.dosyalar) {
-        const satir = document.createElement('div');
-        satir.className = 'satir';
-        const b = document.createElement('button');
-        b.textContent = '▶';
-        b.setAttribute('aria-label', 'Dinle');
-        b.onclick = () => cal('./ses-ornek/' + f.dosya);
-        const t = document.createElement('span');
-        t.textContent = f.metin;
-        satir.append(b, t);
-        k.append(satir);
-      }
-      kutu.append(k);
+      const el = document.createElement('div');
+      el.className = 'secenek';
+      el.innerHTML = '<span class="rozet"></span><span></span>';
+      el.firstChild.textContent = s.kod;
+      el.firstChild.style.background = RENK[s.kod] ?? '#888';
+      el.lastChild.textContent = s.ad;
+      if (s.hata) { const h = document.createElement('div'); h.className = 'hata'; h.textContent = 'Üretilemedi: ' + s.hata.slice(0, 120); el.lastChild.append(h); }
+      secKutu.append(el);
     }
-  }).catch(() => { kutu.textContent = 'Henüz deneme kaydı yok.'; });
+    const kelimeler = [...new Set(d.sesler.flatMap((s) => s.dosyalar.map((f) => f.metin)))];
+    const kutu = document.getElementById('liste');
+    kutu.textContent = '';
+    for (const m of kelimeler) {
+      const satir = document.createElement('div');
+      satir.className = 'satir';
+      const t = document.createElement('div'); t.className = 'metin'; t.textContent = m;
+      const dg = document.createElement('div'); dg.className = 'dugmeler';
+      for (const s of d.sesler) {
+        const f = s.dosyalar.find((x) => x.metin === m);
+        const b = document.createElement('button');
+        b.textContent = s.kod; b.style.background = RENK[s.kod] ?? '#888';
+        b.setAttribute('aria-label', `${m} — ${s.kod}`);
+        if (f) b.onclick = () => cal('./ses-ornek/' + f.dosya, b); else b.disabled = true;
+        dg.append(b);
+      }
+      satir.append(t, dg);
+      kutu.append(satir);
+    }
+  }).catch(() => { document.getElementById('liste').textContent = 'Henüz karşılaştırma kaydı yok.'; });
 </script>
 </body>
 </html>
