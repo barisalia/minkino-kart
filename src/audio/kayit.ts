@@ -5,14 +5,34 @@
 import { normal } from './cumleler';
 import { baglam, konusmaCikisi } from './motor';
 
+/** Kayıt: ayrı dosya adı ya da paket içindeki bayt aralığı (paket = art arda eklenmiş mp3'ler). */
+type Kayit = string | { p: number; b: number; u: number };
+
 interface Manifest {
   ses_id: string | null;
-  dosyalar: Record<string, string>;
+  dosyalar: Record<string, Kayit>;
+  paketler?: string[];
 }
 
 let manifest: Manifest | null = null;
 let manifestYukleniyor: Promise<void> | null = null;
 const tamponlar = new Map<string, Promise<AudioBuffer | null>>();
+const paketVerisi = new Map<number, Promise<ArrayBuffer>>();
+
+function paket(n: number): Promise<ArrayBuffer> {
+  let p = paketVerisi.get(n);
+  if (!p) {
+    p = fetch(`./ses/${manifest!.paketler![n]}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+    p.catch(() => paketVerisi.delete(n));
+    paketVerisi.set(n, p);
+  }
+  return p;
+}
+
+function veri(k: Kayit): Promise<ArrayBuffer> {
+  if (typeof k === 'string') return fetch(`./ses/${k}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+  return paket(k.p).then((ab) => ab.slice(k.b, k.b + k.u));
+}
 let calan: AudioBufferSourceNode | null = null;
 
 /** Manifest'i bir kez yükler (uygulama açılışında çağrılır). */
@@ -21,12 +41,14 @@ export function kayitlariHazirla(): Promise<void> {
     .then((r) => (r.ok ? r.json() : null))
     .then((m: Manifest | null) => {
       manifest = m;
+      // Paketli önizleme sürümü: paketleri sırayla arka planda indir
+      if (m?.paketler?.length) void m.paketler.reduce<Promise<unknown>>((onceki, _, n) => onceki.then(() => paket(n)).catch(() => undefined), Promise.resolve());
     })
     .catch(() => undefined);
   return manifestYukleniyor;
 }
 
-function dosya(metin: string): string | undefined {
+function dosya(metin: string): Kayit | undefined {
   return manifest?.dosyalar[normal(metin)];
 }
 
@@ -38,16 +60,16 @@ function tampon(metin: string): Promise<AudioBuffer | null> {
   const f = dosya(metin);
   const c = baglam();
   if (!f || !c) return Promise.resolve(null);
-  let p = tamponlar.get(f);
+  const anahtar = typeof f === 'string' ? f : `${f.p}:${f.b}`;
+  let p = tamponlar.get(anahtar);
   if (!p) {
-    p = fetch(`./ses/${f}`)
-      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+    p = veri(f)
       .then((ab) => c.decodeAudioData(ab))
       .catch(() => {
-        tamponlar.delete(f);
+        tamponlar.delete(anahtar);
         return null;
       });
-    tamponlar.set(f, p);
+    tamponlar.set(anahtar, p);
   }
   return p;
 }
