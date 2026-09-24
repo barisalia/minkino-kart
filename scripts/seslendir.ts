@@ -24,6 +24,7 @@ interface Ayar extends Uretim {
   es_zaman?: number;
   bekleme_ms?: number;
   en_hizli_harf_sn?: number;
+  butce_karakter?: number;
   ses_id: string;
   bicim: string;
   ayarlar: Record<string, number | boolean>;
@@ -34,6 +35,8 @@ interface Manifest {
   ses_id: string | null;
   model: string | null;
   dosyalar: Record<string, string>;
+  /** Her kaydın hangi ses/model/ayarla üretildiği — değişince yeniden üretilir */
+  imzalar?: Record<string, string>;
 }
 
 const KOK = process.cwd();
@@ -90,7 +93,7 @@ async function havuz<T>(isler: T[], esZaman: number, fn: (x: T, i: number) => Pr
   );
 }
 
-const dosyaAdi = (metin: string) => createHash('sha1').update(normal(metin)).digest('hex').slice(0, 14) + '.mp3';
+const dosyaAdi = (metin: string, imza: string) => createHash('sha1').update(`${imza}|${normal(metin)}`).digest('hex').slice(0, 14) + '.mp3';
 
 if (KARSILASTIR) {
   // Aynı kelimeleri farklı model/ayarlarla seslendirip yan yana dinlemek için (public/ses-ornek)
@@ -132,12 +135,11 @@ if (!sesId) {
 const klasor = path.join(KOK, 'public/ses');
 const manifestYolu = path.join(klasor, 'manifest.json');
 let manifest: Manifest = fs.existsSync(manifestYolu) ? JSON.parse(fs.readFileSync(manifestYolu, 'utf8')) : { ses_id: null, model: null, dosyalar: {} };
-const imza = `${ayar.model}|${ayar.baglam ? 'baglam' : ''}|${ayar.dil ?? ''}`;
-if (manifest.ses_id !== sesId || (manifest.model !== imza && manifest.model !== ayar.model)) {
-  console.log('Ses veya model değişti — tüm kayıtlar yeniden üretilecek.');
-  for (const f of fs.readdirSync(klasor)) if (f.endsWith('.mp3')) fs.unlinkSync(path.join(klasor, f));
-  manifest = { ses_id: sesId, model: imza, dosyalar: {} };
-}
+// Ses/model/ayar değişince eski kayıtlar SİLİNMEZ; yenisi üretilene kadar oyunda çalmaya devam eder.
+const imza = `${sesId}|${ayar.model}|${ayar.baglam ? 'baglam' : ''}|${ayar.dil ?? ''}`;
+manifest.imzalar ??= {};
+manifest.ses_id = sesId;
+manifest.model = ayar.model;
 
 const cumleler = tumCumleler();
 
@@ -159,7 +161,8 @@ if (DUZELT) {
   }
   console.log(`Düzeltme: ${silinen} kayıt yeniden üretilecek.`);
 }
-const eksik = cumleler.filter((c) => !manifest.dosyalar[c] || !fs.existsSync(path.join(klasor, manifest.dosyalar[c]))).slice(0, SINIR);
+const guncelDegil = (c: string) => !manifest.dosyalar[c] || !fs.existsSync(path.join(klasor, manifest.dosyalar[c])) || manifest.imzalar![c] !== imza;
+const eksik = cumleler.filter(guncelDegil).slice(0, SINIR);
 const karakter = eksik.reduce((t, c) => t + c.length, 0);
 console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karakter)`);
 
@@ -174,11 +177,15 @@ function hiz(metin: string, dosya: string): number {
 }
 const SINIR_HIZ = ayar.en_hizli_harf_sn ?? 15;
 let yeniden = 0;
+let harcanan = 0;
+const BUTCE = ayar.butce_karakter ?? Infinity;
 
 try {
   await havuz(eksik, ayar.es_zaman ?? 1, async (c) => {
-    const f = dosyaAdi(c);
+    const f = dosyaAdi(c, imza);
     const hedef = path.join(klasor, f);
+    if (harcanan + c.length > BUTCE) throw new Error(`Karakter bütçesi (${BUTCE}) doldu`);
+    harcanan += c.length;
     await uret(sesId, c, hedef);
     // Aceleye gelmiş (fazla hızlı) kayıtları en çok 2 kez yeniden üret, en yavaşını tut
     const harf = [...c].filter((x) => /\p{L}/u.test(x)).length;
@@ -187,6 +194,8 @@ try {
       for (let d = 0; d < 2 && en.h > SINIR_HIZ; d++) {
         yeniden++;
         await bekle(ayar.bekleme_ms ?? 400);
+        if (harcanan + c.length > BUTCE) break;
+        harcanan += c.length;
         await uret(sesId, c, hedef);
         const h = hiz(c, hedef);
         if (h < en.h) en = { h, veri: fs.readFileSync(hedef) };
@@ -195,6 +204,7 @@ try {
     }
     await bekle(ayar.bekleme_ms ?? 400);
     manifest.dosyalar[c] = f;
+    manifest.imzalar![c] = imza;
     if (++tamam % 25 === 0) {
       kaydet();
       console.log(`… ${tamam}/${eksik.length}`);
@@ -203,14 +213,17 @@ try {
 } catch (e) {
   // Yarım kalan işi kaybetme: üretilenleri kaydet, sonraki çalıştırma kalanından devam eder
   kaydet();
-  console.error(`Durdu (${tamam} kayıt üretildi):`, (e as Error).message);
+  console.error(`Durdu (${tamam} kayıt üretildi, ${harcanan} karakter):`, (e as Error).message);
   process.exit(1);
 }
 
 // Artık kullanılmayan kayıtları temizle
 const gecerli = new Set(cumleler);
-for (const k of Object.keys(manifest.dosyalar)) if (!gecerli.has(k)) delete manifest.dosyalar[k];
+for (const k of Object.keys(manifest.dosyalar)) if (!gecerli.has(k)) {
+  delete manifest.dosyalar[k];
+  delete manifest.imzalar![k];
+}
 const kullanilan = new Set(Object.values(manifest.dosyalar));
 for (const f of fs.readdirSync(klasor)) if (f.endsWith('.mp3') && !kullanilan.has(f)) fs.unlinkSync(path.join(klasor, f));
 kaydet();
-console.log(`Bitti: ${tamam} yeni kayıt, hız nedeniyle ${yeniden} yeniden üretim.`);
+console.log(`Bitti: ${tamam} yeni kayıt, hız nedeniyle ${yeniden} yeniden üretim, ${harcanan} karakter.`);
