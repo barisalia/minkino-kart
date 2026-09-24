@@ -101,7 +101,7 @@ function sayiRengi(n: number): string {
   return RENKLER[n % RENKLER.length];
 }
 
-function icerik(r: KartRef): HTMLElement {
+function icerik(r: KartRef, ornekGoster: boolean): HTMLElement {
   if (r.yazi) {
     const uz = r.yazi.length;
     return h('div.kart-yazi', { style: `--uz:${uz}` }, r.yazi);
@@ -113,16 +113,16 @@ function icerik(r: KartRef): HTMLElement {
   if (adet > 1 || r.carpi) {
     const grup = h('div.kart-grup', { 'data-adet': adet });
     for (let i = 0; i < adet; i++) {
-      const tek = h('div.grup-oge', {}, tekIcerik(k));
+      const tek = h('div.grup-oge', {}, tekIcerik(k, ornekGoster));
       if (r.carpi && i >= adet - r.carpi) tek.classList.add('carpi');
       grup.append(tek);
     }
     return grup;
   }
-  return tekIcerik(k);
+  return tekIcerik(k, ornekGoster);
 }
 
-function tekIcerik(k: Kart): HTMLElement {
+function tekIcerik(k: Kart, ornekGoster = false): HTMLElement {
   switch (k.tur) {
     case 'renk':
       return h('div.kart-cizim', { html: boyaSvg(k.deger ?? '#ccc') });
@@ -141,7 +141,7 @@ function tekIcerik(k: Kart): HTMLElement {
         'div.kart-harf',
         { style: `--r:${RENKLER[idx % RENKLER.length]}` },
         h('b', {}, k.deger ?? ''),
-        ornek && gorselVarMi(ornek) ? resimEl(ornek, 'harf-ornek') : null,
+        ornekGoster && ornek && gorselVarMi(ornek) ? resimEl(ornek, 'harf-ornek') : null,
       );
     }
     default:
@@ -151,6 +151,8 @@ function tekIcerik(k: Kart): HTMLElement {
 
 export interface KartSecenek {
   sinif?: string;
+  /** Harf kartlarında örnek resmi göster (albümde). Oyunda cevabı ele vermesin diye kapalı. */
+  ornek?: boolean;
 }
 
 /** Bir kart referansını kart elemanına çevirir. */
@@ -163,15 +165,21 @@ export function kartEl(g: KartGirdi, sec: KartSecenek = {}): HTMLElement {
   });
   if (sec.sinif) el.classList.add(...sec.sinif.split(' '));
   if (r.olcek) el.style.setProperty('--olcek', String(r.olcek));
+  if ((r.adet ?? 1) >= 4) el.classList.add('genis');
 
   let ic: HTMLElement;
   if (bicim === 'renk' && k) {
     ic = h('div.kart-cizim', { html: sepetSvg(k.deger ?? '#ccc') });
   } else {
-    ic = icerik(r);
+    ic = icerik(r, !!sec.ornek);
   }
   el.append(h('div.kart-ic', {}, ic));
   return el;
+}
+
+/** Kart dizisi için yükseklik/genişlik oranı (hepsi geniş kartsa yatay oran). */
+export function diziOrani(girdiler: KartGirdi[]): number {
+  return girdiler.length && girdiler.every((g) => (refCoz(g).adet ?? 1) >= 4) ? 0.78 : 1.12;
 }
 
 /** Kartın arka yüzü (Minkino desenli). */
