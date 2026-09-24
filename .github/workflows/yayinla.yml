@@ -5,8 +5,8 @@ on:
     branches: [main, 'claude/**']
   workflow_dispatch:
     inputs:
-      ses_ornek:
-        description: 'Aday seslerle deneme kayıtları üret (ses-deneme.html)'
+      ses_karsilastir:
+        description: 'Model karşılaştırma kayıtları üret (ses-deneme.html)'
         type: boolean
         default: false
 
@@ -34,13 +34,14 @@ jobs:
       - name: Recraft görsellerini indir
         run: node scripts/gorsel-indir.mjs
 
-      - name: Aday ses denemeleri (ElevenLabs)
-        if: ${{ inputs.ses_ornek }}
+      - name: Model karşılaştırma kayıtları (ElevenLabs)
+        if: ${{ inputs.ses_karsilastir }}
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-        run: npx vite-node scripts/seslendir.ts -- --ornek
+        run: npx vite-node scripts/seslendir.ts -- --karsilastir
 
       - name: Eksik seslendirmeleri üret (ElevenLabs)
+        if: ${{ !inputs.ses_karsilastir }}
         continue-on-error: true
         timeout-minutes: 60
         env:

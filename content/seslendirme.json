@@ -10,5 +10,55 @@
     "use_speaker_boost": true,
     "speed": 0.95
   },
-  "aday_sesler": []
+  "baglam": true,
+  "dil": null,
+  "baglam_metni": "Merhaba çocuklar! Şimdi hep birlikte Türkçe kartlarla oynuyoruz.",
+  "karsilastirma": {
+    "kelimeler": [
+      "Aferin!",
+      "Süpersin!",
+      "Muhteşem!",
+      "Bravo!",
+      "Limon!",
+      "Muz!",
+      "Top!",
+      "Pizza!",
+      "Balon!",
+      "Tren!",
+      "Roket!",
+      "Penguen!",
+      "Harika! Limon! Ekşi mi ekşi!",
+      "Kedi hangisi? Kediyi bulur musun?"
+    ],
+    "secenekler": [
+      {
+        "kod": "A",
+        "ad": "Multilingual v2 + Türkçe bağlam",
+        "model": "eleven_multilingual_v2",
+        "baglam": true,
+        "dil": null
+      },
+      {
+        "kod": "B",
+        "ad": "Eleven v3 + dil: Türkçe",
+        "model": "eleven_v3",
+        "baglam": false,
+        "dil": "tr",
+        "ayarlar": {
+          "stability": 0.5,
+          "similarity_boost": 0.8,
+          "style": 0.35,
+          "use_speaker_boost": true,
+          "speed": 0.95
+        }
+      },
+      {
+        "kod": "C",
+        "ad": "Flash v2.5 + dil: Türkçe",
+        "model": "eleven_flash_v2_5",
+        "baglam": false,
+        "dil": "tr"
+      }
+    ]
+  }
 }

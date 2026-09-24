@@ -9,16 +9,22 @@
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import metinler from '../content/metinler.json';
 import { tumCumleler, normal } from '../src/audio/cumleler';
-import { sorular } from '../src/engine/katalog';
 
-interface Ayar {
-  ses_id: string;
+interface Uretim {
   model: string;
+  /** Duyulmayan Türkçe bağlam cümlesi (previous_text) — kısa kelimelerin İngilizceye kaymasını önler */
+  baglam?: boolean;
+  /** Dili zorla (language_code) — yalnızca destekleyen modellerde */
+  dil?: string | null;
+  ayarlar?: Record<string, number | boolean>;
+}
+interface Ayar extends Uretim {
+  ses_id: string;
   bicim: string;
   ayarlar: Record<string, number | boolean>;
-  aday_sesler: { ad: string; ses_id: string }[];
+  baglam_metni: string;
+  karsilastirma?: { kelimeler: string[]; secenekler: (Uretim & { kod: string; ad: string })[] };
 }
 interface Manifest {
   ses_id: string | null;
@@ -30,7 +36,7 @@ const KOK = process.cwd();
 const ayar: Ayar = JSON.parse(fs.readFileSync(path.join(KOK, 'content/seslendirme.json'), 'utf8'));
 const ANAHTAR = process.env.ELEVENLABS_API_KEY;
 const argv = process.argv.slice(2);
-const ORNEK = argv.includes('--ornek');
+const KARSILASTIR = argv.includes('--karsilastir');
 const sinirIdx = argv.indexOf('--sinir');
 const SINIR = sinirIdx >= 0 ? Number(argv[sinirIdx + 1]) : Infinity;
 
@@ -39,13 +45,19 @@ if (!ANAHTAR) {
   process.exit(0);
 }
 
-async function uret(sesId: string, metin: string, hedef: string) {
-  const dilZorla = /flash|turbo|v3/.test(ayar.model);
+async function uret(sesId: string, metin: string, hedef: string, u: Uretim = ayar) {
+  const govdeVerisi = {
+    text: metin,
+    model_id: u.model,
+    voice_settings: u.ayarlar ?? ayar.ayarlar,
+    ...(u.dil ? { language_code: u.dil } : {}),
+    ...(u.baglam ? { previous_text: ayar.baglam_metni } : {}),
+  };
   for (let deneme = 1; deneme <= 5; deneme++) {
     const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${sesId}?output_format=${ayar.bicim}`, {
       method: 'POST',
       headers: { 'xi-api-key': ANAHTAR!, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-      body: JSON.stringify({ text: metin, model_id: ayar.model, voice_settings: ayar.ayarlar, ...(dilZorla ? { language_code: 'tr' } : {}) }),
+      body: JSON.stringify(govdeVerisi),
     });
     if (r.ok) {
       fs.mkdirSync(path.dirname(hedef), { recursive: true });
@@ -76,31 +88,28 @@ async function havuz<T>(isler: T[], esZaman: number, fn: (x: T, i: number) => Pr
 
 const dosyaAdi = (metin: string) => createHash('sha1').update(normal(metin)).digest('hex').slice(0, 14) + '.mp3';
 
-if (ORNEK) {
-  // Aday sesleri karşılaştırmak için kısa, temsil edici cümleler
-  const ornekler = [
-    metinler.acilis,
-    metinler.yas_sor,
-    sorular(3, 'hayvanlar')[0].soru_ses!,
-    'Harika! Kedi! Miyav miyav!',
-    sorular(4, 'harfler')[0].soru_ses!,
-    sorular(6, 'sayilar').find((s) => s.islem)?.soru_ses ?? 'Üç elma ve iki elma. Hepsi kaç elma?',
-    'Hımm, bir daha bakalım. Parlayan karta bir bak!',
-    'Harika oynadın! Üç yıldız kazandın! Yeni kartların albüme yapıştı!',
-  ];
-  const adaylar = ayar.aday_sesler.length ? ayar.aday_sesler : ayar.ses_id ? [{ ad: 'secili', ses_id: ayar.ses_id }] : [];
-  const liste: { ad: string; ses_id: string; dosyalar: { metin: string; dosya: string }[] }[] = [];
-  for (const a of adaylar) {
+if (KARSILASTIR) {
+  // Aynı kelimeleri farklı model/ayarlarla seslendirip yan yana dinlemek için (public/ses-ornek)
+  const k = ayar.karsilastirma!;
+  const sonuc: { kod: string; ad: string; hata?: string; dosyalar: { metin: string; dosya: string }[] }[] = [];
+  for (const sec of k.secenekler) {
     const dosyalar: { metin: string; dosya: string }[] = [];
-    for (const [i, m] of ornekler.entries()) {
-      const dosya = `${a.ses_id}/${String(i + 1).padStart(2, '0')}.mp3`;
-      await uret(a.ses_id, m, path.join(KOK, 'public/ses-ornek', dosya));
-      dosyalar.push({ metin: m, dosya });
-      console.log('✓', a.ad, i + 1);
+    let hata: string | undefined;
+    try {
+      for (const [i, m] of k.kelimeler.entries()) {
+        const dosya = `${sec.kod}/${String(i + 1).padStart(2, '0')}.mp3`;
+        await uret(ayar.ses_id, m, path.join(KOK, 'public/ses-ornek', dosya), sec);
+        dosyalar.push({ metin: m, dosya });
+      }
+      console.log('✓', sec.kod, sec.ad);
+    } catch (e) {
+      hata = (e as Error).message;
+      console.error('✗', sec.kod, hata);
     }
-    liste.push({ ...a, dosyalar });
+    sonuc.push({ kod: sec.kod, ad: sec.ad, hata, dosyalar });
   }
-  fs.writeFileSync(path.join(KOK, 'public/ses-ornek/liste.json'), JSON.stringify({ model: ayar.model, sesler: liste }, null, 1));
+  fs.mkdirSync(path.join(KOK, 'public/ses-ornek'), { recursive: true });
+  fs.writeFileSync(path.join(KOK, 'public/ses-ornek/liste.json'), JSON.stringify({ sesler: sonuc }, null, 1));
   process.exit(0);
 }
 
@@ -113,10 +122,11 @@ if (!sesId) {
 const klasor = path.join(KOK, 'public/ses');
 const manifestYolu = path.join(klasor, 'manifest.json');
 let manifest: Manifest = fs.existsSync(manifestYolu) ? JSON.parse(fs.readFileSync(manifestYolu, 'utf8')) : { ses_id: null, model: null, dosyalar: {} };
-if (manifest.ses_id !== sesId || manifest.model !== ayar.model) {
+const imza = `${ayar.model}|${ayar.baglam ? 'baglam' : ''}|${ayar.dil ?? ''}`;
+if (manifest.ses_id !== sesId || (manifest.model !== imza && manifest.model !== ayar.model)) {
   console.log('Ses veya model değişti — tüm kayıtlar yeniden üretilecek.');
   for (const f of fs.readdirSync(klasor)) if (f.endsWith('.mp3')) fs.unlinkSync(path.join(klasor, f));
-  manifest = { ses_id: sesId, model: ayar.model, dosyalar: {} };
+  manifest = { ses_id: sesId, model: imza, dosyalar: {} };
 }
 
 const cumleler = tumCumleler();

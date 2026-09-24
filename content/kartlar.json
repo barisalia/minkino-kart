@@ -218,7 +218,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/elma.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Kıtır kıtır!",
    "renk": "kırmızı",
    "grup": "meyve"
   },
@@ -228,7 +228,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/muz.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Sapsarı ve tatlı!",
    "renk": "sarı",
    "grup": "meyve"
   },
@@ -238,7 +238,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/cilek.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Kıpkırmızı ve mis kokulu!",
    "renk": "kırmızı",
    "grup": "meyve"
   },
@@ -248,7 +248,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/portakal.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Sulu sulu, mis gibi!",
    "renk": "turuncu",
    "grup": "meyve"
   },
@@ -258,7 +258,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/uzum.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Salkım salkım!",
    "renk": "mor",
    "grup": "meyve"
   },
@@ -268,7 +268,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/karpuz.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Yazın serinletir!",
    "renk": "yeşil",
    "grup": "meyve"
   },
@@ -278,7 +278,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/armut.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Tatlı ve sulu!",
    "renk": "yeşil",
    "grup": "meyve"
   },
@@ -288,7 +288,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/limon.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Ekşi mi ekşi!",
    "renk": "sarı",
    "grup": "meyve"
   },
@@ -298,7 +298,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/kiraz.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Çift çift sallanır!",
    "renk": "kırmızı",
    "grup": "meyve"
   },
@@ -308,7 +308,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/ananas.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Başında yeşil tacı var!",
    "renk": "sarı",
    "grup": "meyve"
   },
@@ -318,7 +318,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/nar.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "İçi tane tane!",
    "renk": "kırmızı",
    "grup": "meyve"
   },
@@ -328,7 +328,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/havuc.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Tavşanlar bayılır!",
    "renk": "turuncu",
    "grup": "sebze"
   },
@@ -338,7 +338,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/domates.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Kıpkırmızı ve yuvarlak!",
    "renk": "kırmızı",
    "grup": "sebze"
   },
@@ -348,7 +348,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/salatalik.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Çıtır çıtır!",
    "renk": "yeşil",
    "grup": "sebze"
   },
@@ -358,7 +358,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/misir.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Tane tane, sapsarı!",
    "renk": "sarı",
    "grup": "sebze"
   },
@@ -368,7 +368,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/patlican.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Mor mor, parlak!",
    "renk": "mor",
    "grup": "sebze"
   },
@@ -378,7 +378,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/brokoli.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Minik bir ağaç gibi!",
    "renk": "yeşil",
    "grup": "sebze"
   },
@@ -388,7 +388,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/biber.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Yemyeşil ve çıtır!",
    "renk": "yeşil",
    "grup": "sebze"
   },
@@ -398,7 +398,7 @@
    "tema": "meyveler",
    "tur": "resim",
    "gorsel": "meyveler/patates.webp",
-   "ses": "Ham ham, çok lezzetli!",
+   "ses": "Toprağın altında büyür!",
    "renk": "kahverengi",
    "grup": "sebze"
   },

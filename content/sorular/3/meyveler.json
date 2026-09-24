@@ -3,7 +3,7 @@
   "tema": "meyveler",
   "sorular": [
     { "tip": "BUL", "soru_metni": "Elma hangisi?", "soru_ses": "Elma hangisi? Elmayı bulur musun?", "kartlar": ["elma", "muz"], "dogru": "elma", "ipucu": "Elma kırmızı ve yuvarlak." },
-    { "tip": "BUL", "soru_metni": "Muz hangisi?", "soru_ses": "Ham ham! Muz hangisi?", "kartlar": ["cilek", "muz"], "dogru": "muz", "ipucu": "Muz sarı ve upuzun." },
+    { "tip": "BUL", "soru_metni": "Muz hangisi?", "soru_ses": "Muz hangisi? Muzu bulur musun?", "kartlar": ["cilek", "muz"], "dogru": "muz", "ipucu": "Muz sarı ve upuzun." },
     { "tip": "BUL", "soru_metni": "Çilek hangisi?", "soru_ses": "Minik çilek hangisi?", "kartlar": ["cilek", "karpuz"], "dogru": "cilek", "ipucu": "Çilek kırmızı, üstünde minik noktalar var." },
     { "tip": "BUL", "soru_metni": "Portakal hangisi?", "soru_ses": "Portakal hangisi? Portakalı bul!", "kartlar": ["uzum", "portakal"], "dogru": "portakal", "ipucu": "Portakal turuncu ve yuvarlak." },
     { "tip": "BUL", "soru_metni": "Üzüm hangisi?", "soru_ses": "Üzüm nerede? Üzüm hangisi?", "kartlar": ["uzum", "ananas"], "dogru": "uzum", "ipucu": "Üzümün minicik, yuvarlak taneleri var." },
