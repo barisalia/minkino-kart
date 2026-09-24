@@ -41,6 +41,8 @@ jobs:
         run: npx vite-node scripts/seslendir.ts -- --ornek
 
       - name: Eksik seslendirmeleri üret (ElevenLabs)
+        continue-on-error: true
+        timeout-minutes: 60
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: npx vite-node scripts/seslendir.ts

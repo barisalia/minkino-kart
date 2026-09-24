@@ -1,8 +1,14 @@
 {
   "aciklama": "ElevenLabs seslendirme ayarları. ses_id boşsa oyun cihazın Türkçe sesini kullanır.",
-  "ses_id": "",
+  "ses_id": "U5Yg9Cl0WUYCovjolhzm",
   "model": "eleven_multilingual_v2",
   "bicim": "mp3_44100_64",
-  "ayarlar": { "stability": 0.45, "similarity_boost": 0.8, "style": 0.35, "use_speaker_boost": true, "speed": 0.95 },
+  "ayarlar": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true,
+    "speed": 0.95
+  },
   "aday_sesler": []
 }

@@ -126,15 +126,22 @@ console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karak
 
 let tamam = 0;
 const kaydet = () => fs.writeFileSync(manifestYolu, JSON.stringify(manifest, null, 0));
-await havuz(eksik, 3, async (c) => {
-  const f = dosyaAdi(c);
-  await uret(sesId, c, path.join(klasor, f));
-  manifest.dosyalar[c] = f;
-  if (++tamam % 25 === 0) {
-    kaydet();
-    console.log(`… ${tamam}/${eksik.length}`);
-  }
-});
+try {
+  await havuz(eksik, 3, async (c) => {
+    const f = dosyaAdi(c);
+    await uret(sesId, c, path.join(klasor, f));
+    manifest.dosyalar[c] = f;
+    if (++tamam % 25 === 0) {
+      kaydet();
+      console.log(`… ${tamam}/${eksik.length}`);
+    }
+  });
+} catch (e) {
+  // Yarım kalan işi kaybetme: üretilenleri kaydet, sonraki çalıştırma kalanından devam eder
+  kaydet();
+  console.error(`Durdu (${tamam} kayıt üretildi):`, (e as Error).message);
+  process.exit(1);
+}
 
 // Artık kullanılmayan kayıtları temizle
 const gecerli = new Set(cumleler);
