@@ -7,7 +7,7 @@ export interface Ekran {
   kapat?: () => void;
 }
 
-export type EkranAdi = 'acilis' | 'yas' | 'temalar' | 'oyun' | 'turSonu' | 'album' | 'ebeveyn';
+export type EkranAdi = 'acilis' | 'yas' | 'temalar' | 'oyun' | 'turSonu' | 'album' | 'ebeveyn' | 'mino';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Fabrika = (app: Uygulama, param: any) => Ekran;
 

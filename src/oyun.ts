@@ -12,6 +12,7 @@ import { oyunEkrani } from './screens/oyun';
 import { temalarEkrani } from './screens/temalar';
 import { turSonuEkrani } from './screens/turSonu';
 import { yasEkrani } from './screens/yas';
+import { minoEkrani } from './screens/mino';
 import { durum } from './engine/ilerleme';
 import type { Yas } from './engine/types';
 import { ekranKaydet, Uygulama, type BaslatSecenekleri, type EkranAdi } from './uygulama';
@@ -23,6 +24,7 @@ ekranKaydet('oyun', oyunEkrani);
 ekranKaydet('turSonu', turSonuEkrani);
 ekranKaydet('album', albumEkrani);
 ekranKaydet('ebeveyn', ebeveynEkrani);
+ekranKaydet('mino', minoEkrani);
 
 export type { BaslatSecenekleri };
 

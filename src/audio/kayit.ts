@@ -80,7 +80,7 @@ export function onYukle(metinler: (string | undefined | null)[]) {
 }
 
 /** Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer). */
-export async function kayitCal(metin: string, iptalMi: () => boolean): Promise<boolean> {
+export async function kayitCal(metin: string, iptalMi: () => boolean, hiz = 1): Promise<boolean> {
   const c = baglam();
   const cikis = konusmaCikisi();
   if (!c || !cikis || c.state !== 'running') return false;
@@ -89,9 +89,10 @@ export async function kayitCal(metin: string, iptalMi: () => boolean): Promise<b
   return new Promise((coz) => {
     const src = c.createBufferSource();
     src.buffer = t;
+    src.playbackRate.value = hiz;
     src.connect(cikis);
     calan = src;
-    const emniyet = setTimeout(() => coz(true), t.duration * 1000 + 800);
+    const emniyet = setTimeout(() => coz(true), (t.duration / hiz) * 1000 + 800);
     src.onended = () => {
       clearTimeout(emniyet);
       if (calan === src) calan = null;

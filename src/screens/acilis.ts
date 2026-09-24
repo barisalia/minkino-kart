@@ -2,7 +2,7 @@ import { efekt } from '../audio/ses';
 import { durum } from '../engine/ilerleme';
 import { h, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { kartEl } from '../ui/kart';
+import { gorselUrl, kartEl } from '../ui/kart';
 import { sesDugmesi, yuvarlakDugme } from '../ui/ortak';
 import { ebeveynKapisi } from './ebeveyn';
 import type { Ekran, Uygulama } from '../uygulama';
@@ -29,6 +29,14 @@ export function acilisEkrani(app: Uygulama): Ekran {
     ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => app.secenekler.cikis?.(), 'kucuk')
     : ebeveyn;
 
+  // Mino'ya giriş: köşeden bakan kedi
+  const minoUrl = gorselUrl({ id: 'mino', ad: 'Mino', tema: '', tur: 'resim', gorsel: 'karakter/kedi-3.webp' });
+  const minoGiris = h('button.mino-giris', { type: 'button', 'aria-label': 'Mino ile oyna' }, minoUrl ? h('img', { src: minoUrl, alt: '' }) : null, h('span', {}, 'Mino'));
+  minoGiris.addEventListener('click', () => {
+    efekt.secim();
+    app.git('mino');
+  });
+
   const el = h(
     'div.acilis',
     {},
@@ -37,6 +45,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('div.kart-yelpaze', {}, kartEl('kedi'), kartEl('elma'), kartEl('araba')),
     h('div.logo', {}, logo, h('div.logo-serit', {}, 'KARTLAR')),
     h('div.acilis-alt', {}, oyna),
+    minoGiris,
   );
   return { el };
 }

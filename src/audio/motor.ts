@@ -6,6 +6,7 @@ let ana: GainNode | null = null;
 let efektKanal: GainNode | null = null;
 let muzikKanal: GainNode | null = null;
 let konusmaKanal: GainNode | null = null;
+let konusmaAnaliz: AnalyserNode | null = null;
 
 export function baglam(): AudioContext | null {
   return ctx;
@@ -18,6 +19,16 @@ export function muzikCikisi(): GainNode | null {
 }
 export function konusmaCikisi(): GainNode | null {
   return konusmaKanal;
+}
+/** Konuşma sesinin anlık gücü (0..1) — karakterin ağız hareketi için. */
+let analizTampon: Float32Array<ArrayBuffer> | null = null;
+export function konusmaGucu(): number {
+  if (!konusmaAnaliz) return 0;
+  analizTampon ??= new Float32Array(konusmaAnaliz.fftSize);
+  konusmaAnaliz.getFloatTimeDomainData(analizTampon);
+  let t = 0;
+  for (const v of analizTampon) t += v * v;
+  return Math.min(1, Math.sqrt(t / analizTampon.length) * 4.5);
 }
 
 export function sesMotorunuAc(): AudioContext | null {
@@ -39,6 +50,10 @@ export function sesMotorunuAc(): AudioContext | null {
       efektKanal.connect(ana);
       muzikKanal.connect(ana);
       konusmaKanal.connect(ana);
+      konusmaAnaliz = ctx.createAnalyser();
+      konusmaAnaliz.fftSize = 512;
+      konusmaAnaliz.smoothingTimeConstant = 0.5;
+      konusmaKanal.connect(konusmaAnaliz);
       seviyeleriUygula();
     }
     if (ctx.state === 'suspended') void ctx.resume();

@@ -3,9 +3,18 @@
  * oyun da cümleleri aynı parçalara bölerek söyler, böylece her parça için bir kayıt dosyası olur.
  */
 import metinler from '../../content/metinler.json';
+import minoJson from '../../content/mino.json';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
+
+export const MINO = minoJson;
+const kucuk = (t: string) => t.toLocaleLowerCase('tr');
+/** Mino cümlesinde {ad}/{Ad} yerine kartın adını koyar. */
+export function minoCumle(kalip: string, kartId: string): string {
+  const ad = kart(kartId)?.ad ?? kartId;
+  return kalip.replaceAll('{Ad}', buyukHarfBas(kucuk(ad))).replaceAll('{ad}', kucuk(ad));
+}
 
 /** Kayıt anahtarı: boşlukları sadeleştirilmiş metin. */
 export const normal = (t: string) => t.replace(/\s+/g, ' ').trim();
@@ -119,6 +128,14 @@ export function tumCumleler(): string[] {
         for (const t of dizi('hafiza_eslesti')) ekle(t);
       }
     }
+  }
+  // Mino (kedi karakteri) konuşmaları
+  const m = MINO;
+  for (const t of [...m.selam, ...m.yanlis, ...m.kutlama, m.esne, m.uyan, ...Object.values(m.tepki).flat()]) ekle(t);
+  for (const id of [...m.yiyecekler, ...m.digerleri]) {
+    ekle(minoCumle(m.istek, id));
+    ekle(minoCumle(m.yiyecekler.includes(id) ? m.yedi_yiyecek : m.yedi_diger, id));
+    ekle(`${kart(id)?.ad ?? id}!`);
   }
   return [...set];
 }

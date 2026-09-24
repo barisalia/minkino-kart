@@ -1,0 +1,20 @@
+{
+  "aciklama": "Mino (kedi karakteri) konuşmaları. Kısa tutun: ElevenLabs uzun cümlelerde takılıyor. {ad} yerine kelime gelir.",
+  "selam": ["Merhaba! Ben Mino!", "Hadi oynayalım!"],
+  "istek": "{Ad} nerede?",
+  "yedi_yiyecek": "Mmm, {ad}!",
+  "yedi_diger": "Yaşasın, {ad}!",
+  "yanlis": ["Bu değil!", "Başka bir tane!", "Hıh, bu değil!"],
+  "kutlama": ["Yaşasın!", "Süpersin!", "Dans zamanı!"],
+  "tepki": {
+    "kafa": ["Mırr, mırr!", "Çok güzel!"],
+    "gobek": ["Hihihi!", "Gıdıklanıyorum!"],
+    "burun": ["Hapşu!"],
+    "kuyruk": ["Miyav! Kuyruğum!", "Aaa!"],
+    "ayak": ["Dans edelim!", "Hop hop!"]
+  },
+  "esne": "Uykum geldi...",
+  "uyan": "Günaydın!",
+  "yiyecekler": ["elma", "muz", "cilek", "portakal", "uzum", "karpuz", "armut", "havuc", "misir", "kiraz", "dondurma"],
+  "digerleri": ["kedi", "kopek", "tavsan", "ordek", "balik", "kus", "araba", "otobus", "tren", "ucak", "gemi", "top", "balon"]
+}

@@ -49,6 +49,7 @@ export function konusmaMotorunuAc() {
 
 export function sus() {
   sayac++;
+  konusuyor = false;
   kayitDurdur();
   if (destek()) speechSynthesis.cancel();
   if (aktifDosya) {
@@ -67,7 +68,16 @@ export type Soylenecek = string | undefined | null | (string | undefined | null)
  * Metni (ya da parçalarını sırayla) söyler; bittiğinde çözülür.
  * Her parça için önce gerçek kayıt aranır (public/ses), yoksa cihazın Türkçe sesi kullanılır.
  */
-export function konus(girdi: Soylenecek): Promise<void> {
+let konusuyor = false;
+/** Şu an bir cümle söyleniyor mu (kayıt ya da cihaz sesi). */
+export const konusuyorMu = () => konusuyor;
+
+export interface KonusmaSecenegi {
+  /** Karakter sesi: kayıtlar bu hızda (ve tonda) çalınır, ör. 1.18 = daha ince, sevimli */
+  ton?: number;
+}
+
+export function konus(girdi: Soylenecek, secenek: KonusmaSecenegi = {}): Promise<void> {
   sus();
   const benim = sayac;
   let parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
@@ -80,17 +90,22 @@ export function konus(girdi: Soylenecek): Promise<void> {
 
   onYukle(parcalar);
   muzikKis(true);
+  konusuyor = true;
   return (async () => {
-    for (const p of parcalar) {
-      if (benim !== sayac) return;
-      const calindi = kayitVar(p) && (await kayitCal(p, () => benim !== sayac));
-      if (!calindi && benim === sayac) await tekParca(p, benim);
+    try {
+      for (const p of parcalar) {
+        if (benim !== sayac) return;
+        const calindi = kayitVar(p) && (await kayitCal(p, () => benim !== sayac, secenek.ton ?? 1));
+        if (!calindi && benim === sayac) await tekParca(p, benim, secenek.ton ?? 1);
+      }
+      if (benim === sayac) muzikKis(false);
+    } finally {
+      if (benim === sayac) konusuyor = false;
     }
-    if (benim === sayac) muzikKis(false);
   })();
 }
 
-function tekParca(metin: string, benim: number): Promise<void> {
+function tekParca(metin: string, benim: number, ton = 1): Promise<void> {
   const ayar = durum.i.ayarlar;
   return new Promise<void>((coz) => {
     let bitti = false;
@@ -122,7 +137,7 @@ function tekParca(metin: string, benim: number): Promise<void> {
     u.lang = 'tr-TR';
     if (turkceSes) u.voice = turkceSes;
     u.rate = HIZ;
-    u.pitch = TON;
+    u.pitch = Math.min(2, TON * ton);
     u.volume = ayar.seviye;
     u.onend = u.onerror = () => {
       clearTimeout(emniyet);
