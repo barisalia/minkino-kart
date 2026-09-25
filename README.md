@@ -9,7 +9,7 @@
 - Mikrofon testi (Uyuyan Orman ön denemesi): https://barisalia.github.io/minkino-kart/ses-testi/
 - Uyuyan Orman (sesle, nefesle, alkışla oynanan orman): https://minkino-site.barisalidogan.workers.dev/orman/
 
-Ekip ve ajanlar için rehber: [CLAUDE.md](CLAUDE.md)
+Ekip ve ajanlar için rehber: [minkinogames1.md](minkinogames1.md)
 
 ## Geliştirme
 

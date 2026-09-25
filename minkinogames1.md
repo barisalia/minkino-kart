@@ -1,6 +1,6 @@
 # Minkino — ekip ve ajan rehberi
 
-Bu dosya bu repoda çalışan herkes (insan ya da yapay zekâ ajanı) içindir. Claude Code her oturumda bunu kendiliğinden okur.
+Bu dosya bu repoda çalışan herkes (insan ya da yapay zekâ ajanı) içindir. İşe başlamadan önce baştan sona okunur.
 Oturumlar arası karar defteri: [ORTAK_NOTLAR.md](ORTAK_NOTLAR.md) (yalnızca en alta, tarihli satır eklenir; eskisi silinmez).
 
 ## 1. Ürün ve ürün sahibi
