@@ -70,6 +70,45 @@ async function gemini(env, resim, konu) {
   throw new Error(sonHata || 'Gemini modeli bulunamadı');
 }
 
+/**
+ * Cloudflare Workers AI (ücretsiz günlük kota). Önce görsel düzenleme destekli FLUX.2 denenir,
+ * olmazsa Stable Diffusion img2img.
+ */
+async function cloudflare(env, resim, konu) {
+  const bayt = b64ToBytes(resim);
+  const hatalar = [];
+  try {
+    const form = new FormData();
+    form.append('prompt', geminiTalimati(konu));
+    form.append('input_image_0', new Blob([bayt], { type: 'image/png' }), 'cizim.png');
+    form.append('width', '1024');
+    form.append('height', '1024');
+    const govde = new Response(form);
+    const cikti = await env.AI.run(env.CF_MODEL || '@cf/black-forest-labs/flux-2-dev', {
+      multipart: { body: govde.body, contentType: govde.headers.get('content-type') },
+    });
+    if (cikti?.image) return { veri: cikti.image, mime: 'image/png' };
+    hatalar.push('flux: görsel yok');
+  } catch (e) {
+    hatalar.push(`flux: ${e?.message ?? e}`);
+  }
+  try {
+    const akim = await env.AI.run('@cf/runwayml/stable-diffusion-v1-5-img2img', {
+      prompt: recraftTalimati(konu),
+      negative_prompt: 'text, letters, watermark, scary, ugly, blurry, photo, realistic',
+      image: [...bayt],
+      strength: 0.65,
+      guidance: 8,
+      num_steps: 20,
+    });
+    const tampon = await new Response(akim).arrayBuffer();
+    return { veri: bytesToB64(tampon), mime: 'image/png' };
+  } catch (e) {
+    hatalar.push(`sd: ${e?.message ?? e}`);
+  }
+  throw new Error(`Workers AI: ${hatalar.join(' | ')}`);
+}
+
 async function recraft(env, resim, konu) {
   const f = new FormData();
   f.append('image', new Blob([b64ToBytes(resim)], { type: 'image/png' }), 'cizim.png');
@@ -113,10 +152,14 @@ export default {
     };
     const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     const url = new URL(req.url);
-    const motor = env.MOTOR === 'recraft' || !env.GEMINI_API_KEY ? 'recraft' : 'gemini';
+    // Motor sırası: ayarlanan motor önce, olmazsa anahtarı olan diğerleri
+    const sira = [env.MOTOR || 'cloudflare', 'cloudflare', 'gemini', 'recraft'].filter(
+      (m, i, a) => a.indexOf(m) === i && (m === 'cloudflare' ? !!env.AI : m === 'gemini' ? !!env.GEMINI_API_KEY : !!env.RECRAFT_API_KEY),
+    );
+    const motor = sira[0] ?? 'yok';
 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    if (url.pathname === '/' && req.method === 'GET') return json({ durum: 'hazır', motor, anahtar: motor === 'gemini' ? !!env.GEMINI_API_KEY : !!env.RECRAFT_API_KEY });
+    if (url.pathname === '/' && req.method === 'GET') return json({ durum: motor === 'yok' ? 'motor yok' : 'hazır', motorlar: sira });
     if (url.pathname !== '/sihir' || req.method !== 'POST') return json({ hata: 'bulunamadı' }, 404);
     if (!izinli.includes('*') && koken && !izinli.includes(koken)) return json({ hata: 'izin yok' }, 403);
 
@@ -133,20 +176,16 @@ export default {
     const konu = String(govde?.konu ?? 'surpriz');
     if (!resim || resim.length > 4_000_000) return json({ hata: 'resim yok ya da çok büyük' }, 400);
 
-    try {
-      const sonuc = motor === 'gemini' ? await gemini(env, resim, konu) : await recraft(env, resim, konu);
-      return json({ resim: sonuc.veri, mime: sonuc.mime, motor });
-    } catch (e) {
-      // Gemini olmazsa (ve Recraft anahtarı varsa) yedek motor
-      if (motor === 'gemini' && env.RECRAFT_API_KEY) {
-        try {
-          const sonuc = await recraft(env, resim, konu);
-          return json({ resim: sonuc.veri, mime: sonuc.mime, motor: 'recraft' });
-        } catch (e2) {
-          return json({ hata: String(e2?.message ?? e2) }, 502);
-        }
+    const calistir = { cloudflare, gemini, recraft };
+    const hatalar = [];
+    for (const m of sira) {
+      try {
+        const sonuc = await calistir[m](env, resim, konu);
+        return json({ resim: sonuc.veri, mime: sonuc.mime, motor: m });
+      } catch (e) {
+        hatalar.push(`${m}: ${String(e?.message ?? e).slice(0, 300)}`);
       }
-      return json({ hata: String(e?.message ?? e) }, 502);
     }
+    return json({ hata: hatalar.join(' || ') || 'motor yok' }, 502);
   },
 };

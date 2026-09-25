@@ -68,3 +68,35 @@ jobs:
             gh workflow run yayinla.yml --ref "${GITHUB_REF_NAME}"
           fi
           curl -s "$ADRES/" || true
+
+      - name: Sihir denemesi (3 örnek karalama)
+        if: steps.kontrol.outputs.hazir == '1' && steps.yayin.outputs.adres != ''
+        env:
+          ADRES: ${{ steps.yayin.outputs.adres }}
+        run: |
+          sleep 5
+          mkdir -p sanatci/deneme
+          for ad in kedi ev araba; do
+            python3 -c "import base64,json,sys; print(json.dumps({'resim': base64.b64encode(open('sanatci/ornekler/$ad.png','rb').read()).decode(), 'konu': '$ad'}))" > istek.json
+            curl -s -X POST "$ADRES/sihir" -H 'Content-Type: application/json' -H 'Origin: https://barisalia.github.io' --data @istek.json -o yanit.json -w "$ad HTTP %{http_code}\n" || true
+            python3 - "$ad" <<'PY'
+          import base64, json, sys
+          ad = sys.argv[1]
+          try:
+              j = json.load(open('yanit.json'))
+          except Exception as e:
+              print(ad, 'yanıt okunamadı', e); sys.exit(0)
+          if j.get('resim'):
+              open(f'sanatci/deneme/{ad}.png', 'wb').write(base64.b64decode(j['resim']))
+              print(ad, 'tamam, motor:', j.get('motor'))
+          else:
+              print(ad, 'HATA:', j.get('hata'))
+              open(f'sanatci/deneme/{ad}-hata.txt', 'w').write(str(j.get('hata')))
+          PY
+          done
+          git add sanatci/deneme
+          if ! git diff --cached --quiet; then
+            git -c user.name="minkino-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Minik Sanatçı: sunucu deneme sonuçları [skip ci]"
+            git pull --rebase -q origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi

@@ -20,6 +20,20 @@ describe('sihir sunucusu', () => {
     expect(r.headers.get('Access-Control-Allow-Origin')).toBe('https://barisalia.github.io');
   });
 
+  it('Cloudflare Workers AI motoru: FLUX sonucu döner', async () => {
+    const AI = { run: vi.fn(async () => ({ image: 'RkxVWA==' })) };
+    const r = await sunucu.fetch(istek({ resim: 'aGVsbG8=', konu: 'ev' }, '6.6.6.6'), { ...env, MOTOR: 'cloudflare', AI });
+    expect(await r.json()).toMatchObject({ resim: 'RkxVWA==', motor: 'cloudflare' });
+    expect(AI.run).toHaveBeenCalledTimes(1);
+  });
+
+  it('Workers AI olmazsa Gemini yedeğine düşer', async () => {
+    const AI = { run: vi.fn(async () => { throw new Error('kota bitti'); }) };
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ candidates: [{ content: { parts: [{ inlineData: { data: 'R0VN' } }] } }] }))));
+    const r = await sunucu.fetch(istek({ resim: 'aGVsbG8=', konu: 'ev' }, '7.7.7.7'), { ...env, MOTOR: 'cloudflare', AI });
+    expect(await r.json()).toMatchObject({ resim: 'R0VN', motor: 'gemini' });
+  });
+
   it('izinsiz siteden gelen isteği reddeder', async () => {
     const r = await sunucu.fetch(istek({ resim: 'eA==' }, '3.3.3.3', 'https://kotu.site'), env);
     expect(r.status).toBe(403);
