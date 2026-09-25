@@ -1,3 +1,5 @@
+> **İPTAL (2026-09-25, Barış):** Rive'dan vazgeçildi (zaman ve maliyet). Animasyonları Claude kodla yapacak; tasarımcıdan yalnızca Gemini ifade setleri isteniyor (`ekip/gemini-is-listesi.md`). Bu belge yalnızca kayıt için duruyor.
+
 # Uyuyan Orman — Rive animasyon iş listesi
 
 Hedef: Uyuyan Orman'daki karakterler ve eşyalar **canlı, sesle anında tepki veren, premium 2D animasyonlar** olsun.

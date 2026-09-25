@@ -1,7 +1,7 @@
 # Uyuyan Orman — Gemini (tarayıcı) görsel iş listesi
 
 Bu işler tarayıcıdaki Gemini (görsel düzenleme / Nano Banana) ile yapılır; API kullanılmaz.
-Amaç: Rive animasyoncusuna **aynı karakterin tutarlı ifadelerini** ve **ayrılmış parçalarını** hazırlamak, bir de arka planları **katmanlara** ayırmak.
+Amaç: **aynı karakterin tutarlı ifadelerini** üretmek (Claude animasyonu bu ifadeler arasında geçişle ve kodla yapar), bir de arka planları **katmanlara** ayırmak. (Rive iptal edildi; parça seti artık gerekmiyor.)
 En önemli kural: **stil ve karakter birebir aynı kalacak.** Yeni karakter çizdirmiyoruz; var olanı düzenliyoruz.
 
 ## 0. Her istekte
@@ -11,7 +11,7 @@ En önemli kural: **stil ve karakter birebir aynı kalacak.** Yeni karakter çiz
    > Keep exactly the same character, same art style, same colors, same thick dark-brown outlines, same glossy highlights, same proportions, same framing and position in the image. Premium glossy 2D cartoon vector style for a toddler picture book. Plain pure white background. No text.
 3. Sonucu kaynakla yan yana koyup kontrol edin: yüz, renk, çizgi kalınlığı, oran değiştiyse **kullanmayın**, yeniden isteyin.
 4. Dosyalar **PNG**, olabildiğince büyük (en az 1024 px). Beyaz zemin sonra silinir (Recraft/Photoshop "remove background" ya da Rive'da maske).
-5. Kayıt: ortak klasör `Uyuyan Orman / gemini / <karakter> / <dosya>.png` (repoya koymayın; çok büyük). Rive'cı buradan alır.
+5. Kayıt: `ekip/gemini/<karakter>/<dosya>.png` olarak GitHub'a (ekip dalı). Çok büyükse 1024 px'e küçültüp gönderin.
 
 ## 1. Kaynak görseller
 
@@ -44,7 +44,7 @@ En önemli kural: **stil ve karakter birebir aynı kalacak.** Yeni karakter çiz
 **Tavşan** için ek: `yuru-1.png`, `yuru-2.png`: "tiptoeing quietly, side view facing right, one foot raised / the other foot raised".
 **Kuş** için ek: `kanat-yukari.png`, `kanat-asagi.png`: "wings raised up high / wings pushed down, flying pose".
 
-## 3. Parça seti (Rive iskeleti için; önce PİLOT: sincap)
+## 3. Parça seti — İPTAL (Rive'dan vazgeçildi; yapmayın)
 
 Rive'cı karakteri parçalardan kurar. Parçalar **orijinalle aynı ölçek ve konumda** olmalı ki üst üste konunca birebir tutsun.
 Önerilen yol: parçaları Photoshop/Affinity'de orijinalden kesin; Gemini'yi yalnızca **gizli kalan yerleri tamamlamak** için kullanın:
@@ -73,6 +73,8 @@ Sahneler: `harita`, `ruzgar`, `kus`, `ciftlik`, `davul`, `hece`, `dev`. Bitince 
 
 ## 5. Öncelik
 
-1. **Sincap**: ifade seti + parça seti (Rive pilotu buna bağlı).
-2. Dev, kuş, çiftlik üçlüsü, maymun, baykuş, tavşan, ayı, papağan ifade setleri.
+1. **Sincap** ifade seti (pilot: Claude bununla animasyonu kurup Barış'a gösterir).
+2. Dev, kuş (+ kanat yukarı/aşağı), inek, köpek, kedi, maymun, baykuş, tavşan (+ yürüme iki kare), ayı, papağan ifade setleri.
 3. Arka plan katmanları.
+
+Teslim: PNG'leri ortak klasöre koyun ve **GitHub'a da gönderin**: `ekip/gemini/<karakter>/<dosya>.png` (ekip dalı). Claude oradan alıp küçültür, zeminini siler ve oyuna koyar. Dosya adları tablodakiyle aynı olsun.

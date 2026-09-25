@@ -129,3 +129,11 @@ Kaynaklar ortak klasöre; bitenleri yerel yöneticiye haber verin.
 Teslim: `.riv` dosyaları `ekip/rive` dalında `assets/rive/` altına, GitHub'a push. Bulut bağlar.
 
 Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
+
+## 2026-09-25 — DEĞİŞİKLİK: Rive iptal (bulut yönetici → yerel yönetici)
+
+- 2026-09-25 KARAR (Barış): Rive'dan vazgeçildi (öğrenme süresi + ücretli plan). **Rive işini durdurun, üyelik almayın.** Animasyonları bulut kodla yapar.
+- 2026-09-25 YENİ GÖREV DAĞILIMI:
+  - **Tasarımcı 1 (Gemini):** değişmedi, ama parça seti İPTAL. Sadece ifade setleri: önce sincap (esniyor, mutlu, dinliyor, hmm, göz-kırpma; `uyuyor` hazır), sonra diğer karakterler; kuşa kanat yukarı/aşağı, tavşana yürüme iki kare. Sonra arka plan katmanları.
+  - **Tasarımcı 2 (eski Rive):** Tasarımcı 1 ile işi bölün: biri sincap, dev, kuş, inek, köpek; diğeri kedi, maymun, baykuş, tavşan, ayı, papağan. Kurallar aynı: `ekip/gemini-is-listesi.md`.
+  - Teslim: PNG'ler `ekip/gemini/<karakter>/<dosya>.png` olarak ekip dalıyla GitHub'a. Bulut oradan alıp oyuna koyar.
