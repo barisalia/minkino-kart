@@ -20,6 +20,8 @@ export class Mikrofon {
   /** Telefonun uyguladığı gerçek ayarlar */
   ayarlar: MediaTrackSettings = {};
   onKare: (o: Ozellik) => void = () => undefined;
+  /** Ham örnekler (papağan gibi anında geri çalan oyunlar için; saklanmaz) */
+  onHam: ((g: Float32Array) => void) | null = null;
   /** son 3 saniyenin dB değerleri (grafik için) */
   gecmis: number[] = [];
 
@@ -30,10 +32,11 @@ export class Mikrofon {
     return 1024 / this.ornekHizi;
   }
 
-  async ac(i: Istek) {
+  /** ortak: oyunun kendi ses bağlamı (iki ayrı bağlam iOS'ta sorun çıkarabilir) */
+  async ac(i: Istek, ortak?: AudioContext | null) {
     this.kapat();
     const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    this.ctx = this.ctx && this.ctx.state !== 'closed' ? this.ctx : new AC();
+    this.ctx = ortak ?? (this.ctx && this.ctx.state !== 'closed' ? this.ctx : new AC());
     await this.ctx.resume();
     this.akis = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: i.yankiIptal, noiseSuppression: i.gurultuBastir, autoGainControl: i.otoSeviye, channelCount: 1 },
@@ -49,6 +52,7 @@ export class Mikrofon {
     this.islemci.connect(sessiz).connect(this.ctx.destination);
     this.islemci.onaudioprocess = (e) => {
       const g = e.inputBuffer.getChannelData(0);
+      this.onHam?.(g);
       this.tampon.copyWithin(0, g.length);
       this.tampon.set(g, this.tampon.length - g.length);
       const o = ozellikCikar(this.tampon, this.ornekHizi);

@@ -1,0 +1,2200 @@
+/* Uyuyan Orman — gri ve uykulu orman, sesle renklenir */
+.or-kok {
+  background: #1d3a57;
+  color: var(--kontur);
+}
+.or-kok .zemin {
+  background: radial-gradient(120% 80% at 50% 0%, #3b6d93, #1d3a57 70%);
+}
+.or-kok .zemin::before {
+  display: none;
+}
+.or-kok [hidden] {
+  display: none !important;
+}
+.or-kok img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.or-kok .ekran {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.or-kok .or-resim {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+.or-kok .or-yedek {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f4e1bd;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+.or-kok .ince-dugme {
+  font: inherit;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 3px solid var(--kontur);
+  background: #fff8ea;
+  color: var(--kontur);
+}
+.or-kok .or-kucuk {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- ortak parçalar */
+.or-kok .or-zzz {
+  position: absolute;
+  right: 4%;
+  top: -6%;
+  width: 40%;
+  height: 50%;
+  pointer-events: none;
+}
+.or-kok .or-zzz i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-style: normal;
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: 1.5px #2b4a6b;
+  font-size: clamp(16px, 4vmin, 28px);
+  opacity: 0;
+  animation: or-zzz 3s ease-in-out infinite;
+}
+.or-kok .or-zzz i:nth-child(2) { animation-delay: 1s; font-size: clamp(20px, 5vmin, 34px); }
+.or-kok .or-zzz i:nth-child(3) { animation-delay: 2s; font-size: clamp(24px, 6vmin, 42px); }
+@keyframes or-zzz {
+  0% { opacity: 0; transform: translate(0, 0) rotate(-10deg) scale(0.6); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(40px, -60px) rotate(12deg) scale(1.1); }
+}
+
+.or-kok .or-parilti {
+  position: absolute;
+  z-index: 6;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  background: #ffe066;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  pointer-events: none;
+  animation: or-parilti 1s var(--g) ease-out both;
+}
+@keyframes or-parilti {
+  0% { transform: translate(0, 0) scale(0.3) rotate(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1.3) rotate(180deg); opacity: 0; }
+}
+
+.or-kok .or-fisek {
+  position: absolute;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.or-kok .or-fisek i {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 50%;
+  background: var(--r);
+  box-shadow: 0 0 10px var(--r), 0 0 2px #fff inset;
+  animation: or-fisek 1.2s cubic-bezier(0.1, 0.7, 0.3, 1) both;
+}
+@keyframes or-fisek {
+  0% { transform: rotate(var(--a)) translateX(0) scale(1.4); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(calc(var(--d) * min(26vmin, 170px))) translateY(24px) scale(0.3); opacity: 0; }
+}
+
+.or-kok .or-dinle {
+  position: absolute;
+  right: 4%;
+  top: 2%;
+  z-index: 4;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: var(--cizgi) solid var(--kontur);
+  background: var(--sari);
+  font: 700 1.6rem/1 inherit;
+  color: var(--kontur);
+  box-shadow: 0 4px 0 var(--kontur);
+}
+
+/* ---------------------------------------------------------------- açılış */
+.or-kok .or-acilis {
+  overflow: hidden;
+  justify-content: center;
+}
+.or-kok .or-acilis-arka {
+  position: absolute;
+  inset: 0;
+  background: var(--resim) center / cover no-repeat;
+  filter: grayscale(0.85) brightness(0.72) contrast(0.95);
+}
+.or-kok .or-acilis-arka::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 45% at 50% 42%, rgba(255, 244, 200, 0.28), transparent 70%),
+    linear-gradient(180deg, rgba(20, 40, 70, 0.55), rgba(20, 40, 70, 0.1) 40%, rgba(20, 40, 70, 0.6));
+}
+.or-kok .or-sag-ust {
+  position: absolute;
+  top: var(--ust);
+  left: var(--yan);
+  right: var(--yan);
+}
+.or-kok .or-acilis-ic {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 4vh, 36px);
+}
+.or-kok .or-acilis-ic > .or-zzz {
+  right: 18%;
+  top: 30%;
+  width: 20%;
+}
+.or-kok .or-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.95;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 5px 0 #2b4a6b, 0 10px 24px rgba(0, 0, 0, 0.35);
+  -webkit-text-stroke: 3px #2b4a6b;
+  paint-order: stroke fill;
+}
+.or-kok .or-logo .uyuyan {
+  font-size: clamp(2rem, 10vw, 3.6rem);
+  color: #cfe3ff;
+}
+.or-kok .or-logo .orman {
+  font-size: clamp(3.4rem, 18vw, 6.4rem);
+  color: #b8f08f;
+}
+.or-kok .or-logo span span {
+  display: inline-block;
+  animation: or-uyku-harf 3.2s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.14s);
+}
+@keyframes or-uyku-harf {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(6px) rotate(-4deg); }
+}
+.or-kok .or-acilis-hayvanlar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(96vw, 620px);
+}
+.or-kok .or-acilis-hayvan {
+  width: 19%;
+  margin: 0 -1.5%;
+  filter: grayscale(1) brightness(0.9);
+  animation: or-nefes 3.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.6s);
+  transform-origin: 50% 100%;
+}
+.or-kok .or-acilis-hayvan:nth-child(odd) { width: 16%; }
+.or-kok .or-acilis-hayvan:nth-child(6) { width: 26%; }
+@keyframes or-nefes {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.03, 0.97); }
+}
+.or-kok .or-oyna {
+  --r: var(--yesil);
+  font-size: 2rem;
+  min-height: 84px;
+  padding: 0 1.4em;
+  color: #fff;
+  -webkit-text-stroke: 1.5px var(--kontur);
+  paint-order: stroke fill;
+  animation: or-oyna 2s ease-in-out infinite;
+}
+.or-kok .or-oyna .ikon {
+  width: 1.1em;
+  height: 1.1em;
+}
+@keyframes or-oyna {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* ---------------------------------------------------------------- büyükler (izin) */
+.or-kok .or-izin {
+  background: linear-gradient(180deg, #fff7e6, #ffeecd);
+  overflow-y: auto;
+}
+.or-kok .or-izin-kart {
+  width: min(100%, 560px);
+  margin: 12px auto;
+  padding: 20px 22px 24px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  border-radius: 26px;
+  box-shadow: 0 6px 0 var(--kontur-yumusak);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 1.05rem;
+}
+.or-kok .or-izin-kart h2 {
+  margin: 0;
+  font-size: 1.7rem;
+}
+.or-kok .or-izin-kart p,
+.or-kok .or-izin-kart ul {
+  margin: 0;
+}
+.or-kok .or-izin-kart ul {
+  padding-left: 1.2em;
+  display: grid;
+  gap: 6px;
+}
+.or-kok .or-izin-kart .dugme {
+  align-self: stretch;
+  color: #fff;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+  font-size: 1.4rem;
+}
+.or-kok .or-izin-durum {
+  min-height: 1.3em;
+  font-weight: 600;
+}
+.or-kok .or-satir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.or-kok .or-isim-girdi {
+  font: inherit;
+  font-size: 1.2rem;
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: 3px solid var(--kontur);
+  width: 11em;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ---------------------------------------------------------------- harita */
+.or-kok .or-harita-ekran {
+  background: #2b5a3a;
+  padding-bottom: 0;
+}
+.or-kok .or-harita-ekran .ust-cubuk,
+.or-kok .or-bolge .ust-cubuk,
+.or-kok .or-ekstra .ust-cubuk,
+.or-kok .or-senlik .ust-cubuk {
+  z-index: 5;
+}
+.or-kok .or-harita {
+  position: absolute;
+  inset: 0;
+  background: var(--resim) center / cover no-repeat;
+}
+.or-kok .or-harita::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 50, 80, 0.45), transparent 22%, transparent 78%, rgba(20, 50, 30, 0.55));
+}
+.or-kok .or-patika-cizgi {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--ust) + 70px);
+  bottom: calc(var(--alt) + 86px);
+  width: 100%;
+  height: calc(100% - var(--ust) - 70px - var(--alt) - 86px);
+  pointer-events: none;
+}
+.or-kok .or-patika-cizgi path {
+  fill: none;
+  stroke: rgba(255, 246, 220, 0.9);
+  stroke-width: 7px;
+  stroke-dasharray: 2 16;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 2px 0 rgba(60, 40, 10, 0.35));
+}
+.or-kok .or-madalyon {
+  --boy: clamp(88px, min(24vw, 15vh), 150px);
+  position: absolute;
+  z-index: 2;
+  width: var(--boy);
+  height: var(--boy);
+  margin: calc(var(--boy) / -2) 0 0 calc(var(--boy) / -2);
+  padding: 0;
+  border: none;
+  background: none;
+  animation: or-madalyon-gir 0.6s calc(var(--i, 0) * 0.07s) cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+/* madalyonlar patikanın bulunduğu alana yerleşir */
+.or-kok .or-harita .or-madalyon {
+  top: calc(var(--ust) + 70px + (100% - var(--ust) - 70px - var(--alt) - 86px) * var(--t, 0));
+}
+@keyframes or-madalyon-gir {
+  from { transform: scale(0.3); opacity: 0; }
+}
+.or-kok .or-madalyon-resim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--resim) center / cover, #9ab;
+  border: 5px solid #fff;
+  outline: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+  filter: grayscale(1) brightness(0.78);
+  transition: filter 0.6s;
+}
+.or-kok .or-madalyon-ev {
+  position: absolute;
+  left: 18%;
+  width: 64%;
+  bottom: 6%;
+  filter: grayscale(1) brightness(0.85) drop-shadow(0 3px 0 rgba(0, 0, 0, 0.25));
+  transform: rotate(-6deg);
+  transform-origin: 50% 100%;
+  animation: or-nefes 3.4s ease-in-out infinite;
+}
+.or-kok .or-madalyon .or-zzz {
+  right: -8%;
+  top: -18%;
+}
+.or-kok .or-madalyon-ad {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+  font-weight: 700;
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+}
+.or-kok .or-madalyon.uyanik .or-madalyon-resim {
+  filter: none;
+  outline-color: var(--renk);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25), 0 0 0 7px color-mix(in srgb, var(--renk) 45%, transparent), 0 0 26px 6px color-mix(in srgb, var(--renk) 60%, transparent);
+}
+.or-kok .or-madalyon.uyanik .or-madalyon-ev {
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.25));
+  transform: none;
+  animation: or-zipzip 2.4s ease-in-out infinite;
+}
+.or-kok .or-madalyon.uyanik .or-madalyon-ad {
+  background: var(--renk);
+  color: #fff;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+}
+@keyframes or-zipzip {
+  0%, 60%, 100% { transform: translateY(0); }
+  70% { transform: translateY(-10%) scale(1.04, 0.96); }
+  80% { transform: translateY(0) scale(1.05, 0.95); }
+}
+.or-kok .or-madalyon.senlik {
+  --boy: clamp(64px, min(17vw, 11vh), 96px);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #cfd6dc;
+  border: var(--cizgi) solid var(--kontur);
+  color: #7d8a96;
+  box-shadow: 0 5px 0 var(--kontur);
+}
+.or-kok .or-madalyon.senlik .ikon {
+  width: 56%;
+  height: 56%;
+}
+.or-kok .or-madalyon.senlik.acik {
+  background: conic-gradient(#f0413f, #ffc72c, #5dbe3f, #3e9df2, #9b5ce0, #f0413f);
+  color: #fff;
+  animation: or-madalyon-gir 0.6s both, or-oyna 1.6s 0.6s ease-in-out infinite;
+}
+.or-kok .or-madalyon.senlik.acik .ikon {
+  filter: drop-shadow(0 2px 0 var(--kontur));
+}
+.or-kok .or-alt {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px var(--yan) var(--alt);
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, transparent, rgba(20, 50, 30, 0.55) 40%);
+}
+.or-kok .or-alt-dugme {
+  --r: var(--pembe);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 60px;
+  padding: 0 14px 0 8px;
+  border-radius: 999px;
+  border: var(--cizgi) solid var(--kontur);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--r) 65%, white), var(--r) 60%);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.12), 0 5px 0 var(--kontur);
+  font: 700 clamp(0.85rem, 3.4vw, 1.1rem) / 1.05 inherit;
+  color: #fff;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+}
+.or-kok .or-alt-dugme .ikon {
+  width: 40px;
+  height: 40px;
+  padding: 5px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--kontur);
+  -webkit-text-stroke: 0;
+}
+@media (max-width: 430px) {
+  .or-kok .or-alt-dugme span:not(.ikon) {
+    max-width: 5.2em;
+  }
+}
+
+/* ---------------------------------------------------------------- bölge */
+.or-kok .or-bolge {
+  --gri: 1;
+  overflow: hidden;
+}
+.or-kok .or-arka {
+  position: absolute;
+  inset: 0;
+  background: var(--resim) center / cover no-repeat, #6d7f8f;
+  filter: grayscale(var(--gri)) brightness(calc(1 - var(--gri) * 0.22)) contrast(calc(1 - var(--gri) * 0.1));
+  transition: filter 1.8s ease;
+}
+.or-kok .or-arka::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(90% 70% at 50% 55%, rgba(210, 225, 240, 0.35), rgba(40, 60, 90, 0.55));
+  opacity: var(--gri);
+  transition: opacity 1.8s ease;
+}
+.or-kok .or-ev {
+  position: absolute;
+  z-index: 1;
+  left: 3%;
+  bottom: calc(var(--alt) + 64px);
+  width: clamp(86px, 22vmin, 160px);
+  filter: grayscale(var(--gri)) brightness(calc(1 - var(--gri) * 0.12)) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.25));
+  transform-origin: 50% 100%;
+  transition: filter 1.8s;
+}
+.or-kok .or-ev.uyuyor > .or-resim {
+  animation: or-nefes 3.4s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.or-kok .or-ev.uyuyor:not(.ev-dev) > .or-resim {
+  transform: rotate(-8deg);
+  animation: none;
+}
+.or-kok .or-ev.uyandi .or-zzz {
+  display: none;
+}
+.or-kok .or-ev.uyandi {
+  animation: or-uyandi 1s cubic-bezier(0.3, 1.6, 0.5, 1) both, or-zipzip 2.4s 1s ease-in-out infinite;
+}
+@keyframes or-uyandi {
+  0% { transform: scale(0.9); }
+  40% { transform: translateY(-30%) scale(1.1, 0.95); }
+  100% { transform: none; }
+}
+.or-kok .or-ev.kipir {
+  animation: or-kipir 0.6s ease-in-out;
+}
+@keyframes or-kipir {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-4deg); }
+  40% { transform: rotate(4deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(2deg); }
+}
+/* Uyuyan Dev bölgesinde dev büyük ve ortada; hiç uyanmaz, sadece renklenir */
+.or-kok .or-ev.ev-dev {
+  left: 50%;
+  bottom: calc(var(--alt) + 90px);
+  width: min(66vw, 42vh, 380px);
+  margin-left: calc(min(66vw, 42vh, 380px) / -2);
+}
+.or-kok .or-ev.ev-dev .or-zzz {
+  right: 8%;
+  top: -22%;
+  width: 26%;
+}
+.or-kok .or-ev.ev-dev.uyandi {
+  animation: none;
+}
+.or-kok .or-ev.ev-dev.uyandi .or-zzz {
+  display: block;
+}
+.or-kok .or-sahne {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: calc(var(--ust) + 84px);
+  bottom: calc(var(--alt) + 70px);
+}
+.or-kok .or-adimlar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-adimlar i {
+  width: 18px;
+  height: 22px;
+  border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+  background: #d9d2c5;
+  border: 2.5px solid var(--kontur);
+  transition: background 0.4s, transform 0.4s;
+}
+.or-kok .or-adimlar i.dolu {
+  background: var(--renk, var(--yesil));
+  transform: scale(1.2);
+  animation: or-pat 0.5s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+@keyframes or-pat {
+  from { transform: scale(0.4); }
+}
+.or-kok .or-bolge .baslik-balon {
+  font-size: clamp(1.05rem, 4.6vw, 1.6rem);
+  max-width: 100%;
+  line-height: 1.15;
+  padding-right: 16px;
+}
+.or-kok .or-bolge .baslik-balon span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+@media (max-width: 430px) {
+  .or-kok .or-bolge .ust-cubuk .yuvarlak:not(.kucuk) {
+    width: 56px;
+    height: 56px;
+  }
+  .or-kok .or-adimlar {
+    padding: 6px 7px;
+    gap: 4px;
+  }
+  .or-kok .or-adimlar i {
+    width: 13px;
+    height: 17px;
+  }
+}
+
+/* kulak göstergesi */
+.or-kok .or-kulak {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: var(--alt);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 4px 16px 4px 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid var(--kontur);
+  box-shadow: 0 4px 0 var(--kontur-yumusak);
+  font-weight: 700;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.or-kok .or-kulak[data-durum='bekliyor'] {
+  opacity: 0.55;
+  padding-right: 4px;
+}
+.or-kok .or-kulak-ikon {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e9e2d6;
+  color: var(--kontur);
+}
+.or-kok .or-kulak-ikon svg {
+  width: 30px;
+  height: 30px;
+}
+.or-kok .or-kulak[data-durum='dinliyor'] .or-kulak-ikon {
+  background: var(--yesil);
+  color: #fff;
+}
+.or-kok .or-kulak[data-durum='el'] .or-kulak-ikon {
+  background: var(--turuncu);
+  color: #fff;
+}
+.or-kok .or-kulak-halka {
+  --s: 1;
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin-top: -23px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--yesil) 45%, transparent);
+  transform: scale(var(--s));
+  transition: transform 0.08s linear;
+}
+.or-kok .or-kulak:not([data-durum='dinliyor']) .or-kulak-halka {
+  display: none;
+}
+.or-kok .or-bolge.ipucu .or-sahne::after {
+  content: '';
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  top: 55%;
+  width: 90px;
+  height: 90px;
+  margin: -45px;
+  border-radius: 50%;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%235a3617' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 26V11a3 3 0 0 1 6 0v12m0-2a3 3 0 0 1 6 0v3m0-1a3 3 0 0 1 6 0v8c0 7-5 12-11 12s-9-3-12-8l-5-8a3 3 0 0 1 5-3l5 5'/%3E%3C/svg%3E") center / 64% no-repeat;
+  border: 4px solid var(--kontur);
+  pointer-events: none;
+  animation: or-ipucu 1.2s ease-in-out infinite;
+}
+@keyframes or-ipucu {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.85) translateY(8px); }
+}
+.or-kok .or-bitis {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: max-content;
+  max-width: 94vw;
+}
+.or-kok .or-bitis .dugme {
+  color: #fff;
+  font-size: 1.3rem;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+  animation: or-madalyon-gir 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.or-kok .or-bitis .dugme.parla {
+  animation: or-madalyon-gir 0.5s both, or-oyna 1.4s 0.5s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------- Rüzgar Tepesi */
+.or-kok .or-mum {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: 90px;
+  margin-left: -45px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.or-kok .or-alev {
+  --g: 0;
+  width: 38px;
+  height: 64px;
+  margin-bottom: 2px;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 50% 72%, #fffbe0 0 18%, #ffd23c 42%, #ff8a2b 80%);
+  transform-origin: 50% 100%;
+  transform: rotate(calc(var(--g) * 38deg)) scaleY(calc(1 - var(--g) * 0.45)) scaleX(calc(1 + var(--g) * 0.25));
+  box-shadow: 0 0 30px 10px rgba(255, 200, 60, 0.55);
+  transition: transform 0.08s, opacity 0.35s;
+  animation: or-alev 0.9s ease-in-out infinite alternate;
+}
+@keyframes or-alev {
+  to { border-radius: 46% 54% 50% 50% / 60% 64% 36% 40%; }
+}
+.or-kok .or-mum-govde {
+  width: 56px;
+  height: 120px;
+  border-radius: 12px 12px 8px 8px;
+  border: var(--cizgi) solid var(--kontur);
+  background: repeating-linear-gradient(135deg, #fff 0 12px, #ffc1d6 12px 24px);
+  position: relative;
+}
+.or-kok .or-mum-govde::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -14px;
+  width: 4px;
+  height: 14px;
+  margin-left: -2px;
+  background: #3a2a1a;
+  border-radius: 2px;
+}
+.or-kok .or-mum-tabak {
+  width: 110px;
+  height: 20px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: #ffc72c;
+  border: var(--cizgi) solid var(--kontur);
+}
+.or-kok .or-mum.sondu .or-alev {
+  opacity: 0;
+}
+.or-kok .or-mum.sondu::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 30px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  background: rgba(230, 230, 240, 0.9);
+  box-shadow: 14px -24px 0 4px rgba(230, 230, 240, 0.7), -6px -52px 0 8px rgba(230, 230, 240, 0.5);
+  animation: or-duman 1.4s ease-out both;
+}
+@keyframes or-duman {
+  from { transform: translateY(20px) scale(0.3); opacity: 1; }
+  to { transform: translateY(-40px) scale(1.2); opacity: 0; }
+}
+.or-kok .or-mum.kucuk {
+  position: relative;
+  left: auto;
+  top: auto;
+  margin: 0;
+  transform: scale(0.7);
+  transform-origin: 50% 100%;
+}
+
+.or-kok .or-karahindiba {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  bottom: 0;
+  width: 0;
+}
+.or-kok .or-kh-kafa {
+  position: absolute;
+  left: -70px;
+  top: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #caa46a 0 12%, rgba(255, 255, 255, 0.25) 13% 100%);
+}
+.or-kok .or-kh-kafa i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 70px;
+  height: 3px;
+  margin-top: -1.5px;
+  transform-origin: 0 50%;
+  transform: rotate(var(--a));
+  transition: transform 1.6s cubic-bezier(0.2, 0.6, 0.3, 1), opacity 1.6s;
+}
+.or-kok .or-kh-kafa i::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 14px;
+  top: 1px;
+  height: 1.5px;
+  background: rgba(255, 255, 255, 0.9);
+}
+.or-kok .or-kh-kafa i::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -9px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 20%, rgba(255, 255, 255, 0.75) 40%, transparent 72%);
+}
+.or-kok .or-kh-kafa i.uctu {
+  transform: translate(var(--ux), var(--uy)) rotate(calc(var(--a) + 200deg));
+  opacity: 0;
+}
+.or-kok .or-kh-sap {
+  position: absolute;
+  left: -4px;
+  top: 70px;
+  bottom: -10px;
+  width: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #4f9d38, #6cc04c);
+  border: 2px solid #2f6b22;
+}
+
+.or-kok .or-balon {
+  --s: 0.35;
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: min(46vw, 34vh, 240px);
+  margin-left: calc(min(46vw, 34vh, 240px) / -2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(var(--s));
+  transform-origin: 50% 100%;
+  transition: transform 0.2s ease-out;
+}
+.or-kok .or-balon-govde {
+  width: 100%;
+  aspect-ratio: 0.84;
+  border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%;
+  border: var(--cizgi) solid var(--kontur);
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.85) 0 7%, transparent 8%),
+    radial-gradient(circle at 36% 32%, color-mix(in srgb, var(--r) 55%, white), var(--r) 62%, color-mix(in srgb, var(--r) 70%, black));
+  position: relative;
+}
+.or-kok .or-balon-govde::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  width: 20px;
+  height: 14px;
+  margin-left: -10px;
+  background: var(--r);
+  border: 3px solid var(--kontur);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.or-kok .or-balon-govde.sisiyor {
+  animation: or-sisiyor 0.25s ease-in-out infinite alternate;
+}
+@keyframes or-sisiyor {
+  to { transform: scale(1.03, 0.98); }
+}
+.or-kok .or-balon-ip {
+  width: 3px;
+  height: 90px;
+  margin-top: 10px;
+  background: var(--kontur);
+  border-radius: 2px;
+}
+.or-kok .or-balon.uctu {
+  transition: transform 1.4s cubic-bezier(0.4, 0, 0.8, 0.4);
+  transform: translateY(-120vh) scale(1) rotate(8deg);
+}
+
+.or-kok .or-deniz {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36%;
+  background: linear-gradient(180deg, #7fd1f5, #3e9df2 60%, #2b78c9);
+  border-top: 4px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+.or-kok .or-dalga {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: 14%;
+  height: 26px;
+  background: radial-gradient(circle at 20px -6px, transparent 20px, rgba(255, 255, 255, 0.55) 21px 24px, transparent 25px) 0 0 / 60px 26px repeat-x;
+  animation: or-dalga 4s linear infinite;
+}
+.or-kok .or-dalga.iki {
+  top: 52%;
+  opacity: 0.6;
+  animation-duration: 6s;
+  animation-direction: reverse;
+}
+@keyframes or-dalga {
+  to { transform: translateX(60px); }
+}
+.or-kok .or-iskele {
+  position: absolute;
+  right: 0;
+  bottom: 26%;
+  width: 22%;
+  height: 22px;
+  background: repeating-linear-gradient(90deg, #a86b3a 0 22px, #8a5427 22px 26px);
+  border: 3px solid var(--kontur);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+}
+.or-kok .or-iskele::before,
+.or-kok .or-iskele::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  width: 12px;
+  height: 90px;
+  background: #7a4a22;
+  border: 3px solid var(--kontur);
+  border-top: none;
+}
+.or-kok .or-iskele::before { left: 12%; }
+.or-kok .or-iskele::after { left: 62%; }
+.or-kok .or-tekne {
+  --x: 0.1;
+  --egim: 0deg;
+  position: absolute;
+  z-index: 2;
+  left: calc(var(--x) * 100%);
+  bottom: 24%;
+  width: clamp(100px, 26vmin, 170px);
+  aspect-ratio: 1.15;
+  transition: left 0.2s linear;
+  animation: or-sallan 2.6s ease-in-out infinite;
+}
+@keyframes or-sallan {
+  0%, 100% { translate: 0 0; rotate: -2deg; }
+  50% { translate: 0 6px; rotate: 2deg; }
+}
+.or-kok .or-tekne .or-govde {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  background: linear-gradient(180deg, #ff6b5c, #e0322f);
+  border: var(--cizgi) solid var(--kontur);
+  clip-path: polygon(0 0, 100% 0, 84% 100%, 14% 100%);
+  border-radius: 0 0 30% 30%;
+}
+.or-kok .or-tekne .or-yelken {
+  position: absolute;
+  left: 22%;
+  bottom: 30%;
+  width: 52%;
+  height: 66%;
+  background: linear-gradient(90deg, #fff, #e8f1ff);
+  clip-path: polygon(0 100%, 100% 100%, 8% 0);
+  transform-origin: 0 100%;
+  transform: skewX(var(--egim));
+  filter: drop-shadow(0 0 0 var(--kontur));
+  box-shadow: inset 0 0 0 4px var(--kontur);
+}
+.or-kok .or-tekne.carpti {
+  animation: or-kipir 0.5s ease-in-out;
+}
+.or-kok .or-tekne.vardi {
+  animation: or-zipzip 1.2s ease-in-out 2;
+}
+.or-kok .or-engel {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--x) * 100%);
+  bottom: 22%;
+  width: 60px;
+  height: 36px;
+  margin-left: -30px;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, #fff, #bfe8ff);
+  border: 3px solid #1d5f99;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.or-kok .or-engel.uzun {
+  width: 110px;
+  height: 64px;
+  margin-left: -55px;
+}
+.or-kok .or-engel.siradaki {
+  box-shadow: 0 0 0 6px rgba(255, 199, 44, 0.8);
+  animation: or-oyna 1.2s ease-in-out infinite;
+}
+.or-kok .or-engel.gecti {
+  opacity: 0.35;
+  transform: scale(0.8);
+}
+.or-kok .or-sure-cubuk {
+  --p: 0;
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 4%;
+  width: min(70vw, 360px);
+  height: 22px;
+  margin-left: calc(min(70vw, 360px) / -2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px solid var(--kontur);
+  overflow: hidden;
+}
+.or-kok .or-sure-cubuk i {
+  position: absolute;
+  inset: 0;
+  width: calc(var(--p) * 100%);
+  background: var(--mavi);
+  transition: width 0.08s linear;
+}
+.or-kok .or-sure-cubuk.uzun i {
+  background: var(--mor);
+}
+.or-kok .or-sure-cubuk::after {
+  content: '';
+  position: absolute;
+  left: 69%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--kontur);
+}
+
+.or-kok .or-gul {
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  bottom: 0;
+  width: 0;
+}
+.or-kok .or-gul-kanat {
+  position: absolute;
+  left: min(-24vw, -16vh, -110px);
+  top: 0;
+  width: max(48vw, 32vh, 220px);
+  max-width: 280px;
+  aspect-ratio: 1;
+  margin-left: 0;
+  z-index: 1;
+}
+.or-kok .or-gul-kanat {
+  left: calc(min(48vw, 32vh, 280px) / -2);
+  width: min(48vw, 32vh, 280px);
+}
+.or-kok .or-gul-kanat i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 50%;
+  height: 50%;
+  transform-origin: 0 0;
+  border-radius: 0 100% 0 0;
+  border: var(--cizgi) solid var(--kontur);
+}
+.or-kok .or-gul-kanat i:nth-child(1) { background: #f0413f; transform: rotate(0deg); }
+.or-kok .or-gul-kanat i:nth-child(2) { background: #ffc72c; transform: rotate(90deg); }
+.or-kok .or-gul-kanat i:nth-child(3) { background: #3e9df2; transform: rotate(180deg); }
+.or-kok .or-gul-kanat i:nth-child(4) { background: #5dbe3f; transform: rotate(270deg); }
+.or-kok .or-gul-kanat::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px;
+  border-radius: 50%;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+}
+.or-kok .or-gul-sap {
+  position: absolute;
+  left: -6px;
+  top: calc(min(48vw, 32vh, 280px) / 2);
+  bottom: -10px;
+  width: 12px;
+  background: linear-gradient(90deg, #b9824f, #8a5427);
+  border: 3px solid var(--kontur);
+  border-radius: 6px;
+}
+.or-kok .or-gul-sayac {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid var(--kontur);
+  z-index: 2;
+}
+.or-kok .or-gul-sayac i {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e5dccb;
+  border: 3px solid var(--kontur);
+  transition: background 0.2s, transform 0.2s;
+}
+.or-kok .or-gul-sayac i.yandi {
+  background: var(--yesil);
+  transform: scale(1.15);
+}
+.or-kok .or-gul-sayac i.fazla {
+  background: var(--kirmizi);
+}
+
+/* ---------------------------------------------------------------- Kuş Ağacı */
+.or-kok .or-kus {
+  --x: 0.5;
+  --y: 0.8;
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--x) * 100%);
+  top: calc(var(--y) * 100%);
+  width: clamp(76px, 20vmin, 130px);
+  transform: translate(-50%, -50%);
+  transition: top 0.18s linear, left 0.18s linear;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.2));
+}
+.or-kok .or-kus.ucuyor .or-resim {
+  animation: or-kanat 0.22s ease-in-out infinite alternate;
+}
+@keyframes or-kanat {
+  from { transform: scale(1, 1) rotate(-4deg); }
+  to { transform: scale(1.06, 0.9) rotate(4deg); }
+}
+.or-kok .or-kus.hedef::before,
+.or-kok .or-ayi.hedef::before {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 240, 150, 0.75), transparent 68%);
+  animation: or-oyna 1.3s ease-in-out infinite;
+  z-index: -1;
+}
+.or-kok .or-kus.mutlu {
+  animation: or-zipzip 1s ease-in-out 2;
+}
+.or-kok .or-hedef-yildiz,
+.or-kok .or-yildiz {
+  position: absolute;
+  z-index: 2;
+  left: calc(var(--x, 0.5) * 100%);
+  top: calc(var(--y) * 100%);
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background: radial-gradient(circle at 40% 35%, #fff6b0, #ffc72c 55%, #f5a100);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: or-yildiz-don 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px #ffe066);
+}
+@keyframes or-yildiz-don {
+  0%, 100% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.1); }
+}
+.or-kok .or-hedef-yildiz.alindi,
+.or-kok .or-yildiz.alindi {
+  animation: or-alindi 0.8s ease-out both;
+}
+@keyframes or-alindi {
+  to { transform: scale(2.2) rotate(90deg); opacity: 0; }
+}
+.or-kok .or-ayi {
+  position: absolute;
+  z-index: 2;
+  right: 8%;
+  bottom: 2%;
+  width: clamp(100px, 28vmin, 180px);
+  transform-origin: 50% 100%;
+  transition: filter 1s;
+}
+.or-kok .or-ayi.uyuyor {
+  filter: grayscale(0.9) brightness(0.85);
+  transform: rotate(8deg);
+}
+.or-kok .or-ayi.homur {
+  animation: or-kipir 0.4s ease-in-out infinite;
+}
+.or-kok .or-ayi.uyandi {
+  animation: or-uyandi 1s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.or-kok .or-perde {
+  position: absolute;
+  z-index: 3;
+  right: 3%;
+  top: 8%;
+  height: 60%;
+  width: 40px;
+  border-radius: 999px;
+  border: 3px solid var(--kontur);
+  background: linear-gradient(180deg, #ffe066, #fff 50%, #b07a4a);
+}
+.or-kok .or-perde span {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: #fff;
+  border: 2px solid var(--kontur);
+  white-space: nowrap;
+}
+.or-kok .or-perde .ust { top: -30px; }
+.or-kok .or-perde .alt { bottom: -30px; }
+.or-kok .or-perde-imlec {
+  --y: 0.5;
+  position: absolute;
+  left: 50%;
+  top: calc(var(--y) * 100%);
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: var(--mor);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 3px var(--kontur);
+  transition: top 0.1s linear, opacity 0.2s;
+}
+.or-kok .or-perde-imlec.bos {
+  opacity: 0.25;
+}
+.or-kok .or-ref {
+  --p: 0;
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 40%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--mor) calc(var(--p) * 360deg), rgba(255, 255, 255, 0.7) 0);
+  border: 4px solid var(--kontur);
+}
+.or-kok .or-ref b {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  font-size: 2.2rem;
+}
+.or-kok .or-canlar {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 34px;
+  align-items: flex-start;
+}
+.or-kok .or-can {
+  width: clamp(90px, 24vmin, 130px);
+  aspect-ratio: 1;
+  border-radius: 50% 50% 18% 18%;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.15), 0 6px 0 var(--kontur);
+  position: relative;
+}
+.or-kok .or-can.ince {
+  background: radial-gradient(circle at 35% 30%, #fff8c0, #ffc72c 60%, #e2a300);
+}
+.or-kok .or-can.kalin {
+  margin-top: 80px;
+  background: radial-gradient(circle at 35% 30%, #e7c3a0, #b07a4a 60%, #7a4a22);
+}
+.or-kok .or-can::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  background: inherit;
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-can.caliyor {
+  animation: or-can 0.5s ease-in-out;
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.15), 0 6px 0 var(--kontur), 0 0 0 10px rgba(255, 255, 255, 0.7);
+}
+@keyframes or-can {
+  25% { transform: rotate(-14deg); }
+  75% { transform: rotate(14deg); }
+}
+.or-kok .or-melodi-sonuc {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  height: 70px;
+  align-items: center;
+}
+.or-kok .or-melodi-sonuc i {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--kontur);
+  animation: or-pat 0.4s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.or-kok .or-melodi-sonuc i.ince { background: var(--sari); transform: translateY(-18px); }
+.or-kok .or-melodi-sonuc i.kalin { background: #b07a4a; transform: translateY(18px); }
+.or-kok .or-kus:has(+ .or-melodi-sonuc),
+.or-kok .or-canlar ~ .or-kus {
+  --x: 0.18;
+  --y: 0.8;
+}
+
+/* ---------------------------------------------------------------- Çiftlik Korosu */
+.or-kok .or-koro {
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  bottom: 2%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+.or-kok .or-ciftlik-hayvan {
+  position: relative;
+  width: 30%;
+  max-width: 200px;
+  transform-origin: 50% 100%;
+  transition: filter 0.8s;
+}
+.or-kok .or-ciftlik-hayvan.uyuyor {
+  filter: grayscale(1) brightness(0.8);
+}
+.or-kok .or-ciftlik-hayvan.uyuyor .or-resim {
+  transform: rotate(-6deg);
+}
+.or-kok .or-ciftlik-hayvan.uyandi .or-zzz {
+  display: none;
+}
+.or-kok .or-ciftlik-hayvan.uyandi {
+  animation: or-uyandi 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.or-kok .or-ciftlik-hayvan.hedef {
+  filter: grayscale(0.4);
+}
+.or-kok .or-ciftlik-hayvan.hedef::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -34%;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  background: var(--sari);
+  border: 3px solid var(--kontur);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  animation: or-ok 0.8s ease-in-out infinite alternate;
+}
+@keyframes or-ok {
+  to { transform: translateY(10px); }
+}
+.or-kok .or-ciftlik-hayvan.dinliyor {
+  transform: scale(1.05);
+}
+.or-kok .or-ciftlik-hayvan.salla {
+  animation: or-kipir 0.5s ease-in-out;
+}
+.or-kok .or-balon-yazi {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, 0) scale(0);
+  padding: 6px 14px;
+  border-radius: 18px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  font-weight: 700;
+  font-size: clamp(0.95rem, 4vw, 1.3rem);
+  white-space: nowrap;
+  transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.or-kok .or-ciftlik-hayvan.hedef .or-balon-yazi,
+.or-kok .or-ciftlik-hayvan.soyluyor .or-balon-yazi {
+  transform: translate(-50%, -30px) scale(1);
+}
+.or-kok .or-ciftlik-hayvan.hedef .or-balon-yazi {
+  transform: translate(-50%, -48px) scale(1);
+}
+.or-kok .or-sira {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+.or-kok .or-sira-kart {
+  position: relative;
+  width: clamp(76px, 22vmin, 120px);
+  aspect-ratio: 0.85;
+  border-radius: 18px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 5px 0 var(--kontur-yumusak);
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s;
+}
+.or-kok .or-sira-kart.siradaki {
+  transform: translateY(-8px) scale(1.06);
+  box-shadow: 0 0 0 6px var(--sari), 0 5px 0 var(--kontur-yumusak);
+}
+.or-kok .or-sira-kart.tamam {
+  background: #dcf5d2;
+  opacity: 0.8;
+}
+.or-kok .or-kapak {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #fff;
+  background: repeating-linear-gradient(45deg, var(--mor) 0 14px, #b07fe8 14px 28px);
+  transform: rotateY(90deg);
+  transition: transform 0.4s;
+}
+.or-kok .or-sira-kart.kapali .or-kapak {
+  transform: none;
+}
+
+/* ---------------------------------------------------------------- Davul Köyü */
+.or-kok .or-fisek-sayac {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-fisek-sayac i {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e5dccb;
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-fisek-sayac i.yandi {
+  background: conic-gradient(#f0413f, #ffc72c, #5dbe3f, #3e9df2, #9b5ce0, #f0413f);
+  animation: or-pat 0.4s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.or-kok .or-meyveler {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  border: var(--cizgi) solid var(--kontur);
+  max-width: 94vw;
+}
+.or-kok .or-meyve-grup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 60vw;
+}
+.or-kok .or-meyve {
+  width: clamp(54px, 15vmin, 96px);
+  transition: transform 0.3s;
+}
+.or-kok .or-meyve.yandi {
+  animation: or-meyve 0.5s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+}
+@keyframes or-meyve {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35) translateY(-12px); }
+  100% { transform: scale(1.12); filter: drop-shadow(0 0 10px #ffe066); }
+}
+.or-kok .or-arti {
+  font-size: 2.6rem;
+}
+.or-kok .or-davul {
+  position: absolute;
+  left: 50%;
+  top: 2%;
+  width: clamp(120px, 32vmin, 190px);
+  margin-left: calc(clamp(120px, 32vmin, 190px) / -2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.or-kok .or-davulcu {
+  width: 80%;
+  margin-bottom: -18%;
+  position: relative;
+  z-index: 1;
+}
+.or-kok .or-davul-govde {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  aspect-ratio: 1.6;
+  border-radius: 50% / 22%;
+  border: var(--cizgi) solid var(--kontur);
+  background:
+    radial-gradient(ellipse 50% 22% at 50% 22%, #fff4dd 0 96%, transparent 100%),
+    repeating-linear-gradient(60deg, transparent 0 18px, rgba(255, 255, 255, 0.6) 18px 22px),
+    linear-gradient(90deg, #c92d2b, #f0413f 50%, #c92d2b);
+}
+.or-kok .or-davul.vur .or-davul-govde {
+  animation: or-vur 0.25s ease-out;
+}
+.or-kok .or-davul.vur .or-davulcu {
+  animation: or-vur 0.25s ease-out;
+}
+@keyframes or-vur {
+  40% { transform: scale(1.08, 0.9); }
+}
+.or-kok .or-ritim {
+  position: absolute;
+  left: 50%;
+  width: min(80vw, 420px);
+  margin-left: calc(min(80vw, 420px) / -2);
+  height: 44px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-ritim.hedef { top: 50%; }
+.or-kok .or-ritim.cocuk { top: calc(50% + 60px); background: rgba(255, 255, 255, 0.55); border-style: dashed; }
+.or-kok .or-ritim i {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--turuncu);
+  border: 3px solid var(--kontur);
+  flex: 0 0 auto;
+  animation: or-pat 0.3s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.or-kok .or-ritim i[style*='--x'] {
+  position: absolute;
+  left: calc(8% + var(--x) * 84%);
+  margin-left: -14px;
+}
+.or-kok .or-ritim.cocuk i {
+  background: var(--mavi);
+}
+.or-kok .or-ritim i.yandi {
+  background: var(--sari);
+  transform: scale(1.35);
+}
+
+/* ---------------------------------------------------------------- Hece Mağarası */
+.or-kok .or-hece-kutu {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: max-content;
+  max-width: 94vw;
+}
+.or-kok .or-hece-resim {
+  width: clamp(130px, 36vmin, 220px);
+  padding: 10px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 6px 0 var(--kontur-yumusak);
+}
+.or-kok .or-hece-isim {
+  font-size: clamp(2.4rem, 12vw, 4rem);
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: 3px var(--kontur);
+  paint-order: stroke fill;
+  text-shadow: 0 5px 0 var(--kontur-yumusak);
+}
+.or-kok .or-heceler {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.or-kok .or-hece {
+  min-width: 70px;
+  height: 70px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.75);
+  border: 4px dashed var(--kontur);
+  font-size: 1.7rem;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.2s;
+}
+.or-kok .or-hece.yandi {
+  background: var(--mor);
+  border-style: solid;
+  color: #fff;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+  transform: scale(1.12);
+  animation: or-pat 0.35s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.or-kok .or-heceler.fazla {
+  animation: or-kipir 0.5s ease-in-out;
+}
+.or-kok .or-hece-kutu.tamam .or-hece {
+  background: var(--yesil);
+}
+.or-kok .or-heceler.kucuk .or-hece {
+  min-width: 46px;
+  height: 46px;
+  font-size: 1.1rem;
+  border-width: 3px;
+}
+.or-kok .or-isim-form {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 380px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+  padding: 18px;
+  border-radius: 24px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+}
+.or-kok .or-isim-form .dugme {
+  color: #fff;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+}
+.or-kok .or-uzun {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 16px;
+}
+.or-kok .or-uzun-kart {
+  width: clamp(130px, 40vw, 220px);
+  padding: 12px;
+  border-radius: 26px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 6px 0 var(--kontur);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.or-kok .or-uzun-kart.secildi {
+  background: #dcf5d2;
+  box-shadow: 0 0 0 6px var(--yesil), 0 6px 0 var(--kontur);
+}
+.or-kok .or-uzun-kart.salla {
+  animation: or-kipir 0.5s ease-in-out;
+}
+
+/* ---------------------------------------------------------------- Uyuyan Dev */
+.or-kok .or-dev {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  width: min(62vw, 360px);
+  margin-left: calc(min(62vw, 360px) / -2);
+}
+.or-kok .or-bolge[data-bolge='dev'] .or-ev.uyuyor > .or-resim {
+  animation: or-nefes 4s ease-in-out infinite;
+}
+.or-kok .or-yuva {
+  position: absolute;
+  left: 8%;
+  bottom: 0;
+  width: clamp(120px, 34vmin, 200px);
+  height: clamp(150px, 40vmin, 240px);
+  overflow: hidden;
+  z-index: 3;
+}
+.or-kok .or-yuva::before {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 6%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, #1d140c, #4a321c 70%);
+}
+.or-kok .or-tavsan {
+  --c: 0;
+  position: absolute;
+  left: 15%;
+  width: 70%;
+  bottom: 12%;
+  transform: translateY(calc((1 - var(--c)) * 105%));
+  transition: transform 0.15s linear;
+}
+.or-kok .or-tavsan.mutlu {
+  animation: or-zipzip 1s ease-in-out 2;
+}
+.or-kok .or-yuva-on {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, #5dbe3f, #3f8a2a);
+  border: 3px solid #2f6b22;
+}
+.or-kok .or-sure-halka {
+  --p: 0;
+  position: absolute;
+  right: 5%;
+  top: 4%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: conic-gradient(var(--yesil) calc(var(--p) * 360deg), rgba(255, 255, 255, 0.7) 0);
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-sure-halka::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z' fill='%23ff7eb6'/%3E%3C/svg%3E") center / 60% no-repeat;
+}
+.or-kok .or-patika {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 3%;
+  height: 10px;
+  border-radius: 5px;
+  background: repeating-linear-gradient(90deg, rgba(255, 246, 220, 0.9) 0 14px, transparent 14px 26px);
+}
+.or-kok .or-patika::after {
+  content: '';
+  position: absolute;
+  right: -2%;
+  bottom: -8px;
+  width: 30px;
+  height: 30px;
+  background: var(--sari);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.or-kok .or-yolcu {
+  --x: 0;
+  position: absolute;
+  z-index: 3;
+  left: calc(4% + var(--x) * 84%);
+  bottom: 4%;
+  width: clamp(66px, 17vmin, 104px);
+  transition: left 0.2s linear;
+}
+.or-kok .or-yolcu.yuruyor .or-resim {
+  animation: or-yuru 0.5s ease-in-out infinite;
+}
+@keyframes or-yuru {
+  50% { transform: translateY(-10%) rotate(4deg); }
+}
+.or-kok .or-yaprak {
+  position: absolute;
+  left: 50%;
+  top: 2%;
+  width: clamp(90px, 26vmin, 150px);
+  aspect-ratio: 1;
+  margin-left: calc(clamp(90px, 26vmin, 150px) / -2);
+  border-radius: 0 100% 0 100%;
+  background: #b9b3a8;
+  border: var(--cizgi) solid var(--kontur);
+  transform: rotate(-45deg);
+  transition: background 0.2s, transform 0.3s;
+}
+.or-kok .or-yaprak::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  bottom: 8%;
+  width: 3px;
+  background: rgba(0, 0, 0, 0.25);
+  transform: rotate(45deg);
+}
+.or-kok .or-yaprak[data-evre='ses'] {
+  background: radial-gradient(circle at 30% 30%, #ff8a80, #e0322f);
+  transform: rotate(-45deg) scale(1.12);
+}
+.or-kok .or-yaprak[data-evre='sus'] {
+  background: radial-gradient(circle at 30% 30%, #9be07c, #3f9a2a);
+}
+.or-kok .or-davul.kucuk {
+  width: clamp(100px, 26vmin, 150px);
+  margin-left: calc(clamp(100px, 26vmin, 150px) / -2);
+  filter: grayscale(1) opacity(0.7);
+  transition: filter 0.2s;
+}
+.or-kok .or-davul.kucuk[data-evre='ses'] {
+  filter: drop-shadow(0 0 16px #ffc72c);
+}
+.or-kok .or-davul.kucuk[data-evre='sus']::after {
+  content: 'Şşş';
+  position: absolute;
+  top: 100%;
+  margin-top: 8px;
+  padding: 2px 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--kontur);
+}
+.or-kok .or-evreler {
+  position: absolute;
+  right: 4%;
+  top: 4%;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-evreler i {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e5dccb;
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-evreler i.iyi { background: var(--yesil); animation: or-pat 0.4s cubic-bezier(0.3, 1.8, 0.5, 1); }
+.or-kok .or-evreler i.kotu { background: #c9b9a6; }
+
+/* ---------------------------------------------------------------- ek modlar */
+.or-kok .or-ekstra {
+  overflow: hidden;
+}
+.or-kok .or-ekstra > .or-arka {
+  filter: saturate(0.9) brightness(1.02);
+}
+.or-kok .or-ekstra > .or-arka::after {
+  opacity: 0.35;
+}
+.or-kok .or-nefes {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  padding-bottom: 12px;
+}
+.or-kok .or-nefes-balon {
+  --y: 0;
+  position: absolute;
+  left: 50%;
+  bottom: 46%;
+  width: min(30vw, 22vh, 150px);
+  margin-left: calc(min(30vw, 22vh, 150px) / -2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(calc(var(--y) * -28vh));
+  transition: transform 1.6s cubic-bezier(0.3, 1.2, 0.5, 1);
+  animation: or-sallan 3s ease-in-out infinite;
+}
+.or-kok .or-nefes-balon .or-balon-ip {
+  height: 60px;
+}
+.or-kok .or-nefes-balon.ucuyor {
+  transform: translateY(-80vh);
+  transition-duration: 3s;
+}
+.or-kok .or-nefes-halka {
+  width: min(56vw, 30vh, 240px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85), rgba(255, 126, 182, 0.35) 70%);
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  transform: scale(0.6);
+  transition: transform 3s ease-in-out;
+}
+.or-kok .or-nefes-halka.al {
+  transform: scale(1);
+}
+.or-kok .or-nefes-halka.ver {
+  transform: scale(0.6);
+  transition-duration: 2s;
+}
+.or-kok .or-nefes-ikili {
+  display: flex;
+  gap: 40px;
+  align-items: flex-end;
+}
+.or-kok .or-nefes-cicek,
+.or-kok .or-nefes .or-mum {
+  opacity: 0.45;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.or-kok .or-nefes[data-evre='kokla'] .or-nefes-cicek,
+.or-kok .or-nefes[data-evre='ufle'] .or-mum {
+  opacity: 1;
+  transform: scale(1.12);
+}
+.or-kok .or-nefes[data-evre='ufle'] .or-mum.kucuk {
+  transform: scale(0.8);
+}
+.or-kok .or-cicek-ciz {
+  position: relative;
+  width: 110px;
+  height: 110px;
+}
+.or-kok .or-cicek-ciz i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px;
+  border-radius: 50%;
+  background: #ff9ec0;
+  border: 3px solid var(--kontur);
+  transform: rotate(var(--a)) translateY(-30px);
+}
+.or-kok .or-cicek-ciz b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px;
+  border-radius: 50%;
+  background: var(--sari);
+  border: 3px solid var(--kontur);
+}
+.or-kok .or-adimlar.bes {
+  --renk: var(--pembe);
+}
+.or-kok .or-papagan-sahne {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.or-kok .or-papagan {
+  width: min(64vw, 44vh, 320px);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.25));
+}
+.or-kok .or-papagan.dinliyor {
+  transform: rotate(-8deg);
+  transition: transform 0.3s;
+}
+.or-kok .or-papagan.konusuyor {
+  animation: or-papagan 0.18s ease-in-out infinite alternate;
+}
+@keyframes or-papagan {
+  to { transform: scale(1.04, 0.96) translateY(4px); }
+}
+.or-kok .or-papagan-dalga {
+  --s: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 60px;
+}
+.or-kok .or-papagan-dalga i {
+  width: 12px;
+  height: calc(12px + var(--s) * 48px);
+  border-radius: 6px;
+  background: var(--yesil);
+  border: 2px solid var(--kontur);
+  transition: height 0.08s;
+}
+.or-kok .or-papagan-dalga i:nth-child(2n) {
+  height: calc(12px + var(--s) * 30px);
+}
+.or-kok .or-birlikte {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.or-kok .or-birlikte .or-ritim {
+  position: relative;
+  left: auto;
+  top: auto;
+  margin: 0;
+}
+.or-kok .or-oyuncular {
+  display: flex;
+  gap: 18px;
+}
+.or-kok .or-oyuncu {
+  width: clamp(110px, 34vw, 160px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  border: var(--cizgi) solid var(--kontur);
+  font-size: 1.4rem;
+  opacity: 0.6;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.or-kok .or-oyuncu[data-kim='buyuk'] { --r: var(--turuncu); }
+.or-kok .or-oyuncu[data-kim='cocuk'] { --r: var(--mavi); }
+.or-kok .or-oyuncu.sirada {
+  opacity: 1;
+  transform: scale(1.1);
+  background: var(--r);
+  color: #fff;
+  -webkit-text-stroke: 1px var(--kontur);
+  paint-order: stroke fill;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.7);
+}
+.or-kok .or-yildizlar {
+  display: flex;
+  gap: 6px;
+  min-height: 36px;
+}
+.or-kok .or-yildizlar i {
+  width: 36px;
+  height: 36px;
+  background: var(--sari);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: or-pat 0.5s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.or-kok .or-birlikte .or-kucuk {
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* ---------------------------------------------------------------- Şenlik */
+.or-kok .or-senlik {
+  background: var(--resim) center / cover no-repeat, #2b5a3a;
+  overflow: hidden;
+}
+.or-kok .or-senlik::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 40% at 50% 60%, rgba(255, 240, 180, 0.4), transparent 70%),
+    repeating-conic-gradient(from 0deg at 50% 120%, rgba(255, 255, 255, 0.12) 0 6deg, transparent 6deg 18deg);
+  animation: or-isik 20s linear infinite;
+}
+@keyframes or-isik {
+  to { transform: rotate(8deg) scale(1.1); }
+}
+.or-kok .or-senlik-sahne {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 4px 2%;
+  padding-bottom: 60px;
+}
+.or-kok .or-senlik-hayvan {
+  width: 30%;
+  max-width: 190px;
+  padding: 0;
+  border: none;
+  background: none;
+  transform-origin: 50% 100%;
+  animation: or-sallan 2.4s calc(var(--i) * -0.4s) ease-in-out infinite;
+  filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.3));
+}
+.or-kok .or-senlik-hayvan.zipla {
+  animation: or-senlik-zipla 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes or-senlik-zipla {
+  0% { transform: scale(1); }
+  40% { transform: translateY(-22%) scale(1.12, 0.92); filter: drop-shadow(0 0 20px var(--renk)); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .or-kok * {
+    animation-duration: 0.01s !important;
+    animation-iteration-count: 1 !important;
+  }
+}

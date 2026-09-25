@@ -1,0 +1,87 @@
+{
+  "aciklama": "Uyuyan Orman: sesle, nefesle ve alkışla oynanan orman. Buradaki cümleler seslendirilir (ElevenLabs); 'bolgeler' altındaki adlar ekranda yazar, giriş cümlesi okunur. Kısa tutun.",
+  "hosgeldin": "Uyuyan Orman'a hoş geldin! Orman uyuyor. Hadi sesinle uyandıralım!",
+  "izin": "Büyüğün mikrofonu açsın.",
+  "sessiz_ol": "Bir saniye sessiz olalım.",
+  "sec": "Bir yer seç!",
+  "dinliyorum": "Seni dinliyorum!",
+  "duymadim": "Seni duyamadım. Biraz daha yüksek!",
+  "parmak": "İstersen parmağınla da yapabilirsin.",
+  "tekrar": "Bir daha deneyelim!",
+  "uyandi": "Uyandı! Bak, renkler geldi!",
+  "senlik_acildi": "Bütün orman uyandı! Şenlik zamanı!",
+  "bolgeler": {
+    "ruzgar": { "ad": "Rüzgar Tepesi", "giris": "Rüzgar Tepesi. Sincap uyuyor. Üfleyerek uyandıralım!" },
+    "kus": { "ad": "Kuş Ağacı", "giris": "Kuş Ağacı. Kuş uyuyor. Sesinle uyandıralım!" },
+    "ciftlik": { "ad": "Çiftlik Korosu", "giris": "Çiftlik Korosu. Hayvanlar uyuyor. Onlar gibi söyleyelim!" },
+    "davul": { "ad": "Davul Köyü", "giris": "Davul Köyü. Maymun uyuyor. Alkışla uyandıralım!" },
+    "hece": { "ad": "Hece Mağarası", "giris": "Hece Mağarası. Baykuş uyuyor. Kelimeleri alkışlayalım!" },
+    "dev": { "ad": "Uyuyan Dev", "giris": "Şşş! Burada bir dev uyuyor. Onu uyandırmadan ormanı renklendirelim." }
+  },
+  "ruzgar": {
+    "mum": "Mumu üfle!",
+    "karahindiba": "Karahindibayı üfle!",
+    "balon": "Balonu şişir! Üfle, üfle!",
+    "tekne": "Tekneyi iskeleye götür. Yavaş yavaş üfle.",
+    "yavas": "Çok hızlı! Yavaş üfle.",
+    "gul_2": "Rüzgar gülünü iki saniye çevir.",
+    "gul_3": "Rüzgar gülünü üç saniye çevir.",
+    "uzun": "Biraz daha uzun!",
+    "kisa": "Çok uzun oldu. Biraz kısa!",
+    "yelken": "Küçük dalgada kısa, büyük dalgada uzun üfle."
+  },
+  "kus": {
+    "referans": "Önce normal sesinle aaa de.",
+    "uc": "Ses çıkar, kuş uçsun!",
+    "ince": "İnce sesle kuşu uçur!",
+    "kalin": "Kalın sesle ayıyı uyandır!",
+    "yildiz": "İnce sesle yukarı, kalın sesle aşağı. Yıldızları topla!",
+    "melodi": "Dinle, sonra aynısını söyle."
+  },
+  "ciftlik": {
+    "inek": "İnek gibi söyle: Mööö!",
+    "kopek": "Köpek gibi söyle: Hav hav!",
+    "kedi": "Kedi gibi söyle: Miyav!",
+    "sira": "Sırayla söyle!",
+    "hatirla": "Hayvanları hatırla ve sırayla söyle!"
+  },
+  "davul": {
+    "fisek": "Alkışla, havai fişek patlasın!",
+    "say": "Say ve o kadar alkışla.",
+    "topla": "Hepsini topla ve o kadar alkışla.",
+    "ritim": "Maymunu dinle, sonra aynısını alkışla.",
+    "fazla": "Fazla oldu!",
+    "az": "Biraz daha!"
+  },
+  "hece": {
+    "ad": "Adını alkışlayalım! Her parçaya bir alkış.",
+    "dinle": "Baykuşu dinle, sonra sen alkışla.",
+    "resim": "Resmin adını alkışla.",
+    "uzun": "Hangisi daha uzun? Dokun."
+  },
+  "dev": {
+    "tavsan": "Fısıltıyla konuş, tavşan çıksın.",
+    "saklandi": "Şşş! Çok yüksek, tavşan saklandı.",
+    "gec": "Dev uyuyor. Sessizce geçelim.",
+    "kipirdadi": "Şşş! Dev kıpırdadı.",
+    "heykel": "Davul çalınca ses çıkar, durunca sus.",
+    "yaprak": "Yeşil yaprakta sus, kırmızı yaprakta konuş."
+  },
+  "nefes": {
+    "giris": "Nefes balonu. Yavaş yavaş nefes alalım.",
+    "kokla": "Çiçeği kokla.",
+    "ufle": "Mumu üfle.",
+    "bitti": "Harika, çok sakinsin."
+  },
+  "papagan": {
+    "giris": "Bir şey söyle, papağan tekrar etsin!"
+  },
+  "birlikte": {
+    "buyuk": "Önce büyüğün alkışlasın.",
+    "sen": "Şimdi sen aynısını alkışla!",
+    "degis": "Sıra değişti!"
+  },
+  "senlik": {
+    "giris": "Alkışla, hayvanlar çalsın!"
+  }
+}

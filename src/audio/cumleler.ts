@@ -6,6 +6,7 @@ import metinler from '../../content/metinler.json';
 import minoJson from '../../content/mino.json';
 import sanatciJson from '../../content/sanatci.json';
 import canlanJson from '../../content/canlan.json';
+import ormanJson from '../../content/orman.json';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -152,6 +153,12 @@ export function tumCumleler(): string[] {
   for (const [k, v] of Object.entries(cz)) {
     if (k === 'aciklama' || k === 'puan' || k === 'mod_ad' || k === 'benim') continue;
     if (k === 'resimler') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
+    else topla(v).forEach(ekle);
+  }
+  // Uyuyan Orman konuşmaları (bölge adları ekranda yazar, okunmaz)
+  for (const [k, v] of Object.entries(ormanJson as Record<string, unknown>)) {
+    if (k === 'aciklama') continue;
+    if (k === 'bolgeler') for (const b of Object.values(v as Record<string, { giris: string }>)) ekle(b.giris);
     else topla(v).forEach(ekle);
   }
   return [...set];

@@ -1,5 +1,5 @@
 {
-  "aciklama": "Çiz Canlansın: canlanan resme dokununca çalan kısa ses efektleri (ElevenLabs Sound Effects). Her biri bir kez üretilir → public/ses/efekt/<ad>.mp3. Süre belirtildiği için saniyesi 40 kredi.",
+  "aciklama": "Çiz Canlansın ve Uyuyan Orman: canlanan resme dokununca çalan kısa ses efektleri (ElevenLabs Sound Effects). Her biri bir kez üretilir → public/ses/efekt/<ad>.mp3. Süre belirtildiği için saniyesi 40 kredi.",
   "ortak": "short cute cartoon sound effect for a toddler game, clean, soft, no music, no voice",
   "sesler": {
     "top": {
@@ -97,6 +97,38 @@
     "ordek": {
       "metin": "cute duck quack quack",
       "sure": 0.9
+    },
+    "inek": {
+      "metin": "cute cartoon cow moo",
+      "sure": 1.2
+    },
+    "kus": {
+      "metin": "cute little bird chirping tweet tweet",
+      "sure": 1.0
+    },
+    "ayi": {
+      "metin": "cute baby bear sleepy friendly grumble",
+      "sure": 1.0
+    },
+    "sincap": {
+      "metin": "cute squirrel happy chitter squeak",
+      "sure": 0.8
+    },
+    "maymun": {
+      "metin": "cute little monkey happy ooh ooh aah aah",
+      "sure": 1.0
+    },
+    "baykus": {
+      "metin": "cute baby owl soft hoot hoo hoo",
+      "sure": 1.0
+    },
+    "horlama": {
+      "metin": "friendly cartoon giant soft sleepy snore",
+      "sure": 1.5
+    },
+    "fisek": {
+      "metin": "small cheerful cartoon firework pop and sparkle crackle",
+      "sure": 1.0
     }
   }
 }
