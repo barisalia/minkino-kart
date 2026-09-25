@@ -110,6 +110,13 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   const d2 = await page.locator('[data-parca="kuyruk"]').getAttribute('transform');
   expect(d1).not.toEqual(d2);
 
+  // Sihirli hâl: kitap illüstrasyonuna dönüşür, tekrar basınca geri döner
+  await page.getByRole('button', { name: 'Sihirli hâli' }).click();
+  await expect(page.locator('.cc-sonuc .cc-gercek image')).toBeAttached();
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `tests/screens/${p}-34b-canlan-sihirli.png` });
+  await page.getByRole('button', { name: 'Sihirli hâli' }).click();
+  await expect(page.locator('.cc-sonuc .cc-gercek')).toHaveCount(0);
   // Nasıl çizdim? ve kart
   await page.getByRole('button', { name: 'Nasıl çizdim?' }).click();
   await expect(page.locator('.cc-tekrar-katman')).toBeAttached();
