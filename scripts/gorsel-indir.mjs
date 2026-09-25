@@ -79,15 +79,16 @@ for (const [anahtar, url] of Object.entries(liste)) {
     }
     if (!hepsi && fs.existsSync(hedef)) continue;
     // Sahne arka planları: kırpmadan, kenardan kenara kare
-    if (anahtar.startsWith('sahne/')) {
+    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/')) {
       fs.mkdirSync(path.dirname(hedef), { recursive: true });
-      await sharp(girdi).resize(768, 768, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(hedef);
+      const boy = anahtar.startsWith('orman/') ? 1024 : 768;
+      await sharp(girdi).resize(boy, boy, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(hedef);
       yeni++;
       console.log('✓', anahtar);
       continue;
     }
-    // Çiz Canlansın karakterleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
-    const kaynak = anahtar.startsWith('canlan/') ? await beyaziSil(girdi) : girdi;
+    // Çiz Canlansın ve Uyuyan Orman karakterleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
+    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     await sharp(kirpik)
