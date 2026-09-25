@@ -457,32 +457,35 @@
 .or-kok .or-alt-dugme {
   --r: var(--pembe);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  min-height: 60px;
-  padding: 0 14px 0 8px;
-  border-radius: 999px;
-  border: var(--cizgi) solid var(--kontur);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--r) 65%, white), var(--r) 60%);
-  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.12), 0 5px 0 var(--kontur);
-  font: 700 clamp(0.85rem, 3.4vw, 1.1rem) / 1.05 inherit;
+  gap: 3px;
+  min-width: 76px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: 700 clamp(0.78rem, 3.2vw, 1rem) / 1.05 inherit;
   color: #fff;
-  -webkit-text-stroke: 1px var(--kontur);
+  -webkit-text-stroke: 3px var(--kontur);
   paint-order: stroke fill;
 }
 .or-kok .or-alt-dugme .ikon {
-  width: 40px;
-  height: 40px;
-  padding: 5px;
+  width: 56px;
+  height: 56px;
+  padding: 8px;
   border-radius: 50%;
-  background: #fff;
-  color: var(--kontur);
+  border: var(--cizgi) solid var(--kontur);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--r) 65%, white), var(--r) 60%);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.12), 0 4px 0 var(--kontur);
+  color: #fff;
   -webkit-text-stroke: 0;
 }
-@media (max-width: 430px) {
-  .or-kok .or-alt-dugme span:not(.ikon) {
-    max-width: 5.2em;
-  }
+.or-kok .or-alt-dugme:active .ikon {
+  transform: translateY(3px);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12), 0 1px 0 var(--kontur);
+}
+.or-kok .or-alt {
+  gap: clamp(6px, 3vw, 22px);
 }
 
 /* ---------------------------------------------------------------- bölge */
@@ -526,6 +529,15 @@
 .or-kok .or-ev.uyandi .or-zzz {
   display: none;
 }
+.or-kok .or-ev:not(.ev-dev) {
+  transition: filter 1.8s, left 0.9s cubic-bezier(0.3, 1.3, 0.5, 1), bottom 0.9s cubic-bezier(0.3, 1.3, 0.5, 1), width 0.9s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.or-kok .or-ev.uyandi:not(.ev-dev) {
+  --b: clamp(150px, 44vmin, 260px);
+  width: var(--b);
+  left: calc(50% - var(--b) / 2);
+  bottom: 38%;
+}
 .or-kok .or-ev.uyandi {
   animation: or-uyandi 1s cubic-bezier(0.3, 1.6, 0.5, 1) both, or-zipzip 2.4s 1s ease-in-out infinite;
 }
@@ -567,8 +579,14 @@
   z-index: 2;
   left: 0;
   right: 0;
-  top: calc(var(--ust) + 84px);
+  top: calc(var(--ust) + 124px);
   bottom: calc(var(--alt) + 70px);
+}
+.or-kok .or-bolge > .or-adimlar {
+  position: absolute;
+  z-index: 5;
+  right: var(--yan);
+  top: calc(var(--ust) + 82px);
 }
 .or-kok .or-adimlar {
   display: flex;
@@ -595,30 +613,18 @@
   from { transform: scale(0.4); }
 }
 .or-kok .or-bolge .baslik-balon {
-  font-size: clamp(1.05rem, 4.6vw, 1.6rem);
+  font-size: clamp(1rem, 4.4vw, 1.6rem);
   max-width: 100%;
   line-height: 1.15;
   padding-right: 16px;
 }
 .or-kok .or-bolge .baslik-balon span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 430px) {
   .or-kok .or-bolge .ust-cubuk .yuvarlak:not(.kucuk) {
-    width: 56px;
-    height: 56px;
-  }
-  .or-kok .or-adimlar {
-    padding: 6px 7px;
-    gap: 4px;
-  }
-  .or-kok .or-adimlar i {
-    width: 13px;
-    height: 17px;
+    width: 60px;
+    height: 60px;
   }
 }
 
@@ -815,11 +821,12 @@
   left: 50%;
   top: 14%;
   bottom: 0;
-  width: 0;
+  width: 140px;
+  margin-left: -70px;
 }
 .or-kok .or-kh-kafa {
   position: absolute;
-  left: -70px;
+  left: 0;
   top: 0;
   width: 140px;
   height: 140px;
@@ -862,7 +869,7 @@
 }
 .or-kok .or-kh-sap {
   position: absolute;
-  left: -4px;
+  left: 66px;
   top: 70px;
   bottom: -10px;
   width: 8px;
@@ -1084,25 +1091,21 @@
 }
 
 .or-kok .or-gul {
+  --boy: min(48vw, 32vh, 280px);
   position: absolute;
   left: 50%;
   top: 6%;
   bottom: 0;
-  width: 0;
+  width: var(--boy);
+  margin-left: calc(var(--boy) / -2);
 }
 .or-kok .or-gul-kanat {
   position: absolute;
-  left: min(-24vw, -16vh, -110px);
-  top: 0;
-  width: max(48vw, 32vh, 220px);
-  max-width: 280px;
-  aspect-ratio: 1;
-  margin-left: 0;
   z-index: 1;
-}
-.or-kok .or-gul-kanat {
-  left: calc(min(48vw, 32vh, 280px) / -2);
-  width: min(48vw, 32vh, 280px);
+  left: 0;
+  top: 0;
+  width: 100%;
+  aspect-ratio: 1;
 }
 .or-kok .or-gul-kanat i {
   position: absolute;
@@ -1132,8 +1135,8 @@
 }
 .or-kok .or-gul-sap {
   position: absolute;
-  left: -6px;
-  top: calc(min(48vw, 32vh, 280px) / 2);
+  left: calc(50% - 6px);
+  top: calc(var(--boy) / 2);
   bottom: -10px;
   width: 12px;
   background: linear-gradient(90deg, #b9824f, #8a5427);
@@ -1957,25 +1960,25 @@
   --y: 0;
   position: absolute;
   left: 50%;
-  bottom: 46%;
-  width: min(30vw, 22vh, 150px);
-  margin-left: calc(min(30vw, 22vh, 150px) / -2);
+  top: 0;
+  width: min(26vw, 16vh, 120px);
+  margin-left: calc(min(26vw, 16vh, 120px) / -2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateY(calc(var(--y) * -28vh));
+  transform: translateY(calc(8vh - var(--y) * 8vh));
   transition: transform 1.6s cubic-bezier(0.3, 1.2, 0.5, 1);
   animation: or-sallan 3s ease-in-out infinite;
 }
 .or-kok .or-nefes-balon .or-balon-ip {
-  height: 60px;
+  height: 36px;
 }
 .or-kok .or-nefes-balon.ucuyor {
   transform: translateY(-80vh);
   transition-duration: 3s;
 }
 .or-kok .or-nefes-halka {
-  width: min(56vw, 30vh, 240px);
+  width: min(50vw, 26vh, 220px);
   aspect-ratio: 1;
   border-radius: 50%;
   display: grid;

@@ -45,6 +45,7 @@ if (kok) {
     (window as unknown as { __orman: unknown }).__orman = { app, kayit };
   }
   const ekran = q.has('test') ? q.get('ekran') : null;
-  if (ekran === 'bolge') app.git('bolge', { id: q.get('bolge') ?? 'ruzgar' });
+  if (ekran === 'bolge' && q.has('mik')) app.git('izin', { sonra: 'bolge', param: { id: q.get('bolge') ?? 'ruzgar' } });
+  else if (ekran === 'bolge') app.git('bolge', { id: q.get('bolge') ?? 'ruzgar' });
   else app.git(ekran ?? 'acilis');
 }

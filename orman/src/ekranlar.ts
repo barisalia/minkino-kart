@@ -132,13 +132,13 @@ export function haritaEkrani(app: Uygulama): Ekran {
     const [x1, y1] = n[i];
     d += ` C${x0 * 100} ${((y0 + y1) / 2) * 100} ${x1 * 100} ${((y0 + y1) / 2) * 100} ${x1 * 100} ${y1 * 100}`;
   }
-  d += ` L50 5`;
+  d += ` L50 3`;
   harita.innerHTML = `<svg class="or-patika-cizgi" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${d}"/></svg>`;
   BOLGELER.forEach((b, i) => {
     const uyanik = kayit.uyanan.includes(b.id);
     const m = h(
       `button.or-madalyon${uyanik ? '.uyanik' : ''}`,
-      { type: 'button', style: `left:${b.konum[0] * 100}%;top:${b.konum[1] * 100}%;--renk:${b.renk};--i:${i}`, 'data-bolge': b.id, 'aria-label': b.ad },
+      { type: 'button', style: `left:${b.konum[0] * 100}%;--t:${b.konum[1]};--renk:${b.renk};--i:${i}`, 'data-bolge': b.id, 'aria-label': b.ad },
       h('span.or-madalyon-resim', { style: `--resim:url("${adres(`orman/${b.id}`)}")` }),
       resim(b.ev, 'or-madalyon-ev', b.ad),
       uyanik ? null : zzz(),
@@ -150,7 +150,7 @@ export function haritaEkrani(app: Uygulama): Ekran {
     });
     harita.append(m);
   });
-  const senlik = h(`button.or-madalyon.senlik${hepsi ? '.acik' : ''}`, { type: 'button', style: 'left:50%;top:5%', 'aria-label': 'Orman Şenliği' }, svg(IK.senlik), h('span.or-madalyon-ad', {}, 'Şenlik'));
+  const senlik = h(`button.or-madalyon.senlik${hepsi ? '.acik' : ''}`, { type: 'button', style: 'left:50%;--t:0.03', 'aria-label': 'Orman Şenliği' }, svg(IK.senlik), h('span.or-madalyon-ad', {}, 'Şenlik'));
   senlik.addEventListener('click', () => {
     if (!hepsi) {
       efekt.kilitli();
@@ -204,7 +204,8 @@ export function bolgeEkrani(app: Uygulama, p: { id: string }): Ekran {
     arka,
     ev,
     sahne,
-    h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Haritaya dön', () => app.git('harita')), h('div.orta', {}, balon), adimlar),
+    h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Haritaya dön', () => app.git('harita')), h('div.orta', {}, balon)),
+    adimlar,
     kg.el,
   );
   const griYap = (g: number) => el.style.setProperty('--gri', String(g));
