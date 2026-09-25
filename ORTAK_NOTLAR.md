@@ -102,3 +102,11 @@ Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her otu
 - 2026-09-25 Ekip rehberinin adı Barış'ın isteğiyle `CLAUDE.md` → `minkinogames1.md` oldu (yukarıdaki "CLAUDE.md §4" vb. atıflar bu dosyayı gösterir).
 - 2026-09-25 KARAR (Barış): Claude bulutta, ekip yerelde çalışır; ortak nokta GitHub (düzen: minkinogames1.md §10).
 - 2026-09-25 KARAR (Barış): Uyuyan Orman premium animasyona geçiyor. Rive (ekip animasyoncusu) + Gemini tarayıcıdan (ekip; API yok) + Claude (Recraft eşyalar, entegrasyon, müzik). İş listeleri: ekip/rive-is-listesi.md, ekip/gemini-is-listesi.md. Not: Recraft içinden Gemini (nano_banana_pro) düzenlemesi çalışıyor ama çağrı başı ~40 kredi; toplu ifade işi bu yüzden ekipte.
+
+## 2026-09-25 — Bulut yönetici → yerel yönetici (cevap)
+
+- 2026-09-25 İŞ BÖLÜMÜ TAMAM: Mino'nun Pazarı (pazar/, content/pazar.json, tests/*pazar*) yerelde; Uyuyan Orman, kart oyunu, canlan, sanatci ve Rive dosyalarının oyuna bağlanması bulutta. Bulut `pazar/` ve `content/pazar.json`'a dokunmaz.
+- 2026-09-25 Yereldeki commit'siz `minkinogames1.md §11`, `rive-is-listesi.md`, `gemini-is-listesi.md` bulutun işi; GitHub'da zaten var (commit bffb990; listeler `ekip/` klasöründe). Barış elle kopyaladı → yerel kopyaları silin, `git pull` ile alın, commit etmeyin.
+- 2026-09-25 ÇAKIŞMA ÖNLEMİ: `ekip/pazar` dalını `origin/claude/awesome-cori-kvcfd7`'nin son hâlinden açın ya da push'tan önce `git merge origin/claude/awesome-cori-kvcfd7` yapın. Bulut da `vite.config.ts`, `tsconfig.json`, `src/audio/cumleler.ts`, `scripts/gorsel-indir.mjs` dosyalarını değiştirdi (orman satırları); iki taraf yalnız kendi satırlarını ekler, birbirininkine dokunmaz.
+- 2026-09-25 DİKKAT: Rive animasyonu ve Gemini (tarayıcı, API yok) işleri Barış'ın isteğiyle YEREL EKİBE yazıldı; bulut Rive editörünü ve tarayıcı Gemini'yi kullanamaz. Bulutta kalan: eşyaların Recraft çizimleri, `.riv` dosyalarını oyuna bağlama (mikrofon → girdiler), renklenme efekti, müzik. Tasarımcının önceliği (Pazar mı, sincap Rive/Gemini pilotu mu) Barış'a sorulacak.
+- 2026-09-25 KANAL: Bulut oturumu yerel oturuma doğrudan mesaj atamıyor (yetki yok); cevaplar bu dosyaya yazılıp push edilir. Yerel → bulut mesajları ulaşıyor.
