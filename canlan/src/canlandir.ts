@@ -46,6 +46,11 @@ export function sablonSvg(r: Resim, o: { kalinlik?: number; renk?: string; sinif
       for (const a of parcaAlanlari(r, p)) s.append(el('path', { d: `M${a.map(([x, y]) => `${x.toFixed(4)} ${y.toFixed(4)}`).join('L')}Z`, fill: renk, opacity: tur === 'acik' ? 0.28 : 1 }));
     }
   }
+  if (tur === 'sus' && g) {
+    const arka = el('g');
+    arka.innerHTML = g.sus.filter((x) => x.arka).map((x) => x.svg).join('');
+    s.prepend(arka);
+  }
   const renkler = r.canlan.renkler ?? {};
   for (const c of r.cizgiler) {
     s.append(
@@ -61,7 +66,7 @@ export function sablonSvg(r: Resim, o: { kalinlik?: number; renk?: string; sinif
   }
   if (tur === 'sus' && g) {
     const sus = el('g');
-    sus.innerHTML = g.sus.map((x) => x.svg).join('');
+    sus.innerHTML = g.sus.filter((x) => !x.arka).map((x) => x.svg).join('');
     s.append(sus);
   }
   return s;
@@ -86,36 +91,53 @@ const ters = (p: Nokta, d: Donusum): Nokta => [(p[0] - d.tx) / d.s, (p[1] - d.ty
 const yumusakBasla = (x: number) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
 const TUR = Math.PI * 2;
 
+/** Rengi Minkino konturuna (koyu kahve) doğru koyulaştırır: çocuğun rengi seçilir ama kitap gibi durur. */
+function koyu(hex: string, t = 0.6): string {
+  const v = parseInt(hex.replace('#', ''), 16);
+  const k = [0x3b, 0x23, 0x14];
+  const c = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x, i) => Math.round(x * (1 - t) + k[i] * t));
+  return `#${c.map((x) => x.toString(16).padStart(2, '0')).join('')}`;
+}
+
 export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: { kalinlik: number; renk: string }): Canli {
   const svg = el('svg', { viewBox: '0 0 1 1', class: 'cc-canli', 'aria-hidden': 'true' });
+  // Katmanlar: tum (yolculuk, şablon birimi) > yer (çizimi sahnede ortalar) > ic (tüm-resim hareketleri, çizim birimi) > parçalar
   const tum = el('g', { class: 'cc-tum' });
+  const yer = el('g', { class: 'cc-yer' });
   const ic = el('g');
-  tum.append(ic);
+  yer.append(ic);
+  tum.append(yer);
   svg.append(tum);
   const k = donusum.s;
   const P = (p: Nokta) => ters(p, donusum);
+  const T = (p: Nokta): Nokta => [p[0] * k + donusum.tx, p[1] * k + donusum.ty];
 
   // parça grupları (şablondaki sırayla)
   const adlar = [...new Set([...r.cizgiler.map((c) => c.parca), ...parcalar.map((p) => p.parca)])];
-  const gruplar = new Map<string, { g: SVGGElement; boya: SVGGElement; sus: SVGGElement; yollar: { n: Nokta[]; p: SVGPathElement[] }[] }>();
+  const gruplar = new Map<string, { g: SVGGElement; arka: SVGGElement; boya: SVGGElement; sus: SVGGElement; yollar: { n: Nokta[]; p: SVGPathElement[] }[] }>();
   for (const ad of adlar) {
     const g = el('g', { 'data-parca': ad });
+    const arka = el('g', { class: 'cc-sus-katman' });
     const boya = el('g', { class: 'cc-boya-katman' });
     const sus = el('g', { class: 'cc-sus-katman' });
-    g.append(boya, sus);
+    g.append(arka, boya, sus);
     ic.append(g);
-    gruplar.set(ad, { g, boya, sus, yollar: [] });
+    gruplar.set(ad, { g, arka, boya, sus, yollar: [] });
   }
+  // Çizgi: kitaptaki gibi koyu kahve kontur; içi boyanmayan (yalnız çizgi olan) parçalar renkli kalın çizgi
+  const kalin = Math.max(0.017, Math.min(0.03, o.kalinlik * k * 0.8));
   const tumNoktalar: Nokta[] = [];
   for (const p of parcalar) {
     const grup = gruplar.get(p.parca)!;
+    const cizgiParca = parcaAlanlari(r, p.parca).length === 0;
     const renk = r.canlan.renkler?.[p.parca] ?? o.renk;
     const d = yolD(p.n);
-    const alt = el('path', { d, class: 'cc-alt', 'stroke-width': o.kalinlik * 1.9 });
-    const ust = el('path', { d, class: 'cc-cizgi', stroke: renk, 'stroke-width': o.kalinlik, pathLength: 1 });
-    grup.g.insertBefore(alt, grup.sus);
-    grup.g.insertBefore(ust, grup.sus);
-    grup.yollar.push({ n: p.n, p: [alt, ust] });
+    const W = cizgiParca ? kalin * 1.5 : kalin;
+    const yollar: SVGPathElement[] = [el('path', { d, class: 'cc-alt', 'stroke-width': (W + 0.022) / k })];
+    yollar.push(el('path', { d, class: 'cc-cizgi', stroke: koyu(renk), 'stroke-width': (cizgiParca ? W + 0.012 : W) / k, pathLength: 1 }));
+    if (cizgiParca) yollar.push(el('path', { d, class: 'cc-cizgi cc-renkli', stroke: renk, 'stroke-width': W / k, pathLength: 1 }));
+    for (const y of yollar) grup.g.insertBefore(y, grup.sus);
+    grup.yollar.push({ n: p.n, p: yollar });
     tumNoktalar.push(...p.n);
   }
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -123,6 +145,16 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
   }
   const merkez: Nokta = [(x0 + x1) / 2, (y0 + y1) / 2];
+  // sahnede: şablonun yerine ve büyüklüğüne oturur; zemini olan resim yere basar
+  const alt = T([merkez[0], y1])[1];
+  const kay = r.canlan.zemin !== undefined ? r.canlan.zemin - alt : 0;
+  yer.setAttribute('transform', `translate(0 ${kay.toFixed(4)}) matrix(${k} 0 0 ${k} ${donusum.tx} ${donusum.ty})`);
+  const merkezT: Nokta = [T(merkez)[0], T(merkez)[1] + kay];
+  // yere basan resimlere yumuşak gölge
+  if (['cayir', 'yol', 'kar'].includes(r.sahne) && r.canlan.yol !== 'yuksel' && r.canlan.yol !== 'suzul') {
+    const g = (T([x1, y1])[0] - T([x0, y1])[0]) * 0.46;
+    tum.prepend(el('ellipse', { cx: merkezT[0], cy: alt + kay + 0.012, rx: Math.max(0.08, g), ry: 0.028, class: 'cc-golge' }));
+  }
 
   function donusumYaz(h: Hareket, t: number, e: number): string {
     switch (h.tip) {
@@ -173,21 +205,24 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     switch (r.canlan.yol) {
       case 'yuz': {
         const w = TUR * 0.09;
-        const x = (0.14 / k) * Math.sin(w * t) * e;
+        const x = 0.14 * Math.sin(w * t) * e;
         const yon = Math.max(-1, Math.min(1, Math.cos(w * t) * 5));
         const y = 0.02 * Math.sin(TUR * 0.5 * t) * e;
         const sx = e < 1 ? 1 : yon;
-        return `translate(${x} ${y}) translate(${merkez[0]} ${merkez[1]}) scale(${sx.toFixed(3)} 1) translate(${-merkez[0]} ${-merkez[1]})`;
+        return `translate(${x} ${y}) translate(${merkezT[0]} ${merkezT[1]}) scale(${sx.toFixed(3)} 1) translate(${-merkezT[0]} ${-merkezT[1]})`;
       }
       case 'git': {
-        const faz = (t * 0.16 + 0.5) % 1;
-        const x = e * ((faz - 0.5) * 2.4);
-        return `translate(${x.toFixed(4)} ${(0.008 * Math.sin(TUR * 3 * t)).toFixed(4)})`;
+        // soldan gelir, ortada durup zıplar, sağdan çıkar (7 sn)
+        const f = (t / 7 + 0.4) % 1;
+        const yavas = (u: number) => 1 - (1 - u) ** 3;
+        const x = f < 0.3 ? -1.1 * (1 - yavas(f / 0.3)) : f < 0.7 ? 0 : 1.1 * ((f - 0.7) / 0.3) ** 3;
+        return `translate(${(e * x).toFixed(4)} ${(0.008 * Math.sin(TUR * 3 * t)).toFixed(4)})`;
       }
       case 'yuksel': {
-        const faz = (t * 0.1 + 0.5) % 1;
-        const y = e * -((faz - 0.5) * 2.4);
-        return `translate(${(0.03 * Math.sin(TUR * 0.4 * t)).toFixed(4)} ${y.toFixed(4)})`;
+        // ortada salınır, sonra yükselip gider, alttan geri gelir (9 sn)
+        const f = (t / 9) % 1;
+        const y = f < 0.65 ? 0 : f < 0.85 ? -1.2 * ((f - 0.65) / 0.2) ** 2 : 1.2 * (1 - (f - 0.85) / 0.15) ** 2;
+        return `translate(${(0.03 * Math.sin(TUR * 0.4 * t)).toFixed(4)} ${(e * y + 0.02 * Math.sin(TUR * 0.3 * t)).toFixed(4)})`;
       }
       case 'suzul':
         return `translate(0 ${(0.03 * e * Math.sin(TUR * 0.35 * t)).toFixed(4)})`;
@@ -219,7 +254,8 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     // önce 0.9 sn parlayarak çizilir, sonra hareket yavaşça açılır
     const e = yumusakBasla((t - 0.9) / 0.8);
     const tt = Math.max(0, t - 0.9);
-    tum.setAttribute('transform', `${yolDonusumu(tt, e)} ${(r.canlan.tum ?? []).map((h) => donusumYaz(h, tt, e)).join(' ')}`);
+    tum.setAttribute('transform', yolDonusumu(tt, e));
+    ic.setAttribute('transform', (r.canlan.tum ?? []).map((h) => donusumYaz(h, tt, e)).join(' '));
     for (const [ad, grup] of gruplar) {
       const hareketler = r.canlan.parca?.[ad] ?? [];
       grup.g.setAttribute('transform', hareketler.map((h) => donusumYaz(h, tt, e)).join(' '));
@@ -236,6 +272,7 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
         const kay = `translate(${(q[0] - m[0]).toFixed(4)} ${(q[1] - m[1]).toFixed(4)})`;
         grup.boya.setAttribute('transform', kay);
         grup.sus.setAttribute('transform', kay);
+        grup.arka.setAttribute('transform', kay);
       }
     }
     raf = requestAnimationFrame(kare);
@@ -268,20 +305,22 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
         const icg = el('g', { class: 'cc-sus', style: `--i:${i}` });
         icg.innerHTML = x.svg;
         dis.append(icg);
-        grup.sus.append(dis);
+        (x.arka ? grup.arka : grup.sus).append(dis);
       });
     },
     noktaAl(x, y) {
-      const b = svg.getBoundingClientRect();
-      return [(x - b.left) / b.width, (y - b.top) / b.height];
+      const m = ic.getScreenCTM();
+      if (!m) return [0, 0];
+      const q = new DOMPoint(x, y).matrixTransform(m.inverse());
+      return [q.x, q.y];
     },
     hayalet(liste) {
-      svg.querySelector('.cc-hayalet')?.remove();
+      ic.querySelector('.cc-hayalet')?.remove();
       const g = el('g', { class: 'cc-hayalet' });
       const secili: SablonCizgi[] = r.cizgiler.filter((c) => liste === 'hepsi' || liste.includes(c.parca));
       for (const c of secili)
-        g.append(el('path', { d: yolD(c.n.map(P)), 'stroke-width': Math.max(0.012, o.kalinlik * 0.8), pathLength: 1 }));
-      svg.append(g);
+        g.append(el('path', { d: yolD(c.n.map(P)), 'stroke-width': 0.014 / k, pathLength: 1 }));
+      ic.append(g);
     },
   };
 }

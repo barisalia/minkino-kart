@@ -9,6 +9,8 @@ import type { Nokta } from './resimler';
 export interface Sus {
   parca: string;
   svg: string;
+  /** parçanın arkasında (boyanın altında) dursun: yüzgeç gibi */
+  arka?: boolean;
 }
 export interface Guzellik {
   boya: Record<string, string>;
@@ -17,6 +19,11 @@ export interface Guzellik {
 }
 
 const K = '#5a3617'; // Minkino kontur rengi
+const yay = (cx: number, cy: number, r: number, a0: number, a1: number, n: number): Nokta[] =>
+  Array.from({ length: n + 1 }, (_, i): Nokta => {
+    const a = ((a0 + ((a1 - a0) * i) / n) * Math.PI) / 180;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  });
 const G = '#3b2314'; // göz
 const f = (v: number) => +v.toFixed(4);
 
@@ -63,8 +70,10 @@ const yanak = (x: number, y: number, rx: number) => `<ellipse cx="${x}" cy="${y}
 
 export const SUS: Record<string, Guzellik> = {
   top: {
-    boya: { top: '#F0413F' },
-    sus: [{ parca: 'top', svg: parilti(0.5, 0.5, 0.3) + yuz(0.5, 0.55, 0.19) }],
+    boya: { top: '#F0413F', serit: '#FFC72C' },
+    // şeridin altı ayrı renk: plaj topu
+    alanlar: { serit: [[...yay(0.5, 0.95, 0.42, 232, 308, 16), ...yay(0.5, 0.5, 0.3, 23.4, 156.6, 20)]] },
+    sus: [{ parca: 'top', svg: parilti(0.5, 0.5, 0.3) + yuz(0.5, 0.41, 0.16) }],
   },
   gunes: {
     boya: { yuz: '#FFC72C' },
@@ -95,10 +104,10 @@ export const SUS: Record<string, Guzellik> = {
   balik: {
     boya: { govde: '#FF8A2B', kuyruk: '#FFC72C' },
     sus: [
+      { parca: 'govde', arka: true, svg: `<path d="M.4 .4C.42 .2 .56 .18 .66 .38Z" fill="#FFC72C" stroke="${K}" stroke-width=".014" stroke-linejoin="round"/><path d="M.47 .3Q.5 .26 .55 .28" stroke="#fff" stroke-width=".012" fill="none" stroke-linecap="round" opacity=".7"/>` },
       {
         parca: 'govde',
         svg:
-          `<path d="M.42 .345Q.5 .21 .63 .35" fill="#FFC72C" stroke="${K}" stroke-width=".014" stroke-linejoin="round"/>` +
           `<path d="M.42 .45q.05 .05 0 .1M.5 .43q.055 .07 0 .14" stroke="#fff" stroke-width=".014" fill="none" opacity=".7" stroke-linecap="round"/>` +
           `<path d="M.71 .57Q.745 .6 .78 .565" stroke="${G}" stroke-width=".014" fill="none" stroke-linecap="round"/>` +
           yanak(0.68, 0.55, 0.028) +

@@ -11,7 +11,7 @@ import { boyaBolgesi, boyaResmi, sihirliBoya, type Boya } from './boya';
 import { canliCizim, sablonSvg, yolD } from './canlandir';
 import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
-import { AYAR, canlanirMi, ornekle, puanla } from './puan';
+import { AYAR, canlanirMi, ornekle, parcalaraBol, puanla, toparla } from './puan';
 import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } from './resimler';
 import { SUS } from './susler';
 
@@ -44,11 +44,18 @@ function logo(): HTMLElement {
   return h('div.cc-logo', { role: 'img', 'aria-label': 'Çiz Canlansın' }, kelime('Çiz', 0), kelime('Canlansın', 3));
 }
 
-/** Sahne (deniz, gök, çayır…) ve süsleri. */
+const SAHNE_RESIM = import.meta.glob<string>('../../assets/sahne/*.webp', { eager: true, query: '?url', import: 'default' });
+
+/** Sahne (deniz, gök, çayır…): kitap kalitesinde arka plan resmi + hareketli süsler. */
 function sahne(r: Resim): HTMLElement {
   const s = h(`div.cc-sahne.sahne-${r.sahne}`);
-  const sus = h('div.cc-sus', { 'aria-hidden': 'true' });
-  const adet = { deniz: 7, gok: 3, cayir: 4, gece: 12, yol: 3, kar: 14 }[r.sahne];
+  const url = SAHNE_RESIM[`../../assets/sahne/${r.sahne}.webp`];
+  if (url) {
+    s.classList.add('resimli');
+    s.style.setProperty('--sahne', `url("${url}")`);
+  }
+  const sus = h('div.cc-sahne-sus', { 'aria-hidden': 'true' });
+  const adet = { deniz: 7, okyanus: 0, gok: 3, cayir: 4, gece: 12, yol: 3, kar: 14 }[r.sahne];
   for (let i = 0; i < adet; i++) sus.append(h('i', { style: `--i:${i};--x:${(i * 37) % 100};--y:${(i * 53) % 100}` }));
   s.append(sus);
   return s;
@@ -372,11 +379,13 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   yildizKaydet(p.mod, r.id, sonuc.yildiz);
   // en uzun çizginin rengi
   const ana = [...p.cizgiler].sort((a, b) => b.noktalar.length - a.noktalar.length)[0];
-  const canli = canliCizim(r, sonuc.parcalar, sonuc.donusum, { kalinlik: ana?.kalinlik ?? 0.025, renk: ana?.renk ?? r.renk });
+  // Çocuğun çizgisi toparlanır: onun çizgisi ama kitaptaki gibi temiz
+  const guzel = toparla(r, p.cizgiler.map((c) => c.noktalar), sonuc.donusum);
+  const canli = canliCizim(r, parcalaraBol(r, guzel, sonuc.donusum), sonuc.donusum, { kalinlik: ana?.kalinlik ?? 0.025, renk: ana?.renk ?? r.renk });
   const sh = sahne(r);
   sh.append(canli.el);
   const kutu = h('div.cc-sonuc-kutu', {}, sh);
-  const cizgiler = p.cizgiler.map((c) => ({ n: c.noktalar, kalinlik: c.kalinlik }));
+  const cizgiler = guzel.map((n, i) => ({ n, kalinlik: p.cizgiler[i].kalinlik }));
 
   const yildizlar = h('div.cc-yildizlar', { 'aria-label': `${sonuc.yildiz} yıldız`, 'data-yildiz': sonuc.yildiz });
   for (let i = 0; i < 3; i++) yildizlar.append(h('i', { html: IKON.yildiz }));
@@ -473,6 +482,18 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     boyaCubugu.hidden = true;
     dugmeler.hidden = false;
     sh.classList.remove('boyaniyor');
+    // boyanmamış yerler sihirle renklenir (çocuk bir renk seçtiyse ana parça o renk olur)
+    const boyanan = new Set(boyalar.map((b) => b.parca));
+    const oneri = SUS[r.id]?.boya ?? {};
+    const anaParca = Object.keys(oneri)[0];
+    const kendiRengi = !boyalar.length && ana?.renk && ana.renk !== r.renk ? ana.renk : null;
+    const oto = sihirliBoya(r, cizgiler, sonuc.donusum)
+      .filter((b) => !boyanan.has(b.parca))
+      .map((b) => (kendiRengi && b.parca === anaParca ? { ...b, renk: kendiRengi } : b));
+    if (oto.length) {
+      boyalar.push(...oto);
+      new Set(oto.map((b) => b.parca)).forEach(parcaCiz);
+    }
     sh.classList.add('canli');
     canli.susGoster();
     canli.baslat();

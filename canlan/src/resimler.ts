@@ -24,7 +24,7 @@ export type Hareket =
   | { tip: 'dalga'; genlik: number; boy: number; hiz: number; eksen: 'x' | 'y' };
 
 export type Yol = 'yuz' | 'git' | 'yuksel' | 'suzul';
-export type Sahne = 'gok' | 'deniz' | 'cayir' | 'gece' | 'yol' | 'kar';
+export type Sahne = 'gok' | 'deniz' | 'okyanus' | 'cayir' | 'gece' | 'yol' | 'kar';
 
 export interface Resim {
   id: string;
@@ -35,7 +35,8 @@ export interface Resim {
   cizgiler: SablonCizgi[];
   /** Eksik sayılmayan küçük parçalar (göz gibi) */
   kucukParcalar?: string[];
-  canlan: { tum?: Hareket[]; parca?: Record<string, Hareket[]>; yol?: Yol; renkler?: Record<string, string> };
+  /** zemin: yere basan resimde çizimin alt kenarının sahnedeki yeri (0..1) */
+  canlan: { tum?: Hareket[]; parca?: Record<string, Hareket[]>; yol?: Yol; renkler?: Record<string, string>; zemin?: number };
 }
 
 // ---------- şekil yardımcıları ----------
@@ -92,7 +93,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'serit', n: yay(0.5, 0.95, 0.42, 0.42, 232, 308, 16) },
     ],
     kucukParcalar: ['serit'],
-    canlan: { tum: [{ tip: 'zipla', yukseklik: 0.28, hiz: 0.9, zemin: 0.8 }], parca: { serit: [{ tip: 'kaydir', dx: 0.02, dy: 0, hiz: 0.9 }] } },
+    canlan: { zemin: 0.9, tum: [{ tip: 'zipla', yukseklik: 0.16, hiz: 0.9, zemin: 0.8 }] },
   },
   {
     id: 'gunes', ad: ad('gunes'), zorluk: 1, renk: '#FF8A2B', sahne: 'gok',
@@ -213,6 +214,7 @@ export const RESIMLER: Resim[] = [
     ],
     canlan: {
       yol: 'git',
+      zemin: 0.93,
       parca: {
         govde: [{ tip: 'kaydir', dx: 0, dy: 0.008, hiz: 3 }],
         teker1: [{ tip: 'cevir', pivot: [0.3, 0.67], hiz: 1.4 }],
@@ -221,13 +223,14 @@ export const RESIMLER: Resim[] = [
     },
   },
   {
-    id: 'tekne', ad: ad('tekne'), zorluk: 3, renk: '#F0413F', sahne: 'deniz',
+    id: 'tekne', ad: ad('tekne'), zorluk: 3, renk: '#F0413F', sahne: 'okyanus',
     cizgiler: [
       { parca: 'govde', n: [[0.14, 0.62], [0.86, 0.62], [0.72, 0.8], [0.28, 0.8], [0.14, 0.62]], kapali: true },
       { parca: 'direk', n: [[0.5, 0.62], [0.5, 0.16]] },
       { parca: 'yelken', n: [[0.5, 0.18], [0.78, 0.55], [0.5, 0.55]] },
     ],
     canlan: {
+      zemin: 0.86,
       tum: [{ tip: 'don', pivot: [0.5, 0.8], aci: 7, hiz: 0.55 }, { tip: 'kaydir', dx: 0, dy: 0.02, hiz: 0.55, faz: 0.25 }],
       parca: { yelken: [{ tip: 'olcek', pivot: [0.5, 0.4], x: 1.12, y: 1, hiz: 1.1 }] },
     },

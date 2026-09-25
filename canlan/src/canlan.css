@@ -92,7 +92,8 @@
   height: 100%;
   overflow: visible;
 }
-.cc-kok .cc-canli path {
+.cc-kok .cc-canli path.cc-alt,
+.cc-kok .cc-canli path.cc-cizgi {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -127,23 +128,23 @@
 @keyframes cc-hayalet {
   50% { opacity: 0.15; }
 }
-.cc-kok .cc-sus {
+.cc-kok .cc-sahne-sus {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
-.cc-kok .cc-sus i {
+.cc-kok .cc-sahne-sus i {
   position: absolute;
   left: calc(var(--x) * 1%);
   top: calc(var(--y) * 1%);
   animation-play-state: paused;
 }
-.cc-kok .cc-sahne.canli .cc-sus i {
+.cc-kok .cc-sahne.canli .cc-sahne-sus i {
   animation-play-state: running;
 }
 /* gökyüzü + bulutlar */
 .cc-kok .sahne-gok { background: linear-gradient(180deg, #9ed8ff, #e3f5ff); }
-.cc-kok .sahne-gok .cc-sus i {
+.cc-kok .sahne-gok .cc-sahne-sus i {
   width: 30%;
   height: 11%;
   top: calc(8% + var(--i) * 28%);
@@ -164,7 +165,7 @@
     radial-gradient(120% 60% at 50% 110%, #1f6fb8, transparent 70%),
     linear-gradient(180deg, #8fdcfb, #2f8fd8);
 }
-.cc-kok .sahne-deniz .cc-sus i {
+.cc-kok .sahne-deniz .cc-sahne-sus i {
   width: 4%;
   aspect-ratio: 1;
   top: 100%;
@@ -176,6 +177,10 @@
 @keyframes cc-kabarcik {
   to { transform: translate(8px, -1100%); opacity: 0; }
 }
+/* okyanus (su yüzeyi) */
+.cc-kok .sahne-okyanus {
+  background: linear-gradient(180deg, #9ed8ff 0%, #e3f5ff 70%, #3fc1d9 71%, #1e8fc2 100%);
+}
 /* çayır */
 .cc-kok .sahne-cayir {
   background:
@@ -183,7 +188,7 @@
     radial-gradient(90% 40% at 85% 112%, #58be3a 60%, transparent 61%),
     linear-gradient(180deg, #a8e1ff, #e7f7ff 75%);
 }
-.cc-kok .sahne-cayir .cc-sus i {
+.cc-kok .sahne-cayir .cc-sahne-sus i {
   width: 5%;
   aspect-ratio: 1;
   top: calc(84% + (var(--i) * 3%));
@@ -197,7 +202,7 @@
 }
 /* gece + yıldızlar */
 .cc-kok .sahne-gece { background: radial-gradient(90% 70% at 50% 20%, #3b3f8f, #1b2356); }
-.cc-kok .sahne-gece .cc-sus i {
+.cc-kok .sahne-gece .cc-sahne-sus i {
   width: 2.2%;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -215,7 +220,7 @@
     linear-gradient(180deg, transparent 78%, #6b6f7a 78%, #6b6f7a 94%, #58be3a 94%),
     linear-gradient(180deg, #a8e1ff, #e7f7ff);
 }
-.cc-kok .sahne-yol .cc-sus i {
+.cc-kok .sahne-yol .cc-sahne-sus i {
   width: 14%;
   height: 1.4%;
   top: 85.5%;
@@ -229,7 +234,7 @@
 }
 /* kar */
 .cc-kok .sahne-kar { background: linear-gradient(180deg, #cfe9ff, #f7fbff 80%, #fff); }
-.cc-kok .sahne-kar .cc-sus i {
+.cc-kok .sahne-kar .cc-sahne-sus i {
   width: 2.4%;
   aspect-ratio: 1;
   top: -4%;
@@ -767,4 +772,23 @@
   .cc-kok .cc-canli.canlaniyor .cc-cizgi {
     animation: none;
   }
+}
+
+/* ---------- Kitap kalitesinde sahne ---------- */
+.cc-kok .cc-sahne.resimli {
+  background: var(--sahne) center / cover no-repeat;
+}
+.cc-kok .cc-sahne.resimli.sahne-gok .cc-sahne-sus,
+.cc-kok .cc-sahne.resimli.sahne-cayir .cc-sahne-sus,
+.cc-kok .cc-sahne.resimli.sahne-yol .cc-sahne-sus {
+  display: none;
+}
+.cc-kok .cc-golge {
+  fill: rgba(40, 20, 0, 0.2);
+  filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.8s 0.6s;
+}
+.cc-kok .cc-sahne.canli .cc-golge {
+  opacity: 1;
 }

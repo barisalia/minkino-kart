@@ -120,6 +120,23 @@ class Izgara {
   private anahtar(i: number, j: number) {
     return (i + 512) * 4096 + (j + 512);
   }
+  /** En yakın noktanın sırası (hücre komşuluğunda yoksa -1). */
+  enYakin(x: number, y: number): number {
+    const i0 = Math.floor(x / this.hucre);
+    const j0 = Math.floor(y / this.hucre);
+    let en = Infinity;
+    let sira = -1;
+    for (let i = i0 - 1; i <= i0 + 1; i++)
+      for (let j = j0 - 1; j <= j0 + 1; j++)
+        for (const k of this.m.get(this.anahtar(i, j)) ?? []) {
+          const d = Math.hypot(this.b.n[k][0] - x, this.b.n[k][1] - y);
+          if (d < en) {
+            en = d;
+            sira = k;
+          }
+        }
+    return sira;
+  }
   /** En iyi eşleşme puanı (0..1): yakınlık × yön uyumu. */
   eslesme(x: number, y: number, tx: number, ty: number, tol: number): number {
     return this.esle(x, y, tx, ty, tol)[0];
@@ -289,6 +306,43 @@ function hizala(r: Resim, cocukCizgiler: Nokta[][], tol: number): Donusum {
   const b = en;
   for (const k of [0.97, 1, 1.03]) for (const dx of [-0.015, 0, 0.015]) for (const dy of [-0.015, 0, 0.015]) dene({ s: b.s * k, tx: b.tx + dx, ty: b.ty + dy });
   return en;
+}
+
+/**
+ * Güzelleştirme: çocuğun çizgisini şablona doğru çeker (yakın yerlerde en çok %w) ve titremeyi yumuşatır.
+ * Sonuç hâlâ onun çizgisi (yeri, eğrisi, karakteri) ama kitaptaki gibi temiz.
+ */
+export function toparla(r: Resim, cizgiler: Nokta[][], d: Donusum, w = 0.5): Nokta[][] {
+  const s = sablonOrnekle(r, 0.006, 0.05);
+  const uzak = 0.14;
+  return cizgiler.map((c) => {
+    if (c.length < 2) return c;
+    const n = ornekle(c, 0.006);
+    const cekilmis = n.map((p): Nokta => {
+      const q = uygula(p, d);
+      const k = s.izgara.enYakin(q[0], q[1]);
+      if (k < 0) return p;
+      const t = s.n[k];
+      const u = Math.hypot(t[0] - q[0], t[1] - q[1]);
+      const a = w * Math.max(0, 1 - u / uzak);
+      const b: Nokta = [q[0] * (1 - a) + t[0] * a, q[1] * (1 - a) + t[1] * a];
+      return [(b[0] - d.tx) / d.s, (b[1] - d.ty) / d.s];
+    });
+    // kayan ortalama (uçlar sabit)
+    const P = 4;
+    return cekilmis.map((p, i): Nokta => {
+      if (i < 1 || i >= cekilmis.length - 1) return p;
+      const a = Math.max(0, i - P);
+      const b = Math.min(cekilmis.length - 1, i + P);
+      let x = 0;
+      let y = 0;
+      for (let j = a; j <= b; j++) {
+        x += cekilmis[j][0];
+        y += cekilmis[j][1];
+      }
+      return [x / (b - a + 1), y / (b - a + 1)];
+    });
+  });
 }
 
 /** Çocuğun çizgilerini en yakın şablon parçasına göre böler (canlanmada her parça ayrı oynar). */

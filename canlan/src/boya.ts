@@ -227,15 +227,35 @@ function enYakinParca(alanlar: [string, Nokta[]][], m: Uint8Array, d: Donusum, N
   return parca;
 }
 
-/** Sihirli boya: her parçayı önerilen renge boyar. */
+/** Sihirli boya: her parçayı önerilen renge boyar (çizgilerle bölünmüş alanın bütün parçalarını). */
 export function sihirliBoya(r: Resim, cizgiler: Cizgi[], d: Donusum, N = BOYUT): Boya[] {
   const renkler = SUS[r.id]?.boya ?? {};
   const out: Boya[] = [];
+  const engel = cizgiMaskesi(cizgiler, 0.03, N);
   for (const [parca, alan] of tumAlanlar(r)) {
     const renk = renkler[parca];
     if (!renk) continue;
-    const b = boyaBolgesi(r, cizgiler, d, ters(icNokta(alan), d), N);
-    if (b) out.push({ parca: b.parca === parca ? parca : parca, renk, maske: b.maske });
+    const ilk = boyaBolgesi(r, cizgiler, d, ters(icNokta(alan), d), N);
+    if (!ilk) continue;
+    const maske = ilk.maske;
+    // alanın içinde kalan ama boyanmamış başka bölmeler (topun şeridin altı gibi) varsa onları da doldur
+    let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+    for (const [x, y] of alan) {
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+    for (let i = 1; i < 9; i++)
+      for (let j = 1; j < 9; j++) {
+        const sp: Nokta = [x0 + ((x1 - x0) * i) / 9, y0 + ((y1 - y0) * j) / 9];
+        if (!noktaIcinde(sp, alan)) continue;
+        const q = ters(sp, d);
+        const k = Math.floor(q[1] * N) * N + Math.floor(q[0] * N);
+        if (k < 0 || k >= maske.length || maske[k] || engel[k]) continue;
+        const b = tasir(engel, q[0], q[1], N);
+        if (!b || b.kenaraDegdi || b.alan > 0.6) continue;
+        const g = genislet(b.maske, Math.round(0.015 * N + 1), N);
+        for (let m = 0; m < maske.length; m++) if (g[m]) maske[m] = 1;
+      }
+    out.push({ parca, renk, maske });
   }
   return out;
 }
