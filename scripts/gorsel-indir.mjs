@@ -32,6 +32,14 @@ for (const [anahtar, url] of Object.entries(liste)) {
       console.log('✓ svg', anahtar);
     }
     if (!hepsi && fs.existsSync(hedef)) continue;
+    // Sahne arka planları: kırpmadan, kenardan kenara kare
+    if (anahtar.startsWith('sahne/')) {
+      fs.mkdirSync(path.dirname(hedef), { recursive: true });
+      await sharp(girdi).resize(768, 768, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(hedef);
+      yeni++;
+      console.log('✓', anahtar);
+      continue;
+    }
     const kirpik = await sharp(girdi).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     await sharp(kirpik)
