@@ -30,6 +30,20 @@ function yukle(ad: string): Promise<AudioBuffer | null> {
   return p;
 }
 
+const seviyeler = new WeakMap<AudioBuffer, number>();
+function seviye(b: AudioBuffer): number {
+  let v = seviyeler.get(b);
+  if (v === undefined) {
+    const d = b.getChannelData(0);
+    let t = 0;
+    for (let i = 0; i < d.length; i += 4) t += d[i] * d[i];
+    const rms = Math.sqrt(t / Math.max(1, d.length / 4));
+    v = Math.max(0.3, Math.min(1.8, 0.13 / Math.max(0.01, rms)));
+    seviyeler.set(b, v);
+  }
+  return v;
+}
+
 /** Önceden yükle (canlanınca), dokunuşta gecikme olmasın. */
 export const resimSesiHazirla = (ad: string) => void yukle(ad);
 
@@ -48,7 +62,10 @@ export async function resimSesi(ad: string) {
   }
   const k = c.createBufferSource();
   k.buffer = b;
-  k.connect(cikis);
+  // efektlerin yüksekliği farklı: hepsi aynı seviyede duyulsun
+  const g = c.createGain();
+  g.gain.value = seviye(b);
+  k.connect(g).connect(cikis);
   k.start();
   sonCalan = k;
 }
