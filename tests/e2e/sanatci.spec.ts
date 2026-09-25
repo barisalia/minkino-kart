@@ -62,6 +62,7 @@ test('Minik Sanatçı: çiz → ne çizdin → ebeveyn onayı → sihir → sonu
 
 test('Minik Sanatçı: sunucu yokken dostça uyarı', async ({ page }) => {
   const hatalar = hataTopla(page);
+  await page.route('**/sanatci/ayar.json', (r) => r.fulfill({ json: {} }));
   await page.goto('./sanatci/?test=1');
   await page.evaluate(() => localStorage.setItem('minik-sanatci-onay-v1', '1'));
   await page.getByRole('button', { name: 'Çiz' }).click();

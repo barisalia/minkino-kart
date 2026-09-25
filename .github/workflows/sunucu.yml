@@ -75,9 +75,18 @@ jobs:
           ADRES: ${{ steps.yayin.outputs.adres }}
         run: |
           sleep 5
+          python3 -c "import PIL" 2>/dev/null || python3 -m pip install -q --user --break-system-packages pillow
           mkdir -p sanatci/deneme
           for ad in kedi ev araba; do
-            python3 -c "import base64,json,sys; print(json.dumps({'resim': base64.b64encode(open('sanatci/ornekler/$ad.png','rb').read()).decode(), 'konu': '$ad'}))" > istek.json
+            python3 -c "
+          import base64, io, json
+          from PIL import Image
+          ham = open('sanatci/ornekler/$ad.png','rb').read()
+          k = Image.open(io.BytesIO(ham)).convert('RGBA')
+          zemin = Image.new('RGB', k.size, 'white'); zemin.paste(k, mask=k.split()[3])
+          b = io.BytesIO(); zemin.resize((504, 504)).save(b, 'PNG')
+          print(json.dumps({'resim': base64.b64encode(ham).decode(), 'kucuk': base64.b64encode(b.getvalue()).decode(), 'konu': '$ad'}))
+          " > istek.json
             curl -s -X POST "$ADRES/sihir" -H 'Content-Type: application/json' -H 'Origin: https://barisalia.github.io' --data @istek.json -o yanit.json -w "$ad HTTP %{http_code}\n" || true
             python3 - "$ad" <<'PY'
           import base64, json, sys

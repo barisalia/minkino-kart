@@ -27,6 +27,14 @@ describe('sihir sunucusu', () => {
     expect(AI.run).toHaveBeenCalledTimes(1);
   });
 
+  it('Workers AI: ucuz klein 4B önce, küçük kopya kullanılır; kota bitince diğer modele boşuna gidilmez', async () => {
+    const AI = { run: vi.fn(async (_m: string) => { throw new Error('4006: you have used up your daily free allocation'); }) };
+    const r = await sunucu.fetch(istek({ resim: 'aGVsbG8=', kucuk: 'a2s=', konu: 'ev' }, '8.8.8.8'), { ...env, MOTOR: 'cloudflare', AI, GEMINI_API_KEY: '' , RECRAFT_API_KEY: '' });
+    expect(r.status).toBe(502);
+    expect(AI.run).toHaveBeenCalledTimes(1);
+    expect((AI.run.mock.calls[0] as unknown[])[0]).toBe('@cf/black-forest-labs/flux-2-klein-4b');
+  });
+
   it('Workers AI olmazsa Gemini yedeğine düşer', async () => {
     const AI = { run: vi.fn(async () => { throw new Error('kota bitti'); }) };
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ candidates: [{ content: { parts: [{ inlineData: { data: 'R0VN' } }] } }] }))));

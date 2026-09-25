@@ -37,6 +37,19 @@ function base64(b: Blob): Promise<string> {
   });
 }
 
+/** Çizimin küçük kopyası (Workers AI FLUX.2 klein girişi 512 px'ten küçük olmalı). */
+async function kucult(b: Blob, boyut = 504): Promise<Blob> {
+  const bmp = await createImageBitmap(b);
+  const c = document.createElement('canvas');
+  c.width = c.height = boyut;
+  const x = c.getContext('2d')!;
+  x.fillStyle = '#fff';
+  x.fillRect(0, 0, boyut, boyut);
+  x.drawImage(bmp, 0, 0, boyut, boyut);
+  bmp.close?.();
+  return new Promise((coz, red) => c.toBlob((k) => (k ? coz(k) : red(new Error('küçültülemedi'))), 'image/png'));
+}
+
 /** Çizimi sunucuya gönderir, sihirli sonucu (PNG/WebP) döndürür. */
 export async function sihirYap(cizim: Blob, konu: string, sinyal?: AbortSignal): Promise<Blob> {
   const { sunucu } = await ayarYukle();
@@ -46,7 +59,7 @@ export async function sihirYap(cizim: Blob, konu: string, sinyal?: AbortSignal):
     r = await fetch(`${sunucu.replace(/\/$/, '')}/sihir`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ resim: await base64(cizim), konu }),
+      body: JSON.stringify({ resim: await base64(cizim), kucuk: await kucult(cizim).then(base64).catch(() => ''), konu }),
       signal: sinyal,
     });
   } catch {

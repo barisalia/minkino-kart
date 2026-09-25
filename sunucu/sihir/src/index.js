@@ -1,6 +1,6 @@
 /**
  * Minik Sanatçı — sihir sunucusu.
- * POST /sihir  { resim: <PNG base64>, konu: "kedi" | ... | "surpriz" }  →  { resim: <base64>, mime }
+ * POST /sihir  { resim: <PNG base64>, kucuk?: <≤504 px PNG base64>, konu: "kedi" | ... | "surpriz" }  →  { resim: <base64>, mime }
  *
  * Gizlilik: çizim yalnızca dönüştürme için yapay zeka servisine iletilir; sunucuda saklanmaz, kaydı tutulmaz.
  * Anahtarlar (GEMINI_API_KEY, RECRAFT_API_KEY) Cloudflare'de gizli değişken olarak durur, uygulamaya hiç inmez.
@@ -74,40 +74,35 @@ async function gemini(env, resim, konu) {
 }
 
 /**
- * Cloudflare Workers AI (ücretsiz günlük kota). Önce görsel düzenleme destekli FLUX.2 denenir,
- * olmazsa Stable Diffusion img2img.
+ * Cloudflare Workers AI. Ana model FLUX.2 [klein] 4B: görsel düzenleme destekli ve çok ucuz
+ * (1024 px çıktı ≈ 110 nöron; günlük ücretsiz 10.000 nöron ≈ 90 resim). Giriş resmi 512 px'ten küçük olmalı,
+ * bu yüzden uygulama ayrıca küçük bir kopya ("kucuk") gönderir.
+ * Yedek: klein 9B (daha pahalı, ≈ 1.500 nöron).
  */
-async function cloudflare(env, resim, konu) {
-  const bayt = b64ToBytes(resim);
+const CF_MODELLER = ['@cf/black-forest-labs/flux-2-klein-4b', '@cf/black-forest-labs/flux-2-klein-9b'];
+
+async function cloudflare(env, resim, konu, kucuk) {
+  const bayt = b64ToBytes(kucuk || resim);
   const hatalar = [];
-  try {
-    const form = new FormData();
-    form.append('prompt', geminiTalimati(konu));
-    form.append('input_image_0', new Blob([bayt], { type: 'image/png' }), 'cizim.png');
-    form.append('width', '1024');
-    form.append('height', '1024');
-    const govde = new Response(form);
-    const cikti = await env.AI.run(env.CF_MODEL || '@cf/black-forest-labs/flux-2-dev', {
-      multipart: { body: govde.body, contentType: govde.headers.get('content-type') },
-    });
-    if (cikti?.image) return { veri: cikti.image, mime: 'image/png' };
-    hatalar.push('flux: görsel yok');
-  } catch (e) {
-    hatalar.push(`flux: ${e?.message ?? e}`);
-  }
-  try {
-    const akim = await env.AI.run('@cf/runwayml/stable-diffusion-v1-5-img2img', {
-      prompt: recraftTalimati(konu),
-      negative_prompt: 'text, letters, watermark, scary, ugly, blurry, photo, realistic',
-      image: [...bayt],
-      strength: 0.65,
-      guidance: 8,
-      num_steps: 20,
-    });
-    const tampon = await new Response(akim).arrayBuffer();
-    return { veri: bytesToB64(tampon), mime: 'image/png' };
-  } catch (e) {
-    hatalar.push(`sd: ${e?.message ?? e}`);
+  const modeller = env.CF_MODEL ? [env.CF_MODEL, ...CF_MODELLER] : CF_MODELLER;
+  for (const model of [...new Set(modeller)]) {
+    try {
+      const form = new FormData();
+      form.append('prompt', geminiTalimati(konu));
+      form.append('input_image_0', new Blob([bayt], { type: 'image/png' }), 'cizim.png');
+      form.append('width', '1024');
+      form.append('height', '1024');
+      const govde = new Response(form);
+      const cikti = await env.AI.run(model, {
+        multipart: { body: govde.body, contentType: govde.headers.get('content-type') },
+      });
+      if (cikti?.image) return { veri: cikti.image, mime: 'image/png' };
+      hatalar.push(`${model}: görsel yok`);
+    } catch (e) {
+      hatalar.push(`${model}: ${e?.message ?? e}`);
+      // günlük kota bittiyse diğer model de çalışmaz
+      if (/4006|daily free allocation/i.test(String(e?.message ?? e))) break;
+    }
   }
   throw new Error(`Workers AI: ${hatalar.join(' | ')}`);
 }
@@ -177,13 +172,14 @@ export default {
     }
     const resim = String(govde?.resim ?? '');
     const konu = String(govde?.konu ?? 'surpriz');
-    if (!resim || resim.length > 4_000_000) return json({ hata: 'resim yok ya da çok büyük' }, 400);
+    const kucuk = String(govde?.kucuk ?? '');
+    if (!resim || resim.length > 4_000_000 || kucuk.length > 1_000_000) return json({ hata: 'resim yok ya da çok büyük' }, 400);
 
     const calistir = { cloudflare, gemini, recraft };
     const hatalar = [];
     for (const m of sira) {
       try {
-        const sonuc = await calistir[m](env, resim, konu);
+        const sonuc = await calistir[m](env, resim, konu, kucuk);
         return json({ resim: sonuc.veri, mime: sonuc.mime, motor: m });
       } catch (e) {
         hatalar.push(`${m}: ${String(e?.message ?? e).slice(0, 300)}`);
