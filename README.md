@@ -2,7 +2,9 @@
 
 3-6 yaş için sesli, eğitici kart oyunu. Çocuk soruyu sesli duyar, doğru kartı bulur; doğru kart uçup albümüne yapışır.
 
-**Canlı sürüm (telefonda aç):** https://barisalia.github.io/minkino-kart/
+**Canlı sürümler (telefonda aç):**
+- Kart oyunu (+ Mino): https://barisalia.github.io/minkino-kart/
+- Minik Sanatçı: https://barisalia.github.io/minkino-kart/sanatci/
 
 ## Geliştirme
 

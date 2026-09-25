@@ -1,0 +1,28 @@
+{
+  "aciklama": "Minik Sanatçı konuşmaları. Kısa tutun.",
+  "hosgeldin": "Hadi resim yapalım!",
+  "ciz": "Ne istersen çiz!",
+  "ne_cizdin": "Ne çizdin?",
+  "sihir": ["Sihir zamanı!", "Abrakadabra!"],
+  "bekle": ["Az kaldı!", "Sihir yapılıyor!"],
+  "bitti": ["Bak ne oldu!", "Vay canına!"],
+  "harika": "Harika bir resim!",
+  "kaydedildi": "Galerine eklendi!",
+  "hata": "Sihir olmadı. Tekrar dene!",
+  "bos": "Önce bir şey çiz!",
+  "galeri": "Senin resimlerin!",
+  "konular": {
+    "kedi": "Kedi",
+    "kopek": "Köpek",
+    "kus": "Kuş",
+    "balik": "Balık",
+    "ev": "Ev",
+    "araba": "Araba",
+    "cicek": "Çiçek",
+    "agac": "Ağaç",
+    "cocuk": "İnsan",
+    "dinozor": "Dinozor",
+    "gunes": "Güneş",
+    "surpriz": "Sürpriz"
+  }
+}

@@ -1,0 +1,14 @@
+# Minik Sanatçı sihir sunucusu (Cloudflare Worker)
+# Kurulum GitHub Actions ile otomatik: .github/workflows/sunucu.yml
+name = "minkino-sihir"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Hangi sitelerden istek kabul edilir (virgülle). Capacitor uygulaması için capacitor://localhost ve https://localhost.
+IZINLI_KOKENLER = "https://barisalia.github.io,capacitor://localhost,https://localhost,http://localhost:5173,http://localhost:4173"
+# gemini (Nano Banana) ya da recraft
+MOTOR = "gemini"
+GEMINI_MODEL = "gemini-3-pro-image-preview"
+# Kötüye kullanıma karşı: bir cihazdan (IP) dakikada en çok kaç sihir
+DAKIKA_SINIRI = "6"

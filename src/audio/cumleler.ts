@@ -4,6 +4,7 @@
  */
 import metinler from '../../content/metinler.json';
 import minoJson from '../../content/mino.json';
+import sanatciJson from '../../content/sanatci.json';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -136,6 +137,13 @@ export function tumCumleler(): string[] {
     ekle(minoCumle(m.istek, id));
     ekle(minoCumle(m.yiyecekler.includes(id) ? m.yedi_yiyecek : m.yedi_diger, id));
     ekle(`${kart(id)?.ad ?? id}!`);
+  }
+  // Minik Sanatçı konuşmaları
+  const sn = sanatciJson as Record<string, unknown>;
+  for (const [k, v] of Object.entries(sn)) {
+    if (k === 'aciklama') continue;
+    if (k === 'konular') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
+    else for (const t of [v].flat() as string[]) ekle(t);
   }
   return [...set];
 }

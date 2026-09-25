@@ -1,0 +1,70 @@
+name: Sihir sunucusu (Cloudflare)
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths: ['sunucu/**', '.github/workflows/sunucu.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  kur:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      RECRAFT_API_KEY: ${{ secrets.RECRAFT_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Anahtarlar var mı?
+        id: kontrol
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Cloudflare anahtarları eklenmemiş (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID) — kurulum atlandı."
+            echo "hazir=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "hazir=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.kontrol.outputs.hazir == '1'
+        with:
+          node-version: 22
+
+      - name: Worker'ı yayınla
+        if: steps.kontrol.outputs.hazir == '1'
+        id: yayin
+        working-directory: sunucu/sihir
+        run: |
+          npx --yes wrangler@4 deploy 2>&1 | tee yayin.log
+          ADRES=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' yayin.log | head -1)
+          echo "adres=$ADRES" >> "$GITHUB_OUTPUT"
+          echo "Sunucu adresi: $ADRES"
+
+      - name: Gizli anahtarları yükle
+        if: steps.kontrol.outputs.hazir == '1'
+        working-directory: sunucu/sihir
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then echo "$GEMINI_API_KEY" | npx --yes wrangler@4 secret put GEMINI_API_KEY; fi
+          if [ -n "$RECRAFT_API_KEY" ]; then echo "$RECRAFT_API_KEY" | npx --yes wrangler@4 secret put RECRAFT_API_KEY; fi
+
+      - name: Sunucu adresini uygulamaya yaz
+        if: steps.kontrol.outputs.hazir == '1' && steps.yayin.outputs.adres != ''
+        env:
+          ADRES: ${{ steps.yayin.outputs.adres }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "{ \"sunucu\": \"$ADRES\" }" > public/sanatci/ayar.json
+          git add public/sanatci/ayar.json
+          if ! git diff --cached --quiet; then
+            git -c user.name="minkino-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Minik Sanatçı: sihir sunucusu adresi [skip ci]"
+            git pull --rebase -q origin "${GITHUB_REF_NAME}" || true
+            git push
+            gh workflow run yayinla.yml --ref "${GITHUB_REF_NAME}"
+          fi
+          curl -s "$ADRES/" || true

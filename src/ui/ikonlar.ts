@@ -19,5 +19,12 @@ export const IKON = {
   tac: s('<path d="M8 36h32M9 16l8 8 7-12 7 12 8-8-3 20H12z" fill="currentColor" stroke-width="4"/>'),
   onay: s('<path d="m11 25 9 9 17-19"/>'),
   sil: s('<path d="M10 14h28M19 14V9h10v5M14 14l2 26h16l2-26"/>'),
+  kalem: s('<path d="M31 9l8 8-21 21-10 2 2-10z" fill="currentColor" stroke-width="4"/><path d="M27 13l8 8"/>'),
+  sihir: s('<path d="M9 39 29 19"/><path d="m33 7 1.8 4.2L39 13l-4.2 1.8L33 19l-1.8-4.2L27 13l4.2-1.8z" fill="currentColor" stroke-width="2.5"/><path d="M40 25v4M38 27h4M18 8v4M16 10h4" stroke-width="3"/>'),
+  paylas: s('<path d="M24 29V7M15 15l9-9 9 9"/><path d="M11 23v14a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V23"/>'),
+  geriAl: s('<path d="M18 13 9 22l9 9"/><path d="M10 22h17a10 10 0 0 1 0 20h-5"/>'),
+  silgi: s('<path d="m21 38-9-9a3 3 0 0 1 0-4l14-14a3 3 0 0 1 4 0l9 9a3 3 0 0 1 0 4L27 38z" fill="currentColor" stroke-width="4"/><path d="M21 38h17"/>'),
+  resim: s('<rect x="7" y="9" width="34" height="30" rx="5"/><circle cx="17" cy="19" r="3.5" fill="currentColor"/><path d="m9 35 10-10 7 7 5-5 9 9"/>'),
+  yazdir: s('<path d="M14 18V8h20v10"/><rect x="7" y="18" width="34" height="14" rx="3"/><path d="M14 28h20v12H14z" fill="currentColor" stroke-width="4"/>'),
   el: s('<path d="M18 26V11a3 3 0 0 1 6 0v12m0-2a3 3 0 0 1 6 0v3m0-1a3 3 0 0 1 6 0v8c0 7-5 12-11 12s-9-3-12-8l-5-8a3 3 0 0 1 5-3l5 5"/>'),
 };
