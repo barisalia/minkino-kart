@@ -76,6 +76,21 @@ jobs:
 
       - run: npm run build
 
+      - name: Cloudflare'e de yayınla (telefonda denemek için; Pages kapalıyken de çalışır)
+        id: cf
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        working-directory: sunucu/site
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "Cloudflare anahtarı yok, atlandı"; exit 0; fi
+          npx --yes wrangler@4 deploy 2>&1 | tee yayin.log
+          ADRES=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' yayin.log | head -1)
+          echo "Site adresi: $ADRES"
+          echo "### Oyunlar yayında: $ADRES" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Mikrofon testi: $ADRES/ses-testi/" >> "$GITHUB_STEP_SUMMARY"
+
       - name: gh-pages dalına yayınla
         uses: peaceiris/actions-gh-pages@v4
         with:

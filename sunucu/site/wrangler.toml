@@ -1,0 +1,9 @@
+# Minkino oyunları — statik site (Cloudflare Workers, yalnızca dosya sunar; ücretsiz)
+# GitHub Pages kapalıyken de telefonda denenebilsin diye. Yayın: .github/workflows/yayinla.yml
+name = "minkino-site"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "../../dist"
+html_handling = "auto-trailing-slash"
+not_found_handling = "none"
