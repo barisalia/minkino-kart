@@ -12,7 +12,7 @@ import { acilisEkrani, cizEkrani, listeEkrani, sonucEkrani } from './ekranlar';
 import { resim, yasModu, type Mod } from './resimler';
 
 // Seslendirme kayıtları kart oyunuyla ortak (site kökündeki ses/ klasörü)
-sesKokuAyarla('../ses/');
+sesKokuAyarla('../ses/', './ses/');
 
 ekranKaydet('acilis', acilisEkrani);
 ekranKaydet('yas', yasEkrani);

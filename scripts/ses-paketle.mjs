@@ -11,7 +11,28 @@ const oncelikli = new Set();
 const metinler = JSON.parse(fs.readFileSync('content/metinler.json', 'utf8'));
 for (const v of Object.values(metinler)) for (const c of [v].flat()) oncelikli.add(c.split('{')[0].trim().slice(0, 12));
 const onde = (t) => [...oncelikli].some((o) => o && t.startsWith(o));
-const sirali = Object.entries(m.dosyalar).sort((a, b) => Number(onde(b[0])) - Number(onde(a[0])));
+// --canlan: yalnızca Çiz Canlansın'ın söylediği cümleler (küçük tek paket)
+let girdiler = Object.entries(m.dosyalar);
+if (process.argv.includes('--canlan')) {
+  const c = JSON.parse(fs.readFileSync('content/canlan.json', 'utf8'));
+  const istenen = new Set();
+  const topla = (v) => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
+  for (const [k, v] of Object.entries(c)) {
+    if (['aciklama', 'puan', 'mod_ad'].includes(k)) continue;
+    if (k === 'resimler') Object.values(v).forEach((ad) => istenen.add(`${ad}!`));
+    else topla(v).forEach((t) => istenen.add(t));
+  }
+  ['Bir', 'İki', 'Üç', 'Dört', 'Beş', 'Altı', 'Yedi', 'Sekiz', 'Dokuz', 'On'].forEach((s) => istenen.add(`${s}!`));
+  istenen.add(metinler.acilis);
+  istenen.add(metinler.yas_sor);
+  for (const y of [3, 4, 5, 6]) istenen.add(metinler.yas_secildi.replace('{yas}', y));
+  const norm = (t) => t.replace(/\s+/g, ' ').trim();
+  const n = new Set([...istenen].map(norm));
+  girdiler = girdiler.filter(([t]) => n.has(norm(t)));
+  const eksik = [...n].filter((t) => !m.dosyalar[t]);
+  if (eksik.length) console.log('kaydı olmayan:', eksik.join(' | '));
+}
+const sirali = girdiler.sort((a, b) => Number(onde(b[0])) - Number(onde(a[0])));
 const paketler = [];
 const dosyalar = {};
 const cache = new Map();

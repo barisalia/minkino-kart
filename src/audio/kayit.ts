@@ -17,8 +17,12 @@ interface Manifest {
 let manifest: Manifest | null = null;
 /** Kayıtların bulunduğu klasör (alt klasördeki uygulamalar için, ör. Minik Sanatçı: '../ses/') */
 let kok = './ses/';
-export function sesKokuAyarla(yol: string) {
-  kok = yol.endsWith('/') ? yol : `${yol}/`;
+/** Asıl klasörde kayıt bulunamazsa sırayla denenecek yedek klasörler (ör. tek dosyalık önizlemede './ses/') */
+let yedekler: string[] = [];
+const bolu = (y: string) => (y.endsWith('/') ? y : `${y}/`);
+export function sesKokuAyarla(yol: string, ...yedek: string[]) {
+  kok = bolu(yol);
+  yedekler = yedek.map(bolu);
 }
 let manifestYukleniyor: Promise<void> | null = null;
 const tamponlar = new Map<string, Promise<AudioBuffer | null>>();
@@ -42,8 +46,21 @@ let calan: AudioBufferSourceNode | null = null;
 
 /** Manifest'i bir kez yükler (uygulama açılışında çağrılır). */
 export function kayitlariHazirla(): Promise<void> {
-  manifestYukleniyor ??= fetch(`${kok}manifest.json`)
-    .then((r) => (r.ok ? r.json() : null))
+  manifestYukleniyor ??= (async () => {
+    for (const k of [kok, ...yedekler]) {
+      try {
+        const r = await fetch(`${k}manifest.json`);
+        if (!r.ok) continue;
+        const m = (await r.json()) as Manifest;
+        if (!m?.dosyalar) continue;
+        kok = k;
+        return m;
+      } catch {
+        /* sonraki klasör */
+      }
+    }
+    return null;
+  })()
     .then((m: Manifest | null) => {
       manifest = m;
       // Paketli önizleme sürümü: paketleri sırayla arka planda indir
