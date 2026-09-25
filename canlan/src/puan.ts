@@ -411,6 +411,8 @@ export function noktaDizisi(c: SablonCizgi): Nokta[] {
   // kapalı şekilde başa dönen son nokta tekrar gösterilmez
   const [a, b] = [n[0], n[n.length - 1]];
   if (n.length > 2 && Math.hypot(a[0] - b[0], a[1] - b[1]) < 0.03) n.pop();
+  // en çok 10 nokta (4 yaş ona kadar sayar; sayı seslendirmeleri Bir…On)
+  if (n.length > 10) n = Array.from({ length: 10 }, (_, i) => n[Math.round((i * (n.length - 1)) / 9)]);
   return n;
 }
 

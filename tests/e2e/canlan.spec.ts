@@ -113,16 +113,42 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   expect(hatalar).toEqual([]);
 });
 
-test('Çiz Canlansın: 4 yaş noktaları birleştir (ev)', async ({ page }, info) => {
+test('Çiz Canlansın: 4 yaş noktaları birleştir (ev) — sürükle, noktaya yapışsın', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./canlan/?test=1&yas=4&ekran=ciz&resim=ev&mod=nokta');
   await expect(page.locator('.cc-nokta').first()).toBeVisible();
-  await expect(page.locator('.cc-nokta.siradaki')).toHaveCount(1);
+  await expect(page.locator('.cc-nokta.siradaki.ilk')).toHaveCount(1);
+  await expect(page.locator('.cc-adimlar i')).toHaveCount(3);
+  // yanlış yerden başlamak: nokta sallanır, bir şey çizilmez
+  const r = (await page.locator('.cc-kagit .ms-tuval').boundingBox())!;
+  await page.mouse.click(r.x + r.width * 0.9, r.y + r.height * 0.1);
+  await expect(page.locator('.cc-nokta.salla')).toHaveCount(1);
   await page.screenshot({ path: `tests/screens/${info.project.name}-35-canlan-nokta.png` });
+  // ilk çizgiyi yarıya kadar çizip bırak: yapışan noktalar kalır
+  const duvar = await page.evaluate(() => (window as unknown as { __canlan: { resim: (id: string) => { cizgiler: { n: [number, number][] }[] } } }).__canlan.resim('ev').cizgiler[0].n);
+  await page.mouse.move(r.x + duvar[0][0] * r.width, r.y + duvar[0][1] * r.height);
+  await page.mouse.down();
+  for (let k = 1; k <= 14; k++) await page.mouse.move(r.x + duvar[0][0] * r.width, r.y + (duvar[0][1] + ((duvar[1][1] - duvar[0][1]) * k) / 14) * r.height);
+  await page.mouse.up();
+  await expect(page.locator('.cc-nokta.yandi').first()).toBeAttached();
+  await page.screenshot({ path: `tests/screens/${info.project.name}-35b-canlan-nokta-yarim.png` });
+  await page.getByRole('button', { name: 'Temizle' }).click();
+  await expect(page.locator('.cc-nokta.yandi')).toHaveCount(0);
   await ciz(page, 'ev');
   await bittiyse(page);
   await expect(page.locator('.cc-sonuc')).toBeVisible();
   expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBeGreaterThanOrEqual(2);
+  expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: noktalarla kedi — gözler tek dokunuşla, 3 yıldız', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./canlan/?test=1&yas=4&ekran=ciz&resim=kedi&mod=nokta');
+  await expect(page.locator('.cc-nokta').first()).toBeVisible();
+  await ciz(page, 'kedi');
+  await bittiyse(page);
+  await expect(page.locator('.cc-sonuc')).toBeVisible();
+  expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBe(3);
   expect(hatalar).toEqual([]);
 });
 

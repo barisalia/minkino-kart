@@ -118,6 +118,12 @@ export const efekt = {
     const adet = sade ? 4 : 9;
     for (let i = 0; i < adet; i++) can(NOTA(penta[Math.floor(Math.random() * penta.length)]), 0.04 + Math.random() * (sade ? 0.25 : 0.55), sade ? 0.05 : 0.07, 0.22);
   },
+  /** Nokta birleştirmede her noktada bir üst nota (pentatonik, kulağa hep hoş gelir). */
+  nota(sira: number) {
+    const olcek = [72, 74, 76, 79, 81, 84, 86, 88, 91, 93, 96];
+    const n = olcek[Math.min(olcek.length - 1, Math.max(0, sira))];
+    can(NOTA(n), 0, 0.2, 0.45);
+  },
   yildiz(sira: number) {
     const n = [76, 79, 84][sira] ?? 84;
     can(NOTA(n), 0, 0.25, 0.7);

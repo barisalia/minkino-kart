@@ -9,8 +9,9 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Tuval, type Cizgi } from '../../sanatci/src/tuval';
 import { boyaBolgesi, boyaResmi, sihirliBoya, type Boya } from './boya';
 import { canliCizim, sablonSvg, yolD } from './canlandir';
+import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
-import { AYAR, canlanirMi, noktaDizisi, ornekle, puanla } from './puan';
+import { AYAR, canlanirMi, ornekle, puanla } from './puan';
 import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } from './resimler';
 import { SUS } from './susler';
 
@@ -160,6 +161,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   const alan = h('div.cc-alan', {}, kagit);
   let kapandi = false;
   let bitiyor = false;
+  const kapanis: (() => void)[] = [];
   const tol = AYAR.tolerans[mod] * (AYAR.yas_carpani[String(yas())] ?? 1);
 
   // --- Renkler
@@ -177,7 +179,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   }
 
   const bitti = h('button.dugme.cc-bitti', { type: 'button', 'aria-label': 'Bitti', disabled: true }, svg(IKON.onay), h('span', {}, 'Bitti'));
-  bitti.addEventListener('click', () => bitir());
+  bitti.addEventListener('click', () => bitir(nokta?.hata));
 
   // --- Canlı geri bildirim (yol boyanır / noktalar yanar)
   let geriBildirim: (p: Nokta) => void = () => undefined;
@@ -214,58 +216,40 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
       });
     };
     tamamMi = () => sayi / noktalar.length >= 0.93;
+    // Bir süre çizilmezse parmak, boyanmamış ilk yolu gösterir
+    const sinirlar: [number, number][] = [];
+    let k = 0;
+    for (const c of r.cizgiler) {
+      const n = ornekle(c.n, 0.02).length;
+      sinirlar.push([k, k + n]);
+      k += n;
+    }
+    const ipucu = parmakIpucu(kagit);
+    let bosta: number | undefined;
+    const bostaKur = () => {
+      clearTimeout(bosta);
+      ipucu.gizle();
+      bosta = window.setTimeout(() => {
+        if (kapandi) return;
+        const i = sinirlar.findIndex(([a, b]) => dolu.slice(a, b).reduce((t, v) => t + v, 0) / (b - a) < 0.8);
+        if (i < 0) return;
+        const [a, b] = sinirlar[i];
+        let bas = a;
+        while (bas < b && dolu[bas]) bas++;
+        ipucu.goster(noktalar.slice(Math.max(a, bas - 1), Math.min(b, bas + 18)));
+      }, 3000);
+    };
+    kagit.addEventListener('pointerdown', bostaKur);
+    kagit.addEventListener('pointerup', bostaKur);
+    bostaKur();
+    kapanis.push(() => {
+      clearTimeout(bosta);
+      ipucu.gizle();
+    });
   }
 
-  if (mod === 'nokta') {
-    const diziler = r.cizgiler.map((c) => noktaDizisi(c));
-    let sira = 0;
-    let yanan = new Set<number>();
-    const katman = sv('g', { class: 'cc-noktalar' });
-    ust.append(katman);
-    const ciz = () => {
-      katman.replaceChildren();
-      diziler.forEach((d, s) => {
-        if (s > sira) return;
-        d.forEach(([x, y], i) => {
-          if (s < sira) {
-            katman.append(sv('circle', { cx: x, cy: y, r: 0.012, class: 'cc-nokta-eski' }));
-            return;
-          }
-          const yandi = yanan.has(i);
-          const ilkSonmemis = [...d.keys()].find((k) => !yanan.has(k));
-          const g = sv('g', { class: `cc-nokta${yandi ? ' yandi' : ''}${i === ilkSonmemis ? ' siradaki' : ''}`, transform: `translate(${x} ${y})` });
-          g.append(sv('circle', { r: 0.034 }));
-          if (d.length > 1) {
-            const t = sv('text', { y: 0.013 });
-            t.textContent = String(i + 1);
-            g.append(t);
-          }
-          katman.append(g);
-        });
-      });
-    };
-    ciz();
-    geriBildirim = ([x, y]) => {
-      const d = diziler[sira];
-      if (!d) return;
-      let degisti = false;
-      d.forEach(([a, b], i) => {
-        if (!yanan.has(i) && Math.hypot(a - x, b - y) < 0.05) {
-          yanan.add(i);
-          degisti = true;
-          efekt.yildiz(Math.min(4, i));
-        }
-      });
-      if (!degisti) return;
-      if (yanan.size === d.length) {
-        sira++;
-        yanan = new Set();
-        if (sira < diziler.length) efekt.eslesti();
-      }
-      ciz();
-    };
-    tamamMi = () => sira >= diziler.length;
-  }
+  let nokta: NoktaOyunu | null = null;
+  if (mod === 'nokta') nokta = noktaOyunu({ r, kagit, ust, tuval, bitti: (hata) => bitir(hata) });
 
   let model: HTMLElement | null = null;
   if (mod === 'kopya') {
@@ -295,7 +279,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
     }
   };
 
-  function bitir() {
+  function bitir(hata?: number) {
     if (kapandi) return;
     if (tuval.bosMu()) {
       bitiyor = false;
@@ -303,7 +287,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
       return;
     }
     efekt.secim();
-    app.git('sonuc', { id: r.id, mod, cizgiler: tuval.cizgiler.filter((c) => !c.silgi) });
+    app.git('sonuc', { id: r.id, mod, cizgiler: tuval.cizgiler.filter((c) => !c.silgi), hata: hata ?? nokta?.hata });
   }
 
   // --- Hafızadan: 3 saniye göster, sonra sakla
@@ -358,9 +342,9 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
     h(
       'div.ust-cubuk',
       {},
-      h('div.ust-grup', {}, yuvarlakDugme(IKON.geri, 'Resimler', () => app.git('liste')), yuvarlakDugme(IKON.geriAl, 'Geri al', () => tuval.geriAl(), 'kucuk')),
+      h('div.ust-grup', {}, yuvarlakDugme(IKON.geri, 'Resimler', () => app.git('liste')), yuvarlakDugme(IKON.geriAl, 'Geri al', () => (nokta ? nokta.geriAl() : tuval.geriAl()), 'kucuk')),
       balon,
-      h('div.ust-grup', {}, ...(gozDugme ? [gozDugme] : []), yuvarlakDugme(IKON.sil, 'Temizle', () => tuval.temizle(), 'kucuk')),
+      h('div.ust-grup', {}, ...(gozDugme ? [gozDugme] : []), yuvarlakDugme(IKON.sil, 'Temizle', () => (nokta ? nokta.temizle() : tuval.temizle()), 'kucuk')),
     ),
     h('div.cc-calisma', {}, ...(model ? [model] : []), alan),
     h('div.cc-alt', {}, palet, bitti),
@@ -370,6 +354,8 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
     el,
     kapat() {
       kapandi = true;
+      nokta?.kapat();
+      kapanis.forEach((f) => f());
       tuval.kapat();
     },
   };
@@ -378,9 +364,11 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
 // ---------------------------------------------------------------- Sonuç: yıldız → boya → canlan
 const BOYALAR = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#2FB5A5', '#6CC8FF', '#3E9DF2', '#9B5CE0', '#FF7EB6', '#A0522D', '#FFFFFF', '#3b3b3b'];
 
-export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: Cizgi[] }): Ekran {
+export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: Cizgi[]; hata?: number }): Ekran {
   const r = resim(p.id) ?? RESIMLER[0];
   const sonuc = puanla(r, p.cizgiler.map((c) => c.noktalar), p.mod, yas());
+  // Nokta birleştirmede çizgi zaten düzgün çıkar; yıldızı yanlış başlangıç sayısı belirler
+  if (p.mod === 'nokta' && p.hata !== undefined) sonuc.yildiz = Math.min(sonuc.yildiz, p.hata <= 2 ? 3 : p.hata <= 6 ? 2 : 1) as typeof sonuc.yildiz;
   yildizKaydet(p.mod, r.id, sonuc.yildiz);
   // en uzun çizginin rengi
   const ana = [...p.cizgiler].sort((a, b) => b.noktalar.length - a.noktalar.length)[0];

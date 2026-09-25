@@ -181,7 +181,7 @@ describe('Çiz Canlansın: puanlama', () => {
     expect(cati.length).toBeGreaterThanOrEqual(3);
     expect(cati.length).toBeLessThanOrEqual(8);
     expect(noktaDizisi(resim('balik')!.cizgiler[2])).toHaveLength(1);
-    for (const r of RESIMLER) for (const c of r.cizgiler) expect(noktaDizisi(c).length, r.id).toBeLessThanOrEqual(11);
+    for (const r of RESIMLER) for (const c of r.cizgiler) expect(noktaDizisi(c).length, r.id).toBeLessThanOrEqual(10);
   });
 
   it('hızlı: en zor resimde hizalamalı puanlama 150 ms altında', () => {
