@@ -108,3 +108,11 @@ Barış'ın kuralı: **2D vektör, yüksek kalite, premium glossy cartoon, çocu
 6. Capacitor ile iOS/Android paketi, mağaza ikonları, açılış ekranı; tek Minkino kabuk uygulaması (oyunlar `oyunuBaslat(kok, { cikis })` gibi giriş noktalarıyla gömülür).
 7. Abonelik (RevenueCat vb.); altyapı `src/engine/odul.ts` → `ABONELIK_AKTIF = false`.
 8. Mino: ayrı karakter sesi, kol hareketleri (ORTAK_NOTLAR'daki ONAY BEKLİYOR maddeleri).
+
+## 10. Bulut + yerel çalışma düzeni
+
+- **Claude (bulut)** yalnızca `claude/awesome-cori-kvcfd7` dalında çalışır ve oraya push eder. **Yerel ekip** bu dala doğrudan push etmez; kendi dallarında çalışır (`ekip/<konu>`), GitHub'a push eder.
+- Yerel ekip, bulutta yapılanları almak için: `git fetch origin && git merge origin/claude/awesome-cori-kvcfd7` (kendi dalına). CI'ın ürettiği görsel/ses commit'leri de bu yolla gelir.
+- Claude, ekibin işini görmek/almak için ekibin GitHub'a push ettiği dalı okur; yerel bilgisayardaki push edilmemiş dosyaları göremez.
+- Aynı dosyada aynı anda çalışmayın: iş bölüşümü `ORTAK_NOTLAR.md`'ye yazılır (kim, hangi uygulama/dosya). `ORTAK_NOTLAR.md`'ye yalnız en alta satır eklendiği için çakışma kolay çözülür: iki tarafın satırları da tutulur.
+- Final: ekibin dalları ve bulut dalı PR ile `main`'de birleşir; yerelde `git pull` ile herkes son hâli alır.

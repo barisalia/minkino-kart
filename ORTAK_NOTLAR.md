@@ -100,3 +100,4 @@ Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her otu
 - 2026-09-25 Barış'ın yerel ekibi için rehber: `CLAUDE.md` (ürün, mimari, stil ve kredi kuralları, çalışma düzeni, açık işler). Yönetici ajan bunu okuyarak başlar.
 - 2026-09-25 ONAY BEKLİYOR: (1) Repoda `main` dalı yok; tüm iş `claude/awesome-cori-kvcfd7` dalında. Ekip için bu daldan `main` açılıp varsayılan yapılsın mı? (2) Uyuyan Orman eşikleri gerçek cihazda/çocukla denenip ayarlanmalı (ses-testi raporları).
 - 2026-09-25 Ekip rehberinin adı Barış'ın isteğiyle `CLAUDE.md` → `minkinogames1.md` oldu (yukarıdaki "CLAUDE.md §4" vb. atıflar bu dosyayı gösterir).
+- 2026-09-25 KARAR (Barış): Claude bulutta, ekip yerelde çalışır; ortak nokta GitHub (düzen: minkinogames1.md §10).
