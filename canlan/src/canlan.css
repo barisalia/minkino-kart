@@ -630,3 +630,66 @@
 .cc-kok .cc-sonuc-dugmeler .vurgu {
   animation: mk-nabiz 1.3s ease-in-out infinite;
 }
+
+/* ---------- Boyama ---------- */
+.cc-kok .cc-sahne.boyaniyor {
+  cursor: pointer;
+  box-shadow: 0 7px 0 var(--kontur-yumusak), 0 0 0 5px color-mix(in srgb, var(--sari) 70%, transparent), 0 16px 40px rgba(90, 54, 23, 0.16);
+}
+.cc-kok .cc-sahne.boyandi {
+  animation: cc-boyandi 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes cc-boyandi {
+  40% { transform: scale(1.03); }
+}
+.cc-kok .cc-boya-resim {
+  animation: cc-boya-gir 0.28s ease-out both;
+}
+@keyframes cc-boya-gir {
+  from { opacity: 0; }
+}
+.cc-kok .cc-boya-cubugu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.cc-kok .cc-boya-palet {
+  justify-content: center;
+  max-width: 560px;
+}
+.cc-kok .cc-boya-palet .cc-boya {
+  width: 40px;
+  height: 40px;
+}
+.cc-kok .cc-boya-arac {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cc-kok .cc-sihirli {
+  --r: var(--sari);
+}
+.cc-kok .cc-canlandir {
+  --r: var(--mor);
+  animation: mk-nabiz 1.4s ease-in-out infinite;
+}
+.cc-kok .cc-canlandir .ikon {
+  font-size: 30px;
+}
+/* canlanınca süsler sırayla "pıt" diye belirir */
+.cc-kok .cc-sus {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cc-sus 0.55s cubic-bezier(0.3, 1.7, 0.5, 1) both;
+  animation-delay: calc(0.95s + var(--i) * 0.14s);
+}
+@keyframes cc-sus {
+  from { transform: scale(0); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cc-kok .cc-sus,
+  .cc-kok .cc-canli.canlaniyor .cc-cizgi {
+    animation: none;
+  }
+}

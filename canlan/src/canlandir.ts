@@ -4,7 +4,9 @@
  * hizalama dönüşümünün tersiyle çocuğun çizimine taşınır.
  */
 import type { Donusum, Parcali } from './puan';
+import { parcaAlanlari } from './boya';
 import type { Hareket, Nokta, Resim, SablonCizgi } from './resimler';
+import { SUS } from './susler';
 
 const NS = 'http://www.w3.org/2000/svg';
 const el = <K extends keyof SVGElementTagNameMap>(ad: K, a: Record<string, string | number> = {}) => {
@@ -27,21 +29,40 @@ export function yolD(n: Nokta[]): string {
   return `${d}L${f(s[0])} ${f(s[1])}`;
 }
 
-/** Şablonu (örnek resim) çizer: liste kartı, bakarak çizme ve hafıza için. */
-export function sablonSvg(r: Resim, o: { kalinlik?: number; renk?: string; sinif?: string } = {}): SVGSVGElement {
+/**
+ * Şablonu (örnek resim) çizer.
+ * - "sus": liste kartındaki gibi bitmiş, boyalı ve süslü hâli
+ * - "acik": bakarak çizmede olduğu gibi çizgiler + hafif boya ipucu
+ * - "cizgi": yalnızca çizgiler
+ */
+export function sablonSvg(r: Resim, o: { kalinlik?: number; renk?: string; sinif?: string; tur?: 'sus' | 'acik' | 'cizgi' } = {}): SVGSVGElement {
   const s = el('svg', { viewBox: '0 0 1 1', class: o.sinif ?? 'cc-sablon', 'aria-hidden': 'true' });
+  const tur = o.tur ?? 'cizgi';
+  const g = SUS[r.id];
+  if (tur !== 'cizgi' && g) {
+    for (const p of [...new Set(r.cizgiler.map((c) => c.parca))]) {
+      const renk = g.boya[p];
+      if (!renk) continue;
+      for (const a of parcaAlanlari(r, p)) s.append(el('path', { d: `M${a.map(([x, y]) => `${x.toFixed(4)} ${y.toFixed(4)}`).join('L')}Z`, fill: renk, opacity: tur === 'acik' ? 0.28 : 1 }));
+    }
+  }
   const renkler = r.canlan.renkler ?? {};
   for (const c of r.cizgiler) {
     s.append(
       el('path', {
-        d: yolD(c.kapali ? [...c.n] : c.n),
+        d: yolD(c.n),
         fill: 'none',
-        stroke: renkler[c.parca] ?? o.renk ?? r.renk,
+        stroke: tur === 'sus' ? renkler[c.parca] ?? '#5a3617' : renkler[c.parca] ?? o.renk ?? r.renk,
         'stroke-width': o.kalinlik ?? 0.035,
         'stroke-linecap': 'round',
         'stroke-linejoin': 'round',
       }),
     );
+  }
+  if (tur === 'sus' && g) {
+    const sus = el('g');
+    sus.innerHTML = g.sus.map((x) => x.svg).join('');
+    s.append(sus);
   }
   return s;
 }
@@ -53,6 +74,12 @@ export interface Canli {
   durdur(): void;
   /** Eksik parçaları çocuğun çiziminin üstünde kesik çizgiyle göster. */
   hayalet(parcalar: string[] | 'hepsi'): void;
+  /** Bir parçanın boyasını koy (resim adresi, çizim koordinatında 1x1). null: kaldır. */
+  boyaKoy(parca: string, url: string | null): void;
+  /** Süsleri (yüz, parlama, pencere…) sırayla belirt. */
+  susGoster(): void;
+  /** Ekran noktasını çizim koordinatına çevirir. */
+  noktaAl(x: number, y: number): Nokta;
 }
 
 const ters = (p: Nokta, d: Donusum): Nokta => [(p[0] - d.tx) / d.s, (p[1] - d.ty) / d.s];
@@ -70,11 +97,14 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
 
   // parça grupları (şablondaki sırayla)
   const adlar = [...new Set([...r.cizgiler.map((c) => c.parca), ...parcalar.map((p) => p.parca)])];
-  const gruplar = new Map<string, { g: SVGGElement; yollar: { n: Nokta[]; p: SVGPathElement[] }[] }>();
+  const gruplar = new Map<string, { g: SVGGElement; boya: SVGGElement; sus: SVGGElement; yollar: { n: Nokta[]; p: SVGPathElement[] }[] }>();
   for (const ad of adlar) {
     const g = el('g', { 'data-parca': ad });
+    const boya = el('g', { class: 'cc-boya-katman' });
+    const sus = el('g', { class: 'cc-sus-katman' });
+    g.append(boya, sus);
     ic.append(g);
-    gruplar.set(ad, { g, yollar: [] });
+    gruplar.set(ad, { g, boya, sus, yollar: [] });
   }
   const tumNoktalar: Nokta[] = [];
   for (const p of parcalar) {
@@ -83,7 +113,8 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     const d = yolD(p.n);
     const alt = el('path', { d, class: 'cc-alt', 'stroke-width': o.kalinlik * 1.9 });
     const ust = el('path', { d, class: 'cc-cizgi', stroke: renk, 'stroke-width': o.kalinlik, pathLength: 1 });
-    grup.g.append(alt, ust);
+    grup.g.insertBefore(alt, grup.sus);
+    grup.g.insertBefore(ust, grup.sus);
     grup.yollar.push({ n: p.n, p: [alt, ust] });
     tumNoktalar.push(...p.n);
   }
@@ -165,6 +196,19 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     }
   }
 
+  const merkezler = new Map<string, Nokta>();
+  function parcaMerkezi(ad: string): Nokta {
+    let m = merkezler.get(ad);
+    if (!m) {
+      const n = gruplar.get(ad)?.yollar.flatMap((y) => y.n) ?? [];
+      m = n.length ? [n.reduce((a, p) => a + p[0], 0) / n.length, n.reduce((a, p) => a + p[1], 0) / n.length] : merkez;
+      merkezler.set(ad, m);
+    }
+    return m;
+  }
+  // şablon → çizim koordinatı
+  const matris = `matrix(${1 / k} 0 0 ${1 / k} ${-donusum.tx / k} ${-donusum.ty / k})`;
+
   let raf = 0;
   let bas = 0;
   const dalgalar = (h: Hareket[] | undefined) => (h ?? []).filter((x): x is Extract<Hareket, { tip: 'dalga' }> => x.tip === 'dalga');
@@ -180,12 +224,19 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
       const hareketler = r.canlan.parca?.[ad] ?? [];
       grup.g.setAttribute('transform', hareketler.map((h) => donusumYaz(h, tt, e)).join(' '));
       const d = [...tumDalga, ...dalgalar(hareketler)];
-      if (d.length && e > 0)
+      if (d.length && e > 0) {
         for (const y of grup.yollar) {
           const n = d.reduce((pts, h) => pts.map(dalgala(h, tt, e)), y.n);
           const yol = yolD(n);
           y.p.forEach((p) => p.setAttribute('d', yol));
         }
+        // boya ve süsler, parçanın ortasındaki kaymayla birlikte gider
+        const m = parcaMerkezi(ad);
+        const q = d.reduce((pt, h) => dalgala(h, tt, e)(pt), m);
+        const kay = `translate(${(q[0] - m[0]).toFixed(4)} ${(q[1] - m[1]).toFixed(4)})`;
+        grup.boya.setAttribute('transform', kay);
+        grup.sus.setAttribute('transform', kay);
+      }
     }
     raf = requestAnimationFrame(kare);
   }
@@ -200,6 +251,29 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     },
     durdur() {
       cancelAnimationFrame(raf);
+    },
+    boyaKoy(parca, url) {
+      const g = gruplar.get(parca);
+      if (!g) return;
+      g.boya.replaceChildren();
+      if (url) g.boya.append(el('image', { href: url, x: 0, y: 0, width: 1, height: 1, preserveAspectRatio: 'none', class: 'cc-boya-resim' }));
+    },
+    susGoster() {
+      const g = SUS[r.id];
+      if (!g) return;
+      g.sus.forEach((x, i) => {
+        const grup = gruplar.get(x.parca);
+        if (!grup) return;
+        const dis = el('g', { transform: matris });
+        const icg = el('g', { class: 'cc-sus', style: `--i:${i}` });
+        icg.innerHTML = x.svg;
+        dis.append(icg);
+        grup.sus.append(dis);
+      });
+    },
+    noktaAl(x, y) {
+      const b = svg.getBoundingClientRect();
+      return [(x - b.left) / b.width, (y - b.top) / b.height];
     },
     hayalet(liste) {
       svg.querySelector('.cc-hayalet')?.remove();

@@ -7,14 +7,16 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { baslikBalon, sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Tuval, type Cizgi } from '../../sanatci/src/tuval';
+import { boyaBolgesi, boyaResmi, sihirliBoya, type Boya } from './boya';
 import { canliCizim, sablonSvg, yolD } from './canlandir';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
 import { AYAR, canlanirMi, noktaDizisi, ornekle, puanla } from './puan';
 import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } from './resimler';
+import { SUS } from './susler';
 
 const S = canlan as unknown as {
   hosgeldin: string; sec: string; mod: Record<Mod, string>; mod_ad: Record<Mod, string>; simdi: string; sayac: string[];
-  yildiz: Record<string, string>; canlaniyor: string; eksik: string; tekrar: string; bos: string;
+  yildiz: Record<string, string>; canlaniyor: string; eksik: string; tekrar: string; bos: string; boya: string;
 };
 const NS = 'http://www.w3.org/2000/svg';
 const sv = <K extends keyof SVGElementTagNameMap>(ad: K, a: Record<string, string | number> = {}) => {
@@ -68,6 +70,9 @@ export function acilisEkrani(app: Uygulama): Ekran {
   vitrin.classList.add('cc-vitrin', 'canli');
   const c = canliCizim(r, p.parcalar, p.donusum, { kalinlik: 0.03, renk: r.renk });
   vitrin.append(c.el);
+  const boyalar = sihirliBoya(r, titrekKopya(r).map((n) => ({ n, kalinlik: 0.03 })), p.donusum);
+  new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca)).toDataURL()));
+  c.susGoster();
   c.baslat();
 
   const oyna = h('button.dugme.cc-oyna', { type: 'button', 'aria-label': 'Oyna' }, svg(IKON.oyna), h('span', {}, 'Oyna'));
@@ -99,7 +104,7 @@ export function listeEkrani(app: Uygulama): Ekran {
       const y = enIyi(mod, r.id);
       const yildizlar = h('div.cc-kart-yildiz', { 'aria-label': `${y} yıldız` });
       for (let k = 0; k < 3; k++) yildizlar.append(h(`i${k < y ? '.dolu' : ''}`, { html: IKON.yildiz }));
-      const b = h('button.cc-resim', { type: 'button', 'aria-label': r.ad, 'data-resim': r.id, style: `--i:${i};--r:${r.renk}` }, sablonSvg(r, { kalinlik: 0.045 }), h('span.cc-resim-ad', {}, r.ad), yildizlar);
+      const b = h('button.cc-resim', { type: 'button', 'aria-label': r.ad, 'data-resim': r.id, style: `--i:${i};--r:${r.renk}` }, sablonSvg(r, { kalinlik: 0.03, tur: 'sus' }), h('span.cc-resim-ad', {}, r.ad), yildizlar);
       b.addEventListener('click', () => {
         efekt.secim();
         app.git('ciz', { id: r.id, mod });
@@ -264,7 +269,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
 
   let model: HTMLElement | null = null;
   if (mod === 'kopya') {
-    model = h('div.cc-model', {}, sablonSvg(r, { kalinlik: 0.04 }));
+    model = h('div.cc-model', {}, sablonSvg(r, { kalinlik: 0.04, tur: 'acik' }));
   }
 
   // canlı izleme: çizim sırasında son noktalar
@@ -304,7 +309,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   // --- Hafızadan: 3 saniye göster, sonra sakla
   let gozDugme: HTMLButtonElement | null = null;
   if (mod === 'hafiza') {
-    const goster = sablonSvg(r, { kalinlik: 0.04, sinif: 'cc-hafiza-model' });
+    const goster = sablonSvg(r, { kalinlik: 0.04, sinif: 'cc-hafiza-model', tur: 'acik' });
     const sayac = h('div.cc-sayac', { 'aria-live': 'polite' });
     kagit.append(goster, sayac);
     kagit.classList.add('bakiyor');
@@ -370,7 +375,9 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   };
 }
 
-// ---------------------------------------------------------------- Sonuç
+// ---------------------------------------------------------------- Sonuç: yıldız → boya → canlan
+const BOYALAR = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#2FB5A5', '#6CC8FF', '#3E9DF2', '#9B5CE0', '#FF7EB6', '#A0522D', '#FFFFFF', '#3b3b3b'];
+
 export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: Cizgi[] }): Ekran {
   const r = resim(p.id) ?? RESIMLER[0];
   const sonuc = puanla(r, p.cizgiler.map((c) => c.noktalar), p.mod, yas());
@@ -381,6 +388,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   const sh = sahne(r);
   sh.append(canli.el);
   const kutu = h('div.cc-sonuc-kutu', {}, sh);
+  const cizgiler = p.cizgiler.map((c) => ({ n: c.noktalar, kalinlik: c.kalinlik }));
 
   const yildizlar = h('div.cc-yildizlar', { 'aria-label': `${sonuc.yildiz} yıldız`, 'data-yildiz': sonuc.yildiz });
   for (let i = 0; i < 3; i++) yildizlar.append(h('i', { html: IKON.yildiz }));
@@ -394,7 +402,58 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   tamamla.addEventListener('click', () => app.git('ciz', { id: r.id, mod: p.mod, devam: p.cizgiler }));
   const dugmeler = h('div.cc-sonuc-dugmeler', {}, tamamla, tekrar, ileri);
 
+  // --- Boyama
+  const boyalar: Boya[] = [];
+  let boyaRengi = SUS[r.id]?.boya[Object.keys(SUS[r.id]?.boya ?? {})[0]] ?? '#FFC72C';
+  let boyuyor = false;
+  const parcaCiz = (parca: string) => {
+    const liste = boyalar.filter((b) => b.parca === parca);
+    canli.boyaKoy(parca, liste.length ? boyaResmi(liste).toDataURL() : null);
+  };
+  const palet = h('div.cc-palet.cc-boya-palet', { role: 'radiogroup', 'aria-label': 'Boyalar' });
+  for (const renk of BOYALAR) {
+    const b = h(`button.cc-boya${renk === boyaRengi ? '.secili' : ''}`, { type: 'button', style: `--r:${renk}`, 'aria-label': 'Boya rengi', 'data-renk': renk });
+    b.addEventListener('click', () => {
+      boyaRengi = renk;
+      palet.querySelectorAll('.secili').forEach((x) => x.classList.remove('secili'));
+      b.classList.add('secili');
+      efekt.dokunma();
+    });
+    palet.append(b);
+  }
+  const geriAl = yuvarlakDugme(IKON.geriAl, 'Boyayı geri al', () => {
+    const b = boyalar.pop();
+    if (b) parcaCiz(b.parca);
+  }, 'kucuk');
+  const sihirli = yuvarlakDugme(IKON.sihir, 'Sihirli boya', () => {
+    const yeni = sihirliBoya(r, cizgiler, sonuc.donusum);
+    if (!yeni.length) return;
+    boyalar.push(...yeni);
+    new Set(yeni.map((b) => b.parca)).forEach(parcaCiz);
+    efekt.kilitAcildi();
+    sh.classList.remove('boyandi');
+    void sh.offsetWidth;
+    sh.classList.add('boyandi');
+  }, 'kucuk cc-sihirli');
+  const canlandir = h('button.dugme.cc-canlandir', { type: 'button', 'aria-label': 'Canlandır' }, svg(IKON.sihir), h('span', {}, 'Canlandır'));
+  const boyaCubugu = h('div.cc-boya-cubugu', { hidden: true }, palet, h('div.cc-boya-arac', {}, geriAl, sihirli, canlandir));
+  dugmeler.hidden = true;
+
+  sh.addEventListener('pointerdown', (e) => {
+    if (!boyuyor) return;
+    const q = canli.noktaAl(e.clientX, e.clientY);
+    const b = boyaBolgesi(r, cizgiler, sonuc.donusum, q);
+    if (!b) {
+      efekt.dokunma();
+      return;
+    }
+    boyalar.push({ ...b, renk: boyaRengi });
+    parcaCiz(b.parca);
+    efekt.yapis();
+  });
+
   let kapandi = false;
+  let bitirBoya: () => void = () => undefined;
   void (async () => {
     await bekle(sure(350));
     const kutular = [...yildizlar.children] as HTMLElement[];
@@ -406,15 +465,28 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     if (kapandi) return;
     const canlanir = canlanirMi(sonuc.yildiz);
     if (!canlanir) {
+      dugmeler.hidden = false;
       canli.hayalet(sonuc.eksik.length ? sonuc.eksik : 'hepsi');
       tekrar.classList.add('vurgu');
       await konus([sonuc.yildiz ? S.yildiz[String(sonuc.yildiz)] : '', S.tekrar]);
       return;
     }
-    void konus(S.yildiz[String(sonuc.yildiz)]);
-    await bekle(sure(700));
+    // Boyama: çocuk resmin içini boyar, sonra "Canlandır"
+    boyuyor = true;
+    boyaCubugu.hidden = false;
+    sh.classList.add('boyaniyor');
+    void konus([S.yildiz[String(sonuc.yildiz)], S.boya]);
+    await new Promise<void>((coz) => {
+      bitirBoya = coz;
+      canlandir.addEventListener('click', () => coz(), { once: true });
+    });
     if (kapandi) return;
+    boyuyor = false;
+    boyaCubugu.hidden = true;
+    dugmeler.hidden = false;
+    sh.classList.remove('boyaniyor');
     sh.classList.add('canli');
+    canli.susGoster();
     canli.baslat();
     efekt.kilitAcildi();
     const k = kutu.getBoundingClientRect();
@@ -434,12 +506,14 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     { 'data-yildiz': sonuc.yildiz, 'data-puan': sonuc.puan.toFixed(2), 'data-eksik': sonuc.eksik.join(',') },
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.ev, 'Ana ekran', () => app.git('acilis')), yildizlar, yuvarlakDugme(IKON.izgara, 'Resimler', () => app.git('liste'))),
     kutu,
+    boyaCubugu,
     dugmeler,
   );
   return {
     el,
     kapat() {
       kapandi = true;
+      bitirBoya();
       canli.durdur();
     },
   };

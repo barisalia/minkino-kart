@@ -39,6 +39,19 @@ async function ciz(page: Page, id: string, o: { olcek?: number; kay?: Nokta; tit
   }
 }
 
+/** Sonuç sahnesinde (çizim koordinatında) bir noktaya dokun. */
+async function sahneyeDokun(page: Page, x: number, y: number) {
+  const r = (await page.locator('.cc-sonuc .cc-canli').boundingBox())!;
+  await page.mouse.click(r.x + x * r.width, r.y + y * r.height);
+}
+
+async function sihirliBoyaVeCanlandir(page: Page) {
+  await expect(page.locator('.cc-boya-cubugu')).toBeVisible();
+  await page.getByRole('button', { name: 'Sihirli boya' }).click();
+  await page.getByRole('button', { name: 'Canlandır' }).click();
+  await expect(page.locator('.cc-sahne.canli')).toBeVisible();
+}
+
 async function bittiyse(page: Page) {
   // yol ve nokta modunda resim tamamlanınca kendiliğinden biter
   const sonuc = page.locator('.cc-sonuc');
@@ -70,7 +83,21 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   const sonuc = page.locator('.cc-sonuc');
   await expect(sonuc).toBeVisible();
   expect(Number(await sonuc.getAttribute('data-yildiz'))).toBeGreaterThanOrEqual(2);
+  // Boyama: gövdeye ve kuyruğa dokun
+  await expect(page.locator('.cc-boya-cubugu')).toBeVisible();
+  await sahneyeDokun(page, 0.45, 0.55);
+  await expect(page.locator('[data-parca="govde"] .cc-boya-resim')).toBeAttached();
+  await page.locator('.cc-boya-palet [data-renk="#3E9DF2"]').click();
+  await sahneyeDokun(page, 0.19, 0.5);
+  await expect(page.locator('[data-parca="kuyruk"] .cc-boya-resim')).toBeAttached();
+  // dışarıya dokunmak boyamaz
+  await sahneyeDokun(page, 0.05, 0.92);
+  await expect(page.locator('.cc-boya-resim')).toHaveCount(2);
+  await page.screenshot({ path: `tests/screens/${p}-33b-canlan-boya.png` });
+  await page.getByRole('button', { name: 'Canlandır' }).click();
   await expect(page.locator('.cc-sahne.canli')).toBeVisible();
+  await expect(page.locator('.cc-boya-cubugu')).toBeHidden();
+  await expect(page.locator('.cc-sus').first()).toBeAttached();
   await expect(page.locator('.cc-canli.canlaniyor [data-parca="kuyruk"] path').first()).toBeAttached();
   await page.waitForTimeout(2600);
   await page.screenshot({ path: `tests/screens/${p}-34-canlan-canlandi.png` });
@@ -108,7 +135,8 @@ test('Çiz Canlansın: 5 yaş bakarak çiz — başka yere küçük çizse de hi
   await page.getByRole('button', { name: 'Bitti' }).click();
   await expect(page.locator('.cc-sonuc')).toBeVisible();
   expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBeGreaterThanOrEqual(2);
-  await page.waitForTimeout(2200);
+  await sihirliBoyaVeCanlandir(page);
+  await page.waitForTimeout(2600);
   await page.screenshot({ path: `tests/screens/${info.project.name}-37-canlan-araba.png` });
   expect(hatalar).toEqual([]);
 });
@@ -123,7 +151,8 @@ test('Çiz Canlansın: 6 yaş hafızadan — resim görünür, kaybolur, sonra �
   await page.getByRole('button', { name: 'Bitti' }).click();
   await expect(page.locator('.cc-sonuc')).toBeVisible();
   expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBeGreaterThanOrEqual(2);
-  await page.waitForTimeout(1800);
+  await sihirliBoyaVeCanlandir(page);
+  await page.waitForTimeout(2400);
   await page.screenshot({ path: `tests/screens/${info.project.name}-38-canlan-yildiz.png` });
   expect(hatalar).toEqual([]);
 });
@@ -135,6 +164,7 @@ test('Çiz Canlansın: eksik parça — tekerleksiz araba "Tamamla" ile tamamlan
   await page.getByRole('button', { name: 'Bitti' }).click();
   const sonuc = page.locator('.cc-sonuc');
   await expect(sonuc).toHaveAttribute('data-eksik', 'teker2');
+  await page.getByRole('button', { name: 'Canlandır' }).click();
   await expect(page.getByRole('button', { name: 'Tamamla' })).toBeVisible();
   await expect(page.locator('.cc-hayalet path')).toHaveCount(1);
   await page.screenshot({ path: `tests/screens/${info.project.name}-39-canlan-eksik.png` });
@@ -164,6 +194,7 @@ test('Çiz Canlansın: karalama canlanmaz, "Tekrar" önerilir', async ({ page })
   await expect(page.locator('.cc-sonuc')).toBeVisible();
   expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBeLessThanOrEqual(1);
   await expect(page.locator('.cc-tekrar.vurgu')).toBeVisible();
+  await expect(page.locator('.cc-boya-cubugu')).toBeHidden();
   await expect(page.locator('.cc-sahne.canli')).toHaveCount(0);
   expect(hatalar).toEqual([]);
 });
