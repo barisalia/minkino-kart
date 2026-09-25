@@ -69,6 +69,13 @@ export class Tuval {
     this.onDegisim();
   }
 
+  /** Kayıtlı çizgileri geri yükler (yarım kalan çizime devam). */
+  yukle(cizgiler: Cizgi[]) {
+    this.cizgiler = cizgiler.map((c) => ({ ...c, noktalar: [...c.noktalar] }));
+    this.ciz();
+    this.onDegisim();
+  }
+
   bosMu() {
     return !this.cizgiler.some((c) => !c.silgi);
   }

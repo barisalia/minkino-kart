@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
-// İki ayrı uygulama: kart oyunu (/) ve Minik Sanatçı (/sanatci/)
+// Ayrı uygulamalar: kart oyunu (/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/)
 export default defineConfig({
   base: './',
   build: {
@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         kartlar: resolve(__dirname, 'index.html'),
         sanatci: resolve(__dirname, 'sanatci/index.html'),
+        canlan: resolve(__dirname, 'canlan/index.html'),
       },
     },
   },

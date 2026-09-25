@@ -5,6 +5,7 @@
 import metinler from '../../content/metinler.json';
 import minoJson from '../../content/mino.json';
 import sanatciJson from '../../content/sanatci.json';
+import canlanJson from '../../content/canlan.json';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -144,6 +145,14 @@ export function tumCumleler(): string[] {
     if (k === 'aciklama') continue;
     if (k === 'konular') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
     else for (const t of [v].flat() as string[]) ekle(t);
+  }
+  // Çiz Canlansın konuşmaları (puan ayarları hariç)
+  const cz = canlanJson as Record<string, unknown>;
+  const topla = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
+  for (const [k, v] of Object.entries(cz)) {
+    if (k === 'aciklama' || k === 'puan' || k === 'mod_ad') continue;
+    if (k === 'resimler') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
+    else topla(v).forEach(ekle);
   }
   return [...set];
 }

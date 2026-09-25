@@ -1,0 +1,90 @@
+{
+  "aciklama": "Çiz Canlansın konuşmaları ve puan ayarları. Konuşmalar kısa (en çok 4 kelime). Puan ayarları çocuklarla denedikçe buradan oynanır.",
+  "hosgeldin": "Çiz, canlansın!",
+  "sec": "Ne çizelim?",
+  "mod": {
+    "iz": "Yolu takip et!",
+    "nokta": "Noktaları birleştir!",
+    "kopya": "Bak ve çiz!",
+    "hafiza": "İyi bak!"
+  },
+  "mod_ad": {
+    "iz": "Yol",
+    "nokta": "Nokta",
+    "kopya": "Bak çiz",
+    "hafiza": "Hafıza"
+  },
+  "simdi": "Şimdi çiz!",
+  "sayac": [
+    "Üç!",
+    "İki!",
+    "Bir!"
+  ],
+  "yildiz": {
+    "1": "Güzel deneme!",
+    "2": "Çok güzel!",
+    "3": "Harika!"
+  },
+  "canlaniyor": "Canlanıyor!",
+  "eksik": "Bir şey eksik!",
+  "tekrar": "Bir daha dene!",
+  "bos": "Önce çiz!",
+  "resimler": {
+    "top": "Top",
+    "gunes": "Güneş",
+    "kalp": "Kalp",
+    "gokkusagi": "Gökkuşağı",
+    "bulut": "Bulut",
+    "yildiz": "Yıldız",
+    "balik": "Balık",
+    "ev": "Ev",
+    "elma": "Elma",
+    "agac": "Ağaç",
+    "balon": "Balon",
+    "yilan": "Yılan",
+    "kardan": "Kardan adam",
+    "araba": "Araba",
+    "tekne": "Tekne",
+    "cicek": "Çiçek",
+    "kelebek": "Kelebek",
+    "kedi": "Kedi"
+  },
+  "puan": {
+    "aciklama": "tolerans: tuvalin kenarına oranla kabul edilen sapma. yas_carpani: küçük yaşta tolerans büyür. yildiz: 1/2/3 yıldız için gereken puan (0-1). canlanma_yildiz: resmin canlanması için gereken yıldız.",
+    "tolerans": {
+      "iz": 0.04,
+      "nokta": 0.04,
+      "kopya": 0.045,
+      "hafiza": 0.05
+    },
+    "yas_carpani": {
+      "3": 1.35,
+      "4": 1.15,
+      "5": 1,
+      "6": 0.9
+    },
+    "yildiz": {
+      "iz": [
+        0.3,
+        0.6,
+        0.85
+      ],
+      "nokta": [
+        0.3,
+        0.6,
+        0.85
+      ],
+      "kopya": [
+        0.3,
+        0.6,
+        0.82
+      ],
+      "hafiza": [
+        0.3,
+        0.55,
+        0.78
+      ]
+    },
+    "canlanma_yildiz": 2
+  }
+}

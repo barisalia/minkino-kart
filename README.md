@@ -5,6 +5,7 @@
 **Canlı sürümler (telefonda aç):**
 - Kart oyunu (+ Mino): https://barisalia.github.io/minkino-kart/
 - Minik Sanatçı: https://barisalia.github.io/minkino-kart/sanatci/
+- Çiz Canlansın: https://barisalia.github.io/minkino-kart/canlan/
 
 ## Geliştirme
 

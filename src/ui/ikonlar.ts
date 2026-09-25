@@ -26,5 +26,9 @@ export const IKON = {
   silgi: s('<path d="m21 38-9-9a3 3 0 0 1 0-4l14-14a3 3 0 0 1 4 0l9 9a3 3 0 0 1 0 4L27 38z" fill="currentColor" stroke-width="4"/><path d="M21 38h17"/>'),
   resim: s('<rect x="7" y="9" width="34" height="30" rx="5"/><circle cx="17" cy="19" r="3.5" fill="currentColor"/><path d="m9 35 10-10 7 7 5-5 9 9"/>'),
   yazdir: s('<path d="M14 18V8h20v10"/><rect x="7" y="18" width="34" height="14" rx="3"/><path d="M14 28h20v12H14z" fill="currentColor" stroke-width="4"/>'),
+  goz: s('<path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24z"/><circle cx="24" cy="24" r="5" fill="currentColor"/>'),
+  yol: s('<path d="M8 36c6-14 12 4 18-10s10-10 14-12" stroke-dasharray="4 7"/><circle cx="8" cy="36" r="4" fill="currentColor"/>'),
+  noktalar: s('<circle cx="10" cy="36" r="4" fill="currentColor"/><circle cx="20" cy="14" r="4" fill="currentColor"/><circle cx="32" cy="30" r="4" fill="currentColor"/><circle cx="40" cy="10" r="4" fill="currentColor"/>'),
+  beyin: s('<path d="M24 10a7 7 0 0 0-12 3 7 7 0 0 0-3 12 7 7 0 0 0 5 10 7 7 0 0 0 10 3zM24 10a7 7 0 0 1 12 3 7 7 0 0 1 3 12 7 7 0 0 1-5 10 7 7 0 0 1-10 3z"/><path d="M24 10v28"/>'),
   el: s('<path d="M18 26V11a3 3 0 0 1 6 0v12m0-2a3 3 0 0 1 6 0v3m0-1a3 3 0 0 1 6 0v8c0 7-5 12-11 12s-9-3-12-8l-5-8a3 3 0 0 1 5-3l5 5"/>'),
 };
