@@ -52,6 +52,13 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: npx vite-node scripts/seslendir.ts -- ${{ inputs.ses_duzelt && '--duzelt' || '' }}
 
+      - name: Eksik ses efektlerini üret (ElevenLabs Sound Effects)
+        if: ${{ !inputs.ses_karsilastir }}
+        continue-on-error: true
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: node scripts/efekt-sesleri.mjs
+
       - name: Yeni görsel ve sesleri repoya kaydet
         continue-on-error: true
         run: |

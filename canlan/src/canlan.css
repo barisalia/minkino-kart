@@ -792,3 +792,6 @@
 .cc-kok .cc-sahne.canli .cc-golge {
   opacity: 1;
 }
+.cc-kok .cc-sahne.canli {
+  cursor: pointer;
+}

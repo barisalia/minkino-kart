@@ -24,6 +24,8 @@ export type Hareket =
   | { tip: 'dalga'; genlik: number; boy: number; hiz: number; eksen: 'x' | 'y' };
 
 export type Yol = 'yuz' | 'git' | 'yuksel' | 'suzul';
+/** Canlanan resme dokununca hafif tepki */
+export type Tepki = 'atis' | 'zipla' | 'salla' | 'don' | 'titre';
 export type Sahne = 'gok' | 'deniz' | 'okyanus' | 'cayir' | 'gece' | 'yol' | 'kar';
 
 export interface Resim {
@@ -36,7 +38,7 @@ export interface Resim {
   /** Eksik sayılmayan küçük parçalar (göz gibi) */
   kucukParcalar?: string[];
   /** zemin: yere basan resimde çizimin alt kenarının sahnedeki yeri (0..1) */
-  canlan: { tum?: Hareket[]; parca?: Record<string, Hareket[]>; yol?: Yol; renkler?: Record<string, string>; zemin?: number };
+  canlan: { tum?: Hareket[]; parca?: Record<string, Hareket[]>; yol?: Yol; renkler?: Record<string, string>; zemin?: number; tepki?: Tepki };
 }
 
 // ---------- şekil yardımcıları ----------
@@ -93,7 +95,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'serit', n: yay(0.5, 0.95, 0.42, 0.42, 232, 308, 16) },
     ],
     kucukParcalar: ['serit'],
-    canlan: { zemin: 0.9, tum: [{ tip: 'zipla', yukseklik: 0.16, hiz: 0.9, zemin: 0.8 }] },
+    canlan: { tepki: 'zipla', zemin: 0.9, tum: [{ tip: 'zipla', yukseklik: 0.16, hiz: 0.9, zemin: 0.8 }] },
   },
   {
     id: 'gunes', ad: ad('gunes'), zorluk: 1, renk: '#FF8A2B', sahne: 'gok',
@@ -104,12 +106,12 @@ export const RESIMLER: Resim[] = [
         return { parca: 'isinlar', n: [[0.5 + 0.25 * Math.cos(a), 0.5 + 0.25 * Math.sin(a)], [0.5 + 0.37 * Math.cos(a), 0.5 + 0.37 * Math.sin(a)]] };
       }),
     ],
-    canlan: { tum: [{ tip: 'olcek', pivot: [0.5, 0.5], x: 1.06, y: 1.06, hiz: 1.2 }], parca: { isinlar: [{ tip: 'cevir', pivot: [0.5, 0.5], hiz: 0.12 }] } },
+    canlan: { tepki: 'salla', tum: [{ tip: 'olcek', pivot: [0.5, 0.5], x: 1.06, y: 1.06, hiz: 1.2 }], parca: { isinlar: [{ tip: 'cevir', pivot: [0.5, 0.5], hiz: 0.12 }] } },
   },
   {
     id: 'kalp', ad: ad('kalp'), zorluk: 1, renk: '#FF4F8B', sahne: 'gok',
     cizgiler: [{ parca: 'kalp', n: kalpSekli(0.5, 0.5, 0.36), kapali: true }],
-    canlan: { tum: [{ tip: 'olcek', pivot: [0.5, 0.55], x: 1.14, y: 1.14, hiz: 1.3 }], yol: 'suzul' },
+    canlan: { tepki: 'atis', tum: [{ tip: 'olcek', pivot: [0.5, 0.55], x: 1.14, y: 1.14, hiz: 1.3 }], yol: 'suzul' },
   },
   {
     id: 'gokkusagi', ad: ad('gokkusagi'), zorluk: 1, renk: '#9B5CE0', sahne: 'gok',
@@ -118,7 +120,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'orta', n: yay(0.5, 0.72, 0.28, 0.28, 180, 360, 24) },
       { parca: 'ic', n: yay(0.5, 0.72, 0.18, 0.18, 180, 360, 18) },
     ],
-    canlan: {
+    canlan: { tepki: 'atis',
       tum: [{ tip: 'olcek', pivot: [0.5, 0.72], x: 1.04, y: 1.08, hiz: 0.8 }],
       yol: 'suzul',
       renkler: { dis: '#F0413F', orta: '#FFC72C', ic: '#3E9DF2' },
@@ -133,12 +135,12 @@ export const RESIMLER: Resim[] = [
       { parca: 'yagmur', n: [[0.66, 0.7], [0.63, 0.8]] },
     ],
     kucukParcalar: ['yagmur'],
-    canlan: { tum: [{ tip: 'kaydir', dx: 0.08, dy: 0, hiz: 0.18 }], parca: { yagmur: [{ tip: 'kaydir', dx: 0, dy: 0.03, hiz: 1.6 }] } },
+    canlan: { tepki: 'titre', tum: [{ tip: 'kaydir', dx: 0.08, dy: 0, hiz: 0.18 }], parca: { yagmur: [{ tip: 'kaydir', dx: 0, dy: 0.03, hiz: 1.6 }] } },
   },
   {
     id: 'yildiz', ad: ad('yildiz'), zorluk: 2, renk: '#FFB000', sahne: 'gece',
     cizgiler: [{ parca: 'yildiz', n: yildizSekli(0.5, 0.52, 0.36, 0.15), kapali: true }],
-    canlan: { tum: [{ tip: 'don', pivot: [0.5, 0.52], aci: 14, hiz: 0.7 }, { tip: 'olcek', pivot: [0.5, 0.52], x: 1.08, y: 1.08, hiz: 1.4 }], yol: 'suzul' },
+    canlan: { tepki: 'don', tum: [{ tip: 'don', pivot: [0.5, 0.52], aci: 14, hiz: 0.7 }, { tip: 'olcek', pivot: [0.5, 0.52], x: 1.08, y: 1.08, hiz: 1.4 }], yol: 'suzul' },
   },
   {
     id: 'balik', ad: ad('balik'), zorluk: 2, renk: '#FF8A2B', sahne: 'deniz',
@@ -148,7 +150,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'goz', n: daire(0.66, 0.45, 0.025, 0.025, 10), kapali: true },
     ],
     kucukParcalar: ['goz'],
-    canlan: { yol: 'yuz', parca: { kuyruk: [{ tip: 'olcek', pivot: [0.26, 0.5], x: 0.55, y: 1, hiz: 2.4 }] } },
+    canlan: { tepki: 'salla', yol: 'yuz', parca: { kuyruk: [{ tip: 'olcek', pivot: [0.26, 0.5], x: 0.55, y: 1, hiz: 2.4 }] } },
   },
   {
     id: 'ev', ad: ad('ev'), zorluk: 2, renk: '#F0413F', sahne: 'cayir',
@@ -157,7 +159,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'cati', n: [[0.2, 0.49], [0.5, 0.18], [0.8, 0.49], [0.2, 0.49]], kapali: true },
       { parca: 'kapi', n: [[0.44, 0.86], [0.44, 0.66], [0.56, 0.66], [0.56, 0.86]] },
     ],
-    canlan: {
+    canlan: { tepki: 'zipla',
       tum: [{ tip: 'olcek', pivot: [0.5, 0.86], x: 1.05, y: 0.94, hiz: 1.1 }, { tip: 'don', pivot: [0.5, 0.86], aci: 4, hiz: 0.55 }],
       parca: { cati: [{ tip: 'don', pivot: [0.2, 0.49], aci: -7, hiz: 0.55, faz: 0.2 }] },
     },
@@ -170,7 +172,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'yaprak', n: [[0.54, 0.24], ...yay(0.63, 0.2, 0.09, 0.05, 180, 360, 8).slice(1), ...yay(0.63, 0.2, 0.09, 0.05, 0, 180, 8).slice(1)], kapali: true },
     ],
     kucukParcalar: ['yaprak'],
-    canlan: { tum: [{ tip: 'zipla', yukseklik: 0.12, hiz: 0.8, zemin: 0.84 }], parca: { yaprak: [{ tip: 'don', pivot: [0.54, 0.24], aci: 18, hiz: 1.2 }] } },
+    canlan: { tepki: 'zipla', tum: [{ tip: 'zipla', yukseklik: 0.12, hiz: 0.8, zemin: 0.84 }], parca: { yaprak: [{ tip: 'don', pivot: [0.54, 0.24], aci: 18, hiz: 1.2 }] } },
   },
   {
     id: 'agac', ad: ad('agac'), zorluk: 2, renk: '#3FA535', sahne: 'cayir',
@@ -179,7 +181,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'govde', n: [[0.44, 0.61], [0.44, 0.88]] },
       { parca: 'govde', n: [[0.56, 0.61], [0.56, 0.88]] },
     ],
-    canlan: { parca: { tepe: [{ tip: 'don', pivot: [0.5, 0.62], aci: 6, hiz: 0.5 }, { tip: 'olcek', pivot: [0.5, 0.62], x: 1.05, y: 1.03, hiz: 0.9 }] } },
+    canlan: { tepki: 'salla', parca: { tepe: [{ tip: 'don', pivot: [0.5, 0.62], aci: 6, hiz: 0.5 }, { tip: 'olcek', pivot: [0.5, 0.62], x: 1.05, y: 1.03, hiz: 0.9 }] } },
   },
   {
     id: 'balon', ad: ad('balon'), zorluk: 2, renk: '#9B5CE0', sahne: 'gok',
@@ -187,7 +189,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'balon', n: daire(0.5, 0.36, 0.2, 0.24), kapali: true },
       { parca: 'ip', n: [[0.5, 0.6], [0.47, 0.68], [0.53, 0.76], [0.47, 0.84], [0.5, 0.9]] },
     ],
-    canlan: { yol: 'yuksel', parca: { ip: [{ tip: 'dalga', genlik: 0.025, boy: 0.18, hiz: 1.3, eksen: 'y' }] } },
+    canlan: { tepki: 'zipla', yol: 'yuksel', parca: { ip: [{ tip: 'dalga', genlik: 0.025, boy: 0.18, hiz: 1.3, eksen: 'y' }] } },
   },
   {
     id: 'yilan', ad: ad('yilan'), zorluk: 2, renk: '#5DBE3F', sahne: 'cayir',
@@ -195,7 +197,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'govde', n: Array.from({ length: 33 }, (_, i): Nokta => [0.12 + (i / 32) * 0.62, 0.58 + 0.1 * Math.sin((i / 32) * Math.PI * 3)]) },
       { parca: 'bas', n: daire(0.8, 0.56, 0.065), kapali: true },
     ],
-    canlan: { tum: [{ tip: 'dalga', genlik: 0.035, boy: 0.33, hiz: 0.9, eksen: 'x' }], yol: 'suzul' },
+    canlan: { tepki: 'salla', tum: [{ tip: 'dalga', genlik: 0.035, boy: 0.33, hiz: 0.9, eksen: 'x' }], yol: 'suzul' },
   },
   {
     id: 'kardan', ad: ad('kardan'), zorluk: 2, renk: '#3E9DF2', sahne: 'kar',
@@ -203,7 +205,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'alt', n: daire(0.5, 0.66, 0.21), kapali: true },
       { parca: 'ust', n: daire(0.5, 0.32, 0.13), kapali: true },
     ],
-    canlan: { tum: [{ tip: 'don', pivot: [0.5, 0.87], aci: 5, hiz: 0.6 }], parca: { ust: [{ tip: 'don', pivot: [0.5, 0.45], aci: 12, hiz: 0.8 }] } },
+    canlan: { tepki: 'salla', tum: [{ tip: 'don', pivot: [0.5, 0.87], aci: 5, hiz: 0.6 }], parca: { ust: [{ tip: 'don', pivot: [0.5, 0.45], aci: 12, hiz: 0.8 }] } },
   },
   {
     id: 'araba', ad: ad('araba'), zorluk: 3, renk: '#3E9DF2', sahne: 'yol',
@@ -212,7 +214,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'teker1', n: daire(0.3, 0.67, 0.08, 0.08, 20), kapali: true },
       { parca: 'teker2', n: daire(0.7, 0.67, 0.08, 0.08, 20), kapali: true },
     ],
-    canlan: {
+    canlan: { tepki: 'zipla',
       yol: 'git',
       zemin: 0.93,
       parca: {
@@ -229,7 +231,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'direk', n: [[0.5, 0.62], [0.5, 0.16]] },
       { parca: 'yelken', n: [[0.5, 0.18], [0.78, 0.55], [0.5, 0.55]] },
     ],
-    canlan: {
+    canlan: { tepki: 'salla',
       zemin: 0.86,
       tum: [{ tip: 'don', pivot: [0.5, 0.8], aci: 7, hiz: 0.55 }, { tip: 'kaydir', dx: 0, dy: 0.02, hiz: 0.55, faz: 0.25 }],
       parca: { yelken: [{ tip: 'olcek', pivot: [0.5, 0.4], x: 1.12, y: 1, hiz: 1.1 }] },
@@ -247,7 +249,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'yaprak', n: [[0.5, 0.72], ...yay(0.6, 0.66, 0.1, 0.05, 150, 330, 8).slice(1), ...yay(0.6, 0.66, 0.1, 0.05, -30, 150, 8).slice(1)], kapali: true },
     ],
     kucukParcalar: ['yaprak'],
-    canlan: {
+    canlan: { tepki: 'salla',
       tum: [{ tip: 'don', pivot: [0.5, 0.88], aci: 8, hiz: 0.45 }],
       parca: { yapraklar: [{ tip: 'cevir', pivot: [0.5, 0.32], hiz: 0.1 }], orta: [{ tip: 'olcek', pivot: [0.5, 0.32], x: 1.15, y: 1.15, hiz: 1.2 }] },
     },
@@ -264,7 +266,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'anten', n: [[0.5, 0.3], [0.57, 0.17]] },
     ],
     kucukParcalar: ['anten'],
-    canlan: {
+    canlan: { tepki: 'zipla',
       yol: 'suzul',
       tum: [{ tip: 'kaydir', dx: 0.1, dy: 0.05, hiz: 0.2 }],
       parca: {
@@ -288,7 +290,7 @@ export const RESIMLER: Resim[] = [
       { parca: 'biyik', n: [[0.64, 0.68], [0.84, 0.72]] },
     ],
     kucukParcalar: ['gozler'],
-    canlan: {
+    canlan: { tepki: 'zipla',
       tum: [{ tip: 'don', pivot: [0.5, 0.8], aci: 6, hiz: 0.6 }],
       parca: {
         sol_kulak: [{ tip: 'don', pivot: [0.36, 0.38], aci: -10, hiz: 1.3 }],

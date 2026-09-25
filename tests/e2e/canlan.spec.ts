@@ -101,6 +101,9 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   await expect(page.locator('.cc-canli.canlaniyor [data-parca="kuyruk"] path').first()).toBeAttached();
   await page.waitForTimeout(2600);
   await page.screenshot({ path: `tests/screens/${p}-34-canlan-canlandi.png` });
+  // dokununca hafif tepki (balık sallanır)
+  await sahneyeDokun(page, 0.5, 0.5);
+  await expect.poll(async () => (await page.locator('.cc-sonuc .cc-tepki').getAttribute('transform')) ?? '').toContain('rotate');
   // kuyruk gerçekten oynuyor mu?
   const d1 = await page.locator('[data-parca="kuyruk"]').getAttribute('transform');
   await page.waitForTimeout(150);

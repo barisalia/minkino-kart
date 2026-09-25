@@ -85,6 +85,8 @@ export interface Canli {
   susGoster(): void;
   /** Ekran noktasını çizim koordinatına çevirir. */
   noktaAl(x: number, y: number): Nokta;
+  /** Dokunma tepkisi (canlandıktan sonra) */
+  dokun(): void;
 }
 
 const ters = (p: Nokta, d: Donusum): Nokta => [(p[0] - d.tx) / d.s, (p[1] - d.ty) / d.s];
@@ -103,10 +105,12 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
   const svg = el('svg', { viewBox: '0 0 1 1', class: 'cc-canli', 'aria-hidden': 'true' });
   // Katmanlar: tum (yolculuk, şablon birimi) > yer (çizimi sahnede ortalar) > ic (tüm-resim hareketleri, çizim birimi) > parçalar
   const tum = el('g', { class: 'cc-tum' });
+  const tepkiG = el('g', { class: 'cc-tepki' });
   const yer = el('g', { class: 'cc-yer' });
   const ic = el('g');
   yer.append(ic);
-  tum.append(yer);
+  tepkiG.append(yer);
+  tum.append(tepkiG);
   svg.append(tum);
   const k = donusum.s;
   const P = (p: Nokta) => ters(p, donusum);
@@ -244,6 +248,33 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
   // şablon → çizim koordinatı
   const matris = `matrix(${1 / k} 0 0 ${1 / k} ${-donusum.tx / k} ${-donusum.ty / k})`;
 
+  // Dokununca kısa, hafif tepki (0.7 sn)
+  let tepkiBas = -1;
+  function tepkiDonusumu(zaman: number): string {
+    if (tepkiBas < 0) return '';
+    const u = (zaman - tepkiBas) / 700;
+    if (u >= 1 || u < 0) return '';
+    const [mx, my] = merkezT;
+    const etrafinda = (d: string) => `translate(${mx} ${my}) ${d} translate(${-mx} ${-my})`;
+    switch (r.canlan.tepki ?? 'zipla') {
+      case 'atis': {
+        const s = 1 + 0.12 * Math.abs(Math.sin(TUR * u)) * (1 - u * 0.5);
+        return etrafinda(`scale(${s.toFixed(4)})`);
+      }
+      case 'salla':
+        return etrafinda(`rotate(${(9 * Math.sin(2 * TUR * u) * (1 - u)).toFixed(3)})`);
+      case 'don':
+        return etrafinda(`rotate(${(360 * (1 - (1 - u) ** 3)).toFixed(2)})`);
+      case 'titre':
+        return `translate(${(0.018 * Math.sin(5 * TUR * u) * (1 - u)).toFixed(4)} 0)`;
+      default: {
+        const y = -0.07 * Math.sin(Math.PI * Math.min(1, u * 1.3));
+        const ez = u > 0.75 ? Math.sin(Math.PI * ((u - 0.75) / 0.25)) : 0;
+        return `translate(0 ${y.toFixed(4)}) ${etrafinda(`scale(${(1 + 0.08 * ez).toFixed(4)} ${(1 - 0.1 * ez).toFixed(4)})`)}`;
+      }
+    }
+  }
+
   let raf = 0;
   let bas = 0;
   const dalgalar = (h: Hareket[] | undefined) => (h ?? []).filter((x): x is Extract<Hareket, { tip: 'dalga' }> => x.tip === 'dalga');
@@ -255,6 +286,7 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     const e = yumusakBasla((t - 0.9) / 0.8);
     const tt = Math.max(0, t - 0.9);
     tum.setAttribute('transform', yolDonusumu(tt, e));
+    tepkiG.setAttribute('transform', tepkiDonusumu(zaman));
     ic.setAttribute('transform', (r.canlan.tum ?? []).map((h) => donusumYaz(h, tt, e)).join(' '));
     for (const [ad, grup] of gruplar) {
       const hareketler = r.canlan.parca?.[ad] ?? [];
@@ -307,6 +339,9 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
         dis.append(icg);
         (x.arka ? grup.arka : grup.sus).append(dis);
       });
+    },
+    dokun() {
+      tepkiBas = performance.now();
     },
     noktaAl(x, y) {
       const m = ic.getScreenCTM();

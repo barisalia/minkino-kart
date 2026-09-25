@@ -13,6 +13,7 @@ import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
 import { AYAR, canlanirMi, ornekle, parcalaraBol, puanla, toparla } from './puan';
 import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } from './resimler';
+import { resimSesi, resimSesiHazirla } from './ses';
 import { SUS } from './susler';
 
 const S = canlan as unknown as {
@@ -82,6 +83,14 @@ export function acilisEkrani(app: Uygulama): Ekran {
   new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca)).toDataURL()));
   c.susGoster();
   c.baslat();
+  let sonDokunus = 0;
+  vitrin.addEventListener('pointerdown', () => {
+    const simdi = performance.now();
+    if (simdi - sonDokunus < 350) return;
+    sonDokunus = simdi;
+    c.dokun();
+    void resimSesi(r.id);
+  });
 
   const oyna = h('button.dugme.cc-oyna', { type: 'button', 'aria-label': 'Oyna' }, svg(IKON.oyna), h('span', {}, 'Oyna'));
   oyna.addEventListener('click', () => {
@@ -436,7 +445,18 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   const boyaCubugu = h('div.cc-boya-cubugu', { hidden: true }, palet, h('div.cc-boya-arac', {}, geriAl, sihirli, canlandir));
   dugmeler.hidden = true;
 
+  let canlandi = false;
+  let sonDokunus = 0;
   sh.addEventListener('pointerdown', (e) => {
+    // canlandıktan sonra: dokununca hafif tepki + resmin sesi
+    if (canlandi) {
+      const simdi = performance.now();
+      if (simdi - sonDokunus < 350) return;
+      sonDokunus = simdi;
+      canli.dokun();
+      void resimSesi(r.id);
+      return;
+    }
     if (!boyuyor) return;
     const q = canli.noktaAl(e.clientX, e.clientY);
     const b = boyaBolgesi(r, cizgiler, sonuc.donusum, q);
@@ -497,6 +517,8 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     sh.classList.add('canli');
     canli.susGoster();
     canli.baslat();
+    canlandi = true;
+    resimSesiHazirla(r.id);
     efekt.kilitAcildi();
     const k = kutu.getBoundingClientRect();
     konfetiPatlat(app.kok, k.left + k.width / 2, k.top + k.height / 2, sonuc.yildiz === 3 ? 110 : 45, sonuc.yildiz === 3 ? 1 : 0.6);
