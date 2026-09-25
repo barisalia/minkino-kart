@@ -3,7 +3,11 @@ import '@fontsource/fredoka/latin-ext-600.css';
 import '@fontsource/fredoka/latin-ext-700.css';
 import '../../src/styles/ana.css';
 import './sanatci.css';
+import { sesKokuAyarla } from '../../src/audio/kayit';
 import { ekranKaydet, Uygulama } from '../../src/uygulama';
+
+// Seslendirme kayıtları kart oyunuyla ortak (site kökündeki ses/ klasörü)
+sesKokuAyarla('../ses/');
 import { acilisEkrani, bastirEkrani, cizEkrani, galeriEkrani, konuEkrani, sihirEkrani, sonucEkrani } from './ekranlar';
 
 ekranKaydet('acilis', acilisEkrani);

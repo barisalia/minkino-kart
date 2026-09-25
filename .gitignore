@@ -8,3 +8,4 @@ tests/screens/*.png
 *.log
 scripts/gecici
 dist-tek
+dist-tek-sanatci

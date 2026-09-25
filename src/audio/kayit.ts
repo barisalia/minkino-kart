@@ -15,6 +15,11 @@ interface Manifest {
 }
 
 let manifest: Manifest | null = null;
+/** Kayıtların bulunduğu klasör (alt klasördeki uygulamalar için, ör. Minik Sanatçı: '../ses/') */
+let kok = './ses/';
+export function sesKokuAyarla(yol: string) {
+  kok = yol.endsWith('/') ? yol : `${yol}/`;
+}
 let manifestYukleniyor: Promise<void> | null = null;
 const tamponlar = new Map<string, Promise<AudioBuffer | null>>();
 const paketVerisi = new Map<number, Promise<ArrayBuffer>>();
@@ -22,7 +27,7 @@ const paketVerisi = new Map<number, Promise<ArrayBuffer>>();
 function paket(n: number): Promise<ArrayBuffer> {
   let p = paketVerisi.get(n);
   if (!p) {
-    p = fetch(`./ses/${manifest!.paketler![n]}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+    p = fetch(`${kok}${manifest!.paketler![n]}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
     p.catch(() => paketVerisi.delete(n));
     paketVerisi.set(n, p);
   }
@@ -30,14 +35,14 @@ function paket(n: number): Promise<ArrayBuffer> {
 }
 
 function veri(k: Kayit): Promise<ArrayBuffer> {
-  if (typeof k === 'string') return fetch(`./ses/${k}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+  if (typeof k === 'string') return fetch(`${kok}${k}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
   return paket(k.p).then((ab) => ab.slice(k.b, k.b + k.u));
 }
 let calan: AudioBufferSourceNode | null = null;
 
 /** Manifest'i bir kez yükler (uygulama açılışında çağrılır). */
 export function kayitlariHazirla(): Promise<void> {
-  manifestYukleniyor ??= fetch('./ses/manifest.json')
+  manifestYukleniyor ??= fetch(`${kok}manifest.json`)
     .then((r) => (r.ok ? r.json() : null))
     .then((m: Manifest | null) => {
       manifest = m;
