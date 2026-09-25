@@ -17,6 +17,13 @@ const S = sanatci as unknown as {
 };
 const rastgele = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 
+/**
+ * Ebeveyn kapısı (sihir onayı, paylaşım, silme, sipariş). Barış'ın isteğiyle kapalı.
+ * App Store "Çocuklar" kategorisi paylaşım/satın alma öncesi ebeveyn kapısı ister: mağaza sürümünde true yapın.
+ */
+const EBEVEYN_KAPISI = false;
+const kapi = (app: Uygulama) => (EBEVEYN_KAPISI ? ebeveynKapisi(app) : Promise.resolve(true));
+
 // Görseller (kart oyunuyla ortak arşivden)
 const gorseller = import.meta.glob<string>(
   [
@@ -191,7 +198,7 @@ export function konuEkrani(app: Uygulama): Ekran {
       efekt.secim();
       b.classList.add('secili');
       await Promise.all([konus(`${ad}!`), bekle(sure(500))]);
-      if (!onayVarMi()) {
+      if (EBEVEYN_KAPISI && !onayVarMi()) {
         const tamam = await ebeveynOnayi(app);
         if (!tamam) {
           kilit = false;
@@ -315,7 +322,7 @@ export function sonucEkrani(app: Uygulama, p: { eser: Eser; yeni?: boolean }): E
 
   const paylasD = h('button.dugme', { type: 'button', style: '--r:#3E9DF2' }, svg(IKON.paylas), h('span', {}, 'Paylaş'));
   paylasD.addEventListener('click', async () => {
-    if (!(await ebeveynKapisi(app))) return;
+    if (!(await kapi(app))) return;
     const kolaj = await kolajYap(p.eser);
     const sonuc = await paylas(kolaj, 'minik-sanatci.png');
     if (sonuc === 'goster') app.kok.append(kolajPenceresi(kolaj));
@@ -398,7 +405,7 @@ export function galeriEkrani(app: Uygulama): Ekran {
         let zamanlayici: number | undefined;
         kart.addEventListener('pointerdown', () => {
           zamanlayici = window.setTimeout(async () => {
-            if (await ebeveynKapisi(app)) {
+            if (await kapi(app)) {
               await eserSil(e.id);
               app.git('galeri');
             }
@@ -421,7 +428,7 @@ export function bastirEkrani(app: Uygulama, p: { eser: Eser }): Ekran {
     h(`div.ms-urun.${sinif}`, {}, h('div.ms-urun-gorsel', {}, h('img', { src: url, alt: '' })), h('div.ms-urun-bilgi', {}, h('b', {}, ad), h('span', {}, aciklama), h('small', {}, fiyat)));
   const siparis = h('button.dugme', { type: 'button', style: '--r:#5DBE3F' }, 'Sipariş ver');
   siparis.addEventListener('click', async () => {
-    if (!(await ebeveynKapisi(app))) return;
+    if (!(await kapi(app))) return;
     const perde = h('div.perde', {}, h('div.pencere', {}, h('h2', {}, 'Çok yakında!'), h('p', {}, 'Baskı siparişi Minkino mağazasıyla birlikte açılacak. Resminiz galeride saklı kalıyor.')));
     perde.addEventListener('click', () => perde.remove());
     app.kok.append(perde);

@@ -43,15 +43,7 @@ test('Minik Sanatçı: çiz → ne çizdin → ebeveyn onayı → sihir → sonu
   await page.screenshot({ path: `tests/screens/${p}-22-sanatci-konu.png` });
   await page.locator('[data-konu="kedi"]').click();
 
-  // Ebeveyn kapısı + onay
-  const soru = page.locator('.kapi-soru');
-  await expect(soru).toBeVisible();
-  for (const c of (await soru.getAttribute('data-toplam'))!) await page.locator('.tus-takimi .tus', { hasText: new RegExp(`^${c}$`) }).click();
-  await page.locator('.tus.tamam').click();
-  await expect(page.locator('.ms-onay')).toBeVisible();
-  await page.screenshot({ path: `tests/screens/${p}-23-sanatci-onay.png` });
-  await page.getByRole('button', { name: 'Onaylıyorum' }).click();
-
+  // Ebeveyn onayı kapalı (EBEVEYN_KAPISI = false): doğrudan sihir
   await expect(page.locator('.ms-karsilastir')).toBeVisible({ timeout: 10000 });
   expect(giden.konu).toBe('kedi');
   expect(giden.resim?.length).toBeGreaterThan(1000);
