@@ -14,14 +14,17 @@ const KONU = {
 const STIL =
   'premium, finished children\'s picture-book illustration in modern Disney Junior / Nick Jr. preschool cartoon style: ' +
   'glossy clean 2D vector art, soft cel shading, gentle gradients, white highlight glints, thick clean dark-brown outlines, ' +
-  'high saturation, cute rounded shapes, big sparkling expressive eyes on any character, cheerful and charming';
+  'vivid bright saturated colors, cute rounded shapes, cheerful and charming';
 
 function geminiTalimati(konu) {
   const ne = KONU[konu] ? ` The child says it is ${KONU[konu]}.` : '';
   return (
     `A young child drew this with crayons.${ne} Turn it into an adorable, ${STIL}. ` +
     'The child must instantly recognize their drawing: keep the same subjects, the same pose, layout and composition, ' +
-    'the same number of objects and the same main colors as the crayon drawing, but make it look cute and professional. ' +
+    'and the same number of objects. COLORS: use exactly the colors the child used — fill every shape with the color of ' +
+    'its crayon outline (a red outline means a red part, a blue outline means a blue part); do not replace them with beige, ' +
+    'peach or pastel tones. Only living creatures the child drew may have cute sparkling eyes; never add eyes or faces to ' +
+    'houses, vehicles, suns or other objects. Make it look cute and professional. ' +
     'Plain pure white background, no text, no letters, no frame. Keep it wholesome and suitable for toddlers.'
   );
 }
