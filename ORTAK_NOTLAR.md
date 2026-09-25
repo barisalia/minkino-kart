@@ -110,3 +110,22 @@ Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her otu
 - 2026-09-25 ÇAKIŞMA ÖNLEMİ: `ekip/pazar` dalını `origin/claude/awesome-cori-kvcfd7`'nin son hâlinden açın ya da push'tan önce `git merge origin/claude/awesome-cori-kvcfd7` yapın. Bulut da `vite.config.ts`, `tsconfig.json`, `src/audio/cumleler.ts`, `scripts/gorsel-indir.mjs` dosyalarını değiştirdi (orman satırları); iki taraf yalnız kendi satırlarını ekler, birbirininkine dokunmaz.
 - 2026-09-25 DİKKAT: Rive animasyonu ve Gemini (tarayıcı, API yok) işleri Barış'ın isteğiyle YEREL EKİBE yazıldı; bulut Rive editörünü ve tarayıcı Gemini'yi kullanamaz. Bulutta kalan: eşyaların Recraft çizimleri, `.riv` dosyalarını oyuna bağlama (mikrofon → girdiler), renklenme efekti, müzik. Tasarımcının önceliği (Pazar mı, sincap Rive/Gemini pilotu mu) Barış'a sorulacak.
 - 2026-09-25 KANAL: Bulut oturumu yerel oturuma doğrudan mesaj atamıyor (yetki yok); cevaplar bu dosyaya yazılıp push edilir. Yerel → bulut mesajları ulaşıyor.
+
+## 2026-09-25 — GÖREV ATAMASI: Barış'ın tasarımcıları Uyuyan Orman'a (bulut yönetici → yerel yönetici)
+
+Barış: "Sana tasarımcı atadım, önce tasarımcılara iş ver." Bu tasarımcılar ŞİMDİ Uyuyan Orman'da çalışır (Pazar'ın görselleri bekleyebilir; öncelik Barış'ın kararı). Yerel yönetici lütfen şu sırayla dağıtsın:
+
+**TASARIMCI 1 — Gemini (tarayıcı), `ekip/gemini-is-listesi.md`:**
+1. BUGÜN: **Sincap** ifade seti (§2: uyuyor, esniyor, mutlu, dinliyor, hmm, göz-kırpma). `uyuyor` hazır, yeniden yapmayın: `assets/recraft/orman.json` → `orman-karakter/sincap-uyku`.
+2. Sonra: **Sincap** parça seti (§3): gövde-kolsuz, gövde-kuyruksuz, kafa-tek, yüz-boş (Rive'cı ne isterse).
+3. Sonra sırayla: dev, kuş, inek, köpek, kedi, maymun, baykuş, tavşan, ayı, papağan ifade setleri.
+4. En son: 7 arka planın 3'er katmanı (§4).
+Kaynaklar ortak klasöre; bitenleri yerel yöneticiye haber verin.
+
+**TASARIMCI 2 — Rive, `ekip/rive-is-listesi.md`:**
+1. Tasarımcı 1'in sincap ifade+parça setiyle **sincap pilotu**: uyku döngüsü, uyanma, bekleme, `sevin`, `hmm`, `dokun`, `kipir`, `ruzgar`. Girdi adları listedekiyle BİREBİR aynı (state machine adı `Durum`).
+2. Beklerken (parçalar gelmeden) hemen başlanabilecek: **mum.riv** ve **ruzgar_gulu.riv** (§4). Çizimleri hazır: `assets/recraft/orman-esya.json` (mum, alev, rüzgar gülü; ayrıca karahindiba, tohum, balon, yelkenli, gölet, iskele, davul, çan, yuva, yaprak, yıldız, çiçek). `git pull` sonrası CI bunları `assets/orman-esya/*.webp` olarak indirir; büyük boy için JSON'daki adresleri açın.
+3. Pilotun 5-10 sn önizleme videosu → Barış onayı → diğer karakterler.
+Teslim: `.riv` dosyaları `ekip/rive` dalında `assets/rive/` altına, GitHub'a push. Bulut bağlar.
+
+Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.

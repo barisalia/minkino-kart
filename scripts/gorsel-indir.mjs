@@ -88,7 +88,7 @@ for (const [anahtar, url] of Object.entries(liste)) {
       continue;
     }
     // Çiz Canlansın ve Uyuyan Orman karakterleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
-    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') ? await beyaziSil(girdi) : girdi;
+    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     await sharp(kirpik)
