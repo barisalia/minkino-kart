@@ -12,5 +12,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "tests/unit", "sanatci/src", "canlan/src", "ses-testi/src", "orman/src"]
+  "include": ["src", "tests/unit", "sanatci/src", "canlan/src", "ses-testi/src", "orman/src", "pazar/src"]
 }

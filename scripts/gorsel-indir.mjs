@@ -79,16 +79,17 @@ for (const [anahtar, url] of Object.entries(liste)) {
     }
     if (!hepsi && fs.existsSync(hedef)) continue;
     // Sahne arka planları: kırpmadan, kenardan kenara kare
-    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/')) {
+    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/') || anahtar === 'pazar/arkaplan') {
       fs.mkdirSync(path.dirname(hedef), { recursive: true });
-      const boy = anahtar.startsWith('orman/') ? 1024 : 768;
+      const boy = anahtar.startsWith('orman/') || anahtar === 'pazar/arkaplan' ? 1024 : 768;
       await sharp(girdi).resize(boy, boy, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(hedef);
       yeni++;
       console.log('✓', anahtar);
       continue;
     }
-    // Çiz Canlansın ve Uyuyan Orman karakterleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
-    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') ? await beyaziSil(girdi) : girdi;
+    // Çiz Canlansın, Uyuyan Orman ve Pazar nesneleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
+    // (pazar/arkaplan yukarıdaki arka plan dalında ayrıldı, buraya gelmez)
+    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('pazar/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     await sharp(kirpik)

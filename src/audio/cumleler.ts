@@ -7,6 +7,7 @@ import minoJson from '../../content/mino.json';
 import sanatciJson from '../../content/sanatci.json';
 import canlanJson from '../../content/canlan.json';
 import ormanJson from '../../content/orman.json';
+import { pazarCumleleri } from '../../pazar/src/istek';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -161,5 +162,7 @@ export function tumCumleler(): string[] {
     if (k === 'bolgeler') for (const b of Object.values(v as Record<string, { giris: string }>)) ekle(b.giris);
     else topla(v).forEach(ekle);
   }
+  // Mino'nun Pazarı konuşmaları (kalıplar ürün/sayı/renk ile açılmış hâlde)
+  pazarCumleleri().forEach(ekle);
   return [...set];
 }

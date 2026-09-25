@@ -101,3 +101,10 @@ Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her otu
 - 2026-09-25 ONAY BEKLİYOR: (1) Repoda `main` dalı yok; tüm iş `claude/awesome-cori-kvcfd7` dalında. Ekip için bu daldan `main` açılıp varsayılan yapılsın mı? (2) Uyuyan Orman eşikleri gerçek cihazda/çocukla denenip ayarlanmalı (ses-testi raporları).
 - 2026-09-25 Ekip rehberinin adı Barış'ın isteğiyle `CLAUDE.md` → `minkinogames1.md` oldu (yukarıdaki "CLAUDE.md §4" vb. atıflar bu dosyayı gösterir).
 - 2026-09-25 KARAR (Barış): Claude bulutta, ekip yerelde çalışır; ortak nokta GitHub (düzen: minkinogames1.md §10).
+
+## 2026-09-26 — Yerel ekip: Mino'nun Pazarı (yeni oyun)
+
+- 2026-09-26 Barış: "uygulamaya eğitici bir oyun ekleyelim, fikri sen düşün" → yönetici fikri: **Mino'nun Pazarı** (`pazar/`, önek `pz-`). Mino tezgâhta, hayvan müşteriler sırayla ister; çocuk meyve/sebzeyi sürükleyip sepete koyar. 5 müşteri → pazar şenliği. Dokunmalı, mikrofon yok.
+- 2026-09-26 Yaşa göre: 3 yaş tek ürün adı ("Bir elma ver") · 4 yaş renk + 1-5 sayma · 5 yaş iki ürün birden + meyve/sebze ayırma · 6 yaş basit toplama ("Bende 2 var, 3 daha") + bozuk para.
+- 2026-09-26 İş bölümü (dal `ekip/pazar`): **kodcu** → `pazar/` (index.html, src/), `content/pazar.json`, `vite.config.ts` girişi, `src/audio/cumleler.ts`, `tests/unit/pazar.test.ts`, `tests/e2e/pazar.spec.ts`. **tasarımcı** → `assets/recraft/pazar.json` + görsel istem metinleri (pazar arka planı, tezgâh, sepet, bozuk paralar). Mevcut `assets/meyveler`, `assets/hayvanlar`, `assets/karakter` (Mino) kullanılır. Başka uygulamanın dosyasına dokunulmaz.
+- 2026-09-26 ONAY BEKLİYOR: (1) Fikrin kendisi. (2) Yeni görsel ~5 adet ≈ 10 Recraft kredisi (önce 1 örnek). (3) Seslendirme ~40 kısa cümle ≈ 1.000 karakter. (4) Bilgisayarda Node.js yok; kurulum onayı.

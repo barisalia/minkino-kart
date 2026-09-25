@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
-// Ayrı uygulamalar: kart oyunu (/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/)
+// Ayrı uygulamalar: kart oyunu (/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/), Mino'nun Pazarı (/pazar/)
 export default defineConfig({
   base: './',
   build: {
@@ -15,6 +15,7 @@ export default defineConfig({
         canlan: resolve(__dirname, 'canlan/index.html'),
         sesTesti: resolve(__dirname, 'ses-testi/index.html'),
         orman: resolve(__dirname, 'orman/index.html'),
+        pazar: resolve(__dirname, 'pazar/index.html'),
       },
     },
   },
