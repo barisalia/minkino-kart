@@ -7,6 +7,9 @@
 - Minik Sanatçı: https://barisalia.github.io/minkino-kart/sanatci/
 - Çiz Canlansın: https://barisalia.github.io/minkino-kart/canlan/
 - Mikrofon testi (Uyuyan Orman ön denemesi): https://barisalia.github.io/minkino-kart/ses-testi/
+- Uyuyan Orman (sesle, nefesle, alkışla oynanan orman): https://minkino-site.barisalidogan.workers.dev/orman/
+
+Ekip ve ajanlar için rehber: [CLAUDE.md](CLAUDE.md)
 
 ## Geliştirme
 
