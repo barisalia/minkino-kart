@@ -89,7 +89,7 @@ for (const [anahtar, url] of Object.entries(liste)) {
     }
     // Çiz Canlansın, Uyuyan Orman ve Pazar nesneleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
     // (pazar/arkaplan yukarıdaki arka plan dalında ayrıldı, buraya gelmez)
-    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('pazar/') ? await beyaziSil(girdi) : girdi;
+    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') || anahtar.startsWith('pazar/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     await sharp(kirpik)

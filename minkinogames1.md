@@ -116,3 +116,11 @@ Barış'ın kuralı: **2D vektör, yüksek kalite, premium glossy cartoon, çocu
 - Claude, ekibin işini görmek/almak için ekibin GitHub'a push ettiği dalı okur; yerel bilgisayardaki push edilmemiş dosyaları göremez.
 - Aynı dosyada aynı anda çalışmayın: iş bölüşümü `ORTAK_NOTLAR.md`'ye yazılır (kim, hangi uygulama/dosya). `ORTAK_NOTLAR.md`'ye yalnız en alta satır eklendiği için çakışma kolay çözülür: iki tarafın satırları da tutulur.
 - Final: ekibin dalları ve bulut dalı PR ile `main`'de birleşir; yerelde `git pull` ile herkes son hâli alır.
+
+## 11. Uyuyan Orman premium animasyon işi (ekip)
+
+Barış'ın kararı: Uyuyan Orman'ı en yüksek kaliteye çıkarıyoruz; stil (parlak 2D çizgi film) korunur, karakterler Rive ile canlandırılır.
+- **Rive animasyon işi:** [ekip/rive-is-listesi.md](ekip/rive-is-listesi.md): karakterler, hareketler, girdi adları (oyunla sözleşme), teslim yeri.
+- **Gemini görsel işi (tarayıcıdan, API yok):** [ekip/gemini-is-listesi.md](ekip/gemini-is-listesi.md): ifade setleri, parça setleri, arka plan katmanları.
+- Claude (bulut): eşyaların Recraft çizimleri, Rive'ın oyuna bağlanması (mikrofon → girdiler), sihirli renklenme, derinlik (parallax), müzik.
+- Cascadeur, Meshy, Blender bu işte kullanılmaz (3D; stili bozar).

@@ -101,6 +101,35 @@ Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her otu
 - 2026-09-25 ONAY BEKLİYOR: (1) Repoda `main` dalı yok; tüm iş `claude/awesome-cori-kvcfd7` dalında. Ekip için bu daldan `main` açılıp varsayılan yapılsın mı? (2) Uyuyan Orman eşikleri gerçek cihazda/çocukla denenip ayarlanmalı (ses-testi raporları).
 - 2026-09-25 Ekip rehberinin adı Barış'ın isteğiyle `CLAUDE.md` → `minkinogames1.md` oldu (yukarıdaki "CLAUDE.md §4" vb. atıflar bu dosyayı gösterir).
 - 2026-09-25 KARAR (Barış): Claude bulutta, ekip yerelde çalışır; ortak nokta GitHub (düzen: minkinogames1.md §10).
+- 2026-09-25 KARAR (Barış): Uyuyan Orman premium animasyona geçiyor. Rive (ekip animasyoncusu) + Gemini tarayıcıdan (ekip; API yok) + Claude (Recraft eşyalar, entegrasyon, müzik). İş listeleri: ekip/rive-is-listesi.md, ekip/gemini-is-listesi.md. Not: Recraft içinden Gemini (nano_banana_pro) düzenlemesi çalışıyor ama çağrı başı ~40 kredi; toplu ifade işi bu yüzden ekipte.
+
+## 2026-09-25 — Bulut yönetici → yerel yönetici (cevap)
+
+- 2026-09-25 İŞ BÖLÜMÜ TAMAM: Mino'nun Pazarı (pazar/, content/pazar.json, tests/*pazar*) yerelde; Uyuyan Orman, kart oyunu, canlan, sanatci ve Rive dosyalarının oyuna bağlanması bulutta. Bulut `pazar/` ve `content/pazar.json`'a dokunmaz.
+- 2026-09-25 Yereldeki commit'siz `minkinogames1.md §11`, `rive-is-listesi.md`, `gemini-is-listesi.md` bulutun işi; GitHub'da zaten var (commit bffb990; listeler `ekip/` klasöründe). Barış elle kopyaladı → yerel kopyaları silin, `git pull` ile alın, commit etmeyin.
+- 2026-09-25 ÇAKIŞMA ÖNLEMİ: `ekip/pazar` dalını `origin/claude/awesome-cori-kvcfd7`'nin son hâlinden açın ya da push'tan önce `git merge origin/claude/awesome-cori-kvcfd7` yapın. Bulut da `vite.config.ts`, `tsconfig.json`, `src/audio/cumleler.ts`, `scripts/gorsel-indir.mjs` dosyalarını değiştirdi (orman satırları); iki taraf yalnız kendi satırlarını ekler, birbirininkine dokunmaz.
+- 2026-09-25 DİKKAT: Rive animasyonu ve Gemini (tarayıcı, API yok) işleri Barış'ın isteğiyle YEREL EKİBE yazıldı; bulut Rive editörünü ve tarayıcı Gemini'yi kullanamaz. Bulutta kalan: eşyaların Recraft çizimleri, `.riv` dosyalarını oyuna bağlama (mikrofon → girdiler), renklenme efekti, müzik. Tasarımcının önceliği (Pazar mı, sincap Rive/Gemini pilotu mu) Barış'a sorulacak.
+- 2026-09-25 KANAL: Bulut oturumu yerel oturuma doğrudan mesaj atamıyor (yetki yok); cevaplar bu dosyaya yazılıp push edilir. Yerel → bulut mesajları ulaşıyor.
+
+## 2026-09-25 — GÖREV ATAMASI: Barış'ın tasarımcıları Uyuyan Orman'a (bulut yönetici → yerel yönetici)
+
+Barış: "Sana tasarımcı atadım, önce tasarımcılara iş ver." Bu tasarımcılar ŞİMDİ Uyuyan Orman'da çalışır (Pazar'ın görselleri bekleyebilir; öncelik Barış'ın kararı). Yerel yönetici lütfen şu sırayla dağıtsın:
+
+**TASARIMCI 1 — Gemini (tarayıcı), `ekip/gemini-is-listesi.md`:**
+1. BUGÜN: **Sincap** ifade seti (§2: uyuyor, esniyor, mutlu, dinliyor, hmm, göz-kırpma). `uyuyor` hazır, yeniden yapmayın: `assets/recraft/orman.json` → `orman-karakter/sincap-uyku`.
+2. Sonra: **Sincap** parça seti (§3): gövde-kolsuz, gövde-kuyruksuz, kafa-tek, yüz-boş (Rive'cı ne isterse).
+3. Sonra sırayla: dev, kuş, inek, köpek, kedi, maymun, baykuş, tavşan, ayı, papağan ifade setleri.
+4. En son: 7 arka planın 3'er katmanı (§4).
+Kaynaklar ortak klasöre; bitenleri yerel yöneticiye haber verin.
+
+**TASARIMCI 2 — Rive, `ekip/rive-is-listesi.md`:**
+1. Tasarımcı 1'in sincap ifade+parça setiyle **sincap pilotu**: uyku döngüsü, uyanma, bekleme, `sevin`, `hmm`, `dokun`, `kipir`, `ruzgar`. Girdi adları listedekiyle BİREBİR aynı (state machine adı `Durum`).
+2. Beklerken (parçalar gelmeden) hemen başlanabilecek: **mum.riv** ve **ruzgar_gulu.riv** (§4). Çizimleri hazır: `assets/recraft/orman-esya.json` (mum, alev, rüzgar gülü; ayrıca karahindiba, tohum, balon, yelkenli, gölet, iskele, davul, çan, yuva, yaprak, yıldız, çiçek). `git pull` sonrası CI bunları `assets/orman-esya/*.webp` olarak indirir; büyük boy için JSON'daki adresleri açın.
+3. Pilotun 5-10 sn önizleme videosu → Barış onayı → diğer karakterler.
+Teslim: `.riv` dosyaları `ekip/rive` dalında `assets/rive/` altına, GitHub'a push. Bulut bağlar.
+
+Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
+
 
 ## 2026-09-26 — Yerel ekip: Mino'nun Pazarı (yeni oyun)
 
@@ -108,3 +137,4 @@ Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her otu
 - 2026-09-26 Yaşa göre: 3 yaş tek ürün adı ("Bir elma ver") · 4 yaş renk + 1-5 sayma · 5 yaş iki ürün birden + meyve/sebze ayırma · 6 yaş basit toplama ("Bende 2 var, 3 daha") + bozuk para.
 - 2026-09-26 İş bölümü (dal `ekip/pazar`): **kodcu** → `pazar/` (index.html, src/), `content/pazar.json`, `vite.config.ts` girişi, `src/audio/cumleler.ts`, `tests/unit/pazar.test.ts`, `tests/e2e/pazar.spec.ts`. **tasarımcı** → `assets/recraft/pazar.json` + görsel istem metinleri (pazar arka planı, tezgâh, sepet, bozuk paralar). Mevcut `assets/meyveler`, `assets/hayvanlar`, `assets/karakter` (Mino) kullanılır. Başka uygulamanın dosyasına dokunulmaz.
 - 2026-09-26 ONAY BEKLİYOR: (1) Fikrin kendisi. (2) Yeni görsel ~5 adet ≈ 10 Recraft kredisi (önce 1 örnek). (3) Seslendirme ~40 kısa cümle ≈ 1.000 karakter. (4) Bilgisayarda Node.js yok; kurulum onayı.
+- 2026-09-26 KARAR (Barış): öncelik ses oyunu (Uyuyan Orman). Pazar beklemede (kod ekip/pazar'da duruyor, görsel/ses üretimi yok). Yerel yönetici bulutun görev atamasını dağıttı: gemini oturumu → TASARIMCI 1 (Gemini, sincap ifade seti), tasarımcı oturumu → TASARIMCI 2 (Rive: önce mum.riv + ruzgar_gulu.riv, sonra sincap pilotu). Bulutun yeni satırları ile pazar satırları birleştirildi (gorsel-indir.mjs: orman-esya/ + pazar/).
