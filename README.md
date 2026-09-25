@@ -6,6 +6,7 @@
 - Kart oyunu (+ Mino): https://barisalia.github.io/minkino-kart/
 - Minik Sanatçı: https://barisalia.github.io/minkino-kart/sanatci/
 - Çiz Canlansın: https://barisalia.github.io/minkino-kart/canlan/
+- Mikrofon testi (Uyuyan Orman ön denemesi): https://barisalia.github.io/minkino-kart/ses-testi/
 
 ## Geliştirme
 

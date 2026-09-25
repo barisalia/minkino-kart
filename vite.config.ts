@@ -13,6 +13,7 @@ export default defineConfig({
         kartlar: resolve(__dirname, 'index.html'),
         sanatci: resolve(__dirname, 'sanatci/index.html'),
         canlan: resolve(__dirname, 'canlan/index.html'),
+        sesTesti: resolve(__dirname, 'ses-testi/index.html'),
       },
     },
   },
