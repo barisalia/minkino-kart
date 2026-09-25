@@ -2,23 +2,101 @@
   "aciklama": "Çiz Canlansın: canlanan resme dokununca çalan kısa ses efektleri (ElevenLabs Sound Effects). Her biri bir kez üretilir → public/ses/efekt/<ad>.mp3. Süre belirtildiği için saniyesi 40 kredi.",
   "ortak": "short cute cartoon sound effect for a toddler game, clean, soft, no music, no voice",
   "sesler": {
-    "top": { "metin": "rubber ball boing bounce and a tiny cute giggle", "sure": 1.2 },
-    "gunes": { "metin": "warm magical sparkle chime", "sure": 1.0 },
-    "kalp": { "metin": "soft heartbeat thump thump", "sure": 1.0 },
-    "gokkusagi": { "metin": "magical harp glissando with sparkles", "sure": 1.2 },
-    "bulut": { "metin": "gentle rain drops pitter patter", "sure": 1.2 },
-    "yildiz": { "metin": "twinkling star sparkle", "sure": 1.0 },
-    "balik": { "metin": "underwater bubbles blub blub", "sure": 1.0 },
-    "ev": { "metin": "wooden door knock knock", "sure": 0.9 },
-    "elma": { "metin": "crunchy apple bite", "sure": 0.8 },
-    "agac": { "metin": "leaves rustling and a little bird chirp", "sure": 1.2 },
-    "balon": { "metin": "rubber balloon squeak", "sure": 0.8 },
-    "yilan": { "metin": "playful little snake hiss sss", "sure": 1.0 },
-    "kardan": { "metin": "soft snow crunch with tiny jingle bells", "sure": 1.0 },
-    "araba": { "metin": "toy car horn beep beep", "sure": 0.8 },
-    "tekne": { "metin": "small boat horn toot with gentle waves", "sure": 1.2 },
-    "cicek": { "metin": "magical flower bloom pop with sparkle", "sure": 1.0 },
-    "kelebek": { "metin": "soft fluttering wings with a light twinkle", "sure": 1.0 },
-    "kedi": { "metin": "cute kitten meow", "sure": 1.0 }
+    "top": {
+      "metin": "rubber ball boing bounce and a tiny cute giggle",
+      "sure": 1.2
+    },
+    "gunes": {
+      "metin": "warm magical sparkle chime",
+      "sure": 1.0
+    },
+    "kalp": {
+      "metin": "soft heartbeat thump thump",
+      "sure": 1.0
+    },
+    "gokkusagi": {
+      "metin": "magical harp glissando with sparkles",
+      "sure": 1.2
+    },
+    "bulut": {
+      "metin": "gentle rain drops pitter patter",
+      "sure": 1.2
+    },
+    "yildiz": {
+      "metin": "twinkling star sparkle",
+      "sure": 1.0
+    },
+    "balik": {
+      "metin": "underwater bubbles blub blub",
+      "sure": 1.0
+    },
+    "ev": {
+      "metin": "wooden door knock knock",
+      "sure": 0.9
+    },
+    "elma": {
+      "metin": "crunchy apple bite",
+      "sure": 0.8
+    },
+    "agac": {
+      "metin": "leaves rustling and a little bird chirp",
+      "sure": 1.2
+    },
+    "balon": {
+      "metin": "rubber balloon squeak",
+      "sure": 0.8
+    },
+    "yilan": {
+      "metin": "playful little snake hiss sss",
+      "sure": 1.0
+    },
+    "kardan": {
+      "metin": "soft snow crunch with tiny jingle bells",
+      "sure": 1.0
+    },
+    "araba": {
+      "metin": "toy car horn beep beep",
+      "sure": 0.8
+    },
+    "tekne": {
+      "metin": "small boat horn toot with gentle waves",
+      "sure": 1.2
+    },
+    "cicek": {
+      "metin": "magical flower bloom pop with sparkle",
+      "sure": 1.0
+    },
+    "kelebek": {
+      "metin": "soft fluttering wings with a light twinkle",
+      "sure": 1.0
+    },
+    "kedi": {
+      "metin": "cute kitten meow",
+      "sure": 1.0
+    },
+    "dinozor": {
+      "metin": "cute baby dinosaur little roar rawr",
+      "sure": 1.0
+    },
+    "roket": {
+      "metin": "cartoon rocket launch whoosh",
+      "sure": 1.2
+    },
+    "kopek": {
+      "metin": "cute puppy bark woof woof",
+      "sure": 1.0
+    },
+    "ucak": {
+      "metin": "cartoon airplane fly by zoom",
+      "sure": 1.2
+    },
+    "tavsan": {
+      "metin": "bunny hop boing with a tiny squeak",
+      "sure": 0.9
+    },
+    "ordek": {
+      "metin": "cute duck quack quack",
+      "sure": 0.9
+    }
   }
 }

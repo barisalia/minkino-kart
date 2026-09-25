@@ -229,4 +229,80 @@ export const SUS: Record<string, Guzellik> = {
       },
     ],
   },
+  dinozor: {
+    boya: { govde: '#5DBE3F', boyun: '#5DBE3F', kuyruk: '#5DBE3F' },
+    sus: [
+      {
+        parca: 'boyun',
+        svg: gozBebegi(0.79, 0.232, 0.015) + `<path d="M.8 .272Q.822 .288 .845 .266" stroke="${G}" stroke-width=".009" fill="none" stroke-linecap="round"/>` + yanak(0.772, 0.262, 0.014) + `<circle cx=".838" cy=".224" r=".005" fill="${G}"/>`,
+      },
+      {
+        parca: 'govde',
+        svg: parilti(0.44, 0.6, 0.17) + [[0.37, 0.6, 0.03], [0.47, 0.66, 0.024], [0.53, 0.56, 0.02]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#2f8f2a" opacity=".45"/>`).join(''),
+      },
+    ],
+  },
+  roket: {
+    boya: { govde: '#EEF1F7', kanatlar: '#F0413F', pencere: '#6CC8FF' },
+    sus: [
+      { parca: 'pencere', svg: parilti(0.5, 0.42, 0.055) + yuz(0.5, 0.43, 0.035, false) },
+      {
+        parca: 'govde',
+        svg:
+          `<path d="M.385 .6H.615" stroke="#F0413F" stroke-width=".022"/>` +
+          [0.44, 0.5, 0.56].map((x) => `<circle cx="${x}" cy=".64" r=".006" fill="${K}" opacity=".5"/>`).join('') +
+          pirilti(0.2, 0.24, 0.03) + pirilti(0.82, 0.3, 0.025) + pirilti(0.16, 0.62, 0.02),
+      },
+    ],
+  },
+  kopek: {
+    boya: { yuz: '#E8B07A', sol_kulak: '#8B5A2B', sag_kulak: '#8B5A2B', burun: '#3b2314' },
+    sus: [
+      {
+        parca: 'yuz',
+        svg:
+          `<ellipse cx=".6" cy=".495" rx=".06" ry=".05" fill="#8B5A2B" opacity=".35"/>` +
+          `<path d="M.478 .705Q.5 .775 .522 .705Z" fill="#FF7EB6" stroke="${K}" stroke-width=".007" stroke-linejoin="round"/>` +
+          yanak(0.35, 0.63, 0.035) + yanak(0.65, 0.63, 0.035),
+      },
+      { parca: 'gozler', svg: gozBebegi(0.42, 0.5, 0.02) + gozBebegi(0.58, 0.5, 0.02) },
+      { parca: 'burun', svg: `<circle cx=".485" cy=".59" r=".01" fill="#fff" opacity=".8"/>` },
+    ],
+  },
+  ucak: {
+    boya: { govde: '#F4F6FA', kuyruk: '#F0413F', kanat: '#3E9DF2' },
+    sus: [
+      {
+        parca: 'govde',
+        svg:
+          `<path d="M.22 .565H.74" stroke="#3E9DF2" stroke-width=".014" stroke-linecap="round"/>` +
+          `<path d="M.765 .475Q.805 .485 .815 .52L.765 .52Z" fill="#BDE7FF" stroke="${K}" stroke-width=".008" stroke-linejoin="round"/>`,
+      },
+      { parca: 'camlar', svg: [0.48, 0.57, 0.66].map((x) => `<circle cx="${x}" cy=".52" r=".017" fill="#BDE7FF"/>`).join('') },
+      { parca: 'kuyruk', svg: pirilti(0.2, 0.38, 0.018, '#fff') },
+    ],
+  },
+  tavsan: {
+    boya: { yuz: '#FFFFFF', sol_kulak: '#FFFFFF', sag_kulak: '#FFFFFF' },
+    sus: [
+      { parca: 'sol_kulak', svg: `<ellipse cx=".42" cy=".3" rx=".027" ry=".115" fill="#FF9EBB"/>` },
+      { parca: 'sag_kulak', svg: `<ellipse cx=".58" cy=".3" rx=".027" ry=".115" fill="#FF9EBB"/>` },
+      { parca: 'gozler', svg: gozBebegi(0.44, 0.58, 0.018) + gozBebegi(0.56, 0.58, 0.018) },
+      {
+        parca: 'yuz',
+        svg:
+          `<path d="M.484 .638L.516 .638L.5 .656Z" fill="#FF7EB6" stroke="${K}" stroke-width=".005" stroke-linejoin="round"/>` +
+          `<path d="M.5 .656q-.02 .026-.042 .006M.5 .656q.02 .026 .042 .006" stroke="${G}" stroke-width=".008" fill="none" stroke-linecap="round"/>` +
+          `<rect x=".49" y=".664" width=".02" height=".022" rx=".004" fill="#fff" stroke="${K}" stroke-width=".004"/>` +
+          yanak(0.38, 0.66, 0.03) + yanak(0.62, 0.66, 0.03),
+      },
+    ],
+  },
+  ordek: {
+    boya: { govde: '#FFC72C', bas: '#FFC72C', gaga: '#FF8A2B', kanat: '#FFB000' },
+    sus: [
+      { parca: 'bas', svg: parilti(0.66, 0.4, 0.1) + gozBebegi(0.685, 0.37, 0.016) + yanak(0.66, 0.43, 0.02) },
+      { parca: 'govde', svg: parilti(0.47, 0.63, 0.2) + `<path d="M.26 .78Q.31 .75 .36 .78M.56 .79Q.61 .76 .66 .79" stroke="#fff" stroke-width=".01" fill="none" stroke-linecap="round" opacity=".8"/>` },
+    ],
+  },
 };

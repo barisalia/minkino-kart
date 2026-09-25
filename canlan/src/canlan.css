@@ -795,3 +795,76 @@
 .cc-kok .cc-sahne.canli {
   cursor: pointer;
 }
+/* kâğıt tanesi: pastel resim hissi (çok hafif) */
+.cc-kok .cc-sahne::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: var(--kagit) repeat;
+  background-size: 160px 160px;
+  mix-blend-mode: multiply;
+  opacity: 0.16;
+}
+
+/* ---------- Nasıl çizdim? ve kart ---------- */
+.cc-kok .cc-tekrar-katman {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.6s;
+}
+.cc-kok .cc-tekrar-katman.bitti { opacity: 0; }
+.cc-kok .cc-tekrar-kagit { fill: #fffdf7; }
+.cc-kok .cc-tekrar-cizgi {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation-name: cc-ciziliyor;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+.cc-kok .cc-nasil { --r: var(--sari); }
+.cc-kok .cc-kart { --r: #6cc8ff; }
+.cc-kok .cc-kart-pencere {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: min(92vw, 420px);
+}
+.cc-kok .cc-kart-pencere img {
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(90, 54, 23, 0.25);
+  -webkit-touch-callout: default;
+  user-select: auto;
+}
+
+/* ---------- Sihirli hâl ---------- */
+.cc-kok .cc-canli .cc-yer {
+  transition: opacity 0.45s;
+}
+.cc-kok .cc-canli.gercekte .cc-yer {
+  opacity: 0;
+}
+.cc-kok .cc-gercek image {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cc-gercek-gir 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes cc-gercek-gir {
+  from { opacity: 0; transform: scale(0.5) rotate(-8deg); }
+}
+.cc-kok .cc-sihir-dugme { --r: var(--mor); --i: #fff; }
+.cc-kok .cc-sihir-dugme.acik { --r: #fff; --i: var(--mor); }
+.cc-kok .cc-resim .cc-resim-gorsel {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--r) 10%, #fffdf7);
+  padding: 8%;
+}

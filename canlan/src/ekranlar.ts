@@ -13,12 +13,13 @@ import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
 import { AYAR, canlanirMi, ornekle, parcalaraBol, puanla, toparla } from './puan';
 import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } from './resimler';
+import { kartPaylas, kartYap, tekrarOynat } from './kart';
 import { resimSesi, resimSesiHazirla } from './ses';
 import { SUS } from './susler';
 
 const S = canlan as unknown as {
   hosgeldin: string; sec: string; mod: Record<Mod, string>; mod_ad: Record<Mod, string>; simdi: string; sayac: string[];
-  yildiz: Record<string, string>; canlaniyor: string; eksik: string; tekrar: string; bos: string; boya: string;
+  yildiz: Record<string, string>; canlaniyor: string; eksik: string; tekrar: string; bos: string; boya: string; benim: Record<string, string>;
 };
 const NS = 'http://www.w3.org/2000/svg';
 const sv = <K extends keyof SVGElementTagNameMap>(ad: K, a: Record<string, string | number> = {}) => {
@@ -46,10 +47,68 @@ function logo(): HTMLElement {
 }
 
 const SAHNE_RESIM = import.meta.glob<string>('../../assets/sahne/*.webp', { eager: true, query: '?url', import: 'default' });
+/** Sihirli hâl: her resmin kitap illüstrasyonu (Recraft) */
+const GERCEK_RESIM = import.meta.glob<string>('../../assets/canlan/*.webp', { eager: true, query: '?url', import: 'default' });
+/** İllüstrasyonu sola bakan resimler (sahnede aynalanır) */
+const AYNALI = new Set(['ucak']);
+
+/** Adresi veri adresine çevirir (kart için SVG'nin içine gömülebilsin). */
+async function veriAdresi(url: string): Promise<string> {
+  const b = await (await fetch(url)).blob();
+  return new Promise((coz) => {
+    const o = new FileReader();
+    o.onload = () => coz(String(o.result));
+    o.readAsDataURL(b);
+  });
+}
+
+/** Renklerin ton farkı (derece). Gri/beyaz renklerde 0. */
+function tonFarki(hedef: string, kaynak: string): number {
+  const ton = (h: string) => {
+    const v = parseInt(h.replace('#', ''), 16);
+    const [r, g, b] = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) => x / 255);
+    const mx = Math.max(r, g, b);
+    const mn = Math.min(r, g, b);
+    const d = mx - mn;
+    if (d < 0.15) return null;
+    const t = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return (t * 60 + 360) % 360;
+  };
+  const a = ton(hedef);
+  const b = ton(kaynak);
+  if (a === null || b === null) return 0;
+  let f = a - b;
+  if (f > 180) f -= 360;
+  if (f < -180) f += 360;
+  return Math.abs(f) < 12 ? 0 : f;
+}
+
+/** Kâğıt tanesi (bir kez üretilir): sahnenin üstünde çok hafif, pastel resim hissi verir. */
+let kagitUrl = '';
+function kagitDokusu(): string {
+  if (kagitUrl) return kagitUrl;
+  try {
+    const c = document.createElement('canvas');
+    c.width = c.height = 160;
+    const x = c.getContext('2d')!;
+    const img = x.createImageData(160, 160);
+    for (let i = 0; i < 160 * 160; i++) {
+      const v = 200 + Math.random() * 55;
+      img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v;
+      img.data[i * 4 + 3] = 255;
+    }
+    x.putImageData(img, 0, 0);
+    kagitUrl = c.toDataURL('image/png');
+  } catch {
+    kagitUrl = 'data:,';
+  }
+  return kagitUrl;
+}
 
 /** Sahne (deniz, gök, çayır…): kitap kalitesinde arka plan resmi + hareketli süsler. */
 function sahne(r: Resim): HTMLElement {
   const s = h(`div.cc-sahne.sahne-${r.sahne}`);
+  s.style.setProperty('--kagit', `url("${kagitDokusu()}")`);
   const url = SAHNE_RESIM[`../../assets/sahne/${r.sahne}.webp`];
   if (url) {
     s.classList.add('resimli');
@@ -121,7 +180,7 @@ export function listeEkrani(app: Uygulama): Ekran {
       const y = enIyi(mod, r.id);
       const yildizlar = h('div.cc-kart-yildiz', { 'aria-label': `${y} yıldız` });
       for (let k = 0; k < 3; k++) yildizlar.append(h(`i${k < y ? '.dolu' : ''}`, { html: IKON.yildiz }));
-      const b = h('button.cc-resim', { type: 'button', 'aria-label': r.ad, 'data-resim': r.id, style: `--i:${i};--r:${r.renk}` }, sablonSvg(r, { kalinlik: 0.03, tur: 'sus' }), h('span.cc-resim-ad', {}, r.ad), yildizlar);
+      const b = h('button.cc-resim', { type: 'button', 'aria-label': r.ad, 'data-resim': r.id, style: `--i:${i};--r:${r.renk}` }, GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`] ? h('img.cc-resim-gorsel', { src: GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`], alt: '', loading: 'lazy' }) : sablonSvg(r, { kalinlik: 0.03, tur: 'sus' }), h('span.cc-resim-ad', {}, r.ad), yildizlar);
       b.addEventListener('click', () => {
         efekt.secim();
         app.git('ciz', { id: r.id, mod });
@@ -377,6 +436,18 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   };
 }
 
+/** Paylaşım yoksa kartı gösterir (basılı tutup kaydetmek için). */
+function kartPenceresi(b: Blob): HTMLElement {
+  const url = URL.createObjectURL(b);
+  const kapat = h('button.dugme', { type: 'button', style: '--r:#5DBE3F' }, 'Tamam');
+  const perde = h('div.perde', { role: 'dialog', 'aria-label': 'Kartım' }, h('div.pencere.cc-kart-pencere', {}, h('img', { src: url, alt: 'Resim kartım' }), h('p', {}, 'Resmi basılı tutup kaydedebilirsin.'), kapat));
+  kapat.addEventListener('click', () => {
+    perde.remove();
+    URL.revokeObjectURL(url);
+  });
+  return perde;
+}
+
 // ---------------------------------------------------------------- Sonuç: yıldız → boya → canlan
 const BOYALAR = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#2FB5A5', '#6CC8FF', '#3E9DF2', '#9B5CE0', '#FF7EB6', '#A0522D', '#FFFFFF', '#3b3b3b'];
 
@@ -406,7 +477,49 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   ileri.addEventListener('click', () => app.git('ciz', { id: sonraki.id, mod: p.mod }));
   const tamamla = h('button.dugme.cc-tamamla', { type: 'button', 'aria-label': 'Tamamla', style: '--r:#3E9DF2', hidden: true }, svg(IKON.kalem), h('span', {}, 'Tamamla'));
   tamamla.addEventListener('click', () => app.git('ciz', { id: r.id, mod: p.mod, devam: p.cizgiler }));
-  const dugmeler = h('div.cc-sonuc-dugmeler', {}, tamamla, tekrar, ileri);
+  // Nasıl çizdim? (çizimi sırayla yeniden çizer) ve paylaşılabilir kart
+  let tekrarOynuyor = false;
+  const nasil = yuvarlakDugme(IKON.oyna, 'Nasıl çizdim?', async () => {
+    if (tekrarOynuyor) return;
+    tekrarOynuyor = true;
+    await tekrarOynat(sh, p.cizgiler);
+    tekrarOynuyor = false;
+  }, 'kucuk cc-nasil');
+  const kart = yuvarlakDugme(IKON.paylas, 'Kartım', async () => {
+    kart.disabled = true;
+    try {
+      const b = await kartYap({ svg: canli.el, sahneUrl: SAHNE_RESIM[`../../assets/sahne/${r.sahne}.webp`], baslik: S.benim[r.id] ?? r.ad, yildiz: sonuc.yildiz });
+      const d = await kartPaylas(b, `${r.id}-kartim.png`);
+      if (d === 'goster') app.kok.append(kartPenceresi(b));
+    } finally {
+      kart.disabled = false;
+    }
+  }, 'kucuk cc-kart');
+  kart.hidden = true;
+  // Sihirli hâl: çizim, çocuğun boyasıyla renklenen kitap illüstrasyonuna dönüşür (tekrar dokununca geri döner)
+  const gercekUrl = GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`];
+  let gercekte = false;
+  let gercekVeri: string | null = null;
+  const sihirDugme = yuvarlakDugme(IKON.sihir, 'Sihirli hâli', async () => {
+    if (!gercekUrl) return;
+    gercekte = !gercekte;
+    sihirDugme.classList.toggle('acik', gercekte);
+    if (!gercekte) {
+      canli.gercek(null);
+      efekt.dokunma();
+      return;
+    }
+    gercekVeri ??= await veriAdresi(gercekUrl).catch(() => gercekUrl);
+    const anaParca = Object.keys(SUS[r.id]?.boya ?? {})[0];
+    const cocukRengi = boyalar.filter((b) => b.parca === anaParca).at(-1)?.renk;
+    const oneri = SUS[r.id]?.boya[anaParca];
+    canli.gercek(gercekVeri, { renkKaydir: cocukRengi && oneri ? tonFarki(cocukRengi, oneri) : 0, ayna: AYNALI.has(r.id) });
+    efekt.kilitAcildi();
+    const k = kutu.getBoundingClientRect();
+    konfetiPatlat(app.kok, k.left + k.width / 2, k.top + k.height / 2, 40, 0.5);
+  }, 'kucuk cc-sihir-dugme');
+  sihirDugme.hidden = true;
+  const dugmeler = h('div.cc-sonuc-dugmeler', {}, h('div.ust-grup', {}, nasil, sihirDugme, kart), tamamla, tekrar, ileri);
 
   // --- Boyama
   const boyalar: Boya[] = [];
@@ -518,6 +631,8 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     canli.susGoster();
     canli.baslat();
     canlandi = true;
+    kart.hidden = false;
+    sihirDugme.hidden = !gercekUrl;
     resimSesiHazirla(r.id);
     efekt.kilitAcildi();
     const k = kutu.getBoundingClientRect();

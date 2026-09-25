@@ -150,7 +150,7 @@ export function tumCumleler(): string[] {
   const cz = canlanJson as Record<string, unknown>;
   const topla = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
   for (const [k, v] of Object.entries(cz)) {
-    if (k === 'aciklama' || k === 'puan' || k === 'mod_ad') continue;
+    if (k === 'aciklama' || k === 'puan' || k === 'mod_ad' || k === 'benim') continue;
     if (k === 'resimler') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
     else topla(v).forEach(ekle);
   }

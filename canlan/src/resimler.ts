@@ -299,6 +299,132 @@ export const RESIMLER: Resim[] = [
       },
     },
   },
+  {
+    id: 'dinozor', ad: ad('dinozor'), zorluk: 3, renk: '#3FA535', sahne: 'cayir',
+    cizgiler: [
+      { parca: 'govde', n: daire(0.44, 0.6, 0.22, 0.14), kapali: true },
+      { parca: 'boyun', n: [[0.58, 0.52], [0.66, 0.3], [0.7, 0.21], [0.8, 0.19], [0.85, 0.24], [0.79, 0.29], [0.72, 0.31], [0.66, 0.55], [0.58, 0.52]], kapali: true },
+      { parca: 'kuyruk', n: [[0.23, 0.56], [0.06, 0.68], [0.25, 0.67], [0.23, 0.56]], kapali: true },
+      { parca: 'bacaklar', n: [[0.34, 0.72], [0.34, 0.86]] },
+      { parca: 'bacaklar', n: [[0.41, 0.74], [0.41, 0.86]] },
+      { parca: 'bacaklar', n: [[0.5, 0.74], [0.5, 0.86]] },
+      { parca: 'bacaklar', n: [[0.57, 0.72], [0.57, 0.86]] },
+      { parca: 'dikenler', n: [[0.3, 0.48], [0.34, 0.41], [0.38, 0.47], [0.42, 0.4], [0.46, 0.46], [0.5, 0.4], [0.54, 0.47]] },
+    ],
+    kucukParcalar: ['dikenler'],
+    canlan: {
+      tepki: 'zipla',
+      zemin: 0.9,
+      renkler: { dikenler: '#FF8A2B' },
+      parca: {
+        boyun: [{ tip: 'don', pivot: [0.62, 0.54], aci: 6, hiz: 0.6 }],
+        kuyruk: [{ tip: 'don', pivot: [0.24, 0.62], aci: 12, hiz: 1 }],
+        bacaklar: [{ tip: 'kaydir', dx: 0, dy: 0.006, hiz: 1.2 }],
+      },
+    },
+  },
+  {
+    id: 'roket', ad: ad('roket'), zorluk: 2, renk: '#F0413F', sahne: 'gece',
+    cizgiler: [
+      { parca: 'govde', n: [...yay(0.5, 0.38, 0.12, 0.24, 180, 360, 20), [0.62, 0.68], [0.38, 0.68], [0.38, 0.38]], kapali: true },
+      { parca: 'pencere', n: daire(0.5, 0.42, 0.055), kapali: true },
+      { parca: 'kanatlar', n: [[0.38, 0.54], [0.27, 0.72], [0.38, 0.68], [0.38, 0.54]], kapali: true },
+      { parca: 'kanatlar', n: [[0.62, 0.54], [0.73, 0.72], [0.62, 0.68], [0.62, 0.54]], kapali: true },
+      { parca: 'alev', n: [[0.42, 0.71], [0.46, 0.84], [0.5, 0.75], [0.54, 0.86], [0.58, 0.71]] },
+    ],
+    kucukParcalar: ['alev'],
+    canlan: {
+      tepki: 'titre',
+      yol: 'yuksel',
+      renkler: { alev: '#FF8A2B' },
+      tum: [{ tip: 'kaydir', dx: 0.004, dy: 0, hiz: 7 }],
+      parca: { alev: [{ tip: 'olcek', pivot: [0.5, 0.71], x: 1.12, y: 1.35, hiz: 3.2 }] },
+    },
+  },
+  {
+    id: 'kopek', ad: ad('kopek'), zorluk: 2, renk: '#A0522D', sahne: 'cayir',
+    cizgiler: [
+      { parca: 'yuz', n: daire(0.5, 0.56, 0.23, 0.21), kapali: true },
+      { parca: 'sol_kulak', n: daire(0.27, 0.53, 0.07, 0.15, 24), kapali: true },
+      { parca: 'sag_kulak', n: daire(0.73, 0.53, 0.07, 0.15, 24), kapali: true },
+      { parca: 'gozler', n: daire(0.42, 0.5, 0.025, 0.025, 10), kapali: true },
+      { parca: 'gozler', n: daire(0.58, 0.5, 0.025, 0.025, 10), kapali: true },
+      { parca: 'burun', n: daire(0.5, 0.6, 0.05, 0.035, 14), kapali: true },
+      { parca: 'agiz', n: yay(0.5, 0.64, 0.08, 0.06, 20, 160, 12) },
+    ],
+    kucukParcalar: ['gozler', 'burun', 'agiz'],
+    canlan: {
+      tepki: 'zipla',
+      zemin: 0.86,
+      tum: [{ tip: 'don', pivot: [0.5, 0.78], aci: 5, hiz: 0.6 }],
+      parca: {
+        sol_kulak: [{ tip: 'don', pivot: [0.28, 0.39], aci: 12, hiz: 1.4 }],
+        sag_kulak: [{ tip: 'don', pivot: [0.72, 0.39], aci: -12, hiz: 1.4, faz: 0.2 }],
+      },
+    },
+  },
+  {
+    id: 'ucak', ad: ad('ucak'), zorluk: 3, renk: '#3E9DF2', sahne: 'gok',
+    cizgiler: [
+      { parca: 'govde', n: [[0.2, 0.46], [0.72, 0.46], ...yay(0.72, 0.53, 0.11, 0.07, -90, 90, 14).slice(1), [0.22, 0.6], [0.2, 0.46]], kapali: true },
+      { parca: 'kuyruk', n: [[0.2, 0.46], [0.11, 0.25], [0.31, 0.46], [0.2, 0.46]], kapali: true },
+      { parca: 'kanat', n: [[0.42, 0.56], [0.32, 0.76], [0.43, 0.76], [0.55, 0.56], [0.42, 0.56]], kapali: true },
+      { parca: 'camlar', n: daire(0.48, 0.52, 0.022, 0.022, 10), kapali: true },
+      { parca: 'camlar', n: daire(0.57, 0.52, 0.022, 0.022, 10), kapali: true },
+      { parca: 'camlar', n: daire(0.66, 0.52, 0.022, 0.022, 10), kapali: true },
+    ],
+    kucukParcalar: ['camlar'],
+    canlan: {
+      tepki: 'salla',
+      yol: 'git',
+      tum: [{ tip: 'don', pivot: [0.5, 0.55], aci: 4, hiz: 0.5 }, { tip: 'kaydir', dx: 0, dy: 0.03, hiz: 0.4 }],
+      parca: { kanat: [{ tip: 'olcek', pivot: [0.45, 0.56], x: 1, y: 0.9, hiz: 1.2 }] },
+    },
+  },
+  {
+    id: 'tavsan', ad: ad('tavsan'), zorluk: 2, renk: '#FF7EB6', sahne: 'cayir',
+    cizgiler: [
+      { parca: 'yuz', n: daire(0.5, 0.62, 0.2, 0.18), kapali: true },
+      { parca: 'sol_kulak', n: daire(0.42, 0.28, 0.055, 0.17, 24), kapali: true },
+      { parca: 'sag_kulak', n: daire(0.58, 0.28, 0.055, 0.17, 24), kapali: true },
+      { parca: 'gozler', n: daire(0.44, 0.58, 0.022, 0.022, 10), kapali: true },
+      { parca: 'gozler', n: daire(0.56, 0.58, 0.022, 0.022, 10), kapali: true },
+      { parca: 'biyik', n: [[0.4, 0.67], [0.26, 0.64]] },
+      { parca: 'biyik', n: [[0.4, 0.7], [0.26, 0.73]] },
+      { parca: 'biyik', n: [[0.6, 0.67], [0.74, 0.64]] },
+      { parca: 'biyik', n: [[0.6, 0.7], [0.74, 0.73]] },
+    ],
+    kucukParcalar: ['gozler', 'biyik'],
+    canlan: {
+      tepki: 'zipla',
+      zemin: 0.88,
+      tum: [{ tip: 'zipla', yukseklik: 0.07, hiz: 0.7, zemin: 0.8 }],
+      parca: {
+        sol_kulak: [{ tip: 'don', pivot: [0.42, 0.45], aci: -9, hiz: 1.1 }],
+        sag_kulak: [{ tip: 'don', pivot: [0.58, 0.45], aci: 9, hiz: 1.1, faz: 0.3 }],
+      },
+    },
+  },
+  {
+    id: 'ordek', ad: ad('ordek'), zorluk: 2, renk: '#FF8A2B', sahne: 'okyanus',
+    cizgiler: [
+      { parca: 'govde', n: daire(0.47, 0.63, 0.23, 0.13), kapali: true },
+      { parca: 'bas', n: daire(0.66, 0.4, 0.1), kapali: true },
+      { parca: 'gaga', n: [[0.745, 0.36], [0.91, 0.415], [0.745, 0.47], [0.745, 0.36]], kapali: true },
+      { parca: 'kanat', n: daire(0.44, 0.61, 0.1, 0.055, 20), kapali: true },
+    ],
+    kucukParcalar: ['gaga'],
+    canlan: {
+      tepki: 'salla',
+      yol: 'yuz',
+      zemin: 0.8,
+      parca: {
+        bas: [{ tip: 'don', pivot: [0.64, 0.5], aci: 8, hiz: 0.8 }],
+        gaga: [{ tip: 'don', pivot: [0.64, 0.5], aci: 8, hiz: 0.8 }],
+        kanat: [{ tip: 'olcek', pivot: [0.36, 0.61], x: 1.08, y: 1.2, hiz: 1.6 }],
+      },
+    },
+  },
 ];
 
 export const resim = (id: string) => RESIMLER.find((r) => r.id === id);

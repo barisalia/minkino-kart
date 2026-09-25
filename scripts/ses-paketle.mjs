@@ -18,7 +18,7 @@ if (process.argv.includes('--canlan')) {
   const istenen = new Set();
   const topla = (v) => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
   for (const [k, v] of Object.entries(c)) {
-    if (['aciklama', 'puan', 'mod_ad'].includes(k)) continue;
+    if (['aciklama', 'puan', 'mod_ad', 'benim'].includes(k)) continue;
     if (k === 'resimler') Object.values(v).forEach((ad) => istenen.add(`${ad}!`));
     else topla(v).forEach((t) => istenen.add(t));
   }

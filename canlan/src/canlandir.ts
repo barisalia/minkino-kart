@@ -87,6 +87,11 @@ export interface Canli {
   noktaAl(x: number, y: number): Nokta;
   /** Dokunma tepkisi (canlandıktan sonra) */
   dokun(): void;
+  /**
+   * Sihirli hâl: çizimin yerinde aynı resmin kitap illüstrasyonu belirir (url: veri adresi).
+   * renkKaydir: çocuğun boyasına göre ton kaydırma (derece). null verilirse çocuğun çizimine döner.
+   */
+  gercek(url: string | null, o?: { renkKaydir?: number; ayna?: boolean }): void;
 }
 
 const ters = (p: Nokta, d: Donusum): Nokta => [(p[0] - d.tx) / d.s, (p[1] - d.ty) / d.s];
@@ -342,6 +347,33 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     },
     dokun() {
       tepkiBas = performance.now();
+    },
+    gercek(url, g = {}) {
+      tepkiG.querySelector('.cc-gercek')?.remove();
+      svg.classList.toggle('gercekte', !!url);
+      if (!url) return;
+      // şablonun kapladığı alan (sahnedeki yeri)
+      let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+      for (const ci of r.cizgiler)
+        for (const [px, py] of ci.n) {
+          a = Math.min(a, px); c = Math.max(c, px); b = Math.min(b, py); d = Math.max(d, py);
+        }
+      const boy = Math.max(c - a, d - b) / 0.9;
+      const cx = (a + c) / 2;
+      const cy = (b + d) / 2 + (r.canlan.zemin !== undefined ? r.canlan.zemin - d : 0);
+      const g2 = el('g', { class: 'cc-gercek' });
+      if (g.renkKaydir) {
+        const id = `cc-ton-${Math.random().toString(36).slice(2, 8)}`;
+        const f = el('filter', { id, 'color-interpolation-filters': 'sRGB' });
+        f.append(el('feColorMatrix', { type: 'hueRotate', values: g.renkKaydir.toFixed(1) }));
+        g2.append(f);
+        g2.setAttribute('filter', `url(#${id})`);
+      }
+      const resim = el('image', { href: url, x: cx - boy / 2, y: cy - boy / 2, width: boy, height: boy, preserveAspectRatio: 'xMidYMid meet' });
+      const ayna = el('g', g.ayna ? { transform: `translate(${2 * cx} 0) scale(-1 1)` } : {});
+      ayna.append(resim);
+      g2.append(ayna);
+      tepkiG.append(g2);
     },
     noktaAl(x, y) {
       const m = ic.getScreenCTM();

@@ -320,9 +320,31 @@ export function boyaResmi(boyalar: Boya[], N = BOYUT): HTMLCanvasElement {
     golge.addColorStop(1, 'rgba(60,20,0,0.18)');
     kx.fillStyle = golge;
     kx.fillRect(0, 0, N, N);
+    pastelDokusu(kx, b.maske, N);
     x.drawImage(k, 0, 0);
   }
   return c;
+}
+
+/** Pastel boya görünümü: çapraz tarama + tane (her piksel için sabit, titremesin). */
+function pastelDokusu(kx: CanvasRenderingContext2D, maske: Uint8Array, N: number) {
+  const img = kx.getImageData(0, 0, N, N);
+  const d = img.data;
+  for (let i = 0; i < maske.length; i++) {
+    if (!maske[i]) continue;
+    const x = i % N;
+    const y = (i - x) / N;
+    // sabit sözde rastgele tane
+    let h = (x * 374761393 + y * 668265263) >>> 0;
+    h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
+    const tane = ((h & 255) / 255 - 0.5) * 0.16;
+    const tarama = Math.sin((x + y) * 0.95) * 0.045 + Math.sin((x - y) * 0.37) * 0.02;
+    const f = 1 + tane + tarama;
+    d[i * 4] = Math.min(255, d[i * 4] * f);
+    d[i * 4 + 1] = Math.min(255, d[i * 4 + 1] * f);
+    d[i * 4 + 2] = Math.min(255, d[i * 4 + 2] * f);
+  }
+  kx.putImageData(img, 0, 0);
 }
 
 function hex(h: string): [number, number, number] {

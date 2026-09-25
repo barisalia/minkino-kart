@@ -69,7 +69,7 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   await page.screenshot({ path: `tests/screens/${p}-30-canlan-acilis.png` });
 
   await page.getByRole('button', { name: 'Oyna' }).click();
-  await expect(page.locator('.cc-resim')).toHaveCount(18);
+  await expect(page.locator('.cc-resim')).toHaveCount(24);
   await expect(page.locator('.cc-mod.secili')).toHaveAttribute('data-mod', 'iz');
   await page.waitForTimeout(700);
   await page.screenshot({ path: `tests/screens/${p}-31-canlan-liste.png` });
@@ -110,6 +110,15 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   const d2 = await page.locator('[data-parca="kuyruk"]').getAttribute('transform');
   expect(d1).not.toEqual(d2);
 
+  // Nasıl çizdim? ve kart
+  await page.getByRole('button', { name: 'Nasıl çizdim?' }).click();
+  await expect(page.locator('.cc-tekrar-katman')).toBeAttached();
+  await page.getByRole('button', { name: 'Kartım' }).click();
+  const kartResmi = page.locator('.cc-kart-pencere img');
+  await expect(kartResmi).toBeVisible({ timeout: 10000 });
+  await page.waitForTimeout(300);
+  await kartResmi.screenshot({ path: `tests/screens/${p}-40-canlan-kart.png` });
+  await page.getByRole('button', { name: 'Tamam' }).click();
   // Liste yıldızı kaydetti
   await page.getByRole('button', { name: 'Resimler' }).click();
   await expect(page.locator('[data-resim="balik"] .cc-kart-yildiz i.dolu').first()).toBeVisible();
