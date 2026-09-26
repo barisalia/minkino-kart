@@ -31,10 +31,10 @@
 .mk-kok .mino .g { transform: var(--govde); }
 .mk-kok .mino .k { transform: var(--govde) var(--kafa); }
 .mk-kok .mino .q { transform: var(--govde) var(--kuyruk); }
-.mk-kok .mino .m-kapak rect { fill: rgb(234, 215, 188); }
-.mk-kok .mino .m-kirpik { fill: none; stroke: rgb(67, 19, 16); stroke-width: 14; stroke-linecap: round; }
+.mk-kok .mino .m-kapak rect { fill: rgb(250, 158, 60); }
+.mk-kok .mino .m-kirpik { fill: none; stroke: rgb(58, 18, 16); stroke-width: 19; stroke-linecap: round; }
 .mk-kok .mino .m-mutlu-goz path,
-.mk-kok .mino .m-kapali-goz path { fill: none; stroke: rgb(67, 19, 16); stroke-width: 16; stroke-linecap: round; }
+.mk-kok .mino .m-kapali-goz path { fill: none; stroke: rgb(58, 18, 16); stroke-width: 22; stroke-linecap: round; }
 .mk-kok .mino .m-kapak .m-kirpik { display: none; }
 .mk-kok .mino .m-kapali-goz { opacity: 0; }
 .mk-kok .mino.gozkapali .m-kapali-goz { opacity: 1; }
@@ -43,9 +43,9 @@
 .mk-kok .mino.mutlu .m-mutlu-goz { opacity: 1; }
 .mk-kok .mino.mutlu .m-yanak { opacity: 0.5; }
 .mk-kok .mino .m-yanak ellipse { fill: #ff7e9a; filter: blur(6px); }
-.mk-kok .mino .m-agiz-ic { fill: rgb(95, 34, 34); stroke: rgb(67, 19, 16); stroke-width: 10; stroke-linejoin: round; }
-.mk-kok .mino .m-dil { fill: rgb(216, 105, 100); }
-.mk-kok .mino .m-agiz-cizgi { fill: none; stroke: rgb(67, 19, 16); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.mk-kok .mino .m-agiz-ic { fill: rgb(117, 8, 30); stroke: rgb(58, 18, 16); stroke-width: 10; stroke-linejoin: round; }
+.mk-kok .mino .m-dil { fill: rgb(236, 118, 131); }
+.mk-kok .mino .m-agiz-cizgi { fill: none; stroke: rgb(58, 18, 16); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
 .mk-kok .mino-zzz {
   position: absolute;
   right: 12%;

@@ -6,13 +6,14 @@
 import { konusmaGucu } from '../audio/motor';
 import { konusuyorMu } from '../audio/ses';
 import { h, TEST_MODU } from '../ui/dom';
-import { MINO_SVG } from './mino-svg';
+import { MINO_AGIZ, MINO_SVG } from './mino-svg';
 
 // Pivot noktaları (çizimin viewBox koordinatları)
-const BOYUN = { x: 600, y: 1150 };
-const KUYRUK = { x: 1140, y: 1165 };
-const AYAK = { x: 600, y: 1690 };
-const AGIZ = { x: 583, y: 884, g: 150 };
+const BOYUN = { x: 1024, y: 1225 };
+const KUYRUK = { x: 1300, y: 1680 };
+const AYAK = { x: 1024, y: 1885 };
+/** Ağız kendi grubunda (0,0) etrafında çizilir; grup onu burnun altına taşır (bkz. MINO_AGIZ) */
+const AGIZ = { x: 0, y: 0, g: 150 };
 
 export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne';
 
@@ -106,7 +107,7 @@ export class Mino {
   agizKonumu(): { x: number; y: number } {
     const r = this.kok.getBoundingClientRect();
     const vb = this.kok.viewBox.baseVal;
-    return { x: r.left + ((AGIZ.x - vb.x) / vb.width) * r.width, y: r.top + ((AGIZ.y + 30 - vb.y) / vb.height) * r.height };
+    return { x: r.left + ((MINO_AGIZ.x - vb.x) / vb.width) * r.width, y: r.top + ((MINO_AGIZ.y + 30 * MINO_AGIZ.olcek - vb.y) / vb.height) * r.height };
   }
 
   /** Dokunulan noktanın hangi bölgeye denk geldiği. */
@@ -115,10 +116,10 @@ export class Mino {
     const vb = this.kok.viewBox.baseVal;
     const vx = vb.x + ((x - r.left) / r.width) * vb.width;
     const vy = vb.y + ((y - r.top) / r.height) * vb.height;
-    if (Math.hypot(vx - 566, vy - 850) < 70) return 'burun';
-    if (vx > 960 && vy > 850) return 'kuyruk';
+    if (Math.hypot(vx - 1024, vy - 915) < 95) return 'burun';
+    if (vx > 1395 && vy > 1185) return 'kuyruk';
     if (vy < BOYUN.y) return 'kafa';
-    if (vy > 1560) return 'ayak';
+    if (vy > 1760) return 'ayak';
     return 'gobek';
   }
 

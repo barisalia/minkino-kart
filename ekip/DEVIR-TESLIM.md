@@ -119,26 +119,25 @@ Bulutta Recraft'a doğrudan bağlıydım. Yerelde Recraft web sitesini kullanın
 
 Senaryo senaristten gelecek: `ekip/senarist-rehberi.md` → `ekip/senaryo/<bolum>.md`.
 
-## 5. Mino (ana karakter): yeni tasarım sırada
+## 5. Mino (ana karakter): yeni tasarım yayında, tasarımcı sürümü bekleniyor
 
-- **Onaylanan tasarım:** `ekip/mino/mino-a-kaynak.svg`.
-- **Tasarımcı görevi:** `ekip/mino/TASARIMCI-GOREVI.md`. Illustrator'da gövdeye hafif gölge eklenecek ve animasyon katmanlarına ayrılacak. Teslim `ekip/mino/mino-final.svg`.
-- **Mino'nun kodu:**
-  - `src/mino/mino.ts` hareketleri yapar: nefes, göz kırpma, ağız, 10 tepki (zıpla, şaşır, dans…).
-  - `src/mino/mino-svg.ts`, `scripts/mino/rig.mjs` ile **otomatik üretilir**.
-- **Eski Mino'nun iskeleti nasıl kurulmuştu:**
-  - Kaynak `karakter-kaynak/kedi-3.svg`.
-  - Her path kafa, gövde ya da kuyruk grubuna atanmış (`scripts/mino/sinifla.mjs`, `parcalar.json`).
-  - Büyük dış kontur bölgelere kırpılmış.
-  - Göz kapakları göz şekliyle kırpılmış.
-  - Ağız kodla çiziliyor.
-  - Dönme noktaları `mino.ts` başındaki `BOYUN`, `KUYRUK`, `AYAK`, `AGIZ` sabitleri.
-- **`mino-final.svg` gelince yapılacaklar:**
-  1. Katman adları (`kafa`, `govde`, `kuyruk`, `kol-sol`, `kol-sag`, `fular`, `goz-sol`, `goz-sag`, `agiz`) doğrudan gruplara eşlenir. Path sınıflandırmasına gerek kalmaz; `rig.mjs` bu gruplara göre sadeleştirilir.
-  2. `mino.ts` içinde `BOYUN`, `KUYRUK`, `AYAK`, `AGIZ` noktaları ve göz kapağı `--oy` değerleri yeni çizimin koordinatlarına göre güncellenir.
-  3. `src/styles/mino.css` içindeki göz kapağı rengi yeni kürk rengiyle değiştirilir.
-  4. Mino'yu kullanan her yerde (`src/screens`, `orman`, `macera`) ekran görüntüsüyle kontrol edilir: `npm run e2e`.
-- **Pratik öneri:** önce yeni Mino'yu tek bir ekranda deneyin (Sesli Maceralar'da `new Mino()`). Hareketler oturunca her yere geçirin.
+- **2026-09-26 (bulutun son işi):** Onaylanan yeni Mino (`karakter-kaynak/mino-a.svg`, Recraft pro vektör) iskeletiyle **bütün oyunlarda yayında**.
+  - Konuşurken ağız açılıyor, göz kırpıyor, gülünce gözleri kapanıyor.
+  - Kafası ve kuyruğu sallanıyor; zıplama, dans ve 10 tepki çalışıyor.
+- **İskelet nasıl kuruldu:** `scripts/mino/rig.mjs` → `src/mino/mino-svg.ts`.
+  - Her path, sınır kutusuna göre kafaya (`k`) ya da gövdeye (`g`) atanıyor; kuyruk path'leri `q`.
+  - Dış kontur (path 1) kafa ve gövde bölgelerine kırpılıyor.
+  - Kuyruğun olduğu yer maskeyle konturdan çıkarılıyor; kuyruk kendi kenar çizgisiyle dönüyor. Sağ pati maskede geri açılıyor.
+  - Göz kapakları, göz dış çizgisiyle kırpılmış turuncu dikdörtgenler.
+  - Ağız kodla çiziliyor, `MINO_AGIZ` grubuyla burnun altına yerleşiyor.
+  - Dönme noktaları `src/mino/mino.ts` başında: `BOYUN`, `KUYRUK`, `AYAK`.
+  - Renkler `src/styles/mino.css` dosyasında.
+- **Tasarımcı sürümü gelince** (`ekip/mino/mino-final.svg`, görev: `ekip/mino/TASARIMCI-GOREVI.md`; gövde gölgesi ve katmanlar):
+  1. Dosyayı `karakter-kaynak/` altına koyun.
+  2. `rig.mjs` içinde kaynak yolunu değiştirin.
+  3. Katman adlarıyla sınıfları eşleyin: `kafa`/`goz-*`/`agiz` → `k`, `govde`/`kol-*`/`fular` → `g`, `kuyruk` → `q`. Katmanlı dosyada path indekslerine gerek kalmaz.
+  4. Göz ve ağız koordinatları aynı kalırsa başka bir şeye dokunmak gerekmez. Değiştiyse `rig.mjs` içindeki kapak ve ağız sayıları güncellenir.
+  5. `node scripts/mino/rig.mjs` çalıştırın, sonra `npm run e2e` ile `tests/screens/*mino*` ve `*macera*` görüntülerine bakın.
 
 ## 6. Açık işler (öncelik sırası)
 

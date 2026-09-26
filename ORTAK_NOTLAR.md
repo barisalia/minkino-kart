@@ -195,3 +195,4 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   6. ElevenLabs anahtarını değiştirme.
   7. `main` / Pages kararı.
 - 2026-09-26 ONAY BEKLİYOR (Barış): `claude/awesome-cori-kvcfd7` dalından `main` açılması ve varsayılan dal yapılması.
+- 2026-09-26 Bulut (son iş): **Yeni Mino (A) bütün oyunlarda yayında.** İskelet `scripts/mino/rig.mjs` ile kuruldu: konuşma ağzı, göz kırpma, kafa ve kuyruk sallama, tepkiler, dans. Tasarımcının gölgeli ve katmanlı sürümü gelince aynı betikle değiştirilecek; adımlar `ekip/DEVIR-TESLIM.md` 5. bölümde.
