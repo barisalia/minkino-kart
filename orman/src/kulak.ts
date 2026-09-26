@@ -6,7 +6,10 @@
 import { OrtamOlcer, type Ayar, type Ozellik } from '../../ses-testi/src/analiz';
 import { Mikrofon } from '../../ses-testi/src/mikrofon';
 import { konusuyorMu } from '../../src/audio/ses';
-import { baglam, sesMotorunuAc } from '../../src/audio/motor';
+import { baglam, mikrofonDinliyorMu, sesMotorunuAc } from '../../src/audio/motor';
+
+/** Konuşma bittikten sonra bu kadar ms daha dinlenmez (oda yankısı, hoparlörün son sesi) */
+const KONUSMA_SONRASI = 350;
 
 export type KulakDurumu = 'kapali' | 'aciliyor' | 'hazir' | 'yok';
 
@@ -17,6 +20,7 @@ class KulakSinifi {
   readonly ayar: Ayar = { taban: -62, duyarlilik: 0, kare: 1024 / 48000 };
   private dinleyici: ((o: Ozellik) => void) | null = null;
   private susBitis = 0;
+  private sonKonusma = -Infinity;
   private son: number[] = [];
   private sayac = 0;
   /** son karenin ses seviyesi 0..1 (kulak simgesi için) */
@@ -59,6 +63,7 @@ class KulakSinifi {
     this.mik.onKare = (o) => this.kare(o);
     this.mik.onHam = (g) => this.hamDinleyici?.(g);
     this.durumYap('hazir');
+    mikrofonDinliyorMu(!!this.dinleyici);
     return true;
   }
 
@@ -82,7 +87,9 @@ class KulakSinifi {
   private kare(o: Ozellik) {
     this.tabanGuncelle(o.db);
     this.seviye = Math.max(0, Math.min(1, (o.db - this.ayar.taban) / 40));
-    const dinle = !!this.dinleyici && !konusuyorMu() && performance.now() > this.susBitis;
+    const simdi = performance.now();
+    if (konusuyorMu()) this.sonKonusma = simdi;
+    const dinle = !!this.dinleyici && simdi - this.sonKonusma > KONUSMA_SONRASI && simdi > this.susBitis;
     if (dinle !== this.dinliyor) {
       this.dinliyor = dinle;
       this.degisti?.();
@@ -93,6 +100,8 @@ class KulakSinifi {
   /** Görevin kare işleyicisini bağlar (null: dinleme yok) */
   dinle(fn: ((o: Ozellik) => void) | null) {
     this.dinleyici = fn;
+    // görev dinlerken arka plan müziği susar (mikrofon açıksa)
+    mikrofonDinliyorMu(!!fn && this.acik);
     this.degisti?.();
   }
 
@@ -104,12 +113,14 @@ class KulakSinifi {
   /** Mikrofonsuz (dokunarak) oyna */
   mikrofonsuz() {
     this.mik.kapat();
+    mikrofonDinliyorMu(false);
     this.durumYap('yok');
   }
 
   kapat() {
     this.mik.kapat();
     this.dinleyici = null;
+    mikrofonDinliyorMu(false);
     if (this.durum === 'hazir') this.durumYap('kapali');
   }
 }

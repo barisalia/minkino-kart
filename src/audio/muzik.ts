@@ -1,5 +1,4 @@
-import { durum } from '../engine/ilerleme';
-import { baglam, muzikCikisi } from './motor';
+import { baglam, muzikCikisi, muzikSeviyesi } from './motor';
 
 /**
  * Hafif arka plan müziği: Web Audio ile çalınan yumuşak, pentatonik bir ninni-döngüsü.
@@ -64,7 +63,7 @@ export function muzikBaslat() {
   sonraki = c.currentTime + 0.1;
   cikis.gain.cancelScheduledValues(c.currentTime);
   cikis.gain.setValueAtTime(0, c.currentTime);
-  cikis.gain.linearRampToValueAtTime(durum.i.ayarlar.muzik ? 1 : 0, c.currentTime + 2);
+  cikis.gain.linearRampToValueAtTime(muzikSeviyesi(), c.currentTime + 2);
   zamanlayici = window.setInterval(planla, 100);
   planla();
 }
@@ -79,5 +78,5 @@ export function muzikAyarUygula() {
   const c = baglam();
   const cikis = muzikCikisi();
   if (!c || !cikis) return;
-  cikis.gain.setTargetAtTime(durum.i.ayarlar.muzik ? 1 : 0, c.currentTime, 0.2);
+  cikis.gain.setTargetAtTime(muzikSeviyesi(), c.currentTime, 0.2);
 }
