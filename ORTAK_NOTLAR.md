@@ -176,6 +176,26 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   - Teslim: `ekip/mino/mino-final.svg` ve PNG.
 - 2026-09-26 Bulut: `mino-final.svg` gelince iskeleti kurar (konuşma ağzı, göz kırpma, tepkiler, dans) ve tüm oyunlarda eski Mino'nun yerine koyar.
 
+## 2026-09-26 — DEVİR TESLİM: bulut yönetici → yerel yönetici
+
+- 2026-09-26 KARAR (Barış): Bulut paketi bitti; bulut yönetici (Yönetici 2) çekiliyor. **Bütün iş yerel ekipte.**
+- 2026-09-26 Devir teslim dosyası: `ekip/DEVIR-TESLIM.md`. İçinde:
+  - projeyi yerele alma,
+  - dal düzeni (öneri: buluttan `main` açılsın, ekip dalları ona birleşsin; CI yalnız `main` / `claude/**` dallarında çalışır),
+  - otomatik görsel/ses/yayın hattı,
+  - Sesli Maceralar mimarisi,
+  - Mino'nun yeni iskeletinin nasıl kurulacağı,
+  - öncelikli açık işler, Barış'ın ölçüleri, tuzaklar.
+- 2026-09-26 KALAN İŞ (sırayla):
+  1. Mino final (tasarımcı → iskelet → her yere).
+  2. Parti pozları.
+  3. Bölüm 2 senaryosu ve kodu.
+  4. Gerçek cihaz testi.
+  5. Sihir kotası.
+  6. ElevenLabs anahtarını değiştirme.
+  7. `main` / Pages kararı.
+- 2026-09-26 ONAY BEKLİYOR (Barış): `claude/awesome-cori-kvcfd7` dalından `main` açılması ve varsayılan dal yapılması.
+
 
 ## 2026-09-26 — Yerel ekip: Mino'nun Pazarı (yeni oyun)
 
