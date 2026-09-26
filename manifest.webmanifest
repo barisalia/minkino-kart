@@ -1,0 +1,15 @@
+{
+  "name": "Minkino Kartlar",
+  "short_name": "Minkino",
+  "lang": "tr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#FFF4DD",
+  "theme_color": "#FFF4DD",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "ikon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
