@@ -10,6 +10,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Mino } from '../../src/mino/mino';
+import { balonlar, canliSahne, havaiFisek } from './canli';
 import { adres, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
 import { denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek } from './istek';
@@ -77,9 +78,14 @@ export function acilisEkrani(app: Uygulama): Ekran {
     app.git('yas', { sonra: 'pazar' });
   });
   const meyveler = ['elma', 'muz', 'cilek', 'portakal', 'havuc'].map((u, i) => h('div.pz-acilis-meyve', { style: `--i:${i}` }, resim(`meyveler/${u}`, '', urunAdi(u))));
+  const canli = canliSahne();
+  canli.gun(0);
+  canli.ufuk.classList.add('pz-acilis-ufuk');
   const el = h(
     'div.pz-acilis',
     { style: gorselStil('pazar/arkaplan') },
+    canli.arka,
+    canli.ufuk,
     h('div.ust-cubuk', {}, sol, h('div.orta'), sesDugmesi()),
     h(
       'div.pz-acilis-ic',
@@ -100,6 +106,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     kapat() {
       clearTimeout(selam);
       mino.kapat();
+      canli.kapat();
     },
   };
 }
@@ -149,13 +156,17 @@ export function pazarEkrani(app: Uygulama): Ekran {
   const ver = h('button.dugme.pz-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
   const urunler = h('div.pz-urunler');
   // Mino standın içinde tahtanın arkasında, sepet tahtanın üstünde; müşteri standın önünde
-  const sahne = h('div.pz-sahne', {}, stand([h('div.pz-mino', {}, mino.el)], [sepet]), musteriKap);
+  // yaşayan pazar: bulutlar, flamalar, kuşlar, uzak yayalar, günün ışığı (canli.ts)
+  const canli = canliSahne();
+  canli.gun(0);
+  const sahne = h('div.pz-sahne', {}, canli.ufuk, stand([h('div.pz-mino', {}, mino.el)], [sepet]), musteriKap);
   // ön tezgâh: standın tahtasının devamı; ürünler bunun üstünde
   const tezgah = h('div.pz-tezgah', {}, h('div.pz-tezgah-ust', {}, ver), urunler);
   const cikis = () => app.git('acilis');
   const el = h(
     'div.pz-pazar',
     { style: gorselStil('pazar/arkaplan'), 'data-yas': y },
+    canli.arka,
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Geri', cikis), h('div.orta', {}, balon), sesDugmesi()),
     yildizlar,
     sahne,
@@ -235,7 +246,14 @@ export function pazarEkrani(app: Uygulama): Ekran {
     e.classList.remove('pz-parla');
     tasi(e, sepetIc);
     // ürün sepete düşünce küçük bir sekme (kayma bittikten sonra)
-    setTimeout(() => salla(e, 'pz-dustu'), sure(300));
+    // ürün sekip yerleşir; para dönerek kavisle düşer ve şıngırdar
+    if (paraMi(id)) {
+      setTimeout(() => salla(e, 'pz-para-dustu'), sure(120));
+      setTimeout(() => {
+        singir(sepet);
+        efekt.nota(9);
+      }, sure(420));
+    } else setTimeout(() => salla(e, 'pz-dustu'), sure(300));
     efekt.yapis();
     salla(sepet, 'pz-zipla');
     sepetGuncelle();
@@ -246,7 +264,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
   }
 
   function urunEl(id: string, i: number): HTMLElement {
-    const e = h('div.pz-urun', { 'data-urun': id, role: 'img', 'aria-label': paraMi(id) ? A.lira.replace('{sayi}', String(PARA[id])) : urunAdi(id) }, urunResmi(id));
+    const e = h('div.pz-urun', { 'data-urun': id, role: 'img', 'aria-label': paraMi(id) ? A.lira.replace('{sayi}', String(PARA[id])) : urunAdi(id) }, h('i.pz-urun-golge'), urunResmi(id));
     const yuva = h('div.pz-yuva', { style: `--i:${i}` }, e);
     sokuler.push(
       surukle({
@@ -302,6 +320,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
 
   const tur = async (i: number) => {
     ist = istekUret(y, i);
+    // gün ilerler: ilk müşteri sabah, sonuncusu akşamüstü
+    canli.gun(i / (MUSTERI_SAYISI - 1));
     hata = 0;
     verHata = 0;
     ipucu = false;
@@ -316,7 +336,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     ver.hidden = !ist.dugmeli;
     verYazi.textContent = ist.tur === 'ode' ? A.tamam : A.ver;
     el.dataset.tur = ist.tur;
-    if (TEST_MODU) el.dataset.istek = JSON.stringify({ istenen: ist.istenen, lira: ist.lira });
+    if (TEST_MODU || document.body.dataset.onizleme) el.dataset.istek = JSON.stringify({ istenen: ist.istenen, lira: ist.lira });
     sepetGuncelle();
 
     const ad = musteriler[i];
@@ -346,14 +366,15 @@ export function pazarEkrani(app: Uygulama): Ekran {
     urunler.querySelectorAll('.pz-parla').forEach((e) => e.classList.remove('pz-parla'));
     efekt.dogru();
     void resimSesi(ad);
-    mino.tepki('zipla');
+    // Mino sepeti patisiyle müşteriye uzatır
+    mino.tepki('uzat');
     // parıltı: müşterinin (solda) ve Mino'nun (standın içinde) üstünde
     parilti(sahne, 0.2, 0.55, 10);
     parilti(sahne, 0.56, 0.4, 8);
     const r = sahne.getBoundingClientRect();
     konfetiPatlat(app.kok, r.left + r.width * 0.2, r.top + r.height * 0.55, 40);
-    yildizlar.children[i]?.classList.add('dolu');
-    efekt.yildiz(Math.min(2, i % 3));
+    // yıldız müşterinin üstünden uçup üstteki yerine oturur
+    void yildizUcur(app.kok, m, yildizlar.children[i] as HTMLElement | undefined).then(() => efekt.yildiz(Math.min(2, i % 3)));
     kayit.yildiz++;
     kaydet();
     const tesekkur = rastgele(P.dogru);
@@ -384,8 +405,47 @@ export function pazarEkrani(app: Uygulama): Ekran {
       clearInterval(ipucuSayaci);
       sokuler.splice(0).forEach((f) => f());
       mino.kapat();
+      canli.kapat();
     },
   };
+}
+
+/** Para kasaya düşünce sepetin ağzında şıngır parıltısı */
+function singir(sepet: HTMLElement) {
+  const s = h('div.pz-singir', { style: 'left:50%;top:40%' }, ...Array.from({ length: 7 }, (_, i) => h('i', { style: `--a:${Math.round((i * 360) / 7)}deg` })));
+  sepet.append(s);
+  setTimeout(() => s.remove(), 700);
+}
+
+/**
+ * Kazanılan yıldız müşterinin üstünden kavis çizerek uçar, dönerek üstteki yerine oturur; varınca yer dolar.
+ * Yalnız transform (WAAPI).
+ */
+function yildizUcur(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElement | undefined): Promise<void> {
+  if (!hedef) return Promise.resolve();
+  const a = kaynak.getBoundingClientRect();
+  const b = hedef.getBoundingClientRect();
+  const x0 = a.left + a.width / 2;
+  const y0 = a.top + a.height * 0.25;
+  const dx = b.left + b.width / 2 - x0;
+  const dy = b.top + b.height / 2 - y0;
+  const y = h('div.pz-ucan-yildiz', { style: `left:${x0}px;top:${y0}px` }, svg(IKON.yildiz));
+  kok.append(y);
+  const an = y.animate(
+    [
+      { transform: 'translate(0, 0) scale(0.3) rotate(0)', offset: 0, easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)' },
+      { transform: 'translate(0, -40px) scale(1.5) rotate(90deg)', offset: 0.25, easing: 'cubic-bezier(0.5, 0, 0.3, 1)' },
+      { transform: `translate(${dx * 0.55}px, ${dy * 0.55 - 60}px) scale(1.2) rotate(250deg)`, offset: 0.62, easing: 'cubic-bezier(0.5, 0, 0.7, 0.6)' },
+      { transform: `translate(${dx}px, ${dy}px) scale(0.7) rotate(360deg)`, offset: 1 },
+    ],
+    { duration: sure(900), fill: 'forwards' },
+  );
+  return an.finished
+    .catch(() => undefined)
+    .then(() => {
+      y.remove();
+      hedef.classList.add('dolu');
+    });
 }
 
 // ---------------------------------------------------------------- Şenlik (5 müşteri mutlu)
@@ -415,25 +475,34 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[] }): Ekra
   const cik = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.ev), A.cikis);
   const cikis = app.secenekler.cikis;
   cik.addEventListener('click', () => (cikis ? cikis() : app.git('acilis')));
+  // akşam oldu: fenerler yanar; konfeti yerine uçan balonlar ve havai fişek
+  const canli = canliSahne({ senlik: true });
+  canli.gun(1);
+  canli.ufuk.classList.add('pz-acilis-ufuk');
+  const gok = h('div.pz-senlik-gok', { 'aria-hidden': 'true' });
   const el = h(
     'div.pz-senlik',
     { style: gorselStil('pazar/arkaplan') },
+    canli.arka,
+    canli.ufuk,
+    gok,
     h('div.ust-cubuk', {}, bosluk(), h('div.orta', {}, h('div.baslik-balon', {}, h('span', {}, P.senlik))), sesDugmesi()),
     h('div.pz-yildizlar.pz-hepsi', {}, ...Array.from({ length: MUSTERI_SAYISI }, () => h('i.pz-yildiz.dolu', {}, svg(IKON.yildiz)))),
     sahne,
     h('div.pz-senlik-alt', {}, birDaha, cik),
   );
   efekt.kilitAcildi();
-  setTimeout(() => {
-    const r = sahne.getBoundingClientRect();
-    konfetiPatlat(app.kok, r.left + r.width / 2, r.top + r.height / 3, 110);
-  }, sure(200));
+  const balonDur = balonlar(gok);
+  const fisekDur = havaiFisek(gok);
   void konus([P.senlik, P.senlik_dokun]);
   return {
     el,
     kapat() {
       clearInterval(dans);
       mino.kapat();
+      canli.kapat();
+      balonDur();
+      fisekDur();
     },
   };
 }

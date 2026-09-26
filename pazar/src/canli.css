@@ -1,0 +1,459 @@
+/* Mino'nun Pazarı — yaşayan sahne (canli.ts): arka plan görselinin üstünde katmanlar. Yalnız transform / opacity. */
+.pz-kok .pz-canli {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.pz-kok .pz-canli > * {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ---- gün ışığı: sabah sıcak-soluk, akşamüstü turuncu-pembe (opaklık geçişiyle) */
+.pz-kok .pz-isik {
+  inset: 0;
+  opacity: 0;
+  transition: opacity 3s ease-in-out;
+}
+.pz-kok .pz-isik-sabah {
+  background:
+    radial-gradient(70% 45% at 10% 0%, rgba(255, 236, 190, 0.55), transparent 70%),
+    linear-gradient(180deg, rgba(255, 224, 170, 0.28), rgba(255, 246, 225, 0.12) 60%, transparent);
+}
+.pz-kok .pz-isik-aksam {
+  background:
+    radial-gradient(80% 50% at 85% 10%, rgba(255, 170, 110, 0.5), transparent 70%),
+    linear-gradient(180deg, rgba(255, 120, 80, 0.36), rgba(255, 170, 80, 0.3) 55%, rgba(255, 140, 110, 0.22));
+}
+.pz-kok .pz-canli-senlik .pz-isik-aksam {
+  opacity: 1;
+}
+
+/* ---- güneş: köşede yavaş dönen ışınlar ve parıltı; gün ilerledikçe gökte kayar */
+.pz-kok .pz-gunes {
+  --gun: 0;
+  top: -18vmin;
+  left: -18vmin;
+  width: 60vmin;
+  aspect-ratio: 1;
+  translate: calc(var(--gun) * 110vw) calc(var(--gun) * 8vmin);
+  transition: translate 4s ease-in-out;
+}
+.pz-kok .pz-gunes-isin,
+.pz-kok .pz-gunes-parilti {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.pz-kok .pz-gunes-isin {
+  background: repeating-conic-gradient(from 0deg, rgba(255, 250, 210, 0.38) 0 7deg, transparent 7deg 22deg);
+  -webkit-mask: radial-gradient(closest-side, #000 20%, transparent 100%);
+  mask: radial-gradient(closest-side, #000 20%, transparent 100%);
+  animation: pz-don 60s linear infinite;
+}
+.pz-kok .pz-gunes-parilti {
+  inset: 30%;
+  background: radial-gradient(closest-side, rgba(255, 255, 235, 0.95), rgba(255, 240, 170, 0.5) 45%, transparent);
+  animation: pz-nabiz-isik 4s ease-in-out infinite alternate;
+}
+@keyframes pz-don {
+  to { transform: rotate(360deg); }
+}
+@keyframes pz-nabiz-isik {
+  from { transform: scale(0.9); opacity: 0.75; }
+  to { transform: scale(1.12); opacity: 1; }
+}
+
+/* ---- bulutlar: ekranı soldan sağa yavaşça geçer (uzaktakiler küçük ve yavaş) */
+.pz-kok .pz-bulutlar {
+  inset: 0;
+}
+.pz-kok .pz-bulut {
+  position: absolute;
+  left: 0;
+  animation: pz-bulut var(--sure) linear var(--g) infinite;
+  will-change: transform;
+}
+.pz-kok .pz-bulut svg {
+  display: block;
+  width: 100%;
+}
+@keyframes pz-bulut {
+  from { transform: translateX(-60vw); }
+  to { transform: translateX(110vw); }
+}
+
+/* ---- ipe asılı süsler: flamalar ve (şenlikte) fenerler */
+.pz-kok .pz-flamalar,
+.pz-kok .pz-fenerler {
+  left: -2%;
+  right: -2%;
+  top: 19%;
+  height: 9vh;
+}
+.pz-kok .pz-ip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 22%;
+  overflow: visible;
+}
+.pz-kok .pz-flama {
+  position: absolute;
+  width: clamp(26px, 7.5vw, 46px);
+  translate: -50% 0;
+  transform-origin: 50% 0;
+  animation: pz-ruzgar var(--d, 2s) ease-in-out var(--g, 0s) infinite alternate;
+}
+.pz-kok .pz-flama svg {
+  display: block;
+  width: 100%;
+}
+/* rüzgâr: süs sallanır, bez gibi hafifçe incelip genişler */
+@keyframes pz-ruzgar {
+  0% { transform: rotate(-9deg) scaleX(1); }
+  50% { transform: rotate(3deg) scaleX(0.88); }
+  100% { transform: rotate(10deg) scaleX(1.04); }
+}
+
+/* ---- stand tentesi rüzgârda dalgalanır (tasarımcının çiziminin tente katmanı) */
+.pz-kok .pz-stand-tente {
+  transform-origin: 50% 12%;
+  animation: pz-tente 3.2s ease-in-out infinite;
+}
+@keyframes pz-tente {
+  0%, 100% { transform: scaleY(1) skewX(0); }
+  30% { transform: scaleY(1.025) skewX(-1.2deg); }
+  60% { transform: scaleY(0.985) skewX(0.8deg); }
+}
+
+/* ---- kuş sürüsü: kanat çırparak gökten geçer */
+.pz-kok .pz-kus-katman {
+  inset: 0;
+}
+.pz-kok .pz-kuslar {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  animation: pz-kus-gec 11s linear forwards;
+}
+@keyframes pz-kus-gec {
+  0% { transform: translateX(calc(var(--yon) * -60vw + 50vw)) translateY(0); }
+  50% { transform: translateX(50vw) translateY(-3vh); }
+  100% { transform: translateX(calc(var(--yon) * 60vw + 50vw)) translateY(1vh); }
+}
+.pz-kok .pz-kus {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: clamp(16px, 4vw, 26px);
+  animation: pz-kanat 0.42s ease-in-out var(--g) infinite alternate;
+}
+.pz-kok .pz-kus svg {
+  display: block;
+  width: 100%;
+}
+@keyframes pz-kanat {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(-0.35); }
+}
+
+/* ---- uzak yayalar: standın arkasında, zeminde yürüyen soluk siluetler */
+.pz-kok .pz-ufuk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.pz-kok .pz-yaya {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: calc(100% * var(--boy));
+  aspect-ratio: 0.5;
+  color: rgba(70, 96, 150, 0.32);
+  animation: pz-yaya-git var(--sure) linear forwards;
+}
+.pz-kok .pz-yaya svg {
+  display: block;
+  height: 100%;
+  fill: currentColor;
+  transform: scaleX(var(--yon));
+  transform-origin: 50% 100%;
+  animation: pz-yaya-adim 0.55s ease-in-out infinite alternate;
+}
+@keyframes pz-yaya-git {
+  from { transform: translateX(calc(50vw - var(--yon) * 60vw)); }
+  to { transform: translateX(calc(50vw + var(--yon) * 60vw)); }
+}
+@keyframes pz-yaya-adim {
+  from { translate: 0 0; rotate: -2deg; }
+  to { translate: 0 -5%; rotate: 2deg; }
+}
+
+/* ---- şenlik: fenerler teker teker yanar */
+.pz-kok .pz-fener {
+  position: absolute;
+  width: clamp(22px, 6.5vw, 42px);
+  aspect-ratio: 0.72;
+  translate: -50% 0;
+  transform-origin: 50% 0;
+  animation: pz-ruzgar var(--d, 2.4s) ease-in-out var(--g, 0s) infinite alternate;
+}
+.pz-kok .pz-fener b {
+  position: absolute;
+  inset: 12% 0 0;
+  border-radius: 40% 40% 45% 45%;
+  border: 3px solid var(--kontur);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22%, rgba(90, 54, 23, 0.25) 22% 26%),
+    radial-gradient(circle at 50% 45%, #fff6c2, var(--r) 70%);
+}
+.pz-kok .pz-fener b::after {
+  /* sönükken üstünde gölge; yanınca kalkar */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(60, 30, 40, 0.45);
+  transition: opacity 0.6s;
+}
+.pz-kok .pz-fener::before {
+  content: '';
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  top: 0;
+  height: 16%;
+  border-radius: 3px;
+  background: var(--kontur);
+}
+.pz-kok .pz-fener-isik {
+  position: absolute;
+  inset: -70%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 220, 120, 0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.pz-kok .pz-fener.yandi b::after {
+  opacity: 0;
+}
+.pz-kok .pz-fener.yandi .pz-fener-isik {
+  opacity: 1;
+  animation: pz-fener-titre 1.6s ease-in-out infinite alternate;
+}
+@keyframes pz-fener-titre {
+  from { opacity: 0.7; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+
+/* ---- şenlik: uçan balonlar ve havai fişek */
+.pz-kok .pz-senlik-gok {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.pz-kok .pz-ucan-balon {
+  position: absolute;
+  bottom: -20vh;
+  width: calc(clamp(34px, 10vw, 64px) * var(--boy));
+  animation: pz-balon-yuksel var(--sure) cubic-bezier(0.3, 0, 0.6, 1) forwards;
+}
+.pz-kok .pz-ucan-balon svg {
+  display: block;
+  width: 100%;
+  transform-origin: 50% 90%;
+  animation: pz-balon-sal var(--sal) ease-in-out infinite alternate;
+}
+@keyframes pz-balon-yuksel {
+  from { transform: translateY(0); }
+  to { transform: translateY(-135vh); }
+}
+@keyframes pz-balon-sal {
+  from { transform: translateX(-12px) rotate(-6deg); }
+  to { transform: translateX(12px) rotate(6deg); }
+}
+.pz-kok .pz-fisek {
+  position: absolute;
+  width: calc(clamp(90px, 30vw, 200px) * var(--boy));
+  aspect-ratio: 1;
+  translate: -50% -50%;
+}
+.pz-kok .pz-fisek-flas {
+  position: absolute;
+  inset: 35%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #fff, var(--r), transparent);
+  animation: pz-flas 0.6s ease-out forwards;
+}
+@keyframes pz-flas {
+  0% { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.pz-kok .pz-fisek-kivilcim {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9%;
+  aspect-ratio: 1;
+  margin: -4.5%;
+  border-radius: 50%;
+  background: var(--r);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
+  animation: pz-kivilcim 1.4s cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
+}
+@keyframes pz-kivilcim {
+  0% { transform: rotate(var(--a)) translateY(0) scale(1); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: rotate(var(--a)) translateY(calc(-500% * var(--u))) translateY(40%) scale(0.3); opacity: 0; }
+}
+
+/* =====================================================================================================
+   DOYURUCU GERİ BİLDİRİM
+   ===================================================================================================== */
+/* sürüklenen ürün hafifçe sallanır; gölgesi yere düşer ve büyür (havaya kalktı hissi) */
+.pz-kok .pz-urun-golge {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -6%;
+  height: 14%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(70, 38, 12, 0.35), transparent);
+  transition: transform 0.2s, opacity 0.2s;
+  z-index: -1;
+}
+.pz-kok .pz-urun.pz-tasiniyor .pz-urun-golge {
+  transform: translateY(80%) scale(1.5);
+  opacity: 0.55;
+}
+.pz-kok .pz-urun.pz-tasiniyor > .pz-resim,
+.pz-kok .pz-urun.pz-tasiniyor > .pz-para {
+  animation: pz-tasi-sallan 0.5s ease-in-out infinite alternate;
+}
+@keyframes pz-tasi-sallan {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(7deg); }
+}
+.pz-kok .pz-sepet-ic .pz-urun-golge {
+  display: none;
+}
+/* sepet esner (lastik gibi: basılır, uzar, oturur) */
+.pz-kok .pz-stand .pz-sepet {
+  transform-origin: 50% 92%;
+}
+.pz-kok .pz-sepet.pz-zipla {
+  animation: pz-sepet-esne 0.55s linear;
+}
+@keyframes pz-sepet-esne {
+  0% { transform: scale(1, 1); }
+  22% { transform: scale(1.14, 0.84); }
+  46% { transform: scale(0.93, 1.09); }
+  68% { transform: scale(1.04, 0.97); }
+  86% { transform: scale(0.99, 1.01); }
+  100% { transform: scale(1, 1); }
+}
+/* para kasaya: dönerek kavisle düşer, şıngır parıltı */
+.pz-kok .pz-sepet-ic .pz-urun.pz-para-dustu {
+  animation: pz-para-dus 0.55s linear;
+}
+@keyframes pz-para-dus {
+  0% { transform: translateY(-120%) scaleX(1); animation-timing-function: ease-out; }
+  30% { transform: translateY(-170%) scaleX(-1); animation-timing-function: ease-in; }
+  60% { transform: translateY(0) scaleX(1) scaleY(0.85); animation-timing-function: ease-out; }
+  80% { transform: translateY(-18%) scaleX(-1); }
+  100% { transform: none; }
+}
+.pz-kok .pz-singir {
+  position: absolute;
+  z-index: 8;
+  width: 30%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.pz-kok .pz-singir i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22%;
+  aspect-ratio: 1;
+  margin: -11%;
+  background: #ffe066;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: pz-singir 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+@keyframes pz-singir {
+  0% { transform: rotate(var(--a)) translateY(0) scale(0.3); opacity: 1; }
+  100% { transform: rotate(var(--a)) translateY(-220%) scale(1.1) rotate(90deg); opacity: 0; }
+}
+/* teslim: sepet müşteriye doğru uzanır, ürünler kavisle müşteriye uçar */
+.pz-kok .pz-stand .pz-sepet.pz-teslim {
+  animation: pz-sepet-uzat 1s cubic-bezier(0.45, 0, 0.3, 1);
+}
+@keyframes pz-sepet-uzat {
+  0%, 100% { transform: none; }
+  35%, 55% { transform: translateX(-26%) rotate(-8deg); }
+}
+.pz-kok .pz-stand .pz-sepet.pz-teslim .pz-sepet-ic {
+  animation: pz-teslim-kavis 0.9s linear 0.35s both;
+}
+@keyframes pz-teslim-kavis {
+  0% { transform: none; opacity: 1; animation-timing-function: ease-out; }
+  45% { transform: translate(-22cqw, -18cqh) scale(0.8); animation-timing-function: ease-in; }
+  100% { transform: translate(-46cqw, -6cqh) scale(0.3); opacity: 0; }
+}
+/* kazanılan yıldız: sahneden uçup üstteki yerine oturur */
+.pz-kok .pz-ucan-yildiz {
+  position: fixed;
+  z-index: 70;
+  width: clamp(40px, 11vw, 64px);
+  aspect-ratio: 1;
+  margin: calc(clamp(40px, 11vw, 64px) / -2);
+  color: var(--sari);
+  pointer-events: none;
+  filter: drop-shadow(0 3px 0 var(--kontur));
+}
+.pz-kok .pz-ucan-yildiz .ikon {
+  width: 100%;
+  height: 100%;
+}
+.pz-kok .pz-ucan-yildiz svg * {
+  fill: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .pz-bulut,
+  .pz-kok .pz-flama,
+  .pz-kok .pz-fener,
+  .pz-kok .pz-gunes-isin,
+  .pz-kok .pz-gunes-parilti,
+  .pz-kok .pz-stand-tente,
+  .pz-kok .pz-fener-isik,
+  .pz-kok .pz-urun.pz-tasiniyor > .pz-resim,
+  .pz-kok .pz-urun.pz-tasiniyor > .pz-para {
+    animation: none !important;
+  }
+}
+
+/* açılış ve şenlikte zemin görünür: yayalar taş zeminin üstünde yürür */
+.pz-kok .pz-ufuk.pz-acilis-ufuk {
+  bottom: 9%;
+  height: 11%;
+  z-index: 0;
+}
+
+/* açılışta arka planın kendi flamaları yeter: öndeki ip başlığın üstüne binmesin */
+.pz-kok .pz-acilis .pz-flamalar {
+  display: none;
+}

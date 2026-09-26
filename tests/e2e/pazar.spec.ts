@@ -47,8 +47,9 @@ test('Mino’nun Pazarı: açılış → pazar, sürükleyerek 1 müşteri (3 ya
 
   // doğru ürün → müşteri sevinir, yıldız
   await sepeteSurukle(page, page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`));
-  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
+  // müşteri hemen sevinir; yıldız uçup yerine oturunca dolar
   await expect(page.locator('.pz-musteri.sevindi')).toBeVisible();
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
   // sıradaki müşteri gelir
   await expect(page.locator('.pz-pazar.pz-aktif')).toBeVisible({ timeout: 8000 });
   const yildiz = await page.evaluate(() => (window as unknown as { __pazar: { kayit: { yildiz: number } } }).__pazar.kayit.yildiz);

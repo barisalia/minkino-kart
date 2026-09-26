@@ -21,7 +21,7 @@ const KOL_EN_COK = 24;
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
 
-export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne';
+export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat';
 
 interface Durum {
   tepki: Tepki | null;
@@ -95,7 +95,7 @@ export class Mino {
 
   /** Kısa bir tepki animasyonu oynat. */
   tepki(t: Tepki, sure?: number) {
-    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2 };
+    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3 };
     this.d.tepki = t;
     this.d.tepkiBas = this.zaman();
     this.d.tepkiSure = sure ?? varsayilan[t];
@@ -280,6 +280,18 @@ export class Mino {
             kolSol += 18 * zarf;
             kolSag += 18 * zarf;
             break;
+          case 'uzat': {
+            // bir şeyi (sol yandaki) karşısındakine uzatır: öne/sola eğilir, doğrulur, sol kolu kalkar, gülümser
+            const tut = Math.min(1, e / 0.25, (1 - e) / 0.25);
+            ziplaY = -150 * tut;
+            govdeAci = -7 * tut;
+            kafaAci -= 6 * tut;
+            kolSol += 26 * tut;
+            kolSag += 6 * tut;
+            mutlu = tut > 0.4 ? 1 : 0;
+            agizHedef = 0.85;
+            break;
+          }
         }
       }
     }

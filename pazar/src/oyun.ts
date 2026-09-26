@@ -24,7 +24,10 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
   const app = new Uygulama(kok, secenekler);
   kok.classList.add('pz-kok');
   const q = new URLSearchParams(location.search);
-  if (q.has('test')) {
+  // ?onizleme=1: test gibi doğrudan ekrana gider ama gerçek hızda (animasyon kaydı / gösterim için)
+  const kisayol = q.has('test') || q.has('onizleme');
+  if (kisayol) {
+    if (q.has('onizleme')) document.body.dataset.onizleme = '1';
     // Test kısayolu: ?test=1&yas=4&ekran=pazar
     const y = Number(q.get('yas'));
     if (y >= 3 && y <= 6) {
@@ -33,7 +36,7 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     }
     (window as unknown as { __pazar: unknown }).__pazar = { app, kayit };
   }
-  const ekran = q.has('test') ? q.get('ekran') : null;
+  const ekran = kisayol ? q.get('ekran') : null;
   app.git(ekran ?? 'acilis');
   return () => {
     app.kapat();
