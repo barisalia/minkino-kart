@@ -91,7 +91,7 @@ for (const [anahtar, url] of Object.entries(liste)) {
     }
     if (!hepsi && fs.existsSync(hedef)) continue;
     // Sahne arka planları: kırpmadan, kenardan kenara kare
-    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/') || anahtar.startsWith('parti-sahne/')) {
+    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/') || anahtar.startsWith('parti-sahne/') || anahtar === 'pazar/arkaplan') {
       fs.mkdirSync(path.dirname(hedef), { recursive: true });
       const boy = anahtar.startsWith('sahne/') ? 768 : 1024;
       await sharp(girdi).resize(boy, boy, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(hedef);
@@ -99,8 +99,9 @@ for (const [anahtar, url] of Object.entries(liste)) {
       console.log('✓', anahtar);
       continue;
     }
-    // Çiz Canlansın ve Uyuyan Orman karakterleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
-    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') || anahtar.startsWith('parti/') ? await beyaziSil(girdi) : girdi;
+    // Çiz Canlansın, Uyuyan Orman, Parti ve Pazar nesneleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
+    // (pazar/arkaplan yukarıdaki arka plan dalında ayrıldı, buraya gelmez)
+    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') || anahtar.startsWith('parti/') || anahtar.startsWith('pazar/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
     // Uyuyan Orman eşyaları: kare değil, kendi oranında (yerleşim CSS'te kolay olsun)
