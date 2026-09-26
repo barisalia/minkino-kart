@@ -4,12 +4,14 @@ import { hataTopla } from './yardimci';
 interface IstekVerisi {
   istenen: Record<string, number>;
   lira?: number;
+  sol?: string[];
 }
+const AGIR: Record<string, number> = { ananas: 2, karpuz: 3 };
 
-/** Ürünü parmakla (fareyle) sepete sürükler */
-async function sepeteSurukle(page: Page, urun: Locator) {
+/** Ürünü parmakla (fareyle) sepete (ya da verilen hedefe) sürükler */
+async function sepeteSurukle(page: Page, urun: Locator, hedef = '.pz-sepet') {
   const a = (await urun.boundingBox())!;
-  const b = (await page.locator('.pz-sepet').boundingBox())!;
+  const b = (await page.locator(hedef).boundingBox())!;
   const [x0, y0] = [a.x + a.width / 2, a.y + a.height / 2];
   const [x1, y1] = [b.x + b.width / 2, b.y + b.height / 2];
   await page.mouse.move(x0, y0);
@@ -107,5 +109,25 @@ test('Mino’nun Pazarı: 6 yaş toplama ve para, 5 yaş ayırma, şenlik ekran�
   await expect(page.locator('.pz-senlik-hayvan')).toHaveCount(5);
   await page.waitForTimeout(400);
   await page.screenshot({ path: 'tests/screens/iphone-a6-pazar-senlik.png' });
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino’nun Pazarı: terazi — müşterinin kefesini meyveyle dengele (6 yaş)', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=6&ekran=pazar&tur=terazi');
+  const ist = await istek(page);
+  await expect(page.locator('.pz-terazi')).toBeVisible();
+  await expect(page.locator('.pz-t-sol .pz-urun')).toHaveCount(ist.sol!.length);
+  const hedef = ist.sol!.reduce((a, id) => a + (AGIR[id] ?? 1), 0);
+  // hafif (1 birim) meyvelerle teker teker dengele
+  for (let i = 0; i < hedef; i++) {
+    await sepeteSurukle(page, page.locator('.pz-urunler .pz-urun:not([data-urun="ananas"]):not([data-urun="karpuz"])').first(), '.pz-t-sag');
+    if (i === 0) {
+      await page.waitForTimeout(120);
+      await page.screenshot({ path: `tests/screens/${info.project.name}-a7-pazar-terazi.png` });
+    }
+  }
+  // dengelenince (test modunda hemen) müşteri sevinir ve yıldız dolar
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
   expect(hatalar).toEqual([]);
 });

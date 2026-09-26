@@ -8,7 +8,7 @@ import { kart } from '../../src/engine/katalog';
 import type { Yas } from '../../src/engine/types';
 
 export type Rnd = () => number;
-export type Tur = 'tek' | 'renk' | 'sayi' | 'iki' | 'ayir' | 'toplama' | 'ode';
+export type Tur = 'tek' | 'renk' | 'sayi' | 'iki' | 'ayir' | 'toplama' | 'ode' | 'terazi';
 export type Grup = 'meyve' | 'sebze';
 
 export const MUSTERI_SAYISI = 5;
@@ -16,13 +16,25 @@ export const MUSTERI_SAYISI = 5;
 export const PARA = { 'para-1': 1, 'para-5': 5 } as const;
 export const paraMi = (id: string): id is keyof typeof PARA => id in PARA;
 
-/** Yaşa göre 5 müşterinin istek türleri (3 yaş tek ürün, 4 renk + sayma, 5 iki ürün + ayırma, 6 toplama + para) */
+/**
+ * Yaşa göre 5 müşterinin istek türleri: 3 yaş tek ürün, 4 renk + sayma, 5 iki ürün + ayırma + terazi,
+ * 6 toplama + para + terazi (ortadaki müşteri teraziyle gelir).
+ */
 export const PLAN: Record<Yas, Tur[]> = {
   3: ['tek', 'tek', 'tek', 'tek', 'tek'],
   4: ['sayi', 'renk', 'sayi', 'renk', 'sayi'],
-  5: ['iki', 'ayir', 'iki', 'ayir', 'iki'],
-  6: ['toplama', 'ode', 'toplama', 'ode', 'toplama'],
+  5: ['iki', 'ayir', 'terazi', 'ayir', 'iki'],
+  6: ['toplama', 'ode', 'terazi', 'ode', 'toplama'],
 };
+
+/**
+ * Terazi ağırlıkları (birim). Küçük meyve/sebze 1; ananas 2, karpuz 3. Çocuk sayıyı değil dengeyi arar:
+ * 6 yaşta bir karpuzu üç küçük meyve dengeler.
+ */
+export const AGIRLIK: Record<string, number> = { ananas: 2, karpuz: 3 };
+export const agirlik = (id: string) => AGIRLIK[id] ?? 1;
+/** Terazide kullanılan küçük (1 birim) ürünler */
+const HAFIF = ['elma', 'portakal', 'domates', 'havuc', 'limon', 'armut'];
 
 export interface Istek {
   tur: Tur;
@@ -42,6 +54,8 @@ export interface Istek {
   yazi: string;
   /** "Ver" düğmesiyle mi bitiyor (sayma işleri), yoksa doğru ürün konunca kendiliğinden mi */
   dugmeli: boolean;
+  /** terazi: müşterinin kefesindeki ürünler (toplam ağırlığı dengelenmeli) */
+  sol?: string[];
 }
 
 export type Sonuc = 'tamam' | 'az' | 'fazla';
@@ -81,8 +95,9 @@ const tekrarla = (id: string, n: number) => Array.from({ length: n }, () => id);
 /** İkinci cümle parçası küçük harfle başlasın (yazıda) */
 const kucukBas = (s: string) => s.charAt(0).toLocaleLowerCase('tr') + s.slice(1);
 
-export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random): Istek {
-  const tur = PLAN[yas][sira % MUSTERI_SAYISI];
+/** zorla: test ve gösterim için belli bir istek türü */
+export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?: Tur): Istek {
+  const tur = zorla ?? PLAN[yas][sira % MUSTERI_SAYISI];
   const tum = [...new Set([...URUN.meyve, ...URUN.sebze])];
   switch (tur) {
     case 'tek': {
@@ -131,6 +146,21 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random): Istek
       const tezgah = [...tekrarla(u, daha + 2), ...farkli(tum, 1, rnd, [u])];
       return { tur, istenen: { [u]: daha }, bende, tezgah: karistir(tezgah, rnd), soz: [s1, s2], yazi: `${s1} ${s2}`, dugmeli: true };
     }
+    case 'terazi': {
+      const s = I.terazi;
+      if (yas <= 5) {
+        // 5 yaş: kefede 2-4 aynı küçük meyve; hepsi aynı ağırlıkta, eşit sayıda koymak dengeler
+        const u = sec(HAFIF, rnd);
+        const n = arasi(2, 4, rnd);
+        const tezgah = [...tekrarla(u, n + 1), ...farkli(HAFIF, 2, rnd, [u])];
+        return { tur, istenen: {}, sol: tekrarla(u, n), tezgah: karistir(tezgah, rnd), soz: [s], yazi: s, dugmeli: false };
+      }
+      // 6 yaş: kefede ağır bir meyve (ananas 2 / karpuz 3), bazen yanında bir küçük; çocuk küçüklerle ya da bir ananasla dengeler
+      const agir = sec(['ananas', 'karpuz'], rnd);
+      const sol = rnd() < 0.5 ? [agir] : [agir, sec(HAFIF, rnd)];
+      const tezgah = [...farkli(HAFIF, 5, rnd), 'ananas'];
+      return { tur, istenen: {}, sol, tezgah: karistir(tezgah, rnd), soz: [s], yazi: s, dugmeli: false };
+    }
     case 'ode': {
       const lira = arasi(2, 9, rnd);
       const s = doldur(I.ode, { sayi: lira });
@@ -149,6 +179,8 @@ export function uygunMu(ist: Istek, id: string): boolean {
       return urunGrubu(id) === ist.grup;
     case 'ode':
       return paraMi(id);
+    case 'terazi':
+      return !paraMi(id);
     default:
       return id in ist.istenen;
   }
@@ -159,6 +191,11 @@ export function denetle(ist: Istek, sepet: string[]): Sonuc {
   if (ist.tur === 'ode') {
     const t = sepet.reduce((a, id) => a + (paraMi(id) ? PARA[id] : 0), 0);
     return t === ist.lira ? 'tamam' : t < (ist.lira ?? 0) ? 'az' : 'fazla';
+  }
+  if (ist.tur === 'terazi') {
+    const hedef = (ist.sol ?? []).reduce((a, id) => a + agirlik(id), 0);
+    const t = sepet.reduce((a, id) => a + agirlik(id), 0);
+    return t === hedef ? 'tamam' : t < hedef ? 'az' : 'fazla';
   }
   if (ist.tur === 'renk') return sepet.some((id) => urunRengi(id) === ist.renk) ? 'tamam' : 'az';
   const say = (id: string) => sepet.filter((x) => x === id).length;
@@ -179,7 +216,7 @@ export function pazarCumleleri(): string[] {
   for (const renk of Object.keys(RENKLER)) c.push(doldur(I.renk, { renk }));
   for (let n = 1; n <= 3; n++) c.push(doldur(I.daha, { sayi: n }));
   for (let n = 2; n <= 9; n++) c.push(doldur(I.ode, { sayi: n }));
-  c.push(I.meyve, I.sebze);
+  c.push(I.meyve, I.sebze, I.terazi);
   c.push(P.hosgeldin, P.basla, ...P.dogru, ...P.yanlis, P.az, P.fazla, P.meyve_degil, P.sebze_degil, P.yardim, P.sayalim, P.surukle, P.senlik, P.senlik_dokun);
   return [...new Set(c)];
 }

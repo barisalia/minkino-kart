@@ -5,6 +5,7 @@ import '../../src/styles/ana.css';
 import '../../src/styles/mino.css';
 import './pazar.css';
 import './canli.css';
+import './terazi.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { oyunuBaslat } from './oyun';
 

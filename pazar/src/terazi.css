@@ -1,0 +1,154 @@
+/* Mino'nun Pazarı — terazi (terazi.ts). Kol ve kefeler kodla (transform) hareket eder. */
+.pz-kok .pz-terazi-yer:empty {
+  display: none;
+}
+.pz-kok .pz-terazili .pz-tezgah-ust {
+  justify-content: center;
+}
+/* terazili müşteride sepet kenara çekilir (yerine terazi var) */
+.pz-kok .pz-sepet.pz-gizli {
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.pz-kok .pz-terazi {
+  position: relative;
+  width: min(92vw, 38vh, 540px);
+  aspect-ratio: 440 / 210;
+  margin-top: -4px;
+  animation: pz-terazi-gel 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes pz-terazi-gel {
+  from { transform: translateY(18%) scale(0.7); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.pz-kok .pz-t-taban,
+.pz-kok .pz-t-kol {
+  position: absolute;
+  inset: 0;
+}
+.pz-kok .pz-t-taban,
+.pz-kok .pz-t-kol-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pz-kok .pz-t-kol {
+  z-index: 1;
+  /* pivot: çizimde (220, 74) / (440, 210) */
+  transform-origin: 50% 35.24%;
+  will-change: transform;
+}
+.pz-kok .pz-t-kefe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: 29.55%;
+  translate: -50% 0;
+  transform-origin: 50% 0;
+  will-change: transform;
+  container-type: inline-size;
+}
+.pz-kok .pz-t-kefe-govde {
+  position: relative;
+  transition: transform 0.15s;
+}
+.pz-kok .pz-t-kefe-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.pz-kok .pz-t-sag.pz-uzerinde .pz-t-kefe-govde {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 8px rgba(255, 210, 60, 0.95));
+}
+/* kefenin içi: ürünler tasın ağzında, aşağıdan yukarı dizilir */
+.pz-kok .pz-kefe-ic {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 29%;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0 1px;
+}
+/* ağır meyve (--a: 2 ananas, 3 karpuz) kefede daha büyük görünür */
+.pz-kok .pz-kefe-ic .pz-urun {
+  width: calc(40cqw * (0.7 + 0.3 * var(--a, 1)));
+  height: calc(40cqw * (0.7 + 0.3 * var(--a, 1)));
+  margin: 0 -4% -8%;
+}
+.pz-kok .pz-kefe-ic .pz-urun-golge {
+  display: none;
+}
+.pz-kok .pz-kefe-ic .pz-urun.pz-hazir {
+  opacity: 1;
+  filter: none;
+  animation: pz-dustu 0.42s linear;
+}
+/* dengede: kefelerin altında sıcak parıltı, kadranın yeşil bölgesi nabız gibi */
+.pz-kok .pz-t-parilti {
+  position: absolute;
+  left: -14%;
+  right: -14%;
+  top: 38%;
+  height: 80%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 232, 120, 0.9), rgba(255, 210, 80, 0.35) 60%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.pz-kok .pz-terazi.dengede .pz-t-parilti {
+  opacity: 1;
+  animation: pz-fener-titre 0.8s ease-in-out infinite alternate;
+}
+.pz-kok .pz-t-yesil {
+  transition: opacity 0.3s;
+}
+.pz-kok .pz-terazi.dengede .pz-t-yesil {
+  animation: pz-yesil 0.5s ease-in-out infinite alternate;
+}
+@keyframes pz-yesil {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+/* teslim: sağ kefedekiler kavisle müşteriye uçar */
+.pz-kok .pz-terazi.pz-teslim .pz-t-sag .pz-kefe-ic {
+  animation: pz-terazi-teslim 0.9s linear 0.3s both;
+}
+@keyframes pz-terazi-teslim {
+  0% { transform: none; opacity: 1; animation-timing-function: ease-out; }
+  45% { transform: translate(-20vw, -22vh) scale(0.8); animation-timing-function: ease-in; }
+  100% { transform: translate(-40vw, -26vh) scale(0.3); opacity: 0; }
+}
+/* istek balonu: müşterinin meyveleri = ? */
+.pz-kok .pz-istek-terazi b {
+  font-size: clamp(1.6rem, 7vw, 2.6rem);
+  font-weight: 700;
+  color: var(--mavi);
+  -webkit-text-stroke: 4px var(--kontur);
+  paint-order: stroke fill;
+  line-height: 1;
+}
+.pz-kok .pz-istek-terazi .pz-resim {
+  width: clamp(34px, 9vw, 58px);
+  height: clamp(34px, 9vw, 58px);
+}
+.pz-kok .pz-istek-terazi .pz-soru {
+  color: var(--turuncu);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .pz-terazi,
+  .pz-kok .pz-terazi.dengede .pz-t-parilti,
+  .pz-kok .pz-terazi.dengede .pz-t-yesil {
+    animation: none;
+  }
+}

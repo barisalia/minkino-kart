@@ -3,7 +3,7 @@ import P from '../../content/pazar.json';
 import { normal, tumCumleler } from '../../src/audio/cumleler';
 import { kart } from '../../src/engine/katalog';
 import { YASLAR } from '../../src/engine/types';
-import { denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, pazarCumleleri, PLAN, urunGrubu, urunRengi, uygunMu, type Istek } from '../../pazar/src/istek';
+import { agirlik, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, pazarCumleleri, PLAN, urunGrubu, urunRengi, uygunMu, type Istek } from '../../pazar/src/istek';
 
 /** Tekrarlanabilir rastgele sayı (mulberry32) */
 function tohumlu(t: number) {
@@ -24,6 +24,18 @@ function hepsi(): Istek[] {
 
 /** İsteği doğru karşılayan sepet (tezgâhtan seçilerek) */
 function dogruSepet(ist: Istek): string[] {
+  if (ist.tur === 'terazi') {
+    // tezgâhtan, ağır olandan başlayarak hedef ağırlığı tam tutturan bir seçim
+    let kalan = (ist.sol ?? []).reduce((a, id) => a + agirlik(id), 0);
+    const s: string[] = [];
+    for (const id of [...ist.tezgah].sort((a, b) => agirlik(b) - agirlik(a))) {
+      if (agirlik(id) <= kalan) {
+        s.push(id);
+        kalan -= agirlik(id);
+      }
+    }
+    return s;
+  }
   if (ist.tur === 'ode') {
     const lira = ist.lira ?? 0;
     const bes = Math.floor(lira / 5);
@@ -37,8 +49,8 @@ describe('pazar: istek üretme', () => {
     for (const y of YASLAR) expect(PLAN[y]).toHaveLength(MUSTERI_SAYISI);
     expect(new Set(PLAN[3])).toEqual(new Set(['tek']));
     expect(new Set(PLAN[4])).toEqual(new Set(['renk', 'sayi']));
-    expect(new Set(PLAN[5])).toEqual(new Set(['iki', 'ayir']));
-    expect(new Set(PLAN[6])).toEqual(new Set(['toplama', 'ode']));
+    expect(new Set(PLAN[5])).toEqual(new Set(['iki', 'ayir', 'terazi']));
+    expect(new Set(PLAN[6])).toEqual(new Set(['toplama', 'ode', 'terazi']));
   });
 
   it('3 yaş: tek ürün, tezgâhta 3 farklı seçenek', () => {
@@ -117,6 +129,37 @@ describe('pazar: istek üretme', () => {
     }
     for (const [renk, l] of Object.entries(P.renkler)) for (const id of l) expect(urunRengi(id), id).toBe(renk);
     for (const g of ['meyve', 'sebze'] as const) for (const id of P.urunler[g]) expect(urunGrubu(id), id).toBe(g);
+  });
+});
+
+describe('pazar: terazi', () => {
+  it('5 yaş: kefede 2-4 aynı küçük meyve; 6 yaş: ağır meyve (ananas 2 / karpuz 3) — tezgâhla her zaman dengelenir', () => {
+    for (let t = 1; t <= 80; t++) {
+      for (const y of [5, 6] as const) {
+        const ist = istekUret(y, 2, tohumlu(t * 13 + y));
+        expect(ist.tur).toBe('terazi');
+        const hedef = (ist.sol ?? []).reduce((a, id) => a + agirlik(id), 0);
+        if (y === 5) {
+          expect(new Set(ist.sol).size).toBe(1);
+          expect(hedef).toBeGreaterThanOrEqual(2);
+          expect(hedef).toBeLessThanOrEqual(4);
+        } else {
+          expect(ist.sol?.some((id) => agirlik(id) >= 2)).toBe(true);
+          expect(hedef).toBeLessThanOrEqual(4);
+        }
+        expect(ist.tezgah.reduce((a, id) => a + agirlik(id), 0)).toBeGreaterThanOrEqual(hedef);
+        expect(denetle(ist, dogruSepet(ist))).toBe('tamam');
+      }
+    }
+  });
+  it('ağırlıklar: karpuz = 3 elma, ananas = 2; az / tamam / fazla', () => {
+    const ist: Istek = { tur: 'terazi', istenen: {}, sol: ['karpuz'], tezgah: [], soz: [], yazi: '', dugmeli: false };
+    expect(denetle(ist, ['elma', 'elma'])).toBe('az');
+    expect(denetle(ist, ['elma', 'elma', 'elma'])).toBe('tamam');
+    expect(denetle(ist, ['ananas', 'elma'])).toBe('tamam');
+    expect(denetle(ist, ['ananas', 'ananas'])).toBe('fazla');
+    expect(uygunMu(ist, 'elma')).toBe(true);
+    expect(uygunMu(ist, 'para-1')).toBe(false);
   });
 });
 

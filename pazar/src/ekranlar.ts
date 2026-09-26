@@ -13,7 +13,8 @@ import { Mino } from '../../src/mino/mino';
 import { balonlar, canliSahne, havaiFisek } from './canli';
 import { adres, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
-import { denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek } from './istek';
+import { agirlik, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
+import { Terazi } from './terazi';
 import { geriGonder, surukle, tasi } from './surukle';
 
 const A = P.arayuz;
@@ -129,6 +130,19 @@ function istekGorseli(ist: Istek): HTMLElement {
       return h('div.pz-istek', {}, grup(u, ist.istenen[u], '+'));
     case 'ode':
       return h('div.pz-istek', {}, h('div.pz-istek-grup.pz-istek-lira', {}, h('b', {}, A.lira.replace('{sayi}', String(ist.lira)))));
+    case 'terazi':
+      // müşterinin kefesindekiler = ? (dengele)
+      return h(
+        'div.pz-istek.pz-istek-terazi',
+        {},
+        // aynı meyveler "3 🍐" diye kısalır (balon ekrana sığsın)
+        ...[...new Set(ist.sol ?? [])].map((id) => {
+          const n = (ist.sol ?? []).filter((x) => x === id).length;
+          return n > 1 ? grup(id, n) : urunResmi(id);
+        }),
+        h('b', {}, '='),
+        h('b.pz-soru', {}, '?'),
+      );
     case 'ayir': {
       // tezgâhta olmayan bir örnekle grubu göster (cevabı ele vermesin)
       const ornek = P.urunler[ist.grup ?? 'meyve'].find((x) => !ist.tezgah.includes(x)) ?? u;
@@ -161,7 +175,9 @@ export function pazarEkrani(app: Uygulama): Ekran {
   canli.gun(0);
   const sahne = h('div.pz-sahne', {}, canli.ufuk, stand([h('div.pz-mino', {}, mino.el)], [sepet]), musteriKap);
   // ön tezgâh: standın tahtasının devamı; ürünler bunun üstünde
-  const tezgah = h('div.pz-tezgah', {}, h('div.pz-tezgah-ust', {}, ver), urunler);
+  // terazi (5-6 yaş, ortadaki müşteri): ön tezgâhın üstünde, ürünlerin önünde
+  const teraziYer = h('div.pz-terazi-yer');
+  const tezgah = h('div.pz-tezgah', {}, h('div.pz-tezgah-ust', {}, teraziYer, ver), urunler);
   const cikis = () => app.git('acilis');
   const el = h(
     'div.pz-pazar',
@@ -173,7 +189,13 @@ export function pazarEkrani(app: Uygulama): Ekran {
     tezgah,
   );
 
+  // test ve gösterim: ?tur=terazi ile ilk müşteri o türden gelir
+  const zorla = (TEST_MODU || document.body.dataset.onizleme ? new URLSearchParams(location.search).get('tur') : null) as Tur | null;
   let ist: Istek = istekUret(y, 0);
+  let terazi: Terazi | null = null;
+  /** ürünlerin konduğu yer: sepet ya da terazinin kefesi */
+  const kap = () => (terazi && ist.tur === 'terazi' ? terazi.icSag : sepetIc);
+  const hedefEl = () => (terazi && ist.tur === 'terazi' ? terazi.kefeSag : sepet);
   let aktif = false;
   let kapandi = false;
   let hata = 0;
@@ -185,7 +207,16 @@ export function pazarEkrani(app: Uygulama): Ekran {
   let bitir: () => void = () => undefined;
   const sokuler: (() => void)[] = [];
 
-  const sepettekiler = () => [...sepetIc.querySelectorAll<HTMLElement>('.pz-urun:not(.pz-hazir)')].map((e) => e.dataset.urun ?? '');
+  const sepettekiler = () => [...kap().querySelectorAll<HTMLElement>('.pz-urun:not(.pz-hazir)')].map((e) => e.dataset.urun ?? '');
+  /** terazi: kefelerdeki ağırlıklar kola iletilir */
+  const teraziGuncelle = () => terazi?.agirliklar((ist.sol ?? []).reduce((a, id) => a + agirlik(id), 0), sepettekiler().reduce((a, id) => a + agirlik(id), 0));
+  let fazlaDendi = false;
+  /** terazi dengelenince: kol ortada durup kefeler parlayınca biter (el çekilirse beklemeyi bırakır) */
+  async function dengeBekle() {
+    for (let k = 0; k < 80 && terazi && !terazi.dengede; k++) await bekle(sure(50));
+    await bekle(sure(650));
+    if (aktif && denetle(ist, sepettekiler()) === 'tamam') bitir();
+  }
   const salla = (e: HTMLElement | null, sinif = 'pz-hayir') => {
     if (!e) return;
     e.classList.remove(sinif);
@@ -244,7 +275,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       return;
     }
     e.classList.remove('pz-parla');
-    tasi(e, sepetIc);
+    tasi(e, kap());
     // ürün sepete düşünce küçük bir sekme (kayma bittikten sonra)
     // ürün sekip yerleşir; para dönerek kavisle düşer ve şıngırdar
     if (paraMi(id)) {
@@ -255,6 +286,21 @@ export function pazarEkrani(app: Uygulama): Ekran {
       }, sure(420));
     } else setTimeout(() => salla(e, 'pz-dustu'), sure(300));
     efekt.yapis();
+    if (ist.tur === 'terazi') {
+      e.style.setProperty('--a', String(agirlik(id)));
+      teraziGuncelle();
+      const r = denetle(ist, sepettekiler());
+      if (r === 'tamam') {
+        efekt.nota(8);
+        void dengeBekle();
+      } else if (r === 'fazla') {
+        // fazla geldi: kefe iner; bir kez söylenir, kefedeki meyveye dokununca geri döner
+        mino.tepki('sasir');
+        if (!fazlaDendi) void soyle(P.fazla);
+        fazlaDendi = true;
+      } else efekt.nota(sepettekiler().length);
+      return;
+    }
     salla(sepet, 'pz-zipla');
     sepetGuncelle();
     if (!ist.dugmeli) {
@@ -269,7 +315,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     sokuler.push(
       surukle({
         el: e,
-        hedef: () => sepet,
+        hedef: hedefEl,
         aktif: () => aktif && e.parentElement === yuva,
         basla: () => {
           sonHareket = performance.now();
@@ -284,10 +330,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
     );
     // sayma işlerinde sepetteki ürüne dokununca tezgâha geri döner (fazlayı düzeltmek için)
     e.addEventListener('click', () => {
-      if (!aktif || !ist.dugmeli || e.parentElement !== sepetIc || performance.now() - sonBirakma < 400) return;
+      if (!aktif || !(ist.dugmeli || ist.tur === 'terazi') || e.parentElement !== kap() || performance.now() - sonBirakma < 400) return;
       efekt.dokunma();
       tasi(e, yuva);
       sepetGuncelle();
+      teraziGuncelle();
     });
     return yuva;
   }
@@ -319,7 +366,29 @@ export function pazarEkrani(app: Uygulama): Ekran {
   }, 1000);
 
   const tur = async (i: number) => {
-    ist = istekUret(y, i);
+    ist = istekUret(y, i, Math.random, i === 0 && zorla ? zorla : undefined);
+    fazlaDendi = false;
+    // terazi yalnız terazili müşteride kurulur; sepet o sırada kenara çekilir
+    terazi?.kapat();
+    terazi = null;
+    teraziYer.replaceChildren();
+    sepet.classList.toggle('pz-gizli', ist.tur === 'terazi');
+    el.classList.toggle('pz-terazili', ist.tur === 'terazi');
+    if (ist.tur === 'terazi') {
+      const tz = new Terazi();
+      terazi = tz;
+      teraziYer.append(tz.el);
+      // müşterinin meyveleri sol kefeye teker teker konur: her birinde kefe biraz daha iner
+      (ist.sol ?? []).forEach((id, k) =>
+        setTimeout(() => {
+          if (terazi !== tz) return;
+          tz.icSol.append(h('div.pz-urun.pz-hazir', { 'data-urun': id, style: `--a:${agirlik(id)}` }, urunResmi(id)));
+          const sol = (ist.sol ?? []).slice(0, k + 1).reduce((a, x) => a + agirlik(x), 0);
+          tz.agirliklar(sol, 0);
+          efekt.yapis();
+        }, sure(500 + k * 380)),
+      );
+    }
     // gün ilerler: ilk müşteri sabah, sonuncusu akşamüstü
     canli.gun(i / (MUSTERI_SAYISI - 1));
     hata = 0;
@@ -336,7 +405,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     ver.hidden = !ist.dugmeli;
     verYazi.textContent = ist.tur === 'ode' ? A.tamam : A.ver;
     el.dataset.tur = ist.tur;
-    if (TEST_MODU || document.body.dataset.onizleme) el.dataset.istek = JSON.stringify({ istenen: ist.istenen, lira: ist.lira });
+    if (TEST_MODU || document.body.dataset.onizleme) el.dataset.istek = JSON.stringify({ istenen: ist.istenen, lira: ist.lira, sol: ist.sol });
     sepetGuncelle();
 
     const ad = musteriler[i];
@@ -363,6 +432,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     // müşteri sevinir, teşekkür eder, yıldız
     m.classList.add('sevindi');
     sepet.classList.add('pz-teslim');
+    terazi?.el.classList.add('pz-teslim');
     urunler.querySelectorAll('.pz-parla').forEach((e) => e.classList.remove('pz-parla'));
     efekt.dogru();
     void resimSesi(ad);
@@ -406,6 +476,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       sokuler.splice(0).forEach((f) => f());
       mino.kapat();
       canli.kapat();
+      terazi?.kapat();
     },
   };
 }
