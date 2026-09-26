@@ -71,8 +71,9 @@ export class Musteri {
     this.karakter.konus(acik);
   }
 
-  /** Yanlış ürün: kafasını iki yana sallar */
+  /** Yanlış ürün: kafasını iki yana sallar; üzgün ifadesi olan karakter kısa süre üzülür */
   hayir() {
+    this.karakter.ifade('uzgun', 1500);
     return this.karakter.oynat('hayir', 650);
   }
 

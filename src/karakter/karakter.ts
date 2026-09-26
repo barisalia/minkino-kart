@@ -20,6 +20,33 @@ interface IskeletBilgi {
   gizli: string[];
   bagli: Record<string, string>;
   donme: Record<string, [number, number]>;
+  /** isteğe bağlı: ifade setleri (yoksa gizli eklerin adlarından türetilir) */
+  ifadeler?: Record<string, { goster: string[]; gizle: string[] }>;
+}
+
+/** İfade adları ve onları gösteren gizli eklerin son ekleri (goz-uzgun, kulak-sol-dusuk …) */
+const IFADE_EKLERI: Record<string, string[]> = { uzgun: ['uzgun', 'dusuk'], mutlu: ['mutlu'], saskin: ['saskin'], kizgin: ['kizgin'] };
+
+/**
+ * Gizli eklerden ifade setleri: "<taban>-<ek>" katmanı gösterilir, tabanı gizlenir. Taban bir katmansa o
+ * (kulak-sol-dusuk → kulak-sol), değilse tabanla başlayan görünür katmanlar (goz-uzgun → goz-sol, goz-sag).
+ */
+export function ifadeSetleri(b: Pick<IskeletBilgi, 'sira' | 'gizli' | 'ifadeler'>): Record<string, { goster: string[]; gizle: string[] }> {
+  const setler: Record<string, { goster: string[]; gizle: string[] }> = {};
+  for (const [ad, ekler] of Object.entries(IFADE_EKLERI)) {
+    const goster: string[] = [];
+    const gizle = new Set<string>();
+    for (const id of b.gizli) {
+      const ek = ekler.find((e) => id.endsWith('-' + e));
+      if (!ek) continue;
+      goster.push(id);
+      const taban = id.slice(0, -(ek.length + 1));
+      if (b.sira.includes(taban)) gizle.add(taban);
+      else for (const x of b.sira) if (x.startsWith(taban + '-') && !b.gizli.includes(x)) gizle.add(x);
+    }
+    if (goster.length) setler[ad] = { goster, gizle: [...gizle] };
+  }
+  return { ...setler, ...(b.ifadeler ?? {}) };
 }
 
 const BILGILER = import.meta.glob<IskeletBilgi>('../../assets/karakter-iskelet/*.json', { eager: true, import: 'default' });
@@ -86,6 +113,11 @@ export class Karakter {
   private parca = new Map<string, SVGGElement>();
   private dn: Record<string, [number, number]> = {};
   private bagli: Record<string, string> = {};
+  private gizli = new Set<string>();
+  private setler: Record<string, { goster: string[]; gizle: string[] }> = {};
+  private ifadeAd: string | null = null;
+  private ifadeBitis = 0;
+  private sonGorunum = new Map<string, boolean>();
   private raf = 0;
   private t0 = performance.now();
   private hareket: Hareket | null = null;
@@ -118,7 +150,10 @@ export class Karakter {
       const id = g.id;
       g.removeAttribute('id');
       g.dataset.parca = id;
-      if (b.gizli.includes(id)) g.removeAttribute('display');
+      if (b.gizli.includes(id)) {
+        g.removeAttribute('display');
+        g.style.opacity = '0';
+      }
       this.parca.set(id, g);
     }
     // katman sırası JSON'daki "sira"dan (arkadan öne): SVG'deki sıra ne olursa olsun
@@ -128,6 +163,8 @@ export class Karakter {
     }
     this.dn = b.donme;
     this.bagli = b.bagli;
+    this.gizli = new Set(b.gizli);
+    this.setler = ifadeSetleri(b);
     this.el.replaceChildren(kap);
     this.tek = null;
     this.el.classList.add('kr-iskeletli');
@@ -143,6 +180,20 @@ export class Karakter {
   }
 
   /** Konuşuyor mu: açıkken ağız (agiz-acik katmanı ya da gaga) açılıp kapanır */
+  /**
+   * Yüz ifadesi (ör. 'uzgun'): o ifadenin katmanları görünür, yerine geçtikleri gizlenir. ms verilirse o süre
+   * sonra normale döner; null normale döndürür. Karakterde o ifade yoksa (ya da tek görselse) bir şey olmaz.
+   */
+  ifade(ad: string | null, ms = 0) {
+    this.ifadeAd = ad && this.setler[ad] ? ad : null;
+    this.ifadeBitis = ms && this.ifadeAd ? performance.now() + (TEST_MODU ? 30 : ms) : 0;
+  }
+
+  /** Bu karakterde bu ifade var mı */
+  ifadeVar(ad: string) {
+    return !!this.setler[ad];
+  }
+
   konus(acik: boolean) {
     this.konusma = acik;
   }
@@ -173,7 +224,8 @@ export class Karakter {
       p.sx = 1 - S(t * 1.9) * 0.006;
       p.kulakSol = S(t * 1.3) * 3;
       p.kulakSag = S(t * 1.3 + 1.1) * 3;
-      p.kuyruk = S(t * 2.2) * 4;
+      // kuyruk: çoğunda hafif salınım; köpekte (huy: kuyruk) hızlı sallanır
+      p.kuyruk = this.k.huy === 'kuyruk' ? S(t * 7) * 16 : S(t * 2.2) * 4;
       p.kafa = S(t * 0.8) * 1.5;
     }
     if (t > this.sonrakiKirp) {
@@ -257,8 +309,8 @@ export class Karakter {
       'kulak-sol': -p.kulakSol,
       'kulak-sag': p.kulakSag,
       // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
-      'kol-sol': kolSinir(p.kolSol),
-      'kol-sag': -kolSinir(p.kolSag),
+      'kol-sol': kolSinir(p.kolSol, this.k.kol),
+      'kol-sag': -kolSinir(p.kolSag, this.k.kol),
       // kanatlar kolların yerine (kuş, ördek): + = açılır
       'kanat-sol': kanatSinir(p.kolSol),
       'kanat-sag': -kanatSinir(p.kolSag),
@@ -279,25 +331,41 @@ export class Karakter {
       if (id === 'gaga-alt' && dn[id] && p.agizAcik) tr += ' ' + etrafinda(dn[id], 0, 1, 1 + 0.12 * p.agizAcik, 0, 34 * p.agizAcik);
       g.style.transform = tr;
     }
-    // göz kırpma ve ağız
-    const kapali = p.gozKapali;
-    this.gorun('goz-sol', !kapali);
-    this.gorun('goz-sag', !kapali);
-    this.gorun('goz-kapali', kapali);
-    if (this.parca.has('agiz-acik')) {
-      this.gorun('agiz-acik', p.agizAcik > 0.5);
-      this.gorun('agiz', p.agizAcik <= 0.5);
-    }
+    this.gorunurluk(p);
   }
 
-  private gorun(id: string, acik: boolean) {
-    const g = this.parca.get(id);
-    if (g) g.style.opacity = acik ? '1' : '0';
+  /** Hangi katman görünür: varsayılan (gizli ekler kapalı) → ifade → göz kırpma → konuşma ağzı */
+  private gorunurluk(p: Poz) {
+    if (this.ifadeBitis && performance.now() > this.ifadeBitis) this.ifade(null);
+    const gor = new Map<string, boolean>();
+    for (const id of this.parca.keys()) gor.set(id, !this.gizli.has(id));
+    const set = this.ifadeAd ? this.setler[this.ifadeAd] : null;
+    if (set) {
+      for (const id of set.gizle) gor.set(id, false);
+      for (const id of set.goster) gor.set(id, true);
+    }
+    // göz kırpma: açık göz görünüyorsa kapalı gözle değişir
+    if (p.gozKapali && this.parca.has('goz-kapali') && (gor.get('goz-sol') || gor.get('goz-sag'))) {
+      gor.set('goz-sol', false);
+      gor.set('goz-sag', false);
+      gor.set('goz-kapali', true);
+    }
+    // konuşma: normal ağız görünüyorsa açık ağızla değişir
+    if (p.agizAcik > 0.5 && this.parca.has('agiz-acik') && gor.get('agiz')) {
+      gor.set('agiz', false);
+      gor.set('agiz-acik', true);
+    }
+    for (const [id, acik] of gor) {
+      if (this.sonGorunum.get(id) === acik) continue;
+      this.sonGorunum.set(id, acik);
+      const g = this.parca.get(id);
+      if (g) g.style.opacity = acik ? '1' : '0';
+    }
   }
 }
 
 /** Kol açısı: içe en çok 5°, dışa/yukarı en çok 110° (iskelet standardındaki aralık) */
-const kolSinir = (a: number) => Math.max(-5, Math.min(110, a));
+const kolSinir = (a: number, sinir: [number, number] = [-5, 110]) => Math.max(sinir[0], Math.min(sinir[1], a));
 /** Kanat açısı: -30 (kapanır) … +60 (açılır) */
 const kanatSinir = (a: number) => Math.max(-30, Math.min(60, a));
 
@@ -460,11 +528,21 @@ function dans(d: Kisilik['dans'], gecen: number, u: number, p: Poz) {
       p.don += 4 * S(u * PI * 4);
       p.y -= 5 * Math.abs(S(u * PI * 2));
       break;
-    case 'kovala':
-      p.sx *= u < 0.6 ? Math.cos(u * PI * 3.33) : 1;
-      p.kuyruk += 30 * S(gecen * 30) * z;
-      if (u >= 0.6) p.y -= 18 * S(((u - 0.6) / 0.4) * PI);
+    case 'kovala': {
+      // köpek: kuyruk pervane gibi döner (3 tur), iki kez hoplar, patiler havada
+      p.kuyruk += 1080 * u;
+      const s = (u * 2) % 1;
+      p.y -= 16 * S(s * PI) * z;
+      p.sx *= 1 + 0.08 * (s < 0.12 || s > 0.88 ? 1 : 0) * z;
+      p.sy *= 1 + 0.06 * S(s * PI) * z;
+      p.kolSol += 55 * z;
+      p.kolSag += 55 * z;
+      p.kulakSol += 14 * S(gecen * 18) * z;
+      p.kulakSag += 14 * S(gecen * 18 + 1) * z;
+      p.agizAcik = z > 0.3 ? 1 : 0;
+      p.gozKapali = z > 0.6 && S(s * PI) > 0.6;
       break;
+    }
     case 'salto':
       p.don -= 360 * Math.min(1, Math.max(0, (u - 0.1) / 0.8));
       p.y -= 40 * S(Math.min(1, u) * PI);

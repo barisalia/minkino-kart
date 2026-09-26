@@ -85,6 +85,7 @@
 
 /* istek karşılanınca balon söner: zıplayan müşterinin kulakları balonun arkasında kalmasın */
 .pz-kok .pz-musteri.sevindi .pz-istek-balon {
+  animation: none;
   opacity: 0;
   transform: scale(0.6) translateY(20%);
   transition: opacity 0.3s, transform 0.3s;
