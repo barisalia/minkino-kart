@@ -58,9 +58,8 @@ export class Ufleme {
   private dokunma = false;
   onBasla: () => void = () => undefined;
   onBitti: (sure: number) => void = () => undefined;
-  /** kolay: sesli üflemeyi ("fuuu") de sayar, eşik daha düşük (küçük yaşlar ve parti bölümü) */
-  constructor(ayar: Ayar, private dokunmaGucu = 0.5, kolay = false) {
-    this.b = new UflemeBulucu(ayar, kolay);
+  constructor(ayar: Ayar, private dokunmaGucu = 0.5) {
+    this.b = new UflemeBulucu(ayar);
   }
   kare(o: Ozellik) {
     if (this.dokunma) return;

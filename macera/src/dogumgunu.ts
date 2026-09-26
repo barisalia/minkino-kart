@@ -262,7 +262,11 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
 
   // ================================================================= sahne yardımcıları
 
-  /** Balon: öne gelir, üfledikçe şişer, dolunca uçup flamaya asılır. 5-6 yaş: çizgiyi geçerse patlar. */
+  /**
+   * Balon: öne gelir, üfledikçe şişer, dolunca uçup flamaya asılır. 5-6 yaş: çizgiyi geçerse patlar.
+   * KİLİTLİ (Barış onaylı): algılama katı (`new Ufleme(kulak.ayar, 0.5)`), konuşma balonu şişirmez.
+   * Kolaylaştırmak için yalnız şişme hızı / yeşil bölge değişir; algılamaya dokunmayın (ekip/SES-SISTEMI.md).
+   */
   async function balonSisir(n: number) {
     const hedef = 1;
     const ton = BALON_TON[n % BALON_TON.length];

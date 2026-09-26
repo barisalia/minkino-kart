@@ -221,3 +221,19 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
 - 2026-09-26 KARAR (Barış): Mino'nun Pazarı tamamlanacak (ekip/pazar main'e birleştirildi, henüz gönderilmedi). Oyun: Mino tezgâhta, hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler; 3 yaş ad · 4 renk/1-5 sayma · 5 iki ürün/ayırma · 6 toplama/1-5 lira. Kalanlar: yeni Mino, pazar görselleri (Recraft ~5), seslendirme (sayma ürünleri 4'e inerek ~1.000 karakter).
 - 2026-09-26 KARAR (Barış): Sesli Maceralar / Ada'nın Doğum Günü tamamen bulut yöneticide; yerel ekip macera/, content/macera.json, assets/parti*'ye dokunmaz.
 - 2026-09-26 TAMAM: Mino'nun Pazarı yayına çıktı. Recraft 5 görsel (tezgah, arkaplan, sepet, para-1, para-5; 10 kredi, kalan 387), tasarımcı kapalı beyazları temizledi; kodcu standı üç katmanlı kurdu (Mino standın içinde), CSS tente kalktı, paralar sepette sıralı. Seslendirme: 76 yeni cümle ≈ 1.184 karakter (CI üretir). scripts/gorsel-indir.mjs Windows yol düzeltmesi (fileURLToPath).
+
+## 2026-09-26 — ADA'NIN DOĞUM GÜNÜ ONAYLANDI, SES SİSTEMİ KİLİTLİ (bulut → yerel, ÇOK ÖNEMLİ)
+
+- 2026-09-26 KARAR (Barış): "Oldu sonunda. Ses sistemi böyle olmalı. Bunu bozmayın." Sesli Maceralar'ın bu hâli (`eddd6aa` ve sonrası) referans. Bölüm artık yerelde devam ediyor.
+- 2026-09-26 **UYARI (Barış'tan, çok sert bir dille):** Üfleme ve ses algılamasına **dokunulmayacak.**
+  - Balon, algılama gevşetildiği için konuşunca ve "çıt" deyince şişiyordu. İlk sürümün katı algılamasına dönüldü; "kolay mod" kodu tamamen silindi.
+  - Kolaylık **yalnız oyunun hızından** (şişme hızı, yeşil bölge, mum eşiği) verilir, algılamadan asla.
+- 2026-09-26 Kilit: `tests/unit/ses-kilidi.test.ts`. Kontrol ettikleri:
+  - konuşma sayılmaz,
+  - tıkırtı sayılmaz,
+  - nefes sayılır,
+  - eşik metinleri ve bölümdeki kullanım değişmemiş.
+
+  CI birim testlerini yayından önce çalıştırır: kilit kırılırsa o sürüm siteye çıkmaz. Değiştirmek şartsa önce Barış'ın onayı.
+- 2026-09-26 Öğretici rehber: `ekip/SES-SISTEMI.md`. İçinde sistemin parçaları, algılayıcılar tablosu, yeni sesli görev tarifi, telefon ve animasyon kuralları var. Yerel ekip ses işine başlamadan önce okuyacak.
+- 2026-09-26 Bulut: işi bitti. `claude/awesome-cori-kvcfd7` ve `main` aynı commit'te.

@@ -188,6 +188,8 @@ export interface Ayar {
 }
 
 // ---------------------------------------------------------------- 1. Üfleme
+// KİLİTLİ (Barış onaylı, 2026-09-26): eşikler değiştirilmez. Kolaylık algılamadan değil oyunun şişme/sönme
+// hızından verilir. Bkz. ekip/SES-SISTEMI.md ve tests/unit/ses-kilidi.test.ts
 /** Üfleme: sesli (perdeli) değil, gürültü gibi, kalın ağırlıklı ve süren bir ses. */
 export class UflemeBulucu {
   private art = 0;
@@ -198,23 +200,16 @@ export class UflemeBulucu {
   sure = 0;
   aktif = false;
   toplamUfleme = 0;
-  constructor(
-    private a: Ayar,
-    private kolay = false,
-  ) {}
+  constructor(private a: Ayar) {}
   kare(o: Ozellik): { basladi?: boolean; bitti?: number } {
-    // kolay: eşik biraz düşük ama yine yalnız nefes sesi (perdesiz, gürültü gibi); konuşma, müzik, TV sayılmaz
-    const esik = this.a.taban + (this.kolay ? 11 : 14) - this.a.duyarlilik;
-    const ufleme = this.kolay
-      ? o.db > esik && o.perde === null && (o.kalinOran > 0.22 || o.db > esik + 12) && o.duzluk > 0.02
-      : o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
+    const esik = this.a.taban + 14 - this.a.duyarlilik;
+    const ufleme = o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
     const sonuc: { basladi?: boolean; bitti?: number } = {};
     if (ufleme) {
       this.art++;
       this.bos = 0;
       this.guc = Math.max(0, Math.min(1, (o.db - esik) / 25));
-      // kolay modda üfleme ~0.13 sn sürmeden başlamaz (kapı, tıkırtı gibi kısa sesler şişirmesin)
-      if (!this.aktif && this.art >= (this.kolay ? 6 : 4)) {
+      if (!this.aktif && this.art >= 4) {
         this.aktif = true;
         this.sure = this.art * this.a.kare;
         sonuc.basladi = true;

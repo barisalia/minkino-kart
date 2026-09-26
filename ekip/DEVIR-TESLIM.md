@@ -7,6 +7,12 @@
 - [ekip/stil-rehberi.md](stil-rehberi.md): görsel stil ve prompt kalıpları.
 - [ORTAK_NOTLAR.md](../ORTAK_NOTLAR.md): kararlar ve tarihçe.
 
+
+> **2026-09-26 SON DURUM, Barış onaylı:** "Ada'nın Doğum Günü" (Sesli Maceralar, `macera/`) bitti ve onaylandı. Referans commit `eddd6aa` ve sonrası.
+> - Bundan sonra bölüm **yerelde** devam ediyor.
+> - **Ses sistemi kilitli:** önce [ekip/SES-SISTEMI.md](SES-SISTEMI.md) okunacak. Üfleme ve algılama eşiklerine dokunulmaz; kolaylık yalnız oyunun hızından verilir. Kilit testi: `tests/unit/ses-kilidi.test.ts`. Kırmızıysa o sürüm yayına çıkmaz.
+> - Deniz ve Zeynep pozları ile Ada'nın `dans2`/`mutlu` pozları gelince yerelde eklenir. Yöntem: `assets/parti-ifade/<ad>/<poz>.webp` ve `dogumgunu.ts` içindeki `KONUK_CIZIM` satırı, Elif örneğindeki gibi.
+
 ---
 
 ## 1. İlk gün: projeyi yerele alın (30 dk)
