@@ -166,3 +166,12 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   - **Üfleme kolaylaştı:** eşik düştü, sesli "fuuu" da sayılıyor, balonun yeşil bölgesi genişledi, yeşile girince balon yavaşlıyor, mumlar daha çabuk sönüyor.
 - 2026-09-26 ONAY BEKLİYOR (Barış): Mino'nun yeniden tasarımı. Barış Recraft'tan görsel gönderecek; gelince Mino baştan kurulacak.
 - 2026-09-26 KARAR (Barış): **Tüm görseller tek stilde.** Prompt kalıpları, Recraft ayarları, Gemini stil kilidi ve kalite kontrol listesi: `ekip/stil-rehberi.md`. Yeni görsel üreten herkes bu dosyadaki kalıpları kelimesi kelimesine kullanır. Parlaklık ve doku **az dozda** olur; 2D'den kopulmaz.
+
+## 2026-09-26 — MINO YENİ TASARIM: tasarımcıya (bulut yönetici → yerel yönetici, ACİL)
+
+- 2026-09-26 KARAR (Barış): Yeni Mino **A sürümü** onaylandı. Recraft pro vektörle çizildi, sade 2D. Dosyalar: `ekip/mino/mino-a-kaynak.svg`, önizleme `ekip/mino/mino-a-onizleme.png`. Tek eksik: **gövdede gölgelendirme zayıf.**
+- 2026-09-26 **TASARIMCI GÖREVİ (en yüksek öncelik):** `ekip/mino/TASARIMCI-GOREVI.md`. Yönetici bunu **önce tasarımcıya** versin; parti pozlarından önce yapılacak.
+  - Illustrator'da gövdeye az dozda, sert kenarlı gölge eklenecek. Doku ve gradyan olmayacak.
+  - Animasyon için katmanlara ayrılacak: kuyruk, govde, kol-sol, kol-sag, fular, kafa, goz-sol, goz-sag, agiz.
+  - Teslim: `ekip/mino/mino-final.svg` ve PNG.
+- 2026-09-26 Bulut: `mino-final.svg` gelince iskeleti kurar (konuşma ağzı, göz kırpma, tepkiler, dans) ve tüm oyunlarda eski Mino'nun yerine koyar.
