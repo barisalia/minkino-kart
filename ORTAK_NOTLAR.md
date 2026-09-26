@@ -217,3 +217,4 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   - Ölçüm: yavaşlatılmış tarayıcıda (CPU x6) sahte mikrofonla iki sürüm de balonu aynı hızda şişirdi. Telefondaki sorunun kesin kaynağı bulunamadı; güvenli temel seçildi.
 - 2026-09-26 ONAY BEKLİYOR (Barış): bu dalın `main`'e gönderilmesi. O zamana kadar yerel `main`'e push etmeden önce mutlaka `git merge origin/claude/awesome-cori-kvcfd7` yapsın, yoksa bu düzeltme siteden gider.
 - 2026-09-26 KALAN İŞ: Elif, Deniz ve Zeynep pozları `ekip/parti-pozlar` dalına gelince bulut Ada bölümüne koyar.
+- 2026-09-26 Bulut: Elif pozları ve Can'ın güncel pozları (`ekip/parti-pozlar` 679f153) Ada bölümüne kondu. Deniz, Zeynep ve Ada dans2/mutlu aynı dala gelince konacak.
