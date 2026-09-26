@@ -20,12 +20,14 @@ export interface Kisilik {
   hayir: number;
   /** kol açısı sınırı [içe, dışa] (yoksa -5 … 110) */
   kol?: [number, number];
+  /** iskelete özel açı sınırları (±derece): fazlasında eklem yerinde boşluk açılan karakterler için */
+  sinir?: { kafa?: number; kulak?: number; bacak?: number };
 }
 
 export const KISILIK: Record<string, Kisilik> = {
   ordek: { yuruyus: 'paytak', adim: 260, gelis: 1500, huy: 'ayak', dans: 'paytak', agiz: [0.5, 0.49], hayir: 10 },
   tavsan: { yuruyus: 'hop', adim: 430, gelis: 1300, huy: 'burun', dans: 'hop', agiz: [0.5, 0.52], hayir: 8 },
-  ayi: { yuruyus: 'agir', adim: 720, gelis: 2100, huy: 'esne', dans: 'gobek', agiz: [0.5, 0.52], hayir: 5 },
+  ayi: { yuruyus: 'agir', adim: 720, gelis: 2100, huy: 'esne', dans: 'gobek', agiz: [0.52, 0.56], hayir: 5, kol: [-25, 60], sinir: { kafa: 6, kulak: 10, bacak: 5 } },
   inek: { yuruyus: 'salin', adim: 620, gelis: 1900, huy: 'gevis', dans: 'don', agiz: [0.78, 0.46], hayir: 6 },
   kopek: { yuruyus: 'tiris', adim: 220, gelis: 1100, huy: 'kuyruk', dans: 'kovala', agiz: [0.5, 0.5], hayir: 9, kol: [-5, 60] },
   maymun: { yuruyus: 'takla', adim: 500, gelis: 1400, huy: 'kasin', dans: 'salto', agiz: [0.5, 0.4], hayir: 9 },

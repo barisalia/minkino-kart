@@ -321,21 +321,24 @@ export class Karakter {
     const olcek = 20.48; // % → çizim birimi (2048 / 100)
     const kokN = dn.govde ?? [1024, 1930];
     const kok = `translate(${(p.x * olcek).toFixed(1)}px, ${(p.y * olcek).toFixed(1)}px) ${etrafinda(kokN, p.don, p.sx, p.sy)}`;
-    const kafaT = dn.kafa ? etrafinda(dn.kafa, p.kafa, 1, 1, 0, p.kafaY * olcek) : '';
+    // karaktere özel sınırlar (ör. ayı: kafa ±6, kulak ±10, bacak ±5)
+    const s = this.k.sinir ?? {};
+    const sin = (a: number, m?: number) => (m === undefined ? a : Math.max(-m, Math.min(m, a)));
+    const kafaT = dn.kafa ? etrafinda(dn.kafa, sin(p.kafa, s.kafa), 1, 1, 0, p.kafaY * olcek) : '';
+    // kafa yalnız kafaT ile döner (bağlı parçalar da aynı dönüşü alır); açı tablosunda yok
     const aci: Record<string, number> = {
-      kafa: p.kafa,
-      'kulak-sol': -p.kulakSol,
-      'kulak-sag': p.kulakSag,
+      'kulak-sol': -sin(p.kulakSol, s.kulak),
+      'kulak-sag': sin(p.kulakSag, s.kulak),
       // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
       'kol-sol': kolSinir(p.kolSol, this.k.kol),
       'kol-sag': -kolSinir(p.kolSag, this.k.kol),
       // kanatlar kolların yerine (kuş, ördek): + = açılır
       'kanat-sol': kanatSinir(p.kolSol),
       'kanat-sag': -kanatSinir(p.kolSag),
-      'bacak-sol': p.bacakSol,
-      'bacak-sag': -p.bacakSag,
-      'ayak-sol': p.bacakSol,
-      'ayak-sag': -p.bacakSag,
+      'bacak-sol': sin(p.bacakSol, s.bacak),
+      'bacak-sag': -sin(p.bacakSag, s.bacak),
+      'ayak-sol': sin(p.bacakSol, s.bacak),
+      'ayak-sag': -sin(p.bacakSag, s.bacak),
       kuyruk: p.kuyruk,
     };
     for (const [id, g] of this.parca) {
@@ -426,15 +429,23 @@ function yuruyus(y: Yuruyus, adim: number, p: Poz) {
       p.kolSag += 18 * yay;
       break;
     }
-    case 'agir': // ağır, basınca gövde çöker, kafa sallanır
-      p.y -= 2 * yay;
-      p.don += yon * 3 * yay;
-      p.sx *= 1 + 0.06 * (1 - yay);
-      p.sy *= 1 - 0.06 * (1 - yay);
-      p.kafa += 3 * yay;
-      p.kolSol += yon * 10 * yay;
-      p.kolSag -= yon * 10 * yay;
+    case 'agir': {
+      // ağır ağır: bacaklar az açılır (ayıda ±5), ağırlık asıl gövdede: her basışta çöker, sonra yaylanıp kalkar,
+      // omuzlar adımla iki yana yatar, kafa gövdeden biraz geç gelir
+      const bas = Math.pow(1 - yay, 2); // adımın başı ve sonu: ayak yere basmış
+      p.y -= 1.5 * yay;
+      p.don += yon * 3.5 * yay;
+      p.sx *= 1 + 0.07 * bas;
+      p.sy *= 1 - 0.08 * bas + 0.02 * yay;
+      p.bacakSol += yon > 0 ? 5 * yay : -3 * yay;
+      p.bacakSag += yon < 0 ? 5 * yay : -3 * yay;
+      p.kafa -= yon * 3 * S(s * PI - 0.6);
+      p.kolSol += yon * 12 * yay;
+      p.kolSag -= yon * 12 * yay;
+      p.kulakSol += 4 * bas;
+      p.kulakSag += 4 * bas;
       break;
+    }
     case 'salin':
       p.don += yon * 5 * yay;
       p.y -= 2.5 * yay;
