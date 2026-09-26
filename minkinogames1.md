@@ -119,8 +119,7 @@ Barış'ın kuralı: **2D vektör, yüksek kalite, premium glossy cartoon, çocu
 
 ## 11. Uyuyan Orman premium animasyon işi (ekip)
 
-Barış'ın kararı: Uyuyan Orman'ı en yüksek kaliteye çıkarıyoruz; stil (parlak 2D çizgi film) korunur, karakterler Rive ile canlandırılır.
-- **Rive animasyon işi:** [ekip/rive-is-listesi.md](ekip/rive-is-listesi.md): karakterler, hareketler, girdi adları (oyunla sözleşme), teslim yeri.
+Barış'ın kararı: Uyuyan Orman'ı en yüksek kaliteye çıkarıyoruz; stil (parlak 2D çizgi film) korunur. **Rive iptal** (zaman/maliyet); animasyonları Claude kodla yapar (ifade geçişleri, nefes, göz kırpma, esneme-zıplama, eşyaların canlı fiziği).
 - **Gemini görsel işi (tarayıcıdan, API yok):** [ekip/gemini-is-listesi.md](ekip/gemini-is-listesi.md): ifade setleri, parça setleri, arka plan katmanları.
-- Claude (bulut): eşyaların Recraft çizimleri, Rive'ın oyuna bağlanması (mikrofon → girdiler), sihirli renklenme, derinlik (parallax), müzik.
+- Claude (bulut): eşyaların Recraft çizimleri, karakter ve eşya animasyonları (kod), sihirli renklenme, derinlik (parallax), müzik.
 - Cascadeur, Meshy, Blender bu işte kullanılmaz (3D; stili bozar).

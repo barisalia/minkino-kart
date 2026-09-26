@@ -129,6 +129,30 @@
     "fisek": {
       "metin": "small cheerful cartoon firework pop and sparkle crackle",
       "sure": 1.0
+    },
+    "zil": {
+      "metin": "cheerful ding dong doorbell",
+      "sure": 1.2
+    },
+    "patla": {
+      "metin": "funny balloon pop",
+      "sure": 0.6
+    },
+    "duduk": {
+      "metin": "party horn blower toot",
+      "sure": 0.8
+    },
+    "yasasin": {
+      "metin": "group of happy little kids cheering yay and clapping",
+      "sure": 1.8
+    },
+    "kikir": {
+      "metin": "tiny muffled giggle hihi",
+      "sure": 0.8
+    },
+    "huh": {
+      "metin": "group of cute cartoon animals saying a funny puzzled huh",
+      "sure": 0.8
     }
   }
 }

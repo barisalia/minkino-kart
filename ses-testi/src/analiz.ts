@@ -198,10 +198,15 @@ export class UflemeBulucu {
   sure = 0;
   aktif = false;
   toplamUfleme = 0;
-  constructor(private a: Ayar) {}
+  constructor(
+    private a: Ayar,
+    private kolay = false,
+  ) {}
   kare(o: Ozellik): { basladi?: boolean; bitti?: number } {
-    const esik = this.a.taban + 14 - this.a.duyarlilik;
-    const ufleme = o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
+    const esik = this.a.taban + (this.kolay ? 9 : 14) - this.a.duyarlilik;
+    const ufleme = this.kolay
+      ? o.db > esik && (o.perde === null || o.db > esik + 6) && (o.kalinOran > 0.2 || o.db > esik + 10)
+      : o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
     const sonuc: { basladi?: boolean; bitti?: number } = {};
     if (ufleme) {
       this.art++;

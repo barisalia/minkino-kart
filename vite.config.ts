@@ -15,6 +15,7 @@ export default defineConfig({
         canlan: resolve(__dirname, 'canlan/index.html'),
         sesTesti: resolve(__dirname, 'ses-testi/index.html'),
         orman: resolve(__dirname, 'orman/index.html'),
+        macera: resolve(__dirname, 'macera/index.html'),
         pazar: resolve(__dirname, 'pazar/index.html'),
       },
     },

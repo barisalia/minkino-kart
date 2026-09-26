@@ -53,7 +53,7 @@ function referansli(ic: GorevFabrika): GorevFabrika {
 const uc: GorevFabrika = (b, bitti) => {
   const hedefY = [0.3, 0.2, 0.25][b.tur % 3];
   const kus = kusEl();
-  const hedef = h('div.or-hedef-yildiz', { style: `--y:${hedefY}` });
+  const hedef = h('div.or-hedef-yildiz', { style: `--y:${hedefY}` }, resim('orman-esya/yildiz'));
   b.sahne.append(hedef, kus);
   let y = 0.8;
   let ses = false;
@@ -167,7 +167,7 @@ function yildizYolu(): GorevFabrika {
     const DIZILER = [[0.3, 0.68, 0.45], [0.7, 0.28, 0.55], [0.45, 0.25, 0.72]];
     const yler = DIZILER[b.tur % 3];
     const yildizlar = yler.map((y, i) => {
-      const s = h('div.or-yildiz', { style: `--x:${0.3 + i * 0.25};--y:${y}` });
+      const s = h('div.or-yildiz', { style: `--x:${0.3 + i * 0.25};--y:${y}` }, resim('orman-esya/yildiz'));
       b.sahne.append(s);
       return { el: s, x: 0.3 + i * 0.25, y, alindi: false };
     });
@@ -218,8 +218,8 @@ function melodi(kalip: ('i' | 'k')[]): GorevFabrika {
     const s = new SesSekli(b.ayar);
     const IN = 72;
     const KA = 65;
-    const ince = h('button.or-can.ince', { type: 'button', 'aria-label': 'İnce nota' });
-    const kalin = h('button.or-can.kalin', { type: 'button', 'aria-label': 'Kalın nota' });
+    const ince = h('button.or-can.ince', { type: 'button', 'aria-label': 'İnce nota' }, resim('orman-esya/can'));
+    const kalin = h('button.or-can.kalin', { type: 'button', 'aria-label': 'Kalın nota' }, resim('orman-esya/can'));
     const sonuc = h('div.or-melodi-sonuc');
     const dinle = h('button.or-dinle', { type: 'button', 'aria-label': 'Tekrar dinle' }, '♪');
     b.sahne.append(h('div.or-canlar', {}, ince, kalin), sonuc, dinle, kusEl());

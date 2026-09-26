@@ -39,10 +39,10 @@ function dongu(fn: (dt: number) => void): () => void {
 /** 5 yavaş nefes: çiçeği kokla (nefes al), mumu üfle (nefes ver). Her nefeste balon biraz yükselir. */
 export function nefesEkrani(app: Uygulama): Ekran {
   const u = new Ufleme(kulak.ayar, 0.5);
-  const balon = h('div.or-nefes-balon', {}, h('div.or-balon-govde', { style: '--r:#FF7EB6' }), h('div.or-balon-ip'));
-  const cicek = h('div.or-nefes-cicek', {}, h('div.or-cicek-ciz', {}, ...Array.from({ length: 6 }, (_, i) => h('i', { style: `--a:${i * 60}deg` })), h('b')));
+  const balon = h('div.or-nefes-balon', {}, resim('orman-esya/balon', '', 'Balon'));
+  const cicek = h('div.or-nefes-cicek', {}, resim('orman-esya/cicek', '', 'Çiçek'));
   const halka = h('div.or-nefes-halka', {}, h('span', {}));
-  const mum = h('div.or-mum.kucuk', {}, h('div.or-alev'), h('div.or-mum-govde'));
+  const mum = h('div.or-mum.kucuk', {}, h('div.or-alev', {}, resim('orman-esya/alev')), resim('orman-esya/mum', 'or-mum-resim', 'Mum'));
   const noktalar = h('div.or-adimlar.bes', {}, ...Array.from({ length: 5 }, () => h('i')));
   const sahne = h('div.or-nefes', {}, balon, halka, h('div.or-nefes-ikili', {}, cicek, mum), noktalar);
   const { el, yazi } = iskelet(app, 'nefes-ekran', 'Nefes Balonu', 'orman/ruzgar', sahne);

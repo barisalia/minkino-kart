@@ -130,6 +130,52 @@ Teslim: `.riv` dosyaları `ekip/rive` dalında `assets/rive/` altına, GitHub'a 
 
 Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
 
+## 2026-09-25 — DEĞİŞİKLİK: Rive iptal (bulut yönetici → yerel yönetici)
+
+- 2026-09-25 KARAR (Barış): Rive'dan vazgeçildi (öğrenme süresi + ücretli plan). **Rive işini durdurun, üyelik almayın.** Animasyonları bulut kodla yapar.
+- 2026-09-25 YENİ GÖREV DAĞILIMI:
+  - **Tasarımcı 1 (Gemini):** değişmedi, ama parça seti İPTAL. Sadece ifade setleri: önce sincap (esniyor, mutlu, dinliyor, hmm, göz-kırpma; `uyuyor` hazır), sonra diğer karakterler; kuşa kanat yukarı/aşağı, tavşana yürüme iki kare. Sonra arka plan katmanları.
+  - **Tasarımcı 2 (eski Rive):** Tasarımcı 1 ile işi bölün: biri sincap, dev, kuş, inek, köpek; diğeri kedi, maymun, baykuş, tavşan, ayı, papağan. Kurallar aynı: `ekip/gemini-is-listesi.md`.
+  - Teslim: PNG'ler `ekip/gemini/<karakter>/<dosya>.png` olarak ekip dalıyla GitHub'a. Bulut oradan alıp oyuna koyar.
+
+## 2026-09-26 — YENİ YÖN: hikâyeli sesli bölümler; ilk bölüm "Ada'nın Doğum Günü" (bulut yönetici → yerel yönetici)
+
+- 2026-09-26 KARAR (Barış): Uyuyan Orman'daki kopuk görevler ("balonu şişir" vb.) hikâyesiz olduğu için yetersiz. Ses mekanikleri hikâyeli bölümlere taşınıyor. Bölüm 1: **Ada'nın Sürpriz Doğum Günü** (Mino + hayvan arkadaşlar Ada'ya parti hazırlar): açılış animasyonu → balonları şişir, as → saklan, sus → "SÜRPRİZ!" → "İyi ki doğdun" karaoke (ince/kalın tepkili) → mumları üfle → pastayı dil şaklatarak (tık) kes → alkışla dans.
+- 2026-09-26 **TASARIMCI GÖREVİ (öncelikli, orman ifadelerinden önce):** `ekip/parti-gemini.md`: Ada'nın 5 hâli (şaşkın, dilek, şapkalı, alkış, dans) ve 4 konuğun (sincap, tavşan, köpek, ayı) şapkalı 5 hâli. İki tasarımcı: biri Ada + sincap, diğeri tavşan + köpek + ayı. Teslim: `ekip/gemini/parti/<karakter>/<dosya>.png` → GitHub.
+- 2026-09-26 Bulut: parti çizimleri (salon, pasta, dilim, mum, flama, kapı, masa, hediye, koltuk, bıçak, şapka, Ada; Recraft) + bölümün kodu (`macera/`).
+- 2026-09-26 Bulut: `macera/` (Sesli Maceralar) bölüm 1 hazır: açılış animasyonu (Mino anlatır, konuklar gelir) → balon (3-4 yaş şişir; 5-6 yaş yeşilde dur, fazlası patlar) → karanlıkta saklan ve sus (ses olunca konuk kıkırdar, Ada durur) → kapı açılır, Ada girer → "SÜRPRİZ!" (yüksek ses ya da büyük düğme) → karaoke "Mutlu yıllar sana / İyi ki doğdun Ada" (önce müzik kutusu, sonra çocuk; ton bağımsız perde; çok ince/kalın → konuk "Aaa?/Ooo?"; 6 yaşta yüksek nota ödülü) → yaş kadar mum (üfleme gücü) → dil şaklatarak/alkışla pasta dilimleme (tabaklara) → alkışla dans (her alkış müzik vuruşu + disko ışığı) → final. Uçtan uca test: tests/e2e/macera.spec.ts.
+- 2026-09-26 Tasarımcıların parti pozları gelince (`ekip/gemini/parti/...`) Claude `assets/parti-ifade/<ad>/<poz>.webp` olarak koyar; kod pozları hazır bekliyor (şimdilik ayrı şapka + kodla hareket).
+
+## 2026-09-26 (öğleden sonra) — Ada bölümü v2 + senarist görevi (bulut yönetici → yerel yönetici)
+
+- 2026-09-26 KARAR (Barış): Parti konukları hayvan olmayacak, **Ada gibi çocuklar** olacak (kedi Mino kalıyor). Yeni arkadaşlar: **Can, Elif, Deniz, Zeynep** (Recraft, Ada'yla aynı stil). Hayvan parti pozları İPTAL.
+- 2026-09-26 **TASARIMCI GÖREVİ GÜNCELLENDİ:** `ekip/parti-gemini.md`.
+  - **Tasarımcı 1:** Ada (şaşkın, dilek, şapkalı, alkış, dans, dans2, mutlu) + Can.
+  - **Tasarımcı 2:** Elif, Deniz, Zeynep. Her biri: selam, saklanıyor (ikisi şapkasız); şapkalı, alkış, şaşkın, dans, dans2.
+  - Teslim: `ekip/gemini/parti/<karakter>/<dosya>.png`.
+- 2026-09-26 **SENARİST / FİKİRCİ GÖREVİ (yeni):** `ekip/senarist-rehberi.md` okunacak.
+  - İş: "Ada'nın Doğum Günü" kalitesinde 2. bölümün senaryosu.
+  - Kural: hikâyeden doğan ses görevleri, duygu eğrisi, yaşa göre ayar, parmak karşılığı. Rehberde mekanik tablosu, şablon ve fikir tohumları var.
+  - Teslim: `ekip/senaryo/<bolum-adi>.md` → GitHub. Bulut kodlar ve çizdirir.
+- 2026-09-26 Bulut, Ada v2:
+  - Çocuk konuklar kapıdan zille tek tek gelir ve el sallar.
+  - Saklanırken koltuğun, masanın ve hediyelerin arkasına çömelirler.
+  - **Pasta dilim dilim kesilir:** yakın çekimde pasta üstten görünür, her tıkta spatula kesik atar, dilim kalkıp o arkadaşın tabağına uçar. Pasta bitince tabak boş kalır, dilimler masaya gelir.
+  - **Dans:** 8 figür (yan adım, zıplama, twist, dönüş, kalça, eğil-kalk, selam, final taklası). Aynalı koreografi, dalga, Ada'nın etrafında toplanma, disko topu, dönen spot ışıklar, loş oda.
+  - Karakterlerde bekleme nefesi ve adım adım yürüme var.
+  - **Üfleme kolaylaştı:** eşik düştü, sesli "fuuu" da sayılıyor, balonun yeşil bölgesi genişledi, yeşile girince balon yavaşlıyor, mumlar daha çabuk sönüyor.
+- 2026-09-26 ONAY BEKLİYOR (Barış): Mino'nun yeniden tasarımı. Barış Recraft'tan görsel gönderecek; gelince Mino baştan kurulacak.
+- 2026-09-26 KARAR (Barış): **Tüm görseller tek stilde.** Prompt kalıpları, Recraft ayarları, Gemini stil kilidi ve kalite kontrol listesi: `ekip/stil-rehberi.md`. Yeni görsel üreten herkes bu dosyadaki kalıpları kelimesi kelimesine kullanır. Parlaklık ve doku **az dozda** olur; 2D'den kopulmaz.
+
+## 2026-09-26 — MINO YENİ TASARIM: tasarımcıya (bulut yönetici → yerel yönetici, ACİL)
+
+- 2026-09-26 KARAR (Barış): Yeni Mino **A sürümü** onaylandı. Recraft pro vektörle çizildi, sade 2D. Dosyalar: `ekip/mino/mino-a-kaynak.svg`, önizleme `ekip/mino/mino-a-onizleme.png`. Tek eksik: **gövdede gölgelendirme zayıf.**
+- 2026-09-26 **TASARIMCI GÖREVİ (en yüksek öncelik):** `ekip/mino/TASARIMCI-GOREVI.md`. Yönetici bunu **önce tasarımcıya** versin; parti pozlarından önce yapılacak.
+  - Illustrator'da gövdeye az dozda, sert kenarlı gölge eklenecek. Doku ve gradyan olmayacak.
+  - Animasyon için katmanlara ayrılacak: kuyruk, govde, kol-sol, kol-sag, fular, kafa, goz-sol, goz-sag, agiz.
+  - Teslim: `ekip/mino/mino-final.svg` ve PNG.
+- 2026-09-26 Bulut: `mino-final.svg` gelince iskeleti kurar (konuşma ağzı, göz kırpma, tepkiler, dans) ve tüm oyunlarda eski Mino'nun yerine koyar.
+
 
 ## 2026-09-26 — Yerel ekip: Mino'nun Pazarı (yeni oyun)
 

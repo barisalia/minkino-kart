@@ -8,6 +8,8 @@ import sharp from 'sharp';
 const kok = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const klasor = path.join(kok, 'assets', 'recraft');
 const hepsi = process.argv.includes('--hepsi');
+// Yerel deneme: GORSEL_YEREL='{"parti/can":"/yol/dosya.webp"}' — indirmek yerine bu dosyaları işler
+const yerel = process.env.GORSEL_YEREL ? JSON.parse(process.env.GORSEL_YEREL) : {};
 const liste = {};
 for (const f of fs.readdirSync(klasor).filter((f) => f.endsWith('.json'))) {
   Object.assign(liste, JSON.parse(fs.readFileSync(path.join(klasor, f), 'utf8')));
@@ -59,6 +61,15 @@ async function beyaziSil(girdi) {
   return sharp(data, { raw: { width: W, height: H, channels: 4 } }).png().toBuffer();
 }
 
+/** Eşya: en uzun kenar 512, kendi oranında, 8 px şeffaf pay */
+export async function esyaKaydet(kirpik, hedef) {
+  await sharp(kirpik)
+    .resize(496, 496, { fit: 'inside' })
+    .extend({ top: 8, bottom: 8, left: 8, right: 8, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .webp({ quality: 84, alphaQuality: 90, effort: 6 })
+    .toFile(hedef);
+}
+
 let yeni = 0;
 let hata = 0;
 for (const [anahtar, url] of Object.entries(liste)) {
@@ -68,10 +79,11 @@ for (const [anahtar, url] of Object.entries(liste)) {
   const svgGerek = anahtar.startsWith('karakter/') && !fs.existsSync(kaynakSvg);
   if (!hepsi && fs.existsSync(hedef) && !svgGerek) continue;
   try {
-    const yanit = await fetch(url);
-    if (!yanit.ok) throw new Error(`HTTP ${yanit.status}`);
-    const girdi = Buffer.from(await yanit.arrayBuffer());
-    const tur = yanit.headers.get('content-type') ?? '';
+    if (Object.keys(yerel).length && !yerel[anahtar]) continue;
+    const yanit = yerel[anahtar] ? null : await fetch(url);
+    if (yanit && !yanit.ok) throw new Error(`HTTP ${yanit.status}`);
+    const girdi = yanit ? Buffer.from(await yanit.arrayBuffer()) : fs.readFileSync(yerel[anahtar]);
+    const tur = yanit?.headers.get('content-type') ?? '';
     if (anahtar.startsWith('karakter/') && (tur.includes('svg') || girdi.subarray(0, 200).toString().includes('<svg'))) {
       fs.mkdirSync(path.dirname(kaynakSvg), { recursive: true });
       fs.writeFileSync(kaynakSvg, girdi);
@@ -79,19 +91,26 @@ for (const [anahtar, url] of Object.entries(liste)) {
     }
     if (!hepsi && fs.existsSync(hedef)) continue;
     // Sahne arka planları: kırpmadan, kenardan kenara kare
-    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/') || anahtar === 'pazar/arkaplan') {
+    if (anahtar.startsWith('sahne/') || anahtar.startsWith('orman/') || anahtar.startsWith('parti-sahne/') || anahtar === 'pazar/arkaplan') {
       fs.mkdirSync(path.dirname(hedef), { recursive: true });
-      const boy = anahtar.startsWith('orman/') || anahtar === 'pazar/arkaplan' ? 1024 : 768;
+      const boy = anahtar.startsWith('sahne/') ? 768 : 1024;
       await sharp(girdi).resize(boy, boy, { fit: 'cover' }).webp({ quality: 80, effort: 6 }).toFile(hedef);
       yeni++;
       console.log('✓', anahtar);
       continue;
     }
-    // Çiz Canlansın, Uyuyan Orman ve Pazar nesneleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
+    // Çiz Canlansın, Uyuyan Orman, Parti ve Pazar nesneleri beyaz zeminde üretildi: kenardan bağlı beyazı şeffaf yap
     // (pazar/arkaplan yukarıdaki arka plan dalında ayrıldı, buraya gelmez)
-    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') || anahtar.startsWith('pazar/') ? await beyaziSil(girdi) : girdi;
+    const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') || anahtar.startsWith('parti/') || anahtar.startsWith('pazar/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
+    // Uyuyan Orman eşyaları: kare değil, kendi oranında (yerleşim CSS'te kolay olsun)
+    if (anahtar.startsWith('orman-esya/') || anahtar.startsWith('parti/')) {
+      await esyaKaydet(kirpik, hedef);
+      yeni++;
+      console.log('✓', anahtar);
+      continue;
+    }
     await sharp(kirpik)
       .resize(464, 464, { fit: 'inside' })
       .extend({ top: 24, bottom: 24, left: 24, right: 24, background: { r: 0, g: 0, b: 0, alpha: 0 } })

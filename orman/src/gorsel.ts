@@ -2,7 +2,7 @@
 import { h } from '../../src/ui/dom';
 
 const RESIMLER = import.meta.glob<string>(
-  ['../../assets/hayvanlar/*.webp', '../../assets/renkler/*.webp', '../../assets/meyveler/*.webp', '../../assets/tasitlar/*.webp', '../../assets/orman/*.webp', '../../assets/orman-karakter/*.webp'],
+  ['../../assets/hayvanlar/*.webp', '../../assets/renkler/*.webp', '../../assets/meyveler/*.webp', '../../assets/tasitlar/*.webp', '../../assets/orman/*.webp', '../../assets/orman-karakter/*.webp', '../../assets/orman-esya/*.webp', '../../assets/orman-ifade/*/*.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 
