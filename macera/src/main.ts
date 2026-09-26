@@ -24,7 +24,9 @@ if (kok) {
   const app = new Uygulama(kok);
   kok.classList.add('mc-kok');
   const q = new URLSearchParams(location.search);
-  if (q.has('test')) {
+  // ?onizleme=1: test gibi doğrudan ekrana gider ama gerçek hızda (animasyon kaydı / gösterim için)
+  const kisayol = q.has('test') || q.has('onizleme');
+  if (kisayol) {
     const y = Number(q.get('yas'));
     if (y >= 3 && y <= 6) {
       durum.i.yas = y as Yas;
@@ -32,5 +34,5 @@ if (kok) {
     }
     (window as unknown as { __macera: unknown }).__macera = { app };
   }
-  app.git((q.has('test') && q.get('ekran')) || 'acilis');
+  app.git((kisayol && q.get('ekran')) || 'acilis');
 }

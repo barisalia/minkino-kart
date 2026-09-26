@@ -4,6 +4,7 @@
  */
 import { h } from '../../src/ui/dom';
 import { adres } from './gorsel';
+import { AZ_HAREKET } from './oyuncu';
 
 export interface Konum {
   x: number;
@@ -40,12 +41,44 @@ export class Sahne {
     return el;
   }
 
-  /** Kamera: (x, y) odak noktası (sahnenin %'si, üstten), z yakınlık */
+  /**
+   * Kamera: (x, y) odak noktası (sahnenin %'si, üstten), z yakınlık.
+   * Odak noktası da yumuşakça kayar (CSS geçişi, macera.css → .mc-dunya): ağır bir kamera gibi yavaş kalkar, yavaş durur.
+   */
   async kamera(x: number, y: number, z: number, ms = 1200) {
     this.dunya.style.transitionDuration = `${ms}ms`;
     this.dunya.style.transformOrigin = `${x}% ${y}%`;
     this.dunya.style.transform = `scale(${z})`;
     await bekle(ms);
+  }
+
+  /** Kısa sarsıntı (balon patlaması, sürpriz): yalnız transform; hareketi azalt tercihinde yok */
+  titret(guc = 1) {
+    if (AZ_HAREKET) return;
+    const d = 5 * guc;
+    this.el.animate(
+      [
+        { translate: '0 0' },
+        { translate: `${-d}px ${d * 0.4}px` },
+        { translate: `${d * 0.8}px ${-d * 0.5}px` },
+        { translate: `${-d * 0.5}px ${d * 0.3}px` },
+        { translate: `${d * 0.25}px 0` },
+        { translate: '0 0' },
+      ],
+      { duration: 320, easing: 'ease-out' },
+    );
+  }
+
+  /** Dünyada (x, y alttan %) kısa bir parıltı kümesi; w: kümenin genişliği (%) */
+  parilti(x: number, y: number, w = 14, renk = '#ffd84a') {
+    const adet = 9;
+    const el = h(
+      'div.mc-parilti',
+      { style: `--r:${renk}` },
+      ...Array.from({ length: adet }, (_, i) => h('i', { style: `--a:${Math.round((i * 360) / adet + Math.random() * 20)}deg;--g:${i * 18}ms` })),
+    );
+    this.koy(el, { x, y, w, z: 12 });
+    setTimeout(() => el.remove(), 1100);
   }
 
   async isik(acik: boolean, ms = 900) {

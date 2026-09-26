@@ -358,7 +358,8 @@
   position: absolute;
   inset: 0;
   transition-property: transform, transform-origin;
-  transition-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  /* ağır kamera: yavaş kalkar, uzun ve yumuşak durur (easeInOutQuart'a yakın) */
+  transition-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
 }
 .mc-kok .mc-oda {
   position: absolute;
@@ -446,8 +447,7 @@
 /* ---------------------------------------------------------------- oyuncular */
 .mc-kok .mc-oyuncu {
   z-index: 4;
-  transition-property: left, bottom;
-  transition-timing-function: cubic-bezier(0.35, 0, 0.3, 1);
+  /* yürüyüş transform ile (oyuncu.ts → git: FLIP); left/bottom anında değişir */
 }
 .mc-kok .mc-oyuncu.gizli {
   display: none;
@@ -462,19 +462,45 @@
   bottom: -1%;
   height: 8%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(40, 25, 10, 0.28), transparent);
+  background: radial-gradient(closest-side, rgba(40, 25, 10, 0.3), transparent);
+  transform-origin: 50% 50%;
 }
 .mc-kok .mc-oy-hareket {
   transform-origin: 50% 100%;
+  /* karakter kendi katmanında: gölgeli çizim her karede yeniden boyanmaz, yalnız taşınır */
+  will-change: transform;
 }
+/* bakınma / ağırlık aktarma katmanı (oyuncu.ts → boşta hareketler) */
+.mc-kok .mc-oy-bakis {
+  transform-origin: 50% 100%;
+}
+/*
+ * Yürüyüş: adım ritminde sekme (her adımda basıp yaylanır), gidiş yönüne hafif öne eğilme,
+ * adımla birlikte omuzların iki yana yatması. Gölge her adımda nabız gibi küçülür.
+ */
 .mc-kok .mc-oyuncu.yuruyor .mc-oy-hareket {
-  animation: mc-yuru 0.5s ease-in-out infinite;
+  animation: mc-yuru var(--adim, 0.42s) linear infinite;
 }
-/* adım adım: her adımda yaylanır, gövde iki yana yatar */
+.mc-kok .mc-oyuncu.yuruyor .mc-oy-bakis {
+  rotate: calc(var(--yon, 1) * 4deg);
+  transition: rotate 0.25s ease-out;
+}
+.mc-kok .mc-oyuncu.yuruyor .mc-oy-golge {
+  animation: mc-adim-golge calc(var(--adim, 0.42s) / 2) cubic-bezier(0.3, 0, 0.5, 1) infinite alternate;
+}
+.mc-kok .mc-oy-bakis {
+  transition: rotate 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
 @keyframes mc-yuru {
-  0%, 50%, 100% { transform: translateY(0) scale(1.03, 0.97) rotate(0); }
-  25% { transform: translateY(-9%) scale(0.98, 1.03) rotate(4deg); }
-  75% { transform: translateY(-9%) scale(0.98, 1.03) rotate(-4deg); }
+  0% { transform: translateY(0) scale(1.05, 0.95) rotate(0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  22% { transform: translateY(-7%) scale(0.98, 1.03) rotate(2.5deg); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  50% { transform: translateY(0) scale(1.05, 0.95) rotate(0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  72% { transform: translateY(-7%) scale(0.98, 1.03) rotate(-2.5deg); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  100% { transform: translateY(0) scale(1.05, 0.95) rotate(0); }
+}
+@keyframes mc-adim-golge {
+  from { transform: scale(1); }
+  to { transform: scale(0.86); opacity: 0.8; }
 }
 .mc-kok .mc-oyuncu.sallaniyor .mc-oy-govde {
   animation: mc-sallan 1.1s ease-in-out infinite alternate;
@@ -487,12 +513,20 @@
   position: relative;
   aspect-ratio: var(--ar, 1);
   transform-origin: 50% 100%;
-  animation: mc-nefes 2.8s ease-in-out var(--faz, 0s) infinite;
+  /* nefes ve salınım ayrı sürelerde: birleşince hiç tekrar etmeyen, canlı bir bekleme */
+  animation:
+    mc-nefes var(--nefes, 2.8s) ease-in-out var(--faz, 0s) infinite,
+    mc-salinim calc(var(--nefes, 2.8s) * 1.7) ease-in-out var(--faz, 0s) infinite;
 }
-/* bekleme: nefes alır, ağırlığını hafifçe bir ayağından ötekine verir */
+/* bekleme: göğüs kalkar (boy uzar, en daralır), sonra yumuşakça iner */
 @keyframes mc-nefes {
-  0%, 100% { scale: 1 1; rotate: -0.8deg; }
-  50% { scale: 1.015 1.03; rotate: 0.8deg; }
+  0%, 100% { scale: 1 1; }
+  45% { scale: 0.99 1.028; }
+}
+/* ağırlığını hafifçe bir ayağından ötekine verir */
+@keyframes mc-salinim {
+  0%, 100% { rotate: -0.9deg; translate: -0.4% 0; }
+  50% { rotate: 0.9deg; translate: 0.4% 0; }
 }
 .mc-kok .mc-oy-resim {
   position: absolute;
@@ -823,11 +857,14 @@
 }
 
 /* ---------------------------------------------------------------- oyuncu: kapıda belirme, saklanırken çömelme */
+/* kapıdan giriş: ışıktan çıkıp içeri bir adım atar gibi (belirir, küçük sekmeyle yerine oturur) */
 .mc-kok .mc-oyuncu.kapida .mc-oy-hareket {
-  animation: mc-kapida 0.3s ease-out;
+  animation: mc-kapida 0.42s cubic-bezier(0.25, 0.8, 0.35, 1);
 }
 @keyframes mc-kapida {
-  from { opacity: 0; transform: scale(0.85); }
+  0% { opacity: 0; transform: translateX(6%) scale(0.86, 0.9); }
+  55% { opacity: 1; transform: translateX(1%) translateY(-5%) scale(0.98, 1.04); }
+  100% { opacity: 1; transform: none; }
 }
 .mc-kok .mc-oyuncu .mc-oy-hareket {
   transition: translate 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), scale 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
@@ -1086,4 +1123,44 @@
 @keyframes mc-isilti {
   0%, 100% { transform: scale(0.2); opacity: 0; }
   50% { transform: scale(1.6); opacity: 1; }
+}
+
+/* ---------------------------------------------------------------- canlılık: parıltı, titreşim */
+/* kısa parıltı kümesi (sahne.ts → parilti): yıldızcıklar merkezden saçılır */
+.mc-kok .mc-parilti {
+  pointer-events: none;
+  aspect-ratio: 1;
+  z-index: 12;
+}
+.mc-kok .mc-parilti i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16%;
+  aspect-ratio: 1;
+  margin: -8% 0 0 -8%;
+  background: var(--r, #ffd84a);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: mc-parilti 0.8s cubic-bezier(0.2, 0.7, 0.3, 1) var(--g, 0ms) both;
+}
+@keyframes mc-parilti {
+  0% { transform: rotate(var(--a)) translateY(0) scale(0.2); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: rotate(var(--a)) translateY(-230%) scale(1) rotate(90deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .mc-oy-govde,
+  .mc-kok .mc-oyuncu.yuruyor .mc-oy-hareket,
+  .mc-kok .mc-oyuncu.yuruyor .mc-oy-golge,
+  .mc-kok .mc-oyuncu.sallaniyor .mc-oy-govde,
+  .mc-kok .mc-balon.asili .mc-balon-govde {
+    animation: none;
+  }
+  .mc-kok .mc-oyuncu.yuruyor .mc-oy-bakis {
+    rotate: none;
+  }
+  .mc-kok .mc-parilti {
+    display: none;
+  }
 }

@@ -106,6 +106,19 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     kulak.sustur(sus);
     void resimSesi(ad);
   };
+  /**
+   * Tepki dalgası: biri sevinince sahnede ona en yakın iki kişi kısa gecikmeyle, daha küçük tepki verir.
+   * Herkes aynı anda aynı hareketi yapmaz.
+   */
+  const dalga = (ilk: Oyuncu, yukseklik = 18) => {
+    void ilk.sevin(yukseklik);
+    const x = (k: Oyuncu) => Number(k.el.style.getPropertyValue('--x')) || 50;
+    [...konuklar, oy.ada]
+      .filter((k) => k !== ilk && !k.el.classList.contains('gizli'))
+      .sort((a, b) => Math.abs(x(a) - x(ilk)) - Math.abs(x(b) - x(ilk)))
+      .slice(0, 2)
+      .forEach((k, i) => setTimeout(() => void (i === 0 ? k.sevin(yukseklik * 0.45, 700) : k.kipir()), 160 + i * 150));
+  };
   const konfeti = (x = 50, y = 40, adet = 90) => {
     const [px, py] = sahne.noktaEkran(x, y);
     konfetiPatlat(kok, px, py, adet);
@@ -204,6 +217,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     oy.ada.el.classList.remove('karanlikta');
     minoKutu.classList.remove('sakli');
     efektCal('duduk', 900);
+    sahne.titret(1);
     oy.ada.poz('saskin', 2600);
     void oy.ada.zipla(34);
     mino.tepki('zipla');
@@ -214,7 +228,8 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       k.poz('normal');
       k.el.classList.remove('comeldi');
       k.sapkaTak();
-      void k.git(x, y, 450).then(() => k.figur('zipla', 1, 560));
+      // fırlayış sırayla: herkes aynı anda değil
+      setTimeout(() => void k.git(x, y, 450).then(() => k.figur('zipla', 1, 560)), i * 90);
     }
     efektCal('yasasin', 2000);
     await bekle(900);
@@ -290,6 +305,8 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     if (ui.kapandiMi()) return;
     if (patladi) {
       balon.classList.add('patladi');
+      sahne.titret(0.8);
+      sahne.parilti(50, 40, 18, '#ff9ec4');
       efektCal('patla', 800);
       void konuklar[n % 4].balon(M.tepki.vay, 900);
       await bekle(450);
@@ -306,10 +323,10 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     balon.style.setProperty('--y', String(y));
     balon.style.zIndex = '2';
     const k = konuklar[n % 4];
-    k.poz('alkis', 900);
-    void k.zipla(18);
+    dalga(k, 18);
     await bekle(900);
     balon.classList.add('asili');
+    sahne.parilti(x, y + 4, 9);
     if (n < balonSayisi - 1) void soyle(D.balon_asildi[n % D.balon_asildi.length]);
   }
 
@@ -560,9 +577,10 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ui.ipucu(null);
     await bekle(600);
     oy.ada.poz('mutlu');
-    void oy.ada.zipla(20);
+    dalga(oy.ada, 20);
     efektCal('yasasin', 2000);
     konfeti(50, 45, 110);
+    sahne.parilti(50, 32, 20);
     await soyle(D.mum_bitti);
     mumKutu.classList.add('kalkti');
     await bekle(500);
@@ -703,7 +721,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     oy.ada.koy(adaYer[0], adaYer[1]);
     await bekle(500);
     yakin.remove();
-    konuklar.forEach((k) => k.poz('alkis', 1200));
+    konuklar.forEach((k, i) => setTimeout(() => k.poz('alkis', 1200), i * 110));
     await sahne.kamera(50, 50, 1, 900);
   }
 
@@ -774,10 +792,11 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
           return;
         }
         const figur = FIGURLER[(n - 1) % (FIGURLER.length - 1)];
-        herkes.forEach((k) => {
+        // aynı figür ama herkes birkaç kare arayla: robot gibi değil, bir grup gibi
+        herkes.forEach((k, i) => setTimeout(() => {
           k.poz((['dans', 'alkis', 'dans2'] as const)[n % 3], 600);
           void k.figur(figur, yon(k), 640);
-        });
+        }, (i * 37) % 110));
       };
       a.onAlkis = vur;
       dansTik = () => a.tik();
