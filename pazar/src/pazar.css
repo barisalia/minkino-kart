@@ -120,12 +120,11 @@
   flex-direction: column;
   align-items: center;
 }
+/* canlı Mino tezgâhın arkasında: ayakları tezgâhın altında kalır */
 .pz-kok .pz-acilis-mino {
-  width: min(52vw, 300px);
-  aspect-ratio: 1;
-  margin-bottom: -18%;
-  animation: pz-salin 3s ease-in-out infinite;
-  transform-origin: 50% 100%;
+  width: min(46vw, 26vh, 250px);
+  aspect-ratio: 1360 / 1790;
+  margin-bottom: -22%;
 }
 .pz-kok .pz-acilis-tezgah {
   position: relative;
@@ -246,38 +245,41 @@
   height: clamp(40px, 8vw, 70px);
   opacity: 0.95;
 }
+/*
+ * Sahne düzeni (sahnenin kendi ölçüsüne göre, cq birimleri): Mino tezgâhın arkasında solda, ayakları tezgâhın
+ * altında kalır; müşteri sağda tezgâha yanaşır, isteği başının üstündeki balonda. İkisi de sahnenin tabanına oturur.
+ */
+.pz-kok .pz-sahne {
+  container-type: size;
+}
 .pz-kok .pz-mino {
   position: absolute;
-  left: 2%;
-  bottom: -4px;
-  width: min(42%, 46vh, 330px);
-  aspect-ratio: 1;
-  animation: pz-salin 3.4s ease-in-out infinite;
-  transform-origin: 50% 100%;
+  left: 1%;
+  bottom: -9%;
+  /* Mino çizimi 1360×1790 */
+  width: min(60cqw, 92cqh * 0.76, 420px);
+  aspect-ratio: 1360 / 1790;
+  z-index: 1;
 }
 .pz-kok .pz-musteri-kap {
   position: absolute;
-  right: 2%;
-  bottom: -4px;
-  width: min(54%, 58vh, 420px);
-  top: clamp(20px, 6%, 50px);
+  right: 1%;
+  bottom: -5%;
+  width: min(48cqw, 62cqh, 380px);
+  aspect-ratio: 1;
   pointer-events: none;
+  z-index: 2;
 }
 .pz-kok .pz-musteri {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
-  animation: pz-gel 0.7s cubic-bezier(0.25, 1.2, 0.4, 1) both;
+  animation: pz-gel 0.9s linear both;
 }
 .pz-kok .pz-musteri-resim {
-  width: 76%;
-  height: auto;
-  aspect-ratio: 1;
-  max-height: 72%;
-  margin-right: 6%;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   transform-origin: 50% 100%;
 }
 .pz-kok .pz-musteri.sevindi .pz-musteri-resim {
@@ -287,14 +289,25 @@
   animation: pz-hayir 0.5s ease-in-out;
 }
 .pz-kok .pz-musteri.gidiyor {
-  animation: pz-git 0.55s ease-in both;
+  animation: pz-git 0.6s linear both;
 }
+/* geliş: sekerek yürür (her adımda hafif sıçrama), tezgâha varınca basıp durur */
 @keyframes pz-gel {
-  from { transform: translateX(110%); }
-  to { transform: none; }
+  0% { transform: translateX(115%) translateY(0); animation-timing-function: ease-out; }
+  20% { transform: translateX(84%) translateY(-7%) rotate(-3deg); animation-timing-function: ease-in; }
+  38% { transform: translateX(56%) translateY(0) rotate(0); animation-timing-function: ease-out; }
+  56% { transform: translateX(30%) translateY(-6%) rotate(-3deg); animation-timing-function: ease-in; }
+  74% { transform: translateX(8%) translateY(0) rotate(0); animation-timing-function: ease-out; }
+  86% { transform: translateX(0) scale(1.06, 0.93); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+  100% { transform: none; }
 }
+/* gidiş: sevinçle bir zıplar, sonra sekerek çıkar */
 @keyframes pz-git {
-  to { transform: translateX(120%); opacity: 0; }
+  0% { transform: none; }
+  25% { transform: translateY(-9%) rotate(4deg); }
+  45% { transform: translateX(18%) translateY(0); }
+  70% { transform: translateX(60%) translateY(-6%) rotate(4deg); opacity: 1; }
+  100% { transform: translateX(125%) translateY(0); opacity: 0; }
 }
 @keyframes pz-sevin {
   0%, 100% { transform: translateY(0) scale(1); }
@@ -309,8 +322,13 @@
 
 /* İstek balonu (resimli) */
 .pz-kok .pz-istek-balon {
-  position: relative;
-  margin: 0 18% 4% 0;
+  /* müşterinin başının üstünde, biraz sola (Mino'ya doğru) */
+  position: absolute;
+  bottom: 90%;
+  left: 50%;
+  translate: -62% 0;
+  z-index: 3;
+  white-space: nowrap;
   padding: clamp(6px, 1.6vw, 12px) clamp(10px, 3vw, 18px);
   border-radius: 26px;
   background: #fff;
@@ -412,11 +430,12 @@
   align-items: center;
   justify-content: center;
   gap: clamp(10px, 3vw, 22px);
-  margin-top: calc(-1 * clamp(56px, 12vh, 110px));
+  /* sepet tezgâhın üstüne oturur: yalnız alt yarısı tezgâhın kenarına biner, karakterleri kapatmaz */
+  margin-top: calc(-0.5 * clamp(96px, 15vh, 150px));
 }
 .pz-kok .pz-sepet {
   position: relative;
-  width: min(62vw, 400px);
+  width: min(56vw, 380px);
   height: clamp(96px, 15vh, 150px);
   flex: 0 1 auto;
   border-radius: 18px 18px 44% 44% / 18px 18px 36% 36%;
@@ -489,6 +508,16 @@
 @keyframes pz-teslim {
   to { transform: translate(24vw, -20vh) scale(0.3); opacity: 0; }
 }
+/* sepete düşen ürün: küçük sekme (yalnız transform) */
+.pz-kok .pz-sepet-ic .pz-urun.pz-dustu {
+  animation: pz-dustu 0.42s linear;
+}
+@keyframes pz-dustu {
+  0% { transform: translateY(-22%); animation-timing-function: ease-in; }
+  45% { transform: translateY(0) scale(1.14, 0.84); animation-timing-function: ease-out; }
+  70% { transform: translateY(-9%) scale(0.96, 1.05); animation-timing-function: ease-in; }
+  100% { transform: none; }
+}
 .pz-kok .pz-urun.pz-hazir {
   opacity: 0.9;
   filter: saturate(0.85);
@@ -535,11 +564,12 @@
 
 .pz-kok .pz-urunler {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--pz-urun), max-content));
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: clamp(6px, 2vw, 14px);
-  margin-top: clamp(12px, 2.4vh, 22px);
+  max-width: 640px;
+  margin: clamp(12px, 2.4vh, 22px) auto 0;
   min-height: calc(var(--pz-urun) + 12px);
 }
 .pz-kok .pz-urunler[data-adet='3'] {
@@ -673,11 +703,10 @@
   justify-content: center;
   gap: 4%;
 }
+/* canlı Mino kendi dansını yapar (mino.ts) */
 .pz-kok .pz-senlik-mino {
-  width: min(44vw, 34vh, 280px);
-  aspect-ratio: 1;
-  animation: pz-dans 0.9s ease-in-out infinite;
-  transform-origin: 50% 100%;
+  width: min(40vw, 28vh, 240px);
+  aspect-ratio: 1360 / 1790;
 }
 .pz-kok .pz-senlik-hayvanlar {
   display: flex;
@@ -717,4 +746,14 @@
   .pz-kok .pz-senlik-hayvan {
     animation: none;
   }
+}
+
+/* "7 lira" balonu: yazı balona sığsın */
+.pz-kok .pz-istek-lira b {
+  font-size: clamp(1.3rem, 6vw, 2.2rem);
+  -webkit-text-stroke: 4px var(--kontur);
+  padding: 0 2px;
+}
+.pz-kok .pz-istek-lira {
+  padding: 8px 6px 12px;
 }

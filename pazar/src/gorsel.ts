@@ -1,8 +1,8 @@
-/** Pazar görselleri: mevcut setler (hayvanlar, meyveler, Mino) + tasarımcının pazar seti (gelene kadar CSS yer tutucu) */
+/** Pazar görselleri: mevcut setler (hayvanlar, meyveler) + tasarımcının pazar seti (gelene kadar CSS yer tutucu). Mino canlı çizim (src/mino). */
 import { h } from '../../src/ui/dom';
 
 const RESIMLER = import.meta.glob<string>(
-  ['../../assets/hayvanlar/*.webp', '../../assets/meyveler/*.webp', '../../assets/karakter/kedi-3.webp', '../../assets/pazar/*.webp'],
+  ['../../assets/hayvanlar/*.webp', '../../assets/meyveler/*.webp', '../../assets/pazar/*.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 
@@ -16,8 +16,6 @@ export function resim(yol: string, sinif = '', alt = ''): HTMLElement {
   if (url) return h(`img.pz-resim${s}`, { src: url, alt, draggable: 'false' });
   return h(`div.pz-resim.pz-yedek${s}`, { role: 'img', 'aria-label': alt }, alt.charAt(0));
 }
-
-export const MINO = 'karakter/kedi-3';
 
 /** Uçuşan küçük parıltılar (x, y: 0..1, kaba göre) */
 export function parilti(kap: HTMLElement, x: number, y: number, adet = 8) {

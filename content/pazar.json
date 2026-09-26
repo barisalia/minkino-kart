@@ -39,7 +39,7 @@
     "lira": "{sayi} lira"
   },
   "urunler": {
-    "say": ["elma", "muz", "cilek", "portakal", "armut", "havuc", "domates", "misir"],
+    "say": ["elma", "muz", "cilek", "havuc"],
     "meyve": ["elma", "muz", "cilek", "portakal", "armut", "uzum", "limon", "kiraz"],
     "sebze": ["havuc", "domates", "salatalik", "misir", "patlican", "brokoli", "biber"]
   },
