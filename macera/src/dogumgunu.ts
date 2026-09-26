@@ -1,0 +1,661 @@
+/**
+ * Bölüm 1: Ada'nın Sürpriz Doğum Günü.
+ * Mino ve arkadaşları Ada'ya sürpriz parti hazırlar; çocuk sesiyle yardım eder:
+ * balonları şişirir (üfleme) → saklanıp susar (sessizlik) → "Sürpriz!" diye bağırır (yüksek ses) →
+ * şarkı söyler (perde) → mumları üfler (üfleme gücü) → pastayı dil şaklatarak keser (tık) → alkışla dans (ritim).
+ * Her adım parmakla da oynanır; hiçbir adımda takılıp kalınmaz.
+ */
+import M from '../../content/macera.json';
+import { efekt, konus } from '../../src/audio/ses';
+import { durum } from '../../src/engine/ilerleme';
+import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { konfetiPatlat } from '../../src/ui/konfeti';
+import { Mino } from '../../src/mino/mino';
+import type { Ozellik } from '../../ses-testi/src/analiz';
+import { Alkis, sesVar, Ufleme } from '../../orman/src/gorev';
+import { kulak } from '../../orman/src/kulak';
+import { davul, nota } from '../../orman/src/sesler';
+import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
+import { resim } from './gorsel';
+import { Oyuncu } from './oyuncu';
+import { Sahne } from './sahne';
+import { anlikFark, melodi, notaDegerlendir, referansBul, tepeNota, type Nota, type NotaSonucu } from './sarki';
+
+const D = M.dogumgunu;
+const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, sure(ms)));
+const sec = <T>(a: T[]) => a[Math.floor(Math.random() * a.length)];
+
+export interface BolumArayuz {
+  /** alt yazı (Mino'nun söylediği) */
+  yazi(t: string): void;
+  /** görev ipucu (ekranın altında, kısa) */
+  ipucu(t: string | null): void;
+  /** büyük dokunma düğmesi (ör. "SÜRPRİZ!") — dokununca çözülür */
+  dugme(etiket: string): Promise<void>;
+  dugmeKaldir(): void;
+  /** ilerleme noktaları */
+  ilerleme(n: number, toplam: number): void;
+  kapandiMi(): boolean;
+}
+
+interface Oyuncular {
+  ada: Oyuncu;
+  sincap: Oyuncu;
+  tavsan: Oyuncu;
+  kopek: Oyuncu;
+  ayi: Oyuncu;
+}
+
+/** Konukların parti sırasındaki yerleri (x, alttan y) */
+const YER: Record<keyof Omit<Oyuncular, 'ada'>, [number, number]> = { sincap: [15, 30], tavsan: [34, 34], kopek: [66, 34], ayi: [85, 30] };
+const SAKLI: Record<keyof Omit<Oyuncular, 'ada'>, [number, number, number]> = { sincap: [16, 21, 2], tavsan: [31, 22, 2], kopek: [66, 11, 4], ayi: [80, 13, 4] };
+/** Balonların flamadaki yerleri */
+const BALON_YER: [number, number][] = [
+  [10, 68], [26, 64], [42, 62], [58, 62], [74, 64], [90, 68],
+];
+const BALON_TON = [0, 200, 60, 280, 130, 330];
+
+export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
+  const yas = durum.i.yas ?? 4;
+  const sahne = new Sahne('parti-sahne/oda');
+  kok.append(sahne.el);
+
+  // --------------------------------------------------------------- dekor
+  sahne.koy(resim('parti/flama', 'mc-flama'), { x: 50, y: 74, w: 106, z: 1 });
+  const kapi = sahne.koy(h('div.mc-kapi', {}, resim('parti/kapi', '', 'Kapı')), { x: 89, y: 24, w: 24, z: 1 });
+  sahne.koy(resim('parti/koltuk', '', 'Koltuk'), { x: 22, y: 17, w: 42, z: 3 });
+  sahne.koy(resim('parti/hediye', '', 'Hediyeler'), { x: 82, y: 9, w: 24, z: 5 });
+  sahne.koy(resim('parti/masa', '', 'Masa'), { x: 50, y: 2, w: 54, z: 6 });
+  const pasta = sahne.koy(h('div.mc-pasta', {}, resim('parti/pasta', 'mc-pasta-resim', 'Pasta')), { x: 50, y: 17, w: 32, z: 7 });
+  const tabaklar = sahne.koy(h('div.mc-tabaklar'), { x: 50, y: 0, w: 100, z: 9 });
+
+  const oy: Oyuncular = {
+    ada: new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 17, oran: 284 / 512, sapka: { x: 50, y: 12, w: 34, d: -4 } }),
+    sincap: new Oyuncu({ ad: 'sincap', resim: 'orman-karakter/sincap', boy: 24, sapka: { x: 40, y: 34, w: 22, d: -8 } }),
+    tavsan: new Oyuncu({ ad: 'tavsan', resim: 'hayvanlar/tavsan', boy: 24, sapka: { x: 60, y: 36, w: 18, d: 10 } }),
+    kopek: new Oyuncu({ ad: 'kopek', resim: 'hayvanlar/kopek', boy: 23, sapka: { x: 50, y: 20, w: 22 } }),
+    ayi: new Oyuncu({ ad: 'ayi', resim: 'hayvanlar/ayi', boy: 25, sapka: { x: 55, y: 14, w: 22, d: 8 } }),
+  };
+  const konuklar = [oy.sincap, oy.tavsan, oy.kopek, oy.ayi];
+  const konukAd = ['sincap', 'tavsan', 'kopek', 'ayi'] as const;
+  for (const k of konuklar) {
+    k.el.classList.add('gizli');
+    sahne.dunya.append(k.el);
+  }
+  oy.ada.el.classList.add('gizli');
+  sahne.dunya.append(oy.ada.el);
+
+  const mino = new Mino();
+  const minoKutu = sahne.koy(h('div.mc-mino', {}, mino.el), { x: 13, y: -2, w: 30, z: 10 });
+  resimSesiHazirla('zil');
+  resimSesiHazirla('patla');
+  resimSesiHazirla('duduk');
+  resimSesiHazirla('yasasin');
+  resimSesiHazirla('kikir');
+
+  const soyle = async (t: string) => {
+    if (ui.kapandiMi()) return;
+    ui.yazi(t);
+    await konus(t, { ton: 1.12 });
+  };
+  const adaSoyle = async (t: string) => {
+    ui.yazi(t);
+    await konus(t, { ton: 1.28 });
+  };
+  const efektCal = (ad: string, sus = 1200) => {
+    kulak.sustur(sus);
+    void resimSesi(ad);
+  };
+  const konfeti = (x = 50, y = 40, adet = 90) => {
+    const [px, py] = sahne.noktaEkran(x, y);
+    konfetiPatlat(kok, px, py, adet);
+  };
+
+  // rAF döngüsü (görevlerin zamanlaması için)
+  const tikler = new Set<(dt: number) => void>();
+  let onceki = performance.now();
+  let raf = requestAnimationFrame(function d(t) {
+    const dt = Math.min(0.1, (t - onceki) / 1000);
+    onceki = t;
+    tikler.forEach((f) => f(dt));
+    raf = requestAnimationFrame(d);
+  });
+  const temizle = () => {
+    cancelAnimationFrame(raf);
+    kulak.dinle(null);
+    mino.kapat();
+  };
+
+  const balonSayisi = { 3: 3, 4: 4, 5: 5, 6: 6 }[yas] ?? 4;
+  /** 5-6 yaş: balon çizgide durmalı, fazla şişen patlar */
+  const kontrollu = yas >= 5;
+
+  try {
+    // =============================================================== 0. Açılış
+    minoKutu.classList.add('giris');
+    await bekle(700);
+    mino.tepki('zipla');
+    await soyle(D.merhaba);
+    // konuklar tek tek gelir
+    for (const [i, k] of konuklar.entries()) {
+      const [x, y] = YER[konukAd[i]];
+      k.koy(i < 2 ? -20 : 120, y);
+      k.el.classList.remove('gizli');
+      k.katman = 4;
+      await k.git(x, y, 700);
+      void k.zipla();
+      if (konukAd[i] !== 'sincap') efektCal(konukAd[i], 900);
+      await bekle(250);
+    }
+    await soyle(D.surpriz_plan);
+    if (ui.kapandiMi()) return;
+
+    // =============================================================== 1. Balonlar
+    await soyle(D.balon_giris);
+    if (kontrollu) await soyle(D.balon_cizgi);
+    for (let n = 0; n < balonSayisi && !ui.kapandiMi(); n++) {
+      ui.ilerleme(n, balonSayisi);
+      await balonSisir(n);
+    }
+    ui.ilerleme(balonSayisi, balonSayisi);
+    ui.ipucu(null);
+    await soyle(D.balon_bitti);
+
+    // =============================================================== 2. Saklan, sus
+    mino.tepki('sasir');
+    await soyle(D.saklan);
+    for (const [i, k] of konuklar.entries()) {
+      const [x, y, z] = SAKLI[konukAd[i]];
+      k.katman = z;
+      k.poz('saklaniyor');
+      void k.git(x, y, 600);
+    }
+    minoKutu.classList.add('sakli');
+    await bekle(700);
+    await sahne.isik(false, 1000);
+    efektCal('zil', 1600);
+    await bekle(1300);
+    await soyle(D.sessiz);
+    await sessizBekle();
+
+    // =============================================================== 3. SÜRPRİZ!
+    kapi.classList.add('acik');
+    oy.ada.koy(89, 25);
+    oy.ada.katman = 1;
+    oy.ada.el.classList.remove('gizli');
+    oy.ada.el.classList.add('karanlikta');
+    await bekle(700);
+    await oy.ada.git(56, 33, 1400);
+    oy.ada.katman = 4;
+    await soyle(D.surpriz_simdi);
+    await surprizBekle();
+    // ışıklar yanar, herkes fırlar
+    await sahne.isik(true, 250);
+    oy.ada.el.classList.remove('karanlikta');
+    minoKutu.classList.remove('sakli');
+    efektCal('duduk', 900);
+    oy.ada.poz('saskin', 2600);
+    void oy.ada.zipla(34);
+    mino.tepki('zipla');
+    konfeti(50, 35, 140);
+    for (const [i, k] of konuklar.entries()) {
+      const [x, y] = YER[konukAd[i]];
+      k.katman = 4;
+      k.poz('normal');
+      k.sapkaTak();
+      void k.git(x, y, 450).then(() => k.zipla());
+    }
+    efektCal('yasasin', 2000);
+    await bekle(900);
+    oy.ada.sapkaTak();
+    await adaSoyle(M.ada.vay);
+    await soyle(D.iyi_ki);
+
+    // =============================================================== 4. Şarkı
+    await sarkiSoyle();
+
+    // =============================================================== 5. Mumlar
+    await mumlar();
+
+    // =============================================================== 6. Pastayı kes
+    await pastaKes();
+
+    // =============================================================== 7. Dans
+    await dans();
+
+    await sahne.kamera(50, 50, 1, 900);
+    oy.ada.poz('mutlu');
+    await adaSoyle(M.ada.tesekkur);
+    konfeti(50, 30, 160);
+    efektCal('yasasin', 2000);
+    await soyle(D.son);
+  } finally {
+    temizle();
+  }
+
+  // ================================================================= sahne yardımcıları
+
+  /** Balon: öne gelir, üfledikçe şişer, dolunca uçup flamaya asılır. 5-6 yaş: çizgiyi geçerse patlar. */
+  async function balonSisir(n: number) {
+    const hedef = 1;
+    const ton = BALON_TON[n % BALON_TON.length];
+    const govde = h('div.mc-balon-govde', { style: `--ton:${ton}deg` }, resim('orman-esya/balon', '', 'Balon'));
+    const balon = sahne.koy(h('div.mc-balon', {}, govde), { x: 50, y: 34, w: 16, z: 11 });
+    // 5-6 yaş: yanda ölçer; yeşil bölgede durmalı
+    const isaret = h('i.mc-olcer-isaret');
+    const olcer = kontrollu ? sahne.koy(h('div.mc-olcer', {}, h('i.mc-olcer-yesil'), isaret), { x: 70, y: 34, w: 5, z: 11 }) : null;
+    const u = new Ufleme(kulak.ayar, 0.5);
+    let dolu = 0;
+    let patladi = false;
+    ui.ipucu(kontrollu ? 'Üfle, yeşilde dur!' : 'Balona üfle');
+    const ALT = 0.78;
+    const UST = 1.2;
+    await new Promise<void>((coz) => {
+      const bitir = () => {
+        tikler.delete(tik);
+        coz();
+      };
+      const tik = (dt: number) => {
+        if (ui.kapandiMi()) return bitir();
+        u.tik(dt);
+        if (u.aktif) dolu += dt * (0.34 + u.guc * 0.4) * (yas <= 3 ? 1.25 : 1);
+        balon.style.setProperty('--s', String(0.25 + Math.min(dolu, 1.25) * 0.75));
+        isaret.style.setProperty('--p', String(Math.min(1, dolu / 1.25)));
+        govde.classList.toggle('sisiyor', u.aktif);
+        if (kontrollu && dolu > UST) {
+          patladi = true;
+          return bitir();
+        }
+        if (kontrollu ? dolu >= ALT && !u.aktif : dolu >= hedef) bitir();
+      };
+      tikler.add(tik);
+      kulak.dinle((o) => u.kare(o));
+      dokunma = { bas: () => u.bas(), birak: () => u.birak() };
+    });
+    kulak.dinle(null);
+    dokunma = null;
+    olcer?.remove();
+    if (ui.kapandiMi()) return;
+    if (patladi) {
+      balon.classList.add('patladi');
+      efektCal('patla', 800);
+      void konuklar[n % 4].balon(M.tepki.vay, 900);
+      await bekle(450);
+      balon.remove();
+      await soyle(D.balon_patladi);
+      return balonSisir(n);
+    }
+    // bağla ve as
+    const [x, y] = BALON_YER[n % BALON_YER.length];
+    efekt.secim();
+    balon.classList.add('asiliyor');
+    balon.style.setProperty('--s', '0.62');
+    balon.style.setProperty('--x', String(x));
+    balon.style.setProperty('--y', String(y));
+    balon.style.zIndex = '2';
+    const k = konuklar[n % 4];
+    k.poz('alkis', 900);
+    void k.zipla(18);
+    await bekle(900);
+    balon.classList.add('asili');
+    if (n < balonSayisi - 1) void soyle(D.balon_asildi[n % D.balon_asildi.length]);
+  }
+
+  /** Sessizlik: Ada kapıya yaklaşırken ses çıkmamalı. Ses olunca bir konuk kıkırdar, Ada durur. */
+  async function sessizBekle() {
+    const hedef = { 3: 3, 4: 4, 5: 5, 6: 6 }[yas] ?? 4;
+    let gecen = 0;
+    let gurultu = 0;
+    let uyari = 0;
+    let dokunuyor = false;
+    ui.ipucu('Şşş… sessiz ol');
+    const halka = h('div.mc-sessiz', {}, h('i'));
+    sahne.on.append(halka);
+    await new Promise<void>((coz) => {
+      const kare = (o: Ozellik) => {
+        if (dokunuyor) return;
+        if (o.db - kulak.ayar.taban + kulak.ayar.duyarlilik > 12) gurultu += kulak.ayar.kare;
+        else gurultu = Math.max(0, gurultu - kulak.ayar.kare * 2);
+        if (gurultu > 0.15) {
+          gurultu = 0;
+          gecen = Math.max(0, gecen - 1.2);
+          const k = sec(konuklar);
+          void k.kipir();
+          void k.balon('hihi', 900);
+          if (performance.now() - uyari > 5000) {
+            uyari = performance.now();
+            efektCal('kikir', 900);
+            void soyle(D.kim_var);
+          }
+        }
+      };
+      const mikVar = kulak.acik && !TEST_MODU;
+      const tik = (dt: number) => {
+        if (!mikVar && !dokunuyor) return;
+        if (dokunuyor || gurultu === 0) gecen += dt;
+        halka.style.setProperty('--p', String(Math.min(1, gecen / hedef)));
+        // ayak sesleri: Ada yaklaşıyor
+        if (Math.floor(gecen * 2) !== Math.floor((gecen - dt) * 2)) davul(false, 0.08 + (gecen / hedef) * 0.12);
+        if (gecen >= hedef) {
+          tikler.delete(tik);
+          coz();
+        }
+      };
+      tikler.add(tik);
+      kulak.dinle(kare);
+      dokunma = { bas: () => (dokunuyor = true), birak: () => (dokunuyor = false) };
+      if (!mikVar) ui.ipucu('Parmağını basılı tut, sessizce bekle');
+    });
+    kulak.dinle(null);
+    dokunma = null;
+    halka.remove();
+    ui.ipucu(null);
+  }
+
+  /** "SÜRPRİZ!": yüksek bir ses (ya da büyük düğme) */
+  async function surprizBekle() {
+    let yuksek = 0;
+    let deneme = 0;
+    const dugme = ui.dugme('SÜRPRİZ!');
+    await Promise.race([
+      dugme,
+      new Promise<void>((coz) => {
+        kulak.dinle((o) => {
+          const ust = o.db - kulak.ayar.taban + kulak.ayar.duyarlilik;
+          if (ust > 24) yuksek += kulak.ayar.kare;
+          else if (ust > 12 && yuksek === 0) {
+            // ses var ama kısık
+            deneme++;
+            if (deneme === 60) void soyle(D.surpriz_yine);
+          }
+          if (yuksek > 0.18) coz();
+        });
+      }),
+    ]);
+    kulak.dinle(null);
+    ui.dugmeKaldir();
+  }
+
+  /** Karaoke: önce Mino'nun müzik kutusu çalar (dinle), sonra çocuk söyler; konuklar sesine göre tepki verir. */
+  async function sarkiSoyle() {
+    await sahne.kamera(50, 58, 1.08, 900);
+    const satir = yas <= 3 ? 2 : 4;
+    const notalar = melodi(satir);
+    const VURUS = yas <= 4 ? 0.62 : 0.56;
+    const panel = h('div.mc-karaoke');
+    const heceEl = notalar.map((n) => h(`span.mc-hece${n.midi === tepeNota(notalar).midi && yas >= 6 ? '.tepe' : ''}`, { style: `--h:${(n.midi - 65) / 16}` }, n.hece));
+    const satirlar: HTMLElement[] = [];
+    notalar.forEach((n, i) => {
+      satirlar[n.satir] ??= h('div.mc-satir');
+      satirlar[n.satir].append(heceEl[i]);
+    });
+    const top = h('i.mc-top');
+    panel.append(...satirlar, top);
+    sahne.on.append(panel);
+
+    const hece = (i: number) => {
+      heceEl.forEach((e, k) => e.classList.toggle('simdi', k === i));
+      const r = heceEl[i].getBoundingClientRect();
+      const p = panel.getBoundingClientRect();
+      top.style.transform = `translate(${r.left - p.left + r.width / 2}px, ${r.top - p.top - 14}px)`;
+    };
+
+    // --- dinle: müzik kutusu
+    await soyle(D.sarki_giris);
+    konuklar.forEach((k) => k.sallan(true));
+    for (const [i, n] of notalar.entries()) {
+      if (ui.kapandiMi()) return;
+      hece(i);
+      nota(n.midi, n.vurus * VURUS * 0.95, 0.22);
+      await bekle(n.vurus * VURUS * 1000 + (notalar[i + 1] && notalar[i + 1].satir !== n.satir ? VURUS * 1000 : 0));
+    }
+    heceEl.forEach((e) => e.classList.remove('simdi'));
+    konuklar.forEach((k) => k.sallan(false));
+
+    // --- sen söyle
+    await soyle(D.sarki_sen);
+    for (const s of ['3', '2', '1']) {
+      ui.ipucu(s);
+      davul(true, 0.18);
+      await bekle(VURUS * 1000);
+    }
+    ui.ipucu('Söyle!');
+    const sonuclar: NotaSonucu[] = [];
+    let referans: number | null = null;
+    const refPerdeler: number[] = [];
+    let perdeler: number[] = [];
+    let sesliKare = 0;
+    let kareSay = 0;
+    let dokunusVar = false;
+    let simdiki: Nota | null = null;
+    let tepkiZamani = 0;
+    konuklar.forEach((k) => k.sallan(true));
+    kulak.dinle((o) => {
+      if (!simdiki) return;
+      kareSay++;
+      if (sesVar(o, kulak.ayar, 10)) sesliKare++;
+      if (o.perde !== null && sesVar(o, kulak.ayar, 10)) {
+        perdeler.push(o.perde);
+        if (simdiki.satir === 0 && simdiki.midi === 67) refPerdeler.push(o.perde);
+        // anlık tepki: çok ince / çok kalın
+        if (referans && yas >= 4 && performance.now() - tepkiZamani > 1400) {
+          const f = anlikFark(o.perde, referans, simdiki.midi);
+          if (Math.abs(f) > 4.5) {
+            tepkiZamani = performance.now();
+            const k = sec(konuklar);
+            k.poz('saskin', 1100);
+            void k.balon(f > 0 ? M.tepki.tiz : M.tepki.kalin, 1000);
+          }
+        }
+      }
+    });
+    dokunma = { bas: () => (dokunusVar = true), birak: () => undefined };
+    const tolerans = yas >= 6 ? 2.5 : 3.5;
+    for (const [i, n] of notalar.entries()) {
+      if (ui.kapandiMi()) break;
+      simdiki = n;
+      perdeler = [];
+      sesliKare = 0;
+      kareSay = 0;
+      dokunusVar = false;
+      hece(i);
+      // çok hafif vuruş (tempo için); kulak kısa süre susar
+      davul(false, 0.05);
+      await bekle(n.vurus * VURUS * 1000);
+      if (!referans) referans = referansBul(refPerdeler);
+      const oran = kareSay ? sesliKare / kareSay : 0;
+      const r = dokunusVar
+        ? 'dogru'
+        : notaDegerlendir({ perdeler, sesli: TEST_MODU ? 1 : oran, midi: n.midi, referans, tolerans, yalnizSes: yas <= 4 || i < 2 });
+      sonuclar.push(r);
+      heceEl[i].classList.add(r === 'dogru' || r === 'ses' ? 'iyi' : r === 'sessiz' ? 'bos' : 'kacti');
+      if (r === 'dogru' && n === tepeNota(notalar) && yas >= 6) {
+        const k = sec(konuklar);
+        k.poz('alkis', 1000);
+        void k.balon(M.tepki.vay, 1000);
+      }
+      if (notalar[i + 1] && notalar[i + 1].satir !== n.satir) {
+        simdiki = null;
+        await bekle(VURUS * 1000);
+      }
+    }
+    simdiki = null;
+    kulak.dinle(null);
+    dokunma = null;
+    ui.ipucu(null);
+    konuklar.forEach((k) => k.sallan(false));
+    const iyi = sonuclar.filter((r) => r === 'dogru' || r === 'ses').length;
+    // herkes alkışlar (ne kadar iyi söylediyse o kadar coşkulu)
+    konuklar.forEach((k, i) => setTimeout(() => {
+      k.poz('alkis', 1400);
+      void k.zipla(iyi / sonuclar.length > 0.6 ? 26 : 12);
+    }, i * 120));
+    efektCal('yasasin', 2000);
+    if (iyi / Math.max(1, sonuclar.length) > 0.6) konfeti(50, 30, 80);
+    panel.classList.add('bitti');
+    await soyle(D.sarki_bitti);
+    panel.remove();
+  }
+
+  /** Mumlar: yaş kadar mum; üfleme gücüne göre teker teker (güçlüyse ikişer) söner */
+  async function mumlar() {
+    const adet = Math.max(3, Math.min(6, yas));
+    const mumKutu = h('div.mc-mumlar');
+    const mumlar: { el: HTMLElement; alev: HTMLElement; sondu: boolean }[] = [];
+    for (let i = 0; i < adet; i++) {
+      const alev = h('div.mc-alev', {}, resim('orman-esya/alev'));
+      const el = h('div.mc-mum', { style: `--i:${i};--n:${adet}` }, alev, resim('parti/mum', 'mc-mum-resim'));
+      mumKutu.append(el);
+      mumlar.push({ el, alev, sondu: false });
+    }
+    pasta.append(mumKutu);
+    await sahne.kamera(50, 72, 1.7, 1100);
+    oy.ada.poz('dilek');
+    await soyle(D.mum_giris);
+    ui.ipucu('Mumlara üfle');
+    const u = new Ufleme(kulak.ayar, 0.7);
+    let biriken = 0;
+    await new Promise<void>((coz) => {
+      const tik = (dt: number) => {
+        u.tik(dt);
+        const acik = mumlar.filter((m) => !m.sondu);
+        for (const m of acik) m.alev.style.setProperty('--g', String(u.guc));
+        if (!u.aktif) {
+          biriken = Math.max(0, biriken - dt);
+          return;
+        }
+        biriken += dt * (0.5 + u.guc * 1.4);
+        if (biriken > 0.45 && acik.length) {
+          biriken = 0;
+          const kac = u.guc > 0.75 ? 2 : 1;
+          for (const m of acik.slice(0, kac)) {
+            m.sondu = true;
+            m.el.classList.add('sondu');
+          }
+          nota(84 - acik.length, 0.3, 0.12);
+          if (mumlar.every((m) => m.sondu)) {
+            tikler.delete(tik);
+            coz();
+          }
+        }
+      };
+      tikler.add(tik);
+      kulak.dinle((o) => u.kare(o));
+      dokunma = { bas: () => u.bas(), birak: () => u.birak() };
+    });
+    kulak.dinle(null);
+    dokunma = null;
+    ui.ipucu(null);
+    await bekle(600);
+    oy.ada.poz('mutlu');
+    void oy.ada.zipla(20);
+    efektCal('yasasin', 2000);
+    konfeti(50, 45, 110);
+    await soyle(D.mum_bitti);
+    mumKutu.classList.add('kalkti');
+    await bekle(500);
+    mumKutu.remove();
+  }
+
+  /** Pasta: her "tık"ta (dil şaklatma ya da alkış) bir dilim kesilip bir tabağa gider */
+  async function pastaKes() {
+    const adet = { 3: 3, 4: 4, 5: 5, 6: 6 }[yas] ?? 4;
+    const kimler = [oy.ada, ...konuklar, oy.ada].slice(0, adet);
+    const yerler = [50, 16, 34, 66, 85, 50];
+    tabaklar.replaceChildren();
+    const tabak = kimler.map((_, i) => {
+      const t = h('div.mc-tabak', { style: `--x:${yerler[i] + (i === 5 ? 12 : 0)}` }, h('i.mc-tabak-bos'));
+      tabaklar.append(t);
+      return t;
+    });
+    const bicak = sahne.koy(h('div.mc-bicak', {}, resim('parti/bicak', '', 'Bıçak')), { x: 60, y: 40, w: 12, z: 12 });
+    await sahne.kamera(50, 70, 1.4, 900);
+    await soyle(D.kes_giris);
+    ui.ipucu('Dilini şaklat: tık tık!');
+    const eski = kulak.ayar.duyarlilik;
+    kulak.ayar.duyarlilik = eski + 6; // dil şaklatması alkıştan kısıktır
+    const a = new Alkis(kulak.ayar);
+    let kesilen = 0;
+    let kesTik: ((dt: number) => void) | null = null;
+    await new Promise<void>((coz) => {
+      const kes = () => {
+        if (kesilen >= adet) return;
+        kesilen++;
+        bicak.classList.remove('kes');
+        void bicak.offsetWidth;
+        bicak.classList.add('kes');
+        efekt.cevir();
+        pasta.style.setProperty('--kalan', String(1 - kesilen / (adet + 1)));
+        const d = sahne.koy(h('div.mc-ucan-dilim', { style: `--hx:${yerler[kesilen - 1]}` }, resim('parti/dilim', '', 'Dilim')), { x: 50, y: 22, w: 12, z: 12 });
+        requestAnimationFrame(() => d.classList.add('uc'));
+        setTimeout(() => {
+          d.remove();
+          tabak[kesilen - 1].replaceChildren(resim('parti/dilim', '', 'Dilim'));
+          tabak[kesilen - 1].classList.add('dolu');
+          const kim = kimler[kesilen - 1];
+          void kim.zipla(14);
+          nota(72 + kesilen * 2, 0.35, 0.18);
+        }, sure(650));
+        if (kesilen === adet) setTimeout(coz, sure(1000));
+      };
+      a.onAlkis = kes;
+      kesTik = () => a.tik();
+      tikler.add(kesTik);
+      kulak.dinle((o) => a.kare(o));
+      dokunma = { bas: kes, birak: () => undefined };
+    });
+    kulak.dinle(null);
+    if (kesTik) tikler.delete(kesTik);
+    kulak.ayar.duyarlilik = eski;
+    dokunma = null;
+    ui.ipucu(null);
+    bicak.remove();
+    konuklar.forEach((k) => k.poz('alkis', 1200));
+    await soyle(D.kes_bitti);
+    await sahne.kamera(50, 50, 1, 900);
+  }
+
+  /** Dans: her alkış bir müzik vuruşu + herkes bir dans figürü; 12 alkışta final */
+  async function dans() {
+    await soyle(D.dans_giris);
+    ui.ipucu('Alkışla!');
+    const a = new Alkis(kulak.ayar);
+    const RENK = ['#ff7eb6', '#ffc72c', '#5dbe3f', '#3e9df2', '#9b5ce0', '#ff8a2b'];
+    const AKOR = [[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]];
+    const HEDEF = 12;
+    let n = 0;
+    let dansTik: ((dt: number) => void) | null = null;
+    await new Promise<void>((coz) => {
+      const vur = () => {
+        if (n >= HEDEF) return;
+        n++;
+        ui.ilerleme(n, HEDEF);
+        davul(n % 2 === 1, 0.35);
+        AKOR[Math.floor((n - 1) / 2) % AKOR.length].forEach((m, i) => setTimeout(() => nota(m + 12, 0.35, 0.08), i * 25));
+        sahne.diskoRenk(RENK[n % RENK.length]);
+        [oy.ada, ...konuklar].forEach((k, i) => {
+          k.poz(n % 3 === 0 ? 'dans' : 'alkis', 600);
+          setTimeout(() => void k.dansEt(), i * 40);
+        });
+        mino.tepki('dans', 0.8);
+        if (n === HEDEF) setTimeout(coz, sure(700));
+      };
+      a.onAlkis = vur;
+      dansTik = () => a.tik();
+      tikler.add(dansTik);
+      kulak.dinle((o) => a.kare(o));
+      dokunma = { bas: vur, birak: () => undefined };
+    });
+    kulak.dinle(null);
+    if (dansTik) tikler.delete(dansTik);
+    dokunma = null;
+    ui.ipucu(null);
+    sahne.diskoRenk(null);
+    konfeti(30, 30, 120);
+    konfeti(70, 30, 120);
+    efektCal('yasasin', 2200);
+  }
+}
+
+/** Sahneye dokunma (her adımın parmak karşılığı) — bölüm ekranı bağlar */
+export let dokunma: { bas: () => void; birak: () => void } | null = null;

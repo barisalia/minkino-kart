@@ -7,6 +7,7 @@ import minoJson from '../../content/mino.json';
 import sanatciJson from '../../content/sanatci.json';
 import canlanJson from '../../content/canlan.json';
 import ormanJson from '../../content/orman.json';
+import maceraJson from '../../content/macera.json';
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -160,6 +161,11 @@ export function tumCumleler(): string[] {
     if (k === 'aciklama') continue;
     if (k === 'bolgeler') for (const b of Object.values(v as Record<string, { giris: string }>)) ekle(b.giris);
     else topla(v).forEach(ekle);
+  }
+  // Sesli Maceralar (başlık, şarkı sözü ve tepki balonları okunmaz)
+  for (const [k, v] of Object.entries(maceraJson as Record<string, unknown>)) {
+    if (['aciklama', 'baslik', 'bolumler', 'sarki', 'tepki'].includes(k)) continue;
+    topla(v).forEach(ekle);
   }
   return [...set];
 }

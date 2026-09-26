@@ -1,0 +1,43 @@
+{
+  "aciklama": "Sesli Maceralar: hikâyeli, sesle oynanan bölümler. Cümleler Mino'nun sesiyle (seslendirme) okunur. 'ada' altındakiler Ada'nın sesi (aynı ses, ince ton). Kısa tutun.",
+  "baslik": "Sesli Maceralar",
+  "bolumler": {
+    "dogumgunu": "Ada'nın Doğum Günü"
+  },
+  "dogumgunu": {
+    "merhaba": "Merhaba! Bugün arkadaşımız Ada'nın doğum günü!",
+    "surpriz_plan": "Ada birazdan gelecek. Ona sürpriz bir parti hazırlayalım!",
+    "balon_giris": "Önce balonları şişirelim. Balona üfle!",
+    "balon_cizgi": "Yeşile gelince dur, fazla şişirme!",
+    "balon_patladi": "Pat! Çok şişti. Bir daha!",
+    "balon_asildi": ["Süper!", "Bir balon daha!", "Oda çok güzel oldu!"],
+    "balon_bitti": "Balonlar hazır!",
+    "saklan": "Şşş! Ada geliyor! Hemen saklanalım!",
+    "sessiz": "Hiç ses çıkarma. Ada hiçbir şey duymasın.",
+    "kim_var": "Eyvah! Ada bir ses duydu. Şşş!",
+    "surpriz_simdi": "Şimdi! Hep birlikte bağır: Sürpriz!",
+    "surpriz_yine": "Daha yüksek! Sürpriz!",
+    "iyi_ki": "İyi ki doğdun Ada!",
+    "sarki_giris": "Hadi Ada'ya şarkı söyleyelim! Önce bir dinle.",
+    "sarki_sen": "Şimdi sen söyle!",
+    "sarki_bitti": "Ne güzel söyledin!",
+    "mum_giris": "Ada dilek tutuyor. Şimdi mumları üfle!",
+    "mum_bitti": "Hepsi söndü! Dileği gerçek olsun!",
+    "kes_giris": "Pastayı keselim! Dilini şaklat: tık tık! Her tıkta bir dilim.",
+    "kes_bitti": "Herkese bir dilim pasta!",
+    "dans_giris": "Şimdi parti zamanı! Alkışla, herkes dans etsin!",
+    "son": "Harika bir parti oldu! Ada çok mutlu. Teşekkürler!"
+  },
+  "ada": {
+    "vay": "Vay canına! Sürpriz mi?",
+    "tesekkur": "Çok teşekkür ederim!"
+  },
+  "sarki": {
+    "satirlar": ["Mutlu yıllar sana", "Mutlu yıllar sana", "İyi ki doğdun Ada", "Mutlu yıllar sana"]
+  },
+  "tepki": {
+    "tiz": "Aaa?",
+    "kalin": "Ooo?",
+    "vay": "Vay!"
+  }
+}

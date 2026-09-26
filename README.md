@@ -7,7 +7,8 @@
 - Minik Sanatçı: https://barisalia.github.io/minkino-kart/sanatci/
 - Çiz Canlansın: https://barisalia.github.io/minkino-kart/canlan/
 - Mikrofon testi (Uyuyan Orman ön denemesi): https://barisalia.github.io/minkino-kart/ses-testi/
-- Uyuyan Orman (sesle, nefesle, alkışla oynanan orman): https://minkino-site.barisalidogan.workers.dev/orman/
+- Sesli Maceralar (hikâyeli ses oyunu; bölüm 1: Ada'nın Doğum Günü): https://minkino-site.barisalidogan.workers.dev/macera/
+- Uyuyan Orman (ilk ses oyunu denemesi): https://minkino-site.barisalidogan.workers.dev/orman/
 
 Ekip ve ajanlar için rehber: [minkinogames1.md](minkinogames1.md)
 
