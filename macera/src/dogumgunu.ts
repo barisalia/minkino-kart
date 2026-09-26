@@ -74,7 +74,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
   sahne.koy(resim('parti/masa', '', 'Masa'), { x: 50, y: 2, w: 54, z: 6 });
   const pasta = sahne.koy(h('div.mc-pasta', {}, resim('parti/pasta', 'mc-pasta-resim', 'Pasta')), { x: 50, y: 17, w: 32, z: 7 });
 
-  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 17, oran: 284 / 512, sapka: { x: 50, y: 12, w: 34, d: -4 } });
+  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
   const konuklar = KONUKLAR.map((ad) => new Oyuncu({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }));
   const oy = { ada };
   const konukAd = KONUKLAR;
