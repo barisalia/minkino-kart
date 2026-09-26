@@ -45,6 +45,7 @@
     return tekParca(doc.selection[0]);
   }
   var siluet = p(102);
+  var KOL_KONTUR = 13, GOVDE_KONTUR = 14;
   var log = [];
   function icinde(rb, sb) { return rb && rb[0] >= sb[0] - 1 && rb[1] <= sb[1] + 1 && rb[2] <= sb[2] + 1 && rb[3] >= sb[3] - 1; }
   function sinir(it) { var b = it.geometricBounds; return [b[0], b[1], b[2], b[3]]; }
@@ -149,10 +150,20 @@
   for (var g2 in SURUCU) {
     altliklar[g2] = [];
     for (var k = 0; k < SURUCU[g2].length; k++) {
-      // Kollar: arkadaki gövdenin rengi 6 px payla çıkarılır (duruşta o payı gövdenin kendi konturu boyar;
-      // kol kalkınca gövde konturundan kopan kıymıklar kolla gelmez)
-      var pay = (g2 === 'kol-sol' || g2 === 'kol-sag') ? 6 : 0;
-      var al = altlik(p(SURUCU[g2][k]), D, oge(ARKA[g2]), g2 + '/p' + SURUCU[g2][k], pay);
+      var al;
+      if (g2 === 'kol-sol' || g2 === 'kol-sag') {
+        // Kollar: silüetten kesilmez; kol ve patinin çevresi boyunca eşit kalınlıkta kendi konturu.
+        // Yalnız arkadaki gövdenin rengi çıkarılır: duruşta gövdeye değen çizgi kaynaktaki kadar kalır,
+        // kol kalkınca da her kenarda kontur olur (kıymık yok).
+        // Kaynakta kolun dış çizgisi 12-14 px, kol-gövde arası 9-12 px (ölçüldü): her kenarda eşit 13 px,
+        // hiçbir şey çıkarılmaz (omuzda çentik/basamak olmasın). Duruşta kol-gövde çizgisi en çok 3 px kalınlaşır.
+        al = ofset(p(SURUCU[g2][k]), KOL_KONTUR);
+        if (al) { boya(al, KONTUR); al.name = 'kontur'; log.push(g2 + '/p' + SURUCU[g2][k] + ':kol'); }
+      } else {
+        // Gövde konturu kaynakta 11-13 px: 14 px ile genişletilir (16 px patinin konturundan kıymık kapıyordu)
+        var dd = (g2 === 'govde') ? GOVDE_KONTUR : D;
+        al = altlik(p(SURUCU[g2][k]), dd, oge(ARKA[g2]), g2 + '/p' + SURUCU[g2][k], 0);
+      }
       if (al) altliklar[g2].push(al);
     }
   }

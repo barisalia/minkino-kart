@@ -1,65 +1,81 @@
 // Mino'nun vektör çiziminden canlandırılabilir SVG üretir → src/mino/mino-svg.ts
-// Her path, sırası korunarak bir sınıf alır (k: kafa, g: gövde, q: kuyruk) ve CSS değişkenleriyle hareket eder.
+// Kaynak: tasarımcının katmanlı çizimi ekip/mino/mino-final.svg (katmanlar <g id="…">).
+// Her katman bir sınıf alır ve CSS değişkenleriyle hareket eder:
+//   q: kuyruk · g: gövde + fular · kl / kr: sol / sağ kol · k: kafa, gözler ve kodla çizilen ağız
+// Eski çizim (karakter-kaynak/kedi-3.svg) path sınıflandırmasıyla kurulmuştu (sinifla.mjs, parcalar.json); artık gerekmez.
+// Durağan resmi de üretir → assets/karakter/mino.webp
+// Çalıştırma: node scripts/mino/rig.mjs
 import fs from 'node:fs';
-import { grup, parcalar } from './sinifla.mjs';
+import sharp from 'sharp';
 
-const kaynak = fs.readFileSync('karakter-kaynak/kedi-3.svg', 'utf8').replace(/<metadata>[\s\S]*?<\/metadata>/, '');
-const defs = kaynak.match(/<defs>[\s\S]*?<\/defs>/)[0];
-const yollar = [...kaynak.matchAll(/<path\b([^>]*?)\/?>/g)].map((m) => m[1].replace(/\/\s*$/, ''));
-const d = (i) => yollar[i].match(/\sd="([^"]+)"/)[1];
+const KAYNAK = 'ekip/mino/mino-final.svg';
+const kaynak = fs.readFileSync(KAYNAK, 'utf8');
 
-// Ağız: 62 (iç), 63 (dil) gizlenir; 61 (burun+ağız çizgisi) sadece burun kısmı kalacak şekilde kırpılır.
-const AGIZ_GIZLE = new Set([62, 63]);
-const AGIZ_CIZGI = 61;
-const GOZ_SOL = 46; // sol gözün dış çizgisi
-const GOZ_SAG = 3; // sağ gözün dış çizgisi
-
-// Dış kontur (path 1) bölgelere kırpılır
-const BOLGE = {
-  kafa: 'M0 0H1075V850H1000V1150H0Z',
-  kuyruk: 'M1000 850H1331V1165H1000Z',
-  govde: 'M0 1150H1000V1165H1331V2048H0Z',
-};
-
-let govde = [];
-const cikti = [];
-yollar.forEach((a, i) => {
-  const g = grup(parcalar[i]);
-  if (g === 'sil') return;
-  if (g === 'kontur') {
-    cikti.push(`<path class="g" clip-path="url(#m-govde)"${a}/>`);
-    cikti.push(`<path class="q" clip-path="url(#m-kuyruk)"${a}/>`);
-    cikti.push(`<path class="k" clip-path="url(#m-kafa)"${a}/>`);
-    return;
+/** Bir katmanın içi (en dıştaki <g id> etiketi hariç) */
+function katman(id) {
+  const bas = kaynak.indexOf(`<g id="${id}"`);
+  if (bas < 0) throw new Error(`Katman yok: ${id}`);
+  const ic = kaynak.indexOf('>', bas) + 1;
+  // iç içe <g>'leri sayarak kapanışı bul
+  let derinlik = 1;
+  const re = /<g\b[^>]*?(\/?)>|<\/g>/g;
+  re.lastIndex = ic;
+  for (let m; (m = re.exec(kaynak)); ) {
+    if (m[0] === '</g>') derinlik--;
+    else if (!m[1]) derinlik++;
+    if (derinlik === 0) return kaynak.slice(ic, m.index).trim();
   }
-  if (AGIZ_GIZLE.has(i)) return;
-  if (i === AGIZ_CIZGI) {
-    cikti.push(`<path class="k" clip-path="url(#m-burun)"${a}/>`);
-    return;
-  }
-  const s = g === 'kafa' ? 'k' : g === 'kuyruk' ? 'q' : 'g';
-  cikti.push(`<path class="${s}"${a}/>`);
-});
+  throw new Error(`Kapanmayan katman: ${id}`);
+}
 
-const svg = `<svg class="mino-svg" viewBox="140 400 1180 1310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-${defs.replace('</defs>', `
-<clipPath id="m-kafa"><path d="${BOLGE.kafa}"/></clipPath>
-<clipPath id="m-kuyruk"><path d="${BOLGE.kuyruk}"/></clipPath>
-<clipPath id="m-govde"><path d="${BOLGE.govde}"/></clipPath>
-<clipPath id="m-burun"><rect x="400" y="700" width="400" height="178"/></clipPath>
-<clipPath id="m-goz-sol"><path d="${d(GOZ_SOL)}"/></clipPath>
-<clipPath id="m-goz-sag"><path d="${d(GOZ_SAG)}"/></clipPath>
-</defs>`)}
-${cikti.join('\n')}
-<g class="k" id="m-ust">
-  <g class="m-yanak"><ellipse cx="300" cy="930" rx="60" ry="30"/><ellipse cx="870" cy="930" rx="60" ry="30"/></g>
-  <g clip-path="url(#m-goz-sol)"><g class="m-kapak" style="--oy:638px"><rect x="260" y="600" width="250" height="300"/><path class="m-kirpik" d="M270 900H510"/></g></g>
-  <g clip-path="url(#m-goz-sag)"><g class="m-kapak" style="--oy:659px"><rect x="640" y="600" width="270" height="300"/><path class="m-kirpik" d="M640 900H910"/></g></g>
-  <g class="m-kapali-goz"><path d="M300 785Q385 835 470 785"/><path d="M690 775Q775 825 860 775"/></g>
-  <g class="m-mutlu-goz"><path d="M300 770Q385 690 470 770"/><path d="M690 760Q775 680 860 760"/></g>
-  <g class="m-agiz"><path class="m-agiz-ic"/><path class="m-dil"/><path class="m-agiz-cizgi"/></g>
+// Degrade kimlikleri sayfadaki başka SVG'lerle çakışmasın
+const kimlikler = [...kaynak.matchAll(/<linearGradient id="([^"]+)"/g)].map((m) => m[1]);
+const onekle = (t) => kimlikler.reduce((s, id) => s.replaceAll(`id="${id}"`, `id="m-${id}"`).replaceAll(`url(#${id})`, `url(#m-${id})`), t);
+const sade = (t) => onekle(t).replace(/\n\s+/g, '\n');
+
+const defs = sade(kaynak.match(/<defs>[\s\S]*?<\/defs>/)[0]);
+const g = (sinif, ...idler) => `<g class="${sinif}">\n${idler.map((id) => sade(katman(id))).join('\n')}\n</g>`;
+
+// Gözler ayrı grupta: göz kırpınca ve sevinince gizlenir, yerine kapalı / mutlu göz çizgisi gelir.
+// Tasarımcının ağız katmanı (agiz) kullanılmaz: ağız konuşmaya göre kodla çizilir (mino.ts → agizYollari).
+// Ek katmanlardaki (goz-kapali) çizgiler karakterin koyu kahve konturuna çekilir.
+// Varsayılan ağız (mino.ts → agizYollari(0.72, 1) çıktısı): SVG canlandırılmadan kullanıldığında da (avatar) ağız görünsün
+const AGIZ_IC = 'M951 992Q987 996 1024 966Q1061 996 1097 992Q1105 1067 1024 1080Q943 1067 951 992Z';
+const AGIZ_DIL = 'M980 1072Q1024 1043 1068 1072Q1024 1080 980 1072Z';
+const AGIZ_KENAR = 'M951 992Q933 974 915 952M1097 992Q1115 974 1133 952M1024 956V966';
+const kapaliGoz =sade(katman('goz-kapali')).replaceAll('#030102', '#3a1210');
+
+const svg = `<svg class="mino-svg" viewBox="344 140 1360 1790" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+${defs}
+${g('q', 'kuyruk')}
+${g('g', 'govde')}
+${g('kl', 'kol-sol')}
+${g('kr', 'kol-sag')}
+${g('g', 'fular')}
+<g class="k">
+${sade(katman('kafa'))}
+<g class="m-yanak"><ellipse cx="690" cy="995" rx="66" ry="34"/><ellipse cx="1358" cy="995" rx="66" ry="34"/></g>
+<g class="m-goz">
+${sade(katman('goz-sol'))}
+${sade(katman('goz-sag'))}
+</g>
+<g class="m-kapali-goz">
+${kapaliGoz}
+</g>
+<g class="m-mutlu-goz"><path d="M650 900Q768 796 886 900"/><path d="M1162 902Q1282 798 1402 902"/></g>
+<g class="m-agiz"><path class="m-agiz-ic" d="${AGIZ_IC}"/><path class="m-dil" d="${AGIZ_DIL}"/><path class="m-agiz-cizgi" d="${AGIZ_IC}${AGIZ_KENAR}"/></g>
 </g>
 </svg>`;
 
-fs.writeFileSync('src/mino/mino-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs — elle düzenlemeyin.\nexport const MINO_SVG = ${JSON.stringify(svg)};\n`);
-console.log('mino-svg.ts', Math.round(svg.length / 1024), 'KB,', cikti.length, 'path');
+fs.writeFileSync('src/mino/mino-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.\nexport const MINO_SVG = ${JSON.stringify(svg)};\n`);
+console.log('mino-svg.ts', Math.round(svg.length / 1024), 'KB');
+
+// Durağan resim (açılıştaki "Mino ile oyna" düğmesi): diğer karakter görselleriyle aynı biçim, 512 kare şeffaf WebP
+const resim = await sharp(Buffer.from(kaynak), { density: 72 }).trim({ threshold: 8 }).toBuffer();
+await sharp(resim)
+  .resize(464, 464, { fit: 'inside' })
+  .extend({ top: 24, bottom: 24, left: 24, right: 24, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .resize(512, 512, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .webp({ quality: 82, alphaQuality: 90, effort: 6 })
+  .toFile('assets/karakter/mino.webp');
+console.log('assets/karakter/mino.webp');
