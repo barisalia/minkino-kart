@@ -19,6 +19,9 @@ const SVG: Record<string, string> = {
     <path d="M74 20H176Q198 31 176 42H74Z" fill="#dfe6ee" stroke="${K}" stroke-width="6" stroke-linejoin="round"/><path d="M84 26H168" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`,
   kasa: `<svg viewBox="0 0 200 140"><rect x="6" y="10" width="188" height="124" rx="12" fill="#d8914c" stroke="${K}" stroke-width="7"/>
     <path d="M6 52H194M6 94H194" stroke="${K}" stroke-width="6"/><path d="M20 22H180M20 64H180M20 106H180" stroke="#f3b977" stroke-width="5" stroke-linecap="round" opacity=".8"/></svg>`,
+  'karpuz-dilim': `<svg viewBox="0 0 120 110"><path d="M8 20Q60 124 112 20Z" fill="#3f9a3a" stroke="${K}" stroke-width="7" stroke-linejoin="round"/><path d="M18 22Q60 106 102 22Z" fill="#f7f0c8"/><path d="M24 22Q60 96 96 22Z" fill="#ee3b43"/><path d="M8 20H112" stroke="${K}" stroke-width="7" stroke-linecap="round"/>
+    ${[[46, 36], [74, 36], [60, 56], [52, 30], [68, 30]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="3.5" ry="5.5" fill="#3a1f14"/>`).join('')}<path d="M30 26Q44 30 58 28" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5" fill="none"/></svg>`,
+  cekirdek: `<svg viewBox="0 0 20 28"><path d="M10 2Q18 12 16 20Q13 27 10 27Q7 27 4 20Q2 12 10 2Z" fill="#3a1f14" stroke="${K}" stroke-width="2"/><ellipse cx="8" cy="12" rx="2" ry="4" fill="#fff" opacity=".4"/></svg>`,
   tabak: `<svg viewBox="0 0 200 60"><ellipse cx="100" cy="30" rx="94" ry="24" fill="#fff" stroke="${K}" stroke-width="6"/><ellipse cx="100" cy="28" rx="62" ry="13" fill="#eef3f7"/></svg>`,
 };
 
@@ -30,4 +33,4 @@ export function esyaCiz(tip: string, film: string): HTMLElement {
 }
 
 /** Eşyanın en/boy oranı (yer tutucular için) */
-export const ESYA_ORAN: Record<string, number> = { karpuz: 200 / 150, 'karpuz-yarim': 200 / 120, bicak: 200 / 60, kasa: 200 / 140, tabak: 200 / 60 };
+export const ESYA_ORAN: Record<string, number> = { karpuz: 200 / 150, 'karpuz-yarim': 200 / 120, bicak: 200 / 60, kasa: 200 / 140, tabak: 200 / 60, 'karpuz-dilim': 120 / 110, cekirdek: 20 / 28 };

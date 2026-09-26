@@ -246,3 +246,84 @@
 .fl-kok .fl-alt-kim {
   margin-right: 8px;
 }
+
+/* ---------------------------------------------------------------- 16:9 kadraj
+   Film her zaman 16:9 oynar: yatay telefonda ekranı doldurur; dikeyde ortada durur (üst/alt yumuşak dolgu)
+   ve altında yazısız "telefonu çevir" simgesi görünür. Kamera kadrajı bu 16:9 kutuya göre hesaplanır. */
+.fl-kok .fl-ekran {
+  background:
+    radial-gradient(120% 60% at 50% 50%, #3a2f52 0%, #1e1a2e 70%);
+}
+.fl-kok .fl-sahne-kap {
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  height: auto;
+  aspect-ratio: 16 / 9;
+  translate: -50% -50%;
+  border-radius: 0;
+  overflow: hidden;
+}
+.fl-kok .fl-sahne {
+  container-type: size;
+}
+/* alt yazı ve parıltılar kadraja göre ölçeklenir */
+.fl-kok .fl-altyazi {
+  bottom: 4cqh;
+  max-width: 88cqw;
+  padding: 1.2cqh 2.4cqw;
+  border-radius: 2.4cqh;
+  border-width: max(2px, 0.5cqh);
+  font-size: max(13px, 3.3cqw);
+}
+@media (orientation: portrait) {
+  .fl-kok .fl-sahne-kap {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12), 0 18px 40px rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
+  }
+}
+/* telefonu çevir simgesi: yalnız dikeyde, kadrajın altında */
+.fl-kok .fl-cevir {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: calc(50% + min(100vw, calc(100dvh * 16 / 9)) * 9 / 32 + 28px);
+  width: 64px;
+  translate: -50% 0;
+  z-index: 2;
+  opacity: 0.85;
+  pointer-events: none;
+}
+@media (orientation: portrait) {
+  .fl-kok .fl-cevir {
+    display: block;
+  }
+}
+.fl-kok .fl-cevir svg {
+  display: block;
+  width: 100%;
+}
+.fl-kok .fl-cevir-tel {
+  transform-origin: 32px 30px;
+  animation: fl-cevir 2.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+}
+.fl-kok .fl-cevir-ok {
+  animation: fl-cevir-ok 2.4s ease-in-out infinite;
+}
+@keyframes fl-cevir {
+  0%, 20% { transform: rotate(0); }
+  50%, 80% { transform: rotate(-90deg); }
+  100% { transform: rotate(0); }
+}
+@keyframes fl-cevir-ok {
+  0%, 15% { opacity: 0; }
+  30%, 50% { opacity: 1; }
+  60%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fl-kok .fl-cevir-tel,
+  .fl-kok .fl-cevir-ok {
+    animation: none;
+  }
+}

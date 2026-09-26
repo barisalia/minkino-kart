@@ -21,7 +21,7 @@ const KOL_EN_COK = 24;
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
 
-export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz';
+export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz' | 'saril' | 'kolac';
 
 interface Durum {
   tepki: Tepki | null;
@@ -96,7 +96,7 @@ export class Mino {
 
   /** Kısa bir tepki animasyonu oynat. */
   tepki(t: Tepki, sure?: number) {
-    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3 };
+    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3, saril: 1.2, kolac: 1.4 };
     this.d.tepki = t;
     this.d.tepkiBas = this.zaman();
     this.d.tepkiSure = sure ?? varsayilan[t];
@@ -320,6 +320,28 @@ export class Mino {
             kafaY += cos(e * Math.PI * 5) * 6 * zarf;
             mutlu = 1;
             agizHedef = 0.6;
+            break;
+          }
+          case 'saril': {
+            // (sarılma çizimi gelene kadar) sağdaki bir şeye yaslanır, kolları iki yana açık, mutlu
+            const tut = Math.min(1, e / 0.2, (1 - e) / 0.2);
+            govdeAci = 8 * tut;
+            kafaAci += 7 * tut;
+            kolSol += 22 * tut;
+            kolSag += 22 * tut;
+            sy -= 0.03 * tut;
+            mutlu = tut > 0.4 ? 1 : 0;
+            agizHedef = 0.2;
+            break;
+          }
+          case 'kolac': {
+            // "Gelin!": kollarını kocaman açar, hafifçe zıplar
+            const tut = Math.min(1, e / 0.15, (1 - e) / 0.2);
+            kolSol += 24 * tut;
+            kolSag += 24 * tut;
+            ziplaY = -Math.max(0, sin(Math.min(1, e / 0.4) * Math.PI)) * 60;
+            mutlu = tut > 0.5 ? 1 : 0;
+            agizHedef = 0.9;
             break;
           }
           case 'kararsiz': {

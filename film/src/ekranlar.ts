@@ -9,6 +9,9 @@ import { Film, type FilmDosya } from './motor';
 const FILMLER = import.meta.glob<FilmDosya>('../../content/film/*.json', { eager: true, import: 'default' });
 export const filmBul = (ad: string) => FILMLER[`../../content/film/${ad}.json`];
 
+/** Yazısız "telefonu yan çevir" simgesi: telefon dikeyden yataya döner (CSS animasyonu) */
+const CEVIR = '<svg viewBox="0 0 64 64" aria-hidden="true"><g class="fl-cevir-tel"><rect x="20" y="8" width="24" height="44" rx="6" fill="#fff" stroke="#5a3617" stroke-width="4"/><rect x="25" y="14" width="14" height="28" rx="2" fill="#ffd28a"/><circle cx="32" cy="46" r="2.5" fill="#5a3617"/></g><path class="fl-cevir-ok" d="M50 16a22 22 0 0 1 4 18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path class="fl-cevir-ok" d="M50 34l4 1 1-5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 const DURAKLAT = '<svg viewBox="0 0 48 48"><rect x="12" y="10" width="8" height="28" rx="3" fill="currentColor"/><rect x="28" y="10" width="8" height="28" rx="3" fill="currentColor"/></svg>';
 
 export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
@@ -31,7 +34,8 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
   const cikis = app.secenekler.cikis;
   const ust = h('div.ust-cubuk.fl-ust', {}, cikis ? yuvarlakDugme(IKON.geri, 'Geri', () => cikis(), 'kucuk') : h('div'), h('div.ust-grup', {}, duraklatDugme, sesDugmesi()));
   const sahneKap = h('div.fl-sahne-kap');
-  const el = h('div.fl-ekran', {}, sahneKap, kapak, ust);
+  const cevir = h('div.fl-cevir', { 'aria-hidden': 'true', html: CEVIR });
+  const el = h('div.fl-ekran', {}, sahneKap, cevir, kapak, ust);
 
   const ogutKarti = (metin: string) => {
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.tekrar), 'Tekrar izle');

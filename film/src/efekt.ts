@@ -107,6 +107,26 @@ export const FILM_EFEKT: Record<string, () => void> = {
   vuvu() {
     for (let i = 0; i < 5; i++) hisirti(i * 0.14, 0.12, 500, 1400, 0.1, 1.2);
   },
+  /** tavşan: hop hop */
+  hop() {
+    [0, 0.35, 0.7].forEach((b) => ton(420, b, 0.16, 'sine', 0.18, 900));
+  },
+  /** ördek: vak vak */
+  vak() {
+    [0, 0.28].forEach((b) => {
+      ton(520, b, 0.14, 'sawtooth', 0.08, 360);
+      hisirti(b, 0.12, 900, 700, 0.1, 4);
+    });
+  },
+  /** kıtır kıtır ısırık */
+  kitir() {
+    for (let i = 0; i < 4; i++) hisirti(i * 0.09, 0.07, 3000, 1800, 0.22, 2.5);
+  },
+  /** sıcak kapanış: yükselen arpej */
+  final() {
+    [60, 64, 67, 72, 76, 79, 84].forEach((n, i) => ton(440 * Math.pow(2, (n - 69) / 12), i * 0.11, 0.9, 'sine', 0.09));
+    ton(440 * Math.pow(2, (48 - 69) / 12), 0, 1.8, 'triangle', 0.1);
+  },
   /** parıltı: çan */
   parilti() {
     [84, 88, 91].forEach((n, i) => ton(440 * Math.pow(2, (n - 69) / 12), i * 0.07, 0.4, 'sine', 0.1));

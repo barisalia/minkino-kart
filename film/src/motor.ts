@@ -49,6 +49,8 @@ export interface Sahne {
   oyuncular?: Record<string, OyuncuTanim>;
   esyalar?: Record<string, EsyaTanim>;
   olaylar: Olay[];
+  /** kadrajda her zaman tam görünecek oyuncu / eşyalar (kamera olayı "tut" ile değiştirir) */
+  tut?: string[];
 }
 export interface FilmDosya {
   baslik: string;
@@ -89,7 +91,7 @@ class Nesne {
   saydam: number;
   /** yürürken film tarafı sekme (Mino gibi yürüyüş hareketi olmayanlar için) */
   sekme = 0;
-  constructor(readonly k: Konum, cocuk: HTMLElement, oran: number) {
+  constructor(readonly k: Konum, cocuk: HTMLElement, readonly oran: number) {
     this.x = k.x;
     this.y = k.y;
     this.don = k.don ?? 0;
@@ -136,6 +138,10 @@ export class Film {
   private nesneler = new Map<string, Nesne>();
   private oyuncular = new Map<string, Oyuncu>();
   private kam = { x: 50, y: 50, z: 1 };
+  /** güvenli alan: kadrajda tutulacaklar ve kameranın buna göre yumuşak düzeltmesi */
+  private tut: string[] = [];
+  private konusan: string | null = null;
+  private duzelt = { x: 0, y: 0 };
   private altZaman = 0;
   private bitti = false;
   private readonly hiz: number;
@@ -260,6 +266,10 @@ export class Film {
       this.katmanlar[e.katman ?? 'orta'].append(n.el);
     }
     this.kam = { x: s.kamera[0], y: s.kamera[1], z: s.kamera[2] };
+    this.tut = s.tut ?? [];
+    this.konusan = null;
+    this.duzelt = { x: 0, y: 0 };
+    this.ilkKare = true;
     this.isikEl.style.opacity = String(s.isik ?? 0);
     this.el.dataset.sahne = s.ad;
   }
@@ -278,16 +288,54 @@ export class Film {
   }
 
   // ---------------------------------------------------------------- kamera
+  private ilkKare = true;
+
+  /**
+   * Güvenli alan: konuşan karakter ve "tut" listesindekiler kadrajdan taşmasın. Kamera hedefi korunur, yalnız
+   * gerektiği kadar (yumuşakça) kaydırılır. Sığmıyorsa bu nesnelerin ortasına bakılır.
+   */
+  private guvenliAlan(W: number, H: number, S: number) {
+    const idler = [...new Set([...this.tut, ...(this.konusan ? [this.konusan] : [])])];
+    let l = Infinity, r = -Infinity, ust = Infinity, alt = -Infinity;
+    for (const id of idler) {
+      const n = this.nesneler.get(id);
+      if (!n || n.saydam < 0.5) continue;
+      const w = n.k.w * n.olcek;
+      const hh = w / n.oran;
+      l = Math.min(l, n.x - w / 2);
+      r = Math.max(r, n.x + w / 2);
+      ust = Math.min(ust, 100 - (n.y + hh));
+      alt = Math.max(alt, 100 - n.y);
+    }
+    let hx = 0, hy = 0;
+    if (l < Infinity) {
+      const vw = (100 * W) / (S * this.kam.z);
+      const vh = (100 * H) / (S * this.kam.z);
+      const m = 3;
+      const x = this.kam.x;
+      const y = this.kam.y;
+      const kx = r - l + 2 * m > vw ? (l + r) / 2 : Math.min(l - m + vw / 2, Math.max(r + m - vw / 2, x));
+      const ky = alt - ust + 2 * m > vh ? (ust + alt) / 2 : Math.min(ust - m + vh / 2, Math.max(alt + m - vh / 2, y));
+      hx = kx - x;
+      hy = ky - y;
+    }
+    const k = this.ilkKare ? 1 : 0.12;
+    this.ilkKare = false;
+    this.duzelt.x += (hx - this.duzelt.x) * k;
+    this.duzelt.y += (hy - this.duzelt.y) * k;
+  }
+
   private kameraUygula() {
     const W = this.el.clientWidth;
     const H = this.el.clientHeight;
     const S = Math.max(W, H);
     this.dunya.style.width = this.dunya.style.height = `${S}px`;
+    this.guvenliAlan(W, H, S);
     for (const [ad, el] of Object.entries(this.katmanlar) as [Katman, HTMLElement][]) {
       const d = DERINLIK[ad];
       const z = 1 + (this.kam.z - 1) * d;
-      const fx = S / 2 + ((this.kam.x / 100) * S - S / 2) * d;
-      const fy = S / 2 + ((this.kam.y / 100) * S - S / 2) * d;
+      const fx = S / 2 + (((this.kam.x + this.duzelt.x) / 100) * S - S / 2) * d;
+      const fy = S / 2 + (((this.kam.y + this.duzelt.y) / 100) * S - S / 2) * d;
       let tx = W / 2 - fx * z;
       let ty = H / 2 - fy * z;
       // dünyanın kenarı görünmesin
@@ -313,6 +361,7 @@ export class Film {
     const sure = Number(o.sure ?? 0.8);
     const egri = o.egri as string | undefined;
     if (o.kim === 'kamera') {
+      if (Array.isArray(o.tut)) this.tut = o.tut as string[];
       const a = { ...this.kam };
       const [x, y, z] = [Number(o.x ?? a.x), Number(o.y ?? a.y), Number(o.z ?? a.z)];
       this.tween(sure, egri ?? 'yumusak', (u) => {
@@ -402,7 +451,11 @@ export class Film {
     this.el.dataset.sonSoz = metin;
     if (oy) {
       oy.konus(true);
-      void this.bekle(sn * 0.85).then(() => oy.konus(false));
+      this.konusan = kim;
+      void this.bekle(sn * 0.85).then(() => {
+        oy.konus(false);
+        if (this.konusan === kim) this.konusan = null;
+      });
     }
     if (this.ses) void konus(metin, { ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 });
   }
