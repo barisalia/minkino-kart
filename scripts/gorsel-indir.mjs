@@ -59,6 +59,15 @@ async function beyaziSil(girdi) {
   return sharp(data, { raw: { width: W, height: H, channels: 4 } }).png().toBuffer();
 }
 
+/** Eşya: en uzun kenar 512, kendi oranında, 8 px şeffaf pay */
+export async function esyaKaydet(kirpik, hedef) {
+  await sharp(kirpik)
+    .resize(496, 496, { fit: 'inside' })
+    .extend({ top: 8, bottom: 8, left: 8, right: 8, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .webp({ quality: 84, alphaQuality: 90, effort: 6 })
+    .toFile(hedef);
+}
+
 let yeni = 0;
 let hata = 0;
 for (const [anahtar, url] of Object.entries(liste)) {
@@ -91,6 +100,13 @@ for (const [anahtar, url] of Object.entries(liste)) {
     const kaynak = anahtar.startsWith('canlan/') || anahtar.startsWith('orman-karakter/') || anahtar.startsWith('orman-esya/') ? await beyaziSil(girdi) : girdi;
     const kirpik = await sharp(kaynak).ensureAlpha().trim({ threshold: 8 }).toBuffer();
     fs.mkdirSync(path.dirname(hedef), { recursive: true });
+    // Uyuyan Orman eşyaları: kare değil, kendi oranında (yerleşim CSS'te kolay olsun)
+    if (anahtar.startsWith('orman-esya/')) {
+      await esyaKaydet(kirpik, hedef);
+      yeni++;
+      console.log('✓', anahtar);
+      continue;
+    }
     await sharp(kirpik)
       .resize(464, 464, { fit: 'inside' })
       .extend({ top: 24, bottom: 24, left: 24, right: 24, background: { r: 0, g: 0, b: 0, alpha: 0 } })

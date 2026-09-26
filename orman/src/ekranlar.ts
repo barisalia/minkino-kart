@@ -10,9 +10,10 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { BOLGELER, bolge, type Bolge } from './bolgeler';
 import { Alkis, type Baglam, type Gorev, type Nokta } from './gorev';
-import { adres, parilti, resim, zzz } from './gorsel';
+import { adres, parilti } from './gorsel';
 import { kaydet, kayit, uyandir } from './ilerleme';
 import { kulak } from './kulak';
+import { karakter, type Karakter } from './karakter';
 import { basari, hayvanCal, hayvanHazirla } from './sesler';
 
 export const IK = {
@@ -24,6 +25,11 @@ export const IK = {
 };
 
 const yas = () => durum.i.yas ?? 4;
+
+/** Bölgenin ev sahibi canlı karakter olarak */
+function evKarakteri(b: Bolge, uyuyor: boolean): Karakter {
+  return karakter({ resim: b.ev, ad: b.ev.split('/').pop()!, uyuyor, uyanmaz: b.id === 'dev' });
+}
 
 function logo(): HTMLElement {
   const k = (t: string, sinif: string) => h(`span.${sinif}`, {}, ...[...t].map((c, i) => h('span', { style: `--i:${i}` }, c)));
@@ -54,7 +60,8 @@ function kulakGostergesi(): { el: HTMLElement; guncelle(): void } {
 
 // ---------------------------------------------------------------- Açılış
 export function acilisEkrani(app: Uygulama): Ekran {
-  const ogeler = BOLGELER.map((b, i) => h('div.or-acilis-hayvan', { style: `--i:${i}` }, resim(b.ev, '', b.ad)));
+  const krler = BOLGELER.map((b) => evKarakteri(b, true));
+  const ogeler = BOLGELER.map((_, i) => ({ el: h('div.or-acilis-hayvan', { style: `--i:${i}` }, krler[i].el) }));
   const oyna = h('button.dugme.or-oyna', { type: 'button' }, svg(IKON.oyna), 'Oyna');
   oyna.addEventListener('click', async () => {
     efekt.secim();
@@ -66,10 +73,10 @@ export function acilisEkrani(app: Uygulama): Ekran {
     'div.or-acilis',
     { style: `--resim:url("${adres('orman/harita')}")` },
     h('div.or-acilis-arka'),
-    h('div.or-acilis-ic', {}, logo(), h('div.or-acilis-hayvanlar', {}, ...ogeler), zzz(), oyna),
+    h('div.or-acilis-ic', {}, logo(), h('div.or-acilis-hayvanlar', {}, ...ogeler.map((o) => o.el)), oyna),
     h('div.ust-cubuk.or-sag-ust', {}, h('div'), sesDugmesi()),
   );
-  return { el };
+  return { el, kapat: () => krler.forEach((k) => k.kapat()) };
 }
 
 // ---------------------------------------------------------------- Büyükler: mikrofon izni
@@ -134,14 +141,16 @@ export function haritaEkrani(app: Uygulama): Ekran {
   }
   d += ` L50 3`;
   harita.innerHTML = `<svg class="or-patika-cizgi" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${d}"/></svg>`;
+  const haritaKr: Karakter[] = [];
   BOLGELER.forEach((b, i) => {
     const uyanik = kayit.uyanan.includes(b.id);
+    const kr = evKarakteri(b, !uyanik);
+    haritaKr.push(kr);
     const m = h(
       `button.or-madalyon${uyanik ? '.uyanik' : ''}`,
       { type: 'button', style: `left:${b.konum[0] * 100}%;--t:${b.konum[1]};--renk:${b.renk};--i:${i}`, 'data-bolge': b.id, 'aria-label': b.ad },
       h('span.or-madalyon-resim', { style: `--resim:url("${adres(`orman/${b.id}`)}")` }),
-      resim(b.ev, 'or-madalyon-ev', b.ad),
-      uyanik ? null : zzz(),
+      h('span.or-madalyon-ev', {}, kr.el),
       h('span.or-madalyon-ad', {}, b.ad),
     );
     m.addEventListener('click', () => {
@@ -183,7 +192,7 @@ export function haritaEkrani(app: Uygulama): Ekran {
     kaydet();
     senlik.classList.add('yeni');
   }
-  return { el };
+  return { el, kapat: () => haritaKr.forEach((k) => k.kapat()) };
 }
 
 // ---------------------------------------------------------------- Bölge
@@ -191,7 +200,8 @@ export function bolgeEkrani(app: Uygulama, p: { id: string }): Ekran {
   const bl = bolge(p.id) as Bolge;
   const fabrikalar = bl.gorevler(yas());
   const arka = h('div.or-arka', { style: `--resim:url("${adres(`orman/${bl.id}`)}")` });
-  const ev = h(`div.or-ev.uyuyor.ev-${bl.id}`, {}, resim(bl.ev, '', bl.ad), zzz());
+  const kr = evKarakteri(bl, true);
+  const ev = h(`div.or-ev.uyuyor.ev-${bl.id}`, {}, kr.el);
   const sahne = h('div.or-sahne');
   const yazi = h('span', {}, bl.ad);
   let sonYonerge = bl.giris;
@@ -300,8 +310,7 @@ export function bolgeEkrani(app: Uygulama, p: { id: string }): Ekran {
     if (kapandi) return;
     adimlar.children[i]?.classList.add('dolu');
     griYap(1 - (i + 1) / 3);
-    ev.classList.add('kipir');
-    setTimeout(() => ev.classList.remove('kipir'), 700);
+    void kr.kipir();
     basari();
     await Promise.all([konus(metin('dogru')), bekle(sure(900))]);
   };
@@ -310,7 +319,10 @@ export function bolgeEkrani(app: Uygulama, p: { id: string }): Ekran {
     sahne.replaceChildren();
     ev.classList.remove('uyuyor');
     ev.classList.add('uyandi');
-    hayvanCal(bl.evSesi, 2000);
+    await bekle(sure(500));
+    const uyaniyor = kr.uyan();
+    setTimeout(() => hayvanCal(bl.evSesi, 2000), sure(bl.id === 'dev' ? 300 : 1300));
+    await uyaniyor;
     const r = ev.getBoundingClientRect();
     konfetiPatlat(app.kok, r.left + r.width / 2, r.top + r.height / 3, 90);
     parilti(sahne, 0.5, 0.5, 12);
@@ -324,6 +336,12 @@ export function bolgeEkrani(app: Uygulama, p: { id: string }): Ekran {
     harita.addEventListener('click', () => app.git('harita'));
     tekrar.addEventListener('click', () => app.git('bolge', { id: bl.id }));
     sahne.append(h('div.or-bitis', {}, harita, tekrar));
+    // uyanan karaktere dokununca sevinir ve sesini çıkarır
+    sahne.classList.add('bitti');
+    ev.addEventListener('pointerdown', () => {
+      void kr.dokun();
+      hayvanCal(bl.evSesi, 1500);
+    });
     if (ilk && BOLGELER.every((x) => kayit.uyanan.includes(x.id))) harita.classList.add('parla');
   };
 
@@ -349,6 +367,7 @@ export function bolgeEkrani(app: Uygulama, p: { id: string }): Ekran {
       kulak.dinle(null);
       gorev?.kapat?.();
       cancelAnimationFrame(rafId);
+      kr.kapat();
     },
   };
 }
@@ -393,8 +412,9 @@ export function buyuklerEkrani(app: Uygulama): Ekran {
 
 // ---------------------------------------------------------------- Şenlik (bütün orman uyanınca)
 export function senlikEkrani(app: Uygulama): Ekran {
+  const krler = BOLGELER.map((b) => evKarakteri(b, false));
   const hayvanlar = BOLGELER.map((b, i) => {
-    const e = h('button.or-senlik-hayvan', { type: 'button', style: `--i:${i};--renk:${b.renk}`, 'aria-label': b.ad }, resim(b.ev, '', b.ad));
+    const e = h('button.or-senlik-hayvan', { type: 'button', style: `--i:${i};--renk:${b.renk}`, 'aria-label': b.ad }, krler[i].el);
     e.addEventListener('pointerdown', (ev) => {
       ev.stopPropagation();
       cal(i);
@@ -416,6 +436,7 @@ export function senlikEkrani(app: Uygulama): Ekran {
   function cal(i: number) {
     const b = BOLGELER[i];
     const e = hayvanlar[i];
+    void krler[i].sevin();
     e.classList.remove('zipla');
     void e.offsetWidth;
     e.classList.add('zipla');
@@ -448,6 +469,7 @@ export function senlikEkrani(app: Uygulama): Ekran {
     kapat() {
       kulak.dinle(null);
       cancelAnimationFrame(rafId);
+      krler.forEach((k) => k.kapat());
     },
   };
 }

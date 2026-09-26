@@ -103,7 +103,7 @@ function ritimGorevi(kalip: ('u' | 'k')[]): GorevFabrika {
     const toplam = zamanlar[zamanlar.length - 1];
     const hedefSira = h('div.or-ritim.hedef', {}, ...zamanlar.map((t) => h('i', { style: `--x:${t / toplam}` })));
     const cocukSira = h('div.or-ritim.cocuk');
-    const davulEl = h('div.or-davul', {}, resim('hayvanlar/maymun', 'or-davulcu', 'Maymun'), h('div.or-davul-govde'));
+    const davulEl = h('div.or-davul', {}, resim('hayvanlar/maymun', 'or-davulcu', 'Maymun'), resim('orman-esya/davul', 'or-davul-resim', 'Davul'));
     const dinle = h('button.or-dinle', { type: 'button', 'aria-label': 'Tekrar dinle' }, '♪');
     b.sahne.append(davulEl, hedefSira, cocukSira, dinle);
     let caliyor = false;

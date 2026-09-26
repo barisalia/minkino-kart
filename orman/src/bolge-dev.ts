@@ -29,7 +29,7 @@ const ust = (o: Ozellik, b: Baglam) => o.db - b.ayar.taban + b.ayar.duyarlilik;
 function tavsan(sure: number): GorevFabrika {
   return (b, bitti) => {
     const tv = h('div.or-tavsan', {}, resim('hayvanlar/tavsan', '', 'Tavşan'));
-    const yuva = h('div.or-yuva', {}, tv, h('i.or-yuva-on'));
+    const yuva = h('div.or-yuva', {}, tv, resim('orman-esya/yuva', 'or-yuva-on', 'Tavşan yuvası'));
     const halka = h('div.or-sure-halka');
     devEl(b);
     b.sahne.append(yuva, halka);
@@ -84,7 +84,7 @@ function gec(sure: number): GorevFabrika {
   return (b, bitti) => {
     const dev = devEl(b);
     const yolcu = h('div.or-yolcu', {}, resim('hayvanlar/tavsan', '', 'Tavşan'));
-    b.sahne.append(h('div.or-patika'), yolcu);
+    b.sahne.append(h('div.or-patika', {}, resim('orman-esya/yildiz', 'or-patika-yildiz')), yolcu);
     let x = 0;
     let gurultu = 0;
     let sessiz = false;
@@ -140,7 +140,7 @@ function gec(sure: number): GorevFabrika {
  */
 function heykel(yaprak: boolean): GorevFabrika {
   return (b, bitti) => {
-    const isaret = yaprak ? h('div.or-yaprak') : h('div.or-davul.kucuk', {}, h('div.or-davul-govde'));
+    const isaret = yaprak ? h('div.or-yaprak', {}, resim('orman-esya/yaprak', '', 'Yaprak')) : h('div.or-davul.kucuk', {}, resim('orman-esya/davul', 'or-davul-resim', 'Davul'));
     const sonuclar = h('div.or-evreler', {}, ...Array.from({ length: 4 }, () => h('i')));
     const dev = devEl(b);
     b.sahne.append(isaret, sonuclar);
