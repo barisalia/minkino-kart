@@ -237,3 +237,4 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   CI birim testlerini yayından önce çalıştırır: kilit kırılırsa o sürüm siteye çıkmaz. Değiştirmek şartsa önce Barış'ın onayı.
 - 2026-09-26 Öğretici rehber: `ekip/SES-SISTEMI.md`. İçinde sistemin parçaları, algılayıcılar tablosu, yeni sesli görev tarifi, telefon ve animasyon kuralları var. Yerel ekip ses işine başlamadan önce okuyacak.
 - 2026-09-26 Bulut: işi bitti. `claude/awesome-cori-kvcfd7` ve `main` aynı commit'te.
+- 2026-09-26 Bulut: Deniz pozları ve yeniden işlenmiş Can/Elif pozları (`ekip/parti-pozlar` 427f213) Ada bölümüne kondu. Kalan: Zeynep ve Ada dans2/mutlu.
