@@ -271,7 +271,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // 5-6 yaş: yanda ölçer; yeşil bölgede durmalı
     const isaret = h('i.mc-olcer-isaret');
     const olcer = kontrollu ? sahne.koy(h('div.mc-olcer', {}, h('i.mc-olcer-yesil'), isaret), { x: 70, y: 34, w: 5, z: 11 }) : null;
-    const u = new Ufleme(kulak.ayar, 0.5, true);
+    const u = new Ufleme(kulak.ayar, 0.5);
     let dolu = 0;
     let patladi = false;
     ui.ipucu(kontrollu ? 'Üfle, yeşilde dur!' : 'Balona üfle');
@@ -543,7 +543,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     oy.ada.poz('dilek');
     await soyle(D.mum_giris);
     ui.ipucu('Mumlara üfle');
-    const u = new Ufleme(kulak.ayar, 0.8, true);
+    const u = new Ufleme(kulak.ayar, 0.8);
     let biriken = 0;
     await new Promise<void>((coz) => {
       const tik = (dt: number) => {
