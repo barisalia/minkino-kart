@@ -12,39 +12,14 @@
   --pz-urun: clamp(58px, 17vw, 104px);
 }
 
-/* ---------- Ortak arka plan ve tente ---------- */
+/* ---------- Ortak arka plan (tasarımcının pazar/arkaplan.webp: flamalar, tenteler, taş zemin) ---------- */
 .pz-kok .pz-acilis,
 .pz-kok .pz-pazar,
 .pz-kok .pz-senlik {
   background:
-    var(--resim, none) center / cover no-repeat,
+    var(--resim, none) center 100% / cover no-repeat,
     radial-gradient(90% 40% at 20% 30%, rgba(255, 255, 255, 0.7), transparent 70%),
     linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
-}
-.pz-kok .pz-tente {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: clamp(54px, 11vw, 92px);
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%),
-    repeating-linear-gradient(90deg, var(--pz-tente-1) 0 clamp(28px, 7vw, 48px), var(--pz-tente-2) 0 clamp(56px, 14vw, 96px));
-  border-bottom: var(--cizgi) solid var(--kontur);
-  /* dalgalı alt kenar */
-  -webkit-mask:
-    linear-gradient(#000 0 0) top / 100% calc(100% - 14px) no-repeat,
-    radial-gradient(circle at 50% 0, #000 13px, transparent 14px) bottom / clamp(28px, 7vw, 48px) 14px repeat-x;
-  mask:
-    linear-gradient(#000 0 0) top / 100% calc(100% - 14px) no-repeat,
-    radial-gradient(circle at 50% 0, #000 13px, transparent 14px) bottom / clamp(28px, 7vw, 48px) 14px repeat-x;
-  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.18));
-}
-.pz-kok .pz-acilis > .pz-tente,
-.pz-kok .pz-senlik > .pz-tente {
-  position: fixed;
 }
 .pz-kok .ust-cubuk {
   z-index: 5;
@@ -120,26 +95,38 @@
   flex-direction: column;
   align-items: center;
 }
-/* canlı Mino tezgâhın arkasında: ayakları tezgâhın altında kalır */
-.pz-kok .pz-acilis-mino {
-  width: min(46vw, 26vh, 250px);
-  aspect-ratio: 1360 / 1790;
-  margin-bottom: -22%;
+.pz-kok .pz-acilis-sahne .pz-stand {
+  --sw: min(88vw, 44vh, 460px);
+  /* açılışta bacaklar görünmez: stand, altında yumuşak gölgeyle tezgâh gibi durur */
+  margin-bottom: calc(var(--sw) * -0.22);
 }
-.pz-kok .pz-acilis-tezgah {
-  position: relative;
-  z-index: 1;
-  width: 100%;
+.pz-kok .pz-acilis-sahne .pz-stand-arka {
+  clip-path: inset(0 0 22% 0);
+}
+.pz-kok .pz-acilis-sahne .pz-stand-tahta {
+  clip-path: inset(56% 0 22% 0);
+}
+.pz-kok .pz-acilis-sahne .pz-stand::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 74%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(60, 35, 12, 0.35), transparent);
+  z-index: 0;
+}
+/* meyveler standın tahtasının üstünde sıralı */
+.pz-kok .pz-acilis-meyveler {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 38%;
   display: flex;
-  justify-content: center;
-  gap: 2%;
-  padding: 3% 4% 7%;
-  border-radius: 22px 22px 14px 14px;
-  border: var(--cizgi) solid var(--kontur);
-  background:
-    var(--resim, none) center / cover no-repeat,
-    linear-gradient(180deg, var(--pz-tahta-acik) 0 14%, var(--pz-tahta) 14% 100%);
-  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.1), 0 7px 0 var(--kontur);
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 4;
 }
 .pz-kok .pz-acilis-meyve {
   width: 18%;
@@ -230,7 +217,7 @@
   100% { transform: scale(1); }
 }
 
-/* Sahne: Mino solda, müşteri sağda, tente üstte */
+/* Sahne: pazar standı ortada (Mino içinde), müşteri standın önünde solda */
 .pz-kok .pz-sahne {
   position: relative;
   flex: 1 1 0;
@@ -240,36 +227,68 @@
 .pz-kok .pz-pazar > .ust-cubuk + .pz-yildizlar {
   margin-top: 2px;
 }
-.pz-kok .pz-pazar .pz-tente {
-  top: calc(-1 * clamp(4px, 1vh, 10px));
-  height: clamp(40px, 8vw, 70px);
-  opacity: 0.95;
-}
 /*
- * Sahne düzeni (sahnenin kendi ölçüsüne göre, cq birimleri): Mino tezgâhın arkasında solda, ayakları tezgâhın
- * altında kalır; müşteri sağda tezgâha yanaşır, isteği başının üstündeki balonda. İkisi de sahnenin tabanına oturur.
+ * Stand (pazar/tezgah.webp, kare çizim; oranlar çizimden ölçüldü): tente %9–37, iç boşluk %37–56, tahtanın arka kenarı %56,
+ * ön yüzü %71'e kadar, altında bacaklar. Oyunda standın alt kısmı ön tezgâhın arkasında kalır: tahta ile ön tezgâh tek
+ * bir tezgâh gibi birleşir. Katmanlar: arka (bütün çizim) → Mino → önde tente ve tahta → tahtanın üstündekiler.
  */
 .pz-kok .pz-sahne {
   container-type: size;
 }
-.pz-kok .pz-mino {
+.pz-kok .pz-stand {
+  --sw: min(108cqw, 128cqh);
+  position: relative;
+  width: var(--sw);
+  aspect-ratio: 1;
+}
+.pz-kok .pz-sahne .pz-stand {
   position: absolute;
-  left: 1%;
-  bottom: -9%;
-  /* Mino çizimi 1360×1790 */
-  width: min(60cqw, 92cqh * 0.76, 420px);
+  left: 50%;
+  bottom: calc(var(--sw) * -0.28);
+  translate: -50% 0;
+}
+.pz-kok .pz-stand-katman {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.pz-kok .pz-stand-arka { z-index: 1; filter: drop-shadow(0 8px 10px rgba(80, 45, 15, 0.25)); }
+.pz-kok .pz-stand-tente { z-index: 3; clip-path: inset(0 0 63% 0); }
+.pz-kok .pz-stand-tahta { z-index: 3; clip-path: inset(56% 0 0 0); }
+/* görsel yoksa sade yer tutucu: tahta şeridi */
+.pz-kok .pz-stand-yedek.pz-stand-arka { background: linear-gradient(180deg, transparent 56%, var(--pz-tahta) 56% 71%, transparent 71%); }
+/* Mino standın içinde, tahtanın arkasında: fuları tahtanın kenarında, kulak uçları tentenin altında */
+.pz-kok .pz-stand .pz-mino {
+  position: absolute;
+  z-index: 2;
+  left: 37%;
+  bottom: 28%;
+  width: 32%;
   aspect-ratio: 1360 / 1790;
-  z-index: 1;
+}
+/* sepet tahtanın üstünde, sağda */
+.pz-kok .pz-stand .pz-sepet {
+  position: absolute;
+  z-index: 4;
+  left: 64%;
+  bottom: 33%;
+  width: 31%;
+  height: auto;
+  aspect-ratio: 1;
 }
 .pz-kok .pz-musteri-kap {
   position: absolute;
-  right: 1%;
-  bottom: -5%;
-  width: min(48cqw, 62cqh, 380px);
+  left: 0;
+  bottom: -2%;
+  width: min(36cqw, 46cqh, 330px);
   aspect-ratio: 1;
   pointer-events: none;
-  z-index: 2;
+  z-index: 5;
 }
+
 .pz-kok .pz-musteri {
   position: absolute;
   inset: 0;
@@ -293,21 +312,21 @@
 }
 /* geliş: sekerek yürür (her adımda hafif sıçrama), tezgâha varınca basıp durur */
 @keyframes pz-gel {
-  0% { transform: translateX(115%) translateY(0); animation-timing-function: ease-out; }
-  20% { transform: translateX(84%) translateY(-7%) rotate(-3deg); animation-timing-function: ease-in; }
-  38% { transform: translateX(56%) translateY(0) rotate(0); animation-timing-function: ease-out; }
-  56% { transform: translateX(30%) translateY(-6%) rotate(-3deg); animation-timing-function: ease-in; }
-  74% { transform: translateX(8%) translateY(0) rotate(0); animation-timing-function: ease-out; }
+  0% { transform: translateX(-115%) translateY(0); animation-timing-function: ease-out; }
+  20% { transform: translateX(-84%) translateY(-7%) rotate(3deg); animation-timing-function: ease-in; }
+  38% { transform: translateX(-56%) translateY(0) rotate(0); animation-timing-function: ease-out; }
+  56% { transform: translateX(-30%) translateY(-6%) rotate(3deg); animation-timing-function: ease-in; }
+  74% { transform: translateX(-8%) translateY(0) rotate(0); animation-timing-function: ease-out; }
   86% { transform: translateX(0) scale(1.06, 0.93); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
   100% { transform: none; }
 }
 /* gidiş: sevinçle bir zıplar, sonra sekerek çıkar */
 @keyframes pz-git {
   0% { transform: none; }
-  25% { transform: translateY(-9%) rotate(4deg); }
-  45% { transform: translateX(18%) translateY(0); }
-  70% { transform: translateX(60%) translateY(-6%) rotate(4deg); opacity: 1; }
-  100% { transform: translateX(125%) translateY(0); opacity: 0; }
+  25% { transform: translateY(-9%) rotate(-4deg); }
+  45% { transform: translateX(-18%) translateY(0); }
+  70% { transform: translateX(-60%) translateY(-6%) rotate(-4deg); opacity: 1; }
+  100% { transform: translateX(-125%) translateY(0); opacity: 0; }
 }
 @keyframes pz-sevin {
   0%, 100% { transform: translateY(0) scale(1); }
@@ -322,11 +341,11 @@
 
 /* İstek balonu (resimli) */
 .pz-kok .pz-istek-balon {
-  /* müşterinin başının üstünde, biraz sola (Mino'ya doğru) */
+  /* müşterinin başının üstünde, biraz sağa (Mino'ya doğru) */
   position: absolute;
   bottom: 90%;
   left: 50%;
-  translate: -62% 0;
+  translate: -38% 0;
   z-index: 3;
   white-space: nowrap;
   padding: clamp(6px, 1.6vw, 12px) clamp(10px, 3vw, 18px);
@@ -340,7 +359,7 @@
   content: '';
   position: absolute;
   bottom: -15px;
-  right: 30%;
+  left: 30%;
   width: 24px;
   height: 24px;
   background: #fff;
@@ -408,12 +427,12 @@
   margin: 0 calc(var(--yan) * -1) calc(var(--alt) * -1);
   padding: clamp(10px, 2vh, 18px) var(--yan) var(--alt);
   border-top: var(--cizgi) solid var(--kontur);
-  border-radius: 26px 26px 0 0;
+  border-radius: 22px 22px 0 0;
+  /* standın tahtası (#d39150 / #b8743a tonları) ile aynı ahşap */
   background:
-    var(--resim, none) center / cover no-repeat,
-    linear-gradient(180deg, var(--pz-tahta-acik) 0 12px, var(--pz-tahta) 12px),
-    var(--pz-tahta);
-  box-shadow: 0 -6px 0 rgba(90, 54, 23, 0.15);
+    linear-gradient(180deg, #f2b774 0 10px, #d99a55 10px 16px, #cf8a47 16px),
+    #cf8a47;
+  box-shadow: 0 -10px 18px rgba(70, 38, 12, 0.28), inset 0 3px 0 rgba(255, 255, 255, 0.35);
 }
 .pz-kok .pz-tezgah:not(.pz-gorselli)::before {
   /* tahta çizgileri */
@@ -429,9 +448,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  justify-content: flex-end;
   gap: clamp(10px, 3vw, 22px);
-  /* sepet tezgâhın üstüne oturur: yalnız alt yarısı tezgâhın kenarına biner, karakterleri kapatmaz */
-  margin-top: calc(-0.5 * clamp(96px, 15vh, 150px));
+}
+/* "Ver" düğmesi ön tezgâhın sağ üst köşesinde, tahtanın kenarına biner */
+.pz-kok .pz-tezgah-ust .pz-ver {
+  margin-top: -6px;
 }
 .pz-kok .pz-sepet {
   position: relative;
@@ -470,9 +492,9 @@
 }
 .pz-kok .pz-sepet-resim {
   position: absolute;
-  inset: -12% -4% -8%;
-  width: 108%;
-  height: 120%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   pointer-events: none;
 }
@@ -756,4 +778,36 @@
 }
 .pz-kok .pz-istek-lira {
   padding: 8px 6px 12px;
+}
+
+/* ---------- Sepet (görselli, standın tahtasında) ---------- */
+/* hasır sepetin ağzı: çizimde %42–70 yüksekliğinde; ürünler ağızda sıralanır, doldukça küçülür (--ks, ekranlar.ts) */
+.pz-kok .pz-sepet.pz-gorselli .pz-sepet-ic {
+  inset: 30% 14% 24%;
+  gap: 1px 3px;
+  align-content: flex-end;
+}
+.pz-kok .pz-stand .pz-sepet-ic .pz-urun {
+  width: calc(var(--sw) * 0.09 * var(--ks, 1));
+  height: calc(var(--sw) * 0.09 * var(--ks, 1));
+}
+.pz-kok .pz-stand .pz-sepet-ic .pz-para b {
+  font-size: calc(var(--sw) * 0.04 * var(--ks, 1));
+  -webkit-text-stroke: 3px var(--kontur);
+}
+.pz-kok .pz-sepet.pz-gorselli.pz-uzerinde {
+  box-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(255, 210, 60, 0.95));
+}
+/* teslim: sepetteki ürünler soldaki müşteriye uçar */
+.pz-kok .pz-stand .pz-sepet.pz-teslim .pz-sepet-ic {
+  animation-name: pz-teslim-sol;
+}
+@keyframes pz-teslim-sol {
+  to { transform: translate(-48cqw, -6cqh) scale(0.3); opacity: 0; }
+}
+/* sayma ipucu: para toplamı sepetin altında */
+.pz-kok .pz-stand .pz-sepet.pz-say[data-toplam]::after {
+  bottom: -6px;
+  font-size: 0.95rem;
 }

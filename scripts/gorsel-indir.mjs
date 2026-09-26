@@ -3,9 +3,11 @@
 // Zaten var olan dosyalar atlanır. Kullanım: node scripts/gorsel-indir.mjs [--hepsi]
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-const kok = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+// fileURLToPath: Windows'ta ve boşluklu klasör adlarında da doğru yol
+const kok = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const klasor = path.join(kok, 'assets', 'recraft');
 const hepsi = process.argv.includes('--hepsi');
 // Yerel deneme: GORSEL_YEREL='{"parti/can":"/yol/dosya.webp"}' — indirmek yerine bu dosyaları işler

@@ -42,8 +42,17 @@ function logo(): HTMLElement {
   return h('div.pz-logo', { role: 'img', 'aria-label': `${A.baslik_ust} ${A.baslik_alt}` }, h('span.pz-logo-ust', {}, A.baslik_ust), h('span.pz-logo-alt', {}, ...harfler));
 }
 
-/** Çizgili pazar tentesi */
-const tente = () => h('div.pz-tente', { 'aria-hidden': 'true' });
+/**
+ * Pazar standı (tasarımcının pazar/tezgah.webp çizimi: tente, direkler, tahta). Üç katman:
+ * arkada bütün stand, ortada içindekiler (Mino, standın içinde), önde tente ve tahta (Mino tahtanın arkasında kalır).
+ * "ustunde" tahtanın üstüne konanlar (sepet, meyveler) en öndedir. Görsel yoksa CSS yer tutucu.
+ */
+function stand(icinde: HTMLElement[], ustunde: HTMLElement[] = []): HTMLElement {
+  const url = adres('pazar/tezgah');
+  const katman = (sinif: string) =>
+    url ? h(`img.pz-stand-katman.${sinif}`, { src: url, alt: '', draggable: 'false' }) : h(`div.pz-stand-katman.pz-stand-yedek.${sinif}`);
+  return h('div.pz-stand', {}, katman('pz-stand-arka'), ...icinde, katman('pz-stand-tente'), katman('pz-stand-tahta'), ...ustunde);
+}
 
 // ---------------------------------------------------------------- Açılış
 export function acilisEkrani(app: Uygulama): Ekran {
@@ -71,13 +80,12 @@ export function acilisEkrani(app: Uygulama): Ekran {
   const el = h(
     'div.pz-acilis',
     { style: gorselStil('pazar/arkaplan') },
-    tente(),
     h('div.ust-cubuk', {}, sol, h('div.orta'), sesDugmesi()),
     h(
       'div.pz-acilis-ic',
       {},
       logo(),
-      h('div.pz-acilis-sahne', {}, h('div.pz-acilis-mino', {}, mino.el), h('div.pz-acilis-tezgah', { style: gorselStil('pazar/tezgah') }, ...meyveler)),
+      h('div.pz-acilis-sahne', {}, stand([h('div.pz-mino', {}, mino.el)], [h('div.pz-acilis-meyveler', {}, ...meyveler)])),
       oyna,
       h(
         'div.pz-acilis-alt',
@@ -134,14 +142,16 @@ export function pazarEkrani(app: Uygulama): Ekran {
   const musteriKap = h('div.pz-musteri-kap');
   const mino = new Mino();
   mino.el.addEventListener('pointerdown', () => mino.tepki('gidik'));
-  const sahne = h('div.pz-sahne', {}, tente(), h('div.pz-mino', {}, mino.el), musteriKap);
   const sepetUrl = adres('pazar/sepet');
   const sepetIc = h('div.pz-sepet-ic');
   const sepet = h(`div.pz-sepet${sepetUrl ? '.pz-gorselli' : ''}`, { role: 'region', 'aria-label': 'Sepet' }, sepetUrl ? h('img.pz-sepet-resim', { src: sepetUrl, alt: '', draggable: 'false' }) : null, sepetIc);
   const verYazi = h('span', {}, A.ver);
   const ver = h('button.dugme.pz-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
   const urunler = h('div.pz-urunler');
-  const tezgah = h(`div.pz-tezgah${adres('pazar/tezgah') ? '.pz-gorselli' : ''}`, { style: gorselStil('pazar/tezgah') }, h('div.pz-tezgah-ust', {}, sepet, ver), urunler);
+  // Mino standın içinde tahtanın arkasında, sepet tahtanın üstünde; müşteri standın önünde
+  const sahne = h('div.pz-sahne', {}, stand([h('div.pz-mino', {}, mino.el)], [sepet]), musteriKap);
+  // ön tezgâh: standın tahtasının devamı; ürünler bunun üstünde
+  const tezgah = h('div.pz-tezgah', {}, h('div.pz-tezgah-ust', {}, ver), urunler);
   const cikis = () => app.git('acilis');
   const el = h(
     'div.pz-pazar',
@@ -185,6 +195,9 @@ export function pazarEkrani(app: Uygulama): Ekran {
       say.set(id, n);
       e.dataset.no = String(n);
     }
+    // sepet doldukça içindekiler küçülür: üst üste binmeden sığsınlar
+    const adet = sepetIc.children.length;
+    sepetIc.style.setProperty('--ks', String(adet <= 3 ? 1 : adet <= 5 ? 0.82 : adet <= 7 ? 0.68 : 0.58));
     if (ist.tur === 'ode') {
       const t = sepettekiler().reduce((a, id) => a + (paraMi(id) ? PARA[id] : 0), 0);
       sepet.dataset.toplam = A.lira.replace('{sayi}', String(t));
@@ -334,10 +347,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
     efekt.dogru();
     void resimSesi(ad);
     mino.tepki('zipla');
-    parilti(sahne, 0.72, 0.5, 10);
-    parilti(sahne, 0.24, 0.45, 8);
+    // parıltı: müşterinin (solda) ve Mino'nun (standın içinde) üstünde
+    parilti(sahne, 0.2, 0.55, 10);
+    parilti(sahne, 0.56, 0.4, 8);
     const r = sahne.getBoundingClientRect();
-    konfetiPatlat(app.kok, r.left + r.width * 0.72, r.top + r.height * 0.5, 40);
+    konfetiPatlat(app.kok, r.left + r.width * 0.2, r.top + r.height * 0.55, 40);
     yildizlar.children[i]?.classList.add('dolu');
     efekt.yildiz(Math.min(2, i % 3));
     kayit.yildiz++;
@@ -404,7 +418,6 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[] }): Ekra
   const el = h(
     'div.pz-senlik',
     { style: gorselStil('pazar/arkaplan') },
-    tente(),
     h('div.ust-cubuk', {}, bosluk(), h('div.orta', {}, h('div.baslik-balon', {}, h('span', {}, P.senlik))), sesDugmesi()),
     h('div.pz-yildizlar.pz-hepsi', {}, ...Array.from({ length: MUSTERI_SAYISI }, () => h('i.pz-yildiz.dolu', {}, svg(IKON.yildiz)))),
     sahne,
