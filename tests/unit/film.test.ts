@@ -17,7 +17,7 @@ describe('film: Mino’nun Karpuzu', () => {
   });
   it('zaman çizelgesi sahne süresi içinde, her olayın kimi sahnede var', () => {
     for (const s of sahneler) {
-      const varlar = new Set(['kamera', 'isik', 'efekt', 'parilti', 'anlatici', 'stand', ...Object.keys(s.oyuncular ?? {}), ...Object.keys(s.esyalar ?? {})]);
+      const varlar = new Set(['kamera', 'isik', 'efekt', 'muzik', 'parilti', 'anlatici', 'stand', ...Object.keys(s.oyuncular ?? {}), ...Object.keys(s.esyalar ?? {})]);
       for (const o of s.olaylar as Olay[]) {
         expect(o.t, `${s.ad} ${o.kim}`).toBeLessThanOrEqual(s.sure);
         expect(varlar.has(o.kim), `${s.ad}: ${o.kim}`).toBe(true);

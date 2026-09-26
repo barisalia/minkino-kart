@@ -12,6 +12,7 @@ import { konus, sus } from '../../src/audio/ses';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { esyaCiz, ESYA_ORAN } from './esya';
 import { FILM_EFEKT } from './efekt';
+import { filmMuzik, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
 
 // ---------------------------------------------------------------- sahne dosyası
@@ -114,6 +115,8 @@ export interface FilmSecenek {
   hiz?: number;
   /** cihaz sesiyle konuşma (animatik); false: yalnız alt yazı */
   ses?: boolean;
+  /** film müziği (Web Audio); test modunda kapalı */
+  muzik?: boolean;
   bitti?: () => void;
 }
 
@@ -146,6 +149,7 @@ export class Film {
   private bitti = false;
   private readonly hiz: number;
   private readonly ses: boolean;
+  private readonly muzik: boolean;
 
   constructor(
     private readonly dosya: FilmDosya,
@@ -153,6 +157,7 @@ export class Film {
   ) {
     this.hiz = secenek.hiz ?? (TEST_MODU ? 12 : 1);
     this.ses = secenek.ses ?? !TEST_MODU;
+    this.muzik = secenek.muzik ?? !TEST_MODU;
     this.katmanlar = { uzak: h('div.fl-katman.fl-uzak'), orta: h('div.fl-katman.fl-orta'), on: h('div.fl-katman.fl-on') };
     this.dunya = h('div.fl-dunya', {}, this.katmanlar.uzak, this.katmanlar.orta, this.katmanlar.on);
     this.isikEl = h('div.fl-isik');
@@ -167,6 +172,7 @@ export class Film {
   async oynat(): Promise<void> {
     this.son = performance.now();
     this.raf = requestAnimationFrame((t) => this.kare(t));
+    if (this.muzik) filmMuzik.baslat('nese');
     for (const s of this.dosya.sahneler) {
       if (this.bitti) return;
       if ('ogut' in s) {
@@ -175,6 +181,7 @@ export class Film {
       }
       await this.sahneOyna(s);
     }
+    if (this.muzik) filmMuzik.dur(4);
     this.secenek.bitti?.();
   }
 
@@ -187,6 +194,7 @@ export class Film {
     this.el.classList.toggle('duraklatildi', d);
     this.el.getAnimations({ subtree: true }).forEach((a) => (d ? a.pause() : a.play()));
     if (d) sus();
+    if (this.muzik) filmMuzik.duraklat(d);
   }
 
   kapat() {
@@ -194,6 +202,7 @@ export class Film {
     cancelAnimationFrame(this.raf);
     this.oyuncular.forEach((o) => o.kapat());
     sus();
+    if (this.muzik) filmMuzik.dur(0.5);
   }
 
   // ---------------------------------------------------------------- saat
@@ -375,6 +384,12 @@ export class Film {
       this.tween(sure, 'yumusak', (u) => (this.isikEl.style.opacity = String(a + (b - a) * u)));
       return;
     }
+    if (o.kim === 'muzik') {
+      if (!this.muzik) return;
+      if (o.yap === 'ruh') filmMuzik.degis(String(o.ad) as Ruh);
+      else if (o.yap === 'dur') filmMuzik.dur(Number(o.sure ?? 2));
+      return;
+    }
     if (o.kim === 'efekt') {
       FILM_EFEKT[o.yap]?.();
       return;
@@ -449,6 +464,8 @@ export class Film {
     this.altyazi.classList.add('acik');
     this.altZaman = this.saat + sn;
     this.el.dataset.sonSoz = metin;
+    // konuşma sırasında müzik kısılır (ducking)
+    if (this.muzik) filmMuzik.kis(sn / this.hiz);
     if (oy) {
       oy.konus(true);
       this.konusan = kim;

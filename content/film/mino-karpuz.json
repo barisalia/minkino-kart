@@ -54,6 +54,12 @@
       "olaylar": [
         {
           "t": 0,
+          "kim": "muzik",
+          "yap": "ruh",
+          "ad": "nese"
+        },
+        {
+          "t": 0,
           "kim": "kamera",
           "yap": "git",
           "x": 52,
@@ -341,6 +347,12 @@
           "sure": 2.2
         },
         {
+          "t": 3.4,
+          "kim": "muzik",
+          "yap": "ruh",
+          "ad": "uzgun"
+        },
+        {
           "t": 3.7,
           "kim": "kopek",
           "yap": "tepki",
@@ -460,6 +472,12 @@
           "kim": "mino",
           "yap": "tepki",
           "ad": "uzat"
+        },
+        {
+          "t": 12.2,
+          "kim": "muzik",
+          "yap": "ruh",
+          "ad": "aydinlik"
         },
         {
           "t": 12.6,
@@ -734,6 +752,12 @@
         }
       },
       "olaylar": [
+        {
+          "t": 0,
+          "kim": "muzik",
+          "yap": "ruh",
+          "ad": "nese"
+        },
         {
           "t": 0.3,
           "kim": "efekt",
@@ -1172,6 +1196,12 @@
       },
       "olaylar": [
         {
+          "t": 0,
+          "kim": "muzik",
+          "yap": "ruh",
+          "ad": "aydinlik"
+        },
+        {
           "t": 0.3,
           "kim": "isik",
           "yap": "git",
@@ -1186,13 +1216,6 @@
           "sure": 1.2
         },
         {
-          "t": 1.1,
-          "kim": "ordek",
-          "yap": "tepki",
-          "ad": "ye",
-          "sure": 1.2
-        },
-        {
           "t": 1,
           "kim": "mino",
           "yap": "tepki",
@@ -1200,19 +1223,14 @@
           "sure": 1.4
         },
         {
-          "t": 1.2,
-          "kim": "kopek",
+          "t": 1.1,
+          "kim": "ordek",
           "yap": "tepki",
           "ad": "ye",
           "sure": 1.2
         },
         {
           "t": 1.1,
-          "kim": "efekt",
-          "yap": "kitir"
-        },
-        {
-          "t": 1.6,
           "kim": "efekt",
           "yap": "kitir"
         },
@@ -1243,6 +1261,18 @@
           "yap": "git",
           "olcek": 0.45,
           "sure": 1.2
+        },
+        {
+          "t": 1.2,
+          "kim": "kopek",
+          "yap": "tepki",
+          "ad": "ye",
+          "sure": 1.2
+        },
+        {
+          "t": 1.6,
+          "kim": "efekt",
+          "yap": "kitir"
         },
         {
           "t": 2.8,
@@ -1348,9 +1378,10 @@
           "sure": 4
         },
         {
-          "t": 11,
-          "kim": "efekt",
-          "yap": "final"
+          "t": 10.4,
+          "kim": "muzik",
+          "yap": "ruh",
+          "ad": "kapanis"
         }
       ]
     },
