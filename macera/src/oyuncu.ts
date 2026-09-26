@@ -27,11 +27,10 @@ export interface OyuncuSecenek {
 }
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-/** Hareketi azalt tercihi: bakınma yok, zıplamalar alçak, titreşim yok */
+/** Hareketi azalt tercihi: zıplamalar alçak, titreşim yok */
 export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const rastgele = (a: number, b: number) => a + Math.random() * (b - a);
-
-// Kolay kullanım için hazır eğriler (anahtar kare başına): fırlama yavaşlar, düşüş hızlanır, iniş yumuşar
+// anahtar kare eğrileri: fırlama yavaşlar, düşüş hızlanır, iniş yumuşar
 const EGRI = {
   cik: 'cubic-bezier(0.2, 0.75, 0.35, 1)',
   dus: 'cubic-bezier(0.55, 0, 0.85, 0.35)',
@@ -39,17 +38,13 @@ const EGRI = {
   topla: 'cubic-bezier(0.3, 1.5, 0.5, 1)',
 };
 
-/**
- * Anahtar karelerdeki dikey konumdan gölge kareleri üretir: karakter yükseldikçe gölge küçülür ve silikleşir.
- * translateY(-30%) ya da translate(x, -30%) biçimlerini okur.
- */
+/** Anahtar karelerdeki dikey konumdan gölge kareleri: karakter yükseldikçe gölge küçülür ve silikleşir */
 function golgeKareleri(kf: Keyframe[]): Keyframe[] {
   return kf.map((k) => {
     const t = String(k.transform ?? '');
     const m = t.match(/translateY\((-?[\d.]+)%\)/) ?? t.match(/translate\([^,)]+,\s*(-?[\d.]+)%\)/);
     const y = m ? Math.max(0, -Number(m[1])) : 0;
-    const s = Math.max(0.45, 1 - y / 70);
-    const g: Keyframe = { transform: `scale(${s.toFixed(3)})`, opacity: Math.max(0.35, 1 - y / 90) };
+    const g: Keyframe = { transform: `scale(${Math.max(0.45, 1 - y / 70).toFixed(3)})`, opacity: Math.max(0.35, 1 - y / 90) };
     if (k.offset !== undefined) g.offset = k.offset;
     if (k.easing) g.easing = k.easing;
     return g;
@@ -65,11 +60,7 @@ export class Oyuncu {
   readonly ad: string;
   private resimler = new Map<Poz, HTMLImageElement>();
   private hareket: HTMLElement;
-  /** bakınma / ağırlık aktarma katmanı (hareketin içinde, nefesin dışında) */
-  private bakis: HTMLElement;
   private golge: HTMLElement;
-  private bosZaman = 0;
-  private yuruyor = false;
   private sapkaEl: HTMLElement | null = null;
   private balonEl: HTMLElement;
   private simdiki: Poz = 'normal';
@@ -91,60 +82,20 @@ export class Oyuncu {
       this.sapkaEl = h('img.mc-oy-sapka', { src: adres('parti/sapka'), alt: '', draggable: 'false', style: `--sx:${x}%;--sy:${y}%;--sw:${w}%;--sd:${d}deg` });
       govde.append(this.sapkaEl);
     }
-    this.bakis = h('div.mc-oy-bakis', {}, govde);
-    this.hareket = h('div.mc-oy-hareket', {}, this.bakis);
+    this.hareket = h('div.mc-oy-hareket', {}, govde);
     this.balonEl = h('div.mc-oy-balon');
-    this.golge = h('i.mc-oy-golge');
-    // nefes/bekleme döngüleri herkeste aynı anda ve aynı hızda olmasın
+    // nefes/bekleme döngüleri herkeste aynı anda olmasın
     const faz = (-Math.random() * 3).toFixed(2);
     const nefes = rastgele(2.6, 3.5).toFixed(2);
-    this.el = h('div.mc-oyuncu', { 'data-ad': s.ad, style: `--w:${s.boy ?? 24};--ar:${s.oran ?? 1};--golge:${s.golge ?? 18}%;--faz:${faz}s;--nefes:${nefes}s` }, this.golge, this.hareket, this.balonEl);
+    this.golge = h('i.mc-oy-golge');
+    this.el = h(
+      'div.mc-oyuncu',
+      { 'data-ad': s.ad, style: `--w:${s.boy ?? 24};--ar:${s.oran ?? 1};--golge:${s.golge ?? 18}%;--faz:${faz}s;--nefes:${nefes}s` },
+      this.golge,
+      this.hareket,
+      this.balonEl,
+    );
     this.goster('normal');
-    if (!AZ_HAREKET) this.bosPlanla();
-  }
-
-  // ---------------------------------------------------------------- boşta: ara sıra bakınma, ağırlık aktarma
-  private bosPlanla() {
-    clearTimeout(this.bosZaman);
-    this.bosZaman =window.setTimeout(() => this.bosHareket(), rastgele(2500, 6500));
-  }
-
-  /** Karakter boştaysa küçük bir bakınma ya da kıpırtı yapar (hareket / yürüyüş sırasında yapmaz) */
-  private bosHareket() {
-    // sahneden kaldırıldıysa döngü biter
-    if (!this.el.isConnected && this.el.dataset.baglandi) return;
-    if (this.el.isConnected) this.el.dataset.baglandi = '1';
-    const mesgul = this.yuruyor || this.hareket.getAnimations().length > 0 || this.el.classList.contains('gizli');
-    if (this.el.isConnected && !mesgul) {
-      const yon = Math.random() < 0.5 ? -1 : 1;
-      const tur = Math.random();
-      const kf: Keyframe[] =
-        tur < 0.55
-          ? // bakınma: başını bir yana çevirir gibi eğilir, biraz durur, döner
-            [
-              { transform: 'rotate(0) translateX(0)' },
-              { transform: `rotate(${yon * 3.5}deg) translateX(${yon * 1.5}%)`, offset: 0.25, easing: EGRI.yumusak },
-              { transform: `rotate(${yon * 3}deg) translateX(${yon * 1.5}%)`, offset: 0.7, easing: EGRI.yumusak },
-              { transform: 'rotate(0) translateX(0)' },
-            ]
-          : tur < 0.85
-            ? // ağırlığını öbür ayağına verir
-              [
-                { transform: 'translateX(0) rotate(0)' },
-                { transform: `translateX(${yon * 2.5}%) rotate(${-yon * 2}deg) scale(1.02, 0.98)`, offset: 0.4, easing: EGRI.yumusak },
-                { transform: 'translateX(0) rotate(0)' },
-              ]
-            : // küçük sevinç kıpırtısı (topuk kaldırma)
-              [
-                { transform: 'translateY(0) scale(1, 1)' },
-                { transform: 'translateY(0) scale(1.04, 0.95)', offset: 0.2, easing: EGRI.cik },
-                { transform: 'translateY(-4%) scale(0.98, 1.03)', offset: 0.45, easing: EGRI.dus },
-                { transform: 'translateY(0) scale(1.03, 0.97)', offset: 0.7, easing: EGRI.topla },
-                { transform: 'translateY(0) scale(1, 1)' },
-              ];
-      this.bakis.animate(kf, { duration: tur < 0.55 ? rastgele(1400, 2000) : 900, easing: 'linear' });
-    }
-    this.bosPlanla();
   }
 
   /** Şapkayı tak/çıkar: şapkalı poz görseli varsa onu, yoksa ayrı şapkayı kullanır */
@@ -180,17 +131,14 @@ export class Oyuncu {
     if (ms) this.gecici = window.setTimeout(() => this.goster(this.simdiki), ms);
   }
 
-  /** Hareket katmanında bir animasyon; gölge dikey konuma göre kendiliğinden küçülüp büyür */
+  /** Hareket katmanında bir animasyon; gölge dikey konuma göre küçülüp büyür */
   private oynat(kf: Keyframe[], ms: number, easing = 'ease-in-out') {
     const secenek: KeyframeAnimationOptions = { duration: ms, easing };
     this.golge.animate(golgeKareleri(kf), secenek);
     return this.hareket.animate(kf, secenek).finished.catch(() => undefined);
   }
 
-  /**
-   * Zıplama: önce çömelir (hazırlık), fırlarken uzar, tepede yuvarlaklaşır, inişte basılır, sonra toparlanır.
-   * Fırlama yavaşlayarak, düşüş hızlanarak (anahtar kare başına eğri).
-   */
+  /** Zıplama: çömelir, fırlarken uzar, tepede yuvarlaklaşır, inişte basılır, toparlanır */
   zipla(yukseklik = 28) {
     const y = AZ_HAREKET ? yukseklik * 0.4 : yukseklik;
     return this.oynat(
@@ -209,7 +157,7 @@ export class Oyuncu {
     );
   }
 
-  /** Sevinç: çömelip zıplar, alkış pozu (tepki dalgasında komşular daha küçüğünü yapar) */
+  /** Sevinç: alkış pozu + zıplama (tepki dalgasında komşular daha küçüğünü yapar) */
   sevin(yukseklik = 20, ms = 900) {
     this.poz('alkis', ms);
     return this.zipla(yukseklik);
@@ -328,46 +276,19 @@ export class Oyuncu {
     this.balonEl.classList.remove('acik');
   }
 
-  /**
-   * Sahnede bir yere yürü (x: sahne genişliğinin %'si, merkez; y: alttan %).
-   * Yalnız transform ile: yeni yer hemen yazılır, karakter eski yerinden oraya "translate" ile kayar (FLIP).
-   * Adım ritminde sekip gidiş yönüne eğilir; başlarken hafif geri yaslanır, varınca basıp toparlanır.
-   */
+  /** Sahnede bir yere yürü/koş (x: sahne genişliğinin %'si, merkez; y: alttan %) */
   async git(x: number, y: number, ms = 900) {
-    const x0 = this.el.offsetLeft;
-    const y0 = this.el.offsetTop;
-    this.koy(x, y);
-    const dx = x0 - this.el.offsetLeft;
-    const dy = y0 - this.el.offsetTop;
-    if (Math.hypot(dx, dy) < 1) {
-      await bekle(ms);
-      return;
-    }
-    const yon = dx > 0 ? -1 : 1;
-    this.el.style.setProperty('--yon', String(yon));
-    // adım süresi mesafeye göre: kısa yolda ufak ve sık, uzun yolda ölçülü
-    this.el.style.setProperty('--adim', `${Math.max(0.3, Math.min(0.46, ms / 2400))}s`);
-    this.yuruyor = true;
+    this.el.style.transitionDuration = `${ms}ms`;
+    this.el.style.setProperty('--x', String(x));
+    this.el.style.setProperty('--y', String(y));
     this.el.classList.add('yuruyor');
-    const yol = this.el.animate([{ translate: `${dx}px ${dy}px` }, { translate: '0 0' }], { duration: ms, easing: 'cubic-bezier(0.4, 0, 0.3, 1)' });
-    await yol.finished.catch(() => undefined);
+    await bekle(ms);
     this.el.classList.remove('yuruyor');
-    this.yuruyor = false;
-    // varış: ağırlık öne gider, basar, toparlanır
-    void this.oynat(
-      [
-        { transform: 'rotate(0) scale(1, 1)' },
-        { transform: `rotate(${yon * 3}deg) scale(1.06, 0.94)`, offset: 0.35, easing: EGRI.topla },
-        { transform: 'rotate(0) scale(1, 1)' },
-      ],
-      320,
-      'linear',
-    );
   }
 
   /** Anında konumla (geçişsiz) */
   koy(x: number, y: number) {
-    this.el.getAnimations().forEach((a) => a.cancel());
+    this.el.style.transitionDuration = '0ms';
     this.el.style.setProperty('--x', String(x));
     this.el.style.setProperty('--y', String(y));
   }

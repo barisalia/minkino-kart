@@ -68,13 +68,13 @@ test("Ada'nın Doğum Günü: dokunarak baştan sona (5 yaş)", async ({ page },
   // pasta
   await expect(page.locator('.mc-kesim.acik')).toBeVisible({ timeout: 15000 });
   await page.waitForTimeout(800);
+  // dilim uçarken gelen dokunuş sayılmaz (çocuk art arda tıklarsa pasta karışmasın): sayı artana kadar tekrar dokun
   for (let i = 0; i < 5; i++) {
-    await dokun(page, 1);
-    if (i === 2) {
-      await page.waitForTimeout(450);
-      await ekran(page, '108-macera-pasta', p);
-    }
-    await expect(page.locator('.mc-kesim-yer.dolu')).toHaveCount(i + 1, { timeout: 8000 });
+    await expect(async () => {
+      await dokun(page, 1);
+      await expect(page.locator('.mc-kesim-yer.dolu')).toHaveCount(i + 1, { timeout: 1500 });
+    }).toPass({ timeout: 15000 });
+    if (i === 2) await ekran(page, '108-macera-pasta', p);
   }
   // dans
   await expect(page.locator('.mc-ipucu.acik')).toHaveText('Alkışla!', { timeout: 15000 });
