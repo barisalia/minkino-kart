@@ -165,3 +165,4 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   - Karakterlerde bekleme nefesi ve adım adım yürüme var.
   - **Üfleme kolaylaştı:** eşik düştü, sesli "fuuu" da sayılıyor, balonun yeşil bölgesi genişledi, yeşile girince balon yavaşlıyor, mumlar daha çabuk sönüyor.
 - 2026-09-26 ONAY BEKLİYOR (Barış): Mino'nun yeniden tasarımı. Barış Recraft'tan görsel gönderecek; gelince Mino baştan kurulacak.
+- 2026-09-26 KARAR (Barış): **Tüm görseller tek stilde.** Prompt kalıpları, Recraft ayarları, Gemini stil kilidi ve kalite kontrol listesi: `ekip/stil-rehberi.md`. Yeni görsel üreten herkes bu dosyadaki kalıpları kelimesi kelimesine kullanır. Parlaklık ve doku **az dozda** olur; 2D'den kopulmaz.
