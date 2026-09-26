@@ -1,0 +1,70 @@
+{
+  "ad": "ordek",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "govde",
+    "ayak-sol",
+    "ayak-sag",
+    "kafa",
+    "gaga-ic",
+    "gaga-alt",
+    "gaga-ust",
+    "goz-sol",
+    "goz-sag",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali"
+  ],
+  "bagli": {
+    "gaga-ic": "kafa",
+    "gaga-alt": "kafa",
+    "gaga-ust": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "goz-kapali": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1104,
+      1156
+    ],
+    "gaga-ust": [
+      989,
+      1009
+    ],
+    "gaga-alt": [
+      1080,
+      1086
+    ],
+    "goz-sol": [
+      1045,
+      715
+    ],
+    "goz-sag": [
+      1472,
+      785
+    ],
+    "kuyruk": [
+      688,
+      1310
+    ],
+    "ayak-sol": [
+      737,
+      1695
+    ],
+    "ayak-sag": [
+      1332,
+      1695
+    ],
+    "govde": [
+      1087,
+      1919
+    ],
+    "goz-kapali": [
+      1262,
+      764
+    ]
+  }
+}

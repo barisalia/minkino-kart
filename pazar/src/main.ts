@@ -3,9 +3,11 @@ import '@fontsource/fredoka/latin-ext-600.css';
 import '@fontsource/fredoka/latin-ext-700.css';
 import '../../src/styles/ana.css';
 import '../../src/styles/mino.css';
+import '../../src/karakter/karakter.css';
 import './pazar.css';
 import './canli.css';
 import './terazi.css';
+import './musteri.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { oyunuBaslat } from './oyun';
 

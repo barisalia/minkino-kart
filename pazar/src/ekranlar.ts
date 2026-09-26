@@ -13,7 +13,8 @@ import { Mino } from '../../src/mino/mino';
 import { balonlar, canliSahne, havaiFisek } from './canli';
 import { adres, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
-import { agirlik, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
+import { agirlik, urunRengi, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
+import { Musteri } from './musteri';
 import { Terazi } from './terazi';
 import { geriGonder, surukle, tasi } from './surukle';
 
@@ -153,7 +154,9 @@ function istekGorseli(ist: Istek): HTMLElement {
 
 export function pazarEkrani(app: Uygulama): Ekran {
   const y = yas();
-  const musteriler = karistir(P.musteriler).slice(0, MUSTERI_SAYISI);
+  // gösterim / test: &musteriler=ordek,tavsan,… ile müşteriler seçilebilir
+  const secili = TEST_MODU || document.body.dataset.onizleme ? (new URLSearchParams(location.search).get('musteriler') ?? '').split(',').filter((x) => P.musteriler.includes(x)) : [];
+  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, MUSTERI_SAYISI);
   musteriler.forEach(resimSesiHazirla);
 
   const yazi = h('span', {}, P.basla);
@@ -203,7 +206,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
   let sonHareket = performance.now();
   let sonBirakma = 0;
   let ipucu = false;
-  let musteri: HTMLElement | null = null;
+  let musteri: Musteri | null = null;
   let bitir: () => void = () => undefined;
   const sokuler: (() => void)[] = [];
 
@@ -254,7 +257,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
   function yanlisUrun() {
     hata++;
     efekt.yanlis();
-    salla(musteri);
+    void musteri?.hayir();
     mino.tepki('hayir');
     const soz = ist.tur === 'ayir' ? (ist.grup === 'meyve' ? P.meyve_degil : P.sebze_degil) : rastgele(P.yanlis);
     if (hata >= 2) {
@@ -409,21 +412,28 @@ export function pazarEkrani(app: Uygulama): Ekran {
     sepetGuncelle();
 
     const ad = musteriler[i];
-    const m = h('div.pz-musteri', { 'data-musteri': ad }, h('div.pz-istek-balon', {}, istekGorseli(ist)), resim(`hayvanlar/${ad}`, 'pz-musteri-resim', ad));
-    musteri = m;
+    // müşteri kendi yürüyüşüyle gelir (musteri.ts: kişilikler)
+    musteri?.kapat();
+    const mu = new Musteri(ad, resim(`hayvanlar/${ad}`, 'pz-musteri-resim', ad), h('div.pz-istek-balon', {}, istekGorseli(ist)));
+    const m = mu.el;
+    musteri = mu;
     musteriKap.replaceChildren(m);
     void resimSesi(ad);
     // Mino müşteriyi karşılar
     setTimeout(() => mino.tepki('mir', 1.4), sure(450));
-    await bekle(sure(700));
+    await mu.gel();
     if (kapandi) return;
+    mu.bekle(true);
 
     const bitti = new Promise<void>((r) => (bitir = r));
     yazi.textContent = ist.yazi;
     sonHareket = performance.now();
     aktif = true;
     el.classList.add('pz-aktif');
+    // müşteri isteğini söylerken ağzı oynar
+    mu.konus(true);
     await soyle(ist.soz);
+    mu.konus(false);
     await bitti;
     aktif = false;
     el.classList.remove('pz-aktif');
@@ -449,10 +459,19 @@ export function pazarEkrani(app: Uygulama): Ekran {
     kaydet();
     const tesekkur = rastgele(P.dogru);
     yazi.textContent = tesekkur;
-    await Promise.all([soyle(tesekkur), bekle(sure(1300))]);
+    // ürün müşteriye ulaşınca: alır, ısırır (kırıntılar), kendi sevinç dansını yapar, sonra kendi yürüyüşüyle gider
+    const yenen = ist.tur === 'ode' ? undefined : sepettekiler()[0];
+    await Promise.all([
+      soyle(tesekkur),
+      (async () => {
+        await bekle(sure(750));
+        await mu.ye(yenen ? urunResmi(yenen) : null, RENK_KODU[urunRengi(yenen ?? '') ?? ''] ?? '#f4a340', A.nyam);
+        await mu.dans();
+      })(),
+    ]);
     if (kapandi) return;
     m.classList.add('gidiyor');
-    await bekle(sure(550));
+    await mu.git();
   };
 
   void (async () => {
@@ -477,6 +496,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       mino.kapat();
       canli.kapat();
       terazi?.kapat();
+      musteri?.kapat();
     },
   };
 }

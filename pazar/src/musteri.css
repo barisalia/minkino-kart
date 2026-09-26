@@ -1,0 +1,84 @@
+/* Mino'nun Pazarı — kişilikli müşteriler (musteri.ts). Hareketler WAAPI ile; burada katmanlar ve parçacıklar. */
+.pz-kok .pz-musteri.pz-kisilik,
+.pz-kok .pz-musteri.pz-kisilik.gidiyor {
+  animation: none;
+}
+.pz-kok .pz-musteri.pz-kisilik.sevindi .pz-musteri-resim,
+.pz-kok .pz-musteri.pz-kisilik.pz-hayir .pz-musteri-resim {
+  animation: none;
+}
+.pz-kok .pz-m-govde {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 96%;
+  will-change: transform;
+}
+.pz-kok .pz-m-govde > .pz-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* ayakların altındaki gölge (kuş havadayken silik) */
+.pz-kok .pz-m-golge {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 2%;
+  height: 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(60, 35, 12, 0.3), transparent);
+}
+.pz-kok .pz-musteri[data-yuruyus='uc'] .pz-m-golge {
+  opacity: 0.55;
+}
+/* yenen ürün: ağzın önünde, ısırdıkça küçülür */
+.pz-kok .pz-m-lokma {
+  position: absolute;
+  z-index: 4;
+  width: 30%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.pz-kok .pz-m-lokma > .pz-resim {
+  width: 100%;
+  height: 100%;
+}
+.pz-kok .pz-m-kirinti {
+  position: absolute;
+  z-index: 5;
+  width: 4.5%;
+  aspect-ratio: 1;
+  margin: -2.25%;
+  border-radius: 45% 55% 50% 50%;
+  border: 1.5px solid rgba(90, 54, 23, 0.6);
+  pointer-events: none;
+}
+/* "Nyam!" yazısı ağzın üstünde zıplayarak belirir */
+.pz-kok .pz-m-nyam {
+  position: absolute;
+  z-index: 6;
+  translate: -50% 0;
+  font-size: clamp(0.95rem, 4.2vw, 1.4rem);
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: 4px var(--kontur);
+  paint-order: stroke fill;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pz-nyam 1s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes pz-nyam {
+  0% { transform: scale(0.2) rotate(-10deg); opacity: 0; }
+  25% { transform: scale(1.15) rotate(4deg); opacity: 1; }
+  45% { transform: scale(1) rotate(-2deg); }
+  70% { transform: scale(1.08) rotate(3deg); }
+  100% { transform: scale(1) translateY(-20%); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .pz-m-nyam {
+    animation: none;
+  }
+}

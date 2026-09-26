@@ -1,0 +1,34 @@
+/* Ortak karakter bileşeni (src/karakter/karakter.ts). Kök sınıf altında: gömülünce başka uygulamayı bozmaz. */
+.mk-kok .kr-karakter {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* tek görsel: ayak tabanından esner, eğilir */
+.mk-kok .kr-tek {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 96%;
+  will-change: transform;
+}
+.mk-kok .kr-tek > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* iskelet: parçalar çizimin kendi koordinatlarında döner (dönme noktaları JSON'dan) */
+.mk-kok .kr-iskelet {
+  position: absolute;
+  inset: 0;
+}
+.mk-kok .kr-iskelet svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.mk-kok .kr-iskelet g {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
