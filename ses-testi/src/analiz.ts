@@ -188,13 +188,6 @@ export interface Ayar {
 }
 
 // ---------------------------------------------------------------- 1. Üfleme
-/**
- * Kolay üfleme eşikleri (Sesli Maceralar). Yapay seslerle ölçüm (tests/unit/ses-testi.test.ts):
- * üfleme / sesli "fuuu" düzlük 0,02–0,15, kalın oran 0,3–0,9; konuşma, ünlü, müzik düzlük < 0,012, perde güveni > 0,93;
- * "sss/şşş" ve TV cızırtısı tiz (merkez ~4 kHz, kalın oran < 0,1). Gerçek cihazda /ses-testi/ raporlarıyla ayarlanacak.
- */
-export const KOLAY = { esik: 12, duzluk: 0.02, kalin: 0.25, merkez: 1500, perdeGuven: 0.8 };
-
 /** Üfleme: sesli (perdeli) değil, gürültü gibi, kalın ağırlıklı ve süren bir ses. */
 export class UflemeBulucu {
   private art = 0;
@@ -210,16 +203,9 @@ export class UflemeBulucu {
     private kolay = false,
   ) {}
   kare(o: Ozellik): { basladi?: boolean; bitti?: number } {
-    const esik = this.a.taban + (this.kolay ? KOLAY.esik : 14) - this.a.duyarlilik;
+    const esik = this.a.taban + (this.kolay ? 9 : 14) - this.a.duyarlilik;
     const ufleme = this.kolay
-      ? // Kolay (Sesli Maceralar): sesli "fuuu" da sayılır ama yüksek ses tek başına YETMEZ.
-        // Her karede üflemeye özgü şart: gürültü benzeri (düzlük), kalın ağırlıklı, tiz değil.
-        // Perde bulunursa zayıf olmalı (üflemenin içindeki ses); güçlü perde = konuşma, şarkı, müzik.
-        o.db > esik &&
-        o.duzluk > KOLAY.duzluk &&
-        o.kalinOran > KOLAY.kalin &&
-        o.merkez < KOLAY.merkez &&
-        (o.perde === null || o.perdeGuven < KOLAY.perdeGuven)
+      ? o.db > esik && (o.perde === null || o.db > esik + 6) && (o.kalinOran > 0.2 || o.db > esik + 10)
       : o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
     const sonuc: { basladi?: boolean; bitti?: number } = {};
     if (ufleme) {

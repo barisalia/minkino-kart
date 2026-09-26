@@ -71,24 +71,10 @@ export function seviyeleriUygula() {
 }
 
 /** Konuşma sırasında müziği kısar. */
-let mikrofonDinliyor = false;
-/** Arka plan müziğinin olması gereken seviyesi: ayar kapalıysa ya da mikrofon dinliyorsa 0 */
-export const muzikSeviyesi = (kis = false) => (durum.i.ayarlar.muzik && !mikrofonDinliyor ? (kis ? 0.3 : 1) : 0);
-
-/**
- * Mikrofon bir görevi dinlerken arka plan müziği susar: yankı iptali kapalı, telefonun hoparlörü mikrofona yakın;
- * oyun kendi müziğini çocuğun sesi (üfleme, alkış) sanmasın.
- */
-export function mikrofonDinliyorMu(d: boolean) {
-  if (d === mikrofonDinliyor) return;
-  mikrofonDinliyor = d;
-  if (ctx && muzikKanal) muzikKanal.gain.setTargetAtTime(muzikSeviyesi(), ctx.currentTime, d ? 0.06 : 0.6);
-}
-
 export function muzikKis(kis: boolean) {
   if (!ctx || !muzikKanal || !efektKanal) return;
   const a = durum.i.ayarlar;
-  muzikKanal.gain.setTargetAtTime(muzikSeviyesi(kis), ctx.currentTime, kis ? 0.08 : 0.4);
+  muzikKanal.gain.setTargetAtTime(a.muzik ? (kis ? 0.3 : 1) : 0, ctx.currentTime, kis ? 0.08 : 0.4);
   // Konuşma sırasında efektler de geri planda kalsın (ses anlaşılır olsun, cızırdamasın)
   efektKanal.gain.setTargetAtTime(a.efekt ? (kis ? 0.45 : 0.9) : 0, ctx.currentTime, kis ? 0.05 : 0.3);
 }

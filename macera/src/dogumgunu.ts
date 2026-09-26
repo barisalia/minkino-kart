@@ -624,8 +624,6 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
         [{ transform: 'translate(-5%, -93%) scale(1)' }, { transform: 'translate(-5%, -93%) scale(0.9) translateY(4%)', offset: 0.45 }, { transform: 'translate(-5%, -93%) scale(1)' }],
         { duration: sure(260), easing: 'ease-in-out' },
       );
-      // kesme sesi kısa bir hışırtı: alkış / dil şaklatması sanılıp kendi kendine kesim yaptırmasın
-      kulak.sustur(450);
       efekt.cevir();
       await bekle(130);
       dilimler[(cizgi + adet - 1) % adet].dis.classList.add('kesik');

@@ -44,31 +44,6 @@ function ufleme(sn: number, genlik = 0.25, tohum = 7) {
   }
   return out;
 }
-/** Ünlü ("aaa"): zengin harmonik dizisi, formantlar ~700 ve ~1200 Hz; oda gürültüsü eklenebilir */
-function unlu(sn: number, f = 150, genlik = 0.2, gurultu = 0) {
-  const n = Math.round(sn * SR);
-  const out = new Float32Array(n);
-  const r = rastgele(11);
-  for (let k = 1; k * f < 5000; k++) {
-    const fr = k * f;
-    const a = Math.exp(-((fr - 700) ** 2) / (2 * 200 ** 2)) + 0.6 * Math.exp(-((fr - 1200) ** 2) / (2 * 250 ** 2)) + 0.3 / k;
-    for (let i = 0; i < n; i++) out[i] += genlik * a * Math.sin((2 * Math.PI * fr * i) / SR + k);
-  }
-  if (gurultu) for (let i = 0; i < n; i++) out[i] += r() * gurultu;
-  return out;
-}
-/** Oyun müziği gibi: değişen notalar + bas (sinüs/üçgen karışımı) */
-function muzik(sn: number, genlik = 0.15) {
-  const n = Math.round(sn * SR);
-  const notalar = [262, 330, 392, 523];
-  return Float32Array.from({ length: n }, (_, i) => {
-    const t = i / SR;
-    const nt = notalar[Math.floor(t * 4) % 4];
-    return genlik * (Math.sin(2 * Math.PI * nt * t) + 0.4 * Math.sin(2 * Math.PI * 131 * t) + 0.2 * Math.sin(4 * Math.PI * nt * t));
-  });
-}
-/** İki sinyali üst üste koyar */
-const karistir = (a: Float32Array, b: Float32Array) => a.map((v, i) => v + (b[i] ?? 0));
 /** Alkış: çok kısa, hızla sönen gürültü patlaması */
 function alkis(tohum = 3) {
   const r = rastgele(tohum);
@@ -130,41 +105,6 @@ describe('Uyuyan Orman: ses analizi', () => {
     expect(sureler).toHaveLength(1);
     expect(sureler[0]).toBeGreaterThan(1.2);
     expect(sureler[0]).toBeLessThan(1.7);
-  });
-
-  describe('kolay üfleme (Sesli Maceralar): yüksek ses tek başına yetmez', () => {
-    /** Sinyal boyunca üfleme sayılan toplam süre (sn) */
-    const uflemeSuresi = (sinyal: Float32Array) => {
-      const a = ayarla(sessizlik(1));
-      const u = new UflemeBulucu(a, true);
-      let toplam = 0;
-      isle(birlestir(sessizlik(0.3), sinyal, sessizlik(0.5)), (o) => {
-        const r = u.kare(o);
-        if (r.bitti) toplam += r.bitti;
-      });
-      return toplam;
-    };
-
-    it('(a) konuşma / ünlü (perdeli, harmonik) üfleme sayılmaz, yüksek sesle de', () => {
-      expect(uflemeSuresi(unlu(1.5, 150, 0.2))).toBe(0);
-      expect(uflemeSuresi(unlu(1.5, 250, 0.3))).toBe(0);
-      expect(uflemeSuresi(unlu(1.5, 150, 0.2, 0.05)), 'oda gürültüsüyle').toBe(0);
-      expect(uflemeSuresi(ton(1.5, 120, 0.3)), 'kalın ses').toBe(0);
-      expect(uflemeSuresi(karistir(ton(1.5, 120, 0.2), ufleme(1.5, 0.05))), 'nefesli konuşma').toBe(0);
-    });
-
-    it('(b) müzik (oyunun kendi müziği, TV) üfleme sayılmaz', () => {
-      expect(uflemeSuresi(muzik(2))).toBe(0);
-      expect(uflemeSuresi(muzik(2, 0.3))).toBe(0);
-      expect(uflemeSuresi(karistir(muzik(2), ufleme(2, 0.05))), 'müzik + hafif gürültü').toBe(0);
-    });
-
-    it('(c) gürültü benzeri üfleme ve sesli "fuuu" sayılır', () => {
-      expect(uflemeSuresi(ufleme(1.5))).toBeGreaterThan(1.2);
-      expect(uflemeSuresi(ufleme(1.5, 0.08)), 'hafif üfleme').toBeGreaterThan(1.2);
-      expect(uflemeSuresi(karistir(ufleme(1.5, 0.25), ton(1.5, 200, 0.15))), '"fuuu" (zayıf perde)').toBeGreaterThan(1.2);
-      expect(uflemeSuresi(karistir(ufleme(1.5, 0.25), ton(1.5, 200, 0.25))), '"fuuu" (perde yer yer bulunur)').toBeGreaterThan(0.8);
-    });
   });
 
   it('ince / kalın: çocuğun kendi sesine göre', () => {
