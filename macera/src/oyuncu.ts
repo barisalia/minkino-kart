@@ -10,7 +10,7 @@ import { adres } from './gorsel';
 export type Poz = 'normal' | 'sapkali' | 'alkis' | 'saskin' | 'dans' | 'dans2' | 'saklaniyor' | 'dilek' | 'mutlu' | 'selam';
 const POZLAR: Poz[] = ['normal', 'sapkali', 'alkis', 'saskin', 'dans', 'dans2', 'saklaniyor', 'dilek', 'mutlu', 'selam'];
 /** Tasarımcı görsellerinde şapkalı çizilen pozlar */
-const SAPKALI = new Set<Poz>(['sapkali', 'alkis', 'saskin', 'dans', 'dans2']);
+const SAPKALI = new Set<Poz>(['sapkali', 'alkis', 'saskin', 'dans', 'dans2', 'mutlu']);
 
 export interface OyuncuSecenek {
   ad: string;

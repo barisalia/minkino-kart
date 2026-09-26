@@ -48,7 +48,7 @@ const KONUK_CIZIM: Record<KonukAd, { oran: number; boy?: number; golge?: number;
   can: { boy: 23.28, oran: 422 / 558, golge: 28.7, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
   elif: { boy: 20.7, oran: 366 / 583, golge: 26, sapka: { x: 54.1, y: 17.4, w: 22.5, d: 6 } },
   deniz: { boy: 20.27, oran: 378 / 521, golge: 25.5, sapka: { x: 47, y: 11.6, w: 24.5, d: -5 } },
-  zeynep: { oran: 322 / 512, sapka: { x: 50, y: 6, w: 28, d: 6 } },
+  zeynep: { boy: 16.94, oran: 352 / 565, golge: 20.7, sapka: { x: 50.3, y: 14.8, w: 25.6, d: 6 } },
 };
 /** Konukların parti sırasındaki yerleri (x, alttan y) */
 const YER: Record<KonukAd, [number, number, number]> = { can: [27, 5, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [74, 5, 7] };
