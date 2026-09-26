@@ -259,12 +259,14 @@ export class Karakter {
       // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
       'kol-sol': kolSinir(p.kolSol),
       'kol-sag': -kolSinir(p.kolSag),
+      // kanatlar kolların yerine (kuş, ördek): + = açılır
+      'kanat-sol': kanatSinir(p.kolSol),
+      'kanat-sag': -kanatSinir(p.kolSag),
       'bacak-sol': p.bacakSol,
       'bacak-sag': -p.bacakSag,
       'ayak-sol': p.bacakSol,
       'ayak-sag': -p.bacakSag,
       kuyruk: p.kuyruk,
-      'gaga-alt': p.agizAcik * 14,
     };
     for (const [id, g] of this.parca) {
       let tr = kok;
@@ -273,6 +275,8 @@ export class Karakter {
       const a = aci[id];
       if (a && dn[id]) tr += ' ' + etrafinda(dn[id], a);
       if (id === 'agiz' && p.burun) tr += ` translate(0px, ${p.burun.toFixed(1)}px)`;
+      // alt gaga menteşeden aşağı açılır, içi (gaga-ic) görünür
+      if (id === 'gaga-alt' && dn[id] && p.agizAcik) tr += ' ' + etrafinda(dn[id], 0, 1, 1 + 0.12 * p.agizAcik, 0, 34 * p.agizAcik);
       g.style.transform = tr;
     }
     // göz kırpma ve ağız
@@ -294,6 +298,8 @@ export class Karakter {
 
 /** Kol açısı: içe en çok 5°, dışa/yukarı en çok 110° (iskelet standardındaki aralık) */
 const kolSinir = (a: number) => Math.max(-5, Math.min(110, a));
+/** Kanat açısı: -30 (kapanır) … +60 (açılır) */
+const kanatSinir = (a: number) => Math.max(-30, Math.min(60, a));
 
 /** bir noktanın etrafında dönme + ölçek (çizim birimleri) */
 function etrafinda([x, y]: [number, number], aci: number, sx = 1, sy = 1, tx = 0, ty = 0) {
@@ -315,6 +321,9 @@ function yuruyus(y: Yuruyus, adim: number, p: Poz) {
       p.bacakSag += yon < 0 ? 14 * yay : 0;
       p.kuyruk += yon * 10 * yay;
       p.kafa -= yon * 4 * yay;
+      // denge: kanatlar hafif açık, yalpalanan tarafınki biraz daha
+      p.kolSol += 14 + (yon > 0 ? 8 : 0) * yay;
+      p.kolSag += 14 + (yon < 0 ? 8 : 0) * yay;
       break;
     case 'hop': {
       // yay gibi sıçrar: çömelir, uzar, havada toplanır, iner; kulaklar geriden gelir
@@ -421,6 +430,9 @@ function dans(d: Kisilik['dans'], gecen: number, u: number, p: Poz) {
       p.bacakSag += 18 * Math.max(0, -S(u * PI * 8)) * z;
       p.kuyruk += 20 * S(u * PI * 16) * z;
       p.agizAcik = z > 0.5 ? 1 : 0;
+      // sevinçle kanat çırpar
+      p.kolSol += (15 + 45 * Math.abs(S(u * PI * 10))) * z;
+      p.kolSag += (15 + 45 * Math.abs(S(u * PI * 10 + 0.4))) * z;
       break;
     case 'hop': {
       // tavşan: iki kol havaya, kulaklar sallanır, üç yüksek hop

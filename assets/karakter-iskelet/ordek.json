@@ -2,14 +2,15 @@
   "ad": "ordek",
   "boyut": 2048,
   "sira": [
-    "kuyruk",
+    "bacak-sol",
+    "bacak-sag",
+    "kanat-sol",
+    "kanat-sag",
     "govde",
-    "ayak-sol",
-    "ayak-sag",
     "kafa",
     "gaga-ic",
     "gaga-alt",
-    "gaga-ust",
+    "gaga",
     "goz-sol",
     "goz-sag",
     "goz-kapali"
@@ -18,53 +19,61 @@
     "goz-kapali"
   ],
   "bagli": {
-    "gaga-ic": "kafa",
+    "gaga": "kafa",
     "gaga-alt": "kafa",
-    "gaga-ust": "kafa",
+    "gaga-ic": "kafa",
     "goz-sol": "kafa",
     "goz-sag": "kafa",
     "goz-kapali": "kafa"
   },
   "donme": {
     "kafa": [
-      1104,
-      1156
+      1024,
+      1000
     ],
-    "gaga-ust": [
-      989,
-      1009
+    "gaga": [
+      1024,
+      760
     ],
     "gaga-alt": [
-      1080,
-      1086
+      1024,
+      866
+    ],
+    "gaga-ic": [
+      1024,
+      866
     ],
     "goz-sol": [
-      1045,
-      715
+      805,
+      548
     ],
     "goz-sag": [
-      1472,
-      785
-    ],
-    "kuyruk": [
-      688,
-      1310
-    ],
-    "ayak-sol": [
-      737,
-      1695
-    ],
-    "ayak-sag": [
-      1332,
-      1695
-    ],
-    "govde": [
-      1087,
-      1919
+      1240,
+      548
     ],
     "goz-kapali": [
-      1262,
-      764
+      1024,
+      560
+    ],
+    "kanat-sol": [
+      770,
+      1110
+    ],
+    "kanat-sag": [
+      1278,
+      1110
+    ],
+    "bacak-sol": [
+      862,
+      1690
+    ],
+    "bacak-sag": [
+      1186,
+      1690
+    ],
+    "govde": [
+      1024,
+      1985
     ]
   }
 }

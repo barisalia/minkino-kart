@@ -21,7 +21,7 @@ export interface Kisilik {
 }
 
 export const KISILIK: Record<string, Kisilik> = {
-  ordek: { yuruyus: 'paytak', adim: 260, gelis: 1500, huy: 'ayak', dans: 'paytak', agiz: [0.72, 0.5], hayir: 10 },
+  ordek: { yuruyus: 'paytak', adim: 260, gelis: 1500, huy: 'ayak', dans: 'paytak', agiz: [0.5, 0.49], hayir: 10 },
   tavsan: { yuruyus: 'hop', adim: 430, gelis: 1300, huy: 'burun', dans: 'hop', agiz: [0.5, 0.52], hayir: 8 },
   ayi: { yuruyus: 'agir', adim: 720, gelis: 2100, huy: 'esne', dans: 'gobek', agiz: [0.5, 0.52], hayir: 5 },
   inek: { yuruyus: 'salin', adim: 620, gelis: 1900, huy: 'gevis', dans: 'don', agiz: [0.78, 0.46], hayir: 6 },
