@@ -203,3 +203,4 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
 
   Bulut kredisi ve Recraft kredisi (226) sınırlı. Bu işler Barış üzerinden istenir.
 - 2026-09-26 KARAR (Barış): `main` dalı açıldı (yerel yönetici). İçerik: bulut dalının son hâli + tasarımcının katmanlı Mino'su (kodcu bağladı; bulutun ara Mino'sunun yerine geçti). Mino'nun Pazarı `main`'de YOK (beklemede, `ekip/pazar` dalında; seslendirme kredisi harcanmasın diye). Bundan sonra iş `main` üzerinden.
+- 2026-09-26 KARAR (Barış): Üfleme bulutun hâline döndü ("buluttaki hâli kusursuzdu"); 2d3becc geri alındı. Not: 'kendi kendine ilerleme' şikâyeti sırasında yerel yöneticinin tarayıcı panelinde oyun açık ve müzik çalıyordu; ilerlemeye büyük olasılıkla o ses sebep oldu. Üfleme eşiklerine Barış'ın onayı olmadan dokunulmaz.
