@@ -1,6 +1,6 @@
 # Minkino Mini Filmler: animasyon ekibi rehberi
 
-**Ne yapıyoruz:** Uygulamanın içinde oynayan, 60-120 saniyelik, 3-6 yaş için **eğitici mini çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (renkler, sayılar, paylaşmak, el yıkamak, mevsimler…) ve sonunda çocuğa 1-2 soru sorar.
+**Ne yapıyoruz:** Uygulamanın içinde oynayan, **50-60 saniyelik**, 3-6 yaş için **eğitici mini çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (paylaşmak, renkler, sayılar, el yıkamak…). Hikâye sade; süs sürprizler yok. **Final sorusu yok**; film anlatıcının kısa bir öğüdüyle biter ("Paylaşmak güzeldir."). (Barış, 2026-09-26)
 
 **Ekip yöneticisi:** yerel yönetici (bu klasördeki yönetici oturumu). Herkes ona bağlı çalışır, işini ona teslim eder. Ürün sahibi Barış; kararları o verir.
 
@@ -15,7 +15,7 @@ Filmler MP4 olarak çizilmez. Karakterler **katmanlı SVG iskeletlerdir** (Mino 
 Neden:
 - Mino ve arkadaşları oyunlarda nasıl görünüyorsa filmde de öyle görünür. Tek stil, tek karakter.
 - Dosyalar çok küçük (bir film ~1-2 MB, video olsa 30-60 MB). İnternetsiz çalışır.
-- Film durup çocuğa soru sorabilir, cevaba göre devam eder (eğitici kısım).
+- İleride istenirse film durup çocukla etkileşebilir (şimdilik yok).
 - Ağız, konuşma sesine göre kendiliğinden oynar (Mino'da çalışan yöntem).
 - Gerekirse aynı motor ekran kaydıyla MP4'e de çevrilir (tanıtım, sosyal medya).
 
@@ -84,7 +84,7 @@ Yeni görsel gerekiyorsa (arka plan, eşya) **Recraft** kullanılır (bu bilgisa
         { "t": 3.2, "kim": "mino", "soyle": "Renkler nereye gitti?" }
       ]
     },
-    { "soru": { "metin": "Hangisi kırmızı?", "secenekler": ["elma", "muz", "yaprak"], "dogru": "elma" } }
+    { "ogut": "Paylaşmak güzeldir." }
   ]
 }
 ```
@@ -109,9 +109,9 @@ assets/film/<film>/…           filmin görselleri (webp)
 
 ```
 # <Film adı>
-Öğrettiği: <tek cümle>          Yaş: 3-6        Süre: ~90 sn
+Öğrettiği: <tek cümle>          Yaş: 3-6        Süre: ~60 sn
 Karakterler: Mino, …
-Duygu eğrisi: merak → sorun → deneme/komik hata → çözüm → kutlama
+Duygu eğrisi: merak → sorun → komik an → çözüm → öğüt
 
 ## Sahne 1 — <yer>
 Kamera: geniş plan, yavaşça Mino'ya yaklaşır
@@ -120,8 +120,8 @@ ANLATICI: "…"
 MİNO: "…"
 Ses/efekt: …
 
-## Soru (final)
-"Hangisi …?"  Seçenekler: … (doğru: …)  Doğruysa: …  Yanlışsa: (asla ceza yok) …
+## Öğüt (final)
+ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 ```
 
 ## 8. Kurallar
