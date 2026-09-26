@@ -14,12 +14,12 @@ test('Mino: açılıştan girilir, doğru kartı verince yeni tur başlar, dokun
   await page.locator('.mino-tepsi .kart:not([data-dogru])').first().click();
   await expect(page.locator('.mino-tepsi [data-dogru="1"]')).toBeVisible();
 
-  // Doğru kart → Mino yer, yeni istek gelir
-  const onceki = await page.locator('.mino-tepsi [data-dogru="1"]').getAttribute('data-kart');
+  // Doğru kart → Mino yer, yeni istek gelir. Yeni tur kartları yeniden kurar: eski ızgarayı işaretleyip
+  // yenisini bekleriz (aynı kart rastgele yeniden seçilse de test şaşmaz)
+  await page.locator('.mino-tepsi .izgara').evaluate((e) => e.setAttribute('data-eski', '1'));
   await page.locator('.mino-tepsi [data-dogru="1"]').click();
-  await expect
-    .poll(async () => page.locator('.mino-tepsi [data-dogru="1"]').getAttribute('data-kart'), { timeout: 8000 })
-    .not.toBe(onceki);
+  await expect(page.locator('.mino-tepsi .izgara:not([data-eski])')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('.mino-tepsi .izgara:not([data-eski]) [data-dogru="1"]')).toHaveCount(1);
 
   // Mino'nun farklı yerlerine dokun
   const r = (await page.locator('.mino-svg').boundingBox())!;
