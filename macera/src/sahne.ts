@@ -54,6 +54,12 @@ export class Sahne {
     await bekle(ms);
   }
 
+  /** Loş ışık (dans: spot ışıkları parlasın diye oda biraz kararır) */
+  los(acik: boolean) {
+    this.karanlik.style.transitionDuration = '800ms';
+    this.karanlik.classList.toggle('los', acik);
+  }
+
   /** Disko ışığı (dans sahnesi): her alkışta renk değişir */
   diskoRenk(renk: string | null) {
     this.disko.classList.toggle('acik', !!renk);

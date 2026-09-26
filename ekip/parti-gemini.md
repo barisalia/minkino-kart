@@ -1,26 +1,39 @@
-# Ada'nın Doğum Günü — Gemini (tarayıcı) görsel iş listesi
+# Ada'nın Doğum Günü: Gemini (tarayıcı) görsel iş listesi
 
-Yeni bölüm: **Ada'nın Sürpriz Doğum Günü.** Mino ve hayvan arkadaşları Ada'ya sürpriz parti hazırlıyor; çocuk balon şişiriyor, saklanıp susuyor, "Sürpriz!" diye bağırıyor, şarkı söylüyor, mum üflüyor, pastayı kesiyor, dans ettiriyor.
+**Bölüm:** Ada'nın Sürpriz Doğum Günü.
+
+**Konu:** Mino ve Ada'nın arkadaşları (Can, Elif, Deniz, Zeynep) Ada'ya sürpriz parti hazırlıyor. Çocuk:
+- balon şişiriyor,
+- saklanıp susuyor,
+- "Sürpriz!" diye bağırıyor,
+- şarkı söylüyor,
+- mum üflüyor,
+- pastayı kesiyor,
+- dans ettiriyor.
+
+> **2026-09-26 değişiklik:** Hayvan konuklar (sincap, tavşan, köpek, ayı) çıkarıldı. Yerlerine Ada gibi 4 çocuk geldi (Barış'ın isteği).
+> Hayvan pozları **yapılmasın.** Başlanmış olan varsa bırakın.
+
 Bu liste, Uyuyan Orman ifade işinden **önce** yapılır.
 
 ## Her istekte
 
-1. Kaynak görseli (ve gerekiyorsa şapkayı) Gemini'ye yükleyin.
+1. Kaynak görseli Gemini'ye yükleyin. Şapkalı pozlarda şapkayı ikinci görsel olarak yükleyin.
 2. İsteğin başına bu stil kilidini koyun:
    > Keep exactly the same character, same art style, same colors, same thick dark-brown outlines, same glossy highlights, same proportions and size. Premium glossy 2D cartoon vector style for a toddler picture book. Full body, facing the viewer. Plain pure white background. No text.
-3. Sonucu kaynakla yan yana kontrol edin; yüz, renk, çizgi, oran değiştiyse kullanmayın.
-4. PNG, en az 1024 px. Kayıt: `ekip/gemini/parti/<karakter>/<dosya>.png` (ekip dalıyla GitHub'a). Claude alır, zemini siler, oyuna koyar.
+3. Sonucu kaynakla yan yana kontrol edin. Yüz, saç, kıyafet rengi, çizgi ya da oran değiştiyse kullanmayın.
+4. PNG olarak, en az 1024 px kaydedin. Kayıt yeri `ekip/gemini/parti/<karakter>/<dosya>.png`, ekip dalıyla GitHub'a gönderin. Claude alır, zemini siler, oyuna koyar.
 
 ## Kaynaklar
 
-| Karakter | Kaynak |
-|---|---|
-| ada (doğum günü kızı) | https://img.recraft.ai/4ZwIzTHeP4JtLcvLGCJdaZJnx4htKyIQnigMfYcijwo/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/381ccf59-8004-4214-ba64-9cf1c4959903 |
-| parti şapkası | https://img.recraft.ai/ZEmCphcymn6MyAtn-u8izFX89ND8xruEAApckGqz3Mw/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/e2beb6a1-c202-4ab4-984e-0c8f5eff158d |
-| sincap | https://img.recraft.ai/3hLODN-4vaLw4K3Zhwy2qBD3rHHsNoZNQtN5F7jv71w/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/e10a9c35-b2cb-4c91-b06c-3545258bab21 |
-| tavsan | https://img.recraft.ai/1n3NLOy0McAExW7SjcTWvRjWXOAmvxInqoWmgta4zaE/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/7c9ae8c4-91c5-4819-a406-21862900e53e |
-| kopek | https://img.recraft.ai/HBq_B5wn3GtcwBBYO5cS21tmFeNcS5AGWOkolAQoDZw/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/3664fb00-e251-4e11-b2c9-490ff912df03 |
-| ayi | https://img.recraft.ai/4e6n86p4AKuXd1GS6MphKv_ffd3m9MzKxorznz9VvTU/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/ad53865d-5585-4bf5-87db-4f32bc1b10e8 |
+| Karakter | Görünüş | Kaynak |
+|---|---|---|
+| ada | Doğum günü kızı. Kıvırcık kahverengi saç, iki topuz, sarı fiyonklar, sarı puantiyeli elbise. | https://img.recraft.ai/4ZwIzTHeP4JtLcvLGCJdaZJnx4htKyIQnigMfYcijwo/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/381ccf59-8004-4214-ba64-9cf1c4959903 |
+| can | Siyah dağınık saç, yeşil yıldızlı tişört, mavi şort. | https://img.recraft.ai/vL7SlB-uHLr8KkJ1m3VLOa-WCQE6_bdhseneCSxKNXI/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/875aae78-6c10-4ad1-a43d-506f4a33fae0 |
+| elif | Uzun düz kahverengi saç, pembe taç, lila elbise. | https://img.recraft.ai/zhdSe0pRLwVucUoR9cz8FDjNIObMsIx1QMdY2otUjzw/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/5d003f25-6b39-4f13-9007-c6715c833349 |
+| deniz | Turuncu kıvırcık saç, çil, çizgili tişört, kot tulum. | https://img.recraft.ai/r9hJq8o12U4SJkQMtYrBuWsfWmk9saWiRg0VLV-0Nm0/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/ca60cc0a-38b6-4ba4-956b-fc3481e4aa3b |
+| zeynep | Sarı iki kuyruk, mavi kurdele, kırmızı yuvarlak gözlük, turkuaz etek. | https://img.recraft.ai/A0FTi9e--fEHv3raw9oSq9nPw6E2hcqoJTAprQKxL-4/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/0bc7e3b5-c43a-4c08-8719-52720c1bf621 |
+| parti şapkası | | https://img.recraft.ai/ZEmCphcymn6MyAtn-u8izFX89ND8xruEAApckGqz3Mw/rs:fit:1024:1024:0/raw:1/plain/abs://external/images/e2beb6a1-c202-4ab4-984e-0c8f5eff158d |
 
 ## 1. Ada (öncelik 1)
 
@@ -31,17 +44,29 @@ Bu liste, Uyuyan Orman ifade işinden **önce** yapılır.
 | `sapkali.png` | Same girl wearing this party hat (second image) on her head, big happy smile. |
 | `alkis.png` | Same girl wearing the party hat, clapping her hands, laughing. |
 | `dans.png` | Same girl wearing the party hat, dancing happily with both arms up. |
+| `dans2.png` | Same girl wearing the party hat, a different dance move: one hand on her hip, the other arm pointing up to the sky, one knee lifted. |
+| `mutlu.png` | Same girl wearing the party hat, jumping with joy, both fists up, eyes closed laughing. |
 
-## 2. Konuklar: sincap, tavşan, köpek, ayı (öncelik 2)
+## 2. Arkadaşlar: can, elif, deniz, zeynep (öncelik 2)
 
-Her biri için (parti şapkasını ikinci görsel olarak ekleyin):
+Her biri için aşağıdaki pozlar yapılacak. Şapkalı pozlarda parti şapkasını ikinci görsel olarak ekleyin.
 
 | Dosya | İstek |
 |---|---|
-| `sapkali.png` | Same character wearing this party hat, happy smile. |
-| `saklaniyor.png` | Same character wearing the party hat, covering its eyes with its paws, giggling quietly (hiding for a surprise party). |
-| `alkis.png` | Same character wearing the party hat, clapping its paws, laughing. |
-| `saskin.png` | Same character wearing the party hat, a funny puzzled "aaa?" face, paws over its ears (as if a song note was a bit off). Cute and funny, not sad. |
-| `dans.png` | Same character wearing the party hat, dancing happily with arms up. |
+| `selam.png` | Same child, NO hat, waving hello with one hand raised high, big friendly smile (arriving at the party). |
+| `saklaniyor.png` | Same child, NO hat, crouching down low, one finger on the lips saying "shhh", eyes sparkling (hiding for a surprise party). |
+| `sapkali.png` | Same child wearing this party hat, happy smile. |
+| `alkis.png` | Same child wearing the party hat, clapping hands, laughing. |
+| `saskin.png` | Same child wearing the party hat, a funny puzzled "aaa?" face, hands over the ears (as if a song note was a bit off). Cute and funny, not sad. |
+| `dans.png` | Same child wearing the party hat, dancing happily with both arms up. |
+| `dans2.png` | Same child wearing the party hat, a different dance move: one hand on the hip, the other arm pointing up, one knee lifted. |
 
-Sıra: Ada → sincap → tavşan → köpek → ayı. Bitenleri parça parça gönderin; Claude geldikçe oyuna koyar.
+> Not: `selam` ve `saklaniyor` pozları **şapkasız.** Çünkü çocuklar şapkayı sürprizden sonra takıyor.
+
+**Sıra:** Ada, sonra Can, Elif, Deniz, Zeynep.
+
+İki tasarımcı varsa:
+- Tasarımcı 1: Ada ve Can.
+- Tasarımcı 2: Elif, Deniz ve Zeynep.
+
+Bitenleri parça parça gönderin; Claude geldikçe oyuna koyar.

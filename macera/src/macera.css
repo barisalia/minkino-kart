@@ -389,6 +389,9 @@
   opacity: 0;
   transition: opacity 0.9s;
 }
+.mc-kok .mc-karanlik.los {
+  opacity: 0.42;
+}
 .mc-kok .mc-karanlik.acik {
   opacity: 1;
 }
@@ -465,10 +468,13 @@
   transform-origin: 50% 100%;
 }
 .mc-kok .mc-oyuncu.yuruyor .mc-oy-hareket {
-  animation: mc-yuru 0.34s ease-in-out infinite;
+  animation: mc-yuru 0.5s ease-in-out infinite;
 }
+/* adım adım: her adımda yaylanır, gövde iki yana yatar */
 @keyframes mc-yuru {
-  50% { transform: translateY(-8%) rotate(3deg); }
+  0%, 50%, 100% { transform: translateY(0) scale(1.03, 0.97) rotate(0); }
+  25% { transform: translateY(-9%) scale(0.98, 1.03) rotate(4deg); }
+  75% { transform: translateY(-9%) scale(0.98, 1.03) rotate(-4deg); }
 }
 .mc-kok .mc-oyuncu.sallaniyor .mc-oy-govde {
   animation: mc-sallan 1.1s ease-in-out infinite alternate;
@@ -481,10 +487,12 @@
   position: relative;
   aspect-ratio: var(--ar, 1);
   transform-origin: 50% 100%;
-  animation: mc-nefes 2.8s ease-in-out infinite;
+  animation: mc-nefes 2.8s ease-in-out var(--faz, 0s) infinite;
 }
+/* bekleme: nefes alır, ağırlığını hafifçe bir ayağından ötekine verir */
 @keyframes mc-nefes {
-  50% { scale: 1.015 1.03; }
+  0%, 100% { scale: 1 1; rotate: -0.8deg; }
+  50% { scale: 1.015 1.03; rotate: 0.8deg; }
 }
 .mc-kok .mc-oy-resim {
   position: absolute;
@@ -628,13 +636,6 @@
 }
 
 /* ---------------------------------------------------------------- pasta, mumlar, dilimler */
-.mc-kok .mc-pasta {
-  --kalan: 1;
-}
-.mc-kok .mc-pasta-resim {
-  clip-path: polygon(0 0, calc(var(--kalan) * 100%) 0, calc(var(--kalan) * 100%) 62%, 100% 62%, 100% 100%, 0 100%);
-  transition: clip-path 0.4s ease;
-}
 .mc-kok .mc-mumlar {
   position: absolute;
   left: 26%;
@@ -696,48 +697,32 @@
   from { transform: translateY(0) scale(0.4); opacity: 1; }
   to { transform: translateY(-160%) scale(2); opacity: 0; }
 }
-.mc-kok .mc-tabaklar {
-  height: 20%;
-  width: 100%;
-  transform: none;
-  left: 0;
-  pointer-events: none;
-}
-.mc-kok .mc-tabak {
-  position: absolute;
-  left: calc(var(--x) * 1%);
-  bottom: 6%;
-  width: calc(10 * var(--b));
-  transform: translateX(-50%);
+.mc-kok .mc-tabak.dolu {
+  animation: mc-balon-gir 0.4s cubic-bezier(0.3, 1.8, 0.5, 1) var(--g, 0ms) backwards;
 }
 .mc-kok .mc-tabak-bos {
   display: block;
-  width: 100%;
-  aspect-ratio: 3;
+  width: 130%;
+  margin-left: -15%;
+  aspect-ratio: 2.6;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 40%, #fff, #e6eef5);
-  border: 3px solid var(--kontur);
+  background: radial-gradient(ellipse at 50% 40%, #fff, #e3ebf4);
+  border: 2.5px solid var(--kontur);
+  box-shadow: 0 3px 0 rgba(60, 30, 10, 0.18);
 }
-.mc-kok .mc-tabak.dolu {
-  animation: mc-balon-gir 0.4s cubic-bezier(0.3, 1.8, 0.5, 1);
+.mc-kok .mc-tabak > .mc-resim {
+  position: absolute;
+  left: 5%;
+  bottom: 38%;
+  width: 90%;
+  filter: drop-shadow(0 3px 2px rgba(60, 30, 10, 0.25));
 }
-.mc-kok .mc-ucan-dilim {
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.3, 1), bottom 0.6s cubic-bezier(0.3, 0, 0.3, 1.4);
+.mc-kok .mc-altlik {
+  display: block;
+  width: 92%;
+  margin: 0 auto;
 }
-.mc-kok .mc-ucan-dilim.uc {
-  left: calc(var(--hx) * 1%);
-  bottom: 4%;
-}
-.mc-kok .mc-bicak {
-  transform: translateX(-50%) rotate(-10deg);
-  transform-origin: 30% 20%;
-}
-.mc-kok .mc-bicak.kes {
-  animation: mc-kes 0.35s ease-in-out;
-}
-@keyframes mc-kes {
-  50% { transform: translateX(-60%) translateY(40%) rotate(-24deg); }
-}
+
 
 /* ---------------------------------------------------------------- sessizlik halkası */
 .mc-kok .mc-sessiz {
@@ -835,4 +820,270 @@
   background: #ffc72c;
   border: 3px solid var(--kontur);
   transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+/* ---------------------------------------------------------------- oyuncu: kapıda belirme, saklanırken çömelme */
+.mc-kok .mc-oyuncu.kapida .mc-oy-hareket {
+  animation: mc-kapida 0.3s ease-out;
+}
+@keyframes mc-kapida {
+  from { opacity: 0; transform: scale(0.85); }
+}
+.mc-kok .mc-oyuncu .mc-oy-hareket {
+  transition: translate 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), scale 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.mc-kok .mc-oyuncu.comeldi .mc-oy-hareket {
+  translate: 0 8%;
+  scale: 1.04 0.84;
+}
+
+/* ---------------------------------------------------------------- pasta kesme: yakın çekim */
+.mc-kok .mc-kesim {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 90px 16px 110px;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 244, 225, 0.55), rgba(60, 30, 40, 0.55));
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.mc-kok .mc-kesim.acik {
+  opacity: 1;
+}
+.mc-kok .mc-kesim-servis {
+  position: relative;
+  width: min(74vw, 46vh);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 36%, #ffffff, #e9f0fa 55%, #c7d6ec 80%, #9fb6da);
+  border: 4px solid var(--kontur);
+  box-shadow: 0 14px 0 -4px #8aa3cc, 0 22px 30px rgba(40, 20, 10, 0.35);
+  transform: scale(0.6) translateY(20%);
+  transition: transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mc-kok .mc-kesim.acik .mc-kesim-servis {
+  transform: none;
+}
+.mc-kok .mc-kesim-pasta {
+  position: absolute;
+  inset: 7%;
+}
+.mc-kok .mc-kd {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.28s cubic-bezier(0.3, 1.6, 0.5, 1), filter 0.2s;
+}
+.mc-kok .mc-kd-ic {
+  position: absolute;
+  inset: 0;
+}
+.mc-kok .mc-kd-ic > .mc-resim {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* kesik: dilimin kenarı koyu çizgiyle belirir; kalkınca altında pandispanya kalınlığı görünür */
+.mc-kok .mc-kd.kesik {
+  filter: drop-shadow(0 0 0.8px #4a2a14) drop-shadow(0 0 0.6px #4a2a14);
+}
+.mc-kok .mc-kd.kalkti {
+  z-index: 2;
+  transform: translate(var(--dx), var(--dy));
+  filter: drop-shadow(0 0 0.8px #4a2a14) drop-shadow(0 5px 0 #f6d9a2) drop-shadow(0 6px 0 #e98bb0) drop-shadow(0 0 1px #4a2a14)
+    drop-shadow(0 10px 8px rgba(60, 30, 10, 0.35));
+}
+.mc-kok .mc-kb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  width: 62%;
+  height: 0;
+  transform-origin: 0 0;
+  transform: rotate(var(--a, 0deg));
+  opacity: 0;
+  transition: transform 0.17s ease-out, opacity 0.15s;
+  pointer-events: none;
+}
+.mc-kok .mc-kb.gorunur {
+  opacity: 1;
+}
+.mc-kok .mc-kb-resim {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  transform-origin: 5% 93%;
+  transform: translate(-5%, -93%);
+  filter: drop-shadow(3px 6px 4px rgba(40, 20, 10, 0.35));
+}
+.mc-kok .mc-kesim-kirinti i {
+  position: absolute;
+  left: calc(30% + (var(--i) * 17 % 40) * 1%);
+  top: calc(30% + (var(--i) * 29 % 40) * 1%);
+  width: 3%;
+  aspect-ratio: 1.3;
+  border-radius: 45%;
+  background: #f3d49c;
+  border: 1.5px solid #b0793c;
+  transform: rotate(calc(var(--i) * 47deg)) scale(0);
+  transition: transform 0.4s cubic-bezier(0.3, 1.8, 0.5, 1) calc(var(--i) * 40ms);
+}
+.mc-kok .mc-kesim-kirinti.gorunur i {
+  transform: rotate(calc(var(--i) * 47deg)) scale(1);
+}
+.mc-kok .mc-kesim-tabaklar {
+  display: flex;
+  gap: 2vw;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 96vw;
+}
+.mc-kok .mc-kesim-yer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(15vw, 11vh);
+}
+.mc-kok .mc-avatar {
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid var(--kontur);
+  background: var(--resim) 50% 4% / 190% auto no-repeat, #fff4e0;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+.mc-kok .mc-avatar.mino {
+  background: #ffe6c7;
+}
+.mc-kok .mc-avatar.mino svg {
+  width: 170%;
+  margin: -8% 0 0 -35%;
+}
+.mc-kok .mc-kesim-tabakcik {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.4;
+  margin-top: -6%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, #fff, #e6eef5);
+  border: 3px solid var(--kontur);
+}
+.mc-kok .mc-kesim-tabakcik > .mc-resim {
+  position: absolute;
+  left: 18%;
+  bottom: 30%;
+  width: 64%;
+  animation: mc-balon-gir 0.4s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.mc-kok .mc-kesim-yer.dolu .mc-avatar {
+  animation: mc-sevin 0.5s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+@keyframes mc-sevin {
+  40% { transform: translateY(-22%) scale(1.12); }
+}
+
+/* ---------------------------------------------------------------- dans: disko topu, spotlar, ışıltılar */
+.mc-kok .mc-disko-topu {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 3;
+  width: min(16vw, 10vh);
+  transform: translate(-50%, -110%);
+  transition: transform 1.2s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.mc-kok .mc-disko-topu.indi {
+  transform: translate(-50%, 0);
+}
+.mc-kok .mc-dt-ip {
+  display: block;
+  width: 3px;
+  height: 90px;
+  margin: 0 auto;
+  background: #6b5846;
+}
+.mc-kok .mc-dt-top {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid var(--kontur);
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.95) 0 7%, transparent 18%),
+    repeating-linear-gradient(0deg, rgba(40, 50, 80, 0.35) 0 1.5px, transparent 1.5px 12%),
+    repeating-linear-gradient(90deg, rgba(40, 50, 80, 0.35) 0 1.5px, transparent 1.5px 12%),
+    linear-gradient(135deg, #f4f7fc, #b7c3d8 55%, #8b98b3);
+  background-size: auto, 100% 100%, 200% 100%, auto;
+  box-shadow: 0 0 24px 6px rgba(255, 255, 255, 0.5);
+  animation: mc-dt-don 2.4s linear infinite;
+}
+@keyframes mc-dt-don {
+  to { background-position: 0 0, 0 0, 100% 0, 0 0; }
+}
+.mc-kok .mc-disko-topu.parla .mc-dt-top {
+  box-shadow: 0 0 40px 16px color-mix(in srgb, #fff 60%, var(--renk, #ffd54a));
+  transition: box-shadow 0.05s;
+}
+.mc-kok .mc-spotlar {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.8s;
+  mix-blend-mode: screen;
+}
+.mc-kok .mc-spotlar.acik {
+  opacity: 1;
+}
+.mc-kok .mc-spotlar i {
+  position: absolute;
+  top: -10%;
+  left: calc(12% + var(--k, 0) * 25%);
+  width: 34%;
+  height: 120%;
+  transform-origin: 50% 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--r) 70%, transparent), transparent 85%);
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  opacity: 0.6;
+  animation: mc-spot 3.2s ease-in-out infinite alternate;
+}
+.mc-kok .mc-spotlar i:nth-child(1) { --k: 0; --r: #ff7eb6; animation-delay: -0.4s; }
+.mc-kok .mc-spotlar i:nth-child(2) { --k: 1; --r: #ffd54a; animation-delay: -1.6s; }
+.mc-kok .mc-spotlar i:nth-child(3) { --k: 2; --r: #6fd3ff; animation-delay: -2.2s; }
+.mc-kok .mc-spotlar i:nth-child(4) { --k: 3; --r: #9bff7a; animation-delay: -0.9s; }
+@keyframes mc-spot {
+  from { transform: rotate(-24deg); }
+  to { transform: rotate(24deg); }
+}
+.mc-kok .mc-isiltilar {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.mc-kok .mc-isiltilar.acik {
+  opacity: 1;
+}
+.mc-kok .mc-isiltilar i {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1% + 12%);
+  width: 10px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 30%, rgba(255, 255, 255, 0) 70%);
+  animation: mc-isilti 1.6s ease-in-out calc(var(--i) * -0.23s) infinite;
+}
+@keyframes mc-isilti {
+  0%, 100% { transform: scale(0.2); opacity: 0; }
+  50% { transform: scale(1.6); opacity: 1; }
 }

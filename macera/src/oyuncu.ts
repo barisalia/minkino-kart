@@ -7,10 +7,10 @@
 import { h } from '../../src/ui/dom';
 import { adres } from './gorsel';
 
-export type Poz = 'normal' | 'sapkali' | 'alkis' | 'saskin' | 'dans' | 'saklaniyor' | 'dilek' | 'mutlu';
-const POZLAR: Poz[] = ['normal', 'sapkali', 'alkis', 'saskin', 'dans', 'saklaniyor', 'dilek', 'mutlu'];
+export type Poz = 'normal' | 'sapkali' | 'alkis' | 'saskin' | 'dans' | 'dans2' | 'saklaniyor' | 'dilek' | 'mutlu' | 'selam';
+const POZLAR: Poz[] = ['normal', 'sapkali', 'alkis', 'saskin', 'dans', 'dans2', 'saklaniyor', 'dilek', 'mutlu', 'selam'];
 /** Tasarımcı görsellerinde şapkalı çizilen pozlar */
-const SAPKALI = new Set<Poz>(['sapkali', 'alkis', 'saskin', 'dans', 'saklaniyor']);
+const SAPKALI = new Set<Poz>(['sapkali', 'alkis', 'saskin', 'dans', 'dans2']);
 
 export interface OyuncuSecenek {
   ad: string;
@@ -25,6 +25,10 @@ export interface OyuncuSecenek {
 }
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/** Dans figürleri (alkış başına bir figür; hepsi ayak tabanından döner, esneyip sıkışır) */
+export type Figur = 'zipla' | 'yanAdim' | 'don' | 'twist' | 'kalca' | 'egilKalk' | 'takla' | 'selam';
+export const FIGURLER: Figur[] = ['yanAdim', 'zipla', 'twist', 'don', 'kalca', 'egilKalk', 'selam', 'takla'];
 
 export class Oyuncu {
   readonly el: HTMLElement;
@@ -54,7 +58,9 @@ export class Oyuncu {
     }
     this.hareket = h('div.mc-oy-hareket', {}, govde);
     this.balonEl = h('div.mc-oy-balon');
-    this.el = h('div.mc-oyuncu', { 'data-ad': s.ad, style: `--w:${s.boy ?? 24};--ar:${s.oran ?? 1}` }, h('i.mc-oy-golge'), this.hareket, this.balonEl);
+    // nefes/bekleme döngüleri herkeste aynı anda olmasın
+    const faz = (-Math.random() * 3).toFixed(2);
+    this.el = h('div.mc-oyuncu', { 'data-ad': s.ad, style: `--w:${s.boy ?? 24};--ar:${s.oran ?? 1};--faz:${faz}s` }, h('i.mc-oy-golge'), this.hareket, this.balonEl);
     this.goster('normal');
   }
 
@@ -121,6 +127,85 @@ export class Oyuncu {
       ],
       620,
     );
+  }
+
+  /** Dans figürü: yon = 1 sağa, -1 sola (karşılıklı ayna figürler için); ms figür süresi */
+  figur(f: Figur, yon: 1 | -1 = 1, ms = 640) {
+    const Y = yon;
+    const kf: Record<Figur, Keyframe[]> = {
+      zipla: [
+        { transform: 'translateY(0) scale(1, 1)' },
+        { transform: 'translateY(0) scale(1.16, 0.82)', offset: 0.18 },
+        { transform: 'translateY(-34%) scale(0.9, 1.12)', offset: 0.45 },
+        { transform: 'translateY(-38%) scale(1, 1) rotate(0)', offset: 0.55 },
+        { transform: 'translateY(0) scale(1.18, 0.84)', offset: 0.8 },
+        { transform: 'translateY(0) scale(1, 1)' },
+      ],
+      yanAdim: [
+        { transform: 'translate(0, 0) rotate(0)' },
+        { transform: `translate(${Y * 16}%, -12%) rotate(${Y * 8}deg)`, offset: 0.25 },
+        { transform: `translate(${Y * 22}%, 0) scale(1.08, 0.92)`, offset: 0.45 },
+        { transform: `translate(${Y * 6}%, -10%) rotate(${-Y * 6}deg)`, offset: 0.72 },
+        { transform: 'translate(0, 0) rotate(0)' },
+      ],
+      don: [
+        { transform: 'translateY(0) scale(1, 1)' },
+        { transform: 'translateY(0) scale(1.12, 0.88)', offset: 0.16 },
+        { transform: 'translateY(-14%) scale(0.55, 1.05)', offset: 0.3 },
+        { transform: 'translateY(-18%) scale(-0.55, 1.05)', offset: 0.36 },
+        { transform: 'translateY(-22%) scale(-1, 1.03)', offset: 0.5 },
+        { transform: 'translateY(-18%) scale(-0.55, 1.05)', offset: 0.64 },
+        { transform: 'translateY(-14%) scale(0.55, 1.05)', offset: 0.7 },
+        { transform: 'translateY(0) scale(1.12, 0.9)', offset: 0.86 },
+        { transform: 'translateY(0) scale(1, 1)' },
+      ],
+      twist: [
+        { transform: 'rotate(0) scale(1, 1)' },
+        { transform: `rotate(${Y * 12}deg) scale(1.06, 0.9)`, offset: 0.2 },
+        { transform: `rotate(${-Y * 12}deg) scale(1.06, 0.9)`, offset: 0.45 },
+        { transform: `rotate(${Y * 10}deg) scale(1.04, 0.94)`, offset: 0.7 },
+        { transform: 'rotate(0) scale(1, 1)' },
+      ],
+      kalca: [
+        { transform: 'skewX(0) translateX(0)' },
+        { transform: `skewX(${Y * 12}deg) translateX(${-Y * 4}%)`, offset: 0.2 },
+        { transform: `skewX(${-Y * 12}deg) translateX(${Y * 4}%)`, offset: 0.4 },
+        { transform: `skewX(${Y * 12}deg) translateX(${-Y * 4}%)`, offset: 0.6 },
+        { transform: `skewX(${-Y * 10}deg) translateX(${Y * 3}%)`, offset: 0.8 },
+        { transform: 'skewX(0) translateX(0)' },
+      ],
+      egilKalk: [
+        { transform: 'translateY(0) scale(1, 1)' },
+        { transform: 'translateY(0) scale(1.2, 0.72)', offset: 0.35 },
+        { transform: `translateY(-26%) scale(0.88, 1.16) rotate(${Y * 6}deg)`, offset: 0.62 },
+        { transform: 'translateY(0) scale(1.08, 0.92)', offset: 0.85 },
+        { transform: 'translateY(0) scale(1, 1)' },
+      ],
+      selam: [
+        { transform: 'rotate(0) translateY(0)' },
+        { transform: `rotate(${Y * 14}deg) translateY(-4%)`, offset: 0.3 },
+        { transform: `rotate(${Y * 14}deg) translateY(-4%) scale(1.04)`, offset: 0.6 },
+        { transform: 'rotate(0) translateY(0)' },
+      ],
+      takla: [
+        { transform: 'translateY(0) rotate(0) scale(1, 1)' },
+        { transform: 'translateY(0) rotate(0) scale(1.15, 0.8)', offset: 0.15 },
+        { transform: `translateY(-50%) rotate(${Y * 180}deg) scale(0.95, 1.05)`, offset: 0.5 },
+        { transform: `translateY(-8%) rotate(${Y * 350}deg) scale(1, 1)`, offset: 0.8 },
+        { transform: `translateY(0) rotate(${Y * 360}deg) scale(1.12, 0.88)`, offset: 0.9 },
+        { transform: `translateY(0) rotate(${Y * 360}deg) scale(1, 1)` },
+      ],
+    };
+    // takla ve dönüşte ağırlık merkezinden dönsün
+    this.hareket.style.transformOrigin = f === 'takla' ? '50% 55%' : '';
+    return this.oynat(kf[f], f === 'takla' ? ms * 1.3 : ms, 'cubic-bezier(0.45, 0, 0.3, 1)');
+  }
+
+  /** Sahneye giriş: el sallar gibi sallanıp zıplar */
+  async selamVer() {
+    this.poz('selam', 1100);
+    await this.figur('selam', 1, 520);
+    await this.figur('selam', -1, 520);
   }
 
   /** Kıkırdama / kıpırdanma */

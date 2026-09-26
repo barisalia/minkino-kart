@@ -66,17 +66,27 @@ test("Ada'nın Doğum Günü: dokunarak baştan sona (5 yaş)", async ({ page },
   await ekran(page, '107-macera-mumlar', p);
   await tut(page, 2600);
   // pasta
-  await expect(page.locator('.mc-bicak')).toBeVisible({ timeout: 15000 });
-  await page.waitForTimeout(1000);
-  await dokun(page, 3);
-  await page.waitForTimeout(700);
-  await ekran(page, '108-macera-pasta', p);
-  await dokun(page, 2);
+  await expect(page.locator('.mc-kesim.acik')).toBeVisible({ timeout: 15000 });
+  await page.waitForTimeout(800);
+  for (let i = 0; i < 5; i++) {
+    await dokun(page, 1);
+    if (i === 2) {
+      await page.waitForTimeout(450);
+      await ekran(page, '108-macera-pasta', p);
+    }
+    await expect(page.locator('.mc-kesim-yer.dolu')).toHaveCount(i + 1, { timeout: 8000 });
+  }
   // dans
   await expect(page.locator('.mc-ipucu.acik')).toHaveText('Alkışla!', { timeout: 15000 });
-  await dokun(page, 6);
+  for (let i = 0; i < 6; i++) {
+    await dokun(page, 1);
+    await page.waitForTimeout(250);
+  }
   await ekran(page, '109-macera-dans', p);
-  await dokun(page, 6);
+  for (let i = 0; i < 6; i++) {
+    await dokun(page, 1);
+    await page.waitForTimeout(250);
+  }
   await expect(page.locator('.mc-son')).toBeVisible({ timeout: 15000 });
   await page.waitForTimeout(500);
   await ekran(page, '110-macera-son', p);

@@ -16,8 +16,9 @@ import { Alkis, sesVar, Ufleme } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import { davul, nota } from '../../orman/src/sesler';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
-import { resim } from './gorsel';
-import { Oyuncu } from './oyuncu';
+import { adres, resim } from './gorsel';
+import { FIGURLER, Oyuncu } from './oyuncu';
+import { MINO_SVG } from '../../src/mino/mino-svg';
 import { Sahne } from './sahne';
 import { anlikFark, melodi, notaDegerlendir, referansBul, tepeNota, type Nota, type NotaSonucu } from './sarki';
 
@@ -38,17 +39,21 @@ export interface BolumArayuz {
   kapandiMi(): boolean;
 }
 
-interface Oyuncular {
-  ada: Oyuncu;
-  sincap: Oyuncu;
-  tavsan: Oyuncu;
-  kopek: Oyuncu;
-  ayi: Oyuncu;
-}
-
+/** Ada'nın arkadaşları (konuklar) */
+const KONUKLAR = ['can', 'elif', 'deniz', 'zeynep'] as const;
+type KonukAd = (typeof KONUKLAR)[number];
+/** çizim oranı (en/boy) ve şapkanın kafadaki yeri */
+const KONUK_CIZIM: Record<KonukAd, { oran: number; sapka: { x: number; y: number; w: number; d?: number } }> = {
+  can: { oran: 281 / 512, sapka: { x: 49, y: 7, w: 32, d: -6 } },
+  elif: { oran: 274 / 512, sapka: { x: 50, y: 6, w: 30, d: 6 } },
+  deniz: { oran: 289 / 512, sapka: { x: 47, y: 10, w: 32, d: -5 } },
+  zeynep: { oran: 322 / 512, sapka: { x: 50, y: 6, w: 28, d: 6 } },
+};
 /** Konukların parti sırasındaki yerleri (x, alttan y) */
-const YER: Record<keyof Omit<Oyuncular, 'ada'>, [number, number]> = { sincap: [15, 30], tavsan: [34, 34], kopek: [66, 34], ayi: [85, 30] };
-const SAKLI: Record<keyof Omit<Oyuncular, 'ada'>, [number, number, number]> = { sincap: [16, 21, 2], tavsan: [31, 22, 2], kopek: [66, 11, 4], ayi: [80, 13, 4] };
+const YER: Record<KonukAd, [number, number, number]> = { can: [27, 5, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [74, 5, 7] };
+/** Saklanma yerleri (x, y, katman): koltuğun, masanın, hediyelerin arkası */
+const SAKLI: Record<KonukAd, [number, number, number]> = { can: [16, 13, 2], elif: [37, 5, 5], deniz: [63, 5, 5], zeynep: [84, 3, 4] };
+const ADA_YER: [number, number] = [50, 30];
 /** Balonların flamadaki yerleri */
 const BALON_YER: [number, number][] = [
   [10, 68], [26, 64], [42, 62], [58, 62], [74, 64], [90, 68],
@@ -57,6 +62,7 @@ const BALON_TON = [0, 200, 60, 280, 130, 330];
 
 export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
   const yas = durum.i.yas ?? 4;
+  const adaYer: [number, number] = [...ADA_YER];
   const sahne = new Sahne('parti-sahne/oda');
   kok.append(sahne.el);
 
@@ -67,17 +73,11 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
   sahne.koy(resim('parti/hediye', '', 'Hediyeler'), { x: 82, y: 9, w: 24, z: 5 });
   sahne.koy(resim('parti/masa', '', 'Masa'), { x: 50, y: 2, w: 54, z: 6 });
   const pasta = sahne.koy(h('div.mc-pasta', {}, resim('parti/pasta', 'mc-pasta-resim', 'Pasta')), { x: 50, y: 17, w: 32, z: 7 });
-  const tabaklar = sahne.koy(h('div.mc-tabaklar'), { x: 50, y: 0, w: 100, z: 9 });
 
-  const oy: Oyuncular = {
-    ada: new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 17, oran: 284 / 512, sapka: { x: 50, y: 12, w: 34, d: -4 } }),
-    sincap: new Oyuncu({ ad: 'sincap', resim: 'orman-karakter/sincap', boy: 24, sapka: { x: 40, y: 34, w: 22, d: -8 } }),
-    tavsan: new Oyuncu({ ad: 'tavsan', resim: 'hayvanlar/tavsan', boy: 24, sapka: { x: 60, y: 36, w: 18, d: 10 } }),
-    kopek: new Oyuncu({ ad: 'kopek', resim: 'hayvanlar/kopek', boy: 23, sapka: { x: 50, y: 20, w: 22 } }),
-    ayi: new Oyuncu({ ad: 'ayi', resim: 'hayvanlar/ayi', boy: 25, sapka: { x: 55, y: 14, w: 22, d: 8 } }),
-  };
-  const konuklar = [oy.sincap, oy.tavsan, oy.kopek, oy.ayi];
-  const konukAd = ['sincap', 'tavsan', 'kopek', 'ayi'] as const;
+  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 17, oran: 284 / 512, sapka: { x: 50, y: 12, w: 34, d: -4 } });
+  const konuklar = KONUKLAR.map((ad) => new Oyuncu({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }));
+  const oy = { ada };
+  const konukAd = KONUKLAR;
   for (const k of konuklar) {
     k.el.classList.add('gizli');
     sahne.dunya.append(k.el);
@@ -136,17 +136,25 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await bekle(700);
     mino.tepki('zipla');
     await soyle(D.merhaba);
-    // konuklar tek tek gelir
+    // arkadaşlar kapıdan tek tek gelir: zil çalar, kapı açılır, içeri yürüyüp el sallarlar
     for (const [i, k] of konuklar.entries()) {
-      const [x, y] = YER[konukAd[i]];
-      k.koy(i < 2 ? -20 : 120, y);
+      const [x, y, z] = YER[konukAd[i]];
+      efektCal('zil', 900);
+      kapi.classList.add('acik');
+      await bekle(450);
+      k.koy(89, 25);
+      k.katman = 2;
       k.el.classList.remove('gizli');
-      k.katman = 4;
-      await k.git(x, y, 700);
-      void k.zipla();
-      if (konukAd[i] !== 'sincap') efektCal(konukAd[i], 900);
+      k.el.classList.add('kapida');
       await bekle(250);
+      k.el.classList.remove('kapida');
+      k.katman = z;
+      await k.git(x, y, 900);
+      kapi.classList.remove('acik');
+      void k.balon(M.tepki.selam, 900);
+      await k.selamVer();
     }
+    await soyle(D.arkadaslar);
     await soyle(D.surpriz_plan);
     if (ui.kapandiMi()) return;
 
@@ -168,6 +176,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       const [x, y, z] = SAKLI[konukAd[i]];
       k.katman = z;
       k.poz('saklaniyor');
+      k.el.classList.add('comeldi');
       void k.git(x, y, 600);
     }
     minoKutu.classList.add('sakli');
@@ -181,11 +190,12 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // =============================================================== 3. SÜRPRİZ!
     kapi.classList.add('acik');
     oy.ada.koy(89, 25);
-    oy.ada.katman = 1;
+    oy.ada.katman = 2;
     oy.ada.el.classList.remove('gizli');
     oy.ada.el.classList.add('karanlikta');
     await bekle(700);
-    await oy.ada.git(56, 33, 1400);
+    await oy.ada.git(adaYer[0], adaYer[1], 1600);
+    kapi.classList.remove('acik');
     oy.ada.katman = 4;
     await soyle(D.surpriz_simdi);
     await surprizBekle();
@@ -199,11 +209,12 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     mino.tepki('zipla');
     konfeti(50, 35, 140);
     for (const [i, k] of konuklar.entries()) {
-      const [x, y] = YER[konukAd[i]];
-      k.katman = 4;
+      const [x, y, z] = YER[konukAd[i]];
+      k.katman = z;
       k.poz('normal');
+      k.el.classList.remove('comeldi');
       k.sapkaTak();
-      void k.git(x, y, 450).then(() => k.zipla());
+      void k.git(x, y, 450).then(() => k.figur('zipla', 1, 560));
     }
     efektCal('yasasin', 2000);
     await bekle(900);
@@ -244,12 +255,13 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // 5-6 yaş: yanda ölçer; yeşil bölgede durmalı
     const isaret = h('i.mc-olcer-isaret');
     const olcer = kontrollu ? sahne.koy(h('div.mc-olcer', {}, h('i.mc-olcer-yesil'), isaret), { x: 70, y: 34, w: 5, z: 11 }) : null;
-    const u = new Ufleme(kulak.ayar, 0.5);
+    const u = new Ufleme(kulak.ayar, 0.5, true);
     let dolu = 0;
     let patladi = false;
     ui.ipucu(kontrollu ? 'Üfle, yeşilde dur!' : 'Balona üfle');
-    const ALT = 0.78;
-    const UST = 1.2;
+    // geniş yeşil bölge; yeşile girince balon yavaşlar (durmak kolay olsun)
+    const ALT = 0.7;
+    const UST = 1.4;
     await new Promise<void>((coz) => {
       const bitir = () => {
         tikler.delete(tik);
@@ -258,7 +270,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       const tik = (dt: number) => {
         if (ui.kapandiMi()) return bitir();
         u.tik(dt);
-        if (u.aktif) dolu += dt * (0.34 + u.guc * 0.4) * (yas <= 3 ? 1.25 : 1);
+        if (u.aktif) dolu += dt * (0.6 + u.guc * 0.5) * (yas <= 3 ? 1.3 : 1) * (kontrollu && dolu >= ALT ? 0.45 : 1);
         balon.style.setProperty('--s', String(0.25 + Math.min(dolu, 1.25) * 0.75));
         isaret.style.setProperty('--p', String(Math.min(1, dolu / 1.25)));
         govde.classList.toggle('sisiyor', u.aktif);
@@ -513,7 +525,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     oy.ada.poz('dilek');
     await soyle(D.mum_giris);
     ui.ipucu('Mumlara üfle');
-    const u = new Ufleme(kulak.ayar, 0.7);
+    const u = new Ufleme(kulak.ayar, 0.8, true);
     let biriken = 0;
     await new Promise<void>((coz) => {
       const tik = (dt: number) => {
@@ -524,10 +536,10 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
           biriken = Math.max(0, biriken - dt);
           return;
         }
-        biriken += dt * (0.5 + u.guc * 1.4);
-        if (biriken > 0.45 && acik.length) {
+        biriken += dt * (0.8 + u.guc * 1.6);
+        if (biriken > 0.28 && acik.length) {
           biriken = 0;
-          const kac = u.guc > 0.75 ? 2 : 1;
+          const kac = u.guc > 0.55 ? 2 : 1;
           for (const m of acik.slice(0, kac)) {
             m.sondu = true;
             m.el.classList.add('sondu');
@@ -557,88 +569,215 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     mumKutu.remove();
   }
 
-  /** Pasta: her "tık"ta (dil şaklatma ya da alkış) bir dilim kesilip bir tabağa gider */
+  /**
+   * Pasta: yakın çekim — pasta üstten görünür, her "tık"ta (dil şaklatma ya da alkış) pasta spatulası
+   * bir kesik atar, dilim kalkar ve sırası gelen arkadaşın tabağına uçar. Son dilimde tabak boş kalır.
+   */
   async function pastaKes() {
-    const adet = { 3: 3, 4: 4, 5: 5, 6: 6 }[yas] ?? 4;
-    const kimler = [oy.ada, ...konuklar, oy.ada].slice(0, adet);
-    const yerler = [50, 16, 34, 66, 85, 50];
-    tabaklar.replaceChildren();
-    const tabak = kimler.map((_, i) => {
-      const t = h('div.mc-tabak', { style: `--x:${yerler[i] + (i === 5 ? 12 : 0)}` }, h('i.mc-tabak-bos'));
-      tabaklar.append(t);
-      return t;
+    const adet = Math.max(3, Math.min(6, yas));
+    const kimler: { ad: string; oyuncu: Oyuncu | null }[] = [
+      { ad: 'ada', oyuncu: oy.ada },
+      ...KONUKLAR.map((ad, i) => ({ ad, oyuncu: konuklar[i] })),
+      { ad: 'mino', oyuncu: null },
+    ].slice(0, adet);
+
+    // --- yakın çekim katmanı
+    const aci = (i: number) => -90 + (i * 360) / adet;
+    const rad = (d: number) => (d * Math.PI) / 180;
+    const dilimler = Array.from({ length: adet }, (_, i) => {
+      const a0 = aci(i);
+      const a1 = aci(i + 1);
+      const noktalar = ['50% 50%'];
+      for (let k = 0; k <= 10; k++) {
+        const a = rad(a0 + ((a1 - a0) * k) / 10);
+        noktalar.push(`${(50 + 72 * Math.cos(a)).toFixed(2)}% ${(50 + 72 * Math.sin(a)).toFixed(2)}%`);
+      }
+      const orta = rad((a0 + a1) / 2);
+      const ic = h('div.mc-kd-ic', { style: `clip-path:polygon(${noktalar.join(',')})` }, resim('parti/pasta-ust', '', ''));
+      const dis = h('div.mc-kd', { style: `--dx:${(Math.cos(orta) * 9).toFixed(2)}%;--dy:${(Math.sin(orta) * 9).toFixed(2)}%` }, ic);
+      return { dis, orta };
     });
-    const bicak = sahne.koy(h('div.mc-bicak', {}, resim('parti/bicak', '', 'Bıçak')), { x: 60, y: 40, w: 12, z: 12 });
-    await sahne.kamera(50, 70, 1.4, 900);
+    const bicakImg = resim('parti/bicak', 'mc-kb-resim', 'Pasta spatulası');
+    const bicak = h('div.mc-kb', {}, bicakImg);
+    const pastaUst = h('div.mc-kesim-pasta', {}, ...dilimler.map((d) => d.dis), bicak);
+    const kirintilar = h('div.mc-kesim-kirinti', {}, ...Array.from({ length: 9 }, (_, i) => h('i', { style: `--i:${i}` })));
+    const tabakEl = kimler.map((k) => {
+      const yuz = k.ad === 'mino' ? h('div.mc-avatar.mino') : h('div.mc-avatar', { style: `--resim:url("${adres(`parti/${k.ad}`)}")` });
+      if (k.ad === 'mino') yuz.innerHTML = MINO_SVG;
+      return h('div.mc-kesim-yer', {}, yuz, h('div.mc-kesim-tabakcik'));
+    });
+    const yakin = h('div.mc-kesim', {}, h('div.mc-kesim-servis', {}, kirintilar, pastaUst), h('div.mc-kesim-tabaklar', {}, ...tabakEl));
+    await sahne.kamera(50, 70, 1.35, 800);
+    sahne.on.append(yakin);
+    await bekle(60);
+    yakin.classList.add('acik');
+    await bekle(700);
     await soyle(D.kes_giris);
     ui.ipucu('Dilini şaklat: tık tık!');
+
+    /** spatula bir çizgiye (açı) gider ve bastırır; o çizginin iki yanındaki dilimler "kesik" olur */
+    const kes = async (cizgi: number) => {
+      bicak.style.setProperty('--a', `${aci(cizgi) + 45}deg`);
+      bicak.classList.add('gorunur');
+      await bekle(170);
+      bicakImg.animate(
+        [{ transform: 'translate(-5%, -93%) scale(1)' }, { transform: 'translate(-5%, -93%) scale(0.9) translateY(4%)', offset: 0.45 }, { transform: 'translate(-5%, -93%) scale(1)' }],
+        { duration: sure(260), easing: 'ease-in-out' },
+      );
+      efekt.cevir();
+      await bekle(130);
+      dilimler[(cizgi + adet - 1) % adet].dis.classList.add('kesik');
+      dilimler[cizgi % adet].dis.classList.add('kesik');
+    };
+    /** i. dilim kalkar ve i. tabağa uçar */
+    const tasi = async (i: number) => {
+      const d = dilimler[i];
+      d.dis.classList.add('kalkti');
+      await bekle(280);
+      const r = pastaUst.getBoundingClientRect();
+      const t = tabakEl[i].getBoundingClientRect();
+      const cx = r.left + r.width / 2 + Math.cos(d.orta) * r.width * 0.3;
+      const cy = r.top + r.height / 2 + Math.sin(d.orta) * r.height * 0.3;
+      const dx = t.left + t.width / 2 - cx;
+      const dy = t.top + t.height * 0.72 - cy;
+      await d.dis
+        .animate(
+          [
+            { transform: 'translate(var(--dx), var(--dy)) scale(1)' },
+            { transform: `translate(calc(var(--dx) + ${dx * 0.5}px), calc(var(--dy) + ${dy * 0.5 - r.height * 0.12}px)) scale(0.7)`, offset: 0.5 },
+            { transform: `translate(calc(var(--dx) + ${dx}px), calc(var(--dy) + ${dy}px)) scale(0.42)` },
+          ],
+          { duration: sure(560), easing: 'cubic-bezier(0.45, 0, 0.3, 1)', fill: 'forwards' },
+        )
+        .finished.catch(() => undefined);
+      d.dis.remove();
+      const tabakcik = tabakEl[i].querySelector('.mc-kesim-tabakcik')!;
+      tabakcik.append(resim('parti/dilim', '', 'Dilim'));
+      tabakEl[i].classList.add('dolu');
+      nota(72 + i * 2, 0.35, 0.18);
+      void kimler[i].oyuncu?.figur('zipla', 1, 520);
+    };
+
     const eski = kulak.ayar.duyarlilik;
     kulak.ayar.duyarlilik = eski + 6; // dil şaklatması alkıştan kısıktır
     const a = new Alkis(kulak.ayar);
     let kesilen = 0;
+    let mesgul = false;
     let kesTik: ((dt: number) => void) | null = null;
     await new Promise<void>((coz) => {
-      const kes = () => {
-        if (kesilen >= adet) return;
-        kesilen++;
-        bicak.classList.remove('kes');
-        void bicak.offsetWidth;
-        bicak.classList.add('kes');
-        efekt.cevir();
-        pasta.style.setProperty('--kalan', String(1 - kesilen / (adet + 1)));
-        const d = sahne.koy(h('div.mc-ucan-dilim', { style: `--hx:${yerler[kesilen - 1]}` }, resim('parti/dilim', '', 'Dilim')), { x: 50, y: 22, w: 12, z: 12 });
-        requestAnimationFrame(() => d.classList.add('uc'));
-        setTimeout(() => {
-          d.remove();
-          tabak[kesilen - 1].replaceChildren(resim('parti/dilim', '', 'Dilim'));
-          tabak[kesilen - 1].classList.add('dolu');
-          const kim = kimler[kesilen - 1];
-          void kim.zipla(14);
-          nota(72 + kesilen * 2, 0.35, 0.18);
-        }, sure(650));
-        if (kesilen === adet) setTimeout(coz, sure(1000));
+      const tikla = async () => {
+        if (mesgul || kesilen >= adet) return;
+        mesgul = true;
+        const i = kesilen++;
+        if (i === 0) await kes(0);
+        if (i < adet - 1) await kes(i + 1);
+        bicak.classList.remove('gorunur');
+        await tasi(i);
+        mesgul = false;
+        if (kesilen === adet) coz();
       };
-      a.onAlkis = kes;
+      a.onAlkis = () => void tikla();
       kesTik = () => a.tik();
       tikler.add(kesTik);
       kulak.dinle((o) => a.kare(o));
-      dokunma = { bas: kes, birak: () => undefined };
+      dokunma = { bas: () => void tikla(), birak: () => undefined };
     });
     kulak.dinle(null);
     if (kesTik) tikler.delete(kesTik);
     kulak.ayar.duyarlilik = eski;
     dokunma = null;
     ui.ipucu(null);
-    bicak.remove();
-    konuklar.forEach((k) => k.poz('alkis', 1200));
+    kirintilar.classList.add('gorunur');
+    efektCal('yasasin', 2000);
     await soyle(D.kes_bitti);
+    // yakın çekim kapanır: masada boş pasta tabağı, önlerde dilimler
+    yakin.classList.remove('acik');
+    pasta.replaceChildren(resim('parti/altlik', 'mc-altlik', 'Boş pasta tabağı'));
+    // dilimler masanın önüne, tabaklarda
+    kimler.forEach((_, i) => {
+      const x = 29 + (42 * i) / Math.max(1, adet - 1);
+      sahne.koy(h('div.mc-tabak.dolu', { style: `--g:${i * 90}ms` }, h('i.mc-tabak-bos'), resim('parti/dilim', '', 'Dilim')), { x, y: 11 + (i % 2) * 2, w: 8, z: 8 });
+    });
+    // pasta bitti: Ada artık pastanın değil masanın arkasında durur
+    adaYer[1] = 21;
+    oy.ada.koy(adaYer[0], adaYer[1]);
+    await bekle(500);
+    yakin.remove();
+    konuklar.forEach((k) => k.poz('alkis', 1200));
     await sahne.kamera(50, 50, 1, 900);
   }
 
-  /** Dans: her alkış bir müzik vuruşu + herkes bir dans figürü; 12 alkışta final */
+  /**
+   * Dans: her alkış bir müzik vuruşu + bir dans figürü. Koreografi: aynalı figürler (soldakiler sola,
+   * sağdakiler sağa), dalga (soldan sağa sırayla), yer değiştirme, Ada'nın etrafında toplanma ve final taklası.
+   * Disko topu iner, renkli spot ışıklar döner.
+   */
   async function dans() {
+    const herkes = [oy.ada, ...konuklar];
+    const evler = new Map<Oyuncu, [number, number]>([[oy.ada, adaYer], ...konuklar.map((k, i) => [k, [YER[konukAd[i]][0], YER[konukAd[i]][1]]] as [Oyuncu, [number, number]])]);
+    const yon = (k: Oyuncu): 1 | -1 => ((evler.get(k)?.[0] ?? 50) < 50 ? -1 : 1);
+    const topu = h('div.mc-disko-topu', {}, h('i.mc-dt-ip'), h('i.mc-dt-top'));
+    const spotlar = h('div.mc-spotlar', {}, h('i'), h('i'), h('i'), h('i'));
+    const isiltilar = h('div.mc-isiltilar', {}, ...Array.from({ length: 14 }, (_, i) => h('i', { style: `--i:${i};--x:${(i * 37) % 100};--y:${(i * 53) % 70}` })));
+    sahne.on.prepend(spotlar, isiltilar, topu);
+    await bekle(40);
+    topu.classList.add('indi');
     await soyle(D.dans_giris);
+    spotlar.classList.add('acik');
+    isiltilar.classList.add('acik');
+    sahne.los(true);
     ui.ipucu('Alkışla!');
     const a = new Alkis(kulak.ayar);
     const RENK = ['#ff7eb6', '#ffc72c', '#5dbe3f', '#3e9df2', '#9b5ce0', '#ff8a2b'];
     const AKOR = [[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]];
+    const BAS = [48, 53, 55, 48];
     const HEDEF = 12;
     let n = 0;
     let dansTik: ((dt: number) => void) | null = null;
+    const topla = (hedef: 'ada' | 'ev') => {
+      konuklar.forEach((k) => {
+        const [x, y] = evler.get(k)!;
+        void k.git(hedef === 'ada' ? x + (adaYer[0] - x) * 0.35 : x, y, 420);
+      });
+    };
     await new Promise<void>((coz) => {
       const vur = () => {
         if (n >= HEDEF) return;
         n++;
         ui.ilerleme(n, HEDEF);
+        // müzik: davul + bas + akor arpej
+        const olcu = Math.floor((n - 1) / 2) % AKOR.length;
         davul(n % 2 === 1, 0.35);
-        AKOR[Math.floor((n - 1) / 2) % AKOR.length].forEach((m, i) => setTimeout(() => nota(m + 12, 0.35, 0.08), i * 25));
+        nota(BAS[olcu], 0.4, 0.14);
+        AKOR[olcu].forEach((m, i) => setTimeout(() => nota(m + 12, 0.35, 0.08), i * 60));
         sahne.diskoRenk(RENK[n % RENK.length]);
-        [oy.ada, ...konuklar].forEach((k, i) => {
-          k.poz(n % 3 === 0 ? 'dans' : 'alkis', 600);
-          setTimeout(() => void k.dansEt(), i * 40);
-        });
+        topu.classList.remove('parla');
+        void topu.offsetWidth;
+        topu.classList.add('parla');
         mino.tepki('dans', 0.8);
-        if (n === HEDEF) setTimeout(coz, sure(700));
+        if (n === HEDEF) {
+          // final: herkes takla atar
+          herkes.forEach((k, i) => setTimeout(() => void k.figur('takla', yon(k), 700), i * 70));
+          setTimeout(coz, sure(1100));
+          return;
+        }
+        if (n === 5) topla('ada');
+        if (n === 9) topla('ev');
+        if (n % 4 === 0) {
+          // dalga: soldan sağa sırayla zıplarlar
+          [...herkes]
+            .sort((p, q) => (evler.get(p)![0] - evler.get(q)![0]))
+            .forEach((k, i) => setTimeout(() => {
+              k.poz('dans', 600);
+              void k.figur('zipla', 1, 520);
+            }, i * 110));
+          return;
+        }
+        const figur = FIGURLER[(n - 1) % (FIGURLER.length - 1)];
+        herkes.forEach((k) => {
+          k.poz((['dans', 'alkis', 'dans2'] as const)[n % 3], 600);
+          void k.figur(figur, yon(k), 640);
+        });
       };
       a.onAlkis = vur;
       dansTik = () => a.tik();
@@ -654,6 +793,15 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     konfeti(30, 30, 120);
     konfeti(70, 30, 120);
     efektCal('yasasin', 2200);
+    spotlar.classList.remove('acik');
+    isiltilar.classList.remove('acik');
+    sahne.los(false);
+    topu.classList.remove('indi');
+    setTimeout(() => {
+      spotlar.remove();
+      isiltilar.remove();
+      topu.remove();
+    }, 1400);
   }
 }
 

@@ -145,3 +145,23 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
 - 2026-09-26 Bulut: parti çizimleri (salon, pasta, dilim, mum, flama, kapı, masa, hediye, koltuk, bıçak, şapka, Ada; Recraft) + bölümün kodu (`macera/`).
 - 2026-09-26 Bulut: `macera/` (Sesli Maceralar) bölüm 1 hazır: açılış animasyonu (Mino anlatır, konuklar gelir) → balon (3-4 yaş şişir; 5-6 yaş yeşilde dur, fazlası patlar) → karanlıkta saklan ve sus (ses olunca konuk kıkırdar, Ada durur) → kapı açılır, Ada girer → "SÜRPRİZ!" (yüksek ses ya da büyük düğme) → karaoke "Mutlu yıllar sana / İyi ki doğdun Ada" (önce müzik kutusu, sonra çocuk; ton bağımsız perde; çok ince/kalın → konuk "Aaa?/Ooo?"; 6 yaşta yüksek nota ödülü) → yaş kadar mum (üfleme gücü) → dil şaklatarak/alkışla pasta dilimleme (tabaklara) → alkışla dans (her alkış müzik vuruşu + disko ışığı) → final. Uçtan uca test: tests/e2e/macera.spec.ts.
 - 2026-09-26 Tasarımcıların parti pozları gelince (`ekip/gemini/parti/...`) Claude `assets/parti-ifade/<ad>/<poz>.webp` olarak koyar; kod pozları hazır bekliyor (şimdilik ayrı şapka + kodla hareket).
+
+## 2026-09-26 (öğleden sonra) — Ada bölümü v2 + senarist görevi (bulut yönetici → yerel yönetici)
+
+- 2026-09-26 KARAR (Barış): Parti konukları hayvan olmayacak, **Ada gibi çocuklar** olacak (kedi Mino kalıyor). Yeni arkadaşlar: **Can, Elif, Deniz, Zeynep** (Recraft, Ada'yla aynı stil). Hayvan parti pozları İPTAL.
+- 2026-09-26 **TASARIMCI GÖREVİ GÜNCELLENDİ:** `ekip/parti-gemini.md`.
+  - **Tasarımcı 1:** Ada (şaşkın, dilek, şapkalı, alkış, dans, dans2, mutlu) + Can.
+  - **Tasarımcı 2:** Elif, Deniz, Zeynep. Her biri: selam, saklanıyor (ikisi şapkasız); şapkalı, alkış, şaşkın, dans, dans2.
+  - Teslim: `ekip/gemini/parti/<karakter>/<dosya>.png`.
+- 2026-09-26 **SENARİST / FİKİRCİ GÖREVİ (yeni):** `ekip/senarist-rehberi.md` okunacak.
+  - İş: "Ada'nın Doğum Günü" kalitesinde 2. bölümün senaryosu.
+  - Kural: hikâyeden doğan ses görevleri, duygu eğrisi, yaşa göre ayar, parmak karşılığı. Rehberde mekanik tablosu, şablon ve fikir tohumları var.
+  - Teslim: `ekip/senaryo/<bolum-adi>.md` → GitHub. Bulut kodlar ve çizdirir.
+- 2026-09-26 Bulut, Ada v2:
+  - Çocuk konuklar kapıdan zille tek tek gelir ve el sallar.
+  - Saklanırken koltuğun, masanın ve hediyelerin arkasına çömelirler.
+  - **Pasta dilim dilim kesilir:** yakın çekimde pasta üstten görünür, her tıkta spatula kesik atar, dilim kalkıp o arkadaşın tabağına uçar. Pasta bitince tabak boş kalır, dilimler masaya gelir.
+  - **Dans:** 8 figür (yan adım, zıplama, twist, dönüş, kalça, eğil-kalk, selam, final taklası). Aynalı koreografi, dalga, Ada'nın etrafında toplanma, disko topu, dönen spot ışıklar, loş oda.
+  - Karakterlerde bekleme nefesi ve adım adım yürüme var.
+  - **Üfleme kolaylaştı:** eşik düştü, sesli "fuuu" da sayılıyor, balonun yeşil bölgesi genişledi, yeşile girince balon yavaşlıyor, mumlar daha çabuk sönüyor.
+- 2026-09-26 ONAY BEKLİYOR (Barış): Mino'nun yeniden tasarımı. Barış Recraft'tan görsel gönderecek; gelince Mino baştan kurulacak.

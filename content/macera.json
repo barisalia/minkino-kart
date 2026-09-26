@@ -6,11 +6,16 @@
   },
   "dogumgunu": {
     "merhaba": "Merhaba! Bugün arkadaşımız Ada'nın doğum günü!",
+    "arkadaslar": "Arkadaşları da geldi: Can, Elif, Deniz ve Zeynep!",
     "surpriz_plan": "Ada birazdan gelecek. Ona sürpriz bir parti hazırlayalım!",
     "balon_giris": "Önce balonları şişirelim. Balona üfle!",
     "balon_cizgi": "Yeşile gelince dur, fazla şişirme!",
     "balon_patladi": "Pat! Çok şişti. Bir daha!",
-    "balon_asildi": ["Süper!", "Bir balon daha!", "Oda çok güzel oldu!"],
+    "balon_asildi": [
+      "Süper!",
+      "Bir balon daha!",
+      "Oda çok güzel oldu!"
+    ],
     "balon_bitti": "Balonlar hazır!",
     "saklan": "Şşş! Ada geliyor! Hemen saklanalım!",
     "sessiz": "Hiç ses çıkarma. Ada hiçbir şey duymasın.",
@@ -33,11 +38,17 @@
     "tesekkur": "Çok teşekkür ederim!"
   },
   "sarki": {
-    "satirlar": ["Mutlu yıllar sana", "Mutlu yıllar sana", "İyi ki doğdun Ada", "Mutlu yıllar sana"]
+    "satirlar": [
+      "Mutlu yıllar sana",
+      "Mutlu yıllar sana",
+      "İyi ki doğdun Ada",
+      "Mutlu yıllar sana"
+    ]
   },
   "tepki": {
     "tiz": "Aaa?",
     "kalin": "Ooo?",
-    "vay": "Vay!"
+    "vay": "Vay!",
+    "selam": "Selam!"
   }
 }

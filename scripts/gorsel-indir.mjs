@@ -8,6 +8,8 @@ import sharp from 'sharp';
 const kok = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const klasor = path.join(kok, 'assets', 'recraft');
 const hepsi = process.argv.includes('--hepsi');
+// Yerel deneme: GORSEL_YEREL='{"parti/can":"/yol/dosya.webp"}' — indirmek yerine bu dosyaları işler
+const yerel = process.env.GORSEL_YEREL ? JSON.parse(process.env.GORSEL_YEREL) : {};
 const liste = {};
 for (const f of fs.readdirSync(klasor).filter((f) => f.endsWith('.json'))) {
   Object.assign(liste, JSON.parse(fs.readFileSync(path.join(klasor, f), 'utf8')));
@@ -77,10 +79,11 @@ for (const [anahtar, url] of Object.entries(liste)) {
   const svgGerek = anahtar.startsWith('karakter/') && !fs.existsSync(kaynakSvg);
   if (!hepsi && fs.existsSync(hedef) && !svgGerek) continue;
   try {
-    const yanit = await fetch(url);
-    if (!yanit.ok) throw new Error(`HTTP ${yanit.status}`);
-    const girdi = Buffer.from(await yanit.arrayBuffer());
-    const tur = yanit.headers.get('content-type') ?? '';
+    if (Object.keys(yerel).length && !yerel[anahtar]) continue;
+    const yanit = yerel[anahtar] ? null : await fetch(url);
+    if (yanit && !yanit.ok) throw new Error(`HTTP ${yanit.status}`);
+    const girdi = yanit ? Buffer.from(await yanit.arrayBuffer()) : fs.readFileSync(yerel[anahtar]);
+    const tur = yanit?.headers.get('content-type') ?? '';
     if (anahtar.startsWith('karakter/') && (tur.includes('svg') || girdi.subarray(0, 200).toString().includes('<svg'))) {
       fs.mkdirSync(path.dirname(kaynakSvg), { recursive: true });
       fs.writeFileSync(kaynakSvg, girdi);
