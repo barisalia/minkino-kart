@@ -30,7 +30,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     : ebeveyn;
 
   // Mino'ya giriş: köşeden bakan kedi
-  const minoUrl = gorselUrl({ id: 'mino', ad: 'Mino', tema: '', tur: 'resim', gorsel: 'karakter/kedi-3.webp' });
+  const minoUrl = gorselUrl({ id: 'mino', ad: 'Mino', tema: '', tur: 'resim', gorsel: 'karakter/mino.webp' });
   const minoGiris = h('button.mino-giris', { type: 'button', 'aria-label': 'Mino ile oyna' }, minoUrl ? h('img', { src: minoUrl, alt: '' }) : null, h('span', {}, 'Mino'));
   minoGiris.addEventListener('click', () => {
     efekt.secim();

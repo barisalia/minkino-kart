@@ -31,3 +31,27 @@ test('Mino: açılıştan girilir, doğru kartı verince yeni tur başlar, dokun
   await expect(page.locator('.oyna-dugme')).toBeVisible();
   expect(hatalar).toEqual([]);
 });
+
+test('Mino: tepkiler (zıpla, dans, ağız açık, göz kapalı, mutlu) ekran görüntüsü', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./?test=1&yas=4&ekran=mino');
+  await expect(page.locator('.mino-svg')).toBeVisible();
+  await page.waitForTimeout(1500);
+  // Görüntü Mino kutusunun biraz dışını da alsın: zıplayınca / dansta kulaklar kutudan taşar (sayfada taşma serbest)
+  const k = (await page.locator('.mino').boundingBox())!;
+  const pay = k.height * 0.3;
+  const alan = { x: Math.max(0, k.x - 20), y: Math.max(0, k.y - pay), width: k.width + 40, height: k.height + pay };
+  const mino = { screenshot: (o: { path: string }) => page.screenshot({ ...o, clip: alan }) };
+  const tepki = (ad: string) => page.evaluate((a) => (window as unknown as { __mino: { tepki(t: string): void } }).__mino.tepki(a), ad);
+  for (const [ad, ms, dosya] of [['zipla', 380, '11-mino-zipla'], ['dans', 450, '12-mino-dans'], ['sasir', 500, '13-mino-agiz-acik'], ['evet', 350, '14-mino-mutlu']] as const) {
+    await tepki(ad);
+    await page.waitForTimeout(ms);
+    await mino.screenshot({ path: `tests/screens/${info.project.name}-${dosya}.png` });
+    await page.waitForTimeout(2600);
+  }
+  // göz kırpma ve uyku aynı kapalı göz çizimini kullanır
+  await page.evaluate(() => (window as unknown as { __mino: { uyu(): void } }).__mino.uyu());
+  await expect(page.locator('.mino.gozkapali')).toBeVisible();
+  await mino.screenshot({ path: `tests/screens/${info.project.name}-15-mino-goz-kapali.png` });
+  expect(hatalar).toEqual([]);
+});

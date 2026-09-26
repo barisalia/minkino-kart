@@ -2,14 +2,16 @@ import { kart as kartBul, refCoz } from '../engine/katalog';
 import type { Kart, KartGirdi, KartRef } from '../engine/types';
 import { h } from './dom';
 
-// Karakter seçenek çizimleri pakete girmesin; sadece Mino'nun kendisi
-const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '!../../assets/parti/**', '!../../assets/parti-sahne/**', '../../assets/karakter/kedi-3.webp'], {
+// Karakter seçenek çizimleri pakete girmesin; sadece Mino'nun kendisi.
+// (Olumsuz desen bütün listeye uygulandığı için Mino aynı listeye geri eklenemiyor: ayrı liste.)
+const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '!../../assets/parti/**', '!../../assets/parti-sahne/**'], {
   eager: true,
   query: '?url',
   import: 'default',
 });
+const minoResmi = import.meta.glob<string>('../../assets/karakter/mino.webp', { eager: true, query: '?url', import: 'default' });
 const gorselMap = new Map<string, string>();
-for (const [yol, url] of Object.entries(gorseller)) gorselMap.set(yol.replace('../../assets/', ''), url);
+for (const [yol, url] of Object.entries({ ...gorseller, ...minoResmi })) gorselMap.set(yol.replace('../../assets/', ''), url);
 
 export const KONTUR = '#5a3617';
 const RENKLER = ['#F0413F', '#3E9DF2', '#5DBE3F', '#FF8A2B', '#9B5CE0', '#FFC72C'];

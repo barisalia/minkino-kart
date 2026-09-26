@@ -1,19 +1,25 @@
 /**
  * Mino — konuşan, tepki veren kedi karakteri.
- * Vektör çizim parçalarına ayrılmıştır (kafa, gövde, kuyruk); hareketler CSS değişkenleriyle
- * her karede güncellenir. Ağız, konuşma sesinin gücüne göre açılıp kapanır.
+ * Vektör çizim katmanlara ayrılmıştır (kafa, gövde, iki kol, kuyruk; ekip/mino/mino-final.svg → scripts/mino/rig.mjs);
+ * hareketler CSS değişkenleriyle her karede güncellenir. Ağız, konuşma sesinin gücüne göre açılıp kapanır.
  */
 import { konusmaGucu } from '../audio/motor';
 import { konusuyorMu } from '../audio/ses';
 import { h, TEST_MODU } from '../ui/dom';
-import { MINO_AGIZ, MINO_SVG } from './mino-svg';
+import { MINO_SVG } from './mino-svg';
 
-// Pivot noktaları (çizimin viewBox koordinatları)
-const BOYUN = { x: 1024, y: 1225 };
-const KUYRUK = { x: 1300, y: 1680 };
+// Dönme noktaları (çizimin 2048'lik koordinatları; tasarımcının önerisi)
+const BOYUN = { x: 1024, y: 1240 };
+const KUYRUK = { x: 1250, y: 1680 };
 const AYAK = { x: 1024, y: 1885 };
-/** Ağız kendi grubunda (0,0) etrafında çizilir; grup onu burnun altına taşır (bkz. MINO_AGIZ) */
-const AGIZ = { x: 0, y: 0, g: 150 };
+const KOL_SOL = { x: 840, y: 1290 };
+const KOL_SAG = { x: 1205, y: 1290 };
+/** ağzın üst kenarı (bıyık çizgisinin iki ucu) ve genişliği */
+const AGIZ = { x: 1024, y: 992, g: 168 };
+/** Kollar bundan fazla kalkınca kol ucunda kontur izi görünüyor (çizimin bilinen sınırı) */
+const KOL_EN_COK = 24;
+/** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
+const OLCEK = 1.35;
 
 export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne';
 
@@ -35,23 +41,32 @@ const sin = Math.sin;
 const donus = (p: { x: number; y: number }, derece: number, sx = 1, sy = 1, tx = 0, ty = 0) =>
   `translate(${p.x + tx}px, ${p.y + ty}px) rotate(${derece}deg) scale(${sx}, ${sy}) translate(${-p.x}px, ${-p.y}px)`;
 
-/** Ağız: 0 = kapalı gülümseme, 1 = kocaman açık */
+/**
+ * Ağız: 0 = kapalı gülümseme (ω), 1 = kocaman açık. Tasarımcının ağız katmanıyla aynı biçim:
+ * burundan inen çizgi, üst kenarı ω olan ağız, altta dil.
+ */
 function agizYollari(acik: number, gulum: number) {
   const { x: cx, y: ust, g } = AGIZ;
+  const burunAlt = 956;
+  if (acik < 0.06) {
+    // kapalı: burun çizgisi + kedi gülümsemesi (ω)
+    const orta = ust - 4;
+    const cukur = ust + 14 + 26 * gulum;
+    const cizgi = `M${cx} ${burunAlt}V${orta}M${cx - 80} ${ust - 14}Q${cx - 44} ${cukur + 6} ${cx} ${orta}Q${cx + 44} ${cukur + 6} ${cx + 80} ${ust - 14}`;
+    return { ic: '', dil: '', cizgi };
+  }
   const gen = g * (1 - acik * 0.18);
   const x0 = cx - gen / 2;
   const x1 = cx + gen / 2;
-  const derin = 6 + acik * 92;
+  const derin = 10 + acik * 108;
   const alt = ust + derin;
-  const ic = acik < 0.06
-    ? ''
-    : `M${x0} ${ust} Q${cx} ${ust + 10 * gulum} ${x1} ${ust} Q${x1 + 6} ${ust + derin * 0.85} ${cx} ${alt} Q${x0 - 6} ${ust + derin * 0.85} ${x0} ${ust}Z`;
-  const dilY = alt - 6;
-  const dil = acik < 0.3 ? '' : `M${cx - 36} ${dilY} Q${cx} ${dilY - 34 * acik} ${cx + 36} ${dilY} Q${cx} ${dilY + 6} ${cx - 36} ${dilY}Z`;
-  // Kapalıyken kedi gülümsemesi (ω), açıkken ağız kenarı
-  const cizgi = acik < 0.06
-    ? `M${cx - 78} ${ust - 8} Q${cx - 40} ${ust + 26 * gulum + 8} ${cx} ${ust - 2} Q${cx + 40} ${ust + 26 * gulum + 8} ${cx + 78} ${ust - 8}`
-    : ic;
+  // üst kenar: iki yanda aşağı, ortada burna doğru kalkan ω
+  const tepe = ust - 16 - 10 * gulum;
+  const ic = `M${x0} ${ust}Q${(x0 + cx) / 2} ${ust + 4} ${cx} ${tepe}Q${(x1 + cx) / 2} ${ust + 4} ${x1} ${ust}Q${x1 + 8} ${ust + derin * 0.85} ${cx} ${alt}Q${x0 - 8} ${ust + derin * 0.85} ${x0} ${ust}Z`;
+  const dilY = alt - 8;
+  const dil = acik < 0.3 ? '' : `M${cx - 44} ${dilY}Q${cx} ${dilY - 40 * acik} ${cx + 44} ${dilY}Q${cx} ${dilY + 8} ${cx - 44} ${dilY}Z`;
+  // ağız kenarı + yanlarda yanağa kıvrılan uçlar + burun çizgisi
+  const cizgi = `${ic}M${x0} ${ust}Q${x0 - 18} ${ust - 18} ${x0 - 36} ${ust - 40}M${x1} ${ust}Q${x1 + 18} ${ust - 18} ${x1 + 36} ${ust - 40}M${cx} ${burunAlt}V${tepe}`;
   return { ic, dil, cizgi };
 }
 
@@ -61,7 +76,6 @@ export class Mino {
   private agizIc: SVGPathElement;
   private dil: SVGPathElement;
   private agizCizgi: SVGPathElement;
-  private kapaklar: SVGGElement[];
   private zzz: HTMLElement;
   private raf = 0;
   private bas = performance.now();
@@ -75,7 +89,6 @@ export class Mino {
     this.agizIc = this.el.querySelector('.m-agiz-ic')!;
     this.dil = this.el.querySelector('.m-dil')!;
     this.agizCizgi = this.el.querySelector('.m-agiz-cizgi')!;
-    this.kapaklar = [...this.el.querySelectorAll<SVGGElement>('.m-kapak')];
     this.kare = this.kare.bind(this);
     this.raf = requestAnimationFrame(this.kare);
   }
@@ -107,7 +120,7 @@ export class Mino {
   agizKonumu(): { x: number; y: number } {
     const r = this.kok.getBoundingClientRect();
     const vb = this.kok.viewBox.baseVal;
-    return { x: r.left + ((MINO_AGIZ.x - vb.x) / vb.width) * r.width, y: r.top + ((MINO_AGIZ.y + 30 * MINO_AGIZ.olcek - vb.y) / vb.height) * r.height };
+    return { x: r.left + ((AGIZ.x - vb.x) / vb.width) * r.width, y: r.top + ((AGIZ.y + 30 - vb.y) / vb.height) * r.height };
   }
 
   /** Dokunulan noktanın hangi bölgeye denk geldiği. */
@@ -116,10 +129,10 @@ export class Mino {
     const vb = this.kok.viewBox.baseVal;
     const vx = vb.x + ((x - r.left) / r.width) * vb.width;
     const vy = vb.y + ((y - r.top) / r.height) * vb.height;
-    if (Math.hypot(vx - 1024, vy - 915) < 95) return 'burun';
-    if (vx > 1395 && vy > 1185) return 'kuyruk';
-    if (vy < BOYUN.y) return 'kafa';
-    if (vy > 1760) return 'ayak';
+    if (Math.hypot(vx - 1024, vy - 915) < 75) return 'burun';
+    if (vx > 1300 && vy > 1180) return 'kuyruk';
+    if (vy < BOYUN.y - 20) return 'kafa';
+    if (vy > 1680) return 'ayak';
     return 'gobek';
   }
 
@@ -150,6 +163,9 @@ export class Mino {
     let mutlu = 0;
     let agizHedef = uyku ? 0 : 0.72;
     let gulum = 1;
+    // kollar: derece, + = dışa/yukarı kalkar (iki kol için aynı yön anlamı)
+    let kolSol = sin(t * (uyku ? 1.3 : 2.1)) * 1.5;
+    let kolSag = sin(t * (uyku ? 1.3 : 2.1) + 0.4) * 1.5;
 
     // Göz kırpma
     if (!uyku && t > d.sonrakiKirp) {
@@ -174,6 +190,8 @@ export class Mino {
             sy += sin(t * 25) * 0.03 * zarf;
             mutlu = zarf > 0.15 ? 1 : 0;
             agizHedef = 0.95;
+            kolSol += (6 + sin(t * 34) * 5) * zarf;
+            kolSag += (6 + sin(t * 34 + 1.5) * 5) * zarf;
             break;
           case 'mir':
             kafaAci += 10 * zarf;
@@ -189,6 +207,9 @@ export class Mino {
             sy = 1 - bas * 0.12 + (ziplaY < -20 ? 0.05 : 0);
             kuyrukAci += 5 * zarf;
             agizHedef = 1;
+            // havadayken iki kol da kalkar
+            kolSol += 22 * Math.max(0, sin(p * Math.PI));
+            kolSag += 22 * Math.max(0, sin(p * Math.PI));
             break;
           }
           case 'hapsu':
@@ -203,6 +224,8 @@ export class Mino {
               kafaY += 18 * sin(Math.min(1, f * 2) * Math.PI);
               gozKapali = 1;
               agizHedef = 1;
+              kolSol += 12 * sin(Math.min(1, f * 2) * Math.PI);
+              kolSag += 12 * sin(Math.min(1, f * 2) * Math.PI);
             }
             break;
           case 'sasir':
@@ -210,22 +233,30 @@ export class Mino {
             sy += 0.04 * zarf;
             agizHedef = 1;
             gulum = -0.2;
+            kolSol += 16 * zarf;
+            kolSag += 16 * zarf;
             break;
           case 'hayir':
             kafaAci += sin(e * Math.PI * 6) * 9 * zarf;
             agizHedef = 0.08;
             gulum = -0.6;
+            kolSol -= 4 * zarf;
+            kolSag -= 4 * zarf;
             break;
           case 'evet':
             kafaY += sin(e * Math.PI * 4) * 16 * zarf;
             mutlu = 1;
             agizHedef = 0.9;
+            // el sallama (sağ kol)
+            kolSag += (15 + sin(e * Math.PI * 6) * 8) * zarf;
             break;
           case 'ham': {
             const cig = Math.abs(sin(e * Math.PI * 7));
             agizHedef = cig * 0.75;
             mutlu = 1;
             sx = 1 + 0.03 * zarf;
+            kolSol -= 6 * zarf;
+            kolSag -= 6 * zarf;
             kafaAci += sin(e * Math.PI * 3.5) * 4;
             break;
           }
@@ -234,6 +265,9 @@ export class Mino {
             kafaAci += sin(e * Math.PI * 8 + 0.6) * 8;
             ziplaY = -Math.abs(sin(e * Math.PI * 8)) * 60 * zarf;
             kuyrukAci += sin(e * Math.PI * 8) * 12;
+            // kollar sırayla kalkar
+            kolSol += (10 + sin(e * Math.PI * 8) * 12) * zarf;
+            kolSag += (10 - sin(e * Math.PI * 8) * 12) * zarf;
             mutlu = 1;
             agizHedef = 0.95;
             break;
@@ -242,6 +276,9 @@ export class Mino {
             gozKapali = Math.max(gozKapali, zarf);
             kafaAci -= 8 * zarf;
             sy += 0.03 * zarf;
+            // esnerken gerinir
+            kolSol += 18 * zarf;
+            kolSag += 18 * zarf;
             break;
         }
       }
@@ -257,15 +294,18 @@ export class Mino {
 
     // Uygula
     const s = this.el.style;
-    const govde = `translate(0px, ${ziplaY}px) ` + donus(AYAK, govdeAci, sx, sy);
+    const govde = `translate(0px, ${ziplaY * OLCEK}px) ` + donus(AYAK, govdeAci, sx, sy);
     s.setProperty('--govde', govde);
-    s.setProperty('--kafa', donus(BOYUN, kafaAci, 1, 1, 0, kafaY));
+    // kafa fazla yukarı kalkarsa fuların üstünde boynun konturu görünür: yukarı en çok 6 birim
+    s.setProperty('--kafa', donus(BOYUN, kafaAci, 1, 1, 0, Math.max(-6, kafaY)));
     s.setProperty('--kuyruk', donus(KUYRUK, kuyrukAci));
+    const kol = (a: number) => Math.max(-8, Math.min(KOL_EN_COK, a));
+    s.setProperty('--kol-sol', donus(KOL_SOL, kol(kolSol)));
+    s.setProperty('--kol-sag', donus(KOL_SAG, -kol(kolSag)));
     s.setProperty('--golge', String(1 - Math.min(0.5, -ziplaY / 400)));
-    const kapak = Math.max(gozKapali, mutlu);
-    for (const k of this.kapaklar) k.style.transform = `translateY(var(--oy)) scaleY(${kapak}) translateY(calc(var(--oy) * -1))`;
+    // Göz: açık çizim ↔ kapalı / mutlu göz çizgisi (katman değişimi; kırpma anında)
     this.el.classList.toggle('mutlu', mutlu > 0.5);
-    this.el.classList.toggle('gozkapali', mutlu <= 0.5 && kapak > 0.85);
+    this.el.classList.toggle('gozkapali', mutlu <= 0.5 && gozKapali > 0.5);
     const { ic, dil, cizgi } = agizYollari(Math.max(0, d.agiz), gulum);
     this.agizIc.setAttribute('d', ic);
     this.dil.setAttribute('d', dil);

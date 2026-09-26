@@ -8,6 +8,9 @@ test('açılış → yaş → tema → 8 soruluk tur → albüm', async ({ page 
   const p = info.project.name;
   await page.goto('./?test=1');
   await expect(page.locator('.oyna-dugme')).toBeVisible();
+  // kart ve Mino resimleri çizilmeden görüntü alınmasın (yoksa kartlar boş görünür)
+  await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => undefined))));
+  await page.waitForTimeout(200);
   await page.screenshot({ path: ekran(p, '01-acilis') });
 
   await page.locator('.oyna-dugme').click();

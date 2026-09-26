@@ -202,3 +202,4 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   - GitHub CI ile üretim hattı.
 
   Bulut kredisi ve Recraft kredisi (226) sınırlı. Bu işler Barış üzerinden istenir.
+- 2026-09-26 KARAR (Barış): `main` dalı açıldı (yerel yönetici). İçerik: bulut dalının son hâli + tasarımcının katmanlı Mino'su (kodcu bağladı; bulutun ara Mino'sunun yerine geçti). Mino'nun Pazarı `main`'de YOK (beklemede, `ekip/pazar` dalında; seslendirme kredisi harcanmasın diye). Bundan sonra iş `main` üzerinden.
