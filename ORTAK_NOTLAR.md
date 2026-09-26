@@ -207,3 +207,13 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
 - 2026-09-26 TAMAM: Sesli Maceralar animasyonları (kodcu): farklı fazda nefes + kendiliğinden küçük hareketler, zıplamada çömelme/uzama/basılma, yükseklikle küçülen gölge, transform ile adım ritimli yürüyüş, tepki dalgası, parıltı/sarsıntı, yumuşak kapı girişi ve kamera; reduced-motion desteği; telefonda ~59 fps. Ses/mikrofon mantığına dokunulmadı. ?onizleme=1: gerçek hızda doğrudan bölüm.
 - 2026-09-26 TAMAM: Ada'nın 5 parti pozu oyunda (tasarımcı: assets/parti-ifade/ada/, 345×622 ortak tuval, ayak altta; kontrol ekip/parti/ada-pozlar.png). dogumgunu.ts Ada: boy 20.65, oran 345/622, şapka yeni tuvale göre. WebP'ler sharp ile ~30 KB'a sıkıştırıldı. KALAN İŞ: çocuk konukların (Can, Elif, Deniz, Zeynep) 7'şer pozu + Ada dans2/mutlu Gemini'de üretiliyor (can/selam onaylı).
 - 2026-09-26 TAMAM: Can'ın 7 parti pozu oyunda (assets/parti-ifade/can/, 422×558 tuval). KONUK_CIZIM'e karakter başına boy ve golge (gölge iç payı) eklendi; Oyuncu 'golge' seçeneği (--golge). Ada golge 24, Can 28.6.
+
+## 2026-09-26 — Ada'nın Doğum Günü BİTTİ (bulut → yerel)
+
+- 2026-09-26 KARAR (Barış): Sesli Maceralar (`macera/`, `content/macera.json`, `assets/parti*`) tamamen bulutta. Yerel ekip dokunmuyor.
+- 2026-09-26 Bulut: `claude/awesome-cori-kvcfd7` dalı (ae69b90), `main` (090981e) üstüne kuruldu; yeni Mino ile Ada ve Can pozları içinde.
+  - `macera/` telefonda sorunsuz çalışan hâle (4f894ca) döndü, üstüne yerelin güvenli animasyonları eklendi: pozlar, dalga, sarsıntı, parıltı, gölge, zıplama, nefes, kapı girişi, kamera.
+  - Çıkarılanlar: bakınma döngüsü, FLIP yürüyüş, `will-change`.
+  - Ölçüm: yavaşlatılmış tarayıcıda (CPU x6) sahte mikrofonla iki sürüm de balonu aynı hızda şişirdi. Telefondaki sorunun kesin kaynağı bulunamadı; güvenli temel seçildi.
+- 2026-09-26 ONAY BEKLİYOR (Barış): bu dalın `main`'e gönderilmesi. O zamana kadar yerel `main`'e push etmeden önce mutlaka `git merge origin/claude/awesome-cori-kvcfd7` yapsın, yoksa bu düzeltme siteden gider.
+- 2026-09-26 KALAN İŞ: Elif, Deniz ve Zeynep pozları `ekip/parti-pozlar` dalına gelince bulut Ada bölümüne koyar.
