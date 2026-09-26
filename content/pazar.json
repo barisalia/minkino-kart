@@ -1,0 +1,61 @@
+{
+  "aciklama": "Mino'nun Pazarı: hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler. Cümleler seslendirilir (ElevenLabs); {urun} {sayi} {Sayi} {Renk} yerine kelime gelir. 'arayuz' yalnız ekranda yazar, okunmaz. 'urunler', 'renkler', 'musteriler' veri; okunmaz. Kısa tutun.",
+  "hosgeldin": "Mino'nun Pazarı'na hoş geldin!",
+  "basla": "Müşteriler geliyor!",
+  "istek": {
+    "tek": "Bir {urun} ver.",
+    "renk": "{Renk} olanı ver.",
+    "sayi": "{Sayi} {urun} ver.",
+    "iki": "{Sayi} {urun},",
+    "meyve": "Meyveleri sepete koy.",
+    "sebze": "Sebzeleri sepete koy.",
+    "bende": "Bende {sayi} {urun} var.",
+    "daha": "{Sayi} tane daha ver.",
+    "ode": "Kasaya {sayi} lira koy."
+  },
+  "dogru": ["Teşekkürler!", "Çok sağ ol!", "Tam istediğim!"],
+  "yanlis": ["Bu değil. Bir daha bak!", "Hımm, başka bir tane!"],
+  "az": "Biraz daha!",
+  "fazla": "Fazla oldu!",
+  "meyve_degil": "Bu bir sebze!",
+  "sebze_degil": "Bu bir meyve!",
+  "yardim": "Parlayanı dene!",
+  "sayalim": "Birlikte sayalım!",
+  "surukle": "Sepete sürükle!",
+  "senlik": "Pazar şenliği! Yaşasın!",
+  "senlik_dokun": "Hayvanlara dokun!",
+  "arayuz": {
+    "baslik_ust": "Mino'nun",
+    "baslik_alt": "Pazarı",
+    "oyna": "Oyna",
+    "ver": "Ver",
+    "tamam": "Tamam",
+    "bir_daha": "Bir daha",
+    "cikis": "Çıkış",
+    "yas": "{yas} yaş",
+    "meyveler": "Meyveler",
+    "sebzeler": "Sebzeler",
+    "yildiz": "{yildiz} yıldız",
+    "lira": "{sayi} lira"
+  },
+  "urunler": {
+    "say": ["elma", "muz", "cilek", "havuc"],
+    "meyve": ["elma", "muz", "cilek", "portakal", "armut", "uzum", "limon", "kiraz"],
+    "sebze": ["havuc", "domates", "salatalik", "misir", "patlican", "brokoli", "biber"]
+  },
+  "renkler": {
+    "kırmızı": ["elma", "cilek", "domates", "kiraz"],
+    "sarı": ["muz", "limon", "misir"],
+    "turuncu": ["portakal", "havuc"],
+    "yeşil": ["armut", "salatalik", "brokoli"],
+    "mor": ["uzum", "patlican"]
+  },
+  "renk_kodu": {
+    "kırmızı": "#F0413F",
+    "sarı": "#FFC72C",
+    "turuncu": "#FF8A2B",
+    "yeşil": "#5DBE3F",
+    "mor": "#9B5CE0"
+  },
+  "musteriler": ["kopek", "tavsan", "ordek", "inek", "ayi", "maymun", "kus"]
+}

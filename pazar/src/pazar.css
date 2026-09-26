@@ -1,0 +1,813 @@
+/* Mino'nun Pazarı — tüm stiller .pz-kok altında (ana uygulamaya gömülebilir), önek pz- */
+.pz-kok {
+  --pz-gok-1: #bfe6ff;
+  --pz-gok-2: #fff4dd;
+  --pz-tahta: #d99a55;
+  --pz-tahta-koyu: #b8743a;
+  --pz-tahta-acik: #f0c083;
+  --pz-hasir: #e2ac62;
+  --pz-hasir-koyu: #b77a36;
+  --pz-tente-1: #f0413f;
+  --pz-tente-2: #fff7ea;
+  --pz-urun: clamp(58px, 17vw, 104px);
+}
+
+/* ---------- Ortak arka plan (tasarımcının pazar/arkaplan.webp: flamalar, tenteler, taş zemin) ---------- */
+.pz-kok .pz-acilis,
+.pz-kok .pz-pazar,
+.pz-kok .pz-senlik {
+  background:
+    var(--resim, none) center 100% / cover no-repeat,
+    radial-gradient(90% 40% at 20% 30%, rgba(255, 255, 255, 0.7), transparent 70%),
+    linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
+}
+.pz-kok .ust-cubuk {
+  z-index: 5;
+}
+
+/* ---------- Görseller ---------- */
+.pz-kok .pz-resim {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.pz-kok .pz-yedek {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sari);
+  border: var(--cizgi) solid var(--kontur);
+  font-size: 1.6em;
+  color: #fff;
+}
+
+/* ---------- Açılış ---------- */
+.pz-kok .pz-acilis-ic {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 12px;
+  padding-top: clamp(6px, 3vh, 30px);
+}
+.pz-kok .pz-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.95;
+  filter: drop-shadow(0 5px 0 rgba(90, 54, 23, 0.22));
+}
+.pz-kok .pz-logo-ust {
+  font-size: clamp(1.7rem, 8vw, 3.2rem);
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: 7px var(--kontur);
+  paint-order: stroke fill;
+  transform: rotate(-4deg);
+}
+.pz-kok .pz-logo-alt {
+  display: flex;
+  font-size: clamp(3.2rem, 17vw, 6.4rem);
+  font-weight: 700;
+  -webkit-text-stroke: 9px var(--kontur);
+  paint-order: stroke fill;
+}
+.pz-kok .pz-logo-alt span {
+  color: var(--kirmizi);
+  animation: pz-harf 2.6s ease-in-out calc(var(--i) * 0.12s) infinite;
+}
+.pz-kok .pz-logo-alt span:nth-child(3n + 2) { color: var(--turuncu); }
+.pz-kok .pz-logo-alt span:nth-child(3n) { color: var(--yesil); }
+@keyframes pz-harf {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-7px) rotate(-3deg); }
+}
+.pz-kok .pz-acilis-sahne {
+  position: relative;
+  width: min(92vw, 560px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pz-kok .pz-acilis-sahne .pz-stand {
+  --sw: min(88vw, 44vh, 460px);
+  /* açılışta bacaklar görünmez: stand, altında yumuşak gölgeyle tezgâh gibi durur */
+  margin-bottom: calc(var(--sw) * -0.22);
+}
+.pz-kok .pz-acilis-sahne .pz-stand-arka {
+  clip-path: inset(0 0 22% 0);
+}
+.pz-kok .pz-acilis-sahne .pz-stand-tahta {
+  clip-path: inset(56% 0 22% 0);
+}
+.pz-kok .pz-acilis-sahne .pz-stand::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 74%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(60, 35, 12, 0.35), transparent);
+  z-index: 0;
+}
+/* meyveler standın tahtasının üstünde sıralı */
+.pz-kok .pz-acilis-meyveler {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 38%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 4;
+}
+.pz-kok .pz-acilis-meyve {
+  width: 18%;
+  aspect-ratio: 1;
+  animation: pz-hop 2.2s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--i) * 0.25s) infinite;
+}
+@keyframes pz-hop {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-18%) rotate(-6deg); }
+}
+@keyframes pz-salin {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.pz-kok .pz-oyna {
+  --r: var(--yesil);
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  min-width: min(62vw, 280px);
+  min-height: 84px;
+}
+.pz-kok .pz-oyna .ikon {
+  font-size: 1.1em;
+}
+.pz-kok .pz-acilis-alt {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 52px;
+}
+.pz-kok .pz-toplam-yildiz,
+.pz-kok .pz-yas-dugme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  box-shadow: 0 4px 0 var(--kontur-yumusak);
+  font-size: 1.15rem;
+}
+.pz-kok .pz-toplam-yildiz .ikon {
+  color: var(--sari);
+  font-size: 1.4em;
+}
+
+/* ---------- Pazar ekranı ---------- */
+.pz-kok .pz-pazar {
+  gap: clamp(4px, 1vh, 10px);
+}
+.pz-kok .pz-baslik {
+  font-size: clamp(1.05rem, 4.6vw, 1.6rem);
+  padding-right: 16px;
+  max-width: 100%;
+}
+.pz-kok .pz-baslik span {
+  min-width: 0;
+}
+.pz-kok .pz-yildizlar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: clamp(6px, 2vw, 14px);
+}
+.pz-kok .pz-yildiz {
+  font-size: clamp(28px, 7.5vw, 44px);
+  color: rgba(90, 54, 23, 0.22);
+  display: inline-flex;
+  transition: color 0.2s;
+}
+.pz-kok .pz-yildiz .ikon {
+  width: 1em;
+  height: 1em;
+}
+.pz-kok .pz-yildiz svg * {
+  fill: currentColor;
+}
+.pz-kok .pz-yildiz.dolu {
+  color: var(--sari);
+  filter: drop-shadow(0 3px 0 var(--kontur));
+  animation: pz-yildiz 0.6s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+@keyframes pz-yildiz {
+  0% { transform: scale(0.3) rotate(-90deg); }
+  60% { transform: scale(1.45) rotate(10deg); }
+  100% { transform: scale(1); }
+}
+
+/* Sahne: pazar standı ortada (Mino içinde), müşteri standın önünde solda */
+.pz-kok .pz-sahne {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 150px;
+  margin: 0 calc(var(--yan) * -1);
+}
+.pz-kok .pz-pazar > .ust-cubuk + .pz-yildizlar {
+  margin-top: 2px;
+}
+/*
+ * Stand (pazar/tezgah.webp, kare çizim; oranlar çizimden ölçüldü): tente %9–37, iç boşluk %37–56, tahtanın arka kenarı %56,
+ * ön yüzü %71'e kadar, altında bacaklar. Oyunda standın alt kısmı ön tezgâhın arkasında kalır: tahta ile ön tezgâh tek
+ * bir tezgâh gibi birleşir. Katmanlar: arka (bütün çizim) → Mino → önde tente ve tahta → tahtanın üstündekiler.
+ */
+.pz-kok .pz-sahne {
+  container-type: size;
+}
+.pz-kok .pz-stand {
+  --sw: min(108cqw, 128cqh);
+  position: relative;
+  width: var(--sw);
+  aspect-ratio: 1;
+}
+.pz-kok .pz-sahne .pz-stand {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--sw) * -0.28);
+  translate: -50% 0;
+}
+.pz-kok .pz-stand-katman {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.pz-kok .pz-stand-arka { z-index: 1; filter: drop-shadow(0 8px 10px rgba(80, 45, 15, 0.25)); }
+.pz-kok .pz-stand-tente { z-index: 3; clip-path: inset(0 0 63% 0); }
+.pz-kok .pz-stand-tahta { z-index: 3; clip-path: inset(56% 0 0 0); }
+/* görsel yoksa sade yer tutucu: tahta şeridi */
+.pz-kok .pz-stand-yedek.pz-stand-arka { background: linear-gradient(180deg, transparent 56%, var(--pz-tahta) 56% 71%, transparent 71%); }
+/* Mino standın içinde, tahtanın arkasında: fuları tahtanın kenarında, kulak uçları tentenin altında */
+.pz-kok .pz-stand .pz-mino {
+  position: absolute;
+  z-index: 2;
+  left: 37%;
+  bottom: 28%;
+  width: 32%;
+  aspect-ratio: 1360 / 1790;
+}
+/* sepet tahtanın üstünde, sağda */
+.pz-kok .pz-stand .pz-sepet {
+  position: absolute;
+  z-index: 4;
+  left: 64%;
+  bottom: 33%;
+  width: 31%;
+  height: auto;
+  aspect-ratio: 1;
+}
+.pz-kok .pz-musteri-kap {
+  position: absolute;
+  left: 0;
+  bottom: -2%;
+  width: min(36cqw, 46cqh, 330px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.pz-kok .pz-musteri {
+  position: absolute;
+  inset: 0;
+  animation: pz-gel 0.9s linear both;
+}
+.pz-kok .pz-musteri-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+}
+.pz-kok .pz-musteri.sevindi .pz-musteri-resim {
+  animation: pz-sevin 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 2;
+}
+.pz-kok .pz-musteri.pz-hayir .pz-musteri-resim {
+  animation: pz-hayir 0.5s ease-in-out;
+}
+.pz-kok .pz-musteri.gidiyor {
+  animation: pz-git 0.6s linear both;
+}
+/* geliş: sekerek yürür (her adımda hafif sıçrama), tezgâha varınca basıp durur */
+@keyframes pz-gel {
+  0% { transform: translateX(-115%) translateY(0); animation-timing-function: ease-out; }
+  20% { transform: translateX(-84%) translateY(-7%) rotate(3deg); animation-timing-function: ease-in; }
+  38% { transform: translateX(-56%) translateY(0) rotate(0); animation-timing-function: ease-out; }
+  56% { transform: translateX(-30%) translateY(-6%) rotate(3deg); animation-timing-function: ease-in; }
+  74% { transform: translateX(-8%) translateY(0) rotate(0); animation-timing-function: ease-out; }
+  86% { transform: translateX(0) scale(1.06, 0.93); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+  100% { transform: none; }
+}
+/* gidiş: sevinçle bir zıplar, sonra sekerek çıkar */
+@keyframes pz-git {
+  0% { transform: none; }
+  25% { transform: translateY(-9%) rotate(-4deg); }
+  45% { transform: translateX(-18%) translateY(0); }
+  70% { transform: translateX(-60%) translateY(-6%) rotate(-4deg); opacity: 1; }
+  100% { transform: translateX(-125%) translateY(0); opacity: 0; }
+}
+@keyframes pz-sevin {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-16%) scale(1.06, 0.96) rotate(-4deg); }
+  60% { transform: translateY(0) scale(1.08, 0.92); }
+}
+@keyframes pz-hayir {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-7deg); }
+  75% { transform: rotate(7deg); }
+}
+
+/* İstek balonu (resimli) */
+.pz-kok .pz-istek-balon {
+  /* müşterinin başının üstünde, biraz sağa (Mino'ya doğru) */
+  position: absolute;
+  bottom: 90%;
+  left: 50%;
+  translate: -38% 0;
+  z-index: 3;
+  white-space: nowrap;
+  padding: clamp(6px, 1.6vw, 12px) clamp(10px, 3vw, 18px);
+  border-radius: 26px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 5px 0 var(--kontur-yumusak);
+  animation: pz-balon 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 0.45s both;
+}
+.pz-kok .pz-istek-balon::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 30%;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-right: var(--cizgi) solid var(--kontur);
+  border-bottom: var(--cizgi) solid var(--kontur);
+  transform: rotate(45deg) skew(8deg, 8deg);
+  border-radius: 0 0 6px 0;
+}
+@keyframes pz-balon {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.pz-kok .pz-istek {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 14px);
+}
+.pz-kok .pz-istek > .pz-resim,
+.pz-kok .pz-istek > .pz-para {
+  width: clamp(48px, 13vw, 84px);
+  height: clamp(48px, 13vw, 84px);
+}
+.pz-kok .pz-istek-grup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.pz-kok .pz-istek-grup b {
+  font-size: clamp(1.8rem, 8vw, 3rem);
+  font-weight: 700;
+  color: var(--mavi);
+  -webkit-text-stroke: 5px var(--kontur);
+  paint-order: stroke fill;
+  line-height: 1;
+}
+.pz-kok .pz-istek-grup .pz-resim,
+.pz-kok .pz-istek-grup .pz-para {
+  width: clamp(40px, 11vw, 70px);
+  height: clamp(40px, 11vw, 70px);
+}
+.pz-kok .pz-istek-ayir {
+  flex-direction: column;
+  gap: 0;
+  font-size: clamp(0.95rem, 3.8vw, 1.3rem);
+}
+.pz-kok .pz-istek-ayir > .pz-resim {
+  width: clamp(40px, 11vw, 66px);
+  height: clamp(40px, 11vw, 66px);
+}
+.pz-kok .pz-renk-leke {
+  display: block;
+  width: clamp(48px, 13vw, 80px);
+  height: clamp(48px, 13vw, 80px);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55) 0 14%, transparent 15%), var(--r);
+  border: var(--cizgi) solid var(--kontur);
+  border-radius: 46% 54% 50% 50% / 55% 45% 55% 45%;
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- Tezgâh, sepet, ürünler ---------- */
+.pz-kok .pz-tezgah {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  margin: 0 calc(var(--yan) * -1) calc(var(--alt) * -1);
+  padding: clamp(10px, 2vh, 18px) var(--yan) var(--alt);
+  border-top: var(--cizgi) solid var(--kontur);
+  border-radius: 22px 22px 0 0;
+  /* standın tahtası (#d39150 / #b8743a tonları) ile aynı ahşap */
+  background:
+    linear-gradient(180deg, #f2b774 0 10px, #d99a55 10px 16px, #cf8a47 16px),
+    #cf8a47;
+  box-shadow: 0 -10px 18px rgba(70, 38, 12, 0.28), inset 0 3px 0 rgba(255, 255, 255, 0.35);
+}
+.pz-kok .pz-tezgah:not(.pz-gorselli)::before {
+  /* tahta çizgileri */
+  content: '';
+  position: absolute;
+  inset: 12px 0 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, transparent 0 46px, rgba(90, 54, 23, 0.16) 46px 49px);
+}
+.pz-kok .pz-tezgah-ust {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: flex-end;
+  gap: clamp(10px, 3vw, 22px);
+}
+/* "Ver" düğmesi ön tezgâhın sağ üst köşesinde, tahtanın kenarına biner */
+.pz-kok .pz-tezgah-ust .pz-ver {
+  margin-top: -6px;
+}
+.pz-kok .pz-sepet {
+  position: relative;
+  width: min(56vw, 380px);
+  height: clamp(96px, 15vh, 150px);
+  flex: 0 1 auto;
+  border-radius: 18px 18px 44% 44% / 18px 18px 36% 36%;
+  border: var(--cizgi) solid var(--kontur);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 30%),
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(90, 54, 23, 0.22) 14px 17px),
+    repeating-linear-gradient(0deg, var(--pz-hasir) 0 12px, var(--pz-hasir-koyu) 12px 15px);
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.12), 0 6px 0 var(--kontur);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.pz-kok .pz-sepet:not(.pz-gorselli)::before {
+  /* sap */
+  content: '';
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: -46%;
+  height: 70%;
+  border: calc(var(--cizgi) + 5px) solid var(--pz-hasir-koyu);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+  outline: 0;
+  box-shadow: 0 0 0 0 transparent;
+  z-index: -1;
+  filter: drop-shadow(0 0 0 var(--kontur)) drop-shadow(0 -3px 0 var(--kontur));
+}
+.pz-kok .pz-sepet.pz-gorselli {
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.pz-kok .pz-sepet-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.pz-kok .pz-sepet.pz-uzerinde {
+  transform: scale(1.07);
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.12), 0 6px 0 var(--kontur), 0 0 0 7px rgba(255, 199, 44, 0.85);
+}
+.pz-kok .pz-sepet.pz-zipla {
+  animation: pz-sepet 0.4s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.pz-kok .pz-sepet.pz-hayir {
+  animation: pz-hayir 0.45s ease-in-out;
+}
+@keyframes pz-sepet {
+  40% { transform: scale(1.08, 0.92); }
+}
+.pz-kok .pz-sepet-ic {
+  position: absolute;
+  inset: 8% 6% 16%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 2px 4px;
+}
+.pz-kok .pz-sepet-ic .pz-urun {
+  width: clamp(40px, 10.5vw, 66px);
+  height: clamp(40px, 10.5vw, 66px);
+}
+.pz-kok .pz-sepet.pz-teslim .pz-sepet-ic {
+  animation: pz-teslim 0.9s ease-in 0.3s both;
+}
+@keyframes pz-teslim {
+  to { transform: translate(24vw, -20vh) scale(0.3); opacity: 0; }
+}
+/* sepete düşen ürün: küçük sekme (yalnız transform) */
+.pz-kok .pz-sepet-ic .pz-urun.pz-dustu {
+  animation: pz-dustu 0.42s linear;
+}
+@keyframes pz-dustu {
+  0% { transform: translateY(-22%); animation-timing-function: ease-in; }
+  45% { transform: translateY(0) scale(1.14, 0.84); animation-timing-function: ease-out; }
+  70% { transform: translateY(-9%) scale(0.96, 1.05); animation-timing-function: ease-in; }
+  100% { transform: none; }
+}
+.pz-kok .pz-urun.pz-hazir {
+  opacity: 0.9;
+  filter: saturate(0.85);
+}
+/* Sayma ipucu: sepetteki her ürünün sırası, paralarda toplam */
+.pz-kok .pz-sepet.pz-say .pz-urun:not(.pz-hazir)::after {
+  content: attr(data-no);
+  position: absolute;
+  right: -4px;
+  top: -6px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--mavi);
+  border: 2px solid var(--kontur);
+  color: #fff;
+  font-size: 14px;
+}
+.pz-kok .pz-sepet.pz-say[data-toplam]::after {
+  content: attr(data-toplam);
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  white-space: nowrap;
+  font-size: 1.05rem;
+}
+.pz-kok .pz-ver {
+  --r: var(--yesil);
+  flex: 0 0 auto;
+  min-height: 72px;
+  padding: 0 0.9em;
+}
+.pz-kok .pz-ver[hidden] {
+  display: none;
+}
+
+.pz-kok .pz-urunler {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(6px, 2vw, 14px);
+  max-width: 640px;
+  margin: clamp(12px, 2.4vh, 22px) auto 0;
+  min-height: calc(var(--pz-urun) + 12px);
+}
+.pz-kok .pz-urunler[data-adet='3'] {
+  --pz-urun: clamp(84px, 24vw, 140px);
+  gap: clamp(12px, 5vw, 36px);
+}
+.pz-kok .pz-urunler[data-adet='6'] {
+  --pz-urun: clamp(70px, 20vw, 118px);
+}
+.pz-kok .pz-yuva {
+  position: relative;
+  width: var(--pz-urun);
+  height: var(--pz-urun);
+  border-radius: 22%;
+  background: radial-gradient(60% 30% at 50% 88%, rgba(90, 54, 23, 0.25), transparent 70%);
+  animation: pz-dus 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--i) * 0.05s) both;
+}
+@keyframes pz-dus {
+  from { transform: translateY(-30px) scale(0.6); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.pz-kok .pz-urun {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.25));
+}
+.pz-kok .pz-urun.pz-tasiniyor {
+  z-index: 50;
+  cursor: grabbing;
+  filter: drop-shadow(0 12px 10px rgba(90, 54, 23, 0.35));
+}
+.pz-kok .pz-yuva:has(.pz-tasiniyor) {
+  z-index: 50;
+}
+.pz-kok .pz-urun.pz-parla::before {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 230, 120, 0.95) 0%, rgba(255, 199, 44, 0.5) 45%, transparent 70%);
+  animation: pz-parla 1s ease-in-out infinite alternate;
+  z-index: -1;
+}
+@keyframes pz-parla {
+  from { transform: scale(0.85); opacity: 0.6; }
+  to { transform: scale(1.12); opacity: 1; }
+}
+
+/* Bozuk paralar (tasarımcının görseli gelene kadar CSS) */
+.pz-kok .pz-para {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.pz-kok .pz-para:not(.pz-gorselli) {
+  width: 86%;
+  height: 86%;
+  margin: 7%;
+  border-radius: 50%;
+  border: var(--cizgi) solid var(--kontur);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.6) 0 12%, transparent 13%), radial-gradient(circle, var(--pz-para-1) 0 58%, var(--pz-para-2) 60% 100%);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.15);
+}
+.pz-kok .pz-para-1 {
+  --pz-para-1: #e59a5c;
+  --pz-para-2: #c47437;
+}
+.pz-kok .pz-para-5 {
+  --pz-para-1: #ffd54f;
+  --pz-para-2: #e8a91c;
+}
+.pz-kok .pz-para img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.pz-kok .pz-para b {
+  position: relative;
+  font-size: calc(var(--pz-urun) * 0.42);
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: 5px var(--kontur);
+  paint-order: stroke fill;
+  line-height: 1;
+}
+.pz-kok .pz-sepet-ic .pz-para b,
+.pz-kok .pz-istek .pz-para b {
+  font-size: clamp(18px, 5vw, 30px);
+  -webkit-text-stroke: 4px var(--kontur);
+}
+
+/* Parıltılar */
+.pz-kok .pz-parilti {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px;
+  z-index: 6;
+  pointer-events: none;
+  background: var(--sari);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: pz-parilti 1s ease-out var(--g) both;
+}
+@keyframes pz-parilti {
+  from { transform: translate(0, 0) scale(0.4); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(1.3) rotate(90deg); opacity: 0; }
+}
+
+/* ---------- Şenlik ---------- */
+.pz-kok .pz-senlik {
+  gap: 10px;
+}
+.pz-kok .pz-senlik .pz-yildizlar {
+  margin-top: 4px;
+}
+.pz-kok .pz-senlik-sahne {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+}
+/* canlı Mino kendi dansını yapar (mino.ts) */
+.pz-kok .pz-senlik-mino {
+  width: min(40vw, 28vh, 240px);
+  aspect-ratio: 1360 / 1790;
+}
+.pz-kok .pz-senlik-hayvanlar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(4px, 2vw, 16px);
+  width: min(100%, 700px);
+}
+.pz-kok .pz-senlik-hayvan {
+  width: clamp(92px, 27vw, 150px);
+  aspect-ratio: 1;
+  animation: pz-dans 1.1s ease-in-out calc(var(--i) * 0.18s) infinite;
+  transform-origin: 50% 100%;
+}
+.pz-kok .pz-senlik-hayvan.zipla {
+  animation: pz-sevin 0.7s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes pz-dans {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-8%); }
+}
+.pz-kok .pz-senlik-alt {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .pz-logo-alt span,
+  .pz-kok .pz-acilis-meyve,
+  .pz-kok .pz-acilis-mino,
+  .pz-kok .pz-mino,
+  .pz-kok .pz-senlik-mino,
+  .pz-kok .pz-senlik-hayvan {
+    animation: none;
+  }
+}
+
+/* "7 lira" balonu: yazı balona sığsın */
+.pz-kok .pz-istek-lira b {
+  font-size: clamp(1.3rem, 6vw, 2.2rem);
+  -webkit-text-stroke: 4px var(--kontur);
+  padding: 0 2px;
+}
+.pz-kok .pz-istek-lira {
+  padding: 8px 6px 12px;
+}
+
+/* ---------- Sepet (görselli, standın tahtasında) ---------- */
+/* hasır sepetin ağzı: çizimde %42–70 yüksekliğinde; ürünler ağızda sıralanır, doldukça küçülür (--ks, ekranlar.ts) */
+.pz-kok .pz-sepet.pz-gorselli .pz-sepet-ic {
+  inset: 30% 14% 24%;
+  gap: 1px 3px;
+  align-content: flex-end;
+}
+.pz-kok .pz-stand .pz-sepet-ic .pz-urun {
+  width: calc(var(--sw) * 0.09 * var(--ks, 1));
+  height: calc(var(--sw) * 0.09 * var(--ks, 1));
+}
+.pz-kok .pz-stand .pz-sepet-ic .pz-para b {
+  font-size: calc(var(--sw) * 0.04 * var(--ks, 1));
+  -webkit-text-stroke: 3px var(--kontur);
+}
+.pz-kok .pz-sepet.pz-gorselli.pz-uzerinde {
+  box-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(255, 210, 60, 0.95));
+}
+/* teslim: sepetteki ürünler soldaki müşteriye uçar */
+.pz-kok .pz-stand .pz-sepet.pz-teslim .pz-sepet-ic {
+  animation-name: pz-teslim-sol;
+}
+@keyframes pz-teslim-sol {
+  to { transform: translate(-48cqw, -6cqh) scale(0.3); opacity: 0; }
+}
+/* sayma ipucu: para toplamı sepetin altında */
+.pz-kok .pz-stand .pz-sepet.pz-say[data-toplam]::after {
+  bottom: -6px;
+  font-size: 0.95rem;
+}
