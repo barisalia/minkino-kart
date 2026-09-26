@@ -125,3 +125,7 @@ Barış'ın kararı: Uyuyan Orman'ı en yüksek kaliteye çıkarıyoruz; stil (p
 - **Gemini görsel işi (tarayıcıdan, API yok):** [ekip/gemini-is-listesi.md](ekip/gemini-is-listesi.md): ifade setleri, parça setleri, arka plan katmanları.
 - Claude (bulut): eşyaların Recraft çizimleri, karakter ve eşya animasyonları (kod), sihirli renklenme, derinlik (parallax), müzik.
 - Cascadeur, Meshy, Blender bu işte kullanılmaz (3D; stili bozar).
+
+## 12. Mini çizgi filmler (animasyon ekibi)
+
+Uygulamaya eğitici mini çizgi filmler ekleniyor. Ekip, iş akışı, iskelet ve sahne dosyası standartları: [ekip/film/FILM-REHBERI.md](ekip/film/FILM-REHBERI.md). Ekip yerel yöneticiye bağlıdır.
