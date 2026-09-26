@@ -196,3 +196,9 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   7. `main` / Pages kararı.
 - 2026-09-26 ONAY BEKLİYOR (Barış): `claude/awesome-cori-kvcfd7` dalından `main` açılması ve varsayılan dal yapılması.
 - 2026-09-26 Bulut (son iş): **Yeni Mino (A) bütün oyunlarda yayında.** İskelet `scripts/mino/rig.mjs` ile kuruldu: konuşma ağzı, göz kırpma, kafa ve kuyruk sallama, tepkiler, dans. Tasarımcının gölgeli ve katmanlı sürümü gelince aynı betikle değiştirilecek; adımlar `ekip/DEVIR-TESLIM.md` 5. bölümde.
+- 2026-09-26 KARAR (Barış): Bulut yönetici tamamen kapanmadı. **Yalnız bulutta yapılabilen ya da orada daha kolay olan işler** buluta verilecek, gerisini yerel ekip yapar. Bulutta yapılacak işler:
+  - Recraft'a doğrudan bağlı üretim: görsel üret, zemin sil, oyuna koy. Vektöre çevirme. Gemini (nano banana pro) ile poz ve ifade.
+  - Tarayıcıda tam oynanış testi, ekran görüntüsü, video.
+  - GitHub CI ile üretim hattı.
+
+  Bulut kredisi ve Recraft kredisi (226) sınırlı. Bu işler Barış üzerinden istenir.
