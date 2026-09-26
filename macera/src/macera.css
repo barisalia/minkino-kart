@@ -457,8 +457,8 @@
 }
 .mc-kok .mc-oy-golge {
   position: absolute;
-  left: 18%;
-  right: 18%;
+  left: var(--golge, 18%);
+  right: var(--golge, 18%);
   bottom: -1%;
   height: 8%;
   border-radius: 50%;

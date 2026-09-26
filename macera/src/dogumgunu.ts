@@ -43,8 +43,9 @@ export interface BolumArayuz {
 const KONUKLAR = ['can', 'elif', 'deniz', 'zeynep'] as const;
 type KonukAd = (typeof KONUKLAR)[number];
 /** çizim oranı (en/boy) ve şapkanın kafadaki yeri */
-const KONUK_CIZIM: Record<KonukAd, { oran: number; sapka: { x: number; y: number; w: number; d?: number } }> = {
-  can: { oran: 281 / 512, sapka: { x: 49, y: 7, w: 32, d: -6 } },
+/** boy/golge yalnız poz tuvali genişletilmiş konuklarda (parti-ifade): kutu büyür, karakter ekranda aynı boyda kalır */
+const KONUK_CIZIM: Record<KonukAd, { oran: number; boy?: number; golge?: number; sapka: { x: number; y: number; w: number; d?: number } }> = {
+  can: { boy: 23.28, oran: 422 / 558, golge: 28.6, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
   elif: { oran: 274 / 512, sapka: { x: 50, y: 6, w: 30, d: 6 } },
   deniz: { oran: 289 / 512, sapka: { x: 47, y: 10, w: 32, d: -5 } },
   zeynep: { oran: 322 / 512, sapka: { x: 50, y: 6, w: 28, d: 6 } },
@@ -74,7 +75,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
   sahne.koy(resim('parti/masa', '', 'Masa'), { x: 50, y: 2, w: 54, z: 6 });
   const pasta = sahne.koy(h('div.mc-pasta', {}, resim('parti/pasta', 'mc-pasta-resim', 'Pasta')), { x: 50, y: 17, w: 32, z: 7 });
 
-  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
+  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
   const konuklar = KONUKLAR.map((ad) => new Oyuncu({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }));
   const oy = { ada };
   const konukAd = KONUKLAR;

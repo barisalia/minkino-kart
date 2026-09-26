@@ -41,6 +41,12 @@ public static class Parti {
   /// Zemin silme. esik: beyaz sayılma (232). buyukBosluk: kenara bağlı olmayan beyaz bölge bu alandan büyükse zemin sayılır
   /// (kol-gövde arası gibi). korunacak: "x,y;x,y" noktalarını içeren bölgeler silinmez (göz akı vb.). Rapor döner.
   public static string ZeminSil(string girdi, string cikti, int esik, int buyukBosluk, string korunacak) {
+    return ZeminSil(girdi, cikti, esik, buyukBosluk, korunacak, "");
+  }
+  /// silNo: ayrıca silinecek kapalı boşluk numaraları ("13,14"): kol-gövde arası gibi zemin boşlukları
+  public static string ZeminSil(string girdi, string cikti, int esik, int buyukBosluk, string korunacak, string silNo) {
+    var silSet = new HashSet<int>();
+    if (!string.IsNullOrEmpty(silNo)) foreach (var s in silNo.Split(',')) { int v; if (int.TryParse(s.Trim(), out v)) silSet.Add(v); }
     var r = Rgba.Oku(girdi); int W = r.W, H = r.H; var p = r.P;
     var etiket = new int[W * H]; // 0: işlenmedi, -1: beyaz değil, >0 bölge no
     var alanlar = new List<int>(); alanlar.Add(0);
@@ -69,14 +75,21 @@ public static class Parti {
     }
     var silinecek = new bool[alanlar.Count];
     var rapor = new System.Text.StringBuilder();
+    // her bölgenin "saf beyaz" oranı (üç kanal da >= 253) ve ortalama parlaklığı
+    var saf = new int[alanlar.Count]; var toplam = new long[alanlar.Count];
+    for (int i = 0; i < W * H; i++) { int e = etiket[i]; if (e <= 0) continue; int o = i * 4;
+      int mn = Math.Min(p[o], Math.Min(p[o + 1], p[o + 2])); if (mn >= 253) saf[e]++; toplam[e] += (p[o] + p[o + 1] + p[o + 2]) / 3; }
     for (int n = 1; n < alanlar.Count; n++) {
-      bool sil = !koru.Contains(n) && (kenara[n] || alanlar[n] > buyukBosluk);
+      bool sil = !koru.Contains(n) && (kenara[n] || alanlar[n] > buyukBosluk || silSet.Contains(n));
       silinecek[n] = sil;
-      if (!kenara[n] && alanlar[n] > buyukBosluk / 4) {
+      if (!kenara[n] && alanlar[n] > 600) {
         var b = sinirlar[n];
-        rapor.AppendFormat("bosluk#{0} alan={1} kutu={2},{3}-{4},{5} {6}\n", n, alanlar[n], b[0], b[1], b[2], b[3], sil ? "SILINDI" : (koru.Contains(n) ? "korundu" : "kaldi"));
+        rapor.AppendFormat("bosluk#{0} alan={1} kutu={2},{3}-{4},{5} saf={6:F2} ort={7:F1} {8}\n", n, alanlar[n], b[0], b[1], b[2], b[3],
+          (double)saf[n] / alanlar[n], (double)toplam[n] / alanlar[n], sil ? "SILINDI" : (koru.Contains(n) ? "korundu" : "kaldi"));
       }
     }
+    { int kn = 0; long ks = 0, kt = 0; for (int n = 1; n < alanlar.Count; n++) if (kenara[n]) { kn += alanlar[n]; ks += saf[n]; kt += toplam[n]; }
+      if (kn > 0) rapor.AppendFormat("KENAR ZEMIN saf={0:F3} ort={1:F1}\n", (double)ks / kn, (double)kt / kn); }
     var sil2 = new bool[W * H];
     for (int i = 0; i < W * H; i++) if (etiket[i] > 0 && silinecek[etiket[i]]) sil2[i] = true;
     // Kenar pikselleri: silinen alana 2 px içindeki açık pikselleri koyu kontur rengiyle beyazdan ayır (koyu zeminde hale kalmasın)
@@ -127,6 +140,33 @@ public static class Parti {
         outB.Save(cikti, ImageFormat.Png);
       }
     }
+  }
+
+  /// Zemini önceden silinmiş (eski boru hattı) çizimin kenar halesini temizler: saydam alana 2 px içindeki pikseller
+  /// beyaz üstüne karışmış sayılır, koyu kontur rengiyle beyazdan ayrılır (renk ve alfa yeniden hesaplanır).
+  public static string KenarTemizle(string girdi, string cikti) {
+    var r = Rgba.Oku(girdi); int W = r.W, H = r.H; var p = r.P;
+    int[] F = { 30, 38, 66 };
+    var saydam = new bool[W * H]; for (int i = 0; i < W * H; i++) saydam[i] = p[i * 4 + 3] < 10;
+    int degisen = 0;
+    for (int y = 0; y < H; y++) for (int x = 0; x < W; x++) {
+      int i = y * W + x; if (saydam[i]) continue;
+      bool yakin = false;
+      for (int dy = -2; dy <= 2 && !yakin; dy++) for (int dx = -2; dx <= 2; dx++) {
+        int xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        if (saydam[yy * W + xx]) { yakin = true; break; }
+      }
+      if (!yakin) continue;
+      int o = i * 4; double a = 0;
+      for (int c = 0; c < 3; c++) a = Math.Max(a, (255.0 - p[o + c]) / (255.0 - F[c]));
+      if (a >= 1) continue;
+      double yeniA = Math.Min(a, p[o + 3] / 255.0);
+      if (yeniA < 0.02) { p[o] = p[o + 1] = p[o + 2] = 0; p[o + 3] = 0; degisen++; continue; }
+      for (int c = 0; c < 3; c++) { double v = (p[o + c] - (1 - a) * 255.0) / Math.Max(a, 0.02); p[o + c] = (byte)Math.Max(0, Math.Min(255, Math.Round(v))); }
+      p[o + 3] = (byte)Math.Round(yeniA * 255); degisen++;
+    }
+    r.Yaz(cikti);
+    return "kenar temizlendi: " + degisen + " piksel";
   }
 
   /// Kalın koyu bölgelerin (gözbebekleri) merkezleri: yarıçap r'lik kare içinde en az oran kadarı koyu olan pikseller

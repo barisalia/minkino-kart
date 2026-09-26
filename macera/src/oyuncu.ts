@@ -22,6 +22,8 @@ export interface OyuncuSecenek {
   boy?: number;
   /** çizimin en/boy oranı (kare değilse) */
   oran?: number;
+  /** gölgenin kutunun iki yanından içe payı (%); geniş poz tuvallerinde ayaklara oturması için */
+  golge?: number;
 }
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -96,7 +98,7 @@ export class Oyuncu {
     // nefes/bekleme döngüleri herkeste aynı anda ve aynı hızda olmasın
     const faz = (-Math.random() * 3).toFixed(2);
     const nefes = rastgele(2.6, 3.5).toFixed(2);
-    this.el = h('div.mc-oyuncu', { 'data-ad': s.ad, style: `--w:${s.boy ?? 24};--ar:${s.oran ?? 1};--faz:${faz}s;--nefes:${nefes}s` }, this.golge, this.hareket, this.balonEl);
+    this.el = h('div.mc-oyuncu', { 'data-ad': s.ad, style: `--w:${s.boy ?? 24};--ar:${s.oran ?? 1};--golge:${s.golge ?? 18}%;--faz:${faz}s;--nefes:${nefes}s` }, this.golge, this.hareket, this.balonEl);
     this.goster('normal');
     if (!AZ_HAREKET) this.bosPlanla();
   }
