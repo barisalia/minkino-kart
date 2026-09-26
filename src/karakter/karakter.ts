@@ -121,6 +121,11 @@ export class Karakter {
       if (b.gizli.includes(id)) g.removeAttribute('display');
       this.parca.set(id, g);
     }
+    // katman sırası JSON'daki "sira"dan (arkadan öne): SVG'deki sıra ne olursa olsun
+    for (const id of b.sira) {
+      const g = this.parca.get(id);
+      if (g?.parentNode) g.parentNode.appendChild(g);
+    }
     this.dn = b.donme;
     this.bagli = b.bagli;
     this.el.replaceChildren(kap);
@@ -251,8 +256,9 @@ export class Karakter {
       kafa: p.kafa,
       'kulak-sol': -p.kulakSol,
       'kulak-sag': p.kulakSag,
-      'kol-sol': p.kolSol,
-      'kol-sag': -p.kolSag,
+      // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
+      'kol-sol': kolSinir(p.kolSol),
+      'kol-sag': -kolSinir(p.kolSag),
       'bacak-sol': p.bacakSol,
       'bacak-sag': -p.bacakSag,
       'ayak-sol': p.bacakSol,
@@ -285,6 +291,9 @@ export class Karakter {
     if (g) g.style.opacity = acik ? '1' : '0';
   }
 }
+
+/** Kol açısı: içe en çok 5°, dışa/yukarı en çok 110° (iskelet standardındaki aralık) */
+const kolSinir = (a: number) => Math.max(-5, Math.min(110, a));
 
 /** bir noktanın etrafında dönme + ölçek (çizim birimleri) */
 function etrafinda([x, y]: [number, number], aci: number, sx = 1, sy = 1, tx = 0, ty = 0) {
