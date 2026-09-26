@@ -1,0 +1,2 @@
+can: { boy: 23.28, oran: 422 / 558, golge: 28.7, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
+elif: { boy: 20.70, oran: 366 / 583, golge: 26.0, sapka: { x: 54.1, y: 17.4, w: 22.5, d: 6 } },
