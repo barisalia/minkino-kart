@@ -20,6 +20,8 @@ export interface Kisilik {
   hayir: number;
   /** kol açısı sınırı [içe, dışa] (yoksa -5 … 110) */
   kol?: [number, number];
+  /** iskelette kafa eğilmesinin genliği (varsayılan 1.8) */
+  kafaGenlik?: number;
   /** iskelete özel açı sınırları (±derece): fazlasında eklem yerinde boşluk açılan karakterler için */
   sinir?: { kafa?: number; kulak?: number; bacak?: number };
 }

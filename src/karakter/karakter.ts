@@ -324,7 +324,10 @@ export class Karakter {
     // karaktere özel sınırlar (ör. ayı: kafa ±6, kulak ±10, bacak ±5)
     const s = this.k.sinir ?? {};
     const sin = (a: number, m?: number) => (m === undefined ? a : Math.max(-m, Math.min(m, a)));
-    const kafaT = dn.kafa ? etrafinda(dn.kafa, sin(p.kafa, s.kafa), 1, 1, 0, p.kafaY * olcek) : '';
+    // kafa eğilmesi iskelette genlik çarpanıyla (canlı dursun; eskiden kafa katmanı açının iki katı dönüyordu),
+    // bağlı parçalar (kulak, göz, ağız) aynı dönüşü paylaşır; karaktere özel sınır en son uygulanır
+    const kafaAci = sin(p.kafa * (this.k.kafaGenlik ?? 1.8), s.kafa);
+    const kafaT = dn.kafa ? etrafinda(dn.kafa, kafaAci, 1, 1, 0, p.kafaY * olcek) : '';
     // kafa yalnız kafaT ile döner (bağlı parçalar da aynı dönüşü alır); açı tablosunda yok
     const aci: Record<string, number> = {
       'kulak-sol': -sin(p.kulakSol, s.kulak),
