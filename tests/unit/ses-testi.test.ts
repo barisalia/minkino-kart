@@ -107,6 +107,26 @@ describe('Uyuyan Orman: ses analizi', () => {
     expect(sureler[0]).toBeLessThan(1.7);
   });
 
+  it('kolay üfleme (Sesli Maceralar): nefes sayılır; konuşma, ortam uğultusu, kısa tıkırtı sayılmaz', () => {
+    const a = ayarla(sessizlik(1));
+    const u = new UflemeBulucu(a, true);
+    const r = rastgele(7);
+    const ugultu = Float32Array.from({ length: Math.round(2 * SR) }, () => r() * 0.004);
+    const tik = Float32Array.from({ length: Math.round(0.05 * SR) }, () => r() * 0.5);
+    let yanlis = 0;
+    isle(birlestir(ugultu, sessizlik(0.3), ton(1, 220), ton(1, 320, 0.4), sessizlik(0.3), tik, sessizlik(0.5)), (o) => {
+      if (u.kare(o).basladi) yanlis++;
+    });
+    expect(yanlis).toBe(0);
+    const sureler: number[] = [];
+    // güçlü ve hafif (küçük çocuk) üfleme
+    isle(birlestir(ufleme(1.2), sessizlik(0.6), ufleme(1.2, 0.06, 3), sessizlik(0.6)), (o) => {
+      const s = u.kare(o);
+      if (s.bitti) sureler.push(s.bitti);
+    });
+    expect(sureler).toHaveLength(2);
+  });
+
   it('ince / kalın: çocuğun kendi sesine göre', () => {
     const a = ayarla(sessizlik(1));
     const p = new PerdeIzci(a);

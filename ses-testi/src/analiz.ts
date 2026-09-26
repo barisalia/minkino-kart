@@ -203,16 +203,18 @@ export class UflemeBulucu {
     private kolay = false,
   ) {}
   kare(o: Ozellik): { basladi?: boolean; bitti?: number } {
-    const esik = this.a.taban + (this.kolay ? 9 : 14) - this.a.duyarlilik;
+    // kolay: eşik biraz düşük ama yine yalnız nefes sesi (perdesiz, gürültü gibi); konuşma, müzik, TV sayılmaz
+    const esik = this.a.taban + (this.kolay ? 11 : 14) - this.a.duyarlilik;
     const ufleme = this.kolay
-      ? o.db > esik && (o.perde === null || o.db > esik + 6) && (o.kalinOran > 0.2 || o.db > esik + 10)
+      ? o.db > esik && o.perde === null && (o.kalinOran > 0.22 || o.db > esik + 12) && o.duzluk > 0.02
       : o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
     const sonuc: { basladi?: boolean; bitti?: number } = {};
     if (ufleme) {
       this.art++;
       this.bos = 0;
       this.guc = Math.max(0, Math.min(1, (o.db - esik) / 25));
-      if (!this.aktif && this.art >= 4) {
+      // kolay modda üfleme ~0.13 sn sürmeden başlamaz (kapı, tıkırtı gibi kısa sesler şişirmesin)
+      if (!this.aktif && this.art >= (this.kolay ? 6 : 4)) {
         this.aktif = true;
         this.sure = this.art * this.a.kare;
         sonuc.basladi = true;
