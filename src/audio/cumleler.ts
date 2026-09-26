@@ -9,6 +9,12 @@ import canlanJson from '../../content/canlan.json';
 import ormanJson from '../../content/orman.json';
 import maceraJson from '../../content/macera.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
+
+interface FilmCumleleri {
+  seslendir?: boolean;
+  sahneler: ({ ogut: string } | { olaylar: { yap: string; metin?: unknown }[] })[];
+}
+const FILMLER = import.meta.glob<FilmCumleleri>('../../content/film/*.json', { eager: true, import: 'default' });
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -167,6 +173,14 @@ export function tumCumleler(): string[] {
   for (const [k, v] of Object.entries(maceraJson as Record<string, unknown>)) {
     if (['aciklama', 'baslik', 'bolumler', 'sarki', 'tepki'].includes(k)) continue;
     topla(v).forEach(ekle);
+  }
+  // Mini filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)
+  for (const f of Object.values(FILMLER)) {
+    if (!f.seslendir) continue;
+    for (const s of f.sahneler) {
+      if ('ogut' in s) ekle(s.ogut);
+      else for (const o of s.olaylar) if (o.yap === 'soyle' && typeof o.metin === 'string') ekle(o.metin);
+    }
   }
   // Mino'nun Pazarı konuşmaları (kalıplar ürün/sayı/renk ile açılmış hâlde)
   pazarCumleleri().forEach(ekle);

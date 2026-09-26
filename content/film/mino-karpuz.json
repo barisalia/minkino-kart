@@ -1,0 +1,563 @@
+{
+  "aciklama": "Mino'nun Karpuzu (ekip/film/senaryo/mino-karpuz.md). ANİMATİK: Sahne 1 + 2, kaba zamanlama. Konumlar dünyanın %'si (x merkez, y alttan, w genişlik); t ve sure film saniyesi. seslendir=false: cümleler Barış onaylayana kadar seslendirme hattına girmez.",
+  "baslik": "Mino'nun Karpuzu",
+  "film": "mino-karpuz",
+  "ogretir": "paylaşmak",
+  "seslendir": false,
+  "adlar": {
+    "mino": "Mino",
+    "kopek": "Köpek",
+    "tavsan": "Tavşan",
+    "ordek": "Ördek"
+  },
+  "sahneler": [
+    {
+      "ad": "1-pazar-kapaniyor",
+      "sure": 12,
+      "arka": "pazar",
+      "kamera": [
+        50,
+        50,
+        1
+      ],
+      "isik": 0.75,
+      "gecis": "iris",
+      "oyuncular": {
+        "mino": {
+          "tip": "mino",
+          "x": 36,
+          "y": 6,
+          "w": 18,
+          "z": 7
+        }
+      },
+      "esyalar": {
+        "karpuz": {
+          "tip": "karpuz",
+          "x": 56,
+          "y": 31,
+          "w": 15,
+          "z": 6
+        },
+        "kasa": {
+          "tip": "kasa",
+          "x": 73,
+          "y": 5,
+          "w": 12,
+          "z": 4
+        }
+      },
+      "olaylar": [
+        {
+          "t": 0,
+          "kim": "kamera",
+          "yap": "git",
+          "x": 50,
+          "y": 70,
+          "z": 1.35,
+          "sure": 5
+        },
+        {
+          "t": 0.4,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "mir"
+        },
+        {
+          "t": 1.6,
+          "kim": "parilti",
+          "yap": "",
+          "x": 56,
+          "y": 38
+        },
+        {
+          "t": 1.7,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "sasir"
+        },
+        {
+          "t": 2.5,
+          "kim": "mino",
+          "yap": "git",
+          "x": 50,
+          "sure": 0.9
+        },
+        {
+          "t": 3.4,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "zorlan",
+          "sure": 1.6
+        },
+        {
+          "t": 3.4,
+          "kim": "karpuz",
+          "yap": "titre",
+          "sure": 1.6
+        },
+        {
+          "t": 5,
+          "kim": "karpuz",
+          "yap": "git",
+          "x": 60,
+          "y": 5,
+          "don": 200,
+          "yay": 5,
+          "sure": 0.6,
+          "egri": "dus"
+        },
+        {
+          "t": 5.3,
+          "kim": "mino",
+          "yap": "git",
+          "x": 57,
+          "y": 6,
+          "don": 360,
+          "yay": 6,
+          "sure": 0.9,
+          "yuru": false,
+          "egri": "dus"
+        },
+        {
+          "t": 5.6,
+          "kim": "efekt",
+          "yap": "yuvarlan"
+        },
+        {
+          "t": 5.6,
+          "kim": "karpuz",
+          "yap": "git",
+          "x": 66,
+          "don": 420,
+          "sure": 1.2,
+          "egri": "cik"
+        },
+        {
+          "t": 6.2,
+          "kim": "mino",
+          "yap": "git",
+          "x": 61,
+          "don": 720,
+          "sure": 1,
+          "yuru": false,
+          "egri": "cik"
+        },
+        {
+          "t": 6.8,
+          "kim": "efekt",
+          "yap": "tok"
+        },
+        {
+          "t": 6.8,
+          "kim": "karpuz",
+          "yap": "bas"
+        },
+        {
+          "t": 6.8,
+          "kim": "kasa",
+          "yap": "titre",
+          "sure": 0.5
+        },
+        {
+          "t": 7,
+          "kim": "mino",
+          "yap": "git",
+          "x": 65,
+          "y": 14,
+          "don": 700,
+          "yay": 5,
+          "sure": 0.45,
+          "yuru": false,
+          "egri": "yay"
+        },
+        {
+          "t": 7.8,
+          "kim": "mino",
+          "yap": "git",
+          "don": 720,
+          "sure": 0.5,
+          "yuru": false
+        },
+        {
+          "t": 7.9,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "sersem",
+          "sure": 1.6
+        },
+        {
+          "t": 9.3,
+          "kim": "kamera",
+          "yap": "git",
+          "x": 62,
+          "y": 80,
+          "z": 1.6,
+          "sure": 2
+        },
+        {
+          "t": 9.5,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "evet"
+        },
+        {
+          "t": 9.5,
+          "kim": "mino",
+          "yap": "soyle",
+          "metin": "Kocaman karpuz! Hepsi benim!"
+        }
+      ]
+    },
+    {
+      "ad": "2-ac-kopek",
+      "sure": 20,
+      "arka": "pazar",
+      "kamera": [
+        52,
+        80,
+        1.4
+      ],
+      "isik": 0.8,
+      "gecis": "iris",
+      "oyuncular": {
+        "mino": {
+          "tip": "mino",
+          "x": 38,
+          "y": 6,
+          "w": 16,
+          "z": 6
+        },
+        "kopek": {
+          "tip": "kopek",
+          "x": 60,
+          "y": -12,
+          "w": 17,
+          "z": 3,
+          "yon": -1
+        }
+      },
+      "esyalar": {
+        "karpuz": {
+          "tip": "karpuz",
+          "x": 56,
+          "y": 5,
+          "w": 26,
+          "z": 5
+        },
+        "yarim1": {
+          "tip": "karpuz-yarim",
+          "x": 55,
+          "y": 5,
+          "w": 22,
+          "z": 5,
+          "gizli": true
+        },
+        "yarim2": {
+          "tip": "karpuz-yarim",
+          "x": 57,
+          "y": 5,
+          "w": 22,
+          "z": 5,
+          "gizli": true
+        },
+        "bicak": {
+          "tip": "bicak",
+          "x": 44,
+          "y": 22,
+          "w": 11,
+          "z": 7,
+          "don": -40
+        }
+      },
+      "olaylar": [
+        {
+          "t": 0.5,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "mir"
+        },
+        {
+          "t": 1.5,
+          "kim": "kopek",
+          "yap": "git",
+          "x": 62,
+          "y": 11,
+          "sure": 0.8,
+          "yuru": false,
+          "egri": "cik"
+        },
+        {
+          "t": 1.6,
+          "kim": "efekt",
+          "yap": "kokla"
+        },
+        {
+          "t": 1.6,
+          "kim": "kopek",
+          "yap": "tepki",
+          "ad": "kokla",
+          "sure": 1.6
+        },
+        {
+          "t": 3.4,
+          "kim": "efekt",
+          "yap": "gurul"
+        },
+        {
+          "t": 3.4,
+          "kim": "kopek",
+          "yap": "ifade",
+          "ad": "uzgun",
+          "sure": 2.2
+        },
+        {
+          "t": 3.7,
+          "kim": "kopek",
+          "yap": "tepki",
+          "ad": "bak",
+          "sure": 1.2
+        },
+        {
+          "t": 4.6,
+          "kim": "mino",
+          "yap": "git",
+          "x": 56,
+          "sure": 0.35,
+          "yuru": false,
+          "egri": "cik"
+        },
+        {
+          "t": 4.6,
+          "kim": "bicak",
+          "yap": "git",
+          "x": 61,
+          "y": 24,
+          "sure": 0.35,
+          "egri": "cik"
+        },
+        {
+          "t": 4.7,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "sasir"
+        },
+        {
+          "t": 5.8,
+          "kim": "kopek",
+          "yap": "ifade",
+          "ad": "uzgun",
+          "sure": 6.5
+        },
+        {
+          "t": 5.8,
+          "kim": "kopek",
+          "yap": "git",
+          "x": 80,
+          "y": 6,
+          "sure": 2.4
+        },
+        {
+          "t": 7,
+          "kim": "kamera",
+          "yap": "git",
+          "x": 55,
+          "y": 84,
+          "z": 2,
+          "sure": 1.2
+        },
+        {
+          "t": 8,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "kararsiz",
+          "sure": 3.2
+        },
+        {
+          "t": 8.8,
+          "kim": "mino",
+          "yap": "don",
+          "yon": -1
+        },
+        {
+          "t": 9.6,
+          "kim": "mino",
+          "yap": "don",
+          "yon": 1
+        },
+        {
+          "t": 10.4,
+          "kim": "mino",
+          "yap": "don",
+          "yon": -1
+        },
+        {
+          "t": 11.2,
+          "kim": "mino",
+          "yap": "don",
+          "yon": 1
+        },
+        {
+          "t": 11.4,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "sasir",
+          "sure": 0.6
+        },
+        {
+          "t": 11.8,
+          "kim": "kamera",
+          "yap": "git",
+          "x": 60,
+          "y": 80,
+          "z": 1.4,
+          "sure": 1
+        },
+        {
+          "t": 12.2,
+          "kim": "mino",
+          "yap": "soyle",
+          "metin": "Dur! Gel, paylaşalım!"
+        },
+        {
+          "t": 12.2,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "uzat"
+        },
+        {
+          "t": 12.6,
+          "kim": "kopek",
+          "yap": "ifade",
+          "ad": null
+        },
+        {
+          "t": 12.6,
+          "kim": "kopek",
+          "yap": "don",
+          "yon": -1
+        },
+        {
+          "t": 12.7,
+          "kim": "kopek",
+          "yap": "tepki",
+          "ad": "bak",
+          "sure": 1
+        },
+        {
+          "t": 13.8,
+          "kim": "kopek",
+          "yap": "git",
+          "x": 72,
+          "sure": 0.8
+        },
+        {
+          "t": 14.8,
+          "kim": "mino",
+          "yap": "git",
+          "x": 46,
+          "sure": 0.4
+        },
+        {
+          "t": 14.8,
+          "kim": "bicak",
+          "yap": "git",
+          "x": 55,
+          "y": 30,
+          "don": -70,
+          "sure": 0.4
+        },
+        {
+          "t": 15.6,
+          "kim": "bicak",
+          "yap": "git",
+          "y": 17,
+          "don": -5,
+          "sure": 0.16,
+          "egri": "dus"
+        },
+        {
+          "t": 15.75,
+          "kim": "efekt",
+          "yap": "cat"
+        },
+        {
+          "t": 15.76,
+          "kim": "karpuz",
+          "yap": "gizle",
+          "sure": 0.04
+        },
+        {
+          "t": 15.76,
+          "kim": "yarim1",
+          "yap": "goster",
+          "sure": 0.04
+        },
+        {
+          "t": 15.76,
+          "kim": "yarim2",
+          "yap": "goster",
+          "sure": 0.04
+        },
+        {
+          "t": 15.8,
+          "kim": "yarim1",
+          "yap": "git",
+          "x": 46,
+          "don": -16,
+          "sure": 0.5,
+          "egri": "cik"
+        },
+        {
+          "t": 15.8,
+          "kim": "yarim2",
+          "yap": "git",
+          "x": 66,
+          "don": 16,
+          "sure": 0.5,
+          "egri": "cik"
+        },
+        {
+          "t": 15.9,
+          "kim": "parilti",
+          "yap": "",
+          "x": 56,
+          "y": 18
+        },
+        {
+          "t": 16,
+          "kim": "bicak",
+          "yap": "gizle",
+          "sure": 0.3
+        },
+        {
+          "t": 16.4,
+          "kim": "efekt",
+          "yap": "vuvu"
+        },
+        {
+          "t": 16.4,
+          "kim": "kopek",
+          "yap": "tepki",
+          "ad": "dans",
+          "sure": 1.4
+        },
+        {
+          "t": 17.3,
+          "kim": "kopek",
+          "yap": "soyle",
+          "metin": "Hav! Teşekkürler!"
+        },
+        {
+          "t": 17.5,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "evet"
+        }
+      ]
+    },
+    {
+      "ogut": "Paylaşmak güzeldir."
+    }
+  ]
+}

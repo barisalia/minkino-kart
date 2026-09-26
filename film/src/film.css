@@ -1,0 +1,248 @@
+/* Minkino Film — oynatıcı ve sahne. Tüm stiller .fl-kok altında. Yalnız transform / opacity ile hareket. */
+.fl-kok {
+  background: #1e1a2e;
+}
+.fl-kok .fl-ekran {
+  padding: 0;
+}
+.fl-kok .fl-sahne-kap,
+.fl-kok .fl-sahne {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.fl-kok .fl-dunya {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.fl-kok .fl-katman {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.fl-kok .fl-arka {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fl-kok .fl-nesne {
+  position: absolute;
+  translate: -50% 0;
+}
+.fl-kok .fl-ic {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 60%;
+  will-change: transform;
+}
+.fl-kok .fl-esya-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.fl-kok .fl-esya-resim svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 6px 5px rgba(60, 35, 12, 0.22));
+}
+.fl-kok .fl-oyuncu {
+  position: absolute;
+  inset: 0;
+}
+.fl-kok .fl-oyuncu .mino {
+  position: absolute;
+  inset: 0;
+}
+.fl-kok .fl-oyuncu .mino::before {
+  display: none;
+}
+/* akşamüstü ışığı */
+.fl-kok .fl-isik {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(80% 55% at 80% 12%, rgba(255, 170, 100, 0.55), transparent 70%),
+    linear-gradient(180deg, rgba(255, 120, 80, 0.3), rgba(255, 170, 80, 0.22) 55%, rgba(120, 60, 140, 0.2));
+  mix-blend-mode: multiply;
+}
+/* iris geçişi: ortası açık daire, dışı karanlık (--iris 0 kapalı … 1 açık) */
+.fl-kok .fl-iris {
+  --iris: 0;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+.fl-kok .fl-iris i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 200vmax #1e1a2e;
+  transform: scale(calc(var(--iris) * 260));
+}
+.fl-kok .fl-iris.karar i {
+  box-shadow: none;
+  background: none;
+}
+.fl-kok .fl-iris.karar {
+  background: #1e1a2e;
+  opacity: calc(1 - var(--iris));
+}
+/* alt yazı */
+.fl-kok .fl-altyazi {
+  position: absolute;
+  z-index: 21;
+  left: 50%;
+  bottom: max(20px, var(--alt));
+  max-width: min(92vw, 640px);
+  translate: -50% 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 3px solid var(--kontur);
+  box-shadow: 0 5px 0 var(--kontur-yumusak);
+  font-size: clamp(1.05rem, 4.6vw, 1.5rem);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+}
+.fl-kok .fl-altyazi.acik {
+  opacity: 1;
+  transform: none;
+}
+.fl-kok .fl-alt-kim {
+  color: var(--turuncu);
+  text-transform: capitalize;
+}
+.fl-kok .fl-alt-kim:empty {
+  display: none;
+}
+.fl-kok .fl-altyazi.anlatici {
+  font-style: italic;
+}
+/* parıltı */
+.fl-kok .fl-parilti {
+  position: absolute;
+  z-index: 30;
+  width: 12%;
+  aspect-ratio: 1;
+  translate: -50% 50%;
+  pointer-events: none;
+}
+.fl-kok .fl-parilti i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20%;
+  aspect-ratio: 1;
+  margin: -10%;
+  background: #ffe066;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: fl-parilti 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+@keyframes fl-parilti {
+  from { transform: rotate(var(--a)) translateY(0) scale(0.3); opacity: 1; }
+  to { transform: rotate(var(--a)) translateY(-240%) scale(1.1) rotate(90deg); opacity: 0; }
+}
+/* kapak ve üst çubuk */
+.fl-kok .fl-ust {
+  position: absolute;
+  left: var(--yan);
+  right: var(--yan);
+  top: var(--ust);
+  z-index: 25;
+}
+.fl-kok .fl-kapak {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 28px;
+  background: radial-gradient(90% 70% at 50% 40%, #ffd79a, #ff9d5c 60%, #d8663f);
+  transition: opacity 0.5s;
+}
+.fl-kok .fl-kapak.gizli {
+  opacity: 0;
+  pointer-events: none;
+}
+.fl-kok .fl-baslik {
+  margin: 0;
+  padding: 0 20px;
+  text-align: center;
+  font-size: clamp(2.2rem, 10vw, 4.2rem);
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: 8px var(--kontur);
+  paint-order: stroke fill;
+}
+.fl-kok .fl-oynat {
+  font-size: clamp(1.5rem, 6vw, 2.1rem);
+  min-width: min(60vw, 260px);
+}
+/* öğüt kartı */
+.fl-kok .fl-ogut {
+  position: absolute;
+  inset: 0;
+  z-index: 26;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 26px;
+  background: rgba(30, 26, 46, 0.55);
+  animation: fl-ogut 0.6s ease-out both;
+}
+.fl-kok .fl-ogut p {
+  margin: 0;
+  padding: 18px 28px;
+  border-radius: 26px;
+  background: #fff8ea;
+  border: 4px solid var(--kontur);
+  box-shadow: 0 7px 0 var(--kontur);
+  font-size: clamp(1.6rem, 7vw, 2.6rem);
+  text-align: center;
+}
+@keyframes fl-ogut {
+  from { opacity: 0; transform: scale(0.94); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fl-kok .fl-parilti {
+    display: none;
+  }
+}
+/* eşyalar kendi merkezlerinden döner (yuvarlanan karpuz) */
+.fl-kok .fl-nesne[data-esya] .fl-ic {
+  transform-origin: 50% 50%;
+}
+.fl-kok .fl-ust [hidden] {
+  display: none;
+}
+/* alt yazı: ad satır başında, metin doğal kırılır */
+.fl-kok .fl-altyazi {
+  display: block;
+  width: max-content;
+  text-align: center;
+}
+.fl-kok .fl-alt-kim {
+  margin-right: 8px;
+}

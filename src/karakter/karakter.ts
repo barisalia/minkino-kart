@@ -92,7 +92,7 @@ export interface Poz {
 }
 const bosPoz = (): Poz => ({ x: 0, y: 0, don: 0, sx: 1, sy: 1, kafa: 0, kafaY: 0, kulakSol: 0, kulakSag: 0, kolSol: 0, kolSag: 0, bacakSol: 0, bacakSag: 0, kuyruk: 0, gozKapali: false, agizAcik: 0, burun: 0 });
 
-export type HareketAdi = 'yuru' | 'var' | 'huy' | 'hayir' | 'ye' | 'dans' | 'sevin';
+export type HareketAdi = 'yuru' | 'var' | 'huy' | 'hayir' | 'ye' | 'dans' | 'sevin' | 'kokla' | 'bak';
 interface Hareket {
   ad: HareketAdi;
   bas: number;
@@ -282,6 +282,24 @@ export class Karakter {
         p.sx *= 1 + 0.03 * Math.abs(S(u * PI * 6)) * z;
         p.kulakSol += 6 * S(u * PI * 6);
         p.kulakSag += 6 * S(u * PI * 6);
+        break;
+      }
+      case 'kokla': {
+        // koklar: kafa öne uzanıp kısa kısa iner-kalkar, kulaklar dikilir
+        const z = zarf(u, 0.12);
+        p.kafa += (5 + 3 * S(gecen * 26)) * z;
+        p.kafaY += 1.5 * z;
+        p.burun = S(gecen * 40) * 5 * z;
+        p.kulakSol += 10 * z;
+        p.kulakSag += 10 * z;
+        break;
+      }
+      case 'bak': {
+        // merakla başını yana yatırıp bakar
+        const z = zarf(u, 0.2);
+        p.kafa += 9 * z;
+        p.kulakSol += 8 * z;
+        p.kulakSag -= 4 * z;
         break;
       }
       case 'dans':

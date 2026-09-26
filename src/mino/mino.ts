@@ -21,7 +21,7 @@ const KOL_EN_COK = 24;
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
 
-export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat';
+export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz';
 
 interface Durum {
   tepki: Tepki | null;
@@ -38,6 +38,7 @@ function ara(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 const sin = Math.sin;
+const cos = Math.cos;
 const donus = (p: { x: number; y: number }, derece: number, sx = 1, sy = 1, tx = 0, ty = 0) =>
   `translate(${p.x + tx}px, ${p.y + ty}px) rotate(${derece}deg) scale(${sx}, ${sy}) translate(${-p.x}px, ${-p.y}px)`;
 
@@ -95,7 +96,7 @@ export class Mino {
 
   /** Kısa bir tepki animasyonu oynat. */
   tepki(t: Tepki, sure?: number) {
-    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3 };
+    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3 };
     this.d.tepki = t;
     this.d.tepkiBas = this.zaman();
     this.d.tepkiSure = sure ?? varsayilan[t];
@@ -135,6 +136,12 @@ export class Mino {
     if (vy > 1680) return 'ayak';
     return 'gobek';
   }
+
+  /** Film/animatik: ses kaydı yokken de konuşma ağzını oynatır (açıkken ağız kendiliğinden açılıp kapanır) */
+  agizOyna(acik: boolean) {
+    this.agizZorla = acik;
+  }
+  private agizZorla = false;
 
   kapat() {
     cancelAnimationFrame(this.raf);
@@ -292,12 +299,45 @@ export class Mino {
             agizHedef = 0.85;
             break;
           }
+          case 'zorlan': {
+            // ağır bir şeyi kaldırmaya çalışır: çömelir, titrer, yanaklar şişer (ağız kapalı, gözler sıkılı)
+            const tut = Math.min(1, e / 0.2, (1 - e) / 0.15);
+            sy -= 0.07 * tut;
+            sx += 0.05 * tut;
+            govdeAci = sin(t * 55) * 1.8 * tut;
+            kafaAci += sin(t * 48) * 2 * tut;
+            kolSol += 18 * tut;
+            kolSag += 18 * tut;
+            gozKapali = Math.max(gozKapali, tut > 0.5 ? 1 : 0);
+            agizHedef = 0;
+            gulum = -0.3;
+            break;
+          }
+          case 'sersem': {
+            // sersem ama mutlu: başı daire çizerek sallanır, gözler mutlu
+            kafaAci += sin(e * Math.PI * 5) * 9 * zarf;
+            govdeAci = sin(e * Math.PI * 5 + 1) * 3 * zarf;
+            kafaY += cos(e * Math.PI * 5) * 6 * zarf;
+            mutlu = 1;
+            agizHedef = 0.6;
+            break;
+          }
+          case 'kararsiz': {
+            // kararsız: bir sağa bir sola bakar (başı yatar), kuyruk ucu kıvrılır
+            const bak = e < 0.2 ? -1 : e < 0.45 ? 1 : e < 0.7 ? -1 : 1;
+            kafaAci += bak * 8 * zarf;
+            govdeAci = bak * 2 * zarf;
+            kuyrukAci += sin(t * 5) * 14 * zarf;
+            agizHedef = 0.1;
+            gulum = -0.2;
+            break;
+          }
         }
       }
     }
 
     // Konuşurken ağız sesin gücüyle açılır
-    if (konusuyorMu() && !uyku) {
+    if ((konusuyorMu() || this.agizZorla) && !uyku) {
       const guc = konusmaGucu();
       agizHedef = guc > 0.01 ? Math.min(1, 0.12 + guc * 1.3) : 0.1 + Math.abs(sin(t * 16)) * 0.6; // cihaz sesi: tahmini
       mutlu = 0;

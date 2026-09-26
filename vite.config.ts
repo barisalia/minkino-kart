@@ -17,6 +17,7 @@ export default defineConfig({
         orman: resolve(__dirname, 'orman/index.html'),
         macera: resolve(__dirname, 'macera/index.html'),
         pazar: resolve(__dirname, 'pazar/index.html'),
+        film: resolve(__dirname, 'film/index.html'),
       },
     },
   },
