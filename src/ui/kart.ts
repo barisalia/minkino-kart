@@ -3,7 +3,7 @@ import type { Kart, KartGirdi, KartRef } from '../engine/types';
 import { h } from './dom';
 
 // Karakter seçenek çizimleri pakete girmesin; sadece Mino'nun kendisi
-const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '../../assets/karakter/kedi-3.webp'], {
+const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '!../../assets/parti/**', '!../../assets/parti-sahne/**', '../../assets/karakter/kedi-3.webp'], {
   eager: true,
   query: '?url',
   import: 'default',

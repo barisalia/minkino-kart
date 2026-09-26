@@ -137,3 +137,9 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
   - **Tasarımcı 1 (Gemini):** değişmedi, ama parça seti İPTAL. Sadece ifade setleri: önce sincap (esniyor, mutlu, dinliyor, hmm, göz-kırpma; `uyuyor` hazır), sonra diğer karakterler; kuşa kanat yukarı/aşağı, tavşana yürüme iki kare. Sonra arka plan katmanları.
   - **Tasarımcı 2 (eski Rive):** Tasarımcı 1 ile işi bölün: biri sincap, dev, kuş, inek, köpek; diğeri kedi, maymun, baykuş, tavşan, ayı, papağan. Kurallar aynı: `ekip/gemini-is-listesi.md`.
   - Teslim: PNG'ler `ekip/gemini/<karakter>/<dosya>.png` olarak ekip dalıyla GitHub'a. Bulut oradan alıp oyuna koyar.
+
+## 2026-09-26 — YENİ YÖN: hikâyeli sesli bölümler; ilk bölüm "Ada'nın Doğum Günü" (bulut yönetici → yerel yönetici)
+
+- 2026-09-26 KARAR (Barış): Uyuyan Orman'daki kopuk görevler ("balonu şişir" vb.) hikâyesiz olduğu için yetersiz. Ses mekanikleri hikâyeli bölümlere taşınıyor. Bölüm 1: **Ada'nın Sürpriz Doğum Günü** (Mino + hayvan arkadaşlar Ada'ya parti hazırlar): açılış animasyonu → balonları şişir, as → saklan, sus → "SÜRPRİZ!" → "İyi ki doğdun" karaoke (ince/kalın tepkili) → mumları üfle → pastayı dil şaklatarak (tık) kes → alkışla dans.
+- 2026-09-26 **TASARIMCI GÖREVİ (öncelikli, orman ifadelerinden önce):** `ekip/parti-gemini.md`: Ada'nın 5 hâli (şaşkın, dilek, şapkalı, alkış, dans) ve 4 konuğun (sincap, tavşan, köpek, ayı) şapkalı 5 hâli. İki tasarımcı: biri Ada + sincap, diğeri tavşan + köpek + ayı. Teslim: `ekip/gemini/parti/<karakter>/<dosya>.png` → GitHub.
+- 2026-09-26 Bulut: parti çizimleri (salon, pasta, dilim, mum, flama, kapı, masa, hediye, koltuk, bıçak, şapka, Ada; Recraft) + bölümün kodu (`macera/`).
