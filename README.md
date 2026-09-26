@@ -10,7 +10,7 @@
 - Sesli Maceralar (hikâyeli ses oyunu; bölüm 1: Ada'nın Doğum Günü): https://minkino-site.barisalidogan.workers.dev/macera/
 - Uyuyan Orman (ilk ses oyunu denemesi): https://minkino-site.barisalidogan.workers.dev/orman/
 
-Ekip ve ajanlar için rehber: [minkinogames1.md](minkinogames1.md)
+Ekip ve ajanlar için rehber: [minkinogames1.md](minkinogames1.md) · Devir teslim (yerel ekip): [ekip/DEVIR-TESLIM.md](ekip/DEVIR-TESLIM.md) · Görsel stil: [ekip/stil-rehberi.md](ekip/stil-rehberi.md)
 
 ## Geliştirme
 

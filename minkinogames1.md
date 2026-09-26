@@ -111,6 +111,8 @@ Barış'ın kuralı: **2D vektör, yüksek kalite, premium glossy cartoon, çocu
 
 ## 10. Bulut + yerel çalışma düzeni
 
+> **2026-09-26: Bulut oturumu kapandı.** Bütün iş yerel ekipte. Devir teslim: [ekip/DEVIR-TESLIM.md](ekip/DEVIR-TESLIM.md). Aşağıdaki bulut/yerel düzeni artık tarihçe.
+
 - **Claude (bulut)** yalnızca `claude/awesome-cori-kvcfd7` dalında çalışır ve oraya push eder. **Yerel ekip** bu dala doğrudan push etmez; kendi dallarında çalışır (`ekip/<konu>`), GitHub'a push eder.
 - Yerel ekip, bulutta yapılanları almak için: `git fetch origin && git merge origin/claude/awesome-cori-kvcfd7` (kendi dalına). CI'ın ürettiği görsel/ses commit'leri de bu yolla gelir.
 - Claude, ekibin işini görmek/almak için ekibin GitHub'a push ettiği dalı okur; yerel bilgisayardaki push edilmemiş dosyaları göremez.
