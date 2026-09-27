@@ -28,3 +28,14 @@ Notlar:
 - Dönme noktaları (ege.json): gözler 1033,668 · ağızlar 1026,846 · yanak 1026,860 (hepsi kafaya bağlı; kafa 1020,1020 etrafında döner).
 - SVG sırası (alttan üste): `yanak-mamali`, göz ekleri, ağız ekleri — asıl yüz katmanlarının üstünde.
 - Önizleme: `ege-ifadeler.png` (üstte açık, altta koyu zemin; normal + 10 ifade).
+
+## Baş çevirme (3/4, sola / sağa)
+
+Her kafaya bağlı katmanın iki yönlü sürümü var: `<katman>-sola` (yüz izleyicinin **soluna** döner) ve `<katman>-saga` (sağına). Toplam 42 gizli grup:
+`kafa`, `kas`, `agiz`, `goz-sol`, `goz-sag`, `goz-kapali` ve 15 ifade ekinin tamamı (ör. `goz-kikir-saga`, `agiz-kahkaha-sola`).
+
+Kural: baş dönükken, görünen her kafa katmanı **X** yerine **X-sola** (ya da **X-saga**) gösterilir. Örnek, sağa dönük kahkaha: `kafa-saga`, `kas-saga`, `goz-kikir-saga`, `agiz-kahkaha-saga` görünür; `kafa`, `kas`, `goz-sol`, `goz-sag`, `agiz` gizlenir.
+
+- Kafa dış çizgisi aynı kalır; yüz (göz, kaş, burun, ağız, allık, saç tutamı) dönüş yönüne ~90 px kayar. Dönülen taraftaki göz daralır, karşı göz hafifçe açılır. Dönülen taraftaki kulak kafaya doğru daralır (arkaya kaçar), karşı kulak biraz genişler.
+- Aynı dönme noktası (kafa 1020,1020), aynı bağlılık (kafa). Dönüş sırasında dönük hâlle normal arasında geçiş için iki kare yeterli (ön → yan); istenirse araya ara kare üretilebilir.
+- Önizleme: `ege-bas-cevirme.png` (sütunlar: sola | ön | sağa; satırlar: normal, kıkır, kahkaha, şaşkın).
