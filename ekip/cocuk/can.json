@@ -1,0 +1,79 @@
+﻿{
+    "ad":  "can",
+    "boyut":  2048,
+    "sira":  [
+                 "kol-sol",
+                 "kol-sag",
+                 "bacak-sol",
+                 "bacak-sag",
+                 "govde",
+                 "kafa",
+                 "kas",
+                 "goz-sol",
+                 "goz-sag",
+                 "agiz",
+                 "goz-kapali",
+                 "agiz-acik",
+                 "agiz-gulus"
+             ],
+    "gizli":  [
+                  "goz-kapali",
+                  "agiz-acik",
+                  "agiz-gulus"
+              ],
+    "bagli":  {
+                  "kas":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa",
+                  "agiz-acik":  "kafa",
+                  "agiz-gulus":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1030,
+                               995
+                           ],
+                  "kas":  [
+                              1017,
+                              612
+                          ],
+                  "goz-sol":  [
+                                  858,
+                                  737
+                              ],
+                  "goz-sag":  [
+                                  1172,
+                                  737
+                              ],
+                  "agiz":  [
+                               1020,
+                               885
+                           ],
+                  "goz-kapali":  [
+                                     1015,
+                                     745
+                                 ],
+                  "kol-sol":  [
+                                  872,
+                                  1118
+                              ],
+                  "kol-sag":  [
+                                  1176,
+                                  1118
+                              ],
+                  "bacak-sol":  [
+                                    898,
+                                    1450
+                                ],
+                  "bacak-sag":  [
+                                    1158,
+                                    1450
+                                ],
+                  "govde":  [
+                                1024,
+                                1800
+                            ]
+              }
+}
