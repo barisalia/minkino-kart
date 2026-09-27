@@ -1,0 +1,16 @@
+{
+  "aciklama": "Anne pozlari ayni kisi olarak esitlendi: sac koyu kahve, ten, kazak (mor), pantolon (gri), terlik ve parlaklik dozu ayakta poza (anne.webp) gore; sariliyor yuzu ayakta pozun goz stiline cevrildi. Ucu ayni piksel olceginde (yuz capi ~269 px, anne.webp ile ayni): oyunda ayni olcekle cizilirse bas boyutlari tutar. anne.webp degismedi (referans).",
+  "anne.webp": { "tuval": [428, 1143] },
+  "anne-sariliyor.webp": { "tuval": [876, 935], "kaynakOlcek": 0.94 },
+  "anne-uyuyor": {
+    "tuval": [781, 896],
+    "kaynakOlcek": 1.2,
+    "dosyalar": ["anne-uyuyor.webp", "anne-uyuyor-govde.webp", "anne-uyuyor-bas.webp"],
+    "not": "anne-uyuyor.webp tek parca. Nefes icin govde + bas kullanin: ucu ayni tuvalde, (0,0) hizali; bas ustte. Govdede basin alti boyun/kol/kazak rengiyle 16 px uzatildi (bas biraz kayarsa bosluk gorunmez).",
+    "nefes": {
+      "pivot": [697, 890],
+      "boyunNoktasi": [469, 391],
+      "oneri": "govde scaleY 1.000 -> 1.012 (pivot etrafinda, ~4 sn sinus dongu); bas ayni anda y -= (890 - 391) * (scaleY - 1) kadar kalksin (%1.2'de ~6 px). %4'e kadar dikis gorunmedi."
+    }
+  }
+}
