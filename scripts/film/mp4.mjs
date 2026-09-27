@@ -34,7 +34,8 @@ try {
 // App Store kesiti: 3. ve 4. sahne (arkadaşlar gelir, karpuz paylaşılır, dans): en sıcak ve renkli 30 sn
 const dosya = JSON.parse(fs.readFileSync(`content/film/${FILM}.json`, 'utf8'));
 const sahneler = dosya.sahneler.filter((s) => s.sure);
-const sahneBasi = (n) => sahneler.slice(0, n).reduce((t, s) => t + s.sure + 0.7, 0);
+// sahne geçişi 0.7 sn (iris / kararma); sonraki sahne 'kes' ise geçiş yok
+const sahneBasi = (n) => sahneler.slice(0, n).reduce((t, s, i) => t + s.sure + (sahneler[i + 1]?.gecis === 'kes' ? 0 : 0.7), 0);
 const FORMATLAR = {
   dikey: { w: 1080, h: 1920, kadraj: 'dolu' },
   kare: { w: 1080, h: 1080, kadraj: 'dolu' },

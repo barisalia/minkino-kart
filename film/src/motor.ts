@@ -12,7 +12,7 @@ import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import type { KonusmaSecenegi } from '../../src/audio/konusma';
 import { KINO_SESI, konus, sus } from '../../src/audio/ses';
 import { h, TEST_MODU } from '../../src/ui/dom';
-import { esyaCiz, ESYA_ORAN } from './esya';
+import { esyaAdresi, esyaCiz, ESYA_ALT, ESYA_MERKEZ, ESYA_ORAN } from './esya';
 import { FILM_EFEKT } from './efekt';
 import { filmMuzik, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
@@ -72,14 +72,42 @@ export interface Konum {
   /** 1 sağa, -1 sola bakar */
   yon?: 1 | -1;
   don?: number;
+  /** bu dünya çizgisinin altı görünmez (kasanın arkasına eğilen karakter) */
+  kirp?: number;
+  /** gölgenin düştüğü zemin (dünya y): havadaki eşyanın gölgesi yerde kalır */
+  zemin?: number;
+}
+/** Karakterin bir parçasına takılı eşya (ör. Kino'nun kafasındaki elma): parçayla birlikte hareket eder */
+export interface TasiTanim {
+  /** eşya tipi (görseli) */
+  tip: string;
+  /** takılan parça: Mino 'govde' | 'kafa' | 'kol-sol' | 'kol-sag'; karakter iskelet katmanı ('kafa', 'govde'…) */
+  parca: string;
+  /** çizim birimleriyle (Mino 1360×1790 kutusu, karakter 2048) merkez, genişlik, açı */
+  x: number;
+  y: number;
+  w: number;
+  don?: number;
+  /** olaylarda bu adla bırakılır */
+  ad?: string;
 }
 export interface OyuncuTanim extends Konum {
   /** 'mino' ya da karakter adı (kopek, tavsan, ordek…) */
   tip: string;
+  /** sahne başında parçalarına takılı eşyalar */
+  tasi?: TasiTanim[];
+  /** sahne başındaki duruş (Oyuncu.durus) */
+  durus?: Record<string, number>;
+  /** sahne başındaki yüz ifadesi */
+  ifade?: string;
 }
 export interface EsyaTanim extends Konum {
   tip: string;
   katman?: Katman;
+  /** yere temas gölgesi */
+  golge?: boolean;
+  /** "en parlak" eşya: üstünde yumuşak parıltı */
+  parla?: boolean;
 }
 export interface Olay {
   t: number;
@@ -93,7 +121,10 @@ export interface Sahne {
   arka: string;
   kamera: [number, number, number];
   isik?: number;
-  gecis?: 'iris' | 'karar';
+  /** ışığın tonu: akşamüstü (varsayılan) ya da sabah (açık, altın sarısı) */
+  isikTon?: 'aksam' | 'sabah';
+  /** kes: önceki sahneden doğrudan kesme (iris / kararma yok; konumlar sürer) */
+  gecis?: 'iris' | 'karar' | 'kes';
   oyuncular?: Record<string, OyuncuTanim>;
   esyalar?: Record<string, EsyaTanim>;
   olaylar: Olay[];
@@ -108,6 +139,8 @@ export interface FilmDosya {
   ogretir?: string;
   /** false: cümleler henüz seslendirme hattına girmez (animatik) */
   seslendir?: boolean;
+  /** kendi çizimi olmayan arka plan / eşyalar için başka filmin klasörü (assets/film/<malzeme>/) */
+  malzeme?: string;
   sahneler: (Sahne | { ogut: string })[];
 }
 /**
@@ -146,25 +179,61 @@ class Nesne {
   saydam: number;
   /** yürürken film tarafı sekme (Mino gibi yürüyüş hareketi olmayanlar için) */
   sekme = 0;
-  constructor(readonly k: Konum, cocuk: HTMLElement, readonly oran: number) {
+  /** dünya ekseninde basılma (squash & stretch): + yayvanlaşır, - incelip uzar; alt kenar yerinde kalır */
+  ez = 0;
+  /** kutunun altındaki boş pay (kutu yüksekliğinin oranı): ayak / eşyanın alt kenarı tam y'de durur */
+  alt = 0;
+  /** dönme noktasının kutudaki yüksekliği (üstten, 0..1): ezilmede alt kenarı sabit tutmak için */
+  merkezY: number;
+  /** bu dünya çizgisinin (y) altı görünmez: kasanın arkasına eğilen karakterin zeminin altına inen kısmı */
+  kirp: number | null = null;
+  /** gölgenin düştüğü zemin (dünya y); null: gölge nesnenin dibinde (temas gölgesi) */
+  zemin: number | null = null;
+  golge: HTMLElement | null = null;
+  /** salla olayının sırası: yenisi gelince eskisi biter */
+  sallaNo = 0;
+  constructor(readonly k: Konum, cocuk: HTMLElement, readonly oran: number, merkez?: [number, number]) {
     this.x = k.x;
     this.y = k.y;
     this.don = k.don ?? 0;
     this.yon = k.yon ?? 1;
     this.saydam = k.gizli ? 0 : 1;
-    this.ic = h('div.fl-ic', {}, cocuk);
+    this.merkezY = merkez ? merkez[1] / 100 : 0.5;
+    this.ic = h('div.fl-ic', merkez ? { style: `transform-origin:${merkez[0]}% ${merkez[1]}%` } : {}, cocuk);
     this.el = h('div.fl-nesne', { style: `width:${k.w}%;aspect-ratio:${oran};z-index:${k.z ?? 5}` }, this.ic);
   }
   /** oyuncunun ayak altı gölgesi (dönmez, çevrilmez) */
   golgeEkle() {
-    this.el.prepend(h('i.fl-golge'));
+    this.golge = h('i.fl-golge');
+    this.el.prepend(this.golge);
+  }
+  /** kutunun dünya yüksekliği */
+  get boy() {
+    return this.k.w / this.oran;
   }
   /** dünya ölçüsü (px) */
   uygula() {
+    const H = this.boy;
+    const alt = this.y - this.alt * H;
     this.el.style.left = `${this.x}%`;
-    this.el.style.bottom = `${this.y}%`;
+    this.el.style.bottom = `${alt}%`;
     this.el.style.opacity = String(this.saydam);
-    this.ic.style.transform = `translateY(${(-this.sekme).toFixed(2)}%) rotate(${this.don.toFixed(2)}deg) scale(${(this.yon * this.olcek).toFixed(3)}, ${this.olcek.toFixed(3)})`;
+    // ezilme: dünya ekseninde, alt kenar yerinde kalır (yalnız kullanılınca; eski filmlerde dönüşüm aynı)
+    const ez = this.ez ? `translateY(${(this.ez * (1 - this.alt - this.merkezY) * 100).toFixed(2)}%) scale(${(1 + this.ez).toFixed(3)}, ${(1 - this.ez).toFixed(3)}) ` : '';
+    this.ic.style.transform = `translateY(${(-this.sekme).toFixed(2)}%) ${ez}rotate(${this.don.toFixed(2)}deg) scale(${(this.yon * this.olcek).toFixed(3)}, ${this.olcek.toFixed(3)})`;
+    if (this.kirp !== null) this.el.style.clipPath = `inset(-300% -300% ${Math.max(0, ((this.kirp - alt) / H) * 100).toFixed(2)}% -300%)`;
+    else if (this.el.style.clipPath) this.el.style.clipPath = '';
+    // gölge: altında boşluk varsa zemine düşer, yükseldikçe küçülüp solar
+    if (this.golge) {
+      const g = this.golge.style;
+      g.bottom = `${(this.alt * 100 - 1.5).toFixed(2)}%`;
+      const yuk = this.zemin === null ? 0 : Math.max(0, this.y - this.zemin);
+      if (yuk > 0.01 || g.transform) {
+        const s = Math.max(0.3, 1 - yuk / (H * 1.6));
+        g.transform = yuk > 0.01 ? `translateY(${((yuk / (H * 0.07)) * 100).toFixed(1)}%) scale(${s.toFixed(3)})` : '';
+        g.opacity = yuk > 0.01 ? s.toFixed(3) : '';
+      }
+    }
   }
 }
 
@@ -234,6 +303,29 @@ export class Film {
     this.altMetin = h('span.fl-alt-metin');
     this.altyazi = h('div.fl-altyazi', { 'aria-live': 'polite' }, this.altKim, this.altMetin);
     this.el = h('div.fl-sahne', {}, this.dunya, this.isikEl, this.iris, this.altyazi);
+    this.onYukle();
+  }
+
+  /** Bütün sahnelerin görselleri baştan yüklenmeye başlar: sonraki sahneler açılınca eşyalar geç belirmesin */
+  private onYukle() {
+    const d = this.dosya;
+    const adresler = new Set<string>();
+    for (const x of ['arka-uzak', 'arka-orta', 'arka-on']) {
+      const u = FILM_GORSEL[`../../assets/film/${d.film}/${x}.webp`] ?? (d.malzeme ? FILM_GORSEL[`../../assets/film/${d.malzeme}/${x}.webp`] : undefined);
+      if (u) adresler.add(u);
+    }
+    for (const s of d.sahneler) {
+      if ('ogut' in s) continue;
+      for (const e of Object.values(s.esyalar ?? {})) {
+        const u = esyaAdresi(e.tip, d.film, d.malzeme);
+        if (u) adresler.add(u);
+      }
+      for (const o of Object.values(s.oyuncular ?? {})) for (const t of o.tasi ?? []) {
+        const u = esyaAdresi(t.tip, d.film, d.malzeme);
+        if (u) adresler.add(u);
+      }
+    }
+    for (const u of adresler) new Image().src = u;
   }
 
   /** Oynatmayı başlatır (çözülünce film bitmiştir) */
@@ -241,13 +333,15 @@ export class Film {
     this.son = performance.now();
     this.raf = requestAnimationFrame((t) => this.kare(t));
     if (this.muzik) filmMuzik.baslat('nese');
-    for (const s of this.dosya.sahneler) {
+    const liste = this.dosya.sahneler;
+    for (const [i, s] of liste.entries()) {
       if (this.bitti) return;
       if ('ogut' in s) {
         this.el.dataset.bitti = '1';
         break;
       }
-      await this.sahneOyna(s);
+      const sonraki = liste[i + 1];
+      await this.sahneOyna(s, !!sonraki && !('ogut' in sonraki) && sonraki.gecis === 'kes');
     }
     if (this.muzik) filmMuzik.dur(4);
     this.secenek.bitti?.();
@@ -310,15 +404,16 @@ export class Film {
   }
 
   // ---------------------------------------------------------------- sahne
-  private async sahneOyna(s: Sahne) {
+  /** kesme: sonraki sahne doğrudan başlar (kapanış geçişi ve bekleme yok) */
+  private async sahneOyna(s: Sahne, kesme = false) {
     this.kur(s);
     this.sahneBas = this.saat;
     this.olaylar = [...s.olaylar].sort((a, b) => a.t - b.t);
     this.siradaki = 0;
-    this.gecis(true, s.gecis);
+    if (s.gecis !== 'kes') this.gecis(true, s.gecis);
     await this.bekle(s.sure);
-    if (this.bitti) return;
-    this.gecis(false, s.gecis);
+    if (this.bitti || kesme) return;
+    this.gecis(false, s.gecis === 'kes' ? 'iris' : s.gecis);
     await this.bekle(0.7);
     this.altyazi.classList.remove('acik');
   }
@@ -327,23 +422,37 @@ export class Film {
     this.oyuncular.forEach((o) => o.kapat());
     this.oyuncular.clear();
     this.nesneler.clear();
+    // önceki sahnenin süren tween'leri (kesmede kamera / yol) yeni sahneye karışmasın
+    this.tweenler = [];
     Object.values(this.katmanlar).forEach((k) => k.replaceChildren());
     this.tezgahVar = !!s.tezgah;
     this.arka(s.arka);
     for (const [id, o] of Object.entries(s.oyuncular ?? {})) {
-      const oy = new Oyuncu(o.tip);
+      const oy = new Oyuncu(o.tip, this.hiz);
       const n = new Nesne(o, oy.el, oy.oran);
       n.el.dataset.oyuncu = id;
+      n.alt = oy.alt;
+      n.merkezY = 0.6;
+      n.kirp = o.kirp ?? null;
       n.golgeEkle();
+      for (const t of o.tasi ?? []) oy.tasi(t.ad ?? t.tip, esyaAdresi(t.tip, this.dosya.film, this.dosya.malzeme) ?? '', t.parca, t.x, t.y, t.w, (ESYA_ORAN[t.tip] ?? 1), t.don ?? 0);
+      if (o.durus) oy.durus(o.durus, 0);
+      if (o.ifade) oy.ifade(o.ifade);
       this.oyuncular.set(id, oy);
       this.nesneler.set(id, n);
       this.katmanlar.orta.append(n.el);
     }
     for (const [id, e] of Object.entries(s.esyalar ?? {})) {
-      const n = new Nesne(e, esyaCiz(e.tip, this.dosya.film), ESYA_ORAN[e.tip] ?? 1);
+      const n = new Nesne(e, esyaCiz(e.tip, this.dosya.film, this.dosya.malzeme), ESYA_ORAN[e.tip] ?? 1, ESYA_MERKEZ[e.tip]);
       n.el.dataset.esya = id;
+      n.el.dataset.tip = e.tip;
+      this.esyaTip.set(id, e.tip);
+      n.alt = ESYA_ALT[e.tip] ?? 0;
+      n.kirp = e.kirp ?? null;
+      n.zemin = e.zemin ?? null;
       // karakter pozları (mino-sarilma) oyuncu gibi gölgeli
-      if (e.tip.startsWith('mino-')) n.golgeEkle();
+      if (e.tip.startsWith('mino-') || e.golge) n.golgeEkle();
+      if (e.parla) n.ic.append(h('i.fl-parla'));
       this.nesneler.set(id, n);
       this.katmanlar[e.katman ?? 'orta'].append(n.el);
     }
@@ -353,6 +462,7 @@ export class Film {
     this.duzelt = { x: 0, y: 0 };
     this.ilkKare = true;
     this.isikAyarla(s.isik ?? 0);
+    this.el.classList.toggle('sabah', s.isikTon === 'sabah');
     this.el.dataset.sahne = s.ad;
   }
 
@@ -362,7 +472,8 @@ export class Film {
    */
   private arka(ad: string) {
     if (ad !== 'pazar') return;
-    const film = (x: string) => FILM_GORSEL[`../../assets/film/${this.dosya.film}/${x}.webp`] ?? '';
+    // filmin kendi çizimi yoksa ortak malzeme klasörü (ör. Elma Kulesi karpuz filminin pazarını kullanır)
+    const film = (x: string) => FILM_GORSEL[`../../assets/film/${this.dosya.film}/${x}.webp`] ?? (this.dosya.malzeme ? FILM_GORSEL[`../../assets/film/${this.dosya.malzeme}/${x}.webp`] : undefined) ?? '';
     const resim = (x: string) => h('img.fl-arka', { src: film(x), alt: '', draggable: 'false' });
     this.katmanlar.uzak.append(resim('arka-uzak'), this.isikUzak);
     this.katmanlar.tezgahlar.append(resim('arka-orta'));
@@ -496,6 +607,12 @@ export class Film {
       if (!this.muzik) return;
       if (o.yap === 'ruh') filmMuzik.degis(String(o.ad) as Ruh);
       else if (o.yap === 'dur') filmMuzik.dur(Number(o.sure ?? 2));
+      // durdurulan müzik yeniden (ör. hüzünlü sessizlikten sonra yumuşak tema)
+      else if (o.yap === 'baslat') filmMuzik.baslat(String(o.ad ?? 'nese') as Ruh);
+      return;
+    }
+    if (o.kim === 'toz') {
+      this.toz(Number(o.x), Number(o.y), Number(o.adet ?? 5), Number(o.yon ?? 0), Number(o.boy ?? 1));
       return;
     }
     if (o.kim === 'efekt') {
@@ -515,19 +632,22 @@ export class Film {
     if (!n) return;
     switch (o.yap) {
       case 'git': {
-        const a = { x: n.x, y: n.y, don: n.don, olcek: n.olcek };
-        const b = { x: Number(o.x ?? a.x), y: Number(o.y ?? a.y), don: Number(o.don ?? a.don), olcek: Number(o.olcek ?? a.olcek) };
+        const a = { x: n.x, y: n.y, don: n.don, olcek: n.olcek, ez: n.ez };
+        const b = { x: Number(o.x ?? a.x), y: Number(o.y ?? a.y), don: Number(o.don ?? a.don), olcek: Number(o.olcek ?? a.olcek), ez: Number(o.ez ?? a.ez) };
         const yay = Number(o.yay ?? 0);
         const yuru = o.yuru !== false && !!oy;
-        if (yuru && b.x !== a.x) n.yon = b.x > a.x ? 1 : -1;
+        // önden çizimi asimetrik karakterler (Kino'nun göz lekesi) yürürken aynalanmaz
+        // cevir: false → yön değişmez (küçük yan adım: patiler yer değiştirmesin)
+        if (yuru && b.x !== a.x && !oy?.yonSabit && o.cevir !== false) n.yon = b.x > a.x ? 1 : -1;
         // Mino yana yürürken yandan iskeletiyle gerçek adım atar; yolu kısaysa ya da profil yoksa önden seker
-        const adim = yuru && oy ? oy.yuru(sure / this.hiz, Math.abs(b.x - a.x) / n.k.w) : null;
+        const adim = yuru && oy ? oy.yuru(sure / this.hiz, Math.abs(b.x - a.x) / n.k.w, o.stil as string | undefined) : null;
         const sek = !!adim && !adim.kendi;
         this.tween(sure, egri ?? (yuru ? 'dogrusal' : 'yumusak'), (u) => {
           n.x = a.x + (b.x - a.x) * u;
           n.y = a.y + (b.y - a.y) * u + yay * 4 * u * (1 - u);
           n.don = a.don + (b.don - a.don) * u;
           n.olcek = a.olcek + (b.olcek - a.olcek) * u;
+          n.ez = a.ez + (b.ez - a.ez) * u;
           n.sekme = sek ? Math.abs(Math.sin(u * Math.PI * Math.max(2, Math.round(sure * 3)))) * 5 : 0;
         }, () => {
           n.sekme = 0;
@@ -564,7 +684,170 @@ export class Film {
       case 'soyle':
         this.soyle(o.kim, String(o.metin), o.sure as number | undefined, oy);
         return;
+      case 'sek':
+        this.sek(n, o, sure);
+        return;
+      case 'salla': {
+        // sallanma: kökünden açı (don) ya da yatay (x) salınım; sonum: gittikçe söner, zarf: yumuşak başlar / biter
+        const no = ++n.sallaNo;
+        const eksen = o.eksen === 'x' ? 'x' : 'don';
+        const A = Number(o.genlik ?? 8);
+        const f = Number(o.hiz ?? 2);
+        const sonum = o.sonum !== false;
+        let son = 0;
+        this.tween(sure, 'dogrusal', (u) => {
+          // yenisi başladıysa bu salınımın payı geri alınır, eşya kendi yerinden devam eder
+          if (no !== n.sallaNo) {
+            n[eksen] -= son;
+            son = 0;
+            return;
+          }
+          const z = sonum ? Math.pow(1 - u, 1.5) : Math.min(1, u / 0.08, (1 - u) / 0.12);
+          const v = A * Math.sin(u * sure * f * Math.PI * 2) * z;
+          n[eksen] += v - son;
+          son = v;
+        });
+        return;
+      }
+      case 'kirp':
+        n.kirp = o.y === null || o.y === undefined ? null : Number(o.y);
+        return;
+      case 'zemin':
+        n.zemin = o.y === null || o.y === undefined ? null : Number(o.y);
+        return;
+      case 'z':
+        n.el.style.zIndex = String(o.z);
+        return;
+      case 'parla':
+        // eşyanın üstünde minik yıldız ışıltı (acik: false kaldırır)
+        n.ic.querySelector(':scope > .fl-parla')?.remove();
+        if (o.acik !== false) n.ic.append(h('i.fl-parla'));
+        return;
+      case 'durus':
+        oy?.durus(o as unknown as Record<string, number>, Number(o.sure ?? 0.4) / this.hiz);
+        return;
+      case 'ek':
+        oy?.ek(String(o.ad), o.acik !== false);
+        return;
+      case 'bak':
+        oy?.bak(Number(o.yon ?? 0));
+        return;
+      case 'al':
+        this.al(o.kim, String(o.esya), String(o.parca ?? 'govde'));
+        return;
+      case 'birak':
+        this.birak(o.kim, String(o.esya), o.parca as string | undefined);
+        return;
     }
+  }
+
+  /**
+   * Sekerek yuvarlanma (elmalar, top): hedef x'e giderken zıplar; her inişte basılır (squash), sekme yüksekliği
+   * azalır, yuvarlak eşya yol boyunca kendi çevresinde döner. Gölge zeminde kalır.
+   * o: x, y (zemin), yukseklik (ilk sekme; 0: düz yuvarlanır), sekme (iniş sayısı), efekt (her inişte), don (ek dönüş)
+   */
+  private sek(n: Nesne, o: Olay, sure: number) {
+    const a = { x: n.x, y: n.y, don: n.don };
+    const hx = Number(o.x ?? a.x);
+    const zemin = Number(o.y ?? a.y);
+    const h0 = Number(o.yukseklik ?? 6);
+    const say = Math.max(1, Math.round(Number(o.sekme ?? 3)));
+    const efekt = o.efekt as string | undefined;
+    const yuvarla = o.yuvarla !== false;
+    n.zemin = zemin;
+    // parçalar: [düşüş (başlangıç yüksekliğinden), sekme 1…, yerde yuvarlanma]; süreler √yükseklikle orantılı
+    const dus = Math.max(0, a.y - zemin);
+    const yuk = Array.from({ length: say - 1 }, (_, i) => h0 * Math.pow(0.42, i));
+    const pay = [Math.sqrt(dus + 0.05), ...yuk.map((y) => 2 * Math.sqrt(y))];
+    const yuvarlanma = Number(o.yuvarlan ?? 0.35);
+    pay.push(pay.reduce((s, x) => s + x, 0) * yuvarlanma);
+    const top = pay.reduce((s, x) => s + x, 0);
+    const sinir: number[] = [];
+    pay.reduce((s, x) => (sinir.push((s + x) / top), s + x), 0);
+    // her inişten önceki yükseklik (basılmanın gücü)
+    const inisYuk = [dus, ...yuk];
+    // dönüş: yuvarlanan yol / çevre (eşyanın genişliğine göre) + istenen ek dönüş
+    const cevre = Math.PI * n.k.w * 0.85;
+    const donus = (yuvarla ? ((hx - a.x) / cevre) * 360 : 0) + Number(o.don ?? 0);
+    let inisSay = 0;
+    const ezSure = 0.09;
+    this.tween(sure, 'dogrusal', (u) => {
+      // yatay: yavaşlayarak (sürtünme)
+      const ux = 1 - Math.pow(1 - u, 1.8);
+      n.x = a.x + (hx - a.x) * ux;
+      n.don = a.don + donus * ux;
+      let i = sinir.findIndex((s) => u < s);
+      if (i < 0) i = pay.length - 1;
+      const bas = i === 0 ? 0 : sinir[i - 1];
+      const v = Math.min(1, (u - bas) / Math.max(1e-6, sinir[i] - bas));
+      if (i === 0) n.y = zemin + dus * (1 - v * v); // yerçekimiyle hızlanan düşüş
+      else if (i <= yuk.length) n.y = zemin + yuk[i - 1] * 4 * v * (1 - v);
+      else n.y = zemin;
+      // iniş: efekt + basılıp toparlanma (squash)
+      if (i > inisSay && inisSay < inisYuk.length) {
+        inisSay = i;
+        if (efekt) FILM_EFEKT[efekt]?.();
+      }
+      const d = i === 0 ? 1 : (u - sinir[i - 1]) * sure;
+      const guc = i === 0 ? 0 : Math.min(0.22, 0.06 + (inisYuk[i - 1] ?? 0) * 0.03);
+      n.ez = d < ezSure && i <= inisYuk.length ? guc * Math.sin((d / ezSure) * Math.PI) : 0;
+    }, () => {
+      n.y = zemin;
+      n.ez = 0;
+    });
+  }
+
+  // ---------------------------------------------------------------- taşıma (eşya ↔ karakter parçası)
+  /** orta katmanın ekrandaki kutusu: ekran ↔ dünya dönüşümü */
+  private dunyaya(sx: number, sy: number) {
+    const L = this.katmanlar.orta.getBoundingClientRect();
+    return { x: ((sx - L.left) / L.width) * 100, y: ((L.bottom - sy) / L.height) * 100, olcek: L.width / 100 };
+  }
+
+  /**
+   * Eşya karakterin parçasına geçer (ör. Mino elmayı alır): eşya olduğu yerde gizlenir, aynı yerde, aynı boyda
+   * parçaya takılı bir kopya görünür; parça dönünce o da döner. Fark görünmez.
+   */
+  private al(kim: string, esya: string, parca: string) {
+    const oy = this.oyuncular.get(kim);
+    const n = this.nesneler.get(esya);
+    if (!oy || !n) return;
+    const r = n.el.getBoundingClientRect();
+    const tip = (this.esyaTip.get(esya) ?? esya);
+    oy.al(esya, esyaAdresi(tip, this.dosya.film, this.dosya.malzeme) ?? '', parca, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, r.width * n.olcek, ESYA_ORAN[tip] ?? 1, n.don * n.yon);
+    n.saydam = 0;
+  }
+
+  /** Parçadaki eşya bırakılır: dünyadaki eşya takılı kopyanın yerine, boyuna ve açısına oturur, kopya kalkar */
+  private birak(kim: string, esya: string, parca?: string) {
+    const oy = this.oyuncular.get(kim);
+    const n = this.nesneler.get(esya);
+    if (!oy || !n) return;
+    const k = oy.birak(esya, parca);
+    if (!k) return;
+    const d = this.dunyaya(k.x, k.y);
+    const w = k.w / d.olcek;
+    n.olcek = w / n.k.w;
+    const H = n.boy;
+    n.x = d.x;
+    n.y = d.y - H / 2 + n.alt * H;
+    n.don = k.don * n.yon;
+    n.saydam = 1;
+    n.uygula();
+  }
+  private esyaTip = new Map<string, string>();
+
+  /** Toz bulutu: yumuşak, yuvarlak toz topakları kabarıp dağılır (kayma, çarpma) */
+  private toz(x: number, y: number, adet: number, yon: number, boy: number) {
+    const p = h('div.fl-toz', { style: `left:${x}%;bottom:${y}%;--boy:${boy}` },
+      ...Array.from({ length: adet }, (_, i) => {
+        const a = (i / Math.max(1, adet - 1) - 0.5) * 2;
+        const dx = (yon ? yon * (40 + 90 * Math.abs(a)) : a * 110) * (0.8 + 0.4 * ((i * 37) % 10) / 10);
+        const dy = -(30 + 50 * (1 - Math.abs(a)));
+        return h('i', { style: `--dx:${dx.toFixed(0)}%;--dy:${dy.toFixed(0)}%;--s:${(0.7 + 0.5 * ((i * 53) % 10) / 10).toFixed(2)};animation-delay:${(i * 0.035).toFixed(3)}s` });
+      }));
+    this.katmanlar.orta.append(p);
+    setTimeout(() => p.remove(), 1400 / this.hiz + 200);
   }
 
   /** Alt yazı + (animatikte) cihaz sesi + konuşan karakterin ağzı */
@@ -578,6 +861,8 @@ export class Film {
     this.el.dataset.sonSoz = metin;
     // konuşma sırasında müzik kısılır (ducking)
     if (this.muzik) filmMuzik.kis(sn / this.hiz);
+    // yalnız konuşanın ağzı sesle oynar (Kino konuşurken Mino susar)
+    this.oyuncular.forEach((o, id) => o.sustur(!!kim && id !== kim));
     const konusSecenek = konusSecenegi(kim);
     const ses = this.ses ? konus(metin, konusSecenek) : null;
     sesGunlugeYaz('konus', metin, konusSecenek);

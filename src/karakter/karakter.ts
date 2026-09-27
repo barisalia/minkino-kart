@@ -221,6 +221,14 @@ export class Karakter {
     this.ifadeBitis = ms && this.ifadeAd ? performance.now() + (TEST_MODU ? 30 : ms) : 0;
   }
 
+  /**
+   * İskeletin bir parçasının SVG grubu (ör. film: Kino'nun kafasına elma takmak). İskelet yüklenmeden (ya da
+   * tek görselde) undefined.
+   */
+  parcaG(id: string): SVGGElement | undefined {
+    return this.parca.get(id);
+  }
+
   /** Bu karakterde bu ifade var mı */
   ifadeVar(ad: string) {
     return !!this.setler[ad];
@@ -240,6 +248,16 @@ export class Karakter {
     else this.acikEkler.delete(id);
   }
   private acikEkler = new Set<string>();
+
+  /**
+   * Görünen bir katmanı geçici gizler (ör. film: Kino'nun kuyruğu, yerine patiyle bastırılmış kuyruk eki
+   * 'pati-kuyruk' gösterilirken). Varsayılan: hiçbiri gizli değil.
+   */
+  gizle(id: string, gizli: boolean) {
+    if (gizli) this.gizlenenler.add(id);
+    else this.gizlenenler.delete(id);
+  }
+  private gizlenenler = new Set<string>();
 
   /**
    * Konuşuyor mu: açıkken ağız sese göre şekil alır (dudak senkronu, src/audio/dudak.ts): iskeletin agiz-<şekil>
@@ -439,6 +457,7 @@ export class Karakter {
       for (const id of set.goster) gor.set(id, true);
     }
     for (const id of this.acikEkler) if (this.parca.has(id)) gor.set(id, true);
+    for (const id of this.gizlenenler) gor.set(id, false);
     // göz kırpma: açık göz görünüyorsa kapalı gözle değişir
     if (p.gozKapali && this.parca.has('goz-kapali') && (gor.get('goz-sol') || gor.get('goz-sag'))) {
       gor.set('goz-sol', false);

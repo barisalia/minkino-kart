@@ -11,7 +11,7 @@
 import { baglam, muzikCikisi } from '../../src/audio/motor';
 import { muzikDurdur } from '../../src/audio/muzik';
 
-export type Ruh = 'nese' | 'uzgun' | 'aydinlik' | 'kapanis';
+export type Ruh = 'nese' | 'uzgun' | 'aydinlik' | 'kapanis' | 'yumusak';
 
 interface Tema {
   bpm: number;
@@ -47,6 +47,15 @@ const TEMA: Record<Ruh, Tema> = {
     melodi: [72, 0, 74, 0, 76, 0, 77, 0, 79, 0, 0, 0, 81, 0, 79, 0, 84, 0, 0, 0, 83, 0, 79, 0, 84, 0, 0, 0, 0, 0, 0, 0],
     arpej: 'dolu',
     shaker: true,
+    pad: true,
+  },
+  // özür anı: yavaş, sıcak, yumuşak (Fa majör, seyrek tel + pad); Kino ve Elma Kulesi
+  yumusak: {
+    bpm: 70,
+    akorlar: [[65, 'maj'], [69, 'min'], [70, 'maj'], [60, 'maj']],
+    melodi: [81, 0, 0, 0, 79, 0, 77, 0, 76, 0, 0, 0, 72, 0, 0, 0, 74, 0, 0, 0, 77, 0, 76, 0, 72, 0, 0, 0, 0, 0, 0, 0],
+    arpej: 'seyrek',
+    shaker: false,
     pad: true,
   },
   kapanis: {

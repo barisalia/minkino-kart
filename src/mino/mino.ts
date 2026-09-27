@@ -33,6 +33,15 @@ export function minoIfadeleriYukle(): Promise<string | null> {
   );
   return ifadeYukleme;
 }
+/** İfade kafaları (üzgün: kulakları sarkık kafa): ifade ekleriyle aynı tembel pakette */
+let ifadeKafaYukleme: Promise<string | null> | null = null;
+function minoIfadeKafaYukle(): Promise<string | null> {
+  ifadeKafaYukleme ??= import('./mino-ifade-svg').then(
+    (m) => m.MINO_IFADE_KAFA_SVG,
+    () => null,
+  );
+  return ifadeKafaYukleme;
+}
 
 /**
  * Hâl ekleri (sırılsıklam, pofuduk; tam vektör, ağır): ifade ekleri gibi ayrı pakette, yalnız hal() ilk
@@ -65,8 +74,11 @@ export function minoBurunYukle(): Promise<Record<'kafa' | 'yuz' | 'kol' | 'pati'
 /** Burun ifadeleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne) */
 export type MinoBurunIfade = 'burun-kasinti' | 'burun-tut' | 'hapsu';
 const burunMu = (ad: MinoIfade): ad is MinoBurunIfade => ad === 'burun-kasinti' || ad === 'burun-tut' || ad === 'hapsu';
-/** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) ve burun ifadeleri */
-export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | MinoBurunIfade;
+/**
+ * Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) ve burun ifadeleri. Film 2: 'uzgun' (kulakları
+ * sarkık kafa + yalvaran bakış), 'saskin' (kocaman gözler, "o" ağız), 'odak' (kısık gözler, dil ucu dışarıda).
+ */
+export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | 'uzgun' | 'saskin' | 'odak' | MinoBurunIfade;
 /**
  * ifade() ayarı. ms: bu süre sonra normale döner (0: null verilene kadar).
  * boy (yalnız hapşu): 'buyuk' HAPŞU (püf tam "pat" 0.85 → 1.05, kafa sarsılır; varsayılan), 'kucuk' hıpşu (küçük, soluk püf, hafif sarsıntı).
@@ -91,6 +103,12 @@ const TEPKI_IFADE: Partial<Record<string, MinoIfade>> = { zorlan: 'zorlanma', se
  * hazırlık-takipli uzatma, kısa sevinç. Eski tepkiler aynen durur.
  */
 export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz' | 'saril' | 'kolac' | 'selam' | 'duzelt' | 'sun' | 'sevinc';
+
+/**
+ * Film duruşu: açılar derece, kafaY / ziplaY çizim birimi (+ aşağı), sx / sy çarpan, gulum ve agiz eklenir
+ * (gulum -1.6: üzgün ağız), goz 1: gözler kapalı.
+ */
+export type MinoEkPoz = Partial<Record<'kafaAci' | 'kafaY' | 'govdeAci' | 'ziplaY' | 'sx' | 'sy' | 'kolSol' | 'kolSag' | 'kuyrukAci' | 'gozKay' | 'gulum' | 'agiz' | 'goz', number>>;
 
 interface Durum {
   tepki: Tepki | null;
@@ -315,9 +333,15 @@ export class Mino {
   private async ifadeleriEkle(): Promise<boolean> {
     if (this.ifadeEklendi) return true;
     const svg = await minoIfadeleriYukle();
+    const kafa = await minoIfadeKafaYukle();
     const yer = this.el.querySelector('.m-ifadeler');
     if (!svg || !yer) return false;
-    if (!this.ifadeEklendi) yer.innerHTML = svg;
+    if (!this.ifadeEklendi) {
+      yer.innerHTML = svg;
+      // ifade kafaları (üzgün): asıl kafanın hemen üstüne, göz / ağız eklerinin altına (hapşu kafası gibi)
+      const kafaHal = this.kok.querySelector(':scope > .k > .m-hal');
+      if (kafa && kafaHal) kafaHal.insertAdjacentHTML('afterend', kafa);
+    }
     this.ifadeEklendi = true;
     return true;
   }
@@ -375,6 +399,11 @@ export class Mino {
   agizSekliSu: AgizSekli = 'gulumse';
   /** Başka bir karakter konuşurken (ör. Kino) Mino'nun ağzı oynamasın */
   agizSus = false;
+  /**
+   * Film duruşu (film/src/oyuncu.ts → durus): tepki ve bekleme hareketlerinin üstüne eklenen beden dili
+   * (üzgün: baş eğik, kuyruk sarkık, ağız aşağı…). null: yok (oyunlarda değişiklik yok).
+   */
+  ekPoz: MinoEkPoz | null = null;
   /**
    * Gözler sıkıca kapalı (ifade eki olmadan; ör. banyoda köpük kaçmasın). Hâl çizimleriyle (sırılsıklam,
    * pofuduk) de temiz çalışır. Varsayılan false: diğer oyunlarda değişiklik yok.
@@ -706,6 +735,24 @@ export class Mino {
         sy -= 0.04 * sars;
         sx += 0.03 * sars;
       }
+    }
+
+    // Film duruşu (ekPoz): tepkilerin üstüne eklenir (yoksa hiçbir şey değişmez)
+    const ep = this.ekPoz;
+    if (ep) {
+      kafaAci += ep.kafaAci ?? 0;
+      kafaY += ep.kafaY ?? 0;
+      govdeAci += ep.govdeAci ?? 0;
+      ziplaY += ep.ziplaY ?? 0;
+      sx *= ep.sx ?? 1;
+      sy *= ep.sy ?? 1;
+      kolSol += ep.kolSol ?? 0;
+      kolSag += ep.kolSag ?? 0;
+      kuyrukAci += ep.kuyrukAci ?? 0;
+      gozKay += ep.gozKay ?? 0;
+      gulum += ep.gulum ?? 0;
+      agizHedef = Math.max(0, agizHedef + (ep.agiz ?? 0));
+      if ((ep.goz ?? 0) > 0.5) gozKapali = Math.max(gozKapali, 1);
     }
 
     // Konuşurken ağız sese göre şekil alır (dudak senkronu: src/audio/dudak.ts); susunca gülümsemeye döner
