@@ -976,6 +976,17 @@
 @media (min-width: 700px) {
   .mk-kok .tema-izgara { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+/* yatay telefon: dört yaş kartı tek sırada (alttakiler ekrandan taşmasın) */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mk-kok .yas-izgara {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: min(100%, calc((100dvh - var(--dokunma) - var(--ust) - var(--alt) - 40px) / 1.1 * 4 + 72px));
+    padding: 10px 4px 12px;
+  }
+  .mk-kok .yas-kart b {
+    font-size: clamp(3.4rem, 17dvh, 6rem);
+  }
+}
 .mk-kok .kaydir {
   flex: 1;
   min-height: 0;

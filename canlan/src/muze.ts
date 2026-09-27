@@ -187,13 +187,6 @@ export function muzeEkrani(app: Uygulama): Ekran {
   let acik: { kapat(): void } | null = null;
   let kapandi = false;
 
-  if (!liste.length) {
-    for (let i = 0; i < 3; i++) duvar.append(h('div.cc-muze-cerceve.bos', { style: `--i:${i};--egim:${[-2, 1.5, -1][i]}deg` }, h('div.cc-cerceve-ic', {}, h('span', {}, '?'))));
-    const hadi = h('button.dugme.cc-muze-hadi', { type: 'button', 'aria-label': 'Hadi çizelim' }, svg(IKON.kalem), h('span', {}, 'Hadi çizelim'));
-    hadi.addEventListener('click', () => app.git('liste'));
-    duvar.append(hadi);
-  }
-
   liste.forEach((e, i) => {
     const r = resim(e.resim)!;
     const ic = h('div.cc-cerceve-ic');
@@ -221,6 +214,14 @@ export function muzeEkrani(app: Uygulama): Ekran {
     });
     duvar.append(cerceve);
   });
+
+  // Duvar yarım kalmasın: az resim varken boş yerlere soru işaretli çerçeveler, altında "Hadi çizelim"
+  if (liste.length < 3) {
+    for (let i = liste.length; i < 3; i++) duvar.append(h('div.cc-muze-cerceve.bos', { style: `--i:${i};--egim:${[-2, 1.5, -1][i]}deg` }, h('div.cc-cerceve-ic', {}, h('span', {}, '?'))));
+    const hadi = h('button.dugme.cc-muze-hadi', { type: 'button', 'aria-label': 'Hadi çizelim' }, svg(IKON.kalem), h('span', {}, 'Hadi çizelim'));
+    hadi.addEventListener('click', () => app.git('liste'));
+    duvar.append(hadi);
+  }
 
   const el = h(
     'div.cc-muze',

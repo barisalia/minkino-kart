@@ -95,16 +95,46 @@ export function acilisEkrani(app: Uygulama): Ekran {
     efekt.secim();
     app.git('galeri');
   });
+  // Mino vitrinin köşesinde: çizim sihirli resme dönerken değneğini sallar; vitrine dokununca sevinir
+  const yuva = yoldasYuvasi('ms-acilis-mino');
+  const zamanlar: number[] = [];
+  void yuva.hazir.then((y) => {
+    if (!y) return;
+    y.dokunulur(true);
+    if (!tamHareket()) return;
+    // vitrin 5 sn'de bir çizimi sihirli hâline çevirir (ms-vitrin, %35-55): büyü o ana denk gelir
+    const buyu = () => {
+      y.buyu(true);
+      zamanlar.push(window.setTimeout(() => y.buyu(false), 1500));
+    };
+    zamanlar.push(window.setTimeout(() => {
+      buyu();
+      zamanlar.push(window.setInterval(buyu, 5000));
+    }, 1300));
+  });
+  onceSonra.addEventListener('pointerdown', () => {
+    efekt.dokunma();
+    yuva.yap((y) => y.sevin());
+  });
   const el = h(
     'div.ms-acilis',
     {},
     h('div.ust-cubuk', {}, h('div'), sesDugmesi()),
     logo(),
-    onceSonra,
+    h('div.ms-acilis-sahne', {}, onceSonra, yuva.el),
     h('div.ms-acilis-alt', {}, ciz, galeri),
   );
   el.addEventListener('pointerdown', () => void konus(S.hosgeldin), { once: true });
-  return { el };
+  return {
+    el,
+    kapat() {
+      zamanlar.forEach((z) => {
+        clearTimeout(z);
+        clearInterval(z);
+      });
+      yuva.kapat();
+    },
+  };
 }
 
 // ---------------------------------------------------------------- Çizim
@@ -166,17 +196,23 @@ export function cizEkrani(app: Uygulama, p?: { devam?: boolean }): Ekran {
   });
   renkler.append(silgi);
 
-  const kalinliklar = h('div.ms-kalinlik');
-  KALINLIK.forEach((k, i) => {
-    const b = h('button', { type: 'button', 'aria-label': ['İnce', 'Orta', 'Kalın'][i] }, h('i', { style: `--k:${8 + i * 9}px` }));
-    if (k === tuval.kalinlik) b.classList.add('secili');
-    b.addEventListener('click', () => {
-      tuval.kalinlik = k;
-      kalinliklar.querySelectorAll('.secili').forEach((x) => x.classList.remove('secili'));
-      b.classList.add('secili');
-      efekt.dokunma();
-    });
-    kalinliklar.append(b);
+  // Kalınlık: tek büyük düğme (üç küçük düğme parmak ucundan küçüktü); her dokunuşta ince → orta → kalın
+  const KALINLIK_AD = ['İnce', 'Orta', 'Kalın'];
+  // tuvalin varsayılanı (0.022) ortaya en yakın
+  let kalinlikSira = KALINLIK.indexOf(tuval.kalinlik) >= 0 ? KALINLIK.indexOf(tuval.kalinlik) : 1;
+  const kalinliklar = h('button.ms-kalinlik', { type: 'button' });
+  KALINLIK.forEach((_, i) => kalinliklar.append(h('i', { style: `--k:${8 + i * 7}px` })));
+  const kalinlikGoster = () => {
+    kalinliklar.dataset.secili = String(kalinlikSira);
+    kalinliklar.setAttribute('aria-label', `Kalınlık: ${KALINLIK_AD[kalinlikSira]}`);
+    kalinliklar.querySelectorAll('i').forEach((x, i) => x.classList.toggle('secili', i === kalinlikSira));
+  };
+  kalinlikGoster();
+  kalinliklar.addEventListener('click', () => {
+    kalinlikSira = (kalinlikSira + 1) % KALINLIK.length;
+    tuval.kalinlik = KALINLIK[kalinlikSira];
+    kalinlikGoster();
+    efekt.dokunma();
   });
 
   const bitti = h('button.dugme.ms-bitti', { type: 'button', 'aria-label': 'Sihir yap', disabled: true }, svg(IKON.sihir), h('span', {}, 'Sihir'));
@@ -224,6 +260,17 @@ export function cizEkrani(app: Uygulama, p?: { devam?: boolean }): Ekran {
 export function konuEkrani(app: Uygulama): Ekran {
   const izgara = h('div.ms-konular');
   let kilit = false;
+  // Kartların altı boş kalmasın: çocuğun çizimi küçük bir çerçevede, yanında Mino "bu ne?" diye bakar
+  const yuva = yoldasYuvasi('ms-konu-mino');
+  void yuva.hazir.then((y) => y?.dokunulur(true));
+  const cizimCerceve = h('div.ms-konu-cizim');
+  let cizimUrl = '';
+  if (sonCizim && !sonCizim.bosMu()) {
+    void sonCizim.blob(360).then((b) => {
+      cizimUrl = URL.createObjectURL(b);
+      cizimCerceve.append(h('img', { src: cizimUrl, alt: 'Çizimin' }));
+    });
+  }
   Object.entries(S.konular).forEach(([id, ad], i) => {
     const url = KONU_GORSEL[id] ? gorsel(KONU_GORSEL[id]) : undefined;
     const b = h(
@@ -237,6 +284,7 @@ export function konuEkrani(app: Uygulama): Ekran {
       kilit = true;
       efekt.secim();
       b.classList.add('secili');
+      yuva.yap((y) => y.sevin());
       await Promise.all([konus(`${ad}!`), bekle(sure(500))]);
       if (EBEVEYN_KAPISI && !onayVarMi()) {
         const tamam = await ebeveynOnayi(app);
@@ -254,10 +302,16 @@ export function konuEkrani(app: Uygulama): Ekran {
     'div.ms-konu-ekran',
     {},
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Çizime dön', () => app.git('ciz', { devam: true })), h('div.baslik-balon', {}, h('span', {}, S.ne_cizdin)), h('div', { style: 'width:72px' })),
-    h('div.kaydir', {}, izgara),
+    h('div.kaydir', {}, izgara, h('div.ms-konu-alt', {}, yuva.el, cizimCerceve)),
   );
   void konus(S.ne_cizdin);
-  return { el };
+  return {
+    el,
+    kapat() {
+      yuva.kapat();
+      if (cizimUrl) URL.revokeObjectURL(cizimUrl);
+    },
+  };
 }
 
 /** İlk sihirden önce: ebeveyn kapısı + açık onay (çizim sunucuya gönderilecek). */
@@ -429,7 +483,11 @@ export function sonucEkrani(app: Uygulama, p: { eser: Eser; yeni?: boolean }): E
     h('div.ms-k-cizgi', {}, h('span', {}, svg(IKON.sihir))),
     kaydirici,
   );
-  const guncelle = () => karsilastir.style.setProperty('--k', `${kaydirici.value}%`);
+  const guncelle = () => {
+    karsilastir.style.setProperty('--k', `${kaydirici.value}%`);
+    // sihir düğmesi (tutamak) kenara gelince yarısı kesilmesin diye birimsiz değer de
+    karsilastir.style.setProperty('--kn', kaydirici.value);
+  };
   kaydirici.addEventListener('input', guncelle);
   guncelle();
   // Açılış: kadife perde iki yana açılır, sahne ışığı süzülür (yalnız yeni sihirde, tam animasyonda)

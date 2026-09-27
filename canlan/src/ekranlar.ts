@@ -110,6 +110,12 @@ export function acilisEkrani(app: Uygulama): Ekran {
   new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca)).toDataURL()));
   c.susGoster();
   c.baslat();
+  // Mino vitrinin köşesinde: balığa bakar, dokununca sevinir (kendisine dokunulunca da tepki verir)
+  const yuva = yoldasYuvasi('cc-acilis-mino');
+  void yuva.hazir.then((y) => {
+    y?.dokunulur(true);
+    y?.mino.bak(0.6);
+  });
   let sonDokunus = 0;
   vitrin.addEventListener('pointerdown', () => {
     const simdi = performance.now();
@@ -117,6 +123,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     sonDokunus = simdi;
     c.dokun();
     void resimSesi(r.id);
+    yuva.yap((y) => y.sevin());
   });
 
   const oyna = h('button.dugme.cc-oyna', { type: 'button', 'aria-label': 'Oyna' }, svg(IKON.oyna), h('span', {}, 'Oyna'));
@@ -129,11 +136,17 @@ export function acilisEkrani(app: Uygulama): Ekran {
     {},
     h('div.ust-cubuk', {}, h('div'), sesDugmesi()),
     logo(),
-    vitrin,
+    h('div.cc-acilis-sahne', {}, vitrin, yuva.el),
     h('div.cc-acilis-alt', {}, oyna),
   );
   el.addEventListener('pointerdown', () => void konus(S.hosgeldin), { once: true });
-  return { el, kapat: () => c.durdur() };
+  return {
+    el,
+    kapat: () => {
+      c.durdur();
+      yuva.kapat();
+    },
+  };
 }
 
 // ---------------------------------------------------------------- Resim seçimi
