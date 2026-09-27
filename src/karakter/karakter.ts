@@ -124,6 +124,11 @@ export class Karakter {
   private konusma = false;
   private sonrakiKirp = 1.5;
   private kirp = -1;
+  /**
+   * Bölüme özel ek hareket (ör. banyo: silkelenme, uluma, titreme): her karede hesaplanan pozu değiştirebilir.
+   * t: karakterin saati (sn). null: yok.
+   */
+  ekHareket: ((p: Poz, t: number) => void) | null = null;
 
   /** yedek: iskelet yoksa (ya da yüklenene kadar) gösterilecek tek görselin adresi */
   constructor(ad: string, yedek: HTMLElement) {
@@ -243,6 +248,7 @@ export class Karakter {
         hr.coz();
       }
     }
+    this.ekHareket?.(p, t);
     // konuşurken ağız açılıp kapanır
     if (this.konusma) p.agizAcik = Math.max(p.agizAcik, S(t * 17) > 0 ? 1 : 0.2);
     this.ciz(p);

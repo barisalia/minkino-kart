@@ -33,6 +33,8 @@ export const KISILIK: Record<string, Kisilik> = {
   // inek iskeleti: kollar gövdenin önünde (katman sırası JSON'da), kuyruk -40 … +15
   inek: { yuruyus: 'salin', adim: 620, gelis: 1900, huy: 'gevis', dans: 'don', agiz: [0.51, 0.43], hayir: 6, kol: [-10, 60], sinir: { kafa: 6, kulak: 10, bacak: 5, kuyruk: [-40, 15] } },
   kopek: { yuruyus: 'tiris', adim: 220, gelis: 1100, huy: 'kuyruk', dans: 'kovala', agiz: [0.5, 0.5], hayir: 9, kol: [-5, 60] },
+  // Kino (ana karakter, köpek yavrusu): coşkulu, hoplayarak yürür, kuyruğu pervane, kulakları uçuşur (sarkık kulak: ±25)
+  kino: { yuruyus: 'hop', adim: 300, gelis: 1100, huy: 'kuyruk', dans: 'kovala', agiz: [0.46, 0.49], hayir: 9, kol: [-5, 60], sinir: { kulak: 25 } },
   maymun: { yuruyus: 'takla', adim: 500, gelis: 1400, huy: 'kasin', dans: 'salto', agiz: [0.5, 0.4], hayir: 9 },
   kus: { yuruyus: 'uc', adim: 180, gelis: 1500, huy: 'gaga', dans: 'kanat', agiz: [0.86, 0.36], hayir: 12 },
 };

@@ -196,6 +196,8 @@ export class Mino {
     this.agizZorla = acik;
   }
   private agizZorla = false;
+  /** Başka bir karakter konuşurken (ör. Kino) Mino'nun ağzı oynamasın */
+  agizSus = false;
 
   kapat() {
     cancelAnimationFrame(this.raf);
@@ -415,7 +417,7 @@ export class Mino {
     }
 
     // Konuşurken ağız sesin gücüyle açılır
-    if ((konusuyorMu() || this.agizZorla) && !uyku) {
+    if (((konusuyorMu() && !this.agizSus) || this.agizZorla) && !uyku) {
       const guc = konusmaGucu();
       agizHedef = guc > 0.01 ? Math.min(1, 0.12 + guc * 1.3) : 0.1 + Math.abs(sin(t * 16)) * 0.6; // cihaz sesi: tahmini
       mutlu = 0;
