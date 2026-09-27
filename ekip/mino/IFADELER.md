@@ -54,3 +54,20 @@ Bağlama ve z-sırası:
 - SVG sırası (alttan üste): `goz-kasinti, burun-kasinti, agiz-kasinti, yanak-burun-tut, goz-burun-tut, kol-sol-burun, kol-sag-burun, pati-burun, kafa-hapsu, goz-hapsu, agiz-hapsu, puf-hapsu`.
 - Önizleme: `mino-burun-ifadeleri.png` (normal | burun kaşıntısı | burun tut | hapşu; üstte açık, altta koyu zemin).
 - Varsayılan çizim değişmedi: ekler gizliyken önceki SVG ile piksel farkı 0.
+
+## Dudak senkronu ağızları (tam vektör, gizli, kafaya bağlı)
+
+Kod (`src/audio/dudak-mantik.ts`, `src/mino/mino.ts`) altısı birlikte varsa bunları kullanır. Konuşurken kod ağzı (`m-agiz`) gizlenir, o anki şekil gösterilir. Kontur #030102, 12 px (mevcut ağızlarla aynı). Burun altı çizgisi (1024,958→988) şekillerin içinde.
+
+| Katman | Ses | Not |
+|---|---|---|
+| `agiz-kapali` | M, B, P | Sıkılmış, hafif kavisli düz dudak. **Değişti:** önceki `agiz-kapali` (kapalı ω gülümseme) artık `agiz-gulumse`. |
+| `agiz-az` | kısa, kısık heceler | ω'nın altında küçük açıklık |
+| `agiz-orta` | A | Varsayılan ağzın daha açık hâli (ω + U), dil görünür |
+| `agiz-yuvarlak` | O, U | Yuvarlak açık ağız (önceki `agiz-acik` ile aynı biçim) |
+| `agiz-dis` | İ, E, S | Geniş yayvan ağız, üst diş sırası |
+| `agiz-gulumse` | susma / dinlenme | Kapalı ω gülümseme |
+
+- SVG sırası: `agiz-kapali` grubunun hemen arkasında `agiz-az, agiz-orta, agiz-yuvarlak, agiz-dis, agiz-gulumse`.
+- Yeni katmanlar `scripts/mino/rig.mjs` yeniden çalıştırılınca iskelete girer.
+- Önizleme: `ekip/film/dudak-agizlari.png` (üst satır Mino, alt satır Kino; varsayılan ağız gizli, gerçek SVG'den).

@@ -22,3 +22,19 @@ Ayrıca:
 - Dönme noktaları (kino-final.json): gözler 965,758 · ağızlar 915,990 · köpük 955,230 (hepsi kafaya bağlı; kafa 975,1180 etrafında döner).
 - Önizleme: `kino-ifadeler.png` (üstte açık, altta koyu zemin).
 - Not: Barış başka Kino tasarımı seçerse ekler yeniden çizilir; katman adları aynı kalır.
+
+## Dudak senkronu ağızları (vektör, gizli, kafaya bağlı)
+
+Kod (`src/audio/dudak-mantik.ts`) altısı birlikte varsa bunları kullanır. Konuşurken `agiz` ve `dil` gizlenir, o anki şekil gösterilir. Kontur #3A1210 (ω 18 px, açık ağız 16 px, az 14 px); ağız içi #3A1210, dil #EC7683, dişler beyaz.
+
+| Katman | Ses | Not |
+|---|---|---|
+| `agiz-kapali` | M, B, P | Sıkılmış, hafif kavisli düz dudak. **Değişti:** önceki `agiz-kapali` (görsel) bu vektörle değiştirildi. |
+| `agiz-az` | kısa, kısık heceler | ω'nın altında küçük açıklık |
+| `agiz-orta` | A | ω + derin açık ağız, dil görünür |
+| `agiz-yuvarlak` | O, U | Yuvarlak "o" ağız (`agiz-uluma` biçiminin 10 px yukarısı) |
+| `agiz-dis` | İ, E, S | Geniş ağız, dişler görünür |
+| `agiz-gulumse` | susma / dinlenme | `agiz-keyif` ile aynı rahat ω |
+
+- kino-final.json güncellendi: altısı `sira`da `agiz-kapali`nın arkasında, `gizli`de, `bagli` → `kafa`. Dönme noktası 915,990 (`agiz-kapali` eski noktasında, 910,930).
+- Önizleme: `ekip/film/dudak-agizlari.png` (üst satır Mino, alt satır Kino).
