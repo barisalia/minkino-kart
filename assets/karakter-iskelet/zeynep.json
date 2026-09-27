@@ -1,0 +1,116 @@
+{
+  "ad": "zeynep",
+  "boyut": 2048,
+  "sira": [
+    "kol-sol",
+    "kol-sag",
+    "bacak-sol",
+    "bacak-sag",
+    "govde",
+    "kafa",
+    "sac-orgu-sol",
+    "sac-orgu-sag",
+    "kas",
+    "goz-sol",
+    "goz-sag",
+    "agiz",
+    "goz-kapali",
+    "agiz-acik",
+    "agiz-gulus"
+  ],
+  "gizli": [
+    "goz-kapali",
+    "agiz-acik",
+    "agiz-gulus"
+  ],
+  "bagli": {
+    "kas": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "agiz": "kafa",
+    "sac-orgu-sol": "kafa",
+    "sac-orgu-sag": "kafa",
+    "goz-kapali": "kafa",
+    "agiz-acik": "kafa",
+    "agiz-gulus": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1030,
+      880
+    ],
+    "kas": [
+      861,
+      486
+    ],
+    "goz-sol": [
+      879,
+      627
+    ],
+    "goz-sag": [
+      1170,
+      620
+    ],
+    "agiz": [
+      1030,
+      800
+    ],
+    "sac-orgu-sol": [
+      692,
+      626
+    ],
+    "sac-orgu-sag": [
+      1383,
+      626
+    ],
+    "kol-sol": [
+      836,
+      1030
+    ],
+    "kol-sag": [
+      1216,
+      1042
+    ],
+    "bacak-sol": [
+      888,
+      1500
+    ],
+    "bacak-sag": [
+      1185,
+      1490
+    ],
+    "govde": [
+      1040,
+      1880
+    ]
+  },
+  "ifadeler": {
+    "saskin": {
+      "goster": [
+        "agiz-acik"
+      ],
+      "gizle": [
+        "agiz"
+      ]
+    },
+    "mutlu": {
+      "goster": [
+        "agiz-gulus"
+      ],
+      "gizle": [
+        "agiz"
+      ]
+    },
+    "dilek": {
+      "goster": [
+        "goz-kapali",
+        "agiz-gulus"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "agiz"
+      ]
+    }
+  }
+}

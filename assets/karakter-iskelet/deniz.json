@@ -1,0 +1,104 @@
+{
+  "ad": "deniz",
+  "boyut": 2048,
+  "sira": [
+    "kol-sol",
+    "kol-sag",
+    "bacak-sol",
+    "bacak-sag",
+    "govde",
+    "kafa",
+    "kas",
+    "goz-sol",
+    "goz-sag",
+    "agiz",
+    "goz-kapali",
+    "agiz-acik",
+    "agiz-gulus"
+  ],
+  "gizli": [
+    "goz-kapali",
+    "agiz-acik",
+    "agiz-gulus"
+  ],
+  "bagli": {
+    "kas": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "agiz": "kafa",
+    "goz-kapali": "kafa",
+    "agiz-acik": "kafa",
+    "agiz-gulus": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1010,
+      975
+    ],
+    "kas": [
+      1015,
+      556
+    ],
+    "goz-sol": [
+      857,
+      700
+    ],
+    "goz-sag": [
+      1170,
+      700
+    ],
+    "agiz": [
+      1012,
+      865
+    ],
+    "kol-sol": [
+      775,
+      1138
+    ],
+    "kol-sag": [
+      1272,
+      1148
+    ],
+    "bacak-sol": [
+      862,
+      1712
+    ],
+    "bacak-sag": [
+      1170,
+      1715
+    ],
+    "govde": [
+      1018,
+      1880
+    ]
+  },
+  "ifadeler": {
+    "saskin": {
+      "goster": [
+        "agiz-acik"
+      ],
+      "gizle": [
+        "agiz"
+      ]
+    },
+    "mutlu": {
+      "goster": [
+        "agiz-gulus"
+      ],
+      "gizle": [
+        "agiz"
+      ]
+    },
+    "dilek": {
+      "goster": [
+        "goz-kapali",
+        "agiz-gulus"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "agiz"
+      ]
+    }
+  }
+}

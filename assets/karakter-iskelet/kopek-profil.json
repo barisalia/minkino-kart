@@ -1,0 +1,78 @@
+{
+  "ad": "kopek-profil",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "kulak-arka",
+    "bacak-arka",
+    "kol-arka",
+    "bacak-on",
+    "govde",
+    "kol-on",
+    "kafa",
+    "kulak-on",
+    "goz",
+    "agiz",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali"
+  ],
+  "bagli": {
+    "kulak-on": "kafa",
+    "kulak-arka": "kafa",
+    "goz": "kafa",
+    "agiz": "kafa",
+    "goz-kapali": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1030,
+      1150
+    ],
+    "kulak-on": [
+      1000,
+      430
+    ],
+    "kulak-arka": [
+      1190,
+      470
+    ],
+    "goz": [
+      1227,
+      783
+    ],
+    "agiz": [
+      1360,
+      990
+    ],
+    "goz-kapali": [
+      1229,
+      800
+    ],
+    "kol-on": [
+      985,
+      1196
+    ],
+    "kol-arka": [
+      1225,
+      1215
+    ],
+    "bacak-on": [
+      950,
+      1570
+    ],
+    "bacak-arka": [
+      1140,
+      1580
+    ],
+    "kuyruk": [
+      808,
+      1484
+    ],
+    "govde": [
+      1030,
+      1790
+    ]
+  }
+}
