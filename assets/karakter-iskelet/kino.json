@@ -17,13 +17,43 @@
     "goz-kapali",
     "agiz-acik",
     "agiz-kapali",
-    "dil-disarida"
+    "dil-disarida",
+    "goz-heyecan",
+    "goz-sicak",
+    "goz-titreme",
+    "goz-keyif",
+    "goz-uluma",
+    "goz-uzgun",
+    "goz-saskin",
+    "agiz-heyecan",
+    "agiz-sicak",
+    "agiz-titreme",
+    "agiz-keyif",
+    "agiz-uluma",
+    "agiz-uzgun",
+    "agiz-saskin",
+    "kopuk-sac"
   ],
   "gizli": [
     "goz-kapali",
     "agiz-acik",
     "agiz-kapali",
-    "dil-disarida"
+    "dil-disarida",
+    "goz-heyecan",
+    "goz-sicak",
+    "goz-titreme",
+    "goz-keyif",
+    "goz-uluma",
+    "goz-uzgun",
+    "goz-saskin",
+    "agiz-heyecan",
+    "agiz-sicak",
+    "agiz-titreme",
+    "agiz-keyif",
+    "agiz-uluma",
+    "agiz-uzgun",
+    "agiz-saskin",
+    "kopuk-sac"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -35,7 +65,22 @@
     "goz-kapali": "kafa",
     "agiz-acik": "kafa",
     "agiz-kapali": "kafa",
-    "dil-disarida": "kafa"
+    "dil-disarida": "kafa",
+    "goz-heyecan": "kafa",
+    "goz-sicak": "kafa",
+    "goz-titreme": "kafa",
+    "goz-keyif": "kafa",
+    "goz-uluma": "kafa",
+    "goz-uzgun": "kafa",
+    "goz-saskin": "kafa",
+    "agiz-heyecan": "kafa",
+    "agiz-sicak": "kafa",
+    "agiz-titreme": "kafa",
+    "agiz-keyif": "kafa",
+    "agiz-uluma": "kafa",
+    "agiz-uzgun": "kafa",
+    "agiz-saskin": "kafa",
+    "kopuk-sac": "kafa"
   },
   "donme": {
     "kafa": [
@@ -101,6 +146,66 @@
     "govde": [
       1040,
       1880
+    ],
+    "goz-heyecan": [
+      965,
+      758
+    ],
+    "goz-sicak": [
+      965,
+      758
+    ],
+    "goz-titreme": [
+      965,
+      758
+    ],
+    "goz-keyif": [
+      965,
+      758
+    ],
+    "goz-uluma": [
+      965,
+      758
+    ],
+    "goz-uzgun": [
+      965,
+      758
+    ],
+    "goz-saskin": [
+      965,
+      758
+    ],
+    "agiz-heyecan": [
+      915,
+      990
+    ],
+    "agiz-sicak": [
+      915,
+      990
+    ],
+    "agiz-titreme": [
+      915,
+      990
+    ],
+    "agiz-keyif": [
+      915,
+      990
+    ],
+    "agiz-uluma": [
+      915,
+      990
+    ],
+    "agiz-uzgun": [
+      915,
+      990
+    ],
+    "agiz-saskin": [
+      915,
+      990
+    ],
+    "kopuk-sac": [
+      955,
+      230
     ]
   }
 }
