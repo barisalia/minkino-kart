@@ -10,11 +10,17 @@ import { eserKaydet, eserler, eserSil, onayVarMi, onayVer, type Eser } from './d
 import { kolajYap, paylas } from './kolaj';
 import { SihirHatasi, sihirYap } from './sihir';
 import { Tuval } from './tuval';
+import { fircaParilti } from './parilti';
+import { yoldasYuvasi } from '../../src/mino/cizim-yoldas-yuva';
+import { azHareket } from '../../src/ui/hareket';
 
 const S = sanatci as unknown as {
   hosgeldin: string; ciz: string; ne_cizdin: string; sihir: string[]; bekle: string[]; bitti: string[];
   harika: string; kaydedildi: string; hata: string; bos: string; galeri: string; konular: Record<string, string>;
+  yorgun: string; cerceve: string;
 };
+/** Tam animasyon (test modunda ve az harekette sade) */
+const tamHareket = () => !TEST_MODU && !azHareket();
 const rastgele = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 
 /**
@@ -112,6 +118,30 @@ export function cizEkrani(app: Uygulama, p?: { devam?: boolean }): Ekran {
   if (sonCizim && sonCizim !== tuval) sonCizim.kapat();
   sonCizim = tuval;
   const kagit = h('div.ms-kagit', {}, tuval.el);
+  // Mino kâğıdın köşesinde izler; fırça yaklaşınca yol verir (aşağı kayar), sonra geri gelir
+  const yuva = yoldasYuvasi('ms-ciz-mino');
+  const kagitKutu = h('div.ms-kagit-kutu', {}, kagit, yuva.el);
+  let minoKutu: DOMRect | null = null;
+  let donus = 0;
+  const kac = (x: number, y: number) => {
+    if (!yuva.el.classList.contains('kac')) minoKutu = yuva.el.getBoundingClientRect();
+    const k = minoKutu;
+    if (!k || !k.width) return;
+    if (x > k.left - 36 && x < k.right + 36 && y > k.top - 36 && y < k.bottom + 36) {
+      if (!yuva.el.classList.contains('kac')) yuva.yap((m) => m.sasir());
+      yuva.el.classList.add('kac');
+      clearTimeout(donus);
+      donus = window.setTimeout(() => yuva.el.classList.remove('kac'), 1800);
+    }
+  };
+  const parilti = fircaParilti(kagit, tuval.el, {
+    renk: () => tuval.renk,
+    izle: (x, y) => {
+      yuva.yap((m) => m.izle(x));
+      kac(x, y);
+    },
+  });
+  let cizgiSayisi = 0;
 
   const renkler = h('div.ms-renkler', { role: 'radiogroup', 'aria-label': 'Renkler' });
   const secRenk = (b: HTMLElement, r: string) => {
@@ -153,6 +183,8 @@ export function cizEkrani(app: Uygulama, p?: { devam?: boolean }): Ekran {
   tuval.onDegisim = () => {
     bitti.disabled = tuval.bosMu();
     bitti.classList.toggle('hazir', !tuval.bosMu());
+    // her üç çizgide bir Mino başını sallar
+    if (!tuval.bosMu() && ++cizgiSayisi % 3 === 0) yuva.yap((m) => m.onayla());
   };
   tuval.onDegisim();
   bitti.addEventListener('click', () => {
@@ -161,6 +193,7 @@ export function cizEkrani(app: Uygulama, p?: { devam?: boolean }): Ekran {
       return;
     }
     efekt.secim();
+    yuva.yap((m) => m.sevin());
     app.git('konu');
   });
 
@@ -173,11 +206,18 @@ export function cizEkrani(app: Uygulama, p?: { devam?: boolean }): Ekran {
       h('div.ust-grup', {}, yuvarlakDugme(IKON.ev, 'Ana ekran', () => app.git('acilis')), yuvarlakDugme(IKON.geriAl, 'Geri al', () => tuval.geriAl(), 'kucuk'), yuvarlakDugme(IKON.sil, 'Temizle', () => tuval.temizle(), 'kucuk')),
       bitti,
     ),
-    kagit,
+    kagitKutu,
     h('div.ms-palet', {}, renkler, kalinliklar),
   );
   void konus(S.ciz);
-  return { el };
+  return {
+    el,
+    kapat() {
+      clearTimeout(donus);
+      parilti.kapat();
+      yuva.kapat();
+    },
+  };
 }
 
 // ---------------------------------------------------------------- Ne çizdin?
@@ -254,16 +294,76 @@ async function ebeveynOnayi(app: Uygulama): Promise<boolean> {
 // ---------------------------------------------------------------- Sihir
 export function sihirEkrani(app: Uygulama, p: { konu: string }): Ekran {
   const cerceve = h('div.ms-sihir-cerceve');
+  // çerçevenin çevresinde dönen yıldızlar (parıltı döngüsü)
+  const yorunge = h('div.ms-yorunge', { 'aria-hidden': 'true' }, h('i'), h('i'), h('i'), h('i'), h('i'));
+  const cerceveKutu = h('div.ms-cerceve-kutu', {}, h('div.ms-hale', { 'aria-hidden': 'true' }), cerceve, yorunge);
+  // Mino sihirli değnekle büyü yapar; değnekten çerçeveye yıldız tozu akar
+  const yuva = yoldasYuvasi('ms-sihir-mino');
+  const akis = h('div.ms-akis', { 'aria-hidden': 'true' });
+  const sahne = h('div.ms-sihir-sahne', {}, cerceveKutu, h('div.ms-asa', {}, svg(IKON.sihir)), yuva.el, akis);
   const yazi = h('div.ms-sihir-yazi', { 'aria-live': 'polite' }, rastgele(S.sihir));
-  const el = h('div.ms-sihir', {}, h('div.ust-cubuk', {}, yuvarlakDugme(IKON.ev, 'Ana ekran', () => app.git('acilis')), h('div')), h('div.ms-sihir-sahne', {}, cerceve, h('div.ms-asa', {}, svg(IKON.sihir))), yazi);
+  const el = h('div.ms-sihir', {}, h('div.ust-cubuk', {}, yuvarlakDugme(IKON.ev, 'Ana ekran', () => app.git('acilis')), h('div')), sahne, yazi);
   const iptal = new AbortController();
   let kapandi = false;
+  let tozZaman = 0;
+  let cinZaman = 0;
+
+  // yıldız tozu akışı (havuz: çöp üretmez; yalnız transform / opacity)
+  function akisBaslat(y: { asaUcu(): { x: number; y: number } | null }) {
+    if (!tamHareket()) return;
+    const havuz: HTMLElement[] = [];
+    for (let i = 0; i < 24; i++) {
+      const t = h('i');
+      akis.append(t);
+      havuz.push(t);
+    }
+    let sira = 0;
+    const renk = ['#FFD84D', '#FFFFFF', '#C9A6FF', '#FF9BD0', '#8FE3FF'];
+    tozZaman = window.setInterval(() => {
+      const uc = y.asaUcu();
+      if (!uc) return;
+      const a = akis.getBoundingClientRect();
+      const c = cerceve.getBoundingClientRect();
+      const x0 = uc.x - a.left;
+      const y0 = uc.y - a.top;
+      const x1 = c.left - a.left + c.width * (0.25 + Math.random() * 0.5);
+      const y1 = c.top - a.top + c.height * (0.25 + Math.random() * 0.5);
+      const t = havuz[sira++ % havuz.length];
+      t.style.background = renk[sira % renk.length];
+      const ortaX = (x0 + x1) / 2 + (Math.random() - 0.5) * 80;
+      const ortaY = Math.min(y0, y1) - 40 - Math.random() * 60;
+      const b = 0.8 + Math.random() * 1.1;
+      t.getAnimations().forEach((x) => x.cancel());
+      t.animate(
+        [
+          { transform: `translate(${x0}px, ${y0}px) scale(0.2) rotate(0deg)`, opacity: 0 },
+          { transform: `translate(${x0}px, ${y0}px) scale(${b}) rotate(40deg)`, opacity: 1, offset: 0.1 },
+          { transform: `translate(${ortaX}px, ${ortaY}px) scale(${b}) rotate(160deg)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(${x1}px, ${y1}px) scale(0.1) rotate(320deg)`, opacity: 0 },
+        ],
+        { duration: 1000, easing: 'cubic-bezier(0.4, 0, 0.3, 1)' },
+      );
+    }, 75);
+    // arada bir tatlı çan sesi (sık değil)
+    cinZaman = window.setInterval(() => efekt.nota(4 + Math.floor(Math.random() * 5)), 3200);
+  }
+  function akisDurdur() {
+    clearInterval(tozZaman);
+    clearInterval(cinZaman);
+  }
+  void yuva.hazir.then((y) => {
+    if (!y || kapandi || el.classList.contains('hata')) return;
+    sahne.classList.add('mino-hazir');
+    y.buyu(true);
+    akisBaslat(y);
+  });
 
   void (async () => {
     const tuval = sonCizim;
     if (!tuval) return app.git('ciz');
     const cizim = await tuval.blob();
-    cerceve.append(h('img.ms-sihir-cizim', { src: URL.createObjectURL(cizim), alt: 'Çizimin' }));
+    const cizimUrl = URL.createObjectURL(cizim);
+    cerceve.append(h('img.ms-sihir-cizim', { src: cizimUrl, alt: 'Çizimin' }));
     efekt.kilitAcildi();
     void konus(rastgele(S.sihir));
     const bekleme = window.setInterval(() => {
@@ -279,18 +379,29 @@ export function sihirEkrani(app: Uygulama, p: { konu: string }): Ekran {
       app.git('sonuc', { eser, yeni: true });
     } catch (e) {
       clearInterval(bekleme);
+      akisDurdur();
       if (kapandi) return;
       const kod = e instanceof SihirHatasi ? e.kod : 'sunucu';
+      // Nazik son: sihir olmasa da çocuğun kendi resmi "sihirli çerçeve"de parlar; hiçbir yerde takılmaz
       el.classList.add('hata');
-      yazi.textContent = kod === 'kurulum' ? 'Sihirli kalem hazırlanıyor' : S.hata;
-      void konus(S.hata);
-      const tekrar = h('button.dugme', { type: 'button', style: '--r:#FF8A2B' }, 'Tekrar dene');
+      cerceveKutu.classList.add('sihirli');
+      cerceveKutu.append(h('div.ms-kose-yildiz', { 'aria-hidden': 'true' }, h('i'), h('i'), h('i'), h('i')));
+      yuva.yap((y) => y.nazik());
+      const ilk = kod === 'yogun' ? S.yorgun : S.hata;
+      yazi.textContent = kod === 'kurulum' ? 'Sihirli kalem hazırlanıyor' : ilk;
+      yazi.append(h('small', {}, S.cerceve));
+      void konus([ilk, S.cerceve]);
+      const tekrar = h('button.dugme', { type: 'button', style: '--r:#FF8A2B' }, svg(IKON.tekrar), h('span', {}, 'Tekrar dene'));
       tekrar.addEventListener('click', () => app.git('sihir', p));
+      const yeni = h('button.dugme', { type: 'button', style: '--r:#5DBE3F', 'aria-label': 'Yeni resim' }, svg(IKON.kalem), h('span', {}, 'Yeni resim'));
+      yeni.addEventListener('click', () => app.git('ciz'));
       const not =
         kod === 'kurulum'
           ? h('p.ms-ebeveyn-not', {}, 'Ebeveynler için: Sihir sunucusu henüz kurulmadı (ayar.json → sunucu). Kurulum tamamlanınca bu ekran çalışacak.')
-          : h('p.ms-ebeveyn-not', {}, e instanceof Error ? e.message : '');
-      el.append(h('div.ms-hata-kutu', {}, tekrar, not));
+          : kod === 'yogun'
+            ? h('p.ms-ebeveyn-not', {}, 'Ebeveynler için: Bugünkü ücretsiz sihir hakkı doldu ya da sunucu yoğun. Biraz sonra yeniden deneyebilirsiniz.')
+            : h('p.ms-ebeveyn-not', {}, e instanceof Error ? e.message : '');
+      el.append(h('div.ms-hata-kutu', {}, h('div.ms-hata-dugmeler', {}, tekrar, yeni), not));
     }
   })();
 
@@ -299,6 +410,8 @@ export function sihirEkrani(app: Uygulama, p: { konu: string }): Ekran {
     kapat() {
       kapandi = true;
       iptal.abort();
+      akisDurdur();
+      yuva.kapat();
     },
   };
 }
@@ -319,6 +432,12 @@ export function sonucEkrani(app: Uygulama, p: { eser: Eser; yeni?: boolean }): E
   const guncelle = () => karsilastir.style.setProperty('--k', `${kaydirici.value}%`);
   kaydirici.addEventListener('input', guncelle);
   guncelle();
+  // Açılış: kadife perde iki yana açılır, sahne ışığı süzülür (yalnız yeni sihirde, tam animasyonda)
+  const perdeli = !!p.yeni && tamHareket();
+  const perde = h('div.ms-perde', { 'aria-hidden': 'true' }, h('i.ms-perde-sol'), h('i.ms-perde-sag'), h('b.ms-spot'));
+  if (perdeli) karsilastir.insertBefore(perde, kaydirici);
+  const yuva = yoldasYuvasi('ms-sonuc-mino');
+  const sahne = h('div.ms-sonuc-sahne', {}, karsilastir, yuva.el);
 
   const paylasD = h('button.dugme', { type: 'button', style: '--r:#3E9DF2' }, svg(IKON.paylas), h('span', {}, 'Paylaş'));
   paylasD.addEventListener('click', async () => {
@@ -337,14 +456,23 @@ export function sonucEkrani(app: Uygulama, p: { eser: Eser; yeni?: boolean }): E
     'div.ms-sonuc',
     {},
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.ev, 'Ana ekran', () => app.git('acilis')), h('div.ust-grup', {}, yuvarlakDugme(IKON.resim, 'Galerim', () => app.git('galeri'), 'kucuk'), yeni)),
-    karsilastir,
+    sahne,
     h('div.ms-sonuc-dugmeler', {}, paylasD, bastir),
   );
 
+  let kapandi = false;
   if (p.yeni) {
-    // Açılış gösterisi: perde soldan sağa kayar, konfeti
+    // Açılış gösterisi: kadife perde açılır, çocuğun çizimi görünür; sonra sihir soldan sağa süpürür, konfeti
     void (async () => {
       await bekle(sure(300));
+      if (perdeli) {
+        karsilastir.classList.add('perde-acik');
+        efekt.ucus();
+        yuva.yap((y) => y.sasir());
+        await bekle(1150);
+        perde.remove();
+      }
+      if (kapandi) return;
       const r = karsilastir.getBoundingClientRect();
       if (!TEST_MODU) {
         const bas = performance.now();
@@ -352,16 +480,20 @@ export function sonucEkrani(app: Uygulama, p: { eser: Eser; yeni?: boolean }): E
           const e = Math.min(1, (t - bas) / 1400);
           kaydirici.value = String(100 - (1 - Math.pow(1 - e, 3)) * 100);
           guncelle();
-          if (e < 1) requestAnimationFrame(adim);
-          else {
+          if (e < 1 && !kapandi) requestAnimationFrame(adim);
+          else if (!kapandi) {
+            karsilastir.classList.remove('supur');
             konfetiPatlat(app.kok, r.left + r.width / 2, r.top + r.height / 2, 140, 1.3);
             efekt.konfeti();
+            yuva.yap((y) => y.dans());
           }
         };
+        karsilastir.classList.add('supur');
         requestAnimationFrame(adim);
       } else {
         kaydirici.value = '0';
         guncelle();
+        yuva.yap((y) => y.sevin());
       }
       efekt.ucus();
       await konus([rastgele(S.bitti), S.kaydedildi]);
@@ -370,7 +502,13 @@ export function sonucEkrani(app: Uygulama, p: { eser: Eser; yeni?: boolean }): E
       }
     })();
   }
-  return { el };
+  return {
+    el,
+    kapat() {
+      kapandi = true;
+      yuva.kapat();
+    },
+  };
 }
 
 function kolajPenceresi(b: Blob): HTMLElement {

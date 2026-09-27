@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
 
@@ -220,6 +221,107 @@ test('Çiz Canlansın: eksik parça — tekerleksiz araba "Tamamla" ile tamamlan
   await page.getByRole('button', { name: 'Bitti' }).click();
   await expect(page.locator('.cc-sonuc')).toHaveAttribute('data-eksik', '');
   expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBe(3);
+  expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: Müzem — canlanan resim duvara asılır, dokununca yine canlanır', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  const p = info.project.name;
+  // boş müze: soru işaretli çerçeveler + "Hadi çizelim"
+  await page.goto('./canlan/?test=1&yas=5&ekran=muze');
+  await expect(page.locator('.cc-muze-cerceve.bos')).toHaveCount(3);
+  await expect(page.getByRole('button', { name: 'Hadi çizelim' })).toBeVisible();
+  await expect(page.locator('.cc-muze-mino .mino')).toBeAttached();
+  await page.screenshot({ path: `tests/screens/${p}-41-canlan-muze-bos.png` });
+
+  // bir resim çiz, boya, canlandır: Mino çizimde ve sonuçta eşlik eder
+  await page.goto('./canlan/?test=1&yas=5&ekran=ciz&resim=araba&mod=kopya');
+  await expect(page.locator('.cc-ciz-mino .mino')).toBeAttached();
+  await ciz(page, 'araba', { titreme: 0.006 });
+  await page.getByRole('button', { name: 'Bitti' }).click();
+  await expect(page.locator('.cc-sonuc-mino .mino')).toBeAttached();
+  await sihirliBoyaVeCanlandir(page);
+  const muzem = page.getByRole('button', { name: 'Müzem' });
+  await expect(muzem).toBeVisible();
+  await muzem.click();
+
+  // müze duvarı: çerçeveli, boyalı, süslü resim
+  const cerceve = page.locator('.cc-muze-cerceve[data-resim="araba"]');
+  await expect(cerceve).toHaveCount(1);
+  await expect(cerceve.locator('.cc-canli path').first()).toBeAttached();
+  await expect(cerceve.locator('.cc-boya-resim').first()).toBeAttached();
+  await expect(cerceve.locator('.cc-plaka')).toContainText('Arabam');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `tests/screens/${p}-42-canlan-muze.png` });
+
+  // dokununca büyür ve yine canlanır; resme dokununca tepki verir
+  await cerceve.click();
+  const perde = page.locator('.cc-muze-perde');
+  await expect(perde).toBeVisible();
+  await expect(perde.locator('.cc-canli.canlaniyor')).toBeAttached();
+  await expect(perde.locator('.cc-sahne.canli')).toBeAttached();
+  // önce çizgiler parlayarak yeniden çizilir, sonra hareket açılır
+  await page.waitForTimeout(1400);
+  const t1 = await perde.locator('.cc-canli .cc-tum').getAttribute('transform');
+  await page.waitForTimeout(200);
+  expect(await perde.locator('.cc-canli .cc-tum').getAttribute('transform')).not.toEqual(t1);
+  const s = (await perde.locator('.cc-canli').boundingBox())!;
+  await page.mouse.click(s.x + s.width / 2, s.y + s.height / 2);
+  await expect.poll(async () => (await perde.locator('.cc-tepki').getAttribute('transform')) ?? '').not.toBe('');
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `tests/screens/${p}-43-canlan-muze-yakin.png` });
+  await page.getByRole('button', { name: 'Kapat' }).click();
+  await expect(perde).toHaveCount(0);
+
+  // listede Müzem kartı resim sayısını gösterir; oradan da girilir
+  await page.getByRole('button', { name: 'Geri' }).click();
+  await expect(page.locator('.cc-muze-karti .cc-muze-sayi')).toHaveText('1');
+  await page.locator('.cc-muze-karti').click();
+  await expect(page.locator('.cc-muze-cerceve')).toHaveCount(1);
+  expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: cila videosu (gerçek hız)', async ({ browser }, info) => {
+  test.skip(!process.env.CILA_VIDEO || info.project.name !== 'iphone', 'video yalnız CILA_VIDEO=1 ile (telefon)');
+  test.setTimeout(240_000);
+  const vp = info.project.use.viewport ?? { width: 390, height: 844 };
+  const dir = `test-results/video-canlan`;
+  const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: 'tr-TR', baseURL: info.project.use.baseURL, recordVideo: { dir, size: vp } });
+  const page = await ctx.newPage();
+  const hatalar = hataTopla(page);
+  // liste: kartlar sırayla düşer, Müzem kartı başta
+  await page.goto('./canlan/?onizleme=1&yas=5&ekran=liste');
+  await page.waitForTimeout(2200);
+  await page.locator('[data-resim="balik"]').click({ force: true });
+  await expect(page.locator('.cc-model svg')).toBeVisible();
+  await page.waitForTimeout(1200);
+  // çizerken fırça ucunda parıltı, Mino izler
+  await ciz(page, 'balik', { titreme: 0.008 });
+  await page.waitForTimeout(700);
+  await page.getByRole('button', { name: 'Bitti' }).click({ force: true });
+  // yıldızlar tek tek uçar
+  await expect(page.locator('.cc-boya-cubugu')).toBeVisible({ timeout: 15000 });
+  await page.waitForTimeout(600);
+  await sahneyeDokun(page, 0.45, 0.55);
+  await page.waitForTimeout(500);
+  await page.locator('.cc-boya-palet [data-renk="#3E9DF2"]').click({ force: true });
+  await sahneyeDokun(page, 0.19, 0.5);
+  await page.waitForTimeout(700);
+  // sinematik canlanma
+  await page.getByRole('button', { name: 'Canlandır' }).click({ force: true });
+  await page.waitForTimeout(4200);
+  await sahneyeDokun(page, 0.5, 0.5);
+  await page.waitForTimeout(1500);
+  // Müzem: duvara asılır, dokununca yine canlanır
+  await page.getByRole('button', { name: 'Müzem' }).click({ force: true });
+  await page.waitForTimeout(2200);
+  await page.locator('.cc-muze-cerceve').first().click({ force: true });
+  await page.waitForTimeout(3500);
+  await page.getByRole('button', { name: 'Kapat' }).click({ force: true });
+  await page.waitForTimeout(1000);
+  const video = page.video();
+  await ctx.close();
+  if (video) fs.copyFileSync(await video.path(), 'tests/screens/canlan-cila.webm');
   expect(hatalar).toEqual([]);
 });
 

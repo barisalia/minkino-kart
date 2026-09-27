@@ -69,20 +69,64 @@
   background: #fffdf7;
   isolation: isolate;
 }
-.cc-kok .cc-sahne::after {
-  /* canlanmadan önce kâğıt; canlanınca renkler açılır */
-  content: '';
+/* canlanmadan önce kâğıt; canlanınca iki yana açılır (sahne.ts → .cc-kapak) */
+.cc-kok .cc-kapak {
   position: absolute;
   inset: 0;
   z-index: 1;
+  display: flex;
+  pointer-events: none;
+}
+.cc-kok .cc-kapak i {
+  flex: 1;
   background:
     radial-gradient(circle at 1px 1px, rgba(90, 54, 23, 0.06) 1px, transparent 1.5px) 0 0 / 18px 18px,
     #fffdf7;
-  transition: opacity 1.1s ease;
-  pointer-events: none;
+  transition: transform 1.05s cubic-bezier(0.65, 0, 0.25, 1);
 }
-.cc-kok .cc-sahne.canli::after {
+.cc-kok .cc-kapak i:first-child {
+  transform-origin: 0 100%;
+}
+.cc-kok .cc-kapak i:last-child {
+  transform-origin: 100% 100%;
+}
+.cc-kok .cc-sahne.canli .cc-kapak i:first-child {
+  transform: translateX(-104%) rotate(-5deg);
+}
+.cc-kok .cc-sahne.canli .cc-kapak i:last-child {
+  transform: translateX(104%) rotate(5deg);
+}
+/* arka plan ayrı katman: kamera yaklaşırken farklı hızda büyür */
+.cc-kok .cc-sahne-arka {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--sahne) center / cover no-repeat;
+}
+/* kâğıt açılırken ortadan ışık hüzmesi (çizimin arkasında) */
+.cc-kok .cc-isik {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 160%;
+  height: 160%;
+  margin: -80% 0 0 -80%;
+  z-index: 2;
+  pointer-events: none;
   opacity: 0;
+  background:
+    radial-gradient(circle, rgba(255, 255, 245, 0.95) 0 5%, rgba(255, 238, 170, 0.7) 12%, rgba(255, 238, 170, 0) 34%),
+    repeating-conic-gradient(from 0deg, rgba(255, 246, 205, 0.8) 0 6deg, rgba(255, 246, 205, 0) 6deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 12%, transparent 60%);
+  mask-image: radial-gradient(circle, #000 12%, transparent 60%);
+}
+.cc-kok .cc-sahne.isik-patla .cc-isik {
+  animation: cc-isik 2s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@keyframes cc-isik {
+  0% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  22% { opacity: 1; transform: scale(0.85) rotate(14deg); }
+  100% { opacity: 0; transform: scale(1.3) rotate(60deg); }
 }
 .cc-kok .cc-canli {
   position: absolute;
@@ -326,12 +370,115 @@
   box-shadow: 0 5px 0 var(--kontur-yumusak);
   color: var(--kontur);
   font: inherit;
-  animation: mk-ekran-giris 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-  animation-delay: calc(var(--i) * 30ms);
-  transition: transform 0.12s;
+  position: relative;
 }
-.cc-kok .cc-resim:active {
-  transform: scale(0.95);
+/* Kartların girişi: sırayla yaylanarak düşer (dolgu yalnız başta: sonra dokunma hissi serbest) */
+.cc-kok .cc-resim,
+.cc-kok .cc-muze-karti {
+  animation: cc-kart-gir 0.62s cubic-bezier(0.25, 1.35, 0.45, 1) backwards;
+  animation-delay: calc(min(var(--i), 15) * 36ms);
+  transition: transform 0.32s cubic-bezier(0.3, 1.8, 0.5, 1), opacity 0.25s;
+}
+@keyframes cc-kart-gir {
+  from { opacity: 0; transform: translateY(48px) scale(0.55) rotate(var(--egim, -4deg)); }
+  55% { opacity: 1; }
+}
+.cc-kok .cc-resim .cc-resim-gorsel,
+.cc-kok .cc-resim > svg {
+  animation: cc-gorsel-gir 0.5s cubic-bezier(0.3, 1.7, 0.5, 1) backwards;
+  animation-delay: calc(min(var(--i), 15) * 36ms + 200ms);
+}
+@keyframes cc-gorsel-gir {
+  from { transform: scale(0.35) rotate(-14deg); opacity: 0; }
+}
+.cc-kok .cc-resim .cc-kart-yildiz i.dolu {
+  animation: cc-kart-yildiz 0.45s cubic-bezier(0.3, 1.8, 0.5, 1) backwards;
+  animation-delay: calc(min(var(--i), 15) * 36ms + 380ms);
+}
+@keyframes cc-kart-yildiz {
+  from { transform: scale(0) rotate(-90deg); }
+}
+/* dokunma hissi: basınca ezilir, bırakınca yaylanır */
+.cc-kok .cc-resim.basili,
+.cc-kok .cc-muze-karti.basili {
+  transform: translateY(4px) scale(0.92);
+  transition-duration: 0.08s;
+}
+/* seçilince öne çıkar, diğerleri geri çekilir */
+.cc-kok .cc-izgara.secim-var > * {
+  opacity: 0.35;
+  transform: scale(0.9);
+}
+.cc-kok .cc-izgara.secim-var > .secildi {
+  opacity: 1;
+  z-index: 2;
+  transform: scale(1.1) rotate(-3deg);
+}
+/* Müzem kartı */
+.cc-kok .cc-muze-karti {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px 8px;
+  border-radius: 24px;
+  background: linear-gradient(165deg, #fff6dc, #ffe1a3);
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 5px 0 var(--kontur-yumusak);
+  color: var(--kontur);
+  font: inherit;
+  position: relative;
+}
+.cc-kok .cc-muze-karti-cerceve {
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #fffdf7;
+  background: linear-gradient(135deg, #ffe07a, #e0a82e 45%, #f7cd5a 55%, #c28418);
+  border: 3px solid var(--kontur);
+  padding: 12%;
+}
+/* çerçevedeki minik tablo: gök, güneş, tepe */
+.cc-kok .cc-mini-tablo {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  border: 2px solid var(--kontur);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 72% 30%, #ffd84d 0 11%, transparent 12%),
+    radial-gradient(120% 60% at 30% 110%, #6ccf4a 0 55%, transparent 56%),
+    radial-gradient(90% 50% at 90% 115%, #58be3a 0 55%, transparent 56%),
+    linear-gradient(180deg, #8fd3ff, #e3f5ff);
+}
+.cc-kok .cc-mini-tablo i {
+  /* minik çizim: tepede bir ev çatısı */
+  position: absolute;
+  left: 22%;
+  bottom: 30%;
+  width: 26%;
+  aspect-ratio: 1;
+  background: linear-gradient(180deg, #f0413f 0 45%, #fff3dc 45%);
+  clip-path: polygon(50% 0, 100% 55%, 100% 100%, 0 100%, 0 55%);
+}
+.cc-kok .cc-muze-sayi {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: #f0413f;
+  color: #fff;
+  border: 3px solid var(--kontur);
+  font-size: 1rem;
 }
 .cc-kok .cc-resim svg {
   width: 100%;
@@ -676,12 +823,45 @@
   display: block;
   width: 100%;
 }
+.cc-kok .cc-yildizlar i {
+  position: relative;
+}
 .cc-kok .cc-yildizlar i.dolu {
   color: var(--sari);
-  animation: cc-yildiz 0.55s cubic-bezier(0.3, 1.7, 0.5, 1) both;
+  animation: cc-yildiz 0.5s cubic-bezier(0.3, 1.7, 0.5, 1) both;
 }
 @keyframes cc-yildiz {
-  from { transform: scale(0.2) rotate(-40deg); }
+  from { transform: scale(1.45); }
+  45% { transform: scale(0.86, 0.8); }
+}
+/* yerine konan yıldızdan halka yayılır */
+.cc-kok .cc-yildizlar i.patla::after {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  border-radius: 50%;
+  border: 5px solid var(--sari);
+  pointer-events: none;
+  animation: cc-halka-yayil 0.55s ease-out both;
+}
+@keyframes cc-halka-yayil {
+  from { transform: scale(0.3); opacity: 1; }
+  to { transform: scale(1.35); opacity: 0; }
+}
+/* uçan yıldız (ekranda sabit katman) */
+.cc-kok .cc-ucan-yildiz {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  color: var(--sari);
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(255, 214, 70, 0.95));
+}
+.cc-kok .cc-ucan-yildiz svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .cc-kok .cc-sonuc-kutu {
   flex: 1;

@@ -1,0 +1,52 @@
+/* Fırça ucunda parıltı (parilti.ts): yalnız transform / opacity */
+.mk-kok .fp-katman {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.mk-kok .fp-uc,
+.mk-kok .fp-toz {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.mk-kok .fp-uc::before {
+  /* fırça ucundaki sıcak ışık */
+  content: '';
+  position: absolute;
+  left: -17px;
+  top: -17px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 18%, rgba(255, 216, 77, 0.55) 40%, rgba(255, 216, 77, 0) 70%);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.18s, transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.mk-kok .fp-uc.acik::before {
+  opacity: 1;
+  transform: scale(1);
+  animation: fp-nabiz 0.5s ease-in-out infinite alternate;
+}
+@keyframes fp-nabiz {
+  to { transform: scale(1.25); }
+}
+.mk-kok .fp-toz i {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  /* dört köşeli pırıltı */
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .fp-uc.acik::before { animation: none; }
+}
