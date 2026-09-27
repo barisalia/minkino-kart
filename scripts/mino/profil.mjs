@@ -20,8 +20,12 @@ function katman(id) {
 
 // Görünen alan: önden çizimle (mino-svg.ts, viewBox 344 140 1360 1790) aynı ölçü ve aynı ayak çizgisi; gövde ortada.
 // Kuyruk sol kenardan taşar (overflow: visible).
-const VIEWBOX = '400 140 1360 1790';
-// Kalça kökleri ve kol arkası çizimde tam (tasarımcı): bacaklar ±25°, kollar ±25° döner, ek dolgu gerekmez.
+// Ayak çizgisi: önden çizim 140'tan başlarken profilin eski taban çizgisi (1895) onunla hizalıydı; bacaklar
+// yeniden çizilince yakın patinin tabanı TABAN'a indi (scripts/mino/pati-olc.mjs ölçer; yuruyus.ts ZEMIN ile aynı),
+// görünen alan da o kadar aşağı kayar: yürürken patiler önden çizimin bastığı yere basar.
+const TABAN = 1919;
+const VIEWBOX = `400 ${140 + TABAN - 1895} 1360 1790`;
+// Kalça kökleri ve kol arkası çizimde tam (tasarımcı): bacaklar ±25°, kollar ±25°, kulaklar ±10° döner, ek dolgu gerekmez.
 const katmanlar = bilgi.sira
   .map((id) => `<g class="mp-${id}"${bilgi.gizli.includes(id) ? ' style="display:none"' : ''}>${katman(id)}</g>`)
   .join('\n');

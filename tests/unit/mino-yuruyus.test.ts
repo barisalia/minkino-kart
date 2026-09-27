@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import profil from '../../ekip/mino/mino-profil.json';
-import { bacakEvresi, DONME, MINO_DONGU_YOLU, patiDunya, yuruyusPozu, ZEMIN } from '../../src/mino/yuruyus';
+import { BACAK_ACI, bacakEvresi, DONME, MINO_ADIM_YOLU, MINO_DONGU_YOLU, OLCU, patiDunya, yuruyusPozu } from '../../src/mino/yuruyus';
 
 const ADIM = 400;
 const fazlar = Array.from({ length: ADIM }, (_, i) => i / ADIM);
@@ -10,8 +10,9 @@ describe('Mino yandan yürüyüş döngüsü', () => {
     for (const ad of ['bacak-on', 'bacak-arka', 'govde'] as const) expect(profil.donme[ad]).toEqual([...DONME[ad]]);
   });
 
-  it('açılar temiz sınırlar içinde: bacak ±25, kol ±25 (en az ±18 sallanır), kuyruk ±6, kulak ±6', () => {
+  it('açılar temiz sınırlar içinde: bacak ±25, kol ±25 (en az ±18 sallanır), kuyruk ±6, kulak ±10’un altında (en az ±7 sallanır)', () => {
     let kol = 0;
+    let kulak = 0;
     for (const f of fazlar) {
       for (const t of [0, 0.4, 1.3, 2.7]) {
         const z = yuruyusPozu(f, 1, t);
@@ -20,11 +21,14 @@ describe('Mino yandan yürüyüş döngüsü', () => {
         expect(Math.abs(z.kolOn)).toBeLessThanOrEqual(25);
         expect(Math.abs(z.kolArka)).toBeLessThanOrEqual(25);
         expect(Math.abs(z.kuyruk)).toBeLessThanOrEqual(6);
-        expect(Math.abs(z.kulak)).toBeLessThanOrEqual(6);
+        expect(Math.abs(z.kulak)).toBeLessThan(OLCU.KULAK);
         kol = Math.max(kol, Math.abs(z.kolOn), Math.abs(z.kolArka));
+        kulak = Math.max(kulak, Math.abs(z.kulak));
       }
     }
+    expect(OLCU.KULAK).toBe(10);
     expect(kol).toBeGreaterThanOrEqual(18);
+    expect(kulak).toBeGreaterThanOrEqual(7);
   });
 
   it('bacaklar karşılıklı döner, kollar ters: yakın bacak öndeyken yakın kol geride', () => {
@@ -35,37 +39,62 @@ describe('Mino yandan yürüyüş döngüsü', () => {
     expect(z.kolArka).toBeLessThan(-15); // öne
   });
 
-  it('her karede bir pati tam yerde, hiçbir pati yere gömülmüyor (dururken de)', () => {
+  it('her karede bir pati tam yerinde, hiçbir pati yere gömülmüyor (dururken de)', () => {
     for (const guc of [1, 0.5, 0]) {
       for (const f of fazlar) {
         const z = yuruyusPozu(f, guc, 0.7);
-        const on = patiDunya('bacak-on', z).enAlt;
-        const arka = patiDunya('bacak-arka', z).enAlt;
-        expect(Math.max(on, arka)).toBeCloseTo(ZEMIN, 3);
+        const on = patiDunya('bacak-on', z).yer;
+        const arka = patiDunya('bacak-arka', z).yer;
+        expect(Math.min(on, arka)).toBeCloseTo(0, 3);
+        expect(on).toBeGreaterThan(-1e-3);
+        expect(arka).toBeGreaterThan(-1e-3);
       }
     }
+  });
+
+  it('dururken çizim tasarımcının dinlenme duruşunda (bacaklar dönmez, kaymaz)', () => {
+    const z = yuruyusPozu(0.3, 0, 0);
+    for (const k of ['bacakOn', 'bacakArka', 'bacakOnY', 'bacakArkaY', 'bob'] as const) expect(z[k]).toBeCloseTo(0, 6);
   });
 
   it('basan pati yerde, havadaki kalkık (geçişte belirgin)', () => {
     // yakın bacak 0..0.5 basar, 0.5..1 havada
     for (const f of fazlar) {
       const z = yuruyusPozu(f, 1, 0);
-      if (f < 0.5) expect(patiDunya('bacak-on', z).enAlt).toBeCloseTo(ZEMIN, 3);
-      else expect(patiDunya('bacak-arka', z).enAlt).toBeCloseTo(ZEMIN, 3);
+      if (f < 0.5) expect(patiDunya('bacak-on', z).yer).toBeCloseTo(0, 3);
+      else expect(patiDunya('bacak-arka', z).yer).toBeCloseTo(0, 3);
     }
-    const gecis = yuruyusPozu(0.75, 1, 0);
-    expect(ZEMIN - patiDunya('bacak-on', gecis).enAlt).toBeGreaterThan(15);
+    expect(patiDunya('bacak-on', yuruyusPozu(0.75, 1, 0)).yer).toBeGreaterThan(15);
+    expect(patiDunya('bacak-arka', yuruyusPozu(0.25, 1, 0)).yer).toBeGreaterThan(15);
   });
 
-  it('basan pati kaymıyor: gövde döngü yolunu sabit hızla alırken patinin taban ucu yerinde kalır', () => {
+  it('basan pati kaymıyor: gövde döngü yolunu sabit hızla alırken patinin taban noktası yerinde kalır', () => {
     for (const [ad, bas] of [['bacak-on', 0], ['bacak-arka', 0.5]] as const) {
       const xs: number[] = [];
       for (let i = 0; i <= 50; i++) {
         const f = bas + (i / 50) * 0.5;
         xs.push(patiDunya(ad, yuruyusPozu(f, 1, 0)).tabanX + (f - bas) * MINO_DONGU_YOLU);
       }
-      expect(Math.max(...xs) - Math.min(...xs)).toBeLessThan(0.1 * MINO_DONGU_YOLU);
+      expect(Math.max(...xs) - Math.min(...xs)).toBeLessThan(0.05 * MINO_DONGU_YOLU);
     }
+  });
+
+  it('iki adım eşit genişlikte: bacaklar öne ve geriye eşit açılır, iki bacak da aynı adım yolunu alır', () => {
+    // basan patinin taban noktasının kalçaya göre gidişi (gövdenin bir adımda aldığı yol)
+    const yol = (ad: 'bacak-on' | 'bacak-arka', bas: number) =>
+      patiDunya(ad, yuruyusPozu(bas, 1, 0)).tabanX - patiDunya(ad, yuruyusPozu(bas + 0.4999, 1, 0)).tabanX;
+    const y1 = yol('bacak-on', 0);
+    const y2 = yol('bacak-arka', 0.5);
+    expect(y1).toBeGreaterThan(0.9 * MINO_ADIM_YOLU);
+    expect(Math.abs(y1 - y2)).toBeLessThan(0.02 * MINO_ADIM_YOLU);
+    // iki temas anında bacaklar arasındaki açı aynı; her bacak öne ve geriye eşit döner
+    const t1 = yuruyusPozu(0, 1, 0);
+    const t2 = yuruyusPozu(0.5, 1, 0);
+    expect(t1.bacakArka - t1.bacakOn).toBeCloseTo(t2.bacakOn - t2.bacakArka, 6);
+    expect(t1.bacakOn).toBeCloseTo(-t2.bacakOn, 6);
+    expect(t1.bacakArka).toBeCloseTo(-t2.bacakArka, 6);
+    // açılar ±25 sınırını iyi kullanır
+    expect(Math.max(BACAK_ACI['bacak-on'], BACAK_ACI['bacak-arka'])).toBeGreaterThanOrEqual(23);
   });
 
   it('iki adım aynı: gövdenin iniş-kalkışı aksamıyor; evreler temas → çöküş (en alçak) → geçiş → yükseliş (en yüksek)', () => {

@@ -13,7 +13,7 @@
   "sahneler": [
     {
       "ad": "1-pazar-kapaniyor",
-      "sure": 12,
+      "sure": 12.55,
       "arka": "pazar",
       "kamera": [
         50,
@@ -102,10 +102,10 @@
           "kim": "mino",
           "yap": "git",
           "x": 74,
-          "sure": 0.65
+          "sure": 1.2
         },
         {
-          "t": 2.7,
+          "t": 3.25,
           "kim": "mino",
           "yap": "git",
           "x": 62.98,
@@ -116,7 +116,7 @@
           "egri": "yumusak"
         },
         {
-          "t": 3.2,
+          "t": 3.75,
           "kim": "karpuz",
           "yap": "git",
           "don": 71.26,
@@ -124,56 +124,56 @@
           "egri": "cik"
         },
         {
-          "t": 3.4,
+          "t": 3.95,
           "kim": "mino",
           "yap": "gizle",
           "sure": 0.12
         },
         {
-          "t": 3.4,
+          "t": 3.95,
           "kim": "karpuz",
           "yap": "gizle",
           "sure": 0.12
         },
         {
-          "t": 3.4,
+          "t": 3.95,
           "kim": "sarilma",
           "yap": "goster",
           "sure": 0.12
         },
         {
-          "t": 4.2,
+          "t": 4.75,
           "kim": "mino",
           "yap": "tepki",
           "ad": "zorlan",
           "sure": 1.1
         },
         {
-          "t": 4.2,
+          "t": 4.75,
           "kim": "karpuz",
           "yap": "titre",
           "sure": 1
         },
         {
-          "t": 4.2,
+          "t": 4.75,
           "kim": "sarilma",
           "yap": "gizle",
           "sure": 0.12
         },
         {
-          "t": 4.2,
+          "t": 4.75,
           "kim": "mino",
           "yap": "goster",
           "sure": 0.12
         },
         {
-          "t": 4.2,
+          "t": 4.75,
           "kim": "karpuz",
           "yap": "goster",
           "sure": 0.12
         },
         {
-          "t": 5.2,
+          "t": 5.75,
           "kim": "karpuz",
           "yap": "git",
           "x": 60,
@@ -184,7 +184,7 @@
           "egri": "dus"
         },
         {
-          "t": 5.5,
+          "t": 6.05,
           "kim": "mino",
           "yap": "git",
           "x": 57,
@@ -196,12 +196,12 @@
           "egri": "dus"
         },
         {
-          "t": 5.8,
+          "t": 6.35,
           "kim": "efekt",
           "yap": "yuvarlan"
         },
         {
-          "t": 5.8,
+          "t": 6.35,
           "kim": "karpuz",
           "yap": "git",
           "x": 66,
@@ -210,7 +210,7 @@
           "egri": "cik"
         },
         {
-          "t": 6.4,
+          "t": 6.95,
           "kim": "mino",
           "yap": "git",
           "x": 61,
@@ -220,23 +220,23 @@
           "egri": "cik"
         },
         {
-          "t": 7,
+          "t": 7.55,
           "kim": "efekt",
           "yap": "tok"
         },
         {
-          "t": 7,
+          "t": 7.55,
           "kim": "karpuz",
           "yap": "bas"
         },
         {
-          "t": 7,
+          "t": 7.55,
           "kim": "kasa",
           "yap": "titre",
           "sure": 0.5
         },
         {
-          "t": 7.2,
+          "t": 7.75,
           "kim": "mino",
           "yap": "git",
           "x": 65,
@@ -248,7 +248,7 @@
           "egri": "yay"
         },
         {
-          "t": 8,
+          "t": 8.55,
           "kim": "mino",
           "yap": "git",
           "don": 720,
@@ -256,14 +256,14 @@
           "yuru": false
         },
         {
-          "t": 8.1,
+          "t": 8.65,
           "kim": "mino",
           "yap": "tepki",
           "ad": "sersem",
           "sure": 1.6
         },
         {
-          "t": 9.3,
+          "t": 9.85,
           "kim": "kamera",
           "yap": "git",
           "x": 64,
@@ -277,13 +277,13 @@
           ]
         },
         {
-          "t": 9.5,
+          "t": 10.05,
           "kim": "mino",
           "yap": "tepki",
           "ad": "evet"
         },
         {
-          "t": 9.5,
+          "t": 10.05,
           "kim": "mino",
           "yap": "soyle",
           "metin": "Kocaman karpuz! Hepsi benim!"
@@ -572,16 +572,16 @@
           "kim": "mino",
           "yap": "git",
           "x": 46,
-          "sure": 0.8
+          "sure": 1.2
         },
         {
-          "t": 15.45,
+          "t": 15.85,
           "kim": "mino",
           "yap": "don",
           "yon": 1
         },
         {
-          "t": 14.8,
+          "t": 15.2,
           "kim": "bicak",
           "yap": "git",
           "x": 55,
@@ -590,7 +590,7 @@
           "sure": 0.4
         },
         {
-          "t": 15.6,
+          "t": 16,
           "kim": "bicak",
           "yap": "git",
           "y": 17,
@@ -599,30 +599,30 @@
           "egri": "dus"
         },
         {
-          "t": 15.75,
+          "t": 16.15,
           "kim": "efekt",
           "yap": "cat"
         },
         {
-          "t": 15.76,
+          "t": 16.16,
           "kim": "karpuz",
           "yap": "gizle",
           "sure": 0.04
         },
         {
-          "t": 15.76,
+          "t": 16.16,
           "kim": "yarim1",
           "yap": "goster",
           "sure": 0.04
         },
         {
-          "t": 15.76,
+          "t": 16.16,
           "kim": "yarim2",
           "yap": "goster",
           "sure": 0.04
         },
         {
-          "t": 15.8,
+          "t": 16.2,
           "kim": "yarim1",
           "yap": "git",
           "x": 46,
@@ -631,7 +631,7 @@
           "egri": "cik"
         },
         {
-          "t": 15.8,
+          "t": 16.2,
           "kim": "yarim2",
           "yap": "git",
           "x": 66,
@@ -640,38 +640,38 @@
           "egri": "cik"
         },
         {
-          "t": 15.9,
+          "t": 16.3,
           "kim": "parilti",
           "yap": "",
           "x": 56,
           "y": 18
         },
         {
-          "t": 16,
+          "t": 16.4,
           "kim": "bicak",
           "yap": "gizle",
           "sure": 0.3
         },
         {
-          "t": 16.4,
+          "t": 16.8,
           "kim": "efekt",
           "yap": "vuvu"
         },
         {
-          "t": 16.4,
+          "t": 16.8,
           "kim": "kopek",
           "yap": "tepki",
           "ad": "dans",
           "sure": 1.4
         },
         {
-          "t": 17.3,
+          "t": 17.7,
           "kim": "kopek",
           "yap": "soyle",
           "metin": "Hav! Teşekkürler!"
         },
         {
-          "t": 17.5,
+          "t": 17.9,
           "kim": "mino",
           "yap": "tepki",
           "ad": "evet"

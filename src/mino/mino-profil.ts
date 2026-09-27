@@ -5,8 +5,9 @@
  *   Katmanlar arkadan öne: kuyruk, kulak-arka, bacak-arka, kol-arka, bacak-on, govde, kol-on, fular, kafa, kulak-on,
  *   goz, agiz (+ gizli goz-kapali). Çizim sağa bakar; sola yürürken dışarıdan aynalanır (scaleX(-1)).
  *   Yürüme döngüsü (yuruyus.ts): çizgi film yürüyüşü, her adım temas → çöküş → geçiş → yükseliş. Bacaklar kalçadaki
- *   dönme noktalarından ±22° döner (basan pati yerde kaymaz, havadaki kalkar), kollar ters yönde ±19-22° sallanır,
- *   gövde adım ritminde iner-kalkar ve öne eğilir, kafa / kulak / kuyruk / fular geriden gelir (follow-through).
+ *   dönme noktalarından öne ve geriye eşit döner (yakın ±21°, uzak ±24°: iki adım aynı yolu alır; basan pati yerde
+ *   kaymaz, havadaki kalkar), kollar ters yönde ±19-22° sallanır, gövde adım ritminde iner-kalkar ve öne eğilir,
+ *   kafa / kulak (±9) / kuyruk / fular geriden gelir (follow-through).
  *   Dururken nefes alır, göz kırpar.
  * - YuruyenMino: önden Mino (mino.ts) + profil. Yürürken yana döner (kısa daraltma + geçiş), durunca bacaklar
  *   toparlanır ve yumuşakça önden çizime döner. Profil yüklenmemişse önden kalır (hiçbir şey bozulmaz).
