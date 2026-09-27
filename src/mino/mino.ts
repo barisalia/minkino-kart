@@ -21,6 +21,11 @@ const KOL_EN_COK = 24;
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
 
+/** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) */
+export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp';
+/** Bu tepkiler kendi ifadesini de açar (yalnız filmde kullanılır; oyunlarda değişiklik yok) */
+const TEPKI_IFADE: Partial<Record<string, MinoIfade>> = { zorlan: 'zorlanma', sersem: 'sersem', kararsiz: 'kararsiz' };
+
 export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz' | 'saril' | 'kolac';
 
 interface Durum {
@@ -98,6 +103,8 @@ export class Mino {
   tepki(t: Tepki, sure?: number) {
     const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3, saril: 1.2, kolac: 1.4 };
     this.d.tepki = t;
+    const ifd = TEPKI_IFADE[t];
+    if (ifd) this.ifade(ifd, (sure ?? varsayilan[t]) * 1000);
     this.d.tepkiBas = this.zaman();
     this.d.tepkiSure = sure ?? varsayilan[t];
     if (t !== 'esne') this.uyan();
@@ -137,6 +144,21 @@ export class Mino {
     return 'gobek';
   }
 
+  /**
+   * Yüz ifadesi (çizilmiş ek katmanlar): açıkken ilgili gözler, kod ağzı ve yanaklar yerini ifadenin çizimine bırakır.
+   * ms verilirse o süre sonra normale döner; null normale döndürür.
+   */
+  ifade(ad: MinoIfade | null, ms = 0) {
+    for (const c of [...this.el.classList]) if (c.startsWith('ifade-')) this.el.classList.remove(c);
+    clearTimeout(this.ifadeZaman);
+    this.ifadeAd = ad;
+    if (!ad) return;
+    this.el.classList.add(`ifade-${ad}`);
+    if (ms) this.ifadeZaman = window.setTimeout(() => this.ifade(null), TEST_MODU ? 30 : ms);
+  }
+  private ifadeAd: MinoIfade | null = null;
+  private ifadeZaman = 0;
+
   /** Film/animatik: ses kaydı yokken de konuşma ağzını oynatır (açıkken ağız kendiliğinden açılıp kapanır) */
   agizOyna(acik: boolean) {
     this.agizZorla = acik;
@@ -170,6 +192,7 @@ export class Mino {
     let mutlu = 0;
     let agizHedef = uyku ? 0 : 0.72;
     let gulum = 1;
+    let gozKay = 0;
     // kollar: derece, + = dışa/yukarı kalkar (iki kol için aynı yön anlamı)
     let kolSol = sin(t * (uyku ? 1.3 : 2.1)) * 1.5;
     let kolSag = sin(t * (uyku ? 1.3 : 2.1) + 0.4) * 1.5;
@@ -345,8 +368,9 @@ export class Mino {
             break;
           }
           case 'kararsiz': {
-            // kararsız: bir sağa bir sola bakar (başı yatar), kuyruk ucu kıvrılır
+            // kararsız: bir sağa bir sola bakar (başı yatar, gözler kayar), kuyruk ucu kıvrılır
             const bak = e < 0.2 ? -1 : e < 0.45 ? 1 : e < 0.7 ? -1 : 1;
+            gozKay = bak * 22 * zarf;
             kafaAci += bak * 8 * zarf;
             govdeAci = bak * 2 * zarf;
             kuyrukAci += sin(t * 5) * 14 * zarf;
@@ -364,6 +388,10 @@ export class Mino {
       agizHedef = guc > 0.01 ? Math.min(1, 0.12 + guc * 1.3) : 0.1 + Math.abs(sin(t * 16)) * 0.6; // cihaz sesi: tahmini
       mutlu = 0;
     }
+    if (this.ifadeAd === 'goz-kirp') {
+      agizHedef = 0;
+      gulum = 1;
+    }
     d.agiz = ara(d.agiz, agizHedef, TEST_MODU ? 1 : 0.35);
 
     // Uygula
@@ -376,6 +404,7 @@ export class Mino {
     const kol = (a: number) => Math.max(-8, Math.min(KOL_EN_COK, a));
     s.setProperty('--kol-sol', donus(KOL_SOL, kol(kolSol)));
     s.setProperty('--kol-sag', donus(KOL_SAG, -kol(kolSag)));
+    s.setProperty('--goz-kay', `${gozKay.toFixed(1)}px`);
     s.setProperty('--golge', String(1 - Math.min(0.5, -ziplaY / 400)));
     // Göz: açık çizim ↔ kapalı / mutlu göz çizgisi (katman değişimi; kırpma anında)
     this.el.classList.toggle('mutlu', mutlu > 0.5);

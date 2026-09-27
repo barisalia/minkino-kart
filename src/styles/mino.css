@@ -192,3 +192,30 @@
   -webkit-text-stroke: 4px var(--kontur);
   paint-order: stroke fill;
 }
+
+/* ---------------------------------------------------------------- film ifadeleri (mino.ts → ifade)
+   Tablo: ekip/mino/IFADELER.md. İfade açıkken çizilmiş ek görünür, yerine geçtiği göz / kod ağzı / yanak gizlenir. */
+.mk-kok .mino .m-ifade { opacity: 0; }
+.mk-kok .mino .m-goz { translate: var(--goz-kay, 0px) 0; }
+.mk-kok .mino.ifade-zorlanma .m-zorlanma,
+.mk-kok .mino.ifade-sersem .m-sersem,
+.mk-kok .mino.ifade-kararsiz .m-kararsiz,
+.mk-kok .mino.ifade-goz-kirp .m-goz-kirp { opacity: 1; }
+.mk-kok .mino.ifade-zorlanma .m-goz,
+.mk-kok .mino.ifade-zorlanma .m-agiz,
+.mk-kok .mino.ifade-zorlanma .m-yanak,
+.mk-kok .mino.ifade-zorlanma .m-kapali-goz,
+.mk-kok .mino.ifade-zorlanma .m-mutlu-goz,
+.mk-kok .mino.ifade-sersem .m-goz,
+.mk-kok .mino.ifade-sersem .m-agiz,
+.mk-kok .mino.ifade-sersem .m-yanak,
+.mk-kok .mino.ifade-sersem .m-kapali-goz,
+.mk-kok .mino.ifade-sersem .m-mutlu-goz,
+.mk-kok .mino.ifade-kararsiz .m-agiz,
+.mk-kok .mino.ifade-goz-kirp .m-goz-sol,
+.mk-kok .mino.ifade-goz-kirp .m-kapali-goz,
+.mk-kok .mino.ifade-goz-kirp .m-mutlu-goz { opacity: 0 !important; }
+/* kararsızda gözler normal kalır: mutlu / kapalı göz çizgisi yerine açık göz */
+.mk-kok .mino.ifade-kararsiz .m-goz { opacity: 1 !important; }
+.mk-kok .mino.ifade-kararsiz .m-kapali-goz,
+.mk-kok .mino.ifade-kararsiz .m-mutlu-goz { opacity: 0 !important; }

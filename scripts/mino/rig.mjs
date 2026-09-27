@@ -43,7 +43,15 @@ const g = (sinif, ...idler) => `<g class="${sinif}">\n${idler.map((id) => sade(k
 const AGIZ_IC = 'M951 992Q987 996 1024 966Q1061 996 1097 992Q1105 1067 1024 1080Q943 1067 951 992Z';
 const AGIZ_DIL = 'M980 1072Q1024 1043 1068 1072Q1024 1080 980 1072Z';
 const AGIZ_KENAR = 'M951 992Q933 974 915 952M1097 992Q1115 974 1133 952M1024 956V966';
-const kapaliGoz =sade(katman('goz-kapali')).replaceAll('#030102', '#3a1210');
+const kapaliGoz = sade(katman('goz-kapali')).replaceAll('#030102', '#3a1210');
+// Film ifadeleri (ekip/mino/IFADELER.md): gizli ekler kafaya bağlı, ağız ve gözlerin üstünde; mino.ts → ifade()
+const ifade = (ad, ...idler) => `<g class="m-ifade m-${ad}">${idler.map((id) => sade(katman(id))).join('')}</g>`;
+const IFADELER = [
+  ifade('zorlanma', 'yanak-zorlanma', 'goz-zorlanma'),
+  ifade('sersem', 'yanak-sersem', 'goz-sersem', 'agiz-sersem'),
+  ifade('kararsiz', 'kas-kararsiz', 'agiz-kararsiz'),
+  ifade('goz-kirp', 'goz-kirp'),
+].join('\n');
 
 const svg = `<svg class="mino-svg" viewBox="344 140 1360 1790" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 ${defs}
@@ -56,14 +64,15 @@ ${g('g', 'fular')}
 ${sade(katman('kafa'))}
 <g class="m-yanak"><ellipse cx="690" cy="995" rx="66" ry="34"/><ellipse cx="1358" cy="995" rx="66" ry="34"/></g>
 <g class="m-goz">
-${sade(katman('goz-sol'))}
-${sade(katman('goz-sag'))}
+<g class="m-goz-sol">${sade(katman('goz-sol'))}</g>
+<g class="m-goz-sag">${sade(katman('goz-sag'))}</g>
 </g>
 <g class="m-kapali-goz">
 ${kapaliGoz}
 </g>
 <g class="m-mutlu-goz"><path d="M650 900Q768 796 886 900"/><path d="M1162 902Q1282 798 1402 902"/></g>
 <g class="m-agiz"><path class="m-agiz-ic" d="${AGIZ_IC}"/><path class="m-dil" d="${AGIZ_DIL}"/><path class="m-agiz-cizgi" d="${AGIZ_IC}${AGIZ_KENAR}"/></g>
+${IFADELER}
 </g>
 </svg>`;
 

@@ -33,4 +33,4 @@ export function esyaCiz(tip: string, film: string): HTMLElement {
 }
 
 /** Eşyanın en/boy oranı (yer tutucular için) */
-export const ESYA_ORAN: Record<string, number> = { karpuz: 200 / 150, 'karpuz-yarim': 200 / 120, bicak: 200 / 60, kasa: 200 / 140, tabak: 200 / 60, 'karpuz-dilim': 120 / 110, cekirdek: 20 / 28 };
+export const ESYA_ORAN: Record<string, number> = { karpuz: 1.113, 'karpuz-yarim': 200 / 120, bicak: 200 / 60, kasa: 200 / 140, tabak: 200 / 60, 'karpuz-dilim': 120 / 110, cekirdek: 20 / 28 };
