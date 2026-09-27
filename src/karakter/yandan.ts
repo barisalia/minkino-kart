@@ -269,6 +269,9 @@ export class YandanKarakter {
     set('bacak-arka', this.don('bacak-arka', z.bacakArka, `translate(0 ${z.bacakArkaY.toFixed(1)}) `));
     set('kol-on', this.don('kol-on', z.kolOn));
     set('kol-arka', this.don('kol-arka', z.kolArka));
+    // kuşlarda kol yerine kanat: yürürken yalnız hafif kıpırdar (Adobe: kanat-on ±5)
+    set('kanat-on', this.don('kanat-on', z.kolOn * 0.25));
+    set('kanat-arka', this.don('kanat-arka', z.kolArka * 0.25));
     const kafaT = this.don('kafa', z.kafa, `translate(0 ${z.kafaY.toFixed(1)}) `);
     set('kafa', kafaT);
     set('kulak-on', `${kafaT} ${this.don('kulak-on', -z.kulak)}`);
@@ -294,4 +297,4 @@ export class YandanKarakter {
 }
 
 /** ciz()'in kendisi yerleştirdiği katmanlar */
-const ZINCIR = new Set(['bacak-on', 'bacak-arka', 'kol-on', 'kol-arka', 'kafa', 'kulak-on', 'kulak-arka', 'goz', 'goz-kapali', 'agiz', 'kuyruk', 'govde']);
+const ZINCIR = new Set(['bacak-on', 'bacak-arka', 'kol-on', 'kol-arka', 'kanat-on', 'kanat-arka', 'kafa', 'kulak-on', 'kulak-arka', 'goz', 'goz-kapali', 'agiz', 'kuyruk', 'govde']);

@@ -1,0 +1,66 @@
+﻿{
+    "ad":  "ordek-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kanat-arka",
+                 "kuyruk",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kanat-on",
+                 "kafa",
+                 "gaga",
+                 "goz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "gaga":  "kafa",
+                  "goz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1050,
+                               990
+                           ],
+                  "gaga":  [
+                               1400,
+                               720
+                           ],
+                  "goz":  [
+                              1240,
+                              535
+                          ],
+                  "goz-kapali":  [
+                                     1240,
+                                     560
+                                 ],
+                  "kanat-on":  [
+                                   1045,
+                                   1165
+                               ],
+                  "kanat-arka":  [
+                                     1330,
+                                     1110
+                                 ],
+                  "kuyruk":  [
+                                 600,
+                                 1270
+                             ],
+                  "bacak-on":  [
+                                   860,
+                                   1735
+                               ],
+                  "bacak-arka":  [
+                                     1128,
+                                     1730
+                                 ],
+                  "govde":  [
+                                1000,
+                                1720
+                            ]
+              }
+}
