@@ -1,6 +1,9 @@
 {
-  "aciklama": "ElevenLabs seslendirme ayarları. ses_id boşsa oyun cihazın Türkçe sesini kullanır.",
+  "aciklama": "ElevenLabs seslendirme ayarları. ses_id boşsa oyun cihazın Türkçe sesini kullanır. karakter_sesleri: karakterin kendi ElevenLabs ses kimliği (Voice ID); boşsa o karakter anlatıcı sesinin tonlanmış hâliyle konuşur (Kino: kalın ton 0.92). Doldurulunca yalnız o karakterin cümleleri public/ses/<karakter>/ altına üretilir.",
   "ses_id": "U5Yg9Cl0WUYCovjolhzm",
+  "karakter_sesleri": {
+    "kino": "eoOuf4kLj2cCEuSIJD4C"
+  },
   "model": "eleven_v3",
   "bicim": "mp3_44100_64",
   "ayarlar": {

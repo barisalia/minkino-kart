@@ -1,16 +1,15 @@
 /**
  * Gerçek seslendirme kayıtları (ElevenLabs ile üretilir, public/ses/ altında).
  * Bir cümlenin kaydı varsa Web Audio ile çalınır; yoksa cihazın Türkçe sesi devreye girer.
+ * Karakter cümlesinde (ör. Kino) önce karakterin kendi kaydı aranır (src/audio/karakter-ses.ts → kayitSec).
  */
-import { normal } from './cumleler';
+import { kayitSec, type KayitSecenegi, type SesManifest } from './karakter-ses';
 import { baglam, konusmaCikisi } from './motor';
 
 /** Kayıt: ayrı dosya adı ya da paket içindeki bayt aralığı (paket = art arda eklenmiş mp3'ler). */
 type Kayit = string | { p: number; b: number; u: number };
 
-interface Manifest {
-  ses_id: string | null;
-  dosyalar: Record<string, Kayit>;
+interface Manifest extends SesManifest<Kayit> {
   paketler?: string[];
 }
 
@@ -70,16 +69,17 @@ export function kayitlariHazirla(): Promise<void> {
   return manifestYukleniyor;
 }
 
-function dosya(metin: string): Kayit | undefined {
-  return manifest?.dosyalar[normal(metin)];
+/** Cümle için çalınacak kayıt: karakterin kendi kaydı (hız 1) ya da anlatıcı kaydı (hız = ton). */
+function dosya(metin: string, secenek: KayitSecenegi = {}) {
+  return kayitSec(manifest, metin, secenek);
 }
 
-export function kayitVar(metin: string): boolean {
-  return !!dosya(metin);
+export function kayitVar(metin: string, secenek: KayitSecenegi = {}): boolean {
+  return !!dosya(metin, secenek);
 }
 
-function tampon(metin: string): Promise<AudioBuffer | null> {
-  const f = dosya(metin);
+function tampon(metin: string, secenek: KayitSecenegi = {}): Promise<AudioBuffer | null> {
+  const f = dosya(metin, secenek)?.kayit;
   const c = baglam();
   if (!f || !c) return Promise.resolve(null);
   const anahtar = typeof f === 'string' ? f : `${f.p}:${f.b}`;
@@ -97,16 +97,20 @@ function tampon(metin: string): Promise<AudioBuffer | null> {
 }
 
 /** Sıradaki cümlelerin kayıtlarını önceden indirip çözer (gecikmesiz çalsın diye). */
-export function onYukle(metinler: (string | undefined | null)[]) {
-  for (const m of metinler) if (m) void tampon(m);
+export function onYukle(metinler: (string | undefined | null)[], secenek: KayitSecenegi = {}) {
+  for (const m of metinler) if (m) void tampon(m, secenek);
 }
 
-/** Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer). */
-export async function kayitCal(metin: string, iptalMi: () => boolean, hiz = 1): Promise<boolean> {
+/**
+ * Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer).
+ * secenek.karakter: önce karakterin kendi kaydı (normal hızda); yoksa anlatıcı kaydı secenek.ton hızında.
+ */
+export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}): Promise<boolean> {
   const c = baglam();
   const cikis = konusmaCikisi();
   if (!c || !cikis || c.state !== 'running') return false;
-  const t = await tampon(metin);
+  const hiz = dosya(metin, secenek)?.hiz ?? 1;
+  const t = await tampon(metin, secenek);
   if (!t || iptalMi()) return !!t;
   return new Promise((coz) => {
     const src = c.createBufferSource();

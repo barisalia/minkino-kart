@@ -8,7 +8,7 @@
  * - Işık tonu (akşamüstü), sahne geçişi (iris / kararma), alt yazı, sonda öğüt kartı.
  * Yalnız transform / opacity.
  */
-import { konus, sus } from '../../src/audio/ses';
+import { KINO_SESI, konus, sus } from '../../src/audio/ses';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { esyaCiz, ESYA_ORAN } from './esya';
 import { FILM_EFEKT } from './efekt';
@@ -520,7 +520,8 @@ export class Film {
         if (this.konusan === kim) this.konusan = null;
       });
     }
-    if (this.ses) void konus(metin, { ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 });
+    // Kino: kendi sesi varsa o, yoksa anlatıcı sesinin kalın tonu (maceralarla aynı yol)
+    if (this.ses) void konus(metin, kim === 'kino' ? KINO_SESI : { karakter: kim || null, ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 });
   }
 
   private parilti(x: number, y: number) {
