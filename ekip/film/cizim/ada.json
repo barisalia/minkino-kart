@@ -1,0 +1,105 @@
+﻿{
+    "ad":  "ada",
+    "boyut":  2048,
+    "sira":  [
+                 "sac-arka",
+                 "kol-sol",
+                 "kol-sag",
+                 "bacak-sol",
+                 "bacak-sag",
+                 "govde",
+                 "kafa",
+                 "sac-topuz-sol",
+                 "sac-topuz-sag",
+                 "kas",
+                 "goz-sol",
+                 "goz-sag",
+                 "agiz",
+                 "goz-kapali",
+                 "agiz-acik",
+                 "agiz-gulus"
+             ],
+    "gizli":  [
+                  "goz-kapali",
+                  "agiz-acik",
+                  "agiz-gulus"
+              ],
+    "bagli":  {
+                  "kas":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa",
+                  "sac-topuz-sol":  "kafa",
+                  "sac-topuz-sag":  "kafa",
+                  "sac-arka":  "kafa",
+                  "agiz-acik":  "kafa",
+                  "agiz-gulus":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1026,
+                               664
+                           ],
+                  "kas":  [
+                              1032,
+                              326
+                          ],
+                  "goz-sol":  [
+                                  918,
+                                  434
+                              ],
+                  "goz-sag":  [
+                                  1136,
+                                  440
+                              ],
+                  "agiz":  [
+                               1022,
+                               576
+                           ],
+                  "goz-kapali":  [
+                                     1028,
+                                     444
+                                 ],
+                  "sac-topuz-sol":  [
+                                        854,
+                                        190
+                                    ],
+                  "sac-topuz-sag":  [
+                                        1222,
+                                        190
+                                    ],
+                  "sac-arka":  [
+                                   1030,
+                                   208
+                               ],
+                  "kol-sol":  [
+                                  866,
+                                  796
+                              ],
+                  "kol-sag":  [
+                                  1174,
+                                  800
+                              ],
+                  "bacak-sol":  [
+                                    880,
+                                    1490
+                                ],
+                  "bacak-sag":  [
+                                    1172,
+                                    1490
+                                ],
+                  "govde":  [
+                                1026,
+                                1580
+                            ],
+                  "agiz-acik":  [
+                                    1022,
+                                    576
+                                ],
+                  "agiz-gulus":  [
+                                     1022,
+                                     576
+                                 ]
+              }
+}
