@@ -4,6 +4,7 @@
  * beşik sallama (yön değişimi = salınım), deneme/ipucu kuralı. Ses algılama eşiklerine dokunulmaz
  * (ekip/SES-SISTEMI.md): kolaylık yalnız oyunun hızından ve kurallarından verilir.
  */
+import NINNI_JSON from '../../assets/muzik/ninni.json';
 import type { Nota } from './sarki';
 
 /** 3-4 yaş grubu mu (5-6: büyük grup) */
@@ -68,29 +69,56 @@ export function gulme(konusmaSayisi: number, inceFark: number): 'kikir' | 'kahka
 
 // ---------------------------------------------------------------- ninni
 /**
- * "Dandini dandini dastana" (geleneksel, anonim). Kulaktan sade düzenleme, ninni ölçüsünde; ilk nota 67 (çocuğun
- * kendi "sol"üne göre ton bağımsız değerlendirilir: sarki.ts notaDegerlendir).
+ * Ninni Gemini (Lyria) kaydıdır, özgün sözler: "Dandini dandini Ege / Yumdu gözünü bebek / Ay geldi, yıldız geldi /
+ * Uyu da büyü Ege". Oyun şarkıdaki notalara göre ilerler: heceler, notalar (midi), vuruşlar ve zamanlar kayıttan
+ * ölçüldü (assets/muzik/ninni.json; "tahmini" heceler de kullanılır). Ton bağımsız değerlendirilir: çocuğun
+ * kendi ilk notası referans (sarki.ts notaDegerlendir, refMidi = NINNI_REF_MIDI).
  */
-const NINNI_SATIRLAR: [string[], number[], number[]][] = [
-  [['Dan', 'di', 'ni', 'dan', 'di', 'ni', 'das', 'ta', 'na'], [67, 67, 69, 67, 67, 69, 70, 69, 67], [1, 1, 1, 1, 1, 1, 1, 1, 2]],
-  [['Da', 'na', 'lar', 'gir', 'miş', 'bos', 'ta', 'na'], [65, 65, 67, 69, 67, 65, 64, 62], [1, 1, 1, 1, 1, 1, 1, 2]],
-  [['Kov', 'bos', 'tan', 'cı', 'da', 'na', 'yı'], [67, 69, 70, 69, 67, 65, 64], [1, 1, 1, 1, 1, 1, 2]],
-  [['Ye', 'me', 'sin', 'la', 'ha', 'na', 'yı'], [65, 64, 62, 64, 65, 64, 62], [1, 1, 1, 1, 1, 1, 2]],
-];
-
-export function ninni(dize = 4): Nota[] {
-  const notalar: Nota[] = [];
-  let t = 0;
-  NINNI_SATIRLAR.slice(0, dize).forEach(([heceler, midiler, sureler], satir) => {
-    heceler.forEach((hece, i) => {
-      notalar.push({ midi: midiler[i], vurus: sureler[i], hece, satir, bas: t });
-      t += sureler[i];
-    });
-    t += 1;
-  });
-  return notalar;
+interface NinniHece {
+  hece: string;
+  satir: number;
+  basla_ms: number;
+  bitir_ms: number;
+  midi: number;
+  vurus: number;
+  tahmini?: boolean;
 }
-/** Ninni vuruşu (sn): yavaş */
+const NINNI_KAYIT = NINNI_JSON as { bpm: number; baslangic_ms: number; sure_ms: number; heceler: NinniHece[] };
+/** Kayıttaki dize sayısı (dinlemede hepsi çalar; değerlendirme yaşa göre ilk dizelerden) */
+export const NINNI_DIZE = new Set(NINNI_KAYIT.heceler.map((x) => x.satir)).size;
+/** Referans nota: ninninin ilk notası ("Dan"; çocuğun tonu buradan ölçülür) */
+export const NINNI_REF_MIDI = NINNI_KAYIT.heceler[0].midi;
+
+/** Ninninin ilk `dize` dizesi, kayıttaki notalar ve zamanlarla (basMs: kayıttaki başlangıç, sureMs: sonraki heceye) */
+export function ninni(dize = NINNI_DIZE): Nota[] {
+  const vurusMs = 60000 / NINNI_KAYIT.bpm;
+  const H = NINNI_KAYIT.heceler;
+  const ilk = H[0].basla_ms;
+  return H.filter((x) => x.satir < dize).map((x, i) => {
+    const sonraki = H[i + 1];
+    const son = sonraki && sonraki.satir === x.satir ? sonraki.basla_ms : x.bitir_ms;
+    return { midi: x.midi, vurus: x.vurus, hece: x.hece, satir: x.satir, bas: (x.basla_ms - ilk) / vurusMs, basMs: x.basla_ms, sureMs: Math.max(120, son - x.basla_ms) };
+  });
+}
+/** Kayıtta verilen dizenin bittiği an (ms, dosyanın başından) */
+export function ninniSonuMs(dize = NINNI_DIZE): number {
+  const s = NINNI_KAYIT.heceler.filter((x) => x.satir < dize);
+  return s[s.length - 1].bitir_ms;
+}
+/** Kayıttaki satır arası (ms): dizenin son hecesinin bitişinden sonraki dizenin ilk hecesine */
+export function ninniSatirArasiMs(satir: number): number {
+  const H = NINNI_KAYIT.heceler;
+  const son = H.filter((x) => x.satir === satir).pop();
+  const sonraki = H.find((x) => x.satir === satir + 1);
+  return son && sonraki ? Math.max(0, sonraki.basla_ms - son.bitir_ms) : 0;
+}
+/**
+ * Çocuk kayıttan yavaş söyler (kayıt 77 bpm; hızlı heceler var). 3-4 yaş daha yavaş. Bu kadar kısa notada
+ * (ms, yavaşlatılmış) ton puanlanmaz, ses çıkarması yeter.
+ */
+export const ninniYavas = (yas: number) => (kucukMu(yas) ? 1.7 : 1.45);
+export const NINNI_KISA_MS = 330;
+/** Ninni vuruşu (sn): kayıt çalınamazsa müzik kutusu bu tempoyla çalar (kayıt 77 bpm ≈ 0.78 sn) */
 export const NINNI_VURUS = 0.72;
 
 // ---------------------------------------------------------------- beşik sallama

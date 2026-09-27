@@ -39,7 +39,13 @@ import {
   IPUCU_SURE,
   NINNI_GECER,
   ninni,
+  NINNI_DIZE,
+  NINNI_KISA_MS,
+  NINNI_REF_MIDI,
+  ninniSatirArasiMs,
+  ninniSonuMs,
   NINNI_VURUS,
+  ninniYavas,
   Salinim,
   SERBEST_KUKLA,
   SERT_GUC,
@@ -53,6 +59,7 @@ import { Oyuncu } from './oyuncu';
 import { cocukOyuncu } from './ege-cocuk';
 import { Sahne } from './sahne';
 import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
+import NINNI_SESI from '../../assets/muzik/ninni-sozlu.mp3?url';
 import './ege.css';
 
 const M = E.mino;
@@ -519,7 +526,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     if (!TEST_MODU) muzik.baslat();
   };
   const muzikKutu = () => {
-    if (!TEST_MODU) muzik.kutu(ninni(1).concat(ninni(2).slice(ninni(1).length)).map((n) => ({ midi: n.midi, vurus: n.vurus })));
+    // ninninin kayıttaki notaları (assets/muzik/ninni.json), dört dize
+    if (!TEST_MODU) muzik.kutu(ninni().map((n) => ({ midi: n.midi, vurus: n.vurus })));
   };
   /** Sesli görev: müzik durur (mikrofon duymasın), bitince önceki müzik devam */
   const sesliGorev = async <T>(f: () => Promise<T>, sonra: 'oyuncak' | 'kutu' | null = 'oyuncak'): Promise<T> => {
@@ -2174,17 +2182,20 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   }
 
   /**
-   * Ninni: önce müzik kutusu bir kez çalar (dinle), sonra çocuk kısık sesle söyler ya da beşiği sallar
-   * (her yön değişimi bir nota). Doğru söylenen / sallanan her nota tavandaki bir yıldızı yakar, beşik sallanır.
-   * Yüksek seste Ege bir gözünü açar, Mino "Şşş, daha kısık!" der (cezasız).
+   * Ninni: önce ninninin kaydı (Gemini, sözlü) bir kez çalar, heceler kayıtla birlikte yanar (dinle); sonra çocuk
+   * kısık sesle söyler ya da beşiği sallar (her yön değişimi bir nota). Oyun kayıttaki notalara göre ilerler
+   * (assets/muzik/ninni.json). Dinlemede kaydın bütün dizeleri çalar; değerlendirme yaşa göre ilk `dize` dizeden.
+   * Doğru söylenen / sallanan her nota tavandaki bir yıldızı yakar, beşik sallanır. Yüksek seste Ege bir gözünü
+   * açar, Mino "Şşş, daha kısık!" der (cezasız). Sıra kuralı: kayıt çalarken mikrofon dinlemez; çocuk söylerken
+   * altyapı çalmaz (oyunun sesi mikrofona karışmasın, ekip/SES-SISTEMI.md).
    */
   async function ninniGorevi(dize: number, dinlet: boolean): Promise<void> {
     const notalar = ninni(dize);
-    const V = NINNI_VURUS;
+    const tum = dinlet ? ninni(NINNI_DIZE) : notalar;
     const panel = h('div.mc-karaoke.eg-karaoke');
-    const heceEl = notalar.map((n) => h('span.mc-hece', { style: `--h:${(n.midi - 62) / 16}` }, n.hece));
+    const heceEl = tum.map((n) => h('span.mc-hece', { style: `--h:${(n.midi - 58) / 16}` }, n.hece));
     const satirlar: HTMLElement[] = [];
-    notalar.forEach((n, i) => {
+    tum.forEach((n, i) => {
       satirlar[n.satir] ??= h('div.mc-satir');
       satirlar[n.satir].append(heceEl[i]);
     });
@@ -2205,18 +2216,15 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       besikIc.animate([{ rotate: `${-yon * 3 * guc}deg` }, { rotate: `${yon * 4 * guc}deg` }, { rotate: `${yon * 1 * guc}deg` }], { duration: sure(700), easing: 'ease-in-out', fill: 'forwards' });
     };
     try {
-      // --- dinle: müzik kutusu
+      // --- dinle: ninninin kaydı (bütün dizeler), heceler kayıtla birlikte yanar
       if (dinlet) {
         muzik.durdur();
         await mSoyle(M.dinle);
         ui.ipucu(I.ninni_dinle);
-        for (const [i, n] of notalar.entries()) {
-          hece(i);
-          efektCal(() => S.kutuNota(n.midi, 0.12, n.vurus * V * 1.6), n.vurus * V * 1000);
-          besikSalla(0.6);
-          await bekle(n.vurus * V * 1000 + (notalar[i + 1] && notalar[i + 1].satir !== n.satir ? V * 1000 : 0));
-        }
+        await ninniDinlet(tum, hece, besikSalla);
         heceEl.forEach((e) => e.classList.remove('simdi'));
+        // söyleme yaşa göre ilk dizelerden: kalan dizeler panelden kalkar
+        satirlar.slice(dize).forEach((s) => s.classList.add('gizli'));
       }
       // --- sen söyle / salla
       await mSoyle(M.sen);
@@ -2241,9 +2249,55 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     }
   }
 
+  /**
+   * Ninninin sözlü kaydını çalar; heceler kaydın zamanıyla (basMs) yanar, her hecede beşik hafifçe sallanır.
+   * Kayıt çalarken mikrofon dinlemez (kulak.sustur). Kayıt açılamazsa (ya da testte) aynı notalar müzik kutusuyla.
+   */
+  function ninniDinlet(notalar: Nota[], hece: (i: number) => void, besikSalla: (g?: number) => void): Promise<void> {
+    const kutuyla = async () => {
+      for (const [i, n] of notalar.entries()) {
+        hece(i);
+        const ms = n.sureMs ?? NINNI_VURUS * 1000;
+        efektCal(() => S.kutuNota(n.midi, 0.12, (ms / 1000) * 1.6), ms);
+        besikSalla(0.6);
+        await bekle(ms + (notalar[i + 1] && notalar[i + 1].satir !== n.satir ? ninniSatirArasiMs(n.satir) : 0));
+      }
+    };
+    if (TEST_MODU) return kutuyla();
+    const bitis = ninniSonuMs(Math.max(...notalar.map((n) => n.satir)) + 1);
+    const ses = new Audio(NINNI_SESI);
+    ses.volume = durum.i.ayarlar.seviye;
+    kulak.sustur(bitis + 800);
+    return ses.play().then(
+      () =>
+        gorev<void>((coz) => {
+          let simdi = -1;
+          const dur = tik(() => {
+            const t = ses.currentTime * 1000;
+            let k = -1;
+            notalar.forEach((n, j) => {
+              if (t >= (n.basMs ?? 0)) k = j;
+            });
+            if (k >= 0 && k !== simdi) {
+              hece((simdi = k));
+              besikSalla(0.6);
+            }
+            if (t >= bitis + 250 || ses.ended) coz();
+          });
+          return () => {
+            dur();
+            ses.pause();
+          };
+        }),
+      () => kutuyla(),
+    );
+  }
+
   /** Mikrofonla söyleme (dokunma: beşiği sallamak o notayı sayar). Dönüş: iyi nota sayısı */
   async function ninniSoyle(notalar: Nota[], hece: (i: number) => void, heceEl: HTMLElement[], yildizlar: NinniYildizlari, besikSalla: (g?: number) => void): Promise<number> {
-    const V = NINNI_VURUS;
+    // çocuk kayıttan yavaş söyler; çok kısa hecelerde ton puanlanmaz, ses çıkarması yeter
+    const YAVAS = ninniYavas(yas);
+    const kisa = (n: Nota) => (n.sureMs ?? 600) * YAVAS < NINNI_KISA_MS;
     let iyi = 0;
     let referans: number | null = null;
     const refPerdeler: number[] = [];
@@ -2263,7 +2317,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       if (sesVar(o, kulak.ayar, 10)) sesliKare++;
       if (o.perde !== null && sesVar(o, kulak.ayar, 10)) {
         perdeler.push(o.perde);
-        if (simdiki.satir === 0 && simdiki.midi === 67) refPerdeler.push(o.perde);
+        if (simdiki.satir === 0 && simdiki.midi === NINNI_REF_MIDI) refPerdeler.push(o.perde);
       }
       // yüksek ses: Ege bir gözünü açar
       if (sv.yuksekSure > 0.3 && performance.now() - kisikUyari > 3500) {
@@ -2280,10 +2334,10 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         kareSay = 0;
         sallandi = false;
         hece(i);
-        await bekle(n.vurus * V * 1000);
+        await bekle((n.sureMs ?? NINNI_VURUS * 1000) * YAVAS);
         if (!referans) referans = referansBul(refPerdeler);
         const oran2 = kareSay ? sesliKare / kareSay : 0;
-        const r = sallandi ? 'dogru' : notaDegerlendir({ perdeler, sesli: oran2, midi: n.midi, referans, tolerans: 3, yalnizSes: !ayar.melodi || i < 2 });
+        const r = sallandi ? 'dogru' : notaDegerlendir({ perdeler, sesli: oran2, midi: n.midi, referans, tolerans: 3, yalnizSes: !ayar.melodi || i < 2 || kisa(n), refMidi: NINNI_REF_MIDI });
         const tamam = r === 'dogru' || r === 'ses';
         heceEl[i].classList.add(tamam ? 'iyi' : r === 'sessiz' ? 'bos' : 'kacti');
         if (tamam) {
@@ -2293,12 +2347,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
           besikSalla(0.8);
         } else if (referans && r !== 'sessiz' && perdeler.length) {
           // anlık: çok uzaksa Ege kaşını kaldırır (cezasız)
-          const f = anlikFark(perdeler[perdeler.length - 1], referans, n.midi);
+          const f = anlikFark(perdeler[perdeler.length - 1], referans, n.midi, NINNI_REF_MIDI);
           if (Math.abs(f) > 5) ege.ifade('tek-goz', 700);
         }
         if (notalar[i + 1] && notalar[i + 1].satir !== n.satir) {
           simdiki = null;
-          await bekle(V * 1000);
+          await bekle(Math.max(700, ninniSatirArasiMs(n.satir) * YAVAS));
         }
       }
     } finally {

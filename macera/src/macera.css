@@ -1249,6 +1249,9 @@
     gap: 3px;
     min-height: 34px;
   }
+  .mc-kok .mc-bolum[data-bolum='ege'] .eg-ninni-yildiz {
+    top: 44%;
+  }
   .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-hece {
     padding: 2px 5px;
     border-radius: 9px;
