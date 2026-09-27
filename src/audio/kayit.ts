@@ -132,3 +132,6 @@ export function kayitDurdur() {
   }
   calan = null;
 }
+
+/** Bir cümlenin kaydını çözülmüş hâliyle verir (kayıt yoksa null). Filmin MP4 kaydında sesi dosyaya işlemek için. */
+export const kayitTamponu = (metin: string): Promise<AudioBuffer | null> => tampon(metin);

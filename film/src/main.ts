@@ -12,6 +12,9 @@ import { filmEkrani } from './ekranlar';
 // Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
 sesKokuAyarla('../ses/', './ses/');
 
+// MP4 kaydı (scripts/film/mp4.mjs): çevrimdışı ses işleyici yalnız ?kayit=1'de yüklenir
+if (new URLSearchParams(location.search).has('kayit')) void import('./kayit');
+
 ekranKaydet('film', filmEkrani);
 // beklenmedik hatada "Baştan başla" açılışa döner: açılış = film kapağı
 ekranKaydet('acilis', filmEkrani);

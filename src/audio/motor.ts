@@ -63,6 +63,38 @@ export function sesMotorunuAc(): AudioContext | null {
   return ctx;
 }
 
+/**
+ * Ses bağlamını geçici olarak başkasıyla değiştirir (ör. filmin MP4 kaydında OfflineAudioContext: aynı efekt,
+ * müzik ve konuşma kodu dosyaya işlenir). Aynı kanal zinciri yeni bağlamda kurulur; dönen işlev eskisine döndürür.
+ * Oyunlarda kullanılmaz.
+ */
+export function baglamiDegistir(yeni: BaseAudioContext): () => void {
+  const eski = { ctx, ana, efektKanal, muzikKanal, konusmaKanal, konusmaAnaliz };
+  const c = yeni as AudioContext;
+  ctx = c;
+  ana = c.createGain();
+  const comp = c.createDynamicsCompressor();
+  comp.threshold.value = -12;
+  comp.knee.value = 12;
+  comp.ratio.value = 3;
+  ana.connect(comp).connect(c.destination);
+  efektKanal = c.createGain();
+  muzikKanal = c.createGain();
+  konusmaKanal = c.createGain();
+  konusmaKanal.gain.value = 1.15;
+  efektKanal.connect(ana);
+  muzikKanal.connect(ana);
+  konusmaKanal.connect(ana);
+  konusmaAnaliz = null;
+  const a = durum.i.ayarlar;
+  ana.gain.value = a.seviye;
+  efektKanal.gain.value = a.efekt ? 0.9 : 0;
+  muzikKanal.gain.value = a.muzik ? 1 : 0;
+  return () => {
+    ({ ctx, ana, efektKanal, muzikKanal, konusmaKanal, konusmaAnaliz } = eski);
+  };
+}
+
 export function seviyeleriUygula() {
   if (!ctx || !ana || !efektKanal) return;
   const a = durum.i.ayarlar;
