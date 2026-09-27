@@ -1,0 +1,106 @@
+﻿{
+    "ad":  "kino",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "kulak-sol",
+                 "govde",
+                 "kol-sol",
+                 "kol-sag",
+                 "fular",
+                 "kafa",
+                 "kulak-sag",
+                 "goz-sol",
+                 "goz-sag",
+                 "agiz",
+                 "dil",
+                 "goz-kapali",
+                 "agiz-acik",
+                 "agiz-kapali",
+                 "dil-disarida"
+             ],
+    "gizli":  [
+                  "goz-kapali",
+                  "agiz-acik",
+                  "agiz-kapali",
+                  "dil-disarida"
+              ],
+    "bagli":  {
+                  "kulak-sol":  "kafa",
+                  "kulak-sag":  "kafa",
+                  "agiz":  "kafa",
+                  "dil":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "goz-kapali":  "kafa",
+                  "agiz-acik":  "kafa",
+                  "agiz-kapali":  "kafa",
+                  "dil-disarida":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               975,
+                               1180
+                           ],
+                  "kulak-sol":  [
+                                    600,
+                                    390
+                                ],
+                  "kulak-sag":  [
+                                    1420,
+                                    380
+                                ],
+                  "goz-sol":  [
+                                  686,
+                                  758
+                              ],
+                  "goz-sag":  [
+                                  1245,
+                                  758
+                              ],
+                  "agiz":  [
+                               930,
+                               1000
+                           ],
+                  "dil":  [
+                              965,
+                              1040
+                          ],
+                  "goz-kapali":  [
+                                     965,
+                                     770
+                                 ],
+                  "agiz-acik":  [
+                                    910,
+                                    990
+                                ],
+                  "agiz-kapali":  [
+                                      910,
+                                      930
+                                  ],
+                  "dil-disarida":  [
+                                       910,
+                                       1040
+                                   ],
+                  "kol-sol":  [
+                                  765,
+                                  1275
+                              ],
+                  "kol-sag":  [
+                                  1215,
+                                  1290
+                              ],
+                  "fular":  [
+                                1030,
+                                1230
+                            ],
+                  "kuyruk":  [
+                                 1262,
+                                 1648
+                             ],
+                  "govde":  [
+                                1040,
+                                1880
+                            ]
+              }
+}
