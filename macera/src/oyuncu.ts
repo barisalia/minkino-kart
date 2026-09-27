@@ -26,6 +26,11 @@ export interface OyuncuSecenek {
   golge?: number;
   /** yalnız bu pozları yükle (ör. Bölüm 2: parti şapkalı pozlar olmasın); yoksa hepsi */
   pozlar?: Poz[];
+  /**
+   * Parçalı iskelet (ör. Bölüm 2: src/karakter ile Ada, Can): el gövdeye eklenir; poz(p) true dönen pozlarda
+   * resim yerine iskelet görünür (false: o pozun resmi, ör. "saklanıyor"). Yoksa davranış aynı.
+   */
+  iskelet?: { el: HTMLElement; poz: (p: Poz) => boolean };
 }
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -79,6 +84,8 @@ export class Oyuncu {
       this.resimler.set(p, img);
       govde.append(img);
     }
+    this.iskelet = s.iskelet ?? null;
+    if (this.iskelet) govde.append(this.iskelet.el);
     if (s.sapka) {
       const { x, y, w, d = 0 } = s.sapka;
       this.sapkaEl = h('img.mc-oy-sapka', { src: adres('parti/sapka'), alt: '', draggable: 'false', style: `--sx:${x}%;--sy:${y}%;--sw:${w}%;--sd:${d}deg` });
@@ -106,9 +113,17 @@ export class Oyuncu {
     this.goster(this.simdiki);
   }
 
+  private iskelet: OyuncuSecenek['iskelet'] | null;
+
   private goster(p: Poz) {
     const sapkaliVar = this.resimler.has('sapkali');
     let hedef: Poz = this.resimler.has(p) ? p : 'normal';
+    // iskelet bu pozu oynatıyorsa resimler kapanır
+    const iskeletle = this.iskelet?.poz(p) ?? false;
+    if (this.iskelet) {
+      this.iskelet.el.hidden = !iskeletle;
+      if (iskeletle) hedef = '' as Poz;
+    }
     if (hedef === 'normal' && this.sapkaTakili && sapkaliVar) hedef = 'sapkali';
     this.resimler.forEach((img, k) => {
       const onceki = img.classList.contains('aktif');

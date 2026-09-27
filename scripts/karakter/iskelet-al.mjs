@@ -5,7 +5,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const KAYNAK = ['ekip/pazar-musteri', 'ekip/film/cizim'];
+// ekip/cocuk: çocuk karakterler (Ada, Can, Elif…; Sesli Maceralar)
+const KAYNAK = ['ekip/pazar-musteri', 'ekip/film/cizim', 'ekip/cocuk'];
 /** [klasör, dosya adı (uzantısız), iskelet adı] */
 const ANA = [
   ['ekip/kino', 'kino-final', 'kino'],
@@ -17,7 +18,18 @@ const ANA = [
  * belgesinden: Ege → ekip/ege/IFADELER.md). src/karakter/karakter.ts `ifade(ad)` bunları kullanır.
  */
 const GOZLER = ['goz-sol', 'goz-sag', 'goz-kapali'];
+/** Çocuk karakterler: gizli ekler goz-kapali, agiz-acik (konuşma / şaşkın), agiz-gulus */
+const COCUK_IFADE = {
+  saskin: { goster: ['agiz-acik'], gizle: ['agiz'] },
+  mutlu: { goster: ['agiz-gulus'], gizle: ['agiz'] },
+  dilek: { goster: ['goz-kapali', 'agiz-gulus'], gizle: ['goz-sol', 'goz-sag', 'agiz'] },
+};
 const IFADE_TABLOSU = {
+  ada: COCUK_IFADE,
+  can: COCUK_IFADE,
+  elif: COCUK_IFADE,
+  deniz: COCUK_IFADE,
+  zeynep: COCUK_IFADE,
   ege: {
     agliyor: { goster: ['goz-agliyor', 'agiz-agliyor'], gizle: [...GOZLER, 'kas', 'agiz'] },
     am: { goster: ['agiz-am'], gizle: ['agiz'] },

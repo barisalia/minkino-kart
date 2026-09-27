@@ -47,6 +47,7 @@ import * as S from './ege-ses';
 import { SesSeviyesi } from './ege-seviye';
 import { Ipucu, parmak, Surukle, tasi, type Hedef } from './ege-surukle';
 import { Oyuncu } from './oyuncu';
+import { cocukOyuncu } from './ege-cocuk';
 import { Sahne } from './sahne';
 import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
 import './ege.css';
@@ -229,9 +230,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
 
   // --- çocuklar ve Mino
-  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, golge: 24, pozlar: ['normal', 'saskin', 'dilek', 'mutlu', 'alkis', 'dans'] });
-  const can = new Oyuncu({ ad: 'can', resim: 'parti/can', boy: 23.28, oran: 422 / 558, golge: 28.6, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
-  const elif = new Oyuncu({ ad: 'elif', resim: 'parti/elif', boy: 20.7, oran: 366 / 583, golge: 26, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
+  // çocuklar: parçalı iskeleti olan (Ada, Can) ortak Karakter bileşeniyle oynar (ege-cocuk.ts); ölçek parti tuvaliyle aynı
+  const { oyuncu: ada, iskelet: adaI } = cocukOyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, golge: 24, pozlar: ['normal', 'saskin', 'dilek', 'mutlu', 'alkis', 'dans'] });
+  const { oyuncu: can, iskelet: canI } = cocukOyuncu({ ad: 'can', resim: 'parti/can', boy: 23.28, oran: 422 / 558, golge: 28.6, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
+  const { oyuncu: elif, iskelet: elifI } = cocukOyuncu({ ad: 'elif', resim: 'parti/elif', boy: 20.7, oran: 366 / 583, golge: 26, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
+  const iskeletler = { ada: adaI, can: canI, elif: elifI };
   ada.koy(42, Z + 3);
   ada.katman = 8;
   can.koy(118, Z + 2);
@@ -489,6 +492,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     muzik.durdur();
     mino.kapat();
     ege.kapat();
+    Object.values(iskeletler).forEach((i) => i?.kapat());
     acikSurukle.forEach((s) => s.kapat());
     acikIpucu.forEach((i) => i.kapat());
     clearInterval(anneZzz);
@@ -1315,6 +1319,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         el.dataset.takili = '1';
         void tasi(el, x, y, 500, w);
         void kim.zipla(10);
+        // kuklayı tutan kol kalkar (ayı Ada'nın sağında, civciv Can'ın solunda)
+        (kim === ada ? adaI : canI)?.kukla(kim === ada ? 'sag' : 'sol');
         efektCal(() => S.pop(), 300);
         ip.ilerle();
         if (++takili === 2) coz();
@@ -1343,6 +1349,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     /** Kukla konuşur (ağzı açılıp kapanır); Ege ona bakar ve güler (her konuşmada gülmesi büyür) */
     const konustur = async (hangi: 'civciv' | 'ayi', inceFark = 3, sesli = false) => {
       const k = hangi === 'civciv' ? civK : ayiK;
+      (hangi === 'civciv' ? canI : adaI)?.kuklaSalla();
       k.el.classList.remove('konusuyor');
       void k.el.offsetWidth;
       k.el.classList.add('konusuyor');
@@ -1600,6 +1607,21 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   /** Oyuncu yüzünü elleriyle kapatır (cee-ee): tasarımcının pozu (assets/ege/cee-<ad>.webp, oyuncunun tuvaline hizalı) ya da kodla eller */
   function elKapa(o: Oyuncu, ad: 'ada' | 'can' | 'elif'): HTMLElement {
     const govde = o.el.querySelector('.mc-oy-govde');
+    const isk = iskeletler[ad];
+    const ellerUrl = egeAdres(`cee-${ad}-eller`);
+    if (isk && ellerUrl && govde) {
+      isk.cee(true);
+      const img = h('img.mc-oy-resim.eg-cee-resim.eg-cee-eller', { src: ellerUrl, alt: '', draggable: 'false', 'data-ege': `eller-${ad}` });
+      govde.append(img);
+      // açılınca (eleman kaldırılınca) kollar iner
+      new MutationObserver((_, g) => {
+        if (!img.isConnected) {
+          isk.cee(false);
+          g.disconnect();
+        }
+      }).observe(govde, { childList: true });
+      return img;
+    }
     const url = egeAdres(`cee-${ad}`);
     if (url && govde) {
       const img = h('img.mc-oy-resim.eg-cee-resim.aktif', { src: url, alt: '', draggable: 'false', 'data-ege': `eller-${ad}` });

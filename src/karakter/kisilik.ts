@@ -23,7 +23,7 @@ export interface Kisilik {
   /** iskelette kafa eğilmesinin genliği (varsayılan 1.8) */
   kafaGenlik?: number;
   /** iskelete özel açı sınırları (±derece): fazlasında eklem yerinde boşluk açılan karakterler için */
-  sinir?: { kafa?: number; kulak?: number; bacak?: number; kuyruk?: [number, number]; govde?: number; kanat?: [number, number] };
+  sinir?: { kafa?: number; kulak?: number; bacak?: number; kuyruk?: [number, number]; govde?: number; kanat?: [number, number]; topuz?: number };
 }
 
 export const KISILIK: Record<string, Kisilik> = {
@@ -42,4 +42,12 @@ export const KISILIK: Record<string, Kisilik> = {
   // kuş iskeleti: kafa ve gövde tek parça (gaga, gözler gövdeye bağlı); kanat -20 … +30, bacak ±6, kuyruk ±8, gövde ±3
   kus: { yuruyus: 'uc', adim: 180, gelis: 1500, huy: 'gaga', dans: 'kanat', agiz: [0.86, 0.36], hayir: 12, sinir: { bacak: 6, kuyruk: [-8, 8], govde: 3, kanat: [-20, 30] } },
 };
+/**
+ * Çocuk karakterler (ekip/cocuk iskeletleri; Sesli Maceralar). Sınırlar tasarımcının: kol -40 (içe) … +120 (yukarı),
+ * bacak ±14, kafa ±12, saç topuzu ±12. Ada neşeli ve zıplayan, Can hareketli ve koşturan.
+ */
+const COCUK_SINIR = { kafa: 12, bacak: 14, topuz: 12, kulak: 12 };
+KISILIK.ada = { yuruyus: 'hop', adim: 380, gelis: 1200, huy: 'ayak', dans: 'hop', agiz: [0.5, 0.28], hayir: 8, kol: [-40, 120], kafaGenlik: 1.3, sinir: COCUK_SINIR };
+KISILIK.can = { yuruyus: 'tiris', adim: 240, gelis: 900, huy: 'ayak', dans: 'kovala', agiz: [0.5, 0.43], hayir: 9, kol: [-40, 120], kafaGenlik: 1.3, sinir: COCUK_SINIR };
+KISILIK.elif = { ...KISILIK.ada, yuruyus: 'salin', adim: 420 };
 export const kisilik = (ad: string): Kisilik => KISILIK[ad] ?? KISILIK.kopek;

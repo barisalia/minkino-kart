@@ -372,6 +372,9 @@ export class Karakter {
     const aci: Record<string, number> = {
       'kulak-sol': -sin(p.kulakSol, s.kulak),
       'kulak-sag': sin(p.kulakSag, s.kulak),
+      // çocukların saç topuzları kulak gibi salınır
+      'sac-topuz-sol': -sin(p.kulakSol, s.topuz ?? s.kulak),
+      'sac-topuz-sag': sin(p.kulakSag, s.topuz ?? s.kulak),
       // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
       'kol-sol': kolSinir(p.kolSol, kolS),
       'kol-sag': -kolSinir(p.kolSag, kolS),
