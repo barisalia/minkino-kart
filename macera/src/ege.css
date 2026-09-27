@@ -1,0 +1,1185 @@
+/* Sesli Maceralar Bölüm 2: Şşş, Ege Uyuyor! Yalnız .eg-sahne (ve açılış kartı) altında; hareket transform / opacity ile. */
+
+/* ---------------------------------------------------------------- oda ve ışık */
+.mc-kok .eg-sahne .mc-oda {
+  /* pencere dar ekranda da görünsün (ege.ts arkaNokta ile aynı: 24% 82%) */
+  background-position: 24% 82%;
+}
+.mc-kok .eg-sahne .eg-aksam {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 150, 80, 0.16), rgba(255, 190, 120, 0.06) 55%, rgba(120, 70, 150, 0.1));
+  transition: opacity 1.4s;
+}
+.mc-kok .eg-sahne.aksamustu .eg-aksam {
+  background: linear-gradient(180deg, rgba(180, 110, 150, 0.26), rgba(255, 170, 110, 0.12) 55%, rgba(90, 60, 140, 0.2));
+}
+.mc-kok .eg-sahne .eg-gece {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: linear-gradient(180deg, #3d4a9a, #6272c4 60%, #4a58a8);
+  mix-blend-mode: multiply;
+  opacity: var(--gece, 0);
+  transition: opacity 0.25s;
+}
+.mc-kok .eg-sahne.gece .eg-gece {
+  transition: opacity 1.4s;
+}
+.mc-kok .eg-sahne .eg-gece-kullanilmiyor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--lx, 90%) 88%, rgba(255, 196, 120, 0.45), rgba(255, 196, 120, 0.1) 26%, transparent 50%);
+  opacity: 0;
+  transition: opacity 1s;
+}
+.mc-kok .eg-sahne.lamba-acik .eg-gece::after {
+  opacity: 1;
+}
+
+/* pencere: gece gökyüzü (perde kapanınca / finalde) */
+.mc-kok .eg-sahne .eg-pencere {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 70% 30%, #3b4f9e, #1c2460 70%);
+  opacity: 0;
+  transition: opacity 1.6s;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mc-kok .eg-sahne.aksamustu .eg-pencere {
+  opacity: 0.55;
+}
+.mc-kok .eg-sahne.gece .eg-pencere,
+.mc-kok .eg-sahne.final .eg-pencere {
+  opacity: 1;
+}
+.mc-kok .eg-sahne.final .eg-pencere {
+  z-index: 21;
+}
+.mc-kok .eg-pencere-ay {
+  position: absolute;
+  left: 58%;
+  top: 18%;
+  width: 26%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fffbe0, #ffe99a 60%, #f3cf63);
+  box-shadow: 0 0 18px 6px rgba(255, 240, 170, 0.55);
+}
+.mc-kok .eg-pencere-ay::after {
+  content: '';
+  position: absolute;
+  left: 30%;
+  top: 44%;
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(230, 190, 90, 0.5);
+  box-shadow: 14px -10px 0 -2px rgba(230, 190, 90, 0.4);
+}
+.mc-kok .eg-pencere-yildiz {
+  position: absolute;
+  left: calc(10% + var(--i) * 13%);
+  top: calc(30% + (var(--i) * 37 % 5) * 9%);
+  width: 5%;
+  aspect-ratio: 1;
+  background: #fff6c8;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: eg-pirilti 2.4s ease-in-out calc(var(--i) * -0.4s) infinite;
+}
+@keyframes eg-pirilti {
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+/* perde: iki kanat, --p 0 (toplu, kenarlarda) … 1 (kapalı) */
+.mc-kok .eg-sahne .eg-perde {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s;
+}
+.mc-kok .eg-sahne .eg-perde.gorunur {
+  opacity: 1;
+}
+.mc-kok .eg-sahne .eg-perde.suruklenir {
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+}
+.mc-kok .eg-perde-kanat {
+  position: absolute;
+  top: 0;
+  width: 50.5%;
+  height: 100%;
+  background: var(--resim) 0 0 / 200% 100% no-repeat;
+  transform: scaleX(calc(0.2 + 0.8 * var(--p, 0)));
+  transition: transform 0.25s cubic-bezier(0.3, 1.2, 0.5, 1);
+  filter: drop-shadow(0 6px 5px rgba(20, 20, 60, 0.25));
+}
+.mc-kok .eg-perde-kanat.sol {
+  left: 0;
+  transform-origin: 0 50%;
+}
+.mc-kok .eg-perde-kanat.sag {
+  right: 0;
+  background-position: 100% 0;
+  transform-origin: 100% 50%;
+}
+.mc-kok .eg-perde.kapali .eg-perde-kanat {
+  transition-duration: 0.6s;
+}
+.mc-kok .eg-sahne.final .eg-perde-kanat {
+  transition: transform 2.4s cubic-bezier(0.45, 0, 0.3, 1);
+}
+.mc-kok .eg-sahne[data-eg-gorev='hazirla'] .eg-perde.suruklenir .eg-perde-kanat {
+  animation: eg-perde-davet 2.6s ease-in-out infinite;
+}
+@keyframes eg-perde-davet {
+  0%, 70%, 100% { translate: 0 0; }
+  80% { translate: 2% 0; }
+  90% { translate: -1% 0; }
+}
+
+/* tavanda dönen yıldızlar (gece lambası): tek katman döner */
+.mc-kok .eg-sahne .eg-tavan {
+  position: absolute;
+  z-index: 21;
+  left: var(--lx, 85%);
+  top: 6%;
+  width: 150vmax;
+  height: 150vmax;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s;
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+}
+.mc-kok .eg-sahne .eg-tavan.acik {
+  opacity: 0.9;
+}
+.mc-kok .eg-tavan-don {
+  position: absolute;
+  inset: 0;
+  animation: eg-don 80s linear infinite;
+}
+@keyframes eg-don {
+  to { transform: rotate(360deg); }
+}
+.mc-kok .eg-tavan i {
+  position: absolute;
+  width: var(--b);
+  transform: translate(-50%, -50%);
+}
+.mc-kok .eg-tavan svg {
+  display: block;
+  width: 100%;
+  fill: #fff2a8;
+  filter: drop-shadow(0 0 4px rgba(255, 240, 160, 0.9));
+  animation: eg-pirilti 3s ease-in-out var(--g) infinite;
+}
+.mc-kok .eg-tavan[data-renk='1'] svg { fill: #ffb3d4; }
+.mc-kok .eg-tavan[data-renk='2'] svg { fill: #a9e4ff; }
+.mc-kok .eg-tavan[data-renk='3'] svg { fill: #c6f5a8; }
+
+/* ---------------------------------------------------------------- görseller ve eşyalar */
+.mc-kok .eg-sahne .eg-resim {
+  display: block;
+  height: auto;
+}
+.mc-kok .eg-sahne .eg-resim:not(.mc-oge) {
+  width: 100%;
+}
+.mc-kok .eg-sahne .eg-sepet {
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-resim svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mc-kok .eg-sahne .eg-esya > .eg-resim,
+.mc-kok .eg-sahne .eg-lamba > .eg-resim {
+  filter: drop-shadow(0 5px 4px rgba(60, 40, 20, 0.2));
+}
+.mc-kok .eg-sahne .gizli {
+  display: none;
+}
+.mc-kok .eg-sahne .eg-geliyor {
+  animation: eg-gel 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes eg-gel {
+  from { scale: 0.2; opacity: 0; }
+}
+.mc-kok .eg-sahne .gidiyor {
+  transition: opacity 0.5s, scale 0.5s;
+  opacity: 0;
+  scale: 0.7;
+  pointer-events: none;
+}
+.mc-kok .eg-sahne [data-ege] .eg-resim {
+  pointer-events: none;
+}
+
+/* sürükleme */
+.mc-kok .eg-sahne .eg-suruklenir {
+  cursor: grab;
+  touch-action: none;
+}
+.mc-kok .eg-sahne .eg-suruklenir::before {
+  /* parmak için geniş tutma alanı */
+  content: '';
+  position: absolute;
+  inset: -18%;
+}
+.mc-kok .eg-sahne .eg-suruklenir.tutuldu {
+  cursor: grabbing;
+  scale: 1.12;
+  z-index: 30 !important;
+}
+.mc-kok .eg-sahne .eg-suruklenir.tutuldu > .eg-resim {
+  filter: drop-shadow(0 14px 10px rgba(60, 40, 20, 0.3));
+}
+.mc-kok .eg-sahne .eg-iz {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: eg-iz 1.7s ease-out forwards;
+}
+.mc-kok .eg-sahne .eg-iz svg {
+  overflow: visible;
+}
+.mc-kok .eg-sahne .eg-iz path {
+  fill: none;
+  stroke: #ffe36e;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-dasharray: 3 5;
+  animation: eg-iz-akis 1.7s linear;
+}
+.mc-kok .eg-sahne .eg-iz circle {
+  fill: rgba(255, 228, 110, 0.25);
+  stroke: #ffe36e;
+  stroke-width: 5;
+}
+@keyframes eg-iz {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes eg-iz-akis {
+  from { stroke-dashoffset: 40; }
+  to { stroke-dashoffset: 0; }
+}
+.mc-kok .eg-sahne .eg-parmak {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 46px;
+  margin: -6px 0 0 -14px;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+}
+.mc-kok .eg-sahne .eg-parmak svg {
+  display: block;
+  width: 100%;
+}
+.mc-kok .eg-sahne .parliyor > .eg-resim {
+  animation: eg-parla 0.9s ease-in-out infinite alternate;
+}
+@keyframes eg-parla {
+  to { scale: 1.1; filter: drop-shadow(0 0 10px #ffe36e) drop-shadow(0 0 4px #fff); }
+}
+
+/* balonlar */
+.mc-kok .eg-sahne .eg-balon {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 96%;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  font-weight: 700;
+  font-size: clamp(0.9rem, 4vw, 1.3rem);
+  white-space: nowrap;
+  transform: translateX(-50%) scale(0);
+  transform-origin: 50% 100%;
+  transition: transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-balon.acik {
+  transform: translateX(-50%) scale(1);
+}
+.mc-kok .eg-sahne .eg-balon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  background: #fff;
+  border-right: 3px solid var(--kontur);
+  border-bottom: 3px solid var(--kontur);
+  transform: rotate(45deg);
+}
+.mc-kok .eg-sahne .eg-mino-balon {
+  bottom: 84%;
+  left: 64%;
+}
+
+/* ---------------------------------------------------------------- beşik */
+.mc-kok .eg-sahne .eg-besik-ic {
+  transform-origin: 50% 96%;
+}
+.mc-kok .eg-sahne .eg-besik-ic.sallaniyor {
+  animation: eg-besik 1.5s ease-in-out infinite;
+}
+@keyframes eg-besik {
+  25% { rotate: -3deg; }
+  75% { rotate: 3deg; }
+}
+.mc-kok .eg-sahne .eg-besik.suruklenir {
+  touch-action: none;
+  cursor: grab;
+}
+
+/* ---------------------------------------------------------------- anne */
+.mc-kok .eg-sahne .eg-anne-gov {
+  transform-origin: 50% 100%;
+  transition: rotate 0.8s cubic-bezier(0.4, 0, 0.3, 1), translate 0.8s cubic-bezier(0.4, 0, 0.3, 1), scale 0.8s;
+}
+.mc-kok .eg-sahne .eg-anne .eg-resim {
+  filter: drop-shadow(0 6px 5px rgba(60, 40, 20, 0.2));
+}
+.mc-kok .eg-sahne .eg-anne.salliyor .eg-anne-gov {
+  animation: eg-anne-salla 1.5s ease-in-out infinite;
+}
+@keyframes eg-anne-salla {
+  25% { rotate: 3deg; }
+  75% { rotate: -2deg; }
+}
+.mc-kok .eg-sahne .eg-anne.esniyor .eg-anne-gov {
+  animation: eg-esne 1.8s ease-in-out;
+}
+@keyframes eg-esne {
+  15% { scale: 1.02 0.97; }
+  45% { scale: 0.97 1.05; rotate: -3deg; }
+  70% { scale: 1.01 0.99; rotate: 1deg; }
+}
+.mc-kok .eg-sahne .eg-anne.yuruyor .eg-anne-gov {
+  animation: eg-anne-yuru 0.5s ease-in-out infinite;
+}
+@keyframes eg-anne-yuru {
+  0%, 100% { translate: 0 0; rotate: -1.5deg; }
+  50% { translate: 0 -3%; rotate: 1.5deg; }
+}
+/* kanepeye uzanır (poz çizimi gelene kadar ayakta çizimi döndürülür) */
+.mc-kok .eg-sahne .eg-anne.uzanik:not(.pozlu) .eg-anne-gov {
+  transform-origin: 50% 50%;
+  rotate: -84deg;
+  scale: 0.8;
+  translate: 4% 42%;
+}
+.mc-kok .eg-sahne .eg-anne.uzanik .eg-anne-gov > * {
+  animation: eg-nefes 3.8s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes eg-nefes {
+  50% { transform: scale(1.012, 1.02); }
+}
+.mc-kok .eg-sahne .eg-anne.uzanik .eg-balon {
+  bottom: 62%;
+  left: 12%;
+}
+.mc-kok .eg-sahne .eg-anne.oturuyor:not(.pozlu) .eg-anne-gov {
+  rotate: -7deg;
+  scale: 0.94;
+}
+.mc-kok .eg-sahne .eg-anne.sariliyor .eg-anne-gov {
+  animation: eg-saril 1.6s ease-in-out 2;
+}
+@keyframes eg-saril {
+  30% { rotate: 4deg; scale: 1.04 0.98; }
+  60% { rotate: -3deg; scale: 0.99 1.02; }
+}
+.mc-kok .eg-sahne .eg-anne.konusuyor .eg-anne-gov {
+  animation: eg-konus-anne 0.5s ease-in-out infinite alternate;
+}
+@keyframes eg-konus-anne {
+  to { translate: 0 -1%; }
+}
+
+/* ---------------------------------------------------------------- Ege */
+.mc-kok .eg-sahne .eg-ege {
+  --bak: 0;
+}
+.mc-kok .eg-ege-kutu {
+  position: relative;
+  aspect-ratio: var(--ar, 0.88);
+  transform-origin: 50% 70%;
+  transition: rotate 0.7s cubic-bezier(0.4, 0, 0.3, 1.2), scale 0.4s;
+}
+.mc-kok .eg-agiz-isaret {
+  position: absolute;
+  width: 8%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.mc-kok .eg-ege-golge {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: -2%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(40, 25, 10, 0.28), transparent);
+}
+.mc-kok .eg-sahne .eg-ege.yatiyor .eg-ege-kutu {
+  transform-origin: 50% 50%;
+  rotate: -70deg;
+  scale: 0.68;
+}
+.mc-kok .eg-sahne .eg-ege.yatiyor .eg-ege-golge {
+  opacity: 0;
+}
+.mc-kok .eg-sahne .eg-ege.kucakta .eg-ege-kutu {
+  rotate: -12deg;
+  scale: 0.96;
+}
+.mc-kok .eg-sahne .eg-ege.parlak .eg-ege-kutu {
+  filter: drop-shadow(0 0 10px #fff6c2) brightness(1.06);
+}
+.mc-kok .eg-sahne .eg-ege .eg-balon {
+  bottom: 92%;
+}
+.mc-kok .eg-sahne .eg-ege.yatiyor .eg-balon {
+  bottom: 70%;
+  left: 30%;
+}
+
+/* ifadeler: tasarımcının vektör ekleri (Karakter.ifade göster/gizle yapar); burada yalnız kod ekleri */
+.mc-kok .eg-yuzlu .eg-yuz .eg-emzik,
+.mc-kok .eg-yuzlu .eg-onluk,
+.mc-kok .eg-yuzlu .eg-leke {
+  display: none;
+}
+.mc-kok .eg-yuzlu .eg-yanak {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.mc-kok .eg-yuzlu.kizarik .eg-yanak {
+  opacity: 0.35;
+}
+/* uykulu: açık gözler yarı kapanır */
+.mc-kok .eg-yuzlu g[data-parca='goz-sol'] > image {
+  transform-origin: 846px 663px;
+}
+.mc-kok .eg-yuzlu g[data-parca='goz-sag'] > image {
+  transform-origin: 1207px 662px;
+}
+.mc-kok .eg-yuzlu[data-uykulu][data-ifade='bakiyor'] :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
+  scale: 1 0.5;
+}
+.mc-kok .eg-yuzlu.kirpistir :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
+  animation: eg-kirp 0.28s ease-in-out 3;
+}
+@keyframes eg-kirp {
+  50% { scale: 1 0.1; }
+}
+/* bakış: tasarımcının dönük baş katmanları (X-sola / X-saga) Karakter ifade setleriyle gösterilir */
+/* emzik: ağız ekleri görünmez, emzik emilir */
+.mc-kok .eg-yuzlu.emzikli g[data-parca^='agiz'] {
+  opacity: 0 !important;
+}
+.mc-kok .eg-yuzlu.emzikli .eg-yuz .eg-emzik {
+  display: inline;
+}
+.mc-kok .eg-yuzlu .eg-emzik image {
+  transform-origin: 1026px 850px;
+  scale: var(--emme, 1);
+}
+/* mamalı yanak: her ifadeyle birlikte; silindikçe solar (--mama) */
+.mc-kok .eg-yuzlu.mamali:not([data-yon]) g[data-parca='yanak-mamali'],
+.mc-kok .eg-yuzlu.mamali[data-yon='sola'] g[data-parca='yanak-mamali-sola'],
+.mc-kok .eg-yuzlu.mamali[data-yon='saga'] g[data-parca='yanak-mamali-saga'] {
+  opacity: 1 !important;
+}
+.mc-kok .eg-yuzlu g[data-parca^='yanak-mamali'] > * {
+  opacity: var(--mama, 1);
+  transition: opacity 0.2s;
+}
+/* önlük */
+.mc-kok .eg-yuzlu.onluklu .eg-onluk {
+  display: inline;
+}
+/* ---------------------------------------------------------------- parçacıklar */
+.mc-kok .eg-sahne .eg-parca-katman {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  pointer-events: none;
+}
+.mc-kok .eg-p {
+  position: absolute;
+  width: var(--b);
+  height: var(--b);
+  pointer-events: none;
+}
+.mc-kok .eg-p svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mc-kok .eg-p-yas {
+  border-radius: 50% 50% 50% 50% / 62% 62% 42% 42%;
+  background: radial-gradient(circle at 35% 30%, #fff 0 16%, #a6dcf7 38%, #4f9fd6);
+}
+.mc-kok .eg-p-mama {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff5c8 0 14%, #f4c65c 45%, #d9a33c);
+}
+.mc-kok .eg-p-buhar {
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+}
+.mc-kok .eg-p-parilti {
+  background: #fff3a0;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+}
+.mc-kok .eg-p-z,
+.mc-kok .eg-p-nota {
+  width: auto;
+  height: auto;
+  font-weight: 700;
+  font-size: var(--b);
+  line-height: 1;
+  color: #cfe0ff;
+  -webkit-text-stroke: 1.5px #3b4a8c;
+  paint-order: stroke fill;
+}
+.mc-kok .eg-p-nota {
+  color: #ffd24a;
+  -webkit-text-stroke: 1.5px #8a5a10;
+}
+.mc-kok .eg-yansi {
+  position: absolute;
+  z-index: 26;
+  pointer-events: none;
+  font-weight: 700;
+  font-size: clamp(1.3rem, 6vw, 2rem);
+  color: var(--r, #ff8a3d);
+  -webkit-text-stroke: 4px #fff;
+  paint-order: stroke fill;
+  text-shadow: 0 3px 0 var(--kontur);
+  white-space: nowrap;
+}
+.mc-kok .eg-yansi.buyuk {
+  font-size: clamp(2.6rem, 14vw, 5rem);
+  -webkit-text-stroke: 6px #fff;
+  text-shadow: 0 5px 0 var(--kontur);
+}
+.mc-kok .eg-bitti-yildiz {
+  position: absolute;
+  width: 34px;
+  margin-left: -17px;
+  margin-top: -34px;
+  pointer-events: none;
+  z-index: 26;
+  animation: eg-bitti 2.5s cubic-bezier(0.3, 1.6, 0.5, 1) forwards;
+}
+.mc-kok .eg-bitti-yildiz svg {
+  display: block;
+  width: 100%;
+  fill: #ffe36e;
+  stroke: #b07a12;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px #fff3a0);
+}
+@keyframes eg-bitti {
+  0% { transform: scale(0) rotate(-40deg); }
+  20% { transform: scale(1.3) rotate(10deg); }
+  30%, 80% { transform: scale(1) rotate(0); opacity: 1; }
+  100% { transform: translateY(-30px) scale(0.8); opacity: 0; }
+}
+.mc-kok .eg-ucan-kalp {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  margin: -17px 0 0 -17px;
+  z-index: 26;
+  pointer-events: none;
+}
+.mc-kok .eg-ucan-kalp svg {
+  display: block;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------- oyuncak sepeti, çıngırak */
+.mc-kok .eg-sahne .eg-esya.salla > .eg-resim {
+  animation: eg-cingirak 0.32s ease-in-out;
+  transform-origin: 70% 80%;
+}
+@keyframes eg-cingirak {
+  25% { rotate: -24deg; scale: 1.08; }
+  60% { rotate: 18deg; }
+}
+.mc-kok .eg-sahne .eg-cingirak {
+  touch-action: none;
+}
+
+/* ---------------------------------------------------------------- mama */
+.mc-kok .eg-sahne .eg-buhar {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 72%;
+  height: 90%;
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-buhar i {
+  position: absolute;
+  bottom: 0;
+  width: 22%;
+  height: 100%;
+  border-radius: 50%;
+  border-left: 4px solid rgba(255, 255, 255, 0.9);
+  animation: eg-buhar 1.6s ease-in-out infinite;
+}
+.mc-kok .eg-sahne .eg-buhar i:nth-child(1) { left: 10%; }
+.mc-kok .eg-sahne .eg-buhar i:nth-child(2) { left: 42%; animation-delay: 0.5s; }
+.mc-kok .eg-sahne .eg-buhar i:nth-child(3) { left: 72%; animation-delay: 1s; }
+@keyframes eg-buhar {
+  from { transform: translateY(20%) scaleY(0.6); opacity: 0; }
+  40% { opacity: 1; }
+  to { transform: translateY(-30%) scaleY(1); opacity: 0; }
+}
+.mc-kok .eg-sahne .eg-kasik .eg-kasik-mama {
+  position: absolute;
+  left: 12%;
+  top: 44%;
+  width: 34%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff5c8 0 14%, #f4c65c 45%, #d9a33c);
+  border: 2px solid #b8802a;
+  transform: scale(0);
+  transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-kasik.dolu .eg-kasik-mama {
+  transform: scale(1);
+}
+.mc-kok .eg-sahne .eg-kasik-buhar {
+  left: 8%;
+  right: 50%;
+  bottom: 55%;
+  height: 160%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.mc-kok .eg-sahne .eg-kasik.sicak .eg-kasik-buhar {
+  opacity: var(--buhar, 1);
+}
+.mc-kok .eg-sahne .eg-kasik.ufleniyor .eg-kasik-buhar {
+  transform: skewX(-28deg) translateX(-14%);
+  transition: transform 0.2s, opacity 0.2s;
+}
+.mc-kok .eg-sahne .eg-kasik.ufleniyor > .eg-resim {
+  animation: eg-titre 0.12s linear infinite;
+}
+@keyframes eg-titre {
+  50% { translate: 1px -1px; }
+}
+.mc-kok .eg-sahne .eg-ucan-mama {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 20px;
+  margin: -10px 0 0 -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff5c8 0 14%, #f4c65c 45%, #d9a33c);
+  border: 3px solid #b8802a;
+  z-index: 26;
+}
+.mc-kok .eg-mino-mama {
+  position: absolute;
+  width: 16%;
+  aspect-ratio: 1.2;
+  border-radius: 50% 44% 52% 48%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, #fff5c8 0 14%, #f4c65c 45%, #d9a33c);
+  border: 3px solid #b8802a;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* battaniye: anneye / Ege'ye örtülür */
+.mc-kok .eg-sahne .ortuldu > .eg-resim {
+  transition: rotate 0.5s, scale 0.5s;
+  rotate: -4deg;
+  scale: 1.08 0.72;
+  transform-origin: 50% 80%;
+}
+.mc-kok .eg-sahne .ortuldu.nefes > .eg-resim {
+  animation: eg-ortu-nefes 3s ease-in-out infinite;
+}
+@keyframes eg-ortu-nefes {
+  50% { scale: 1.1 0.78; }
+}
+.mc-kok .eg-sahne .ortuldu.kaydi {
+  transition: translate 0.8s, opacity 0.8s;
+  translate: 20% 30%;
+  opacity: 0.4;
+}
+
+/* kuklalar: gövde + ağız (ayı) / alt gaga (civciv); --s: 0.15 kapalı … 1 açık (assets/ege/kukla-hizalama.json) */
+.mc-kok .eg-sahne .eg-kukla-ic {
+  position: relative;
+  transform-origin: 50% 100%;
+}
+.mc-kok .eg-sahne .eg-kukla-agiz {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-kukla-ayi .eg-kukla-agiz {
+  transform-origin: 50.7% 31.64%;
+  transform: scaleY(var(--s, 0.15));
+}
+.mc-kok .eg-sahne .eg-kukla-civciv .eg-kukla-agiz {
+  transform-origin: 49.46% 40.53%;
+  transform: rotate(12.9deg) scaleY(var(--s, 0.15)) rotate(-12.9deg);
+}
+.mc-kok .eg-sahne .eg-kukla.konusuyor .eg-kukla-ic {
+  animation: eg-konus 0.8s ease-in-out;
+}
+@keyframes eg-konus {
+  15% { transform: translateY(-12%) scale(1.06, 0.95); }
+  35% { transform: translateY(0) scale(0.96, 1.05); }
+  55% { transform: translateY(-7%) scale(1.04, 0.97); }
+}
+.mc-kok .eg-sahne .eg-kukla-ayi.konusuyor .eg-kukla-ic {
+  animation: eg-konus-ayi 1.1s ease-in-out;
+}
+@keyframes eg-konus-ayi {
+  30% { transform: rotate(-7deg) scale(1.05); }
+  65% { transform: rotate(6deg) scale(1.04); }
+}
+.mc-kok .eg-sahne .eg-kukla.omuz .eg-kukla-ic {
+  animation: eg-omuz 0.8s ease-in-out;
+}
+@keyframes eg-omuz {
+  30%, 60% { transform: translateY(-5%) scale(1.06, 0.95) rotate(4deg); }
+}
+.mc-kok .eg-sahne .eg-kukla .eg-balon {
+  bottom: 100%;
+}
+
+/* çocukların kutusu şeffaf yerlerde dokunmayı kapmasın (eller hariç) */
+.mc-kok .eg-sahne .mc-oyuncu {
+  pointer-events: none;
+}
+
+/* cee-ee: tasarımcının yüzü kapalı pozu (oyuncunun resim katmanı gibi; dokunulabilir) */
+.mc-kok .eg-sahne .mc-oy-resim.eg-cee-resim {
+  pointer-events: auto;
+}
+
+/* cee-ee: yüzü kapatan eller (poz çizimi yoksa) */
+.mc-kok .eg-eller {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: auto;
+}
+.mc-kok .eg-eller i {
+  position: absolute;
+  top: var(--fy);
+  width: calc(var(--fw) * 0.62);
+  transform: translate(-50%, -38%);
+  animation: eg-el-kapan 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  filter: drop-shadow(0 2px 2px rgba(60, 30, 10, 0.25));
+}
+.mc-kok .eg-eller svg {
+  display: block;
+  width: 100%;
+}
+.mc-kok .eg-eller i.sol {
+  left: calc(var(--fx) - var(--fw) * 0.24);
+  rotate: -10deg;
+  scale: -1 1;
+}
+.mc-kok .eg-eller i.sag {
+  left: calc(var(--fx) + var(--fw) * 0.24);
+  rotate: 10deg;
+}
+@keyframes eg-el-kapan {
+  from { transform: translate(-50%, 60%) scale(0.6); opacity: 0; }
+}
+.mc-kok .eg-eller.acildi i {
+  transition: translate 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), opacity 0.35s;
+  opacity: 0;
+}
+.mc-kok .eg-eller.acildi i.sol {
+  translate: -120% 20%;
+}
+.mc-kok .eg-eller.acildi i.sag {
+  translate: 120% 20%;
+}
+.mc-kok .eg-mino-pati {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: auto;
+}
+.mc-kok .eg-mino-pati i {
+  position: absolute;
+  width: 20%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 60%, #ffc6a6 0 22%, transparent 23%), radial-gradient(circle at 40% 35%, #ffd9a8, #f59a3c 70%);
+  border: 3px solid #3a1210;
+  transform: translate(-50%, -50%);
+  animation: eg-el-kapan 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.mc-kok .eg-mino-pati.acildi i {
+  transition: opacity 0.3s, scale 0.3s;
+  opacity: 0;
+  scale: 1.4;
+}
+
+/* Mino: burnu kaşınıyor, tutuluyor, hapşırık */
+.mc-kok .eg-burun-parla {
+  position: absolute;
+  z-index: 4;
+  width: 22%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(255, 240, 150, 0.85), rgba(255, 200, 80, 0.35) 60%, transparent);
+  animation: eg-burun 0.8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes eg-burun {
+  from { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+  to { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+}
+.mc-kok .eg-burun-halka {
+  position: absolute;
+  z-index: 5;
+  width: 30%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(#ffd84a calc(var(--p, 0) * 360deg), rgba(255, 255, 255, 0.35) 0);
+  -webkit-mask: radial-gradient(closest-side, transparent 72%, #000 74%);
+  mask: radial-gradient(closest-side, transparent 72%, #000 74%);
+  pointer-events: none;
+}
+.mc-kok .eg-mino.kasiniyor .mino {
+  animation: eg-seyir 0.18s linear infinite;
+}
+@keyframes eg-seyir {
+  50% { translate: 0.6% 0; }
+}
+.mc-kok .eg-mino.tutuluyor .mino {
+  animation: eg-titre-mino 0.08s linear infinite;
+  scale: 1.04 0.97;
+}
+@keyframes eg-titre-mino {
+  50% { translate: 1.2% -0.6%; }
+}
+.mc-kok .eg-mino.kulak-ucus .mino {
+  animation: eg-hapsu 0.9s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+@keyframes eg-hapsu {
+  15% { scale: 1.15 0.85; translate: 0 4%; }
+  35% { scale: 0.9 1.12; translate: -4% -6%; rotate: -6deg; }
+  60% { scale: 1.04 0.97; rotate: 3deg; }
+}
+.mc-kok .eg-sahne .eg-mino.uyuyor {
+  z-index: 5 !important;
+}
+
+/* gece lambası */
+.mc-kok .eg-sahne .eg-lamba {
+  cursor: pointer;
+}
+.mc-kok .eg-lamba-isik {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 260%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.3);
+  background: radial-gradient(closest-side, rgba(255, 220, 140, 0.8), rgba(255, 200, 120, 0.25) 50%, transparent);
+  opacity: 0;
+  transition: opacity 0.8s, transform 0.8s cubic-bezier(0.3, 1.3, 0.5, 1);
+  pointer-events: none;
+}
+.mc-kok .eg-sahne.lamba-acik .eg-lamba-isik {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: eg-lamba 3s ease-in-out 1s infinite alternate;
+}
+@keyframes eg-lamba {
+  to { opacity: 0.8; transform: translate(-50%, -50%) scale(0.94); }
+}
+
+/* çocuklar parmak uçlarında */
+.mc-kok .eg-sahne .mc-oyuncu.parmakucu .mc-oy-hareket {
+  animation: eg-parmakucu 1.6s ease-in-out infinite;
+}
+@keyframes eg-parmakucu {
+  50% { transform: translateY(-2.5%) scale(0.99, 1.02); }
+}
+
+/* ---------------------------------------------------------------- ay göstergesi (sessizlik) */
+.mc-kok .eg-ay-gosterge {
+  position: absolute;
+  z-index: 12;
+  right: 16px;
+  top: calc(var(--ust, 0px) + 84px);
+  width: clamp(56px, 16vw, 84px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.6s, transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mc-kok .eg-ay-gosterge.acik {
+  opacity: 1;
+  transform: scale(1);
+}
+.mc-kok .eg-ay-disk {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 38% 36%, #fffbe0, #ffe99a 60%, #f3cf63);
+  border: 3px solid #3b4a8c;
+}
+.mc-kok .eg-ay-golge {
+  position: absolute;
+  inset: -4%;
+  border-radius: 50%;
+  background: #243070;
+  transition: transform 0.25s;
+}
+.mc-kok .eg-ay-hale {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 240, 170, 0.55), transparent);
+  opacity: var(--o, 0);
+  z-index: -1;
+}
+.mc-kok .eg-ay-gosterge.dolu .eg-ay-disk {
+  animation: eg-dolunay 1s ease-in-out 2;
+}
+@keyframes eg-dolunay {
+  50% { transform: scale(1.12); }
+}
+
+/* ninni yıldızları ve karaoke (gece) */
+.mc-kok .eg-ninni-yildiz {
+  position: absolute;
+  z-index: 11;
+  left: 0;
+  right: 0;
+  top: 35%;
+  height: 14%;
+  pointer-events: none;
+  transition: opacity 0.8s;
+}
+.mc-kok .eg-ninni-yildiz.gidiyor {
+  opacity: 0;
+}
+.mc-kok .eg-ny {
+  position: absolute;
+  width: clamp(18px, 5vw, 28px);
+  transform: translate(-50%, -50%);
+  opacity: 0.28;
+  filter: grayscale(1) brightness(1.6);
+  transition: opacity 0.3s, filter 0.3s;
+}
+.mc-kok .eg-ny svg {
+  display: block;
+  width: 100%;
+}
+.mc-kok .eg-ny.yandi {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px #fff3a0);
+}
+.mc-kok .eg-karaoke {
+  background: rgba(34, 44, 104, 0.9);
+  color: #fff;
+}
+.mc-kok .eg-karaoke .mc-hece {
+  background: rgba(255, 255, 255, 0.14);
+}
+.mc-kok .eg-karaoke .mc-hece.simdi {
+  background: #ffc84a;
+  color: #3a2a10;
+}
+.mc-kok .eg-karaoke .mc-hece.iyi {
+  background: #7fd6a8;
+  color: #13351f;
+}
+
+/* ödül kartı */
+.mc-kok .eg-odul {
+  position: absolute;
+  z-index: 24;
+  left: 50%;
+  top: 34%;
+  width: min(66vw, 320px);
+  padding: 10px 10px 12px;
+  border-radius: 26px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 8px 0 var(--kontur);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0) rotate(-12deg);
+  transition: transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.5s;
+}
+.mc-kok .eg-odul.acik {
+  transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+}
+.mc-kok .eg-odul.gidiyor {
+  opacity: 0;
+  transform: translate(-50%, -80%) scale(0.6) rotate(-3deg);
+}
+.mc-kok .eg-odul b {
+  font-size: clamp(1.15rem, 5.2vw, 1.5rem);
+}
+.mc-kok .eg-odul-resim {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.6;
+  border-radius: 18px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #3b4f9e, #1c2460 80%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2%;
+}
+.mc-kok .eg-odul-resim > img {
+  width: 27%;
+  margin-bottom: 4%;
+}
+.mc-kok .eg-odul-ege {
+  position: relative;
+  width: 34%;
+  aspect-ratio: 0.88;
+  margin-bottom: 2%;
+}
+
+/* ---------------------------------------------------------------- büyük düğme: kalp (öpücük) */
+.mc-kok .mc-buyuk-dugme.eg-kalp-dugme::before {
+  content: '';
+  display: inline-block;
+  width: 1.1em;
+  height: 1em;
+  margin-right: 0.35em;
+  vertical-align: -0.1em;
+  background: #ff6f9c;
+  clip-path: path('M9 16 C2 11 0 7 2.5 3.5 C5 0.5 8 1.5 9 4 C10 1.5 13 0.5 15.5 3.5 C18 7 16 11 9 16Z');
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .eg-sahne .eg-besik-ic.sallaniyor,
+  .mc-kok .eg-sahne .eg-anne.salliyor .eg-anne-gov,
+  .mc-kok .eg-sahne .eg-anne.yuruyor .eg-anne-gov,
+  .mc-kok .eg-sahne .eg-anne.uzanik .eg-anne-gov > *,
+  .mc-kok .eg-sahne .parliyor > .eg-resim,
+  .mc-kok .eg-tavan-don,
+  .mc-kok .eg-pencere-yildiz,
+  .mc-kok .eg-yuzlu .eg-damla,
+  .mc-kok .eg-sahne .mc-oyuncu.parmakucu .mc-oy-hareket,
+  .mc-kok .eg-mino.kasiniyor .mino,
+  .mc-kok .eg-mino.tutuluyor .mino,
+  .mc-kok .eg-sahne .ortuldu.nefes > .eg-resim,
+  .mc-kok .eg-sahne .eg-perde.suruklenir .eg-perde-kanat {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------- açılış: Bölüm 2 kartı (küçük, yatay) */
+.mc-kok .eg-bolum-kart {
+  width: min(84vw, 420px);
+  border-radius: 30px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 8px 0 var(--kontur);
+  display: flex;
+  font: inherit;
+  color: var(--kontur);
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  text-align: left;
+}
+.mc-kok .eg-bk-resim {
+  position: relative;
+  flex: none;
+  width: clamp(72px, 20vw, 96px);
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--resim) 24% 70% / cover, #bfe6d6;
+}
+.mc-kok .eg-bk-resim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 40, 110, 0.32);
+}
+.mc-kok .eg-bk-resim .eg-ege {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 2%;
+  z-index: 1;
+}
+.mc-kok .eg-bk-resim .eg-balon,
+.mc-kok .eg-bk-resim .eg-ege-golge {
+  display: none;
+}
+.mc-kok .eg-bk-yazi {
+  display: flex;
+  flex-direction: column;
+}
+.mc-kok .eg-bk-yazi b {
+  font-size: clamp(1.2rem, 5.5vw, 1.7rem);
+}
+.mc-kok .eg-bk-yazi small {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}

@@ -14,9 +14,14 @@ import { banyoBolumu } from './banyo';
 import { banyoAdres } from './banyo-gorsel';
 import { MINO_SVG } from '../../src/mino/mino-svg';
 import { KINO_ISKELET } from './banyo-karakter';
+import E from '../../content/macera-ege.json';
+import { egeUyuyor } from './ege';
+import { Ege } from './ege-bebek';
 
-/** Mino Banyo Yapmıyor! seçildi mi (açılıştaki kart; test/önizlemede ?bolum=banyo) */
-let banyoSecildi = new URLSearchParams(location.search).get('bolum') === 'banyo';
+/** Oynanacak bölüm (açılışta seçilir; test/önizlemede ?bolum=banyo | ?bolum=ege) */
+type BolumAdi = 'dogumgunu' | 'banyo' | 'ege';
+const BOLUM_PARAM = new URLSearchParams(location.search).get('bolum');
+let secilenBolum: BolumAdi = BOLUM_PARAM === 'banyo' || BOLUM_PARAM === 'ege' ? BOLUM_PARAM : 'dogumgunu';
 const KINO_RESIM = import.meta.glob<string>('../../assets/karakter-iskelet/*.svg', { eager: true, query: '?url', import: 'default' });
 
 const IZIN_ANAHTAR = 'minkino-macera-izin';
@@ -40,8 +45,8 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('span.mc-bolum-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, resim('parti/pasta', 'mc-bk-pasta'), resim('parti/ada', 'mc-bk-ada'), resim('orman-esya/balon', 'mc-bk-balon')),
     h('b', {}, M.bolumler.dogumgunu),
   );
-  const basla = (banyo = false) => {
-    banyoSecildi = banyo;
+  const basla = (bolum: BolumAdi = 'dogumgunu') => {
+    secilenBolum = bolum;
     efekt.secim();
     if (!durum.i.yas) app.git('yas', { sonra: 'izin' });
     else if (kulak.acik || kulak.durum === 'yok' || TEST_MODU) app.git('bolum');
@@ -64,11 +69,20 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('b', {}, BN.baslik),
   );
   banyoKart.addEventListener('click', () => {
-    basla(true);
+    basla('banyo');
   });
+  // Bölüm 2: Şşş, Ege Uyuyor! (küçük kart: uyuyan Ege)
+  const egeResim = new Ege();
+  egeResim.ifade('uyuyor');
+  egeResim.durum('uyku');
+  const egeKart = h('button.eg-bolum-kart', { type: 'button', 'aria-label': E.baslik }, h('span.eg-bk-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, egeResim.el), h('span.eg-bk-yazi', {}, h('small', {}, 'Bölüm 2'), h('b', {}, E.baslik)));
+  egeKart.addEventListener('click', () => basla('ege'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
   return {
-    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, banyoKart, oyna)),
+    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, egeKart, banyoKart, oyna)),
+    kapat() {
+      egeResim.kapat();
+    },
   };
 }
 
@@ -117,7 +131,7 @@ export function izinEkrani(app: Uygulama): Ekran {
 
 // ---------------------------------------------------------------- Bölüm
 export function bolumEkrani(app: Uygulama): Ekran {
-  const banyo = banyoSecildi;
+  const bolum = secilenBolum;
   const yazi = h('span.mc-yazi');
   let sonYazi = '';
   const balon = h('div.baslik-balon.mc-altyazi', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(sonYazi, { ton: 1.12 }), 'kucuk'), yazi);
@@ -175,12 +189,12 @@ export function bolumEkrani(app: Uygulama): Ekran {
   el.addEventListener('pointerdown', (e) => {
     if (hedefDugme(e)) return;
     basili = true;
-    if (!banyo) dokunma?.bas();
+    if (bolum === 'dogumgunu') dokunma?.bas();
   });
   const birak = () => {
     if (!basili) return;
     basili = false;
-    if (!banyo) dokunma?.birak();
+    if (bolum === 'dogumgunu') dokunma?.birak();
   };
   el.addEventListener('pointerup', birak);
   el.addEventListener('pointercancel', birak);
@@ -198,7 +212,7 @@ export function bolumEkrani(app: Uygulama): Ekran {
       await kulak.ac();
       ui.ipucu(null);
     }
-    await (banyo ? banyoBolumu : dogumGunu)(sahneKok, ui);
+    await (bolum === 'ege' ? egeUyuyor : bolum === 'banyo' ? banyoBolumu : dogumGunu)(sahneKok, ui);
     if (kapandi) return;
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.tekrar), 'Bir daha');
     const cik = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.ev), 'Ana sayfa');

@@ -9,6 +9,7 @@ import canlanJson from '../../content/canlan.json';
 import ormanJson from '../../content/orman.json';
 import maceraJson from '../../content/macera.json';
 import maceraBanyoJson from '../../content/macera-banyo.json';
+import maceraEgeJson from '../../content/macera-ege.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 
 interface FilmCumleleri {
@@ -178,6 +179,11 @@ export function tumCumleler(): string[] {
   // Sesli Maceralar: Mino Banyo Yapmıyor! (başlık, kart adı, balon tepkileri ve ipuçları okunmaz)
   for (const [k, v] of Object.entries(maceraBanyoJson as Record<string, unknown>)) {
     if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu'].includes(k)) continue;
+    topla(v).forEach(ekle);
+  }
+  // Sesli Maceralar: Şşş, Ege Uyuyor! (başlık, kart adı, balon tepkileri, ninni sözü ve ipuçları okunmaz)
+  for (const [k, v] of Object.entries(maceraEgeJson as Record<string, unknown>)) {
+    if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'ninni_baslik'].includes(k)) continue;
     topla(v).forEach(ekle);
   }
   // Mini filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)

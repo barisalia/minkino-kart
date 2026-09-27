@@ -35,6 +35,8 @@ export const KISILIK: Record<string, Kisilik> = {
   kopek: { yuruyus: 'tiris', adim: 220, gelis: 1100, huy: 'kuyruk', dans: 'kovala', agiz: [0.5, 0.5], hayir: 9, kol: [-5, 60] },
   // Kino (ana karakter, köpek yavrusu): coşkulu, hoplayarak yürür, kuyruğu pervane, kulakları uçuşur (sarkık kulak: ±25)
   kino: { yuruyus: 'hop', adim: 300, gelis: 1100, huy: 'kuyruk', dans: 'kovala', agiz: [0.46, 0.49], hayir: 9, kol: [-5, 60], sinir: { kulak: 25 } },
+  // Bebek Ege (Sesli Maceralar Bölüm 2; oturan bebek): iskelet sınırları kafa ±10, kol -40…+35, bacak ±8
+  ege: { yuruyus: 'salin', adim: 600, gelis: 1500, huy: 'ayak', dans: 'gobek', agiz: [0.5, 0.41], hayir: 7, kol: [-40, 35], kafaGenlik: 1, sinir: { kafa: 10, bacak: 8 } },
   // maymun iskeleti: kollar -45 … +45 (fazlasında omuzda boşluk), kafa ±5, kulak ±8, bacak ±5, kuyruk ±12
   maymun: { yuruyus: 'takla', adim: 500, gelis: 1400, huy: 'kasin', dans: 'salto', agiz: [0.5, 0.4], hayir: 9, kol: [-45, 45], sinir: { kafa: 5, kulak: 8, bacak: 5, kuyruk: [-12, 12] } },
   // kuş iskeleti: kafa ve gövde tek parça (gaga, gözler gövdeye bağlı); kanat -20 … +30, bacak ±6, kuyruk ±8, gövde ±3
