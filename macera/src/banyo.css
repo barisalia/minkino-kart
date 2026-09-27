@@ -166,19 +166,8 @@
 .mc-kok .bn-balon {
   z-index: 6;
 }
-/* sırılsıklam Mino: tüyler yatmış, sıska, koyu ıslak renk */
-.mc-kok .bn-kisi-gov.bn-sirilsiklam .bn-cizim {
-  scale: 0.84 1.02;
-  filter: saturate(1.15) brightness(0.9);
-  transition: scale 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
-}
-.mc-kok .bn-kisi-gov .bn-cizim {
-  transition: scale 0.6s cubic-bezier(0.3, 1.4, 0.5, 1);
-}
-/* kabarık (pofuduk) */
-.mc-kok .bn-kisi-gov.bn-kabarik .bn-cizim {
-  scale: 1.06;
-}
+/* sırılsıklam ve pofuduk Mino: gerçek hâl çizimleri (mino.ts → hal; banyo-karakter → islak / pofuduk).
+   Aşağıdaki kod tüy topu (bn-pofuduk) yalnız hâl çizimi olmayan karakter için yedek. */
 .mc-kok .bn-pofuduk {
   position: absolute;
   z-index: 3;

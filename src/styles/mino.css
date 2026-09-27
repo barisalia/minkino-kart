@@ -33,6 +33,12 @@
 .mk-kok .mino .q { transform: var(--govde) var(--kuyruk); }
 .mk-kok .mino .kl { transform: var(--govde) var(--kol-sol); }
 .mk-kok .mino .kr { transform: var(--govde) var(--kol-sag); }
+/* Hâller (mino.ts → hal): sırılsıklam / pofuduk çizimi asıl kafa, gövde, kuyruk (ve pofudukta kollar) yerine */
+.mk-kok .mino .m-hal > g { display: none; }
+.mk-kok .mino.hal-islak .m-hal-islak,
+.mk-kok .mino.hal-pofuduk .m-hal-pofuduk { display: inline; }
+.mk-kok .mino.hal-islak .m-asil[data-hal~='islak'],
+.mk-kok .mino.hal-pofuduk .m-asil[data-hal~='pofuduk'] { display: none; }
 /* Yürüyen Mino (src/mino/mino-profil.ts): önden ↔ yandan dönüş. Giden çizim daralır ve en ince anında kaybolur,
    gelen o anda belirip genişler (çizgi film dönüşü; iki çizim hiç yarı saydam üst üste binmez). */
 .mk-kok .mino-yuruyen {

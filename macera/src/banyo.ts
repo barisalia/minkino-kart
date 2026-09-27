@@ -16,6 +16,7 @@ import B from '../../content/macera-banyo.json';
 import { efekt, konus } from '../../src/audio/ses';
 import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
+import { minoHalleriYukle } from '../../src/mino/mino';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { konfetiPatlat } from '../../src/ui/konfeti';
 import { Perde, sesVar, Ufleme } from '../../orman/src/gorev';
@@ -75,6 +76,8 @@ const KINO_KUVET_X = 66;
 export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
   const yas = durum.i.yas ?? 4;
   const kucuk = kucukMu(yas);
+  // Mino'nun sırılsıklam / pofuduk çizimleri (ağır, tembel paket) ilk kullanımdan önce hazır olsun
+  void minoHalleriYukle();
 
   // ================================================================ sahne kurulumu
   const sahne = new Sahne('banyo/arkaplan');
@@ -241,8 +244,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       ekle(Number(el.style.getPropertyValue('--x')) || 50, bX(Number(el.style.getPropertyValue('--w')) || 0) / 2);
     }
     if (l === Infinity) return { x: cekim.x, y: cekim.y, z: cekim.z };
-    l = Math.max(0, l - 2);
-    r = Math.min(100, r + 2);
+    l = Math.max(0, l - 3);
+    r = Math.min(100, r + 3);
     const z = Math.max(1, Math.min(cekim.z, 100 / Math.max(1, r - l)));
     if (z <= 1.001) return { x: cekim.x, y: cekim.y, z: 1 };
     // görünen aralık: [ox·(1 − 1/z), ox·(1 − 1/z) + 100/z]
@@ -934,6 +937,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     // köpük şişesi
     const sise = sahne.koy(h('div.bn-sise.bn-sise-kopuk', {}, esya('kopuk', '', 'Köpük şişesi')), { x: 16, y: 2, w: 8, z: 9 });
     girisZipla(sise);
+    await kam(cekim.x, cekim.y, cekim.z, 500, [sise]);
     ui.ipucu(B.ipucu.kopuk);
     durumYaz('kopuk');
     const d = new Deneme(yas);

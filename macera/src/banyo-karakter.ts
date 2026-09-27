@@ -324,35 +324,55 @@ export class Kisi {
   // ---------------------------------------------------------------- ıslaklık
   /** Islak parlaklık (0 kuru … 1 sırılsıklam) ve damlayan su */
   islak(oran: number) {
+    if (this.ad === 'mino') {
+      // Mino: gerçek sırılsıklam çizimi (hâl eki; damlalar ve ıslak parlamalar çizimin içinde)
+      this.islakOran = oran;
+      this.minoHalGuncelle();
+      this.gov.classList.toggle('damliyor', oran > 0.35);
+      this.gov.classList.toggle('bn-sirilsiklam', oran > 0.6);
+      return;
+    }
+    // Kino: ıslak parlamalar kodla (hâl çizimi yok)
     let e = this.kap.querySelector<SVGGElement>('g.bn-islak-k');
     if (!e && oran > 0) {
-      const [kafaP, govdeP] = this.ad === 'mino' ? ['k', 'g'] : ['kafa', 'govde'];
-      const kafa = this.parcaG(kafaP);
-      const govde = this.parcaG(govdeP);
-      const m = this.ad === 'mino';
+      const kafa = this.parcaG('kafa');
+      const govde = this.parcaG('govde');
       const parilti = (d: string, w: number) => `<path d="${d}" fill="none" stroke="#fff" stroke-width="${w}" stroke-linecap="round" opacity=".8"/>`;
       e = svgEl('g', { class: 'bn-islak-k' });
-      e.innerHTML = m
-        ? parilti('M700 300 Q760 250 840 240', 26) + parilti('M1260 260 Q1320 280 1360 330', 18) + parilti('M560 800 Q570 900 620 960', 18) +
-          // yatmış ıslak perçem: alna yapışmış tek tutam
-          `<path d="M968 292 Q1030 270 1092 292 Q1080 370 1046 440 Q1036 452 1030 436 Q1000 380 968 292 Z" fill="#f08a2c" stroke="${K}" stroke-width="13" stroke-linejoin="round"/><path d="M1010 310 Q1030 360 1034 400" fill="none" stroke="#e25b1c" stroke-width="9" stroke-linecap="round"/>`
-        : parilti('M820 520 Q880 470 960 460', 24) + parilti('M1150 480 Q1210 500 1240 550', 16) + parilti('M760 860 Q770 950 820 990', 16);
+      e.innerHTML = parilti('M820 520 Q880 470 960 460', 24) + parilti('M1150 480 Q1210 500 1240 550', 16) + parilti('M760 860 Q770 950 820 990', 16);
       const e2 = svgEl('g', { class: 'bn-islak-g' });
-      e2.innerHTML = m ? parilti('M890 1360 Q880 1480 910 1580', 20) + parilti('M1180 1400 Q1190 1470 1180 1520', 14) : parilti('M930 1330 Q920 1430 950 1520', 18) + parilti('M1110 1350 Q1120 1400 1110 1450', 12);
+      e2.innerHTML = parilti('M930 1330 Q920 1430 950 1520', 18) + parilti('M1110 1350 Q1120 1400 1110 1450', 12);
       kafa?.append(e);
       govde?.append(e2);
     }
     this.kap.querySelectorAll<SVGGElement>('g.bn-islak-k, g.bn-islak-g').forEach((g) => (g.style.opacity = String(oran)));
     this.gov.classList.toggle('damliyor', oran > 0.35);
-    if (this.ad === 'mino') this.gov.classList.toggle('bn-sirilsiklam', oran > 0.6);
-    else this.kinoIslak = oran > 0.6;
+    this.kinoIslak = oran > 0.6;
+  }
+
+  private islakOran = 0;
+  private pofOran = 0;
+  /**
+   * Mino'nun hâli (mino.ts → hal): kurulanırken ıslaklık azalıp kabarıklık arttıkça sırılsıklam → normal → pofuduk.
+   * Hâl değişince kısa bir "silkinme" (basılıp toparlanma) ile geçer.
+   */
+  private minoHalGuncelle() {
+    const m = this.mino;
+    if (!m) return;
+    const hal = this.pofOran > 0.3 ? 'pofuduk' : this.islakOran > 0.35 ? 'islak' : null;
+    if (hal === m.halAd) return;
+    void m.hal(hal).then(() => {
+      if (m.halAd !== hal) return;
+      this.kap.animate([{ scale: '1 1' }, { scale: '1.08 0.92' }, { scale: '0.96 1.04' }, { scale: '1 1' }], { duration: sure(380), easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
+    });
   }
 
   // ---------------------------------------------------------------- Mino'nun fuları
   private fularYollari(): SVGElement[] {
     const s = this.svg();
     if (!s) return [];
-    return [...s.querySelectorAll<SVGElement>('path')].filter((e) => /^#(f03137|cd5b6b)$/i.test(e.getAttribute('fill') ?? ''));
+    // hâl eklerindeki (m-hal) aynı renkli burun yolları fular sayılmaz
+    return [...s.querySelectorAll<SVGElement>('path')].filter((e) => /^#(f03137|cd5b6b)$/i.test(e.getAttribute('fill') ?? '') && !e.closest('.m-hal'));
   }
   /** Fular takılı mı (Mino: çizimdeki fular; Kino: kodla takılan) */
   fular(takili: boolean) {
@@ -394,6 +414,13 @@ export class Kisi {
   // ---------------------------------------------------------------- pofuduk (Mino)
   /** Kurulandıkça kabaran tüy topu: 0 yok … 1 kocaman pofuduk top */
   pofuduk(oran: number) {
+    if (this.mino) {
+      // Mino: gerçek pofuduk çizimi (hâl eki); taradıkça oran düşer, düzelince normal çizime döner
+      this.pofOran = oran;
+      this.minoHalGuncelle();
+      this.gov.classList.toggle('bn-kabarik', oran > 0.3);
+      return;
+    }
     if (!this.pofEl) {
       const tuy = Array.from({ length: 22 }, (_, i) => {
         const a = (i / 22) * Math.PI * 2;
