@@ -7,10 +7,11 @@ const sahneler = karpuz.sahneler.filter((s): s is Extract<typeof s, { olaylar: u
 const cumleler = sahneler.flatMap((s) => (s.olaylar as Olay[]).filter((o) => o.yap === 'soyle').map((o) => o.metin as string));
 
 describe('film: Mino’nun Karpuzu', () => {
-  it('animatik: cümleler Barış onaylayana kadar seslendirme listesinde değil', () => {
-    expect(karpuz.seslendir).toBe(false);
+  // Barış 2026-09-27 gece seslendirmeyi onayladı: cümleler seslendirme listesinde olmalı
+  it('seslendirme açık: bütün cümleler ve öğüt seslendirme listesinde', () => {
+    expect(karpuz.seslendir).toBe(true);
     const liste = new Set(tumCumleler());
-    for (const c of [...cumleler, 'Paylaşmak güzeldir.']) expect(liste.has(c), c).toBe(false);
+    for (const c of [...cumleler, 'Paylaşmak güzeldir.']) expect(liste.has(c), c).toBe(true);
   });
   it('cümleler kısa: karakter ≤ 6 kelime', () => {
     for (const c of cumleler) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(6);
