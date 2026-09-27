@@ -3,6 +3,7 @@
   "boyut": 2048,
   "sira": [
     "kuyruk",
+    "pati-kuyruk",
     "kulak-sol",
     "govde",
     "kol-sol",
@@ -63,7 +64,8 @@
     "agiz-orta",
     "agiz-yuvarlak",
     "agiz-dis",
-    "agiz-gulumse"
+    "agiz-gulumse",
+    "pati-kuyruk"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -241,6 +243,10 @@
     "agiz-gulumse": [
       915,
       990
+    ],
+    "pati-kuyruk": [
+      1330,
+      1620
     ]
   }
 }

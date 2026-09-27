@@ -23,6 +23,17 @@ Ayrıca:
 - Önizleme: `kino-ifadeler.png` (üstte açık, altta koyu zemin).
 - Not: Barış başka Kino tasarımı seçerse ekler yeniden çizilir; katman adları aynı kalır.
 
+## Film 2 eki: kuyruğunu basıp tutan Kino (vektör, gizli)
+
+| Hâl | Göster | Gizle | Not |
+|---|---|---|---|
+| kuyruğu patiyle bastırılmış | `pati-kuyruk` | `kuyruk` | Kuyruk kökten aşağı iner, sağ arka patinin altından geçer. Kahverengi ucu iki pati arasında görünür. Patinin sağ altında iki küçük sıkışma çizgisi var. |
+
+- Katman gövdenin altında: SVG'de ve json `sira`da `kuyruk`un hemen arkasında. Pati gövde katmanında olduğu için kuyruğun üstünde kalır, "basıyor" görünür.
+- Kök, eski kuyruğun kol ve bacak yanındaki kontur uçlarına oturur; `kuyruk` gizlenince bu uçlar açıkta kalmaz.
+- Dönme noktası 1330,1620 (kök). Bağlı değil, `kuyruk` gibi üst düzey. Sallanma isteniyorsa kod ucu (1100,1865) çevresinde küçük titretir; kök dönmesi ±3°'yi geçmesin, yoksa pati altından kayar.
+- Önizleme: `kino-pati-kuyruk.png` (solda normal, sağda pati-kuyruk).
+
 ## Dudak senkronu ağızları (vektör, gizli, kafaya bağlı)
 
 Kod (`src/audio/dudak-mantik.ts`) altısı birlikte varsa bunları kullanır. Konuşurken `agiz` ve `dil` gizlenir, o anki şekil gösterilir. Kontur #3A1210 (ω 18 px, açık ağız 16 px, az 14 px); ağız içi #3A1210, dil #EC7683, dişler beyaz.
