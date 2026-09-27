@@ -44,8 +44,58 @@ const KATMANLI: Record<string, { cerceve: [number, number]; katmanlar: { ad: str
 /** Sarılma pozunda karpuz: çerçevedeki merkezi ve (ortalama) ölçeği; motor pozu sahnedeki karpuza hizalar */
 export const SARILMA_KARPUZ = { merkez: [458.8, 791.8] as const, olcek: (0.8288 + 0.882) / 2, aci: 71.26, cerceve: [1209, 1286] as const };
 
+/**
+ * Başka setlerdeki hazır çizimler (filmin kendi klasöründe yoksa): meyve, banyodaki top, pazar sepeti.
+ * Yeni çizim gerekmesin diye (Kino ve Elma Kulesi).
+ */
+const DIS_GORSEL = import.meta.glob<string>(['../../assets/meyveler/elma.webp', '../../assets/banyo/top.webp', '../../assets/pazar/sepet.webp'], { eager: true, query: '?url', import: 'default' });
+const DIS: Record<string, string> = { elma: '../../assets/meyveler/elma.webp', top: '../../assets/banyo/top.webp', sepet: '../../assets/pazar/sepet.webp' };
+/** Eşyanın görsel adresi (varsa): önce filmin klasörü, sonra ortak malzeme klasörü, sonra hazır setler */
+export function esyaAdresi(tip: string, film: string, malzeme?: string): string | undefined {
+  return GORSELLER[`../../assets/film/${film}/${tip}.webp`] ?? (malzeme ? GORSELLER[`../../assets/film/${malzeme}/${tip}.webp`] : undefined) ?? (DIS[tip] ? DIS_GORSEL[DIS[tip]] : undefined);
+}
+
+/**
+ * Karakter parçasından eşya: iskeletteki tek bir katmanın kopyası (ör. kasanın arkasından çıkan Kino kuyruğu).
+ * İskelet SVG'si bir kez indirilir; katman kendi kutusuna kırpılır (viewBox), dönme noktası ESYA_MERKEZ'de.
+ */
+const ISKELET = import.meta.glob<string>('../../assets/karakter-iskelet/kino.svg', { eager: true, query: '?url', import: 'default' });
+const PARCA_ESYA: Record<string, { iskelet: string; katman: string; kutu: [number, number, number, number]; don: [number, number] }> = {
+  'kino-kuyruk': { iskelet: 'kino', katman: 'kuyruk', kutu: [1218, 1391, 282, 301], don: [1262, 1648] },
+};
+const iskeletMetin = new Map<string, Promise<string | null>>();
+function parcaEsya(tip: string): HTMLElement {
+  const p = PARCA_ESYA[tip];
+  const el = h('div.fl-esya-resim.fl-parca-esya');
+  let metin = iskeletMetin.get(p.iskelet);
+  if (!metin) {
+    const url = ISKELET[`../../assets/karakter-iskelet/${p.iskelet}.svg`];
+    metin = url ? fetch(url).then((r) => (r.ok ? r.text() : null)).catch(() => null) : Promise.resolve(null);
+    iskeletMetin.set(p.iskelet, metin);
+  }
+  void metin.then((m) => {
+    const g = m?.match(new RegExp(`<g[^>]*id="${p.katman}"[^>]*>[\\s\\S]*?</g>`))?.[0];
+    if (!g) return;
+    const [x, y, w, hh] = p.kutu;
+    el.innerHTML = `<svg viewBox="${x} ${y} ${w} ${hh}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">${g.replace(/\sid="[^"]*"/, '')}</svg>`;
+  });
+  return el;
+}
+
+/** Eşyanın dönme noktası (kutuya göre %; yoksa merkez): parçadan eşyalar kökünden döner */
+export const ESYA_MERKEZ: Record<string, [number, number]> = Object.fromEntries(
+  Object.entries(PARCA_ESYA).map(([ad, p]) => [ad, [((p.don[0] - p.kutu[0]) / p.kutu[2]) * 100, ((p.don[1] - p.kutu[1]) / p.kutu[3]) * 100]]),
+);
+
+/** Görselin altındaki boş pay (kutu yüksekliğinin oranı): eşya y'ye tam otursun, havada durmasın */
+export const ESYA_ALT: Record<string, number> = { elma: 24 / 560, top: 11 / 372, sepet: 24 / 560 };
+
 /** Eşya elemanı: varsa gerçek görsel, yoksa SVG yer tutucu */
-export function esyaCiz(tip: string, film: string): HTMLElement {
+export function esyaCiz(tip: string, film: string, malzeme?: string): HTMLElement {
+  if (PARCA_ESYA[tip]) return parcaEsya(tip);
+  // kendi klasöründe yoksa ortak malzeme ya da hazır setler (katmanlı pozlar hariç: onlar filmin kendi klasöründe)
+  const dis = !GORSELLER[`../../assets/film/${film}/${tip}.webp`] && !KATMANLI[tip] ? esyaAdresi(tip, film, malzeme) : undefined;
+  if (dis) return h('img.fl-esya-resim', { src: dis, alt: '', draggable: 'false' });
   const kat = KATMANLI[tip];
   if (kat) {
     const [W, H] = kat.cerceve;
@@ -66,4 +116,5 @@ export function esyaCiz(tip: string, film: string): HTMLElement {
 export const ESYA_ORAN: Record<string, number> = {
   karpuz: 1.113, 'karpuz-yarim': 1.134, 'karpuz-dilim': 1.077, tabak: 1.362, bicak: 4.082, kasa: 1.429, cekirdek: 20 / 28,
   'mino-sarilma': 1209 / 1286,
+  elma: 1, top: 369 / 372, sepet: 1, 'kino-kuyruk': 282 / 301,
 };

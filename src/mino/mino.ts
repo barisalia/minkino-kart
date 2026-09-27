@@ -91,6 +91,12 @@ const TEPKI_IFADE: Partial<Record<string, MinoIfade>> = { zorlan: 'zorlanma', se
  */
 export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz' | 'saril' | 'kolac' | 'selam' | 'duzelt' | 'sun' | 'sevinc';
 
+/**
+ * Film duruşu: açılar derece, kafaY / ziplaY çizim birimi (+ aşağı), sx / sy çarpan, gulum ve agiz eklenir
+ * (gulum -1.6: üzgün ağız), goz 1: gözler kapalı.
+ */
+export type MinoEkPoz = Partial<Record<'kafaAci' | 'kafaY' | 'govdeAci' | 'ziplaY' | 'sx' | 'sy' | 'kolSol' | 'kolSag' | 'kuyrukAci' | 'gozKay' | 'gulum' | 'agiz' | 'goz', number>>;
+
 interface Durum {
   tepki: Tepki | null;
   tepkiBas: number;
@@ -346,6 +352,11 @@ export class Mino {
   private agizZorla = false;
   /** Başka bir karakter konuşurken (ör. Kino) Mino'nun ağzı oynamasın */
   agizSus = false;
+  /**
+   * Film duruşu (film/src/oyuncu.ts → durus): tepki ve bekleme hareketlerinin üstüne eklenen beden dili
+   * (üzgün: baş eğik, kuyruk sarkık, ağız aşağı…). null: yok (oyunlarda değişiklik yok).
+   */
+  ekPoz: MinoEkPoz | null = null;
   /**
    * Gözler sıkıca kapalı (ifade eki olmadan; ör. banyoda köpük kaçmasın). Hâl çizimleriyle (sırılsıklam,
    * pofuduk) de temiz çalışır. Varsayılan false: diğer oyunlarda değişiklik yok.
@@ -677,6 +688,24 @@ export class Mino {
         sy -= 0.04 * sars;
         sx += 0.03 * sars;
       }
+    }
+
+    // Film duruşu (ekPoz): tepkilerin üstüne eklenir (yoksa hiçbir şey değişmez)
+    const ep = this.ekPoz;
+    if (ep) {
+      kafaAci += ep.kafaAci ?? 0;
+      kafaY += ep.kafaY ?? 0;
+      govdeAci += ep.govdeAci ?? 0;
+      ziplaY += ep.ziplaY ?? 0;
+      sx *= ep.sx ?? 1;
+      sy *= ep.sy ?? 1;
+      kolSol += ep.kolSol ?? 0;
+      kolSag += ep.kolSag ?? 0;
+      kuyrukAci += ep.kuyrukAci ?? 0;
+      gozKay += ep.gozKay ?? 0;
+      gulum += ep.gulum ?? 0;
+      agizHedef = Math.max(0, agizHedef + (ep.agiz ?? 0));
+      if ((ep.goz ?? 0) > 0.5) gozKapali = Math.max(gozKapali, 1);
     }
 
     // Konuşurken ağız sesin gücüyle açılır

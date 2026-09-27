@@ -147,6 +147,11 @@ export class Karakter {
    * Yalnız verildiği sürece geçerli; eklemler kapalıyken (battaniye altı) kullanılır.
    */
   ozelSinir: { sinir?: Kisilik['sinir']; kol?: [number, number] } | null = null;
+  /**
+   * true: yüz ifadesi açıkken (ör. üzgün) konuşunca da ağız açılıp kapanır (film). Varsayılan false: oyunlarda
+   * ifadenin kendi ağzı konuşmada da durur (değişiklik yok).
+   */
+  ifadeAgziKonusur = false;
 
   /** İskelet kuruldu (ya da iskelet yok / yüklenemedi): parçalara ek koyacaklar bunu bekler (yavaş cihazda da) */
   readonly hazir: Promise<void>;
@@ -213,6 +218,14 @@ export class Karakter {
   ifade(ad: string | null, ms = 0) {
     this.ifadeAd = ad && this.setler[ad] ? ad : null;
     this.ifadeBitis = ms && this.ifadeAd ? performance.now() + (TEST_MODU ? 30 : ms) : 0;
+  }
+
+  /**
+   * İskeletin bir parçasının SVG grubu (ör. film: Kino'nun kafasına elma takmak). İskelet yüklenmeden (ya da
+   * tek görselde) undefined.
+   */
+  parcaG(id: string): SVGGElement | undefined {
+    return this.parca.get(id);
   }
 
   /** Bu karakterde bu ifade var mı */
@@ -425,6 +438,13 @@ export class Karakter {
     if (p.agizAcik > 0.5 && this.parca.has('agiz-acik') && gor.get('agiz')) {
       gor.set('agiz', false);
       gor.set('agiz-acik', true);
+    } else if (p.agizAcik > 0.5 && this.ifadeAgziKonusur && this.konusma && set && this.parca.has('agiz-acik')) {
+      // (isteğe bağlı) ifade açıkken de konuşunca ağız açılıp kapanır: ifadenin ağzı yerini açık ağza bırakır
+      const agizlar = set.goster.filter((id) => id.startsWith('agiz-') && gor.get(id));
+      if (agizlar.length) {
+        for (const id of agizlar) gor.set(id, false);
+        gor.set('agiz-acik', true);
+      }
     }
     for (const [id, acik] of gor) {
       if (this.sonGorunum.get(id) === acik) continue;
