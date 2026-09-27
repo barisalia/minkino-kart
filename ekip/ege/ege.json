@@ -1,0 +1,73 @@
+﻿{
+    "ad":  "ege",
+    "boyut":  2048,
+    "sira":  [
+                 "govde",
+                 "kol-sol",
+                 "kol-sag",
+                 "bacak-sol",
+                 "bacak-sag",
+                 "kafa",
+                 "kas",
+                 "agiz",
+                 "goz-sol",
+                 "goz-sag",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "agiz":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "goz-kapali":  "kafa",
+                  "kas":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1020,
+                               1020
+                           ],
+                  "goz-sol":  [
+                                  846,
+                                  660
+                              ],
+                  "goz-sag":  [
+                                  1208,
+                                  660
+                              ],
+                  "agiz":  [
+                               1026,
+                               838
+                           ],
+                  "goz-kapali":  [
+                                     1027,
+                                     680
+                                 ],
+                  "kol-sol":  [
+                                  730,
+                                  1050
+                              ],
+                  "kol-sag":  [
+                                  1300,
+                                  1050
+                              ],
+                  "bacak-sol":  [
+                                    820,
+                                    1620
+                                ],
+                  "bacak-sag":  [
+                                    1215,
+                                    1620
+                                ],
+                  "govde":  [
+                                1020,
+                                1740
+                            ],
+                  "kas":  [
+                              1029,
+                              500
+                          ]
+              }
+}
