@@ -190,6 +190,18 @@
           "sure": 0.8
         },
         {
+          "t": 0.6,
+          "kim": "mino",
+          "yap": "ifade",
+          "ad": "odak"
+        },
+        {
+          "t": 3,
+          "kim": "mino",
+          "yap": "ifade",
+          "ad": null
+        },
+        {
           "t": 1.3,
           "kim": "mino",
           "yap": "tepki",
@@ -804,6 +816,12 @@
         {
           "t": 2.9,
           "kim": "mino",
+          "yap": "ifade",
+          "ad": "saskin"
+        },
+        {
+          "t": 2.9,
+          "kim": "mino",
           "yap": "durus",
           "agiz": 0.35,
           "gulum": -0.8,
@@ -1047,7 +1065,7 @@
           "t": 5.3,
           "kim": "mino",
           "yap": "ifade",
-          "ad": "kararsiz"
+          "ad": "uzgun"
         },
         {
           "t": 6.5,
@@ -1124,7 +1142,7 @@
             "agiz": -0.8,
             "gulum": -2.2
           },
-          "ifade": "kararsiz"
+          "ifade": "uzgun"
         },
         "kino": {
           "tip": "kino",
@@ -1755,7 +1773,7 @@
             "sy": 0.965,
             "gozKay": 0
           },
-          "ifade": "kararsiz"
+          "ifade": "uzgun"
         },
         "kino": {
           "tip": "kino",
@@ -2837,6 +2855,7 @@
           "t": 7.3,
           "kim": "kino",
           "yap": "durus",
+          "patiKuyruk": 1,
           "kolSag": 20,
           "kuyruk": 20,
           "salla": 0,
@@ -2998,6 +3017,7 @@
           "t": 10.3,
           "kim": "kino",
           "yap": "durus",
+          "patiKuyruk": 0,
           "kolSag": 20,
           "kuyruk": 0,
           "salla": 1.4,

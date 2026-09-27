@@ -46,6 +46,14 @@ const AGIZ_IC = 'M951 992Q987 996 1024 966Q1061 996 1097 992Q1105 1067 1024 1080
 const AGIZ_DIL = 'M980 1072Q1024 1043 1068 1072Q1024 1080 980 1072Z';
 const AGIZ_KENAR = 'M951 992Q933 974 915 952M1097 992Q1115 974 1133 952M1024 956V966';
 const kapaliGoz = sade(katman('goz-kapali')).replaceAll('#030102', '#3a1210');
+// Dudak senkronu ağızları (Adobe; gizli katmanlar agiz-kapali, agiz-az, agiz-orta, agiz-yuvarlak, agiz-dis, agiz-gulumse):
+// altısı da çizimde varsa kafaya bağlı, gizli gruplar olarak eklenir; mino.ts konuşurken kod ağzı yerine bunları gösterir.
+// Yoksa (bugün) hiçbir şey eklenmez, çıktı değişmez. (Eski agiz-kapali tek başına sayılmaz: altısı birlikte gelir.)
+const AGIZ_SEKILLERI = ['kapali', 'az', 'orta', 'yuvarlak', 'dis', 'gulumse'];
+const agizSekilVar = AGIZ_SEKILLERI.every((s) => kaynak.includes(`<g id="agiz-${s}"`));
+const AGIZ_SEKIL = agizSekilVar
+  ? AGIZ_SEKILLERI.map((s) => `<g class="m-agiz-sekil" data-sekil="${s}" style="display:none">${sade(katman(`agiz-${s}`))}</g>`).join('\n') + '\n'
+  : '';
 // Film ifadeleri (ekip/mino/IFADELER.md): gizli ekler kafaya bağlı, ağız ve gözlerin üstünde; mino.ts → ifade()
 const ifade = (ad, ...idler) => `<g class="m-ifade m-${ad}">${idler.map((id) => sade(katman(id))).join('')}</g>`;
 const IFADELER = [
@@ -112,7 +120,7 @@ ${kapaliGoz}
 </g>
 <g class="m-mutlu-goz"><path d="M650 900Q768 796 886 900"/><path d="M1162 902Q1282 798 1402 902"/></g>
 <g class="m-agiz"><path class="m-agiz-ic" d="${AGIZ_IC}"/><path class="m-dil" d="${AGIZ_DIL}"/><path class="m-agiz-cizgi" d="${AGIZ_IC}${AGIZ_KENAR}"/></g>
-<g class="m-ifadeler"></g>
+${AGIZ_SEKIL}<g class="m-ifadeler"></g>
 </g>
 </svg>`;
 

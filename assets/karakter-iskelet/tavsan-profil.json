@@ -1,0 +1,78 @@
+{
+  "ad": "tavsan-profil",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "kulak-arka",
+    "bacak-arka",
+    "kol-arka",
+    "govde",
+    "bacak-on",
+    "kol-on",
+    "kafa",
+    "kulak-on",
+    "goz",
+    "agiz",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali"
+  ],
+  "bagli": {
+    "kulak-on": "kafa",
+    "kulak-arka": "kafa",
+    "goz": "kafa",
+    "agiz": "kafa",
+    "goz-kapali": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      975,
+      1175
+    ],
+    "kulak-on": [
+      975,
+      648
+    ],
+    "kulak-arka": [
+      872,
+      700
+    ],
+    "goz": [
+      1160,
+      872
+    ],
+    "agiz": [
+      1245,
+      1010
+    ],
+    "goz-kapali": [
+      1160,
+      880
+    ],
+    "kol-on": [
+      955,
+      1292
+    ],
+    "kol-arka": [
+      1205,
+      1300
+    ],
+    "bacak-on": [
+      1130,
+      1620
+    ],
+    "bacak-arka": [
+      1180,
+      1680
+    ],
+    "kuyruk": [
+      790,
+      1545
+    ],
+    "govde": [
+      1010,
+      1900
+    ]
+  }
+}

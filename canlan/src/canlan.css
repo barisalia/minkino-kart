@@ -1048,3 +1048,161 @@
   background: color-mix(in srgb, var(--r) 10%, #fffdf7);
   padding: 8%;
 }
+
+/* ---------- Cila: dokunma alanları, yatay telefon, boş alanlar ---------- */
+/* açılışta ses düğmesi sağ üst köşede (ortalanan ekranda çubuk daralıp ortaya kayıyordu) */
+.cc-kok .cc-acilis > .ust-cubuk {
+  align-self: stretch;
+}
+/* renk düğmeleri: dokunma alanı 64 px (görünen daire aynı) */
+.cc-kok .cc-boya::before {
+  inset: -10px;
+}
+.cc-kok .cc-boya-palet .cc-boya::before {
+  inset: -12px;
+}
+.cc-kok .cc-yas {
+  height: 64px;
+}
+/* açılışta Mino vitrinin yanında durur; vitrine dokununca sevinir */
+.cc-kok .cc-acilis-sahne {
+  position: relative;
+}
+.cc-kok .cc-acilis-mino {
+  position: absolute;
+  z-index: 3;
+  left: -6%;
+  bottom: -9%;
+  width: 31%;
+  max-width: 130px;
+}
+/* dik ekranda kâğıdın altındaki boşluğu Mino doldurur (kâğıt kare kalır) */
+@media (max-aspect-ratio: 1/1) {
+  .cc-kok .cc-alan.mino-var {
+    --mino-yer: clamp(96px, 15vh, 150px);
+    padding-bottom: var(--mino-yer);
+    place-items: start center;
+  }
+  .cc-kok .cc-alan.mino-var > .cc-kagit {
+    margin-top: max(0px, calc((100cqh - 100cqw) * 0.35));
+  }
+  .cc-kok .cc-alan > .cc-ciz-mino {
+    width: clamp(78px, calc((max(0px, 100cqh - 100cqw) * 0.65 + var(--mino-yer)) * 0.7), 140px);
+  }
+}
+/* yatay: kâğıt görünür kalsın (satır düzeninde yükseklik sıfıra düşüyordu) */
+@media (min-aspect-ratio: 1/1) {
+  .cc-kok .cc-calisma {
+    align-items: stretch;
+  }
+  .cc-kok .cc-model {
+    align-self: center;
+  }
+}
+@media (orientation: landscape) and (max-height: 560px) {
+  .cc-kok {
+    --dokunma: 64px;
+  }
+  /* açılış: solda canlı vitrin, sağda logo ve Oyna */
+  .cc-kok .cc-acilis {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: center;
+  }
+  .cc-kok .cc-acilis > .ust-cubuk {
+    position: absolute;
+    top: var(--ust);
+    right: var(--yan);
+  }
+  .cc-kok .cc-acilis-sahne {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .cc-kok .cc-acilis .cc-vitrin {
+    width: min(42vw, calc(100dvh - var(--ust) - var(--alt) - 24px), 380px);
+  }
+  .cc-kok .cc-acilis .cc-logo {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    font-size: clamp(2.6rem, min(8vw, 17dvh), 5rem);
+  }
+  .cc-kok .cc-acilis-alt {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 16px 0 max(8px, 4dvh);
+  }
+  .cc-kok .cc-oyna {
+    min-height: 76px;
+  }
+  /* çizim: renkler solda iki sütun, Bitti sağda; kâğıt ortada büyük (alt sıra kâğıdı küçültüyordu) */
+  .cc-kok .cc-ciz {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px 12px;
+  }
+  .cc-kok .cc-ciz > .ust-cubuk {
+    grid-column: 1 / -1;
+  }
+  .cc-kok .cc-ciz > .cc-calisma {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .cc-kok .cc-ciz > .cc-alt {
+    display: contents;
+  }
+  .cc-kok .cc-ciz .cc-palet {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+    display: grid;
+    grid-template-columns: repeat(2, 44px);
+    gap: 20px 20px;
+    padding: 0 8px;
+  }
+  .cc-kok .cc-ciz .cc-bitti {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: end;
+    margin: 0 0 6px;
+    min-height: 64px;
+  }
+  /* sonuç: resim solda, boya ve düğmeler sağda */
+  .cc-kok .cc-sonuc {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px 14px;
+  }
+  .cc-kok .cc-sonuc > .ust-cubuk {
+    grid-column: 1 / -1;
+  }
+  .cc-kok .cc-sonuc > .cc-sonuc-kutu {
+    grid-column: 1;
+    grid-row: 2;
+    height: 100%;
+    width: 100%;
+  }
+  .cc-kok .cc-sonuc > .cc-boya-cubugu,
+  .cc-kok .cc-sonuc > .cc-sonuc-dugmeler {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: center;
+  }
+  .cc-kok .cc-sonuc > .cc-sonuc-dugmeler {
+    align-content: center;
+  }
+  /* müze: dört çerçeve yan yana, Mino köşede çerçevelerin önüne binmez */
+  .cc-kok .cc-muze .cc-muze-duvar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: none;
+    gap: 44px 20px;
+    padding: 40px 12px 110px clamp(96px, 14vw, 150px);
+  }
+  .cc-kok .cc-muze .cc-muze-mino {
+    width: clamp(78px, 11vw, 120px);
+  }
+}

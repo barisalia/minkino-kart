@@ -45,11 +45,11 @@ const KATMANLI: Record<string, { cerceve: [number, number]; katmanlar: { ad: str
 export const SARILMA_KARPUZ = { merkez: [458.8, 791.8] as const, olcek: (0.8288 + 0.882) / 2, aci: 71.26, cerceve: [1209, 1286] as const };
 
 /**
- * Başka setlerdeki hazır çizimler (filmin kendi klasöründe yoksa): meyve, banyodaki top, pazar sepeti.
+ * Başka setlerdeki hazır çizimler (filmin kendi klasöründe yoksa): meyve, top (renkler seti), pazar sepeti.
  * Yeni çizim gerekmesin diye (Kino ve Elma Kulesi).
  */
-const DIS_GORSEL = import.meta.glob<string>(['../../assets/meyveler/elma.webp', '../../assets/banyo/top.webp', '../../assets/pazar/sepet.webp'], { eager: true, query: '?url', import: 'default' });
-const DIS: Record<string, string> = { elma: '../../assets/meyveler/elma.webp', top: '../../assets/banyo/top.webp', sepet: '../../assets/pazar/sepet.webp' };
+const DIS_GORSEL = import.meta.glob<string>(['../../assets/meyveler/elma.webp', '../../assets/renkler/top.webp', '../../assets/pazar/sepet.webp'], { eager: true, query: '?url', import: 'default' });
+const DIS: Record<string, string> = { elma: '../../assets/meyveler/elma.webp', top: '../../assets/renkler/top.webp', sepet: '../../assets/pazar/sepet.webp' };
 /** Eşyanın görsel adresi (varsa): önce filmin klasörü, sonra ortak malzeme klasörü, sonra hazır setler */
 export function esyaAdresi(tip: string, film: string, malzeme?: string): string | undefined {
   return GORSELLER[`../../assets/film/${film}/${tip}.webp`] ?? (malzeme ? GORSELLER[`../../assets/film/${malzeme}/${tip}.webp`] : undefined) ?? (DIS[tip] ? DIS_GORSEL[DIS[tip]] : undefined);
@@ -88,7 +88,7 @@ export const ESYA_MERKEZ: Record<string, [number, number]> = Object.fromEntries(
 );
 
 /** Görselin altındaki boş pay (kutu yüksekliğinin oranı): eşya y'ye tam otursun, havada durmasın */
-export const ESYA_ALT: Record<string, number> = { elma: 24 / 560, top: 11 / 372, sepet: 24 / 560 };
+export const ESYA_ALT: Record<string, number> = { elma: 24 / 560, top: 24 / 560, sepet: 24 / 560 };
 
 /** Eşya elemanı: varsa gerçek görsel, yoksa SVG yer tutucu */
 export function esyaCiz(tip: string, film: string, malzeme?: string): HTMLElement {
@@ -116,5 +116,5 @@ export function esyaCiz(tip: string, film: string, malzeme?: string): HTMLElemen
 export const ESYA_ORAN: Record<string, number> = {
   karpuz: 1.113, 'karpuz-yarim': 1.134, 'karpuz-dilim': 1.077, tabak: 1.362, bicak: 4.082, kasa: 1.429, cekirdek: 20 / 28,
   'mino-sarilma': 1209 / 1286,
-  elma: 1, top: 369 / 372, sepet: 1, 'kino-kuyruk': 282 / 301,
+  elma: 1, top: 1, sepet: 1, 'kino-kuyruk': 282 / 301,
 };

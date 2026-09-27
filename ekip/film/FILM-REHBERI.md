@@ -58,6 +58,7 @@ Yeni görsel gerekiyorsa (arka plan, eşya) **Recraft** kullanılır (bu bilgisa
 - SVG, `viewBox` kare (2048), Presentation Attributes, `id` = katman adı, minify kapalı.
 - Katman adları (varsa): `kuyruk, govde, bacak-sol, bacak-sag, kol-sol, kol-sag, aksesuar, kafa, kulak-sol, kulak-sag, goz-sol, goz-sag, agiz`. Hayvana göre `kanat-sol/sag`, `gaga`.
 - Gizli ekler (`display="none"`): `goz-kapali`, `agiz-acik`, `agiz-kapali`, gerekirse `goz-mutlu`.
+- Dudak senkronu ağızları (isteğe bağlı, gizli, kafaya bağlı): `agiz-kapali, agiz-az, agiz-orta, agiz-yuvarlak, agiz-dis, agiz-gulumse` (6'sı birlikte). Varsa konuşurken kod bunları kullanır (src/audio/dudak.ts), yoksa `agiz-acik` ölçeklenir. Mino'da `node scripts/mino/rig.mjs` yeniden çalıştırılınca eklenir.
 - Her katman kendi konturuyla tam çizili; dönünce altında boşluk görünmez (boyun, omuz, kuyruk kökü uzatılır).
 - Dönme noktaları dosyayla birlikte `ekip/film/cizim/<ad>.json` içinde: `{ "kafa": [x, y], "kol-sol": [x, y], … }`.
 - Örnek: `ekip/mino/mino-final.svg` + `scripts/mino/rig.mjs` + `src/mino/mino.ts`.

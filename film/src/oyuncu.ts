@@ -6,6 +6,7 @@
  * tutulur…). Hedef değerler verilir, oyuncu oraya süreyle (üstel yumuşatma) varır; hazır tepkilerin üstüne eklenir.
  * Taşıma (tasi / al / birak): eşya bir parçaya takılır (ör. Kino'nun kafasındaki elma), parçayla birlikte döner.
  */
+import type { KonusBilgi } from '../../src/audio/dudak';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
 import { Mino, minoIfadeleriYukle, type MinoEkPoz, type MinoIfade, type Tepki } from '../../src/mino/mino';
 import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
@@ -32,16 +33,43 @@ const KUYRUK_SINIR: Record<string, [number, number]> = { kino: [-8, 20] };
 const YON_SABIT = new Set(['kino']);
 
 /**
+ * Mino'nun yolda olan ifadeleri (Adobe: kafa-uzgun + goz-uzgun + agiz-uzgun, goz-saskin + agiz-saskin,
+ * goz-odak + agiz-dil) ve gelene kadar yerine kullanılan en yakın mevcut ifade (null: yüz normal, beden dili duruşla).
+ */
+const MINO_YEDEK: Record<string, string | null> = { uzgun: 'kararsiz', saskin: null, odak: null };
+const destek = new Map<string, Promise<boolean>>();
+/** Mino'nun bu ifadesi hazır mı: ifade eklerinde katmanı (m-<ad>) ve stil kuralı (.ifade-<ad>) var mı */
+function minoIfadeDestek(ad: string): Promise<boolean> {
+  let p = destek.get(ad);
+  if (!p) {
+    p = minoIfadeleriYukle().then((svg) => {
+      if (!svg?.includes(`m-${ad}`)) return false;
+      for (const s of document.styleSheets) {
+        try {
+          for (const r of s.cssRules) if ((r as CSSStyleRule).selectorText?.includes(`.ifade-${ad}`)) return true;
+        } catch {
+          /* başka kaynaktan stil */
+        }
+      }
+      return false;
+    });
+    destek.set(ad, p);
+  }
+  return p;
+}
+
+/**
  * Duruş alanları. Karakter (iskelet): kulak (+ dikilir, - düşer), kafa (eğilme °), kafaY (% boyun, + aşağı),
  * kol / kolSol / kolSag (+ dışa kalkar, - içe), kuyruk (kökten açı °), salla (kendi kuyruk sallamasının çarpanı),
  * pervane (hızlı kuyruk sallama genliği), hop (sevinç hopu), y (beden, + aşağı: eğilme), don (beden eğimi),
- * sx / sy (ezilme), goz (1: kapalı), dil (1: dil dışarıda), adim (sessiz, küçük adımlarla yürüyüş), titre.
+ * sx / sy (ezilme), goz (1: kapalı), dil (1: dil dışarıda), adim (sessiz, küçük adımlarla yürüyüş), titre,
+ * patiKuyruk (1: kuyruğunu patisiyle tutar; 'pati-kuyruk' eki yoksa kolSag / kuyruk açısıyla).
  * Mino: kafaAci, kafaY, govdeAci, ziplaY (- yükselir), sx, sy, kolSol, kolSag, kuyrukAci, gozKay, gulum (-1 üzgün … 1),
  * agiz (0 kapalı … 1), goz (1: kapalı).
  */
 type Durus = Record<string, number>;
 const MINO_ALAN = ['kafaAci', 'kafaY', 'govdeAci', 'ziplaY', 'sx', 'sy', 'kolSol', 'kolSag', 'kuyrukAci', 'gozKay', 'gulum', 'agiz', 'goz'] as const;
-const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre'] as const;
+const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre', 'patiKuyruk'] as const;
 /** varsayılanlar (duruş "normal"e dönerken) */
 const VARSAYILAN: Durus = { salla: 1, sx: 1, sy: 1 };
 const deger = (d: Durus, k: string) => d[k] ?? VARSAYILAN[k] ?? 0;
@@ -81,13 +109,14 @@ export class Oyuncu {
     if (tip === 'mino') {
       this.yuruyen = new YuruyenMino();
       this.mino = this.yuruyen.mino;
+      // filmde Mino'nun ağzını yalnız motor açar (konus): başkasının cümlesinde oynamasın
+      this.mino.agizSus = true;
       this.el = h('div.fl-oyuncu.fl-mino', {}, this.yuruyen.el);
       this.oran = 1360 / 1790;
     } else {
       const url = HAYVAN[`../../assets/hayvanlar/${tip}.webp`] ?? '';
       this.karakter = new Karakter(tip, h('img', { src: url, alt: '', draggable: 'false' }));
       this.karakter.ekHareket = (p, t) => this.karakterPoz(p, t);
-      this.karakter.ifadeAgziKonusur = true;
       this.el = h('div.fl-oyuncu', { 'data-tip': tip }, this.karakter.el);
       this.oran = 1;
     }
@@ -129,7 +158,15 @@ export class Oyuncu {
   }
 
   ifade(ad: string | null, ms = 0) {
-    this.mino?.ifade(ad as MinoIfade | null, ms);
+    if (this.mino) {
+      const m = this.mino;
+      const no = ++this.ifadeNo;
+      // yolda olan çizimler (üzgün, şaşkın, odak): katmanı ve kuralı gelmişse o, yoksa en yakın mevcut ifade
+      if (ad && ad in MINO_YEDEK)
+        void minoIfadeDestek(ad).then((d) => no === this.ifadeNo && void m.ifade((d ? ad : MINO_YEDEK[ad]) as MinoIfade | null, ms));
+      else void m.ifade(ad as MinoIfade | null, ms);
+      return;
+    }
     const k = this.karakter;
     if (!k) return;
     const no = ++this.ifadeNo;
@@ -149,10 +186,11 @@ export class Oyuncu {
     this.mino?.bak(yon);
   }
 
-  konus(acik: boolean) {
+  /** Konuşuyor: ağzı sese göre oynar (bilgi: cümle ve MP4 kaydında önceden çıkarılmış ağız dizisi) */
+  konus(acik: boolean, bilgi?: KonusBilgi) {
     this.konusuyor = acik;
-    if (this.yuruyen) this.yuruyen.konus(acik);
-    else this.karakter?.konus(acik);
+    if (this.yuruyen) this.yuruyen.konus(acik, bilgi);
+    else this.karakter?.konus(acik, true, bilgi);
   }
 
   /** Başka biri konuşurken Mino'nun ağzı sesle oynamasın */
@@ -263,6 +301,15 @@ export class Oyuncu {
     if (this.karakter) {
       const dil = v('dil') > 0.5;
       this.karakter.ek('dil-disarida', dil);
+      // kuyruğunu patisiyle tutar: iskelette 'pati-kuyruk' eki (Adobe, yolda) varsa o görünür, kuyruk durur, kol
+      // kalkmaz; yoksa kol ve kuyruk açısıyla (patiyi kuyruğa indirir) — duruştaki kolSag / kuyruk bu yedek içindir
+      const tut = v('patiKuyruk') > 0.5;
+      const pati = tut && !!this.karakter.parcaG('pati-kuyruk');
+      this.karakter.ek('pati-kuyruk', pati);
+      if (pati) {
+        p.kolSag -= v('kolSag');
+        p.kuyruk = 0;
+      }
     }
     // eklem sınırları (dikiş yeri açılmasın)
     const kol = KOL_EN_COK[this.tip];

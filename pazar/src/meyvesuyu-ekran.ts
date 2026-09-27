@@ -19,13 +19,13 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { AZ, Bardak, Blender, YABANMERSINI } from './blender';
 import { canliSahne } from './canli';
 import { gorselStil, odulAni, stand } from './ekranlar';
-import { parilti, resim } from './gorsel';
+import { flamaYerlestir, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
 import { urunAdi } from './istek';
 import { brrSesi, icmeSesi } from './meyvesuyu-ses';
 import { dogruSecim, karisim, karisimCumlesi, KAPASITE, MEYVE_RENGI, MS_MUSTERI, msIstekUret, SU_KODU, tarif, type MsIstek, type SuRengi } from './meyvesuyu';
 import { MinoCanli } from './mino-canli';
-import { Musteri } from './musteri';
+import { Musteri, musteriHazirla } from './musteri';
 import { geriGonder, surukle, tasi } from './surukle';
 
 const A = P.arayuz;
@@ -62,7 +62,10 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   const q = new URLSearchParams(location.search);
   const secili = onizleme() ? (q.get('musteriler') ?? '').split(',').filter((x) => P.musteriler.includes(x)) : [];
   const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, MS_MUSTERI);
-  musteriler.forEach(resimSesiHazirla);
+  musteriler.forEach((ad) => {
+    resimSesiHazirla(ad);
+    musteriHazirla(ad);
+  });
 
   const yazi = h('span', {}, M.giris);
   let sonSoz: string[] = [M.giris];
@@ -92,6 +95,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     sahne,
     tezgah,
   );
+  const flamaKapat = flamaYerlestir(el, kamera);
 
   let ist: MsIstek = msIstekUret(y, 0);
   let kapandi = false;
@@ -391,6 +395,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       minoCanli.kapat();
       mino.kapat();
       canli.kapat();
+      flamaKapat();
       blender.kapat();
       musteri?.kapat();
     },

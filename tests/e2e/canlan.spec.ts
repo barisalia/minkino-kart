@@ -277,7 +277,10 @@ test('Çiz Canlansın: Müzem — canlanan resim duvara asılır, dokununca yine
   await page.getByRole('button', { name: 'Geri' }).click();
   await expect(page.locator('.cc-muze-karti .cc-muze-sayi')).toHaveText('1');
   await page.locator('.cc-muze-karti').click();
-  await expect(page.locator('.cc-muze-cerceve')).toHaveCount(1);
+  await expect(page.locator('.cc-muze-cerceve:not(.bos)')).toHaveCount(1);
+  // tek resim varken duvar boş kalmaz: yanında soru işaretli çerçeveler ve "Hadi çizelim"
+  await expect(page.locator('.cc-muze-cerceve.bos')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: 'Hadi çizelim' })).toBeVisible();
   expect(hatalar).toEqual([]);
 });
 

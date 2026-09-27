@@ -5,6 +5,8 @@ import { durum, kaydetDurum } from '../engine/ilerleme';
 import { bekle, h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { konfetiPatlat } from '../ui/konfeti';
+import { azHareket } from '../ui/hareket';
+import { Mino, type Tepki } from '../mino/mino';
 import { yuvarlakDugme } from '../ui/ortak';
 import type { Ekran, Uygulama } from '../uygulama';
 import { albumSayfasi } from './album';
@@ -26,7 +28,18 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
   const yeniTema = yuvarlakDugme(IKON.izgara, 'Yeni tema', () => app.git('temalar', { yeniAcilan: p.acilanTemalar[0] }));
   yeniTema.style.setProperty('--r', '#3E9DF2');
 
-  const el = h('div.tur-sonu', {}, yildizlar, kaydir, h('div.alt-dugmeler', {}, tekrar, yeniTema));
+  // Ödül anı: Mino yıldızların yanında her yıldızda sevinir, sonunda dans eder; dokununca yine oynar
+  const mino = new Mino();
+  mino.agizSus = true;
+  const minoKap = h('div.ts-mino', { 'aria-hidden': 'true' }, mino.el);
+  const MINO_SIRA: Tepki[] = ['zipla', 'kolac', 'gidik', 'dans'];
+  let minoSira = 0;
+  minoKap.addEventListener('pointerdown', () => {
+    efekt.dokunma();
+    if (!azHareket()) mino.tepki(MINO_SIRA[minoSira++ % MINO_SIRA.length]);
+  });
+
+  const el = h('div.tur-sonu', {}, h('div.ts-ust', {}, minoKap, yildizlar), kaydir, h('div.alt-dugmeler', {}, tekrar, yeniTema));
 
   void (async () => {
     await bekle(sure(250));
@@ -44,6 +57,7 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
       if (kapandi) return;
       yildizEl[i].classList.add('dolu');
       efekt.yildiz(i);
+      if (!azHareket()) mino.tepki(i === p.yildiz - 1 ? 'dans' : 'sevinc');
     }
     // Yeni kartlar albüme yapışıyor
     const yeniEl = sayfa.querySelector('.kart.yeni');
@@ -64,6 +78,7 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
     el,
     kapat() {
       kapandi = true;
+      mino.kapat();
       app.kok.querySelector('.kutlama')?.remove();
     },
   };

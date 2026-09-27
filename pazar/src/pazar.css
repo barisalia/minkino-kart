@@ -279,14 +279,42 @@
   height: auto;
   aspect-ratio: 1;
 }
+/* müşteri standın sol direğinin önünde: stand küçüldüğünde (tablet, terazi) ekranın kenarında havada kalmaz,
+   isteği balonu ekrandan taşmaz */
 .pz-kok .pz-musteri-kap {
   position: absolute;
-  left: 0;
+  left: max(1cqw, calc(50cqw - min(108cqw, 128cqh) * 0.5));
   bottom: -2%;
   width: min(36cqw, 46cqh, 330px);
   aspect-ratio: 1;
   pointer-events: none;
   z-index: 5;
+}
+/*
+ * Uzun telefon ekranı (dikey, dar): sahne ekran genişliğiyle sınırlı kaldığından stand ile üstteki flamalar
+ * arasında büyük boş gökyüzü kalıyordu, müşteri de küçüktü. Stand biraz büyür (kenarları hafif taşar; sepet
+ * içeri kayar), müşteri büyür; flama ipi de standın hemen üstüne iner (aşağıda).
+ */
+@media (max-aspect-ratio: 3/5) {
+  .pz-kok .pz-pazar .pz-sahne .pz-stand {
+    --sw: min(116cqw, 128cqh);
+  }
+  .pz-kok .pz-pazar .pz-stand .pz-sepet {
+    left: 61%;
+  }
+  .pz-kok .pz-pazar.ms-ekran .pz-stand .ms-blender {
+    left: 57%;
+  }
+  .pz-kok .pz-pazar .pz-musteri-kap {
+    width: min(44cqw, 46cqh, 330px);
+  }
+}
+/* flama ipi standın üstünde (gorsel.ts → flamaYerlestir) */
+.pz-kok .pz-pazar .pz-flamalar {
+  top: var(--pz-flama-y, 19%);
+}
+.pz-kok .pz-pazar.pz-flama-kayar .pz-flamalar {
+  transition: top 1.2s cubic-bezier(0.45, 0.05, 0.25, 1);
 }
 
 .pz-kok .pz-musteri {

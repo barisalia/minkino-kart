@@ -105,7 +105,7 @@ export function onYukle(metinler: (string | undefined | null)[], secenek: KayitS
  * Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer).
  * secenek.karakter: önce karakterin kendi kaydı (normal hızda); yoksa anlatıcı kaydı secenek.ton hızında.
  */
-export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}): Promise<boolean> {
+export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}, basladi?: () => void): Promise<boolean> {
   const c = baglam();
   const cikis = konusmaCikisi();
   if (!c || !cikis || c.state !== 'running') return false;
@@ -125,6 +125,7 @@ export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: K
       coz(true);
     };
     src.start();
+    basladi?.();
   });
 }
 
@@ -144,4 +145,20 @@ export function kayitDurdur() {
 export async function kayitTamponu(metin: string, secenek: KayitSecenegi = {}): Promise<{ tampon: AudioBuffer; hiz: number } | null> {
   const t = await tampon(metin, secenek);
   return t ? { tampon: t, hiz: dosya(metin, secenek)?.hiz ?? 1 } : null;
+}
+
+/**
+ * Kaydın örnekleri (tek kanal) ve çalma hızı: ses bağlamı açılmadan da (filmin MP4 kaydı) çevrimdışı çözülür.
+ * Dudak senkronunun önceden çıkarılan zarfı için (src/audio/dudak.ts). Kayıt yoksa null.
+ */
+export async function kayitOrnekleri(metin: string, secenek: KayitSecenegi = {}): Promise<{ ornek: Float32Array; hz: number; hiz: number } | null> {
+  const s = dosya(metin, secenek);
+  if (!s) return null;
+  try {
+    let t = baglam() ? await tampon(metin, secenek) : null;
+    if (!t) t = await new OfflineAudioContext(1, 1, 48000).decodeAudioData(await veri(s.kayit));
+    return t ? { ornek: t.getChannelData(0), hz: t.sampleRate, hiz: s.hiz } : null;
+  } catch {
+    return null;
+  }
 }
