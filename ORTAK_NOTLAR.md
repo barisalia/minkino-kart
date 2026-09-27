@@ -207,9 +207,39 @@ Soru/engel olursa bu dosyaya yazın; bulut her çalışmada okur.
 - 2026-09-26 TAMAM: Sesli Maceralar animasyonları (kodcu): farklı fazda nefes + kendiliğinden küçük hareketler, zıplamada çömelme/uzama/basılma, yükseklikle küçülen gölge, transform ile adım ritimli yürüyüş, tepki dalgası, parıltı/sarsıntı, yumuşak kapı girişi ve kamera; reduced-motion desteği; telefonda ~59 fps. Ses/mikrofon mantığına dokunulmadı. ?onizleme=1: gerçek hızda doğrudan bölüm.
 - 2026-09-26 TAMAM: Ada'nın 5 parti pozu oyunda (tasarımcı: assets/parti-ifade/ada/, 345×622 ortak tuval, ayak altta; kontrol ekip/parti/ada-pozlar.png). dogumgunu.ts Ada: boy 20.65, oran 345/622, şapka yeni tuvale göre. WebP'ler sharp ile ~30 KB'a sıkıştırıldı. KALAN İŞ: çocuk konukların (Can, Elif, Deniz, Zeynep) 7'şer pozu + Ada dans2/mutlu Gemini'de üretiliyor (can/selam onaylı).
 - 2026-09-26 TAMAM: Can'ın 7 parti pozu oyunda (assets/parti-ifade/can/, 422×558 tuval). KONUK_CIZIM'e karakter başına boy ve golge (gölge iç payı) eklendi; Oyuncu 'golge' seçeneği (--golge). Ada golge 24, Can 28.6.
+
+## 2026-09-26 — Ada'nın Doğum Günü BİTTİ (bulut → yerel)
+
+- 2026-09-26 KARAR (Barış): Sesli Maceralar (`macera/`, `content/macera.json`, `assets/parti*`) tamamen bulutta. Yerel ekip dokunmuyor.
+- 2026-09-26 Bulut: `claude/awesome-cori-kvcfd7` dalı (ae69b90), `main` (090981e) üstüne kuruldu; yeni Mino ile Ada ve Can pozları içinde.
+  - `macera/` telefonda sorunsuz çalışan hâle (4f894ca) döndü, üstüne yerelin güvenli animasyonları eklendi: pozlar, dalga, sarsıntı, parıltı, gölge, zıplama, nefes, kapı girişi, kamera.
+  - Çıkarılanlar: bakınma döngüsü, FLIP yürüyüş, `will-change`.
+  - Ölçüm: yavaşlatılmış tarayıcıda (CPU x6) sahte mikrofonla iki sürüm de balonu aynı hızda şişirdi. Telefondaki sorunun kesin kaynağı bulunamadı; güvenli temel seçildi.
+- 2026-09-26 ONAY BEKLİYOR (Barış): bu dalın `main`'e gönderilmesi. O zamana kadar yerel `main`'e push etmeden önce mutlaka `git merge origin/claude/awesome-cori-kvcfd7` yapsın, yoksa bu düzeltme siteden gider.
+- 2026-09-26 KALAN İŞ: Elif, Deniz ve Zeynep pozları `ekip/parti-pozlar` dalına gelince bulut Ada bölümüne koyar.
+- 2026-09-26 Bulut: Elif pozları ve Can'ın güncel pozları (`ekip/parti-pozlar` 679f153) Ada bölümüne kondu. Deniz, Zeynep ve Ada dans2/mutlu aynı dala gelince konacak.
 - 2026-09-26 KARAR (Barış): Mino'nun Pazarı tamamlanacak (ekip/pazar main'e birleştirildi, henüz gönderilmedi). Oyun: Mino tezgâhta, hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler; 3 yaş ad · 4 renk/1-5 sayma · 5 iki ürün/ayırma · 6 toplama/1-5 lira. Kalanlar: yeni Mino, pazar görselleri (Recraft ~5), seslendirme (sayma ürünleri 4'e inerek ~1.000 karakter).
 - 2026-09-26 KARAR (Barış): Sesli Maceralar / Ada'nın Doğum Günü tamamen bulut yöneticide; yerel ekip macera/, content/macera.json, assets/parti*'ye dokunmaz.
 - 2026-09-26 TAMAM: Mino'nun Pazarı yayına çıktı. Recraft 5 görsel (tezgah, arkaplan, sepet, para-1, para-5; 10 kredi, kalan 387), tasarımcı kapalı beyazları temizledi; kodcu standı üç katmanlı kurdu (Mino standın içinde), CSS tente kalktı, paralar sepette sıralı. Seslendirme: 76 yeni cümle ≈ 1.184 karakter (CI üretir). scripts/gorsel-indir.mjs Windows yol düzeltmesi (fileURLToPath).
+
+## 2026-09-26 — ADA'NIN DOĞUM GÜNÜ ONAYLANDI, SES SİSTEMİ KİLİTLİ (bulut → yerel, ÇOK ÖNEMLİ)
+
+- 2026-09-26 KARAR (Barış): "Oldu sonunda. Ses sistemi böyle olmalı. Bunu bozmayın." Sesli Maceralar'ın bu hâli (`eddd6aa` ve sonrası) referans. Bölüm artık yerelde devam ediyor.
+- 2026-09-26 **UYARI (Barış'tan, çok sert bir dille):** Üfleme ve ses algılamasına **dokunulmayacak.**
+  - Balon, algılama gevşetildiği için konuşunca ve "çıt" deyince şişiyordu. İlk sürümün katı algılamasına dönüldü; "kolay mod" kodu tamamen silindi.
+  - Kolaylık **yalnız oyunun hızından** (şişme hızı, yeşil bölge, mum eşiği) verilir, algılamadan asla.
+- 2026-09-26 Kilit: `tests/unit/ses-kilidi.test.ts`. Kontrol ettikleri:
+  - konuşma sayılmaz,
+  - tıkırtı sayılmaz,
+  - nefes sayılır,
+  - eşik metinleri ve bölümdeki kullanım değişmemiş.
+
+  CI birim testlerini yayından önce çalıştırır: kilit kırılırsa o sürüm siteye çıkmaz. Değiştirmek şartsa önce Barış'ın onayı.
+- 2026-09-26 Öğretici rehber: `ekip/SES-SISTEMI.md`. İçinde sistemin parçaları, algılayıcılar tablosu, yeni sesli görev tarifi, telefon ve animasyon kuralları var. Yerel ekip ses işine başlamadan önce okuyacak.
+- 2026-09-26 Bulut: işi bitti. `claude/awesome-cori-kvcfd7` ve `main` aynı commit'te.
+- 2026-09-26 Bulut: Deniz pozları ve yeniden işlenmiş Can/Elif pozları (`ekip/parti-pozlar` 427f213) Ada bölümüne kondu. Kalan: Zeynep ve Ada dans2/mutlu.
+- 2026-09-26 Bulut: Ada'nın Doğum Günü TAMAMLANDI. Bütün parti pozları kondu: Ada (dans2, mutlu dahil), Can, Elif, Deniz, Zeynep. Ada'nın sevinç pozu şapkalı çizim olduğu için ayrı şapka takılmaz. Bölümde açık iş kalmadı.
+
 - 2026-09-26 KARAR (Barış): Animasyon ekibi kuruldu — uygulamaya eğitici mini çizgi filmler. Rehber ekip/film/FILM-REHBERI.md. Filmler video değil, katmanlı SVG iskeletleri oynatan film motoru (film/, content/film/*.json). Roller: Senarist (senaryo), Adobe (iskelet/katmanlı arka plan), Gemini (poz/ifade), Animatör (yeni oturum; motor + filmler), yönetici (ses, kontrol, yayın).
 - 2026-09-27 GECE PLANI (Barış uyurken): Film 1 gerçek görsellerle bitirilecek (kodcu), yandan yürüyüş çizimleri (Gemini) ve iskeletleri (Adobe), Pazar'a inek/maymun/kuş iskeletleri, Minkino ana menüsü (uygulama/, ayrı çalışma kopyasında). KURAL: kredi harcanmaz (seslendirme/Recraft yok), siteye push yok; her şey yerel commit, sabah Barış onaylar. Senarist'ten gelen senaryolar dinlenip malzeme listesine dönüştürülür.
 - 2026-09-27 ONAY BEKLİYOR: (1) Pazar 2 (yaşayan sahne, terazi, müşteri kişilikleri, iskeletli tavşan/ördek/köpek/ayı) siteye gönderilsin mi? (2) Film cümleleri seslendirilsin mi (~130 karakter)?

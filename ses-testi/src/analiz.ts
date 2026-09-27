@@ -188,6 +188,8 @@ export interface Ayar {
 }
 
 // ---------------------------------------------------------------- 1. Üfleme
+// KİLİTLİ (Barış onaylı, 2026-09-26): eşikler değiştirilmez. Kolaylık algılamadan değil oyunun şişme/sönme
+// hızından verilir. Bkz. ekip/SES-SISTEMI.md ve tests/unit/ses-kilidi.test.ts
 /** Üfleme: sesli (perdeli) değil, gürültü gibi, kalın ağırlıklı ve süren bir ses. */
 export class UflemeBulucu {
   private art = 0;
@@ -198,15 +200,10 @@ export class UflemeBulucu {
   sure = 0;
   aktif = false;
   toplamUfleme = 0;
-  constructor(
-    private a: Ayar,
-    private kolay = false,
-  ) {}
+  constructor(private a: Ayar) {}
   kare(o: Ozellik): { basladi?: boolean; bitti?: number } {
-    const esik = this.a.taban + (this.kolay ? 9 : 14) - this.a.duyarlilik;
-    const ufleme = this.kolay
-      ? o.db > esik && (o.perde === null || o.db > esik + 6) && (o.kalinOran > 0.2 || o.db > esik + 10)
-      : o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
+    const esik = this.a.taban + 14 - this.a.duyarlilik;
+    const ufleme = o.db > esik && o.perde === null && (o.kalinOran > 0.28 || o.db > esik + 16) && o.duzluk > 0.025;
     const sonuc: { basladi?: boolean; bitti?: number } = {};
     if (ufleme) {
       this.art++;

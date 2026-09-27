@@ -41,10 +41,7 @@ export class Sahne {
     return el;
   }
 
-  /**
-   * Kamera: (x, y) odak noktası (sahnenin %'si, üstten), z yakınlık.
-   * Odak noktası da yumuşakça kayar (CSS geçişi, macera.css → .mc-dunya): ağır bir kamera gibi yavaş kalkar, yavaş durur.
-   */
+  /** Kamera: (x, y) odak noktası (sahnenin %'si, üstten), z yakınlık */
   async kamera(x: number, y: number, z: number, ms = 1200) {
     this.dunya.style.transitionDuration = `${ms}ms`;
     this.dunya.style.transformOrigin = `${x}% ${y}%`;
@@ -52,7 +49,7 @@ export class Sahne {
     await bekle(ms);
   }
 
-  /** Kısa sarsıntı (balon patlaması, sürpriz): yalnız transform; hareketi azalt tercihinde yok */
+  /** Kısa sarsıntı (balon patlaması, sürpriz); hareketi azalt tercihinde yok */
   titret(guc = 1) {
     if (AZ_HAREKET) return;
     const d = 5 * guc;

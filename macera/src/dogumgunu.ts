@@ -45,10 +45,10 @@ type KonukAd = (typeof KONUKLAR)[number];
 /** çizim oranı (en/boy) ve şapkanın kafadaki yeri */
 /** boy/golge yalnız poz tuvali genişletilmiş konuklarda (parti-ifade): kutu büyür, karakter ekranda aynı boyda kalır */
 const KONUK_CIZIM: Record<KonukAd, { oran: number; boy?: number; golge?: number; sapka: { x: number; y: number; w: number; d?: number } }> = {
-  can: { boy: 23.28, oran: 422 / 558, golge: 28.6, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
-  elif: { oran: 274 / 512, sapka: { x: 50, y: 6, w: 30, d: 6 } },
-  deniz: { oran: 289 / 512, sapka: { x: 47, y: 10, w: 32, d: -5 } },
-  zeynep: { oran: 322 / 512, sapka: { x: 50, y: 6, w: 28, d: 6 } },
+  can: { boy: 23.28, oran: 422 / 558, golge: 28.7, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
+  elif: { boy: 20.7, oran: 366 / 583, golge: 26, sapka: { x: 54.1, y: 17.4, w: 22.5, d: 6 } },
+  deniz: { boy: 20.27, oran: 378 / 521, golge: 25.5, sapka: { x: 47, y: 11.6, w: 24.5, d: -5 } },
+  zeynep: { boy: 16.94, oran: 352 / 565, golge: 20.7, sapka: { x: 50.3, y: 14.8, w: 25.6, d: 6 } },
 };
 /** Konukların parti sırasındaki yerleri (x, alttan y) */
 const YER: Record<KonukAd, [number, number, number]> = { can: [27, 5, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [74, 5, 7] };
@@ -262,7 +262,11 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
 
   // ================================================================= sahne yardımcıları
 
-  /** Balon: öne gelir, üfledikçe şişer, dolunca uçup flamaya asılır. 5-6 yaş: çizgiyi geçerse patlar. */
+  /**
+   * Balon: öne gelir, üfledikçe şişer, dolunca uçup flamaya asılır. 5-6 yaş: çizgiyi geçerse patlar.
+   * KİLİTLİ (Barış onaylı): algılama katı (`new Ufleme(kulak.ayar, 0.5)`), konuşma balonu şişirmez.
+   * Kolaylaştırmak için yalnız şişme hızı / yeşil bölge değişir; algılamaya dokunmayın (ekip/SES-SISTEMI.md).
+   */
   async function balonSisir(n: number) {
     const hedef = 1;
     const ton = BALON_TON[n % BALON_TON.length];
@@ -271,7 +275,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // 5-6 yaş: yanda ölçer; yeşil bölgede durmalı
     const isaret = h('i.mc-olcer-isaret');
     const olcer = kontrollu ? sahne.koy(h('div.mc-olcer', {}, h('i.mc-olcer-yesil'), isaret), { x: 70, y: 34, w: 5, z: 11 }) : null;
-    const u = new Ufleme(kulak.ayar, 0.5, true);
+    const u = new Ufleme(kulak.ayar, 0.5);
     let dolu = 0;
     let patladi = false;
     ui.ipucu(kontrollu ? 'Üfle, yeşilde dur!' : 'Balona üfle');
@@ -543,7 +547,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     oy.ada.poz('dilek');
     await soyle(D.mum_giris);
     ui.ipucu('Mumlara üfle');
-    const u = new Ufleme(kulak.ayar, 0.8, true);
+    const u = new Ufleme(kulak.ayar, 0.8);
     let biriken = 0;
     await new Promise<void>((coz) => {
       const tik = (dt: number) => {
