@@ -178,7 +178,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     await bekle(300, 700);
     if (tur === 0 || tur === 3 || tur === 4) await ekran(`15-cee-${tur}`);
     if (tur === 0) {
-      await dokun(page, page.locator('.eg-eller i.sag').first());
+      await dokun(page, page.locator('[data-ege="eller-ada"]').first());
     }
     else await dokun(page, page.locator('.mc-buyuk-dugme'));
     await expect.poll(() => gorev(page), { timeout: T }).not.toBe('cee');

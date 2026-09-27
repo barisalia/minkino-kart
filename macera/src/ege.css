@@ -500,12 +500,7 @@
 @keyframes eg-kirp {
   50% { scale: 1 0.1; }
 }
-/* bakış: yüz parçaları (göz, kaş, ağız ve ekleri) bakılan yana kayar, kafa da o yana eğilir */
-.mc-kok .eg-yuzlu :is(g[data-parca^='goz'], g[data-parca^='agiz'], g[data-parca='kas'], g[data-parca='yanak-mamali']) > *,
-.mc-kok .eg-yuzlu .eg-yuz-on {
-  translate: calc(var(--bak, 0) * 40px) 0;
-  transition: translate 0.45s cubic-bezier(0.3, 1.3, 0.5, 1), scale 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
-}
+/* bakış: tasarımcının dönük baş katmanları (X-sola / X-saga) Karakter ifade setleriyle gösterilir */
 /* emzik: ağız ekleri görünmez, emzik emilir */
 .mc-kok .eg-yuzlu.emzikli g[data-parca^='agiz'] {
   opacity: 0 !important;
@@ -518,10 +513,12 @@
   scale: var(--emme, 1);
 }
 /* mamalı yanak: her ifadeyle birlikte; silindikçe solar (--mama) */
-.mc-kok .eg-yuzlu.mamali g[data-parca='yanak-mamali'] {
+.mc-kok .eg-yuzlu.mamali:not([data-yon]) g[data-parca='yanak-mamali'],
+.mc-kok .eg-yuzlu.mamali[data-yon='sola'] g[data-parca='yanak-mamali-sola'],
+.mc-kok .eg-yuzlu.mamali[data-yon='saga'] g[data-parca='yanak-mamali-saga'] {
   opacity: 1 !important;
 }
-.mc-kok .eg-yuzlu g[data-parca='yanak-mamali'] > * {
+.mc-kok .eg-yuzlu g[data-parca^='yanak-mamali'] > * {
   opacity: var(--mama, 1);
   transition: opacity 0.2s;
 }
@@ -802,7 +799,12 @@
   pointer-events: none;
 }
 
-/* cee-ee: yüzü kapatan eller */
+/* cee-ee: tasarımcının yüzü kapalı pozu (oyuncunun resim katmanı gibi; dokunulabilir) */
+.mc-kok .eg-sahne .mc-oy-resim.eg-cee-resim {
+  pointer-events: auto;
+}
+
+/* cee-ee: yüzü kapatan eller (poz çizimi yoksa) */
 .mc-kok .eg-eller {
   position: absolute;
   inset: 0;

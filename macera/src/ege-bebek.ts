@@ -54,10 +54,10 @@ const svgEl = (ad: string, html: string, sinif = '') => {
 };
 
 /** Kodla eklenen yüz parçaları (kafa katmanına): hafif yanak kızarması, mama lekelerinin silme noktaları, emzik */
-function yuzSvg(): string {
+function yuzSvg(dx = 0): string {
   return `
 <g class="eg-yanak"><ellipse cx="800" cy="780" rx="92" ry="60" fill="#ef8a82"/><ellipse cx="1254" cy="782" rx="92" ry="60" fill="#ef8a82"/></g>
-<g class="eg-yuz-on">
+<g class="eg-yuz-on" transform="translate(${dx} 0)">
   <g class="eg-lekeler"></g>
   <g class="eg-emzik"></g>
 </g>`;
@@ -106,7 +106,8 @@ export class Ege {
     const s = this.svg();
     if (!s) return;
     s.setAttribute('viewBox', KIRPIM.join(' '));
-    this.parca('kafa')?.append(svgEl('g', yuzSvg(), 'eg-yuz'));
+    // yüz ekleri kafanın üç hâline de (ön, sola / sağa dönük: yüz ~90 birim kayar); görünen kafayla birlikte görünür
+    for (const [ad, dx] of [['kafa', 0], ['kafa-sola', -90], ['kafa-saga', 90]] as const) this.parca(ad)?.append(svgEl('g', yuzSvg(dx), 'eg-yuz'));
     // önlük: gövdenin boynunda (kafanın altında, kolların arkasında)
     const onluk = egeAdres('onluk');
     const g = svgEl(
@@ -118,8 +119,7 @@ export class Ege {
     );
     this.parca('govde')?.append(g);
     const em = egeAdres('emzik');
-    const emzik = s.querySelector('.eg-emzik');
-    if (emzik)
+    for (const emzik of s.querySelectorAll('.eg-emzik'))
       emzik.innerHTML = em
         ? `<image href="${em}" x="${AGIZ[0] - 92}" y="${AGIZ[1] - 64}" width="184" height="220"/>`
         : `<ellipse cx="${AGIZ[0]}" cy="${AGIZ[1] + 10}" rx="92" ry="34" fill="#9fd2f2" stroke="${K}" stroke-width="12"/><circle cx="${AGIZ[0]}" cy="${AGIZ[1] + 70}" r="44" fill="none" stroke="#a978c9" stroke-width="20"/>`;
@@ -140,7 +140,11 @@ export class Ege {
     this.el.dataset.ifade = ad;
     this.el.classList.toggle('kizarik', KIZARIK[ad]);
     // tasarımcının ifade eki (göster / gizle seti iskeletin JSON'unda); bakıyor: çizimin kendi yüzü
-    this.kar.ifade(ad === 'bakiyor' ? null : ad);
+    const yon = this.bakHedef <= -0.5 ? 'sola' : this.bakHedef >= 0.5 ? 'saga' : '';
+    if (yon) this.el.dataset.yon = yon;
+    else delete this.el.dataset.yon;
+    const set = (ad === 'bakiyor' ? 'normal' : ad) + (yon ? `-${yon}` : '');
+    this.kar.ifade(set === 'normal' ? null : set);
   }
 
   /** İfade; ms verilirse o süre sonra temel ifadeye döner, verilmezse yeni temel ifade olur */
@@ -168,6 +172,8 @@ export class Ege {
   bak(yon: number) {
     this.bakHedef = Math.max(-1, Math.min(1, yon));
     this.el.style.setProperty('--bak', String(this.bakHedef));
+    // tasarımcının dönük başı (X-sola / X-saga katmanları), ifadeyle birlikte
+    this.goster(this.simdiki);
   }
   /** Ayak sallama (sevinç / yemek) */
   ayakSalla(ms = 900) {
@@ -183,7 +189,7 @@ export class Ege {
     const az = AZ_HAREKET ? 0.3 : 1;
     // bakış yumuşakça döner (takip: kafa önce, yüz parçaları CSS geçişiyle)
     this.bakSimdi += (this.bakHedef - this.bakSimdi) * 0.12;
-    p.kafa += this.bakSimdi * 9;
+    p.kafa += this.bakSimdi * 4;
     // bebek: kollar hafif iner-kalkar, ayaklar arada kıpırdar
     p.kolSol += S(t * 1.6) * 3;
     p.kolSag += S(t * 1.6 + 0.8) * 3;
@@ -385,7 +391,7 @@ export class Ege {
   }
   /** Ağzın ekrandaki kutusu (kaşık hedefi) */
   agizKutusu(): DOMRect {
-    const [x, y] = this.ekranda(AGIZ[0] + this.bakSimdi * 30, AGIZ[1] + 20);
+    const [x, y] = this.ekranda(AGIZ[0] + this.bakHedef * 90, AGIZ[1] + 20);
     const b = this.birim() * 220;
     return new DOMRect(x - b / 2, y - b / 2, b, b);
   }

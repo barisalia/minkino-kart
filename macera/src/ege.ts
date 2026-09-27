@@ -1375,14 +1375,19 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       // açılır: eller savrulur, "Cee!", Ege kıkırdar (her turda gülme büyür)
       for (const [k, s] of saklananlar.entries()) {
         const el = eller[k];
-        el.classList.add('acildi');
-        setTimeout(() => el.remove(), sure(500));
+        const pozlu = el.classList.contains('eg-cee-resim');
+        if (pozlu) el.remove();
+        else {
+          el.classList.add('acildi');
+          setTimeout(() => el.remove(), sure(500));
+        }
         if (s === 'mino') {
           mino.tepki('zipla');
           void balon(minoBalon, B.cee, 1000);
         } else {
           const o = kim[s];
-          o.poz(s === 'ada' ? 'alkis' : 'selam', 1100);
+          // "Cee!" anı: tasarımcının açık pozu (şaşkın) ya da el sallama
+          o.poz(pozlu ? 'saskin' : s === 'ada' ? 'alkis' : 'selam', 1100);
           void o.zipla(12);
           void o.balon(B.cee, 1000);
         }
@@ -1406,8 +1411,16 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ui.ipucu(null);
   }
 
-  /** Oyuncunun yüzüne eller (cee-ee) */
+  /** Oyuncu yüzünü elleriyle kapatır (cee-ee): tasarımcının pozu (assets/ege/cee-<ad>.webp, oyuncunun tuvaline hizalı) ya da kodla eller */
   function elKapa(o: Oyuncu, ad: 'ada' | 'can' | 'elif'): HTMLElement {
+    const govde = o.el.querySelector('.mc-oy-govde');
+    const url = egeAdres(`cee-${ad}`);
+    if (url && govde) {
+      const img = h('img.mc-oy-resim.eg-cee-resim.aktif', { src: url, alt: '', draggable: 'false', 'data-ege': `eller-${ad}` });
+      govde.querySelectorAll('.mc-oy-resim.aktif').forEach((e) => e.classList.remove('aktif'));
+      govde.append(img);
+      return img;
+    }
     const [x, y, w] = YUZ[ad];
     const el = h('div.eg-eller', { style: `--fx:${x}%;--fy:${y}%;--fw:${w}%;--ten:${TEN[ad]}`, 'data-ege': `eller-${ad}` }, h('i.sol', { html: EL_SVG }), h('i.sag', { html: EL_SVG }));
     o.el.querySelector('.mc-oy-govde')?.append(el);

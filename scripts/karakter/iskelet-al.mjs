@@ -34,13 +34,34 @@ const IFADE_TABLOSU = {
 const HEDEF = 'assets/karakter-iskelet';
 fs.mkdirSync(HEDEF, { recursive: true });
 
+/**
+ * Baş çevirme (ör. Ege): kafaya bağlı katmanların "<katman>-sola" / "<katman>-saga" sürümleri varsa her ifade için
+ * "<ifade>-sola" / "<ifade>-saga" (ve "normal-sola/saga") setleri üretilir: görünen her yönlü katman X yerine X-yön.
+ */
+function yonSetleri(b, ifadeler) {
+  const yonlu = new Set(b.sira.filter((id) => /-(sola|saga)$/.test(id)).map((id) => id.replace(/-(sola|saga)$/, '')));
+  if (!yonlu.size) return ifadeler;
+  const tabanGorunur = b.sira.filter((id) => yonlu.has(id) && !b.gizli.includes(id));
+  const cikti = { ...(ifadeler ?? {}) };
+  for (const yon of ['sola', 'saga']) {
+    for (const [ad, set] of [['normal', { goster: [], gizle: [] }], ...Object.entries(ifadeler ?? {})]) {
+      const gorunur = new Set(tabanGorunur.filter((x) => !set.gizle.includes(x)));
+      set.goster.forEach((x) => gorunur.add(x));
+      const goster = [...gorunur].map((x) => (yonlu.has(x) ? `${x}-${yon}` : x));
+      const gizle = [...new Set([...set.gizle, ...gorunur])].filter((x) => yonlu.has(x));
+      cikti[`${ad}-${yon}`] = { goster, gizle };
+    }
+  }
+  return cikti;
+}
+
 let n = 0;
 function aktar(jsonYol, svg, ad) {
   if (!fs.existsSync(jsonYol) || !fs.existsSync(svg)) return;
   const bilgi = JSON.parse(fs.readFileSync(jsonYol, 'utf8').replace(/^﻿/, ''));
   if (!bilgi.donme || !bilgi.sira) return;
   const sade = { ad: bilgi.ad ?? ad, boyut: bilgi.boyut ?? 2048, sira: bilgi.sira, gizli: bilgi.gizli ?? [], bagli: bilgi.bagli ?? {}, donme: bilgi.donme };
-  const ifadeler = bilgi.ifadeler ?? IFADE_TABLOSU[ad];
+  const ifadeler = yonSetleri(sade, bilgi.ifadeler ?? IFADE_TABLOSU[ad]);
   if (ifadeler) sade.ifadeler = ifadeler;
   fs.writeFileSync(path.join(HEDEF, `${ad}.json`), JSON.stringify(sade, null, 2) + '\n');
   fs.copyFileSync(svg, path.join(HEDEF, `${ad}.svg`));
