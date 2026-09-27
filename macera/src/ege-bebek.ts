@@ -46,7 +46,7 @@ const KIZARIK: Record<EgeIfade, boolean> = {
  * Beşikte yatış pozu (iskelet açıları): bacaklar kalçadan aşağı (düz), kollar omuzdan gövdeye doğru.
  * Nefes hızı (rad/sn): ~4.8 sn'lik döngü; battaniye aynı nefesle iner kalkar (--nefes).
  */
-const YATIS = { bacak: -62, bacakSinir: 70, kol: -74, nefesHiz: 1.3 };
+const YATIS = { bacak: -62, bacakSinir: 70, kol: -74, nefesHiz: 1.3, kafa: 17, kafaSinir: 34 };
 
 export type EgeHareket = 'kikir' | 'kahkaha' | 'ayak' | 'irkil' | 'esne' | 'kipir' | 'vur' | 'cirp' | 'am' | 'gurul' | 'hayir';
 type Mod = 'normal' | 'agla' | 'uyku' | 'yatik';
@@ -170,7 +170,7 @@ export class Ege {
     this.mod = m;
     this.el.classList.toggle('uykuda', m === 'uyku' || m === 'yatik');
     // beşikte yatış: bacaklar düz uzanır, kollar yana iner (oturuş sınırları yalnız bu pozda gevşer)
-    this.kar.ozelSinir = m === 'yatik' ? { sinir: { kafa: 10, bacak: YATIS.bacakSinir }, kol: [YATIS.kol - 8, 40] } : null;
+    this.kar.ozelSinir = m === 'yatik' ? { sinir: { kafa: YATIS.kafaSinir, bacak: YATIS.bacakSinir }, kol: [YATIS.kol - 8, 40] } : null;
     if (m !== 'yatik') this.nefesYaz(0);
   }
   /** Nefes (−1…1) bu elemana --nefes olarak yazılır: üstündeki battaniye nefesle iner kalkar */
@@ -223,7 +223,8 @@ export class Ege {
       this.nefesYaz(AZ_HAREKET ? n * 0.4 : n);
       p.sy = 1 + n * 0.014 * az;
       p.sx = 1 + n * 0.006 * az;
-      p.kafa += S(t * 0.5) * 0.8 * az;
+      // baş yastıkta yüzü bize dönük (yatış kutusu −90°; baş boyundan geri döner, yüz dik okunur)
+      p.kafa += YATIS.kafa + S(t * 0.5) * 0.8 * az;
       p.kolSol = YATIS.kol + n * 2 * az;
       p.kolSag = YATIS.kol + S(t * YATIS.nefesHiz + 0.3) * 2 * az;
       p.bacakSol = YATIS.bacak;

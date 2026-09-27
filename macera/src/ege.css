@@ -201,6 +201,24 @@
 .mc-kok .eg-sahne .eg-sepet {
   pointer-events: none;
 }
+/* yere değen eşyaların temas gölgesi (havada durmasın): sepet ve halıya çıkan oyuncaklar */
+.mc-kok .eg-sahne .eg-sepet:not(.eg-sepet-on)::after,
+.mc-kok .eg-sahne .eg-oyuncak.yerde::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -5%;
+  height: 14%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(60, 35, 15, 0.32), rgba(60, 35, 15, 0));
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-oyuncak.yerde::after {
+  bottom: -7%;
+  height: 18%;
+}
 .mc-kok .eg-sahne .eg-resim svg {
   display: block;
   width: 100%;
@@ -300,6 +318,16 @@
 @keyframes eg-parla {
   to { scale: 1.1; filter: drop-shadow(0 0 10px #ffe36e) drop-shadow(0 0 4px #fff); }
 }
+/* dokunulacak hedef (çıngırak, kukla, lamba): parlar; kuklada iç katman */
+.mc-kok .eg-sahne .parliyor > .eg-kukla-ic {
+  animation: eg-parla 0.9s ease-in-out infinite alternate;
+}
+/* geniş dokunma alanı (küçük parmak ıskalamasın) */
+.mc-kok .eg-sahne .eg-genis::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+}
 
 /* balonlar */
 .mc-kok .eg-sahne .eg-balon {
@@ -354,6 +382,88 @@
 .mc-kok .eg-sahne .eg-besik.suruklenir {
   touch-action: none;
   cursor: grab;
+}
+/* katmanlar (aynı tuval, 780×621): arka resim → yastık → Ege (yuva) → açık battaniye → fistolu ön kenar */
+.mc-kok .eg-sahne .eg-besik-ic {
+  position: relative;
+}
+.mc-kok .eg-sahne .eg-besik-yastik,
+.mc-kok .eg-sahne .eg-besik-yuva,
+.mc-kok .eg-sahne .eg-besik-ortu,
+.mc-kok .eg-sahne .eg-besik-on {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-besik-yastik svg,
+.mc-kok .eg-sahne .eg-besik-ortu svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.mc-kok .eg-sahne .eg-besik:not(.katmanli) .eg-besik-yastik,
+.mc-kok .eg-sahne .eg-besik:not(.katmanli) .eg-besik-ortu {
+  display: none;
+}
+/* beşiğin yerdeki gölgesi (sallanırken yerinde kalır) */
+.mc-kok .eg-sahne .eg-besik-golge {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -2.5%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(50, 30, 15, 0.3), transparent);
+  pointer-events: none;
+}
+/* Ege beşikte: yuvada beşiğin yüzdesiyle yerleşir (dünya konumu değil); z-index yok, katman sırası DOM'dan */
+.mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte {
+  left: 47%;
+  bottom: 31%;
+  width: 51.6%;
+  z-index: auto !important;
+  pointer-events: auto;
+}
+/* yatarken: baş solda yastıkta (yüz ve baş fistolu kenarın üstünde), gövde battaniyenin altında */
+.mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte.yatiyor {
+  left: 35.4%;
+  bottom: 37.7%;
+}
+.mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte .eg-ege-golge {
+  opacity: 0;
+}
+/* Ege'nin açık battaniyesi: açılınca görünür, Ege'nin nefesiyle (--nefes) alt kenarı yerinde, üstü iner kalkar */
+.mc-kok .eg-sahne .eg-besik-ortu {
+  opacity: 0;
+  transform-origin: 50% 53%;
+}
+.mc-kok .eg-sahne .eg-besik-ortu.acik {
+  opacity: 1;
+}
+.mc-kok .eg-besik-ortu .eg-ortu-govde {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  scale: 1 calc(1 + 0.03 * var(--nefes, 0));
+}
+.mc-kok .eg-sahne .eg-besik-on {
+  display: block;
+}
+
+/* kumaş gibi sürüklenen battaniye: hıza göre eğilir (--egim, yayla durulur), tutulurken hafifçe dalgalanır */
+.mc-kok .eg-sahne .eg-dalgali > .eg-resim {
+  transform-origin: 50% 15%;
+  transform: skewX(calc(var(--egim, 0) * 1deg)) rotate(calc(var(--egim, 0) * -0.35deg));
+}
+.mc-kok .eg-sahne .eg-dalgali.tutuldu > .eg-resim {
+  animation: eg-dalga 0.8s ease-in-out infinite;
+}
+@keyframes eg-dalga {
+  0%, 100% { scale: 1 1; }
+  30% { scale: 1.035 0.955; }
+  65% { scale: 0.975 1.03; }
 }
 
 /* ---------------------------------------------------------------- anne */
@@ -437,6 +547,46 @@
 @keyframes eg-anne-nefes-govde {
   to { scale: 1 var(--nefes-s); }
 }
+/* annenin açık battaniyesi: gövdeyle aynı pivotta nefes alır; başın altında */
+.mc-kok .eg-anne-ortu {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: var(--px) var(--py);
+  animation: eg-anne-nefes-govde 2s ease-in-out infinite alternate;
+}
+.mc-kok .eg-anne-ortu.acik {
+  opacity: 1;
+}
+.mc-kok .eg-anne-ortu svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* sokulunca: baş battaniyeye doğru hafifçe iner ve yaslanır, yanaklar pembeleşir */
+.mc-kok .eg-anne-bas {
+  transform-origin: 60% 44%;
+  transition: rotate 0.9s cubic-bezier(0.3, 0, 0.3, 1.3);
+}
+.mc-kok .eg-anne.sokuldu .eg-anne-bas {
+  rotate: -3deg;
+}
+.mc-kok .eg-anne-yanak {
+  position: absolute;
+  width: 9%;
+  aspect-ratio: 1.5;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgba(240, 110, 130, 0.55), rgba(240, 110, 130, 0));
+  opacity: 0;
+  transition: opacity 0.9s 0.3s;
+  pointer-events: none;
+}
+.mc-kok .eg-anne.sokuldu .eg-anne-yanak {
+  opacity: 1;
+}
 @keyframes eg-anne-nefes-bas {
   to { translate: 0 var(--nefes-bas); }
 }
@@ -495,7 +645,7 @@
 .mc-kok .eg-sahne .eg-ege.yatiyor .eg-ege-kutu {
   transform-origin: 50% 50%;
   rotate: -90deg;
-  scale: 0.8;
+  scale: 0.7;
 }
 .mc-kok .eg-sahne .eg-ege.yatiyor .eg-ege-golge {
   opacity: 0;

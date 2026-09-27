@@ -25,19 +25,19 @@ describe('Ege Uyuyor: yaş ayarları (yalnız senaryonun dediği yerlerde)', () 
     expect([k.yavasUfle, b.yavasUfle]).toEqual([false, true]);
     expect([k.ritim, b.ritim]).toEqual([false, true]);
     expect([k.yumusak, b.yumusak]).toEqual([false, true]);
-    expect([k.dize, b.dize]).toEqual([2, 4]);
-    expect([k.sessiz, b.sessiz]).toEqual([4, 6]);
+    expect([k.dize, b.dize]).toEqual([2, 3]);
+    expect([k.sessiz, b.sessiz]).toEqual([3.5, 5]);
     expect(k.tik).toBe(3);
   });
   it('kuklalar ve cee-ee her yaşta aynı', () => {
     expect(SERBEST_KUKLA).toBe(4);
     expect(CEE_TURLARI).toEqual(['ada', 'can', 'elif', 'mino', 'hepsi']);
   });
-  it('kolaylık: 3-4 yaşta 3. denemede kabul, 5-6 yaşta da kilitlenme yok', () => {
+  it('kolaylık: her yaşta 3. denemede kabul (kilitlenme yok)', () => {
     expect(kabulMu(3, 1)).toBe(false);
     expect(kabulMu(3, 2)).toBe(true);
-    expect(kabulMu(6, 2)).toBe(false);
-    expect(kabulMu(6, 3)).toBe(true);
+    expect(kabulMu(6, 1)).toBe(false);
+    expect(kabulMu(6, 2)).toBe(true);
   });
 });
 

@@ -26,9 +26,11 @@ export interface EgeAyar {
 }
 
 export function egeAyar(yas: number): EgeAyar {
+  // 2026-09-27 (Barış: "bazı zor kısımlar var, bir tık kolaylaştır"): 5-6 yaşta ninni 4 → 3 dize, sessizlik
+  // 3-4 yaşta 4 → 3.5 sn, 5-6 yaşta 6 → 5 sn. Algılama eşiklerine dokunulmadı; yalnız oyunun süresi ve kuralı.
   return kucukMu(yas)
-    ? { tik: 3, ritim: false, kasik: 3, yavasUfle: false, yumusak: false, dize: 2, melodi: false, sessiz: 4 }
-    : { tik: 3, ritim: true, kasik: 4, yavasUfle: true, yumusak: true, dize: 4, melodi: true, sessiz: 6 };
+    ? { tik: 3, ritim: false, kasik: 3, yavasUfle: false, yumusak: false, dize: 2, melodi: false, sessiz: 3.5 }
+    : { tik: 3, ritim: true, kasik: 4, yavasUfle: true, yumusak: true, dize: 3, melodi: true, sessiz: 5 };
 }
 
 /** Her yaşta aynı: serbest kukla konuşması, cee-ee turları */
@@ -41,22 +43,22 @@ export const EGE_RITIM = [0, 0.34, 1.04];
 
 // ---------------------------------------------------------------- kolaylık kuralı
 /**
- * Bir ses görevi 2 denemede ya da 12 saniyede olmazsa parmak ipucu çıkar; 3-4 yaşta 3. denemede kabul edilir.
- * 5-6 yaşta da oyun kilitlenmez: 4. denemede kabul.
+ * Bir ses görevi 2 denemede ya da 8 saniyede olmazsa parmak ipucu çıkar; her yaşta 3. denemede kabul edilir
+ * (önce 5-6 yaşta 4. denemedeydi; Barış: "bir tık kolaylaştır"). Oyun hiçbir yerde kilitlenmez.
  */
-export const IPUCU_SURE = 12;
+export const IPUCU_SURE = 8;
 export const IPUCU_YANLIS = 2;
-export function kabulMu(yas: number, yanlis: number): boolean {
-  return yanlis >= (kucukMu(yas) ? 2 : 3);
+export function kabulMu(_yas: number, yanlis: number): boolean {
+  return yanlis >= 2;
 }
 
 // ---------------------------------------------------------------- mama
-/** Üfleme gücü bu değerin üstündeyse "sert" (5-6 yaş); algılama eşiği değil, oyunun yorumu */
-export const SERT_GUC = 0.85;
-/** Bu kadar süre sert üflenirse mama kaşıktan fırlar (sn) */
-export const SERT_SURE = 0.3;
-/** Buhar sönme hızı (saniyede): yavaş üflemede de dolar; kolaylık buradan */
-export const buharSonme = (guc: number) => 0.45 + guc * 0.55;
+/** Üfleme gücü bu değerin üstündeyse "sert" (5-6 yaş); algılama eşiği değil, oyunun yorumu (0.85 → 0.92) */
+export const SERT_GUC = 0.92;
+/** Bu kadar süre sert üflenirse mama kaşıktan fırlar (sn; 0.3 → 0.5). Bir kez fırlayınca bir daha fırlamaz. */
+export const SERT_SURE = 0.5;
+/** Buhar sönme hızı (saniyede): yavaş üflemede de dolar; kolaylık buradan (0.45 + 0.55g → 0.6 + 0.7g) */
+export const buharSonme = (guc: number) => 0.6 + guc * 0.7;
 
 // ---------------------------------------------------------------- kuklalar
 /** Ege'nin gülmesi: her konuşmada büyür; çok ince seste katıla katıla */
@@ -125,11 +127,13 @@ export class Salinim {
 }
 
 // ---------------------------------------------------------------- sessizlik
-/** Ses çıkınca ay ne kadar geri iner (sn) */
-export const AY_GERI = 1.2;
+/** Ses çıkınca ay ne kadar geri iner (sn; 1.2 → 0.8) */
+export const AY_GERI = 0.8;
 /** Mino'nun burnu ay dolmaya bu kadar kala kaşınır (dolum oranı) */
 export const BURUN_ORAN = 0.8;
-/** Burnu tutma süresi (sn): parmak bu kadar basılı kalırsa hapşırık tutulur */
-export const BURUN_TUT = 1.6;
-/** Burnu tutmak için süre (sn): geçerse HAPŞU */
-export const BURUN_SURE = 7;
+/** Burnu tutma süresi (sn): parmak bu kadar basılı kalırsa hapşırık tutulur (1.6 → 1.2) */
+export const BURUN_TUT = 1.2;
+/** Burnu tutmak için süre (sn): geçerse HAPŞU (7 → 9) */
+export const BURUN_SURE = 9;
+/** Ninni: notaların bu oranı iyi söylenirse (ya da sallanırsa) geçer (0.5 → 0.4) */
+export const NINNI_GECER = 0.4;
