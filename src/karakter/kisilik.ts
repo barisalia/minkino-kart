@@ -23,7 +23,7 @@ export interface Kisilik {
   /** iskelette kafa eğilmesinin genliği (varsayılan 1.8) */
   kafaGenlik?: number;
   /** iskelete özel açı sınırları (±derece): fazlasında eklem yerinde boşluk açılan karakterler için */
-  sinir?: { kafa?: number; kulak?: number; bacak?: number; kuyruk?: [number, number] };
+  sinir?: { kafa?: number; kulak?: number; bacak?: number; kuyruk?: [number, number]; govde?: number; kanat?: [number, number] };
 }
 
 export const KISILIK: Record<string, Kisilik> = {
@@ -37,7 +37,9 @@ export const KISILIK: Record<string, Kisilik> = {
   kino: { yuruyus: 'hop', adim: 300, gelis: 1100, huy: 'kuyruk', dans: 'kovala', agiz: [0.46, 0.49], hayir: 9, kol: [-5, 60], sinir: { kulak: 25 } },
   // Bebek Ege (Sesli Maceralar Bölüm 2; oturan bebek): iskelet sınırları kafa ±10, kol -40…+35, bacak ±8
   ege: { yuruyus: 'salin', adim: 600, gelis: 1500, huy: 'ayak', dans: 'gobek', agiz: [0.5, 0.41], hayir: 7, kol: [-40, 35], kafaGenlik: 1, sinir: { kafa: 10, bacak: 8 } },
-  maymun: { yuruyus: 'takla', adim: 500, gelis: 1400, huy: 'kasin', dans: 'salto', agiz: [0.5, 0.4], hayir: 9 },
-  kus: { yuruyus: 'uc', adim: 180, gelis: 1500, huy: 'gaga', dans: 'kanat', agiz: [0.86, 0.36], hayir: 12 },
+  // maymun iskeleti: kollar -45 … +45 (fazlasında omuzda boşluk), kafa ±5, kulak ±8, bacak ±5, kuyruk ±12
+  maymun: { yuruyus: 'takla', adim: 500, gelis: 1400, huy: 'kasin', dans: 'salto', agiz: [0.5, 0.4], hayir: 9, kol: [-45, 45], sinir: { kafa: 5, kulak: 8, bacak: 5, kuyruk: [-12, 12] } },
+  // kuş iskeleti: kafa ve gövde tek parça (gaga, gözler gövdeye bağlı); kanat -20 … +30, bacak ±6, kuyruk ±8, gövde ±3
+  kus: { yuruyus: 'uc', adim: 180, gelis: 1500, huy: 'gaga', dans: 'kanat', agiz: [0.86, 0.36], hayir: 12, sinir: { bacak: 6, kuyruk: [-8, 8], govde: 3, kanat: [-20, 30] } },
 };
 export const kisilik = (ad: string): Kisilik => KISILIK[ad] ?? KISILIK.kopek;

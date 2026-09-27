@@ -1,0 +1,83 @@
+﻿{
+    "ad":  "mino-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "kulak-arka",
+                 "bacak-arka",
+                 "kol-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "fular",
+                 "kafa",
+                 "kulak-on",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-on":  "kafa",
+                  "kulak-arka":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1070,
+                               1190
+                           ],
+                  "kulak-on":  [
+                                   960,
+                                   590
+                               ],
+                  "kulak-arka":  [
+                                     1230,
+                                     330
+                                 ],
+                  "goz":  [
+                              1300,
+                              820
+                          ],
+                  "agiz":  [
+                               1510,
+                               995
+                           ],
+                  "goz-kapali":  [
+                                     1325,
+                                     835
+                                 ],
+                  "kol-on":  [
+                                 1050,
+                                 1300
+                             ],
+                  "kol-arka":  [
+                                   1295,
+                                   1400
+                               ],
+                  "fular":  [
+                                1100,
+                                1230
+                            ],
+                  "bacak-on":  [
+                                   1160,
+                                   1670
+                               ],
+                  "bacak-arka":  [
+                                     935,
+                                     1660
+                                 ],
+                  "kuyruk":  [
+                                 835,
+                                 1585
+                             ],
+                  "govde":  [
+                                1100,
+                                1880
+                            ]
+              }
+}

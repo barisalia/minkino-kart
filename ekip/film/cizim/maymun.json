@@ -1,0 +1,84 @@
+﻿{
+    "ad":  "maymun",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "kulak-sol",
+                 "kulak-sag",
+                 "bacak-sol",
+                 "bacak-sag",
+                 "govde",
+                 "kol-sol",
+                 "kol-sag",
+                 "kafa",
+                 "agiz",
+                 "goz-sol",
+                 "goz-sag",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-sol":  "kafa",
+                  "kulak-sag":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               920,
+                               950
+                           ],
+                  "kulak-sol":  [
+                                    545,
+                                    720
+                                ],
+                  "kulak-sag":  [
+                                    1245,
+                                    480
+                                ],
+                  "goz-sol":  [
+                                  719,
+                                  589
+                              ],
+                  "goz-sag":  [
+                                  1025,
+                                  502
+                              ],
+                  "agiz":  [
+                               920,
+                               760
+                           ],
+                  "goz-kapali":  [
+                                     872,
+                                     556
+                                 ],
+                  "kol-sol":  [
+                                  785,
+                                  1035
+                              ],
+                  "kol-sag":  [
+                                  1270,
+                                  1025
+                              ],
+                  "bacak-sol":  [
+                                    860,
+                                    1600
+                                ],
+                  "bacak-sag":  [
+                                    1170,
+                                    1600
+                                ],
+                  "kuyruk":  [
+                                 1290,
+                                 1650
+                             ],
+                  "govde":  [
+                                980,
+                                1880
+                            ]
+              }
+}

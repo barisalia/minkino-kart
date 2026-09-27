@@ -38,7 +38,11 @@ export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp';
 /** Bu tepkiler kendi ifadesini de açar (yalnız filmde kullanılır; oyunlarda değişiklik yok) */
 const TEPKI_IFADE: Partial<Record<string, MinoIfade>> = { zorlan: 'zorlanma', sersem: 'sersem', kararsiz: 'kararsiz' };
 
-export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz' | 'saril' | 'kolac';
+/**
+ * Son dört (selam, duzelt, sun, sevinc) pazarın tezgâh hareketleri: el sallama, meyveleri düzeltme,
+ * hazırlık-takipli uzatma, kısa sevinç. Eski tepkiler aynen durur.
+ */
+export type Tepki = 'gidik' | 'mir' | 'zipla' | 'hapsu' | 'sasir' | 'hayir' | 'evet' | 'ham' | 'dans' | 'esne' | 'uzat' | 'zorlan' | 'sersem' | 'kararsiz' | 'saril' | 'kolac' | 'selam' | 'duzelt' | 'sun' | 'sevinc';
 
 interface Durum {
   tepki: Tepki | null;
@@ -113,7 +117,7 @@ export class Mino {
 
   /** Kısa bir tepki animasyonu oynat. */
   tepki(t: Tepki, sure?: number) {
-    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3, saril: 1.2, kolac: 1.4 };
+    const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3, saril: 1.2, kolac: 1.4, selam: 1.4, duzelt: 1.7, sun: 1.5, sevinc: 1.0 };
     this.d.tepki = t;
     const ifd = TEPKI_IFADE[t];
     if (ifd) this.ifade(ifd, (sure ?? varsayilan[t]) * 1000);
@@ -135,6 +139,21 @@ export class Mino {
   get uyuyorMu() {
     return this.d.uyuyor;
   }
+
+  /** Şu an bir tepki oynuyor mu (boştaki canlılık döngüsü üst üste binmesin diye) */
+  get mesgul() {
+    return !!this.d.tepki;
+  }
+
+  /**
+   * Bakış yönü: -1 sola, 0 karşıya, 1 sağa (gözler kayar, baş hafifçe o yana döner; yumuşak geçiş).
+   * Varsayılan 0: bakışı kullanmayan oyunlarda hiçbir şey değişmez.
+   */
+  bak(yon: number) {
+    this.bakisHedef = Math.max(-1, Math.min(1, yon));
+  }
+  private bakisHedef = 0;
+  private bakis = 0;
 
   /** Ekran koordinatında ağzın merkezi (yiyecek uçurmak için). */
   agizKonumu(): { x: number; y: number } {
@@ -401,6 +420,73 @@ export class Mino {
             agizHedef = 0.9;
             break;
           }
+          case 'selam': {
+            // müşteriye el sallar: sağ kol kalkar ve üç kez sallanır, baş o yana yatar, gülümser
+            const tut = Math.min(1, e / 0.15, (1 - e) / 0.2);
+            kolSag += (KOL_EN_COK - 6 + sin(e * Math.PI * 7) * 8) * tut;
+            kafaAci += 6 * tut;
+            govdeAci = sin(e * Math.PI * 7) * 1.5 * tut;
+            kuyrukAci += sin(t * 7) * 8 * tut;
+            mutlu = tut > 0.4 ? 1 : 0;
+            agizHedef = 0.7;
+            break;
+          }
+          case 'duzelt': {
+            // tezgâhtaki meyveleri düzeltir: öne eğilir, patileri sırayla dokunur, sonra doğrulup bakar
+            const tut = Math.min(1, e / 0.2, (1 - e) / 0.25);
+            ziplaY = 38 * tut;
+            govdeAci = -3 * tut;
+            kafaAci -= 7 * tut;
+            const dokun = e > 0.2 && e < 0.8 ? sin(e * Math.PI * 9) : 0;
+            kolSol += (4 + Math.max(0, dokun) * 10) * tut;
+            kolSag += (4 + Math.max(0, -dokun) * 10) * tut;
+            gozKay -= 10 * tut;
+            agizHedef = 0.12;
+            gulum = 1;
+            break;
+          }
+          case 'sun': {
+            // hazırlık → uzatma → takip: önce geri çekilip çömelir, sonra öne atılır (hafif fazlasıyla),
+            // bir an tutar, bırakınca geri gelirken küçük bir sekme yapar
+            let cek = 0;
+            let at = 0;
+            if (e < 0.18) cek = sin((e / 0.18) * Math.PI * 0.5);
+            else if (e < 0.3) {
+              const u = (e - 0.18) / 0.12;
+              cek = 1 - u;
+              at = u * 1.15;
+            } else if (e < 0.42) at = 1.15 - 0.15 * ((e - 0.3) / 0.12);
+            else if (e < 0.72) at = 1 + sin((e - 0.42) * 20) * 0.03;
+            else {
+              const u = (e - 0.72) / 0.28;
+              at = Math.max(0, 1 - u * 1.25) - Math.max(0, sin(Math.min(1, (u - 0.8) / 0.2) * Math.PI)) * 0.12;
+            }
+            sy -= 0.07 * cek;
+            sx += 0.05 * cek;
+            govdeAci = 5 * cek - 8 * at;
+            ziplaY = 30 * cek - 140 * Math.max(0, at);
+            kafaAci += 4 * cek - 6 * at;
+            kolSol += -6 * cek + 26 * Math.max(0, at);
+            kolSag += -4 * cek + 8 * Math.max(0, at);
+            kuyrukAci += 10 * at;
+            mutlu = at > 0.5 ? 1 : 0;
+            agizHedef = at > 0.3 ? 0.85 : 0.2;
+            break;
+          }
+          case 'sevinc': {
+            // kısa sevinç: iki küçük hop, kollar havada, gözler mutlu
+            const hop = Math.abs(sin(e * Math.PI * 2));
+            ziplaY = -90 * hop * zarf;
+            const bas = hop < 0.15 ? 1 - hop / 0.15 : 0;
+            sx = 1 + 0.06 * bas * zarf;
+            sy = 1 - 0.07 * bas * zarf + 0.03 * hop;
+            kolSol += KOL_EN_COK * zarf;
+            kolSag += KOL_EN_COK * zarf;
+            kuyrukAci += sin(t * 9) * 12 * zarf;
+            mutlu = 1;
+            agizHedef = 1;
+            break;
+          }
           case 'kararsiz': {
             // kararsız: bir sağa bir sola bakar (başı yatar, gözler kayar), kuyruk ucu kıvrılır
             const bak = e < 0.2 ? -1 : e < 0.45 ? 1 : e < 0.7 ? -1 : 1;
@@ -414,6 +500,13 @@ export class Mino {
           }
         }
       }
+    }
+
+    // Bakış yönü (bak()): gözler kayar, baş hafifçe o yana döner (varsayılan 0: değişiklik yok)
+    this.bakis = ara(this.bakis, this.bakisHedef, TEST_MODU ? 1 : 0.07);
+    if (this.bakis) {
+      gozKay += this.bakis * 26;
+      kafaAci += this.bakis * 4;
     }
 
     // Konuşurken ağız sesin gücüyle açılır

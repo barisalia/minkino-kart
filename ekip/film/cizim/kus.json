@@ -1,0 +1,67 @@
+﻿{
+    "ad":  "kus",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "kanat-sol",
+                 "kanat-sag",
+                 "bacak-sol",
+                 "bacak-sag",
+                 "govde",
+                 "gaga",
+                 "goz-sol",
+                 "goz-sag",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "gaga":  "govde",
+                  "goz-sol":  "govde",
+                  "goz-sag":  "govde",
+                  "goz-kapali":  "govde"
+              },
+    "donme":  {
+                  "govde":  [
+                                1020,
+                                1830
+                            ],
+                  "gaga":  [
+                               1025,
+                               590
+                           ],
+                  "goz-sol":  [
+                                  827,
+                                  405
+                              ],
+                  "goz-sag":  [
+                                  1220,
+                                  405
+                              ],
+                  "goz-kapali":  [
+                                     1020,
+                                     425
+                                 ],
+                  "kanat-sol":  [
+                                    735,
+                                    860
+                                ],
+                  "kanat-sag":  [
+                                    1305,
+                                    860
+                                ],
+                  "bacak-sol":  [
+                                    885,
+                                    1400
+                                ],
+                  "bacak-sag":  [
+                                    1155,
+                                    1400
+                                ],
+                  "kuyruk":  [
+                                 1020,
+                                 1420
+                             ]
+              }
+}

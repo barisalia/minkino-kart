@@ -12,6 +12,11 @@ import { h, sure, TEST_MODU } from '../../src/ui/dom';
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ms = (x: number) => (AZ ? Math.min(x, 200) : sure(x));
 const ras = (a: number, b: number) => a + Math.random() * (b - a);
+/** Yüz buruşturunca başın yanındaki titrek çizgiler ve beğenince uçan kalp (kalın kahve kontur) */
+const BRR =
+  '<svg viewBox="0 0 80 40" aria-hidden="true"><g fill="none" stroke="#5a3617" stroke-width="5" stroke-linecap="round"><path d="M6 8q6-6 12 0t12 0"/><path d="M4 22q6-6 12 0t12 0"/><path d="M50 8q6-6 12 0t12 0"/><path d="M52 22q6-6 12 0t12 0"/></g></svg>';
+const KALP =
+  '<svg viewBox="0 0 40 36" aria-hidden="true"><path d="M20 33C8 25 3 18 3 11a8.5 8.5 0 0 1 17-2 8.5 8.5 0 0 1 17 2c0 7-5 14-17 22z" fill="#ff5a7a" stroke="#5a3617" stroke-width="3.5" stroke-linejoin="round"/><ellipse cx="11" cy="10" rx="3.5" ry="2.5" fill="#fff" opacity=".7"/></svg>';
 
 export class Musteri {
   readonly el: HTMLElement;
@@ -131,6 +136,93 @@ export class Musteri {
         () => p.remove(),
         () => p.remove(),
       );
+    }
+  }
+
+  /**
+   * Meyve suyu içer: bardak ağzının önüne gelir, pipetten üç yudum (her yudumda sıvı azalır, ağız oynar).
+   * bardak: Bardak elemanı (blender.ts), sivi: onun sıvı katmanı.
+   */
+  async ic(bardak: HTMLElement, sivi: HTMLElement) {
+    this.mesgul = true;
+    this.bekle(false);
+    const [ax, ay] = this.k.agiz;
+    const yer = h('div.pz-m-bardak', { style: `left:${ax * 100}%;top:${ay * 100}%` }, bardak);
+    this.el.append(yer);
+    await yer
+      .animate(
+        [
+          { transform: 'translate(-70%, 30%) translate(-40%, 40%) scale(.5) rotate(-10deg)', opacity: 0 },
+          { transform: 'translate(-70%, 30%) scale(1.08) rotate(4deg)', opacity: 1, offset: 0.7 },
+          { transform: 'translate(-70%, 30%) scale(1) rotate(0)', opacity: 1 },
+        ],
+        { duration: ms(360), easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)', fill: 'forwards' },
+      )
+      .finished.catch(() => undefined);
+    void this.karakter.oynat('ye', 1150);
+    for (let i = 0; i < 3; i++) {
+      const once = 1 - i / 3;
+      const sonra = 1 - (i + 1) / 3;
+      sivi.animate([{ transform: `scaleY(${once.toFixed(2)})` }, { transform: `scaleY(${Math.max(0.02, sonra).toFixed(2)})` }], { duration: ms(260), easing: 'ease-in', fill: 'forwards' });
+      // yudum: bardak hafifçe eğilir
+      yer.animate([{ rotate: '0deg' }, { rotate: '-7deg' }, { rotate: '0deg' }], { duration: ms(320), easing: 'ease-in-out' });
+      await new Promise((r) => setTimeout(r, ms(360)));
+    }
+    await yer.animate([{ opacity: 1 }, { opacity: 0, transform: 'translate(-70%, 60%) scale(.6)' }], { duration: ms(240), fill: 'forwards' }).finished.catch(() => undefined);
+    yer.remove();
+  }
+
+  /**
+   * Yanlış renk: yüzünü buruşturur. Gözler sıkılır, kafa geri kaçar, kulaklar düşer, bütün beden titrer,
+   * ağız "ıyy" diye açılır; üzgün ifadesi olan karakterde o da görünür. Başın yanında titrek çizgiler.
+   */
+  async burus() {
+    this.mesgul = true;
+    this.karakter.ifade('uzgun', 1500);
+    const k = this.karakter;
+    let t0 = -1;
+    const sure = AZ ? 0.4 : TEST_MODU ? 0.03 : 1.3;
+    k.ekHareket = (p, t) => {
+      if (t0 < 0) t0 = t;
+      const u = (t - t0) / sure;
+      if (u >= 1) {
+        k.ekHareket = null;
+        return;
+      }
+      const z = Math.min(1, u / 0.12, (1 - u) / 0.25);
+      const titre = AZ ? 0 : Math.sin(t * 70);
+      p.gozKapali = z > 0.3;
+      p.kafa -= 7 * z;
+      p.kafaY -= 1.2 * z;
+      p.kulakSol -= 14 * z;
+      p.kulakSag -= 14 * z;
+      p.sx *= 1 + 0.035 * titre * z;
+      p.sy *= 1 - 0.05 * z - 0.03 * titre * z;
+      p.don += 2.5 * titre * z;
+      p.kolSol += 20 * z;
+      p.kolSag += 20 * z;
+      p.agizAcik = z > 0.4 ? 0.8 : 0;
+    };
+    if (!AZ && !TEST_MODU) {
+      const [ax, ay] = this.k.agiz;
+      const cizgi = h('i.pz-m-brr', { style: `left:${ax * 100}%;top:${ay * 100 - 28}%`, html: BRR });
+      this.el.append(cizgi);
+      setTimeout(() => cizgi.remove(), 1300);
+    }
+    await new Promise((r) => setTimeout(r, sure * 1000 + 60));
+    k.ekHareket = null;
+    this.mesgul = false;
+    this.bekle(true);
+  }
+
+  /** Beğendi: başının üstünde kalpler uçuşur */
+  kalpler() {
+    if (AZ || TEST_MODU) return;
+    const [ax, ay] = this.k.agiz;
+    for (let i = 0; i < 5; i++) {
+      const k = h('i.pz-m-kalp', { style: `left:${ax * 100 + ras(-18, 18)}%;top:${ay * 100 - 20}%;--g:${i * 110}ms;--dx:${ras(-30, 30).toFixed(0)}px`, html: KALP });
+      this.el.append(k);
+      setTimeout(() => k.remove(), 1500 + i * 110);
     }
   }
 
