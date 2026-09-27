@@ -14,7 +14,7 @@ import { pazarCumleleri } from '../../pazar/src/istek';
 
 interface FilmCumleleri {
   seslendir?: boolean;
-  sahneler: ({ ogut: string } | { olaylar: { yap: string; metin?: unknown }[] })[];
+  sahneler: ({ ogut: string } | { olaylar: { yap: string; kim?: string; metin?: unknown }[] })[];
 }
 const FILMLER = import.meta.glob<FilmCumleleri>('../../content/film/*.json', { eager: true, import: 'default' });
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
@@ -86,6 +86,9 @@ const DEGISKENLER: Record<string, (string | number)[]> = {
   kalan: Array.from({ length: 40 }, (_, i) => i + 1),
   yildiz: [1, 2, 3].map(sayiAdi),
 };
+
+/** İç içe JSON değerindeki bütün metinler. */
+const topla = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
 
 export function tumCumleler(): string[] {
   const set = new Set<string>();
@@ -159,7 +162,6 @@ export function tumCumleler(): string[] {
   }
   // Çiz Canlansın konuşmaları (puan ayarları hariç)
   const cz = canlanJson as Record<string, unknown>;
-  const topla = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
   for (const [k, v] of Object.entries(cz)) {
     if (k === 'aciklama' || k === 'puan' || k === 'mod_ad' || k === 'benim') continue;
     if (k === 'resimler') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
@@ -197,4 +199,24 @@ export function tumCumleler(): string[] {
   // Mino'nun Pazarı konuşmaları (kalıplar ürün/sayı/renk ile açılmış hâlde)
   pazarCumleleri().forEach(ekle);
   return [...set];
+}
+
+/**
+ * Kendi sesi olabilecek karakterlerin cümleleri (content/seslendirme.json → karakter_sesleri).
+ * Bunlar tumCumleler() içinde de vardır (anlatıcı sesiyle, kalın tonla çalınan yedek kayıt);
+ * karakterin ses kimliği doluysa seslendirme betiği ayrıca karakterin kendi sesiyle üretir.
+ */
+export function karakterCumleleri(): Record<string, string[]> {
+  const kino = new Set<string>();
+  const ekle = (t?: string | null) => {
+    if (t && normal(t)) kino.add(normal(t));
+  };
+  // Mino Banyo Yapmıyor!: "kino" bölümü
+  topla((maceraBanyoJson as Record<string, unknown>).kino).forEach(ekle);
+  // Mini filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
+  for (const f of Object.values(FILMLER)) {
+    if (!f.seslendir) continue;
+    for (const s of f.sahneler) if ('olaylar' in s) for (const o of s.olaylar) if (o.yap === 'soyle' && o.kim === 'kino' && typeof o.metin === 'string') ekle(o.metin);
+  }
+  return { kino: [...kino] };
 }

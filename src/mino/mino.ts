@@ -346,6 +346,11 @@ export class Mino {
   private agizZorla = false;
   /** Başka bir karakter konuşurken (ör. Kino) Mino'nun ağzı oynamasın */
   agizSus = false;
+  /**
+   * Gözler sıkıca kapalı (ifade eki olmadan; ör. banyoda köpük kaçmasın). Hâl çizimleriyle (sırılsıklam,
+   * pofuduk) de temiz çalışır. Varsayılan false: diğer oyunlarda değişiklik yok.
+   */
+  gozZorla = false;
 
   kapat() {
     cancelAnimationFrame(this.raf);
@@ -683,6 +688,10 @@ export class Mino {
     if (this.ifadeAd === 'goz-kirp') {
       agizHedef = 0;
       gulum = 1;
+    }
+    if (this.gozZorla) {
+      gozKapali = 1;
+      mutlu = 0;
     }
     d.agiz = ara(d.agiz, agizHedef, TEST_MODU ? 1 : 0.35);
 

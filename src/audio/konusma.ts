@@ -75,27 +75,36 @@ export const konusuyorMu = () => konusuyor;
 export interface KonusmaSecenegi {
   /** Karakter sesi: kayıtlar bu hızda (ve tonda) çalınır, ör. 1.18 = daha ince, sevimli */
   ton?: number;
+  /**
+   * Konuşan karakter (ör. 'kino'): karakterin kendi ses kaydı varsa o normal tonda çalınır ve `ton` yok sayılır;
+   * yoksa anlatıcı kaydı `ton` ile çalınır (content/seslendirme.json → karakter_sesleri).
+   */
+  karakter?: string | null;
 }
+
+/** Kino'nun konuşması: kendi sesi yoksa anlatıcı sesinin kalın tonu. */
+export const KINO_SESI: KonusmaSecenegi = { karakter: 'kino', ton: 0.92 };
 
 export function konus(girdi: Soylenecek, secenek: KonusmaSecenegi = {}): Promise<void> {
   sus();
   const benim = sayac;
   let parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
   // Birleşik cümlenin tek parça kaydı varsa onu çal (daha doğal, arada boşluk yok)
+  const kayitSecenegi = { karakter: secenek.karakter, ton: secenek.ton };
   const butun = normal(parcalar.join(' '));
-  if (parcalar.length > 1 && kayitVar(butun)) parcalar = [butun];
+  if (parcalar.length > 1 && kayitVar(butun, kayitSecenegi)) parcalar = [butun];
   if (!parcalar.length) return Promise.resolve();
   if (TEST_MODU) return new Promise((r) => setTimeout(r, 5));
   if (!durum.i.ayarlar.konusma) return new Promise((r) => setTimeout(r, 250));
 
-  onYukle(parcalar);
+  onYukle(parcalar, kayitSecenegi);
   muzikKis(true);
   konusuyor = true;
   return (async () => {
     try {
       for (const p of parcalar) {
         if (benim !== sayac) return;
-        const calindi = kayitVar(p) && (await kayitCal(p, () => benim !== sayac, secenek.ton ?? 1));
+        const calindi = kayitVar(p, kayitSecenegi) && (await kayitCal(p, () => benim !== sayac, kayitSecenegi));
         if (!calindi && benim === sayac) await tekParca(p, benim, secenek.ton ?? 1);
       }
       if (benim === sayac) muzikKis(false);

@@ -7,6 +7,7 @@
  */
 import { baglamiDegistir, konusmaCikisi, muzikKis } from '../../src/audio/motor';
 import { kayitTamponu } from '../../src/audio/kayit';
+import type { KayitSecenegi } from '../../src/audio/karakter-ses';
 import { FILM_EFEKT } from './efekt';
 import { gunlukDurum, sesGunlugu, type SesOlayi } from './motor';
 import { filmMuzik, type Ruh } from './muzik';
@@ -34,8 +35,8 @@ async function sesiIsle(t0: number, sure: number): Promise<string> {
   try {
     const olaylar: (SesOlayi & { s: number })[] = sesGunlugu.map((o) => ({ ...o, s: Math.max(0, o.t - t0) })).filter((o) => o.s < sure).sort((a, b) => a.s - b.s);
     // konuşma kayıtlarını önceden çöz (askıdayken beklemeyelim)
-    const tampon = new Map<string, AudioBuffer | null>();
-    for (const o of olaylar) if (o.tur === 'konus' && !tampon.has(o.ad)) tampon.set(o.ad, await kayitTamponu(o.ad));
+    const tampon = new Map<SesOlayi, { tampon: AudioBuffer; hiz: number } | null>();
+    for (const o of olaylar) if (o.tur === 'konus') tampon.set(o, await kayitTamponu(o.ad, (o.arg ?? {}) as KayitSecenegi));
     let i = 0;
     const cal = (o: SesOlayi) => {
       if (o.tur === 'efekt') FILM_EFEKT[o.ad]?.();
@@ -44,16 +45,17 @@ async function sesiIsle(t0: number, sure: number): Promise<string> {
         if (o.ad === 'baslat' || o.ad === 'degis') m[o.ad](o.arg as Ruh);
         else m[o.ad](o.arg);
       } else {
-        const b = tampon.get(o.ad);
+        const k = tampon.get(o);
         const cikis = konusmaCikisi();
-        if (!b || !cikis) return;
+        if (!k || !cikis) return;
         const src = oc.createBufferSource();
-        src.buffer = b;
+        src.buffer = k.tampon;
+        src.playbackRate.value = k.hiz;
         src.connect(cikis);
         src.start(oc.currentTime);
         // konuşurken müzik ve efekt geri planda (oyundaki gibi)
         muzikKis(true);
-        const bitis = oc.currentTime + b.duration;
+        const bitis = oc.currentTime + k.tampon.duration / k.hiz;
         void oc.suspend(Math.min(sure - ADIM, Math.ceil(bitis / ADIM) * ADIM + ADIM / 2)).then(() => {
           muzikKis(false);
           void oc.resume();

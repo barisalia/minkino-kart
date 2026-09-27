@@ -60,8 +60,8 @@ export function sicaklik(kirmizi: number, mavi: number): number | null {
 }
 
 export type SuDurumu = 'sicak' | 'soguk' | 'ilik';
-/** Yeşil (ılık) bölge: 5-6 yaş göstergesi */
-export const ILIK = { alt: 0.4, ust: 0.6 };
+/** Yeşil (ılık) bölge: 5-6 yaş göstergesi (geniş: iki musluğu bir adım farkla açmak da ılık sayılır) */
+export const ILIK = { alt: 0.35, ust: 0.65 };
 
 export function suDurumu(kirmizi: number, mavi: number, yas: number): SuDurumu | null {
   const t = sicaklik(kirmizi, mavi);
@@ -84,18 +84,23 @@ export function dolumHizi(kirmizi: number, mavi: number, durum: SuDurumu | null,
 }
 
 // ---------------------------------------------------------------- Sahne 4: baloncuk
-/** Mino'yu küvete çekmek için gereken baloncuk */
-export const gerekenBaloncuk = (yas: number) => (kucukMu(yas) ? 4 : 3);
+/** Mino'yu küvete çekmek için gereken kocaman baloncuk (Barış: köpük yapma bir tık daha kolay) */
+export const gerekenBaloncuk = (yas: number) => (kucukMu(yas) ? 3 : 2);
+
+/** 5-6 yaş: bu kadar (sn) üflemek kocaman baloncuk için yeter (oyunun yorumu; algılama eşiği değil) */
+export const KOCAMAN_SURE = 0.5;
+/** 5-6 yaş: bundan uzun sert üfleme baloncuğu minik yapar */
+export const SERT_SURE = 0.6;
 
 /**
- * 5-6 yaş: yavaş ve uzun üfleme kocaman, sert (güçlü) ya da kısa üfleme minik baloncuk.
- * sure: üflemenin süresi (sn); sertSure: bu sürede sert üflenen kısım (sn); iyilik: arka arkaya minikten sonra
- * kolaylık (başarısız deneme sayısı; 4'ten sonra her üfleme kocaman sayılır; kilitlenme yok).
+ * 5-6 yaş: yavaş ve uzun üfleme kocaman, sert (güçlü) ya da kısa üfleme minik baloncuk (minik de uçar, her
+ * üflemede baloncuk çıkar). sure: üflemenin süresi (sn); sertSure: bu sürede sert üflenen kısım (sn);
+ * basarisiz: arka arkaya minik sayısı (3. denemede kabul: 2 minikten sonra her üfleme kocaman; kilitlenme yok).
  */
 export function baloncukBoyu(sure: number, sertSure: number, yas: number, basarisiz = 0): 'kocaman' | 'minik' {
   if (kucukMu(yas)) return 'kocaman';
-  if (basarisiz >= 4) return 'kocaman';
-  return sure >= 0.9 && sertSure < 0.45 ? 'kocaman' : 'minik';
+  if (basarisiz >= 2) return 'kocaman';
+  return sure >= KOCAMAN_SURE && sertSure < SERT_SURE ? 'kocaman' : 'minik';
 }
 
 /** Üfleme gücü bu değerin üstündeyse "sert" (5-6 yaş); algılama eşiği değil, oyunun yorumu */
@@ -121,8 +126,10 @@ export class Ovalama {
     return this.oran >= 1;
   }
 }
-/** Bölge yarıçapı biriminde gereken yol: küçükler için biraz kısa */
-export const ovalamaYolu = (yas: number) => (kucukMu(yas) ? 5 : 6.5);
+/** Bölge yarıçapı biriminde gereken yol: birkaç kısa sürtme yeter (küçükler için daha da kısa) */
+export const ovalamaYolu = (yas: number) => (kucukMu(yas) ? 2.5 : 3.5);
+/** Ovalamada hedef bölgenin dokunma payı (bölge yarıçapının katı): hedefin yakını da sayılır */
+export const OVALAMA_PAY = 1.8;
 
 /** Tarak darbesi: yukarıdan aşağı, yeterince uzun ve dikey */
 export const taramaMi = (dx: number, dy: number, boy: number) => dy > boy * 0.3 && dy > Math.abs(dx) * 1.2;
@@ -173,6 +180,13 @@ export class Deneme {
   }
   get ipucuGosterildi() {
     return this.gosterildi;
+  }
+  /**
+   * Kolay mod (her yaşta): 2 yanlıştan sonra (3. deneme) ya da 12 sn'de ipucu çıktıktan sonra görev
+   * cömertleşir (köpük yapma: yanlış yer de sayılır, her üfleme kocaman baloncuk).
+   */
+  get kolay(): boolean {
+    return this.yanlis >= 2 || this.gosterildi;
   }
 }
 

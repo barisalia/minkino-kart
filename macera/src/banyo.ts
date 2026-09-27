@@ -13,7 +13,7 @@
 import '../../src/karakter/karakter.css';
 import './banyo.css';
 import B from '../../content/macera-banyo.json';
-import { efekt, konus } from '../../src/audio/ses';
+import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
 import { minoHalleriYukle } from '../../src/mino/mino';
@@ -25,7 +25,7 @@ import { davul } from '../../orman/src/sesler';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import type { BolumArayuz } from './dogumgunu';
 import { Sahne } from './sahne';
-import { ASKI_TOPUZ, BANYO_ORAN, banyoAdres, esya, fularSvg, RAF_YUZ, TABURE_YUZ } from './banyo-gorsel';
+import { ASKI_TOPUZ, BANYO_ORAN, banyoAdres, esya, fularSvg, RAF_YUZ, SEPET_KENAR, TABURE_YUZ } from './banyo-gorsel';
 import { Kisi, kopukHtml } from './banyo-karakter';
 import { Bugu, EkranDamlalari, geriDon, icinde, merkez, ovala, ParmakIpucu, Parcaciklar, surukle, yansiYazi, type IpucuTuru } from './banyo-efekt';
 import {
@@ -37,10 +37,13 @@ import {
   dolumHizi,
   gerekenBaloncuk,
   ILIK,
+  KOCAMAN_SURE,
   kucukMu,
   Ovalama,
+  OVALAMA_PAY,
   ovalamaYolu,
   SERT_GUC,
+  SERT_SURE,
   sicaklik,
   siraKontrol,
   sonrakiAciklik,
@@ -57,6 +60,8 @@ import {
 import { BanyoMuzik, bs, CanliUluma, SuSesi, ulu } from './banyo-ses';
 
 const IPTAL = Symbol('iptal');
+/** Kişinin kutusunun alt kenarının altını gizler (saklambaçta dalarken / çıkarken kutunun altı = örtünün çizgisi) */
+const altKirp = (el: HTMLElement) => `polygon(-600px -1200px, 1600px -1200px, 1600px ${el.offsetHeight}px, -600px ${el.offsetHeight}px)`;
 const r = (a: number, b: number) => a + Math.random() * (b - a);
 
 /** Sahnedeki yerleşim (x: sahne genişliğinin %'si, y: alttan %, w: --b birimi); zemin: ayakların bastığı yer */
@@ -172,10 +177,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   const rafHedef = sahne.koy(h('div.bn-raf-hedef'), { x: rafNokta.x, y: rafNokta.y - 2, w: 30, z: 1 });
 
   // --- eşyalar
-  // duş perdesi (Mino'nun saklandığı): sağ kenarı eski yerinde kalır, kuyruk perdenin hemen sağından görünür
+  // duş perdesi (süs; sağ kenarı eski yerinde)
   const PERDE_W = 30;
   const perdeSag = 11 + bX(24) / 2;
-  const perde = sahne.koy(h('div.bn-perde', {}, esya('dus-perdesi', '', 'Duş perdesi')), { x: perdeSag - bX(PERDE_W) / 2, y: 3, w: PERDE_W, z: 8 });
+  sahne.koy(h('div.bn-perde', {}, esya('dus-perdesi', '', 'Duş perdesi')), { x: perdeSag - bX(PERDE_W) / 2, y: 3, w: PERDE_W, z: 7 });
   // tabure: havlular üstünde durur (Mino'nun üçüncü saklandığı yer: tabure ve havluların arkası)
   const TABURE_W = 19;
   const tabureUst = 1 + bY(TABURE_W * BANYO_ORAN.tabure) * (1 - TABURE_YUZ.y);
@@ -204,8 +209,17 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     : sahne.koy(h('div.bn-isi', {}, h('i.bn-isi-yesil', { style: `--a:${ILIK.alt};--u:${ILIK.ust}` }), h('div.bn-isi-yol', {}, h('i.bn-isi-ok'))), { x: MUS_X.agiz, y: agizY + bY(15), w: 26, z: 4 });
   const zincir = sahne.koy(h('div.bn-zincir', { role: 'button', 'aria-label': 'Tıpanın zinciri' }, h('i.bn-zincir-halka')), { x: 34, y: onKenarY - bY(9), w: 4, z: 9 });
   zincir.style.height = `${bY(9) + 1}%`;
-  const ordek = sahne.koy(h('div.bn-ordek-kap', {}, h('div.bn-ordek', {}, esya('ordek', '', 'Lastik ördek'))), { x: 77, y: arkaUst(77) - bY(1.2), w: 9, z: 7 });
-  const sepet = sahne.koy(h('div.bn-sepet', {}, esya('sepet', '', 'Çamaşır sepeti')), { x: 87, y: 1, w: 19, z: 8 });
+  // ördek küvetin ARKA kenarında durur: küvetteki Kino'nun arkasında kalır (eskiden göğsünün önüne biniyordu)
+  const ordek = sahne.koy(h('div.bn-ordek-kap', {}, h('div.bn-ordek', {}, esya('ordek', '', 'Lastik ördek'))), { x: 77, y: arkaUst(77) - bY(1.2), w: 9, z: 3 });
+  // çamaşır sepeti: yerde, karakterlerin ayak çizgisinin biraz arkasında (kimseyi örtmez), kadrajda tam görünür.
+  // İki katman: arka (sap + iç) ve ön kenar (hasır gövde): havlu ve saklanan Mino ikisinin arasına düşer.
+  const SEPET_W = 22;
+  const SEPET_X = duvarX(87, SEPET_W);
+  const SEPET_Y = 3.4;
+  const sepet = sahne.koy(h('div.bn-sepet', {}, esya('sepet', '', 'Çamaşır sepeti')), { x: SEPET_X, y: SEPET_Y, w: SEPET_W, z: 6 });
+  const sepetOn = sahne.koy(h('div.bn-sepet.bn-sepet-on', { 'aria-hidden': 'true' }, esya('sepet', '', '')), { x: SEPET_X, y: SEPET_Y, w: SEPET_W, z: 8 });
+  /** sepetin ön kenarının üst çizgisi (dünya y, alttan %): içine düşen bunun altında görünmez */
+  const sepetKenarY = () => SEPET_Y + bY(SEPET_W * BANYO_ORAN.sepet) * (1 - SEPET_KENAR);
   const havluMavi = sahne.koy(h('div.bn-havlu', { 'data-renk': 'mavi' }, esya('havlu-mavi', '', 'Mavi havlu')), { x: 22, y: tabureUst, w: 17, z: 7 });
   const havluTuruncu = sahne.koy(h('div.bn-havlu', { 'data-renk': 'turuncu' }, esya('havlu-turuncu', '', 'Turuncu havlu')), { x: 21, y: tabureUst + bY(17 * 0.36), w: 17, z: 7 });
   const top = sahne.koy(h('div.bn-top', {}, esya('top', '', 'Top')), { x: -10, y: 1.5, w: 7, z: 8 });
@@ -337,7 +351,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     else delete sahne.el.dataset.bnHedef;
   };
 
-  // --- konuşma: Mino (ince ton) ve Kino (aynı ses, kalın ton; ağzı oynar, Mino'nunki durur)
+  // --- konuşma: Mino (ince ton) ve Kino (kendi sesi varsa o; yoksa aynı ses, kalın ton; ağzı oynar, Mino'nunki durur)
   const mSoyle = async (t: string) => {
     if (kapandi) throw IPTAL;
     ui.yazi(t);
@@ -350,7 +364,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     M.mino!.agizSus = true;
     KN.konus(true);
     try {
-      await konus(t, { ton: 0.92 });
+      await konus(t, KINO_SESI);
     } finally {
       KN.konus(false);
       M.mino!.agizSus = false;
@@ -514,7 +528,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     efektCal('top', 1200);
     const topIc = top.querySelector<HTMLElement>('.bn-esya')!;
     topIc.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(1080deg)' }], { duration: sure(1500), easing: 'cubic-bezier(0.2, 0.7, 0.4, 1)' });
-    await kayGit(top, -10, 88, 1500);
+    // top küvetin önünde durur (sepetin önüne yuvarlanıp onu örtmesin)
+    await kayGit(top, -10, 57, 1500);
     // Kino hoplayarak gelir (pati izleri bırakır)
     KN.kinoOynat('coskulu', 0);
     for (const x of [2, 16, 30]) {
@@ -522,8 +537,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       patiIzi(x - 3);
     }
     await kSoyle(B.kino.camur);
-    // Mino somurtarak gelir
-    await M.git(70, 3, 1100);
+    // Mino somurtarak gelir (yandan yürüyerek)
+    await M.git(70, 3, 1300, 0, undefined, true);
     M.tepki('hayir');
     void M.balon(B.balon.hih, 900);
     KN.kinoDur();
@@ -674,7 +689,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
             d.hareket();
           },
           birak(cx, cy) {
-            if (!icinde(cx, cy, askiHedef, d.kabul ? 1.2 : 0.35)) {
+            if (!icinde(cx, cy, askiHedef, d.kolay ? 1.2 : 0.6)) {
               if (d.yanlisEkle()) ipucuGoster('surukle', merkez(f.el), merkez(askiHedef));
               return false;
             }
@@ -703,62 +718,48 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ui.ipucu(null);
     durumYaz(null);
 
-    // --- Mino kaçar
+    // --- Mino kaçar: çizgi film saklambacı. Yandan koşar, saklanacağı yere sıçrayıp arkasına dalar (örtünün
+    // çizgisinin altı hiç görünmez: yarım / kesik Mino yok). Saklandığı yerden kuyruk ucu çıkar ve ritmik sallanır,
+    // ara sıra kulak ucu / gözleri dikizler; bulununca "Aa!" deyip fırlar.
     M.tepki('sasir');
     await mSoyle(B.mino.yapmam);
     M.tepki('hayir');
     await bekle(300);
-    const saklanmaYerleri: { ad: string; x: number; y: number; z: number; aynala: boolean; nesne: HTMLElement }[] = [
-      { ad: 'perde', x: 11 + bX(KISI_W) * 0.24, y: 6, z: 7, aynala: false, nesne: perde },
-      { ad: 'sepet', x: 87 - bX(KISI_W) * 0.3, y: 1 + bY(19 * 1.155) - bY(8), z: 7, aynala: false, nesne: sepet },
-      { ad: 'havlu', x: 22 + bX(KISI_W) * 0.1, y: 0, z: 6, aynala: false, nesne: havluTuruncu },
-    ];
     await kSoyle(B.kino.bul);
-    for (const [i, yer] of saklanmaYerleri.entries()) {
-      // hazırlan (çömel), fırla
-      await M.gov.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.15, 0.8)' }], { duration: sure(200), fill: 'forwards' }).finished.catch(() => undefined);
-      bs.vuu();
-      M.gov.getAnimations().forEach((a) => a.cancel());
-      M.el.classList.add('bn-hizli');
-      await M.git(yer.x, yer.y, 420, 6, 'cubic-bezier(0.5, 0, 0.3, 1)');
-      M.el.classList.remove('bn-hizli');
-      M.katman = yer.z;
-      yer.nesne.style.zIndex = String(Math.max(Number(yer.nesne.style.zIndex) || 0, yer.z + 1));
-      M.sakla(true, yer.aynala);
-      yer.nesne.classList.add('saklanilan');
-      yer.nesne.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.06, 0.94)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: sure(300) });
+    const yerler = saklanmaYerleri();
+    for (const [i, yer] of yerler.entries()) {
+      await saklan(yer);
       durumYaz('bul');
       ui.ipucu(B.ipucu.bul);
+      const sk = sakliGoster(yer);
       const dk = new Deneme(yas);
       let gecen = 0;
-      const ipK2 = ipucuDongusu(dk, () => ipucuGoster('dokun', M.bolgeEkran('kuyruk')));
+      const ipK2 = ipucuDongusu(dk, () => ipucuGoster('dokun', sk.kuyrukUcu()));
       await gorev<void>((coz) => {
-        kisiIs.set(M, () => coz());
-        // 5 sn'de bulunmazsa kuyruk sallanır (ipucu)
+        const bul = (e: PointerEvent) => {
+          e.stopPropagation();
+          coz();
+        };
+        sk.hedef.addEventListener('pointerdown', bul);
+        // 5 sn'de bulunmazsa kuyruk daha hızlı sallanır ve parlar (ipucu)
         const kapat = tik((dt) => {
           gecen += dt;
-          M.el.classList.toggle('bn-kuyruk-salla', gecen > 5);
+          sk.salla(gecen > 5);
         });
         return () => {
-          kisiIs.set(M, null);
+          sk.hedef.removeEventListener('pointerdown', bul);
           kapat();
-          M.el.classList.remove('bn-kuyruk-salla');
         };
       });
       ipK2();
       ui.ipucu(null);
       durumYaz(null);
-      yer.nesne.classList.remove('saklanilan');
-      if (yer.nesne === havluTuruncu) yer.nesne.style.zIndex = '7';
-      M.sakla(false);
-      M.katman = 8;
-      void M.zipla(20, 600);
-      M.tepki('sasir');
-      yazi(...M.bolgeEkran('kafa'), '!', '#f0413f');
-      if (i < saklanmaYerleri.length - 1) await mSoyle(B.mino.eyvah);
+      sk.kapat();
+      await bulundu(yer);
+      if (i < yerler.length - 1) await mSoyle(B.mino.eyvah);
     }
-    // yakalandı: köşeye oturur, küsmüş
-    await M.git(80, 2, 700);
+    // yakalandı: köşeye koşup oturur, küsmüş
+    await M.git(80, 2, 900, 0, undefined, true);
     M.tepki('hayir');
     void M.balon(B.balon.hih, 1000);
     await mSoyle(B.mino.girmem);
@@ -824,7 +825,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     await gorev<void>((coz) => {
       const kapatlar = (['kirmizi', 'mavi'] as const).map((renk) => muslukKontrol(musluklar[renk], (v) => ayarla(renk, v), () => acik[renk], () => doldu));
       const kapat = tik((dt) => {
-        const dd = suDurumu(acik.kirmizi, acik.mavi, yas);
+        // 5-6 yaş: 3. denemede ya da 12 sn'lik ipucundan sonra iki musluk da açıksa ılık sayılır (3-4 yaş kuralı)
+        const dd = suDurumu(acik.kirmizi, acik.mavi, d.kolay ? 3 : yas);
         const t = sicaklik(acik.kirmizi, acik.mavi);
         const akisG = (acik.kirmizi + acik.mavi) / 2;
         suSesi.ayarla(akisG, t ?? 0.5);
@@ -950,7 +952,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       const kapat = surukle(sise, {
         basla: () => d.hareket(),
         birak(cx, cy) {
-          if (!icinde(cx, cy, suArka, d.kabul ? 0.6 : 0.05)) {
+          if (!icinde(cx, cy, suArka, d.kolay ? 0.8 : 0.25)) {
             if (d.yanlisEkle()) ipucuGoster('surukle', merkez(sise), merkez(suArka));
             return false;
           }
@@ -968,9 +970,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     // Kino köpükten bir baloncuk halkası çıkarır
     await bekle(300);
     KN.kinoOynat('coskulu', 900);
-    // halkanın uzun sapı karakterlerin yüzüne binmesin: halka başlarının üstünde, boş duvarda durur
-    const HALKA_W = 13;
-    const halkaKonum = { x: 55, y: AYAKTA_Y + kisiH * 0.95 + bY(HALKA_W * 2.35) };
+    // halkanın uzun sapı karakterlerin yüzüne binmesin: halka başlarının üstünde, boş duvarda durur; askılığın ve
+    // fularların önüne binmesin diye solda (baloncuklar sağdaki Mino'ya doğru ekranı geçer)
+    const HALKA_W = 14;
+    const halkaKonum = { x: 36, y: AYAKTA_Y + kisiH * 0.95 + bY(HALKA_W * 2.2) };
     // halka: kutu halkanın kendisi (dokunma ve baloncuk yeri); çizimin sapı kutudan aşağı sarkar
     const halka = sahne.koy(h('div.bn-halka', { role: 'button', 'aria-label': 'Baloncuk halkası' }, esya('baloncuk-halkasi', 'bn-halka-resim'), h('i.bn-halka-zar')), { x: halkaKonum.x, y: halkaKonum.y, w: HALKA_W, z: 9 });
     girisZipla(halka);
@@ -994,12 +997,12 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const kose = { x: 80, y: 2 };
     /** Mino baloncuğa doğru adım adım yaklaşır */
     const minoCekil = async (n: number) => {
-      if (n === 1) {
-        M.tepki('kararsiz', 2);
-      } else if (n === 2 && n < gereken) {
-        M.tepki('mir', 1.4);
-        await M.git(kose.x - 6, kose.y, 500);
-      } else if (n < gereken) {
+      const kalan = gereken - n;
+      if (kalan >= 2) {
+        // gözleri baloncuğu izler, kuyruğu seğirir, bir adım yaklaşır
+        M.tepki('kararsiz', 1.6);
+        await M.git(kose.x - 5, kose.y, 500);
+      } else if (kalan === 1) {
         M.tepki('uzat', 1.2);
         bs.pit();
         yazi(...M.bolgeEkran('pati'), B.balon.pit, '#3e9df2');
@@ -1067,23 +1070,34 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       };
       const minik = () => {
         basarisiz++;
-        for (let i = 0; i < 3; i++) setTimeout(() => void baloncukUcur('minik', false), sure(i * 120));
+        for (let i = 0; i < 4; i++) setTimeout(() => void baloncukUcur('minik', false), sure(i * 110));
         if (dh.yanlisEkle()) {
           ipucuGoster('bas', merkez(halka));
-          void mSoyle(B.mino.yavas).catch(() => undefined);
+          if (basarisiz === 2) void mSoyle(B.mino.yavas).catch(() => undefined);
         }
       };
+      /** bir baloncuk uçarken gelen üfleme boşa gitmesin: sayılmayan küçük baloncuklar çıkar (her üflemede baloncuk) */
+      const sus = () => {
+        for (let i = 0; i < 2; i++) setTimeout(() => void baloncukUcur('minik', false), sure(i * 120));
+      };
       ui.ilerleme(0, gereken);
+      halka.classList.add('bekliyor');
       u.onBasla = () => {
         sertSure = 0;
+        dh.hareket();
         halka.classList.add('ufleniyor');
-        if (kucuk && !mesgul) void kocaman();
+        if (kucuk) {
+          if (!mesgul) void kocaman();
+          else sus();
+        }
       };
       u.onBitti = (sn) => {
         halka.classList.remove('ufleniyor');
         zar.style.setProperty('--s', '0');
-        if (kucuk || mesgul) return;
-        const boy = baloncukBoyu(sn, sertSure, yas, basarisiz);
+        if (kucuk) return;
+        if (mesgul) return sus();
+        // 3. denemede (2 minikten sonra) ya da 12 sn'lik ipucundan sonra her üfleme kocaman
+        const boy = baloncukBoyu(sn, sertSure, yas, dh.kolay ? 2 : basarisiz);
         if (boy === 'kocaman') void kocaman();
         else minik();
       };
@@ -1091,9 +1105,9 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         u.tik(dt);
         if (!u.aktif || kucuk) return;
         if (u.guc > SERT_GUC) sertSure += dt;
-        // büyük grup: üfledikçe halkadaki baloncuk büyür; sert üflenirse patlar
-        zar.style.setProperty('--s', Math.min(1, u.sure / 0.9).toFixed(3));
-        if (sertSure > 0.45 && !mesgul) {
+        // büyük grup: üfledikçe halkadaki baloncuk büyür (dolunca kocaman olur); çok sert üflenirse patlar
+        zar.style.setProperty('--s', Math.min(1, u.sure / KOCAMAN_SURE).toFixed(3));
+        if (sertSure > SERT_SURE && !mesgul && !dh.kolay) {
           sertSure = -99;
           zar.style.setProperty('--s', '0');
           minik();
@@ -1122,6 +1136,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ui.ipucu(null);
     ui.ilerleme(gereken, gereken);
     durumYaz(null);
+    halka.classList.remove('bekliyor', 'ufleniyor');
     halka.classList.add('gidiyor');
     setTimeout(() => halka.remove(), sure(500));
 
@@ -1230,13 +1245,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     }
     // göz kuralı: başa sıra geldi
     await mSoyle(B.mino.gozler);
-    const gozKapa = tik(() => {
-      if (!M.mino) return;
-      KN.gozKapali = true;
-    });
-    // gözler sıkıca kapalı (komik yüz): Mino'nun çizilmiş "zorlanma" ifadesi, gövde kıpırdamaz
-    M.mino!.ifade('zorlanma');
-    KN.gozKapali = true;
+    // gözler sıkıca kapalı (ikisi de). Mino sırılsıklam: çizilmiş "zorlanma" eki ıslak kafaya uymuyor (yamalı
+    // görünüyordu), bu yüzden gözler kendi kapalı çizgileriyle kapanır
+    M.gozSik(true);
+    KN.gozSik(true);
     await sampuanGetir(sampuan, M, true);
     await ovalaGorev(M, ['kafa'], true, B.mino.gozler, () => {
       yapilan++;
@@ -1246,9 +1258,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       yapilan++;
       ui.ilerleme(yapilan, toplam);
     });
-    gozKapa();
-    M.mino!.ifade(null);
-    KN.gozKapali = false;
+    M.gozSik(false);
+    KN.gozSik(false);
     M.tepki('evet', 1);
     sampuan.classList.add('gidiyor');
     ui.ilerleme(toplam, toplam);
@@ -1315,69 +1326,75 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     });
     let minoKapadi = false;
     let kinoIciyor = 0;
-    let son = performance.now();
+    // başlangıçtaki toplam köpük: çoğu akınca (%85) kalan kendiliğinden akar gider (son kırıntıyı aramak gerekmez)
+    const toplamKopuk = () => [M, KN].reduce((t, k) => t + k.kopukluBolumler().reduce((s, b) => s + k.kopukOrani(b), 0), 0);
+    const ilkKopuk = Math.max(0.01, toplamKopuk());
     await gorev<void>((coz) => {
+      let akiyor = false;
+      // su, duş tutulduğu sürece her karede akar (parmak dursa da): durulama parmağın hızına bağlı değil
+      const kapatTik = tik((dt) => {
+        if (!akiyor) return;
+        suSesi.tik();
+        const simdi = performance.now();
+        const [dx, dy] = merkez(dus.querySelector('.bn-esya')!);
+        for (const k of [M, KN]) {
+          for (const b of k.kopukluBolumler()) {
+            const [bx, by] = k.bolgeEkran(b);
+            const rp = k.bolge(b)!.r * k.birim();
+            // duşun altında (başlığın biraz üstü de sayılır), geniş bir su sütunu
+            if (by > dy - rp - 30 && Math.abs(bx - dx) < rp * 1.6 + 50) {
+              const yeni = Math.max(0, k.kopukOrani(b) - dt * (TEST_MODU ? 20 : 2.2));
+              k.kopuk(b, yeni);
+              if (Math.random() < 0.25) parca.sicrat(bx, by, 'kopuk', 1, 0.4);
+              if (yeni === 0) {
+                parca.parilti(bx, by, 5);
+                bs.damla();
+              }
+              if (k === M && !minoKapadi) {
+                minoKapadi = true;
+                M.tepki('zorlan', 3);
+              }
+              if (k === KN && simdi - kinoIciyor > 1600) {
+                // köpük saç duşla akar gider
+                if (KN.sacSekil !== null) {
+                  KN.kopukSac(null);
+                  parca.sicrat(...KN.bolgeEkran('kafa'), 'kopuk', 8, 0.7);
+                }
+                kinoIciyor = simdi;
+                KN.kinoOynat('ic', 1400);
+              }
+            }
+          }
+        }
+        if (toplamKopuk() <= ilkKopuk * 0.15) coz();
+      });
       const kapat = surukle(dus, {
         basla() {
           dus.classList.add('akiyor');
           suSesi.ayarla(0.6, 0.5);
-          son = performance.now();
+          akiyor = true;
           d.hareket();
         },
-        hareket(cx, cy) {
-          suSesi.tik();
-          const simdi = performance.now();
-          const dt = Math.min(0.1, (simdi - son) / 1000);
-          son = simdi;
-          const [dx, dy] = merkez(dus.querySelector('.bn-esya')!);
-          void cx;
-          void cy;
-          let kalan = 0;
-          for (const k of [M, KN]) {
-            for (const b of k.kopukluBolumler()) {
-              const [bx, by] = k.bolgeEkran(b);
-              const t = k.bolge(b)!;
-              const rp = t.r * k.birim();
-              const alti = by > dy - 20 && by - dy < H() * 0.45;
-              if (alti && Math.abs(bx - dx) < rp * 1.5 + 30) {
-                const yeni = Math.max(0, k.kopukOrani(b) - dt * (TEST_MODU ? 20 : 1.8));
-                k.kopuk(b, yeni);
-                if (Math.random() < 0.25) parca.sicrat(bx, by, 'kopuk', 1, 0.4);
-                if (yeni === 0) {
-                  parca.parilti(bx, by, 5);
-                  bs.damla();
-                }
-                if (k === M && !minoKapadi) {
-                  minoKapadi = true;
-                  M.tepki('zorlan', 3);
-                }
-                if (k === KN && simdi - kinoIciyor > 1600) {
-                  // köpük saç duşla akar gider
-                  if (KN.sacSekil !== null) {
-                    KN.kopukSac(null);
-                    parca.sicrat(...KN.bolgeEkran('kafa'), 'kopuk', 8, 0.7);
-                  }
-                  kinoIciyor = simdi;
-                  KN.kinoOynat('ic', 1400);
-                }
-              }
-              kalan += k.kopukOrani(b);
-            }
-          }
-          if (kalan < 0.05) coz();
+        hareket() {
+          d.hareket();
         },
         birak() {
           dus.classList.remove('akiyor');
           suSesi.ayarla(0);
+          akiyor = false;
           return false;
         },
         kalk: 1.05,
       });
       return () => {
         kapat();
+        kapatTik();
         suSesi.ayarla(0);
       };
     });
+    // kalan köpük kırıntıları da akıp gider
+    for (const k of [M, KN]) for (const b of k.kopukluBolumler()) k.kopuk(b, 0);
+    if (KN.sacSekil !== null) KN.kopukSac(null);
     ipK();
     dus.classList.remove('akiyor');
     geriDon(dus);
@@ -1673,7 +1690,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     }, sure(160));
     sahne.titret(1.2);
     await bekle(350);
-    damla.sicrat(kucuk ? 14 : 20);
+    damla.sicrat(kucuk ? 10 : 14);
     sahne.titret(1.4);
     await bekle(1350);
     clearInterval(ekranSicrat);
@@ -1690,7 +1707,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     await gorev<void>((coz) => {
       damla.onSil = (kalan) => {
         d.hareket();
-        if (kalan <= 0.1) coz();
+        if (kalan <= 0.3) coz();
       };
       return () => (damla.onSil = () => undefined);
     });
@@ -1749,7 +1766,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
           if (!bas || cy < bas[1]) bas = [cx, cy];
           if (taramaMi(cx - bas[0], cy - bas[1], k.height)) {
             bas = [cx, cy];
-            kabarik = Math.max(0, kabarik - 0.25);
+            kabarik = Math.max(0, kabarik - 0.34);
             M.pofuduk(kabarik);
             bs.havlu();
             parca.sicrat(cx, cy, 'yildiz', 3, 0.6);
@@ -1792,9 +1809,12 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     girisZipla(ordek);
     havluMavi.style.zIndex = '10';
     havluTuruncu.style.zIndex = '11';
-    // toplanma: havlular, sepet ve raf kadrajda
+    // toplanma: havlular, sepet ve raf kadrajda; ikisi ortada, sepetin önünü kapatmadan durur
     void kam(50, 96, taban, 600, [havluMavi, havluTuruncu, sepet, rafHedef]);
-    await Promise.all([M.git(30, 3, 600, 8), KN.git(73, 3, 600, 8)]);
+    // dar ekranda (telefon) sığmazsa ikisi birlikte sağa kayar: Mino taburenin önüne binmesin
+    const kay = Math.max(0, 32 - (SEPET_X - bX(SEPET_W) * 0.5 - bX(KISI_W) * 0.92));
+    const kinoX = SEPET_X - bX(SEPET_W) * 0.5 - bX(KISI_W) * 0.3 + kay;
+    await Promise.all([M.git(kinoX - bX(KISI_W) * 0.62, 3, 600, 8), KN.git(kinoX, 3, 600, 8)]);
     await mSoyle(B.mino.topla);
     // --- ıslak havlular sepete
     ui.ipucu(B.ipucu.topla);
@@ -1811,26 +1831,15 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         surukle(hv, {
           basla: () => d.hareket(),
           birak(cx, cy) {
-            if (!icinde(cx, cy, sepet, d.kabul ? 1.2 : 0.3)) {
+            // bırakma alanı cömert: sepetin çevresi (ve üstü) de sayılır
+            if (!icinde(cx, cy, sepet, d.kolay ? 1.2 : 0.6)) {
               if (d.yanlisEkle()) ipucuGoster('surukle', merkez(hv), merkez(sepet));
               return false;
             }
             kapatlar[i]();
             hv.classList.add('sepette');
-            const [sx, sy] = merkez(sepet);
-            const [hx, hy] = merkez(hv);
-            const t = hv.style.translate || '0px 0px';
-            hv.animate([{ translate: t, scale: '1' }, { translate: `calc(${t.split(' ')[0]} + ${sx - hx}px) calc(${t.split(' ')[1] ?? '0px'} + ${sy - hy - 10}px)`, scale: '0.4' }], {
-              duration: sure(350),
-              easing: 'ease-in',
-              fill: 'forwards',
-            });
-            setTimeout(() => {
-              hv.style.visibility = 'hidden';
-              sepet.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.1, 0.9)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: sure(300), easing: 'cubic-bezier(0.3, 1.6, 0.5, 1)' });
-              bs.pop();
-            }, sure(340));
-            if (havlular.every((x) => x.classList.contains('sepette'))) setTimeout(coz, sure(500));
+            sepeteKoy(hv, havlular.filter((x) => x.classList.contains('sepette')).length - 1);
+            if (havlular.every((x) => x.classList.contains('sepette'))) setTimeout(coz, sure(700));
             return true;
           },
         }),
@@ -1854,7 +1863,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
           bs.vik();
         },
         birak(cx, cy) {
-          if (!icinde(cx, cy, rafHedef, d2.kabul ? 1.5 : 0.4)) {
+          if (!icinde(cx, cy, rafHedef, d2.kolay ? 1.5 : 0.8)) {
             if (d2.yanlisEkle()) ipucuGoster('surukle', merkez(ordek), merkez(rafHedef));
             return false;
           }
@@ -1899,7 +1908,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
           birak(cx, cy) {
             M.el.classList.remove('bn-sahip');
             KN.el.classList.remove('bn-sahip');
-            const kime = icinde(cx, cy, M.kap, 0.05) ? M : icinde(cx, cy, KN.kap, 0.05) ? KN : d3.kabul ? sahibi(f) : null;
+            // iki karakter yan yana (üst üste binebilir): önce fuların sahibine bakılır
+            const sahip = sahibi(f);
+            const diger = sahip === M ? KN : M;
+            const kime = icinde(cx, cy, sahip.kap, 0.15) ? sahip : icinde(cx, cy, diger.kap, 0.05) ? diger : d3.kolay ? sahip : null;
             if (kime !== sahibi(f)) {
               if (kime) {
                 kime.tepki('hayir');
@@ -1955,7 +1967,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     await gorev<void>((coz) => {
       bugu.onDegis = (o) => {
         d4.hareket();
-        if (o >= 0.6) coz();
+        if (o >= 0.45) coz();
       };
       return () => (bugu.onDegis = () => undefined);
     });
@@ -2000,7 +2012,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     efektCal('kikir', 1200);
     await bekle(1000);
     pencere.remove();
-    await M.git(52, 3, 600);
+    await M.git(KN.x - bX(KISI_W) * 0.45, 3, 600, 0, undefined, true);
     M.tepki('saril', 1.8);
     parca.parilti(...M.bolgeEkran('kafa'), 7, 'kalp');
     await bekle(1200);
@@ -2013,7 +2025,15 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const kart = h(
       'div.bn-odul',
       {},
-      h('div.bn-odul-resim', {}, h('div.bn-odul-kisi', { html: M.kap.innerHTML }), h('div.bn-odul-kisi', { html: KN.kap.innerHTML }), h('div.bn-odul-tac', { html: tacSvg() })),
+      // kopyalar .bn-cizim altında: köpük / çamur ekleri banyo.css kurallarıyla (ölçek 0) gizli kalır — eskiden kartta
+      // karakterlerin üstünde kocaman köpük kümeleri görünüyordu
+      h(
+        'div.bn-odul-resim',
+        {},
+        h('div.bn-odul-kisi.bn-cizim', { html: M.mino!.el.outerHTML }),
+        h('div.bn-odul-kisi.bn-cizim', { html: KN.kap.innerHTML }),
+        h('div.bn-odul-tac', { html: tacSvg() }),
+      ),
       h('b', {}, B.kart),
     );
     sahne.el.append(kart);
@@ -2025,7 +2045,294 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     await bekle(1200);
   }
 
+  // ================================================================ saklambaç (sahne 2)
+  /** Mino çiziminin (viewBox 344 140 1360 1790) (dx, dy) noktası dünyada (X, Y)'ye gelsin diye kutunun yeri (x merkez, y alt) */
+  function minoKutu(X: number, Y: number, dx: number, dy: number, s = 1) {
+    return { x: X - bX(KISI_W * s) * ((dx - 344) / 1360 - 0.5), y: Y - bY(KISI_W * s * KISI_ORAN) * (1 - (dy - 140) / 1790) };
+  }
+  /** Kutunun (y alt, yükseklik h; dünya %) içinde, alttan cizgi'ye kadarını gizleyen kırpma (üstü ve yanları serbest) */
+  function cizgiKirp(el: HTMLElement, yAlt: number, h: number, cizgi: number | null) {
+    if (cizgi === null) {
+      el.style.clipPath = '';
+      return;
+    }
+    // px ile (yüzdeli, kutunun dışına taşan çokgen Chrome'da parçayı hiç çizdirmiyordu)
+    const hPx = (h / 100) * H();
+    const ust = (1 - (cizgi - yAlt) / h) * hPx;
+    const w = W();
+    el.style.clipPath = `polygon(${-w}px ${-2 * hPx}px, ${2 * w}px ${-2 * hPx}px, ${2 * w}px ${ust.toFixed(1)}px, ${-w}px ${ust.toFixed(1)}px)`;
+  }
+  interface SaklanmaYeri {
+    ad: 'kuvet' | 'sepet' | 'havlu';
+    /** Mino'nun saklandığı x (kutu merkezi) */
+    x: number;
+    /** örtünün üst çizgisi (dünya y, alttan %): Mino bunun arkasına dalar, altı hiç görünmez */
+    cizgi: () => number;
+    /** saklanırken katman */
+    z: number;
+    /** sıçramadan önce koşup geldiği yer (yerde) */
+    yaklas: () => number;
+    /** bulununca sıçradığı yer */
+    cikis: () => [number, number];
+    /** dikizleyen kafanın x'i (null: havlunun altından gözler) */
+    kafaX: number | null;
+    /** kuyruk kökü (dünya) ve kuyruğun kırpma çizgisi (null: kırpma yok, katmanla örtülür) */
+    kuyruk: () => { x: number; y: number; cizgi: number | null };
+    /** saklanınca / dikizlerken kıpırdayan örtü */
+    ortu: HTMLElement[];
+  }
+  function saklanmaYerleri(): SaklanmaYeri[] {
+    const KX = 44;
+    const havluY = () => Number(havluTuruncu.style.getPropertyValue('--y')) || tabureUst;
+    const havluUst = () => havluY() + bY(17 * BANYO_ORAN.havlu) * 0.82;
+    const MW = bX(KISI_W);
+    return [
+      {
+        // küvetin arkası: Kino'nun (küvette) önünden sıçrayıp küvetin arkasına dalar
+        ad: 'kuvet',
+        x: KX,
+        cizgi: () => arkaUst(KX),
+        z: 2,
+        yaklas: () => M.x,
+        cikis: () => [KX, 3],
+        kafaX: KX,
+        kuyruk: () => ({ x: KX - MW * 0.62, y: arkaUst(KX - MW * 0.4) - bY(1), cizgi: arkaUst(KX - MW * 0.4) }),
+        ortu: [ordekIc],
+      },
+      {
+        // çamaşır sepetinin içi
+        ad: 'sepet',
+        x: SEPET_X,
+        cizgi: sepetKenarY,
+        z: 7,
+        yaklas: () => SEPET_X - MW * 0.85,
+        cikis: () => [SEPET_X - MW * 0.8, 3],
+        kafaX: SEPET_X - bX(1),
+        kuyruk: () => ({ x: SEPET_X + bX(SEPET_W) * 0.02, y: sepetKenarY() - bY(1.5), cizgi: sepetKenarY() }),
+        ortu: [sepet, sepetOn],
+      },
+      {
+        // taburedeki havluların altı: üstteki havlu kalkınca karanlıkta iki göz
+        ad: 'havlu',
+        x: 22,
+        cizgi: havluUst,
+        z: 7,
+        yaklas: () => 22 + MW * 0.95,
+        cikis: () => [22 + MW * 0.9, 3],
+        kafaX: null,
+        kuyruk: () => ({ x: 22 + bX(17) * 0.3, y: havluY() + bY(2.5), cizgi: null }),
+        ortu: [havluTuruncu, havluMavi],
+      },
+    ];
+  }
+  /** Örtü kıpırdar (Mino arkasına daldı / dikizliyor) */
+  function kipirdat(ortu: HTMLElement[], guc = 1) {
+    for (const o of ortu) {
+      const e = o.classList.contains('bn-ordek') ? o : (o.querySelector<HTMLElement>(':scope > .bn-esya') ?? o);
+      e.animate(
+        [
+          { transform: 'scale(1, 1) rotate(0deg)' },
+          { transform: `scale(${1 + 0.07 * guc}, ${1 - 0.07 * guc}) rotate(${-2 * guc}deg)` },
+          { transform: `scale(${1 - 0.03 * guc}, ${1 + 0.04 * guc}) rotate(${1.5 * guc}deg)` },
+          { transform: 'scale(1, 1) rotate(0deg)' },
+        ],
+        { duration: sure(420), easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' },
+      );
+    }
+  }
+  /** Koşup saklanma yerine dalar */
+  async function saklan(yer: SaklanmaYeri) {
+    // hazırlan (çömel), fırla
+    await M.gov.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.15, 0.8)' }], { duration: sure(200), fill: 'forwards' }).finished.catch(() => undefined);
+    M.gov.getAnimations().forEach((a) => a.cancel());
+    bs.vuu();
+    const yx = yer.yaklas();
+    if (Math.abs(M.x - yx) > 3) await M.git(yx, 3, 380 + Math.abs(M.x - yx) * 11, 0, undefined, true);
+    // sıçrar: ayakları örtünün çizgisine konar; havada, en tepede örtünün arkasına geçer
+    const cizgi = yer.cizgi();
+    M.el.classList.add('bn-dalis');
+    const zz = window.setTimeout(() => (M.katman = yer.z), sure(300));
+    await M.git(yer.x, cizgi, 600, 15);
+    clearTimeout(zz);
+    M.katman = yer.z;
+    // dalar: kutunun alt kenarı örtünün çizgisinde; altı hiç görünmez
+    M.el.style.clipPath = altKirp(M.el);
+    await M.gov.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.14, 0.84)' }], { duration: sure(110), fill: 'forwards' }).finished.catch(() => undefined);
+    bs.blup(false);
+    kipirdat(yer.ortu, 1.4);
+    const D = M.el.offsetHeight + 16;
+    await M.yol
+      .animate([{ transform: 'translateY(0)' }, { transform: `translateY(${D}px)` }], { duration: sure(240), easing: 'cubic-bezier(0.55, 0, 0.9, 0.5)', fill: 'forwards' })
+      .finished.catch(() => undefined);
+    M.sakla(true);
+    M.gov.getAnimations().forEach((a) => a.cancel());
+    M.yol.getAnimations().forEach((a) => a.cancel());
+    M.el.style.clipPath = '';
+    parca.sicrat(...ekranda(yer.x, cizgi), yer.ad === 'kuvet' ? 'su' : 'yildiz', 5, 0.5);
+  }
+  /** Bulununca: "Aa!" deyip saklandığı yerden fırlar, öne sıçrar */
+  async function bulundu(yer: SaklanmaYeri) {
+    M.el.style.clipPath = altKirp(M.el);
+    const D = M.el.offsetHeight + 16;
+    M.yol.style.transform = `translateY(${D}px)`;
+    M.sakla(false);
+    M.tepki('sasir', 1.3);
+    void M.balon(B.balon.aa, 1000);
+    bs.pop();
+    kipirdat(yer.ortu, 1.6);
+    await M.yol
+      .animate([{ transform: `translateY(${D}px)` }, { transform: 'translateY(-14%)', offset: 0.65 }, { transform: 'translateY(0)' }], { duration: sure(460), easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' })
+      .finished.catch(() => undefined);
+    M.yol.style.transform = '';
+    M.el.style.clipPath = '';
+    yazi(...M.bolgeEkran('kafa'), '!', '#f0413f');
+    const [cx, cy] = yer.cikis();
+    const zz = window.setTimeout(() => (M.katman = 8), sure(280));
+    await M.git(cx, cy, 560, 14);
+    clearTimeout(zz);
+    M.katman = 8;
+    M.el.classList.remove('bn-dalis');
+  }
+  /** Dünya (x, y alttan %) → ekran */
+  function ekranda(x: number, y: number): [number, number] {
+    const k = sahne.dunya.getBoundingClientRect();
+    return [k.left + (x / 100) * k.width, k.bottom - (y / 100) * k.height];
+  }
+  /**
+   * Saklanan Mino'nun görünen parçaları: örtünün arkasından çıkan kuyruk ucu (ritmik sallanır), ara sıra dikizleyen
+   * kafa (kulak ucu ya da gözler) ya da havlunun altından bakan gözler. Hepsi örtünün çizgisinde kırpılır.
+   */
+  function sakliGoster(yer: SaklanmaYeri) {
+    const S = 0.94;
+    const MH = bY(KISI_W * S * KISI_ORAN);
+    const parcalar: HTMLElement[] = [];
+    // kuyruk: kök örtünün arkasında, uç dışarıda
+    const ky = yer.kuyruk();
+    const kk = minoKutu(ky.x, ky.y, 1250, 1680, S);
+    const kIc = h('div.bn-saklanan-ic.bn-saklanan-kuyruk-ic', {}, M.minoKlon('q') ?? '');
+    const kuyruk = sahne.koy(h('div.bn-saklanan.bn-saklanan-kuyruk', { 'aria-hidden': 'true' }, kIc), { x: kk.x, y: kk.y, w: KISI_W * S, z: yer.z });
+    cizgiKirp(kuyruk, kk.y, MH, ky.cizgi);
+    parcalar.push(kuyruk);
+    kuyruk.animate([{ opacity: 0 }, { opacity: 1 }], { duration: sure(200) });
+    // dikiz
+    let kafaIc: HTMLElement | null = null;
+    let gozler: HTMLElement | null = null;
+    const cizgi = yer.cizgi();
+    if (yer.kafaX !== null) {
+      // kafanın tepesi (kulak uçları) çizginin biraz altında bekler
+      const kb = minoKutu(yer.kafaX, cizgi - bY(1.5), 1030, 170, S);
+      kafaIc = h('div.bn-saklanan-ic', {}, M.minoKlon('k') ?? '');
+      const kafa = sahne.koy(h('div.bn-saklanan.bn-saklanan-kafa', { 'aria-hidden': 'true' }, kafaIc), { x: kb.x, y: kb.y, w: KISI_W * S, z: yer.z });
+      cizgiKirp(kafa, kb.y, MH, cizgi);
+      parcalar.push(kafa);
+    } else {
+      // havlu: üstteki havlu kalkınca aradaki karanlıkta iki göz
+      gozler = sahne.koy(h('div.bn-sakli-gozler', { 'aria-hidden': 'true', html: gozlerSvg() }), { x: 22 + bX(17) * 0.22, y: Number(havluTuruncu.style.getPropertyValue('--y')) + bY(1), w: 9, z: 7 });
+      parcalar.push(gozler);
+      havluTuruncu.style.zIndex = '8';
+    }
+    // dokunma alanı: saklandığı yer (kuyruk + dikiz bölgesi), cömert
+    const hx = (yer.x + (kk.x + bX(KISI_W * S) * 0.3)) / 2;
+    const hedef = sahne.koy(h('div.bn-sakli-hedef', { role: 'button', 'aria-label': 'Mino burada' }), { x: hx, y: cizgi - bY(9), w: KISI_W * 1.35, z: 12 });
+    parcalar.push(hedef);
+
+    // dikiz döngüsü: kulak ucu ya da gözler kısa süre görünür, Kino o yana bakar
+    let kapandi2 = false;
+    let zaman = 0;
+    let sayac = 0;
+    const px = (n: number) => (bY(n) / 100) * H();
+    const dikiz = async () => {
+      if (kapandi2) return;
+      sayac++;
+      KN.kinoOynat('bak', 1300, yer.x < KN.x ? -1 : 1);
+      if (kafaIc) {
+        // sırayla: kulak ucu, gözler
+        const yuk = sayac % 2 ? px(5.5) : px(11);
+        kipirdat(yer.ortu, 0.6);
+        await kafaIc
+          .animate(
+            [
+              { transform: 'translateY(0)' },
+              { transform: `translateY(${-yuk}px)`, offset: 0.25 },
+              { transform: `translateY(${-yuk}px) rotate(${sayac % 4 < 2 ? 4 : -4}deg)`, offset: 0.75 },
+              { transform: 'translateY(0)' },
+            ],
+            { duration: sure(1500), easing: 'ease-in-out' },
+          )
+          .finished.catch(() => undefined);
+      } else if (gozler) {
+        const hv = havluTuruncu.querySelector<HTMLElement>(':scope > .bn-esya');
+        const kalk = [
+          { transform: 'rotate(0deg) translateY(0)' },
+          { transform: 'rotate(-7deg) translateY(-18%)', offset: 0.22 },
+          { transform: 'rotate(-7deg) translateY(-18%)', offset: 0.8 },
+          { transform: 'rotate(0deg) translateY(0)' },
+        ];
+        hv?.animate(kalk, { duration: sure(1600), easing: 'ease-in-out' });
+        await gozler
+          .animate([{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 1, offset: 0.75 }, { opacity: 0 }], { duration: sure(1600) })
+          .finished.catch(() => undefined);
+      }
+      if (!kapandi2) zaman = window.setTimeout(() => void dikiz(), sure(1400 + Math.random() * 1600));
+    };
+    zaman = window.setTimeout(() => void dikiz(), sure(900));
+    return {
+      hedef,
+      kuyrukUcu: (): [number, number] => {
+        const r = kuyruk.getBoundingClientRect();
+        return [r.left + ((1640 - 344) / 1360) * r.width, r.top + ((1250 - 140) / 1790) * r.height];
+      },
+      salla(hizli: boolean) {
+        kuyruk.classList.toggle('hizli', hizli);
+      },
+      kapat() {
+        kapandi2 = true;
+        clearTimeout(zaman);
+        for (const p of parcalar) p.remove();
+        if (yer.ad === 'havlu') havluTuruncu.style.zIndex = '7';
+        KN.kinoDur();
+      },
+    };
+  }
+
   // ================================================================ sahne yardımcıları
+  /**
+   * Havlu sepetin İÇİNE düşer: sepetin arka ve ön katmanı arasına yerleşir (ön kenar önde, havlunun üstü kenardan
+   * taşar); bırakıldığı yerden yay çizerek, küçülerek gelir. sira: sepetteki kaçıncı havlu (üst üste biner).
+   */
+  function sepeteKoy(hv: HTMLElement, sira: number) {
+    const once = hv.getBoundingClientRect();
+    hv.getAnimations().forEach((a) => a.cancel());
+    hv.style.translate = '';
+    hv.style.rotate = '';
+    hv.style.scale = '';
+    const w = SEPET_W * 0.74;
+    hv.style.setProperty('--x', String(SEPET_X + (sira % 2 ? bX(2.2) : -bX(1.6))));
+    hv.style.setProperty('--y', String(sepetKenarY() - bY(w * BANYO_ORAN.havlu) * 0.6 + bY(sira * 2.4)));
+    hv.style.setProperty('--w', String(w));
+    hv.style.zIndex = '7';
+    hv.classList.remove('parla', 'tutuluyor');
+    const sonra = hv.getBoundingClientRect();
+    const olcek = hv.offsetWidth ? sonra.width / hv.offsetWidth : 1;
+    const dx = (once.left + once.width / 2 - (sonra.left + sonra.width / 2)) / olcek;
+    const dy = (once.top + once.height / 2 - (sonra.top + sonra.height / 2)) / olcek;
+    const s0 = sonra.width ? once.width / sonra.width : 1;
+    const tepe = Math.min(dy, 0) * 0.5 - 50;
+    hv.animate(
+      [
+        { translate: `${dx}px ${dy}px`, scale: String(s0), rotate: '0deg' },
+        { translate: `${dx * 0.45}px ${tepe}px`, scale: String((s0 + 1) / 2), rotate: `${sira % 2 ? 10 : -10}deg`, offset: 0.45 },
+        { translate: '0px 6px', scale: '1.04 0.94', rotate: `${sira % 2 ? -3 : 3}deg`, offset: 0.82 },
+        { translate: '0px 0px', scale: '1', rotate: '0deg' },
+      ],
+      { duration: sure(560), easing: 'cubic-bezier(0.4, 0, 0.6, 1)' },
+    );
+    setTimeout(() => {
+      kipirdat([sepet, sepetOn], 1.2);
+      bs.pop();
+      parca.parilti(...ekranda(SEPET_X, sepetKenarY()), 6);
+    }, sure(460));
+  }
   /** Topu soldan sağa kaydır (yalnız transform) */
   async function kayGit(el: HTMLElement, x0: number, x1: number, ms: number) {
     const dx = ((x1 - x0) / 100) * W();
@@ -2188,7 +2495,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       const kapat = surukle(sise, {
         basla: () => d.hareket(),
         birak(cx, cy) {
-          const bulunan = hedefler.find((x) => icinde(cx, cy, x.kap, d.kabul ? 0.8 : 0.1));
+          const bulunan = hedefler.find((x) => icinde(cx, cy, x.kap, d.kolay ? 0.8 : 0.3));
           if (!bulunan) {
             if (d.yanlisEkle()) ipucuGoster('surukle', merkez(sise), hedefler[0].bolgeEkran('kafa'));
             return false;
@@ -2232,43 +2539,56 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     });
     let yanlisYol = 0;
     let sesZaman = 0;
+    let kopukZaman = 0;
     await gorev<void>((coz) => {
       kisiIs.set(k, () => undefined);
       const oteki = k === M ? KN : M;
-      oteki.el.classList.add("bn-gecirgen");
-      const kapat = ovala(k.kap, (cx, cy, yol) => {
+      oteki.el.classList.add('bn-gecirgen');
+      /** hedef bölgede sürtme: köpük hemen ve bolca belirir, ilerleme halkası dolar */
+      const hedefeSurt = (b: Bolum, cx: number, cy: number, yol: number) => {
+        const px = (k.bolge(b)?.r ?? 100) * k.birim();
+        const o = oval.get(b)!;
+        o.ekle(yol / px);
+        k.kopuk(b, 0.45 + o.oran * 0.55);
+        k.ilerlemeCiz(b, o.oran);
+        d.hareket();
+        yanlisYol = 0;
+        const simdi = performance.now();
+        if (simdi - kopukZaman > 90) {
+          kopukZaman = simdi;
+          parca.sicrat(cx, cy, 'kopuk', 2, 0.35);
+          parca.yuksel(cx, cy, 'baloncuk', 1, 24);
+        }
+        if (simdi - sesZaman > 140) {
+          sesZaman = simdi;
+          bs.hisirti();
+        }
+        if (o.bitti) {
+          bitenler.add(b);
+          k.ilerlemeCiz(null);
+          parca.parilti(...k.bolgeEkran(b), 9);
+          parca.yuksel(...k.bolgeEkran(b), 'baloncuk', 5, 40);
+          efekt.nota(bitenler.size + 2);
+          kulak.sustur(400);
+          adimBitti();
+          if (sirali) {
+            const s = siraKontrol(hedefler, siraNo, b);
+            siraNo++;
+            if (s === 'bitti') return coz();
+          } else if (bitenler.size === hedefler.length) return coz();
+          parlaGuncelle();
+          durumYaz('ova', `${k.ad}-${simdiki()}`);
+        }
+      };
+      const surt = (cx: number, cy: number, yol: number) => {
+        const hedef = simdiki();
+        // hedefin yakını da sayılır (geniş dokunma alanı); kolay modda (2 yanlış / 12 sn) karakterin her yeri
+        if (k.bolgeBul(cx, cy, OVALAMA_PAY, [hedef]) || d.kolay) return hedefeSurt(hedef, cx, cy, yol);
         const b = k.bolgeBul(cx, cy, 1.2);
         if (!b) return;
-        const hedef = simdiki();
-        const px = (k.bolge(b)?.r ?? 100) * k.birim();
-        if (b === hedef) {
-          const o = oval.get(b)!;
-          o.ekle(yol / px);
-          k.kopuk(b, 0.15 + o.oran * 0.85);
-          d.hareket();
-          yanlisYol = 0;
-          if (performance.now() - sesZaman > 140) {
-            sesZaman = performance.now();
-            bs.hisirti();
-            if (Math.random() < 0.5) parca.yuksel(cx, cy, 'baloncuk', 1, 20);
-          }
-          if (o.bitti) {
-            bitenler.add(b);
-            parca.parilti(...k.bolgeEkran(b), 7);
-            efekt.nota(bitenler.size + 2);
-            kulak.sustur(400);
-            adimBitti();
-            if (sirali) {
-              const s = siraKontrol(hedefler, siraNo, b);
-              siraNo++;
-              if (s === 'bitti') return coz();
-            } else if (bitenler.size === hedefler.length) return coz();
-            parlaGuncelle();
-            durumYaz('ova', `${k.ad}-${simdiki()}`);
-          }
-        } else if (!parlat && !bitenler.has(b)) {
-          // yanlış yer (büyük grup): biraz ovalayınca gülerek düzeltir
-          yanlisYol += yol / px;
+        if (!parlat && !bitenler.has(b)) {
+          // yanlış yer (büyük grup): biraz ovalayınca gülerek düzeltir; iki yanlıştan sonra kolay mod
+          yanlisYol += yol / ((k.bolge(b)?.r ?? 100) * k.birim());
           if (yanlisYol > 2.2) {
             yanlisYol = 0;
             k.tepki(k === M ? 'gidik' : 'zipla', 1);
@@ -2280,14 +2600,17 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
             void (k === M ? mSoyle(soz) : kSoyle(soz)).catch(() => undefined);
           }
         }
-      });
+      };
+      // parmak değer değmez köpük (sürtmeyi beklemeden)
+      const kapat = ovala(k.kap, surt, (cx, cy) => surt(cx, cy, 0));
       return () => {
         kapat();
         kisiIs.set(k, null);
-        oteki.el.classList.remove("bn-gecirgen");
+        oteki.el.classList.remove('bn-gecirgen');
       };
     });
     ipK();
+    k.ilerlemeCiz(null);
     k.parla(null);
     ui.ipucu(null);
     durumYaz(null);
@@ -2315,7 +2638,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
           }
           if (son) {
             const yol = Math.hypot(cx - son[0], cy - son[1]);
-            p = Math.min(1, p + yol / (k.kap.getBoundingClientRect().height * (TEST_MODU ? 0.8 : 5)));
+            p = Math.min(1, p + yol / (k.kap.getBoundingClientRect().height * (TEST_MODU ? 0.8 : 3.5)));
             if (ilerle) ilerle(p);
             else k.islak(1 - p);
             d.hareket();
@@ -2378,6 +2701,15 @@ function girdapSvg(): string {
     <ellipse cx="100" cy="40" rx="90" ry="32" stroke="#5aa6f0" stroke-width="6" opacity=".6"/>
     <path d="M100 40 m-70 0 a70 26 0 1 1 70 26 a50 18 0 1 1 -40 -14 a28 10 0 1 1 30 6" stroke="#fff" stroke-width="7" opacity=".9"/>
     <ellipse cx="100" cy="40" rx="12" ry="5" fill="#2c6fb3" stroke="none"/></g></svg>`;
+}
+
+/** Havlunun altındaki karanlıktan bakan iki göz (Mino'nun göz renkleri) */
+function gozlerSvg(): string {
+  const goz = (x: number) =>
+    `<ellipse cx="${x}" cy="50" rx="25" ry="29" fill="#fff" stroke="#3a1210" stroke-width="5"/>` +
+    `<circle cx="${x + 4}" cy="54" r="17" fill="#9a5a2a"/><circle cx="${x + 5}" cy="55" r="10" fill="#3a1210"/>` +
+    `<circle cx="${x - 2}" cy="45" r="6" fill="#fff"/>`;
+  return `<svg viewBox="0 0 200 100" aria-hidden="true"><ellipse cx="100" cy="52" rx="96" ry="44" fill="#2a1410" opacity=".82"/>${goz(68)}${goz(132)}</svg>`;
 }
 
 /** Ödül kartındaki köpük taç */

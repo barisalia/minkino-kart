@@ -48,6 +48,9 @@ describe('Mino Banyo Yapmıyor: oyun mantığı', () => {
     expect(suDurumu(1, 1 / 3, 6)).toBe('sicak');
     expect(suDurumu(1 / 3, 1, 6)).toBe('soguk');
     expect(suDurumu(2 / 3, 2 / 3, 6)).toBe('ilik');
+    // bir adım fark da ılık (yeşil bölge geniş)
+    expect(suDurumu(2 / 3, 1, 6)).toBe('ilik');
+    expect(suDurumu(1 / 3, 2 / 3, 6)).toBe('soguk');
     expect(suDurumu(0, 0, 6)).toBeNull();
   });
 
@@ -66,14 +69,16 @@ describe('Mino Banyo Yapmıyor: oyun mantığı', () => {
     expect(dolumHizi(0, 0, null, 0)).toBe(0);
   });
 
-  it('baloncuk: küçüklerde her üfleme sayılır; büyüklerde yavaş-uzun kocaman, sert ya da kısa minik; 4 denemeden sonra kolaylık', () => {
-    expect(gerekenBaloncuk(3)).toBe(4);
-    expect(gerekenBaloncuk(6)).toBe(3);
+  it('baloncuk: küçüklerde her üfleme sayılır; büyüklerde yarım saniyelik yavaş üfleme kocaman, sert ya da çok kısa minik; 3. denemede kabul', () => {
+    expect(gerekenBaloncuk(3)).toBe(3);
+    expect(gerekenBaloncuk(6)).toBe(2);
     expect(baloncukBoyu(0.2, 0, 4)).toBe('kocaman');
     expect(baloncukBoyu(1.2, 0.1, 6)).toBe('kocaman');
-    expect(baloncukBoyu(0.4, 0, 6)).toBe('minik');
+    expect(baloncukBoyu(0.55, 0, 6)).toBe('kocaman');
+    expect(baloncukBoyu(0.3, 0, 6)).toBe('minik');
     expect(baloncukBoyu(1.5, 0.8, 6)).toBe('minik');
-    expect(baloncukBoyu(0.3, 0.9, 6, 4)).toBe('kocaman');
+    expect(baloncukBoyu(0.3, 0.9, 6, 1)).toBe('minik');
+    expect(baloncukBoyu(0.3, 0.9, 6, 2)).toBe('kocaman');
   });
 
   it('ovalama eşiği ve iki adımlı sıra', () => {
@@ -110,6 +115,12 @@ describe('Mino Banyo Yapmıyor: oyun mantığı', () => {
     expect(b.tik(1.5)).toBe(true);
     b.hareket();
     expect(b.tik(5)).toBe(false);
+    // kolay mod her yaşta: 2 yanlıştan (3. deneme) ya da 12 sn'lik ipucundan sonra
+    expect(b.kolay).toBe(true);
+    const c = new Deneme(6);
+    expect(c.kolay).toBe(false);
+    c.tik(12.5);
+    expect(c.kolay).toBe(true);
   });
 
   it('uluma: çocuğun perdesini izler, köpek aralığında kalır', () => {
