@@ -12,12 +12,12 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Mino } from '../../src/mino/mino';
 import { balonlar, canliSahne, havaiFisek } from './canli';
 import { BARDAK_IKON } from './blender';
-import { adres, parilti, resim, tozKalkar } from './gorsel';
+import { adres, flamaYerlestir, parilti, resim, tozKalkar } from './gorsel';
 import { MinoCanli } from './mino-canli';
 import { odulSesi } from './meyvesuyu-ses';
 import { kaydet, kayit } from './ilerleme';
 import { agirlik, urunRengi, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
-import { Musteri } from './musteri';
+import { Musteri, musteriHazirla } from './musteri';
 import { Terazi } from './terazi';
 import { geriGonder, surukle, tasi } from './surukle';
 
@@ -171,7 +171,10 @@ export function pazarEkrani(app: Uygulama): Ekran {
   // gösterim / test: &musteriler=ordek,tavsan,… ile müşteriler seçilebilir
   const secili = TEST_MODU || document.body.dataset.onizleme ? (new URLSearchParams(location.search).get('musteriler') ?? '').split(',').filter((x) => P.musteriler.includes(x)) : [];
   const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, MUSTERI_SAYISI);
-  musteriler.forEach(resimSesiHazirla);
+  musteriler.forEach((ad) => {
+    resimSesiHazirla(ad);
+    musteriHazirla(ad);
+  });
 
   const yazi = h('span', {}, P.basla);
   let sonSoz: string[] = [P.basla];
@@ -210,6 +213,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     sahne,
     tezgah,
   );
+  const flamaKapat = flamaYerlestir(el, kamera);
 
   // test ve gösterim: ?tur=terazi ile ilk müşteri o türden gelir
   const zorla = (TEST_MODU || document.body.dataset.onizleme ? new URLSearchParams(location.search).get('tur') : null) as Tur | null;
@@ -529,6 +533,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       sokuler.splice(0).forEach((f) => f());
       mino.kapat();
       canli.kapat();
+      flamaKapat();
       terazi?.kapat();
       musteri?.kapat();
     },

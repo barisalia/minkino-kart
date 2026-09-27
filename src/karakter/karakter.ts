@@ -15,7 +15,7 @@ import { AGIZ_ACIKLIK, agizKatmaniSec, type AgizKatmani, type AgizSekli } from '
 import { h, TEST_MODU } from '../ui/dom';
 import { kisilik, type Kisilik, type Yuruyus } from './kisilik';
 
-interface IskeletBilgi {
+export interface IskeletBilgi {
   ad: string;
   boyut: number;
   sira: string[];
@@ -67,12 +67,14 @@ export function ifadeSetleri(b: Pick<IskeletBilgi, 'sira' | 'gizli' | 'ifadeler'
 const BILGILER = import.meta.glob<IskeletBilgi>('../../assets/karakter-iskelet/*.json', { eager: true, import: 'default' });
 const SVGLER = import.meta.glob<string>('../../assets/karakter-iskelet/*.svg', { eager: true, query: '?url', import: 'default' });
 const bilgi = (ad: string) => BILGILER[`../../assets/karakter-iskelet/${ad}.json`];
+/** İskeletin JSON bilgisi (yoksa undefined); yandan görünüşler de (<ad>-profil) buradan */
+export const iskeletBilgisi = (ad: string): IskeletBilgi | undefined => bilgi(ad);
 const svgAdresi = (ad: string) => SVGLER[`../../assets/karakter-iskelet/${ad}.svg`];
 export const iskeletVar = (ad: string) => !!bilgi(ad) && !!svgAdresi(ad);
 
 /** SVG metni bir kez indirilir, sonra aynı karakterin bütün kopyaları kullanır */
 const onbellek = new Map<string, Promise<string | null>>();
-function svgGetir(ad: string): Promise<string | null> {
+export function svgGetir(ad: string): Promise<string | null> {
   let p = onbellek.get(ad);
   if (!p) {
     p = fetch(svgAdresi(ad))

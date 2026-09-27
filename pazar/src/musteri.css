@@ -19,6 +19,17 @@
   width: 100%;
   height: 100%;
 }
+/* yandan yürüyen müşteri (yandan.ts): önden ve yandan çizim ayrı katmanlarda, ikisi de hep hazır çizilmiş durur;
+   dönüşte yalnız saydamlık ve genişlik değişir (yeni çizilen katman bir kare boş kalmaz) */
+.pz-kok .pz-m-govde > .kr-karakter,
+.pz-kok .pz-m-yan {
+  will-change: transform, opacity;
+}
+.pz-kok .pz-m-yan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 /* ayakların altındaki gölge (kuş havadayken silik) */
 .pz-kok .pz-m-golge {
   position: absolute;

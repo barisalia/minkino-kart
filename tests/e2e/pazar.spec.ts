@@ -59,6 +59,24 @@ test('Mino’nun Pazarı: açılış → pazar, sürükleyerek 1 müşteri (3 ya
   expect(hatalar).toEqual([]);
 });
 
+test('Mino’nun Pazarı: köpek yandan yürüyerek gelir, tezgâhta önden döner, yandan yürüyerek gider', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  // test modunda yandan yürüyüş kapalı; &yandan=1 açar (yürüyüş gerçek hızda)
+  await page.goto('./pazar/?test=1&yandan=1&yas=3&ekran=pazar&musteriler=kopek');
+  const mu = page.locator('.pz-musteri[data-musteri="kopek"]');
+  await expect(mu).toHaveClass(/pz-yandan/, { timeout: 8000 });
+  await expect(mu.locator('.yk-yandan svg')).toBeAttached();
+  const ist = await istek(page);
+  await expect(mu).not.toHaveClass(/pz-yandan/);
+  // tezgâhta önden çizim görünür, yan çizim gizli
+  expect(await mu.locator('.kr-karakter').evaluate((e) => Number(getComputedStyle(e).opacity))).toBe(1);
+  expect(await mu.locator('.pz-m-yan').evaluate((e) => Number(getComputedStyle(e).opacity))).toBeLessThan(0.01);
+  const [urun] = Object.keys(ist.istenen);
+  await sepeteSurukle(page, page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`));
+  await expect(page.locator('.pz-musteri[data-musteri="kopek"].gidiyor.pz-yandan')).toBeAttached({ timeout: 8000 });
+  expect(hatalar).toEqual([]);
+});
+
 test('Mino’nun Pazarı: 4 yaş sayma, "Ver" ile', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./pazar/?test=1&yas=4&ekran=pazar');
