@@ -4,8 +4,9 @@
  * - MinoProfil: Adobe'nin profil iskeleti (ekip/mino/mino-profil.svg → scripts/mino/profil.mjs → mino-profil-svg.ts).
  *   Katmanlar arkadan öne: kuyruk, kulak-arka, bacak-arka, kol-arka, bacak-on, govde, kol-on, fular, kafa, kulak-on,
  *   goz, agiz (+ gizli goz-kapali). Çizim sağa bakar; sola yürürken dışarıdan aynalanır (scaleX(-1)).
- *   Yürüme döngüsü: bacaklar kalçadan karşılıklı (±15°, daha fazlasında kalçada boşluk görünür), kollar ters,
- *   gövde her adımda iner-kalkar ve hafifçe öne eğilir, kafa / kulak / kuyruk / fular geriden gelir (follow-through).
+ *   Yürüme döngüsü (yuruyus.ts): çizgi film yürüyüşü, her adım temas → çöküş → geçiş → yükseliş. Bacaklar kalçadaki
+ *   dönme noktalarından ±22° döner (basan pati yerde kaymaz, havadaki kalkar), kollar ters yönde ±19-22° sallanır,
+ *   gövde adım ritminde iner-kalkar ve öne eğilir, kafa / kulak / kuyruk / fular geriden gelir (follow-through).
  *   Dururken nefes alır, göz kırpar.
  * - YuruyenMino: önden Mino (mino.ts) + profil. Yürürken yana döner (kısa daraltma + geçiş), durunca bacaklar
  *   toparlanır ve yumuşakça önden çizime döner. Profil yüklenmemişse önden kalır (hiçbir şey bozulmaz).
@@ -14,6 +15,9 @@
  */
 import { h, TEST_MODU } from '../ui/dom';
 import { Mino } from './mino';
+import { yuruyusPozu } from './yuruyus';
+
+export { MINO_DONGU_YOLU } from './yuruyus';
 
 type ProfilModul = typeof import('./mino-profil-svg');
 let yukleme: Promise<ProfilModul | null> | null = null;
@@ -28,24 +32,12 @@ export function minoProfilYukle(): Promise<ProfilModul | null> {
 const KATMANLAR = ['kuyruk', 'kulak-arka', 'bacak-arka', 'kol-arka', 'bacak-on', 'govde', 'kol-on', 'fular', 'kafa', 'kulak-on', 'goz', 'agiz', 'goz-kapali'] as const;
 type Katman = (typeof KATMANLAR)[number];
 
-/** Yürüyüş ölçüleri (derece / çizim birimi) */
-const BACAK = 18;
-/**
- * Kollar küçük salınır: gövde katmanında kolun arkası doldurulmuş (bulanık) bölge var, fazla salınınca görünüyor.
- * Arka kol gövdenin arkasında, biraz daha serbest.
- */
-const KOL_ON = 5;
-const KOL_ARKA = 8;
-/** bacakların gövdeye birleştiği yükseklik (eğmenin sabit çizgisi) ve patilerin tabanı (çizim birimi) */
-const DIKIS_Y = 1725;
-const TABAN_Y = 1895;
-/** bir tam döngüde (iki adım) gövdenin aldığı yol (çizim birimi): her adımda basan pati 2·h·tan(BACAK) geri kayar */
-export const MINO_DONGU_YOLU = 4 * (TABAN_Y - DIKIS_Y) * Math.tan((BACAK * Math.PI) / 180);
 /** Profil ve önden çizimin kutusu (viewBox genişliği; mino-svg ile aynı) */
 export const MINO_KUTU_GENISLIK = 1360;
+/** Yürümeye başlarken döngünün girdiği yer: geçiş evresine yakın (bacaklar kapalı, ilk adım doğal açılır) */
+const BASLANGIC_FAZ = 0.2;
 
 const sin = Math.sin;
-const TAM = Math.PI * 2;
 
 export class MinoProfil {
   readonly el: HTMLElement;
@@ -91,8 +83,21 @@ export class MinoProfil {
   /** Yürümeye başla (ya da hızını değiştir); adimHizi: döngü / sn (bir döngü = iki adım) */
   yuru(adimHizi = 1.6) {
     this.hiz = adimHizi;
-    if (this.hedefGuc === 0 && this.guc < 0.05) this.faz = 0;
+    if (this.hedefGuc === 0 && this.guc < 0.05) this.faz = BASLANGIC_FAZ;
     this.hedefGuc = 1;
+  }
+
+  /**
+   * Yürüyüşü bir anda dondurur (evre görselleri ve testler için): faz 0..1 (iki adım; 0 ve 0.5 temas,
+   * ~0.07 çöküş, 0.25 geçiş, ~0.35 yükseliş), guc 0..1.
+   */
+  evre(faz: number, guc = 1) {
+    this.duraklat = true;
+    this.faz = ((faz % 1) + 1) % 1;
+    this.guc = this.hedefGuc = guc;
+    this.t = 0;
+    this.sonrakiKirp = Infinity;
+    this.ciz();
   }
 
   /** Dur: bacaklar yumuşakça dinlenme duruşuna döner */
@@ -123,7 +128,7 @@ export class MinoProfil {
     const k = TEST_MODU ? 1 : Math.min(1, dt * (this.hedefGuc > this.guc ? 14 : 11));
     this.guc += (this.hedefGuc - this.guc) * k;
     if (this.hedefGuc === 0 && this.guc < 0.01) this.guc = 0;
-    // dururken bacak döngüsü en yakın dinlenme noktasına (faz 0 / 0.5) doğru tamamlanır, yarıda donmaz
+    // dururken döngü yavaşlayarak sürer, güç sıfırlanırken bacaklar dinlenme duruşunda toplanır (yarıda donmaz)
     if (this.guc > 0) this.faz = (this.faz + dt * this.hiz * Math.max(0.35, this.guc)) % 1;
     if (!this.gorunur && this.guc === 0) return;
     this.ciz();
@@ -134,51 +139,30 @@ export class MinoProfil {
     return `${ek}rotate(${derece.toFixed(2)} ${x} ${y})`;
   }
 
-  /**
-   * Bacak: kalçadan döndürmek yerine gövdenin alt çizgisinden (DIKIS_Y) yatay eğme. Böylece bacağın gövdeyle
-   * birleştiği dikiş yerinde kalır (dönmede dikiş eğilip kontur kesikleri ve beyaz boşluklar görünüyordu),
-   * pati ise yere paralel kalır (basan ayak düz basar). derece: + ayak geriye.
-   */
-  private bacak(derece: number) {
-    const e = Math.tan((derece * Math.PI) / 180);
-    return `matrix(1 0 ${(-e).toFixed(4)} 1 ${(e * DIKIS_Y).toFixed(2)} 0)`;
-  }
-
   private ciz() {
     if (!this.yuklu) return;
     const g = this.g;
     const t = this.t;
-    const w = this.guc;
-    const a = TAM * this.faz;
-    const s = sin(a);
-    const adim = (gecikme: number) => sin(2 * a - gecikme);
-    const nefes = sin(t * 2.1);
+    const z = yuruyusPozu(this.faz, this.guc, t);
 
-    // gövde: adım ritminde iner-kalkar (bacaklar açıkken aşağıda, geçişte yukarıda), hafifçe öne eğilir;
-    // basışta hafif basılma, yükselişte uzama
+    // beden (bütün katmanlar): önce yere göre basılma / uzama, sonra öne eğim, sonra iniş-kalkış
     const [ax, ay] = this.p.govde ?? [1100, 1880];
-    const inis = s * s; // 0 geçiş, 1 bacaklar en açık
-    const bob = w * (-20 * (1 - inis) + 4) + (1 - w) * 0;
-    const egim = w * 3.2;
-    const sy = 1 + w * (0.022 * (1 - inis) - 0.018 * inis) + (1 - w) * nefes * 0.008;
-    const sx = 1 - w * (0.012 * (1 - inis) - 0.012 * inis);
     g.beden?.setAttribute(
       'transform',
-      `translate(0 ${bob.toFixed(1)}) rotate(${egim.toFixed(2)} ${ax} ${ay}) translate(${ax} ${ay}) scale(${sx.toFixed(4)} ${sy.toFixed(4)}) translate(${-ax} ${-ay})`,
+      `translate(0 ${z.bob.toFixed(1)}) rotate(${z.egim.toFixed(2)} ${ax} ${ay}) translate(${ax} ${ay}) scale(${z.sx.toFixed(4)} ${z.sy.toFixed(4)}) translate(${-ax} ${-ay})`,
     );
 
-    // bacaklar karşılıklı, kollar ters (yakın kol yakın bacağın tersine)
-    g['bacak-on']?.setAttribute('transform', this.bacak(w * BACAK * s));
-    g['bacak-arka']?.setAttribute('transform', this.bacak(-w * BACAK * s));
-    g['kol-on']?.setAttribute('transform', this.don('kol-on', -w * KOL_ON * s + (1 - w) * nefes * 1.2));
-    g['kol-arka']?.setAttribute('transform', this.don('kol-arka', w * KOL_ARKA * s + (1 - w) * nefes * 1.2));
+    // bacaklar kalçadan döner (patiyi yere oturtan dikey kayma + havadakinin kalkması), kollar ters
+    g['bacak-on']?.setAttribute('transform', this.don('bacak-on', z.bacakOn, `translate(0 ${z.bacakOnY.toFixed(1)}) `));
+    g['bacak-arka']?.setAttribute('transform', this.don('bacak-arka', z.bacakArka, `translate(0 ${z.bacakArkaY.toFixed(1)}) `));
+    g['kol-on']?.setAttribute('transform', this.don('kol-on', z.kolOn));
+    g['kol-arka']?.setAttribute('transform', this.don('kol-arka', z.kolArka));
 
-    // kafa: adımı biraz geriden izler; dururken hafif bakınma
-    const kafa = w * 1.8 * adim(0.9) + (1 - w) * sin(t * 0.9) * 1.6;
-    const kafaT = this.don('kafa', kafa, `translate(0 ${(w * 5 * adim(0.7)).toFixed(1)}) `);
+    // kafa: gövdenin iniş-kalkışını biraz geriden izler; dururken hafif bakınma
+    const kafaT = this.don('kafa', z.kafa, `translate(0 ${z.kafaY.toFixed(1)}) `);
     g.kafa?.setAttribute('transform', kafaT);
     // kafaya bağlılar: önce kafanın dönüşü, sonra kendi dönüşü
-    const kulak = w * 5 * adim(1.7) + sin(t * 1.7) * 1.4;
+    const kulak = z.kulak;
     g['kulak-on']?.setAttribute('transform', `${kafaT} ${this.don('kulak-on', -kulak)}`);
     g['kulak-arka']?.setAttribute('transform', `${kafaT} ${this.don('kulak-arka', -kulak * 0.8)}`);
     // göz kırpma
@@ -196,10 +180,9 @@ export class MinoProfil {
     const acik = this.konusuyor ? 1 + Math.abs(sin(t * 15)) * 0.7 : 1;
     g.agiz?.setAttribute('transform', `${kafaT} translate(${mx} ${my - 20}) scale(1 ${acik.toFixed(3)}) translate(${-mx} ${-(my - 20)})`);
 
-    // kuyruk: yürürken kalkık, adımla dalgalanır (geriden gelir); dururken yavaş sallanır
-    g.kuyruk?.setAttribute('transform', this.don('kuyruk', w * (5 + 7 * adim(1.3)) + sin(t * 2.3) * 4 * (1 - w * 0.5)));
-    // fular: rüzgârda hafif dalga
-    g.fular?.setAttribute('transform', this.don('fular', w * 2.5 * adim(1.5) + (1 - w) * nefes * 0.6));
+    // kuyruk: adımla dalgalanır (geriden gelir, ±6); dururken yavaş sallanır. fular: adımın ardından dalga
+    g.kuyruk?.setAttribute('transform', this.don('kuyruk', z.kuyruk));
+    g.fular?.setAttribute('transform', this.don('fular', z.fular));
   }
 }
 

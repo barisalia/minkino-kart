@@ -21,11 +21,9 @@ function katman(id) {
 // Görünen alan: önden çizimle (mino-svg.ts, viewBox 344 140 1360 1790) aynı ölçü ve aynı ayak çizgisi; gövde ortada.
 // Kuyruk sol kenardan taşar (overflow: visible).
 const VIEWBOX = '400 140 1360 1790';
-// Kalça dolgusu: bacaklar yürürken gövdeyle birleştikleri yerde beyaz boşluk kalmasın diye bacakların arkasında
-// gövde renginde bir leke (dinlenme duruşunda tamamen gövde ve bacakların altında kalır).
-const DOLGU = '<g class="mp-dolgu"><ellipse cx="1095" cy="1668" rx="165" ry="52" fill="#f89d3f"/></g>';
+// Kalça kökleri ve kol arkası çizimde tam (tasarımcı): bacaklar ±25°, kollar ±25° döner, ek dolgu gerekmez.
 const katmanlar = bilgi.sira
-  .map((id) => (id === 'bacak-arka' ? DOLGU + '\n' : '') + `<g class="mp-${id}"${bilgi.gizli.includes(id) ? ' style="display:none"' : ''}>${katman(id)}</g>`)
+  .map((id) => `<g class="mp-${id}"${bilgi.gizli.includes(id) ? ' style="display:none"' : ''}>${katman(id)}</g>`)
   .join('\n');
 const svg = `<svg class="mino-profil-svg" viewBox="${VIEWBOX}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 <g class="mp-beden">
