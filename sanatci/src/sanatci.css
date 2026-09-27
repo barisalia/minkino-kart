@@ -105,7 +105,31 @@
   opacity: 1;
   animation: mk-nabiz 1.4s ease-in-out infinite;
 }
+/* kâğıt + Mino: Mino kâğıdın alt köşesinde durur, fırça yaklaşınca kenarın arkasına kayar */
+.ms-kok .ms-kagit-kutu {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+  margin-bottom: -8px;
+  overflow: hidden;
+}
+.ms-kok .ms-ciz-mino {
+  position: absolute;
+  right: 10px;
+  bottom: 12px;
+  z-index: 7;
+  width: clamp(72px, 10.5vh, 118px);
+  transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.ms-kok .ms-ciz-mino.kac {
+  transform: translateY(96%) scale(0.9);
+  transition: transform 0.28s cubic-bezier(0.5, 0, 0.8, 0.4);
+}
 .ms-kok .ms-kagit {
+  position: relative;
   flex: 1;
   min-height: 0;
   border-radius: 28px;
@@ -279,19 +303,148 @@
   place-items: center;
   width: 100%;
 }
-.ms-kok .ms-sihir-cerceve {
+.ms-kok .ms-cerceve-kutu {
   position: relative;
   width: min(78vw, 50vh, 420px);
   aspect-ratio: 1;
+}
+.ms-kok .ms-sihir-cerceve {
+  position: relative;
+  width: 100%;
+  height: 100%;
   border-radius: 36px;
   background: #fff;
   border: var(--cizgi) solid var(--kontur);
-  box-shadow: 0 0 0 10px rgba(155, 92, 224, 0.2), 0 0 60px 20px rgba(155, 92, 224, 0.35);
+  box-shadow: 0 0 0 10px rgba(155, 92, 224, 0.2);
   overflow: hidden;
-  animation: ms-parilti 2s ease-in-out infinite;
+  animation: ms-nefes 2.4s ease-in-out infinite;
 }
-@keyframes ms-parilti {
-  50% { box-shadow: 0 0 0 16px rgba(255, 199, 44, 0.35), 0 0 80px 30px rgba(255, 199, 44, 0.45); }
+@keyframes ms-nefes {
+  50% { transform: scale(1.025); }
+}
+/* çerçevenin arkasında atan büyü ışığı (yalnız opacity / transform) */
+.ms-kok .ms-hale {
+  position: absolute;
+  inset: -16%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 214, 90, 0.85), rgba(155, 92, 224, 0.55) 62%, rgba(155, 92, 224, 0) 78%);
+  animation: ms-hale 1.6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes ms-hale {
+  from { opacity: 0.5; transform: scale(0.93); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+/* çevresinde dönen yıldızlar */
+.ms-kok .ms-yorunge {
+  position: absolute;
+  inset: -9%;
+  pointer-events: none;
+  animation: ms-don 9s linear infinite;
+}
+@keyframes ms-don {
+  to { transform: rotate(360deg); }
+}
+.ms-kok .ms-yorunge i,
+.ms-kok .ms-kose-yildiz i,
+.ms-kok .ms-akis i {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  margin: -12px;
+  background: #ffd84d;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+.ms-kok .ms-yorunge i {
+  animation: ms-pirilti 1.2s ease-in-out infinite alternate;
+}
+.ms-kok .ms-yorunge i:nth-child(1) { left: 50%; top: 0; }
+.ms-kok .ms-yorunge i:nth-child(2) { left: 97.5%; top: 34.5%; background: #fff; animation-delay: -0.3s; }
+.ms-kok .ms-yorunge i:nth-child(3) { left: 79%; top: 90.5%; background: #c9a6ff; animation-delay: -0.6s; }
+.ms-kok .ms-yorunge i:nth-child(4) { left: 21%; top: 90.5%; background: #ff9bd0; animation-delay: -0.9s; }
+.ms-kok .ms-yorunge i:nth-child(5) { left: 2.5%; top: 34.5%; background: #8fe3ff; animation-delay: -0.15s; }
+@keyframes ms-pirilti {
+  from { transform: scale(0.45) rotate(0deg); opacity: 0.5; }
+  to { transform: scale(1.15) rotate(45deg); opacity: 1; }
+}
+/* değnekten çerçeveye akan yıldız tozu */
+.ms-kok .ms-akis {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: visible;
+}
+.ms-kok .ms-akis i {
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  margin: -8px;
+  opacity: 0;
+}
+.ms-kok .ms-sihir-mino {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 5;
+  width: clamp(120px, 23vh, 220px);
+}
+.ms-kok .ms-sihir.hata .ms-cerceve-kutu {
+  width: min(64vw, 40vh, 380px);
+}
+.ms-kok .ms-sihir.hata .ms-sihir-mino {
+  width: clamp(84px, 13vh, 140px);
+  left: -2%;
+}
+.ms-kok .ms-sihir-sahne.mino-hazir .ms-asa {
+  display: none;
+}
+/* sihir olmadı: çocuğun kendi resmi sihirli altın çerçevede */
+.ms-kok .ms-cerceve-kutu.sihirli .ms-sihir-cerceve {
+  animation: none;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 6px #fff8e6,
+    0 0 0 16px #f2c14e,
+    0 0 0 20px var(--kontur),
+    0 18px 30px rgba(90, 54, 23, 0.3);
+}
+.ms-kok .ms-cerceve-kutu.sihirli .ms-hale {
+  animation-duration: 2.6s;
+}
+.ms-kok .ms-cerceve-kutu.sihirli .ms-yorunge {
+  animation-duration: 16s;
+}
+.ms-kok .ms-kose-yildiz {
+  position: absolute;
+  inset: -6%;
+  pointer-events: none;
+}
+.ms-kok .ms-kose-yildiz i {
+  width: 34px;
+  height: 34px;
+  margin: -17px;
+  animation: ms-pirilti 0.9s ease-in-out infinite alternate;
+}
+.ms-kok .ms-kose-yildiz i:nth-child(1) { left: 0; top: 0; }
+.ms-kok .ms-kose-yildiz i:nth-child(2) { left: 100%; top: 0; background: #fff; animation-delay: -0.3s; }
+.ms-kok .ms-kose-yildiz i:nth-child(3) { left: 100%; top: 100%; animation-delay: -0.5s; }
+.ms-kok .ms-kose-yildiz i:nth-child(4) { left: 0; top: 100%; background: #fff; animation-delay: -0.7s; }
+.ms-kok .ms-sihir-yazi small {
+  display: block;
+  font-size: 0.72em;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+.ms-kok .ms-hata-dugmeler {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.ms-kok .ms-hata-dugmeler .ikon {
+  font-size: 28px;
 }
 .ms-kok .ms-sihir-cerceve::after {
   /* ışık süpürmesi */
@@ -328,7 +481,6 @@
   font-size: clamp(1.4rem, 6vw, 2rem);
   padding: 12px 0 24px;
 }
-.ms-kok .ms-sihir.hata .ms-sihir-cerceve,
 .ms-kok .ms-sihir.hata .ms-asa {
   animation: none;
 }
@@ -352,12 +504,74 @@
   align-items: center;
   gap: 16px;
 }
+.ms-kok .ms-sonuc-sahne {
+  position: relative;
+  margin: auto 0;
+}
+.ms-kok .ms-sonuc-mino {
+  position: absolute;
+  left: -4%;
+  bottom: -7%;
+  z-index: 4;
+  width: 25%;
+  max-width: 150px;
+}
+/* açılış perdesi: kadife perde iki yana toplanır, sahne ışığı süzülür */
+.ms-kok .ms-perde {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.ms-kok .ms-perde i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 51%;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 88%, #f2c14e 88%, #f2c14e 92%, #b8860b 92%, #b8860b 93%, transparent 93%),
+    repeating-linear-gradient(90deg, #9a0f22 0, #d62a3f 9%, #b3152b 15%, #8c0c1e 20%);
+  transition: transform 1.1s cubic-bezier(0.65, 0, 0.25, 1);
+}
+.ms-kok .ms-perde-sol {
+  left: 0;
+  transform-origin: 0 0;
+  box-shadow: inset -10px 0 14px rgba(60, 0, 10, 0.45);
+}
+.ms-kok .ms-perde-sag {
+  right: 0;
+  transform-origin: 100% 0;
+  box-shadow: inset 10px 0 14px rgba(60, 0, 10, 0.45);
+}
+.ms-kok .perde-acik .ms-perde-sol,
+.ms-kok .perde-acik .ms-perde-sag {
+  transform: scaleX(0.12);
+}
+.ms-kok .ms-spot {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: -20%;
+  bottom: -10%;
+  background: radial-gradient(50% 60% at 50% 55%, rgba(255, 250, 220, 0.9), rgba(255, 250, 220, 0) 70%);
+  opacity: 0;
+}
+.ms-kok .perde-acik .ms-spot {
+  animation: ms-spot 1.15s ease-out both;
+}
+@keyframes ms-spot {
+  0% { opacity: 0; transform: scale(0.6); }
+  45% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+.ms-kok .ms-karsilastir.supur .ms-k-cizgi {
+  box-shadow: 0 0 22px 8px rgba(255, 216, 77, 0.9);
+}
 .ms-kok .ms-karsilastir {
   --k: 50%;
   position: relative;
   width: min(92vw, 58vh, 560px);
   aspect-ratio: 1;
-  margin: auto 0;
   border-radius: 32px;
   background: #fff;
   border: var(--cizgi) solid var(--kontur);

@@ -16,11 +16,18 @@ import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } fr
 import { kartPaylas, kartYap, tekrarOynat } from './kart';
 import { resimSesi, resimSesiHazirla } from './ses';
 import { SUS } from './susler';
+import { SAHNE_RESIM, sahne } from './sahne';
+import { muzeSayisi, muzeyeAs } from './muze';
+import { yoldasYuvasi } from '../../src/mino/cizim-yoldas-yuva';
+import { azHareket } from '../../src/ui/hareket';
+import { fircaParilti } from '../../sanatci/src/parilti';
 
 const S = canlan as unknown as {
   hosgeldin: string; sec: string; mod: Record<Mod, string>; mod_ad: Record<Mod, string>; simdi: string; sayac: string[];
   yildiz: Record<string, string>; canlaniyor: string; eksik: string; tekrar: string; bos: string; boya: string; benim: Record<string, string>;
 };
+/** Tam animasyon (test modunda ve az harekette sade) */
+const tamHareket = () => !TEST_MODU && !azHareket();
 const NS = 'http://www.w3.org/2000/svg';
 const sv = <K extends keyof SVGElementTagNameMap>(ad: K, a: Record<string, string | number> = {}) => {
   const e = document.createElementNS(NS, ad);
@@ -46,7 +53,6 @@ function logo(): HTMLElement {
   return h('div.cc-logo', { role: 'img', 'aria-label': 'Çiz Canlansın' }, kelime('Çiz', 0), kelime('Canlansın', 3));
 }
 
-const SAHNE_RESIM = import.meta.glob<string>('../../assets/sahne/*.webp', { eager: true, query: '?url', import: 'default' });
 /** Sihirli hâl: her resmin kitap illüstrasyonu (Recraft) */
 const GERCEK_RESIM = import.meta.glob<string>('../../assets/canlan/*.webp', { eager: true, query: '?url', import: 'default' });
 /** İllüstrasyonu sola bakan resimler (sahnede aynalanır) */
@@ -81,44 +87,6 @@ function tonFarki(hedef: string, kaynak: string): number {
   if (f > 180) f -= 360;
   if (f < -180) f += 360;
   return Math.abs(f) < 12 ? 0 : f;
-}
-
-/** Kâğıt tanesi (bir kez üretilir): sahnenin üstünde çok hafif, pastel resim hissi verir. */
-let kagitUrl = '';
-function kagitDokusu(): string {
-  if (kagitUrl) return kagitUrl;
-  try {
-    const c = document.createElement('canvas');
-    c.width = c.height = 160;
-    const x = c.getContext('2d')!;
-    const img = x.createImageData(160, 160);
-    for (let i = 0; i < 160 * 160; i++) {
-      const v = 200 + Math.random() * 55;
-      img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v;
-      img.data[i * 4 + 3] = 255;
-    }
-    x.putImageData(img, 0, 0);
-    kagitUrl = c.toDataURL('image/png');
-  } catch {
-    kagitUrl = 'data:,';
-  }
-  return kagitUrl;
-}
-
-/** Sahne (deniz, gök, çayır…): kitap kalitesinde arka plan resmi + hareketli süsler. */
-function sahne(r: Resim): HTMLElement {
-  const s = h(`div.cc-sahne.sahne-${r.sahne}`);
-  s.style.setProperty('--kagit', `url("${kagitDokusu()}")`);
-  const url = SAHNE_RESIM[`../../assets/sahne/${r.sahne}.webp`];
-  if (url) {
-    s.classList.add('resimli');
-    s.style.setProperty('--sahne', `url("${url}")`);
-  }
-  const sus = h('div.cc-sahne-sus', { 'aria-hidden': 'true' });
-  const adet = { deniz: 7, okyanus: 0, gok: 3, cayir: 4, gece: 12, yol: 3, kar: 14 }[r.sahne];
-  for (let i = 0; i < adet; i++) sus.append(h('i', { style: `--i:${i};--x:${(i * 37) % 100};--y:${(i * 53) % 100}` }));
-  s.append(sus);
-  return s;
 }
 
 /** Çizimin titrek el ile yapılmış hâli (açılıştaki vitrin için). */
@@ -174,17 +142,42 @@ export function listeEkrani(app: Uygulama): Ekran {
   const izgara = h('div.cc-izgara');
   const modlar = h('div.cc-modlar', { role: 'radiogroup', 'aria-label': 'Nasıl çizelim?' });
 
+  let gidiyor = false;
+  /** Seçilen kart öne çıkar, diğerleri geri çekilir; sonra çizime geçilir. */
+  function sec(b: HTMLElement, git: () => void) {
+    if (gidiyor) return;
+    gidiyor = true;
+    efekt.secim();
+    b.classList.add('secildi');
+    izgara.classList.add('secim-var');
+    window.setTimeout(git, tamHareket() ? 280 : 0);
+  }
+  /** Dokunma hissi: basınca ezilir, bırakınca yaylanır (yalnız transform) */
+  function dokunmaHissi(b: HTMLElement) {
+    b.addEventListener('pointerdown', () => b.classList.add('basili'));
+    for (const o of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(o, () => b.classList.remove('basili'));
+  }
   function kartlar() {
     izgara.replaceChildren();
+    // Müzem: canlandırılan resimlerin asıldığı duvar
+    const sayi = muzeSayisi();
+    const muze = h(
+      'button.cc-muze-karti',
+      { type: 'button', 'aria-label': 'Müzem', style: '--i:0' },
+      h('span.cc-muze-karti-cerceve', {}, h('span.cc-mini-tablo', {}, h('i'))),
+      h('span.cc-resim-ad', {}, 'Müzem'),
+      sayi ? h('span.cc-muze-sayi', {}, String(sayi)) : null,
+    );
+    dokunmaHissi(muze);
+    muze.addEventListener('click', () => sec(muze, () => app.git('muze')));
+    izgara.append(muze);
     SIRALI.forEach((r, i) => {
       const y = enIyi(mod, r.id);
       const yildizlar = h('div.cc-kart-yildiz', { 'aria-label': `${y} yıldız` });
       for (let k = 0; k < 3; k++) yildizlar.append(h(`i${k < y ? '.dolu' : ''}`, { html: IKON.yildiz }));
-      const b = h('button.cc-resim', { type: 'button', 'aria-label': r.ad, 'data-resim': r.id, style: `--i:${i};--r:${r.renk}` }, GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`] ? h('img.cc-resim-gorsel', { src: GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`], alt: '', loading: 'lazy' }) : sablonSvg(r, { kalinlik: 0.03, tur: 'sus' }), h('span.cc-resim-ad', {}, r.ad), yildizlar);
-      b.addEventListener('click', () => {
-        efekt.secim();
-        app.git('ciz', { id: r.id, mod });
-      });
+      const b = h('button.cc-resim', { type: 'button', 'aria-label': r.ad, 'data-resim': r.id, style: `--i:${i + 1};--r:${r.renk};--egim:${((i * 5) % 7) - 3}deg` }, GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`] ? h('img.cc-resim-gorsel', { src: GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`], alt: '', loading: 'lazy' }) : sablonSvg(r, { kalinlik: 0.03, tur: 'sus' }), h('span.cc-resim-ad', {}, r.ad), yildizlar);
+      dokunmaHissi(b);
+      b.addEventListener('click', () => sec(b, () => app.git('ciz', { id: r.id, mod })));
       izgara.append(b);
     });
   }
@@ -233,10 +226,18 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   const alt = sv('svg', { viewBox: '0 0 1 1', class: 'cc-alt-katman', 'aria-hidden': 'true' });
   const ust = sv('svg', { viewBox: '0 0 1 1', class: 'cc-ust-katman', 'aria-hidden': 'true' });
   const kagit = h('div.cc-kagit', { 'data-mod': mod }, alt, tuval.el, ust);
-  const alan = h('div.cc-alan', {}, kagit);
+  // Mino kâğıdın yanında durur, fırçayı gözüyle izler
+  const yuva = yoldasYuvasi('cc-ciz-mino');
+  const alan = h('div.cc-alan.mino-var', {}, kagit, yuva.el);
   let kapandi = false;
   let bitiyor = false;
   const kapanis: (() => void)[] = [];
+  const parilti = fircaParilti(kagit, tuval.el, { renk: () => tuval.renk, izle: (x) => yuva.yap((y) => y.izle(x)) });
+  kapanis.push(() => {
+    parilti.kapat();
+    yuva.kapat();
+  });
+  let cizgiSayisi = 0;
   const tol = AYAR.tolerans[mod] * (AYAR.yas_carpani[String(yas())] ?? 1);
 
   // --- Renkler
@@ -348,7 +349,10 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
     const bos = tuval.bosMu();
     bitti.disabled = bos;
     bitti.classList.toggle('hazir', !bos);
+    // her üç çizgide bir Mino başını sallar ("güzel gidiyor")
+    if (!bos && ++cizgiSayisi % 3 === 0) yuva.yap((y) => y.onayla());
     if (!bos && tamamMi() && !bitiyor) {
+      yuva.yap((y) => y.sevin());
       bitiyor = true;
       setTimeout(() => !kapandi && bitir(), sure(650));
     }
@@ -362,6 +366,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
       return;
     }
     efekt.secim();
+    yuva.yap((y) => y.sevin());
     app.git('sonuc', { id: r.id, mod, cizgiler: tuval.cizgiler.filter((c) => !c.silgi), hata: hata ?? nokta?.hata });
   }
 
@@ -461,10 +466,14 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   const ana = [...p.cizgiler].sort((a, b) => b.noktalar.length - a.noktalar.length)[0];
   // Çocuğun çizgisi toparlanır: onun çizgisi ama kitaptaki gibi temiz
   const guzel = toparla(r, p.cizgiler.map((c) => c.noktalar), sonuc.donusum);
-  const canli = canliCizim(r, parcalaraBol(r, guzel, sonuc.donusum), sonuc.donusum, { kalinlik: ana?.kalinlik ?? 0.025, renk: ana?.renk ?? r.renk });
+  const parcalar = parcalaraBol(r, guzel, sonuc.donusum);
+  const cizimAyar = { kalinlik: ana?.kalinlik ?? 0.025, renk: ana?.renk ?? r.renk };
+  const canli = canliCizim(r, parcalar, sonuc.donusum, cizimAyar);
   const sh = sahne(r);
   sh.append(canli.el);
-  const kutu = h('div.cc-sonuc-kutu', {}, sh);
+  // Mino sahnenin köşesinde: yıldızlara sevinir, canlanan resme şaşırıp dans eder
+  const yuva = yoldasYuvasi('cc-sonuc-mino');
+  const kutu = h('div.cc-sonuc-kutu', {}, sh, yuva.el);
   const cizgiler = guzel.map((n, i) => ({ n, kalinlik: p.cizgiler[i].kalinlik }));
 
   const yildizlar = h('div.cc-yildizlar', { 'aria-label': `${sonuc.yildiz} yıldız`, 'data-yildiz': sonuc.yildiz });
@@ -496,6 +505,9 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     }
   }, 'kucuk cc-kart');
   kart.hidden = true;
+  // Canlanan resim müzeye asılır; düğme o an belirir
+  const muzeD = yuvarlakDugme(IKON.resim, 'Müzem', () => app.git('muze'), 'kucuk cc-muze-dugme');
+  muzeD.hidden = true;
   // Sihirli hâl: çizim, çocuğun boyasıyla renklenen kitap illüstrasyonuna dönüşür (tekrar dokununca geri döner)
   const gercekUrl = GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`];
   let gercekte = false;
@@ -519,7 +531,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     konfetiPatlat(app.kok, k.left + k.width / 2, k.top + k.height / 2, 40, 0.5);
   }, 'kucuk cc-sihir-dugme');
   sihirDugme.hidden = true;
-  const dugmeler = h('div.cc-sonuc-dugmeler', {}, h('div.ust-grup', {}, nasil, sihirDugme, kart), tamamla, tekrar, ileri);
+  const dugmeler = h('div.cc-sonuc-dugmeler', {}, h('div.ust-grup', {}, nasil, sihirDugme, kart, muzeD), tamamla, tekrar, ileri);
 
   // --- Boyama
   const boyalar: Boya[] = [];
@@ -568,6 +580,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
       sonDokunus = simdi;
       canli.dokun();
       void resimSesi(r.id);
+      if (Math.random() < 0.5) yuva.yap((y) => y.sevin());
       return;
     }
     if (!boyuyor) return;
@@ -586,13 +599,16 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   let bitirBoya: () => void = () => undefined;
   void (async () => {
     await bekle(sure(350));
+    // Yıldız ödülü: her yıldız resmin ortasından tek tek uçup yerine konar, Mino sevinir
     const kutular = [...yildizlar.children] as HTMLElement[];
     for (let i = 0; i < sonuc.yildiz && !kapandi; i++) {
-      kutular[i].classList.add('dolu');
-      efekt.yildiz(i);
-      await bekle(sure(380));
+      await yildizUcur(app.kok, sh, kutular[i], i);
+      if (kapandi) return;
+      yuva.yap((y) => (i === 2 ? y.dans() : y.sevin()));
+      await bekle(sure(tamHareket() ? 120 : 380));
     }
     if (kapandi) return;
+    if (!sonuc.yildiz || !canlanirMi(sonuc.yildiz)) yuva.yap((y) => y.nazik());
     const canlanir = canlanirMi(sonuc.yildiz);
     if (!canlanir) {
       dugmeler.hidden = false;
@@ -627,6 +643,9 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
       boyalar.push(...oto);
       new Set(oto.map((b) => b.parca)).forEach(parcaCiz);
     }
+    // Sinematik canlanma: Mino şaşırır, kâğıt iki yana açılır, ortadan ışık hüzmesi, kamera sahneye yaklaşır
+    yuva.yap((y) => y.sasir());
+    sinematikAcilis(sh, canli.el);
     sh.classList.add('canli');
     canli.susGoster();
     canli.baslat();
@@ -637,6 +656,11 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     efekt.kilitAcildi();
     const k = kutu.getBoundingClientRect();
     konfetiPatlat(app.kok, k.left + k.width / 2, k.top + k.height / 2, sonuc.yildiz === 3 ? 110 : 45, sonuc.yildiz === 3 ? 1 : 0.6);
+    window.setTimeout(() => !kapandi && yuva.yap((y) => y.dans()), sure(1200));
+    // müzeye as (yalnız bu cihazda)
+    muzeyeAs({ resim: r.id, mod: p.mod, yildiz: sonuc.yildiz, donusum: sonuc.donusum, kalinlik: cizimAyar.kalinlik, renk: cizimAyar.renk, parcalar, boyalar });
+    muzeD.hidden = false;
+    muzeD.classList.add('yeni');
     await konus(S.canlaniyor);
     if (kapandi) return;
     if (sonuc.eksik.length) {
@@ -661,6 +685,57 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
       kapandi = true;
       bitirBoya();
       canli.durdur();
+      yuva.kapat();
     },
   };
+}
+
+/** Bir yıldız sahnenin ortasından kavis çizerek üst çubuktaki yerine uçar; varınca dolar ve halka yayar. */
+async function yildizUcur(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElement, sira: number) {
+  if (!tamHareket()) {
+    hedef.classList.add('dolu');
+    efekt.yildiz(sira);
+    return;
+  }
+  const a = kaynak.getBoundingClientRect();
+  const b = hedef.getBoundingClientRect();
+  const boy = b.width;
+  const ucan = h('div.cc-ucan-yildiz', { html: IKON.yildiz, 'aria-hidden': 'true', style: `width:${boy}px;height:${boy}px` });
+  kok.append(ucan);
+  const x0 = a.left + a.width / 2 - boy / 2;
+  const y0 = a.top + a.height * 0.45 - boy / 2;
+  const x1 = b.left;
+  const y1 = b.top;
+  const tepe = Math.min(y0, y1) - 70;
+  efekt.dagit();
+  const anim = ucan.animate(
+    [
+      { transform: `translate(${x0}px, ${y0}px) scale(0.2) rotate(-90deg)`, opacity: 0 },
+      { transform: `translate(${x0}px, ${y0 - 30}px) scale(1.7) rotate(0deg)`, opacity: 1, offset: 0.25 },
+      { transform: `translate(${(x0 + x1) / 2 + (sira - 1) * 40}px, ${tepe}px) scale(1.35) rotate(200deg)`, opacity: 1, offset: 0.62 },
+      { transform: `translate(${x1}px, ${y1}px) scale(1) rotate(360deg)`, opacity: 1 },
+    ],
+    { duration: 720, easing: 'cubic-bezier(0.45, 0, 0.3, 1)', fill: 'forwards' },
+  );
+  await anim.finished.catch(() => undefined);
+  ucan.remove();
+  hedef.classList.add('dolu', 'patla');
+  efekt.yildiz(sira);
+}
+
+/** Canlanma anı: kâğıt açılırken ışık hüzmesi, arka plan ve çizim farklı hızda yaklaşır (derinlik). */
+function sinematikAcilis(sh: HTMLElement, cizim: SVGSVGElement) {
+  if (!tamHareket()) return;
+  sh.classList.add('isik-patla');
+  const arka = sh.querySelector<HTMLElement>('.cc-sahne-arka');
+  arka?.animate([{ transform: 'scale(1.22)' }, { transform: 'scale(1.06)', offset: 0.55 }, { transform: 'scale(1)' }], { duration: 2200, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' });
+  cizim.animate(
+    [
+      { transform: 'scale(0.82) translateY(3%)' },
+      { transform: 'scale(1.07) translateY(-1%)', offset: 0.55 },
+      { transform: 'none' },
+    ],
+    { duration: 1500, easing: 'cubic-bezier(0.3, 0.9, 0.3, 1)' },
+  );
+  sh.animate([{ transform: 'scale(0.97)' }, { transform: 'scale(1.025)', offset: 0.45 }, { transform: 'none' }], { duration: 1100, easing: 'ease-out' });
 }

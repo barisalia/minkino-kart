@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { copyFileSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { hataTopla } from './yardimci';
 
@@ -58,6 +58,117 @@ test('Minik Sanatçı: çiz → ne çizdin → ebeveyn onayı → sihir → sonu
   await expect(page.locator('.ms-eser')).toHaveCount(4); // 1 yeni + 3 örnek
   await page.screenshot({ path: `tests/screens/${p}-26-sanatci-galeri.png` });
   expect(hatalar).toEqual([]);
+});
+
+test('Minik Sanatçı: kota dolu — nazik mesaj, çizim sihirli çerçevede, takılma yok', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  // 429 tarayıcı konsoluna "kaynak yüklenemedi" yazar: beklenen durum, hata sayılmaz
+  page.on('console', () => undefined);
+  await page.route('**/sanatci/ayar.json', (r) => r.fulfill({ json: { sunucu: 'https://sahte-sihir.test' } }));
+  let bekle = true;
+  await page.route('https://sahte-sihir.test/sihir', async (r) => {
+    // sihir beklerken Mino değnekle büyü yapar
+    while (bekle) await new Promise((c) => setTimeout(c, 50));
+    await r.fulfill({ status: 429, json: { hata: 'kota' }, headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
+  await page.goto('./sanatci/?test=1');
+  await page.getByRole('button', { name: 'Çiz' }).click();
+  await expect(page.locator('.ms-ciz-mino .mino')).toBeAttached();
+  const r = (await page.locator('.ms-tuval').boundingBox())!;
+  await page.mouse.move(r.x + 60, r.y + 80);
+  await page.mouse.down();
+  for (let i = 1; i <= 12; i++) await page.mouse.move(r.x + 60 + i * 18, r.y + 80 + Math.sin(i) * 40);
+  await page.mouse.up();
+  await expect(page.locator('.fp-katman')).toBeAttached();
+  await page.getByRole('button', { name: 'Sihir yap' }).click();
+  await page.locator('[data-konu="kedi"]').click();
+  await expect(page.locator('.ms-sihir-mino .cy-yoldas.buyu')).toBeAttached();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-23-sanatci-sihir-bekleme.png` });
+  bekle = false;
+  await expect(page.locator('.ms-cerceve-kutu.sihirli')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('.ms-sihir-cizim')).toBeVisible();
+  await expect(page.locator('.ms-sihir-yazi')).toContainText('dinleniyor');
+  await expect(page.locator('.ms-sihir-mino .cy-yoldas.buyu')).toHaveCount(0);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-23b-sanatci-kota.png` });
+  await page.getByRole('button', { name: 'Yeni resim' }).click();
+  await expect(page.locator('.ms-tuval')).toBeVisible();
+  expect(hatalar.filter((h) => !h.includes('429'))).toEqual([]);
+});
+
+test('Minik Sanatçı: cila videosu (gerçek hız)', async ({ browser }, info) => {
+  test.skip(!process.env.CILA_VIDEO || info.project.name !== 'iphone', 'video yalnız CILA_VIDEO=1 ile (telefon)');
+  test.setTimeout(240_000);
+  const vp = info.project.use.viewport ?? { width: 390, height: 844 };
+  const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: 'tr-TR', baseURL: info.project.use.baseURL, recordVideo: { dir: 'test-results/video-sanatci', size: vp } });
+  const page = await ctx.newPage();
+  const hatalar = hataTopla(page);
+  page.on('console', () => undefined);
+  await page.route('**/sanatci/ayar.json', (r) => r.fulfill({ json: { sunucu: 'https://sahte-sihir.test' } }));
+  let kota = false;
+  await page.route('https://sahte-sihir.test/sihir', async (r) => {
+    // sihir biraz sürer: Mino değnekle büyü yapar
+    await new Promise((c) => setTimeout(c, kota ? 3000 : 5000));
+    if (kota) await r.fulfill({ status: 429, json: { hata: 'kota' }, headers: { 'Access-Control-Allow-Origin': '*' } });
+    else await r.fulfill({ json: { resim: SONUC, mime: 'image/webp' }, headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
+  await page.goto('./sanatci/');
+  await page.waitForTimeout(1200);
+  await page.getByRole('button', { name: 'Çiz' }).click({ force: true });
+  await page.waitForTimeout(1000);
+  const r = (await page.locator('.ms-tuval').boundingBox())!;
+  const cember = async (cx: number, cy: number, rad: number, n = 36) => {
+    await page.mouse.move(r.x + cx + rad, r.y + cy);
+    await page.mouse.down();
+    for (let i = 1; i <= n; i++) {
+      await page.mouse.move(r.x + cx + Math.cos((i / n) * Math.PI * 2) * rad, r.y + cy + Math.sin((i / n) * Math.PI * 2) * rad);
+      await page.waitForTimeout(16);
+    }
+    await page.mouse.up();
+  };
+  // kedi yüzü: kafa, kulaklar, gözler
+  await page.locator('[data-renk="#FF8A2B"]').click({ force: true });
+  await cember(r.width / 2, r.height / 2, r.width * 0.26);
+  await page.locator('[data-renk="#2B2B2B"]').click({ force: true });
+  await cember(r.width * 0.42, r.height * 0.46, 12, 16);
+  await cember(r.width * 0.58, r.height * 0.46, 12, 16);
+  // sağ alt köşeye doğru uzun çizgi: Mino yol verir
+  await page.mouse.move(r.x + r.width * 0.5, r.y + r.height * 0.75);
+  await page.mouse.down();
+  for (let i = 1; i <= 30; i++) {
+    await page.mouse.move(r.x + r.width * (0.5 + i * 0.015), r.y + r.height * (0.75 + i * 0.007));
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
+  await page.waitForTimeout(2200);
+  await page.getByRole('button', { name: 'Sihir yap' }).click({ force: true });
+  await page.waitForTimeout(900);
+  await page.locator('[data-konu="kedi"]').click({ force: true });
+  // sihir bekleme + perde + süpürme + konfeti
+  await expect(page.locator('.ms-karsilastir')).toBeVisible({ timeout: 20000 });
+  await page.waitForTimeout(5500);
+  // kota dolu: nazik son (sihirli çerçeve)
+  kota = true;
+  await page.getByRole('button', { name: 'Yeni çizim' }).click({ force: true });
+  await page.waitForTimeout(600);
+  const r2 = (await page.locator('.ms-tuval').boundingBox())!;
+  await page.mouse.move(r2.x + r2.width * 0.3, r2.y + r2.height * 0.5);
+  await page.mouse.down();
+  for (let i = 1; i <= 30; i++) {
+    await page.mouse.move(r2.x + r2.width * (0.3 + i * 0.013), r2.y + r2.height * (0.5 + Math.sin(i / 3) * 0.12));
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
+  await page.getByRole('button', { name: 'Sihir yap' }).click({ force: true });
+  await page.waitForTimeout(600);
+  await page.locator('[data-konu="surpriz"]').click({ force: true });
+  await expect(page.locator('.ms-cerceve-kutu.sihirli')).toBeVisible({ timeout: 20000 });
+  await page.waitForTimeout(3000);
+  const video = page.video();
+  await ctx.close();
+  if (video) copyFileSync(await video.path(), 'tests/screens/sanatci-cila.webm');
+  expect(hatalar.filter((h) => !h.includes('429'))).toEqual([]);
 });
 
 test('Minik Sanatçı: sunucu yokken dostça uyarı', async ({ page }) => {

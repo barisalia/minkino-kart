@@ -1,0 +1,62 @@
+/* Çizim yoldaşı Mino (Çiz Canlansın, Minik Sanatçı): yalnız transform / opacity */
+.mk-kok .cy-yuva {
+  pointer-events: none;
+}
+.mk-kok .cy-yuva > .cy-yoldas {
+  animation: cy-gir 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  transform-origin: 50% 100%;
+}
+@keyframes cy-gir {
+  from { opacity: 0; transform: translateY(30%) scale(0.7); }
+}
+.mk-kok .cy-yoldas {
+  position: relative;
+  width: 100%;
+}
+.mk-kok .cy-yoldas.dokunulur .mino {
+  pointer-events: auto;
+}
+/* Değnek: yalnız büyüde görünür, patiden döner */
+.mk-kok .mino .cy-asa {
+  transform-origin: 1286px 1548px;
+  transform: rotate(-35deg) scale(0.3);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1), opacity 0.2s;
+}
+.mk-kok .cy-yoldas.buyu .mino .cy-asa {
+  opacity: 1;
+  transform: none;
+  animation: cy-asa 0.9s ease-in-out infinite alternate;
+}
+@keyframes cy-asa {
+  from { transform: rotate(-16deg); }
+  to { transform: rotate(20deg); }
+}
+.mk-kok .mino .cy-asa-yildiz {
+  transform-origin: 1700px 1060px;
+}
+/* yıldızın çevresinde atan ışık */
+.mk-kok .mino .cy-asa-isik {
+  transform-origin: 1700px 1060px;
+  opacity: 0;
+}
+.mk-kok .cy-yoldas.buyu .mino .cy-asa-isik {
+  animation: cy-isik 0.6s ease-in-out infinite alternate;
+}
+@keyframes cy-isik {
+  from { opacity: 0.15; transform: scale(0.55); }
+  to { opacity: 0.6; transform: scale(1); }
+}
+.mk-kok .cy-yoldas.buyu .mino .cy-asa-yildiz {
+  animation: cy-yildiz 0.6s ease-in-out infinite alternate;
+}
+@keyframes cy-yildiz {
+  from { transform: scale(0.9) rotate(-8deg); }
+  to { transform: scale(1.12) rotate(10deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .cy-yoldas.buyu .mino .cy-asa,
+  .mk-kok .cy-yoldas.buyu .mino .cy-asa-yildiz {
+    animation: none;
+  }
+}

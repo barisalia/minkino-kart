@@ -1,0 +1,263 @@
+/* Çiz Canlansın — Mino yerleri ve Müzem (yan dal). Yalnız transform / opacity animasyonu. */
+
+/* ---------- Mino (çizim yoldaşı) ---------- */
+.cc-kok .cc-alan {
+  position: relative;
+}
+/* Mino'ya kâğıdın altında yer açılır (kâğıt küçülür, çizim alanının üstüne binmez) */
+.cc-kok .cc-alan.mino-var {
+  padding-bottom: clamp(96px, 15vh, 150px);
+}
+.cc-kok .cc-ciz-mino {
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  z-index: 4;
+  width: clamp(78px, 11.5vh, 116px);
+}
+@media (min-aspect-ratio: 1/1) {
+  .cc-kok .cc-alan.mino-var {
+    padding-bottom: 0;
+    padding-left: clamp(84px, 13vw, 150px);
+  }
+}
+.cc-kok .cc-sonuc-kutu {
+  position: relative;
+}
+.cc-kok .cc-sonuc-mino {
+  position: absolute;
+  z-index: 5;
+  width: calc(min(100cqw, 100cqh) * 0.23);
+  max-width: 150px;
+  left: calc(50cqw - min(50cqw, 50cqh) - 6px);
+  bottom: calc(50cqh - min(50cqw, 50cqh) - 10px);
+}
+.cc-kok .cc-muze-dugme {
+  --r: #f2c14e;
+}
+.cc-kok .cc-muze-dugme.yeni {
+  animation: cc-muze-yeni 0.6s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+}
+@keyframes cc-muze-yeni {
+  from { transform: scale(0) rotate(-40deg); }
+}
+
+/* ---------- Müzem ---------- */
+.cc-kok .cc-muze {
+  gap: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 30%),
+    repeating-linear-gradient(90deg, #f7e6c9 0 30px, #f3ddb9 30px 60px);
+}
+.cc-kok .cc-muze::before {
+  /* lambri (alt tahta) */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 17%;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, #8b5a2b 0 8px, #c98f55 8px 12px, transparent 12px),
+    repeating-linear-gradient(90deg, #b87a45 0 2px, #c48851 2px 90px);
+  box-shadow: 0 -4px 0 rgba(90, 54, 23, 0.15);
+}
+.cc-kok .cc-muze .baslik-balon {
+  margin: 0;
+  font-size: clamp(1.1rem, 4.8vw, 1.6rem);
+}
+.cc-kok .cc-muze-duvar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 50px 22px;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 44px 12px 170px;
+}
+@media (min-width: 700px) {
+  .cc-kok .cc-muze-duvar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.cc-kok .cc-muze-cerceve {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--kontur);
+  font: inherit;
+  transform-origin: 50% -26px;
+  transform: rotate(var(--egim));
+  animation: cc-asil 1s cubic-bezier(0.3, 1.2, 0.5, 1) backwards;
+  animation-delay: calc(min(var(--i), 12) * 90ms);
+  transition: transform 0.3s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+/* asılırken iple sallanır */
+@keyframes cc-asil {
+  0% { opacity: 0; transform: translateY(-50px) rotate(calc(var(--egim) - 16deg)); }
+  40% { opacity: 1; transform: rotate(calc(var(--egim) + 8deg)); }
+  65% { transform: rotate(calc(var(--egim) - 4deg)); }
+  85% { transform: rotate(calc(var(--egim) + 1.5deg)); }
+  100% { transform: rotate(var(--egim)); }
+}
+.cc-kok .cc-muze-cerceve:active {
+  transform: rotate(var(--egim)) scale(0.95);
+  transition-duration: 0.08s;
+}
+.cc-kok .cc-muze-cerceve::before {
+  /* ip: çividen çerçevenin iki köşesine */
+  content: '';
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  margin-left: -23px;
+  border-left: 3px solid #7a4a22;
+  border-top: 3px solid #7a4a22;
+  transform: rotate(45deg);
+}
+.cc-kok .cc-muze-cerceve::after {
+  /* çivi */
+  content: '';
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3c4, #c99a3a 60%, #7a5a1a);
+  border: 2px solid var(--kontur);
+}
+.cc-kok .cc-cerceve-ic {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 9%;
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent 35%, transparent 65%, rgba(120, 70, 10, 0.25)),
+    linear-gradient(135deg, #ffe07a, #e0a82e 45%, #f7cd5a 55%, #c28418);
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 246, 210, 0.5),
+    inset 0 0 0 9px rgba(160, 100, 20, 0.3),
+    0 12px 20px rgba(90, 54, 23, 0.28);
+}
+/* tablo ışığı: çerçevenin çevresinde duvara düşen sıcak ışık */
+.cc-kok .cc-muze-cerceve:not(.bos) .cc-cerceve-ic {
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 246, 210, 0.5),
+    inset 0 0 0 9px rgba(160, 100, 20, 0.3),
+    0 12px 20px rgba(90, 54, 23, 0.28),
+    0 -10px 60px 26px rgba(255, 248, 215, 0.75);
+}
+.cc-kok .cc-cerceve-ic .cc-sahne {
+  width: 100%;
+  border-width: 3px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 5px #fff8e6;
+}
+.cc-kok .cc-muze-cerceve.bos .cc-cerceve-ic span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: #fff8e6;
+  border: 3px dashed rgba(90, 54, 23, 0.35);
+  font-size: clamp(2.4rem, 10vw, 3.6rem);
+  color: rgba(90, 54, 23, 0.35);
+}
+.cc-kok .cc-plaka {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  padding: 3px 12px 4px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f8dc8a, #d3a445);
+  border: 2px solid var(--kontur);
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  font-size: clamp(0.85rem, 3.4vw, 1.05rem);
+  line-height: 1.1;
+  max-width: 100%;
+}
+.cc-kok .cc-plaka b {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.cc-kok .cc-plaka-yildiz {
+  display: flex;
+  gap: 1px;
+}
+.cc-kok .cc-plaka-yildiz i {
+  width: 15px;
+  color: rgba(90, 54, 23, 0.25);
+}
+.cc-kok .cc-plaka-yildiz i.dolu {
+  color: #fff4b0;
+}
+.cc-kok .cc-plaka-yildiz svg {
+  display: block;
+  width: 100%;
+}
+.cc-kok .cc-muze-hadi {
+  grid-column: 1 / -1;
+  justify-self: center;
+  --r: var(--yesil);
+  font-size: 1.4rem;
+}
+.cc-kok .cc-muze-mino {
+  position: absolute;
+  left: 8px;
+  bottom: calc(var(--alt) + 2px);
+  z-index: 5;
+  width: clamp(84px, 13vh, 140px);
+}
+/* yakından bakış */
+.cc-kok .cc-muze-perde {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 45%, rgba(60, 36, 14, 0.4), rgba(30, 16, 4, 0.82));
+  animation: mk-perde 0.25s both;
+}
+.cc-kok .cc-muze-perde.kapaniyor {
+  animation: cc-perde-kapan 0.26s ease-in both;
+}
+@keyframes cc-perde-kapan {
+  to { opacity: 0; }
+}
+.cc-kok .cc-muze-sahne {
+  position: relative;
+  width: min(86vw, 62vh, 560px);
+}
+.cc-kok .cc-muze-buyuk .cc-cerceve-ic {
+  padding: 7%;
+}
+.cc-kok .cc-muze-buyuk .cc-sahne {
+  cursor: pointer;
+}
+.cc-kok .cc-muze-buyuk-mino {
+  position: absolute;
+  left: -5%;
+  bottom: -9%;
+  width: 27%;
+  z-index: 3;
+}
+.cc-kok .cc-muze-kapat {
+  position: absolute;
+  top: calc(var(--ust, 16px) + 4px);
+  right: 16px;
+}
