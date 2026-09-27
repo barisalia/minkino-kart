@@ -362,7 +362,12 @@ export class Film {
     this.katmanlar.tezgahlar.append(resim('arka-orta'));
     this.katmanlar.zemin.append(resim('arka-on'));
     // dikey / kare MP4 kadrajında dünyanın altı görünür: taş zemin aşağı doğru sürer
-    if (document.body.dataset.kadraj === 'dolu') this.katmanlar.zemin.append(h('img.fl-zemin-alt', { src: film('arka-on'), alt: '', draggable: 'false' }), h('img.fl-zemin-alt.fl-zemin-alt-2', { src: film('arka-on'), alt: '', draggable: 'false' }));
+    if (document.body.dataset.kadraj === 'dolu') {
+      // kasasız taş zemin uzantısı (scripts/film/zemin-uzanti.mjs): dikey ayna / düz / ayna dizilir, dikiş olmaz
+      const zemin = film('arka-zemin') || film('arka-on');
+      const bant = (ayna: boolean) => h(`img${ayna ? '.ayna' : ''}`, { src: zemin, alt: '', draggable: 'false' });
+      this.katmanlar.zemin.append(h('div.fl-zemin-alt', {}, bant(true), bant(false), bant(true)));
+    }
     if (this.tezgahVar) {
       const stand = new Nesne({ x: 50, y: 5, w: 62, z: 1 }, h('img.fl-esya-resim', { src: PAZAR_GORSEL['../../assets/pazar/tezgah.webp'] ?? '', alt: '', draggable: 'false' }), 1);
       stand.el.dataset.esya = 'stand';
