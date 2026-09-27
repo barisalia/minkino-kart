@@ -11,7 +11,8 @@ import fs from 'node:fs';
 import sharp from 'sharp';
 
 const KAYNAK = 'ekip/mino/mino-final.svg';
-const kaynak = fs.readFileSync(KAYNAK, 'utf8');
+// satır sonları LF'ye (Windows'ta CRLF çıkışlı checkout'ta da çıktı aynı kalsın)
+const kaynak = fs.readFileSync(KAYNAK, 'utf8').replace(/\r\n/g, '\n');
 
 /** Bir katmanın içi (en dıştaki <g id> etiketi hariç) */
 function katman(id) {
@@ -61,7 +62,15 @@ const IFADELER = [
   ifade('sersem', 'yanak-sersem', 'goz-sersem', 'agiz-sersem'),
   ifade('kararsiz', 'kas-kararsiz', 'agiz-kararsiz'),
   ifade('goz-kirp', 'goz-kirp'),
+  // Film 2 (Kino ve Elma Kulesi; IFADELER.md "Film 2 ekleri"): şaşkın (kule yıkılırken), odak (elmayı dizerken, dil
+  // ucu dışarıda), üzgün (yüz; kafası aşağıdaki IFADE_KAFA ile değişir)
+  ifade('saskin', 'goz-saskin', 'agiz-saskin'),
+  ifade('odak', 'goz-odak', 'agiz-dil'),
+  ifade('uzgun', 'goz-uzgun', 'agiz-uzgun'),
 ].join('\n');
+// Üzgün kafa (kulakları yana sarkık): burun eklerindeki kafa-hapsu gibi asıl kafanın yerine, k içinde asıl kafanın
+// hemen üstüne (göz / ağız eklerinin altında) konur; mino.ts → ifadeleriEkle(). Aynı tembel pakette.
+const IFADE_KAFA = `<g class="m-ifade m-uzgun m-ifade-kafa">${sade(katman('kafa-uzgun'))}</g>`;
 
 // Hâl ekleri (ekip/mino/IFADELER.md, "Hâl ekleri"): sırılsıklam ve pofuduk; asıl grubun yerine, aynı z-sırasında.
 // Asıl çizim <g class="m-asil" data-hal="…"> içinde, hâl çizimi yanındaki boş <g class="m-hal" data-yer="…"> yuvasına
@@ -128,8 +137,10 @@ ${AGIZ_SEKIL}<g class="m-ifadeler"></g>
 fs.writeFileSync('src/mino/mino-ifade-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.
 // Mino'nun film ifadeleri; mino.ts tembel yükler (import()).
 export const MINO_IFADE_SVG = ${JSON.stringify(IFADELER)};
+// Asıl kafanın yerine geçen ifade kafaları (üzgün): k içinde asıl kafanın hemen üstüne konur.
+export const MINO_IFADE_KAFA_SVG = ${JSON.stringify(IFADE_KAFA)};
 `);
-console.log('mino-ifade-svg.ts', Math.round(IFADELER.length / 1024), 'KB');
+console.log('mino-ifade-svg.ts', Math.round((IFADELER.length + IFADE_KAFA.length) / 1024), 'KB');
 // Hâl ekleri de ağır (tam vektör, ~170 KB): ayrı dosya, yalnız hal() ilk çağrılınca (banyo) tembel yüklenir
 fs.writeFileSync('src/mino/mino-hal-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.
 // Mino'nun hâlleri (sırılsıklam, pofuduk): yuva (q, g, kl, kr, k) → hâl grupları; mino.ts tembel yükler (import()).

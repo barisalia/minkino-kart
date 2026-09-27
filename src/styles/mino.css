@@ -270,6 +270,17 @@
 .mk-kok .mino.ifade-kararsiz .m-kapali-goz,
 .mk-kok .mino.ifade-kararsiz .m-mutlu-goz { opacity: 0 !important; }
 
+/* Film 2 ifadeleri (IFADELER.md "Film 2 ekleri"): üzgün, şaşkın, odak. Gözler, kod ağzı, kapalı / mutlu göz gizli;
+   üzgünde asıl kafa da gizlenir, yerine kulakları sarkık kafa (m-ifade-kafa) gelir (hapşu kafası gibi). */
+.mk-kok .mino.ifade-uzgun .m-uzgun,
+.mk-kok .mino.ifade-saskin .m-saskin,
+.mk-kok .mino.ifade-odak .m-odak { opacity: 1; }
+.mk-kok .mino:is(.ifade-uzgun, .ifade-saskin, .ifade-odak) :is(.m-goz, .m-kapali-goz, .m-mutlu-goz, .m-agiz, .m-agiz-sekil) { opacity: 0 !important; }
+.mk-kok .mino .m-ifade-kafa { display: none; }
+.mk-kok .mino.ifade-uzgun .m-ifade-kafa { display: inline; }
+.mk-kok .mino.ifade-uzgun .k > .m-asil,
+.mk-kok .mino.ifade-uzgun .k > .m-hal { display: none; }
+
 /* Burun ifadeleri (mino.ts → ifade: burun-kasinti, burun-tut, hapsu; ekler mino-burun-svg.ts'ten tembel gelir).
    Gözler, kod ağzı ve yanaklar !important ile gizli: göz kırpma / mutlu göz / konuşma ağzı ifadenin altından sızmaz. */
 .mk-kok .mino .m-burun-kollar { transform: var(--govde); }

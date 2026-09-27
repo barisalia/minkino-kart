@@ -131,4 +131,134 @@ export const FILM_EFEKT: Record<string, () => void> = {
   parilti() {
     [84, 88, 91].forEach((n, i) => ton(440 * Math.pow(2, (n - 69) / 12), i * 0.07, 0.4, 'sine', 0.1));
   },
+
+  // ---------------------------------------------------------------- Kino ve Elma Kulesi
+  /** elma yerine oturur: tahta üstünde küçük "tık" */
+  tik() {
+    ton(1650, 0, 0.06, 'sine', 0.22, 1100);
+    hisirti(0, 0.04, 3200, 2600, 0.12, 3);
+  },
+  /** kule dökülürken tatlı "tık-tık-tok" (ksilofon gibi, inen) */
+  tiktok() {
+    ksilofon(84, 0, 0.16);
+    ksilofon(79, 0.13, 0.16);
+    ksilofon(72, 0.3, 0.2);
+    ton(180, 0.3, 0.2, 'sine', 0.2, 90);
+  },
+  /** elmalar yuvarlanırken inen notalar (pıtır pıtır) */
+  inen() {
+    [91, 88, 86, 84, 81, 79, 76, 74, 72].forEach((n, i) => ksilofon(n, i * 0.085, 0.1));
+  },
+  /** tek elma yere seker: yumuşak "pıt" (her seferinde biraz farklı perde) */
+  pit() {
+    ton(900 + Math.random() * 500, 0, 0.09, 'sine', 0.2, 420);
+  },
+  /** elma kafaya konar: komik "pıt" */
+  kafa() {
+    ton(1300, 0, 0.12, 'sine', 0.28, 520);
+    ton(2600, 0.02, 0.06, 'triangle', 0.06, 1600);
+  },
+  /** top: boing */
+  boing() {
+    const hz = hazir();
+    if (!hz) return;
+    const [c, cikis] = hz;
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(160, t);
+    o.frequency.exponentialRampToValueAtTime(420, t + 0.08);
+    o.frequency.exponentialRampToValueAtTime(230, t + 0.32);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.26, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.36);
+    o.connect(g).connect(cikis);
+    o.start(t);
+    o.stop(t + 0.4);
+  },
+  /** kayma: vıııık (pati sürtünmesi, inen) */
+  vin() {
+    hisirti(0, 0.75, 2600, 700, 0.2, 6);
+    ton(1250, 0, 0.7, 'sawtooth', 0.035, 520);
+  },
+  /** çarpma: gümm */
+  gum() {
+    ton(110, 0, 0.45, 'sine', 0.6, 42);
+    hisirti(0, 0.18, 500, 150, 0.3, 0.8);
+    ton(240, 0.02, 0.12, 'triangle', 0.12, 120);
+  },
+  /** hüzün: tek, yumuşak çello notası (korkutucu değil) */
+  huzun() {
+    const hz = hazir();
+    if (!hz) return;
+    const [c, cikis] = hz;
+    const t = c.currentTime;
+    for (const [f, ses] of [[196, 0.1], [392, 0.025]] as const) {
+      const o = c.createOscillator();
+      const lfo = c.createOscillator();
+      const lg = c.createGain();
+      const g = c.createGain();
+      const fl = c.createBiquadFilter();
+      o.type = 'sawtooth';
+      o.frequency.value = f;
+      lfo.frequency.value = 5;
+      lg.gain.value = f * 0.006;
+      lfo.connect(lg).connect(o.frequency);
+      fl.type = 'lowpass';
+      fl.frequency.value = 900;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(ses, t + 0.35);
+      g.gain.linearRampToValueAtTime(ses * 0.7, t + 1.2);
+      g.gain.linearRampToValueAtTime(0.0001, t + 2.2);
+      o.connect(fl).connect(g).connect(cikis);
+      o.start(t);
+      lfo.start(t);
+      o.stop(t + 2.3);
+      lfo.stop(t + 2.3);
+    }
+    ksilofon(67, 0.9, 0.05);
+  },
+  /** çak: iki pati buluşur */
+  cak() {
+    hisirti(0, 0.08, 2400, 1600, 0.4, 1.2);
+    hisirti(0.012, 0.1, 1200, 900, 0.25, 1);
+    ton(1900, 0, 0.05, 'triangle', 0.08, 1500);
+  },
+  /** kısa kıkırdama (iki karakter gülüyor): yükselen minik notalar */
+  kikir() {
+    [76, 79, 76, 81, 79, 84].forEach((n, i) => ton(440 * Math.pow(2, (n - 69) / 12), i * 0.09, 0.08, 'triangle', 0.07));
+  },
+  /** koşu: pıt pıt pıt (yumuşak pati sesleri) */
+  kosu() {
+    for (let i = 0; i < 6; i++) hisirti(i * 0.15, 0.06, 900, 600, 0.12, 2);
+  },
+  /** kule sallanır: tıkır tıkır (elmalar birbirine değer) */
+  tikir() {
+    for (let i = 0; i < 5; i++) ton(1400 + (i % 2) * 300, i * 0.09, 0.04, 'sine', 0.08, 1000);
+  },
+  /** sabah kuşları: iki kısa cıvıltı */
+  kus() {
+    [0, 0.16, 0.7, 0.82, 0.94].forEach((b, i) => ton(2600 + (i % 2) * 500, b, 0.09, 'sine', 0.05, 3600 + (i % 3) * 300));
+  },
+  /** hızlı dalış: fiuuu */
+  fiu() {
+    hisirti(0, 0.35, 900, 3200, 0.16, 2);
+  },
+  /** üzgün Mino iç çeker gibi: yumuşak nefes */
+  nefes() {
+    hisirti(0, 0.9, 700, 400, 0.05, 0.6);
+  },
 };
+
+/** ksilofon notası: temel + parlak üst harmonik (kısa söner) */
+function ksilofon(midi: number, bas: number, ses: number) {
+  const f = 440 * Math.pow(2, (midi - 69) / 12);
+  ton(f, bas, 0.45, 'sine', ses);
+  ton(f * 4, bas, 0.08, 'sine', ses * 0.25);
+}
+
+// elma dizilirken her elmada bir yükselen nota (nota0 … nota9: pentatonik)
+[72, 74, 76, 79, 81, 84, 86, 88, 91, 93].forEach((n, i) => {
+  FILM_EFEKT[`nota${i}`] = () => ksilofon(n, 0, 0.16);
+});
