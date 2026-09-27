@@ -2,7 +2,7 @@ import { efekt } from '../audio/ses';
 import { durum } from '../engine/ilerleme';
 import { h, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { gorselUrl, kartEl } from '../ui/kart';
+import { gorselUrl, kartArkasi, kartEl } from '../ui/kart';
 import { sesDugmesi, yuvarlakDugme } from '../ui/ortak';
 import { ebeveynKapisi } from './ebeveyn';
 import type { Ekran, Uygulama } from '../uygulama';
@@ -37,6 +37,18 @@ export function acilisEkrani(app: Uygulama): Ekran {
     app.git('mino');
   });
 
+  // Yan dal: Hafıza Oyunu (sağ alt köşe; biri kapalı biri açık iki küçük kart)
+  const hafizaGiris = h(
+    'button.hafiza-giris',
+    { type: 'button', 'aria-label': 'Hafıza Oyunu' },
+    h('span.hg-kartlar', {}, h('span.hg-kart.hg-arka', {}, kartArkasi()), kartEl('kedi', { sinif: 'hg-kart hg-on' })),
+    h('span.hg-ad', {}, 'Hafıza'),
+  );
+  hafizaGiris.addEventListener('click', () => {
+    efekt.secim();
+    app.git(durum.i.yas ? 'temalar' : 'yas', durum.i.yas ? { mod: 'hafiza' } : { sonra: 'temalar', sonraParam: { mod: 'hafiza' } });
+  });
+
   const el = h(
     'div.acilis',
     {},
@@ -46,6 +58,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('div.logo', {}, logo, h('div.logo-serit', {}, 'KARTLAR')),
     h('div.acilis-alt', {}, oyna),
     minoGiris,
+    hafizaGiris,
   );
   return { el };
 }

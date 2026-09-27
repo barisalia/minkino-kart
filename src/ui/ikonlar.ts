@@ -29,6 +29,7 @@ export const IKON = {
   goz: s('<path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24z"/><circle cx="24" cy="24" r="5" fill="currentColor"/>'),
   yol: s('<path d="M8 36c6-14 12 4 18-10s10-10 14-12" stroke-dasharray="4 7"/><circle cx="8" cy="36" r="4" fill="currentColor"/>'),
   noktalar: s('<circle cx="10" cy="36" r="4" fill="currentColor"/><circle cx="20" cy="14" r="4" fill="currentColor"/><circle cx="32" cy="30" r="4" fill="currentColor"/><circle cx="40" cy="10" r="4" fill="currentColor"/>'),
+  hafiza: s('<rect x="5" y="12" width="20" height="26" rx="4" transform="rotate(-10 15 25)" fill="currentColor"/><rect x="23" y="10" width="20" height="26" rx="4" transform="rotate(8 33 23)"/><path d="M30 19.5a3.2 3.2 0 1 1 3.4 3.3c-.9.2-1.4.8-1.4 1.7v1" stroke-width="3.2"/><circle cx="31.8" cy="29.6" r="1.5" fill="currentColor" stroke="none"/>'),
   beyin: s('<path d="M24 10a7 7 0 0 0-12 3 7 7 0 0 0-3 12 7 7 0 0 0 5 10 7 7 0 0 0 10 3zM24 10a7 7 0 0 1 12 3 7 7 0 0 1 3 12 7 7 0 0 1-5 10 7 7 0 0 1-10 3z"/><path d="M24 10v28"/>'),
   el: s('<path d="M18 26V11a3 3 0 0 1 6 0v12m0-2a3 3 0 0 1 6 0v3m0-1a3 3 0 0 1 6 0v8c0 7-5 12-11 12s-9-3-12-8l-5-8a3 3 0 0 1 5-3l5 5"/>'),
 };

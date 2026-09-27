@@ -129,6 +129,10 @@ export const efekt = {
     can(NOTA(n), 0, 0.25, 0.7);
     can(NOTA(n + 12), 0.06, 0.1, 0.5);
   },
+  /** Kart dağıtma: kısa, hafif bir "fırt" */
+  dagit() {
+    hisirti(0, 0.07, 1400, 3800, 0.09, 1.1);
+  },
   cevir() {
     hisirti(0, 0.12, 900, 2600, 0.18, 1.5);
     ton(300, 0.02, 0.07, 'triangle', 0.1, 500);

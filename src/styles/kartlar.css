@@ -1,0 +1,395 @@
+/*
+ * Minkino Kartlar — cila ve Hafıza Oyunu. Yalnız kart oyunu yükler (src/oyun.ts); diğer uygulamaları etkilemez.
+ * Animasyonlar yalnız transform / opacity (telefonda 60 fps); az hareket isteyene ana.css'teki genel kural uygulanır.
+ */
+
+/* ---------- Soru satırı: Mino yoldaş + soru balonu ---------- */
+.mk-kok .soru-satir {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  width: min(100%, 720px);
+  margin: 2px auto 0;
+}
+.mk-kok .soru-satir .soru-balon {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  margin: 0 0 6px;
+}
+.mk-kok .yoldas {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  width: clamp(62px, min(21vw, 12.5vh), 128px);
+  margin: 0 0 -4px -4px;
+}
+.mk-kok .hafiza-oyun .yoldas {
+  width: clamp(66px, min(23vw, 13.5vh), 140px);
+}
+.mk-kok .yoldas .mino {
+  width: 100%;
+  cursor: pointer;
+}
+
+/* ---------- Kart: basılma, ışıltı ---------- */
+.mk-kok .kart.secenek.basili,
+.mk-kok .hafiza-kart.basili {
+  transform: translateY(4px) scale(0.94);
+  transition-duration: 0.08s;
+}
+/* doğru kartın yol gösteren ışıltısı: gölge değil, hale katmanının saydamlığı oynar */
+.mk-kok .oyun .kart.isilti {
+  animation: mk-isilti-nabiz 1.3s ease-in-out infinite;
+}
+.mk-kok .oyun .kart.isilti::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 7px rgba(255, 199, 44, 0.95), 0 0 34px 12px rgba(255, 199, 44, 0.6);
+  animation: mk-isilti-hale 1.3s ease-in-out infinite;
+}
+@keyframes mk-isilti-nabiz {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+@keyframes mk-isilti-hale {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.mk-kok .oyun .kart.soluk {
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Dağıtılırken kartın arka yüzü (havada dönünce kaybolur) */
+.mk-kok .dagit-arka {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ---------- Uçuş izi, yapışma halkası ---------- */
+.mk-kok .ucan-kart {
+  box-shadow: 0 0 0 5px rgba(255, 199, 44, 0.85), 0 14px 28px rgba(90, 54, 23, 0.28);
+}
+.mk-kok .iz-yildiz {
+  position: fixed;
+  z-index: 56;
+  pointer-events: none;
+  background: currentColor;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  will-change: transform, opacity;
+}
+.mk-kok .yapis-halka {
+  position: fixed;
+  z-index: 55;
+  pointer-events: none;
+  border-radius: 50%;
+  border: 5px solid #ffc72c;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Hafıza kartı (scaleX ile dönen) ---------- */
+.mk-kok .hk {
+  position: relative;
+  container-type: inline-size;
+  width: var(--kw, 120px);
+  aspect-ratio: 1 / 1.12;
+  perspective: none;
+  transition: transform 0.18s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mk-kok .hk-ic {
+  position: absolute;
+  inset: 0;
+  border-radius: 16% / 14.3%;
+}
+.mk-kok .hk-arka,
+.mk-kok .hk-on {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.mk-kok .hk-arka {
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 5px 0 #6b3fa3, 0 10px 22px rgba(90, 54, 23, 0.15);
+  overflow: hidden;
+}
+.mk-kok .hk-on .kart {
+  width: 100%;
+}
+.mk-kok .hk.acik .hk-arka,
+.mk-kok .hk:not(.acik) .hk-on {
+  opacity: 0;
+}
+.mk-kok .hk-golge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(58, 28, 92, 0.6), rgba(58, 28, 92, 0.12));
+  opacity: 0;
+}
+.mk-kok .hk.eslesti .hk-on .kart {
+  box-shadow: 0 0 0 5px var(--yesil), 0 0 24px 8px rgba(93, 190, 63, 0.5);
+}
+/* albüme uçan çiftin yerinde silik bir yuva kalır */
+.mk-kok .hk.alindi {
+  pointer-events: none;
+}
+.mk-kok .hk.alindi .hk-ic {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.mk-kok .hk.alindi::before {
+  content: '';
+  position: absolute;
+  inset: 5%;
+  border-radius: 16% / 14.3%;
+  border: 3px dashed rgba(90, 54, 23, 0.22);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- Hafıza Oyunu ekranı ---------- */
+.mk-kok .hafiza-oyun {
+  background:
+    radial-gradient(110% 55% at 50% 0%, rgba(255, 255, 255, 0.7), transparent 60%),
+    radial-gradient(80% 50% at 50% 100%, rgba(155, 92, 224, 0.16), transparent 70%);
+}
+.mk-kok .ho-alan {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0 8px;
+}
+.mk-kok .ho-son {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: radial-gradient(circle, rgba(255, 244, 221, 0.9), rgba(255, 244, 221, 0.55));
+  animation: mk-perde 0.3s both;
+}
+.mk-kok .ho-son-ic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 26px 16px;
+  border-radius: 32px;
+  background: #fffdf6;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 8px 0 var(--kontur-yumusak);
+}
+.mk-kok .ho-son .yildizlar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.mk-kok .ho-son .buyuk-yildiz:nth-child(2) {
+  font-size: clamp(72px, 22vw, 112px);
+  margin-bottom: 14px;
+}
+.mk-kok .ho-son-baslik {
+  font-size: clamp(1.4rem, 6vw, 2rem);
+}
+
+/* ---------- Açılış: Hafıza Oyunu girişi (sağ alt) ---------- */
+.mk-kok .hafiza-giris {
+  position: absolute;
+  right: var(--yan);
+  bottom: var(--alt);
+  z-index: 5;
+  width: clamp(96px, 26vw, 140px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: var(--cizgi) solid var(--kontur);
+  background: radial-gradient(circle at 50% 35%, #f3e8ff, #c9a6f5);
+  box-shadow: 0 6px 0 var(--kontur);
+  overflow: hidden;
+  padding: 0;
+  animation: mk-nabiz 2.2s ease-in-out -1.1s infinite;
+}
+.mk-kok .hg-kartlar {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 0;
+  height: 0;
+}
+.mk-kok .hg-kart {
+  --kw: clamp(38px, 10.5vw, 56px);
+  position: absolute;
+  width: var(--kw);
+  aspect-ratio: 1 / 1.12;
+  left: calc(var(--kw) * -0.5);
+  top: calc(var(--kw) * -0.56);
+  border-radius: 16% / 14.3%;
+  container-type: inline-size;
+}
+.mk-kok .hg-arka {
+  border: 3px solid var(--kontur);
+  overflow: hidden;
+  transform: translateX(-34%) rotate(-12deg);
+  animation: mk-hg-arka 3.2s ease-in-out infinite;
+}
+.mk-kok .hg-kart.kart {
+  border-width: 3px;
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  transform: translateX(34%) rotate(10deg);
+  animation: mk-hg-on 3.2s ease-in-out infinite;
+}
+@keyframes mk-hg-arka {
+  0%, 100% { transform: translateX(-34%) rotate(-12deg); }
+  50% { transform: translateX(-38%) translateY(-4px) rotate(-15deg); }
+}
+@keyframes mk-hg-on {
+  0%, 100% { transform: translateX(34%) rotate(10deg); }
+  50% { transform: translateX(38%) translateY(-4px) rotate(13deg); }
+}
+.mk-kok .hg-ad {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7%;
+  font-size: clamp(0.85rem, 3.8vw, 1.15rem);
+  color: #fff;
+  -webkit-text-stroke: 4px var(--kontur);
+  paint-order: stroke fill;
+}
+
+/* ---------- Temalar: Hafıza Oyunu şeridi ve hafıza modu ---------- */
+.mk-kok .hafiza-serit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(100% - 8px, 720px);
+  min-height: 76px;
+  margin: 14px auto 0;
+  padding: 8px 18px 8px 12px;
+  border-radius: 26px;
+  border: var(--cizgi) solid var(--kontur);
+  background:
+    repeating-linear-gradient(-35deg, rgba(255, 255, 255, 0.14) 0 14px, transparent 14px 28px),
+    linear-gradient(180deg, #c49af5, var(--mor) 75%);
+  box-shadow: inset 0 -7px 0 rgba(0, 0, 0, 0.12), 0 6px 0 var(--kontur);
+  color: #fff;
+  text-align: left;
+  transition: transform 0.12s;
+  animation: mk-kart-giris 0.55s cubic-bezier(0.25, 1.4, 0.5, 1) both;
+}
+.mk-kok .hafiza-serit:active {
+  transform: translateY(4px) scale(0.98);
+}
+.mk-kok .hs-kartlar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 92px;
+  height: 58px;
+}
+.mk-kok .hs-kart {
+  --kw: 44px;
+  position: absolute;
+  top: 4px;
+  width: var(--kw);
+  aspect-ratio: 1 / 1.12;
+  border-radius: 16% / 14.3%;
+  border: 3px solid var(--kontur);
+  overflow: hidden;
+  container-type: inline-size;
+}
+.mk-kok .hs-kart:nth-child(1) { left: 0; transform: rotate(-10deg); }
+.mk-kok .hs-kart:nth-child(2) { left: 22px; transform: rotate(-2deg); }
+.mk-kok .hs-kart.kart {
+  left: 46px;
+  overflow: visible;
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  transform: rotate(9deg);
+  animation: mk-hs-cevir 3.6s ease-in-out infinite;
+}
+@keyframes mk-hs-cevir {
+  0%, 70%, 100% { transform: rotate(9deg) scaleX(1); }
+  80% { transform: rotate(9deg) scaleX(0.05); }
+  90% { transform: rotate(9deg) scaleX(1.06); }
+}
+.mk-kok .hs-ad {
+  flex: 1;
+  font-size: clamp(1.15rem, 5vw, 1.5rem);
+  -webkit-text-stroke: 4px var(--kontur);
+  paint-order: stroke fill;
+}
+.mk-kok .hs-ok {
+  font-size: 34px;
+  color: #fff;
+  filter: drop-shadow(0 2px 0 var(--kontur));
+}
+.mk-kok .temalar.mod-hafiza .baslik-balon .yuvarlak.kucuk {
+  --r: #c9a6f5;
+}
+.mk-kok .paket-hafiza {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  color: var(--mor);
+  font-size: 24px;
+  z-index: 2;
+}
+
+/* ---------- Albüm: sayfa çevirme ve koleksiyon parıltısı ---------- */
+.mk-kok .sayfa-kutu {
+  position: relative;
+}
+.mk-kok .sayfa-golge {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(var(--yon, 90deg), rgba(90, 54, 23, 0.05), rgba(90, 54, 23, 0.55));
+  opacity: 0;
+}
+.mk-kok .sayfa-golge.alt {
+  background: rgba(90, 54, 23, 0.5);
+}
+.mk-kok .kart-parilti {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mk-kok .kart-parilti::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 34%;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0));
+  transform: translateX(-160%) skewX(-16deg);
+  animation: mk-kart-parilti 6s ease-in-out infinite;
+  animation-delay: calc(var(--p, 0) * 0.85s + 0.8s);
+}
+@keyframes mk-kart-parilti {
+  0%, 78% { transform: translateX(-160%) skewX(-16deg); }
+  96%, 100% { transform: translateX(360%) skewX(-16deg); }
+}

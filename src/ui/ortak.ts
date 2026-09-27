@@ -1,6 +1,7 @@
 import { durum } from '../engine/ilerleme';
 import { efekt, konus, sessizeAlDegistir, tumSesKapaliMi } from '../audio/ses';
 import { h, svg } from './dom';
+import { yapisEsne } from './hareket';
 import { IKON } from './ikonlar';
 
 export function yuvarlakDugme(ikon: string, etiket: string, tik: () => void, sinif = ''): HTMLButtonElement {
@@ -13,7 +14,7 @@ export function yuvarlakDugme(ikon: string, etiket: string, tik: () => void, sin
 }
 
 /** Albüm düğmesi (kartların uçtuğu hedef), sayaç rozetiyle. */
-export function albumDugmesi(tik: () => void): { el: HTMLButtonElement; artir: () => void } {
+export function albumDugmesi(tik: () => void): { el: HTMLButtonElement; artir: (kok?: HTMLElement) => void } {
   const rozet = h('span.rozet', {}, String(durum.i.album.length));
   const el = yuvarlakDugme(IKON.album, 'Albüm', tik, 'album-dugme');
   el.style.setProperty('--r', '#FF8A2B');
@@ -23,10 +24,15 @@ export function albumDugmesi(tik: () => void): { el: HTMLButtonElement; artir: (
   let sayi = durum.i.album.length;
   return {
     el,
-    artir() {
+    /** Kart albüme yapıştı: sayaç artar; `kok` verilirse düğme ezilip esner, halka ve yıldızlar saçılır. */
+    artir(kok?: HTMLElement) {
       sayi++;
       rozet.textContent = String(sayi);
       rozet.style.display = '';
+      if (kok) {
+        yapisEsne(el, kok);
+        return;
+      }
       el.classList.remove('ziplat');
       void el.offsetWidth;
       el.classList.add('ziplat');

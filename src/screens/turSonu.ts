@@ -55,7 +55,7 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
       if (durum.i.kutlananTemalar.includes(id)) continue;
       durum.i.kutlananTemalar.push(id);
       kaydetDurum();
-      await kutla(app, id);
+      await paketKutla(app, id);
       if (kapandi) return;
     }
   })();
@@ -70,7 +70,7 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
 }
 
 /** Yeni paket açıldı kutlaması. Dokununca kapanır. */
-function kutla(app: Uygulama, temaId: string): Promise<void> {
+export function paketKutla(app: Uygulama, temaId: string): Promise<void> {
   const t = temaBul(temaId);
   if (!t) return Promise.resolve();
   return new Promise((coz) => {
