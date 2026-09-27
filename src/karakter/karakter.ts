@@ -148,13 +148,16 @@ export class Karakter {
    */
   ozelSinir: { sinir?: Kisilik['sinir']; kol?: [number, number] } | null = null;
 
+  /** İskelet kuruldu (ya da iskelet yok / yüklenemedi): parçalara ek koyacaklar bunu bekler (yavaş cihazda da) */
+  readonly hazir: Promise<void>;
+
   /** yedek: iskelet yoksa (ya da yüklenene kadar) gösterilecek tek görselin adresi */
   constructor(ad: string, yedek: HTMLElement) {
     this.ad = ad;
     this.k = kisilik(ad);
     this.tek = h('div.kr-tek', {}, yedek);
     this.el = h('div.kr-karakter', { 'data-karakter': ad }, this.tek);
-    if (iskeletVar(ad)) void this.iskeletKur();
+    this.hazir = iskeletVar(ad) ? this.iskeletKur().catch(() => undefined) : Promise.resolve();
     this.raf = requestAnimationFrame((t) => this.kare(t));
   }
 
