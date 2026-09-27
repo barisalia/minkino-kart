@@ -1,0 +1,34 @@
+﻿{
+    "aciklama":  "El kuklalari: govde + agiz/gaga ayni cercevede (px). Ust uste = kukla-ayi.webp / kukla-civciv.webp (tam cizim, agiz acik). Govdede agiz yeri kurk/tuy rengiyle doldurulmus.",
+    "kukla-ayi":  {
+                      "cerceve":  [
+                                      858,
+                                      1005
+                                  ],
+                      "sira":  [
+                                   "kukla-ayi-govde",
+                                   "kukla-ayi-agiz"
+                               ],
+                      "pivot":  [
+                                    435,
+                                    318
+                                ],
+                      "acKapa":  "agiz katmani pivot etrafinda scaleY(s): s=1 tam acik, s=0.15 kapali (ince agiz cizgisi kalir). Ornek CSS: transform-origin: 435px 318px; transform: scaleY(s)"
+                  },
+    "kukla-civciv":  {
+                         "cerceve":  [
+                                         837,
+                                         1014
+                                     ],
+                         "sira":  [
+                                      "kukla-civciv-govde",
+                                      "kukla-civciv-gaga"
+                                  ],
+                         "pivot":  [
+                                       414,
+                                       411
+                                   ],
+                         "aci":  12.9,
+                         "acKapa":  "alt gaga, ust gaganin alt kenarina dik yonde ezilir: transform-origin: 414px 411px; transform: rotate(12.9deg) scaleY(s) rotate(-12.9deg). s=1 acik, s=0.15 kapali."
+                     }
+}
