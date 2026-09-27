@@ -1,5 +1,5 @@
 {
-  "aciklama": "Sesli Maceralar: Mino Banyo Yapmıyor! (senaryo: ekip/senaryo/mino-banyo.md). 'mino' cümleleri Mino'nun sesiyle (ton 1.12), 'kino' cümleleri aynı sesin kalın tonuyla (ton 0.92) okunur. 'balon' ve 'ipucu' seslendirilmez (ekranda yazar). Kısa tutun.",
+  "aciklama": "Sesli Maceralar: Mino Banyo Yapmıyor! (senaryo: ekip/senaryo/mino-banyo.md). 'mino' cümleleri Mino'nun sesiyle (ton 1.12), 'kino' cümleleri Kino'nun kendi sesiyle (content/seslendirme.json → karakter_sesleri.kino), o boşsa aynı sesin kalın tonuyla (ton 0.92) okunur. 'balon' ve 'ipucu' seslendirilmez (ekranda yazar). Kısa tutun.",
   "baslik": "Mino Banyo Yapmıyor!",
   "kart": "Mis Gibi Minkino",
   "mino": {

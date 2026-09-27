@@ -13,7 +13,7 @@
 import '../../src/karakter/karakter.css';
 import './banyo.css';
 import B from '../../content/macera-banyo.json';
-import { efekt, konus } from '../../src/audio/ses';
+import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
 import { minoHalleriYukle } from '../../src/mino/mino';
@@ -337,7 +337,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     else delete sahne.el.dataset.bnHedef;
   };
 
-  // --- konuşma: Mino (ince ton) ve Kino (aynı ses, kalın ton; ağzı oynar, Mino'nunki durur)
+  // --- konuşma: Mino (ince ton) ve Kino (kendi sesi varsa o; yoksa aynı ses, kalın ton; ağzı oynar, Mino'nunki durur)
   const mSoyle = async (t: string) => {
     if (kapandi) throw IPTAL;
     ui.yazi(t);
@@ -350,7 +350,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     M.mino!.agizSus = true;
     KN.konus(true);
     try {
-      await konus(t, { ton: 0.92 });
+      await konus(t, KINO_SESI);
     } finally {
       KN.konus(false);
       M.mino!.agizSus = false;

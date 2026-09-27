@@ -47,7 +47,7 @@ const bitir = () => {
   parcalar = [];
   boy = 0;
 };
-for (const [metin, f] of sirali) {
+const ekle = (f) => {
   if (!cache.has(f)) {
     const b = fs.readFileSync(path.join('public/ses', f));
     if (boy + b.length > (paketler.length === 0 ? ILK_SINIR : SINIR)) bitir();
@@ -55,8 +55,19 @@ for (const [metin, f] of sirali) {
     parcalar.push(b);
     boy += b.length;
   }
-  dosyalar[metin] = cache.get(f);
+  return cache.get(f);
+};
+for (const [metin, f] of sirali) dosyalar[metin] = ekle(f);
+// Karakter sesleri (ör. Kino'nun kendi sesi: public/ses/kino/…) — --canlan paketinde yok
+let karakterler;
+if (!process.argv.includes('--canlan') && m.karakterler) {
+  karakterler = {};
+  for (const [kar, k] of Object.entries(m.karakterler)) {
+    const kd = {};
+    for (const [metin, f] of Object.entries(k.dosyalar ?? {})) kd[metin] = ekle(f);
+    karakterler[kar] = { ses_id: k.ses_id, dosyalar: kd };
+  }
 }
 bitir();
-fs.writeFileSync(path.join(hedef, 'ses', 'manifest.json'), JSON.stringify({ ses_id: m.ses_id, model: m.model, paketler, dosyalar }));
+fs.writeFileSync(path.join(hedef, 'ses', 'manifest.json'), JSON.stringify({ ses_id: m.ses_id, model: m.model, paketler, dosyalar, ...(karakterler ? { karakterler } : {}) }));
 console.log(paketler.length, 'paket', Object.keys(dosyalar).length, 'kayıt');

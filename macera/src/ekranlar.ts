@@ -1,6 +1,7 @@
 /** Sesli Maceralar ekranları: açılış (bölüm seçimi), büyükler (mikrofon izni), bölüm */
 import M from '../../content/macera.json';
-import { efekt, konus } from '../../src/audio/ses';
+import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
+import { karakterCumleleri, normal } from '../../src/audio/cumleler';
 import { durum } from '../../src/engine/ilerleme';
 import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
@@ -134,7 +135,10 @@ export function bolumEkrani(app: Uygulama): Ekran {
   const bolum = secilenBolum;
   const yazi = h('span.mc-yazi');
   let sonYazi = '';
-  const balon = h('div.baslik-balon.mc-altyazi', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(sonYazi, { ton: 1.12 }), 'kucuk'), yazi);
+  // Tekrar dinle: Kino'nun cümlesi Kino'nun sesiyle (kendi sesi ya da kalın ton), diğerleri Mino tonuyla
+  const kinoCumleleri = new Set(karakterCumleleri().kino);
+  const tekrarDinle = () => void konus(sonYazi, kinoCumleleri.has(normal(sonYazi)) ? KINO_SESI : { ton: 1.12 });
+  const balon = h('div.baslik-balon.mc-altyazi', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', tekrarDinle, 'kucuk'), yazi);
   const noktalar = h('div.mc-ilerleme');
   const ipucu = h('div.mc-ipucu');
   const kulakEl = h('div.mc-kulak', {}, h('i.mc-kulak-halka'), svg(KULAK_SVG));

@@ -5,11 +5,15 @@
  *   ELEVENLABS_API_KEY=... npx vite-node scripts/seslendir.ts -- --ornek # aday seslerle deneme kayıtları (public/ses-ornek)
  *
  * Ses kimliği content/seslendirme.json → ses_id (veya ELEVENLABS_VOICE_ID). Ses değişirse hepsi yeniden üretilir.
+ * Karakter sesleri: content/seslendirme.json → karakter_sesleri (ör. "kino": "<ses kimliği>"). Doluysa o karakterin
+ * cümleleri (src/audio/cumleler.ts → karakterCumleleri) ayrıca public/ses/<karakter>/ altına kendi sesiyle üretilir;
+ * karakter sesi değişince yalnız o karakterin kayıtları yeniden üretilir, anlatıcı kayıtlarına dokunulmaz.
  */
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { tumCumleler, normal } from '../src/audio/cumleler';
+import { tumCumleler, karakterCumleleri, normal } from '../src/audio/cumleler';
+import { etkinKarakterSesleri, karakterKlasoru, manifestiAyikla, uretimIsleri, type KarakterSesleri, type SesManifest, type UretimIsi } from '../src/audio/karakter-ses';
 
 interface Uretim {
   model: string;
@@ -30,13 +34,7 @@ interface Ayar extends Uretim {
   ayarlar: Record<string, number | boolean>;
   baglam_metni: string;
   karsilastirma?: { kelimeler: string[]; secenekler: (Uretim & { kod: string; ad: string })[] };
-}
-interface Manifest {
-  ses_id: string | null;
-  model: string | null;
-  dosyalar: Record<string, string>;
-  /** Her kaydın hangi ses/model/ayarla üretildiği — değişince yeniden üretilir */
-  imzalar?: Record<string, string>;
+  karakter_sesleri?: KarakterSesleri;
 }
 
 const KOK = process.cwd();
@@ -134,37 +132,58 @@ if (!sesId) {
 
 const klasor = path.join(KOK, 'public/ses');
 const manifestYolu = path.join(klasor, 'manifest.json');
-let manifest: Manifest = fs.existsSync(manifestYolu) ? JSON.parse(fs.readFileSync(manifestYolu, 'utf8')) : { ses_id: null, model: null, dosyalar: {} };
+const manifest: SesManifest = fs.existsSync(manifestYolu) ? JSON.parse(fs.readFileSync(manifestYolu, 'utf8')) : { ses_id: null, model: null, dosyalar: {} };
 // Ses/model/ayar değişince eski kayıtlar SİLİNMEZ; yenisi üretilene kadar oyunda çalmaya devam eder.
-const imza = `${sesId}|${ayar.model}|${ayar.baglam ? 'baglam' : ''}|${ayar.dil ?? ''}`;
 manifest.imzalar ??= {};
 manifest.ses_id = sesId;
 manifest.model = ayar.model;
+const karakterSesleri = etkinKarakterSesleri(ayar);
+for (const [k, kSes] of Object.entries(karakterSesleri)) {
+  manifest.karakterler ??= {};
+  manifest.karakterler[k] ??= { ses_id: kSes, dosyalar: {}, imzalar: {} };
+  manifest.karakterler[k].ses_id = kSes;
+  manifest.karakterler[k].imzalar ??= {};
+}
+/** Bir işin kaydedileceği yer: anlatıcı ya da karakterin kayıtları */
+const kayitlar = (k: string | null) => (k ? manifest.karakterler![k] : manifest) as { dosyalar: Record<string, string>; imzalar: Record<string, string> };
 
 const cumleler = tumCumleler();
+const kCumleler = karakterCumleleri();
 
 if (DUZELT) {
   // Sadece sorunlu kayıtları yeniden üret: kısa (1-2 kelime, İngilizceye kayabilen) ve fazla hızlı olanlar
   const harfSay = (t: string) => [...t].filter((c) => /\p{L}/u.test(c)).length;
   const kbps = Number(ayar.bicim.split('_')[2] ?? 64);
   let silinen = 0;
-  for (const c of cumleler) {
-    const f = manifest.dosyalar[c];
-    if (!f || !fs.existsSync(path.join(klasor, f))) continue;
-    const kisa = c.split(/\s+/).length <= 2;
-    const sure = (fs.statSync(path.join(klasor, f)).size * 8) / (kbps * 1000);
-    const hizli = harfSay(c) >= 6 && harfSay(c) / sure > 14;
-    if (kisa || hizli) {
-      delete manifest.dosyalar[c];
-      silinen++;
+  const gruplar: [string | null, string[]][] = [[null, cumleler], ...Object.keys(karakterSesleri).map((k): [string, string[]] => [k, kCumleler[k] ?? []])];
+  for (const [kim, liste] of gruplar) {
+    const kayit = kayitlar(kim);
+    for (const c of liste) {
+      const f = kayit.dosyalar[c];
+      if (!f || !fs.existsSync(path.join(klasor, f))) continue;
+      const kisa = c.split(/\s+/).length <= 2;
+      const sure = (fs.statSync(path.join(klasor, f)).size * 8) / (kbps * 1000);
+      const hizli = harfSay(c) >= 6 && harfSay(c) / sure > 14;
+      if (kisa || hizli) {
+        delete kayit.dosyalar[c];
+        silinen++;
+      }
     }
   }
   console.log(`Düzeltme: ${silinen} kayıt yeniden üretilecek.`);
 }
-const guncelDegil = (c: string) => !manifest.dosyalar[c] || !fs.existsSync(path.join(klasor, manifest.dosyalar[c])) || manifest.imzalar![c] !== imza;
-const eksik = cumleler.filter(guncelDegil).slice(0, SINIR);
-const karakter = eksik.reduce((t, c) => t + c.length, 0);
-console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karakter)`);
+const eksik = uretimIsleri({
+  ayar,
+  sesId,
+  manifest,
+  cumleler,
+  karakterCumleleri: kCumleler,
+  dosyaAdi,
+  dosyaVar: (f) => fs.existsSync(path.join(klasor, f)),
+}).slice(0, SINIR);
+const karakter = eksik.reduce((t, c) => t + c.metin.length, 0);
+const kEksik = eksik.filter((x) => x.karakter).length;
+console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karakter)${kEksik ? `; bunların ${kEksik} tanesi karakter sesi` : ''}`);
 
 let tamam = 0;
 const kaydet = () => fs.writeFileSync(manifestYolu, JSON.stringify(manifest, null, 0));
@@ -181,12 +200,12 @@ let harcanan = 0;
 const BUTCE = ayar.butce_karakter ?? Infinity;
 
 try {
-  await havuz(eksik, ayar.es_zaman ?? 1, async (c) => {
-    const f = dosyaAdi(c, imza);
+  await havuz(eksik, ayar.es_zaman ?? 1, async (is: UretimIsi) => {
+    const { metin: c, dosya: f } = is;
     const hedef = path.join(klasor, f);
     if (harcanan + c.length > BUTCE) throw new Error(`Karakter bütçesi (${BUTCE}) doldu`);
     harcanan += c.length;
-    await uret(sesId, c, hedef);
+    await uret(is.sesId, c, hedef);
     // Aceleye gelmiş (fazla hızlı) kayıtları en çok 2 kez yeniden üret, en yavaşını tut
     const harf = [...c].filter((x) => /\p{L}/u.test(x)).length;
     if (harf >= 6) {
@@ -196,15 +215,16 @@ try {
         await bekle(ayar.bekleme_ms ?? 400);
         if (harcanan + c.length > BUTCE) break;
         harcanan += c.length;
-        await uret(sesId, c, hedef);
+        await uret(is.sesId, c, hedef);
         const h = hiz(c, hedef);
         if (h < en.h) en = { h, veri: fs.readFileSync(hedef) };
       }
       fs.writeFileSync(hedef, en.veri);
     }
     await bekle(ayar.bekleme_ms ?? 400);
-    manifest.dosyalar[c] = f;
-    manifest.imzalar![c] = imza;
+    const kayit = kayitlar(is.karakter);
+    kayit.dosyalar[c] = f;
+    kayit.imzalar[c] = is.imza;
     if (++tamam % 25 === 0) {
       kaydet();
       console.log(`… ${tamam}/${eksik.length}`);
@@ -217,13 +237,13 @@ try {
   process.exit(1);
 }
 
-// Artık kullanılmayan kayıtları temizle
-const gecerli = new Set(cumleler);
-for (const k of Object.keys(manifest.dosyalar)) if (!gecerli.has(k)) {
-  delete manifest.dosyalar[k];
-  delete manifest.imzalar![k];
-}
-const kullanilan = new Set(Object.values(manifest.dosyalar));
+// Artık kullanılmayan kayıtları temizle (sesi boşaltılan karakterin kayıtları da: boş = anlatıcı sesi, eski davranış)
+const kullanilan = manifestiAyikla(manifest, ayar, cumleler, kCumleler);
 for (const f of fs.readdirSync(klasor)) if (f.endsWith('.mp3') && !kullanilan.has(f)) fs.unlinkSync(path.join(klasor, f));
+for (const k of Object.keys(ayar.karakter_sesleri ?? {})) {
+  const alt = karakterKlasoru(k);
+  if (!fs.existsSync(path.join(klasor, alt))) continue;
+  for (const f of fs.readdirSync(path.join(klasor, alt))) if (f.endsWith('.mp3') && !kullanilan.has(alt + f)) fs.unlinkSync(path.join(klasor, alt, f));
+}
 kaydet();
 console.log(`Bitti: ${tamam} yeni kayıt, hız nedeniyle ${yeniden} yeniden üretim, ${harcanan} karakter.`);
