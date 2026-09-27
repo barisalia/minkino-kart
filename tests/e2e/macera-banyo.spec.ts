@@ -67,9 +67,10 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
   }
   for (let i = 0; i < 3; i++) {
     await gorevBekle(page, ['bul'], T);
-    await page.waitForTimeout(gercekHiz ? 900 : 150);
+    await page.waitForTimeout(gercekHiz ? 2600 : 150);
     if (i === 1) await ekran('03-saklambac');
-    await dokun(page, bolge(page, 'mino-kuyruk'));
+    // saklandığı yer: kuyruk ucunun ve dikizin çıktığı alan
+    await dokun(page, page.locator('.bn-sakli-hedef'));
     await expect.poll(() => gorev(page), { timeout: T }).not.toBe('bul');
   }
   // 3. su
@@ -87,11 +88,17 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
   await surukle(page, page.locator('.bn-sise-kopuk'), page.locator('.bn-su-on'));
   await gorevBekle(page, ['ufle'], T);
   await ekran('05-baloncuk');
+  let ufleEkran = false;
   while ((await gorev(page)) === 'ufle') {
     const { x, y } = await merkez(page.locator('.bn-halka'));
     await page.mouse.move(x, y);
     await page.mouse.down();
-    await page.waitForTimeout(1200);
+    await page.waitForTimeout(gercekHiz ? 1200 : 700);
+    if (!ufleEkran) {
+      ufleEkran = true;
+      await ekran('05b-ufle');
+    }
+    await page.waitForTimeout(gercekHiz ? 0 : 500);
     await page.mouse.up();
     await page.waitForTimeout(gercekHiz ? 2600 : 400);
   }
@@ -99,6 +106,7 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
   await ekran('06-slap');
   // 5. köpürt
   let sacEkran = false;
+  let ovaEkran = false;
   while (true) {
     const g = await gorevBekle(page, ['sampuan', 'ova', 'sac'], T);
     if (g === 'sac') break;
@@ -112,6 +120,12 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
     const { x, y, k } = await merkez(bolge(page, id));
     await page.mouse.move(x, y);
     await page.mouse.down();
+    if (!ovaEkran && id === 'mino-kulak') {
+      // ovalamanın ortası: köpük ve ilerleme halkası
+      await zikzak(page, x, y, Math.max(8, k.width * 0.35), k.height * 0.4, 2);
+      await ekran('07b-ova');
+      ovaEkran = true;
+    }
     await zikzak(page, x, y, Math.max(8, k.width * 0.35), k.height * 0.4, 16);
     await page.mouse.up();
     if (!sacEkran && id === 'mino-kuyruk') {
@@ -128,17 +142,21 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
   await dokun(page, page.locator('.mc-buyuk-dugme'));
   // 6. duş, uluma, tıpa
   await gorevBekle(page, ['dus'], T);
+  // kamera (duşu kadraja alan çekim) otursun; konumlar her turda yeniden ölçülür
+  await page.waitForTimeout(800);
   const dus = await merkez(page.locator('.bn-dus'));
-  const mino = await merkez(page.locator('[data-kisi="mino"] .bn-cizim'));
-  const kino = await merkez(page.locator('[data-kisi="kino"] .bn-cizim'));
-  const ust = Math.min(mino.k.y, kino.k.y) - 20;
   await page.mouse.move(dus.x, dus.y);
   await page.mouse.down();
-  for (let tur = 0; tur < (gercekHiz ? 24 : 8) && (await gorev(page)) === 'dus'; tur++) {
-    const [a, b] = tur % 2 ? [kino.x + 20, mino.x - 20] : [mino.x - 20, kino.x + 20];
+  for (let tur = 0; tur < 40 && (await gorev(page)) === 'dus'; tur++) {
+    const mino = await merkez(page.locator('[data-kisi="mino"] .bn-cizim'));
+    const kino = await merkez(page.locator('[data-kisi="kino"] .bn-cizim'));
+    const ust = Math.min(mino.k.y, kino.k.y) - 10;
+    const sol = Math.min(mino.k.x, kino.k.x);
+    const sag = Math.max(mino.k.x + mino.k.width, kino.k.x + kino.k.width);
+    const [a, b] = tur % 2 ? [sag, sol] : [sol, sag];
     for (let i = 0; i <= 24; i++) {
       await page.mouse.move(a + ((b - a) * i) / 24, ust + (i % 3) * 6);
-      if (gercekHiz) await page.waitForTimeout(45);
+      await page.waitForTimeout(gercekHiz ? 45 : 16);
       if (i === 12 && tur === 1) await ekran('09-dus');
     }
   }
@@ -206,9 +224,11 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
   // 8. toplan, fularlar, ayna
   await gorevBekle(page, ['sepet'], T);
   for (const renk of ['turuncu', 'mavi']) {
-    await surukle(page, page.locator(`.bn-havlu[data-renk="${renk}"]`), page.locator('.bn-sepet'));
+    await surukle(page, page.locator(`.bn-havlu[data-renk="${renk}"]`), page.locator('.bn-sepet:not(.bn-sepet-on)'));
     await page.waitForTimeout(300);
   }
+  await page.waitForTimeout(gercekHiz ? 600 : 200);
+  await ekran('13b-sepet');
   await gorevBekle(page, ['ordek'], T);
   await surukle(page, page.locator('.bn-ordek-kap'), page.locator('.bn-raf-hedef'));
   await gorevBekle(page, ['fular-tak'], T);
@@ -234,7 +254,7 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
 
 for (const yas of [3, 6]) {
   test(`Mino Banyo Yapmıyor: dokunarak baştan sona (${yas} yaş)`, async ({ page }, info) => {
-    test.setTimeout(240_000);
+    test.setTimeout(480_000);
     const hatalar = hataTopla(page);
     await page.goto(`./macera/?test=1&ekran=bolum&yas=${yas}&bolum=banyo`);
     const p = info.project.name;
@@ -263,7 +283,9 @@ test('Mino Banyo Yapmıyor: gerçek hızda video', async ({ browser }, info) => 
   const page = await ctx.newPage();
   const hatalar = hataTopla(page);
   await page.goto(`./macera/?onizleme=1&ekran=bolum&yas=5&bolum=banyo`);
-  await oyna(page, async () => undefined, true);
+  // BANYO_VIDEO_EKRAN=1: gerçek hızda ekran görüntüleri de (baloncuklar, köpük, saklambaç gerçek hızında görünür)
+  const ekran = process.env.BANYO_VIDEO_EKRAN ? (ad: string) => page.screenshot({ path: `tests/screens/${info.project.name}-banyo-gercek-${ad}.png` }) : async () => undefined;
+  await oyna(page, ekran, true);
   await page.waitForTimeout(1500);
   const video = page.video();
   await ctx.close();
