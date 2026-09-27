@@ -55,6 +55,20 @@ Bağlama ve z-sırası:
 - Önizleme: `mino-burun-ifadeleri.png` (normal | burun kaşıntısı | burun tut | hapşu; üstte açık, altta koyu zemin).
 - Varsayılan çizim değişmedi: ekler gizliyken önceki SVG ile piksel farkı 0.
 
+## Film 2 ekleri: Kino ve Elma Kulesi (tam vektör, gizli)
+
+| İfade | Göster | Gizle | Not |
+|---|---|---|---|
+| üzgün | `kafa-uzgun`, `goz-uzgun`, `agiz-uzgun` | `kafa`, `goz-sol`, `goz-sag`, ağız | Kulaklar yana sarkık (kulak ortasından dışa ~62°, %92, kafanın arkasında). Dış köşesi düşük eğik kapak (yalvaran bakış), iç ucu kalkık kaşlar, alt kapakta ıslak parıltı. Küçük aşağı kıvrık ağız. Gözyaşı yok (3 yaş için yumuşak). |
+| şaşkın | `goz-saskin`, `agiz-saskin` | `goz-sol`, `goz-sag`, ağız | Kule yıkılırken. Kocaman beyaz gözler, iri iris, yüksek kalkık kaşlar, küçük "o" ağız. |
+| odak | `goz-odak`, `agiz-dil` | `goz-sol`, `goz-sag`, ağız | Elmayı dizerken. Kısık gözler, bakış içe, düz kaşlar. ω ağız, dilin ucu sağ köşeden dışarıda. |
+
+- `kafa-uzgun`: hâl grupları gibi `kafa` yerine, `k` sınıfının z-sırasına konur (göz ve ağız eklerinin altında kalır). Öbür ekler kafaya bağlı, `k` grubunun sonuna.
+- Omuz düşürme ve parmak ucunda uzanma kodla yapılır (kol, gövde dönüşü); ayrı çizim yok.
+- SVG sırası (alttan üste, dosyanın sonunda): `kafa-uzgun, goz-uzgun, agiz-uzgun, goz-saskin, agiz-saskin, goz-odak, agiz-dil`.
+- Önizleme: `mino-film2-ifadeler.png` (normal | üzgün | şaşkın | odak; üstte açık, altta koyu zemin).
+- Varsayılan çizim değişmedi: ekler gizliyken önceki SVG ile piksel farkı 0.
+
 ## Dudak senkronu ağızları (tam vektör, gizli, kafaya bağlı)
 
 Kod (`src/audio/dudak-mantik.ts`, `src/mino/mino.ts`) altısı birlikte varsa bunları kullanır. Konuşurken kod ağzı (`m-agiz`) gizlenir, o anki şekil gösterilir. Kontur #030102, 12 px (mevcut ağızlarla aynı). Burun altı çizgisi (1024,958→988) şekillerin içinde.
