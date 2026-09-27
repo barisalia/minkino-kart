@@ -15,6 +15,44 @@ import { FILM_EFEKT } from './efekt';
 import { filmMuzik, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
 
+// ---------------------------------------------------------------- MP4 kaydı (?kayit=1; scripts/film/mp4.mjs)
+/**
+ * Kayıt modu: film sahte saatle kare kare çekilir; ses çalınmaz, olaylar zamanıyla günlüğe yazılır ve sonra aynı
+ * efekt / müzik / konuşma koduyla çevrimdışı işlenir (film/src/kayit.ts). Normal oynatmada hiçbir şey değişmez.
+ */
+export const KAYIT = typeof location !== 'undefined' && new URLSearchParams(location.search).has('kayit');
+export interface SesOlayi {
+  /** performance.now() / 1000 (sahte saat) */
+  t: number;
+  tur: 'efekt' | 'muzik' | 'konus';
+  ad: string;
+  arg?: unknown;
+}
+export const sesGunlugu: SesOlayi[] = [];
+/** çevrimdışı işlerken aynı işlevler yeniden çağrılır: o sırada günlük tutulmaz */
+export const gunlukDurum = { kapali: false };
+export function sesGunlugeYaz(tur: SesOlayi['tur'], ad: string, arg?: unknown) {
+  if (KAYIT && !gunlukDurum.kapali) sesGunlugu.push({ t: performance.now() / 1000, tur, ad, arg });
+}
+if (KAYIT) {
+  // efektler ve müzik çağrıldığı an günlüğe (bağlam olmadığı için gerçekte ses çıkmaz)
+  for (const ad of Object.keys(FILM_EFEKT)) {
+    const f = FILM_EFEKT[ad];
+    FILM_EFEKT[ad] = () => {
+      sesGunlugeYaz('efekt', ad);
+      f();
+    };
+  }
+  const m = filmMuzik as unknown as Record<string, (...a: unknown[]) => void>;
+  for (const ad of ['baslat', 'degis', 'kis', 'duraklat', 'dur']) {
+    const f = m[ad].bind(filmMuzik);
+    m[ad] = (...a: unknown[]) => {
+      sesGunlugeYaz('muzik', ad, a[0]);
+      f(...a);
+    };
+  }
+}
+
 const FILM_GORSEL = import.meta.glob<string>('../../assets/film/*/arka-*.webp', { eager: true, query: '?url', import: 'default' });
 const PAZAR_GORSEL = import.meta.glob<string>('../../assets/pazar/tezgah.webp', { eager: true, query: '?url', import: 'default' });
 
@@ -323,6 +361,8 @@ export class Film {
     this.katmanlar.uzak.append(resim('arka-uzak'), this.isikUzak);
     this.katmanlar.tezgahlar.append(resim('arka-orta'));
     this.katmanlar.zemin.append(resim('arka-on'));
+    // dikey / kare MP4 kadrajında dünyanın altı görünür: taş zemin aşağı doğru sürer
+    if (document.body.dataset.kadraj === 'dolu') this.katmanlar.zemin.append(h('img.fl-zemin-alt', { src: film('arka-on'), alt: '', draggable: 'false' }), h('img.fl-zemin-alt.fl-zemin-alt-2', { src: film('arka-on'), alt: '', draggable: 'false' }));
     if (this.tezgahVar) {
       const stand = new Nesne({ x: 50, y: 5, w: 62, z: 1 }, h('img.fl-esya-resim', { src: PAZAR_GORSEL['../../assets/pazar/tezgah.webp'] ?? '', alt: '', draggable: 'false' }), 1);
       stand.el.dataset.esya = 'stand';
@@ -343,6 +383,12 @@ export class Film {
    * Güvenli alan: konuşan karakter ve "tut" listesindekiler kadrajdan taşmasın. Kamera hedefi korunur, yalnız
    * gerektiği kadar (yumuşakça) kaydırılır. Sığmıyorsa bu nesnelerin ortasına bakılır.
    */
+  /** MP4 dikey / kare kadraj (?kadraj=dolu): kamera ek yakınlığı (tut alanına göre, yumuşak) */
+  private zCarpan = 1;
+  private dolu(W: number, H: number) {
+    return document.body.dataset.kadraj === 'dolu' && H >= W;
+  }
+
   private guvenliAlan(W: number, H: number, S: number) {
     const idler = [...new Set([...this.tut, ...(this.konusan ? [this.konusan] : [])])];
     let l = Infinity, r = -Infinity, ust = Infinity, alt = -Infinity;
@@ -358,8 +404,8 @@ export class Film {
     }
     let hx = 0, hy = 0;
     if (l < Infinity) {
-      const vw = (100 * W) / (S * this.kam.z);
-      const vh = (100 * H) / (S * this.kam.z);
+      const vw = (100 * W) / (S * this.kam.z * this.zCarpan);
+      const vh = (100 * H) / (S * this.kam.z * this.zCarpan);
       const m = 3;
       const x = this.kam.x;
       const y = this.kam.y;
@@ -370,6 +416,12 @@ export class Film {
     }
     // duraklatılmışken kamera tamamen durur (yumuşak düzeltme de beklemede kalır)
     if (this.duraklat && !this.ilkKare) return;
+    // dikey / kare: karakterler ekran yüksekliğinin ~%40'ı olacak kadar yaklaş; tut alanı sığmıyorsa sığacak kadar
+    if (this.dolu(W, H)) {
+      const hedef = H > W * 1.3 ? 1.5 : 1.28;
+      const c = l < Infinity ? Math.min(hedef, Math.max(0.75, 1 / this.kam.z, (100 * W) / (S * this.kam.z * (r - l + 8)))) : hedef;
+      this.zCarpan += (c - this.zCarpan) * (this.ilkKare ? 1 : 0.06);
+    }
     const k = this.ilkKare ? 1 : 0.12;
     this.ilkKare = false;
     this.duzelt.x += (hx - this.duzelt.x) * k;
@@ -382,16 +434,19 @@ export class Film {
     const S = Math.max(W, H);
     this.dunya.style.width = this.dunya.style.height = `${S}px`;
     this.guvenliAlan(W, H, S);
+    // MP4 dikey / kare kadraj (?kadraj=dolu): dünyanın altı taş zeminle sürer (fl-zemin-alt), sahne alt üçte bire çıkar
+    // pay, zemin bantlarının (ayna + düz: dünyanın ~%19'u) ekrandaki yüksekliğini aşmasın: uzaklaşınca altta boşluk kalmasın
+    const pay = this.dolu(W, H) ? Math.min(H * (H > W * 1.3 ? 0.16 : 0.1), 0.17 * S * this.kam.z * this.zCarpan) : 0;
     for (const [ad, el] of Object.entries(this.katmanlar) as [Katman, HTMLElement][]) {
       const d = DERINLIK[ad];
-      const z = 1 + (this.kam.z - 1) * d;
+      const z = 1 + (this.kam.z * this.zCarpan - 1) * d;
       const fx = S / 2 + (((this.kam.x + this.duzelt.x) / 100) * S - S / 2) * d;
       const fy = S / 2 + (((this.kam.y + this.duzelt.y) / 100) * S - S / 2) * d;
       let tx = W / 2 - fx * z;
       let ty = H / 2 - fy * z;
       // dünyanın kenarı görünmesin
       tx = Math.min(0, Math.max(W - S * z, tx));
-      ty = Math.min(0, Math.max(H - S * z, ty));
+      ty = Math.min(0, Math.max(H - S * z - pay, ty - pay * 0.85));
       el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z.toFixed(4)})`;
     }
   }
@@ -521,7 +576,9 @@ export class Film {
       });
     }
     // Kino: kendi sesi varsa o, yoksa anlatıcı sesinin kalın tonu (maceralarla aynı yol)
-    if (this.ses) void konus(metin, kim === 'kino' ? KINO_SESI : { karakter: kim || null, ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 });
+    const konusSecenek = kim === 'kino' ? KINO_SESI : { karakter: kim || null, ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 };
+    if (this.ses) void konus(metin, konusSecenek);
+    sesGunlugeYaz('konus', metin, konusSecenek);
   }
 
   private parilti(x: number, y: number) {

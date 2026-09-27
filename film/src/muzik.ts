@@ -174,6 +174,11 @@ class FilmMuzik {
     clearInterval(this.sayac);
   }
 
+  /** MP4 kaydı (film/src/kayit.ts): zamanlayıcı yerine çevrimdışı işlemede dışarıdan adım */
+  adimAt() {
+    if (this.calisiyor) this.planla();
+  }
+
   /** önümüzdeki ~0.35 sn'nin notalarını zamanla */
   private planla() {
     const c = this.c;
