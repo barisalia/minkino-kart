@@ -7,9 +7,26 @@
  * Katmanlar: .pz-musteri (yol: giriş/çıkış, WAAPI) > balon + gölge + karakter (duruş: karakter motoru).
  */
 import { Karakter } from '../../src/karakter/karakter';
+import { YandanKarakter, yandanVar, yandanYukle } from '../../src/karakter/yandan';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { tozKalkar } from './gorsel';
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** test modunda yandan yürüyüş kapalı (hızlı testler); &yandan=1 ile açılır */
+const yandanZorla = typeof location !== 'undefined' && new URLSearchParams(location.search).get('yandan') === '1';
+/** Bu müşteri yandan yürüyerek mi gelir: yan görünüş iskeleti var, hareket azaltılmamış */
+const yandanYururMu = (ad: string) => yandanVar(ad) && !AZ && (!TEST_MODU || yandanZorla);
+/**
+ * Önden / yandan çizimden görünmeyeni: tam 0 değil. Tarayıcı saydamlığı 0 olan katmanı hiç boyamaz; açılınca
+ * gömülü resimleri yeniden çözerken bir kare boş kalıyordu (dönüşte karakter bir an kayboluyordu).
+ */
+const GIZLI = '0.001';
+const bekle = (x: number) => new Promise<void>((r) => setTimeout(r, ms(x)));
+
+/** Ekran açılırken müşterilerin yan görünüşlerini önceden hazırlar (varsa) */
+export function musteriHazirla(ad: string) {
+  if (yandanYururMu(ad)) void yandanYukle(ad);
+}
 const ms = (x: number) => (AZ ? Math.min(x, 200) : sure(x));
 const ras = (a: number, b: number) => a + Math.random() * (b - a);
 /** Yüz buruşturunca başın yanındaki titrek çizgiler ve beğenince uçan kalp (kalın kahve kontur) */
@@ -25,19 +42,125 @@ export class Musteri {
   private huyZaman = 0;
   private mesgul = false;
 
+  /** yan görünüşü olan karakter (assets/karakter-iskelet/<ad>-profil.*): kenardan yandan yürüyerek gelir, gider */
+  private yan: YandanKarakter | null = null;
+  private yanKap: HTMLElement | null = null;
+  private govde: HTMLElement;
+
   constructor(ad: string, cizim: HTMLElement, balon: HTMLElement) {
     this.ad = ad;
     this.karakter = new Karakter(ad, cizim);
-    this.el = h('div.pz-musteri.pz-kisilik', { 'data-musteri': ad, 'data-yuruyus': this.karakter.k.yuruyus }, balon, h('i.pz-m-golge'), h('div.pz-m-govde', {}, this.karakter.el));
+    this.govde = h('div.pz-m-govde', {}, this.karakter.el);
+    if (yandanYururMu(ad)) {
+      this.yan = new YandanKarakter(ad);
+      this.yan.gorunur = false;
+      this.yanKap = h('div.pz-m-yan', { style: `opacity:${GIZLI}` }, this.yan.el);
+      this.govde.append(this.yanKap);
+    }
+    this.el = h('div.pz-musteri.pz-kisilik', { 'data-musteri': ad, 'data-yuruyus': this.karakter.k.yuruyus }, balon, h('i.pz-m-golge'), this.govde);
   }
 
   private get k() {
     return this.karakter.k;
   }
 
+  /** Yan görünüş kullanılabiliyorsa onu döner (yüklenmesi uzarsa null: önden yürür) */
+  private async yanHazir(): Promise<YandanKarakter | null> {
+    const yan = this.yan;
+    if (!yan) return null;
+    const hazir = await Promise.race([yan.hazir, new Promise<boolean>((r) => setTimeout(() => r(false), 900))]);
+    return hazir && this.el.isConnected ? yan : null;
+  }
+
+  /** Adım hızı (döngü / sn; bir döngü iki adım): kişiliğin adım süresinden, makul sınırlarda */
+  private get adimHizi() {
+    return Math.max(1.5, Math.min(2.3, 1000 / (2 * this.k.adim)));
+  }
+
+  /**
+   * Önden ↔ yandan dönüş: giden çizim daralıp kaybolur, gelen o anda belirip taşarak genişler (Mino'nun dönüşüyle
+   * aynı dil); bütün beden kısa bir sıkışma + zıplama yapar, yere inerken ayakların dibinde toz kalkar.
+   */
+  private async don(yandan: boolean) {
+    const yan = this.yanKap;
+    if (!yan) return;
+    const on = this.karakter.el;
+    const [giden, gelen] = yandan ? [on, yan] : [yan, on];
+    const govde = this.govde.animate(
+      [
+        { transform: 'none' },
+        { transform: 'scale(1.08, 0.9)', offset: 0.22, easing: 'cubic-bezier(0.3, 0, 0.4, 1)' },
+        { transform: 'translateY(-6%) scale(0.96, 1.05)', offset: 0.55, easing: 'cubic-bezier(0.5, 0, 0.8, 0.6)' },
+        { transform: 'scale(1.06, 0.94)', offset: 0.82, easing: 'ease-out' },
+        { transform: 'none' },
+      ],
+      { duration: 420 },
+    );
+    await bekle(90);
+    await giden.animate([{ transform: 'scaleX(1)' }, { transform: 'scaleX(0.7)' }], { duration: 90, easing: 'ease-in' }).finished.catch(() => undefined);
+    giden.style.opacity = GIZLI;
+    gelen.style.opacity = '1';
+    if (this.yan) this.yan.gorunur = yandan;
+    gelen.animate([{ transform: 'scaleX(0.7)' }, { transform: 'scaleX(1.06)', offset: 0.7 }, { transform: 'scaleX(1)' }], { duration: 150, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1.2)' });
+    await bekle(120);
+    // ayaklar yere inerken toz (ayak çizgisi çizimin ~%88'inde)
+    tozKalkar(this.el, 0.5, 0.88);
+    await govde.finished.catch(() => undefined);
+  }
+
+  /** Yandan yürür: her karede tam alınan yol kadar ilerler (adım ile ilerleme eşleşir, pati kaymaz) */
+  private yuruYandan(yan: YandanKarakter, bas: number, hedef: number, dur: boolean): Promise<void> {
+    const w = this.el.offsetWidth || 300;
+    const birim = w / 2048;
+    const yon = hedef >= bas ? 1 : -1;
+    yan.yon = yon;
+    const yol0 = yan.yol;
+    let durdu = false;
+    const git = (x: number) => (this.el.style.transform = `translateX(${x.toFixed(1)}px)`);
+    git(bas * w);
+    return new Promise((coz) => {
+      yan.onKare = (yol) => {
+        const x = bas * w + yon * (yol - yol0) * birim;
+        git(x);
+        const kalan = (hedef * w - x) * yon;
+        if (!dur) {
+          if (kalan <= 0) coz();
+          return;
+        }
+        if (!durdu && kalan <= yan.frenYolu() * birim) {
+          durdu = true;
+          yan.dur();
+        }
+        if (durdu && yan.yurume < 0.12) {
+          yan.onKare = null;
+          coz();
+        }
+      };
+      yan.yuru(this.adimHizi);
+    });
+  }
+
   /** Kendi yürüyüşüyle soldan tezgâha gelir; varınca basıp durur */
   async gel() {
     this.mesgul = true;
+    const yan = await this.yanHazir();
+    if (yan) {
+      // yandan: kenarın dışından yürür, tezgâhta durur, önden görünüşe döner
+      this.karakter.el.style.opacity = GIZLI;
+      this.yanKap!.style.opacity = '1';
+      yan.gorunur = true;
+      this.el.classList.add('pz-yandan');
+      await this.yuruYandan(yan, -0.95, 0, true);
+      const x = new DOMMatrixReadOnly(getComputedStyle(this.el).transform).m41;
+      // durduğu yer ile tezgâhtaki yeri arasındaki minik fark dönüşün zıplamasında kapanır
+      this.el.animate([{ transform: `translateX(${x}px)` }, { transform: 'translateX(0)' }], { duration: 300, easing: 'ease-out' });
+      this.el.style.transform = '';
+      await this.don(false);
+      this.el.classList.remove('pz-yandan');
+      await this.karakter.oynat('var', 360);
+      this.mesgul = false;
+      return;
+    }
     const k = this.k;
     const yol: Keyframe[] =
       k.yuruyus === 'uc'
@@ -236,6 +359,15 @@ export class Musteri {
   async git() {
     this.mesgul = true;
     this.bekle(false);
+    const yan = this.yan && (await this.yan.hazir) && this.el.isConnected ? this.yan : null;
+    if (yan) {
+      // önden yana döner (sola bakar), yandan yürüyerek kenardan çıkar
+      yan.yon = -1;
+      await this.don(true);
+      this.el.classList.add('pz-yandan');
+      await this.yuruYandan(yan, 0, -1.05, false);
+      return;
+    }
     const k = this.k;
     const sure = Math.max(700, k.gelis * 0.7);
     const yol: Keyframe[] = k.yuruyus === 'uc' ? [{ transform: 'translate(0, 0)' }, { transform: 'translate(-120%, -130%)' }] : [{ transform: 'translateX(0)' }, { transform: 'translateX(-125%)' }];
@@ -247,6 +379,7 @@ export class Musteri {
   kapat() {
     clearTimeout(this.huyZaman);
     this.karakter.kapat();
+    this.yan?.kapat();
     this.el.getAnimations({ subtree: true }).forEach((a) => a.cancel());
   }
 }

@@ -32,3 +32,19 @@
   transform-box: view-box;
   transform-origin: 0 0;
 }
+/* Yandan yürüyen karakter (yandan.ts): yan görünüş iskeleti; sola yürürken aynalanır */
+.mk-kok .yk-yandan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: scaleX(var(--yk-yon, 1));
+}
+.mk-kok .yk-cizim,
+.mk-kok .yk-cizim svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}

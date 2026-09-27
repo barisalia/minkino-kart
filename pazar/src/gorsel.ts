@@ -32,6 +32,36 @@ export function tozKalkar(kap: HTMLElement, x: number, y: number) {
   setTimeout(() => yer.remove(), 900);
 }
 
+/**
+ * Öndeki flama ipi standın hemen üstüne asılır: uzun telefon ekranında stand aşağıda kalınca ip ile tente
+ * arasında büyük boş gökyüzü kalıyordu. İp en az ekranın %19'unda (eski yeri); tezgâh yükselip alçaldıkça
+ * (Ver düğmesi, terazi) yumuşakça yer değiştirir. Döndürdüğü işlev gözlemciyi kapatır.
+ */
+export function flamaYerlestir(ekran: HTMLElement, kamera: HTMLElement): () => void {
+  const yerlestir = () => {
+    const s = kamera.querySelector('.pz-stand')?.getBoundingClientRect();
+    const f = ekran.querySelector<HTMLElement>('.pz-flamalar');
+    const k = ekran.getBoundingClientRect();
+    if (!s || !f || !k.height) return;
+    // tente çizimin %9'undan başlar; flamaların ucu tentenin biraz üstünde kalsın
+    const tente = s.top + s.height * 0.1 - k.top;
+    ekran.style.setProperty('--pz-flama-y', `${Math.round(Math.max(0.19 * k.height, tente - f.offsetHeight * 0.95))}px`);
+  };
+  let raf = requestAnimationFrame(() => {
+    yerlestir();
+    // ilk yerleşim anında; sonrakiler kayarak
+    raf = requestAnimationFrame(() => ekran.classList.add('pz-flama-kayar'));
+  });
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => yerlestir()) : null;
+  ro?.observe(ekran);
+  const tezgah = ekran.querySelector('.pz-tezgah');
+  if (tezgah) ro?.observe(tezgah);
+  return () => {
+    cancelAnimationFrame(raf);
+    ro?.disconnect();
+  };
+}
+
 /** Uçuşan küçük parıltılar (x, y: 0..1, kaba göre) */
 export function parilti(kap: HTMLElement, x: number, y: number, adet = 8) {
   for (let i = 0; i < adet; i++) {
