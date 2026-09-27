@@ -12,17 +12,62 @@
     "agiz",
     "goz-sol",
     "goz-sag",
-    "goz-kapali"
+    "goz-kapali",
+    "yanak-mamali",
+    "goz-agliyor",
+    "goz-kikir",
+    "goz-saskin",
+    "goz-esniyor",
+    "goz-uyku",
+    "goz-tek-acik",
+    "agiz-agliyor",
+    "agiz-am",
+    "agiz-kikir",
+    "agiz-kahkaha",
+    "agiz-saskin",
+    "agiz-buzuk",
+    "agiz-esniyor",
+    "agiz-uyku-gulus"
   ],
   "gizli": [
-    "goz-kapali"
+    "goz-kapali",
+    "yanak-mamali",
+    "goz-agliyor",
+    "goz-kikir",
+    "goz-saskin",
+    "goz-esniyor",
+    "goz-uyku",
+    "goz-tek-acik",
+    "agiz-agliyor",
+    "agiz-am",
+    "agiz-kikir",
+    "agiz-kahkaha",
+    "agiz-saskin",
+    "agiz-buzuk",
+    "agiz-esniyor",
+    "agiz-uyku-gulus"
   ],
   "bagli": {
     "agiz": "kafa",
     "goz-sol": "kafa",
     "goz-sag": "kafa",
     "goz-kapali": "kafa",
-    "kas": "kafa"
+    "kas": "kafa",
+    "yanak-mamali": "kafa",
+    "goz-agliyor": "kafa",
+    "goz-kikir": "kafa",
+    "goz-saskin": "kafa",
+    "goz-esniyor": "kafa",
+    "goz-uyku": "kafa",
+    "goz-tek-acik": "kafa",
+    "agiz-agliyor": "kafa",
+    "agiz-am": "kafa",
+    "agiz-kikir": "kafa",
+    "agiz-kahkaha": "kafa",
+    "agiz-saskin": "kafa",
+    "agiz-buzuk": "kafa",
+    "agiz-esniyor": "kafa",
+    "agiz-uyku-gulus": "kafa"
   },
   "donme": {
     "kafa": [
@@ -68,6 +113,177 @@
     "kas": [
       1029,
       500
+    ],
+    "yanak-mamali": [
+      1026,
+      860
+    ],
+    "goz-agliyor": [
+      1033,
+      668
+    ],
+    "goz-kikir": [
+      1033,
+      668
+    ],
+    "goz-saskin": [
+      1033,
+      668
+    ],
+    "goz-esniyor": [
+      1033,
+      668
+    ],
+    "goz-uyku": [
+      1033,
+      668
+    ],
+    "goz-tek-acik": [
+      1033,
+      668
+    ],
+    "agiz-agliyor": [
+      1026,
+      846
+    ],
+    "agiz-am": [
+      1026,
+      846
+    ],
+    "agiz-kikir": [
+      1026,
+      846
+    ],
+    "agiz-kahkaha": [
+      1026,
+      846
+    ],
+    "agiz-saskin": [
+      1026,
+      846
+    ],
+    "agiz-buzuk": [
+      1026,
+      846
+    ],
+    "agiz-esniyor": [
+      1026,
+      846
+    ],
+    "agiz-uyku-gulus": [
+      1026,
+      846
     ]
+  },
+  "ifadeler": {
+    "agliyor": {
+      "goster": [
+        "goz-agliyor",
+        "agiz-agliyor"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali",
+        "kas",
+        "agiz"
+      ]
+    },
+    "am": {
+      "goster": [
+        "agiz-am"
+      ],
+      "gizle": [
+        "agiz"
+      ]
+    },
+    "kikir": {
+      "goster": [
+        "goz-kikir",
+        "agiz-kikir"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali",
+        "agiz"
+      ]
+    },
+    "kahkaha": {
+      "goster": [
+        "goz-kikir",
+        "agiz-kahkaha"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali",
+        "agiz"
+      ]
+    },
+    "saskin": {
+      "goster": [
+        "goz-saskin",
+        "agiz-saskin"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali",
+        "kas",
+        "agiz"
+      ]
+    },
+    "buzuk": {
+      "goster": [
+        "agiz-buzuk"
+      ],
+      "gizle": [
+        "agiz"
+      ]
+    },
+    "esniyor": {
+      "goster": [
+        "goz-esniyor",
+        "agiz-esniyor"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali",
+        "agiz"
+      ]
+    },
+    "uyuyor": {
+      "goster": [
+        "goz-uyku"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali"
+      ]
+    },
+    "uykuda-gulumsuyor": {
+      "goster": [
+        "goz-uyku",
+        "agiz-uyku-gulus"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "goz-kapali",
+        "agiz"
+      ]
+    },
+    "tek-goz": {
+      "goster": [
+        "goz-tek-acik"
+      ],
+      "gizle": [
+        "goz-sag",
+        "goz-kapali"
+      ]
+    }
   }
 }

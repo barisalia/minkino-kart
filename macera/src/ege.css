@@ -471,13 +471,10 @@
   left: 30%;
 }
 
-/* ifadeler: çizimin göz / ağız / kaş katmanları gizlenir ya da ölçeklenir, yerine kodla çizilen parçalar */
-.mc-kok .eg-yuzlu .eg-yuz .eg-g,
-.mc-kok .eg-yuzlu .eg-yuz .eg-a,
-.mc-kok .eg-yuzlu .eg-yuz .eg-kas-uzgun,
-.mc-kok .eg-yuzlu .eg-yuz .eg-yas,
+/* ifadeler: tasarımcının vektör ekleri (Karakter.ifade göster/gizle yapar); burada yalnız kod ekleri */
 .mc-kok .eg-yuzlu .eg-yuz .eg-emzik,
-.mc-kok .eg-yuzlu .eg-onluk {
+.mc-kok .eg-yuzlu .eg-onluk,
+.mc-kok .eg-yuzlu .eg-leke {
   display: none;
 }
 .mc-kok .eg-yuzlu .eg-yanak {
@@ -485,36 +482,16 @@
   transition: opacity 0.4s;
 }
 .mc-kok .eg-yuzlu.kizarik .eg-yanak {
-  opacity: 0.5;
+  opacity: 0.35;
 }
-/* gözler */
-.mc-kok .eg-yuzlu:is([data-goz='kapali'], [data-goz='mutlu'], [data-goz='sikili'], [data-goz='tek']) g[data-parca='goz-sol'],
-.mc-kok .eg-yuzlu:is([data-goz='kapali'], [data-goz='mutlu'], [data-goz='sikili']) g[data-parca='goz-sag'],
-.mc-kok .eg-yuzlu:is([data-goz='mutlu'], [data-goz='sikili'], [data-goz='tek']) g[data-parca='goz-kapali'] {
-  opacity: 0 !important;
-}
-.mc-kok .eg-yuzlu[data-goz='kapali'] g[data-parca='goz-kapali'],
-.mc-kok .eg-yuzlu[data-goz='tek'] g[data-parca='goz-sag'] {
-  opacity: 1 !important;
-}
-.mc-kok .eg-yuzlu[data-goz='mutlu'] .eg-g-mutlu,
-.mc-kok .eg-yuzlu[data-goz='sikili'] .eg-g-sikili,
-.mc-kok .eg-yuzlu[data-goz='tek'] .eg-g-tek {
-  display: inline;
-}
+/* uykulu: açık gözler yarı kapanır */
 .mc-kok .eg-yuzlu g[data-parca='goz-sol'] > image {
   transform-origin: 846px 663px;
 }
 .mc-kok .eg-yuzlu g[data-parca='goz-sag'] > image {
   transform-origin: 1207px 662px;
 }
-.mc-kok .eg-yuzlu :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
-  transition: scale 0.25s cubic-bezier(0.3, 1.6, 0.5, 1), translate 0.45s cubic-bezier(0.3, 1.3, 0.5, 1);
-}
-.mc-kok .eg-yuzlu[data-goz='iri'] :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
-  scale: 1.22;
-}
-.mc-kok .eg-yuzlu[data-uykulu][data-goz='acik'] :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
+.mc-kok .eg-yuzlu[data-uykulu][data-ifade='bakiyor'] :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
   scale: 1 0.5;
 }
 .mc-kok .eg-yuzlu.kirpistir :is(g[data-parca='goz-sol'], g[data-parca='goz-sag']) > image {
@@ -523,23 +500,15 @@
 @keyframes eg-kirp {
   50% { scale: 1 0.1; }
 }
-/* ağız */
-.mc-kok .eg-yuzlu:not([data-agiz='notr']) g[data-parca='agiz'],
-.mc-kok .eg-yuzlu.emzikli g[data-parca='agiz'] {
+/* bakış: yüz parçaları (göz, kaş, ağız ve ekleri) bakılan yana kayar, kafa da o yana eğilir */
+.mc-kok .eg-yuzlu :is(g[data-parca^='goz'], g[data-parca^='agiz'], g[data-parca='kas'], g[data-parca='yanak-mamali']) > *,
+.mc-kok .eg-yuzlu .eg-yuz-on {
+  translate: calc(var(--bak, 0) * 40px) 0;
+  transition: translate 0.45s cubic-bezier(0.3, 1.3, 0.5, 1), scale 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+/* emzik: ağız ekleri görünmez, emzik emilir */
+.mc-kok .eg-yuzlu.emzikli g[data-parca^='agiz'] {
   opacity: 0 !important;
-}
-.mc-kok .eg-yuzlu[data-agiz='agla'] .eg-a-agla,
-.mc-kok .eg-yuzlu[data-agiz='am'] .eg-a-am,
-.mc-kok .eg-yuzlu[data-agiz='gul'] .eg-a-gul,
-.mc-kok .eg-yuzlu[data-agiz='kahkaha'] .eg-a-kahkaha,
-.mc-kok .eg-yuzlu[data-agiz='o'] .eg-a-o,
-.mc-kok .eg-yuzlu[data-agiz='buzuk'] .eg-a-buzuk,
-.mc-kok .eg-yuzlu[data-agiz='esne'] .eg-a-esne,
-.mc-kok .eg-yuzlu[data-agiz='uyku'] .eg-a-uyku {
-  display: inline;
-}
-.mc-kok .eg-yuzlu.emzikli .eg-yuz .eg-a {
-  display: none;
 }
 .mc-kok .eg-yuzlu.emzikli .eg-yuz .eg-emzik {
   display: inline;
@@ -548,44 +517,18 @@
   transform-origin: 1026px 850px;
   scale: var(--emme, 1);
 }
-/* kaşlar */
-.mc-kok .eg-yuzlu[data-kas='uzgun'] g[data-parca='kas'] {
-  opacity: 0 !important;
+/* mamalı yanak: her ifadeyle birlikte; silindikçe solar (--mama) */
+.mc-kok .eg-yuzlu.mamali g[data-parca='yanak-mamali'] {
+  opacity: 1 !important;
 }
-.mc-kok .eg-yuzlu[data-kas='uzgun'] .eg-kas-uzgun {
-  display: inline;
+.mc-kok .eg-yuzlu g[data-parca='yanak-mamali'] > * {
+  opacity: var(--mama, 1);
+  transition: opacity 0.2s;
 }
-/* bakış: yüz parçaları bakılan yana kayar (kafa da o yana eğilir) */
-.mc-kok .eg-yuzlu :is(g[data-parca='goz-sol'], g[data-parca='goz-sag'], g[data-parca='goz-kapali'], g[data-parca='agiz'], g[data-parca='kas']) > image,
-.mc-kok .eg-yuzlu .eg-yuz-on {
-  translate: calc(var(--bak, 0) * 40px) 0;
-  transition: translate 0.45s cubic-bezier(0.3, 1.3, 0.5, 1), scale 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.mc-kok .eg-yuzlu[data-kas='yukari'] g[data-parca='kas'] > image {
-  translate: calc(var(--bak, 0) * 40px) -34px;
-}
-/* gözyaşı */
-.mc-kok .eg-yuzlu.yasli .eg-yuz .eg-yas {
-  display: inline;
-}
-.mc-kok .eg-yuzlu .eg-damla {
-  animation: eg-damla 1.1s ease-in calc(var(--i) * 0.27s) infinite;
-}
-@keyframes eg-damla {
-  0% { translate: 0 0; opacity: 0; }
-  15% { opacity: 1; }
-  100% { translate: 0 190px; opacity: 0; }
-}
-/* önlük, mama lekesi */
+/* önlük */
 .mc-kok .eg-yuzlu.onluklu .eg-onluk {
   display: inline;
 }
-.mc-kok .eg-yuzlu .eg-leke {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: opacity 0.15s;
-}
-
 /* ---------------------------------------------------------------- parçacıklar */
 .mc-kok .eg-sahne .eg-parca-katman {
   position: absolute;

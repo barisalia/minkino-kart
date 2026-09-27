@@ -62,7 +62,7 @@ export const OLCU: Record<string, [number, number]> = {
   'perde-kapali': [858, 849],
   'kukla-ayi': [858, 1005],
   'kukla-civciv': [837, 1014],
-  anne: [266, 720],
+  anne: [428, 1143],
 };
 export const oran = (ad: string) => {
   const o = OLCU[ad] ?? (SVG[ad] ? [SVG[ad][0], SVG[ad][1]] : [1, 1]);

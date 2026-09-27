@@ -3,10 +3,10 @@
  * scripts/karakter/iskelet-al.mjs → assets/karakter-iskelet/ege.*). Katmanlar: govde, kol-sol/sag, bacak-sol/sag,
  * kafa, kas, agiz, goz-sol/sag, gizli goz-kapali. Açılar: kafa ±10, kol -40…+35, bacak ±8 (kisilik.ts).
  *
- * İfadeler (ağlıyor, am, kıkırdama, kahkaha, şaşkın, dudak büzük, esneme, uyku, uykuda gülümseme, bir göz açık)
- * Gemini'den gelene kadar KODLA: çizimin göz/ağız/kaş katmanları gizlenir ya da ölçeklenir, yerine kafa katmanına
- * eklenen vektör parçalar (aynı kontur ve ten rengi) görünür. Gözyaşı, mama lekesi, emzik ve önlük de kafa / gövde
- * katmanına eklenen SVG'dir: kafa dönünce onlar da döner. Başını çevirme: kafa eğilir, yüz parçaları o yana kayar.
+ * İfadeler tasarımcının vektör ekleri (ekip/ege/IFADELER.md; göster/gizle setleri iskeletin JSON'unda "ifadeler"):
+ * ağlıyor, am, kıkırdama, kahkaha, şaşkın, dudak büzük, esneme, uyku, uykuda gülümseme, bir göz açık; mamalı yüz
+ * (yanak-mamali) her ifadeyle birlikte, silindikçe solar. Gözyaşı damlaları, emzik ve önlük kodla (kafa / gövde katmanına
+ * eklenen SVG: kafa dönünce onlar da döner). Başını çevirme: kafa eğilir, yüz parçaları o yana kayar.
  * Hareketler (ağlarken çırpınma, kıkırdama, kahkaha, tekme, irkilme, esneme, uyku nefesi) Karakter.ekHareket ile.
  * Yalnız transform / opacity.
  */
@@ -23,30 +23,23 @@ const KIRPIM: [number, number, number, number] = [215, 118, 1620, 1840];
 export const EGE_ORAN = KIRPIM[3] / KIRPIM[2];
 
 /** Yüz noktaları (iskelet koordinatı) */
-const GOZ_SOL: [number, number] = [846, 663];
-const GOZ_SAG: [number, number] = [1207, 662];
 const AGIZ: [number, number] = [1026, 842];
 const K = '#4b1917';
-const TEN = '#ecb399';
-const KAS = '#8a5b46';
 
 export type EgeIfade = 'agliyor' | 'bakiyor' | 'am' | 'kikir' | 'kahkaha' | 'saskin' | 'buzuk' | 'esniyor' | 'uyuyor' | 'uykuda-gulumsuyor' | 'tek-goz';
-type Goz = 'acik' | 'iri' | 'kapali' | 'mutlu' | 'sikili' | 'tek';
-type Agiz = 'notr' | 'agla' | 'am' | 'gul' | 'kahkaha' | 'o' | 'buzuk' | 'esne' | 'uyku';
-type Kas = 'normal' | 'yukari' | 'uzgun';
-/** ifade → [göz, ağız, kaş, gözyaşı, yanak kızarması] */
-const IFADE: Record<EgeIfade, [Goz, Agiz, Kas, boolean, boolean]> = {
-  agliyor: ['sikili', 'agla', 'uzgun', true, true],
-  bakiyor: ['acik', 'notr', 'normal', false, false],
-  am: ['acik', 'am', 'yukari', false, false],
-  kikir: ['mutlu', 'gul', 'normal', false, true],
-  kahkaha: ['mutlu', 'kahkaha', 'yukari', false, true],
-  saskin: ['iri', 'o', 'yukari', false, false],
-  buzuk: ['acik', 'buzuk', 'uzgun', false, false],
-  esniyor: ['kapali', 'esne', 'yukari', false, false],
-  uyuyor: ['kapali', 'uyku', 'normal', false, false],
-  'uykuda-gulumsuyor': ['kapali', 'notr', 'normal', false, true],
-  'tek-goz': ['tek', 'uyku', 'normal', false, false],
+/** ifade → yanak kızarır mı (ifade setinin adı ifadenin kendisi; "bakiyor" = çizimin kendi yüzü) */
+const KIZARIK: Record<EgeIfade, boolean> = {
+  agliyor: true,
+  bakiyor: false,
+  am: false,
+  kikir: true,
+  kahkaha: true,
+  saskin: false,
+  buzuk: false,
+  esniyor: false,
+  uyuyor: false,
+  'uykuda-gulumsuyor': true,
+  'tek-goz': false,
 };
 
 export type EgeHareket = 'kikir' | 'kahkaha' | 'ayak' | 'irkil' | 'esne' | 'kipir' | 'vur' | 'cirp' | 'am' | 'gurul' | 'hayir';
@@ -60,43 +53,18 @@ const svgEl = (ad: string, html: string, sinif = '') => {
   return e as SVGGElement;
 };
 
-/** Kodla çizilen yüz parçaları (kafa katmanına eklenir) */
+/** Kodla eklenen yüz parçaları (kafa katmanına): hafif yanak kızarması, mama lekelerinin silme noktaları, emzik */
 function yuzSvg(): string {
-  const [lx, ly] = GOZ_SOL;
-  const [rx, ry] = GOZ_SAG;
-  const [ax, ay] = AGIZ;
-  const yama = (x: number, y: number) => `<ellipse cx="${x}" cy="${y}" rx="112" ry="116" fill="url(#egTen)"/>`;
-  const s = `stroke="${K}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
-  const dil = (y: number, rx2: number, ry2: number) => `<ellipse cx="${ax}" cy="${y}" rx="${rx2}" ry="${ry2}" fill="#e56f78"/>`;
   return `
-<defs><radialGradient id="egTen"><stop offset=".62" stop-color="${TEN}"/><stop offset="1" stop-color="${TEN}" stop-opacity="0"/></radialGradient></defs>
 <g class="eg-yanak"><ellipse cx="800" cy="780" rx="92" ry="60" fill="#ef8a82"/><ellipse cx="1254" cy="782" rx="92" ry="60" fill="#ef8a82"/></g>
 <g class="eg-yuz-on">
-  <g class="eg-g eg-g-mutlu">${yama(lx, ly)}${yama(rx, ry)}<path d="M${lx - 70} ${ly + 22}Q${lx} ${ly - 70} ${lx + 70} ${ly + 22}" ${s} stroke-width="20"/><path d="M${rx - 70} ${ry + 22}Q${rx} ${ry - 70} ${rx + 70} ${ry + 22}" ${s} stroke-width="20"/></g>
-  <g class="eg-g eg-g-sikili">${yama(lx, ly)}${yama(rx, ry)}<path d="M${lx - 64} ${ly - 44}L${lx + 50} ${ly}L${lx - 64} ${ly + 44}" ${s} stroke-width="20"/><path d="M${rx + 64} ${ry - 44}L${rx - 50} ${ry}L${rx + 64} ${ry + 44}" ${s} stroke-width="20"/></g>
-  <g class="eg-g eg-g-tek">${yama(lx, ly)}<path d="M${lx - 66} ${ly + 4}Q${lx} ${ly + 56} ${lx + 66} ${ly + 4}" ${s} stroke-width="18"/><path d="M${lx - 70} ${ly - 8}L${lx - 92} ${ly - 30}" ${s} stroke-width="12"/></g>
-  <g class="eg-kas-uzgun"><path d="M${lx - 80} ${ly - 150}Q${lx - 20} ${ly - 170} ${lx + 50} ${ly - 205}" ${s} stroke="${KAS}" stroke-width="26"/><path d="M${rx + 80} ${ry - 150}Q${rx + 20} ${ry - 170} ${rx - 50} ${ry - 205}" ${s} stroke="${KAS}" stroke-width="26"/></g>
-  <g class="eg-a eg-a-agla"><path d="M${ax - 100} ${ay - 6}Q${ax} ${ay - 64} ${ax + 100} ${ay - 6}Q${ax + 96} ${ay + 104} ${ax} ${ay + 110}Q${ax - 96} ${ay + 104} ${ax - 100} ${ay - 6}Z" fill="#7a2320" stroke="${K}" stroke-width="14" stroke-linejoin="round"/>${dil(ay + 76, 58, 24)}</g>
-  <g class="eg-a eg-a-am"><circle cx="${ax}" cy="${ay + 14}" r="52" fill="#7a2320" stroke="${K}" stroke-width="14"/>${dil(ay + 42, 30, 14)}</g>
-  <g class="eg-a eg-a-gul"><path d="M${ax - 88} ${ay - 22}Q${ax} ${ay - 4} ${ax + 88} ${ay - 22}Q${ax + 78} ${ay + 70} ${ax} ${ay + 76}Q${ax - 78} ${ay + 70} ${ax - 88} ${ay - 22}Z" fill="#7a2320" stroke="${K}" stroke-width="14" stroke-linejoin="round"/>${dil(ay + 50, 42, 18)}</g>
-  <g class="eg-a eg-a-kahkaha"><path d="M${ax - 118} ${ay - 34}Q${ax} ${ay - 12} ${ax + 118} ${ay - 34}Q${ax + 104} ${ay + 116} ${ax} ${ay + 122}Q${ax - 104} ${ay + 116} ${ax - 118} ${ay - 34}Z" fill="#7a2320" stroke="${K}" stroke-width="14" stroke-linejoin="round"/>${dil(ay + 86, 64, 26)}<path d="M${ax - 80} ${ay - 24}Q${ax} ${ay - 8} ${ax + 80} ${ay - 24}" stroke="#fff" stroke-width="16" fill="none" stroke-linecap="round" opacity=".9"/></g>
-  <g class="eg-a eg-a-o"><ellipse cx="${ax}" cy="${ay + 14}" rx="32" ry="42" fill="#7a2320" stroke="${K}" stroke-width="13"/></g>
-  <g class="eg-a eg-a-buzuk"><path d="M${ax - 50} ${ay + 20}Q${ax} ${ay - 24} ${ax + 50} ${ay + 20}Q${ax} ${ay + 50} ${ax - 50} ${ay + 20}Z" fill="#d77a70" stroke="${K}" stroke-width="12" stroke-linejoin="round"/><path d="M${ax - 34} ${ay + 18}Q${ax} ${ay + 10} ${ax + 34} ${ay + 18}" ${s} stroke-width="8"/></g>
-  <g class="eg-a eg-a-esne"><ellipse cx="${ax}" cy="${ay + 34}" rx="50" ry="78" fill="#7a2320" stroke="${K}" stroke-width="14"/>${dil(ay + 84, 32, 16)}</g>
-  <g class="eg-a eg-a-uyku"><path d="M${ax - 34} ${ay + 4}Q${ax} ${ay + 24} ${ax + 34} ${ay + 4}" ${s} stroke-width="12"/></g>
-  <g class="eg-yas">
-    <path class="eg-yas-iz" d="M${lx + 20} ${ly + 70}Q${lx + 6} ${ly + 150} ${lx + 26} ${ly + 230}" stroke="#9fd8f6" stroke-width="22" fill="none" stroke-linecap="round" opacity=".85"/>
-    <path class="eg-yas-iz" d="M${rx - 20} ${ry + 70}Q${rx - 6} ${ry + 150} ${rx - 26} ${ry + 230}" stroke="#9fd8f6" stroke-width="22" fill="none" stroke-linecap="round" opacity=".85"/>
-    ${[0, 1, 2, 3].map((i) => `<path class="eg-damla" style="--i:${i}" d="M${i % 2 ? rx - 30 : lx + 30} ${ly + 80}q-24 40 0 56q24-16 0-56z" fill="#8fd2f7" stroke="#3f8fc0" stroke-width="6"/>`).join('')}
-  </g>
   <g class="eg-lekeler"></g>
   <g class="eg-emzik"></g>
 </g>`;
 }
-
 /** Mama lekesinin yerleri (kafa koordinatı): ağız çevresi, yanaklar, burun, alın */
 const LEKE_YER: [number, number, number][] = [
-  [920, 922, 52], [1136, 914, 48], [786, 838, 46], [1268, 832, 50], [1036, 984, 44], [1052, 750, 34], [900, 520, 42],
+  [920, 922, 60], [1136, 914, 56], [786, 838, 64], [1268, 832, 66], [1036, 984, 56],
 ];
 
 export class Ege {
@@ -156,6 +124,7 @@ export class Ege {
         ? `<image href="${em}" x="${AGIZ[0] - 92}" y="${AGIZ[1] - 64}" width="184" height="220"/>`
         : `<ellipse cx="${AGIZ[0]}" cy="${AGIZ[1] + 10}" rx="92" ry="34" fill="#9fd2f2" stroke="${K}" stroke-width="12"/><circle cx="${AGIZ[0]}" cy="${AGIZ[1] + 70}" r="44" fill="none" stroke="#a978c9" stroke-width="20"/>`;
     this.kar.ekHareket = (p, t) => this.poz(p, t);
+    this.goster(this.simdiki);
   }
 
   private svg(): SVGSVGElement | null {
@@ -168,14 +137,10 @@ export class Ege {
   // ---------------------------------------------------------------- ifade
   private goster(ad: EgeIfade) {
     this.simdiki = ad;
-    const [g, a, k, yas, yanak] = IFADE[ad];
-    const d = this.el.dataset;
-    d.goz = g;
-    d.agiz = a;
-    d.kas = k;
-    d.ifade = ad;
-    this.el.classList.toggle('yasli', yas);
-    this.el.classList.toggle('kizarik', yanak);
+    this.el.dataset.ifade = ad;
+    this.el.classList.toggle('kizarik', KIZARIK[ad]);
+    // tasarımcının ifade eki (göster / gizle seti iskeletin JSON'unda); bakıyor: çizimin kendi yüzü
+    this.kar.ifade(ad === 'bakiyor' ? null : ad);
   }
 
   /** İfade; ms verilirse o süre sonra temel ifadeye döner, verilmezse yeni temel ifade olur */
@@ -372,7 +337,15 @@ export class Ege {
     e.dataset.r = String(r);
     e.innerHTML = `<path d="${d}Z" fill="#f4c65c" stroke="#c98e22" stroke-width="7" stroke-linejoin="round"/><ellipse cx="${x - r * 0.3}" cy="${y - r * 0.3}" rx="${r * 0.22}" ry="${r * 0.14}" fill="#fff6c8"/>`;
     g.append(e);
-    e.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)' }], { duration: sure(260), easing: 'cubic-bezier(.3,1.6,.5,1)' });
+    this.mamaGuncelle();
+  }
+  /** Tasarımcının mamalı yanak eki: lekeler çoğaldıkça belirginleşir, silindikçe solar */
+  private mamaGuncelle() {
+    const hepsi = [...(this.svg()?.querySelectorAll<SVGGElement>('.eg-leke') ?? [])];
+    const kalan = hepsi.reduce((t, l) => t + Math.max(0, Number(l.dataset.o ?? 1)), 0);
+    const oran = hepsi.length ? Math.min(1, 0.45 + 0.11 * hepsi.length) * (kalan / hepsi.length) : 0;
+    this.el.style.setProperty('--mama', oran.toFixed(3));
+    this.el.classList.toggle('mamali', oran > 0.02);
   }
   /** Silinmemiş lekeler */
   lekeler(): SVGGElement[] {
@@ -391,6 +364,7 @@ export class Ege {
       if (o <= 0) l.classList.add('silindi');
       degisti = true;
     }
+    if (degisti) this.mamaGuncelle();
     return degisti;
   }
   /** En yakın silinmemiş lekenin ekrandaki yeri (ipucu) */

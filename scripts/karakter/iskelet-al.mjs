@@ -12,6 +12,25 @@ const ANA = [
   // Bebek Ege (Sesli Maceralar Bölüm 2): kafa, kol, bacak, göz, ağız, kaş katmanları
   ['ekip/ege', 'ege', 'ege'],
 ];
+/**
+ * İfade setleri (göster / gizle). Kaynak JSON'da "ifadeler" varsa o, yoksa buradaki tablo (tasarımcının ifade
+ * belgesinden: Ege → ekip/ege/IFADELER.md). src/karakter/karakter.ts `ifade(ad)` bunları kullanır.
+ */
+const GOZLER = ['goz-sol', 'goz-sag', 'goz-kapali'];
+const IFADE_TABLOSU = {
+  ege: {
+    agliyor: { goster: ['goz-agliyor', 'agiz-agliyor'], gizle: [...GOZLER, 'kas', 'agiz'] },
+    am: { goster: ['agiz-am'], gizle: ['agiz'] },
+    kikir: { goster: ['goz-kikir', 'agiz-kikir'], gizle: [...GOZLER, 'agiz'] },
+    kahkaha: { goster: ['goz-kikir', 'agiz-kahkaha'], gizle: [...GOZLER, 'agiz'] },
+    saskin: { goster: ['goz-saskin', 'agiz-saskin'], gizle: [...GOZLER, 'kas', 'agiz'] },
+    buzuk: { goster: ['agiz-buzuk'], gizle: ['agiz'] },
+    esniyor: { goster: ['goz-esniyor', 'agiz-esniyor'], gizle: [...GOZLER, 'agiz'] },
+    uyuyor: { goster: ['goz-uyku'], gizle: GOZLER },
+    'uykuda-gulumsuyor': { goster: ['goz-uyku', 'agiz-uyku-gulus'], gizle: [...GOZLER, 'agiz'] },
+    'tek-goz': { goster: ['goz-tek-acik'], gizle: ['goz-sag', 'goz-kapali'] },
+  },
+};
 const HEDEF = 'assets/karakter-iskelet';
 fs.mkdirSync(HEDEF, { recursive: true });
 
@@ -21,6 +40,8 @@ function aktar(jsonYol, svg, ad) {
   const bilgi = JSON.parse(fs.readFileSync(jsonYol, 'utf8').replace(/^﻿/, ''));
   if (!bilgi.donme || !bilgi.sira) return;
   const sade = { ad: bilgi.ad ?? ad, boyut: bilgi.boyut ?? 2048, sira: bilgi.sira, gizli: bilgi.gizli ?? [], bagli: bilgi.bagli ?? {}, donme: bilgi.donme };
+  const ifadeler = bilgi.ifadeler ?? IFADE_TABLOSU[ad];
+  if (ifadeler) sade.ifadeler = ifadeler;
   fs.writeFileSync(path.join(HEDEF, `${ad}.json`), JSON.stringify(sade, null, 2) + '\n');
   fs.copyFileSync(svg, path.join(HEDEF, `${ad}.svg`));
   console.log('✓', ad, `${sade.sira.length} katman`, `${Math.round(fs.statSync(svg).size / 1024)} KB`);

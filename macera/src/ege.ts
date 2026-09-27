@@ -806,7 +806,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await sahne.kamera(56, 96, taban * 1.1, 900);
 
     // --- önlük
-    const onluk = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'onluk' }, esya('onluk', undefined, 'Önlük')), { x: 30, y: Z + 16, w: 11, z: 11 });
+    const onluk = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'onluk' }, esya('onluk', undefined, 'Önlük')), { x: 31, y: Z + 3, w: 11, z: 11 });
     await mSoyle(M.onluk);
     ui.ipucu(I.onluk);
     durumYaz('onluk');
@@ -853,7 +853,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // --- peçeteyle sil
     ege.ifade('kikir');
     await mSoyle(M.sil);
-    const pecete = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'pecete' }, esya('pecete', undefined, 'Peçete')), { x: 30, y: Z + 18, w: 11, z: 12 });
+    const pecete = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'pecete' }, esya('pecete', undefined, 'Peçete')), { x: 31, y: Z + 3, w: 11, z: 12 });
     ui.ipucu(I.sil);
     durumYaz('sil');
     await gorev<void>((coz) => {
