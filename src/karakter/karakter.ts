@@ -342,7 +342,7 @@ export class Karakter {
       'bacak-sag': -sin(p.bacakSag, s.bacak),
       'ayak-sol': sin(p.bacakSol, s.bacak),
       'ayak-sag': -sin(p.bacakSag, s.bacak),
-      kuyruk: p.kuyruk,
+      kuyruk: s.kuyruk ? Math.max(s.kuyruk[0], Math.min(s.kuyruk[1], p.kuyruk)) : p.kuyruk,
     };
     for (const [id, g] of this.parca) {
       let tr = kok;

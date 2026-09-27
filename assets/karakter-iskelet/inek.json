@@ -1,0 +1,84 @@
+{
+  "ad": "inek",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "kulak-sol",
+    "kulak-sag",
+    "bacak-sol",
+    "bacak-sag",
+    "govde",
+    "kol-sol",
+    "kol-sag",
+    "kafa",
+    "agiz",
+    "goz-sol",
+    "goz-sag",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali"
+  ],
+  "bagli": {
+    "kulak-sol": "kafa",
+    "kulak-sag": "kafa",
+    "agiz": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "goz-kapali": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1020,
+      960
+    ],
+    "kulak-sol": [
+      772,
+      440
+    ],
+    "kulak-sag": [
+      1276,
+      440
+    ],
+    "goz-sol": [
+      889,
+      517
+    ],
+    "goz-sag": [
+      1157,
+      517
+    ],
+    "agiz": [
+      1035,
+      860
+    ],
+    "goz-kapali": [
+      1023,
+      520
+    ],
+    "kol-sol": [
+      715,
+      975
+    ],
+    "kol-sag": [
+      1325,
+      975
+    ],
+    "bacak-sol": [
+      840,
+      1600
+    ],
+    "bacak-sag": [
+      1200,
+      1600
+    ],
+    "kuyruk": [
+      1352,
+      1580
+    ],
+    "govde": [
+      1020,
+      1880
+    ]
+  }
+}

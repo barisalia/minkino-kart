@@ -7,9 +7,9 @@
                  "kulak-sag",
                  "bacak-sol",
                  "bacak-sag",
+                 "govde",
                  "kol-sol",
                  "kol-sag",
-                 "govde",
                  "kafa",
                  "agiz",
                  "goz-sol",
@@ -33,12 +33,12 @@
                                960
                            ],
                   "kulak-sol":  [
-                                    770,
-                                    430
+                                    772,
+                                    440
                                 ],
                   "kulak-sag":  [
-                                    1260,
-                                    430
+                                    1276,
+                                    440
                                 ],
                   "goz-sol":  [
                                   889,
@@ -57,11 +57,11 @@
                                      520
                                  ],
                   "kol-sol":  [
-                                  745,
+                                  715,
                                   975
                               ],
                   "kol-sag":  [
-                                  1295,
+                                  1325,
                                   975
                               ],
                   "bacak-sol":  [
@@ -73,8 +73,8 @@
                                     1600
                                 ],
                   "kuyruk":  [
-                                 1335,
-                                 1530
+                                 1352,
+                                 1580
                              ],
                   "govde":  [
                                 1020,
