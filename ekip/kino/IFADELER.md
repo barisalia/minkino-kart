@@ -27,11 +27,11 @@ Ayrıca:
 
 | Hâl | Göster | Gizle | Not |
 |---|---|---|---|
-| kuyruğu patiyle bastırılmış | `pati-kuyruk` | `kuyruk` | Kuyruk kökten aşağı iner, sağ arka patinin altından geçer. Kahverengi ucu iki pati arasında görünür. Patinin sağ altında iki küçük sıkışma çizgisi var. |
+| kuyruğu patiyle bastırılmış | `pati-kuyruk` | `kuyruk` | Asıl kuyruk kalınlığında ve boyunda. Kökten bacağın sağından kıvrılıp yere iner. Kahverengi uç sağ arka patinin altında yassı ve ezik; yalnız patinin sağında ve altında görünür. Ucun sağında iki küçük sıkışma çizgisi var. |
 
 - Katman gövdenin altında: SVG'de ve json `sira`da `kuyruk`un hemen arkasında. Pati gövde katmanında olduğu için kuyruğun üstünde kalır, "basıyor" görünür.
 - Kök, eski kuyruğun kol ve bacak yanındaki kontur uçlarına oturur; `kuyruk` gizlenince bu uçlar açıkta kalmaz.
-- Dönme noktası 1330,1620 (kök). Bağlı değil, `kuyruk` gibi üst düzey. Sallanma isteniyorsa kod ucu (1100,1865) çevresinde küçük titretir; kök dönmesi ±3°'yi geçmesin, yoksa pati altından kayar.
+- Dönme noktası 1330,1620 (kök). Bağlı değil, `kuyruk` gibi üst düzey. Sallanma isteniyorsa kod ucu (1400,1885) çevresinde küçük titretir; kök dönmesi ±3°'yi geçmesin, yoksa pati altından kayar.
 - Önizleme: `kino-pati-kuyruk.png` (solda normal, sağda pati-kuyruk).
 
 ## Dudak senkronu ağızları (vektör, gizli, kafaya bağlı)
