@@ -18,7 +18,19 @@ async function dokun(page: Page, l: Locator) {
   const { x, y } = await merkez(l);
   await page.mouse.click(x, y);
 }
+/** Kamera kayarken ya da eşya uçarken ölçülen yer eskir: kutu iki ölçümde aynı kalana kadar bekle (en çok ~3 sn) */
+async function sabit(l: Locator) {
+  let once = await l.boundingBox();
+  for (let i = 0; i < 30; i++) {
+    await l.page().waitForTimeout(100);
+    const simdi = await l.boundingBox();
+    if (once && simdi && Math.abs(once.x - simdi.x) < 1 && Math.abs(once.y - simdi.y) < 1 && Math.abs(once.width - simdi.width) < 1) return;
+    once = simdi;
+  }
+}
 async function surukle(page: Page, kaynak: Locator, hedef: Locator | { x: number; y: number }, adim = 14, yavas = false) {
+  await sabit(kaynak);
+  if (!('x' in hedef)) await sabit(hedef);
   const a = await merkez(kaynak);
   const b = 'x' in hedef ? hedef : await merkez(hedef);
   await page.mouse.move(a.x, a.y);
@@ -44,18 +56,24 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   const bekle = (test: number, gercek: number) => page.waitForTimeout(gercekHiz ? gercek : test);
   const vp = page.viewportSize()!;
 
-  // 1. anneye battaniye (önce yanlış yere: geri kayar, iz çıkar)
+  // 1. anneye battaniye (önce yanlış yere: iz çıkar; 3-4 yaşta battaniye kendiliğinden anneye süzülüp açılır,
+  // 5-6 yaşta geri kayar, ikinci sürükleme anneye)
   await gorevBekle(page, ['battaniye'], T);
   await bekle(300, 900);
   await ekran('01-anne-uyudu');
   await surukle(page, ege(page, 'battaniye'), { x: vp.width * 0.85, y: vp.height * 0.35 });
   await bekle(250, 400);
   await ekran('02-yanlis-iz');
-  await bekle(700, 1200);
-  await surukle(page, ege(page, 'battaniye'), page.locator('[data-ege="anne"] .eg-anne-gov'), 14, gercekHiz);
+  if (yas >= 5) {
+    await bekle(700, 1200);
+    await surukle(page, ege(page, 'battaniye'), page.locator('[data-ege="anne"] .eg-anne-gov'), 14, gercekHiz);
+  }
+  await bekle(150, 700);
+  await ekran('02a-battaniye-acilis');
   await expect(ege(page, 'anne')).toHaveClass(/gulumsuyor/, { timeout: 8000 });
-  // anne kanepede oturuş çiziminde (aynı piksel ölçeği), battaniye kucağında
+  // anne kanepede oturuş çiziminde (aynı piksel ölçeği), açık battaniye omzundan ayak bileklerine örtülü
   await expect(ege(page, 'anne')).toHaveAttribute('data-resim', 'uyuyor');
+  await expect(page.locator('.eg-anne-ortu.acik')).toHaveCount(1);
   await bekle(700, 1200);
   await ekran('02b-anne-ortu');
 
@@ -206,7 +224,11 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await surukle(page, ege(page, 'emzik'), ege(page, 'agiz'), 14, gercekHiz);
   await bekle(300, 900);
   await surukle(page, ege(page, 'battaniye-ege'), ege(page, 'bebek'), 14, gercekHiz);
+  // Ege beşiğin içinde (yuvada) yatıyor; açık battaniye örtülü
+  await expect(page.locator('.eg-besik-yuva > [data-ege="bebek"].yatiyor')).toHaveCount(1);
+  await expect(page.locator('.eg-besik-ortu.acik[data-ege="ortu"]')).toHaveCount(1, { timeout: 8000 });
   await bekle(700, 1200);
+  await ekran('17b-besik-ortu');
   await dokun(page, ege(page, 'lamba'));
   await bekle(600, 1500);
   await ekran('18-lamba');
@@ -265,7 +287,8 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     await ekran('24-hipsu');
   } else {
     // tutmazsa HAPŞU: Ege uyanır, kısa ninni ve kısa sessizlik
-    await expect.poll(() => gorev(page), { timeout: 15000 }).not.toBe('burun');
+    // (burun süresi duvar saatiyle: 9 sn; yavaş makinede kare hızı düşse de uzamaz)
+    await expect.poll(() => gorev(page), { timeout: 20000 }).not.toBe('burun');
     await page.waitForTimeout(500);
     await ekran('23-hapsu');
     await sallaBitir('24-kisa-ninni');
