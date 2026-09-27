@@ -25,9 +25,9 @@ rig.mjs için örnek (k grubunun sonuna):
 | Hâl | Göster (asıl grubun yerine) | Gizle | Not |
 |---|---|---|---|
 | sırılsıklam | `kafa-islak`, `govde-islak`, `kuyruk-islak` | `kafa`, `govde`, `kuyruk` | Kafa %89 ve gövde %80 genişlikte (tabandan), kuyruk ince ip. Renkler koyulaşmış, damlalar ve ıslak parlamalar grubun içinde. |
-| pofuduk | `kafa-pofuduk`, `govde-pofuduk`, `kuyruk-pofuduk` | `kafa`, `govde`, `kuyruk` | Dış kontur bulut gibi tüylü; kuyruk kocaman fırça. İç çizgiler ve desenler asıl çizimle aynı. |
+| pofuduk | `kafa-pofuduk`, `govde-pofuduk`, `kuyruk-pofuduk` (+ isteğe bağlı `kol-sol-pofuduk`, `kol-sag-pofuduk`) | `kafa`, `govde`, `kuyruk` (+ `kol-sol`, `kol-sag`) | Kabarmış tüy: silüet ~%15 şişkin ve yuvarlak, yanaklarda ve tepede iri kıvrık tutamlar, gövde yanlarında tutamlar, kuyruk kocaman fırça; içte kısa tüy çizgileri, alt-sağda sert gölge. Yüz (gözler, ağız) aynı. |
 
-- Her hâl grubu, asıl grubun **z-sırasına** konur: `kuyruk-*` → `q`, `govde-*` → `g`, `kafa-*` → `k` sınıfı (kafa hâli göz ve ağız katmanlarının altında kalır). Kollar, fular, gözler ve ağız değişmez.
+- Her hâl grubu, asıl grubun **z-sırasına** konur: `kuyruk-*` → `q`, `govde-*` → `g`, `kol-sol-*` → `kl`, `kol-sag-*` → `kr`, `kafa-*` → `k` sınıfı (kafa hâli göz ve ağız katmanlarının altında kalır). Fular, gözler ve ağız değişmez.
 - Aynı hâlin üç parçası birlikte kullanılır. Karıştırma (ıslak kafa + pofuduk gövde) mümkün ama denenmedi.
 - Önizleme: `mino-haller.png` (normal | ıslak | pofuduk; üstte açık, altta koyu zemin).
 
@@ -35,3 +35,4 @@ Uyarılar:
 - sharp/librsvg gömülü WebP'yi çizmiyor. Bu, duruk `mino.webp` üretimini etkilemez, çünkü ekler gizli. Tarayıcıda (Edge ile denendi) sorunsuz çiziliyor.
 - Önizleme: `mino-ifadeler.png` (normal, zorlanma, sersem, kararsız, göz kırpma).
 - Sarılma pozu ayrı teslim edilecek: `assets/film/mino-karpuz/mino-sarilma-{arka,on}.webp` + hizalama JSON'u.
+
