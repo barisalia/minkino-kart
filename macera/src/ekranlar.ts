@@ -146,7 +146,8 @@ export function bolumEkrani(app: Uygulama): Ekran {
   const sahneKok = h('div.mc-sahne-kok');
   const el = h(
     'div.mc-bolum',
-    {},
+    // Ege ve banyo yatay ekranda sahneyi ortada dikey bir bantta oynatır, yazılar yanlara geçer (macera.css)
+    { 'data-bolum': bolum },
     sahneKok,
     h('div.ust-cubuk.mc-ust', {}, yuvarlakDugme(IKON.geri, 'Çık', () => app.git('acilis')), h('div.orta', {}, balon), noktalar),
     h('div.mc-alt', {}, kulakEl, ipucu),
@@ -216,6 +217,9 @@ export function bolumEkrani(app: Uygulama): Ekran {
       await kulak.ac();
       ui.ipucu(null);
     }
+    // Ege ve banyo sahnenin ölçüsünü kurulurken okur: ekran sayfaya eklensin (yatay ekranda sahne dar bir bant,
+    // pencerenin eni değil)
+    if (bolum !== 'dogumgunu') await Promise.resolve();
     await (bolum === 'ege' ? egeUyuyor : bolum === 'banyo' ? banyoBolumu : dogumGunu)(sahneKok, ui);
     if (kapandi) return;
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.tekrar), 'Bir daha');

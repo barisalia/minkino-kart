@@ -86,6 +86,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const sahne = new Sahne('parti-sahne/oda');
   sahne.el.classList.add('eg-sahne');
   kok.append(sahne.el);
+  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın bulanık devamı (macera.css → .mc-yan-dolgu)
+  kok.prepend(h('div.mc-yan-dolgu', { 'aria-hidden': 'true', style: `--resim:${sahne.dunya.querySelector<HTMLElement>('.mc-oda')?.style.getPropertyValue('--resim') ?? 'none'}` }));
   const aksam = h('div.eg-aksam');
   const gece = h('div.eg-gece');
   sahne.dunya.append(aksam);
@@ -351,7 +353,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     return { ...k, l: k.l + w * 0.14, r: k.r - w * 0.14 };
   };
   /** Kenarda yarım görünmemesi gerekenler */
-  const kacinlar = () => [anneBasAlan(), minoAlan(), alan(ege.el)].filter((a): a is Alan => !!a);
+  const kacinlar = () => [anneBasAlan(), minoAlan(), alan(ege.el), ...cocuklar().map((el) => alan(el))].filter((a): a is Alan => !!a);
   /** Kadraj payı (%): üstte düğme ve yazı şeridi, yanlarda nefes payı */
   const PAY = { yan: 2.5, ust: 13, alt: 3 };
   let cekim = { x: 50, y: 97, z: 1, tut: [] as (HTMLElement | (() => Alan | null))[] };
@@ -1497,6 +1499,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // Ada sepetten kuklaları çıkarır: "Kuklalar!"
     void ada.git(30, Z + 3, 800);
     void can.git(78, Z + 2, 800);
+    // kuklaları alacak Ada ve Can kadrajda (tablette Ada sol kenarda yarım kalıyordu: bırakma hedefi görünmüyordu)
+    void kam(52, 96, taban * 1.06, 800, [ada.el, can.el, ege.el]);
     await bekle(600);
     void ada.balon(B.ada.kukla, 1400);
     const ayiK = new Kukla('ayi');
