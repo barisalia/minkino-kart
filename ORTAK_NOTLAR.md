@@ -286,3 +286,13 @@ Dosyalar `main`'e gelince Barış'a haber verin; Barış buluta iletir (bulut ye
 - 2026-09-27 ADOBE YANCISI: Dudak senkronu ağızları (tasarımcı isteği): Mino ve Kino için 6'şar şekil (agiz-kapali/az/orta/yuvarlak/dis/gulumse) → ekip/adobe-yanci/cikti/agiz/{mino,kino}/<ad>.png (2048 saydam, tuvale hizalı), karşılaştırma cikti/agiz/karsilastirma.png, vektör kaynakları cikti/agiz/kaynak/*.svg (+ üretici betik). Betikle çizildi (Chromium render), kredi harcanmadı. Konturlar mevcut ağızlarla aynı renk/kalınlık (Mino #030102 12px, Kino #3a1210 16-18px); gulumse/yuvarlak mevcut agiz-kapali / agiz-acik / agiz-keyif / agiz-uluma çizimlerinin kopyası. Tasarımcı SVG/JSON/IFADELER'e ekleyecek.
 - 2026-09-27 Bulut: Doğum Günü şarkısı bağlandı. Notalar ve zamanlar `assets/muzik/dogumgunu.json` dosyasından geliyor; "önce bir dinle" kısmında sözlü kayıt çalıyor ve top heceleri kayıtla birlikte izliyor, çalarken mikrofon dinlemiyor. Çocuk kayıttan biraz yavaş söylüyor (3-4 yaş 1.6x, 5-6 yaş 1.35x). Kısa hecelerde ton puanlanmıyor, ses çıkarmak yetiyor. Ekrandaki sözler yeni sözlere geçti. Ses kilidi değişmedi.
 - 2026-09-27 FİLM 2 (animatör): **Kino ve Elma Kulesi** hazır (content/film/kino-elma-kulesi.json, 5 sahne ~60 sn, seslendir: true; Kino cümleleri kim: kino → Kino sesi). /film/ kapağında iki film kartı, `?film=kino-elma-kulesi`; Karpuz aynı. Motora yalnız ekleme: sekme/yuvarlanma (sek), salla, toz, kirp (kasa arkası), taşıma (al/birak: eşya parçaya takılır), duruş (Oyuncu.durus; Mino.ekPoz, Karakter.parcaG/ifadeAgziKonusur), 'kes' geçişi, sabah ışığı, malzeme klasörü, yeni efektler + 'yumusak' müzik. Mino'nun Film 2 ifadeleri bağlandı (rig.mjs → uzgun/saskin/odak; üzgünde kulakları sarkık kafa), Kino pati-kuyruk (Karakter.gizle ile kuyruk yerine). Top: assets/renkler/top.webp. KALAN İŞ: Kino yan görünüşü gelince koşu yandan (src/karakter/yandan.ts).
+
+## 2026-09-27 — Barış'ın geri bildirimi (bulut aracılığıyla, yerel ekibe)
+
+- 2026-09-27 **Ege bölümü ("Şşş, Ege Uyuyor!"):**
+  - Çıngırak görevi **hatalı**.
+  - Barış oyunu da **saçma** buldu, yani hikâye ve görev mantığı oturmamış.
+  - Göndermeden önce hikâye `ekip/senarist-rehberi.md` 1. bölümdeki ölçüye göre yeniden gözden geçirilsin: her görev hikâyeden doğmalı, "bu görev neden burada?" sorusunun cevabı olmalı, duygu eğrisi olmalı, çocuğun sesinin sonucu görünmeli.
+- 2026-09-27 **Kino:** hâlâ hatalı.
+- Barış, gece düzelir diye bekliyor. Düzeltilince kısa not ve ekran görüntüsüyle bildirin.
+- Doğum Günü şarkısı bağlandı ve yayında; o bölüme dokunmayın.
