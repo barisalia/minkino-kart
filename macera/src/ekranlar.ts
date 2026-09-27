@@ -9,6 +9,13 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { kulak } from '../../orman/src/kulak';
 import { dogumGunu, dokunma, type BolumArayuz } from './dogumgunu';
 import { adres, resim } from './gorsel';
+import E from '../../content/macera-ege.json';
+import { egeUyuyor } from './ege';
+import { Ege } from './ege-bebek';
+
+/** Oynanacak bölüm (açılışta seçilir; test/önizlemede ?bolum=ege) */
+type BolumAdi = 'dogumgunu' | 'ege';
+let secilenBolum: BolumAdi = new URLSearchParams(location.search).get('bolum') === 'ege' ? 'ege' : 'dogumgunu';
 
 const IZIN_ANAHTAR = 'minkino-macera-izin';
 const izinVar = () => {
@@ -31,17 +38,23 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('span.mc-bolum-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, resim('parti/pasta', 'mc-bk-pasta'), resim('parti/ada', 'mc-bk-ada'), resim('orman-esya/balon', 'mc-bk-balon')),
     h('b', {}, M.bolumler.dogumgunu),
   );
-  const basla = () => {
+  const basla = (bolum: BolumAdi = 'dogumgunu') => {
+    secilenBolum = bolum;
     efekt.secim();
     if (!durum.i.yas) app.git('yas', { sonra: 'izin' });
     else if (kulak.acik || kulak.durum === 'yok' || TEST_MODU) app.git('bolum');
     else app.git('izin');
   };
-  oyna.addEventListener('click', basla);
-  kart.addEventListener('click', basla);
+  oyna.addEventListener('click', () => basla());
+  kart.addEventListener('click', () => basla());
+  // Bölüm 2: Şşş, Ege Uyuyor! (küçük kart: uyuyan Ege)
+  const egeResim = new Ege();
+  egeResim.ifade('uyuyor');
+  const egeKart = h('button.mc-bolum-kart.eg-bolum-kart', { type: 'button', 'aria-label': E.baslik }, h('span.eg-bk-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, egeResim.el), h('span.eg-bk-yazi', {}, h('small', {}, 'Bölüm 2'), h('b', {}, E.baslik)));
+  egeKart.addEventListener('click', () => basla('ege'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
   return {
-    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, oyna)),
+    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, egeKart, oyna)),
   };
 }
 
@@ -90,6 +103,7 @@ export function izinEkrani(app: Uygulama): Ekran {
 
 // ---------------------------------------------------------------- Bölüm
 export function bolumEkrani(app: Uygulama): Ekran {
+  const bolum = secilenBolum;
   const yazi = h('span.mc-yazi');
   let sonYazi = '';
   const balon = h('div.baslik-balon.mc-altyazi', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(sonYazi, { ton: 1.12 }), 'kucuk'), yazi);
@@ -147,12 +161,12 @@ export function bolumEkrani(app: Uygulama): Ekran {
   el.addEventListener('pointerdown', (e) => {
     if (hedefDugme(e)) return;
     basili = true;
-    dokunma?.bas();
+    if (bolum === 'dogumgunu') dokunma?.bas();
   });
   const birak = () => {
     if (!basili) return;
     basili = false;
-    dokunma?.birak();
+    if (bolum === 'dogumgunu') dokunma?.birak();
   };
   el.addEventListener('pointerup', birak);
   el.addEventListener('pointercancel', birak);
@@ -170,7 +184,7 @@ export function bolumEkrani(app: Uygulama): Ekran {
       await kulak.ac();
       ui.ipucu(null);
     }
-    await dogumGunu(sahneKok, ui);
+    await (bolum === 'ege' ? egeUyuyor : dogumGunu)(sahneKok, ui);
     if (kapandi) return;
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.tekrar), 'Bir daha');
     const cik = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.ev), 'Ana sayfa');

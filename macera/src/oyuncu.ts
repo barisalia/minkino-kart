@@ -24,6 +24,8 @@ export interface OyuncuSecenek {
   oran?: number;
   /** gölgenin kutunun iki yanından içe payı (%); geniş poz tuvallerinde ayaklara oturması için */
   golge?: number;
+  /** yalnız bu pozları yükle (ör. Bölüm 2: parti şapkalı pozlar olmasın); yoksa hepsi */
+  pozlar?: Poz[];
 }
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -70,7 +72,7 @@ export class Oyuncu {
   constructor(s: OyuncuSecenek) {
     this.ad = s.ad;
     const govde = h('div.mc-oy-govde');
-    for (const p of POZLAR) {
+    for (const p of s.pozlar ?? POZLAR) {
       const url = adres(`parti-ifade/${s.ad}/${p}`) || (p === 'normal' ? adres(s.resim) : '');
       if (!url) continue;
       const img = h('img.mc-oy-resim', { src: url, alt: '', draggable: 'false', 'data-poz': p }) as HTMLImageElement;
