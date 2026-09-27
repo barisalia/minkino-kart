@@ -33,6 +33,15 @@ export function minoIfadeleriYukle(): Promise<string | null> {
   );
   return ifadeYukleme;
 }
+/** İfade kafaları (üzgün: kulakları sarkık kafa): ifade ekleriyle aynı tembel pakette */
+let ifadeKafaYukleme: Promise<string | null> | null = null;
+function minoIfadeKafaYukle(): Promise<string | null> {
+  ifadeKafaYukleme ??= import('./mino-ifade-svg').then(
+    (m) => m.MINO_IFADE_KAFA_SVG,
+    () => null,
+  );
+  return ifadeKafaYukleme;
+}
 
 /**
  * Hâl ekleri (sırılsıklam, pofuduk; tam vektör, ağır): ifade ekleri gibi ayrı pakette, yalnız hal() ilk
@@ -65,8 +74,11 @@ export function minoBurunYukle(): Promise<Record<'kafa' | 'yuz' | 'kol' | 'pati'
 /** Burun ifadeleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne) */
 export type MinoBurunIfade = 'burun-kasinti' | 'burun-tut' | 'hapsu';
 const burunMu = (ad: MinoIfade): ad is MinoBurunIfade => ad === 'burun-kasinti' || ad === 'burun-tut' || ad === 'hapsu';
-/** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) ve burun ifadeleri */
-export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | MinoBurunIfade;
+/**
+ * Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) ve burun ifadeleri. Film 2: 'uzgun' (kulakları
+ * sarkık kafa + yalvaran bakış), 'saskin' (kocaman gözler, "o" ağız), 'odak' (kısık gözler, dil ucu dışarıda).
+ */
+export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | 'uzgun' | 'saskin' | 'odak' | MinoBurunIfade;
 /**
  * ifade() ayarı. ms: bu süre sonra normale döner (0: null verilene kadar).
  * boy (yalnız hapşu): 'buyuk' HAPŞU (püf tam "pat" 0.85 → 1.05, kafa sarsılır; varsayılan), 'kucuk' hıpşu (küçük, soluk püf, hafif sarsıntı).
@@ -321,9 +333,15 @@ export class Mino {
   private async ifadeleriEkle(): Promise<boolean> {
     if (this.ifadeEklendi) return true;
     const svg = await minoIfadeleriYukle();
+    const kafa = await minoIfadeKafaYukle();
     const yer = this.el.querySelector('.m-ifadeler');
     if (!svg || !yer) return false;
-    if (!this.ifadeEklendi) yer.innerHTML = svg;
+    if (!this.ifadeEklendi) {
+      yer.innerHTML = svg;
+      // ifade kafaları (üzgün): asıl kafanın hemen üstüne, göz / ağız eklerinin altına (hapşu kafası gibi)
+      const kafaHal = this.kok.querySelector(':scope > .k > .m-hal');
+      if (kafa && kafaHal) kafaHal.insertAdjacentHTML('afterend', kafa);
+    }
     this.ifadeEklendi = true;
     return true;
   }
