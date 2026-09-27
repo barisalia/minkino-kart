@@ -217,6 +217,7 @@ export class Film {
     this.duraklat = d;
     this.el.classList.toggle('duraklatildi', d);
     this.el.getAnimations({ subtree: true }).forEach((a) => (d ? a.pause() : a.play()));
+    this.oyuncular.forEach((o) => o.duraklat(d));
     if (d) sus();
     if (this.muzik) filmMuzik.duraklat(d);
   }
@@ -451,15 +452,19 @@ export class Film {
         const yay = Number(o.yay ?? 0);
         const yuru = o.yuru !== false && !!oy;
         if (yuru && b.x !== a.x) n.yon = b.x > a.x ? 1 : -1;
-        if (yuru) oy?.yuru(sure / this.hiz);
+        // Mino yana yürürken yandan iskeletiyle gerçek adım atar; yolu kısaysa ya da profil yoksa önden seker
+        const adim = yuru && oy ? oy.yuru(sure / this.hiz, Math.abs(b.x - a.x) / n.k.w) : null;
+        const sek = !!adim && !adim.kendi;
         this.tween(sure, egri ?? (yuru ? 'dogrusal' : 'yumusak'), (u) => {
           n.x = a.x + (b.x - a.x) * u;
           n.y = a.y + (b.y - a.y) * u + yay * 4 * u * (1 - u);
           n.don = a.don + (b.don - a.don) * u;
           n.olcek = a.olcek + (b.olcek - a.olcek) * u;
-          // kendi yürüyüşü olmayan (Mino) adım adım seker
-          n.sekme = yuru && oy?.tip === 'mino' ? Math.abs(Math.sin(u * Math.PI * Math.max(2, Math.round(sure * 3)))) * 5 : 0;
-        }, () => (n.sekme = 0));
+          n.sekme = sek ? Math.abs(Math.sin(u * Math.PI * Math.max(2, Math.round(sure * 3)))) * 5 : 0;
+        }, () => {
+          n.sekme = 0;
+          if (adim) oy?.yuruBitti(adim.no);
+        });
         return;
       }
       case 'don':

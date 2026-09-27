@@ -33,6 +33,50 @@
 .mk-kok .mino .q { transform: var(--govde) var(--kuyruk); }
 .mk-kok .mino .kl { transform: var(--govde) var(--kol-sol); }
 .mk-kok .mino .kr { transform: var(--govde) var(--kol-sag); }
+/* Yürüyen Mino (src/mino/mino-profil.ts): önden ↔ yandan dönüş. Giden çizim daralır ve en ince anında kaybolur,
+   gelen o anda belirip genişler (çizgi film dönüşü; iki çizim hiç yarı saydam üst üste binmez). */
+.mk-kok .mino-yuruyen {
+  position: relative;
+  width: 100%;
+  transform: scaleX(var(--mino-yon, 1));
+}
+.mk-kok .mino-yuruyen > .mino,
+.mk-kok .mino-yuruyen > .mino-profil {
+  transform-origin: 50% 100%;
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.3, 1.2) 0.09s, opacity 0s linear 0.09s;
+}
+.mk-kok .mino-profil {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scaleX(0.72);
+  pointer-events: none;
+}
+.mk-kok .mino-yuruyen > .mino-profil,
+.mk-kok .mino-yuruyen.yandan > .mino {
+  transition: transform 0.09s ease-in, opacity 0s linear 0.09s;
+}
+.mk-kok .mino-yuruyen.yandan > .mino {
+  opacity: 0;
+  transform: scaleX(0.72);
+}
+.mk-kok .mino-yuruyen.yandan > .mino-profil {
+  opacity: 1;
+  transform: none;
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.3, 1.2) 0.09s, opacity 0s linear 0.09s;
+}
+.mk-kok .mino-profil-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .mino-yuruyen > .mino,
+  .mk-kok .mino-yuruyen > .mino-profil {
+    transition: none !important;
+  }
+}
 /* Gözler: kırpınca / uyurken kapalı çizgi, sevinince mutlu kavis (çizimin koyu kahve konturu #3a1210) */
 .mk-kok .mino .m-mutlu-goz path { fill: none; stroke: #3a1210; stroke-width: 16; stroke-linecap: round; }
 .mk-kok .mino .m-kapali-goz,

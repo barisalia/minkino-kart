@@ -441,7 +441,15 @@ export class Kisi {
   koy(x: number, y: number) {
     this.el.style.setProperty('--x', String(x));
     this.el.style.setProperty('--y', String(y));
+    this.hedef = x;
   }
+  private hedef: number | null = null;
+  /** Gittiği (ya da durduğu) yer: kamera kadrajı buna göre hazırlanır (yol animasyonu bitmeden bilinsin) */
+  get hedefX() {
+    return this.hedef ?? this.x;
+  }
+  /** Yürümeye başlarken haber (bölüm kamerası karakteri kadrajda tutmak için) */
+  gitBasi: ((x: number, ms: number) => void) | null = null;
   get x() {
     return Number(this.el.style.getPropertyValue('--x')) || 50;
   }
@@ -459,6 +467,8 @@ export class Kisi {
   async git(x: number, y: number, ms = 800, yay = 0, egri = 'cubic-bezier(0.45, 0, 0.3, 1)') {
     const kok = this.el.parentElement;
     if (!kok) return this.koy(x, y);
+    this.hedef = x;
+    this.gitBasi?.(x, ms);
     const W = kok.clientWidth;
     const H = kok.clientHeight;
     const dx = ((x - this.x) / 100) * W;

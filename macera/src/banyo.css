@@ -592,15 +592,14 @@
   0%, 100% { transform: translateY(0) rotate(-3deg); }
   50% { transform: translateY(-8%) rotate(3deg); }
 }
-.mc-kok .bn-perde svg,
-.mc-kok .bn-askilik svg,
-.mc-kok .bn-raf svg {
-  display: block;
-  width: 100%;
-  height: auto;
+/* duvar ve yer eşyaları (assets/banyo çizimleri): dokunmayı engellemez */
+.mc-kok .bn-perde,
+.mc-kok .bn-askilik,
+.mc-kok .bn-raf,
+.mc-kok .bn-tabure {
+  pointer-events: none;
 }
 .mc-kok .bn-perde {
-  pointer-events: none;
   transform-origin: 50% 0;
 }
 .mc-kok .bn-perde.saklanilan,
@@ -728,29 +727,20 @@
   position: absolute;
   inset: -30%;
 }
-.mc-kok .bn-halka-cember {
+/* baloncuk-halkasi.webp: kutu = halkanın dış çemberi (çizimde halka sağ üstte, tuvalin %35'i, merkezi %79.5 / %20);
+   sap aşağı sarksın diye çizim halkanın merkezi çevresinde döndürülür */
+.mc-kok .bn-halka-resim {
   position: absolute;
-  inset: 8%;
-  border-radius: 50%;
-  border: 7px solid #ff9ec4;
-  box-shadow: 0 0 0 3px var(--kontur), inset 0 0 0 3px var(--kontur);
-}
-.mc-kok .bn-halka-cember::after {
-  /* sap */
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  width: 12%;
-  height: 70%;
-  margin-left: -6%;
-  background: #ff9ec4;
-  border: 3px solid var(--kontur);
-  border-radius: 0 0 8px 8px;
+  width: 286%;
+  max-width: none;
+  left: -177%;
+  top: -1.2%;
+  transform-origin: 79.5% 20%;
+  rotate: -45deg;
 }
 .mc-kok .bn-halka-zar {
   position: absolute;
-  inset: 14%;
+  inset: 17%;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9) 0 8%, transparent 10%), conic-gradient(from 20deg, rgba(255, 170, 220, 0.45), rgba(150, 220, 255, 0.45), rgba(200, 255, 190, 0.45), rgba(255, 230, 150, 0.45), rgba(255, 170, 220, 0.45));
   transform: translateY(calc(var(--s, 0) * -60%)) scale(calc(1 + var(--s, 0) * 1.6));
@@ -893,8 +883,9 @@
   position: absolute;
   left: 50%;
   top: 52%;
-  width: min(74vw, 46vh);
-  aspect-ratio: 300 / 380;
+  width: min(86vw, 50vh);
+  /* ayna-buyuk.webp: yuvarlak ahşap çerçeve */
+  aspect-ratio: 1014 / 990;
   pointer-events: auto;
   transform: translate(-50%, -50%) scale(0.3);
   opacity: 0;
@@ -911,10 +902,11 @@
 }
 .mc-kok .bn-ayna-cam {
   position: absolute;
-  left: 11%;
-  right: 11%;
-  top: 9.5%;
-  bottom: 9.5%;
+  /* çizimdeki camın iç kenarı */
+  left: 15.5%;
+  right: 14.5%;
+  top: 15.5%;
+  bottom: 16%;
   border-radius: 50%;
   overflow: hidden;
   touch-action: none;
