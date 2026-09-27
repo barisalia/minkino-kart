@@ -11,8 +11,7 @@ binding = "AI"
 [vars]
 # Hangi sitelerden istek kabul edilir (virgülle). Capacitor uygulaması için capacitor://localhost ve https://localhost.
 IZINLI_KOKENLER = "https://barisalia.github.io,https://minkino-site.barisalidogan.workers.dev,capacitor://localhost,https://localhost,http://localhost:5173,http://localhost:4173"
-# cloudflare (Workers AI, ücretsiz kota) | gemini (Nano Banana, ücretli) | recraft (ücretli)
+# Tek motor: cloudflare (Workers AI, FLUX.2 klein 4B). Çocuk verisi başka servise gitmez.
 MOTOR = "cloudflare"
-GEMINI_MODEL = "gemini-3-pro-image-preview"
 # Kötüye kullanıma karşı: bir cihazdan (IP) dakikada en çok kaç sihir
 DAKIKA_SINIRI = "6"

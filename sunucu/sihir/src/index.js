@@ -2,8 +2,9 @@
  * Minik Sanatçı — sihir sunucusu.
  * POST /sihir  { resim: <PNG base64>, kucuk?: <≤504 px PNG base64>, konu: "kedi" | ... | "surpriz" }  →  { resim: <base64>, mime }
  *
- * Gizlilik: çizim yalnızca dönüştürme için yapay zeka servisine iletilir; sunucuda saklanmaz, kaydı tutulmaz.
- * Anahtarlar (GEMINI_API_KEY, RECRAFT_API_KEY) Cloudflare'de gizli değişken olarak durur, uygulamaya hiç inmez.
+ * Gizlilik: çizim yalnızca Cloudflare Workers AI'ye (FLUX.2 klein 4B) iletilir; sunucuda saklanmaz, kaydı tutulmaz.
+ * Çocuk verisi kuralı (2026-09-27): başka servise yedek YOK. Gemini API şartları 18 yaş altına yönelik uygulamada
+ * kullanımı yasaklıyor; klein 9B lisansı ürün içinde kullanıma izin vermiyor. Bu yüzden ikisi de kaldırıldı.
  */
 
 const KONU = {
@@ -16,7 +17,7 @@ const STIL =
   'glossy clean 2D vector art, soft cel shading, gentle gradients, white highlight glints, thick clean dark-brown outlines, ' +
   'vivid bright saturated colors, cute rounded shapes, cheerful and charming';
 
-function geminiTalimati(konu) {
+function talimat(konu) {
   const ne = KONU[konu] ? ` The child says it is ${KONU[konu]}.` : '';
   return (
     `A young child drew this with crayons.${ne} Turn it into an adorable, ${STIL}. ` +
@@ -29,66 +30,28 @@ function geminiTalimati(konu) {
   );
 }
 
-function recraftTalimati(konu) {
-  const ne = KONU[konu] ?? 'the thing';
-  return `Premium glossy cartoon illustration of ${ne} drawn by a child, same pose, composition and colors as the drawing, ${STIL}. Plain white background. No text.`;
-}
-
 function b64ToBytes(b64) {
   const s = atob(b64);
   const a = new Uint8Array(s.length);
   for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
   return a;
 }
-function bytesToB64(buf) {
-  const a = new Uint8Array(buf);
-  let s = '';
-  for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode(...a.subarray(i, i + 0x8000));
-  return btoa(s);
-}
-
-async function gemini(env, resim, konu) {
-  const modeller = [env.GEMINI_MODEL || 'gemini-3-pro-image-preview', 'gemini-2.5-flash-image'];
-  let sonHata = '';
-  for (const model of modeller) {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: geminiTalimati(konu) }, { inlineData: { mimeType: 'image/png', data: resim } }] }],
-        generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: '1:1' } },
-      }),
-    });
-    if (r.status === 404) {
-      sonHata = `model yok: ${model}`;
-      continue;
-    }
-    const j = await r.json();
-    if (!r.ok) throw new Error(`Gemini ${r.status}: ${JSON.stringify(j).slice(0, 300)}`);
-    const parca = j.candidates?.[0]?.content?.parts?.find((p) => p.inlineData || p.inline_data);
-    const veri = parca?.inlineData ?? parca?.inline_data;
-    if (!veri?.data) throw new Error('Gemini görsel döndürmedi');
-    return { veri: veri.data, mime: veri.mimeType ?? veri.mime_type ?? 'image/png' };
-  }
-  throw new Error(sonHata || 'Gemini modeli bulunamadı');
-}
 
 /**
  * Cloudflare Workers AI. Ana model FLUX.2 [klein] 4B: görsel düzenleme destekli ve çok ucuz
  * (1024 px çıktı ≈ 110 nöron; günlük ücretsiz 10.000 nöron ≈ 90 resim). Giriş resmi 512 px'ten küçük olmalı,
  * bu yüzden uygulama ayrıca küçük bir kopya ("kucuk") gönderir.
- * Yedek: klein 9B (daha pahalı, ≈ 1.500 nöron).
  */
-const CF_MODELLER = ['@cf/black-forest-labs/flux-2-klein-4b', '@cf/black-forest-labs/flux-2-klein-9b'];
+// Yalnız 4B (lisansı ürün içi kullanıma uygun). CF_MODEL ayarı bilerek dikkate alınmaz.
+const CF_MODELLER = ['@cf/black-forest-labs/flux-2-klein-4b'];
 
 async function cloudflare(env, resim, konu, kucuk) {
   const bayt = b64ToBytes(kucuk || resim);
   const hatalar = [];
-  const modeller = env.CF_MODEL ? [env.CF_MODEL, ...CF_MODELLER] : CF_MODELLER;
-  for (const model of [...new Set(modeller)]) {
+  for (const model of CF_MODELLER) {
     try {
       const form = new FormData();
-      form.append('prompt', geminiTalimati(konu));
+      form.append('prompt', talimat(konu));
       form.append('input_image_0', new Blob([bayt], { type: 'image/png' }), 'cizim.png');
       form.append('width', '1024');
       form.append('height', '1024');
@@ -105,26 +68,6 @@ async function cloudflare(env, resim, konu, kucuk) {
     }
   }
   throw new Error(`Workers AI: ${hatalar.join(' | ')}`);
-}
-
-async function recraft(env, resim, konu) {
-  const f = new FormData();
-  f.append('image', new Blob([b64ToBytes(resim)], { type: 'image/png' }), 'cizim.png');
-  f.append('prompt', recraftTalimati(konu));
-  f.append('strength', '0.5');
-  f.append('model', 'recraftv4_1');
-  const r = await fetch('https://external.api.recraft.ai/v1/images/imageToImage', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${env.RECRAFT_API_KEY}` },
-    body: f,
-  });
-  const j = await r.json();
-  if (!r.ok) throw new Error(`Recraft ${r.status}: ${JSON.stringify(j).slice(0, 300)}`);
-  const d = j.data?.[0];
-  if (d?.b64_json) return { veri: d.b64_json, mime: 'image/png' };
-  if (!d?.url) throw new Error('Recraft görsel döndürmedi');
-  const g = await fetch(d.url);
-  return { veri: bytesToB64(await g.arrayBuffer()), mime: g.headers.get('content-type') ?? 'image/png' };
 }
 
 // Basit hız sınırı (her sunucu örneğinde ayrı tutulur; kötüye kullanıma karşı ilk savunma)
@@ -150,10 +93,8 @@ export default {
     };
     const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     const url = new URL(req.url);
-    // Motor sırası: ayarlanan motor önce, olmazsa anahtarı olan diğerleri
-    const sira = [env.MOTOR || 'cloudflare', 'cloudflare', 'gemini', 'recraft'].filter(
-      (m, i, a) => a.indexOf(m) === i && (m === 'cloudflare' ? !!env.AI : m === 'gemini' ? !!env.GEMINI_API_KEY : !!env.RECRAFT_API_KEY),
-    );
+    // Tek motor: Cloudflare Workers AI. Çizim başka hiçbir servise gitmez.
+    const sira = env.AI ? ['cloudflare'] : [];
     const motor = sira[0] ?? 'yok';
 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
@@ -175,7 +116,7 @@ export default {
     const kucuk = String(govde?.kucuk ?? '');
     if (!resim || resim.length > 4_000_000 || kucuk.length > 1_000_000) return json({ hata: 'resim yok ya da çok büyük' }, 400);
 
-    const calistir = { cloudflare, gemini, recraft };
+    const calistir = { cloudflare };
     const hatalar = [];
     for (const m of sira) {
       try {
