@@ -69,6 +69,16 @@ Bağlama ve z-sırası:
 - Önizleme: `mino-film2-ifadeler.png` (normal | üzgün | şaşkın | odak; üstte açık, altta koyu zemin).
 - Varsayılan çizim değişmedi: ekler gizliyken önceki SVG ile piksel farkı 0.
 
+## "Elektrikler Kesildi!" eki: avlanan Mino (tam vektör, gizli, kafaya bağlı)
+
+| İfade | Göster | Gizle | Not |
+|---|---|---|---|
+| av | `goz-av`, `agiz-av` | `goz-sol`, `goz-sag`, ağız | Kısık ve odaklı gözler: içe doğru alçalan üst kapak, kalkık alt kapak. Amber iriste dikey yarık kedi göz bebeği, tek keskin parıltı. İç uca doğru inen kararlı kaşlar. Ağız sıkılmış, bir yanı hafif kalkık. |
+
+- Kalçanın hafif havada olduğu eğilme kodla yapılır (gövde ve kuyruk dönüşü); ayrı çizim yok.
+- SVG'de dosyanın sonunda: `goz-av, agiz-av`. Önizleme: `mino-av.png` (normal | av).
+- Varsayılan çizim değişmedi (piksel farkı 0).
+
 ## Dudak senkronu ağızları (tam vektör, gizli, kafaya bağlı)
 
 Kod (`src/audio/dudak-mantik.ts`, `src/mino/mino.ts`) altısı birlikte varsa bunları kullanır. Konuşurken kod ağzı (`m-agiz`) gizlenir, o anki şekil gösterilir. Kontur #030102, 12 px (mevcut ağızlarla aynı). Burun altı çizgisi (1024,958→988) şekillerin içinde.

@@ -4,11 +4,13 @@
   "sira": [
     "kuyruk",
     "pati-kuyruk",
+    "kuyruk-korku",
     "kulak-sol",
     "govde",
     "kol-sol",
     "kol-sag",
     "fular",
+    "kafa-korku",
     "kafa",
     "kulak-sag",
     "goz-sol",
@@ -38,6 +40,8 @@
     "agiz-uluma",
     "agiz-uzgun",
     "agiz-saskin",
+    "goz-korku",
+    "agiz-korku",
     "kopuk-sac"
   ],
   "gizli": [
@@ -65,7 +69,11 @@
     "agiz-yuvarlak",
     "agiz-dis",
     "agiz-gulumse",
-    "pati-kuyruk"
+    "pati-kuyruk",
+    "kuyruk-korku",
+    "kafa-korku",
+    "goz-korku",
+    "agiz-korku"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -97,7 +105,10 @@
     "agiz-orta": "kafa",
     "agiz-yuvarlak": "kafa",
     "agiz-dis": "kafa",
-    "agiz-gulumse": "kafa"
+    "agiz-gulumse": "kafa",
+    "kafa-korku": "kafa",
+    "goz-korku": "kafa",
+    "agiz-korku": "kafa"
   },
   "donme": {
     "kafa": [
@@ -247,6 +258,22 @@
     "pati-kuyruk": [
       1330,
       1620
+    ],
+    "kafa-korku": [
+      975,
+      1180
+    ],
+    "goz-korku": [
+      965,
+      758
+    ],
+    "agiz-korku": [
+      915,
+      990
+    ],
+    "kuyruk-korku": [
+      1052,
+      1600
     ]
   }
 }
