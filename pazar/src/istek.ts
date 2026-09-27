@@ -6,6 +6,7 @@ import P from '../../content/pazar.json';
 import { buyukHarfBas, sayiAdi } from '../../src/audio/metin';
 import { kart } from '../../src/engine/katalog';
 import type { Yas } from '../../src/engine/types';
+import { meyveSuyuCumleleri } from './meyvesuyu';
 
 export type Rnd = () => number;
 export type Tur = 'tek' | 'renk' | 'sayi' | 'iki' | 'ayir' | 'toplama' | 'ode' | 'terazi';
@@ -218,5 +219,7 @@ export function pazarCumleleri(): string[] {
   for (let n = 2; n <= 9; n++) c.push(doldur(I.ode, { sayi: n }));
   c.push(I.meyve, I.sebze, I.terazi);
   c.push(P.hosgeldin, P.basla, ...P.dogru, ...P.yanlis, P.az, P.fazla, P.meyve_degil, P.sebze_degil, P.yardim, P.sayalim, P.surukle, P.senlik, P.senlik_dokun);
+  // Meyve Suyu Köşesi (yan dal)
+  c.push(...meyveSuyuCumleleri());
   return [...new Set(c)];
 }

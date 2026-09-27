@@ -326,10 +326,10 @@ export class Karakter {
     const dn = this.dn;
     const olcek = 20.48; // % → çizim birimi (2048 / 100)
     const kokN = dn.govde ?? [1024, 1930];
-    const kok = `translate(${(p.x * olcek).toFixed(1)}px, ${(p.y * olcek).toFixed(1)}px) ${etrafinda(kokN, p.don, p.sx, p.sy)}`;
-    // karaktere özel sınırlar (ör. ayı: kafa ±6, kulak ±10, bacak ±5)
+    // karaktere özel sınırlar (ör. ayı: kafa ±6, kulak ±10, bacak ±5; kuş: gövde ±3)
     const s = this.k.sinir ?? {};
     const sin = (a: number, m?: number) => (m === undefined ? a : Math.max(-m, Math.min(m, a)));
+    const kok = `translate(${(p.x * olcek).toFixed(1)}px, ${(p.y * olcek).toFixed(1)}px) ${etrafinda(kokN, sin(p.don, s.govde), p.sx, p.sy)}`;
     // kafa eğilmesi iskelette genlik çarpanıyla (canlı dursun; eskiden kafa katmanı açının iki katı dönüyordu),
     // bağlı parçalar (kulak, göz, ağız) aynı dönüşü paylaşır; karaktere özel sınır en son uygulanır
     const kafaAci = sin(p.kafa * (this.k.kafaGenlik ?? 1.8), s.kafa);
@@ -342,8 +342,8 @@ export class Karakter {
       'kol-sol': kolSinir(p.kolSol, this.k.kol),
       'kol-sag': -kolSinir(p.kolSag, this.k.kol),
       // kanatlar kolların yerine (kuş, ördek): + = açılır
-      'kanat-sol': kanatSinir(p.kolSol),
-      'kanat-sag': -kanatSinir(p.kolSag),
+      'kanat-sol': kanatSinir(p.kolSol, s.kanat),
+      'kanat-sag': -kanatSinir(p.kolSag, s.kanat),
       'bacak-sol': sin(p.bacakSol, s.bacak),
       'bacak-sag': -sin(p.bacakSag, s.bacak),
       'ayak-sol': sin(p.bacakSol, s.bacak),
@@ -397,7 +397,7 @@ export class Karakter {
 /** Kol açısı: içe en çok 5°, dışa/yukarı en çok 110° (iskelet standardındaki aralık) */
 const kolSinir = (a: number, sinir: [number, number] = [-5, 110]) => Math.max(sinir[0], Math.min(sinir[1], a));
 /** Kanat açısı: -30 (kapanır) … +60 (açılır) */
-const kanatSinir = (a: number) => Math.max(-30, Math.min(60, a));
+const kanatSinir = (a: number, sinir: [number, number] = [-30, 60]) => Math.max(sinir[0], Math.min(sinir[1], a));
 
 /** bir noktanın etrafında dönme + ölçek (çizim birimleri) */
 function etrafinda([x, y]: [number, number], aci: number, sx = 1, sy = 1, tx = 0, ty = 0) {
@@ -468,16 +468,32 @@ function yuruyus(y: Yuruyus, adim: number, p: Poz) {
       p.kulakSol -= 8 * yay;
       p.kulakSag -= 8 * yay;
       break;
-    case 'takla':
+    case 'takla': {
+      // takla: çömelip sıçrar, havada kollar yukarı uzanır, bacaklar toplanır, kuyruk arkadan savrulur; iner, basılır
+      const bas = s < 0.12 ? S((s / 0.12) * PI) : s > 0.88 ? S(((1 - s) / 0.12) * PI) : 0;
       p.don += s * 360;
       p.y -= 26 * yay;
+      p.sx *= 1 + 0.1 * bas;
+      p.sy *= 1 - 0.12 * bas;
+      p.kolSol += 45 * yay;
+      p.kolSag += 45 * yay;
+      p.bacakSol += 5 * yay;
+      p.bacakSag += 5 * yay;
+      p.kuyruk += -12 * yay + 6 * S(s * PI * 4);
+      p.kulakSol += 8 * yay;
+      p.kulakSag += 8 * yay;
       break;
+    }
     case 'uc':
       p.y -= 4 * S(s * PI * 2);
       p.sy *= 1 - 0.1 * yay;
       p.don -= 6;
-      p.kolSol += 50 * yay;
-      p.kolSag += 50 * yay;
+      // kanat çırparak süzülür: her adımda kanat tam açılıp aşağı vurur; bacaklar sarkar, kuyruk dümen
+      p.kolSol += 50 * yay - 18 * (1 - yay);
+      p.kolSag += 50 * yay - 18 * (1 - yay);
+      p.bacakSol += 6 * (1 - yay);
+      p.bacakSag += 6 * (1 - yay);
+      p.kuyruk += 8 * S(s * PI * 2);
       break;
   }
 }
@@ -513,15 +529,29 @@ function huy(h: Kisilik['huy'], gecen: number, u: number, p: Poz) {
       p.don += 4 * S(gecen * 26) * z;
       if (u > 0.7) p.y -= 8 * S(((u - 0.7) / 0.3) * PI);
       break;
-    case 'kasin': // kaşınır: kol kafaya gider, yana eğilir
+    case 'kasin': // kaşınır: kol kafaya gider ve hızlı hızlı kaşır, yana eğilir, kuyruk kıvrılır, göz kısılır
       p.don -= 8 * z;
-      p.kolSag += 90 * z;
+      p.kolSag += (37 + 8 * S(gecen * 34)) * z;
+      p.kolSol += 6 * S(gecen * 5) * z;
       p.kafa += 4 * S(gecen * 30) * z;
+      p.kulakSag += 6 * Math.abs(S(gecen * 34)) * z;
+      p.kuyruk += 10 * S(gecen * 6) * z;
+      p.gozKapali = z > 0.6 && S(gecen * 3) > 0.2;
       break;
-    case 'gaga': // iki kez gagalar
-      p.kafa += 12 * Math.abs(S(u * PI * 2)) * z;
-      p.kafaY += 1.5 * Math.abs(S(u * PI * 2)) * z;
+    case 'gaga': {
+      // iki kez gagalar: kafası ayrı değilse (kuş iskeleti: kafa gövdeyle tek parça) bütün beden öne eğilip
+      // aşağı iner ve basılır; kanatlar dengede hafif açılır, kuyruk kalkar
+      const vur = Math.abs(S(u * PI * 2));
+      p.kafa += 12 * vur * z;
+      p.kafaY += 1.5 * vur * z;
+      p.don += 3 * vur * z;
+      p.y += 2.5 * vur * z;
+      p.sy *= 1 - 0.05 * vur * z;
+      p.kolSol += 10 * vur * z;
+      p.kolSag += 10 * vur * z;
+      p.kuyruk += 8 * vur * z;
       break;
+    }
   }
 }
 
@@ -581,15 +611,37 @@ function dans(d: Kisilik['dans'], gecen: number, u: number, p: Poz) {
       p.gozKapali = z > 0.6 && S(s * PI) > 0.6;
       break;
     }
-    case 'salto':
-      p.don -= 360 * Math.min(1, Math.max(0, (u - 0.1) / 0.8));
-      p.y -= 40 * S(Math.min(1, u) * PI);
+    case 'salto': {
+      // geri takla: çömelir, kollar yukarı savrulur, havada bacaklar toplanır, kuyruk dönüşü takip eder; iner, kollar açık
+      const don = Math.min(1, Math.max(0, (u - 0.1) / 0.8));
+      const hava = S(Math.min(1, u) * PI);
+      const bas = u < 0.1 ? S((u / 0.1) * PI) : u > 0.9 ? S(((1 - u) / 0.1) * PI) : 0;
+      p.don -= 360 * don;
+      p.y -= 40 * hava;
+      p.sx *= 1 + 0.1 * bas;
+      p.sy *= 1 - 0.12 * bas;
+      p.kolSol += 45 * z;
+      p.kolSag += 45 * z;
+      p.bacakSol += 5 * hava;
+      p.bacakSag += 5 * hava;
+      p.kuyruk += 12 * S(don * PI * 2) * z;
+      p.kulakSol += 8 * hava;
+      p.kulakSag += 8 * hava;
+      p.agizAcik = z > 0.4 ? 1 : 0;
       break;
-    case 'kanat':
+    }
+    case 'kanat': {
+      // sevinçle havalanır: kanatlar hızlı çırpar (aşağı vuruşta beden yükselir), bacaklar sarkar, kuyruk sallanır
+      const cirp = S(u * PI * 8);
       p.y -= 45 * S(u * PI);
-      p.sy *= 1 - 0.12 * Math.abs(S(u * PI * 8));
-      p.kolSol += 70 * Math.abs(S(u * PI * 8));
-      p.kolSag += 70 * Math.abs(S(u * PI * 8));
+      p.sy *= 1 - 0.12 * Math.abs(cirp);
+      p.kolSol += 70 * Math.abs(cirp) - 15 * Math.max(0, -cirp);
+      p.kolSag += 70 * Math.abs(cirp) - 15 * Math.max(0, -cirp);
+      p.bacakSol += 6 * S(u * PI) * z;
+      p.bacakSag += 6 * S(u * PI) * z;
+      p.kuyruk += 8 * S(gecen * 14) * z;
+      p.gozKapali = z > 0.6 && Math.abs(cirp) > 0.8;
       break;
+    }
   }
 }

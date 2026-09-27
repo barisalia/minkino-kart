@@ -1,5 +1,5 @@
 {
-  "aciklama": "Mino'nun Pazarı: hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler. Cümleler seslendirilir (ElevenLabs); {urun} {sayi} {Sayi} {Renk} yerine kelime gelir. 'arayuz' yalnız ekranda yazar, okunmaz. 'urunler', 'renkler', 'musteriler' veri; okunmaz. Kısa tutun.",
+  "aciklama": "Mino'nun Pazarı: hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler. Cümleler seslendirilir (ElevenLabs); {urun} {sayi} {Sayi} {Renk} yerine kelime gelir. 'arayuz' yalnız ekranda yazar, okunmaz (düğme, balon ve ipucu yazıları). 'meyvesuyu': Meyve Suyu Köşesi cümleleri, okunur ({Renk} yerine suyun rengi). 'urunler', 'renkler', 'musteriler' veri; okunmaz. Kısa tutun.",
   "hosgeldin": "Mino'nun Pazarı'na hoş geldin!",
   "basla": "Müşteriler geliyor!",
   "istek": {
@@ -25,6 +25,23 @@
   "surukle": "Sepete sürükle!",
   "senlik": "Pazar şenliği! Yaşasın!",
   "senlik_dokun": "Hayvanlara dokun!",
+  "meyvesuyu": {
+    "giris": "Meyve suyu köşesi!",
+    "istek": "{Renk} meyve suyu lütfen!",
+    "at": "Meyveyi blendere at!",
+    "bas": "Şimdi düğmeye bas!",
+    "karistir": "İki rengi karıştır!",
+    "dogru": ["Mmm, çok lezzetli!", "Tam istediğim renk!"],
+    "yanlis": ["Iyy, bu başka renk!", "Hık! Bu olmadı!"],
+    "tekrar": "Bir daha deneyelim!",
+    "karisim": {
+      "turuncu": "Kırmızı ve sarı turuncu yapar!",
+      "yeşil": "Sarı ve mavi yeşil yapar!",
+      "mor": "Kırmızı ve mavi mor yapar!"
+    },
+    "kahverengi": "Hepsi karışınca kahverengi!",
+    "doldu": "Blender doldu!"
+  },
   "arayuz": {
     "baslik_ust": "Mino'nun",
     "baslik_alt": "Pazarı",
@@ -38,7 +55,13 @@
     "meyveler": "Meyveler",
     "sebzeler": "Sebzeler",
     "yildiz": "{yildiz} yıldız",
-    "lira": "{sayi} lira"
+    "lira": "{sayi} lira",
+    "meyvesuyu": "Meyve Suyu",
+    "pazar": "Pazar",
+    "karistir": "Karıştır",
+    "blender": "Blender",
+    "bardak": "Meyve suyu",
+    "yabanmersini": "yaban mersini"
   },
   "urunler": {
     "say": ["elma", "muz", "cilek", "havuc"],

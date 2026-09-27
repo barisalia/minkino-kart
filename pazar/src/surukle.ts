@@ -13,6 +13,8 @@ export interface Surukle {
   /** bırakıldı: hedefin üstünde mi */
   birak: (hedefte: boolean) => void;
   basla?: () => void;
+  /** parmak hareket etti (ekran koordinatı): ör. Mino gözleriyle izler */
+  tasi?: (x: number, y: number) => void;
 }
 
 /** Hedefin çevresine tolerans payı (küçük parmaklar tam isabet ettiremez) */
@@ -46,6 +48,7 @@ export function surukle(s: Surukle): () => void {
   const kaydir = (e: PointerEvent) => {
     if (e.pointerId !== id) return;
     el.style.transform = `translate(${e.clientX - x0}px, ${e.clientY - y0}px) scale(1.18) rotate(-4deg)`;
+    s.tasi?.(e.clientX, e.clientY);
     s.hedef().classList.toggle('pz-uzerinde', icinde(s.hedef().getBoundingClientRect(), e.clientX, e.clientY));
   };
   const son = (e: PointerEvent) => {

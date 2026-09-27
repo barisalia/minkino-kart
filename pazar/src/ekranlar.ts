@@ -11,7 +11,10 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Mino } from '../../src/mino/mino';
 import { balonlar, canliSahne, havaiFisek } from './canli';
-import { adres, parilti, resim } from './gorsel';
+import { BARDAK_IKON } from './blender';
+import { adres, parilti, resim, tozKalkar } from './gorsel';
+import { MinoCanli } from './mino-canli';
+import { odulSesi } from './meyvesuyu-ses';
 import { kaydet, kayit } from './ilerleme';
 import { agirlik, urunRengi, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
 import { Musteri } from './musteri';
@@ -22,10 +25,10 @@ const A = P.arayuz;
 const RENK_KODU = P.renk_kodu as Record<string, string>;
 const yas = (): Yas => durum.i.yas ?? 4;
 const rastgele = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
-const bosluk = () => h('div', { style: 'width:72px' });
+export const bosluk = () => h('div', { style: 'width:72px' });
 
 /** Tasarımcının görseli geldiyse arka plan olarak (yoksa CSS yer tutucu) */
-function gorselStil(yol: string): string | undefined {
+export function gorselStil(yol: string): string | undefined {
   const url = adres(yol);
   return url ? `--resim:url("${url}")` : undefined;
 }
@@ -50,7 +53,7 @@ function logo(): HTMLElement {
  * arkada bütün stand, ortada içindekiler (Mino, standın içinde), önde tente ve tahta (Mino tahtanın arkasında kalır).
  * "ustunde" tahtanın üstüne konanlar (sepet, meyveler) en öndedir. Görsel yoksa CSS yer tutucu.
  */
-function stand(icinde: HTMLElement[], ustunde: HTMLElement[] = []): HTMLElement {
+export function stand(icinde: HTMLElement[], ustunde: HTMLElement[] = []): HTMLElement {
   const url = adres('pazar/tezgah');
   const katman = (sinif: string) =>
     url ? h(`img.pz-stand-katman.${sinif}`, { src: url, alt: '', draggable: 'false' }) : h(`div.pz-stand-katman.pz-stand-yedek.${sinif}`);
@@ -61,14 +64,24 @@ function stand(icinde: HTMLElement[], ustunde: HTMLElement[] = []): HTMLElement 
 export function acilisEkrani(app: Uygulama): Ekran {
   const mino = new Mino();
   // Mino tezgâhın arkasından el sallar; dokununca zıplar
-  const selam = setTimeout(() => mino.tepki('evet'), sure(500));
+  const selam = setTimeout(() => mino.tepki('selam'), sure(500));
   mino.el.addEventListener('pointerdown', () => mino.tepki('zipla'));
+  // boşta durmaz: meyveleri düzeltir, yayalara bakar, mırlar
+  const minoCanli = new MinoCanli(mino, { urunVar: () => true, musteriVar: () => false });
   const oyna =h('button.dugme.pz-oyna', { type: 'button' }, svg(IKON.oyna), A.oyna);
   oyna.addEventListener('click', async () => {
     efekt.secim();
     void konus(P.hosgeldin);
     await bekle(sure(250));
     app.git(durum.i.yas ? 'pazar' : 'yas', { sonra: 'pazar' });
+  });
+  // ikinci oyun: Meyve Suyu Köşesi
+  const meyveSuyu = h('button.dugme.pz-ms-dugme', { type: 'button' }, svg(BARDAK_IKON), A.meyvesuyu);
+  meyveSuyu.addEventListener('click', async () => {
+    efekt.secim();
+    void konus(P.meyvesuyu.giris);
+    await bekle(sure(250));
+    app.git(durum.i.yas ? 'meyvesuyu' : 'yas', { sonra: 'meyvesuyu' });
   });
   const cikis = app.secenekler.cikis;
   const sol = cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => cikis(), 'kucuk') : bosluk();
@@ -94,7 +107,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
       {},
       logo(),
       h('div.pz-acilis-sahne', {}, stand([h('div.pz-mino', {}, mino.el)], [h('div.pz-acilis-meyveler', {}, ...meyveler)])),
-      oyna,
+      h('div.pz-acilis-dugmeler', {}, oyna, meyveSuyu),
       h(
         'div.pz-acilis-alt',
         {},
@@ -107,6 +120,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     el,
     kapat() {
       clearTimeout(selam);
+      minoCanli.kapat();
       mino.kapat();
       canli.kapat();
     },
@@ -166,17 +180,22 @@ export function pazarEkrani(app: Uygulama): Ekran {
   const musteriKap = h('div.pz-musteri-kap');
   const mino = new Mino();
   mino.el.addEventListener('pointerdown', () => mino.tepki('gidik'));
+  const urunler = h('div.pz-urunler');
+  let aktif = false;
+  // Mino tezgâhta boş durmaz; sürüklenen ürünü gözleriyle izler
+  const minoCanli = new MinoCanli(mino, { urunVar: () => urunler.children.length > 0, musteriVar: () => aktif });
   const sepetUrl = adres('pazar/sepet');
   const sepetIc = h('div.pz-sepet-ic');
   const sepet = h(`div.pz-sepet${sepetUrl ? '.pz-gorselli' : ''}`, { role: 'region', 'aria-label': 'Sepet' }, sepetUrl ? h('img.pz-sepet-resim', { src: sepetUrl, alt: '', draggable: 'false' }) : null, sepetIc);
   const verYazi = h('span', {}, A.ver);
   const ver = h('button.dugme.pz-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
-  const urunler = h('div.pz-urunler');
   // Mino standın içinde tahtanın arkasında, sepet tahtanın üstünde; müşteri standın önünde
   // yaşayan pazar: bulutlar, flamalar, kuşlar, uzak yayalar, günün ışığı (canli.ts)
   const canli = canliSahne();
   canli.gun(0);
-  const sahne = h('div.pz-sahne', {}, canli.ufuk, stand([h('div.pz-mino', {}, mino.el)], [sepet]), musteriKap);
+  // kamera: stand ve müşteri bir katmanda; müşteri gelince kadraj yumuşakça ona yaklaşır, gidince açılır (uzak yayalar yarı hızda: derinlik)
+  const kamera = h('div.pz-kamera', {}, stand([h('div.pz-mino', {}, mino.el)], [sepet]), musteriKap);
+  const sahne = h('div.pz-sahne', {}, canli.ufuk, kamera);
   // ön tezgâh: standın tahtasının devamı; ürünler bunun üstünde
   // terazi (5-6 yaş, ortadaki müşteri): ön tezgâhın üstünde, ürünlerin önünde
   const teraziYer = h('div.pz-terazi-yer');
@@ -199,7 +218,6 @@ export function pazarEkrani(app: Uygulama): Ekran {
   /** ürünlerin konduğu yer: sepet ya da terazinin kefesi */
   const kap = () => (terazi && ist.tur === 'terazi' ? terazi.icSag : sepetIc);
   const hedefEl = () => (terazi && ist.tur === 'terazi' ? terazi.kefeSag : sepet);
-  let aktif = false;
   let kapandi = false;
   let hata = 0;
   let verHata = 0;
@@ -287,7 +305,12 @@ export function pazarEkrani(app: Uygulama): Ekran {
         singir(sepet);
         efekt.nota(9);
       }, sure(420));
-    } else setTimeout(() => salla(e, 'pz-dustu'), sure(300));
+    } else
+      setTimeout(() => {
+        salla(e, 'pz-dustu');
+        // düştüğü yerde küçük toz ve parıltı
+        tozAt(e, ist.tur === 'terazi' && terazi ? terazi.kefeSag : sepet);
+      }, sure(300));
     efekt.yapis();
     if (ist.tur === 'terazi') {
       e.style.setProperty('--a', String(agirlik(id)));
@@ -323,9 +346,12 @@ export function pazarEkrani(app: Uygulama): Ekran {
         basla: () => {
           sonHareket = performance.now();
           efekt.secim();
+          minoCanli.izleBasla();
         },
+        tasi: (x) => minoCanli.izle(x),
         birak: (hedefte) => {
           sonBirakma = performance.now();
+          minoCanli.izleBitti();
           if (hedefte) koy(e, id);
           else geriGonder(e);
         },
@@ -420,7 +446,9 @@ export function pazarEkrani(app: Uygulama): Ekran {
     musteriKap.replaceChildren(m);
     void resimSesi(ad);
     // Mino müşteriyi karşılar
-    setTimeout(() => mino.tepki('mir', 1.4), sure(450));
+    setTimeout(() => minoCanli.karsila(), sure(450));
+    kamera.classList.add('pz-yakin');
+    sahne.classList.add('pz-yakin');
     await mu.gel();
     if (kapandi) return;
     mu.bekle(true);
@@ -447,14 +475,16 @@ export function pazarEkrani(app: Uygulama): Ekran {
     efekt.dogru();
     void resimSesi(ad);
     // Mino sepeti patisiyle müşteriye uzatır
-    mino.tepki('uzat');
+    // hazırlık → uzatma → takip
+    mino.tepki('sun');
     // parıltı: müşterinin (solda) ve Mino'nun (standın içinde) üstünde
     parilti(sahne, 0.2, 0.55, 10);
     parilti(sahne, 0.56, 0.4, 8);
     const r = sahne.getBoundingClientRect();
     konfetiPatlat(app.kok, r.left + r.width * 0.2, r.top + r.height * 0.55, 40);
     // yıldız müşterinin üstünden uçup üstteki yerine oturur
-    void yildizUcur(app.kok, m, yildizlar.children[i] as HTMLElement | undefined).then(() => efekt.yildiz(Math.min(2, i % 3)));
+    // ödül anı: yıldız büyüyüp parlar, uçup yerine oturur; Mino kısa sevinir
+    void odulAni(app.kok, m, yildizlar.children[i] as HTMLElement | undefined, i, mino);
     kayit.yildiz++;
     kaydet();
     const tesekkur = rastgele(P.dogru);
@@ -471,6 +501,9 @@ export function pazarEkrani(app: Uygulama): Ekran {
     ]);
     if (kapandi) return;
     m.classList.add('gidiyor');
+    minoCanli.ugurla();
+    kamera.classList.remove('pz-yakin');
+    sahne.classList.remove('pz-yakin');
     await mu.git();
   };
 
@@ -492,6 +525,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       aktif = false;
       bitir();
       clearInterval(ipucuSayaci);
+      minoCanli.kapat();
       sokuler.splice(0).forEach((f) => f());
       mino.kapat();
       canli.kapat();
@@ -501,6 +535,14 @@ export function pazarEkrani(app: Uygulama): Ekran {
   };
 }
 
+/** Ürünün düştüğü yerde (kabın içinde, ürünün altında) toz ve parıltı */
+export function tozAt(e: HTMLElement, kap: HTMLElement) {
+  const a = e.getBoundingClientRect();
+  const b = kap.getBoundingClientRect();
+  if (!b.width || !b.height) return;
+  tozKalkar(kap, (a.left + a.width / 2 - b.left) / b.width, (a.bottom - a.height * 0.15 - b.top) / b.height);
+}
+
 /** Para kasaya düşünce sepetin ağzında şıngır parıltısı */
 function singir(sepet: HTMLElement) {
   const s = h('div.pz-singir', { style: 'left:50%;top:40%' }, ...Array.from({ length: 7 }, (_, i) => h('i', { style: `--a:${Math.round((i * 360) / 7)}deg` })));
@@ -508,39 +550,106 @@ function singir(sepet: HTMLElement) {
   setTimeout(() => s.remove(), 700);
 }
 
+const AZ_ODUL = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 /**
- * Kazanılan yıldız müşterinin üstünden kavis çizerek uçar, dönerek üstteki yerine oturur; varınca yer dolar.
- * Yalnız transform (WAAPI).
+ * Ödül anı: yıldız müşterinin üstünde doğar, arkasında dönen ışınlar ve parlama ile kocaman büyür ("vııng" + çan),
+ * bir an asılı kalıp nabız gibi atar, sonra kavis çizerek üstteki yerine uçar. Oturunca yer sekip dolar,
+ * çevresinde bir halka ve parıltılar açılır, ikinci çan çalar, Mino kısa bir sevinç yapar.
+ * Yalnız transform / opacity (WAAPI). Hareketi azalt tercihinde yıldız doğrudan yerine oturur.
  */
-function yildizUcur(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElement | undefined): Promise<void> {
+export function odulAni(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElement | undefined, sira: number, mino?: Mino): Promise<void> {
   if (!hedef) return Promise.resolve();
+  const otur = () => {
+    hedef.classList.add('dolu');
+    efekt.yildiz(Math.min(2, sira % 3));
+    mino?.tepki('sevinc');
+  };
+  if (AZ_ODUL) {
+    otur();
+    return Promise.resolve();
+  }
   const a = kaynak.getBoundingClientRect();
   const b = hedef.getBoundingClientRect();
   const x0 = a.left + a.width / 2;
-  const y0 = a.top + a.height * 0.25;
+  const y0 = a.top + a.height * 0.2;
   const dx = b.left + b.width / 2 - x0;
   const dy = b.top + b.height / 2 - y0;
-  const y = h('div.pz-ucan-yildiz', { style: `left:${x0}px;top:${y0}px` }, svg(IKON.yildiz));
-  kok.append(y);
-  const an = y.animate(
+  const isin = h('i.pz-odul-isin');
+  const parla = h('i.pz-odul-parla');
+  const yildiz = h('div.pz-odul-yildiz', {}, svg(IKON.yildiz));
+  const el = h('div.pz-odul', { style: `left:${x0}px;top:${y0}px`, 'aria-hidden': 'true' }, parla, isin, yildiz);
+  kok.append(el);
+  const T = sure(1500);
+  odulSesi();
+  const can = window.setTimeout(() => efekt.nota(7 + (sira % 3)), sure(300));
+  // yol: yükselir, asılı kalır, kavisle yerine uçar
+  const yol = el.animate(
     [
-      { transform: 'translate(0, 0) scale(0.3) rotate(0)', offset: 0, easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)' },
-      { transform: 'translate(0, -40px) scale(1.5) rotate(90deg)', offset: 0.25, easing: 'cubic-bezier(0.5, 0, 0.3, 1)' },
-      { transform: `translate(${dx * 0.55}px, ${dy * 0.55 - 60}px) scale(1.2) rotate(250deg)`, offset: 0.62, easing: 'cubic-bezier(0.5, 0, 0.7, 0.6)' },
-      { transform: `translate(${dx}px, ${dy}px) scale(0.7) rotate(360deg)`, offset: 1 },
+      { transform: 'translate(0, 0)', easing: 'cubic-bezier(.2,.8,.3,1)' },
+      { transform: 'translate(0, -60px)', offset: 0.28, easing: 'ease-in-out' },
+      { transform: 'translate(0, -66px)', offset: 0.52, easing: 'cubic-bezier(.45,0,.55,.2)' },
+      { transform: `translate(${dx * 0.45}px, ${dy * 0.5 - 90}px)`, offset: 0.76, easing: 'cubic-bezier(.3,.3,.6,1)' },
+      { transform: `translate(${dx}px, ${dy}px)` },
     ],
-    { duration: sure(900), fill: 'forwards' },
+    { duration: T, fill: 'forwards' },
   );
-  return an.finished
+  // yıldız: doğar, fazlasıyla büyür, nabız atar, uçarken döner ve küçülür
+  yildiz.animate(
+    [
+      { transform: 'scale(.15) rotate(-140deg)' },
+      { transform: 'scale(2.5) rotate(12deg)', offset: 0.22, easing: 'ease-out' },
+      { transform: 'scale(2.1) rotate(0deg)', offset: 0.3 },
+      { transform: 'scale(2.3) rotate(-4deg)', offset: 0.4 },
+      { transform: 'scale(2.1) rotate(0deg)', offset: 0.52, easing: 'ease-in' },
+      { transform: 'scale(.72) rotate(360deg)' },
+    ],
+    { duration: T, fill: 'forwards' },
+  );
+  // arkadaki ışınlar dönerek açılır, uçuşta söner; parlama nefes alır
+  isin.animate(
+    [
+      { transform: 'scale(.2) rotate(0deg)', opacity: 0 },
+      { transform: 'scale(1.15) rotate(50deg)', opacity: 1, offset: 0.25 },
+      { transform: 'scale(1.3) rotate(95deg)', opacity: 0.9, offset: 0.52 },
+      { transform: 'scale(.5) rotate(150deg)', opacity: 0, offset: 0.7 },
+      { transform: 'scale(.5) rotate(150deg)', opacity: 0 },
+    ],
+    { duration: T, fill: 'forwards' },
+  );
+  parla.animate(
+    [
+      { transform: 'scale(.3)', opacity: 0 },
+      { transform: 'scale(1.2)', opacity: 1, offset: 0.2 },
+      { transform: 'scale(1)', opacity: 0.8, offset: 0.52 },
+      { transform: 'scale(.4)', opacity: 0, offset: 0.72 },
+      { transform: 'scale(.4)', opacity: 0 },
+    ],
+    { duration: T, fill: 'forwards' },
+  );
+  return yol.finished
     .catch(() => undefined)
     .then(() => {
-      y.remove();
-      hedef.classList.add('dolu');
+      clearTimeout(can);
+      el.remove();
+      otur();
+      // yerine oturduğu anda halka ve parıltılar
+      const bx = b.left + b.width / 2;
+      const by = b.top + b.height / 2;
+      const varis = h('div.pz-odul-varis', { style: `left:${bx}px;top:${by}px`, 'aria-hidden': 'true' }, h('i.pz-odul-halka'));
+      for (let i = 0; i < 8; i++) {
+        const aci = (i / 8) * Math.PI * 2;
+        varis.append(h('i.pz-parilti', { style: `left:0;top:0;--dx:${(Math.cos(aci) * 46).toFixed(0)}px;--dy:${(Math.sin(aci) * 46).toFixed(0)}px;--g:0ms` }));
+      }
+      kok.append(varis);
+      setTimeout(() => varis.remove(), 1100);
     });
 }
 
 // ---------------------------------------------------------------- Şenlik (5 müşteri mutlu)
-export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[] }): Ekran {
+export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?: 'pazar' | 'meyvesuyu'; yildiz?: number }): Ekran {
+  // hangi oyundan gelindi: "Bir daha" onu açar, yanındaki düğme öteki oyunu (pazar ↔ meyve suyu)
+  const kaynak = p?.kaynak ?? 'pazar';
   const ms = p?.musteriler?.length ? p.musteriler : P.musteriler.slice(0, MUSTERI_SAYISI);
   ms.forEach(resimSesiHazirla);
   const sahne = h('div.pz-senlik-sahne');
@@ -562,7 +671,14 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[] }): Ekra
   mino.el.addEventListener('pointerdown', () => mino.tepki('zipla'));
   sahne.append(h('div.pz-senlik-mino', {}, mino.el), h('div.pz-senlik-hayvanlar', {}, ...hayvanlar));
   const birDaha = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.tekrar), A.bir_daha);
-  birDaha.addEventListener('click', () => app.git('pazar'));
+  birDaha.addEventListener('click', () => app.git(kaynak));
+  const obur = kaynak === 'pazar'
+    ? h('button.dugme.pz-ms-dugme', { type: 'button' }, svg(BARDAK_IKON), A.meyvesuyu)
+    : h('button.dugme', { type: 'button', style: '--r:var(--turuncu)' }, svg(IKON.oyna), A.pazar);
+  obur.addEventListener('click', () => {
+    efekt.secim();
+    app.git(kaynak === 'pazar' ? 'meyvesuyu' : 'pazar');
+  });
   const cik = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.ev), A.cikis);
   const cikis = app.secenekler.cikis;
   cik.addEventListener('click', () => (cikis ? cikis() : app.git('acilis')));
@@ -578,9 +694,9 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[] }): Ekra
     canli.ufuk,
     gok,
     h('div.ust-cubuk', {}, bosluk(), h('div.orta', {}, h('div.baslik-balon', {}, h('span', {}, P.senlik))), sesDugmesi()),
-    h('div.pz-yildizlar.pz-hepsi', {}, ...Array.from({ length: MUSTERI_SAYISI }, () => h('i.pz-yildiz.dolu', {}, svg(IKON.yildiz)))),
+    h('div.pz-yildizlar.pz-hepsi', {}, ...Array.from({ length: p?.yildiz ?? MUSTERI_SAYISI }, () => h('i.pz-yildiz.dolu', {}, svg(IKON.yildiz)))),
     sahne,
-    h('div.pz-senlik-alt', {}, birDaha, cik),
+    h('div.pz-senlik-alt', {}, birDaha, obur, cik),
   );
   efekt.kilitAcildi();
   const balonDur = balonlar(gok);

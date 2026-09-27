@@ -131,3 +131,111 @@ test('Mino’nun Pazarı: terazi — müşterinin kefesini meyveyle dengele (6 y
   await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
   expect(hatalar).toEqual([]);
 });
+
+// ---------------------------------------------------------------- Meyve Suyu Köşesi (yan dal)
+interface MsVeri {
+  hedef: string;
+  tezgah: string[];
+  dogru: string[];
+}
+/** Müşteri hazır olunca meyve suyu isteğini okur (test modunda ekranda data-istek) */
+async function msIstek(page: Page): Promise<MsVeri> {
+  await expect(page.locator('.ms-ekran.pz-aktif')).toBeVisible({ timeout: 10000 });
+  return JSON.parse((await page.locator('.ms-ekran').getAttribute('data-istek'))!) as MsVeri;
+}
+/** Meyveleri blender'a atar; Karıştır düğmesi belirir */
+async function blendereAt(page: Page, meyveler: string[]) {
+  for (const m of meyveler) {
+    await sepeteSurukle(page, page.locator(`.pz-urunler .pz-urun[data-urun="${m}"]`), '.ms-blender');
+    await page.waitForTimeout(80);
+  }
+  await expect(page.locator('.ms-meyveler .pz-urun')).toHaveCount(meyveler.length);
+  await expect(page.locator('.ms-karistir')).toBeVisible();
+}
+
+test('Meyve Suyu: 3 yaş — açılıştan girilir, yanlış renkte yüz buruşturma (ceza yok), doğru renkte yıldız', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=3');
+  await page.getByRole('button', { name: 'Meyve Suyu' }).click();
+  const ist = await msIstek(page);
+  await expect(page.locator('.ms-blender')).toBeVisible();
+  await expect(page.locator('.pz-urunler .pz-urun')).toHaveCount(3);
+  // balonda istenen renkte bardak
+  await expect(page.locator('.pz-istek-balon .ms-bardak')).toBeVisible();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-m1-meyvesuyu-3yas.png` });
+
+  // yanlış renk: müşteri içer, yüzünü buruşturur; yıldız yok, meyveler tezgâha döner
+  const yanlis = ist.tezgah.find((m) => !ist.dogru.includes(m))!;
+  await blendereAt(page, [yanlis]);
+  await page.locator('.ms-karistir').click();
+  await expect(page.locator('.ms-ekran[data-sonuc="yanlis"]')).toBeAttached({ timeout: 10000 });
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(0);
+  const tekrar = await msIstek(page);
+  expect(tekrar.hedef).toBe(ist.hedef);
+  await expect(page.locator('.ms-meyveler .pz-urun')).toHaveCount(0);
+  await expect(page.locator('.pz-urunler .pz-urun')).toHaveCount(3);
+
+  // doğru renk: müşteri içer, sevinir, yıldız
+  await blendereAt(page, ist.dogru);
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-m2-meyvesuyu-blender.png` });
+  await page.locator('.ms-karistir').click();
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1, { timeout: 10000 });
+  // sıradaki müşteri başka bir renk ister
+  const ikinci = await msIstek(page);
+  expect(ikinci.hedef).not.toBe(ist.hedef);
+  expect(hatalar).toEqual([]);
+});
+
+test('Meyve Suyu: 4 yaş — tek meyve tek renk (dört müşteri, şenlik)', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=4&ekran=meyvesuyu');
+  for (let i = 0; i < 4; i++) {
+    const ist = await msIstek(page);
+    expect(ist.tezgah).toHaveLength(4);
+    expect(ist.dogru).toHaveLength(1);
+    await blendereAt(page, ist.dogru);
+    await page.locator('.ms-karistir').click();
+    await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(i + 1, { timeout: 10000 });
+  }
+  // dört müşteri mutlu: şenlik; "Bir daha" meyve suyuna, yanındaki düğme pazara götürür
+  await expect(page.locator('.pz-senlik-hayvan')).toHaveCount(4, { timeout: 15000 });
+  await expect(page.locator('.pz-senlik .pz-yildiz.dolu')).toHaveCount(4);
+  await expect(page.getByRole('button', { name: 'Pazar' })).toBeVisible();
+  expect(hatalar).toEqual([]);
+});
+
+for (const yas of [5, 6] as const) {
+  test(`Meyve Suyu: ${yas} yaş — iki rengi karıştır (kırmızı + sarı = turuncu …)`, async ({ page }, info) => {
+    const hatalar = hataTopla(page);
+    await page.goto(`./pazar/?test=1&yas=${yas}&ekran=meyvesuyu`);
+    const ist = await msIstek(page);
+    expect(['turuncu', 'yeşil', 'mor']).toContain(ist.hedef);
+    expect(ist.dogru).toHaveLength(2);
+    // tek ana renk yetmez: yanlış; balonda ipucu formülü (● + ● =) belirir
+    await blendereAt(page, [ist.dogru[0]]);
+    await page.locator('.ms-karistir').click();
+    await expect(page.locator('.ms-ekran[data-sonuc="yanlis"]')).toBeAttached({ timeout: 10000 });
+    await msIstek(page);
+    await expect(page.locator('.pz-istek-balon .ms-formul')).toBeVisible();
+    await expect(page.locator('.pz-istek-balon .ms-nokta')).toHaveCount(2);
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: `tests/screens/${info.project.name}-m3-meyvesuyu-${yas}yas-ipucu.png` });
+    // iki ana renk: doğru karışım
+    await blendereAt(page, ist.dogru);
+    await page.locator('.ms-karistir').click();
+    await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1, { timeout: 10000 });
+    expect(hatalar).toEqual([]);
+  });
+}
+
+test('Meyve Suyu: pazar şenliğinden ikinci oyun olarak açılır', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=5&ekran=senlik');
+  await page.getByRole('button', { name: 'Meyve Suyu' }).click();
+  await msIstek(page);
+  await expect(page.locator('.ms-blender')).toBeVisible();
+  expect(hatalar).toEqual([]);
+});
