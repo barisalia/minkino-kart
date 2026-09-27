@@ -1,4 +1,5 @@
-import { efekt } from '../audio/ses';
+import { efekt, konus } from '../audio/ses';
+import { kart } from '../engine/katalog';
 import { durum } from '../engine/ilerleme';
 import { h, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
@@ -49,12 +50,29 @@ export function acilisEkrani(app: Uygulama): Ekran {
     app.git(durum.i.yas ? 'temalar' : 'yas', durum.i.yas ? { mod: 'hafiza' } : { sonra: 'temalar', sonraParam: { mod: 'hafiza' } });
   });
 
+  // Yelpazedeki kartlar canlı: dokununca zıplar ve adı söylenir
+  const yelpaze = h('div.kart-yelpaze', {}, ...(['kedi', 'elma', 'araba'] as const).map((id) => {
+    const k = kartEl(id);
+    k.addEventListener('pointerdown', () => {
+      efekt.dokunma();
+      k.classList.remove('hop');
+      void k.offsetWidth;
+      k.classList.add('hop');
+      const ad = kart(id)?.ad;
+      if (ad) void konus(`${ad}!`);
+    });
+    k.addEventListener('animationend', (e) => {
+      if (e.animationName === 'mk-yelpaze-hop') k.classList.remove('hop');
+    });
+    return k;
+  }));
+
   const el = h(
     'div.acilis',
     {},
     h('div.kose-sol', {}, sol),
     h('div.kose-sag', {}, h('div.ust-grup', {}, app.secenekler.cikis ? ebeveyn : null, sesDugmesi())),
-    h('div.kart-yelpaze', {}, kartEl('kedi'), kartEl('elma'), kartEl('araba')),
+    yelpaze,
     h('div.logo', {}, logo, h('div.logo-serit', {}, 'KARTLAR')),
     h('div.acilis-alt', {}, oyna),
     minoGiris,

@@ -233,7 +233,10 @@ export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}):
     // ekran sahnedeyken ölç: kartların son yeri dağıtmadan önce belli olsun
     // yaşın düzeni (2×2, 2×3, 3×4, 4×4); geniş ekranda yan yatırılmış hâli de olur
     const d = HAFIZA_DUZEN[yas];
-    kapatSigdir = izgaraSigdir(alan, izgara, oyun.deste.length, { enBuyuk: yas === 3 ? 230 : 190, bosluk: yas >= 5 ? 10 : 16, kolonlar: [d.kolon, d.satir] });
+    // yatay telefonda (alçak ekran) iki sıra ya da tek sıra da olabilir; yoksa 6 yaşın kartları parmak ucundan küçük kalıyordu
+    const n = oyun.deste.length;
+    const kolonlar = [d.kolon, d.satir, n / 2, ...(n <= 6 ? [n] : [])];
+    kapatSigdir = izgaraSigdir(alan, izgara, n, { enBuyuk: yas === 3 ? 230 : 190, bosluk: yas >= 5 ? 10 : 16, kolonlar });
     const konusma = konus([metin('hafiza_oyunu'), metin('hafiza_sor')]);
     yoldas.dagit();
     await dagit(elemanlar, yoldas.patiNoktasi(), { bas: 150, aralik: elemanlar.length > 8 ? 55 : 90, arkaDon: false, ses: () => efekt.dagit() });

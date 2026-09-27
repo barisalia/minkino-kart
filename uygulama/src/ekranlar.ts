@@ -159,12 +159,20 @@ export function menuEkrani(app: Uygulama): Ekran {
   if (!AZ_HAREKET && !TEST_MODU) {
     minoKap.classList.add('geliyor');
     kinoKap.classList.add('geliyor');
-    void minoProfilYukle().then(() => {
-      yuruyen.yon = 1;
-      yuruyen.yuru(1.9);
+    // yandan çizim yavaş gelirse Mino ekranın dışında beklemesin: kısa süre sonra önden çizimle kayarak gelir
+    let geldi = false;
+    const gel = (yuruyerek: boolean) => {
+      if (geldi) return;
+      geldi = true;
+      if (yuruyerek) {
+        yuruyen.yon = 1;
+        yuruyen.yuru(1.9);
+        sonra(1250, () => yuruyen.dur());
+      }
       minoKap.classList.replace('geliyor', 'geldi');
-      sonra(1250, () => yuruyen.dur());
-    });
+    };
+    void minoProfilYukle().then((m) => gel(!!m));
+    sonra(1500, () => gel(false));
     sonra(350, () => {
       kinoOynat('yuru', 1100);
       kinoKap.classList.replace('geliyor', 'geldi');
@@ -203,7 +211,15 @@ export function menuEkrani(app: Uygulama): Ekran {
   const kartlar = OYUNLAR.map((k, i) => {
     const govde = h('span.ug-kart-govde', {}, kartResmi(k), h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
     const a = h('a.ug-kart', { href: k.adres, 'data-oyun': k.id, 'aria-label': k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
-    a.addEventListener('pointerdown', () => a.classList.add('basili'));
+    a.addEventListener('pointerdown', () => {
+      a.classList.add('basili');
+      // Mino basılan karta bakar (canlılık: karakterler çocuğun ne seçtiğiyle ilgilenir)
+      if (AZ_HAREKET) return;
+      const k = a.getBoundingClientRect();
+      const m = mino.el.getBoundingClientRect();
+      mino.bak(Math.max(-1, Math.min(1, (k.left + k.width / 2 - (m.left + m.width / 2)) / Math.max(160, innerWidth * 0.4))));
+      sonra(1200, () => mino.bak(0));
+    });
     for (const olay of ['pointerup', 'pointercancel', 'pointerleave'] as const) a.addEventListener(olay, () => a.classList.remove('basili'));
     a.addEventListener('click', (e) => {
       // Karta dokununca kart zıplar, Mino ve Kino sevinir, kısa bir an sonra oyuna geçilir.
@@ -221,7 +237,7 @@ export function menuEkrani(app: Uygulama): Ekran {
     return h('li.ug-kart-yer', { style: `--i:${i}` }, a);
   });
 
-  const kapi = h('button.ug-kapi', { type: 'button', 'aria-label': 'Ebeveyn köşesi (basılı tutun)' }, h('span.ug-kapi-halka', { 'aria-hidden': 'true' }), svg(IKON.ebeveyn));
+  const kapi = h('button.ug-kapi', { type: 'button', 'aria-label': 'Ebeveyn köşesi (basılı tutun)' }, h('span.ug-kapi-daire', {}, h('span.ug-kapi-halka', { 'aria-hidden': 'true' }), svg(IKON.ebeveyn)));
   const ipucu = h('span.ug-kapi-ipucu', { role: 'status' }, 'Büyükler için: basılı tutun');
   let ipucuZaman = 0;
   const kapiBirak = basiliTut(
