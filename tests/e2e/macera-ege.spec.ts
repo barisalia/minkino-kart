@@ -87,11 +87,18 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     }
   } else {
     await ekran('05-ritim');
-    // Ege'nin ritmi: tık-tık … tıık
-    for (const [i, ara] of [0, 340, 700].entries()) {
-      await page.waitForTimeout(ara);
-      await dokun(page, ege(page, 'cingirak'));
-      if (i === 1) await ekran('05b-salla');
+    // Ege'nin ritmi: tık-tık … tıık. Tutmazsa oyun ritmi yeniden gösterir ve yeni seri bekler (4. denemede kabul);
+    // test de görev "ritim" kaldıkça yeniden dener. Ekran görüntüsü seri bittikten sonra (araya girip ritmi bozmasın).
+    for (let deneme = 0; deneme < 5; deneme++) {
+      for (const ara of [0, 340, 700]) {
+        await page.waitForTimeout(ara);
+        await dokun(page, ege(page, 'cingirak'));
+      }
+      if (deneme === 0) await ekran('05b-salla');
+      // seri 1.4 sn sessizlikte biter; sonra ya sonraki göreve geçilir ya ritim yeniden gösterilip tekrar istenir
+      await page.waitForTimeout(1800);
+      await expect.poll(() => gorev(page), { timeout: T }).not.toBe('');
+      if ((await gorev(page)) !== 'ritim') break;
     }
   }
 
