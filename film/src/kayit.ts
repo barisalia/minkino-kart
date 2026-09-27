@@ -6,10 +6,12 @@
  * Yalnız ?kayit=1'de yüklenir (film/src/main.ts).
  */
 import { baglamiDegistir, konusmaCikisi, muzikKis } from '../../src/audio/motor';
-import { kayitTamponu } from '../../src/audio/kayit';
+import { dudakDizisiHazirla } from '../../src/audio/dudak';
+import { kayitlariHazirla, kayitTamponu } from '../../src/audio/kayit';
 import type { KayitSecenegi } from '../../src/audio/karakter-ses';
 import { FILM_EFEKT } from './efekt';
-import { gunlukDurum, sesGunlugu, type SesOlayi } from './motor';
+import { filmBul } from './ekranlar';
+import { gunlukDurum, konusSecenegi, sesGunlugu, type SesOlayi } from './motor';
 import { filmMuzik, type Ruh } from './muzik';
 
 const ORNEK = 48000;
@@ -113,4 +115,22 @@ function wav(b: AudioBuffer): string {
   return btoa(s);
 }
 
-(window as unknown as { __filmKayit: unknown }).__filmKayit = { sesiIsle, gunluk: () => sesGunlugu.length };
+/**
+ * Dudak senkronu: kayıtta ses çalmadığı (ve saat sahte olduğu) için ağız canlı ölçülemez; filmdeki bütün cümlelerin
+ * kayıtları önceden çözülür, zarfından ağız dizisi çıkarılır (src/audio/dudak.ts). Motor cümleyi söyletirken diziyi
+ * zamana göre oynatır. Kaydedici (__filmKayit) bunlar bitince hazır sayılır.
+ */
+async function dudaklariHazirla() {
+  await kayitlariHazirla();
+  const dosya = filmBul(new URLSearchParams(location.search).get('film') ?? 'mino-karpuz');
+  for (const s of dosya?.sahneler ?? []) {
+    const olaylar = (s as { olaylar?: { kim: string; yap: string; metin?: unknown }[] }).olaylar ?? [];
+    for (const o of olaylar) if (o.yap === 'soyle' && o.metin) await dudakDizisiHazirla(String(o.metin), konusSecenegi(o.kim === 'anlatici' ? '' : o.kim));
+  }
+}
+
+void dudaklariHazirla()
+  .catch(() => undefined)
+  .then(() => {
+    (window as unknown as { __filmKayit: unknown }).__filmKayit = { sesiIsle, gunluk: () => sesGunlugu.length };
+  });

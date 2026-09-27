@@ -50,6 +50,7 @@ export function konusmaMotorunuAc() {
 export function sus() {
   sayac++;
   konusuyor = false;
+  ani = null;
   kayitDurdur();
   if (destek()) speechSynthesis.cancel();
   if (aktifDosya) {
@@ -71,6 +72,19 @@ export type Soylenecek = string | undefined | null | (string | undefined | null)
 let konusuyor = false;
 /** Şu an bir cümle söyleniyor mu (kayıt ya da cihaz sesi). */
 export const konusuyorMu = () => konusuyor;
+
+/**
+ * Şu an çalan parça (dudak senkronu, src/audio/dudak.ts): 'kayit' = Web Audio'dan geçen gerçek kayıt (ses
+ * ölçülebilir), 'cihaz' = cihazın sesi ya da düz ses dosyası (ölçülemez; ağız metnin ritmiyle oynar).
+ * bas: parçanın başladığı an (performance.now). Parça başlamadan / bitince null.
+ */
+export interface KonusmaAni {
+  kaynak: 'kayit' | 'cihaz';
+  metin: string;
+  bas: number;
+}
+let ani: KonusmaAni | null = null;
+export const konusmaAni = (): KonusmaAni | null => ani;
 
 export interface KonusmaSecenegi {
   /** Karakter sesi: kayıtlar bu hızda (ve tonda) çalınır, ör. 1.18 = daha ince, sevimli */
@@ -104,12 +118,19 @@ export function konus(girdi: Soylenecek, secenek: KonusmaSecenegi = {}): Promise
     try {
       for (const p of parcalar) {
         if (benim !== sayac) return;
-        const calindi = kayitVar(p, kayitSecenegi) && (await kayitCal(p, () => benim !== sayac, kayitSecenegi));
+        const basladi = () => {
+          if (benim === sayac) ani = { kaynak: 'kayit', metin: p, bas: performance.now() };
+        };
+        const calindi = kayitVar(p, kayitSecenegi) && (await kayitCal(p, () => benim !== sayac, kayitSecenegi, basladi));
         if (!calindi && benim === sayac) await tekParca(p, benim, secenek.ton ?? 1);
+        if (benim === sayac) ani = null;
       }
       if (benim === sayac) muzikKis(false);
     } finally {
-      if (benim === sayac) konusuyor = false;
+      if (benim === sayac) {
+        konusuyor = false;
+        ani = null;
+      }
     }
   })();
 }
@@ -134,7 +155,9 @@ function tekParca(metin: string, benim: number, ton = 1): Promise<void> {
         clearTimeout(emniyet);
         son();
       };
-      a.play().catch(() => son());
+      a.play().then(() => {
+        if (benim === sayac) ani = { kaynak: 'cihaz', metin, bas: performance.now() };
+      }, () => son());
       return;
     }
     if (!destek()) {
@@ -152,9 +175,15 @@ function tekParca(metin: string, benim: number, ton = 1): Promise<void> {
       clearTimeout(emniyet);
       son();
     };
+    // ağız ritmi sesin gerçekten başladığı andan (onstart gelmeyen cihazda konuşma isteğinden) sayılır
+    u.onstart = () => {
+      if (benim === sayac) ani = { kaynak: 'cihaz', metin, bas: performance.now() };
+    };
     // Chrome bazen cancel()'dan hemen sonra gelen konuşmayı yutar; kısa gecikme.
     setTimeout(() => {
-      if (benim === sayac) speechSynthesis.speak(u);
+      if (benim !== sayac) return;
+      speechSynthesis.speak(u);
+      ani ??= { kaynak: 'cihaz', metin, bas: performance.now() };
     }, 60);
   });
 }

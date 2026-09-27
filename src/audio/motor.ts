@@ -1,4 +1,5 @@
 import { durum } from '../engine/ilerleme';
+import { olcumHesapla, type Olcum } from './dudak-mantik';
 
 /** Paylaşılan Web Audio bağlamı. İlk dokunuşta açılır (iOS kuralı). */
 let ctx: AudioContext | null = null;
@@ -31,6 +32,21 @@ export function konusmaGucu(): number {
   return Math.min(1, Math.sqrt(t / analizTampon.length) * 4.5);
 }
 
+/**
+ * Konuşma sesinin şu anki ölçümü (yükseklik + parlaklık; dudak senkronu, src/audio/dudak.ts). Aynı karede birden
+ * çok karakter sorarsa bir kez ölçülür. Ses bağlamı yoksa null.
+ */
+let sonOlcum: { ms: number; o: Olcum } | null = null;
+export function konusmaOlcum(): Olcum | null {
+  if (!konusmaAnaliz || !ctx) return null;
+  const simdi = performance.now();
+  if (sonOlcum && simdi - sonOlcum.ms < 5) return sonOlcum.o;
+  analizTampon ??= new Float32Array(konusmaAnaliz.fftSize);
+  konusmaAnaliz.getFloatTimeDomainData(analizTampon);
+  sonOlcum = { ms: simdi, o: olcumHesapla(analizTampon, ctx.sampleRate) };
+  return sonOlcum.o;
+}
+
 export function sesMotorunuAc(): AudioContext | null {
   try {
     if (!ctx) {
@@ -51,7 +67,8 @@ export function sesMotorunuAc(): AudioContext | null {
       muzikKanal.connect(ana);
       konusmaKanal.connect(ana);
       konusmaAnaliz = ctx.createAnalyser();
-      konusmaAnaliz.fftSize = 512;
+      // ~21 ms'lik pencere: dudak senkronunun ölçümü (yükseklik + parlaklık)
+      konusmaAnaliz.fftSize = 1024;
       konusmaAnaliz.smoothingTimeConstant = 0.5;
       konusmaKanal.connect(konusmaAnaliz);
       seviyeleriUygula();
@@ -111,8 +128,9 @@ export function muzikKis(kis: boolean) {
   efektKanal.gain.setTargetAtTime(a.efekt ? (kis ? 0.45 : 0.9) : 0, ctx.currentTime, kis ? 0.05 : 0.3);
 }
 
-document.addEventListener('visibilitychange', () => {
-  if (!ctx) return;
-  if (document.hidden) void ctx.suspend();
-  else void ctx.resume();
-});
+if (typeof document !== 'undefined')
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx) return;
+    if (document.hidden) void ctx.suspend();
+    else void ctx.resume();
+  });

@@ -2,6 +2,7 @@
  * Filmde bir oyuncu: Mino (src/mino, katmanlı iskelet; yürürken yandan iskelete döner) ya da ortak karakter bileşeni
  * (src/karakter: köpek, tavşan, ördek… iskelet varsa parça parça, yoksa tek görsel). Motor ikisini aynı arayüzle yönetir.
  */
+import type { KonusBilgi } from '../../src/audio/dudak';
 import { Karakter, type HareketAdi } from '../../src/karakter/karakter';
 import { Mino, minoIfadeleriYukle, type MinoIfade, type Tepki } from '../../src/mino/mino';
 import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
@@ -31,6 +32,8 @@ export class Oyuncu {
     if (tip === 'mino') {
       this.yuruyen = new YuruyenMino();
       this.mino = this.yuruyen.mino;
+      // filmde Mino'nun ağzını yalnız motor açar (konus): başkasının cümlesinde oynamasın
+      this.mino.agizSus = true;
       this.el = h('div.fl-oyuncu.fl-mino', {}, this.yuruyen.el);
       this.oran = 1360 / 1790;
     } else {
@@ -75,9 +78,10 @@ export class Oyuncu {
     this.karakter?.ifade(ad, ms);
   }
 
-  konus(acik: boolean) {
-    if (this.yuruyen) this.yuruyen.konus(acik);
-    else this.karakter?.konus(acik);
+  /** Konuşuyor: ağzı sese göre oynar (bilgi: cümle ve MP4 kaydında önceden çıkarılmış ağız dizisi) */
+  konus(acik: boolean, bilgi?: KonusBilgi) {
+    if (this.yuruyen) this.yuruyen.konus(acik, bilgi);
+    else this.karakter?.konus(acik, true, bilgi);
   }
 
   duraklat(d: boolean) {

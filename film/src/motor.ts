@@ -8,6 +8,8 @@
  * - Işık tonu (akşamüstü), sahne geçişi (iris / kararma), alt yazı, sonda öğüt kartı.
  * Yalnız transform / opacity.
  */
+import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
+import type { KonusmaSecenegi } from '../../src/audio/konusma';
 import { KINO_SESI, konus, sus } from '../../src/audio/ses';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { esyaCiz, ESYA_ORAN } from './esya';
@@ -53,7 +55,11 @@ if (KAYIT) {
   }
 }
 
-const FILM_GORSEL = import.meta.glob<string>('../../assets/film/*/arka-*.webp', { eager: true, query: '?url', import: 'default' });
+/** Konuşanın sesi (kim: '' anlatıcı). Kino: kendi sesi varsa o, yoksa anlatıcı sesinin kalın tonu (maceralarla aynı yol) */
+export const konusSecenegi = (kim: string): KonusmaSecenegi =>
+  kim === 'kino' ? KINO_SESI : { karakter: kim || null, ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 };
+
+const FILM_GORSEL =import.meta.glob<string>('../../assets/film/*/arka-*.webp', { eager: true, query: '?url', import: 'default' });
 const PAZAR_GORSEL = import.meta.glob<string>('../../assets/pazar/tezgah.webp', { eager: true, query: '?url', import: 'default' });
 
 // ---------------------------------------------------------------- sahne dosyası
@@ -572,19 +578,31 @@ export class Film {
     this.el.dataset.sonSoz = metin;
     // konuşma sırasında müzik kısılır (ducking)
     if (this.muzik) filmMuzik.kis(sn / this.hiz);
-    if (oy) {
-      oy.konus(true);
-      this.konusan = kim;
-      void this.bekle(sn * 0.85).then(() => {
-        oy.konus(false);
-        if (this.konusan === kim) this.konusan = null;
+    const konusSecenek = konusSecenegi(kim);
+    const ses = this.ses ? konus(metin, konusSecenek) : null;
+    sesGunlugeYaz('konus', metin, konusSecenek);
+    // konuşanın ağzı oynar (dudak senkronu): karakter kendi cümlesinde; anlatıcı cümlesinde (anlatıcı = Mino'nun
+    // sesi) sahnede görünen Mino varsa o, yoksa kimse
+    const minoN = this.nesneler.get('mino');
+    const agiz = oy ?? (!kim && minoN && minoN.saydam >= 0.5 ? this.oyuncular.get('mino') : undefined);
+    if (agiz) {
+      const agizKim = kim || 'mino';
+      // MP4 kaydı: ses çalmıyor, ağız kaydın önceden çıkarılmış zarfıyla (film/src/kayit.ts hazırlar)
+      const dizi = KAYIT ? dudakDizisi(metin, konusSecenek.karakter) : null;
+      agiz.konus(true, { metin, dizi });
+      this.konusan = agizKim;
+      const no = (this.konusNo.get(agiz) ?? 0) + 1;
+      this.konusNo.set(agiz, no);
+      // ağız en az tahmini süre, kayıt çalıyorsa (ya da dizisi varsa) sonuna kadar açık
+      void Promise.all([this.bekle(Math.max(sn * 0.85, dizi ? diziSuresi(dizi) * this.hiz : 0)), ses]).then(() => {
+        if (this.konusNo.get(agiz) !== no) return;
+        agiz.konus(false);
+        if (this.konusan === agizKim) this.konusan = null;
       });
     }
-    // Kino: kendi sesi varsa o, yoksa anlatıcı sesinin kalın tonu (maceralarla aynı yol)
-    const konusSecenek = kim === 'kino' ? KINO_SESI : { karakter: kim || null, ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 };
-    if (this.ses) void konus(metin, konusSecenek);
-    sesGunlugeYaz('konus', metin, konusSecenek);
   }
+  /** oyuncu başına son cümlenin numarası (eski cümlenin bitişi yenisinin ağzını kapatmasın) */
+  private konusNo = new Map<Oyuncu, number>();
 
   private parilti(x: number, y: number) {
     const p = h('div.fl-parilti', { style: `left:${x}%;bottom:${y}%` }, ...Array.from({ length: 8 }, (_, i) => h('i', { style: `--a:${i * 45}deg` })));
