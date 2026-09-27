@@ -7,20 +7,21 @@
  *  - GEÇİŞ    (φ = 0.5)  : basan bacak dik, havadaki bacak kalkık hâlde onun yanından öne geçer
  *  - YÜKSELİŞ (φ ≈ 0.7)  : basan bacak iter, gövde en yüksek ve uzamış, öne biraz daha eğik
  * Bacaklar kalçadaki dönme noktasından DÖNER. Tasarımcının çiziminde bacaklar dinlenmede kalçanın altında
- * (ortalanmış) ve kalça kökleri iki yöne de ±25°'ye kadar temiz: öne ve geriye eşit açılır.
+ * (ortalanmış), iki patinin tabanı aynı zeminde ve iki kalça yan yana (yatayda 115 birim); kalça kökleri iki yöne
+ * de ±25°'ye kadar temiz: öne ve geriye eşit açılır.
  * Basan bacakta açının sinüsü zamanla doğrusal: gövde sabit hızla giderken basan pati yerde kaymaz.
- * İki adım eşit: her bacağın açısı, kendi boyuyla aynı adım yolunu alacak kadardır (uzak bacak kısa olduğu için
- * biraz daha çok döner); gövde iki adımda da aynı yolu alır, aynı iner-kalkar.
+ * İki adım eşit: her bacağın açısı, kendi boyuyla aynı adım yolunu alacak kadardır (yakın bacak ±24°, uzak bacak
+ * 10 birim uzun olduğu için ±23°); gövde iki adımda da aynı yolu alır, aynı iner-kalkar.
  * Havadaki bacak ease'li döner (itişin devamıyla biraz geri, sonra öne uzanıp yerine oturur) ve kalkar.
  * Kollar bacakların tersine, kuyruk / kulaklar / fular gövdenin iniş-çıkışını geriden izler (follow-through).
  * Gövdenin yüksekliği patilerden hesaplanır (iki adımda aynı, aksamaz); her pati ayrıca bacağın küçük dikey
- * kaymasıyla tam kendi yerine (ZEMIN_BACAK) oturur: basan pati yere değer, hiçbir pati yere gömülmez.
+ * kaymasıyla tam yere (ZEMIN) oturur: basan pati yere değer, hiçbir pati yere gömülmez.
  */
 
 /** Dönme noktaları (çizim birimi; ekip/mino/mino-profil.json → donme ile aynı, birim testi denetler) */
 export const DONME = {
   'bacak-on': [1160, 1670],
-  'bacak-arka': [935, 1660],
+  'bacak-arka': [1045, 1660],
   govde: [1100, 1880],
 } as const;
 
@@ -29,13 +30,10 @@ type BacakAdi = 'bacak-on' | 'bacak-arka';
 // ---- Ölçülen geometri: node scripts/mino/pati-olc.mjs (katman resimlerinin opak piksellerinden) ----
 
 /**
- * Patilerin dinlenme duruşunda yere değen çizgisi (çizim birimi). Yakın pati 1919'da; uzak bacağın patisi
- * çizimde 38 birim yukarıda (1881) durur: uzak ayak derinlikte geride, bu yüzden kendi yer çizgisine basar
- * (dinlenme duruşu tasarımcının çizdiği gibi kalır, uzak bacak kalçasından aşağı kaydırılmaz).
+ * Patilerin dinlenme duruşunda yere değen çizgisi (çizim birimi): iki patinin tabanı da burada. profil.mjs'teki
+ * TABAN ile aynı → önden çizimin ayak çizgisi.
  */
-export const ZEMIN_BACAK: Record<BacakAdi, number> = { 'bacak-on': 1919, 'bacak-arka': 1881 };
-/** Ana yer çizgisi (yakın pati; profil.mjs'teki TABAN ile aynı → önden çizimin ayak çizgisi) */
-export const ZEMIN = ZEMIN_BACAK['bacak-on'];
+export const ZEMIN = 1919;
 
 /**
  * Bacağın alt kısmının dışbükey zarfı (çizim birimi; ilk nokta dinlenmede en alttaki taban noktası). Bacak
@@ -48,16 +46,16 @@ const PATI: Record<BacakAdi, readonly (readonly [number, number])[]> = {
     [1294, 1887], [1297, 1878], [1095, 1878], [1298, 1872], [1298, 1862], [1297, 1856],
   ],
   'bacak-arka': [
-    [1010, 1881], [990, 1881], [1017, 1880], [983, 1880], [973, 1878], [1030, 1876], [962, 1875], [950, 1871],
-    [1044, 1868], [935, 1865], [1053, 1858], [911, 1853], [1057, 1850], [901, 1847], [1059, 1844], [895, 1843],
-    [885, 1835], [879, 1829], [873, 1821],
+    [1120, 1919], [1100, 1919], [1127, 1918], [1093, 1918], [1083, 1916], [1140, 1914], [1072, 1913], [1060, 1909],
+    [1154, 1906], [1045, 1903], [1163, 1896], [1021, 1891], [1167, 1888], [1011, 1885], [1169, 1882], [1005, 1881],
+    [995, 1873], [989, 1867], [983, 1859], [977, 1843], [977, 1828],
   ],
 };
 
 /** Ölçüler (derece / çizim birimi) */
 export const OLCU = {
-  /** uzak (kısa) bacağın basışta öne / itişte geriye açısı; yakın bacak aynı adım yolu için biraz az döner
-   * (sınır ±25; havadaki bacağın taşması dahil) */
+  /** kısa bacağın (yakın) basışta öne / itişte geriye açısı; uzun bacak (uzak) aynı adım yolu için biraz az
+   * döner (sınır ±25; havadaki bacağın taşması dahil) */
   BACAK: 24,
   /** yakın kol / uzak kol salınımı (bacakların tersine) */
   KOL_ON: 22,
@@ -148,7 +146,7 @@ export interface YuruyusPozu {
 }
 
 /**
- * Bir pozda patinin dünyadaki en alt noktası, kendi yer çizgisinden yüksekliği (yer; + havada, − gömülü) ve
+ * Bir pozda patinin dünyadaki en alt noktası, yer çizgisinden yüksekliği (yer; + havada, − gömülü) ve
  * taban noktasının x'i (bütün dönüşümlerle; mino-profil.ts'in yazdığı transform zinciriyle aynı).
  * Birim testleri: basan pati yere değer, hiçbir pati yere gömülmez, basan pati kaymaz.
  */
@@ -167,11 +165,11 @@ export function patiDunya(ad: BacakAdi, z: YuruyusPozu): { enAlt: number; yer: n
   };
   let enAlt = -Infinity;
   for (const [x, y] of PATI[ad]) enAlt = Math.max(enAlt, dunya(x, y)[1]);
-  return { enAlt, yer: ZEMIN_BACAK[ad] - enAlt, tabanX: dunya(PATI[ad][0][0], PATI[ad][0][1])[0] };
+  return { enAlt, yer: ZEMIN - enAlt, tabanX: dunya(PATI[ad][0][0], PATI[ad][0][1])[0] };
 }
 
 /**
- * Bacak (derece kadar dönmüş) ve beden (ölçek + eğim) dönüşümünden sonra patinin en alt noktasını kendi yer
+ * Bacak (derece kadar dönmüş) ve beden (ölçek + eğim) dönüşümünden sonra patinin en alt noktasını yer
  * çizgisine değdirmek için bedenin ne kadar inmesi gerektiği (+ aşağı).
  */
 function yereInis(ad: BacakAdi, aci: number, sx: number, sy: number, egim: number): number {
@@ -189,7 +187,7 @@ function yereInis(ad: BacakAdi, aci: number, sx: number, sy: number, egim: numbe
     const oy = (by - ay) * sy;
     enAlt = Math.max(enAlt, ay + ox * Math.sin(e) + oy * Math.cos(e));
   }
-  return ZEMIN_BACAK[ad] - enAlt;
+  return ZEMIN - enAlt;
 }
 
 /**
@@ -224,8 +222,8 @@ export function yuruyusPozu(faz: number, guc: number, t: number): YuruyusPozu {
   const b = bacaklar(p);
   const b2 = bacaklar(p + 0.5);
 
-  // gövdenin yüksekliği: patiler yere değecek kadar iner. İki bacağın boyu, patinin kalçaya göre yeri ve öne
-  // eğimdeki kalkışı farklı olduğundan yalnız buna bakılsa gövde bir adımda yüksek, ötekinde alçak kalır (aksama);
+  // gövdenin yüksekliği: patiler yere değecek kadar iner. İki bacağın boyu, kalçanın gövde noktasına göre yeri
+  // ve öne eğimdeki kalkışı farklı olduğundan yalnız buna bakılsa gövde bir adımda yüksek, ötekinde alçak kalır (aksama);
   // bu yüzden iki adımın ortalaması alınır (her adım aynı) ve üstüne çöküşte ek iniş, yükselişte ek kalkış eklenir.
   const bob = (Math.min(b.onIn, b.arkaIn) + Math.min(b2.onIn, b2.arkaIn)) / 2 + w * (OLCU.COKUS * cok - OLCU.YUKSELIS * yuk);
   // bacaklar: her pati tam yere değsin diye bacak bedenin içinde dikeyde kayar (diz bükülmesinin yerine; kalça

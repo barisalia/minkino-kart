@@ -5,7 +5,7 @@
  *   Katmanlar arkadan öne: kuyruk, kulak-arka, bacak-arka, kol-arka, bacak-on, govde, kol-on, fular, kafa, kulak-on,
  *   goz, agiz (+ gizli goz-kapali). Çizim sağa bakar; sola yürürken dışarıdan aynalanır (scaleX(-1)).
  *   Yürüme döngüsü (yuruyus.ts): çizgi film yürüyüşü, her adım temas → çöküş → geçiş → yükseliş. Bacaklar kalçadaki
- *   dönme noktalarından öne ve geriye eşit döner (yakın ±21°, uzak ±24°: iki adım aynı yolu alır; basan pati yerde
+ *   dönme noktalarından öne ve geriye eşit döner (yakın ±24°, uzak ±23°: iki adım aynı yolu alır; basan pati yerde
  *   kaymaz, havadaki kalkar), kollar ters yönde ±19-22° sallanır, gövde adım ritminde iner-kalkar ve öne eğilir,
  *   kafa / kulak (±9) / kuyruk / fular geriden gelir (follow-through).
  *   Dururken nefes alır, göz kırpar.
