@@ -7,7 +7,11 @@ import path from 'node:path';
 
 const KAYNAK = ['ekip/pazar-musteri', 'ekip/film/cizim'];
 /** [klasör, dosya adı (uzantısız), iskelet adı] */
-const ANA = [['ekip/kino', 'kino-final', 'kino']];
+const ANA = [
+  ['ekip/kino', 'kino-final', 'kino'],
+  // Bebek Ege (Sesli Maceralar Bölüm 2): kafa, kol, bacak, göz, ağız, kaş katmanları
+  ['ekip/ege', 'ege', 'ege'],
+];
 const HEDEF = 'assets/karakter-iskelet';
 fs.mkdirSync(HEDEF, { recursive: true });
 

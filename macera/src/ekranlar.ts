@@ -74,11 +74,15 @@ export function acilisEkrani(app: Uygulama): Ekran {
   // Bölüm 2: Şşş, Ege Uyuyor! (küçük kart: uyuyan Ege)
   const egeResim = new Ege();
   egeResim.ifade('uyuyor');
-  const egeKart = h('button.mc-bolum-kart.eg-bolum-kart', { type: 'button', 'aria-label': E.baslik }, h('span.eg-bk-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, egeResim.el), h('span.eg-bk-yazi', {}, h('small', {}, 'Bölüm 2'), h('b', {}, E.baslik)));
+  egeResim.durum('uyku');
+  const egeKart = h('button.eg-bolum-kart', { type: 'button', 'aria-label': E.baslik }, h('span.eg-bk-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, egeResim.el), h('span.eg-bk-yazi', {}, h('small', {}, 'Bölüm 2'), h('b', {}, E.baslik)));
   egeKart.addEventListener('click', () => basla('ege'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
   return {
     el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, egeKart, banyoKart, oyna)),
+    kapat() {
+      egeResim.kapat();
+    },
   };
 }
 
