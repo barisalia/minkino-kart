@@ -11,6 +11,7 @@
  */
 import { Karakter, type Poz } from '../../src/karakter/karakter';
 import { Mino, type Tepki } from '../../src/mino/mino';
+import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { fularSvg } from './banyo-gorsel';
 import type { Bolum, BolgeId, KisiAdi } from './banyo-mantik';
@@ -97,11 +98,20 @@ export function kopukHtml(x: number, y: number, r: number, tohum: number) {
   return s;
 }
 
-export type KinoHareket = 'silkelen' | 'ulu' | 'titre' | 'tekme' | 'coskulu' | 'yuz' | 'kulakDik' | 'ic' | 'dinle' | 'bak';
+export type KinoHareket = 'silkelen' | 'ulu' | 'titre' | 'tekme' | 'coskulu' | 'yuz' | 'kulakDik' | 'ic' | 'dinle' | 'bak' | 'dans' | 'sevin';
 /** Kino'nun çizilmiş yüz ifadeleri (ekip/kino/IFADELER.md) */
 export type KinoIfade = 'heyecan' | 'sicak' | 'titreme' | 'keyif' | 'uluma' | 'uzgun' | 'saskin';
 /** Kendi yüzü olan hareketler */
-const KINO_OTO_IFADE: Partial<Record<KinoHareket, KinoIfade>> = { coskulu: 'heyecan', yuz: 'heyecan', ulu: 'uluma', titre: 'titreme' };
+const KINO_OTO_IFADE: Partial<Record<KinoHareket, KinoIfade>> = { coskulu: 'heyecan', yuz: 'heyecan', ulu: 'uluma', titre: 'titreme', dans: 'heyecan', sevin: 'heyecan' };
+/**
+ * Kino'nun kolu omuzdan en çok bu kadar kalkar (derece): fazlasında omuz dikişi ve kol ucunda kontur izi görünüyor
+ * (iskelet kolu -5 … 60'a izin verir; 25°'den sonra omuzda yarık görünüyor, banyo hareketleri 20'de kalır).
+ */
+const KINO_KOL_EN_COK = 20;
+/** Kuyruk kökünden en çok bu kadar döner (derece; aşağı yalnız %40'ı): fazlasında kökte beyaz yarık görünüyor */
+const KINO_KUYRUK_EN_COK = 20;
+/** Mino'nun hâl çizimleri (sırılsıklam / pofuduk) varken ifade eki bindirilen tepkiler: hâl yüzüyle uyuşmuyor */
+const HAL_IFADESIZ = new Set<Tepki>(['zorlan', 'sersem', 'kararsiz']);
 /** Köpük saçın şekilleri (aynı çizim: yatay, dikey esneme) */
 const SAC_SEKIL: [number, number][] = [
   [1, 1],
@@ -120,6 +130,8 @@ export class Kisi {
   /** çizim kutusu (dokunma burada) */
   readonly kap: HTMLElement;
   readonly mino: Mino | null = null;
+  /** Mino: önden ↔ yandan yürüyen sarmal (koşarken yana döner, adımları yola göre) */
+  readonly yuruyen: YuruyenMino | null = null;
   readonly kar: Karakter | null = null;
   private balonEl: HTMLElement;
   private pofEl: HTMLElement | null = null;
@@ -142,7 +154,8 @@ export class Kisi {
     this.kap = h('div.bn-cizim');
     if (ad === 'mino') {
       this.mino = new Mino();
-      this.kap.append(this.mino.el);
+      this.yuruyen = new YuruyenMino(this.mino);
+      this.kap.append(this.yuruyen.el);
       this.hazirP = Promise.resolve();
     } else {
       this.kar = new Karakter(KINO_ISKELET, h('div'));
@@ -163,7 +176,9 @@ export class Kisi {
 
   private async kinoKur() {
     const kar = this.kar!;
-    for (let i = 0; i < 200 && !kar.el.classList.contains('kr-iskeletli'); i++) await new Promise((r) => setTimeout(r, 25));
+    // iskeletin gelmesini bekle (yavaş cihazda 5 sn'yi geçebiliyor: eskiden beklemeyi bırakınca Kino'nun çamur /
+    // dokunma bölgeleri hiç kurulmuyor, ilk görev takılıyordu)
+    await kar.hazir;
     const s = this.svg();
     if (!s) return;
     s.setAttribute('viewBox', KINO_KIRPIM.join(' '));
@@ -322,6 +337,47 @@ export class Kisi {
     g.append(e);
   }
 
+  /**
+   * Ovalamanın ilerleme halkası: bölgenin çevresinde dolan yeşil çember (0..1). b null: kaldırır.
+   * Çocuk ne kadar kaldığını görür; dolunca bölge biter.
+   */
+  ilerlemeCiz(b: Bolum | null, oran = 0) {
+    let e = this.kap.querySelector<SVGGElement>('g.bn-ilerleme');
+    if (!b) {
+      e?.remove();
+      return;
+    }
+    const t = this.bolgeler[b];
+    const g = t && this.parcaG(t.parca);
+    if (!t || !g) return;
+    const r = t.r * 1.3;
+    const cevre = 2 * Math.PI * r;
+    if (!e || e.dataset.bolum !== b) {
+      e?.remove();
+      e = svgEl('g', { class: 'bn-ilerleme', 'data-bolum': b });
+      e.innerHTML =
+        `<circle cx="${t.x}" cy="${t.y}" r="${r}" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="${(t.r * 0.2).toFixed(0)}"/>` +
+        `<circle class="bn-ilerleme-dolu" cx="${t.x}" cy="${t.y}" r="${r}" fill="none" stroke="#4fc94a" stroke-width="${(t.r * 0.2).toFixed(0)}" stroke-linecap="round" stroke-dasharray="0 ${cevre.toFixed(0)}" transform="rotate(-90 ${t.x} ${t.y})"/>`;
+      g.append(e);
+    }
+    e.querySelector('.bn-ilerleme-dolu')?.setAttribute('stroke-dasharray', `${(cevre * Math.max(0, Math.min(1, oran))).toFixed(1)} ${cevre.toFixed(0)}`);
+  }
+
+  /**
+   * Mino'nun tek bir parçasının donuk kopyası (saklambaç: arkadan görünen kuyruk ucu 'q', dikizleyen kafa 'k').
+   * Asıl çizimle aynı kutu ve ölçek; yalnız o parça görünür (banyo.css → bn-klon-q / bn-klon-k).
+   */
+  minoKlon(parca: 'q' | 'k'): HTMLElement | null {
+    if (!this.mino) return null;
+    const k = this.mino.el.cloneNode(true) as HTMLElement;
+    for (const c of [...k.classList]) if (c.startsWith('ifade-') || c === 'gozkapali' || c === 'mutlu' || c === 'uyuyor') k.classList.remove(c);
+    for (const v of ['--govde', '--kafa', '--kuyruk', '--kol-sol', '--kol-sag']) k.style.setProperty(v, 'translate(0px, 0px)');
+    k.classList.add(`bn-klon-${parca}`);
+    // dokunma / test çemberleri ve parlamalar kopyada olmaz (asıl çizimde kalır)
+    k.querySelectorAll('.bn-bolge, .bn-isabet, .bn-ilerleme, .bn-parla, .mino-zzz').forEach((e) => e.remove());
+    return k;
+  }
+
   /** Dokunma/test için görünmez bölge çemberleri (data-bolge) */
   isabetleriKur() {
     for (const [b, t] of Object.entries(this.bolgeler) as [Bolum, BolgeTanim][]) {
@@ -387,21 +443,14 @@ export class Kisi {
   /** Fular takılı mı (Mino: çizimdeki fular; Kino: kodla takılan) */
   fular(takili: boolean) {
     if (this.ad === 'kino') {
+      // Kino'nun çiziminde fuların altı (göğüs, yuvarlak boyun dolgusu) temiz: fular yalnız gizlenir.
+      // (Eskiden kodla konan köşeli göğüs yaması baş kalkınca — uluma — boyunda düz çizgili bir kutu gibi görünüyordu.)
       const f = this.parcaG('fular') ?? this.kap.querySelector<SVGGElement>('g.bn-kino-fular');
       if (f) f.style.visibility = takili ? '' : 'hidden';
-      // iskeletin gövdesi fuların altında boş: fular çıkınca krem göğüs tüyüyle örtülür
-      const govde = this.parcaG('govde');
-      let gogus = govde?.querySelector<SVGPathElement>('path.bn-gogus');
-      if (!takili && !gogus && govde && this.parcaG('fular')) {
-        govde.insertAdjacentHTML(
-          'beforeend',
-          `<path class="bn-gogus" d="M790 1170 L1250 1170 Q1262 1260 1236 1330 Q1210 1350 1190 1352 Q1196 1400 1160 1420 Q1160 1470 1110 1480 Q1085 1520 1040 1505 Q995 1520 970 1480 Q920 1470 920 1420 Q884 1400 890 1352 Q870 1350 845 1330 Q815 1260 790 1170 Z" fill="#f4ebdd" stroke="${K}" stroke-width="12" stroke-linejoin="round"/>`,
-        );
-        gogus = govde.querySelector<SVGPathElement>('path.bn-gogus');
-      }
-      if (gogus) gogus.style.display = takili ? 'none' : '';
       return;
     }
+    // yandan (profil) çizimdeki fular da (banyo.css → bn-fularsiz)
+    this.el.classList.toggle('bn-fularsiz', !takili);
     const yollar = this.fularYollari();
     yollar.forEach((e) => (e.style.display = takili ? '' : 'none'));
     const s = this.svg();
@@ -415,6 +464,19 @@ export class Kisi {
       gogus = s?.querySelector('path.bn-gogus');
     }
     if (gogus) (gogus as SVGElement).style.display = takili ? 'none' : '';
+    // Hâl çizimlerinde (sırılsıklam, pofuduk) asıl kafa grubu — ve onunla göğüs yaması — gizlenir; fuların koyu
+    // zemini açıkta kalıyordu. Aynı yama hâl kafasının hemen altına da konur (yalnız hâl açıkken görünür; banyo.css).
+    let halGogus = s?.querySelector<SVGElement>('path.bn-gogus-hal');
+    if (!takili && !halGogus && gogus) {
+      const kafaHal = s?.querySelector<SVGGElement>(':scope > .k > .m-hal');
+      if (kafaHal) {
+        halGogus = gogus.cloneNode() as SVGElement;
+        halGogus.setAttribute('class', 'bn-gogus-hal');
+        halGogus.style.display = '';
+        kafaHal.before(halGogus);
+      }
+    }
+    if (halGogus) halGogus.style.display = takili ? 'none' : '';
   }
   /** Fuların ekrandaki yeri */
   fularEkran(): [number, number] {
@@ -468,10 +530,10 @@ export class Kisi {
     this.gov.classList.toggle('bn-kabarik', oran > 0.02);
   }
 
-  // ---------------------------------------------------------------- saklanma (Mino: yalnız kuyruk ucu)
-  sakla(acik: boolean, aynala = false) {
+  // ---------------------------------------------------------------- saklanma
+  /** Saklandı: tamamen görünmez (görünen kuyruk ucu / dikiz ayrı parçalardır; banyo.ts → sakliGoster) */
+  sakla(acik: boolean) {
     this.el.classList.toggle('bn-sakli', acik);
-    this.el.classList.toggle('bn-aynali', acik && aynala);
   }
 
   // ---------------------------------------------------------------- hareket
@@ -501,7 +563,7 @@ export class Kisi {
    * (x, y) noktasına git (sahnenin %'si, y alttan). yay: zıplama yüksekliği (sahne yüksekliğinin %'si).
    * Yalnız transform: yol katmanı kayar, sonra konum işlenir.
    */
-  async git(x: number, y: number, ms = 800, yay = 0, egri = 'cubic-bezier(0.45, 0, 0.3, 1)') {
+  async git(x: number, y: number, ms = 800, yay = 0, egri = 'cubic-bezier(0.45, 0, 0.3, 1)', yandan = false) {
     const kok = this.el.parentElement;
     if (!kok) return this.koy(x, y);
     this.hedef = x;
@@ -510,6 +572,19 @@ export class Kisi {
     const H = kok.clientHeight;
     const dx = ((x - this.x) / 100) * W;
     const dy = (-(y - this.y) / 100) * H;
+    // Mino yandan yürür / koşar: profil iskeleti, adım hızı yola göre (pati yerde kaymaz)
+    if (yandan && !yay && this.yuruyen && Math.abs(dx) > this.el.offsetWidth * 0.15) {
+      const dongu = (Math.abs(dx) / Math.max(1, this.el.offsetWidth)) * (MINO_KUTU_GENISLIK / MINO_DONGU_YOLU);
+      this.yuruyen.el.classList.toggle('sola', dx < 0);
+      if (this.yuruyen.yuru(Math.min(4.5, Math.max(1.2, dongu / Math.max(0.1, sure(ms) / 1000))))) {
+        const a = this.yol.animate([{ transform: 'translate(0, 0)' }, { transform: `translate(${dx}px, ${dy}px)` }], { duration: sure(ms), easing: 'linear', fill: 'forwards' });
+        await a.finished.catch(() => undefined);
+        this.yuruyen.dur();
+        this.koy(x, y);
+        a.cancel();
+        return;
+      }
+    }
     const yh = (yay / 100) * H;
     const kf: Keyframe[] = yay
       ? [
@@ -588,17 +663,15 @@ export class Kisi {
 
   /** Mino tepkisi (Kino'da karşılığı) */
   tepki(t: Tepki, sn?: number) {
-    if (this.mino) this.mino.tepki(t, sn);
-    else if (this.kar) {
+    if (this.mino) {
+      this.mino.tepki(t, sn);
+      // hâl çizimi açıkken ifade eki (normal kafaya göre kesilmiş) hâl kafasının üstünde yamalı duruyor: gösterme
+      if (this.mino.halAd && HAL_IFADESIZ.has(t)) void this.mino.ifade(null);
+    } else if (this.kar) {
       const es: Partial<Record<Tepki, () => void>> = {
-        zipla: () => {
-          void this.kar!.oynat('sevin', 900);
-          this.kinoIfade('heyecan', 900);
-        },
-        dans: () => {
-          void this.kar!.oynat('dans', 1600);
-          this.kinoIfade('heyecan', 1600);
-        },
+        // Kino'nun kendi sevinci ve dansı (karakterin "kovala" dansında kuyruk tam tur dönüyor, kopuk görünüyordu)
+        zipla: () => this.kinoOynat('sevin', 900),
+        dans: () => this.kinoOynat('dans', 1600),
         sasir: () => this.kinoOynat('kulakDik', 900),
         hayir: () => void this.kar!.oynat('hayir', 700),
         evet: () => void this.kar!.oynat('huy', 900),
@@ -620,6 +693,11 @@ export class Kisi {
   }
   /** Gözler sıkıca kapalı (köpük kaçmasın) */
   gozKapali = false;
+  /** İkisi için de "gözler sıkıca kapalı" (Mino: ifade eki olmadan, ıslak / pofuduk hâlde de temiz) */
+  gozSik(acik: boolean) {
+    if (this.mino) this.mino.gozZorla = acik;
+    else this.gozKapali = acik;
+  }
   /** Kino'ya özel hareket (ms; 0 = durdurana kadar) */
   kinoOynat(ad: KinoHareket, ms = 1000, yon = 1) {
     if (!this.kar) return;
@@ -715,7 +793,7 @@ export class Kisi {
             // kulaklar pervane gibi, gövde iki yana
             p.don += 12 * S(t * 38) * z * az;
             p.x += 2.5 * S(t * 38) * z * az;
-            kulak(24 * S(t * 44) * z * az, 24 * S(t * 44 + 1.2) * z * az);
+            kulak(18 * S(t * 44) * z * az, 18 * S(t * 44 + 1.2) * z * az);
             p.kuyruk += 40 * S(t * 36) * z;
             p.gozKapali = z > 0.4;
             p.sx *= 1 + 0.04 * S(t * 76) * z;
@@ -776,9 +854,39 @@ export class Kisi {
             p.kafa += 9 * z * o.yon;
             kulak(6 * z);
             break;
+          case 'dans': {
+            // sevinç dansı: iki yana sallanarak hoplar, kollar sırayla kalkar, kuyruk pervane gibi sallanır (dönmez)
+            const hop = Math.abs(S(t * 9));
+            p.y -= 9 * hop * z * az;
+            p.don += 6 * S(t * 4.5) * z * az;
+            p.kafa -= 4 * S(t * 4.5 + 0.6) * z;
+            p.kolSol += (14 + 22 * Math.max(0, S(t * 9))) * z;
+            p.kolSag += (14 + 22 * Math.max(0, -S(t * 9))) * z;
+            p.kuyruk += 40 * S(t * 30) * z;
+            kulak(14 * S(t * 18) * z, 14 * S(t * 18 + 1) * z);
+            dil = true;
+            break;
+          }
+          case 'sevin': {
+            // kısa sevinç: iki hop, kollar havada, kuyruk sallanır
+            const hop = Math.abs(S(u * Math.PI * 2));
+            p.y -= 12 * hop * z * az;
+            p.sy *= 1 + 0.04 * hop * z;
+            p.kolSol += 34 * z;
+            p.kolSag += 34 * z;
+            p.kuyruk += 35 * S(t * 30) * z;
+            kulak(16 * hop * z);
+            dil = true;
+            break;
+          }
         }
       }
     }
+    // kollar omuzdan fazla kalkmasın (omuz dikişi görünmesin)
+    p.kolSol = Math.min(p.kolSol, KINO_KOL_EN_COK);
+    p.kolSag = Math.min(p.kolSag, KINO_KOL_EN_COK);
+    // kuyruk kökünde yarık açılmasın (sallanma hızlı ama dar)
+    p.kuyruk = Math.max(-KINO_KUYRUK_EN_COK * 0.4, Math.min(KINO_KUYRUK_EN_COK, p.kuyruk));
     p.agizAcik = Math.max(p.agizAcik, agiz > 0.5 ? 1 : 0);
     // kodla çizilen ağız / dil (iskelette yoksa); iskeletin "dil-disarida" katmanı
     const ag = this.kap.querySelector<SVGGElement>('g.bn-kino-agiz');
@@ -793,7 +901,8 @@ export class Kisi {
   }
 
   kapat() {
-    this.mino?.kapat();
+    if (this.yuruyen) this.yuruyen.kapat();
+    else this.mino?.kapat();
     this.kar?.kapat();
   }
 }

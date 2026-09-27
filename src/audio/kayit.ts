@@ -136,3 +136,12 @@ export function kayitDurdur() {
   }
   calan = null;
 }
+
+/**
+ * Bir cümlenin kaydı çözülmüş hâliyle ve kayitCal'ın çalacağı hızla (kayıt yoksa null). Filmin MP4 kaydında sesi
+ * dosyaya işlemek için.
+ */
+export async function kayitTamponu(metin: string, secenek: KayitSecenegi = {}): Promise<{ tampon: AudioBuffer; hiz: number } | null> {
+  const t = await tampon(metin, secenek);
+  return t ? { tampon: t, hiz: dosya(metin, secenek)?.hiz ?? 1 } : null;
+}

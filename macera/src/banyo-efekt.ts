@@ -140,7 +140,7 @@ export class EkranDamlalari {
         if (d.silindi) continue;
         const dx = (px - d.x) * oran;
         const dy = py - d.y;
-        if (Math.hypot(dx, dy) < d.r + 7) {
+        if (Math.hypot(dx, dy) < d.r + 11) {
           d.silindi = true;
           degisti = true;
           d.el
@@ -263,7 +263,7 @@ export class Bugu {
     if (!c) return;
     c.globalCompositeOperation = 'destination-out';
     c.lineCap = 'round';
-    c.lineWidth = Math.max(14, this.el.width * 0.16);
+    c.lineWidth = Math.max(18, this.el.width * 0.22);
     c.beginPath();
     c.moveTo(a[0], a[1]);
     c.lineTo(b[0] + 0.1, b[1]);

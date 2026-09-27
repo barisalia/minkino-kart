@@ -47,7 +47,11 @@ export const BANYO_ORAN = {
   raf: 648 / 1011,
   'dus-perdesi': 1221 / 1278,
   tabure: 852 / 1050,
+  sepet: 783 / 678,
+  havlu: 453 / 723,
 };
+/** sepetin ön kenar bandının üst çizgisi (üstten oran): ön katman buradan aşağısıdır (içine düşen bunun arkasında) */
+export const SEPET_KENAR = 0.34;
 /** askılığın topuzları (sol, orta, sağ) ve yükseklikleri */
 export const ASKI_TOPUZ = { x: [0.21, 0.505, 0.8], y: 0.5 };
 /** rafın üst yüzü (eşyanın konacağı yer) */
