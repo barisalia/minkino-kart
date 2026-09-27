@@ -1,11 +1,18 @@
-/** Minkino ana menüsü: Mino karşılar, altında oyun kartları; büyükler için ebeveyn kapısı (basılı tut) */
+/**
+ * Minkino ana menüsü: Mino ve Kino karşılar (Mino yandan yürüyerek, Kino hoplayarak gelir; arada birbirine bakıp el
+ * sallarlar, dokununca tepki verirler), altında oyun kartları (sırayla gelir, yan oyun rozetleri, parmakla hafif
+ * parallax); büyükler için ebeveyn kapısı (basılı tut).
+ */
 import { efekt } from '../../src/audio/ses';
-import { Mino, type Tepki } from '../../src/mino/mino';
-import { h, sure, svg } from '../../src/ui/dom';
+import '../../src/karakter/karakter.css';
+import { Karakter, type HareketAdi, type Poz as KPoz } from '../../src/karakter/karakter';
+import { type Tepki } from '../../src/mino/mino';
+import { minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
+import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { OYUNLAR, type OyunKarti } from './oyunlar';
+import { derinlik, OYUNLAR, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
@@ -25,21 +32,25 @@ function logo(): HTMLElement {
   return h('div.ug-logo', {}, yazi);
 }
 
-/** Kartın resmi: oyunun kendi çizimlerinden küçük bir sahne */
+/** Kartın resmi: oyunun kendi çizimlerinden küçük bir sahne; katmanlar parallax için derinlik (--d) alır */
 function kartResmi(k: OyunKarti): HTMLElement {
   const zemin = k.zemin ? adres(k.zemin) : '';
   const kap = h('span.ug-kart-resim', { style: zemin ? `--zemin:url("${zemin}")` : undefined });
-  for (const c of k.katmanlar) {
+  const n = k.katmanlar.length;
+  k.katmanlar.forEach((c, i) => {
     const sinif = c.sinif.split(' ').join('.');
+    const d = `--d:${derinlik(i, n).toFixed(2)}`;
     if (c.ikon) {
-      kap.append(svg(IKON[c.ikon], `ug-k ug-rozet ${c.sinif}`));
-      continue;
+      const ikon = svg(IKON[c.ikon], `ug-k ug-rozet ${c.sinif}`);
+      ikon.style.setProperty('--d', derinlik(i, n).toFixed(2));
+      kap.append(ikon);
+      return;
     }
     const url = c.gorsel ? adres(c.gorsel) : '';
-    if (!url) continue;
+    if (!url) return;
     const img = h('img', { src: url, alt: '', draggable: 'false', decoding: 'async' });
-    kap.append(c.cerceve ? h(`span.ug-k.${sinif}.ug-cerceve`, {}, img) : h(`span.ug-k.${sinif}`, {}, img));
-  }
+    kap.append(c.cerceve ? h(`span.ug-k.${sinif}.ug-cerceve`, { style: d }, img) : h(`span.ug-k.${sinif}`, { style: d }, img));
+  });
   return kap;
 }
 
@@ -81,34 +92,128 @@ export function basiliTut(el: HTMLElement, ms: number, ac: () => void, kisa?: ()
 
 // ---------------------------------------------------------------- Menü
 export function menuEkrani(app: Uygulama): Ekran {
-  const mino = new Mino();
+  const yuruyen = new YuruyenMino();
+  const mino = yuruyen.mino;
   const tepki = (t: Tepki) => {
     if (!AZ_HAREKET) mino.tepki(t);
   };
   const zamanlar: number[] = [];
-  // Mino el sallayarak karşılar
-  zamanlar.push(window.setTimeout(() => tepki('evet'), sure(700)));
+  const sonra = (ms: number, fn: () => void) => zamanlar.push(window.setTimeout(fn, sure(ms)));
+
+  // Kino: ortak karakter iskeleti (assets/karakter-iskelet/kino.*; tasarım değişse de katman adları aynı kalır)
+  const kino = new Karakter('kino', h('div'));
+  /** Kino'nun el sallamasının başladığı an (sn) */
+  let kinoSalla = -9;
+  kino.ekHareket = (p: KPoz) => {
+    const g = performance.now() / 1000 - kinoSalla;
+    if (g < 1.3) {
+      // Mino'ya doğru (izleyicinin solundaki) kol kalkıp sallanır, baş o yana eğilir
+      const z = Math.max(0, Math.min(1, g / 0.2, (1.3 - g) / 0.25));
+      p.kolSol += (50 + 10 * Math.sin(g * 16)) * z;
+      p.kafa -= 5 * z;
+    }
+  };
+  const kinoIfade = (ad: string, ms: number) => {
+    if (kino.ifadeVar(ad)) kino.ifade(ad, ms);
+  };
+  const kinoOynat = (ad: HareketAdi, ms: number) => {
+    if (!AZ_HAREKET) void kino.oynat(ad, ms);
+  };
+
+  // birbirine bakıp el sallarlar
+  const selamlas = () => {
+    if (AZ_HAREKET) return;
+    mino.bak(1);
+    kinoOynat('bak', 900);
+    sonra(500, () => {
+      tepki('selam');
+      kinoSalla = performance.now() / 1000;
+      kinoIfade('heyecan', 1300);
+    });
+    sonra(1900, () => mino.bak(0));
+  };
+  // ara sıra: selamlaşma ya da biri bir şey yapar, öbürü bakar
+  const BOS: (() => void)[] = [
+    selamlas,
+    () => {
+      kinoOynat('huy', 1400);
+      mino.bak(1);
+      sonra(1500, () => mino.bak(0));
+    },
+    () => {
+      tepki('mir');
+      kinoOynat('bak', 1000);
+    },
+  ];
+  let bosSira = 0;
+  const bosPlanla = () => {
+    sonra(5200 + Math.random() * 2600, () => {
+      BOS[bosSira++ % BOS.length]();
+      bosPlanla();
+    });
+  };
+
+  // açılış: Mino soldan yandan yürüyerek, Kino sağdan hoplayarak gelir; sonra selamlaşırlar
+  const minoKap = h('div.ug-mino-kap', {}, h('div.ug-mino', {}, yuruyen.el));
+  const kinoKap = h('div.ug-kino-kap', { 'data-karakter-kap': 'kino' }, h('div.ug-kino', {}, kino.el));
+  if (!AZ_HAREKET && !TEST_MODU) {
+    minoKap.classList.add('geliyor');
+    kinoKap.classList.add('geliyor');
+    void minoProfilYukle().then(() => {
+      yuruyen.yon = 1;
+      yuruyen.yuru(1.9);
+      minoKap.classList.replace('geliyor', 'geldi');
+      sonra(1250, () => yuruyen.dur());
+    });
+    sonra(350, () => {
+      kinoOynat('yuru', 1100);
+      kinoKap.classList.replace('geliyor', 'geldi');
+    });
+    sonra(1500, () => kinoOynat('var', 400));
+    sonra(1900, selamlas);
+  } else sonra(700, () => tepki('evet'));
+  bosPlanla();
+
   const minoTepkileri: Tepki[] = ['gidik', 'mir', 'zipla', 'dans'];
   let sira = 0;
   mino.el.addEventListener('pointerdown', () => {
     efekt.dokunma();
     tepki(minoTepkileri[sira++ % minoTepkileri.length]);
+    // Kino dönüp bakar
+    kinoOynat('bak', 900);
+  });
+  const kinoTepkileri: [HareketAdi, string, number][] = [
+    ['sevin', 'heyecan', 1300],
+    ['huy', 'keyif', 1400],
+    ['bak', 'saskin', 1000],
+    ['dans', 'heyecan', 1500],
+  ];
+  let kinoSira = 0;
+  kinoKap.addEventListener('pointerdown', () => {
+    efekt.dokunma();
+    const [hareket, ifade, ms] = kinoTepkileri[kinoSira++ % kinoTepkileri.length];
+    kinoOynat(hareket, ms);
+    kinoIfade(ifade, ms);
+    kinoKap.dataset.tepki = hareket;
+    mino.bak(1);
+    sonra(ms, () => mino.bak(0));
   });
 
   let gidiyor = false;
   const kartlar = OYUNLAR.map((k, i) => {
-    const govde = h('span.ug-kart-govde', {}, kartResmi(k), h('span.ug-kart-ad', {}, k.ad));
+    const govde = h('span.ug-kart-govde', {}, kartResmi(k), h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
     const a = h('a.ug-kart', { href: k.adres, 'data-oyun': k.id, 'aria-label': k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
     a.addEventListener('pointerdown', () => a.classList.add('basili'));
     for (const olay of ['pointerup', 'pointercancel', 'pointerleave'] as const) a.addEventListener(olay, () => a.classList.remove('basili'));
     a.addEventListener('click', (e) => {
-      // Karta dokununca kart zıplar, Mino sevinir, kısa bir an sonra oyuna geçilir.
+      // Karta dokununca kart zıplar, Mino ve Kino sevinir, kısa bir an sonra oyuna geçilir.
       // Tek uygulamaya gömülünce burada sayfa değişmek yerine oyunun `oyunuBaslat(kok, { cikis })` girişi çağrılacak.
       e.preventDefault();
       if (gidiyor) return;
       gidiyor = true;
       efekt.secim();
       tepki('zipla');
+      kinoOynat('sevin', 600);
       a.classList.remove('basili');
       a.classList.add('secildi');
       zamanlar.push(window.setTimeout(() => location.assign(a.href), sure(AZ_HAREKET ? 150 : 650)));
@@ -138,16 +243,40 @@ export function menuEkrani(app: Uygulama): Ekran {
     {},
     h('div.ug-gok', { 'aria-hidden': 'true' }, h('i.ug-bulut.ug-bulut-1'), h('i.ug-bulut.ug-bulut-2'), h('i.ug-bulut.ug-bulut-3')),
     h('div.ug-kose', {}, ipucu, kapi),
-    h('header.ug-giris', {}, logo(), h('div.ug-mino-kap', {}, h('div.ug-mino', {}, mino.el))),
+    h('header.ug-giris', {}, logo(), h('div.ug-ikili', {}, minoKap, kinoKap)),
     h('nav.ug-oyunlar', { 'aria-label': 'Oyunlar' }, h('ul.ug-izgara', {}, ...kartlar)),
   );
+
+  // parallax: parmak (ya da fare) ekranda gezdikçe kart katmanları ve bulutlar farklı hızda kayar; yumuşak takip
+  const hedef = { x: 0, y: 0 };
+  const simdi = { x: 0, y: 0 };
+  let raf = 0;
+  const adim = () => {
+    simdi.x += (hedef.x - simdi.x) * 0.12;
+    simdi.y += (hedef.y - simdi.y) * 0.12;
+    el.style.setProperty('--px', simdi.x.toFixed(3));
+    el.style.setProperty('--py', simdi.y.toFixed(3));
+    raf = Math.abs(hedef.x - simdi.x) + Math.abs(hedef.y - simdi.y) > 0.002 ? requestAnimationFrame(adim) : 0;
+  };
+  const izle = (e: PointerEvent) => {
+    hedef.x = (e.clientX / innerWidth) * 2 - 1;
+    hedef.y = (e.clientY / innerHeight) * 2 - 1;
+    if (!raf) raf = requestAnimationFrame(adim);
+  };
+  if (!AZ_HAREKET) {
+    el.addEventListener('pointermove', izle);
+    el.addEventListener('pointerdown', izle);
+  }
+
   return {
     el,
     kapat() {
       zamanlar.forEach(clearTimeout);
       clearTimeout(ipucuZaman);
+      cancelAnimationFrame(raf);
       kapiBirak();
-      mino.kapat();
+      yuruyen.kapat();
+      kino.kapat();
     },
   };
 }

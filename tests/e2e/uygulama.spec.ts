@@ -36,6 +36,16 @@ test('Ana menü: açılışta Mino ve 6 oyun kartı, görseller yüklü', async 
     .poll(() => page.locator('.ug-kart img').evaluateAll((l) => l.filter((i) => !(i as HTMLImageElement).complete || (i as HTMLImageElement).naturalWidth === 0).length))
     .toBe(0);
 
+  // Kino Mino'nun yanında (parçalı iskelet yüklendi), yan oyun rozetleri kartlarda
+  await expect(page.locator('.ug-kino .kr-iskeletli svg')).toBeVisible();
+  await expect(page.locator('.ug-yeni')).toHaveCount(4);
+  await expect(page.locator('.ug-kart[data-oyun="pazar"] .ug-yeni')).toHaveText('Meyve Suyu');
+  await expect(page.locator('.ug-kart[data-oyun="kartlar"] .ug-yeni')).toHaveText('Hafıza');
+  await expect(page.locator('.ug-kart[data-oyun="canlan"] .ug-yeni')).toHaveText('Müzem');
+  // Kino'ya dokununca tepki verir
+  await page.locator('.ug-kino-kap').click();
+  await expect(page.locator('.ug-kino-kap')).toHaveAttribute('data-tepki', 'sevin');
+
   await page.waitForTimeout(300);
   await page.screenshot({ path: `tests/screens/${info.project.name}-uygulama-menu.png` });
   expect(hatalar).toEqual([]);
