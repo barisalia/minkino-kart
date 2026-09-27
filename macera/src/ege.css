@@ -393,16 +393,59 @@
   scale: 0.8;
   translate: 4% 42%;
 }
-.mc-kok .eg-sahne .eg-anne.uzanik .eg-anne-gov > * {
+.mc-kok .eg-sahne .eg-anne.uzanik:not(.pozlu) .eg-anne-gov > * {
   animation: eg-nefes 3.8s ease-in-out infinite;
   transform-origin: 50% 50%;
 }
 @keyframes eg-nefes {
   50% { transform: scale(1.012, 1.02); }
 }
-.mc-kok .eg-sahne .eg-anne.uzanik .eg-balon {
+.mc-kok .eg-sahne .eg-anne.uzanik:not(.pozlu) .eg-balon {
   bottom: 62%;
   left: 12%;
+}
+/* kanepede uyuyor (anne-uyuyor-govde + -bas, aynı tuval): gövde pivot etrafında boyuna uzar, baş boyunla kalkar;
+   ~4 sn'lik yumuşak döngü (2 sn gidiş, 2 sn dönüş) */
+.mc-kok .eg-sahne .eg-anne-nefes {
+  display: none;
+  position: relative;
+  filter: drop-shadow(0 6px 5px rgba(60, 40, 20, 0.2));
+}
+.mc-kok .eg-sahne .eg-anne.katmanli[data-resim='uyuyor'] .eg-anne-nefes {
+  display: block;
+}
+.mc-kok .eg-sahne .eg-anne.katmanli[data-resim='uyuyor'] .eg-anne-gov > .eg-resim {
+  display: none;
+}
+.mc-kok .eg-anne-nefes > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.mc-kok .eg-anne-govde {
+  transform-origin: var(--px) var(--py);
+  animation: eg-anne-nefes-govde 2s ease-in-out infinite alternate;
+}
+.mc-kok .eg-anne-bas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: eg-anne-nefes-bas 2s ease-in-out infinite alternate;
+}
+@keyframes eg-anne-nefes-govde {
+  to { scale: 1 var(--nefes-s); }
+}
+@keyframes eg-anne-nefes-bas {
+  to { translate: 0 var(--nefes-bas); }
+}
+.mc-kok .eg-sahne .eg-anne[data-resim='uyuyor'] .eg-balon {
+  bottom: 92%;
+  left: 60%;
+}
+.mc-kok .eg-sahne .eg-anne[data-resim='sariliyor'] .eg-balon {
+  bottom: 98%;
 }
 .mc-kok .eg-sahne .eg-anne.oturuyor:not(.pozlu) .eg-anne-gov {
   rotate: -7deg;
@@ -448,10 +491,11 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(40, 25, 10, 0.28), transparent);
 }
+/* beşikte sırtüstü yatış: baş solda yastıkta, gövde yatay (iskelet pozu ege-bebek.ts YATIS: bacaklar düz, kollar yanda) */
 .mc-kok .eg-sahne .eg-ege.yatiyor .eg-ege-kutu {
   transform-origin: 50% 50%;
-  rotate: -70deg;
-  scale: 0.68;
+  rotate: -90deg;
+  scale: 0.8;
 }
 .mc-kok .eg-sahne .eg-ege.yatiyor .eg-ege-golge {
   opacity: 0;
@@ -736,16 +780,17 @@
   scale: 1.08 0.72;
   transform-origin: 50% 80%;
 }
+/* Ege'nin battaniyesi: Ege'nin nefesiyle (--nefes −1…1, ege-bebek.ts) iner kalkar; alt kenar yerinde kalır */
 .mc-kok .eg-sahne .ortuldu.nefes > .eg-resim {
-  animation: eg-ortu-nefes 3s ease-in-out infinite;
+  transition: rotate 0.5s;
+  scale: calc(1.08 + 0.012 * var(--nefes, 0)) calc(0.72 + 0.03 * var(--nefes, 0));
 }
-@keyframes eg-ortu-nefes {
-  50% { scale: 1.1 0.78; }
-}
+/* anne uyanınca battaniyesini katlayıp kenara koyar */
 .mc-kok .eg-sahne .ortuldu.kaydi {
-  transition: translate 0.8s, opacity 0.8s;
-  translate: 20% 30%;
-  opacity: 0.4;
+  transition: translate 0.8s, opacity 0.8s, scale 0.8s;
+  translate: -10% 30%;
+  scale: 0.7;
+  opacity: 0;
 }
 
 /* kuklalar: gövde + ağız (ayı) / alt gaga (civciv); --s: 0.15 kapalı … 1 açık (assets/ege/kukla-hizalama.json) */
@@ -895,19 +940,8 @@
   mask: radial-gradient(closest-side, transparent 72%, #000 74%);
   pointer-events: none;
 }
-.mc-kok .eg-mino.kasiniyor .mino {
-  animation: eg-seyir 0.18s linear infinite;
-}
-@keyframes eg-seyir {
-  50% { translate: 0.6% 0; }
-}
-.mc-kok .eg-mino.tutuluyor .mino {
-  animation: eg-titre-mino 0.08s linear infinite;
-  scale: 1.04 0.97;
-}
-@keyframes eg-titre-mino {
-  50% { translate: 1.2% -0.6%; }
-}
+/* burun kaşıntısı / tutma / hapşu yüzleri tasarımcının çizimi (Mino.ifade: burun-kasinti, burun-tut, hapsu);
+   seğirme, yanak şişmesi ve titreşim Mino'nun kendi kodunda */
 .mc-kok .eg-mino.kulak-ucus .mino {
   animation: eg-hapsu 0.9s cubic-bezier(0.3, 1.4, 0.5, 1);
 }
@@ -1122,8 +1156,6 @@
   .mc-kok .eg-pencere-yildiz,
   .mc-kok .eg-yuzlu .eg-damla,
   .mc-kok .eg-sahne .mc-oyuncu.parmakucu .mc-oy-hareket,
-  .mc-kok .eg-mino.kasiniyor .mino,
-  .mc-kok .eg-mino.tutuluyor .mino,
   .mc-kok .eg-sahne .ortuldu.nefes > .eg-resim,
   .mc-kok .eg-sahne .eg-perde.suruklenir .eg-perde-kanat {
     animation: none !important;

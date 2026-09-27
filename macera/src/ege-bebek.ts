@@ -42,6 +42,12 @@ const KIZARIK: Record<EgeIfade, boolean> = {
   'tek-goz': false,
 };
 
+/**
+ * Beşikte yatış pozu (iskelet açıları): bacaklar kalçadan aşağı (düz), kollar omuzdan gövdeye doğru.
+ * Nefes hızı (rad/sn): ~4.8 sn'lik döngü; battaniye aynı nefesle iner kalkar (--nefes).
+ */
+const YATIS = { bacak: -62, bacakSinir: 70, kol: -74, nefesHiz: 1.3 };
+
 export type EgeHareket = 'kikir' | 'kahkaha' | 'ayak' | 'irkil' | 'esne' | 'kipir' | 'vur' | 'cirp' | 'am' | 'gurul' | 'hayir';
 type Mod = 'normal' | 'agla' | 'uyku' | 'yatik';
 
@@ -163,6 +169,15 @@ export class Ege {
   durum(m: Mod) {
     this.mod = m;
     this.el.classList.toggle('uykuda', m === 'uyku' || m === 'yatik');
+    // beşikte yatış: bacaklar düz uzanır, kollar yana iner (oturuş sınırları yalnız bu pozda gevşer)
+    this.kar.ozelSinir = m === 'yatik' ? { sinir: { kafa: 10, bacak: YATIS.bacakSinir }, kol: [YATIS.kol - 8, 40] } : null;
+    if (m !== 'yatik') this.nefesYaz(0);
+  }
+  /** Nefes (−1…1) bu elemana --nefes olarak yazılır: üstündeki battaniye nefesle iner kalkar */
+  nefesEl: HTMLElement | null = null;
+  private nefesYaz(n: number) {
+    this.el.style.setProperty('--nefes', n.toFixed(3));
+    this.nefesEl?.style.setProperty('--nefes', n.toFixed(3));
   }
   /** Kısa hareket (ms) */
   oynat(ad: EgeHareket, ms = 900) {
@@ -202,7 +217,18 @@ export class Ege {
       p.kolSag += (14 + S(t * 7 + 1.3) * 16) * g;
       p.bacakSol += S(t * 8) * 7 * g;
       p.bacakSag += S(t * 8 + 1.6) * 7 * g;
-    } else if (this.mod === 'uyku' || this.mod === 'yatik') {
+    } else if (this.mod === 'yatik') {
+      // sırtüstü yatış (kutu CSS'te −90° döner, baş yastıkta): gövde düz, bacaklar uzanık, kollar yanda; yavaş nefes
+      const n = S(t * YATIS.nefesHiz);
+      this.nefesYaz(AZ_HAREKET ? n * 0.4 : n);
+      p.sy = 1 + n * 0.014 * az;
+      p.sx = 1 + n * 0.006 * az;
+      p.kafa += S(t * 0.5) * 0.8 * az;
+      p.kolSol = YATIS.kol + n * 2 * az;
+      p.kolSag = YATIS.kol + S(t * YATIS.nefesHiz + 0.3) * 2 * az;
+      p.bacakSol = YATIS.bacak;
+      p.bacakSag = YATIS.bacak;
+    } else if (this.mod === 'uyku') {
       p.sy = 1 + S(t * 1.3) * 0.022;
       p.sx = 1 - S(t * 1.3) * 0.01;
       p.kafa += (this.mod === 'uyku' ? 5 : 0) + S(t * 0.6) * 1;
@@ -380,14 +406,45 @@ export class Ege {
   }
 
   // ---------------------------------------------------------------- koordinat
-  /** Çizim koordinatı → ekran */
-  ekranda(x: number, y: number): [number, number] {
+  /** Kutunun CSS dönüşü (derece; yatarken −90, kucakta −12; geçiş sürerken o anki değer) */
+  private aci(): number {
+    const r = getComputedStyle(this.kutuEl).rotate;
+    const m = /(-?[\d.]+)deg/.exec(r ?? '');
+    return m ? Number(m[1]) : 0;
+  }
+  /** Çizimin dönmemiş ekran boyu ve dönük kutunun merkezi */
+  private cerceve() {
     const r = (this.svg() ?? this.kutuEl).getBoundingClientRect();
+    const a = (this.aci() * Math.PI) / 180;
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    const ar = KIRPIM[2] / KIRPIM[3];
+    // dönmüş dikdörtgenin sınır kutusu: en = w·|cos| + h·|sin|
+    const h0 = a ? r.width / (ar * Math.abs(c) + Math.abs(s)) : r.height;
+    const w0 = a ? ar * h0 : r.width;
+    return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w0, h0, c, s };
+  }
+  /** Çizim koordinatı → ekran (kutu döndüyse dönüşle birlikte: beşikte yatarken de doğru nokta) */
+  ekranda(x: number, y: number): [number, number] {
+    const { cx, cy, w0, h0, c, s } = this.cerceve();
     const [vx, vy, vw, vh] = KIRPIM;
-    return [r.left + ((x - vx) / vw) * r.width, r.top + ((y - vy) / vh) * r.height];
+    const dx = ((x - vx) / vw - 0.5) * w0;
+    const dy = ((y - vy) / vh - 0.5) * h0;
+    return [cx + dx * c - dy * s, cy + dx * s + dy * c];
   }
   birim() {
-    return (this.svg() ?? this.kutuEl).getBoundingClientRect().width / KIRPIM[2];
+    return this.cerceve().w0 / KIRPIM[2];
+  }
+  /** Çizimdeki bir dikdörtgenin ekrandaki sınır kutusu (dönükken köşeler yer değiştirir) */
+  private kutuEkran(x0: number, y0: number, x1: number, y1: number): DOMRect {
+    const k = [this.ekranda(x0, y0), this.ekranda(x1, y0), this.ekranda(x0, y1), this.ekranda(x1, y1)];
+    const xs = k.map((p) => p[0]);
+    const ys = k.map((p) => p[1]);
+    return new DOMRect(Math.min(...xs), Math.min(...ys), Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+  }
+  /** Beşikte yatarken örtülecek yer: boyundan ayak uçlarına (baş yastıkta açıkta) */
+  yatisOrtuKutusu(): DOMRect {
+    return this.kutuEkran(640, 960, 1400, 1960);
   }
   /** Ağzın ekrandaki kutusu (kaşık hedefi) */
   agizKutusu(): DOMRect {
@@ -397,9 +454,7 @@ export class Ege {
   }
   /** Yüzün ekrandaki kutusu */
   yuzKutusu(): DOMRect {
-    const [x0, y0] = this.ekranda(640, 380);
-    const [x1, y1] = this.ekranda(1410, 1030);
-    return new DOMRect(x0, y0, x1 - x0, y1 - y0);
+    return this.kutuEkran(640, 380, 1410, 1030);
   }
   /** Başın üstü (kalpler, Zzz) ekran noktası */
   basUstu(): [number, number] {
@@ -407,9 +462,7 @@ export class Ege {
   }
   /** Gövdenin ekrandaki kutusu (önlük, battaniye hedefi) */
   govdeKutusu(): DOMRect {
-    const [x0, y0] = this.ekranda(700, 900);
-    const [x1, y1] = this.ekranda(1340, 1700);
-    return new DOMRect(x0, y0, x1 - x0, y1 - y0);
+    return this.kutuEkran(700, 900, 1340, 1700);
   }
 
   kapat() {

@@ -3,7 +3,8 @@
 // Her katman bir sınıf alır ve CSS değişkenleriyle hareket eder:
 //   q: kuyruk · g: gövde + fular · kl / kr: sol / sağ kol · k: kafa, gözler ve kodla çizilen ağız
 // Eski çizim (karakter-kaynak/kedi-3.svg) path sınıflandırmasıyla kurulmuştu (sinifla.mjs, parcalar.json); artık gerekmez.
-// Tembel yüklenen ekler: film ifadeleri → src/mino/mino-ifade-svg.ts, hâller (ıslak, pofuduk) → src/mino/mino-hal-svg.ts
+// Tembel yüklenen ekler: film ifadeleri → src/mino/mino-ifade-svg.ts, hâller (ıslak, pofuduk) → src/mino/mino-hal-svg.ts,
+// burun ifadeleri (kaşıntı, burun tut, hapşu) → src/mino/mino-burun-svg.ts
 // Durağan resmi de üretir → assets/karakter/mino.webp
 // Çalıştırma: node scripts/mino/rig.mjs
 import fs from 'node:fs';
@@ -73,6 +74,25 @@ const HALLER = Object.fromEntries(
   Object.entries(HAL_PARCA).map(([yer, p]) => [yer, Object.entries(p.haller).map(([hal, id]) => `<g class="m-hal-${hal}">${sade(katman(id))}</g>`).join('')]),
 );
 
+// Burun ekleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne): tam vektör, gizli. Ana çizimde yuvaları yok:
+// mino.ts → burunEkle() dört parçayı yerine koyar (ana paket büyümesin):
+//   kafa: k içinde asıl kafanın hemen üstüne (hâl ekleri gibi; hapşuda asıl kafa gizlenir), göz / ağız eklerinin altında
+//   yuz:  k'nin sonuna (kafaya bağlı): göz, burun, ağız, yanak ekleri ve püf
+//   kol:  kafanın ve fuların üstüne, gövdeye bağlı (omuzdan döner)
+//   pati: en üste, kafaya bağlı (burnu kapatan patiler)
+// Kırpma yolu kimlikleri (brn-…) sayfadaki başka SVG'lerle çakışmasın diye m- öneki alır.
+const burun = (id) => sade(katman(id)).replaceAll('id="brn-', 'id="m-brn-').replaceAll('url(#brn-', 'url(#m-brn-');
+const BURUN = {
+  kafa: `<g class="m-burun-kafa">${burun('kafa-hapsu')}</g>`,
+  yuz: [
+    `<g class="m-ifade m-burun-kasinti">${burun('goz-kasinti')}<g class="m-burun-burun">${burun('burun-kasinti')}</g>${burun('agiz-kasinti')}</g>`,
+    `<g class="m-ifade m-burun-tut"><g class="m-burun-yanak">${burun('yanak-burun-tut')}</g>${burun('goz-burun-tut')}</g>`,
+    `<g class="m-ifade m-hapsu">${burun('goz-hapsu')}${burun('agiz-hapsu')}<g class="m-hapsu-puf">${burun('puf-hapsu')}</g></g>`,
+  ].join(''),
+  kol: `<g class="m-ifade m-burun-tut m-burun-kollar"><g class="m-burun-kol-sol">${burun('kol-sol-burun')}</g><g class="m-burun-kol-sag">${burun('kol-sag-burun')}</g></g>`,
+  pati: `<g class="m-ifade m-burun-tut m-burun-pati">${burun('pati-burun')}</g>`,
+};
+
 const svg = `<svg class="mino-svg" viewBox="344 140 1360 1790" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 ${defs}
 ${gHal('q')}
@@ -108,6 +128,12 @@ fs.writeFileSync('src/mino/mino-hal-svg.ts', `// Otomatik üretildi: node script
 export const MINO_HAL_SVG: Record<string, string> = ${JSON.stringify(HALLER)};
 `);
 console.log('mino-hal-svg.ts', Math.round(JSON.stringify(HALLER).length / 1024), 'KB');
+// Burun ekleri (~40 KB): ayrı dosya, yalnız ifade('burun-kasinti' | 'burun-tut' | 'hapsu') ilk çağrılınca (Ege) tembel yüklenir
+fs.writeFileSync('src/mino/mino-burun-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.
+// Mino'nun burun ifadeleri (kaşıntı, burun tut, hapşu): yuva (kafa, yuz, kol, pati) → ekler; mino.ts tembel yükler (import()).
+export const MINO_BURUN_SVG: Record<'kafa' | 'yuz' | 'kol' | 'pati', string> = ${JSON.stringify(BURUN)};
+`);
+console.log('mino-burun-svg.ts', Math.round(JSON.stringify(BURUN).length / 1024), 'KB');
 fs.writeFileSync('src/mino/mino-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.\nexport const MINO_SVG = ${JSON.stringify(svg)};\n`);
 console.log('mino-svg.ts', Math.round(svg.length / 1024), 'KB');
 

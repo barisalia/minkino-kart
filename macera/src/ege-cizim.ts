@@ -6,6 +6,7 @@
  */
 import { h } from '../../src/ui/dom';
 import { adres } from './gorsel';
+import ANNE_HIZA from '../../assets/ege/anne-hizalama.json';
 
 const K = '#4b1917';
 const GORSEL = import.meta.glob<string>(['../../assets/ege/*.webp', '../../assets/ege-gecici/*.webp', '../../assets/banyo/*.webp'], { eager: true, query: '?url', import: 'default' });
@@ -20,6 +21,19 @@ export const ANNE_GORSEL = 'anne';
 export type AnnePoz = 'ayakta' | 'uyuyor' | 'gulumsuyor' | 'sariliyor';
 /** Pozun kendi çizimi var mı (yoksa ayakta çizimi döndürülüp eğilerek kullanılır) */
 export const annePozVar = (p: AnnePoz) => p !== 'ayakta' && !!GORSEL[`../../assets/ege/${ANNE_GORSEL}-${p}.webp`];
+/**
+ * Anne pozlarının tuvali (px). Tasarımcı üçünü aynı piksel ölçeğinde çizdi (assets/ege/anne-hizalama.json):
+ * oyunda da aynı ölçekle (b / px) çizilir, baş boyu pozdan poza değişmez.
+ */
+export const ANNE_TUVAL: Record<'ayakta' | 'uyuyor' | 'sariliyor', [number, number]> = {
+  ayakta: ANNE_HIZA['anne.webp'].tuval as [number, number],
+  uyuyor: ANNE_HIZA['anne-uyuyor'].tuval as [number, number],
+  sariliyor: ANNE_HIZA['anne-sariliyor.webp'].tuval as [number, number],
+};
+/** Uyuyan annenin nefesi: gövde pivot etrafında boyuna uzar, baş boyun noktasıyla birlikte kalkar */
+export const ANNE_NEFES = { pivot: ANNE_HIZA['anne-uyuyor'].nefes.pivot as [number, number], boyun: ANNE_HIZA['anne-uyuyor'].nefes.boyunNoktasi as [number, number], olcek: 1.012 };
+/** Uyuyan anne gövde + baş katmanlı mı (nefes için) */
+export const anneKatmanli = () => !!(GORSEL['../../assets/ege/anne-uyuyor-govde.webp'] && GORSEL['../../assets/ege/anne-uyuyor-bas.webp']);
 
 /** Yer tutucular: [viewBox en, boy, içerik] (yalnız görsel yoksa) */
 const SVG: Record<string, [number, number, string]> = {
@@ -63,6 +77,7 @@ export const OLCU: Record<string, [number, number]> = {
   'kukla-ayi': [858, 1005],
   'kukla-civciv': [837, 1014],
   anne: [428, 1143],
+  koltuk: [512, 396],
 };
 export const oran = (ad: string) => {
   const o = OLCU[ad] ?? (SVG[ad] ? [SVG[ad][0], SVG[ad][1]] : [1, 1]);

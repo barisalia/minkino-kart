@@ -54,6 +54,10 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await bekle(700, 1200);
   await surukle(page, ege(page, 'battaniye'), page.locator('[data-ege="anne"] .eg-anne-gov'), 14, gercekHiz);
   await expect(ege(page, 'anne')).toHaveClass(/gulumsuyor/, { timeout: 8000 });
+  // anne kanepede oturuş çiziminde (aynı piksel ölçeği), battaniye kucağında
+  await expect(ege(page, 'anne')).toHaveAttribute('data-resim', 'uyuyor');
+  await bekle(700, 1200);
+  await ekran('02b-anne-ortu');
 
   // 2. sepette çıngırak
   await gorevBekle(page, ['sepet'], T);
@@ -266,7 +270,12 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await bekle(300, 900);
   await ekran('25-fisilti');
   await dokun(page, page.locator('.mc-buyuk-dugme'));
-  await bekle(1500, 5000);
+  // final: anne kanepede kollarını açıp çocuklara sarılır
+  await gorevBekle(page, ['saril'], T);
+  await expect(ege(page, 'anne')).toHaveAttribute('data-resim', 'sariliyor');
+  await expect(ege(page, 'anne')).toHaveClass(/sariliyor/);
+  await ekran('26-saril');
+  await bekle(200, 3000);
   await ekran('26-aferin');
   await expect(page.locator('.mc-son')).toBeVisible({ timeout: gercekHiz ? 120000 : 40000 });
   await page.waitForTimeout(500);

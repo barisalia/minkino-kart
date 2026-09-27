@@ -269,3 +269,17 @@
 .mk-kok .mino.ifade-kararsiz .m-goz { opacity: 1 !important; }
 .mk-kok .mino.ifade-kararsiz .m-kapali-goz,
 .mk-kok .mino.ifade-kararsiz .m-mutlu-goz { opacity: 0 !important; }
+
+/* Burun ifadeleri (mino.ts → ifade: burun-kasinti, burun-tut, hapsu; ekler mino-burun-svg.ts'ten tembel gelir).
+   Gözler, kod ağzı ve yanaklar !important ile gizli: göz kırpma / mutlu göz / konuşma ağzı ifadenin altından sızmaz. */
+.mk-kok .mino .m-burun-kollar { transform: var(--govde); }
+.mk-kok .mino .m-burun-pati { transform: var(--govde) var(--kafa); }
+.mk-kok .mino .m-burun-kafa { display: none; }
+.mk-kok .mino.ifade-hapsu .m-burun-kafa { display: inline; }
+.mk-kok .mino.ifade-hapsu .k > .m-asil,
+.mk-kok .mino.ifade-hapsu .k > .m-hal { display: none; }
+.mk-kok .mino.ifade-burun-kasinti .m-burun-kasinti,
+.mk-kok .mino.ifade-burun-tut .m-burun-tut,
+.mk-kok .mino.ifade-hapsu .m-hapsu { opacity: 1; }
+.mk-kok .mino:is(.ifade-burun-kasinti, .ifade-burun-tut, .ifade-hapsu) :is(.m-goz, .m-kapali-goz, .m-mutlu-goz, .m-agiz, .m-yanak),
+.mk-kok .mino.ifade-burun-tut :is(.kl, .kr) { opacity: 0 !important; }

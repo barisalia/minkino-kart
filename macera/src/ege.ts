@@ -16,13 +16,13 @@ import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { konfetiPatlat } from '../../src/ui/konfeti';
-import { Mino } from '../../src/mino/mino';
+import { Mino, minoBurunYukle } from '../../src/mino/mino';
 import { ritimAyniMi, SessizlikSayaci, type Ozellik } from '../../ses-testi/src/analiz';
 import { Alkis, Perde, sesVar, Ufleme } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import type { BolumArayuz } from './dogumgunu';
 import { Ege } from './ege-bebek';
-import { ANNE_GORSEL, annePozVar, egeAdres, esya, Kukla, oran } from './ege-cizim';
+import { ANNE_GORSEL, ANNE_NEFES, ANNE_TUVAL, anneKatmanli, annePozVar, egeAdres, esya, Kukla, oran } from './ege-cizim';
 import { AyGosterge, KALP_SVG, NinniYildizlari, Parcaciklar, TavanYildizlari, yansiYazi } from './ege-efekt';
 import {
   AY_GERI,
@@ -113,7 +113,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   /** zemin: dikey ekranda her şey biraz yukarıda (alt yazı ve ipucu kutusunun üstünde kalsın) */
   const Z = dikey ? 10 : 2;
   const taban = dikey ? 1.45 : 1.12;
-  const genel = (ms = 900) => sahne.kamera(50, 97, taban, ms);
+  /** Genel çekim: Ege ve sahnedeki çocuklar kadrajda (kadraj koruması: kam) */
+  const genel = (ms = 900, ek: HTMLElement[] = []) => kam(50, 97, taban, ms, [ege.el, ...cocuklar(), ...ek]);
   /** Arka plan resmindeki bir nokta (1024×1024, cover, konum 24% 82%) sahnede nerede (x %, y alttan %) ve ölçek */
   const arkaNokta = (ix: number, iy: number) => {
     const w = W();
@@ -133,9 +134,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const perdeOrta = arkaNokta(266, 0);
   const perdeSag = arkaNokta(510, 0);
   const perdeAlt = arkaNokta(0, 492);
+  // dikey ekranda arka planın sol ucu ekran dışında: perdenin sol kanadı görünen kenardan başlar (pencerenin
+  // görünen kısmını yine örter)
+  const perdeL = dikey ?Math.max(perdeSol.x, 1.5) : perdeSol.x;
   const perde = h(
     'div.eg-perde',
-    { style: `left:${perdeSol.x}%;top:0;width:${perdeSag.x - perdeSol.x}%;height:${perdeAlt.ust}%`, 'data-ege': 'perde' },
+    { style: `left:${perdeL}%;top:0;width:${perdeSag.x - perdeL}%;height:${perdeAlt.ust}%`, 'data-ege': 'perde' },
     h('div.eg-perde-kanat.sol', { style: `--resim:url("${egeAdres('perde-kapali')}")` }),
     h('div.eg-perde-kanat.sag', { style: `--resim:url("${egeAdres('perde-kapali')}")` }),
   );
@@ -145,8 +149,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   perdeAyarla(0);
 
   // --- dekor
-  const KOLTUK = { x: 20, y: Z + 15, w: 40 };
-  sahne.koy(esya('koltuk', 'parti/koltuk', 'Kanepe'), { ...KOLTUK, z: 3 });
+  // kanepe annenin oturuş pozlarına göre (aynı ölçekte kıvrılmış anne oturağa sığsın); dikeyde sol kenardan içeride
+  const KOLTUK_W = 46;
+  const KOLTUK = { x: Math.max(20, bX(KOLTUK_W) / 2 + 1), y: Z + 15, w: KOLTUK_W };
+  const koltukH = KOLTUK.w * oran('koltuk');
+  const koltuk = sahne.koy(esya('koltuk', 'parti/koltuk', 'Kanepe'), { ...KOLTUK, z: 3 });
   const BESIK = { x: 71, y: Z + 6, w: 31 };
   const besikH = BESIK.w * oran('besik');
   const besik = sahne.koy(h('div.eg-besik', { 'data-ege': 'besik' }, h('div.eg-besik-ic', {}, esya('besik', undefined, 'Beşik'))), { ...BESIK, z: 6 });
@@ -160,18 +167,66 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   await ege.hazir();
   S.hazirla();
 
-  // --- anne (tek çizim: ayakta; uyurken döndürülüp kanepeye uzanır; poz çizimleri gelince onlar)
+  // --- anne: ayakta (anne.webp), kanepede uyuyor (gövde + baş katmanı, nefes alır), sarılıyor. Üç poz aynı
+  // piksel ölçeğinde (assets/ege/anne-hizalama.json): b / px sabit, genişlik pozun tuvalinden.
+  const ANNE_B = 19 / ANNE_TUVAL.ayakta[0];
   const anneImg = h('img.mc-resim.eg-resim', { src: egeAdres(ANNE_GORSEL), alt: 'Anne', draggable: 'false' }) as HTMLImageElement;
-  const anneGov = h('div.eg-anne-gov', {}, egeAdres(ANNE_GORSEL) ? anneImg : esya('anne'));
+  const [nefTW, nefTH] = ANNE_TUVAL.uyuyor;
+  const anneNefes = anneKatmanli()
+    ? h(
+        'div.eg-anne-nefes',
+        {
+          style:
+            `--px:${((ANNE_NEFES.pivot[0] / nefTW) * 100).toFixed(2)}%;--py:${((ANNE_NEFES.pivot[1] / nefTH) * 100).toFixed(2)}%;` +
+            `--nefes-s:${ANNE_NEFES.olcek};--nefes-bas:${((-(ANNE_NEFES.pivot[1] - ANNE_NEFES.boyun[1]) * (ANNE_NEFES.olcek - 1)) / nefTH * 100).toFixed(3)}%`,
+        },
+        h('img.eg-anne-govde', { src: egeAdres('anne-uyuyor-govde'), alt: 'Anne', draggable: 'false' }),
+        h('img.eg-anne-bas', { src: egeAdres('anne-uyuyor-bas'), alt: '', draggable: 'false' }),
+      )
+    : null;
+  const anneGov = h('div.eg-anne-gov', {}, egeAdres(ANNE_GORSEL) ? anneImg : esya('anne'), anneNefes);
   const anneBalon = h('div.eg-balon');
   const anne = sahne.koy(h('div.eg-anne', { 'data-ege': 'anne' }, anneGov, anneBalon), { x: 55, y: Z + 10, w: 19, z: 4 });
+  anne.classList.toggle('katmanli', !!anneNefes);
+  /** Görünen çizim: ayakta | uyuyor | sariliyor (uyanık oturuş çizimi yoksa kollarını açmış sarılıyor çizimi) */
+  type AnneResim = 'ayakta' | 'uyuyor' | 'sariliyor';
+  let anneResim = 'ayakta' as AnneResim;
   const annePoz = (p: 'ayakta' | 'uyuyor' | 'gulumsuyor' | 'sariliyor') => {
     anne.dataset.poz = p;
-    const ayri = annePozVar(p);
+    const r = p === 'gulumsuyor' && !annePozVar('gulumsuyor') && annePozVar('sariliyor') ? 'sariliyor' : p;
+    const ayri = annePozVar(r);
     anne.classList.toggle('pozlu', ayri);
-    if (egeAdres(ANNE_GORSEL)) anneImg.src = ayri ? egeAdres(`${ANNE_GORSEL}-${p}`) : egeAdres(ANNE_GORSEL);
+    anneResim = ayri && (r === 'uyuyor' || r === 'sariliyor') ? r : 'ayakta';
+    anne.dataset.resim = anneResim;
+    if (egeAdres(ANNE_GORSEL)) anneImg.src = ayri ? egeAdres(`${ANNE_GORSEL}-${r}`) : egeAdres(ANNE_GORSEL);
+    anne.style.setProperty('--w', (ANNE_TUVAL[anneResim][0] * ANNE_B).toFixed(2));
   };
   annePoz('ayakta');
+  /** Kanepede oturuş yeri (alt orta, % ): uyurken kalça oturağın sağında, ayaklar sola; sarılırken ortada */
+  const oturak = (o: number) => KOLTUK.y + bY(koltukH * o);
+  const anneOturYer = (r: 'uyuyor' | 'sariliyor') => {
+    const w = ANNE_TUVAL[r][0] * ANNE_B;
+    if (r === 'uyuyor') return { x: KOLTUK.x + bX(KOLTUK.w * 0.2) - bX(w * (ANNE_NEFES.pivot[0] / ANNE_TUVAL.uyuyor[0] - 0.5)), y: oturak(0.33) };
+    return { x: KOLTUK.x, y: oturak(0.27) };
+  };
+  /** Pozun çizimindeki bir oranın (0..1) ekran noktası: baş (Zzz, kalp), battaniye */
+  const ANNE_BAS: Record<AnneResim,[number, number, number, number]> = {
+    // baş kutusu (tuvalin oranı: x0, y0, x1, y1)
+    ayakta: [0.08, 0, 0.92, 0.3],
+    uyuyor: [0.4, 0.06, 0.78, 0.48],
+    sariliyor: [0.33, 0, 0.67, 0.36],
+  };
+  const anneBasEkran = (): [number, number] => {
+    const r = anneGov.getBoundingClientRect();
+    const [x0, y0, x1] = ANNE_BAS[anneResim];
+    return [r.left + (r.width * (x0 + x1)) / 2, r.top + r.height * y0];
+  };
+  /** Annenin örtülecek yeri (ekran kutusu): uyurken kucağı ve bacakları, ayakta çizimde göğüsten ayaklara */
+  const anneOrtuKutu = () => {
+    const r = anneGov.getBoundingClientRect();
+    if (anneResim === 'uyuyor') return new DOMRect(r.left + r.width * 0.22, r.top + r.height * 0.5, r.width * 0.62, r.height * 0.42);
+    return new DOMRect(r.left + r.width * 0.34, r.top + r.height * 0.2, r.width * 0.64, r.height * 0.8);
+  };
 
   // --- çocuklar ve Mino
   const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, golge: 24, pozlar: ['normal', 'saskin', 'dilek', 'mutlu', 'alkis', 'dans'] });
@@ -189,8 +244,103 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const oyX = (o: Oyuncu) => Number(o.el.style.getPropertyValue('--x')) || 50;
 
   const mino = new Mino();
+  // burun kaşıntısı / tutma / hapşu yüzleri (8. sahne) ayrı küçük pakette: şimdiden arka planda yüklensin
+  void minoBurunYukle();
   const minoBalon = h('div.eg-balon.eg-mino-balon');
   const minoKutu = sahne.koy(h('div.mc-mino.eg-mino', { 'data-ege': 'mino' }, mino.el, minoBalon), { x: 19, y: Z - 3, w: 24, z: 10 });
+
+  // ================================================================ kamera ve kadraj koruması (banyodaki gibi)
+  // Sahne kodu çekimi ister (odak x/y, yakınlık z) ve o çekimde kadrajda kalması gerekenleri (tut) verir. Taşacaksa
+  // odak kayar, sığmıyorsa yakınlık düşer. Annenin başı ve Mino kenarda yarım kalmaz: ya tamamen içeride ya dışarıda.
+  type Alan = { l: number; r: number; u: number; a: number };
+  /** Dünyadaki kutu (% ; u/a üstten). Konumu --x/--y ile verilen öğede hedef konum (yürürken de doğru) */
+  const alan = (el: HTMLElement): Alan | null => {
+    if (!el.isConnected || el.classList.contains('gizli') || el.classList.contains('gidiyor') || !el.offsetWidth) return null;
+    const dw = sahne.dunya.offsetWidth || W();
+    const dh = sahne.dunya.offsetHeight || H();
+    const w = (el.offsetWidth / dw) * 100;
+    const hh = (el.offsetHeight / dh) * 100;
+    const vx = el.style.getPropertyValue('--x');
+    if (vx !== '') {
+      const x = Number(vx);
+      const y = Number(el.style.getPropertyValue('--y')) || 0;
+      return { l: x - w / 2, r: x + w / 2, u: 100 - y - hh, a: 100 - y };
+    }
+    const l = (el.offsetLeft / dw) * 100;
+    const u = (el.offsetTop / dh) * 100;
+    return { l, r: l + w, u, a: u + hh };
+  };
+  /** Annenin başı (yarım kalmasın) */
+  const anneBasAlan = (): Alan | null => {
+    const k = alan(anne);
+    if (!k) return null;
+    const [x0, y0, x1, y1] = ANNE_BAS[anneResim];
+    const w = k.r - k.l;
+    const hh = k.a - k.u;
+    return { l: k.l + w * x0, r: k.l + w * x1, u: k.u + hh * y0, a: k.u + hh * y1 };
+  };
+  /** Mino (kutunun boş kenarları hariç) */
+  const minoAlan = (): Alan | null => {
+    const k = alan(minoKutu);
+    if (!k) return null;
+    const w = k.r - k.l;
+    return { ...k, l: k.l + w * 0.14, r: k.r - w * 0.14 };
+  };
+  /** Kenarda yarım görünmemesi gerekenler */
+  const kacinlar = () => [anneBasAlan(), minoAlan(), alan(ege.el)].filter((a): a is Alan => !!a);
+  /** Kadraj payı (%): üstte düğme ve yazı şeridi, yanlarda nefes payı */
+  const PAY = { yan: 2.5, ust: 13, alt: 3 };
+  let cekim = { x: 50, y: 97, z: 1, tut: [] as (HTMLElement | (() => Alan | null))[] };
+  const kadrajHesap = () => {
+    const kutular = () => cekim.tut.map((t) => (typeof t === 'function' ? t() : alan(t))).filter((a): a is Alan => !!a);
+    const coz = (ek: Alan[]) => {
+      const hepsi = kutular().concat(ek);
+      if (!hepsi.length) return { x: cekim.x, y: cekim.y, z: cekim.z };
+      const l = Math.max(0, Math.min(...hepsi.map((k) => k.l)) - PAY.yan);
+      const r = Math.min(100, Math.max(...hepsi.map((k) => k.r)) + PAY.yan);
+      const u = Math.max(0, Math.min(...hepsi.map((k) => k.u)) - PAY.ust);
+      const a = Math.min(100, Math.max(...hepsi.map((k) => k.a)) + PAY.alt);
+      const z = Math.max(1, Math.min(cekim.z, 100 / Math.max(1, r - l), 100 / Math.max(1, a - u)));
+      if (z <= 1.001) return { x: cekim.x, y: cekim.y, z: 1 };
+      // görünen aralık: [o·(1 − 1/z), o·(1 − 1/z) + 100/z]
+      const k = 1 - 1 / z;
+      const sinirla = (o: number, lo: number, hi: number) => Math.max(0, Math.min(100, lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, o))));
+      return { x: sinirla(cekim.x, (r - 100 / z) / k, l / k), y: sinirla(cekim.y, (a - 100 / z) / k, u / k), z };
+    };
+    const ek: Alan[] = [];
+    let c = coz(ek);
+    // yarım kalan (annenin başı, Mino): dışarı it, olmazsa kadraja al
+    for (const kc of kacinlar()) {
+      if (c.z <= 1.001) break;
+      const k = 1 - 1 / c.z;
+      const vl = c.x * k;
+      const vr = vl + 100 / c.z;
+      if (kc.r <= vl || kc.l >= vr || (kc.l >= vl && kc.r <= vr)) continue;
+      const ic = kutular().concat(ek);
+      const icL = Math.min(...ic.map((q) => q.l), 100) - PAY.yan;
+      const icR = Math.max(...ic.map((q) => q.r), 0) + PAY.yan;
+      // solda yarım: kadrajın solu başın sağına
+      const solaIt = (kc.r + 0.5) / k;
+      const sagaIt = (kc.l - 0.5 - 100 / c.z) / k;
+      if (kc.l < vl && solaIt <= 100 && kc.r + 0.5 <= icL && icR <= kc.r + 0.5 + 100 / c.z) c = { ...c, x: solaIt };
+      else if (kc.r > vr && sagaIt >= 0 && kc.l - 0.5 >= icR && icL >= kc.l - 0.5 - 100 / c.z) c = { ...c, x: sagaIt };
+      else {
+        ek.push(kc);
+        c = coz(ek);
+      }
+    }
+    return c;
+  };
+  /** Kamera (kadraj korumalı) */
+  const kam = (x: number, y: number, z: number, ms: number, tut: (HTMLElement | (() => Alan | null))[] = []) => {
+    cekim = { x, y, z, tut };
+    const c = kadrajHesap();
+    sahne.el.dataset.kamera = `${c.x.toFixed(1)} ${c.y.toFixed(1)} ${c.z.toFixed(2)}`;
+    return sahne.kamera(c.x, c.y, c.z, ms);
+  };
+  /** Sahnedeki (görünen) çocuklar */
+  const cocuklar = () => [ada, can, elif].map((o) => o.el).filter((el) => !el.classList.contains('gizli') && Math.abs(Number(el.style.getPropertyValue('--x')) - 50) < 55);
+  void koltuk;
 
   // --- ay göstergesi (sahne 8)
   const ay = new AyGosterge();
@@ -440,12 +590,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   // ================================================================ 1. Anne çok yorgun
   async function sahne1() {
     sahne.el.dataset.egSahne = '1';
-    await sahne.kamera(72, 80, 1.9, 10);
+    await kam(72, 80, 1.9, 10, [besik, anne]);
     aglat(1);
     anne.classList.add('salliyor');
     besikIc.classList.add('sallaniyor');
     await bekle(1100);
-    void sahne.kamera(50, 88, taban, 2200);
+    void kam(50, 88, taban, 2200, [anne, besik]);
     minoKutu.classList.add('giris');
     await bekle(700);
     mino.tepki('zipla');
@@ -458,20 +608,40 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await anneSoyle(E.anne.uzan);
     anne.classList.remove('esniyor');
     anne.classList.add('yuruyor');
-    await tasi(anne, KOLTUK.x + 3, KOLTUK.y + bY(6), 1400);
-    anne.classList.remove('yuruyor');
-    annePoz('uyuyor');
+    if (annePozVar('uyuyor')) {
+      // kanepenin önüne yürür (kalçası oturağın üstüne gelecek yere), oturur, dizine yaslanıp uyuyakalır
+      const yer = anneOturYer('uyuyor');
+      const kalcaX = KOLTUK.x + bX(KOLTUK.w * 0.2);
+      await tasi(anne, kalcaX, KOLTUK.y + bY(koltukH * 0.06), 1400);
+      anne.classList.remove('yuruyor');
+      annePoz('uyuyor');
+      anne.style.setProperty('--x', String(yer.x));
+      anne.style.setProperty('--y', String(yer.y));
+      // oturma: önce çöker, sonra yumuşakça yerine oturur
+      anneGov.animate(
+        [
+          { transformOrigin: '80% 100%', scale: '1.03 0.9', translate: '0 3%' },
+          { transformOrigin: '80% 100%', scale: '0.98 1.03', translate: '0 -1%', offset: 0.55 },
+          { transformOrigin: '80% 100%', scale: '1 1', translate: '0 0' },
+        ],
+        { duration: sure(520), easing: 'ease-out' },
+      );
+    } else {
+      await tasi(anne, KOLTUK.x + 3, KOLTUK.y + bY(6), 1400);
+      anne.classList.remove('yuruyor');
+      annePoz('uyuyor');
+    }
     anne.classList.add('uzanik');
     anne.style.zIndex = '4';
     efektCal(() => S.hisirti(), 500);
     anneUyuyor = true;
     anneZzz = window.setInterval(() => {
       if (!anneUyuyor) return;
-      const [x, y] = merkez(anneGov);
-      parca.yuksel(x - 30, y - 20, 'z', 3);
+      const [x, y] = anneBasEkran();
+      parca.yuksel(x, y, 'z', 3);
     }, TEST_MODU ? 99999 : 3200);
-    const [ax, ay] = merkez(anneGov);
-    parca.yuksel(ax - 30, ay - 20, 'z', 3);
+    const [ax, ay] = anneBasEkran();
+    parca.yuksel(ax, ay, 'z', 3);
     await bekle(600);
     // Mino ile Ada birbirine bakar
     mino.tepki('sasir');
@@ -481,6 +651,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
 
     // --- battaniye: anneye sürükle
     const battaniye = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'battaniye' }, esya('battaniye-anne', undefined, 'Battaniye')), { x: 56, y: Z + 2, w: 17, z: 11 });
+    void kam(40, 92, taban, 900, [anne, battaniye]);
     await mSoyle(M.battaniye);
     ui.ipucu(I.battaniye);
     durumYaz('battaniye');
@@ -497,11 +668,10 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
           bitir(s, ip);
           battaniye.classList.remove('eg-geliyor');
           efektCal(() => S.hisirti(true), 900);
-          // annenin gövdesini (göğüsten ayaklara) örter
-          const r = anneGov.getBoundingClientRect();
-          const govde = new DOMRect(r.left + r.width * 0.34, r.top + r.height * 0.2, r.width * 0.64, r.height * 0.8);
+          // uyuyan annenin kucağını ve bacaklarını örter (ayakta çizimde göğüsten ayaklara)
+          const govde = anneOrtuKutu();
           battaniye.style.zIndex = '5';
-          void ortala(battaniye, govde, pxB(govde.width * 0.66), oran('battaniye-anne')).then(() => {
+          void ortala(battaniye, govde, pxB(govde.width * (anneResim === 'uyuyor' ? 0.92 : 0.66)), oran('battaniye-anne')).then(() => {
             battaniye.classList.add('ortuldu');
             coz();
           });
@@ -515,8 +685,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ui.ipucu(null);
     efektCal(() => efekt.dogru(), 800);
     anne.classList.add('gulumsuyor');
-    const [bx, by] = merkez(anneGov);
-    parca.yuksel(bx, by - 20, 'kalp', 3);
+    const [bx, by] = anneBasEkran();
+    parca.yuksel(bx, by + 10, 'kalp', 3);
     ada.poz('mutlu', 1600);
     void ada.zipla(16);
     await bekle(700);
@@ -552,6 +722,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       ['ordek', sahne.koy(h('div.eg-esya.eg-oyuncak', { 'data-ege': 'ordek' }, esya('ordek', 'banyo/ordek', 'Lastik ördek')), { x: SEPET.x - 2.5, y: icY(0.6), w: 7, z: 11 })],
     ];
     const KENAR: [number, number][] = [[33, Z - 2], [70, Z - 2], [29, Z + 2], [66, Z + 2]];
+    void kam(58, 96, taban, 800, [sepet, ...cocuklar()]);
     await mSoyle(M.cingirak_ara);
     ui.ipucu(I.sepet);
     durumYaz('sepet');
@@ -620,7 +791,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ui.ipucu(null);
 
     // --- çıngırağı salla: tık / alkış (çıngırağa dokunmak da olur)
-    await sahne.kamera(66, 95, taban * 1.12, 900);
+    await kam(66, 95, taban * 1.12, 900, [can.el, ege.el]);
     const salla = (uzun = false) => {
       S.cingirak(uzun);
       cing.classList.remove('salla');
@@ -688,9 +859,20 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     parca.parilti(ex, ey, 8);
     can.poz('alkis', 1000);
     await mSoyle(M.sustu);
-    await genel(800);
     cing.classList.add('gidiyor');
     can.poz('normal');
+    // toparlanma: oyuncaklar sepete zıplar, sepet kenardan çekilir (sahne sadeleşsin)
+    const [sx, sy] = [Number(sepet.style.getPropertyValue('--x')), Number(sepet.style.getPropertyValue('--y'))];
+    oyuncaklar.forEach(([, el], i) =>
+      setTimeout(() => {
+        el.style.zIndex = '3';
+        void tasi(el, sx, sy + bY(6), 450, 4).then(() => el.classList.add('gidiyor'));
+        efektCal(() => S.pop(), 300);
+      }, sure(i * 140)),
+    );
+    await bekle(oyuncaklar.length * 140 + 500);
+    sepet.classList.add('gidiyor');
+    await genel(800);
   }
 
   /** 5-6 yaş: Ege kollarını çırparak ritmi gösterir (her vuruşta minik çıngırak sesi) */
@@ -803,10 +985,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         parca.yuksel(x, y - 14, 'buhar', 1, 10);
       }
     });
-    await sahne.kamera(56, 96, taban * 1.1, 900);
+    await kam(56, 96, taban * 1.1, 900, [ege.el, sandalye, kase]);
 
     // --- önlük
     const onluk = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'onluk' }, esya('onluk', undefined, 'Önlük')), { x: 31, y: Z + 3, w: 11, z: 11 });
+    void kam(56, 96, taban * 1.1, 600, [ege.el, sandalye, kase, onluk]);
     await mSoyle(M.onluk);
     ui.ipucu(I.onluk);
     durumYaz('onluk');
@@ -837,6 +1020,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     const kasikEl = h('div.eg-esya.eg-kasik', { 'data-ege': 'kasik' }, esya('kasik', undefined, 'Kaşık'), h('i.eg-kasik-mama'), h('div.eg-buhar.eg-kasik-buhar', {}, h('i'), h('i'), h('i')));
     const KASIK_YER = { x: 80, y: kaseY + bY(2) };
     const kasik = sahne.koy(kasikEl, { ...KASIK_YER, w: 10, z: 12 });
+    void kam(56, 96, taban * 1.1, 600, [ege.el, kase, kasik]);
     const agiz = () => ege.agizKutusu();
     for (let n = 0; n < ayar.kasik; n++) {
       ui.ilerleme(n, ayar.kasik);
@@ -854,6 +1038,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ege.ifade('kikir');
     await mSoyle(M.sil);
     const pecete = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'pecete' }, esya('pecete', undefined, 'Peçete')), { x: 31, y: Z + 3, w: 11, z: 12 });
+    void kam(50, 96, taban * 1.1, 600, [ege.el, pecete]);
     ui.ipucu(I.sil);
     durumYaz('sil');
     await gorev<void>((coz) => {
@@ -1150,7 +1335,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     durumYaz(null);
     ui.ipucu(null);
     await bekle(400);
-    await sahne.kamera(52, 96, taban * 1.06, 700);
+    await kam(52, 96, taban * 1.06, 700, [ada.el, can.el, ege.el]);
 
     // --- kukla konuşturma
     let referans: number | null = null;
@@ -1345,7 +1530,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await elif.git(40, Z + 1, 1100);
     elif.poz('selam', 900);
     void elif.balon(B.elif.benim, 1000);
-    await genel(700);
+    // cee-ee: üç çocuk, Ege ve (kulaklarını kapatacak) Mino kadrajda
+    await genel(700, [minoKutu]);
     await mSoyle(M.cee_giris);
     const kim: Record<Exclude<CeeTur, 'hepsi' | 'mino'>, Oyuncu> = { ada, can, elif };
     let gulmeSay = 0;
@@ -1498,7 +1684,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ada.poz('mutlu');
     ege.el.classList.add('kucakta');
     void ada.git(62, Z + 3, 1100);
-    await tasi(ege.el, BESIK.x + 2, BESIK.y + bY(besikH * 0.36), 1100);
+    // yatış: beşiğin içine gömülür (ön kenar gövdeyi örter, baş yastıkta ve battaniye görünür)
+    await tasi(ege.el, BESIK.x + 1.5, BESIK.y + bY(besikH * 0.33), 1100);
     sahne.dunya.querySelector('[data-ege="sandalye"]')?.classList.add('gidiyor');
     ege.el.style.zIndex = '5';
     ege.el.classList.remove('kucakta');
@@ -1508,7 +1695,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ada.poz('normal');
     efektCal(() => S.hisirti(), 500);
     await ada.git(48, Z + 3, 700);
-    await sahne.kamera(dikey ? 44 : 50, dikey ? 66 : 62, dikey ? 1.02 : 1, 900);
+    const hazirlaKam = (ms: number, ek: HTMLElement[] = []) => kam(dikey ? 44 : 50, dikey ? 66 : 62, dikey ? 1.02 : 1, ms, [besik, perde, ...ek]);
+    await hazirlaKam(900);
     await mSoyle(M.hazirla);
     ui.ipucu(I.hazirla);
     durumYaz('hazirla');
@@ -1516,7 +1704,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // dört iş, sıra serbest; biten işin üstünde bir yıldız parlar
     const emzik = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'emzik' }, esya('emzik', undefined, 'Emzik')), { x: 58, y: Z + 16, w: 6, z: 12 });
     const battaniye = sahne.koy(h('div.eg-esya.eg-geliyor', { 'data-ege': 'battaniye-ege' }, esya('battaniye-ege', undefined, 'Ege\'nin battaniyesi')), { x: 36, y: Z + 1, w: 14, z: 12 });
-    const lamba = sahne.koy(h('div.eg-lamba.eg-geliyor', { 'data-ege': 'lamba', role: 'button', 'aria-label': 'Gece lambası' }, h('i.eg-lamba-isik'), esya('gece-lambasi', undefined, 'Gece lambası')), { x: 93, y: Z + 1, w: 10, z: 12 });
+    const lamba = sahne.koy(h('div.eg-lamba.eg-geliyor', { 'data-ege': 'lamba', role: 'button', 'aria-label': 'Gece lambası' }, h('i.eg-lamba-isik'), esya('gece-lambasi', undefined, 'Gece lambası')), { x: dikey ? 88 : 93, y: Z + 1, w: 10, z: 12 });
+    void hazirlaKam(600, [emzik, battaniye, lamba]);
     const yildizKoy = (el: HTMLElement) => {
       const [x, y] = merkez(el);
       parca.parilti(x, y - 20, 6, 'yildiz');
@@ -1575,12 +1764,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
           efektCal(() => S.hisirti(true), 900);
           battaniye.classList.remove('eg-geliyor');
           battaniye.style.zIndex = '7';
-          // yatan Ege'nin gövdesini örter (baş solda açıkta kalır)
-          const r = (ege.el.querySelector('.eg-ege-kutu') ?? ege.el).getBoundingClientRect();
-          const govde = new DOMRect(r.left + r.width * 0.36, r.top + r.height * 0.18, r.width * 0.66, r.height * 0.8);
-          void ortala(battaniye, govde, pxB(govde.width * 0.95), oran('battaniye-ege')).then(() => {
-            battaniye.classList.add('ortuldu');
+          // yatan Ege'yi boynundan ayaklarına örter (baş yastıkta açıkta kalır); battaniye nefesle iner kalkar
+          const govde = ege.yatisOrtuKutusu();
+          void ortala(battaniye, govde, pxB(govde.width * 1.2), oran('battaniye-ege')).then(() => {
+            battaniye.classList.add('ortuldu', 'nefes');
             battaniye.dataset.ege = 'ortu';
+            ege.nefesEl = battaniye;
             isBitti('battaniye', battaniye);
           });
           return true;
@@ -1708,7 +1897,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       }
     });
     ege.ifade('uyuyor');
-    await sahne.kamera(64, 94, taban * 1.1, 900);
+    await kam(64, 94, taban * 1.1, 900, [besik]);
     await mSoyle(M.ninni);
     const tamam = await ninniGorevi(ayar.dize, true);
     gozKapa();
@@ -1967,7 +2156,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   async function sahne8() {
     sahne.el.dataset.egSahne = '8';
     muzik.durdur();
-    await sahne.kamera(50, 96, taban, 900);
+    await kam(50, 96, taban, 900, [besik, minoKutu]);
     await mSoyle(M.uyudu);
     // herkes parmak uçlarında
     for (const o of [ada, can, elif]) o.el.classList.add('parmakucu');
@@ -1981,11 +2170,13 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await sessizlik(ayar.sessiz, BURUN_ORAN, (g) => (gecen = g));
     // 2. kısım: burun
     const tuttu = await burun();
-    void sahne.kamera(50, 96, taban, 900);
+    void kam(50, 96, taban, 900, [besik, minoKutu]);
     if (tuttu) {
       // minicik hıpşu: Ege uykusunda gülümser, herkes rahat bir nefes alır
       efektCal(() => S.hipsu(), 700);
       mino.tepki('hapsu', 0.5);
+      // minicik hıpşu: hapşu yüzü, küçük püf
+      setTimeout(() => void mino.ifade('hapsu', { boy: 'kucuk', ms: 900 }), sure(250));
       const [nx, ny] = minoEkran(MINO_BURUN);
       yazi(nx + 10, ny - 30, B.hipsu, '#ff9ec4');
       await bekle(700);
@@ -1999,6 +2190,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       // HAPŞUU! Ege uyanır; Mino utanır. Kısa ninni ve kısa sessizlik
       efektCal(() => S.hapsu(), 1800);
       mino.tepki('hapsu', 1.2);
+      // HAPŞUU: kocaman hapşu yüzü, püf "pat", kafa sarsılır
+      // (tepkinin nefes alma yarısında kaşıntı yüzü kalır, patlama anında hapşu yüzü)
+      setTimeout(() => void mino.ifade('hapsu', { boy: 'buyuk', ms: 1400 }), sure(600));
       const [nx, ny] = minoEkran(MINO_BURUN);
       yazi(nx, ny - 40, B.hapsu, '#ff8a3d', true);
       sahne.titret(1.3);
@@ -2096,14 +2290,18 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   /** Mino'nun burnu kaşınır: çocuk burnuna basılı tutarsa hapşırık tutulur (true); süre geçerse HAPŞU (false) */
   async function burun(): Promise<boolean> {
     minoSerbest = false;
-    const minoYer = { x: Number(minoKutu.style.getPropertyValue('--x')), y: Number(minoKutu.style.getPropertyValue('--y')) };
+    // burun anında Mino çocukların önünde (yüzü ve burnu kapanmasın)
+    const minoZ = minoKutu.style.zIndex;
+    minoKutu.style.zIndex = '14';
+    const minoYer ={ x: Number(minoKutu.style.getPropertyValue('--x')), y: Number(minoKutu.style.getPropertyValue('--y')) };
     void tasi(minoKutu, dikey ? 27 : 24, Z + 5, 600);
-    void sahne.kamera(dikey ? 34 : 38, 92, taban * 1.12, 700);
+    void kam(dikey ? 34 : 38, 92, taban * 1.12, 700, [minoKutu]);
     const [nx, ny] = minoYuzde(MINO_BURUN);
     const parla = h('i.eg-burun-parla', { style: `left:${nx}%;top:${ny}%`, 'data-ege': 'burun' });
     const halka = h('i.eg-burun-halka', { style: `left:${nx}%;top:${ny}%` });
     mino.el.append(parla, halka);
-    minoKutu.classList.add('kasiniyor');
+    // tasarımcının burun kaşıntısı yüzü (şaşı gözler, geniş burun, seğirme çizgileri; burun kendiliğinden seğirir)
+    void mino.ifade('burun-kasinti');
     efektCal(() => S.haha(3), 2200);
     void balon(minoBalon, B.haha, 2000);
     mino.tepki('esne', 1.6);
@@ -2126,7 +2324,6 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
             zorlanma -= dt;
             if (zorlanma <= 0) {
               zorlanma = 1.1;
-              mino.tepki('zorlan', 1.2);
               S.zorlan();
             }
           } else tut = Math.max(0, tut - dt * 2);
@@ -2137,6 +2334,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         });
         const bas = (e: PointerEvent) => {
           e.stopPropagation();
+          if (!basili) void mino.ifade('burun-tut'); // kollar kalkar, patiler burunda, yanaklar şişer, minik titrer
           basili = true;
           ip.ilerle();
           minoKutu.classList.add('tutuluyor');
@@ -2147,6 +2345,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
           }
         };
         const birak = () => {
+          if (basili) void mino.ifade('burun-kasinti');
           basili = false;
           minoKutu.classList.remove('tutuluyor');
         };
@@ -2168,8 +2367,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       parla.remove();
       halka.remove();
       minoKutu.classList.remove('kasiniyor');
+      // tutabildiyse yüzü hıpşuya kadar "tutuyor"da kalır; sahne 8 hapşu yüzüne geçirir
       minoSerbest = true;
-      setTimeout(() => void tasi(minoKutu, minoYer.x, minoYer.y, 700), sure(1600));
+      setTimeout(() => {
+        minoKutu.style.zIndex = minoZ;
+        void tasi(minoKutu, minoYer.x, minoYer.y, 700);
+      }, sure(1600));
     }
   }
 
@@ -2179,10 +2382,25 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // anne uyanır, şaşkın bir şekilde beşiğe bakar
     anneUyuyor = false;
     clearInterval(anneZzz);
-    await sahne.kamera(46, 96, taban, 900);
+    await kam(46, 96, taban, 900, [anne, besik]);
     anne.classList.remove('uzanik');
     anne.classList.add('oturuyor');
     annePoz('gulumsuyor');
+    if (anneResim !== 'ayakta') {
+      // başını kaldırıp doğrulur (oturuş çizimi, kanepede aynı yerde)
+      const yer = anneOturYer(anneResim);
+      anne.style.setProperty('--x', String(yer.x));
+      anne.style.setProperty('--y', String(yer.y));
+      anneGov.animate(
+        [
+          { transformOrigin: '50% 100%', scale: '1.02 0.9', translate: '0 2%' },
+          { transformOrigin: '50% 100%', scale: '0.98 1.04', translate: '0 -1.5%', offset: 0.5 },
+          { transformOrigin: '50% 100%', scale: '1 1', translate: '0 0' },
+        ],
+        { duration: sure(650), easing: 'ease-out' },
+      );
+      void kam(46, 96, taban, 600, [anne, besik]);
+    }
     const ortuA = sahne.dunya.querySelector<HTMLElement>('[data-ege="battaniye"]');
     ortuA?.classList.add('kaydi');
     await bekle(700);
@@ -2207,23 +2425,39 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     anne.classList.remove('oturuyor');
     annePoz('sariliyor');
     anne.classList.add('sariliyor');
-    void ada.git(32, Z + 3, 900);
-    void elif.git(46, Z + 1, 900);
-    void can.git(58, Z + 2, 900);
-    await tasi(anne, 45, Z + 2, 900);
+    if (anneResim === 'sariliyor') {
+      // çocuklar kanepeye koşar, anne kollarını açıp hepsine sarılır (anne kanepede oturur)
+      const yer = anneOturYer('sariliyor');
+      anne.style.setProperty('--x', String(yer.x));
+      anne.style.setProperty('--y', String(yer.y));
+      const gel = [ada.git(KOLTUK.x - bX(11), Z + 3, 900), elif.git(KOLTUK.x + bX(4), Z + 1, 900), can.git(KOLTUK.x + bX(19), Z + 2, 900)];
+      // Mino yer açar: Can'ın yanına geçer (çocukların arkasında kalmasın)
+      void tasi(minoKutu, Math.min(86, KOLTUK.x + bX(36)), Z - 3, 900);
+      void kam(40, 96, taban, 900, [anne, ada.el, elif.el, can.el, minoKutu]);
+      await Promise.all(gel);
+    } else {
+      void ada.git(32, Z + 3, 900);
+      void elif.git(46, Z + 1, 900);
+      void can.git(58, Z + 2, 900);
+      await tasi(anne, 45, Z + 2, 900);
+    }
     for (const [i, o] of [ada, elif, can].entries()) setTimeout(() => {
       o.poz('mutlu', 1600);
       void o.zipla(8);
     }, sure(i * 150));
-    const [ax, ay2] = merkez(anneGov);
-    parca.yuksel(ax, ay2 - 30, 'kalp', 6, 60);
-    await bekle(1400);
+    const [ax, ay2] = anneBasEkran();
+    parca.yuksel(ax, ay2 + 20, 'kalp', 6, 60);
+    // sarılma anı (test modunda da kısalmaz: e2e bu anın görüntüsünü alır)
+    durumYaz('saril');
+    await new Promise((r) => setTimeout(r, 1400));
+    durumYaz(null);
     await mSoyle(M.son);
-    // Mino esner, kanepede kıvrılıp uyur
+    // Mino esner, kanepenin koluna kıvrılıp uyur (oturakta anne var)
     mino.tepki('esne', 2);
     await bekle(1200);
     minoKutu.classList.add('uyuyor');
-    await tasi(minoKutu, KOLTUK.x - 6, KOLTUK.y + bY(8), 900, 20);
+    if (anneResim === 'sariliyor') await tasi(minoKutu, KOLTUK.x - bX(KOLTUK.w * 0.36), KOLTUK.y + bY(koltukH * 0.42), 900, 15);
+    else await tasi(minoKutu, KOLTUK.x - 6, KOLTUK.y + bY(8), 900, 20);
     mino.uyu();
     // ödül kartı
     odulKarti();

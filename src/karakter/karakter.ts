@@ -142,6 +142,11 @@ export class Karakter {
    * t: karakterin saati (sn). null: yok.
    */
   ekHareket: ((p: Poz, t: number) => void) | null = null;
+  /**
+   * Geçici sınır (ör. beşikte yatan bebek: bacaklar düz, kollar yanda). null: kişiliğin kendi sınırları.
+   * Yalnız verildiği sürece geçerli; eklemler kapalıyken (battaniye altı) kullanılır.
+   */
+  ozelSinir: { sinir?: Kisilik['sinir']; kol?: [number, number] } | null = null;
 
   /** yedek: iskelet yoksa (ya da yüklenene kadar) gösterilecek tek görselin adresi */
   constructor(ad: string, yedek: HTMLElement) {
@@ -355,7 +360,8 @@ export class Karakter {
     const olcek = 20.48; // % → çizim birimi (2048 / 100)
     const kokN = dn.govde ?? [1024, 1930];
     // karaktere özel sınırlar (ör. ayı: kafa ±6, kulak ±10, bacak ±5; kuş: gövde ±3)
-    const s = this.k.sinir ?? {};
+    const s = this.ozelSinir?.sinir ?? this.k.sinir ?? {};
+    const kolS = this.ozelSinir?.kol ?? this.k.kol;
     const sin = (a: number, m?: number) => (m === undefined ? a : Math.max(-m, Math.min(m, a)));
     const kok = `translate(${(p.x * olcek).toFixed(1)}px, ${(p.y * olcek).toFixed(1)}px) ${etrafinda(kokN, sin(p.don, s.govde), p.sx, p.sy)}`;
     // kafa eğilmesi iskelette genlik çarpanıyla (canlı dursun; eskiden kafa katmanı açının iki katı dönüyordu),
@@ -367,8 +373,8 @@ export class Karakter {
       'kulak-sol': -sin(p.kulakSol, s.kulak),
       'kulak-sag': sin(p.kulakSag, s.kulak),
       // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
-      'kol-sol': kolSinir(p.kolSol, this.k.kol),
-      'kol-sag': -kolSinir(p.kolSag, this.k.kol),
+      'kol-sol': kolSinir(p.kolSol, kolS),
+      'kol-sag': -kolSinir(p.kolSag, kolS),
       // kanatlar kolların yerine (kuş, ördek): + = açılır
       'kanat-sol': kanatSinir(p.kolSol, s.kanat),
       'kanat-sag': -kanatSinir(p.kolSag, s.kanat),

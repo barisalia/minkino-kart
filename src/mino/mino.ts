@@ -48,8 +48,40 @@ export function minoHalleriYukle(): Promise<Record<string, string> | null> {
 /** Tüm beden hâli: asıl kafa / gövde / kuyruk (pofudukta kollar da) çizimin hâl sürümüyle değişir */
 export type MinoHal = 'islak' | 'pofuduk';
 
-/** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) */
-export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp';
+/**
+ * Burun ekleri (kaşıntı, burun tut, hapşu; tam vektör, ~40 KB): film ifadelerinden ayrı, kendi küçük paketinde;
+ * yalnız ifade() bunlardan biriyle ilk çağrılınca bir kez yüklenir. Önceden yüklemek için çağrılabilir (Ege açılışta).
+ */
+let burunYukleme: Promise<Record<'kafa' | 'yuz' | 'kol' | 'pati', string> | null> | null = null;
+export function minoBurunYukle(): Promise<Record<'kafa' | 'yuz' | 'kol' | 'pati', string> | null> {
+  burunYukleme ??= import('./mino-burun-svg').then(
+    (m) => m.MINO_BURUN_SVG,
+    () => null,
+  );
+  return burunYukleme;
+}
+
+/** Burun ifadeleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne) */
+export type MinoBurunIfade = 'burun-kasinti' | 'burun-tut' | 'hapsu';
+const burunMu = (ad: MinoIfade): ad is MinoBurunIfade => ad === 'burun-kasinti' || ad === 'burun-tut' || ad === 'hapsu';
+/** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) ve burun ifadeleri */
+export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | MinoBurunIfade;
+/**
+ * ifade() ayarı. ms: bu süre sonra normale döner (0: null verilene kadar).
+ * boy (yalnız hapşu): 'buyuk' HAPŞU (püf tam "pat" 0.85 → 1.05, kafa sarsılır; varsayılan), 'kucuk' hıpşu (küçük, soluk püf, hafif sarsıntı).
+ */
+export interface MinoIfadeAyar {
+  ms?: number;
+  boy?: 'kucuk' | 'buyuk';
+}
+/** Burun eklerinin dönme / ölçek noktaları (çizimin 2048'lik koordinatları; IFADELER.md) */
+const OMUZ_SOL = { x: 892, y: 1312 };
+const OMUZ_SAG = { x: 1156, y: 1312 };
+const PUF = { x: 1024, y: 1080 };
+const BURUN_UCU = { x: 1024, y: 915 };
+const YANAK = { x: 1024, y: 1010 };
+/** omuzdan pati bileğine dikey uzaklık: kafa inip kalkınca kol bu oranla kısalıp uzar (pati burunda kalsın) */
+const KOL_BOY = 312;
 /** Bu tepkiler kendi ifadesini de açar (yalnız filmde kullanılır; oyunlarda değişiklik yok) */
 const TEPKI_IFADE: Partial<Record<string, MinoIfade>> = { zorlan: 'zorlanma', sersem: 'sersem', kararsiz: 'kararsiz' };
 
@@ -135,7 +167,7 @@ export class Mino {
     const varsayilan: Record<Tepki, number> = { gidik: 1.6, mir: 2.2, zipla: 0.9, hapsu: 1.2, sasir: 1.1, hayir: 1.0, evet: 0.9, ham: 1.4, dans: 2.4, esne: 2.2, uzat: 1.3, zorlan: 1.6, sersem: 1.6, kararsiz: 3, saril: 1.2, kolac: 1.4, selam: 1.4, duzelt: 1.7, sun: 1.5, sevinc: 1.0 };
     this.d.tepki = t;
     const ifd = TEPKI_IFADE[t];
-    if (ifd) this.ifade(ifd, (sure ?? varsayilan[t]) * 1000);
+    if (ifd) void this.ifade(ifd, (sure ?? varsayilan[t]) * 1000);
     this.d.tepkiBas = this.zaman();
     this.d.tepkiSure = sure ?? varsayilan[t];
     if (t !== 'esne') this.uyan();
@@ -192,25 +224,74 @@ export class Mino {
 
   /**
    * Yüz ifadesi (çizilmiş ek katmanlar): açıkken ilgili gözler, kod ağzı ve yanaklar yerini ifadenin çizimine bırakır.
-   * ms verilirse o süre sonra normale döner; null normale döndürür.
+   * ayar: ms (sayı ya da { ms }) verilirse o süre sonra normale döner; null normale döndürür.
+   * Burun ifadeleri: 'burun-kasinti' (burun seğirir), 'burun-tut' (kollar kalkar, patiler burunda, yanaklar şişer, titrer),
+   * 'hapsu' ({ boy: 'buyuk' } HAPŞU: püf "pat" + kafa sarsıntısı; { boy: 'kucuk' } hıpşu).
+   * Ekler henüz yüklenmediyse yüklenir; dönen söz ifade göründüğünde (ya da vazgeçildiğinde) çözülür.
    */
-  ifade(ad: MinoIfade | null, ms = 0) {
+  ifade(ad: MinoIfade | null, ayar: number | MinoIfadeAyar = 0): Promise<void> {
+    const { ms = 0, boy = 'buyuk' } = typeof ayar === 'number' ? { ms: ayar } : ayar;
     for (const c of [...this.el.classList]) if (c.startsWith('ifade-')) this.el.classList.remove(c);
     clearTimeout(this.ifadeZaman);
     this.ifadeAd = null;
     this.ifadeIstek++;
-    if (!ad) return;
+    this.burunSifirla();
+    if (!ad) return Promise.resolve();
     // ekler henüz yüklenmediyse yükle; yüklenince (hâlâ isteniyorsa) göster, yoksa sessizce vazgeç
     const istek = this.ifadeIstek;
-    void this.ifadeleriEkle().then((tamam) => {
+    return (burunMu(ad) ? this.burunEkle() : this.ifadeleriEkle()).then((tamam) => {
       if (!tamam || istek !== this.ifadeIstek) return;
       this.ifadeAd = ad;
+      this.burunBas = this.zaman();
+      this.burunBoy = boy;
       this.el.classList.add(`ifade-${ad}`);
-      if (ms) this.ifadeZaman = window.setTimeout(() => this.ifade(null), TEST_MODU ? 30 : ms);
+      if (ms) this.ifadeZaman = window.setTimeout(() => void this.ifade(null), TEST_MODU ? 30 : ms);
     });
+  }
+  /** Açık ifade (yoksa null) */
+  get ifadeSu(): MinoIfade | null {
+    return this.ifadeAd;
   }
   private ifadeIstek = 0;
   private ifadeEklendi = false;
+
+  /** Bu Mino'ya burun eklerini koyar (paylaşılan tembel yükleme; yuvalar: mino-burun-svg.ts, scripts/mino/rig.mjs) */
+  private async burunEkle(): Promise<boolean> {
+    if (this.burunEklendi) return true;
+    const ekler = await minoBurunYukle();
+    const k = this.kok.querySelector<SVGGElement>(':scope > .k');
+    const kafaHal = k?.querySelector(':scope > .m-hal');
+    if (!ekler || !k || !kafaHal) return false;
+    if (this.burunEklendi) return true;
+    // hapşu kafası asıl kafanın (ve hâlinin) hemen üstüne, göz / ağız eklerinin altına
+    kafaHal.insertAdjacentHTML('afterend', ekler.kafa);
+    k.insertAdjacentHTML('beforeend', ekler.yuz);
+    // burnu tutan kollar kafanın ve fuların üstünde, patiler en üstte
+    this.kok.insertAdjacentHTML('beforeend', ekler.kol + ekler.pati);
+    this.burunParca = {
+      burun: this.kok.querySelector('.m-burun-burun'),
+      yanak: this.kok.querySelector('.m-burun-yanak'),
+      puf: this.kok.querySelector('.m-hapsu-puf'),
+      kolSol: this.kok.querySelector('.m-burun-kol-sol'),
+      kolSag: this.kok.querySelector('.m-burun-kol-sag'),
+    };
+    this.burunEklendi = true;
+    return true;
+  }
+  private burunEklendi = false;
+  private burunParca: Record<'burun' | 'yanak' | 'puf' | 'kolSol' | 'kolSag', SVGGElement | null> | null = null;
+  /** burun ifadesinin başladığı an (kodla canlandırma için) ve hapşunun boyu */
+  private burunBas = 0;
+  private burunBoy: 'kucuk' | 'buyuk' = 'buyuk';
+  /** burun eklerinin kodla verilen dönüşümlerini bırakır (bir sonraki açılışta baştan başlasın) */
+  private burunSifirla() {
+    if (!this.burunParca) return;
+    for (const e of Object.values(this.burunParca)) {
+      if (!e) continue;
+      e.style.transform = '';
+      e.style.opacity = '';
+    }
+  }
 
   /** Bu Mino'nun kafasına ifade eklerini koyar (paylaşılan tembel yükleme) */
   private async ifadeleriEkle(): Promise<boolean> {
@@ -557,6 +638,42 @@ export class Mino {
       kafaAci += this.bakis * 4;
     }
 
+    // Burun ifadeleri (ifade()): çizilmiş eklerin kodla canlanan kısımları (yalnız transform / opacity)
+    const bp = this.burunParca;
+    const bi = this.ifadeAd;
+    if (bp && bi && burunMu(bi)) {
+      const b = TEST_MODU ? 1 : t - this.burunBas; // ifade açılalı geçen süre (sn)
+      if (bi === 'burun-kasinti') {
+        // burun seğirir: her ~0.8 sn'de kısa bir kabarma, baş hafifçe kalkıp "koklar"
+        const u = (b % 0.8) / 0.8;
+        const seg = u < 0.22 ? sin((u / 0.22) * Math.PI) : 0;
+        bp.burun?.style.setProperty('transform', donus(BURUN_UCU, 0, 1 + 0.07 * seg, 1 + 0.05 * seg));
+        kafaY -= 4 * seg;
+      } else if (bi === 'burun-tut') {
+        // yanaklar şişer (hafif fazlasıyla açılır, sonra nefes gibi kabarıp iner); baş ve gövde minik titrer
+        const ac = Math.min(1, b / 0.28);
+        const sis = sin(ac * Math.PI * 0.5) + sin(ac * Math.PI) * 0.35 + (ac >= 1 ? sin((b - 0.28) * 4.5) * 0.25 : 0);
+        bp.yanak?.style.setProperty('transform', donus(YANAK, 0, 0.92 + 0.1 * sis, 0.95 + 0.06 * sis));
+        kafaAci += sin(t * 47) * 0.9;
+        kafaY += sin(t * 53) * 1.6;
+        govdeAci += sin(t * 41) * 0.35;
+      } else {
+        // hapşu: püf "pat" (0.85 → 1.05 → 1; hıpşuda küçük ve soluk), kafa kısa sarsılır
+        const buyuk = this.burunBoy === 'buyuk';
+        const p = Math.min(1, b / 0.32);
+        const pat = p < 0.55 ? ara(0.85, 1.05, sin((p / 0.55) * Math.PI * 0.5)) : ara(1.05, 1, (p - 0.55) / 0.45);
+        // hıpşu: yarım "pat" (0.85 → 0.95); daha küçüğü sarsıntı çizgilerini kafanın üstüne bindirir
+        const olcek = buyuk ? pat : 0.85 + (pat - 0.85) * 0.5;
+        bp.puf?.style.setProperty('transform', donus(PUF, 0, olcek, olcek));
+        bp.puf?.style.setProperty('opacity', String(Math.min(1, b / 0.06) * (buyuk ? 1 : 0.7)));
+        const sars = Math.max(0, 1 - b / 0.55) * (buyuk ? 1 : 0.35);
+        kafaAci += sin(b * 42) * 7 * sars;
+        kafaY += 18 * sin(Math.min(1, b / 0.3) * Math.PI) * (buyuk ? 1 : 0.4);
+        sy -= 0.04 * sars;
+        sx += 0.03 * sars;
+      }
+    }
+
     // Konuşurken ağız sesin gücüyle açılır
     if (((konusuyorMu() && !this.agizSus) || this.agizZorla) && !uyku) {
       const guc = konusmaGucu();
@@ -574,7 +691,14 @@ export class Mino {
     const govde = `translate(0px, ${ziplaY * OLCEK}px) ` + donus(AYAK, govdeAci, sx, sy);
     s.setProperty('--govde', govde);
     // kafa fazla yukarı kalkarsa fuların üstünde boynun konturu görünür: yukarı en çok 6 birim
-    s.setProperty('--kafa', donus(BOYUN, kafaAci, 1, 1, 0, Math.max(-6, kafaY)));
+    const kafaYS = Math.max(-6, kafaY);
+    s.setProperty('--kafa', donus(BOYUN, kafaAci, 1, 1, 0, kafaYS));
+    // burnu tutan kollar (gövdeye bağlı) omuzdan kafayla aynı açıda döner, kafa inip kalkınca uzar / kısalır: patiler burunda kalır
+    if (bp && bi === 'burun-tut') {
+      const boy = 1 - kafaYS / KOL_BOY; // kafa inerse (kafaY > 0) burun omza yaklaşır
+      bp.kolSol?.style.setProperty('transform', donus(OMUZ_SOL, kafaAci, 1, boy));
+      bp.kolSag?.style.setProperty('transform', donus(OMUZ_SAG, kafaAci, 1, boy));
+    }
     s.setProperty('--kuyruk', donus(KUYRUK, kuyrukAci));
     const kol = (a: number) => Math.max(-8, Math.min(KOL_EN_COK, a));
     s.setProperty('--kol-sol', donus(KOL_SOL, kol(kolSol)));
