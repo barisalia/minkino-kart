@@ -1,0 +1,251 @@
+{
+ "kaynak": "gemini-lyria",
+ "bpm": 100,
+ "baslangic_ms": 997,
+ "sure_ms": 9980,
+ "heceler": [
+  {
+   "hece": "Ne",
+   "satir": 0,
+   "basla_ms": 997,
+   "bitir_ms": 1320,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "şey",
+   "satir": 0,
+   "basla_ms": 1320,
+   "bitir_ms": 1642,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "le",
+   "satir": 0,
+   "basla_ms": 1641,
+   "bitir_ms": 1914,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "şar",
+   "satir": 0,
+   "basla_ms": 1914,
+   "bitir_ms": 2089,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "kı",
+   "satir": 0,
+   "basla_ms": 2088,
+   "bitir_ms": 2443,
+   "midi": 69,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "söy",
+   "satir": 0,
+   "basla_ms": 2443,
+   "bitir_ms": 2797,
+   "midi": 69,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "le",
+   "satir": 0,
+   "basla_ms": 3029,
+   "bitir_ms": 3133,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "Mum",
+   "satir": 1,
+   "basla_ms": 3133,
+   "bitir_ms": 3313,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "la",
+   "satir": 1,
+   "basla_ms": 3313,
+   "bitir_ms": 3865,
+   "midi": 67,
+   "vurus": 1,
+   "tahmini": false
+  },
+  {
+   "hece": "rı",
+   "satir": 1,
+   "basla_ms": 3865,
+   "bitir_ms": 4062,
+   "midi": 65,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "üf",
+   "satir": 1,
+   "basla_ms": 4062,
+   "bitir_ms": 4370,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "le",
+   "satir": 1,
+   "basla_ms": 4370,
+   "bitir_ms": 4927,
+   "midi": 62,
+   "vurus": 1,
+   "tahmini": true
+  },
+  {
+   "hece": "ha",
+   "satir": 1,
+   "basla_ms": 4927,
+   "bitir_ms": 5119,
+   "midi": 69,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "di",
+   "satir": 1,
+   "basla_ms": 5177,
+   "bitir_ms": 5432,
+   "midi": 62,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "İ",
+   "satir": 2,
+   "basla_ms": 5432,
+   "bitir_ms": 5537,
+   "midi": 69,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "yi",
+   "satir": 2,
+   "basla_ms": 6198,
+   "bitir_ms": 6309,
+   "midi": 65,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "ki",
+   "satir": 2,
+   "basla_ms": 6309,
+   "bitir_ms": 6721,
+   "midi": 67,
+   "vurus": 0.75,
+   "tahmini": false
+  },
+  {
+   "hece": "doğ",
+   "satir": 2,
+   "basla_ms": 6721,
+   "bitir_ms": 6814,
+   "midi": 69,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "dun",
+   "satir": 2,
+   "basla_ms": 6814,
+   "bitir_ms": 7197,
+   "midi": 69,
+   "vurus": 0.75,
+   "tahmini": false
+  },
+  {
+   "hece": "A",
+   "satir": 2,
+   "basla_ms": 7301,
+   "bitir_ms": 7603,
+   "midi": 72,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "da",
+   "satir": 2,
+   "basla_ms": 7603,
+   "bitir_ms": 7731,
+   "midi": 66,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "Hep",
+   "satir": 3,
+   "basla_ms": 7754,
+   "bitir_ms": 7865,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "mut",
+   "satir": 3,
+   "basla_ms": 7864,
+   "bitir_ms": 8758,
+   "midi": 69,
+   "vurus": 1.5,
+   "tahmini": true
+  },
+  {
+   "hece": "lu",
+   "satir": 3,
+   "basla_ms": 8758,
+   "bitir_ms": 8950,
+   "midi": 62,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "ol",
+   "satir": 3,
+   "basla_ms": 8950,
+   "bitir_ms": 9269,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "A",
+   "satir": 3,
+   "basla_ms": 9269,
+   "bitir_ms": 9473,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "da",
+   "satir": 3,
+   "basla_ms": 9472,
+   "bitir_ms": 9658,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": false
+  }
+ ]
+}
