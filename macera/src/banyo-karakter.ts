@@ -98,6 +98,16 @@ export function kopukHtml(x: number, y: number, r: number, tohum: number) {
 }
 
 export type KinoHareket = 'silkelen' | 'ulu' | 'titre' | 'tekme' | 'coskulu' | 'yuz' | 'kulakDik' | 'ic' | 'dinle' | 'bak';
+/** Kino'nun çizilmiş yüz ifadeleri (ekip/kino/IFADELER.md) */
+export type KinoIfade = 'heyecan' | 'sicak' | 'titreme' | 'keyif' | 'uluma' | 'uzgun' | 'saskin';
+/** Kendi yüzü olan hareketler */
+const KINO_OTO_IFADE: Partial<Record<KinoHareket, KinoIfade>> = { coskulu: 'heyecan', yuz: 'heyecan', ulu: 'uluma', titre: 'titreme' };
+/** Köpük saçın şekilleri (aynı çizim: yatay, dikey esneme) */
+const SAC_SEKIL: [number, number][] = [
+  [1, 1],
+  [1.28, 0.82],
+  [0.84, 1.34],
+];
 
 export class Kisi {
   readonly ad: KisiAdi;
@@ -581,8 +591,14 @@ export class Kisi {
     if (this.mino) this.mino.tepki(t, sn);
     else if (this.kar) {
       const es: Partial<Record<Tepki, () => void>> = {
-        zipla: () => void this.kar!.oynat('sevin', 900),
-        dans: () => void this.kar!.oynat('dans', 1600),
+        zipla: () => {
+          void this.kar!.oynat('sevin', 900);
+          this.kinoIfade('heyecan', 900);
+        },
+        dans: () => {
+          void this.kar!.oynat('dans', 1600);
+          this.kinoIfade('heyecan', 1600);
+        },
         sasir: () => this.kinoOynat('kulakDik', 900),
         hayir: () => void this.kar!.oynat('hayir', 700),
         evet: () => void this.kar!.oynat('huy', 900),
@@ -608,10 +624,56 @@ export class Kisi {
   kinoOynat(ad: KinoHareket, ms = 1000, yon = 1) {
     if (!this.kar) return;
     this.ozel = { ad, bas: performance.now() / 1000, sure: ms ? (TEST_MODU ? 0.03 : ms / 1000) : Infinity, yon };
+    // hareketin yüzü (çizilmiş ifade): coşku → heyecan, uluma → uluma, titreme → titreme
+    const oto = KINO_OTO_IFADE[ad];
+    if (oto) {
+      this.kar.ifade(oto, ms);
+      this.otoIfade = oto;
+    } else this.otoIfadeBitir();
   }
   kinoDur() {
     this.ozel = null;
+    this.otoIfadeBitir();
   }
+  /** Hareketin kendiliğinden açtığı ifade hâlâ duruyorsa kapatır (elle verilen ifadeye dokunmaz) */
+  private otoIfadeBitir() {
+    if (this.otoIfade && this.kar?.ifadeSu === this.otoIfade) this.kar.ifade(null);
+    this.otoIfade = null;
+  }
+  private otoIfade: KinoIfade | null = null;
+
+  /**
+   * Kino'nun yüz ifadesi (iskeletin çizilmiş ekleri; ekip/kino/IFADELER.md): gözler, ağız ve dil yerine ifade
+   * çizimi. ms: süre (0: kaldırılana kadar); null normale döner.
+   */
+  kinoIfade(ad: KinoIfade | null, ms = 0) {
+    this.kar?.ifade(ad, ms);
+    this.otoIfade = null;
+  }
+
+  /**
+   * Kino'nun köpük saçı (çizilmiş kopuk-sac eki; hiçbir şeyi gizlemez). sekil: 0 kabarık, 1 geniş taç, 2 uzun tepe
+   * (aynı çizim farklı esnetilir); null kaldırır.
+   */
+  kopukSac(sekil: number | null) {
+    const kar = this.kar;
+    if (!kar) return;
+    kar.ek('kopuk-sac', sekil !== null);
+    this.sacSekil = sekil;
+    const g = this.parcaG('kopuk-sac');
+    if (!g || sekil === null) return;
+    let ic = g.querySelector<SVGGElement>(':scope > g.bn-sac-ic');
+    if (!ic) {
+      ic = svgEl('g', { class: 'bn-sac-ic' });
+      ic.append(...[...g.childNodes]);
+      g.append(ic);
+    }
+    const [sx, sy] = SAC_SEKIL[sekil % SAC_SEKIL.length];
+    ic.style.transform = `scale(${sx}, ${sy})`;
+    ic.animate([{ scale: '0.6' }, { scale: '1.12' }, { scale: '1' }], { duration: sure(380), easing: 'cubic-bezier(0.3, 1.6, 0.5, 1)' });
+  }
+  /** Köpük saç takılı mı (null: yok) */
+  sacSekil: number | null = null;
   get kinoHareket() {
     return this.ozel?.ad ?? null;
   }
@@ -659,8 +721,9 @@ export class Kisi {
             p.sx *= 1 + 0.04 * S(t * 76) * z;
             break;
           case 'ulu':
+            // baş yukarı (≈ −15°; uluma ifadesiyle)
             p.kafaY -= 3 * z;
-            p.kafa -= 3 * z;
+            p.kafa -= 8 * z;
             p.sy *= 1 + 0.05 * z;
             kulak((this.kinoKulakYon * 20 + 4 * S(t * 11)) * z, (this.kinoKulakYon * 20 + 4 * S(t * 11 + 1)) * z);
             p.gozKapali = z > 0.5;
@@ -720,7 +783,8 @@ export class Kisi {
     // kodla çizilen ağız / dil (iskelette yoksa); iskeletin "dil-disarida" katmanı
     const ag = this.kap.querySelector<SVGGElement>('g.bn-kino-agiz');
     if (ag) ag.style.opacity = agiz > 0.5 || (this.kinoKonus && S(simdi * 18) > 0) ? '1' : '0';
-    const dilGoster = dil && agiz <= 0.5 && !this.kinoKonus;
+    // çizilmiş ifade açıkken (kendi ağzı ve dili var) dışarıdaki dil gösterilmez
+    const dilGoster = dil && agiz <= 0.5 && !this.kinoKonus && !this.kar?.ifadeSu;
     if (dilGoster !== this.dilSon) {
       this.dilSon = dilGoster;
       const dl = this.parcaG('dil-disarida') ?? this.kap.querySelector<SVGGElement>('g.bn-kino-dil');

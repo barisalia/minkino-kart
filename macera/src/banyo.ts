@@ -799,6 +799,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const kinoTepki = async (dd: SuDurumu | null) => {
       if (dd === 'sicak') {
         KN.kinoOynat('kulakDik', 0);
+        KN.kinoIfade('sicak');
         if (!kinoKenarda) {
           kinoKenarda = true;
           KN.katman = 7;
@@ -815,6 +816,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         await kSoyle(B.kino.soguk);
       } else if (dd === 'ilik') {
         KN.kinoOynat('ic', 1400);
+        KN.kinoIfade('keyif', 1800);
         void KN.balon(B.balon.ooh, 1200);
         await kSoyle(B.kino.tam);
       }
@@ -900,6 +902,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ui.ipucu(null);
     durumYaz(null);
     KN.kinoDur();
+    KN.kinoIfade(null);
     buz?.remove();
     if (kinoKenarda) {
       KN.katman = 4;
@@ -922,6 +925,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ordek.classList.add('yuzuyor');
     girisZipla(ordek);
     KN.kinoOynat('ic', 1500);
+    KN.kinoIfade('keyif', 2000);
     void KN.balon(B.balon.ooh, 1300);
     parca.halka(...KN.bolgeEkran('gobek'), 90);
     efekt.dogru();
@@ -1260,14 +1264,9 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
 
     // --- köpük saç (serbest oyun)
     await kSoyle(B.kino.sac);
-    const sekiller = ['tepe', 'tac', 'tavsan'] as const;
+    // Kino'nun çizilmiş köpük saçı (kopuk-sac eki); her dokunuşta başka şekle esner
     let sekil = -1;
-    const sac = KN.ekle('kafa', 'bn-sac', '');
-    const sacCiz = () => {
-      if (!sac) return;
-      sac.innerHTML = sacHtml(sekiller[sekil]);
-      sac.animate([{ transform: 'scale(0.6)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: sure(380), easing: 'cubic-bezier(0.3, 1.6, 0.5, 1)' });
-    };
+    const sacCiz = () => KN.kopukSac(sekil);
     ui.ipucu(B.ipucu.sac);
     durumYaz('sac', 'kino-kafa');
     const dugme = ui.dugme('Tamam!');
@@ -1279,7 +1278,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         if (b !== 'kafa') return serbestDokun(KN, e);
         clearTimeout(ipGoster);
         ipEl.gizle();
-        sekil = (sekil + 1) % sekiller.length;
+        sekil = (sekil + 1) % 3;
         sacCiz();
         bs.blup(true);
         KN.kinoOynat('bak', 1100, sekil % 2 ? 1 : -1);
@@ -1353,10 +1352,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
                   M.tepki('zorlan', 3);
                 }
                 if (k === KN && simdi - kinoIciyor > 1600) {
-                  const sac = KN.kap.querySelector<SVGGElement>("g.bn-sac");
-                  if (sac && !sac.classList.contains("gidiyor")) {
-                    sac.classList.add("gidiyor");
-                    parca.sicrat(...KN.bolgeEkran("kafa"), "kopuk", 8, 0.7);
+                  // köpük saç duşla akar gider
+                  if (KN.sacSekil !== null) {
+                    KN.kopukSac(null);
+                    parca.sicrat(...KN.bolgeEkran('kafa'), 'kopuk', 8, 0.7);
                   }
                   kinoIciyor = simdi;
                   KN.kinoOynat('ic', 1400);
@@ -2371,24 +2370,6 @@ function kopukSerisi(): string {
     s += `<circle cx="${x}" cy="${30 + ((i * 17) % 10)}" r="${rr}" fill="#fff" stroke="#b9c9d8" stroke-width="2.5"/>`;
   }
   return `<svg viewBox="0 0 600 90" preserveAspectRatio="none" aria-hidden="true">${s}</svg>`;
-}
-
-/** Kino'nun köpük saçı: dikili tepe, kral tacı, tavşan kulağı */
-function sacHtml(sekil: 'tepe' | 'tac' | 'tavsan'): string {
-  const d: [number, number, number][] = [];
-  if (sekil === 'tepe') for (let i = 0; i < 8; i++) d.push([1030 + Math.sin(i * 1.7) * (60 - i * 6), 420 - i * 55, 95 - i * 9]);
-  if (sekil === 'tac') {
-    for (let i = 0; i < 7; i++) d.push([820 + i * 70, 430, 70]);
-    for (const x of [850, 1030, 1210]) for (let j = 1; j < 4; j++) d.push([x + (1030 - x) * 0.05 * j, 430 - j * 60, 58 - j * 10]);
-  }
-  if (sekil === 'tavsan')
-    for (const yon of [-1, 1]) for (let j = 0; j < 7; j++) d.push([1030 + yon * (90 + j * 18), 420 - j * 62, 70 - j * 3]);
-  return d
-    .map(
-      ([x, y, rr]) =>
-        `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${rr.toFixed(0)}" fill="#fff" stroke="#b9c9d8" stroke-width="8"/><circle cx="${(x - rr * 0.35).toFixed(0)}" cy="${(y - rr * 0.38).toFixed(0)}" r="${(rr * 0.22).toFixed(0)}" fill="#dff3ff"/>`,
-    )
-    .join('');
 }
 
 /** Gider girdabı */

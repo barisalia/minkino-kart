@@ -304,9 +304,14 @@
 .mc-kok .bn-cizim circle.bn-isabet {
   pointer-events: none;
 }
-.mc-kok .bn-cizim g.bn-sac,
 .mc-kok .bn-cizim g.bn-sakal {
   transform-origin: 1030px 420px;
+}
+/* Kino'nun çizilmiş köpük saçı: tepesinin altından esner (kopuk-sac, kino-final.json dönme 955,230) */
+.mc-kok .bn-cizim g.bn-sac-ic {
+  transform-box: view-box;
+  transform-origin: 955px 330px;
+  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
 /* ---------------------------------------------------------------- küvet ve su */
