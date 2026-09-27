@@ -1,0 +1,30 @@
+# Ege yüz ifadeleri (ege.svg içinde, gizli)
+
+Tasarımcı çizimi, **vektör** (Ege'nin kontur rengi #4A1A17, kaş #7A4A3E, ağız içi #6B2A26, dil #E8857A). Hepsi `display="none"`, 2048 tuvalde yerinde, **kafaya bağlı** (ege.json `bagli`). Kafa katmanında gözlerin, kaşların ve ağzın altı ten rengiyle düzgün doldurulmuştur: asıl katmanlar gizlenince yüz boş ve lekesiz kalır.
+
+İfade = aşağıdaki "Gizle" katmanlarını gizle, "Göster" eklerini göster.
+
+| İfade | Göster | Gizle |
+|---|---|---|
+| normal | (yok) | (yok) |
+| ağlıyor ("ıngaa") | `goz-agliyor`, `agiz-agliyor` | `goz-sol`, `goz-sag`, `kas`, `agiz` |
+| am (yemek) | `agiz-am` | `agiz` |
+| mamalı | `agiz-am` (ya da `agiz`), `yanak-mamali` | `agiz` (am ile) |
+| kıkırdıyor | `goz-kikir`, `agiz-kikir` | `goz-sol`, `goz-sag`, `agiz` |
+| kahkaha | `goz-kikir`, `agiz-kahkaha` | `goz-sol`, `goz-sag`, `agiz` |
+| şaşkın "Ooo" | `goz-saskin`, `agiz-saskin` | `goz-sol`, `goz-sag`, `kas`, `agiz` |
+| dudak büzük | `agiz-buzuk` | `agiz` |
+| esniyor | `goz-esniyor`, `agiz-esniyor` | `goz-sol`, `goz-sag`, `agiz` |
+| uyuyor | `goz-uyku` (+ istenirse `agiz-uyku-gulus`) | `goz-sol`, `goz-sag` (+ `agiz`) |
+| uykuda gülümsüyor | `goz-uyku`, `agiz-uyku-gulus` | `goz-sol`, `goz-sag`, `agiz` |
+| bir göz açık | `goz-tek-acik` (+ örn. `agiz-kikir`) | `goz-sag` (+ `agiz`) |
+
+Notlar:
+- `goz-agliyor` ve `goz-saskin` kendi kaşlarını içerir (endişeli / kalkık), bu yüzden `kas` gizlenir. Diğerlerinde normal kaşlar kalır.
+- `goz-agliyor` gözyaşı dereleri ve damlaları içerir. Damlalar kod ile ayrıca düşürülecekse bu ek olduğu gibi kalabilir.
+- `goz-tek-acik`: sol göz (izleyiciye göre sol) açık kalır, sağ göz kapalı kavis.
+- `yanak-mamali` yalnız lekelerdir; herhangi bir ağızla birlikte kullanılabilir.
+- Mevcut `goz-kapali` (basit kapalı göz) da duruyor; uyku için `goz-uyku` (kirpikli) daha yumuşak.
+- Dönme noktaları (ege.json): gözler 1033,668 · ağızlar 1026,846 · yanak 1026,860 (hepsi kafaya bağlı; kafa 1020,1020 etrafında döner).
+- SVG sırası (alttan üste): `yanak-mamali`, göz ekleri, ağız ekleri — asıl yüz katmanlarının üstünde.
+- Önizleme: `ege-ifadeler.png` (üstte açık, altta koyu zemin; normal + 10 ifade).
