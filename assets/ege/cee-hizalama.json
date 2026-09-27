@@ -1,0 +1,72 @@
+{
+  "aciklama": "Cee-ee (Sss, Ege Uyuyor!): cee-<ad> = eller yuzu kapatmis tam poz; cee-<ad>-acik = \"Cee!\" ani (saskin poz, sapkasiz); cee-<ad>-eller = yalniz eller (ust katman). Ucu de ayni tuvalde: assets/parti-ifade/<ad>/normal.webp ile ayni boyut ve hiza (oyundaki parti-ifade oyuncusuna dogrudan takilir). parti/<ad>.webp (eski kucuk tuval) icin: bu tuvalde parti gorseli (dx,dy) kadar kaydirilmis durur; olcek 1.",
+  "ada": {
+    "tuval": [
+      345,
+      622
+    ],
+    "partiGorseli": "assets/parti/ada.webp",
+    "partiTuval": [
+      284,
+      512
+    ],
+    "dx": 32,
+    "dy": 110,
+    "kontrol": [
+      32,
+      110
+    ],
+    "dosyalar": [
+      "cee-ada.webp",
+      "cee-ada-acik.webp",
+      "cee-ada-eller.webp"
+    ],
+    "not": "acik = parti-ifade/ada/saskin ile ayni"
+  },
+  "can": {
+    "tuval": [
+      422,
+      558
+    ],
+    "partiGorseli": "assets/parti/can.webp",
+    "partiTuval": [
+      281,
+      512
+    ],
+    "dx": 70,
+    "dy": 46,
+    "kontrol": [
+      69,
+      46
+    ],
+    "dosyalar": [
+      "cee-can.webp",
+      "cee-can-acik.webp",
+      "cee-can-eller.webp"
+    ],
+    "not": "acik = parti-ifade/can/saskin, parti sapkasi kaldirildi (sac tamamlandi)"
+  },
+  "elif": {
+    "tuval": [
+      366,
+      583
+    ],
+    "partiGorseli": "assets/parti/elif.webp",
+    "partiTuval": [
+      274,
+      512
+    ],
+    "dx": 61,
+    "dy": 71,
+    "kontrol": [
+      61,
+      71
+    ],
+    "dosyalar": [
+      "cee-elif.webp",
+      "cee-elif-acik.webp",
+      "cee-elif-eller.webp"
+    ],
+    "not": "acik = parti-ifade/elif/saskin, parti sapkasi kaldirildi (sac tamamlandi)"
+  }
+}

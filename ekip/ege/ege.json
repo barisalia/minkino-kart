@@ -27,7 +27,49 @@
     "agiz-saskin",
     "agiz-buzuk",
     "agiz-esniyor",
-    "agiz-uyku-gulus"
+    "agiz-uyku-gulus",
+    "kafa-sola",
+    "kas-sola",
+    "agiz-sola",
+    "goz-sol-sola",
+    "goz-sag-sola",
+    "goz-kapali-sola",
+    "goz-agliyor-sola",
+    "goz-kikir-sola",
+    "goz-saskin-sola",
+    "goz-esniyor-sola",
+    "goz-uyku-sola",
+    "goz-tek-acik-sola",
+    "agiz-agliyor-sola",
+    "agiz-am-sola",
+    "agiz-kikir-sola",
+    "agiz-kahkaha-sola",
+    "agiz-saskin-sola",
+    "agiz-buzuk-sola",
+    "agiz-esniyor-sola",
+    "agiz-uyku-gulus-sola",
+    "yanak-mamali-sola",
+    "kafa-saga",
+    "kas-saga",
+    "agiz-saga",
+    "goz-sol-saga",
+    "goz-sag-saga",
+    "goz-kapali-saga",
+    "goz-agliyor-saga",
+    "goz-kikir-saga",
+    "goz-saskin-saga",
+    "goz-esniyor-saga",
+    "goz-uyku-saga",
+    "goz-tek-acik-saga",
+    "agiz-agliyor-saga",
+    "agiz-am-saga",
+    "agiz-kikir-saga",
+    "agiz-kahkaha-saga",
+    "agiz-saskin-saga",
+    "agiz-buzuk-saga",
+    "agiz-esniyor-saga",
+    "agiz-uyku-gulus-saga",
+    "yanak-mamali-saga"
   ],
   "gizli": [
     "goz-kapali",
@@ -45,7 +87,49 @@
     "agiz-saskin",
     "agiz-buzuk",
     "agiz-esniyor",
-    "agiz-uyku-gulus"
+    "agiz-uyku-gulus",
+    "kafa-sola",
+    "kas-sola",
+    "agiz-sola",
+    "goz-sol-sola",
+    "goz-sag-sola",
+    "goz-kapali-sola",
+    "goz-agliyor-sola",
+    "goz-kikir-sola",
+    "goz-saskin-sola",
+    "goz-esniyor-sola",
+    "goz-uyku-sola",
+    "goz-tek-acik-sola",
+    "agiz-agliyor-sola",
+    "agiz-am-sola",
+    "agiz-kikir-sola",
+    "agiz-kahkaha-sola",
+    "agiz-saskin-sola",
+    "agiz-buzuk-sola",
+    "agiz-esniyor-sola",
+    "agiz-uyku-gulus-sola",
+    "yanak-mamali-sola",
+    "kafa-saga",
+    "kas-saga",
+    "agiz-saga",
+    "goz-sol-saga",
+    "goz-sag-saga",
+    "goz-kapali-saga",
+    "goz-agliyor-saga",
+    "goz-kikir-saga",
+    "goz-saskin-saga",
+    "goz-esniyor-saga",
+    "goz-uyku-saga",
+    "goz-tek-acik-saga",
+    "agiz-agliyor-saga",
+    "agiz-am-saga",
+    "agiz-kikir-saga",
+    "agiz-kahkaha-saga",
+    "agiz-saskin-saga",
+    "agiz-buzuk-saga",
+    "agiz-esniyor-saga",
+    "agiz-uyku-gulus-saga",
+    "yanak-mamali-saga"
   ],
   "bagli": {
     "agiz": "kafa",
@@ -67,7 +151,47 @@
     "agiz-saskin": "kafa",
     "agiz-buzuk": "kafa",
     "agiz-esniyor": "kafa",
-    "agiz-uyku-gulus": "kafa"
+    "agiz-uyku-gulus": "kafa",
+    "kas-sola": "kafa",
+    "agiz-sola": "kafa",
+    "goz-sol-sola": "kafa",
+    "goz-sag-sola": "kafa",
+    "goz-kapali-sola": "kafa",
+    "goz-agliyor-sola": "kafa",
+    "goz-kikir-sola": "kafa",
+    "goz-saskin-sola": "kafa",
+    "goz-esniyor-sola": "kafa",
+    "goz-uyku-sola": "kafa",
+    "goz-tek-acik-sola": "kafa",
+    "agiz-agliyor-sola": "kafa",
+    "agiz-am-sola": "kafa",
+    "agiz-kikir-sola": "kafa",
+    "agiz-kahkaha-sola": "kafa",
+    "agiz-saskin-sola": "kafa",
+    "agiz-buzuk-sola": "kafa",
+    "agiz-esniyor-sola": "kafa",
+    "agiz-uyku-gulus-sola": "kafa",
+    "yanak-mamali-sola": "kafa",
+    "kas-saga": "kafa",
+    "agiz-saga": "kafa",
+    "goz-sol-saga": "kafa",
+    "goz-sag-saga": "kafa",
+    "goz-kapali-saga": "kafa",
+    "goz-agliyor-saga": "kafa",
+    "goz-kikir-saga": "kafa",
+    "goz-saskin-saga": "kafa",
+    "goz-esniyor-saga": "kafa",
+    "goz-uyku-saga": "kafa",
+    "goz-tek-acik-saga": "kafa",
+    "agiz-agliyor-saga": "kafa",
+    "agiz-am-saga": "kafa",
+    "agiz-kikir-saga": "kafa",
+    "agiz-kahkaha-saga": "kafa",
+    "agiz-saskin-saga": "kafa",
+    "agiz-buzuk-saga": "kafa",
+    "agiz-esniyor-saga": "kafa",
+    "agiz-uyku-gulus-saga": "kafa",
+    "yanak-mamali-saga": "kafa"
   },
   "donme": {
     "kafa": [
@@ -173,6 +297,174 @@
     "agiz-uyku-gulus": [
       1026,
       846
+    ],
+    "kafa-sola": [
+      1020,
+      1020
+    ],
+    "kas-sola": [
+      1029,
+      500
+    ],
+    "agiz-sola": [
+      1026,
+      838
+    ],
+    "goz-sol-sola": [
+      846,
+      660
+    ],
+    "goz-sag-sola": [
+      1208,
+      660
+    ],
+    "goz-kapali-sola": [
+      1027,
+      680
+    ],
+    "goz-agliyor-sola": [
+      1033,
+      668
+    ],
+    "goz-kikir-sola": [
+      1033,
+      668
+    ],
+    "goz-saskin-sola": [
+      1033,
+      668
+    ],
+    "goz-esniyor-sola": [
+      1033,
+      668
+    ],
+    "goz-uyku-sola": [
+      1033,
+      668
+    ],
+    "goz-tek-acik-sola": [
+      1033,
+      668
+    ],
+    "agiz-agliyor-sola": [
+      1026,
+      846
+    ],
+    "agiz-am-sola": [
+      1026,
+      846
+    ],
+    "agiz-kikir-sola": [
+      1026,
+      846
+    ],
+    "agiz-kahkaha-sola": [
+      1026,
+      846
+    ],
+    "agiz-saskin-sola": [
+      1026,
+      846
+    ],
+    "agiz-buzuk-sola": [
+      1026,
+      846
+    ],
+    "agiz-esniyor-sola": [
+      1026,
+      846
+    ],
+    "agiz-uyku-gulus-sola": [
+      1026,
+      846
+    ],
+    "yanak-mamali-sola": [
+      1026,
+      860
+    ],
+    "kafa-saga": [
+      1020,
+      1020
+    ],
+    "kas-saga": [
+      1029,
+      500
+    ],
+    "agiz-saga": [
+      1026,
+      838
+    ],
+    "goz-sol-saga": [
+      846,
+      660
+    ],
+    "goz-sag-saga": [
+      1208,
+      660
+    ],
+    "goz-kapali-saga": [
+      1027,
+      680
+    ],
+    "goz-agliyor-saga": [
+      1033,
+      668
+    ],
+    "goz-kikir-saga": [
+      1033,
+      668
+    ],
+    "goz-saskin-saga": [
+      1033,
+      668
+    ],
+    "goz-esniyor-saga": [
+      1033,
+      668
+    ],
+    "goz-uyku-saga": [
+      1033,
+      668
+    ],
+    "goz-tek-acik-saga": [
+      1033,
+      668
+    ],
+    "agiz-agliyor-saga": [
+      1026,
+      846
+    ],
+    "agiz-am-saga": [
+      1026,
+      846
+    ],
+    "agiz-kikir-saga": [
+      1026,
+      846
+    ],
+    "agiz-kahkaha-saga": [
+      1026,
+      846
+    ],
+    "agiz-saskin-saga": [
+      1026,
+      846
+    ],
+    "agiz-buzuk-saga": [
+      1026,
+      846
+    ],
+    "agiz-esniyor-saga": [
+      1026,
+      846
+    ],
+    "agiz-uyku-gulus-saga": [
+      1026,
+      846
+    ],
+    "yanak-mamali-saga": [
+      1026,
+      860
     ]
   }
 }
