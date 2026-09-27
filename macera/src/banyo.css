@@ -192,6 +192,20 @@
 @keyframes bn-pof {
   50% { transform: scale(1.03, 0.97); }
 }
+/* fularsız Mino'nun göğüs yaması hâl çizimlerinde (banyo-karakter → fular): yalnız hâl açıkken, hâlin renginde */
+.mc-kok .mino:not(.hal-islak):not(.hal-pofuduk) .bn-gogus-hal {
+  display: none;
+}
+.mc-kok .mino.hal-islak .bn-gogus-hal {
+  fill: #d7c8b4;
+}
+/* ovalamanın ilerleme halkası (yeşil dolar) */
+.mc-kok .bn-cizim g.bn-ilerleme {
+  pointer-events: none;
+}
+.mc-kok .bn-cizim .bn-ilerleme-dolu {
+  transition: stroke-dasharray 0.15s linear;
+}
 /* damlayan su */
 .mc-kok .bn-damlalar {
   position: absolute;
@@ -222,28 +236,73 @@
   20% { opacity: 1; transform: translateY(0) scale(1); }
   100% { transform: translateY(220%) translateY(60px) scale(0.8, 1.2); opacity: 0; }
 }
-/* saklanma: yalnız kuyruk ucu görünür */
-.mc-kok .bn-kisi.bn-sakli .bn-cizim {
-  clip-path: inset(54% 0 9% 70%);
+/* Mino yandan yürürken (banyo-karakter → git(yandan)): profil sola bakar (önden çizim aynalanmaz) */
+.mc-kok .bn-cizim .mino-yuruyen.sola .mino-profil-svg {
+  transform: scaleX(-1);
 }
-.mc-kok .bn-kisi.bn-sakli.bn-aynali .bn-kisi-gov {
-  scale: -1 1;
+.mc-kok .bn-kisi.bn-fularsiz .mp-fular {
+  display: none;
 }
-.mc-kok .bn-kisi.bn-kuyruk-salla .bn-kisi-gov {
-  transform-origin: 68% 86%;
-  animation: bn-kuyruk-salla 0.7s ease-in-out infinite;
+/* saklambaç: saklanan Mino tamamen görünmez; görünenler ayrı parçalar (kuyruk ucu, dikizleyen kafa, gözler) */
+.mc-kok .bn-kisi.bn-sakli {
+  visibility: hidden;
 }
-.mc-kok .bn-kisi.bn-kuyruk-salla .bn-cizim {
-  filter: drop-shadow(0 0 6px #ffe36a);
+.mc-kok .bn-kisi.bn-dalis .bn-kisi-golge {
+  display: none;
 }
-@keyframes bn-kuyruk-salla {
-  0%, 100% { rotate: 0deg; }
-  30% { rotate: -9deg; }
-  70% { rotate: 7deg; }
+.mc-kok .bn-saklanan {
+  pointer-events: none;
+  aspect-ratio: 1360 / 1790;
 }
-.mc-kok .bn-kisi.bn-hizli .bn-kisi-gov {
-  scale: 1.25 0.85;
-  opacity: 0.85;
+.mc-kok .bn-saklanan-ic {
+  position: absolute;
+  inset: 0;
+}
+.mc-kok .bn-saklanan .mino {
+  width: 100%;
+}
+.mc-kok .bn-saklanan .mino::before {
+  display: none;
+}
+.mc-kok .bn-klon-q .mino-svg > g:not(.q),
+.mc-kok .bn-klon-k .mino-svg > g:not(.k) {
+  display: none;
+}
+/* kuyruk ucu: kökünden ritmik sallanır (kök örtünün arkasında) */
+.mc-kok .bn-saklanan-kuyruk-ic {
+  transform-origin: 66.6% 86%;
+  animation: bn-sakli-kuyruk 1.1s ease-in-out infinite alternate;
+}
+.mc-kok .bn-saklanan-kuyruk.hizli .bn-saklanan-kuyruk-ic {
+  animation-duration: 0.45s;
+  filter: drop-shadow(0 0 7px #ffe36a);
+}
+@keyframes bn-sakli-kuyruk {
+  0% { transform: rotate(-9deg); }
+  100% { transform: rotate(13deg); }
+}
+.mc-kok .bn-sakli-hedef {
+  aspect-ratio: 1.35;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mc-kok .bn-sakli-gozler {
+  pointer-events: none;
+  opacity: 0;
+}
+.mc-kok .bn-sakli-gozler svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 50%;
+  animation: bn-goz-kirp 1.6s ease-in-out infinite;
+}
+@keyframes bn-goz-kirp {
+  0%, 44%, 56%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.1); }
+}
+.mc-kok .bn-havlu .bn-esya {
+  transform-origin: 12% 95%;
 }
 /* 3-4 yaş: fuların sahibi parlar */
 .mc-kok .bn-kisi.bn-sahip::before {
@@ -596,16 +655,24 @@
 .mc-kok .bn-perde {
   transform-origin: 50% 0;
 }
-.mc-kok .bn-perde.saklanilan,
-.mc-kok .bn-sepet.saklanilan,
-.mc-kok .bn-havlu.saklanilan {
-  animation: bn-kipir 2.6s ease-in-out infinite;
+/* çamaşır sepeti: arka (sap + iç) ve ön kenar (hasır gövde) katmanı; içine düşen ikisinin arasında */
+.mc-kok .bn-sepet {
+  pointer-events: none;
 }
-@keyframes bn-kipir {
-  0%, 80%, 100% { rotate: 0deg; }
-  85% { rotate: -2deg; }
-  90% { rotate: 2deg; }
-  95% { rotate: -1deg; }
+.mc-kok .bn-sepet .bn-esya {
+  transform-origin: 50% 100%;
+}
+.mc-kok .bn-sepet-on {
+  clip-path: inset(34% -10% -10% -10%);
+}
+.mc-kok .bn-sepet-on .bn-esya {
+  filter: none !important;
+}
+.mc-kok .bn-sepet.parla .bn-esya {
+  filter: drop-shadow(0 0 10px #ffe36a);
+}
+.mc-kok .bn-sepet-on.parla .bn-esya {
+  filter: none !important;
 }
 .mc-kok .bn-askilik-hedef,
 .mc-kok .bn-raf-hedef {
@@ -717,9 +784,32 @@
   transition: opacity 0.4s;
 }
 .mc-kok .bn-halka::after {
+  /* geniş dokunma alanı (parmakla basılı tutmak kolay olsun) */
   content: '';
   position: absolute;
-  inset: -30%;
+  inset: -70%;
+  border-radius: 50%;
+}
+/* çocuk bekleniyor: halkanın arkasında nabız gibi bir ışık (yalnız opacity / transform; mikrofon açıkken hafif) */
+.mc-kok .bn-halka::before {
+  content: '';
+  position: absolute;
+  inset: -28%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 236, 140, 0.85), rgba(255, 236, 140, 0));
+  opacity: 0;
+  pointer-events: none;
+}
+.mc-kok .bn-halka.bekliyor::before {
+  animation: bn-halka-nabiz 1.1s ease-in-out infinite;
+}
+.mc-kok .bn-halka.ufleniyor::before {
+  opacity: 1;
+  background: radial-gradient(closest-side, rgba(160, 225, 255, 0.9), rgba(160, 225, 255, 0));
+}
+@keyframes bn-halka-nabiz {
+  0%, 100% { opacity: 0.15; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.12); }
 }
 /* baloncuk-halkasi.webp: kutu = halkanın dış çemberi (çizimde halka sağ üstte, tuvalin %35'i, merkezi %79.5 / %20);
    sap aşağı sarksın diye çizim halkanın merkezi çevresinde döndürülür */
@@ -737,7 +827,7 @@
   inset: 17%;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9) 0 8%, transparent 10%), conic-gradient(from 20deg, rgba(255, 170, 220, 0.45), rgba(150, 220, 255, 0.45), rgba(200, 255, 190, 0.45), rgba(255, 230, 150, 0.45), rgba(255, 170, 220, 0.45));
-  transform: translateY(calc(var(--s, 0) * -60%)) scale(calc(1 + var(--s, 0) * 1.6));
+  transform: translateY(calc(var(--s, 0) * -40%)) scale(calc(1 + var(--s, 0) * 1.1));
   transition: transform 0.12s ease-out;
 }
 .mc-kok .bn-halka.ufleniyor .bn-halka-zar {
@@ -749,7 +839,7 @@
 .mc-kok .bn-baloncuk {
   position: absolute;
   z-index: 13;
-  width: 72px;
+  width: 96px;
   aspect-ratio: 1;
   border-radius: 50%;
   pointer-events: none;
@@ -760,7 +850,7 @@
   box-shadow: 0 0 0 2px rgba(120, 160, 200, 0.45);
 }
 .mc-kok .bn-baloncuk.minik {
-  width: 24px;
+  width: 30px;
 }
 .mc-kok .bn-baloncuk.patla {
   animation: bn-patla 0.3s ease-out forwards;
@@ -1043,15 +1133,14 @@
   .mc-kok .bn-su-yuzey,
   .mc-kok .bn-pofuduk svg,
   .mc-kok .bn-damlalar i,
-  .mc-kok .bn-kisi.bn-kuyruk-salla .bn-kisi-gov,
+  .mc-kok .bn-saklanan-kuyruk-ic,
+  .mc-kok .bn-sakli-gozler svg,
+  .mc-kok .bn-halka.bekliyor::before,
   .mc-kok .bn-kisi.bn-sahip::before,
   .mc-kok .bn-kisi-gov.bn-parlak::after,
   .mc-kok .bn-cizim g.bn-parla,
   .mc-kok .bn-fular.asili svg,
   .mc-kok .bn-ordek-kap.yuzuyor .bn-ordek,
-  .mc-kok .bn-perde.saklanilan,
-  .mc-kok .bn-sepet.saklanilan,
-  .mc-kok .bn-havlu.saklanilan,
   .mc-kok .bn-girdap svg,
   .mc-kok .bn-halka.ufleniyor .bn-halka-zar,
   .mc-kok .bn-pencere-parilti,
