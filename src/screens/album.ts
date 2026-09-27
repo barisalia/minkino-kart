@@ -4,11 +4,11 @@ import { albumKartlari, temaBul, TEMALAR } from '../engine/katalog';
 import { durum } from '../engine/ilerleme';
 import { temaDurumu } from '../engine/odul';
 import type { Tema } from '../engine/types';
-import { h, svg } from '../ui/dom';
+import { h, svg, TEST_MODU } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { kartEl } from '../ui/kart';
 import { kartSesi } from '../audio/cumleler';
-import { sinifOynat } from '../ui/hareket';
+import { azHareket, sinifOynat } from '../ui/hareket';
 import { baslikBalon, yuvarlakDugme } from '../ui/ortak';
 import type { Ekran, Uygulama } from '../uygulama';
 
@@ -20,9 +20,12 @@ export function albumSayfasi(t: Tema, sec: { yeni?: string[] } = {}): HTMLElemen
   const alinan = kartlar.filter((k) => sahip.has(k.id)).length;
 
   const izgara = h('div.album-izgara');
+  let parilti = 0;
   kartlar.forEach((k) => {
     const var_ = sahip.has(k.id);
     const el = kartEl(k.id, { sinif: var_ ? 'var' : 'yok', ornek: true });
+    // koleksiyon parıltısı: kazanılmış kartların üstünden sırayla ışık geçer
+    if (var_) el.append(h('i.kart-parilti', { style: `--p:${parilti++ % 7}`, 'aria-hidden': 'true' }));
     el.setAttribute('role', 'button');
     el.setAttribute('aria-label', var_ ? k.ad : 'Bulunmamış kart');
     const yeniSira = yeni.indexOf(k.id);
@@ -56,13 +59,63 @@ export function albumSayfasi(t: Tema, sec: { yeni?: string[] } = {}): HTMLElemen
 export function albumEkrani(app: Uygulama, param?: { tema?: string }): Ekran {
   let secili = temaBul(param?.tema ?? '') ?? TEMALAR[0];
   const sekmeler = h('div.album-sekmeler', { role: 'tablist' });
-  const sayfaKutu = h('div');
+  const sayfaKutu = h('div.sayfa-kutu');
+
+  /**
+   * Sayfa çevirme: eski sayfa sırttan (ileri: sol kenar, geri: sağ kenar) kalkıp döner ve gölgelenerek kaybolur;
+   * altından yeni sayfa görünür, kartları çıkartma gibi sırayla yerine oturur. İlk açılışta albüm kapağı açılır gibi.
+   */
+  function sayfaCevir(onceki: HTMLElement | null, yeni: HTMLElement, ileri: boolean, kaydirma: number) {
+    if (TEST_MODU || azHareket()) {
+      sayfaKutu.replaceChildren(yeni);
+      return;
+    }
+    const kartlar = [...yeni.querySelectorAll<HTMLElement>('.album-izgara .kart')];
+    kartlar.forEach((k, i) =>
+      k.animate([{ transform: 'scale(.6) rotate(-6deg)', opacity: 0 }, { transform: 'scale(1.06) rotate(1deg)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], {
+        duration: 360,
+        delay: (onceki ? 220 : 260) + Math.min(i, 18) * 28,
+        easing: 'cubic-bezier(.3,.8,.4,1)',
+        fill: 'backwards',
+        composite: 'add',
+      }),
+    );
+    if (!onceki) {
+      sayfaKutu.replaceChildren(yeni);
+      yeni.style.transformOrigin = 'left center';
+      yeni.animate([{ transform: 'perspective(1600px) rotateY(-70deg)', opacity: 0 }, { transform: 'perspective(1600px) rotateY(6deg)', opacity: 1, offset: 0.75 }, { transform: 'none', opacity: 1 }], {
+        duration: 560,
+        easing: 'cubic-bezier(.25,.8,.35,1)',
+      });
+      return;
+    }
+    Object.assign(onceki.style, { position: 'absolute', left: '0', right: '0', top: `${-kaydirma}px`, zIndex: '3', transformOrigin: ileri ? 'left center' : 'right center', pointerEvents: 'none' });
+    const golge = h('i.sayfa-golge', { style: `--yon:${ileri ? '90deg' : '-90deg'}` });
+    onceki.append(golge);
+    sayfaKutu.replaceChildren(yeni, onceki);
+    const aci = ileri ? -92 : 92;
+    onceki
+      .animate([{ transform: 'perspective(1600px) rotateY(0deg)', opacity: 1 }, { transform: `perspective(1600px) rotateY(${aci * 0.7}deg)`, opacity: 1, offset: 0.7 }, { transform: `perspective(1600px) rotateY(${aci}deg)`, opacity: 0 }], {
+        duration: 520,
+        easing: 'cubic-bezier(.45,.05,.7,.6)',
+        fill: 'forwards',
+      })
+      .finished.then(() => onceki.remove(), () => onceki.remove());
+    golge.animate([{ opacity: 0 }, { opacity: 0.55 }], { duration: 520, fill: 'forwards' });
+    // alttaki yeni sayfa önce gölgede, sayfa kalkınca aydınlanır
+    const alt = h('i.sayfa-golge.alt');
+    yeni.append(alt);
+    alt.animate([{ opacity: 0.35 }, { opacity: 0 }], { duration: 520, fill: 'forwards' }).finished.then(() => alt.remove(), () => alt.remove());
+  }
   const kaydir = h('div.kaydir', {}, sayfaKutu);
 
   function goster(t: Tema, konusma = true) {
+    const ileri = TEMALAR.indexOf(t) >= TEMALAR.indexOf(secili);
     secili = t;
     [...sekmeler.children].forEach((s) => s.classList.toggle('secili', (s as HTMLElement).dataset.tema === t.id));
-    sayfaKutu.replaceChildren(albumSayfasi(t));
+    const onceki = sayfaKutu.firstElementChild as HTMLElement | null;
+    const yeni = albumSayfasi(t);
+    sayfaCevir(onceki, yeni, ileri, kaydir.scrollTop);
     kaydir.scrollTop = 0;
     if (konusma) {
       const bos = !albumKartlari(t.id).some((k) => durum.i.album.includes(k.id));

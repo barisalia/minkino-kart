@@ -4,7 +4,8 @@ import { eslestiCumlesi } from '../../audio/cumleler';
 import { refCoz } from '../../engine/katalog';
 import { bekle, h, karistir, sure, TEST_MODU } from '../../ui/dom';
 import { izgaraSigdir } from '../../ui/hareket';
-import { kartArkasi, kartEl, refAdi } from '../../ui/kart';
+import { cevir, eslesmeyenSallan, eslesmeZipla, hafizaKartiEl } from '../../ui/hafizaKart';
+import { refAdi } from '../../ui/kart';
 import type { SoruBaglam } from '../oyun';
 
 /** HAFIZA: kapalı kartları çevir, aynı olan çiftleri bul. */
@@ -20,40 +21,40 @@ export function hafizaCiz(b: SoruBaglam) {
   b.temizlik(() => (iptal = true));
 
   const elemanlar = kartlar.map((g, i) => {
-    const anahtar = refCoz(g).kart ?? refCoz(g).yazi ?? String(i);
-    const el = h(
-      'button.hafiza-kart',
-      { type: 'button', 'data-cift': anahtar, 'aria-label': 'Kapalı kart' },
-      h('div.hafiza-dondur', {}, h('div.hafiza-arka', {}, kartArkasi()), h('div.hafiza-on', {}, kartEl(g))),
-    );
+    const el = hafizaKartiEl(g, refCoz(g).kart ?? refCoz(g).yazi ?? String(i));
     el.addEventListener('click', async () => {
-      if (kilit || el.classList.contains('acik')) return;
+      if (kilit || el.classList.contains('acik') || acik.includes(el)) return;
       efekt.cevir();
-      el.classList.add('acik');
       acik.push(el);
+      const donus = cevir(el, true);
       if (acik.length < 2) return;
       kilit = true;
       const [a, c] = acik;
       acik = [];
+      await donus;
+      if (iptal) return;
       if (a.dataset.cift === c.dataset.cift) {
-        await bekle(sure(350));
+        await bekle(sure(150));
         if (iptal) return;
         a.classList.add('eslesti');
         c.classList.add('eslesti');
+        eslesmeZipla(a);
+        eslesmeZipla(c, 70);
         efekt.eslesti();
         bulunan++;
         if (bulunan === s.kartlar.length) {
           b.dogru(c, [metin('hafiza_bitti')]);
           return;
         }
+        b.sevin();
         void konus(eslestiCumlesi(refAdi(g)));
         kilit = false;
       } else {
-        await bekle(sure(1000));
+        await bekle(sure(800));
         if (iptal) return;
+        await Promise.all([eslesmeyenSallan(a), eslesmeyenSallan(c)]);
         efekt.cevir();
-        a.classList.remove('acik');
-        c.classList.remove('acik');
+        await Promise.all([cevir(a, false), cevir(c, false, 60)]);
         kilit = false;
       }
     });
@@ -64,14 +65,16 @@ export function hafizaCiz(b: SoruBaglam) {
   b.temizlik(izgaraSigdir(b.secenek, izgara, kartlar.length, { enBuyuk: 200 }));
   b.secenek.append(izgara);
 
-  // Başta kartları kısa bir süre göster, sonra kapat
+  // Kartlar dağıtılınca kısa bir süre dalga hâlinde açılır, sonra kapanır
   void (async () => {
-    elemanlar.forEach((e) => e.classList.add('acik'));
+    await b.hazir;
+    if (iptal) return;
+    efekt.cevir();
+    await Promise.all(elemanlar.map((e, i) => cevir(e, true, i * 45)));
     await bekle(TEST_MODU ? 10 : 900 + kartlar.length * 180);
     if (iptal) return;
     efekt.cevir();
-    elemanlar.forEach((e) => e.classList.remove('acik'));
-    await bekle(sure(450));
-    kilit = false;
+    await Promise.all(elemanlar.map((e, i) => cevir(e, false, i * 45)));
+    if (!iptal) kilit = false;
   })();
 }

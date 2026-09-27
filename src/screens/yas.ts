@@ -9,7 +9,7 @@ import type { Ekran, Uygulama } from '../uygulama';
 
 const RENK: Record<Yas, string> = { 3: '#F0413F', 4: '#3E9DF2', 5: '#5DBE3F', 6: '#9B5CE0' };
 
-export function yasEkrani(app: Uygulama, param?: { sonra?: string }): Ekran {
+export function yasEkrani(app: Uygulama, param?: { sonra?: string; sonraParam?: unknown }): Ekran {
   let kilit = false;
   const izgara = h('div.yas-izgara');
   YASLAR.forEach((y, i) => {
@@ -29,7 +29,7 @@ export function yasEkrani(app: Uygulama, param?: { sonra?: string }): Ekran {
       durum.i.yas = y;
       kaydetDurum();
       await Promise.all([konus(metin('yas_secildi', { yas: y })), bekle(sure(900))]);
-      app.git(param?.sonra ?? 'temalar');
+      app.git(param?.sonra ?? 'temalar', param?.sonraParam);
     });
     izgara.append(kart);
   });

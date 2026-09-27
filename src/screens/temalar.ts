@@ -6,7 +6,7 @@ import { temaDurumu } from '../engine/odul';
 import type { Tema } from '../engine/types';
 import { bekle, h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { kartEl } from '../ui/kart';
+import { kartArkasi, kartEl } from '../ui/kart';
 import { albumDugmesi, baslikBalon, sesDugmesi, yuvarlakDugme } from '../ui/ortak';
 import { sinifOynat } from '../ui/hareket';
 import { ebeveynKapisi } from './ebeveyn';
@@ -45,11 +45,13 @@ export function paketEl(t: Tema, i = 0): HTMLElement {
   return el;
 }
 
-export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string }): Ekran {
+export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string; mod?: 'hafiza' }): Ekran {
   let kilit = false;
+  const hafizaModu = param?.mod === 'hafiza';
   const izgara = h('div.tema-izgara');
   TEMALAR.forEach((t, i) => {
     const el = paketEl(t, i);
+    if (hafizaModu) el.append(h('div.paket-hafiza', { 'aria-hidden': 'true' }, svg(IKON.hafiza)));
     if (param?.yeniAcilan === t.id) el.classList.add('yeni-acildi');
     el.addEventListener('click', async () => {
       if (kilit) return;
@@ -64,10 +66,27 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string }): E
       efekt.secim();
       el.classList.add('yeni-acildi');
       await Promise.all([konus(metin('tema_basla', { tema: t.ad })), bekle(sure(700))]);
-      app.git('oyun', { tema: t.id });
+      app.git(hafizaModu ? 'hafiza' : 'oyun', { tema: t.id });
     });
     izgara.append(el);
   });
+
+  // Yan dal: Hafıza Oyunu şeridi (paketlerin üstünde)
+  let hafizaSerit: HTMLElement | null = null;
+  if (!hafizaModu) {
+    hafizaSerit = h(
+      'button.hafiza-serit',
+      { type: 'button', 'aria-label': 'Hafıza Oyunu' },
+      h('span.hs-kartlar', {}, h('span.hs-kart', {}, kartArkasi()), h('span.hs-kart', {}, kartArkasi()), kartEl('kedi', { sinif: 'hs-kart hs-on' })),
+      h('span.hs-ad', {}, 'Hafıza Oyunu'),
+      svg(IKON.oyna, 'hs-ok'),
+    );
+    hafizaSerit.addEventListener('click', () => {
+      if (kilit) return;
+      efekt.secim();
+      app.git('temalar', { mod: 'hafiza' });
+    });
+  }
 
   const album = albumDugmesi(() => app.git('album'));
   const ebeveyn = yuvarlakDugme(IKON.ebeveyn, 'Ebeveyn köşesi', async () => {
@@ -75,7 +94,7 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string }): E
   }, 'kucuk');
 
   const el = h(
-    'div.temalar',
+    `div.temalar${hafizaModu ? '.mod-hafiza' : ''}`,
     {},
     h(
       'div.ust-cubuk',
@@ -83,9 +102,9 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string }): E
       h('div.ust-grup', {}, yuvarlakDugme(IKON.ev, 'Ana ekran', () => app.git('acilis')), ebeveyn),
       h('div.ust-grup', {}, sesDugmesi(), album.el),
     ),
-    baslikBalon('Kart Paketleri', metin('tema_sor')),
-    h('div.kaydir', {}, izgara),
+    hafizaModu ? baslikBalon('Hafıza Oyunu', [metin('hafiza_oyunu'), metin('tema_sor')]) : baslikBalon('Kart Paketleri', metin('tema_sor')),
+    h('div.kaydir', {}, hafizaSerit, izgara),
   );
-  void konus(metin('tema_sor'));
+  void konus(hafizaModu ? [metin('hafiza_oyunu'), metin('tema_sor')] : metin('tema_sor'));
   return { el };
 }

@@ -13,6 +13,8 @@ import { temalarEkrani } from './screens/temalar';
 import { turSonuEkrani } from './screens/turSonu';
 import { yasEkrani } from './screens/yas';
 import { minoEkrani } from './screens/mino';
+import { hafizaOyunuEkrani } from './screens/hafizaOyunu';
+import './styles/kartlar.css';
 import { durum } from './engine/ilerleme';
 import type { Yas } from './engine/types';
 import { ekranKaydet, Uygulama, type BaslatSecenekleri, type EkranAdi } from './uygulama';
@@ -25,6 +27,7 @@ ekranKaydet('turSonu', turSonuEkrani);
 ekranKaydet('album', albumEkrani);
 ekranKaydet('ebeveyn', ebeveynEkrani);
 ekranKaydet('mino', minoEkrani);
+ekranKaydet('hafiza', hafizaOyunuEkrani);
 
 export type { BaslatSecenekleri };
 
@@ -32,9 +35,9 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
   const app = new Uygulama(kok, secenekler);
   const q = new URLSearchParams(location.search);
   if (q.has('test') && q.get('yas')) {
-    // Test kısayolu: ?test=1&yas=5&tema=sayilar[&ekran=album]
+    // Test kısayolu: ?test=1&yas=5&tema=sayilar[&ekran=album][&mod=hafiza]
     durum.i.yas = Number(q.get('yas')) as Yas;
-    if (q.get('ekran')) app.git(q.get('ekran') as EkranAdi, { tema: q.get('tema') ?? 'hayvanlar' });
+    if (q.get('ekran')) app.git(q.get('ekran') as EkranAdi, { tema: q.get('tema') ?? 'hayvanlar', mod: q.get('mod') ?? undefined });
     else app.git('oyun', { tema: q.get('tema') ?? 'hayvanlar' });
   } else app.git('acilis');
   if (import.meta.env.DEV || new URLSearchParams(location.search).has('test')) {

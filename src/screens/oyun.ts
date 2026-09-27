@@ -10,12 +10,13 @@ import { bekle, h, sure, TEST_MODU } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { kartEl } from '../ui/kart';
 import { konfetiPatlat } from '../ui/konfeti';
-import { merkez, sinifOynat, ucur } from '../ui/hareket';
+import { azHareket, dagit, koy, merkez, parlat, topla, ucurKavis, yumusakSallan } from '../ui/hareket';
 import { albumDugmesi, yuvarlakDugme } from '../ui/ortak';
 import type { Ekran, Uygulama } from '../uygulama';
 import { eslestirCiz } from './sorular/eslestir';
 import { hafizaCiz } from './sorular/hafiza';
 import { secmeliCiz } from './sorular/secmeli';
+import { minoYoldas } from './yoldas';
 
 export interface SoruBaglam {
   app: Uygulama;
@@ -28,6 +29,10 @@ export interface SoruBaglam {
   dogru(el: HTMLElement | null, aciklama: string[]): void;
   /** Yanlış cevap. `el` sallanır, `dogruEl` ışıldar. */
   yanlis(el: HTMLElement, dogruEl: HTMLElement | null, soldur?: boolean): void;
+  /** Ara başarı (hafızada bir çift bulundu): Mino sevinir. */
+  sevin(): void;
+  /** Kartların giriş (dağıtma) animasyonu bitince çözülür. */
+  hazir: Promise<void>;
   temizlik(fn: () => void): void;
 }
 
@@ -74,14 +79,30 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
   hop.classList.add('soru-hop');
   const balon = h('div.soru-balon', {}, hop);
   const alan = h('div.oyun-alan');
+  const yoldas = minoYoldas();
 
   const el = h(
     'div.oyun',
     { style: `--tema:${tema.renk}`, 'data-tema': tema.id },
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.ev, 'Paketlere dön', () => app.git('temalar')), h('div.orta', {}, ilerleme), album.el),
-    balon,
+    h('div.soru-satir', {}, yoldas.el, balon),
     alan,
   );
+
+  // Dokunulan karta basılma hissi (bırakınca yaylanarak geri gelir); Mino dokunulan yere bakar
+  el.addEventListener('pointerdown', (e) => {
+    yoldas.bakNokta(e.clientX);
+    const k = (e.target as Element).closest<HTMLElement>('.secenek, .hafiza-kart');
+    if (!k || k.classList.contains('soluk')) return;
+    k.classList.add('basili');
+    const birak = () => {
+      k.classList.remove('basili');
+      window.removeEventListener('pointerup', birak);
+      window.removeEventListener('pointercancel', birak);
+    };
+    window.addEventListener('pointerup', birak);
+    window.addEventListener('pointercancel', birak);
+  });
 
   async function soruyuSoyle() {
     const s = sorular[sira];
@@ -129,6 +150,8 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     let yanlisVar = false;
     let yanlisSayisi = 0;
     let cozuldu = false;
+    let hazirOl: () => void = () => undefined;
+    const hazir = new Promise<void>((r) => (hazirOl = r));
     const b: SoruBaglam = {
       app,
       soru: s,
@@ -148,24 +171,48 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
         yanlisVar = true;
         yanlisSayisi++;
         efekt.yanlis();
-        void sinifOynat(yEl, 'sallan', 500).then(() => soldur && yEl.classList.add('soluk'));
+        void yumusakSallan(yEl).then(() => soldur && !cozuldu && yEl.classList.add('soluk'));
         dogruEl?.classList.add('isilti');
+        yoldas.cesaret(dogruEl);
         const ipucu = s.ipucu && yanlisSayisi === 1 ? [s.ipucu] : [metin('tekrar_dene'), metin('ipucu_genel')];
         void konus(ipucu);
       },
+      sevin: () => yoldas.sevin(),
+      hazir,
     };
     CIZICILER[s.tip](b);
+    void girisOynat(s).then(hazirOl);
     void soruyuSoyle();
     bostaSayaci();
+  }
+
+  /** Soru girişi: balon tazelenir, gösterge kartları sahneye konur, seçenekleri Mino dağıtır. */
+  async function girisOynat(s: Soru) {
+    if (!TEST_MODU && !azHareket()) {
+      balon.animate([{ transform: 'scale(.94)', opacity: 0.6 }, { transform: 'scale(1.03)', opacity: 1, offset: 0.6 }, { transform: 'none' }], { duration: 380, easing: 'ease-out' });
+    }
+    const gosterge = [...alan.querySelectorAll<HTMLElement>('.gosterge-alan .izgara > *')];
+    const secenekler = [...alan.querySelectorAll<HTMLElement>('.secenek-alan .izgara > *')];
+    [...gosterge, ...secenekler].forEach((k) => k.classList.remove('giris'));
+    koy(gosterge);
+    yoldas.dagit();
+    await dagit(secenekler, yoldas.patiNoktasi(), {
+      bas: gosterge.length ? 160 + gosterge.length * 60 : 60,
+      aralik: secenekler.length > 6 ? 55 : 95,
+      arkaDon: s.tip !== 'HAFIZA',
+      ses: () => efekt.dagit(),
+    });
   }
 
   async function dogruAkisi(s: Soru, hedefEl: HTMLElement | null, aciklama: string[]) {
     efekt.dogru();
     const m = merkez(hedefEl ?? alan);
-    konfetiPatlat(app.kok, m.x, m.y, 80);
+    konfetiPatlat(app.kok, m.x, m.y, 60);
+    parlat(app.kok, m.x, m.y, 12, Math.max(60, m.w * 0.8));
     setTimeout(() => efekt.konfeti(true), 90);
     const nokta = ilerleme.children[sira];
     nokta?.classList.add('tamam');
+    yoldas.sevin(sira === sorular.length - 1);
 
     const sahip = new Set([...durum.i.album, ...yeniKartlar]);
     const odul = odulKartiSec(s, tema.id, sahip);
@@ -176,24 +223,23 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
       yeniKartlar.push(odul);
       durum.i.album.push(odul);
       kaydetDurum();
-      ucus = bekle(sure(650)).then(async () => {
+      ucus = bekle(sure(600)).then(async () => {
         if (kapandi) return;
         efekt.ucus();
         const kaynak = hedefEl ?? alan;
-        await ucur(app.kok, kartEl(odul, { ornek: true }), kaynak, album.el, 0.3, 800);
+        await ucurKavis(app.kok, kartEl(odul, { ornek: true }), kaynak, album.el, { sonOlcek: 0.3, ms: 920, iz: true });
         if (kapandi) return;
         efekt.yapis();
-        album.artir();
+        album.artir(app.kok);
       });
     }
     await Promise.all([konusma, ucus, bekle(sure(1100))]);
     if (kapandi) return;
     sira++;
     if (sira < sorular.length) {
-      alan.style.transition = 'opacity .2s';
-      alan.style.opacity = '0';
-      await bekle(sure(220));
-      alan.style.opacity = '';
+      // soru geçişi: kalan kartlar sırayla düşüp kaybolur, yenilerini Mino dağıtır
+      await topla([...alan.querySelectorAll<HTMLElement>('.izgara > *')]);
+      if (kapandi) return;
       soruGoster();
     } else bitir();
   }
@@ -226,6 +272,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
       kapandi = true;
       clearTimeout(bosta);
       temizle();
+      yoldas.kapat();
     },
   };
 }
