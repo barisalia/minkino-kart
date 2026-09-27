@@ -10,6 +10,8 @@
  * Mino'nun iskelet yaklaşımıyla aynı (src/mino/mino.ts): dönme noktaları çizimin 2048'lik koordinatlarında,
  * transform-box: view-box. Yalnız transform / opacity.
  */
+import { Dudak, type KonusBilgi } from '../audio/dudak';
+import { AGIZ_ACIKLIK, agizKatmaniSec, type AgizKatmani, type AgizSekli } from '../audio/dudak-mantik';
 import { h, TEST_MODU } from '../ui/dom';
 import { kisilik, type Kisilik, type Yuruyus } from './kisilik';
 
@@ -102,8 +104,10 @@ export interface Poz {
   gozKapali: boolean;
   agizAcik: number;
   burun: number;
+  /** Dudak senkronunun şekli (konuşurken; null: karakterin kendi ağzı) */
+  agizSekli?: AgizSekli | null;
 }
-const bosPoz = (): Poz => ({ x: 0, y: 0, don: 0, sx: 1, sy: 1, kafa: 0, kafaY: 0, kulakSol: 0, kulakSag: 0, kolSol: 0, kolSag: 0, bacakSol: 0, bacakSag: 0, kuyruk: 0, gozKapali: false, agizAcik: 0, burun: 0 });
+const bosPoz = (): Poz => ({ x: 0, y: 0, don: 0, sx: 1, sy: 1, kafa: 0, kafaY: 0, kulakSol: 0, kulakSag: 0, kolSol: 0, kolSag: 0, bacakSol: 0, bacakSag: 0, kuyruk: 0, gozKapali: false, agizAcik: 0, burun: 0, agizSekli: null });
 
 export type HareketAdi = 'yuru' | 'var' | 'huy' | 'hayir' | 'ye' | 'dans' | 'sevin' | 'kokla' | 'bak';
 interface Hareket {
@@ -235,9 +239,19 @@ export class Karakter {
   }
   private acikEkler = new Set<string>();
 
-  konus(acik: boolean) {
+  /**
+   * Konuşuyor mu: açıkken ağız sese göre şekil alır (dudak senkronu, src/audio/dudak.ts): iskeletin agiz-<şekil>
+   * katmanları (Adobe), yoksa agiz-acik ölçeklenerek / agiz-kapali; gagada alt gaga açılır.
+   * sesli: çalan konuşma sesi bu karakterin (false: sessiz balon, ağız yalnız ritimle); bilgi: cümle / MP4 dizisi.
+   */
+  konus(acik: boolean, sesli = true, bilgi?: KonusBilgi) {
+    if (acik && (!this.konusma || bilgi)) this.dudak.hazirla(bilgi);
     this.konusma = acik;
+    this.konusSesli = sesli;
   }
+  private dudak = new Dudak();
+  private konusSesli = true;
+  private agizK: AgizKatmani | null = null;
 
   get mesgul() {
     return !!this.hareket;
@@ -285,8 +299,13 @@ export class Karakter {
       }
     }
     this.ekHareket?.(p, t);
-    // konuşurken ağız açılıp kapanır
-    if (this.konusma) p.agizAcik = Math.max(p.agizAcik, S(t * 17) > 0 ? 1 : 0.2);
+    // konuşurken ağız sese göre şekil alır; susunca kısa kapanıp gülümsemeye (kendi ağzı) döner
+    const sekil = this.dudak.kare(performance.now(), this.konusma, this.konusSesli);
+    if (sekil !== 'gulumse' || (this.konusma && this.parca.has('agiz-gulumse'))) {
+      p.agizSekli = sekil;
+      p.agizAcik = Math.max(p.agizAcik, AGIZ_ACIKLIK[sekil]);
+    }
+    this.agizK = p.agizSekli ? agizKatmaniSec(p.agizSekli, (id) => this.parca.has(id)) : null;
     this.ciz(p);
   }
 
@@ -397,6 +416,9 @@ export class Karakter {
       const a = aci[id];
       if (a && dn[id]) tr += ' ' + etrafinda(dn[id], a);
       if (id === 'agiz' && p.burun) tr += ` translate(0px, ${p.burun.toFixed(1)}px)`;
+      // dudak senkronu: ağız katmanı kendi noktası etrafında ölçeklenir (agiz-acik'ten az / orta / yuvarlak / dis)
+      const ak = this.agizK;
+      if (ak && id === ak.id && (ak.sx !== 1 || ak.sy !== 1)) tr += ' ' + etrafinda(dn[id] ?? dn.agiz ?? [1024, 1024], 0, ak.sx, ak.sy);
       // alt gaga menteşeden aşağı açılır, içi (gaga-ic) görünür
       if (id === 'gaga-alt' && dn[id] && p.agizAcik) tr += ' ' + etrafinda(dn[id], 0, 1, 1 + 0.12 * p.agizAcik, 0, 34 * p.agizAcik);
       g.style.transform = tr;
@@ -421,8 +443,17 @@ export class Karakter {
       gor.set('goz-sag', false);
       gor.set('goz-kapali', true);
     }
-    // konuşma: normal ağız görünüyorsa açık ağızla değişir
-    if (p.agizAcik > 0.5 && this.parca.has('agiz-acik') && gor.get('agiz')) {
+    // konuşma: normal ağız görünüyorsa (ifade ağzı yoksa) dudak şeklinin katmanıyla değişir; ağzın dili de gider
+    const ak = this.agizK;
+    // ifade açıkken konuşuyorsa: ifadenin gözleri kalır, ağzı (agiz-heyecan …) konuşma ağzına bırakılır
+    const ifadeAgzi = set && ak ? set.goster.filter((id) => id.startsWith('agiz-') && id !== ak.id) : [];
+    if (ak && (gor.get('agiz') || ifadeAgzi.length)) {
+      gor.set('agiz', false);
+      for (const id of ifadeAgzi) gor.set(id, false);
+      if (gor.get('dil')) gor.set('dil', false);
+      gor.set(ak.id, true);
+    } else if (p.agizAcik > 0.5 && this.parca.has('agiz-acik') && gor.get('agiz')) {
+      // hareketlerin açık ağzı (yeme, dans, esneme)
       gor.set('agiz', false);
       gor.set('agiz-acik', true);
     }

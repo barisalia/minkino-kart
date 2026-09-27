@@ -3,7 +3,8 @@
  * Vektör çizim katmanlara ayrılmıştır (kafa, gövde, iki kol, kuyruk; ekip/mino/mino-final.svg → scripts/mino/rig.mjs);
  * hareketler CSS değişkenleriyle her karede güncellenir. Ağız, konuşma sesinin gücüne göre açılıp kapanır.
  */
-import { konusmaGucu } from '../audio/motor';
+import { Dudak, type AgizSekli, type KonusBilgi } from '../audio/dudak';
+import { AGIZ_SEKILLERI } from '../audio/dudak-mantik';
 import { konusuyorMu } from '../audio/ses';
 import { h, TEST_MODU } from '../ui/dom';
 import { MINO_SVG } from './mino-svg';
@@ -114,7 +115,7 @@ const donus = (p: { x: number; y: number }, derece: number, sx = 1, sy = 1, tx =
  * Ağız: 0 = kapalı gülümseme (ω), 1 = kocaman açık. Tasarımcının ağız katmanıyla aynı biçim:
  * burundan inen çizgi, üst kenarı ω olan ağız, altta dil.
  */
-function agizYollari(acik: number, gulum: number) {
+function agizYollari(acik: number, gulum: number, en = 1) {
   const { x: cx, y: ust, g } = AGIZ;
   const burunAlt = 956;
   if (acik < 0.06) {
@@ -124,7 +125,8 @@ function agizYollari(acik: number, gulum: number) {
     const cizgi = `M${cx} ${burunAlt}V${orta}M${cx - 80} ${ust - 14}Q${cx - 44} ${cukur + 6} ${cx} ${orta}Q${cx + 44} ${cukur + 6} ${cx + 80} ${ust - 14}`;
     return { ic: '', dil: '', cizgi };
   }
-  const gen = g * (1 - acik * 0.18);
+  // en: ağzın genişlik çarpanı (dudak senkronu: yuvarlak "o" dar, dişler "i/s" geniş)
+  const gen = g * (1 - acik * 0.18) * en;
   const x0 = cx - gen / 2;
   const x1 = cx + gen / 2;
   const derin = 10 + acik * 108;
@@ -138,6 +140,18 @@ function agizYollari(acik: number, gulum: number) {
   const cizgi = `${ic}M${x0} ${ust}Q${x0 - 18} ${ust - 18} ${x0 - 36} ${ust - 40}M${x1} ${ust}Q${x1 + 18} ${ust - 18} ${x1 + 36} ${ust - 40}M${cx} ${burunAlt}V${tepe}`;
   return { ic, dil, cizgi };
 }
+
+/**
+ * Dudak senkronunun şekilleri kod ağzıyla (Adobe'nin ağız katmanları gelene kadar; gelince onlar kullanılır).
+ * gulumse burada yok: dinlenirken Mino'nun kendi (tepkiye göre) ağzı kalır.
+ */
+const KOD_AGZI: Record<Exclude<AgizSekli, 'gulumse'>, { acik: number; en: number; gulum: number }> = {
+  kapali: { acik: 0, en: 1, gulum: 0.5 },
+  az: { acik: 0.32, en: 0.95, gulum: 0.6 },
+  orta: { acik: 0.82, en: 1, gulum: 0.8 },
+  yuvarlak: { acik: 0.62, en: 0.62, gulum: 0.1 },
+  dis: { acik: 0.24, en: 1.15, gulum: 0.9 },
+};
 
 export class Mino {
   readonly el: HTMLElement;
@@ -158,6 +172,10 @@ export class Mino {
     this.agizIc = this.el.querySelector('.m-agiz-ic')!;
     this.dil = this.el.querySelector('.m-dil')!;
     this.agizCizgi = this.el.querySelector('.m-agiz-cizgi')!;
+    this.agizG = this.el.querySelector('.m-agiz');
+    // Adobe'nin ağız şekilleri (agiz-kapali … agiz-gulumse; scripts/mino/rig.mjs): altısı da varsa kullanılır
+    const sekiller = new Map([...this.el.querySelectorAll<SVGGElement>('.m-agiz-sekil')].map((g) => [g.dataset.sekil as AgizSekli, g]));
+    if (AGIZ_SEKILLERI.every((s) => sekiller.has(s))) this.agizKatman = sekiller;
     this.kare = this.kare.bind(this);
     this.raf = requestAnimationFrame(this.kare);
   }
@@ -339,11 +357,22 @@ export class Mino {
     return true;
   }
 
-  /** Film/animatik: ses kaydı yokken de konuşma ağzını oynatır (açıkken ağız kendiliğinden açılıp kapanır) */
-  agizOyna(acik: boolean) {
+  /**
+   * Film/animatik: Mino konuşuyor (açıkken ağız sese göre oynar; ses yoksa metnin ritmiyle). bilgi: cümle ve
+   * (filmin MP4 kaydında) önceden çıkarılmış ağız dizisi.
+   */
+  agizOyna(acik: boolean, bilgi?: KonusBilgi) {
     this.agizZorla = acik;
+    if (acik) this.dudak.hazirla(bilgi);
   }
   private agizZorla = false;
+  private dudak = new Dudak();
+  private agizG: SVGGElement | null = null;
+  private agizKatman: Map<AgizSekli, SVGGElement> | null = null;
+  private agizKatmanSon: AgizSekli | null = null;
+  private agizEn = 1;
+  /** Dudak senkronunun şu anki şekli (yandan Mino da buna göre açar) */
+  agizSekliSu: AgizSekli = 'gulumse';
   /** Başka bir karakter konuşurken (ör. Kino) Mino'nun ağzı oynamasın */
   agizSus = false;
   /**
@@ -679,11 +708,25 @@ export class Mino {
       }
     }
 
-    // Konuşurken ağız sesin gücüyle açılır
-    if (((konusuyorMu() && !this.agizSus) || this.agizZorla) && !uyku) {
-      const guc = konusmaGucu();
-      agizHedef = guc > 0.01 ? Math.min(1, 0.12 + guc * 1.3) : 0.1 + Math.abs(sin(t * 16)) * 0.6; // cihaz sesi: tahmini
+    // Konuşurken ağız sese göre şekil alır (dudak senkronu: src/audio/dudak.ts); susunca gülümsemeye döner
+    const konusuyor = ((konusuyorMu() && !this.agizSus) || this.agizZorla) && !uyku;
+    const sekil = this.dudak.kare(performance.now(), konusuyor);
+    this.agizSekliSu = sekil;
+    let en = 1;
+    if (konusuyor) mutlu = 0;
+    if (sekil !== 'gulumse' && !uyku) {
+      const k = KOD_AGZI[sekil];
+      agizHedef = k.acik;
+      en = k.en;
+      gulum = k.gulum;
       mutlu = 0;
+    }
+    // Adobe'nin ağız katmanları varsa konuşurken onlar görünür (kod ağzı gizlenir)
+    const katman = this.agizKatman && konusuyor && !this.ifadeAd ? sekil : null;
+    if (katman !== this.agizKatmanSon) {
+      this.agizKatmanSon = katman;
+      for (const [ad, g] of this.agizKatman ?? []) g.style.display = ad === katman ? 'inline' : 'none';
+      if (this.agizG) this.agizG.style.display = katman ? 'none' : '';
     }
     if (this.ifadeAd === 'goz-kirp') {
       agizHedef = 0;
@@ -694,6 +737,7 @@ export class Mino {
       mutlu = 0;
     }
     d.agiz = ara(d.agiz, agizHedef, TEST_MODU ? 1 : 0.35);
+    this.agizEn = ara(this.agizEn, en, TEST_MODU ? 1 : 0.35);
 
     // Uygula
     const s = this.el.style;
@@ -717,7 +761,7 @@ export class Mino {
     // Göz: açık çizim ↔ kapalı / mutlu göz çizgisi (katman değişimi; kırpma anında)
     this.el.classList.toggle('mutlu', mutlu > 0.5);
     this.el.classList.toggle('gozkapali', mutlu <= 0.5 && gozKapali > 0.5);
-    const { ic, dil, cizgi } = agizYollari(Math.max(0, d.agiz), gulum);
+    const { ic, dil, cizgi } = agizYollari(Math.max(0, d.agiz), gulum, this.agizEn);
     this.agizIc.setAttribute('d', ic);
     this.dil.setAttribute('d', dil);
     this.agizCizgi.setAttribute('d', cizgi);

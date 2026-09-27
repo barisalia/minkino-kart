@@ -149,8 +149,8 @@ export class CocukIskelet {
       p.kulakSol += 6 * Math.sin(w * 2);
       p.kulakSag += 6 * Math.sin(w * 2 + 0.6);
     }
-    // balon açıkken konuşuyor: ağız açılıp kapanır
-    this.karakter.konus(!!this.balonEl?.classList.contains('acik'));
+    // balon açıkken konuşuyor: ağız açılıp kapanır (sessiz balon: çalan konuşma sesi onun değil, ağız ritimle)
+    this.karakter.konus(!!this.balonEl?.classList.contains('acik'), false);
   }
 }
 

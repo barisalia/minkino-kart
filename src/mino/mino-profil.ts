@@ -14,6 +14,8 @@
  *
  * Ağır (gömülü WebP ~210 KB): ilk kullanımda bir kez tembel yüklenir; minoProfilYukle() ile önceden yüklenebilir.
  */
+import type { KonusBilgi } from '../audio/dudak';
+import { AGIZ_ACIKLIK } from '../audio/dudak-mantik';
 import { h, TEST_MODU } from '../ui/dom';
 import { Mino } from './mino';
 import { yuruyusPozu } from './yuruyus';
@@ -62,6 +64,8 @@ export class MinoProfil {
   private sonrakiKirp = 1.2 + Math.random() * 2;
   private kirpBas = -1;
   private konusuyor = false;
+  /** Konuşurken ağzın açıklığı (0..1; dudak senkronu, önden Mino'nun şeklinden). null: kendi ritmi */
+  aciklik: (() => number) | null = null;
   /** görünmüyorken ve dururken kare hesaplanmaz */
   gorunur = true;
 
@@ -178,7 +182,7 @@ export class MinoProfil {
     if (g['goz-kapali']) g['goz-kapali'].style.display = kapali ? '' : 'none';
     // ağız: konuşurken çizili ağız aşağı doğru açılıp kapanır
     const [mx, my] = this.p.agiz ?? [1510, 995];
-    const acik = this.konusuyor ? 1 + Math.abs(sin(t * 15)) * 0.7 : 1;
+    const acik = this.konusuyor ? 1 + (this.aciklik ? this.aciklik() : Math.abs(sin(t * 15))) * 0.7 : 1;
     g.agiz?.setAttribute('transform', `${kafaT} translate(${mx} ${my - 20}) scale(1 ${acik.toFixed(3)}) translate(${-mx} ${-(my - 20)})`);
 
     // kuyruk: adımla dalgalanır (geriden gelir, ±6); dururken yavaş sallanır. fular: adımın ardından dalga
@@ -202,6 +206,8 @@ export class YuruyenMino {
     this.mino = mino;
     this.profil = new MinoProfil();
     this.profil.gorunur = false;
+    // yandan ağız, önden Mino'nun dudak şekline göre açılır
+    this.profil.aciklik = () => AGIZ_ACIKLIK[this.mino.agizSekliSu];
     this.el = h('div.mino-yuruyen', {}, this.mino.el, this.profil.el);
     void this.profil.hazir.then((v) => (this.profilHazir = v));
   }
@@ -241,8 +247,9 @@ export class YuruyenMino {
     this.el.style.setProperty('--mino-yon', String(y));
   }
 
-  konus(acik: boolean) {
-    this.mino.agizOyna(acik);
+  /** Konuşuyor (bilgi: cümle ve filmin MP4 kaydında ağız dizisi; Mino.agizOyna) */
+  konus(acik: boolean, bilgi?: KonusBilgi) {
+    this.mino.agizOyna(acik, bilgi);
     this.profil.konus(acik);
   }
 

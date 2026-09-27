@@ -477,10 +477,13 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     if (kapandi) throw IPTAL;
     ui.yazi(t);
     anne.classList.add('konusuyor');
+    // anne konuşurken Mino'nun ağzı oynamasın (dudak senkronu: konuşanın ağzı)
+    mino.agizSus = true;
     try {
       await konus(t, { ton: 0.95 });
     } finally {
       anne.classList.remove('konusuyor');
+      mino.agizSus = false;
     }
     if (kapandi) throw IPTAL;
   };
