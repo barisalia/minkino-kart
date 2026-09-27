@@ -3,6 +3,7 @@
  * Recraft çizimleri tasarımcı tarafından kesilip assets/banyo/<ad>.webp olarak konur; kod dosyayı kendiliğinden
  * kullanır. Dosya yoksa stil kuralına uygun (kalın koyu kahve kontur, parlak vurgu, yumuşak degrade) sade SVG
  * yer tutucu çizilir. Çamur, köpük, damla, buhar, buğu her zaman kodla çizilir (banyo-efekt.ts).
+ * Askılık, raf, duş perdesi, baloncuk halkası, büyük ayna ve tabure artık yalnız gerçek çizimle (yer tutucusu yok).
  *
  * Küvet iki parçadır: kuvet-arka (arka kenar + iç) ve kuvet-on (ön kenar + gövde + ayaklar). İkisi AYNI tuvalde
  * (kaynak kuvet.webp çerçevesi, 1216×896) kesilmelidir; üst üste konunca hizalanır.
@@ -29,7 +30,30 @@ export type EsyaAdi =
   | 'ordek'
   | 'top'
   | 'ayna'
-  | 'paspas';
+  | 'paspas'
+  | 'askilik'
+  | 'raf'
+  | 'dus-perdesi'
+  | 'baloncuk-halkasi'
+  | 'ayna-buyuk'
+  | 'tabure';
+
+/**
+ * Yerleşimde kullanılan çizimlerin en/boy oranları (yükseklik / genişlik; dosyanın tuvali) ve çizim içindeki
+ * önemli noktalar (tuvalin 0..1 oranı, üstten).
+ */
+export const BANYO_ORAN = {
+  askilik: 303 / 1194,
+  raf: 648 / 1011,
+  'dus-perdesi': 1221 / 1278,
+  tabure: 852 / 1050,
+};
+/** askılığın topuzları (sol, orta, sağ) ve yükseklikleri */
+export const ASKI_TOPUZ = { x: [0.21, 0.505, 0.8], y: 0.5 };
+/** rafın üst yüzü (eşyanın konacağı yer) */
+export const RAF_YUZ = { x: 0.47, y: 0.2 };
+/** taburenin oturağı (üstüne konan eşyanın tabanı) */
+export const TABURE_YUZ = { y: 0.2 };
 
 /** 'kuvet-on' → adres (yoksa '') */
 export const banyoAdres = (ad: EsyaAdi) => RESIMLER[`../../assets/banyo/${ad}.webp`] ?? '';
@@ -124,14 +148,6 @@ const YER_TUTUCU: Partial<Record<EsyaAdi, [string, string]>> = {
     <path d="M14 44 Q60 30 106 60 M18 80 Q60 58 102 88" fill="none" stroke="#e8453c" stroke-width="16"/>
     <circle cx="60" cy="60" r="52" fill="none" stroke="${K}" stroke-width="7"/>${vurgu('M34 30 Q44 22 56 20', 7)}`,
   ],
-  // finaldeki büyük ayna (yakın çekim): arka plandaki aynanın çerçevesiyle aynı renkler, iki kişi sığsın diye geniş
-  ayna: [
-    '0 0 300 380',
-    `<defs><linearGradient id="bnAc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d3a1"/><stop offset="1" stop-color="#c98d56"/></linearGradient></defs>
-    <ellipse cx="150" cy="190" rx="142" ry="182" fill="url(#bnAc)" stroke="${K}" stroke-width="8"/>
-    <ellipse cx="150" cy="190" rx="118" ry="156" fill="#e7f6ff" stroke="${K}" stroke-width="6"/>
-    <path d="M40 120 Q60 60 110 34" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".7"/>`,
-  ],
 };
 
 function musluk(renk: string, koyu: string) {
@@ -169,26 +185,6 @@ export function fularSvg(renk: 'kirmizi' | 'mavi'): string {
     <path d="M60 64 L100 132 L140 64" fill="none" stroke="${b}" stroke-width="6" stroke-linecap="round"/>
     <circle cx="100" cy="52" r="14" fill="${b}" stroke="${K}" stroke-width="6"/>${vurgu('M40 44 Q70 56 96 58', 6)}</svg>`;
 }
-
-/** Askılık (duvardaki ahşap çubuk, iki topuzlu) — arka plandaki askılık ekranda görünmüyorsa çizilir */
-export const ASKILIK_SVG = `<svg viewBox="0 0 300 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <rect x="8" y="14" width="284" height="44" rx="10" fill="#e4b27c" stroke="${K}" stroke-width="7"/>${vurgu('M26 26 L270 26', 6)}
-  <g fill="#d99a5e" stroke="${K}" stroke-width="6"><circle cx="90" cy="46" r="20"/><circle cx="210" cy="46" r="20"/></g>
-  <g fill="#fff" opacity=".7"><circle cx="84" cy="40" r="5"/><circle cx="204" cy="40" r="5"/></g></svg>`;
-
-/** Raf (ördeğin yeri) */
-export const RAF_SVG = `<svg viewBox="0 0 300 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M40 30 L70 30 L60 64 Z M230 30 L260 30 L240 64 Z" fill="#c98d56" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
-  <rect x="6" y="8" width="288" height="26" rx="8" fill="#e4b27c" stroke="${K}" stroke-width="7"/>${vurgu('M24 18 L276 18', 5)}</svg>`;
-
-/** Duş perdesi (Mino'nun saklandığı): çubuk + dalgalı kumaş */
-export const PERDE_SVG = `<svg viewBox="0 0 220 520" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs><linearGradient id="bnPr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#bfe6f0"/><stop offset=".5" stop-color="#e6f7fb"/><stop offset="1" stop-color="#a9d9e8"/></linearGradient></defs>
-  <rect x="0" y="6" width="220" height="16" rx="8" fill="#c9d0d7" stroke="${K}" stroke-width="6"/>
-  <path d="M18 22 Q40 34 62 22 Q84 34 106 22 Q128 34 150 22 Q172 34 196 22 L204 500 Q180 516 156 500 Q132 516 108 500 Q84 516 60 500 Q36 516 12 500 Z" fill="url(#bnPr)" stroke="${K}" stroke-width="7" stroke-linejoin="round"/>
-  <g fill="none" stroke="#8cc3d6" stroke-width="5" stroke-linecap="round"><path d="M62 40 L60 490"/><path d="M106 40 L108 490"/><path d="M150 40 L156 490"/></g>
-  <g fill="#fff" opacity=".85"><circle cx="40" cy="120" r="12"/><circle cx="130" cy="210" r="16"/><circle cx="84" cy="330" r="11"/><circle cx="170" cy="400" r="13"/></g>
-  <g fill="#ffd23f" stroke="${K}" stroke-width="3"><circle cx="40" cy="14" r="7"/><circle cx="84" cy="14" r="7"/><circle cx="128" cy="14" r="7"/><circle cx="172" cy="14" r="7"/></g></svg>`;
 
 /** Parmak ipucu: işaret eden el */
 export const EL_SVG = `<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

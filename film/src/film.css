@@ -83,7 +83,8 @@
   position: absolute;
   inset: 0;
 }
-.fl-kok .fl-oyuncu .mino {
+.fl-kok .fl-oyuncu .mino,
+.fl-kok .fl-oyuncu .mino-yuruyen {
   position: absolute;
   inset: 0;
 }

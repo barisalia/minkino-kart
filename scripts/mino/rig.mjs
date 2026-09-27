@@ -3,6 +3,7 @@
 // Her katman bir sınıf alır ve CSS değişkenleriyle hareket eder:
 //   q: kuyruk · g: gövde + fular · kl / kr: sol / sağ kol · k: kafa, gözler ve kodla çizilen ağız
 // Eski çizim (karakter-kaynak/kedi-3.svg) path sınıflandırmasıyla kurulmuştu (sinifla.mjs, parcalar.json); artık gerekmez.
+// Tembel yüklenen ekler: film ifadeleri → src/mino/mino-ifade-svg.ts, hâller (ıslak, pofuduk) → src/mino/mino-hal-svg.ts
 // Durağan resmi de üretir → assets/karakter/mino.webp
 // Çalıştırma: node scripts/mino/rig.mjs
 import fs from 'node:fs';
@@ -53,15 +54,34 @@ const IFADELER = [
   ifade('goz-kirp', 'goz-kirp'),
 ].join('\n');
 
+// Hâl ekleri (ekip/mino/IFADELER.md, "Hâl ekleri"): sırılsıklam ve pofuduk; asıl grubun yerine, aynı z-sırasında.
+// Asıl çizim <g class="m-asil" data-hal="…"> içinde, hâl çizimi yanındaki boş <g class="m-hal" data-yer="…"> yuvasına
+// tembel yüklenir (mino-hal-svg.ts); mino.ts → hal(). data-hal: bu parçayı hangi hâllerin değiştirdiği.
+const HAL_PARCA = {
+  q: { asil: 'kuyruk', haller: { islak: 'kuyruk-islak', pofuduk: 'kuyruk-pofuduk' } },
+  g: { asil: 'govde', haller: { islak: 'govde-islak', pofuduk: 'govde-pofuduk' } },
+  kl: { asil: 'kol-sol', haller: { pofuduk: 'kol-sol-pofuduk' } },
+  kr: { asil: 'kol-sag', haller: { pofuduk: 'kol-sag-pofuduk' } },
+  k: { asil: 'kafa', haller: { islak: 'kafa-islak', pofuduk: 'kafa-pofuduk' } },
+};
+const asilHal = (yer) => {
+  const p = HAL_PARCA[yer];
+  return `<g class="m-asil" data-hal="${Object.keys(p.haller).join(' ')}">\n${sade(katman(p.asil))}\n</g>\n<g class="m-hal" data-yer="${yer}"></g>`;
+};
+const gHal = (yer) => `<g class="${yer}">\n${asilHal(yer)}\n</g>`;
+const HALLER = Object.fromEntries(
+  Object.entries(HAL_PARCA).map(([yer, p]) => [yer, Object.entries(p.haller).map(([hal, id]) => `<g class="m-hal-${hal}">${sade(katman(id))}</g>`).join('')]),
+);
+
 const svg = `<svg class="mino-svg" viewBox="344 140 1360 1790" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 ${defs}
-${g('q', 'kuyruk')}
-${g('g', 'govde')}
-${g('kl', 'kol-sol')}
-${g('kr', 'kol-sag')}
+${gHal('q')}
+${gHal('g')}
+${gHal('kl')}
+${gHal('kr')}
 ${g('g', 'fular')}
 <g class="k">
-${sade(katman('kafa'))}
+${asilHal('k')}
 <g class="m-yanak"><ellipse cx="690" cy="995" rx="66" ry="34"/><ellipse cx="1358" cy="995" rx="66" ry="34"/></g>
 <g class="m-goz">
 <g class="m-goz-sol">${sade(katman('goz-sol'))}</g>
@@ -82,6 +102,12 @@ fs.writeFileSync('src/mino/mino-ifade-svg.ts', `// Otomatik üretildi: node scri
 export const MINO_IFADE_SVG = ${JSON.stringify(IFADELER)};
 `);
 console.log('mino-ifade-svg.ts', Math.round(IFADELER.length / 1024), 'KB');
+// Hâl ekleri de ağır (tam vektör, ~170 KB): ayrı dosya, yalnız hal() ilk çağrılınca (banyo) tembel yüklenir
+fs.writeFileSync('src/mino/mino-hal-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.
+// Mino'nun hâlleri (sırılsıklam, pofuduk): yuva (q, g, kl, kr, k) → hâl grupları; mino.ts tembel yükler (import()).
+export const MINO_HAL_SVG: Record<string, string> = ${JSON.stringify(HALLER)};
+`);
+console.log('mino-hal-svg.ts', Math.round(JSON.stringify(HALLER).length / 1024), 'KB');
 fs.writeFileSync('src/mino/mino-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.\nexport const MINO_SVG = ${JSON.stringify(svg)};\n`);
 console.log('mino-svg.ts', Math.round(svg.length / 1024), 'KB');
 

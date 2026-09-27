@@ -25,7 +25,18 @@ interface IskeletBilgi {
 }
 
 /** İfade adları ve onları gösteren gizli eklerin son ekleri (goz-uzgun, kulak-sol-dusuk …) */
-const IFADE_EKLERI: Record<string, string[]> = { uzgun: ['uzgun', 'dusuk'], mutlu: ['mutlu'], saskin: ['saskin'], kizgin: ['kizgin'] };
+const IFADE_EKLERI: Record<string, string[]> = {
+  uzgun: ['uzgun', 'dusuk'],
+  mutlu: ['mutlu'],
+  saskin: ['saskin'],
+  kizgin: ['kizgin'],
+  // Kino (ekip/kino/IFADELER.md): banyo ifadeleri
+  heyecan: ['heyecan'],
+  sicak: ['sicak'],
+  titreme: ['titreme'],
+  keyif: ['keyif'],
+  uluma: ['uluma'],
+};
 
 /**
  * Gizli eklerden ifade setleri: "<taban>-<ek>" katmanı gösterilir, tabanı gizlenir. Taban bir katmansa o
@@ -44,6 +55,8 @@ export function ifadeSetleri(b: Pick<IskeletBilgi, 'sira' | 'gizli' | 'ifadeler'
       if (b.sira.includes(taban)) gizle.add(taban);
       else for (const x of b.sira) if (x.startsWith(taban + '-') && !b.gizli.includes(x)) gizle.add(x);
     }
+    // ağız değişince ağzın dili de gider (ifade ağzı kendi dilini çizer)
+    if (gizle.has('agiz') && b.sira.includes('dil') && !b.gizli.includes('dil')) gizle.add('dil');
     if (goster.length) setler[ad] = { goster, gizle: [...gizle] };
   }
   return { ...setler, ...(b.ifadeler ?? {}) };
@@ -198,6 +211,21 @@ export class Karakter {
   ifadeVar(ad: string) {
     return !!this.setler[ad];
   }
+
+  /** Şu anki ifade (yoksa null) */
+  get ifadeSu(): string | null {
+    return this.ifadeAd;
+  }
+
+  /**
+   * Bağımsız gizli ek (ör. Kino'nun kopuk-sac'ı): ifadeden ayrı açılıp kapanır, hiçbir katmanı gizlemez.
+   * İskelette o katman yoksa bir şey olmaz.
+   */
+  ek(id: string, acik: boolean) {
+    if (acik) this.acikEkler.add(id);
+    else this.acikEkler.delete(id);
+  }
+  private acikEkler = new Set<string>();
 
   konus(acik: boolean) {
     this.konusma = acik;
@@ -374,6 +402,7 @@ export class Karakter {
       for (const id of set.gizle) gor.set(id, false);
       for (const id of set.goster) gor.set(id, true);
     }
+    for (const id of this.acikEkler) if (this.parca.has(id)) gor.set(id, true);
     // göz kırpma: açık göz görünüyorsa kapalı gözle değişir
     if (p.gozKapali && this.parca.has('goz-kapali') && (gor.get('goz-sol') || gor.get('goz-sag'))) {
       gor.set('goz-sol', false);

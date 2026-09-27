@@ -16,6 +16,7 @@ import B from '../../content/macera-banyo.json';
 import { efekt, konus } from '../../src/audio/ses';
 import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
+import { minoHalleriYukle } from '../../src/mino/mino';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { konfetiPatlat } from '../../src/ui/konfeti';
 import { Perde, sesVar, Ufleme } from '../../orman/src/gorev';
@@ -24,7 +25,7 @@ import { davul } from '../../orman/src/sesler';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import type { BolumArayuz } from './dogumgunu';
 import { Sahne } from './sahne';
-import { ASKILIK_SVG, banyoAdres, esya, fularSvg, PERDE_SVG, RAF_SVG } from './banyo-gorsel';
+import { ASKI_TOPUZ, BANYO_ORAN, banyoAdres, esya, fularSvg, RAF_YUZ, TABURE_YUZ } from './banyo-gorsel';
 import { Kisi, kopukHtml } from './banyo-karakter';
 import { Bugu, EkranDamlalari, geriDon, icinde, merkez, ovala, ParmakIpucu, Parcaciklar, surukle, yansiYazi, type IpucuTuru } from './banyo-efekt';
 import {
@@ -75,6 +76,8 @@ const KINO_KUVET_X = 66;
 export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
   const yas = durum.i.yas ?? 4;
   const kucuk = kucukMu(yas);
+  // Mino'nun sırılsıklam / pofuduk çizimleri (ağır, tembel paket) ilk kullanımdan önce hazır olsun
+  void minoHalleriYukle();
 
   // ================================================================ sahne kurulumu
   const sahne = new Sahne('banyo/arkaplan');
@@ -100,8 +103,13 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   const bY = (n: number) => ((n * bPx()) / H()) * 100;
   /** b birimi → sahne genişliğinin %'si */
   const bX = (n: number) => ((n * bPx()) / W()) * 100;
-  /** kameranın taban yakınlığı: dikey telefonda duvarın boş üstü azalsın, sahne büyüsün (alttan sabit) */
-  const taban = W() / H() < 0.8 ? 1.12 : 1;
+  /** dikey ekran (telefon / dikey tablet): sahne yatay çizildiği için üstte boş duvar kalır */
+  const kucukEkranMi = W() / H() < 0.8;
+  /**
+   * Kameranın taban yakınlığı: dikeyde küvete yaklaşılır, duvarın boş üstü azalır (alttan sabit). Karakterler
+   * kadrajdan taşacaksa kadraj koruması (kam) odağı kaydırır ya da yakınlığı düşürür.
+   */
+  const taban = kucukEkranMi ? 1.22 : 1;
   const KUVET_W = 66;
   const kuvetH = bY(KUVET_W * KV.oran);
   const KUVET = { x: 50, y: ZEMIN - kuvetH * (1 - KV.ayak), w: KUVET_W };
@@ -134,26 +142,44 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   const rafArka = [arkaNokta(1080, 315), arkaNokta(1300, 315)];
   const askiVar = askiArka.every((n) => n.gorunur);
   const rafVar = rafArka.every((n) => n.gorunur);
+  /** duvar eşyası sağ kenardan taşmasın: dikeyde kamera yaklaşınca da (≈1.3 kat) kadrajda kalacak kadar içeri alınır */
+  const duvarX = (x: number, w: number) => Math.min(x, kucukEkranMi ? 50 + 36 - bX(w) / 2 : 100 - bX(w) / 2 - 3);
   let askiNokta: [{ x: number; y: number }, { x: number; y: number }];
   if (askiVar) askiNokta = [arkaNokta(1128, 425), arkaNokta(1218, 432)];
   else {
-    sahne.koy(h('div.bn-askilik', { html: ASKILIK_SVG }), { x: 79, y: 57, w: 26, z: 1 });
+    // askılık (üç topuzlu ahşap çubuk): fularlar iki yandaki topuza asılır
+    const AW = 28;
+    const ax = duvarX(79, AW);
+    const ay = kucukEkranMi ? 50 : 57;
+    sahne.koy(h('div.bn-askilik', {}, esya('askilik', '', 'Askılık')), { x: ax, y: ay, w: AW, z: 1 });
+    const topuzY = ay + bY(AW * BANYO_ORAN.askilik) * (1 - ASKI_TOPUZ.y);
     askiNokta = [
-      { x: 79 - bX(26) * 0.2, y: 57 + bY(26 * 0.3) * 0.35 },
-      { x: 79 + bX(26) * 0.2, y: 57 + bY(26 * 0.3) * 0.35 },
+      { x: ax + bX(AW) * (ASKI_TOPUZ.x[0] - 0.5), y: topuzY },
+      { x: ax + bX(AW) * (ASKI_TOPUZ.x[2] - 0.5), y: topuzY },
     ];
   }
   const askiHedef = sahne.koy(h('div.bn-askilik-hedef'), { x: (askiNokta[0].x + askiNokta[1].x) / 2, y: askiNokta[0].y - 9, w: 34, z: 1 });
   let rafNokta: { x: number; y: number };
   if (rafVar) rafNokta = arkaNokta(1170, 312);
   else {
-    sahne.koy(h('div.bn-raf', { html: RAF_SVG }), { x: 79, y: 70, w: 26, z: 1 });
-    rafNokta = { x: 79, y: 70 + bY(26 * (70 / 300)) * 0.86 };
+    // raf (ördeğin yeri): ördek rafın üst yüzüne oturur
+    const RW = 22;
+    const rx = duvarX(79, RW);
+    const ry = kucukEkranMi ? 62 : 68;
+    sahne.koy(h('div.bn-raf', {}, esya('raf', '', 'Raf')), { x: rx, y: ry, w: RW, z: 1 });
+    rafNokta = { x: rx + bX(RW) * (RAF_YUZ.x - 0.5), y: ry + bY(RW * BANYO_ORAN.raf) * (1 - RAF_YUZ.y) };
   }
   const rafHedef = sahne.koy(h('div.bn-raf-hedef'), { x: rafNokta.x, y: rafNokta.y - 2, w: 30, z: 1 });
 
   // --- eşyalar
-  const perde = sahne.koy(h('div.bn-perde', { html: PERDE_SVG }), { x: 11, y: 4, w: 24, z: 8 });
+  // duş perdesi (Mino'nun saklandığı): sağ kenarı eski yerinde kalır, kuyruk perdenin hemen sağından görünür
+  const PERDE_W = 30;
+  const perdeSag = 11 + bX(24) / 2;
+  const perde = sahne.koy(h('div.bn-perde', {}, esya('dus-perdesi', '', 'Duş perdesi')), { x: perdeSag - bX(PERDE_W) / 2, y: 3, w: PERDE_W, z: 8 });
+  // tabure: havlular üstünde durur (Mino'nun üçüncü saklandığı yer: tabure ve havluların arkası)
+  const TABURE_W = 19;
+  const tabureUst = 1 + bY(TABURE_W * BANYO_ORAN.tabure) * (1 - TABURE_YUZ.y);
+  sahne.koy(h('div.bn-tabure', {}, esya('tabure', '', 'Tabure')), { x: 22, y: 1, w: TABURE_W, z: 7 });
   const kuvetArka = sahne.koy(h('div.bn-kuvet.bn-kuvet-arka', {}, esya('kuvet-arka', '', 'Küvet')), { ...KUVET, z: 3 });
   const suArka = sahne.koy(h('div.bn-kuvet.bn-su.bn-su-arka', {}, h('div.bn-su-agiz', {}, h('div.bn-su-dolgu', {}, h('i.bn-su-yuzey')))), { ...KUVET, z: 3 });
   const suOn = sahne.koy(h('div.bn-kuvet.bn-su.bn-su-on', {}, h('div.bn-su-agiz', {}, h('div.bn-su-dolgu', {}, h('i.bn-su-yuzey')))), { ...KUVET, z: 5 });
@@ -180,8 +206,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   zincir.style.height = `${bY(9) + 1}%`;
   const ordek = sahne.koy(h('div.bn-ordek-kap', {}, h('div.bn-ordek', {}, esya('ordek', '', 'Lastik ördek'))), { x: 77, y: arkaUst(77) - bY(1.2), w: 9, z: 7 });
   const sepet = sahne.koy(h('div.bn-sepet', {}, esya('sepet', '', 'Çamaşır sepeti')), { x: 87, y: 1, w: 19, z: 8 });
-  const havluMavi = sahne.koy(h('div.bn-havlu', { 'data-renk': 'mavi' }, esya('havlu-mavi', '', 'Mavi havlu')), { x: 22, y: 1, w: 17, z: 7 });
-  const havluTuruncu = sahne.koy(h('div.bn-havlu', { 'data-renk': 'turuncu' }, esya('havlu-turuncu', '', 'Turuncu havlu')), { x: 21, y: 1 + bY(17 * 0.36), w: 17, z: 7 });
+  const havluMavi = sahne.koy(h('div.bn-havlu', { 'data-renk': 'mavi' }, esya('havlu-mavi', '', 'Mavi havlu')), { x: 22, y: tabureUst, w: 17, z: 7 });
+  const havluTuruncu = sahne.koy(h('div.bn-havlu', { 'data-renk': 'turuncu' }, esya('havlu-turuncu', '', 'Turuncu havlu')), { x: 21, y: tabureUst + bY(17 * 0.36), w: 17, z: 7 });
   const top = sahne.koy(h('div.bn-top', {}, esya('top', '', 'Top')), { x: -10, y: 1.5, w: 7, z: 8 });
 
   // --- karakterler
@@ -195,6 +221,57 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   KN.isabetleriKur();
   M.fular(true);
   KN.fular(true);
+
+  // --- kamera ve kadraj koruması
+  // Sahne kodu çekimi ister (odak x/y, yakınlık z). Mino ile Kino (ve o an gereken eşyalar) kadrajın dışına
+  // taşacaksa odak yana kayar; ikisi birden sığmıyorsa yakınlık düşer. Karakter yürümeye başlayınca yeniden bakılır.
+  let cekim = { x: 50, y: 96, z: 1, tut: [] as HTMLElement[], kisiler: [M, KN] };
+  let uygulanan = { x: 50, y: 96, z: 1 };
+  const kadrajHesap = () => {
+    let l = Infinity;
+    let r = -Infinity;
+    const ekle = (x: number, yari: number) => {
+      l = Math.min(l, x - yari);
+      r = Math.max(r, x + yari);
+    };
+    for (const k of cekim.kisiler) {
+      const x = k.hedefX;
+      // sahneye henüz girmemiş / çıkmış olan sayılmaz
+      if (x > -4 && x < 104) ekle(x, bX(KISI_W) * 0.48);
+    }
+    for (const el of cekim.tut) {
+      if (!el.isConnected) continue;
+      ekle(Number(el.style.getPropertyValue('--x')) || 50, bX(Number(el.style.getPropertyValue('--w')) || 0) / 2);
+    }
+    if (l === Infinity) return { x: cekim.x, y: cekim.y, z: cekim.z };
+    l = Math.max(0, l - 3);
+    r = Math.min(100, r + 3);
+    const z = Math.max(1, Math.min(cekim.z, 100 / Math.max(1, r - l)));
+    if (z <= 1.001) return { x: cekim.x, y: cekim.y, z: 1 };
+    // görünen aralık: [ox·(1 − 1/z), ox·(1 − 1/z) + 100/z]
+    const k = 1 - 1 / z;
+    const alt = (r - 100 / z) / k;
+    const ust = l / k;
+    const x = alt > ust ? (alt + ust) / 2 : Math.min(ust, Math.max(alt, cekim.x));
+    return { x: Math.max(0, Math.min(100, x)), y: cekim.y, z };
+  };
+  /**
+   * Kamera (kadraj korumalı). tut: bu çekimde kadrajda kalması gereken eşyalar; kisiler: korunan karakterler
+   * (yakın çekimde yalnız biri).
+   */
+  const kam = (x: number, y: number, z: number, ms: number, tut: HTMLElement[] = [], kisiler: Kisi[] = [M, KN]) => {
+    cekim = { x, y, z, tut, kisiler };
+    uygulanan = kadrajHesap();
+    return sahne.kamera(uygulanan.x, uygulanan.y, uygulanan.z, ms);
+  };
+  const kadrajGuncelle = (ms: number) => {
+    const c = kadrajHesap();
+    if (Math.abs(c.x - uygulanan.x) < 0.5 && Math.abs(c.z - uygulanan.z) < 0.01) return;
+    uygulanan = c;
+    void sahne.kamera(c.x, c.y, c.z, Math.max(450, ms));
+  };
+  M.gitBasi = (_x, ms) => kadrajGuncelle(ms);
+  KN.gitBasi = (_x, ms) => kadrajGuncelle(ms);
 
   const muzik = new BanyoMuzik();
   const suSesi = new SuSesi();
@@ -432,7 +509,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       (kisi === 'mino' ? M : KN).camurEkle(b, tohum++);
     }
     // kalan çamur benekleri (süs: dokunulmaz)
-    await sahne.kamera(50, 96, taban * 1.12, 10);
+    await kam(50, 96, taban * 1.12, 10);
     // top yuvarlanarak girer
     efektCal('top', 1200);
     const topIc = top.querySelector<HTMLElement>('.bn-esya')!;
@@ -451,7 +528,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     void M.balon(B.balon.hih, 900);
     KN.kinoDur();
     await mSoyle(B.mino.kino_atladi);
-    await sahne.kamera(50, 96, taban * 1.25, 800);
+    await kam(50, 96, taban * 1.25, 800);
     await mSoyle(B.mino.nereler);
 
     // --- serbest dokunuşlar
@@ -568,7 +645,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
 
     // --- fularlar askıya
     await mSoyle(B.mino.fular);
-    await sahne.kamera(50, 96, taban, 700);
+    await kam(50, 96, taban, 700, [askiHedef]);
     ui.ipucu(B.ipucu.fular);
     const fularlar = ([
       [M, 'kirmizi'],
@@ -634,7 +711,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const saklanmaYerleri: { ad: string; x: number; y: number; z: number; aynala: boolean; nesne: HTMLElement }[] = [
       { ad: 'perde', x: 11 + bX(KISI_W) * 0.24, y: 6, z: 7, aynala: false, nesne: perde },
       { ad: 'sepet', x: 87 - bX(KISI_W) * 0.3, y: 1 + bY(19 * 1.155) - bY(8), z: 7, aynala: false, nesne: sepet },
-      { ad: 'havlu', x: 22 + bX(KISI_W) * 0.1, y: 0, z: 7, aynala: false, nesne: havluTuruncu },
+      { ad: 'havlu', x: 22 + bX(KISI_W) * 0.1, y: 0, z: 6, aynala: false, nesne: havluTuruncu },
     ];
     await kSoyle(B.kino.bul);
     for (const [i, yer] of saklanmaYerleri.entries()) {
@@ -693,7 +770,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     KN.kinoOynat('coskulu', 1600);
     void KN.zipla(14, 600);
     await kSoyle(B.kino.su);
-    await sahne.kamera(40, 90, taban * 1.15, 800);
+    await kam(40, 90, taban * 1.15, 800, [musluklar.kirmizi, musluklar.mavi]);
     await mSoyle(B.mino.musluk);
     ui.ipucu(kucuk ? B.ipucu.musluk : B.ipucu.ilik);
     isiGosterge?.classList.add('acik');
@@ -722,6 +799,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const kinoTepki = async (dd: SuDurumu | null) => {
       if (dd === 'sicak') {
         KN.kinoOynat('kulakDik', 0);
+        KN.kinoIfade('sicak');
         if (!kinoKenarda) {
           kinoKenarda = true;
           KN.katman = 7;
@@ -738,6 +816,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         await kSoyle(B.kino.soguk);
       } else if (dd === 'ilik') {
         KN.kinoOynat('ic', 1400);
+        KN.kinoIfade('keyif', 1800);
         void KN.balon(B.balon.ooh, 1200);
         await kSoyle(B.kino.tam);
       }
@@ -823,6 +902,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ui.ipucu(null);
     durumYaz(null);
     KN.kinoDur();
+    KN.kinoIfade(null);
     buz?.remove();
     if (kinoKenarda) {
       KN.katman = 4;
@@ -845,11 +925,12 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ordek.classList.add('yuzuyor');
     girisZipla(ordek);
     KN.kinoOynat('ic', 1500);
+    KN.kinoIfade('keyif', 2000);
     void KN.balon(B.balon.ooh, 1300);
     parca.halka(...KN.bolgeEkran('gobek'), 90);
     efekt.dogru();
     kulak.sustur(900);
-    await sahne.kamera(50, 96, taban, 800);
+    await kam(50, 96, taban, 800);
   }
 
   // ================================================================ 4. Baloncuk tuzağı
@@ -860,6 +941,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     // köpük şişesi
     const sise = sahne.koy(h('div.bn-sise.bn-sise-kopuk', {}, esya('kopuk', '', 'Köpük şişesi')), { x: 16, y: 2, w: 8, z: 9 });
     girisZipla(sise);
+    await kam(cekim.x, cekim.y, cekim.z, 500, [sise]);
     ui.ipucu(B.ipucu.kopuk);
     durumYaz('kopuk');
     const d = new Deneme(yas);
@@ -886,8 +968,11 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     // Kino köpükten bir baloncuk halkası çıkarır
     await bekle(300);
     KN.kinoOynat('coskulu', 900);
-    const halkaKonum = { x: 55, y: AYAKTA_Y + kisiH * 1.05 };
-    const halka = sahne.koy(h('div.bn-halka', { role: 'button', 'aria-label': 'Baloncuk halkası' }, h('i.bn-halka-zar'), h('i.bn-halka-cember')), { x: halkaKonum.x, y: halkaKonum.y, w: 16, z: 9 });
+    // halkanın uzun sapı karakterlerin yüzüne binmesin: halka başlarının üstünde, boş duvarda durur
+    const HALKA_W = 13;
+    const halkaKonum = { x: 55, y: AYAKTA_Y + kisiH * 0.95 + bY(HALKA_W * 2.35) };
+    // halka: kutu halkanın kendisi (dokunma ve baloncuk yeri); çizimin sapı kutudan aşağı sarkar
+    const halka = sahne.koy(h('div.bn-halka', { role: 'button', 'aria-label': 'Baloncuk halkası' }, esya('baloncuk-halkasi', 'bn-halka-resim'), h('i.bn-halka-zar')), { x: halkaKonum.x, y: halkaKonum.y, w: HALKA_W, z: 9 });
     girisZipla(halka);
     bs.blup(true);
     await mSoyle(B.mino.ufle);
@@ -1067,7 +1152,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     yazi(sx, sy - 120, B.balon.slap, '#3e9df2', true);
     M.islak(1);
     kopukYuzey.animate([{ transform: 'translateX(-50%) scale(1, 1)' }, { transform: 'translateX(-50%) scale(1.1, 1.4)' }, { transform: 'translateX(-50%) scale(1, 1)' }], { duration: sure(600), easing: 'cubic-bezier(0.3, 1.5, 0.5, 1)' });
-    await sahne.kamera(MINO_KUVET_X, 85, taban * 1.3, 350);
+    await kam(MINO_KUVET_X, 85, taban * 1.3, 350, [], [M]);
     siraYak('islat', 'bitti');
     // bir an sessizlik
     await bekle(1400);
@@ -1077,7 +1162,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     bs.blup(true);
     M.tepki('mir', 1.8);
     await mSoyle(B.mino.fena_degil);
-    await sahne.kamera(50, 96, taban, 800);
+    await kam(50, 96, taban, 800);
     muzikAc();
   }
 
@@ -1091,7 +1176,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     await Promise.all([M.git(MINO_KUVET_X, AYAKTA_Y, 500, 5), KN.git(KINO_KUVET_X, AYAKTA_Y, 500, 5)]);
     const sampuan = sahne.koy(h('div.bn-sise.bn-sise-sampuan', {}, esya('sampuan', '', 'Şampuan')), { x: 16, y: 2, w: 8, z: 9 });
     girisZipla(sampuan);
-    await sahne.kamera(50, 92, taban * 1.12, 700);
+    await kam(50, 92, taban * 1.12, 700, [sampuan]);
 
     const planM: { hedef: Bolum[]; soz: string }[] = kucuk
       ? [
@@ -1179,14 +1264,9 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
 
     // --- köpük saç (serbest oyun)
     await kSoyle(B.kino.sac);
-    const sekiller = ['tepe', 'tac', 'tavsan'] as const;
+    // Kino'nun çizilmiş köpük saçı (kopuk-sac eki); her dokunuşta başka şekle esner
     let sekil = -1;
-    const sac = KN.ekle('kafa', 'bn-sac', '');
-    const sacCiz = () => {
-      if (!sac) return;
-      sac.innerHTML = sacHtml(sekiller[sekil]);
-      sac.animate([{ transform: 'scale(0.6)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: sure(380), easing: 'cubic-bezier(0.3, 1.6, 0.5, 1)' });
-    };
+    const sacCiz = () => KN.kopukSac(sekil);
     ui.ipucu(B.ipucu.sac);
     durumYaz('sac', 'kino-kafa');
     const dugme = ui.dugme('Tamam!');
@@ -1198,7 +1278,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         if (b !== 'kafa') return serbestDokun(KN, e);
         clearTimeout(ipGoster);
         ipEl.gizle();
-        sekil = (sekil + 1) % sekiller.length;
+        sekil = (sekil + 1) % 3;
         sacCiz();
         bs.blup(true);
         KN.kinoOynat('bak', 1100, sekil % 2 ? 1 : -1);
@@ -1224,6 +1304,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     await mSoyle(B.mino.durula);
     const dus = sahne.koy(h('div.bn-dus', { role: 'button', 'aria-label': 'Duş başlığı' }, h('div.bn-dus-akis', {}, h('i'), h('i'), h('i')), esya('dus', '', 'Duş')), { x: 84, y: AYAKTA_Y + kisiH * 0.9, w: 13, z: 9 });
     girisZipla(dus);
+    void kam(cekim.x, cekim.y, cekim.z, 600, [dus]);
     ui.ipucu(B.ipucu.dus);
     durumYaz('dus');
     const d = new Deneme(yas);
@@ -1271,10 +1352,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
                   M.tepki('zorlan', 3);
                 }
                 if (k === KN && simdi - kinoIciyor > 1600) {
-                  const sac = KN.kap.querySelector<SVGGElement>("g.bn-sac");
-                  if (sac && !sac.classList.contains("gidiyor")) {
-                    sac.classList.add("gidiyor");
-                    parca.sicrat(...KN.bolgeEkran("kafa"), "kopuk", 8, 0.7);
+                  // köpük saç duşla akar gider
+                  if (KN.sacSekil !== null) {
+                    KN.kopukSac(null);
+                    parca.sicrat(...KN.bolgeEkran('kafa'), 'kopuk', 8, 0.7);
                   }
                   kinoIciyor = simdi;
                   KN.kinoOynat('ic', 1400);
@@ -1567,13 +1648,13 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     sahne.el.dataset.bnSahne = '7';
     siraYak('kurula', 'simdi');
     // kurulanmak için küvetten çıkarlar
-    await sahne.kamera(50, 96, taban, 10);
+    await kam(50, 96, taban, 10);
     M.katman = 8;
     KN.katman = 8;
     await Promise.all([M.git(45, 3, 700, 16), KN.git(71, 3, 700, 16)]);
     havluMavi.style.zIndex = '9';
     havluTuruncu.style.zIndex = '10';
-    void sahne.kamera(55, 96, taban * 1.1, 700);
+    void kam(55, 96, taban * 1.1, 700, [havluMavi, havluTuruncu]);
     kuvetOn.classList.add('arkada');
     // --- Kino'yu kurula (yarıya kadar)
     ui.ipucu(B.ipucu.havlu);
@@ -1711,6 +1792,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     girisZipla(ordek);
     havluMavi.style.zIndex = '10';
     havluTuruncu.style.zIndex = '11';
+    // toplanma: havlular, sepet ve raf kadrajda
+    void kam(50, 96, taban, 600, [havluMavi, havluTuruncu, sepet, rafHedef]);
     await Promise.all([M.git(30, 3, 600, 8), KN.git(73, 3, 600, 8)]);
     await mSoyle(B.mino.topla);
     // --- ıslak havlular sepete
@@ -1852,7 +1935,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const yansiK = new Kisi('kino');
     ic.append(h('div.bn-ayna-arka', { style: `--resim:url("${banyoAdres('arkaplan')}")` }), h('div.bn-ayna-kisiler', {}, yansiM.el, yansiK.el));
     const bugu = new Bugu();
-    const cerceve = esya('ayna', 'bn-ayna-cerceve', 'Ayna', true);
+    const cerceve = esya('ayna-buyuk', 'bn-ayna-cerceve', 'Ayna');
     yakin.append(cerceve, h('div.bn-ayna-cam', {}, ic, bugu.el, h('i.bn-ayna-parilti')));
     sahne.on.append(yakin);
     await yansiK.hazir();
@@ -1922,10 +2005,10 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     parca.parilti(...M.bolgeEkran('kafa'), 7, 'kalp');
     await bekle(1200);
     // öğüt: kameraya
-    await sahne.kamera(50, 90, taban * 1.25, 800);
+    await kam(50, 90, taban * 1.25, 800);
     M.tepki('evet', 1);
     await mSoyle(B.mino.ogut);
-    await sahne.kamera(50, 96, taban, 700);
+    await kam(50, 96, taban, 700);
     // ödül kartı
     const kart = h(
       'div.bn-odul',
@@ -2287,24 +2370,6 @@ function kopukSerisi(): string {
     s += `<circle cx="${x}" cy="${30 + ((i * 17) % 10)}" r="${rr}" fill="#fff" stroke="#b9c9d8" stroke-width="2.5"/>`;
   }
   return `<svg viewBox="0 0 600 90" preserveAspectRatio="none" aria-hidden="true">${s}</svg>`;
-}
-
-/** Kino'nun köpük saçı: dikili tepe, kral tacı, tavşan kulağı */
-function sacHtml(sekil: 'tepe' | 'tac' | 'tavsan'): string {
-  const d: [number, number, number][] = [];
-  if (sekil === 'tepe') for (let i = 0; i < 8; i++) d.push([1030 + Math.sin(i * 1.7) * (60 - i * 6), 420 - i * 55, 95 - i * 9]);
-  if (sekil === 'tac') {
-    for (let i = 0; i < 7; i++) d.push([820 + i * 70, 430, 70]);
-    for (const x of [850, 1030, 1210]) for (let j = 1; j < 4; j++) d.push([x + (1030 - x) * 0.05 * j, 430 - j * 60, 58 - j * 10]);
-  }
-  if (sekil === 'tavsan')
-    for (const yon of [-1, 1]) for (let j = 0; j < 7; j++) d.push([1030 + yon * (90 + j * 18), 420 - j * 62, 70 - j * 3]);
-  return d
-    .map(
-      ([x, y, rr]) =>
-        `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${rr.toFixed(0)}" fill="#fff" stroke="#b9c9d8" stroke-width="8"/><circle cx="${(x - rr * 0.35).toFixed(0)}" cy="${(y - rr * 0.38).toFixed(0)}" r="${(rr * 0.22).toFixed(0)}" fill="#dff3ff"/>`,
-    )
-    .join('');
 }
 
 /** Gider girdabı */

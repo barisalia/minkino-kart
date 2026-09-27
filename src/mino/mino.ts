@@ -33,6 +33,21 @@ export function minoIfadeleriYukle(): Promise<string | null> {
   return ifadeYukleme;
 }
 
+/**
+ * Hâl ekleri (sırılsıklam, pofuduk; tam vektör, ağır): ifade ekleri gibi ayrı pakette, yalnız hal() ilk
+ * çağrılınca bir kez yüklenir. Önceden yüklemek için çağrılabilir (banyo açılışta).
+ */
+let halYukleme: Promise<Record<string, string> | null> | null = null;
+export function minoHalleriYukle(): Promise<Record<string, string> | null> {
+  halYukleme ??= import('./mino-hal-svg').then(
+    (m) => m.MINO_HAL_SVG,
+    () => null,
+  );
+  return halYukleme;
+}
+/** Tüm beden hâli: asıl kafa / gövde / kuyruk (pofudukta kollar da) çizimin hâl sürümüyle değişir */
+export type MinoHal = 'islak' | 'pofuduk';
+
 /** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) */
 export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp';
 /** Bu tepkiler kendi ifadesini de açar (yalnız filmde kullanılır; oyunlarda değişiklik yok) */
@@ -209,6 +224,39 @@ export class Mino {
   }
   private ifadeAd: MinoIfade | null = null;
   private ifadeZaman = 0;
+
+  /**
+   * Beden hâli (ekip/mino/IFADELER.md "Hâl ekleri"): 'islak' sırılsıklam, 'pofuduk' kabarmış tüy, null normal.
+   * Ekler henüz yüklenmediyse yüklenince (hâlâ isteniyorsa) uygulanır; dönen söz uygulandığında çözülür.
+   */
+  hal(ad: MinoHal | null): Promise<void> {
+    this.halIstek = ad;
+    if (!ad) {
+      this.halUygula(null);
+      return Promise.resolve();
+    }
+    return this.halleriEkle().then((tamam) => {
+      if (tamam && this.halIstek === ad) this.halUygula(ad);
+    });
+  }
+  get halAd(): MinoHal | null {
+    return this.halIstek;
+  }
+  private halIstek: MinoHal | null = null;
+  private halEklendi = false;
+  private halUygula(ad: MinoHal | null) {
+    this.el.classList.toggle('hal-islak', ad === 'islak');
+    this.el.classList.toggle('hal-pofuduk', ad === 'pofuduk');
+  }
+  /** Bu Mino'nun yuvalarına (m-hal) hâl eklerini koyar (paylaşılan tembel yükleme) */
+  private async halleriEkle(): Promise<boolean> {
+    if (this.halEklendi) return true;
+    const haller = await minoHalleriYukle();
+    if (!haller) return false;
+    if (!this.halEklendi) for (const yuva of this.el.querySelectorAll<SVGGElement>('.m-hal')) yuva.innerHTML = haller[yuva.dataset.yer ?? ''] ?? '';
+    this.halEklendi = true;
+    return true;
+  }
 
   /** Film/animatik: ses kaydı yokken de konuşma ağzını oynatır (açıkken ağız kendiliğinden açılıp kapanır) */
   agizOyna(acik: boolean) {
