@@ -1,0 +1,32 @@
+﻿{
+    "aciklama":  "Banyo hizalama (Tasarimci). Yuzdeler arkaplan.webp cercevesine gore (x,y sol-ust; w,h genislik/yukseklik). Kuvet iki katman ayni cerceve: once kuvet-arka, sonra karakter, en ustte kuvet-on.",
+    "arkaplan":  {
+                     "boyut":  [
+                                   2688,
+                                   1536
+                               ]
+                 },
+    "ayna":  {
+                 "x":  85.57,
+                 "y":  11.98,
+                 "w":  7.59,
+                 "h":  28.65,
+                 "not":  "arkaplandaki aynanin tam ustune oturur; bugu icin cam ortasi yaklasik %53,%45 (ayna icinde)"
+             },
+    "paspas":  {
+                   "x":  65.03,
+                   "y":  80.73,
+                   "w":  27.68,
+                   "h":  15.36,
+                   "not":  "arkaplanda da var; karakterlerin onunde cizilirse ayak altini ortmesin diye karakterden once cizin"
+               },
+    "kuvet":  {
+                  "boyut":  [
+                                2432,
+                                1792
+                            ],
+                  "ayakTabani":  84.15,
+                  "icTaban":  38.5,
+                  "not":  "ic kenar (on kasnagin ust cizgisi) ortada kuvet yuksekliginin %38.5i; karakter govdesi bunun altinda gizlenir"
+              }
+}
