@@ -36,3 +36,21 @@ Uyarılar:
 - Önizleme: `mino-ifadeler.png` (normal, zorlanma, sersem, kararsız, göz kırpma).
 - Sarılma pozu ayrı teslim edilecek: `assets/film/mino-karpuz/mino-sarilma-{arka,on}.webp` + hizalama JSON'u.
 
+## Burun ekleri (Ege 8. sahne; tam vektör, gizli)
+
+Hepsi `display="none"`, 2048 tuvalde yerinde, gömülü görsel yok (yalnız vektör, küçük). Ağız: `agiz` katmanı ya da kod ağzı (`m-agiz`), hangisi kullanılıyorsa.
+
+| İfade | Göster | Gizle | Not |
+|---|---|---|---|
+| burun kaşıntısı | `goz-kasinti`, `burun-kasinti`, `agiz-kasinti` | `goz-sol`, `goz-sag`, ağız | Yarı kapalı, iç uçta kalkık kapaklar. Gözler şaşı, burna bakıyor; pınarlarda birer yaş damlası. Burun %14 geniş, delikleri açık, üstünde kırışık; iki yanda ve üstte seğirme çizgileri. "Haa" yarı açık ağız. |
+| burun tut | `yanak-burun-tut`, `goz-burun-tut`, `kol-sol-burun`, `kol-sag-burun`, `pati-burun` | `goz-sol`, `goz-sag`, ağız, `kol-sol`, `kol-sag` | Kocaman şişkin gözler (beyaz göz akı, küçük iris). Yanaklar kafa silüetinden taşar, allık koyu; sıkılmış dalgalı ağız yanak katmanının içinde. İki kol omuzdan dik kalkar, iki pati burnu kapatır. |
+| hapşu | `kafa-hapsu`, `goz-hapsu`, `agiz-hapsu`, `puf-hapsu` | `kafa`, `goz-sol`, `goz-sag`, ağız | Gözler sıkıca kapalı (> <), kocaman açık ağız. `kafa-hapsu`: kulakları geriye yatık kafa (kulaklar ~35° dışa döner, %85, kafanın arkasında kalır). `puf-hapsu`: kafa çevresinde sarsıntı çizgileri (koyu kenarlı açık renk, gece sahnesinde de görünür), iki yanda püf bulutları, damlacıklar. |
+
+Bağlama ve z-sırası:
+- Kafaya bağlı, `k` grubunun sonuna: `goz-*`, `burun-kasinti`, `agiz-*`, `yanak-burun-tut`, `pati-burun`, `puf-hapsu`.
+- `kafa-hapsu`: hâl grupları gibi `kafa` yerine, `k` sınıfının z-sırasına konur (göz ve ağız eklerinin altında kalır).
+- `kol-sol-burun`, `kol-sag-burun`: gövdeye bağlı (dönme noktası omuz: (892,1312) / (1156,1312)), ama kafanın ve fuların **üstünde** çizilir. Omuz ucunda kontur yok; kol gövdenin turuncu yanına karışır. `pati-burun` bunların da üstünde olmalı. Bilek pati altında kaldığı için küçük kafa hareketlerinde kopukluk görünmez.
+- Öneri: hapşu anında `puf-hapsu` için ölçek 0.85 → 1.05 "pat" (merkez ~(1024,1080)) ve kafaya kısa bir sarsıntı.
+- SVG sırası (alttan üste): `goz-kasinti, burun-kasinti, agiz-kasinti, yanak-burun-tut, goz-burun-tut, kol-sol-burun, kol-sag-burun, pati-burun, kafa-hapsu, goz-hapsu, agiz-hapsu, puf-hapsu`.
+- Önizleme: `mino-burun-ifadeleri.png` (normal | burun kaşıntısı | burun tut | hapşu; üstte açık, altta koyu zemin).
+- Varsayılan çizim değişmedi: ekler gizliyken önceki SVG ile piksel farkı 0.
