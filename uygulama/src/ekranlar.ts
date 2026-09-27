@@ -102,9 +102,6 @@ export function menuEkrani(app: Uygulama): Ekran {
 
   // Kino: ortak karakter iskeleti (assets/karakter-iskelet/kino.*; tasarım değişse de katman adları aynı kalır)
   const kino = new Karakter('kino', h('div'));
-  // Çizimdeki boyun dolgusu (govde katmanında çene altı) köşeli: baş ±5°'den fazla eğilince kenarı görünüyor.
-  // Adobe dolguyu çene eğrisine göre tamamlayana kadar menüde baş eğmesi sınırlı.
-  kino.ozelSinir = { sinir: { ...kino.k.sinir, kafa: 4 } };
   /** Kino'nun el sallamasının başladığı an (sn) */
   let kinoSalla = -9;
   kino.ekHareket = (p: KPoz) => {

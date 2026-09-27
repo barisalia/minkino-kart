@@ -368,6 +368,8 @@ export class Film {
       hx = kx - x;
       hy = ky - y;
     }
+    // duraklatılmışken kamera tamamen durur (yumuşak düzeltme de beklemede kalır)
+    if (this.duraklat && !this.ilkKare) return;
     const k = this.ilkKare ? 1 : 0.12;
     this.ilkKare = false;
     this.duzelt.x += (hx - this.duzelt.x) * k;
