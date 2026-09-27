@@ -250,6 +250,16 @@ export class Karakter {
   private acikEkler = new Set<string>();
 
   /**
+   * Görünen bir katmanı geçici gizler (ör. film: Kino'nun kuyruğu, yerine patiyle bastırılmış kuyruk eki
+   * 'pati-kuyruk' gösterilirken). Varsayılan: hiçbiri gizli değil.
+   */
+  gizle(id: string, gizli: boolean) {
+    if (gizli) this.gizlenenler.add(id);
+    else this.gizlenenler.delete(id);
+  }
+  private gizlenenler = new Set<string>();
+
+  /**
    * Konuşuyor mu: açıkken ağız sese göre şekil alır (dudak senkronu, src/audio/dudak.ts): iskeletin agiz-<şekil>
    * katmanları (Adobe), yoksa agiz-acik ölçeklenerek / agiz-kapali; gagada alt gaga açılır.
    * sesli: çalan konuşma sesi bu karakterin (false: sessiz balon, ağız yalnız ritimle); bilgi: cümle / MP4 dizisi.
@@ -447,6 +457,7 @@ export class Karakter {
       for (const id of set.goster) gor.set(id, true);
     }
     for (const id of this.acikEkler) if (this.parca.has(id)) gor.set(id, true);
+    for (const id of this.gizlenenler) gor.set(id, false);
     // göz kırpma: açık göz görünüyorsa kapalı gözle değişir
     if (p.gozKapali && this.parca.has('goz-kapali') && (gor.get('goz-sol') || gor.get('goz-sag'))) {
       gor.set('goz-sol', false);

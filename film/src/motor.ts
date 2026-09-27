@@ -303,6 +303,29 @@ export class Film {
     this.altMetin = h('span.fl-alt-metin');
     this.altyazi = h('div.fl-altyazi', { 'aria-live': 'polite' }, this.altKim, this.altMetin);
     this.el = h('div.fl-sahne', {}, this.dunya, this.isikEl, this.iris, this.altyazi);
+    this.onYukle();
+  }
+
+  /** Bütün sahnelerin görselleri baştan yüklenmeye başlar: sonraki sahneler açılınca eşyalar geç belirmesin */
+  private onYukle() {
+    const d = this.dosya;
+    const adresler = new Set<string>();
+    for (const x of ['arka-uzak', 'arka-orta', 'arka-on']) {
+      const u = FILM_GORSEL[`../../assets/film/${d.film}/${x}.webp`] ?? (d.malzeme ? FILM_GORSEL[`../../assets/film/${d.malzeme}/${x}.webp`] : undefined);
+      if (u) adresler.add(u);
+    }
+    for (const s of d.sahneler) {
+      if ('ogut' in s) continue;
+      for (const e of Object.values(s.esyalar ?? {})) {
+        const u = esyaAdresi(e.tip, d.film, d.malzeme);
+        if (u) adresler.add(u);
+      }
+      for (const o of Object.values(s.oyuncular ?? {})) for (const t of o.tasi ?? []) {
+        const u = esyaAdresi(t.tip, d.film, d.malzeme);
+        if (u) adresler.add(u);
+      }
+    }
+    for (const u of adresler) new Image().src = u;
   }
 
   /** Oynatmayı başlatır (çözülünce film bitmiştir) */

@@ -301,11 +301,13 @@ export class Oyuncu {
     if (this.karakter) {
       const dil = v('dil') > 0.5;
       this.karakter.ek('dil-disarida', dil);
-      // kuyruğunu patisiyle tutar: iskelette 'pati-kuyruk' eki (Adobe, yolda) varsa o görünür, kuyruk durur, kol
-      // kalkmaz; yoksa kol ve kuyruk açısıyla (patiyi kuyruğa indirir) — duruştaki kolSag / kuyruk bu yedek içindir
+      // kuyruğunu arka patisiyle bastırır: iskelette 'pati-kuyruk' eki (Adobe) varsa kuyruk gizlenir, o görünür
+      // (dönmez: kökü ±3°'yi geçerse pati altından kayar), kol kalkmaz; yoksa kol ve kuyruk açısıyla (ön pati kuyrukta)
+      // — duruştaki kolSag / kuyruk bu yedek içindir
       const tut = v('patiKuyruk') > 0.5;
       const pati = tut && !!this.karakter.parcaG('pati-kuyruk');
       this.karakter.ek('pati-kuyruk', pati);
+      this.karakter.gizle('kuyruk', pati);
       if (pati) {
         p.kolSag -= v('kolSag');
         p.kuyruk = 0;
