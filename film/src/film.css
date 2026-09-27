@@ -354,3 +354,55 @@
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------- MP4 kaydı (?kayit=1; scripts/film/mp4.mjs) */
+/* düğmeler ve "çevir" simgesi kayda girmez; öğüt kartında "Tekrar izle" yok */
+body[data-kayit] .fl-kok .fl-ust,
+body[data-kayit] .fl-kok .fl-cevir,
+body[data-kayit] .fl-kok .fl-ogut .dugme {
+  display: none;
+}
+/* dikey / kare çıktılar: sahne ekranın tamamını doldurur (kamera güvenli alanı kişileri kadrajda tutar) */
+body[data-kadraj='dolu'] .fl-kok .fl-sahne-kap {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  translate: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* altyazı: büyük, yuvarlak yazı, alt güvenli alanda */
+body[data-kayit] .fl-kok .fl-altyazi {
+  bottom: 7cqh;
+  max-width: 90cqw;
+  padding: 1.6cqmin 3.6cqmin;
+  border-radius: 999px;
+  border-width: max(3px, 0.6cqmin);
+  box-shadow: 0 0.9cqmin 0 var(--kontur-yumusak);
+  font-size: max(18px, 6.2cqmin);
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: normal;
+}
+body[data-kayit] .fl-kok .fl-ogut p {
+  font-size: max(22px, 7cqmin);
+}
+/* dikey / kare kadraj: dünyanın altında taş zemin aynı dokuyla sürer. Kasasız taş uzantısı (arka-zemin.webp)
+   dikey ayna / düz / ayna dizilir: dikiş ve ters kasa olmaz */
+body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt {
+  position: absolute;
+  left: 0;
+  top: 99.9%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
+  transform: scaleY(-1);
+}

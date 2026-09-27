@@ -4,7 +4,7 @@ import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { Film, type FilmDosya } from './motor';
+import { Film, KAYIT, sesGunlugeYaz, type FilmDosya } from './motor';
 
 const FILMLER = import.meta.glob<FilmDosya>('../../content/film/*.json', { eager: true, import: 'default' });
 export const filmBul = (ad: string) => FILMLER[`../../content/film/${ad}.json`];
@@ -20,6 +20,9 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
   const dosya = filmBul(ad);
   if (!dosya) throw new Error(`Film yok: ${ad}`);
   const sessiz = q.has('sessiz');
+  // MP4 kaydı: düğmeler gizli, altyazı büyük; ?kadraj=dolu: 16:9 yerine ekranın tamamı (dikey / kare çıktılar)
+  if (KAYIT) document.body.dataset.kayit = '1';
+  if (q.get('kadraj') === 'dolu') document.body.dataset.kadraj = 'dolu';
   let film: Film | null = null;
 
   const oynatDugme = h('button.dugme.fl-oynat', { type: 'button' }, svg(IKON.oyna), 'Oynat');
@@ -43,6 +46,7 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
     const kart = h('div.fl-ogut', {}, h('p', {}, metin), tekrar);
     el.append(kart);
     if (!sessiz && !TEST_MODU) void konus(metin);
+    sesGunlugeYaz('konus', metin);
   };
 
   const basla = () => {
