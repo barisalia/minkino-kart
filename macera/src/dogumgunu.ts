@@ -20,7 +20,8 @@ import { adres, resim } from './gorsel';
 import { FIGURLER, Oyuncu } from './oyuncu';
 import { MINO_SVG } from '../../src/mino/mino-svg';
 import { Sahne } from './sahne';
-import { anlikFark, melodi, notaDegerlendir, referansBul, tepeNota, type Nota, type NotaSonucu } from './sarki';
+import { anlikFark, melodi, notaDegerlendir, REF_MIDI, referansBul, satirSonuMs, tepeNota, type Nota, type NotaSonucu } from './sarki';
+import SARKI_SESI from '../../assets/muzik/dogumgunu-sozlu.mp3?url';
 
 const D = M.dogumgunu;
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, sure(ms)));
@@ -415,9 +416,13 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await sahne.kamera(50, 58, 1.08, 900);
     const satir = yas <= 3 ? 2 : 4;
     const notalar = melodi(satir);
-    const VURUS = yas <= 4 ? 0.62 : 0.56;
+    // çocuk kayıttan biraz yavaş söyler (kayıt 100 bpm; küçükler için daha da yavaş)
+    const YAVAS = yas <= 4 ? 1.6 : 1.35;
+    const VURUS = (0.6 * YAVAS);
+    /** bu kadar kısa notada ton puanlanmaz, ses çıkarması yeter (çocuk hızlı heceleri tutturamaz) */
+    const kisa = (n: Nota) => (n.sureMs ?? 600) * YAVAS < 330;
     const panel = h('div.mc-karaoke');
-    const heceEl = notalar.map((n) => h(`span.mc-hece${n.midi === tepeNota(notalar).midi && yas >= 6 ? '.tepe' : ''}`, { style: `--h:${(n.midi - 65) / 16}` }, n.hece));
+    const heceEl = notalar.map((n) => h(`span.mc-hece${n.midi === tepeNota(notalar).midi && yas >= 6 ? '.tepe' : ''}`, { style: `--h:${(n.midi - 58) / 16}` }, n.hece));
     const satirlar: HTMLElement[] = [];
     notalar.forEach((n, i) => {
       satirlar[n.satir] ??= h('div.mc-satir');
@@ -434,15 +439,48 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       top.style.transform = `translate(${r.left - p.left + r.width / 2}px, ${r.top - p.top - 14}px)`;
     };
 
-    // --- dinle: müzik kutusu
+    /** Kaydı çalar, top heceleri kaydın zamanıyla izler; kayıt açılamazsa (ya da testte) aynı notalar müzik kutusuyla */
+    const kayitCal = async () => {
+      const bitis = satirSonuMs(satir);
+      const muzikKutusu = async () => {
+        for (const [i, n] of notalar.entries()) {
+          if (ui.kapandiMi()) return;
+          hece(i);
+          nota(n.midi, ((n.sureMs ?? 500) / 1000) * 0.95, 0.22);
+          await bekle(n.sureMs ?? 500);
+        }
+      };
+      if (TEST_MODU) return muzikKutusu();
+      const ses = new Audio(SARKI_SESI);
+      kulak.sustur(bitis + 800);
+      const calindi = await ses.play().then(() => true, () => false);
+      if (!calindi) return muzikKutusu();
+      let simdi = -1;
+      await new Promise<void>((coz) => {
+        const bitir = () => {
+          tikler.delete(izle);
+          ses.pause();
+          coz();
+        };
+        const izle = () => {
+          if (ui.kapandiMi()) return bitir();
+          const t = ses.currentTime * 1000;
+          let k = -1;
+          notalar.forEach((n, j) => {
+            if (t >= (n.basMs ?? 0)) k = j;
+          });
+          if (k >= 0 && k !== simdi) hece((simdi = k));
+          if (t >= bitis + 250 || ses.ended) bitir();
+        };
+        tikler.add(izle);
+      });
+    };
+
+    // --- dinle: şarkının kaydı (Gemini); çalarken mikrofon dinlemez, top heceleri kayıtla birlikte izler
     await soyle(D.sarki_giris);
     konuklar.forEach((k) => k.sallan(true));
-    for (const [i, n] of notalar.entries()) {
-      if (ui.kapandiMi()) return;
-      hece(i);
-      nota(n.midi, n.vurus * VURUS * 0.95, 0.22);
-      await bekle(n.vurus * VURUS * 1000 + (notalar[i + 1] && notalar[i + 1].satir !== n.satir ? VURUS * 1000 : 0));
-    }
+    await kayitCal();
+    if (ui.kapandiMi()) return;
     heceEl.forEach((e) => e.classList.remove('simdi'));
     konuklar.forEach((k) => k.sallan(false));
 
@@ -470,10 +508,10 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       if (sesVar(o, kulak.ayar, 10)) sesliKare++;
       if (o.perde !== null && sesVar(o, kulak.ayar, 10)) {
         perdeler.push(o.perde);
-        if (simdiki.satir === 0 && simdiki.midi === 67) refPerdeler.push(o.perde);
-        // anlık tepki: çok ince / çok kalın
-        if (referans && yas >= 4 && performance.now() - tepkiZamani > 1400) {
-          const f = anlikFark(o.perde, referans, simdiki.midi);
+        if (simdiki.satir === 0 && simdiki.midi === REF_MIDI) refPerdeler.push(o.perde);
+        // anlık tepki: çok ince / çok kalın (yalnız uzun notalarda)
+        if (referans && yas >= 4 && !kisa(simdiki) && performance.now() - tepkiZamani > 1400) {
+          const f = anlikFark(o.perde, referans, simdiki.midi, REF_MIDI);
           if (Math.abs(f) > 4.5) {
             tepkiZamani = performance.now();
             const k = sec(konuklar);
@@ -493,14 +531,13 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       kareSay = 0;
       dokunusVar = false;
       hece(i);
-      // çok hafif vuruş (tempo için); kulak kısa süre susar
-      davul(false, 0.05);
-      await bekle(n.vurus * VURUS * 1000);
+      // (burada vuruş sesi çalınmaz: kısa notalarda mikrofonu susturur)
+      await bekle((n.sureMs ?? 600) * YAVAS);
       if (!referans) referans = referansBul(refPerdeler);
       const oran = kareSay ? sesliKare / kareSay : 0;
       const r = dokunusVar
         ? 'dogru'
-        : notaDegerlendir({ perdeler, sesli: TEST_MODU ? 1 : oran, midi: n.midi, referans, tolerans, yalnizSes: yas <= 4 || i < 2 });
+        : notaDegerlendir({ perdeler, sesli: TEST_MODU ? 1 : oran, midi: n.midi, referans, tolerans, yalnizSes: yas <= 4 || i < 2 || kisa(n), refMidi: REF_MIDI });
       sonuclar.push(r);
       heceEl[i].classList.add(r === 'dogru' || r === 'ses' ? 'iyi' : r === 'sessiz' ? 'bos' : 'kacti');
       if (r === 'dogru' && n === tepeNota(notalar) && yas >= 6) {

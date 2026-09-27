@@ -1,15 +1,30 @@
 import { describe, expect, it } from 'vitest';
-import { anlikFark, melodi, notaDegerlendir, referansBul, tepeNota } from '../../macera/src/sarki';
+import { anlikFark, melodi, notaDegerlendir, REF_MIDI, referansBul, satirSonuMs, tepeNota } from '../../macera/src/sarki';
 
 const hz = (midi: number, ref = 67, refHz = 300) => refHz * Math.pow(2, (midi - ref) / 12);
 
 describe('Doğum günü şarkısı', () => {
-  it('dört satır, satır başına 6-7 hece; en yüksek nota "ki"', () => {
+  it('şarkı kayıttan (assets/muzik/dogumgunu.json): dört satır, sözler, zamanlar sıralı', () => {
     const m = melodi();
+    expect(m.filter((n) => n.satir === 0).map((n) => n.hece).join('')).toBe('Neşeyleşarkısöyle');
     expect(m.filter((n) => n.satir === 2).map((n) => n.hece).join('')).toBe('İyikidoğdunAda');
     expect(new Set(m.map((n) => n.satir)).size).toBe(4);
-    expect(tepeNota(m).hece).toBe('ki');
-    expect(melodi(2).length).toBe(12);
+    expect(m.length).toBe(27);
+    expect(melodi(2).length).toBe(14);
+    expect(tepeNota(m).midi).toBe(72);
+    for (let i = 1; i < m.length; i++) expect(m[i].basMs!).toBeGreaterThanOrEqual(m[i - 1].basMs!);
+    expect(satirSonuMs(2)).toBeLessThan(satirSonuMs(4));
+    expect(REF_MIDI).toBe(m[0].midi);
+  });
+
+  it('kayıttaki referans notaya göre ton bağımsız değerlendirme', () => {
+    for (const refHz of [220, 300, 420]) {
+      const ref = referansBul(Array(8).fill(refHz))!;
+      for (const n of melodi()) {
+        const p = Array(10).fill(hz(n.midi, REF_MIDI, refHz));
+        expect(notaDegerlendir({ perdeler: p, sesli: 1, midi: n.midi, referans: ref, tolerans: 2.5, yalnizSes: false, refMidi: REF_MIDI })).toBe('dogru');
+      }
+    }
   });
 
   it('ton bağımsız: çocuk hangi tonda söylerse söylesin aralıklar doğruysa kabul', () => {
