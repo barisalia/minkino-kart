@@ -1,0 +1,43 @@
+﻿{
+    "aciklama":  "Mino karpuza sariliyor (Gemini cizimi, mino-final hizasinda DEGIL). Katmanlar ortak cercevede (1209x1286), alttan uste: arka, karpuz, on. Ucu ust uste = ozgun cizim.",
+    "cerceve":  [
+                    1209,
+                    1286
+                ],
+    "sira":  [
+                 "mino-sarilma-arka",
+                 "mino-sarilma-karpuz",
+                 "mino-sarilma-on"
+             ],
+    "karpuzElips":  {
+                        "merkez":  [
+                                       458.8,
+                                       791.8
+                                   ],
+                        "yaricap":  [
+                                        495.2,
+                                        408
+                                    ],
+                        "aci":  71.26
+                    },
+    "bizimKarpuz":  {
+                        "aciklama":  "mino-sarilma-karpuz yerine karpuz.webp kullanmak icin (sap Mino\u0027nun arkasinda kalir): once karpuz.webp\u0027nin govde merkezini (merkezKaynak) orijine al, olcek(x,y) uygula, aci kadar saat yonunde dondur, cercevede merkez\u0027e tasi.",
+                        "dosya":  "karpuz.webp",
+                        "merkezKaynak":  [
+                                             599.7,
+                                             611.8
+                                         ],
+                        "olcek":  [
+                                      0.8288,
+                                      0.882
+                                  ],
+                        "aci":  71.26,
+                        "merkez":  [
+                                       458.8,
+                                       791.8
+                                   ],
+                        "css":  "transform-origin:0 0; transform: translate(458.8px,791.8px) rotate(71.26deg) scale(0.8288,0.8820) translate(-599.7px,-611.8px)"
+                    },
+    "zeminY":  1279.5,
+    "zeminAciklama":  "Ayak/karpuz tabanlarinin en alti (cercevede y). Sahneye yerlestirirken bu cizgi zemine oturur."
+}

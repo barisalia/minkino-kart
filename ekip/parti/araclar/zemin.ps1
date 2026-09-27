@@ -1,4 +1,5 @@
-param([string]$Ad, [string]$Pozlar, [string]$Sil = '', [switch]$Sayfa)
+param([string]$Ad, [string]$Pozlar, [string]$Sil = '', [switch]$Sayfa, [string]$Muhur = '')
+# -Muhur "poz:cx,cy,r;poz2:cx,cy,r" → ponpon göbeği gibi zemine sızan iç beyazları korumak için set halkası
 # Gemini PNG'lerinin zeminini siler → <ad>-<poz>-seffaf.png
 # Yalnız kenara bağlı beyaz otomatik silinir; kapalı beyaz boşluklar (göz akı, diş, ayakkabı, kol-gövde arası) korunur.
 # -Sil "poz:13,14;poz2:30"  → o pozda o numaralı kapalı boşluklar (zemin olanlar) da silinir.
@@ -8,9 +9,11 @@ $sp = $PSScriptRoot
 $kaynak = "C:/Users/Minkex/Desktop/minkino-parti-gemini/ekip/gemini/parti/$Ad"
 $silHarita = @{}
 foreach ($parca in ($Sil -split ';')) { if ($parca -match '^(\w+):(.+)$') { $silHarita[$Matches[1]] = $Matches[2] } }
+$muhurHarita = @{}
+foreach ($parca in ($Muhur -split ';')) { if ($parca -match '^(\w+):(.+)$') { $muhurHarita[$Matches[1]] = $Matches[2] } }
 $bosluklar = @()
 foreach ($p in ($Pozlar -split ',')) {
-  $r = [Parti]::ZeminSil("$kaynak/$p.png", "$sp/$Ad-$p-seffaf.png", 232, 1000000000, "", [string]$silHarita[$p])
+  $r = [Parti]::ZeminSil("$kaynak/$p.png", "$sp/$Ad-$p-seffaf.png", 232, 1000000000, "", [string]$silHarita[$p], [string]$muhurHarita[$p])
   "== $p"; $r
   foreach ($satir in ($r -split "`n")) {
     if ($satir -match 'bosluk#(\d+) alan=(\d+) kutu=(\d+),(\d+)-(\d+),(\d+)') {

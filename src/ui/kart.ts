@@ -4,7 +4,7 @@ import { h } from './dom';
 
 // Karakter seçenek çizimleri pakete girmesin; sadece Mino'nun kendisi.
 // (Olumsuz desen bütün listeye uygulandığı için Mino aynı listeye geri eklenemiyor: ayrı liste.)
-const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '!../../assets/parti/**', '!../../assets/parti-sahne/**'], {
+const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '!../../assets/parti/**', '!../../assets/parti-sahne/**', '!../../assets/film/**'], {
   eager: true,
   query: '?url',
   import: 'default',

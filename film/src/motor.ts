@@ -15,6 +15,9 @@ import { FILM_EFEKT } from './efekt';
 import { filmMuzik, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
 
+const FILM_GORSEL = import.meta.glob<string>('../../assets/film/*/arka-*.webp', { eager: true, query: '?url', import: 'default' });
+const PAZAR_GORSEL = import.meta.glob<string>('../../assets/pazar/tezgah.webp', { eager: true, query: '?url', import: 'default' });
+
 // ---------------------------------------------------------------- sahne dosyası
 export interface Konum {
   x: number;
@@ -52,6 +55,8 @@ export interface Sahne {
   olaylar: Olay[];
   /** kadrajda her zaman tam görünecek oyuncu / eşyalar (kamera olayı "tut" ile değiştirir) */
   tut?: string[];
+  /** Mino'nun pazar tezgâhı (tezgah.webp) sahnede dursun mu */
+  tezgah?: boolean;
 }
 export interface FilmDosya {
   baslik: string;
@@ -61,8 +66,13 @@ export interface FilmDosya {
   seslendir?: boolean;
   sahneler: (Sahne | { ogut: string })[];
 }
-type Katman = 'uzak' | 'orta' | 'on';
-const DERINLIK: Record<Katman, number> = { uzak: 0.55, orta: 1, on: 1.25 };
+/**
+ * Katmanlar (arkadan öne): uzak (gök, tepeler) · tezgahlar (pazar tezgâhları, flamalar) · zemin (taş zemin, yan
+ * kasalar) · orta (oyuncular, eşyalar) · on. Zemin ön katman derinliğinde (1.25) ama karakterlerin arkasında çizilir:
+ * ayaklar ve gölgeler zeminin üstünde kalsın.
+ */
+type Katman = 'uzak' | 'tezgahlar' | 'zemin' | 'orta' | 'on';
+const DERINLIK: Record<Katman, number> = { uzak: 0.55, tezgahlar: 1, zemin: 1.25, orta: 1, on: 1.25 };
 
 // ---------------------------------------------------------------- eğriler ve tween
 const EGRI: Record<string, (u: number) => number> = {
@@ -101,6 +111,10 @@ class Nesne {
     this.ic = h('div.fl-ic', {}, cocuk);
     this.el = h('div.fl-nesne', { style: `width:${k.w}%;aspect-ratio:${oran};z-index:${k.z ?? 5}` }, this.ic);
   }
+  /** oyuncunun ayak altı gölgesi (dönmez, çevrilmez) */
+  golgeEkle() {
+    this.el.prepend(h('i.fl-golge'));
+  }
   /** dünya ölçüsü (px) */
   uygula() {
     this.el.style.left = `${this.x}%`;
@@ -125,6 +139,8 @@ export class Film {
   private dunya: HTMLElement;
   private katmanlar: Record<Katman, HTMLElement>;
   private isikEl: HTMLElement;
+  /** akşam ışığı uzak katmanda biraz daha güçlü */
+  private isikUzak: HTMLElement;
   private iris: HTMLElement;
   private altyazi: HTMLElement;
   private altKim: HTMLElement;
@@ -147,6 +163,7 @@ export class Film {
   private duzelt = { x: 0, y: 0 };
   private altZaman = 0;
   private bitti = false;
+  private tezgahVar = false;
   private readonly hiz: number;
   private readonly ses: boolean;
   private readonly muzik: boolean;
@@ -158,8 +175,15 @@ export class Film {
     this.hiz = secenek.hiz ?? (TEST_MODU ? 12 : 1);
     this.ses = secenek.ses ?? !TEST_MODU;
     this.muzik = secenek.muzik ?? !TEST_MODU;
-    this.katmanlar = { uzak: h('div.fl-katman.fl-uzak'), orta: h('div.fl-katman.fl-orta'), on: h('div.fl-katman.fl-on') };
-    this.dunya = h('div.fl-dunya', {}, this.katmanlar.uzak, this.katmanlar.orta, this.katmanlar.on);
+    this.katmanlar = {
+      uzak: h('div.fl-katman.fl-uzak'),
+      tezgahlar: h('div.fl-katman.fl-tezgahlar'),
+      zemin: h('div.fl-katman.fl-zemin'),
+      orta: h('div.fl-katman.fl-orta'),
+      on: h('div.fl-katman.fl-on'),
+    };
+    this.dunya = h('div.fl-dunya', {}, ...Object.values(this.katmanlar));
+    this.isikUzak = h('div.fl-isik-uzak');
     this.isikEl = h('div.fl-isik');
     this.iris = h('div.fl-iris', {}, h('i'));
     this.altKim = h('b.fl-alt-kim');
@@ -259,11 +283,13 @@ export class Film {
     this.oyuncular.clear();
     this.nesneler.clear();
     Object.values(this.katmanlar).forEach((k) => k.replaceChildren());
+    this.tezgahVar = !!s.tezgah;
     this.arka(s.arka);
     for (const [id, o] of Object.entries(s.oyuncular ?? {})) {
       const oy = new Oyuncu(o.tip);
       const n = new Nesne(o, oy.el, oy.oran);
       n.el.dataset.oyuncu = id;
+      n.golgeEkle();
       this.oyuncular.set(id, oy);
       this.nesneler.set(id, n);
       this.katmanlar.orta.append(n.el);
@@ -271,6 +297,8 @@ export class Film {
     for (const [id, e] of Object.entries(s.esyalar ?? {})) {
       const n = new Nesne(e, esyaCiz(e.tip, this.dosya.film), ESYA_ORAN[e.tip] ?? 1);
       n.el.dataset.esya = id;
+      // karakter pozları (mino-sarilma) oyuncu gibi gölgeli
+      if (e.tip.startsWith('mino-')) n.golgeEkle();
       this.nesneler.set(id, n);
       this.katmanlar[e.katman ?? 'orta'].append(n.el);
     }
@@ -279,21 +307,32 @@ export class Film {
     this.konusan = null;
     this.duzelt = { x: 0, y: 0 };
     this.ilkKare = true;
-    this.isikEl.style.opacity = String(s.isik ?? 0);
+    this.isikAyarla(s.isik ?? 0);
     this.el.dataset.sahne = s.ad;
   }
 
-  /** Arka plan: bilinen yerler (şimdilik pazar: gökyüzü görseli uzakta, stand ortada). Adobe katmanlı verince buraya. */
+  /**
+   * Arka plan. Pazar: filmin katmanlı çizimi (assets/film/<film>/arka-uzak, -orta, -on; ortak 16:9 çerçeve) dünyanın
+   * altına tam genişlikte oturur; uzak katmanın üstü gök rengiyle devam eder. Mino'nun tezgâhı istenirse ortada.
+   */
   private arka(ad: string) {
-    const GORSEL = import.meta.glob<string>('../../assets/pazar/*.webp', { eager: true, query: '?url', import: 'default' });
-    const g = (x: string) => GORSEL[`../../assets/pazar/${x}.webp`] ?? '';
-    if (ad === 'pazar') {
-      this.katmanlar.uzak.append(h('img.fl-arka', { src: g('arkaplan'), alt: '', draggable: 'false' }));
-      const stand = new Nesne({ x: 50, y: 5, w: 62, z: 1 }, h('img.fl-esya-resim', { src: g('tezgah'), alt: '', draggable: 'false' }), 1);
+    if (ad !== 'pazar') return;
+    const film = (x: string) => FILM_GORSEL[`../../assets/film/${this.dosya.film}/${x}.webp`] ?? '';
+    const resim = (x: string) => h('img.fl-arka', { src: film(x), alt: '', draggable: 'false' });
+    this.katmanlar.uzak.append(resim('arka-uzak'), this.isikUzak);
+    this.katmanlar.tezgahlar.append(resim('arka-orta'));
+    this.katmanlar.zemin.append(resim('arka-on'));
+    if (this.tezgahVar) {
+      const stand = new Nesne({ x: 50, y: 5, w: 62, z: 1 }, h('img.fl-esya-resim', { src: PAZAR_GORSEL['../../assets/pazar/tezgah.webp'] ?? '', alt: '', draggable: 'false' }), 1);
       stand.el.dataset.esya = 'stand';
       this.nesneler.set('stand', stand);
       this.katmanlar.orta.append(stand.el);
     }
+  }
+
+  private isikAyarla(v: number) {
+    this.isikEl.style.opacity = String(v);
+    this.isikUzak.style.opacity = String(Math.min(1, v * 0.8));
   }
 
   // ---------------------------------------------------------------- kamera
@@ -381,7 +420,7 @@ export class Film {
     if (o.kim === 'isik') {
       const a = Number(this.isikEl.style.opacity || 0);
       const b = Number(o.deger ?? 0);
-      this.tween(sure, 'yumusak', (u) => (this.isikEl.style.opacity = String(a + (b - a) * u)));
+      this.tween(sure, 'yumusak', (u) => this.isikAyarla(a + (b - a) * u));
       return;
     }
     if (o.kim === 'muzik') {

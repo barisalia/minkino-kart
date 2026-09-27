@@ -38,9 +38,21 @@ foreach ($p in $a.pozlar) {
 $eskiW = $nr.W; $eskiH = $nr.H
 "TUVAL {0}x{1}  (eski {2}x{3})  normal kaydirma +{4},+{5}  goz ortasi x={6:N1} goz y={7:N1} ayak y={8}" -f $TW, $TH, $eskiW, $eskiH, $dx, $dy, $XC, ($n.gy + $dy), $YA
 $boy = $a.boy * $TW / $eskiW
-"OYUN: boy {0:N2} (eski {1}), oran {2}/{3}" -f $boy, $a.boy, $TW, $TH
+# gölge: eski kutuda iki yandan %18 içerideydi; aynı piksel genişliği için yeni iç pay (iki yanın ortalaması)
+$gSol = (0.18 * $eskiW + $dx) / $TW * 100; $gSag = ($TW - (0.82 * $eskiW + $dx)) / $TW * 100; $golge = ($gSol + $gSag) / 2
+$inv = [Globalization.CultureInfo]::InvariantCulture
 if ($a.sapka) {
   $sx = ($a.sapka.x / 100 * $eskiW + $dx) / $TW * 100; $sy = ($a.sapka.y / 100 * $eskiH + $dy) / $TH * 100; $sw = $a.sapka.w / 100 * $eskiW / $TW * 100
-  "OYUN: sapka {{ x: {0:N1}, y: {1:N1}, w: {2:N1}, d: {3} }}" -f $sx, $sy, $sw, $a.sapka.d
+  $satir = [string]::Format($inv, "{0}: {{ boy: {1:0.00}, oran: {2} / {3}, golge: {4:0.0}, sapka: {{ x: {5:0.0}, y: {6:0.0}, w: {7:0.0}, d: {8} }} }},", $ad, $boy, $TW, $TH, $golge, $sx, $sy, $sw, $a.sapka.d)
+} else {
+  $satir = [string]::Format($inv, "{0}: {{ boy: {1:0.00}, oran: {2} / {3}, golge: {4:0.0} }},", $ad, $boy, $TW, $TH, $golge)
 }
+"OYUN SATIRI: $satir"
+$satir | Set-Content "$sp/tuval/_satir.txt"
+# ekip/parti/pozlar/satirlar.txt: bu karakterin eski satırı değiştirilir, yoksa eklenir
+$satirDosya = 'C:/Users/Minkex/Desktop/Minkino Games/ekip/parti/pozlar/satirlar.txt'
+New-Item -ItemType Directory -Force (Split-Path $satirDosya) | Out-Null
+$eski = if (Test-Path $satirDosya) { @(Get-Content $satirDosya -Encoding UTF8 | Where-Object { $_ -and -not $_.StartsWith("${ad}:") }) } else { @() }
+$yeni = @($eski) + $satir
+[IO.File]::WriteAllLines($satirDosya, [string[]]$yeni, (New-Object Text.UTF8Encoding $false))
 @{ TW = $TW; TH = $TH; XC = $XC; GY = $n.gy + $dy; YA = $YA } | ConvertTo-Json | Set-Content "$sp/tuval/_olcu.json"

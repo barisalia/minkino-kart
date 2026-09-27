@@ -45,10 +45,22 @@ public static class Parti {
   }
   /// silNo: ayrıca silinecek kapalı boşluk numaraları ("13,14"): kol-gövde arası gibi zemin boşlukları
   public static string ZeminSil(string girdi, string cikti, int esik, int buyukBosluk, string korunacak, string silNo) {
+    return ZeminSil(girdi, cikti, esik, buyukBosluk, korunacak, silNo, "");
+  }
+  /// muhur: "cx,cy,r;..." — bu dairelerin çevresi (1 px halka) zemin silmeye set olur; tüylü ponponun göbeği gibi
+  /// kenardaki aralıklardan zemine bağlanan iç beyazlar korunur.
+  public static string ZeminSil(string girdi, string cikti, int esik, int buyukBosluk, string korunacak, string silNo, string muhur) {
     var silSet = new HashSet<int>();
     if (!string.IsNullOrEmpty(silNo)) foreach (var s in silNo.Split(',')) { int v; if (int.TryParse(s.Trim(), out v)) silSet.Add(v); }
     var r = Rgba.Oku(girdi); int W = r.W, H = r.H; var p = r.P;
-    var etiket = new int[W * H]; // 0: işlenmedi, -1: beyaz değil, >0 bölge no
+    var etiket = new int[W * H]; // 0: işlenmedi, -1: beyaz değil ya da set, >0 bölge no
+    if (!string.IsNullOrEmpty(muhur)) foreach (var m in muhur.Split(';')) {
+      var q = m.Split(','); if (q.Length != 3) continue;
+      int mx = int.Parse(q[0]), my = int.Parse(q[1]), mr = int.Parse(q[2]);
+      for (int a = 0; a < 3600; a++) { double t = a * Math.PI / 1800.0;
+        int x = (int)Math.Round(mx + mr * Math.Cos(t)), y = (int)Math.Round(my + mr * Math.Sin(t));
+        if (x >= 0 && y >= 0 && x < W && y < H) etiket[y * W + x] = -1; }
+    }
     var alanlar = new List<int>(); alanlar.Add(0);
     var kenara = new List<bool>(); kenara.Add(false);
     var sinirlar = new List<int[]>(); sinirlar.Add(null);
@@ -169,13 +181,34 @@ public static class Parti {
     return "kenar temizlendi: " + degisen + " piksel";
   }
 
+  /// Zeminle birlikte silinmiş beyaz bir iç bölgeyi (ör. tüylü ponponun göbeği) geri koyar: (cx,cy) merkezli r yarıçaplı
+  /// daire içinde silinmiş pikseller kaynaktaki renkleriyle opak geri gelir. Önce dairedeki saydam kümenin merkezi aranır.
+  public static string GeriKoy(string seffafPng, string kaynakPng, int x0, int y0, int x1, int y1, int r) {
+    var s = Rgba.Oku(seffafPng); var k = Rgba.Oku(kaynakPng); int W = s.W;
+    long sx = 0, sy = 0; int n = 0;
+    for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) if (s.P[(y * W + x) * 4 + 3] == 0) { sx += x; sy += y; n++; }
+    if (n == 0) return "saydam yok";
+    int cx = (int)(sx / n), cy = (int)(sy / n), deg = 0;
+    for (int y = cy - r; y <= cy + r; y++) for (int x = cx - r; x <= cx + r; x++) {
+      if ((x - cx) * (x - cx) + (y - cy) * (y - cy) > r * r) continue;
+      int o = (y * W + x) * 4; if (s.P[o + 3] != 0) continue;
+      s.P[o] = k.P[o]; s.P[o + 1] = k.P[o + 1]; s.P[o + 2] = k.P[o + 2]; s.P[o + 3] = 255; deg++;
+    }
+    s.Yaz(seffafPng);
+    return "geri kondu: merkez " + cx + "," + cy + " (" + n + " saydam piksel kutuda), " + deg + " piksel";
+  }
+
   /// Kalın koyu bölgelerin (gözbebekleri) merkezleri: yarıçap r'lik kare içinde en az oran kadarı koyu olan pikseller
   /// bölgelere ayrılır; her bölgenin ağırlık merkezi ve piksel sayısı döner. Arama kutusu: x0,y0,x1,y1.
   public static string KoyuMerkezler(string png, int r, double oran, int x0, int y0, int x1, int y1) {
+    return KoyuMerkezler(png, r, oran, x0, y0, x1, y1, 95, 70, 65);
+  }
+  /// rMax/gMax/bMax: "koyu" sayılma eşikleri (kahverengi gözbebekleri için gevşetilebilir)
+  public static string KoyuMerkezler(string png, int r, double oran, int x0, int y0, int x1, int y1, int rMax, int gMax, int bMax) {
     var g = Rgba.Oku(png); int W = g.W, H = g.H; var p = g.P;
     var koyu = new int[(W + 1) * (H + 1)]; // integral görüntü
     for (int y = 0; y < H; y++) { int satir = 0; for (int x = 0; x < W; x++) {
-      int o = (y * W + x) * 4; bool k = p[o + 3] > 200 && p[o + 2] < 95 && p[o + 1] < 70 && p[o] < 65;
+      int o = (y * W + x) * 4; bool k = p[o + 3] > 200 && p[o + 2] < rMax && p[o + 1] < gMax && p[o] < bMax;
       satir += k ? 1 : 0; koyu[(y + 1) * (W + 1) + x + 1] = koyu[y * (W + 1) + x + 1] + satir; } }
     var isaret = new bool[W * H]; int alan = (2 * r + 1) * (2 * r + 1);
     for (int y = Math.Max(y0, r); y <= Math.Min(y1, H - r - 1); y++) for (int x = Math.Max(x0, r); x <= Math.Min(x1, W - r - 1); x++) {

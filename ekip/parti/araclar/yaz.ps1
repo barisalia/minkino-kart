@@ -1,10 +1,10 @@
-param([string]$Ad, [string]$Pozlar, [switch]$Kayipsiz)
-# Tuvaldeki PNG'leri assets/parti-ifade/<ad>/<poz>.webp olarak yazar.
+param([string]$Ad, [string]$Pozlar, [switch]$Kayipsiz, [string]$Hedef = '')
+# Tuvaldeki PNG'leri <Hedef>/<poz>.webp olarak yazar (Hedef verilmezse ekip/parti/<ad>; oyuna koymak bulutun/Barış'ın kararı).
 # Varsayılan: sharp ile kayıplı (quality 88, alphaQuality 100; ~30 KB). -Kayipsiz: kendi VP8L kodlayıcı (Node yoksa).
 $ErrorActionPreference = 'Stop'
 $sp = $PSScriptRoot
 $proje = 'C:/Users/Minkex/Desktop/Minkino Games'
-$hedef = "$proje/assets/parti-ifade/$Ad"
+$hedef = if ($Hedef) { $Hedef } else { "$proje/ekip/parti/pozlar/$Ad" }
 New-Item -ItemType Directory -Force $hedef | Out-Null
 $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User')
 if ($Kayipsiz) { . "$sp/yukle.ps1" }

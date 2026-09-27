@@ -3,7 +3,10 @@
  * ördek… iskelet varsa parça parça, yoksa tek görsel). Motor ikisini aynı arayüzle yönetir.
  */
 import { Karakter, type HareketAdi } from '../../src/karakter/karakter';
-import { Mino, type MinoIfade, type Tepki } from '../../src/mino/mino';
+import { Mino, minoIfadeleriYukle, type MinoIfade, type Tepki } from '../../src/mino/mino';
+
+// film açılınca Mino'nun ifade ekleri önceden yüklensin (ilk ifadede gecikme olmasın)
+void minoIfadeleriYukle();
 import { h } from '../../src/ui/dom';
 
 const HAYVAN = import.meta.glob<string>('../../assets/hayvanlar/*.webp', { eager: true, query: '?url', import: 'default' });

@@ -21,6 +21,18 @@ const KOL_EN_COK = 24;
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
 
+/**
+ * İfade ekleri ayrı pakette (gömülü WebP, ağır): yalnız gerektiğinde bir kez yüklenir. Film açılışta önceden çağırır.
+ */
+let ifadeYukleme: Promise<string | null> | null = null;
+export function minoIfadeleriYukle(): Promise<string | null> {
+  ifadeYukleme ??= import('./mino-ifade-svg').then(
+    (m) => m.MINO_IFADE_SVG,
+    () => null,
+  );
+  return ifadeYukleme;
+}
+
 /** Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) */
 export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp';
 /** Bu tepkiler kendi ifadesini de açar (yalnız filmde kullanılır; oyunlarda değişiklik yok) */
@@ -151,10 +163,30 @@ export class Mino {
   ifade(ad: MinoIfade | null, ms = 0) {
     for (const c of [...this.el.classList]) if (c.startsWith('ifade-')) this.el.classList.remove(c);
     clearTimeout(this.ifadeZaman);
-    this.ifadeAd = ad;
+    this.ifadeAd = null;
+    this.ifadeIstek++;
     if (!ad) return;
-    this.el.classList.add(`ifade-${ad}`);
-    if (ms) this.ifadeZaman = window.setTimeout(() => this.ifade(null), TEST_MODU ? 30 : ms);
+    // ekler henüz yüklenmediyse yükle; yüklenince (hâlâ isteniyorsa) göster, yoksa sessizce vazgeç
+    const istek = this.ifadeIstek;
+    void this.ifadeleriEkle().then((tamam) => {
+      if (!tamam || istek !== this.ifadeIstek) return;
+      this.ifadeAd = ad;
+      this.el.classList.add(`ifade-${ad}`);
+      if (ms) this.ifadeZaman = window.setTimeout(() => this.ifade(null), TEST_MODU ? 30 : ms);
+    });
+  }
+  private ifadeIstek = 0;
+  private ifadeEklendi = false;
+
+  /** Bu Mino'nun kafasına ifade eklerini koyar (paylaşılan tembel yükleme) */
+  private async ifadeleriEkle(): Promise<boolean> {
+    if (this.ifadeEklendi) return true;
+    const svg = await minoIfadeleriYukle();
+    const yer = this.el.querySelector('.m-ifadeler');
+    if (!svg || !yer) return false;
+    if (!this.ifadeEklendi) yer.innerHTML = svg;
+    this.ifadeEklendi = true;
+    return true;
   }
   private ifadeAd: MinoIfade | null = null;
   private ifadeZaman = 0;

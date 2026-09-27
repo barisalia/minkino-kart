@@ -1,15 +1,16 @@
-{
+﻿{
   "ad": "can",
   "boy": 15.5,
   "sapka": { "x": 49, "y": 7, "w": 32, "d": -6 },
   "normal": { "gx": 140.5, "gy": 165.5, "ayak": 504 },
   "pozlar": [
-    { "ad": "selam",      "gx": 1016.5, "gy": 718.5, "ayak": 1902 },
-    { "ad": "saklaniyor", "gx": 1018.0, "gy": 716.0, "ayak": 1902 },
-    { "ad": "sapkali",    "gx": 1016.5, "gy": 718.5, "ayak": 1902 },
-    { "ad": "alkis",      "gx": 1016.0, "gy": 718.5, "ayak": 1902 },
-    { "ad": "saskin",     "gx": 1024.4, "gy": 722.3, "ayak": 1902 },
-    { "ad": "dans",       "gx": 1024.3, "gy": 722.3, "ayak": 1902 },
-    { "ad": "dans2",      "gx": 1024.3, "gy": 722.2, "ayak": 1902 }
+    { "ad": "selam",      "gx": 1016.9, "gy": 748.8, "ayak": 1813 },
+    { "ad": "saklaniyor", "gx": 1017.0, "gy": 747.0, "ayak": 1814 },
+    { "ad": "sapkali",    "gx": 1017.0, "gy": 748.9, "ayak": 1814 },
+    { "ad": "alkis",      "gx": 1016.0, "gy": 749.0, "ayak": 1814 },
+    { "ad": "saskin",     "gx": 1024.1, "gy": 752.1, "ayak": 1814 },
+    { "ad": "dans",       "gx": 1024.0, "gy": 752.3, "ayak": 1814 },
+    { "ad": "dans2",      "gx": 1024.0, "gy": 752.0, "ayak": 1814 }
   ]
 }
+

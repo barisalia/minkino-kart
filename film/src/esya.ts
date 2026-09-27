@@ -1,11 +1,12 @@
 /**
- * Film eşyaları. Gerçek çizimler (Recraft/Gemini, assets/film/<film>/<ad>.webp) gelene kadar stil kurallarına uygun
- * SVG yer tutucular: yuvarlak hatlar, kalın koyu kahve kontur, az dozda parlaklık.
+ * Film eşyaları: gerçek çizimler assets/film/<film>/<ad>.webp; olmayanlar için stil kurallarına uygun SVG yer
+ * tutucular (yuvarlak hatlar, kalın koyu kahve kontur, az dozda parlaklık).
  */
 import { h } from '../../src/ui/dom';
 
 const K = '#5a3617';
-const GORSELLER = import.meta.glob<string>('../../assets/film/**/*.webp', { eager: true, query: '?url', import: 'default' });
+// arka-*: motor.ts; mino-sarilma-karpuz yerine karpuz.webp kullanılır
+const GORSELLER = import.meta.glob<string>(['../../assets/film/**/*.webp', '!**/arka-*.webp', '!**/mino-sarilma-karpuz.webp'], { eager: true, query: '?url', import: 'default' });
 
 const SVG: Record<string, string> = {
   karpuz: `<svg viewBox="0 0 200 150"><ellipse cx="100" cy="80" rx="92" ry="64" fill="#3f9a3a" stroke="${K}" stroke-width="7"/>
@@ -25,12 +26,44 @@ const SVG: Record<string, string> = {
   tabak: `<svg viewBox="0 0 200 60"><ellipse cx="100" cy="30" rx="94" ry="24" fill="#fff" stroke="${K}" stroke-width="6"/><ellipse cx="100" cy="28" rx="62" ry="13" fill="#eef3f7"/></svg>`,
 };
 
+/**
+ * Katmanlı pozlar (ortak çerçevede üst üste; ekip notu assets/film/<film>/<ad>.json). Karpuz katmanı yerine bizim
+ * karpuz.webp dönüşümle yerleşir: sahnedeki karpuz eşyasıyla birebir aynı görünür, geçiş fark edilmez.
+ */
+const KATMANLI: Record<string, { cerceve: [number, number]; katmanlar: { ad: string; w: number; h: number; donusum?: string }[] }> = {
+  'mino-sarilma': {
+    cerceve: [1209, 1286],
+    katmanlar: [
+      { ad: 'mino-sarilma-arka', w: 1209, h: 1286 },
+      { ad: 'karpuz', w: 1200, h: 1078, donusum: 'translate(458.8 791.8) rotate(71.26) scale(0.8288 0.882) translate(-599.7 -611.8)' },
+      { ad: 'mino-sarilma-on', w: 1209, h: 1286 },
+    ],
+  },
+};
+
+/** Sarılma pozunda karpuz: çerçevedeki merkezi ve (ortalama) ölçeği; motor pozu sahnedeki karpuza hizalar */
+export const SARILMA_KARPUZ = { merkez: [458.8, 791.8] as const, olcek: (0.8288 + 0.882) / 2, aci: 71.26, cerceve: [1209, 1286] as const };
+
 /** Eşya elemanı: varsa gerçek görsel, yoksa SVG yer tutucu */
 export function esyaCiz(tip: string, film: string): HTMLElement {
+  const kat = KATMANLI[tip];
+  if (kat) {
+    const [W, H] = kat.cerceve;
+    const resimler = kat.katmanlar
+      .map((k) => {
+        const url = GORSELLER[`../../assets/film/${film}/${k.ad}.webp`] ?? '';
+        return `<image href="${url}" width="${k.w}" height="${k.h}"${k.donusum ? ` transform="${k.donusum}"` : ''}/>`;
+      })
+      .join('');
+    return h('div.fl-esya-resim.fl-katmanli', { html: `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${resimler}</svg>` });
+  }
   const url = GORSELLER[`../../assets/film/${film}/${tip}.webp`];
   if (url) return h('img.fl-esya-resim', { src: url, alt: '', draggable: 'false' });
   return h('div.fl-esya-resim', { html: SVG[tip] ?? SVG.kasa, 'data-yer-tutucu': '1' });
 }
 
 /** Eşyanın en/boy oranı (yer tutucular için) */
-export const ESYA_ORAN: Record<string, number> = { karpuz: 1.113, 'karpuz-yarim': 200 / 120, bicak: 200 / 60, kasa: 200 / 140, tabak: 200 / 60, 'karpuz-dilim': 120 / 110, cekirdek: 20 / 28 };
+export const ESYA_ORAN: Record<string, number> = {
+  karpuz: 1.113, 'karpuz-yarim': 1.134, 'karpuz-dilim': 1.077, tabak: 1.362, bicak: 4.082, kasa: 1.429, cekirdek: 20 / 28,
+  'mino-sarilma': 1209 / 1286,
+};

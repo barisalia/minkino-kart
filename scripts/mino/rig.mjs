@@ -72,10 +72,16 @@ ${kapaliGoz}
 </g>
 <g class="m-mutlu-goz"><path d="M650 900Q768 796 886 900"/><path d="M1162 902Q1282 798 1402 902"/></g>
 <g class="m-agiz"><path class="m-agiz-ic" d="${AGIZ_IC}"/><path class="m-dil" d="${AGIZ_DIL}"/><path class="m-agiz-cizgi" d="${AGIZ_IC}${AGIZ_KENAR}"/></g>
-${IFADELER}
+<g class="m-ifadeler"></g>
 </g>
 </svg>`;
 
+// İfade ekleri ağır (gömülü WebP): ayrı dosya, yalnız ifade() ilk çağrılınca (film) tembel yüklenir
+fs.writeFileSync('src/mino/mino-ifade-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.
+// Mino'nun film ifadeleri; mino.ts tembel yükler (import()).
+export const MINO_IFADE_SVG = ${JSON.stringify(IFADELER)};
+`);
+console.log('mino-ifade-svg.ts', Math.round(IFADELER.length / 1024), 'KB');
 fs.writeFileSync('src/mino/mino-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.\nexport const MINO_SVG = ${JSON.stringify(svg)};\n`);
 console.log('mino-svg.ts', Math.round(svg.length / 1024), 'KB');
 
