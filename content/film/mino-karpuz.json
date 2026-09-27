@@ -836,14 +836,14 @@
           "t": 0.3,
           "kim": "tavsan",
           "yap": "git",
-          "x": 26,
+          "x": 28,
           "sure": 2.2
         },
         {
           "t": 0.8,
           "kim": "ordek",
           "yap": "git",
-          "x": 13,
+          "x": 17,
           "sure": 3.4
         },
         {
@@ -1035,12 +1035,15 @@
           "yap": "git",
           "x": 50,
           "y": 80,
-          "z": 1.3,
+          "z": 1.25,
           "sure": 0.8,
           "tut": [
             "t1",
             "t4",
-            "mino"
+            "mino",
+            "tavsan",
+            "ordek",
+            "kopek"
           ]
         },
         {
