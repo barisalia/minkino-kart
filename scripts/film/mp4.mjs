@@ -19,6 +19,8 @@ const FILM = secenek('film', 'mino-karpuz');
 const FPS = Number(secenek('fps', 30));
 const CIKTI = 'dist-video';
 const PORT = 4175;
+// --ornek=5,30,58: video yerine yalnız bu saniyelerde kare (hızlı deneme): dist-video/ornek-<format>-<sn>.jpg
+const ORNEK = secenek('ornek', '').split(',').filter(Boolean).map(Number);
 
 // ffmpeg: npm paketi (ffmpeg-static) varsa o, yoksa sistemdeki
 let FFMPEG = 'ffmpeg';
@@ -103,6 +105,22 @@ async function kaydet(ad, f) {
   });
 
   const dt = 1000 / FPS;
+  if (ORNEK.length) {
+    let gecen = 0;
+    for (const sn of [...ORNEK].sort((a, b) => a - b)) {
+      // sabit adımla o ana kadar ilerle (hareket ve kamera yumuşatması aynı kalsın)
+      while (gecen < sn - 1e-6) {
+        await sayfa.clock.runFor(dt);
+        gecen += dt / 1000;
+      }
+      await sayfa.evaluate(() => window.__animSenk(performance.now()));
+      await sayfa.evaluate(() => Promise.all([...document.images].filter((i) => !i.complete).map((i) => new Promise((r) => (i.onload = i.onerror = r)))));
+      await sayfa.screenshot({ path: path.join(CIKTI, `ornek-${ad}-${sn}.jpg`), type: 'jpeg', quality: 88 });
+    }
+    await tarayici.close();
+    console.log(`✓ örnek kareler: ${ad} (${ORNEK.join(', ')} sn)`);
+    return;
+  }
   const gecici = path.join(CIKTI, `.${FILM}-${ad}-goruntu.mp4`);
   let kare = 0;
   let bitti = -1;

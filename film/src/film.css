@@ -380,7 +380,7 @@ body[data-kayit] .fl-kok .fl-altyazi {
   border-radius: 999px;
   border-width: max(3px, 0.6cqmin);
   box-shadow: 0 0.9cqmin 0 var(--kontur-yumusak);
-  font-size: max(20px, 7.2cqmin);
+  font-size: max(18px, 6.2cqmin);
   font-weight: 700;
   line-height: 1.15;
   white-space: normal;
@@ -388,15 +388,20 @@ body[data-kayit] .fl-kok .fl-altyazi {
 body[data-kayit] .fl-kok .fl-ogut p {
   font-size: max(22px, 7cqmin);
 }
-/* dikey / kare kadraj: dünyanın altında taş zemin devam eder (arka-on'un alt rengiyle) */
+/* dikey / kare kadraj: dünyanın altında taş zemin aynı dokuyla sürer: ön katmanın zemin bandının aynası (dikiş olmaz) */
 body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt {
   position: absolute;
-  left: -30%;
-  right: -30%;
-  top: 99.6%;
-  height: 60%;
-  background:
-    radial-gradient(ellipse 34% 30% at 50% 50%, rgba(255, 219, 150, 0.5) 62%, transparent 66%) 0 0 / 11% 9%,
-    radial-gradient(ellipse 34% 30% at 50% 50%, rgba(255, 219, 150, 0.4) 62%, transparent 66%) 5.5% 4.5% / 11% 9%,
-    linear-gradient(180deg, #f5ad4b, #e39a3f 70%, #d58c37);
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  transform: scaleY(-1);
+  transform-origin: 50% 100%;
+  /* yalnız alttaki taş zemin (çizimin alt %17'si) aynalanır */
+  clip-path: inset(83% 0 0 0);
+}
+/* aynanın altında zemin yine düz yönde sürer (ayna + düz = dikişsiz iki bant) */
+body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt-2 {
+  transform: translateY(34%);
 }
