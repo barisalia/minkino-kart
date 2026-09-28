@@ -107,10 +107,15 @@ export function menuEkrani(app: Uygulama): Ekran {
   kino.ekHareket = (p: KPoz) => {
     const g = performance.now() / 1000 - kinoSalla;
     if (g < 1.3) {
-      // Mino'ya doğru (izleyicinin solundaki) kol kalkıp sallanır, baş o yana eğilir
+      // Mino'ya selam: baş o yana (izleyicinin soluna) eğilir, kulaklar uçuşur, kuyruk sallanır, iki küçük hop.
+      // (Eskiden kol 60° kalkıyordu: çizimde kol omuzdan ayrık, beyaz kütük gibi görünüyordu; bkz. kisilik.ts kino)
       const z = Math.max(0, Math.min(1, g / 0.2, (1.3 - g) / 0.25));
-      p.kolSol += (50 + 10 * Math.sin(g * 16)) * z;
       p.kafa -= 5 * z;
+      p.don -= 3 * z;
+      p.y -= 3 * Math.abs(Math.sin(g * 9)) * z;
+      p.kulakSol += 12 * Math.sin(g * 16) * z;
+      p.kulakSag += 12 * Math.sin(g * 16 + 1) * z;
+      p.kuyruk += 30 * Math.sin(g * 30) * z;
     }
   };
   const kinoIfade = (ad: string, ms: number) => {

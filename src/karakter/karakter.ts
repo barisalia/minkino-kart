@@ -206,7 +206,7 @@ export class Karakter {
       const g = this.parca.get(id);
       if (g?.parentNode) g.parentNode.appendChild(g);
     }
-    this.dn = b.donme;
+    this.dn = { ...b.donme, ...(this.k.donme ?? {}) };
     this.bagli = b.bagli;
     this.gizli = new Set(b.gizli);
     this.setler = ifadeSetleri(b);
@@ -421,12 +421,24 @@ export class Karakter {
     const kok = `translate(${(p.x * olcek).toFixed(1)}px, ${(p.y * olcek).toFixed(1)}px) ${etrafinda(kokN, sin(p.don, s.govde), p.sx, p.sy)}`;
     // kafa eğilmesi iskelette genlik çarpanıyla (canlı dursun; eskiden kafa katmanı açının iki katı dönüyordu),
     // bağlı parçalar (kulak, göz, ağız) aynı dönüşü paylaşır; karaktere özel sınır en son uygulanır
-    const kafaAci = sin(p.kafa * (this.k.kafaGenlik ?? 1.8), s.kafa);
-    const kafaT = dn.kafa ? etrafinda(dn.kafa, kafaAci, 1, 1, 0, p.kafaY * olcek) : '';
+    const aralik = (a: number, r?: [number, number]) => (r ? Math.max(r[0], Math.min(r[1], a)) : a);
+    const kafaAci = aralik(sin(p.kafa * (this.k.kafaGenlik ?? 1.8), s.kafa), s.kafaAci);
+    const kafaT = dn.kafa ? etrafinda(dn.kafa, kafaAci, 1, 1, 0, aralik(p.kafaY, s.kafaY) * olcek) : '';
+    // kulak: genel sınır, sonra kulak başına aralık; aralığı aşan kısım (kulakEsne varsa) kökten esnemeye döner.
+    // Sarkık kulakta (kulakTers) "dışa / kalkar" dönme yönü ters.
+    const kulakYon = this.k.kulakTers ? -1 : 1;
+    const kulakSolHam = sin(p.kulakSol, s.kulak);
+    const kulakSagHam = sin(p.kulakSag, s.kulak);
+    const kulakSol = aralik(kulakSolHam, s.kulakSol);
+    const kulakSag = aralik(kulakSagHam, s.kulakSag);
+    const esne: Record<string, number> = { 'kulak-sol': kulakSolHam - kulakSol, 'kulak-sag': kulakSagHam - kulakSag };
+    // kuyruk: aralık, ya da tek yöne katlanan açı (0 … R … 0: sallanma da pervane de bu aralıkta gidip gelir)
+    const R = s.kuyrukKatla;
+    const kuyruk = R ? R - Math.abs((Math.abs(p.kuyruk) % (2 * R)) - R) : s.kuyruk ? Math.max(s.kuyruk[0], Math.min(s.kuyruk[1], p.kuyruk)) : p.kuyruk;
     // kafa yalnız kafaT ile döner (bağlı parçalar da aynı dönüşü alır); açı tablosunda yok
     const aci: Record<string, number> = {
-      'kulak-sol': -sin(p.kulakSol, s.kulak),
-      'kulak-sag': sin(p.kulakSag, s.kulak),
+      'kulak-sol': -kulakSol * kulakYon,
+      'kulak-sag': kulakSag * kulakYon,
       // çocukların saç topuzları kulak gibi salınır
       'sac-topuz-sol': -sin(p.kulakSol, s.topuz ?? s.kulak),
       'sac-topuz-sag': sin(p.kulakSag, s.topuz ?? s.kulak),
@@ -440,14 +452,20 @@ export class Karakter {
       'bacak-sag': -sin(p.bacakSag, s.bacak),
       'ayak-sol': sin(p.bacakSol, s.bacak),
       'ayak-sag': -sin(p.bacakSag, s.bacak),
-      kuyruk: s.kuyruk ? Math.max(s.kuyruk[0], Math.min(s.kuyruk[1], p.kuyruk)) : p.kuyruk,
+      kuyruk,
     };
+    const kulakEsne = this.k.kulakEsne;
     for (const [id, g] of this.parca) {
       let tr = kok;
       if (id === 'kafa') tr += ' ' + kafaT;
       else if (this.bagli[id] === 'kafa') tr += ' ' + kafaT;
       const a = aci[id];
       if (a && dn[id]) tr += ' ' + etrafinda(dn[id], a);
+      // sınırı aşan kulak açısı: iç kenar ve kök yerinde; dışa (+) genişler, içe (-) daralıp uzar (sarkar).
+      // Kulak kısalmaz: ucu yukarı çekilince altında kafanın kesik konturu görünüyordu.
+      const ke = kulakEsne?.[id as 'kulak-sol' | 'kulak-sag'];
+      const e = esne[id];
+      if (ke && e && dn[id]) tr += ' ' + etrafinda([ke[0], dn[id][1]], 0, Math.max(0.8, Math.min(1.2, 1 + e * ke[1])), Math.min(1.12, 1 - Math.min(0, e) * ke[2]));
       if (id === 'agiz' && p.burun) tr += ` translate(0px, ${p.burun.toFixed(1)}px)`;
       // dudak senkronu: ağız katmanı kendi noktası etrafında ölçeklenir (agiz-acik'ten az / orta / yuvarlak / dis)
       const ak = this.agizK;
@@ -471,6 +489,8 @@ export class Karakter {
     }
     for (const id of this.acikEkler) if (this.parca.has(id)) gor.set(id, true);
     for (const id of this.gizlenenler) gor.set(id, false);
+    // dışarıda sarkan dil (Kino) ağzın kendi dilinin yerine geçer: ikisi birden iki dil gibi görünüyordu
+    if (gor.get('dil-disarida')) gor.set('dil', false);
     // göz kırpma: açık göz görünüyorsa kapalı gözle değişir
     if (p.gozKapali && this.parca.has('goz-kapali') && (gor.get('goz-sol') || gor.get('goz-sag'))) {
       gor.set('goz-sol', false);
@@ -486,11 +506,15 @@ export class Karakter {
       for (const id of ifadeAgzi) gor.set(id, false);
       if (gor.get('dil')) gor.set('dil', false);
       gor.set(ak.id, true);
-    } else if (p.agizAcik > 0.5 && this.parca.has('agiz-acik') && gor.get('agiz')) {
-      // hareketlerin açık ağzı (yeme, dans, esneme)
+    } else if (p.agizAcik > 0.5 && this.parca.has('agiz-acik') && (gor.get('agiz'))) {
+      // hareketlerin açık ağzı (yeme, dans, esneme); normal ağzın dili de gider (açık ağzın kendi dili var:
+      // eskiden "o" ağzın yanından pembe dil parçası taşıyordu)
       gor.set('agiz', false);
+      if (gor.get('dil')) gor.set('dil', false);
       gor.set('agiz-acik', true);
     }
+    // sarkan dil yalnız karakterin kendi ağzıyla (ifade ağzı ya da konuşma ağzı açıkken dil ağzın dışında kalıyordu)
+    if (gor.get('dil-disarida') && !gor.get('agiz') && !gor.get('agiz-acik')) gor.set('dil-disarida', false);
     for (const [id, acik] of gor) {
       if (this.sonGorunum.get(id) === acik) continue;
       this.sonGorunum.set(id, acik);
@@ -715,6 +739,22 @@ function dans(d: Kisilik['dans'], gecen: number, u: number, p: Poz) {
       p.kulakSag += 14 * S(gecen * 18 + 1) * z;
       p.agizAcik = z > 0.3 ? 1 : 0;
       p.gozKapali = z > 0.6 && S(s * PI) > 0.6;
+      break;
+    }
+    case 'kino': {
+      // Kino: iki yana sallanarak hoplar, baş karşı yana, kuyruk hızlı sallanır, kulaklar uçuşur. Kolları çizimde
+      // omuzdan kalkamıyor (kişilik sınırı), sevinç bedenden ve kuyruktan gelir.
+      const hop = Math.abs(S(gecen * 9));
+      p.y -= 9 * hop * z;
+      p.sy *= 1 + 0.04 * hop * z;
+      p.sx *= 1 - 0.02 * hop * z;
+      p.don += 6 * S(gecen * 4.5) * z;
+      p.kafa -= 4 * S(gecen * 4.5 + 0.6) * z;
+      p.kuyruk += 40 * S(gecen * 30) * z;
+      p.kulakSol += 14 * S(gecen * 18) * z;
+      p.kulakSag += 14 * S(gecen * 18 + 1) * z;
+      p.kolSol += 2 * z;
+      p.kolSag += 2 * z;
       break;
     }
     case 'salto': {

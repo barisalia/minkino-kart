@@ -23,12 +23,10 @@ const ADIM_EN_AZ = 1.2;
 const ADIM_EN_COK = 2.8;
 
 /**
- * Kino (ekip/kino): iskelet kutusunun altında boş pay (ayaklar 1888'de biter; 2048'lik kutu) ve eklem sınırları
- * (banyo ile aynı: kol omuzdan en çok 20°, kuyruk kökünden -8 … 20°; fazlasında dikiş yeri açılıyor).
+ * Kino (ekip/kino): iskelet kutusunun altında boş pay (ayaklar 1888'de biter; 2048'lik kutu). Eklem sınırları
+ * (kol, kulak, kuyruk) kişilikte: src/karakter/kisilik.ts → kino.
  */
 const KARAKTER_ALT: Record<string, number> = { kino: 160 / 2048 };
-const KOL_EN_COK: Record<string, number> = { kino: 20 };
-const KUYRUK_SINIR: Record<string, [number, number]> = { kino: [-8, 20] };
 /** önden çizimi asimetrik (göz lekesi): aynalanmaz */
 const YON_SABIT = new Set(['kino']);
 
@@ -313,14 +311,7 @@ export class Oyuncu {
         p.kuyruk = 0;
       }
     }
-    // eklem sınırları (dikiş yeri açılmasın)
-    const kol = KOL_EN_COK[this.tip];
-    if (kol !== undefined) {
-      p.kolSol = Math.min(p.kolSol, kol);
-      p.kolSag = Math.min(p.kolSag, kol);
-    }
-    const ks = KUYRUK_SINIR[this.tip];
-    if (ks) p.kuyruk = Math.max(ks[0], Math.min(ks[1], p.kuyruk));
+    // eklem sınırları (dikiş yeri açılmasın) karakterin kişiliğinde (src/karakter/kisilik.ts), çizimde en son
   }
 
   // ---------------------------------------------------------------- taşıma
