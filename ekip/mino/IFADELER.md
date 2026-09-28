@@ -121,3 +121,18 @@ Asıl kollar kafanın altında durduğu için 100° üstünde kafanın arkasına
 - Kullanım: `govde` ile `kuyruk` gizlenir, `-oturma` katmanları gösterilir. Zemine tam oturtmak için bütün karakter yaklaşık 50 px aşağı kaydırılır.
 - Varsayılan çizimde piksel farkı 0.
 - Önizleme: `ekip/mino/mino-oturma.png` (ayakta, oturma, oturma + el sallama, oturma + alkış; açık ve koyu zemin).
+
+## Film 3: düşünüyor, işaret, sarılma
+
+| Katman | Poz | Not |
+|---|---|---|
+| `kol-sag-dusun` | düşünüyor | Ekranda sağdaki kol dirsekten bükülür, pati çenenin altındadır. `kol-sag` yerine gösterilir. |
+| `goz-dusun` | düşünüyor | Asıl gözler; iris yukarı-sola bakar. Sol kaş kalkık, sağ kaş düz. `goz-sol` ve `goz-sag` yerine gösterilir. |
+| `agiz-dusun` | düşünüyor | Yana kaymış kapalı "hımm" ağzı. `agiz` yerine gösterilir. |
+| `goz-bak-sag` / `goz-bak-sol` | işaret | Asıl gözler; iris ekranda sağa ya da sola kayar. İşaret eden kolla birlikte kullanılır: `kol-sag-yukari` −85° (sağa) ya da `kol-sol-yukari` +85° (sola). |
+| `kol-sol-sarilma` + `kol-sag-sarilma` | sarılma | İki kol göğüste çaprazlanır, patiler ortada birleşir. `goz-kapali` + `agiz-gulumse` ile kullanılır. |
+
+- Bakış gözleri asıl göz çiziminden yapıldı: iris ve göz bebeği göz açıklığına kırpılıp kaydırıldı. Parıltılar, kapak ve kirpikler yerinde kalır.
+- Bükük kollar kavisli kürk tüpüdür (kontur 13 px), omuz başında yarım yay vardır. SVG'nin en sonunda yer alır.
+- Varsayılan çizimde piksel farkı 0.
+- Önizleme: `ekip/mino/mino-film3.png`.
