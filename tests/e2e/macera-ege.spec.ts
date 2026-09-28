@@ -268,7 +268,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await ekran('23-son');
 }
 
-for (const yas of [3, 5]) {
+for (const yas of (process.env.EGE_YASLAR ?? '3,5').split(',').map(Number)) {
   test(`Ege Uyuyor: dokunarak baştan sona (${yas} yaş)`, async ({ page }, info) => {
     test.setTimeout(300_000);
     const hatalar = hataTopla(page);

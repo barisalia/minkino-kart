@@ -562,18 +562,18 @@
   font-weight: 700;
   font-size: clamp(0.9rem, 4vw, 1.3rem);
   white-space: nowrap;
-  transform: translateX(-50%) scale(0);
-  transform-origin: 50% 100%;
+  transform: translateX(calc(-50% + var(--kay, 0px))) scale(0);
+  transform-origin: calc(50% - var(--kay, 0px)) 100%;
   transition: transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
   pointer-events: none;
 }
 .mc-kok .mc-oy-balon.acik {
-  transform: translateX(-50%) scale(1);
+  transform: translateX(calc(-50% + var(--kay, 0px))) scale(1);
 }
 .mc-kok .mc-oy-balon::after {
   content: '';
   position: absolute;
-  left: 50%;
+  left: calc(50% - var(--kay, 0px));
   top: 100%;
   width: 12px;
   height: 12px;

@@ -1,6 +1,7 @@
 /**
  * "Şşş, Ege Uyuyor!" oyun mantığı (DOM'suz, birim testli: tests/unit/macera-ege.test.ts).
- * Yaş ayarları (yalnız senaryonun dediği yerlerde: çıngırak, mama, cee-ee, ninni, sessizlik), ninni melodisi,
+ * Yaş ayarları (yalnız senaryonun dediği yerlerde: mama, ninni, sessizlik; çıngırak ve cee-ee alanları
+ * ege-duzeltme.md ile oyundan çıktı, dışa aktarımlar birim testi için duruyor), ninni melodisi,
  * beşik sallama (yön değişimi = salınım), deneme/ipucu kuralı. Ses algılama eşiklerine dokunulmaz
  * (ekip/SES-SISTEMI.md): kolaylık yalnız oyunun hızından ve kurallarından verilir.
  */

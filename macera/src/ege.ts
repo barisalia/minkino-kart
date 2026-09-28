@@ -1367,7 +1367,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await elif.git(89, Z + 4, 1400);
     can.poz('selam', 900);
     void can.balon(B.can.merhaba, 900);
-    await bekle(500);
+    // Elif'in balonu Can'ınkinin üstüne binmesin
+    await bekle(950);
     elif.poz('selam', 900);
     void elif.balon(B.elif.benim, 1100);
     ege.bak(-1);
@@ -2094,6 +2095,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
           let simdi = -1;
           const dur = tik(() => {
             const t = ses.currentTime * 1000;
+            // kayıt geç başlasa da sonuna kadar mikrofon dinlemez
+            kulak.sustur(Math.max(0, bitis - t) + 800);
             let k = -1;
             notalar.forEach((n, j) => {
               if (t >= (n.basMs ?? 0)) k = j;
