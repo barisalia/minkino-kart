@@ -136,3 +136,4 @@ Asıl kollar kafanın altında durduğu için 100° üstünde kafanın arkasına
 - Bükük kollar kavisli kürk tüpüdür (kontur 13 px), omuz başında yarım yay vardır. SVG'nin en sonunda yer alır.
 - Varsayılan çizimde piksel farkı 0.
 - Önizleme: `ekip/mino/mino-film3.png`.
+- **İkili sarılma (Mino + Kino, yan yana):** Mino `kol-sag-yukari` −100°, Kino `kol-sol-yukari` +100°; ikisinde de `goz-kapali` + `agiz-gulumse`. Mino önce çizilir, kolu Kino'nun arkasına geçer. Kino sonra çizilir, kolu Mino'nun omzunun önüne gelir. Kino, Mino tuvalinde x+1000, y+60 (aynı ölçek). Önizleme: `ekip/film/mino-kino-sarilma.png`.

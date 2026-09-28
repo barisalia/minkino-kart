@@ -3,10 +3,12 @@
   "boyut": 2048,
   "sira": [
     "kuyruk",
+    "kuyruk-oturma",
     "pati-kuyruk",
     "kuyruk-korku",
     "kulak-sol",
     "govde",
+    "govde-oturma",
     "kol-sol",
     "kol-sag",
     "fular",
@@ -91,7 +93,9 @@
     "goz-bak-sol",
     "kol-sag-dusun",
     "kol-sol-sarilma",
-    "kol-sag-sarilma"
+    "kol-sag-sarilma",
+    "kuyruk-oturma",
+    "govde-oturma"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -332,6 +336,14 @@
     "kol-sag-sarilma": [
       1215,
       1300
+    ],
+    "kuyruk-oturma": [
+      1262,
+      1648
+    ],
+    "govde-oturma": [
+      1040,
+      1880
     ]
   }
 }
