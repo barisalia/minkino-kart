@@ -8,9 +8,9 @@
     "govde",
     "kol-on",
     "fular",
+    "kulak-arka",
     "kafa",
     "kulak-on",
-    "kulak-arka",
     "goz-sol",
     "goz-sag",
     "agiz",
@@ -55,8 +55,8 @@
       420
     ],
     "kulak-arka": [
-      1400,
-      330
+      1380,
+      380
     ],
     "goz-sol": [
       1125,
