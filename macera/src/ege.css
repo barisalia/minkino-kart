@@ -938,6 +938,37 @@
   pointer-events: none;
 }
 
+/* tüy: perdeden süzülür (sahne.on katmanında), Mino'nun kulağının ucuna konar, sonra burnuna kayar */
+.mc-kok .eg-tuy {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 12;
+  width: clamp(16px, 3.6vmin, 28px);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 2px rgba(60, 40, 20, 0.25));
+}
+.mc-kok .eg-tuy svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .mc-mino .eg-tuy.kulakta {
+  width: 13%;
+  z-index: 4;
+  transform: translate(-50%, -88%) rotate(-28deg);
+  transform-origin: 50% 90%;
+  transition: left 1.3s ease-in-out, top 1.3s ease-in-out, transform 1.3s ease-in-out;
+  animation: eg-tuy-kipir 2.6s ease-in-out infinite;
+}
+.mc-kok .mc-mino .eg-tuy.kulakta.burunda {
+  transform: translate(-20%, -70%) rotate(62deg);
+}
+@keyframes eg-tuy-kipir {
+  0%, 100% { rotate: 0deg; }
+  50% { rotate: 7deg; }
+}
+
 /* battaniye: anneye / Ege'ye örtülür */
 .mc-kok .eg-sahne .ortuldu > .eg-resim {
   transition: rotate 0.5s, scale 0.5s;
