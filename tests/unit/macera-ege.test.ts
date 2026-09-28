@@ -4,7 +4,8 @@ import { normal, tumCumleler } from '../../src/audio/cumleler';
 import type { Ayar, Ozellik } from '../../ses-testi/src/analiz';
 import analizKaynak from '../../ses-testi/src/analiz.ts?raw';
 import egeKaynak from '../../macera/src/ege.ts?raw';
-import { CEE_TURLARI, EGE_RITIM, egeAyar, gulme, kabulMu, kucukMu, ninni, Salinim, SERBEST_KUKLA } from '../../macera/src/ege-mantik';
+import NINNI from '../../assets/muzik/ninni.json';
+import { CEE_TURLARI, EGE_RITIM, egeAyar, gulme, kabulMu, kucukMu, ninni, NINNI_DIZE, NINNI_REF_MIDI, ninniSonuMs, Salinim, SERBEST_KUKLA } from '../../macera/src/ege-mantik';
 import { SesSeviyesi, sesDurumu, soyleyisSonucu, YUKSEK_UST, type Soyleyis } from '../../macera/src/ege-seviye';
 import { ritimAyniMi } from '../../ses-testi/src/analiz';
 
@@ -52,14 +53,35 @@ describe('Ege Uyuyor: çıngırak ritmi, kuklalar, ninni, beşik', () => {
     expect(gulme(1, 9)).toBe('kahkaha');
     expect(gulme(4, 3)).toBe('kahkaha');
   });
-  it('ninni: "Dandini dandini dastana", ilk nota referans (67), dize sayısı', () => {
+  it('ninni: tablo kaydın JSON dosyasından kurulur (notalar, vuruşlar, heceler, zamanlar; tahminiler dahil)', () => {
+    const H = NINNI.heceler;
     const n4 = ninni(4);
-    const n2 = ninni(2);
-    expect(n4[0].midi).toBe(67);
-    expect(n4.slice(0, 3).map((n) => n.hece).join('')).toBe('Dandini');
-    expect(new Set(n4.map((n) => n.satir)).size).toBe(4);
-    expect(new Set(n2.map((n) => n.satir)).size).toBe(2);
-    expect(ninni(1).length).toBe(9);
+    expect(n4.length).toBe(H.length);
+    n4.forEach((n, i) => {
+      expect(n.hece).toBe(H[i].hece);
+      expect(n.midi).toBe(H[i].midi);
+      expect(n.vurus).toBe(H[i].vurus);
+      expect(n.satir).toBe(H[i].satir);
+      expect(n.basMs).toBe(H[i].basla_ms);
+      expect(n.sureMs).toBeGreaterThan(0);
+    });
+    expect(H.some((x) => x.tahmini)).toBe(true);
+    expect(NINNI_REF_MIDI).toBe(H[0].midi);
+    expect(NINNI_DIZE).toBe(4);
+    expect(ninniSonuMs(2)).toBeLessThan(ninniSonuMs(4));
+  });
+  it('ninni: hece sayısı yeni sözlerle eşleşir, dize sayısı yaşa göre', () => {
+    const SOZLER = ['Dandini dandini Ege', 'Yumdu gözünü bebek', 'Ay geldi, yıldız geldi', 'Uyu da büyü Ege'];
+    const kucuk = (t: string) => t.toLocaleLowerCase('tr').replace(/[^a-zçğıöşü]/g, '');
+    SOZLER.forEach((soz, satir) => {
+      const dize = ninni(4).filter((n) => n.satir === satir);
+      expect(kucuk(dize.map((n) => n.hece).join(''))).toBe(kucuk(soz));
+      // Türkçede hece sayısı = ünlü sayısı
+      expect(dize.length).toBe((kucuk(soz).match(/[aeıioöuü]/g) ?? []).length);
+    });
+    expect(new Set(ninni(2).map((n) => n.satir)).size).toBe(egeAyar(3).dize);
+    expect(new Set(ninni(egeAyar(6).dize).map((n) => n.satir)).size).toBe(3);
+    expect(ninni(1).map((n) => n.hece).join('')).toBe('DandinidandiniEge');
   });
   it('beşik sallama: her yön değişimi bir salınım; titreme sayılmaz', () => {
     const s = new Salinim(20);

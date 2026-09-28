@@ -287,10 +287,33 @@ export class Oyuncu {
   async balon(yazi: string, ms = 1400) {
     this.balonEl.textContent = yazi;
     this.balonEl.classList.remove('acik');
+    this.balonSigdir();
     void this.balonEl.offsetWidth;
     this.balonEl.classList.add('acik');
     await bekle(ms);
     this.balonEl.classList.remove('acik');
+  }
+
+  /** Balon sahnenin kenarından taşmasın: açık hâlini ölçüp yana kaydırır (kuyruk karakterin üstünde kalır) */
+  private balonSigdir() {
+    const b = this.balonEl;
+    const sahne = b.closest('.mc-sahne') ?? document.documentElement;
+    b.style.setProperty('--kay', '0px');
+    b.style.transition = 'none';
+    b.classList.add('acik');
+    const r = b.getBoundingClientRect();
+    const s = sahne.getBoundingClientRect();
+    b.classList.remove('acik');
+    void b.offsetWidth;
+    b.style.transition = '';
+    if (!r.width || !b.offsetWidth) return;
+    const PAY = 6;
+    let kay = 0;
+    if (r.right > s.right - PAY) kay = s.right - PAY - r.right;
+    if (r.left + kay < s.left + PAY) kay = s.left + PAY - r.left;
+    // kuyruk balonun içinde kalsın
+    kay = Math.max(-r.width / 2 + 18, Math.min(r.width / 2 - 18, kay));
+    b.style.setProperty('--kay', `${kay / (r.width / b.offsetWidth)}px`);
   }
 
   /** Sahnede bir yere yürü/koş (x: sahne genişliğinin %'si, merkez; y: alttan %) */

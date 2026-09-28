@@ -489,10 +489,10 @@
   transform-origin: 50% 90%;
 }
 .mc-kok .bn-musluk::after {
-  /* geniş dokunma alanı */
+  /* geniş dokunma alanı (en az ~64 px, komşusunu örtmeyecek kadar) */
   content: '';
   position: absolute;
-  inset: -40% -30%;
+  inset: min(-40%, max(-14px, calc(50% - 36px))) min(-30%, max(-14px, calc(50% - 36px)));
 }
 .mc-kok .bn-musluk-halka {
   position: absolute;
@@ -738,10 +738,13 @@
 .mc-kok .bn-sise.suruklenir::after,
 .mc-kok .bn-tarak.suruklenir::after,
 .mc-kok .bn-havlu.suruklenir::after,
-.mc-kok .bn-ordek-kap.suruklenir::after {
+.mc-kok .bn-ordek-kap.suruklenir::after,
+.mc-kok .bn-fular.suruklenir::after,
+.mc-kok .bn-zincir-halka::after {
+  /* geniş tutma alanı: en az ~64 px, komşusunu örtmeyecek kadar (şişe, tarak, ördek, fular, tıpa halkası) */
   content: '';
   position: absolute;
-  inset: -25%;
+  inset: min(-25%, max(-14px, calc(50% - 36px)));
 }
 .mc-kok .gidiyor {
   opacity: 0;
@@ -1125,6 +1128,23 @@
   top: 4%;
   width: 40%;
   transform: translateX(-50%);
+}
+
+/* yatay ekran: sahne ortada dar bir bantta (macera.css); adım sırası bandın üstünde yatay bir şerit (sol sütun
+ * dar bantta muslukların üstüne biniyordu) */
+@media (min-aspect-ratio: 13/10) {
+  .mc-kok .mc-bolum[data-bolum='banyo'] .bn-sira {
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 5px;
+    padding: 5px;
+  }
+  .mc-kok .mc-bolum[data-bolum='banyo'] .bn-sira i {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
