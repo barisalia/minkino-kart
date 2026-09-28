@@ -61,3 +61,18 @@ Kod (`src/audio/dudak-mantik.ts`) altısı birlikte varsa bunları kullanır. Ko
 
 - kino-final.json güncellendi: altısı `sira`da `agiz-kapali`nın arkasında, `gizli`de, `bagli` → `kafa`. Dönme noktası 915,990 (`agiz-kapali` eski noktasında, 910,930).
 - Önizleme: `ekip/film/dudak-agizlari.png` (üst satır Mino, alt satır Kino).
+
+## Kalkık kollar (el sallama, çak, uzanma, alkış)
+
+Ham kol resimleri yalnız küçük açılar için kesilmişti: iç konturları yok, gövdeden kalma parçalar var. Bu yüzden kalkık kollar yeni ve temiz **vektör** kol olarak çizildi.
+
+| Katman | Dönme noktası | Açı | Not |
+|---|---|---|---|
+| `kol-sol-yukari` | 765,1282 | 40°–160° | Krem kol (#F4ECDE). İç yanda gölge şeridi (#E2CCB4), patide 3 parmak çizgisi, kontur #3A1210 13 px. Omuz başında yarım yay kontur var. |
+| `kol-sag-yukari` | 1215,1292 | −40°…−160° | Aynaya göre aynı yapı |
+
+- SVG'nin en sonundadır; yüz katmanlarının önünde çizilir.
+- kino-final.json güncellendi: iki katman `sira` sonunda ve `gizli`de; `donme` noktaları yukarıdaki gibi.
+- Kullanım: açı yaklaşık 30°'yi geçince `kol-sol` / `kol-sag` gizlenir, `-yukari` katmanı gösterilir ve aynı açıyla döndürülür.
+- Varsayılan çizimde piksel farkı 0 (2048 çözünürlükte ölçüldü).
+- Önizleme: `ekip/kino/kino-kol-yukari.png`.

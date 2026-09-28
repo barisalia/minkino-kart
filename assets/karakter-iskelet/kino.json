@@ -42,7 +42,9 @@
     "agiz-saskin",
     "goz-korku",
     "agiz-korku",
-    "kopuk-sac"
+    "kopuk-sac",
+    "kol-sol-yukari",
+    "kol-sag-yukari"
   ],
   "gizli": [
     "goz-kapali",
@@ -73,7 +75,9 @@
     "kuyruk-korku",
     "kafa-korku",
     "goz-korku",
-    "agiz-korku"
+    "agiz-korku",
+    "kol-sol-yukari",
+    "kol-sag-yukari"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -274,6 +278,14 @@
     "kuyruk-korku": [
       1052,
       1600
+    ],
+    "kol-sol-yukari": [
+      765,
+      1282
+    ],
+    "kol-sag-yukari": [
+      1215,
+      1292
     ]
   }
 }
