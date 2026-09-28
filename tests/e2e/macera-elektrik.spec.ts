@@ -221,6 +221,10 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await dokun(page, el(page, 'fener'));
   await gorevBekle(page, ['koy'], T);
   await surukle(page, el(page, 'fener'), el(page, 'komodin'));
+  // final: ikisi çadırın kapısında, ikisi de görünür (çadıra girince kaybolmasınlar)
+  await expect(page.locator('.el-cadir.dolu')).toBeVisible({ timeout: 40000 });
+  for (const ad of ['mino', 'kino']) expect(await el(page, ad).evaluate((e) => Number(getComputedStyle(e).opacity))).toBeGreaterThan(0.9);
+  await ekran('7a-cadirda');
   await expect(el(page, 'odul')).toBeVisible({ timeout: 40000 });
   await ekran('7b-cesur-kino');
   await expect(page.locator('.mc-son')).toBeVisible({ timeout: 40000 });
