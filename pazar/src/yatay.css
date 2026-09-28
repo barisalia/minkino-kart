@@ -1,0 +1,297 @@
+/*
+ * Mino'nun Pazarı — yatay ekran (telefon yan çevrilince). Pazar sahnesi dikey çizildi (telefon / tablet): yatayda
+ * stand, müşteri ve ön tezgâh ortada tablet oranında (3:4) bir bantta oynar (Ege / banyo ile aynı düzen, macera.css).
+ * İki yanda pazarın bulanık devamı; geri düğmesi ve konuşma balonu sol yana, ses düğmesi, yıldızlar ve büyük
+ * "Ver" / "Karıştır" düğmesi sağ yana geçer (bandın içini örtmez). Açılış ve şenlik yatayda iki sütun / tek sıra.
+ * Yalnız alçak yatay ekran (telefon): dikey telefon ve tablet (dikey ya da yatay) bu dosyadan etkilenmez.
+ */
+@media (min-aspect-ratio: 13/10) and (max-height: 540px) {
+  .pz-kok .pz-pazar {
+    --bant: 75vh;
+    --yan-en: calc(50vw - var(--bant) / 2);
+    /* yan panellerin kenar boşluğu (çentik güvenli alanı dahil) */
+    --kenar: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
+    /* bandın içindeki kenar boşluğu: tezgâh ve sahne bandın kenarına dayanır */
+    --yan: 8px;
+    padding: var(--ust) calc(var(--yan-en) + var(--yan)) var(--alt);
+    gap: 0;
+  }
+  /* iki yan: arka plan ve yaşayan sahne (bulut, flama, güneş) bulanıklaşır; bandın kenarında yumuşak gölge */
+  .pz-kok .pz-pazar::before,
+  .pz-kok .pz-pazar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    width: var(--yan-en);
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(7px) brightness(0.84) saturate(0.9);
+    backdrop-filter: blur(7px) brightness(0.84) saturate(0.9);
+    background: rgba(59, 42, 36, 0.12);
+  }
+  .pz-kok .pz-pazar::before {
+    left: 0;
+    box-shadow: 8px 0 22px -4px rgba(40, 20, 10, 0.35);
+  }
+  .pz-kok .pz-pazar::after {
+    right: 0;
+    box-shadow: -8px 0 22px -4px rgba(40, 20, 10, 0.35);
+  }
+
+  /* üst çubuk iki yana ayrılır: solda geri + balon (altında), sağda ses; ortası boş (bandı örtmez) */
+  .pz-kok .pz-pazar > .ust-cubuk {
+    position: absolute;
+    top: var(--ust);
+    left: var(--kenar);
+    right: var(--kenar);
+    display: grid;
+    grid-template-columns: calc(var(--yan-en) - var(--kenar) - 12px) 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: start;
+    row-gap: 12px;
+    pointer-events: none;
+  }
+  .pz-kok .pz-pazar > .ust-cubuk > * {
+    pointer-events: auto;
+  }
+  .pz-kok .pz-pazar > .ust-cubuk > :first-child {
+    grid-area: 1 / 1;
+    justify-self: start;
+  }
+  .pz-kok .pz-pazar > .ust-cubuk > .orta {
+    grid-area: 2 / 1;
+    justify-content: flex-start;
+  }
+  .pz-kok .pz-pazar > .ust-cubuk > :last-child {
+    grid-area: 1 / 3;
+  }
+  .pz-kok .pz-pazar .pz-baslik {
+    font-size: clamp(1rem, 5.2vh, 1.35rem);
+    line-height: 1.2;
+    border-radius: 26px;
+    padding-right: 14px;
+  }
+  /* yıldızlar sağ yanda, ses düğmesinin altında */
+  .pz-kok .pz-pazar > .pz-yildizlar {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--ust) + 84px);
+    right: var(--kenar);
+    width: calc(var(--yan-en) - var(--kenar) - 12px);
+    margin: 0;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .pz-kok .pz-pazar .pz-yildiz {
+    font-size: clamp(26px, 9vh, 40px);
+  }
+
+  /* sahne ekranın üstünden başlar (üst çubuk yanlarda) */
+  .pz-kok .pz-pazar .pz-sahne {
+    min-height: 0;
+  }
+  /* müşteri bandın içinde biraz daha büyük; balon bandın ölçüsünde */
+  .pz-kok .pz-pazar .pz-musteri-kap {
+    width: min(40cqw, 50cqh, 330px);
+  }
+  .pz-kok .pz-pazar .pz-istek-balon {
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+  .pz-kok .pz-pazar .pz-istek-balon::after {
+    width: 18px;
+    height: 18px;
+    bottom: -11px;
+  }
+  .pz-kok .pz-pazar .pz-istek {
+    gap: 6px;
+  }
+  .pz-kok .pz-pazar .pz-istek > .pz-resim,
+  .pz-kok .pz-pazar .pz-istek > .pz-para,
+  .pz-kok .pz-pazar .pz-renk-leke,
+  .pz-kok .pz-pazar .ms-istek .ms-bardak {
+    width: calc(var(--bant) * 0.14);
+    height: calc(var(--bant) * 0.14);
+  }
+  .pz-kok .pz-pazar .ms-istek .ms-bardak {
+    height: auto;
+  }
+  .pz-kok .pz-pazar .pz-istek-grup .pz-resim,
+  .pz-kok .pz-pazar .pz-istek-grup .pz-para,
+  .pz-kok .pz-pazar .pz-istek-ayir > .pz-resim {
+    width: calc(var(--bant) * 0.12);
+    height: calc(var(--bant) * 0.12);
+  }
+  .pz-kok .pz-pazar .pz-istek-grup b {
+    font-size: calc(var(--bant) * 0.1);
+    -webkit-text-stroke: 4px var(--kontur);
+  }
+  .pz-kok .pz-pazar .pz-istek-lira b {
+    font-size: calc(var(--bant) * 0.075);
+  }
+  .pz-kok .pz-pazar .pz-istek-ayir {
+    font-size: calc(var(--bant) * 0.045);
+  }
+  .pz-kok .pz-pazar .pz-istek .pz-para b {
+    font-size: calc(var(--bant) * 0.055);
+    -webkit-text-stroke: 3px var(--kontur);
+  }
+  .pz-kok .pz-pazar .ms-formul b {
+    font-size: calc(var(--bant) * 0.05);
+  }
+  .pz-kok .pz-pazar .ms-nokta {
+    width: calc(var(--bant) * 0.065);
+  }
+
+  /* ön tezgâh bandın içinde, ince; ürünler bandın ölçüsünde (dört yan yana) */
+  .pz-kok .pz-pazar .pz-tezgah {
+    padding-top: 8px;
+    border-radius: 18px 18px 0 0;
+  }
+  .pz-kok .pz-pazar .pz-urunler,
+  .pz-kok .pz-pazar .pz-urunler[data-adet='6'] {
+    --pz-urun: calc(var(--bant) * 0.21);
+    gap: 4px 6px;
+    margin-top: 4px;
+    max-width: none;
+  }
+  /* kalabalık tezgâh (7 ve üstü): beş yan yana, iki sıra (üç sıra sahneyi eziyordu) */
+  .pz-kok .pz-pazar .pz-urunler:is([data-adet='7'], [data-adet='8'], [data-adet='9'], [data-adet='10']) {
+    --pz-urun: calc(var(--bant) * 0.172);
+    gap: 4px 5px;
+  }
+  .pz-kok .pz-pazar .pz-urunler[data-adet='3'] {
+    --pz-urun: calc(var(--bant) * 0.26);
+    gap: 10px;
+  }
+  .pz-kok .pz-pazar .pz-urunler .pz-para b {
+    -webkit-text-stroke: 4px var(--kontur);
+  }
+  /* terazi tezgâhın üstünde, bandın ölçüsünde */
+  .pz-kok .pz-pazar .pz-terazi {
+    width: min(calc(var(--bant) * 0.62), 46vh);
+    /* terazi tezgâhın ön kenarında durur, sahnenin altına biraz yükselir (sahneye yer kalsın) */
+    margin-top: calc(var(--bant) * -0.1);
+  }
+  /* öndeki flamalar bandın ölçüsünde */
+  .pz-kok .pz-pazar .pz-flama {
+    width: calc(var(--bant) * 0.09);
+  }
+  /* "Ver" / "Karıştır" sağ yanın ortasında, büyük (tezgâhın içinden yana çıkar) */
+  .pz-kok .pz-pazar .pz-tezgah-ust {
+    position: static;
+    min-height: 0;
+  }
+  .pz-kok .pz-pazar .pz-tezgah {
+    position: relative;
+  }
+  .pz-kok .pz-pazar .pz-tezgah-ust .pz-ver {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + var(--yan-en) / 2);
+    translate: -50% -50%;
+    margin: 0;
+    max-width: calc(var(--yan-en) - 2 * var(--kenar));
+    min-height: 80px;
+    font-size: clamp(1.4rem, 7.5vh, 2rem);
+    padding: 0.15em 0.8em;
+    white-space: nowrap;
+  }
+
+  /* şarkı: sayım sırası bandın ölçüsünde */
+  .pz-kok .pz-pazar .pz-sarki-sira {
+    --pz-sm: calc(var(--bant) * 0.1);
+    gap: calc(var(--bant) * 0.03);
+    top: 2px;
+    padding-top: 22px;
+  }
+  .pz-kok .pz-pazar .pz-sarki-rozet {
+    width: 26px;
+    height: 26px;
+    margin-left: -13px;
+    top: -20px;
+    font-size: 0.95rem;
+  }
+
+  /* ---------- açılış: solda logo ve stand, sağda düğmeler (dikeyde alt alta sığmıyordu) ---------- */
+  .pz-kok .pz-acilis > .ust-cubuk {
+    position: absolute;
+    top: var(--ust);
+    left: var(--yan);
+    right: var(--yan);
+    pointer-events: none;
+  }
+  .pz-kok .pz-acilis > .ust-cubuk > * {
+    pointer-events: auto;
+  }
+  .pz-kok .pz-acilis-ic {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'logo dugme'
+      'sahne dugme'
+      'sahne alt';
+    align-items: center;
+    justify-items: center;
+    gap: 0 12px;
+    padding: 0 0 4px;
+  }
+  .pz-kok .pz-acilis-ic > .pz-logo {
+    grid-area: logo;
+  }
+  .pz-kok .pz-acilis-ic > .pz-acilis-sahne {
+    grid-area: sahne;
+    align-self: end;
+    width: 100%;
+  }
+  .pz-kok .pz-acilis-ic > .pz-acilis-dugmeler {
+    grid-area: dugme;
+    align-self: end;
+  }
+  .pz-kok .pz-acilis-ic > .pz-acilis-alt {
+    grid-area: alt;
+    align-self: start;
+    margin-top: 12px;
+  }
+  .pz-kok .pz-acilis .pz-logo-ust {
+    font-size: clamp(1.5rem, 9vh, 2.4rem);
+  }
+  .pz-kok .pz-acilis .pz-logo-alt {
+    font-size: clamp(2.8rem, 19vh, 4.6rem);
+  }
+  .pz-kok .pz-acilis-sahne .pz-stand {
+    --sw: min(46vw, 70vh, 380px);
+  }
+
+  /* ---------- şenlik: Mino ve hayvanlar tek sırada, düğmeler altta ---------- */
+  .pz-kok .pz-senlik {
+    gap: 4px;
+  }
+  .pz-kok .pz-senlik .pz-yildiz {
+    font-size: clamp(24px, 8vh, 36px);
+  }
+  .pz-kok .pz-senlik-sahne {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: clamp(6px, 2vw, 18px);
+    min-height: 0;
+  }
+  .pz-kok .pz-senlik-mino {
+    width: min(26vh, 16vw, 200px);
+    flex: 0 0 auto;
+  }
+  .pz-kok .pz-senlik-hayvanlar {
+    flex-wrap: nowrap;
+    width: auto;
+    gap: clamp(4px, 1.4vw, 14px);
+  }
+  .pz-kok .pz-senlik-hayvan {
+    width: min(30vh, 15vw, 150px);
+  }
+  .pz-kok .pz-senlik-alt .dugme {
+    min-height: 60px;
+    font-size: clamp(1.05rem, 5.4vh, 1.35rem);
+  }
+}
