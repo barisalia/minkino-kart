@@ -105,3 +105,5 @@ Ham kol resimleri yalnız küçük açılar için kesilmişti: iç konturları y
 - Bilinen küçük iz: `kol-sag` resminin altında gövdeden kalma kısa bir kontur çizgisi var (x≈1265, y 1600–1640). Ayakta bacağın içinde kaybolur, oturmada kucağın üstünde hafifçe görünür.
 - Varsayılan çizimde piksel farkı 0.
 - Önizleme: `ekip/kino/kino-oturma.png`.
+
+- **Kafa sağ kenarı (kulak altı) yuvarlatıldı:** sağ kulağın örttüğü yerde kafa yayı daha yuvarlak (en geniş yer ≈ x 1452, eskisi 1436), göz lekesi elips olarak kulağın altında devam ediyor, kulak dışa (−15°, −30°) dönünce kenar dik çizgi olarak görünmüyor. Dinlenme çizimi değişmedi (2048 px'te piksel farkı 0).

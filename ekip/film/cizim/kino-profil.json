@@ -3,9 +3,9 @@
     "boyut":  2048,
     "sira":  [
                  "kuyruk",
-                 "govde",
                  "bacak-arka",
                  "bacak-on",
+                 "govde",
                  "kol-on",
                  "fular",
                  "kafa",
