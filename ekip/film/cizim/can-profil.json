@@ -1,0 +1,61 @@
+﻿{
+    "ad":  "can-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kol-arka",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "kafa",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1110,
+                               915
+                           ],
+                  "goz":  [
+                              1343,
+                              640
+                          ],
+                  "agiz":  [
+                               1400,
+                               745
+                           ],
+                  "goz-kapali":  [
+                                     1343,
+                                     665
+                                 ],
+                  "kol-on":  [
+                                 1060,
+                                 1070
+                             ],
+                  "kol-arka":  [
+                                   1075,
+                                   1070
+                               ],
+                  "bacak-on":  [
+                                   1065,
+                                   1520
+                               ],
+                  "bacak-arka":  [
+                                     1080,
+                                     1520
+                                 ],
+                  "govde":  [
+                                1100,
+                                1950
+                            ]
+              }
+}

@@ -1,0 +1,55 @@
+﻿{
+    "ad":  "deniz-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kol-arka",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "kafa",
+                 "goz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "goz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1090,
+                               970
+                           ],
+                  "goz":  [
+                              1302,
+                              700
+                          ],
+                  "goz-kapali":  [
+                                     1304,
+                                     712
+                                 ],
+                  "kol-on":  [
+                                 1100,
+                                 1110
+                             ],
+                  "kol-arka":  [
+                                   1100,
+                                   1110
+                               ],
+                  "bacak-on":  [
+                                   1085,
+                                   1575
+                               ],
+                  "bacak-arka":  [
+                                     1070,
+                                     1575
+                                 ],
+                  "govde":  [
+                                1100,
+                                1945
+                            ]
+              }
+}

@@ -1,0 +1,84 @@
+{
+  "ad": "kino-34",
+  "boyut": 2048,
+  "sira": [
+    "kulak-sag",
+    "bacak-sol",
+    "bacak-sag",
+    "govde",
+    "kol-sol",
+    "kol-sag",
+    "fular",
+    "kafa",
+    "kulak-sol",
+    "goz-sol",
+    "goz-sag",
+    "agiz",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali"
+  ],
+  "bagli": {
+    "kulak-sol": "kafa",
+    "kulak-sag": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "agiz": "kafa",
+    "goz-kapali": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1170,
+      1230
+    ],
+    "kulak-sol": [
+      620,
+      330
+    ],
+    "kulak-sag": [
+      1520,
+      330
+    ],
+    "goz-sol": [
+      1025,
+      690
+    ],
+    "goz-sag": [
+      1548,
+      678
+    ],
+    "agiz": [
+      1290,
+      960
+    ],
+    "goz-kapali": [
+      1280,
+      700
+    ],
+    "fular": [
+      1050,
+      1220
+    ],
+    "kol-sol": [
+      780,
+      1280
+    ],
+    "kol-sag": [
+      1370,
+      1330
+    ],
+    "bacak-sol": [
+      840,
+      1660
+    ],
+    "bacak-sag": [
+      1150,
+      1670
+    ],
+    "govde": [
+      1040,
+      1880
+    ]
+  }
+}

@@ -10,6 +10,9 @@ const KAYNAK = ['ekip/pazar-musteri', 'ekip/film/cizim', 'ekip/cocuk'];
 /** [klasör, dosya adı (uzantısız), iskelet adı] */
 const ANA = [
   ['ekip/kino', 'kino-final', 'kino'],
+  // Kino yan görünüş (yandan yürüyüş, src/karakter/yandan.ts) ve 3/4 görünüş (Adobe, Turntable + Gemini)
+  ['ekip/kino', 'kino-profil', 'kino-profil'],
+  ['ekip/kino', 'kino-34', 'kino-34'],
   // Bebek Ege (Sesli Maceralar Bölüm 2): kafa, kol, bacak, göz, ağız, kaş katmanları
   ['ekip/ege', 'ege', 'ege'],
 ];

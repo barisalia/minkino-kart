@@ -1,0 +1,72 @@
+﻿{
+    "ad":  "kino-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "govde",
+                 "bacak-arka",
+                 "bacak-on",
+                 "kol-on",
+                 "fular",
+                 "kafa",
+                 "kulak-on",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-on":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1060,
+                               1170
+                           ],
+                  "kulak-on":  [
+                                   720,
+                                   470
+                               ],
+                  "goz":  [
+                              1225,
+                              715
+                          ],
+                  "agiz":  [
+                               1430,
+                               950
+                           ],
+                  "goz-kapali":  [
+                                     1225,
+                                     722
+                                 ],
+                  "fular":  [
+                                1150,
+                                1180
+                            ],
+                  "kol-on":  [
+                                 940,
+                                 1262
+                             ],
+                  "bacak-on":  [
+                                   970,
+                                   1660
+                               ],
+                  "bacak-arka":  [
+                                     1150,
+                                     1660
+                                 ],
+                  "kuyruk":  [
+                                 790,
+                                 1540
+                             ],
+                  "govde":  [
+                                1050,
+                                1900
+                            ]
+              }
+}

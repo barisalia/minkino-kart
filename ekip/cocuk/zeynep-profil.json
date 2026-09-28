@@ -1,0 +1,67 @@
+﻿{
+    "ad":  "zeynep-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "sac-arka",
+                 "kol-arka",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "kafa",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "sac-arka":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1080,
+                               835
+                           ],
+                  "sac-arka":  [
+                                   790,
+                                   622
+                               ],
+                  "goz":  [
+                              1298,
+                              567
+                          ],
+                  "agiz":  [
+                               1345,
+                               730
+                           ],
+                  "goz-kapali":  [
+                                     1298,
+                                     572
+                                 ],
+                  "kol-on":  [
+                                 1030,
+                                 975
+                             ],
+                  "kol-arka":  [
+                                   1150,
+                                   990
+                               ],
+                  "bacak-on":  [
+                                   1020,
+                                   1550
+                               ],
+                  "bacak-arka":  [
+                                     1135,
+                                     1550
+                                 ],
+                  "govde":  [
+                                1070,
+                                1950
+                            ]
+              }
+}

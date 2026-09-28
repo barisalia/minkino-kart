@@ -1,0 +1,67 @@
+﻿{
+    "ad":  "elif-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kol-arka",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "sac-arka",
+                 "kol-on",
+                 "kafa",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "sac-arka":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1120,
+                               740
+                           ],
+                  "sac-arka":  [
+                                   990,
+                                   630
+                               ],
+                  "goz":  [
+                              1272,
+                              532
+                          ],
+                  "agiz":  [
+                               1328,
+                               662
+                           ],
+                  "goz-kapali":  [
+                                     1272,
+                                     542
+                                 ],
+                  "kol-on":  [
+                                 1050,
+                                 895
+                             ],
+                  "kol-arka":  [
+                                   1092,
+                                   900
+                               ],
+                  "bacak-on":  [
+                                   1080,
+                                   1395
+                               ],
+                  "bacak-arka":  [
+                                     1150,
+                                     1405
+                                 ],
+                  "govde":  [
+                                1100,
+                                1935
+                            ]
+              }
+}
