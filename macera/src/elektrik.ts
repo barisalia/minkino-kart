@@ -176,17 +176,43 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const cek = (l: number, r: number, alt: number, ust: number, zmax = 1.6, ms = 1100) => {
     const gw = W;
     const gh = H - GUVEN.ust - GUVEN.alt;
-    const bw = ((r - l) / 100) * Wd;
-    const bh = ((ust - alt) / 100) * Hd;
-    const z = Math.max(1, Math.min(zmax, gw / Math.max(1, bw), gh / Math.max(1, bh)));
-    const cx = ((l + r) / 200) * Wd;
-    const cy = Hd - ((alt + ust) / 200) * Hd;
-    let tx = gw / 2 - cx * z;
-    let ty = GUVEN.ust + gh / 2 - cy * z;
-    tx = Math.min(0, Math.max(W - Wd * z, tx));
-    ty = Math.min(0, Math.max(H - Hd * z, ty));
-    kamZ = z;
-    kamT = [tx, ty];
+    const hesap = (l: number, r: number) => {
+      const bw = ((r - l) / 100) * Wd;
+      const bh = ((ust - alt) / 100) * Hd;
+      const z = Math.max(1, Math.min(zmax, gw / Math.max(1, bw), gh / Math.max(1, bh)));
+      const cx = ((l + r) / 200) * Wd;
+      const cy = Hd - ((alt + ust) / 200) * Hd;
+      const tx = Math.min(0, Math.max(W - Wd * z, gw / 2 - cx * z));
+      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + gh / 2 - cy * z));
+      return { z, tx, ty };
+    };
+    let c = hesap(l, r);
+    // kadraj koruması (Ege ve banyodaki gibi): Mino ya da Kino kenarda yarım kalmaz; yarım kalacaksa çekim onu da
+    // içine alacak kadar genişler (yakınlık düşer), neredeyse tamamen dışarıdaysa dışarı itilir
+    for (const k of [MN, KN, MN, KN]) {
+      const kk = kisiKutu(k);
+      if (!kk) continue;
+      const vl = ((-c.tx / c.z) / Wd) * 100;
+      const vr = (((W - c.tx) / c.z) / Wd) * 100;
+      if (kk.r <= vl || kk.l >= vr || (kk.l >= vl && kk.r <= vr)) continue;
+      const gorunen = (Math.min(vr, kk.r) - Math.max(vl, kk.l)) / (kk.r - kk.l);
+      if (gorunen < 0.25) {
+        // dışarı it: kadrajın kenarı kişinin öbür yanına (istenen bölge yine içeride kalıyorsa)
+        const solda = kk.l < vl;
+        const tx = solda ? -((kk.r + 0.5) / 100) * Wd * c.z : W - ((kk.l - 0.5) / 100) * Wd * c.z;
+        const yl = ((-tx / c.z) / Wd) * 100;
+        const yr = (((W - tx) / c.z) / Wd) * 100;
+        if (yl <= l + 0.01 && yr >= r - 0.01 && tx <= 0 && tx >= W - Wd * c.z) {
+          c = { ...c, tx };
+          continue;
+        }
+      }
+      l = Math.min(l, kk.l - 1);
+      r = Math.max(r, kk.r + 1);
+      c = hesap(l, r);
+    }
+    kamZ = c.z;
+    kamT = [c.tx, c.ty];
     kamUygula(ms);
     return bekle(ms * 0.9);
   };
@@ -246,11 +272,11 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const SAAT = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : yatayTel ? 5 : 20), w: 10 };
   const saat = koy(h('div.el-saat', { 'data-el': 'saat' }, esya('saat', SAAT_SVG, 'Saat')), SAAT.x, SAAT.y, SAAT.w, 1);
   // masa (ortada, örtülü): Kino altına saklanır
-  const MASA = { x: X(6), y: Y(8), w: 36 };
+  const MASA = { x: X(5), y: Y(8), w: 32 };
   const masaH = MASA.w * (349 / 512);
   const masa = koy(h('div.el-masa', { 'data-el': 'masa' }, esya('masa', '', 'Masa', 'parti/masa')), MASA.x, MASA.y, MASA.w, 6);
   // küp kule (masanın solunda, önde)
-  const KULE = { x: X(-9), y: Y(1), w: 7 };
+  const KULE = { x: X(-7.5), y: Y(1), w: 7 };
   // küpler aynı katmanda (masanın önünde, Kino ile Mino'nun arkasında); üst üste binen küpte sonraki üstte kalır
   const kupler = KUPLER.map((k, i) => koy(h('div.el-kup', { html: kupSvg(k.renk, k.desen, `el-kup-${i}`) }), KULE.x, KULE.y + bY(i * 7 * 0.84), KULE.w, 7));
   kupler[3].style.opacity = '0';
@@ -263,10 +289,29 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const KN = new Kisi('kino');
   MN.el.dataset.el = 'mino';
   KN.el.dataset.el = 'kino';
-  const MINO_YER = { x: X(-21), y: Y(-1) };
-  const KINO_YER = { x: X(-1), y: Y(0) };
+  // (aralarında boşluk: yan yana dururken biri ötekinin yüzünü örtmesin; çizimlerin görünen gövdesi ~19 b)
+  const MINO_YER = { x: X(-19), y: Y(-1) };
+  const KINO_YER = { x: X(3), y: Y(0) };
   sahne.koy(MN.el, { ...MINO_YER, w: KISI_W, z: 9 });
   sahne.koy(KN.el, { ...KINO_YER, w: KISI_W, z: 8 });
+  // kadraj koruması için gidilen yer (yürürken de bilinsin)
+  const hedefY = new Map<Kisi, number>();
+  for (const k of [MN, KN]) {
+    const git = k.git.bind(k);
+    k.git = (x, y, ...a) => {
+      hedefY.set(k, y);
+      return git(x, y, ...a);
+    };
+  }
+  /** Kişinin dünyadaki görünen kutusu (%; çizim kutusunun boş kenarları hariç); saklıysa null */
+  const kisiKutu = (k: Kisi) => {
+    if (k.el.classList.contains('el-icerde')) return null;
+    const x = k.hedefX;
+    const kw = Number(k.el.style.getPropertyValue('--w')) || KISI_W;
+    const w = bX(kw);
+    const y = hedefY.get(k) ?? k.y;
+    return { l: x - w / 2, r: x + w / 2, alt: y, ust: y + bY(kw * KISI_ORAN * 0.95) };
+  };
   await KN.hazir();
   // Kino'nun korkusu (0..1). Yarının üstünde korkmuş Kino çizimi (Adobe: kafa-korku, goz-korku, agiz-korku,
   // kuyruk-korku; ekip/kino/IFADELER.md): kulaklar başa yapışık, kuyruk bacak arasında. Kodla yalnız büzülme:
@@ -549,7 +594,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   async function sahne1() {
     ui.ilerleme(0, 7);
     // aydınlık salon: kule, Mino ve Kino
-    void cek(X(-34), X(36), Y(-3), Y(40), 1.6, 0);
+    void cek(X(-30), X(15), Y(-3), Y(38), 2, 0);
     await bekle(600);
     await mSoyle(M.giris);
     // Kino son küpü dikkatle koyar (dili dışarıda), küp kavis çizip kulenin tepesine oturur
@@ -600,7 +645,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // örtü sallanır
     masa.animate([{ rotate: '0deg' }, { rotate: '-1.2deg' }, { rotate: '1deg' }, { rotate: '-0.5deg' }, { rotate: '0deg' }], { duration: sure(600), easing: 'ease-out', composite: 'add' });
     S.hisirti();
-    await cek(X(-30), X(30), Y(-3), Y(34), 1.7, 900);
+    await cek(X(-30), X(14), Y(-3), Y(34), 2.1, 900);
     await mSoyle(M.kesildi);
     await mSoyle(M.korktu);
     await mSoyle(M.cagir);
@@ -609,7 +654,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     buzul(false);
     KN.katman = 8;
     korkut(0.7);
-    await KN.git(MINO_YER.x + bX(15), Y(-1), 800);
+    await KN.git(MINO_YER.x + bX(19), Y(-1), 800);
     MN.tepki('saril');
     void balon(MN, B.gel, 1100);
     await bekle(500);
@@ -621,7 +666,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   /** Kino'yu kısık sesle (ya da örtüyü okşayarak) çağır: kulak → burun → çıkış */
   function kinoCagir(saklan: { x: number; y: number }): Promise<void> {
     const kx = saklan.x;
-    const ADIM_X = [0, bX(-9.5), bX(-15.5)];
+    const ADIM_X = [0, bX(-7), bX(-11)];
     let adim = 0;
     let yanlis = 0;
     let uyari = 0;
@@ -731,9 +776,9 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   // ================================================================ 2: Çekmecede fener
   async function sahne2() {
     // komodine gidilir, çekmece açılır
-    void MN.git(KOMODIN.x + bX(16), Y(0), 1000, 0, undefined, true);
-    void KN.git(KOMODIN.x + bX(30), Y(1), 1100);
-    await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(38), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 1100);
+    void MN.git(KOMODIN.x + bX(14), Y(0), 1000, 0, undefined, true);
+    void KN.git(KOMODIN.x + bX(34), Y(1), 1100);
+    await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(45), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 1100);
     S.cekmece();
     cekmece.classList.add('acik');
     await bekle(700);
@@ -954,7 +999,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ek?.remove();
     korkut(0.8);
     el.classList.remove('ucuyor');
-    await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(38), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 600);
+    await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(45), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 600);
     yakin.classList.add('acik');
     await bekle(400);
   }
@@ -962,8 +1007,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   // ================================================================ 3: Işık lekesi
   async function sahne3() {
     // herkes odanın ortasına; ışık lekesi duvarda
-    void MN.git(X(-18), Y(-1), 900, 0, undefined, true);
-    void KN.git(X(-2), Y(0), 900);
+    void MN.git(X(-19), Y(-1), 900, 0, undefined, true);
+    void KN.git(X(3), Y(0), 900);
     // perdenin alt ucu (ışık oraya gelince Mino tırmanır); çekim onu da güvenli alana alır
     const perde = arkaNokta(452, 430);
     // (yatay telefonda perde çekime sığmaz: çekim yerde kalır, ışık üst kenara gelince kamera yukarı kayar)
@@ -1138,7 +1183,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       korkut(Math.max(0.15, 0.5 - n * 0.12));
       if (n === 1) void balon(KN, B.ii, 900);
       else KN.kinoIfade('saskin', 1200);
-      void KN.git(Math.min(X(4), KN.x + bX(3)), KN.y, 500);
+      void KN.git(Math.min(X(8), KN.x + bX(2)), KN.y, 500);
       await bekle(500);
       MN.katman = 9;
       await MN.git(eskiX, eskiY, 650, 10);
@@ -1171,7 +1216,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       for (const dx of [8, -6, 10]) {
         const [gx, gy] = gece.hedefi;
         gece.hedef(gx + (dx * bPx), gy - bPx * 4);
-        await KN.git(Math.min(X(14), Math.max(X(-10), KN.x + bX(dx * 0.5))), KN.y, 380, 7);
+        await KN.git(Math.min(X(14), Math.max(X(1), KN.x + bX(dx * 0.5))), KN.y, 380, 7);
         KN.kinoOynat('coskulu', 500);
       }
       ui.ilerleme(3, 7);
@@ -1182,11 +1227,11 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   // ================================================================ 4: Karanlığın sesleri
   async function sahne4() {
     // Kino oyuncak kemiğin üstüne oturmuş (kemik gövdesinin altında gizli)
-    const KINO_OTUR = { x: X(-1), y: Y(0) };
+    const KINO_OTUR = { x: X(4.5), y: Y(0) };
     void KN.git(KINO_OTUR.x, KINO_OTUR.y, 500);
     const kemik = koy(h('div.el-kemik', { 'data-el': 'kemik' }, esya('kemik', KEMIK_SVG, 'Oyuncak kemik')), KINO_OTUR.x + bX(2), KINO_OTUR.y + bY(1), 10, 7);
     kemik.style.opacity = '0';
-    await cek(X(-36), X(36), Y(-3), SAAT.y + bY(10 * SAAT_ORAN + 4), 1.5, 1000);
+    await cek(X(-31), X(17), Y(-3), SAAT.y + bY(10 * SAAT_ORAN + 4), 1.8, 1000);
     // birden bir ses: Kino büzülür
     korkut(0.9);
     await kSoyle(KN_.ne_o);
@@ -1224,8 +1269,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         kemik.style.opacity = '1';
         kemik.style.zIndex = '9';
         await KN.zipla(14, 600);
-        void KN.git(KINO_OTUR.x - bX(6), KINO_OTUR.y, 400);
-        await ucur(kemik, KINO_OTUR.x + bX(5), KINO_OTUR.y - bY(1), 450, 20);
+        void KN.git(KINO_OTUR.x + bX(6), KINO_OTUR.y, 400);
+        await ucur(kemik, KINO_OTUR.x - bX(4), KINO_OTUR.y - bY(1), 450, 20);
         S.giyk(0, 2);
         void balon(kemik, B.giyk, 1000);
         korkut(0);
@@ -1238,7 +1283,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       await bekle(500);
     }
     ui.ilerleme(4, 7);
-    void tasi(kemik, KINO_OTUR.x + bX(12), Y(-3), 500, 8);
+    void tasi(kemik, KINO_OTUR.x - bX(5), Y(-3), 500, 8);
   }
 
   /** Susup dinle: sessizlik halkası dolar (mikrofon: SessizlikSayaci; parmak: kulağa basılı tut) */
@@ -1495,8 +1540,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
 
   // ================================================================ 6: Battaniye çadırı
   async function sahne6() {
-    if (yatayTel) await cek(X(-40), X(40), Y(-7), battaniyeYer.y + bY(9), 1.5, 1000);
-    else await cek(X(dikey ? -30 : -40), X(dikey ? 30 : 40), Y(dikey ? -7 : -4), Y(40), 1.5, 1000);
+    const cek6 = (ms: number) => (yatayTel ? cek(X(-40), X(40), Y(-7), battaniyeYer.y + bY(9), 1.5, ms) : cek(X(dikey ? -30 : -40), X(dikey ? 30 : 40), Y(dikey ? -7 : -4), Y(40), 1.5, ms));
+    await cek6(1000);
     // ışık halının ortasına, geniş; oda biraz daha seçilir
     gece.hedef(...px(X(0), Y(6)));
     gece.delik(Math.min(W, H) * (dikey ? 0.3 : 0.34) / Math.max(1, kamZ));
@@ -1513,7 +1558,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       await bekle(700 + toplanan.length * 110);
     }
     // sandalyeler iki yanda; ışıklı yerler halıda
-    const CADIR = { x: X(-2), y: Y(-4), w: 42 };
+    // (tabanı ipucu şeridinin üstünde kalsın: ışıklı yerler ve finaldeki ikili alttaki yazı/düğmelerin altında kalmasın)
+    const CADIR = { x: X(-2), y: Y(dikey ? 2 : -4), w: 42 };
     const yerler = [
       { x: CADIR.x - bX(CADIR.w * 0.42), y: CADIR.y },
       { x: CADIR.x + bX(CADIR.w * 0.42), y: CADIR.y },
@@ -1526,8 +1572,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // karakterler kenara
     // (dikey telefonda dar çekim: karakterler arkaya, masanın iki yanına; sandalyeler önde görünür)
     if (dikey || yatayTel) {
-      void MN.git(X(-19), Y(13), 700, 0, undefined, true);
-      void KN.git(X(19), Y(13), 700);
+      void MN.git(X(-20), Y(13), 700, 0, undefined, true);
+      void KN.git(X(20), Y(13), 700);
       MN.katman = 7;
       KN.katman = 7;
     } else {
@@ -1536,6 +1582,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       MN.katman = 12;
       KN.katman = 12;
     }
+    // çekim yeni yerlerine göre (kadraj koruması: kenarda yarım kalmasınlar)
+    void cek6(700);
     await mSoyle(M.sandalye);
     durumYaz('sandalye');
     ui.ipucu(I.sandalye);
@@ -1618,7 +1666,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // mandallar
     await mSoyle(M.mandal);
     const mandallar = [0, 1].map((i) =>
-      koy(h('div.el-mandal', { 'data-el': `mandal-${i + 1}`, role: 'button', 'aria-label': 'Mandal', html: mandalSvg(i ? '#5dbe3f' : '#ffc72c') }), CADIR.x + bX(i ? 7 : -7), Y(-10), 3.4, 14),
+      koy(h('div.el-mandal', { 'data-el': `mandal-${i + 1}`, role: 'button', 'aria-label': 'Mandal', html: mandalSvg(i ? '#5dbe3f' : '#ffc72c') }), CADIR.x + bX(i ? 7 : -7), Y(dikey ? -4 : -10), 3.4, 14),
     );
     mandallar.forEach((m, i) => m.style.setProperty('rotate', i ? '70deg' : '-70deg'));
     durumYaz('mandal');
@@ -1811,7 +1859,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     cokuk.classList.remove('dolasiyor');
     KN.el.classList.remove('el-icerde');
     await KN.git(CADIR.x + bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 500, 6);
-    KN.katman = 12;
+    KN.katman = 15;
     KN.kinoIfade('heyecan', 1400);
     void balon(KN, B.haha, 1000);
     MN.tepki('gidik');
@@ -1831,7 +1879,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   async function sahne7() {
     const { cadir, CADIR } = sahne6Sonu!;
     // fener bizde (yerde, ışığı açık): önde
-    const fener = koy(h('div.el-fener.yanik', { 'data-el': 'fener', role: 'button', 'aria-label': 'Fener' }, esya('fener', FENER_SVG, 'Fener')), X(-12), Y(-9), 12, 14);
+    const fener = koy(h('div.el-fener.yanik', { 'data-el': 'fener', role: 'button', 'aria-label': 'Fener' }, esya('fener', FENER_SVG, 'Fener')), X(-12), Y(dikey ? -3 : -9), 12, 14);
     gece.huzme(false);
     await bekle(300);
     // ışıklar gelir: vızz vızz, lamba titreyip yanar
@@ -1935,8 +1983,10 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     await bekle(500);
 
     // final: Kino lambayı kendisi kapatır
-    await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), LAMBA.y + bY(LAMBA.w * LAMBA_ORAN + 4), 1.3, 900);
+    // (Mino çadırın önüne: çadırın ve mandalların önünde)
+    MN.katman = 15;
     void MN.git(CADIR.x - bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 700, 0, undefined, true);
+    await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), LAMBA.y + bY(LAMBA.w * LAMBA_ORAN + 4), 1.3, 900);
     KN.katman = 3;
     await KN.git(LAMBA.x + bX(6), LAMBA.y - bY(1), 1000);
     await kSoyle(KN_.kapatirim);
@@ -1957,20 +2007,24 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     gece.hedef(...px(CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORAN * 0.45)));
     gece.delik(Math.min(W, H) * (dikey ? 0.32 : 0.3) / Math.max(1, kamZ));
     await bekle(500);
-    KN.katman = 12;
+    KN.katman = 15;
     await KN.git(CADIR.x + bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 900);
     await kSoyle(KN_.oynayalim);
     await mSoyle(M.aferin);
-    // ikisi çadıra girer; çadır içeriden parlar
-    void MN.git(CADIR.x - bX(3), CADIR.y + bY(1), 800, 0, undefined, true);
-    await KN.git(CADIR.x + bX(3), CADIR.y + bY(1), 800);
-    MN.katman = 9;
-    KN.katman = 9;
-    MN.el.classList.add('el-icerde');
-    KN.el.classList.add('el-icerde');
+    // ikisi çadırın kapısının iki yanına oturur: kapı aralarında içeriden parlar, ikisi de görünür (yüzleri açık)
+    // (biraz küçülür: çadır arkada görünsün)
+    const KAPI_W = KISI_W * 0.72;
+    MN.katman = 16;
+    KN.katman = 15;
+    for (const k of [MN, KN]) k.el.style.setProperty('--w', String(KAPI_W));
+    void MN.git(CADIR.x - bX(CADIR.w * 0.27), CADIR.y + bY(0.5), 800, 0, undefined, true);
+    await KN.git(CADIR.x + bX(CADIR.w * 0.27), CADIR.y + bY(0.5), 800);
     cadir.classList.add('dolu');
+    KN.kinoIfade('heyecan', 3000);
+    MN.tepki('evet');
     await bekle(700);
-    await cek(CADIR.x - bX(CADIR.w * 0.7), CADIR.x + bX(CADIR.w * 0.7), CADIR.y - bY(3), CADIR.y + bY(CADIR.w * CADIR_ORAN + 8), 1.9, 1400);
+    // (yakın: bitişteki düğmeler altta çıkınca ikisinin yüzü üstte açık kalsın)
+    await cek(CADIR.x - bX(CADIR.w * 0.52), CADIR.x + bX(CADIR.w * 0.52), CADIR.y - bY(3), CADIR.y + bY(CADIR.w * CADIR_ORAN + 6), 2.2, 1400);
     ui.ilerleme(7, 7);
     await mSoyle(M.son);
     odulKarti();
