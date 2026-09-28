@@ -16,12 +16,24 @@
                  "agiz",
                  "goz-kapali",
                  "agiz-acik",
-                 "agiz-gulus"
+                 "agiz-gulus",
+                 "agiz-kapali",
+                 "agiz-az",
+                 "agiz-orta",
+                 "agiz-yuvarlak",
+                 "agiz-dis",
+                 "agiz-gulumse"
              ],
     "gizli":  [
                   "goz-kapali",
                   "agiz-acik",
-                  "agiz-gulus"
+                  "agiz-gulus",
+                  "agiz-kapali",
+                  "agiz-az",
+                  "agiz-orta",
+                  "agiz-yuvarlak",
+                  "agiz-dis",
+                  "agiz-gulumse"
               ],
     "bagli":  {
                   "kas":  "kafa",
@@ -32,7 +44,13 @@
                   "sac-orgu-sag":  "kafa",
                   "goz-kapali":  "kafa",
                   "agiz-acik":  "kafa",
-                  "agiz-gulus":  "kafa"
+                  "agiz-gulus":  "kafa",
+                  "agiz-kapali":  "kafa",
+                  "agiz-az":  "kafa",
+                  "agiz-orta":  "kafa",
+                  "agiz-yuvarlak":  "kafa",
+                  "agiz-dis":  "kafa",
+                  "agiz-gulumse":  "kafa"
               },
     "donme":  {
                   "kafa":  [
@@ -82,6 +100,30 @@
                   "govde":  [
                                 1040,
                                 1880
-                            ]
+                            ],
+                  "agiz-kapali":  [
+                                      1030,
+                                      800
+                                  ],
+                  "agiz-az":  [
+                                  1030,
+                                  800
+                              ],
+                  "agiz-orta":  [
+                                    1030,
+                                    800
+                                ],
+                  "agiz-yuvarlak":  [
+                                        1030,
+                                        800
+                                    ],
+                  "agiz-dis":  [
+                                   1030,
+                                   800
+                               ],
+                  "agiz-gulumse":  [
+                                       1030,
+                                       800
+                                   ]
               }
 }

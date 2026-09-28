@@ -1,0 +1,65 @@
+{
+  "ad": "anne",
+  "kaynak": "assets/ege/anne.webp",
+  "tuval": [
+    428,
+    1143
+  ],
+  "sira": [
+    "govde",
+    "agiz",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
+  ],
+  "gizli": [
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
+  ],
+  "bagli": {
+    "agiz": "govde",
+    "agiz-kapali": "govde",
+    "agiz-az": "govde",
+    "agiz-orta": "govde",
+    "agiz-yuvarlak": "govde",
+    "agiz-dis": "govde",
+    "agiz-gulumse": "govde"
+  },
+  "donme": {
+    "agiz": [
+      213.5,
+      452
+    ],
+    "agiz-kapali": [
+      213.5,
+      452
+    ],
+    "agiz-az": [
+      213.5,
+      452
+    ],
+    "agiz-orta": [
+      213.5,
+      452
+    ],
+    "agiz-yuvarlak": [
+      213.5,
+      452
+    ],
+    "agiz-dis": [
+      213.5,
+      452
+    ],
+    "agiz-gulumse": [
+      213.5,
+      452
+    ]
+  }
+}

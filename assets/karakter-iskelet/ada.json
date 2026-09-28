@@ -17,12 +17,24 @@
     "agiz",
     "goz-kapali",
     "agiz-acik",
-    "agiz-gulus"
+    "agiz-gulus",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
   ],
   "gizli": [
     "goz-kapali",
     "agiz-acik",
-    "agiz-gulus"
+    "agiz-gulus",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
   ],
   "bagli": {
     "kas": "kafa",
@@ -34,7 +46,13 @@
     "sac-topuz-sag": "kafa",
     "sac-arka": "kafa",
     "agiz-acik": "kafa",
-    "agiz-gulus": "kafa"
+    "agiz-gulus": "kafa",
+    "agiz-kapali": "kafa",
+    "agiz-az": "kafa",
+    "agiz-orta": "kafa",
+    "agiz-yuvarlak": "kafa",
+    "agiz-dis": "kafa",
+    "agiz-gulumse": "kafa"
   },
   "donme": {
     "kafa": [
@@ -98,6 +116,30 @@
       576
     ],
     "agiz-gulus": [
+      1022,
+      576
+    ],
+    "agiz-kapali": [
+      1022,
+      576
+    ],
+    "agiz-az": [
+      1022,
+      576
+    ],
+    "agiz-orta": [
+      1022,
+      576
+    ],
+    "agiz-yuvarlak": [
+      1022,
+      576
+    ],
+    "agiz-dis": [
+      1022,
+      576
+    ],
+    "agiz-gulumse": [
       1022,
       576
     ]
