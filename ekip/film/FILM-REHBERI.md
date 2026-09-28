@@ -132,3 +132,13 @@ ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 - Bir oturum başka oturumun dosyasına dokunmaz; iş bölümü `ORTAK_NOTLAR.md`'ye yazılır.
 - Kimse GitHub'a doğrudan göndermez; teslimler yöneticiye, yönetici gönderir.
 - Doğum günü bölümü (`macera/`) bulut yöneticinin; film ekibi oraya dokunmaz.
+
+## 9. Sahne dosyası eklemeleri (film 3: Kino ve Kaydırak)
+
+- **Jenerikler (üç filmde de):** oynatınca başlık kartı + `assets/muzik/film-acilis.mp3` (7,9 sn), sonra film; film ve öğüt kartından sonra `film-kapanis.mp3` (5 sn). Kartsız gösterim / ekran görüntüsü için `?kartsiz=1`. MP4 kaydı bunları ve müzikleri içerir; kayıt kapanış jeneriği bitince (`.fl-ekran[data-tamam]`) sona erer.
+- **Dosya müziği:** `{ "kim": "muzik", "yap": "dosya", "ad": "film-merak", "ses": 0.5, "dongu": false, "gec": 0.4, "ustune": false }` (yeni dosya öncekini çapraz geçişle söndürür); `{ "yap": "dosya-dur", "sure": 2 }`. Adlar: `film-uzgun`, `film-kovalamaca`, `film-surpriz`, `film-kutlama`, `film-merak`, `film-fon-pazar`. Film dosyasında `"sentez": false` sentez müziği (nese…) başlatmaz.
+- **Park:** `"arka": "park"` (kaydırak, kum havuzu) ya da `"park-salincak"`; `"ortaKaydir": 30` orta katmanı sağa kaydırır (kaydırak çalıların arkasında kalmasın). Çimen ve oyun aletleri oyuncularla aynı derinliktedir.
+- **Yan görünüş oyuncusu:** oyuncuda `"yan": true` (`assets/karakter-iskelet/<tip>-profil`): yandan yürür / koşar (`git` + `"stil": "kos"`), `"stil": "yerinde"` olduğu yerde adım atar (merdiven), dururken nefes alır. Çizim sağa bakar (`yon: -1` sola). Ağzı ayrı oyuncudan oynatmak için `soyle` olayında `"agiz": "<oyuncu>"`.
+- **Görünüm değişimi:** `{ "kim": "kinoy", "yap": "yerine", "hedef": "kino", "yon": 1 }` yan ↔ önden Kino (konum aktarılır). `{ "yap": "yer", x, y, don }` anında konum.
+- **Önden Kino / karakter duruşları (`durus`):** `otur: 1` (+ `y: 2.2`), `yukSol` / `yukSag` (30-160° kalkık kol), `dusun: 1`, `bakan: -1 | 1`.
+

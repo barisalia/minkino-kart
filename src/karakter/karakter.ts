@@ -121,6 +121,9 @@ export interface Poz {
   burun: number;
   /** Dudak senkronunun şekli (konuşurken; null: karakterin kendi ağzı) */
   agizSekli?: AgizSekli | null;
+  /** Kalkık kol (kol-sol-yukari / kol-sag-yukari katmanı, 30-160°; film: Oyuncu.durus yukSol / yukSag). 0: yok */
+  yukSol?: number;
+  yukSag?: number;
 }
 const bosPoz = (): Poz => ({ x: 0, y: 0, don: 0, sx: 1, sy: 1, kafa: 0, kafaY: 0, kulakSol: 0, kulakSag: 0, kolSol: 0, kolSag: 0, bacakSol: 0, bacakSag: 0, kuyruk: 0, gozKapali: false, agizAcik: 0, burun: 0, agizSekli: null });
 
@@ -445,6 +448,9 @@ export class Karakter {
       // kollar yalnız dışa doğru (sallama, uzatma, kaldırma): göbeğin önüne / karşıya geçmez
       'kol-sol': kolSinir(p.kolSol, kolS),
       'kol-sag': -kolSinir(p.kolSag, kolS),
+      // kalkık kollar (Adobe, ayrı katman): sınırsız açı (40-160°), sağ kol ayna
+      'kol-sol-yukari': p.yukSol ?? 0,
+      'kol-sag-yukari': -(p.yukSag ?? 0),
       // kanatlar kolların yerine (kuş, ördek): + = açılır
       'kanat-sol': kanatSinir(p.kolSol, s.kanat),
       'kanat-sag': -kanatSinir(p.kolSag, s.kanat),
@@ -453,6 +459,8 @@ export class Karakter {
       'ayak-sol': sin(p.bacakSol, s.bacak),
       'ayak-sag': -sin(p.bacakSag, s.bacak),
       kuyruk,
+      // oturan kuyruk da sallanır (kökü kucağın arkasında; aynı aralık)
+      'kuyruk-oturma': kuyruk,
     };
     const kulakEsne = this.k.kulakEsne;
     for (const [id, g] of this.parca) {

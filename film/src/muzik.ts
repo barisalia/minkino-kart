@@ -11,6 +11,44 @@
 import { baglam, muzikCikisi } from '../../src/audio/motor';
 import { muzikDurdur } from '../../src/audio/muzik';
 
+// Yalnız film müzikleri pakete girer (film-acilis, film-kapanis, film-uzgun, film-kovalamaca, film-surpriz, film-kutlama, film-merak, film-fon-pazar)
+const DOSYALAR = import.meta.glob<string>('../../assets/muzik/film-*.mp3', { eager: true, query: '?url', import: 'default' });
+export const filmMuzikAdresi = (ad: string): string | null => DOSYALAR[`../../assets/muzik/${ad}.mp3`] ?? null;
+/** Dosya müziği süreleri (sn; jenerikler): açılış kartı ve kapanış bu kadar sürer */
+export const ACILIS_SURESI = 7.9;
+export const KAPANIS_SURESI = 5;
+
+/** Çözülmüş dosya müzikleri (bağlamdan bağımsız AudioBuffer): yükleme bir kez, sonra hemen (eşzamanlı) çalınır */
+const tamponlar = new Map<string, Promise<AudioBuffer | null>>();
+const hazirTampon = new Map<string, AudioBuffer>();
+export function dosyaTamponu(c: BaseAudioContext, ad: string): Promise<AudioBuffer | null> {
+  const url = filmMuzikAdresi(ad);
+  if (!url) return Promise.resolve(null);
+  let p = tamponlar.get(ad);
+  if (!p) {
+    p = fetch(url)
+      .then((r) => r.arrayBuffer())
+      .then((b) => c.decodeAudioData(b))
+      .then((b) => (hazirTampon.set(ad, b), b))
+      .catch(() => null);
+    tamponlar.set(ad, p);
+  }
+  return p;
+}
+
+/** sahne dosyasındaki dosya müziği olayı ve jenerik çağrıları */
+export interface DosyaSecenegi {
+  ad: string;
+  /** düzey 0..1 (varsayılan 0.55) */
+  ses?: number;
+  /** bitince başa sar (varsayılan: bir kez çalar, sonunda söner) */
+  dongu?: boolean;
+  /** giriş (yumuşak yükselme) süresi, sn (varsayılan 0.4) */
+  gec?: number;
+  /** öncekini kesme: üst üste çal */
+  ustune?: boolean;
+}
+
 export type Ruh = 'nese' | 'uzgun' | 'aydinlik' | 'kapanis' | 'yumusak';
 
 interface Tema {
@@ -112,6 +150,84 @@ class FilmMuzik {
   private calisiyor = false;
   private bitis = false;
   private duckBitis = 0;
+  /** çalan dosya müzikleri */
+  private dosyalar: { src: AudioBufferSourceNode; g: GainNode }[] = [];
+
+  /** çıkış zinciri (sentez → kısma → müzik kanalı); dosya müziği kısmaya doğrudan bağlanır */
+  private zincir(c: AudioContext, ana: GainNode) {
+    this.c = c;
+    if (!this.cikis) {
+      this.duck = c.createGain();
+      this.cikis = c.createGain();
+      this.cikis.gain.value = 0.9;
+      this.cikis.connect(this.duck).connect(ana);
+    }
+  }
+
+  /**
+   * Dosya müziği çalar (assets/muzik/film-*.mp3). Önceki dosya müzikleri çapraz geçişle söner (ustune: değil).
+   * Tampon hazırsa hemen (eşzamanlı: MP4 kaydının çevrimdışı işlemesi), değilse yüklenince çalar.
+   */
+  dosyaCal(a: DosyaSecenegi) {
+    const c = baglam();
+    const ana = muzikCikisi();
+    if (!c || !ana || !filmMuzikAdresi(a.ad)) return;
+    muzikDurdur();
+    ana.gain.cancelScheduledValues(c.currentTime);
+    ana.gain.setTargetAtTime(1, c.currentTime, 0.3);
+    this.zincir(c, ana);
+    if (!a.ustune) this.dosyaDur(a.gec ?? 0.4, true);
+    const cal = (b: AudioBuffer) => {
+      const t = c.currentTime + 0.03;
+      const ses = a.ses ?? 0.55;
+      const gec = a.gec ?? 0.4;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(ses, t + gec);
+      const src = c.createBufferSource();
+      src.buffer = b;
+      src.loop = !!a.dongu;
+      src.connect(g).connect(this.duck!);
+      const k = { src, g };
+      this.dosyalar.push(k);
+      src.onended = () => {
+        this.dosyalar = this.dosyalar.filter((x) => x !== k);
+        g.disconnect();
+      };
+      // bir kez çalan parça sonunda söner (kesik bitmesin)
+      if (!a.dongu) {
+        g.gain.setValueAtTime(ses, Math.max(t + gec, t + b.duration - 0.7));
+        g.gain.linearRampToValueAtTime(0.0001, t + b.duration);
+      }
+      src.start(t);
+    };
+    const hazir = hazirTampon.get(a.ad);
+    if (hazir) cal(hazir);
+    else void dosyaTamponu(c, a.ad).then((b) => b && cal(b));
+  }
+
+  /** Sahneden istenen söndürme (MP4 kaydında günlüğe yazılır; dosyaDur iç çağrılarda yazılmaz) */
+  dosyaSon(sn = 1.5) {
+    this.dosyaDur(sn);
+  }
+
+  /** Çalan dosya müziklerini yumuşakça söndürür */
+  dosyaDur(sn = 1.5, yeni = false) {
+    const c = this.c;
+    if (!c) return;
+    const t = c.currentTime;
+    const s = Math.max(0.05, sn);
+    for (const k of this.dosyalar) {
+      k.g.gain.cancelScheduledValues(t);
+      k.g.gain.setTargetAtTime(0.0001, t, s / 3);
+      try {
+        k.src.stop(t + s + 0.05);
+      } catch {
+        /* zaten durmuş */
+      }
+    }
+    if (!yeni) this.dosyalar = [];
+  }
 
   baslat(ruh: Ruh = 'nese') {
     const c = baglam();
@@ -121,15 +237,9 @@ class FilmMuzik {
     muzikDurdur();
     ana.gain.cancelScheduledValues(c.currentTime);
     ana.gain.setTargetAtTime(1, c.currentTime, 0.3);
-    this.c = c;
-    if (!this.cikis) {
-      this.duck = c.createGain();
-      this.cikis = c.createGain();
-      this.cikis.gain.value = 0.9;
-      this.cikis.connect(this.duck).connect(ana);
-    }
-    this.cikis.gain.cancelScheduledValues(c.currentTime);
-    this.cikis.gain.setTargetAtTime(0.9, c.currentTime, 0.4);
+    this.zincir(c, ana);
+    this.cikis!.gain.cancelScheduledValues(c.currentTime);
+    this.cikis!.gain.setTargetAtTime(0.9, c.currentTime, 0.4);
     this.ruh = ruh;
     this.sonraki = null;
     this.bitis = false;
@@ -155,6 +265,8 @@ class FilmMuzik {
   }
 
   duraklat(d: boolean) {
+    // dosya müziği: bağlamı askıya al / sürdür (konum kaybolmasın)
+    if (this.c && this.dosyalar.length) void (d ? this.c.suspend() : this.c.resume()).catch(() => undefined);
     if (!this.c || !this.cikis) return;
     if (d) {
       this.durdurZamanlayici();
@@ -168,6 +280,7 @@ class FilmMuzik {
 
   /** Yumuşakça sustur */
   dur(sn = 1.5) {
+    this.dosyaDur(sn);
     this.durdurZamanlayici();
     if (this.c && this.cikis) this.cikis.gain.setTargetAtTime(0, this.c.currentTime, sn / 3);
   }

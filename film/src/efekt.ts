@@ -245,6 +245,24 @@ export const FILM_EFEKT: Record<string, () => void> = {
   fiu() {
     hisirti(0, 0.35, 900, 3200, 0.16, 2);
   },
+  // ---------------------------------------------------------------- Kino ve Kaydırak
+  /** kaydırakta kayış: pürüzsüz vıııı (alçalan, hafif cızırtılı) */
+  kaydir() {
+    hisirti(0, 0.9, 1800, 500, 0.13, 4);
+    ton(700, 0, 0.85, 'sine', 0.05, 320);
+    ton(1400, 0.05, 0.7, 'triangle', 0.02, 800);
+  },
+  /** merdiven basamağı: tahta tıp tıp (çıkarken) */
+  merdiven() {
+    for (let i = 0; i < 5; i++) {
+      ton(520 + i * 60, i * 0.24, 0.07, 'triangle', 0.16, 300);
+      hisirti(i * 0.24, 0.03, 2200, 1500, 0.06, 3);
+    }
+  },
+  /** sabırsız ayak: tıp tıp (tahta zemin gibi yumuşak) */
+  ayak() {
+    [0, 0.2, 0.4].forEach((b) => ton(240, b, 0.06, 'sine', 0.14, 140));
+  },
   /** üzgün Mino iç çeker gibi: yumuşak nefes */
   nefes() {
     hisirti(0, 0.9, 700, 400, 0.05, 0.6);
