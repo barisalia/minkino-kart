@@ -1,0 +1,84 @@
+﻿{
+    "ad":  "mino-34",
+    "boyut":  2048,
+    "sira":  [
+                 "kol-arka",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "fular",
+                 "kafa",
+                 "kulak-on",
+                 "kulak-arka",
+                 "goz-sol",
+                 "goz-sag",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-on":  "kafa",
+                  "kulak-arka":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1080,
+                               1235
+                           ],
+                  "kulak-on":  [
+                                   770,
+                                   420
+                               ],
+                  "kulak-arka":  [
+                                     1400,
+                                     330
+                                 ],
+                  "goz-sol":  [
+                                  1125,
+                                  800
+                              ],
+                  "goz-sag":  [
+                                  1492,
+                                  818
+                              ],
+                  "agiz":  [
+                               1360,
+                               1030
+                           ],
+                  "goz-kapali":  [
+                                     1250,
+                                     830
+                                 ],
+                  "fular":  [
+                                1040,
+                                1262
+                            ],
+                  "kol-on":  [
+                                 835,
+                                 1320
+                             ],
+                  "kol-arka":  [
+                                   1285,
+                                   1455
+                               ],
+                  "bacak-on":  [
+                                   905,
+                                   1680
+                               ],
+                  "bacak-arka":  [
+                                     1130,
+                                     1720
+                                 ],
+                  "govde":  [
+                                1040,
+                                1900
+                            ]
+              }
+}
