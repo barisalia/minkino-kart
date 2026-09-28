@@ -134,3 +134,27 @@ export class YuksekSes {
     return this.sure > YUKSEK_SURE;
   }
 }
+
+// ---------------------------------------------------------------- sahne 6: kayıtlı kamp şarkısı (varsa)
+/**
+ * Gemini kaydı gelince: assets/muzik/kamp.json (heceler, vuruslar_ms = alkış vuruşları) + kamp-sozlu/sozsuz.mp3.
+ * Kural: oyun şarkıya uyar (kayıt zorlanmaz). Her alkış kaydın bir sonraki parçasını çalar: vuruş n → vuruş n+1.
+ * Alkış sayısı kayıttaki vuruş sayısıdır; yaşa göre sayı (6 / 8) kayıtta o kadar vuruş varsa ilk o kadarı alınır.
+ */
+export interface KampKayit {
+  vuruslar_ms: number[];
+  heceler?: { hece: string; basla_ms: number; bitir_ms: number }[];
+  sure_ms?: number;
+}
+export interface KampParca {
+  basMs: number;
+  bitMs: number;
+}
+export function kampParcalari(k: KampKayit | null | undefined, adet: number): KampParca[] {
+  const v = (k?.vuruslar_ms ?? []).filter((x) => Number.isFinite(x) && x >= 0).sort((a, b) => a - b);
+  if (v.length < 2) return [];
+  const n = v.length >= adet ? adet : v.length;
+  const hecelerSon = k?.heceler?.length ? Math.max(...k.heceler.map((h) => h.bitir_ms)) : 0;
+  const son = v.length > n ? v[n] : k?.sure_ms ?? (hecelerSon > v[n - 1] ? hecelerSon : v[n - 1] + 1200);
+  return v.slice(0, n).map((bas, i) => ({ basMs: bas, bitMs: i + 1 < n ? v[i + 1] : son }));
+}

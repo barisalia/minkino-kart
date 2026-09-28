@@ -74,6 +74,7 @@ import {
   isaretSonuc,
   kabulMu,
   kampNotalari,
+  kampParcalari,
   Oksama,
   SES_SIRASI,
   sessizlikIlerle,
@@ -123,7 +124,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   dunya.style.height = `${Hd}px`;
   dunya.style.bottom = 'auto';
   // b birimi dünyaya göre (yatay telefonda dünya kare): CSS'teki --b ile aynı
-  const bPx = Math.min(Wd * 0.0116, Hd * 0.0075);
+  // (yatay telefonda ekran alçak: birim ekran yüksekliğine göre de sınırlanır, oda ve karakterler çekime sığsın)
+  const bPx = Math.min(Wd * 0.0116, Hd * 0.0075, W / H > 1.3 ? H * 0.0115 : Infinity);
   sahne.el.style.setProperty('--b', `${bPx.toFixed(3)}px`);
   const bX = (n: number) => ((n * bPx) / Wd) * 100;
   const bY = (n: number) => ((n * bPx) / Hd) * 100;
@@ -229,7 +231,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const SAKSI = { x: KOMODIN.x + bX(4), y: KOMODIN.y + bY(komodinH * 0.86), w: 8 };
   const saksi = koy(h('div.el-saksi', { 'data-el': 'saksi' }, esya('saksi', SAKSI_SVG, 'Saksı'), h('i.el-damla'), h('i.el-damla.d2')), SAKSI.x, SAKSI.y, SAKSI.w, 4);
   // duvar saati (komodin ile lambanın arasında, duvarda)
-  const SAAT = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : 20), w: 10 };
+  // (yatay telefonda ekran alçak: saat duvarda daha aşağıda, sahne 4 çekimine Kino ile birlikte sığsın)
+  const SAAT = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : W / H > 1.3 ? 5 : 20), w: 10 };
   const saat = koy(h('div.el-saat', { 'data-el': 'saat' }, esya('saat', SAAT_SVG, 'Saat')), SAAT.x, SAAT.y, SAAT.w, 1);
   // masa (ortada, örtülü): Kino altına saklanır
   const MASA = { x: X(6), y: Y(8), w: 36 };
@@ -295,6 +298,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     }
   };
   const kisiH = KISI_W * KISI_ORAN;
+  /** Sahne 6'nın çadırı sahne 7'ye geçer (akıştan önce tanımlı olmalı) */
+  let sahne6Sonu: { cadir: HTMLElement; CADIR: { x: number; y: number; w: number } } | null = null;
 
   // ================================================================ akış altyapısı
   const tikler = new Set<(dt: number) => void>();
@@ -480,7 +485,9 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   let sonSerbest = 0;
   let serbestAcik = true;
   const serbest = (k: Kisi) => (e: PointerEvent) => {
-    if (!serbestAcik || performance.now() - sonSerbest < 800 || sahne.el.dataset.elGorev === 'kino') return;
+    // ışığın ya da sesin yerini gösterme görevlerinde dokunuş sahneye geçer (Kino'nun altındaki kemik gibi)
+    const g = sahne.el.dataset.elGorev ?? '';
+    if (!serbestAcik || performance.now() - sonSerbest < 800 || g === 'kino' || g === 'isik' || g === 'bul') return;
     sonSerbest = performance.now();
     e.stopPropagation();
     if (k === MN) {
@@ -942,7 +949,11 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // herkes odanın ortasına; ışık lekesi duvarda
     void MN.git(X(-18), Y(-1), 900, 0, undefined, true);
     void KN.git(X(-2), Y(0), 900);
-    await cek(X(-36), X(38), Y(-3), DUVAR + bY(30), 1.5, 1000);
+    // perdenin alt ucu (ışık oraya gelince Mino tırmanır); çekim onu da güvenli alana alır
+    const perde = arkaNokta(452, 430);
+    // (yatay telefonda perde çekime sığmaz: çekim yerde kalır, ışık üst kenara gelince kamera yukarı kayar)
+    await cek(X(-36), X(38), Y(-3), W / H > 1.3 ? DUVAR + bY(30) : Math.max(DUVAR + bY(30), perde.y + bY(18)), 1.5, 1000);
+    const kamBas: [number, number] = [kamT[0], kamT[1]];
     await mSoyle(M.isik);
     // hedefler: koltuk (oturağı), perde (arka plandaki sağ perde), masa (üstü)
     const hedefEl = (ad: string, x: number, y: number, w: number, hh: number) => {
@@ -950,7 +961,6 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       dunya.append(el);
       return el;
     };
-    const perde = arkaNokta(452, 300);
     const HEDEF: Record<ZiplamaYeri, { el: HTMLElement; ini: [number, number] }> = {
       koltuk: { el: hedefEl('koltuk', KOLTUK.x, KOLTUK.y + bY(koltukH * 0.2), bX(KOLTUK.w * 0.8), bY(koltukH * 0.75)), ini: [KOLTUK.x, KOLTUK.y + bY(koltukH * 0.32)] },
       perde: { el: hedefEl('perde', perde.x, perde.y - bY(14), bX(16), bY(30)), ini: [perde.x, perde.y - bY(12)] },
@@ -972,8 +982,23 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       }
       // ışık parmağı izler (basılıyken sürüklenir; dokununca oraya gider)
       let basili = false;
+      let parmakYer: [number, number] | null = null;
       const git = (e: PointerEvent) => {
+        parmakYer = [e.clientX, e.clientY];
         const [x, y] = dunyaPx(e.clientX, e.clientY);
+        gece.hedef(x, y);
+      };
+      /** Kenar kaydırma: parmak ekranın üst / alt kenarındaysa kamera o yöne kayar (sığmayan perde için) */
+      const kenarKay = (dt: number) => {
+        if (!basili || !parmakYer) return;
+        const py = parmakYer[1];
+        const v = py < GUVEN.ust + 40 ? 1 : py > H - GUVEN.alt - 30 ? -1 : 0;
+        if (!v) return;
+        const yeni = Math.min(0, Math.max(H - Hd * kamZ, kamT[1] + v * dt * 320));
+        if (Math.abs(yeni - kamT[1]) < 0.1) return;
+        kamT = [kamT[0], yeni];
+        kamUygula(0);
+        const [x, y] = dunyaPx(parmakYer[0], parmakYer[1]);
         gece.hedef(x, y);
       };
       const bas = (e: PointerEvent) => {
@@ -986,7 +1011,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       };
       const birak = () => (basili = false);
       sahne.el.addEventListener('pointerdown', bas);
-      sahne.el.addEventListener('pointermove', hareket);
+      // hareket pencereden: parmak üst çubuğun üstüne çıksa da ışık (ve kenar kaydırma) izler
+      addEventListener('pointermove', hareket);
       addEventListener('pointerup', birak);
       addEventListener('pointercancel', birak);
       const icerde = (el: HTMLElement, x: number, y: number) => {
@@ -1006,6 +1032,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       olc();
       let olcZaman = 0;
       const durdur = tik((dt) => {
+        kenarKay(dt);
         // Mino'nun gözleri ışığı izler
         const [gx] = gece.merkez;
         MN.mino?.bak(Math.max(-1, Math.min(1, (gx / Wd) * 100 - MN.x) / 25));
@@ -1039,6 +1066,11 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
           if (ziplanan.length >= ZIPLAMA_SAYISI) {
             kinoSira = true;
             kinoHedef = KN.kap;
+            // kamera kenar kaydırmayla kaydıysa Kino'ya geri döner
+            if (Math.abs(kamT[1] - kamBas[1]) > 1) {
+              kamT = [kamBas[0], kamBas[1]];
+              kamUygula(700);
+            }
             durumYaz('kino');
             ui.ipucu(I.kino);
             olc();
@@ -1054,7 +1086,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         avlan(false);
         MN.mino?.bak(0);
         sahne.el.removeEventListener('pointerdown', bas);
-        sahne.el.removeEventListener('pointermove', hareket);
+        removeEventListener('pointermove', hareket);
         removeEventListener('pointerup', birak);
         removeEventListener('pointercancel', birak);
       };
@@ -1408,11 +1440,22 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
 
   // ================================================================ 6: Battaniye çadırı
   async function sahne6() {
-    await cek(X(-40), X(40), Y(-4), Y(40), 1.5, 1000);
+    await cek(X(dikey ? -30 : -40), X(dikey ? 30 : 40), Y(dikey ? -7 : -4), Y(40), 1.5, 1000);
     // ışık halının ortasına, geniş; oda biraz daha seçilir
     gece.hedef(...px(X(0), Y(6)));
     gece.delik(Math.min(W, H) * (dikey ? 0.3 : 0.34) / Math.max(1, kamZ));
     await mSoyle(M.cadir);
+    // çadır yeri boşalsın: küpler ve oyuncak kemik komodinin dibine toplanır (sırayla, küçük sekerek)
+    {
+      const kemikEl = dunya.querySelector<HTMLElement>('[data-el="kemik"]');
+      const toplanan = [...kupler, ...(kemikEl ? [kemikEl] : [])];
+      toplanan.forEach((e, i) => {
+        e.style.zIndex = '4';
+        setTimeout(() => void ucur(e, KOMODIN.x + bX(13 + (i % 3) * 5.5), ARKA(-1 - Math.floor(i / 3) * 2), 520, 14, e === kemikEl ? 6 : 5), sure(i * 110));
+      });
+      S.patiler(5);
+      await bekle(700 + toplanan.length * 110);
+    }
     // sandalyeler iki yanda; ışıklı yerler halıda
     const CADIR = { x: X(-2), y: Y(-4), w: 42 };
     const yerler = [
@@ -1421,14 +1464,22 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ];
     const isikYer = yerler.map((p, i) => koy(h('div.el-yer', { 'data-el': `sandalye-yeri-${i + 1}` }), p.x, p.y - bY(2), 14, 21));
     const sandalyeler = [
-      koy(h('div.el-sandalye', { 'data-el': 'sandalye-1' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? -32 : -36), Y(-1), 11, 8),
-      koy(h('div.el-sandalye', { 'data-el': 'sandalye-2' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? 32 : 37), Y(0), 11, 8),
+      koy(h('div.el-sandalye', { 'data-el': 'sandalye-1' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? -25 : -36), Y(dikey ? -2 : -1), 11, 8),
+      koy(h('div.el-sandalye', { 'data-el': 'sandalye-2' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? 25 : 37), Y(dikey ? -1 : 0), 11, 8),
     ];
     // karakterler kenara
-    void MN.git(X(-22), Y(-6), 700, 0, undefined, true);
-    void KN.git(X(20), Y(-6), 700);
-    MN.katman = 12;
-    KN.katman = 12;
+    // (dikey telefonda dar çekim: karakterler arkaya, masanın iki yanına; sandalyeler önde görünür)
+    if (dikey) {
+      void MN.git(X(-19), Y(13), 700, 0, undefined, true);
+      void KN.git(X(19), Y(13), 700);
+      MN.katman = 7;
+      KN.katman = 7;
+    } else {
+      void MN.git(X(-22), Y(-6), 700, 0, undefined, true);
+      void KN.git(X(20), Y(-6), 700);
+      MN.katman = 12;
+      KN.katman = 12;
+    }
     await mSoyle(M.sandalye);
     durumYaz('sandalye');
     ui.ipucu(I.sandalye);
@@ -1548,18 +1599,28 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
 
     // kamp şarkısı: her alkış bir nota, çadırın ışıklarından biri yanar
     await mSoyle(M.sarki);
-    const notalar = kampNotalari(ayar.alkis);
+    // Kayıt (Gemini) varsa oyun şarkıya uyar: alkış vuruşları kamp.json'dan, her alkış kaydın bir parçası.
+    // Yoksa sentez: yaşa göre 6 / 8 nota.
+    const kayit = S.kampKaydi();
+    const parcalar = kayit ? kampParcalari(kayit.kayit, ayar.alkis) : [];
+    const calar = parcalar.length ? new S.KampCalar(kayit!.url) : null;
+    const notalar = calar ? parcalar.map(() => 0) : kampNotalari(ayar.alkis);
+    const isikSayisi = notalar.length;
+    const isikKap = cadir.querySelector<HTMLElement>('.el-isiklar')!;
+    if (isikKap.children.length !== isikSayisi) isikKap.replaceChildren(...Array.from({ length: isikSayisi }, (_, i) => h('i', { style: `--i:${i};--n:${isikSayisi}` })));
     const isiklar = [...cadir.querySelectorAll<HTMLElement>('.el-isiklar i')];
+    iptaller.push(() => calar?.kapat());
     await sesliGorev(() =>
       gorev<void>((coz) => {
-        durumYaz('sarki', ayar.alkis);
+        durumYaz('sarki', isikSayisi);
         ui.ipucu(I.sarki);
         let n = 0;
         const a = new Alkis(kulak.ayar);
         const ip = ipucu(kutu(cadir));
         const vur = () => {
           if (n >= notalar.length) return;
-          S.kampNota(notalar[n], n % 2 === 0);
+          if (calar) calar.parca(parcalar[n]);
+          else S.kampNota(notalar[n], n % 2 === 0);
           isiklar[n]?.classList.add('yanik');
           n++;
           ui.ilerleme(n, notalar.length);
@@ -1588,7 +1649,12 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       }),
     );
     ui.ilerleme(0, 0);
-    [72, 76, 79, 84].forEach((m, i) => setTimeout(() => S.kampNota(m, false), sure(i * 120)));
+    if (calar) {
+      // son parça kendi sonuna kadar çalar (oyun şarkıya uyar)
+      const p = parcalar[parcalar.length - 1];
+      await bekle(Math.min(3000, Math.max(0, p.bitMs - p.basMs - 600)));
+      calar.kapat();
+    } else [72, 76, 79, 84].forEach((m, i) => setTimeout(() => S.kampNota(m, false), sure(i * 120)));
     konfeti(cadir, 36);
     await bekle(900);
 
@@ -1616,7 +1682,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // Kino battaniyenin kenarından çıkar, çadır "hop" diye yeniden kurulur
     cokuk.classList.remove('dolasiyor');
     KN.el.classList.remove('el-icerde');
-    await KN.git(CADIR.x + bX(CADIR.w * 0.62), Y(-6), 500, 6);
+    await KN.git(CADIR.x + bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 500, 6);
     KN.katman = 12;
     KN.kinoIfade('heyecan', 1400);
     void balon(KN, B.haha, 1000);
@@ -1632,7 +1698,6 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ui.ilerleme(6, 7);
     sahne6Sonu = { cadir, CADIR };
   }
-  let sahne6Sonu: { cadir: HTMLElement; CADIR: { x: number; y: number; w: number } } | null = null;
 
   // ================================================================ 7: Geldiii!
   async function sahne7() {
@@ -1649,7 +1714,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     gece.delik(0);
     lamba.classList.add('yanik');
     pencere.el.classList.add('komsular');
-    await cek(X(-40), X(40), Y(-10), Y(42), 1.4, 900);
+    await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), Y(42), 1.4, 900);
     // mahalleden "Geldiii!" balonları (pencerenin yanından)
     for (let i = 0; i < 3; i++) setTimeout(() => void balonGoster(balonKatman, new DOMRect(W * (0.2 + i * 0.3), GUVEN.ust + 30 + (i % 2) * 30, 10, 10), B.geldi, 1400), sure(i * 350));
     KN.kinoIfade('heyecan', 1500);
@@ -1740,8 +1805,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     await bekle(500);
 
     // final: Kino lambayı kendisi kapatır
-    await cek(X(-40), X(40), Y(-10), LAMBA.y + bY(LAMBA.w * LAMBA_ORAN + 4), 1.3, 900);
-    void MN.git(CADIR.x - bX(CADIR.w * 0.62), Y(-6), 700, 0, undefined, true);
+    await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), LAMBA.y + bY(LAMBA.w * LAMBA_ORAN + 4), 1.3, 900);
+    void MN.git(CADIR.x - bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 700, 0, undefined, true);
     KN.katman = 3;
     await KN.git(LAMBA.x + bX(6), LAMBA.y - bY(1), 1000);
     await kSoyle(KN_.kapatirim);
@@ -1757,9 +1822,12 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // çadırda gece lambası yanar
     cadir.classList.add('lamba');
     S.lambaTik();
+    // loş odada çadırın çevresi gece lambasıyla aydınlık kalır
+    gece.hedef(...px(CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORAN * 0.45)));
+    gece.delik(Math.min(W, H) * (dikey ? 0.32 : 0.3) / Math.max(1, kamZ));
     await bekle(500);
     KN.katman = 12;
-    await KN.git(CADIR.x + bX(CADIR.w * 0.62), Y(-6), 900);
+    await KN.git(CADIR.x + bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 900);
     await kSoyle(KN_.oynayalim);
     await mSoyle(M.aferin);
     // ikisi çadıra girer; çadır içeriden parlar

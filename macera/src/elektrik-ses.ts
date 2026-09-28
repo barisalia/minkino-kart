@@ -7,6 +7,7 @@
  */
 import { baglam, efektCikisi, muzikCikisi } from '../../src/audio/motor';
 import { kulak } from '../../orman/src/kulak';
+import type { KampKayit, KampParca } from './elektrik-mantik';
 
 function hazir(cikis: 'efekt' | 'muzik' = 'efekt', pan = 0): [AudioContext, AudioNode] | null {
   const c = baglam();
@@ -512,5 +513,43 @@ export class GeceMuzik {
       this.sonraki += this.vurus;
       this.adim++;
     }
+  }
+}
+
+// ---------------------------------------------------------------- kayıtlı kamp şarkısı (Gemini; varsa)
+/** assets/muzik/kamp-sozlu.mp3 / kamp-sozsuz.mp3 + kamp.json gelirse sentez yerine kayıt çalar (yoksa boş) */
+const KAMP_SES = import.meta.glob<string>('../../assets/muzik/kamp-*.mp3', { eager: true, query: '?url', import: 'default' });
+const KAMP_JSON = import.meta.glob<KampKayit>('../../assets/muzik/kamp.json', { eager: true, import: 'default' });
+
+export function kampKaydi(): { url: string; kayit: KampKayit } | null {
+  const kayit = KAMP_JSON['../../assets/muzik/kamp.json'];
+  const url = KAMP_SES['../../assets/muzik/kamp-sozlu.mp3'] ?? KAMP_SES['../../assets/muzik/kamp-sozsuz.mp3'];
+  return kayit && url ? { url, kayit } : null;
+}
+
+/** Kaydı parça parça çalar: her alkış bir parça (vuruştan bir sonraki vuruşa); mikrofon parça boyunca susar */
+export class KampCalar {
+  private ses: HTMLAudioElement;
+  private dur: ReturnType<typeof setTimeout> | null = null;
+  constructor(url: string) {
+    this.ses = new Audio(url);
+    this.ses.preload = 'auto';
+  }
+  parca(p: KampParca) {
+    const ms = Math.max(80, p.bitMs - p.basMs);
+    kulak.sustur(ms + 250);
+    if (this.dur) clearTimeout(this.dur);
+    try {
+      this.ses.currentTime = p.basMs / 1000;
+      void this.ses.play().catch(() => undefined);
+    } catch {
+      /* ses yüklenemedi: oyun sürer */
+    }
+    this.dur = setTimeout(() => this.ses.pause(), ms);
+  }
+  kapat() {
+    if (this.dur) clearTimeout(this.dur);
+    this.ses.pause();
+    this.ses.src = '';
   }
 }
