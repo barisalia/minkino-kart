@@ -8,6 +8,8 @@
     "bacak-sol",
     "bacak-sag",
     "govde",
+    "gaga-ic",
+    "gaga-alt",
     "gaga",
     "goz-sol",
     "goz-sag",
@@ -20,7 +22,9 @@
     "gaga": "govde",
     "goz-sol": "govde",
     "goz-sag": "govde",
-    "goz-kapali": "govde"
+    "goz-kapali": "govde",
+    "gaga-alt": "govde",
+    "gaga-ic": "govde"
   },
   "donme": {
     "govde": [
@@ -62,6 +66,14 @@
     "kuyruk": [
       1020,
       1420
+    ],
+    "gaga-alt": [
+      1025,
+      600
+    ],
+    "gaga-ic": [
+      1025,
+      600
     ]
   }
 }

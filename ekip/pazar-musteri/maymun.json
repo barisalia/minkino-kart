@@ -1,84 +1,126 @@
-﻿{
-    "ad":  "maymun",
-    "boyut":  2048,
-    "sira":  [
-                 "kuyruk",
-                 "kulak-sol",
-                 "kulak-sag",
-                 "bacak-sol",
-                 "bacak-sag",
-                 "govde",
-                 "kol-sol",
-                 "kol-sag",
-                 "kafa",
-                 "agiz",
-                 "goz-sol",
-                 "goz-sag",
-                 "goz-kapali"
-             ],
-    "gizli":  [
-                  "goz-kapali"
-              ],
-    "bagli":  {
-                  "kulak-sol":  "kafa",
-                  "kulak-sag":  "kafa",
-                  "agiz":  "kafa",
-                  "goz-sol":  "kafa",
-                  "goz-sag":  "kafa",
-                  "goz-kapali":  "kafa"
-              },
-    "donme":  {
-                  "kafa":  [
-                               920,
-                               950
-                           ],
-                  "kulak-sol":  [
-                                    545,
-                                    720
-                                ],
-                  "kulak-sag":  [
-                                    1245,
-                                    480
-                                ],
-                  "goz-sol":  [
-                                  719,
-                                  589
-                              ],
-                  "goz-sag":  [
-                                  1025,
-                                  502
-                              ],
-                  "agiz":  [
-                               920,
-                               760
-                           ],
-                  "goz-kapali":  [
-                                     872,
-                                     556
-                                 ],
-                  "kol-sol":  [
-                                  785,
-                                  1035
-                              ],
-                  "kol-sag":  [
-                                  1270,
-                                  1025
-                              ],
-                  "bacak-sol":  [
-                                    860,
-                                    1600
-                                ],
-                  "bacak-sag":  [
-                                    1170,
-                                    1600
-                                ],
-                  "kuyruk":  [
-                                 1290,
-                                 1650
-                             ],
-                  "govde":  [
-                                980,
-                                1880
-                            ]
-              }
+{
+  "ad": "maymun",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "kulak-sol",
+    "kulak-sag",
+    "bacak-sol",
+    "bacak-sag",
+    "govde",
+    "kol-sol",
+    "kol-sag",
+    "kafa",
+    "agiz",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse",
+    "goz-sol",
+    "goz-sag",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
+  ],
+  "bagli": {
+    "kulak-sol": "kafa",
+    "kulak-sag": "kafa",
+    "agiz": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "goz-kapali": "kafa",
+    "agiz-kapali": "kafa",
+    "agiz-az": "kafa",
+    "agiz-orta": "kafa",
+    "agiz-yuvarlak": "kafa",
+    "agiz-dis": "kafa",
+    "agiz-gulumse": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      920,
+      950
+    ],
+    "kulak-sol": [
+      545,
+      720
+    ],
+    "kulak-sag": [
+      1245,
+      480
+    ],
+    "goz-sol": [
+      719,
+      589
+    ],
+    "goz-sag": [
+      1025,
+      502
+    ],
+    "agiz": [
+      920,
+      760
+    ],
+    "goz-kapali": [
+      872,
+      556
+    ],
+    "kol-sol": [
+      785,
+      1035
+    ],
+    "kol-sag": [
+      1270,
+      1025
+    ],
+    "bacak-sol": [
+      860,
+      1600
+    ],
+    "bacak-sag": [
+      1170,
+      1600
+    ],
+    "kuyruk": [
+      1290,
+      1650
+    ],
+    "govde": [
+      980,
+      1880
+    ],
+    "agiz-kapali": [
+      920,
+      760
+    ],
+    "agiz-az": [
+      920,
+      760
+    ],
+    "agiz-orta": [
+      920,
+      760
+    ],
+    "agiz-yuvarlak": [
+      920,
+      760
+    ],
+    "agiz-dis": [
+      920,
+      760
+    ],
+    "agiz-gulumse": [
+      920,
+      760
+    ]
+  }
 }

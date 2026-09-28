@@ -12,12 +12,24 @@
     "kol-sag",
     "kafa",
     "agiz",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse",
     "goz-sol",
     "goz-sag",
     "goz-kapali"
   ],
   "gizli": [
-    "goz-kapali"
+    "goz-kapali",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -25,7 +37,13 @@
     "agiz": "kafa",
     "goz-sol": "kafa",
     "goz-sag": "kafa",
-    "goz-kapali": "kafa"
+    "goz-kapali": "kafa",
+    "agiz-kapali": "kafa",
+    "agiz-az": "kafa",
+    "agiz-orta": "kafa",
+    "agiz-yuvarlak": "kafa",
+    "agiz-dis": "kafa",
+    "agiz-gulumse": "kafa"
   },
   "donme": {
     "kafa": [
@@ -79,6 +97,30 @@
     "govde": [
       1020,
       1880
+    ],
+    "agiz-kapali": [
+      1035,
+      860
+    ],
+    "agiz-az": [
+      1035,
+      860
+    ],
+    "agiz-orta": [
+      1035,
+      860
+    ],
+    "agiz-yuvarlak": [
+      1035,
+      860
+    ],
+    "agiz-dis": [
+      1035,
+      860
+    ],
+    "agiz-gulumse": [
+      1035,
+      860
     ]
   }
 }
