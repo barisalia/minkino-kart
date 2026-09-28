@@ -18,6 +18,7 @@ import { odulSesi } from './meyvesuyu-ses';
 import { kaydet, kayit } from './ilerleme';
 import { agirlik, urunRengi, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
 import { Musteri, musteriHazirla } from './musteri';
+import { pazarSarkisi, type PazarSarkisi } from './sarki';
 import { Terazi } from './terazi';
 import { geriGonder, surukle, tasi } from './surukle';
 
@@ -511,8 +512,13 @@ export function pazarEkrani(app: Uygulama): Ekran {
     await mu.git();
   };
 
+  // pazar açılışı: şarkı (sayılan meyveler tezgâhta sözle birlikte zıplar), sonra ilk müşteri
+  let sarki: PazarSarkisi | null = null;
   void (async () => {
     await bekle(sure(300));
+    if (kapandi) return;
+    sarki = pazarSarkisi({ tezgah, yazi, ekran: el, mino });
+    await sarki.bitti;
     if (kapandi) return;
     await soyle(P.basla);
     for (let i = 0; i < MUSTERI_SAYISI && !kapandi; i++) await tur(i);
@@ -528,6 +534,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       kapandi = true;
       aktif = false;
       bitir();
+      sarki?.durdur();
       clearInterval(ipucuSayaci);
       minoCanli.kapat();
       sokuler.splice(0).forEach((f) => f());

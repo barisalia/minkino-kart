@@ -3,6 +3,8 @@
  * Yaş ayarları, su sıcaklığı, baloncuk boyu, ovalama ve deneme/ipucu kuralları burada.
  * Kolaylık yalnız oyunun hızından ve kurallarından verilir; ses algılama eşiklerine dokunulmaz (ekip/SES-SISTEMI.md).
  */
+import SARKI_JSON from '../../assets/muzik/banyo.json';
+import { sarkiTablosu, type SarkiJson } from '../../src/audio/sarki-kayit';
 
 /** 3-4 yaş grubu mu (5-6: büyük grup) */
 export const kucukMu = (yas: number) => yas <= 4;
@@ -206,3 +208,9 @@ export function ulumaKonturu(farklar: number[], n = 24): number[] {
 }
 /** Uluma görevi için toplam ses süresi (sn) */
 export const ULUMA_HEDEF = 3;
+
+// ---------------------------------------------------------------- köpük şarkısı
+/** Köpük şarkısının sözleri (Gemini kaydı assets/muzik/banyo.json; heceleri kayıttakilerle eşleşir) */
+export const BANYO_SOZ = ['Köpük köpük baloncuk', 'Mino oldu pamukçuk', 'Ovala ovala tertemiz', 'Şarkı söyle hep beraber'];
+/** Kaydın hece / vuruş tablosu: oyun şarkının notalarına ve ritmine göre ilerler */
+export const BANYO_SARKI = sarkiTablosu(SARKI_JSON as SarkiJson);

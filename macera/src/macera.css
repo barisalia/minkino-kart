@@ -828,6 +828,19 @@
 .mc-kok .mc-hece.bos {
   opacity: 0.55;
 }
+/* şarkı kutlaması (banyo köpük şarkısı): heceler kelime kelime, söylenmiş heceler */
+.mc-kok .mc-kelime {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+}
+.mc-kok .mc-satir:has(.mc-kelime) {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mc-kok .mc-hece.gecti {
+  background: #d7f0fb;
+}
 .mc-kok .mc-top {
   position: absolute;
   left: 0;
