@@ -44,7 +44,14 @@
     "agiz-korku",
     "kopuk-sac",
     "kol-sol-yukari",
-    "kol-sag-yukari"
+    "kol-sag-yukari",
+    "goz-dusun",
+    "agiz-dusun",
+    "goz-bak-sag",
+    "goz-bak-sol",
+    "kol-sag-dusun",
+    "kol-sol-sarilma",
+    "kol-sag-sarilma"
   ],
   "gizli": [
     "goz-kapali",
@@ -77,7 +84,14 @@
     "goz-korku",
     "agiz-korku",
     "kol-sol-yukari",
-    "kol-sag-yukari"
+    "kol-sag-yukari",
+    "goz-dusun",
+    "agiz-dusun",
+    "goz-bak-sag",
+    "goz-bak-sol",
+    "kol-sag-dusun",
+    "kol-sol-sarilma",
+    "kol-sag-sarilma"
   ],
   "bagli": {
     "kulak-sol": "kafa",
@@ -112,7 +126,11 @@
     "agiz-gulumse": "kafa",
     "kafa-korku": "kafa",
     "goz-korku": "kafa",
-    "agiz-korku": "kafa"
+    "agiz-korku": "kafa",
+    "goz-dusun": "kafa",
+    "agiz-dusun": "kafa",
+    "goz-bak-sag": "kafa",
+    "goz-bak-sol": "kafa"
   },
   "donme": {
     "kafa": [
@@ -286,6 +304,34 @@
     "kol-sag-yukari": [
       1215,
       1292
+    ],
+    "goz-dusun": [
+      965,
+      758
+    ],
+    "agiz-dusun": [
+      915,
+      990
+    ],
+    "goz-bak-sag": [
+      965,
+      758
+    ],
+    "goz-bak-sol": [
+      965,
+      758
+    ],
+    "kol-sag-dusun": [
+      1215,
+      1305
+    ],
+    "kol-sol-sarilma": [
+      765,
+      1290
+    ],
+    "kol-sag-sarilma": [
+      1215,
+      1300
     ]
   }
 }
