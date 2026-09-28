@@ -1134,7 +1134,7 @@
   100% { transform: rotate(var(--a)) translateY(-230%) scale(1) rotate(90deg); opacity: 0; }
 }
 
-/* ---------------------------------------------------------------- yatay ekran (Ege, banyo)
+/* ---------------------------------------------------------------- yatay ekran (Ege, banyo, Elektrikler Kesildi)
  * Sahneler dikey çizildi (telefon / tablet): yatay ekranda sahne ortada tablet oranında (3:4) bir bantta oynar,
  * böylece her şey dikeydeki yerinde durur (perde, pencere, küvetin içi). İki yan odanın bulanık devamı; alt yazı
  * ve ipucu sol yana, ilerleme ve büyük düğme sağ yana geçer (sahnenin üstünü örtmez). */
@@ -1142,19 +1142,19 @@
   display: none;
 }
 @media (min-aspect-ratio: 13/10) {
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) {
     --bant: 75vh;
     --yan-en: calc(50vw - var(--bant) / 2);
     background: #3b2a24;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-sahne-kok {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-sahne-kok {
     left: var(--yan-en);
     right: var(--yan-en);
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-sahne {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-sahne {
     box-shadow: 0 0 28px 6px rgba(40, 20, 10, 0.35);
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-yan-dolgu {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-yan-dolgu {
     display: block;
     position: absolute;
     top: 0;
@@ -1173,86 +1173,86 @@
     filter: blur(7px) brightness(0.3) saturate(0.6) hue-rotate(200deg);
   }
   /* sol yan: geri düğmesi, altında alt yazı */
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-ust {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ust {
     right: calc(100% - var(--yan-en) + 10px);
     flex-wrap: wrap;
     align-content: flex-start;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-ust .orta {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ust .orta {
     flex-basis: 100%;
     justify-content: flex-start;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-altyazi {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi {
     font-size: clamp(0.95rem, 4.4vh, 1.2rem);
     border-radius: 26px;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-ilerleme {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ilerleme {
     right: auto;
     left: calc(100% + 20px + var(--bant));
     top: 4px;
   }
   /* sağ yan: altta ipucu (sol yandaki alt yazıyla dengeli) */
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-alt {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-alt {
     left: calc(100% - var(--yan-en) + 10px);
     right: var(--yan);
     transform: none;
     flex-wrap: wrap;
     justify-content: flex-end;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-ipucu {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ipucu {
     white-space: normal;
     border-radius: 22px;
     font-size: clamp(0.95rem, 4.2vh, 1.15rem);
     line-height: 1.15;
   }
   /* sağ yan: büyük düğme ve bitişteki düğmeler dikey ortada */
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-dugme-yeri {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-dugme-yeri {
     left: auto;
     right: calc(var(--yan-en) / 2);
     bottom: 50%;
     transform: translate(50%, 50%);
     max-width: calc(var(--yan-en) - 20px);
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-buyuk-dugme {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-buyuk-dugme {
     font-size: clamp(1.6rem, 8vh, 2.3rem);
     min-height: 84px;
     padding: 0.2em 0.7em;
     line-height: 1.05;
     white-space: normal;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-son {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-son {
     flex-direction: column;
     align-items: stretch;
     width: auto;
   }
   /* bant içindeki yazılar ve kartlar bandın ölçüsünde (pencere eniyle büyüyüp kenardan taşmasın) */
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) :is(.eg-balon, .eg-mino-balon) {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) :is(.eg-balon, .eg-mino-balon) {
     font-size: 0.8rem;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) :is(.eg-yansi, .bn-yansi) {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) :is(.eg-yansi, .bn-yansi) {
     font-size: 1.25rem;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) :is(.eg-yansi, .bn-yansi).buyuk {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) :is(.eg-yansi, .bn-yansi).buyuk {
     font-size: 2.8rem;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) :is(.eg-odul, .bn-odul) {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) :is(.eg-odul, .bn-odul) {
     max-width: 88%;
   }
   /* ninni heceleri: bandın içinde (üstte alt yazı şeridi yok) */
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-karaoke {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-karaoke {
     top: 10px;
     width: 96%;
     padding: 16px 6px 8px;
     border-radius: 18px;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-satir {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-satir {
     gap: 3px;
     min-height: 34px;
   }
   .mc-kok .mc-bolum[data-bolum='ege'] .eg-ninni-yildiz {
     top: 44%;
   }
-  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo']) .mc-hece {
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-hece {
     padding: 2px 5px;
     border-radius: 9px;
     font-size: 0.8rem;

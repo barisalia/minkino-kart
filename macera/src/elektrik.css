@@ -1,0 +1,913 @@
+/* Elektrikler Kesildi! (macera/src/elektrik.ts). Hepsi .mc-kok altında, önek el-. Animasyonlar yalnız transform / opacity. */
+
+/* ---------------------------------------------------------------- açılış kartı */
+.mc-kok .el-bolum-kart {
+  position: relative;
+  width: min(84vw, 420px);
+  border-radius: 30px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 8px 0 var(--kontur);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  text-align: left;
+  font: inherit;
+  color: var(--kontur);
+}
+.mc-kok .el-bk-resim {
+  position: relative;
+  flex: none;
+  width: clamp(72px, 20vw, 96px);
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--resim) 70% 80% / cover, #2c3470;
+}
+.mc-kok .el-bk-resim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(38% 38% at 58% 52%, rgba(255, 238, 180, 0.15), rgba(22, 28, 78, 0.78) 72%);
+}
+.mc-kok .el-bk-kino {
+  position: absolute;
+  z-index: 1;
+  left: 14%;
+  bottom: -6%;
+  width: 78%;
+  animation: el-titrek 0.18s steps(2) infinite;
+}
+.mc-kok .el-bk-fener {
+  position: absolute;
+  z-index: 2;
+  right: -4%;
+  bottom: 6%;
+  width: 46%;
+  rotate: -18deg;
+}
+.mc-kok .el-bk-fener svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .el-bk-yazi {
+  display: flex;
+  flex-direction: column;
+}
+.mc-kok .el-bk-yazi b {
+  font-size: clamp(1.2rem, 5.5vw, 1.7rem);
+}
+.mc-kok .el-bk-yazi small {
+  font-size: 0.9rem;
+  color: #e0493d;
+  font-weight: 700;
+}
+@keyframes el-titrek {
+  50% { translate: 1px 0; }
+}
+
+/* ---------------------------------------------------------------- sahne */
+.mc-kok .el-sahne .mc-dunya {
+  will-change: transform;
+}
+.mc-kok .el-resim {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.mc-kok .el-resim svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mc-kok .el-sahne .mc-oge > .el-resim,
+.mc-kok .el-sahne .mc-oge > div > .el-resim {
+  filter: drop-shadow(0 5px 4px rgba(40, 25, 15, 0.2));
+}
+/* temas gölgesi: yerdeki eşyalar */
+.mc-kok .el-masa::before,
+.mc-kok .el-koltuk::before,
+.mc-kok .el-komodin::before,
+.mc-kok .el-sandalye::before,
+.mc-kok .el-lamba::before,
+.mc-kok .el-cadir::before,
+.mc-kok .el-kup::before,
+.mc-kok .el-kemik::before,
+.mc-kok .el-fener::before,
+.mc-kok .el-yastik::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 6%;
+  right: 6%;
+  bottom: -3%;
+  height: 10%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(40, 22, 12, 0.32), transparent);
+  pointer-events: none;
+}
+.mc-kok .el-lamba::before {
+  left: 18%;
+  right: 18%;
+  height: 4%;
+  bottom: -1%;
+}
+.mc-kok .el-kup::before {
+  bottom: -6%;
+}
+
+/* ---------------------------------------------------------------- karanlık */
+.mc-kok .el-gece {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition-property: opacity;
+  --koyu: rgba(18, 24, 70, 0.8);
+}
+.mc-kok .el-gece.acik {
+  opacity: 1;
+}
+.mc-kok .el-gece[data-seviye='fener'] {
+  --koyu: rgba(20, 26, 74, 0.72);
+}
+.mc-kok .el-gece[data-seviye='los'] {
+  --koyu: rgba(40, 30, 80, 0.5);
+}
+.mc-kok .el-gece-maske {
+  position: absolute;
+  left: -100%;
+  top: -100%;
+  width: 300%;
+  height: 300%;
+  background: var(--koyu);
+  transition: background-color 0.8s;
+}
+.mc-kok .el-gece.delikli .el-gece-maske {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 236, 170, 0.12) 0, rgba(255, 236, 170, 0.06) calc(var(--r) * 0.5), transparent calc(var(--r) * 0.72), var(--koyu) var(--r));
+}
+.mc-kok .el-ay-isigi {
+  position: absolute;
+  background: linear-gradient(180deg, rgba(190, 210, 255, 0.28), rgba(190, 210, 255, 0.06));
+  clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+  mix-blend-mode: screen;
+  opacity: 0.8;
+}
+.mc-kok .el-gece.delikli .el-ay-isigi,
+.mc-kok .el-gece[data-seviye='los'] .el-ay-isigi {
+  opacity: 0.35;
+}
+.mc-kok .el-huzme {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 100px;
+  margin: -100px 0 0 -120px;
+  transform-origin: 50% 100%;
+  clip-path: polygon(0 0, 100% 0, 58% 100%, 42% 100%);
+  background: linear-gradient(0deg, rgba(255, 240, 190, 0) 0%, rgba(255, 240, 190, 0.1) 60%, rgba(255, 240, 190, 0.02) 100%);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.mc-kok .el-huzme.acik {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- pencere: gece göğü, karşı apartman, Can */
+.mc-kok .el-pencere {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+.mc-kok .el-pencere > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mc-kok .el-pencere .el-yildiz {
+  animation: el-parilda 2.4s ease-in-out calc(var(--i) * -0.37s) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes el-parilda {
+  50% { opacity: 0.35; scale: 0.7; }
+}
+.mc-kok .el-pencere .el-komsu {
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.mc-kok .el-pencere.komsular .el-komsu {
+  opacity: 1;
+}
+.mc-kok .el-can-pencere {
+  position: absolute;
+  left: var(--cx);
+  top: var(--cy);
+  width: 5.2%;
+  aspect-ratio: 0.8;
+  translate: -50% -50%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #232a64;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.mc-kok .el-pencere.can-var .el-can-pencere {
+  opacity: 1;
+}
+.mc-kok .el-can-isik {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, #ffe7a0, #f0a850);
+}
+.mc-kok .el-can {
+  position: absolute;
+  left: 8%;
+  width: 84%;
+  top: 18%;
+  transition: translate 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), rotate 0.35s;
+  transform-origin: 50% 90%;
+}
+.mc-kok .el-can-pencere.hi .el-can {
+  rotate: -14deg;
+}
+.mc-kok .el-can-pencere.selam .el-can {
+  animation: el-selam 0.5s ease-in-out 3;
+}
+@keyframes el-selam {
+  50% { rotate: 9deg; translate: 0 -6%; }
+}
+.mc-kok .el-can-pencere.dustu .el-can {
+  translate: 0 110%;
+  rotate: 25deg;
+  transition: translate 0.6s cubic-bezier(0.5, -0.4, 0.8, 0.6), rotate 0.6s;
+}
+.mc-kok .el-can-fener {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 130%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #fffbe0, rgba(255, 248, 200, 0.7) 30%, rgba(255, 240, 160, 0) 70%);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.mc-kok .el-can-fener.yanik {
+  opacity: 1;
+}
+.mc-kok .el-can-cerceve {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #3a1210;
+  border-radius: 4px;
+}
+.mc-kok .el-bizim-isik {
+  position: absolute;
+  left: var(--cx);
+  top: var(--cy);
+  width: 14%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 250, 220, 0.9), rgba(255, 240, 170, 0));
+  opacity: 0;
+}
+.mc-kok .el-bizim-isik.flas {
+  animation: el-flas 0.35s ease-out;
+}
+@keyframes el-flas {
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------------------------------------------------------------- eşyalar */
+.mc-kok .el-lamba .el-lamba-hale {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  width: 260%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 236, 170, 0.55), rgba(255, 236, 170, 0));
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.mc-kok .el-lamba.yanik .el-lamba-hale {
+  opacity: 1;
+}
+.mc-kok .el-lamba .el-lamba-sapka {
+  transition: filter 0.4s;
+  filter: brightness(0.7);
+}
+.mc-kok .el-lamba.yanik .el-lamba-sapka {
+  filter: brightness(1.08);
+}
+.mc-kok .el-lamba .el-lamba-ip {
+  transform-box: view-box;
+}
+.mc-kok .el-cekmece {
+  position: absolute;
+  pointer-events: none;
+}
+.mc-kok .el-cekmece-ic,
+.mc-kok .el-cekmece-on {
+  position: absolute;
+  inset: 0;
+  transition: translate 0.45s cubic-bezier(0.3, 1.3, 0.5, 1), scale 0.45s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.mc-kok .el-cekmece svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mc-kok .el-cekmece-ic {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.mc-kok .el-cekmece.acik .el-cekmece-ic {
+  opacity: 1;
+}
+.mc-kok .el-cekmece.acik .el-cekmece-on {
+  translate: 0 38%;
+  scale: 1.1;
+}
+.mc-kok .el-saksi .el-damla {
+  position: absolute;
+  left: 30%;
+  bottom: 2%;
+  width: 7%;
+  aspect-ratio: 0.7;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: #8fd1ff;
+  border: 2px solid #3a1210;
+  opacity: 0;
+}
+.mc-kok .el-saksi.damliyor .el-damla {
+  animation: el-damla 1.1s cubic-bezier(0.55, 0, 0.9, 0.5) infinite;
+}
+.mc-kok .el-saksi.damliyor .el-damla.d2 {
+  animation-delay: -0.55s;
+  left: 60%;
+}
+@keyframes el-damla {
+  0% { opacity: 0; translate: 0 0; }
+  15% { opacity: 1; }
+  90% { opacity: 1; translate: 0 260%; }
+  100% { opacity: 0; translate: 0 300%; }
+}
+.mc-kok .el-saat .el-sarkac {
+  transform-origin: 60px 96px;
+  transform-box: view-box;
+}
+.mc-kok .el-saat.canli .el-sarkac {
+  animation: el-sarkac 0.96s ease-in-out infinite alternate;
+}
+.mc-kok .el-saat .el-sarkac {
+  rotate: -12deg;
+}
+@keyframes el-sarkac {
+  to { rotate: 12deg; }
+}
+.mc-kok .el-saat .el-yelkovan,
+.mc-kok .el-saat .el-akrep {
+  transform-box: view-box;
+  transform-origin: 60px 58px;
+}
+.mc-kok .el-saat.canli .el-yelkovan {
+  animation: el-don 8s linear infinite;
+}
+@keyframes el-don {
+  to { rotate: 360deg; }
+}
+/* masa: okşanırken örtü dalgalanır */
+.mc-kok .el-masa > .el-resim {
+  transform-origin: 50% 20%;
+  transition: skew 0.2s;
+  skew: calc(var(--oks, 0) * 2deg) 0deg;
+}
+.mc-kok .el-masa.el-oksanir {
+  cursor: grab;
+  touch-action: none;
+}
+.mc-kok .el-kup > div,
+.mc-kok .el-kup svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .el-hedef {
+  position: absolute;
+  pointer-events: none;
+}
+.mc-kok .el-kemik {
+  transition: opacity 0.2s;
+}
+
+/* ---------------------------------------------------------------- karakterler */
+.mc-kok .el-sahne .bn-kisi-gov {
+  transition: scale 0.35s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+/* büzülmüş Kino (masanın altında): gövde toplanır */
+.mc-kok .el-sahne .bn-kisi.el-buzuk .bn-kisi-gov {
+  scale: 1.08 0.82;
+}
+/* çadırın içinde: görünmez (çadır onu örter) */
+.mc-kok .el-sahne .bn-kisi.el-icerde {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.mc-kok .el-kino-ek {
+  pointer-events: none;
+}
+.mc-kok .el-kino-ek.yanik .el-fener-cam {
+  fill: #fffbe0;
+}
+
+/* ---------------------------------------------------------------- balonlar (ekran katmanı) */
+.mc-kok .el-balonlar {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+.mc-kok .el-balon {
+  position: absolute;
+  translate: -50% -100%;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background: #fff;
+  border: 3px solid var(--kontur, #3a1210);
+  color: var(--kontur, #3a1210);
+  font-weight: 700;
+  font-size: clamp(0.95rem, 3.6cqw, 1.3rem);
+  white-space: nowrap;
+  opacity: 0;
+  scale: 0.4;
+  transform-origin: 50% 100%;
+  transition: opacity 0.2s, scale 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.mc-kok .el-balon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 3px solid var(--kontur, #3a1210);
+  border-top: 0;
+  border-left: 0;
+  translate: -50% 0;
+  rotate: 45deg;
+}
+.mc-kok .el-balon.acik {
+  opacity: 1;
+  scale: 1;
+}
+
+/* ---------------------------------------------------------------- çekmece yakın çekim */
+.mc-kok .el-yakin {
+  position: absolute;
+  z-index: 15;
+  left: 50%;
+  top: 54%;
+  width: min(92cqw, 560px, 118cqh);
+  aspect-ratio: 1.5;
+  translate: -50% -50%;
+  scale: 0.2;
+  opacity: 0;
+  transition: scale 0.45s cubic-bezier(0.3, 1.3, 0.5, 1), opacity 0.3s;
+  --hx: 50%;
+  --hy: 50%;
+  touch-action: none;
+}
+.mc-kok .el-yakin.acik {
+  scale: 1;
+  opacity: 1;
+}
+.mc-kok .el-yakin-ic {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.35));
+}
+.mc-kok .el-yakin-ic svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mc-kok .el-yakin-karanlik {
+  position: absolute;
+  inset: 3% 3% 16%;
+  border-radius: 8px;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--hx) var(--hy), rgba(20, 20, 50, 0) 0, rgba(20, 20, 50, 0) 12%, rgba(16, 18, 52, 0.78) 26%);
+  transition: opacity 0.5s;
+}
+.mc-kok .el-yakin.isikli .el-yakin-karanlik {
+  opacity: 0;
+}
+.mc-kok .el-yakin-hale {
+  position: absolute;
+  left: var(--hx);
+  top: var(--hy);
+  width: 22%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 3px dashed rgba(255, 236, 160, 0.7);
+  pointer-events: none;
+  transition: left 0.15s, top 0.15s, opacity 0.3s;
+}
+.mc-kok .el-yakin.isikli .el-yakin-hale {
+  opacity: 0;
+}
+.mc-kok .el-yesya {
+  position: absolute;
+  translate: -50% -50%;
+  rotate: var(--d);
+  cursor: pointer;
+  transition: left 0.45s cubic-bezier(0.3, 1.2, 0.5, 1), top 0.45s cubic-bezier(0.3, 1.2, 0.5, 1), width 0.45s, rotate 0.45s, opacity 0.3s;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.35));
+}
+.mc-kok .el-yesya::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+}
+.mc-kok .el-yesya.ucuyor {
+  opacity: 0;
+  translate: -50% -160%;
+}
+.mc-kok .el-yesya.bulundu {
+  z-index: 3;
+}
+.mc-kok .el-yesya.yanik .el-fener-cam {
+  fill: #fffbe0;
+}
+.mc-kok .el-yesya.yanik::after {
+  content: '';
+  position: absolute;
+  left: 92%;
+  top: 50%;
+  width: 70%;
+  aspect-ratio: 1;
+  translate: -20% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 250, 210, 0.95), rgba(255, 240, 170, 0));
+  animation: el-nabiz 1.4s ease-in-out infinite;
+}
+.mc-kok .el-yesya.basildi .el-fener-dugme {
+  translate: 0 3px;
+}
+@keyframes el-nabiz {
+  50% { scale: 1.15; }
+}
+
+/* ---------------------------------------------------------------- dinle düğmesi (sessizlik), fener düğmesi */
+.mc-kok .el-kulak-dugme {
+  position: absolute;
+  z-index: 16;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: 84px;
+  width: 84px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: var(--cizgi, 4px) solid var(--kontur, #3a1210);
+  background: #fff;
+  color: var(--kontur, #3a1210);
+  box-shadow: 0 6px 0 var(--kontur, #3a1210);
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  --p: 0;
+  animation: el-gel 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mc-kok .el-kulak-dugme span {
+  width: 52%;
+  z-index: 1;
+}
+.mc-kok .el-kulak-dugme svg {
+  display: block;
+  width: 100%;
+}
+.mc-kok .el-kulak-halka {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(#8ee07a calc(var(--p) * 360deg), transparent 0);
+  opacity: 0.8;
+}
+.mc-kok .el-kulak-dugme.basili {
+  translate: 0 4px;
+  box-shadow: 0 2px 0 var(--kontur, #3a1210);
+}
+.mc-kok .el-kulak-dugme.bitti {
+  opacity: 0;
+  scale: 0.5;
+  transition: opacity 0.25s, scale 0.25s;
+}
+@keyframes el-gel {
+  from { scale: 0.3; opacity: 0; }
+}
+.mc-kok .el-fener-dugme {
+  position: absolute;
+  z-index: 16;
+  left: 50%;
+  bottom: 70px;
+  width: min(44cqw, 200px);
+  padding: 14px 18px;
+  translate: -50% 0;
+  border-radius: 26px;
+  border: var(--cizgi, 4px) solid var(--kontur, #3a1210);
+  background: #2c3470;
+  box-shadow: 0 6px 0 var(--kontur, #3a1210);
+  touch-action: none;
+  animation: el-gel 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mc-kok .el-fener-dugme svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .el-fener-dugme.bas {
+  animation: el-bas 0.3s ease-out;
+}
+.mc-kok .el-fener-dugme.bas .el-fener-cam {
+  fill: #fffbe0;
+}
+@keyframes el-bas {
+  40% { scale: 0.92; }
+}
+
+/* ---------------------------------------------------------------- çadır */
+.mc-kok .el-yer {
+  aspect-ratio: 2.4;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 238, 170, 0.75), rgba(255, 238, 170, 0.15) 70%, transparent);
+  border: 3px dashed rgba(255, 236, 160, 0.9);
+  pointer-events: none;
+  animation: el-nabiz 1.4s ease-in-out infinite;
+}
+.mc-kok .el-yer.genis {
+  aspect-ratio: 3;
+}
+.mc-kok .el-yer.dolu {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.mc-kok .el-sahne .eg-suruklenir {
+  cursor: grab;
+  touch-action: none;
+}
+.mc-kok .el-sahne .eg-suruklenir::after {
+  content: '';
+  position: absolute;
+  inset: -18%;
+}
+.mc-kok .el-sahne .eg-suruklenir.tutuldu {
+  cursor: grabbing;
+  scale: 1.1;
+  z-index: 30 !important;
+}
+.mc-kok .el-sahne .eg-suruklenir.tutuldu > .el-resim {
+  filter: drop-shadow(0 14px 10px rgba(40, 25, 15, 0.35));
+}
+.mc-kok .el-cadir {
+  transform-origin: 50% 100%;
+  cursor: pointer;
+}
+.mc-kok .el-cadir-cizim svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .el-cadir.coktu > .el-cadir-cizim,
+.mc-kok .el-cadir.coktu > .el-isiklar,
+.mc-kok .el-cadir.coktu > .el-cadir-lamba {
+  opacity: 0;
+}
+.mc-kok .el-cadir-lamba {
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  width: 16%;
+  translate: -50% 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.mc-kok .el-cadir.lamba .el-cadir-lamba {
+  opacity: 1;
+}
+.mc-kok .el-cadir .el-cadir-ic {
+  transition: opacity 0.6s;
+}
+.mc-kok .el-cadir.lamba .el-cadir-ic {
+  opacity: 0.9;
+}
+.mc-kok .el-cadir.dolu .el-cadir-ic {
+  opacity: 1;
+}
+.mc-kok .el-cadir.lamba::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 150%;
+  aspect-ratio: 1.6;
+  translate: -50% 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 226, 150, 0.4), transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+.mc-kok .el-isiklar {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 2%;
+  height: 40%;
+  pointer-events: none;
+}
+.mc-kok .el-isiklar i {
+  position: absolute;
+  left: calc(var(--i) / (var(--n) - 1) * 100%);
+  top: calc(100% - (1 - (var(--i) / (var(--n) - 1) - 0.5) * (var(--i) / (var(--n) - 1) - 0.5) * 4) * 90% - 4%);
+  width: 7%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 36%);
+  background: #6b5a7a;
+  transition: background 0.2s, scale 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.mc-kok .el-isiklar i.yanik {
+  background: #ffe36e;
+  scale: 1.4;
+  filter: drop-shadow(0 0 4px #fff3b0);
+}
+.mc-kok .el-mandal {
+  cursor: pointer;
+  transition: rotate 0.3s, opacity 0.2s;
+}
+.mc-kok .el-mandal svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .el-mandal::after {
+  content: '';
+  position: absolute;
+  inset: -40% -120%;
+}
+.mc-kok .el-cokuk svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .el-tumsek {
+  position: absolute;
+  left: 40%;
+  bottom: 20%;
+  width: 22%;
+  aspect-ratio: 1.6;
+  border-radius: 50% 50% 20% 20%;
+  background: radial-gradient(circle at 40% 30%, #fbd3dc, #e5859c);
+  border: 4px solid #3a1210;
+  border-bottom: 0;
+}
+.mc-kok .el-cokuk.dolasiyor .el-tumsek {
+  animation: el-tumsek 1.6s ease-in-out infinite;
+}
+@keyframes el-tumsek {
+  0%, 100% { translate: -60% 0; }
+  25% { translate: 0 -12%; }
+  50% { translate: 70% 0; }
+  75% { translate: 0 -12%; }
+}
+
+/* ---------------------------------------------------------------- final: fener, ödül */
+.mc-kok .el-fener.yanik .el-fener-cam {
+  fill: #fffbe0;
+}
+.mc-kok .el-fener.yanik::after {
+  content: '';
+  position: absolute;
+  left: 95%;
+  top: 50%;
+  width: 80%;
+  aspect-ratio: 1;
+  translate: -20% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 250, 210, 0.9), rgba(255, 240, 170, 0));
+}
+.mc-kok .el-fener {
+  cursor: pointer;
+}
+.mc-kok .el-odul {
+  position: absolute;
+  z-index: 24;
+  left: 50%;
+  top: 40%;
+  width: min(66cqw, 320px, 60cqh);
+  padding: 10px 10px 12px;
+  border-radius: 26px;
+  background: #fff;
+  border: var(--cizgi, 4px) solid var(--kontur, #3a1210);
+  box-shadow: 0 8px 0 var(--kontur, #3a1210);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--kontur, #3a1210);
+  transform: translate(-50%, -50%) scale(0.3);
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.4s;
+}
+.mc-kok .el-odul.acik {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+}
+.mc-kok .el-odul.gidiyor {
+  opacity: 0;
+  transform: translate(-50%, -80%) scale(0.6) rotate(-3deg);
+}
+.mc-kok .el-odul b {
+  font-size: clamp(1.15rem, 5.2cqw, 1.5rem);
+}
+.mc-kok .el-odul-resim {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.6;
+  border-radius: 18px;
+  overflow: hidden;
+  background: radial-gradient(circle at 60% 40%, #4a5cb0, #1c2460 80%);
+}
+.mc-kok .el-odul-kino {
+  position: absolute;
+  left: 14%;
+  bottom: -8%;
+  width: 52%;
+}
+.mc-kok .el-odul-fener {
+  position: absolute;
+  right: 6%;
+  bottom: 18%;
+  width: 40%;
+  rotate: -20deg;
+}
+.mc-kok .el-odul-fener svg {
+  display: block;
+  width: 100%;
+}
+.mc-kok .el-odul-fener .el-fener-cam {
+  fill: #fffbe0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .el-bk-kino,
+  .mc-kok .el-pencere .el-yildiz,
+  .mc-kok .el-yer,
+  .mc-kok .el-cokuk.dolasiyor .el-tumsek {
+    animation: none;
+  }
+}
+/* kamp şarkısı: gösterilen vuruşta yıldız kısa parlar (yanık değil); yastık: alkışın dokunma karşılığı */
+.mc-kok .el-isiklar i.goster {
+  animation: el-yildiz-goster 0.42s ease-out;
+}
+@keyframes el-yildiz-goster {
+  0% {
+    background: #fff6c2;
+    scale: 1.7;
+  }
+  100% {
+    scale: 1;
+  }
+}
+.mc-kok .el-yastik {
+  cursor: pointer;
+  transform-origin: 50% 100%;
+}
+/* yatay ekranın yan dolgusu (macera.css → .mc-yan-dolgu): elektrik kesikken gece, loşta biraz açık */
+.mc-kok .mc-sahne-kok:has(.el-sahne.el-karanlik) .mc-yan-dolgu {
+  filter: blur(7px) brightness(0.32) saturate(0.6) hue-rotate(200deg);
+}
+.mc-kok .mc-sahne-kok:has(.el-sahne.el-los) .mc-yan-dolgu {
+  filter: blur(7px) brightness(0.5) saturate(0.7) sepia(0.2);
+}
+/* sahne bir kap: yakın çekim, düğmeler ve ödül kartı sahnenin eni/boyuna göre (yatay ekranda sahne dar bir bant) */
+.mc-kok .mc-sahne.el-sahne {
+  container-type: size;
+}
