@@ -156,18 +156,40 @@ export class EkranDamlalari {
       }
       if (degisti) this.onSil(this.kalanOran);
     };
-    this.el.addEventListener('pointerdown', (e) => {
+    const basla = (e: PointerEvent) => {
       bas = true;
       sil(e);
-    });
-    this.el.addEventListener('pointermove', sil);
+    };
     const bit = () => (bas = false);
-    this.el.addEventListener('pointerup', bit);
-    this.el.addEventListener('pointercancel', bit);
+    // Silme bütün bölüm ekranında dinlenir: yatay ekranda sahne ortada dar bir bant, parmak yandan başlayıp
+    // ekranı boydan boya silebilir (dokunmada olaylar parmağın ilk değdiği öğeye gider)
+    this.baglan = () => {
+      const alan = (this.el.closest('.mc-bolum') as HTMLElement | null) ?? this.el;
+      if (alan === this.alan) return;
+      this.coz();
+      this.alan = alan;
+      alan.addEventListener('pointerdown', basla);
+      alan.addEventListener('pointermove', sil);
+      alan.addEventListener('pointerup', bit);
+      alan.addEventListener('pointercancel', bit);
+      this.coz = () => {
+        alan.removeEventListener('pointerdown', basla);
+        alan.removeEventListener('pointermove', sil);
+        alan.removeEventListener('pointerup', bit);
+        alan.removeEventListener('pointercancel', bit);
+        bas = false;
+        this.alan = null;
+        this.coz = () => undefined;
+      };
+    };
   }
+  private alan: HTMLElement | null = null;
+  private baglan: () => void;
+  private coz: () => void = () => undefined;
   /** Ekrana adet kadar damla sıçrat */
   sicrat(adet: number) {
     this.el.classList.add('acik');
+    this.baglan();
     for (let i = 0; i < adet; i++) {
       const rr = r(3.5, 8.5);
       const x = r(6, 94);
@@ -198,6 +220,7 @@ export class EkranDamlalari {
   temizle() {
     for (const d of this.damlalar) if (!d.silindi) d.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: sure(300), fill: 'forwards' });
     this.damlalar.forEach((d) => (d.silindi = true));
+    this.coz();
     setTimeout(() => {
       this.el.classList.remove('acik');
       this.el.replaceChildren();

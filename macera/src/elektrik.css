@@ -452,7 +452,7 @@
   border: 3px solid var(--kontur, #3a1210);
   color: var(--kontur, #3a1210);
   font-weight: 700;
-  font-size: clamp(0.95rem, 3.6vw, 1.3rem);
+  font-size: clamp(0.95rem, 3.6cqw, 1.3rem);
   white-space: nowrap;
   opacity: 0;
   scale: 0.4;
@@ -484,7 +484,7 @@
   z-index: 15;
   left: 50%;
   top: 54%;
-  width: min(92vw, 560px, 118vh);
+  width: min(92cqw, 560px, 118cqh);
   aspect-ratio: 1.5;
   translate: -50% -50%;
   scale: 0.2;
@@ -627,7 +627,7 @@
   z-index: 16;
   left: 50%;
   bottom: 70px;
-  width: min(44vw, 200px);
+  width: min(44cqw, 200px);
   padding: 14px 18px;
   translate: -50% 0;
   border-radius: 26px;
@@ -820,7 +820,7 @@
   z-index: 24;
   left: 50%;
   top: 40%;
-  width: min(66vw, 320px, 60vh);
+  width: min(66cqw, 320px, 60cqh);
   padding: 10px 10px 12px;
   border-radius: 26px;
   background: #fff;
@@ -844,7 +844,7 @@
   transform: translate(-50%, -80%) scale(0.6) rotate(-3deg);
 }
 .mc-kok .el-odul b {
-  font-size: clamp(1.15rem, 5.2vw, 1.5rem);
+  font-size: clamp(1.15rem, 5.2cqw, 1.5rem);
 }
 .mc-kok .el-odul-resim {
   position: relative;
@@ -899,4 +899,15 @@
 .mc-kok .el-yastik {
   cursor: pointer;
   transform-origin: 50% 100%;
+}
+/* yatay ekranın yan dolgusu (macera.css → .mc-yan-dolgu): elektrik kesikken gece, loşta biraz açık */
+.mc-kok .mc-sahne-kok:has(.el-sahne.el-karanlik) .mc-yan-dolgu {
+  filter: blur(7px) brightness(0.32) saturate(0.6) hue-rotate(200deg);
+}
+.mc-kok .mc-sahne-kok:has(.el-sahne.el-los) .mc-yan-dolgu {
+  filter: blur(7px) brightness(0.5) saturate(0.7) sepia(0.2);
+}
+/* sahne bir kap: yakın çekim, düğmeler ve ödül kartı sahnenin eni/boyuna göre (yatay ekranda sahne dar bir bant) */
+.mc-kok .mc-sahne.el-sahne {
+  container-type: size;
 }

@@ -27,6 +27,7 @@ import { Alkis } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import type { BolumArayuz } from './dogumgunu';
 import { Sahne } from './sahne';
+import { adres } from './gorsel';
 import { Kisi } from './banyo-karakter';
 import { SesSeviyesi } from './ege-seviye';
 import { Ipucu, iz, parmak, Surukle, type Hedef } from './ege-surukle';
@@ -121,6 +122,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const sahne = new Sahne('parti-sahne/oda');
   sahne.el.classList.add('el-sahne');
   kok.append(sahne.el);
+  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın bulanık devamı (macera.css → .mc-yan-dolgu), karanlıkta kararır
+  kok.prepend(h('div.mc-yan-dolgu', { 'aria-hidden': 'true', style: `--resim:url("${adres('parti-sahne/oda')}")` }));
   const W = sahne.el.clientWidth || innerWidth;
   const H = sahne.el.clientHeight || innerHeight;
   /** Yatay ekranda dünya kare: arka plan resminin tamamı (pencere dahil) dünyada; kamera aşağıdan başlar */
@@ -570,6 +573,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     lamba.classList.remove('yanik');
     gece.seviye('tam');
     gece.karanlik(true, 120);
+    sahne.el.classList.add('el-karanlik');
     gece.titret();
     void balon(lamba, B.pit, 1100);
     await bekle(350);
@@ -1835,12 +1839,14 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     gece.titret();
     await bekle(900);
     gece.karanlik(false, 300);
+    sahne.el.classList.remove('el-karanlik');
     gece.delik(0);
     lamba.classList.add('yanik');
     pencere.el.classList.add('komsular');
     await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), Y(42), 1.4, 900);
     // mahalleden "Geldiii!" balonları (pencerenin yanından)
-    for (let i = 0; i < 3; i++) setTimeout(() => void balonGoster(balonKatman, new DOMRect(W * (0.2 + i * 0.3), GUVEN.ust + 30 + (i % 2) * 30, 10, 10), B.geldi, 1400), sure(i * 350));
+    const sr = sahne.el.getBoundingClientRect();
+    for (let i = 0; i < 3; i++) setTimeout(() => void balonGoster(balonKatman, new DOMRect(sr.left + W * (0.2 + i * 0.3), sr.top + GUVEN.ust + 30 + (i % 2) * 30, 10, 10), B.geldi, 1400), sure(i * 350));
     KN.kinoIfade('heyecan', 1500);
     KN.kinoOynat('sevin', 900);
     MN.tepki('zipla');
@@ -1942,6 +1948,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     lamba.classList.remove('yanik');
     gece.seviye('los');
     gece.karanlik(true, 700);
+    sahne.el.classList.add('el-karanlik', 'el-los');
     await bekle(400);
     // çadırda gece lambası yanar
     cadir.classList.add('lamba');

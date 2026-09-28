@@ -76,3 +76,32 @@ Ham kol resimleri yalnız küçük açılar için kesilmişti: iç konturları y
 - Kullanım: açı yaklaşık 30°'yi geçince `kol-sol` / `kol-sag` gizlenir, `-yukari` katmanı gösterilir ve aynı açıyla döndürülür.
 - Varsayılan çizimde piksel farkı 0 (2048 çözünürlükte ölçüldü).
 - Önizleme: `ekip/kino/kino-kol-yukari.png`.
+
+## Film 3: düşünüyor, işaret, sarılma
+
+| Katman | Poz | Not |
+|---|---|---|
+| `kol-sag-dusun` | düşünüyor | Ekranda sağdaki kol dirsekten bükülür, krem pati çenenin altındadır. `kol-sag` yerine gösterilir. |
+| `goz-dusun` | düşünüyor | Asıl göz resimleri yukarı-sola kayar (−20,−26); sol kaş kalkık, sağ kaş düz. `goz-sol` ve `goz-sag` yerine gösterilir. |
+| `agiz-dusun` | düşünüyor | Burundan inen çizgi ve yana kaymış "hımm" ağzı. `agiz` ile `dil` yerine gösterilir. |
+| `goz-bak-sag` / `goz-bak-sol` | işaret | Asıl göz resimleri ±24 px kayar. İşaret eden kolla birlikte kullanılır: `kol-sag-yukari` −85° ya da `kol-sol-yukari` +85°. |
+| `kol-sol-sarilma` + `kol-sag-sarilma` | sarılma | Kollar göğüste çaprazlanır, patiler ortada birleşir. `goz-kapali` + `agiz-gulumse` ile kullanılır. |
+
+- Kino'nun gözleri düz koyu olduğu için bakış, göz resmi kaydırılarak verilir. Gözlerin altındaki yüz boyası tamdır, boşluk kalmaz.
+- Kollar temiz vektördür (108 px krem tüp, kontur 13 px), omuz başında yarım yay vardır.
+- kino-final.json güncellendi: yedi katman `sira` sonunda ve `gizli`de. Göz ve ağız katmanlarının `bagli` değeri `kafa`; `donme` noktaları eklendi.
+- Varsayılan çizimde piksel farkı 0.
+- Önizleme: `ekip/kino/kino-film3.png`.
+
+## Oturma
+
+| Katman | Yerine geçtiği | Not |
+|---|---|---|
+| `govde-oturma` | `govde` | Gövde y 1595 altında kesilir; kesik yer ayakta kolların arkasında kalır. Altta krem kucak, uyluk kıvrımları ve öne uzanan iki krem pati var. Zemin ≈ y 1845. |
+| `kuyruk-oturma` | `kuyruk` | Temiz vektör kuyruk: kökü kucağın arkasında, sağda yere uzanır, ucu kalkık ve kahve (#7E4A2E). Asıl kuyruk resmi kullanılmadı, çünkü gövdenin arkasına gizlenen kenarı konturlu değil. |
+
+- json: `sira`da `kuyruk`un ve `govde`nin hemen arkasında, `gizli`de; `donme` noktaları asıllarıyla aynı.
+- Kullanım: `govde` ile `kuyruk` gizlenir, `-oturma` katmanları gösterilir. Zemine tam oturtmak için Kino yaklaşık 45 px aşağı kaydırılır. Kalkık kollar ve sarılma kollarıyla birlikte kullanılabilir.
+- Bilinen küçük iz: `kol-sag` resminin altında gövdeden kalma kısa bir kontur çizgisi var (x≈1265, y 1600–1640). Ayakta bacağın içinde kaybolur, oturmada kucağın üstünde hafifçe görünür.
+- Varsayılan çizimde piksel farkı 0.
+- Önizleme: `ekip/kino/kino-oturma.png`.

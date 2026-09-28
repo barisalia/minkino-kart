@@ -39,3 +39,19 @@ Kural: baş dönükken, görünen her kafa katmanı **X** yerine **X-sola** (ya 
 - Kafa dış çizgisi aynı kalır; yüz (göz, kaş, burun, ağız, allık, saç tutamı) dönüş yönüne ~90 px kayar. Dönülen taraftaki göz daralır, karşı göz hafifçe açılır. Dönülen taraftaki kulak kafaya doğru daralır (arkaya kaçar), karşı kulak biraz genişler.
 - Aynı dönme noktası (kafa 1020,1020), aynı bağlılık (kafa). Dönüş sırasında dönük hâlle normal arasında geçiş için iki kare yeterli (ön → yan); istenirse araya ara kare üretilebilir.
 - Önizleme: `ege-bas-cevirme.png` (sütunlar: sola | ön | sağa; satırlar: normal, kıkır, kahkaha, şaşkın).
+
+## Anne: konuşma iskeleti (`ekip/ege/anne.svg` + `anne.json`)
+
+Kaynak `assets/ege/anne.webp` (428×1143, ayakta pozu). Aynı tuvalde, aynı piksel ölçeğindedir.
+
+| Katman | Not |
+|---|---|
+| `govde` | anne.webp. Ağız bölgesi (x 162–266, y 438–466) üstten alta ara değerle ten rengine boyanmıştır (kayıpsız WebP). |
+| `agiz` | Asıl ağız kırpıntısı (x 158, y 434, 112×36). Varsayılan görüntü anne.webp ile birebir aynıdır (tam çözünürlükte piksel farkı 0). |
+| `agiz-kapali`, `agiz-az`, `agiz-orta`, `agiz-yuvarlak`, `agiz-dis` | Gizli vektör ağızlar. Çizgi #1e0000 (2.4 px), ağız içi #6e1f22, dil #e0707a, diş #fbf6f2. |
+| `agiz-gulumse` | Gizli; asıl kapalı gülüşün kopyası (dinlenme ağzı). |
+
+- Konuşurken `agiz` gizlenir ve o anki şekil gösterilir (çocuklarla aynı adlar).
+- Hepsi `govde`ye bağlıdır; dönme noktası 213.5,452.
+- Önizleme: `ekip/ege/anne-agizlar.png` (açık ve koyu zemin).
+- Kanepe ve sarılma pozlarında (`anne-sariliyor.webp`, `anne-uyuyor-*`) konuşma ağzı henüz yoktur. Gerekirse aynı yöntemle eklenir.

@@ -89,6 +89,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   sahne.el.classList.add('bn-sahne');
   sahne.dunya.querySelector<HTMLElement>('.mc-oda')?.style.setProperty('--resim', `url("${banyoAdres('arkaplan')}")`);
   kok.append(sahne.el);
+  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın bulanık devamı (macera.css → .mc-yan-dolgu)
+  kok.prepend(h('div.mc-yan-dolgu', { 'aria-hidden': 'true', style: `--resim:url("${banyoAdres('arkaplan')}")` }));
   const parca = new Parcaciklar();
   sahne.dunya.append(parca.el);
   const damla = new EkranDamlalari();

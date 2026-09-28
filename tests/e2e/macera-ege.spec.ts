@@ -1,5 +1,7 @@
 /**
  * Sesli Maceralar Bölüm 2: Şşş, Ege Uyuyor! — dokunarak baştan sona (3-4 ve 5-6 yaş), konsol hatası yok.
+ * Akış (ekip/senaryo/ege-duzeltme.md, 7 sahne): battaniye → mama → sepet + kuklalar → yatak → ninni → sessizlik + burun
+ * → fısıltı.
  * Oyun her görevde sahneye data-eg-gorev yazar; test onu okuyup parmakla oynar (mikrofonsuz: her sesli görevin
  * dokunma karşılığı). 3 yaşta Mino'nun burnu tutulmaz (HAPŞU dalı: kısa ninni + kısa sessizlik), 5 yaşta tutulur.
  * Gerçek hızda (?onizleme=1) .webm kaydı: EGE_VIDEO=1 → tests/screens/macera-ege-<proje>.webm
@@ -77,53 +79,10 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await bekle(700, 1200);
   await ekran('02b-anne-ortu');
 
-  // 2. sepette çıngırak
-  await gorevBekle(page, ['sepet'], T);
-  await bekle(300, 800);
-  await ekran('03-sepet');
-  await dokun(page, ege(page, 'ordek'));
-  await bekle(150, 700);
-  await surukle(page, ege(page, 'top'), { x: vp.width * 0.15, y: vp.height * 0.9 }, 14, gercekHiz);
-  // kalan oyuncaklara dokun (gerçek hızda uçuş animasyonu sürerken ıskalanırsa yeniden)
-  for (let i = 0; i < 10 && (await gorev(page)) === 'sepet'; i++) {
-    await bekle(200, 700);
-    const kalan = page.locator('.eg-oyuncak:not([data-cikti])').first();
-    if (!(await kalan.count())) break;
-    await dokun(page, kalan);
-  }
-  await gorevBekle(page, ['cingirak-bul'], T);
-  await bekle(200, 600);
-  await ekran('04-cingirak');
-  await dokun(page, ege(page, 'cingirak'));
-  const g = await gorevBekle(page, ['tik', 'ritim'], T);
-  await bekle(200, 600);
-  if (g === 'tik') {
-    for (let i = 0; i < 3; i++) {
-      await dokun(page, ege(page, 'cingirak'));
-      await bekle(250, 700);
-      if (i === 1) await ekran('05-salla');
-    }
-  } else {
-    await ekran('05-ritim');
-    // Ege'nin ritmi: tık-tık … tıık. Tutmazsa oyun ritmi yeniden gösterir ve yeni seri bekler (4. denemede kabul);
-    // test de görev "ritim" kaldıkça yeniden dener. Ekran görüntüsü seri bittikten sonra (araya girip ritmi bozmasın).
-    for (let deneme = 0; deneme < 5; deneme++) {
-      for (const ara of [0, 340, 700]) {
-        await page.waitForTimeout(ara);
-        await dokun(page, ege(page, 'cingirak'));
-      }
-      if (deneme === 0) await ekran('05b-salla');
-      // seri 1.4 sn sessizlikte biter; sonra ya sonraki göreve geçilir ya ritim yeniden gösterilip tekrar istenir
-      await page.waitForTimeout(1800);
-      await expect.poll(() => gorev(page), { timeout: T }).not.toBe('');
-      if ((await gorev(page)) !== 'ritim') break;
-    }
-  }
-
-  // 3. mama: önlük, kaşıklar (üfle: basılı tut), peçete
+  // 2. mama: önlük, kaşıklar (üfle: basılı tut), peçete
   await gorevBekle(page, ['onluk'], T);
   await bekle(400, 900);
-  await ekran('06-mama');
+  await ekran('03-mama');
   await surukle(page, ege(page, 'onluk'), ege(page, 'bebek'), 14, gercekHiz);
   let sicakDenendi = false;
   let ufleEkran = false;
@@ -141,7 +100,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
         await bekle(200, 600);
         await surukle(page, ege(page, 'kasik'), ege(page, 'agiz'), 12, gercekHiz);
         await expect(ege(page, 'bebek')).toHaveAttribute('data-ifade', 'buzuk', { timeout: 4000 });
-        await ekran('07-sicak');
+        await ekran('04-sicak');
         await bekle(900, 2500);
       }
       const k = await merkez(ege(page, 'kasik'));
@@ -149,7 +108,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
       await page.mouse.down();
       if (!ufleEkran) {
         await bekle(500, 900);
-        await ekran('08-ufle');
+        await ekran('05-ufle');
         ufleEkran = true;
       }
       await expect.poll(() => gorev(page), { timeout: 10000 }).not.toBe('ufle');
@@ -161,7 +120,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     }
   }
   await bekle(300, 800);
-  await ekran('09-mamali');
+  await ekran('06-mamali');
   for (let i = 0; i < 16 && (await gorev(page)) === 'sil'; i++) {
     const a = await merkez(ege(page, 'pecete'));
     const b = await merkez(ege(page, 'agiz'));
@@ -172,55 +131,52 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
       await page.mouse.move(a.x + (b.x - a.x) * t + Math.sin(j * 0.9) * 34, a.y + (b.y - a.y) * t + Math.cos(j * 1.3) * 26 - 10);
       if (gercekHiz) await page.waitForTimeout(16);
     }
-    if (i === 0) await ekran('10-sil');
+    if (i === 0) await ekran('07-sil');
     await page.mouse.up();
     await bekle(150, 300);
   }
 
-  // 4. kuklalar
+  // 3. Ege sıkılmış: sepetteki oyuncakları çıkarıp Ege'ye göster (dokun ya da sürükle), en alttaki kuklalar Ada'ya ve Can'a
+  await gorevBekle(page, ['sepet'], T);
+  await bekle(300, 800);
+  await ekran('08-sepet');
+  await dokun(page, ege(page, 'ordek'));
+  await bekle(150, 700);
+  await surukle(page, ege(page, 'top'), { x: vp.width * 0.15, y: vp.height * 0.9 }, 14, gercekHiz);
+  // kalan oyuncaklara dokun (gerçek hızda uçuş animasyonu sürerken ıskalanırsa yeniden)
+  for (let i = 0; i < 10 && (await gorev(page)) === 'sepet'; i++) {
+    await bekle(200, 700);
+    const kalan = page.locator('.eg-oyuncak:not([data-cikti])').first();
+    if (!(await kalan.count())) break;
+    await dokun(page, kalan);
+  }
   await gorevBekle(page, ['kukla-tak'], T);
   await bekle(500, 1000);
-  await ekran('11-kuklalar');
+  await ekran('09-kuklalar');
   await surukle(page, ege(page, 'kukla-ayi'), page.locator('.mc-oyuncu[data-ad="ada"]'), 14, gercekHiz);
   await bekle(300, 600);
   await surukle(page, ege(page, 'kukla-civciv'), page.locator('.mc-oyuncu[data-ad="can"]'), 14, gercekHiz);
   await gorevBekle(page, ['civciv'], T);
   await dokun(page, ege(page, 'kukla-civciv'));
   await bekle(500, 1200);
-  await ekran('12-civciv');
+  await ekran('10-civciv');
   await gorevBekle(page, ['ayi'], T);
   await dokun(page, ege(page, 'kukla-ayi'));
   await bekle(400, 900);
-  await ekran('13-ayi');
+  await ekran('11-ayi');
   for (let i = 0; i < 4; i++) {
     await gorevBekle(page, ['serbest'], T);
     await dokun(page, ege(page, i % 2 ? 'kukla-ayi' : 'kukla-civciv'));
     if (i === 3) {
       await bekle(700, 1400);
-      await ekran('14-kahkaha');
+      await ekran('12-kahkaha');
     }
   }
 
-  // 5. cee-ee: 5 tur (Ada, Can, Elif, Mino kulaklarını kapatır, hep birlikte)
-  for (let tur = 0; tur < 5; tur++) {
-    await gorevBekle(page, ['cee'], T);
-    await bekle(300, 700);
-    if (tur === 0 || tur === 3 || tur === 4) await ekran(`15-cee-${tur}`);
-    if (tur === 0) {
-      await dokun(page, page.locator('[data-ege="eller-ada"]').first());
-    }
-    else await dokun(page, page.locator('.mc-buyuk-dugme'));
-    await expect.poll(() => gorev(page), { timeout: T }).not.toBe('cee');
-    if (tur === 4) {
-      await bekle(400, 900);
-      await ekran('16-cee-kahkaha');
-    }
-  }
-
-  // 6. yatak hazırlığı: emzik, battaniye, lamba, perde
+  // 4. yatak hazırlığı (anne Ege'yi beşiğe yatırır): emzik, battaniye, lamba, perde
   await gorevBekle(page, ['hazirla'], T);
   await bekle(500, 1000);
-  await ekran('17-yatak');
+  await ekran('13-yatak');
   await surukle(page, ege(page, 'emzik'), ege(page, 'agiz'), 14, gercekHiz);
   await bekle(300, 900);
   await surukle(page, ege(page, 'battaniye-ege'), ege(page, 'bebek'), 14, gercekHiz);
@@ -228,10 +184,10 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await expect(page.locator('.eg-besik-yuva > [data-ege="bebek"].yatiyor')).toHaveCount(1);
   await expect(page.locator('.eg-besik-ortu.acik[data-ege="ortu"]')).toHaveCount(1, { timeout: 8000 });
   await bekle(700, 1200);
-  await ekran('17b-besik-ortu');
+  await ekran('13b-besik-ortu');
   await dokun(page, ege(page, 'lamba'));
   await bekle(600, 1500);
-  await ekran('18-lamba');
+  await ekran('14-lamba');
   {
     const p = await merkez(ege(page, 'perde'), 0.5, 0.45);
     await page.mouse.move(p.x, p.y);
@@ -242,7 +198,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     await page.mouse.up();
   }
   await bekle(800, 1800);
-  await ekran('19-gece');
+  await ekran('15-gece');
 
   // 7. ninni: beşiği sağa-sola salla (her yön değişimi bir nota)
   const sallaBitir = async (ad: string) => {
@@ -257,7 +213,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     }
     await page.mouse.up();
   };
-  await sallaBitir('20-ninni');
+  await sallaBitir('16-ninni');
 
   // 8. sessizlik (parmak basılı) + Mino'nun burnu
   const sessizBekle = async (ad?: string) => {
@@ -271,48 +227,48 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     await expect.poll(() => gorev(page), { timeout: T }).not.toBe('sessiz');
     await page.mouse.up();
   };
-  await sessizBekle('21-sessiz-ay');
+  await sessizBekle('17-sessiz-ay');
   await gorevBekle(page, ['burun'], T);
   await bekle(400, 800);
-  await ekran('22-burun');
+  await ekran('18-burun');
   if (yas >= 5) {
     const n = await merkez(ege(page, 'burun'));
     await page.mouse.move(n.x, n.y);
     await page.mouse.down();
     await page.waitForTimeout(900);
-    await ekran('23-burun-tut');
+    await ekran('19-burun-tut');
     await expect.poll(() => gorev(page), { timeout: 10000 }).not.toBe('burun');
     await page.mouse.up();
     await bekle(400, 900);
-    await ekran('24-hipsu');
+    await ekran('20-hipsu');
   } else {
     // tutmazsa HAPŞU: Ege uyanır, kısa ninni ve kısa sessizlik
     // (burun süresi duvar saatiyle: 9 sn; yavaş makinede kare hızı düşse de uzamaz)
     await expect.poll(() => gorev(page), { timeout: 20000 }).not.toBe('burun');
     await page.waitForTimeout(500);
-    await ekran('23-hapsu');
-    await sallaBitir('24-kisa-ninni');
+    await ekran('19-hapsu');
+    await sallaBitir('20-kisa-ninni');
   }
   await sessizBekle();
 
   // 9. fısıltı (dokunma: öpücük) ve final
   await gorevBekle(page, ['fisilti'], T);
   await bekle(300, 900);
-  await ekran('25-fisilti');
+  await ekran('21-fisilti');
   await dokun(page, page.locator('.mc-buyuk-dugme'));
   // final: anne kanepede kollarını açıp çocuklara sarılır
   await gorevBekle(page, ['saril'], T);
   await expect(ege(page, 'anne')).toHaveAttribute('data-resim', 'sariliyor');
   await expect(ege(page, 'anne')).toHaveClass(/sariliyor/);
-  await ekran('26-saril');
+  await ekran('22-saril');
   await bekle(200, 3000);
-  await ekran('26-aferin');
+  await ekran('22-aferin');
   await expect(page.locator('.mc-son')).toBeVisible({ timeout: gercekHiz ? 120000 : 40000 });
   await page.waitForTimeout(500);
-  await ekran('27-son');
+  await ekran('23-son');
 }
 
-for (const yas of [3, 5]) {
+for (const yas of (process.env.EGE_YASLAR ?? '3,5').split(',').map(Number)) {
   test(`Ege Uyuyor: dokunarak baştan sona (${yas} yaş)`, async ({ page }, info) => {
     test.setTimeout(300_000);
     const hatalar = hataTopla(page);

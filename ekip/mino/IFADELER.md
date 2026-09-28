@@ -109,3 +109,31 @@ Asıl kollar kafanın altında durduğu için 100° üstünde kafanın arkasına
 - Kullanım: açı yaklaşık 30°'yi geçince `kol-sol` / `kol-sag` gizlenir, `-yukari` katmanı gösterilir ve aynı açıyla döndürülür. Tek kol da olur (örnek: sol 150°, sağ −20°, el sallama).
 - Varsayılan çizimde piksel farkı 0 (2048 çözünürlükte ölçüldü).
 - Önizleme: `ekip/mino/mino-kol-yukari.png` (0°, 40°, 90°, 130°, 160°, tek kol 150°; açık ve koyu zemin).
+
+## Oturma
+
+| Katman | Yerine geçtiği | Not |
+|---|---|---|
+| `govde-oturma` | `govde` | Gövdenin y 1672 altı kesilir (bacaklar gider). Altta iki yana taşan kucak var, uyluk kıvrım çizgileri ve öne uzanan iki krem pati (parmak çizgili). Zemin ≈ y 1845 (ayaktayken 1895). |
+| `kuyruk-oturma` | `kuyruk` | Aynı kuyruk. Kökü kalçanın arkasında, sağ yanda yere yatık kıvrılır: `translate(-110,40) rotate(40 1260 1680)`. |
+
+- SVG sırası: `kuyruk-oturma` asıl kuyruğun, `govde-oturma` asıl gövdenin hemen arkasında. Kollar, fular ve kafa üstte kalır, kalkık kollarla birlikte kullanılabilir.
+- Kullanım: `govde` ile `kuyruk` gizlenir, `-oturma` katmanları gösterilir. Zemine tam oturtmak için bütün karakter yaklaşık 50 px aşağı kaydırılır.
+- Varsayılan çizimde piksel farkı 0.
+- Önizleme: `ekip/mino/mino-oturma.png` (ayakta, oturma, oturma + el sallama, oturma + alkış; açık ve koyu zemin).
+
+## Film 3: düşünüyor, işaret, sarılma
+
+| Katman | Poz | Not |
+|---|---|---|
+| `kol-sag-dusun` | düşünüyor | Ekranda sağdaki kol dirsekten bükülür, pati çenenin altındadır. `kol-sag` yerine gösterilir. |
+| `goz-dusun` | düşünüyor | Asıl gözler; iris yukarı-sola bakar. Sol kaş kalkık, sağ kaş düz. `goz-sol` ve `goz-sag` yerine gösterilir. |
+| `agiz-dusun` | düşünüyor | Yana kaymış kapalı "hımm" ağzı. `agiz` yerine gösterilir. |
+| `goz-bak-sag` / `goz-bak-sol` | işaret | Asıl gözler; iris ekranda sağa ya da sola kayar. İşaret eden kolla birlikte kullanılır: `kol-sag-yukari` −85° (sağa) ya da `kol-sol-yukari` +85° (sola). |
+| `kol-sol-sarilma` + `kol-sag-sarilma` | sarılma | İki kol göğüste çaprazlanır, patiler ortada birleşir. `goz-kapali` + `agiz-gulumse` ile kullanılır. |
+
+- Bakış gözleri asıl göz çiziminden yapıldı: iris ve göz bebeği göz açıklığına kırpılıp kaydırıldı. Parıltılar, kapak ve kirpikler yerinde kalır.
+- Bükük kollar kavisli kürk tüpüdür (kontur 13 px), omuz başında yarım yay vardır. SVG'nin en sonunda yer alır.
+- Varsayılan çizimde piksel farkı 0.
+- Önizleme: `ekip/mino/mino-film3.png`.
+- **İkili sarılma (Mino + Kino, yan yana):** Mino `kol-sag-yukari` −100°, Kino `kol-sol-yukari` +100°; ikisinde de `goz-kapali` + `agiz-gulumse`. Mino önce çizilir, kolu Kino'nun arkasına geçer. Kino sonra çizilir, kolu Mino'nun omzunun önüne gelir. Kino, Mino tuvalinde x+1000, y+60 (aynı ölçek). Önizleme: `ekip/film/mino-kino-sarilma.png`.
