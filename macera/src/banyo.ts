@@ -21,7 +21,9 @@ import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { konfetiPatlat } from '../../src/ui/konfeti';
 import { Perde, sesVar, Ufleme } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
-import { davul } from '../../orman/src/sesler';
+import { davul, nota } from '../../orman/src/sesler';
+import { KayitCalar, vurusaYakin } from '../../src/audio/sarki-kayit';
+import SARKI_SESI from '../../assets/muzik/banyo-sozlu.mp3?url';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import type { BolumArayuz } from './dogumgunu';
 import { Sahne } from './sahne';
@@ -30,6 +32,7 @@ import { Kisi, kopukHtml } from './banyo-karakter';
 import { Bugu, EkranDamlalari, geriDon, icinde, merkez, ovala, ParmakIpucu, Parcaciklar, surukle, yansiYazi, type IpucuTuru } from './banyo-efekt';
 import {
   BOLUM_BENIM,
+  BANYO_SARKI,
   baloncukBoyu,
   bolgeCoz,
   camurPlani,
@@ -1278,6 +1281,9 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     kulak.sustur(900);
     siraYak('kopurt', 'bitti');
 
+    // --- köpük şarkısı (kısa kutlama; geçme koşulu yok)
+    await kopukSarkisi();
+
     // --- köpük saç (serbest oyun)
     await kSoyle(B.kino.sac);
     // Kino'nun çizilmiş köpük saçı (kopuk-sac eki); her dokunuşta başka şekle esner
@@ -1311,6 +1317,106 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ui.ipucu(null);
     durumYaz(null);
     sampuan.remove();
+  }
+
+  /**
+   * Köpük şarkısı (Gemini kaydı, assets/muzik/banyo.json): köpürtme bitince kısa kutlama. Oyun kaydın notalarına ve
+   * ritmine göre ilerler: heceler kaydın zamanıyla yanar (karaoke), Mino ile Kino kaydın vuruşlarında sırayla
+   * zıplar / dans eder. Çocuk ekrana (köpüğe) dokunarak alkışla eşlik eder: vuruşa yakın dokunuş büyük köpük ve
+   * parıltı, uzak olan küçük köpük (yumuşak tolerans, ceza yok). Geçme koşulu yok: şarkı bitince bölüm sürer.
+   * Ses kilidi: kayıt çalarken mikrofon dinlemez, bu yüzden alkış yalnız dokunmayla sayılır.
+   */
+  async function kopukSarkisi() {
+    muzikKapat();
+    kulak.dinle(null);
+    const T = BANYO_SARKI;
+    const panel = h('div.mc-karaoke.bn-karaoke');
+    const heceEl = T.heceler.map((n) => h('span.mc-hece', { style: `--h:${(n.midi - 58) / 16}` }, n.hece));
+    const satirlar = T.satirlar.map((s) => h('div.mc-satir', {}, ...s.map((x) => heceEl[T.heceler.indexOf(x)])));
+    const top = h('i.mc-top');
+    panel.append(...satirlar, top);
+    sahne.on.append(panel);
+    const hece = (i: number) => {
+      heceEl.forEach((e, k) => {
+        e.classList.toggle('simdi', k === i);
+        e.classList.toggle('gecti', k < i);
+      });
+      const r = heceEl[i]?.getBoundingClientRect();
+      const p = panel.getBoundingClientRect();
+      if (r) top.style.transform = `translate(${r.left - p.left + r.width / 2}px, ${r.top - p.top - 14}px)`;
+    };
+    durumYaz('sarki');
+    ui.ipucu(B.ipucu.sarki);
+    // dans: Kino baştan sona dans eder, Mino da; her vuruşta biri zıplar (sırayla)
+    KN.kinoOynat('dans', 0);
+    M.tepki('dans');
+    let isabet = 0;
+    let sonVurus = -1;
+    const calar = new KayitCalar({
+      url: SARKI_SESI,
+      tablo: T,
+      sustur: (ms) => kulak.sustur(ms),
+      yedekNota: (x) => nota(x.midi, (x.sureMs / 1000) * 0.95, 0.2),
+      onHece: (i) => {
+        hece(i);
+        const x = T.heceler[i];
+        // satır başında: 2. satır "Mino oldu pamukçuk" Mino sevinir, 3. satır "Ovala ovala" ikisi kıpırdar
+        if (i > 0 && T.heceler[i - 1].satir !== x.satir) {
+          if (x.satir === 1) M.tepki('sevinc');
+          else if (x.satir === 2) void Promise.all([M.kipir(), KN.kipir()]);
+          else M.tepki('dans');
+        }
+      },
+      onVurus: (i) => {
+        void (i % 2 ? KN : M).zipla(6, 360);
+        if (i % 4 === 3) parca.yuksel(...merkez(suOn), 'baloncuk', 2, 80);
+      },
+    });
+    // alkış = dokunuş (Mino'ya / Kino'ya dokunmak da sayılır)
+    const alkis = (e: PointerEvent) => {
+      const y = vurusaYakin(T.vuruslar, calar.zaman, kucuk ? 300 : 220);
+      if (y && y.sira !== sonVurus) {
+        sonVurus = y.sira;
+        isabet++;
+        sahne.el.dataset.bnAlkis = String(isabet);
+        parca.yuksel(e.clientX, e.clientY, 'baloncuk', 5, 50);
+        parca.parilti(e.clientX, e.clientY, 5);
+        davul(false, 0.1);
+      } else {
+        parca.sicrat(e.clientX, e.clientY, 'kopuk', 3, 0.5);
+        bs.blup(false);
+      }
+    };
+    const bos = () => undefined;
+    kisiIs.set(M, bos);
+    kisiIs.set(KN, bos);
+    sahne.el.addEventListener('pointerdown', alkis);
+    try {
+      await gorev<void>((coz) => {
+        void calar.cal().then(() => coz());
+        return () => calar.durdur();
+      });
+    } finally {
+      sahne.el.removeEventListener('pointerdown', alkis);
+      kisiIs.set(M, null);
+      kisiIs.set(KN, null);
+      KN.kinoDur();
+      ui.ipucu(null);
+      durumYaz(null);
+      panel.classList.add('bitti');
+      setTimeout(() => panel.remove(), sure(500));
+    }
+    // güzel eşlik ettiyse kocaman kutlama; etmediyse de kısa sevinç (ceza yok)
+    M.tepki('sevinc');
+    KN.kinoOynat('sevin', 900);
+    if (isabet >= 4) {
+      const r = sahne.el.getBoundingClientRect();
+      konfetiPatlat(kok, r.left + r.width / 2, r.top + r.height * 0.45, 40);
+      efekt.dogru();
+      kulak.sustur(900);
+    }
+    await bekle(600);
+    muzikAc();
   }
 
   // ================================================================ 6. Duş ve uluma

@@ -14,6 +14,7 @@
  */
 import E from '../../content/macera-ege.json';
 import { efekt, konus } from '../../src/audio/ses';
+import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
 import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
@@ -427,6 +428,15 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   sahne.el.append(ay.el);
 
   const muzik = new S.EgeMuzik();
+  /**
+   * Ege fonu (assets/muzik/ege-fon.mp3 varsa): bölümün başında ve yatak sahnesinde oyuncak / müzik kutusu
+   * müziğinin yerine çalar; sesli görevde ve ninni başlayınca durur. Dosya yoksa eski müzik çalar.
+   */
+  const fon = new DosyaMuzik(fonDosyasi('ege-fon'), 0.35);
+  const muzikSus = () => {
+    muzik.durdur();
+    fon.durdur();
+  };
 
   // ================================================================ akış altyapısı
   const tikler = new Set<(dt: number) => void>();
@@ -575,15 +585,17 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   // --- müzik: genel müziği durdur, bölümün müziği
   muzikDurdur();
   const muzikAc = () => {
-    if (!TEST_MODU) muzik.baslat();
+    if (fon.var) fon.baslat();
+    else if (!TEST_MODU) muzik.baslat();
   };
   const muzikKutu = () => {
     // ninninin kayıttaki notaları (assets/muzik/ninni.json), dört dize
-    if (!TEST_MODU) muzik.kutu(ninni().map((n) => ({ midi: n.midi, vurus: n.vurus })));
+    if (fon.var) fon.baslat();
+    else if (!TEST_MODU) muzik.kutu(ninni().map((n) => ({ midi: n.midi, vurus: n.vurus })));
   };
   /** Sesli görev: müzik durur (mikrofon duymasın), bitince önceki müzik devam */
   const sesliGorev = async <T>(f: () => Promise<T>, sonra: 'oyuncak' | 'kutu' | null = 'oyuncak'): Promise<T> => {
-    muzik.durdur();
+    muzikSus();
     // ağlama sesi çalarsa kulak 1.5 sn susar (ege-ses aglama): dinlerken ağlama sessiz, yalnız gözyaşı
     const eskiSessiz = aglamaSessiz;
     aglamaSessiz = true;
@@ -720,7 +732,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const temizle = () => {
     cancelAnimationFrame(raf);
     kulak.dinle(null);
-    muzik.durdur();
+    muzikSus();
     mino.kapat();
     ege.kapat();
     Object.values(iskeletler).forEach((i) => i?.kapat());
@@ -1743,7 +1755,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   // ================================================================ 4. Ege yoruldu: yatak hazırlığı
   async function sahne6() {
     sahne.el.dataset.egSahne = '6';
-    muzik.durdur();
+    muzikSus();
+    // yatak sahnesi: Ege fonu (dosya varsa)
+    fon.baslat();
     // çok güldü, yoruldu: kocaman bir esneme, gözünü ovuşturur
     ege.ifade('esniyor', 1600);
     ege.oynat('esne', 1600);
@@ -1998,7 +2012,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     const [zx, zy] = ege.basUstu();
     parca.yuksel(zx, zy, 'z', 3);
     efektCal(() => S.kutuNota(62, 0.1, 2), 1500);
-    muzik.durdur();
+    muzikSus();
     await bekle(1500);
   }
 
@@ -2011,6 +2025,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
    * altyapı çalmaz (oyunun sesi mikrofona karışmasın, ekip/SES-SISTEMI.md).
    */
   async function ninniGorevi(dize: number, dinlet: boolean): Promise<void> {
+    // ninni başlayınca fon ve müzik kutusu susar
+    muzikSus();
     const notalar = ninni(dize);
     const tum = dinlet ? ninni(NINNI_DIZE) : notalar;
     const panel = h('div.mc-karaoke.eg-karaoke');
@@ -2039,7 +2055,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     try {
       // --- dinle: ninninin kaydı (bütün dizeler), heceler kayıtla birlikte yanar
       if (dinlet) {
-        muzik.durdur();
+        muzikSus();
         await mSoyle(M.dinle);
         ui.ipucu(I.ninni_dinle);
         await ninniDinlet(tum, hece, besikSalla);
@@ -2274,7 +2290,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   // ================================================================ 6. Şşş! Tüy ve Mino'nun burnu
   async function sahne8() {
     sahne.el.dataset.egSahne = '8';
-    muzik.durdur();
+    muzikSus();
     await kam(50, 96, taban, 900, [besik, minoKutu]);
     await mSoyle(M.uyudu);
     // herkes parmak uçlarında

@@ -839,3 +839,87 @@
   bottom: -6px;
   font-size: 0.95rem;
 }
+
+/* ---------------------------------------------------------------- pazar şarkısı (sarki.ts): sayım sırası, karaoke */
+.pz-kok .pz-sarki-sira {
+  --pz-sm: clamp(30px, 8vw, 64px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(8px, 2.6vw, 22px);
+  width: 100%;
+  padding-top: 22px;
+  transition: opacity 0.35s, transform 0.35s;
+}
+.pz-kok .pz-sarki-sira.gidiyor {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.pz-kok .pz-sarki-grup {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  opacity: 0.55;
+  transition: opacity 0.25s;
+}
+.pz-kok .pz-sarki-grup.sayildi {
+  opacity: 1;
+}
+.pz-kok .pz-sarki-meyveler {
+  display: flex;
+}
+.pz-kok .pz-sarki-meyve {
+  display: block;
+  width: var(--pz-sm);
+  height: var(--pz-sm);
+  filter: drop-shadow(0 3px 0 rgba(90, 54, 23, 0.25));
+}
+.pz-kok .pz-sarki-meyve + .pz-sarki-meyve {
+  margin-left: calc(var(--pz-sm) * -0.3);
+}
+.pz-kok .pz-sarki-meyve.zipla {
+  animation: pz-sarki-zipla 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+@keyframes pz-sarki-zipla {
+  0% { transform: translateY(0) scale(1, 1); }
+  25% { transform: translateY(0) scale(1.15, 0.85); }
+  55% { transform: translateY(-38%) scale(0.92, 1.1); }
+  80% { transform: translateY(0) scale(1.08, 0.94); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+.pz-kok .pz-sarki-rozet {
+  position: absolute;
+  left: 50%;
+  top: -22px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  border-radius: 50%;
+  background: #ffc72c;
+  border: 3px solid var(--kontur);
+  color: var(--kontur);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+  transform: scale(0);
+  transition: transform 0.3s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.pz-kok .pz-sarki-grup.sayildi .pz-sarki-rozet {
+  transform: scale(1);
+}
+.pz-kok .pz-hece {
+  display: inline-block;
+  transition: transform 0.15s, color 0.15s;
+}
+.pz-kok .pz-hece.simdi {
+  color: #e8437f;
+  transform: translateY(-2px) scale(1.18);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .pz-sarki-meyve.zipla {
+    animation: none;
+  }
+}

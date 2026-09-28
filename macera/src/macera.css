@@ -828,6 +828,10 @@
 .mc-kok .mc-hece.bos {
   opacity: 0.55;
 }
+/* şarkı kutlaması: söylenmiş heceler (banyo köpük şarkısı) */
+.mc-kok .mc-hece.gecti {
+  background: #d7f0fb;
+}
 .mc-kok .mc-top {
   position: absolute;
   left: 0;

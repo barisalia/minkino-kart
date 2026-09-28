@@ -3,6 +3,7 @@
  * sallarlar, dokununca tepki verirler), altında oyun kartları (sırayla gelir, yan oyun rozetleri, parmakla hafif
  * parallax); büyükler için ebeveyn kapısı (basılı tut).
  */
+import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
 import { efekt } from '../../src/audio/ses';
 import '../../src/karakter/karakter.css';
 import { Karakter, type HareketAdi, type Poz as KPoz } from '../../src/karakter/karakter';
@@ -99,6 +100,9 @@ export function menuEkrani(app: Uygulama): Ekran {
   };
   const zamanlar: number[] = [];
   const sonra = (ms: number, fn: () => void) => zamanlar.push(window.setTimeout(fn, sure(ms)));
+  // menü müziği (assets/muzik/menu-dongu.mp3 varsa): kısık döngü, konuşurken kısılır, sessize almaya uyar
+  const fon = new DosyaMuzik(fonDosyasi('menu-dongu'), 0.3);
+  fon.baslat();
 
   // Kino: ortak karakter iskeleti (assets/karakter-iskelet/kino.*; tasarım değişse de katman adları aynı kalır)
   const kino = new Karakter('kino', h('div'));
@@ -296,6 +300,7 @@ export function menuEkrani(app: Uygulama): Ekran {
       clearTimeout(ipucuZaman);
       cancelAnimationFrame(raf);
       kapiBirak();
+      fon.durdur();
       yuruyen.kapat();
       kino.kapat();
     },

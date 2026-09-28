@@ -68,7 +68,7 @@
    "tahmini": true
   },
   {
-   "hece": "ÃœÃ§",
+   "hece": "Üç",
    "satir": 1,
    "basla_ms": 3356,
    "bitir_ms": 3583,
@@ -77,7 +77,7 @@
    "tahmini": false
   },
   {
-   "hece": "Ã§i",
+   "hece": "çi",
    "satir": 1,
    "basla_ms": 3583,
    "bitir_ms": 3920,
@@ -95,7 +95,7 @@
    "tahmini": false
   },
   {
-   "hece": "dÃ¶rt",
+   "hece": "dört",
    "satir": 1,
    "basla_ms": 4367,
    "bitir_ms": 4500,
@@ -113,7 +113,7 @@
    "tahmini": false
   },
   {
-   "hece": "Ã¼",
+   "hece": "ü",
    "satir": 1,
    "basla_ms": 4750,
    "bitir_ms": 4854,
@@ -122,7 +122,7 @@
    "tahmini": false
   },
   {
-   "hece": "zÃ¼m",
+   "hece": "züm",
    "satir": 1,
    "basla_ms": 4854,
    "bitir_ms": 5551,
@@ -176,7 +176,7 @@
    "tahmini": true
   },
   {
-   "hece": "rÄ±",
+   "hece": "rı",
    "satir": 2,
    "basla_ms": 6883,
    "bitir_ms": 7043,
