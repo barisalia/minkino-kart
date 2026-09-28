@@ -53,8 +53,11 @@ const KINO_BOLGE: Partial<Record<Bolum, BolgeTanim>> = {
 /** Kino'nun fuları ve ağzı (çizim koordinatı) */
 const KINO_FULAR: [number, number] = [975, 1300];
 const KINO_AGIZ: [number, number] = [930, 1000];
-/** Kino'nun kulakları sarkık: "kalkar / açılır" yönü Karakter'in kulak açısının tersi */
-const KULAK_DIS = -1;
+/**
+ * Kulağın "kalkar / açılır" yönü. Kino'nun kulakları sarkık; çevirmeyi artık Karakter yapıyor (kisilik.ts →
+ * kulakTers), burada Poz'un kendi anlamı: + = dışa açılır.
+ */
+const KULAK_DIS = 1;
 
 const NS = 'http://www.w3.org/2000/svg';
 function svgEl<K extends keyof SVGElementTagNameMap>(ad: K, attrs: Record<string, string | number> = {}, html = ''): SVGElementTagNameMap[K] {
@@ -103,13 +106,6 @@ export type KinoHareket = 'silkelen' | 'ulu' | 'titre' | 'tekme' | 'coskulu' | '
 export type KinoIfade = 'heyecan' | 'sicak' | 'titreme' | 'keyif' | 'uluma' | 'uzgun' | 'saskin';
 /** Kendi yüzü olan hareketler */
 const KINO_OTO_IFADE: Partial<Record<KinoHareket, KinoIfade>> = { coskulu: 'heyecan', yuz: 'heyecan', ulu: 'uluma', titre: 'titreme', dans: 'heyecan', sevin: 'heyecan' };
-/**
- * Kino'nun kolu omuzdan en çok bu kadar kalkar (derece): fazlasında omuz dikişi ve kol ucunda kontur izi görünüyor
- * (iskelet kolu -5 … 60'a izin verir; 25°'den sonra omuzda yarık görünüyor, banyo hareketleri 20'de kalır).
- */
-const KINO_KOL_EN_COK = 20;
-/** Kuyruk kökünden en çok bu kadar döner (derece; aşağı yalnız %40'ı): fazlasında kökte beyaz yarık görünüyor */
-const KINO_KUYRUK_EN_COK = 20;
 /** Mino'nun hâl çizimleri (sırılsıklam / pofuduk) varken ifade eki bindirilen tepkiler: hâl yüzüyle uyuşmuyor */
 const HAL_IFADESIZ = new Set<Tepki>(['zorlan', 'sersem', 'kararsiz']);
 /** Köpük saçın şekilleri (aynı çizim: yatay, dikey esneme) */
@@ -882,11 +878,7 @@ export class Kisi {
         }
       }
     }
-    // kollar omuzdan fazla kalkmasın (omuz dikişi görünmesin)
-    p.kolSol = Math.min(p.kolSol, KINO_KOL_EN_COK);
-    p.kolSag = Math.min(p.kolSag, KINO_KOL_EN_COK);
-    // kuyruk kökünde yarık açılmasın (sallanma hızlı ama dar)
-    p.kuyruk = Math.max(-KINO_KUYRUK_EN_COK * 0.4, Math.min(KINO_KUYRUK_EN_COK, p.kuyruk));
+    // kol, kulak, kuyruk sınırları kişilikte (src/karakter/kisilik.ts → kino): çizimin kesik yerleri açılmasın
     p.agizAcik = Math.max(p.agizAcik, agiz > 0.5 ? 1 : 0);
     // kodla çizilen ağız / dil (iskelette yoksa); iskeletin "dil-disarida" katmanı
     const ag = this.kap.querySelector<SVGGElement>('g.bn-kino-agiz');
@@ -895,8 +887,12 @@ export class Kisi {
     const dilGoster = dil && agiz <= 0.5 && !this.kinoKonus && !this.kar?.ifadeSu;
     if (dilGoster !== this.dilSon) {
       this.dilSon = dilGoster;
-      const dl = this.parcaG('dil-disarida') ?? this.kap.querySelector<SVGGElement>('g.bn-kino-dil');
-      if (dl) dl.style.opacity = dilGoster ? '1' : '0';
+      // iskeletin eki Karakter'den açılır (ağzın kendi dili o sırada gizlenir); kodla çizilen yedek elle
+      if (this.parcaG('dil-disarida')) this.kar?.ek('dil-disarida', dilGoster);
+      else {
+        const dl = this.kap.querySelector<SVGGElement>('g.bn-kino-dil');
+        if (dl) dl.style.opacity = dilGoster ? '1' : '0';
+      }
     }
   }
 

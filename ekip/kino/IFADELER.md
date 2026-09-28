@@ -34,6 +34,18 @@ Ayrıca:
 - Dönme noktası 1330,1620 (kök). Bağlı değil, `kuyruk` gibi üst düzey. Sallanma isteniyorsa kod ucu (1400,1885) çevresinde küçük titretir; kök dönmesi ±3°'yi geçmesin, yoksa pati altından kayar.
 - Önizleme: `kino-pati-kuyruk.png` (solda normal, sağda pati-kuyruk).
 
+## "Elektrikler Kesildi!" eki: korkmuş Kino (vektör, gizli)
+
+| Hâl | Göster | Gizle | Not |
+|---|---|---|---|
+| korku | `kafa-korku`, `goz-korku`, `agiz-korku`, `kuyruk-korku` | `kulak-sol`, `kulak-sag`, `goz-sol`, `goz-sag`, `agiz`, `dil`, `kuyruk` | Kulaklar başa yapışık: asıl kulaklar kökten içe döner, %74 daralır, kafanın arkasına geçer. Yalnız yanlarda kahve şerit görünür. Gözler iri, koyu ve parlak; altta ıslak ışık, iç ucu kalkık endişeli kaşlar, iki yanda titreme çizgileri. Ağız küçük ve titrek dalgalı. Kuyruk bacak arasına sıkışık, kahve uç iki ayağın arasında görünür. |
+
+- `kafa-korku`: SVG ve json `sira`da `kafa`nın hemen önünde (kafanın arkasında), kafaya bağlı, dönme noktası kafayla aynı (975,1180).
+- `goz-korku`, `agiz-korku`: `agiz-saskin`ın arkasında, kafaya bağlı; dönme noktaları 965,758 ve 915,990.
+- `kuyruk-korku`: `kuyruk` ve `pati-kuyruk`un arkasında, gövdenin altında (yalnız bacak arası görünür). Bağlı değil; dönme noktası 1052,1600.
+- Büzülme (gövde hafif basık, kafa omuzlara gömülü) kodla yapılır.
+- Önizleme: `kino-korku.png` (normal | korku). Varsayılan çizim değişmedi (piksel farkı 0).
+
 ## Dudak senkronu ağızları (vektör, gizli, kafaya bağlı)
 
 Kod (`src/audio/dudak-mantik.ts`) altısı birlikte varsa bunları kullanır. Konuşurken `agiz` ve `dil` gizlenir, o anki şekil gösterilir. Kontur #3A1210 (ω 18 px, açık ağız 16 px, az 14 px); ağız içi #3A1210, dil #EC7683, dişler beyaz.

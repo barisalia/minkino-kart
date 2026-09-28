@@ -128,6 +128,9 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   const suCizgiY = KUVET.y + kuvetH * (1 - KV.suOrta);
   const AYAKTA_Y = onKenarY - kisiH * 0.03;
   const OTUR_Y = onKenarY - kisiH * 0.36;
+  // Kino'nun ağzı çiziminde Mino'nunkinden aşağıda: aynı derinlikte oturunca konuşurken ağzı su çizgisinin altında
+  // kalıyordu (dil suyun içinde); biraz daha yüksekte oturur
+  const KINO_OTUR_Y = OTUR_Y + kisiH * 0.08;
 
   /** Arka plan resmindeki bir nokta (1344×768) sahnede nerede, görünüyor mu (background: cover, center 82%) */
   const arkaNokta = (ix: number, iy: number) => {
@@ -918,7 +921,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       suCiz();
       await bekle(40);
     }
-    await KN.git(KINO_KUVET_X, OTUR_Y, 500);
+    await KN.git(KINO_KUVET_X, KINO_OTUR_Y, 500);
     // ördek suya iner ve yüzer
     ordek.getAnimations().forEach((a) => a.cancel());
     ordek.style.translate = '';
