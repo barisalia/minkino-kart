@@ -1,0 +1,306 @@
+{
+ "kaynak": "gemini-lyria",
+ "bpm": 104.4,
+ "baslangic_ms": 1002,
+ "sure_ms": 10470,
+ "heceler": [
+  {
+   "hece": "Kö",
+   "satir": 0,
+   "basla_ms": 1002,
+   "bitir_ms": 1264,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "pük",
+   "satir": 0,
+   "basla_ms": 1263,
+   "bitir_ms": 1525,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "kö",
+   "satir": 0,
+   "basla_ms": 1525,
+   "bitir_ms": 1821,
+   "midi": 62,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "pük",
+   "satir": 0,
+   "basla_ms": 1821,
+   "bitir_ms": 2082,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ba",
+   "satir": 0,
+   "basla_ms": 2082,
+   "bitir_ms": 2454,
+   "midi": 64,
+   "vurus": 0.75,
+   "tahmini": true
+  },
+  {
+   "hece": "lon",
+   "satir": 0,
+   "basla_ms": 2453,
+   "bitir_ms": 2930,
+   "midi": 67,
+   "vurus": 0.75,
+   "tahmini": true
+  },
+  {
+   "hece": "cuk",
+   "satir": 0,
+   "basla_ms": 2929,
+   "bitir_ms": 3272,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "Mi",
+   "satir": 1,
+   "basla_ms": 3272,
+   "bitir_ms": 3348,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "no",
+   "satir": 1,
+   "basla_ms": 3347,
+   "bitir_ms": 4102,
+   "midi": 65,
+   "vurus": 1.25,
+   "tahmini": true
+  },
+  {
+   "hece": "ol",
+   "satir": 1,
+   "basla_ms": 4102,
+   "bitir_ms": 4451,
+   "midi": 62,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "du",
+   "satir": 1,
+   "basla_ms": 4450,
+   "bitir_ms": 4729,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "pa",
+   "satir": 1,
+   "basla_ms": 4729,
+   "bitir_ms": 4944,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "muk",
+   "satir": 1,
+   "basla_ms": 4944,
+   "bitir_ms": 5072,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "çuk",
+   "satir": 1,
+   "basla_ms": 5071,
+   "bitir_ms": 5217,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "O",
+   "satir": 2,
+   "basla_ms": 5693,
+   "bitir_ms": 5942,
+   "midi": 69,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "va",
+   "satir": 2,
+   "basla_ms": 5942,
+   "bitir_ms": 6262,
+   "midi": 72,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "la",
+   "satir": 2,
+   "basla_ms": 6262,
+   "bitir_ms": 6459,
+   "midi": 71,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "o",
+   "satir": 2,
+   "basla_ms": 6459,
+   "bitir_ms": 6755,
+   "midi": 69,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "va",
+   "satir": 2,
+   "basla_ms": 6755,
+   "bitir_ms": 6964,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": true
+  },
+  {
+   "hece": "la",
+   "satir": 2,
+   "basla_ms": 6964,
+   "bitir_ms": 7173,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": true
+  },
+  {
+   "hece": "ter",
+   "satir": 2,
+   "basla_ms": 7173,
+   "bitir_ms": 7312,
+   "midi": 69,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "te",
+   "satir": 2,
+   "basla_ms": 7312,
+   "bitir_ms": 7510,
+   "midi": 64,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "miz",
+   "satir": 2,
+   "basla_ms": 7510,
+   "bitir_ms": 7870,
+   "midi": 64,
+   "vurus": 0.75,
+   "tahmini": false
+  },
+  {
+   "hece": "Şar",
+   "satir": 3,
+   "basla_ms": 7881,
+   "bitir_ms": 8427,
+   "midi": 65,
+   "vurus": 1,
+   "tahmini": true
+  },
+  {
+   "hece": "kı",
+   "satir": 3,
+   "basla_ms": 8427,
+   "bitir_ms": 8862,
+   "midi": 64,
+   "vurus": 0.75,
+   "tahmini": false
+  },
+  {
+   "hece": "söy",
+   "satir": 3,
+   "basla_ms": 8862,
+   "bitir_ms": 9036,
+   "midi": 62,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "le",
+   "satir": 3,
+   "basla_ms": 9036,
+   "bitir_ms": 9280,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "hep",
+   "satir": 3,
+   "basla_ms": 9344,
+   "bitir_ms": 9478,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "be",
+   "satir": 3,
+   "basla_ms": 9477,
+   "bitir_ms": 9623,
+   "midi": 62,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "ra",
+   "satir": 3,
+   "basla_ms": 9623,
+   "bitir_ms": 9884,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ber",
+   "satir": 3,
+   "basla_ms": 9884,
+   "bitir_ms": 10174,
+   "midi": 59,
+   "vurus": 0.5,
+   "tahmini": false
+  }
+ ],
+ "vuruslar_ms": [
+  715,
+  1325,
+  1911,
+  2486,
+  3032,
+  3601,
+  4187,
+  4767,
+  5342,
+  5923,
+  6480,
+  7060,
+  7606,
+  8204,
+  8761,
+  9348,
+  9916
+ ]
+}

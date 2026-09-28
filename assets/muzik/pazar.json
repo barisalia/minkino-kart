@@ -1,0 +1,271 @@
+{
+ "kaynak": "gemini-lyria",
+ "bpm": 105.5,
+ "baslangic_ms": 1000,
+ "sure_ms": 10400,
+ "heceler": [
+  {
+   "hece": "Bir",
+   "satir": 0,
+   "basla_ms": 1000,
+   "bitir_ms": 1168,
+   "midi": 67,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "el",
+   "satir": 0,
+   "basla_ms": 1168,
+   "bitir_ms": 1412,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ma",
+   "satir": 0,
+   "basla_ms": 1412,
+   "bitir_ms": 1609,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "i",
+   "satir": 0,
+   "basla_ms": 1609,
+   "bitir_ms": 1847,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "ki",
+   "satir": 0,
+   "basla_ms": 1847,
+   "bitir_ms": 2085,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "ar",
+   "satir": 0,
+   "basla_ms": 2085,
+   "bitir_ms": 2358,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "mut",
+   "satir": 0,
+   "basla_ms": 2358,
+   "bitir_ms": 2631,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": true
+  },
+  {
+   "hece": "ÃœÃ§",
+   "satir": 1,
+   "basla_ms": 3356,
+   "bitir_ms": 3583,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "Ã§i",
+   "satir": 1,
+   "basla_ms": 3583,
+   "bitir_ms": 3920,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "lek",
+   "satir": 1,
+   "basla_ms": 3920,
+   "bitir_ms": 4367,
+   "midi": 67,
+   "vurus": 0.75,
+   "tahmini": false
+  },
+  {
+   "hece": "dÃ¶rt",
+   "satir": 1,
+   "basla_ms": 4367,
+   "bitir_ms": 4500,
+   "midi": 65,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "de",
+   "satir": 1,
+   "basla_ms": 4500,
+   "bitir_ms": 4750,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "Ã¼",
+   "satir": 1,
+   "basla_ms": 4750,
+   "bitir_ms": 4854,
+   "midi": 64,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "zÃ¼m",
+   "satir": 1,
+   "basla_ms": 4854,
+   "bitir_ms": 5551,
+   "midi": 60,
+   "vurus": 1.25,
+   "tahmini": true
+  },
+  {
+   "hece": "Mi",
+   "satir": 2,
+   "basla_ms": 5551,
+   "bitir_ms": 5644,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "no",
+   "satir": 2,
+   "basla_ms": 5644,
+   "bitir_ms": 5940,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "nun",
+   "satir": 2,
+   "basla_ms": 5940,
+   "bitir_ms": 6218,
+   "midi": 62,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "pa",
+   "satir": 2,
+   "basla_ms": 6445,
+   "bitir_ms": 6724,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "za",
+   "satir": 2,
+   "basla_ms": 6723,
+   "bitir_ms": 6883,
+   "midi": 62,
+   "vurus": 0.25,
+   "tahmini": true
+  },
+  {
+   "hece": "rÄ±",
+   "satir": 2,
+   "basla_ms": 6883,
+   "bitir_ms": 7043,
+   "midi": 62,
+   "vurus": 0.25,
+   "tahmini": true
+  },
+  {
+   "hece": "Ha",
+   "satir": 3,
+   "basla_ms": 7902,
+   "bitir_ms": 8453,
+   "midi": 64,
+   "vurus": 1,
+   "tahmini": true
+  },
+  {
+   "hece": "di",
+   "satir": 3,
+   "basla_ms": 8453,
+   "bitir_ms": 8709,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "gel",
+   "satir": 3,
+   "basla_ms": 8709,
+   "bitir_ms": 8813,
+   "midi": 61,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "say",
+   "satir": 3,
+   "basla_ms": 8813,
+   "bitir_ms": 8964,
+   "midi": 65,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "bi",
+   "satir": 3,
+   "basla_ms": 8964,
+   "bitir_ms": 9069,
+   "midi": 60,
+   "vurus": 0.25,
+   "tahmini": false
+  },
+  {
+   "hece": "zim",
+   "satir": 3,
+   "basla_ms": 9069,
+   "bitir_ms": 9481,
+   "midi": 67,
+   "vurus": 0.75,
+   "tahmini": false
+  },
+  {
+   "hece": "le",
+   "satir": 3,
+   "basla_ms": 9661,
+   "bitir_ms": 9771,
+   "midi": 57,
+   "vurus": 0.25,
+   "tahmini": true
+  }
+ ],
+ "vuruslar_ms": [
+  198,
+  773,
+  1342,
+  1911,
+  2479,
+  3025,
+  3623,
+  4192,
+  4761,
+  5330,
+  5893,
+  6398,
+  6996,
+  7565,
+  8157,
+  8702,
+  9271,
+  9863
+ ]
+}
