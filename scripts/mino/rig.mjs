@@ -67,6 +67,8 @@ const IFADELER = [
   ifade('saskin', 'goz-saskin', 'agiz-saskin'),
   ifade('odak', 'goz-odak', 'agiz-dil'),
   ifade('uzgun', 'goz-uzgun', 'agiz-uzgun'),
+  // Elektrikler Kesildi! (IFADELER.md "avlanan Mino"): ışık lekesine kilitlenmiş kısık gözler, sıkılmış ağız
+  ifade('av', 'goz-av', 'agiz-av'),
 ].join('\n');
 // Üzgün kafa (kulakları yana sarkık): burun eklerindeki kafa-hapsu gibi asıl kafanın yerine, k içinde asıl kafanın
 // hemen üstüne (göz / ağız eklerinin altında) konur; mino.ts → ifadeleriEkle(). Aynı tembel pakette.

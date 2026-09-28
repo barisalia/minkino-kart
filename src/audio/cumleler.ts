@@ -10,6 +10,7 @@ import ormanJson from '../../content/orman.json';
 import maceraJson from '../../content/macera.json';
 import maceraBanyoJson from '../../content/macera-banyo.json';
 import maceraEgeJson from '../../content/macera-ege.json';
+import maceraElektrikJson from '../../content/macera-elektrik.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 
 interface FilmCumleleri {
@@ -188,6 +189,11 @@ export function tumCumleler(): string[] {
     if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'ninni_baslik'].includes(k)) continue;
     topla(v).forEach(ekle);
   }
+  // Sesli Maceralar: Elektrikler Kesildi! (başlık, kart adı, balon tepkileri, ipuçları ve düğme yazısı okunmaz)
+  for (const [k, v] of Object.entries(maceraElektrikJson as Record<string, unknown>)) {
+    if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'dugme'].includes(k)) continue;
+    topla(v).forEach(ekle);
+  }
   // Mini filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;
@@ -213,6 +219,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   };
   // Mino Banyo Yapmıyor!: "kino" bölümü
   topla((maceraBanyoJson as Record<string, unknown>).kino).forEach(ekle);
+  // Elektrikler Kesildi!: "kino" bölümü
+  topla((maceraElektrikJson as Record<string, unknown>).kino).forEach(ekle);
   // Mini filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

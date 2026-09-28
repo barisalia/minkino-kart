@@ -77,8 +77,9 @@ const burunMu = (ad: MinoIfade): ad is MinoBurunIfade => ad === 'burun-kasinti' 
 /**
  * Film ifadeleri (mino-final.svg gizli ekleri; ekip/mino/IFADELER.md) ve burun ifadeleri. Film 2: 'uzgun' (kulakları
  * sarkık kafa + yalvaran bakış), 'saskin' (kocaman gözler, "o" ağız), 'odak' (kısık gözler, dil ucu dışarıda).
+ * Elektrikler Kesildi!: 'av' (ışığa kilitlenmiş kısık gözler, dikey göz bebeği, sıkılmış ağız).
  */
-export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | 'uzgun' | 'saskin' | 'odak' | MinoBurunIfade;
+export type MinoIfade = 'zorlanma' | 'sersem' | 'kararsiz' | 'goz-kirp' | 'uzgun' | 'saskin' | 'odak' | 'av' | MinoBurunIfade;
 /**
  * ifade() ayarı. ms: bu süre sonra normale döner (0: null verilene kadar).
  * boy (yalnız hapşu): 'buyuk' HAPŞU (püf tam "pat" 0.85 → 1.05, kafa sarsılır; varsayılan), 'kucuk' hıpşu (küçük, soluk püf, hafif sarsıntı).

@@ -41,6 +41,14 @@ const IFADE_EKLERI: Record<string, string[]> = {
 };
 
 /**
+ * Katman adından türetilemeyen ifadeler: gösterilen ve gizlenen katmanlar açıkça (ekip/kino/IFADELER.md).
+ * Elektrikler Kesildi!: korkmuş Kino (kulaklar başa yapışık, iri endişeli gözler, titrek ağız, kuyruk bacak arasında).
+ */
+const ACIK_IFADELER: Record<string, { goster: string[]; gizle: string[] }> = {
+  korku: { goster: ['kafa-korku', 'goz-korku', 'agiz-korku', 'kuyruk-korku'], gizle: ['kulak-sol', 'kulak-sag', 'goz-sol', 'goz-sag', 'agiz', 'dil', 'kuyruk'] },
+};
+
+/**
  * Gizli eklerden ifade setleri: "<taban>-<ek>" katmanı gösterilir, tabanı gizlenir. Taban bir katmansa o
  * (kulak-sol-dusuk → kulak-sol), değilse tabanla başlayan görünür katmanlar (goz-uzgun → goz-sol, goz-sag).
  */
@@ -60,6 +68,11 @@ export function ifadeSetleri(b: Pick<IskeletBilgi, 'sira' | 'gizli' | 'ifadeler'
     // ağız değişince ağzın dili de gider (ifade ağzı kendi dilini çizer)
     if (gizle.has('agiz') && b.sira.includes('dil') && !b.gizli.includes('dil')) gizle.add('dil');
     if (goster.length) setler[ad] = { goster, gizle: [...gizle] };
+  }
+  // adından türetilemeyen ifadeler (ör. kafa-korku kulakları gizler, kafayı değil): katmanları iskelette varsa
+  for (const [ad, set] of Object.entries(ACIK_IFADELER)) {
+    const goster = set.goster.filter((id) => b.gizli.includes(id));
+    if (goster.length === set.goster.length) setler[ad] = { goster, gizle: set.gizle.filter((id) => b.sira.includes(id)) };
   }
   return { ...setler, ...(b.ifadeler ?? {}) };
 }

@@ -276,6 +276,9 @@
 .mk-kok .mino.ifade-saskin .m-saskin,
 .mk-kok .mino.ifade-odak .m-odak { opacity: 1; }
 .mk-kok .mino:is(.ifade-uzgun, .ifade-saskin, .ifade-odak) :is(.m-goz, .m-kapali-goz, .m-mutlu-goz, .m-agiz, .m-agiz-sekil) { opacity: 0 !important; }
+/* Elektrikler Kesildi!: avlanan Mino (goz-av, agiz-av); gözler ve ağız gizli, kafa aynı */
+.mk-kok .mino.ifade-av .m-av { opacity: 1; }
+.mk-kok .mino.ifade-av :is(.m-goz, .m-kapali-goz, .m-mutlu-goz, .m-agiz, .m-agiz-sekil) { opacity: 0 !important; }
 .mk-kok .mino .m-ifade-kafa { display: none; }
 .mk-kok .mino.ifade-uzgun .m-ifade-kafa { display: inline; }
 .mk-kok .mino.ifade-uzgun .k > .m-asil,
