@@ -18,11 +18,14 @@ import { KINO_ISKELET } from './banyo-karakter';
 import E from '../../content/macera-ege.json';
 import { egeUyuyor } from './ege';
 import { Ege } from './ege-bebek';
+import EL from '../../content/macera-elektrik.json';
+import { elektrikKesildi } from './elektrik';
+import { FENER_SVG } from './elektrik-cizim';
 
 /** Oynanacak bölüm (açılışta seçilir; test/önizlemede ?bolum=banyo | ?bolum=ege) */
-type BolumAdi = 'dogumgunu' | 'banyo' | 'ege';
+type BolumAdi = 'dogumgunu' | 'banyo' | 'ege' | 'elektrik';
 const BOLUM_PARAM = new URLSearchParams(location.search).get('bolum');
-let secilenBolum: BolumAdi = BOLUM_PARAM === 'banyo' || BOLUM_PARAM === 'ege' ? BOLUM_PARAM : 'dogumgunu';
+let secilenBolum: BolumAdi = BOLUM_PARAM === 'banyo' || BOLUM_PARAM === 'ege' || BOLUM_PARAM === 'elektrik' ? BOLUM_PARAM : 'dogumgunu';
 const KINO_RESIM = import.meta.glob<string>('../../assets/karakter-iskelet/*.svg', { eager: true, query: '?url', import: 'default' });
 
 const IZIN_ANAHTAR = 'minkino-macera-izin';
@@ -78,9 +81,17 @@ export function acilisEkrani(app: Uygulama): Ekran {
   egeResim.durum('uyku');
   const egeKart = h('button.eg-bolum-kart', { type: 'button', 'aria-label': E.baslik }, h('span.eg-bk-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, egeResim.el), h('span.eg-bk-yazi', {}, h('small', {}, 'Bölüm 2'), h('b', {}, E.baslik)));
   egeKart.addEventListener('click', () => basla('ege'));
+  // Elektrikler Kesildi! (yeni bölüm; karanlık salon, fener ışığında korkmuş Kino)
+  const elKart = h(
+    'button.el-bolum-kart',
+    { type: 'button', 'aria-label': EL.baslik, 'data-bolum': 'elektrik' },
+    h('span.el-bk-resim', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, kinoUrl ? h('img.el-bk-kino', { src: kinoUrl, alt: '', draggable: 'false' }) : null, h('span.el-bk-fener', { html: FENER_SVG })),
+    h('span.el-bk-yazi', {}, h('small', {}, 'Yeni bölüm'), h('b', {}, EL.baslik)),
+  );
+  elKart.addEventListener('click', () => basla('elektrik'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
   return {
-    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, egeKart, banyoKart, oyna)),
+    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, elKart, egeKart, banyoKart, oyna)),
     kapat() {
       egeResim.kapat();
     },
@@ -216,7 +227,7 @@ export function bolumEkrani(app: Uygulama): Ekran {
       await kulak.ac();
       ui.ipucu(null);
     }
-    await (bolum === 'ege' ? egeUyuyor : bolum === 'banyo' ? banyoBolumu : dogumGunu)(sahneKok, ui);
+    await (bolum === 'elektrik' ? elektrikKesildi : bolum === 'ege' ? egeUyuyor : bolum === 'banyo' ? banyoBolumu : dogumGunu)(sahneKok, ui);
     if (kapandi) return;
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.tekrar), 'Bir daha');
     const cik = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.ev), 'Ana sayfa');

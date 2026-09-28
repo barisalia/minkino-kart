@@ -40,11 +40,9 @@ import {
   COKUK_SVG,
   ELDIVEN_ORAN,
   ELDIVEN_SVG,
-  elAdres,
   esya,
   FENER_ORAN,
   FENER_SVG,
-  KEMIK_ORAN,
   KEMIK_SVG,
   KOMODIN_ORAN,
   KOMODIN_SVG,
@@ -52,17 +50,13 @@ import {
   LAMBA_ORAN,
   LAMBA_SVG,
   mandalSvg,
-  MANDAL_ORAN,
   PIL_ORAN,
   PIL_SVG,
-  pozVar,
   RENDE_ORAN,
   RENDE_SVG,
   SAAT_ORAN,
   SAAT_SVG,
-  SAKSI_ORAN,
   SAKSI_SVG,
-  SANDALYE_ORAN,
   SANDALYE_SVG,
   tekil,
 } from './elektrik-cizim';
@@ -128,7 +122,9 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const dunya = sahne.dunya;
   dunya.style.height = `${Hd}px`;
   dunya.style.bottom = 'auto';
-  const bPx = Math.min(innerWidth * 0.0116, innerHeight * 0.011);
+  // b birimi dünyaya göre (yatay telefonda dünya kare): CSS'teki --b ile aynı
+  const bPx = Math.min(Wd * 0.0116, Hd * 0.0075);
+  sahne.el.style.setProperty('--b', `${bPx.toFixed(3)}px`);
   const bX = (n: number) => ((n * bPx) / Wd) * 100;
   const bY = (n: number) => ((n * bPx) / Hd) * 100;
   const dikey = W / H < 0.8;
@@ -282,8 +278,6 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     korku = k;
     KN.el.classList.toggle('el-korkak', k >= 0.5);
   };
-  /** Kino'nun kısa ifadesi (şaşkın, heyecan …); bitince korkuyorsa korkmuş yüze döner */
-  const kinoYuz = (ad: string, ms: number) => KN.kar!.ifade(ad, ms);
   /** Büzülmüş Kino (masanın altında): gövde toplanır (kodla) */
   const buzul = (acik: boolean) => KN.el.classList.toggle('el-buzuk', acik);
   /**
@@ -570,7 +564,6 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     })();
     // Kino korkar, masanın altına fırlar
     korkut(1);
-    KN.kinoIfade('uzgun');
     MN.mino!.ifade('saskin', 1800);
     MN.tepki('sasir');
     await bekle(300);
@@ -1148,7 +1141,6 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     await cek(X(-36), X(36), Y(-3), SAAT.y + bY(10 * SAAT_ORAN + 4), 1.5, 1000);
     // birden bir ses: Kino büzülür
     korkut(0.9);
-    KN.kinoIfade('uzgun');
     await kSoyle(KN_.ne_o);
     await mSoyle(M.dinleyelim);
     const kaynaklar: Record<SesKaynagi, HTMLElement> = { saat, saksi, kemik: KN.kap };
