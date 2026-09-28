@@ -503,6 +503,87 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
   outline: 3px solid #fff;
   outline-offset: 2px;
 }
+/* ---------------------------------------------------------------- açılış kartı (film-acilis jeneriği, 7,9 sn) */
+.fl-kok .fl-acilis {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2.4vmin;
+  overflow: hidden;
+  background: radial-gradient(90% 70% at 50% 42%, #ffe6b4, #ff9d5c 62%, #d8663f);
+  transition: opacity 0.6s;
+}
+.fl-kok .fl-acilis.bitti {
+  opacity: 0;
+  pointer-events: none;
+}
+/* dönen ışınlar */
+.fl-kok .fl-acilis-isik {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 260vmax;
+  aspect-ratio: 1;
+  margin: -130vmax;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.2) 0 9deg, transparent 9deg 22deg);
+  mask-image: radial-gradient(closest-side, #000 8%, transparent 46%);
+  animation: fl-acilis-don 24s linear infinite;
+}
+.fl-kok .fl-acilis-baslik {
+  position: relative;
+  margin: 0;
+  padding: 0 4vw;
+  max-width: 92vw;
+  text-align: center;
+  font-size: clamp(2.4rem, min(11vw, 17vh), 5.2rem);
+  line-height: 1.08;
+  font-weight: 700;
+  color: #fff;
+  -webkit-text-stroke: max(6px, 1.4vmin) var(--kontur);
+  paint-order: stroke fill;
+  text-shadow: 0 1.2vmin 0 var(--kontur-yumusak);
+  animation: fl-acilis-gir 1.1s cubic-bezier(0.2, 1.5, 0.4, 1) 0.4s both;
+}
+.fl-kok .fl-acilis-alt {
+  position: relative;
+  margin: 0;
+  font-size: clamp(1rem, 3.2vmin, 1.6rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #fff8ea;
+  text-shadow: 0 2px 0 var(--kontur-yumusak);
+  animation: fl-acilis-alt 1s ease-out 1.5s both;
+}
+@keyframes fl-acilis-gir {
+  from { transform: translateY(-60vh) scale(0.7) rotate(-4deg); opacity: 0; }
+  60% { opacity: 1; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fl-acilis-alt {
+  from { transform: translateY(2vmin); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fl-acilis-don {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fl-kok .fl-acilis-isik {
+    animation: none;
+  }
+}
+/* yan görünüş oyuncusu: gölge gövdenin genişliğinde (kutunun ortasında) */
+.fl-kok .fl-nesne:has(.fl-yan) .fl-golge {
+  left: 30%;
+  right: 30%;
+}
+/* park: dikey / kare kadrajda dünyanın altı çimen */
+body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt.fl-park-zemin {
+  height: 100%;
+  background: linear-gradient(#9bd63f, #86c531 30%, #74b32a);
+}
 body[data-kayit] .fl-kok .fl-filmler {
   display: none;
 }

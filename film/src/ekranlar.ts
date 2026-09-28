@@ -4,7 +4,13 @@ import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { Film, KAYIT, sesGunlugeYaz, type FilmDosya } from './motor';
+import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
+import { Film, KAYIT, konusSecenegi, sesGunlugeYaz, type FilmDosya } from './motor';
+import { ACILIS_SURESI, filmMuzik, KAPANIS_SURESI } from './muzik';
+
+/** Jenerikler (film-acilis / film-kapanis) film müziğiyle birlikte: test modunda kapalı, süreler film hızıyla kısalır */
+const MUZIK = !TEST_MODU;
+const HIZ = TEST_MODU ? 12 : 1;
 
 const FILMLER = import.meta.glob<FilmDosya>('../../content/film/*.json', { eager: true, import: 'default' });
 export const filmBul = (ad: string) => FILMLER[`../../content/film/${ad}.json`];
@@ -53,20 +59,39 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
   const cevir = h('div.fl-cevir', { 'aria-hidden': 'true', html: CEVIR });
   const el = h('div.fl-ekran', {}, sahneKap, cevir, kapak, ust);
 
+  // zamanlayıcılar (ekrandan çıkınca temizlenir)
+  const zamanlar: number[] = [];
+  const sonra = (sn: number, is: () => void) => void zamanlar.push(window.setTimeout(is, sn * 1000));
+
+  /** Kapanış jeneriği (film-kapanis, 5 sn): öğüt söylendikten sonra; bitince ekran "tamam" olur (MP4 kaydı bununla biter) */
+  const kapanisJenerigi = (bekle: number) => {
+    sonra(bekle, () => {
+      if (MUZIK) filmMuzik.dosyaCal({ ad: 'film-kapanis', ses: 0.85, gec: 0.05 });
+      sonra(KAPANIS_SURESI / HIZ, () => (el.dataset.tamam = '1'));
+    });
+  };
+
   const ogutKarti = (metin: string) => {
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.tekrar), 'Tekrar izle');
     tekrar.addEventListener('click', () => app.git('film', { ad }));
     const kart = h('div.fl-ogut', {}, h('p', {}, metin), tekrar);
     el.append(kart);
-    // öğüdü karakter filmin sonunda kendisi söylediyse (Mino kameraya) kart yeniden okumaz
-    if (film?.el.dataset.sonSoz === metin) return;
-    if (!sessiz && !TEST_MODU) void konus(metin);
+    // öğüdü karakter filmin sonunda kendisi söylediyse (Mino kameraya) kart yeniden okumaz; jenerik hemen (kısa bekleyişle)
+    if (film?.el.dataset.sonSoz === metin) return kapanisJenerigi(0.8 / HIZ);
     sesGunlugeYaz('konus', metin);
+    if (!sessiz && !TEST_MODU) {
+      // öğüt bitince jenerik (konuşma sesi iptal edilirse de çözülür)
+      void konus(metin).then(() => kapanisJenerigi(0.4), () => kapanisJenerigi(0.4));
+      return;
+    }
+    // sessiz oynatma / MP4 kaydı: söz süresi tahmini (kayıtta ağız dizisinin süresi)
+    const dizi = KAYIT ? dudakDizisi(metin, konusSecenegi('').karakter) : null;
+    const sn = dizi ? diziSuresi(dizi) : 0.8;
+    kapanisJenerigi(sn + 0.5);
   };
 
-  const basla = () => {
-    kapak.classList.add('gizli');
-    duraklatDugme.hidden = false;
+  /** Filmi kurar (görseller yüklenmeye başlar; açılış kartı sürerken hazır olsun) */
+  const hazirla = () => {
     film = new Film(dosya, {
       ses: !sessiz && !TEST_MODU,
       bitti: () => {
@@ -76,7 +101,27 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
       },
     });
     sahneKap.replaceChildren(film.el);
-    void film.oynat();
+    return film;
+  };
+  const baslatFilm = () => {
+    duraklatDugme.hidden = false;
+    void (film ?? hazirla()).oynat();
+  };
+
+  /** Açılış: başlık kartı + film-acilis jeneriği (7,9 sn), sonra film başlar */
+  const basla = () => {
+    kapak.classList.add('gizli');
+    // ?kartsiz=1: açılış kartı ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
+    if (q.has('kartsiz')) return baslatFilm();
+    const kart = h('div.fl-acilis', {}, h('i.fl-acilis-isik'), h('h2.fl-acilis-baslik', {}, dosya.baslik), h('p.fl-acilis-alt', {}, 'Minkino Mini Film'));
+    el.append(kart);
+    hazirla();
+    if (MUZIK) filmMuzik.dosyaCal({ ad: 'film-acilis', ses: 0.85, gec: 0.05 });
+    sonra(ACILIS_SURESI / HIZ, () => {
+      baslatFilm();
+      kart.classList.add('bitti');
+      sonra(0.7, () => kart.remove());
+    });
   };
   oynatDugme.addEventListener('click', basla);
   if (q.has('oto')) setTimeout(basla, 50);
@@ -84,7 +129,9 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
   return {
     el,
     kapat() {
+      zamanlar.forEach((z) => clearTimeout(z));
       film?.kapat();
+      filmMuzik.dur(0.5);
     },
   };
 }

@@ -8,6 +8,7 @@
  */
 import type { KonusBilgi } from '../../src/audio/dudak';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
+import { YandanKarakter, yandanVar, yandanYukle } from '../../src/karakter/yandan';
 import { Mino, minoIfadeleriYukle, type MinoEkPoz, type MinoIfade, type Tepki } from '../../src/mino/mino';
 import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, TEST_MODU } from '../../src/ui/dom';
@@ -27,6 +28,15 @@ const ADIM_EN_COK = 2.8;
  * (kol, kulak, kuyruk) kişilikte: src/karakter/kisilik.ts → kino.
  */
 const KARAKTER_ALT: Record<string, number> = { kino: 160 / 2048 };
+/**
+ * Yan görünüş oyuncusu (yan: true): kutunun altındaki boş pay (2048'lik kutu; ayaklar bu satırda biter). Çizimden ölçüldü
+ * (yandanYukle → geo.zemin); ölçülmeyenler 0.08.
+ */
+const YAN_ALT: Record<string, number> = { kino: 0.0771, ada: 0.0552, can: 0.043, elif: 0.0527, deniz: 0.0513, zeynep: 0.0449, tavsan: 0.0498, ordek: 0.0205, kopek: 0.1113 };
+/** yan yürüyüşün adım hızı sınırları (döngü / sn): 'kos' stili çok hızlı sürebilir */
+const YAN_ADIM_EN_AZ = 0.9;
+const YAN_ADIM_EN_COK = 2.8;
+const YAN_KOS_EN_COK = 4.4;
 /** önden çizimi asimetrik (göz lekesi): aynalanmaz */
 const YON_SABIT = new Set(['kino']);
 
@@ -61,13 +71,16 @@ function minoIfadeDestek(ad: string): Promise<boolean> {
  * kol / kolSol / kolSag (+ dışa kalkar, - içe), kuyruk (kökten açı °), salla (kendi kuyruk sallamasının çarpanı),
  * pervane (hızlı kuyruk sallama genliği), hop (sevinç hopu), y (beden, + aşağı: eğilme), don (beden eğimi),
  * sx / sy (ezilme), goz (1: kapalı), dil (1: dil dışarıda), adim (sessiz, küçük adımlarla yürüyüş), titre,
- * patiKuyruk (1: kuyruğunu patisiyle tutar; 'pati-kuyruk' eki yoksa kolSag / kuyruk açısıyla).
+ * patiKuyruk (1: kuyruğunu patisiyle tutar; 'pati-kuyruk' eki yoksa kolSag / kuyruk açısıyla),
+ * otur (1: oturur: govde-oturma + kuyruk-oturma; zemine oturtmak için y ≈ 2.2 verin), yukSol / yukSag (kalkık kol açısı,
+ * 30-160°: kol-*-yukari katmanı, asıl kol gizlenir; 0: normal kol), dusun (1: düşünüyor: göz, ağız ve sağ kol),
+ * bakan (-1 sola / 1 sağa bakan göz; 0: normal).
  * Mino: kafaAci, kafaY, govdeAci, ziplaY (- yükselir), sx, sy, kolSol, kolSag, kuyrukAci, gozKay, gulum (-1 üzgün … 1),
  * agiz (0 kapalı … 1), goz (1: kapalı).
  */
 type Durus = Record<string, number>;
 const MINO_ALAN = ['kafaAci', 'kafaY', 'govdeAci', 'ziplaY', 'sx', 'sy', 'kolSol', 'kolSag', 'kuyrukAci', 'gozKay', 'gulum', 'agiz', 'goz'] as const;
-const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre', 'patiKuyruk'] as const;
+const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre', 'patiKuyruk', 'otur', 'yukSol', 'yukSag', 'dusun', 'bakan'] as const;
 /** varsayılanlar (duruş "normal"e dönerken) */
 const VARSAYILAN: Durus = { salla: 1, sx: 1, sy: 1 };
 const deger = (d: Durus, k: string) => d[k] ?? VARSAYILAN[k] ?? 0;
@@ -83,6 +96,8 @@ export class Oyuncu {
   private mino: Mino | null = null;
   private yuruyen: YuruyenMino | null = null;
   private karakter: Karakter | null = null;
+  /** yan görünüş (yan: true): her zaman yandan; yürürken adım atar, dururken nefes alır */
+  private yan: YandanKarakter | null = null;
   /** üst üste binen yürüyüşlerde yalnız sonuncusu bitince durulur */
   private yuruNo = 0;
   /** duruş: şimdiki değerler, hedefler ve varış süreleri (sn) */
@@ -101,9 +116,20 @@ export class Oyuncu {
     readonly tip: string,
     /** film hızı (test modunda hızlı): duruş süreleri buna göre kısalır */
     private readonly hiz = 1,
+    /** yan görünüşle (assets/karakter-iskelet/<tip>-profil): sıra bekleyen çocuklar, koşan Kino… */
+    yanGorunus = false,
   ) {
+    this.yonSabit = YON_SABIT.has(tip) && !yanGorunus;
+    if (yanGorunus && yandanVar(tip)) {
+      this.alt = YAN_ALT[tip] ?? 0.08;
+      this.yan = new YandanKarakter(tip);
+      this.el = h('div.fl-oyuncu.fl-yan', { 'data-tip': tip }, this.yan.el);
+      this.oran = 1;
+      void yandanYukle(tip);
+      this.raf = requestAnimationFrame((t) => this.kare(t));
+      return;
+    }
     this.alt = KARAKTER_ALT[tip] ?? 0;
-    this.yonSabit = YON_SABIT.has(tip);
     if (tip === 'mino') {
       this.yuruyen = new YuruyenMino();
       this.mino = this.yuruyen.mino;
@@ -136,6 +162,19 @@ export class Oyuncu {
    */
   yuru(sure: number, mesafe = 0, stil?: string): { no: number; kendi: boolean } {
     const no = ++this.yuruNo;
+    if (this.yan) {
+      // yan görünüş: adım uzunluğu (geo.donguYolu) yola göre; ayaklar kaymaz. Yol kısaysa (küçük ayar) yürümez
+      // 'yerinde': olduğu yerde adım atar (merdivende tırmanma, sabırsız ayak değiştirme)
+      if (stil === 'yerinde') {
+        this.yan.yuru(2.1);
+        return { no, kendi: true };
+      }
+      if (mesafe < 0.02 || sure <= 0) return { no, kendi: true };
+      const dongu = (mesafe * 2048) / (this.yan.geo?.donguYolu ?? 900);
+      const en = stil === 'kos' ? YAN_KOS_EN_COK : YAN_ADIM_EN_COK;
+      this.yan.yuru(Math.min(en, Math.max(YAN_ADIM_EN_AZ, dongu / sure)));
+      return { no, kendi: true };
+    }
     if (this.yuruyen) {
       if (mesafe < 0.2 || sure <= 0) return { no, kendi: false };
       const dongu = (mesafe * MINO_KUTU_GENISLIK) / MINO_DONGU_YOLU;
@@ -150,9 +189,18 @@ export class Oyuncu {
     return { no, kendi: true };
   }
 
+  /** Bütün yürüyüşleri keser (başka görünüme geçerken) */
+  dur() {
+    this.yuruNo++;
+    this.yuruyen?.dur();
+    this.yan?.dur();
+  }
+
   /** Yürüyüş yolu bitti (motor); Mino durur ve önden çizime döner */
   yuruBitti(no: number) {
-    if (no === this.yuruNo) this.yuruyen?.dur();
+    if (no !== this.yuruNo) return;
+    this.yuruyen?.dur();
+    this.yan?.dur();
   }
 
   ifade(ad: string | null, ms = 0) {
@@ -187,7 +235,8 @@ export class Oyuncu {
   /** Konuşuyor: ağzı sese göre oynar (bilgi: cümle ve MP4 kaydında önceden çıkarılmış ağız dizisi) */
   konus(acik: boolean, bilgi?: KonusBilgi) {
     this.konusuyor = acik;
-    if (this.yuruyen) this.yuruyen.konus(acik, bilgi);
+    if (this.yan) this.yan.konus(acik);
+    else if (this.yuruyen) this.yuruyen.konus(acik, bilgi);
     else this.karakter?.konus(acik, true, bilgi);
   }
 
@@ -199,11 +248,13 @@ export class Oyuncu {
   duraklat(d: boolean) {
     this.durdu = d;
     if (this.yuruyen) this.yuruyen.duraklat = d;
+    if (this.yan) this.yan.duraklat = d;
   }
 
   kapat() {
     cancelAnimationFrame(this.raf);
     this.yuruyen?.kapat();
+    this.yan?.kapat();
     this.karakter?.kapat();
   }
 
@@ -302,14 +353,43 @@ export class Oyuncu {
       // kuyruğunu arka patisiyle bastırır: iskelette 'pati-kuyruk' eki (Adobe) varsa kuyruk gizlenir, o görünür
       // (dönmez: kökü ±3°'yi geçerse pati altından kayar), kol kalkmaz; yoksa kol ve kuyruk açısıyla (ön pati kuyrukta)
       // — duruştaki kolSag / kuyruk bu yedek içindir
-      const tut = v('patiKuyruk') > 0.5;
+      const otur = v('otur') > 0.5 && !!this.karakter.parcaG('govde-oturma');
+      const tut = v('patiKuyruk') > 0.5 && !otur;
       const pati = tut && !!this.karakter.parcaG('pati-kuyruk');
       this.karakter.ek('pati-kuyruk', pati);
-      this.karakter.gizle('kuyruk', pati);
+      this.karakter.gizle('kuyruk', pati || otur);
       if (pati) {
         p.kolSag -= v('kolSag');
         p.kuyruk = 0;
       }
+      // oturma (Adobe: govde-oturma, kuyruk-oturma): gövde ve kuyruğun yerine geçer; oturan kuyruk da sallanır
+      this.karakter.ek('govde-oturma', otur);
+      this.karakter.ek('kuyruk-oturma', otur);
+      this.karakter.gizle('govde', otur);
+      // kalkık kollar (kol-*-yukari, 30-160°): asıl kol gizlenir, temiz vektör kol aynı omuzdan döner
+      const ys = v('yukSol');
+      const yg = v('yukSag');
+      const kalkSol = ys >= 30 && !!this.karakter.parcaG('kol-sol-yukari');
+      const kalkSag = yg >= 30 && !!this.karakter.parcaG('kol-sag-yukari');
+      this.karakter.ek('kol-sol-yukari', kalkSol);
+      this.karakter.ek('kol-sag-yukari', kalkSag);
+      this.karakter.gizle('kol-sol', kalkSol);
+      p.yukSol = kalkSol ? ys : 0;
+      p.yukSag = kalkSag ? yg : 0;
+      // düşünüyor (goz-dusun, agiz-dusun, kol-sag-dusun) ve bakış (goz-bak-sag / goz-bak-sol)
+      const dusun = v('dusun') > 0.5 && !!this.karakter.parcaG('goz-dusun');
+      const bakan = v('bakan');
+      const bakSag = !dusun && bakan > 0.5 && !!this.karakter.parcaG('goz-bak-sag');
+      const bakSol = !dusun && bakan < -0.5 && !!this.karakter.parcaG('goz-bak-sol');
+      for (const id of ['goz-dusun', 'agiz-dusun', 'kol-sag-dusun']) this.karakter.ek(id, dusun);
+      this.karakter.ek('goz-bak-sag', bakSag);
+      this.karakter.ek('goz-bak-sol', bakSol);
+      const gozDegisti = dusun || bakSag || bakSol;
+      this.karakter.gizle('goz-sol', gozDegisti);
+      this.karakter.gizle('goz-sag', gozDegisti);
+      this.karakter.gizle('agiz', dusun);
+      this.karakter.gizle('dil', dusun);
+      this.karakter.gizle('kol-sag', dusun || kalkSag);
     }
     // eklem sınırları (dikiş yeri açılmasın) karakterin kişiliğinde (src/karakter/kisilik.ts), çizimde en son
   }

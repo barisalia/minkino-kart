@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import elma from '../../content/film/kino-elma-kulesi.json';
+import kaydirak from '../../content/film/kino-kaydirak.json';
 import karpuz from '../../content/film/mino-karpuz.json';
+// dosya varlığı: vite glob (node:fs tipi yok); yalnız yol anahtarları kullanılır
+const MUZIK_DOSYALARI = Object.keys(import.meta.glob('../../assets/muzik/film-*.mp3', { eager: true, query: '?url', import: 'default' }));
+const ISKELET_DOSYALARI = Object.keys(import.meta.glob('../../assets/karakter-iskelet/*-profil.svg', { eager: true, query: '?url', import: 'default' }));
+const existsSync = (yol: string) => [...MUZIK_DOSYALARI, ...ISKELET_DOSYALARI].some((k) => k.endsWith(yol.replace(/^assets\//, '/')));
 import seslendirme from '../../content/seslendirme.json';
 // efekt modülü Web Audio / document ister: adlar kaynaktan okunur (FILM_EFEKT'in yöntemleri + nota0…nota9)
 import efektKaynak from '../../film/src/efekt.ts?raw';
@@ -90,5 +95,71 @@ describe('film: Kino ve Elma Kulesi', () => {
     for (const [, e] of elmalar) kat.set((e as unknown as { y: number }).y, (kat.get((e as unknown as { y: number }).y) ?? 0) + 1);
     expect([...kat.entries()].sort((a, b) => a[0] - b[0]).map(([, n]) => n)).toEqual([4, 3, 2, 1]);
     expect((ilk.esyalar?.e10 as unknown as { parla?: boolean }).parla).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------- Kino ve Kaydırak
+interface KaydirakOlay extends Olay { hedef?: string; agiz?: string; sure?: number }
+interface KaydirakSahne { ad: string; sure: number; gecis?: string; arka: string; olaylar: KaydirakOlay[]; oyuncular: Record<string, { tip: string; yan?: boolean }> }
+const kSahneler = kaydirak.sahneler.filter((s) => 'olaylar' in s) as unknown as KaydirakSahne[];
+const kSoz = (kim?: string) => kSahneler.flatMap((s) => s.olaylar.filter((o) => o.yap === 'soyle' && (!kim || o.kim === kim)).map((o) => o.metin as string));
+const KAYDIRAK_OGUT = 'Sırayı beklemek güzeldir.';
+
+describe('film: Kino ve Kaydırak', () => {
+  it('senaryodaki 9 cümle ve öğüt (Kino kendi sesiyle, Mino anlatıcı); soru yok', () => {
+    expect(kaydirak.seslendir).toBe(true);
+    expect(kSoz('kino')).toEqual(['Kaydırak! Kaydırak!', 'Ben önce!', 'Sabrediyorum!', 'Sıra bende!', 'Yaşasın!']);
+    expect(kSoz('mino')).toEqual(['Parkta kaydırak sırası vardı.', 'Kino, sıra arkada.', 'Sıra herkese gelir.', KAYDIRAK_OGUT]);
+    expect(kaydirak.sahneler.find((s) => 'ogut' in s)).toEqual({ ogut: KAYDIRAK_OGUT });
+    // soru yok
+    for (const c of [...kSoz(), KAYDIRAK_OGUT]) expect(c, c).not.toContain('?');
+  });
+  it('bütün cümleler seslendirme listesinde; Kino cümleleri Kino sesinde, Mino cümleleri değil', () => {
+    const liste = new Set(tumCumleler());
+    for (const c of [...kSoz(), KAYDIRAK_OGUT]) expect(liste.has(c), c).toBe(true);
+    const kino = new Set(karakterCumleleri().kino);
+    for (const c of kSoz('kino')) expect(kino.has(c), c).toBe(true);
+    for (const c of [...kSoz('mino'), KAYDIRAK_OGUT]) expect(kino.has(c), c).toBe(false);
+  });
+  it('cümleler kısa: Mino ≤ 5, Kino ≤ 3 kelime', () => {
+    for (const c of kSoz('mino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(5);
+    for (const c of kSoz('kino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(3);
+  });
+  it('5 sahne, yaklaşık 50-62 sn; olaylar sahne süresi içinde; her olayın kimi, hedefi ve ağzı sahnede', () => {
+    expect(kSahneler.length).toBe(5);
+    const toplam = kSahneler.reduce((t, s) => t + s.sure, 0);
+    expect(toplam).toBeGreaterThanOrEqual(50);
+    expect(toplam).toBeLessThanOrEqual(62);
+    for (const s of kSahneler) {
+      expect(s.arka).toBe('park');
+      const oyuncular = Object.keys(s.oyuncular);
+      const varlar = new Set(['kamera', 'isik', 'efekt', 'muzik', 'parilti', 'anlatici', 'toz', ...oyuncular]);
+      for (const o of s.olaylar) {
+        expect(o.t, `${s.ad} ${o.kim}`).toBeLessThanOrEqual(s.sure);
+        expect(varlar.has(o.kim), `${s.ad}: ${o.kim}`).toBe(true);
+        if (o.yap === 'yerine') expect(oyuncular, `${s.ad}: yerine ${o.hedef}`).toContain(o.hedef);
+        if (o.agiz) expect(oyuncular, `${s.ad}: agiz ${o.agiz}`).toContain(o.agiz);
+      }
+    }
+  });
+  it('yan görünüş oyuncularının iskeleti (assets/karakter-iskelet/<ad>-profil) var', () => {
+    for (const s of kSahneler)
+      for (const [id, o] of Object.entries(s.oyuncular)) if (o.yan) expect(existsSync(`assets/karakter-iskelet/${o.tip}-profil.svg`), `${s.ad}: ${id}`).toBe(true);
+  });
+  it('efektler tanımlı; müzik dosyaları (assets/muzik/film-*.mp3) var', () => {
+    for (const s of kSahneler)
+      for (const o of s.olaylar) {
+        if (o.kim === 'efekt') expect(Object.keys(FILM_EFEKT), o.yap).toContain(o.yap);
+        if (o.kim === 'muzik' && o.yap === 'dosya') expect(existsSync(`assets/muzik/${o.ad}.mp3`), String(o.ad)).toBe(true);
+      }
+    // duygu müzikleri: bu filmde kullanılanlar
+    const kullanilan = new Set(kSahneler.flatMap((s) => s.olaylar.filter((o) => o.kim === 'muzik' && o.yap === 'dosya').map((o) => o.ad)));
+    for (const ad of ['film-fon-pazar', 'film-kovalamaca', 'film-surpriz', 'film-uzgun', 'film-merak', 'film-kutlama']) expect(kullanilan.has(ad), ad).toBe(true);
+    // sentez müzik kapalı: müzik yalnız dosyalardan
+    expect((kaydirak as { sentez?: boolean }).sentez).toBe(false);
+  });
+  it('jenerik dosyaları var: açılış 7,9 sn, kapanış 5 sn', () => {
+    expect(existsSync('assets/muzik/film-acilis.mp3')).toBe(true);
+    expect(existsSync('assets/muzik/film-kapanis.mp3')).toBe(true);
   });
 });

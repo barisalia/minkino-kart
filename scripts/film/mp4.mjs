@@ -35,7 +35,9 @@ try {
 const dosya = JSON.parse(fs.readFileSync(`content/film/${FILM}.json`, 'utf8'));
 const sahneler = dosya.sahneler.filter((s) => s.sure);
 // sahne geçişi 0.7 sn (iris / kararma); sonraki sahne 'kes' ise geçiş yok
-const sahneBasi = (n) => sahneler.slice(0, n).reduce((t, s, i) => t + s.sure + (sahneler[i + 1]?.gecis === 'kes' ? 0 : 0.7), 0);
+// açılış kartı + film-acilis jeneriği (7,9 sn) filmden önce gelir; kapanış jeneriği (5 sn) öğüt kartından sonra
+const ACILIS = 7.9;
+const sahneBasi = (n) => ACILIS + sahneler.slice(0, n).reduce((t, s, i) => t + s.sure + (sahneler[i + 1]?.gecis === 'kes' ? 0 : 0.7), 0);
 const FORMATLAR = {
   dikey: { w: 1080, h: 1920, kadraj: 'dolu' },
   kare: { w: 1080, h: 1080, kadraj: 'dolu' },
@@ -124,7 +126,8 @@ async function kaydet(ad, f) {
   }
   const gecici = path.join(CIKTI, `.${FILM}-${ad}-goruntu.mp4`);
   let kare = 0;
-  let bitti = -1;
+  // tamam: kapanış jeneriği bitti (ekranda data-tamam); kayıt ondan ~1 sn sonra biter
+  let tamam = -1;
   let ornek = null;
   // kesit başına kadar görüntüsüz ilerle
   if (bas > 0) await sayfa.clock.runFor(Math.round(bas * 1000));
@@ -134,7 +137,7 @@ async function kaydet(ad, f) {
       if (kare > 0) await sayfa.clock.runFor(dt);
       const durum = await sayfa.evaluate(() => {
         window.__animSenk(performance.now());
-        return !!document.querySelector('.fl-sahne[data-bitti]');
+        return !!document.querySelector('.fl-ekran[data-tamam]');
       });
       // yeni görseller (sahne değişince) yüklensin
       await sayfa.evaluate(() => Promise.all([...document.images].filter((i) => !i.complete).map((i) => new Promise((r) => (i.onload = i.onerror = r)))));
@@ -142,9 +145,9 @@ async function kaydet(ad, f) {
       await yaz(b);
       kare++;
       const gecen = kare / FPS;
-      if (!ornek && gecen >= (f.sure ? f.sure * 0.45 : 9.5)) ornek = b;
-      if (durum && bitti < 0) bitti = kare;
-      if (f.sure ? gecen >= f.sure : bitti >= 0 && kare - bitti >= FPS * 4) break;
+      if (!ornek && gecen >= (f.sure ? f.sure * 0.45 : ACILIS + 9.5)) ornek = b;
+      if (durum && tamam < 0) tamam = kare;
+      if (f.sure ? gecen >= f.sure : tamam >= 0 && kare - tamam >= FPS) break;
       if (gecen > 180) throw new Error('film bitmedi (180 sn)');
       if (kare % (FPS * 5) === 0) process.stdout.write(`  ${ad}: ${gecen.toFixed(0)} sn\r`);
     }

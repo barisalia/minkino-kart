@@ -12,7 +12,7 @@ import type { KayitSecenegi } from '../../src/audio/karakter-ses';
 import { FILM_EFEKT } from './efekt';
 import { filmBul } from './ekranlar';
 import { gunlukDurum, konusSecenegi, sesGunlugu, type SesOlayi } from './motor';
-import { filmMuzik, type Ruh } from './muzik';
+import { dosyaTamponu, filmMuzik, type DosyaSecenegi, type Ruh } from './muzik';
 
 const ORNEK = 48000;
 /** askıya alma aralığı (sn): olaylar bu aralıkla yerine konur, müzik planlayıcısı bu aralıkla ilerler */
@@ -39,14 +39,15 @@ async function sesiIsle(t0: number, sure: number): Promise<string> {
     // konuşma kayıtlarını önceden çöz (askıdayken beklemeyelim)
     const tampon = new Map<SesOlayi, { tampon: AudioBuffer; hiz: number } | null>();
     for (const o of olaylar) if (o.tur === 'konus') tampon.set(o, await kayitTamponu(o.ad, (o.arg ?? {}) as KayitSecenegi));
+    // dosya müzikleri (jenerikler, duygu müzikleri): çözülmüş tampon hazır olsun, dosyaCal eşzamanlı çalsın
+    for (const o of olaylar) if (o.tur === 'muzik' && o.ad === 'dosyaCal') await dosyaTamponu(vekil as unknown as BaseAudioContext, (o.arg as DosyaSecenegi).ad);
     let i = 0;
     const cal = (o: SesOlayi) => {
       if (o.tur === 'efekt') FILM_EFEKT[o.ad]?.();
       else if (o.tur === 'muzik') {
         const m = filmMuzik as unknown as Record<string, (a?: unknown) => void>;
         if (o.ad === 'baslat' || o.ad === 'degis') m[o.ad](o.arg as Ruh);
-        else m[o.ad](o.arg);
-      } else {
+        else m[o.ad](o.arg);      } else {
         const k = tampon.get(o);
         const cikis = konusmaCikisi();
         if (!k || !cikis) return;
@@ -124,6 +125,8 @@ async function dudaklariHazirla() {
   await kayitlariHazirla();
   const dosya = filmBul(new URLSearchParams(location.search).get('film') ?? 'mino-karpuz');
   for (const s of dosya?.sahneler ?? []) {
+    // öğüt kartındaki cümle (filmde söylenmediyse kart okur; kapanış jeneriği bitişinden sonra başlar)
+    if ('ogut' in s) await dudakDizisiHazirla(s.ogut, konusSecenegi(''));
     const olaylar = (s as { olaylar?: { kim: string; yap: string; metin?: unknown }[] }).olaylar ?? [];
     for (const o of olaylar) if (o.yap === 'soyle' && o.metin) await dudakDizisiHazirla(String(o.metin), konusSecenegi(o.kim === 'anlatici' ? '' : o.kim));
   }

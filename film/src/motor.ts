@@ -11,10 +11,12 @@
 import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import type { KonusmaSecenegi } from '../../src/audio/konusma';
 import { KINO_SESI, konus, sus } from '../../src/audio/ses';
+import { iskeletVar, svgGetir } from '../../src/karakter/karakter';
+import { yandanYukle } from '../../src/karakter/yandan';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { esyaAdresi, esyaCiz, ESYA_ALT, ESYA_MERKEZ, ESYA_ORAN } from './esya';
 import { FILM_EFEKT } from './efekt';
-import { filmMuzik, type Ruh } from './muzik';
+import { filmMuzik, type DosyaSecenegi, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
 
 // ---------------------------------------------------------------- MP4 kaydı (?kayit=1; scripts/film/mp4.mjs)
@@ -46,7 +48,7 @@ if (KAYIT) {
     };
   }
   const m = filmMuzik as unknown as Record<string, (...a: unknown[]) => void>;
-  for (const ad of ['baslat', 'degis', 'kis', 'duraklat', 'dur']) {
+  for (const ad of ['baslat', 'degis', 'kis', 'duraklat', 'dur', 'dosyaCal', 'dosyaSon']) {
     const f = m[ad].bind(filmMuzik);
     m[ad] = (...a: unknown[]) => {
       sesGunlugeYaz('muzik', ad, a[0]);
@@ -94,6 +96,8 @@ export interface TasiTanim {
 export interface OyuncuTanim extends Konum {
   /** 'mino' ya da karakter adı (kopek, tavsan, ordek…) */
   tip: string;
+  /** true: yan görünüşle (assets/karakter-iskelet/<tip>-profil): yandan yürür / koşar, dururken yandan nefes alır. Çizim sağa bakar (yon: -1 sola) */
+  yan?: boolean;
   /** sahne başında parçalarına takılı eşyalar */
   tasi?: TasiTanim[];
   /** sahne başındaki duruş (Oyuncu.durus) */
@@ -132,6 +136,8 @@ export interface Sahne {
   tut?: string[];
   /** Mino'nun pazar tezgâhı (tezgah.webp) sahnede dursun mu */
   tezgah?: boolean;
+  /** park: orta katman çizimi bu kadar (dünya genişliğinin %'si) sağa kayar (kaydırak ön çalıların arkasında kalmasın) */
+  ortaKaydir?: number;
 }
 export interface FilmDosya {
   baslik: string;
@@ -139,6 +145,8 @@ export interface FilmDosya {
   ogretir?: string;
   /** false: cümleler henüz seslendirme hattına girmez (animatik) */
   seslendir?: boolean;
+  /** false: film başında sentez (Web Audio) müziği başlamaz; müzik yalnız sahnedeki dosya olaylarından gelir */
+  sentez?: boolean;
   /** kendi çizimi olmayan arka plan / eşyalar için başka filmin klasörü (assets/film/<malzeme>/) */
   malzeme?: string;
   sahneler: (Sahne | { ogut: string })[];
@@ -277,6 +285,7 @@ export class Film {
   private altZaman = 0;
   private bitti = false;
   private tezgahVar = false;
+  private ortaKaydir = 0;
   private readonly hiz: number;
   private readonly ses: boolean;
   private readonly muzik: boolean;
@@ -310,7 +319,7 @@ export class Film {
   private onYukle() {
     const d = this.dosya;
     const adresler = new Set<string>();
-    for (const x of ['arka-uzak', 'arka-orta', 'arka-on']) {
+    for (const x of ['arka-uzak', 'arka-orta', 'arka-orta-2', 'arka-on']) {
       const u = FILM_GORSEL[`../../assets/film/${d.film}/${x}.webp`] ?? (d.malzeme ? FILM_GORSEL[`../../assets/film/${d.malzeme}/${x}.webp`] : undefined);
       if (u) adresler.add(u);
     }
@@ -320,9 +329,16 @@ export class Film {
         const u = esyaAdresi(e.tip, d.film, d.malzeme);
         if (u) adresler.add(u);
       }
-      for (const o of Object.values(s.oyuncular ?? {})) for (const t of o.tasi ?? []) {
-        const u = esyaAdresi(t.tip, d.film, d.malzeme);
-        if (u) adresler.add(u);
+      for (const o of Object.values(s.oyuncular ?? {})) {
+        for (const t of o.tasi ?? []) {
+          const u = esyaAdresi(t.tip, d.film, d.malzeme);
+          if (u) adresler.add(u);
+        }
+        // karakter iskeletleri (önden ve yandan) önceden indirilir / ölçülür: sahne açılınca gecikme olmasın
+        if (o.tip !== 'mino') {
+          if (o.yan) void yandanYukle(o.tip);
+          else if (iskeletVar(o.tip)) void svgGetir(o.tip);
+        }
       }
     }
     for (const u of adresler) new Image().src = u;
@@ -332,7 +348,7 @@ export class Film {
   async oynat(): Promise<void> {
     this.son = performance.now();
     this.raf = requestAnimationFrame((t) => this.kare(t));
-    if (this.muzik) filmMuzik.baslat('nese');
+    if (this.muzik && this.dosya.sentez !== false) filmMuzik.baslat('nese');
     const liste = this.dosya.sahneler;
     for (const [i, s] of liste.entries()) {
       if (this.bitti) return;
@@ -426,14 +442,16 @@ export class Film {
     this.tweenler = [];
     Object.values(this.katmanlar).forEach((k) => k.replaceChildren());
     this.tezgahVar = !!s.tezgah;
+    this.ortaKaydir = s.ortaKaydir ?? 0;
     this.arka(s.arka);
     for (const [id, o] of Object.entries(s.oyuncular ?? {})) {
-      const oy = new Oyuncu(o.tip, this.hiz);
+      const oy = new Oyuncu(o.tip, this.hiz, !!o.yan);
       const n = new Nesne(o, oy.el, oy.oran);
       n.el.dataset.oyuncu = id;
       n.alt = oy.alt;
       n.merkezY = 0.6;
       n.kirp = o.kirp ?? null;
+      n.zemin = o.zemin ?? null;
       n.golgeEkle();
       for (const t of o.tasi ?? []) oy.tasi(t.ad ?? t.tip, esyaAdresi(t.tip, this.dosya.film, this.dosya.malzeme) ?? '', t.parca, t.x, t.y, t.w, (ESYA_ORAN[t.tip] ?? 1), t.don ?? 0);
       if (o.durus) oy.durus(o.durus, 0);
@@ -471,6 +489,21 @@ export class Film {
    * altına tam genişlikte oturur; uzak katmanın üstü gök rengiyle devam eder. Mino'nun tezgâhı istenirse ortada.
    */
   private arka(ad: string) {
+    // Park (assets/film/park): uzak (gök, tepeler) · orta ya da orta-2 (salıncak / kaydırak, ağaçlar, bank) · ön (çimen, çalılar).
+    // 'park': kaydırak ve kum havuzlu ikinci orta katman; 'park-salincak': salıncak, çit ve tahterevalli.
+    if (ad === 'park' || ad === 'park-salincak') {
+      const resimP = (x: string) => h('img.fl-arka', { src: FILM_GORSEL[`../../assets/film/park/${x}.webp`] ?? '', alt: '', draggable: 'false' });
+      this.katmanlar.uzak.append(resimP('arka-uzak'), this.isikUzak);
+      const orta = resimP(ad === 'park' ? 'arka-orta-2' : 'arka-orta');
+      // orta katmanı yana kaydır (%): kaydırak, ön çalıların arkasında kalmasın
+      if (this.ortaKaydir) orta.style.left = `${this.ortaKaydir}%`;
+      // çimen (arka-on) altta, oyun aletleri onun ÜSTÜNDE: kaydırak ve kum havuzu çimenin arkasında kalmasın; hepsi
+      // oyuncularla aynı derinlikte (kamera yakınlaşınca ayaklar zeminden kaymaz)
+      this.katmanlar.tezgahlar.append(resimP('arka-on'), orta);
+      // dikey / kare MP4 kadrajında dünyanın altı görünür: çimen aşağı sürer
+      if (document.body.dataset.kadraj === 'dolu') this.katmanlar.zemin.append(h('div.fl-zemin-alt.fl-park-zemin'));
+      return;
+    }
     if (ad !== 'pazar') return;
     // filmin kendi çizimi yoksa ortak malzeme klasörü (ör. Elma Kulesi karpuz filminin pazarını kullanır)
     const film = (x: string) => FILM_GORSEL[`../../assets/film/${this.dosya.film}/${x}.webp`] ?? (this.dosya.malzeme ? FILM_GORSEL[`../../assets/film/${this.dosya.malzeme}/${x}.webp`] : undefined) ?? '';
@@ -607,6 +640,9 @@ export class Film {
       if (!this.muzik) return;
       if (o.yap === 'ruh') filmMuzik.degis(String(o.ad) as Ruh);
       else if (o.yap === 'dur') filmMuzik.dur(Number(o.sure ?? 2));
+      // dosya müziği (assets/muzik/film-*.mp3): { yap: 'dosya', ad: 'film-merak', ses, dongu, gec, ustune }; 'dosya-dur': söner
+      else if (o.yap === 'dosya') filmMuzik.dosyaCal({ ad: String(o.ad), ses: o.ses as number | undefined, dongu: o.dongu as boolean | undefined, gec: o.gec as number | undefined, ustune: o.ustune as boolean | undefined } satisfies DosyaSecenegi);
+      else if (o.yap === 'dosya-dur') filmMuzik.dosyaSon(Number(o.sure ?? 1.5));
       // durdurulan müzik yeniden (ör. hüzünlü sessizlikten sonra yumuşak tema)
       else if (o.yap === 'baslat') filmMuzik.baslat(String(o.ad ?? 'nese') as Ruh);
       return;
@@ -658,6 +694,32 @@ export class Film {
       case 'don':
         n.yon = Number(o.yon) === -1 ? -1 : 1;
         return;
+      case 'yer':
+        // anında konum (ışınlama): x, y, don, olcek, ez, yon verilenler değişir (yolculuk yok; üst üste tween'lerin başlangıç karışıklığı olmaz)
+        n.x = Number(o.x ?? n.x);
+        n.y = Number(o.y ?? n.y);
+        n.don = Number(o.don ?? n.don);
+        n.olcek = Number(o.olcek ?? n.olcek);
+        n.ez = Number(o.ez ?? n.ez);
+        if (o.yon !== undefined) n.yon = Number(o.yon) === -1 ? -1 : 1;
+        return;
+      case 'yerine': {
+        // Aynı karakterin başka görünümü (ör. yandan koşan Kino → önden Kino): bu oyuncu gizlenir, hedef oyuncu aynı yerde
+        // belirir (konum, açı, ezilme, ölçek aktarılır); gelen çizim yatayda kısa bir sıkışmayla açılır (dönüş hissi)
+        const n2 = this.nesneler.get(String(o.hedef));
+        if (!n2) return;
+        n2.x = Number(o.x ?? n.x);
+        n2.y = Number(o.y ?? n.y);
+        n2.don = n.don;
+        n2.olcek = n.olcek;
+        n2.sekme = 0;
+        if (o.yon !== undefined) n2.yon = Number(o.yon) === -1 ? -1 : 1;
+        oy?.dur();
+        n.saydam = 0;
+        n2.saydam = 1;
+        this.tween(0.24, 'cik', (u) => (n2.ez = 0.16 * (1 - u)), () => (n2.ez = 0));
+        return;
+      }
       case 'goster':
       case 'gizle': {
         const a = n.saydam;
@@ -681,9 +743,12 @@ export class Film {
       case 'ifade':
         oy?.ifade(o.ad ? String(o.ad) : null, o.sure === undefined ? 0 : (Number(o.sure) * 1000) / this.hiz);
         return;
-      case 'soyle':
-        this.soyle(o.kim, String(o.metin), o.sure as number | undefined, oy);
+      case 'soyle': {
+        // agiz: konuşanın sesi kim'den, ağzı başka bir oyuncudan (ör. yan görünüşteki Kino: kim 'kino', agiz 'kinoy')
+        const agizId = o.agiz ? String(o.agiz) : undefined;
+        this.soyle(o.kim, String(o.metin), o.sure as number | undefined, agizId ? this.oyuncular.get(agizId) : oy, agizId);
         return;
+      }
       case 'sek':
         this.sek(n, o, sure);
         return;
@@ -851,7 +916,7 @@ export class Film {
   }
 
   /** Alt yazı + (animatikte) cihaz sesi + konuşan karakterin ağzı */
-  private soyle(kim: string, metin: string, sure?: number, oy?: Oyuncu) {
+  private soyle(kim: string, metin: string, sure?: number, oy?: Oyuncu, agizId?: string) {
     const sn = sure ?? 0.9 + metin.length * 0.075;
     this.altKim.textContent = kim ? (this.dosya as unknown as { adlar?: Record<string, string> }).adlar?.[kim] ?? kim : '';
     this.altMetin.textContent = metin;
@@ -871,7 +936,7 @@ export class Film {
     const minoN = this.nesneler.get('mino');
     const agiz = oy ?? (!kim && minoN && minoN.saydam >= 0.5 ? this.oyuncular.get('mino') : undefined);
     if (agiz) {
-      const agizKim = kim || 'mino';
+      const agizKim = agizId ?? (kim || 'mino');
       // MP4 kaydı: ses çalmıyor, ağız kaydın önceden çıkarılmış zarfıyla (film/src/kayit.ts hazırlar)
       const dizi = KAYIT ? dudakDizisi(metin, konusSecenek.karakter) : null;
       agiz.konus(true, { metin, dizi });
