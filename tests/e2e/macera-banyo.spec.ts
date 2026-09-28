@@ -108,8 +108,20 @@ async function oyna(page: Page, ekran: (ad: string) => Promise<unknown>, gercekH
   let sacEkran = false;
   let ovaEkran = false;
   while (true) {
-    const g = await gorevBekle(page, ['sampuan', 'ova', 'sac'], T);
+    const g = await gorevBekle(page, ['sampuan', 'ova', 'sarki', 'sac'], T);
     if (g === 'sac') break;
+    if (g === 'sarki') {
+      // köpük şarkısı (kısa kutlama): heceler yanar, ekrana dokunmak alkış; geçme koşulu yok, kendiliğinden biter
+      await page.waitForTimeout(700);
+      await ekran('07c-sarki');
+      const s = (await page.locator(SAHNE).boundingBox())!;
+      for (let i = 0; i < 6 && (await gorev(page)) === 'sarki'; i++) {
+        await page.mouse.click(s.x + s.width * 0.5, s.y + s.height * 0.62);
+        await page.waitForTimeout(280);
+      }
+      await gorevBekle(page, ['sac'], T);
+      break;
+    }
     const id = await hedef(page);
     if (g === 'sampuan') {
       await surukle(page, page.locator('.bn-sise-sampuan'), bolge(page, id || 'mino-kafa'));
@@ -256,7 +268,8 @@ for (const yas of [3, 6]) {
   test(`Mino Banyo Yapmıyor: dokunarak baştan sona (${yas} yaş)`, async ({ page }, info) => {
     test.setTimeout(480_000);
     const hatalar = hataTopla(page);
-    await page.goto(`./macera/?test=1&ekran=bolum&yas=${yas}&bolum=banyo`);
+    // 3 yaşta şarkı gerçek hızda akar (sarkihiz=1, sessiz): heceler ve alkış görünsün
+    await page.goto(`./macera/?test=1&ekran=bolum&yas=${yas}&bolum=banyo${yas === 3 ? '&sarkihiz=1' : ''}`);
     const p = info.project.name;
     await oyna(page, (ad) => page.screenshot({ path: `tests/screens/${p}-banyo-${yas}yas-${ad}.png` }));
     expect(hatalar).toEqual([]);

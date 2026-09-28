@@ -65,19 +65,43 @@ export function sarkiTablosu(j: SarkiJson): SarkiTablosu {
 /** Karşılaştırma için hece: küçük harf, yalnız harfler ("Mino'nun" → "minonun") */
 export const heceAnahtar = (s: string) => s.toLocaleLowerCase('tr').replace(/[^a-zçğıöşüâîû]/g, '');
 
-/** Hecenin ünlü sayısı (Türkçede her hecede bir ünlü) */
-const unluSay = (k: string) => (k.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) ?? []).length;
-
-/** Sözlerin (satır satır) kelimeleri başlatan hece sıraları: karaokede kelime aralarına boşluk koymak için */
-export function kelimeBaslari(soz: string[]): Set<number> {
-  const s = new Set<number>();
+/**
+ * Kayıttaki heceleri sözlerin yazımıyla eşler (karaoke için): her hece sözdeki harfleriyle yazılır, arkasındaki
+ * noktalama (’ , .) heceye eklenir; kelime: sözde kaçıncı kelime (satırlar boyunca). Dönüş hece sırasıyla.
+ */
+export function sozleEsle(soz: string[], heceler: string[]): { yazi: string; kelime: number; satir: number }[] {
+  const harf = /[a-zçğıöşüâîûA-ZÇĞİÖŞÜÂÎÛ]/;
+  const cikti: { yazi: string; kelime: number; satir: number }[] = [];
+  let satir = 0;
   let i = 0;
-  for (const satir of soz)
-    for (const kelime of satir.split(/\s+/).filter((k) => unluSay(k) > 0)) {
-      s.add(i);
-      i += unluSay(kelime);
+  let kelime = -1;
+  let yeniKelime = true;
+  for (const hece of heceler) {
+    let s = soz[satir] ?? '';
+    // satır bitti: sonrakine geç
+    while (satir < soz.length && !s.slice(i).match(harf)) {
+      satir++;
+      i = 0;
+      s = soz[satir] ?? '';
+      yeniKelime = true;
     }
-  return s;
+    while (i < s.length && !harf.test(s[i])) {
+      if (/\s/.test(s[i])) yeniKelime = true;
+      i++;
+    }
+    if (yeniKelime) kelime++;
+    yeniKelime = false;
+    let yazi = '';
+    let n = heceAnahtar(hece).length;
+    while (i < s.length && n > 0) {
+      if (harf.test(s[i])) n--;
+      yazi += s[i++];
+    }
+    // hecenin arkasındaki noktalama (boşluk değil, harf değil)
+    while (i < s.length && !harf.test(s[i]) && !/\s/.test(s[i])) yazi += s[i++];
+    cikti.push({ yazi, kelime, satir });
+  }
+  return cikti;
 }
 
 /** t anında (ms, dosyanın başından) söylenen hecenin sırası; daha başlamadıysa -1 */
@@ -172,7 +196,9 @@ export class KayitCalar {
       this.ses?.pause();
       return;
     }
-    this.hiz = TEST_MODU ? (this.s.testHizi ?? 8) : 1;
+    // test modunda saat hızlı akar (&sarkihiz=1: gerçek hızda, sessiz; ekran görüntüsü / ritim denemesi için)
+    const q = TEST_MODU ? Number(new URLSearchParams(location.search).get('sarkihiz')) : 0;
+    this.hiz = TEST_MODU ? (q > 0 ? q : (this.s.testHizi ?? 8)) : 1;
     this.bas = performance.now();
     await new Promise<void>((coz) => {
       this.bitir = coz;

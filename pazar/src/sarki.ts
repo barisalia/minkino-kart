@@ -7,14 +7,12 @@
  */
 import SARKI_SESI from '../../assets/muzik/pazar-sozlu.mp3?url';
 import { efekt } from '../../src/audio/ses';
-import { KayitCalar, kelimeBaslari, vurusaYakin } from '../../src/audio/sarki-kayit';
+import { KayitCalar, sozleEsle, vurusaYakin } from '../../src/audio/sarki-kayit';
 import type { Mino } from '../../src/mino/mino';
 import { h, sure } from '../../src/ui/dom';
 import { parilti, resim } from './gorsel';
 import { urunAdi } from './istek';
 import { PAZAR_SARKI, PAZAR_SOZ, sayimPlani } from './sarki-plan';
-
-const KELIME_BASI = kelimeBaslari(PAZAR_SOZ);
 
 export interface PazarSarkisi {
   bitti: Promise<void>;
@@ -22,10 +20,10 @@ export interface PazarSarkisi {
 }
 
 /**
- * Şarkıyı çalar. urunler: tezgâhtaki ürün alanı (sayım sırası buraya konur, bitince kalkar); yazi: başlık balonunun
+ * Şarkıyı çalar. tezgah: ön tezgâh (sayım sırası üstüne konur, bitince kalkar); yazi: başlık balonunun
  * yazısı (karaoke); ekran: dokunma (alkış) alanı.
  */
-export function pazarSarkisi(p: { urunler: HTMLElement; yazi: HTMLElement; ekran: HTMLElement; mino: Mino }): PazarSarkisi {
+export function pazarSarkisi(p: { tezgah: HTMLElement; yazi: HTMLElement; ekran: HTMLElement; mino: Mino }): PazarSarkisi {
   const T = PAZAR_SARKI;
   const plan = sayimPlani(T);
   // tezgâhta sayım sırası: her grup kendi rozetiyle
@@ -35,21 +33,26 @@ export function pazarSarkisi(p: { urunler: HTMLElement; yazi: HTMLElement; ekran
     return { s, el: h('div.pz-sarki-grup', { 'data-meyve': s.meyve }, rozet, h('span.pz-sarki-meyveler', {}, ...meyveler)), meyveler };
   });
   const sira = h('div.pz-sarki-sira', {}, ...gruplar.map((g) => g.el));
-  p.urunler.append(sira);
+  p.tezgah.append(sira);
   p.ekran.dataset.sarki = 'caliyor';
 
   // karaoke: balonda o anki satır, heceler sırayla yanar
   const eskiYazi = p.yazi.textContent;
-  const heceEl = T.heceler.map((x) => h('span.pz-hece', {}, x.hece));
+  // heceler sözlerin yazımıyla (Mino’nun, virgüller); kelimeler bölünmeden satır atlar
+  const yazim = sozleEsle(PAZAR_SOZ, T.heceler.map((x) => x.hece));
+  const heceEl = yazim.map((y) => h('span.pz-hece', {}, y.yazi));
   let satir = -1;
   const satirGoster = (s: number) => {
     satir = s;
-    const parcalar: (HTMLElement | string)[] = [];
+    const kelimeler = new Map<number, HTMLElement>();
     T.heceler.forEach((x, i) => {
       if (x.satir !== s) return;
-      if (parcalar.length && KELIME_BASI.has(i)) parcalar.push(' ');
-      parcalar.push(heceEl[i]);
+      const k = yazim[i].kelime;
+      if (!kelimeler.has(k)) kelimeler.set(k, h('span.pz-kelime'));
+      kelimeler.get(k)!.append(heceEl[i]);
     });
+    const parcalar: (HTMLElement | string)[] = [];
+    for (const e of kelimeler.values()) parcalar.push(...(parcalar.length ? [' ', e] : [e]));
     p.yazi.replaceChildren(...parcalar);
   };
 

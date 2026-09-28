@@ -4,8 +4,8 @@ import PAZAR_JSON from '../../assets/muzik/pazar.json';
 import { BANYO_SARKI, BANYO_SOZ } from '../../macera/src/banyo-mantik';
 import { PAZAR_SARKI, PAZAR_SOZ, SAYILAN, sayimPlani } from '../../pazar/src/sarki-plan';
 import { hecele } from '../../ses-testi/src/analiz';
-import { DUCK_ORAN, fonSeviyesi } from '../../src/audio/dosya-muzik';
-import { hangiHece, hangiVurus, heceAnahtar, kelimeBaslari, sarkiTablosu, vurusaYakin, type SarkiJson, type SarkiTablosu } from '../../src/audio/sarki-kayit';
+import { donguBolgesi, fonDosyasi } from '../../src/audio/dosya-muzik';
+import { hangiHece, hangiVurus, heceAnahtar, sarkiTablosu, sozleEsle, vurusaYakin, type SarkiJson, type SarkiTablosu } from '../../src/audio/sarki-kayit';
 
 /** Sözlerin satır satır heceleri (Türkçe heceleme) */
 const sozHeceleri = (soz: string[]) => soz.map((s) => s.split(/\s+/).flatMap((k) => hecele(k)));
@@ -44,12 +44,17 @@ describe.each(SARKILAR)('şarkı tablosu: %s', (_ad, T, soz, json) => {
     T.satirlar.forEach((s, i) => expect(s.map((x) => heceAnahtar(x.hece))).toEqual(H[i].map(heceAnahtar)));
   });
 
-  it('kelime başları: sözün kelime sayısı kadar', () => {
-    const kelime = soz.join(' ').split(/\s+/).length;
-    const b = kelimeBaslari(soz);
-    expect(b.size).toBe(kelime);
-    expect(b.has(0)).toBe(true);
-    expect(Math.max(...b)).toBeLessThan(T.heceler.length);
+  it('karaoke yazımı: heceler sözlerin yazımıyla birleşince sözün kendisi (noktalama, kelimeler, satırlar)', () => {
+    const y = sozleEsle(soz, T.heceler.map((x) => x.hece));
+    expect(y).toHaveLength(T.heceler.length);
+    soz.forEach((satir, i) => {
+      const s = y.filter((x) => x.satir === i);
+      const kelimeler = [...new Set(s.map((x) => x.kelime))].map((k) => s.filter((x) => x.kelime === k).map((x) => x.yazi).join(''));
+      expect(kelimeler.join(' ')).toBe(satir);
+    });
+    // kayıttaki satırlarla aynı
+    expect(y.map((x) => x.satir)).toEqual(T.heceler.map((x) => x.satir));
+    expect(new Set(y.map((x) => x.kelime)).size).toBe(soz.join(' ').split(/\s+/).length);
   });
 
   it('zaman → hece / vuruş', () => {
@@ -120,12 +125,20 @@ describe('tablo kurulumu (örnek JSON)', () => {
   });
 });
 
-describe('fon müziği (menü, Ege): kısık, konuşurken düşer, sessize almaya uyar', () => {
-  it('ducking ve sessize alma', () => {
-    const acik = { muzik: true, seviye: 1 };
-    expect(fonSeviyesi(acik, false, 0.3)).toBeCloseTo(0.3);
-    expect(fonSeviyesi(acik, true, 0.3)).toBeCloseTo(0.3 * DUCK_ORAN);
-    expect(fonSeviyesi({ muzik: false, seviye: 1 }, false, 0.3)).toBe(0);
-    expect(fonSeviyesi({ muzik: true, seviye: 0.5 }, false, 0.4)).toBeCloseTo(0.2);
+describe('fon müziği (menü, Ege): tıksız döngü', () => {
+  it('dosyalar pakette', () => {
+    expect(fonDosyasi('menu-dongu')).toBeTruthy();
+    expect(fonDosyasi('ege-fon')).toBeTruthy();
+  });
+  it('döngü bölgesi: baştaki ve sondaki sessizlik (kodlayıcı dolgusu) atılır', () => {
+    const k = new Float32Array(100);
+    for (let i = 10; i < 90; i++) k[i] = Math.sin(i) * 0.5 + 0.6;
+    expect(donguBolgesi([k, new Float32Array(100)])).toEqual([10, 90]);
+    // sağ kanalda daha uzun süren ses
+    const sag = new Float32Array(100);
+    sag[95] = 0.2;
+    expect(donguBolgesi([k, sag])).toEqual([10, 96]);
+    // tamamen sessiz: bütünü
+    expect(donguBolgesi([new Float32Array(50)])).toEqual([0, 50]);
   });
 });

@@ -22,7 +22,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { Perde, sesVar, Ufleme } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import { davul, nota } from '../../orman/src/sesler';
-import { KayitCalar, vurusaYakin } from '../../src/audio/sarki-kayit';
+import { KayitCalar, sozleEsle, vurusaYakin } from '../../src/audio/sarki-kayit';
 import SARKI_SESI from '../../assets/muzik/banyo-sozlu.mp3?url';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import type { BolumArayuz } from './dogumgunu';
@@ -33,6 +33,7 @@ import { Bugu, EkranDamlalari, geriDon, icinde, merkez, ovala, ParmakIpucu, Parc
 import {
   BOLUM_BENIM,
   BANYO_SARKI,
+  BANYO_SOZ,
   baloncukBoyu,
   bolgeCoz,
   camurPlani,
@@ -1331,8 +1332,18 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     kulak.dinle(null);
     const T = BANYO_SARKI;
     const panel = h('div.mc-karaoke.bn-karaoke');
-    const heceEl = T.heceler.map((n) => h('span.mc-hece', { style: `--h:${(n.midi - 58) / 16}` }, n.hece));
-    const satirlar = T.satirlar.map((s) => h('div.mc-satir', {}, ...s.map((x) => heceEl[T.heceler.indexOf(x)])));
+    // heceler sözlerin yazımıyla, kelime kelime gruplu (kelime arası boşluk daha geniş)
+    const yazim = sozleEsle(BANYO_SOZ, T.heceler.map((x) => x.hece));
+    const heceEl = T.heceler.map((n, i) => h('span.mc-hece', { style: `--h:${(n.midi - 58) / 16}` }, yazim[i].yazi));
+    const satirlar = T.satirlar.map((s) => {
+      const kelimeler = new Map<number, HTMLElement>();
+      for (const x of s) {
+        const i = T.heceler.indexOf(x);
+        if (!kelimeler.has(yazim[i].kelime)) kelimeler.set(yazim[i].kelime, h('span.mc-kelime'));
+        kelimeler.get(yazim[i].kelime)!.append(heceEl[i]);
+      }
+      return h('div.mc-satir', {}, ...kelimeler.values());
+    });
     const top = h('i.mc-top');
     panel.append(...satirlar, top);
     sahne.on.append(panel);

@@ -517,7 +517,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
   void (async () => {
     await bekle(sure(300));
     if (kapandi) return;
-    sarki = pazarSarkisi({ urunler, yazi, ekran: el, mino });
+    sarki = pazarSarkisi({ tezgah, yazi, ekran: el, mino });
     await sarki.bitti;
     if (kapandi) return;
     await soyle(P.basla);

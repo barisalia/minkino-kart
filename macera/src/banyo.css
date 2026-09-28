@@ -1173,3 +1173,9 @@
     animation: none;
   }
 }
+
+/* köpük şarkısı: karaoke paneli sıranın (ıslat / köpürt …) yerini alır */
+.mc-kok .bn-sahne[data-bn-gorev='sarki'] .bn-sira {
+  opacity: 0;
+  transition: opacity 0.3s;
+}

@@ -842,13 +842,18 @@
 
 /* ---------------------------------------------------------------- pazar şarkısı (sarki.ts): sayım sırası, karaoke */
 .pz-kok .pz-sarki-sira {
-  --pz-sm: clamp(30px, 8vw, 64px);
+  --pz-sm: clamp(28px, min(8vw, 9vh), 64px);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(8px, 2vh, 16px);
+  z-index: 2;
+  pointer-events: none;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   gap: clamp(8px, 2.6vw, 22px);
-  width: 100%;
-  padding-top: 22px;
+  padding-top: 24px;
   transition: opacity 0.35s, transform 0.35s;
 }
 .pz-kok .pz-sarki-sira.gidiyor {
@@ -909,6 +914,10 @@
 }
 .pz-kok .pz-sarki-grup.sayildi .pz-sarki-rozet {
   transform: scale(1);
+}
+.pz-kok .pz-kelime {
+  display: inline-block;
+  white-space: nowrap;
 }
 .pz-kok .pz-hece {
   display: inline-block;
