@@ -95,3 +95,17 @@ Kod (`src/audio/dudak-mantik.ts`, `src/mino/mino.ts`) altısı birlikte varsa bu
 - SVG sırası: `agiz-kapali` grubunun hemen arkasında `agiz-az, agiz-orta, agiz-yuvarlak, agiz-dis, agiz-gulumse`.
 - Yeni katmanlar `scripts/mino/rig.mjs` yeniden çalıştırılınca iskelete girer.
 - Önizleme: `ekip/film/dudak-agizlari.png` (üst satır Mino, alt satır Kino; varsayılan ağız gizli, gerçek SVG'den).
+
+## Kalkık kollar (el sallama, çak, uzanma, alkış)
+
+Asıl kollar kafanın altında durduğu için 100° üstünde kafanın arkasına giriyordu. İki yeni gizli katman bu sorunu çözer.
+
+| Katman | Dönme noktası | Açı | Not |
+|---|---|---|---|
+| `kol-sol-yukari` | 840,1290 (`KOL_SOL`) | 40°–160° | Asıl kolun vektör kopyası ve kürk renkli omuz başı (#fa9e3c). Omzun sırtında yarım yay kontur var. |
+| `kol-sag-yukari` | 1205,1290 (`KOL_SAG`) | −40°…−160° | Aynaya göre aynı yapı |
+
+- SVG'nin **en sonundadır**: kafa, göz ve ağız katmanlarının da önünde çizilir. Alkışta ve 160°'de pati yanağın önüne gelir.
+- Kullanım: açı yaklaşık 30°'yi geçince `kol-sol` / `kol-sag` gizlenir, `-yukari` katmanı gösterilir ve aynı açıyla döndürülür. Tek kol da olur (örnek: sol 150°, sağ −20°, el sallama).
+- Varsayılan çizimde piksel farkı 0 (2048 çözünürlükte ölçüldü).
+- Önizleme: `ekip/mino/mino-kol-yukari.png` (0°, 40°, 90°, 130°, 160°, tek kol 150°; açık ve koyu zemin).
