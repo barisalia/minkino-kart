@@ -7,7 +7,7 @@
  */
 import { baglam, efektCikisi, muzikCikisi } from '../../src/audio/motor';
 import { kulak } from '../../orman/src/kulak';
-import type { KampKayit, KampParca } from './elektrik-mantik';
+import type { KampKayit } from './elektrik-mantik';
 
 function hazir(cikis: 'efekt' | 'muzik' = 'efekt', pan = 0): [AudioContext, AudioNode] | null {
   const c = baglam();
@@ -516,40 +516,56 @@ export class GeceMuzik {
   }
 }
 
-// ---------------------------------------------------------------- kayıtlı kamp şarkısı (Gemini; varsa)
-/** assets/muzik/kamp-sozlu.mp3 / kamp-sozsuz.mp3 + kamp.json gelirse sentez yerine kayıt çalar (yoksa boş) */
+// ---------------------------------------------------------------- kayıtlı kamp şarkısı (Gemini)
+/** assets/muzik/kamp-sozlu.mp3 + kamp-sozsuz.mp3 + kamp.json; yoksa null (sentez vuruşlarla oynanır) */
 const KAMP_SES = import.meta.glob<string>('../../assets/muzik/kamp-*.mp3', { eager: true, query: '?url', import: 'default' });
 const KAMP_JSON = import.meta.glob<KampKayit>('../../assets/muzik/kamp.json', { eager: true, import: 'default' });
 
-export function kampKaydi(): { url: string; kayit: KampKayit } | null {
+export function kampKaydi(): { sozlu: string; sozsuz: string; kayit: KampKayit } | null {
   const kayit = KAMP_JSON['../../assets/muzik/kamp.json'];
-  const url = KAMP_SES['../../assets/muzik/kamp-sozlu.mp3'] ?? KAMP_SES['../../assets/muzik/kamp-sozsuz.mp3'];
-  return kayit && url ? { url, kayit } : null;
+  const sozlu = KAMP_SES['../../assets/muzik/kamp-sozlu.mp3'];
+  const sozsuz = KAMP_SES['../../assets/muzik/kamp-sozsuz.mp3'] ?? sozlu;
+  return kayit && sozlu ? { sozlu, sozsuz, kayit } : null;
 }
 
-/** Kaydı parça parça çalar: her alkış bir parça (vuruştan bir sonraki vuruşa); mikrofon parça boyunca susar */
+/** Kaydın bir parçasını çalar (başı–sonu ms); bitince çözülür. Mikrofon parça boyunca (ve biraz sonrasında) susar. */
 export class KampCalar {
-  private ses: HTMLAudioElement;
+  private sesler: Record<'sozlu' | 'sozsuz', HTMLAudioElement>;
   private dur: ReturnType<typeof setTimeout> | null = null;
-  constructor(url: string) {
-    this.ses = new Audio(url);
-    this.ses.preload = 'auto';
+  private bitti: (() => void) | null = null;
+  constructor(sozlu: string, sozsuz: string) {
+    this.sesler = { sozlu: new Audio(sozlu), sozsuz: new Audio(sozsuz) };
+    for (const a of Object.values(this.sesler)) a.preload = 'auto';
   }
-  parca(p: KampParca) {
-    const ms = Math.max(80, p.bitMs - p.basMs);
-    kulak.sustur(ms + 250);
-    if (this.dur) clearTimeout(this.dur);
+  cal(tur: 'sozlu' | 'sozsuz', basMs: number, bitMs: number): Promise<void> {
+    this.durdur();
+    const ms = Math.max(80, bitMs - basMs);
+    kulak.sustur(ms + 350);
+    const a = this.sesler[tur];
     try {
-      this.ses.currentTime = p.basMs / 1000;
-      void this.ses.play().catch(() => undefined);
+      a.currentTime = basMs / 1000;
+      void a.play().catch(() => undefined);
     } catch {
       /* ses yüklenemedi: oyun sürer */
     }
-    this.dur = setTimeout(() => this.ses.pause(), ms);
+    return new Promise<void>((coz) => {
+      this.bitti = coz;
+      this.dur = setTimeout(() => {
+        a.pause();
+        this.bitti = null;
+        coz();
+      }, ms);
+    });
+  }
+  durdur() {
+    if (this.dur) clearTimeout(this.dur);
+    this.dur = null;
+    for (const a of Object.values(this.sesler)) a.pause();
+    this.bitti?.();
+    this.bitti = null;
   }
   kapat() {
-    if (this.dur) clearTimeout(this.dur);
-    this.ses.pause();
-    this.ses.src = '';
+    this.durdur();
+    for (const a of Object.values(this.sesler)) a.src = '';
   }
 }

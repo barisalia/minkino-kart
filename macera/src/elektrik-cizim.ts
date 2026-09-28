@@ -259,3 +259,11 @@ export function esya(ad: string, svg: string, alt = '', yedek?: string): HTMLEle
   if (url) return h('img.mc-resim.el-resim', { src: url, alt, draggable: 'false' });
   return h('div.mc-resim.el-resim', { html: tekil(svg), role: 'img', 'aria-label': alt });
 }
+
+/** Kamp minderi (yastık): kamp şarkısında parmakla vurulur (alkışın dokunma karşılığı); ortasında yıldız */
+export const YASTIK_ORAN = 110 / 160;
+export const YASTIK_SVG = `<svg viewBox="0 0 160 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>${deg('el-ys-g', '#8fd1ff', '#3e7fd6')}</defs>
+<path d="M18 22Q14 8 30 10Q80 16 130 10Q146 8 142 22Q148 55 142 88Q146 102 130 100Q80 94 30 100Q14 102 18 88Q12 55 18 22Z" fill="url(#el-ys-g)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+<path d="M80 34L87 49L103 51L91 62L94 78L80 70L66 78L69 62L57 51L73 49Z" fill="#ffd95c" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/>
+<path d="M22 14L30 22M138 14L130 22M22 96L30 88M138 96L130 88" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+${parla(46, 26, 18, 6, -8, 0.6)}</svg>`;

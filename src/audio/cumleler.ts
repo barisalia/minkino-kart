@@ -189,9 +189,9 @@ export function tumCumleler(): string[] {
     if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'ninni_baslik'].includes(k)) continue;
     topla(v).forEach(ekle);
   }
-  // Sesli Maceralar: Elektrikler Kesildi! (başlık, kart adı, balon tepkileri, ipuçları ve düğme yazısı okunmaz)
+  // Sesli Maceralar: Elektrikler Kesildi! (başlık, kart adı, balon tepkileri, ipuçları, düğme yazısı ve şarkı sözü okunmaz)
   for (const [k, v] of Object.entries(maceraElektrikJson as Record<string, unknown>)) {
-    if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'dugme'].includes(k)) continue;
+    if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'dugme', 'sarki'].includes(k)) continue;
     topla(v).forEach(ekle);
   }
   // Mini filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)

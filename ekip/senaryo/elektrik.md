@@ -118,10 +118,12 @@ Toplam yaklaşık **5,5 dakika**.
   1. MİNO: *"Önce sandalyeleri getir."* İki sandalyeyi halının iki yanındaki ışıklı yerlere sürükler.
   2. MİNO: *"Şimdi battaniyeyi üstüne ser."* Battaniyeyi sandalyelere sürükler; battaniye açılıp çadır olur.
   3. MİNO: *"Mandallarla tuttur."* İki mandala dokunur, "çıt" diye tutturur.
-  4. MİNO: *"Kamp şarkısı! Alkışla çal."* Her alkış şarkının bir notasını çalar, çadırın üstünde bir yıldız yanar.
+  4. MİNO: *"Kamp şarkısı! Alkışla çal."* → *"Önce şarkıyı dinleyelim."* Gemini kaydı (sözlü) baştan sona çalar, sözler ekranda satır satır ("Çadırımız kocaman / Fenerimiz yanıyor / Kino artık korkmuyor / Hadi alkış, alkış, alkış!"), herkes vuruşlarda sallanır.
+  5. MİNO: *"Şimdi sen alkışla!"* **Yankı:** sözsüz altyapıdan bir parça çalar, vuruşlarında çadırın yıldızları parlar; parça bitince çocuk aynı vuruşları alkışlar (ya da çadırın önündeki **yastığa** vurur), her alkışta bir yıldız yanar. İki tur. Sonunda sözlü kaydın son satırı ("Hadi alkış…") hep birlikte çalar.
+  - Oyun şarkıya uyar: vuruşlar `assets/muzik/kamp.json → vuruslar_ms` (kayıttaki el çırpmaları). Kayıt çalarken mikrofon dinlemez; çocuk sessizlikte alkışlar. Değerlendirme: sayı tutmalı; 5-6 yaşta ritim de, yumuşak toleransla (her aralık kayıttaki vuruş aralığının %45'i ile 2,1 katı arası). Tutmazsa Kino başını yana yatırır ("Hı?"), parça yeniden; 3. denemede kabul.
 - **Şaka:** Kino sevinçle içeri dalar, kuyruğu sandalyeye çarpar, **çadır çöker.** Battaniyenin altında bir tümsek dolaşır. MİNO: *"Çadır çöktü! Kino nerede?"* KİNO (altından): *"Buuu! Ben hayalet Kino!"* Sonra kafasını çıkarır, çadır "hop" diye yeniden kurulur.
-- **Yaşa göre:** Alkış: 3-4 yaşta 6, 5-6 yaşta 8.
-- **Parmakla:** Sürükle, mandala dokun, şarkıda yastığa (çadıra) vur.
+- **Yaşa göre:** Yankı: 3-4 yaşta 2 × 3 vuruş (yalnız sayı), 5-6 yaşta 2 × 4 vuruş (sayı + yumuşak ritim).
+- **Parmakla:** Sürükle, mandala dokun, şarkıda yastığa vur.
 
 ### Sahne 7: Geldiii! (~40 sn)
 - **Olur:** Lamba "vızz vızz" titreyip yanar, oda aydınlanır. Pencereden mahalleden "Geldiii!" balonları yükselir. MİNO: *"Işıklar geldi!"* → *"Hadi, sen de bağır: Geldiii!"*
@@ -192,7 +194,7 @@ Pıt (elektrik sönmesi), küp düşmesi, çekmece gıcırtısı, fener düğmes
 **Kural:** her efekt `kulak.sustur(ms)` ile çalar; sesli görevlerde müzik durur.
 
 ## Müzik
-Gece müziği: yumuşak müzik kutusu (Web Audio), yalnız mikrofonun dinlemediği anlarda. Kamp şarkısı: pentatonik 8 notalık basit melodi (telif yok), çocuğun her alkışı bir nota.
+Gece müziği: yumuşak müzik kutusu (Web Audio), yalnız mikrofonun dinlemediği anlarda. Kamp şarkısı: Gemini kaydı (özgün sözler; `assets/muzik/kamp-sozlu.mp3`, `kamp-sozsuz.mp3`, `kamp.json`). Kayıt yoksa aynı tempoda sentez vuruşlar (yedek).
 
 ## Final
 Kino lambayı kendisi kapatır, çadırda gece lambası yanar. "Aferin Kino! Artık karanlıktan korkmuyorsun." Albüme **"Cesur Kino"** kartı.

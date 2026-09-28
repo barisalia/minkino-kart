@@ -3,6 +3,7 @@ import EL from '../../content/macera-elektrik.json';
 import { normal, tumCumleler } from '../../src/audio/cumleler';
 import elektrikKaynak from '../../macera/src/elektrik.ts?raw';
 import dogumgunuKaynak from '../../macera/src/dogumgunu.ts?raw';
+import KAMP from '../../assets/muzik/kamp.json';
 import {
   aranan,
   cagriSonucu,
@@ -15,7 +16,12 @@ import {
   kabulMu,
   KAMP_SARKISI,
   kampNotalari,
-  kampParcalari,
+  kampSatirBaslari,
+  kampTurAyar,
+  kampTurlari,
+  RITIM_ALT,
+  RITIM_UST,
+  yankiSonuc,
   kucukMu,
   Oksama,
   SES_SIRASI,
@@ -177,19 +183,42 @@ describe('Elektrikler Kesildi: içerik ve kurallar', () => {
   });
 });
 
-describe('Kamp şarkısı kaydı (Gemini; gelirse oyun şarkıya uyar)', () => {
-  it('kayıt yoksa parça yok (sentez çalar)', () => {
-    expect(kampParcalari(null, 6)).toEqual([]);
-    expect(kampParcalari({ vuruslar_ms: [500] }, 6)).toEqual([]);
+describe('Kamp şarkısı (Gemini kaydı; oyun şarkıya uyar)', () => {
+  it('kayıt main\'de: 32 vuruş, dört satır; sözler ekranda (seslendirilmez)', () => {
+    expect(KAMP.vuruslar_ms).toHaveLength(32);
+    expect(kampSatirBaslari(KAMP)).toHaveLength(4);
+    expect(EL.sarki).toHaveLength(4);
+    const tum = new Set(tumCumleler().map(normal));
+    for (const s of EL.sarki) expect(tum.has(normal(s))).toBe(false);
   });
-  it('her alkış bir vuruştan ötekine; yaşın sayısı kadar, kayıt kısaysa kayıttaki kadar', () => {
-    const k = { vuruslar_ms: [400, 900, 1400, 1900, 2400, 2900, 3400, 3900, 4400], sure_ms: 5200 };
-    const p6 = kampParcalari(k, 6);
-    expect(p6).toHaveLength(6);
-    expect(p6[0]).toEqual({ basMs: 400, bitMs: 900 });
-    expect(p6[5]).toEqual({ basMs: 2900, bitMs: 3400 });
-    const p8 = kampParcalari({ vuruslar_ms: [0, 500, 1000], sure_ms: 2000 }, 8);
-    expect(p8).toHaveLength(3);
-    expect(p8[2]).toEqual({ basMs: 1000, bitMs: 2000 });
+  it('yankı turları: 3-4 yaşta 2 × 3, 5-6 yaşta 2 × 4 vuruş; vuruşlar kayıttan', () => {
+    expect(kampTurAyar(3)).toEqual({ tur: 2, vurus: 3 });
+    expect(kampTurAyar(6)).toEqual({ tur: 2, vurus: 4 });
+    for (const yas of [3, 6]) {
+      const t = kampTurlari(KAMP, yas);
+      expect(t).toHaveLength(2);
+      for (const x of t) {
+        expect(x.vuruslar).toHaveLength(kampTurAyar(yas).vurus);
+        expect(x.vuruslar[0]).toBeGreaterThan(0);
+        expect(x.basMs + x.vuruslar[x.vuruslar.length - 1]).toBeLessThan(x.bitMs);
+        expect(x.bitMs).toBeLessThanOrEqual(KAMP.sure_ms);
+        expect(x.ara).toBeGreaterThan(500);
+        expect(x.ara).toBeLessThan(650);
+      }
+    }
+    expect(kampTurlari(null, 5)).toEqual([]);
+  });
+  it('değerlendirme: sayı tutmalı; ritim yumuşak toleransla (3-4 yaşta yalnız sayı)', () => {
+    const ara = 575;
+    const dogru = [0, 560, 1170, 1720];
+    expect(yankiSonuc(dogru, 4, ara)).toBe('dogru');
+    expect(yankiSonuc(dogru.slice(0, 3), 4, ara)).toBe('az');
+    expect(yankiSonuc([...dogru, 2300], 4, ara)).toBe('cok');
+    // yarı hızda da olur, çok hızlı telaşla vurmak olmaz
+    expect(yankiSonuc([0, 1100, 2200, 3300], 4, ara)).toBe('dogru');
+    expect(yankiSonuc([0, 150, 300, 450], 4, ara)).toBe('ritim');
+    expect(yankiSonuc([0, 150, 300], 3, ara, false)).toBe('dogru');
+    expect(RITIM_ALT).toBeLessThan(0.5);
+    expect(RITIM_UST).toBeGreaterThan(2);
   });
 });

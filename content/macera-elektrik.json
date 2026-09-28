@@ -29,6 +29,8 @@
     "battaniye": "Şimdi battaniyeyi üstüne ser.",
     "mandal": "Mandallarla tuttur.",
     "sarki": "Kamp şarkısı! Alkışla çal.",
+    "sarki_dinle": "Önce şarkıyı dinleyelim.",
+    "sen_alkisla": "Şimdi sen alkışla!",
     "coktu": "Çadır çöktü! Kino nerede?",
     "geldi": "Işıklar geldi!",
     "bagir": "Hadi, sen de bağır: Geldiii!",
@@ -90,11 +92,13 @@
     "sandalye": "Sandalyeleri ışıklı yere sürükle",
     "battaniye": "Battaniyeyi sandalyelere sürükle",
     "mandal": "Mandallara dokun",
-    "sarki": "Alkışla ya da çadıra dokun",
+    "sarki": "Alkışla ya da yastığa vur",
+    "sarki_dinle": "Şarkıyı dinle",
     "bagir": "Geldiii! diye bağır",
     "kapat": "Fenere dokun, kapat",
     "koy": "Feneri çekmeceye sürükle"
   },
+  "sarki": ["Çadırımız kocaman", "Fenerimiz yanıyor", "Kino artık korkmuyor", "Hadi alkış, alkış, alkış!"],
   "dugme": {
     "geldi": "GELDİİ!"
   }

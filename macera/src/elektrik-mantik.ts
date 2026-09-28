@@ -135,26 +135,70 @@ export class YuksekSes {
   }
 }
 
-// ---------------------------------------------------------------- sahne 6: kayıtlı kamp şarkısı (varsa)
+// ---------------------------------------------------------------- sahne 6: kamp şarkısı (Gemini kaydı)
 /**
- * Gemini kaydı gelince: assets/muzik/kamp.json (heceler, vuruslar_ms = alkış vuruşları) + kamp-sozlu/sozsuz.mp3.
- * Kural: oyun şarkıya uyar (kayıt zorlanmaz). Her alkış kaydın bir sonraki parçasını çalar: vuruş n → vuruş n+1.
- * Alkış sayısı kayıttaki vuruş sayısıdır; yaşa göre sayı (6 / 8) kayıtta o kadar vuruş varsa ilk o kadarı alınır.
+ * Kayıt: assets/muzik/kamp.json (heceler, vuruslar_ms = kayıttaki el çırpmaları) + kamp-sozlu / kamp-sozsuz.mp3.
+ * Kural: oyun şarkıya uyar (kayıt zorlanmaz). Önce sözlü şarkı dinlenir. Sonra yankı oyunu: sözsüz altyapıdan bir
+ * parça çalar (vuruşlarında çadırın yıldızları yanar), parça bitince çocuk aynı vuruşları alkışlar (ya da yastığa
+ * vurur). Kayıt çalarken mikrofon dinlemez (sırayla konuşma kuralı); çocuk sessizlikte alkışlar.
+ * Değerlendirme kayıttaki vuruş aralığına göre, yumuşak toleransla.
  */
 export interface KampKayit {
   vuruslar_ms: number[];
-  heceler?: { hece: string; basla_ms: number; bitir_ms: number }[];
+  heceler?: { hece: string; satir: number; basla_ms: number; bitir_ms: number }[];
   sure_ms?: number;
 }
-export interface KampParca {
+export interface KampTur {
+  /** kayıtta parçanın başı ve sonu (ms) */
   basMs: number;
   bitMs: number;
+  /** parçadaki vuruşlar (parçanın başından ms) */
+  vuruslar: number[];
+  /** kayıttaki ortalama vuruş aralığı (ms) */
+  ara: number;
 }
-export function kampParcalari(k: KampKayit | null | undefined, adet: number): KampParca[] {
+/** Her turun kayıttaki ilk vuruşu (şarkının dört satırının başları) */
+export const KAMP_TUR_BAS = [2, 10, 18, 26];
+/** Tur sayısı ve turdaki vuruş (3-4: 2 × 3; 5-6: 2 × 4; toplam 6 / 8 alkış) */
+export const kampTurAyar = (yas: number) => ({ tur: 2, vurus: kucukMu(yas) ? 3 : 4 });
+
+export function kampTurlari(k: KampKayit | null | undefined, yas: number): KampTur[] {
   const v = (k?.vuruslar_ms ?? []).filter((x) => Number.isFinite(x) && x >= 0).sort((a, b) => a - b);
+  const { tur, vurus } = kampTurAyar(yas);
   if (v.length < 2) return [];
-  const n = v.length >= adet ? adet : v.length;
-  const hecelerSon = k?.heceler?.length ? Math.max(...k.heceler.map((h) => h.bitir_ms)) : 0;
-  const son = v.length > n ? v[n] : k?.sure_ms ?? (hecelerSon > v[n - 1] ? hecelerSon : v[n - 1] + 1200);
-  return v.slice(0, n).map((bas, i) => ({ basMs: bas, bitMs: i + 1 < n ? v[i + 1] : son }));
+  const ara = (v[v.length - 1] - v[0]) / (v.length - 1);
+  const turlar: KampTur[] = [];
+  for (const i0 of KAMP_TUR_BAS) {
+    if (turlar.length >= tur) break;
+    if (i0 + vurus > v.length) break;
+    const bas = v[i0];
+    const son = v[i0 + vurus - 1];
+    turlar.push({ basMs: Math.max(0, bas - ara * 0.35), bitMs: son + ara * 0.6, vuruslar: v.slice(i0, i0 + vurus).map((x) => x - Math.max(0, bas - ara * 0.35)), ara });
+  }
+  return turlar;
+}
+
+export type YankiSonuc = 'dogru' | 'az' | 'cok' | 'ritim';
+/** Yumuşak tolerans: her aralık kayıttaki vuruş aralığının %45'i ile 2,1 katı arasında olmalı */
+export const RITIM_ALT = 0.45;
+export const RITIM_UST = 2.1;
+/**
+ * Çocuğun alkışları (ms) kayıttaki vuruşlarla aynı mı: sayı tutmalı; ritim yumuşak (yarı hızda da, biraz hızlı
+ * da olur). ritimBak false ise (3-4 yaş) yalnız sayı.
+ */
+export function yankiSonuc(zamanlar: number[], n: number, ara: number, ritimBak = true): YankiSonuc {
+  if (zamanlar.length < n) return 'az';
+  if (zamanlar.length > n) return 'cok';
+  if (!ritimBak) return 'dogru';
+  for (let i = 1; i < zamanlar.length; i++) {
+    const d = zamanlar[i] - zamanlar[i - 1];
+    if (d < ara * RITIM_ALT || d > ara * RITIM_UST) return 'ritim';
+  }
+  return 'dogru';
+}
+/** Sözlü kaydın satır başları (ms): ekranda şarkı sözü o anda değişir */
+export function kampSatirBaslari(k: KampKayit | null | undefined): number[] {
+  const s = new Map<number, number>();
+  for (const h of k?.heceler ?? []) s.set(h.satir, Math.min(s.get(h.satir) ?? Infinity, h.basla_ms));
+  return [...s.entries()].sort((a, b) => a[0] - b[0]).map(([, b]) => b);
 }

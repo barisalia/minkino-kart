@@ -99,7 +99,8 @@
 .mc-kok .el-cadir::before,
 .mc-kok .el-kup::before,
 .mc-kok .el-kemik::before,
-.mc-kok .el-fener::before {
+.mc-kok .el-fener::before,
+.mc-kok .el-yastik::before {
   content: '';
   position: absolute;
   z-index: -1;
@@ -881,4 +882,21 @@
   .mc-kok .el-cokuk.dolasiyor .el-tumsek {
     animation: none;
   }
+}
+/* kamp şarkısı: gösterilen vuruşta yıldız kısa parlar (yanık değil); yastık: alkışın dokunma karşılığı */
+.mc-kok .el-isiklar i.goster {
+  animation: el-yildiz-goster 0.42s ease-out;
+}
+@keyframes el-yildiz-goster {
+  0% {
+    background: #fff6c2;
+    scale: 1.7;
+  }
+  100% {
+    scale: 1;
+  }
+}
+.mc-kok .el-yastik {
+  cursor: pointer;
+  transform-origin: 50% 100%;
 }

@@ -50,8 +50,7 @@ async function gorevBekle(page: Page, adlar: string[], ms = 30000) {
 }
 const el = (page: Page, ad: string) => page.locator(`[data-el="${ad}"]`).first();
 
-async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unknown>) {
-  const T = 30000;
+async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unknown>, T = 30000) {
   const bekle = (ms: number) => page.waitForTimeout(ms);
 
   // 1. Pıt! Kino masanın altında: örtüyü okşa (kulak → burun → çıkış)
@@ -92,6 +91,7 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await ekran('3-isik');
   for (const yer of ['koltuk', 'masa', 'perde']) {
     await gorevBekle(page, ['isik'], T);
+    const sayi = Number(await hedef(page));
     const h = el(page, `${yer}-hedef`);
     await sabit(h);
     let m = await merkez(h);
@@ -108,21 +108,21 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
       await page.mouse.move(m.x, m.y);
       await page.mouse.down();
     }
-    await bekle(400);
+    await bekle(T > 30000 ? 1500 : 400);
     await page.mouse.up();
     if (yer === 'koltuk') {
       await bekle(250);
       await ekran('3b-mino-ziplar');
     }
     // Mino zıplayıp dönene kadar bekle (sonraki hedef ancak o zaman sayılır)
-    await bekle(1500);
+    await expect.poll(async () => (await gorev(page)) === 'kino' || Number(await hedef(page)) > sayi, { timeout: T }).toBe(true);
   }
   await gorevBekle(page, ['kino'], T);
   {
     const m = await merkez(el(page, 'kino'), 0.5, 0.35);
     await page.mouse.move(m.x, m.y);
     await page.mouse.down();
-    await bekle(400);
+    await bekle(T > 30000 ? 1500 : 400);
     await page.mouse.up();
   }
   await expect.poll(() => gorev(page), { timeout: T }).not.toBe('kino');
@@ -186,18 +186,31 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await dokun(page, el(page, 'mandal-1'));
   await bekle(600);
   await dokun(page, el(page, 'mandal-2'));
-  await gorevBekle(page, ['sarki'], T);
-  const nota = Number(await hedef(page));
-  expect(nota).toBe(yas <= 4 ? 6 : 8);
-  for (let i = 0; i < nota; i++) {
-    await dokun(page, el(page, 'cadir'), 0.5, 0.6);
-    await bekle(200);
-    if (i === nota - 2) await ekran('6b-sarki');
+  // kamp şarkısı: önce dinlenir, sonra iki tur yankı (yastığa vur: 3-4 yaşta 3'er, 5-6 yaşta 4'er vuruş)
+  await gorevBekle(page, ['sarki-dinle', 'sarki'], T);
+  let tur = 0;
+  for (let i = 0; i < 600 && tur < 2; i++) {
+    const g = await gorevBekle(page, ['sarki', 'sarki-dinle'], T);
+    if (g === 'sarki-dinle') {
+      await bekle(150);
+      continue;
+    }
+    const hd = await hedef(page);
+    const n = Number(hd.split('/')[0]);
+    expect(n).toBe(yas <= 4 ? 3 : 4);
+    await sabit(el(page, 'yastik'));
+    const y = await merkez(el(page, 'yastik'), 0.5, 0.35);
+    for (let j = 0; j < n; j++) {
+      await page.mouse.click(y.x, y.y);
+      await bekle(300);
+    }
+    if (tur === 1) await ekran('6b-sarki');
+    await expect.poll(async () => (await gorev(page)) + (await hedef(page)), { timeout: T }).not.toBe('sarki' + hd);
+    tur++;
   }
-  await expect.poll(() => gorev(page), { timeout: T }).not.toBe('sarki');
-  await expect(el(page, 'cokuk')).toBeVisible({ timeout: T });
-  await bekle(300);
-  await ekran('6c-hayalet-kino');
+  expect(tur).toBe(2);
+  // çadır çöker: hayalet Kino (test hızında kısa sürer; yakalanırsa kare alınır)
+  if (await el(page, 'cokuk').isVisible({ timeout: 0 }).catch(() => false) || (await el(page, 'cokuk').waitFor({ timeout: 8000 }).then(() => true).catch(() => false))) await ekran('6c-hayalet-kino');
 
   // 7. Geldiii! büyük düğme, feneri kapat, çekmeceye koy; Kino lambayı kapatır
   await gorevBekle(page, ['bagir'], T);
@@ -225,6 +238,7 @@ for (const yas of [3, 6]) {
       await oyna(page, yas, (ad) => page.screenshot({ path: `tests/screens/elektrik-${p}-${yas}yas-${ad}.png` }));
     } finally {
       if (hatalar.length) console.log('HATALAR', hatalar);
+      await page.screenshot({ path: `tests/screens/elektrik-${p}-${yas}yas-zz-son-durum.png` }).catch(() => undefined);
     }
     expect(hatalar).toEqual([]);
   });
@@ -250,5 +264,15 @@ test('Elektrikler Kesildi: açılış kartı', async ({ page }, info) => {
   await page.screenshot({ path: `tests/screens/elektrik-${info.project.name}-acilis.png` });
   await page.locator('.el-bolum-kart').click();
   await expect(page.locator('.el-sahne')).toBeVisible({ timeout: 15000 });
+  expect(hatalar).toEqual([]);
+});
+
+test('Elektrikler Kesildi: gerçek hızda (kayıtlı şarkıyla)', async ({ page }, info) => {
+  test.skip(!process.env.ELEKTRIK_GERCEK, 'yalnız ELEKTRIK_GERCEK=1 ile (uzun sürer)');
+  test.setTimeout(900_000);
+  const hatalar = hataTopla(page);
+  await page.goto('./macera/?onizleme=1&ekran=bolum&yas=6&bolum=elektrik');
+  const p = info.project.name;
+  await oyna(page, 6, (ad) => page.screenshot({ path: `tests/screens/elektrik-gercek-${p}-${ad}.png` }), 90000);
   expect(hatalar).toEqual([]);
 });

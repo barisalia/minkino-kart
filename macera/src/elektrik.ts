@@ -59,6 +59,7 @@ import {
   SAKSI_SVG,
   SANDALYE_SVG,
   tekil,
+  YASTIK_SVG,
 } from './elektrik-cizim';
 import { balonGoster, Gece, GecePencere, PENCERE } from './elektrik-efekt';
 import {
@@ -74,7 +75,12 @@ import {
   isaretSonuc,
   kabulMu,
   kampNotalari,
-  kampParcalari,
+  kampSatirBaslari,
+  kampTurAyar,
+  kampTurlari,
+  kucukMu,
+  yankiSonuc,
+  type KampTur,
   Oksama,
   SES_SIRASI,
   sessizlikIlerle,
@@ -130,6 +136,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const bX = (n: number) => ((n * bPx) / Wd) * 100;
   const bY = (n: number) => ((n * bPx) / Hd) * 100;
   const dikey = W / H < 0.8;
+  /** Yatay telefon (alçak ekran): bazı çekim ve yerleşimler buna göre */
+  const yatayTel = W / H > 1.3;
   /** Arka plan resmindeki bir nokta (1024×1024, cover, konum 50% 82%): dünya % (x soldan, y alttan, ust üstten) */
   const arkaS = Math.max(Wd / 1024, Hd / 1024);
   const arkaNokta = (ix: number, iy: number) => {
@@ -232,7 +240,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const saksi = koy(h('div.el-saksi', { 'data-el': 'saksi' }, esya('saksi', SAKSI_SVG, 'Saksı'), h('i.el-damla'), h('i.el-damla.d2')), SAKSI.x, SAKSI.y, SAKSI.w, 4);
   // duvar saati (komodin ile lambanın arasında, duvarda)
   // (yatay telefonda ekran alçak: saat duvarda daha aşağıda, sahne 4 çekimine Kino ile birlikte sığsın)
-  const SAAT = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : W / H > 1.3 ? 5 : 20), w: 10 };
+  const SAAT = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : yatayTel ? 5 : 20), w: 10 };
   const saat = koy(h('div.el-saat', { 'data-el': 'saat' }, esya('saat', SAAT_SVG, 'Saat')), SAAT.x, SAAT.y, SAAT.w, 1);
   // masa (ortada, örtülü): Kino altına saklanır
   const MASA = { x: X(6), y: Y(8), w: 36 };
@@ -240,7 +248,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const masa = koy(h('div.el-masa', { 'data-el': 'masa' }, esya('masa', '', 'Masa', 'parti/masa')), MASA.x, MASA.y, MASA.w, 6);
   // küp kule (masanın solunda, önde)
   const KULE = { x: X(-9), y: Y(1), w: 7 };
-  const kupler = KUPLER.map((k, i) => koy(h('div.el-kup', { html: kupSvg(k.renk, k.desen, `el-kup-${i}`) }), KULE.x, KULE.y + bY(i * 7 * 0.84), KULE.w, 7 + i));
+  // küpler aynı katmanda (masanın önünde, Kino ile Mino'nun arkasında); üst üste binen küpte sonraki üstte kalır
+  const kupler = KUPLER.map((k, i) => koy(h('div.el-kup', { html: kupSvg(k.renk, k.desen, `el-kup-${i}`) }), KULE.x, KULE.y + bY(i * 7 * 0.84), KULE.w, 7));
   kupler[3].style.opacity = '0';
   // katlı battaniye (koltuğun oturağında)
   const battaniyeYer = { x: KOLTUK.x - bX(2), y: KOLTUK.y + bY(koltukH * 0.3), w: 13 };
@@ -299,6 +308,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   };
   const kisiH = KISI_W * KISI_ORAN;
   /** Sahne 6'nın çadırı sahne 7'ye geçer (akıştan önce tanımlı olmalı) */
+  /** Yankı turlarının sırası (durum yazısında; test her yeni turu ayırt eder) */
+  let yankiSira = 0;
   let sahne6Sonu: { cadir: HTMLElement; CADIR: { x: number; y: number; w: number } } | null = null;
 
   // ================================================================ akış altyapısı
@@ -952,7 +963,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // perdenin alt ucu (ışık oraya gelince Mino tırmanır); çekim onu da güvenli alana alır
     const perde = arkaNokta(452, 430);
     // (yatay telefonda perde çekime sığmaz: çekim yerde kalır, ışık üst kenara gelince kamera yukarı kayar)
-    await cek(X(-36), X(38), Y(-3), W / H > 1.3 ? DUVAR + bY(30) : Math.max(DUVAR + bY(30), perde.y + bY(18)), 1.5, 1000);
+    await cek(X(-36), X(38), Y(-3), yatayTel ? DUVAR + bY(30) : Math.max(DUVAR + bY(30), perde.y + bY(18)), 1.5, 1000);
     const kamBas: [number, number] = [kamT[0], kamT[1]];
     await mSoyle(M.isik);
     // hedefler: koltuk (oturağı), perde (arka plandaki sağ perde), masa (üstü)
@@ -967,7 +978,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       masa: { el: hedefEl('masa', MASA.x, MASA.y + bY(masaH * 0.4), bX(MASA.w * 0.8), bY(masaH * 0.6)), ini: [MASA.x, MASA.y + bY(masaH * 0.9)] },
     };
     const temizHedef = () => Object.values(HEDEF).forEach((h) => h.el.remove());
-    durumYaz('isik');
+    durumYaz('isik', 0);
     ui.ipucu(I.isik);
     const ziplanan: ZiplamaYeri[] = [];
     let mesgul = false;
@@ -1063,6 +1074,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         }
         void minoZipla(yer as ZiplamaYeri).then(async () => {
           ziplanan.push(yer as ZiplamaYeri);
+          if (ziplanan.length < ZIPLAMA_SAYISI) durumYaz('isik', ziplanan.length);
           if (ziplanan.length >= ZIPLAMA_SAYISI) {
             kinoSira = true;
             kinoHedef = KN.kap;
@@ -1438,9 +1450,49 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     });
   }
 
+  /**
+   * Yankı: çocuk parçanın vuruşlarını alkışlar (mikrofon: Alkis; parmak: yastığa vur). Seri 1.4 sn sessizlikte
+   * biter; alkış zamanları (ms) döner. Her alkışta sıradaki yıldız yanar. Mikrofonla gelen alkışta oyun ses
+   * çalmaz (sonraki alkışı duyabilsin); yastığa vurunca yumuşak "pof".
+   */
+  function yankiBekle(n: number, ilk: number, isiklar: HTMLElement[], yastik: HTMLElement): Promise<number[]> {
+    // hedef: vuruş sayısı / tur sırası (test her yeni turu ayırt edebilsin)
+    durumYaz('sarki', `${n}/${++yankiSira}`);
+    ui.ipucu(I.sarki);
+    return gorev<number[]>((coz) => {
+      const a = new Alkis(kulak.ayar);
+      const ip = ipucu(kutu(yastik));
+      a.onAlkis = (sira) => {
+        if (sira <= n) isiklar[ilk + sira - 1]?.classList.add('yanik');
+        ip.ilerle();
+        MN.tepki('dans', 0.5);
+        KN.kinoOynat('dans', 400);
+      };
+      a.onSeri = (z) => coz(z.map((s) => s * 1000));
+      const bas = (e: PointerEvent) => {
+        e.stopPropagation();
+        S.pat();
+        yastik.animate([{ scale: '1 1' }, { scale: '1.12 0.8' }, { scale: '0.96 1.05' }, { scale: '1 1' }], { duration: sure(280), easing: 'ease-out' });
+        a.dokun();
+      };
+      yastik.addEventListener('pointerdown', bas);
+      kulak.dinle((o) => a.kare(o));
+      const kapat = tik(() => a.tik());
+      return () => {
+        kapat();
+        kulak.dinle(null);
+        bitir(ip);
+        yastik.removeEventListener('pointerdown', bas);
+        ui.ipucu(null);
+        durumYaz(null);
+      };
+    });
+  }
+
   // ================================================================ 6: Battaniye çadırı
   async function sahne6() {
-    await cek(X(dikey ? -30 : -40), X(dikey ? 30 : 40), Y(dikey ? -7 : -4), Y(40), 1.5, 1000);
+    if (yatayTel) await cek(X(-40), X(40), Y(-7), battaniyeYer.y + bY(9), 1.5, 1000);
+    else await cek(X(dikey ? -30 : -40), X(dikey ? 30 : 40), Y(dikey ? -7 : -4), Y(40), 1.5, 1000);
     // ışık halının ortasına, geniş; oda biraz daha seçilir
     gece.hedef(...px(X(0), Y(6)));
     gece.delik(Math.min(W, H) * (dikey ? 0.3 : 0.34) / Math.max(1, kamZ));
@@ -1469,7 +1521,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ];
     // karakterler kenara
     // (dikey telefonda dar çekim: karakterler arkaya, masanın iki yanına; sandalyeler önde görünür)
-    if (dikey) {
+    if (dikey || yatayTel) {
       void MN.git(X(-19), Y(13), 700, 0, undefined, true);
       void KN.git(X(19), Y(13), 700);
       MN.katman = 7;
@@ -1597,66 +1649,138 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     durumYaz(null);
     ui.ipucu(null);
 
-    // kamp şarkısı: her alkış bir nota, çadırın ışıklarından biri yanar
+    // kamp şarkısı (Gemini kaydı; oyun şarkıya uyar): önce sözlü şarkı dinlenir; sonra yankı: altyapıdan bir parça
+    // çalar (vuruşlarında çadırın yıldızları yanıp söner), parça bitince çocuk aynı vuruşları alkışlar ya da yastığa
+    // vurur. Kayıt çalarken mikrofon dinlemez (sırayla konuşma); değerlendirme kayıttaki vuruş aralığına göre, yumuşak.
     await mSoyle(M.sarki);
-    // Kayıt (Gemini) varsa oyun şarkıya uyar: alkış vuruşları kamp.json'dan, her alkış kaydın bir parçası.
-    // Yoksa sentez: yaşa göre 6 / 8 nota.
     const kayit = S.kampKaydi();
-    const parcalar = kayit ? kampParcalari(kayit.kayit, ayar.alkis) : [];
-    const calar = parcalar.length ? new S.KampCalar(kayit!.url) : null;
-    const notalar = calar ? parcalar.map(() => 0) : kampNotalari(ayar.alkis);
-    const isikSayisi = notalar.length;
-    const isikKap = cadir.querySelector<HTMLElement>('.el-isiklar')!;
-    if (isikKap.children.length !== isikSayisi) isikKap.replaceChildren(...Array.from({ length: isikSayisi }, (_, i) => h('i', { style: `--i:${i};--n:${isikSayisi}` })));
-    const isiklar = [...cadir.querySelectorAll<HTMLElement>('.el-isiklar i')];
+    const turlar = kayit ? kampTurlari(kayit.kayit, yas) : [];
+    const calar = kayit && turlar.length ? new S.KampCalar(kayit.sozlu, kayit.sozsuz) : null;
     iptaller.push(() => calar?.kapat());
-    await sesliGorev(() =>
-      gorev<void>((coz) => {
-        durumYaz('sarki', isikSayisi);
-        ui.ipucu(I.sarki);
-        let n = 0;
-        const a = new Alkis(kulak.ayar);
-        const ip = ipucu(kutu(cadir));
-        const vur = () => {
-          if (n >= notalar.length) return;
-          if (calar) calar.parca(parcalar[n]);
-          else S.kampNota(notalar[n], n % 2 === 0);
-          isiklar[n]?.classList.add('yanik');
-          n++;
-          ui.ilerleme(n, notalar.length);
-          ip.ilerle();
-          cadir.animate([{ scale: '1 1' }, { scale: '1.04 0.96' }, { scale: '1 1' }], { duration: sure(260), easing: 'ease-out' });
-          MN.tepki('dans', 0.6);
-          KN.kinoOynat('dans', 500);
-          if (n >= notalar.length) setTimeout(coz, sure(600));
-        };
-        a.onAlkis = vur;
-        const bas = (e: PointerEvent) => {
-          e.stopPropagation();
-          vur();
-        };
-        cadir.addEventListener('pointerdown', bas);
-        kulak.dinle((o) => a.kare(o));
-        const kapat = tik(() => a.tik());
-        return () => {
-          kapat();
-          kulak.dinle(null);
-          bitir(ip);
-          cadir.removeEventListener('pointerdown', bas);
-          ui.ipucu(null);
-          durumYaz(null);
-        };
-      }),
-    );
-    ui.ilerleme(0, 0);
-    if (calar) {
-      // son parça kendi sonuna kadar çalar (oyun şarkıya uyar)
-      const p = parcalar[parcalar.length - 1];
-      await bekle(Math.min(3000, Math.max(0, p.bitMs - p.basMs - 600)));
-      calar.kapat();
-    } else [72, 76, 79, 84].forEach((m, i) => setTimeout(() => S.kampNota(m, false), sure(i * 120)));
-    konfeti(cadir, 36);
-    await bekle(900);
+    // kayıt yoksa: aynı tempoda sentez vuruşlar
+    const { vurus: turVurus, tur: turSayisi } = kampTurAyar(yas);
+    const YEDEK_ARA = 575;
+    const TURLAR: KampTur[] = turlar.length
+      ? turlar
+      : Array.from({ length: turSayisi }, () => ({ basMs: 0, bitMs: YEDEK_ARA * (turVurus + 0.3), vuruslar: Array.from({ length: turVurus }, (_, i) => YEDEK_ARA * (0.35 + i)), ara: YEDEK_ARA }));
+    const toplam = TURLAR.reduce((a, t) => a + t.vuruslar.length, 0);
+    const notalar = kampNotalari(toplam);
+    const isikKap = cadir.querySelector<HTMLElement>('.el-isiklar')!;
+    isikKap.replaceChildren(...Array.from({ length: toplam }, (_, i) => h('i', { style: `--i:${i};--n:${toplam}` })));
+    const isiklar = [...isikKap.querySelectorAll<HTMLElement>('i')];
+    const parlat = (el: HTMLElement | undefined) => {
+      if (!el) return;
+      el.classList.remove('goster');
+      void el.offsetWidth;
+      el.classList.add('goster');
+    };
+    const dansEt = (guc = 0.6) => {
+      cadir.animate([{ scale: '1 1' }, { scale: '1.03 0.97' }, { scale: '1 1' }], { duration: sure(260), easing: 'ease-out' });
+      MN.tepki('dans', guc);
+      KN.kinoOynat('dans', 500);
+    };
+    // yastık: alkışın dokunma karşılığı (çadırın kapısının önünde)
+    const yastik = koy(h('div.el-yastik', { 'data-el': 'yastik', role: 'button', 'aria-label': 'Yastık' }, esya('yastik', YASTIK_SVG, 'Yastık')), CADIR.x, CADIR.y + bY(1), 12, 13);
+    yastik.animate([{ scale: '0.2', opacity: 0 }, { scale: '1.1', opacity: 1, offset: 0.7 }, { scale: '1' }], { duration: sure(420), easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
+    S.pop();
+
+    await sesliGorev(async () => {
+      // 1) sözlü şarkıyı dinle: sözler ekranda satır satır, herkes vuruşlarda sallanır
+      await mSoyle(M.sarki_dinle);
+      durumYaz('sarki-dinle');
+      ui.ipucu(I.sarki_dinle);
+      if (calar && kayit && !TEST_MODU) {
+        const k = kayit.kayit;
+        const satirlar = kampSatirBaslari(k);
+        await gorev<void>((coz) => {
+          const zaman: ReturnType<typeof setTimeout>[] = [];
+          satirlar.forEach((ms, i) => zaman.push(setTimeout(() => ui.yazi(EL.sarki[i] ?? ''), ms)));
+          k.vuruslar_ms.forEach((ms, i) => zaman.push(setTimeout(() => {
+            parlat(isiklar[i % isiklar.length]);
+            if (i % 2 === 0) dansEt(0.4);
+          }, ms)));
+          void calar.cal('sozlu', 0, k.sure_ms ?? (k.vuruslar_ms[k.vuruslar_ms.length - 1] ?? 0) + 800).then(() => coz());
+          return () => {
+            zaman.forEach(clearTimeout);
+            calar.durdur();
+          };
+        });
+      } else {
+        for (const [i, s] of EL.sarki.entries()) {
+          ui.yazi(s);
+          parlat(isiklar[i]);
+          dansEt(0.4);
+          await bekle(700);
+        }
+      }
+      ui.ipucu(null);
+      durumYaz(null);
+
+      // 2) yankı: parça çalar → çocuk aynı vuruşları alkışlar
+      await mSoyle(M.sen_alkisla);
+      let yildiz = 0;
+      for (const [ti, t] of TURLAR.entries()) {
+        const n = t.vuruslar.length;
+        for (let deneme = 0; ; deneme++) {
+          durumYaz('sarki-dinle');
+          await gorev<void>((coz) => {
+            const zaman: ReturnType<typeof setTimeout>[] = t.vuruslar.map((ms, i) =>
+              setTimeout(() => {
+                parlat(isiklar[yildiz + i]);
+                dansEt(0.5);
+                if (!calar) S.kampNota(notalar[yildiz + i], i % 2 === 0);
+              }, sure(ms)),
+            );
+            if (calar && !TEST_MODU) void calar.cal('sozsuz', t.basMs, t.bitMs).then(() => coz());
+            else {
+              kulak.sustur(t.bitMs - t.basMs + 350);
+              zaman.push(setTimeout(coz, sure(t.bitMs - t.basMs)));
+            }
+            return () => {
+              zaman.forEach(clearTimeout);
+              calar?.durdur();
+            };
+          });
+          const zamanlar = await yankiBekle(n, yildiz, isiklar, yastik);
+          const sonuc = yankiSonuc(zamanlar, n, t.ara, !kucukMu(yas) && !TEST_MODU);
+          if (sonuc === 'dogru' || kabulMu(deneme)) break;
+          // tutmadı (komik, cezasız): Kino başını yana yatırır, yıldızlar söner, parça yeniden
+          isiklar.slice(yildiz, yildiz + n).forEach((i) => i.classList.remove('yanik'));
+          KN.kinoOynat('bak', 1000, 1);
+          void balon(KN, B.hi, 900);
+          await bekle(1000);
+        }
+        yildiz += n;
+        S.yildiz(ti + 2);
+        MN.tepki('zipla');
+        KN.kinoOynat('sevin', 700);
+        ui.ilerleme(yildiz, toplam);
+        await bekle(700);
+      }
+      ui.ilerleme(0, 0);
+      // 3) hep birlikte: sözlü kaydın son satırı ("Hadi alkış, alkış, alkış!"), bütün yıldızlar parlar
+      konfeti(cadir, 36);
+      if (calar && kayit && !TEST_MODU) {
+        const k = kayit.kayit;
+        const son = kampSatirBaslari(k).pop() ?? 0;
+        ui.yazi(EL.sarki[EL.sarki.length - 1]);
+        await gorev<void>((coz) => {
+          const zaman = k.vuruslar_ms.filter((ms) => ms >= son - 200).map((ms) => setTimeout(() => {
+            isiklar.forEach(parlat);
+            dansEt(0.7);
+          }, ms - son + 200));
+          void calar.cal('sozlu', Math.max(0, son - 200), k.sure_ms ?? son + 3000).then(() => coz());
+          return () => {
+            zaman.forEach(clearTimeout);
+            calar.durdur();
+          };
+        });
+      } else [72, 76, 79, 84].forEach((m, i) => setTimeout(() => S.kampNota(m, false), sure(i * 120)));
+      calar?.kapat();
+    });
+    yastik.animate([{ scale: '1', opacity: 1 }, { scale: '0.3', opacity: 0 }], { duration: sure(300), fill: 'forwards' });
+    setTimeout(() => yastik.remove(), sure(320));
+    await bekle(600);
 
     // şaka: Kino çadıra dalar, kuyruğu sandalyeye çarpar, çadır çöker; altında tümsek dolaşır
     KN.kinoOynat('coskulu', 700);
