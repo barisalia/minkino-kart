@@ -15,6 +15,8 @@ const ANA = [
   ['ekip/kino', 'kino-34', 'kino-34'],
   // Bebek Ege (Sesli Maceralar Bölüm 2): kafa, kol, bacak, göz, ağız, kaş katmanları
   ['ekip/ege', 'ege', 'ege'],
+  // Anne (Ege bölümü): ayakta çizimi (anne.webp) + dudak senkronu ağızları; tuval 428×1143 (ekip/ege/IFADELER.md)
+  ['ekip/ege', 'anne', 'anne'],
 ];
 /**
  * İfade setleri (göster / gizle). Kaynak JSON'da "ifadeler" varsa o, yoksa buradaki tablo (tasarımcının ifade
@@ -76,6 +78,11 @@ function aktar(jsonYol, svg, ad) {
   const bilgi = JSON.parse(fs.readFileSync(jsonYol, 'utf8').replace(/^﻿/, ''));
   if (!bilgi.donme || !bilgi.sira) return;
   const sade = { ad: bilgi.ad ?? ad, boyut: bilgi.boyut ?? 2048, sira: bilgi.sira, gizli: bilgi.gizli ?? [], bagli: bilgi.bagli ?? {}, donme: bilgi.donme };
+  // kare olmayan tuval (ör. anne 428×1143): en × boy da yazılır, boyut uzun kenar
+  if (Array.isArray(bilgi.tuval)) {
+    sade.tuval = bilgi.tuval;
+    if (!bilgi.boyut) sade.boyut = Math.max(...bilgi.tuval);
+  }
   const ifadeler = yonSetleri(sade, bilgi.ifadeler ?? IFADE_TABLOSU[ad]);
   if (ifadeler) sade.ifadeler = ifadeler;
   fs.writeFileSync(path.join(HEDEF, `${ad}.json`), JSON.stringify(sade, null, 2) + '\n');

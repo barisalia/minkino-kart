@@ -57,6 +57,7 @@ import { SesSeviyesi } from './ege-seviye';
 import { Ipucu, iz, parmak, Surukle, tasi, type Hedef } from './ege-surukle';
 import { Oyuncu } from './oyuncu';
 import { cocukOyuncu } from './ege-cocuk';
+import { AnneIskelet, anneIskeletVar } from './ege-anne';
 import { Sahne } from './sahne';
 import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
 import NINNI_SESI from '../../assets/muzik/ninni-sozlu.mp3?url';
@@ -246,6 +247,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const anneBalon = h('div.eg-balon');
   const anne = sahne.koy(h('div.eg-anne', { 'data-ege': 'anne' }, anneGov, anneBalon), { x: 55, y: Z + 10, w: 19, z: 4 });
   anne.classList.toggle('katmanli', !!anneNefes);
+  // ayakta pozunda konuşurken ağzı oynar (katmanlı iskelet, ege-anne.ts): img'nin üstünde yalnız ağız yaması
+  const anneIsk = egeAdres(ANNE_GORSEL) && anneIskeletVar() ? new AnneIskelet(anneBalon, () => anne.classList.add('iskeletli')) : null;
+  if (anneIsk) anneGov.append(anneIsk.el);
   /** Görünen çizim: ayakta | uyuyor | sariliyor (uyanık oturuş çizimi yoksa kollarını açmış sarılıyor çizimi) */
   type AnneResim = 'ayakta' | 'uyuyor' | 'sariliyor';
   let anneResim = 'ayakta' as AnneResim;
@@ -503,13 +507,15 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     if (kapandi) throw IPTAL;
     ui.yazi(t);
     anne.classList.add('konusuyor');
-    // anne konuşurken Mino'nun ağzı oynamasın (dudak senkronu: konuşanın ağzı)
+    // anne konuşurken yalnız annenin ağzı oynar, Mino'nunki oynamaz (dudak senkronu: konuşanın ağzı)
     mino.agizSus = true;
+    anneIsk?.konus(t);
     try {
       await konus(t, { ton: 0.95 });
     } finally {
       anne.classList.remove('konusuyor');
       mino.agizSus = false;
+      anneIsk?.konus(null);
     }
     if (kapandi) throw IPTAL;
   };
@@ -736,6 +742,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     mino.kapat();
     ege.kapat();
     Object.values(iskeletler).forEach((i) => i?.kapat());
+    anneIsk?.kapat();
     acikSurukle.forEach((s) => s.kapat());
     acikIpucu.forEach((i) => i.kapat());
     clearInterval(anneZzz);

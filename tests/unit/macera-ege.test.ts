@@ -8,6 +8,9 @@ import NINNI from '../../assets/muzik/ninni.json';
 import { CEE_TURLARI, EGE_RITIM, egeAyar, gulme, kabulMu, kucukMu, ninni, NINNI_DIZE, NINNI_REF_MIDI, ninniSonuMs, Salinim, SERBEST_KUKLA } from '../../macera/src/ege-mantik';
 import { SesSeviyesi, sesDurumu, soyleyisSonucu, YUKSEK_UST, type Soyleyis } from '../../macera/src/ege-seviye';
 import { ritimAyniMi } from '../../ses-testi/src/analiz';
+import ANNE_ISKELET from '../../assets/karakter-iskelet/anne.json';
+import ANNE_HIZA from '../../assets/ege/anne-hizalama.json';
+import { AGIZ_SEKILLERI, agizKatmaniSec } from '../../src/audio/dudak-mantik';
 
 const AYAR: Ayar = { taban: -60, duyarlilik: 0, kare: 1024 / 48000 };
 /** Yapay kare: taban üstü dB, perde (Hz ya da null), spektral merkez */
@@ -154,5 +157,25 @@ describe('Ege Uyuyor: cümleler', () => {
       expect(t.split(/\s+/).length).toBeLessThanOrEqual(8);
       expect(t.length).toBeLessThanOrEqual(48);
     }
+  });
+});
+
+describe('Ege Uyuyor: konuşan anne (katmanlı iskelet, ege-anne.ts)', () => {
+  it('iskelet anne.webp ile aynı tuvalde; asıl ağız görünür, 6 dudak senkronu ağzı gizli', () => {
+    expect(ANNE_ISKELET.tuval).toEqual(ANNE_HIZA['anne.webp'].tuval);
+    expect(ANNE_ISKELET.sira.slice(0, 2)).toEqual(['govde', 'agiz']);
+    expect(ANNE_ISKELET.gizli).not.toContain('agiz');
+    for (const s of AGIZ_SEKILLERI) {
+      expect(ANNE_ISKELET.sira).toContain(`agiz-${s}`);
+      expect(ANNE_ISKELET.gizli).toContain(`agiz-${s}`);
+      // her şekil kendi katmanıyla (ölçeklenmiş yedek değil)
+      expect(agizKatmaniSec(s, (id) => ANNE_ISKELET.sira.includes(id))?.id).toBe(`agiz-${s}`);
+    }
+  });
+  it('seslendirilen anne cümlesinde yalnız annenin ağzı oynar (Mino susar), bitince anne de susar', () => {
+    const soyle = egeKaynak.slice(egeKaynak.indexOf('const anneSoyle'), egeKaynak.indexOf('const efektCal'));
+    expect(soyle).toContain('mino.agizSus = true');
+    expect(soyle).toContain('anneIsk?.konus(t)');
+    expect(soyle).toContain('anneIsk?.konus(null)');
   });
 });
