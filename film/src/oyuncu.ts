@@ -9,12 +9,14 @@
 import type { KonusBilgi } from '../../src/audio/dudak';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
 import { YandanKarakter, yandanVar, yandanYukle } from '../../src/karakter/yandan';
-import { Mino, minoIfadeleriYukle, type MinoEkPoz, type MinoIfade, type Tepki } from '../../src/mino/mino';
+import { Mino, minoIfadeleriYukle, minoPozYukle, type MinoEkPoz, type MinoIfade, type Tepki } from '../../src/mino/mino';
+import { durusPozu, MINO_POZ_ALAN } from '../../src/mino/mino-poz';
 import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, TEST_MODU } from '../../src/ui/dom';
 
-// film açılınca Mino'nun ifade ekleri ve yandan iskeleti önceden yüklensin (ilk kullanımda gecikme olmasın)
+// film açılınca Mino'nun ifade ve poz ekleri ve yandan iskeleti önceden yüklensin (ilk kullanımda gecikme olmasın)
 void minoIfadeleriYukle();
+void minoPozYukle();
 void minoProfilYukle();
 
 const HAYVAN = import.meta.glob<string>('../../assets/hayvanlar/*.webp', { eager: true, query: '?url', import: 'default' });
@@ -76,10 +78,13 @@ function minoIfadeDestek(ad: string): Promise<boolean> {
  * 30-160°: kol-*-yukari katmanı, asıl kol gizlenir; 0: normal kol), dusun (1: düşünüyor: göz, ağız ve sağ kol),
  * bakan (-1 sola / 1 sağa bakan göz; 0: normal).
  * Mino: kafaAci, kafaY, govdeAci, ziplaY (- yükselir), sx, sy, kolSol, kolSag, kuyrukAci, gozKay, gulum (-1 üzgün … 1),
- * agiz (0 kapalı … 1), goz (1: kapalı).
+ * agiz (0 kapalı … 1), goz (1: kapalı); Kino'daki adlarla pozlar (src/mino/mino-poz.ts → durusPozu): otur (1: oturur,
+ * kendiliğinden zemine iner; y vermeyin), yukSol / yukSag (kol açısı; 30°'yi geçince kalkık kol, en çok 160°),
+ * dusun (1), bakan (-1 / 1: o yana bakan gözler; kolu yukSol / yukSag kaldırır), saril (1: sarılma).
  */
 type Durus = Record<string, number>;
-const MINO_ALAN = ['kafaAci', 'kafaY', 'govdeAci', 'ziplaY', 'sx', 'sy', 'kolSol', 'kolSag', 'kuyrukAci', 'gozKay', 'gulum', 'agiz', 'goz'] as const;
+const MINO_EK_ALAN = ['kafaAci', 'kafaY', 'govdeAci', 'ziplaY', 'sx', 'sy', 'kolSol', 'kolSag', 'kuyrukAci', 'gozKay', 'gulum', 'agiz', 'goz'] as const;
+const MINO_ALAN = [...MINO_EK_ALAN, ...MINO_POZ_ALAN] as const;
 const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre', 'patiKuyruk', 'otur', 'yukSol', 'yukSag', 'dusun', 'bakan'] as const;
 /** varsayılanlar (duruş "normal"e dönerken) */
 const VARSAYILAN: Durus = { salla: 1, sx: 1, sy: 1 };
@@ -295,8 +300,15 @@ export class Oyuncu {
     const d = this.simdi;
     if (!Object.keys(d).length) return;
     const e: MinoEkPoz = {};
-    for (const k of MINO_ALAN) if (k in d) e[k] = d[k];
+    for (const k of MINO_EK_ALAN) if (k in d) e[k] = d[k];
     this.mino.ekPoz = e;
+    // pozlar (oturma, kalkık kollar, düşünme, bakış, sarılma): yalnız duruşta verilmişse
+    const p = durusPozu(d);
+    const m = this.mino;
+    if (p.otur !== undefined && p.otur !== m.oturuyor) void m.otur(p.otur);
+    if (p.yukSol !== undefined) m.kol('sol', p.yukSol);
+    if (p.yukSag !== undefined) m.kol('sag', p.yukSag);
+    if (p.poz !== undefined && p.poz !== m.pozSu) void m.poz(p.poz, { kol: false });
   }
 
   /** Karakter (iskelet) pozuna duruşu ekler; eklem sınırları en son */

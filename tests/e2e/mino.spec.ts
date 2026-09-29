@@ -55,3 +55,37 @@ test('Mino: tepkiler (zıpla, dans, ağız açık, göz kapalı, mutlu) ekran g�
   await mino.screenshot({ path: `tests/screens/${info.project.name}-15-mino-goz-kapali.png` });
   expect(hatalar).toEqual([]);
 });
+
+test('Mino: pozlar (kalkık kol, oturma, düşünme, işaret, sarılma) doğru katmanları gösterir', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./?test=1&yas=4&ekran=mino');
+  await expect(page.locator('.mino-svg')).toBeVisible();
+  type M = { kol(y: string, a: number): void; otur(a: boolean): Promise<void>; poz(p: string | null): Promise<void> };
+  const m = (f: string) => page.evaluate((f) => new Function('m', f)((window as unknown as { __mino: M }).__mino), f);
+  const gorunur = (s: string) => page.locator(`.mino ${s}`).first().evaluate((e) => getComputedStyle(e).display !== 'none' && getComputedStyle(e).opacity !== '0');
+  // varsayılan: poz eki yok (tembel paket yüklenmedi)
+  await expect(page.locator('.mino .m-poz')).toHaveCount(0);
+  await m("m.kol('sol', 130); m.kol('sag', 90); return m.otur(true)");
+  await expect(page.locator('.mino.otur.kol-sol-yukari.kol-sag-yukari')).toHaveCount(1);
+  expect(await gorunur('.m-poz-kol-sol-yukari')).toBe(true);
+  expect(await gorunur('.m-poz-otur')).toBe(true);
+  expect(await gorunur('.kl')).toBe(false);
+  expect(await gorunur('.q > .m-asil')).toBe(false);
+  await page.locator('.mino').screenshot({ path: `tests/screens/${info.project.name}-16-mino-poz-kol-otur.png` });
+  await m("m.kol('sol', 0); m.kol('sag', 0); m.otur(false); return m.poz('dusun')");
+  await expect(page.locator('.mino.poz-dusun')).toHaveCount(1);
+  await expect(page.locator('.mino.otur, .mino.kol-sol-yukari')).toHaveCount(0);
+  expect(await gorunur('.m-poz-kol-dusun')).toBe(true);
+  expect(await gorunur('.kr')).toBe(false);
+  await m("return m.poz('isaret-sag')");
+  await expect(page.locator('.mino.kol-sag-yukari.poz-bak-sag')).toHaveCount(1);
+  await m("return m.poz('sarilma')");
+  await expect(page.locator('.mino.poz-sarilma.gozkapali')).toHaveCount(1);
+  expect(await gorunur('.m-poz-sarilma')).toBe(true);
+  await page.locator('.mino').screenshot({ path: `tests/screens/${info.project.name}-17-mino-poz-sarilma.png` });
+  // bırakınca normale döner
+  await m('return m.poz(null)');
+  await expect(page.locator('.mino:is(.poz-sarilma, .poz-dusun, .kol-sag-yukari, .otur)')).toHaveCount(0);
+  expect(await gorunur('.kl')).toBe(true);
+  expect(hatalar).toEqual([]);
+});

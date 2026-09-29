@@ -7,7 +7,10 @@ import { Dudak, type AgizSekli, type KonusBilgi } from '../audio/dudak';
 import { AGIZ_SEKILLERI } from '../audio/dudak-mantik';
 import { konusuyorMu } from '../audio/ses';
 import { h, TEST_MODU } from '../ui/dom';
+import { KUYRUK_OTUR, kolCoz, KOL_EN_COK, OTUR_Y, pozKolu, type MinoKolYan, type MinoPoz } from './mino-poz';
 import { MINO_SVG } from './mino-svg';
+
+export type { MinoKolYan, MinoPoz } from './mino-poz';
 
 // Dönme noktaları (çizimin 2048'lik koordinatları; tasarımcının önerisi)
 const BOYUN = { x: 1024, y: 1240 };
@@ -17,8 +20,6 @@ const KOL_SOL = { x: 840, y: 1290 };
 const KOL_SAG = { x: 1205, y: 1290 };
 /** ağzın üst kenarı (bıyık çizgisinin iki ucu) ve genişliği */
 const AGIZ = { x: 1024, y: 992, g: 168 };
-/** Kollar bundan fazla kalkınca kol ucunda kontur izi görünüyor (çizimin bilinen sınırı) */
-const KOL_EN_COK = 24;
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
 
@@ -69,6 +70,19 @@ export function minoBurunYukle(): Promise<Record<'kafa' | 'yuz' | 'kol' | 'pati'
     () => null,
   );
   return burunYukleme;
+}
+
+/**
+ * Poz ekleri (kalkık kollar, oturma, düşünme, işaret, sarılma; tam vektör, ~90 KB): kendi küçük paketinde, yalnız
+ * kol() / otur() / poz() ilk gerektiğinde bir kez yüklenir. Önceden yüklemek için çağrılabilir (film açılışta).
+ */
+let pozYukleme: Promise<Record<'kuyruk' | 'govde' | 'yuz' | 'kol', string> | null> | null = null;
+export function minoPozYukle(): Promise<Record<'kuyruk' | 'govde' | 'yuz' | 'kol', string> | null> {
+  pozYukleme ??= import('./mino-poz-svg').then(
+    (m) => m.MINO_POZ_SVG,
+    () => null,
+  );
+  return pozYukleme;
 }
 
 /** Burun ifadeleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne) */
@@ -381,6 +395,72 @@ export class Mino {
     this.halEklendi = true;
     return true;
   }
+
+  // ---------------------------------------------------------------- pozlar (IFADELER.md: kalkık kollar, oturma, film 3)
+  /**
+   * Kolun temel açısı (derece, + = dışa / yukarı; iki kol için aynı yön anlamı). Bekleme ve tepki hareketleri üstüne
+   * eklenir. Toplam ~30°'yi geçince asıl kol gizlenir, kalkık kol (kol-*-yukari) aynı açıyla görünür (en çok 160°).
+   * 0: normal kol (varsayılan; eskisi gibi en çok 24°). Kino'daki karşılığı: duruş yukSol / yukSag.
+   */
+  kol(yan: MinoKolYan, aci: number) {
+    this.kolPoz[yan] = Number.isFinite(aci) ? aci : 0;
+    if (this.kolPoz[yan] > 0) void this.pozEkle();
+  }
+  /** kol() ile verilen temel açılar */
+  get kolAcilari(): Readonly<Record<MinoKolYan, number>> {
+    return this.kolPoz;
+  }
+  private kolPoz: Record<MinoKolYan, number> = { sol: 0, sag: 0 };
+
+  /**
+   * Oturur (true) / kalkar (false): gövde ve kuyruk oturan çizimle değişir, karakter ~50 birim aşağı iner (zemine
+   * oturur). Kollar, kalkık kollar, fular ve kafa aynı kalır. Dönen söz çizim hazır olunca çözülür.
+   */
+  otur(acik: boolean): Promise<void> {
+    this.oturIstek = acik;
+    return acik ? this.pozEkle().then(() => undefined) : Promise.resolve();
+  }
+  get oturuyor(): boolean {
+    return this.oturIstek;
+  }
+  private oturIstek = false;
+
+  /**
+   * Tam beden pozu: 'dusun' (sağ pati çenede, gözler yukarı, "hımm" ağzı), 'isaret-sag' / 'isaret-sol' (o yana bakan
+   * gözler + o yandaki kalkık kol 85°), 'sarilma' (kollar göğüste çapraz, gözler kapalı, kapalı gülümseme), null: yok.
+   * ayar.kol false: işarette kol kalkmaz, yalnız gözler o yana bakar (film duruşu "bakan"). Konuşurken pozun ağzı
+   * konuşma ağzına bırakılır. Bir ifade (ifade()) açıksa pozun yüzü gizlenir, kolları kalır.
+   */
+  poz(ad: MinoPoz | null, ayar: { kol?: boolean } = {}): Promise<void> {
+    this.pozIstek = ad;
+    this.pozKol = ayar.kol ?? true;
+    return ad ? this.pozEkle().then(() => undefined) : Promise.resolve();
+  }
+  get pozSu(): MinoPoz | null {
+    return this.pozIstek;
+  }
+  private pozIstek: MinoPoz | null = null;
+  private pozKol = true;
+
+  /** Bu Mino'ya poz eklerini koyar (paylaşılan tembel yükleme; yuvalar: mino-poz-svg.ts, scripts/mino/rig.mjs) */
+  private pozEkle(): Promise<boolean> {
+    this.pozEkleme ??= minoPozYukle().then((ekler) => {
+      const q = this.kok.querySelector(':scope > .q > .m-hal');
+      const g = this.kok.querySelector(':scope > .g > .m-hal');
+      const k = this.kok.querySelector(':scope > .k');
+      if (!ekler || !q || !g || !k) return false;
+      // oturan kuyruk / gövde asıl çizimin (ve hâlinin) hemen üstüne; yüz kafanın sonuna; kollar en üste
+      q.insertAdjacentHTML('afterend', ekler.kuyruk);
+      g.insertAdjacentHTML('afterend', ekler.govde);
+      k.insertAdjacentHTML('beforeend', ekler.yuz);
+      this.kok.insertAdjacentHTML('beforeend', ekler.kol);
+      this.pozEklendi = true;
+      return true;
+    });
+    return this.pozEkleme;
+  }
+  private pozEkleme: Promise<boolean> | null = null;
+  private pozEklendi = false;
 
   /**
    * Film/animatik: Mino konuşuyor (açıkken ağız sese göre oynar; ses yoksa metnin ritmiyle). bilgi: cümle ve
@@ -756,6 +836,18 @@ export class Mino {
       if ((ep.goz ?? 0) > 0.5) gozKapali = Math.max(gozKapali, 1);
     }
 
+    // Pozlar (kol / otur / poz): yalnız çizimleri yüklendiyse (yoksa hiçbir şey değişmez)
+    const pozVar = this.pozEklendi;
+    const pz = pozVar ? this.pozIstek : null;
+    const otur = pozVar && this.oturIstek;
+    if (pz === 'sarilma') {
+      // gözler kapalı, kapalı gülümseme (Adobe agiz-gulumse; yoksa kod ağzı)
+      gozKapali = 1;
+      mutlu = 0;
+      agizHedef = 0;
+      gulum = 1;
+    } else if (pz === 'dusun') mutlu = 0;
+
     // Konuşurken ağız sese göre şekil alır (dudak senkronu: src/audio/dudak.ts); susunca gülümsemeye döner
     const konusuyor = ((konusuyorMu() && !this.agizSus) || this.agizZorla) && !uyku;
     const sekil = this.dudak.kare(performance.now(), konusuyor);
@@ -770,7 +862,8 @@ export class Mino {
       mutlu = 0;
     }
     // Adobe'nin ağız katmanları varsa konuşurken onlar görünür (kod ağzı gizlenir)
-    const katman = this.agizKatman && konusuyor && !this.ifadeAd ? sekil : null;
+    // (sarılırken susunca Adobe'nin kapalı gülümsemesi)
+    const katman = this.agizKatman && !this.ifadeAd ? (konusuyor ? sekil : pz === 'sarilma' ? 'gulumse' : null) : null;
     if (katman !== this.agizKatmanSon) {
       this.agizKatmanSon = katman;
       for (const [ad, g] of this.agizKatman ?? []) g.style.display = ad === katman ? 'inline' : 'none';
@@ -789,7 +882,7 @@ export class Mino {
 
     // Uygula
     const s = this.el.style;
-    const govde = `translate(0px, ${ziplaY * OLCEK}px) ` + donus(AYAK, govdeAci, sx, sy);
+    const govde = `translate(0px, ${ziplaY * OLCEK + (otur ? OTUR_Y : 0)}px) ` + donus(AYAK, govdeAci, sx, sy);
     s.setProperty('--govde', govde);
     // kafa fazla yukarı kalkarsa fuların üstünde boynun konturu görünür: yukarı en çok 6 birim
     const kafaYS = Math.max(-6, kafaY);
@@ -800,10 +893,30 @@ export class Mino {
       bp.kolSol?.style.setProperty('transform', donus(OMUZ_SOL, kafaAci, 1, boy));
       bp.kolSag?.style.setProperty('transform', donus(OMUZ_SAG, kafaAci, 1, boy));
     }
-    s.setProperty('--kuyruk', donus(KUYRUK, kuyrukAci));
-    const kol = (a: number) => Math.max(-8, Math.min(KOL_EN_COK, a));
-    s.setProperty('--kol-sol', donus(KOL_SOL, kol(kolSol)));
-    s.setProperty('--kol-sag', donus(KOL_SAG, -kol(kolSag)));
+    // oturan kuyruk kendi kökünden sallanır
+    s.setProperty('--kuyruk', donus(otur ? KUYRUK_OTUR : KUYRUK, kuyrukAci));
+    // kollar: poz yoksa eskisi gibi (-8 … 24°); kol() / işaret açısıyla 30°'yi geçince kalkık kol (sarılırken ikisi de,
+    // düşünürken sağ kol kendi çiziminde)
+    const kolTemel = (yan: MinoKolYan) => (pz === 'sarilma' || (pz === 'dusun' && yan === 'sag') ? 0 : this.kolPoz[yan] || (this.pozKol ? pozKolu(pz, yan) : 0));
+    const ks = kolCoz(kolTemel('sol'), kolSol, pozVar);
+    const kg = kolCoz(kolTemel('sag'), kolSag, pozVar);
+    s.setProperty('--kol-sol', donus(KOL_SOL, ks.aci));
+    s.setProperty('--kol-sag', donus(KOL_SAG, -kg.aci));
+    if (pozVar) {
+      s.setProperty('--kol-sol-yuk', donus(KOL_SOL, ks.yukari ? ks.aci : 0));
+      s.setProperty('--kol-sag-yuk', donus(KOL_SAG, kg.yukari ? -kg.aci : 0));
+      const c = this.el.classList;
+      const yuz = !!pz && !this.ifadeAd;
+      c.toggle('otur', otur);
+      c.toggle('kol-sol-yukari', ks.yukari && pz !== 'sarilma');
+      c.toggle('kol-sag-yukari', kg.yukari && pz !== 'sarilma' && pz !== 'dusun');
+      c.toggle('poz-dusun', pz === 'dusun');
+      c.toggle('poz-sarilma', pz === 'sarilma');
+      c.toggle('poz-dusun-yuz', yuz && pz === 'dusun');
+      c.toggle('poz-dusun-agiz', yuz && pz === 'dusun' && !konusuyor);
+      c.toggle('poz-bak-sag', yuz && pz === 'isaret-sag');
+      c.toggle('poz-bak-sol', yuz && pz === 'isaret-sol');
+    }
     s.setProperty('--goz-kay', `${gozKay.toFixed(1)}px`);
     s.setProperty('--golge', String(1 - Math.min(0.5, -ziplaY / 400)));
     // Göz: açık çizim ↔ kapalı / mutlu göz çizgisi (katman değişimi; kırpma anında)

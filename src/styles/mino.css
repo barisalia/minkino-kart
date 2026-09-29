@@ -297,3 +297,31 @@
 .mk-kok .mino.ifade-hapsu .m-hapsu { opacity: 1; }
 .mk-kok .mino:is(.ifade-burun-kasinti, .ifade-burun-tut, .ifade-hapsu) :is(.m-goz, .m-kapali-goz, .m-mutlu-goz, .m-agiz, .m-yanak),
 .mk-kok .mino.ifade-burun-tut :is(.kl, .kr) { opacity: 0 !important; }
+
+/* Pozlar (mino.ts → kol, otur, poz; ekler mino-poz-svg.ts'ten tembel gelir; IFADELER.md "Kalkık kollar", "Oturma",
+   "Film 3"). Kalkık / bükük / sarılan kollar gövdeye bağlı, kafanın da önünde; yüz ekleri kafaya bağlı. */
+.mk-kok .mino .m-poz { display: none; }
+.mk-kok .mino .m-poz-kol-sol-yukari { transform: var(--govde) var(--kol-sol-yuk); }
+.mk-kok .mino .m-poz-kol-sag-yukari { transform: var(--govde) var(--kol-sag-yuk); }
+.mk-kok .mino :is(.m-poz-kol-dusun, .m-poz-sarilma) { transform: var(--govde); }
+.mk-kok .mino.otur .m-poz-otur,
+.mk-kok .mino.kol-sol-yukari .m-poz-kol-sol-yukari,
+.mk-kok .mino.kol-sag-yukari .m-poz-kol-sag-yukari,
+.mk-kok .mino.poz-dusun .m-poz-kol-dusun,
+.mk-kok .mino.poz-dusun-yuz .m-poz-dusun-goz,
+.mk-kok .mino.poz-dusun-agiz .m-poz-dusun-agiz,
+.mk-kok .mino.poz-sarilma .m-poz-sarilma { display: inline; }
+/* oturunca asıl gövde ve kuyruk (ve hâlleri) gizli */
+.mk-kok .mino.otur :is(.q, .g) > :is(.m-asil, .m-hal) { display: none; }
+/* asıl kollar: kalkık kolla, düşünen kolla ya da sarılan kollarla değişir */
+.mk-kok .mino.kol-sol-yukari .kl,
+.mk-kok .mino.kol-sag-yukari .kr,
+.mk-kok .mino.poz-dusun .kr,
+.mk-kok .mino.poz-sarilma :is(.kl, .kr) { display: none; }
+/* düşünen yüz: gözler (kırpmasız) ve susarken ağız */
+.mk-kok .mino.poz-dusun-yuz :is(.m-goz, .m-kapali-goz, .m-mutlu-goz),
+.mk-kok .mino.poz-dusun-agiz :is(.m-agiz, .m-agiz-sekil) { opacity: 0 !important; }
+/* işaret: o yana bakan gözler asıl gözlerin yerine; göz kırpınca / sevinince kapalı / mutlu göz çizgisi */
+.mk-kok .mino:is(.poz-bak-sag, .poz-bak-sol) .m-goz { opacity: 0; }
+.mk-kok .mino.poz-bak-sag:not(.gozkapali, .mutlu) .m-poz-bak-sag,
+.mk-kok .mino.poz-bak-sol:not(.gozkapali, .mutlu) .m-poz-bak-sol { display: inline; }

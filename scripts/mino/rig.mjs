@@ -4,7 +4,8 @@
 //   q: kuyruk · g: gövde + fular · kl / kr: sol / sağ kol · k: kafa, gözler ve kodla çizilen ağız
 // Eski çizim (karakter-kaynak/kedi-3.svg) path sınıflandırmasıyla kurulmuştu (sinifla.mjs, parcalar.json); artık gerekmez.
 // Tembel yüklenen ekler: film ifadeleri → src/mino/mino-ifade-svg.ts, hâller (ıslak, pofuduk) → src/mino/mino-hal-svg.ts,
-// burun ifadeleri (kaşıntı, burun tut, hapşu) → src/mino/mino-burun-svg.ts
+// burun ifadeleri (kaşıntı, burun tut, hapşu) → src/mino/mino-burun-svg.ts,
+// pozlar (kalkık kollar, oturma, düşünme, işaret, sarılma) → src/mino/mino-poz-svg.ts
 // Durağan resmi de üretir → assets/karakter/mino.webp
 // Çalıştırma: node scripts/mino/rig.mjs
 import fs from 'node:fs';
@@ -112,6 +113,34 @@ const BURUN = {
   pati: `<g class="m-ifade m-burun-tut m-burun-pati">${burun('pati-burun')}</g>`,
 };
 
+// Poz ekleri (ekip/mino/IFADELER.md "Kalkık kollar", "Oturma", "Film 3"): tam vektör, gizli. Ana çizimde yuvaları yok:
+// mino.ts → pozEkle() dört parçayı yerine koyar (burun ekleri gibi; ana paket büyümesin):
+//   kuyruk: q içinde asıl kuyruğun (ve hâlinin) hemen üstüne (oturan kuyruk; q'nun dönme noktası oturunca değişir)
+//   govde:  ilk g içinde asıl gövdenin (ve hâlinin) hemen üstüne (oturan gövde; fular ve kollar üstte kalır)
+//   yuz:    k'nin sonuna (kafaya bağlı): düşünen göz ve ağız, işaret eden (sağa / sola bakan) gözler
+//   kol:    SVG'nin en sonuna (kafanın ve yüzün de önünde, gövdeye bağlı): kalkık kollar, düşünen kol, sarılan kollar
+// Kırpma yolu kimlikleri (f3-…, otur-…) sayfadaki başka SVG'lerle (Kino'nunkiler de) çakışmasın diye m- öneki alır.
+const pozKatman = (id) =>
+  sade(katman(id))
+    .replace(/id="(f3-|otur-)/g, 'id="m-$1')
+    .replace(/url\(#(f3-|otur-)/g, 'url(#m-$1');
+const POZ = {
+  kuyruk: `<g class="m-poz m-poz-otur">${pozKatman('kuyruk-oturma')}</g>`,
+  govde: `<g class="m-poz m-poz-otur">${pozKatman('govde-oturma')}</g>`,
+  yuz: [
+    `<g class="m-poz m-poz-dusun-goz">${pozKatman('goz-dusun')}</g>`,
+    `<g class="m-poz m-poz-dusun-agiz">${pozKatman('agiz-dusun')}</g>`,
+    `<g class="m-poz m-poz-bak-sag">${pozKatman('goz-bak-sag')}</g>`,
+    `<g class="m-poz m-poz-bak-sol">${pozKatman('goz-bak-sol')}</g>`,
+  ].join(''),
+  kol: [
+    `<g class="m-poz m-poz-kol-sol-yukari">${pozKatman('kol-sol-yukari')}</g>`,
+    `<g class="m-poz m-poz-kol-sag-yukari">${pozKatman('kol-sag-yukari')}</g>`,
+    `<g class="m-poz m-poz-kol-dusun">${pozKatman('kol-sag-dusun')}</g>`,
+    `<g class="m-poz m-poz-sarilma">${pozKatman('kol-sol-sarilma')}${pozKatman('kol-sag-sarilma')}</g>`,
+  ].join(''),
+};
+
 const svg = `<svg class="mino-svg" viewBox="344 140 1360 1790" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 ${defs}
 ${gHal('q')}
@@ -155,6 +184,12 @@ fs.writeFileSync('src/mino/mino-burun-svg.ts', `// Otomatik üretildi: node scri
 export const MINO_BURUN_SVG: Record<'kafa' | 'yuz' | 'kol' | 'pati', string> = ${JSON.stringify(BURUN)};
 `);
 console.log('mino-burun-svg.ts', Math.round(JSON.stringify(BURUN).length / 1024), 'KB');
+// Poz ekleri (~80 KB): ayrı dosya, yalnız kol() 30°'yi geçince, otur() ya da poz() ilk çağrılınca tembel yüklenir
+fs.writeFileSync('src/mino/mino-poz-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.
+// Mino'nun pozları (kalkık kollar, oturma, düşünme, işaret, sarılma): yuva (kuyruk, govde, yuz, kol) → ekler; mino.ts tembel yükler (import()).
+export const MINO_POZ_SVG: Record<'kuyruk' | 'govde' | 'yuz' | 'kol', string> = ${JSON.stringify(POZ)};
+`);
+console.log('mino-poz-svg.ts', Math.round(JSON.stringify(POZ).length / 1024), 'KB');
 fs.writeFileSync('src/mino/mino-svg.ts', `// Otomatik üretildi: node scripts/mino/rig.mjs (kaynak ${KAYNAK}) — elle düzenlemeyin.\nexport const MINO_SVG = ${JSON.stringify(svg)};\n`);
 console.log('mino-svg.ts', Math.round(svg.length / 1024), 'KB');
 

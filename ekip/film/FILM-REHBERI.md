@@ -141,4 +141,5 @@ ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 - **Yan görünüş oyuncusu:** oyuncuda `"yan": true` (`assets/karakter-iskelet/<tip>-profil`): yandan yürür / koşar (`git` + `"stil": "kos"`), `"stil": "yerinde"` olduğu yerde adım atar (merdiven), dururken nefes alır. Çizim sağa bakar (`yon: -1` sola). Ağzı ayrı oyuncudan oynatmak için `soyle` olayında `"agiz": "<oyuncu>"`.
 - **Görünüm değişimi:** `{ "kim": "kinoy", "yap": "yerine", "hedef": "kino", "yon": 1 }` yan ↔ önden Kino (konum aktarılır). `{ "yap": "yer", x, y, don }` anında konum.
 - **Önden Kino / karakter duruşları (`durus`):** `otur: 1` (+ `y: 2.2`), `yukSol` / `yukSag` (30-160° kalkık kol), `dusun: 1`, `bakan: -1 | 1`.
+- **Mino duruşları (`durus`, aynı adlar):** `otur: 1` (kendiliğinden zemine iner, `y` gerekmez), `yukSol` / `yukSag` (kol açısı; 30°'yi geçince kalkık kol, en çok 160°), `dusun: 1`, `bakan: -1 | 1` (yalnız gözler; işaret için `yukSag: 85` / `yukSol: 85` ekleyin), `saril: 1` (kollar göğüste, gözler kapalı, gülümseme). Kodda: `mino.kol('sag', 150)`, `mino.otur(true)`, `mino.poz('dusun' | 'isaret-sag' | 'isaret-sol' | 'sarilma' | null)`.
 
