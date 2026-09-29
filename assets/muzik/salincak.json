@@ -1,0 +1,289 @@
+{
+ "kaynak": "gemini-lyria",
+ "bpm": 101.3,
+ "baslangic_ms": 1000,
+ "sure_ms": 10320,
+ "heceler": [
+  {
+   "hece": "Sal",
+   "satir": 0,
+   "basla_ms": 1000,
+   "bitir_ms": 1300,
+   "midi": 59,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "la",
+   "satir": 0,
+   "basla_ms": 1300,
+   "bitir_ms": 1600,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "sal",
+   "satir": 0,
+   "basla_ms": 1600,
+   "bitir_ms": 1900,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "la",
+   "satir": 0,
+   "basla_ms": 1900,
+   "bitir_ms": 2200,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "sa",
+   "satir": 0,
+   "basla_ms": 2200,
+   "bitir_ms": 2500,
+   "midi": 69,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "lın",
+   "satir": 0,
+   "basla_ms": 2500,
+   "bitir_ms": 2800,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "cak",
+   "satir": 0,
+   "basla_ms": 2800,
+   "bitir_ms": 3100,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "Gök",
+   "satir": 1,
+   "basla_ms": 3100,
+   "bitir_ms": 3400,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "yü",
+   "satir": 1,
+   "basla_ms": 3400,
+   "bitir_ms": 3700,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "zü",
+   "satir": 1,
+   "basla_ms": 3700,
+   "bitir_ms": 4000,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ne",
+   "satir": 1,
+   "basla_ms": 4000,
+   "bitir_ms": 4300,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "va",
+   "satir": 1,
+   "basla_ms": 4300,
+   "bitir_ms": 4600,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ra",
+   "satir": 1,
+   "basla_ms": 4600,
+   "bitir_ms": 4900,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "cak",
+   "satir": 1,
+   "basla_ms": 4900,
+   "bitir_ms": 5200,
+   "midi": 62,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "Sı",
+   "satir": 2,
+   "basla_ms": 5200,
+   "bitir_ms": 5500,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ra",
+   "satir": 2,
+   "basla_ms": 5500,
+   "bitir_ms": 5800,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "sen",
+   "satir": 2,
+   "basla_ms": 5800,
+   "bitir_ms": 6100,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "de",
+   "satir": 2,
+   "basla_ms": 6100,
+   "bitir_ms": 6400,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "sı",
+   "satir": 2,
+   "basla_ms": 6400,
+   "bitir_ms": 6700,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ra",
+   "satir": 2,
+   "basla_ms": 6700,
+   "bitir_ms": 7000,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ben",
+   "satir": 2,
+   "basla_ms": 7000,
+   "bitir_ms": 7300,
+   "midi": 69,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "de",
+   "satir": 2,
+   "basla_ms": 7300,
+   "bitir_ms": 7600,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "Her",
+   "satir": 3,
+   "basla_ms": 7600,
+   "bitir_ms": 7900,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "kes",
+   "satir": 3,
+   "basla_ms": 7900,
+   "bitir_ms": 8200,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "gü",
+   "satir": 3,
+   "basla_ms": 8200,
+   "bitir_ms": 8500,
+   "midi": 67,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "ler",
+   "satir": 3,
+   "basla_ms": 8500,
+   "bitir_ms": 8800,
+   "midi": 65,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "bu",
+   "satir": 3,
+   "basla_ms": 8800,
+   "bitir_ms": 9100,
+   "midi": 64,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "par",
+   "satir": 3,
+   "basla_ms": 9100,
+   "bitir_ms": 9400,
+   "midi": 62,
+   "vurus": 0.5,
+   "tahmini": false
+  },
+  {
+   "hece": "kta",
+   "satir": 3,
+   "basla_ms": 9400,
+   "bitir_ms": 9700,
+   "midi": 60,
+   "vurus": 0.5,
+   "tahmini": false
+  }
+ ],
+ "vuruslar_ms": [
+  173,
+  759,
+  1392,
+  1966,
+  2564,
+  3122,
+  3743,
+  4352,
+  4950,
+  5542,
+  6140,
+  6732,
+  7324,
+  7922,
+  8485,
+  9101,
+  9687,
+  10291
+ ]
+}
