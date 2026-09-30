@@ -24,9 +24,9 @@ test('Film: Mino’nun Karpuzu animatiği baştan sona oynar, sonda öğüt kart
 
 test('Film: Kino ve Elma Kulesi baştan sona oynar (kapakta film seçimi), sonda öğüt kartı', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  // film listesi: karpuz kapağında iki kart; Elma Kulesi kartı o filmi açar
+  // film listesi: karpuz kapağında dört kart; Elma Kulesi kartı o filmi açar
   await page.goto('./film/?test=1');
-  await expect(page.locator('.fl-film-kart')).toHaveCount(3);
+  await expect(page.locator('.fl-film-kart')).toHaveCount(4);
   await page.locator('.fl-film-kart[data-film="kino-elma-kulesi"]').click();
   // ekran geçişi bitince yalnız yeni kapak kalır
   await expect(page.locator('.fl-baslik')).toHaveCount(1);
@@ -67,7 +67,7 @@ test('Film: Kino ve Kaydırak: açılış kartı, 5 sahne, öğüt kartı ve kap
   const hatalar = hataTopla(page);
   await page.goto('./film/?test=1&film=kino-kaydirak');
   await expect(page.locator('.fl-baslik')).toHaveText('Kino ve Kaydırak');
-  await expect(page.locator('.fl-film-kart')).toHaveCount(3);
+  await expect(page.locator('.fl-film-kart')).toHaveCount(4);
   await page.screenshot({ path: `tests/screens/${info.project.name}-f5-kaydirak-kapak.png` });
   await page.evaluate(() => {
     const w = window as unknown as { __sahneler: string[]; __sozler: string[] };
@@ -98,6 +98,49 @@ test('Film: Kino ve Kaydırak: açılış kartı, 5 sahne, öğüt kartı ve kap
   });
   expect(kayit.sahneler).toEqual(['1-siranin-basi', '2-sira-arkada', '3-sona-git', '4-bekleme', '5-sira-bende']);
   expect(kayit.sozler).toEqual(['Parkta kaydırak sırası vardı.', 'Kaydırak! Kaydırak!', 'Ben önce!', 'Kino, sıra arkada.', 'Sıra herkese gelir.', 'Sabrediyorum!', 'Sıra bende!', 'Yaşasın!', 'Sırayı beklemek güzeldir.']);
+  expect(hatalar).toEqual([]);
+});
+
+test("Film: Mino'nun Sepeti: kapakta dördüncü kart, 5 sahne, öğüt kartı ve kapanış jeneriği", async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./film/?test=1');
+  // kapak: dördüncü kart (mino-karpuz ilk, sonra adlarına göre)
+  await expect(page.locator('.fl-film-kart')).toHaveCount(4);
+  await expect(page.locator('.fl-film-kart').nth(3)).toHaveAttribute('data-film', 'mino-sepet');
+  await page.locator('.fl-film-kart[data-film="mino-sepet"]').click();
+  await expect(page.locator('.fl-baslik')).toHaveCount(1);
+  await expect(page.locator('.fl-baslik')).toHaveText("Mino'nun Sepeti");
+  await expect(page).toHaveURL(/film=mino-sepet/);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-f7-sepet-kapak.png` });
+  await page.evaluate(() => {
+    const w = window as unknown as { __sahneler: string[]; __sozler: string[] };
+    w.__sahneler = [];
+    w.__sozler = [];
+    new MutationObserver((ms) => {
+      for (const m of ms) {
+        const el = m.target as HTMLElement;
+        if (m.attributeName === 'data-sahne' && el.dataset.sahne && w.__sahneler.at(-1) !== el.dataset.sahne) w.__sahneler.push(el.dataset.sahne);
+        if (m.attributeName === 'data-son-soz' && el.dataset.sonSoz && w.__sozler.at(-1) !== el.dataset.sonSoz) w.__sozler.push(el.dataset.sonSoz);
+      }
+    }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-sahne', 'data-son-soz'] });
+  });
+  await page.getByRole('button', { name: 'Oynat' }).click();
+  await expect(page.locator('.fl-acilis-baslik')).toHaveText("Mino'nun Sepeti");
+  // sahne 1: Mino, sepet ve beş elma (test modunda film hızlı: sepet elden çabuk düşer, yalnız varlığına bakılır)
+  await expect(page.locator('.fl-sahne[data-sahne="1-neseli-yol"]')).toBeVisible();
+  await expect(page.locator('.fl-nesne[data-oyuncu="mino"] .mino-svg')).toBeVisible();
+  await expect(page.locator('.fl-nesne[data-esya="sepet"]')).toHaveCount(1);
+  await expect(page.locator('.fl-nesne[data-tip="elma"]')).toHaveCount(5);
+  // son: Mino öğüdü söyler, öğüt kartı; kapanış jeneriği bitince ekran tamam
+  await expect(page.locator('.fl-ogut')).toContainText('Yardım etmek güzeldir.', { timeout: 25000 });
+  await expect(page.locator('.fl-ekran[data-tamam]')).toHaveCount(1, { timeout: 5000 });
+  await page.screenshot({ path: `tests/screens/${info.project.name}-f8-sepet-ogut.png` });
+  const kayit = await page.evaluate(() => {
+    const w = window as unknown as { __sahneler: string[]; __sozler: string[] };
+    return { sahneler: w.__sahneler, sozler: w.__sozler };
+  });
+  expect(kayit.sahneler).toEqual(['1-neseli-yol', '2-hepsi-dagildi', '3-topla', '4-bir-elma-eksik', '5-tesekkur']);
+  expect(kayit.sozler).toEqual(['Sepetim elma dolu!', 'Eyvah! Elmalarım!', 'Hepsi dağıldı.', 'Ben yardım ederim!', 'Bir elma eksik.', 'Orada, bankın altında!', 'Buldum!', 'Teşekkür ederim!', 'Rica ederim!', 'Yardım etmek güzeldir.']);
   expect(hatalar).toEqual([]);
 });
 

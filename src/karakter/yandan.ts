@@ -220,6 +220,11 @@ export class YandanKarakter {
     this.konusuyor = acik;
   }
 
+  /** İskelet katmanının grubu (film: parçaya eşya takmak için, ör. Kino'nun ağzındaki elma); kurulmadıysa null */
+  parcaG(ad: string): SVGGElement | null {
+    return this.g.get(ad) ?? null;
+  }
+
   kapat() {
     cancelAnimationFrame(this.raf);
     this.raf = 0;

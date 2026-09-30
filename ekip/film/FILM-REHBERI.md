@@ -143,3 +143,9 @@ ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 - **Önden Kino / karakter duruşları (`durus`):** `otur: 1` (+ `y: 2.2`), `yukSol` / `yukSag` (30-160° kalkık kol), `dusun: 1`, `bakan: -1 | 1`.
 - **Mino duruşları (`durus`, aynı adlar):** `otur: 1` (kendiliğinden zemine iner, `y` gerekmez), `yukSol` / `yukSag` (kol açısı; 30°'yi geçince kalkık kol, en çok 160°), `dusun: 1`, `bakan: -1 | 1` (yalnız gözler; işaret için `yukSag: 85` / `yukSol: 85` ekleyin), `saril: 1` (kollar göğüste, gözler kapalı, gülümseme). Kodda: `mino.kol('sag', 150)`, `mino.otur(true)`, `mino.poz('dusun' | 'isaret-sag' | 'isaret-sol' | 'sarilma' | null)`.
 
+
+## 10. Film 4 (Mino'nun Sepeti) eklemeleri
+
+- **Yan görünüşte taşıma:** `al` / `birak` / `tasi` artık yan görünüş oyuncusunda da çalışır; parça adı profil iskeletinin katmanı: `agiz` (Kino elmayı ağzında taşır), `kol-on` / `kol-arka` (çocuğun ön / arka eli). Eşya önce `git` ile parçanın dünyadaki yerine uçar, sonra `al` (aynı yerde takılır).
+- **Zemin y 4,5 + kamera y:** oyuncular kum havuzunun önünde durur. 16:9'da görüntünün altı dünyanın altına denk gelsin diye kamera y = 100 - 28,125 / z (ayaklar altyazının üstünde kalır; öteki oranlarda `tut` korur).
+- **Sahne dosyası üreteçle** yazılabilir (hop, koşu+fren+toz, sepete atma gibi tekrarlı hareketler); JSON yine tek kaynak.
