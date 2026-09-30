@@ -27,3 +27,9 @@ Illustrator 11:00'den önce açılmaz; Barış öyle istedi. İsteyen: yönetici
 - İyi çıkan yan görünüşler köpek standardıyla (`ekip/pazar-musteri/kopek-profil.*`) `<ad>-profil.svg/json` iskeletine çevrilir.
 - Önizlemeler açık ve koyu zeminde hazırlanır, varsayılan çizimde piksel farkı 0 olmalı.
 - Yöneticiye tek satır haber verilir.
+
+## Güncelleme (2026-09-30)
+- Yancı oturumu kalmadı; Turntable'ı tasarımcı oturumu Illustrator arayüzünden yapıyor.
+- Vektörleştirme: `vektorlestir-maske.jsx` içindeki `[High Fidelity Photo]` yerine **`[16 Colors]`** kullanılmalı. Ege'de ilki renksiz (beyaz dolgu, siyah kontur) çıktı; ikincisi renkli çıktı. Kaynak: `cikti/turntable/ege-temiz16.ai`.
+- Açılar (yatay): yan 90°, 3/4 45°, arka 180°. Bir üretim ≈ 4 dk.
+- Biten: Ege yan (`ekip/turntable/ege/yan.png/.svg`). Kalan: Ege 3/4 ve arka, anne, ayı, inek, maymun, kuş, köpek, tavşan, ördek.
