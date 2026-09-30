@@ -413,12 +413,16 @@ export class Oyuncu {
       const sinif: Record<string, string> = { govde: 'g', kafa: 'k', 'kol-sol': 'kl', 'kol-sag': 'kr', kuyruk: 'q' };
       return this.mino.el.querySelector<SVGGElement>(`svg > g.${sinif[ad] ?? 'g'}`);
     }
+    // yan görünüş: profil iskeletinin katmanı ('agiz': ağızda taşınan, 'kol-on': öndeki elde)
+    if (this.yan) return this.yan.parcaG(ad);
     return this.karakter?.parcaG(ad) ?? null;
   }
-  /** parça hazır olunca (karakter iskeleti yüklenince) */
+  /** parça hazır olunca (karakter / yan görünüş iskeleti yüklenince) */
   private parcaHazir(ad: string): Promise<SVGGElement | null> {
     const g = this.parca(ad);
-    if (g || !this.karakter) return Promise.resolve(g);
+    if (g) return Promise.resolve(g);
+    if (this.yan) return this.yan.hazir.then(() => this.parca(ad));
+    if (!this.karakter) return Promise.resolve(g);
     return this.karakter.hazir.then(() => this.parca(ad));
   }
 
@@ -488,7 +492,7 @@ export class Oyuncu {
 
   /** Parçadaki eşyayı bırakır: ekrandaki merkezi, genişliği (px) ve açısı döner */
   birak(ad: string, parca?: string): { x: number; y: number; w: number; don: number } | null {
-    const kok = this.mino?.el ?? this.karakter?.el;
+    const kok = this.mino?.el ?? this.karakter?.el ?? this.yan?.el;
     const im = kok?.querySelector<SVGImageElement>(`[data-tasinan="${ad}"]`);
     const g = (parca ? this.parca(parca) : null) ?? (im?.parentNode as SVGGElement | null);
     if (!im || !g) return null;
