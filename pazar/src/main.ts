@@ -11,10 +11,12 @@ import './musteri.css';
 import './meyvesuyu.css';
 import './yatay.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
+import { anaMenuyeDon } from '../../src/uygulama';
 import { oyunuBaslat } from './oyun';
 
 // Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
 sesKokuAyarla('../ses/', './ses/');
 
 const kok = document.getElementById('mino-pazar');
-if (kok) oyunuBaslat(kok);
+// Açılıştaki geri düğmesi ana menüye (site kökü) döner
+if (kok) oyunuBaslat(kok, { cikis: anaMenuyeDon });

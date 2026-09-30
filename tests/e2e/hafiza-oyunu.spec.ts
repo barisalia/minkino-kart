@@ -28,7 +28,7 @@ for (const [yas, kartSayisi] of [
   test(`Hafıza Oyunu ${yas} yaş: açılıştan girilir, ${kartSayisi} kart, yanlış çift kapanır, hepsi bulununca biter`, async ({ page }, info) => {
     const hatalar = hataTopla(page);
     const p = info.project.name;
-    await page.goto('./?test=1');
+    await page.goto('./kartlar/?test=1');
     await page.getByRole('button', { name: 'Hafıza Oyunu' }).click();
     // yaş henüz seçilmedi: önce yaş, sonra hafıza modunda paketler
     await page.locator(`[data-yas="${yas}"]`).click();
@@ -100,7 +100,7 @@ for (const [yas, kartSayisi] of [
 
 test('Hafıza Oyunu: paket ekranındaki şeritten girilir', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./?test=1&yas=5&ekran=temalar');
+  await page.goto('./kartlar/?test=1&yas=5&ekran=temalar');
   await expect(page.locator('.hafiza-serit')).toBeVisible();
   await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => undefined))));
   await page.screenshot({ path: ekran(info.project.name, 'hafiza-00-serit') });

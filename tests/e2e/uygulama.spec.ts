@@ -2,17 +2,17 @@ import { expect, test } from '@playwright/test';
 import { hataTopla } from './yardimci';
 
 const BEKLENEN: Record<string, string> = {
-  kartlar: '../',
-  pazar: '../pazar/',
-  canlan: '../canlan/',
-  sanatci: '../sanatci/',
-  macera: '../macera/',
-  film: '../film/',
+  kartlar: './kartlar/',
+  pazar: './pazar/',
+  canlan: './canlan/',
+  sanatci: './sanatci/',
+  macera: './macera/',
+  film: './film/',
 };
 
 test('Ana menü: açılışta Mino ve 6 oyun kartı, görseller yüklü', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./uygulama/?test=1');
+  await page.goto('./?test=1');
   await expect(page.locator('.ug-menu .mino svg')).toBeVisible();
   const kartlar = page.locator('.ug-kart');
   await expect(kartlar).toHaveCount(6);
@@ -53,16 +53,57 @@ test('Ana menü: açılışta Mino ve 6 oyun kartı, görseller yüklü', async 
 
 test('Ana menü: karta dokununca ilgili oyuna gider', async ({ page }) => {
   const hatalar = hataTopla(page);
-  await page.goto('./uygulama/?test=1');
+  await page.goto('./?test=1');
   await page.locator('.ug-kart[data-oyun="pazar"]').click();
   await page.waitForURL(/\/pazar\/$/);
   await expect(page.locator('.pz-logo')).toBeVisible();
   expect(hatalar).toEqual([]);
 });
 
+test('Site kökü ana menüyü açar; Kartlar /kartlar/ adresinde, eski adresler yönlenir', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./');
+  await expect(page.locator('.ug-menu')).toBeVisible();
+  // kartın sallanması test modunda durur (tıklama için)
+  await page.goto('./?test=1');
+  await page.locator('.ug-kart[data-oyun="kartlar"]').click();
+  await page.waitForURL(/\/kartlar\/$/);
+  await expect(page.locator('.oyna-dugme')).toBeVisible();
+
+  // eski menü adresi köke yönlenir (parametreler korunur)
+  await page.goto('./uygulama/?test=1');
+  await page.waitForURL((u) => u.pathname === '/' && u.search === '?test=1');
+  await expect(page.locator('.ug-menu')).toBeVisible();
+
+  // eski Kartlar bağlantısı (kökte ?yas=…) Kartlar'a yönlenir
+  await page.goto('./?test=1&yas=5&ekran=temalar');
+  await page.waitForURL(/\/kartlar\/\?test=1&yas=5&ekran=temalar$/);
+  await expect(page.locator('.hafiza-serit')).toBeVisible();
+  expect(hatalar).toEqual([]);
+});
+
+test('Her oyunun açılışındaki geri düğmesi ana menüye döner', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  const oyunlar: [string, string][] = [
+    ['kartlar', 'Minkino’ya dön'],
+    ['pazar', 'Minkino’ya dön'],
+    ['canlan', 'Minkino’ya dön'],
+    ['sanatci', 'Minkino’ya dön'],
+    ['macera', 'Minkino’ya dön'],
+    ['film', 'Geri'],
+  ];
+  for (const [oyun, etiket] of oyunlar) {
+    await page.goto(`./${oyun}/?test=1`);
+    await page.getByRole('button', { name: etiket, exact: true }).click();
+    await page.waitForURL((u) => u.pathname === '/', { timeout: 10000 });
+    await expect(page.locator('.ug-menu'), oyun).toBeVisible();
+  }
+  expect(hatalar).toEqual([]);
+});
+
 test('Ana menü: ebeveyn kapısı kısa dokunuşta açılmaz, basılı tutunca açılır', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./uygulama/?test=1');
+  await page.goto('./?test=1');
   const kapi = page.locator('.ug-kapi');
   await expect(kapi).toBeVisible();
 
@@ -89,7 +130,7 @@ test('Ana menü: yatay ekranda da kartlar sığıyor', async ({ page }, info) =>
   const hatalar = hataTopla(page);
   const { width, height } = page.viewportSize()!;
   await page.setViewportSize({ width: height, height: width });
-  await page.goto('./uygulama/?test=1');
+  await page.goto('./?test=1');
   await expect(page.locator('.ug-kart')).toHaveCount(6);
   for (const kart of await page.locator('.ug-kart').all()) {
     const k = (await kart.boundingBox())!;

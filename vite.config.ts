@@ -1,7 +1,8 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
-// Ayrı uygulamalar: kart oyunu (/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/), Mino'nun Pazarı (/pazar/), ana menü (/uygulama/)
+// Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
+// Mino'nun Pazarı (/pazar/) …; /uygulama/ eski menü adresi, köke yönlendirir
 export default defineConfig({
   base: './',
   build: {
@@ -10,7 +11,8 @@ export default defineConfig({
     target: 'es2020',
     rollupOptions: {
       input: {
-        kartlar: resolve(__dirname, 'index.html'),
+        menu: resolve(__dirname, 'index.html'),
+        kartlar: resolve(__dirname, 'kartlar/index.html'),
         sanatci: resolve(__dirname, 'sanatci/index.html'),
         canlan: resolve(__dirname, 'canlan/index.html'),
         sesTesti: resolve(__dirname, 'ses-testi/index.html'),

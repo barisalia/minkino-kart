@@ -3,7 +3,7 @@ import { hataTopla } from './yardimci';
 
 test('Mino: açılıştan girilir, doğru kartı verince yeni tur başlar, dokununca tepki verir', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./?test=1');
+  await page.goto('./kartlar/?test=1');
   await page.getByRole('button', { name: 'Mino ile oyna' }).click();
   await expect(page.locator('.mino-svg')).toBeVisible();
   await expect(page.locator('.mino-tepsi .kart')).toHaveCount(3);
@@ -34,7 +34,7 @@ test('Mino: açılıştan girilir, doğru kartı verince yeni tur başlar, dokun
 
 test('Mino: tepkiler (zıpla, dans, ağız açık, göz kapalı, mutlu) ekran görüntüsü', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./?test=1&yas=4&ekran=mino');
+  await page.goto('./kartlar/?test=1&yas=4&ekran=mino');
   await expect(page.locator('.mino-svg')).toBeVisible();
   await page.waitForTimeout(1500);
   // Görüntü Mino kutusunun biraz dışını da alsın: zıplayınca / dansta kulaklar kutudan taşar (sayfada taşma serbest)
@@ -58,7 +58,7 @@ test('Mino: tepkiler (zıpla, dans, ağız açık, göz kapalı, mutlu) ekran g�
 
 test('Mino: pozlar (kalkık kol, oturma, düşünme, işaret, sarılma) doğru katmanları gösterir', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./?test=1&yas=4&ekran=mino');
+  await page.goto('./kartlar/?test=1&yas=4&ekran=mino');
   await expect(page.locator('.mino-svg')).toBeVisible();
   type M = { kol(y: string, a: number): void; otur(a: boolean): Promise<void>; poz(p: string | null): Promise<void> };
   const m = (f: string) => page.evaluate((f) => new Function('m', f)((window as unknown as { __mino: M }).__mino), f);

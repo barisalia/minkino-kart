@@ -22,6 +22,9 @@ export interface BaslatSecenekleri {
   cikis?: () => void;
 }
 
+/** Tek başına açılan oyun sayfasından (/kartlar/, /pazar/ …) sitenin kökündeki ana menüye döner */
+export const anaMenuyeDon = () => location.assign('../');
+
 export class Uygulama {
   readonly kok: HTMLElement;
   readonly secenekler: BaslatSecenekleri;

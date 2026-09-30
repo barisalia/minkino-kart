@@ -8,8 +8,8 @@ import { sesKokuAyarla } from '../../src/audio/kayit';
 import { ekranKaydet, Uygulama } from '../../src/uygulama';
 import { ayarlarEkrani, menuEkrani } from './ekranlar';
 
-// Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
-sesKokuAyarla('../ses/', './ses/');
+// Ana menü sitenin kökünde (/); seslendirme kayıtları kökteki ses/ klasöründe, diğer uygulamalarla ortak
+sesKokuAyarla('./ses/');
 
 ekranKaydet('menu', menuEkrani);
 ekranKaydet('ayarlar', ayarlarEkrani);

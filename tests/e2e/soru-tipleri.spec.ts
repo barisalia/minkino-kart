@@ -13,7 +13,7 @@ const TIPLER: [string, number, string][] = [
 for (const [tip, yas, tema] of TIPLER) {
   test(`soru tipi ${tip} (${yas} yaş, ${tema})`, async ({ page }, info) => {
     const hatalar = hataTopla(page);
-    await page.goto(`./?test=1&yas=${yas}&tema=${tema}&tip=${tip}`);
+    await page.goto(`./kartlar/?test=1&yas=${yas}&tema=${tema}&tip=${tip}`);
     await expect(page.locator(`.oyun-alan[data-tip="${tip}"]`)).toBeVisible();
     await page.waitForTimeout(150);
     await page.screenshot({ path: `tests/screens/${info.project.name}-tip-${tip}.png` });
@@ -25,7 +25,7 @@ for (const [tip, yas, tema] of TIPLER) {
 
 test('yanlış cevap: kart sallanır, soluklaşır, doğru kart ışıldar, tekrar denenir', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  await page.goto('./?test=1&yas=5&tema=hayvanlar&tip=BUL');
+  await page.goto('./kartlar/?test=1&yas=5&tema=hayvanlar&tip=BUL');
   const yanlis = page.locator('.secenek:not([data-dogru])').first();
   await yanlis.click();
   await expect(yanlis).toHaveClass(/soluk/);
@@ -39,7 +39,7 @@ test('yanlış cevap: kart sallanır, soluklaşır, doğru kart ışıldar, tekr
 
 test('eşleştir: yanlış kartı hedefe sürüklemek kabul edilmez', async ({ page }) => {
   const hatalar = hataTopla(page);
-  await page.goto('./?test=1&yas=3&tema=hayvanlar&tip=ESLESTIR');
+  await page.goto('./kartlar/?test=1&yas=3&tema=hayvanlar&tip=ESLESTIR');
   const hedef = page.locator('.gosterge-alan .kart').first();
   await suruklе(page, page.locator('.secenek:not([data-dogru])').first(), hedef);
   await expect(page.locator('.ilerleme i.tamam')).toHaveCount(0);
@@ -54,7 +54,7 @@ test('tüm yaş ve temalarda tur başlar ve ilk soru cevaplanır', async ({ page
   const hatalar = hataTopla(page);
   for (const yas of [3, 4, 5, 6]) {
     for (const tema of ['hayvanlar', 'meyveler', 'tasitlar', 'renkler', 'sayilar', 'harfler']) {
-      await page.goto(`./?test=1&yas=${yas}&tema=${tema}`);
+      await page.goto(`./kartlar/?test=1&yas=${yas}&tema=${tema}`);
       await expect(page.locator('.oyun-alan[data-tip]')).toBeVisible();
       await soruyuCevapla(page);
       await soruDegisti(page, 0);

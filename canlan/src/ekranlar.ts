@@ -134,7 +134,8 @@ export function acilisEkrani(app: Uygulama): Ekran {
   const el = h(
     'div.cc-acilis',
     {},
-    h('div.ust-cubuk', {}, h('div'), sesDugmesi()),
+    // tek başına açıldığında (ör. ana menüden) sol üstte ana menüye dönüş
+    h('div.ust-cubuk', {}, app.secenekler.cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => app.secenekler.cikis?.(), 'kucuk') : h('div'), sesDugmesi()),
     logo(),
     h('div.cc-acilis-sahne', {}, vitrin, yuva.el),
     h('div.cc-acilis-alt', {}, oyna),

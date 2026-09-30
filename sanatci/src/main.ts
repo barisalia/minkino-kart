@@ -4,7 +4,7 @@ import '@fontsource/fredoka/latin-ext-700.css';
 import '../../src/styles/ana.css';
 import './sanatci.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
-import { ekranKaydet, Uygulama } from '../../src/uygulama';
+import { anaMenuyeDon, ekranKaydet, Uygulama } from '../../src/uygulama';
 
 // Seslendirme kayıtları kart oyunuyla ortak (site kökündeki ses/ klasörü)
 sesKokuAyarla('../ses/');
@@ -20,7 +20,8 @@ ekranKaydet('bastir', bastirEkrani);
 
 const kok = document.getElementById('minik-sanatci');
 if (kok) {
-  const app = new Uygulama(kok);
+  // açılıştaki geri düğmesi ana menüye (site kökü) döner
+  const app = new Uygulama(kok, { cikis: anaMenuyeDon });
   kok.classList.add('ms-kok');
   const q = new URLSearchParams(location.search);
   app.git(q.has('test') && q.get('ekran') ? q.get('ekran')! : 'acilis');

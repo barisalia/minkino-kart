@@ -7,12 +7,12 @@ const MEVCUT = new Set(Object.keys(import.meta.glob('../../assets/**/*.webp')).m
 describe('Ana menü oyun kartları', () => {
   it('altı oyun, benzersiz kimlik ve doğru göreli adres', () => {
     expect(OYUNLAR.map((k) => [k.id, k.adres])).toEqual([
-      ['kartlar', '../'],
-      ['pazar', '../pazar/'],
-      ['canlan', '../canlan/'],
-      ['sanatci', '../sanatci/'],
-      ['macera', '../macera/'],
-      ['film', '../film/'],
+      ['kartlar', './kartlar/'],
+      ['pazar', './pazar/'],
+      ['canlan', './canlan/'],
+      ['sanatci', './sanatci/'],
+      ['macera', './macera/'],
+      ['film', './film/'],
     ]);
   });
 

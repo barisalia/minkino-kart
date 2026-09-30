@@ -104,7 +104,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   slKart.addEventListener('click', () => basla('salincak'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
   return {
-    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, slKart, kart, elKart, egeKart, banyoKart, oyna)),
+    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, app.secenekler.cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => app.secenekler.cikis?.(), 'kucuk') : h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, slKart, kart, elKart, egeKart, banyoKart, oyna)),
     kapat() {
       egeResim.kapat();
     },

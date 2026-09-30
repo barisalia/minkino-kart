@@ -6,7 +6,7 @@ import '../../src/styles/mino.css';
 import '../../src/karakter/karakter.css';
 import './film.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
-import { ekranKaydet, Uygulama } from '../../src/uygulama';
+import { anaMenuyeDon, ekranKaydet, Uygulama } from '../../src/uygulama';
 import { filmEkrani } from './ekranlar';
 
 // Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
@@ -21,7 +21,8 @@ ekranKaydet('acilis', filmEkrani);
 
 const kok = document.getElementById('minkino-film');
 if (kok) {
-  const app = new Uygulama(kok);
+  // açılıştaki geri düğmesi ana menüye (site kökü) döner
+  const app = new Uygulama(kok, { cikis: anaMenuyeDon });
   kok.classList.add('fl-kok');
   app.git('film');
 }

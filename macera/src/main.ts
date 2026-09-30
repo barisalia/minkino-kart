@@ -8,7 +8,7 @@ import { sesKokuAyarla } from '../../src/audio/kayit';
 import { durum, kaydetDurum } from '../../src/engine/ilerleme';
 import type { Yas } from '../../src/engine/types';
 import { yasEkrani } from '../../src/screens/yas';
-import { ekranKaydet, Uygulama } from '../../src/uygulama';
+import { anaMenuyeDon, ekranKaydet, Uygulama } from '../../src/uygulama';
 import { acilisEkrani, bolumEkrani, izinEkrani } from './ekranlar';
 
 // Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
@@ -21,7 +21,8 @@ ekranKaydet('bolum', bolumEkrani);
 
 const kok = document.getElementById('sesli-maceralar');
 if (kok) {
-  const app = new Uygulama(kok);
+  // açılıştaki geri düğmesi ana menüye (site kökü) döner
+  const app = new Uygulama(kok, { cikis: anaMenuyeDon });
   kok.classList.add('mc-kok');
   const q = new URLSearchParams(location.search);
   // ?onizleme=1: test gibi doğrudan ekrana gider ama gerçek hızda (animasyon kaydı / gösterim için)

@@ -6,7 +6,7 @@ const ekran = (proje: string, ad: string) => `tests/screens/${proje}-${ad}.png`;
 test('açılış → yaş → tema → 8 soruluk tur → albüm', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   const p = info.project.name;
-  await page.goto('./?test=1');
+  await page.goto('./kartlar/?test=1');
   await expect(page.locator('.oyna-dugme')).toBeVisible();
   // kart ve Mino resimleri çizilmeden görüntü alınmasın (yoksa kartlar boş görünür)
   await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => undefined))));
@@ -71,7 +71,7 @@ test('açılış → yaş → tema → 8 soruluk tur → albüm', async ({ page 
 test('ebeveyn köşesi: kapı, yaş değiştirme, ayarlar', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   const p = info.project.name;
-  await page.goto('./?test=1');
+  await page.goto('./kartlar/?test=1');
   await page.getByRole('button', { name: 'Ebeveyn köşesi' }).click();
   const soru = page.locator('.kapi-soru');
   await expect(soru).toBeVisible();

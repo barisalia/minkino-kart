@@ -22,7 +22,7 @@ export interface OyunKarti {
   id: string;
   /** Kısa ad (büyükler için, kartın altında) */
   ad: string;
-  /** Uygulama sayfasına göre göreli adres */
+  /** Ana menü sayfasına (site kökü) göre göreli adres */
   adres: string;
   /** Kartın ana rengi */
   renk: string;
@@ -37,7 +37,7 @@ export const OYUNLAR: OyunKarti[] = [
   {
     id: 'kartlar',
     ad: 'Kartlar',
-    adres: '../',
+    adres: './kartlar/',
     renk: '#FFC72C',
     rozet: 'Hafıza',
     katmanlar: [
@@ -49,7 +49,7 @@ export const OYUNLAR: OyunKarti[] = [
   {
     id: 'pazar',
     ad: 'Mino’nun Pazarı',
-    adres: '../pazar/',
+    adres: './pazar/',
     renk: '#F0413F',
     zemin: 'pazar/arkaplan',
     rozet: 'Meyve Suyu',
@@ -63,7 +63,7 @@ export const OYUNLAR: OyunKarti[] = [
   {
     id: 'canlan',
     ad: 'Çiz Canlansın',
-    adres: '../canlan/',
+    adres: './canlan/',
     renk: '#5DBE3F',
     zemin: 'sahne/cayir',
     rozet: 'Müzem',
@@ -75,7 +75,7 @@ export const OYUNLAR: OyunKarti[] = [
   {
     id: 'sanatci',
     ad: 'Minik Sanatçı',
-    adres: '../sanatci/',
+    adres: './sanatci/',
     renk: '#9B5CE0',
     katmanlar: [
       { gorsel: 'sanatci/ornek-kedi-sonuc', sinif: 'ug-k-tablo', cerceve: true },
@@ -85,7 +85,7 @@ export const OYUNLAR: OyunKarti[] = [
   {
     id: 'macera',
     ad: 'Sesli Maceralar',
-    adres: '../macera/',
+    adres: './macera/',
     renk: '#FF7EB6',
     zemin: 'parti-sahne/oda',
     // macera açılışında üç bölüm kartı var (Doğum Günü, Ege Uyuyor, Banyo): kart doğrudan oraya gider
@@ -100,7 +100,7 @@ export const OYUNLAR: OyunKarti[] = [
   {
     id: 'film',
     ad: 'Mini Filmler',
-    adres: '../film/',
+    adres: './film/',
     renk: '#3E9DF2',
     zemin: 'sahne/cayir',
     katmanlar: [

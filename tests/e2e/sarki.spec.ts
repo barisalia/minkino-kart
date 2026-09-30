@@ -36,7 +36,7 @@ test('Pazar şarkısı: 1 elma, 2 armut, 3 çilek, 4 üzüm sözle zıplar; alk�
 test('Menü müziği: menu-dongu.mp3 ilk dokunuşta yüklenip çalar', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   const istek = page.waitForRequest(/menu-dongu.*\.mp3/, { timeout: 10000 });
-  await page.goto('./uygulama/');
+  await page.goto('./');
   await expect(page.locator('.ug-menu')).toBeVisible();
   await page.mouse.click(10, 10);
   await istek;

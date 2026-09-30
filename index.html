@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-    <meta name="theme-color" content="#FFF4DD" />
-    <meta name="description" content="Minkino Kartlar — 3-6 yaş için sesli, eğitici kart oyunu." />
+    <meta name="theme-color" content="#BFE6FF" />
+    <meta name="description" content="Minkino — 3-6 yaş için sesli, eğitici oyunlar" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -12,10 +12,17 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./ikon-180.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <title>Minkino Kartlar</title>
+    <title>Minkino</title>
+    <script>
+      // Kartlar eskiden sitenin kökündeydi: eski Kartlar bağlantıları (?yas=…, ?tema=…, ?kategori=…) /kartlar/'a gider
+      (function () {
+        var q = new URLSearchParams(location.search);
+        if (['yas', 'tema', 'mod', 'tip', 'kategori'].some(function (k) { return q.has(k); })) location.replace('./kartlar/' + location.search + location.hash);
+      })();
+    </script>
   </head>
   <body>
-    <div id="minkino-kartlar" class="mk-kok"></div>
-    <script type="module" src="./src/main.ts"></script>
+    <div id="minkino"></div>
+    <script type="module" src="./uygulama/src/main.ts"></script>
   </body>
 </html>

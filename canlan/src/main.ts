@@ -7,7 +7,7 @@ import { sesKokuAyarla } from '../../src/audio/kayit';
 import { durum, kaydetDurum } from '../../src/engine/ilerleme';
 import type { Yas } from '../../src/engine/types';
 import { yasEkrani } from '../../src/screens/yas';
-import { ekranKaydet, Uygulama } from '../../src/uygulama';
+import { anaMenuyeDon, ekranKaydet, Uygulama } from '../../src/uygulama';
 import { acilisEkrani, cizEkrani, listeEkrani, sonucEkrani } from './ekranlar';
 import { muzeEkrani } from './muze';
 import { resim, yasModu, type Mod } from './resimler';
@@ -24,7 +24,8 @@ ekranKaydet('muze', muzeEkrani);
 
 const kok = document.getElementById('ciz-canlansin');
 if (kok) {
-  const app = new Uygulama(kok);
+  // açılıştaki geri düğmesi ana menüye (site kökü) döner
+  const app = new Uygulama(kok, { cikis: anaMenuyeDon });
   kok.classList.add('cc-kok');
   const q = new URLSearchParams(location.search);
   // ?onizleme=1: test gibi doğrudan ekrana gider ama gerçek hızda (animasyon kaydı / gösterim için)
