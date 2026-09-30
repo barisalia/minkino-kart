@@ -276,8 +276,15 @@ export function bankSvg(): string {
 export const CAYIR_TEPE: [number, number][] = [
   [-212, 160], [-160, 159], [-112, 155], [-80, 140], [-48, 121], [-4, 113], [40, 116], [72, 131], [100, 147], [148, 153], [212, 158],
 ];
-export function cayirSvg(en: number, boy: number): string {
-  const p = CAYIR_TEPE.map(([u, v]) => [u + en / 2, boy - v] as [number, number]);
+/** Çayırın tepe çizgisinin u noktasındaki yüksekliği (b; doğrusal ara değer) */
+export function cayirTepe(u: number): number {
+  const t = CAYIR_TEPE;
+  if (u <= t[0][0]) return t[0][1];
+  for (let i = 1; i < t.length; i++) if (u <= t[i][0]) return t[i - 1][1] + ((t[i][1] - t[i - 1][1]) * (u - t[i - 1][0])) / (t[i][0] - t[i - 1][0]);
+  return t[t.length - 1][1];
+}
+export function cayirSvg(en: number, boy: number, altPay = 0): string {
+  const p = CAYIR_TEPE.map(([u, v]) => [u + en / 2, boy - v - altPay] as [number, number]);
   let d = `M${f(p[0][0])} ${f(p[0][1])}`;
   for (let i = 0; i < p.length - 1; i++) {
     const a = p[Math.max(0, i - 1)];

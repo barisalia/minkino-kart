@@ -89,7 +89,8 @@ export const OYUNLAR: OyunKarti[] = [
     renk: '#FF7EB6',
     zemin: 'parti-sahne/oda',
     // macera açılışında üç bölüm kartı var (Doğum Günü, Ege Uyuyor, Banyo): kart doğrudan oraya gider
-    rozet: '3 bölüm',
+    // yeni bölüm (Bölüm 5, Salıncak Kimin?) rozette; macera açılışında kartı en üstte
+    rozet: 'Yeni: Salıncak',
     katmanlar: [
       { gorsel: 'orman-esya/balon', sinif: 'ug-k-balon' },
       { gorsel: 'parti/pasta', sinif: 'ug-k-pasta' },

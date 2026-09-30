@@ -1,5 +1,21 @@
 /* Sesli Maceralar: Salıncak Kimin? (macera/src/salincak.ts). Önek: sl-. Ölçü birimi --b (sahne ayarlar). */
 
+/* açılış: bölüm kartları ekrana sığmazsa (beşinci bölümle telefonda) liste yukarıdan başlar ve kayar; logo ve Oyna
+   düğmesi kesilmez */
+.mc-kok .mc-acilis:has(.sl-bolum-kart) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  justify-content: safe center;
+  overscroll-behavior: contain;
+}
+.mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-acilis-ic {
+  flex: none;
+  padding: 14px 0 30px;
+}
+.mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-acilis-arka {
+  position: fixed;
+}
+
 /* ---------------------------------------------------------------- açılış kartı */
 .mc-kok .sl-bolum-kart {
   position: relative;
@@ -95,11 +111,20 @@
   background-repeat: no-repeat;
   pointer-events: none;
 }
+/* köşe çalıları: kırpılan kenarlar yumuşakça çayıra karışır */
 .mc-kok .sl-cali.sol {
   left: 0;
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 30%), linear-gradient(to top, transparent, #000 22%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to left, transparent, #000 30%), linear-gradient(to top, transparent, #000 22%);
+  mask-composite: intersect;
 }
 .mc-kok .sl-cali.sag {
   right: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 30%), linear-gradient(to top, transparent, #000 22%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 30%), linear-gradient(to top, transparent, #000 22%);
+  mask-composite: intersect;
 }
 .mc-kok .sl-gok,
 .mc-kok .sl-orta {
@@ -246,6 +271,19 @@
   transform-origin: 50% 50%;
 }
 
+/* görev sürerken ayaktaki karakterler dokunuşu tutmaz (arkadaki salıncağa dokunulabilsin); kaydırakta Kino tutulur */
+.mc-kok .sl-sahne[data-sl-gorev] .bn-kisi:not(.sl-binen),
+.mc-kok .sl-sahne[data-sl-gorev] .bn-kisi:not(.sl-binen) *,
+.mc-kok .sl-sahne[data-sl-gorev] .sl-cocuk:not(.sl-binen),
+.mc-kok .sl-sahne[data-sl-gorev] .sl-cocuk:not(.sl-binen) *,
+.mc-kok .sl-sahne[data-sl-gorev] .sl-anne,
+.mc-kok .sl-sahne[data-sl-gorev] .sl-anne * {
+  pointer-events: none;
+}
+.mc-kok .sl-sahne[data-sl-gorev='kay'] .bn-kisi[data-el='kino'] .bn-cizim {
+  pointer-events: auto;
+}
+
 /* ---------------------------------------------------------------- Kino: yan görünüş, ters, baş aşağı */
 .mc-kok .sl-kino-yan {
   position: absolute;
@@ -343,6 +381,19 @@
   height: auto;
   filter: drop-shadow(0 3px 2px rgba(40, 30, 20, 0.2));
 }
+/* ayakta konuşan anne: katmanlı iskelet img'nin üstünde, yalnız konuşurken (ege-anne.ts) */
+.mc-kok .sl-anne .eg-anne-iskelet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  aspect-ratio: 428 / 1143;
+  pointer-events: none;
+  visibility: hidden;
+}
+.mc-kok .sl-anne.iskeletli[data-hal='ayakta'] .eg-anne-iskelet:not(.susuyor) {
+  visibility: visible;
+}
 .mc-kok .sl-anne .sl-golge {
   bottom: -1.2%;
   left: 18%;
@@ -387,7 +438,7 @@
 .mc-kok .sl-rozet b {
   position: relative;
   z-index: 1;
-  font-size: calc(5.2 * var(--b));
+  font-size: calc(7 * var(--b));
   line-height: 1;
   color: var(--kontur, #3a1210);
 }

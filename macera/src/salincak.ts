@@ -50,6 +50,7 @@ import {
   CERCEVE_KUTU,
   cerceveSvg,
   cayirSvg,
+  cayirTepe,
   cimenSvg,
   KAYDIRAK,
   kaydirakArkaSvg,
@@ -117,7 +118,12 @@ const WB = 400;
 const RESIM_ORAN = 2752 / 1536;
 const HI = WB / RESIM_ORAN;
 const ZEMIN_UZAT = 62;
-const HB = HI + ZEMIN_UZAT;
+/**
+ * Sahnenin altında ek çimen (b): dikey ekranda çekim ortalanabilsin (sahne ekranın alt üçte birine sıkışmasın).
+ * Bütün yükseklikler (v) bu payın üstünden ölçülür.
+ */
+const ALT_PAY = 40;
+const HB = HI + ZEMIN_UZAT + ALT_PAY;
 /** Mino ve Kino çiziminin kutusu (b) ve oranı; çocuklar ve bebek */
 const KISI_W = 24;
 const CAN_W = 46;
@@ -156,7 +162,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   const bY = (n: number) => (n / HB) * 100;
   /** Konum: u (dünyanın ortasından b), v (dünyanın altından b) */
   const X = (u: number) => 50 + bX(u);
-  const Y = (v: number) => bY(v);
+  const Y = (v: number) => bY(v + ALT_PAY);
   const dikey = W / H < 0.8;
   /** Dar dikey ekran (telefon): çekimler tek odaklı ve yakın; Can yakın çekim penceresinde */
   const dar = dikey && W < 600;
@@ -168,14 +174,14 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   // · iki köşede ön katmanın çalı-lale kümeleri (karakterlere göre küçültülmüş)
   const gok = h('div.sl-gok', { style: `background-image:url("${park('arka-uzak')}")` });
   const orta = h('div.sl-orta', { style: `background-image:url("${park('arka-orta')}")` });
-  for (const e of [gok, orta]) Object.assign(e.style, { bottom: `${bY(ZEMIN_UZAT)}%`, height: `${bY(HI)}%` });
-  const cayir = h('div.sl-cayir', { html: cayirSvg(WB, HB) });
+  for (const e of [gok, orta]) Object.assign(e.style, { bottom: `${Y(ZEMIN_UZAT)}%`, height: `${bY(HI)}%` });
+  const cayir = h('div.sl-cayir', { html: cayirSvg(WB, HB, ALT_PAY) });
   const CALI = { olcek: 0.45, w: 52, alt: 36 };
   const cali = (yon: 'sol' | 'sag') => {
     const iw = WB * CALI.olcek;
     const ih = HI * CALI.olcek;
     const e = h(`div.sl-cali.${yon}`, {
-      style: `background-image:url("${park('arka-on')}");background-size:calc(${iw} * var(--b)) calc(${ih} * var(--b));background-position:${yon === 'sol' ? 'left' : 'right'} 0 top calc(${-ih * 0.575} * var(--b));width:calc(${CALI.w} * var(--b));height:calc(${ih * 0.325} * var(--b));bottom:${bY(CALI.alt)}%`,
+      style: `background-image:url("${park('arka-on')}");background-size:calc(${iw} * var(--b)) calc(${ih} * var(--b));background-position:${yon === 'sol' ? 'left' : 'right'} 0 top calc(${-ih * 0.575} * var(--b));width:calc(${CALI.w} * var(--b));height:calc(${ih * 0.325} * var(--b));bottom:${Y(CALI.alt)}%`,
     });
     return e;
   };
@@ -184,12 +190,21 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   {
     let t = 7;
     const r = () => ((t = (t * 9301 + 49297) % 233280) / 233280);
-    for (let i = 0; i < 26; i++) {
-      const v = 4 + r() * 34;
+    for (let i = 0; i < 40; i++) {
+      const v = 4 - ALT_PAY + r() * (34 + ALT_PAY);
       const u = -196 + r() * 392;
       const tur = Math.floor(r() * 4);
       const w = tur === 3 ? 4.5 : tur === 0 ? 5 : 3.2;
       sahne.koy(h('div.sl-sus', { html: cimenSvg(tur) }), { x: X(u), y: Y(v), w, z: 2 });
+    }
+    // çayırın yükseltisinde uzak çiçek ve tutamlar (yükseldikçe küçülür: derinlik)
+    for (let i = 0; i < 46; i++) {
+      const u = -196 + r() * 392;
+      const tepe = cayirTepe(u);
+      const v = 58 + r() * Math.max(4, tepe - 64);
+      const tur = Math.floor(r() * 3);
+      const k = 1 - ((v - 58) / Math.max(1, tepe - 58)) * 0.55;
+      sahne.koy(h('div.sl-sus.uzak', { html: cimenSvg(tur) }), { x: X(u), y: Y(v), w: (tur === 0 ? 4 : 2.6) * k, z: 1 });
     }
   }
 
@@ -601,16 +616,21 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
         const vr = ((W - c.tx) / c.z / Wd) * 100;
         if (kk.r <= vl || kk.l >= vr || (kk.l >= vl && kk.r <= vr)) continue;
         const gorunen = (Math.min(vr, kk.r) - Math.max(vl, kk.l)) / Math.max(0.01, kk.r - kk.l);
-        if (gorunen < 0.5) {
-          const solda = kk.l < vl;
-          const tx = solda ? -((kk.r + 0.4) / 100) * Wd * c.z : W - ((kk.l - 0.4) / 100) * Wd * c.z;
+        // yakınlığı bozmadan kaydırmayı dene: çoğu görünüyorsa tamamen içeri, azı görünüyorsa tamamen dışarı (istenen
+        // bölge yine kadrajda kalmalı); olmazsa öbürü; o da olmazsa çekim genişler
+        const solda = kk.l < vl;
+        const icine = solda ? -((kk.l - 0.4) / 100) * Wd * c.z : W - ((kk.r + 0.4) / 100) * Wd * c.z;
+        const disina = solda ? -((kk.r + 0.4) / 100) * Wd * c.z : W - ((kk.l - 0.4) / 100) * Wd * c.z;
+        const uygun = (tx: number) => {
           const yl = (-tx / c.z / Wd) * 100;
           const yr = ((W - tx) / c.z / Wd) * 100;
-          if (yl <= l + 0.01 && yr >= r - 0.01 && tx <= 0 && tx >= W - Wd * c.z) {
-            c = { ...c, tx };
-            degisti = true;
-            continue;
-          }
+          return yl <= l + 0.01 && yr >= r - 0.01 && tx <= 0 && tx >= W - Wd * c.z;
+        };
+        const aday = (gorunen >= 0.5 ? [icine, disina] : [disina, icine]).find(uygun);
+        if (aday !== undefined) {
+          c = { ...c, tx: aday };
+          degisti = true;
+          continue;
         }
         l = Math.min(l, kk.l - 0.6);
         r = Math.max(r, kk.r + 0.6);
@@ -618,6 +638,20 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
         degisti = true;
       }
       if (!degisti) break;
+    }
+    // son güvence: hâlâ yarım kalan varsa (kaydırmalar birbirini bozduysa) çekim hepsini içine alacak kadar genişler
+    for (let tur = 0; tur < 4; tur++) {
+      const vl = (-c.tx / c.z / Wd) * 100;
+      const vr = ((W - c.tx) / c.z / Wd) * 100;
+      const yarim = korunan()
+        .map(kisiKutu)
+        .filter((kk): kk is { l: number; r: number } => !!kk && kk.r > vl && kk.l < vr && (kk.l < vl || kk.r > vr));
+      if (!yarim.length) break;
+      for (const kk of yarim) {
+        l = Math.min(l, kk.l - 0.6);
+        r = Math.max(r, kk.r + 0.6);
+      }
+      c = hesap(l, r);
     }
     kamZ = c.z;
     kamT = [c.tx, c.ty];
@@ -735,6 +769,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     KN.kapat();
     CAN.kapat();
     ADA.kapat();
+    ANNE.kapat();
     EGE.kapat();
     kinoYan.kapat();
     (canYakin as Cocuk | null)?.kapat();
@@ -1001,7 +1036,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await cekSalincakVeBank(1000);
     await mSoyle(ayar.sayi === 5 ? M.say_5 : M.say_10);
     const rozet = h('div.sl-rozet', { 'data-el': 'sayi' }, h('span.sl-rozet-yildiz', { html: YILDIZ_SVG }), h('b', {}, ''));
-    koy(rozet, ASKI.buyuk, BAR_Y + 3, 9, 12);
+    koy(rozet, ASKI.buyuk, BAR_Y + 3, 12, 12);
     await sesliGorev(() => saymaGorevi(rozet));
     pompa();
     // son sayıda Can ayağa fırlar: "Sıra bende!"
@@ -1781,7 +1816,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     CAN.katman = 12;
     await CAN.git(X(CAN_BANK.x), Y(ZEMIN), 300, false);
     void cekB(ASKI.buyuk - 46, ASKI.bebek + 14, ZEMIN - 12, BAR_Y + 4, 2.2, 1000);
-    await CAN.git(X(ASKI.buyuk - 16), Y(ZEMIN - 6), 1500);
+    await CAN.git(X(-90), Y(ZEMIN - 4), 1500);
     CAN.selam(1200);
     void balon(CAN, B.bekledin, 2600);
     await bekle(2400);
@@ -1794,7 +1829,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await mSoyle(M.iki);
     await sesliGorev(() => tekerleme());
     // final: herkes el sallar, Ada zıplar, anne gülümser
-    await cekB(-160, ASKI.bebek + 34, ZEMIN - 12, BAR_Y + 14, dar ? 1.6 : 1.4, 1200);
+    await (dar ? cekB(-100, ASKI.bebek + 22, ZEMIN - 14, BAR_Y + 10, 1.8, 1200) : cekB(-165, ASKI.bebek + 34, ZEMIN - 12, BAR_Y + 14, 1.4, 1200));
     canHep((c) => c.sevin(1400));
     ADA.sevin(1600);
     void ADA.zipla(22, 700).then(() => ADA.zipla(18, 600));
@@ -1808,6 +1843,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await mSoyle(M.ogut);
     odulKarti();
     await bekle(2600);
+    // bitiş düğmeleri altta çıkar: sahne yukarı kalksın, yüzler açık kalsın
+    void (dar ? cekB(-100, ASKI.bebek + 22, ZEMIN - 60, BAR_Y + 6, 1.8, 900) : cekB(-165, ASKI.bebek + 34, ZEMIN - 42, BAR_Y + 10, 1.4, 900));
   }
 
   /**
