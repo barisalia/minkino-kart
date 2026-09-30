@@ -12,9 +12,10 @@
  * SesSeviyesi (ege-seviye.ts: kısık ses, fısıltı). Oyun ses çıkarırken kulak susar; sesli görevlerde müzik durur;
  * tekerleme kaydı çalarken mikrofon dinlemez (sırayla: dize çalar, sonra çocuk alkışlar).
  *
- * Dünya: park (assets/film/park: uzak gökyüzü kaydırınca yavaş kayar, orta ağaçlar ve çit, ön çalılar) + altında kodla
- * uzatılmış çimen. Ölçü birimi b (--b); eşyalar b cinsinden. Kamera kaydırır ve yaklaşır; kadraj koruması her çekimde:
- * kimse kenarda yarım kalmaz (yarım kalacaksa çekim genişler ya da kişi tamamen dışarıda kalır).
+ * Dünya: park (assets/film/park; yerleşim salincak-cizim.ts → PARK): uzak gök ve tepeler (kaydırınca yavaş kayar), orta
+ * ağaçlar ve çit, kenarlarda ön katmanın çalı-lale kümeleri, zemin ön katmanın çimeni. Ölçü birimi b (--b); eşyalar b
+ * cinsinden. Kamera kaydırır ve yaklaşır; artan boy üste (gök) gider, zemin altta az kalır. Kadraj koruması her
+ * çekimde: kimse ve salıncağın A ayakları kenarda yarım kalmaz (yarım kalacaksa çekim genişler ya da tamamen dışarıda).
  * Salıncak: iki zincirli sarkaç (oturak yatay kalır), fizik salincak-mantik.ts → Sarkac.
  */
 import '../../src/karakter/karakter.css';
@@ -49,9 +50,7 @@ import {
   CERCEVE,
   CERCEVE_KUTU,
   cerceveSvg,
-  cayirSvg,
-  cayirTepe,
-  cimenSvg,
+  cimenYeri,
   KAYDIRAK,
   kaydirakArkaSvg,
   kaydirakOnSvg,
@@ -60,6 +59,7 @@ import {
   KOVA,
   kovaArkaSvg,
   kovaOnSvg,
+  KUME_ORAN,
   KUM,
   kumArkaSvg,
   kumOnSvg,
@@ -67,6 +67,9 @@ import {
   MERDIVEN,
   OTURAK,
   oturakSvg,
+  PARK,
+  PARK_ORAN,
+  PARK_RESIM,
   YILDIZ_SVG,
   ZINCIR,
   zincirSvg,
@@ -107,23 +110,18 @@ const KN_ = SL.kino;
 const B = SL.balon;
 const I = SL.ipucu;
 const IPTAL = Symbol('iptal');
-const PARK = import.meta.glob<string>('../../assets/film/park/*.webp', { eager: true, query: '?url', import: 'default' });
-const park = (ad: string) => PARK[`../../assets/film/park/${ad}.webp`] ?? '';
+const PARK_DOSYA = import.meta.glob<string>('../../assets/film/park/*.webp', { eager: true, query: '?url', import: 'default' });
+const park = (ad: string) => PARK_DOSYA[`../../assets/film/park/${ad}.webp`] ?? '';
 const ISKELET = import.meta.glob<string>(['../../assets/karakter-iskelet/kino.svg', '../../assets/karakter-iskelet/ege.svg'], { eager: true, query: '?url', import: 'default' });
 const kutu = (el: Element) => () => el.getBoundingClientRect();
 const merkezi = (r: DOMRect): [number, number] => [r.left + r.width / 2, r.top + r.height / 2];
 
-/** Dünyanın eni (b) ve park resminin oranı; resmin altında kodla uzatılmış çimen (b) */
+/** Dünyanın eni (b); park katmanlarının yerleşimi salincak-cizim.ts → PARK */
 const WB = 400;
-const RESIM_ORAN = 2752 / 1536;
-const HI = WB / RESIM_ORAN;
-const ZEMIN_UZAT = 62;
-/**
- * Sahnenin altında ek çimen (b): dikey ekranda çekim ortalanabilsin (sahne ekranın alt üçte birine sıkışmasın).
- * Bütün yükseklikler (v) bu payın üstünden ölçülür.
- */
-const ALT_PAY = 40;
-const HB = HI + ZEMIN_UZAT + ALT_PAY;
+/** Zeminin (v = 0) altında kalan çimen payı (b); dünyanın üstü uzak katmanın (gök) üst kenarı */
+const ALT_PAY = 20;
+const UZAK_H = PARK.uzak.w / PARK_ORAN;
+const ORTA_H = PARK.orta.w / PARK_ORAN;
 /** Mino ve Kino çiziminin kutusu (b) ve oranı; çocuklar ve bebek */
 const KISI_W = 24;
 const CAN_W = 46;
@@ -152,6 +150,9 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   kok.append(sahne.el);
   const W = sahne.el.clientWidth || innerWidth;
   const H = sahne.el.clientHeight || innerHeight;
+  // yatay ekranda çekim alçak ve geniş: uzak katman (gök, tepeler) biraz aşağıda, ufuk ekranın üst kısmında kaybolmasın
+  const uzak = W / H > 1.3 ? PARK.uzakYatay : PARK.uzak;
+  const HB = uzak.alt + UZAK_H + ALT_PAY;
   const bPx = Math.max(W / WB, H / HB);
   const Wd = WB * bPx;
   const Hd = HB * bPx;
@@ -169,43 +170,42 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   /** Alçak yatay telefon */
   const yatayTel = W / H > 1.3 && H < 500;
 
-  // park katmanları: uzak (gök, tepeler) · orta (ağaçlar, çit; çizili küçük salıncak kesilir) · önde kodla çizilmiş
-  // çayır yükseltisi (ağaçların dibini, çizili bankı ve tahterevalliyi örter; eşyalar ve karakterler bunun üstünde)
-  // · iki köşede ön katmanın çalı-lale kümeleri (karakterlere göre küçültülmüş)
-  const gok = h('div.sl-gok', { style: `background-image:url("${park('arka-uzak')}")` });
-  const orta = h('div.sl-orta', { style: `background-image:url("${park('arka-orta')}")` });
-  for (const e of [gok, orta]) Object.assign(e.style, { bottom: `${Y(ZEMIN_UZAT)}%`, height: `${bY(HI)}%` });
-  const cayir = h('div.sl-cayir', { html: cayirSvg(WB, HB, ALT_PAY) });
-  const CALI = { olcek: 0.45, w: 52, alt: 36 };
-  const cali = (yon: 'sol' | 'sag') => {
-    const iw = WB * CALI.olcek;
-    const ih = HI * CALI.olcek;
-    const e = h(`div.sl-cali.${yon}`, {
-      style: `background-image:url("${park('arka-on')}");background-size:calc(${iw} * var(--b)) calc(${ih} * var(--b));background-position:${yon === 'sol' ? 'left' : 'right'} 0 top calc(${-ih * 0.575} * var(--b));width:calc(${CALI.w} * var(--b));height:calc(${ih * 0.325} * var(--b));bottom:${Y(CALI.alt)}%`,
+  // park katmanları (salincak-cizim.ts → PARK): uzak (gök, bulutlar, tepeler, evler; kaydırınca yavaş kayar) · orta
+  // (iki büyük ağaç ve çit; çizili küçük salıncak kırpılır) · kenar çalıları (ön katmanın köşe kümeleri, ağaçların
+  // dibinde; çizili bankı ve tahterevalliyi örter) · ön çimen (ön katmanın çimeni; üst kenarı eşyaların arkasında)
+  const katman = (sinif: `div.${string}`, ad: string, k: { w: number; alt: number }, hh: number) =>
+    h(sinif, { style: `background-image:url("${park(ad)}");left:${X(-k.w / 2)}%;width:${bX(k.w)}%;bottom:${Y(k.alt)}%;height:${bY(hh)}%` });
+  const gok = katman('div.sl-gok', 'arka-uzak', uzak, UZAK_H);
+  const orta = katman('div.sl-orta', 'arka-orta', PARK.orta, ORTA_H);
+  const cy = cimenYeri(ALT_PAY);
+  const { x0, x1, y0 } = PARK_RESIM.cimenKaynak;
+  const cimen = h('div.sl-cimen', {
+    style: `background-image:url("${park('arka-on')}");background-size:${100 / (x1 - x0)}% ${100 / (1 - y0)}%;bottom:${Y(cy.alt)}%;height:${bY(cy.boy)}%`,
+  });
+  /** Ön katmanın köşe kümesi (çalı, lale, taş): w eni (b); dünyada u ortası, v altı */
+  const kume = (yon: 'sol' | 'sag', u: number, v: number, w: number, ek = '') => {
+    const { kume: kk } = PARK_RESIM;
+    const e = h(`div.sl-kume.${yon}${ek}`, {
+      style: `background-image:url("${park('arka-on')}");background-size:${100 / kk.w}% ${100 / (1 - kk.y0)}%;aspect-ratio:${KUME_ORAN.toFixed(4)}`,
     });
+    e.style.setProperty('--x', String(X(u)));
+    e.style.setProperty('--y', String(Y(v)));
+    e.style.setProperty('--w', String(w));
     return e;
   };
-  dunya.append(gok, orta, cayir, cali('sol'), cali('sag'));
-  // ön çimen süsleri (tohumlu: her açılışta aynı)
-  {
-    let t = 7;
-    const r = () => ((t = (t * 9301 + 49297) % 233280) / 233280);
-    for (let i = 0; i < 40; i++) {
-      const v = 4 - ALT_PAY + r() * (34 + ALT_PAY);
-      const u = -196 + r() * 392;
-      const tur = Math.floor(r() * 4);
-      const w = tur === 3 ? 4.5 : tur === 0 ? 5 : 3.2;
-      sahne.koy(h('div.sl-sus', { html: cimenSvg(tur) }), { x: X(u), y: Y(v), w, z: 2 });
-    }
-    // çayırın yükseltisinde uzak çiçek ve tutamlar (yükseldikçe küçülür: derinlik)
-    for (let i = 0; i < 46; i++) {
-      const u = -196 + r() * 392;
-      const tepe = cayirTepe(u);
-      const v = 58 + r() * Math.max(4, tepe - 64);
-      const tur = Math.floor(r() * 3);
-      const k = 1 - ((v - 58) / Math.max(1, tepe - 58)) * 0.55;
-      sahne.koy(h('div.sl-sus.uzak', { html: cimenSvg(tur) }), { x: X(u), y: Y(v), w: (tur === 0 ? 4 : 2.6) * k, z: 1 });
-    }
+  // kenar çalıları: ağaçların dibinde, ön çimenin arkasında (altları çimenin kenarında kalır)
+  const CALI = { w: 104, alt: 40 };
+  dunya.append(gok, orta, kume('sol', -WB / 2 + CALI.w * 0.42, CALI.alt, CALI.w), kume('sag', WB / 2 - CALI.w * 0.42, CALI.alt, CALI.w), cimen);
+  // ön çiçek öbekleri: yalnız kenarlarda, düzenli (karakterlerin yürüdüğü orta boş kalır)
+  for (const [yon, u, v, w] of [
+    ['sol', -176, -4, 58],
+    ['sag', 176, -4, 58],
+    ['sol', -118, 8, 36],
+    ['sag', 118, 6, 40],
+  ] as const) {
+    const e = kume(yon, u, v, w, '.on');
+    e.style.zIndex = '2';
+    dunya.append(e);
   }
 
   // ================================================================ yerleşim (b)
@@ -231,6 +231,12 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   koy(h('div.sl-cizgi', { 'data-el': 'cizgi', html: beklemeCizgisiSvg() }), CIZGI.x, CIZGI.y, CIZGI.w, 3);
   // salıncak çerçevesi (arka), oturaklar (sarkaç), kelepçeler (ön)
   koy(h('div.sl-cerceve', { 'data-el': 'cerceve', html: cerceveSvg() }), 0, CER_Y - CERCEVE_KUTU.alt, CERCEVE_KUTU.w, 5);
+  // kadraj koruması: salıncağın iki A ayağı (görünmez işaret; kutunun %10'u kenarlardan kırpılır diye geniş) ya tamamen
+  // görünür ya hiç görünmez; iskele kenarda kesik kalmaz
+  const AYAK = { u: (CERCEVE.disAyak + CERCEVE.icAyak) / 2 + 1.2, w: (CERCEVE.disAyak - CERCEVE.icAyak + 8) / 0.8 };
+  const ayaklar = [-1, 1].map((s) => koy(h('div.sl-isaret.sl-ayak'), s * AYAK.u, CER_Y, AYAK.w, 1));
+  // bebek oturağı da (az sallanır) kenarda yarım kalmaz
+  ayaklar.push(koy(h('div.sl-isaret.sl-ayak'), ASKI.bebek, CER_Y, (KOVA.w + 2) / 0.8, 1));
 
   interface SarkacDom {
     ad: 'buyuk' | 'bebek';
@@ -583,13 +589,15 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     const [b] = dunyaPx(r.right - r.width * (k instanceof Cocuk ? 0.22 : 0.1), 0);
     return { l: (a / Wd) * 100, r: (b / Wd) * 100 };
   };
-  const korunan = (): (Kisiler | Anne | HTMLElement)[] => [MN, KN, CAN, ADA, ANNE, egeKap];
+  const korunan = (): (Kisiler | Anne | HTMLElement)[] => [MN, KN, CAN, ADA, ANNE, egeKap, ...ayaklar];
   /**
    * Çekim: dünyadaki bir bölge (b: sol, sağ, alttan alt, alttan üst) güvenli alana sığsın; zmax en çok yakınlık.
    * Dünya ekranı her zaman örter. Kadraj koruması: bir kişi kenarda yarım kalacaksa önce onu tamamen dışarıda
    * bırakacak kaydırma denenir (istenen bölge içeride kalıyorsa), olmazsa çekim onu da içine alacak kadar genişler.
    */
   const cekB = (lb: number, rb: number, altb: number, ustb: number, zmax = 2, ms = 1100) => {
+    // dar dikey ekranda en çok bu kadar yakın: ufuk ekranın üst üçte biriyle ortası arasında kalsın
+    if (dar) zmax = Math.min(zmax, 2.2);
     let l = X(lb);
     let r = X(rb);
     const alt = Y(altb);
@@ -601,9 +609,12 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       const bh = ((ust - alt) / 100) * Hd;
       const z = Math.max(1, Math.min(zmax, gw / Math.max(1, bw), gh / Math.max(1, bh)));
       const cx = ((l + r) / 200) * Wd;
-      const cy = Hd - ((alt + ust) / 200) * Hd;
+      // dikeyde bölge güvenli alana enden sığar, boyda yer artar: artan yer çoğunlukla üste (gök, ağaçlar) gider,
+      // zemin ekranın altında az kalır (bölgenin altı güvenli alanın altına yakın)
+      const ustPx = Hd * (1 - ust / 100);
+      const artan = Math.max(0, gh - bh * z);
       const tx = Math.min(0, Math.max(W - Wd * z, gw / 2 - cx * z));
-      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + gh / 2 - cy * z));
+      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * 0.88 - ustPx * z));
       return { z, tx, ty };
     };
     let c = hesap(l, r);
@@ -778,7 +789,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   // ================================================================ çekimler (her ekran için)
   /** Salıncak yakın (büyük oturak ve binen) */
   function cekSalincak(ms = 1000, zmax = 2.4) {
-    return dar ? cekB(-54, 8, ZEMIN - 10, BAR_Y + 6, zmax, ms) : cekB(-70, 30, ZEMIN - 10, BAR_Y + 6, zmax, ms);
+    // dikeyde sol A ayağı ve büyük salıncak (tablette bebek oturağı da); kadraj koruması ayakları kesik bırakmaz
+    return dar ? cekB(-86, 6, ZEMIN - 10, BAR_Y + 6, zmax, ms) : dikey ? cekB(-88, 34, ZEMIN - 10, BAR_Y + 6, zmax, ms) : cekB(-70, 30, ZEMIN - 10, BAR_Y + 6, zmax, ms);
   }
   /** Bank ve salıncak birlikte */
   function cekBankSalincak(ms = 1000) {
@@ -1148,7 +1160,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await KN.gov.animate([{ rotate: '0deg' }, { rotate: '180deg' }], { duration: sure(500), easing: 'cubic-bezier(0.4, 0, 0.3, 1.3)' }).finished.catch(() => undefined);
     KN.gov.style.rotate = '180deg';
     BUYUK.s.genlikYap(0.34);
-    await cekSalincak(900, 2.2);
+    await (dar ? cekB(-86, 16, ZEMIN - 10, BAR_Y + 6, 2.2, 900) : cekSalincak(900, 2.2));
     await kSoyle(KN_.bir_daha);
     CAN.uzgun(0.9);
     await bekle(400);
@@ -1628,7 +1640,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     ANNE.katman = 10;
     const anneYol = ANNE.git(X(ASKI.bebek + 20), Y(ZEMIN - 1), 2600);
     // bu arada Kino bebek oturağına kendisi girer, sıkışır
-    void cekB(ASKI.buyuk - 10, ASKI.bebek + 36, ZEMIN - 12, BAR_Y + 4, 2.4, 1000);
+    // (dikeyde bebek salıncağı ve sağ A ayağı: anne ayağın önünde, ayak kesik kalmasın; telefonda büyük oturak tam dışarıda, tablette tam içeride)
+    void (dar ? cekB(-10.5, 85.5, ZEMIN - 12, BAR_Y + 4, 2.4, 1000) : dikey ? cekB(-40, 86, ZEMIN - 12, BAR_Y + 4, 2.4, 1000) : cekB(ASKI.buyuk - 10, ASKI.bebek + 36, ZEMIN - 12, BAR_Y + 4, 2.4, 1000));
     await kinoKos(ASKI.bebek - 12, ZEMIN - 2, 1100);
     KN.katman = 2;
     KN.el.classList.add('sl-sikisik');

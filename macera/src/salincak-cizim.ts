@@ -267,42 +267,52 @@ export function bankSvg(): string {
   </svg>`;
 }
 
-// ---------------------------------------------------------------- çayır (önde, kodla)
+// ---------------------------------------------------------------- park arka planı (assets/film/park) yerleşimi
 /**
- * Çayır yükseltisi: dünyanın altından yumuşak bir tepe çizgisine kadar (kenarlarda yüksek: ağaçların dibi ve çizili
- * eşyalar arkasında kalır; ortada alçak: uzaktaki tepeler görünür). viewBox dünyanın b ölçüsü (en × boy), y aşağı.
- * Tepe çizgisi (u: ortadan b, v: alttan b) Catmull-Rom ile yumuşatılır; koyu yeşil kontur ve açık yeşil parlaklık.
+ * Parkın Gemini katmanları (2752×1536) dünyaya b cinsinden yerleşir (u: ortadan, v: zeminden yukarı).
+ * - uzak: gök, bulutlar, tepeler ve evler; ufuk (tepelerin üstü) salıncak barının epey üstünde.
+ * - orta: iki büyük ağaç ve çit; çizili salıncak kırpılır, bank ve tahterevalli ön çimenin ve kenar çalılarının
+ *   arkasında kalır.
+ * - ön çimen: ön katmanın (arka-on) ortadaki çimen şeridi dünyanın enine gerilir; koyu konturlu üst kenarı eşyaların
+ *   ve karakterlerin arkasında (ağaçların dibi bunun arkasında). Zemin, resmin kendi çimenidir.
+ * - kenar çalıları ve çiçek öbekleri: ön katmanın köşe kümeleri, küçültülmüş (karakterlerin yanında dev durmasın).
  */
-export const CAYIR_TEPE: [number, number][] = [
-  [-212, 160], [-160, 159], [-112, 155], [-80, 140], [-48, 121], [-4, 113], [40, 116], [72, 131], [100, 147], [148, 153], [212, 158],
-];
-/** Çayırın tepe çizgisinin u noktasındaki yüksekliği (b; doğrusal ara değer) */
-export function cayirTepe(u: number): number {
-  const t = CAYIR_TEPE;
-  if (u <= t[0][0]) return t[0][1];
-  for (let i = 1; i < t.length; i++) if (u <= t[i][0]) return t[i - 1][1] + ((t[i][1] - t[i - 1][1]) * (u - t[i - 1][0])) / (t[i][0] - t[i - 1][0]);
-  return t[t.length - 1][1];
+export const PARK_ORAN = 2752 / 1536;
+export const PARK = {
+  uzak: { w: 440, alt: 36 },
+  /** yatay ekranda (alçak, geniş çekim) uzak katman aşağıda: ufuk barın hemen üstünde, gök görünür */
+  uzakYatay: { w: 440, alt: 14 },
+  orta: { w: 440, alt: -10 },
+  /** ön çimenin üst kenarı (ortada, v) */
+  cimenUst: 64,
+};
+/** Resimde (y: 0 üst, 1 alt) ölçülen yerler */
+export const PARK_RESIM = {
+  /** uzak: tepelerin gökle birleştiği çizgi (ortada) */
+  ufuk: 0.67,
+  /** orta: ağaç gövdelerinin dibi, çizili bankın ve tahterevallinin üstü */
+  agacDibi: 0.8,
+  bankUst: 0.65,
+  tahterevalliUst: 0.74,
+  /** ön: çimenin üst kenarı (ortada) ve kaynak şeridi */
+  cimenKenar: 0.802,
+  cimenKaynak: { x0: 0.28, x1: 0.72, y0: 0.78 },
+  /** ön: köşe kümesi (sol; sağdaki aynası): x 0-.34, y .55-1 */
+  kume: { w: 0.34, y0: 0.55 },
+};
+/** Katmanın resmindeki y noktasının dünyadaki yüksekliği (v, b) */
+export function parkV(k: { w: number; alt: number }, y: number): number {
+  return k.alt + (1 - y) * (k.w / PARK_ORAN);
 }
-export function cayirSvg(en: number, boy: number, altPay = 0): string {
-  const p = CAYIR_TEPE.map(([u, v]) => [u + en / 2, boy - v - altPay] as [number, number]);
-  let d = `M${f(p[0][0])} ${f(p[0][1])}`;
-  for (let i = 0; i < p.length - 1; i++) {
-    const a = p[Math.max(0, i - 1)];
-    const b = p[i];
-    const c = p[i + 1];
-    const e = p[Math.min(p.length - 1, i + 2)];
-    d += `C${f(b[0] + (c[0] - a[0]) / 6)} ${f(b[1] + (c[1] - a[1]) / 6)} ${f(c[0] - (e[0] - b[0]) / 6)} ${f(c[1] - (e[1] - b[1]) / 6)} ${f(c[0])} ${f(c[1])}`;
-  }
-  const alan = `${d}L${en + 20} ${boy + 5}L-20 ${boy + 5}Z`;
-  return `<svg viewBox="0 0 ${en} ${boy}" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="slCayir" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b3dc52"/><stop offset=".45" stop-color="#a5d446"/><stop offset=".8" stop-color="#97c93f"/><stop offset="1" stop-color="#8cc03a"/></linearGradient></defs>
-    <path d="${alan}" fill="url(#slCayir)"/>
-    <path d="${d}" transform="translate(0 2.2)" fill="none" stroke="#c9ea72" stroke-width="1.6" stroke-linecap="round" opacity=".75"/>
-    <path d="${d}" fill="none" stroke="#4e7d25" stroke-width="0.9" stroke-linecap="round"/>
-  </svg>`;
+/** Ön çimen şeridinin dünyadaki yeri (v, b): dünyanın altından (altPay) üst kenarı cimenUst'e gelecek boya */
+export function cimenYeri(altPay: number): { alt: number; boy: number } {
+  const { cimenKenar, cimenKaynak } = PARK_RESIM;
+  return { alt: -altPay, boy: ((PARK.cimenUst + altPay) * (1 - cimenKaynak.y0)) / (1 - cimenKenar) };
 }
+/** Köşe kümesinin (çalı + lale) oranı (en / boy) */
+export const KUME_ORAN = (PARK_RESIM.kume.w * 2752) / ((1 - PARK_RESIM.kume.y0) * 1536);
 
-// ---------------------------------------------------------------- zemin süsleri, bekleme çizgisi, fular
+// ---------------------------------------------------------------- bekleme çizgisi
 /** Sarı bekleme çizgisi (yerde, perspektifle yassı) */
 export function beklemeCizgisiSvg(): string {
   let s = '';
@@ -311,17 +321,6 @@ export function beklemeCizgisiSvg(): string {
     s += `<path d="M${x} 16 L${x + 48} 16 L${x + 44} 30 L${x - 4} 30 Z" fill="#ffd23a" stroke="#8a5a14" stroke-width="3" stroke-linejoin="round"/>`;
   }
   return `<svg viewBox="0 0 660 40" aria-hidden="true">${s}</svg>`;
-}
-
-/** Çimen tutamı, çiçek ve çakıl (ön zemin süsleri); tur 0..3 */
-export function cimenSvg(tur: number): string {
-  if (tur === 0)
-    return `<svg viewBox="0 0 60 40" aria-hidden="true"><path d="M6 40 Q10 18 4 4 Q18 16 20 40 M20 40 Q24 10 30 0 Q34 18 32 40 M32 40 Q40 16 54 8 Q44 24 44 40 Z" fill="#6cb43a" stroke="#3f7a22" stroke-width="3" stroke-linejoin="round"/></svg>`;
-  if (tur === 1)
-    return `<svg viewBox="0 0 40 50" aria-hidden="true"><path d="M20 50 V22" stroke="#3f7a22" stroke-width="4"/><path d="M20 36 Q8 30 6 20 Q16 22 20 32" fill="#6cb43a" stroke="#3f7a22" stroke-width="2.5"/>${[0, 72, 144, 216, 288].map((a) => `<ellipse cx="20" cy="10" rx="6" ry="9" fill="#fff" stroke="${K}" stroke-width="2.4" transform="rotate(${a} 20 18)"/>`).join('')}<circle cx="20" cy="18" r="5.5" fill="#ffc93a" stroke="${K}" stroke-width="2.4"/></svg>`;
-  if (tur === 2)
-    return `<svg viewBox="0 0 40 50" aria-hidden="true"><path d="M20 50 V22" stroke="#3f7a22" stroke-width="4"/><path d="M20 38 Q32 32 34 22 Q24 24 20 34" fill="#6cb43a" stroke="#3f7a22" stroke-width="2.5"/><path d="M10 10 Q20 -2 30 10 L28 22 Q20 28 12 22 Z" fill="#ff5f6e" stroke="${K}" stroke-width="2.6" stroke-linejoin="round"/><path d="M15 10 L20 18 L25 10" fill="none" stroke="#c8303f" stroke-width="2.2"/></svg>`;
-  return `<svg viewBox="0 0 60 26" aria-hidden="true"><ellipse cx="22" cy="17" rx="18" ry="8" fill="#b8b1a6" stroke="#6b5f55" stroke-width="3"/><ellipse cx="44" cy="19" rx="11" ry="6" fill="#cfc8bd" stroke="#6b5f55" stroke-width="3"/><path d="M12 14 Q18 11 26 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/></svg>`;
 }
 
 /** Can'ın asık yüzü: ağzın yerine ters kavis (kafa katmanına eklenir; Can iskeletinin ağız noktası 1020,885) */

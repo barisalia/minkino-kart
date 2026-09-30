@@ -24,7 +24,7 @@ import {
   surukleIlerle,
   yankiSonuc,
 } from '../../macera/src/salincak-mantik';
-import { cayirTepe, kaymaNoktasi, KAYMA_YOLU } from '../../macera/src/salincak-cizim';
+import { CERCEVE, cimenYeri, kaymaNoktasi, KAYMA_YOLU, PARK, PARK_RESIM, parkV } from '../../macera/src/salincak-cizim';
 
 describe('Salıncak Kimin: yaş ayarı (yalnız senaryonun dediği sahnelerde)', () => {
   it('3-4 yaş: 5 sallanış, zamanlama serbest, 2 dize; 5-6 yaş: 10 sallanış, halka penceresi, 4 dize', () => {
@@ -174,9 +174,20 @@ describe('Çizim ölçüleri', () => {
       once = p.y;
     }
   });
-  it('çayırın tepe çizgisi kenarlarda yüksek (ağaçların dibi örtülür), ortada alçak', () => {
-    expect(cayirTepe(-200)).toBeGreaterThan(cayirTepe(0));
-    expect(cayirTepe(200)).toBeGreaterThan(cayirTepe(0));
+  it('park arka planı: ufuk salıncak barının üstünde, zemin resmin kendi çimeni, çizili bank ve tahterevalli örtülü', () => {
+    const bar = 52 + CERCEVE.bar;
+    // ufuk (uzak tepeler) barın epey üstünde: gök ve tepeler görünür
+    expect(parkV(PARK.uzak, PARK_RESIM.ufuk)).toBeGreaterThan(bar + 15);
+    // ön çimenin kenarı eşyaların (çerçeve ayakları v 52) arkasında, ağaçların dibi çimenin arkasında
+    expect(PARK.cimenUst).toBeGreaterThan(52);
+    expect(parkV(PARK.orta, PARK_RESIM.agacDibi)).toBeLessThan(PARK.cimenUst + 2);
+    // tahterevalli çimenin arkasında kalır; bank kenar çalılarının boyunu aşmaz
+    expect(parkV(PARK.orta, PARK_RESIM.tahterevalliUst)).toBeLessThanOrEqual(PARK.cimenUst + 1);
+    expect(parkV(PARK.orta, PARK_RESIM.bankUst)).toBeLessThan(PARK.cimenUst + 30);
+    // ön çimen şeridi dünyanın altından başlar, üst kenarı cimenUst'te
+    const c = cimenYeri(20);
+    expect(c.alt).toBe(-20);
+    expect(c.alt + (c.boy * (1 - PARK_RESIM.cimenKenar)) / (1 - PARK_RESIM.cimenKaynak.y0)).toBeCloseTo(PARK.cimenUst);
   });
 });
 
