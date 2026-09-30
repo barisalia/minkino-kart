@@ -483,11 +483,23 @@
 
 /* ---------------------------------------------------------------- anne */
 .mc-kok .eg-sahne .eg-anne-gov {
+  position: relative;
   transform-origin: 50% 100%;
   transition: rotate 0.8s cubic-bezier(0.4, 0, 0.3, 1), translate 0.8s cubic-bezier(0.4, 0, 0.3, 1), scale 0.8s;
 }
 .mc-kok .eg-sahne .eg-anne .eg-resim {
   filter: drop-shadow(0 6px 5px rgba(60, 40, 20, 0.2));
+}
+/* konuşan anne (ege-anne.ts): katmanlı ayakta çizimi img'nin tam üstünde, aynı kutuda; yalnız ağız yaması ve
+   konuşma ağzı çizilir. Yalnız ayakta pozunda ve konuşurken görünür (susarken img olduğu gibi) */
+.mc-kok .eg-sahne .eg-anne-iskelet {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+.mc-kok .eg-sahne .eg-anne.iskeletli[data-resim='ayakta'] .eg-anne-iskelet:not(.susuyor) {
+  visibility: visible;
 }
 .mc-kok .eg-sahne .eg-anne.salliyor .eg-anne-gov {
   animation: eg-anne-salla 1.5s ease-in-out infinite;

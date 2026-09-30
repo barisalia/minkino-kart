@@ -18,6 +18,8 @@ import { kisilik, type Kisilik, type Yuruyus } from './kisilik';
 export interface IskeletBilgi {
   ad: string;
   boyut: number;
+  /** kare olmayan tuval [en, boy] (ör. anne 428×1143); yoksa boyut × boyut */
+  tuval?: [number, number];
   sira: string[];
   gizli: string[];
   bagli: Record<string, string>;
