@@ -1,0 +1,581 @@
+/* Sesli Maceralar: Salıncak Kimin? (macera/src/salincak.ts). Önek: sl-. Ölçü birimi --b (sahne ayarlar). */
+
+/* ---------------------------------------------------------------- açılış kartı */
+.mc-kok .sl-bolum-kart {
+  position: relative;
+  width: min(84vw, 420px);
+  border-radius: 30px;
+  background: #fff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 8px 0 var(--kontur);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  text-align: left;
+  color: var(--kontur);
+  font: inherit;
+  cursor: pointer;
+}
+.mc-kok .sl-bolum-kart:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 var(--kontur);
+}
+.mc-kok .sl-bk-resim {
+  position: relative;
+  flex: none;
+  width: clamp(72px, 20vw, 96px);
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--resim) 30% 70% / cover, #8fd0ff;
+}
+.mc-kok .sl-bk-salincak {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: 4%;
+}
+.mc-kok .sl-bk-salincak svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .sl-bk-kino {
+  position: absolute;
+  z-index: 1;
+  left: 24%;
+  bottom: 10%;
+  width: 52%;
+  transform-origin: 50% -60%;
+  animation: sl-bk-sallan 2.2s ease-in-out infinite;
+}
+@keyframes sl-bk-sallan {
+  0%,
+  100% { rotate: -10deg; }
+  50% { rotate: 10deg; }
+}
+.mc-kok .sl-bk-yazi {
+  display: flex;
+  flex-direction: column;
+}
+.mc-kok .sl-bk-yazi b {
+  font-size: clamp(1.2rem, 5.5vw, 1.7rem);
+}
+.mc-kok .sl-bk-yazi small {
+  font-size: 0.9rem;
+  color: #e0493d;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- sahne ve park katmanları */
+.mc-kok .sl-sahne {
+  background: #8fd0ff;
+  container-type: size;
+}
+.mc-kok .sl-sahne .mc-oda {
+  display: none;
+}
+.mc-kok .sl-sahne .mc-dunya {
+  will-change: transform;
+}
+.mc-kok .sl-cayir {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mc-kok .sl-cayir svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mc-kok .sl-cali {
+  position: absolute;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.mc-kok .sl-cali.sol {
+  left: 0;
+}
+.mc-kok .sl-cali.sag {
+  right: 0;
+}
+.mc-kok .sl-gok,
+.mc-kok .sl-orta {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.mc-kok .sl-gok {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+}
+/* orta katmandaki çizili küçük salıncak kesilir (parkta tek büyük salıncak var: bizimki) */
+.mc-kok .sl-orta {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 42% 100%, 42% 51.2%, 24.6% 51.2%, 24.6% 100%, 0 100%);
+}
+.mc-kok .sl-sus svg,
+.mc-kok .sl-bank svg,
+.mc-kok .sl-cerceve svg,
+.mc-kok .sl-kaydirak svg,
+.mc-kok .sl-kum svg,
+.mc-kok .sl-yigin svg,
+.mc-kok .sl-cizgi svg,
+.mc-kok .sl-kelepce svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mc-kok .sl-sus,
+.mc-kok .sl-cizgi,
+.mc-kok .sl-cerceve,
+.mc-kok .sl-kelepce,
+.mc-kok .sl-kaydirak,
+.mc-kok .sl-kum,
+.mc-kok .sl-bank,
+.mc-kok .sl-oturak-golge,
+.mc-kok .sl-isaret {
+  pointer-events: none;
+}
+.mc-kok .sl-isaret {
+  height: 1px;
+}
+
+/* ---------------------------------------------------------------- salıncak (sarkaç) */
+.mc-kok .sl-sarkac {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.mc-kok .sl-zincir {
+  position: absolute;
+  top: 0;
+  width: calc(2 * var(--b));
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+.mc-kok .sl-zincir svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mc-kok .sl-binek {
+  position: absolute;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+.mc-kok .sl-oturak {
+  position: absolute;
+  left: calc(-13 * var(--b));
+  width: calc(26 * var(--b));
+  top: calc(-1.2 * var(--b));
+  pointer-events: none;
+}
+.mc-kok .sl-kova {
+  position: absolute;
+  left: calc(-8 * var(--b));
+  width: calc(16 * var(--b));
+  top: calc(-5.4 * var(--b));
+  pointer-events: none;
+}
+.mc-kok .sl-oturak svg,
+.mc-kok .sl-kova svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .sl-kova.on {
+  z-index: 3;
+}
+.mc-kok .sl-binici {
+  position: absolute;
+  pointer-events: none;
+}
+.mc-kok .sl-binici > * {
+  pointer-events: auto;
+}
+/* dokunma alanı: oturak ve binen (salıncağa dokunmak, basılı tutmak, hafifçe itmek) */
+.mc-kok .sl-alan {
+  position: absolute;
+  z-index: 4;
+  left: calc(var(--aw, 30) * -0.5 * var(--b));
+  width: calc(var(--aw, 30) * var(--b));
+  bottom: calc(-7 * var(--b));
+  height: calc(var(--ah, 38) * var(--b));
+  border-radius: 40%;
+  touch-action: none;
+  cursor: pointer;
+}
+.mc-kok .sl-alan.tutuluyor {
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.28), transparent);
+}
+/* 5-6 yaş: salıncak yanına gelince (itme zamanı) halka parlar */
+.mc-kok .sl-halka {
+  position: absolute;
+  left: calc(-16 * var(--b));
+  width: calc(32 * var(--b));
+  bottom: calc(-5 * var(--b));
+  height: calc(36 * var(--b));
+  border-radius: 50%;
+  border: calc(0.9 * var(--b)) dashed #ffd23a;
+  box-shadow:
+    0 0 calc(2 * var(--b)) rgba(255, 220, 90, 0.8),
+    inset 0 0 calc(2 * var(--b)) rgba(255, 220, 90, 0.6);
+  opacity: 0;
+  scale: 0.8;
+  transition:
+    opacity 0.12s,
+    scale 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+  pointer-events: none;
+}
+.mc-kok .sl-halka.acik {
+  opacity: 1;
+  scale: 1;
+}
+.mc-kok .sl-oturak-golge {
+  aspect-ratio: 5;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(38, 60, 12, 0.42), rgba(38, 60, 12, 0));
+  transform-origin: 50% 50%;
+}
+
+/* ---------------------------------------------------------------- Kino: yan görünüş, ters, baş aşağı */
+.mc-kok .sl-kino-yan {
+  position: absolute;
+  left: 50%;
+  bottom: -4.2%;
+  width: 145.25%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.mc-kok .bn-kisi.sl-yandan .bn-cizim {
+  visibility: hidden;
+}
+.mc-kok .bn-kisi.sl-yandan .sl-kino-yan {
+  visibility: visible;
+}
+/* karnının üstünde, patileri havada */
+.mc-kok .bn-kisi.sl-ters .sl-kino-yan {
+  rotate: 90deg;
+}
+.mc-kok .bn-kisi.sl-ters .bn-cizim {
+  pointer-events: none;
+}
+.mc-kok .bn-kisi.sl-bas-asagi .bn-kisi-gov {
+  transform-origin: 50% 50%;
+}
+.mc-kok .bn-kisi.sl-binen .bn-kisi-golge,
+.mc-kok .sl-cocuk.sl-binen .sl-golge,
+.mc-kok .sl-cocuk.sl-oturuyor .sl-golge {
+  display: none;
+}
+.mc-kok .bn-kisi.sl-gizli {
+  visibility: hidden;
+}
+/* bebek oturağında sıkışık Kino: biraz basık */
+.mc-kok .bn-kisi.sl-sikisik .bn-cizim {
+  scale: 1.04 0.92;
+  transform-origin: 50% 100%;
+}
+.mc-kok .sl-sahne .bn-kisi-gov {
+  transition: scale 0.25s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+/* ---------------------------------------------------------------- çocuklar, anne, Ege */
+.mc-kok .sl-cocuk-yol,
+.mc-kok .sl-cocuk-gov {
+  position: relative;
+  transform-origin: 50% 100%;
+}
+.mc-kok .sl-cocuk-on {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  touch-action: none;
+  cursor: pointer;
+}
+.mc-kok .sl-cocuk-yan {
+  position: absolute;
+  left: 50%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.mc-kok .sl-cocuk.sl-yandan .sl-cocuk-on {
+  visibility: hidden;
+}
+.mc-kok .sl-cocuk.sl-yandan .sl-cocuk-yan {
+  visibility: visible;
+}
+.mc-kok .sl-golge {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  bottom: 9.5%;
+  height: 3.5%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(38, 60, 12, 0.4), rgba(38, 60, 12, 0));
+  pointer-events: none;
+}
+.mc-kok .sl-kisi-balon {
+  bottom: 88%;
+}
+.mc-kok .sl-cocuk .sl-kisi-balon {
+  bottom: 86%;
+}
+.mc-kok .sl-anne-gov {
+  position: relative;
+  transform-origin: 50% 100%;
+}
+.mc-kok .sl-anne-resim {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 3px 2px rgba(40, 30, 20, 0.2));
+}
+.mc-kok .sl-anne .sl-golge {
+  bottom: -1.2%;
+  left: 18%;
+  right: 18%;
+  height: 3%;
+}
+.mc-kok .sl-anne-kucak {
+  position: absolute;
+  left: 50%;
+  width: calc(13 * var(--b));
+  aspect-ratio: 1620 / 1840;
+  translate: -50% 0;
+  bottom: 13%;
+}
+.mc-kok .sl-anne[data-hal='ayakta'] .sl-anne-kucak {
+  bottom: 30%;
+  width: calc(12.5 * var(--b));
+}
+.mc-kok .sl-ege.kucakta {
+  position: absolute;
+  inset: 0;
+}
+.mc-kok .sl-ege .eg-ege {
+  width: 100%;
+}
+.mc-kok .sl-ege .eg-ege-golge,
+.mc-kok .sl-ege.kucakta .eg-balon {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- sayı rozeti, kum, fular, yığın */
+.mc-kok .sl-rozet {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6b0, #ffd23a 55%, #f4b21c);
+  border: calc(0.7 * var(--b)) solid var(--kontur, #3a1210);
+  box-shadow: 0 calc(0.6 * var(--b)) 0 var(--kontur, #3a1210);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.mc-kok .sl-rozet b {
+  position: relative;
+  z-index: 1;
+  font-size: calc(5.2 * var(--b));
+  line-height: 1;
+  color: var(--kontur, #3a1210);
+}
+.mc-kok .sl-rozet-yildiz {
+  display: none;
+  position: absolute;
+  inset: 8%;
+  opacity: 0.9;
+}
+.mc-kok .sl-rozet-yildiz svg {
+  width: 100%;
+  height: 100%;
+}
+.mc-kok .sl-rozet.pat {
+  animation: sl-pat 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.mc-kok .sl-rozet.gidiyor {
+  transition: opacity 0.4s, scale 0.4s;
+  opacity: 0;
+  scale: 0.4;
+}
+@keyframes sl-pat {
+  0% { scale: 0.6; }
+  60% { scale: 1.25; }
+  100% { scale: 1; }
+}
+.mc-kok .sl-kum-tane {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: #f2d07a;
+  border: 1.5px solid #b9873a;
+  pointer-events: none;
+}
+.mc-kok .sl-fular {
+  position: absolute;
+  z-index: 25;
+  pointer-events: none;
+}
+.mc-kok .sl-fular svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .sl-yigin {
+  animation: sl-yigin-gel 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
+  transform-origin: 50% 100%;
+}
+.mc-kok .sl-yigin.gidiyor {
+  transition: opacity 0.3s, scale 0.3s;
+  opacity: 0;
+  scale: 1.2 0.4;
+}
+@keyframes sl-yigin-gel {
+  0% { scale: 0.5 0.2; }
+  100% { scale: 1 1; }
+}
+.mc-kok .sl-yigin .sl-kuyruk {
+  transform-box: view-box;
+  transform-origin: 160px 96px;
+  animation: sl-kuyruk 0.3s ease-in-out infinite alternate;
+}
+.mc-kok .sl-yigin .sl-yigin-kulak {
+  transform-box: view-box;
+  transform-origin: 96px 100px;
+  animation: sl-kuyruk 0.5s ease-in-out infinite alternate-reverse;
+}
+@keyframes sl-kuyruk {
+  from { rotate: -16deg; }
+  to { rotate: 16deg; }
+}
+
+/* ---------------------------------------------------------------- Can'ın yakın çekimi (dar dikey ekran) */
+.mc-kok .sl-yakin {
+  position: absolute;
+  z-index: 18;
+  left: 10px;
+  width: min(34vw, 150px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid #fff;
+  box-shadow:
+    0 0 0 3px var(--kontur, #3a1210),
+    0 6px 14px rgba(0, 0, 0, 0.25);
+  background-size: 400% auto;
+  background-position: 30% 62%;
+  scale: 0;
+  transition: scale 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+  pointer-events: none;
+}
+.mc-kok .sl-yakin.acik {
+  scale: 1;
+}
+.mc-kok .sl-yakin-bank {
+  position: absolute;
+  left: -30%;
+  width: 160%;
+  bottom: -38%;
+}
+.mc-kok .sl-yakin-bank svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .sl-yakin .sl-cocuk {
+  position: absolute;
+  left: 50%;
+  bottom: -52%;
+  width: 118%;
+  translate: -50% 0;
+}
+
+/* ---------------------------------------------------------------- ödül kartı */
+.mc-kok .sl-odul {
+  position: absolute;
+  z-index: 24;
+  left: 50%;
+  top: 42%;
+  width: min(66cqw, 330px, 60cqh);
+  padding: 10px 10px 12px;
+  border-radius: 26px;
+  background: #fff;
+  border: var(--cizgi, 4px) solid var(--kontur, #3a1210);
+  box-shadow: 0 8px 0 var(--kontur, #3a1210);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--kontur, #3a1210);
+  opacity: 0;
+  transform: translate(-50%, -30%) scale(0.5) rotate(-3deg);
+  transition:
+    opacity 0.35s,
+    transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+  pointer-events: none;
+}
+.mc-kok .sl-odul.acik {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+}
+.mc-kok .sl-odul.gidiyor {
+  opacity: 0;
+  transform: translate(-50%, -80%) scale(0.6) rotate(-3deg);
+}
+.mc-kok .sl-odul b {
+  font-size: clamp(1.1rem, 5cqw, 1.45rem);
+  text-align: center;
+}
+.mc-kok .sl-odul-resim {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.6;
+  border-radius: 18px;
+  overflow: hidden;
+  background-size: 260% auto;
+  background-position: 50% 70%;
+}
+.mc-kok .sl-odul-salincak {
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  bottom: 2%;
+}
+.mc-kok .sl-odul-salincak svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mc-kok .sl-odul-kino {
+  position: absolute;
+  left: 18%;
+  bottom: 6%;
+  width: 36%;
+}
+.mc-kok .sl-odul-ege {
+  position: absolute;
+  right: 22%;
+  bottom: 14%;
+  width: 22%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .sl-bk-kino,
+  .mc-kok .sl-yigin .sl-kuyruk,
+  .mc-kok .sl-yigin .sl-yigin-kulak {
+    animation: none;
+  }
+}

@@ -21,11 +21,15 @@ import { Ege } from './ege-bebek';
 import EL from '../../content/macera-elektrik.json';
 import { elektrikKesildi } from './elektrik';
 import { FENER_SVG } from './elektrik-cizim';
+import SL from '../../content/macera-salincak.json';
+import { salincakKimin } from './salincak';
+import { kartSalincakSvg } from './salincak-cizim';
 
 /** Oynanacak bölüm (açılışta seçilir; test/önizlemede ?bolum=banyo | ?bolum=ege) */
-type BolumAdi = 'dogumgunu' | 'banyo' | 'ege' | 'elektrik';
+type BolumAdi = 'dogumgunu' | 'banyo' | 'ege' | 'elektrik' | 'salincak';
 const BOLUM_PARAM = new URLSearchParams(location.search).get('bolum');
-let secilenBolum: BolumAdi = BOLUM_PARAM === 'banyo' || BOLUM_PARAM === 'ege' || BOLUM_PARAM === 'elektrik' ? BOLUM_PARAM : 'dogumgunu';
+let secilenBolum: BolumAdi = BOLUM_PARAM === 'banyo' || BOLUM_PARAM === 'ege' || BOLUM_PARAM === 'elektrik' || BOLUM_PARAM === 'salincak' ? BOLUM_PARAM : 'dogumgunu';
+const PARK_UZAK = Object.values(import.meta.glob<string>('../../assets/film/park/arka-uzak.webp', { eager: true, query: '?url', import: 'default' }))[0] ?? '';
 const KINO_RESIM = import.meta.glob<string>('../../assets/karakter-iskelet/*.svg', { eager: true, query: '?url', import: 'default' });
 
 const IZIN_ANAHTAR = 'minkino-macera-izin';
@@ -56,7 +60,8 @@ export function acilisEkrani(app: Uygulama): Ekran {
     else if (kulak.acik || kulak.durum === 'yok' || TEST_MODU) app.git('bolum');
     else app.git('izin');
   };
-  oyna.addEventListener('click', () => basla());
+  // ana menüden yeni bölüme gelindiyse (?bolum=salincak) büyük Oyna düğmesi de onu açar
+  oyna.addEventListener('click', () => basla(BOLUM_PARAM === 'salincak' ? 'salincak' : undefined));
   kart.addEventListener('click', () => basla());
   // Mino Banyo Yapmıyor! (küçük kart: banyoda Mino ile Kino)
   const kinoUrl = KINO_RESIM[`../../assets/karakter-iskelet/${KINO_ISKELET}.svg`] ?? '';
@@ -89,9 +94,17 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('span.el-bk-yazi', {}, h('small', {}, 'Yeni bölüm'), h('b', {}, EL.baslik)),
   );
   elKart.addEventListener('click', () => basla('elektrik'));
+  // Bölüm 5: Salıncak Kimin? (yeni bölüm; parkta salıncak, sallanan Kino)
+  const slKart = h(
+    'button.sl-bolum-kart',
+    { type: 'button', 'aria-label': SL.baslik, 'data-bolum': 'salincak' },
+    h('span.sl-bk-resim', { style: `--resim:url("${PARK_UZAK}")` }, h('span.sl-bk-salincak', { html: kartSalincakSvg() }), kinoUrl ? h('img.sl-bk-kino', { src: kinoUrl, alt: '', draggable: 'false' }) : null),
+    h('span.sl-bk-yazi', {}, h('small', {}, 'Yeni bölüm'), h('b', {}, SL.baslik)),
+  );
+  slKart.addEventListener('click', () => basla('salincak'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
   return {
-    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, kart, elKart, egeKart, banyoKart, oyna)),
+    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, slKart, kart, elKart, egeKart, banyoKart, oyna)),
     kapat() {
       egeResim.kapat();
     },
@@ -231,7 +244,7 @@ export function bolumEkrani(app: Uygulama): Ekran {
     // Ege ve banyo sahnenin ölçüsünü kurulurken okur: ekran sayfaya eklensin (yatay ekranda sahne dar bir bant,
     // pencerenin eni değil)
     if (bolum !== 'dogumgunu') await Promise.resolve();
-    await (bolum === 'elektrik' ? elektrikKesildi : bolum === 'ege' ? egeUyuyor : bolum === 'banyo' ? banyoBolumu : dogumGunu)(sahneKok, ui);
+    await (bolum === 'salincak' ? salincakKimin : bolum === 'elektrik' ? elektrikKesildi : bolum === 'ege' ? egeUyuyor : bolum === 'banyo' ? banyoBolumu : dogumGunu)(sahneKok, ui);
     if (kapandi) return;
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--sari)' }, svg(IKON.tekrar), 'Bir daha');
     const cik = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.ev), 'Ana sayfa');
