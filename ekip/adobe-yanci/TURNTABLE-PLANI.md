@@ -14,6 +14,8 @@ Illustrator 11:00'den önce açılmaz; Barış öyle istedi. İsteyen: yönetici
 - İç beyazlar (Elif'in yakası, ördek, tavşan) kenara değmediği sürece kalır; kontrol edilir.
 - CIKTI: `cikti/turntable/<ad>-temiz.ai`. Belge açık kalır, karakter seçili olur.
 
+**Durum (11:06):** 16 dosya hazır: `cikti/turntable/<ad>-temiz.ai`, kontrol için `<ad>-temiz.png`, hepsi bir arada `cikti/turntable/onizleme.png`. İç beyazları korumak için `ekip/illustrator/vektorlestir-maske.jsx` kullanıldı: büyük beyaz, merkezi şeffaf PNG'de zemindeyse silinir. Elif'in yakası, köpeğin göz akı, Can'ın ayakkabısı ve ördek korundu. Illustrator açık bırakıldı, belge açık değil.
+
 ## 3. Dönen tabla (yancı, arayüzden)
 - Her `<ad>-temiz.ai` için: tümünü seç → Özellikler → Dönüştür → **Dönen tabla**.
 - Üretilecek açılar: **yan** (sağa bakan tam profil), **3/4**, **arka**.
