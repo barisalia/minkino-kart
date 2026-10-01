@@ -82,7 +82,8 @@ function minoIfadeDestek(ad: string): Promise<boolean> {
  * patiKuyruk (1: kuyruğunu patisiyle tutar; 'pati-kuyruk' eki yoksa kolSag / kuyruk açısıyla),
  * otur (1: oturur: govde-oturma + kuyruk-oturma; zemine oturtmak için y ≈ 2.2 verin), yukSol / yukSag (kalkık kol açısı,
  * 30-160°: kol-*-yukari katmanı, asıl kol gizlenir; 0: normal kol), dusun (1: düşünüyor: göz, ağız ve sağ kol),
- * bakan (-1 sola / 1 sağa bakan göz; 0: normal).
+ * bakan (-1 sola / 1 sağa bakan göz; 0: normal), kas (kaş: 1 çatık, - kalkık; tek 'kas' katmanlı iskelet, ör. ayı),
+ * surat (1: düz kapalı ağız: agiz-kapali), tatli (1: kapalı gülümseme: agiz-gulumse; konuşmadan önce 0'a çekin).
  * Mino: kafaAci, kafaY, govdeAci, ziplaY (- yükselir), sx, sy, kolSol, kolSag, kuyrukAci, gozKay, gulum (-1 üzgün … 1),
  * agiz (0 kapalı … 1), goz (1: kapalı); Kino'daki adlarla pozlar (src/mino/mino-poz.ts → durusPozu): otur (1: oturur,
  * kendiliğinden zemine iner; y vermeyin), yukSol / yukSag (kol açısı; 30°'yi geçince kalkık kol, en çok 160°),
@@ -91,7 +92,7 @@ function minoIfadeDestek(ad: string): Promise<boolean> {
 type Durus = Record<string, number>;
 const MINO_EK_ALAN = ['kafaAci', 'kafaY', 'govdeAci', 'ziplaY', 'sx', 'sy', 'kolSol', 'kolSag', 'kuyrukAci', 'gozKay', 'gulum', 'agiz', 'goz'] as const;
 const MINO_ALAN = [...MINO_EK_ALAN, ...MINO_POZ_ALAN] as const;
-const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre', 'patiKuyruk', 'otur', 'yukSol', 'yukSag', 'dusun', 'bakan'] as const;
+const KARAKTER_ALAN = ['kulak', 'kulakSol', 'kulakSag', 'kafa', 'kafaY', 'kol', 'kolSol', 'kolSag', 'kuyruk', 'salla', 'pervane', 'hop', 'y', 'don', 'sx', 'sy', 'goz', 'dil', 'adim', 'titre', 'patiKuyruk', 'otur', 'yukSol', 'yukSag', 'dusun', 'bakan', 'kas', 'surat', 'tatli'] as const;
 /** varsayılanlar (duruş "normal"e dönerken) */
 const VARSAYILAN: Durus = { salla: 1, sx: 1, sy: 1 };
 const deger = (d: Durus, k: string) => d[k] ?? VARSAYILAN[k] ?? 0;
@@ -405,8 +406,19 @@ export class Oyuncu {
       const gozDegisti = dusun || bakSag || bakSol;
       this.karakter.gizle('goz-sol', gozDegisti);
       this.karakter.gizle('goz-sag', gozDegisti);
-      this.karakter.gizle('agiz', dusun);
-      this.karakter.gizle('dil', dusun);
+      // kaş (çatık / kalkık) ve sahneye özel ağızlar (surat asma, tatlı gülümseme); yalnız duruşta verilmişse
+      p.kas = v('kas');
+      if ('surat' in this.hedef || 'tatli' in this.hedef) {
+        const surat = v('surat') > 0.5 && !!this.karakter.parcaG('agiz-kapali');
+        const tatli = !surat && v('tatli') > 0.5 && !!this.karakter.parcaG('agiz-gulumse');
+        this.karakter.ek('agiz-kapali', surat);
+        this.karakter.ek('agiz-gulumse', tatli);
+        this.karakter.gizle('agiz', dusun || surat || tatli);
+        this.karakter.gizle('dil', dusun || surat || tatli);
+      } else {
+        this.karakter.gizle('agiz', dusun);
+        this.karakter.gizle('dil', dusun);
+      }
       this.karakter.gizle('kol-sag', dusun || kalkSag);
     }
     // eklem sınırları (dikiş yeri açılmasın) karakterin kişiliğinde (src/karakter/kisilik.ts), çizimde en son

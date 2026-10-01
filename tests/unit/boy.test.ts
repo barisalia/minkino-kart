@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import elma from '../../content/film/kino-elma-kulesi.json';
 import kaydirak from '../../content/film/kino-kaydirak.json';
+import lutfen from '../../content/film/kino-lutfen.json';
 import karpuz from '../../content/film/mino-karpuz.json';
 import sepet from '../../content/film/mino-sepet.json';
 import { altPayi, BOY, boyGenislik, boyOrani, boyTipi, CIZIM, COCUKLAR, gorunenBoy, minoBoyu, yanOlcek } from '../../src/karakter/boy';
@@ -46,7 +47,7 @@ describe('boy tablosu', () => {
 
 interface Oy { tip: string; w: number; yan?: boolean }
 describe('filmler boy tablosuna uyar', () => {
-  for (const f of [karpuz, elma, kaydirak, sepet]) {
+  for (const f of [karpuz, elma, kaydirak, sepet, lutfen]) {
     it(`${f.baslik}: insanların genişliği tablodan (Mino'nun o sahnedeki kutusuna göre)`, () => {
       for (const s of f.sahneler) {
         if (!('oyuncular' in s)) continue;
