@@ -103,7 +103,7 @@ export const OYUNLAR: OyunKarti[] = [
     adres: './film/',
     renk: '#3E9DF2',
     // en yeni filmin kapağı (filmin kendi karesi: assets/film/kapak); yeni film gelince bu ad değişir
-    zemin: 'film/kapak/mino-sepet',
+    zemin: 'film/kapak/kino-lutfen',
     katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
   },
 ];

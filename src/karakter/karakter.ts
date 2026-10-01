@@ -101,6 +101,8 @@ export function svgGetir(ad: string): Promise<string | null> {
 }
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** kaş kırpımlarının sayfada tek kimliği (aynı karakterden birkaç kopya olabilir) */
+let kasSayac = 0;
 
 /** O karedeki duruş. Açılar derece; kol/kulak/bacak için + = dışa / yukarı kalkar. y: boyun %'si, - = yukarı */
 export interface Poz {
@@ -126,6 +128,8 @@ export interface Poz {
   /** Kalkık kol (kol-sol-yukari / kol-sag-yukari katmanı, 30-160°; film: Oyuncu.durus yukSol / yukSag). 0: yok */
   yukSol?: number;
   yukSag?: number;
+  /** Kaş (tek 'kas' katmanı iki yarıya bölünür): 1 çatık (iç uçlar iner, kaşlar yaklaşır), - kalkık (şaşkın / duygulu). 0: yok */
+  kas?: number;
 }
 const bosPoz = (): Poz => ({ x: 0, y: 0, don: 0, sx: 1, sy: 1, kafa: 0, kafaY: 0, kulakSol: 0, kulakSag: 0, kolSol: 0, kolSag: 0, bacakSol: 0, bacakSag: 0, kuyruk: 0, gozKapali: false, agizAcik: 0, burun: 0, agizSekli: null });
 
@@ -484,7 +488,64 @@ export class Karakter {
       if (id === 'gaga-alt' && dn[id] && p.agizAcik) tr += ' ' + etrafinda(dn[id], 0, 1, 1 + 0.12 * p.agizAcik, 0, 34 * p.agizAcik);
       g.style.transform = tr;
     }
+    this.kasCiz(p.kas ?? 0);
     this.gorunurluk(p);
+  }
+
+  /**
+   * Kaş çatma / kaldırma. İskeletteki tek 'kas' katmanı (iki kaş, tek resim) ilk kullanımda ortadan iki yarıya
+   * bölünür (her yarı kendi kırpımıyla aynı resmi gösterir); her kaş kendi ortası çevresinde döner ve iner.
+   * k 1: çatık (iç uçlar aşağı, kaşlar gözlere yaklaşır), k < 0: kalkık. Kullanılmadıkça çizime dokunulmaz.
+   */
+  private kasCiz(k: number) {
+    if (!k && !this.kasYari.length) return;
+    if (!this.kasYari.length && !this.kasBol()) return;
+    const [sol, sag] = this.kasYari;
+    // çatık: iç uçlar iner, kaşlar incelir ve yaklaşır; kalkık: iç uçlar kalkar (duygulu, şaşkın)
+    const c = Math.max(0, k);
+    const a = k > 0 ? 32 * k : 18 * k;
+    const dx = k > 0 ? 16 * k : 6 * k;
+    const dy = k > 0 ? 46 * k : 34 * k;
+    const sx = 1 + 0.1 * c;
+    const sy = 1 - 0.28 * Math.min(1, c);
+    sol[0].style.transform = k ? etrafinda(sol[1], a, sx, sy, dx, dy) : '';
+    sag[0].style.transform = k ? etrafinda(sag[1], -a, sx, sy, -dx, dy) : '';
+  }
+  /** kaşın iki yarısı: [dönen grup, dönme noktası] */
+  private kasYari: [SVGGElement, [number, number]][] = [];
+  private kasBolunemez = false;
+  private kasBol(): boolean {
+    const kas = this.parca.get('kas');
+    const im = kas?.querySelector(':scope > image');
+    if (this.kasBolunemez || !kas || !im) return !(this.kasBolunemez = true);
+    const [x, y, w, hh] = ['x', 'y', 'width', 'height'].map((a) => Number(im.getAttribute(a) ?? 0));
+    const svg = kas.ownerSVGElement;
+    if (!w || !hh || !svg) return !(this.kasBolunemez = true);
+    const ns = 'http://www.w3.org/2000/svg';
+    const no = ++kasSayac;
+    const defs = document.createElementNS(ns, 'defs');
+    svg.prepend(defs);
+    for (const [i, sol] of [[0, true], [1, false]] as const) {
+      const id = `kr-kas-${no}-${i}`;
+      const cp = document.createElementNS(ns, 'clipPath');
+      cp.setAttribute('id', id);
+      const r = document.createElementNS(ns, 'rect');
+      r.setAttribute('x', String(sol ? x - 40 : x + w / 2));
+      r.setAttribute('y', String(y - 60));
+      r.setAttribute('width', String(w / 2 + 40));
+      r.setAttribute('height', String(hh + 120));
+      cp.append(r);
+      defs.append(cp);
+      const don = document.createElementNS(ns, 'g');
+      const ic = document.createElementNS(ns, 'g');
+      ic.setAttribute('clip-path', `url(#${id})`);
+      ic.append(im.cloneNode(true));
+      don.append(ic);
+      kas.append(don);
+      this.kasYari.push([don, [sol ? x + w / 4 : x + (3 * w) / 4, y + hh / 2]]);
+    }
+    im.remove();
+    return true;
   }
 
   /** Hangi katman görünür: varsayılan (gizli ekler kapalı) → ifade → göz kırpma → konuşma ağzı */

@@ -154,3 +154,13 @@ ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 
 - /film/ açılınca **Çizgi Filmler** seçme ekranı gelir (`film/src/katalog.ts`, `katalog.css`): her film büyük kapak kartı (kapak, ad, öğüt rozeti, süre, oynat). Karta dokununca film açılış kartı + jenerikle hemen başlar. `?film=<ad>` doğrudan o filmin kapağını (Oynat) açar; MP4 kaydı bunu kullanır. Filmdeki geri düğmesi bu ekrana döner.
 - **Yeni film eklenince:** (1) `katalog.ts` → `SIRA` listesinin başına `{ ad, ogut, renk, yeni: true }` ekle, eskisinden `yeni`yi kaldır; (2) kapak üret: filmin en güzel karesi (karakterler büyük, yüzler görünür, altyazı/düğme yok), `npm run film:mp4 -- yatay --film=<ad> --ornek=<sn>` ile kare al, 16:9 960 px webp (sharp), ≤120 KB → `assets/film/kapak/<ad>.webp`; (3) ana menü kartı en yeni kapağı gösterir: `uygulama/src/oyunlar.ts` → film kartının `zemin` adı.
+
+## 12. Film 5 (Kino ve Sihirli Söz) eklemeleri
+
+- **Tezgâh eşya olarak:** `{ "tip": "tezgah", x, y, w }` (`assets/pazar/tezgah.webp`): yeri ve boyu sahneden (`"tezgah": true` ortada sabit, w 62). Satıcı tezgâhın önünde, kasaların arkasında durur; ayakları kasaların arkasında kalır.
+- **Çilek:** `tip: "cilek"` (`assets/meyveler/cilek.webp`), elma gibi.
+- **Kaş, surat, tatlı gülümseme (önden iskelet, duruş):** `kas` (1 çatık: iç uçlar iner, kaşlar incelir ve yaklaşır; - kalkık: duygulu / şaşkın). Tek `kas` katmanı ilk kullanımda iki yarıya bölünür (ayı, köpek). `surat: 1` düz kapalı ağız (agiz-kapali), `tatli: 1` kapalı gülümseme (agiz-gulumse); karakter konuşmadan önce 0'a çekin.
+- **Eşya y'si görünen alt kenarıdır:** bir parçaya uçurulan meyvenin hedefinde merkez değil alt kenar verilir (merkez − w/2 + alt pay); `al` olayı yolun bitişinden az sonra (yol + 0,04 sn) gelsin, yoksa son kare uygulanmadan takılır.
+- **`tut` listesine iri kutulu karakter (satıcı ayı) konmaz:** kutunun boş üstü kadrajı yukarı iter; ayı için kamerayı elle çerçeveleyin.
+- **Yeni efektler:** `horul` (uyuklama), `hih` (surat asma), `eri` (yüreği erime).
+- **Şarkı ve karaoke:** `{ "kim": "sarki", "yap": "basla", "ad": "<ad>", "soz": ["satır", …], "ses": 0.75, "yer": "ust" }` → `assets/muzik/<ad>-sozlu.mp3` çalar, heceler `assets/muzik/<ad>.json` zamanlarıyla altyazı yerinde (ya da `yer: "ust"`: üstte) karaoke gibi yanar (film saatiyle; duraklayınca durur, MP4'te de aynı). `"sozsuz": true` → `<ad>-sozsuz.mp3` fon olarak, karaokesiz. `{ "kim": "sarki", "yap": "dur", "sure": 1.6 }` söndürür. Kayıt film açılınca önceden çözülür. Konuşma şarkının girişine konabilir (müzik kısılır); sözlerin üstüne konmaz.

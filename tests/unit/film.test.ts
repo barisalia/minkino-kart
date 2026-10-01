@@ -3,6 +3,11 @@ import elma from '../../content/film/kino-elma-kulesi.json';
 import kaydirak from '../../content/film/kino-kaydirak.json';
 import karpuz from '../../content/film/mino-karpuz.json';
 import sepet from '../../content/film/mino-sepet.json';
+import lutfen from '../../content/film/kino-lutfen.json';
+import ayiIskelet from '../../assets/karakter-iskelet/ayi.json';
+import lutfenSarki from '../../assets/muzik/lutfen.json';
+import { sozleEsle } from '../../src/audio/sarki-kayit';
+const SARKI_DOSYALARI = Object.keys(import.meta.glob('../../assets/muzik/*-sozlu.mp3', { eager: true, query: '?url', import: 'default' }));
 // dosya varlığı: vite glob (node:fs tipi yok); yalnız yol anahtarları kullanılır
 const MUZIK_DOSYALARI = Object.keys(import.meta.glob('../../assets/muzik/film-*.mp3', { eager: true, query: '?url', import: 'default' }));
 const ISKELET_DOSYALARI = Object.keys(import.meta.glob('../../assets/karakter-iskelet/*-profil.svg', { eager: true, query: '?url', import: 'default' }));
@@ -236,5 +241,103 @@ describe("film: Mino'nun Sepeti", () => {
     const kullanilan = new Set(sSahneler.flatMap((s) => s.olaylar.filter((o) => o.kim === 'muzik' && o.yap === 'dosya').map((o) => o.ad)));
     for (const ad of ['film-fon-pazar', 'film-surpriz', 'film-uzgun', 'film-kovalamaca', 'film-merak', 'film-kutlama']) expect(kullanilan.has(ad), ad).toBe(true);
     expect((sepet as { sentez?: boolean }).sentez).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------- Kino ve Sihirli Söz
+interface LutfenOlay extends Olay { hedef?: string; agiz?: string; esya?: string; parca?: string; [k: string]: unknown }
+interface LutfenSahne { ad: string; sure: number; arka: string; olaylar: LutfenOlay[]; oyuncular: Record<string, { tip: string; yan?: boolean; durus?: Record<string, number>; tasi?: { ad: string; parca: string }[] }>; esyalar?: Record<string, { tip: string; gizli?: boolean }> }
+const lSahneler = lutfen.sahneler.filter((s) => 'olaylar' in s) as unknown as LutfenSahne[];
+const lSoz = (kim?: string) => lSahneler.flatMap((s) => s.olaylar.filter((o) => o.yap === 'soyle' && (!kim || o.kim === kim)).map((o) => o.metin as string));
+const LUTFEN_OGUT = 'Lütfen demek sihirli bir sözdür.';
+
+describe('film: Kino ve Sihirli Söz', () => {
+  it('cümleler ve öğüt (Mino anlatıcı, Kino kendi sesiyle, satıcı ayı tek cümle); soru yok', () => {
+    expect(lutfen.seslendir).toBe(true);
+    expect(lSoz('kino')).toEqual(['Ver!', 'Ver! Ver!', 'Lütfen…', 'Teşekkürler!']);
+    expect(lSoz('mino')).toEqual(["Bugün Kino'yla pazardayız!", 'Sihirli sözü söyle: Lütfen!', LUTFEN_OGUT]);
+    expect(lSoz('ayi')).toEqual(['Buyur! Bir de çilek!']);
+    expect(lutfen.sahneler.find((s) => 'ogut' in s)).toEqual({ ogut: LUTFEN_OGUT });
+    for (const c of [...lSoz(), LUTFEN_OGUT]) expect(c, c).not.toContain('?');
+  });
+  it('bütün cümleler seslendirme listesinde; Kino cümleleri Kino sesinde, Mino ve ayının cümleleri değil', () => {
+    const liste = new Set(tumCumleler());
+    for (const c of [...lSoz(), LUTFEN_OGUT]) expect(liste.has(c), c).toBe(true);
+    const kino = new Set(karakterCumleleri().kino);
+    for (const c of lSoz('kino')) expect(kino.has(c), c).toBe(true);
+    for (const c of [...lSoz('mino'), ...lSoz('ayi'), LUTFEN_OGUT]) expect(kino.has(c), c).toBe(false);
+  });
+  it('cümleler kısa: Mino ≤ 5, Kino ≤ 3, ayı ≤ 6 kelime', () => {
+    for (const c of lSoz('mino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(5);
+    for (const c of lSoz('kino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(3);
+    for (const c of lSoz('ayi')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(6);
+  });
+  it('5 sahne, yaklaşık 60 sn (sondaki şarkıyla 66 sn’yi geçmez), pazarda; olaylar sahne içinde; kimi, hedefi, taşınan eşyası sahnede', () => {
+    expect(lSahneler.length).toBe(5);
+    const toplam = lSahneler.reduce((t, s) => t + s.sure, 0);
+    expect(toplam).toBeGreaterThanOrEqual(55);
+    expect(toplam).toBeLessThanOrEqual(66);
+    expect(lutfen.malzeme).toBe('mino-karpuz');
+    for (const s of lSahneler) {
+      expect(s.arka).toBe('pazar');
+      const oyuncular = Object.keys(s.oyuncular);
+      const esyalar = Object.keys(s.esyalar ?? {});
+      const varlar = new Set(['kamera', 'efekt', 'muzik', 'sarki', 'parilti', 'toz', ...oyuncular, ...esyalar]);
+      for (const o of s.olaylar) {
+        expect(o.t, `${s.ad} ${o.kim}`).toBeLessThanOrEqual(s.sure);
+        expect(varlar.has(o.kim), `${s.ad}: ${o.kim}`).toBe(true);
+        if (o.yap === 'yerine') expect(oyuncular, `${s.ad}: yerine ${o.hedef}`).toContain(o.hedef);
+        if (o.yap === 'al' || o.yap === 'birak') expect(esyalar, `${s.ad}: ${o.yap} ${o.esya}`).toContain(o.esya);
+      }
+      for (const o of Object.values(s.oyuncular)) for (const t of o.tasi ?? []) expect(esyalar, `${s.ad}: tasi ${t.ad}`).toContain(t.ad);
+      // tezgâh, elma ve çilek kasaları her sahnede
+      expect(esyalar).toEqual(expect.arrayContaining(['tezgah', 'kasa1', 'kasa2', 'elma', 'cilek']));
+    }
+  });
+  it('satıcı ayı: kaş çatar ve surat asar, sonra kaşları kalkar ve tatlı gülümser; dudak senkronlu konuşur', () => {
+    const durus = lSahneler.flatMap((s) => [...s.olaylar.filter((o) => o.kim === 'ayi' && o.yap === 'durus'), ...(s.oyuncular.ayi?.durus ? [s.oyuncular.ayi.durus] : [])]) as Record<string, unknown>[];
+    expect(durus.some((d) => Number(d.kas) >= 1 && d.surat === 1), 'kaş çatma').toBe(true);
+    expect(durus.some((d) => Number(d.kas) < 0), 'kalkık kaş').toBe(true);
+    expect(durus.some((d) => d.tatli === 1), 'tatlı gülümseme').toBe(true);
+    // iskelette tek kaş katmanı ve dudak senkronu ağızları var
+    expect(ayiIskelet.sira).toContain('kas');
+    for (const a of ['agiz-kapali', 'agiz-az', 'agiz-orta', 'agiz-yuvarlak', 'agiz-dis', 'agiz-gulumse']) expect(ayiIskelet.gizli, a).toContain(a);
+  });
+  it('ayı elmayı Kino’nun patisine, çileği başına verir; ikisi de sonraki sahnede Kino’da takılı', () => {
+    const al = lSahneler.flatMap((s) => s.olaylar.filter((o) => o.yap === 'al'));
+    expect(al.some((o) => o.kim === 'kino' && o.esya === 'elma' && o.parca === 'kol-sag')).toBe(true);
+    expect(al.some((o) => o.kim === 'kino' && o.esya === 'cilek' && o.parca === 'kafa')).toBe(true);
+    const son = lSahneler[4].oyuncular.kino.tasi ?? [];
+    expect(son.map((t) => `${t.ad}:${t.parca}`)).toEqual(['elma:govde', 'cilek:kafa']);
+    expect(lSahneler[4].esyalar?.cilek.gizli).toBe(true);
+    // Kino yandan koşarak gelir, önüne döner
+    expect(lSahneler[0].olaylar.some((o) => o.kim === 'kinoy' && o.stil === 'kos')).toBe(true);
+    expect(lSahneler[0].olaylar.some((o) => o.kim === 'kinoy' && o.yap === 'yerine' && o.hedef === 'kino')).toBe(true);
+  });
+  it('efektler tanımlı; müzik dosyaları var; sentez müzik kapalı', () => {
+    for (const s of lSahneler)
+      for (const o of s.olaylar) {
+        if (o.kim === 'efekt') expect(Object.keys(FILM_EFEKT), o.yap).toContain(o.yap);
+        if (o.kim === 'muzik' && o.yap === 'dosya') expect(existsSync(`assets/muzik/${o.ad}.mp3`), String(o.ad)).toBe(true);
+      }
+    const kullanilan = new Set(lSahneler.flatMap((s) => s.olaylar.filter((o) => o.kim === 'muzik' && o.yap === 'dosya').map((o) => o.ad)));
+    for (const ad of ['film-fon-pazar', 'film-surpriz', 'film-uzgun', 'film-merak', 'film-kutlama']) expect(kullanilan.has(ad), ad).toBe(true);
+    expect((lutfen as { sentez?: boolean }).sentez).toBe(false);
+  });
+  it('finalde "Lütfen ve Teşekkürler" şarkısı: kayıt ve hece tablosu var; sözler kayıttaki hecelerle birebir; öğütten sonra, film içinde biter', () => {
+    const son = lSahneler[4];
+    const sarki = son.olaylar.find((o) => o.kim === 'sarki' && o.yap === 'basla') as LutfenOlay & { soz: string[] };
+    expect(sarki.ad).toBe('lutfen');
+    expect(SARKI_DOSYALARI.some((k) => k.endsWith('/lutfen-sozlu.mp3'))).toBe(true);
+    // sözler (yazım) kayıttaki hecelere harf harf oturur; dört satır
+    expect(sarki.soz).toEqual(['Lütfen demek çok güzel', 'Teşekkür etmek çok güzel', 'Her arkadaş sevgiyle', 'Güller açar el ele']);
+    const yazim = sozleEsle(sarki.soz, lutfenSarki.heceler.map((x) => x.hece));
+    for (const [i, satir] of sarki.soz.entries())
+      expect(yazim.filter((y) => y.satir === i).map((y) => y.yazi).join(''), satir).toBe(satir.replace(/\s/g, ''));
+    // Mino öğüdü şarkının girişinde söyler (sözler başlamadan biter); şarkı sahne bitmeden sona erer
+    const ogut = son.olaylar.find((o) => o.yap === 'soyle' && o.metin === LUTFEN_OGUT) as LutfenOlay & { sure: number };
+    const sozBasi = sarki.t + lutfenSarki.baslangic_ms / 1000;
+    expect(ogut.t + ogut.sure).toBeLessThanOrEqual(sozBasi);
+    expect(sarki.t + Math.max(...lutfenSarki.heceler.map((x) => x.bitir_ms)) / 1000).toBeLessThan(son.sure);
   });
 });

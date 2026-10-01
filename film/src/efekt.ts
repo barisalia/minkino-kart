@@ -267,6 +267,23 @@ export const FILM_EFEKT: Record<string, () => void> = {
   nefes() {
     hisirti(0, 0.9, 700, 400, 0.05, 0.6);
   },
+  // ---------------------------------------------------------------- Kino ve Sihirli Söz
+  /** tezgâhında uyuklayan ayı: tatlı, kısa horlama (hırr… fiuu) */
+  horul() {
+    ton(85, 0, 0.7, 'sawtooth', 0.035, 70);
+    hisirti(0, 0.7, 260, 180, 0.07, 1.5);
+    hisirti(0.8, 0.55, 1400, 2200, 0.04, 1.2);
+  },
+  /** surat asan ayı: "hıh!" (kısa, burundan) */
+  hih() {
+    hisirti(0, 0.22, 1100, 650, 0.16, 2.2);
+    ton(230, 0, 0.18, 'triangle', 0.08, 150);
+  },
+  /** yüreği eriyen ayı: yumuşak yükselen "ooo" (iki ince ton) */
+  eri() {
+    ton(523, 0, 0.6, 'sine', 0.1, 784);
+    ton(659, 0.15, 0.7, 'sine', 0.08, 988);
+  },
 };
 
 /** ksilofon notası: temel + parlak üst harmonik (kısa söner) */
