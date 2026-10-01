@@ -99,14 +99,12 @@ export const OYUNLAR: OyunKarti[] = [
   },
   {
     id: 'film',
-    ad: 'Mini Filmler',
+    ad: 'Çizgi Filmler',
     adres: './film/',
     renk: '#3E9DF2',
-    zemin: 'sahne/cayir',
-    katmanlar: [
-      { gorsel: 'meyveler/karpuz', sinif: 'ug-k-karpuz' },
-      { ikon: 'oyna', sinif: 'ug-k-oynat' },
-    ],
+    // en yeni filmin kapağı (filmin kendi karesi: assets/film/kapak); yeni film gelince bu ad değişir
+    zemin: 'film/kapak/mino-sepet',
+    katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
   },
 ];
 

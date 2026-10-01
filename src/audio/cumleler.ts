@@ -200,7 +200,7 @@ export function tumCumleler(): string[] {
     if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'sarki'].includes(k)) continue;
     topla(v).forEach(ekle);
   }
-  // Mini filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)
+  // Çizgi filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;
     for (const s of f.sahneler) {
@@ -229,7 +229,7 @@ export function karakterCumleleri(): Record<string, string[]> {
   topla((maceraElektrikJson as Record<string, unknown>).kino).forEach(ekle);
   // Salıncak Kimin?: "kino" bölümü
   topla((maceraSalincakJson as Record<string, unknown>).kino).forEach(ekle);
-  // Mini filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
+  // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;
     for (const s of f.sahneler) if ('olaylar' in s) for (const o of s.olaylar) if (o.yap === 'soyle' && o.kim === 'kino' && typeof o.metin === 'string') ekle(o.metin);

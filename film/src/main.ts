@@ -5,9 +5,11 @@ import '../../src/styles/ana.css';
 import '../../src/styles/mino.css';
 import '../../src/karakter/karakter.css';
 import './film.css';
+import './katalog.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { anaMenuyeDon, ekranKaydet, Uygulama } from '../../src/uygulama';
 import { filmEkrani } from './ekranlar';
+import { katalogEkrani } from './katalog';
 
 // Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
 sesKokuAyarla('../ses/', './ses/');
@@ -16,13 +18,14 @@ sesKokuAyarla('../ses/', './ses/');
 if (new URLSearchParams(location.search).has('kayit')) void import('./kayit');
 
 ekranKaydet('film', filmEkrani);
-// beklenmedik hatada "Baştan başla" açılışa döner: açılış = film kapağı
-ekranKaydet('acilis', filmEkrani);
+ekranKaydet('katalog', katalogEkrani);
+// beklenmedik hatada "Baştan başla" açılışa döner: açılış = Çizgi Filmler ekranı
+ekranKaydet('acilis', katalogEkrani);
 
 const kok = document.getElementById('minkino-film');
 if (kok) {
-  // açılıştaki geri düğmesi ana menüye (site kökü) döner
+  // Çizgi Filmler ekranındaki geri düğmesi ana menüye (site kökü) döner; ?film=<ad> doğrudan o filmin kapağını açar
   const app = new Uygulama(kok, { cikis: anaMenuyeDon });
   kok.classList.add('fl-kok');
-  app.git('film');
+  app.git(new URLSearchParams(location.search).has('film') ? 'film' : 'katalog');
 }

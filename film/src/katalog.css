@@ -1,0 +1,471 @@
+/* Çizgi Filmler seçme ekranı (katalog.ts). Sinema: kadife perde, ışıklı tabela, patlamış mısır; büyük kapak kartları.
+   Telefon dikey: tek sütun; yatay ve tablet: iki sütun. Tüm stiller .fl-kok .fl-katalog altında. */
+.fl-kok .fl-katalog {
+  --perde: clamp(12px, 3.4vw, 40px);
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 38% at 50% 0%, rgba(255, 196, 110, 0.38), transparent 70%),
+    radial-gradient(120% 70% at 50% 110%, rgba(255, 120, 90, 0.22), transparent 60%),
+    linear-gradient(180deg, #4a2142 0%, #2c1a3a 45%, #1e1a2e 100%);
+}
+
+/* ---------- perde ve saçak ---------- */
+.fl-kok .fl-k-perde {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.fl-kok .fl-k-perde-sol,
+.fl-kok .fl-k-perde-sag {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--perde);
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0) 60%),
+    repeating-linear-gradient(90deg, #8f1325 0, #c9283a 5px, #e04a55 8px, #b01b30 12px, #8f1325 16px);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.45);
+}
+.fl-kok .fl-k-perde-sol {
+  left: 0;
+  border-bottom-right-radius: 70% 18%;
+}
+.fl-kok .fl-k-perde-sag {
+  right: 0;
+  transform: scaleX(-1);
+  border-bottom-right-radius: 70% 18%;
+}
+/* üstte dalgalı kadife saçak + altın püskül çizgisi */
+.fl-kok .fl-k-sacak {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 30px;
+  background:
+    radial-gradient(22px 18px at 50% 0, #c9283a 96%, transparent 100%) 0 8px / 40px 22px repeat-x,
+    linear-gradient(#a3172b, #c9283a) 0 0 / 100% 10px no-repeat;
+  filter: drop-shadow(0 4px 0 #f2b33d) drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35));
+}
+/* arkada göz kırpan küçük ışıklar */
+.fl-kok .fl-k-yildizlar i {
+  position: absolute;
+  z-index: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffe9a8;
+  box-shadow: 0 0 10px 3px rgba(255, 220, 140, 0.55);
+  opacity: 0.25;
+  left: calc(8% + var(--i) * 13.5%);
+  top: calc(14% + var(--i) * 3%);
+  animation: fl-k-goz-kirp 3.2s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.47s);
+}
+.fl-kok .fl-k-yildizlar i:nth-child(odd) {
+  top: calc(30% + var(--i) * 6%);
+}
+@keyframes fl-k-goz-kirp {
+  0%, 100% { opacity: 0.15; transform: scale(0.6); }
+  50% { opacity: 0.85; transform: scale(1); }
+}
+
+/* ---------- üst: düğmeler, Mino + tabela + Kino ---------- */
+.fl-kok .fl-k-ust {
+  position: relative;
+  z-index: 2;
+  flex: none;
+}
+.fl-kok .fl-k-dugmeler {
+  position: absolute;
+  left: calc(var(--yan) + var(--perde) * 0.4);
+  right: calc(var(--yan) + var(--perde) * 0.4);
+  top: calc(var(--ust) + 10px);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.fl-kok .fl-k-dugmeler > * {
+  pointer-events: auto;
+}
+.fl-kok .fl-k-sahne {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(4px, 2vw, 18px);
+  padding: calc(var(--ust) + 74px) calc(var(--perde) + 8px) 6px;
+}
+.fl-kok .fl-k-mino,
+.fl-kok .fl-k-kino {
+  position: relative;
+  flex: none;
+  width: clamp(62px, 17vw, 130px);
+  aspect-ratio: 1360 / 1790;
+  cursor: pointer;
+  touch-action: manipulation;
+  /* dokunma alanı çizimden biraz büyük */
+  padding: 0;
+}
+.fl-kok .fl-k-mino::after,
+.fl-kok .fl-k-kino::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+}
+.fl-kok .fl-k-mino .mino {
+  position: absolute;
+  inset: 0;
+}
+.fl-kok .fl-k-kino {
+  aspect-ratio: 1410 / 1856;
+}
+.fl-kok .fl-k-kino-ic {
+  position: absolute;
+  inset: 0;
+}
+/* Kino çizimi 2048'lik kutuda; ana menüdekiyle aynı kırpım */
+.fl-kok .fl-k-kino .kr-karakter {
+  inset: auto;
+  left: -26.24%;
+  top: -5.93%;
+  width: 145.25%;
+  height: 110.34%;
+}
+/* ışıklı tabela: altın çerçeve, içinde yanıp sönen ampuller */
+.fl-kok .fl-k-tabela {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-bottom: clamp(10px, 3vw, 26px);
+  padding: clamp(10px, 2.6vw, 18px) clamp(16px, 4.4vw, 34px);
+  border-radius: clamp(18px, 4vw, 28px);
+  background: linear-gradient(180deg, #ffe07a, #ffb72a 60%, #f39a1c);
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 6px 0 var(--kontur), 0 0 34px rgba(255, 196, 80, 0.55);
+}
+.fl-kok .fl-k-tabela::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  border: 5px dotted #fffbe3;
+  filter: drop-shadow(0 0 3px #fff2b0);
+  animation: fl-k-ampul 1.4s steps(2, jump-none) infinite;
+  pointer-events: none;
+}
+@keyframes fl-k-ampul {
+  from { opacity: 1; }
+  to { opacity: 0.45; }
+}
+.fl-kok .fl-k-baslik {
+  position: relative;
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(1.45rem, 6.6vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: #fff;
+  -webkit-text-stroke: clamp(5px, 1.4vw, 9px) var(--kontur);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 0 rgba(90, 54, 23, 0.35);
+}
+.fl-kok .fl-k-misir {
+  position: absolute;
+  right: clamp(-22px, -3vw, -12px);
+  bottom: clamp(-26px, -4vw, -16px);
+  width: clamp(34px, 9vw, 58px);
+  transform: rotate(12deg);
+  filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.3));
+}
+.fl-kok .fl-k-misir svg {
+  display: block;
+  width: 100%;
+}
+
+/* ---------- film listesi ---------- */
+.fl-kok .fl-k-liste {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  padding: 16px calc(var(--perde) + var(--yan)) calc(var(--alt) + 28px);
+  mask-image: linear-gradient(transparent, #000 16px);
+}
+.fl-kok .fl-k-liste::-webkit-scrollbar {
+  display: none;
+}
+.fl-kok .fl-k-izgara {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(18px, 4vw, 28px);
+  width: 100%;
+  max-width: 560px;
+  /* boş yer kalırsa (tablet) kartlar dikeyde ortada; taşarsa baştan kayar */
+  margin: auto;
+  padding: 0;
+  list-style: none;
+}
+.fl-kok .fl-k-yer {
+  animation: fl-k-gir 0.55s cubic-bezier(0.25, 1.4, 0.5, 1) both;
+  animation-delay: calc(0.12s + var(--i) * 0.09s);
+}
+@keyframes fl-k-gir {
+  from { opacity: 0; transform: translateY(26px) scale(0.94); }
+}
+.fl-kok .fl-film-kart {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: clamp(6px, 1.6vw, 10px);
+  border-radius: var(--yaricap);
+  border: var(--cizgi) solid var(--kontur);
+  background: #fff8ea;
+  box-shadow: 0 6px 0 var(--kontur), 0 18px 30px rgba(0, 0, 0, 0.35);
+  color: var(--kontur);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s cubic-bezier(0.3, 1.5, 0.5, 1), box-shadow 0.2s;
+}
+.fl-kok .fl-film-kart.basili {
+  transform: scale(1.04);
+  box-shadow: 0 6px 0 var(--kontur), 0 0 0 5px color-mix(in srgb, var(--r) 70%, white), 0 22px 36px rgba(0, 0, 0, 0.4);
+}
+@media (hover: hover) {
+  .fl-kok .fl-film-kart:hover {
+    transform: scale(1.025);
+  }
+}
+.fl-kok .fl-film-kart.secildi {
+  animation: fl-k-sec 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes fl-k-sec {
+  0% { transform: scale(1.04); }
+  45% { transform: scale(1.09) rotate(-1deg); }
+  100% { transform: scale(1.05); }
+}
+.fl-kok .fl-film-kart:focus-visible {
+  outline: 5px solid var(--r);
+  outline-offset: 4px;
+}
+.fl-kok .fl-film-kart.son-izlenen {
+  box-shadow: 0 6px 0 var(--kontur), 0 0 0 5px rgba(255, 224, 122, 0.85), 0 18px 30px rgba(0, 0, 0, 0.35);
+}
+/* kapak görseli 16:9 */
+.fl-kok .fl-k-kapak {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: calc(var(--yaricap) - 8px);
+  border: 3px solid color-mix(in srgb, var(--r) 45%, var(--kontur));
+  background: color-mix(in srgb, var(--r) 35%, white);
+}
+.fl-kok .fl-k-kapak img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: transform 0.4s ease-out;
+}
+.fl-kok .fl-film-kart.basili .fl-k-kapak img,
+.fl-kok .fl-film-kart.secildi .fl-k-kapak img {
+  transform: scale(1.04);
+}
+.fl-kok .fl-k-parilti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 30%),
+    linear-gradient(0deg, rgba(30, 26, 46, 0.32) 0%, rgba(30, 26, 46, 0) 32%);
+}
+/* büyük oynat düğmesi (bilgi satırının sağında, filmin renginde) */
+.fl-kok .fl-k-oynat {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(58px, 15vw, 74px);
+  aspect-ratio: 1;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, color-mix(in srgb, var(--r) 55%, white), var(--r) 70%);
+  border: 4px solid var(--kontur);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.14), 0 5px 0 var(--kontur);
+  color: #fff;
+  animation: fl-k-nabiz 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.6s);
+}
+.fl-kok .fl-k-oynat svg {
+  width: 60%;
+  margin-left: 9%;
+  filter: drop-shadow(0 2px 0 rgba(90, 54, 23, 0.4));
+}
+@keyframes fl-k-nabiz {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+/* "Yeni" rozeti */
+.fl-kok .fl-k-yeni {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 3px 14px 4px;
+  border-radius: 999px;
+  background: linear-gradient(#ff5a57, #e0302f);
+  border: 3px solid var(--kontur);
+  box-shadow: 0 3px 0 var(--kontur);
+  color: #fff;
+  font-size: clamp(0.95rem, 3.6vw, 1.2rem);
+  font-weight: 700;
+  transform: rotate(-6deg);
+  animation: fl-k-yeni 2.8s ease-in-out infinite;
+}
+@keyframes fl-k-yeni {
+  0%, 70%, 100% { transform: rotate(-6deg) scale(1); }
+  80% { transform: rotate(-10deg) scale(1.12); }
+  90% { transform: rotate(-3deg) scale(1.04); }
+}
+/* süre etiketi */
+.fl-kok .fl-k-sure {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 11px 3px 8px;
+  border-radius: 999px;
+  background: rgba(30, 26, 46, 0.72);
+  color: #fff;
+  font-size: clamp(0.85rem, 3.2vw, 1rem);
+}
+.fl-kok .fl-k-sure svg,
+.fl-kok .fl-k-ogut svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+}
+.fl-kok .fl-k-sure .ikon,
+.fl-kok .fl-k-ogut .ikon {
+  display: inline-flex;
+}
+/* ad + öğüt rozeti */
+.fl-kok .fl-k-bilgi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 4px 2px 6px;
+}
+.fl-kok .fl-k-metin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.fl-kok .fl-k-ad {
+  font-size: clamp(1.15rem, 4.9vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.fl-kok .fl-k-ogut {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--r) 16%, white);
+  border: 2.5px solid color-mix(in srgb, var(--r) 55%, var(--kontur));
+  color: color-mix(in srgb, var(--r) 35%, var(--kontur));
+  font-size: clamp(0.85rem, 3.4vw, 1.05rem);
+  white-space: nowrap;
+}
+.fl-kok .fl-k-ogut .ikon {
+  color: var(--r);
+}
+
+/* ---------- yatay ve tablet: iki sütun ---------- */
+@media (orientation: landscape), (min-width: 700px) {
+  .fl-kok .fl-k-izgara {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 1100px;
+  }
+  .fl-kok .fl-k-oynat {
+    width: clamp(54px, 7vw, 76px);
+  }
+  .fl-kok .fl-k-ad {
+    font-size: clamp(1.1rem, 2.6vw, 1.55rem);
+  }
+}
+@media (min-width: 700px) and (orientation: portrait) {
+  .fl-kok .fl-k-sahne {
+    padding-top: calc(var(--ust) + 76px);
+  }
+  .fl-kok .fl-k-mino,
+  .fl-kok .fl-k-kino {
+    width: 126px;
+  }
+  .fl-kok .fl-k-baslik {
+    font-size: 3.2rem;
+  }
+  .fl-kok .fl-k-liste {
+    padding-left: calc(var(--perde) + 14px);
+    padding-right: calc(var(--perde) + 14px);
+  }
+}
+/* yatay telefon: düğmeler, Mino, tabela ve Kino tek satırda; kartlar ekrana sığacak boyda */
+@media (orientation: landscape) and (max-height: 560px) {
+  .fl-kok .fl-k-sahne {
+    padding-top: calc(var(--ust) + 4px);
+    padding-bottom: 2px;
+  }
+  .fl-kok .fl-k-mino,
+  .fl-kok .fl-k-kino {
+    width: clamp(48px, 13dvh, 70px);
+  }
+  .fl-kok .fl-k-tabela {
+    margin-bottom: 8px;
+    padding: 7px 22px;
+  }
+  .fl-kok .fl-k-baslik {
+    font-size: clamp(1.4rem, 8dvh, 2.2rem);
+  }
+  .fl-kok .fl-k-misir {
+    width: 34px;
+    right: -16px;
+    bottom: -14px;
+  }
+  .fl-kok .fl-k-izgara {
+    gap: 18px 22px;
+    /* bir kart ekranın görünen yüksekliğine sığsın: genişlik ≈ (yükseklik - üst - bilgi) × 16/9 */
+    max-width: min(1100px, calc((100dvh - 205px) * 16 / 9 * 2 + 80px));
+  }
+  .fl-kok .fl-k-liste {
+    padding-top: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fl-kok .fl-k-yer,
+  .fl-kok .fl-k-oynat,
+  .fl-kok .fl-k-yeni,
+  .fl-kok .fl-k-tabela::before,
+  .fl-kok .fl-k-yildizlar i {
+    animation: none;
+  }
+}

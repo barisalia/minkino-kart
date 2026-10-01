@@ -206,7 +206,10 @@
   place-content: center;
   justify-items: center;
   gap: 28px;
-  background: radial-gradient(90% 70% at 50% 40%, #ffd79a, #ff9d5c 60%, #d8663f);
+  /* filmin kendi karesi (Çizgi Filmler kapağı), üstünde hafif karartma; kapak yoksa sıcak degrade */
+  background:
+    radial-gradient(70% 55% at 50% 50%, rgba(30, 26, 46, 0.1), rgba(30, 26, 46, 0.55)),
+    var(--kapak, radial-gradient(90% 70% at 50% 40%, #ffd79a, #ff9d5c 60%, #d8663f)) center / cover no-repeat;
   transition: opacity 0.5s;
 }
 .fl-kok .fl-kapak.gizli {
@@ -251,6 +254,13 @@
 }
 @keyframes fl-ogut {
   from { opacity: 0; transform: scale(0.94); }
+}
+.fl-kok .fl-ogut-dugmeler {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px 18px;
+  padding: 0 16px;
 }
 @media (prefers-reduced-motion: reduce) {
   .fl-kok .fl-parilti {
@@ -477,32 +487,6 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
     display: none;
   }
 }
-/* film seçimi: kapakta küçük film kartları */
-.fl-kok .fl-filmler {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 0 16px;
-}
-.fl-kok .fl-film-kart {
-  min-width: 150px;
-  padding: 10px 18px;
-  border-radius: 18px;
-  border: 3px solid var(--kontur);
-  background: rgba(255, 248, 234, 0.9);
-  box-shadow: 0 4px 0 var(--kontur);
-  color: var(--kontur);
-  font: inherit;
-  font-size: clamp(0.95rem, 3.6vw, 1.15rem);
-  font-weight: 600;
-  cursor: pointer;
-}
-.fl-kok .fl-film-kart[aria-current='true'] {
-  background: #fff;
-  outline: 3px solid #fff;
-  outline-offset: 2px;
-}
 /* ---------------------------------------------------------------- açılış kartı (film-acilis jeneriği, 7,9 sn) */
 .fl-kok .fl-acilis {
   position: absolute;
@@ -583,7 +567,4 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
 body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt.fl-park-zemin {
   height: 100%;
   background: linear-gradient(#9bd63f, #86c531 30%, #74b32a);
-}
-body[data-kayit] .fl-kok .fl-filmler {
-  display: none;
 }

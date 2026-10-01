@@ -42,6 +42,11 @@ test('Ana menü: açılışta Mino ve 6 oyun kartı, görseller yüklü', async 
   await expect(page.locator('.ug-kart[data-oyun="pazar"] .ug-yeni')).toHaveText('Meyve Suyu');
   await expect(page.locator('.ug-kart[data-oyun="kartlar"] .ug-yeni')).toHaveText('Hafıza');
   await expect(page.locator('.ug-kart[data-oyun="canlan"] .ug-yeni')).toHaveText('Müzem');
+  // Çizgi Filmler kartı (eski adı Mini Filmler): resmi en yeni filmin kapağı
+  await expect(page.locator('.ug-kart[data-oyun="film"] .ug-kart-ad')).toHaveText('Çizgi Filmler');
+  await expect(page.locator('.ug-kart[data-oyun="film"]')).toHaveAttribute('aria-label', 'Çizgi Filmler');
+  expect(await page.locator('.ug-kart[data-oyun="film"] .ug-kart-resim').evaluate((e) => getComputedStyle(e).backgroundImage)).toContain('mino-sepet');
+  await expect(page.getByText('Mini Film')).toHaveCount(0);
   // Kino'ya dokununca tepki verir
   await page.locator('.ug-kino-kap').click();
   await expect(page.locator('.ug-kino-kap')).toHaveAttribute('data-tepki', 'sevin');

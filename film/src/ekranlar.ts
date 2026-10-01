@@ -6,6 +6,7 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import { Film, KAYIT, konusSecenegi, sesGunlugeYaz, type FilmDosya } from './motor';
+import { katalog } from './katalog';
 import { ACILIS_SURESI, filmMuzik, KAPANIS_SURESI } from './muzik';
 
 /** Jenerikler (film-acilis / film-kapanis) film müziğiyle birlikte: test modunda kapalı, süreler film hızıyla kısalır */
@@ -20,7 +21,7 @@ const CEVIR = '<svg viewBox="0 0 64 64" aria-hidden="true"><g class="fl-cevir-te
 
 const DURAKLAT = '<svg viewBox="0 0 48 48"><rect x="12" y="10" width="8" height="28" rx="3" fill="currentColor"/><rect x="28" y="10" width="8" height="28" rx="3" fill="currentColor"/></svg>';
 
-export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
+export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }): Ekran {
   const q = new URLSearchParams(location.search);
   const ad = p?.ad ?? q.get('film') ?? 'mino-karpuz';
   const dosya = filmBul(ad);
@@ -32,20 +33,9 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
   let film: Film | null = null;
 
   const oynatDugme = h('button.dugme.fl-oynat', { type: 'button' }, svg(IKON.oyna), 'Oynat');
-  // film seçimi: bütün filmler kart olarak (seçili olan işaretli); karta dokununca o filmin kapağı açılır
-  const filmler = Object.entries(FILMLER)
-    .map(([yol, f]) => ({ ad: yol.replace(/^.*\/([^/]+)\.json$/, '$1'), baslik: f.baslik }))
-    .sort((a, b) => (a.ad === 'mino-karpuz' ? -1 : b.ad === 'mino-karpuz' ? 1 : a.ad.localeCompare(b.ad)));
-  const kartlar = h('nav.fl-filmler', { 'aria-label': 'Filmler' }, ...filmler.map((f) => {
-    const k = h('button.fl-film-kart', { type: 'button', 'aria-current': String(f.ad === ad), 'data-film': f.ad }, f.baslik);
-    k.addEventListener('click', () => {
-      if (f.ad === ad) return;
-      history.replaceState(null, '', `?${new URLSearchParams([...q].filter(([k2]) => k2 !== 'film').concat([['film', f.ad]]))}`);
-      app.git('film', { ad: f.ad });
-    });
-    return k;
-  }));
-  const kapak = h('div.fl-kapak', {}, h('h1.fl-baslik', {}, dosya.baslik), oynatDugme, ...(filmler.length > 1 ? [kartlar] : []));
+  // kapak: filmin kendi karesi (assets/film/kapak) arkada, üstünde başlık ve Oynat; film listesi Çizgi Filmler ekranında
+  const resim = katalog().find((f) => f.ad === ad)?.kapak;
+  const kapak = h('div.fl-kapak', { style: resim ? `--kapak:url("${resim}")` : undefined }, h('h1.fl-baslik', {}, dosya.baslik), oynatDugme);
   const duraklatDugme = yuvarlakDugme(DURAKLAT, 'Duraklat', () => {
     if (!film) return;
     film.duraklatDegistir();
@@ -53,8 +43,12 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
     duraklatDugme.setAttribute('aria-label', film.duraklatildi ? 'Devam' : 'Duraklat');
   }, 'kucuk');
   duraklatDugme.hidden = true;
-  const cikis = app.secenekler.cikis;
-  const ust = h('div.ust-cubuk.fl-ust', {}, cikis ? yuvarlakDugme(IKON.geri, 'Geri', () => cikis(), 'kucuk') : h('div'), h('div.ust-grup', {}, duraklatDugme, sesDugmesi()));
+  /** Çizgi Filmler ekranına döner (adres filmsiz olur; bu film listede ortada görünür) */
+  const listeyeDon = () => {
+    history.replaceState(null, '', `?${new URLSearchParams([...q].filter(([k]) => k !== 'film' && k !== 'oto'))}`);
+    app.git('katalog', { sec: ad });
+  };
+  const ust = h('div.ust-cubuk.fl-ust', {}, yuvarlakDugme(IKON.geri, 'Çizgi Filmler', listeyeDon, 'kucuk'), h('div.ust-grup', {}, duraklatDugme, sesDugmesi()));
   const sahneKap = h('div.fl-sahne-kap');
   const cevir = h('div.fl-cevir', { 'aria-hidden': 'true', html: CEVIR });
   const el = h('div.fl-ekran', {}, sahneKap, cevir, kapak, ust);
@@ -73,8 +67,10 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
 
   const ogutKarti = (metin: string) => {
     const tekrar = h('button.dugme', { type: 'button', style: '--r:var(--yesil)' }, svg(IKON.tekrar), 'Tekrar izle');
-    tekrar.addEventListener('click', () => app.git('film', { ad }));
-    const kart = h('div.fl-ogut', {}, h('p', {}, metin), tekrar);
+    tekrar.addEventListener('click', () => app.git('film', { ad, oynat: true }));
+    const liste = h('button.dugme', { type: 'button', style: '--r:var(--mavi)' }, svg(IKON.izgara), 'Çizgi Filmler');
+    liste.addEventListener('click', listeyeDon);
+    const kart = h('div.fl-ogut', {}, h('p', {}, metin), h('div.fl-ogut-dugmeler', {}, tekrar, liste));
     el.append(kart);
     // öğüdü karakter filmin sonunda kendisi söylediyse (Mino kameraya) kart yeniden okumaz; jenerik hemen (kısa bekleyişle)
     if (film?.el.dataset.sonSoz === metin) return kapanisJenerigi(0.8 / HIZ);
@@ -113,7 +109,7 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
     kapak.classList.add('gizli');
     // ?kartsiz=1: açılış kartı ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
     if (q.has('kartsiz')) return baslatFilm();
-    const kart = h('div.fl-acilis', {}, h('i.fl-acilis-isik'), h('h2.fl-acilis-baslik', {}, dosya.baslik), h('p.fl-acilis-alt', {}, 'Minkino Mini Film'));
+    const kart = h('div.fl-acilis', {}, h('i.fl-acilis-isik'), h('h2.fl-acilis-baslik', {}, dosya.baslik), h('p.fl-acilis-alt', {}, 'Minkino Çizgi Film'));
     el.append(kart);
     hazirla();
     if (MUZIK) filmMuzik.dosyaCal({ ad: 'film-acilis', ses: 0.85, gec: 0.05 });
@@ -124,7 +120,9 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string }): Ekran {
     });
   };
   oynatDugme.addEventListener('click', basla);
-  if (q.has('oto')) setTimeout(basla, 50);
+  // Çizgi Filmler ekranında karta dokunuldu: film hemen açılış kartıyla başlar
+  if (p?.oynat) basla();
+  else if (q.has('oto')) setTimeout(basla, 50);
 
   return {
     el,

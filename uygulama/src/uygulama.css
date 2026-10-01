@@ -309,7 +309,12 @@
 .ug-kok .ug-k-pasta { left: 70%; bottom: 3%; height: min(46cqh, 52cqw); transform: translateX(-50%); }
 .ug-kok .ug-k-ada { left: 32%; bottom: 1%; height: min(90cqh, 110cqw); transform: translateX(-50%); }
 
-/* Mini Filmler: film şeridi içinde karpuz + oynat */
+/* Çizgi Filmler: film şeridi içinde en yeni filmin kapağı + oynat */
+.ug-kok .ug-kart[data-oyun='film'] .ug-kart-resim {
+  /* Mino ve Kino ikisi de görünsün */
+  background-position: 62% 60%;
+  background-size: cover;
+}
 .ug-kok .ug-kart[data-oyun='film'] .ug-kart-resim::before {
   content: '';
   position: absolute;
@@ -322,9 +327,8 @@
     linear-gradient(#3b2b22, #3b2b22) top / 100% 13% no-repeat,
     linear-gradient(#3b2b22, #3b2b22) bottom / 100% 13% no-repeat;
 }
-.ug-kok .ug-k-karpuz { left: 44%; top: 52%; height: min(58cqh, 66cqw); transform: translate(-50%, -50%) rotate(-8deg); }
-.ug-kok .ug-k-karpuz img { object-position: 50% 50%; }
-.ug-kok .ug-k-oynat { right: 7%; bottom: 17%; height: min(30cqh, 30cqw); padding: 6% 5% 6% 7%; }
+/* oynat gökyüzünde (sağ üst): kapaktaki karakterlerin üstüne binmez */
+.ug-kok .ug-k-oynat { right: 6%; top: 17%; height: min(30cqh, 30cqw); padding: 6% 5% 6% 7%; }
 
 /* ---------- Ebeveyn kapısı (küçük, köşede; basılı tutunca dolar) ---------- */
 .ug-kok .ug-kose {

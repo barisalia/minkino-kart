@@ -1,6 +1,6 @@
-# Minkino Mini Filmler: animasyon ekibi rehberi
+# Minkino Çizgi Filmler: animasyon ekibi rehberi
 
-**Ne yapıyoruz:** Uygulamanın içinde oynayan, **50-60 saniyelik**, 3-6 yaş için **eğitici mini çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (paylaşmak, renkler, sayılar, el yıkamak…). Hikâye sade; süs sürprizler yok. **Final sorusu yok**; film anlatıcının kısa bir öğüdüyle biter ("Paylaşmak güzeldir."). (Barış, 2026-09-26)
+**Ne yapıyoruz:** Uygulamanın içinde oynayan, **50-60 saniyelik**, 3-6 yaş için **eğitici kısa çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (paylaşmak, renkler, sayılar, el yıkamak…). Hikâye sade; süs sürprizler yok. **Final sorusu yok**; film anlatıcının kısa bir öğüdüyle biter ("Paylaşmak güzeldir."). (Barış, 2026-09-26)
 
 **Ekip yöneticisi:** yerel yönetici (bu klasördeki yönetici oturumu). Herkes ona bağlı çalışır, işini ona teslim eder. Ürün sahibi Barış; kararları o verir.
 
@@ -149,3 +149,8 @@ ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 - **Yan görünüşte taşıma:** `al` / `birak` / `tasi` artık yan görünüş oyuncusunda da çalışır; parça adı profil iskeletinin katmanı: `agiz` (Kino elmayı ağzında taşır), `kol-on` / `kol-arka` (çocuğun ön / arka eli). Eşya önce `git` ile parçanın dünyadaki yerine uçar, sonra `al` (aynı yerde takılır).
 - **Zemin y 4,5 + kamera y:** oyuncular kum havuzunun önünde durur. 16:9'da görüntünün altı dünyanın altına denk gelsin diye kamera y = 100 - 28,125 / z (ayaklar altyazının üstünde kalır; öteki oranlarda `tut` korur).
 - **Sahne dosyası üreteçle** yazılabilir (hop, koşu+fren+toz, sepete atma gibi tekrarlı hareketler); JSON yine tek kaynak.
+
+## 11. Çizgi Filmler ekranı (/film/ açılışı) ve kapaklar
+
+- /film/ açılınca **Çizgi Filmler** seçme ekranı gelir (`film/src/katalog.ts`, `katalog.css`): her film büyük kapak kartı (kapak, ad, öğüt rozeti, süre, oynat). Karta dokununca film açılış kartı + jenerikle hemen başlar. `?film=<ad>` doğrudan o filmin kapağını (Oynat) açar; MP4 kaydı bunu kullanır. Filmdeki geri düğmesi bu ekrana döner.
+- **Yeni film eklenince:** (1) `katalog.ts` → `SIRA` listesinin başına `{ ad, ogut, renk, yeni: true }` ekle, eskisinden `yeni`yi kaldır; (2) kapak üret: filmin en güzel karesi (karakterler büyük, yüzler görünür, altyazı/düğme yok), `npm run film:mp4 -- yatay --film=<ad> --ornek=<sn>` ile kare al, 16:9 960 px webp (sharp), ≤120 KB → `assets/film/kapak/<ad>.webp`; (3) ana menü kartı en yeni kapağı gösterir: `uygulama/src/oyunlar.ts` → film kartının `zemin` adı.

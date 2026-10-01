@@ -1,12 +1,63 @@
 import { expect, test } from '@playwright/test';
 import { hataTopla } from './yardimci';
 
-test('Film: Mino’nun Karpuzu animatiği baştan sona oynar, sonda öğüt kartı', async ({ page }, info) => {
+test('Çizgi Filmler ekranı: kapaklı büyük kartlar, öğüt rozeti, süre; Mino ve Kino tepki verir; filmden geri dönülür', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./film/?test=1');
+  await expect(page).toHaveTitle('Minkino Çizgi Filmler');
+  await expect(page.locator('.fl-k-baslik')).toHaveText('Çizgi Filmler');
+  const kartlar = page.locator('.fl-film-kart');
+  await expect(kartlar).toHaveCount(4);
+  expect(await kartlar.evaluateAll((l) => l.map((k) => (k as HTMLElement).dataset.film))).toEqual(['mino-sepet', 'kino-kaydirak', 'kino-elma-kulesi', 'mino-karpuz']);
+  await expect(page.locator('.fl-k-yeni')).toHaveCount(1);
+  await expect(page.locator('.fl-film-kart[data-film="mino-karpuz"] .fl-k-ogut')).toHaveText('Paylaşmak');
+  await expect(page.locator('.fl-film-kart[data-film="kino-elma-kulesi"] .fl-k-ogut')).toHaveText('Özür dilemek');
+  await expect(page.locator('.fl-film-kart[data-film="kino-kaydirak"] .fl-k-ogut')).toHaveText('Sıra beklemek');
+  await expect(page.locator('.fl-film-kart[data-film="mino-sepet"] .fl-k-ogut')).toHaveText('Yardım etmek');
+  await expect(page.locator('.fl-k-sure').first()).toHaveText('1 dk');
+  // kapaklar yüklendi; kartlar ekrandan taşmıyor, dokunma alanı büyük
+  const boyut = page.viewportSize()!;
+  for (const k of await kartlar.all()) {
+    await k.scrollIntoViewIfNeeded();
+    await expect(k.locator('img')).toHaveJSProperty('complete', true);
+    expect(await k.locator('img').evaluate((i) => (i as HTMLImageElement).naturalWidth)).toBe(960);
+    const b = (await k.boundingBox())!;
+    expect(b.x).toBeGreaterThanOrEqual(0);
+    expect(b.x + b.width).toBeLessThanOrEqual(boyut.width + 1);
+    expect(b.width).toBeGreaterThan(250);
+    expect(b.height).toBeGreaterThan(170);
+  }
+  // telefon dikeyde tek sütun, tablette iki sütun
+  const [a, b] = [(await kartlar.nth(0).boundingBox())!, (await kartlar.nth(1).boundingBox())!];
+  expect(Math.abs(a.y - b.y) < 2).toBe(boyut.width >= 700);
+  // Mino ve Kino köşede, dokununca tepki verir
+  await expect(page.locator('.fl-k-mino .mino svg')).toBeVisible();
+  await expect(page.locator('.fl-k-kino .kr-iskeletli svg')).toBeVisible();
+  await page.locator('.fl-k-kino').click();
+  await expect(page.locator('.fl-k-kino')).toHaveAttribute('data-tepki', 'sevin');
+  await page.locator('.fl-k-mino').click();
+  await expect(page.locator('.fl-k-mino')).toHaveAttribute('data-tepki', '1');
+  await page.evaluate(() => document.querySelector('.fl-k-liste')!.scrollTo(0, 0));
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-f9-cizgi-filmler.png` });
+  // karta dokun: film başlar; geri düğmesi Çizgi Filmler ekranına döner
+  await kartlar.nth(1).click();
+  await expect(page.locator('.fl-acilis-baslik')).toHaveText('Kino ve Kaydırak');
+  await page.getByRole('button', { name: 'Çizgi Filmler', exact: true }).click();
+  await expect(page.locator('.fl-k-baslik')).toBeVisible();
+  await expect(page.locator('.fl-film-kart.son-izlenen')).toHaveAttribute('data-film', 'kino-kaydirak');
+  await expect(page).not.toHaveURL(/film=/);
+  expect(hatalar).toEqual([]);
+});
+
+test('Film: Mino’nun Karpuzu animatiği baştan sona oynar, sonda öğüt kartı', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  // ?film=<ad>: doğrudan o filmin kapağı (filmin karesi arkada, başlık + Oynat; MP4 kaydı da bunu kullanır)
+  await page.goto('./film/?test=1&film=mino-karpuz');
   await expect(page.locator('.fl-baslik')).toHaveText("Mino'nun Karpuzu");
   await page.screenshot({ path: `tests/screens/${info.project.name}-f0-film-kapak.png` });
   await page.getByRole('button', { name: 'Oynat' }).click();
+  await expect(page.locator('.fl-acilis-alt')).toHaveText('Minkino Çizgi Film');
   // sahne 1: Mino ve karpuz sahnede
   await expect(page.locator('.fl-sahne[data-sahne="1-pazar-kapaniyor"]')).toBeVisible();
   await expect(page.locator('.fl-nesne[data-oyuncu="mino"] .mino-svg')).toBeVisible();
@@ -22,17 +73,11 @@ test('Film: Mino’nun Karpuzu animatiği baştan sona oynar, sonda öğüt kart
   expect(hatalar).toEqual([]);
 });
 
-test('Film: Kino ve Elma Kulesi baştan sona oynar (kapakta film seçimi), sonda öğüt kartı', async ({ page }, info) => {
+test('Film: Kino ve Elma Kulesi baştan sona oynar (Çizgi Filmler ekranından), sonda öğüt kartı', async ({ page }, info) => {
   const hatalar = hataTopla(page);
-  // film listesi: karpuz kapağında dört kart; Elma Kulesi kartı o filmi açar
+  // Çizgi Filmler ekranı: dört kart; Elma Kulesi kartına dokununca film açılış kartıyla hemen başlar
   await page.goto('./film/?test=1');
   await expect(page.locator('.fl-film-kart')).toHaveCount(4);
-  await page.locator('.fl-film-kart[data-film="kino-elma-kulesi"]').click();
-  // ekran geçişi bitince yalnız yeni kapak kalır
-  await expect(page.locator('.fl-baslik')).toHaveCount(1);
-  await expect(page.locator('.fl-baslik')).toHaveText('Kino ve Elma Kulesi');
-  await expect(page).toHaveURL(/film=kino-elma-kulesi/);
-  await page.screenshot({ path: `tests/screens/${info.project.name}-f3-elma-kapak.png` });
   // test modunda film hızlı akar: sahneler ve sözler sırayla kaydedilir (kısa anlar kaçmasın)
   await page.evaluate(() => {
     const w = window as unknown as { __sahneler: string[]; __sozler: string[] };
@@ -46,7 +91,9 @@ test('Film: Kino ve Elma Kulesi baştan sona oynar (kapakta film seçimi), sonda
       }
     }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-sahne', 'data-son-soz'] });
   });
-  await page.getByRole('button', { name: 'Oynat' }).click();
+  await page.locator('.fl-film-kart[data-film="kino-elma-kulesi"]').click();
+  await expect(page.locator('.fl-acilis-baslik')).toHaveText('Kino ve Elma Kulesi');
+  await expect(page).toHaveURL(/film=kino-elma-kulesi/);
   // sahne 1: Mino, 9 elmalık kule, elinde en parlak elma
   await expect(page.locator('.fl-sahne[data-sahne="1-neredeyse-bitti"]')).toBeVisible();
   await expect(page.locator('.fl-nesne[data-oyuncu="mino"] .mino-svg image[data-tasinan="e10"]')).toHaveCount(1);
@@ -67,7 +114,6 @@ test('Film: Kino ve Kaydırak: açılış kartı, 5 sahne, öğüt kartı ve kap
   const hatalar = hataTopla(page);
   await page.goto('./film/?test=1&film=kino-kaydirak');
   await expect(page.locator('.fl-baslik')).toHaveText('Kino ve Kaydırak');
-  await expect(page.locator('.fl-film-kart')).toHaveCount(4);
   await page.screenshot({ path: `tests/screens/${info.project.name}-f5-kaydirak-kapak.png` });
   await page.evaluate(() => {
     const w = window as unknown as { __sahneler: string[]; __sozler: string[] };
@@ -101,17 +147,13 @@ test('Film: Kino ve Kaydırak: açılış kartı, 5 sahne, öğüt kartı ve kap
   expect(hatalar).toEqual([]);
 });
 
-test("Film: Mino'nun Sepeti: kapakta dördüncü kart, 5 sahne, öğüt kartı ve kapanış jeneriği", async ({ page }, info) => {
+test("Film: Mino'nun Sepeti: Çizgi Filmler'de ilk kart (Yeni), 5 sahne, öğüt kartı ve kapanış jeneriği", async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./film/?test=1');
-  // kapak: dördüncü kart (mino-karpuz ilk, sonra adlarına göre)
+  // en yeni film en üstte, Yeni rozetiyle
   await expect(page.locator('.fl-film-kart')).toHaveCount(4);
-  await expect(page.locator('.fl-film-kart').nth(3)).toHaveAttribute('data-film', 'mino-sepet');
-  await page.locator('.fl-film-kart[data-film="mino-sepet"]').click();
-  await expect(page.locator('.fl-baslik')).toHaveCount(1);
-  await expect(page.locator('.fl-baslik')).toHaveText("Mino'nun Sepeti");
-  await expect(page).toHaveURL(/film=mino-sepet/);
-  await page.screenshot({ path: `tests/screens/${info.project.name}-f7-sepet-kapak.png` });
+  await expect(page.locator('.fl-film-kart').first()).toHaveAttribute('data-film', 'mino-sepet');
+  await expect(page.locator('.fl-film-kart[data-film="mino-sepet"] .fl-k-yeni')).toHaveText('Yeni');
   await page.evaluate(() => {
     const w = window as unknown as { __sahneler: string[]; __sozler: string[] };
     w.__sahneler = [];
@@ -124,8 +166,9 @@ test("Film: Mino'nun Sepeti: kapakta dördüncü kart, 5 sahne, öğüt kartı v
       }
     }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-sahne', 'data-son-soz'] });
   });
-  await page.getByRole('button', { name: 'Oynat' }).click();
+  await page.locator('.fl-film-kart[data-film="mino-sepet"]').click();
   await expect(page.locator('.fl-acilis-baslik')).toHaveText("Mino'nun Sepeti");
+  await expect(page).toHaveURL(/film=mino-sepet/);
   // sahne 1: Mino, sepet ve beş elma (test modunda film hızlı: sepet elden çabuk düşer, yalnız varlığına bakılır)
   await expect(page.locator('.fl-sahne[data-sahne="1-neseli-yol"]')).toBeVisible();
   await expect(page.locator('.fl-nesne[data-oyuncu="mino"] .mino-svg')).toBeVisible();
@@ -146,7 +189,7 @@ test("Film: Mino'nun Sepeti: kapakta dördüncü kart, 5 sahne, öğüt kartı v
 
 test('Film: duraklat / devam', async ({ page }, info) => {
   test.skip(info.project.name !== 'iphone', 'bir kez yeter');
-  await page.goto('./film/?onizleme=1&sessiz=1');
+  await page.goto('./film/?onizleme=1&sessiz=1&film=mino-karpuz');
   await page.getByRole('button', { name: 'Oynat' }).click();
   // önce açılış kartı (jenerik 7,9 sn), sonra film başlar ve Duraklat düğmesi görünür
   await expect(page.locator('.fl-acilis-baslik')).toBeVisible();
