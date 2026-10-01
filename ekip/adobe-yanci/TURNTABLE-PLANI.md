@@ -33,3 +33,9 @@ Illustrator 11:00'den önce açılmaz; Barış öyle istedi. İsteyen: yönetici
 - Vektörleştirme: `vektorlestir-maske.jsx` içindeki `[High Fidelity Photo]` yerine **`[16 Colors]`** kullanılmalı. Ege'de ilki renksiz (beyaz dolgu, siyah kontur) çıktı; ikincisi renkli çıktı. Kaynak: `cikti/turntable/ege-temiz16.ai`.
 - Açılar (yatay): yan 90°, 3/4 45°, arka 180°. Bir üretim ≈ 4 dk.
 - Biten: Ege yan (`ekip/turntable/ege/yan.png/.svg`). Kalan: Ege 3/4 ve arka, anne, ayı, inek, maymun, kuş, köpek, tavşan, ördek.
+
+## Güncelleme (2026-10-01, Barış 3 saat)
+- **Biten karakterler:** mino, kino, ada, can, elif, deniz, zeynep (dün); ege, anne, ayi, inek, maymun, kus (yan/3-4/arka); kopek, tavsan, ordek (3/4 + arka). Hepsi `ekip/turntable/<ad>/` altında.
+- **Eşyalar** (kaynak 3/4 ön çizim, bu yüzden dönüşler ona göre): `esya-adlandir.cjs` adlandırır: `yan` = 45° (gerçek yan), `arka-uc-ceyrek` = 90° (arkadan 3/4), `arka` = 180°, `uc-ceyrek` = kaynak çizimin kendisi. Biten: bank, kum-havuzu, fener (parlama bölgesi karışık), + balon sırada. Girdileri hazır, vektörü hazır: salincak, kaydirak, oyuncak-ayi, pasta, hediye-kutusu, kitap (ekip/adobe-yanci/cikti/turntable/<ad>-temiz16.ai).
+- **Uyarı:** çok parçalı (500+) eşya vektörü (salıncak 539, kaydırak 563, pasta 959) Dönen tabla'da Illustrator'ı çökertti (2026-10-01 06:40, WerFault). Önce `[6 Colors]` iziyle sadeleştir ya da parça sayısı <400 olanlardan başla. Çöktüğünde: WerFault'u kapat, Illustrator'ı yeniden başlat (COM), belge aç.
+- Kalan: salincak, kaydirak, oyuncak-ayi, pasta, hediye-kutusu, kitap, mama-sandalyesi, besik, kuvet, sepet, karpuz, elma, top (girdileri `ekip/adobe-yanci/girdi/turntable/` altında).
