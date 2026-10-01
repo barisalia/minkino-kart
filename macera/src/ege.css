@@ -435,17 +435,23 @@
   pointer-events: none;
 }
 /* Ege beşikte: yuvada beşiğin yüzdesiyle yerleşir (dünya konumu değil); z-index yok, katman sırası DOM'dan */
+/* --ege-besik: Ege'nin beşiğe göre payı (ege.ts; boy tablosuyla Ege beşikten çok büyüdü), 1: eski çizim */
 .mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte {
   left: 47%;
   bottom: 31%;
-  width: 51.6%;
+  width: calc(51.6% * var(--ege-besik, 1));
   z-index: auto !important;
   pointer-events: auto;
 }
 /* yatarken: baş solda yastıkta (yüz ve baş fistolu kenarın üstünde), gövde battaniyenin altında */
 .mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte.yatiyor {
   left: 35.4%;
-  bottom: 37.7%;
+  /* kutu büyüdükçe dönme merkezi yükselir: yatan Ege beşikte aynı yerde kalsın */
+  bottom: calc(37.7% - (var(--ege-besik, 1) - 1) * 36.8%);
+}
+/* yatarken beşiğe sığsın: büyüyen kutu kadar küçülür (beşikteki boyu eskisiyle aynı) */
+.mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte.yatiyor .eg-ege-kutu {
+  scale: calc(0.7 / var(--ege-besik, 1));
 }
 .mc-kok .eg-sahne .eg-besik-yuva > .eg-ege.besikte .eg-ege-golge {
   opacity: 0;

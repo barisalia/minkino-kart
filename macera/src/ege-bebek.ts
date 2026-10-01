@@ -11,6 +11,7 @@
  * Yalnız transform / opacity.
  */
 import '../../src/karakter/karakter.css';
+import { boyGenislik, CIZIM, type Cizim } from '../../src/karakter/boy';
 import { Karakter, type Poz } from '../../src/karakter/karakter';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { egeAdres } from './ege-cizim';
@@ -21,6 +22,10 @@ export const EGE_ISKELET = 'ege';
 const KIRPIM: [number, number, number, number] = [215, 118, 1620, 1840];
 /** Ege kutusunun boy/en oranı */
 export const EGE_ORAN = KIRPIM[3] / KIRPIM[2];
+/** Ege kutusunun (kırpım) çizim ölçüsü: boy tablosu için (src/karakter/boy.ts → CIZIM.ege, kırpımın içinde) */
+export const EGE_CIZIM: Cizim = { kutu: [KIRPIM[2], KIRPIM[3]], tepe: CIZIM.ege.tepe - KIRPIM[1], taban: CIZIM.ege.taban - KIRPIM[1] };
+/** Ege kutusunun genişliği (b): Mino'nun kutusu minoW (b) iken oturan Ege boy tablosundaki boyda */
+export const egeGenislik = (minoW: number) => boyGenislik('ege', minoW, EGE_CIZIM);
 
 /** Yüz noktaları (iskelet koordinatı) */
 const AGIZ: [number, number] = [1026, 842];

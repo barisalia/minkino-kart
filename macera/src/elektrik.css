@@ -229,11 +229,13 @@
   inset: 0;
   background: radial-gradient(circle at 50% 40%, #ffe7a0, #f0a850);
 }
+/* Can uzak binada: pencerenin ardında duran bir çocuk (baş pencerenin ~1/3'ü, omuzlar ve göğsü görünür; eskiden yüzü
+   pencereyi dolduruyordu). Yakındaki Mino / Kino ile aynı düzlemde değil: boy tablosu burada uzaklıkla küçülür. */
 .mc-kok .el-can {
   position: absolute;
-  left: 8%;
-  width: 84%;
-  top: 18%;
+  left: 16%;
+  width: 68%;
+  top: 27%;
   transition: translate 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), rotate 0.35s;
   transform-origin: 50% 90%;
 }

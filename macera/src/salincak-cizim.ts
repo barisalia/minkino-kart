@@ -37,11 +37,15 @@ const vurgu = (d: string, w: number, o = 0.75) => `<path d="${d}" fill="none" st
 
 // ---------------------------------------------------------------- salıncak çerçevesi (önden, A ayaklı)
 /** Çerçeve ölçüsü (b): genişlik, yükseklik (zeminden barın üstüne), barın yüksekliği (merkez) */
-export const CERCEVE = { w: 164, h: 47, bar: 44, eklem: 60, disAyak: 80, icAyak: 54.5 };
+// bar 44 → 48 (2026-10-01): boy tablosuyla büyüyen Ege bebek oturağında oturunca başı barın altında kalsın
+export const CERCEVE = { w: 164, h: 51, bar: 48, eklem: 60, disAyak: 80, icAyak: 54.5 };
 /** Oturakların asıldığı yer (b; çerçevenin ortasından): büyük salıncak solda, bebek oturağı sağda */
 export const ASKI = { buyuk: -24, bebek: 24 };
-/** Zincir uzunlukları (b; bardan oturağın üstüne) */
-export const ZINCIR = { buyuk: 35.5, bebek: 28 };
+/**
+ * Zincir uzunlukları (b; bardan oturağın üstüne): büyük oturak zeminden aynı yükseklikte (bar 4 b yükseldi). Bebek
+ * oturağınınki Ege'nin boyuna göre salincak.ts'te (ZINCIR_BEBEK); buradaki eski çizim içindir.
+ */
+export const ZINCIR = { buyuk: 39.5, bebek: 28 };
 /** Oturaklar (b) */
 export const OTURAK = { w: 26, h: 6, zincirAra: 21 };
 export const KOVA = { w: 16, h: 14, zincirAra: 11.6 };

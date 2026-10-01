@@ -24,7 +24,7 @@ import { SessizlikSayaci, type Ozellik } from '../../ses-testi/src/analiz';
 import { Perde, sesVar, Ufleme } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import type { BolumArayuz } from './dogumgunu';
-import { Ege } from './ege-bebek';
+import { Ege, egeGenislik } from './ege-bebek';
 import { ANNE_GORSEL, ANNE_NEFES, ANNE_ORTU_SVG, ANNE_TUVAL, anneKatmanli, annePozVar, EGE_ORTU_SVG, egeAdres, esya, Kukla, oran, YASTIK_SVG } from './ege-cizim';
 import { AyGosterge, KALP_SVG, NinniYildizlari, Parcaciklar, TavanYildizlari, yansiYazi } from './ege-efekt';
 import {
@@ -56,7 +56,8 @@ import * as S from './ege-ses';
 import { SesSeviyesi } from './ege-seviye';
 import { Ipucu, iz, parmak, Surukle, tasi, type Hedef } from './ege-surukle';
 import { Oyuncu } from './oyuncu';
-import { cocukOyuncu } from './ege-cocuk';
+import { cocukBoyu, cocukOyuncu } from './ege-cocuk';
+import { boyGenislik } from '../../src/karakter/boy';
 import { AnneIskelet, anneIskeletVar } from './ege-anne';
 import { Sahne } from './sahne';
 import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
@@ -157,13 +158,25 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const perdeAyarla = (p: number) => perde.style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
   perdeAyarla(0);
 
+  // --- boylar: tek tablodan (src/karakter/boy.ts). Mino'nun kutusu MINO_W (b); çocuklar Mino'nun ~1.35 katı, anne
+  // çocuğun 1.35 katı, oturan Ege Mino'dan biraz büyük. Eşyalar (kanepe, beşik, mama sandalyesi) oturanla orantılı:
+  // *_K = yeni ölçü / eski tasarım ölçüsü (anne 19 b genişlik, Ege 16 b)
+  const MINO_W = 21;
+  const ANNE_B = boyGenislik('anne', MINO_W) / ANNE_TUVAL.ayakta[0];
+  const ANNE_K = (ANNE_B * ANNE_TUVAL.ayakta[0]) / 19;
+  const EGE_W = egeGenislik(MINO_W);
+  const EGE_K = EGE_W / 16;
+
   // --- dekor
   // kanepe annenin oturuş pozlarına göre (aynı ölçekte kıvrılmış anne oturağa sığsın); dikeyde sol kenardan içeride
-  const KOLTUK_W = 46;
+  const KOLTUK_W = 46 * ANNE_K;
   const KOLTUK = { x: Math.max(20, bX(KOLTUK_W) / 2 + 1), y: Z + 15, w: KOLTUK_W };
   const koltukH = KOLTUK.w * oran('koltuk');
   const koltuk = sahne.koy(esya('koltuk', 'parti/koltuk', 'Kanepe'), { ...KOLTUK, z: 3 });
-  const BESIK = { x: 71, y: Z + 6, w: 31 };
+  // beşik büyüyen Ege'yle birlikte büyür ama onun kadar değil (oda dar: dikey telefonda beşik ekranı kaplamasın);
+  // içindeki Ege beşiğin yüzdesiyle yerleşir, payı --ege-besik (ege.css → .eg-besik-yuva): Ege her yerde aynı boyda
+  const BESIK_W = 31 * Math.min(EGE_K, 1.35);
+  const BESIK = { x: Math.min(71, 100 - bX(BESIK_W) / 2 + 2), y: Z + 6, w: BESIK_W };
   const besikH = BESIK.w * oran('besik');
   // Beşik katmanlı: arka resim → yastık → Ege (yuva) → Ege'nin açık battaniyesi → fistolu ön kenar (besik-on.webp,
   // scripts/ege/on-katman.mjs). Hepsi eg-besik-ic içinde: beşik sallanınca Ege ve battaniye de onunla sallanır.
@@ -180,10 +193,10 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     { ...BESIK, z: 6 },
   );
   besik.classList.toggle('katmanli', !!besikOnUrl);
+  besik.style.setProperty('--ege-besik', (EGE_W / (0.516 * BESIK_W)).toFixed(4));
   const besikIc = besik.querySelector<HTMLElement>('.eg-besik-ic')!;
 
   // --- Ege: beşiğin içinde oturarak başlar (yuvada; konumu CSS'te beşiğin yüzdesiyle)
-  const EGE_W = 16;
   const ege = new Ege();
   sahne.koy(ege.el, { x: 50, y: 0, w: EGE_W, z: 5 });
   besikYuva.append(ege.el);
@@ -223,7 +236,6 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
 
   // --- anne: ayakta (anne.webp), kanepede uyuyor (gövde + baş katmanı, nefes alır), sarılıyor. Üç poz aynı
   // piksel ölçeğinde (assets/ege/anne-hizalama.json): b / px sabit, genişlik pozun tuvalinden.
-  const ANNE_B = 19 / ANNE_TUVAL.ayakta[0];
   const anneImg = h('img.mc-resim.eg-resim', { src: egeAdres(ANNE_GORSEL), alt: 'Anne', draggable: 'false' }) as HTMLImageElement;
   const [nefTW, nefTH] = ANNE_TUVAL.uyuyor;
   const anneNefes = anneKatmanli()
@@ -245,7 +257,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const anneOrtu = anneNefes?.querySelector<HTMLElement>('.eg-anne-ortu') ?? null;
   const anneGov = h('div.eg-anne-gov', {}, egeAdres(ANNE_GORSEL) ? anneImg : esya('anne'), anneNefes);
   const anneBalon = h('div.eg-balon');
-  const anne = sahne.koy(h('div.eg-anne', { 'data-ege': 'anne' }, anneGov, anneBalon), { x: 55, y: Z + 10, w: 19, z: 4 });
+  const anne = sahne.koy(h('div.eg-anne', { 'data-ege': 'anne' }, anneGov, anneBalon), { x: 55, y: Z + 10, w: ANNE_TUVAL.ayakta[0] * ANNE_B, z: 4 });
   anne.classList.toggle('katmanli', !!anneNefes);
   // ayakta pozunda konuşurken ağzı oynar (katmanlı iskelet, ege-anne.ts): img'nin üstünde yalnız ağız yaması
   const anneIsk = egeAdres(ANNE_GORSEL) && anneIskeletVar() ? new AnneIskelet(anneBalon, () => anne.classList.add('iskeletli')) : null;
@@ -291,12 +303,17 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
 
   // --- çocuklar ve Mino
-  // çocuklar: parçalı iskeleti olan (Ada, Can) ortak Karakter bileşeniyle oynar (ege-cocuk.ts); ölçek parti tuvaliyle aynı
-  const { oyuncu: ada, iskelet: adaI } = cocukOyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, golge: 24, pozlar: ['normal', 'saskin', 'dilek', 'mutlu', 'alkis', 'dans'] });
-  const { oyuncu: can, iskelet: canI } = cocukOyuncu({ ad: 'can', resim: 'parti/can', boy: 23.28, oran: 422 / 558, golge: 28.6, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
-  const { oyuncu: elif, iskelet: elifI } = cocukOyuncu({ ad: 'elif', resim: 'parti/elif', boy: 20.7, oran: 366 / 583, golge: 26, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
+  // çocuklar: parçalı iskeleti olan (Ada, Can) ortak Karakter bileşeniyle oynar (ege-cocuk.ts); ölçek parti tuvaliyle aynı.
+  // Boyları tablodan (Mino'nun ~1.35 katı); COCUK_K: eski tasarıma (Ada 20.65 b) göre büyüme (kuklalar, aralar)
+  const ADA_BOY = cocukBoyu('ada', MINO_W);
+  const CAN_BOY = cocukBoyu('can', MINO_W);
+  const ELIF_BOY = cocukBoyu('elif', MINO_W);
+  const COCUK_K = ADA_BOY / 20.65;
+  const { oyuncu: ada, iskelet: adaI } = cocukOyuncu({ ad: 'ada', resim: 'parti/ada', boy: ADA_BOY, oran: 345 / 622, golge: 24, pozlar: ['normal', 'saskin', 'dilek', 'mutlu', 'alkis', 'dans'] });
+  const { oyuncu: can, iskelet: canI } = cocukOyuncu({ ad: 'can', resim: 'parti/can', boy: CAN_BOY, oran: 422 / 558, golge: 28.6, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
+  const { oyuncu: elif, iskelet: elifI } = cocukOyuncu({ ad: 'elif', resim: 'parti/elif', boy: ELIF_BOY, oran: 366 / 583, golge: 26, pozlar: ['normal', 'selam', 'saklaniyor', 'saskin', 'alkis', 'dans'] });
   const iskeletler = { ada: adaI, can: canI, elif: elifI };
-  ada.koy(42, Z + 3);
+  ada.koy(38, Z + 3);
   ada.katman = 8;
   can.koy(118, Z + 2);
   can.katman = 9;
@@ -308,9 +325,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const oyX = (o: Oyuncu) => Number(o.el.style.getPropertyValue('--x')) || 50;
 
   // --- mama sandalyesi ve kase: sahne 1'de anne hazırlar (Ege'yi oturtur, mamayı önüne bırakır), sahne 2'de mama
-  const SANDALYE = { x: 52, y: Z + 2, w: 24 };
+  const SANDALYE = { x: 56, y: Z + 2, w: 24 * EGE_K };
   const sandH = SANDALYE.w * oran('mama-sandalyesi');
-  const kaseY = Z + 1 + bY(37 * 0.3);
+  const kaseY = Z + 1 + bY(37 * 0.3 * EGE_K);
   let mamaSeti: { sandalye: HTMLElement; kase: HTMLElement } | null = null;
   const mamaHazirla = () => {
     mamaSeti ??= {
@@ -324,7 +341,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   // burun kaşıntısı / tutma / hapşu yüzleri (8. sahne) ayrı küçük pakette: şimdiden arka planda yüklensin
   void minoBurunYukle();
   const minoBalon = h('div.eg-balon.eg-mino-balon');
-  const minoKutu = sahne.koy(h('div.mc-mino.eg-mino', { 'data-ege': 'mino' }, mino.el, minoBalon), { x: 19, y: Z - 3, w: 24, z: 10 });
+  const minoKutu = sahne.koy(h('div.mc-mino.eg-mino', { 'data-ege': 'mino' }, mino.el, minoBalon), { x: 19, y: Z - 3, w: MINO_W, z: 10 });
 
   // ================================================================ kamera ve kadraj koruması (banyodaki gibi)
   // Sahne kodu çekimi ister (odak x/y, yakınlık z) ve o çekimde kadrajda kalması gerekenleri (tut) verir. Taşacaksa
@@ -952,7 +969,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     anne.classList.add('yuruyor');
     await tasi(anne, SANDALYE.x - bX(11), Z + 7, 1000);
     const [tw, th] = ANNE_TUVAL.ayakta;
-    const kucakY = Z + 7 + bY(19 * (th / tw) * 0.36);
+    const kucakY = Z + 7 + bY(tw * ANNE_B * (th / tw) * 0.36);
     ege.el.classList.add('kucakta');
     ege.el.style.zIndex = '7';
     await tasi(ege.el, SANDALYE.x - bX(8), kucakY, 450);
@@ -1520,8 +1537,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     durumYaz('kukla-tak');
     // ayı Ada'ya (kocaman), civciv Can'a (minicik); ellerinin hizasında
     const elde = (o: Oyuncu, w: number, sag: boolean, oranBoy: number): [number, number, number] => [oyX(o) + (sag ? 1 : -1) * bX(w * 0.62), Z + bY(oranBoy * 0.2), w];
-    const AYI_YER = () => elde(ada, 12, true, 20.65 * (622 / 345));
-    const CIV_YER = () => elde(can, 9, false, 23.28 * (558 / 422));
+    const AYI_YER = () => elde(ada, 12 * COCUK_K, true, ADA_BOY * (622 / 345));
+    const CIV_YER = () => elde(can, 9 * COCUK_K, false, CAN_BOY * (558 / 422));
     await gorev<void>((coz) => {
       let takili = 0;
       const ip = ipucu(
@@ -2002,9 +2019,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // ayak çizgisine göre, Mino önde kalır), kamera beşiğe yaklaşır
     const sol = BESIK.x - bX(BESIK.w / 2);
     for (const o of [ada, can, elif]) o.katman = 8;
-    void can.git(sol - bX(9), Z + 5, 900);
-    void ada.git(sol - bX(21), Z + 5.5, 900);
-    void elif.git(sol - bX(32), Z + 5, 900);
+    void can.git(sol - bX(10), Z + 5, 900);
+    void ada.git(sol - bX(22), Z + 5.5, 900);
+    void elif.git(sol - bX(34), Z + 5, 900);
     await kam(dikey ? 72 : 66, 94, dikey ? 1.6 : 1.3, 900, [besik]);
     await mSoyle(M.ninni);
     const tamam = await ninniGorevi(ayar.dize, true);
@@ -2598,9 +2615,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       const yer = anneOturYer('sariliyor');
       anne.style.setProperty('--x', String(yer.x));
       anne.style.setProperty('--y', String(yer.y));
-      const gel = [ada.git(KOLTUK.x - bX(11), Z + 3, 900), elif.git(KOLTUK.x + bX(4), Z + 1, 900), can.git(KOLTUK.x + bX(19), Z + 2, 900)];
+      const gel = [ada.git(KOLTUK.x - bX(11 * COCUK_K), Z + 3, 900), elif.git(KOLTUK.x + bX(4 * COCUK_K), Z + 1, 900), can.git(KOLTUK.x + bX(19 * COCUK_K), Z + 2, 900)];
       // Mino yer açar: Can'ın yanına geçer (çocukların arkasında kalmasın)
-      void tasi(minoKutu, Math.min(86, KOLTUK.x + bX(36)), Z - 3, 900);
+      void tasi(minoKutu, Math.min(86, KOLTUK.x + bX(19 * COCUK_K + 17)), Z - 3, 900);
       void kam(40, 96, taban, 900, [anne, ada.el, elif.el, can.el, minoKutu]);
       await Promise.all(gel);
     } else {
@@ -2624,8 +2641,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     mino.tepki('esne', 2);
     await bekle(1200);
     minoKutu.classList.add('uyuyor');
-    if (anneResim === 'sariliyor') await tasi(minoKutu, KOLTUK.x - bX(KOLTUK.w * 0.36), KOLTUK.y + bY(koltukH * 0.42), 900, 15);
-    else await tasi(minoKutu, KOLTUK.x - 6, KOLTUK.y + bY(8), 900, 20);
+    if (anneResim === 'sariliyor') await tasi(minoKutu, KOLTUK.x - bX(KOLTUK.w * 0.36), KOLTUK.y + bY(koltukH * 0.42), 900, 15 * (MINO_W / 24));
+    else await tasi(minoKutu, KOLTUK.x - 6, KOLTUK.y + bY(8), 900, 20 * (MINO_W / 24));
     mino.uyu();
     // ödül kartı
     odulKarti();

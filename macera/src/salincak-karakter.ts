@@ -10,6 +10,7 @@
  * piksel ölçeğinde (anne-hizalama.json), baş boyu pozdan poza değişmez.
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { boyGenislik, CIZIM } from '../../src/karakter/boy';
 import { Karakter, type Poz } from '../../src/karakter/karakter';
 import { YandanKarakter, yandanVar } from '../../src/karakter/yandan';
 import { ANNE_TUVAL, egeAdres } from './ege-cizim';
@@ -21,13 +22,20 @@ const NS = 'http://www.w3.org/2000/svg';
 const S = Math.sin;
 
 /**
- * Çocuk ölçüleri (2048'lik çizim birimi): başın tepesi ve ayak tabanı (önden), kalça (oturunca oturağa değen),
- * yan görünüşte başın tepesi ve ayak tabanı. Ölçü: tasarımcının çizimi (scratchpad incelemesi, 2026-09-29).
+ * Boylar tek tablodan (src/karakter/boy.ts): Mino'nun (ve Kino'nun) kutusu MINO_W (b); çocuklar, anne ve Ege ona göre.
+ */
+export const MINO_W = 21;
+
+/**
+ * Çocuk ölçüleri (2048'lik çizim birimi): başın tepesi ve ayak tabanı (önden ve yandan) boy tablosunun çizim ölçüsünden;
+ * kalça (oturunca oturağa değen): tasarımcının çizimi (scratchpad incelemesi, 2026-09-29).
  */
 const OLCU: Record<'can' | 'ada', { tepe: number; taban: number; kalca: number; yanTepe: number; yanTaban: number }> = {
-  can: { tepe: 250, taban: 1800, kalca: 1440, yanTepe: 230, yanTaban: 1925 },
-  ada: { tepe: 50, taban: 1995, kalca: 1560, yanTepe: 60, yanTaban: 1995 },
+  can: { tepe: CIZIM.can.tepe, taban: CIZIM.can.taban, kalca: 1440, yanTepe: CIZIM['can-profil'].tepe, yanTaban: CIZIM['can-profil'].taban },
+  ada: { tepe: CIZIM.ada.tepe, taban: CIZIM.ada.taban, kalca: 1560, yanTepe: CIZIM['ada-profil'].tepe, yanTaban: CIZIM['ada-profil'].taban },
 };
+/** Çocuğun kutu genişliği (b): boy tablosundaki boyda (Mino'nun ~1.35 katı) */
+export const cocukGenislik = (ad: 'can' | 'ada') => boyGenislik(ad, MINO_W);
 
 export class Cocuk {
   readonly el: HTMLElement;
@@ -269,8 +277,8 @@ export class Cocuk {
 }
 
 // ---------------------------------------------------------------- anne
-/** Anne çiziminin b ölçeği: ayakta çizim (1143 px) ~52 b boyunda */
-export const ANNE_B = 52 / 1143;
+/** Anne çiziminin b ölçeği (b / px): ayakta çizim boy tablosundaki boyda (çocuğun 1.35 katı) */
+export const ANNE_B = boyGenislik('anne', MINO_W) / ANNE_TUVAL.ayakta[0];
 export type AnneHal = 'ayakta' | 'oturuyor';
 
 export class Anne {
