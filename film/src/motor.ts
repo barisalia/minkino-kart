@@ -138,6 +138,11 @@ export interface Sahne {
   tezgah?: boolean;
   /** park: orta katman çizimi bu kadar (dünya genişliğinin %'si) sağa kayar (kaydırak ön çalıların arkasında kalmasın) */
   ortaKaydir?: number;
+  /**
+   * park: orta katman (kaydırak, kum havuzu, ağaç) bu yerdeki (dünya %: x, y alttan; zeminde) nokta çevresinde büyür.
+   * Çocuklar boy tablosuyla (src/karakter/boy.ts) büyüyünce kaydırak da orantılı büyüsün, çocuk kaydırağa sığsın.
+   */
+  ortaBuyut?: { olcek: number; x: number; y: number };
 }
 export interface FilmDosya {
   baslik: string;
@@ -286,6 +291,7 @@ export class Film {
   private bitti = false;
   private tezgahVar = false;
   private ortaKaydir = 0;
+  private ortaBuyut: Sahne['ortaBuyut'] | null = null;
   private readonly hiz: number;
   private readonly ses: boolean;
   private readonly muzik: boolean;
@@ -443,6 +449,7 @@ export class Film {
     Object.values(this.katmanlar).forEach((k) => k.replaceChildren());
     this.tezgahVar = !!s.tezgah;
     this.ortaKaydir = s.ortaKaydir ?? 0;
+    this.ortaBuyut = s.ortaBuyut ?? null;
     this.arka(s.arka);
     for (const [id, o] of Object.entries(s.oyuncular ?? {})) {
       const oy = new Oyuncu(o.tip, this.hiz, !!o.yan);
@@ -497,6 +504,13 @@ export class Film {
       const orta = resimP(ad === 'park' ? 'arka-orta-2' : 'arka-orta');
       // orta katmanı yana kaydır (%): kaydırak, ön çalıların arkasında kalmasın
       if (this.ortaKaydir) orta.style.left = `${this.ortaKaydir}%`;
+      // orta katmanı zemindeki bir nokta çevresinde büyüt (resim dünyanın altında, 16:9: yüksekliği dünyanın %56.25'i)
+      const b = this.ortaBuyut;
+      if (b) {
+        const H = (100 * 9) / 16;
+        orta.style.transformOrigin = `${(b.x - this.ortaKaydir).toFixed(2)}% ${(((H - b.y) / H) * 100).toFixed(2)}%`;
+        orta.style.transform = `scale(${b.olcek})`;
+      }
       // çimen (arka-on) altta, oyun aletleri onun ÜSTÜNDE: kaydırak ve kum havuzu çimenin arkasında kalmasın; hepsi
       // oyuncularla aynı derinlikte (kamera yakınlaşınca ayaklar zeminden kaymaz)
       this.katmanlar.tezgahlar.append(resimP('arka-on'), orta);

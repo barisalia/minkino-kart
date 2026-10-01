@@ -218,11 +218,12 @@
   top: calc(-1.2 * var(--b));
   pointer-events: none;
 }
+/* bebek oturağı Ege'yle orantılı: --kova (salincak.ts → EGE_K; boy tablosu) */
 .mc-kok .sl-kova {
   position: absolute;
-  left: calc(-8 * var(--b));
-  width: calc(16 * var(--b));
-  top: calc(-5.4 * var(--b));
+  left: calc(-8 * var(--kova, 1) * var(--b));
+  width: calc(16 * var(--kova, 1) * var(--b));
+  top: calc(-5.4 * var(--kova, 1) * var(--b));
   pointer-events: none;
 }
 .mc-kok .sl-oturak svg,
@@ -418,14 +419,14 @@
 .mc-kok .sl-anne-kucak {
   position: absolute;
   left: 50%;
-  width: calc(13 * var(--b));
+  width: calc(13 * var(--kova, 1) * var(--b));
   aspect-ratio: 1620 / 1840;
   translate: -50% 0;
   bottom: 13%;
 }
 .mc-kok .sl-anne[data-hal='ayakta'] .sl-anne-kucak {
   bottom: 30%;
-  width: calc(12.5 * var(--b));
+  width: calc(12.5 * var(--kova, 1) * var(--b));
 }
 .mc-kok .sl-ege.kucakta {
   position: absolute;

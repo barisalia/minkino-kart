@@ -9,6 +9,7 @@
  * boy, ayak çizgisi ve gölge parti pozlarıyla aynı kalır.
  */
 import { h } from '../../src/ui/dom';
+import { boyGenislik, CIZIM, type Cizim } from '../../src/karakter/boy';
 import { iskeletVar, Karakter, type Poz as KPoz } from '../../src/karakter/karakter';
 import '../../src/karakter/karakter.css';
 import { Oyuncu, type OyuncuSecenek, type Poz } from './oyuncu';
@@ -20,6 +21,20 @@ const HIZA: Record<string, { a: number; bx: number; by: number; tuval: [number, 
   // Elif: oyundaki parti çizimi biraz farklı (kolları daha açık), hiza yaklaşık
   elif: { a: 0.315, bx: -131.9, by: -26.6, tuval: [366, 583] },
 };
+
+/**
+ * Çocuğun parti tuvalindeki çizim ölçüsü (boy tablosu için): iskeletin tepe / tabanı tuvale taşınır. Parti pozlarının
+ * figürü de tuvalde aynı boyda (~496 px).
+ */
+export function cocukCizim(ad: string): Cizim | undefined {
+  const z = HIZA[ad];
+  const c = CIZIM[ad];
+  if (!z || !c) return undefined;
+  return { kutu: z.tuval, tepe: z.by + z.a * c.tepe, taban: z.by + z.a * c.taban };
+}
+
+/** Oyuncunun genişliği (b): Mino'nun kutusu minoW (b) iken çocuk boy tablosundaki boyda (src/karakter/boy.ts) */
+export const cocukBoyu = (ad: string, minoW: number) => boyGenislik(ad, minoW, cocukCizim(ad), 'cocuk');
 
 type Durum = 'normal' | 'selam' | 'sevinc' | 'saskin' | 'dilek' | 'cee';
 

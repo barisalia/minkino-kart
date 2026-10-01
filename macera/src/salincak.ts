@@ -36,12 +36,12 @@ import type { BolumArayuz } from './dogumgunu';
 import { Sahne } from './sahne';
 import { Kisi } from './banyo-karakter';
 import { fularSvg } from './banyo-gorsel';
-import { Ege } from './ege-bebek';
+import { Ege, egeGenislik } from './ege-bebek';
 import { SesSeviyesi } from './ege-seviye';
 import { kikir as egeKikir } from './ege-ses';
 import { Ipucu, parmak } from './ege-surukle';
 import { balonGoster } from './elektrik-efekt';
-import { Anne, Cocuk } from './salincak-karakter';
+import { Anne, Cocuk, cocukGenislik, MINO_W } from './salincak-karakter';
 import {
   ASKI,
   bankSvg,
@@ -122,18 +122,29 @@ const WB = 400;
 const ALT_PAY = 20;
 const UZAK_H = PARK.uzak.w / PARK_ORAN;
 const ORTA_H = PARK.orta.w / PARK_ORAN;
-/** Mino ve Kino çiziminin kutusu (b) ve oranı; çocuklar ve bebek */
-const KISI_W = 24;
-const CAN_W = 46;
-const ADA_W = 35;
-const EGE_W = 14;
+/**
+ * Boylar tek tablodan (src/karakter/boy.ts; salincak-karakter.ts → MINO_W): Mino ve Kino çiziminin kutusu (b), çocuklar
+ * Mino'nun ~1.35 katı, oturan Ege Mino'dan biraz büyük. KISI_K: Mino / Kino'nun eski tasarıma (24 b) göre ölçeği;
+ * EGE_K: Ege'nin (ve bebek oturağının, kucağın) eski tasarıma (14 b) göre ölçeği.
+ */
+const KISI_W = MINO_W;
+const KISI_K = KISI_W / 24;
+const CAN_W = cocukGenislik('can');
+const ADA_W = cocukGenislik('ada');
+const EGE_W = egeGenislik(KISI_W);
+const EGE_K = EGE_W / 14;
 /** Kino oturunca kalçası kutunun altından bu kadar yukarıda (b); yan görünüşte göbek (ters binince) */
-const KINO_OTURMA = 3.3;
-const KINO_GOBEK = 10.6;
+const KINO_OTURMA = 3.3 * KISI_K;
+const KINO_GOBEK = 10.6 * KISI_K;
 /** Mino oturunca */
-const MINO_OTURMA = 1.6;
+const MINO_OTURMA = 1.6 * KISI_K;
 /** Bebek Ege oturunca */
-const EGE_OTURMA = 1.7;
+const EGE_OTURMA = 1.7 * EGE_K;
+/**
+ * Bebek oturağının zinciri: oturak Ege'yle büyüdü; alt kenarı zeminden 4 b yukarıda kalsın (oturağın üstü bağlantının
+ * 5.4 b üstünde, altı KOVA.h - 5.4 altında), Ege'nin başı barın altında kalsın
+ */
+const ZINCIR_BEBEK = CERCEVE.bar - 4 - (KOVA.h - 5.4) * EGE_K;
 /** Test modunda fizik daha hızlı akar (bekleme kısalsın) */
 const FIZIK = TEST_MODU ? 2.6 : 1;
 
@@ -147,6 +158,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   // ================================================================ sahne ve dünya ölçüsü
   const sahne = new Sahne('');
   sahne.el.classList.add('sl-sahne');
+  // bebek oturağı ve kucak Ege'yle orantılı (salincak.css → --kova)
+  sahne.el.style.setProperty('--kova', EGE_K.toFixed(4));
   kok.append(sahne.el);
   const W = sahne.el.clientWidth || innerWidth;
   const H = sahne.el.clientHeight || innerHeight;
@@ -236,7 +249,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   const AYAK = { u: (CERCEVE.disAyak + CERCEVE.icAyak) / 2 + 1.2, w: (CERCEVE.disAyak - CERCEVE.icAyak + 8) / 0.8 };
   const ayaklar = [-1, 1].map((s) => koy(h('div.sl-isaret.sl-ayak'), s * AYAK.u, CER_Y, AYAK.w, 1));
   // bebek oturağı da (az sallanır) kenarda yarım kalmaz
-  ayaklar.push(koy(h('div.sl-isaret.sl-ayak'), ASKI.bebek, CER_Y, (KOVA.w + 2) / 0.8, 1));
+  ayaklar.push(koy(h('div.sl-isaret.sl-ayak'), ASKI.bebek, CER_Y, (KOVA.w * EGE_K + 2) / 0.8, 1));
 
   interface SarkacDom {
     ad: 'buyuk' | 'bebek';
@@ -255,15 +268,15 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   }
   const BINICI = { w: 40, h: 46 };
   function sarkacKur(ad: 'buyuk' | 'bebek'): SarkacDom {
-    const L = ZINCIR[ad];
-    const ara = ad === 'buyuk' ? OTURAK.zincirAra : KOVA.zincirAra;
+    const L = ad === 'buyuk' ? ZINCIR.buyuk : ZINCIR_BEBEK;
+    const ara = ad === 'buyuk' ? OTURAK.zincirAra : KOVA.zincirAra * EGE_K;
     const zincirler = [-1, 1].map((s) => h('div.sl-zincir', { style: `left:calc(${(s * ara) / 2 - 1} * var(--b));height:calc(${L} * var(--b))`, html: zincirSvg(L) }));
     const oturak = ad === 'buyuk' ? h('div.sl-oturak', { html: oturakSvg() }) : h('div.sl-kova.arka', { html: kovaArkaSvg() });
     const onParca = ad === 'bebek' ? h('div.sl-kova.on', { html: kovaOnSvg() }) : null;
     // (binen: oturağın üst çizgisine oturur; bebek oturağında kovanın içine)
-    const binici = h('div.sl-binici', { style: `left:calc(${-BINICI.w / 2} * var(--b));width:calc(${BINICI.w} * var(--b));height:calc(${BINICI.h} * var(--b));top:calc(${-BINICI.h + (ad === 'buyuk' ? 0.7 : 2.8)} * var(--b))` });
+    const binici = h('div.sl-binici', { style: `left:calc(${-BINICI.w / 2} * var(--b));width:calc(${BINICI.w} * var(--b));height:calc(${BINICI.h} * var(--b));top:calc(${-BINICI.h + (ad === 'buyuk' ? 0.7 : 2.8 * EGE_K)} * var(--b))` });
     const halka = h('i.sl-halka');
-    const alan = h('div.sl-alan', { 'data-el': ad === 'buyuk' ? 'salincak' : 'bebek-salincak', style: ad === 'buyuk' ? '' : '--aw:20;--ah:26' });
+    const alan = h('div.sl-alan', { 'data-el': ad === 'buyuk' ? 'salincak' : 'bebek-salincak', style: ad === 'buyuk' ? '' : `--aw:${(20 * EGE_K).toFixed(1)};--ah:${(26 * EGE_K).toFixed(1)}` });
     const binek = h('div.sl-binek', { style: `top:calc(${L} * var(--b))` }, halka, oturak, binici, ...(onParca ? [onParca] : []), alan);
     const kap = h('div.sl-sarkac', { 'data-sarkac': ad, style: `left:${X(ASKI[ad])}%;bottom:${Y(BAR_Y)}%` }, ...zincirler, binek);
     kap.style.zIndex = '7';

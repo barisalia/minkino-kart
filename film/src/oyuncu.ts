@@ -7,6 +7,7 @@
  * Taşıma (tasi / al / birak): eşya bir parçaya takılır (ör. Kino'nun kafasındaki elma), parçayla birlikte döner.
  */
 import type { KonusBilgi } from '../../src/audio/dudak';
+import { altPayi, boyTipi, CIZIM } from '../../src/karakter/boy';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
 import { YandanKarakter, yandanVar, yandanYukle } from '../../src/karakter/yandan';
 import { Mino, minoIfadeleriYukle, minoPozYukle, type MinoEkPoz, type MinoIfade, type Tepki } from '../../src/mino/mino';
@@ -26,15 +27,20 @@ const ADIM_EN_AZ = 1.2;
 const ADIM_EN_COK = 2.8;
 
 /**
- * Kino (ekip/kino): iskelet kutusunun altında boş pay (ayaklar 1888'de biter; 2048'lik kutu). Eklem sınırları
- * (kol, kulak, kuyruk) kişilikte: src/karakter/kisilik.ts → kino.
+ * Kutunun altındaki boş pay (ayaklar y'ye basar): boy tablosundaki çizim ölçüsünden (src/karakter/boy.ts → CIZIM).
+ * Yan görünüş (yan: true): <tip>-profil çizimi (ölçülmeyen 0.08). Önden: Kino ve insanlar (çocuklar, anne, Ege);
+ * önden hayvanlar kutunun dibinde (0; eski filmlerin yerleşimi buna göre). Kino'nun eklem sınırları kişilikte:
+ * src/karakter/kisilik.ts → kino.
  */
-const KARAKTER_ALT: Record<string, number> = { kino: 160 / 2048 };
-/**
- * Yan görünüş oyuncusu (yan: true): kutunun altındaki boş pay (2048'lik kutu; ayaklar bu satırda biter). Çizimden ölçüldü
- * (yandanYukle → geo.zemin); ölçülmeyenler 0.08.
- */
-const YAN_ALT: Record<string, number> = { kino: 0.0771, ada: 0.0552, can: 0.043, elif: 0.0527, deniz: 0.0513, zeynep: 0.0449, tavsan: 0.0498, ordek: 0.0205, kopek: 0.1113 };
+const yanAlt = (tip: string) => {
+  const c = CIZIM[`${tip}-profil`];
+  return c ? altPayi(c) : 0.08;
+};
+const onAlt = (tip: string) => {
+  const c = CIZIM[tip];
+  const t = boyTipi(tip);
+  return c && (tip === 'kino' || t === 'cocuk' || t === 'anne' || t === 'bebek') ? altPayi(c) : 0;
+};
 /** yan yürüyüşün adım hızı sınırları (döngü / sn): 'kos' stili çok hızlı sürebilir */
 const YAN_ADIM_EN_AZ = 0.9;
 const YAN_ADIM_EN_COK = 2.8;
@@ -126,7 +132,7 @@ export class Oyuncu {
   ) {
     this.yonSabit = YON_SABIT.has(tip) && !yanGorunus;
     if (yanGorunus && yandanVar(tip)) {
-      this.alt = YAN_ALT[tip] ?? 0.08;
+      this.alt = yanAlt(tip);
       this.yan = new YandanKarakter(tip);
       this.el = h('div.fl-oyuncu.fl-yan', { 'data-tip': tip }, this.yan.el);
       this.oran = 1;
@@ -134,7 +140,7 @@ export class Oyuncu {
       this.raf = requestAnimationFrame((t) => this.kare(t));
       return;
     }
-    this.alt = KARAKTER_ALT[tip] ?? 0;
+    this.alt = onAlt(tip);
     if (tip === 'mino') {
       this.yuruyen = new YuruyenMino();
       this.mino = this.yuruyen.mino;
