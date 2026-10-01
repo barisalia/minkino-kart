@@ -46,13 +46,13 @@ type KonukAd = (typeof KONUKLAR)[number];
 /** çizim oranı (en/boy) ve şapkanın kafadaki yeri */
 /** boy/golge yalnız poz tuvali genişletilmiş konuklarda (parti-ifade): kutu büyür, karakter ekranda aynı boyda kalır */
 const KONUK_CIZIM: Record<KonukAd, { oran: number; boy?: number; golge?: number; sapka: { x: number; y: number; w: number; d?: number } }> = {
-  can: { boy: 23.28, oran: 422 / 558, golge: 28.7, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
-  elif: { boy: 20.7, oran: 366 / 583, golge: 26, sapka: { x: 54.1, y: 17.4, w: 22.5, d: 6 } },
-  deniz: { boy: 20.27, oran: 378 / 521, golge: 25.5, sapka: { x: 47, y: 11.6, w: 24.5, d: -5 } },
-  zeynep: { boy: 16.94, oran: 352 / 565, golge: 20.7, sapka: { x: 50.3, y: 14.8, w: 25.6, d: 6 } },
+  can: { boy: 41.2, oran: 422 / 558, golge: 28.7, sapka: { x: 49.2, y: 14.7, w: 21.3, d: -6 } },
+  elif: { boy: 34.2, oran: 366 / 583, golge: 26, sapka: { x: 54.1, y: 17.4, w: 22.5, d: 6 } },
+  deniz: { boy: 39.5, oran: 378 / 521, golge: 25.5, sapka: { x: 47, y: 11.6, w: 24.5, d: -5 } },
+  zeynep: { boy: 33.9, oran: 352 / 565, golge: 20.7, sapka: { x: 50.3, y: 14.8, w: 25.6, d: 6 } },
 };
 /** Konukların parti sırasındaki yerleri (x, alttan y) */
-const YER: Record<KonukAd, [number, number, number]> = { can: [27, 5, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [74, 5, 7] };
+const YER: Record<KonukAd, [number, number, number]> = { can: [23, 2, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [79, 2, 7] };
 /** Saklanma yerleri (x, y, katman): koltuğun, masanın, hediyelerin arkası */
 const SAKLI: Record<KonukAd, [number, number, number]> = { can: [16, 13, 2], elif: [37, 5, 5], deniz: [63, 5, 5], zeynep: [84, 3, 4] };
 const ADA_YER: [number, number] = [50, 30];
@@ -76,7 +76,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
   sahne.koy(resim('parti/masa', '', 'Masa'), { x: 50, y: 2, w: 54, z: 6 });
   const pasta = sahne.koy(h('div.mc-pasta', {}, resim('parti/pasta', 'mc-pasta-resim', 'Pasta')), { x: 50, y: 17, w: 32, z: 7 });
 
-  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 20.65, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
+  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 30.2, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
   const konuklar = KONUKLAR.map((ad) => new Oyuncu({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }));
   const oy = { ada };
   const konukAd = KONUKLAR;
