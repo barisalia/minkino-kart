@@ -225,6 +225,13 @@ test("Film: Kino ve Sihirli Söz: Çizgi Filmler'de ilk kart (Yeni), pazar, sat�
   await expect(page.locator('.fl-nesne[data-oyuncu="kino"] image[data-tasinan="cilek"]')).toHaveCount(1);
   await expect(page.locator('.fl-nesne[data-oyuncu="kino"] image[data-tasinan="elma"]')).toHaveCount(1);
   await expect(page.locator('.fl-nesne[data-oyuncu="ayi"] [data-parca="kas"] > g')).toHaveCount(2);
+  // finaldeki şarkı: karaoke dört satır, 29 hece; şarkı bitince kutu kapanmış (bütün heceler yanmış)
+  await expect(page.locator('.fl-sahne[data-sarki="lutfen"]')).toHaveCount(1);
+  await expect(page.locator('.fl-karaoke .fl-k-satir')).toHaveCount(4);
+  await expect(page.locator('.fl-karaoke .fl-hece')).toHaveCount(29);
+  await expect(page.locator('.fl-karaoke[data-bitti]')).toHaveCount(1);
+  await expect(page.locator('.fl-karaoke .fl-hece.gecti')).toHaveCount(29);
+  expect(await page.locator('.fl-karaoke .fl-k-satir').first().textContent()).toBe('Lütfendemekçokgüzel');
   await page.screenshot({ path: `tests/screens/${info.project.name}-f10-lutfen-ogut.png` });
   const kayit = await page.evaluate(() => {
     const w = window as unknown as { __sahneler: string[]; __sozler: string[] };

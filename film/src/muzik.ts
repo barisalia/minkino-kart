@@ -11,8 +11,9 @@
 import { baglam, muzikCikisi } from '../../src/audio/motor';
 import { muzikDurdur } from '../../src/audio/muzik';
 
-// Yalnız film müzikleri pakete girer (film-acilis, film-kapanis, film-uzgun, film-kovalamaca, film-surpriz, film-kutlama, film-merak, film-fon-pazar)
-const DOSYALAR = import.meta.glob<string>('../../assets/muzik/film-*.mp3', { eager: true, query: '?url', import: 'default' });
+// Yalnız film müzikleri pakete girer (film-acilis, film-kapanis, film-uzgun, film-kovalamaca, film-surpriz, film-kutlama, film-merak,
+// film-fon-pazar) ve filmlerde söylenen şarkıların kayıtları (<ad>-sozlu / <ad>-sozsuz: assets/muzik/<ad>.json ile, motor.ts → sarki)
+const DOSYALAR = import.meta.glob<string>(['../../assets/muzik/film-*.mp3', '../../assets/muzik/*-sozlu.mp3', '../../assets/muzik/*-sozsuz.mp3'], { eager: true, query: '?url', import: 'default' });
 export const filmMuzikAdresi = (ad: string): string | null => DOSYALAR[`../../assets/muzik/${ad}.mp3`] ?? null;
 /** Dosya müziği süreleri (sn; jenerikler): açılış kartı ve kapanış bu kadar sürer */
 export const ACILIS_SURESI = 7.9;

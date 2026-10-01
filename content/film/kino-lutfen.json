@@ -1,5 +1,5 @@
 {
-  "aciklama": "Kino ve Sihirli Söz (ekip/film/senaryo/kino-lutfen.md). 5 sahne, yaklaşık 53 sn. Pazar (Mino'nun Karpuzu'nun pazarı: malzeme mino-karpuz). Tezgâh eşya olarak (assets/pazar/tezgah.webp); satıcı ayı tezgâhın önünde, elma ve çilek kasalarının arkasında (önden iskelet: kaş çatma 'kas', surat asma 'surat', tatlı gülümseme 'tatli'; dudak senkronlu konuşur). Kino yandan koşar, önden konuşur (kim: kino); Mino önden (yürür, fısıldar, düşünür, el sallar). Müzik dosyadan (assets/muzik/film-*.mp3). Zemin y 6. Konumlar dünyanın %'si (x merkez, y alttan, w genişlik). Üreteçle yazıldı (tekrarlı hareketler: hop, el sallama, horlama; ölçüler: Kino boy tablosundan, ayının el noktası); JSON tek kaynak.",
+  "aciklama": "Kino ve Sihirli Söz (ekip/film/senaryo/kino-lutfen.md). 5 sahne, yaklaşık 63 sn (sonda 'Lütfen ve Teşekkürler' şarkısı, karaokeli). Pazar (Mino'nun Karpuzu'nun pazarı: malzeme mino-karpuz). Tezgâh eşya olarak (assets/pazar/tezgah.webp); satıcı ayı tezgâhın önünde, elma ve çilek kasalarının arkasında (önden iskelet: kaş çatma 'kas', surat asma 'surat', tatlı gülümseme 'tatli'; dudak senkronlu konuşur). Kino yandan koşar, önden konuşur (kim: kino); Mino önden (yürür, fısıldar, düşünür, el sallar). Müzik dosyadan (assets/muzik/film-*.mp3); şarkı: { kim: 'sarki', yap: 'basla', ad: 'lutfen', soz } (assets/muzik/lutfen-sozlu.mp3 + lutfen.json heceleri altyazıda yanar). Zemin y 6. Konumlar dünyanın %'si (x merkez, y alttan, w genişlik). Üreteçle yazıldı (tekrarlı hareketler: hop, el sallama, horlama; ölçüler: Kino boy tablosundan, ayının el noktası); JSON tek kaynak.",
   "baslik": "Kino ve Sihirli Söz",
   "film": "kino-lutfen",
   "malzeme": "mino-karpuz",
@@ -2390,7 +2390,7 @@
     },
     {
       "ad": "5-tesekkur",
-      "sure": 10.4,
+      "sure": 21.1,
       "arka": "pazar",
       "isik": 0.85,
       "isikTon": "sabah",
@@ -2690,6 +2690,21 @@
           "sure": 0.18
         },
         {
+          "t": 1.2,
+          "kim": "sarki",
+          "yap": "basla",
+          "ad": "lutfen",
+          "ses": 0.75,
+          "gec": 0.3,
+          "yer": "ust",
+          "soz": [
+            "Lütfen demek çok güzel",
+            "Teşekkür etmek çok güzel",
+            "Her arkadaş sevgiyle",
+            "Güller açar el ele"
+          ]
+        },
+        {
           "t": 1.35,
           "kim": "ayi",
           "yap": "durus",
@@ -2733,20 +2748,20 @@
           "sure": 0.4
         },
         {
-          "t": 2.2,
+          "t": 2.1,
           "kim": "kamera",
           "yap": "git",
           "x": 22,
           "y": 83.1,
           "z": 2.115,
-          "sure": 1.2,
+          "sure": 1.1,
           "tut": [
             "mino",
             "kino"
           ]
         },
         {
-          "t": 2.4,
+          "t": 2.3,
           "kim": "mino",
           "yap": "durus",
           "bakan": 0,
@@ -2755,167 +2770,312 @@
           "sure": 0.3
         },
         {
-          "t": 2.9,
+          "t": 2.6,
           "kim": "mino",
           "yap": "soyle",
           "metin": "Lütfen demek sihirli bir sözdür.",
-          "sure": 2.6
+          "sure": 2.5
         },
         {
-          "t": 3.1,
+          "t": 2.8,
           "kim": "mino",
           "yap": "tepki",
           "ad": "evet",
           "sure": 1.2
         },
         {
-          "t": 3.7,
+          "t": 3.4,
           "kim": "kino",
           "yap": "durus",
           "kafaY": 4,
           "sure": 0.1
         },
         {
-          "t": 3.86,
+          "t": 3.56,
           "kim": "kino",
           "yap": "durus",
           "kafaY": 0,
           "sure": 0.14
         },
         {
-          "t": 4.06,
+          "t": 3.76,
           "kim": "kino",
           "yap": "durus",
           "kafaY": 4,
           "sure": 0.1
         },
         {
-          "t": 4.22,
+          "t": 3.92,
           "kim": "kino",
           "yap": "durus",
           "kafaY": 0,
           "sure": 0.14
         },
         {
-          "t": 5.6,
+          "t": 5.2,
           "kim": "mino",
           "yap": "durus",
           "kafaAci": 0,
           "sure": 0.3
         },
         {
-          "t": 5.8,
-          "kim": "muzik",
-          "yap": "dosya-dur",
-          "sure": 2.8
-        },
-        {
-          "t": 5.9,
+          "t": 5.2,
           "kim": "kamera",
           "yap": "git",
-          "x": 40,
-          "y": 73.45,
-          "z": 1.225,
-          "sure": 3.2,
+          "x": 47,
+          "y": 70,
+          "z": 1.065,
+          "sure": 1.2,
           "tut": []
         },
         {
-          "t": 6.2,
-          "kim": "mino",
-          "yap": "durus",
-          "yukSag": 150,
-          "sure": 0.25
+          "t": 6,
+          "kim": "kino",
+          "yap": "tepki",
+          "ad": "dans",
+          "sure": 2.8
         },
         {
-          "t": 6.3,
+          "t": 6,
+          "kim": "mino",
+          "yap": "tepki",
+          "ad": "dans",
+          "sure": 2.8
+        },
+        {
+          "t": 6.1,
+          "kim": "ayi",
+          "yap": "tepki",
+          "ad": "dans",
+          "sure": 2.8
+        },
+        {
+          "t": 9.7,
+          "kim": "kino",
+          "yap": "ifade",
+          "ad": "heyecan"
+        },
+        {
+          "t": 9.7,
           "kim": "kino",
           "yap": "durus",
-          "yukSol": 128,
+          "hop": 4,
+          "pervane": 12,
+          "kulak": 8,
           "sure": 0.2
         },
         {
-          "t": 6.4,
+          "t": 9.7,
           "kim": "ayi",
           "yap": "durus",
           "kolSol": 55,
           "sure": 0.18
         },
         {
-          "t": 6.5,
+          "t": 9.8,
           "kim": "mino",
-          "yap": "durus",
-          "yukSag": 118,
-          "sure": 0.25
+          "yap": "tepki",
+          "ad": "sevinc",
+          "sure": 1.3
         },
         {
-          "t": 6.6,
-          "kim": "kino",
-          "yap": "durus",
-          "yukSol": 100,
-          "sure": 0.2
-        },
-        {
-          "t": 6.65,
+          "t": 9.95,
           "kim": "ayi",
           "yap": "durus",
           "kolSol": 32,
           "sure": 0.18
         },
         {
-          "t": 6.8,
-          "kim": "mino",
-          "yap": "durus",
-          "yukSag": 150,
-          "sure": 0.25
-        },
-        {
-          "t": 6.9,
-          "kim": "kino",
-          "yap": "durus",
-          "yukSol": 128,
-          "sure": 0.2
-        },
-        {
-          "t": 6.9,
+          "t": 10.2,
           "kim": "ayi",
           "yap": "durus",
           "kolSol": 55,
           "sure": 0.18
         },
         {
-          "t": 7.1,
-          "kim": "mino",
-          "yap": "durus",
-          "yukSag": 118,
-          "sure": 0.25
-        },
-        {
-          "t": 7.15,
+          "t": 10.45,
           "kim": "ayi",
           "yap": "durus",
           "kolSol": 32,
           "sure": 0.18
         },
         {
-          "t": 7.3,
-          "kim": "kino",
+          "t": 10.7,
+          "kim": "ayi",
           "yap": "durus",
-          "yukSol": 0,
-          "sure": 0.3
+          "kolSol": 55,
+          "sure": 0.18
         },
         {
-          "t": 7.4,
+          "t": 10.95,
+          "kim": "ayi",
+          "yap": "durus",
+          "kolSol": 32,
+          "sure": 0.18
+        },
+        {
+          "t": 11.2,
           "kim": "ayi",
           "yap": "durus",
           "kolSol": 0,
           "sure": 0.4
         },
         {
-          "t": 7.5,
+          "t": 13.1,
+          "kim": "kino",
+          "yap": "durus",
+          "hop": 0,
+          "pervane": 5,
+          "kulak": 2,
+          "sure": 0.3
+        },
+        {
+          "t": 13.5,
           "kim": "mino",
           "yap": "durus",
+          "saril": 1,
+          "kafaAci": -5,
+          "sure": 0.3
+        },
+        {
+          "t": 13.5,
+          "kim": "ayi",
+          "yap": "durus",
+          "kolSag": -25,
+          "goz": 1,
+          "tatli": 1,
+          "kas": -0.5,
+          "sure": 0.4
+        },
+        {
+          "t": 13.5,
+          "kim": "kino",
+          "yap": "ifade",
+          "ad": "keyif"
+        },
+        {
+          "t": 13.5,
+          "kim": "kino",
+          "yap": "tepki",
+          "ad": "huy",
+          "sure": 2.4
+        },
+        {
+          "t": 16.35,
+          "kim": "mino",
+          "yap": "durus",
+          "saril": 0,
+          "kafaAci": 0,
+          "sure": 0.3
+        },
+        {
+          "t": 16.35,
+          "kim": "ayi",
+          "yap": "durus",
+          "kolSag": 0,
+          "goz": 0,
+          "tatli": 0,
+          "kas": -0.3,
+          "sure": 0.3
+        },
+        {
+          "t": 16.7,
+          "kim": "mino",
+          "yap": "durus",
+          "yukSol": 150,
+          "yukSag": 150,
+          "gulum": 1,
+          "sure": 0.25
+        },
+        {
+          "t": 16.7,
+          "kim": "kino",
+          "yap": "ifade",
+          "ad": "heyecan"
+        },
+        {
+          "t": 16.7,
+          "kim": "kino",
+          "yap": "durus",
+          "yukSol": 128,
+          "yukSag": 128,
+          "hop": 3,
+          "pervane": 12,
+          "sure": 0.2
+        },
+        {
+          "t": 16.7,
+          "kim": "ayi",
+          "yap": "durus",
+          "kolSol": 55,
+          "kolSag": 55,
+          "sure": 0.25
+        },
+        {
+          "t": 16.7,
+          "kim": "parilti",
+          "yap": "",
+          "x": 20,
+          "y": 30
+        },
+        {
+          "t": 17.4,
+          "kim": "parilti",
+          "yap": "",
+          "x": 62,
+          "y": 38
+        },
+        {
+          "t": 18.1,
+          "kim": "parilti",
+          "yap": "",
+          "x": 36,
+          "y": 28
+        },
+        {
+          "t": 18.8,
+          "kim": "parilti",
+          "yap": "",
+          "x": 50,
+          "y": 44
+        },
+        {
+          "t": 19.9,
+          "kim": "mino",
+          "yap": "durus",
+          "yukSol": 0,
           "yukSag": 0,
-          "sure": 0.35
+          "sure": 0.4
+        },
+        {
+          "t": 19.9,
+          "kim": "kino",
+          "yap": "durus",
+          "yukSol": 0,
+          "yukSag": 0,
+          "hop": 0,
+          "pervane": 6,
+          "sure": 0.4
+        },
+        {
+          "t": 19.9,
+          "kim": "ayi",
+          "yap": "durus",
+          "kolSol": 0,
+          "kolSag": 0,
+          "sure": 0.4
+        },
+        {
+          "t": 19.9,
+          "kim": "kino",
+          "yap": "ifade",
+          "ad": null
+        },
+        {
+          "t": 20.1,
+          "kim": "sarki",
+          "yap": "dur",
+          "sure": 1.6
         }
       ]
     },

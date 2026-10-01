@@ -10,13 +10,15 @@
  */
 import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import type { KonusmaSecenegi } from '../../src/audio/konusma';
+import { baglam } from '../../src/audio/motor';
+import { sarkiTablosu, sozleEsle, type SarkiJson, type SarkiTablosu } from '../../src/audio/sarki-kayit';
 import { KINO_SESI, konus, sus } from '../../src/audio/ses';
 import { iskeletVar, svgGetir } from '../../src/karakter/karakter';
 import { yandanYukle } from '../../src/karakter/yandan';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { esyaAdresi, esyaCiz, ESYA_ALT, ESYA_MERKEZ, ESYA_ORAN } from './esya';
 import { FILM_EFEKT } from './efekt';
-import { filmMuzik, type DosyaSecenegi, type Ruh } from './muzik';
+import { dosyaTamponu, filmMuzik, type DosyaSecenegi, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
 
 // ---------------------------------------------------------------- MP4 kaydı (?kayit=1; scripts/film/mp4.mjs)
@@ -63,6 +65,11 @@ export const konusSecenegi = (kim: string): KonusmaSecenegi =>
 
 const FILM_GORSEL =import.meta.glob<string>('../../assets/film/*/arka-*.webp', { eager: true, query: '?url', import: 'default' });
 const PAZAR_GORSEL = import.meta.glob<string>('../../assets/pazar/tezgah.webp', { eager: true, query: '?url', import: 'default' });
+/** Şarkı kayıtlarının hece / vuruş tabloları (assets/muzik/<ad>.json; kayıt <ad>-sozlu.mp3, <ad>-sozsuz.mp3) */
+const SARKILAR = import.meta.glob<SarkiJson>('../../assets/muzik/*.json', { eager: true, import: 'default' });
+const sarkiJson = (ad: string): SarkiJson | undefined => SARKILAR[`../../assets/muzik/${ad}.json`];
+/** şarkı dosyasının adı: sözlü (karaoke) ya da sözsüz (fon) */
+const sarkiDosyasi = (o: Olay) => `${String(o.ad)}-${o.sozsuz ? 'sozsuz' : 'sozlu'}`;
 
 // ---------------------------------------------------------------- sahne dosyası
 export interface Konum {
@@ -260,6 +267,23 @@ export interface FilmSecenek {
   bitti?: () => void;
 }
 
+/** Çalan şarkının karaokesi (Film.sarkiBasla) */
+interface Karaoke {
+  /** başladığı an (film saati, sn) */
+  bas: number;
+  t: SarkiTablosu;
+  heceler: HTMLElement[];
+  satirlar: HTMLElement[];
+  kutu: HTMLElement;
+  top: HTMLElement;
+  /** görünen satır, son yanan hece, hece şu an söyleniyor mu */
+  satir: number;
+  hece: number;
+  simdi: boolean;
+  /** erken söndürüldüğü an (film saati, sn) */
+  bitis: number;
+}
+
 export class Film {
   readonly el: HTMLElement;
   private dunya: HTMLElement;
@@ -331,6 +355,9 @@ export class Film {
     }
     for (const s of d.sahneler) {
       if ('ogut' in s) continue;
+      // şarkı kaydı önceden çözülür: karaoke film saatiyle ilerler, kayıt geç başlamasın
+      const c = baglam();
+      if (c) for (const o of s.olaylar) if (o.kim === 'sarki' && o.yap === 'basla') void dosyaTamponu(c, sarkiDosyasi(o));
       for (const e of Object.values(s.esyalar ?? {})) {
         const u = esyaAdresi(e.tip, d.film, d.malzeme);
         if (u) adresler.add(u);
@@ -414,6 +441,7 @@ export class Film {
     }
     this.nesneler.forEach((n) => n.uygula());
     this.kameraUygula();
+    if (this.karaoke) this.karaokeGuncelle(this.karaoke);
   }
 
   /** film saatiyle bekle (sn) */
@@ -675,6 +703,11 @@ export class Film {
     }
     if (o.kim === 'anlatici') {
       if (o.yap === 'soyle') this.soyle('', String(o.metin), o.sure as number | undefined);
+      return;
+    }
+    if (o.kim === 'sarki') {
+      if (o.yap === 'basla') this.sarkiBasla(o);
+      else if (o.yap === 'dur') this.sarkiBitir(Number(o.sure ?? 1.2));
       return;
     }
     const n = this.nesneler.get(o.kim);
@@ -967,6 +1000,89 @@ export class Film {
   }
   /** oyuncu başına son cümlenin numarası (eski cümlenin bitişi yenisinin ağzını kapatmasın) */
   private konusNo = new Map<Oyuncu, number>();
+
+  // ---------------------------------------------------------------- şarkı (karaoke)
+  /**
+   * Şarkı: kayıt (assets/muzik/<ad>-sozlu.mp3; "sozsuz": true → <ad>-sozsuz.mp3, fon) dosya müziği gibi çalar. Sözlüyse
+   * heceler kaydın tablosundaki zamanlarla (assets/muzik/<ad>.json) altta karaoke gibi yanar: film saatiyle ilerler
+   * (duraklayınca durur, MP4 kaydında da aynı). Bir satır görünür; sonraki satır ilk hecesinden az önce gelir; top
+   * söylenen hecenin üstüne zıplar. o: ad, soz (satırların yazımı), ses, gec, yer ('ust': görüntünün üstünde).
+   * Şarkı sahne geçişlerinde sürer.
+   */
+  private karaoke: Karaoke | null = null;
+
+  private sarkiBasla(o: Olay) {
+    if (this.muzik) filmMuzik.dosyaCal({ ad: sarkiDosyasi(o), ses: Number(o.ses ?? 0.7), gec: Number(o.gec ?? 0.2) });
+    this.karaoke?.kutu.remove();
+    this.karaoke = null;
+    const j = sarkiJson(String(o.ad));
+    if (!j || o.sozsuz) return;
+    const t = sarkiTablosu(j);
+    const soz = Array.isArray(o.soz) ? (o.soz as string[]) : [];
+    const yazim = soz.length ? sozleEsle(soz, t.heceler.map((x) => x.hece)) : t.heceler.map((x, i) => ({ yazi: x.hece, kelime: i, satir: x.satir }));
+    const heceler = t.heceler.map((_, i) => h('span.fl-hece', {}, yazim[i].yazi));
+    // heceler kelime kelime (kelime arası boşluk), satır satır
+    const satirlar = t.satirlar.map((s) => {
+      const kelimeler = new Map<number, HTMLElement>();
+      for (const x of s) {
+        const i = t.heceler.indexOf(x);
+        if (!kelimeler.has(yazim[i].kelime)) kelimeler.set(yazim[i].kelime, h('span.fl-kelime'));
+        kelimeler.get(yazim[i].kelime)!.append(heceler[i]);
+      }
+      return h('div.fl-k-satir', {}, ...kelimeler.values());
+    });
+    const top = h('i.fl-k-top');
+    // yer 'ust': görüntünün üstünde (dans eden karakterlerin ayakları altta kapanmasın)
+    const kutu = h(`div.fl-karaoke${o.yer === 'ust' ? '.ust' : ''}`, { 'aria-hidden': 'true' }, h('span.fl-k-nota', {}, '♪'), ...satirlar, top);
+    this.el.append(kutu);
+    this.karaoke = { bas: this.saat, t, heceler, satirlar, kutu, top, satir: -2, hece: -2, simdi: false, bitis: Infinity };
+    this.el.dataset.sarki = String(o.ad);
+  }
+
+  /** Şarkı erken söner (kayıt yumuşakça kısılır, karaoke kapanır) */
+  private sarkiBitir(sn: number) {
+    if (this.muzik) filmMuzik.dosyaSon(sn);
+    if (this.karaoke) this.karaoke.bitis = this.saat;
+  }
+
+  private karaokeGuncelle(k: Karaoke) {
+    const ms = (this.saat - k.bas) * 1000;
+    const t = k.t;
+    let satir = -1;
+    t.satirlar.forEach((s, i) => {
+      if (ms >= s[0].basMs - 450) satir = i;
+    });
+    const bitti = ms > t.sonMs + 900 || this.saat > k.bitis + 0.3;
+    if (bitti) satir = -1;
+    let hece = -1;
+    for (let i = 0; i < t.heceler.length && t.heceler[i].basMs <= ms; i++) hece = i;
+    const simdi = hece >= 0 && ms < t.heceler[hece].bitMs + 120;
+    if (satir !== k.satir) {
+      k.satir = satir;
+      // kutu kapanırken son satır görünür kalır (solarken boş kutu görünmesin)
+      if (satir >= 0) k.satirlar.forEach((e, i) => e.classList.toggle('acik', i === satir));
+      k.kutu.classList.toggle('acik', satir >= 0);
+    }
+    if (hece !== k.hece || simdi !== k.simdi) {
+      k.hece = hece;
+      k.simdi = simdi;
+      k.heceler.forEach((e, i) => {
+        e.classList.toggle('gecti', i < hece || (i === hece && !simdi));
+        e.classList.toggle('simdi', i === hece && simdi);
+      });
+      // top söylenen hecenin üstüne zıplar
+      const r = k.heceler[hece]?.getBoundingClientRect();
+      const p = k.kutu.getBoundingClientRect();
+      if (r && satir >= 0 && t.heceler[hece].satir === satir) {
+        k.top.style.transform = `translate(${(r.left - p.left + r.width / 2).toFixed(1)}px, ${(r.top - p.top).toFixed(1)}px)`;
+        k.top.classList.add('gorunur');
+      } else k.top.classList.remove('gorunur');
+    }
+    if (bitti) {
+      k.kutu.dataset.bitti = '1';
+      this.karaoke = null;
+    }
+  }
 
   private parilti(x: number, y: number) {
     const p = h('div.fl-parilti', { style: `left:${x}%;bottom:${y}%` }, ...Array.from({ length: 8 }, (_, i) => h('i', { style: `--a:${i * 45}deg` })));

@@ -1,5 +1,5 @@
 # Kino ve Sihirli Söz
-Öğrettiği: Bir şey isterken "lütfen" deriz (kibar istemek); alınca "teşekkürler".          Yaş: 3-6        Süre: ~53 sn (+ 8 sn açılış kartı, + 5 sn kapanış jeneriği)
+Öğrettiği: Bir şey isterken "lütfen" deriz (kibar istemek); alınca "teşekkürler".          Yaş: 3-6        Süre: ~64 sn, sondaki şarkı dahil (+ 8 sn açılış kartı, + 5 sn kapanış jeneriği)
 Karakterler: Mino (anlatıcı da o), Kino, satıcı ayı (tek cümle)
 Duygu eğrisi: neşe (pazara geliş) → iştah (parlayan elma, Kino'nun karnı guruldar) → komik çatışma ("Ver!", ayı kaş çatar, burnu havada döner) → hayal kırıklığı (Kino'nun kulakları düşer) → sır (Mino'nun fısıltısı) → fikir (parıltı) → sihir ("Lütfen…", ayının yüreği erir) → sürpriz (elmanın yanında başa konan çilek) → teşekkür → öğüt
 
@@ -46,13 +46,18 @@ AYI: "Buyur! Bir de çilek!"
 Olur: Ayı elmayı alıp Kino'ya uzatır, Kino patisiyle yakalar ve göğsüne basar. Ayı bir çileği bir elinden ötekine atar, kurulup fırlatır: çilek Kino'nun başına konar (pıt!). Kino şaşırır, sonra güler; ayı göbeğini sallayarak kıkırdar; Mino sevinir.
 Ses/efekt: eri, tık, pıt, fiu, kafa, kıkır, vuvu. Müzik: film-kutlama.
 
-## Sahne 5: Teşekkür (42,5-52,9 sn)
-Kamera: İkili plan; Mino ve Kino yakın; sonda geniş plan.
+## Sahne 5: Teşekkür ve şarkı (42,5-63,6 sn)
+Kamera: İkili plan; Mino ve Kino yakın; şarkıda geniş plan (karaoke üstte, gökte).
 Olur: Kino hoplar, kuyruğu pervane:
 KİNO: "Teşekkürler!"
-Olur: Ayı el sallar, Mino zıplar. Mino kameraya döner:
+Olur: Ayı el sallar, Mino zıplar. Şarkı başlar ("Lütfen ve Teşekkürler", `assets/muzik/lutfen-sozlu.mp3`); girişinde Mino kameraya döner (müzik kısılır):
 MİNO (sıcak): "Lütfen demek sihirli bir sözdür."
-Olur: Kino başını sallar (çilek başında). Kamera geriye çekilir: pazar, tezgâh, üç arkadaş el sallıyor. Müzik söner.
+Olur: Kino başını sallar (çilek başında). Şarkı söylenirken heceler üstte karaoke gibi yanar (`assets/muzik/lutfen.json`), top hecenin üstünde zıplar:
+- "Lütfen demek çok güzel": üçü birden dans eder.
+- "Teşekkür etmek çok güzel": Kino hoplar, ayı el sallar, Mino sevinir.
+- "Her arkadaş sevgiyle": Mino patileri kalbinde, ayı da (gözler kapalı, tatlı gülümseme); Kino sallanır.
+- "Güller açar el ele": hepsinin kolları havada, parıltılar.
+Şarkı söner, iris kapanır.
 
 ## Öğüt (final)
 ANLATICI: "Lütfen demek sihirli bir sözdür."   (soru yok; Mino filmin sonunda kendisi söylediği için öğüt kartı yeniden okumaz)
@@ -89,3 +94,4 @@ Buyur! Bir de çilek!
 - **Mino:** yürüyüş, düşünme, fısıltı eğilmesi, sevinç, el sallama (kalkık kol).
 - **Efekt (yeni, Web Audio):** horul (uyuklayan ayı), hih (surat asma), eri (yüreği erime).
 - **Müzik:** `assets/muzik/film-*.mp3` (fon-pazar, surpriz, uzgun, merak, kutlama) sahne dosyasından.
+- **Şarkı (final):** "Lütfen ve Teşekkürler" (Gemini kaydı): `assets/muzik/lutfen-sozlu.mp3` (20,3 sn) + `lutfen.json` (heceler, vuruşlar); sahne dosyasında `{ "kim": "sarki", "yap": "basla", "ad": "lutfen", "yer": "ust", "soz": [...] }`.

@@ -568,3 +568,98 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt.fl-park-zemin {
   height: 100%;
   background: linear-gradient(#9bd63f, #86c531 30%, #74b32a);
 }
+
+/* ---------------------------------------------------------------- şarkı karaokesi (motor.ts → sarkiBasla)
+   Altyazının yerinde tek satır: heceler kayıtla yanar (söylenen büyür, pembe; geçenler turuncu), top hecenin üstünde zıplar */
+.fl-kok .fl-karaoke {
+  position: absolute;
+  z-index: 22;
+  left: 50%;
+  bottom: 4cqh;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  padding: 1.4cqh 3cqw 1.2cqh 2.2cqw;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  border: max(2px, 0.5cqh) solid var(--kontur);
+  box-shadow: 0 0.8cqh 0 var(--kontur-yumusak);
+  font-size: max(14px, 3.6cqw);
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+}
+.fl-kok .fl-karaoke.ust {
+  bottom: auto;
+  top: 3.5cqh;
+  transform: translateY(-20px);
+}
+.fl-kok .fl-karaoke.acik {
+  opacity: 1;
+  transform: none;
+}
+.fl-kok .fl-k-nota {
+  color: #9b5ce0;
+  font-size: 1.2em;
+  line-height: 1;
+}
+.fl-kok .fl-k-satir {
+  display: none;
+  gap: 0.45em;
+}
+.fl-kok .fl-k-satir.acik {
+  display: flex;
+  animation: fl-k-satir 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes fl-k-satir {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+}
+.fl-kok .fl-kelime {
+  display: inline-flex;
+}
+.fl-kok .fl-hece {
+  display: inline-block;
+  color: #8a7a6a;
+  transition: color 0.15s, transform 0.15s;
+}
+.fl-kok .fl-hece.gecti {
+  color: var(--turuncu);
+}
+.fl-kok .fl-hece.simdi {
+  color: #ff4f9a;
+  transform: translateY(-0.12em) scale(1.22);
+}
+.fl-kok .fl-k-top {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0.55em;
+  height: 0.55em;
+  margin: -0.85em 0 0 -0.275em;
+  border-radius: 50%;
+  background: #ffc72c;
+  border: max(2px, 0.3cqh) solid var(--kontur);
+  opacity: 0;
+  transition: transform 0.16s cubic-bezier(0.3, 1.6, 0.5, 1), opacity 0.2s;
+}
+.fl-kok .fl-k-top.gorunur {
+  opacity: 1;
+}
+body[data-kayit] .fl-kok .fl-karaoke {
+  bottom: 7cqh;
+  padding: 1.6cqmin 4cqmin 1.4cqmin 3cqmin;
+  border-width: max(3px, 0.6cqmin);
+  box-shadow: 0 0.9cqmin 0 var(--kontur-yumusak);
+  font-size: max(18px, 6.2cqmin);
+}
+body[data-kayit] .fl-kok .fl-karaoke.ust {
+  bottom: auto;
+  top: 5cqh;
+}
