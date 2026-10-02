@@ -7,9 +7,9 @@
     "kol-sag",
     "bacak-sol",
     "bacak-sag",
-    "bacak-oturma",
     "govde",
     "govde-oturma",
+    "bacak-oturma",
     "kafa",
     "kas",
     "goz-sol",
@@ -129,7 +129,7 @@
     ],
     "bacak-oturma": [
       1040,
-      1522
+      1662
     ]
   },
   "ifadeler": {

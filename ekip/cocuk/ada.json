@@ -7,9 +7,9 @@
     "kol-sag",
     "bacak-sol",
     "bacak-sag",
-    "bacak-oturma",
     "govde",
     "govde-oturma",
+    "bacak-oturma",
     "kafa",
     "sac-topuz-sol",
     "sac-topuz-sag",
@@ -153,19 +153,22 @@
     ],
     "bacak-oturma": [
       1026,
-      1595
+      1495
     ]
   },
   "oturma": {
     "gizle": [
       "govde",
       "bacak-sol",
-      "bacak-sag"
+      "bacak-sag",
+      "kol-sol",
+      "kol-sag"
     ],
     "goster": [
       "govde-oturma",
       "bacak-oturma"
     ],
-    "kayma": 249
+    "kayma": 296,
+    "kaynak": "kaynak/ada-otur.webp"
   }
 }

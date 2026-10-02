@@ -6,9 +6,9 @@
     "kol-sag",
     "bacak-sol",
     "bacak-sag",
-    "bacak-oturma",
     "govde",
     "govde-oturma",
+    "bacak-oturma",
     "kafa",
     "kas",
     "goz-sol",
@@ -136,7 +136,7 @@
     ],
     "bacak-oturma": [
       1024,
-      1500
+      1581
     ],
     "goz-uzgun": [
       1024,
