@@ -14,18 +14,51 @@
   --hgt: max(10px, calc(var(--w) * (1 - var(--alt)) - var(--dz)));
   height: var(--hgt);
 }
-.ps-kok .ps-yer[data-yer='0'] { left: 25%; }
-.ps-kok .ps-yer[data-yer='1'] { left: 75%; }
+/* iki yer: --yx müşteri alanının (Mino ile Kino arası) oranı */
+.ps-kok .ps-yer[data-yer='0'] { --yx: 0.25; }
+.ps-kok .ps-yer[data-yer='1'] { --yx: 0.75; }
+.ps-kok .ps-yer[data-yer] {
+  left: calc(var(--yx) * 100%);
+}
+/* pencerenin görünen açıklığı (ölçü elemanı, görünmez): müşteri alanı; görselli sahnede pencere oyuğuyla kesişimi */
+.ps-kok .ps-pencere {
+  position: absolute;
+  left: var(--mino-alan);
+  right: var(--duvar);
+  top: 0;
+  bottom: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.ps-kok .ps-resimli .ps-pencere {
+  left: max(var(--mino-alan), calc(var(--ax) + var(--a-sol) * var(--aw)));
+  right: max(var(--duvar), calc(100cqw - var(--ax) - var(--a-sag) * var(--aw)));
+  top: max(0px, calc(var(--ay) + var(--a-ust) * var(--ah)));
+}
+/*
+ * Bütün balonlar için tek kural: balon pencerenin içinde kalır. İstenen yer (--ideal: dikeyde başın üstünde ortalı,
+ * yatayda ve tablette başın sağında) müşteri alanının iki kenarından --pay kadar içeride sınırlanır; sağa taşacak balon
+ * sola kayar. --bg balonun eni (karşılaştırmada daha geniş).
+ */
+.ps-kok .ps-musteri .ps-balon {
+  --alan: calc(100cqw - var(--mino-alan) - var(--duvar));
+  --bg: var(--bw);
+  --yerx: calc(var(--alan) * var(--yx));
+  --pay: calc(6 * var(--u));
+  --ideal: calc(var(--w) / 2 - var(--bg) / 2);
+  width: var(--bg);
+  margin-left: 0 !important;
+  left: clamp(calc(var(--pay) - var(--yerx) + var(--w) / 2), var(--ideal), calc(var(--alan) - var(--pay) - var(--bg) - var(--yerx) + var(--w) / 2));
+}
+.ps-kok .ps-musteri .ps-balon.ps-karsilastir {
+  --bg: calc(var(--bw) * 1.8);
+}
 
 /* sipariş balonu: iri, temiz; kurabiyeler tabakta ve süsleri sayılabilir boyda */
 .ps-kok .ps-balon {
   border-width: max(2px, calc(2.6 * var(--u)));
   border-radius: calc(var(--bw) * 0.16);
   padding: calc(var(--bw) * 0.04) calc(var(--bw) * 0.04) calc(var(--bw) * 0.02);
-}
-.ps-kok .ps-yer[data-yer='0'] .ps-balon,
-.ps-kok .ps-yer[data-yer='1'] .ps-balon {
-  margin-left: calc(var(--bw) / -2);
 }
 .ps-kok .ps-b-kalem[data-adet='1'] .ps-b-parca {
   width: 84%;
@@ -230,10 +263,9 @@
    solda, sipariş balonu başının sağında (iki müşteri yan yana sığar). Balonun üst kenarı: başın biraz üstü; pencerenin
    üstünden ve tezgâhın gerisinden taşmaz. */
 @media (orientation: landscape), (orientation: portrait) and (min-aspect-ratio: 5/8) {
-  .ps-kok .ps-balon {
+  .ps-kok .ps-musteri .ps-balon {
     --pen-ust: calc(var(--W) - var(--hgt));
-    left: calc(var(--w) * 0.72 + 8 * var(--u));
-    margin-left: 0 !important;
+    --ideal: calc(var(--w) * 0.72 + 8 * var(--u));
     bottom: auto;
     top: calc(clamp(8px, var(--pen-ust) + var(--ust) * var(--w) - 16 * var(--u), var(--W) - var(--bw) * 0.92 - 8px) - var(--pen-ust));
     transform-origin: 0 40%;
@@ -245,12 +277,9 @@
     margin-left: 0;
     transform: rotate(135deg);
   }
-  /* karşılaştırma (istenen | verilen): başın yanında genişler; sağdaki müşteride sola doğru (pencereden taşmaz) */
-  .ps-kok .ps-balon.ps-karsilastir {
-    width: calc(var(--bw) * 1.5);
-  }
-  .ps-kok .ps-yer[data-yer='1'] .ps-balon.ps-karsilastir {
-    left: calc(var(--w) * 0.72 + 8 * var(--u) - var(--bw) * 0.5);
+  /* karşılaştırma (istenen | verilen): başın yanında genişler (pencereye sığma kuralı yukarıda, hepsinde aynı) */
+  .ps-kok .ps-musteri .ps-balon.ps-karsilastir {
+    --bg: calc(var(--bw) * 1.5);
   }
   .ps-kok .ps-balon.ps-karsilastir::after {
     display: none;
@@ -267,8 +296,8 @@
     --gomul: 0.42;
     --d: calc(var(--h) * 1.1);
   }
-  .ps-kok .ps-yer[data-yer='0'] { left: 21%; }
-  .ps-kok .ps-yer[data-yer='1'] { left: 67%; }
+  .ps-kok .ps-yer[data-yer='0'] { --yx: 0.21; }
+  .ps-kok .ps-yer[data-yer='1'] { --yx: 0.67; }
   .ps-kok .ps-hamur-kabi {
     width: calc(var(--h) * 1.66);
     height: calc(var(--h) * 1.38);
@@ -319,12 +348,6 @@
   .ps-kok .ps-balon {
     bottom: min(calc(100% - var(--ust) * var(--w) + 8 * var(--u)), calc(var(--W) - var(--bw) * 0.86 - var(--ust-pay, 30 * var(--u))));
   }
-  .ps-kok .ps-yer[data-yer='0'] .ps-balon.ps-karsilastir {
-    margin-left: calc(var(--bw) * -0.35);
-  }
-  .ps-kok .ps-yer[data-yer='1'] .ps-balon.ps-karsilastir {
-    margin-left: calc(var(--bw) * -1.42);
-  }
   .ps-kok .ps-panel {
     --s: min(84cqw, 50cqh);
   }
@@ -336,8 +359,8 @@
     --bw: min(calc(var(--yer-w) * 0.5), calc(196 * var(--u)));
     --gomul: 0.4;
   }
-  .ps-kok .ps-yer[data-yer='0'] { left: 17%; }
-  .ps-kok .ps-yer[data-yer='1'] { left: 62%; }
+  .ps-kok .ps-yer[data-yer='0'] { --yx: 0.17; }
+  .ps-kok .ps-yer[data-yer='1'] { --yx: 0.62; }
   .ps-kok .ps-balon {
     bottom: auto;
   }

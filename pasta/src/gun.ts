@@ -194,7 +194,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const onUrl = yuva('tezgahOn');
   const resimli = !!(arkaUrl && onUrl);
   const arkaResim = resimli ? h('div.ps-arka-resim', { 'aria-hidden': 'true' }) : null;
-  const sahne = h('div.ps-sahne', {}, ...parkKatmanlari(ayar.yer), musteriKatmani, arkaResim, duvar, h('div.ps-cerceve', { 'aria-hidden': 'true' }, h('i.ps-tente'), h('i.ps-flama')));
+  // pencerenin görünen açıklığı (yalnız ölçü: balonlar bunun içinde kalır; test de bununla denetler)
+  const pencere = h('i.ps-pencere', { 'aria-hidden': 'true' });
+  const sahne = h('div.ps-sahne', {}, ...parkKatmanlari(ayar.yer), musteriKatmani, arkaResim, duvar, h('div.ps-cerceve', { 'aria-hidden': 'true' }, h('i.ps-tente'), h('i.ps-flama')), pencere);
 
   // ---------------------------------------------------------------- tezgâh: hamur ve tepsi
   const tepsi: (Kalip | null)[] = [];

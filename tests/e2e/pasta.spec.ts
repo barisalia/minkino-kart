@@ -220,11 +220,15 @@ test('Pasta Otobüsü: ekran kareleri (yatay telefon, balon, dikey telefon, tabl
       expect(b.x + b.width).toBeLessThanOrEqual(w + 1);
       expect(Math.min(b.width, b.height)).toBeGreaterThanOrEqual(63.5);
     }
+    // her balon pencerenin görünen açıklığının içinde (çerçeve, duvar ya da tezgâh hiçbir kenarını örtmez)
+    const pencere = (await page.locator('.ps-pencere').boundingBox())!;
     const balonlar = await Promise.all((await page.locator('.ps-musteri.ps-hazir .ps-balon').all()).map((e) => e.boundingBox()));
+    expect(balonlar.length).toBe(2);
     for (const b of balonlar) {
-      expect(b!.x).toBeGreaterThanOrEqual(0);
-      expect(b!.x + b!.width).toBeLessThanOrEqual(w);
-      expect(b!.y).toBeGreaterThanOrEqual(0);
+      expect(b!.x, `${ad} balon sol`).toBeGreaterThanOrEqual(pencere.x - 0.5);
+      expect(b!.x + b!.width, `${ad} balon sağ`).toBeLessThanOrEqual(pencere.x + pencere.width + 0.5);
+      expect(b!.y, `${ad} balon üst`).toBeGreaterThanOrEqual(pencere.y - 0.5);
+      expect(b!.y + b!.height, `${ad} balon alt`).toBeLessThanOrEqual(pencere.y + pencere.height + 0.5);
     }
     const [a, c] = balonlar as { x: number; y: number; width: number; height: number }[];
     if (a && c) expect(a.x + a.width <= c.x || c.x + c.width <= a.x || a.y + a.height <= c.y || c.y + c.height <= a.y).toBe(true);
