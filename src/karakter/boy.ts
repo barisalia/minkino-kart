@@ -57,6 +57,8 @@ export const CIZIM: Record<string, Cizim> = {
   inek: K(136, 1914),
   kus: K(142, 1906),
   maymun: K(88, 1954),
+  /** Pamuk: komşunun beyaz kedisi (Dedektif Mino) */
+  pamuk: K(192, 1889),
 };
 
 export const COCUKLAR = ['ada', 'can', 'elif', 'deniz', 'zeynep'] as const;
@@ -83,6 +85,8 @@ export const BOY = {
   inek: 1.45,
   kus: 0.55,
   maymun: 1.05,
+  /** Pamuk, Mino gibi bir kedi: aynı boy */
+  pamuk: 1,
 } as const;
 export type BoyTipi = keyof typeof BOY;
 

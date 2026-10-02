@@ -1,0 +1,246 @@
+{
+  "ad": "pamuk-final",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "kulak-sol",
+    "kulak-sag",
+    "kulak-sol-dusuk",
+    "kulak-sag-dusuk",
+    "bacak-sol",
+    "bacak-sag",
+    "govde",
+    "kol-sol",
+    "kol-sag",
+    "kurdele",
+    "kafa",
+    "goz-sol",
+    "goz-sag",
+    "agiz",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse",
+    "yanak-utanmis",
+    "goz-utanmis",
+    "agiz-utanmis",
+    "goz-uzgun",
+    "agiz-uzgun",
+    "goz-mutlu",
+    "agiz-mutlu",
+    "yanak-mutlu",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse",
+    "yanak-utanmis",
+    "goz-utanmis",
+    "agiz-utanmis",
+    "goz-uzgun",
+    "agiz-uzgun",
+    "goz-mutlu",
+    "agiz-mutlu",
+    "yanak-mutlu",
+    "kulak-sol-dusuk",
+    "kulak-sag-dusuk"
+  ],
+  "bagli": {
+    "kulak-sol": "kafa",
+    "kulak-sag": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "agiz": "kafa",
+    "goz-kapali": "kafa",
+    "agiz-kapali": "kafa",
+    "agiz-az": "kafa",
+    "agiz-orta": "kafa",
+    "agiz-yuvarlak": "kafa",
+    "agiz-dis": "kafa",
+    "agiz-gulumse": "kafa",
+    "yanak-utanmis": "kafa",
+    "goz-utanmis": "kafa",
+    "agiz-utanmis": "kafa",
+    "goz-uzgun": "kafa",
+    "agiz-uzgun": "kafa",
+    "goz-mutlu": "kafa",
+    "agiz-mutlu": "kafa",
+    "yanak-mutlu": "kafa",
+    "kulak-sol-dusuk": "kafa",
+    "kulak-sag-dusuk": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1030,
+      1200
+    ],
+    "kulak-sol": [
+      700,
+      400
+    ],
+    "kulak-sag": [
+      1330,
+      400
+    ],
+    "goz-sol": [
+      740,
+      810
+    ],
+    "goz-sag": [
+      1290,
+      810
+    ],
+    "agiz": [
+      1010,
+      1010
+    ],
+    "goz-kapali": [
+      1015,
+      830
+    ],
+    "kurdele": [
+      1020,
+      1260
+    ],
+    "kol-sol": [
+      850,
+      1290
+    ],
+    "kol-sag": [
+      1190,
+      1290
+    ],
+    "bacak-sol": [
+      900,
+      1700
+    ],
+    "bacak-sag": [
+      1120,
+      1700
+    ],
+    "kuyruk": [
+      1290,
+      1600
+    ],
+    "govde": [
+      1010,
+      1880
+    ],
+    "agiz-kapali": [
+      1010,
+      1010
+    ],
+    "agiz-az": [
+      1010,
+      1010
+    ],
+    "agiz-orta": [
+      1010,
+      1010
+    ],
+    "agiz-yuvarlak": [
+      1010,
+      1010
+    ],
+    "agiz-dis": [
+      1010,
+      1010
+    ],
+    "agiz-gulumse": [
+      1010,
+      1010
+    ],
+    "yanak-utanmis": [
+      1010,
+      1010
+    ],
+    "goz-utanmis": [
+      1015,
+      830
+    ],
+    "agiz-utanmis": [
+      1010,
+      1010
+    ],
+    "goz-uzgun": [
+      1015,
+      830
+    ],
+    "agiz-uzgun": [
+      1010,
+      1010
+    ],
+    "goz-mutlu": [
+      1015,
+      830
+    ],
+    "agiz-mutlu": [
+      1010,
+      1010
+    ],
+    "yanak-mutlu": [
+      1010,
+      1010
+    ],
+    "kulak-sol-dusuk": [
+      700,
+      400
+    ],
+    "kulak-sag-dusuk": [
+      1330,
+      400
+    ]
+  },
+  "ifadeler": {
+    "utanmis": {
+      "goster": [
+        "yanak-utanmis",
+        "goz-utanmis",
+        "agiz-utanmis",
+        "kulak-sol-dusuk",
+        "kulak-sag-dusuk"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "agiz",
+        "kulak-sol",
+        "kulak-sag"
+      ]
+    },
+    "uzgun": {
+      "goster": [
+        "goz-uzgun",
+        "agiz-uzgun",
+        "kulak-sol-dusuk",
+        "kulak-sag-dusuk"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "agiz",
+        "kulak-sol",
+        "kulak-sag"
+      ]
+    },
+    "mutlu": {
+      "goster": [
+        "goz-mutlu",
+        "agiz-mutlu",
+        "yanak-mutlu"
+      ],
+      "gizle": [
+        "goz-sol",
+        "goz-sag",
+        "agiz"
+      ]
+    }
+  }
+}

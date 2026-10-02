@@ -13,6 +13,8 @@ const ANA = [
   // Kino yan görünüş (yandan yürüyüş, src/karakter/yandan.ts) ve 3/4 görünüş (Adobe, Turntable + Gemini)
   ['ekip/kino', 'kino-profil', 'kino-profil'],
   ['ekip/kino', 'kino-34', 'kino-34'],
+  // Pamuk: komşunun beyaz kedisi (Dedektif Mino); ağızlar ve ifadeler gizli
+  ['ekip/pamuk', 'pamuk-final', 'pamuk'],
   // Bebek Ege (Sesli Maceralar Bölüm 2): kafa, kol, bacak, göz, ağız, kaş katmanları
   ['ekip/ege', 'ege', 'ege'],
   // Anne (Ege bölümü): ayakta çizimi (anne.webp) + dudak senkronu ağızları; tuval 428×1143 (ekip/ege/IFADELER.md)
