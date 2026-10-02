@@ -1,6 +1,6 @@
 /**
- * Mino'nun Pasta Otobüsü: açılış (otobüs parkta, 10 günlük tablo: Gün 1-6 oynanır, 7-10 "yakında"; her günde yıldızlar)
- * ve akşam (günün yıldızları, açılan yükseltme, kumbara sayımı, dükkân rafı).
+ * Mino'nun Pasta Otobüsü: açılış (otobüs parkta, üç günlük tablo; her günde yıldızlar) ve akşam (günün yıldızları,
+ * kumbara sayımı, dükkân rafı: pastacı şapkası, otobüs boyaları).
  */
 import P from '../../content/pasta.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
@@ -10,40 +10,26 @@ import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { MinoCanli } from '../../pazar/src/mino-canli';
-import { bardakSvg, JETON, KUMBARA, OTOBUS, resimSvg, SAPKA, kalipSvg, kremaSvg, susKabiSvg, urunSvg, yildizSvg } from './cizim';
-import { makineSvg } from './icecek';
-import { yuva } from './resimler';
+import { JETON, KUMBARA, OTOBUS, SAPKA, urunSvg, yildizSvg } from './cizim';
 import { AZ_HAREKET, Efekt, salla } from './gorsel';
 import { boyaUygula, minoSapkaTak, parkKatmanlari, unluKino } from './gun';
 import { gunBitti, kaydet, kayit, toplamYildiz } from './kayit';
-import { acikYukseltmeler, alinabilir, BOYA, GUN_SAYISI, GUNLER, oynanirMi, RAF, satinAl, sayim, type Gun, type RafUrunu, type Yer } from './model';
+import { alinabilir, BOYA, GUN_SAYISI, GUNLER, oynanirMi, RAF, satinAl, sayim, type Gun, type RafUrunu, type Yer } from './model';
 import { ses } from './sesler';
 
 const A = P.arayuz;
 const YER_ADI: Record<Yer, string> = { park: A.park, okul: A.okul, plaj: A.plaj, kar: A.kar, senlik: A.senlik };
 
-/** Günün kartındaki resim: o günün yeniliği */
+/** Günün kartındaki resim: o günün yeniliği (Gün 1 kremalı, Gün 2 çilekli, Gün 3 zigzag kremalı) */
 function gunResmi(g: number): string[] {
   const k = (o: Partial<Parameters<typeof urunSvg>[0]>) => urunSvg({ urun: 'kurabiye', sekil: 'yuvarlak', hal: 'pismis', ...o });
   switch (g) {
     case 1:
-      return [k({ renk: 'pembe', desen: 'zigzag', serpinti: 8 })];
+      return [k({ renk: 'pembe' })];
     case 2:
-      return [k({ sekil: 'kalp', renk: 'sari', yuz: 'gulen' })];
+      return [k({ sekil: 'kalp', renk: 'sari', susler: ['cilek', 'cilek'] })];
     case 3:
-      return [urunSvg({ urun: 'kapkek', sekil: null, hal: 'pismis', yigin: ['pembe', 'pembe'] })];
-    case 4:
-      return [k({ renk: 'mavi', desen: 'dalga' }), bardakSvg({ icecek: 'sut', boy: 'kucuk', dolum: 1 })];
-    case 5:
-      return [urunSvg({ urun: 'kapkek', sekil: null, hal: 'pismis', yigin: ['mavi'], mum: 5 }), bardakSvg({ icecek: 'limonata', boy: 'kucuk', dolum: 1 })];
-    case 6:
-      return [k({ renk: 'pembe', desen: 'kalp' }), bardakSvg({ icecek: 'kakao', boy: 'kucuk', dolum: 1 })];
-    case 7:
-      return [k({ sekil: 'yildiz', renk: 'mor', desen: 'nokta' })];
-    case 8:
-      return [urunSvg({ urun: 'kapkek', sekil: null, hal: 'pismis', yigin: ['sari', 'pembe', 'mavi'], mum: 6 })];
-    case 9:
-      return [k({ sekil: 'kalp', renk: 'pembe', serpinti: 16 })];
+      return [k({ sekil: 'yildiz', renk: 'mavi', desen: 'zigzag', susler: ['cikolata'] })];
     default:
       return [yildizSvg()];
   }
@@ -80,20 +66,18 @@ export function acilisEkrani(app: Uygulama): Ekran {
     salla(otobus, 'ps-zipla');
   });
 
-  // gün tablosu: Gün 1-10 (yer ve o günün yeniliği resimli; kilitli günde asma kilit, biten günde yıldızlar;
-  // 7-10 "yakında": tabloda durur, bu sürümde oynanmaz)
+  // gün tablosu: Gün 1-3 (yer ve o günün yeniliği resimli; kilitli günde asma kilit, biten günde yıldızlar)
   const kartlar = Array.from({ length: GUN_SAYISI }, (_, i) => (i + 1) as Gun).map((g) => {
-    const oynanir = oynanirMi(g);
-    const acik = oynanir && g <= kayit.acikGun;
+    const acik = oynanirMi(g) && g <= kayit.acikGun;
     const biten = kayit.biten.includes(g);
     const yer = YER_ADI[GUNLER[g].yer];
     const b = h(
-      `button.ps-gun-kart${acik ? '' : '.ps-kilitli'}${oynanir ? '' : '.ps-yakinda'}${biten ? '.ps-biten' : ''}${acik && !biten ? '.ps-siradaki' : ''}`,
-      { type: 'button', 'data-gun': String(g), 'data-yer': GUNLER[g].yer, 'aria-label': `${A.gun.replace('{gun}', String(g))} ${yer}${oynanir ? '' : ` ${A.yakinda}`}`, style: `--i:${g}` },
+      `button.ps-gun-kart${acik ? '' : '.ps-kilitli'}${biten ? '.ps-biten' : ''}${acik && !biten ? '.ps-siradaki' : ''}`,
+      { type: 'button', 'data-gun': String(g), 'data-yer': GUNLER[g].yer, 'aria-label': `${A.gun.replace('{gun}', String(g))} ${yer}`, style: `--i:${g}` },
       h('b.ps-gun-no', {}, String(g)),
       h('span.ps-gun-urun', { html: gunResmi(g).join('') }),
-      h('span.ps-gun-yer', {}, oynanir ? yer : A.yakinda),
-      oynanir ? yildizlar(kayit.yildiz[String(g)] ?? 0, 'ps-gun-yildizlar') : null,
+      h('span.ps-gun-yer', {}, yer),
+      yildizlar(kayit.yildiz[String(g)] ?? 0, 'ps-gun-yildizlar'),
       acik ? null : h('i.ps-gun-kilit', { html: KILIT }),
     );
     b.addEventListener('click', async () => {
@@ -143,38 +127,16 @@ const KILIT = `<svg viewBox="0 0 40 44" aria-hidden="true"><path d="M11 20V13A9 
 
 // ---------------------------------------------------------------- Akşam
 function rafIkon(u: RafUrunu): string {
-  switch (u.tur) {
-    case 'sapka':
-      return SAPKA;
-    case 'kalip':
-      return kalipSvg('ay');
-    case 'sus':
-      return susKabiSvg(u.deger as 'muz' | 'cikolata');
-    case 'renk':
-      return kremaSvg('mor');
-    case 'boya': {
-      const b = BOYA[u.deger] ?? BOYA.pembe;
-      return `<div class="ps-raf-otobus" style="--boya:${b.govde};--boya-koyu:${b.koyu}">${OTOBUS}</div>`;
-    }
-  }
-}
-
-/** Yükseltmenin resmi (akşam kartında) */
-function yukseltmeResmi(id: string): string {
-  const firin = yuva('firin');
-  const f = firin ? resimSvg(firin, 160, 110, 'xMidYMid meet') : urunSvg({ urun: 'kurabiye', sekil: 'yuvarlak', hal: 'pismis' });
-  if (id === 'icecek') return makineSvg();
-  return f;
+  if (u.tur === 'sapka') return SAPKA;
+  const b = BOYA[u.deger] ?? BOYA.pembe;
+  return `<div class="ps-raf-otobus" style="--boya:${b.govde};--boya-koyu:${b.koyu}">${OTOBUS}</div>`;
 }
 
 export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yildiz?: number; mutlu?: number } = {}): Ekran {
-  const gun = (p.gun ?? 1) as Gun;
+  const gun = (Math.max(1, Math.min(GUN_SAYISI, p.gun ?? 1)) as Gun);
   const kazanc = Math.max(0, Math.floor(p.kazanc ?? 0));
   const yildiz = Math.max(1, Math.min(3, Math.floor(p.yildiz ?? 1)));
-  // yıldızlar yazılmadan önce ve sonra açık yükseltmeler: yeni açılan akşamda gösterilir
-  const onceki = acikYukseltmeler(toplamYildiz(), kayit.acikGun);
   gunBitti(gun, yildiz);
-  const yeniler = acikYukseltmeler(toplamYildiz(), kayit.acikGun).filter((y) => !onceki.includes(y));
   let kapandi = false;
   const efekt_ = new Efekt(app.kok);
   const mino = new Mino();
@@ -190,9 +152,6 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   // günün yıldızları: önce boş, sırayla dolar
   const gunYildiz = yildizlar(0, 'ps-aksam-yildizlar');
   gunYildiz.dataset.kazanilan = String(yildiz);
-  const yeniKart = yeniler.length
-    ? h('div.ps-yeni-kart', { 'aria-hidden': 'true', 'data-yukseltme': yeniler.join(' ') }, ...yeniler.map((y) => h('div.ps-yeni', { 'data-y': y, html: yukseltmeResmi(y) }, y === 'firin-2' ? h('b.ps-yeni-no', {}, '2') : null)))
-    : null;
   const raf = h('div.ps-raf', { hidden: true });
   const tamam = h('button.dugme.ps-tamam', { type: 'button', hidden: true }, svg(IKON.onay), A.bitti);
   const el = h(
@@ -202,12 +161,11 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     h('div.ps-aksam-gok', { 'aria-hidden': 'true' }),
     h('div.ust-cubuk', {}, h('div', { style: 'width:56px' }), h('div.orta', {}, h('div.baslik-balon.ps-aksam-baslik', {}, h('span', {}, A.gun.replace('{gun}', String(gun))), gunYildiz)), sesDugmesi()),
     h('div.ps-aksam-ic', {}, h('div.ps-aksam-sahne', {}, otobus, h('div.ps-aksam-mino', {}, mino.el), h('div.ps-aksam-kino', {}, kino.el), h('div.ps-aksam-kasa', {}, yigin, kumbara, sayac)), raf, tamam),
-    yeniKart,
     efekt_.el,
   );
   boyaUygula(el);
 
-  /** Yıldızlar sırayla dolar ("İki yıldız!"); yeni yükseltme açıldıysa kartı parlar */
+  /** Yıldızlar sırayla dolar ("İki yıldız!") */
   async function yildizGoster() {
     const yer = [...gunYildiz.children] as HTMLElement[];
     for (let i = 0; i < yildiz && !kapandi; i++) {
@@ -220,15 +178,6 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     }
     if (kapandi) return;
     await konus(P.mino.yildiz[yildiz - 1]);
-    if (yeniKart && !kapandi) {
-      yeniKart.classList.add('ps-goster');
-      efekt.kilitAcildi();
-      const [x, y] = efekt_.merkez(yeniKart);
-      efekt_.parilti(x, y, 14);
-      await konus(P.mino.yeni);
-      await bekle(sure(1200));
-      yeniKart.classList.add('ps-kucul');
-    }
   }
 
   let sayildi = kazanc === 0;

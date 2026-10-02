@@ -1,12 +1,12 @@
 /** Mino'nun Pasta Otobüsü ilerlemesi (yalnız bu cihazda; localStorage, hata olursa sessizce bellekte kalır). */
-import { acikYukseltmeler, RAF, SON_OYNANAN } from './model';
+import { RAF, SON_OYNANAN } from './model';
 
 const ANAHTAR = 'minkino-pasta-v1';
 
 export interface PastaKayit {
   /** kumbaradaki jeton */
   jeton: number;
-  /** oynanabilen en yüksek gün (1-6) */
+  /** oynanabilen en yüksek gün (1-3) */
   acikGun: number;
   /** bitirilen günler */
   biten: number[];
@@ -14,12 +14,12 @@ export interface PastaKayit {
   alinan: string[];
   /** otobüsün boyası */
   boya: string;
-  /** her günün en iyi yıldızı (1-3); toplamı yükseltme açar */
+  /** her günün en iyi yıldızı (1-3) */
   yildiz: Record<string, number>;
 }
 
 const bos = (): PastaKayit => ({ jeton: 0, acikGun: 1, biten: [], alinan: [], boya: 'pembe', yildiz: {} });
-const gunMu = (g: unknown) => typeof g === 'number' && Number.isInteger(g) && g >= 1 && g <= 10;
+const gunMu = (g: unknown) => typeof g === 'number' && Number.isInteger(g) && g >= 1 && g <= SON_OYNANAN;
 
 function yukle(): PastaKayit {
   try {
@@ -60,8 +60,6 @@ export function sifirla() {
 
 /** Toplam yıldız (her günün en iyisi) */
 export const toplamYildiz = (k: PastaKayit = kayit) => Object.values(k.yildiz).reduce((t, n) => t + n, 0);
-/** Şu an açık yükseltmeler (oynanacak güne göre) */
-export const yukseltmeler = (gun: number) => acikYukseltmeler(toplamYildiz(), gun);
 
 /** Gün bitti: yıldız yazılır (en iyisi kalır), bir sonraki gün açılır */
 export function gunBitti(gun: number, yildiz = 1) {

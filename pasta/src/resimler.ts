@@ -88,8 +88,11 @@ export const YUVA = {
   sekersiz: ['sekersiz'],
 } as const satisfies Record<string, readonly string[]>;
 
-/** Kurabiyenin üstündeki tek süs parçası (Gemini'den istenecek: susler-cilek …; bal için susler-bal-damlasi) */
-export const susParcaAdlari = (s: Sus): string[] => [`susler-${s === 'bal' ? 'bal-damlasi' : s}`];
+/**
+ * Kurabiyenin üstündeki tek süs parçası (susler-cilek …; bal için susler-bal-damlasi). Çikolata görselinde üç damla bir
+ * arada: sayılabilsin diye ondan ayrılmış tek damla (susler-cikolata-tek, kodla kesildi) önce gelir.
+ */
+export const susParcaAdlari = (s: Sus): string[] => (s === 'cikolata' ? ['susler-cikolata-tek', 'susler-cikolata'] : [`susler-${s === 'bal' ? 'bal-damlasi' : s}`]);
 
 /** Krema şeridi dokusu (parmak yolu boyunca döşenir), renk renk */
 export const seritAdlari = (r: Renk): string[] => [`krema-serit-${r}`];

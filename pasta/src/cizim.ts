@@ -45,13 +45,18 @@ const KREMA_MERKEZ: Record<Sekil, [number, number]> = { yuvarlak: [50, 50], yild
  * kremanın üstüne dengeli dağılır: 1 ortada, 2 yan yana, 3 üçgen, 4-5 halka. Şeklin içinde kalır (yıldızda ve ayda
  * dar). Her süs biraz farklı boyda ve hafif döner (±20°, her zaman aynı: rastgele ama kararlı).
  */
-const SUS_ALAN: Record<Sekil, { cx: number; cy: number; rx: number; ry: number }> = {
-  yuvarlak: { cx: 50, cy: 50, rx: 17, ry: 15 },
-  kalp: { cx: 50, cy: 44, rx: 16, ry: 12 },
-  yildiz: { cx: 50, cy: 55, rx: 11, ry: 10 },
-  ay: { cx: 35, cy: 57, rx: 8, ry: 15 },
+/**
+ * Süslerin oturduğu alan: kremanın görünen yüzünün ortası (kremalı kurabiye görsellerinde ölçüldü: yuvarlakta ve kalpte
+ * krema yukarıda, y≈43; yıldızda beş kolun ortası y≈52; kurabiyenin kalınlığı altta). Eskiden yıldızda ve yuvarlakta
+ * süsler fazla aşağıda duruyordu (Barış). bk: süsün boy çarpanı (yıldızın içi dar).
+ */
+const SUS_ALAN: Record<Sekil, { cx: number; cy: number; rx: number; ry: number; bk: number }> = {
+  yuvarlak: { cx: 50, cy: 43, rx: 18, ry: 13, bk: 1 },
+  kalp: { cx: 50, cy: 43.5, rx: 16, ry: 11, bk: 1 },
+  yildiz: { cx: 50, cy: 51.5, rx: 12.5, ry: 11, bk: 0.9 },
+  ay: { cx: 35, cy: 57, rx: 8, ry: 15, bk: 0.85 },
 };
-/** n süsün yerleri: x, y, boy (birim), dönme (derece) */
+/** n süsün yerleri: x, y, boy (birim), dönme (derece). Ağırlık merkezi kremanın ortasında. */
 export function susYerleri(sekil: Sekil, n: number, tohum = 0): { x: number; y: number; w: number; a: number }[] {
   const k = SUS_ALAN[sekil];
   if (n <= 0) return [];
@@ -59,30 +64,32 @@ export function susYerleri(sekil: Sekil, n: number, tohum = 0): { x: number; y: 
     n === 1
       ? [[0, 0]]
       : n === 2
-        ? [[-0.85, 0.05], [0.85, -0.05]]
+        ? [[-0.8, 0.05], [0.8, -0.05]]
         : n === 3
-          ? [[0, -0.85], [-0.85, 0.6], [0.85, 0.6]]
+          ? [[0, -0.8], [-0.85, 0.42], [0.85, 0.42]]
           : Array.from({ length: n }, (_, i) => {
               const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
               return [Math.cos(a), Math.sin(a)] as [number, number];
             });
   return yerler.map(([fx, fy], i) => {
     const h = (i * 7919 + tohum * 104729 + n * 31) % 97;
-    return { x: k.cx + fx * k.rx, y: k.cy + fy * k.ry, w: 22 + (h % 7), a: ((h * 13) % 41) - 20 };
+    return { x: k.cx + fx * k.rx, y: k.cy + fy * k.ry, w: (n === 1 ? 32 : 27 + (h % 4)) * k.bk, a: ((h * 13) % 31) - 15 };
   });
 }
 
-/** Süsün görseli (Gemini: susler-<ad>); çilekte bütün ve yarım çilek sırayla. Yoksa yedek: küçük renkli yuvarlak. */
+/**
+ * Süsün görseli (Gemini: susler-<ad>). Sade sürümde hep aynı parça (bütün çilek): çocuk süsleri sayar, yarım çilek
+ * "başka bir süs" gibi görünüp kafa karıştırıyordu. Yoksa yedek: küçük renkli yuvarlak.
+ */
 const SUS_RENGI: Record<Sus, string> = { cilek: '#FF4D5E', havuc: '#FF8A2B', bal: '#FFB321', muz: '#FFF1A8', cikolata: '#6B3A1E' };
-function susGorseli(s: Sus, i = 0): string | null {
-  if (s === 'cilek' && i % 2 === 1) return resim(['susler-cilek-yarim', ...susParcaAdlari(s)]);
+function susGorseli(s: Sus): string | null {
   return resim(susParcaAdlari(s));
 }
 /** Süsün yumuşak gölgesi (küçük, soluk) */
-const SUS_GOLGE = 'filter:drop-shadow(0 .9px .7px rgba(80,40,20,.32))';
-/** Bir süs: merkez (x, y), en w birim, dönme a; i: sırası (çilekte bütün / yarım) */
-export function susSvg(s: Sus, x: number, y: number, w = 24, a = 0, i = 0): string {
-  const u = susGorseli(s, i);
+const SUS_GOLGE = 'filter:drop-shadow(0 1.1px .9px rgba(80,40,20,.42))';
+/** Bir süs: merkez (x, y), en w birim, dönme a (i: eski imza, kullanılmıyor) */
+export function susSvg(s: Sus, x: number, y: number, w = 24, a = 0, _i = 0): string {
+  const u = susGorseli(s);
   const ic = u
     ? `<image href="${u}" x="${(-w / 2).toFixed(2)}" y="${(-w / 2).toFixed(2)}" width="${w.toFixed(2)}" height="${w.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`
     : `<circle r="${(w * 0.3).toFixed(2)}" fill="${SUS_RENGI[s]}" stroke="${K}" stroke-width=".8"/><circle cx="${(-w * 0.1).toFixed(2)}" cy="${(-w * 0.1).toFixed(2)}" r="${(w * 0.07).toFixed(2)}" fill="#fff" opacity=".8"/>`;

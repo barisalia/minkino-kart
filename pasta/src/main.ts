@@ -5,6 +5,7 @@ import '../../src/styles/ana.css';
 import '../../src/styles/mino.css';
 import '../../src/karakter/karakter.css';
 import './pasta.css';
+import './pasta-sade.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { anaMenuyeDon } from '../../src/uygulama';
 import { oyunuBaslat } from './oyun';

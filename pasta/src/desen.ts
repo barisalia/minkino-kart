@@ -38,9 +38,10 @@ export const DESEN_KUTU: Record<Sekil, { cx: number; cy: number; w: number; h: n
  * eninin ~%70'i (yıldızda ve ayda biraz dar). Şablon görselin kendi çizgisinden: bitince görsel tam şablonun üstüne oturur.
  */
 export const DESEN_YERI: Record<Sekil, { cx: number; cy: number; w: number }> = {
-  yuvarlak: { cx: 50, cy: 48, w: 70 },
-  kalp: { cx: 50, cy: 43, w: 64 },
-  yildiz: { cx: 50, cy: 55, w: 56 },
+  // kremalı kurabiye görsellerinde kremanın ölçülen ortası (kurabiyenin kalınlığı altta: krema ortası yukarıda)
+  yuvarlak: { cx: 50, cy: 43, w: 70 },
+  kalp: { cx: 50, cy: 43.5, w: 62 },
+  yildiz: { cx: 50, cy: 52, w: 54 },
   ay: { cx: 37, cy: 56, w: 44 },
 };
 /** Görsellerin en/boy oranı (boy / en) */
@@ -217,6 +218,18 @@ export function kapsama(h: Hedef, cizgiler: readonly (readonly Nokta[])[], tol =
   const parmak = cizgiler.map((c) => ornekle(c, 1.5));
   const ortulen = o.filter((p) => parmak.some((c) => c.some((q) => uzak(p, q) <= tol))).length;
   return ortulen / o.length;
+}
+
+/**
+ * Sade sürümün zigzag kreması (Gün 3): şablonu izlemek gerekmez; kurabiyenin üstünde kabaca yatay her kaydırma sayılır.
+ * Yatayda en az KAYDIRMA_EN birim (kurabiye 100 birim) ya da yol KAYDIRMA_YOL birimden uzun.
+ */
+export const KAYDIRMA_EN = 18;
+export const KAYDIRMA_YOL = 26;
+export function kaydirmaSayilir(c: readonly Nokta[]): boolean {
+  if (c.length < 2) return false;
+  const xs = c.map((p) => p[0]);
+  return Math.max(...xs) - Math.min(...xs) >= KAYDIRMA_EN || uzunluk(c) >= KAYDIRMA_YOL;
 }
 
 /** Dokunuş bu noktaya mı (biraz daha geniş tolerans: tek dokunuş) */

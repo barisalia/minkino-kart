@@ -1,28 +1,43 @@
+/**
+ * Pasta Otobüsü (sade sürüm): sipariş üretimi (3 gün × 4 müşteri), karşılaştırma, hedef kalem, fırın zamanı
+ * (uzun altın penceresi, Gün 1'de yanmaz), jeton, yıldız, kayıt, zigzag kaydırması, seslendirme.
+ */
 import { describe, expect, it } from 'vitest';
 import P from '../../content/pasta.json';
 import { karakterCumleleri, normal, tumCumleler } from '../../src/audio/cumleler';
+import { DESEN_YERI, desenHedefleri, kaydirmaSayilir, type Nokta } from '../../pasta/src/desen';
+import { gunBitti, kayit, sifirla, toplamYildiz } from '../../pasta/src/kayit';
 import {
   acikOlanlar,
-  acikYukseltmeler,
   alinabilir,
-  EN_COK_YIGIN,
+  EN_COK_HAMUR,
+  EN_COK_MUSTERI,
   FIRIN,
   firinHali,
+  GUN_SAYISI,
   GUNLER,
   gunPlani,
   hamurRengi,
   HAMUR_RENK,
+  hedefKalem,
   jetonHesapla,
   kalemSec,
   karsilastir,
+  MUSTERI_SAYISI,
   okuma,
   pisme,
   RAF,
+  RENKLER,
   satinAl,
   sayim,
+  SEKILLER,
   siparisSonucu,
   siradakiIndeks,
+  SON_OYNANAN,
+  SUSLER,
   tesekkur,
+  yildizHesapla,
+  type Gun,
   type Kalem,
   type Parti,
   type Siparis,
@@ -47,108 +62,91 @@ const aynisi = (k: Kalem): Parti => ({
   urun: k.urun,
   sekil: k.sekil,
   parcalar: Array.from({ length: k.adet }, () => ({
-    renk: k.urun === 'kurabiye' ? k.renk : null,
-    yigin: k.urun === 'kapkek' ? Array.from({ length: k.yigin }, () => k.renk!) : [],
+    renk: k.renk,
+    yigin: [],
     susler: k.sus ? Array.from({ length: k.susAdet }, () => k.sus!) : [],
+    desen: k.desen ?? 'duz',
   })),
+});
+const GUNLERI = [1, 2, 3] as Gun[];
+
+describe('sade sürüm: günler ve tezgâh', () => {
+  it('üç gün, günde dört müşteri, sırada en çok iki müşteri', () => {
+    expect(GUN_SAYISI).toBe(3);
+    expect(SON_OYNANAN).toBe(3);
+    expect(Object.keys(GUNLER)).toHaveLength(3);
+    expect(MUSTERI_SAYISI).toBe(4);
+    expect(EN_COK_MUSTERI).toBe(2);
+    for (const g of GUNLERI) {
+      expect(GUNLER[g].musteriler).toHaveLength(4);
+      expect(new Set(GUNLER[g].musteriler).size).toBe(4);
+      // sabır uzun: yalnız uyuklatır
+      expect(GUNLER[g].sabir).toBeGreaterThanOrEqual(90000);
+    }
+  });
+  it('yalnız gereken istasyonlar: Gün 1 süs yok; şekiller, kremalar, süsler üçer', () => {
+    expect(SEKILLER).toEqual(['yuvarlak', 'yildiz', 'kalp']);
+    expect(RENKLER).toEqual(['pembe', 'mavi', 'sari']);
+    expect(SUSLER).toEqual(['cilek', 'cikolata', 'muz']);
+    expect(acikOlanlar(1)).toEqual({ sekiller: SEKILLER, renkler: RENKLER, susler: [], zigzag: false });
+    expect(acikOlanlar(2).susler).toEqual(SUSLER);
+    expect(acikOlanlar(2).zigzag).toBe(false);
+    expect(acikOlanlar(3).zigzag).toBe(true);
+  });
 });
 
 describe('sipariş üretimi', () => {
-  it('Gün 1: altı müşteri (tavşan, ördek, Can ikişer), tek kurabiye, süs yok; ördek sarı kremalı', () => {
+  it('Gün 1: dört müşteri bir kez, hep tek kurabiye, yalnız krema; ördek sarı kremalı', () => {
     for (let s = 1; s <= 40; s++) {
       const plan = gunPlani(1, acikOlanlar(1), tohum(s));
-      expect(plan).toHaveLength(6);
-      const say = new Map<string, number>();
-      plan.forEach((p) => say.set(p.musteri, (say.get(p.musteri) ?? 0) + 1));
-      expect([...say.entries()].sort()).toEqual([['can', 2], ['ordek', 2], ['tavsan', 2]]);
-      // aynı karakter arka arkaya gelmez
-      plan.forEach((p, i) => i && expect(p.musteri).not.toBe(plan[i - 1].musteri));
+      expect(plan.map((p) => p.musteri).sort()).toEqual([...GUNLER[1].musteriler].sort());
       for (const p of plan) {
         expect(p.kalemler).toHaveLength(1);
         const k = p.kalemler[0];
-        expect(k).toMatchObject({ urun: 'kurabiye', adet: 1, sus: null, susAdet: 0 });
-        expect(['yuvarlak', 'yildiz', 'kalp']).toContain(k.sekil);
-        expect(['pembe', 'mavi', 'sari']).toContain(k.renk);
+        expect(k).toMatchObject({ urun: 'kurabiye', adet: 1, sus: null, susAdet: 0, desen: 'duz', serpinti: 0 });
+        expect(SEKILLER).toContain(k.sekil);
+        expect(RENKLER).toContain(k.renk);
         if (p.musteri === 'ordek') expect(k.renk).toBe('sari');
       }
     }
   });
-
-  it('Gün 2: ayı, Ada, Elif; her birinin bir siparişi yüzlü kurabiye, öbürü 2-3 kurabiye, süs 1-3 (üçte en çok 2); ayı ballı', () => {
-    for (let s = 1; s <= 40; s++) {
-      const plan = gunPlani(2, acikOlanlar(2), tohum(s));
-      expect(new Set(plan.map((p) => p.musteri))).toEqual(new Set(['ayi', 'ada', 'elif']));
-      for (const ad of ['ayi', 'ada', 'elif']) expect(plan.filter((p) => p.musteri === ad && p.kalemler[0].yuz)).toHaveLength(1);
-      for (const p of plan) {
-        const k = p.kalemler[0];
-        if (k.yuz) {
-          // yüzlü kurabiye: tek, düz kremalı, süssüz, serpintisiz; yüz yuvarlak ya da kalpte
-          expect(k).toMatchObject({ adet: 1, desen: 'duz', serpinti: 0, sus: null });
-          expect(['yuvarlak', 'kalp']).toContain(k.sekil);
-          expect(['gulen', 'saskin', 'kirpan']).toContain(k.yuz);
-          continue;
-        }
-        expect(k.adet).toBeGreaterThanOrEqual(2);
-        expect(k.adet).toBeLessThanOrEqual(3);
-        expect(k.sus).not.toBeNull();
-        expect(k.susAdet).toBeGreaterThanOrEqual(1);
-        expect(k.susAdet).toBeLessThanOrEqual(k.adet === 3 ? 2 : 3);
-        expect(['cilek', 'havuc', 'bal']).toContain(k.sus);
-        if (p.musteri === 'ayi') expect(k.sus).toBe('bal');
-      }
-    }
-  });
-
-  it('Gün 3: okul önü, herkes bir kez; kapkek, ikili sipariş ve tavşandan sonra ayının mantık siparişi', () => {
-    expect(GUNLER[3].yer).toBe('okul');
+  it('Gün 2-3: en çok 2 kurabiye, tek tür süs 1-3 (iki kurabiyede en çok 2); ilk müşteri tek kurabiye', () => {
     for (let s = 1; s <= 60; s++) {
-      const plan = gunPlani(3, acikOlanlar(3), tohum(s));
-      expect(plan.map((p) => p.musteri).sort()).toEqual(['ada', 'ayi', 'can', 'elif', 'ordek', 'tavsan']);
-      const t = plan.findIndex((p) => p.musteri === 'tavsan');
-      const a = plan.findIndex((p) => p.musteri === 'ayi');
-      expect(t).toBeLessThan(a);
-      const tavsan = plan[t].kalemler[0];
-      expect(tavsan).toMatchObject({ urun: 'kurabiye', adet: 1, sus: 'cilek' });
-      const ayi = plan[a];
-      expect(ayi.mantik).toEqual({ kaynak: 'tavsan', kalem: tavsan, fazla: 1 });
-      expect(ayi.kalemler[0]).toEqual({ ...tavsan, susAdet: tavsan.susAdet + 1 });
-      expect(okuma(ayi)).toEqual([P.mino.mantik]);
-      expect(plan.filter((p) => p.kalemler.length === 2)).toHaveLength(1);
-      const ikili = plan.find((p) => p.kalemler.length === 2)!;
-      expect(ikili.kalemler.map((k) => k.urun)).toEqual(['kurabiye', 'kapkek']);
-      const kapkekler = plan.flatMap((p) => p.kalemler).filter((k) => k.urun === 'kapkek');
-      expect(kapkekler.length).toBeGreaterThanOrEqual(3);
-      for (const k of kapkekler) {
-        expect(k.yigin).toBeGreaterThanOrEqual(1);
-        expect(k.yigin).toBeLessThanOrEqual(EN_COK_YIGIN);
-        expect(k.sekil).toBeNull();
+      for (const g of [2, 3] as Gun[]) {
+        const plan = gunPlani(g, acikOlanlar(g), tohum(s));
+        expect(plan).toHaveLength(4);
+        expect(plan[0].kalemler[0].adet).toBe(1);
+        for (const p of plan) {
+          expect(p.kalemler).toHaveLength(1);
+          const k = p.kalemler[0];
+          expect(k.adet).toBeGreaterThanOrEqual(1);
+          expect(k.adet).toBeLessThanOrEqual(EN_COK_HAMUR);
+          expect(SUSLER).toContain(k.sus);
+          expect(k.susAdet).toBeGreaterThanOrEqual(1);
+          expect(k.susAdet).toBeLessThanOrEqual(k.adet === 2 ? 2 : 3);
+          // krema hep var; açık renk muz sarı kremada istenmez (görünmez, sayılamaz)
+          expect(RENKLER).toContain(k.renk);
+          expect(k.sus === 'muz' && k.renk === 'sari').toBe(false);
+        }
       }
     }
   });
-
-  it('dükkândan alınanlar siparişe girer (ay kalıbı, mor krema, muz, çikolata)', () => {
-    const acik = acikOlanlar(2, ['kalip-ay', 'renk-mor', 'sus-muz', 'sus-cikolata']);
-    expect(acik.sekiller).toContain('ay');
-    expect(acik.renkler).toContain('mor');
-    expect(acik.susler).toEqual(expect.arrayContaining(['muz', 'cikolata']));
-    const hepsi = Array.from({ length: 60 }, (_, s) => gunPlani(2, acik, tohum(s + 1))).flat();
-    expect(hepsi.some((p) => p.kalemler[0].sekil === 'ay')).toBe(true);
-    expect(hepsi.some((p) => p.kalemler[0].renk === 'mor')).toBe(true);
-    expect(acikOlanlar(1).susler).toEqual(['cilek']);
-    expect(acikOlanlar(2).kapkek).toBe(false);
+  it('zigzag krema yalnız Gün 3, günde iki sipariş', () => {
+    for (let s = 1; s <= 40; s++) {
+      expect(gunPlani(2, acikOlanlar(2), tohum(s)).some((p) => p.kalemler[0].desen === 'zigzag')).toBe(false);
+      expect(gunPlani(3, acikOlanlar(3), tohum(s)).filter((p) => p.kalemler[0].desen === 'zigzag')).toHaveLength(2);
+    }
   });
-
   it('sıradaki müşteri: tezgâhta olan karakter ikinci kez gelmez', () => {
     const k = (m: string): Siparis => ({ musteri: m, kalemler: [] });
     expect(siradakiIndeks([k('tavsan'), k('can')], ['tavsan'])).toBe(1);
     expect(siradakiIndeks([k('tavsan')], ['tavsan'])).toBe(-1);
   });
-
-  it('sipariş okunuşu parçalı: {sayı} {şekil} kurabiye, {renk} kremalı, {süs}lü!', () => {
+  it('sipariş okunuşu parçalı: {sayı} {şekil} kurabiye, {renk} kremalı, {desen}, {süs}lü!', () => {
     const k: Kalem = { urun: 'kurabiye', adet: 2, sekil: 'yildiz', renk: 'mavi', sus: 'cilek', susAdet: 1, yigin: 0 };
     expect(okuma({ musteri: 'ada', kalemler: [k] })).toEqual(['İki!', 'Yıldız kurabiye,', 'mavi kremalı,', 'çilekli!']);
     expect(okuma({ musteri: 'can', kalemler: [{ ...k, adet: 1, sus: null, susAdet: 0 }] })).toEqual(['Bir!', 'Yıldız kurabiye,', 'mavi kremalı!']);
-    expect(okuma({ musteri: 'elif', kalemler: [{ urun: 'kapkek', adet: 1, sekil: null, renk: 'pembe', sus: null, susAdet: 0, yigin: 2 }] })).toEqual(['Bir!', 'Kapkek,', 'pembe kremalı!']);
+    expect(okuma({ musteri: 'elif', kalemler: [{ ...k, adet: 1, desen: 'zigzag', sus: 'muz' }] })).toEqual(['Bir!', 'Yıldız kurabiye,', 'mavi kremalı,', 'zigzaglı!', 'muzlu!']);
   });
 });
 
@@ -156,8 +154,8 @@ describe('karşılaştırma', () => {
   const k: Kalem = { urun: 'kurabiye', adet: 2, sekil: 'yildiz', renk: 'mavi', sus: 'cilek', susAdet: 1, yigin: 0 };
   it('tam aynıysa fark yok', () => {
     expect(karsilastir(k, aynisi(k))).toEqual([]);
-    const kk: Kalem = { urun: 'kapkek', adet: 1, sekil: null, renk: 'pembe', sus: 'bal', susAdet: 1, yigin: 3 };
-    expect(karsilastir(kk, aynisi(kk))).toEqual([]);
+    const z: Kalem = { ...k, adet: 1, desen: 'zigzag', sus: 'muz', susAdet: 3 };
+    expect(karsilastir(z, aynisi(z))).toEqual([]);
   });
   it('farklı olan şeyleri tek tek bulur', () => {
     const p = aynisi(k);
@@ -166,59 +164,55 @@ describe('karşılaştırma', () => {
     const renk = aynisi(k);
     renk.parcalar[1].renk = 'pembe';
     expect(karsilastir(k, renk)).toEqual(['renk']);
-    const kremasiz = aynisi(k);
-    kremasiz.parcalar[0].renk = null;
-    expect(karsilastir(k, kremasiz)).toEqual(['renk']);
     const sus = aynisi(k);
     sus.parcalar[0].susler.push('cilek');
     expect(karsilastir(k, sus)).toEqual(['sus']);
-    const baska = aynisi(k);
-    baska.parcalar[1].susler = ['havuc'];
-    expect(karsilastir(k, baska)).toEqual(['sus']);
+    const z = aynisi({ ...k, desen: 'zigzag' });
+    expect(karsilastir(k, z)).toEqual(['desen']);
     expect(karsilastir(k, null)).toEqual(['urun']);
-    // kapkekte yığın sayısı
-    const kk: Kalem = { urun: 'kapkek', adet: 1, sekil: null, renk: 'sari', sus: null, susAdet: 0, yigin: 2 };
-    const az = aynisi(kk);
-    az.parcalar[0].yigin.pop();
-    expect(karsilastir(kk, az)).toEqual(['yigin']);
-    expect(karsilastir(kk, aynisi(k))).toContain('urun');
   });
-  it('çok kalemli siparişte parti aynı ürünün boş kalemine gider; sonuç kalem kalem', () => {
-    const kur: Kalem = { ...k, adet: 1, sus: null, susAdet: 0 };
-    const kap: Kalem = { urun: 'kapkek', adet: 1, sekil: null, renk: 'pembe', sus: null, susAdet: 0, yigin: 1 };
-    const sip: Siparis = { musteri: 'can', kalemler: [kur, kap] };
-    expect(kalemSec(sip, [null, null], aynisi(kap))).toBe(1);
-    expect(kalemSec(sip, [null, null], aynisi(kur))).toBe(0);
-    expect(kalemSec(sip, [null, aynisi(kap)], aynisi(kap))).toBe(0);
-    expect(kalemSec(sip, [aynisi(kur), aynisi(kap)], aynisi(kap))).toBe(-1);
-    expect(siparisSonucu(sip, [aynisi(kur), aynisi(kap)])).toEqual({ ayni: true, farklar: [[], []] });
-    const r = siparisSonucu(sip, [aynisi(kur), { ...aynisi(kap), parcalar: [{ renk: null, yigin: ['mavi'], susler: [] }] }]);
-    expect(r.ayni).toBe(false);
-    expect(r.farklar).toEqual([[], ['renk']]);
+  it('parti siparişin kalemine gider; sonuç kalem kalem', () => {
+    const sip: Siparis = { musteri: 'can', kalemler: [k] };
+    expect(kalemSec(sip, [null], aynisi(k))).toBe(0);
+    expect(kalemSec(sip, [aynisi(k)], aynisi(k))).toBe(-1);
+    expect(siparisSonucu(sip, [aynisi(k)])).toEqual({ ayni: true, farklar: [[]] });
   });
-  it('teşekkür: sevdiği şey tabaktaysa onu söyler', () => {
-    const havuclu: Parti = { urun: 'kurabiye', sekil: 'kalp', parcalar: [{ renk: 'pembe', yigin: [], susler: ['havuc'] }] };
-    expect(tesekkur('tavsan', [havuclu])).toBe(P.musteri.tavsan[0]);
-    expect(tesekkur('tavsan', [{ ...havuclu, parcalar: [{ renk: 'pembe', yigin: [], susler: [] }] }])).toBe(P.musteri.tavsan[1]);
-    expect(tesekkur('ordek', [{ ...havuclu, parcalar: [{ renk: 'sari', yigin: [], susler: [] }] }])).toBe(P.musteri.ordek[0]);
+  it('tabaktaki parti için hedef kalem: şekil ve adet tutan, eşitse gelişi en eski; parti yoksa ilk bekleyen', () => {
+    const a = { sip: { musteri: 'ada', kalemler: [{ ...k, sekil: 'kalp' as const }] }, verilen: [null] };
+    const b = { sip: { musteri: 'can', kalemler: [k] }, verilen: [null] };
+    expect(hedefKalem([a, b], aynisi(k))).toEqual(k);
+    expect(hedefKalem([a, b], { ...aynisi(k), sekil: 'kalp' })?.sekil).toBe('kalp');
+    expect(hedefKalem([a, b])).toEqual(a.sip.kalemler[0]);
+    expect(hedefKalem([{ ...b, verilen: [aynisi(k)] }], aynisi(k))).toBeNull();
+  });
+  it('teşekkür: ördek sarı kremayı sever; tavşan ve ayı havuç/bal demez', () => {
+    const sari: Parti = { urun: 'kurabiye', sekil: 'kalp', parcalar: [{ renk: 'sari', yigin: [], susler: [] }] };
+    expect(tesekkur('ordek', [sari])).toBe(P.musteri.ordek[0]);
+    expect(tesekkur('tavsan', [sari])).toBe(P.musteri.tavsan[1]);
+    expect(tesekkur('ayi', [sari])).toBe(P.musteri.ayi[1]);
   });
 });
 
 describe('fırın zamanlaması', () => {
-  it('beyaz → altın ~6 sn → yanık 6 sn sonra', () => {
-    expect(FIRIN).toEqual({ altin: 6000, yanik: 12000 });
+  it('beyaz → altın ~5 sn; altın en az 10 sn kalır, 10 sn daha sonra yanar', () => {
+    expect(FIRIN.altin).toBeLessThanOrEqual(6000);
+    expect(FIRIN.kizar - FIRIN.altin).toBeGreaterThanOrEqual(10000);
+    expect(FIRIN.yanik - FIRIN.kizar).toBeGreaterThanOrEqual(10000);
     expect(firinHali(0)).toBe('cig');
-    expect(firinHali(5999)).toBe('cig');
-    expect(firinHali(6000)).toBe('altin');
-    expect(firinHali(11999)).toBe('altin');
-    expect(firinHali(12000)).toBe('yanik');
-    expect(firinHali(500, { altin: 300, yanik: 900 })).toBe('altin');
+    expect(firinHali(FIRIN.altin - 1)).toBe('cig');
+    expect(firinHali(FIRIN.altin)).toBe('altin');
+    expect(firinHali(FIRIN.yanik - 1)).toBe('altin');
+    expect(firinHali(FIRIN.yanik)).toBe('yanik');
+    // Gün 1: hiç yanmaz
+    expect(firinHali(10 * 60 * 1000, { ...FIRIN, yanik: Infinity })).toBe('altin');
+    expect(pisme(10 * 60 * 1000, { ...FIRIN, yanik: Infinity })).toBe(1);
   });
-  it('renk geçişi: beyazdan altına, altından kahveye', () => {
+  it('renk geçişi: beyazdan altına; altın kizar anına kadar hiç koyulaşmaz, sonra kahveye', () => {
     expect(pisme(0)).toBe(0);
-    expect(pisme(3000)).toBeCloseTo(0.5);
-    expect(pisme(6000)).toBe(1);
-    expect(pisme(9000)).toBeCloseTo(1.5);
+    expect(pisme(FIRIN.altin / 2)).toBeCloseTo(0.5);
+    expect(pisme(FIRIN.altin)).toBe(1);
+    expect(pisme(FIRIN.kizar - 1)).toBe(1);
+    expect(pisme((FIRIN.kizar + FIRIN.yanik) / 2)).toBeCloseTo(1.5);
     expect(pisme(99999)).toBe(2);
     expect(hamurRengi(0).toLowerCase()).toBe(HAMUR_RENK.cig.toLowerCase());
     expect(hamurRengi(1).toLowerCase()).toBe(HAMUR_RENK.altin.toLowerCase());
@@ -226,8 +220,8 @@ describe('fırın zamanlaması', () => {
   });
 });
 
-describe('jeton', () => {
-  it('aynıysa 3 jeton (+1 bahşiş hızlı servise), farklıysa 2; ret yok', () => {
+describe('jeton, yıldız, kayıt', () => {
+  it('aynıysa 3 jeton (+1 bahşiş uyuklamadan), farklıysa 2; ret yok', () => {
     expect(jetonHesapla(true, 0.2, false)).toEqual({ jeton: 3, bahsis: 1 });
     expect(jetonHesapla(true, 0.9, false)).toEqual({ jeton: 3, bahsis: 0 });
     expect(jetonHesapla(true, 0.3, true)).toEqual({ jeton: 3, bahsis: 0 });
@@ -235,37 +229,67 @@ describe('jeton', () => {
   });
   it('akşam sayımı: 10a kadar tek tek, fazlası beşer beşer', () => {
     expect(sayim(3)).toEqual({ soz: ['Bir!', 'İki!', 'Üç!'], adim: [1, 1, 1] });
-    const s = sayim(22);
-    expect(s.soz).toEqual(['Beş!', 'On!', 'On beş!', 'Yirmi!']);
-    expect(s.adim.reduce((a, b) => a + b, 0)).toBe(22);
-    expect(sayim(24).adim.reduce((a, b) => a + b, 0)).toBe(24);
+    const s = sayim(16);
+    expect(s.soz).toEqual(['Beş!', 'On!', 'On beş!']);
+    expect(s.adim.reduce((a, b) => a + b, 0)).toBe(16);
     expect(sayim(0)).toEqual({ soz: [], adim: [] });
   });
-  it('dükkân rafı: jeton yeterse alınır, yetmezse alınmaz, iki kez alınmaz', () => {
+  it('dükkân rafı yalnız süs: şapka ve boyalar; jeton yeterse alınır, iki kez alınmaz', () => {
+    expect(RAF.map((r) => r.tur)).toEqual(['sapka', 'boya', 'boya']);
     const c = { jeton: 6, alinan: [] as string[] };
-    const sapka = RAF.find((r) => r.id === 'sapka')!;
     const boya = RAF.find((r) => r.id === 'boya-nane')!;
     expect(alinabilir(c, boya)).toBe(false);
-    expect(satinAl(c, 'boya-nane')).toBe(false);
     expect(satinAl(c, 'sapka')).toBe(true);
-    expect(c).toEqual({ jeton: 6 - sapka.fiyat, alinan: ['sapka'] });
+    expect(c).toEqual({ jeton: 1, alinan: ['sapka'] });
     expect(satinAl(c, 'sapka')).toBe(false);
-    expect(RAF.map((r) => r.tur)).toEqual(expect.arrayContaining(['sapka', 'kalip', 'sus', 'renk', 'boya']));
+  });
+  it('yıldız: 1 gün bitti, 2 iki mutlu müşteri, 3 üç mutlu müşteri (uyuklama yıldızı etkilemez)', () => {
+    expect(yildizHesapla(0)).toBe(1);
+    expect(yildizHesapla(1)).toBe(1);
+    expect(yildizHesapla(2)).toBe(2);
+    expect(yildizHesapla(3)).toBe(3);
+    expect(yildizHesapla(4)).toBe(3);
+  });
+  it('kayıt: günün en iyi yıldızı kalır; sonraki gün açılır, Gün 3 sonrası açılmaz', () => {
+    sifirla();
+    gunBitti(1, 2);
+    gunBitti(1, 1);
+    expect(kayit.yildiz['1']).toBe(2);
+    expect(kayit.acikGun).toBe(2);
+    gunBitti(2, 3);
+    expect(toplamYildiz()).toBe(5);
+    gunBitti(3, 3);
+    expect(kayit.acikGun).toBe(3);
+    sifirla();
+  });
+});
+
+describe('zigzag krema (kolay kaydırma)', () => {
+  it('kabaca yatay her kaydırma sayılır; tek dokunuş ve minik kıpırtı sayılmaz', () => {
+    expect(kaydirmaSayilir([[30, 50], [52, 52]])).toBe(true);
+    expect(kaydirmaSayilir([[60, 40], [40, 46]])).toBe(true);
+    // dikey ama uzun bir sürtme de olur (başarısızlık yok)
+    expect(kaydirmaSayilir([[50, 20], [52, 50]])).toBe(true);
+    expect(kaydirmaSayilir([[50, 50]])).toBe(false);
+    expect(kaydirmaSayilir([[50, 50], [53, 51]])).toBe(false);
+  });
+  it('zigzag şablonu her şeklin kremasının ortasında, kurabiyenin içinde', () => {
+    for (const s of SEKILLER) {
+      const [h] = desenHedefleri('zigzag', s);
+      const ys = h.yol.map((p: Nokta) => p[1]);
+      const orta = (Math.min(...ys) + Math.max(...ys)) / 2;
+      expect(Math.abs(orta - DESEN_YERI[s].cy), s).toBeLessThan(4);
+      for (const [x, y] of h.yol) expect(x > 5 && x < 95 && y > 5 && y < 95, s).toBe(true);
+    }
   });
 });
 
 describe('seslendirme', () => {
   const hepsi = new Set(tumCumleler());
   it('bütün parçalar ve cümleler listede, Kino cümleleri Kino sesinde', () => {
-    for (let s = 1; s <= 20; s++)
-      for (const g of [1, 2, 3] as const)
-        for (const sip of gunPlani(g, acikOlanlar(g, ['kalip-ay', 'renk-mor', 'sus-muz', 'sus-cikolata']), tohum(s))) for (const p of okuma(sip)) expect(hepsi.has(normal(p)), p).toBe(true);
-    for (let s = 1; s <= 20; s++)
-      for (const g of [4, 5, 6] as const)
-        for (const sip of gunPlani(g, acikOlanlar(g, [], acikYukseltmeler(0, g)), tohum(s))) for (const p of okuma(sip)) expect(hepsi.has(normal(p)), p).toBe(true);
+    for (let s = 1; s <= 20; s++) for (const g of GUNLERI) for (const sip of gunPlani(g, acikOlanlar(g), tohum(s))) for (const p of okuma(sip)) expect(hepsi.has(normal(p)), p).toBe(true);
     for (const t of duz(P.mino)) expect(hepsi.has(normal(t)), t).toBe(true);
     for (const t of duz(P.parca)) expect(hepsi.has(normal(t)), t).toBe(true);
-    for (const t of P.parca.besli) expect(hepsi.has(t)).toBe(true);
     const kino = new Set(karakterCumleleri().kino);
     for (const t of duz(P.kino)) expect(kino.has(normal(t))).toBe(true);
   });

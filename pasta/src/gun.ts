@@ -1,90 +1,87 @@
 /**
- * Mino'nun Pasta Otobüsü: bir gün (tek ekran). Üstte pencere (park; sırada 1-3 müşteri, başlarının üstünde resimli
- * sipariş balonu), altta tezgâh: HAMUR + tepsi, KALIPLAR, FIRIN (3 göz), KREMA, SÜSLER, SERVİS TABAĞI.
- * Mino tezgâhta, Kino fırının yanında, kasa üstte.
+ * Mino'nun Pasta Otobüsü: bir gün (tek ekran). Üstte pencere (sırada en çok 2 müşteri; yanlarında resimli sipariş
+ * balonu), altta tezgâh: HAMUR + tepsi, KALIPLAR, FIRIN (3 göz, hepsi açık), KREMA, SÜSLER (Gün 2+), SERVİS TABAĞI.
  *
- * Akış: hamur kabına dokun (her dokunuş bir top) → kalıba dokun ("pof", hepsi o şekil) → tepsiye dokun (fırının boş
- * gözüne girer; beyaz → altın ~6 sn "ding" → yanık 6 sn sonra; altınken dokununca tabağa çıkar; yanığı Kino yer) →
- * krema (kurabiyede hepsi o renk; kapkekte her dokunuş bir yığın) → süs (her dokunuş bir tane; fazlası kayar, Kino
- * yakalar) → tabağa sonra müşteriye dokun (ya da tabağı müşteriye sürükle) → karşılaştırma ve jeton.
- * Ret yok: farklıysa müşteri yine yer, farklı olan şey balonda ve tabakta bir an parlar.
+ * Akış (hiç bekleme yok, işler paralel): hamur kabına dokun (her dokunuş bir top, hemen düşer) → kalıba dokun ("pof",
+ * hepsi o şekil) → tepsiye dokun ya da tepsiyi fırına sürükle (boş gözlerden birine uçar; beyaz → altın ~5 sn "ding";
+ * altın en az 10 sn kalır, sonra yavaşça kızarır; Gün 1'de hiç yanmaz) → fırın pişerken yeni tepsi hazırlanır, tabaktaki
+ * süslenir, servis edilir → altın göze dokununca tabağa çıkar (tabak doluysa yanında sıraya girer) → krema (hepsi o
+ * renk; Gün 3'te zigzag siparişte kolay bir kaydırma) → süs (her dokunuş bir tane, yerine zıplayarak oturur; yanlış süs
+ * ya da fazlası kayar, Kino yakalar) → tabağa dokun (hazırsa siparişin sahibine gider) ya da tabağı müşteriye sürükle.
+ * Sıradaki işin yeri hafifçe parlar; 4 sn dokunulmazsa küçük bir el gösterir. Ret yok, ceza yok: farklıysa müşteri yine
+ * yer, farklı olan şey balonda bir an parlar. Sabır kalbi dolunca müşteri yalnız uyuklar.
  */
 import P from '../../content/pasta.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
 import { Karakter } from '../../src/karakter/karakter';
 import { Mino } from '../../src/mino/mino';
-import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { MinoCanli } from '../../pazar/src/mino-canli';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
-import { BULASIK_IKON, HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_CILEK_AGIZ, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, bardakSvg, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, tabakYigini, urunSvg } from './cizim';
-import { icecekPaneli, makineSvg } from './icecek';
-import { hareketIzniIste, susle, type Adim } from './susleme';
+import { HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
+import { zigzagCiz } from './susleme';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
 import { ARKA, FIRIN_KAPILARI, FIRIN_LAMBA, oranYaz, yuva } from './resimler';
-import { kayit, yukseltmeler } from './kayit';
+import { kayit } from './kayit';
 import {
   acikOlanlar,
   BOYA,
-  degisimUygula,
-  firinGozSayisi,
-  hedefKalem,
-  TABAK_SAYISI,
-  yildizHesapla,
-  type Bardak,
-  type Yer,
   EN_COK_HAMUR,
   EN_COK_MUSTERI,
   EN_COK_SUS,
-  EN_COK_YIGIN,
   FIRIN,
   FIRIN_GOZ,
   firinHali,
   GUNLER,
   gunPlani,
   hamurRengi,
+  hedefKalem,
   jetonHesapla,
   kalemSec,
   okuma,
   pisme,
-  sayiSozu,
+  RENK_KODU,
   siparisSonucu,
   siradakiIndeks,
   tesekkur,
+  yildizHesapla,
   type FirinHali,
   type FirinZaman,
   type Gun,
+  type Kalem,
   type Kalip,
   type Parti,
   type Renk,
   type Siparis,
   type Sus,
+  type Yer,
 } from './model';
 import { PastaMusteri, partiCizimi } from './musteri';
 import { ses } from './sesler';
 
-const HAYVAN_RESMI = import.meta.glob<string>('../../assets/hayvanlar/tavsan.webp', { eager: true, query: '?url', import: 'default' });
-const TAVSAN_RESMI = Object.values(HAYVAN_RESMI)[0] ?? '';
-
 const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
 /** test ya da gösterim (?onizleme=1): durum ve sipariş verisi ekrana yazılır */
 const ozelMi = () => TEST_MODU || (typeof document !== 'undefined' && !!document.body?.dataset.onizleme);
-/** Test / gösterim: &firin=altin,yanik (ms) ile fırın zamanı */
-function firinZamani(): FirinZaman {
+/** Test / gösterim: &firin=altin,yanik (ms) ile fırın zamanı; Gün 1'de fırın hiç yakmaz */
+function firinZamani(gun: number): FirinZaman {
   const f = ozelMi() ? q.get('firin') : null;
+  let z: FirinZaman = TEST_MODU ? { altin: 700, yanik: 30000 } : FIRIN;
   if (f) {
     const [a, y] = f.split(',').map(Number);
-    if (a > 0 && y > a) return { altin: a, yanik: y };
+    if (a > 0 && y > a) z = { altin: a, yanik: y };
   }
-  return TEST_MODU ? { altin: 700, yanik: 30000 } : FIRIN;
+  return gun === 1 ? { ...z, yanik: Infinity } : z;
 }
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, AZ_HAREKET ? Math.min(ms, 250) : sure(ms)));
 
 /** Müşterinin konuşma tonu (anlatıcı kaydı biraz incelir: hayvanlar daha ince) */
 const MUSTERI_TON: Record<string, number> = { tavsan: 1.14, ordek: 1.16, ayi: 0.97, can: 1.06, ada: 1.1, elif: 1.1 };
+/** Dokunulmazsa el ipucu bu kadar sonra çıkar (ms) */
+const IPUCU_MS = 4000;
 
 interface Goz {
   parti: Parti;
@@ -92,6 +89,8 @@ interface Goz {
   hal: FirinHali;
   hatirlatildi: boolean;
 }
+/** Sıradaki iş: hangi istasyon (test ve parlama için ad) */
+export type AdimAdi = 'hamur' | 'kalip' | 'tepsi' | 'firin' | 'krema' | 'sus' | 'servis';
 
 /** Mino'ya pastacı şapkası (alındıysa): kafa grubuna eklenir, kafa dönünce o da döner */
 export function minoSapkaTak(mino: Mino) {
@@ -106,18 +105,18 @@ export function boyaUygula(el: HTMLElement) {
   el.style.setProperty('--boya', b.govde);
   el.style.setProperty('--boya-koyu', b.koyu);
 }
-/** Kino: unlu yüzüyle (kafa katmanına un lekeleri ve gizli çilek suyu) */
+/** Kino: unlu yüzüyle (kafa katmanına un lekeleri) */
 export function unluKino(): Karakter {
   const kino = new Karakter('kino', h('div'));
   void kino.hazir.then(() => {
     const kafa = kino.parcaG('kafa');
-    if (kafa && !kafa.querySelector('.ps-kino-un')) kafa.insertAdjacentHTML('beforeend', KINO_UN + KINO_CILEK_AGIZ);
+    if (kafa && !kafa.querySelector('.ps-kino-un')) kafa.insertAdjacentHTML('beforeend', KINO_UN);
   });
   return kino;
 }
 /**
- * Mekân katmanları (gökyüzü-tepeler, orta, ön): park (okul önünde ortada okul binası, şenlikte park), plaj
- * (assets/film/plaj), karlı bahçe (assets/film/kar). Pencereden bu görünür.
+ * Mekân katmanları (gökyüzü-tepeler, orta, ön): park (okul önünde ortada okul binası), plaj (assets/film/plaj), karlı
+ * bahçe (assets/film/kar). Pencereden bu görünür.
  */
 export function parkKatmanlari(yer: Yer): HTMLElement[] {
   const mekan = yer === 'plaj' ? 'plaj' : yer === 'kar' ? 'kar' : 'park';
@@ -126,19 +125,15 @@ export function parkKatmanlari(yer: Yer): HTMLElement[] {
 }
 
 export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
-  const gun = (p.gun ?? 1) as Gun;
+  const gun = (Math.max(1, Math.min(3, p.gun ?? 1)) as Gun);
   const ozel = ozelMi();
   const ayar = GUNLER[gun];
-  const yuk = yukseltmeler(gun);
-  const acik = acikOlanlar(gun, kayit.alinan, yuk);
-  // hızlı fırın yükseltmesi: pişme %30 hızlı
-  const FZ0 = firinZamani();
-  const FZ: FirinZaman = yuk.includes('hizli-firin') && !TEST_MODU ? { altin: FZ0.altin * 0.7, yanik: FZ0.yanik * 0.7 } : FZ0;
-  /** açık fırın gözleri (öbürleri kilitli: yükseltmeyle açılır) */
-  const acikGoz = firinGozSayisi(yuk);
+  const acik = acikOlanlar(gun);
+  const FZ = firinZamani(gun);
   const sabirSure = ozel && Number(q.get('sabir')) > 0 ? Number(q.get('sabir')) : TEST_MODU ? 10 * 60 * 1000 : ayar.sabir;
   const aralik = TEST_MODU ? 400 : ayar.aralik;
   const kuyruk: Siparis[] = gunPlani(gun, acik);
+  const MUSTERI_TOPLAM = kuyruk.length;
   let kapandi = false;
   const zamanlar: number[] = [];
   const sonra = (ms: number, f: () => void) => zamanlar.push(window.setTimeout(() => !kapandi && f(), ms));
@@ -183,8 +178,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     efekt_.parilti(x, y, 4, 0.5);
   });
   minoSapkaTak(mino);
-  // Mino ve Kino tezgâhın katmanında: yatayda Mino pencerenin solunda tezgâhın arkasında (beli tezgâhın gerisinde),
-  // Kino fırının yanındaki rafta; dikeyde ikisi de üst katta, fırının iki yanında (boyları tam görünür)
+  // Mino ve Kino tezgâhın katmanında: yatayda Mino pencerenin solunda, Kino sağdaki rafta; dikeyde ikisi de üst katta
   const minoYer = h('div.ps-mino-yer', {}, mino.el);
   const kinoYer = h('div.ps-kino-yer', { 'data-karakter-kap': 'kino' }, kino.el);
   kinoYer.addEventListener('pointerdown', () => {
@@ -194,10 +188,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     const [x, y] = efekt_.merkez(kino.el, 0.5, 0.3);
     efekt_.kalpler(x, y, 2);
   });
-  // yatayda sağda otobüsün iç duvarı: fayans, raf (tatlı süsleri), Kino'nun rafı; fırın bunun önünde
   const duvar = h('div.ps-duvar', { 'aria-hidden': 'true' }, h('i.ps-duvar-raf', { html: RAF_SUSLERI }));
-  // Gemini görselleri (assets/pasta): otobüsün içi (pencereli duvar, raflar) müşterilerin önünde, penceresi oyulmuş;
-  // tezgâhlar aynı çizimin ön yüzünden. Görsel yoksa eski kod çizimi (duvar, çerçeve, tezgâh yüzeyi) kalır.
+  // Gemini görselleri (assets/pasta): otobüsün içi (pencereli duvar, raflar) müşterilerin önünde, penceresi oyulmuş
   const arkaUrl = yuva('arka');
   const onUrl = yuva('tezgahOn');
   const resimli = !!(arkaUrl && onUrl);
@@ -215,26 +207,25 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
         h('i.ps-tepsi-parca', {
           'data-kalip': k ?? 'top',
           style: `--i:${i}`,
-          html: urunSvg({ urun: k === 'kapkek' ? 'kapkek' : 'kurabiye', sekil: k && k !== 'kapkek' ? k : null, hal: k ? 'cig' : 'top', hamur: '#FBF0DC' }),
+          html: urunSvg({ urun: 'kurabiye', sekil: k && k !== 'kapkek' ? k : null, hal: k ? 'cig' : 'top', hamur: '#FBF0DC' }),
         }),
       ),
     );
+    tepsiIc.dataset.adet = String(tepsi.length);
     tepsiEl.dataset.adet = String(tepsi.length);
     tepsiEl.dataset.hazir = tepsi.length && tepsi.every((k) => k) ? '1' : '0';
   };
 
   // kalıplar
-  const kaliplar: Kalip[] = [...acik.sekiller, ...(acik.kapkek ? (['kapkek'] as const) : [])];
+  const kaliplar: Kalip[] = acik.sekiller.slice();
   const kalipDugmeleri = kaliplar.map((k) => {
     const b = h('button.ps-kalip', { type: 'button', 'data-kalip': k, 'aria-label': k, html: kalipSvg(k) });
     b.addEventListener('click', () => kalipBas(k, b));
     return b;
   });
 
-  // fırın
+  // fırın: üç göz, hepsi açık (paralel pişer)
   const gozler: (Goz | null)[] = Array.from({ length: FIRIN_GOZ }, () => null);
-  // fırın görseli varsa: kapılar görselin kendi kapıları (her kapı görselin o parçası: sallanınca kapı sallanır),
-  // camların yerine oyunun camı (içi parlar, kurabiyeler kabarır); yoksa kod çizimi fırın
   const firinUrl = yuva('firin');
   const yuzde = (v: number) => `${(v * 100).toFixed(2)}%`;
   const gozEl = Array.from({ length: FIRIN_GOZ }, (_, i) => {
@@ -244,23 +235,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     if (firinUrl && kp) cam.setAttribute('style', `left:${yuzde(kp.cx - kp.rx)};top:${yuzde(kp.cy - kp.ry)};width:${yuzde(kp.rx * 2)};height:${yuzde(kp.ry * 2)}`);
     const b = h(
       'button.ps-goz',
-      {
-        type: 'button',
-        'data-goz': String(i),
-        'data-hal': 'bos',
-        'data-kilit': i >= acikGoz ? '1' : null,
-        'aria-label': i >= acikGoz ? `Fırın ${i + 1} kilitli` : `Fırın ${i + 1}`,
-        style: firinUrl && kp ? `--kx:${kp.x};--ky:${kp.y};--kw:${kp.w};--kh:${kp.h}` : null,
-      },
+      { type: 'button', 'data-goz': String(i), 'data-hal': 'bos', 'aria-label': `Fırın ${i + 1}`, style: firinUrl && kp ? `--kx:${kp.x};--ky:${kp.y};--kw:${kp.w};--kh:${kp.h}` : null },
       ...(firinUrl && kp ? [h('i.ps-goz-kapi', {}, cam)] : [h('i.ps-goz-kol'), cam]),
       h('i.ps-goz-saat'),
-      // kilitli göz: yıldızla açılır (asma kilit ve yıldız)
-      i >= acikGoz ? h('i.ps-goz-kilit', { 'aria-hidden': 'true', html: GOZ_KILIT }) : null,
     );
     b.addEventListener('click', () => gozBas(i));
     return { b, ic };
   });
-  // gerçek bir fırın: üstte düğmeler, sıcaklık lambası ve saat; üç camlı kapak; ayaklar
   const firin = firinUrl
     ? h(
         'div.ps-firin.ps-firin-r',
@@ -279,7 +260,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       );
   if (firinUrl) oranYaz(firinUrl, firin, '--firin-oran');
 
-  // krema, süs
+  // krema, süs (süs kavanozları Gün 2'den itibaren)
   const kremaDugmeleri = acik.renkler.map((r) => {
     const b = h('button.ps-krema-sise', { type: 'button', 'data-renk': r, 'aria-label': r, html: kremaDikSvg(r) });
     b.addEventListener('click', () => kremaBas(r, b));
@@ -291,11 +272,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     return b;
   });
 
-  // tabak
+  // tabak (doluyken fırından çıkanlar yanında sıraya girer)
   let tabak: Parti | null = null;
   const bekleyen: Parti[] = [];
-  /** servis için seçili olan: tabak ya da hazır bardak (sonra müşteriye dokunulur) */
-  let secili: null | 'tabak' | 'bardak' = null;
   const tabakIc = h('div.ps-tabak-ic');
   const tabakEl = h('button.ps-tabak', { type: 'button', 'aria-label': 'Servis tabağı', html: TABAK }, tabakIc);
   const bekleyenEl = h('div.ps-bekleyen');
@@ -306,42 +285,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     tabakIc.dataset.adet = String(tabak?.parcalar.length ?? 0);
     if (ozel) tabakEl.dataset.parti = tabak ? JSON.stringify(tabak) : '';
     bekleyenEl.replaceChildren(...bekleyen.map((b) => h('i.ps-bekleyen-parti', { html: partiCizimi(b, 'ps-mini')[0] ?? '' })));
-    if (!tabak && secili === 'tabak') seciliYap(null);
-  };
-
-  // ---------------------------------------------------------------- bulaşık (Gün 4+): tabaklar birikir, Kino yıkar
-  /** temiz tabak (servise hazır), kirli (müşteri yedi, Kino'nun yanında birikir); yıkanırken */
-  let temiz = TABAK_SAYISI;
-  let kirli = 0;
-  let yikiyor = false;
-  const temizEl = h('i.ps-temiz', { 'aria-hidden': 'true' });
-  const kirliEl = h('i.ps-kirli', { 'aria-hidden': 'true' });
-  const gorevEl = h('i.ps-kino-gorev', { 'aria-hidden': 'true', html: BULASIK_IKON }, h('i.ps-gorev-halka'));
-  const bulasikCiz = () => {
-    if (!acik.bulasik) return;
-    temizEl.innerHTML = tabakYigini(Math.min(temiz, TABAK_SAYISI), false);
-    temizEl.dataset.n = String(temiz);
-    kirliEl.innerHTML = kirli ? tabakYigini(Math.min(kirli, 5), true) : '';
-    kirliEl.dataset.n = String(kirli);
-    kirliEl.classList.toggle('ps-sallanan', kirli >= 3);
-    gorevEl.classList.toggle('ps-goster', kirli > 0 || yikiyor);
-    gorevEl.classList.toggle('ps-yikiyor', yikiyor);
-    kinoYer.classList.toggle('ps-gorev-var', kirli > 0 && !yikiyor);
-    kinoYer.setAttribute('role', 'button');
-    kinoYer.setAttribute('aria-label', kirli > 0 && !yikiyor ? 'Kino: bulaşık' : 'Kino');
-  };
-  if (acik.bulasik) kinoYer.append(kirliEl, gorevEl);
-
-  // ---------------------------------------------------------------- içecek makinesi (yükseltme)
-  let hazirBardak: Bardak | null = null;
-  const bardakYer = h('i.ps-hazir-bardak', { 'aria-hidden': 'true' });
-  const makineEl = acik.icecek ? h('button.ps-icecek-makinesi', { type: 'button', 'aria-label': 'İçecek makinesi', html: makineSvg() }, bardakYer) : null;
-  const bardakCiz = () => {
-    if (!makineEl) return;
-    bardakYer.innerHTML = hazirBardak ? bardakSvg({ ...hazirBardak, golge: false }) : '';
-    makineEl.dataset.bardak = hazirBardak ? '1' : '0';
-    if (ozel) makineEl.dataset.parti = hazirBardak ? JSON.stringify(hazirBardak) : '';
-    if (!hazirBardak && secili === 'bardak') seciliYap(null);
+    bekleyenEl.dataset.n = String(bekleyen.length);
   };
 
   // ---------------------------------------------------------------- kasa (tezgâhta), gün tahtası
@@ -354,48 +298,44 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const izgara = (d: HTMLElement[]) => h('div.ps-izgara', { 'data-n': String(d.length) }, ...d);
   /**
    * Tezgâh bir istasyon ızgarası: iki sıra (arka raf ve ön tezgâh), her sıranın tek taban çizgisi. Yatayda soldan
-   * sağa HAMUR → KALIP (askıda; tepsi altında) → FIRIN (tezgâha oturur, iki sırayı kaplar) → KREMA (önde tutacakta;
-   * süs kavanozları arkasındaki rafta) → SERVİS (tabak; kasa arkasındaki rafta). Dikeyde üst katta fırın, altında
-   * iki raf: HAMUR | KALIP, KREMA·SÜS | SERVİS. Çizim: her kat (arka duvar fayansı, arka raf, tezgâh yüzeyi, ön kenar)
-   * kod çizimi; en alttaki dolaplar görselden. Önce arka sıradakiler (dokunuşta öndekiler üstte kalır).
-   * İçecek makinesi (yükseltme) hamur kâsesinin üstündeki arka rafa oturur (kâse o zaman yalnız ön sırada); bulaşıkta
-   * temiz tabaklar servis tabağının yanında, kirliler Kino'nun yanında birikir.
+   * sağa HAMUR → KALIP (askıda; tepsi altında) → FIRIN (iki sırayı kaplar) → KREMA (önde; süs kavanozları arkasındaki
+   * rafta) → SERVİS (tabak; kasa arkasındaki rafta). Gün 1'de süs kavanozu yok (yalnız gereken istasyonlar).
    */
   const tezgah = h(
     'div.ps-tezgah',
-    { 'data-kalip': String(kalipDugmeleri.length), 'data-krema': String(kremaDugmeleri.length), 'data-sus': String(susDugmeleri.length), 'data-icecek': makineEl ? '1' : null },
+    { 'data-kalip': String(kalipDugmeleri.length), 'data-krema': String(kremaDugmeleri.length), 'data-sus': String(susDugmeleri.length) },
     h('i.ps-kat', { 'aria-hidden': 'true', 'data-kat': '0' }),
     h('i.ps-kat', { 'aria-hidden': 'true', 'data-kat': '1' }),
     h('i.ps-kat', { 'aria-hidden': 'true', 'data-kat': '2' }),
     h('i.ps-tz-panel', { 'aria-hidden': 'true', style: `--kapak:${KAPAK_DESENI}` }),
     minoYer,
     kinoYer,
-    makineEl ? istasyon('icecek', makineEl) : null,
     istasyon('kalip', h('div.ps-askilik', {}, izgara(kalipDugmeleri))),
-    istasyon('sus', izgara(susDugmeleri)),
+    susDugmeleri.length ? istasyon('sus', izgara(susDugmeleri)) : null,
     istasyon('kasa', kasa),
     istasyon('hamur', hamurKabi),
     istasyon('tepsi', tepsiEl),
     istasyon('firin', firin),
     istasyon('krema', h('div.ps-tutacak', {}, izgara(kremaDugmeleri))),
-    istasyon('tabak', bekleyenEl, acik.bulasik ? temizEl : null, tabakEl),
+    istasyon('tabak', bekleyenEl, tabakEl),
     jetonKatmani,
   );
 
-  const ilerleme = h('div.ps-ilerleme', { 'aria-hidden': 'true' }, ...Array.from({ length: kuyruk.length }, () => h('i')));
-  // günlük hedef: "Bugün N mutlu müşteri" (kalpler dolar; görsel: mutlu-kalp)
+  // gün tahtası: her müşteri bir kalp (tam istediği gibiyse dolu kalp, biraz farklıysa açık kalp)
   const kalpUrl = yuva('mutluKalp');
   const hedefKalbi = kalpUrl ? `<img src="${kalpUrl}" alt="" draggable="false">` : KALP;
-  const hedefEl = h('div.ps-hedef', { 'aria-label': `Hedef ${ayar.hedef}`, 'data-hedef': String(ayar.hedef), 'data-mutlu': '0' }, ...Array.from({ length: ayar.hedef }, () => h('i', { html: hedefKalbi })));
-  const gunEtiket = h('div.ps-gun-etiket', {}, h('b', {}, P.arayuz.gun.replace('{gun}', String(gun))), hedefEl, ilerleme);
+  const hedefEl = h('div.ps-hedef', { 'aria-label': `${MUSTERI_TOPLAM} müşteri`, 'data-hedef': String(MUSTERI_TOPLAM), 'data-mutlu': '0' }, ...Array.from({ length: MUSTERI_TOPLAM }, () => h('i', { html: hedefKalbi })));
+  const gunEtiket = h('div.ps-gun-etiket', {}, h('b', {}, P.arayuz.gun.replace('{gun}', String(gun))), hedefEl);
   const cikis = () => app.git('acilis');
   const ust = h('div.ust-cubuk.ps-ust', {}, yuvarlakDugme(IKON.geri, 'Geri', cikis, 'kucuk'), h('div.orta', {}, gunEtiket), sesDugmesi());
 
-  const el = h('div.ps-gun', { 'data-gun': String(gun), 'data-yer': ayar.yer }, sahne, tezgah, ust, efekt_.el);
+  // el ipucu: sıradaki işin üstünde dokunur gibi iner kalkar
+  const elIpucu = h('div.ps-el-ipucu', { 'aria-hidden': 'true' }, svg(IKON.el));
+  const el = h('div.ps-gun', { 'data-gun': String(gun), 'data-yer': ayar.yer }, sahne, tezgah, ust, efekt_.el, elIpucu);
   if (resimli) {
     el.classList.add('ps-resimli');
     const a = ARKA;
-    // pencerenin açıklığı oyulur (maske): arkasındaki park ve müşteriler görünür, pencereden taşan yerleri duvarın gerisinde
+    // pencerenin açıklığı oyulur (maske): arkasındaki park ve müşteriler görünür
     const [x0, x1, y0, y1, rx, ry] = [a.pencere.sol, a.pencere.sag, a.pencere.ust, a.tezgah + 0.03, 0.02, 0.036];
     const maske = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" preserveAspectRatio="none"><path fill-rule="evenodd" d="M0 0H1V1H0Z M${x0} ${y1}V${y0 + ry}Q${x0} ${y0} ${x0 + rx} ${y0}H${x1 - rx}Q${x1} ${y0} ${x1} ${y0 + ry}V${y1}Z"/></svg>`;
     arkaResim!.style.setProperty('--maske', `url("data:image/svg+xml,${encodeURIComponent(maske)}")`);
@@ -406,9 +346,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     );
     oranYaz(arkaUrl!, el, '--a-oran');
   }
-  // her dokunuşta minik parıltı (tezgâhtaki bütün düğmeler; sıkışma her düğmenin kendi tepkisinde)
-  tezgah.addEventListener('pointerdown', (e) => {
-    if (!(e.target as Element).closest('button')) return;
+  // her dokunuşta minik parıltı; el ipucu kaybolur
+  el.addEventListener('pointerdown', (e) => {
+    sonDokunus = performance.now();
+    elIpucuGizle();
+    if (!(e.target as Element).closest('.ps-tezgah button')) return;
     const k = app.kok.getBoundingClientRect();
     efekt_.parilti(e.clientX - k.left, e.clientY - k.top, 3, 0.45);
   });
@@ -449,12 +391,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       void soyle(soz, 'kino', false);
     }
   };
-  const kinoCilekAgiz = (ms: number) => {
-    const g = kino.el.querySelector<SVGGElement>('.ps-kino-cilek');
-    if (!g) return;
-    g.style.opacity = '1';
-    sonra(ms, () => (g.style.opacity = '0'));
-  };
 
   // ---------------------------------------------------------------- müşteriler
   const musteriler: PastaMusteri[] = [];
@@ -464,20 +400,17 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   let gelen = 0;
   let calisiyor = false;
   let sonDokunus = performance.now();
-
-  /** müşterinin tezgâha vardığı an (kafası karışık müşterinin balonu bundan sonra değişir) */
-  const varis = new Map<PastaMusteri, number>();
-  /** bugünün mutlu müşterileri (sipariş tam aynı) ve uyuyan oldu mu (3. yıldız) */
+  /** bugünün mutlu müşterileri (sipariş tam aynı) */
   let mutlu = 0;
+  let uyuyanOldu = false;
 
   async function musteriGelsin() {
     const yer = yerindeki.findIndex((x) => !x);
     const i = siradakiIndeks(kuyruk, musteriler.map((m) => m.ad));
     if (yer < 0 || i < 0) return;
     const sip = kuyruk.splice(i, 1)[0];
-    const m = new PastaMusteri(sip, TAVSAN_RESMI);
+    const m = new PastaMusteri(sip);
     if (ozel) m.el.dataset.siparis = JSON.stringify(sip);
-    if (sip.ozel) m.el.dataset.ozel = sip.ozel;
     m.el.dataset.sira = String(gelen);
     musteriler.push(m);
     yerindeki[yer] = m;
@@ -490,62 +423,53 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     window.setTimeout(() => minoCanli.karsila(), sure(400));
     await m.gel(bas);
     if (kapandi) return;
-    varis.set(m, performance.now());
-    // Mino siparişi bir kez okur (mantık siparişini müşteri kendisi söyler)
+    sonGelis = performance.now();
+    // Mino siparişi bir kez okur
     mino.bak(-0.6);
-    if (m.sip.mantik) {
-      await soyle(P.mino.hosgeldin);
-      await soyle(okuma(m.sip), m);
-    } else await soyle([P.mino.hosgeldin, ...okuma(m.sip)]);
+    await soyle([P.mino.hosgeldin, ...okuma(m.sip)]);
     mino.bak(0);
   }
 
-  /** Kafası karışık müşteri: hamur aşamasında (krema öncesi) balon değişir: "Şey… hayır, şöyle olsun!" */
-  async function fikirDegistir(m: PastaMusteri) {
-    if (!m.sip.degisim || m.bitti) return;
-    const yeni = degisimUygula(m.sip);
-    m.siparisDegisti(yeni, TAVSAN_RESMI);
-    if (ozel) m.el.dataset.siparis = JSON.stringify(yeni);
-    const [x, y] = efekt_.merkez(m.balon);
-    efekt_.pof(x, y, 1);
-    ses.pof();
-    void m.karakter.oynat('bak', 700);
-    await soyle(P.musteri.karisik, m);
-    await soyle(okuma(yeni));
+  /** Sıradaki (servis bekleyen) müşteriler, geliş sırasıyla */
+  const bekleyenSiparisler = () => musteriler.filter((m) => m.hazir && !m.bitti);
+  /** Tabaktaki partinin sahibi: en çok tutan kalemin müşterisi */
+  function sahibi(parti: Parti): PastaMusteri | null {
+    const b = bekleyenSiparisler();
+    const k = hedefKalem(b, parti);
+    return (k && b.find((m) => m.sip.kalemler.includes(k))) ?? b[0] ?? null;
+  }
+  /** Tabaktaki partide (hedef kaleme göre) kalan iş: krema (zigzag dahil), süs; yoksa null (servise hazır) */
+  function kalanIs(parti: Parti, k: Kalem | null): 'krema' | 'sus' | null {
+    if (parti.parcalar.some((x) => !x.renk)) return 'krema';
+    if (!k) return null;
+    if (k.desen === 'zigzag' && parti.parcalar.some((x) => x.desen !== 'zigzag')) return 'krema';
+    if (k.sus && parti.parcalar.some((x) => x.susler.length < k.susAdet)) return 'sus';
+    return null;
   }
 
   function musteriBas(m: PastaMusteri) {
-    sonDokunus = performance.now();
     if (!m.hazir || m.bitti) return;
     efekt.dokunma();
     if (m.uyuyor) {
       m.uyan();
       void soyle(P.musteri.uyandi, m);
-      if (!secili) return;
     }
-    if (secili) {
-      void servis(m, secili);
+    // tabak hazırsa bu müşteriye gider
+    if (tabak && !kalanIs(tabak, hedefKalem([m], tabak))) {
+      void servis(m);
       return;
     }
     // siparişi bir daha dinlet
     m.dikkat();
-    void soyle(okuma(m.sip), m.sip.mantik ? m : 'mino', false);
+    void soyle(okuma(m.sip), 'mino', false);
   }
 
-  function seciliYap(ne: null | 'tabak' | 'bardak') {
-    secili = ne === 'tabak' && tabak ? 'tabak' : ne === 'bardak' && hazirBardak ? 'bardak' : null;
-    tabakEl.classList.toggle('ps-secili', secili === 'tabak');
-    makineEl?.classList.toggle('ps-secili', secili === 'bardak');
-    el.classList.toggle('ps-servis', !!secili);
-  }
-
-  /** Jetonlar müşterinin önünde tezgâha düşer */
+  /** Jetonlar müşterinin önünde tezgâha düşer, az sonra kendiliğinden kasaya uçar */
   function jetonDussun(m: PastaMusteri, adet: number, bahsis: number) {
     const r = m.el.getBoundingClientRect();
     const k = jetonKatmani.getBoundingClientRect();
     const x = ((r.left + r.width / 2 - k.left) / Math.max(1, k.width)) * 100;
     for (let i = 0; i < adet + bahsis; i++) {
-      // jetonlar yalnız görüntü (müşterilerin önünü kapatmasın); kasaya dokununca toplanır
       const j = h(`i.ps-jeton${i >= adet ? '.ps-bahsis' : ''}`, { 'aria-hidden': 'true', html: JETON, style: `left:calc(${x.toFixed(1)}% + ${((i - (adet + bahsis - 1) / 2) * 0.62).toFixed(2)} * var(--jeton));--i:${i}` });
       jetonKatmani.append(j);
       yerdeJeton++;
@@ -554,17 +478,16 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     const [yx, yy] = efekt_.merkez(m.el, 0.5, 0.15);
     efekt_.yazi(yx, yy, `+${adet + bahsis}`);
     el.classList.add('ps-jeton-var');
+    sonra(sure(TEST_MODU ? 300 : 1100), () => void jetonTopla());
   }
 
-  /** Tezgâhtaki jetonlar kasaya uçar; Mino sayar */
+  /** Tezgâhtaki jetonlar kasaya uçar */
   let topluyor = false;
-  async function jetonTopla(sessiz = false) {
+  async function jetonTopla() {
     const js = [...jetonKatmani.querySelectorAll<HTMLElement>('.ps-jeton')];
     if (!js.length || topluyor) return;
     topluyor = true;
-    sonDokunus = performance.now();
     const hedef = efekt_.merkez(kasa, 0.5, 0.75);
-    if (!sessiz) void soyle(js.map((_, i) => sayiSozu(i + 1)), 'mino', false);
     kasa.classList.add('ps-kasa-acik');
     await Promise.all(
       js.map(async (j, i) => {
@@ -572,138 +495,75 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
         j.remove();
         // yüksek bir yay çizerek döne döne kasanın çekmecesine
         const kavis = -Math.max(90, Math.abs(hedef[0] - bas[0]) * 0.35);
-        await efekt_.ucur(h('div.ps-ucan-jeton', { html: JETON }), bas, hedef, { ms: 680, gecikme: i * 220, kavis, boy0: 1.1, boy1: 0.55, don: 540 });
+        await efekt_.ucur(h('div.ps-ucan-jeton', { html: JETON }), bas, hedef, { ms: 640, gecikme: i * 150, kavis, boy0: 1.1, boy1: 0.55, don: 540 });
         if (kapandi) return;
         bugun++;
+        yerdeJeton--;
         kasaSayi.textContent = String(bugun);
         salla(kasaSayi, 'ps-zipla');
-        durumYaz();
         ses.singir(i);
         salla(kasa, 'ps-zipla');
         efekt_.parilti(hedef[0], hedef[1], 5, 0.6);
+        durumYaz();
       }),
     );
     kasa.classList.remove('ps-kasa-acik');
-    yerdeJeton = 0;
-    el.classList.remove('ps-jeton-var');
+    if (!jetonKatmani.querySelector('.ps-jeton')) el.classList.remove('ps-jeton-var');
     topluyor = false;
+    // toplarken yenileri düştüyse onlar da
+    if (jetonKatmani.querySelector('.ps-jeton')) void jetonTopla();
   }
   kasa.addEventListener('click', () => {
     efekt.dokunma();
     void jetonTopla();
   });
 
-  /** Temiz tabak kalmadı: servis bekler (ceza yok); Kino "Bana iş ver!" der, bulaşık simgesi parlar */
-  let kinoIsDedi = 0;
-  function tabakYok() {
-    ses.degil();
-    salla(temizEl, 'ps-hayir');
-    salla(gorevEl, 'ps-ipucu');
-    salla(tabakEl, 'ps-hayir');
-    if (performance.now() - kinoIsDedi > 6000) {
-      kinoIsDedi = performance.now();
-      void soyle(P.mino.tabak_yok, 'mino', false);
-      void soyle(P.kino.is_ver, 'kino', false);
-      void kino.oynat('sevin', 900);
-    }
-  }
-
-  async function servis(m: PastaMusteri, kaynak: 'tabak' | 'bardak' = 'tabak') {
-    const parti: Parti | null = kaynak === 'tabak' ? tabak : hazirBardak ? { urun: 'icecek', sekil: null, parcalar: [], bardak: hazirBardak } : null;
+  async function servis(m: PastaMusteri) {
+    const parti = tabak;
     if (!parti || m.bitti || !m.hazir) return;
     const i = kalemSec(m.sip, m.verilen, parti);
     if (i < 0) return;
-    // bulaşık: tatlı temiz bir tabakla gider
-    const tabakla = acik.bulasik && kaynak === 'tabak';
-    if (tabakla && temiz <= 0) {
-      tabakYok();
-      return;
-    }
     efekt.secim();
     m.verilen[i] = parti;
-    let bas: [number, number];
-    if (kaynak === 'tabak') {
-      bas = efekt_.merkez(tabakEl);
-      tabak = bekleyen.shift() ?? null;
-      tabakCiz();
-      if (tabakla) {
-        temiz--;
-        bulasikCiz();
-      }
-    } else {
-      bas = efekt_.merkez(bardakYer);
-      hazirBardak = null;
-      bardakCiz();
-    }
-    seciliYap(null);
-    const hedef = efekt_.merkez(m.el, 0.5, 0.45);
-    await efekt_.ucur(h(kaynak === 'tabak' ? 'div.ps-ucan-tabak' : 'div.ps-ucan-bardak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, hedef, { ms: 520, kavis: -90, boy1: 0.8 });
-    if (kapandi) return;
-    // yüzlü kurabiye: müşteri o ifadeyi yapar
-    const yuz = parti.parcalar.find((p) => p.yuz)?.yuz;
-    if (yuz) m.ifadeYap(yuz);
-    if (m.verilen.some((v) => !v)) {
-      // çok kalemli sipariş: bu kalem alındı (balonda yeşil tik), öteki bekleniyor
-      m.kalemAlindi(i);
-      ses.tik(2);
-      void m.karakter.oynat('sevin', 600);
-      return;
-    }
+    const bas = efekt_.merkez(tabakEl);
+    tabak = bekleyen.shift() ?? null;
+    tabakCiz();
+    if (tabak) salla(tabakEl, 'ps-zipla');
     m.bitti = true;
-    m.kalemAlindi(i);
     m.el.classList.add('ps-bitti');
+    adimGuncelle();
+    const hedef = efekt_.merkez(m.el, 0.5, 0.45);
+    await efekt_.ucur(h('div.ps-ucan-tabak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, hedef, { ms: 460, kavis: -90, boy1: 0.85 });
+    if (kapandi) return;
     const sonuc = siparisSonucu(m.sip, m.verilen);
     const para = jetonHesapla(sonuc.ayni, m.sabir, m.uyudu);
     m.el.dataset.sonuc = sonuc.ayni ? 'ayni' : 'farkli';
     const [hx, hy] = efekt_.merkez(m.el, 0.5, 0.3);
     if (sonuc.ayni) {
       mutlu++;
-      hedefCiz();
       efekt.dogru();
       efekt_.konfeti(hx, hy);
       efekt_.kalpler(hx, hy, 8);
       efekt_.parilti(hx, hy, 10);
       ekranSalla(el, 2.5);
-      if (!yuz) m.mutlu(2600);
+      m.mutlu(2600);
       mino.tepki('sevinc');
-      void soyle(mutlu === ayar.hedef ? [P.mino.tam, P.mino.hedef_tamam] : P.mino.tam);
+      void soyle(P.mino.tam);
     } else {
-      // farklı olan şey balonda ve tabakta bir an parlar; yine de yer ve sever
+      // farklı olan şey balonda bir an parlar; yine de yer ve sever
       m.karsilastir(sonuc.farklar);
       mino.tepki('sasir');
-      await soyle(P.mino.farkli);
-      await bekle(1400);
+      void soyle(P.mino.farkli);
+      await bekle(1600);
       if (kapandi) return;
       efekt_.kalpler(hx, hy, 4);
       m.mutlu(1600);
     }
-    // önce tatlı yenir (içecek varsa onunla birlikte); doğum günü kapkeğinde önce mumlar üflenir
-    const tatli = m.verilen.find((v) => v && !v.bardak) ?? m.verilen.find(Boolean)!;
-    const mumlu = !tatli.bardak && tatli.parcalar.some((p) => (p.mum ?? 0) > 0);
-    if (mumlu) {
-      void soyle(P.mino.iyi_ki);
-      void soyle(P.musteri.ufle, m);
-    }
-    await m.ye(partiCizimi(tatli, 'ps-lokma-svg')[0] ?? '', mumlu ? partiCizimi(tatli, 'ps-lokma-svg', true)[0] : undefined);
+    hedefCiz(sonuc.ayni);
+    await m.ye(partiCizimi(parti, 'ps-lokma-svg')[0] ?? '');
     if (kapandi) return;
     jetonDussun(m, para.jeton, para.bahsis);
     void soyle(tesekkur(m.ad, m.verilen), m);
-    // kirli tabaklar Kino'nun yanına uçar (tabakla verilen her tatlı bir tabak)
-    if (acik.bulasik) {
-      const n = m.verilen.filter((v) => v && !v.bardak).length;
-      for (let k = 0; k < n; k++) {
-        void efekt_.ucur(h('div.ps-ucan-tabak-kirli', { html: tabakYigini(1, true) }), efekt_.merkez(m.el, 0.5, 0.6), efekt_.merkez(kirliEl, 0.5, 0.6), { ms: 600, gecikme: k * 120, kavis: -70 }).then(() => {
-          if (kapandi) return;
-          kirli++;
-          bulasikCiz();
-          salla(kirliEl, 'ps-zipla');
-          if (kirli >= 3 && !yikiyor && performance.now() - kinoIsDedi > 9000) {
-            kinoIsDedi = performance.now();
-            void soyle(P.kino.is_ver, 'kino', false);
-          }
-        });
-      }
-    }
     await m.dans();
     if (kapandi) return;
     minoCanli.ugurla();
@@ -715,73 +575,18 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     m.el.remove();
     if (yer >= 0) yerindeki[yer] = null;
     musteriler.splice(musteriler.indexOf(m), 1);
-    varis.delete(m);
     biten++;
-    ilerleme.children[biten - 1]?.classList.add('dolu');
     durumYaz();
     if (biten >= MUSTERI_TOPLAM) void gunBitti();
   }
-  /** Hedef kalpleri: mutlu müşteri kadar dolu */
-  function hedefCiz() {
+  /** Gün tahtası: servis edilen müşterinin kalbi dolar (tam aynıysa dolu, farklıysa açık) */
+  let servisSayisi = 0;
+  function hedefCiz(ayni: boolean) {
+    const k = hedefEl.children[servisSayisi++];
+    k?.classList.add(ayni ? 'dolu' : 'yarim');
     hedefEl.dataset.mutlu = String(mutlu);
-    [...hedefEl.children].forEach((k, i) => k.classList.toggle('dolu', i < mutlu));
-    salla(hedefEl.children[Math.min(mutlu, ayar.hedef) - 1], 'ps-zipla');
+    salla(k, 'ps-zipla');
   }
-
-  /** Kino bulaşığı yıkar (paralel): köpüklü, ilerleme halkası döner; bitince kirliler temiz tabak olur */
-  async function bulasikYika() {
-    if (!acik.bulasik || yikiyor || kirli <= 0) return;
-    yikiyor = true;
-    const n = kirli;
-    const ms = TEST_MODU ? 700 : 8000;
-    gorevEl.style.setProperty('--sure', `${ms}ms`);
-    kinoYer.classList.add('ps-yikiyor');
-    bulasikCiz();
-    void soyle(P.kino.bulasik, 'kino', false);
-    void kino.oynat('sevin', 600);
-    const kopukler = window.setInterval(() => !kapandi && ses.kopuk(), 900);
-    zamanlar.push(kopukler);
-    await bekle(ms);
-    clearInterval(kopukler);
-    if (kapandi) return;
-    kirli -= n;
-    temiz += n;
-    yikiyor = false;
-    kinoYer.classList.remove('ps-yikiyor');
-    bulasikCiz();
-    // temiz tabaklar servis tabağının yanına uçar
-    void efekt_.ucur(h('div.ps-ucan-tabak-kirli', { html: tabakYigini(Math.min(n, 4), false) }), efekt_.merkez(kinoYer, 0.3, 0.7), efekt_.merkez(temizEl), { ms: 600, kavis: -80 });
-    salla(temizEl, 'ps-zipla');
-    kinoPervane();
-    void soyle(P.kino.piril, 'kino', false);
-  }
-  kinoYer.addEventListener('click', () => {
-    if (acik.bulasik && kirli > 0 && !yikiyor) void bulasikYika();
-  });
-
-  // içecek makinesi: bardak yoksa yakın plan (doldur), varsa bardak seçilir (sonra müşteriye dokun)
-  makineEl?.addEventListener('click', async () => {
-    sonDokunus = performance.now();
-    if (panelAcik) return;
-    if (hazirBardak) {
-      efekt.secim();
-      seciliYap(secili === 'bardak' ? null : 'bardak');
-      if (secili) musteriler.forEach((m) => m.hazir && !m.bitti && salla(m.el, 'ps-cagir'));
-      return;
-    }
-    salla(makineEl, 'ps-bas');
-    const hedefK = bekleyenSiparisler()
-      .flatMap((m) => m.sip.kalemler.filter((k, i) => k.urun === 'icecek' && !m.verilen[i]))
-      .at(0) ?? null;
-    const b = await panelle(() => icecekPaneli({ kok: el, efekt: efekt_, soyle: (s, k, o) => soyle(s, k ?? 'mino', o) }, hedefK));
-    if (kapandi || !b) return;
-    hazirBardak = b;
-    bardakCiz();
-    salla(bardakYer, 'ps-zipla');
-  });
-
-  /** Sıradaki (servis bekleyen) müşteriler, geliş sırasıyla */
-  const bekleyenSiparisler = () => musteriler.filter((m) => m.hazir && !m.bitti);
 
   // ---------------------------------------------------------------- yakın plan paneli açıkken gün durur
   let panelAcik = false;
@@ -789,6 +594,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     panelAcik = true;
     const dur = performance.now();
     el.classList.add('ps-panel-acik');
+    adimGuncelle();
     try {
       return await f();
     } finally {
@@ -799,22 +605,100 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       son = performance.now();
       panelAcik = false;
       el.classList.remove('ps-panel-acik');
+      adimGuncelle();
     }
   }
-  const MUSTERI_TOPLAM = kuyruk.length;
+
+  // ---------------------------------------------------------------- sıradaki iş (parlama, el ipucu)
+  /** Yapılmakta olan partiler: fırındakiler, tabaktaki, tabağın yanında bekleyenler */
+  const uretimde = (): Parti[] => [...gozler.filter((g): g is Goz => !!g).map((g) => g.parti), ...(tabak ? [tabak] : []), ...bekleyen];
+  /** Daha başlanmamış ilk kalem (geliş sırasıyla; yapılmakta olan partiler şekil ve adetle eşlenir) */
+  function yapilacak(): Kalem | null {
+    const serbest = uretimde();
+    for (const m of bekleyenSiparisler()) {
+      for (const k of m.sip.kalemler.filter((_, i) => !m.verilen[i])) {
+        const j = serbest.findIndex((p) => p.sekil === k.sekil && p.parcalar.length === k.adet);
+        const j2 = j >= 0 ? j : serbest.findIndex((p) => p.urun === k.urun);
+        if (j2 >= 0) serbest.splice(j2, 1);
+        else return k;
+      }
+    }
+    return null;
+  }
+  function siradakiAdim(): { ad: AdimAdi; el: HTMLElement } | null {
+    if (!calisiyor || panelAcik) return null;
+    const bekleyenler = bekleyenSiparisler();
+    if (!bekleyenler.length) return null;
+    // 1) tabaktaki: krema, süs, servis
+    if (tabak) {
+      const k = hedefKalem(bekleyenler, tabak);
+      const is = kalanIs(tabak, k);
+      if (is === 'krema') {
+        const r = k?.renk ?? tabak.parcalar[0]?.renk ?? acik.renkler[0];
+        return { ad: 'krema', el: kremaDugmeleri[acik.renkler.indexOf(r)] ?? kremaDugmeleri[0] };
+      }
+      if (is === 'sus' && k?.sus && acik.susler.includes(k.sus)) return { ad: 'sus', el: susDugmeleri[acik.susler.indexOf(k.sus)] };
+      return { ad: 'servis', el: tabakEl };
+    }
+    // 2) fırında altın olan
+    const ai = gozler.findIndex((g) => g?.hal === 'altin');
+    if (ai >= 0) return { ad: 'firin', el: gozEl[ai].b };
+    // 3) yeni tepsi
+    const k = yapilacak();
+    if (!k) return null;
+    if (tepsi.length < Math.min(k.adet, EN_COK_HAMUR)) return { ad: 'hamur', el: hamurKabi };
+    if (tepsi.some((x) => x !== k.sekil)) return { ad: 'kalip', el: kalipDugmeleri[kaliplar.indexOf(k.sekil as Kalip)] ?? kalipDugmeleri[0] };
+    if (gozler.some((g) => !g)) return { ad: 'tepsi', el: tepsiEl };
+    return null;
+  }
+  let parlayan: HTMLElement | null = null;
+  let adimAdi: AdimAdi | null = null;
+  function adimGuncelle() {
+    const a = siradakiAdim();
+    adimAdi = a?.ad ?? null;
+    if (a?.el !== parlayan) {
+      parlayan?.classList.remove('ps-sirada');
+      parlayan = a?.el ?? null;
+      parlayan?.classList.add('ps-sirada');
+      elIpucuGizle();
+    }
+    el.dataset.adim = adimAdi ?? '';
+  }
+  let elGoster = false;
+  function elIpucuGizle() {
+    if (!elGoster) return;
+    elGoster = false;
+    elIpucu.classList.remove('ps-goster');
+  }
+  function elIpucuBak(simdi: number) {
+    if (elGoster || !parlayan || simdi - sonDokunus < IPUCU_MS || bekleyenSoz > 0) return;
+    if (TEST_MODU && q.get('ipucu') !== '1') return;
+    const [x, y] = efekt_.merkez(parlayan, 0.55, 0.55);
+    elIpucu.style.setProperty('--x', `${x.toFixed(0)}px`);
+    elIpucu.style.setProperty('--y', `${y.toFixed(0)}px`);
+    elIpucu.classList.add('ps-goster');
+    elGoster = true;
+  }
 
   // ---------------------------------------------------------------- tezgâh işleri
   const ipucu = (...e: HTMLElement[]) => e.forEach((x) => salla(x, 'ps-ipucu'));
+  const yanlis = () => {
+    // yanlış dokunuş zararsız: sıradaki işin yeri bir kez zıplar
+    ses.degil();
+    if (parlayan) ipucu(parlayan);
+  };
   let kinoHamurDedi = false;
 
-  hamurKabi.addEventListener('click', async () => {
-    sonDokunus = performance.now();
+  hamurKabi.addEventListener('click', () => {
     salla(hamurKabi, 'ps-bas');
-    if (tepsi.length >= EN_COK_HAMUR) {
+    const k = yapilacak();
+    const sinir = Math.min(EN_COK_HAMUR, k?.adet ?? EN_COK_HAMUR);
+    if (tepsi.length >= sinir) {
       // tepsi dolu: top seker, Kino yakalayıp yer
       ses.kay();
       void kinoYer_(urunSvg({ urun: 'kurabiye', sekil: null, hal: 'top' }), efekt_.merkez(tepsiEl), kinoHamurDedi ? undefined : P.kino.yedim);
       kinoHamurDedi = true;
+      adimGuncelle();
       return;
     }
     tepsi.push(null);
@@ -822,20 +706,23 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     ses.plop(n);
     efekt.nota(n - 1);
     tepsiCiz();
-    const yeni = tepsiIc.lastElementChild as HTMLElement | null;
-    yeni?.classList.add('ps-dustu');
-    // kâsedeki hamur kabarıp iner, un tozu havalanır
+    tepsiIc.lastElementChild?.classList.add('ps-dustu');
+    // kâsedeki hamur kabarıp iner, un tozu havalanır; top tepsiye "pof" diye düşer
     salla(hamurKabi, 'ps-kabar');
     const [ux, uy] = efekt_.merkez(hamurKabi, 0.5, 0.25);
     efekt_.pof(ux, uy, 0.45);
+    const son_ = tepsiIc.lastElementChild;
+    if (son_) sonra(sure(260), () => {
+      const [x, y] = efekt_.merkez(son_, 0.5, 0.8);
+      efekt_.pof(x, y, 0.5);
+    });
+    adimGuncelle();
   });
 
   function kalipBas(k: Kalip, b: HTMLElement) {
-    sonDokunus = performance.now();
     salla(b, 'ps-bas');
     if (!tepsi.length) {
-      ses.degil();
-      ipucu(hamurKabi);
+      yanlis();
       return;
     }
     for (let i = 0; i < tepsi.length; i++) tepsi[i] = k;
@@ -846,44 +733,83 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     tepsiIc.classList.remove('ps-pofladi');
     void tepsiIc.offsetWidth;
     tepsiIc.classList.add('ps-pofladi');
+    adimGuncelle();
   }
 
-  /** Tepsi fırına: verilen göz (yoksa ilk boş göz) */
+  /** Tepsi fırına: verilen göz (yoksa ilk boş göz); hepsi açık, paralel pişer */
   function firinaKoy(goz?: number): boolean {
-    if (!tepsi.length) {
-      ses.degil();
-      ipucu(hamurKabi);
+    if (!tepsi.length || !tepsi.every((k) => k)) {
+      yanlis();
       return false;
     }
-    if (!tepsi.every((k) => k)) {
-      ses.degil();
-      ipucu(...kalipDugmeleri);
-      return false;
-    }
-    const i = goz ?? gozler.findIndex((g, k) => !g && k < acikGoz);
-    if (i < 0 || gozler[i] || i >= acikGoz) {
+    const i = goz !== undefined && !gozler[goz] ? goz : gozler.findIndex((g) => !g);
+    if (i < 0) {
       ses.degil();
       ipucu(...gozEl.map((g) => g.b));
       return false;
     }
     const kalip = tepsi[0] as Kalip;
-    const parti: Parti = { urun: kalip === 'kapkek' ? 'kapkek' : 'kurabiye', sekil: kalip === 'kapkek' ? null : kalip, parcalar: tepsi.map(() => ({ renk: null, yigin: [], susler: [] })) };
-    const bas = efekt_.merkez(tepsiEl);
+    const parti: Parti = { urun: 'kurabiye', sekil: kalip === 'kapkek' ? null : kalip, parcalar: tepsi.map(() => ({ renk: null, yigin: [], susler: [] })) };
+    const bas = efekt_.merkez(tepsiIc);
     const resim = tepsiIc.innerHTML;
     tepsi.length = 0;
     tepsiCiz();
     gozler[i] = { parti, bas: performance.now(), hal: 'cig', hatirlatildi: false };
-    gozCiz(i);
     efekt.secim();
-    void efekt_.ucur(h('div.ps-ucan-tepsi', { html: resim }), bas, efekt_.merkez(gozEl[i].b), { ms: 420, kavis: -50, boy1: 0.7 });
-    salla(gozEl[i].b, 'ps-zipla');
+    // tepsideki kurabiyeler kavis çizerek fırının gözüne uçar; göz kapağı yaylanır
+    const gozB = gozEl[i].b;
+    void efekt_.ucur(h('div.ps-ucan-tepsi', { html: resim }), bas, efekt_.merkez(gozB), { ms: 380, kavis: -60, boy1: 0.7 }).then(() => {
+      if (kapandi) return;
+      gozCiz(i);
+      salla(gozB, 'ps-zipla');
+      const [x, y] = efekt_.merkez(gozB);
+      efekt_.parilti(x, y, 4, 0.5);
+    });
+    gozB.dataset.hal = 'cig';
     firinDurum();
+    adimGuncelle();
     return true;
   }
+  let tepsiSurukledi = false;
   tepsiEl.addEventListener('click', () => {
-    sonDokunus = performance.now();
+    if (tepsiSurukledi) return;
     salla(tepsiEl, 'ps-bas');
     firinaKoy();
+  });
+  /** Tepsiyi fırına sürükleme: parmağın altındaki boş göze (yoksa ilk boş göze) */
+  let tepsiX = 0;
+  let tepsiY = 0;
+  const gozAt = (x: number, y: number) =>
+    gozEl.findIndex((g, i) => {
+      if (gozler[i]) return false;
+      const r = g.b.getBoundingClientRect();
+      return x > r.left - 10 && x < r.right + 10 && y > r.top - 20 && y < r.bottom + 20;
+    });
+  const tepsiSurukleBitir = surukle({
+    el: tepsiIc,
+    hedef: () => firin,
+    aktif: () => tepsi.length > 0 && tepsi.every((k) => k),
+    basla: () => {
+      tepsiSurukledi = false;
+    },
+    tasi: (x, y) => {
+      if (Math.abs(x - tepsiX) + Math.abs(y - tepsiY) > 3) tepsiSurukledi = true;
+      tepsiX = x;
+      tepsiY = y;
+    },
+    birak: (hedefte) => {
+      tepsiIc.style.transition = 'none';
+      if (tepsiSurukledi && hedefte) {
+        tepsiIc.style.transform = '';
+        const g = gozAt(tepsiX, tepsiY);
+        firinaKoy(g >= 0 ? g : undefined);
+      } else geriGonder(tepsiIc);
+      window.setTimeout(() => (tepsiSurukledi = false), 50);
+    },
+  });
+  tepsiEl.addEventListener('pointerdown', (e) => {
+    tepsiX = e.clientX;
+    tepsiY = e.clientY;
   });
 
   function gozCiz(i: number) {
@@ -894,6 +820,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       ic.replaceChildren();
       b.style.removeProperty('--hamur');
       b.style.removeProperty('--p');
+      b.style.removeProperty('--y');
       firinDurum();
       return;
     }
@@ -912,13 +839,14 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       if (!g) return;
       const gecen = simdi - g.bas;
       const b = gozEl[i].b;
-      b.style.setProperty('--hamur', hamurRengi(pisme(gecen, FZ)));
+      const pm = pisme(gecen, FZ);
+      b.style.setProperty('--hamur', hamurRengi(pm));
       b.style.setProperty('--p', Math.min(1, gecen / FZ.altin).toFixed(3));
-      b.style.setProperty('--y', Math.max(0, Math.min(1, (gecen - FZ.altin) / (FZ.yanik - FZ.altin))).toFixed(3));
+      b.style.setProperty('--y', Math.max(0, pm - 1).toFixed(3));
       const hal = firinHali(gecen, FZ);
       if (hal === g.hal) {
         // altında bekliyor: bir kez hatırlat
-        if (hal === 'altin' && !g.hatirlatildi && gecen - FZ.altin > 3500) {
+        if (hal === 'altin' && !g.hatirlatildi && gecen - FZ.altin > 4000) {
           g.hatirlatildi = true;
           void soyle(P.mino.pisti, 'mino', false);
         }
@@ -929,10 +857,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       firinDurum();
       const [x, y] = efekt_.merkez(b);
       if (hal === 'altin') {
+        // büyük "ding": ışık patlaması, parıltılar, kapak zıplar
         ses.ding();
-        efekt_.isik(x, y, 1.1);
+        efekt_.isik(x, y, 1.4);
         ekranSalla(el, 1.5);
-        efekt_.parilti(x, y, 10);
+        efekt_.parilti(x, y, 14, 1.1);
+        salla(b, 'ps-zipla');
         kinoPervane();
         if (!pistiDedi) {
           pistiDedi = true;
@@ -954,21 +884,16 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
           kinoPervane();
           void kinoYer_(resim, [x, y], P.kino.citir);
           kinoSonSoz = performance.now();
+          adimGuncelle();
         });
       }
+      adimGuncelle();
     });
   }
 
   function gozBas(i: number) {
-    sonDokunus = performance.now();
     const g = gozler[i];
     const b = gozEl[i].b;
-    if (!g && i >= acikGoz) {
-      // kilitli göz: yıldızla açılır
-      ses.degil();
-      salla(b, 'ps-hayir');
-      return;
-    }
     if (!g) {
       if (!firinaKoy(i)) salla(b, 'ps-bas');
       return;
@@ -980,108 +905,94 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       return;
     }
     if (g.hal === 'yanik') return;
-    // altın: tabağa çıkar
+    // altın: tabağa çıkar (tabak doluysa yanında sıraya girer)
     gozler[i] = null;
     gozCiz(i);
     const parti = g.parti;
-    efekt_.parilti(...efekt_.merkez(b), 6, 0.7);
     const bas = efekt_.merkez(b);
+    efekt_.parilti(bas[0], bas[1], 6, 0.7);
     efekt.yapis();
+    const tabagaMi = !tabak;
     if (tabak) bekleyen.push(parti);
     else tabak = parti;
-    void efekt_.ucur(h('div.ps-ucan-tabak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, efekt_.merkez(tabakEl), { ms: 480, kavis: -70 }).then(() => {
+    adimGuncelle();
+    void efekt_.ucur(h('div.ps-ucan-tabak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, efekt_.merkez(tabagaMi ? tabakEl : bekleyenEl), { ms: 420, kavis: -70 }).then(() => {
       if (kapandi) return;
       tabakCiz();
-      salla(tabakEl, 'ps-zipla');
+      salla(tabagaMi ? tabakEl : bekleyenEl, 'ps-zipla');
     });
-    tabakCiz();
   }
 
-  /**
-   * Krema: kurabiyede ilk dokunuş süsleme masasını açar (siparişteki desen parmakla çizilir, yüz yapılır, serpinti
-   * sallanır); sonraki dokunuşlar yalnız rengi değiştirir. Kapkekte her dokunuş bir yığın; doğum günü kapkeğinde
-   * yığınlar tamamlanınca mum masası açılır.
-   */
+  /** Krema: hepsi o renk, krema kurabiyenin üstüne yayılır. Gün 3 zigzag siparişte kolay kaydırma paneli açılır. */
   function kremaBas(r: Renk, b: HTMLElement) {
-    sonDokunus = performance.now();
     salla(b, 'ps-sik');
-    hareketIzniIste();
     if (panelAcik) return;
     if (!tabak) {
-      ses.degil();
-      ipucu(tabakEl);
+      yanlis();
       return;
     }
     const parti = tabak;
     const [x, y] = efekt_.merkez(tabakEl, 0.5, 0.35);
+    parti.parcalar.forEach((p) => (p.renk = r));
     const hedefK = hedefKalem(bekleyenSiparisler(), parti, r);
-    const adimlar: Adim[] = [];
-    if (parti.urun === 'kurabiye') {
-      const ilk = parti.parcalar.every((p) => !p.renk);
-      parti.parcalar.forEach((p) => (p.renk = r));
-      if (ilk) {
-        const desen = hedefK?.desen ?? 'duz';
-        if (desen !== 'duz') {
-          adimlar.push({ tur: 'desen', desen, renk: r });
-          parti.parcalar.forEach((p) => (p.desen = desen));
-        }
-        if (hedefK?.yuz) adimlar.push({ tur: 'yuz', yuz: hedefK.yuz });
-        adimlar.push({ tur: 'serpinti' });
-      }
-    } else {
-      let tasti = false;
-      for (const p of parti.parcalar) {
-        if (p.yigin.length < EN_COK_YIGIN) p.yigin.push(r);
-        else tasti = true;
-      }
-      if (tasti) {
-        ses.kay();
-        void kinoYer_(urunSvg({ urun: 'kapkek', sekil: null, hal: 'pismis', yigin: [r] }), [x, y], P.kino.yedim);
-      }
-      const p0 = parti.parcalar[0];
-      if (hedefK?.mum && !p0.mum && p0.yigin.length >= hedefK.yigin) adimlar.push({ tur: 'mum' });
-    }
     ses.fis();
-    efekt_.pof(x, y, 0.8, '#fff');
+    efekt_.pof(x, y, 0.9, '#fff');
+    // torbadan tabağa krema damlası uçar
+    void efekt_.ucur(h('div.ps-ucan-krema', { style: `--renk:${RENK_KODU[r]}` }), efekt_.merkez(b, 0.5, 0.9), [x, y], { ms: 260, kavis: -30, boy1: 1.4 });
     tabakCiz();
     tabakIc.classList.remove('ps-kremalandi');
     void tabakIc.offsetWidth;
     tabakIc.classList.add('ps-kremalandi');
-    if (adimlar.length) {
-      void panelle(() => susle({ kok: el, efekt: efekt_, soyle: (s, k, o) => soyle(s, k ?? 'mino', o) }, parti, hedefK, adimlar)).then(() => {
+    adimGuncelle();
+    if (acik.zigzag && hedefK?.desen === 'zigzag' && parti.parcalar.some((p) => p.desen !== 'zigzag')) {
+      void panelle(() => zigzagCiz({ kok: el, efekt: efekt_, soyle: (s, k, o) => soyle(s, k ?? 'mino', o) }, parti, r)).then(() => {
         if (kapandi) return;
         tabakCiz();
         salla(tabakEl, 'ps-zipla');
+        adimGuncelle();
       });
     }
   }
 
+  /** Süs: her dokunuş en az süslü kurabiyeye bir tane (zıplayarak oturur); yanlış süs ya da fazlası kayar, Kino yer */
   let susSira = 0;
   function susBas(s: Sus, b: HTMLElement) {
-    sonDokunus = performance.now();
     salla(b, 'ps-bas');
     if (!tabak) {
-      ses.degil();
-      ipucu(tabakEl);
+      yanlis();
       return;
     }
-    const enAz = tabak.parcalar.reduce((a, p, i) => (p.susler.length < tabak!.parcalar[a].susler.length ? i : a), 0);
-    const hedefParca = tabak.parcalar[enAz];
+    const parti = tabak;
+    const k = hedefKalem(bekleyenSiparisler(), parti);
+    const enAz = parti.parcalar.reduce((a, p, i) => (p.susler.length < parti.parcalar[a].susler.length ? i : a), 0);
+    const hedefParca = parti.parcalar[enAz];
     const [x, y] = efekt_.merkez(tabakEl, 0.5, 0.35);
     const bas = efekt_.merkez(b, 0.5, 0.3);
-    if (hedefParca.susler.length >= EN_COK_SUS) {
-      // sığmadı: kayıp düşer, Kino yakalar
+    const sinir = k ? (k.sus === s ? k.susAdet : 0) : EN_COK_SUS;
+    if (hedefParca.susler.length >= sinir || hedefParca.susler.some((x2) => x2 !== s)) {
+      // yanlış ya da fazla süs: kayıp düşer, Kino yakalar (zararsız)
       ses.kay();
       void kinoYer_(susIkon(s), [x, y], P.kino.yedim);
+      if (parlayan && parlayan !== b) ipucu(parlayan);
       return;
     }
     hedefParca.susler.push(s);
     ses.tik(susSira++);
-    void efekt_.ucur(h('div.ps-ucan-sus', { html: susIkon(s) }), bas, [x, y], { ms: 360, kavis: -50, boy1: 0.8 });
-    tabakCiz();
+    // süs kavanozdan kavis çizerek kurabiyesinin üstüne uçar, sonra yerinde zıplar
+    const yerEl = tabakIc.children[enAz] as HTMLElement | undefined;
+    const varis = yerEl ? efekt_.merkez(yerEl, 0.5, 0.45) : ([x, y] as [number, number]);
+    void efekt_.ucur(h('div.ps-ucan-sus', { html: susIkon(s) }), bas, varis, { ms: 320, kavis: -60, boy1: 0.9 }).then(() => {
+      if (kapandi || tabak !== parti) return;
+      tabakCiz();
+      const yeni = (tabakIc.children[enAz] as HTMLElement | undefined)?.querySelectorAll('.ps-sus');
+      const son_ = yeni?.[yeni.length - 1];
+      son_?.classList.add('ps-sus-kondu');
+      efekt_.parilti(varis[0], varis[1], 3, 0.4);
+    });
+    adimGuncelle();
   }
 
-  // tabak: dokun → seç (sonra müşteriye dokun); ya da müşteriye sürükle
+  // tabak: dokun → hazırsa sahibine gider; ya da müşteriye sürükle
   let surukleniyor = false;
   let sonX = 0;
   let sonY = 0;
@@ -1122,9 +1033,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       musteriler.forEach((x2) => x2.el.classList.remove('ps-uzerinde'));
       const m = surukleniyor ? musteriAt(sonX, sonY) : null;
       tabakIc.style.transition = 'none';
-      if (m) {
+      if (m && tabak) {
         tabakIc.style.transform = '';
-        void servis(m, 'tabak');
+        // hazır değilse (krema, süs eksik) tabak geri döner, eksik iş parlar
+        if (kalanIs(tabak, hedefKalem([m], tabak))) {
+          geriGonder(tabakIc);
+          yanlis();
+        } else void servis(m);
       } else geriGonder(tabakIc);
       window.setTimeout(() => (surukleniyor = false), 50);
     },
@@ -1134,36 +1049,24 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     sonY = e.clientY;
   });
   tabakEl.addEventListener('click', () => {
-    sonDokunus = performance.now();
     if (surukleniyor) return;
     if (!tabak) {
+      yanlis();
+      return;
+    }
+    const m = sahibi(tabak);
+    if (!m) {
       ses.degil();
       return;
     }
-    efekt.secim();
-    seciliYap(secili === 'tabak' ? null : 'tabak');
-    if (secili) musteriler.forEach((m) => m.hazir && !m.bitti && salla(m.el, 'ps-cagir'));
+    // eksik iş varsa servis edilmez: eksik işin yeri parlar
+    if (kalanIs(tabak, hedefKalem([m], tabak))) {
+      salla(tabakEl, 'ps-hayir');
+      yanlis();
+      return;
+    }
+    void servis(m);
   });
-
-  // Kino ara sıra süs kabından gizlice bir çilek aşırır (Gün 2'den itibaren, günde bir kez)
-  let cilekAsirildi = gun < 2 || (TEST_MODU && q.get('cilek') !== '1');
-  const cilekZamani = performance.now() + (TEST_MODU ? 1500 : 35000 + Math.random() * 40000);
-  function cilekAsir(simdi: number) {
-    if (cilekAsirildi || simdi < cilekZamani || simdi - sonDokunus < 1500 || !tabak) return;
-    const p = tabak.parcalar.find((x) => x.susler.includes('cilek'));
-    if (!p) return;
-    cilekAsirildi = true;
-    p.susler.splice(p.susler.lastIndexOf('cilek'), 1);
-    const kab = susDugmeleri[acik.susler.indexOf('cilek')];
-    tabakCiz();
-    salla(tabakEl, 'ps-hayir');
-    void kinoYer_(susIkon('cilek'), efekt_.merkez(tabakEl, 0.5, 0.3));
-    kinoCilekAgiz(6000);
-    kab?.classList.add('ps-eksik');
-    sonra(sure(2600), () => kab?.classList.remove('ps-eksik'));
-    mino.tepki('sasir');
-    void soyle(P.mino.cilek_eksik);
-  }
 
   // ---------------------------------------------------------------- zaman
   let son = performance.now();
@@ -1174,35 +1077,32 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     son = simdi;
     firinTik(simdi);
     for (const m of musteriler) if (m.hazir && !m.bitti && !m.uyuyor) m.sabirGuncelle(m.sabir + dt / sabirSure);
-    // yeni müşteri: boş yer varsa (hiç kimse yoksa hemen, yoksa aralıkla)
+    // yeni müşteri: boş yer varsa (bekleyen yoksa hemen, biri bekliyorsa aralıkla)
     const bekleyenMusteri = musteriler.filter((m) => !m.bitti).length;
-    if (kuyruk.length && musteriler.length < EN_COK_MUSTERI && (bekleyenMusteri === 0 ? simdi - sonGelis > (TEST_MODU ? 200 : 1800) : simdi - sonGelis > (bekleyenMusteri === 1 ? aralik * 0.65 : aralik))) void musteriGelsin();
-    cilekAsir(simdi);
+    if (kuyruk.length && yerindeki.some((x) => !x) && simdi - sonGelis > (bekleyenMusteri === 0 ? (TEST_MODU ? 200 : 1200) : aralik)) void musteriGelsin();
     if (musteriler.some((m) => m.uyuyor)) uyuyanOldu = true;
-    // kafası karışık müşteri: hamur tepsideyken ya da fırındayken (krema öncesi) fikrini değiştirir
-    for (const m of musteriler) {
-      const v = varis.get(m);
-      if (!m.sip.degisim || !v || m.bitti || m.verilen.some(Boolean) || bekleyenSoz > 0) continue;
-      const hamurVar = tepsi.length > 0 || gozler.some(Boolean);
-      if ((hamurVar && simdi - v > (TEST_MODU ? 300 : 2500)) || simdi - v > (TEST_MODU ? 60000 : 16000)) void fikirDegistir(m);
-    }
+    adimGuncelle();
+    elIpucuBak(simdi);
     durumYaz();
   }, 100);
-  let uyuyanOldu = false;
   function durumYaz() {
-    if (ozel) el.dataset.durum = JSON.stringify({ biten, gelen, kuyruk: kuyruk.length, bugun, yerdeJeton, mutlu, temiz, kirli, uyuyanOldu, panel: panelAcik });
+    if (ozel) el.dataset.durum = JSON.stringify({ biten, gelen, kuyruk: kuyruk.length, bugun, yerdeJeton, mutlu, uyuyanOldu, panel: panelAcik, adim: adimAdi });
   }
 
   // ---------------------------------------------------------------- günün sonu
   async function gunBitti() {
     calisiyor = false;
+    adimGuncelle();
     await bekle(400);
-    if (yerdeJeton) await jetonTopla(true);
+    for (let i = 0; i < 40 && (yerdeJeton > 0 || topluyor) && !kapandi; i++) {
+      void jetonTopla();
+      await bekle(150);
+    }
     if (kapandi) return;
     await soyle(P.mino.bitti);
     mino.tepki('dans');
     await bekle(900);
-    const yildiz = yildizHesapla(mutlu, ayar.hedef, uyuyanOldu);
+    const yildiz = yildizHesapla(mutlu, ayar.hedef);
     if (!kapandi) app.git('aksam', { gun, kazanc: bugun, yildiz, mutlu });
   }
 
@@ -1210,15 +1110,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const giris = otobusGirisi(el, () => {
     calisiyor = true;
     son = performance.now();
+    sonDokunus = performance.now();
   });
   void soyle(P.mino.geldi);
-  // günün hedefi: "Bugün beş mutlu müşteri!"
-  const hedefSoz = (P.mino.hedef as Record<string, string>)[String(ayar.hedef)];
-  if (hedefSoz) void soyle(hedefSoz);
   tepsiCiz();
   tabakCiz();
-  bulasikCiz();
-  bardakCiz();
   if (ozel) (window as unknown as Record<string, unknown>).__pastaGun = { kuyruk, musteriler, gozler, get tabak() { return tabak; } };
 
   return {
@@ -1230,6 +1126,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       zamanlar.forEach(clearTimeout);
       giris.kapat();
       surukleBitir();
+      tepsiSurukleBitir();
       minoCanli.kapat();
       mino.kapat();
       kino.kapat();
@@ -1240,7 +1137,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 
 /**
  * Otobüs parka gelir: soldan yuvarlanarak gelir, durur (esneyip basılır), korna; yan kapağı yukarı açılıp tente olur,
- * tezgâh kayarak çıkar, Mino kapağın içinde el sallar; sonra kadraj kapağa yaklaşır ve tezgâh görünür.
+ * Mino kapağın içinde el sallar; sonra kadraj kapağa yaklaşır ve tezgâh görünür. Dokununca hemen geçer.
  */
 function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => void } {
   const mino = new Mino();
@@ -1251,21 +1148,28 @@ function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => voi
   const sakin = AZ_HAREKET || TEST_MODU;
   const minoKopya = otobus.querySelector('.ps-giris-mino')!;
   let kapandi = false;
+  let bitirildi = false;
   const kapat = () => {
     kapandi = true;
     mino.kapat();
     katman.remove();
   };
+  const gec = () => {
+    if (bitirildi) return;
+    bitirildi = true;
+    kapat();
+    bitti();
+  };
+  // beklemek istemeyen çocuk dokununca giriş biter
+  katman.addEventListener('pointerdown', gec);
   void (async () => {
     if (sakin) {
       await new Promise((r) => setTimeout(r, TEST_MODU ? 60 : 300));
-      if (kapandi) return;
-      kapat();
-      bitti();
+      if (!kapandi) gec();
       return;
     }
     const tekerler = [...otobus.querySelectorAll<SVGGElement>('.ps-ob-teker')];
-    const donus = tekerler.map((t) => t.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(720deg)' }], { duration: 1600, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'forwards' }));
+    const donus = tekerler.map((t) => t.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(720deg)' }], { duration: 1500, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'forwards' }));
     await otobus
       .animate(
         [
@@ -1274,33 +1178,29 @@ function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => voi
           { transform: 'translateX(-1%) rotate(1deg)', offset: 0.92 },
           { transform: 'translateX(0) rotate(0deg)' },
         ],
-        { duration: 1700, easing: 'cubic-bezier(.25,.6,.35,1)', fill: 'both' },
+        { duration: 1500, easing: 'cubic-bezier(.25,.6,.35,1)', fill: 'both' },
       )
       .finished.catch(() => undefined);
     donus.forEach((d) => d.cancel());
+    if (kapandi) return;
     ses.korna();
     otobus.querySelector('.ps-ob-govde')?.animate([{ transform: 'none' }, { transform: 'translateY(6px) scale(1.02, .96)' }, { transform: 'none' }], { duration: 380, easing: 'ease-out' });
-    await new Promise((r) => setTimeout(r, 300));
-    // kapak açılır (tente olur), tezgâh çıkar
+    await new Promise((r) => setTimeout(r, 250));
+    // kapak açılır (tente olur)
     ses.vuup();
     otobus.classList.add('ps-acik');
-    await new Promise((r) => setTimeout(r, 650));
+    await new Promise((r) => setTimeout(r, 550));
     if (kapandi) return;
     ses.pof();
     minoKopya.classList.add('ps-goster');
     mino.tepki('selam');
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1100));
     if (kapandi) return;
     // kadraj kapağa yaklaşır
     await katman
-      .animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.4) translateY(6%)', opacity: 0 }], { duration: 650, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' })
+      .animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.4) translateY(6%)', opacity: 0 }], { duration: 550, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' })
       .finished.catch(() => undefined);
-    if (kapandi) return;
-    kapat();
-    bitti();
+    if (!kapandi) gec();
   })();
   return { kapat };
 }
-
-/** Kilitli fırın gözü: asma kilit ve yıldız (yıldızla açılır) */
-const GOZ_KILIT = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M19 28V21A11 11 0 0 1 41 21V28" fill="none" stroke="#6b3a1f" stroke-width="6"/><path d="M19 28V21A11 11 0 0 1 41 21V28" fill="none" stroke="#C9D4DE" stroke-width="3"/><rect x="12" y="27" width="36" height="26" rx="7" fill="#FFD23F" stroke="#6b3a1f" stroke-width="3.4"/><path d="M30 32l2.4 4.8 5.3.8-3.8 3.7.9 5.3-4.8-2.5-4.8 2.5.9-5.3-3.8-3.7 5.3-.8z" fill="#fff" stroke="#C47F00" stroke-width="1.2" stroke-linejoin="round"/></svg>`;

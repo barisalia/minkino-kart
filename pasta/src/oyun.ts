@@ -3,8 +3,8 @@
  *   const kapat = oyunuBaslat(kokEleman, { cikis: () => anaMenuyeDon() });
  *
  * Test / gösterim: ?test=1&ekran=gun&gun=3 (doğrudan güne), &sifirla=1 (kaydı sıfırlar), &jeton=20,
- * &alinan=sapka,kalip-ay (dükkândan alınmış say), &firin=700,30000 (fırın ms), &sabir=3000, &cilek=1,
- * &yildiz=6 (toplam yıldız: günlere üçer dağıtılır; yükseltmeler açılır).
+ * &alinan=sapka (dükkândan alınmış say), &firin=700,30000 (fırın ms), &sabir=3000, &ipucu=1 (el ipucu testte de),
+ * &yildiz=6 (toplam yıldız: günlere üçer dağıtılır).
  */
 import { ekranKaydet, Uygulama, type BaslatSecenekleri } from '../../src/uygulama';
 import { acilisEkrani, aksamEkrani } from './ekranlar';
@@ -35,7 +35,7 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     if (q.has('yildiz')) {
       let y = Math.max(0, Math.floor(Number(q.get('yildiz')) || 0));
       kayit.yildiz = {};
-      for (let g = 1; g <= 10 && y > 0; g++, y -= 3) kayit.yildiz[String(g)] = Math.min(3, y);
+      for (let g = 1; g <= SON_OYNANAN && y > 0; g++, y -= 3) kayit.yildiz[String(g)] = Math.min(3, y);
     }
     const g = Number(q.get('gun'));
     if (g >= 1 && g <= SON_OYNANAN) {

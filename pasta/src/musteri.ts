@@ -8,11 +8,10 @@
  */
 import { BOY, boyOrani, boyTipi, CIZIM, altPayi, ustPayi, yanOlcek } from '../../src/karakter/boy';
 import { Karakter, type Poz } from '../../src/karakter/karakter';
-import { KISILIK } from '../../src/karakter/kisilik';
 import { YandanKarakter, yandanVar } from '../../src/karakter/yandan';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { SEVIYE_TANE } from './desen';
-import { bardakSvg, SEKERSIZ, serpintiIkon, susIkon, urunSvg } from './cizim';
+import { bardakSvg, urunSvg } from './cizim';
 import { AZ_HAREKET } from './gorsel';
 import { type Kalem, type Parti, type Siparis } from './model';
 
@@ -22,10 +21,6 @@ const yandanYururMu = (ad: string) => yandanVar(ad) && !AZ_HAREKET && (!TEST_MOD
 const GIZLI = '0.001';
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, AZ_HAREKET ? Math.min(ms, 200) : sure(ms)));
 const ras = (a: number, b: number) => a + Math.random() * (b - a);
-
-// Ege'nin annesi (Gün 6): ayakta tek parça çizim (Sesli Maceralar'ın konuşma iskeleti); salınarak yürür, ağzı kafasıyla
-// birlikte (kafa ayrı parça değil). Paylaşılan kişilik tablosuna yalnız bu oyundan eklenir.
-KISILIK.anne ??= { yuruyus: 'salin', adim: 640, gelis: 1600, huy: 'ayak', dans: 'gobek', agiz: [0.5, 0.396], hayir: 3, kafaGenlik: 0.4, sinir: { kafa: 2, bacak: 2 } };
 
 /** Kutunun genişliği, en uzun müşterinin (çocuk) görünen boyuna oranla */
 export function boyCarpani(ad: string): number {
@@ -65,18 +60,8 @@ export function partiCizimi(p: Parti, sinif = 'ps-b-parca', mumSonuk = false): s
   );
 }
 
-/** Sipariş balonunun resmi (yazı yok): her kalem bir grup; mantık siparişinde tavşanın kurabiyesi + 1 çilek */
-export function siparisResmi(sip: Siparis, tavsanResmi?: string): HTMLElement {
-  if (sip.mantik) {
-    const m = sip.mantik;
-    return h(
-      'div.ps-b-ic.ps-b-mantik',
-      {},
-      h('div.ps-b-kalem', { 'data-i': '0' }, tavsanResmi ? h('img.ps-b-kimin', { src: tavsanResmi, alt: '', draggable: 'false' }) : null, h('span.ps-b-grup', { html: kalemCizimi(m.kalem) })),
-      h('b.ps-b-arti', {}, `+${m.fazla}`),
-      h('span.ps-b-grup.ps-b-tek', { html: susIkon('cilek') }),
-    );
-  }
+/** Sipariş balonunun resmi (yazı yok): tabakta istenen kurabiyeler, iri (süsleri sayılabilsin) */
+export function siparisResmi(sip: Siparis): HTMLElement {
   return h(
     `div.ps-b-ic${sip.kalemler.length > 1 ? '.ps-b-cok' : ''}`,
     {},
@@ -85,8 +70,6 @@ export function siparisResmi(sip: Siparis, tavsanResmi?: string): HTMLElement {
         'div.ps-b-kalem',
         { 'data-i': String(i), 'data-adet': String(k.adet), 'data-urun': k.urun },
         h('span.ps-b-grup', { html: Array.from({ length: k.adet }, () => kalemCizimi(k)).join('') }),
-        // serpinti: 1 tane = az, 3 tane = bol; Ege bebek: şekersiz (serpintinin üstü çizili)
-        sip.ozel === 'anne' && k.urun === 'kurabiye' ? h('i.ps-b-isaret.ps-b-sekersiz', { html: SEKERSIZ }) : k.serpinti ? h('i.ps-b-isaret', { 'data-serpinti': String(k.serpinti), html: serpintiIkon(k.serpinti) }) : null,
         h('i.ps-b-tamam'),
       ),
     ),
@@ -118,7 +101,7 @@ export class PastaMusteri {
   private zzz: HTMLElement;
   private uykuBas = 0;
 
-  constructor(sip: Siparis, tavsanResmi?: string) {
+  constructor(sip: Siparis) {
     this.sip = sip;
     this.ad = sip.musteri;
     this.verilen = sip.kalemler.map(() => null);
@@ -139,7 +122,7 @@ export class PastaMusteri {
     this.zzz = h('div.ps-m-zzz', { 'aria-hidden': 'true' }, h('span', {}, 'z'), h('span', {}, 'z'), h('span', {}, 'Z'));
     this.yol = h('div.ps-m-yol', {}, this.govde, this.zzz);
     this.sabirEl = h('div.ps-sabir', { 'aria-hidden': 'true' }, h('i.ps-sabir-bos'), h('i.ps-sabir-dolu'));
-    this.balonIc = siparisResmi(sip, tavsanResmi);
+    this.balonIc = siparisResmi(sip);
     this.balon = h('div.ps-balon', {}, this.balonIc, this.sabirEl);
     const c = CIZIM[ad];
     this.el = h(
@@ -348,30 +331,6 @@ export class PastaMusteri {
     this.balon.classList.remove('ps-zipla');
     void this.balon.offsetWidth;
     this.balon.classList.add('ps-zipla');
-  }
-
-  /** Kafası karışık: balon yeni siparişle değişir (pof) */
-  siparisDegisti(sip: Siparis, tavsanResmi?: string) {
-    this.sip = sip;
-    const yeni = siparisResmi(sip, tavsanResmi);
-    this.balonIc.replaceWith(yeni);
-    this.balonIc = yeni;
-    this.el.dataset.degisti = '1';
-    this.balon.classList.remove('ps-degisti');
-    void this.balon.offsetWidth;
-    this.balon.classList.add('ps-degisti');
-  }
-
-  /** Yüzlü kurabiyeyi görünce aynı ifadeyi yapar (gülen: güler, şaşkın: şaşırır, göz kırpan: güler ve kırpar) */
-  ifadeYap(yuz: string) {
-    if (yuz === 'saskin' && this.karakter.ifadeVar('saskin')) {
-      this.karakter.ifade('saskin', 1800);
-      void this.karakter.oynat('bak', 700);
-    } else this.mutlu(1800);
-    this.el.dataset.ifade = yuz;
-    this.el.classList.remove('ps-ifade-saskin', 'ps-ifade-kirpan', 'ps-ifade-gulen');
-    void this.el.offsetWidth;
-    this.el.classList.add(`ps-ifade-${yuz}`);
   }
 
   /** Kalem teslim alındı (çok kalemlide: o kalemin üstünde tik) */
