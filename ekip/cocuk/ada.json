@@ -153,7 +153,7 @@
     ],
     "bacak-oturma": [
       1026,
-      1396
+      1595
     ]
   },
   "oturma": {
@@ -166,7 +166,6 @@
       "govde-oturma",
       "bacak-oturma"
     ],
-    "kayma": 383,
-    "bant": 0.4
+    "kayma": 249
   }
 }

@@ -136,7 +136,7 @@
     ],
     "bacak-oturma": [
       1024,
-      1370
+      1500
     ],
     "goz-uzgun": [
       1024,
@@ -161,7 +161,6 @@
       "govde-oturma",
       "bacak-oturma"
     ],
-    "kayma": 280,
-    "bant": 0.4
+    "kayma": 195
   }
 }

@@ -3,13 +3,15 @@
   "boyut": 1143,
   "sira": [
     "govde",
+    "govde-tasima",
     "agiz",
     "agiz-kapali",
     "agiz-az",
     "agiz-orta",
     "agiz-yuvarlak",
     "agiz-dis",
-    "agiz-gulumse"
+    "agiz-gulumse",
+    "kol-tasima"
   ],
   "gizli": [
     "agiz-kapali",
@@ -17,7 +19,9 @@
     "agiz-orta",
     "agiz-yuvarlak",
     "agiz-dis",
-    "agiz-gulumse"
+    "agiz-gulumse",
+    "govde-tasima",
+    "kol-tasima"
   ],
   "bagli": {
     "agiz": "govde",
@@ -56,6 +60,14 @@
     "agiz-gulumse": [
       213.5,
       452
+    ],
+    "govde-tasima": [
+      214,
+      1000
+    ],
+    "kol-tasima": [
+      214,
+      700
     ]
   },
   "tuval": [

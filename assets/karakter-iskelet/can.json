@@ -22,7 +22,10 @@
     "agiz-orta",
     "agiz-yuvarlak",
     "agiz-dis",
-    "agiz-gulumse"
+    "agiz-gulumse",
+    "goz-uzgun",
+    "kas-uzgun",
+    "agiz-uzgun"
   ],
   "gizli": [
     "goz-kapali",
@@ -35,7 +38,10 @@
     "agiz-dis",
     "agiz-gulumse",
     "govde-oturma",
-    "bacak-oturma"
+    "bacak-oturma",
+    "goz-uzgun",
+    "kas-uzgun",
+    "agiz-uzgun"
   ],
   "bagli": {
     "kas": "kafa",
@@ -50,7 +56,10 @@
     "agiz-orta": "kafa",
     "agiz-yuvarlak": "kafa",
     "agiz-dis": "kafa",
-    "agiz-gulumse": "kafa"
+    "agiz-gulumse": "kafa",
+    "goz-uzgun": "kafa",
+    "kas-uzgun": "kafa",
+    "agiz-uzgun": "kafa"
   },
   "donme": {
     "kafa": [
@@ -127,7 +136,19 @@
     ],
     "bacak-oturma": [
       1024,
-      1370
+      1500
+    ],
+    "goz-uzgun": [
+      1024,
+      740
+    ],
+    "kas-uzgun": [
+      1017,
+      612
+    ],
+    "agiz-uzgun": [
+      1020,
+      885
     ]
   },
   "ifadeler": {
