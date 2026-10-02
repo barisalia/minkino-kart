@@ -57,12 +57,42 @@ export const YUVA = {
    */
   desenZigzag: ['desen-zigzag'],
   desenNokta: ['desen-nokta'],
+  /** v2 desenleri (beyaz krema; görsel yoksa krema şeridi kodla) */
+  desenDalga: ['desen-dalga'],
+  desenKalp: ['desen-kalp'],
   serpinti: ['susler-serpinti'],
+  // ---- v2 (pasta-otobusu-v2.md 8: Gemini görsel listesi). Yoksa yumuşak kod çizimi (ince sıcak kahve kontur, gölge, parlama).
+  /** serpinti kavanozu (sallanır; kapağı delikli) */
+  serpintiKavanozu: ['serpinti-kavanozu', 'kavanoz-serpinti'],
+  /** yüz süsleri: iki göz (bir arada), gülen ağız, pembe yanak şekeri */
+  yuzGoz: ['kurabiye-yuz-goz', 'yuz-goz'],
+  yuzAgiz: ['kurabiye-yuz-agiz', 'yuz-agiz'],
+  /** şaşkın (O) ağız ve göz kırpma (görsel yoksa krema çizgisi) */
+  yuzAgizSaskin: ['kurabiye-yuz-agiz-saskin'],
+  yuzKirpma: ['kurabiye-yuz-kirpma'],
+  yuzYanak: ['yuz-yanak', 'pembe-seker'],
+  /** içecek makinesi (3 musluk: süt, kakao, limonata) ve boş bardaklar (içi şeffaf; dolum kodla) */
+  icecekMakinesi: ['icecek-makinesi'],
+  bardakKucuk: ['bardak-kucuk'],
+  bardakBuyuk: ['bardak-buyuk'],
+  /** doğum günü mumu (yanık ve sönük) */
+  mum: ['mum', 'mum-yanik'],
+  mumSonuk: ['mum-sonuk'],
+  /** bulaşık: temiz tabak, kirli tabak */
+  temizTabak: ['tabak-temiz'],
+  kirliTabak: ['tabak-kirli'],
+  /** gün hedefi ve yıldız */
+  yildiz: ['yildiz'],
+  mutluKalp: ['mutlu-kalp'],
+  /** Ege'nin annesi: şekersiz işareti (serpintinin üstü çizili) */
+  sekersiz: ['sekersiz'],
 } as const satisfies Record<string, readonly string[]>;
 
 /** Kurabiyenin üstündeki tek süs parçası (Gemini'den istenecek: susler-cilek …; bal için susler-bal-damlasi) */
 export const susParcaAdlari = (s: Sus): string[] => [`susler-${s === 'bal' ? 'bal-damlasi' : s}`];
 
+/** Krema şeridi dokusu (parmak yolu boyunca döşenir), renk renk */
+export const seritAdlari = (r: Renk): string[] => [`krema-serit-${r}`];
 export const kalipAdlari = (k: Kalip): string[] => (k === 'kapkek' ? ['cupcake-kalip', 'kalip-kapkek', 'kapkek-kalibi'] : [`kalip-${k}`]);
 export const kremaAdlari = (r: Renk): string[] => [`krema-${r}`, `krema-torbasi-${r}`];
 export const kavanozAdlari = (s: Sus): string[] => [`kavanoz-${s}`, `sus-kavanozu-${s}`];

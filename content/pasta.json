@@ -1,5 +1,5 @@
 {
-  "aciklama": "Mino'nun Pasta Otobüsü (ekip/senaryo/pasta-otobusu.md). Mino = anlatıcı sesi; kino = Kino'nun kendi sesi; musteri = müşteri tepkileri (anlatıcı sesi, tonlu). Sipariş okuma parçalı kayıt: {sayı} (mevcut 'Bir!'…) + şekil + renk + süs. arayuz ekranda yazar, okunmaz.",
+  "aciklama": "Mino'nun Pasta Otobüsü (ekip/senaryo/pasta-otobusu.md). Mino = anlatıcı sesi; kino = Kino'nun kendi sesi; musteri = müşteri tepkileri (anlatıcı sesi, tonlu). Sipariş okuma parçalı kayıt: {sayı} (mevcut 'Bir!'…) + şekil + renk + süs. arayuz ekranda yazar, okunmaz. v2 (pasta-otobusu-v2.md): hedef, yıldız, desen, serpinti, yüz, içecek, bulaşık, özel müşteriler.",
   "mino": {
     "geldi": "Pasta otobüsü geldi!",
     "hosgeldin": "Hoş geldin!",
@@ -11,22 +11,75 @@
     "kumbara": "Kumbarada kaç jeton var?",
     "ne_alalim": "Ne alalım?",
     "bitti": "Bugünlük bu kadar!",
-    "mantik": "Tavşanınkinden bir fazla çilek!"
+    "mantik": "Tavşanınkinden bir fazla çilek!",
+    "hedef": {
+      "3": "Bugün üç mutlu müşteri!",
+      "4": "Bugün dört mutlu müşteri!",
+      "5": "Bugün beş mutlu müşteri!",
+      "6": "Bugün altı mutlu müşteri!",
+      "8": "Bugün sekiz mutlu müşteri!"
+    },
+    "ciz": "Parmağınla çiz!",
+    "guzel": "Çok güzel çizdin!",
+    "salla": "Salla salla!",
+    "yuz": "Yüzünü yapalım!",
+    "mum": "Mumları say!",
+    "doldur": "Çizgiye kadar doldur!",
+    "tabak_yok": "Temiz tabak kalmadı!",
+    "yildiz": [
+      "Bir yıldız!",
+      "İki yıldız!",
+      "Üç yıldız!"
+    ],
+    "yeni": "Yeni bir şey açıldı!",
+    "hedef_tamam": "Hedef tamam!",
+    "dogumgunu": "Doğum günü kapkeği!",
+    "iyi_ki": "İyi ki doğdun!",
+    "ege": "Ege bebek için, şekersiz!"
   },
   "kino": {
     "citir": "Çıtır çıtır!",
     "pisti": "Pişti! Pişti!",
     "yedim": "Hıhı… bir tane yedim.",
-    "uyku": "Zzz… kurabiye…"
+    "uyku": "Zzz… kurabiye…",
+    "is_ver": "Bana iş ver!",
+    "bulasik": "Bulaşık bende!",
+    "piril": "Pırıl pırıl!",
+    "sil": "Siliyorum!",
+    "krema": "Mmm, krema!"
   },
   "musteri": {
-    "tavsan": ["Mmm, havuç!", "Hop hop, sağ ol!"],
-    "ayi": ["Ballı, nefis!", "Ayıcık çok mutlu!"],
-    "ordek": ["Vak, şahane!", "Vak vak, sağ ol!"],
-    "can": ["Süper!", "Harika olmuş!"],
-    "ada": ["Çok güzel!", "Bayıldım!"],
-    "elif": ["Tam istediğim!", "Çok teşekkürler!"],
-    "uyandi": "Hı? Sıra bende mi?"
+    "tavsan": [
+      "Mmm, havuç!",
+      "Hop hop, sağ ol!"
+    ],
+    "ayi": [
+      "Ballı, nefis!",
+      "Ayıcık çok mutlu!"
+    ],
+    "ordek": [
+      "Vak, şahane!",
+      "Vak vak, sağ ol!"
+    ],
+    "can": [
+      "Süper!",
+      "Harika olmuş!"
+    ],
+    "ada": [
+      "Çok güzel!",
+      "Bayıldım!"
+    ],
+    "elif": [
+      "Tam istediğim!",
+      "Çok teşekkürler!"
+    ],
+    "uyandi": "Hı? Sıra bende mi?",
+    "anne": [
+      "Ege çok sevecek!",
+      "Teşekkürler!"
+    ],
+    "karisik": "Şey… hayır, şöyle olsun!",
+    "ufle": "Fuuu!"
   },
   "parca": {
     "sekil": {
@@ -55,7 +108,40 @@
       "muz": "muzlu!",
       "cikolata": "çikolatalı!"
     },
-    "besli": ["Beş!", "On!", "On beş!", "Yirmi!"]
+    "besli": [
+      "Beş!",
+      "On!",
+      "On beş!",
+      "Yirmi!"
+    ],
+    "desen": {
+      "zigzag": "zigzaglı!",
+      "dalga": "dalgalı!",
+      "nokta": "noktalı!",
+      "kalp": "kalpli!"
+    },
+    "yuz": {
+      "gulen": "gülen yüzlü!",
+      "saskin": "şaşkın yüzlü!",
+      "kirpan": "göz kırpan!"
+    },
+    "serpinti": {
+      "az": "az serpinti!",
+      "bol": "bol serpinti!"
+    },
+    "mum": {
+      "4": "Dört mum!",
+      "5": "Beş mum!",
+      "6": "Altı mum!"
+    },
+    "icecek": {
+      "kucuk-sut": "Küçük süt!",
+      "buyuk-sut": "Büyük süt!",
+      "kucuk-kakao": "Küçük kakao!",
+      "buyuk-kakao": "Büyük kakao!",
+      "kucuk-limonata": "Küçük limonata!",
+      "buyuk-limonata": "Büyük limonata!"
+    }
   },
   "arayuz": {
     "baslik_ust": "Mino'nun",
@@ -64,6 +150,10 @@
     "park": "Park",
     "okul": "Okul önü",
     "bitti": "Tamam",
-    "devam": "Devam"
+    "devam": "Devam",
+    "plaj": "Plaj",
+    "kar": "Karlı bahçe",
+    "senlik": "Şenlik",
+    "yakinda": "Yakında"
   }
 }

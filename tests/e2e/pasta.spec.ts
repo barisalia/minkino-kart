@@ -4,31 +4,9 @@
  */
 import { expect, test, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
-
-interface Kalem {
-  urun: 'kurabiye' | 'kapkek';
-  adet: number;
-  sekil: string | null;
-  renk: string;
-  sus: string | null;
-  susAdet: number;
-  yigin: number;
-}
-interface Siparis {
-  musteri: string;
-  kalemler: Kalem[];
-  mantik?: { kaynak: string; kalem: Kalem; fazla: number };
-}
+import { siradaki, susle, type Kalem, type Siparis } from './pasta-yardimci';
 
 const hazirMusteri = (page: Page) => page.locator('.ps-musteri.ps-hazir:not(.ps-bitti)');
-
-/** Sırada bekleyen ilk müşterinin siparişi (test modunda data-siparis) */
-async function siradaki(page: Page): Promise<{ ad: string; sip: Siparis }> {
-  await expect(hazirMusteri(page).first()).toBeVisible({ timeout: 15000 });
-  // ad ve sipariş aynı elemandan, tek seferde (bu arada başka müşteri hazır olabilir)
-  const [ad, veri] = await hazirMusteri(page).first().evaluate((e) => [e.getAttribute('data-musteri')!, e.getAttribute('data-siparis')!]);
-  return { ad, sip: JSON.parse(veri) as Siparis };
-}
 
 /** Bir kalemi dokunarak yapar: hamur (adet kez), kalıp, tepsi → fırın, altında çıkar, krema, süs. Tabakta bırakır. */
 async function kalemYap(page: Page, k: Kalem, o: { renk?: string } = {}) {
@@ -44,7 +22,11 @@ async function kalemYap(page: Page, k: Kalem, o: { renk?: string } = {}) {
   await expect(page.locator('.ps-tabak[data-dolu="1"]')).toBeVisible();
   const renk = o.renk ?? k.renk;
   const kremaSayisi = k.urun === 'kapkek' ? k.yigin : 1;
-  for (let i = 0; i < kremaSayisi; i++) await page.locator(`.ps-krema-sise[data-renk="${renk}"]`).click();
+  for (let i = 0; i < kremaSayisi; i++) {
+    await page.locator(`.ps-krema-sise[data-renk="${renk}"]`).click();
+    // v2: kurabiyede süsleme masası açılır (desen çizilir, serpinti sallanır)
+    await susle(page, k);
+  }
   if (k.sus) for (let i = 0; i < k.susAdet * k.adet; i++) await page.locator(`.ps-sus-kabi[data-sus="${k.sus}"]`).click();
 }
 
@@ -63,7 +45,7 @@ test('Pasta Otobüsü: açılış → Gün 1 (6 müşteri) dokunarak baştan son
   const hatalar = hataTopla(page);
   await page.goto('./pasta/?test=1&sifirla=1');
   await expect(page.locator('.ps-logo')).toBeVisible();
-  await expect(page.locator('.ps-gun-kart')).toHaveCount(3);
+  await expect(page.locator('.ps-gun-kart')).toHaveCount(10);
   await expect(page.locator('.ps-gun-kart[data-gun="2"]')).toHaveClass(/ps-kilitli/);
   await page.locator('.ps-gun-kart[data-gun="1"]').click();
   await expect(page.locator('.ps-gun[data-gun="1"]')).toBeVisible();
@@ -225,7 +207,7 @@ test('Pasta Otobüsü: ekran kareleri (yatay telefon, dikey telefon, tablet)', a
   ] as const) {
     await page.setViewportSize({ width: w, height: hh });
     await page.goto('./pasta/?test=1&sifirla=1&alinan=sapka');
-    await expect(page.locator('.ps-gun-kart')).toHaveCount(3);
+    await expect(page.locator('.ps-gun-kart')).toHaveCount(10);
     await page.waitForTimeout(400);
     await page.screenshot({ path: `tests/screens/pasta-${ad}-acilis.png` });
     await page.goto('./pasta/?test=1&ekran=gun&gun=2&alinan=sapka');

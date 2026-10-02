@@ -1,12 +1,12 @@
 /** Mino'nun Pasta Otobüsü ilerlemesi (yalnız bu cihazda; localStorage, hata olursa sessizce bellekte kalır). */
-import { RAF } from './model';
+import { acikYukseltmeler, RAF, SON_OYNANAN } from './model';
 
 const ANAHTAR = 'minkino-pasta-v1';
 
 export interface PastaKayit {
   /** kumbaradaki jeton */
   jeton: number;
-  /** oynanabilen en yüksek gün (1-3) */
+  /** oynanabilen en yüksek gün (1-6) */
   acikGun: number;
   /** bitirilen günler */
   biten: number[];
@@ -14,9 +14,12 @@ export interface PastaKayit {
   alinan: string[];
   /** otobüsün boyası */
   boya: string;
+  /** her günün en iyi yıldızı (1-3); toplamı yükseltme açar */
+  yildiz: Record<string, number>;
 }
 
-const bos = (): PastaKayit => ({ jeton: 0, acikGun: 1, biten: [], alinan: [], boya: 'pembe' });
+const bos = (): PastaKayit => ({ jeton: 0, acikGun: 1, biten: [], alinan: [], boya: 'pembe', yildiz: {} });
+const gunMu = (g: unknown) => typeof g === 'number' && Number.isInteger(g) && g >= 1 && g <= 10;
 
 function yukle(): PastaKayit {
   try {
@@ -24,12 +27,15 @@ function yukle(): PastaKayit {
     if (!ham) return bos();
     const k = JSON.parse(ham) as Partial<PastaKayit>;
     const idler = new Set(RAF.map((r) => r.id));
+    const yildiz: Record<string, number> = {};
+    if (k.yildiz && typeof k.yildiz === 'object') for (const [g, n] of Object.entries(k.yildiz)) if (gunMu(Number(g))) yildiz[g] = Math.max(0, Math.min(3, Math.floor(Number(n) || 0)));
     return {
       jeton: Math.max(0, Math.floor(Number(k.jeton) || 0)),
-      acikGun: Math.min(3, Math.max(1, Math.floor(Number(k.acikGun) || 1))),
-      biten: Array.isArray(k.biten) ? k.biten.filter((g) => g === 1 || g === 2 || g === 3) : [],
+      acikGun: Math.min(SON_OYNANAN, Math.max(1, Math.floor(Number(k.acikGun) || 1))),
+      biten: Array.isArray(k.biten) ? k.biten.filter(gunMu) : [],
       alinan: Array.isArray(k.alinan) ? k.alinan.filter((x) => typeof x === 'string' && idler.has(x)) : [],
       boya: typeof k.boya === 'string' ? k.boya : 'pembe',
+      yildiz,
     };
   } catch {
     return bos();
@@ -52,9 +58,15 @@ export function sifirla() {
   kaydet();
 }
 
-/** Gün bitti: bir sonraki gün açılır */
-export function gunBitti(gun: number) {
+/** Toplam yıldız (her günün en iyisi) */
+export const toplamYildiz = (k: PastaKayit = kayit) => Object.values(k.yildiz).reduce((t, n) => t + n, 0);
+/** Şu an açık yükseltmeler (oynanacak güne göre) */
+export const yukseltmeler = (gun: number) => acikYukseltmeler(toplamYildiz(), gun);
+
+/** Gün bitti: yıldız yazılır (en iyisi kalır), bir sonraki gün açılır */
+export function gunBitti(gun: number, yildiz = 1) {
   if (!kayit.biten.includes(gun)) kayit.biten.push(gun);
-  kayit.acikGun = Math.min(3, Math.max(kayit.acikGun, gun + 1));
+  kayit.yildiz[String(gun)] = Math.max(kayit.yildiz[String(gun)] ?? 0, Math.max(1, Math.min(3, yildiz)));
+  kayit.acikGun = Math.min(SON_OYNANAN, Math.max(kayit.acikGun, gun + 1));
   kaydet();
 }

@@ -115,6 +115,20 @@ export const ses = {
     ton(300, 0, 0.35, 'sine', 0.16, 900);
     gurultu(0, 0.3, 600, 2400, 0.08, 0.7);
   },
+  /** serpinti: şeker taneleri kavanozda tıkırdar */
+  serp() {
+    gurultu(0, 0.12, 7000, 5000, 0.07, 4);
+    gurultu(0.06, 0.1, 6000, 4500, 0.05, 4);
+  },
+  /** içecek akar: yumuşak şırıltı (sure sn) */
+  akis(sure = 0.3) {
+    gurultu(0, sure, 900, 1300, 0.08, 1.2);
+  },
+  /** köpük: yıkama (bulaşık) */
+  kopuk() {
+    ton(700, 0, 0.12, 'sine', 0.08, 1100);
+    ton(900, 0.1, 0.12, 'sine', 0.07, 1300);
+  },
   /** henüz değil: hafif "tık tık" */
   degil() {
     ton(520, 0, 0.06, 'sine', 0.1, 480);

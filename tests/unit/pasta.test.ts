@@ -3,6 +3,7 @@ import P from '../../content/pasta.json';
 import { karakterCumleleri, normal, tumCumleler } from '../../src/audio/cumleler';
 import {
   acikOlanlar,
+  acikYukseltmeler,
   alinabilir,
   EN_COK_YIGIN,
   FIRIN,
@@ -27,6 +28,9 @@ import {
   type Siparis,
 } from '../../pasta/src/model';
 
+/** İç içe metinleri düzleştirir */
+const duz = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(duz) : v && typeof v === 'object' ? Object.values(v).flatMap(duz) : []);
+
 /** Tekrarlanabilir rastgele sayı (mulberry32) */
 function tohum(s: number) {
   return () => {
@@ -44,7 +48,7 @@ const aynisi = (k: Kalem): Parti => ({
   sekil: k.sekil,
   parcalar: Array.from({ length: k.adet }, () => ({
     renk: k.urun === 'kurabiye' ? k.renk : null,
-    yigin: k.urun === 'kapkek' ? Array.from({ length: k.yigin }, () => k.renk) : [],
+    yigin: k.urun === 'kapkek' ? Array.from({ length: k.yigin }, () => k.renk!) : [],
     susler: k.sus ? Array.from({ length: k.susAdet }, () => k.sus!) : [],
   })),
 });
@@ -70,12 +74,20 @@ describe('sipariş üretimi', () => {
     }
   });
 
-  it('Gün 2: ayı, Ada, Elif; 2-3 kurabiye, süs 1-3 (üçte en çok 2); ayı ballı', () => {
+  it('Gün 2: ayı, Ada, Elif; her birinin bir siparişi yüzlü kurabiye, öbürü 2-3 kurabiye, süs 1-3 (üçte en çok 2); ayı ballı', () => {
     for (let s = 1; s <= 40; s++) {
       const plan = gunPlani(2, acikOlanlar(2), tohum(s));
       expect(new Set(plan.map((p) => p.musteri))).toEqual(new Set(['ayi', 'ada', 'elif']));
+      for (const ad of ['ayi', 'ada', 'elif']) expect(plan.filter((p) => p.musteri === ad && p.kalemler[0].yuz)).toHaveLength(1);
       for (const p of plan) {
         const k = p.kalemler[0];
+        if (k.yuz) {
+          // yüzlü kurabiye: tek, düz kremalı, süssüz, serpintisiz; yüz yuvarlak ya da kalpte
+          expect(k).toMatchObject({ adet: 1, desen: 'duz', serpinti: 0, sus: null });
+          expect(['yuvarlak', 'kalp']).toContain(k.sekil);
+          expect(['gulen', 'saskin', 'kirpan']).toContain(k.yuz);
+          continue;
+        }
         expect(k.adet).toBeGreaterThanOrEqual(2);
         expect(k.adet).toBeLessThanOrEqual(3);
         expect(k.sus).not.toBeNull();
@@ -248,13 +260,17 @@ describe('seslendirme', () => {
     for (let s = 1; s <= 20; s++)
       for (const g of [1, 2, 3] as const)
         for (const sip of gunPlani(g, acikOlanlar(g, ['kalip-ay', 'renk-mor', 'sus-muz', 'sus-cikolata']), tohum(s))) for (const p of okuma(sip)) expect(hepsi.has(normal(p)), p).toBe(true);
-    for (const t of Object.values(P.mino)) expect(hepsi.has(t)).toBe(true);
+    for (let s = 1; s <= 20; s++)
+      for (const g of [4, 5, 6] as const)
+        for (const sip of gunPlani(g, acikOlanlar(g, [], acikYukseltmeler(0, g)), tohum(s))) for (const p of okuma(sip)) expect(hepsi.has(normal(p)), p).toBe(true);
+    for (const t of duz(P.mino)) expect(hepsi.has(normal(t)), t).toBe(true);
+    for (const t of duz(P.parca)) expect(hepsi.has(normal(t)), t).toBe(true);
     for (const t of P.parca.besli) expect(hepsi.has(t)).toBe(true);
     const kino = new Set(karakterCumleleri().kino);
-    for (const t of Object.values(P.kino)) expect(kino.has(normal(t))).toBe(true);
+    for (const t of duz(P.kino)) expect(kino.has(normal(t))).toBe(true);
   });
   it('cümleler kısa', () => {
-    const metinler = [...Object.values(P.mino), ...Object.values(P.kino), ...Object.values(P.musteri).flat()];
+    const metinler = [...duz(P.mino), ...duz(P.kino), ...duz(P.musteri), ...duz(P.parca)];
     for (const t of metinler) expect(t.length, t).toBeLessThanOrEqual(32);
   });
 });

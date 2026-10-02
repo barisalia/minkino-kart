@@ -9,9 +9,9 @@ export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(pref
 const sakin = () => AZ_HAREKET || TEST_MODU;
 const ras = (a: number, b: number) => a + Math.random() * (b - a);
 
-const PARK = import.meta.glob<string>('../../assets/film/park/*.webp', { eager: true, query: '?url', import: 'default' });
-/** Park katmanının adresi (assets/film/park/<ad>.webp) */
-export const parkAdres = (ad: string) => PARK[`../../assets/film/park/${ad}.webp`] ?? '';
+const MEKAN = import.meta.glob<string>(['../../assets/film/park/*.webp', '../../assets/film/plaj/*.webp', '../../assets/film/kar/*.webp'], { eager: true, query: '?url', import: 'default' });
+/** Mekân katmanının adresi (assets/film/<park|plaj|kar>/<ad>.webp); yoksa parkınki */
+export const parkAdres = (ad: string, mekan: 'park' | 'plaj' | 'kar' = 'park') => MEKAN[`../../assets/film/${mekan}/${ad}.webp`] ?? MEKAN[`../../assets/film/park/${ad}.webp`] ?? '';
 
 /** Efekt katmanı: ekranın üstünde, dokunuşları geçirir. Koordinatlar ekran köküne göre (px). */
 export class Efekt {

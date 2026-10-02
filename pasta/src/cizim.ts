@@ -6,8 +6,9 @@
  * Kurabiye ve kapkek çizimleri tek kaynaktan: tepsi, fırın, tabak ve sipariş balonu aynı çizimi kullanır.
  * Hamurun rengi CSS değişkeninden (--hamur): fırında pişerken kod yalnız bu rengi değiştirir.
  */
-import { RENK_KODU, type Renk, type Sekil, type Sus, type Urun } from './model';
-import { KREMA_DIK, kalipAdlari, kapkekAdlari, kavanozAdlari, kremaAdlari, kurabiyeAdlari, resim, susParcaAdlari, yuva, type KurabiyeHal } from './resimler';
+import { agizKutusu, DESEN_ORAN, desenHedefleri, desenKutusu, gozKutusu, serpintiYerleri, yolD, YUZ_YERI, yuzHedefleri, type Desen, type Hedef, type Yuz } from './desen';
+import { ICECEK_KODU, RENK_KODU, type Boy, type Icecek, type Renk, type Sekil, type Sus, type Urun } from './model';
+import { KREMA_DIK, seritAdlari, kalipAdlari, kapkekAdlari, kavanozAdlari, kremaAdlari, kurabiyeAdlari, resim, susParcaAdlari, yuva, type KurabiyeHal } from './resimler';
 
 export const K = '#6b3a1f';
 /** Konturları inceltir (kod çizimleri ilk hâlinde kalın çizilmişti): kahve konturun kalınlığı ×0.62 */
@@ -39,33 +40,63 @@ export const SEKIL_YOLU: Record<Sekil, string> = {
 };
 /** Kremanın küçüldüğü merkez (şeklin gövdesinin ortası) */
 const KREMA_MERKEZ: Record<Sekil, [number, number]> = { yuvarlak: [50, 50], yildiz: [50, 54], kalp: [50, 46], ay: [36, 56] };
-/** Süslerin kurabiye üstündeki yerleri (1-3 süs) */
-const SUS_YERI: Record<Sekil, [number, number][][]> = {
-  yuvarlak: [[[50, 50]], [[38, 42], [62, 60]], [[50, 34], [35, 60], [65, 60]]],
-  yildiz: [[[50, 54]], [[42, 46], [58, 64]], [[50, 40], [38, 62], [62, 62]]],
-  kalp: [[[50, 46]], [[37, 36], [57, 56]], [[34, 38], [66, 38], [50, 62]]],
-  ay: [[[33, 60]], [[26, 48], [42, 72]], [[25, 42], [30, 62], [48, 76]]],
+/**
+ * Süslerin kurabiye üstündeki yerleri (Barış: "çilekler olmuş mu?"; 2026-10-02): küçük (kurabiye eninin %22-28'i),
+ * kremanın üstüne dengeli dağılır: 1 ortada, 2 yan yana, 3 üçgen, 4-5 halka. Şeklin içinde kalır (yıldızda ve ayda
+ * dar). Her süs biraz farklı boyda ve hafif döner (±20°, her zaman aynı: rastgele ama kararlı).
+ */
+const SUS_ALAN: Record<Sekil, { cx: number; cy: number; rx: number; ry: number }> = {
+  yuvarlak: { cx: 50, cy: 50, rx: 17, ry: 15 },
+  kalp: { cx: 50, cy: 44, rx: 16, ry: 12 },
+  yildiz: { cx: 50, cy: 55, rx: 11, ry: 10 },
+  ay: { cx: 35, cy: 57, rx: 8, ry: 15 },
 };
-
-// ---------------------------------------------------------------- süsler (merkez 0,0; ~22 birim)
-const SUS_CIZIM: Record<Sus, string> = {
-  // çilek: kalp gibi gövde, sağ yanı koyu (cel gölge), yeşil taç, sarı çekirdekler, parlama
-  cilek: `<path d="M0 12C-9 8-11-1-10-5C-8-10 8-10 10-5C11-1 9 8 0 12Z" fill="#FF3B4E" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M3 11C8 7 10 0 9-4C10 2 8 8 3 11Z" fill="#C81E36"/><path d="M-8-6L-2.5-5L0-10L2.5-5L8-6L4.5-2L0-4.5L-4.5-2Z" fill="#4CC25A" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><g fill="#FFE27A"><ellipse cx="-4.5" cy="1" rx="1.1" ry="1.6"/><ellipse cx="3.5" cy="0" rx="1.1" ry="1.6"/><ellipse cx="0" cy="5.5" rx="1.1" ry="1.6"/><ellipse cx="-1" cy="-1.5" rx="1" ry="1.4"/><ellipse cx="4.5" cy="5" rx="1" ry="1.4"/></g><ellipse cx="-5" cy="-2.5" rx="2.2" ry="1.3" fill="#fff" opacity=".85" transform="rotate(-25 -5 -2.5)"/>`,
-  havuc: `<circle r="9" fill="#FF8A2B" stroke="${K}" stroke-width="2.4"/><circle r="5.4" fill="#FFB56B"/><circle r="1.8" fill="#E86E10"/><g stroke="#E86E10" stroke-width="1.3" stroke-linecap="round"><path d="M0-4.8v-2.6M0 4.8v2.6M-4.8 0h-2.6M4.8 0h2.6"/></g><path d="M3 7.5A9 9 0 0 0 8.4 3" fill="none" stroke="#D45E08" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="-3.5" cy="-5" rx="2.4" ry="1.2" fill="#fff" opacity=".75"/>`,
-  bal: `<path d="M0-11C4-5 8.5-1 8.5 3.5A8.5 8.5 0 0 1-8.5 3.5C-8.5-1-4-5 0-11Z" fill="#FFB321" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9A8.5 8.5 0 0 0 8.4 2" fill="none" stroke="#E08A00" stroke-width="2.6" stroke-linecap="round"/><path d="M-3.8 1.5A4.2 4.2 0 0 0-1 6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"/><circle cx="-2" cy="-4" r="1.2" fill="#fff" opacity=".9"/>`,
-  // muz dilimi: krem halka, ortada yıldız gibi çekirdek izleri
-  muz: `<circle r="9" fill="#FFF1A8" stroke="${K}" stroke-width="2.4"/><circle r="6" fill="#FFF8D2" stroke="#F2D46A" stroke-width="1.6"/><g fill="#8A5A2B"><circle cx="0" cy="-2.2" r="1.1"/><circle cx="-2" cy="1.4" r="1.1"/><circle cx="2" cy="1.4" r="1.1"/></g><path d="M2.5 8.2A9 9 0 0 0 8.6 2.4" fill="none" stroke="#E8C64A" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="-3.8" cy="-5" rx="2.4" ry="1.2" fill="#fff" opacity=".85"/>`,
-  // çikolata: kare tablet parçası, kabartmalı, parlak
-  cikolata: `<rect x="-9" y="-9" width="18" height="18" rx="3.5" fill="#6B3A1E" stroke="${K}" stroke-width="2.4" transform="rotate(-8)"/><rect x="-6" y="-6.5" width="12" height="11" rx="2.4" fill="#8E5530" transform="rotate(-8)"/><path d="M-5-4.5L4.5-5.8" stroke="#C08356" stroke-width="2" stroke-linecap="round"/><circle cx="-4.5" cy="-4.5" r="1.3" fill="#fff" opacity=".7"/>`,
-};
-for (const s of Object.keys(SUS_CIZIM) as Sus[]) {
-  // Gemini'den süs parçası gelmişse (susler-<ad>) o, yoksa kod çizimi
-  const u = resim(susParcaAdlari(s));
-  SUS_CIZIM[s] = u ? `<image href="${u}" x="-12.5" y="-12.5" width="25" height="25" preserveAspectRatio="xMidYMid meet"/>` : ince(SUS_CIZIM[s]);
+/** n süsün yerleri: x, y, boy (birim), dönme (derece) */
+export function susYerleri(sekil: Sekil, n: number, tohum = 0): { x: number; y: number; w: number; a: number }[] {
+  const k = SUS_ALAN[sekil];
+  if (n <= 0) return [];
+  const yerler: [number, number][] =
+    n === 1
+      ? [[0, 0]]
+      : n === 2
+        ? [[-0.85, 0.05], [0.85, -0.05]]
+        : n === 3
+          ? [[0, -0.85], [-0.85, 0.6], [0.85, 0.6]]
+          : Array.from({ length: n }, (_, i) => {
+              const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
+              return [Math.cos(a), Math.sin(a)] as [number, number];
+            });
+  return yerler.map(([fx, fy], i) => {
+    const h = (i * 7919 + tohum * 104729 + n * 31) % 97;
+    return { x: k.cx + fx * k.rx, y: k.cy + fy * k.ry, w: 22 + (h % 7), a: ((h * 13) % 41) - 20 };
+  });
 }
-export const susSvg = (s: Sus, x: number, y: number, k = 1, ek = '') => `<g class="ps-sus" data-sus="${s}" transform="translate(${x} ${y}) scale(${k})"${ek}>${SUS_CIZIM[s]}</g>`;
-/** Süsün tek başına simgesi (süs kabı, sipariş balonu) */
-export const susIkon = (s: Sus) => `<svg viewBox="-12 -12 24 24" aria-hidden="true">${SUS_CIZIM[s]}</svg>`;
+
+/** Süsün görseli (Gemini: susler-<ad>); çilekte bütün ve yarım çilek sırayla. Yoksa yedek: küçük renkli yuvarlak. */
+const SUS_RENGI: Record<Sus, string> = { cilek: '#FF4D5E', havuc: '#FF8A2B', bal: '#FFB321', muz: '#FFF1A8', cikolata: '#6B3A1E' };
+function susGorseli(s: Sus, i = 0): string | null {
+  if (s === 'cilek' && i % 2 === 1) return resim(['susler-cilek-yarim', ...susParcaAdlari(s)]);
+  return resim(susParcaAdlari(s));
+}
+/** Süsün yumuşak gölgesi (küçük, soluk) */
+const SUS_GOLGE = 'filter:drop-shadow(0 .9px .7px rgba(80,40,20,.32))';
+/** Bir süs: merkez (x, y), en w birim, dönme a; i: sırası (çilekte bütün / yarım) */
+export function susSvg(s: Sus, x: number, y: number, w = 24, a = 0, i = 0): string {
+  const u = susGorseli(s, i);
+  const ic = u
+    ? `<image href="${u}" x="${(-w / 2).toFixed(2)}" y="${(-w / 2).toFixed(2)}" width="${w.toFixed(2)}" height="${w.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`
+    : `<circle r="${(w * 0.3).toFixed(2)}" fill="${SUS_RENGI[s]}" stroke="${K}" stroke-width=".8"/><circle cx="${(-w * 0.1).toFixed(2)}" cy="${(-w * 0.1).toFixed(2)}" r="${(w * 0.07).toFixed(2)}" fill="#fff" opacity=".8"/>`;
+  return `<g class="ps-sus" data-sus="${s}" transform="translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${a})" style="${SUS_GOLGE}">${ic}</g>`;
+}
+/** Süsün tek başına simgesi (süs kabı, sipariş balonu, Kino'nun yediği, uçan süs): aynı görsel */
+export const susIkon = (s: Sus, i = 0) => `<svg viewBox="-12 -12 24 24" aria-hidden="true" overflow="visible">${susSvg(s, 0, 0, 22, 0, i)}</svg>`;
+/** Süsler kurabiyenin ya da kapkeğin üstüne dağılmış */
+function susDiz(sekil: Sekil, susler: readonly Sus[] = [], dy = 0): string {
+  const l = susler.slice(0, 5);
+  return `<g class="ps-susler">${susYerleri(sekil, l.length, l.length)
+    .map((p, i) => susSvg(l[i], p.x, p.y + dy, p.w, p.a, i))
+    .join('')}</g>`;
+}
 
 // ---------------------------------------------------------------- kurabiye / kapkek
 export type Hal = 'top' | 'cig' | 'pismis';
@@ -84,6 +115,14 @@ export interface CizimSecenek {
   yanik?: boolean;
   /** fırının içinde: görsel varsa çiğ → altın → yanık görselleri pişme oranıyla (CSS --p, --y) geçişir */
   firin?: boolean;
+  /** krema deseni (düz: kaplama; öbürleri pişmiş kurabiyenin üstünde renkli krema şeridi) */
+  desen?: Desen | null;
+  /** serpinti tanesi sayısı */
+  serpinti?: number;
+  yuz?: Yuz | null;
+  /** kapkekte doğum günü mumu sayısı; sonuk: üflendi */
+  mum?: number;
+  mumSonuk?: boolean;
 }
 const hamurDolgu = (o: CizimSecenek) => (o.hamur ? o.hamur : 'var(--hamur, #F3B54A)');
 
@@ -116,63 +155,151 @@ const DAMLA: Record<Sekil, [number, number, number][]> = {
   ],
 }
 
-/**
- * Kremanın süs katmanı (Barış: "kurabiye tipsiz"): krema deseni (zikzak çizgi ya da nokta), şeker serpintisi ve
- * parlama. Her kremalı kurabiyede aynı (balonda da tabakta da: fark yaratmaz). Gemini görseli gelirse (desen-zigzag,
- * desen-nokta, susler-serpinti) o kullanılır. Yerler 100×100 kutuda, kremanın içinde kalacak biçimde şekle göre.
- */
-const DESEN: Record<Sekil, { tur: 'zigzag' | 'nokta'; yol: string; serpinti: [number, number, number][]; parla: [number, number, number]; yildiz: [number, number] }> = {
-  yuvarlak: {
-    tur: 'zigzag',
-    yol: 'M21 29q7 -7 14 0t14 0t14 0t14 0M27 43q6 -6 12 0t12 0t12 0t12 0',
-    serpinti: [[30, 21, 30], [46, 16, -40], [64, 19, 70], [80, 29, -20], [17, 40, 60], [85, 43, 15], [37, 56, -60], [63, 56, 40]],
-    parla: [31, 21, -22],
-    yildiz: [74, 20],
-  },
-  kalp: {
-    tur: 'zigzag',
-    yol: 'M23 33q6.5 -6 13 0t13 0t13 0t13 0M30 47q5 -5 10 0t10 0t10 0t10 0',
-    serpinti: [[27, 23, 30], [38, 20, -40], [62, 20, 60], [73, 23, -20], [19, 38, 70], [81, 38, 10], [41, 60, -55], [59, 60, 35], [50, 68, 0]],
-    parla: [29, 25, -30],
-    yildiz: [70, 21],
-  },
-  yildiz: {
-    tur: 'nokta',
-    yol: '50,34 65,45 59,63 41,63 35,45 50,51',
-    serpinti: [[50, 22, 0], [77, 42, 70], [66, 73, -30], [34, 73, 30], [23, 42, -70], [56, 40, 45], [44, 60, -45]],
-    parla: [41, 37, -35],
-    yildiz: [60, 30],
-  },
-  ay: {
-    tur: 'nokta',
-    yol: '33,30 24,46 26,63 38,75 53,79',
-    serpinti: [[38, 22, 30], [20, 36, -50], [18, 56, 70], [30, 72, -20], [46, 84, 50], [32, 47, 10]],
-    parla: [27, 34, -50],
-    yildiz: [44, 24],
-  },
+/** Kremanın parlaması: kaplamanın üstünde yumuşak beyaz parlama ve minik yıldız (desen ve serpinti siparişe göre ayrı) */
+const PARLA: Record<Sekil, { parla: [number, number, number]; yildiz: [number, number] }> = {
+  yuvarlak: { parla: [31, 25, -22], yildiz: [74, 22] },
+  kalp: { parla: [29, 27, -30], yildiz: [70, 22] },
+  yildiz: { parla: [41, 39, -35], yildiz: [60, 32] },
+  ay: { parla: [27, 36, -50], yildiz: [44, 26] },
 };
 const SERPINTI_RENK = ['#FF5A7A', '#6CC4FF', '#FFD84A', '#7FE0C4', '#B98BFF', '#FFFFFF', '#FF9A3D', '#FF5A7A', '#6CC4FF'];
 const parilti = (x: number, y: number, r: number) =>
   `<path d="M${x} ${y - r}Q${x + r * 0.18} ${y - r * 0.18} ${x + r} ${y}Q${x + r * 0.18} ${y + r * 0.18} ${x} ${y + r}Q${x - r * 0.18} ${y + r * 0.18} ${x - r} ${y}Q${x - r * 0.18} ${y - r * 0.18} ${x} ${y - r}Z" fill="#fff"/>`;
 export function kremaSusu(sekil: Sekil): string {
-  const d = DESEN[sekil];
-  const desenUrl = yuva(d.tur === 'zigzag' ? 'desenZigzag' : 'desenNokta');
-  const serpUrl = yuva('serpinti');
-  const tamResim = (u: string) => `<image href="${u}" x="-4" y="-2" width="108" height="104" preserveAspectRatio="xMidYMid meet"/>`;
-  let desen: string;
-  if (desenUrl) desen = tamResim(desenUrl);
-  else if (d.tur === 'zigzag')
-    desen = `<path d="${d.yol}" fill="none" stroke="${K}" stroke-opacity=".15" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 1.4)"/><path d="${d.yol}" fill="none" stroke="#fff" stroke-opacity=".95" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
-  else {
-    const n = d.yol.split(' ').map((p) => p.split(',').map(Number));
-    desen = n.map(([x, y]) => `<circle cx="${x}" cy="${y + 1.2}" r="3.6" fill="${K}" opacity=".14"/><circle cx="${x}" cy="${y}" r="3.4" fill="#fff"/><circle cx="${x - 1}" cy="${y - 1.1}" r="1" fill="#fff" opacity=".9"/>`).join('');
-  }
-  const serpinti = serpUrl
-    ? tamResim(serpUrl)
-    : d.serpinti.map(([x, y, a], i) => `<rect x="${x - 1.3}" y="${y - 3.4}" width="2.6" height="6.8" rx="1.3" fill="${SERPINTI_RENK[i % SERPINTI_RENK.length]}" stroke="${K}" stroke-opacity=".35" stroke-width=".7" transform="rotate(${a} ${x} ${y})"/>`).join('');
+  const d = PARLA[sekil];
   const [px, py, pa] = d.parla;
-  const parlama = `<ellipse cx="${px}" cy="${py}" rx="8" ry="3.2" fill="#fff" opacity=".6" transform="rotate(${pa} ${px} ${py})"/>${parilti(d.yildiz[0], d.yildiz[1], 4.2)}`;
-  return `<g class="ps-krema-susu">${desen}${serpinti}${parlama}</g>`;
+  return `<g class="ps-krema-susu"><ellipse cx="${px}" cy="${py}" rx="8" ry="3.2" fill="#fff" opacity=".6" transform="rotate(${pa} ${px} ${py})"/>${parilti(d.yildiz[0], d.yildiz[1], 4.2)}</g>`;
+}
+
+/** Krema şeridinin dokusu (Gemini: krema-serit-<renk>) varsa SVG deseni olarak; yoksa düz renk (desen kreması beyaz) */
+const BEYAZ_KREMA = '#FFFDF7';
+function seritBoya(renk: Renk | null): { tanim: string; boya: string } {
+  const u = renk ? resim(seritAdlari(renk)) : null;
+  if (!u || !renk) return { tanim: '', boya: renk ? RENK_KODU[renk] : BEYAZ_KREMA };
+  const id = `ps-serit-${renk}`;
+  return { tanim: `<defs><pattern id="${id}" patternUnits="userSpaceOnUse" width="16" height="16"><image href="${u}" width="16" height="16" preserveAspectRatio="xMidYMid slice"/></pattern></defs>`, boya: `url(#${id})` };
+}
+
+/** Bir krema şeridi (parmak yolu ya da şablon): koyu kenar, renk, parlak çizgi */
+export function kremaSeridi(d: string, renk: Renk | null = null, kalin = 5.6): string {
+  const { tanim, boya } = seritBoya(renk);
+  return `${tanim}<path d="${d}" fill="none" stroke="${K}" stroke-opacity=".42" stroke-width="${(kalin + 1.8).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 .9)"/><path d="${d}" fill="none" stroke="${boya}" stroke-width="${kalin}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="${(kalin * 0.28).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" transform="translate(-.5 -.9)"/>`;
+}
+/** Krema noktası */
+export function kremaNoktasi(x: number, y: number, renk: Renk | null = null, r = 4): string {
+  const c = renk ? RENK_KODU[renk] : BEYAZ_KREMA;
+  return `<circle cx="${x}" cy="${y + 0.9}" r="${r + 0.6}" fill="${K}" opacity=".35"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/><path d="M${x - r * 0.55} ${y - r * 0.15}A${r * 0.6} ${r * 0.6} 0 0 1 ${x - r * 0.05} ${y - r * 0.62}" fill="none" stroke="#fff" stroke-width="${(r * 0.32).toFixed(2)}" stroke-linecap="round" opacity=".85"/>`;
+}
+
+/**
+ * Desen katmanı: kremanın üstünde beyaz krema deseni (görsel: desen-zigzag, desen-nokta; kurabiye eninin ~%70'i).
+ * Görseli olmayan desenler (dalga, kalp) aynı kutuda beyaz krema şeridi.
+ */
+export function desenKatmani(sekil: Sekil, desen: Desen): string {
+  const gorsel = desen === 'duz' ? null : yuva(({ zigzag: 'desenZigzag', nokta: 'desenNokta', dalga: 'desenDalga', kalp: 'desenKalp' } as const)[desen]);
+  if (gorsel) {
+    const k = desenKutusu(sekil, desen === 'zigzag' || desen === 'nokta' ? DESEN_ORAN[desen] : desen === 'kalp' ? 0.8 : DESEN_ORAN.cizgi);
+    return `<g class="ps-desen" data-desen="${desen}" style="${SUS_GOLGE}"><image href="${gorsel}" x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" preserveAspectRatio="none"/></g>`;
+  }
+  const h = desenHedefleri(desen, sekil);
+  return `<g class="ps-desen" data-desen="${desen}">${h.map((x) => (x.tur === 'nokta' ? kremaNoktasi(x.yol[0][0], x.yol[0][1]) : kremaSeridi(yolD(x.yol)))).join('')}</g>`;
+}
+
+/** Göz kırpma çizgisi görseli (varsa) */
+function kirpmaGorseli(h: Hedef, sekil: Sekil): string | null {
+  const u = yuva('yuzKirpma');
+  if (!u || h.parca !== 'agiz' || h.yol.length > 12) return null;
+  const k = gozKutusu(sekil);
+  return `<image href="${u}" x="${k.x + k.w / 2}" y="${k.y}" width="${k.w / 2}" height="${k.h}" preserveAspectRatio="xMidYMid meet" style="${SUS_GOLGE}"/>`;
+}
+/**
+ * Yüzün bir parçası (görsel: kurabiye-yuz-goz iki göz bir arada, kurabiye-yuz-agiz gülen ağız). Göz: görselin o yarısı;
+ * ağız: gülen ağız görseli; şaşkın (O) ağız ve göz kırpma çizgisi görseli olmadığından krema çizgisi; yanak: pembe.
+ */
+export function yuzParcasi(h: Hedef, sekil: Sekil = 'yuvarlak', yuz: Yuz = 'gulen'): string {
+  const gozU = yuva('yuzGoz');
+  const agizU = yuva('yuzAgiz');
+  if (h.parca === 'goz' && h.tur === 'nokta' && gozU) {
+    // iki gözün yarısı: iç içe svg ile kırpılır
+    const k = gozKutusu(sekil);
+    const sol = h.yol[0][0] < k.x + k.w / 2;
+    return `<svg x="${sol ? k.x : k.x + k.w / 2}" y="${k.y}" width="${k.w / 2}" height="${k.h}" viewBox="${sol ? 0 : 118} 0 118 119" overflow="hidden" style="${SUS_GOLGE}"><image href="${gozU}" width="236" height="119"/></svg>`;
+  }
+  const kirp = kirpmaGorseli(h, sekil);
+  if (kirp) return kirp;
+  if (h.parca === 'agiz' && h.tur === 'cizgi' && yuz !== 'saskin' && agizU && h.yol.length > 12) {
+    const k = agizKutusu(sekil);
+    return `<image href="${agizU}" x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" preserveAspectRatio="none" style="${SUS_GOLGE}"/>`;
+  }
+  if (h.parca === 'agiz' && h.tur === 'cizgi' && yuz === 'saskin') {
+    const k = agizKutusu(sekil);
+    const u = yuva('yuzAgizSaskin');
+    if (u) return `<image href="${u}" x="${k.x + k.w * 0.25}" y="${k.y - k.h * 0.1}" width="${k.w * 0.5}" height="${k.h * 1.2}" preserveAspectRatio="xMidYMid meet" style="${SUS_GOLGE}"/>`;
+    return `<ellipse cx="${k.x + k.w / 2}" cy="${k.y + k.h / 2}" rx="${k.w * 0.19}" ry="${k.h * 0.42}" fill="#C8405A" stroke="#3A1410" stroke-width="1.6"/><ellipse cx="${k.x + k.w / 2}" cy="${k.y + k.h * 0.72}" rx="${k.w * 0.11}" ry="${k.h * 0.14}" fill="#F48AA0"/>`;
+  }
+  if (h.tur === 'cizgi') return `<path d="${yolD(h.yol)}" fill="none" stroke="#4A2412" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="${yolD(h.yol)}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-linecap="round" transform="translate(-.4 -.7)"/>`;
+  const [x, y] = h.yol[0];
+  if (h.parca === 'goz') {
+    const u = yuva('yuzGoz');
+    if (u) return `<image href="${u}" x="${x - 5}" y="${y - 5.5}" width="10" height="11" preserveAspectRatio="xMidYMid meet"/>`;
+    return `<ellipse cx="${x}" cy="${y + 0.8}" rx="3.9" ry="4.5" fill="${K}" opacity=".3"/><path d="M${x} ${y - 5}C${x + 2} ${y - 2.4} ${x + 3.8} ${y - 0.6} ${x + 3.8} ${y + 1.2}A3.8 3.8 0 0 1 ${x - 3.8} ${y + 1.2}C${x - 3.8} ${y - 0.6} ${x - 2} ${y - 2.4} ${x} ${y - 5}Z" fill="#4A2412"/><circle cx="${x - 1.3}" cy="${y}" r="1.1" fill="#fff" opacity=".9"/>`;
+  }
+  const u = yuva('yuzYanak');
+  if (u) return `<image href="${u}" x="${x - 5}" y="${y - 4}" width="10" height="8" preserveAspectRatio="xMidYMid meet"/>`;
+  return `<ellipse cx="${x}" cy="${y}" rx="5" ry="3.2" fill="#FF7FA8" opacity=".75"/><ellipse cx="${x - 1.4}" cy="${y - 1}" rx="1.5" ry=".8" fill="#fff" opacity=".7"/>`;
+}
+export const yuzKatmani = (sekil: Sekil, yuz: Yuz) => `<g class="ps-yuz" data-yuz="${yuz}">${yuzHedefleri(yuz, sekil).map((h) => yuzParcasi(h, sekil, yuz)).join('')}</g>`;
+
+/** Bir serpinti tanesi (renkli şeker çubuğu) */
+export const serpintiTanesi = (x: number, y: number, a: number, r: number) =>
+  `<rect x="${(x - 1.3).toFixed(2)}" y="${(y - 3.3).toFixed(2)}" width="2.6" height="6.6" rx="1.3" fill="${SERPINTI_RENK[r % SERPINTI_RENK.length]}" stroke="${K}" stroke-opacity=".4" stroke-width=".7" transform="rotate(${a} ${x} ${y})"/>`;
+/** Serpinti katmanı: n tane, her zaman aynı yerlerde (canlı serpinti ile aynı görünür) */
+let maskeNo = 0;
+/**
+ * Serpinti katmanı (görsel: susler-serpinti, kurabiyenin üstünde tek katman). Bol serpintide (12+ tane) görselin tamamı,
+ * azda yalnız n dairelik kısmı görünür (her zaman aynı yerler: canlı serpinti ile son çizim aynı). Görsel yoksa tane tane.
+ */
+export function serpintiKatmani(sekil: Sekil, n: number): string {
+  if (n <= 0) return '';
+  const u = resim(['susler-serpinti']);
+  if (!u) return `<g class="ps-serpinti" data-tane="${n}">${serpintiYerleri(sekil, n).map((t) => serpintiTanesi(t.x, t.y, t.a, t.r)).join('')}</g>`;
+  const k = serpintiKutusu(sekil);
+  const img = `<image href="${u}" x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" preserveAspectRatio="xMidYMid meet"/>`;
+  if (n >= SERPINTI_TAM) return `<g class="ps-serpinti" data-tane="${n}" style="${SUS_GOLGE}">${img}</g>`;
+  const id = `ps-sm-${++maskeNo}`;
+  const daireler = serpintiYerleri(sekil, n)
+    .map((t) => `<circle cx="${t.x}" cy="${t.y}" r="${SERPINTI_DAIRE}" fill="#fff"/>`)
+    .join('');
+  return `<g class="ps-serpinti" data-tane="${n}" style="${SUS_GOLGE}"><mask id="${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">${daireler}</mask><g mask="url(#${id})">${img}</g></g>`;
+}
+/** Serpinti görselinin kutusu: kurabiyenin üstünü kaplar */
+export function serpintiKutusu(sekil: Sekil) {
+  const y = YUZ_YERI[sekil];
+  const w = y.w * 1.08;
+  const hh = (w * 156) / 263;
+  return { x: y.cx - w / 2, y: y.cy - hh / 2 - 2, w, h: hh };
+}
+/** Bu kadar taneden sonra görselin tamamı */
+export const SERPINTI_TAM = 12;
+/** Açılan dairelerin yarıçapı (birim) */
+export const SERPINTI_DAIRE = 8.5;
+
+/** Doğum günü mumları: kapkeğin tepesinde (yTaban: mumların dibi); sönükte alev yok, minik duman */
+export function mumKatmani(n: number, yTaban: number, sonuk = false): string {
+  if (n <= 0) return '';
+  const mum = sonuk ? yuva('mumSonuk') ?? yuva('mum') : yuva('mum');
+  const renk = ['#6CC4FF', '#FF8CC0', '#FFD84A', '#7FE0C4', '#B98BFF', '#FF9A3D'];
+  const c = Array.from({ length: n }, (_, i) => {
+    const x = 50 + (i - (n - 1) / 2) * 7.4;
+    const y = yTaban - (i % 2 ? 1.5 : 0);
+    if (mum && !sonuk) return `<image href="${mum}" x="${x - 4}" y="${y - 22}" width="8" height="22" preserveAspectRatio="xMidYMax meet"/>`;
+    const govde = `<rect x="${x - 1.9}" y="${y - 13}" width="3.8" height="13" rx="1.2" fill="#fff" stroke="${K}" stroke-width=".9"/><path d="M${x - 1.9} ${y - 10}L${x + 1.9} ${y - 12}M${x - 1.9} ${y - 5.5}L${x + 1.9} ${y - 7.5}" stroke="${renk[i % renk.length]}" stroke-width="1.6"/>`;
+    const alev = sonuk
+      ? `<path class="ps-mum-duman" d="M${x} ${y - 14}q-1.5-2 0-4t0-4" fill="none" stroke="#B8AFA8" stroke-width="1" stroke-linecap="round" opacity=".8"/>`
+      : `<path class="ps-mum-alev" d="M${x} ${y - 21}C${x + 2.6} ${y - 18} ${x + 2.4} ${y - 14.5} ${x} ${y - 14}C${x - 2.4} ${y - 14.5} ${x - 2.6} ${y - 18} ${x} ${y - 21}Z" fill="#FFB321" stroke="${K}" stroke-width=".6"/><path d="M${x} ${y - 18.5}C${x + 1} ${y - 17} ${x + 0.9} ${y - 15.4} ${x} ${y - 15.2}C${x - 0.9} ${y - 15.4} ${x - 1} ${y - 17} ${x} ${y - 18.5}Z" fill="#FFF3A0"/>`;
+    return govde + alev;
+  });
+  return `<g class="ps-mumlar" data-mum="${n}">${c.join('')}</g>`;
 }
 
 /** Krema: şeklin küçültülmüşü, alt kenarından akan damlalar, parlak çizgi ve beyaz parıltı noktaları */
@@ -188,6 +315,14 @@ function kremaKatmani(sekil: Sekil, renk: Renk): string {
   return `<g class="ps-krema">${damlalar}<path d="${yol}" fill="${c}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round" transform="${kucult(0.8)}"/>${yama}<path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="16 70" transform="${kucult(0.6)}"/><path d="${yol}" fill="none" stroke="${K}" stroke-opacity=".12" stroke-width="4" stroke-dasharray="40 30" stroke-dashoffset="-40" transform="${kucult(0.68)}"/>${kremaSusu(sekil)}</g>`;
 }
 
+/** Kremalı mı (renkli kaplama; desen kaplamanın üstünde beyaz krema) */
+const duzKrema = (o: CizimSecenek) => !!o.renk;
+/** Kurabiyenin üst katmanları: desen (düz değilse), yüz, serpinti (süsler ayrı, en üstte) */
+function ustKatman(o: CizimSecenek, sekil: Sekil): string {
+  const desen = o.renk && o.desen && o.desen !== 'duz' ? desenKatmani(sekil, o.desen) : '';
+  return desen + (o.yuz ? yuzKatmani(sekil, o.yuz) : '') + serpintiKatmani(sekil, o.serpinti ?? 0);
+}
+
 function kurabiye(o: CizimSecenek): string {
   const sekil = o.sekil ?? 'yuvarlak';
   const yol = SEKIL_YOLU[sekil];
@@ -200,16 +335,9 @@ function kurabiye(o: CizimSecenek): string {
     o.hal === 'cig'
       ? `<path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" transform="translate(50 50) scale(.84) translate(-50 -50)"/>`
       : `<path d="${yol}" fill="none" stroke="#9A5A1E" stroke-opacity=".28" stroke-width="6" transform="translate(50 50) scale(.88) translate(-50 -50)"/><g fill="#8A4A1A" opacity=".35"><circle cx="40" cy="44" r="1.8"/><circle cx="58" cy="40" r="1.8"/><circle cx="62" cy="60" r="1.8"/><circle cx="44" cy="62" r="1.8"/><circle cx="52" cy="52" r="1.5"/></g>`;
-  const krema = o.renk ? kremaKatmani(sekil, o.renk) : '';
-  const parlama = o.renk ? '' : `<path d="M28 32C32 26 38 23 44 22" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="4.5" stroke-linecap="round"/><circle cx="24" cy="40" r="2.4" fill="#fff" opacity=".7"/>`;
-  const susler = (o.susler ?? [])
-    .slice(0, 3)
-    .map((s, i, a) => {
-      const [x, y] = SUS_YERI[sekil][a.length - 1][i];
-      return susSvg(s, x, y, 1.22);
-    })
-    .join('');
-  return golge + yan + govde + doku + krema + parlama + `<g class="ps-susler">${susler}</g>`;
+  const krema = duzKrema(o) ? kremaKatmani(sekil, o.renk!) : '';
+  const parlama = duzKrema(o) ? '' : `<path d="M28 32C32 26 38 23 44 22" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="4.5" stroke-linecap="round"/><circle cx="24" cy="40" r="2.4" fill="#fff" opacity=".7"/>`;
+  return golge + yan + govde + doku + krema + parlama + ustKatman(o, sekil) + susDiz(sekil, o.susler);
 }
 
 /** Krema yığını (kapkek): i. kat, alttan */
@@ -231,13 +359,19 @@ function kapkek(o: CizimSecenek): string {
   const yy = (o.yigin ?? []).slice(0, 3);
   const katlar = yy.map((r, i) => yigin(r, i)).join('');
   const tepe = yy.length ? 52 - (yy.length - 1) * 12 - 16 : 36;
-  const susler = (o.susler ?? []).slice(0, 3).map((s, i, a) => susSvg(s, 50 + (i - (a.length - 1) / 2) * 13, tepe, 1)).join('');
-  return golge + kap + kubbe + `<g class="ps-yiginlar">${katlar}${yiginSusu(yy.length)}</g><g class="ps-susler">${susler}</g>`;
+  const susler = kapkekSusleri(o.susler, tepe);
+  return golge + kap + kubbe + `<g class="ps-yiginlar">${katlar}${yiginSusu(yy.length)}</g>${susler}` + mumKatmani(o.mum ?? 0, tepe + 6, o.mumSonuk);
 }
 
-/** Kapkek kremasının üstüne şeker serpintisi ve parlama (en az bir yığın varsa) */
+/** Kapkek kremasının üstüne şeker serpintisi (görsel: susler-serpinti, küçük) */
 function yiginSusu(n: number): string {
   if (!n) return '';
+  const u = resim(['susler-serpinti']);
+  if (u) {
+    const ust = 52 - (n - 1) * 12;
+    const w = (31 - (n - 1) * 7) * 1.5;
+    return `<g class="ps-krema-susu"><image href="${u}" x="${50 - w / 2}" y="${ust - 12}" width="${w}" height="${w * 0.6}" preserveAspectRatio="xMidYMid meet"/></g>`;
+  }
   const ust = 52 - (n - 1) * 12;
   const w = 31 - (n - 1) * 7;
   const yerler: [number, number, number][] = [[-0.55, -3, 30], [-0.2, -9, -40], [0.25, -8, 60], [0.6, -2, -20], [0.05, 1, 80]];
@@ -251,19 +385,11 @@ function yiginSusu(n: number): string {
   return `<g class="ps-krema-susu">${s}${parilti(50 + w * 0.45, ust - 12, 3.6)}</g>`;
 }
 
-/** Süsler (görselli kurabiyenin üstünde de aynı yerlerde) */
-const kurabiyeSusleri = (sekil: Sekil, susler: Sus[] = []) =>
-  `<g class="ps-susler">${susler
-    .slice(0, 3)
-    .map((s, i, a) => {
-      const [x, y] = SUS_YERI[sekil][a.length - 1][i];
-      return susSvg(s, x, y, 1.22);
-    })
-    .join('')}</g>`;
 
 /**
  * Kurabiye görselle (assets/pasta/kurabiye-<şekil>-<hâl>): hâline göre; fırında çiğ → altın → yanık görselleri pişme
- * oranıyla geçişir. Gereken görsel yoksa null (kod çizimi kullanılır: ay şekli, mor krema …).
+ * oranıyla geçişir. Desenli kremada pişmiş (altın) kurabiye + renkli krema şeridi. Gereken görsel yoksa null (kod
+ * çizimi kullanılır: ay şekli, mor krema …).
  */
 function kurabiyeResim(o: CizimSecenek): string | null {
   const sekil = o.sekil ?? 'yuvarlak';
@@ -278,9 +404,9 @@ function kurabiyeResim(o: CizimSecenek): string | null {
   } else if (o.yanik) {
     const u = r('yanik');
     ic = u && kImg(u);
-  } else if (o.renk) {
+  } else if (duzKrema(o)) {
     const u = r('krema', o.renk);
-    ic = u && `<g class="ps-krema">${kImg(u)}${kremaSusu(sekil)}</g>`;
+    ic = u && `<g class="ps-krema">${kImg(u)}</g>`;
   } else if (o.firin) {
     const [c, a, y] = [r('cig'), r('altin'), r('yanik')];
     ic = c && a && y ? kImg(c) + kImg(a, ' class="ps-k-altin"') + kImg(y, ' class="ps-k-yanik"') : null;
@@ -290,13 +416,20 @@ function kurabiyeResim(o: CizimSecenek): string | null {
   }
   if (!ic) return null;
   const golge = o.golge !== false ? `<ellipse cx="50" cy="91" rx="36" ry="6" fill="${K}" opacity=".16"/>` : '';
-  return golge + ic + kurabiyeSusleri(sekil, o.susler);
+  return golge + ic + ustKatman(o, sekil) + susDiz(sekil, o.susler);
 }
 
 /**
  * Kapkek görselle (cupcake-pismis; tabana hizalı): gövde görsel, krema yığınları ve süsler kod çizimi (kubbenin üstüne).
  * Fırında görsel pişme oranıyla solgundan altına döner (CSS .ps-kk-firin: --p, --y).
  */
+/** Kapkeğin tepesindeki süsler: 1 ortada, 2 yan yana, 3 üçgen (küçük, hafif dönük, gölgeli) */
+function kapkekSusleri(susler: readonly Sus[] = [], tepe: number): string {
+  const l = susler.slice(0, 3);
+  const yer: [number, number][] = l.length === 1 ? [[0, 0]] : l.length === 2 ? [[-7, 1], [7, -1]] : [[0, -6], [-8, 3], [8, 3]];
+  return `<g class="ps-susler">${l.map((x, i) => susSvg(x, 50 + yer[i][0], tepe + yer[i][1], 22 + ((i * 5) % 5), ((i * 17 + l.length * 7) % 41) - 20, i)).join('')}</g>`;
+}
+
 function kapkekResim(o: CizimSecenek): string | null {
   const u = resim(kapkekAdlari(o.hal !== 'pismis')) ?? (o.hal === 'pismis' ? null : resim(kapkekAdlari(false)));
   if (!u) return null;
@@ -304,8 +437,8 @@ function kapkekResim(o: CizimSecenek): string | null {
   const sinif = o.firin || o.hal !== 'pismis' ? ' class="ps-kk-firin"' : o.yanik ? ' class="ps-kk-yanik"' : '';
   const yy = (o.yigin ?? []).slice(0, 3);
   const tepe = yy.length ? 52 - (yy.length - 1) * 12 - 26 : 24;
-  const susler = (o.susler ?? []).slice(0, 3).map((s, i, a) => susSvg(s, 50 + (i - (a.length - 1) / 2) * 13, tepe, 1)).join('');
-  return golge + `<image href="${u}" x="8" y="4" width="84" height="92" preserveAspectRatio="xMidYMax meet"${sinif}/>` + `<g class="ps-yiginlar" transform="translate(0 -10)">${ince(yy.map((r, i) => yigin(r, i)).join(''))}${yiginSusu(yy.length)}</g><g class="ps-susler">${susler}</g>`;
+  const susler = kapkekSusleri(o.susler, tepe);
+  return golge + `<image href="${u}" x="8" y="4" width="84" height="92" preserveAspectRatio="xMidYMax meet"${sinif}/>` + `<g class="ps-yiginlar" transform="translate(0 -10)">${ince(yy.map((r, i) => yigin(r, i)).join(''))}${yiginSusu(yy.length)}</g>${susler}` + mumKatmani(o.mum ?? 0, tepe + 6, o.mumSonuk);
 }
 
 /** Kurabiye ya da kapkek (100×100 viewBox) */
@@ -314,6 +447,105 @@ export function urunSvg(o: CizimSecenek, sinif = 'ps-urun-svg'): string {
     (o.urun === 'kurabiye' ? kurabiyeResim(o) : kapkekResim(o)) ??
     ince(o.hal === 'top' && o.urun === 'kurabiye' ? hamurTopu(o.golge !== false) : o.urun === 'kapkek' ? kapkek(o) : kurabiye(o));
   return `<svg class="${sinif}" viewBox="0 0 100 100" aria-hidden="true" overflow="visible">${ic}</svg>`;
+}
+
+// ---------------------------------------------------------------- içecek
+/** Bardağın iç kutusu (100×100): üst ve alt kenarın y'si, yarı genişlikler; çizgi iç yüksekliğin %80'inde */
+export const BARDAK_IC: Record<Boy, { ust: number; alt: number; wu: number; wa: number }> = {
+  kucuk: { ust: 42, alt: 92, wu: 21, wa: 16 },
+  buyuk: { ust: 14, alt: 92, wu: 24, wa: 18 },
+};
+export const CIZGI_ORAN = 0.8;
+/** Bardak: cam, içinde içecek (dolum: çizgiye oranla), çizgi işareti; kakaoda köpük, limonatada limon ve pipet */
+export function bardakSvg(o: { icecek: Icecek | null; boy: Boy; dolum: number; cizgi?: boolean; golge?: boolean }, sinif = 'ps-bardak-svg'): string {
+  const b = BARDAK_IC[o.boy];
+  const ic = b.alt - b.ust;
+  const xAt = (y: number) => b.wa + ((b.wu - b.wa) * (b.alt - y)) / ic;
+  const doluY = Math.max(b.ust - 2, b.alt - ic * CIZGI_ORAN * Math.max(0, Math.min(1.25, o.dolum)));
+  const cizgiY = b.alt - ic * CIZGI_ORAN;
+  const renk = o.icecek ? ICECEK_KODU[o.icecek] : '#fff';
+  const sivi =
+    o.icecek && o.dolum > 0.01
+      ? `<path d="M${50 - xAt(doluY)} ${doluY}L${50 + xAt(doluY)} ${doluY}L${50 + b.wa} ${b.alt}L${50 - b.wa} ${b.alt}Z" fill="${renk}"/><path d="M${50 + xAt(doluY) - 7} ${doluY + 2}L${50 + b.wa - 5} ${b.alt - 2}L${50 + b.wa} ${b.alt}L${50 + xAt(doluY)} ${doluY}Z" fill="${K}" opacity=".12"/><ellipse cx="50" cy="${doluY}" rx="${xAt(doluY)}" ry="2.4" fill="#fff" opacity=".45"/>` +
+        (o.icecek === 'kakao' && o.dolum > 0.5 ? `<g fill="#F7E6D2" stroke="${K}" stroke-opacity=".3" stroke-width=".6"><circle cx="${50 - xAt(doluY) * 0.5}" cy="${doluY - 1}" r="3.2"/><circle cx="50" cy="${doluY - 2}" r="3.8"/><circle cx="${50 + xAt(doluY) * 0.5}" cy="${doluY - 1}" r="3"/></g>` : '') +
+        (o.dolum > 1 + 0.13 ? `<path d="M${50 + xAt(b.ust)} ${b.ust}q3 6 1 12q-1 3 2 5" fill="none" stroke="${renk}" stroke-width="3.2" stroke-linecap="round"/>` : '')
+      : '';
+  const ekler =
+    o.icecek === 'limonata' && o.dolum > 0.5
+      ? `<path d="M${50 + 6} ${b.ust - 14}L${50 + 2} ${b.alt - 6}" stroke="#FF5A7A" stroke-width="3.2" stroke-linecap="round"/><path d="M${50 + 6} ${b.ust - 14}L${50 + 2} ${b.alt - 6}" stroke="#fff" stroke-width="1.2" stroke-dasharray="3 3"/><g transform="translate(${50 - b.wu + 2} ${b.ust + 1})"><circle r="7" fill="#FFE45C" stroke="${K}" stroke-width="1.4"/><circle r="5" fill="#FFF6B8"/><path d="M0-5V5M-5 0H5M-3.5-3.5L3.5 3.5M3.5-3.5L-3.5 3.5" stroke="#F2C430" stroke-width=".8"/></g>`
+      : '';
+  const camYol = `M${50 - b.wu - 2} ${b.ust - 3}L${50 + b.wu + 2} ${b.ust - 3}L${50 + b.wa + 1.5} ${b.alt + 3}Q50 ${b.alt + 5} ${50 - b.wa - 1.5} ${b.alt + 3}Z`;
+  const gorsel = yuva(o.boy === 'kucuk' ? 'bardakKucuk' : 'bardakBuyuk');
+  const cam = gorsel
+    ? `<image href="${gorsel}" x="${50 - b.wu - 8}" y="${b.ust - 8}" width="${(b.wu + 8) * 2}" height="${b.alt - b.ust + 14}" preserveAspectRatio="none"/>`
+    : `<path d="${camYol}" fill="#E8F6FF" fill-opacity=".28" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M${50 - b.wu + 3} ${b.ust + 4}L${50 - b.wa + 3} ${b.alt - 6}" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".8"/><ellipse cx="50" cy="${b.ust - 3}" rx="${b.wu + 2}" ry="2.6" fill="none" stroke="${K}" stroke-width="1.6" opacity=".6"/>`;
+  const cizgi = o.cizgi ? `<path class="ps-dolum-cizgi" d="M${50 - xAt(cizgiY) - 3} ${cizgiY}H${50 + xAt(cizgiY) + 3}" stroke="#FF5A7A" stroke-width="2" stroke-dasharray="4 2.5" stroke-linecap="round"/><path d="M${50 + xAt(cizgiY) + 3} ${cizgiY - 3}l4 3l-4 3z" fill="#FF5A7A"/>` : '';
+  const golge = o.golge !== false ? `<ellipse cx="50" cy="${b.alt + 4}" rx="${b.wa + 8}" ry="3" fill="${K}" opacity=".18"/>` : '';
+  return `<svg class="${sinif}" viewBox="0 0 100 100" aria-hidden="true" overflow="visible">${golge}${sivi}${ekler}${cam}${cizgi}</svg>`;
+}
+
+/** İçeceğin simgesi (makinenin musluğunda, sipariş balonunda): süt kutusu, kakao fincanı, limon */
+export function icecekIkon(i: Icecek): string {
+  if (i === 'sut')
+    return ince(`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 14L16 6H24L28 14V35H12Z" fill="#fff" stroke="${K}" stroke-width="3" stroke-linejoin="round"/><path d="M12 20H28V29H12Z" fill="#6CC4FF"/><path d="M16 6H24" stroke="${K}" stroke-width="3"/><circle cx="20" cy="24.5" r="2.6" fill="#fff"/></svg>`);
+  if (i === 'kakao')
+    return ince(`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 14H30L28 32C28 35 25 36 22 36H16C13 36 10 35 10 32Z" fill="#FF8CC0" stroke="${K}" stroke-width="3" stroke-linejoin="round"/><path d="M30 18C36 18 36 27 29 27" fill="none" stroke="${K}" stroke-width="3"/><ellipse cx="19" cy="14" rx="11" ry="3" fill="#9A5B35" stroke="${K}" stroke-width="2.4"/><path d="M15 9q-2-3 0-6M21 9q-2-3 0-6" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round" opacity=".5"/></svg>`);
+  return ince(`<svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="22" rx="15" ry="11" fill="#FFE45C" stroke="${K}" stroke-width="3"/><path d="M5 22H35" stroke="#F2C430" stroke-width="2"/><path d="M18 11C18 6 22 4 26 5C25 9 22 11 18 11Z" fill="#7FD06B" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="13" cy="18" rx="3.5" ry="2" fill="#fff" opacity=".8"/></svg>`);
+}
+
+/** İçecek makinesi (yedek kod çizimi): pembe gövde, üç musluk, üstünde üç cam hazne (süt, kakao, limonata) */
+export const ICECEK_MAKINESI_KOD = ince(`<svg viewBox="0 0 160 124" aria-hidden="true" overflow="visible"><ellipse cx="80" cy="119" rx="70" ry="5" fill="${K}" opacity=".2"/><rect x="8" y="44" width="144" height="72" rx="14" fill="#FF8CC0" stroke="${K}" stroke-width="4.5"/><path d="M18 52H142" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/><rect x="16" y="96" width="128" height="12" rx="5" fill="#C9D4DE" stroke="${K}" stroke-width="3.5"/>${(
+  [
+    [33, 'sut'],
+    [80, 'kakao'],
+    [127, 'limonata'],
+  ] as const
+)
+  .map(
+    ([x, i]) =>
+      `<rect x="${x - 19}" y="6" width="38" height="40" rx="10" fill="#E8F6FF" fill-opacity=".7" stroke="${K}" stroke-width="4"/><rect x="${x - 15}" y="18" width="30" height="24" rx="6" fill="${ICECEK_KODU[i]}"/><path d="M${x - 12} 12V30" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".8"/><rect x="${x - 7}" y="58" width="14" height="16" rx="4" fill="#C9D4DE" stroke="${K}" stroke-width="3.5"/><rect x="${x - 4}" y="72" width="8" height="8" rx="2" fill="#9AA9B6" stroke="${K}" stroke-width="3"/>`,
+  )
+  .join('')}</svg>`);
+
+// ---------------------------------------------------------------- bulaşık, yıldız, işaretler
+/** Tabak yığını (üst üste n tabak; kirli: kırıntılı, krema lekeli) */
+export function tabakYigini(n: number, kirli: boolean): string {
+  const u = yuva(kirli ? 'kirliTabak' : 'temizTabak');
+  const c = Array.from({ length: n }, (_, i) => {
+    const y = 52 - i * 8;
+    const x = 30 + (kirli ? [0, 3, -2, 4, -3, 2][i % 6] : 0);
+    if (u) return `<image href="${u}" x="${x - 26}" y="${y - 12}" width="52" height="20" preserveAspectRatio="none"/>`;
+    return `<ellipse cx="${x}" cy="${y + 2}" rx="26" ry="7" fill="#E9F0F6" stroke="${K}" stroke-width="2"/><ellipse cx="${x}" cy="${y}" rx="26" ry="7" fill="#fff" stroke="${K}" stroke-width="2"/><ellipse cx="${x}" cy="${y}" rx="17" ry="4" fill="none" stroke="#FF8CC0" stroke-width="1.6" stroke-dasharray="2 3"/>${
+      kirli ? `<g fill="#C98A4B"><circle cx="${x - 6}" cy="${y - 1}" r="1.6"/><circle cx="${x + 5}" cy="${y + 1}" r="1.3"/><circle cx="${x + 1}" cy="${y - 2}" r="1"/></g><path d="M${x + 6} ${y - 2}q4 1 2 3" fill="none" stroke="#FF8CC0" stroke-width="2" stroke-linecap="round"/>` : ''
+    }`;
+  });
+  return ince(`<svg viewBox="0 0 60 64" aria-hidden="true" overflow="visible">${c.join('')}</svg>`);
+}
+/** Bulaşık simgesi (Kino'nun görev balonunda): köpüklü tabak */
+export const BULASIK_IKON = ince(`<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="30" rx="18" ry="7" fill="#fff" stroke="${K}" stroke-width="3"/><ellipse cx="24" cy="29" rx="11" ry="3.6" fill="none" stroke="#6CC4FF" stroke-width="2"/><g fill="#E8F6FF" stroke="${K}" stroke-width="2"><circle cx="14" cy="17" r="6"/><circle cx="25" cy="12" r="7.5"/><circle cx="35" cy="18" r="5"/></g><g fill="#fff"><circle cx="12" cy="15" r="1.8"/><circle cx="23" cy="9.5" r="2.2"/></g></svg>`);
+/** Gün hedefinin yıldızı */
+export const YILDIZ_SVG = ince(`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${yildizYolu(50, 54, 46, 22)}" fill="#C98A12" transform="translate(0 4)"/><path d="${yildizYolu(50, 52, 46, 22)}" fill="#FFD23F" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M34 40L44 36" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/></svg>`);
+export const yildizSvg = () => {
+  const u = yuva('yildiz');
+  return u ? resimSvg(u, 100, 100, 'xMidYMid meet') : YILDIZ_SVG;
+};
+/** Şekersiz işareti: serpinti taneleri, üstü kırmızı çizili daire (Ege bebek) */
+export const SEKERSIZ = (() => {
+  const u = yuva('sekersiz');
+  if (u) return resimSvg(u, 100, 100, 'xMidYMid meet');
+  const t = [
+    [-5, -3, 30, 0],
+    [3, -5, -40, 1],
+    [5, 3, 60, 2],
+    [-3, 5, -20, 3],
+    [0, 0, 80, 4],
+  ];
+  return ince(`<svg viewBox="-14 -14 28 28" aria-hidden="true"><circle r="12" fill="#fff" stroke="${K}" stroke-width="1.6"/>${t.map(([x, y, a, r]) => serpintiTanesi(x, y, a, r)).join('')}<circle r="11" fill="none" stroke="#FF3B4E" stroke-width="2.6"/><path d="M-7.8-7.8L7.8 7.8" stroke="#FF3B4E" stroke-width="2.6" stroke-linecap="round"/></svg>`);
+})();
+/** Serpinti seviyesi simgesi (balonda, yanında: 1 ya da 3 tane) */
+export function serpintiIkon(seviye: number): string {
+  const t = seviye >= 2 ? [[-6, 2, 30, 0], [0, -4, -40, 1], [6, 2, 60, 2]] : [[0, 0, 30, 0]];
+  return `<svg viewBox="-12 -12 24 24" aria-hidden="true">${t.map(([x, y, a, r]) => serpintiTanesi(x, y, a, r).replace('width="2.6" height="6.6"', 'width="3.4" height="9"')).join('')}</svg>`;
 }
 
 // ---------------------------------------------------------------- istasyonlar
@@ -360,10 +592,10 @@ function susKabiKod(s: Sus, adet = 5): string {
     [42, 32],
     [58, 32],
   ];
-  const icler = ic.map(([x, y]) => susSvg(s, x, y, 1.08)).join('');
+  const icler = ic.map(([x, y]) => susSvg(s, x, y, 24)).join('');
   const yigin = ust
     .slice(0, adet)
-    .map(([x, y]) => susSvg(s, x, y, 1.2))
+    .map(([x, y]) => susSvg(s, x, y, 27))
     .join('');
   const kr = SUS_RENK[s];
   return `<svg viewBox="0 0 100 116" aria-hidden="true" overflow="visible"><ellipse cx="50" cy="111" rx="40" ry="5" fill="${K}" opacity=".2"/><g class="ps-kap-ic">${icler}</g><path d="M17 46C17 40 21 36 27 36H73C79 36 83 40 83 46V96C83 104 77 108 69 108H31C23 108 17 104 17 96Z" fill="#DDF3FF" fill-opacity=".34" stroke="${K}" stroke-width="5"/><path d="M68 40C76 42 80 46 80 54V94C80 101 76 105 70 106C74 100 75 94 75 86V54C75 48 72 43 68 40Z" fill="#7FB8D8" opacity=".35"/><path d="M26 48V94" stroke="#fff" stroke-width="6.5" stroke-linecap="round" opacity=".8"/><path d="M34 46V54" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/><rect x="21" y="29" width="58" height="13" rx="6.5" fill="${kr}" stroke="${K}" stroke-width="4.5"/><path d="M27 33H58" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/><g class="ps-kap-ust">${yigin}</g></svg>`;
