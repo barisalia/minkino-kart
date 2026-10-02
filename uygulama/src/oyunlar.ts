@@ -12,6 +12,8 @@ export interface Katman {
   gorsel?: string;
   /** src/ui/ikonlar.ts içindeki ikon adı */
   ikon?: 'kalem' | 'oyna' | 'sihir';
+  /** kodla çizilen resim (oyunun kendi SVG çizimi; ör. Pasta Otobüsü'nün otobüsü) */
+  kod?: 'otobus';
   /** Yerleşim sınıfı (uygulama.css, önek ug-k-) */
   sinif: string;
   /** Çizim beyaz kartın ya da çerçevenin içinde durur */
@@ -31,6 +33,8 @@ export interface OyunKarti {
   katmanlar: Katman[];
   /** Kartın köşesindeki küçük rozet: oyunun yeni yan oyunu ya da bölümleri (ör. "Meyve Suyu") */
   rozet?: string;
+  /** geniş kart: ızgarada iki sütun kaplar (otobüs yatay bir çizim) */
+  genis?: boolean;
 }
 
 export const OYUNLAR: OyunKarti[] = [
@@ -105,6 +109,17 @@ export const OYUNLAR: OyunKarti[] = [
     // en yeni filmin kapağı (filmin kendi karesi: assets/film/kapak); yeni film gelince bu ad değişir
     zemin: 'film/kapak/kino-oyuncak',
     katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
+  },
+  {
+    id: 'pasta',
+    ad: 'Pasta Otobüsü',
+    adres: './pasta/',
+    renk: '#FF6FA8',
+    // parkta pembe pasta otobüsü (otobüs oyunun kendi kod çizimi: pasta/src/cizim.ts)
+    zemin: 'film/park/arka-uzak',
+    rozet: 'Yeni',
+    genis: true,
+    katmanlar: [{ kod: 'otobus', sinif: 'ug-k-otobus' }],
   },
 ];
 

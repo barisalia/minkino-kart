@@ -130,8 +130,12 @@
   height: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 2.8vw, 22px) clamp(10px, 2.6vw, 22px);
+}
+/* geniş kart (Pasta Otobüsü): iki sütun */
+.ug-kok .ug-kart-yer.ug-genis {
+  grid-column: span 2;
 }
 
 /* ---------- Kart ---------- */
@@ -279,6 +283,10 @@
 .ug-kok .ug-k-meyve { height: calc(var(--t) * 0.2); bottom: calc(var(--t) * 0.42 - 2cqh); transform: translateX(-50%); }
 .ug-kok .ug-k-meyve-1 { left: 32%; }
 .ug-kok .ug-k-meyve-2 { left: 44%; transform: translateX(-50%) rotate(-12deg); }
+
+/* Pasta Otobüsü: parkta pembe otobüs (oyunun kod çizimi) */
+.ug-kok .ug-k-otobus { left: 50%; bottom: 3%; width: min(78cqw, 112cqh); aspect-ratio: 640 / 420; transform: translateX(-50%); }
+.ug-kok .ug-k-otobus svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
 /* Çiz Canlansın: çayırda dinozor + kalem */
 .ug-kok .ug-k-dinozor { left: 46%; bottom: 3%; height: min(80cqh, 96cqw); transform: translateX(-50%); }
@@ -435,15 +443,18 @@
   opacity: 0.55;
 }
 
-/* ---------- Tablet dikey: Mino büyük, altta 3 × 2 kart ---------- */
+/* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada geniş Pasta Otobüsü) ---------- */
 @media (min-width: 600px) and (orientation: portrait) {
   .ug-kok .ug-giris {
     height: clamp(160px, 34dvh, 460px);
   }
   .ug-kok .ug-izgara {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
     padding: 0 clamp(0px, 2vw, 24px) clamp(8px, 2dvh, 28px);
+  }
+  .ug-kok .ug-kart-yer.ug-genis {
+    grid-column: 1 / -1;
   }
   .ug-kok .ug-kart-ad {
     font-size: clamp(1rem, 2.6vw, 1.5rem);
@@ -454,7 +465,7 @@
   }
 }
 
-/* ---------- Yatay: solda Mino ve logo, sağda 3 × 2 kart ---------- */
+/* ---------- Yatay: solda Mino ve logo, sağda 4 × 2 kart (son kart geniş) ---------- */
 @media (orientation: landscape) {
   .ug-kok .ug-menu {
     flex-direction: row;
@@ -487,13 +498,19 @@
     align-items: center;
   }
   .ug-kok .ug-izgara {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
-    /* kartlar aşağı yukarı kare kalsın: ızgara 3:2'ye yakın, ekran yüksekliğine sığar */
-    width: min(100%, 1000px, calc((100dvh - var(--ust) - var(--alt) - 12px) * 1.36));
+    /* kartlar aşağı yukarı kare kalsın: ızgara 4 × 2 (son kart geniş), ekran yüksekliğine sığar */
+    width: min(100%, 1200px, calc((100dvh - var(--ust) - var(--alt) - 12px) * 1.8));
     height: auto;
-    aspect-ratio: 1.36;
+    aspect-ratio: 1.8;
     padding: 4px 0 8px;
+  }
+  /* dört sütunda adlar sığsın */
+  .ug-kok .ug-kart-ad {
+    font-size: clamp(0.72rem, min(1.5vw, 2.6dvh), 1.2rem);
+    padding-left: 0;
+    padding-right: 0;
   }
   .ug-kok .ug-kose {
     top: auto;

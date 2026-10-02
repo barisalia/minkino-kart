@@ -13,11 +13,12 @@ import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
+import { OTOBUS } from '../../pasta/src/cizim';
 import { derinlik, OYUNLAR, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
-  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,sanatci,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/kapak/*.webp'],
+  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,sanatci,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/{kapak,park}/*.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
@@ -41,6 +42,10 @@ function kartResmi(k: OyunKarti): HTMLElement {
   k.katmanlar.forEach((c, i) => {
     const sinif = c.sinif.split(' ').join('.');
     const d = `--d:${derinlik(i, n).toFixed(2)}`;
+    if (c.kod === 'otobus') {
+      kap.append(h(`span.ug-k.${sinif}`, { style: d, html: OTOBUS }));
+      return;
+    }
     if (c.ikon) {
       const ikon = svg(IKON[c.ikon], `ug-k ug-rozet ${c.sinif}`);
       ikon.style.setProperty('--d', derinlik(i, n).toFixed(2));
@@ -243,7 +248,7 @@ export function menuEkrani(app: Uygulama): Ekran {
       a.classList.add('secildi');
       zamanlar.push(window.setTimeout(() => location.assign(a.href), sure(AZ_HAREKET ? 150 : 650)));
     });
-    return h('li.ug-kart-yer', { style: `--i:${i}` }, a);
+    return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}`, { style: `--i:${i}` }, a);
   });
 
   const kapi = h('button.ug-kapi', { type: 'button', 'aria-label': 'Ebeveyn köşesi (basılı tutun)' }, h('span.ug-kapi-daire', {}, h('span.ug-kapi-halka', { 'aria-hidden': 'true' }), svg(IKON.ebeveyn)));
