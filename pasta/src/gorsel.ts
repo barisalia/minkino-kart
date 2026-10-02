@@ -82,6 +82,60 @@ export class Efekt {
     }
   }
 
+  /** Konfeti: renkli kâğıtlar patlayıp dönerek düşer (doğru sipariş) */
+  konfeti(x: number, y: number, adet = 22) {
+    if (sakin()) return;
+    const renkler = ['#FF5A7A', '#FFD84A', '#6CC4FF', '#7FE0C4', '#B98BFF', '#FF8A2B'];
+    for (let i = 0; i < adet; i++) {
+      const p = h('i.ps-konfeti', { style: `left:${x}px;top:${y}px;background:${renkler[i % renkler.length]}` });
+      if (i % 3 === 0) p.style.borderRadius = '50%';
+      this.el.append(p);
+      const a = -Math.PI / 2 + ras(-1.2, 1.2);
+      const r = ras(70, 150);
+      const dx = Math.cos(a) * r;
+      const dy = Math.sin(a) * r;
+      p.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(.4) rotate(0deg)', opacity: 1 },
+          { transform: `translate(-50%, -50%) translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(1) rotate(${ras(180, 360).toFixed(0)}deg)`, opacity: 1, offset: 0.35 },
+          { transform: `translate(-50%, -50%) translate(${(dx * 1.3).toFixed(0)}px, ${(dy + 160).toFixed(0)}px) scale(.9) rotate(${ras(500, 900).toFixed(0)}deg)`, opacity: 0 },
+        ],
+        { duration: ras(1100, 1600), delay: ras(0, 120), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'backwards' },
+      ).finished.then(() => p.remove(), () => p.remove());
+    }
+  }
+
+  /** Kısa ışık patlaması (fırın "ding"): yumuşak sarı halka büyüyüp söner */
+  isik(x: number, y: number, boy = 1) {
+    if (sakin()) return;
+    const p = h('i.ps-isik', { style: `left:${x}px;top:${y}px;width:${(150 * boy).toFixed(0)}px` });
+    this.el.append(p);
+    p.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(.2)', opacity: 0.95 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.8, offset: 0.35 },
+        { transform: 'translate(-50%, -50%) scale(1.4)', opacity: 0 },
+      ],
+      { duration: 520, easing: 'ease-out' },
+    ).finished.then(() => p.remove(), () => p.remove());
+  }
+
+  /** Yükselen yazı ("+3"): kalın konturlu, zıplayarak çıkar */
+  yazi(x: number, y: number, metin: string, renk = '#FFD23F') {
+    if (sakin()) return;
+    const p = h('b.ps-ucan-yazi', { style: `left:${x}px;top:${y}px;color:${renk}` }, metin);
+    this.el.append(p);
+    p.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(.3)', opacity: 0 },
+        { transform: 'translate(-50%, -50%) translateY(-18px) scale(1.25)', opacity: 1, offset: 0.25 },
+        { transform: 'translate(-50%, -50%) translateY(-34px) scale(1)', opacity: 1, offset: 0.7 },
+        { transform: 'translate(-50%, -50%) translateY(-60px) scale(.9)', opacity: 0 },
+      ],
+      { duration: 1200, easing: 'ease-out' },
+    ).finished.then(() => p.remove(), () => p.remove());
+  }
+
   /** Minik duman (yanık): gri bulutlar yükselir */
   duman(x: number, y: number) {
     if (sakin()) return;
@@ -120,6 +174,13 @@ export class Efekt {
     await a.finished.catch(() => undefined);
     kap.remove();
   }
+}
+
+/** Abartısız ekran sallanması (birkaç piksel, kısa) */
+export function ekranSalla(e: HTMLElement, guc = 3) {
+  if (sakin()) return;
+  const k = (f: number) => `translate(${(ras(-1, 1) * guc * f).toFixed(1)}px, ${(ras(-1, 1) * guc * f).toFixed(1)}px)`;
+  e.animate([{ transform: 'none' }, { transform: k(1) }, { transform: k(0.7) }, { transform: k(0.4) }, { transform: 'none' }], { duration: 260, easing: 'ease-out' });
 }
 
 /** Sınıfı yeniden ekleyerek CSS animasyonunu baştan oynatır (zıpla, salla …) */

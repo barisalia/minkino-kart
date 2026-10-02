@@ -29,19 +29,22 @@ export const SEKIL_YOLU: Record<Sekil, string> = {
 const KREMA_MERKEZ: Record<Sekil, [number, number]> = { yuvarlak: [50, 50], yildiz: [50, 54], kalp: [50, 46], ay: [36, 56] };
 /** Süslerin kurabiye üstündeki yerleri (1-3 süs) */
 const SUS_YERI: Record<Sekil, [number, number][][]> = {
-  yuvarlak: [[[50, 50]], [[37, 50], [63, 50]], [[50, 36], [36, 61], [64, 61]]],
-  yildiz: [[[50, 54]], [[39, 56], [61, 56]], [[50, 40], [38, 62], [62, 62]]],
-  kalp: [[[50, 46]], [[36, 40], [64, 40]], [[34, 38], [66, 38], [50, 62]]],
+  yuvarlak: [[[50, 50]], [[38, 42], [62, 60]], [[50, 34], [35, 60], [65, 60]]],
+  yildiz: [[[50, 54]], [[42, 46], [58, 64]], [[50, 40], [38, 62], [62, 62]]],
+  kalp: [[[50, 46]], [[37, 36], [57, 56]], [[34, 38], [66, 38], [50, 62]]],
   ay: [[[33, 60]], [[26, 48], [42, 72]], [[25, 42], [30, 62], [48, 76]]],
 };
 
 // ---------------------------------------------------------------- süsler (merkez 0,0; ~22 birim)
 const SUS_CIZIM: Record<Sus, string> = {
-  cilek: `<path d="M0 11C-8 7-10-1-9-5C-7-9 7-9 9-5C10-1 8 7 0 11Z" fill="#FF4D5E" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-7-6L-2-5L0-9L2-5L7-6L4-2L0-4L-4-2Z" fill="#4CC25A" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><g fill="#FFE7A3"><ellipse cx="-4" cy="1" rx="1.1" ry="1.5"/><ellipse cx="3.5" cy="0" rx="1.1" ry="1.5"/><ellipse cx="0" cy="5" rx="1.1" ry="1.5"/></g><ellipse cx="-4.5" cy="-3" rx="2" ry="1.2" fill="#fff" opacity=".7"/>`,
-  havuc: `<circle r="8.5" fill="#FF8A2B" stroke="${K}" stroke-width="2.4"/><circle r="5" fill="#FFB56B"/><circle r="1.6" fill="#E86E10"/><g stroke="#E86E10" stroke-width="1.2" stroke-linecap="round"><path d="M0-4.6v-2.4M0 4.6v2.4M-4.6 0h-2.4M4.6 0h2.4"/></g><ellipse cx="-3.5" cy="-4.5" rx="2" ry="1" fill="#fff" opacity=".6"/>`,
-  bal: `<path d="M0-11C4-5 8-1 8 3.5A8 8 0 0 1-8 3.5C-8-1-4-5 0-11Z" fill="#FFB321" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-3.5 1.5A4 4 0 0 0-1 6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>`,
-  muz: `<circle r="8.5" fill="#FFF1A8" stroke="${K}" stroke-width="2.4"/><circle r="5.2" fill="none" stroke="#F2D46A" stroke-width="1.6"/><g fill="#8A5A2B"><circle cx="0" cy="-2" r="1"/><circle cx="-1.8" cy="1.4" r="1"/><circle cx="1.8" cy="1.4" r="1"/></g><ellipse cx="-3.5" cy="-4.5" rx="2" ry="1" fill="#fff" opacity=".7"/>`,
-  cikolata: `<path d="M0-10C3-6 9-2 8.5 3.5C8 8-8 8-8.5 3.5C-9-2-3-6 0-10Z" fill="#7A4526" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-3-2C-2-4 0-6 0-6" fill="none" stroke="#B07A50" stroke-width="2" stroke-linecap="round"/>`,
+  // çilek: kalp gibi gövde, sağ yanı koyu (cel gölge), yeşil taç, sarı çekirdekler, parlama
+  cilek: `<path d="M0 12C-9 8-11-1-10-5C-8-10 8-10 10-5C11-1 9 8 0 12Z" fill="#FF3B4E" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M3 11C8 7 10 0 9-4C10 2 8 8 3 11Z" fill="#C81E36"/><path d="M-8-6L-2.5-5L0-10L2.5-5L8-6L4.5-2L0-4.5L-4.5-2Z" fill="#4CC25A" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><g fill="#FFE27A"><ellipse cx="-4.5" cy="1" rx="1.1" ry="1.6"/><ellipse cx="3.5" cy="0" rx="1.1" ry="1.6"/><ellipse cx="0" cy="5.5" rx="1.1" ry="1.6"/><ellipse cx="-1" cy="-1.5" rx="1" ry="1.4"/><ellipse cx="4.5" cy="5" rx="1" ry="1.4"/></g><ellipse cx="-5" cy="-2.5" rx="2.2" ry="1.3" fill="#fff" opacity=".85" transform="rotate(-25 -5 -2.5)"/>`,
+  havuc: `<circle r="9" fill="#FF8A2B" stroke="${K}" stroke-width="2.4"/><circle r="5.4" fill="#FFB56B"/><circle r="1.8" fill="#E86E10"/><g stroke="#E86E10" stroke-width="1.3" stroke-linecap="round"><path d="M0-4.8v-2.6M0 4.8v2.6M-4.8 0h-2.6M4.8 0h2.6"/></g><path d="M3 7.5A9 9 0 0 0 8.4 3" fill="none" stroke="#D45E08" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="-3.5" cy="-5" rx="2.4" ry="1.2" fill="#fff" opacity=".75"/>`,
+  bal: `<path d="M0-11C4-5 8.5-1 8.5 3.5A8.5 8.5 0 0 1-8.5 3.5C-8.5-1-4-5 0-11Z" fill="#FFB321" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9A8.5 8.5 0 0 0 8.4 2" fill="none" stroke="#E08A00" stroke-width="2.6" stroke-linecap="round"/><path d="M-3.8 1.5A4.2 4.2 0 0 0-1 6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"/><circle cx="-2" cy="-4" r="1.2" fill="#fff" opacity=".9"/>`,
+  // muz dilimi: krem halka, ortada yıldız gibi çekirdek izleri
+  muz: `<circle r="9" fill="#FFF1A8" stroke="${K}" stroke-width="2.4"/><circle r="6" fill="#FFF8D2" stroke="#F2D46A" stroke-width="1.6"/><g fill="#8A5A2B"><circle cx="0" cy="-2.2" r="1.1"/><circle cx="-2" cy="1.4" r="1.1"/><circle cx="2" cy="1.4" r="1.1"/></g><path d="M2.5 8.2A9 9 0 0 0 8.6 2.4" fill="none" stroke="#E8C64A" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="-3.8" cy="-5" rx="2.4" ry="1.2" fill="#fff" opacity=".85"/>`,
+  // çikolata: kare tablet parçası, kabartmalı, parlak
+  cikolata: `<rect x="-9" y="-9" width="18" height="18" rx="3.5" fill="#6B3A1E" stroke="${K}" stroke-width="2.4" transform="rotate(-8)"/><rect x="-6" y="-6.5" width="12" height="11" rx="2.4" fill="#8E5530" transform="rotate(-8)"/><path d="M-5-4.5L4.5-5.8" stroke="#C08356" stroke-width="2" stroke-linecap="round"/><circle cx="-4.5" cy="-4.5" r="1.3" fill="#fff" opacity=".7"/>`,
 };
 export const susSvg = (s: Sus, x: number, y: number, k = 1, ek = '') => `<g class="ps-sus" data-sus="${s}" transform="translate(${x} ${y}) scale(${k})"${ek}>${SUS_CIZIM[s]}</g>`;
 /** Süsün tek başına simgesi (süs kabı, sipariş balonu) */
@@ -68,21 +71,57 @@ function hamurTopu(golge: boolean): string {
   return `${golge ? '<ellipse cx="50" cy="84" rx="26" ry="6" fill="#3A1210" opacity=".18"/>' : ''}<path d="M24 66C22 48 34 34 50 34C66 34 78 48 76 66C75 79 25 79 24 66Z" fill="#FBF0DC" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M32 52C34 45 41 41 47 41" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><ellipse cx="62" cy="68" rx="6" ry="3" fill="#EFD9B4"/>`;
 }
 
+/** Kremanın kenarından akan damlalar: [x, y, boy] (krema şeklinin alt kenarında) */
+const DAMLA: Record<Sekil, [number, number, number][]> = {
+  yuvarlak: [
+    [31, 71, 3],
+    [44, 79, 8],
+    [62, 77.5, 4],
+  ],
+  yildiz: [
+    [44, 73, 6],
+    [56, 73, 3],
+    [33, 79, 2],
+  ],
+  kalp: [
+    [44, 72.5, 7],
+    [58, 70.5, 3],
+    [33, 63.5, 2],
+  ],
+  ay: [
+    [42, 80.5, 7],
+    [31, 76.5, 3],
+    [55, 78, 2],
+  ],
+}
+
+/** Krema: şeklin küçültülmüşü, alt kenarından akan damlalar, parlak çizgi ve beyaz parıltı noktaları */
+function kremaKatmani(sekil: Sekil, renk: Renk): string {
+  const yol = SEKIL_YOLU[sekil];
+  const [mx, my] = KREMA_MERKEZ[sekil];
+  const c = RENK_KODU[renk];
+  const kucult = (k: number) => `translate(${mx} ${my}) scale(${k}) translate(-${mx} -${my})`;
+  const damla = DAMLA[sekil];
+  // önce damlalar (konturlu), sonra krema, sonra birleşme yerini kapatan konturusuz yama: kenar akıyor gibi
+  const damlalar = damla.map(([x, y, b]) => `<path d="M${x - 4.2} ${y - 3}V${y + b}A4.2 4.2 0 0 0 ${x + 4.2} ${y + b}V${y - 3}Z" fill="${c}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>`).join('');
+  const yama = damla.map(([x, y, b]) => `<rect x="${x - 2.7}" y="${y - 5}" width="5.4" height="${b * 0.6 + 6}" fill="${c}"/><ellipse cx="${x - 1.3}" cy="${y + b - 0.5}" rx="1.1" ry="1.8" fill="#fff" opacity=".75"/>`).join('');
+  return `<g class="ps-krema">${damlalar}<path d="${yol}" fill="${c}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round" transform="${kucult(0.8)}"/>${yama}<path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="16 70" transform="${kucult(0.6)}"/><path d="${yol}" fill="none" stroke="${K}" stroke-opacity=".12" stroke-width="4" stroke-dasharray="40 30" stroke-dashoffset="-40" transform="${kucult(0.68)}"/></g>`;
+}
+
 function kurabiye(o: CizimSecenek): string {
   const sekil = o.sekil ?? 'yuvarlak';
   const yol = SEKIL_YOLU[sekil];
-  const golge = o.golge !== false ? `<path d="${yol}" fill="#3A1210" opacity=".16" transform="translate(3 6)"/>` : '';
+  const golge = o.golge !== false ? `<path d="${yol}" fill="#3A1210" opacity=".18" transform="translate(3 10)"/>` : '';
+  // kalınlık: aynı şekil biraz aşağıda, koyu (kurabiye tombul dursun)
+  const yan = `<path d="${yol}" style="fill:${hamurDolgu(o)}" stroke="${K}" stroke-width="5" stroke-linejoin="round" transform="translate(0 6)"/><path d="${yol}" fill="${K}" opacity=".26" transform="translate(0 6)"/>`;
   const govde = `<path class="ps-k-govde" d="${yol}" style="fill:${hamurDolgu(o)}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/>`;
   // pişmiş kurabiyenin kenarında hafif koyu halka ve doku noktaları
   const doku =
     o.hal === 'cig'
-      ? `<path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" transform="translate(50 50) scale(.84) translate(-50 -50)"/>`
-      : `<path d="${yol}" fill="none" stroke="#3A1210" stroke-opacity=".14" stroke-width="5" transform="translate(50 50) scale(.86) translate(-50 -50)"/><g fill="#3A1210" opacity=".18"><circle cx="40" cy="44" r="1.6"/><circle cx="58" cy="40" r="1.6"/><circle cx="62" cy="60" r="1.6"/><circle cx="44" cy="62" r="1.6"/></g>`;
-  const [mx, my] = KREMA_MERKEZ[sekil];
-  const krema = o.renk
-    ? `<g class="ps-krema"><path d="${yol}" fill="${RENK_KODU[o.renk]}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round" transform="translate(${mx} ${my}) scale(.78) translate(-${mx} -${my})"/><path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-dasharray="14 60" transform="translate(${mx} ${my}) scale(.62) translate(-${mx} -${my})"/></g>`
-    : '';
-  const parlama = o.renk ? '' : `<path d="M30 30C34 25 39 23 44 22" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>`;
+      ? `<path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" transform="translate(50 50) scale(.84) translate(-50 -50)"/>`
+      : `<path d="${yol}" fill="none" stroke="#9A5A1E" stroke-opacity=".28" stroke-width="6" transform="translate(50 50) scale(.88) translate(-50 -50)"/><g fill="#8A4A1A" opacity=".35"><circle cx="40" cy="44" r="1.8"/><circle cx="58" cy="40" r="1.8"/><circle cx="62" cy="60" r="1.8"/><circle cx="44" cy="62" r="1.8"/><circle cx="52" cy="52" r="1.5"/></g>`;
+  const krema = o.renk ? kremaKatmani(sekil, o.renk) : '';
+  const parlama = o.renk ? '' : `<path d="M28 32C32 26 38 23 44 22" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="4.5" stroke-linecap="round"/><circle cx="24" cy="40" r="2.4" fill="#fff" opacity=".7"/>`;
   const susler = (o.susler ?? [])
     .slice(0, 3)
     .map((s, i, a) => {
@@ -90,7 +129,7 @@ function kurabiye(o: CizimSecenek): string {
       return susSvg(s, x, y, 1.05);
     })
     .join('');
-  return golge + govde + doku + krema + parlama + `<g class="ps-susler">${susler}</g>`;
+  return golge + yan + govde + doku + krema + parlama + `<g class="ps-susler">${susler}</g>`;
 }
 
 /** Krema yığını (kapkek): i. kat, alttan */
@@ -102,12 +141,13 @@ function yigin(renk: Renk, i: number): string {
 }
 
 function kapkek(o: CizimSecenek): string {
-  const golge = o.golge !== false ? '<ellipse cx="50" cy="93" rx="27" ry="5" fill="#3A1210" opacity=".18"/>' : '';
-  const kap = `<path d="M22 62L78 62L70 91L30 91Z" fill="#fff" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><g stroke="#FF9CC8" stroke-width="4"><path d="M33 64L36 89M45 64L46 89M55 64L54 89M67 64L64 89"/></g><path d="M22 62L78 62L70 91L30 91Z" fill="none" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/>`;
+  const golge = o.golge !== false ? '<ellipse cx="50" cy="94" rx="28" ry="5" fill="#3A1210" opacity=".2"/>' : '';
+  // kâğıt kalıp: pembe-beyaz pileler, sağ yanı gölgeli, üst kenarı dalgalı
+  const kap = `<path d="M21 61L79 61L70 92L30 92Z" fill="#fff" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><g stroke="#FF8CC0" stroke-width="4.5"><path d="M31 63L35 90M43 63L45 90M55 63L54 90M67 63L64 90"/></g><path d="M62 62L79 61L70 92L58 92Z" fill="${K}" opacity=".14"/><path d="M21 61L79 61L70 92L30 92Z" fill="none" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M19 62Q24 66 29 62Q34 66 39 62Q44 66 50 62Q56 66 61 62Q66 66 71 62Q76 66 81 62" fill="none" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>`;
   const kubbe =
     o.hal === 'top' || o.hal === 'cig'
-      ? `<path d="M23 63C23 54 34 50 50 50C66 50 77 54 77 63Z" style="fill:${hamurDolgu(o)}" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/>`
-      : `<path d="M20 64C18 48 32 38 50 38C68 38 82 48 80 64Z" style="fill:${hamurDolgu(o)}" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M30 52C33 46 39 43 45 42" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3.5" stroke-linecap="round"/>`;
+      ? `<path d="M23 63C23 54 34 50 50 50C66 50 77 54 77 63Z" style="fill:${hamurDolgu(o)}" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M32 57C36 54 41 53 45 53" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>`
+      : `<path d="M19 64C17 47 32 36 50 36C68 36 83 47 81 64Z" style="fill:${hamurDolgu(o)}" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M62 40C74 45 80 54 79 63L66 63C68 54 66 46 62 40Z" fill="${K}" opacity=".16"/><path d="M29 52C32 45 39 41 46 40" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="4" stroke-linecap="round"/><circle cx="26" cy="58" r="2" fill="#fff" opacity=".6"/>`;
   const yy = (o.yigin ?? []).slice(0, 3);
   const katlar = yy.map((r, i) => yigin(r, i)).join('');
   const tepe = yy.length ? 52 - (yy.length - 1) * 12 - 16 : 36;
@@ -122,52 +162,75 @@ export function urunSvg(o: CizimSecenek, sinif = 'ps-urun-svg'): string {
 }
 
 // ---------------------------------------------------------------- istasyonlar
-/** Kurabiye kalıbı: şeklin kalın renkli kenarı (iç boş) */
+/** Kurabiye kalıbı: şeklin kalın renkli kenarı (iç boş), parlak plastik; panoda çivisine asılı */
 const KALIP_RENK: Record<string, string> = { yuvarlak: '#FF6F7D', yildiz: '#FFC22E', kalp: '#FF7EB6', ay: '#8E7CFF', kapkek: '#4FC3B0' };
 export function kalipSvg(k: Sekil | 'kapkek'): string {
   if (k === 'kapkek') {
-    return `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="90" rx="30" ry="5" fill="${K}" opacity=".16"/><path d="M18 40L82 40L72 86L28 86Z" fill="#fff" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><g stroke="${KALIP_RENK.kapkek}" stroke-width="6"><path d="M31 43L36 83M45 43L47 83M55 43L53 83M69 43L64 83"/></g><path d="M18 40L82 40L72 86L28 86Z" fill="none" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><ellipse cx="50" cy="40" rx="32" ry="6" fill="#fff" stroke="${K}" stroke-width="4"/></svg>`;
+    // kapkek kâğıtları: üst üste üç kâğıt kalıp
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="93" rx="32" ry="5" fill="${K}" opacity=".18"/><path d="M16 36L84 36L74 88L26 88Z" fill="#fff" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><g stroke="${KALIP_RENK.kapkek}" stroke-width="6"><path d="M29 39L35 85M43 39L46 85M57 39L54 85M71 39L65 85"/></g><path d="M62 37L84 36L74 88L60 88Z" fill="${K}" opacity=".12"/><path d="M16 36L84 36L74 88L26 88Z" fill="none" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M12 36Q18 42 24 36Q30 42 36 36Q42 42 50 36Q58 42 64 36Q70 42 76 36Q82 42 88 36" fill="#fff" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M14 26Q20 32 26 26Q32 32 38 26Q44 32 50 26Q56 32 62 26Q68 32 74 26Q80 32 86 26" fill="none" stroke="${K}" stroke-width="4" stroke-linejoin="round" opacity=".55"/><path d="M24 44L28 70" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/></svg>`;
   }
   const yol = SEKIL_YOLU[k];
-  return `<svg viewBox="-4 -4 108 108" aria-hidden="true"><path d="${yol}" fill="none" stroke="${K}" stroke-opacity=".16" stroke-width="15" stroke-linejoin="round" transform="translate(3 6)"/><path d="${yol}" fill="none" stroke="${K}" stroke-width="15" stroke-linejoin="round"/><path d="${yol}" fill="none" stroke="${KALIP_RENK[k]}" stroke-width="8" stroke-linejoin="round"/><path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.5" stroke-dasharray="10 40" stroke-linejoin="round"/></svg>`;
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><path d="${yol}" fill="none" stroke="${K}" stroke-opacity=".18" stroke-width="16" stroke-linejoin="round" transform="translate(4 8)"/><path d="${yol}" fill="none" stroke="${K}" stroke-width="17" stroke-linejoin="round"/><path d="${yol}" fill="none" stroke="${KALIP_RENK[k]}" stroke-width="9.5" stroke-linejoin="round"/><path d="${yol}" fill="none" stroke="${K}" stroke-opacity=".18" stroke-width="4" stroke-linejoin="round" transform="translate(1.5 2.5)"/><path d="${yol}" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="3" stroke-linecap="round" stroke-dasharray="12 46" stroke-linejoin="round"/></svg>`;
 }
 
-/** Hamur kabı: mavi seramik kâse, içinde kabarık hamur ve tahta kaşık */
-export const HAMUR_KABI = `<svg viewBox="0 0 120 110" aria-hidden="true"><ellipse cx="60" cy="102" rx="44" ry="6" fill="${K}" opacity=".18"/><path d="M78 20L96 4" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M78 20L96 4" stroke="#E0A060" stroke-width="5" stroke-linecap="round"/><path d="M22 46C22 30 40 20 60 20C80 20 98 30 98 46Z" fill="#FBF0DC" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M36 34C42 28 50 26 58 26" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M10 46H110C110 76 90 98 60 98C30 98 10 76 10 46Z" fill="#59B7F0" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M14 58H106" stroke="#fff" stroke-width="5" stroke-opacity=".7"/><path d="M20 66C24 80 36 88 50 90" fill="none" stroke="#fff" stroke-width="5" stroke-opacity=".45" stroke-linecap="round"/><path d="M10 46H110" stroke="${K}" stroke-width="5" stroke-linecap="round"/></svg>`;
+/** Hamur kâsesi: büyük mavi seramik kâse; içinde kabaran hamur (.ps-hamur-kabarik), tahta kaşık, un tozu */
+export const HAMUR_KABI = `<svg viewBox="0 0 160 132" aria-hidden="true" overflow="visible"><ellipse cx="80" cy="125" rx="62" ry="7" fill="${K}" opacity=".2"/><ellipse cx="80" cy="54" rx="70" ry="17" fill="#2B86C6" stroke="${K}" stroke-width="5"/><path d="M112 34L146 2" stroke="${K}" stroke-width="13" stroke-linecap="round"/><path d="M112 34L146 2" stroke="#E7A862" stroke-width="6.5" stroke-linecap="round"/><path d="M140 7L145 3" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/><g class="ps-hamur-kabarik"><path d="M18 60C14 42 34 26 56 28C64 13 96 11 104 26C126 22 148 40 142 60Z" fill="#FBF0DC" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M104 27C120 26 138 38 140 54C128 46 116 40 104 40Z" fill="${K}" opacity=".08"/><path d="M34 42C40 34 50 31 58 32" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/><path d="M70 22C76 18 84 17 90 19" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><g fill="#EFD9B4"><ellipse cx="86" cy="42" rx="5" ry="3"/><ellipse cx="112" cy="48" rx="4" ry="2.4"/><ellipse cx="54" cy="50" rx="3.5" ry="2.2"/></g></g><path d="M10 56A70 17 0 0 0 150 56C150 96 120 122 80 122C40 122 10 96 10 56Z" fill="#59B7F0" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M14 74C30 82 130 82 146 74" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/><path d="M14 74C30 82 130 82 146 74" fill="none" stroke="#FF8CC0" stroke-width="3.5" stroke-linecap="round"/><g fill="#fff" opacity=".9"><circle cx="40" cy="96" r="4"/><circle cx="62" cy="104" r="4"/><circle cx="88" cy="105" r="4"/><circle cx="114" cy="98" r="4"/><circle cx="132" cy="88" r="3.5"/></g><path d="M112 84C126 82 140 74 146 64C146 92 126 114 98 120C110 108 114 96 112 84Z" fill="${K}" opacity=".14"/><path d="M22 82C26 98 38 110 54 115" fill="none" stroke="#fff" stroke-width="6" stroke-opacity=".55" stroke-linecap="round"/><path d="M10 56A70 17 0 0 0 150 56" fill="none" stroke="${K}" stroke-width="5"/><path d="M24 60A62 11 0 0 0 66 70" fill="none" stroke="#B9E4FF" stroke-width="4" stroke-linecap="round"/><g fill="#fff"><circle cx="24" cy="18" r="2.6" opacity=".9"/><circle cx="16" cy="30" r="1.8" opacity=".8"/><circle cx="150" cy="40" r="2.2" opacity=".8"/></g></svg>`;
 
-/** Krema şişesi (sıkma torbası şişe): gövde krema renginde, ucu beyaz */
+/** Krema torbası: krema renginde sıkma torbası, ucu metal huni, tahta tutacağın deliğine takılı */
 export function kremaSvg(r: Renk): string {
   const c = RENK_KODU[r];
-  return `<svg viewBox="0 0 70 110" aria-hidden="true"><ellipse cx="35" cy="104" rx="22" ry="4.5" fill="${K}" opacity=".18"/><path d="M27 18L35 3L43 18Z" fill="#fff" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><circle cx="35" cy="4" r="3.5" fill="${c}" stroke="${K}" stroke-width="2.5"/><rect x="22" y="15" width="26" height="12" rx="4" fill="#fff" stroke="${K}" stroke-width="4.5"/><path d="M14 38C14 30 22 26 35 26C48 26 56 30 56 38V90C56 98 48 101 35 101C22 101 14 98 14 90Z" fill="${c}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><rect x="21" y="52" width="28" height="26" rx="9" fill="#fff" stroke="${K}" stroke-width="3.5"/><path d="M35 72C29 68 26 65 26 61C26 58 28 56 31 56C33 56 34.5 57 35 58.5C35.5 57 37 56 39 56C42 56 44 58 44 61C44 65 41 68 35 72Z" fill="${c}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 40V86" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-opacity=".6"/></svg>`;
+  return `<svg viewBox="0 0 80 132" aria-hidden="true" overflow="visible"><ellipse cx="40" cy="127" rx="28" ry="4.5" fill="${K}" opacity=".2"/><path d="M31 84H49L45 102H35Z" fill="#D5DEE6" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M36 87L38 100M44 87L42 100" stroke="#9AA9B6" stroke-width="2"/><path d="M10 100H70L66 124H14Z" fill="#E7A862" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M52 100H70L66 124H54Z" fill="${K}" opacity=".14"/><ellipse cx="40" cy="100" rx="30" ry="5" fill="#F4C287" stroke="${K}" stroke-width="4"/><ellipse cx="40" cy="100" rx="11" ry="2.6" fill="${K}" opacity=".55"/><path d="M14 106H60" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"/><path d="M11 32C11 22 69 22 69 32L50 88H30Z" fill="${c}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M50 30C60 31 66 32 68 34L50 86L44 86Z" fill="${K}" opacity=".14"/><path d="M11 32C11 22 69 22 69 32L65 44C56 39 24 39 15 44Z" fill="#fff" stroke="${K}" stroke-width="4.5" stroke-linejoin="round"/><path d="M29 24C29 13 36 6 40 4C44 6 51 13 51 24Z" fill="#fff" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><rect x="29" y="17" width="22" height="7" rx="3.5" fill="${c}" stroke="${K}" stroke-width="3"/><path d="M21 50L33 80" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-opacity=".6"/><circle cx="20" cy="38" r="2.4" fill="#fff" opacity=".9"/><path d="M57 52C55 58 53 62 52 64" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".4"/><circle cx="58" cy="99" r="3.4" fill="${c}" stroke="${K}" stroke-width="2"/></svg>`;
 }
 
-/** Süs kabı: küçük kâse, üstü süs dolu */
+/** Süsün kavanoz kapağı rengi */
+const SUS_RENK: Record<Sus, string> = { cilek: '#FF5A7A', havuc: '#FF8A2B', bal: '#FFB321', muz: '#FFD84A', cikolata: '#A0643A' };
+/** Süs kavanozu: cam kavanoz, içi süs dolu, ağzından taşıyor (üstteki yığın .ps-kap-ust) */
 export function susKabiSvg(s: Sus, adet = 5): string {
-  const yer: [number, number][] = [
-    [34, 40],
-    [52, 34],
-    [70, 40],
-    [43, 47],
-    [61, 47],
+  const ic: [number, number][] = [
+    [32, 94],
+    [50, 96],
+    [68, 93],
+    [40, 80],
+    [60, 79],
+    [30, 66],
+    [50, 64],
+    [70, 66],
+    [41, 52],
+    [60, 52],
   ];
-  const ust = yer
+  const ust: [number, number][] = [
+    [34, 28],
+    [50, 20],
+    [66, 28],
+    [42, 32],
+    [58, 32],
+  ];
+  const icler = ic.map(([x, y]) => susSvg(s, x, y, 1.08)).join('');
+  const yigin = ust
     .slice(0, adet)
-    .map(([x, y]) => susSvg(s, x, y, 1.15))
+    .map(([x, y]) => susSvg(s, x, y, 1.2))
     .join('');
-  return `<svg viewBox="0 0 104 90" aria-hidden="true" overflow="visible"><ellipse cx="52" cy="84" rx="38" ry="5" fill="${K}" opacity=".18"/><g class="ps-kap-ust">${ust}</g><path d="M10 48H94C94 70 76 82 52 82C28 82 10 70 10 48Z" fill="#FFF3D6" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M16 58C22 70 34 75 46 76" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-opacity=".8"/><path d="M10 48H94" stroke="${K}" stroke-width="5" stroke-linecap="round"/><path d="M24 62C34 66 70 66 80 62" fill="none" stroke="#FFB0CF" stroke-width="5" stroke-linecap="round"/></svg>`;
+  const kr = SUS_RENK[s];
+  return `<svg viewBox="0 0 100 116" aria-hidden="true" overflow="visible"><ellipse cx="50" cy="111" rx="40" ry="5" fill="${K}" opacity=".2"/><g class="ps-kap-ic">${icler}</g><path d="M17 46C17 40 21 36 27 36H73C79 36 83 40 83 46V96C83 104 77 108 69 108H31C23 108 17 104 17 96Z" fill="#DDF3FF" fill-opacity=".34" stroke="${K}" stroke-width="5"/><path d="M68 40C76 42 80 46 80 54V94C80 101 76 105 70 106C74 100 75 94 75 86V54C75 48 72 43 68 40Z" fill="#7FB8D8" opacity=".35"/><path d="M26 48V94" stroke="#fff" stroke-width="6.5" stroke-linecap="round" opacity=".8"/><path d="M34 46V54" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/><rect x="21" y="29" width="58" height="13" rx="6.5" fill="${kr}" stroke="${K}" stroke-width="4.5"/><path d="M27 33H58" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/><g class="ps-kap-ust">${yigin}</g></svg>`;
 }
 
-/** Fırın tepsisi (metal, kenarlı) */
-export const TEPSI = `<svg viewBox="0 0 200 70" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="100" cy="64" rx="92" ry="5" fill="${K}" opacity=".18"/><path d="M6 22H194L186 58H14Z" fill="#C9D4DE" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M16 30H184" stroke="#fff" stroke-width="4" stroke-opacity=".8" stroke-linecap="round"/><path d="M6 22H194" stroke="${K}" stroke-width="5" stroke-linecap="round"/></svg>`;
+/** Fırın tepsisi (metal, kenarlı, içinde pişirme kâğıdı) */
+export const TEPSI = `<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="100" cy="72" rx="94" ry="6" fill="${K}" opacity=".2"/><rect x="0" y="34" width="20" height="16" rx="6" fill="#B9C6D2" stroke="${K}" stroke-width="4.5"/><rect x="180" y="34" width="20" height="16" rx="6" fill="#B9C6D2" stroke="${K}" stroke-width="4.5"/><path d="M10 28H190L180 66H20Z" fill="#B9C6D2" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M22 34H178L171 60H29Z" fill="#FFF3DC" stroke="#E2C8A0" stroke-width="2.5" stroke-linejoin="round"/><path d="M150 34H178L171 60H146Z" fill="${K}" opacity=".06"/><path d="M18 31H182" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".85"/><path d="M10 28H190" stroke="${K}" stroke-width="5" stroke-linecap="round"/></svg>`;
 
-/** Servis tabağı */
-export const TABAK = `<svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="100" cy="72" rx="90" ry="7" fill="${K}" opacity=".18"/><ellipse cx="100" cy="44" rx="94" ry="28" fill="#fff" stroke="${K}" stroke-width="5"/><ellipse cx="100" cy="44" rx="80" ry="21" fill="none" stroke="#7CC8F2" stroke-width="5"/><ellipse cx="100" cy="46" rx="62" ry="14" fill="#F4FAFF"/><path d="M30 36C40 28 60 24 80 23" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`;
+/** Servis tabağı: büyük beyaz pasta tabağı, pembe noktalı kenar */
+export const TABAK = `<svg viewBox="0 0 220 100" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="110" cy="88" rx="100" ry="9" fill="${K}" opacity=".2"/><path d="M8 54C8 74 52 84 110 84C168 84 212 74 212 54" fill="#E9F0F6" stroke="${K}" stroke-width="5"/><ellipse cx="110" cy="52" rx="104" ry="32" fill="#fff" stroke="${K}" stroke-width="5"/><ellipse cx="110" cy="52" rx="92" ry="26" fill="none" stroke="#FF9CC8" stroke-width="6" stroke-dasharray="2 13" stroke-linecap="round"/><ellipse cx="110" cy="54" rx="76" ry="19" fill="#FFF4F8" stroke="#F3D3E0" stroke-width="2.5"/><path d="M28 42C44 30 70 24 96 23" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M150 76C172 74 192 68 202 60" fill="none" stroke="${K}" stroke-opacity=".12" stroke-width="5" stroke-linecap="round"/></svg>`;
 
-/** Fırının gövdesi (gözler DOM'da üstüne gelir) */
-export const FIRIN_GOVDE = `<svg viewBox="0 0 300 150" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="150" cy="146" rx="140" ry="5" fill="${K}" opacity=".2"/><rect x="6" y="6" width="288" height="134" rx="22" fill="#FF6F7D" stroke="${K}" stroke-width="6"/><rect x="16" y="14" width="268" height="18" rx="9" fill="#FF97A2"/><path d="M22 128H278" stroke="#D84E5C" stroke-width="6" stroke-linecap="round"/><g fill="#FFD84A" stroke="${K}" stroke-width="3"><circle cx="40" cy="23" r="6"/><circle cx="62" cy="23" r="6"/></g><rect x="200" y="17" width="70" height="12" rx="6" fill="#fff" stroke="${K}" stroke-width="3"/></svg>`;
+/** Kasa (eski usul yazar kasa): turkuaz gövde, tuşlar, ekran, pembe çekmece, yan kol */
+export const KASA = `<svg viewBox="0 0 120 112" aria-hidden="true" overflow="visible"><ellipse cx="60" cy="106" rx="52" ry="6" fill="${K}" opacity=".2"/><path d="M104 56H116V38" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="116" cy="34" r="6" fill="#FF5A7A" stroke="${K}" stroke-width="3.5"/><rect x="60" y="6" width="46" height="30" rx="7" fill="#fff" stroke="${K}" stroke-width="4.5"/><rect x="66" y="12" width="34" height="17" rx="3" fill="#2E4A44"/><g fill="#FFD84A"><rect x="70" y="16" width="5" height="9" rx="1.5"/><rect x="78" y="16" width="5" height="9" rx="1.5"/><rect x="86" y="16" width="5" height="9" rx="1.5"/></g><path d="M14 46C14 40 18 36 24 36H96C102 36 106 40 106 46V76H14Z" fill="#4FC3B0" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M80 38H96C102 38 104 42 104 46V74H84Z" fill="${K}" opacity=".12"/><g fill="#fff" stroke="${K}" stroke-width="2.6"><rect x="22" y="44" width="13" height="9" rx="3"/><rect x="39" y="44" width="13" height="9" rx="3"/><rect x="56" y="44" width="13" height="9" rx="3"/><rect x="22" y="58" width="13" height="9" rx="3"/><rect x="39" y="58" width="13" height="9" rx="3"/><rect x="56" y="58" width="13" height="9" rx="3"/></g><rect x="74" y="44" width="22" height="23" rx="5" fill="#FF8CC0" stroke="${K}" stroke-width="2.6"/><path d="M20 42C22 40 26 39 30 39" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".7"/><path d="M6 76H114V94C114 99 110 102 105 102H15C10 102 6 99 6 94Z" fill="#FF8CC0" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><path d="M90 78H112V94C112 98 108 100 104 100H92Z" fill="${K}" opacity=".12"/><rect x="48" y="84" width="24" height="8" rx="4" fill="#FFD84A" stroke="${K}" stroke-width="3"/><path d="M12 82H40" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>`;
 
-/** Kasa (yazar kasa) */
-export const KASA = `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="94" rx="40" ry="5" fill="${K}" opacity=".2"/><rect x="58" y="10" width="30" height="22" rx="6" fill="#fff" stroke="${K}" stroke-width="4.5"/><path d="M14 40C14 34 18 30 24 30H76C82 30 86 34 86 40V70H14Z" fill="#4FC3B0" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><g fill="#fff" stroke="${K}" stroke-width="2.5"><rect x="24" y="40" width="12" height="8" rx="3"/><rect x="40" y="40" width="12" height="8" rx="3"/><rect x="24" y="52" width="12" height="8" rx="3"/><rect x="40" y="52" width="12" height="8" rx="3"/></g><rect x="60" y="40" width="18" height="20" rx="4" fill="#FFD84A" stroke="${K}" stroke-width="2.5"/><path d="M8 70H92V84C92 88 89 90 85 90H15C11 90 8 88 8 84Z" fill="#FF8CC0" stroke="${K}" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="80" r="4" fill="#FFD84A" stroke="${K}" stroke-width="2.5"/></svg>`;
+/**
+ * Arka duvar rafı: tahta raf, üstünde pasta standı, şeker kavanozu, kapkek ve makaronlar (yalnız süs; tıklanmaz).
+ * viewBox 240×100.
+ */
+export const RAF_SUSLERI = `<svg viewBox="0 0 240 100" aria-hidden="true" overflow="visible"><g fill="#C98A4B" stroke="${K}" stroke-width="4" stroke-linejoin="round"><path d="M22 90L22 100L40 90Z"/><path d="M218 90L218 100L200 90Z"/></g><rect x="4" y="80" width="232" height="12" rx="4" fill="#E7A862" stroke="${K}" stroke-width="4.5"/><path d="M10 84H230" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M44 80L48 66H56L60 80Z" fill="#fff" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><ellipse cx="52" cy="64" rx="34" ry="6" fill="#fff" stroke="${K}" stroke-width="4"/><rect x="26" y="28" width="52" height="34" rx="9" fill="#FF9CC8" stroke="${K}" stroke-width="4.5"/><path d="M60 30H70C75 30 78 33 78 38V58C78 60 76 62 74 62H64Z" fill="${K}" opacity=".12"/><path d="M26 42H78" stroke="#fff" stroke-width="5"/><path d="M26 36C26 30 30 27 36 27H68C74 27 78 30 78 36C78 42 74 44 72 40C70 46 64 46 62 40C60 47 54 47 52 41C50 47 44 47 42 41C40 46 34 46 32 40C30 44 26 42 26 36Z" fill="#fff" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><circle cx="52" cy="20" r="7" fill="#FF3B4E" stroke="${K}" stroke-width="3.5"/><path d="M52 13C53 8 56 6 59 5" fill="none" stroke="${K}" stroke-width="3" stroke-linecap="round"/><circle cx="49.5" cy="18" r="2" fill="#fff"/><path d="M98 44C98 40 101 38 105 38H131C135 38 138 40 138 44V76C138 79 135 81 131 81H105C101 81 98 79 98 76Z" fill="#DDF3FF" fill-opacity=".45" stroke="${K}" stroke-width="4"/><g><circle cx="108" cy="70" r="3" fill="#FF5A7A"/><circle cx="118" cy="74" r="3" fill="#6CC4FF"/><circle cx="128" cy="69" r="3" fill="#FFD84A"/><circle cx="112" cy="60" r="3" fill="#7FE0C4"/><circle cx="125" cy="58" r="3" fill="#B98BFF"/><circle cx="118" cy="50" r="3" fill="#FF8A2B"/><circle cx="108" cy="49" r="3" fill="#FF5A7A"/><circle cx="129" cy="47" r="3" fill="#6CC4FF"/></g><path d="M104 46V74" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".8"/><rect x="100" y="30" width="36" height="9" rx="4.5" fill="#FF8CC0" stroke="${K}" stroke-width="3.5"/><g transform="translate(146 30) scale(.5)">${kapkek({ urun: 'kapkek', sekil: null, hal: 'pismis', yigin: ['pembe', 'pembe'], susler: ['cilek'], hamur: '#F3B54A', golge: false })}</g><g stroke="${K}" stroke-width="3.5"><ellipse cx="216" cy="74" rx="16" ry="6" fill="#B98BFF"/><ellipse cx="216" cy="66" rx="15" ry="5" fill="#fff"/><ellipse cx="216" cy="60" rx="16" ry="6" fill="#7FE0C4"/><ellipse cx="216" cy="52" rx="15" ry="5" fill="#fff"/><ellipse cx="216" cy="46" rx="16" ry="6" fill="#FFB0CF"/></g></svg>`;
+
+/** Kapı / dolap kapağı deseni (tezgâhın ön paneli; arkada boya rengi görünür): CSS background-image için */
+export const KAPAK_DESENI = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 64"><rect x="8" y="6" width="204" height="52" rx="12" fill="#FFF6EC" stroke="${K}" stroke-width="4"/><rect x="20" y="15" width="180" height="34" rx="8" fill="none" stroke="${K}" stroke-opacity=".22" stroke-width="3"/><path d="M110 26C106 22 100 22 100 28C100 32 105 35 110 39C115 35 120 32 120 28C120 22 114 22 110 26Z" fill="#FF8CC0" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><path d="M16 12H60" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>`)}")`;
 
 /** Jeton: altın para, ortasında yıldız */
 export const JETON = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="54" r="40" fill="#C98A12"/><circle cx="50" cy="48" r="40" fill="#FFD23F" stroke="${K}" stroke-width="6"/><circle cx="50" cy="48" r="29" fill="none" stroke="#F0A818" stroke-width="5"/><path d="${yildizYolu(50, 50, 20, 9)}" fill="#FFB300" stroke="#C47F00" stroke-width="3" stroke-linejoin="round"/><path d="M27 30C33 22 41 18 50 18" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-opacity=".75"/></svg>`;

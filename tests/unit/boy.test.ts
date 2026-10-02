@@ -19,6 +19,17 @@ describe('boy tablosu', () => {
     expect(BOY.bebek).toBeLessThan(BOY.cocuk);
     expect(BOY.kino).toBeLessThan(1);
   });
+  it('hayvanlar: ayı en büyük (çocuktan uzun, anneden kısa), inek büyük; tavşan, ördek, köpek Mino ile çocuk arası; kuş küçük', () => {
+    expect(BOY.ayi).toBeGreaterThan(BOY.cocuk);
+    expect(BOY.ayi).toBeLessThan(BOY.anne);
+    expect(BOY.inek).toBeGreaterThan(BOY.cocuk);
+    expect(BOY.ayi).toBeGreaterThan(BOY.inek);
+    for (const ad of ['tavsan', 'ordek', 'kopek', 'maymun'] as const) {
+      expect(BOY[ad], ad).toBeGreaterThanOrEqual(BOY.mino);
+      expect(BOY[ad], ad).toBeLessThan(BOY.cocuk);
+    }
+    expect(BOY.kus).toBeLessThan(BOY.kino);
+  });
   it('her iskeletin (önden, yan, 3/4) ölçüsü var; tepe tabandan yukarıda, kutunun içinde', () => {
     for (const ad of ISKELETLER) {
       const c = CIZIM[ad];

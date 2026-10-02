@@ -104,7 +104,7 @@ export class PastaMusteri {
     }
     this.govde = h('div.ps-m-govde', {}, ...kutular);
     this.zzz = h('div.ps-m-zzz', { 'aria-hidden': 'true' }, h('span', {}, 'z'), h('span', {}, 'z'), h('span', {}, 'Z'));
-    this.yol = h('div.ps-m-yol', {}, h('i.ps-m-golge'), this.govde, this.zzz);
+    this.yol = h('div.ps-m-yol', {}, this.govde, this.zzz);
     this.sabirEl = h('div.ps-sabir', { 'aria-hidden': 'true' }, h('i.ps-sabir-bos'), h('i.ps-sabir-dolu'));
     this.balonIc = siparisResmi(sip, tavsanResmi);
     this.balon = h('div.ps-balon', {}, this.balonIc, this.sabirEl);
@@ -115,16 +115,48 @@ export class PastaMusteri {
         'data-musteri': ad,
         role: 'button',
         'aria-label': ad,
-        style: `--oran:${boyCarpani(ad).toFixed(4)};--alt:${c ? altPayi(c).toFixed(4) : 0};--tepe:${c ? (1 - ustPayi(c)).toFixed(4) : 1}`,
+        style: `--oran:${boyCarpani(ad).toFixed(4)};--alt:${c ? altPayi(c).toFixed(4) : 0};--ust:${c ? ustPayi(c).toFixed(4) : 0}`,
       },
       this.yol,
+      // dokunma alanı: yalnız tezgâhın üstünde görünen gövde (komşu müşterinin önünü kapatmaz)
+      h('i.ps-m-dokun'),
       this.balon,
     );
     this.karakter.ekHareket = (p, t) => this.poz(p, t);
+    void this.karakter.hazir.then(() => this.yanakTak());
   }
 
-  /** Uyuklarken: gözler kapalı, baş yana düşmüş, yavaş nefes */
+  /** Sabırsızlanınca kızaran yanaklar: kafa katmanına (kafa dönünce yanak da döner), ağzın iki yanına */
+  private yanakTak() {
+    const kafa = this.karakter.parcaG('kafa');
+    if (!kafa || kafa.querySelector('.ps-yanak')) return;
+    const [ax, ay] = this.karakter.k.agiz;
+    const cocuk = boyTipi(this.ad) === 'cocuk';
+    const dx = cocuk ? 118 : 230;
+    const r = cocuk ? 40 : 66;
+    const x = ax * 2048;
+    const y = ay * 2048 - (cocuk ? 46 : 90);
+    kafa.insertAdjacentHTML(
+      'beforeend',
+      `<g class="ps-yanak"><ellipse cx="${x - dx}" cy="${y}" rx="${r}" ry="${r * 0.62}" fill="#FF4F6E"/><ellipse cx="${x + dx}" cy="${y}" rx="${r}" ry="${r * 0.62}" fill="#FF4F6E"/></g>`,
+    );
+  }
+
+  /** Sabırsız mı (kalp dolmaya yakın, uyumuyor): yanaklar kızarır, ayağını vurur, kaşlar çatılır */
+  private get sabirsiz() {
+    return this.sabir > 0.6 && !this.uyuyor && this.hazir && !this.bitti;
+  }
+
+  /** Uyuklarken: gözler kapalı, baş yana düşmüş, yavaş nefes. Sabırsızken ayak vurur gibi hoplar. */
   private poz(p: Poz, t: number) {
+    if (this.sabirsiz && !this.karakter.mesgul && !AZ_HAREKET) {
+      const vur = Math.max(0, Math.sin(t * 9));
+      p.y -= 1.2 * vur;
+      p.sy *= 1 - 0.015 * vur;
+      p.kas = 0.8;
+      p.kafa += Math.sin(t * 4.5) * 2.5;
+      p.bacakSag += 6 * vur;
+    }
     if (!this.uyuyor) return;
     const u = Math.min(1, (performance.now() - this.uykuBas) / 600);
     p.gozKapali = true;
@@ -254,6 +286,7 @@ export class PastaMusteri {
     this.sabir = Math.max(0, Math.min(1, s));
     this.sabirEl.style.setProperty('--s', this.sabir.toFixed(3));
     this.sabirEl.classList.toggle('ps-sabir-az', this.sabir > 0.75);
+    this.el.classList.toggle('ps-sabirsiz', this.sabirsiz);
     if (this.sabir >= 1 && !this.uyuyor) this.uyu();
   }
 
@@ -354,12 +387,27 @@ export class PastaMusteri {
     return this.karakter.oynat('dans', d === 'gobek' ? 1400 : 1300);
   }
 
-  /** Sevinçli ifade (varsa) */
+  /** Sevinçli ifade: varsa 'mutlu', yoksa gülen ağız (agiz-gulus / agiz-gulumse); kahkaha gibi hafif zıplama */
   mutlu(ms = 1600) {
-    if (this.karakter.ifadeVar('mutlu')) this.karakter.ifade('mutlu', ms);
+    this.el.classList.remove('ps-sabirsiz');
+    if (this.karakter.ifadeVar('mutlu')) {
+      this.karakter.ifade('mutlu', ms);
+      return;
+    }
+    const agiz = ['agiz-gulus', 'agiz-gulumse'].find((id) => this.karakter.parcaG(id));
+    if (!agiz) return;
+    this.karakter.ek(agiz, true);
+    this.karakter.gizle('agiz', true);
+    clearTimeout(this.gulusZaman);
+    this.gulusZaman = window.setTimeout(() => {
+      this.karakter.ek(agiz, false);
+      this.karakter.gizle('agiz', false);
+    }, TEST_MODU ? 30 : ms);
   }
+  private gulusZaman = 0;
 
   kapat() {
+    clearTimeout(this.gulusZaman);
     this.karakter.kapat();
     this.yan?.kapat();
     this.el.getAnimations({ subtree: true }).forEach((a) => a.cancel());
