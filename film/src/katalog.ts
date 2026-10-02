@@ -17,7 +17,8 @@ const KAPAKLAR = import.meta.glob<string>('../../assets/film/kapak/*.webp', { ea
 
 /** Filmlerin ekrandaki sırası (en yeni üstte), öğüt rozeti ve kart rengi. Listede olmayan yeni film sona eklenir. */
 const SIRA: { ad: string; ogut: string; renk: string; yeni?: boolean }[] = [
-  { ad: 'kino-lutfen', ogut: 'Lütfen demek', renk: '#9B5CE0', yeni: true },
+  { ad: 'kino-oyuncak', ogut: 'Toplamak', renk: '#17AFA2', yeni: true },
+  { ad: 'kino-lutfen', ogut: 'Lütfen demek', renk: '#9B5CE0' },
   { ad: 'mino-sepet', ogut: 'Yardım etmek', renk: '#FF8A2B' },
   { ad: 'kino-kaydirak', ogut: 'Sıra beklemek', renk: '#3E9DF2' },
   { ad: 'kino-elma-kulesi', ogut: 'Özür dilemek', renk: '#5DBE3F' },

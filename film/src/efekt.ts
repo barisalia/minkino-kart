@@ -284,6 +284,21 @@ export const FILM_EFEKT: Record<string, () => void> = {
     ton(523, 0, 0.6, 'sine', 0.1, 784);
     ton(659, 0.15, 0.7, 'sine', 0.08, 988);
   },
+
+  // ---------------------------------------------------------------- Kino ve Oyuncak Sepeti
+  /** sepete gol: hışır (file girer gibi) + iki notalı neşeli düdük + kısa alkış hışırtısı */
+  gol() {
+    hisirti(0, 0.22, 1800, 4200, 0.14, 2);
+    ksilofon(79, 0.12, 0.16);
+    ksilofon(84, 0.24, 0.18);
+    ton(1568, 0.36, 0.3, 'triangle', 0.06, 2093);
+    for (let i = 0; i < 6; i++) hisirti(0.3 + i * 0.07 + (i % 2) * 0.02, 0.06, 2600, 1800, 0.07, 4);
+  },
+  /** kanepeye konma: yumuşak "pof" (yastık) */
+  pof() {
+    ton(150, 0, 0.28, 'sine', 0.32, 70);
+    hisirti(0, 0.22, 900, 260, 0.16, 0.7);
+  },
 };
 
 /** ksilofon notası: temel + parlak üst harmonik (kısa söner) */

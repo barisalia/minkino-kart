@@ -37,6 +37,15 @@
 .fl-kok .fl-uzak .fl-arka {
   mask-image: linear-gradient(transparent, #000 6%);
 }
+/* ev: duvar kâğıdı rengi; duvar 1.2 büyük, alt ortadan (alt kısmı tahta zeminin arkasında kalır) */
+.fl-kok .fl-uzak.fl-ev {
+  background: #fff0da;
+}
+.fl-kok .fl-uzak .fl-arka.fl-ev-duvar {
+  left: -10%;
+  width: 120%;
+  mask-image: linear-gradient(transparent, #000 4%);
+}
 .fl-kok .fl-isik-uzak {
   position: absolute;
   inset: 0;
@@ -567,6 +576,10 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
 body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt.fl-park-zemin {
   height: 100%;
   background: linear-gradient(#9bd63f, #86c531 30%, #74b32a);
+}
+body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt.fl-ev-zemin {
+  height: 100%;
+  background: linear-gradient(#e7a05b, #dc9451 40%, #cf8747);
 }
 
 /* ---------------------------------------------------------------- şarkı karaokesi (motor.ts → sarkiBasla)

@@ -170,6 +170,8 @@ export interface FilmDosya {
  */
 type Katman = 'uzak' | 'tezgahlar' | 'zemin' | 'orta' | 'on';
 const DERINLIK: Record<Katman, number> = { uzak: 0.55, tezgahlar: 1, zemin: 1.25, orta: 1, on: 1.25 };
+/** evde duvar pazarın göğü kadar uzak değil: daha az kayar (oda derinliği) */
+const EV_UZAK_DERINLIK = 0.8;
 
 // ---------------------------------------------------------------- eğriler ve tween
 const EGRI: Record<string, (u: number) => number> = {
@@ -314,6 +316,8 @@ export class Film {
   private altZaman = 0;
   private bitti = false;
   private tezgahVar = false;
+  /** ev arka planı: duvar (uzak) daha az kayar */
+  private evMi = false;
   private ortaKaydir = 0;
   private ortaBuyut: Sahne['ortaBuyut'] | null = null;
   private readonly hiz: number;
@@ -476,6 +480,7 @@ export class Film {
     this.tweenler = [];
     Object.values(this.katmanlar).forEach((k) => k.replaceChildren());
     this.tezgahVar = !!s.tezgah;
+    this.evMi = s.arka === 'ev';
     this.ortaKaydir = s.ortaKaydir ?? 0;
     this.ortaBuyut = s.ortaBuyut ?? null;
     this.arka(s.arka);
@@ -524,6 +529,18 @@ export class Film {
    * altına tam genişlikte oturur; uzak katmanın üstü gök rengiyle devam eder. Mino'nun tezgâhı istenirse ortada.
    */
   private arka(ad: string) {
+    this.katmanlar.uzak.classList.toggle('fl-ev', ad === 'ev');
+    // Ev (assets/film/ev): uzak (duvar, pencere, saat) · orta (kanepe, lamba, kitaplık) · ön (tahta zemin, halı, sepet,
+    // küpler, tren). Orta ve ön oyuncularla aynı derinlikte (ayaklar zeminden kaymaz; kanepedeki oturuş yerinde kalır);
+    // duvar biraz geride (EV_UZAK_DERINLIK) ve 1.2 büyük çizilir: yakınlaşınca üstünde boşluk görünmez.
+    if (ad === 'ev') {
+      const resimE = (x: string, sinif = '') => h(`img.fl-arka${sinif}`, { src: FILM_GORSEL[`../../assets/film/ev/${x}.webp`] ?? '', alt: '', draggable: 'false' });
+      this.katmanlar.uzak.append(resimE('arka-uzak', '.fl-ev-duvar'), this.isikUzak);
+      this.katmanlar.tezgahlar.append(resimE('arka-orta'), resimE('arka-on'));
+      // dikey / kare MP4 kadrajında dünyanın altı görünür: tahta zemin aşağı sürer
+      if (document.body.dataset.kadraj === 'dolu') this.katmanlar.zemin.append(h('div.fl-zemin-alt.fl-ev-zemin'));
+      return;
+    }
     // Park (assets/film/park): uzak (gök, tepeler) · orta ya da orta-2 (salıncak / kaydırak, ağaçlar, bank) · ön (çimen, çalılar).
     // 'park': kaydırak ve kum havuzlu ikinci orta katman; 'park-salincak': salıncak, çit ve tahterevalli.
     if (ad === 'park' || ad === 'park-salincak') {
@@ -635,7 +652,7 @@ export class Film {
     // pay, zemin bantlarının (ayna + düz: dünyanın ~%19'u) ekrandaki yüksekliğini aşmasın: uzaklaşınca altta boşluk kalmasın
     const pay = this.dolu(W, H) ? Math.min(H * (H > W * 1.3 ? 0.16 : 0.1), 0.17 * S * this.kam.z * this.zCarpan) : 0;
     for (const [ad, el] of Object.entries(this.katmanlar) as [Katman, HTMLElement][]) {
-      const d = DERINLIK[ad];
+      const d = ad === 'uzak' && this.evMi ? EV_UZAK_DERINLIK : DERINLIK[ad];
       const z = 1 + (this.kam.z * this.zCarpan - 1) * d;
       const fx = S / 2 + (((this.kam.x + this.duzelt.x) / 100) * S - S / 2) * d;
       const fy = S / 2 + (((this.kam.y + this.duzelt.y) / 100) * S - S / 2) * d;
