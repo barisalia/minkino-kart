@@ -1,123 +1,148 @@
-﻿{
-    "ad":  "elif",
-    "boyut":  2048,
-    "sira":  [
-                 "sac-arka",
-                 "kol-sol",
-                 "kol-sag",
-                 "bacak-sol",
-                 "bacak-sag",
-                 "govde",
-                 "kafa",
-                 "kas",
-                 "goz-sol",
-                 "goz-sag",
-                 "agiz",
-                 "goz-kapali",
-                 "agiz-acik",
-                 "agiz-gulus",
-                 "agiz-kapali",
-                 "agiz-az",
-                 "agiz-orta",
-                 "agiz-yuvarlak",
-                 "agiz-dis",
-                 "agiz-gulumse"
-             ],
-    "gizli":  [
-                  "goz-kapali",
-                  "agiz-acik",
-                  "agiz-gulus",
-                  "agiz-kapali",
-                  "agiz-az",
-                  "agiz-orta",
-                  "agiz-yuvarlak",
-                  "agiz-dis",
-                  "agiz-gulumse"
-              ],
-    "bagli":  {
-                  "kas":  "kafa",
-                  "goz-sol":  "kafa",
-                  "goz-sag":  "kafa",
-                  "agiz":  "kafa",
-                  "sac-arka":  "kafa",
-                  "goz-kapali":  "kafa",
-                  "agiz-acik":  "kafa",
-                  "agiz-gulus":  "kafa",
-                  "agiz-kapali":  "kafa",
-                  "agiz-az":  "kafa",
-                  "agiz-orta":  "kafa",
-                  "agiz-yuvarlak":  "kafa",
-                  "agiz-dis":  "kafa",
-                  "agiz-gulumse":  "kafa"
-              },
-    "donme":  {
-                  "kafa":  [
-                               1032,
-                               900
-                           ],
-                  "kas":  [
-                              996,
-                              610
-                          ],
-                  "goz-sol":  [
-                                  890,
-                                  707
-                              ],
-                  "goz-sag":  [
-                                  1100,
-                                  707
-                              ],
-                  "agiz":  [
-                               985,
-                               840
-                           ],
-                  "sac-arka":  [
-                                   1032,
-                                   900
-                               ],
-                  "kol-sol":  [
-                                  823,
-                                  919
-                              ],
-                  "kol-sag":  [
-                                  1211,
-                                  956
-                              ],
-                  "bacak-sol":  [
-                                    912,
-                                    1450
-                                ],
-                  "bacak-sag":  [
-                                    1188,
-                                    1450
-                                ],
-                  "govde":  [
-                                1040,
-                                1880
-                            ],
-                  "agiz-kapali":  [
-                                      985,
-                                      840
-                                  ],
-                  "agiz-az":  [
-                                  985,
-                                  840
-                              ],
-                  "agiz-orta":  [
-                                    985,
-                                    840
-                                ],
-                  "agiz-yuvarlak":  [
-                                        985,
-                                        840
-                                    ],
-                  "agiz-dis":  [
-                                   985,
-                                   840
-                               ],
-                  "agiz-gulumse":  [
-                                       985,
-                                       840
-                                   ]
-              }
+{
+  "ad": "elif",
+  "boyut": 2048,
+  "sira": [
+    "sac-arka",
+    "kol-sol",
+    "kol-sag",
+    "bacak-sol",
+    "bacak-sag",
+    "bacak-oturma",
+    "govde",
+    "govde-oturma",
+    "kafa",
+    "kas",
+    "goz-sol",
+    "goz-sag",
+    "agiz",
+    "goz-kapali",
+    "agiz-acik",
+    "agiz-gulus",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse"
+  ],
+  "gizli": [
+    "goz-kapali",
+    "agiz-acik",
+    "agiz-gulus",
+    "agiz-kapali",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-yuvarlak",
+    "agiz-dis",
+    "agiz-gulumse",
+    "govde-oturma",
+    "bacak-oturma"
+  ],
+  "bagli": {
+    "kas": "kafa",
+    "goz-sol": "kafa",
+    "goz-sag": "kafa",
+    "agiz": "kafa",
+    "sac-arka": "kafa",
+    "goz-kapali": "kafa",
+    "agiz-acik": "kafa",
+    "agiz-gulus": "kafa",
+    "agiz-kapali": "kafa",
+    "agiz-az": "kafa",
+    "agiz-orta": "kafa",
+    "agiz-yuvarlak": "kafa",
+    "agiz-dis": "kafa",
+    "agiz-gulumse": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1032,
+      900
+    ],
+    "kas": [
+      996,
+      610
+    ],
+    "goz-sol": [
+      890,
+      707
+    ],
+    "goz-sag": [
+      1100,
+      707
+    ],
+    "agiz": [
+      985,
+      840
+    ],
+    "sac-arka": [
+      1032,
+      900
+    ],
+    "kol-sol": [
+      823,
+      919
+    ],
+    "kol-sag": [
+      1211,
+      956
+    ],
+    "bacak-sol": [
+      912,
+      1450
+    ],
+    "bacak-sag": [
+      1188,
+      1450
+    ],
+    "govde": [
+      1040,
+      1880
+    ],
+    "agiz-kapali": [
+      985,
+      840
+    ],
+    "agiz-az": [
+      985,
+      840
+    ],
+    "agiz-orta": [
+      985,
+      840
+    ],
+    "agiz-yuvarlak": [
+      985,
+      840
+    ],
+    "agiz-dis": [
+      985,
+      840
+    ],
+    "agiz-gulumse": [
+      985,
+      840
+    ],
+    "govde-oturma": [
+      1040,
+      1880
+    ],
+    "bacak-oturma": [
+      1040,
+      1354
+    ]
+  },
+  "oturma": {
+    "gizle": [
+      "govde",
+      "bacak-sol",
+      "bacak-sag"
+    ],
+    "goster": [
+      "govde-oturma",
+      "bacak-oturma"
+    ],
+    "kayma": 346,
+    "bant": 0.4
+  }
 }

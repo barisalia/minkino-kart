@@ -6,7 +6,9 @@
     "kol-sag",
     "bacak-sol",
     "bacak-sag",
+    "bacak-oturma",
     "govde",
+    "govde-oturma",
     "kafa",
     "kas",
     "goz-sol",
@@ -31,7 +33,9 @@
     "agiz-orta",
     "agiz-yuvarlak",
     "agiz-dis",
-    "agiz-gulumse"
+    "agiz-gulumse",
+    "govde-oturma",
+    "bacak-oturma"
   ],
   "bagli": {
     "kas": "kafa",
@@ -116,6 +120,14 @@
     "agiz-gulumse": [
       1020,
       885
+    ],
+    "govde-oturma": [
+      1024,
+      1800
+    ],
+    "bacak-oturma": [
+      1024,
+      1370
     ]
   },
   "ifadeler": {
