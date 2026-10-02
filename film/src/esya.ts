@@ -24,7 +24,23 @@ const SVG: Record<string, string> = {
     ${[[46, 36], [74, 36], [60, 56], [52, 30], [68, 30]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="3.5" ry="5.5" fill="#3a1f14"/>`).join('')}<path d="M30 26Q44 30 58 28" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5" fill="none"/></svg>`,
   cekirdek: `<svg viewBox="0 0 20 28"><path d="M10 2Q18 12 16 20Q13 27 10 27Q7 27 4 20Q2 12 10 2Z" fill="#3a1f14" stroke="${K}" stroke-width="2"/><ellipse cx="8" cy="12" rx="2" ry="4" fill="#fff" opacity=".4"/></svg>`,
   tabak: `<svg viewBox="0 0 200 60"><ellipse cx="100" cy="30" rx="94" ry="24" fill="#fff" stroke="${K}" stroke-width="6"/><ellipse cx="100" cy="28" rx="62" ry="13" fill="#eef3f7"/></svg>`,
+  // oyuncak küpler (Kino ve Oyuncak Sepeti): ön yüz, üst ve yan yüz; ön yüzde yazı yerine şekil (kalp, yıldız, daire)
+  'kup-kirmizi': kup('#f0524c', '#ff8a7a', '#c63c3c', 'M48 92C30 80 26 70 30 62c4-8 14-8 18 0c4-8 14-8 18 0c4 8 0 18-18 30z'),
+  'kup-sari': kup('#ffc83a', '#ffe17a', '#e0a21e', 'M48 50l6.5 13.2 14.5 2.1-10.5 10.2 2.5 14.5L48 83.2 35 90l2.5-14.5L27 65.3l14.5-2.1z'),
+  'kup-mavi': kup('#3e9df2', '#7cc2ff', '#2a78c8', 'M30 72a18 18 0 1 0 36 0a18 18 0 1 0-36 0z'),
+  'kup-yesil': kup('#5dbe3f', '#8fdc6a', '#3f9a2a', 'M48 52l20 34H28z'),
 };
+
+/** Oyuncak küp (3/4 görünüş): ön yüz 80 kare, üst ve sağ yüz 24 derinlik; ön yüzde krem şekil, sol üstte parlaklık */
+function kup(on: string, ust: string, yan: string, sekil: string) {
+  return `<svg viewBox="0 0 120 120"><g stroke="${K}" stroke-width="6" stroke-linejoin="round">
+    <path d="M8 32L32 8H112L88 32Z" fill="${ust}"/><path d="M88 32L112 8V88L88 112Z" fill="${yan}"/>
+    <rect x="8" y="32" width="80" height="80" rx="4" fill="${on}"/></g>
+    <rect x="18" y="42" width="60" height="60" rx="9" fill="#fff6dc" stroke="${K}" stroke-width="3.5" opacity=".95"/>
+    <path d="${sekil}" fill="${on}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M16 38H42" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/>
+    <path d="M40 14H96" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".45"/></svg>`;
+}
 
 /**
  * Katmanlı pozlar (ortak çerçevede üst üste; ekip notu assets/film/<film>/<ad>.json). Karpuz katmanı yerine bizim
@@ -52,7 +68,13 @@ const DIS_GORSEL = import.meta.glob<string>(['../../assets/meyveler/elma.webp', 
 const DIS: Record<string, string> = { elma: '../../assets/meyveler/elma.webp', cilek: '../../assets/meyveler/cilek.webp', top: '../../assets/renkler/top.webp', sepet: '../../assets/pazar/sepet.webp', tezgah: '../../assets/pazar/tezgah.webp' };
 /** Eşyanın görsel adresi (varsa): önce filmin klasörü, sonra ortak malzeme klasörü, sonra hazır setler */
 export function esyaAdresi(tip: string, film: string, malzeme?: string): string | undefined {
-  return GORSELLER[`../../assets/film/${film}/${tip}.webp`] ?? (malzeme ? GORSELLER[`../../assets/film/${malzeme}/${tip}.webp`] : undefined) ?? (DIS[tip] ? DIS_GORSEL[DIS[tip]] : undefined);
+  return (
+    GORSELLER[`../../assets/film/${film}/${tip}.webp`] ??
+    (malzeme ? GORSELLER[`../../assets/film/${malzeme}/${tip}.webp`] : undefined) ??
+    (DIS[tip] ? DIS_GORSEL[DIS[tip]] : undefined) ??
+    // ortak şeffaf eşyalar (assets/film/esya: oyuncak ayı, kitap, bank…)
+    GORSELLER[`../../assets/film/esya/${tip}.webp`]
+  );
 }
 
 /**
@@ -88,7 +110,10 @@ export const ESYA_MERKEZ: Record<string, [number, number]> = Object.fromEntries(
 );
 
 /** Görselin altındaki boş pay (kutu yüksekliğinin oranı): eşya y'ye tam otursun, havada durmasın */
-export const ESYA_ALT: Record<string, number> = { elma: 24 / 560, cilek: 24 / 560, top: 24 / 560, sepet: 24 / 560, tezgah: 25 / 560 };
+export const ESYA_ALT: Record<string, number> = {
+  elma: 24 / 560, cilek: 24 / 560, top: 24 / 560, sepet: 24 / 560, tezgah: 25 / 560,
+  'kup-kirmizi': 5 / 120, 'kup-sari': 5 / 120, 'kup-mavi': 5 / 120, 'kup-yesil': 5 / 120,
+};
 
 /** Eşya elemanı: varsa gerçek görsel, yoksa SVG yer tutucu */
 export function esyaCiz(tip: string, film: string, malzeme?: string): HTMLElement {
@@ -117,4 +142,10 @@ export const ESYA_ORAN: Record<string, number> = {
   karpuz: 1.113, 'karpuz-yarim': 1.134, 'karpuz-dilim': 1.077, tabak: 1.362, bicak: 4.082, kasa: 1.429, cekirdek: 20 / 28,
   'mino-sarilma': 1209 / 1286,
   elma: 1, cilek: 1, top: 1, sepet: 1, tezgah: 1, 'kino-kuyruk': 282 / 301,
+  'kup-kirmizi': 1, 'kup-sari': 1, 'kup-mavi': 1, 'kup-yesil': 1,
+  // ortak eşyalar (assets/film/esya, kırpılmış)
+  'oyuncak-ayi': 447 / 591, kitap: 745 / 460,
+  // ev ön katmanından sepet + ABC küp kümesinin kopyası (assets/film/ev/on-kume.webp; kanepede oturanların önünde
+  // kalır): dünyada x 15.498, y 7.983, w 26.999 (scripts: arka-on'dan 55, 798, 743×520 px kırpıldı)
+  'on-kume': 1.41777,
 };
