@@ -4,7 +4,7 @@ import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 
 // Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
-// Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/) …; /uygulama/ eski menü adresi, köke yönlendirir;
+// Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/), Okula Hazırım! (/okul/) …; /uygulama/ eski menü adresi, köke yönlendirir;
 // /gizlilik/ ve /sartlar/ mağazaların istediği sade sayfalar.
 const SAYFALAR = {
   menu: 'index.html',
@@ -16,6 +16,7 @@ const SAYFALAR = {
   macera: 'macera/index.html',
   pazar: 'pazar/index.html',
   pasta: 'pasta/index.html',
+  okul: 'okul/index.html',
   film: 'film/index.html',
   uygulama: 'uygulama/index.html',
   gizlilik: 'gizlilik/index.html',

@@ -133,10 +133,7 @@
   grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 2.8vw, 22px) clamp(10px, 2.6vw, 22px);
 }
-/* geniş kart (Pasta Otobüsü): iki sütun */
-.ug-kok .ug-kart-yer.ug-genis {
-  grid-column: span 2;
-}
+/* 8 kart: telefonda 2 × 4, yatayda 4 × 2 (hepsi tek hücre); geniş kart (Pasta Otobüsü) yalnız tablet dikeyde iki sütun */
 
 /* ---------- Kart ---------- */
 .ug-kok .ug-kart-yer {
@@ -287,6 +284,11 @@
 /* Pasta Otobüsü: parkta pembe otobüs (oyunun kod çizimi) */
 .ug-kok .ug-k-otobus { left: 50%; bottom: 3%; width: min(78cqw, 112cqh); aspect-ratio: 640 / 420; transform: translateX(-50%); }
 .ug-kok .ug-k-otobus svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Okula Hazırım!: "1 2 3" blokları (kod çizimi) ve elma */
+.ug-kok .ug-k-sayilar { left: 50%; bottom: 6%; width: min(86cqw, 150cqh); aspect-ratio: 560 / 260; transform: translateX(-50%); }
+.ug-kok .ug-k-sayilar img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.ug-kok .ug-k-okul-elma { right: 6%; top: 8%; height: min(30cqh, 26cqw); transform: rotate(10deg); }
 
 /* Çiz Canlansın: çayırda dinozor + kalem */
 .ug-kok .ug-k-dinozor { left: 46%; bottom: 3%; height: min(80cqh, 96cqw); transform: translateX(-50%); }
@@ -455,7 +457,7 @@
   font-size: 0.95rem;
 }
 
-/* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada geniş Pasta Otobüsü) ---------- */
+/* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada Okula Hazırım ve geniş Pasta Otobüsü) ---------- */
 @media (min-width: 600px) and (orientation: portrait) {
   .ug-kok .ug-giris {
     height: clamp(160px, 34dvh, 460px);
@@ -466,7 +468,7 @@
     padding: 0 clamp(0px, 2vw, 24px) clamp(8px, 2dvh, 28px);
   }
   .ug-kok .ug-kart-yer.ug-genis {
-    grid-column: 1 / -1;
+    grid-column: span 2;
   }
   .ug-kok .ug-izgara.ug-az .ug-kart-yer.ug-genis:not(:last-child) {
     grid-column: span 2;
@@ -480,7 +482,7 @@
   }
 }
 
-/* ---------- Yatay: solda Mino ve logo, sağda 4 × 2 kart (son kart geniş) ---------- */
+/* ---------- Yatay: solda Mino ve logo, sağda 4 × 2 kart ---------- */
 @media (orientation: landscape) {
   .ug-kok .ug-menu {
     flex-direction: row;
@@ -515,7 +517,7 @@
   .ug-kok .ug-izgara {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
-    /* kartlar aşağı yukarı kare kalsın: ızgara 4 × 2 (son kart geniş), ekran yüksekliğine sığar */
+    /* kartlar aşağı yukarı kare kalsın: ızgara 4 × 2, ekran yüksekliğine sığar */
     width: min(100%, 1200px, calc((100dvh - var(--ust) - var(--alt) - 12px) * 1.8));
     height: auto;
     aspect-ratio: 1.8;

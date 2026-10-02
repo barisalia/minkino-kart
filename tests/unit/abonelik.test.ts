@@ -36,12 +36,11 @@ describe('erişim tablosu', () => {
 });
 
 describe('uygulama menüsü', () => {
-  it('web: 7 kart; uygulama: Minik Sanatçı yok, Çizgi Filmler geniş', () => {
-    expect(menuOyunlari(false)).toHaveLength(7);
+  it('web: 8 kart; uygulama: Minik Sanatçı yok, normal kartlar çift', () => {
+    expect(menuOyunlari(false)).toHaveLength(8);
     const u = menuOyunlari(true);
     expect(u.map((k) => k.id)).not.toContain('sanatci');
-    expect(u).toHaveLength(6);
-    expect(u.find((k) => k.id === 'film')?.genis).toBe(true);
+    expect(u).toHaveLength(7);
     // ızgara boşluksuz: dar ekranda 2 sütun → normal kartlar çift sayıda
     expect(u.filter((k) => !k.genis).length % 2).toBe(0);
   });

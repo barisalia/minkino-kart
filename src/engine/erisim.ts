@@ -23,6 +23,11 @@ export const ERISIM: Record<string, Erisim> = {
   // Sesli Maceralar: yalnız "Elektrikler Kesildi!" ücretsiz
   'macera/elektrik': 'ucretsiz',
   'macera/*': 'abonelik',
+  // Okula Hazırım: Sayı Bahçesi'nin ilk 3 etkinliği ücretsiz
+  'okul/kac-elma': 'ucretsiz',
+  'okul/sayi-karti': 'ucretsiz',
+  'okul/sepete-koy': 'ucretsiz',
+  'okul/*': 'abonelik',
   // Bütünüyle abonelikle
   pazar: 'abonelik',
   canlan: 'abonelik',
