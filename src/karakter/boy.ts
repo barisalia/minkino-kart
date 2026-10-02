@@ -72,14 +72,17 @@ export const BOY = {
   anne: 1.35 * 1.35,
   /** bebek Ege, oturan hâliyle */
   bebek: 1.1,
-  // pazar hayvanları (müşteriler; film: Mino'nun Karpuzu): Mino'yla aynı kutuda çizildikleri boy
-  kopek: 0.56,
-  tavsan: 0.68,
-  ordek: 0.71,
-  ayi: 0.59,
-  inek: 0.67,
-  kus: 0.66,
-  maymun: 0.7,
+  // Hayvan müşteriler (2026-10-02, Barış: "karakterleri tutarlı koy, bazıları çok ufak"): gerçek boyları, Mino = 1.
+  // Ayı en büyük (çocuktan biraz uzun, yetişkin boyu), inek de büyük; tavşan, ördek, köpek, maymun çocuktan kısa
+  // ama Mino kadar ya da biraz büyük; kuş küçük. Kullanan: Pasta Otobüsü (pasta/src/musteri.ts). Pazar ve film
+  // hayvanları kendi kutularında çizer (bu değerleri okumaz); bu yüzden onlarda değişen bir şey yok.
+  kopek: 1.08,
+  tavsan: 1.12,
+  ordek: 1.02,
+  ayi: 1.55,
+  inek: 1.45,
+  kus: 0.55,
+  maymun: 1.05,
 } as const;
 export type BoyTipi = keyof typeof BOY;
 
