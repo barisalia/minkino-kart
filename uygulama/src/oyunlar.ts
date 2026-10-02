@@ -33,7 +33,7 @@ export interface OyunKarti {
   katmanlar: Katman[];
   /** Kartın köşesindeki küçük rozet: oyunun yeni yan oyunu ya da bölümleri (ör. "Meyve Suyu") */
   rozet?: string;
-  /** geniş kart: ızgarada iki sütun kaplar (otobüs yatay bir çizim) */
+  /** geniş kart: tablet dikeyde (3 × 3 ızgara, 8 kart) son sırada iki sütun kaplar (otobüs yatay bir çizim) */
   genis?: boolean;
 }
 
@@ -109,6 +109,19 @@ export const OYUNLAR: OyunKarti[] = [
     // en yeni filmin kapağı (filmin kendi karesi: assets/film/kapak); yeni film gelince bu ad değişir
     zemin: 'film/kapak/kino-oyuncak',
     katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
+  },
+  {
+    id: 'okul',
+    ad: 'Okula Hazırım',
+    adres: './okul/',
+    renk: '#5DBE3F',
+    // parkta "1 2 3" oyuncak blokları ve elma (bloklar: assets/okul/sayi-bloklari.webp yuvası; Gemini çizimi gelince değişir)
+    zemin: 'film/park/arka-uzak',
+    rozet: 'Yeni',
+    katmanlar: [
+      { gorsel: 'okul/sayi-bloklari', sinif: 'ug-k-sayilar' },
+      { gorsel: 'meyveler/elma', sinif: 'ug-k-okul-elma' },
+    ],
   },
   {
     id: 'pasta',

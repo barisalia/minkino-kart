@@ -18,7 +18,7 @@ import { derinlik, OYUNLAR, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
-  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,sanatci,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/{kapak,park}/*.webp'],
+  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,sanatci,parti,parti-sahne,orman-esya}/*.webp', '../../assets/okul/sayi-bloklari.webp', '../../assets/film/{kapak,park}/*.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
