@@ -189,13 +189,17 @@ test('Pasta Otobüsü: sabır kalbi dolunca müşteri yalnız uyuklar (gitmez), 
   expect(hatalar).toEqual([]);
 });
 
-test('Pasta Otobüsü: ekran kareleri (yatay telefon, balon, dikey telefon, tablet); dokunma alanları ekranda ve iri', async ({ page }, info) => {
-  test.setTimeout(240_000);
+test('Pasta Otobüsü: ekran kareleri ve dizilim (16:9 … 19.5:9 telefon, çok geniş ekran, yatay / dikey tablet, dikey telefon)', async ({ page }, info) => {
+  test.setTimeout(360_000);
   test.skip(info.project.name !== 'iphone', 'kareler bir kez alınır');
-  for (const [ad, w, hh] of [
-    ['gun', 844, 390],
-    ['dikey', 390, 844],
-    ['tablet', 768, 1024],
+  for (const [ad, w, hh, enAz] of [
+    ['gun', 844, 390, 63.5],
+    ['genis', 932, 430, 63.5],
+    ['kucuk', 667, 375, 59.5],
+    ['cok-genis', 1280, 500, 63.5],
+    ['yatay-tablet', 1024, 768, 63.5],
+    ['dikey', 390, 844, 63.5],
+    ['tablet', 768, 1024, 63.5],
   ] as const) {
     await page.setViewportSize({ width: w, height: hh });
     await page.goto('./pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,60000');
@@ -212,13 +216,33 @@ test('Pasta Otobüsü: ekran kareleri (yatay telefon, balon, dikey telefon, tabl
     await page.waitForTimeout(700);
     await page.screenshot({ path: `tests/screens/pasta-sade-${ad}.png` });
     if (ad === 'gun') await page.locator('.ps-musteri.ps-hazir .ps-balon').first().screenshot({ path: 'tests/screens/pasta-sade-balon.png' });
-    // dokunma alanları ekranın içinde, en az 64 px; balonlar pencerede, birbirine binmez
+    // sahne en çok 2.17:1, ortada (çok geniş ekranda yanlar otobüs duvarı)
+    const sahne = (await page.locator('.ps-gun').boundingBox())!;
+    expect(sahne.width / sahne.height, `${ad} sahne oranı`).toBeLessThanOrEqual(2.18);
+    expect(Math.abs(sahne.x + sahne.width / 2 - w / 2), `${ad} sahne ortada`).toBeLessThan(1.5);
+    // dokunma alanları sahnenin içinde ve iri
+    const dugmeler: { ad: string; b: { x: number; y: number; width: number; height: number } }[] = [];
     for (const e of await page.locator('.ps-tezgah button, .ps-ist-firin button').all()) {
       const b = (await e.boundingBox())!;
-      expect(b.x).toBeGreaterThanOrEqual(-1);
-      expect(b.y + b.height).toBeLessThanOrEqual(hh + 1);
-      expect(b.x + b.width).toBeLessThanOrEqual(w + 1);
-      expect(Math.min(b.width, b.height)).toBeGreaterThanOrEqual(63.5);
+      dugmeler.push({ ad: (await e.getAttribute('aria-label')) ?? '', b });
+      expect(b.x, `${ad} sol`).toBeGreaterThanOrEqual(sahne.x - 1);
+      expect(b.y + b.height, `${ad} alt`).toBeLessThanOrEqual(sahne.y + sahne.height + 1);
+      expect(b.x + b.width, `${ad} sağ`).toBeLessThanOrEqual(sahne.x + sahne.width + 1);
+      expect(Math.min(b.width, b.height), `${ad} boy`).toBeGreaterThanOrEqual(enAz);
+    }
+    // fırın dik bir dolap: üç göz üst üste, aynı hizada; tezgâhtaki hiçbir istasyonun üstüne binmez
+    const firin = (await page.locator('.ps-firin-dik').boundingBox())!;
+    expect(firin.height, `${ad} fırın dik`).toBeGreaterThan(firin.width * 1.4);
+    const gozler = dugmeler.filter((d) => d.ad.startsWith('Fırın')).map((d) => d.b);
+    expect(gozler).toHaveLength(3);
+    for (let i = 1; i < 3; i++) {
+      expect(gozler[i].y, `${ad} göz ${i} altta`).toBeGreaterThan(gozler[i - 1].y + gozler[i - 1].height * 0.8);
+      expect(Math.abs(gozler[i].x - gozler[0].x)).toBeLessThan(1.5);
+    }
+    for (const d of dugmeler.filter((x) => !x.ad.startsWith('Fırın') && x.ad !== 'Kasa')) {
+      const b = d.b;
+      const ust = !(b.x + b.width <= firin.x + 1 || firin.x + firin.width <= b.x + 1 || b.y + b.height <= firin.y + 1 || firin.y + firin.height <= b.y + 1);
+      expect(ust, `${ad} ${d.ad} fırının üstünde`).toBe(false);
     }
     // her balon pencerenin görünen açıklığının içinde (çerçeve, duvar ya da tezgâh hiçbir kenarını örtmez)
     const pencere = (await page.locator('.ps-pencere').boundingBox())!;

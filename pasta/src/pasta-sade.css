@@ -9,7 +9,8 @@
 }
 /* tezgâhın gerisinde kalan kısım her müşterinin kendi boyuna oranla (küçük tavşan da büyük ayı da belden yukarı görünür) */
 .ps-kok .ps-musteri {
-  --kid: calc(var(--m) * var(--kid-k));
+  /* çocuk müşterinin kutusu; dar pencerede (16:9 telefon) yerinin enine göre küçülür, iki müşteri ve balonları sığar */
+  --kid: min(calc(var(--m) * var(--kid-k)), calc(var(--yer-w) * var(--kid-max, 9)));
   --dz: calc(var(--w) * (1 - var(--alt) - var(--ust)) * var(--gomul, 0.4));
   --hgt: max(10px, calc(var(--w) * (1 - var(--alt)) - var(--dz)));
   height: var(--hgt);
@@ -78,9 +79,7 @@
 
 /* sıradaki iş: düğmenin resmi yumuşakça parlar (düğmenin kendi zıplama / sallanma tepkileri bozulmaz) */
 .ps-kok .ps-gun .ps-sirada > svg,
-.ps-kok .ps-gun .ps-sirada > img,
-.ps-kok .ps-gun .ps-goz.ps-sirada .ps-goz-kapi,
-.ps-kok .ps-gun .ps-goz.ps-sirada:not(:has(.ps-goz-kapi)) .ps-goz-cam {
+.ps-kok .ps-gun .ps-sirada > img {
   animation: ps-sirada 1.25s ease-in-out infinite;
 }
 @keyframes ps-sirada {
@@ -265,7 +264,7 @@
 @media (orientation: landscape), (orientation: portrait) and (min-aspect-ratio: 5/8) {
   .ps-kok .ps-musteri .ps-balon {
     --pen-ust: calc(var(--W) - var(--hgt));
-    --ideal: calc(var(--w) * 0.72 + 8 * var(--u));
+    --ideal: calc(var(--w) * 0.7 + 6 * var(--u));
     bottom: auto;
     top: calc(clamp(8px, var(--pen-ust) + var(--ust) * var(--w) - 16 * var(--u), var(--W) - var(--bw) * 0.92 - 8px) - var(--pen-ust));
     transform-origin: 0 40%;
@@ -285,57 +284,270 @@
     display: none;
   }
 }
+
+/* ================================================================ sahne çerçevesi: sahne en çok 2.17:1 (19.5:9 telefon) genişlikte,
+   ortada; daha geniş ekranda iki yan otobüsün fayanslı iç duvarı (eşyalar birbirinden uzaklaşmaz, hiçbir şey yayılmaz) */
+.ps-kok .ps-gun-dis {
+  padding: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  container-type: size;
+  background:
+    linear-gradient(90deg, rgba(107, 58, 31, 0.18), rgba(107, 58, 31, 0) 18%, rgba(107, 58, 31, 0) 82%, rgba(107, 58, 31, 0.18)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23FADFD7'/%3E%3Cpath d='M0 .5H40M.5 0V40' stroke='%23E8BBB0' stroke-width='1.2'/%3E%3Cg fill='%23EFBBB0'%3E%3Cpath d='M20 8.5C23.4 12.6 23.4 16.8 20 20C16.6 16.8 16.6 12.6 20 8.5Z'/%3E%3Cpath d='M20 31.5C16.6 27.4 16.6 23.2 20 20C23.4 23.2 23.4 27.4 20 31.5Z'/%3E%3Cpath d='M8.5 20C12.6 16.6 16.8 16.6 20 20C16.8 23.4 12.6 23.4 8.5 20Z'/%3E%3Cpath d='M31.5 20C27.4 23.4 23.2 23.4 20 20C23.2 16.6 27.4 16.6 31.5 20Z'/%3E%3C/g%3E%3Ccircle cx='20' cy='20' r='2.4' fill='%23E5A194'/%3E%3C/svg%3E") 0 0 / 34px 34px,
+    #fadfd7;
+}
+.ps-kok .ps-gun-dis > .ps-gun {
+  position: relative;
+  width: min(100cqw, calc(100cqh * 2.17));
+  height: 100cqh;
+}
+/* sahnenin iki kenarında otobüsün boyalı direği (yalnız yanlarda boşluk kalınca görünür) */
+.ps-kok .ps-gun-dis::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: calc(min(100cqw, 100cqh * 2.17) + 20px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, var(--boya-koyu, #e2609e) 0 4px, var(--boya, #ff8cc0) 4px 10px, transparent 10px calc(100% - 10px), var(--boya, #ff8cc0) calc(100% - 10px) calc(100% - 4px), var(--boya-koyu, #e2609e) calc(100% - 4px));
+}
+
+/* ================================================================ dik fırın dolabı (firin-dik): önden düz, üst üste 3 göz.
+   Yatayda otobüsün sol yanında yerde durur (tezgâhın başında, duvara doğru yükselir); dikeyde üst rafların sağında. */
+.ps-kok .ps-ist-firin {
+  position: absolute;
+  z-index: 7;
+}
+.ps-kok .ps-ist-firin::after {
+  left: 6%;
+  right: 6%;
+  bottom: calc(var(--h) * -0.05);
+}
+.ps-kok .ps-firin-dik {
+  position: relative;
+  width: var(--firin-w);
+  height: calc(var(--firin-w) / var(--firin-oran));
+}
+.ps-kok .ps-firin-dik .ps-firin-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 calc(4 * var(--u)) calc(4 * var(--u)) rgba(107, 58, 31, 0.3));
+}
+.ps-kok .ps-firin-dik .ps-goz,
+.ps-kok .ps-firin-dik .ps-goz[data-hal] {
+  position: absolute;
+  flex: none;
+  min-width: 0;
+  min-height: 0;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: calc(var(--firin-w) * 0.07);
+  background: none;
+  box-shadow: none;
+  animation: none;
+}
+/* sıradaki iş bu gözse: kapının çevresinde yumuşak ışık */
+.ps-kok .ps-firin-dik .ps-goz::before {
+  content: '';
+  position: absolute;
+  inset: -2%;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+.ps-kok .ps-firin-dik .ps-goz.ps-sirada::before {
+  opacity: 1;
+  animation: ps-sirada-goz 1.25s ease-in-out infinite;
+}
+@keyframes ps-sirada-goz {
+  0%,
+  100% { box-shadow: 0 0 0 calc(2 * var(--u)) rgba(255, 226, 110, 0.5), 0 0 calc(6 * var(--u)) calc(2 * var(--u)) rgba(255, 190, 60, 0.3); }
+  50% { box-shadow: 0 0 0 calc(3 * var(--u)) rgba(255, 236, 140, 1), 0 0 calc(16 * var(--u)) calc(6 * var(--u)) rgba(255, 190, 60, 0.85); }
+}
+.ps-kok .ps-firin-dik .ps-goz-cam {
+  position: absolute;
+  border: 0;
+  border-radius: 24% / 46%;
+  overflow: hidden;
+  background: none;
+  box-shadow: none;
+}
+/* boş göz: ışık sönük (cam karanlık); pişerken görselin turuncu ışığı yanar; altın olunca cam parlar; yanıkta duman rengi */
+.ps-kok .ps-firin-dik .ps-goz-isik,
+.ps-kok .ps-firin-dik .ps-goz:not([data-hal='bos']) .ps-goz-isik {
+  inset: 0;
+  opacity: 1;
+  animation: none;
+  background: radial-gradient(ellipse at 50% 55%, rgba(90, 40, 25, 0.5), rgba(45, 18, 12, 0.82));
+  transition: opacity 0.4s, background 0.4s;
+}
+.ps-kok .ps-firin-dik .ps-goz[data-hal='cig'] .ps-goz-isik {
+  opacity: 0;
+}
+.ps-kok .ps-firin-dik .ps-goz[data-hal='altin'] .ps-goz-isik {
+  opacity: 1;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255, 250, 200, 0.7), rgba(255, 210, 80, 0.35) 60%, rgba(255, 170, 40, 0) 100%);
+  animation: ps-isik 1.1s ease-in-out infinite;
+}
+.ps-kok .ps-firin-dik .ps-goz[data-hal='yanik'] .ps-goz-isik {
+  opacity: 1;
+  background: radial-gradient(ellipse at 50% 60%, rgba(120, 90, 80, 0.55), rgba(60, 40, 35, 0.8));
+}
+.ps-kok .ps-firin-dik .ps-goz-ic {
+  position: absolute;
+  inset: 4% 3% 2%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.ps-kok .ps-firin-dik .ps-goz-parca,
+.ps-kok .ps-firin-dik .ps-goz-ic[data-adet='1'] .ps-goz-parca {
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1;
+  margin: 0 1%;
+  flex: 0 0 auto;
+}
+.ps-kok .ps-firin-dik .ps-goz-parlama {
+  z-index: 2;
+}
+/* pişme saati: gözün sağındaki düğmenin üstünde */
+.ps-kok .ps-firin-dik .ps-goz-saat {
+  right: auto;
+  width: calc(var(--firin-w) * 0.15);
+  height: calc(var(--firin-w) * 0.15);
+  margin: calc(var(--firin-w) * -0.075) 0 0 calc(var(--firin-w) * -0.075);
+  border-width: max(2px, calc(2.5 * var(--u)));
+}
+/* altın: kapı hafifçe zıplar ("al beni!") */
+.ps-kok .ps-firin-dik .ps-goz[data-hal='altin'] .ps-goz-cam {
+  box-shadow: inset 0 0 calc(8 * var(--u)) calc(2 * var(--u)) rgba(255, 245, 170, 0.9);
+}
+
+/* ================================================================ yatay: soldan sağa iş sırası. Fırın en solda yerde (sahne
+   yüksekliğinde, üstü duvara uzanır); tezgâhta HAMUR → TEPSİ (üstünde kalıplar) → KREMA (üstünde süsler) → TABAK (üstünde
+   kasa). Kino fırının yanındaki arka rafta (yanığı o yer), Mino pencerenin sağında. */
 @media (orientation: landscape) {
   .ps-kok .ps-gun {
-    --h: max(64px, calc(72 * var(--u)));
+    --h: max(60px, calc(72 * var(--u)));
+    --kid-max: 0.6;
     --r1: calc(var(--h) * 1.16);
     --r2: calc(var(--h) * 0.98);
-    --firin-w: calc(var(--h) * 3.02);
+    --firin-oran: 0.6171;
+    --firin-w: min(calc((100cqh - 76px - 6 * var(--u)) * var(--firin-oran)), calc(var(--h) * 4.3 * var(--firin-oran)), 22cqw);
+    --mino-alan: calc(var(--firin-w) + 16 * var(--u) + env(safe-area-inset-left));
+    --kid-k: 1.6;
+    --mino-h: calc(var(--m) * 0.95);
+    --duvar: calc(var(--mino-w) + 12 * var(--u) + env(safe-area-inset-right));
     --yer-w: calc((100cqw - var(--mino-alan) - var(--duvar)) / 2);
-    --bw: min(calc(var(--yer-w) * 0.5), calc(168 * var(--u)), calc(var(--W) * 0.92));
+    --bw: min(calc(var(--yer-w) * 0.53), calc(168 * var(--u)), calc(var(--W) * 0.92));
     --gomul: 0.42;
     --d: calc(var(--h) * 1.1);
   }
-  .ps-kok .ps-yer[data-yer='0'] { --yx: 0.21; }
-  .ps-kok .ps-yer[data-yer='1'] { --yx: 0.67; }
+  .ps-kok .ps-yer[data-yer='0'] { --yx: 0.2; }
+  .ps-kok .ps-yer[data-yer='1'] { --yx: 0.68; }
+  .ps-kok .ps-tezgah {
+    grid-template-columns: repeat(4, auto);
+    grid-template-areas:
+      '. kalip sus kasa'
+      'hamur tepsi krema tabak';
+    justify-content: space-between;
+    column-gap: calc(6 * var(--u));
+    padding-left: calc(var(--mino-alan) - 4 * var(--u));
+    padding-right: max(calc(10 * var(--u)), env(safe-area-inset-right));
+  }
+  .ps-kok .ps-ist-firin {
+    left: calc(8 * var(--u) + env(safe-area-inset-left));
+    bottom: calc(5 * var(--u));
+  }
   .ps-kok .ps-hamur-kabi {
-    width: calc(var(--h) * 1.66);
-    height: calc(var(--h) * 1.38);
+    width: calc(var(--h) * 1.6);
+    height: calc(var(--h) * 1.33);
   }
   .ps-kok .ps-tepsi {
     width: calc(var(--h) * 1.72);
   }
   .ps-kok .ps-tabak {
-    width: calc(var(--h) * 2);
+    width: calc(var(--h) * 1.9);
   }
   /* yan yana üçlüler (kalıp, kavanoz, krema torbası) sık durur: görünen eşyalar ayrı, dokunma kutuları biraz iç içe */
-  .ps-kok .ps-ist-kalip .ps-izgara > button {
-    margin: 0 calc(var(--h) * -0.14);
+  .ps-kok .ps-ist-kalip .ps-izgara > button,
+  .ps-kok .ps-ist-sus .ps-izgara > button {
+    margin: 0 calc(var(--h) * -0.16);
   }
   .ps-kok .ps-ist-krema .ps-izgara > button {
     height: calc(var(--h) * 1.5);
-    margin: 0 calc(var(--h) * -0.15);
-  }
-  .ps-kok .ps-ist-sus .ps-izgara > button {
-    margin: 0 calc(var(--h) * -0.14);
+    margin: 0 calc(var(--h) * -0.17);
   }
   .ps-kok .ps-kasa {
     width: calc(var(--h) * 1.15);
     height: calc(var(--h) * 1.08);
   }
-  .ps-kok .ps-tezgah {
-    column-gap: calc(4 * var(--u));
-    padding-left: max(calc(8 * var(--u)), env(safe-area-inset-left));
-    padding-right: max(calc(8 * var(--u)), env(safe-area-inset-right));
+  /* Mino pencerenin sağında, tezgâhın gerisinde */
+  .ps-kok .ps-mino-yer {
+    left: auto;
+    right: calc(6 * var(--u) + env(safe-area-inset-right));
   }
-  /* gün tahtası sol üstte, geri düğmesinin yanında (sağ üst balonlara kalır) */
+  /* Kino fırının yanında, arka rafta oturur (hamur kâsesinin üstünde) */
+  .ps-kok .ps-kino-yer {
+    right: auto;
+    left: calc(var(--mino-alan) - 2 * var(--u));
+    width: calc(var(--h) * 1.3);
+    bottom: calc(var(--B2) - var(--h) * 0.12);
+    z-index: 2;
+  }
+  /* gün tahtası sol üstte, geri düğmesinin yanında (fırının üstünde) */
   .ps-kok .ps-gun .ps-ust .orta {
     left: 70px;
     right: auto;
     top: 8px;
   }
 }
-/* dikey telefon: dar pencere; balon başın üstünde, müşteriler biraz küçük (balon yüzü örtmesin) */
+/* yatay tablet (4:3 … 16:10): pencere yüksek; eşyalar ekranın yüksekliğine göre iri, müşteriler büyük, balon başın
+   üstünde (dikey telefondaki gibi) */
+@media (orientation: landscape) and (max-aspect-ratio: 8/5) {
+  .ps-kok .ps-gun {
+    --h: max(64px, calc(100cqh * 0.124));
+    --firin-w: min(calc(var(--h) * 4.3 * var(--firin-oran)), 20cqw);
+    --kid-k: 1.6;
+    --kid-max: 0.92;
+    --bw: min(calc(var(--yer-w) * 0.66), calc(var(--h) * 2.4));
+    --gomul: 0.3;
+    --ust-pay: 80px;
+  }
+  .ps-kok .ps-yer[data-yer='0'] { --yx: 0.25; }
+  .ps-kok .ps-yer[data-yer='1'] { --yx: 0.75; }
+  .ps-kok .ps-musteri .ps-balon {
+    --ideal: calc(var(--w) / 2 - var(--bg) / 2);
+    top: auto;
+    bottom: min(calc(100% - var(--ust) * var(--w) + 8 * var(--u)), calc(var(--W) - var(--bw) * 0.86 - var(--ust-pay)));
+    transform-origin: 50% 110%;
+  }
+  .ps-kok .ps-balon::after {
+    left: 50%;
+    top: auto;
+    bottom: calc(-9 * var(--u));
+    margin-left: calc(-8 * var(--u));
+    transform: rotate(45deg);
+  }
+  .ps-kok .ps-musteri .ps-balon.ps-karsilastir {
+    --bg: calc(var(--bw) * 1.6);
+  }
+}
+/* ================================================================ dikey: pencere üstte; altında üç kat. Üst katta Mino; fırın
+   dolabı sağda raf 1'in tezgâhında durur, üst kata yükselir (Kino üstünde oturur). Raf 1: kalıplar (askıda) / HAMUR, TEPSİ.
+   Raf 2: süsler, kasa / KREMA, TABAK. */
 @media (orientation: portrait) {
   .ps-kok .ps-gun {
     --kid-k: 1.22;
@@ -344,12 +556,66 @@
     --gomul: 0.26;
     /* balonlar geri / ses düğmelerinin ve gün tahtasının altında başlar */
     --ust-pay: 76px;
+    --r2a: calc(var(--h) * 1.2);
+    --r1a: calc(var(--h) * 1);
+    --firin-oran: 0.6171;
+    --firin-w: min(calc((var(--K1) + var(--kh1) - var(--e) - 34 * var(--u)) * var(--firin-oran)), 42cqw);
   }
   .ps-kok .ps-balon {
     bottom: min(calc(100% - var(--ust) * var(--w) + 8 * var(--u)), calc(var(--W) - var(--bw) * 0.86 - var(--ust-pay, 30 * var(--u))));
   }
   .ps-kok .ps-panel {
     --s: min(84cqw, 50cqh);
+  }
+  .ps-kok .ps-tezgah {
+    grid-template-columns: 1fr 1fr var(--firin-w);
+    grid-template-areas:
+      '. . .'
+      'kalip kalip .'
+      'hamur tepsi .'
+      '. . .'
+      'sus sus kasa'
+      'krema krema tabak';
+    justify-content: stretch;
+    column-gap: calc(8 * var(--u));
+    padding-left: max(calc(8 * var(--u)), env(safe-area-inset-left));
+    padding-right: max(calc(8 * var(--u)), env(safe-area-inset-right));
+  }
+  .ps-kok .ps-ist-kalip {
+    align-self: start;
+    margin-top: calc(var(--h) * 0.06);
+  }
+  .ps-kok .ps-ist-firin {
+    right: max(calc(8 * var(--u)), env(safe-area-inset-right));
+    bottom: calc(var(--P) + var(--kh2) + var(--e) + 2 * var(--u));
+    margin: 0;
+  }
+  .ps-kok .ps-hamur-kabi {
+    width: calc(var(--h) * 1.45);
+    height: calc(var(--h) * 1.2);
+  }
+  .ps-kok .ps-tepsi {
+    width: calc(var(--h) * 1.5);
+  }
+  .ps-kok .ps-ist-kalip .ps-izgara > button,
+  .ps-kok .ps-ist-sus .ps-izgara > button {
+    margin: 0 calc(var(--h) * -0.12);
+  }
+  .ps-kok .ps-ist-krema .ps-izgara > button {
+    margin: 0 calc(var(--h) * -0.12);
+  }
+  /* Mino ve Kino üst katta, fırının solunda yan yana (Kino fırına yakın: yanığı o yer) */
+  .ps-kok .ps-gun {
+    --ust-sol: calc(100cqw - var(--firin-w) - 24 * var(--u));
+  }
+  .ps-kok .ps-mino-yer {
+    left: calc(8 * var(--u) + var(--ust-sol) * 0.27 - var(--mino-w) / 2);
+  }
+  .ps-kok .ps-kino-yer {
+    width: min(calc(var(--mino-w) * 0.95), calc(var(--ust-sol) * 0.42));
+    right: auto;
+    left: calc(8 * var(--u) + var(--ust-sol) * 0.74 - min(calc(var(--mino-w) * 0.95), calc(var(--ust-sol) * 0.42)) / 2);
+    bottom: calc(var(--P) + var(--kh2) + var(--kh1) + var(--e) - var(--h) * 0.02);
   }
 }
 /* dikey tablet: geniş pencere, yan balon */
@@ -369,7 +635,7 @@
 @media (prefers-reduced-motion: reduce) {
   .ps-kok .ps-gun .ps-sirada > svg,
   .ps-kok .ps-gun .ps-sirada > img,
-  .ps-kok .ps-gun .ps-goz.ps-sirada .ps-goz-kapi,
+  .ps-kok .ps-firin-dik .ps-goz.ps-sirada::before,
   .ps-kok .ps-el-ipucu.ps-goster,
   .ps-kok .ps-panel-el svg {
     animation: none;

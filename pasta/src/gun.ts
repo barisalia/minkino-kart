@@ -25,7 +25,7 @@ import { geriGonder, surukle } from '../../pazar/src/surukle';
 import { HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
 import { zigzagCiz } from './susleme';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
-import { ARKA, FIRIN_KAPILARI, FIRIN_LAMBA, oranYaz, yuva } from './resimler';
+import { ARKA, FIRIN_GOZLERI, FIRIN_ORAN, oranYaz, yuva } from './resimler';
 import { kayit } from './kayit';
 import {
   acikOlanlar,
@@ -230,37 +230,36 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const gozler: (Goz | null)[] = Array.from({ length: FIRIN_GOZ }, () => null);
   const firinUrl = yuva('firin');
   const yuzde = (v: number) => `${(v * 100).toFixed(2)}%`;
+  // dik fırın dolabı (firin-dik: önden düz, üst üste 3 göz): her göz kapı paneli kadar bir düğme; camında kurabiyeler,
+  // sağındaki düğmenin üstünde pişme saati. Boş göz karanlık, pişen göz ışıklı, altın olan parlar.
+  const kutuStil = (k: { x: number; y: number; w: number; h: number }) => `left:${yuzde(k.x)};top:${yuzde(k.y)};width:${yuzde(k.w)};height:${yuzde(k.h)}`;
   const gozEl = Array.from({ length: FIRIN_GOZ }, (_, i) => {
+    const g = FIRIN_GOZLERI[i];
     const ic = h('div.ps-goz-ic');
-    const cam = h('div.ps-goz-cam', {}, h('i.ps-goz-isik'), h('i.ps-goz-izgara'), ic, h('i.ps-goz-parlama'));
-    const kp = FIRIN_KAPILARI[i];
-    if (firinUrl && kp) cam.setAttribute('style', `left:${yuzde(kp.cx - kp.rx)};top:${yuzde(kp.cy - kp.ry)};width:${yuzde(kp.rx * 2)};height:${yuzde(kp.ry * 2)}`);
+    // cam ve saat: kapı panelinin içinde, görseldeki yerinde (panele göre oran)
+    const ici = (v: number, a: number, b: number) => (v - a) / b;
+    const cam = h(
+      'div.ps-goz-cam',
+      { style: kutuStil({ x: ici(g.cam.x, g.kapi.x, g.kapi.w), y: ici(g.cam.y, g.kapi.y, g.kapi.h), w: g.cam.w / g.kapi.w, h: g.cam.h / g.kapi.h }) },
+      h('i.ps-goz-isik'),
+      ic,
+      h('i.ps-goz-parlama'),
+    );
     const b = h(
       'button.ps-goz',
-      { type: 'button', 'data-goz': String(i), 'data-hal': 'bos', 'aria-label': `Fırın ${i + 1}`, style: firinUrl && kp ? `--kx:${kp.x};--ky:${kp.y};--kw:${kp.w};--kh:${kp.h}` : null },
-      ...(firinUrl && kp ? [h('i.ps-goz-kapi', {}, cam)] : [h('i.ps-goz-kol'), cam]),
-      h('i.ps-goz-saat'),
+      { type: 'button', 'data-goz': String(i), 'data-hal': 'bos', 'aria-label': `Fırın ${i + 1}`, style: kutuStil(g.kapi) },
+      cam,
+      h('i.ps-goz-saat', { style: `left:${yuzde(ici(g.dugme.x, g.kapi.x, g.kapi.w))};top:${yuzde(ici(g.dugme.y, g.kapi.y, g.kapi.h))}` }),
     );
     b.addEventListener('click', () => gozBas(i));
     return { b, ic };
   });
-  const firin = firinUrl
-    ? h(
-        'div.ps-firin.ps-firin-r',
-        { style: `--firin-resim:url("${firinUrl}");--lx:${yuzde(FIRIN_LAMBA.x)};--ly:${yuzde(FIRIN_LAMBA.y)}` },
-        h('img.ps-firin-resim', { src: firinUrl, alt: '', draggable: 'false', 'aria-hidden': 'true' }),
-        h('i.ps-firin-lamba', { 'aria-hidden': 'true' }),
-        h('div.ps-gozler', {}, ...gozEl.map((g) => g.b)),
-      )
-    : h(
-        'div.ps-firin',
-        {},
-        h('i.ps-firin-baca', { 'aria-hidden': 'true' }),
-        h('div.ps-firin-ust', { 'aria-hidden': 'true' }, h('i.ps-firin-dugme'), h('i.ps-firin-dugme'), h('i.ps-firin-lamba'), h('i.ps-firin-gosterge'), h('i.ps-firin-dugme')),
-        h('div.ps-gozler', {}, ...gozEl.map((g) => g.b)),
-        h('i.ps-firin-alt', { 'aria-hidden': 'true' }),
-      );
-  if (firinUrl) oranYaz(firinUrl, firin, '--firin-oran');
+  const firin = h(
+    'div.ps-firin-dik',
+    { style: `--firin-oran:${FIRIN_ORAN}` },
+    firinUrl ? h('img.ps-firin-resim', { src: firinUrl, alt: '', draggable: 'false', 'aria-hidden': 'true' }) : null,
+    ...gozEl.map((g) => g.b),
+  );
 
   // krema, süs (süs kavanozları Gün 2'den itibaren)
   const kremaDugmeleri = acik.renkler.map((r) => {
@@ -334,6 +333,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   // el ipucu: sıradaki işin üstünde dokunur gibi iner kalkar
   const elIpucu = h('div.ps-el-ipucu', { 'aria-hidden': 'true' }, svg(IKON.el));
   const el = h('div.ps-gun', { 'data-gun': String(gun), 'data-yer': ayar.yer }, sahne, tezgah, ust, efekt_.el, elIpucu);
+  // sahne en çok ~19.5:9 genişlikte, ortada; daha geniş ekranda iki yan otobüsün iç duvarı (hiçbir şey yayılmaz)
+  const dis = h('div.ps-gun-dis', {}, el);
   if (resimli) {
     el.classList.add('ps-resimli');
     const a = ARKA;
@@ -353,10 +354,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     sonDokunus = performance.now();
     elIpucuGizle();
     if (!(e.target as Element).closest('.ps-tezgah button')) return;
-    const k = app.kok.getBoundingClientRect();
+    const k = efekt_.kutu();
     efekt_.parilti(e.clientX - k.left, e.clientY - k.top, 3, 0.45);
   });
   boyaUygula(el);
+  boyaUygula(dis);
 
   // ---------------------------------------------------------------- Mino ve Kino
   const minoCanli = new MinoCanli(mino, { urunVar: () => !!tabak, musteriVar: () => musteriler.length > 0 });
@@ -1120,7 +1122,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   if (ozel) (window as unknown as Record<string, unknown>).__pastaGun = { kuyruk, musteriler, gozler, get tabak() { return tabak; } };
 
   return {
-    el,
+    el: dis,
     kapat() {
       kapandi = true;
       calisiyor = false;

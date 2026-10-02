@@ -43,7 +43,8 @@ export const YUVA = {
   arka: ['arka-tezgah-uzak'],
   /** tezgâhın ön yüzü (aynı tuval, üstü şeffaf) */
   tezgahOn: ['tezgah-on'],
-  firin: ['firin'],
+  /** önden düz bakan, üst üste 3 gözlü fırın dolabı (311×504; eski çapraz firin-1 artık kullanılmaz) */
+  firin: ['firin-dik'],
   tepsi: ['firin-tepsisi', 'tepsi'],
   hamurKasesi: ['hamur-kasesi'],
   kasik: ['tahta-kasik'],
@@ -122,11 +123,15 @@ export const ARKA = {
   tezgah: 0.5443,
   tezgahOn: 0.6576,
 };
-/** Fırın görselinde üç kapı ve camları (tuvalin oranı; cam: kapıya göre merkez ve yarıçap) */
-export const FIRIN_KAPILARI = [
-  { x: 0.174, y: 0.354, w: 0.272, h: 0.51, cx: 0.532, cy: 0.442, rx: 0.339, ry: 0.295 },
-  { x: 0.452, y: 0.32, w: 0.268, h: 0.508, cx: 0.514, cy: 0.432, rx: 0.333, ry: 0.288 },
-  { x: 0.724, y: 0.287, w: 0.259, h: 0.498, cx: 0.508, cy: 0.437, rx: 0.339, ry: 0.286 },
+/**
+ * Dik fırın görselinde (firin-dik, 311×504) üst üste üç göz: kapı paneli (dokunma alanı), camı (turuncu ışık; içinde
+ * kurabiyeler) ve sağdaki düğme (pişme saati onun üstüne gelir). Değerler tuvalin oranı (ölçüldü). En/boy oranı.
+ */
+export const FIRIN_ORAN = 311 / 504;
+export const FIRIN_GOZLERI = [
+  { kapi: { x: 0.07, y: 0.045, w: 0.86, h: 0.282 }, cam: { x: 0.225, y: 0.111, w: 0.531, h: 0.113 }, dugme: { x: 0.852, y: 0.188 } },
+  { kapi: { x: 0.07, y: 0.327, w: 0.86, h: 0.275 }, cam: { x: 0.225, y: 0.381, w: 0.531, h: 0.113 }, dugme: { x: 0.852, y: 0.457 } },
+  { kapi: { x: 0.07, y: 0.602, w: 0.86, h: 0.28 }, cam: { x: 0.225, y: 0.655, w: 0.531, h: 0.115 }, dugme: { x: 0.852, y: 0.73 } },
 ];
 /**
  * Krema torbası görselleri (338×355 tuval) çapraz çizilmiş; tezgâhta tutacakta dik durur: ana eksen (alfa PCA ile
@@ -134,8 +139,6 @@ export const FIRIN_KAPILARI = [
  * kutusu (tuval pikseli).
  */
 export const KREMA_DIK = { aci: -43, cx: 170, cy: 172, x: 88, y: -22, w: 164, h: 426 };
-/** Fırının ışığı (üst panelde, sağ düğmenin yanında) */
-export const FIRIN_LAMBA = { x: 0.935, y: 0.232 };
 
 /** Görselin en / boy oranını okur (yüklenince), elemana CSS değişkeni olarak yazar */
 export function oranYaz(url: string, el: HTMLElement, degisken: string) {

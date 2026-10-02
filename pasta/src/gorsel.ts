@@ -18,10 +18,14 @@ export class Efekt {
   readonly el = h('div.ps-efekt', { 'aria-hidden': 'true' });
   constructor(private kok: HTMLElement) {}
 
+  /** Efekt katmanının kendi kutusu (ekrana yerleştiyse; geniş ekranda sahne ortalanır, kökle aynı yerde olmayabilir) */
+  kutu(): DOMRect {
+    return (this.el.isConnected ? this.el : this.kok).getBoundingClientRect();
+  }
   /** Bir elemanın merkezi (efekt katmanına göre) */
   merkez(e: Element, ox = 0.5, oy = 0.5): [number, number] {
     const a = e.getBoundingClientRect();
-    const k = this.kok.getBoundingClientRect();
+    const k = this.kutu();
     return [a.left - k.left + a.width * ox, a.top - k.top + a.height * oy];
   }
 
