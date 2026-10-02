@@ -3,6 +3,8 @@ import M from '../../content/macera.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import { karakterCumleleri, normal } from '../../src/audio/cumleler';
 import { durum } from '../../src/engine/ilerleme';
+import { kilitli } from '../../src/engine/erisim';
+import { erisimVarMi, kilitleriKur } from '../../src/abonelik/kilit';
 import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
@@ -54,6 +56,8 @@ export function acilisEkrani(app: Uygulama): Ekran {
     h('b', {}, M.bolumler.dogumgunu),
   );
   const basla = (bolum: BolumAdi = 'dogumgunu') => {
+    // abonelikli bölüm (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı
+    if (!erisimVarMi(`macera/${bolum}`, app.kok)) return;
     secilenBolum = bolum;
     efekt.secim();
     if (!durum.i.yas) app.git('yas', { sonra: 'izin' });
@@ -61,7 +65,11 @@ export function acilisEkrani(app: Uygulama): Ekran {
     else app.git('izin');
   };
   // ana menüden yeni bölüme gelindiyse (?bolum=salincak) büyük Oyna düğmesi de onu açar
-  oyna.addEventListener('click', () => basla(BOLUM_PARAM === 'salincak' ? 'salincak' : undefined));
+  // uygulamada o bölüm kilitliyse büyük Oyna düğmesi ücretsiz bölümü ("Elektrikler Kesildi!") açar
+  oyna.addEventListener('click', () => {
+    const b: BolumAdi = BOLUM_PARAM === 'salincak' ? 'salincak' : 'dogumgunu';
+    basla(kilitli(`macera/${b}`) ? 'elektrik' : b);
+  });
   kart.addEventListener('click', () => basla());
   // Mino Banyo Yapmıyor! (küçük kart: banyoda Mino ile Kino)
   const kinoUrl = KINO_RESIM[`../../assets/karakter-iskelet/${KINO_ISKELET}.svg`] ?? '';
@@ -103,10 +111,19 @@ export function acilisEkrani(app: Uygulama): Ekran {
   );
   slKart.addEventListener('click', () => basla('salincak'));
   const baslik = h('div.mc-logo', { role: 'img', 'aria-label': M.baslik }, ...M.baslik.split(' ').map((k, i) => h(`span.k${i}`, {}, k)));
+  // uygulamada abonelikli bölümlerde kilit rozeti (web sitesinde hiçbiri kilitli değil)
+  const kilitBirak = kilitleriKur([
+    [kart, 'macera/dogumgunu'],
+    [banyoKart, 'macera/banyo'],
+    [egeKart, 'macera/ege'],
+    [elKart, 'macera/elektrik'],
+    [slKart, 'macera/salincak'],
+  ]);
   return {
     el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, app.secenekler.cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => app.secenekler.cikis?.(), 'kucuk') : h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, slKart, kart, elKart, egeKart, banyoKart, oyna)),
     kapat() {
       egeResim.kapat();
+      kilitBirak();
     },
   };
 }

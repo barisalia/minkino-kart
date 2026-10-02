@@ -10,3 +10,11 @@ scripts/gecici
 dist-tek
 dist-tek-sanatci
 dist-video
+
+# Uygulama (Capacitor): gizli dosyalar repoya girmez
+.env
+.env.*
+*.jks
+*.keystore
+*.p12
+*.7z

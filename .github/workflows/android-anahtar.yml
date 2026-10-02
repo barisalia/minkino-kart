@@ -1,0 +1,78 @@
+name: Android yükleme anahtarı üret (tek sefer)
+
+# TEK SEFERLİK: Play Console'a yükleme imzası için keystore üretir. Bilgisayarda Java olmadığı için burada üretilir.
+# Önce şu secret'lar elle girilmiş olmalı: ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_PASSWORD (aynı parola), ANDROID_KEY_ALIAS.
+# Çıktı: parolalı (AES-256, parola = ANDROID_KEYSTORE_PASSWORD) bir 7z arşivi; 1 gün sonra kendiliğinden silinir.
+# Repo herkese açık olduğu için arşiv şifresiz bırakılmaz; keystore ve parola loga yazılmaz.
+# Adımlar: ekip/uygulama/YAYIN-ADIMLARI.md → "Android imza anahtarı"
+
+on:
+  workflow_dispatch:
+    inputs:
+      onay:
+        description: 'Yeni anahtar üretmek için EVET yazın (bir uygulama için yalnız bir kez)'
+        required: true
+        default: 'hayır'
+
+permissions:
+  contents: read
+
+jobs:
+  anahtar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Denetim
+        env:
+          ONAY: ${{ inputs.onay }}
+          VAR_OLAN: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          PAROLA: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANAHTAR_PAROLA: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ADI: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ "$ONAY" != "EVET" ]; then echo "::error::Onay yok (EVET yazılmadı)."; exit 1; fi
+          if [ -n "$VAR_OLAN" ]; then echo "::error::ANDROID_KEYSTORE_BASE64 zaten var. Yeni anahtar üretilmedi (eskisi Play'e bağlıysa değiştirmeyin)."; exit 1; fi
+          if [ -z "$PAROLA" ] || [ -z "$ADI" ]; then echo "::error::Önce ANDROID_KEYSTORE_PASSWORD ve ANDROID_KEY_ALIAS secret'larını girin."; exit 1; fi
+          if [ ${#PAROLA} -lt 12 ]; then echo "::error::Parola en az 12 karakter olmalı."; exit 1; fi
+          if [ -n "$ANAHTAR_PAROLA" ] && [ "$ANAHTAR_PAROLA" != "$PAROLA" ]; then echo "::error::ANDROID_KEY_PASSWORD, ANDROID_KEYSTORE_PASSWORD ile aynı olmalı (PKCS12)."; exit 1; fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Keystore üret ve parolalı arşivle
+        env:
+          PAROLA: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ADI: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -e
+          D="$RUNNER_TEMP/anahtar"
+          mkdir -p "$D"
+          keytool -genkeypair -noprompt -keystore "$D/minkino-yukleme.jks" -storetype PKCS12 \
+            -alias "$ADI" -keyalg RSA -keysize 4096 -validity 10000 \
+            -storepass:env PAROLA -keypass:env PAROLA \
+            -dname "CN=Minkino, O=Minkino, C=TR" > /dev/null 2>&1
+          base64 -w0 "$D/minkino-yukleme.jks" > "$D/ANDROID_KEYSTORE_BASE64.txt"
+          {
+            echo "Minkino Android yükleme anahtarı"
+            echo "1) ANDROID_KEYSTORE_BASE64.txt içindeki TEK satırı GitHub → Settings → Secrets → Actions → New secret: ANDROID_KEYSTORE_BASE64 olarak ekleyin."
+            echo "2) minkino-yukleme.jks dosyasını güvenli bir yere yedekleyin (parolasıyla birlikte). Kaybolursa Play Console'dan yükleme anahtarı sıfırlanabilir ama zaman alır."
+            echo "3) Bu arşivi GitHub'daki çalıştırma sayfasından silin (Artifacts → çöp kutusu)."
+            echo "Anahtar adı (alias): ANDROID_KEY_ALIAS secret'ındaki ad. Parola: ANDROID_KEYSTORE_PASSWORD."
+          } > "$D/OKU-BENI.txt"
+          # AES-256 7z, dosya adları da şifreli; çıktı loga yazılmaz (GitHub ayrıca secret değerlerini logda maskeler)
+          cd "$D"
+          7z a -t7z -mhe=on -p"$PAROLA" "$RUNNER_TEMP/minkino-android-anahtar.7z" minkino-yukleme.jks ANDROID_KEYSTORE_BASE64.txt OKU-BENI.txt > /dev/null
+          rm -rf "$D"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: minkino-android-anahtar
+          path: ${{ runner.temp }}/minkino-android-anahtar.7z
+          retention-days: 1
+
+      - name: Özet
+        run: |
+          echo "### Anahtar hazır" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifacts → minkino-android-anahtar (7z, parola: ANDROID_KEYSTORE_PASSWORD). İndirip 7-Zip ile açın, sonra buradan silin. 1 gün sonra kendiliğinden silinir." >> "$GITHUB_STEP_SUMMARY"

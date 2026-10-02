@@ -1,5 +1,6 @@
 /** Film oynatıcı: kapak (başlık + Oynat), oynatma (duraklat / devam, ses), sonda öğüt kartı */
 import { konus } from '../../src/audio/ses';
+import { arkaPlanDinle, yonIste } from '../../src/kabuk/yon';
 import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
@@ -36,13 +37,19 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   // kapak: filmin kendi karesi (assets/film/kapak) arkada, üstünde başlık ve Oynat; film listesi Çizgi Filmler ekranında
   const resim = katalog().find((f) => f.ad === ad)?.kapak;
   const kapak = h('div.fl-kapak', { style: resim ? `--kapak:url("${resim}")` : undefined }, h('h1.fl-baslik', {}, dosya.baslik), oynatDugme);
-  const duraklatDugme = yuvarlakDugme(DURAKLAT, 'Duraklat', () => {
+  const duraklatDegistir = () => {
     if (!film) return;
     film.duraklatDegistir();
     duraklatDugme.querySelector('.ikon')!.innerHTML = film.duraklatildi ? IKON.oyna : DURAKLAT;
     duraklatDugme.setAttribute('aria-label', film.duraklatildi ? 'Devam' : 'Duraklat');
-  }, 'kucuk');
+  };
+  const duraklatDugme = yuvarlakDugme(DURAKLAT, 'Duraklat', duraklatDegistir, 'kucuk');
   duraklatDugme.hidden = true;
+  // uygulamada: film açıkken ekran yatay kilitlenir (çıkınca serbest); uygulama arka plana geçince film duraklar
+  yonIste('yatay');
+  const arkaPlanBirak = arkaPlanDinle((arkada) => {
+    if (arkada && film && !film.duraklatildi && !duraklatDugme.hidden) duraklatDegistir();
+  });
   /** Çizgi Filmler ekranına döner (adres filmsiz olur; bu film listede ortada görünür) */
   const listeyeDon = () => {
     history.replaceState(null, '', `?${new URLSearchParams([...q].filter(([k]) => k !== 'film' && k !== 'oto'))}`);
@@ -127,6 +134,8 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   return {
     el,
     kapat() {
+      yonIste('serbest');
+      arkaPlanBirak();
       zamanlar.forEach((z) => clearTimeout(z));
       film?.kapat();
       filmMuzik.dur(0.5);

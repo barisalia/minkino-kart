@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Minkino</string>
+    <string name="title_activity_main">Minkino</string>
+    <string name="package_name">com.minkino.app</string>
+    <string name="custom_url_scheme">com.minkino.app</string>
+</resources>

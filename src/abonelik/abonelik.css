@@ -1,0 +1,328 @@
+/* Abonelik ekranı (Minkino Premium) ve kilit rozeti. Her kural .mk-kok altında (bkz. src/abonelik/ekran.ts). */
+.mk-kok .ab-perde {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: linear-gradient(180deg, #8fd3ff 0%, #bfe6ff 34%, #fff4dd 78%);
+  animation: ab-gel 0.3s ease-out both;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.mk-kok .ab-perde.cikiyor {
+  animation: ab-git 0.25s ease-in both;
+}
+@keyframes ab-gel {
+  from { opacity: 0; transform: translateY(24px); }
+}
+@keyframes ab-git {
+  to { opacity: 0; transform: translateY(24px); }
+}
+.mk-kok .ab-gok {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 280px;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mk-kok .ab-bulut {
+  position: absolute;
+  width: 120px;
+  height: 40px;
+  border-radius: 999px;
+  background: #fff;
+  opacity: 0.85;
+  box-shadow: 30px -16px 0 6px #fff, 68px -6px 0 0 #fff;
+}
+.mk-kok .ab-bulut-1 { top: 70px; left: -20px; }
+.mk-kok .ab-bulut-2 { top: 150px; right: 30px; transform: scale(0.7); }
+
+.mk-kok .ab-ic {
+  position: relative;
+  width: min(100%, 480px);
+  margin: 0 auto;
+  padding: var(--ust) 16px calc(var(--alt) + 16px);
+}
+.mk-kok .ab-ust {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+}
+.mk-kok .ab-not {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid var(--kontur-yumusak);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Mino ve Kino kartın üst kenarında oturur */
+.mk-kok .ab-ikili {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  height: clamp(96px, 26vw, 128px);
+  margin-bottom: -22px;
+  pointer-events: none;
+}
+.mk-kok .ab-mino,
+.mk-kok .ab-kino {
+  position: relative;
+  flex: none;
+  height: 100%;
+  aspect-ratio: 1360 / 1790;
+  pointer-events: auto;
+}
+.mk-kok .ab-mino .mino {
+  position: absolute;
+  inset: 0;
+}
+.mk-kok .ab-kino {
+  aspect-ratio: 1410 / 1856;
+  height: 88%;
+}
+.mk-kok .ab-kino-ic {
+  position: absolute;
+  inset: 0;
+}
+.mk-kok .ab-kino .kr-karakter {
+  inset: auto;
+  left: -26.24%;
+  top: -5.93%;
+  width: 145.25%;
+  height: 110.34%;
+}
+
+.mk-kok .ab-kart {
+  position: relative;
+  border-radius: 28px;
+  background: #fffdf6;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 10px 0 var(--kontur-yumusak);
+  padding: 30px 18px 18px;
+  text-align: center;
+}
+.mk-kok .ab-baslik {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(1.6rem, 7vw, 2rem);
+  color: var(--kontur);
+}
+.mk-kok .ab-tac {
+  font-size: 1.1em;
+}
+.mk-kok .ab-tac svg {
+  color: var(--sari);
+  stroke: var(--kontur);
+}
+.mk-kok .ab-alt {
+  margin: 4px 0 12px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+.mk-kok .ab-liste {
+  list-style: none;
+  margin: 0 auto 14px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  width: fit-content;
+  max-width: 100%;
+  font-weight: 500;
+}
+.mk-kok .ab-liste li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mk-kok .ab-tik {
+  flex: none;
+  font-size: 22px;
+  border-radius: 50%;
+  background: var(--yesil);
+  padding: 3px;
+}
+
+.mk-kok .ab-planlar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 8px 0 10px;
+}
+.mk-kok .ab-plan {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: 108px;
+  padding: 16px 8px 10px;
+  border-radius: 20px;
+  border: 3px solid var(--kontur-yumusak);
+  background: #fff;
+  box-shadow: 0 4px 0 var(--kontur-yumusak);
+  transition: transform 0.1s, border-color 0.1s, background 0.1s;
+}
+.mk-kok .ab-plan.secili {
+  border-color: var(--kontur);
+  background: #fff3c4;
+  box-shadow: 0 5px 0 var(--kontur);
+  transform: translateY(-2px);
+}
+.mk-kok .ab-plan.bos {
+  cursor: default;
+}
+.mk-kok .ab-plan-ad {
+  font-size: 1.05rem;
+}
+.mk-kok .ab-fiyat b {
+  font-size: 1.35rem;
+}
+.mk-kok .ab-fiyat small {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+.mk-kok .ab-aybasi {
+  min-height: 1.1em;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #2f7d1c;
+}
+.mk-kok .ab-avantaj {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  white-space: nowrap;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--kirmizi);
+  border: 2px solid var(--kontur);
+  color: #fff;
+  font-size: 0.8rem;
+}
+.mk-kok .ab-deneme {
+  margin: 6px 0 8px;
+  font-size: 1.15rem;
+  color: #2f7d1c;
+}
+.mk-kok .ab-basla {
+  width: 100%;
+  font-size: 1.2rem;
+}
+.mk-kok .ab-basla[disabled] {
+  --r: #b9ab95;
+  opacity: 0.85;
+}
+.mk-kok .ab-sonra {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.mk-kok .ab-durum {
+  margin: 8px 0 0;
+  min-height: 1.2em;
+  font-weight: 500;
+}
+.mk-kok .ab-durum:empty {
+  display: none;
+}
+.mk-kok .ab-tekrar {
+  margin-top: 6px;
+}
+.mk-kok .ab-geri-yukle {
+  margin-top: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+.mk-kok .ab-geri-yukle[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+.mk-kok .ab-yasal {
+  margin: 10px 0 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.75;
+  text-align: left;
+}
+.mk-kok .ab-baglantilar {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+}
+.mk-kok .ab-baglanti {
+  color: var(--kontur);
+  font-weight: 600;
+  display: inline-block;
+  padding: 8px 4px;
+}
+.mk-kok .ab-perde.mesgul .ab-basla,
+.mk-kok .ab-perde.mesgul .ab-geri-yukle {
+  pointer-events: none;
+  opacity: 0.6;
+}
+.mk-kok .ab-perde[data-durum='yakinda'] .ab-fiyat b,
+.mk-kok .ab-perde[data-durum='yukleniyor'] .ab-fiyat b {
+  opacity: 0.5;
+}
+.mk-kok .ab-basari {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 10px 0 6px;
+}
+.mk-kok .ab-basari .ab-tac {
+  font-size: 56px;
+}
+.mk-kok .ab-basari h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+.mk-kok .ab-basari p {
+  margin: 0 0 12px;
+  font-weight: 500;
+}
+
+/* alçak yatay telefon: karakterler küçük */
+@media (max-height: 540px) and (orientation: landscape) {
+  .mk-kok .ab-ikili { height: 84px; }
+}
+
+/* ---------------------------------------------------------------- kilit rozeti (kilitli kart / bölüm) */
+.mk-kok button[data-kilitli] {
+  position: relative;
+}
+.mk-kok .mk-kilit {
+  position: absolute;
+  z-index: 3;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--sari);
+  border: 3px solid var(--kontur);
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  pointer-events: none;
+}
+.mk-kok .mk-kilit .ikon {
+  font-size: 20px;
+}
+.mk-kok .mk-kilit .ikon svg {
+  color: var(--kontur);
+}

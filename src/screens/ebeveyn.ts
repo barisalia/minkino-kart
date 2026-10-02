@@ -1,88 +1,19 @@
-import { ayarDegistir, efekt, konus } from '../audio/ses';
-import { metin } from '../audio/metin';
+import { ayarDegistir, efekt } from '../audio/ses';
 import { albumKartlari, TEMALAR } from '../engine/katalog';
 import { durum, kaydetDurum, sifirla } from '../engine/ilerleme';
 import { YASLAR, type Yas } from '../engine/types';
 import { h, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { sinifOynat } from '../ui/hareket';
+import { ebeveynKapisiAc } from '../ui/ebeveyn-kapisi';
+import { uygulamaPlatformu } from '../kabuk/ortam';
 import { yuvarlakDugme } from '../ui/ortak';
 import type { Ekran, Uygulama } from '../uygulama';
 
 const SURUM = '0.1.0';
 
-/** Ebeveyn kapısı: basit bir toplama sorusu (ör. 12 + 7). Doğruysa true. */
+/** Ebeveyn kapısı: yazıyla sorulan toplama (ortak kapı: src/ui/ebeveyn-kapisi.ts). Doğruysa true. */
 export function ebeveynKapisi(app: Uygulama): Promise<boolean> {
-  return new Promise((coz) => {
-    const a = 11 + Math.floor(Math.random() * 9);
-    const b = 3 + Math.floor(Math.random() * 7);
-    let girdi = '';
-    const cevap = h('div.kapi-cevap', { 'aria-live': 'polite' }, '');
-    const tuslar = h('div.tus-takimi');
-    const bitir = (sonuc: boolean) => {
-      perde.remove();
-      coz(sonuc);
-    };
-    const kontrol = () => {
-      if (Number(girdi) === a + b) {
-        efekt.dogru();
-        bitir(true);
-      } else {
-        efekt.yanlis();
-        void sinifOynat(cevap, 'hata', 400);
-        void konus(metin('ebeveyn_yanlis'));
-        girdi = '';
-        cevap.textContent = '';
-      }
-    };
-    const tus = (etiket: string | Node, fn: () => void, sinif = '') => {
-      const t = h(`button.tus${sinif}`, { type: 'button', 'aria-label': typeof etiket === 'string' ? etiket : 'sil' }, etiket);
-      t.addEventListener('click', () => {
-        efekt.dokunma();
-        fn();
-      });
-      tuslar.append(t);
-    };
-    for (const n of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
-      tus(String(n), () => {
-        if (girdi.length < 3) girdi += n;
-        cevap.textContent = girdi;
-      });
-    }
-    tus(svg(IKON.sil), () => {
-      girdi = girdi.slice(0, -1);
-      cevap.textContent = girdi;
-    });
-    tus('0', () => {
-      if (girdi.length < 3) girdi += '0';
-      cevap.textContent = girdi;
-    });
-    tus(svg(IKON.onay), kontrol, '.tamam');
-
-    const kapat = yuvarlakDugme(IKON.kapat, 'Kapat', () => bitir(false), 'kucuk kapat-dugme');
-    const perde = h(
-      'div.perde',
-      { role: 'dialog', 'aria-label': 'Ebeveyn kapısı' },
-      h(
-        'div.pencere.ebeveyn-kapisi',
-        {},
-        kapat,
-        h('h2', {}, 'Ebeveyn Köşesi'),
-        h('p', {}, 'Devam etmek için soruyu yanıtlayın.'),
-        h('div.kapi-soru', { 'data-toplam': TEST_ICIN(a + b) }, `${a} + ${b} = ?`),
-        cevap,
-        tuslar,
-      ),
-    );
-    perde.addEventListener('click', (e) => e.target === perde && bitir(false));
-    app.kok.append(perde);
-    void konus(metin('ebeveyn'));
-  });
-}
-
-// Uçtan uca testlerin kapıyı geçebilmesi için (yalnızca ?test=1 modunda görünür)
-function TEST_ICIN(n: number): string | undefined {
-  return new URLSearchParams(location.search).has('test') ? String(n) : undefined;
+  return ebeveynKapisiAc(app.kok, { sesli: true });
 }
 
 function anahtar(acik: boolean, fn: (v: boolean) => void, etiket: string): HTMLButtonElement {
@@ -192,14 +123,23 @@ export function ebeveynEkrani(app: Uygulama): Ekran {
         h('div.satir', {}, h('span', {}, 'Ses seviyesi'), seviye),
       ),
       h('section.panel', {}, h('h2', {}, 'İlerleme'), ilerleme),
-      h(
-        'section.panel.premium',
-        {},
-        h('h2', {}, svg(IKON.tac), 'Minkino Premium ', h('span.etiket', {}, 'Yakında')),
-        h('p', {}, 'Tek abonelikle Minkino’nun tüm eğitici oyunları ve kart paketleri.'),
-        h('ul', {}, h('li', {}, 'Tüm kart paketleri ve yaş seviyeleri'), h('li', {}, 'Düzenli eklenen yeni oyunlar ve paketler'), h('li', {}, 'Reklamsız, güvenli, çevrimdışı oyun')),
-        h('button.dugme', { type: 'button', disabled: true }, 'Aboneliği başlat'),
-      ),
+      uygulamaPlatformu()
+        ? // mağaza uygulamasında: Kartlar ücretsiz; abonelik ekranı (kapı zaten geçildi)
+          h(
+            'section.panel.premium',
+            {},
+            h('h2', {}, svg(IKON.tac), 'Minkino Premium'),
+            h('p', {}, 'Kartlar ücretsiz. Premium ile bütün maceralar, çizgi filmler ve oyunlar açılır.'),
+            h('button.dugme', { type: 'button', onclick: () => void import('../abonelik/ekran').then((m) => m.abonelikEkrani(app.kok)) }, 'Abonelik'),
+          )
+        : h(
+            'section.panel.premium',
+            {},
+            h('h2', {}, svg(IKON.tac), 'Minkino Premium ', h('span.etiket', {}, 'Yakında')),
+            h('p', {}, 'Tek abonelikle Minkino’nun tüm eğitici oyunları ve kart paketleri.'),
+            h('ul', {}, h('li', {}, 'Tüm kart paketleri ve yaş seviyeleri'), h('li', {}, 'Düzenli eklenen yeni oyunlar ve paketler'), h('li', {}, 'Reklamsız, güvenli, çevrimdışı oyun')),
+            h('button.dugme', { type: 'button', disabled: true }, 'Aboneliği başlat'),
+          ),
       h(
         'section.panel',
         {},
