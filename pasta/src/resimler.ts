@@ -51,7 +51,17 @@ export const YUVA = {
   kasa: ['kasa', 'kasa-pembe'],
   kumbara: ['kumbara', 'kumbara-otobus', 'kumbara-kavanoz'],
   jeton: ['jeton'],
+  /**
+   * Kremalı kurabiyenin süs katmanları (Gemini'den istenecek; şeffaf zeminli, kurabiyenin ortasına oturan desen):
+   * zikzak krema (yuvarlak, kalp), nokta krema (yıldız, ay), şeker serpintisi (hepsinde). Yoksa kod çizimi.
+   */
+  desenZigzag: ['desen-zigzag'],
+  desenNokta: ['desen-nokta'],
+  serpinti: ['susler-serpinti'],
 } as const satisfies Record<string, readonly string[]>;
+
+/** Kurabiyenin üstündeki tek süs parçası (Gemini'den istenecek: susler-cilek …; bal için susler-bal-damlasi) */
+export const susParcaAdlari = (s: Sus): string[] => [`susler-${s === 'bal' ? 'bal-damlasi' : s}`];
 
 export const kalipAdlari = (k: Kalip): string[] => (k === 'kapkek' ? ['cupcake-kalip', 'kalip-kapkek', 'kapkek-kalibi'] : [`kalip-${k}`]);
 export const kremaAdlari = (r: Renk): string[] => [`krema-${r}`, `krema-torbasi-${r}`];
@@ -85,6 +95,12 @@ export const FIRIN_KAPILARI = [
   { x: 0.452, y: 0.32, w: 0.268, h: 0.508, cx: 0.514, cy: 0.432, rx: 0.333, ry: 0.288 },
   { x: 0.724, y: 0.287, w: 0.259, h: 0.498, cx: 0.508, cy: 0.437, rx: 0.339, ry: 0.286 },
 ];
+/**
+ * Krema torbası görselleri (338×355 tuval) çapraz çizilmiş; tezgâhta tutacakta dik durur: ana eksen (alfa PCA ile
+ * ölçüldü, ~-47°) dikeye döndürülür, ucu aşağıda. aci: döndürme (derece), cx/cy: dönme merkezi, x/y/w/h: dik hâlinin
+ * kutusu (tuval pikseli).
+ */
+export const KREMA_DIK = { aci: -43, cx: 170, cy: 172, x: 88, y: -22, w: 164, h: 426 };
 /** Fırının ışığı (üst panelde, sağ düğmenin yanında) */
 export const FIRIN_LAMBA = { x: 0.935, y: 0.232 };
 
@@ -106,6 +122,7 @@ export function beklenenler(sekiller: readonly Sekil[], renkler: readonly Renk[]
   for (const k of [...sekiller, 'kapkek'] as Kalip[]) l.push({ ad: `kalip-${k}`, adaylar: kalipAdlari(k) });
   for (const r of renkler) l.push({ ad: `krema-${r}`, adaylar: kremaAdlari(r) });
   for (const s of susler) l.push({ ad: `kavanoz-${s}`, adaylar: kavanozAdlari(s) });
+  for (const s of susler) l.push({ ad: susParcaAdlari(s)[0], adaylar: susParcaAdlari(s) });
   for (const sk of sekiller) {
     for (const h of ['hamur-topu', 'cig', 'altin', 'yanik'] as const) l.push({ ad: `kurabiye-${sk}-${h}`, adaylar: kurabiyeAdlari(sk, h) });
     for (const r of renkler) l.push({ ad: `kurabiye-${sk}-krema-${r}`, adaylar: kurabiyeAdlari(sk, 'krema', r) });

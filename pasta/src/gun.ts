@@ -20,7 +20,7 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { MinoCanli } from '../../pazar/src/mino-canli';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
-import { HAMUR_KABI, JETON, KAPAK_DESENI, KASA, KINO_CILEK_AGIZ, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
+import { HAMUR_KABI, JETON, KAPAK_DESENI, KASA, KINO_CILEK_AGIZ, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
 import { ARKA, FIRIN_KAPILARI, FIRIN_LAMBA, oranYaz, yuva } from './resimler';
 import { kayit } from './kayit';
@@ -185,8 +185,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const resimli = !!(arkaUrl && onUrl);
   const arkaResim = resimli ? h('div.ps-arka-resim', { 'aria-hidden': 'true' }) : null;
   const sahne = h('div.ps-sahne', {}, ...parkKatmanlari(ayar.yer), musteriKatmani, arkaResim, duvar, h('div.ps-cerceve', { 'aria-hidden': 'true' }, h('i.ps-tente'), h('i.ps-flama')));
-  /** Görselden tezgâh: üst yüzey (arka kenardan ön kenara yayılır) ve ön yüz (dolaplar); dikeyde iki tane (arka, ön) */
-  const tezgahResmi = (ad: string) => h(`i.ps-tz.ps-tz-${ad}`, { 'aria-hidden': 'true' }, h('i.ps-tz-yuz'), h('i.ps-tz-dolap'));
 
   // ---------------------------------------------------------------- tezgâh: hamur ve tepsi
   const tepsi: (Kalip | null)[] = [];
@@ -262,7 +260,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 
   // krema, süs
   const kremaDugmeleri = acik.renkler.map((r) => {
-    const b = h('button.ps-krema-sise', { type: 'button', 'data-renk': r, 'aria-label': r, html: kremaSvg(r) });
+    const b = h('button.ps-krema-sise', { type: 'button', 'data-renk': r, 'aria-label': r, html: kremaDikSvg(r) });
     b.addEventListener('click', () => kremaBas(r, b));
     return b;
   });
@@ -297,26 +295,30 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 
   const istasyon = (ad: string, ...c: HTMLElement[]) => h(`div.ps-ist.ps-ist-${ad}`, {}, ...c);
   const izgara = (d: HTMLElement[]) => h('div.ps-izgara', { 'data-n': String(d.length) }, ...d);
+  /**
+   * Tezgâh bir istasyon ızgarası: iki sıra (arka raf ve ön tezgâh), her sıranın tek taban çizgisi. Yatayda soldan
+   * sağa HAMUR → KALIP (askıda; tepsi altında) → FIRIN (tezgâha oturur, iki sırayı kaplar) → KREMA (önde tutacakta;
+   * süs kavanozları arkasındaki rafta) → SERVİS (tabak; kasa arkasındaki rafta). Dikeyde üst katta fırın, altında
+   * iki raf: HAMUR | KALIP, KREMA·SÜS | SERVİS. Çizim: her kat (arka duvar fayansı, arka raf, tezgâh yüzeyi, ön kenar)
+   * kod çizimi; en alttaki dolaplar görselden. Önce arka sıradakiler (dokunuşta öndekiler üstte kalır).
+   */
   const tezgah = h(
     'div.ps-tezgah',
     { 'data-kalip': String(kalipDugmeleri.length), 'data-krema': String(kremaDugmeleri.length), 'data-sus': String(susDugmeleri.length) },
-    // tezgâhın çizimi: arka duvar (dikeyde üst kat), üst yüzey, ön kenar, dolap kapaklı ön panel
-    h('i.ps-tz-kat', { 'aria-hidden': 'true' }),
-    h('i.ps-tz-kat-raf', { 'aria-hidden': 'true' }),
-    h('i.ps-tz-yuzey', { 'aria-hidden': 'true' }),
+    h('i.ps-kat', { 'aria-hidden': 'true', 'data-kat': '0' }),
+    h('i.ps-kat', { 'aria-hidden': 'true', 'data-kat': '1' }),
+    h('i.ps-kat', { 'aria-hidden': 'true', 'data-kat': '2' }),
     h('i.ps-tz-panel', { 'aria-hidden': 'true', style: `--kapak:${KAPAK_DESENI}` }),
-    resimli ? tezgahResmi('arka') : null,
-    resimli ? tezgahResmi('on') : null,
     minoYer,
     kinoYer,
+    istasyon('kalip', h('div.ps-askilik', {}, izgara(kalipDugmeleri))),
+    istasyon('sus', izgara(susDugmeleri)),
+    istasyon('kasa', kasa),
     istasyon('hamur', hamurKabi),
     istasyon('tepsi', tepsiEl),
-    istasyon('kalip', h('div.ps-pano', {}, izgara(kalipDugmeleri))),
     istasyon('firin', firin),
-    istasyon('krema', izgara(kremaDugmeleri)),
-    istasyon('sus', izgara(susDugmeleri)),
+    istasyon('krema', h('div.ps-tutacak', {}, izgara(kremaDugmeleri))),
     istasyon('tabak', bekleyenEl, tabakEl),
-    istasyon('kasa', kasa),
     jetonKatmani,
   );
 
@@ -333,9 +335,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     const [x0, x1, y0, y1, rx, ry] = [a.pencere.sol, a.pencere.sag, a.pencere.ust, a.tezgah + 0.03, 0.02, 0.036];
     const maske = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" preserveAspectRatio="none"><path fill-rule="evenodd" d="M0 0H1V1H0Z M${x0} ${y1}V${y0 + ry}Q${x0} ${y0} ${x0 + rx} ${y0}H${x1 - rx}Q${x1} ${y0} ${x1} ${y0 + ry}V${y1}Z"/></svg>`;
     arkaResim!.style.setProperty('--maske', `url("data:image/svg+xml,${encodeURIComponent(maske)}")`);
+    const tabakUrl = yuva('tabak');
     el.setAttribute(
       'style',
-      `--arka-url:url("${arkaUrl}");--on-url:url("${onUrl}");--a-sol:${a.pencere.sol};--a-sag:${a.pencere.sag};--a-ust:${a.pencere.ust};--a-tz:${a.tezgah};--a-tzon:${a.tezgahOn}`,
+      `--arka-url:url("${arkaUrl}");--on-url:url("${onUrl}");--a-sol:${a.pencere.sol};--a-sag:${a.pencere.sag};--a-ust:${a.pencere.ust};--a-tz:${a.tezgah};--a-tzon:${a.tezgahOn}${tabakUrl ? `;--tabak-url:url("${tabakUrl}")` : ''}`,
     );
     oranYaz(arkaUrl!, el, '--a-oran');
   }

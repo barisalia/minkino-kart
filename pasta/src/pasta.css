@@ -89,24 +89,33 @@
   100% { transform: scale(1); }
 }
 
-/* ---------------------------------------------------------------- gün ekranı: yerleşim
-   Bütün ölçüler --u biriminden (yatay telefon 844×390'da 1 px, dikey telefon 390×844'te 1 px); dokunma alanı --h
-   en az 64 px. Ekran bir boyut kabı: cqw / cqh ekranın kendisi.
-   Yatay: üstte pencere (park, müşteriler belden yukarı), sağda otobüsün iç duvarı (fırın, Kino'nun rafı, menü
-   tahtası), altta perspektifli tek sıra tezgâh (üst yüzey, dolap kapaklı ön panel).
-   Dikey: pencere üstte; tezgâh iki kat: üst kat fayanslı duvar önünde Mino, fırın, Kino; alt katta hamur + krema,
-   tepsi + kalıplar, tabak + süsler. */
+/* ---------------------------------------------------------------- gün ekranı: yerleşim (istasyon ızgarası)
+   Bütün ölçüler --u biriminden (yatay telefon 844×390'da 1 px, dikey telefon 390×844'te 1 px) ve dokunma biriminden
+   --h (en az 64 px). Ekran bir boyut kabı: cqw / cqh ekranın kendisi.
+   Yatay: üstte pencere (Mino solda, müşteriler, Kino sağda); altta tek tezgâh, iki sıra: arka raf (taban çizgisi
+   --B2: kalıp askısı, süs kavanozları, kasa) ve ön tezgâh (taban çizgisi --B1: hamur kâsesi, tepsi, krema tutacağı,
+   tabak). Fırın ortada tezgâha oturur, iki sırayı kaplar. Sütunlar soldan sağa iş sırasıyla, aralar eşit.
+   Dikey: pencere üstte; üst katta Mino, fırın, Kino; altında iki raf (HAMUR | KALIP, KREMA·SÜS | SERVİS).
+   Ölçek: eşyalar birbirine göre gerçekçi (kâse, kavanoz, krema torbası yakın boyda; fırın en büyük). */
 .ps-kok .ps-gun {
   padding: 0;
   display: block;
   overflow: hidden;
   container-type: size;
   --u: min(calc(100cqw / 844), calc(100cqh / 390));
-  --h: max(64px, calc(66 * var(--u)));
-  /* tezgâhın görünen yüksekliği (tezgâh çizgisinden ekranın altına), ön panel, eşyaların pencereye taşma payı */
-  --C: calc(168 * var(--u) + env(safe-area-inset-bottom));
-  --P: calc(38 * var(--u) + env(safe-area-inset-bottom));
-  --R: calc(70 * var(--u));
+  --h: max(64px, calc(64 * var(--u)));
+  /* tezgâh katı (alttan yukarı): dolaplar --P, ön kenar --e, ön tezgâh --r1, arka raf kenarı --led, arka duvar --r2 */
+  --P: calc(var(--h) * 0.36 + env(safe-area-inset-bottom));
+  --e: calc(var(--h) * 0.16);
+  --r1: calc(var(--h) * 1.3);
+  --led: calc(var(--h) * 0.19);
+  --r2: calc(var(--h) * 1);
+  /* taban çizgileri (ekranın altından): ön sıra, arka raf */
+  --B1: calc(var(--P) + var(--e) + 2 * var(--u));
+  --B2: calc(var(--P) + var(--e) + var(--r1) + var(--led));
+  /* tezgâhın görünen yüksekliği (pencerenin alt çizgisinden ekranın altına); eşyaların pencereye taşma payı */
+  --C: calc(var(--B2) + var(--r2));
+  --R: calc(var(--h) * 1.6);
   /* pencerenin yüksekliği; Mino'nun birim boyu (müşteri boyları bundan: çocuk 1.35, ayı 1.6 …) */
   --W: calc(100cqh - var(--C));
   --m: min(calc(var(--W) * 0.58), calc(150 * var(--u)));
@@ -114,14 +123,18 @@
   --mino-h: calc(var(--m) * 1.1);
   --mino-w: calc(var(--mino-h) / 1.3045);
   --kino-w: calc(var(--m) * 0.984);
-  --firin-w: calc(3 * var(--h) + 34 * var(--u));
+  --firin-w: calc(var(--h) * 3.05);
   --raf-w: calc(122 * var(--u));
-  --duvar: calc(var(--firin-w) + var(--raf-w) + 12 * var(--u) + env(safe-area-inset-right));
+  /* pencerenin iki yanı: solda Mino, sağda Kino (müşteriler aralarında) */
+  --duvar: calc(var(--kino-w) * 0.86 + 6 * var(--u) + env(safe-area-inset-right));
   --mino-alan: calc(var(--mino-w) + 6 * var(--u) + env(safe-area-inset-left));
   --yer-w: calc((100cqw - var(--mino-alan) - var(--duvar)) / 3);
-  --bw: min(calc(var(--yer-w) * 0.9), calc(160 * var(--u)));
+  --bw: min(calc(var(--yer-w) * 0.84), calc(148 * var(--u)));
   --jeton: calc(40 * var(--u));
   --d: var(--h);
+  /* kontur ve temas gölgesi (bütün eşyalarda aynı) */
+  --ince: max(1.5px, calc(2.2 * var(--u)));
+  --golge: rgba(107, 58, 31, 0.34);
 }
 .ps-kok .ps-sahne {
   position: absolute;
@@ -141,15 +154,15 @@
   pointer-events: none;
   display: grid;
   grid-template-columns: repeat(5, auto);
-  grid-template-rows: 1fr auto;
+  grid-template-rows: var(--r2) calc(var(--led) + var(--r1));
   grid-template-areas:
-    'hamur kalip krema sus kasa'
-    'tepsi kalip krema sus tabak';
-  justify-content: space-evenly;
-  align-items: end;
+    'hamur kalip firin sus kasa'
+    'hamur tepsi firin krema tabak';
+  align-content: end;
+  justify-content: space-between;
   justify-items: center;
-  column-gap: calc(4 * var(--u));
-  padding: 0 max(calc(8 * var(--u)), env(safe-area-inset-right)) calc(var(--P) - 6 * var(--u)) max(calc(8 * var(--u)), env(safe-area-inset-left));
+  column-gap: calc(6 * var(--u));
+  padding: 0 max(calc(10 * var(--u)), env(safe-area-inset-right)) calc(var(--B1)) max(calc(10 * var(--u)), env(safe-area-inset-left));
 }
 .ps-kok .ps-tezgah button,
 .ps-kok .ps-tabak-ic {
@@ -161,30 +174,71 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  align-self: end;
 }
 .ps-kok .ps-ist-hamur { grid-area: hamur; }
 .ps-kok .ps-ist-tepsi { grid-area: tepsi; }
-.ps-kok .ps-ist-kalip { grid-area: kalip; }
+.ps-kok .ps-ist-kalip { grid-area: kalip; z-index: 2; }
+.ps-kok .ps-ist-firin { grid-area: firin; }
 .ps-kok .ps-ist-krema { grid-area: krema; }
-.ps-kok .ps-ist-sus { grid-area: sus; }
-.ps-kok .ps-ist-tabak { grid-area: tabak; flex-direction: column; align-items: center; }
-.ps-kok .ps-ist-kasa { grid-area: kasa; }
+.ps-kok .ps-ist-sus { grid-area: sus; z-index: 2; }
+.ps-kok .ps-ist-tabak { grid-area: tabak; }
+.ps-kok .ps-ist-kasa { grid-area: kasa; z-index: 2; }
 
-/* tezgâhın çizimi: üst yüzey (bal rengi tahta, arka kenarı koyu, tahta ekleri), ön kenar, dolap kapaklı ön panel */
-.ps-kok .ps-tz-yuzey {
+/* tezgâhın çizimi: her kat bir kutu. Zemini arka duvar (pembe-krem fayans); ::before arka rafın kenarı (taban çizgisi
+   --B2), ::after ön tezgâh yüzeyi ve yuvarlak ön kenar. Kat değişkenleri: --kr1 (yüzey), --kled (raf), --kr2 (duvar) */
+.ps-kok .ps-kat {
+  display: none;
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--R);
-  bottom: var(--P);
   z-index: 2;
-  border-top: calc(4 * var(--u)) solid var(--ps-k);
+  pointer-events: none;
+  --kr1: var(--r1);
+  --kled: var(--led);
+  --kr2: var(--r2);
+  height: calc(var(--e) + var(--kr1) + var(--kled) + var(--kr2));
   background:
-    linear-gradient(180deg, rgba(58, 18, 16, 0.22), rgba(58, 18, 16, 0) calc(16 * var(--u))),
-    repeating-linear-gradient(90deg, transparent 0 calc(132 * var(--u)), rgba(122, 64, 24, 0.35) calc(132 * var(--u)) calc(135 * var(--u))),
-    repeating-linear-gradient(180deg, transparent 0 calc(26 * var(--u)), rgba(255, 255, 255, 0.16) calc(26 * var(--u)) calc(29 * var(--u))),
-    linear-gradient(180deg, #e3a160, #f3c58a 45%, #f8d39f);
+    linear-gradient(180deg, rgba(107, 58, 31, 0.16), rgba(107, 58, 31, 0) calc(10 * var(--u))),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23FADFD7'/%3E%3Cpath d='M0 .5H40M.5 0V40' stroke='%23E8BBB0' stroke-width='1.2'/%3E%3Cg fill='%23EFBBB0'%3E%3Cpath d='M20 8.5C23.4 12.6 23.4 16.8 20 20C16.6 16.8 16.6 12.6 20 8.5Z'/%3E%3Cpath d='M20 31.5C16.6 27.4 16.6 23.2 20 20C23.4 23.2 23.4 27.4 20 31.5Z'/%3E%3Cpath d='M8.5 20C12.6 16.6 16.8 16.6 20 20C16.8 23.4 12.6 23.4 8.5 20Z'/%3E%3Cpath d='M31.5 20C27.4 23.4 23.2 23.4 20 20C23.2 16.6 27.4 16.6 31.5 20Z'/%3E%3C/g%3E%3Ccircle cx='20' cy='20' r='2.4' fill='%23E5A194'/%3E%3Cg fill='%23F2C6BC'%3E%3Ccircle cx='0' cy='0' r='3.4'/%3E%3Ccircle cx='40' cy='0' r='3.4'/%3E%3Ccircle cx='0' cy='40' r='3.4'/%3E%3Ccircle cx='40' cy='40' r='3.4'/%3E%3C/g%3E%3C/svg%3E") 0 0 / calc(30 * var(--u)) calc(30 * var(--u)),
+    #fadfd7;
 }
+/* arka raf: üstü açık tahta, önü koyu; altındaki tezgâha yumuşak gölge düşer */
+.ps-kok .ps-kat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--e) + var(--kr1));
+  height: var(--kled);
+  background: linear-gradient(180deg, #fbe2bb 0, #f2c992 30%, #d19760 31%, #bd7f48 100%);
+  border-top: var(--ince) solid rgba(107, 58, 31, 0.7);
+  border-bottom: var(--ince) solid rgba(107, 58, 31, 0.8);
+  box-shadow: 0 calc(5 * var(--u)) calc(7 * var(--u)) rgba(107, 58, 31, 0.2);
+  z-index: 1;
+}
+/* ön tezgâh: açık tahta yüzey (arkası gölgeli), yuvarlak parlak ön kenar */
+.ps-kok .ps-kat::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--e) + var(--kr1));
+  background:
+    linear-gradient(rgba(107, 58, 31, 0.6), rgba(107, 58, 31, 0.6)) left 0 bottom var(--e) / 100% var(--ince) no-repeat,
+    linear-gradient(180deg, #fff2da 0, #f3c992 calc(3 * var(--u)), #e2a96f 55%, #c98c56 100%) left 0 bottom 0 / 100% var(--e) no-repeat,
+    linear-gradient(180deg, #efcd9b 0, #f8deb2 35%, #fde7c2 100%);
+  border-bottom: var(--ince) solid rgba(107, 58, 31, 0.8);
+}
+/* yatay: tek kat (bütün tezgâh); üstünde pencere pervazı */
+.ps-kok .ps-kat[data-kat='1'] {
+  display: block;
+  bottom: var(--P);
+  border-top: calc(6 * var(--u)) solid #c98a52;
+  box-shadow: inset 0 calc(2 * var(--u)) 0 rgba(255, 255, 255, 0.35);
+}
+/* dolaplar: en alttaki ön panel (görsel varsa tezgah-on görselinin çekmece sırası) */
 .ps-kok .ps-tz-panel {
   position: absolute;
   left: 0;
@@ -192,28 +246,11 @@
   bottom: 0;
   height: var(--P);
   z-index: 2;
-  border-top: calc(4 * var(--u)) solid var(--ps-k);
   background-color: var(--boya);
   background-image: var(--kapak), linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(58, 18, 16, 0.12));
   background-repeat: repeat-x, no-repeat;
-  background-size: auto calc(var(--P) - 12 * var(--u) - env(safe-area-inset-bottom)), 100% 100%;
-  background-position: 0 calc(8 * var(--u)), 0 0;
-}
-/* ön kenar: yuvarlak, parlak tahta şerit */
-.ps-kok .ps-tz-panel::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(-14 * var(--u));
-  height: calc(12 * var(--u));
-  background: linear-gradient(180deg, #ffe6c2, #e7a862);
-  border-top: calc(3 * var(--u)) solid var(--ps-k);
-  box-shadow: inset 0 calc(3 * var(--u)) 0 rgba(255, 255, 255, 0.7);
-}
-.ps-kok .ps-tz-kat,
-.ps-kok .ps-tz-kat-raf {
-  display: none;
+  background-size: auto calc(var(--P) - 8 * var(--u) - env(safe-area-inset-bottom)), 100% 100%;
+  background-position: 0 calc(4 * var(--u)), 0 0;
 }
 
 /* ---------------------------------------------------------------- istasyonlar */
@@ -238,7 +275,7 @@
   width: var(--h);
   height: var(--h);
   display: grid;
-  place-items: center;
+  place-items: end center;
 }
 .ps-kok .ps-izgara > button > svg,
 .ps-kok .ps-hamur-kabi > svg,
@@ -249,14 +286,36 @@
   pointer-events: none;
 }
 .ps-kok .ps-izgara > button > svg {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
+}
+/* temas gölgesi: her eşyanın altında aynı yumuşak elips (taban çizgisine oturur, hiçbir şey yüzmez) */
+.ps-kok .ps-hamur-kabi::after,
+.ps-kok .ps-tepsi::after,
+.ps-kok .ps-tabak::after,
+.ps-kok .ps-kasa::after,
+.ps-kok .ps-sus-kabi::after,
+.ps-kok .ps-tutacak::after,
+.ps-kok .ps-ist-firin::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: calc(var(--h) * -0.06);
+  height: calc(var(--h) * 0.16);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--golge), rgba(107, 58, 31, 0));
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* hamur kâsesi: büyük, içinde hamur kabarır (nefes alır), dokununca kabarıp iner */
 .ps-kok .ps-hamur-kabi {
-  width: calc(var(--h) * 1.95);
-  height: calc(var(--h) * 1.6);
+  width: calc(var(--h) * 1.8);
+  height: calc(var(--h) * 1.49);
 }
 .ps-kok .ps-hamur-kabi > svg {
   position: absolute;
@@ -283,9 +342,9 @@
   100% { transform: scale(1); }
 }
 
-/* tepsi */
+/* tepsi: kalıp askısının altında, ön tezgâhta */
 .ps-kok .ps-tepsi {
-  width: calc(var(--h) * 2);
+  width: calc(var(--h) * 1.85);
   height: var(--h);
 }
 .ps-kok .ps-tepsi > svg {
@@ -300,8 +359,8 @@
   position: absolute;
   left: 8%;
   right: 8%;
-  top: -18%;
-  bottom: 26%;
+  top: 0;
+  bottom: 22%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -351,105 +410,163 @@
   50% { transform: translateY(-4px); }
 }
 
-/* kalıp panosu: delikli tahta pano, kalıplar çivilere asılı */
-.ps-kok .ps-pano {
+/* kalıp askısı: duvardaki metal çubuk, iki tahta dirsek; kalıplar S kancalarla asılı (tepsinin üstünde) */
+.ps-kok .ps-askilik {
   position: relative;
-  padding: calc(12 * var(--u)) calc(8 * var(--u)) calc(8 * var(--u));
-  border: calc(4 * var(--u)) solid var(--ps-k);
-  border-radius: calc(14 * var(--u));
-  background:
-    radial-gradient(circle, rgba(58, 18, 16, 0.38) 0 calc(2 * var(--u)), transparent calc(2.6 * var(--u))) 0 0 / calc(14 * var(--u)) calc(14 * var(--u)),
-    linear-gradient(180deg, #f9d7a4, #edbb7a);
-  box-shadow: inset 0 calc(4 * var(--u)) 0 rgba(255, 255, 255, 0.45), 0 calc(5 * var(--u)) 0 rgba(58, 18, 16, 0.2);
+  padding: 0 calc(var(--h) * 0.1) calc(var(--h) * 0.02);
 }
-.ps-kok .ps-pano::before,
-.ps-kok .ps-pano::after {
-  content: '';
-  position: absolute;
-  bottom: calc(-12 * var(--u));
-  width: calc(12 * var(--u));
-  height: calc(12 * var(--u));
-  background: #c98a4b;
-  border: calc(3 * var(--u)) solid var(--ps-k);
-  border-top: 0;
-  border-radius: 0 0 calc(4 * var(--u)) calc(4 * var(--u));
-}
-.ps-kok .ps-pano::before { left: 14%; }
-.ps-kok .ps-pano::after { right: 14%; }
-.ps-kok .ps-ist-kalip .ps-izgara {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(2, var(--h));
-  grid-auto-columns: var(--h);
-  gap: calc(2 * var(--u)) calc(4 * var(--u));
-}
-.ps-kok .ps-ist-kalip .ps-izgara[data-n='1'] {
-  grid-template-rows: var(--h);
-}
-.ps-kok .ps-kalip::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: calc(-3 * var(--u));
-  width: calc(9 * var(--u));
-  height: calc(9 * var(--u));
-  margin-left: calc(-4.5 * var(--u));
-  border-radius: 50%;
-  background: #c9d4de;
-  border: calc(2.5 * var(--u)) solid var(--ps-k);
-  z-index: 1;
-}
-.ps-kok .ps-kalip > svg {
-  transform: scale(1.06) rotate(-4deg);
-}
-.ps-kok .ps-kalip:nth-child(even) > svg {
-  transform: scale(1.06) rotate(4deg);
-}
-
-/* krema torbaları: tahta tutacaklara takılı, yan yana */
-.ps-kok .ps-ist-krema .ps-izgara {
-  display: flex;
-  gap: calc(2 * var(--u));
-}
-.ps-kok .ps-ist-krema .ps-izgara > button {
-  width: max(64px, calc(var(--h) * 0.97));
-  height: calc(max(64px, calc(var(--h) * 0.97)) * 1.62);
-  flex: 0 1 auto;
-}
-.ps-kok .ps-tezgah[data-krema='4'] .ps-ist-krema .ps-izgara {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-}
-.ps-kok .ps-tezgah[data-krema='4'] .ps-ist-krema .ps-izgara > button {
-  height: calc(var(--h) * 1.3);
-}
-
-/* süs kavanozları: iki basamaklı tahta standda */
-.ps-kok .ps-ist-sus .ps-izgara {
-  position: relative;
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(2, calc(var(--h) * 1.12));
-  grid-auto-columns: var(--h);
-  gap: 0 calc(4 * var(--u));
-  padding: 0 calc(6 * var(--u));
-}
-.ps-kok .ps-ist-sus .ps-izgara[data-n='1'] {
-  grid-template-rows: calc(var(--h) * 1.12);
-}
-.ps-kok .ps-ist-sus .ps-izgara:not([data-n='1'])::before {
+.ps-kok .ps-askilik::before {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(50% - 8 * var(--u));
-  height: calc(10 * var(--u));
-  border: calc(3 * var(--u)) solid var(--ps-k);
-  border-radius: calc(4 * var(--u));
-  background: linear-gradient(180deg, #f4c287, #e7a862);
+  top: calc(var(--h) * 0.05);
+  height: calc(var(--h) * 0.085);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #c7d1db 45%, #8d9aa8);
+  border: var(--ince) solid rgba(107, 58, 31, 0.75);
+  box-shadow: 0 calc(3 * var(--u)) calc(3 * var(--u)) rgba(107, 58, 31, 0.18);
 }
-.ps-kok .ps-sus-kabi > svg {
+.ps-kok .ps-askilik::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--h) * 0.02);
+  right: calc(var(--h) * 0.02);
+  top: 0;
+  height: calc(var(--h) * 0.19);
+  background:
+    linear-gradient(180deg, #e7a862, #c98a4b) 0 0 / calc(var(--h) * 0.1) 100% no-repeat,
+    linear-gradient(180deg, #e7a862, #c98a4b) 100% 0 / calc(var(--h) * 0.1) 100% no-repeat;
+  border-radius: calc(var(--h) * 0.03);
+  pointer-events: none;
+  z-index: -1;
+}
+.ps-kok .ps-ist-kalip .ps-izgara {
+  display: flex;
+  align-items: flex-start;
+}
+.ps-kok .ps-ist-kalip .ps-izgara > button {
+  margin: 0 calc(var(--h) * -0.065);
+  place-items: center;
+}
+/* S kanca: çubuktan kalıbın sapına */
+.ps-kok .ps-kalip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: calc(var(--h) * 0.08);
+  width: calc(var(--h) * 0.11);
+  height: calc(var(--h) * 0.14);
+  margin-left: calc(var(--h) * -0.055);
+  border: calc(var(--h) * 0.035) solid #7d8a98;
+  border-top-color: transparent;
+  border-radius: 0 0 999px 999px;
+  z-index: 1;
+}
+.ps-kok .ps-kalip > svg {
+  transform: translateY(calc(var(--h) * 0.17)) scale(0.72);
+  transform-origin: 50% 0;
+}
+
+/* krema torbaları: tahta tutacakta dik, yan yana; uçları tutacağın içinde */
+.ps-kok .ps-tutacak {
   position: relative;
+  padding: 0 calc(var(--h) * 0.12);
+}
+.ps-kok .ps-tutacak::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--h) * 0.32);
+  z-index: 2;
+  border-radius: calc(var(--h) * 0.12) calc(var(--h) * 0.12) calc(var(--h) * 0.07) calc(var(--h) * 0.07);
+  background:
+    linear-gradient(180deg, #8a5232, #a8693a) 0 0 / 100% calc(var(--h) * 0.08) no-repeat,
+    linear-gradient(180deg, #f2c48c, #e0a165 45%, #c98a4b);
+  border: var(--ince) solid rgba(107, 58, 31, 0.85);
+  box-shadow: inset 0 calc(var(--h) * 0.1) 0 rgba(255, 236, 205, 0.35);
+  pointer-events: none;
+}
+.ps-kok .ps-ist-krema .ps-izgara {
+  display: flex;
+  align-items: flex-end;
+}
+.ps-kok .ps-ist-krema .ps-izgara > button {
+  height: calc(var(--h) * 1.55);
+  margin: 0 calc(var(--h) * -0.1);
+  flex: 0 0 auto;
+}
+.ps-kok .ps-ist-krema .ps-izgara > button > svg {
+  top: calc(var(--h) * 0.02);
+}
+.ps-kok .ps-tezgah[data-krema='4'] .ps-ist-krema .ps-izgara > button {
+  margin: 0 calc(var(--h) * -0.13);
+}
+
+/* süs kavanozları: arka rafta yan yana, hepsi aynı boyda */
+.ps-kok .ps-ist-sus .ps-izgara {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+.ps-kok .ps-ist-sus .ps-izgara > button {
+  height: calc(var(--h) * 1.06);
+  margin: 0 calc(var(--h) * -0.06);
+}
+/* kalabalık tezgâh (Gün 3 ve dükkândan alınanlar: 4-5 kalıp, 4 krema, 4-5 kavanoz): sıra yine tek, aralar sıklaşır,
+   eşyalar kendi aralarında aynı boyda biraz küçülür; yatayda kalıp askısı kâsenin üstüne de uzanır */
+.ps-kok .ps-tezgah[data-kalip='4'] .ps-ist-kalip .ps-izgara > button,
+.ps-kok .ps-tezgah[data-kalip='5'] .ps-ist-kalip .ps-izgara > button,
+.ps-kok .ps-tezgah[data-sus='4'] .ps-ist-sus .ps-izgara > button,
+.ps-kok .ps-tezgah[data-sus='5'] .ps-ist-sus .ps-izgara > button {
+  margin: 0 calc(var(--h) * -0.13);
+}
+.ps-kok .ps-tezgah[data-kalip='4'] .ps-kalip > svg,
+.ps-kok .ps-tezgah[data-kalip='5'] .ps-kalip > svg {
+  transform: translateY(calc(var(--h) * 0.2)) scale(0.66);
+}
+.ps-kok .ps-tezgah[data-sus='4'] .ps-sus-kabi > svg,
+.ps-kok .ps-tezgah[data-sus='5'] .ps-sus-kabi > svg {
+  transform: scale(0.88);
+  transform-origin: 50% 100%;
+}
+.ps-kok .ps-tezgah[data-kalip='4'] .ps-askilik,
+.ps-kok .ps-tezgah[data-kalip='5'] .ps-askilik {
+  padding: 0 calc(var(--h) * 0.16) calc(var(--h) * 0.02);
+}
+@media (orientation: landscape) {
+  .ps-kok .ps-tezgah[data-kalip='4'],
+  .ps-kok .ps-tezgah[data-kalip='5'] {
+    grid-template-areas:
+      'kalip kalip firin sus kasa'
+      'hamur tepsi firin krema tabak';
+  }
+}
+/* dikey kalabalık: kalıp askısı raf 1'in iki sütununa yayılır (kâsenin ve tepsinin üstünde), raf biraz yükselir */
+@media (orientation: portrait) {
+  .ps-kok .ps-gun:has(.ps-tezgah[data-kalip='4']),
+  .ps-kok .ps-gun:has(.ps-tezgah[data-kalip='5']),
+  .ps-kok .ps-gun:has(.ps-tezgah[data-sus='4']),
+  .ps-kok .ps-gun:has(.ps-tezgah[data-sus='5']),
+  .ps-kok .ps-gun:has(.ps-tezgah[data-krema='4']) {
+    --r1a: calc(var(--h) * 1.22);
+  }
+  .ps-kok .ps-tezgah[data-kalip='4'],
+  .ps-kok .ps-tezgah[data-kalip='5'],
+  .ps-kok .ps-tezgah[data-sus='4'],
+  .ps-kok .ps-tezgah[data-sus='5'],
+  .ps-kok .ps-tezgah[data-krema='4'] {
+    grid-template-areas:
+      'firin firin'
+      'kalip kalip'
+      'hamur tepsi'
+      '. .'
+      'sus kasa'
+      'krema tabak';
+    column-gap: calc(4 * var(--u));
+  }
 }
 .ps-kok .ps-sus-kabi.ps-eksik .ps-kap-ust {
   transform: translateY(30%) scale(0.6);
@@ -463,12 +580,13 @@
   transition: transform 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
-/* fırın: gerçek bir fırın (düğmeler, lamba, saat; üç camlı kapak; içi turuncu parlar) */
-.ps-kok .ps-ist-firin {
-  position: absolute;
-  z-index: 3;
-  right: max(calc(8 * var(--u)), env(safe-area-inset-right));
-  bottom: calc(var(--C) - 2 * var(--u));
+/* fırın: gerçek bir fırın (düğmeler, lamba, saat; üç camlı kapak; içi turuncu parlar). Tezgâha oturur: ayakları ön
+   sıranın taban çizgisinde, altında temas gölgesi */
+.ps-kok .ps-ist-firin::after {
+  left: 4%;
+  right: 4%;
+  bottom: calc(var(--h) * -0.07);
+  height: calc(var(--h) * 0.2);
 }
 .ps-kok .ps-firin {
   position: relative;
@@ -714,8 +832,8 @@
 
 /* tabak: büyük pasta tabağı; üstündeki ürünler iri */
 .ps-kok .ps-tabak {
-  width: calc(var(--h) * 2.3);
-  height: calc(var(--h) * 1.2);
+  width: calc(var(--h) * 1.95);
+  height: calc(var(--h) * 1.05);
 }
 .ps-kok .ps-tabak > svg {
   position: absolute;
@@ -764,12 +882,16 @@
   z-index: 40;
   filter: drop-shadow(0 12px 8px rgba(58, 18, 16, 0.3));
 }
+/* sırada bekleyen partiler: tabağın sol üst köşesinde küçük */
 .ps-kok .ps-bekleyen {
+  position: absolute;
+  left: calc(var(--h) * -0.22);
+  bottom: calc(var(--h) * 0.62);
+  z-index: 2;
   display: flex;
   gap: 2px;
-  min-height: 0;
   align-items: flex-end;
-  margin-bottom: calc(-6 * var(--u));
+  pointer-events: none;
 }
 .ps-kok .ps-bekleyen-parti {
   width: calc(var(--h) * 0.48);
@@ -783,10 +905,10 @@
   overflow: visible;
 }
 
-/* kasa: tezgâhın sağ ucunda; jetonlar gelince çekmecesi açılır */
+/* kasa: servis tabağının arkasındaki rafta; jetonlar gelince çekmecesi açılır */
 .ps-kok .ps-kasa {
-  width: calc(var(--h) * 1.3);
-  height: calc(var(--h) * 1.2);
+  width: calc(var(--h) * 1.42);
+  height: calc(var(--h) * 1.34);
 }
 .ps-kok .ps-kasa > svg {
   position: absolute;
@@ -817,8 +939,10 @@
   text-align: center;
 }
 .ps-kok .ps-kasa-sayi {
-  top: -8px;
+  top: 4%;
   bottom: auto;
+  left: 0;
+  right: auto;
 }
 .ps-kok .ps-jeton-var .ps-kasa {
   animation: ps-ipucu 1.2s ease-in-out infinite;
@@ -882,13 +1006,13 @@
   width: var(--mino-w);
   bottom: calc(var(--C) - var(--m) * 0.32);
 }
-/* yatay: Kino fırının yanındaki rafta, boyu tam görünür */
+/* yatay: Kino pencerenin sağında tezgâhın arkasında (Mino'nun karşısında; kasanın üstünden bakar) */
 .ps-kok .ps-kino-yer {
-  z-index: 4;
+  z-index: 1;
   width: var(--kino-w);
   aspect-ratio: 1;
-  right: calc(var(--firin-w) + 10 * var(--u) + env(safe-area-inset-right) + (var(--raf-w) - var(--kino-w)) / 2);
-  bottom: calc(var(--C) + 52 * var(--u) - var(--kino-w) * 0.078);
+  right: calc(2 * var(--u) + env(safe-area-inset-right) - var(--kino-w) * 0.06);
+  bottom: calc(var(--C) - var(--kino-w) * 0.3);
 }
 .ps-kok .ps-sapkali .mino-svg {
   overflow: visible;
@@ -1026,14 +1150,14 @@
 .ps-kok .ps-balon {
   position: absolute;
   left: 50%;
-  bottom: min(calc(100% - var(--ust) * var(--w) + 12 * var(--u)), calc(var(--W) - var(--bw) * 0.64 - var(--ust-pay, 30 * var(--u))));
+  bottom: min(calc(100% - var(--ust) * var(--w) + 12 * var(--u)), calc(var(--W) - var(--bw) * 0.8 - var(--ust-pay, 30 * var(--u))));
   width: var(--bw);
   margin-left: calc(var(--bw) / -2);
-  padding: calc(var(--bw) * 0.035);
-  background: #fff;
-  border: calc(4 * var(--u)) solid var(--ps-k);
-  border-radius: calc(var(--bw) * 0.16);
-  box-shadow: inset 0 calc(-5 * var(--u)) 0 rgba(58, 18, 16, 0.08), 0 calc(5 * var(--u)) 0 rgba(58, 18, 16, 0.18);
+  padding: calc(var(--bw) * 0.03) calc(var(--bw) * 0.04) calc(var(--bw) * 0.035);
+  background: linear-gradient(180deg, #ffffff 0, #fffaf3 60%, #fff3e6 100%);
+  border: max(1.5px, calc(2.4 * var(--u))) solid var(--ps-k);
+  border-radius: calc(var(--bw) * 0.18);
+  box-shadow: inset 0 calc(3 * var(--u)) 0 rgba(255, 255, 255, 0.9), 0 calc(6 * var(--u)) calc(14 * var(--u)) rgba(107, 58, 31, 0.24), 0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(107, 58, 31, 0.14);
   z-index: 3;
   transform-origin: 50% 110%;
   animation: ps-balon-gel 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
@@ -1064,15 +1188,16 @@
   content: '';
   position: absolute;
   left: 50%;
-  bottom: calc(-13 * var(--u));
-  width: calc(18 * var(--u));
-  height: calc(18 * var(--u));
-  margin-left: calc(-9 * var(--u));
-  background: #fff;
-  border-right: calc(4 * var(--u)) solid var(--ps-k);
-  border-bottom: calc(4 * var(--u)) solid var(--ps-k);
+  bottom: calc(-9 * var(--u));
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  margin-left: calc(-8 * var(--u));
+  background: #fff3e6;
+  border-right: max(1.5px, calc(2.4 * var(--u))) solid var(--ps-k);
+  border-bottom: max(1.5px, calc(2.4 * var(--u))) solid var(--ps-k);
   transform: rotate(45deg);
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: calc(4 * var(--u));
+  box-shadow: calc(3 * var(--u)) calc(3 * var(--u)) calc(5 * var(--u)) rgba(107, 58, 31, 0.14);
 }
 .ps-kok .ps-balon.ps-zipla {
   animation: ps-zipla 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
@@ -1118,13 +1243,34 @@
   justify-content: center;
   min-width: 0;
 }
+/* balondaki ürünler bir tabağın üstünde (oyundaki servis tabağı), iri ve net */
 .ps-kok .ps-b-grup {
+  position: relative;
   display: flex;
   justify-content: center;
+  align-items: flex-end;
   width: 100%;
+  padding-bottom: 7%;
+}
+.ps-kok .ps-b-grup::before {
+  content: '';
+  position: absolute;
+  left: 1%;
+  right: 1%;
+  bottom: 0;
+  height: 52%;
+  background-image: var(--tabak-url, radial-gradient(closest-side, #fff 0 76%, #ffd6e6 78% 86%, #f0b8cc 88% 95%, rgba(240, 184, 204, 0) 97%));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(2 * var(--u)) rgba(107, 58, 31, 0.2));
+}
+.ps-kok .ps-b-tek::before,
+.ps-kok .ps-b-mantik .ps-b-tek::before {
+  display: none;
 }
 .ps-kok .ps-b-parca {
-  width: 42%;
+  position: relative;
+  width: 46%;
   aspect-ratio: 1;
   flex: 0 0 auto;
   overflow: visible;
@@ -1133,10 +1279,10 @@
   margin-left: -12%;
 }
 .ps-kok .ps-b-kalem[data-adet='1'] .ps-b-parca {
-  width: 60%;
+  width: 64%;
 }
 .ps-kok .ps-b-kalem[data-adet='2'] .ps-b-parca {
-  width: 52%;
+  width: 58%;
 }
 .ps-kok .ps-b-ic:has(.ps-b-kalem + .ps-b-kalem) .ps-b-parca {
   width: 78%;
@@ -1378,163 +1524,127 @@
   animation: ps-pof 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
-/* ---------------------------------------------------------------- dikey telefon: pencere üstte, tezgâh iki kat */
+/* yatay: gün tahtası sağda ses düğmesinin altında (pencerenin üstü sipariş balonlarına kalır) */
+@media (orientation: landscape) {
+  .ps-kok .ps-gun {
+    --ust-pay: calc(6 * var(--u));
+  }
+  .ps-kok .ps-gun .ps-ust .orta {
+    position: absolute;
+    right: 0;
+    top: 66px;
+  }
+  .ps-kok .ps-gun .ps-gun-etiket {
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 0;
+    padding: 2px 10px 5px;
+    line-height: 1.1;
+  }
+  .ps-kok .ps-gun .ps-ilerleme i {
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+  }
+}
+/* ---------------------------------------------------------------- dikey: pencere üstte; üst kat (Mino, fırın, Kino), altında iki raf
+   Raf 1: HAMUR | KALIP (askı, altında tepsi). Raf 2: KREMA (tutacak; arkasındaki rafta süs kavanozları) | SERVİS
+   (tabak; arkasındaki rafta kasa). Her rafın iki taban çizgisi yatayla aynı düzende. Ölçüler --h biriminden: tablette
+   aynı düzen büyür. */
 @media (orientation: portrait) {
   .ps-kok .ps-gun {
     --u: min(calc(100cqw / 390), calc(100cqh / 844));
     --h: max(64px, calc(64 * var(--u)));
-    /* üst kat (Mino, fırın, Kino), kat rafının kenarı, alt kattaki üç sıra, ön panel */
-    --K1: calc(2 * var(--h) + 30 * var(--u));
-    --K1r: calc(12 * var(--u));
-    --rA: calc(var(--h) * 1.66);
-    --rB: calc(var(--h) * 1.08 + 8 * var(--u));
-    --rC: calc(var(--h) * 1.22);
-    --P: calc(30 * var(--u) + env(safe-area-inset-bottom));
-    --R: calc(10 * var(--u));
-    --C: calc(var(--K1) + var(--K1r) + var(--rA) + var(--rB) + var(--rC) + var(--P) + 18 * var(--u));
+    --P: calc(var(--h) * 0.34 + env(safe-area-inset-bottom));
+    --e: calc(var(--h) * 0.16);
+    --led: calc(var(--h) * 0.19);
+    --K1: calc(var(--h) * 2.62);
+    --r2a: calc(var(--h) * 1.12);
+    --r1a: calc(var(--h) * 0.94);
+    --r2b: calc(var(--h) * 1.02);
+    --r1b: calc(var(--h) * 1.44);
+    --kh1: calc(var(--e) + var(--r1a) + var(--led) + var(--r2a));
+    --kh2: calc(var(--e) + var(--r1b) + var(--led) + var(--r2b));
+    --C: calc(var(--P) + var(--kh2) + var(--kh1) + var(--K1));
+    --R: calc(var(--h) * 0.3);
     --W: calc(100cqh - var(--C));
     /* Mino üst katta boyu tam görünür; müşteriler aynı ölçekte (Mino = 1.1 m) */
-    --mino-h: calc(var(--K1) - 12 * var(--u));
+    --mino-h: calc(var(--K1) * 0.86);
     --m: calc(var(--mino-h) / 1.1);
-    --firin-w: calc(3 * var(--h) + 22 * var(--u));
+    --firin-w: calc(var(--h) * 3 + 24 * var(--u));
     --duvar: 0px;
     --mino-alan: 0px;
     --yer-w: calc(100cqw / 3);
-    --bw: min(calc(var(--yer-w) * 0.86), calc(190 * var(--u)));
+    --bw: min(calc(var(--yer-w) * 0.88), calc(190 * var(--u)));
     --derin: 0.36;
     /* balonlar tepedeki bayrak süsünün altında kalır */
     --ust-pay: calc(var(--tente-h, 0px) + 58px + 46 * var(--u));
     --jeton: calc(36 * var(--u));
-    --sol: calc(var(--h) * 1.9);
   }
   .ps-kok .ps-tezgah {
-    grid-template-columns: var(--sol) 1fr;
-    grid-template-rows: var(--K1) var(--K1r) var(--rA) var(--rB) var(--rC);
+    grid-template-columns: auto auto;
+    grid-template-rows: var(--K1) var(--r2a) calc(var(--led) + var(--r1a)) var(--e) var(--r2b) calc(var(--led) + var(--r1b));
     grid-template-areas:
       'firin firin'
+      'hamur kalip'
+      'hamur tepsi'
       '. .'
-      'hamur krema'
-      'tepsi kalip'
-      'tabak sus';
-    justify-content: stretch;
-    align-content: start;
-    row-gap: calc(4 * var(--u));
-    column-gap: calc(4 * var(--u));
-    padding: var(--R) max(calc(4 * var(--u)), env(safe-area-inset-right)) var(--P) max(calc(4 * var(--u)), env(safe-area-inset-left));
-  }
-  /* üst kat: fayanslı duvar ve önündeki raf tahtası; alt kat: tahta yüzey */
-  .ps-kok .ps-tz-kat {
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: var(--R);
-    height: calc(var(--K1) + 4 * var(--u));
-    z-index: 0;
-    border-top: calc(4 * var(--u)) solid var(--ps-k);
-    background:
-      repeating-linear-gradient(0deg, rgba(58, 18, 16, 0.12) 0 calc(2 * var(--u)), transparent calc(2 * var(--u)) calc(32 * var(--u))),
-      repeating-linear-gradient(90deg, rgba(58, 18, 16, 0.12) 0 calc(2 * var(--u)), transparent calc(2 * var(--u)) calc(32 * var(--u))),
-      conic-gradient(#ffd9e8 25%, #fff3e8 0 50%, #ffd9e8 0 75%, #fff3e8 0) 0 0 / calc(64 * var(--u)) calc(64 * var(--u));
-  }
-  .ps-kok .ps-tz-kat-raf {
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(var(--R) + var(--K1));
-    height: calc(var(--K1r) + 6 * var(--u));
-    z-index: 2;
-    border-top: calc(3.5 * var(--u)) solid var(--ps-k);
-    border-bottom: calc(3.5 * var(--u)) solid var(--ps-k);
-    background: linear-gradient(180deg, #ffe6c2, #e7a862);
-    box-shadow: inset 0 calc(3 * var(--u)) 0 rgba(255, 255, 255, 0.7), 0 calc(4 * var(--u)) 0 rgba(58, 18, 16, 0.18);
-  }
-  .ps-kok .ps-tz-yuzey {
-    top: calc(var(--R) + var(--K1) + var(--K1r) + 6 * var(--u));
-    border-top: 0;
+      'sus kasa'
+      'krema tabak';
+    justify-content: space-evenly;
+    column-gap: calc(8 * var(--u));
+    padding: 0 max(calc(4 * var(--u)), env(safe-area-inset-right)) calc(var(--P) + var(--e) + 2 * var(--u)) max(calc(4 * var(--u)), env(safe-area-inset-left));
   }
   .ps-kok .ps-ist-firin {
-    position: relative;
-    grid-area: firin;
-    right: auto;
-    bottom: auto;
-    align-self: end;
-    margin-bottom: calc(-4 * var(--u));
+    margin-bottom: calc(var(--e) + 2 * var(--u));
   }
-  .ps-kok .ps-firin {
-    height: calc(var(--K1) - 22 * var(--u));
+  /* katlar: üst kat (fayans duvar, ince tezgâh), raf 1, raf 2 */
+  .ps-kok .ps-kat[data-kat='0'],
+  .ps-kok .ps-kat[data-kat='1'],
+  .ps-kok .ps-kat[data-kat='2'] {
+    display: block;
+    border-top: 0;
+    box-shadow: none;
   }
-  .ps-kok .ps-ist-hamur,
-  .ps-kok .ps-ist-tepsi,
-  .ps-kok .ps-ist-tabak {
-    justify-self: center;
+  .ps-kok .ps-kat[data-kat='2'] {
+    bottom: var(--P);
+    --kr1: var(--r1b);
+    --kr2: var(--r2b);
+    height: var(--kh2);
   }
-  .ps-kok .ps-ist-krema,
-  .ps-kok .ps-ist-kalip,
-  .ps-kok .ps-ist-sus {
-    justify-self: stretch;
+  .ps-kok .ps-kat[data-kat='1'] {
+    bottom: calc(var(--P) + var(--kh2));
+    --kr1: var(--r1a);
+    --kr2: var(--r2a);
+    height: var(--kh1);
   }
-  .ps-kok .ps-hamur-kabi {
-    width: calc(var(--h) * 1.85);
-    height: calc(var(--h) * 1.55);
+  .ps-kok .ps-kat[data-kat='0'] {
+    z-index: 0;
+    bottom: calc(var(--P) + var(--kh2) + var(--kh1));
+    --kr1: calc(var(--h) * 0.2);
+    --kled: 0px;
+    --kr2: calc(var(--K1) - var(--e) - var(--h) * 0.2);
+    height: var(--K1);
+    border-top: calc(6 * var(--u)) solid #c98a52;
+    box-shadow: inset 0 calc(2 * var(--u)) 0 rgba(255, 255, 255, 0.35);
   }
-  .ps-kok .ps-tepsi {
-    width: calc(var(--h) * 1.85);
-  }
-  .ps-kok .ps-tabak {
-    width: calc(var(--h) * 1.9);
-    height: calc(var(--h) * 1.15);
-  }
-  .ps-kok .ps-ist-krema .ps-izgara,
-  .ps-kok .ps-tezgah[data-krema='4'] .ps-ist-krema .ps-izgara {
-    display: flex;
-    width: 100%;
-    justify-content: space-evenly;
-  }
-  .ps-kok .ps-tezgah[data-krema='4'] .ps-ist-krema .ps-izgara > button {
-    height: calc(var(--h) * 1.62);
-  }
-  /* kalıplar: tek sıra pano */
-  .ps-kok .ps-pano {
-    width: 100%;
-    padding: calc(4 * var(--u)) calc(2 * var(--u)) calc(2 * var(--u));
-  }
-  .ps-kok .ps-ist-kalip .ps-izgara,
-  .ps-kok .ps-ist-kalip .ps-izgara[data-n='1'] {
-    display: flex;
-    justify-content: space-evenly;
-  }
-  .ps-kok .ps-ist-kalip .ps-izgara > button {
-    flex: 0 1 var(--h);
-    min-width: 0;
-  }
-  /* süsler: tek sıra kavanoz */
-  .ps-kok .ps-ist-sus .ps-izgara,
-  .ps-kok .ps-ist-sus .ps-izgara[data-n='1'] {
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    padding: 0;
-  }
-  .ps-kok .ps-ist-sus .ps-izgara > button {
-    height: calc(var(--h) * 1.15);
-    flex: 0 1 var(--h);
-    min-width: 0;
-  }
-  .ps-kok .ps-ist-sus .ps-izgara:not([data-n='1'])::before {
+  .ps-kok .ps-kat[data-kat='0']::before {
     display: none;
   }
-  /* kasa: dikey telefonda pencerenin sağ üstünde (ses düğmesinin yanında) */
-  .ps-kok .ps-ist-kasa {
-    position: fixed;
-    top: max(6px, env(safe-area-inset-top));
-    right: calc(max(8px, env(safe-area-inset-right)) + 76px);
-    z-index: 21;
-  }
   .ps-kok .ps-kasa {
-    width: 76px;
-    height: 70px;
+    width: calc(var(--h) * 1.2);
+    height: calc(var(--h) * 1.14);
+  }
+  /* Mino ve Kino üst katta, fırının iki yanında, boyları tam */
+  .ps-kok .ps-mino-yer {
+    z-index: 1;
+    left: max(calc(2 * var(--u)), env(safe-area-inset-left));
+    bottom: calc(var(--P) + var(--kh2) + var(--kh1) + var(--e) + 2 * var(--u));
+  }
+  .ps-kok .ps-kino-yer {
+    z-index: 1;
+    right: calc(env(safe-area-inset-right) - 10 * var(--u));
+    bottom: calc(var(--P) + var(--kh2) + var(--kh1) + var(--e) + 2 * var(--u) - var(--kino-w) * 0.078);
   }
   .ps-kok .ps-ust .orta {
     justify-content: flex-start;
@@ -1549,16 +1659,6 @@
     width: 10px;
     height: 10px;
     border-width: 2px;
-  }
-  /* Mino ve Kino üst katta, fırının iki yanında, boyları tam */
-  .ps-kok .ps-mino-yer {
-    z-index: 1;
-    left: max(calc(2 * var(--u)), env(safe-area-inset-left));
-    bottom: calc(var(--C) - var(--R) - var(--K1) - 4 * var(--u));
-  }
-  .ps-kok .ps-kino-yer {
-    right: calc(env(safe-area-inset-right) - 14 * var(--u));
-    bottom: calc(var(--C) - var(--R) - var(--K1) - var(--kino-w) * 0.078 - 2 * var(--u));
   }
   .ps-kok .ps-duvar {
     display: none;
@@ -1577,54 +1677,14 @@
     top: calc(var(--R) - 2 * var(--u));
   }
 }
-/* dikey tablet: aynı iki kat, daha geniş; kasa üst katta Kino'nun yanında */
+/* dikey tablet: aynı düzen, daha iri */
 @media (orientation: portrait) and (min-aspect-ratio: 5/8) {
   .ps-kok .ps-gun {
     --u: min(calc(100cqw / 768), calc(100cqh / 1024));
     --h: max(64px, calc(84 * var(--u)));
-    --K1: calc(2 * var(--h) + 34 * var(--u));
-    --P: calc(36 * var(--u) + env(safe-area-inset-bottom));
-    --sol: calc(var(--h) * 2.3);
-    --kasa-w: calc(var(--h) * 1.45);
-    --bw: min(calc(var(--yer-w) * 0.8), calc(230 * var(--u)));
-  }
-  .ps-kok .ps-tezgah {
-    grid-template-columns: var(--sol) 1fr var(--kasa-w);
-    grid-template-areas:
-      'firin firin kasa'
-      '. . .'
-      'hamur krema krema'
-      'tepsi kalip kalip'
-      'tabak sus sus';
-    padding-left: max(calc(14 * var(--u)), env(safe-area-inset-left));
-    padding-right: max(calc(14 * var(--u)), env(safe-area-inset-right));
-  }
-  .ps-kok .ps-ist-kalip {
-    justify-self: center;
-  }
-  .ps-kok .ps-pano {
-    width: auto;
-  }
-  .ps-kok .ps-ist-kalip .ps-izgara > button {
-    flex: 0 0 var(--h);
-    margin: 0 calc(10 * var(--u));
-  }
-  .ps-kok .ps-ist-kasa {
-    position: relative;
-    top: auto;
-    right: auto;
-    align-self: end;
-    margin-bottom: calc(2 * var(--u));
-  }
-  .ps-kok .ps-kasa {
-    width: var(--kasa-w);
-    height: calc(var(--h) * 1.35);
-  }
-  .ps-kok .ps-kino-yer {
-    right: calc(var(--kasa-w) + 18 * var(--u));
-  }
-  .ps-kok .ps-pano {
-    padding: calc(4 * var(--u)) calc(10 * var(--u));
+    --bw: min(calc(var(--yer-w) * 0.66), calc(176 * var(--u)));
+    --derin: 0.62;
+    --ust-pay: calc(var(--tente-h, 0px) + 58px + 8 * var(--u));
   }
 }
 
@@ -2287,54 +2347,13 @@
   mask: var(--maske) 0 0 / 100% 100% no-repeat;
 }
 .ps-kok .ps-resimli .ps-duvar,
-.ps-kok .ps-resimli .ps-cerceve,
-.ps-kok .ps-resimli .ps-tz-yuzey,
-.ps-kok .ps-resimli .ps-tz-panel,
-.ps-kok .ps-resimli .ps-tz-kat,
-.ps-kok .ps-resimli .ps-tz-kat-raf,
-.ps-kok .ps-resimli .ps-tz-arka {
+.ps-kok .ps-resimli .ps-cerceve {
   display: none;
 }
-.ps-kok .ps-resimli .ps-tz {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: var(--t-ust);
-  bottom: 0;
-  z-index: 2;
-  pointer-events: none;
-  --t-w: var(--aw);
-  --t-x: var(--ax);
-  --t-ust: var(--R);
-  --t-yuz: calc(var(--C) - var(--P) - 8 * var(--u));
-  --t-sh: calc(var(--t-yuz) / (var(--a-tzon) - var(--a-tz)));
-  --t-h: calc(var(--t-w) / var(--a-oran));
-}
-.ps-kok .ps-tz-yuz,
-.ps-kok .ps-tz-dolap {
-  position: absolute;
-  left: 0;
-  right: 0;
-  background-image: var(--on-url);
-  background-repeat: no-repeat;
-}
-.ps-kok .ps-tz-yuz {
-  top: 0;
-  height: var(--t-yuz);
-  background-size: var(--t-w) var(--t-sh);
-  background-position: var(--t-x) calc(var(--a-tz) * var(--t-sh) * -1);
-}
-.ps-kok .ps-tz-dolap {
-  top: var(--t-yuz);
-  bottom: 0;
-  background-color: #80534a;
-  background-size: var(--t-w) var(--t-h);
-  background-position: var(--t-x) calc(var(--a-tzon) * var(--t-h) * -1);
-}
-/* yatay: Kino tezgâhın üstünde, pencerenin sağ köşesinde; süs kavanozlarının gerisinde (dokunuş kavanozlara) */
-.ps-kok .ps-resimli .ps-kino-yer {
-  z-index: 2;
-  bottom: calc(var(--C) - 3 * var(--u) - var(--kino-w) * 0.078);
+/* dolaplar: tezgah-on görselinin çekmece ve kapak sırası (görselin üst kenarından) */
+.ps-kok .ps-resimli .ps-tz-panel {
+  --ph: calc(var(--h) * 2.3);
+  background: var(--on-url) center calc(var(--ph) / 0.34 * -0.655) / auto calc(var(--ph) / 0.34) repeat-x, #e9b98c;
 }
 
 /* fırın görseli: kapılar görselin parçası (kapı sallanınca o parça sallanır), camın yerine oyunun camı */
@@ -2434,13 +2453,13 @@
   filter: brightness(0.5) saturate(0.8);
 }
 
-/* eşya görselleri: yumuşak temas gölgesi; yedek kod çizimlerine de hafif gölge */
+/* eşya görselleri: temas gölgesi düğmenin altındaki elipste; görselde yalnız hafif bir derinlik */
 .ps-kok .ps-tezgah button > svg.ps-r,
 .ps-kok .ps-kumbara > svg.ps-r {
-  filter: drop-shadow(0 calc(3 * var(--u)) calc(2.5 * var(--u)) rgba(107, 58, 31, 0.26));
+  filter: drop-shadow(0 calc(1.5 * var(--u)) calc(1.2 * var(--u)) rgba(107, 58, 31, 0.2));
 }
 .ps-kok .ps-tezgah button > svg:not(.ps-r) {
-  filter: drop-shadow(0 calc(2 * var(--u)) calc(2 * var(--u)) rgba(107, 58, 31, 0.18));
+  filter: drop-shadow(0 calc(1.5 * var(--u)) calc(1.2 * var(--u)) rgba(107, 58, 31, 0.16));
 }
 .ps-kok .ps-hamur-kabi > svg.ps-r .ps-hamur-kabarik {
   animation: none;
@@ -2454,9 +2473,6 @@
   70% { transform: scale(0.98, 1.04); }
   100% { transform: scale(1); }
 }
-.ps-kok .ps-ist-krema .ps-izgara > button:has(> svg.ps-r) {
-  height: calc(max(64px, calc(var(--h) * 0.97)) * 1.12);
-}
 .ps-kok .ps-sus-kabi.ps-eksik > svg.ps-r {
   animation: ps-hayir 0.4s ease-in-out 2;
 }
@@ -2464,31 +2480,5 @@
   height: 84%;
 }
 .ps-kok .ps-tepsi > svg.ps-r {
-  height: 80%;
-}
-
-@media (orientation: portrait) {
-  .ps-kok .ps-resimli {
-    --firin-w: calc(3 * var(--h) + 50 * var(--u));
-  }
-  .ps-kok .ps-resimli .ps-tz-arka {
-    display: block;
-    z-index: 0;
-    --t-yuz: calc(var(--K1) + 6 * var(--u));
-  }
-  .ps-kok .ps-resimli .ps-tz-on {
-    --t-ust: calc(var(--R) + var(--K1) + var(--K1r) + 2 * var(--u));
-    --t-yuz: calc(var(--C) - var(--P) - var(--K1) - var(--K1r) - 2 * var(--u));
-    --t-w: calc(220cqw);
-    --t-x: calc(50cqw - var(--t-w) / 2);
-  }
-  .ps-kok .ps-resimli .ps-kino-yer {
-    z-index: 4;
-    bottom: calc(var(--C) - var(--R) - var(--K1) - var(--kino-w) * 0.078 - 2 * var(--u));
-  }
-}
-/* kalıp panosu: ince, sıcak kahve kenar (görsellerin çizgisine uysun) */
-.ps-kok .ps-resimli .ps-pano {
-  border-width: max(1.5px, calc(2.5 * var(--u)));
-  box-shadow: inset 0 calc(3 * var(--u)) 0 rgba(255, 255, 255, 0.45), 0 calc(4 * var(--u)) calc(4 * var(--u)) rgba(107, 58, 31, 0.22);
+  height: 68%;
 }
