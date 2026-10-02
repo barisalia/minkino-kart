@@ -176,6 +176,54 @@ export function durakYerleri(n: number, c: number): [number, number][] {
   });
 }
 
+type Kutu = [number, number, number, number];
+const kesisim = (a: Kutu, b: Kutu) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+
+/**
+ * Mino ile Kino'nun j. durağın yanındaki yeri (bahçe kutusunda, sol-üst köşe px): üstte, sağda, solda ya da çaprazda;
+ * hiçbir durağa, durak yazısına binmeyen ve ekrandan taşmayan aday seçilir (eşitlikte ilk sıradaki: durağın üstü).
+ * Düzen henüz yoksa null.
+ */
+export function ikiliYeri(bahce: HTMLElement, duraklar: HTMLElement[], j: number, ikili: HTMLElement): [number, number] | null {
+  const W = bahce.clientWidth;
+  const H = bahce.clientHeight;
+  const w = ikili.offsetWidth;
+  const hh = ikili.offsetHeight;
+  if (!W || !H || !w || !hh || !duraklar[j]) return null;
+  // engeller: durak daireleri (biraz küçültülmüş kutu) ve yazıları (offset*: dönüşümsüz yerleşim)
+  const engeller: Kutu[] = [];
+  const merkez = duraklar.map((d) => {
+    const r = d.offsetWidth / 2;
+    const [x, y] = [d.offsetLeft, d.offsetTop];
+    engeller.push([x - r * 0.85, y - r * 0.85, x + r * 0.85, y + r * 0.85]);
+    const ad = d.querySelector<HTMLElement>('.ok-durak-ad');
+    if (ad) engeller.push([x - ad.offsetWidth / 2, y - r + ad.offsetTop, x + ad.offsetWidth / 2, y - r + ad.offsetTop + ad.offsetHeight]);
+    return { x, y, r };
+  });
+  const { x, y, r } = merkez[j];
+  const adaylar: [number, number][] = [
+    [x - w / 2, y - r - 4 - hh],
+    [x + r * 0.7, y + r * 0.85 - hh],
+    [x - r * 0.7 - w, y + r * 0.85 - hh],
+    [x + r * 0.35, y - r * 0.3 - hh],
+    [x - r * 0.35 - w, y - r * 0.3 - hh],
+  ];
+  let en: [number, number] = adaylar[0];
+  let enPuan = Infinity;
+  for (const [l, t] of adaylar) {
+    const k: Kutu = [l, t, l + w, t + hh];
+    let puan = engeller.reduce((s, e) => s + kesisim(k, e), 0);
+    // ekran dışı (alt kenar biraz esnek: ayaklar çimene basabilir)
+    const ic = kesisim(k, [0, 0, W, H + hh * 0.1]);
+    puan += (w * hh - ic) * 3;
+    if (puan < enPuan - 1) {
+      enPuan = puan;
+      en = [l, t];
+    }
+  }
+  return [Math.round(en[0]), Math.round(en[1])];
+}
+
 export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
   const b = bolge(p.bolge ?? 'sayi') ?? BOLGELER[0];
   const y = yas();
@@ -234,9 +282,22 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
   const zamanlar: number[] = [];
   zamanlar.push(
     window.setTimeout(() => {
-      // yürüyüş
-      ikiliYer.style.left = `${yerler[oi][0]}%`;
-      ikiliYer.style.top = `${yerler[oi][1]}%`;
+      // yürüyüş: ikili durağın yanında, başka durağa ve yazısına binmeyen yerde (düzen hazır olunca ölçülür)
+      const bas = ikiliYeri(bahce, duraklar, once, ikiliYer);
+      const son = ikiliYeri(bahce, duraklar, oi, ikiliYer);
+      if (bas && son) {
+        ikiliYer.classList.add('ok-olculu');
+        ikiliYer.style.transition = 'none';
+        ikiliYer.style.left = `${bas[0]}px`;
+        ikiliYer.style.top = `${bas[1]}px`;
+        void ikiliYer.offsetWidth;
+        ikiliYer.style.transition = '';
+        ikiliYer.style.left = `${son[0]}px`;
+        ikiliYer.style.top = `${son[1]}px`;
+      } else {
+        ikiliYer.style.left = `${yerler[oi][0]}%`;
+        ikiliYer.style.top = `${yerler[oi][1]}%`;
+      }
       if (!AZ_HAREKET && oi !== once) void ikiz.kino.oynat('yuru', 900);
     }, TEST_MODU ? 10 : 450),
   );

@@ -10,7 +10,8 @@ import O from '../../../content/okul.json';
 import { Alkis } from '../../../orman/src/gorev';
 import { kulak } from '../../../orman/src/kulak';
 import { h, svg, TEST_MODU } from '../../../src/ui/dom';
-import { DAL, gorsel, kus } from '../cizim';
+import { gorsel, kus } from '../cizim';
+import { Dallar, kusBoyu } from '../dal';
 import { oynat } from '../efekt';
 import { etkinlikKaydet } from '../etkinlik';
 import { rakamKarti, type Sahne } from '../sahne';
@@ -27,9 +28,13 @@ async function tur(s: Sahne, hedef: number, ilk: boolean, mik: { acik: () => boo
   kart.disabled = true;
   const noktalar = Array.from({ length: hedef }, () => h('i'));
   const kuslar = Array.from({ length: hedef + 2 }, (_, i) => h('span.ok-kus', { style: `--i:${i}`, html: kus(i) }));
-  s.alan.replaceChildren(
-    h('div.ok-e7', {}, h('div.ok-e7-ust', {}, kart, h('div.ok-e7-noktalar', {}, ...noktalar)), h('div.ok-e7-dal', {}, h('div.ok-dal-resim', { html: DAL() }), h('div.ok-e7-kuslar', {}, ...kuslar))),
-  );
+  const dallar = new Dallar('ok-e7-dal');
+  const e7 = h('div.ok-e7', {}, h('div.ok-e7-ust', {}, kart, h('div.ok-e7-noktalar', {}, ...noktalar)), dallar.el);
+  s.alan.replaceChildren(e7);
+  // kuşlar dala konar (dal düzeni kuş sayısına ve ekran enine göre; ekran yerleşince ölçülür)
+  await s.bekle(30);
+  dallar.duzenle(kuslar.length, e7.getBoundingClientRect().width || 360, kusBoyu(e7));
+  kuslar.forEach((k, i) => dallar.tunek(i).append(k));
 
   if (ilk) {
     await s.soyle(M.giris);

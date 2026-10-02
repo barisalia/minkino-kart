@@ -18,6 +18,16 @@ const KEMIK =
   '<svg viewBox="0 0 80 40"><path d="M18 8a9 9 0 0 1 16 4h12a9 9 0 1 1 16 6a9 9 0 1 1-16 6H34a9 9 0 1 1-16-6a9 9 0 0 1 0-10z" fill="#FFF4DD" stroke="#6b3a1f" stroke-width="3" stroke-linejoin="round"/></svg>';
 const tabakEl = () => h('span.ok-p-tabak', { html: tabak() }, h('span.ok-p-tabak-ic'));
 
+/**
+ * i. misafirin örtüdeki yeri (örtü kutusunun yüzdesi). Örtü (assets/okul/piknik-ortusu.webp, kırpılmış) yandan
+ * bakılan bir dörtgen: sol köşe (1, 47), üst (48, 2), sağ (100, 29), alt (60, 99). Yerler uzun eksen boyunca,
+ * örtünün eğimiyle hafifçe yükselir; hepsi örtünün içinde.
+ */
+export function ortuYeri(i: number, n: number): [number, number] {
+  const x = 14 + ((i + 0.5) / n) * 72;
+  return [x, 50 - 0.2 * (x - 50)];
+}
+
 etkinlikKaydet({
   id: 'piknik',
   bolge: 'sayi',
@@ -28,11 +38,20 @@ etkinlikKaydet({
     s.turlar(adim);
     s.tur(0);
     const misafirler: Oyuncu[] = plan.misafirler.map((ad) => s.oyuncu(ad, ad === 'ayi' ? 0.95 : 1.15));
-    const yerler = misafirler.map((m, i) => h('div.ok-p-yer', { 'data-misafir': m.ad, style: `--i:${i}` }));
+    // örtü yandan bakılan bir dörtgen: yerler örtünün uzun ekseni boyunca, misafirlerle aynı sırada (soldan sağa)
+    const yerler = misafirler.map((m, i) => {
+      const [x, y] = ortuYeri(i, misafirler.length);
+      return h('div.ok-p-yer', { 'data-misafir': m.ad, style: `--i:${i};left:${x.toFixed(1)}%;top:${y.toFixed(1)}%` });
+    });
     const sira = h('div.ok-p-misafirler', { style: `--n:${misafirler.length}` }, ...misafirler.map((m, i) => h('div.ok-p-misafir', { style: `--i:${i}` }, m.el)));
     const ortu = h('div.ok-p-ortu', { html: ORTU() }, h('div.ok-p-yerler', { style: `--n:${yerler.length}` }, ...yerler));
     const kok = h('div.ok-e10', {}, sira, ortu);
     s.alan.replaceChildren(kok);
+    // dar ekranda misafirler sığsın (hepsi görünür): sıra alandan genişse küçülür
+    await s.bekle(30);
+    const en = s.alan.getBoundingClientRect().width;
+    const sigdir = [...sira.children].reduce((t, c) => t + (c as HTMLElement).offsetWidth, 0);
+    if (en && sigdir > en * 0.98) sira.style.setProperty('--p-uzak', ((0.9 * en * 0.98) / sigdir).toFixed(3));
     misafirler.forEach((m, i) => s.sonra(200 + i * 250, () => void m.k.oynat('var', 700)));
     await s.soyle(M.giris);
 
