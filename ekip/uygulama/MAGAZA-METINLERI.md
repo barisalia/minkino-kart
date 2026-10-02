@@ -167,8 +167,10 @@ Terms of Use: [link]
 **Planlar:**
 | Plan | Türkçe | English |
 |---|---|---|
-| Aylık | **Aylık** · [fiyat] / ay | **Monthly** · [price] / month |
-| Yıllık | **Yıllık** · [fiyat] / yıl · *En avantajlı: ayda [fiyat/12]* | **Yearly** · [price] / year · *Best value: [price/12] per month* |
+| Aylık | **Aylık** · 99 TL / ay | **Monthly** · ₺99 / month |
+| Yıllık | **Yıllık** · 499 TL / yıl · *En avantajlı: ayda yaklaşık 41,58 TL, %58 kazanç* | **Yearly** · ₺499 / year · *Best value: about ₺41.58 per month, save 58%* |
+
+> Fiyatlar Barış'ın kararı (2026-10-02): aylık 99 TL, yıllık 499 TL. Yıllık plan 12 × 99 = 1.188 TL yerine 499 TL, yani %58 daha ucuz. Uygulamada fiyatın elle yazılmaması, mağazadan (RevenueCat) yerel para birimiyle çekilmesi önerilir; yurt dışında mağaza kendi fiyatını gösterir.
 
 **Deneme:**
 - TR: "[N] gün ücretsiz dene" · düğme: **"Ücretsiz denemeyi başlat"**
