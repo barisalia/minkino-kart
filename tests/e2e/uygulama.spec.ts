@@ -110,23 +110,25 @@ test('Her oyunun açılışındaki geri düğmesi ana menüye döner', async ({ 
   expect(hatalar).toEqual([]);
 });
 
-test('Ana menü: ebeveyn kapısı kısa dokunuşta açılmaz, basılı tutunca açılır', async ({ page }, info) => {
+test('Ana menü: ebeveyn kapısı yazılı toplama sorusuyla açılır', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
   const kapi = page.locator('.ug-kapi');
   await expect(kapi).toBeVisible();
 
-  // kısa dokunuş: yalnız ipucu
+  // dokununca soru (yazıyla); kapatınca ayarlar açılmaz
   await kapi.click();
-  await expect(page.locator('.ug-kapi-ipucu')).toHaveClass(/gorunur/);
+  const soru = page.locator('.ebeveyn-kapisi .kapi-soru');
+  await expect(soru).toHaveText(/ artı .* kaç eder\?$/);
+  await page.locator('.ebeveyn-kapisi').getByRole('button', { name: 'Kapat' }).click();
+  await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
   await expect(page.locator('.ug-ayarlar')).toHaveCount(0);
 
-  // basılı tut (test modunda süre kısa)
-  const k = (await kapi.boundingBox())!;
-  await page.mouse.move(k.x + k.width / 2, k.y + k.height / 2);
-  await page.mouse.down();
-  await page.waitForTimeout(200);
-  await page.mouse.up();
+  // doğru cevap (test modunda data-toplam)
+  await kapi.click();
+  const toplam = (await soru.getAttribute('data-toplam'))!;
+  for (const r of toplam) await page.locator('.ebeveyn-kapisi .tus', { hasText: new RegExp(`^${r}$`) }).click();
+  await page.getByRole('button', { name: 'tamam' }).click();
   await expect(page.locator('.ug-ayarlar')).toBeVisible();
   await page.screenshot({ path: `tests/screens/${info.project.name}-uygulama-ebeveyn.png` });
 

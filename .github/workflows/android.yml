@@ -1,0 +1,103 @@
+name: Android (APK + AAB)
+
+# Minkino Android paketi: debug APK (telefona kurup denemek için) ve imzalı release AAB (Play Console'a yüklemek için).
+# Release imzası GitHub secrets'tan gelir; secret yoksa yalnız debug APK üretilir. Keystore repoya ASLA girmez.
+# Adımlar: ekip/uygulama/YAYIN-ADIMLARI.md
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # Play Console her yüklemede daha büyük sürüm kodu ister: bu iş akışının çalışma numarası
+      SURUM_KODU: ${{ github.run_number }}
+      SURUM_ADI: 1.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - run: npm ci
+
+      - name: Seslendirme denetimi (cihaz sesine düşecek cümleler)
+        continue-on-error: true
+        run: npx vite-node scripts/ses-denetim.ts
+
+      - name: Uygulama derlemesi (web dosyaları)
+        env:
+          # RevenueCat PUBLIC SDK anahtarı (gizli değil ama repoya yazılmaz); yoksa uygulamada kilitler kapalı, abonelik "yakında"
+          REVENUECAT_ANDROID_KEY: ${{ secrets.REVENUECAT_ANDROID_KEY || vars.REVENUECAT_ANDROID_KEY }}
+        run: npm run build:app
+
+      - name: Capacitor eşitle
+        run: npx cap sync android
+
+      - name: Debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug -PsurumKodu=$SURUM_KODU -PsurumAdi=$SURUM_ADI
+
+      - name: Release imzası hazır mı?
+        id: imza
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then echo "var=1" >> "$GITHUB_OUTPUT"; else echo "var=0" >> "$GITHUB_OUTPUT"; echo "::notice::Release imzası (ANDROID_KEYSTORE_BASE64) yok: yalnız debug APK üretildi. Bkz. ekip/uygulama/YAYIN-ADIMLARI.md"; fi
+
+      - name: Release AAB (imzalı)
+        if: steps.imza.outputs.var == '1'
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          MINKINO_KEYSTORE_PAROLA: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          MINKINO_ANAHTAR_ADI: ${{ secrets.ANDROID_KEY_ALIAS }}
+          MINKINO_ANAHTAR_PAROLA: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # keystore yalnız bu çalıştırmanın geçici klasörüne açılır, iş bitince silinir
+          export MINKINO_KEYSTORE_DOSYA="$RUNNER_TEMP/minkino-yukleme.jks"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$MINKINO_KEYSTORE_DOSYA"
+          ./gradlew --no-daemon bundleRelease -PsurumKodu=$SURUM_KODU -PsurumAdi=$SURUM_ADI
+          rm -f "$MINKINO_KEYSTORE_DOSYA"
+
+      - name: Debug APK'yı yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: minkino-debug-apk-${{ github.run_number }}
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+      - name: Release AAB'yi yükle
+        if: steps.imza.outputs.var == '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: minkino-release-aab-${{ github.run_number }}
+          path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Özet
+        run: |
+          echo "### Minkino Android · sürüm $SURUM_ADI (kod $SURUM_KODU)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Debug APK: bu sayfanın altındaki **Artifacts** → minkino-debug-apk-${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.imza.outputs.var }}" = "1" ]; then echo "- Play Console için AAB: minkino-release-aab-${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"; else echo "- Release AAB üretilmedi (imza secret'ları yok)" >> "$GITHUB_STEP_SUMMARY"; fi

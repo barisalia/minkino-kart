@@ -1,0 +1,47 @@
+# Minkino iOS derlemesi (Codemagic, Mac bulutta). Mac gerekmez.
+# Barış'ın Codemagic'te bir kez yapacakları (ayrıntı: ekip/uygulama/YAYIN-ADIMLARI.md → iOS):
+#   1) Teams → Integrations → App Store Connect: API anahtarını "Minkino App Store Connect" adıyla ekle.
+#   2) Environment variables → grup "revenuecat": REVENUECAT_IOS_KEY (RevenueCat iOS public SDK anahtarı, appl_ ile başlar).
+#   3) Code signing identities: "Fetch from App Store Connect" ile com.minkino.app için App Store dağıtım profili.
+# Derleme elle başlatılır (Start new build → ios-testflight); bitince TestFlight'a yüklenir.
+workflows:
+  ios-testflight:
+    name: Minkino iOS → TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: Minkino App Store Connect
+    environment:
+      groups:
+        - revenuecat
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.minkino.app
+      vars:
+        XCODE_PROJECT: ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: 22
+      xcode: latest
+    scripts:
+      - name: Paketler
+        script: npm ci
+      - name: Seslendirme denetimi (cihaz sesine düşecek cümleler)
+        script: npx vite-node scripts/ses-denetim.ts || true
+      - name: Uygulama derlemesi (web dosyaları)
+        script: npm run build:app
+      - name: Capacitor eşitle
+        script: npx cap sync ios
+      - name: İmza profillerini projeye uygula
+        script: xcode-project use-profiles
+      - name: Sürüm numarası (Codemagic derleme sayacı)
+        script: |
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/g" "$XCODE_PROJECT/project.pbxproj"
+      - name: IPA
+        script: xcode-project build-ipa --project "$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

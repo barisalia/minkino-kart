@@ -1,6 +1,6 @@
 # Minkino uygulama paketi (iOS / Android): plan
 
-Hazırlayan: kodcu, 2026-09-27. Durum: **taslak**. Kod değişmedi, paket kurulmadı. Barış'ın kararını bekliyor.
+Hazırlayan: kodcu, 2026-09-27. Durum: **Aşama 1 uygulandı (2026-10-02)**: Capacitor 8 paketi, abonelik (RevenueCat), ebeveyn kapısı, gizlilik/şartlar, Android (GitHub Actions) ve iOS (Codemagic) derlemeleri. Barış'ın adımları: [YAYIN-ADIMLARI.md](YAYIN-ADIMLARI.md).
 
 ## 1. Bugünkü durum (depodan ölçüldü)
 

@@ -1,9 +1,15 @@
 /**
  * Minkino ana menüsü: Mino ve Kino karşılar (Mino yandan yürüyerek, Kino hoplayarak gelir; arada birbirine bakıp el
  * sallarlar, dokununca tepki verirler), altında oyun kartları (sırayla gelir, yan oyun rozetleri, parmakla hafif
- * parallax); büyükler için ebeveyn kapısı (basılı tut).
+ * parallax); büyükler için ebeveyn kapısı (yazıyla toplama sorusu). Uygulamada abonelikli kartlarda kilit rozeti.
  */
+import { abonelikEkrani, kilitliIcerik } from '../../src/abonelik/ekran';
+import { kilitleriKur } from '../../src/abonelik/kilit';
 import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
+import { kilitli, premiumMu } from '../../src/engine/erisim';
+import { GIZLILIK_ADRESI, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
+import { uygulamaPlatformu } from '../../src/kabuk/ortam';
+import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
 import { efekt } from '../../src/audio/ses';
 import '../../src/karakter/karakter.css';
 import { Karakter, type HareketAdi, type Poz as KPoz } from '../../src/karakter/karakter';
@@ -14,7 +20,7 @@ import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { OTOBUS } from '../../pasta/src/cizim';
-import { derinlik, OYUNLAR, type OyunKarti } from './oyunlar';
+import { derinlik, menuOyunlari, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
@@ -25,8 +31,6 @@ const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const LOGO_RENK = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#3E9DF2', '#9B5CE0', '#FF7EB6'];
-/** Ebeveyn kapısının açılması için basılı tutma süresi */
-export const KAPI_SURE = 1500;
 
 function logo(): HTMLElement {
   const yazi = h('div.logo-yazi', { role: 'img', 'aria-label': 'Minkino' });
@@ -58,42 +62,6 @@ function kartResmi(k: OyunKarti): HTMLElement {
     kap.append(c.cerceve ? h(`span.ug-k.${sinif}.ug-cerceve`, { style: d }, img) : h(`span.ug-k.${sinif}`, { style: d }, img));
   });
   return kap;
-}
-
-/**
- * Basılı tutunca `ac` çalışır; erken bırakılırsa `kisa`. Tutarken `dolduruyor` sınıfı eklenir
- * (CSS'te `--kapi-sure` boyunca dolan daire; yalnız transform).
- */
-export function basiliTut(el: HTMLElement, ms: number, ac: () => void, kisa?: () => void): () => void {
-  let zaman = 0;
-  el.style.setProperty('--kapi-sure', `${ms}ms`);
-  const birak = (erken: boolean) => {
-    if (!zaman) return;
-    clearTimeout(zaman);
-    zaman = 0;
-    el.classList.remove('dolduruyor');
-    if (erken && kisa) kisa();
-  };
-  el.addEventListener('pointerdown', (e) => {
-    if (e.button > 0 || zaman) return;
-    el.classList.add('dolduruyor');
-    zaman = window.setTimeout(() => {
-      zaman = 0;
-      el.classList.remove('dolduruyor');
-      ac();
-    }, ms);
-  });
-  el.addEventListener('pointerup', () => birak(true));
-  el.addEventListener('pointercancel', () => birak(false));
-  el.addEventListener('pointerleave', () => birak(false));
-  // Klavye: Enter/Boşluk basılı tutma yerine doğrudan açar (büyükler için)
-  el.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      ac();
-    }
-  });
-  return () => birak(false);
 }
 
 // ---------------------------------------------------------------- Menü
@@ -222,9 +190,13 @@ export function menuEkrani(app: Uygulama): Ekran {
   });
 
   let gidiyor = false;
-  const kartlar = OYUNLAR.map((k, i) => {
+  const uygulamada = !!uygulamaPlatformu();
+  const oyunlar = menuOyunlari(uygulamada);
+  const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
+  const kartlar = oyunlar.map((k, i) => {
     const govde = h('span.ug-kart-govde', {}, kartResmi(k), h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
     const a = h('a.ug-kart', { href: k.adres, 'data-oyun': k.id, 'aria-label': k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
+    kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');
       // Mino basılan karta bakar (canlılık: karakterler çocuğun ne seçtiğiyle ilgilenir)
@@ -240,41 +212,38 @@ export function menuEkrani(app: Uygulama): Ekran {
       // Tek uygulamaya gömülünce burada sayfa değişmek yerine oyunun `oyunuBaslat(kok, { cikis })` girişi çağrılacak.
       e.preventDefault();
       if (gidiyor) return;
+      a.classList.remove('basili');
+      // abonelikli oyun (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
+      if (kilitli(k.id)) {
+        tepki('mir');
+        void kilitliIcerik(app.kok);
+        return;
+      }
       gidiyor = true;
       efekt.secim();
       tepki('zipla');
       kinoOynat('sevin', 600);
-      a.classList.remove('basili');
       a.classList.add('secildi');
       zamanlar.push(window.setTimeout(() => location.assign(a.href), sure(AZ_HAREKET ? 150 : 650)));
     });
     return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}`, { style: `--i:${i}` }, a);
   });
+  const kilitBirak = kilitleriKur(kilitKartlari);
 
-  const kapi = h('button.ug-kapi', { type: 'button', 'aria-label': 'Ebeveyn köşesi (basılı tutun)' }, h('span.ug-kapi-daire', {}, h('span.ug-kapi-halka', { 'aria-hidden': 'true' }), svg(IKON.ebeveyn)));
-  const ipucu = h('span.ug-kapi-ipucu', { role: 'status' }, 'Büyükler için: basılı tutun');
-  let ipucuZaman = 0;
-  const kapiBirak = basiliTut(
-    kapi,
-    sure(KAPI_SURE),
-    () => {
-      efekt.secim();
-      app.git('ayarlar');
-    },
-    () => {
-      ipucu.classList.add('gorunur');
-      clearTimeout(ipucuZaman);
-      ipucuZaman = window.setTimeout(() => ipucu.classList.remove('gorunur'), 2200);
-    },
-  );
+  // ebeveyn köşesi: yazıyla toplama sorusu (mağaza kuralı; eskiden "basılı tut")
+  const kapi = h('button.ug-kapi', { type: 'button', 'aria-label': 'Ebeveyn köşesi' }, h('span.ug-kapi-daire', {}, svg(IKON.ebeveyn)));
+  kapi.addEventListener('click', async () => {
+    efekt.dokunma();
+    if (await ebeveynKapisiAc(app.kok)) app.git('ayarlar');
+  });
 
   const el = h(
     'div.ug-menu',
     {},
     h('div.ug-gok', { 'aria-hidden': 'true' }, h('i.ug-bulut.ug-bulut-1'), h('i.ug-bulut.ug-bulut-2'), h('i.ug-bulut.ug-bulut-3')),
-    h('div.ug-kose', {}, ipucu, kapi),
+    h('div.ug-kose', {}, kapi),
     h('header.ug-giris', {}, logo(), h('div.ug-ikili', {}, minoKap, kinoKap)),
-    h('nav.ug-oyunlar', { 'aria-label': 'Oyunlar' }, h('ul.ug-izgara', {}, ...kartlar)),
+    h('nav.ug-oyunlar', { 'aria-label': 'Oyunlar' }, h(`ul.ug-izgara${oyunlar.length < 7 ? '.ug-az' : ''}`, {}, ...kartlar)),
   );
 
   // parallax: parmak (ya da fare) ekranda gezdikçe kart katmanları ve bulutlar farklı hızda kayar; yumuşak takip
@@ -302,9 +271,8 @@ export function menuEkrani(app: Uygulama): Ekran {
     el,
     kapat() {
       zamanlar.forEach(clearTimeout);
-      clearTimeout(ipucuZaman);
       cancelAnimationFrame(raf);
-      kapiBirak();
+      kilitBirak();
       fon.durdur();
       yuruyen.kapat();
       kino.kapat();
@@ -312,14 +280,41 @@ export function menuEkrani(app: Uygulama): Ekran {
   };
 }
 
-// ---------------------------------------------------------------- Ebeveyn köşesi (şimdilik boş)
+// ---------------------------------------------------------------- Ebeveyn köşesi (ebeveyn kapısından sonra)
 export function ayarlarEkrani(app: Uygulama): Ekran {
   const geri = yuvarlakDugme(IKON.geri, 'Ana menü', () => app.git('menu'), 'kucuk');
+  const uygulamada = !!uygulamaPlatformu();
+  // dış bağlantılar (kapının arkasında): gizlilik politikası ve kullanım koşulları web sitesinde
+  const baglanti = (adres: string, yazi: string) => h('a.ince-dugme.ug-baglanti', { href: adres, target: '_blank', rel: 'noopener noreferrer' }, yazi);
+  // abonelik (yalnız uygulamada): durum + abonelik ekranı (satın alımları geri yükleme orada)
+  const aboneDurum = h('p.ug-abone-durum');
+  const durumYaz = () => {
+    aboneDurum.textContent = premiumMu() ? 'Minkino Premium etkin. Teşekkürler!' : 'Bazı oyunlar ücretsiz. Premium ile hepsi açılır.';
+  };
+  durumYaz();
+  const aboneDugme = h('button.dugme.ug-abone-dugme', { type: 'button' }, svg(IKON.tac), 'Minkino Premium');
+  aboneDugme.addEventListener('click', async () => {
+    efekt.secim();
+    await abonelikEkrani(app.kok);
+    durumYaz();
+  });
   const el = h(
     'div.ug-ayarlar',
     {},
     h('div.ust-cubuk', {}, geri, h('h1', {}, 'Ebeveyn Köşesi'), h('div.ug-bosluk')),
-    h('div.ug-ayarlar-ic', {}, h('div.ug-ayarlar-kutu', {}, svg(IKON.ebeveyn, 'ug-ayarlar-ikon'), h('p', {}, 'Ayarlar yakında burada olacak.'))),
+    h(
+      'div.ug-ayarlar-ic',
+      {},
+      h(
+        'div.ug-ayarlar-kutu',
+        {},
+        svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
+        ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme] : []),
+        h('h2', {}, 'Gizlilik ve güvenlik'),
+        h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
+        h('div.ug-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),
+      ),
+    ),
   );
   return { el };
 }

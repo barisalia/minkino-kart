@@ -338,7 +338,7 @@
 /* oynat gökyüzünde (sağ üst): kapaktaki karakterlerin üstüne binmez */
 .ug-kok .ug-k-oynat { right: 6%; top: 17%; height: min(30cqh, 30cqw); padding: 6% 5% 6% 7%; }
 
-/* ---------- Ebeveyn kapısı (küçük, köşede; basılı tutunca dolar) ---------- */
+/* ---------- Ebeveyn kapısı (küçük, köşede; dokununca yazılı toplama sorusu) ---------- */
 .ug-kok .ug-kose {
   position: absolute;
   z-index: 6;
@@ -357,7 +357,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  touch-action: none;
+  touch-action: manipulation;
 }
 .ug-kok .ug-kapi-daire {
   position: relative;
@@ -376,41 +376,24 @@
   position: relative;
   z-index: 1;
 }
-.ug-kok .ug-kapi-halka {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: #ffc72c;
-  transform: scale(0);
-  transition: transform 0.2s ease-out;
-}
-.ug-kok .ug-kapi.dolduruyor .ug-kapi-halka {
-  transform: scale(1);
-  transition: transform var(--kapi-sure, 1.5s) linear;
-}
 .ug-kok .ug-kapi:focus-visible .ug-kapi-daire {
   outline: 3px solid var(--mavi);
   outline-offset: 3px;
 }
-.ug-kok .ug-kapi-ipucu {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--ug-kart-zemin);
-  border: 2px solid rgba(90, 54, 23, 0.25);
-  font-size: 0.85rem;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translateX(8px);
-  transition: opacity 0.2s, transform 0.2s;
-  pointer-events: none;
-}
-.ug-kok .ug-kapi-ipucu.gorunur {
-  opacity: 1;
-  transform: none;
+
+/* ---------- Kilit rozeti (yalnız uygulamada, abonelikli kartlarda): sol üst köşe (sağ üstte yan oyun rozeti) ---------- */
+.ug-kok .ug-kart .mk-kilit {
+  top: -9px;
+  left: -7px;
+  right: auto;
+  width: clamp(30px, 8vmin, 42px);
+  height: clamp(30px, 8vmin, 42px);
 }
 
-/* ---------- Ebeveyn köşesi (şimdilik boş) ---------- */
+/* ---------- Ebeveyn köşesi ---------- */
+.ug-kok .ug-ayarlar {
+  overflow-y: auto;
+}
 .ug-kok .ug-ayarlar .ust-cubuk h1 {
   margin: 0;
   font-size: 1.4rem;
@@ -422,25 +405,54 @@
   flex: 1;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 16px 16px calc(var(--alt) + 16px);
 }
 .ug-kok .ug-ayarlar-kutu {
   width: min(100%, 420px);
-  padding: 28px 22px;
+  padding: 24px 22px;
   border-radius: 28px;
   background: var(--ug-kart-zemin);
   border: var(--cizgi) solid var(--kontur);
   box-shadow: 0 8px 0 var(--kontur-yumusak);
   text-align: center;
 }
+.ug-kok .ug-ayarlar-kutu h2 {
+  margin: 14px 0 0;
+  font-size: 1.2rem;
+}
 .ug-kok .ug-ayarlar-kutu p {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   font-weight: 500;
   opacity: 0.8;
 }
 .ug-kok .ug-ayarlar-ikon {
   font-size: 48px;
   opacity: 0.55;
+}
+.ug-kok .ug-abone-dugme {
+  --r: var(--sari);
+  margin-top: 12px;
+  width: 100%;
+  color: var(--kontur);
+  text-shadow: none;
+  font-size: 1.15rem;
+}
+.ug-kok .ug-abone-dugme .ikon svg {
+  color: var(--kontur);
+}
+.ug-kok .ug-baglantilar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.ug-kok .ug-baglanti {
+  display: inline-grid;
+  place-items: center;
+  color: var(--kontur);
+  text-decoration: none;
+  font-size: 0.95rem;
 }
 
 /* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada geniş Pasta Otobüsü) ---------- */
@@ -455,6 +467,9 @@
   }
   .ug-kok .ug-kart-yer.ug-genis {
     grid-column: 1 / -1;
+  }
+  .ug-kok .ug-izgara.ug-az .ug-kart-yer.ug-genis:not(:last-child) {
+    grid-column: span 2;
   }
   .ug-kok .ug-kart-ad {
     font-size: clamp(1rem, 2.6vw, 1.5rem);
@@ -518,9 +533,6 @@
     bottom: var(--alt);
     left: max(16px, env(safe-area-inset-left));
     flex-direction: row-reverse;
-  }
-  .ug-kok .ug-kapi-ipucu {
-    transform: translateX(-8px);
   }
 }
 

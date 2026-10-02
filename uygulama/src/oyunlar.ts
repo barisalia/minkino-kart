@@ -35,6 +35,10 @@ export interface OyunKarti {
   rozet?: string;
   /** geniş kart: ızgarada iki sütun kaplar (otobüs yatay bir çizim) */
   genis?: boolean;
+  /** Mağaza uygulamasında gösterilmez (Minik Sanatçı: çocuk çizimi dış sunucuya gider; yalnız web sitesinde) */
+  uygulamadaYok?: boolean;
+  /** Uygulamada geniş kart (bir kart eksilince ızgara boşluksuz kalsın) */
+  uygulamadaGenis?: boolean;
 }
 
 export const OYUNLAR: OyunKarti[] = [
@@ -81,6 +85,7 @@ export const OYUNLAR: OyunKarti[] = [
     ad: 'Minik Sanatçı',
     adres: './sanatci/',
     renk: '#9B5CE0',
+    uygulamadaYok: true,
     katmanlar: [
       { gorsel: 'sanatci/ornek-kedi-sonuc', sinif: 'ug-k-tablo', cerceve: true },
       { ikon: 'sihir', sinif: 'ug-k-sihir' },
@@ -108,6 +113,8 @@ export const OYUNLAR: OyunKarti[] = [
     renk: '#3E9DF2',
     // en yeni filmin kapağı (filmin kendi karesi: assets/film/kapak); yeni film gelince bu ad değişir
     zemin: 'film/kapak/kino-oyuncak',
+    // uygulamada Minik Sanatçı yok: Çizgi Filmler kapağı geniş kartta (yatay kapak)
+    uygulamadaGenis: true,
     katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
   },
   {
@@ -122,6 +129,12 @@ export const OYUNLAR: OyunKarti[] = [
     katmanlar: [{ kod: 'otobus', sinif: 'ug-k-otobus' }],
   },
 ];
+
+/** Menüde görünen kartlar: uygulamada Minik Sanatçı yok, Çizgi Filmler geniş */
+export function menuOyunlari(uygulama: boolean): OyunKarti[] {
+  if (!uygulama) return OYUNLAR;
+  return OYUNLAR.filter((k) => !k.uygulamadaYok).map((k) => (k.uygulamadaGenis ? { ...k, genis: true } : k));
+}
 
 /** Parallax derinliği: zemin arkada durur, katmanlar sırayla öne gelir (0 zemin … 1 en ön) */
 export const derinlik = (i: number, n: number) => (n <= 1 ? 1 : 0.45 + (0.55 * i) / (n - 1));

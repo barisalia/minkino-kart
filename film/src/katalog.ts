@@ -3,6 +3,7 @@
  * büyük kapak kartı (filmin kendi karesi: assets/film/kapak/<ad>.webp), adı, öğüt rozeti, süresi ve oynat düğmesi.
  * Mino ve Kino tabelanın iki yanında bekler, dokununca tepki verir. Karta dokununca film açılış kartıyla başlar.
  */
+import { erisimVarMi, kilitleriKur } from '../../src/abonelik/kilit';
 import { efekt } from '../../src/audio/ses';
 import { Karakter, type HareketAdi } from '../../src/karakter/karakter';
 import { Mino, type Tepki } from '../../src/mino/mino';
@@ -152,6 +153,8 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
   // ---------------------------------------------------------------- kartlar
   let gidiyor = false;
   const filmler = katalog();
+  /** uygulamada abonelikli filmlerde kilit rozeti (kapağın sağ üstünde) */
+  const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
   const kartlar = filmler.map((f, i) => {
     const kapak = h(
       'span.fl-k-kapak',
@@ -175,6 +178,7 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
       bilgi,
     );
     if (p?.sec === f.ad) kart.classList.add('son-izlenen');
+    kilitKartlari.push([kart, `film/${f.ad}`, kapak]);
     kart.addEventListener('pointerdown', () => {
       kart.classList.add('basili');
       // Mino basılan karta bakar
@@ -187,6 +191,11 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
     for (const olay of ['pointerup', 'pointercancel', 'pointerleave'] as const) kart.addEventListener(olay, () => kart.classList.remove('basili'));
     kart.addEventListener('click', () => {
       if (gidiyor) return;
+      // abonelikli film (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı
+      if (!erisimVarMi(`film/${f.ad}`, app.kok)) {
+        kart.classList.remove('basili');
+        return;
+      }
       gidiyor = true;
       efekt.secim();
       minoTepki('zipla');
@@ -221,10 +230,12 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
   );
   // son izlenen film görünsün (filmden geri dönünce)
   if (p?.sec) requestAnimationFrame(() => el.querySelector('.son-izlenen')?.scrollIntoView({ block: 'center' }));
+  const kilitBirak = kilitleriKur(kilitKartlari);
 
   return {
     el,
     kapat() {
+      kilitBirak();
       zamanlar.forEach(clearTimeout);
       mino.kapat();
       kino.kapat();
