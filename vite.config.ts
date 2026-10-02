@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 // Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
-// Mino'nun Pazarı (/pazar/) …; /uygulama/ eski menü adresi, köke yönlendirir
+// Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/) …; /uygulama/ eski menü adresi, köke yönlendirir
 export default defineConfig({
   base: './',
   build: {
@@ -19,6 +19,7 @@ export default defineConfig({
         orman: resolve(__dirname, 'orman/index.html'),
         macera: resolve(__dirname, 'macera/index.html'),
         pazar: resolve(__dirname, 'pazar/index.html'),
+        pasta: resolve(__dirname, 'pasta/index.html'),
         film: resolve(__dirname, 'film/index.html'),
         uygulama: resolve(__dirname, 'uygulama/index.html'),
       },

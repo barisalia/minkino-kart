@@ -1,0 +1,69 @@
+{
+  "aciklama": "Mino'nun Pasta Otobüsü (ekip/senaryo/pasta-otobusu.md). Mino = anlatıcı sesi; kino = Kino'nun kendi sesi; musteri = müşteri tepkileri (anlatıcı sesi, tonlu). Sipariş okuma parçalı kayıt: {sayı} (mevcut 'Bir!'…) + şekil + renk + süs. arayuz ekranda yazar, okunmaz.",
+  "mino": {
+    "geldi": "Pasta otobüsü geldi!",
+    "hosgeldin": "Hoş geldin!",
+    "pisti": "Pişti! Çıkar!",
+    "afiyet": "Afiyet olsun!",
+    "tam": "Tam istediği gibi!",
+    "farkli": "Biraz farklı, bak!",
+    "cilek_eksik": "Bir çilek eksik! Kino!",
+    "kumbara": "Kumbarada kaç jeton var?",
+    "ne_alalim": "Ne alalım?",
+    "bitti": "Bugünlük bu kadar!",
+    "mantik": "Tavşanınkinden bir fazla çilek!"
+  },
+  "kino": {
+    "citir": "Çıtır çıtır!",
+    "pisti": "Pişti! Pişti!",
+    "yedim": "Hıhı… bir tane yedim.",
+    "uyku": "Zzz… kurabiye…"
+  },
+  "musteri": {
+    "tavsan": ["Mmm, havuç!", "Hop hop, sağ ol!"],
+    "ayi": ["Ballı, nefis!", "Ayıcık çok mutlu!"],
+    "ordek": ["Vak, şahane!", "Vak vak, sağ ol!"],
+    "can": ["Süper!", "Harika olmuş!"],
+    "ada": ["Çok güzel!", "Bayıldım!"],
+    "elif": ["Tam istediğim!", "Çok teşekkürler!"],
+    "uyandi": "Hı? Sıra bende mi?"
+  },
+  "parca": {
+    "sekil": {
+      "yuvarlak": "Yuvarlak kurabiye,",
+      "yildiz": "Yıldız kurabiye,",
+      "kalp": "Kalp kurabiye,",
+      "ay": "Ay kurabiye,",
+      "kapkek": "Kapkek,"
+    },
+    "renk_ara": {
+      "pembe": "pembe kremalı,",
+      "mavi": "mavi kremalı,",
+      "sari": "sarı kremalı,",
+      "mor": "mor kremalı,"
+    },
+    "renk_son": {
+      "pembe": "pembe kremalı!",
+      "mavi": "mavi kremalı!",
+      "sari": "sarı kremalı!",
+      "mor": "mor kremalı!"
+    },
+    "sus": {
+      "cilek": "çilekli!",
+      "havuc": "havuçlu!",
+      "bal": "ballı!",
+      "muz": "muzlu!",
+      "cikolata": "çikolatalı!"
+    },
+    "besli": ["Beş!", "On!", "On beş!", "Yirmi!"]
+  },
+  "arayuz": {
+    "baslik_ust": "Mino'nun",
+    "baslik_alt": "Pasta Otobüsü",
+    "gun": "Gün {gun}",
+    "park": "Park",
+    "okul": "Okul önü",
+    "bitti": "Tamam",
+    "devam": "Devam"
+  }
+}

@@ -13,6 +13,7 @@ import maceraEgeJson from '../../content/macera-ege.json';
 import maceraElektrikJson from '../../content/macera-elektrik.json';
 import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
+import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -210,6 +211,9 @@ export function tumCumleler(): string[] {
   }
   // Mino'nun Pazarı konuşmaları (kalıplar ürün/sayı/renk ile açılmış hâlde)
   pazarCumleleri().forEach(ekle);
+  // Mino'nun Pasta Otobüsü: Mino, müşteriler, sipariş parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
+  pastaCumleleri().forEach(ekle);
+  pastaKinoCumleleri().forEach(ekle);
   return [...set];
 }
 
@@ -229,6 +233,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   topla((maceraElektrikJson as Record<string, unknown>).kino).forEach(ekle);
   // Salıncak Kimin?: "kino" bölümü
   topla((maceraSalincakJson as Record<string, unknown>).kino).forEach(ekle);
+  // Mino'nun Pasta Otobüsü: Kino'nun cümleleri
+  pastaKinoCumleleri().forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;
