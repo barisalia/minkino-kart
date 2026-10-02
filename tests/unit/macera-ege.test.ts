@@ -163,7 +163,8 @@ describe('Ege Uyuyor: cümleler', () => {
 describe('Ege Uyuyor: konuşan anne (katmanlı iskelet, ege-anne.ts)', () => {
   it('iskelet anne.webp ile aynı tuvalde; asıl ağız görünür, 6 dudak senkronu ağzı gizli', () => {
     expect(ANNE_ISKELET.tuval).toEqual(ANNE_HIZA['anne.webp'].tuval);
-    expect(ANNE_ISKELET.sira.slice(0, 2)).toEqual(['govde', 'agiz']);
+    // görünen katmanlar yalnız gövde ve asıl ağız; taşıma pozu (govde-tasima, kol-tasima) gizli ek
+    expect(ANNE_ISKELET.sira.filter((k) => !ANNE_ISKELET.gizli.includes(k))).toEqual(['govde', 'agiz']);
     expect(ANNE_ISKELET.gizli).not.toContain('agiz');
     for (const s of AGIZ_SEKILLERI) {
       expect(ANNE_ISKELET.sira).toContain(`agiz-${s}`);
