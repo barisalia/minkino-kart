@@ -1,0 +1,89 @@
+﻿{
+    "ad":  "pamuk-final",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "kulak-sol",
+                 "kulak-sag",
+                 "bacak-sol",
+                 "bacak-sag",
+                 "govde",
+                 "kol-sol",
+                 "kol-sag",
+                 "kurdele",
+                 "kafa",
+                 "goz-sol",
+                 "goz-sag",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-sol":  "kafa",
+                  "kulak-sag":  "kafa",
+                  "goz-sol":  "kafa",
+                  "goz-sag":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1030,
+                               1200
+                           ],
+                  "kulak-sol":  [
+                                    700,
+                                    400
+                                ],
+                  "kulak-sag":  [
+                                    1330,
+                                    400
+                                ],
+                  "goz-sol":  [
+                                  740,
+                                  810
+                              ],
+                  "goz-sag":  [
+                                  1290,
+                                  810
+                              ],
+                  "agiz":  [
+                               1010,
+                               1010
+                           ],
+                  "goz-kapali":  [
+                                     1015,
+                                     830
+                                 ],
+                  "kurdele":  [
+                                  1020,
+                                  1260
+                              ],
+                  "kol-sol":  [
+                                  850,
+                                  1290
+                              ],
+                  "kol-sag":  [
+                                  1190,
+                                  1290
+                              ],
+                  "bacak-sol":  [
+                                    900,
+                                    1700
+                                ],
+                  "bacak-sag":  [
+                                    1120,
+                                    1700
+                                ],
+                  "kuyruk":  [
+                                 1290,
+                                 1600
+                             ],
+                  "govde":  [
+                                1010,
+                                1880
+                            ]
+              }
+}
