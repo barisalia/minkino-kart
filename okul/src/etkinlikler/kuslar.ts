@@ -5,7 +5,8 @@
  */
 import O from '../../../content/okul.json';
 import { h } from '../../../src/ui/dom';
-import { DAL, KELEBEK, kus } from '../cizim';
+import { KELEBEK, kus } from '../cizim';
+import { Dallar, kusBoyu } from '../dal';
 import { oynat } from '../efekt';
 import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
@@ -15,15 +16,14 @@ import { ses } from '../sesler';
 const M = O.mino.kuslar;
 
 async function tur(s: Sahne, t: KusTuru, ilk: boolean, renkBas: number) {
-  const dallar = [h('div.ok-e9-dal', {}, h('div.ok-dal-resim', { html: DAL() }), h('div.ok-e9-tunek')), h('div.ok-e9-dal', {}, h('div.ok-dal-resim', { html: DAL() }), h('div.ok-e9-tunek'))];
-  const kok = h('div.ok-e9', {}, ...dallar);
+  const dallar = new Dallar();
+  const kok = h('div.ok-e9', {}, dallar.el);
   s.alan.replaceChildren(kok);
   await s.bekle(20);
-  // dar ekranda dala en çok 4 kuş (kuşlar 64 px'ten küçülmesin); fazlası ikinci dala
+  // dallar kuş sayısına göre: karşılıklı iki dal, tek uzun dal ya da iki kat (kuşlar 64 px'ten küçülmez)
   const enCok = Math.max(t.a, t.tur === 'topla' ? t.a + t.b : t.a);
-  const ikiDal = kok.getBoundingClientRect().width < 480 && enCok > 4;
-  kok.classList.toggle('ok-iki-dal', ikiDal);
-  const tunek = (i: number) => dallar[ikiDal && i >= 4 ? 1 : 0].querySelector('.ok-e9-tunek')!;
+  dallar.duzenle(enCok + (ilk ? 1 : 0), kok.getBoundingClientRect().width || 360, kusBoyu(kok));
+  const tunek = (i: number) => dallar.tunek(i);
 
   let sayac = 0;
   const kuslar: HTMLElement[] = [];
@@ -47,7 +47,9 @@ async function tur(s: Sahne, t: KusTuru, ilk: boolean, renkBas: number) {
   if (ilk) {
     kelebek = h('button.ok-kelebek', { type: 'button', 'aria-label': 'Kelebek', html: KELEBEK() });
     kelebek.addEventListener('click', () => oynat(kelebek, 'ok-cirp'));
-    tunek(1).insertBefore(kelebek, tunek(1).children[1] ?? null);
+    // kelebek son konuk sayılır (karşılıklı dallarda ikinci dala düşer), kuşların arasına girer
+    const t = tunek(enCok);
+    t.insertBefore(kelebek, t.children[1] ?? null);
   }
   if (ilk) await s.soyle(M.giris);
 

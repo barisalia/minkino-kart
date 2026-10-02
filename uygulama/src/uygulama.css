@@ -285,10 +285,11 @@
 .ug-kok .ug-k-otobus { left: 50%; bottom: 3%; width: min(78cqw, 112cqh); aspect-ratio: 640 / 420; transform: translateX(-50%); }
 .ug-kok .ug-k-otobus svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
-/* Okula Hazırım!: "1 2 3" blokları (kod çizimi) ve elma */
-.ug-kok .ug-k-sayilar { left: 50%; bottom: 6%; width: min(86cqw, 150cqh); aspect-ratio: 560 / 260; transform: translateX(-50%); }
+/* Okula Hazırım!: "1 2 3" blokları (assets/okul/sayi-bloklari.webp) ve ortadaki yüksek bloğun üstünde elma */
+.ug-kok .ug-kart[data-oyun="okul"] .ug-k { --b: min(86cqw, 150cqh); }
+.ug-kok .ug-k-sayilar { left: 50%; bottom: 6%; width: var(--b); aspect-ratio: 560 / 260; transform: translateX(-50%); }
 .ug-kok .ug-k-sayilar img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.ug-kok .ug-k-okul-elma { right: 6%; top: 8%; height: min(30cqh, 26cqw); transform: rotate(10deg); }
+.ug-kok .ug-k-okul-elma { left: calc(50% + var(--b) * 0.03); bottom: calc(6% + var(--b) * 0.37); height: calc(var(--b) * 0.22); transform: translateX(-50%) rotate(8deg); }
 
 /* Çiz Canlansın: çayırda dinozor + kalem */
 .ug-kok .ug-k-dinozor { left: 46%; bottom: 3%; height: min(80cqh, 96cqw); transform: translateX(-50%); }

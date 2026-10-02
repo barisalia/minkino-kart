@@ -14,26 +14,53 @@ import { ses } from '../sesler';
 
 const M = O.mino.kac_elma;
 
-/** Elmaların ağaçtaki yerleri: tepe (x %8-92, y %6-64) satırlara bölünür, elma en büyük olacak şekilde */
+/**
+ * Ağacın tacı (assets/okul/agac.webp, 768 × 560 tuvalde, yüzde): elips. Elmaların merkezleri tacın içindeki küçültülmüş
+ * elipse konur (elma yarıçapı kadar içeride), böylece elmanın tamamı tacın yeşilinin üstünde durur.
+ */
+const TAC = { x: 50, y: 33, rx: 30, ry: 24.5 };
+
+/** Elmaların ağaçtaki yerleri (yüzde) ve boyu (px): taç elipsi satırlara bölünür, elma en büyük olacak şekilde */
 export function elmaYerleri(n: number, W: number, H: number): { yer: [number, number][]; boy: number } {
-  const tw = W * 0.84;
-  const th = H * 0.56;
-  let en = { r: 1, s: 0 };
-  for (let r = 1; r <= 4; r++) {
-    const c = Math.ceil(n / r);
-    const s = Math.min(tw / c, th / r) * 0.92;
-    if (s > en.s) en = { r, s };
+  const cx = (TAC.x / 100) * W;
+  const cy = (TAC.y / 100) * H;
+  const rx = (TAC.rx / 100) * W;
+  const ry = (TAC.ry / 100) * H;
+  const dene = (r: number) => {
+    // elma boyu s ile elipsin içi birbirine bağlı: birkaç adımda oturur
+    let s = Math.min((2 * rx) / Math.ceil(n / r), (2 * ry) / r);
+    let satirlar: { y: number; w: number; c: number }[] = [];
+    for (let k = 0; k < 4; k++) {
+      const ax = Math.max(4, rx - s * 0.42);
+      const ay = Math.max(4, ry - s * 0.42);
+      satirlar = Array.from({ length: r }, (_, i) => {
+        const y = cy - ay + ((i + 0.5) * 2 * ay) / r;
+        const t = (y - cy) / ay;
+        return { y, w: 2 * ax * Math.sqrt(Math.max(0, 1 - t * t)), c: 0 };
+      });
+      // her elma, eklenince aralığı en geniş kalan satıra (önce boş satırlar)
+      for (let e = 0; e < n; e++) {
+        let en = satirlar[0];
+        for (const st of satirlar) if (st.w / Math.max(st.c, 0.01) > en.w / Math.max(en.c, 0.01)) en = st;
+        en.c++;
+      }
+      const aralik = Math.min(...satirlar.map((st) => (st.c > 1 ? st.w / (st.c - 1) : Infinity)));
+      s = Math.min(aralik, (2 * ay) / r, rx, ry) * 0.94;
+    }
+    return { s, satirlar };
+  };
+  let en = dene(1);
+  for (let r = 2; r <= 4; r++) {
+    const d = dene(r);
+    if (d.s > en.s) en = d;
   }
   const yer: [number, number][] = [];
-  const c = Math.ceil(n / en.r);
-  for (let i = 0; i < n; i++) {
-    const satir = Math.floor(i / c);
-    const sutun = i % c;
-    const bu = satir === en.r - 1 ? n - satir * c : c;
-    const x = 8 + ((sutun + 0.5) / bu) * 84 + (satir % 2 ? 2 : -2);
-    const y = 6 + ((satir + 0.5) / en.r) * 56;
-    yer.push([x, y]);
-  }
+  en.satirlar.forEach((st, i) => {
+    for (let j = 0; j < st.c; j++) {
+      const x = st.c > 1 ? cx - st.w / 2 + (st.w * j) / (st.c - 1) : cx + (i % 2 ? 0.12 : -0.12) * en.s;
+      yer.push([(x / W) * 100, (st.y / H) * 100]);
+    }
+  });
   return { yer, boy: Math.min(en.s, 100) };
 }
 
