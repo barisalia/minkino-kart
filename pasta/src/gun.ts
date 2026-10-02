@@ -44,7 +44,6 @@ import {
   kalemSec,
   okuma,
   pisme,
-  RENK_KODU,
   siparisSonucu,
   siradakiIndeks,
   tesekkur,
@@ -326,12 +325,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const kalpUrl = yuva('mutluKalp');
   const hedefKalbi = kalpUrl ? `<img src="${kalpUrl}" alt="" draggable="false">` : KALP;
   const hedefEl = h('div.ps-hedef', { 'aria-label': `${MUSTERI_TOPLAM} müşteri`, 'data-hedef': String(MUSTERI_TOPLAM), 'data-mutlu': '0' }, ...Array.from({ length: MUSTERI_TOPLAM }, () => h('i', { html: hedefKalbi })));
-  const gunEtiket = h('div.ps-gun-etiket', {}, h('b', {}, P.arayuz.gun.replace('{gun}', String(gun))), hedefEl);
+  // gün tahtası: yazı yok, büyük gün numarası ve müşteri kalpleri
+  const gunEtiket = h('div.ps-gun-etiket', { 'aria-label': P.arayuz.gun.replace('{gun}', String(gun)) }, h('b.ps-gun-sayi', {}, String(gun)), hedefEl);
   const cikis = () => app.git('acilis');
   const ust = h('div.ust-cubuk.ps-ust', {}, yuvarlakDugme(IKON.geri, 'Geri', cikis, 'kucuk'), h('div.orta', {}, gunEtiket), sesDugmesi());
 
   // el ipucu: sıradaki işin üstünde dokunur gibi iner kalkar
-  const elIpucu = h('div.ps-el-ipucu', { 'aria-hidden': 'true' }, svg(IKON.el));
+  const elIpucu = h('div.ps-el-ipucu', { 'aria-hidden': 'true' }, h('i.ps-el-dalga'), h('span.ps-el-el', {}, svg(IKON.el)));
   const el = h('div.ps-gun', { 'data-gun': String(gun), 'data-yer': ayar.yer }, sahne, tezgah, ust, efekt_.el, elIpucu);
   // sahne en çok ~19.5:9 genişlikte, ortada; daha geniş ekranda iki yan otobüsün iç duvarı (hiçbir şey yayılmaz)
   const dis = h('div.ps-gun-dis', {}, el);
@@ -549,6 +549,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       efekt_.konfeti(hx, hy);
       efekt_.kalpler(hx, hy, 8);
       efekt_.parilti(hx, hy, 10);
+      // büyük sevinç: müşteri iki kez hoplar, başının üstünde kocaman kalp açılır
+      efekt_.buyukKalp(...efekt_.merkez(m.el, 0.5, 0.05));
+      salla(m.el, 'ps-cok-mutlu');
       ekranSalla(el, 2.5);
       m.mutlu(2600);
       mino.tepki('sevinc');
@@ -677,7 +680,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   function elIpucuBak(simdi: number) {
     if (elGoster || !parlayan || simdi - sonDokunus < IPUCU_MS || bekleyenSoz > 0) return;
     if (TEST_MODU && q.get('ipucu') !== '1') return;
-    const [x, y] = efekt_.merkez(parlayan, 0.55, 0.55);
+    const [x, y] = efekt_.merkez(parlayan, 0.5, 0.55);
     elIpucu.style.setProperty('--x', `${x.toFixed(0)}px`);
     elIpucu.style.setProperty('--y', `${y.toFixed(0)}px`);
     elIpucu.classList.add('ps-goster');
@@ -765,6 +768,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     void efekt_.ucur(h('div.ps-ucan-tepsi', { html: resim }), bas, efekt_.merkez(gozB), { ms: 380, kavis: -60, boy1: 0.7 }).then(() => {
       if (kapandi) return;
       gozCiz(i);
+      ses.pof();
       salla(gozB, 'ps-zipla');
       const [x, y] = efekt_.merkez(gozB);
       efekt_.parilti(x, y, 4, 0.5);
@@ -942,7 +946,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     ses.fis();
     efekt_.pof(x, y, 0.9, '#fff');
     // torbadan tabağa krema damlası uçar
-    void efekt_.ucur(h('div.ps-ucan-krema', { style: `--renk:${RENK_KODU[r]}` }), efekt_.merkez(b, 0.5, 0.9), [x, y], { ms: 260, kavis: -30, boy1: 1.4 });
+    // krema torbası (kendi çizimi) kurabiyenin üstüne süzülür, ucunu sıkar
+    void efekt_.ucur(h('div.ps-ucan-torba', { html: kremaDikSvg(r) }), efekt_.merkez(b, 0.5, 0.4), [x, y - 14], { ms: 300, kavis: -40, boy0: 0.9, boy1: 0.7 });
     tabakCiz();
     tabakIc.classList.remove('ps-kremalandi');
     void tabakIc.offsetWidth;

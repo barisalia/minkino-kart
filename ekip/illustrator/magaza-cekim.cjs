@@ -14,7 +14,8 @@ const LISTE = [
   ['', '03-pazar', '/pazar/?test=1&yas=5&ekran=pazar', 4500],
   ['', '04-salincak', '/macera/?test=1&ekran=bolum&yas=5&bolum=salincak', 4500],
   ['', '05-film', '/film/?test=1', 4000],
-  ['', '06-meyve-suyu', '/pazar/?test=1&yas=4&ekran=meyvesuyu', 4500],
+  ['', '06-pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000], // 2026-10-03: sipariş ortası elle (parlayan işe dokunarak) çekildi
+  ['ek/', 'meyve-suyu', '/pazar/?test=1&yas=4&ekran=meyvesuyu', 4500],
   ['ek/', 'banyo', '/macera/?test=1&ekran=bolum&yas=5&bolum=banyo', 4500],
   ['ek/', 'kartlar-bul', '/kartlar/?test=1&yas=5&tema=hayvanlar&tip=BUL', 3500],
   ['ek/', 'pasta-acilis', '/pasta/?test=1', 4500],

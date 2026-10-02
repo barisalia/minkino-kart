@@ -182,7 +182,14 @@ test('Pasta Otobüsü: sabır kalbi dolunca müşteri yalnız uyuklar (gitmez), 
   await expect(m).toHaveClass(/ps-hazir/);
   // 4 sn dokunulmazsa sıradaki işin (hamur) üstünde el
   await expect(page.locator('.ps-hamur-kabi.ps-sirada')).toBeVisible();
-  await expect(page.locator('.ps-el-ipucu.ps-goster')).toBeVisible({ timeout: 8000 });
+  const el = page.locator('.ps-el-ipucu.ps-goster .ps-el-el');
+  await expect(el).toBeVisible({ timeout: 8000 });
+  // el iri (önceden simge kutusu 16 px kalıyordu) ve sıradaki işin üstünde
+  const eb = (await el.boundingBox())!;
+  expect(eb.width).toBeGreaterThanOrEqual(44);
+  const hb = (await page.locator('.ps-hamur-kabi').boundingBox())!;
+  expect(eb.x + eb.width * 0.44).toBeGreaterThan(hb.x - 30);
+  expect(eb.x + eb.width * 0.44).toBeLessThan(hb.x + hb.width + 30);
   await m.click();
   await expect(m).not.toHaveClass(/ps-uyuyor/);
   await expect(page.locator('.ps-el-ipucu.ps-goster')).toHaveCount(0);
@@ -200,6 +207,7 @@ test('Pasta Otobüsü: ekran kareleri ve dizilim (16:9 … 19.5:9 telefon, çok 
     ['yatay-tablet', 1024, 768, 63.5],
     ['dikey', 390, 844, 63.5],
     ['tablet', 768, 1024, 63.5],
+    ['tablet-buyuk', 834, 1194, 63.5],
   ] as const) {
     await page.setViewportSize({ width: w, height: hh });
     await page.goto('./pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,60000');

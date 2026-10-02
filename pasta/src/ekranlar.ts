@@ -11,7 +11,7 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { MinoCanli } from '../../pazar/src/mino-canli';
 import { JETON, KUMBARA, OTOBUS, SAPKA, urunSvg, yildizSvg } from './cizim';
-import { AZ_HAREKET, Efekt, salla } from './gorsel';
+import { AZ_HAREKET, Efekt, parkAdres, salla } from './gorsel';
 import { boyaUygula, minoSapkaTak, parkKatmanlari, unluKino } from './gun';
 import { gunBitti, kaydet, kayit, toplamYildiz } from './kayit';
 import { alinabilir, BOYA, GUN_SAYISI, GUNLER, oynanirMi, RAF, satinAl, sayim, type Gun, type RafUrunu, type Yer } from './model';
@@ -71,12 +71,14 @@ export function acilisEkrani(app: Uygulama): Ekran {
     const acik = oynanirMi(g) && g <= kayit.acikGun;
     const biten = kayit.biten.includes(g);
     const yer = YER_ADI[GUNLER[g].yer];
+    // kart yazısız: o günün mekânı (resim), büyük gün numarası, o günün kurabiyesi, yıldızlar
+    const mekan = GUNLER[g].yer === 'plaj' ? 'plaj' : GUNLER[g].yer === 'kar' ? 'kar' : 'park';
     const b = h(
       `button.ps-gun-kart${acik ? '' : '.ps-kilitli'}${biten ? '.ps-biten' : ''}${acik && !biten ? '.ps-siradaki' : ''}`,
-      { type: 'button', 'data-gun': String(g), 'data-yer': GUNLER[g].yer, 'aria-label': `${A.gun.replace('{gun}', String(g))} ${yer}`, style: `--i:${g}` },
+      { type: 'button', 'data-gun': String(g), 'data-yer': GUNLER[g].yer, 'aria-label': `${A.gun.replace('{gun}', String(g))} ${yer}`, style: `--i:${g};--yer-resim:url("${parkAdres('arka-uzak', mekan)}")` },
+      h('i.ps-gun-manzara', { 'aria-hidden': 'true' }),
       h('b.ps-gun-no', {}, String(g)),
       h('span.ps-gun-urun', { html: gunResmi(g).join('') }),
-      h('span.ps-gun-yer', {}, yer),
       yildizlar(kayit.yildiz[String(g)] ?? 0, 'ps-gun-yildizlar'),
       acik ? null : h('i.ps-gun-kilit', { html: KILIT }),
     );
@@ -153,13 +155,14 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   const gunYildiz = yildizlar(0, 'ps-aksam-yildizlar');
   gunYildiz.dataset.kazanilan = String(yildiz);
   const raf = h('div.ps-raf', { hidden: true });
-  const tamam = h('button.dugme.ps-tamam', { type: 'button', hidden: true }, svg(IKON.onay), A.bitti);
+  // Tamam: yazısız, büyük yeşil onay
+  const tamam = h('button.dugme.ps-tamam', { type: 'button', hidden: true, 'aria-label': A.bitti }, svg(IKON.onay));
   const el = h(
     'div.ps-aksam',
     {},
     ...parkKatmanlari(GUNLER[gun].yer),
     h('div.ps-aksam-gok', { 'aria-hidden': 'true' }),
-    h('div.ust-cubuk', {}, h('div', { style: 'width:56px' }), h('div.orta', {}, h('div.baslik-balon.ps-aksam-baslik', {}, h('span', {}, A.gun.replace('{gun}', String(gun))), gunYildiz)), sesDugmesi()),
+    h('div.ust-cubuk', {}, h('div', { style: 'width:56px' }), h('div.orta', {}, h('div.baslik-balon.ps-aksam-baslik', {}, h('b.ps-aksam-no', { 'aria-label': A.gun.replace('{gun}', String(gun)) }, String(gun)), gunYildiz)), sesDugmesi()),
     h('div.ps-aksam-ic', {}, h('div.ps-aksam-sahne', {}, otobus, h('div.ps-aksam-mino', {}, mino.el), h('div.ps-aksam-kino', {}, kino.el), h('div.ps-aksam-kasa', {}, yigin, kumbara, sayac)), raf, tamam),
     efekt_.el,
   );

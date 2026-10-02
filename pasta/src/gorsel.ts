@@ -69,6 +69,24 @@ export class Efekt {
   }
 
   /** Beğeni: kalpler yükselip söner */
+  /** Kocaman tek kalp: başın üstünde yaylanarak açılır, biraz durur, yukarı süzülüp söner (tam istediği gibiyse) */
+  buyukKalp(x: number, y: number) {
+    if (sakin()) return;
+    const k = h('i.ps-buyuk-kalp', { html: KALP, style: `left:${x}px;top:${y}px` });
+    this.el.append(k);
+    k.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(.1)', opacity: 0 },
+        { transform: 'translate(-50%, -60%) scale(1.25)', opacity: 1, offset: 0.18 },
+        { transform: 'translate(-50%, -60%) scale(.95)', opacity: 1, offset: 0.3 },
+        { transform: 'translate(-50%, -62%) scale(1.05)', opacity: 1, offset: 0.42 },
+        { transform: 'translate(-50%, -64%) scale(1)', opacity: 1, offset: 0.7 },
+        { transform: 'translate(-50%, -110%) scale(.8)', opacity: 0 },
+      ],
+      { duration: 1500, easing: 'ease-out' },
+    ).finished.then(() => k.remove(), () => k.remove());
+  }
+
   kalpler(x: number, y: number, adet = 5) {
     if (sakin()) return;
     for (let i = 0; i < adet; i++) {

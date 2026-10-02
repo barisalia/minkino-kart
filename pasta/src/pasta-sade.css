@@ -91,36 +91,70 @@
     filter: drop-shadow(0 0 calc(5 * var(--u)) rgba(255, 226, 110, 1)) drop-shadow(0 0 calc(12 * var(--u)) rgba(255, 190, 60, 0.85));
   }
 }
-/* el ipucu: sıradaki işin üstünde dokunur gibi iner kalkar */
+/* el ipucu: sıradaki işin ortasına parmak ucuyla dokunur gibi iner kalkar, dokunduğu yerde yumuşak bir halka açılır.
+   (Önceden simge kutusu 1em kalıyordu: el 16 px görünüyordu.) Yumuşak krem eldiven, ince sıcak kahve kontur, gölge. */
 .ps-kok .ps-el-ipucu {
+  --es: max(50px, calc(58 * var(--u)));
   position: absolute;
   left: 0;
   top: 0;
+  width: 0;
+  height: 0;
   z-index: 60;
-  width: max(46px, calc(52 * var(--u)));
-  height: max(46px, calc(52 * var(--u)));
-  color: #fff;
   pointer-events: none;
   opacity: 0;
   transform: translate(var(--x, 0), var(--y, 0));
-  filter: drop-shadow(0 3px 0 rgba(107, 58, 31, 0.55));
-}
-.ps-kok .ps-el-ipucu svg {
-  width: 100%;
-  height: 100%;
-  fill: #fff;
-  stroke: #6b3a1f;
-  stroke-width: 3.2;
+  transition: opacity 0.25s;
 }
 .ps-kok .ps-el-ipucu.ps-goster {
-  animation: ps-el-dokun 1.1s ease-in-out infinite;
+  opacity: 1;
 }
-@keyframes ps-el-dokun {
-  0% { opacity: 0; transform: translate(var(--x), var(--y)) translate(-12%, 30%) scale(1.15); }
-  20% { opacity: 1; transform: translate(var(--x), var(--y)) translate(-12%, 30%) scale(1.1); }
-  45% { opacity: 1; transform: translate(var(--x), var(--y)) translate(-12%, 6%) scale(0.92); }
-  70% { opacity: 1; transform: translate(var(--x), var(--y)) translate(-12%, 30%) scale(1.05); }
-  100% { opacity: 0.9; transform: translate(var(--x), var(--y)) translate(-12%, 30%) scale(1.1); }
+.ps-kok .ps-el-el {
+  position: absolute;
+  left: calc(var(--es) * -0.44);
+  top: calc(var(--es) * -0.17);
+  width: var(--es);
+  height: var(--es);
+  transform-origin: 44% 17%;
+  filter: drop-shadow(0 calc(3 * var(--u)) calc(2 * var(--u)) rgba(107, 58, 31, 0.35));
+}
+.ps-kok .ps-el-el .ikon,
+.ps-kok .ps-el-el svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ps-kok .ps-el-el svg {
+  fill: #fffaf2;
+  stroke: #6b3a1f;
+  stroke-width: 2.6;
+}
+.ps-kok .ps-el-dalga {
+  position: absolute;
+  left: calc(var(--es) * -0.32);
+  top: calc(var(--es) * -0.32);
+  width: calc(var(--es) * 0.64);
+  height: calc(var(--es) * 0.64);
+  border-radius: 50%;
+  border: max(2px, calc(3 * var(--u))) solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 max(1px, calc(2 * var(--u))) rgba(255, 196, 80, 0.55);
+  opacity: 0;
+}
+.ps-kok .ps-el-ipucu.ps-goster .ps-el-el {
+  animation: ps-el-bas 1.3s ease-in-out infinite;
+}
+.ps-kok .ps-el-ipucu.ps-goster .ps-el-dalga {
+  animation: ps-el-dalga 1.3s ease-out infinite;
+}
+@keyframes ps-el-bas {
+  0%, 100% { transform: translate(14%, 26%) rotate(-8deg); }
+  38% { transform: translate(0, 0) rotate(-8deg) scale(0.94); }
+  52% { transform: translate(0, 0) rotate(-8deg) scale(0.94); }
+}
+@keyframes ps-el-dalga {
+  0%, 36% { opacity: 0; transform: scale(0.3); }
+  42% { opacity: 1; transform: scale(0.5); }
+  100% { opacity: 0; transform: scale(1.7); }
 }
 
 /* krema: torbadan uçan damla; tabakta krema kurabiyenin üstüne yayılır */
@@ -582,8 +616,7 @@
     padding-right: max(calc(8 * var(--u)), env(safe-area-inset-right));
   }
   .ps-kok .ps-ist-kalip {
-    align-self: start;
-    margin-top: calc(var(--h) * 0.06);
+    align-self: end;
   }
   .ps-kok .ps-ist-firin {
     right: max(calc(8 * var(--u)), env(safe-area-inset-right));
@@ -599,7 +632,7 @@
   }
   .ps-kok .ps-ist-kalip .ps-izgara > button,
   .ps-kok .ps-ist-sus .ps-izgara > button {
-    margin: 0 calc(var(--h) * -0.12);
+    margin: 0 calc(var(--h) * -0.06);
   }
   .ps-kok .ps-ist-krema .ps-izgara > button {
     margin: 0 calc(var(--h) * -0.12);
@@ -632,6 +665,212 @@
   }
 }
 
+/* ================================================================ cila turu (2026-10-03) */
+/* kalıplar askıda değil, süs kavanozları gibi arka rafta dik durur (kod çizimi askı ve S kancalar kalktı) */
+.ps-kok .ps-askilik {
+  padding: 0;
+}
+.ps-kok .ps-askilik::before,
+.ps-kok .ps-askilik::after,
+.ps-kok .ps-kalip::before {
+  display: none;
+}
+.ps-kok .ps-ist-kalip .ps-izgara {
+  align-items: flex-end;
+}
+.ps-kok .ps-ist-kalip .ps-izgara > button {
+  place-items: end center;
+}
+.ps-kok .ps-tezgah .ps-kalip > svg {
+  transform: scale(0.9);
+  transform-origin: 50% 96%;
+}
+.ps-kok .ps-kalip::after {
+  content: '';
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: calc(var(--h) * -0.04);
+  height: calc(var(--h) * 0.12);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--golge), rgba(107, 58, 31, 0));
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* gün tahtası: büyük gün numarası (yazı yok) */
+.ps-kok .ps-gun-etiket .ps-gun-sayi {
+  font-size: clamp(1.7rem, calc(34 * var(--u)), 2.4rem);
+  line-height: 1;
+}
+
+/* krema: torbanın kendisi kurabiyenin üstüne süzülür */
+.ps-kok .ps-ucan-torba {
+  width: calc(var(--h) * 0.72);
+  height: calc(var(--h) * 1.1);
+}
+.ps-kok .ps-ucan-torba svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* tam istediği gibi: kocaman kalp ve iki hop */
+.ps-kok .ps-buyuk-kalp {
+  position: absolute;
+  width: calc(var(--h) * 1.15);
+  pointer-events: none;
+  filter: drop-shadow(0 calc(4 * var(--u)) 0 rgba(107, 58, 31, 0.22));
+}
+.ps-kok .ps-buyuk-kalp svg {
+  display: block;
+  width: 100%;
+}
+.ps-kok .ps-cok-mutlu .ps-m-govde {
+  animation: ps-cok-mutlu 1.15s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+@keyframes ps-cok-mutlu {
+  0% { transform: none; }
+  14% { transform: translateY(2%) scale(1.07, 0.92); }
+  30% { transform: translateY(-12%) scale(0.96, 1.06) rotate(-3deg); }
+  46% { transform: translateY(1%) scale(1.05, 0.94); }
+  62% { transform: translateY(-8%) rotate(3deg); }
+  80% { transform: translateY(0) scale(1.03, 0.97); }
+  100% { transform: none; }
+}
+
+/* biraz farklı: istenen | verilen aynı boyda yan yana; verilenin çevresinde yumuşak pembe kesik halka sallanır */
+.ps-kok .ps-b-verilen .ps-b-kalem.ps-fark::after {
+  content: '';
+  position: absolute;
+  inset: 2% 4% 0;
+  border-radius: 30%;
+  border: max(2px, calc(2.6 * var(--u))) dashed rgba(255, 105, 140, 0.9);
+  pointer-events: none;
+  animation: ps-fark-halka 0.9s ease-in-out 3;
+}
+@keyframes ps-fark-halka {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* açılış: gün kartları yazısız; her kart o günün mekânı, büyük numara, kurabiyesi, yıldızları */
+.ps-kok .ps-gun-kart {
+  overflow: hidden;
+  background: #bfe6ff !important;
+}
+.ps-kok .ps-gun-manzara {
+  position: absolute;
+  inset: 0;
+  background: var(--yer-resim) 50% 75% / cover no-repeat;
+  pointer-events: none;
+}
+.ps-kok .ps-gun-kart > :not(.ps-gun-manzara):not(.ps-gun-kilit) {
+  position: relative;
+}
+.ps-kok .ps-gun-no {
+  width: 48px;
+  height: 48px;
+  font-size: 1.9rem;
+}
+.ps-kok .ps-gun-urun svg {
+  width: min(78px, 58%);
+  filter: drop-shadow(0 3px 2px rgba(107, 58, 31, 0.3));
+}
+.ps-kok .ps-gun-yildizlar {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 2px solid rgba(107, 58, 31, 0.5);
+}
+.ps-kok .ps-kilitli .ps-gun-manzara {
+  filter: grayscale(0.6) brightness(1.08);
+}
+@media (orientation: landscape) {
+  .ps-kok .ps-gunler {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-content: center;
+  }
+  .ps-kok .ps-gunler .ps-gun-kart {
+    min-height: min(92px, calc((100vh - 120px) / 3));
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: 1fr;
+    padding: 6px 12px !important;
+  }
+  .ps-kok .ps-gunler .ps-gun-yildizlar {
+    position: relative;
+    right: auto;
+    bottom: auto;
+  }
+}
+
+/* akşam: başlıkta büyük gün numarası ve yıldızlar; Tamam yazısız büyük yeşil onay */
+.ps-kok .ps-aksam-no {
+  font-size: 2rem;
+  line-height: 1;
+  margin-right: 4px;
+}
+.ps-kok .ps-tamam {
+  width: 84px;
+  height: 84px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 44px;
+}
+.ps-kok .ps-tamam .ikon {
+  width: 1em;
+  height: 1em;
+}
+
+/* dikey tablet (768×1024, 834×1194): raflar dolu, istasyonlar iri, aralar dengeli */
+@media (orientation: portrait) and (min-aspect-ratio: 5/8) {
+  .ps-kok .ps-gun {
+    --h: max(64px, calc(82 * var(--u)));
+    --K1: calc(var(--h) * 2.35);
+    --r2a: calc(var(--h) * 1.45);
+    --r1a: calc(var(--h) * 1.25);
+    --r2b: calc(var(--h) * 1.3);
+    --r1b: calc(var(--h) * 1.6);
+  }
+  .ps-kok .ps-ist-kalip .ps-izgara > button,
+  .ps-kok .ps-ist-sus .ps-izgara > button {
+    width: calc(var(--h) * 1.28);
+    height: calc(var(--h) * 1.28);
+    margin: 0 calc(var(--h) * -0.08);
+  }
+  .ps-kok .ps-ist-krema .ps-izgara > button {
+    width: calc(var(--h) * 1.15);
+    height: calc(var(--h) * 1.72);
+    margin: 0 calc(var(--h) * -0.08);
+  }
+  .ps-kok .ps-hamur-kabi {
+    width: calc(var(--h) * 1.85);
+    height: calc(var(--h) * 1.5);
+  }
+  .ps-kok .ps-tepsi {
+    width: calc(var(--h) * 2);
+    height: calc(var(--h) * 1.15);
+  }
+  .ps-kok .ps-tabak {
+    width: calc(var(--h) * 2.4);
+    height: calc(var(--h) * 1.25);
+  }
+  .ps-kok .ps-kasa {
+    width: calc(var(--h) * 1.55);
+    height: calc(var(--h) * 1.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-kok .ps-cok-mutlu .ps-m-govde,
+  .ps-kok .ps-b-verilen .ps-b-kalem.ps-fark::after {
+    animation: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .ps-kok .ps-gun .ps-sirada > svg,
   .ps-kok .ps-gun .ps-sirada > img,

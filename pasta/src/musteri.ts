@@ -13,6 +13,7 @@ import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { SEVIYE_TANE } from './desen';
 import { bardakSvg, urunSvg } from './cizim';
 import { AZ_HAREKET } from './gorsel';
+import { ses } from './sesler';
 import { type Kalem, type Parti, type Siparis } from './model';
 
 /** test modunda yandan yürüyüş kapalı (hızlı testler); &yandan=1 açar */
@@ -344,7 +345,8 @@ export class PastaMusteri {
     this.verilen.forEach((p, i) => {
       if (!p) return;
       const f = farklar[i] ?? [];
-      yanYana.append(h(`div.ps-b-kalem${f.length ? '.ps-fark' : ''}`, { 'data-fark': f.join(' ') }, h('span.ps-b-grup', { html: partiCizimi(p).join('') })));
+      // verilen de istenenle aynı boyda (yan yana kıyaslanır); farklı olan yumuşak bir halkayla belirir
+      yanYana.append(h(`div.ps-b-kalem${f.length ? '.ps-fark' : ''}`, { 'data-fark': f.join(' '), 'data-adet': String(p.parcalar.length) }, h('span.ps-b-grup', { html: partiCizimi(p).join('') })));
       const kalem = this.balonIc.querySelector<HTMLElement>(`.ps-b-kalem[data-i="${i}"]`);
       if (kalem && f.length) {
         kalem.classList.add('ps-fark');
@@ -377,6 +379,8 @@ export class PastaMusteri {
     }
     void this.karakter.oynat('ye', 1100);
     for (let i = 0; i < 3; i++) {
+      // her ısırık: "ham"
+      ses.ham();
       const kalan = 1 - (i + 1) / 3;
       lokma.animate([{ transform: `translate(-50%, -50%) scale(${(kalan + 1 / 3).toFixed(2)})` }, { transform: `translate(-50%, -50%) scale(${Math.max(0.05, kalan).toFixed(2)}) rotate(${i % 2 ? -8 : 8}deg)` }], {
         duration: sure(200),
