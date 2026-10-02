@@ -137,3 +137,18 @@ Asıl kollar kafanın altında durduğu için 100° üstünde kafanın arkasına
 - Varsayılan çizimde piksel farkı 0.
 - Önizleme: `ekip/mino/mino-film3.png`.
 - **İkili sarılma (Mino + Kino, yan yana):** Mino `kol-sag-yukari` −100°, Kino `kol-sol-yukari` +100°; ikisinde de `goz-kapali` + `agiz-gulumse`. Mino önce çizilir, kolu Kino'nun arkasına geçer. Kino sonra çizilir, kolu Mino'nun omzunun önüne gelir. Kino, Mino tuvalinde x+1000, y+60 (aynı ölçek). Önizleme: `ekip/film/mino-kino-sarilma.png`.
+
+## Dedektif Mino (şapka + büyüteç, vektör/bit eşlem, gizli; kafaya bağlı)
+
+Kaynak: Gemini `minkino-film-gemini/dedektif/mino-dedektif-1.png`; şapka ve büyüteç kolu çokgenle kesilip Mino'nun ölçüsüne oturtuldu. Betik: `node ekip/illustrator/dedektif-mino.cjs` (tekrar çalıştırmak güvenli; mino-final.svg yeniden yazılırsa yeniden çalıştırın). Önizleme: `ekip/mino/mino-dedektif-onizleme.png`.
+
+| Katman | Ne | Not |
+|---|---|---|
+| `sapka-dedektif` | Kareli dedektif şapkası (kurdele kafası dahil) | Kafaya bağlı, **tüm katmanların en üstünde** (gözlerin, ağzın, kulakların üstünde). Merkezi yüz ortasında (985), alt kenar ≈ y 560. Kulaklar şapkanın iki yanında görünür kalır. |
+| `goz-buyutec` | Mino'nun kendi sol gözü (kafa + göz basılı), cam dairesine kırpılı, 1.25x büyütülmüş | `kol-buyutec`'in **altında** durur. Cam merkezi (738,779), yarıçap ≈ 190. Sabit resim: bakış ve göz kırpma kodla değişmez. |
+| `kol-buyutec` | Halka (cam içi şeffaf) + cam parlaması + sap + el + kol | Gövde çizgisinde ve fular ucunun altında biten bir kırpma var (kol gövdenin önünde, fular kolun önünde). Cam parlaması vektör, halka/sap/el Gemini çiziminden. |
+
+Kullanım: **göster** `sapka-dedektif` + `goz-buyutec` + `kol-buyutec`; **gizle** `kol-sol` (asıl sol kol) ve `goz-sol` (büyütülmüş göz yerine). Sağ kol, sağ göz, ağız, kuyruk olduğu gibi kalır. Sıra (alttan üste): … `goz-buyutec`, `kol-buyutec`, `sapka-dedektif` (dosya sonunda bu sırayla).
+- Şapkayı büyüteçsiz de kullanabilirsiniz (yalnız `sapka-dedektif`); büyüteç şapkasız da olur.
+- Kol, cam göze hizalı olduğu için kafayla birlikte döner (`k` grubunda). Eli kafa dönmesinde çok oynamaz çünkü el boyun hizasında (y ≈ 1235).
+- Büyüteç açıkken göz kırpma atlanmalı: camdaki göz sabit bir resimdir, `goz-kapali` camın içine girmez.
