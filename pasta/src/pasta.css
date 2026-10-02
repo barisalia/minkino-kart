@@ -1,6 +1,6 @@
-/* Mino'nun Pasta Otobüsü (önek ps-). Kontur #3A1210, parlak düz renk, yumuşak gölge. Yalnız transform / opacity animasyonu. */
+/* Mino'nun Pasta Otobüsü (önek ps-). Kontur #6b3a1f (sıcak kahve), parlak düz renk, yumuşak gölge. Yalnız transform / opacity animasyonu. */
 .ps-kok {
-  --ps-k: #3a1210;
+  --ps-k: #6b3a1f;
   --boya: #ff8cc0;
   --boya-koyu: #e2609e;
   background: #bde6ff;
@@ -2257,4 +2257,238 @@
   .ps-kok .ps-kumbara.ps-cagir {
     animation: none;
   }
+}
+
+/* ================================================================ Gemini görselleri (assets/pasta, yuvalar: resimler.ts)
+   Arka: otobüsün içi (fayans duvar, raflar, pencere) müşterilerin önünde; penceresi maskeyle oyulur, park ve müşteriler
+   arkasında görünür. Ölçek: pencere müşteri alanını ve pencere yüksekliğini doldurur, alt kenarı tezgâh çizgisinde.
+   Tezgâh: aynı tuvalin ön yüzünden; üst yüzey arka kenardan ön kenara yayılır (eşyalar üstünde durur), altında
+   dolaplar. Dikeyde iki tezgâh: arkadaki (Mino, fırın, Kino) ve öndeki (istasyonlar). */
+.ps-kok .ps-resimli {
+  --a-oran: 1.7917;
+  --pw: calc(100cqw - var(--mino-alan) - var(--duvar));
+  --pcx: calc(var(--mino-alan) + var(--pw) / 2);
+  --aw: max(calc(var(--pw) / (var(--a-sag) - var(--a-sol))), calc(var(--W) / (var(--a-tz) - var(--a-ust)) * var(--a-oran)));
+  --ah: calc(var(--aw) / var(--a-oran));
+  --ax: calc(var(--pcx) - (var(--a-sol) + var(--a-sag)) / 2 * var(--aw));
+  --ay: calc(var(--W) - var(--a-tz) * var(--ah));
+  background: #8a6d6c;
+}
+.ps-kok .ps-arka-resim {
+  position: absolute;
+  left: var(--ax);
+  top: var(--ay);
+  width: var(--aw);
+  height: var(--ah);
+  z-index: 3;
+  pointer-events: none;
+  background: var(--arka-url) 0 0 / 100% 100% no-repeat;
+  -webkit-mask: var(--maske) 0 0 / 100% 100% no-repeat;
+  mask: var(--maske) 0 0 / 100% 100% no-repeat;
+}
+.ps-kok .ps-resimli .ps-duvar,
+.ps-kok .ps-resimli .ps-cerceve,
+.ps-kok .ps-resimli .ps-tz-yuzey,
+.ps-kok .ps-resimli .ps-tz-panel,
+.ps-kok .ps-resimli .ps-tz-kat,
+.ps-kok .ps-resimli .ps-tz-kat-raf,
+.ps-kok .ps-resimli .ps-tz-arka {
+  display: none;
+}
+.ps-kok .ps-resimli .ps-tz {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--t-ust);
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+  --t-w: var(--aw);
+  --t-x: var(--ax);
+  --t-ust: var(--R);
+  --t-yuz: calc(var(--C) - var(--P) - 8 * var(--u));
+  --t-sh: calc(var(--t-yuz) / (var(--a-tzon) - var(--a-tz)));
+  --t-h: calc(var(--t-w) / var(--a-oran));
+}
+.ps-kok .ps-tz-yuz,
+.ps-kok .ps-tz-dolap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-image: var(--on-url);
+  background-repeat: no-repeat;
+}
+.ps-kok .ps-tz-yuz {
+  top: 0;
+  height: var(--t-yuz);
+  background-size: var(--t-w) var(--t-sh);
+  background-position: var(--t-x) calc(var(--a-tz) * var(--t-sh) * -1);
+}
+.ps-kok .ps-tz-dolap {
+  top: var(--t-yuz);
+  bottom: 0;
+  background-color: #80534a;
+  background-size: var(--t-w) var(--t-h);
+  background-position: var(--t-x) calc(var(--a-tzon) * var(--t-h) * -1);
+}
+/* yatay: Kino tezgâhın üstünde, pencerenin sağ köşesinde; süs kavanozlarının gerisinde (dokunuş kavanozlara) */
+.ps-kok .ps-resimli .ps-kino-yer {
+  z-index: 2;
+  bottom: calc(var(--C) - 3 * var(--u) - var(--kino-w) * 0.078);
+}
+
+/* fırın görseli: kapılar görselin parçası (kapı sallanınca o parça sallanır), camın yerine oyunun camı */
+.ps-kok .ps-resimli .ps-firin.ps-firin-r,
+.ps-kok .ps-firin.ps-firin-r {
+  display: block;
+  width: var(--firin-w);
+  height: auto;
+  aspect-ratio: var(--firin-oran, 1.35);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.ps-kok .ps-firin-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 calc(5 * var(--u)) calc(4 * var(--u)) rgba(107, 58, 31, 0.28));
+}
+.ps-kok .ps-firin-r .ps-gozler {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.ps-kok .ps-firin-r .ps-goz {
+  --kpw: calc(var(--kw) * var(--firin-w));
+  --kph: calc(var(--kh) * var(--firin-w) / var(--firin-oran, 1.35));
+  position: absolute;
+  width: max(64px, var(--kpw));
+  height: max(64px, var(--kph));
+  min-width: 0;
+  min-height: 0;
+  left: calc((var(--kx) + var(--kw) / 2) * 100% - max(32px, calc(var(--kpw) / 2)));
+  top: calc((var(--ky) + var(--kh) / 2) * 100% - max(32px, calc(var(--kph) / 2)));
+  border: 0 !important;
+  border-radius: 0;
+  padding: 0 !important;
+  background: none;
+  box-shadow: none;
+}
+.ps-kok .ps-goz-kapi {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--kpw);
+  height: var(--kph);
+  margin: calc(var(--kph) / -2) 0 0 calc(var(--kpw) / -2);
+  background: var(--firin-resim) no-repeat;
+  background-size: var(--firin-w) calc(var(--firin-w) / var(--firin-oran, 1.35));
+  background-position: calc(var(--kx) * var(--firin-w) * -1) calc(var(--ky) * var(--firin-w) / var(--firin-oran, 1.35) * -1);
+  transition: filter 0.3s;
+}
+.ps-kok .ps-goz-kapi .ps-goz-cam {
+  position: absolute;
+  border-radius: 50%;
+  border: max(1px, calc(1.5 * var(--u))) solid rgba(107, 58, 31, 0.55);
+  box-shadow: inset 0 calc(3 * var(--u)) calc(6 * var(--u)) rgba(42, 22, 18, 0.55);
+}
+.ps-kok .ps-resimli .ps-goz[data-hal='altin'],
+.ps-kok .ps-firin-r .ps-goz[data-hal='altin'],
+.ps-kok .ps-firin-r .ps-goz[data-hal='yanik'] {
+  background: none;
+  box-shadow: none;
+}
+.ps-kok .ps-goz[data-hal='altin'] .ps-goz-kapi {
+  filter: drop-shadow(0 0 calc(5 * var(--u)) #ffd84a) drop-shadow(0 0 calc(2 * var(--u)) #fff36b);
+}
+.ps-kok .ps-firin-r .ps-goz-saat {
+  right: calc(50% - var(--kpw) / 2 - 6 * var(--u));
+  top: calc(50% - var(--kph) / 2 - 8 * var(--u));
+}
+.ps-kok .ps-firin-r .ps-firin-lamba {
+  position: absolute;
+  left: var(--lx);
+  top: var(--ly);
+  width: calc(var(--firin-w) * 0.034);
+  height: calc(var(--firin-w) * 0.034);
+  margin: calc(var(--firin-w) * -0.017) 0 0 calc(var(--firin-w) * -0.017);
+  border-width: max(1px, calc(2 * var(--u)));
+}
+/* fırında kurabiye görselleri: çiğ → altın (--p) → yanık (--y); kapkek görseli solgundan altına */
+.ps-kok .ps-k-altin {
+  opacity: var(--p, 1);
+}
+.ps-kok .ps-k-yanik {
+  opacity: var(--y, 0);
+}
+.ps-kok .ps-kk-firin {
+  filter: brightness(calc(1.2 - 0.2 * var(--p, 0) - 0.5 * var(--y, 0))) saturate(calc(0.4 + 0.6 * var(--p, 0)));
+}
+.ps-kok .ps-kk-yanik {
+  filter: brightness(0.5) saturate(0.8);
+}
+
+/* eşya görselleri: yumuşak temas gölgesi; yedek kod çizimlerine de hafif gölge */
+.ps-kok .ps-tezgah button > svg.ps-r,
+.ps-kok .ps-kumbara > svg.ps-r {
+  filter: drop-shadow(0 calc(3 * var(--u)) calc(2.5 * var(--u)) rgba(107, 58, 31, 0.26));
+}
+.ps-kok .ps-tezgah button > svg:not(.ps-r) {
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(2 * var(--u)) rgba(107, 58, 31, 0.18));
+}
+.ps-kok .ps-hamur-kabi > svg.ps-r .ps-hamur-kabarik {
+  animation: none;
+}
+.ps-kok .ps-hamur-kabi.ps-kabar > svg.ps-r .ps-hamur-kabarik {
+  animation: ps-kabar-r 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes ps-kabar-r {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.06, 0.92); }
+  70% { transform: scale(0.98, 1.04); }
+  100% { transform: scale(1); }
+}
+.ps-kok .ps-ist-krema .ps-izgara > button:has(> svg.ps-r) {
+  height: calc(max(64px, calc(var(--h) * 0.97)) * 1.12);
+}
+.ps-kok .ps-sus-kabi.ps-eksik > svg.ps-r {
+  animation: ps-hayir 0.4s ease-in-out 2;
+}
+.ps-kok .ps-tabak > svg.ps-r {
+  height: 84%;
+}
+.ps-kok .ps-tepsi > svg.ps-r {
+  height: 80%;
+}
+
+@media (orientation: portrait) {
+  .ps-kok .ps-resimli {
+    --firin-w: calc(3 * var(--h) + 50 * var(--u));
+  }
+  .ps-kok .ps-resimli .ps-tz-arka {
+    display: block;
+    z-index: 0;
+    --t-yuz: calc(var(--K1) + 6 * var(--u));
+  }
+  .ps-kok .ps-resimli .ps-tz-on {
+    --t-ust: calc(var(--R) + var(--K1) + var(--K1r) + 2 * var(--u));
+    --t-yuz: calc(var(--C) - var(--P) - var(--K1) - var(--K1r) - 2 * var(--u));
+    --t-w: calc(220cqw);
+    --t-x: calc(50cqw - var(--t-w) / 2);
+  }
+  .ps-kok .ps-resimli .ps-kino-yer {
+    z-index: 4;
+    bottom: calc(var(--C) - var(--R) - var(--K1) - var(--kino-w) * 0.078 - 2 * var(--u));
+  }
+}
+/* kalıp panosu: ince, sıcak kahve kenar (görsellerin çizgisine uysun) */
+.ps-kok .ps-resimli .ps-pano {
+  border-width: max(1.5px, calc(2.5 * var(--u)));
+  box-shadow: inset 0 calc(3 * var(--u)) 0 rgba(255, 255, 255, 0.45), 0 calc(4 * var(--u)) calc(4 * var(--u)) rgba(107, 58, 31, 0.22);
 }

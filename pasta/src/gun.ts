@@ -22,6 +22,7 @@ import { MinoCanli } from '../../pazar/src/mino-canli';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
 import { HAMUR_KABI, JETON, KAPAK_DESENI, KASA, KINO_CILEK_AGIZ, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
+import { ARKA, FIRIN_KAPILARI, FIRIN_LAMBA, oranYaz, yuva } from './resimler';
 import { kayit } from './kayit';
 import {
   acikOlanlar,
@@ -177,7 +178,15 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   });
   // yatayda sağda otobüsün iç duvarı: fayans, raf (tatlı süsleri), Kino'nun rafı; fırın bunun önünde
   const duvar = h('div.ps-duvar', { 'aria-hidden': 'true' }, h('i.ps-duvar-raf', { html: RAF_SUSLERI }));
-  const sahne = h('div.ps-sahne', {}, ...parkKatmanlari(ayar.yer), musteriKatmani, duvar, h('div.ps-cerceve', { 'aria-hidden': 'true' }, h('i.ps-tente'), h('i.ps-flama')));
+  // Gemini görselleri (assets/pasta): otobüsün içi (pencereli duvar, raflar) müşterilerin önünde, penceresi oyulmuş;
+  // tezgâhlar aynı çizimin ön yüzünden. Görsel yoksa eski kod çizimi (duvar, çerçeve, tezgâh yüzeyi) kalır.
+  const arkaUrl = yuva('arka');
+  const onUrl = yuva('tezgahOn');
+  const resimli = !!(arkaUrl && onUrl);
+  const arkaResim = resimli ? h('div.ps-arka-resim', { 'aria-hidden': 'true' }) : null;
+  const sahne = h('div.ps-sahne', {}, ...parkKatmanlari(ayar.yer), musteriKatmani, arkaResim, duvar, h('div.ps-cerceve', { 'aria-hidden': 'true' }, h('i.ps-tente'), h('i.ps-flama')));
+  /** Görselden tezgâh: üst yüzey (arka kenardan ön kenara yayılır) ve ön yüz (dolaplar); dikeyde iki tane (arka, ön) */
+  const tezgahResmi = (ad: string) => h(`i.ps-tz.ps-tz-${ad}`, { 'aria-hidden': 'true' }, h('i.ps-tz-yuz'), h('i.ps-tz-dolap'));
 
   // ---------------------------------------------------------------- tezgâh: hamur ve tepsi
   const tepsi: (Kalip | null)[] = [];
@@ -208,27 +217,48 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 
   // fırın
   const gozler: (Goz | null)[] = Array.from({ length: FIRIN_GOZ }, () => null);
+  // fırın görseli varsa: kapılar görselin kendi kapıları (her kapı görselin o parçası: sallanınca kapı sallanır),
+  // camların yerine oyunun camı (içi parlar, kurabiyeler kabarır); yoksa kod çizimi fırın
+  const firinUrl = yuva('firin');
+  const yuzde = (v: number) => `${(v * 100).toFixed(2)}%`;
   const gozEl = Array.from({ length: FIRIN_GOZ }, (_, i) => {
     const ic = h('div.ps-goz-ic');
+    const cam = h('div.ps-goz-cam', {}, h('i.ps-goz-isik'), h('i.ps-goz-izgara'), ic, h('i.ps-goz-parlama'));
+    const kp = FIRIN_KAPILARI[i];
+    if (firinUrl && kp) cam.setAttribute('style', `left:${yuzde(kp.cx - kp.rx)};top:${yuzde(kp.cy - kp.ry)};width:${yuzde(kp.rx * 2)};height:${yuzde(kp.ry * 2)}`);
     const b = h(
       'button.ps-goz',
-      { type: 'button', 'data-goz': String(i), 'data-hal': 'bos', 'aria-label': `Fırın ${i + 1}` },
-      h('i.ps-goz-kol'),
-      h('div.ps-goz-cam', {}, h('i.ps-goz-isik'), h('i.ps-goz-izgara'), ic, h('i.ps-goz-parlama')),
+      {
+        type: 'button',
+        'data-goz': String(i),
+        'data-hal': 'bos',
+        'aria-label': `Fırın ${i + 1}`,
+        style: firinUrl && kp ? `--kx:${kp.x};--ky:${kp.y};--kw:${kp.w};--kh:${kp.h}` : null,
+      },
+      ...(firinUrl && kp ? [h('i.ps-goz-kapi', {}, cam)] : [h('i.ps-goz-kol'), cam]),
       h('i.ps-goz-saat'),
     );
     b.addEventListener('click', () => gozBas(i));
     return { b, ic };
   });
   // gerçek bir fırın: üstte düğmeler, sıcaklık lambası ve saat; üç camlı kapak; ayaklar
-  const firin = h(
-    'div.ps-firin',
-    {},
-    h('i.ps-firin-baca', { 'aria-hidden': 'true' }),
-    h('div.ps-firin-ust', { 'aria-hidden': 'true' }, h('i.ps-firin-dugme'), h('i.ps-firin-dugme'), h('i.ps-firin-lamba'), h('i.ps-firin-gosterge'), h('i.ps-firin-dugme')),
-    h('div.ps-gozler', {}, ...gozEl.map((g) => g.b)),
-    h('i.ps-firin-alt', { 'aria-hidden': 'true' }),
-  );
+  const firin = firinUrl
+    ? h(
+        'div.ps-firin.ps-firin-r',
+        { style: `--firin-resim:url("${firinUrl}");--lx:${yuzde(FIRIN_LAMBA.x)};--ly:${yuzde(FIRIN_LAMBA.y)}` },
+        h('img.ps-firin-resim', { src: firinUrl, alt: '', draggable: 'false', 'aria-hidden': 'true' }),
+        h('i.ps-firin-lamba', { 'aria-hidden': 'true' }),
+        h('div.ps-gozler', {}, ...gozEl.map((g) => g.b)),
+      )
+    : h(
+        'div.ps-firin',
+        {},
+        h('i.ps-firin-baca', { 'aria-hidden': 'true' }),
+        h('div.ps-firin-ust', { 'aria-hidden': 'true' }, h('i.ps-firin-dugme'), h('i.ps-firin-dugme'), h('i.ps-firin-lamba'), h('i.ps-firin-gosterge'), h('i.ps-firin-dugme')),
+        h('div.ps-gozler', {}, ...gozEl.map((g) => g.b)),
+        h('i.ps-firin-alt', { 'aria-hidden': 'true' }),
+      );
+  if (firinUrl) oranYaz(firinUrl, firin, '--firin-oran');
 
   // krema, süs
   const kremaDugmeleri = acik.renkler.map((r) => {
@@ -275,6 +305,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     h('i.ps-tz-kat-raf', { 'aria-hidden': 'true' }),
     h('i.ps-tz-yuzey', { 'aria-hidden': 'true' }),
     h('i.ps-tz-panel', { 'aria-hidden': 'true', style: `--kapak:${KAPAK_DESENI}` }),
+    resimli ? tezgahResmi('arka') : null,
+    resimli ? tezgahResmi('on') : null,
     minoYer,
     kinoYer,
     istasyon('hamur', hamurKabi),
@@ -294,6 +326,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const ust = h('div.ust-cubuk.ps-ust', {}, yuvarlakDugme(IKON.geri, 'Geri', cikis, 'kucuk'), h('div.orta', {}, gunEtiket), sesDugmesi());
 
   const el = h('div.ps-gun', { 'data-gun': String(gun), 'data-yer': ayar.yer }, sahne, tezgah, ust, efekt_.el);
+  if (resimli) {
+    el.classList.add('ps-resimli');
+    const a = ARKA;
+    // pencerenin açıklığı oyulur (maske): arkasındaki park ve müşteriler görünür, pencereden taşan yerleri duvarın gerisinde
+    const [x0, x1, y0, y1, rx, ry] = [a.pencere.sol, a.pencere.sag, a.pencere.ust, a.tezgah + 0.03, 0.02, 0.036];
+    const maske = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" preserveAspectRatio="none"><path fill-rule="evenodd" d="M0 0H1V1H0Z M${x0} ${y1}V${y0 + ry}Q${x0} ${y0} ${x0 + rx} ${y0}H${x1 - rx}Q${x1} ${y0} ${x1} ${y0 + ry}V${y1}Z"/></svg>`;
+    arkaResim!.style.setProperty('--maske', `url("data:image/svg+xml,${encodeURIComponent(maske)}")`);
+    el.setAttribute(
+      'style',
+      `--arka-url:url("${arkaUrl}");--on-url:url("${onUrl}");--a-sol:${a.pencere.sol};--a-sag:${a.pencere.sag};--a-ust:${a.pencere.ust};--a-tz:${a.tezgah};--a-tzon:${a.tezgahOn}`,
+    );
+    oranYaz(arkaUrl!, el, '--a-oran');
+  }
   // her dokunuşta minik parıltı (tezgâhtaki bütün düğmeler; sıkışma her düğmenin kendi tepkisinde)
   tezgah.addEventListener('pointerdown', (e) => {
     if (!(e.target as Element).closest('button')) return;
@@ -621,7 +666,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       firinDurum();
       return;
     }
-    ic.replaceChildren(...g.parti.parcalar.map((_, k) => h('i.ps-goz-parca', { style: `--i:${k}`, html: urunSvg({ urun: g.parti.urun, sekil: g.parti.sekil, hal: g.parti.urun === 'kapkek' ? 'pismis' : 'pismis' }) })));
+    ic.replaceChildren(...g.parti.parcalar.map((_, k) => h('i.ps-goz-parca', { style: `--i:${k}`, html: urunSvg({ urun: g.parti.urun, sekil: g.parti.sekil, hal: 'pismis', firin: true }) })));
     ic.dataset.adet = String(g.parti.parcalar.length);
   }
   /** Fırının lambası ve göstergesi: çalışıyor mu, pişmiş var mı */
@@ -673,7 +718,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
           const g2 = gozler[i];
           if (!g2 || g2.hal !== 'yanik') return;
           gozler[i] = null;
-          const resim = urunSvg({ urun: g2.parti.urun, sekil: g2.parti.sekil, hal: 'pismis', hamur: '#7B4526' });
+          const resim = urunSvg({ urun: g2.parti.urun, sekil: g2.parti.sekil, hal: 'pismis', hamur: '#7B4526', yanik: true });
           gozCiz(i);
           kinoPervane();
           void kinoYer_(resim, [x, y], P.kino.citir);
