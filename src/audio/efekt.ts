@@ -144,6 +144,11 @@ export const efekt = {
     [67, 72, 76, 79, 84, 88].forEach((n, i) => can(NOTA(n), i * 0.09, 0.2, 0.6));
     hisirti(0.5, 0.5, 3000, 8000, 0.08, 0.5);
   },
+  /** Yumuşak "hı-hı" (ebeveyn kapısında yanlış cevap): iki alçak, kısa, sakin nota */
+  hayir() {
+    can(NOTA(64), 0, 0.12, 0.22);
+    can(NOTA(60), 0.13, 0.12, 0.3);
+  },
   kilitli() {
     ton(300, 0, 0.1, 'square', 0.06, 250);
     ton(250, 0.1, 0.12, 'square', 0.06, 200);

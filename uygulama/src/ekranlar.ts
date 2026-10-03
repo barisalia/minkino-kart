@@ -6,8 +6,9 @@
 import { abonelikEkrani, kilitliIcerik } from '../../src/abonelik/ekran';
 import { kilitleriKur } from '../../src/abonelik/kilit';
 import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
-import { kilitli, premiumMu } from '../../src/engine/erisim';
-import { GIZLILIK_ADRESI, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
+import { saglayici } from '../../src/abonelik/satin';
+import { kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
+import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
 import { efekt } from '../../src/audio/ses';
@@ -16,6 +17,7 @@ import { Karakter, type HareketAdi, type Poz as KPoz } from '../../src/karakter/
 import { type Tepki } from '../../src/mino/mino';
 import { minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
+import { sinifOynat } from '../../src/ui/hareket';
 import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
@@ -24,10 +26,14 @@ import { derinlik, menuOyunlari, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
-  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,sanatci,parti,parti-sahne,orman-esya}/*.webp', '../../assets/okul/sayi-bloklari.webp', '../../assets/film/{kapak,park}/*.webp'],
+  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/okul/sayi-bloklari.webp', '../../assets/film/{kapak,park}/*.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
+/** Ebeveyn Köşesi resmi yuvası: assets/uygulama/ebeveyn-kosesi.webp (gözlüklü, kitaplı Mino); dosya gelince kullanılır */
+const EBEVEYN_RESIM = Object.values(
+  import.meta.glob<string>('../../assets/uygulama/ebeveyn-kosesi.webp', { eager: true, query: '?url', import: 'default' }),
+)[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const LOGO_RENK = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#3E9DF2', '#9B5CE0', '#FF7EB6'];
@@ -199,6 +205,8 @@ export function menuEkrani(app: Uygulama): Ekran {
     kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');
+      // yumuşak dokunma sesi (seçilince ayrıca "seçim" sesi; kilitli kartta sesi ebeveyn kapısı çalar)
+      if (!a.hasAttribute('data-kilitli')) efekt.dokunma();
       // Mino basılan karta bakar (canlılık: karakterler çocuğun ne seçtiğiyle ilgilenir)
       if (AZ_HAREKET) return;
       const k = a.getBoundingClientRect();
@@ -216,6 +224,8 @@ export function menuEkrani(app: Uygulama): Ekran {
       // abonelikli oyun (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
       if (kilitli(k.id)) {
         tepki('mir');
+        // kilit rozeti tatlı bir sallanır (korkutmadan "bu büyüklerle açılır")
+        void sinifOynat(a, 'kilit-salla', 650);
         void kilitliIcerik(app.kok);
         return;
       }
@@ -243,7 +253,8 @@ export function menuEkrani(app: Uygulama): Ekran {
     h('div.ug-gok', { 'aria-hidden': 'true' }, h('i.ug-bulut.ug-bulut-1'), h('i.ug-bulut.ug-bulut-2'), h('i.ug-bulut.ug-bulut-3')),
     h('div.ug-kose', {}, kapi),
     h('header.ug-giris', {}, logo(), h('div.ug-ikili', {}, minoKap, kinoKap)),
-    h('nav.ug-oyunlar', { 'aria-label': 'Oyunlar' }, h(`ul.ug-izgara${oyunlar.length < 7 ? '.ug-az' : ''}`, {}, ...kartlar)),
+    // tek sayıda kart (uygulamada 7): geniş kart (Pasta Otobüsü) son sırayı doldurur, ızgarada boşluk kalmaz
+    h('nav.ug-oyunlar', { 'aria-label': 'Oyunlar' }, h(`ul.ug-izgara${oyunlar.length % 2 ? '.ug-tek' : ''}`, { 'data-adet': String(oyunlar.length) }, ...kartlar)),
   );
 
   // parallax: parmak (ya da fare) ekranda gezdikçe kart katmanları ve bulutlar farklı hızda kayar; yumuşak takip
@@ -298,6 +309,29 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
     await abonelikEkrani(app.kok);
     durumYaz();
   });
+  // satın alımları geri yükle (mağaza kuralı: abonelik ekranına girmeden de bulunabilsin)
+  const geriYukleDugme = h('button.ince-dugme.ug-baglanti.ug-geri-yukle', { type: 'button' }, 'Satın alımları geri yükle');
+  geriYukleDugme.addEventListener('click', async () => {
+    efekt.dokunma();
+    const s = await saglayici();
+    if (!s) {
+      aboneDurum.textContent = 'Abonelik çok yakında. Şimdilik bütün oyunlar açık!';
+      return;
+    }
+    geriYukleDugme.setAttribute('disabled', '');
+    aboneDurum.textContent = 'Satın alımlar kontrol ediliyor…';
+    try {
+      const var_ = await s.geriYukle();
+      premiumAyarla(var_);
+      aboneDurum.textContent = var_ ? 'Minkino Premium geri yüklendi. Teşekkürler!' : 'Bu hesapta etkin bir abonelik bulunamadı.';
+    } catch {
+      aboneDurum.textContent = 'Mağazaya şu an ulaşılamıyor. Lütfen tekrar deneyin.';
+    } finally {
+      geriYukleDugme.removeAttribute('disabled');
+    }
+  });
+  const platform = uygulamaPlatformu();
+  const yonet = platform ? baglanti(ABONELIK_YONETIM[platform], 'Aboneliği yönet') : null;
   const el = h(
     'div.ug-ayarlar',
     {},
@@ -308,11 +342,17 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
       h(
         'div.ug-ayarlar-kutu',
         {},
-        svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
-        ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme] : []),
+        // Gemini çizimi (gözlüklü, kitaplı Mino) gelince o; yoksa ikon
+        EBEVEYN_RESIM
+          ? h('img.ug-ayarlar-resim', { src: EBEVEYN_RESIM, alt: '', draggable: 'false', decoding: 'async' })
+          : svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
+        ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
         h('h2', {}, 'Gizlilik ve güvenlik'),
         h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
         h('div.ug-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),
+        h('h2', {}, 'Bize yazın'),
+        h('p', {}, 'Soru, öneri ya da sorun için:'),
+        h('div.ug-baglantilar', {}, h('a.ince-dugme.ug-baglanti.ug-eposta', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
       ),
     ),
   );
