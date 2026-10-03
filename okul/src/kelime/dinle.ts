@@ -70,9 +70,9 @@ async function tur(s: Sahne, t: DinleTuru, ilk: boolean) {
         sonra: () => s.kinoDon(500),
       });
   }
-  s.adim('sec');
-  await s.soyle(kelimeSozu(t.hedef));
   const k = await dokunSec(s, taslar, (x) => x.dataset.kelime === t.hedef, {
+    adim: 'sec',
+    soru: kelimeSozu(t.hedef),
     yanlis: async (x) => {
       kses.sicrama();
       const [sx, sy] = s.efekt.merkez(x, 0.5, 0.85);

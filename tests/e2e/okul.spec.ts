@@ -227,7 +227,8 @@ for (const yas of [3, 6]) {
     // Okul Yolu: Sayı Bahçesi açık, Ses Kulesi ve Kelime Köprüsü yakında (kilitli)
     await expect(page.locator('.ok-harita .ok-bolge-kart')).toHaveCount(3);
     await expect(page.locator('.ok-bolge-kart[data-bolge="ses"] .ok-yakinda')).toBeVisible();
-    await expect(page.locator('.ok-bolge-kart[data-bolge="kelime"] .ok-yakinda')).toBeVisible();
+    // Kelime Köprüsü açık (okul-kelime.spec.ts)
+    await expect(page.locator('.ok-bolge-kart[data-bolge="kelime"] .ok-yakinda')).toHaveCount(0);
     await page.locator('.ok-bolge-kart[data-bolge="ses"]').click();
     await expect(page.locator('.ok-harita')).toBeVisible();
     await kareAl('harita');

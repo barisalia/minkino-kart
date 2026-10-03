@@ -60,11 +60,22 @@ export function dokunSec(
   s: Sahne,
   kartlar: HTMLElement[],
   dogruMu: (k: HTMLElement) => boolean,
-  o: { yanlis?: (k: HTMLElement) => Promise<void> | void; dokun?: (k: HTMLElement) => void; /** yanlışta nazik "hı-hı" (komik sahnede kapalı) */ nazik?: boolean } = {},
+  o: {
+    yanlis?: (k: HTMLElement) => Promise<void> | void;
+    dokun?: (k: HTMLElement) => void;
+    /** yanlışta nazik "hı-hı" (komik sahnede kapalı) */
+    nazik?: boolean;
+    /** dokunmalar açılınca ekranın adımı (testler) */
+    adim?: string;
+    /** soru: dokunmalar açıldıktan sonra söylenir (çocuk Mino'yu beklemeden dokunabilir) */
+    soru?: string;
+  } = {},
 ): Promise<HTMLElement> {
   const ipucu = new Ipucu(() => kartlar.filter(dogruMu));
   if (TEST_MODU) kartlar.forEach((k) => dogruMu(k) && (k.dataset.dogru = '1'));
   let mesgul = false;
+  if (o.adim) s.adim(o.adim);
+  if (o.soru) void s.soyle(o.soru);
   return new Promise((coz) => {
     for (const k of kartlar) {
       k.addEventListener('click', async () => {

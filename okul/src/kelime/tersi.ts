@@ -78,9 +78,9 @@ async function tur(s: Sahne, c: TersCift, ilk: boolean) {
     return k;
   });
   s.secim.replaceChildren(h('div.ok-k-ters-kartlar', {}, ...kartlar));
-  s.adim('sec');
-  await s.soyle(S.soru);
   const k = await dokunSec(s, kartlar, (x) => x.dataset.taraf === 'a', {
+    adim: 'sec',
+    soru: S.soru,
     yanlis: async () => {
       // dokunduğu durumun adı ("Kapalı!"), sonra soru
       await s.soyle(S.b);

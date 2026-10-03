@@ -62,9 +62,9 @@ async function tur(s: Sahne, t: BoyaTuru, ilk: boolean, biten: HTMLElement[]) {
       });
     }
   }
-  s.adim('boya');
-  await s.soyle(renkSozu(t.renk));
   const k = await dokunSec(s, kovalar, (x) => x.dataset.renk === t.renk, {
+    adim: 'boya',
+    soru: renkSozu(t.renk),
     yanlis: async (x) => {
       await s.soyle(renkSozu(x.dataset.renk ?? ''));
       await s.soyle(renkSozu(t.renk));

@@ -31,7 +31,6 @@ async function tur(s: Sahne, t: EksikTuru, ilk: boolean) {
   });
   s.secim.replaceChildren(h('div.ok-k-ters-kartlar', { 'data-n': '3' }, ...kartlar));
   if (ilk) await s.soyle(KM.eksik.giris);
-  s.adim('sec');
   await s.soyle(C.soru);
 
   /** Seçilen resim boşluğa uçar; boşluktaki resmi döndürür */
@@ -85,11 +84,12 @@ async function tur(s: Sahne, t: EksikTuru, ilk: boolean) {
       mino: KM.eksik.yakala,
       sonra: () => geriKoy(cizme),
     });
-    await s.soyle(C.soru);
   }
 
   const dogru = await dokunSec(s, kartlar, (x) => x.dataset.kelime === t.dogru, {
     nazik: false,
+    adim: 'sec',
+    soru: cizme ? C.soru : undefined,
     yanlis: async (k) => {
       const id = k.dataset.kelime ?? '';
       await komik(id, await bosluga(k));
