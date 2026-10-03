@@ -846,6 +846,28 @@
 .ok-kok .ok-alan > * {
   z-index: 1;
 }
+@media (orientation: portrait) {
+  /*
+   * Dikeyde arka plan tek parça: tepenin altı ekranın dibine kadar aynı çimen (tepenin alt kenarıyla aynı renk),
+   * ağaç-salıncak katmanı tepenin arkasında yarım kesik görünmesin diye gizli; öndeki çalı-çiçek şeridi çimenin üstünde.
+   */
+  .ok-kok .ok-etkinlik:not([data-etkinlik='rakam-ciz']) .ok-orta {
+    display: none;
+  }
+  .ok-kok .ok-etkinlik:not([data-etkinlik='rakam-ciz']) .ok-park::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 42%;
+    background: #74bd4f;
+    z-index: 1;
+  }
+  .ok-kok .ok-etkinlik .ok-on {
+    z-index: 2;
+  }
+}
 /* üst çubuk (söz balonu) oyun alanının üstünde: büyük misafirler, ağaç ya da dal balonu örtmesin */
 .ok-kok .ok-etkinlik > .ok-ust.ust-cubuk:not(.ok-park):not(.ok-efekt) {
   z-index: 2;

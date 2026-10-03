@@ -23,7 +23,7 @@ export function simge(...parcalar: [string, string][]): string {
  * Çıkartma: Gemini'nin çıkartması (assets/okul/kelime/cikartma-<ad>.webp) gelince o, yoksa hazır görsellerden
  * kompozisyon (yedek).
  */
-export const cikartmaVeya = (ad: string, yedek: () => string) => () => (hazir(`okul/kelime/cikartma-${ad}`) ? simge([`okul/kelime/cikartma-${ad}`, 'ok-ks-tam']) : yedek());
+export const cikartmaVeya = (ad: string, yedek: () => string) => () => (hazir(`okul/kelime/cikartma-${ad}`) ? simge([`okul/kelime/cikartma-${ad}`, 'ok-ks-tam ok-ks-cikartma']) : yedek());
 
 /**
  * Sıçrama: damlalar (su mavisi ya da boya rengi) bir noktadan yay çizerek dışa ve yukarı uçar, düşerken söner.
