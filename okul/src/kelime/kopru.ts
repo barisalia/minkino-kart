@@ -19,12 +19,14 @@ import { konfetiPatlat } from '../../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../../src/uygulama';
 import { etkinlikSimgesi, kirpik, parkAdres } from '../cizim';
-import { AZ_HAREKET, Efekt } from '../efekt';
+import { AZ_HAREKET, Efekt, oynat } from '../efekt';
 import { bolge, bolgeEtkinlikleri, oynananlar, yasUygun } from '../etkinlik';
 import { kayit, siradaki } from '../kayit';
 import { KINO_ORAN } from '../sahne';
 import { ses } from '../sesler';
+import { sicrat } from './ortak';
 import { kelimeGorsel } from './resim';
+import { kses } from './ses';
 
 // ---------------------------------------------------------------- köprünün kendi kaydı
 export const KOPRU_ANAHTAR = 'minkino-okul-kelime-v1';
@@ -70,9 +72,11 @@ const TAS_YER: [number, number][] = [
   [0.775, 0.36],
 ];
 /** Mino ile Kino'nun ayaklarının yeri: başta sol kıyıda, şenlikte karşı kıyıda; yürüyüş köprünün üstünden */
-const IKILI_BAS: [number, number] = [0.13, 0.9];
-const IKILI_SON: [number, number] = [0.87, 0.74];
-const YURUYUS: [number, number][] = [IKILI_BAS, [0.27, 0.71], [0.42, 0.53], [0.57, 0.47], [0.72, 0.47], IKILI_SON];
+const IKILI_BAS: [number, number] = [0.22, 0.92];
+const IKILI_SON: [number, number] = [0.78, 0.72];
+/** Derenin taşların fırladığı yeri (köprünün altındaki su) */
+const DERE: [number, number] = [0.66, 0.8];
+const YURUYUS: [number, number][] =[IKILI_BAS, [0.27, 0.71], [0.42, 0.53], [0.57, 0.47], [0.72, 0.47], IKILI_SON];
 
 // ---------------------------------------------------------------- rozet
 /** "Kelime Ustası" rozeti: Gemini'nin rozeti gelene kadar madalyanın ortasında köprü */
@@ -184,32 +188,88 @@ export function kopruEkrani(app: Uygulama): Ekran {
   const zamanlar: number[] = [];
   const bekle = (ms: number) => new Promise<void>((r) => zamanlar.push(window.setTimeout(r, sure(ms))));
 
-  /** Taş yerine düşer: yukarıdan gelir, oturur, tık + parıltı */
+  /**
+   * Taş dereden yerine uçar: suyun içinden fırlar (sıçrama), kavis çizer, yerine oturur (ezilip toparlanır), tık +
+   * parıltı; sonra Kino taşı dener: üstüne zıplar, taş hafifçe çöker, Kino yerine döner.
+   */
   async function tasKoy(t: HTMLElement) {
+    const W = sahne.clientWidth;
+    const H = sahne.clientHeight;
+    const tx = (parseFloat(t.style.left) / 100) * W;
+    const ty = (parseFloat(t.style.top) / 100) * H;
+    // dere: köprünün altındaki su (görselde ~ %66, %80)
+    const dx = DERE[0] * W - tx;
+    const dy = DERE[1] * H - ty;
+    const [sx, sy] = efektK.merkez(sahne, DERE[0], DERE[1]);
     t.dataset.durum = 'bitti';
-    t.classList.add('ok-kp-yeni');
-    await bekle(380);
+    kses.sicrama();
+    sicrat(efektK, sx, sy, '#7fd0ff', 14, 1.1);
+    if (!AZ_HAREKET && !TEST_MODU) {
+      const a = t.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px) scale(0.35)`, opacity: 0, easing: 'cubic-bezier(.2,.7,.4,1)' },
+          { transform: `translate(${dx * 0.5}px, ${Math.min(dy, 0) * 0.5 - H * 0.28}px) scale(1.05) rotate(-12deg)`, opacity: 1, offset: 0.5, easing: 'cubic-bezier(.5,0,.8,.4)' },
+          { transform: 'translate(0, 0) scale(1.18, 0.8)', offset: 0.82, easing: 'cubic-bezier(.3,1.6,.5,1)' },
+          { transform: 'none' },
+        ],
+        { duration: 900 },
+      );
+      await a.finished.catch(() => undefined);
+    }
     if (kapandi) return;
-    ses.dus();
     ses.tik();
+    kses.boing();
     const [x, yy] = efektK.merkez(t);
     efektK.parilti(x, yy, 10);
-    await bekle(260);
+    // Kino taşı dener
+    const kinoKap = ikiz.el.querySelector<HTMLElement>('.ok-ikili-kino');
+    if (kinoKap && !AZ_HAREKET && !TEST_MODU) {
+      const k = kinoKap.getBoundingClientRect();
+      const r = t.getBoundingClientRect();
+      const kx = r.left + r.width / 2 - (k.left + k.width / 2);
+      const ky = r.top + r.height * 0.4 - (k.bottom - k.height * 0.08);
+      void ikiz.kino.oynat('sevin', 1400);
+      const hop = kinoKap.animate(
+        [
+          { transform: 'none', easing: 'ease-in' },
+          { transform: 'translate(0, 6px) scale(1.1, 0.88)', offset: 0.12, easing: 'cubic-bezier(.3,.6,.4,1)' },
+          { transform: `translate(${kx * 0.5}px, ${Math.min(ky, 0) - 70}px) scale(0.92, 1.1)`, offset: 0.32, easing: 'cubic-bezier(.5,0,.9,.5)' },
+          { transform: `translate(${kx}px, ${ky}px) scale(1.15, 0.85)`, offset: 0.48, easing: 'cubic-bezier(.3,1.5,.5,1)' },
+          { transform: `translate(${kx}px, ${ky}px)`, offset: 0.6, easing: 'cubic-bezier(.5,0,.5,1)' },
+          { transform: `translate(${kx * 0.5}px, ${Math.min(ky, 0) - 60}px) scale(0.94, 1.08)`, offset: 0.8, easing: 'cubic-bezier(.5,0,.9,.5)' },
+          { transform: 'translate(0, 0) scale(1.12, 0.88)', offset: 0.93, easing: 'ease-out' },
+          { transform: 'none' },
+        ],
+        { duration: 1500 },
+      );
+      zamanlar.push(window.setTimeout(() => !kapandi && (kses.boing(), oynat(t, 'ok-k-bas')), 720));
+      await hop.finished.catch(() => undefined);
+    } else await bekle(260);
   }
 
-  /** Mino ile Kino köprüden karşıya yürür (yalnız transform), sonra şenlik */
+  /** Mino ile Kino köprüden karşıya hoplaya hoplaya yürür (yalnız transform; her adım yaylı), sonra şenlik */
   async function karsiyaGec() {
     const W = sahne.clientWidth;
     const H = sahne.clientHeight;
     ikiliYer.classList.add('ok-kp-yuruyor');
-    if (!AZ_HAREKET) void ikiz.kino.oynat('yuru', 3200);
+    const SURE = 3600;
+    if (!AZ_HAREKET) void ikiz.kino.oynat('yuru', SURE);
     const [x0, y0] = IKILI_BAS;
-    const a = ikiliYer.animate(
-      YURUYUS.map(([x, yy], i) => ({ transform: `translate(${(x - x0) * W}px, ${(yy - y0) * H - (i % 2 ? 10 : 0)}px)`, offset: i / (YURUYUS.length - 1) })),
-      { duration: sure(3200), easing: 'linear', fill: 'forwards' },
-    );
+    // her iki nokta arasında bir sekme: tepe noktası ara kare
+    const kareler: Keyframe[] = [];
+    const n = YURUYUS.length - 1;
+    YURUYUS.forEach(([x, yy], i) => {
+      const px = (x - x0) * W;
+      const py = (yy - y0) * H;
+      kareler.push({ transform: `translate(${px}px, ${py}px)`, offset: i / n, easing: 'cubic-bezier(.3,0,.6,1)' });
+      if (i < n) {
+        const [x2, y2] = YURUYUS[i + 1];
+        kareler.push({ transform: `translate(${((x + x2) / 2 - x0) * W}px, ${((yy + y2) / 2 - y0) * H - H * 0.07}px)`, offset: (i + 0.5) / n, easing: 'cubic-bezier(.4,0,.7,1)' });
+      }
+    });
+    const a = ikiliYer.animate(kareler, { duration: sure(SURE), fill: 'forwards' });
     if (!AZ_HAREKET) {
-      for (let i = 0; i < 6; i++) zamanlar.push(window.setTimeout(() => !kapandi && ikiz.mino.tepki('zipla', 0.5), sure(i * 520)));
+      for (let i = 0; i < n; i++) zamanlar.push(window.setTimeout(() => !kapandi && (ikiz.mino.tepki('zipla', 0.5), kses.hop(i)), sure((i * SURE) / n)));
     }
     await a.finished.catch(() => undefined);
     if (kapandi) return;

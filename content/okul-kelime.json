@@ -37,7 +37,7 @@
       "bitti": "Rengarenk oldu!"
     },
     "grup": {
-      "giris": "Her resmi kendi sepetine koy!",
+      "giris": "Meyveler sepete, hayvanlar çayıra, taşıtlar yola!",
       "yakala": "Balık bir hayvan Kino!",
       "meyve": "Bu bir meyve!",
       "hayvan": "Bu bir hayvan!",
@@ -63,6 +63,7 @@
     "dinle_son": "Hav! Haklısın!",
     "hecele": "Karpuz! Bam bam bam bam bam!",
     "hecele_son": "İki mi? Bam bam!",
+    "hecele_islak": "Şap! Suya düştüm!",
     "tersi": {
       "acik": "Kapattım!",
       "buyuk": "Minicik top getirdim!",
@@ -75,6 +76,11 @@
     "boya_son": "Silkelendim, tertemizim!",
     "grup": "Balık yüzer, taşıt olur!",
     "grup_son": "Tamam, balık hayvan!",
+    "grup_yanlis": {
+      "meyve": "Sepette o mu? Hi hi!",
+      "hayvan": "Bu çayırda otlamaz ki!",
+      "tasit": "Bu yolda gitmez ki!"
+    },
     "eksik_dogru": "Mmm, çok güzel!",
     "komik": {
       "cizme": "Ihh! Lastik tadı var!",

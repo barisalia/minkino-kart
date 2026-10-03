@@ -11,7 +11,8 @@ import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { boyaTurlari, kelime, renk, renkSozu, type BoyaTuru } from './model';
-import { dokunSec, KA, KK, KM, simge } from './ortak';
+import { dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
+import { kses } from './ses';
 import { boya, boyanabilir } from './resim';
 
 /** Renkli boya kovası */
@@ -74,8 +75,11 @@ async function tur(s: Sahne, t: BoyaTuru, ilk: boolean, biten: HTMLElement[]) {
   efekt.dokunma();
   const damla = h('span.ok-k-damla', { style: `--renk:${renk(t.renk).deger}` });
   await s.efekt.ucur(damla, s.efekt.merkez(k, 0.5, 0.2), s.efekt.merkez(nesne, 0.5, 0.55), { ms: 520, kavis: -90, boy0: 0.6, boy1: 1.4 });
-  ses.dus();
+  kses.slap();
+  const [bx, by] = s.efekt.merkez(nesne, 0.5, 0.55);
+  sicrat(s.efekt, bx, by, renk(t.renk).deger, 16, 1.3);
   boya(nesne, renk(t.renk).deger);
+  oynat(nesne, 'ok-k-bas');
   await s.ovgu(nesne);
   await s.soyle(renkSozu(t.renk));
   k.classList.remove('ok-k-dok');

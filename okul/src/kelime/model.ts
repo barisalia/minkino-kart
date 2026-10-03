@@ -97,6 +97,8 @@ export const GEMINI_KELIME: Record<string, string> = {
   kemik: 'köpek kemiği (klasik iki ucu yumru kemik), krem beyazı',
   'havlu-islak': 'ıslak, sarkık mavi havlu; ucundan su damlaları damlıyor (banyo/havlu-mavi ile aynı havlu)',
   'rozet-kelime': '“Kelime Ustası” rozeti: altın madalya, iki mavi kurdele, ortada resimli taşlı küçük köprü',
+  agil: 'hayvan ağılı: önden bakan alçak tahta çit, içi yeşil çimen, üstü açık (hayvanlar içine konur)',
+  garaj: 'oyuncak garaj: önden bakan küçük kırmızı çatılı garaj, kapısı açık, önünde kısa yol',
 };
 
 const sec = <T>(dizi: T[], rnd: Rnd): T => dizi[Math.floor(rnd() * dizi.length)];

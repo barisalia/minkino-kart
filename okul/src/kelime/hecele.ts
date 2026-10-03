@@ -1,9 +1,11 @@
 /**
- * Kelime Köprüsü 2 · Alkışla hecele (hece sayma). Resimli kelime (karpuz) heceleri kadar taşla gelir; Mino heceleyerek
- * söyler ("Kar!", "Puz!"), her hecede bir taş parlar. Çocuk davula her hece için bir kez vurur (yalnız dokunma, mikrofon
- * yok): her vuruşta bir taş yanar ve hecesi söylenir. Tam sayıda durunca övgü ve sayı ("İki!"); fazlada "Bir fazla
- * oldu!" (ceza yok, Mino yeniden heceler); eksikte bekleyince "Biraz daha vur!".
- * Hece bölme: ses-testi'nin Türkçe hecele()'si. Kino (ilk kelime): karpuza beş kere vurur; Mino: "Kar-puz. İki!"
+ * Kelime Köprüsü 2 · Alkışla hecele (hece sayma). Resimli kelimenin (karpuz) altında bir dere ve kelimenin hecesi
+ * kadar basamak taşı. Mino heceleyerek söyler ("Kar!", "Puz!"), her hecede bir taş parlar. Sonra çocuk davulu çalar:
+ * her vuruşta bir taş yanar, hecesi söylenir ve Kino o taşa zıplar. Tam sayıda durunca Kino karşı kıyıya atlar:
+ * övgü ve sayı ("İki!"). Fazla vurunca Kino son taştan suya düşer, şap! (ceza yok, komik): "Bir fazla oldu!" ve
+ * yeniden. Eksikte bekleyince "Biraz daha vur!". Yalnız dokunma; mikrofon yok.
+ * Hece bölme: ses-testi'nin Türkçe hecele()'si. Kino (ilk kelime): karpuza beş kere vurur, iki taştan sonra suya
+ * düşer; Mino: "Dur Kino, beni dinle!" "Kar! Puz! İki!"
  */
 import { h, TEST_MODU } from '../../../src/ui/dom';
 import { oynat } from '../efekt';
@@ -12,8 +14,9 @@ import type { Sahne } from '../sahne';
 import { sayiSozu } from '../sayi';
 import { ses } from '../sesler';
 import { heceDurumu, heceler, heceSozu, heceTurlari, kelime, kelimeSozu, KINO_HECE } from './model';
-import { KA, KK, KM, simge } from './ortak';
+import { KA, KK, KM, sicrat, simge } from './ortak';
 import { kelimeEl, kelimeGorsel } from './resim';
+import { kses } from './ses';
 
 /** Vuruş dizisinin sonu sayılan sessizlik */
 const TAM_MS = 900;
@@ -29,8 +32,8 @@ async function heceleSoyle(s: Sahne, hs: string[], taslar: HTMLElement[]) {
     const t = taslar[i];
     t.classList.add('ok-k-parla');
     oynat(t, 'ok-zipla');
-    ses.pit(i);
-    await Promise.all([s.soyle(heceSozu(hs[i])), s.bekle(420)]);
+    kses.davul(i);
+    await Promise.all([s.soyle(heceSozu(hs[i])), s.bekle(450)]);
     t.classList.remove('ok-k-parla');
   }
 }
@@ -38,32 +41,57 @@ async function heceleSoyle(s: Sahne, hs: string[], taslar: HTMLElement[]) {
 async function tur(s: Sahne, id: string, ilk: boolean) {
   const hs = heceler(id);
   const n = hs.length;
-  const taslar = hs.map((hc, i) => h('span.ok-k-hece', { style: `--i:${i}`, 'data-hece': hc }, h('img', { src: kelimeGorsel('film/esya/tas'), alt: '', draggable: 'false' }), h('b', {}, hc)));
-  const fazla = h('span.ok-k-hece.ok-k-fazla', { 'aria-hidden': 'true' }, h('img', { src: kelimeGorsel('film/esya/tas'), alt: '', draggable: 'false' }));
+  const tasImg = () => h('img', { src: kelimeGorsel('film/esya/tas'), alt: '', draggable: 'false' });
+  const taslar = hs.map((hc, i) => h('span.ok-k-hece', { style: `--i:${i}`, 'data-hece': hc }, tasImg(), h('b', {}, hc)));
+  // fazladan vuruşta Kino'nun düştüğü su (son taşın ötesi)
+  const su = h('span.ok-k-hece-su', { 'aria-hidden': 'true' });
   const resim = h('div.ok-k-hece-resim', { 'aria-label': kelime(id).ad }, kelimeEl(id));
-  s.alan.replaceChildren(h('div.ok-k-hecele', { 'data-n': String(n) }, resim, h('div.ok-k-taslar', {}, ...taslar, fazla)));
+  const dere = h('div.ok-k-dere', {}, h('img.ok-k-dere-su', { src: kelimeGorsel('orman-esya/golet'), alt: '', draggable: 'false' }), h('div.ok-k-taslar', {}, ...taslar, su));
+  s.alan.replaceChildren(h('div.ok-k-hecele', { 'data-n': String(n) }, resim, dere));
   s.el.dataset.hedef = String(n);
   s.el.dataset.vurus = '0';
   const isik = (k: number) => taslar.forEach((t, i) => t.classList.toggle('ok-k-yandi', i < k));
 
+  // Kino'nun zıplamaları sırayla (hızlı vuruşta kuyruk)
+  let zipla: Promise<void> = Promise.resolve();
+  const tasaZipla = (el: HTMLElement) =>
+    (zipla = zipla.then(async () => {
+      if (s.kapandi()) return;
+      const [x, y] = s.efekt.merkez(el, 0.5, 0.45);
+      await s.kinoGit(x, y, 340);
+      kses.boing();
+      oynat(el, 'ok-k-bas');
+    }));
+  const suyaDus = () =>
+    (zipla = zipla.then(async () => {
+      if (s.kapandi()) return;
+      const [x, y] = s.efekt.merkez(su, 0.5, 0.6);
+      await s.kinoGit(x, y + 30, 380);
+      kses.sicrama();
+      sicrat(s.efekt, x, y, '#6cc4ff', 14, 1.2);
+      s.kinoIfade('saskin', 1400);
+      s.kinoOynat('huy', 900);
+    }));
+
   if (ilk) await s.soyle(KM.hecele.giris);
   await s.soyle(kelimeSozu(id));
   if (id === KINO_HECE && ilk) {
-    // Kino beş kere vurur
+    // Kino beş kere vurur: iki taştan sonra suya düşer
     await s.kinoHata({
       kino: KK.hecele,
       poz: 'kalk',
       once: async () => {
-        s.kinoOynat('dans', 1800);
         for (let i = 0; i < 5; i++) {
-          ses.davul();
-          oynat(resim, 'ok-irkil');
-          oynat(fazla, 'ok-hmm');
-          await s.bekle(240);
+          kses.davul(i);
+          if (i < n) void tasaZipla(taslar[i]);
+          else if (i === n) void suyaDus();
+          await s.bekle(360);
         }
+        await zipla;
       },
       mino: KM.hecele.dur,
       sonra: async () => {
+        await s.kinoDon(450);
         await heceleSoyle(s, hs, taslar);
         await s.soyle(sayiSozu(n));
       },
@@ -84,8 +112,12 @@ async function tur(s: Sahne, id: string, ilk: boolean) {
     const degerlendir = async () => {
       const d = heceDurumu(n, vurus);
       mesgul = true;
+      await zipla;
       if (d === 'tam') {
         dinleyici.vur = null;
+        // karşı kıyıya atlar
+        await s.kinoDon(450);
+        kses.sicrama();
         taslar.forEach((t, i) => {
           t.style.setProperty('--j', String(i));
           t.classList.add('ok-k-dans');
@@ -97,11 +129,11 @@ async function tur(s: Sahne, id: string, ilk: boolean) {
       }
       if (d === 'fazla') {
         yanlis++;
-        s.nazik(fazla);
+        await s.soyle(KK.hecele_islak, 'kino');
+        await s.kinoDon(450);
         await s.soyle(KM.hecele.fazla);
         vurus = 0;
         s.el.dataset.vurus = '0';
-        fazla.classList.remove('ok-k-yandi');
         isik(0);
         // 2 yanlıştan sonra Mino yeniden heceler (ipucu)
         if (yanlis >= 2) await heceleSoyle(s, hs, taslar);
@@ -118,15 +150,11 @@ async function tur(s: Sahne, id: string, ilk: boolean) {
       if (vurus <= n) {
         const t = taslar[vurus - 1];
         isik(vurus);
-        oynat(t, 'ok-zipla');
-        ses.pit(vurus - 1);
+        void tasaZipla(t);
         void s.soyle(heceSozu(hs[vurus - 1]));
-      } else {
-        fazla.classList.add('ok-k-yandi');
-        oynat(fazla, 'ok-hmm');
-      }
+      } else if (vurus === n + 1) void suyaDus();
       clearTimeout(zaman);
-      const ms = vurus < n ? EKSIK_MS : vurus === n ? TAM_MS : 500;
+      const ms = vurus < n ? EKSIK_MS : vurus === n ? TAM_MS : 600;
       zaman = window.setTimeout(() => void degerlendir(), TEST_MODU ? Math.min(ms, 150) : ms);
     };
   });
@@ -140,11 +168,14 @@ etkinlikKaydet({
   ad: KA.etkinlikler['kelime-hecele'],
   simge: () => simge(['orman-esya/davul', 'ok-ks-davul'], ['meyveler/karpuz', 'ok-ks-karpuz']),
   async oyna(s) {
+    let sira = 0;
     const davul = h('button.ok-davul.ok-k-davul', { type: 'button', 'aria-label': 'Davul' }, h('img', { src: kelimeGorsel('orman-esya/davul'), alt: '', draggable: 'false' }));
     davul.addEventListener('pointerdown', (e) => {
       e.preventDefault();
-      ses.davul();
+      kses.davul(sira++ % 4);
       oynat(davul, 'ok-vur');
+      const [x, y] = s.efekt.merkez(davul, 0.5, 0.2);
+      s.efekt.parilti(x, y, 5, 0.6);
       dinleyici.vur?.();
     });
     s.kapaninca(() => (dinleyici.vur = null));
@@ -158,5 +189,6 @@ etkinlikKaydet({
     }
     s.tur(turlar.length);
     s.secim.replaceChildren();
+    ses.sihir();
   },
 });

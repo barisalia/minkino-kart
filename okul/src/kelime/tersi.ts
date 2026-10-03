@@ -10,9 +10,9 @@ import { kirpik, ton } from '../cizim';
 import { oynat } from '../efekt';
 import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
-import { ses } from '../sesler';
 import { tersTurlari, type TersCift } from './model';
 import { dokunSec, KA, KK, KM, simge } from './ortak';
+import { kses } from './ses';
 import { gorselEl, hazir, kelimeGorsel } from './resim';
 
 type Taraf = 'a' | 'b';
@@ -63,9 +63,10 @@ async function tur(s: Sahne, c: TersCift, ilk: boolean) {
     poz: 'kalk',
     once: async () => {
       await s.kinoGit(x, y, 600);
-      ses.pof();
+      kses.ters();
+      s.kinoOynat('huy', 700);
       pano.replaceChildren(gorunus(c, 'b'));
-      oynat(pano, 'ok-yapis');
+      oynat(pano, 'ok-k-ters-don');
     },
     mino: ilk ? KM.tersi.yakala : undefined,
   });
@@ -94,7 +95,8 @@ async function tur(s: Sahne, c: TersCift, ilk: boolean) {
   k.classList.add('ok-k-gitti');
   await s.efekt.ucur(icerik, [x0, y0], [x1, y1], { ms: 520, boy0: 0.6, boy1: 1 });
   pano.replaceChildren(gorunus(c, 'a'));
-  oynat(pano, 'ok-yapis');
+  oynat(pano, 'ok-k-ters-don');
+  kses.boing();
   await s.ovgu(pano);
   s.kinoIfade('utangac', 1200);
   await s.soyle(S.ters);

@@ -76,8 +76,10 @@
 .ok-kok .ok-k-kart > .ok-resim,
 .ok-kok .ok-k-kart > .ok-k-yer,
 .ok-kok .ok-k-kart > .ok-k-gorunus {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 9%;
+  width: 82%;
+  height: 82%;
   pointer-events: none;
 }
 .ok-kok .ok-k-gel {
@@ -701,7 +703,7 @@
   .ok-kok .ok-kp-sahne {
     /* dikeyde köprü yanlardaki boş çimenden kırpılarak büyür */
     width: min(128cqw, 140cqh);
-    top: 46%;
+    top: 55%;
   }
 }
 .ok-kok .ok-kp-kopru {

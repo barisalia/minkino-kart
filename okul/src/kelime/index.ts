@@ -4,6 +4,7 @@
  * (oyun.ts). Etkinlik sırası belgedeki gibi: dinle, hecele, tersi, boya, grup, eksik.
  */
 import './kelime.css';
+import './sahne.css';
 import K from '../../../content/okul-kelime.json';
 import { bolge } from '../etkinlik';
 import { kopruEkrani, kelimeRozeti } from './kopru';
