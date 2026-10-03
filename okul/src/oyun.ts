@@ -22,6 +22,8 @@ import './etkinlikler/kac-alkis';
 import './etkinlikler/rakam-ciz';
 import './etkinlikler/kuslar';
 import './etkinlikler/piknik';
+// Ses Kulesi'nin harf odaları (A N E T İ L)
+import './ses/odalar';
 import { kaydetKayit, kayit, sifirla } from './kayit';
 
 export type { BaslatSecenekleri };

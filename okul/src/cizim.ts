@@ -4,6 +4,8 @@
  * assets/okul/<ad>.webp. Yuvalardaki şimdiki dosyalar sade yer tutuculardır; Gemini çizince yalnız dosya değişir
  * (aynı ad, aynı en-boy oranı, şeffaf zemin). Liste: GORSEL_YUVALARI.
  */
+import { etkinlik } from './etkinlik';
+
 const GORSEL = import.meta.glob<string>(
   [
     '../../assets/okul/*.webp',
@@ -99,7 +101,15 @@ export const KULE = () => resim('okul/kule');
 export const KOPRU = () => resim('okul/kopru');
 export const OKUL = () => resim('okul/okul');
 export const EV = () => resim('canlan/ev');
-export const rozet = () => kirpik('okul/rozet-sayi', 'ok-rozet-resim');
+/**
+ * Bölge rozeti. Ses Kulesi ("Ses Dedektifi"): assets/okul/rozet-ses.webp gelince o; gelene kadar Sayı Ustası madalyası,
+ * ortasında 123 yerine Aa (yumuşak altın yama, harfler uygulamanın yazı tipiyle).
+ */
+export const rozet = (b = 'sayi') => {
+  if (b !== 'ses') return kirpik('okul/rozet-sayi', 'ok-rozet-resim');
+  if (gorsel('okul/rozet-ses')) return resim('okul/rozet-ses', 'ok-rozet-resim');
+  return `<span class="ok-rozet-ses">${kirpik('okul/rozet-sayi', 'ok-rozet-resim')}<span class="ok-rozet-yama"><b>A</b><b>a</b></span></span>`;
+};
 
 // ---------------------------------------------------------------- duraklar ve çıkartmalar
 /** Etkinliğin simgesi (durakta ve çıkartmada): hazır görsellerden küçük bir kompozisyon */
@@ -127,6 +137,7 @@ export function etkinlikSimgesi(id: string): string {
     case 'piknik':
       return `<span class="ok-simge-yigin">${kirpik('okul/piknik-ortusu', 'ok-s-ortu')}${img('meyveler/elma', 'ok-s-ortu-elma')}</span>`;
     default:
-      return '';
+      // öteki ünitelerin etkinlikleri kendi simgesini verir (EtkinlikTanim.simge)
+      return etkinlik(id)?.simge?.() ?? '';
   }
 }

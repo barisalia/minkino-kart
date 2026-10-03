@@ -9,6 +9,7 @@
  * ortak sonuç ekranı (çıkartma yapıştırma, rozet) açılır.
  */
 import O from '../../content/okul.json';
+import SES from '../../content/okul-ses.json';
 import type { Sahne } from './sahne';
 
 export type BolgeId = 'sayi' | 'ses' | 'kelime';
@@ -18,13 +19,15 @@ export interface Bolge {
   ad: string;
   rozet: string;
   renk: string;
-  /** ilk sürümde açık mı (Ses Kulesi ve Kelime Köprüsü "yakında") */
+  /** açık mı (kapalıysa haritada "yakında") */
   acik: boolean;
+  /** rozet töreninde Mino'nun sözü (yoksa O.mino.rozet) */
+  rozetSozu?: string;
 }
 
 export const BOLGELER: Bolge[] = [
   { id: 'sayi', ad: O.arayuz.bolgeler.sayi, rozet: O.arayuz.rozetler.sayi, renk: '#5DBE3F', acik: true },
-  { id: 'ses', ad: O.arayuz.bolgeler.ses, rozet: O.arayuz.rozetler.ses, renk: '#9B5CE0', acik: false },
+  { id: 'ses', ad: O.arayuz.bolgeler.ses, rozet: O.arayuz.rozetler.ses, renk: '#9B5CE0', acik: true, rozetSozu: SES.mino.rozet },
   { id: 'kelime', ad: O.arayuz.bolgeler.kelime, rozet: O.arayuz.rozetler.kelime, renk: '#3E9DF2', acik: false },
 ];
 export const bolge = (id: string) => BOLGELER.find((b) => b.id === id);
@@ -41,6 +44,8 @@ export interface EtkinlikTanim {
    * oradan okunacak; bu dosya kilit koymaz.
    */
   ucretsiz?: boolean;
+  /** Durak ve çıkartma simgesi (HTML); yoksa cizim.ts → etkinlikSimgesi'nin kendi listesi */
+  simge?: () => string;
   /** Etkinliği oynatır; bitince çözülür */
   oyna: (s: Sahne) => Promise<void>;
 }
