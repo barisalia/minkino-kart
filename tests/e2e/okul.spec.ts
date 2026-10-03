@@ -37,7 +37,7 @@ async function bitene(page: Page, ad: string, adim: () => Promise<void>) {
   const son = Date.now() + 60_000;
   let sonHata: unknown = null;
   while (Date.now() < son) {
-    if (await page.locator('.ok-sonuc').count()) return;
+    if (await page.locator('.ok-sonuc:not(.cikiyor)').count()) return;
     try {
       await adim();
     } catch (e) {
@@ -149,7 +149,7 @@ async function oyna(page: Page, id: string, kareAl: (ad: string) => Promise<void
           await page.mouse.up();
           await page.waitForTimeout(60);
         }
-        await expect.poll(async () => (await page.locator('.ok-sonuc').count()) > 0 || (await ekran(page).getAttribute('data-tur', KISA)) !== tur, { timeout: 15000 }).toBe(true);
+        await expect.poll(async () => (await page.locator('.ok-sonuc:not(.cikiyor)').count()) > 0 || (await ekran(page).getAttribute('data-tur', KISA)) !== tur, { timeout: 15000 }).toBe(true);
       });
     case 'kuslar':
       return bitene(page, id, async () => {
@@ -249,7 +249,7 @@ for (const yas of [3, 6]) {
     for (const id of oynanacak) {
       await oyna(page, id, kareAl);
       // Kino'nun hata anı her etkinlikte (Kino komik hatayı yapar, çocuk düzeltir)
-      await expect(page.locator('.ok-sonuc')).toBeVisible();
+      await expect(page.locator('.ok-sonuc:not(.cikiyor)')).toBeVisible();
       const devam = await sonuc(page, id, kareAl);
       if (id !== oynanacak[oynanacak.length - 1]) expect(devam, id).toBe(true);
     }

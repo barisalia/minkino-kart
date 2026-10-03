@@ -30,7 +30,7 @@ const tikla = async (l: Locator) => {
 async function bitene(page: Page, ad: string, adim: () => Promise<void>) {
   const son = Date.now() + 90_000;
   while (Date.now() < son) {
-    if (!(await etkinlikte(page, ad)) || (await page.locator('.ok-sonuc').count())) return;
+    if (!(await etkinlikte(page, ad)) || (await page.locator('.ok-sonuc:not(.cikiyor)').count())) return;
     try {
       await adim();
     } catch {
@@ -181,10 +181,11 @@ test('Ses Kulesi: yarıda çıkınca kaldığı etkinlikten devam; 6 oda bitince
   const s = page.locator('.ok-sonuc');
   await expect(s).toHaveAttribute('data-durum', 'yapistir', { timeout: 15000 });
   await surukle(page, page.locator('.ok-yeni-cikartma'), page.locator('.ok-yuva[data-yuva="ses-l"]'));
-  await expect(s).toHaveAttribute('data-durum', 'rozet', { timeout: 10000 });
+  // rozet töreni test modunda çok kısa: sonunda Mino'nun göğsünde Ses Dedektifi rozeti
+  await expect(s).toHaveAttribute('data-durum', 'bitti', { timeout: 10000 });
+  await expect(page.locator('.ok-gogus-rozet').first()).toBeVisible();
   await page.waitForTimeout(400);
   await page.screenshot({ path: 'tests/screens/okul-ses-rozet.png' });
-  await expect(s).toHaveAttribute('data-durum', 'bitti', { timeout: 10000 });
   const kayit = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-okul-v1') ?? '{}'));
   expect(kayit.rozet).toContain('ses');
   expect(hatalar).toEqual([]);
