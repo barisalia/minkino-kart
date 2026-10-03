@@ -14,7 +14,7 @@ import { Ipucu, type Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { geriGonder, hedefliSurukle } from '../surukle';
 import { grubaUyar, grupResimleri, kelime, kelimeSozu, KATEGORI_SIMGE, KATEGORILER, KINO_GRUP, type Kategori } from './model';
-import { KA, KK, KM, simge } from './ortak';
+import { cikartmaVeya, KA, KK, KM, simge } from './ortak';
 import { gorselEl, hazir, kelimeEl } from './resim';
 import { kses } from './ses';
 
@@ -60,7 +60,7 @@ etkinlikKaydet({
   id: 'kelime-grup',
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-grup'],
-  simge: () => simge(['pazar/sepet', 'ok-ks-sepet'], ['meyveler/elma', 'ok-ks-elma'], ['tasitlar/araba', 'ok-ks-araba']),
+  simge: cikartmaVeya('grup', () => simge([hazir('okul/kelime/meyve-sepeti-bos') ? 'okul/kelime/meyve-sepeti-bos' : 'pazar/sepet', 'ok-ks-sepet'], ['meyveler/elma', 'ok-ks-elma'], ['tasitlar/araba', 'ok-ks-araba'])),
   async oyna(s) {
     const resimler = grupResimleri(s.yas, s.rnd);
     s.turlar(1);

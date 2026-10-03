@@ -7,7 +7,7 @@
  */
 import K from '../../../content/okul-kelime.json';
 import O from '../../../content/okul.json';
-import { erisimVarMi } from '../../../src/abonelik/kilit';
+import { erisimVarMi, kilitleriKur } from '../../../src/abonelik/kilit';
 import { efekt, konus } from '../../../src/audio/ses';
 import type { Depo } from '../../../src/engine/ilerleme';
 import { durum } from '../../../src/engine/ilerleme';
@@ -144,13 +144,16 @@ export function kopruEkrani(app: Uygulama): Ekran {
     return t;
   });
   const ikiliYer = h('div.ok-kp-ikili', {}, ikiz.el);
-  // karşı yakadaki şenlik: flama ve balonlar (şenlikte belirir)
-  const flama = h(
-    'div.ok-kp-senlik',
-    { 'aria-hidden': 'true' },
-    h('img.ok-kp-flama', { src: kelimeGorsel('parti/flama'), alt: '', draggable: 'false' }),
-    h('img.ok-kp-balon', { src: kelimeGorsel('film/esya/balon'), alt: '', draggable: 'false' }),
-  );
+  // karşı yakadaki şenlik (şenlikte belirir): Gemini'nin kopru-senlik çizimi gelince o, yoksa flama ve balonlar
+  const senlikResim = kelimeGorsel('okul/kelime/kopru-senlik');
+  const flama = senlikResim
+    ? h('div.ok-kp-senlik.ok-kp-senlik-resim', { 'aria-hidden': 'true' }, h('img', { src: senlikResim, alt: '', draggable: 'false' }))
+    : h(
+        'div.ok-kp-senlik',
+        { 'aria-hidden': 'true' },
+        h('img.ok-kp-flama', { src: kelimeGorsel('parti/flama'), alt: '', draggable: 'false' }),
+        h('img.ok-kp-balon', { src: kelimeGorsel('film/esya/balon'), alt: '', draggable: 'false' }),
+      );
   const rozetEl = kayit.rozet.includes('kelime') ? h('div.ok-kp-rozet', { html: kelimeRozeti(), 'aria-label': b.rozet }) : null;
   const sahne = h(
     'div.ok-kp-sahne',
@@ -325,11 +328,14 @@ export function kopruEkrani(app: Uygulama): Ekran {
     el.dataset.hazir = '1';
   })();
 
+  // uygulamada abonelikli taşlarda küçük kilit rozeti (Sayı Bahçesi'ndeki gibi; web sitesinde kilit yok)
+  const kilitBirak = kilitleriKur(taslar.map((t): [HTMLElement, string] => [t, `okul/${t.dataset.etkinlik}`]));
   return {
     el,
     kapat() {
       kapandi = true;
       zamanlar.forEach(clearTimeout);
+      kilitBirak();
       ikiz.kapat();
     },
   };

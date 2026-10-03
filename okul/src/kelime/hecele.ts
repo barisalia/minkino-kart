@@ -14,7 +14,7 @@ import type { Sahne } from '../sahne';
 import { sayiSozu } from '../sayi';
 import { ses } from '../sesler';
 import { heceDurumu, heceler, heceSozu, heceTurlari, kelime, kelimeSozu, KINO_HECE } from './model';
-import { KA, KK, KM, sicrat, simge } from './ortak';
+import { cikartmaVeya, KA, KK, KM, sicrat, simge } from './ortak';
 import { hazir, kelimeEl, kelimeGorsel } from './resim';
 import { kses } from './ses';
 
@@ -168,7 +168,7 @@ etkinlikKaydet({
   id: 'kelime-hecele',
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-hecele'],
-  simge: () => simge([DAVUL(), 'ok-ks-davul'], ['okul/kelime/kavun', 'ok-ks-karpuz']),
+  simge: cikartmaVeya('hecele', () => simge([DAVUL(), 'ok-ks-davul'], ['okul/kelime/kavun', 'ok-ks-karpuz'])),
   async oyna(s) {
     let sira = 0;
     const davul = h('button.ok-davul.ok-k-davul', { type: 'button', 'aria-label': 'Davul' }, h('img', { src: kelimeGorsel(DAVUL()), alt: '', draggable: 'false' }));

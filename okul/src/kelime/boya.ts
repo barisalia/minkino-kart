@@ -11,7 +11,7 @@ import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { boyaTurlari, kelime, renk, renkSozu, type BoyaTuru } from './model';
-import { dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
+import { cikartmaVeya, dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
 import { kses } from './ses';
 import { boya, boyanabilir, gorselEl, hazir } from './resim';
 
@@ -93,7 +93,7 @@ etkinlikKaydet({
   id: 'kelime-boya',
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-boya'],
-  simge: () => simge(['film/esya/kova', 'ok-ks-kova']),
+  simge: cikartmaVeya('boya', () => simge([hazir('okul/kelime/boya-kovasi-kirmizi') ? 'okul/kelime/boya-kovasi-kirmizi' : 'film/esya/kova', 'ok-ks-kova'])),
   async oyna(s) {
     const turlar = boyaTurlari(s.yas, s.rnd);
     const biten: HTMLElement[] = [];

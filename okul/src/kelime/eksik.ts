@@ -10,7 +10,7 @@ import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { eksikTurlari, type CumleId, type EksikTuru } from './model';
-import { dokunSec, KA, KK, KM, resimKarti, simge } from './ortak';
+import { cikartmaVeya, dokunSec, KA, KK, KM, resimKarti, simge } from './ortak';
 import { gorselEl, hazir, kelimeEl } from './resim';
 
 /** Cümlenin öznesi (sahnede yoksa): resim yolu */
@@ -121,7 +121,7 @@ etkinlikKaydet({
   id: 'kelime-eksik',
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-eksik'],
-  simge: () => `<span class="ok-simge-yigin">${simge(['renkler/semsiye', 'ok-ks-tam'])}<b class="ok-ks-soru">?</b></span>`,
+  simge: cikartmaVeya('eksik', () => `<span class="ok-simge-yigin">${simge(['okul/kelime/kemik', 'ok-ks-tam'])}<b class="ok-ks-soru">?</b></span>`),
   async oyna(s) {
     const turlar = eksikTurlari(s.yas, s.rnd, hazir);
     s.turlar(turlar.length);

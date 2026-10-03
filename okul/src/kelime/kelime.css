@@ -863,6 +863,27 @@
   opacity: 1;
   scale: 1;
 }
+.ok-kok .ok-kp-senlik-resim img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 100% 0;
+}
+/* uygulamada abonelikli taş: küçük kilit rozeti sağ üstte (numara sol üstte), taş soluklaşmaz */
+.ok-kok .ok-kp-tas > .mk-kilit {
+  top: -6%;
+  right: -6%;
+  left: auto;
+  width: 30px;
+  height: 30px;
+  border-width: 2.5px;
+  z-index: 3;
+}
+.ok-kok .ok-kp-tas > .mk-kilit .ikon {
+  font-size: 16px;
+}
 .ok-kok .ok-kp-flama {
   position: absolute;
   left: 4%;

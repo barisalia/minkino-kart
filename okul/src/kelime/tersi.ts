@@ -12,7 +12,7 @@ import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { tersTurlari, type TersCift } from './model';
-import { dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
+import { cikartmaVeya, dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
 import { gorselEl, hazir, kelimeGorsel } from './resim';
 import { kses } from './ses';
 
@@ -213,7 +213,7 @@ etkinlikKaydet({
   id: 'kelime-tersi',
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-tersi'],
-  simge: () => simge([tercih('kapi-acik', 'ege/perde-acik'), 'ok-ks-tam']),
+  simge: cikartmaVeya('tersi', () => simge([tercih('kapi-acik', 'ege/perde-acik'), 'ok-ks-tam'])),
   async oyna(s) {
     const turlar = tersTurlari(s.yas, s.rnd, hazir);
     s.turlar(turlar.length);

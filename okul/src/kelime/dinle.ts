@@ -11,7 +11,7 @@ import { oynat } from '../efekt';
 import { etkinlikKaydet } from '../etkinlik';
 import type { Sahne } from '../sahne';
 import { dinleTurlari, kelime, kelimeSozu, type DinleTuru } from './model';
-import { dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
+import { cikartmaVeya, dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
 import { hazir, kelimeEl, kelimeGorsel } from './resim';
 import { kses } from './ses';
 
@@ -93,7 +93,7 @@ etkinlikKaydet({
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-dinle'],
   ucretsiz: true,
-  simge: () => simge(['hayvanlar/kedi', 'ok-ks-tam']),
+  simge: cikartmaVeya('dinle', () => simge(['hayvanlar/kedi', 'ok-ks-tam'])),
   async oyna(s) {
     const turlar = dinleTurlari(s.yas, s.rnd, hazir);
     s.turlar(turlar.length);

@@ -8,7 +8,7 @@ import { AZ_HAREKET, type Efekt } from '../efekt';
 import { Ipucu, type Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { kelime } from './model';
-import { kelimeEl, kelimeGorsel } from './resim';
+import { hazir, kelimeEl, kelimeGorsel } from './resim';
 
 export const KM = K.mino;
 export const KK = K.kino;
@@ -18,6 +18,12 @@ export const KA = K.arayuz;
 export function simge(...parcalar: [string, string][]): string {
   return `<span class="ok-simge-yigin">${parcalar.map(([y, s]) => `<img class="ok-resim ${s}" src="${kelimeGorsel(y)}" alt="" draggable="false">`).join('')}</span>`;
 }
+
+/**
+ * Çıkartma: Gemini'nin çıkartması (assets/okul/kelime/cikartma-<ad>.webp) gelince o, yoksa hazır görsellerden
+ * kompozisyon (yedek).
+ */
+export const cikartmaVeya = (ad: string, yedek: () => string) => () => (hazir(`okul/kelime/cikartma-${ad}`) ? simge([`okul/kelime/cikartma-${ad}`, 'ok-ks-tam']) : yedek());
 
 /**
  * Sıçrama: damlalar (su mavisi ya da boya rengi) bir noktadan yay çizerek dışa ve yukarı uçar, düşerken söner.
