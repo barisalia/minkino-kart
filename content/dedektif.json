@@ -1,5 +1,5 @@
 {
-  "aciklama": "Dedektif Mino · Vaka 1: Devrilen Lamba (ekip/senaryo/dedektif-mino.md v2). 'mino' = anlatıcı (Mino'nun sesi, ton 1.12); 'kino' = Kino'nun kendi sesi (content/seslendirme.json → karakter_sesleri.kino); 'kart' = kartın içindeki hayvan (anlatıcı sesi, tonlu: zürafa kalın, ördek ince); 'pamuk' = Pamuk (şimdilik anlatıcı sesinin ince tonu; Barış ayrı ses seçebilir). 'baslik', 'yazi' ekranda yazar, seslendirilmez. Kısa tutun.",
+  "aciklama": "Dedektif Mino · Vaka 1: Devrilen Lamba (ekip/senaryo/dedektif-mino.md v2). 'mino' = anlatıcı (Mino'nun sesi); 'kino' = Kino'nun kendi sesi (content/seslendirme.json → karakter_sesleri.kino); 'kart' = kartın içindeki hayvan (anlatıcı sesi, tonlu: zürafa kalın, ördek ince); 'pamuk' = Pamuk (şimdilik anlatıcı sesinin ince tonu; Barış ayrı ses seçebilir). 'baslik', 'yazi' ekranda yazar, seslendirilmez. Kısa tutun.",
   "baslik": "Dedektif Mino",
   "vaka": "Vaka 1: Devrilen Lamba",
   "yazi": {

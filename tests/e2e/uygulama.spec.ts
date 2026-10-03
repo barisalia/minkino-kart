@@ -104,6 +104,7 @@ test('Her oyunun açılışındaki geri düğmesi ana menüye döner', async ({ 
     ['film', 'Geri'],
     ['pasta', 'Minkino’ya dön'],
     ['okul', 'Minkino’ya dön'],
+    ['dedektif', 'Minkino’ya dön'],
   ];
   for (const [oyun, etiket] of oyunlar) {
     await page.goto(`./${oyun}/?test=1`);

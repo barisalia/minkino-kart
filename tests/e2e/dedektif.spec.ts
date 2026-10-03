@@ -131,7 +131,12 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
 
   // Final: lambayı masaya sürükle, düğmesine bas
   await adimBekle(page, /^lamba-tasi$/);
-  await surukle(page, page.locator('.dd-sahne .dd-lamba-devrik'), page.locator('.dd-sahne .dd-masa-hedef'));
+  // (yüklü makinede kamera / yerleşim kayarken ilk sürükleme ıskalayabilir: çocuk gibi bir daha dener)
+  for (let deneme = 0; deneme < 3 && (await adim(page)) === 'lamba-tasi'; deneme++) {
+    await page.waitForTimeout(400);
+    await surukle(page, page.locator('.dd-sahne .dd-lamba-devrik'), page.locator('.dd-sahne .dd-masa-hedef'));
+    await page.waitForTimeout(600);
+  }
   await adimBekle(page, /^lamba-dugme$/);
   await expect(page.locator('.dd-sahne .dd-lamba-dik')).toHaveClass(/dd-yerinde/);
   await dokun(page, page.locator('.dd-sahne .dd-lamba-dugme'));

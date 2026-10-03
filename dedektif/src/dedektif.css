@@ -1235,7 +1235,8 @@
 }
 .dd-kok .dd-roman-baslik {
   margin: 0 0 clamp(6px, 1.4vmin, 14px);
-  text-align: center;
+  padding: 0 clamp(70px, 20%, 160px) 0 0;
+  text-align: left;
   font-size: clamp(18px, 2.8vmin + 8px, 34px);
   font-weight: 700;
   color: var(--kontur);
@@ -1430,7 +1431,7 @@
 .dd-kok .dd-muhur {
   position: absolute;
   right: -2%;
-  top: -7%;
+  top: -12%;
   padding: 0.12em 0.55em;
   border: 4px solid var(--dd-yesil);
   border-radius: 12px;
