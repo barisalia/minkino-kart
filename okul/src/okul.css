@@ -757,6 +757,8 @@
   --mw: clamp(80px, min(27vw, 14dvh), 160px);
   --kw: calc(var(--mw) * 1.167);
   padding-bottom: 0;
+  /* Kino ya da uçan eşya ekran dışına çıkınca sayfa genişlemesin (telefonda ekran küçülüp dokunuşlar kaymasın) */
+  overflow: clip;
 }
 .ok-kok .ok-ust {
   align-items: flex-start;

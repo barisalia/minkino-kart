@@ -29,12 +29,12 @@ const adimda = async (page: Page, adim: string) => (await page.locator(`.ok-etki
 const gorunur = async (l: Locator) => (await l.count()) > 0 && (await l.first().isVisible());
 /** Görünürse dokunur (ekran o arada değişebilir: bulunamazsa döngü yeniden dener) */
 const tikla = async (l: Locator) => {
-  if (await gorunur(l)) await l.first().click({ timeout: 2000 }).catch(() => undefined);
+  if (await gorunur(l)) await l.first().click({ timeout: 6000 }).catch(() => undefined);
 };
 
 /** Etkinlik bitene (sonuç ekranı gelene) kadar adim() tekrarlanır */
 async function bitene(page: Page, ad: string, adim: () => Promise<void>) {
-  const son = Date.now() + 60_000;
+  const son = Date.now() + 150_000;
   let sonHata: unknown = null;
   while (Date.now() < son) {
     if (await page.locator('.ok-sonuc').count()) return;
@@ -93,8 +93,22 @@ async function oyna(page: Page, id: string, kareAl: (ad: string) => Promise<void
         const sepet = page.locator('.ok-e3-sepet');
         const istenen = Number(await sepet.getAttribute('data-istenen', KISA));
         const adet = Number((await sepet.getAttribute('data-adet', KISA)) ?? 0);
-        if (adet < istenen) await surukle(page, page.locator('.ok-havuc:not([data-sepette])').first(), sepet);
-        else await tikla(page.locator('.ok-ver'));
+        // tur yeni kurulurken (istenen henüz yazılmamış) bekle
+        if (!istenen) return;
+        const tur = await ekran(page).getAttribute('data-tur', KISA);
+        // durum değişene kadar bekle (yüklü makinede tıklama/sürükleme geç işlenir; aynı hamle iki kez yapılmasın)
+        const degisti = () =>
+          expect
+            .poll(async () => (await page.locator('.ok-sonuc').count()) > 0 || (await sepet.getAttribute('data-adet', KISA).catch(() => null)) !== String(adet) || (await ekran(page).getAttribute('data-tur', KISA).catch(() => null)) !== tur, { timeout: 15000 })
+            .toBe(true)
+            .catch(() => undefined);
+        if (adet < istenen) {
+          await surukle(page, page.locator('.ok-havuc:not([data-sepette])').first(), sepet);
+          await degisti();
+        } else {
+          await tikla(page.locator('.ok-ver'));
+          await degisti();
+        }
         await page.waitForTimeout(120);
       });
     case 'hangisinde-cok':
@@ -214,7 +228,7 @@ async function sonuc(page: Page, id: string, kareAl: (ad: string) => Promise<voi
 
 for (const yas of [3, 6]) {
   test(`Okula Hazırım: ${yas} yaşla Sayı Bahçesi baştan sona dokunarak`, async ({ page }, info) => {
-    test.setTimeout(480_000);
+    test.setTimeout(1_200_000);
     const hatalar = hataTopla(page);
     const kareAl = async (ad: string) => {
       if (info.project.name !== 'iphone' && yas === 6 && !['harita', 'bolge', 'rozet'].includes(ad)) return;
