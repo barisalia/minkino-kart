@@ -18,6 +18,7 @@ import { uygulamaPlatformu } from '../kabuk/ortam';
 import { ebeveynKapisiAc } from '../ui/ebeveyn-kapisi';
 import { h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
+import { minkinoLogo } from '../ui/logo';
 import { yuvarlakDugme } from '../ui/ortak';
 import { saglayici, type Plan, type PlanId } from './satin';
 
@@ -243,7 +244,8 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     const kartIc = h(
       'div.ab-kart-ic',
       {},
-      h('h1.ab-baslik', {}, svg(IKON.tac, 'ab-tac'), 'Minkino Premium'),
+      // başlık: asıl MINKINO logosu (krem kartta temiz sürüm), altında taçlı Premium
+      h('h1.ab-baslik', {}, minkinoLogo('sade', 'ab-logo'), h('span.ab-premium', {}, svg(IKON.tac, 'ab-tac'), ' Premium')),
       h('p.ab-alt', {}, 'Bütün oyunlar, maceralar ve filmler.'),
       h('ul.ab-liste', {}, ...ACILANLAR.map((m) => h('li', { style: `--r:${m.renk}` }, svg(IKON[m.ikon], `ab-tik ab-tik-${m.ikon}`), m.yazi))),
       planKutu,

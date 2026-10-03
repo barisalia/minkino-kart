@@ -3,18 +3,15 @@ import { kart } from '../engine/katalog';
 import { durum } from '../engine/ilerleme';
 import { h, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
+import { minkinoLogo } from '../ui/logo';
 import { gorselUrl, kartArkasi, kartEl } from '../ui/kart';
 import { sesDugmesi, yuvarlakDugme } from '../ui/ortak';
 import { ebeveynKapisi } from './ebeveyn';
 import type { Ekran, Uygulama } from '../uygulama';
 
-const LOGO_RENK = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#3E9DF2', '#9B5CE0', '#FF7EB6'];
-
 export function acilisEkrani(app: Uygulama): Ekran {
-  const logo = h('div.logo-yazi', { 'aria-label': 'minkino' });
-  [...'minkino'].forEach((c, i) =>
-    logo.append(h('span', { style: `color:${LOGO_RENK[i]};--i:${i};--yon:${i % 2 ? 1 : -1}` }, c)),
-  );
+  // asıl MINKINO logosu: Kartlar açılışının krem zemininde kenarsız temiz sürüm
+  const logo = minkinoLogo('sade');
 
   const oyna = h('button.dugme.oyna-dugme', { 'aria-label': 'Oyna', type: 'button' }, svg(IKON.oyna));
   oyna.addEventListener('click', () => {

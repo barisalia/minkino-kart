@@ -20,6 +20,7 @@ import { minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { sinifOynat } from '../../src/ui/hareket';
 import { IKON } from '../../src/ui/ikonlar';
+import { minkinoLogo } from '../../src/ui/logo';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { OTOBUS } from '../../pasta/src/cizim';
@@ -37,12 +38,9 @@ const EBEVEYN_RESIM = Object.values(
 )[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-const LOGO_RENK = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#3E9DF2', '#9B5CE0', '#FF7EB6'];
-
+/** Asıl MINKINO logosu: menünün gökyüzünde (bulut, Mino'nun halesi) beyaz kenarlı sürüm */
 function logo(): HTMLElement {
-  const yazi = h('div.logo-yazi', { role: 'img', 'aria-label': 'Minkino' });
-  [...'minkino'].forEach((c, i) => yazi.append(h('span', { style: `color:${LOGO_RENK[i]};--i:${i};--yon:${i % 2 ? 1 : -1}`, 'aria-hidden': 'true' }, c)));
-  return h('div.ug-logo', {}, yazi);
+  return h('div.ug-logo', {}, minkinoLogo('kenarli'));
 }
 
 /** Kartın resmi: oyunun kendi çizimlerinden küçük bir sahne; katmanlar parallax için derinlik (--d) alır */
@@ -358,6 +356,8 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
         EBEVEYN_RESIM
           ? h('img.ug-ayarlar-resim', { src: EBEVEYN_RESIM, alt: '', draggable: 'false', decoding: 'async' })
           : svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
+        // asıl MINKINO logosu (krem kutuda temiz sürüm)
+        minkinoLogo('sade', 'ug-ayarlar-logo'),
         ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
         h('h2', {}, 'Gizlilik ve güvenlik'),
         h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),

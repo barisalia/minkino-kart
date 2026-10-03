@@ -473,8 +473,8 @@
     grid-row: 1;
     align-self: end;
   }
-  .mk-kok .acilis .logo-yazi {
-    font-size: clamp(2.6rem, min(9vw, 19dvh), 5rem);
+  .mk-kok .acilis .logo .mk-logo {
+    width: clamp(200px, min(36vw, 76dvh), 420px);
   }
   .mk-kok .acilis .acilis-alt {
     grid-column: 2;
