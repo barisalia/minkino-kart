@@ -89,13 +89,14 @@ describe('Tersi ne?: zıt çiftler', () => {
       expect(K.kino.tersi[c.id]).toBeTruthy();
     }
   });
-  it('turlar farklı çiftler; görseli olmayan çift (ıslak havlu) gelene kadar oynanmaz', () => {
+  it('turlar farklı çiftler; görseli olmayan çift oynanmaz', () => {
+    const islaksiz: Hazir = (r) => r !== 'okul/kelime/havlu-islak';
     for (let t = 1; t < 30; t++) {
-      const k = tersTurlari(4, tohum(t), yuvasiz);
+      const k = tersTurlari(4, tohum(t), islaksiz);
       expect(k).toHaveLength(4);
       expect(new Set(k.map((c) => c.id)).size).toBe(4);
       expect(k.some((c) => c.id === 'kuru')).toBe(false);
-      expect(tersTurlari(6, tohum(t), yuvasiz)).toHaveLength(5);
+      expect(tersTurlari(6, tohum(t), islaksiz)).toHaveLength(5);
     }
     expect(tersTurlari(6, tohum(1)).length).toBe(5);
   });

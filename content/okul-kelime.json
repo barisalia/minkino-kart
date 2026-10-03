@@ -23,12 +23,12 @@
       "yakala": "Tersini yaptın Kino!",
       "sen": "Sen doğrusunu göster!",
       "ciftler": {
-        "acik": { "iste": "Perdeyi aç Kino!", "soru": "Hangisi açık?", "a": "Açık!", "b": "Kapalı!", "ters": "Açık! Tersi kapalı." },
-        "buyuk": { "iste": "Büyük topu getir Kino!", "soru": "Hangisi büyük?", "a": "Büyük!", "b": "Küçük!", "ters": "Büyük! Tersi küçük." },
-        "sicak": { "iste": "Sıcak bir şey getir Kino!", "soru": "Hangisi sıcak?", "a": "Sıcak!", "b": "Soğuk!", "ters": "Sıcak! Tersi soğuk." },
-        "uzun": { "iste": "Uzun treni getir Kino!", "soru": "Hangisi uzun?", "a": "Uzun!", "b": "Kısa!", "ters": "Uzun! Tersi kısa." },
-        "dolu": { "iste": "Dolu sepeti getir Kino!", "soru": "Hangisi dolu?", "a": "Dolu!", "b": "Boş!", "ters": "Dolu! Tersi boş." },
-        "kuru": { "iste": "Kuru havlu getir Kino!", "soru": "Hangisi kuru?", "a": "Kuru!", "b": "Islak!", "ters": "Kuru! Tersi ıslak." }
+        "acik": { "iste": "Kino, kapı açık kalsın!", "soru": "Hangisi açık?", "a": "Açık!", "b": "Kapalı!", "ters": "Açık! Tersi kapalı." },
+        "buyuk": { "iste": "Kino, top büyük kalsın!", "soru": "Hangisi büyük?", "a": "Büyük!", "b": "Küçük!", "ters": "Büyük! Tersi küçük." },
+        "sicak": { "iste": "Kino, çorba sıcak kalsın!", "soru": "Hangisi sıcak?", "a": "Sıcak!", "b": "Soğuk!", "ters": "Sıcak! Tersi soğuk." },
+        "uzun": { "iste": "Kino, tren uzun kalsın!", "soru": "Hangisi uzun?", "a": "Uzun!", "b": "Kısa!", "ters": "Uzun! Tersi kısa." },
+        "dolu": { "iste": "Kino, bardak dolu kalsın!", "soru": "Hangisi dolu?", "a": "Dolu!", "b": "Boş!", "ters": "Dolu! Tersi boş." },
+        "kuru": { "iste": "Kino, havlu kuru kalsın!", "soru": "Hangisi kuru?", "a": "Kuru!", "b": "Islak!", "ters": "Kuru! Tersi ıslak." }
       }
     },
     "boya": {
@@ -65,12 +65,12 @@
     "hecele_son": "İki mi? Bam bam!",
     "hecele_islak": "Şap! Suya düştüm!",
     "tersi": {
-      "acik": "Kapattım!",
-      "buyuk": "Minicik top getirdim!",
-      "sicak": "Dondurma getirdim! Brr!",
-      "uzun": "Kısacık tren getirdim!",
-      "dolu": "Elmaları yedim! Boş!",
-      "kuru": "Islak havlu getirdim!"
+      "acik": "Kapattım! Güm!",
+      "buyuk": "Topu küçülttüm! Fış!",
+      "sicak": "Dondurma yaptım! Brr!",
+      "uzun": "Vagonları gönderdim! Çuf çuf!",
+      "dolu": "Hepsini içtim! Lık lık!",
+      "kuru": "Islattım! Şıp şıp!"
     },
     "boya": "Kovaya atlıyorum! Hop!",
     "boya_son": "Silkelendim, tertemizim!",

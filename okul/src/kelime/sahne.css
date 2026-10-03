@@ -159,7 +159,20 @@
   }
 }
 
-/* ---------------------------------------------------------------- 3 · Tersi: pano ters döner */
+/* ---------------------------------------------------------------- 3 · Tersi: eşya gözümüzün önünde değişir */
+.ok-kok .ok-k-pano > * {
+  grid-area: 1 / 1;
+}
+.ok-kok .ok-k-sars {
+  animation: ok-k-sars 0.4s ease-out;
+}
+@keyframes ok-k-sars {
+  0%, 100% { translate: 0 0; }
+  20% { translate: -6px 0; }
+  40% { translate: 5px 0; }
+  60% { translate: -3px 0; }
+  80% { translate: 2px 0; }
+}
 .ok-kok .ok-k-ters-don {
   animation: ok-k-ters-don 0.6s cubic-bezier(0.3, 1.3, 0.5, 1);
 }

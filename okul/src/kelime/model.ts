@@ -169,12 +169,12 @@ export interface TersCift {
 }
 /** Belgedeki altı zıt çift: açık-kapalı, büyük-küçük, sıcak-soğuk, uzun-kısa, dolu-boş, ıslak-kuru */
 export const TERS_CIFTLER: TersCift[] = [
-  { id: 'acik', a: 'açık', b: 'kapalı', gerek: ['ege/perde-acik', 'ege/perde-kapali'] },
-  { id: 'buyuk', a: 'büyük', b: 'küçük', gerek: ['renkler/top'] },
-  { id: 'sicak', a: 'sıcak', b: 'soğuk', gerek: ['renkler/corba', 'renkler/dondurma'] },
+  { id: 'acik', a: 'açık', b: 'kapalı', gerek: ['okul/kelime/kapi-acik', 'okul/kelime/kapi-kapali'] },
+  { id: 'buyuk', a: 'büyük', b: 'küçük', gerek: ['okul/kelime/buyuk-top', 'okul/kelime/kucuk-top'] },
+  { id: 'sicak', a: 'sıcak', b: 'soğuk', gerek: ['okul/kelime/sicak-corba', 'okul/kelime/dondurma-eriyen'] },
   { id: 'uzun', a: 'uzun', b: 'kısa', gerek: ['tasitlar/tren', 'okul/vagon'] },
-  { id: 'dolu', a: 'dolu', b: 'boş', gerek: ['pazar/sepet', 'meyveler/elma'] },
-  { id: 'kuru', a: 'kuru', b: 'ıslak', gerek: ['banyo/havlu-mavi', 'okul/kelime/havlu-islak'] },
+  { id: 'dolu', a: 'dolu', b: 'boş', gerek: ['okul/kelime/bardak-dolu', 'okul/kelime/bardak-bos'] },
+  { id: 'kuru', a: 'kuru', b: 'ıslak', gerek: ['okul/kelime/havlu-kuru', 'okul/kelime/havlu-islak'] },
 ];
 /** Görseli hazır çiftlerden 4 tur (karışık); 5-6 yaş 5 tur */
 export function tersTurlari(yas: number, rnd: Rnd, hazir: Hazir = hepsiHazir): TersCift[] {
