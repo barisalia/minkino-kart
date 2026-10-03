@@ -11,7 +11,7 @@ export interface Katman {
   /** assets/ altındaki çizim, uzantısız: 'pazar/tezgah' */
   gorsel?: string;
   /** src/ui/ikonlar.ts içindeki ikon adı */
-  ikon?: 'kalem' | 'oyna' | 'sihir';
+  ikon?: 'kalem' | 'oyna';
   /** kodla çizilen resim (oyunun kendi SVG çizimi; ör. Pasta Otobüsü'nün otobüsü) */
   kod?: 'otobus';
   /** Yerleşim sınıfı (uygulama.css, önek ug-k-) */
@@ -33,12 +33,13 @@ export interface OyunKarti {
   katmanlar: Katman[];
   /** Kartın köşesindeki küçük rozet: oyunun yeni yan oyunu ya da bölümleri (ör. "Meyve Suyu") */
   rozet?: string;
-  /** geniş kart: tablet dikeyde (3 × 3 ızgara, 8 kart) son sırada iki sütun kaplar (otobüs yatay bir çizim) */
+  /**
+   * geniş kart (otobüs yatay bir çizim): 7 kartta son sırayı doldurur (2 ve 4 sütunda iki, 3 sütunda üç hücre);
+   * ızgara her ekranda boşluksuz (uygulama.css → .ug-tek)
+   */
   genis?: boolean;
-  /** Mağaza uygulamasında gösterilmez (Minik Sanatçı: çocuk çizimi dış sunucuya gider; yalnız web sitesinde) */
+  /** Mağaza uygulamasında gösterilmez (yalnız web sitesindeki oyunlar için; şu an yok) */
   uygulamadaYok?: boolean;
-  /** Uygulamada geniş kart (bir kart eksilince ızgara boşluksuz kalsın) */
-  uygulamadaGenis?: boolean;
 }
 
 export const OYUNLAR: OyunKarti[] = [
@@ -78,17 +79,6 @@ export const OYUNLAR: OyunKarti[] = [
     katmanlar: [
       { gorsel: 'canlan/dinozor', sinif: 'ug-k-dinozor' },
       { ikon: 'kalem', sinif: 'ug-k-kalem' },
-    ],
-  },
-  {
-    id: 'sanatci',
-    ad: 'Minik Sanatçı',
-    adres: './sanatci/',
-    renk: '#9B5CE0',
-    uygulamadaYok: true,
-    katmanlar: [
-      { gorsel: 'sanatci/ornek-kedi-sonuc', sinif: 'ug-k-tablo', cerceve: true },
-      { ikon: 'sihir', sinif: 'ug-k-sihir' },
     ],
   },
   {
@@ -141,10 +131,10 @@ export const OYUNLAR: OyunKarti[] = [
   },
 ];
 
-/** Menüde görünen kartlar: uygulamada Minik Sanatçı yok (Okula Hazırım ile kartlar yine çift; Pasta geniş) */
+/** Menüde görünen kartlar (web ve uygulamada aynı 7 kart; Pasta geniş, son sırayı doldurur) */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
   if (!uygulama) return OYUNLAR;
-  return OYUNLAR.filter((k) => !k.uygulamadaYok).map((k) => (k.uygulamadaGenis ? { ...k, genis: true } : k));
+  return OYUNLAR.filter((k) => !k.uygulamadaYok);
 }
 
 /** Parallax derinliği: zemin arkada durur, katmanlar sırayla öne gelir (0 zemin … 1 en ön) */

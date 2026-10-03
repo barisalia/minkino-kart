@@ -8,7 +8,6 @@ tests/screens/*.png
 *.log
 scripts/gecici
 dist-tek
-dist-tek-sanatci
 dist-video
 
 # Uygulama (Capacitor): gizli dosyalar repoya girmez

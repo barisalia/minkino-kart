@@ -8,7 +8,7 @@
 import { efekt, konus } from '../../src/audio/ses';
 import { svg as ikon } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
-import type { Cizgi, Tuval } from '../../sanatci/src/tuval';
+import type { Cizgi, Tuval } from '../../src/ui/tuval';
 import { yolD } from './canlandir';
 import { noktaDizisi, ornekle, uzunluk } from './puan';
 import type { Nokta, Resim } from './resimler';

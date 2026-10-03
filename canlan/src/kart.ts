@@ -1,7 +1,7 @@
 /**
  * "Nasıl çizdim?" tekrarı ve paylaşılabilir resim kartı.
  */
-import type { Cizgi } from '../../sanatci/src/tuval';
+import type { Cizgi } from '../../src/ui/tuval';
 import { yolD } from './canlandir';
 import { uzunluk } from './puan';
 

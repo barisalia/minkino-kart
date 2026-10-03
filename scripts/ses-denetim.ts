@@ -5,7 +5,7 @@
  *   npx vite-node scripts/ses-denetim.ts -- --sert  # uygulamadaki oyunlarda eksik varsa çıkış kodu 1
  *
  * Bir cümle için anlatıcı kaydı (public/ses/manifest.json → dosyalar) ya da bir karakter kaydı varsa cihaz sesine
- * düşmez. Uyuyan Orman ve Minik Sanatçı uygulamada yok: onların cümleleri ayrıca gösterilir (yayını engellemez).
+ * düşmez. Uyuyan Orman uygulamada yok: onun cümleleri ayrıca gösterilir (yayını engellemez).
  * Kayıtlar CI'da (yayinla.yml → scripts/seslendir.ts) üretilir; bu betik kredi harcamaz, yalnız sayar.
  */
 import fs from 'node:fs';
@@ -19,7 +19,7 @@ const manifest: SesManifest = JSON.parse(fs.readFileSync(path.join(klasor, 'mani
 const var_ = (f: string | undefined) => !!f && fs.existsSync(path.join(klasor, f));
 
 /** Yalnız web sitesindeki oyunların içerik metni (uygulamada yok) */
-const yalnizWeb = ['content/orman.json', 'content/sanatci.json'].map((d) => fs.readFileSync(path.join(KOK, d), 'utf8')).join('\n');
+const yalnizWeb = ['content/orman.json'].map((d) => fs.readFileSync(path.join(KOK, d), 'utf8')).join('\n');
 
 const kCumleler = karakterCumleleri();
 const karakterKaydi = (c: string) =>
@@ -35,7 +35,7 @@ if (uygulama.length) {
   for (const c of uygulama) console.log(`  - ${c}`);
 }
 if (web.length) {
-  console.log('\nYalnız web (Uyuyan Orman / Minik Sanatçı):');
+  console.log('\nYalnız web (Uyuyan Orman):');
   for (const c of web) console.log(`  - ${c}`);
 }
 if (process.env.GITHUB_STEP_SUMMARY) {

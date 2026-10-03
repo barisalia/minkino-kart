@@ -4,19 +4,19 @@ Hazırlayan: kodcu, 2026-09-27. Durum: **Aşama 1 uygulandı (2026-10-02)**: Cap
 
 ## 1. Bugünkü durum (depodan ölçüldü)
 
-- **Derleme:** Vite, çok sayfalı (`vite.config.ts` → 9 giriş: kartlar `/`, uygulama, pazar, canlan, sanatci, macera, film, orman, ses-testi).
+- **Derleme:** Vite, çok sayfalı (`vite.config.ts` → çok giriş: menü `/`, kartlar, pazar, canlan, macera, film, okul, pasta, orman, ses-testi).
   - `base: './'`; çıktı `dist/`.
   - Sayfalar arası gezinme göreli bağlantıyla (`../pazar/` gibi); ana menü `uygulama/` kartları `location.assign` ile oyuna gider.
 - **Boyut:**
   - `dist` ≈ 38 MB.
   - 22 MB'ı `public/ses` (1369 seslendirme mp3'ü + 432 KB efekt).
   - ≈ 16 MB görsel/kod (`dist/assets`; karakter iskeletleri, arka planlar, film katmanları).
-- **Gömülebilir giriş (`oyunuBaslat(kok, { cikis })`):** yalnız Kartlar (`src/oyun.ts`) ve Pazar (`pazar/src/oyun.ts`) hazır. Canlan, Sanatçı, Macera, Film ve Orman yalnız kendi `main.ts`'iyle açılıyor.
+- **Gömülebilir giriş (`oyunuBaslat(kok, { cikis })`):** yalnız Kartlar (`src/oyun.ts`) ve Pazar (`pazar/src/oyun.ts`) hazır. Canlan, Macera, Film ve Orman yalnız kendi `main.ts`'iyle açılıyor.
 - **Ses:**
   - Konuşma kayıtlıysa mp3, değilse cihazın Türkçe sesi (Web Speech `speechSynthesis`, `src/audio/konusma.ts`).
   - Efekt ve müzik Web Audio ile.
 - **Mikrofon:** `getUserMedia` (`ses-testi/src/mikrofon.ts`, `orman/src/kulak.ts`). Ses kaydedilmez, kare kare işlenir. Dokunarak oynama her yerde var.
-- **Ağ:** yalnız Minik Sanatçı'nın "sihir"i dış sunucuya gider (`sunucu/sihir`, Cloudflare Worker; ebeveyn onayıyla). Geri kalan her şey çevrimdışı çalışır.
+- **Ağ:** uygulama, mağaza satın alma doğrulaması (RevenueCat) dışında internete veri göndermez; her şey çevrimdışı çalışır. (Minik Sanatçı ve onun dış sunucusu 2026-10-03 kaldırıldı.)
 - **Kayıt:** ilerleme, albüm, müze ve ayarlar `localStorage`'da. Service worker yok.
 - **Yön:** manifest dikey. Film 16:9 ve yatay isteniyor (dikeyde "çevir" simgesi).
 
@@ -43,7 +43,7 @@ Her oyun için `oyunuBaslat(kok, { cikis })` girişi yazılır (Pazar'daki kalı
 - **İş listesi (her oyun için):**
   - `main.ts`'teki kurulumu `oyun.ts`'e taşı; ekranları `ekranKaydet` ile her açılışta yeniden kaydet (aynı ekran adları çakışıyor: `acilis`, `yas`…).
   - Kök sınıfı (`pz-kok`, `mc-kok`…) ekle; `kapat()` her şeyi (rAF, mikrofon, zamanlayıcı, ses) temizlesin.
-  - Sırası: Macera, Canlan, Sanatçı, Film, Orman.
+  - Sırası: Macera, Canlan, Film, Orman.
 - **Yük:** `import()` ile oyun başına tembel paket (ilk açılış hızlı kalır). Ortak ses/mikrofon motorları tek örnek (`kulak`, `ses`) zaten modül düzeyinde.
 - **Risk:** CSS çakışması. Kök sınıflı kurallar çoğunlukla hazır; `ana.css` ortak.
 
@@ -79,7 +79,6 @@ Her oyun için `oyunuBaslat(kok, { cikis })` girişi yazılır (Pazar'daki kalı
 - **Apple Kids kategorisi / Google Families:**
   - Satın alma, dış bağlantı ve ayarlar ebeveyn kapısı arkasında olmalı. Bugünkü "basılı tut" kapısı çocuk için fazla kolay; mağaza kuralı için yetişkinin çözebileceği bir soru (ör. "on iki artı yedi") eklenmeli.
   - Üçüncü taraf reklam ve izleme yok (bugün de yok).
-  - Minik Sanatçı'nın sunucuya gönderimi gizlilik politikasında açıkça yazmalı; onay ekranı hazır.
 - **Abonelik:**
   - Mağaza içi satın alma zorunlu (dijital içerik). Öneri: RevenueCat Capacitor eklentisi. Tek kod iki mağaza, makbuz doğrulama sunucuda; ücretsiz deneme ve aile paylaşımı ayarları mağazada.
   - Kilit mantığı: `src/engine/` altında tek bir `erisim.ts` (hangi oyun/bölüm ücretsiz, hangisi abonelikle). Menüdeki kartlarda kilit rozeti, dokununca ebeveyn kapısı → abonelik ekranı. Çevrimdışında son bilinen abonelik durumu `@capacitor/preferences`'ta.
@@ -91,7 +90,6 @@ Her oyun için `oyunuBaslat(kok, { cikis })` girişi yazılır (Pazar'daki kalı
 - **Ekran yönü:** menü ve oyunlar dikey (tablette serbest), film yatay. `@capacitor/screen-orientation` ile film açılınca yataya kilit, çıkınca serbest.
 - **Güvenli alan:** CSS `env(safe-area-inset-*)` zaten kullanılıyor. Çentikli cihazlarda ve Android gezinme çubuğunda son kontrol.
 - **Açılış ekranı ve ikon:** `@capacitor/splash-screen`; ikon `public/ikon-512.png`'den üretilir (1024 × 1024 kaynak gerekir: tasarımcı).
-- **Sanatçı sunucusu:** Worker'ın CORS'u uygulama kökenlerine (`capacitor://localhost`, `https://localhost`) izin vermeli. Sunucu adresi `ayar.json`'dan mutlak adres olmalı.
 - **Test:**
   - Playwright takımı web derlemesinde aynen kalır.
   - Paket için gerçek cihaz denemesi: mikrofon (üfleme/alkış/perde/sessizlik), ses (kayıt ve cihaz sesi), yön, arka plan/geri dönüş, uçak modunda açılış.

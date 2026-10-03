@@ -5,13 +5,14 @@
  * - Kayıtlar: `minkino-*` localStorage kayıtları @capacitor/preferences'a yansır; silinmişse geri yüklenir.
  * - Arka plan (@capacitor/app appStateChange): ses, müzik, konuşma ve mikrofon durur; geri gelince ses devam eder.
  * - Ekran yönü (@capacitor/screen-orientation): film yatay kilitler, çıkınca serbest (src/kabuk/yon.ts).
+ * - Android geri tuşu (@capacitor/app backButton): pencere kapanır / oyundan ana menüye / ana menüden çıkış.
  */
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { aynaDepo, aynala, geriYukle, kaliciMi, type KaliciDepo } from './kalici';
-import { ARKA_PLAN_OLAYI, YON_OLAYI, type Yon } from './yon';
+import { ARKA_PLAN_OLAYI, GERI_OLAYI, geriKarari, menuSayfasiMi, YON_OLAYI, type Yon } from './yon';
 
 if (Capacitor.isNativePlatform()) kabuguKur();
 
@@ -127,6 +128,25 @@ function kabuguKur() {
     window.dispatchEvent(new CustomEvent(ARKA_PLAN_OLAYI, { detail: { arkada } }));
   };
   void App.addListener('appStateChange', ({ isActive }) => arkaPlan(!isActive));
+
+  // ---------------------------------------------------------------- Android geri tuşu
+  // Açık pencere (ebeveyn kapısı, abonelik) kapanır; sayfa kendi işleyebilir (menüde Ebeveyn Köşesi → menü);
+  // oyundan ana menüye dönülür; yalnız ana menüde uygulamadan çıkılır. (Dinleyici varken WebView'ın kendi geri
+  // davranışı çalışmaz: geçmişte geri gidip aynı oyunu yeniden açmak yok.)
+  let gidiliyor = false;
+  window.addEventListener('pageshow', () => (gidiliyor = false));
+  void App.addListener('backButton', () => {
+    if (gidiliyor) return;
+    const pencereAcik = !!document.querySelector('.kapi-perde, .ab-perde:not(.cikiyor)');
+    const sayfaIsledi = !pencereAcik && !window.dispatchEvent(new CustomEvent(GERI_OLAYI, { cancelable: true }));
+    const karar = geriKarari({ pencereAcik, sayfaIsledi, menude: menuSayfasiMi(location.pathname) });
+    if (karar === 'pencere') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    else if (karar === 'cik') void App.exitApp();
+    else if (karar === 'menu') {
+      gidiliyor = true;
+      location.assign(new URL('/', location.href).href);
+    }
+  });
 
   // ---------------------------------------------------------------- ekran yönü
   window.addEventListener(YON_OLAYI, (e) => {
