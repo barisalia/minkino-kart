@@ -144,16 +144,15 @@ export function kopruEkrani(app: Uygulama): Ekran {
     return t;
   });
   const ikiliYer = h('div.ok-kp-ikili', {}, ikiz.el);
-  // karşı yakadaki şenlik (şenlikte belirir): Gemini'nin kopru-senlik çizimi gelince o, yoksa flama ve balonlar
+  // karşı yakadaki şenlik (şenlikte belirir): flama ve balonlar; Gemini'nin kopru-senlik sahnesi varsa geçişte o da
+  // tam ekran gösterilir (senlikSahnesi)
   const senlikResim = kelimeGorsel('okul/kelime/kopru-senlik');
-  const flama = senlikResim
-    ? h('div.ok-kp-senlik.ok-kp-senlik-resim', { 'aria-hidden': 'true' }, h('img', { src: senlikResim, alt: '', draggable: 'false' }))
-    : h(
-        'div.ok-kp-senlik',
-        { 'aria-hidden': 'true' },
-        h('img.ok-kp-flama', { src: kelimeGorsel('parti/flama'), alt: '', draggable: 'false' }),
-        h('img.ok-kp-balon', { src: kelimeGorsel('film/esya/balon'), alt: '', draggable: 'false' }),
-      );
+  const flama = h(
+    'div.ok-kp-senlik',
+    { 'aria-hidden': 'true' },
+    h('img.ok-kp-flama', { src: kelimeGorsel('parti/flama'), alt: '', draggable: 'false' }),
+    h('img.ok-kp-balon', { src: kelimeGorsel('film/esya/balon'), alt: '', draggable: 'false' }),
+  );
   const rozetEl = kayit.rozet.includes('kelime') ? h('div.ok-kp-rozet', { html: kelimeRozeti(), 'aria-label': b.rozet }) : null;
   const sahne = h(
     'div.ok-kp-sahne',
@@ -281,6 +280,10 @@ export function kopruEkrani(app: Uygulama): Ekran {
     ikiliYer.classList.remove('ok-kp-yuruyor');
     // şenlik: flama ve balonlar karşı yakada, konfeti, dans
     sahne.dataset.senlik = '1';
+    if (senlikResim) {
+      await senlikSahnesi();
+      return;
+    }
     ses.sihir();
     efekt.konfeti();
     konfetiPatlat(el, el.clientWidth * 0.72, el.clientHeight * 0.35, AZ_HAREKET ? 0 : 110);
@@ -289,6 +292,52 @@ export function kopruEkrani(app: Uygulama): Ekran {
       void ikiz.kino.oynat('dans', 2000);
     }
     await konus(K.mino.senlik);
+  }
+
+  /**
+   * Karşı yaka (Gemini'nin kopru-senlik sahnesi): kamera karşıya geçer gibi sahne yumuşakça belirir (hafif yakınlaşma),
+   * Mino ile Kino çayıra hoplayarak gelir, konfeti ve dans; sonra sahne çözülür, köprüye (karşı kıyıya) dönülür.
+   */
+  async function senlikSahnesi() {
+    const yer = h('div.ok-kp-senlik-ikili');
+    const katman = h('div.ok-kp-senlik-sahne', { 'aria-hidden': 'true' }, h('div.ok-kp-senlik-arka', { style: `background-image:url("${senlikResim}")` }), yer);
+    el.insertBefore(katman, el.querySelector('.ust-cubuk'));
+    void katman.offsetWidth;
+    el.dataset.senlik = '1';
+    await bekle(TEST_MODU ? 20 : 700);
+    if (kapandi) return;
+    yer.append(ikiz.el);
+    if (!AZ_HAREKET && !TEST_MODU) {
+      void ikiz.kino.oynat('yuru', 900);
+      await yer
+        .animate(
+          [
+            { transform: 'translate(-60vw, 0)', easing: 'cubic-bezier(.3,0,.6,1)' },
+            { transform: 'translate(-30vw, -8%)', offset: 0.33, easing: 'cubic-bezier(.4,0,.7,1)' },
+            { transform: 'translate(-12vw, 0) scale(1.08, .92)', offset: 0.6, easing: 'cubic-bezier(.3,0,.6,1)' },
+            { transform: 'translate(-4vw, -6%)', offset: 0.8, easing: 'cubic-bezier(.4,0,.7,1)' },
+            { transform: 'none' },
+          ],
+          { duration: 1100 },
+        )
+        .finished.catch(() => undefined);
+    }
+    if (kapandi) return;
+    ses.sihir();
+    efekt.konfeti();
+    konfetiPatlat(el, el.clientWidth * 0.5, el.clientHeight * 0.4, AZ_HAREKET ? 0 : 140);
+    if (!AZ_HAREKET) {
+      ikiz.mino.tepki('dans', 2.4);
+      void ikiz.kino.oynat('dans', 2400);
+    }
+    await konus(K.mino.senlik);
+    await bekle(TEST_MODU ? 20 : 2200);
+    if (kapandi) return;
+    // köprüye dön: Mino ile Kino karşı kıyıda
+    delete el.dataset.senlik;
+    ikiliYer.append(ikiz.el);
+    await bekle(TEST_MODU ? 20 : 700);
+    katman.remove();
   }
 
   void (async () => {
