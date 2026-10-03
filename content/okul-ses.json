@@ -1,12 +1,12 @@
 {
   "aciklama": "Okula Hazırım! · Ünite 1 Ses Kulesi (ekip/senaryo/okul-oncesi.md 3, 5, 6). Harfin ADI değil SESİ söylenir: uzayan sesler uzatılarak yazılır (Aaa, Nnn, Lll), patlamalı t kısa (Tı, asla 'Te'). kelimeler.uzun: ilk sesi uzatılmış söyleyiş (Aaarı!); ilk sesi odanın sesi olmayan kelimelerde düz ad. mino = anlatıcı sesi, kino = Kino'nun kendi sesi. arayuz ekranda yazar, okunmaz. Ortak cümleler (övgü, 'Bir daha bakalım!', 'Ters oldu! Bak, böyle.', 'Ben çizerim!') content/okul.json'dan gelir.",
   "harfler": [
-    { "id": "a", "buyuk": "A", "kucuk": "a", "ses": "Aaa!", "renk": "#F0413F", "kino": "ters", "oda": ["ari", "ayi"], "kelimeler": ["ari", "ayi", "araba", "armut", "aslan", "ananas"] },
-    { "id": "n", "buyuk": "N", "kucuk": "n", "ses": "Nnn!", "renk": "#3E9DF2", "kino": "ayna", "oda": ["nar", "nane"], "kelimeler": ["nar", "nane", "nota"] },
-    { "id": "e", "buyuk": "E", "kucuk": "e", "ses": "Eee!", "renk": "#5DBE3F", "kino": "ayna", "oda": ["elma", "ev"], "kelimeler": ["elma", "ev", "ekmek"] },
-    { "id": "t", "buyuk": "T", "kucuk": "t", "ses": "Tı!", "renk": "#FF8A2B", "kino": "ters", "oda": ["tavsan", "top"], "kelimeler": ["top", "tavsan", "tren", "tavuk", "traktor"] },
-    { "id": "i", "buyuk": "İ", "kucuk": "i", "ses": "İii!", "renk": "#9B5CE0", "kino": "ters", "oda": ["inek", "itfaiye"], "kelimeler": ["inek", "ip", "itfaiye", "igne"] },
-    { "id": "l", "buyuk": "L", "kucuk": "l", "ses": "Lll!", "renk": "#FF5FA2", "kino": "ayna", "oda": ["leylek", "limon"], "kelimeler": ["limon", "lamba", "leylek", "lale"] }
+    { "id": "a", "buyuk": "A", "kucuk": "a", "ses": "Aaa!", "renk": "#F0413F", "kino": "ters", "kahraman": "ari", "hareket": "ucan", "oda": ["ari", "ayi"], "kelimeler": ["ari", "ayi", "araba", "armut", "aslan", "ananas"] },
+    { "id": "n", "buyuk": "N", "kucuk": "n", "ses": "Nnn!", "renk": "#3E9DF2", "kino": "ayna", "kahraman": "nar-yuzlu", "hareket": "zipla", "oda": ["nar", "ninni"], "kelimeler": ["nar", "ninni", "nane"] },
+    { "id": "e", "buyuk": "E", "kucuk": "e", "ses": "Eee!", "renk": "#5DBE3F", "kino": "ayna", "kahraman": "elma-yuzlu", "hareket": "zipla", "oda": ["elma", "ev"], "kelimeler": ["elma", "ev", "ekmek", "el"] },
+    { "id": "t", "buyuk": "T", "kucuk": "t", "ses": "Tı!", "renk": "#FF8A2B", "kino": "ters", "kahraman": "tavsan", "hareket": "zipla", "oda": ["tavsan", "top"], "kelimeler": ["top", "tavsan", "tren", "tavuk", "traktor"] },
+    { "id": "i", "buyuk": "İ", "kucuk": "i", "ses": "İii!", "renk": "#9B5CE0", "kino": "ters", "kahraman": "inek", "hareket": "mo", "oda": ["inek", "itfaiye"], "kelimeler": ["inek", "ip", "itfaiye", "igne"] },
+    { "id": "l", "buyuk": "L", "kucuk": "l", "ses": "Lll!", "renk": "#FF5FA2", "kino": "ayna", "kahraman": "leylek", "hareket": "ucan", "oda": ["leylek", "limon"], "kelimeler": ["leylek", "limon", "lamba"] }
   ],
   "sonraki_gruplar": ["O K U R I M", "Ü S Ö Y D Z", "Ç B G C Ş", "P H V Ğ F J"],
   "kelimeler": {
@@ -17,11 +17,12 @@
     "aslan": { "ad": "Aslan", "uzun": "Aaaslan!" },
     "ananas": { "ad": "Ananas", "uzun": "Aaananas!" },
     "nar": { "ad": "Nar", "uzun": "Nnnar!" },
-    "nota": { "ad": "Nota", "uzun": "Nnnota!" },
+    "ninni": { "ad": "Ninni", "uzun": "Nnninni!" },
     "nane": { "ad": "Nane", "uzun": "Nnnane!" },
     "elma": { "ad": "Elma", "uzun": "Eeelma!" },
     "ev": { "ad": "Ev", "uzun": "Eeev!" },
     "ekmek": { "ad": "Ekmek", "uzun": "Eeekmek!" },
+    "el": { "ad": "El", "uzun": "Eeel!" },
     "top": { "ad": "Top", "uzun": "Tttop!" },
     "tavsan": { "ad": "Tavşan", "uzun": "Tttavşan!" },
     "tren": { "ad": "Tren", "uzun": "Tttren!" },
@@ -34,7 +35,6 @@
     "limon": { "ad": "Limon", "uzun": "Lllimon!" },
     "lamba": { "ad": "Lamba", "uzun": "Lllamba!" },
     "leylek": { "ad": "Leylek", "uzun": "Llleylek!" },
-    "lale": { "ad": "Lale", "uzun": "Lllale!" },
     "kedi": { "ad": "Kedi", "uzun": "Kedi!" },
     "balik": { "ad": "Balık", "uzun": "Balık!" },
     "muz": { "ad": "Muz", "uzun": "Muz!" },

@@ -1111,6 +1111,23 @@
 .ok-kok .ok-ses-duvar-kahraman .ok-ses-kahraman > .ok-ses-img {
   animation: ok-ses-titre 0.18s ease-in-out infinite alternate;
 }
+/* uçmayan kahraman (nar, elma, tavşan, inek) duvarın önünde durur, arada bir sevinçle sekip yere ezilerek konar */
+.ok-kok .ok-ses-duvar-kahraman.ok-ses-duvar-otur {
+  left: auto;
+  right: 7%;
+  top: 30%;
+  animation: ok-ses-sek 4.2s cubic-bezier(0.3, 0, 0.4, 1) infinite;
+}
+.ok-kok .ok-ses-duvar-otur .ok-ses-kahraman > .ok-ses-img {
+  animation: none;
+}
+@keyframes ok-ses-sek {
+  0%, 62%, 100% { translate: 0 0; scale: 1 1; }
+  68% { translate: 0 4%; scale: 1.12 0.88; }
+  78% { translate: 0 -38%; scale: 0.92 1.1; }
+  88% { translate: 0 0; scale: 1.14 0.86; }
+  94% { translate: 0 0; scale: 0.97 1.03; }
+}
 @keyframes ok-ses-gezin {
   0% { translate: 0 0; scale: -1 1; }
   22% { translate: 32vw -6vh; scale: -1 1; }

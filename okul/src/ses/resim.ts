@@ -40,30 +40,41 @@ export function resimEl(k: string, renk = '#9B5CE0'): HTMLElement {
 }
 
 /**
- * Odanın kahramanı (A odasında arı): pozlar assets/okul/ses/<kelime>-<poz>.webp (ucan, mutlu); poz çizimi yoksa
- * kelimenin kendi resmi. Kahraman odada uçar, harfe konar, izlenen harf ona dönüşür.
+ * Odanın kahramanı (A: arı, N: nar, E: elma, T: tavşan, İ: inek, L: leylek): assets/okul/ses/<kahraman>.webp ve pozları
+ * <kahraman>-<poz>.webp (ucan / zipla / mo, mutlu). Pozlar aynı tuvalde aynı ölçekte; poz çizimi yoksa duruş resmi.
+ * Kahraman odaya gelir, sevinir, izlenen harf ona dönüşür.
  */
-export type Poz = '' | 'ucan' | 'mutlu';
-export const pozAdres = (k: string, poz: Poz = ''): string => (poz && YUVA[`../../../assets/okul/ses/${k}-${poz}.webp`]) || resimAdres(k);
-export const pozVar = (k: string, poz: Exclude<Poz, ''>) => !!YUVA[`../../../assets/okul/ses/${k}-${poz}.webp`];
+export type Poz = string;
+const yuvaAdres = (k: string) => YUVA[`../../../assets/okul/ses/${k}.webp`] ?? '';
+export const pozVar = (k: string, poz: Poz) => !!poz && !!yuvaAdres(`${k}-${poz}`);
+export const pozAdres = (k: string, poz: Poz = ''): string => (pozVar(k, poz) && yuvaAdres(`${k}-${poz}`)) || yuvaAdres(k) || resimAdres(k);
 
 export function kahramanEl(k: string, renk: string, poz: Poz = ''): HTMLElement {
   const adres = pozAdres(k, poz);
   const ic = adres ? h('img.ok-ses-img', { src: adres, alt: '', draggable: 'false' }) : resimEl(k, renk);
-  return h('span.ok-ses-kahraman', { 'data-kelime': k, 'data-poz': poz && pozVar(k, poz) ? poz : 'dur' }, ic);
+  return h('span.ok-ses-kahraman', { 'data-kelime': k, 'data-poz': pozVar(k, poz) ? poz : 'dur' }, ic);
 }
 
-/** Kahramanın pozunu değiştirir (ms sonra eski pozuna döner); squash ile geçiş */
+/**
+ * Kahramanın pozunu değiştirir (ms sonra eski pozuna döner). Sert kesme yok: önce ezilir, resim ezilmenin en dibinde
+ * değişir, sonra esneyip toparlanır.
+ */
 export function pozla(el: HTMLElement, poz: Poz, ms = 0) {
   const k = el.dataset.kelime ?? '';
   const img = el.querySelector('img');
-  const once = (el.dataset.poz === 'dur' ? '' : el.dataset.poz) as Poz;
-  if (img && pozAdres(k, poz)) img.src = pozAdres(k, poz);
-  el.dataset.poz = poz && pozVar(k, poz) ? poz : 'dur';
+  const once = el.dataset.poz === 'dur' ? '' : (el.dataset.poz ?? '');
+  const yeni = pozVar(k, poz) ? poz : 'dur';
+  if (yeni === el.dataset.poz && !ms) return;
+  el.dataset.poz = yeni;
   el.classList.remove('ok-ses-poz');
   void el.offsetWidth;
   el.classList.add('ok-ses-poz');
-  if (ms > 0) window.setTimeout(() => el.isConnected && pozla(el, once), ms);
+  const zaman = Number(el.dataset.pozZaman ?? 0);
+  if (zaman) clearTimeout(zaman);
+  window.setTimeout(() => {
+    if (img && el.dataset.poz === yeni) img.src = pozAdres(k, poz);
+  }, 130);
+  if (ms > 0) el.dataset.pozZaman = String(window.setTimeout(() => el.isConnected && pozla(el, once), ms));
 }
 
 /** Kule odasının arka planı (assets/okul/ses/kule-kat.webp; her harf odasının zemini) */

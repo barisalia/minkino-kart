@@ -22,7 +22,7 @@ import { geriGonder, hedefliSurukle } from '../surukle';
 import { HARF_YOLU, izBaslat, izGecis, izOran, izToleransi, kinoYolu, yolD, type Iz } from './harf-yolu';
 import { avSozu, avTurlari, farkliTurlari, HARFLER, kelime, kutuTuru, ODA_ADIMLARI, odaId, odaSesiSozu, ORTAK, SES_ICERIK as S, sesleBaslar, type Harf } from './harfler';
 import { odaAdimi, odaAdimiYaz, ODA_ANAHTARI } from './oda-kayit';
-import { esyaAdres, kahramanEl, kuleKatAdres, pozla, pozVar, resimAdres, resimEl } from './resim';
+import { esyaAdres, kahramanEl, kuleKatAdres, pozAdres, pozla, resimAdres, resimEl } from './resim';
 import type { Nokta } from '../../../canlan/src/resimler';
 
 const M = S.mino;
@@ -46,7 +46,7 @@ const harfYazi = (t: string, sinif = '') => h(`span.ok-ses-harf${sinif}`, { 'ari
 
 /** Odanın çıkartması / durak simgesi: büyük harf ve odanın resmi (A'lı arı) */
 export function odaSimgesi(hf: Harf): string {
-  const r = resimAdres(hf.oda[0]);
+  const r = pozAdres(hf.kahraman);
   return `<span class="ok-ses-simge" style="${harfStil(hf)}"><b>${hf.buyuk}</b>${r ? `<img class="ok-resim" src="${r}" alt="" draggable="false">` : ''}</span>`;
 }
 
@@ -90,6 +90,8 @@ function sesLevhasi(s: Sahne, hf: Harf, dinlet: (soz: Soylenecek) => void): HTML
 }
 
 const sec = <T>(a: T[], i: number) => a[i % a.length];
+/** Kahramanın hareket pozu (uçan, zıplayan); inek koşarken sevinçli duruşuyla (möleyişi dokununca) */
+const hareketPozu = (hf: Harf) => (hf.hareket === 'mo' ? 'mutlu' : hf.hareket);
 
 // ---------------------------------------------------------------- 1 · Sesin odası
 async function tanis(s: Sahne, hf: Harf) {
@@ -97,7 +99,7 @@ async function tanis(s: Sahne, hf: Harf) {
   const levha = h('button.ok-ses-levha', { type: 'button', style: harfStil(hf), 'aria-label': hf.buyuk, 'data-hedef': 'harf' }, harfYazi(hf.buyuk), harfYazi(hf.kucuk, '.ok-ses-kucuk'));
   const kartlar = hf.oda.map((k, i) => resimKarti(k, hf, i));
   // odanın kahramanı (A: arı) ilk kartta; uçarak gelir
-  const kahraman = kahramanEl(hf.oda[0], hf.renk);
+  const kahraman = kahramanEl(hf.kahraman, hf.renk);
   kartlar[0].replaceChildren(kahraman);
   s.alan.replaceChildren(h('div.ok-ses-tanis', {}, kartlar[0], levha, kartlar[1]));
   s.secim.replaceChildren();
@@ -148,7 +150,7 @@ async function tanis(s: Sahne, hf: Harf) {
       oynat(k, 'ok-ses-zipla');
       efekt.dokunma();
       k.classList.remove('ok-ses-davet');
-      if (k === kartlar[0]) pozla(kahraman, 'mutlu', 1100);
+      if (k === kartlar[0]) pozla(kahraman, hf.hareket === 'mo' ? 'mo' : 'mutlu', 1100);
       dinlet(kelime(k.dataset.kelime!).uzun);
       if (giris) dokunulan.add(k);
       else isaretle(k);
@@ -192,7 +194,15 @@ async function kahramanGelsin(s: Sahne, hf: Harf, kahraman: HTMLElement) {
   await s.bekle(250);
   const hedef = s.efekt.merkez(kahraman);
   ses.kanat();
-  await s.efekt.ucur(h('div.ok-ses-ucan', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan')), [-80, hedef[1] - 120], hedef, { ms: 1150, kavis: -110, boy0: 0.7, boy1: 1, don: 8 });
+  if (hf.hareket === 'ucan') {
+    await s.efekt.ucur(h('div.ok-ses-ucan', {}, kahramanEl(hf.kahraman, hf.renk, 'ucan')), [-80, hedef[1] - 120], hedef, { ms: 1150, kavis: -110, boy0: 0.7, boy1: 1, don: 8 });
+  } else {
+    // zıplayarak gelir: iki sekme, her konuşta "pıt"
+    const ara: [number, number] = [hedef[0] * 0.45, hedef[1] + 10];
+    await s.efekt.ucur(h('div.ok-ses-ucan', {}, kahramanEl(hf.kahraman, hf.renk, hareketPozu(hf))), [-80, hedef[1] + 10], ara, { ms: 620, kavis: -90, boy0: 0.85, boy1: 0.95, don: 6 });
+    ses.pit(1);
+    await s.efekt.ucur(h('div.ok-ses-ucan', {}, kahramanEl(hf.kahraman, hf.renk, hareketPozu(hf))), ara, hedef, { ms: 620, kavis: -90, boy0: 0.95, boy1: 1, don: 6 });
+  }
   kahraman.style.visibility = '';
   oynat(kahraman, 'ok-ses-kon');
   ses.pit(2);
@@ -228,7 +238,7 @@ async function av(s: Sahne, hf: Harf) {
   const dinlet = dinleyici(s);
   const levha = sesLevhasi(s, hf, dinlet);
   // kahraman harfin yanında bekler; doğru resim bulununca sevinir
-  const kahraman = kahramanEl(hf.oda[0], hf.renk);
+  const kahraman = kahramanEl(hf.kahraman, hf.renk);
   kahraman.addEventListener('click', () => (pozla(kahraman, 'mutlu', 900), oynat(kahraman, 'ok-ses-zipla')));
   const ust = h('div.ok-ses-av-ust', {}, levha, kahraman);
   const turlar = avTurlari(hf, s.rnd);
@@ -377,7 +387,7 @@ async function izleTur(s: Sahne, hf: Harf, harf: string, ilk: boolean) {
   const kalem = daireEl([0.5, 0.5], 4.5, 'ok-ses-iz-kalem');
   svg.append(kalem);
   // harf bitince kahramana dönüşür (A → arı) ve uçup gider
-  const resimK = h('div.ok-ses-iz-resim', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan'));
+  const resimK = h('div.ok-ses-iz-resim', {}, kahramanEl(hf.kahraman, hf.renk, hareketPozu(hf)));
   const kagit = h('div.ok-ses-kagit', { style: harfStil(hf), 'data-harf': harf }, svg, resimK);
   if (GOSTERIM) {
     kagit.dataset.yol = JSON.stringify(yollar);
@@ -511,7 +521,7 @@ async function izleTur(s: Sahne, hf: Harf, harf: string, ilk: boolean) {
         const bas = s.efekt.merkez(resimK);
         resimK.style.visibility = 'hidden';
         ses.kanat();
-        void s.efekt.ucur(h('div.ok-ses-ucan', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan')), bas, [s.el.clientWidth + 120, bas[1] - 200], { ms: 1400, kavis: -160, boy1: 0.7, don: 14 });
+        void s.efekt.ucur(h('div.ok-ses-ucan', {}, kahramanEl(hf.kahraman, hf.renk, hareketPozu(hf))), bas, [s.el.clientWidth + 120, bas[1] - 200], { ms: 1400, kavis: -160, boy1: 0.7, don: 14 });
       }
       await s.ovgu(kagit);
     };
@@ -655,7 +665,7 @@ async function kutu(s: Sahne, hf: Harf) {
   const dinlet = dinleyici(s);
   const tur = kutuTuru(hf, s.rnd);
   const sesS = sepetEl('ses', hf);
-  const kahraman = kahramanEl(hf.oda[0], hf.renk);
+  const kahraman = kahramanEl(hf.kahraman, hf.renk);
   sesS.el.append(h('span.ok-ses-sepet-kahraman', {}, kahraman));
   const digerS = sepetEl('diger', hf);
   const tepsi = h('div.ok-ses-tepsi');
@@ -791,7 +801,7 @@ for (const hf of HARFLER) {
       const kat = kuleKatAdres();
       if (kat) {
         s.el.querySelector('.ok-park')?.after(
-          h('div.ok-park.ok-ses-oda-arka', { 'aria-hidden': 'true', style: `background-image:url("${kat}")` }, h('span.ok-ses-duvar-harf', {}, hf.buyuk), pozVar(hf.oda[0], 'ucan') ? h('span.ok-ses-duvar-kahraman', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan')) : null),
+          h('div.ok-park.ok-ses-oda-arka', { 'aria-hidden': 'true', style: `background-image:url("${kat}")` }, h('span.ok-ses-duvar-harf', {}, hf.buyuk), h(`span.ok-ses-duvar-kahraman${hf.hareket === 'ucan' ? '' : '.ok-ses-duvar-otur'}`, {}, kahramanEl(hf.kahraman, hf.renk, hf.hareket === 'ucan' ? 'ucan' : ''))),
         );
       }
       const n = ODA_ADIMLARI.length;
@@ -812,7 +822,7 @@ for (const hf of HARFLER) {
         odaAdimiYaz(id, i + 1 < n ? i + 1 : 0);
       }
       s.tur(n);
-      const kahraman = kahramanEl(hf.oda[0], hf.renk, 'mutlu');
+      const kahraman = kahramanEl(hf.kahraman, hf.renk, 'mutlu');
       s.alan.replaceChildren(h('div.ok-ses-final-kap', {}, h('div.ok-ses-levha.ok-ses-final', { style: harfStil(hf) }, harfYazi(hf.buyuk), harfYazi(hf.kucuk, '.ok-ses-kucuk')), kahraman));
       oynat(kahraman, 'ok-ses-kon');
       s.konfeti(0.5, 0.4, 90);

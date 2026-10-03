@@ -21,7 +21,7 @@ import { kayit } from '../kayit';
 import { HARFLER, odaAcik, odaId, SES_ICERIK as S } from './harfler';
 import { odaAdimi } from './oda-kayit';
 import { harfStil } from './odalar';
-import { resimAdres } from './resim';
+import { pozAdres } from './resim';
 
 export interface KuleBaglam {
   ikili: () => { el: HTMLElement; mino: Mino; kino: Karakter; kapat: () => void };
@@ -57,7 +57,7 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
     const yarim = !bitti && odaAdimi(id) > 0;
     const durum = bitti ? 'bitti' : !acik ? 'kilitli' : i === oneriI ? 'oneri' : 'acik';
     const [yan, yuk] = ODA_YERI[i];
-    const resim = bitti ? resimAdres(hf.oda[0]) : '';
+    const resim = bitti ? pozAdres(hf.kahraman) : '';
     const d = h(
       'button.ok-oda',
       { type: 'button', 'data-oda': id, 'data-durum': durum, style: `${harfStil(hf)};--yan:${yan};--yuk:${yuk};--i:${i}`, 'aria-label': S.arayuz.oda.replace('{Harf}', hf.buyuk) },

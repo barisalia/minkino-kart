@@ -17,7 +17,10 @@ export interface Harf {
   renk: string;
   /** Kino harfi nasıl yanlış çizer: aynada (И, Ǝ) ya da baş aşağı (∀, ⊥) */
   kino: 'ayna' | 'ters';
-  /** Sesin odasındaki iki resim */
+  /** odanın kahramanı (assets/okul/ses/<kahraman>[-poz].webp) ve hareket pozu (uçan, zıplayan, möleyen) */
+  kahraman: string;
+  hareket: 'ucan' | 'zipla' | 'mo';
+  /** Sesin odasındaki iki resim (ilki kahramanın kelimesi) */
   oda: string[];
   /** bu sesle başlayan kelimeler (ilk ses avı, sesli kutu) */
   kelimeler: string[];
@@ -54,6 +57,8 @@ export const HAZIR_RESIM: Record<string, string> = {
   ip: 'okul/ses/ip',
   igne: 'okul/ses/igne',
   leylek: 'okul/ses/leylek',
+  ninni: 'okul/ses/ninni',
+  el: 'okul/ses/el',
   araba: 'tasitlar/araba',
   armut: 'meyveler/armut',
   aslan: 'hayvanlar/aslan',
