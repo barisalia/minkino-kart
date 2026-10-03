@@ -30,11 +30,11 @@ function yerYap(k: Kategori): Yer {
   const ic = h('div.ok-k-yer-ic');
   const zemin =
     k === 'meyve'
-      ? gorselEl('pazar/sepet', 'ok-k-yer-resim')
+      ? gorselEl(hazir('okul/kelime/meyve-sepeti-bos') ? 'okul/kelime/meyve-sepeti-bos' : 'pazar/sepet', 'ok-k-yer-resim')
       : hazir(`okul/kelime/${k === 'hayvan' ? 'agil' : 'garaj'}`)
         ? gorselEl(`okul/kelime/${k === 'hayvan' ? 'agil' : 'garaj'}`, 'ok-k-yer-resim')
         : h('span.ok-k-yer-pencere', {}, gorselEl(k === 'hayvan' ? 'sahne/cayir' : 'sahne/yol'));
-  const el = h('div.ok-k-grup-yer', { 'data-kategori': k, role: 'button', 'aria-label': KL[k] }, zemin, ic, h('span.ok-k-etiket', {}, kelimeEl(KATEGORI_SIMGE[k])));
+  const el = h('div.ok-k-grup-yer', { 'data-kategori': k, 'data-cizim': zemin.classList.contains('ok-k-yer-pencere') ? 'pencere' : 'resim', role: 'button', 'aria-label': KL[k] }, zemin, ic, h('span.ok-k-etiket', {}, kelimeEl(KATEGORI_SIMGE[k])));
   return { el, ic };
 }
 

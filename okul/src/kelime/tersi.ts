@@ -29,13 +29,17 @@ function sepet(dolu: boolean): HTMLElement {
   return h('span.ok-k-dolu-sepet', {}, h('img.ok-resim', { src: kelimeGorsel('pazar/sepet'), alt: '', draggable: 'false' }), ...elmalar);
 }
 
+/** Gemini çizimi (okul/kelime/<ad>) varsa o, yoksa depodaki yedek */
+const tercih = (ad: string, yedek: string) => (hazir(`okul/kelime/${ad}`) ? `okul/kelime/${ad}` : yedek);
+
 /** Çiftin bir durumunun görüntüsü (sahnede ve kartta aynı) */
 export function gorunus(c: TersCift, t: Taraf): HTMLElement {
   const a = t === 'a';
   const kutu = (...c2: HTMLElement[]) => h(`span.ok-k-gorunus`, { 'data-cift': c.id, 'data-taraf': t }, ...c2);
   switch (c.id) {
     case 'acik':
-      return kutu(gorselEl(a ? 'ege/perde-acik' : 'ege/perde-kapali'));
+      // Gemini'nin kapısı gelince o (kapi-acik / kapi-kapali), şimdilik perde
+      return kutu(gorselEl(tercih(a ? 'kapi-acik' : 'kapi-kapali', a ? 'ege/perde-acik' : 'ege/perde-kapali')));
     case 'buyuk':
       return kutu(gorselEl('renkler/top', a ? 'ok-k-buyuk' : 'ok-k-kucuk'));
     case 'sicak':
@@ -43,7 +47,8 @@ export function gorunus(c: TersCift, t: Taraf): HTMLElement {
     case 'uzun':
       return kutu(tren(a ? 3 : 0));
     case 'dolu':
-      return kutu(sepet(a));
+      // Gemini'nin bardağı gelince o (bardak-dolu / bardak-bos), şimdilik elmalı sepet
+      return kutu(hazir('okul/kelime/bardak-dolu') && hazir('okul/kelime/bardak-bos') ? gorselEl(a ? 'okul/kelime/bardak-dolu' : 'okul/kelime/bardak-bos') : sepet(a));
     case 'kuru':
       return kutu(gorselEl(a ? 'banyo/havlu-mavi' : 'okul/kelime/havlu-islak'));
   }

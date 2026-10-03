@@ -46,7 +46,7 @@
     },
     "eksik": {
       "giris": "Eksik kelimeyi bul!",
-      "yakala": "Çizme yenmez Kino!",
+      "yakala": "Ayakkabı yenmez Kino!",
       "tekrar": "Bir daha dinle!",
       "cumleler": {
         "kemik": { "soru": "Kino bir … yedi.", "tam": "Kino bir kemik yedi!" },
@@ -61,7 +61,7 @@
   "kino": {
     "dinle": "Kedi! İşte burada!",
     "dinle_son": "Hav! Haklısın!",
-    "hecele": "Karpuz! Bam bam bam bam bam!",
+    "hecele": "Kavun! Bam bam bam bam bam!",
     "hecele_son": "İki mi? Bam bam!",
     "hecele_islak": "Şap! Suya düştüm!",
     "tersi": {
@@ -83,7 +83,7 @@
     },
     "eksik_dogru": "Mmm, çok güzel!",
     "komik": {
-      "cizme": "Ihh! Lastik tadı var!",
+      "ayakkabi": "Ihh! Lastik tadı var!",
       "bulut": "Bulut uçup gitti!",
       "muz": "Muz şemsiye olmaz ki!",
       "top": "Top açılmıyor!",
@@ -99,6 +99,9 @@
   "kelimeler": {
     "kemik": "Kemik",
     "cizme": "Çizme",
+    "ayakkabi": "Ayakkabı",
+    "kavun": "Kavun",
+    "papagan": "Papağan",
     "bulut": "Bulut",
     "kitap": "Kitap",
     "kova": "Kova",

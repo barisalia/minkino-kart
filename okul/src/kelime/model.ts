@@ -77,10 +77,13 @@ const tablo: [string, string, string, Kategori?][] = [
   ['kitap', KL.kitap, 'film/esya/kitap'],
   ['bulut', KL.bulut, 'film/esya/bulut'],
   ['cizme', KL.cizme, 'film/esya/yagmur-botu'],
+  // Gemini çizimleri (assets/okul/kelime; yoksa turlara girmez)
+  ['ayakkabi', KL.ayakkabi, 'okul/kelime/ayakkabi'],
+  ['kavun', KL.kavun, 'okul/kelime/kavun', 'meyve'],
+  ['papagan', KL.papagan, 'okul/kelime/papagan', 'hayvan'],
   ['kova', KL.kova, 'film/esya/kova'],
   ['havlu', KL.havlu, 'banyo/havlu-mavi'],
-  ['sepet', KL.sepet, 'pazar/sepet'],
-  // Gemini yuvaları (görsel gelene kadar turlara girmez)
+  ['sepet', KL.sepet, 'okul/kelime/meyve-sepeti-bos'],
   ['kemik', KL.kemik, 'okul/kelime/kemik'],
 ];
 
@@ -94,11 +97,8 @@ export type Hazir = (resim: string) => boolean;
 export const hepsiHazir: Hazir = () => true;
 /** Gemini'den beklenen görseller (assets/okul/kelime/<ad>.webp; tek nesne, beyaz zemin, Mino stili) */
 export const GEMINI_KELIME: Record<string, string> = {
-  kemik: 'köpek kemiği (klasik iki ucu yumru kemik), krem beyazı',
   'havlu-islak': 'ıslak, sarkık mavi havlu; ucundan su damlaları damlıyor (banyo/havlu-mavi ile aynı havlu)',
   'rozet-kelime': '“Kelime Ustası” rozeti: altın madalya, iki mavi kurdele, ortada resimli taşlı küçük köprü',
-  agil: 'hayvan ağılı: önden bakan alçak tahta çit, içi yeşil çimen, üstü açık (hayvanlar içine konur)',
-  garaj: 'oyuncak garaj: önden bakan küçük kırmızı çatılı garaj, kapısı açık, önünde kısa yol',
 };
 
 const sec = <T>(dizi: T[], rnd: Rnd): T => dizi[Math.floor(rnd() * dizi.length)];
@@ -143,12 +143,12 @@ export const heceSozu = (hece: string) => `${buyukHarfBas(hece)}!`;
 /** Hece sayısına göre kelimeler (hepsinin görseli var; "ğ" ile başlayan hece yok: tek başına okunuşu zor) */
 export const HECE_KELIMELERI: Record<1 | 2 | 3 | 4, string[]> = {
   1: ['top', 'muz', 'fil', 'nar'],
-  2: ['kedi', 'elma', 'balik', 'tavsan', 'ordek', 'ucak', 'gemi', 'limon'],
+  2: ['karpuz', 'kedi', 'elma', 'balik', 'tavsan', 'ordek', 'ucak', 'gemi', 'limon'],
   3: ['araba', 'zurafa', 'kelebek', 'portakal', 'ananas', 'penguen', 'otobus'],
   4: ['helikopter', 'salatalik', 'motosiklet'],
 };
 /** Kino'nun turu: "Karpuz"a beş kere vurur; Mino: "Kar-puz. İki!" */
-export const KINO_HECE = 'karpuz';
+export const KINO_HECE = 'kavun';
 /** 3 kelime: ilk Kino'nun karpuzu; 3-4 yaş sonra 1 ve 3 heceli, 5-6 yaş 3 ve 4 heceli */
 export function heceTurlari(yas: number, rnd: Rnd): string[] {
   const [a, b] = yas <= 4 ? ([1, 3] as const) : ([3, 4] as const);
@@ -214,7 +214,8 @@ export interface BoyaTuru {
  */
 export function boyaTurlari(yas: number, rnd: Rnd): BoyaTuru[] {
   const kucuk = yas <= 4;
-  const palet = (kucuk ? RENKLER.slice(0, 4) : RENKLER).map((r) => r.id);
+  // dört temel renk (Gemini'nin boya kovaları): 3-4 yaş 3, 5-6 yaş 4 kova
+  const palet = RENKLER.slice(0, 4).map((r) => r.id);
   const adet = kucuk ? 3 : 4;
   const nesneler = karistir(BOYA_NESNELERI, rnd).slice(0, 4);
   const hedefler = karistir(palet.filter((r) => r !== 'mavi'), rnd);
@@ -264,8 +265,8 @@ export interface EksikTuru {
 }
 /** Cümlelerin seçenekleri: doğru + iki komik yanlış (Kino yanlışı dener: "Ihh! Lastik tadı var!") */
 export const EKSIK_SECENEK: Record<CumleId, [string, string, string]> = {
-  kemik: ['kemik', 'cizme', 'bulut'],
-  elma: ['elma', 'cizme', 'bulut'],
+  kemik: ['kemik', 'ayakkabi', 'bulut'],
+  elma: ['elma', 'ayakkabi', 'bulut'],
   semsiye: ['semsiye', 'muz', 'top'],
   balon: ['balon', 'elma', 'kitap'],
   ucak: ['ucak', 'fil', 'araba'],

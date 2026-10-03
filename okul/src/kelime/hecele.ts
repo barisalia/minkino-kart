@@ -15,12 +15,14 @@ import { sayiSozu } from '../sayi';
 import { ses } from '../sesler';
 import { heceDurumu, heceler, heceSozu, heceTurlari, kelime, kelimeSozu, KINO_HECE } from './model';
 import { KA, KK, KM, sicrat, simge } from './ortak';
-import { kelimeEl, kelimeGorsel } from './resim';
+import { hazir, kelimeEl, kelimeGorsel } from './resim';
 import { kses } from './ses';
 
 /** Vuruş dizisinin sonu sayılan sessizlik */
 const TAM_MS = 900;
 const EKSIK_MS = 2600;
+/** Davul: Gemini'nin davulu (yoksa Orman'ınki) */
+const DAVUL = () => (hazir('okul/kelime/davul') ? 'okul/kelime/davul' : 'orman-esya/davul');
 
 /** Davul tek yere bağlanır: o anki kelimenin vur'u */
 const dinleyici: { vur: (() => void) | null } = { vur: null };
@@ -166,10 +168,10 @@ etkinlikKaydet({
   id: 'kelime-hecele',
   bolge: 'kelime',
   ad: KA.etkinlikler['kelime-hecele'],
-  simge: () => simge(['orman-esya/davul', 'ok-ks-davul'], ['meyveler/karpuz', 'ok-ks-karpuz']),
+  simge: () => simge([DAVUL(), 'ok-ks-davul'], ['okul/kelime/kavun', 'ok-ks-karpuz']),
   async oyna(s) {
     let sira = 0;
-    const davul = h('button.ok-davul.ok-k-davul', { type: 'button', 'aria-label': 'Davul' }, h('img', { src: kelimeGorsel('orman-esya/davul'), alt: '', draggable: 'false' }));
+    const davul = h('button.ok-davul.ok-k-davul', { type: 'button', 'aria-label': 'Davul' }, h('img', { src: kelimeGorsel(DAVUL()), alt: '', draggable: 'false' }));
     davul.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       kses.davul(sira++ % 4);

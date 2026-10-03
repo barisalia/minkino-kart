@@ -13,11 +13,13 @@ import { ses } from '../sesler';
 import { boyaTurlari, kelime, renk, renkSozu, type BoyaTuru } from './model';
 import { dokunSec, KA, KK, KM, sicrat, simge } from './ortak';
 import { kses } from './ses';
-import { boya, boyanabilir } from './resim';
+import { boya, boyanabilir, gorselEl, hazir } from './resim';
 
-/** Renkli boya kovası */
+/** Renkli boya kovası: Gemini'nin boyalı kovası; yoksa film kovası o renge boyanır */
 function kova(r: string): HTMLButtonElement {
-  const b = h('button.ok-k-kova', { type: 'button', 'data-renk': r, 'aria-label': renk(r).ad }, boyanabilir('film/esya/kova'));
+  const yol = `okul/kelime/boya-kovasi-${r}`;
+  if (hazir(yol)) return h('button.ok-k-kova', { type: 'button', 'data-renk': r, 'aria-label': renk(r).ad, style: `--renk:${renk(r).deger}` }, gorselEl(yol), h('i.ok-k-kova-leke'));
+  const b = h('button.ok-k-kova', { type: 'button', 'data-renk': r, 'aria-label': renk(r).ad, style: `--renk:${renk(r).deger}` }, boyanabilir('film/esya/kova'));
   boya(b.firstElementChild as HTMLElement, renk(r).deger, false);
   return b;
 }

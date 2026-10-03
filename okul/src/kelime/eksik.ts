@@ -48,7 +48,7 @@ async function tur(s: Sahne, t: EksikTuru, ilk: boolean) {
 
   /** Komik sahne (ceza yok): çizmeyi Kino ısırır, bulut uçup gider, ötekiler boing diye seker */
   const komik = async (id: string, r: HTMLElement) => {
-    if (id === 'cizme') {
+    if (id === 'ayakkabi') {
       const [x, y] = s.efekt.merkez(bosluk, 0.9, 1);
       await s.kinoGit(x + 20, y, 550);
       s.kinoOynat('ye', 800);
@@ -67,7 +67,7 @@ async function tur(s: Sahne, t: EksikTuru, ilk: boolean) {
   };
   /** Boşluktaki resim kartına döner */
   const geriKoy = async (k: HTMLElement) => {
-    if (k.dataset.kelime === 'cizme') await s.kinoDon(450);
+    if (k.dataset.kelime === 'ayakkabi') await s.kinoDon(450);
     bosluk.replaceChildren(h('b.ok-k-soru', {}, '?'));
     bosluk.classList.remove('dolu');
     k.classList.remove('ok-k-gitti');
@@ -75,21 +75,21 @@ async function tur(s: Sahne, t: EksikTuru, ilk: boolean) {
   };
 
   // Kino (ilk cümle): çizmeyi yemeye kalkar
-  const cizme = ilk ? kartlar.find((k) => k.dataset.kelime === 'cizme') : undefined;
-  if (cizme) {
+  const ayakkabi = ilk ? kartlar.find((k) => k.dataset.kelime === 'ayakkabi') : undefined;
+  if (ayakkabi) {
     await s.kinoHata({
-      kino: KOMIK.cizme,
+      kino: KOMIK.ayakkabi,
       poz: null,
-      once: async () => komik('cizme', await bosluga(cizme)),
+      once: async () => komik('ayakkabi', await bosluga(ayakkabi)),
       mino: KM.eksik.yakala,
-      sonra: () => geriKoy(cizme),
+      sonra: () => geriKoy(ayakkabi),
     });
   }
 
   const dogru = await dokunSec(s, kartlar, (x) => x.dataset.kelime === t.dogru, {
     nazik: false,
     adim: 'sec',
-    soru: cizme ? C.soru : undefined,
+    soru: ayakkabi ? C.soru : undefined,
     yanlis: async (k) => {
       const id = k.dataset.kelime ?? '';
       await komik(id, await bosluga(k));
