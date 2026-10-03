@@ -50,7 +50,7 @@ export const pozVar = (k: string, poz: Exclude<Poz, ''>) => !!YUVA[`../../../ass
 export function kahramanEl(k: string, renk: string, poz: Poz = ''): HTMLElement {
   const adres = pozAdres(k, poz);
   const ic = adres ? h('img.ok-ses-img', { src: adres, alt: '', draggable: 'false' }) : resimEl(k, renk);
-  return h('span.ok-ses-kahraman', { 'data-kelime': k, 'data-poz': poz || 'dur' }, ic);
+  return h('span.ok-ses-kahraman', { 'data-kelime': k, 'data-poz': poz && pozVar(k, poz) ? poz : 'dur' }, ic);
 }
 
 /** Kahramanın pozunu değiştirir (ms sonra eski pozuna döner); squash ile geçiş */
@@ -59,7 +59,7 @@ export function pozla(el: HTMLElement, poz: Poz, ms = 0) {
   const img = el.querySelector('img');
   const once = (el.dataset.poz === 'dur' ? '' : el.dataset.poz) as Poz;
   if (img && pozAdres(k, poz)) img.src = pozAdres(k, poz);
-  el.dataset.poz = poz || 'dur';
+  el.dataset.poz = poz && pozVar(k, poz) ? poz : 'dur';
   el.classList.remove('ok-ses-poz');
   void el.offsetWidth;
   el.classList.add('ok-ses-poz');

@@ -22,7 +22,7 @@ import { geriGonder, hedefliSurukle } from '../surukle';
 import { HARF_YOLU, izBaslat, izGecis, izOran, izToleransi, kinoYolu, yolD, type Iz } from './harf-yolu';
 import { avSozu, avTurlari, farkliTurlari, HARFLER, kelime, kutuTuru, ODA_ADIMLARI, odaId, odaSesiSozu, ORTAK, SES_ICERIK as S, sesleBaslar, type Harf } from './harfler';
 import { odaAdimi, odaAdimiYaz, ODA_ANAHTARI } from './oda-kayit';
-import { esyaAdres, kahramanEl, kuleKatAdres, pozla, resimAdres, resimEl } from './resim';
+import { esyaAdres, kahramanEl, kuleKatAdres, pozla, pozVar, resimAdres, resimEl } from './resim';
 import type { Nokta } from '../../../canlan/src/resimler';
 
 const M = S.mino;
@@ -393,14 +393,22 @@ async function izleTur(s: Sahne, hf: Harf, harf: string, ilk: boolean) {
     if (!iz) return;
     isaretG.append(daireEl(iz.n[0], 6, 'ok-ses-iz-bas'));
     if (iz.n.length > 1) {
-      const k = Math.min(iz.n.length - 1, 9);
+      // yön oku: çizginin yanında (üstüne binmez), gövdeli ok; yeşil noktadan biraz ileride
+      const k = Math.min(iz.n.length - 1, 12);
       const [x0, y0] = iz.n[0];
       const [x1, y1] = iz.n[k];
-      const a = (Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
-      const ok = document.createElementNS(NS, 'path');
-      ok.setAttribute('d', 'M-4 -5 L4 0 L-4 5');
+      const L = Math.hypot(x1 - x0, y1 - y0) || 1;
+      const [ux, uy] = [(x1 - x0) / L, (y1 - y0) / L];
+      // dik yön: harfin ortasına bakan yan tercih edilir
+      let [px, py] = [-uy, ux];
+      if ((0.5 - x1) * px + (0.5 - y1) * py < 0) [px, py] = [-px, -py];
+      const cx = (x0 + x1) / 2 + px * 0.1;
+      const cy = (y0 + y1) / 2 + py * 0.1;
+      const a = (Math.atan2(uy, ux) * 180) / Math.PI;
+      const ok = document.createElementNS(NS, 'g');
       ok.setAttribute('class', 'ok-ses-iz-ok');
-      ok.setAttribute('transform', `translate(${(x1 * 100).toFixed(2)} ${(y1 * 100).toFixed(2)}) rotate(${a.toFixed(1)})`);
+      ok.setAttribute('transform', `translate(${(cx * 100).toFixed(2)} ${(cy * 100).toFixed(2)}) rotate(${a.toFixed(1)})`);
+      ok.innerHTML = '<path class="ok-ses-iz-ok-dis" d="M-7 0 H5 M0 -5 L6 0 L0 5"/><path d="M-7 0 H5 M0 -5 L6 0 L0 5"/>';
       isaretG.append(ok);
     }
   };
@@ -783,7 +791,7 @@ for (const hf of HARFLER) {
       const kat = kuleKatAdres();
       if (kat) {
         s.el.querySelector('.ok-park')?.after(
-          h('div.ok-park.ok-ses-oda-arka', { 'aria-hidden': 'true', style: `background-image:url("${kat}")` }, h('span.ok-ses-duvar-harf', {}, hf.buyuk), h('span.ok-ses-duvar-kahraman', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan'))),
+          h('div.ok-park.ok-ses-oda-arka', { 'aria-hidden': 'true', style: `background-image:url("${kat}")` }, h('span.ok-ses-duvar-harf', {}, hf.buyuk), pozVar(hf.oda[0], 'ucan') ? h('span.ok-ses-duvar-kahraman', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan')) : null),
         );
       }
       const n = ODA_ADIMLARI.length;
