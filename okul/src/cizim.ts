@@ -4,6 +4,7 @@
  * assets/okul/<ad>.webp. Yuvalardaki şimdiki dosyalar sade yer tutuculardır; Gemini çizince yalnız dosya değişir
  * (aynı ad, aynı en-boy oranı, şeffaf zemin). Liste: GORSEL_YUVALARI.
  */
+import { etkinlik } from './etkinlik';
 const GORSEL = import.meta.glob<string>(
   [
     '../../assets/okul/*.webp',
@@ -127,6 +128,7 @@ export function etkinlikSimgesi(id: string): string {
     case 'piknik':
       return `<span class="ok-simge-yigin">${kirpik('okul/piknik-ortusu', 'ok-s-ortu')}${img('meyveler/elma', 'ok-s-ortu-elma')}</span>`;
     default:
-      return '';
+      // öteki ünitelerin etkinlikleri kendi simgesini kayıtta verir (EtkinlikTanim.simge)
+      return etkinlik(id)?.simge?.() ?? '';
   }
 }

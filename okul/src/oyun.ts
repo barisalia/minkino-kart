@@ -22,6 +22,8 @@ import './etkinlikler/kac-alkis';
 import './etkinlikler/rakam-ciz';
 import './etkinlikler/kuslar';
 import './etkinlikler/piknik';
+// Kelime Köprüsü (Ünite 3): köprü ekranı ve 6 etkinlik
+import './kelime';
 import { kaydetKayit, kayit, sifirla } from './kayit';
 
 export type { BaslatSecenekleri };
@@ -55,6 +57,8 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     }
     kaydetKayit();
     ekran = q.get('ekran') ?? 'acilis';
+    // &bolge=kelime: doğrudan o bölgenin ekranı (ekran=bolge ya da album ile)
+    if (q.get('bolge')) param = { bolge: q.get('bolge') };
     const id = q.get('etkinlik');
     if (id && etkinlik(id)) {
       ekran = q.get('ekran') ?? 'etkinlik';

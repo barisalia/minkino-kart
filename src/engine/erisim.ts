@@ -27,6 +27,8 @@ export const ERISIM: Record<string, Erisim> = {
   'okul/kac-elma': 'ucretsiz',
   'okul/sayi-karti': 'ucretsiz',
   'okul/sepete-koy': 'ucretsiz',
+  // Kelime Köprüsü'nün ilk etkinliği ücretsiz
+  'okul/kelime-dinle': 'ucretsiz',
   'okul/*': 'abonelik',
   // Bütünüyle abonelikle
   pazar: 'abonelik',
