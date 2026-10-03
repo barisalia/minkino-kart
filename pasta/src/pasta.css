@@ -1252,15 +1252,17 @@
   width: 100%;
   padding-bottom: 7%;
 }
+/* tabak kendi oranında (servis-tabagi 406 × 272; yassılaştırılmaz): ürünler tabağın üstünde, alt kenarı ve yanları görünür */
 .ps-kok .ps-b-grup::before {
   content: '';
   position: absolute;
   left: 1%;
   right: 1%;
   bottom: 0;
-  height: 52%;
+  aspect-ratio: var(--tabak-oran, 1.49);
   background-image: var(--tabak-url, radial-gradient(closest-side, #fff 0 76%, #ffd6e6 78% 86%, #f0b8cc 88% 95%, rgba(240, 184, 204, 0) 97%));
-  background-size: 100% 100%;
+  background-size: contain;
+  background-position: 50% 100%;
   background-repeat: no-repeat;
   filter: drop-shadow(0 calc(2 * var(--u)) calc(2 * var(--u)) rgba(107, 58, 31, 0.2));
 }
@@ -2479,9 +2481,11 @@
   left: 0;
   right: 0;
   bottom: 2%;
-  height: 46%;
+  /* tabak kendi oranında (yassılaştırılmaz) */
+  aspect-ratio: var(--tabak-oran, 1.49);
   background-image: var(--tabak-url, radial-gradient(closest-side, #fff 0 76%, #ffd6e6 78% 86%, #f0b8cc 88% 95%, rgba(240, 184, 204, 0) 97%));
-  background-size: 100% 100%;
+  background-size: contain;
+  background-position: 50% 100%;
   background-repeat: no-repeat;
   filter: drop-shadow(0 4px 4px rgba(107, 58, 31, 0.25));
 }
