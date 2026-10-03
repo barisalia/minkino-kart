@@ -9,6 +9,7 @@
 // Yöntem: koyu veya doygun pikseller = çizim, 1 px şişirilip kenardan akıtılan dış bölge zemin; kapalı iç beyazlar (tabak, süt, tüy) kalır; kenar halesi iç renge göre alfadan çıkarılır.
 // Beyaz/açık nesnelerde (tabak, kâse) çizgi açık griyse --ayar ile koyu eşiği yükseltin (örn. "koyu":205).
 const fs = require('fs'), path = require('path');
+const guvenliYaz = require('./guvenli-yaz.cjs');
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const arg = (ad, v) => { const i = process.argv.indexOf('--' + ad); return i >= 0 ? process.argv[i + 1] : v; };
 const GIRDI = arg('girdi'), CIKTI = arg('cikti'), DESEN = new RegExp(arg('desen', '.'), 'i'), ESIT = arg('esit') ? new RegExp(arg('esit'), 'i') : null, ARKA = arg('arka') ? new RegExp(arg('arka'), 'i') : null;
@@ -82,7 +83,7 @@ async function kes(dosya, ad, o) {
     if (ARKA && ARKA.test(ad)) {
       const m = await s(path.join(GIRDI, f)).metadata(); const k = Math.min(1, ARKA_MAX / Math.max(m.width, m.height));
       const buf = await s(path.join(GIRDI, f)).removeAlpha().resize(Math.round(m.width * k), Math.round(m.height * k), { kernel: 'lanczos3' }).webp({ quality: 90, effort: 5 }).toBuffer();
-      const cad = ad.startsWith(ARKA_ONEK) ? ad : ARKA_ONEK + ad; fs.writeFileSync(path.join(CIKTI, cad + '.webp'), buf); console.log(cad + ': arka plan', Math.round(m.width * k) + 'x' + Math.round(m.height * k), Math.round(buf.length / 1024) + ' KB'); continue;
+      const cad = ad.startsWith(ARKA_ONEK) ? ad : ARKA_ONEK + ad; await guvenliYaz(path.join(CIKTI, cad + '.webp'), buf); console.log(cad + ': arka plan', Math.round(m.width * k) + 'x' + Math.round(m.height * k), Math.round(buf.length / 1024) + ' KB'); continue;
     }
     const o = { ...VARSAYILAN, ...(AYAR[ad] || {}) };
     const r = await kes(path.join(GIRDI, f), ad, o);
@@ -97,7 +98,7 @@ async function kes(dosya, ad, o) {
     for (const e of grup) {
       const tuval = await s({ create: { width: TW, height: TH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite([{ input: e.kirp, left: Math.round((TW - e.w) / 2), top: ESIT_HIZA === 'alt' ? TH - e.h : Math.round((TH - e.h) / 2) }]).png().toBuffer();
       const son = olc < 1 ? await s(tuval).resize(Math.round(TW * olc), Math.round(TH * olc), { kernel: 'lanczos3' }).png().toBuffer() : tuval;
-      const buf = await s(son).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); fs.writeFileSync(path.join(CIKTI, e.ad + '.webp'), buf);
+      const buf = await s(son).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); await guvenliYaz(path.join(CIKTI, e.ad + '.webp'), buf);
       console.log(e.ad + ': ortak tuval ' + Math.round(TW * olc) + 'x' + Math.round(TH * olc) + ' (kendi ' + e.w + 'x' + e.h + '), ' + Math.round(buf.length / 1024) + ' KB');
     }
   }
@@ -105,6 +106,6 @@ async function kes(dosya, ad, o) {
 async function yaz(ad, kirp, w, h, parca, kontur) {
   const olc = MAX && Math.max(w, h) > MAX ? MAX / Math.max(w, h) : 1;
   const son = olc < 1 ? await s(kirp).resize(Math.round(w * olc), Math.round(h * olc), { kernel: 'lanczos3' }).png().toBuffer() : kirp;
-  const buf = await s(son).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); fs.writeFileSync(path.join(CIKTI, ad + '.webp'), buf);
+  const buf = await s(son).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); await guvenliYaz(path.join(CIKTI, ad + '.webp'), buf);
   console.log(ad + ': ' + Math.round(w * olc) + 'x' + Math.round(h * olc) + ', ' + Math.round(buf.length / 1024) + ' KB, parça ' + parca + (kontur ? '' : ', kontur yok'));
 }
