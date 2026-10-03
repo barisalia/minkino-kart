@@ -7,7 +7,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { baslikBalon, sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Tuval, type Cizgi } from '../../src/ui/tuval';
-import { boyaBolgesi, boyaResmi, sihirliBoya, type Boya } from './boya';
+import { boyaBolgesi, boyaResmi, BOYUT, sihirliBoya, type Boya } from './boya';
 import { canliCizim, sablonSvg, yolD } from './canlandir';
 import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
@@ -107,7 +107,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   const c = canliCizim(r, p.parcalar, p.donusum, { kalinlik: 0.03, renk: r.renk });
   vitrin.append(c.el);
   const boyalar = sihirliBoya(r, titrekKopya(r).map((n) => ({ n, kalinlik: 0.03 })), p.donusum);
-  new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca)).toDataURL()));
+  new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca), BOYUT, c.boyaPikseli()).toDataURL()));
   c.susGoster();
   c.baslat();
   // Mino vitrinin köşesinde: balığa bakar, dokununca sevinir (kendisine dokunulunca da tepki verir)
@@ -553,7 +553,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   let boyuyor = false;
   const parcaCiz = (parca: string) => {
     const liste = boyalar.filter((b) => b.parca === parca);
-    canli.boyaKoy(parca, liste.length ? boyaResmi(liste).toDataURL() : null);
+    canli.boyaKoy(parca, liste.length ? boyaResmi(liste, BOYUT, canli.boyaPikseli()).toDataURL() : null);
   };
   const palet = h('div.cc-palet.cc-boya-palet', { role: 'radiogroup', 'aria-label': 'Boyalar' });
   for (const renk of BOYALAR) {

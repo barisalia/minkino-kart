@@ -28,6 +28,7 @@ import {
   type KadrajAdi,
   type Kamera,
   type OdaId,
+  yakinlikSiniri,
 } from './mantik';
 import { filmKatmani, resim } from './resimler';
 
@@ -202,6 +203,12 @@ export type Guvenli = (w: number, hgt: number) => [number, number, number, numbe
  */
 export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yatak: 1.6, mutfak: 1.4 };
 
+/**
+ * Odaların arka plan resminin doğal boyu (px; resim yüklenene dek). Kamera bu resmi cihazda doğal pikselinin
+ * PIKSEL_SINIR (×2.2) katından fazla büyütmez: DAR_YAKIN o sınıra kadar uygulanır (daha büyük çizim gelince tamamı).
+ */
+const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536 };
+
 export class Dunya {
   readonly el: HTMLElement;
   oda: Oda | null = null;
@@ -227,6 +234,7 @@ export class Dunya {
     this.oda?.el.remove();
     this.oda = oda;
     this.el.append(oda.el);
+    this.resimBekle(oda);
     this.kadraj = typeof kadraj === 'string' ? KADRAJ[kadraj] : kadraj;
     this.uygula(this.hesapla());
   }
@@ -236,6 +244,7 @@ export class Dunya {
     const eski = this.oda;
     this.oda = oda;
     this.el.append(oda.el);
+    this.resimBekle(oda);
     this.kadraj = typeof kadraj === 'string' ? KADRAJ[kadraj] : kadraj;
     const k = this.hesapla();
     this.uygula(k);
@@ -307,7 +316,32 @@ export class Dunya {
     const { w, h: hgt } = this.boyut;
     const dar = w < hgt * 1.15;
     const yakin = dar ? (this.darYakin ?? DAR_YAKIN[this.oda?.id ?? 'calisma']) : 1;
-    return kameraHesap(this.kadraj, { w: this.oda?.W ?? w, h: ODA_H }, { w, h: hgt }, this.guvenli(w, hgt), this.yakin, yakin);
+    const enCok = yakinlikSiniri(this.dogalBoy(), window.devicePixelRatio || 1);
+    return kameraHesap(this.kadraj, { w: this.oda?.W ?? w, h: ODA_H }, { w, h: hgt }, this.guvenli(w, hgt), this.yakin, yakin, enCok);
+  }
+
+  /** Odanın arka plan resimlerinin en küçük doğal boyu (px; yüklenmemişse bilinen boy) */
+  private dogalBoy(): number {
+    const oda = this.oda;
+    if (!oda) return ZEMIN_BOY.calisma;
+    const boylar = [...oda.el.querySelectorAll<HTMLImageElement>('img.dd-zemin')].map((i) => i.naturalHeight).filter((n) => n > 0);
+    return boylar.length ? Math.min(...boylar) : ZEMIN_BOY[oda.id];
+  }
+
+  /** Arka plan resmi sonradan yüklenince yakınlık sınırı resmin gerçek boyuna göre yeniden hesaplanır */
+  private resimBekle(oda: Oda) {
+    for (const i of oda.el.querySelectorAll<HTMLImageElement>('img.dd-zemin')) {
+      if (i.complete) continue;
+      i.addEventListener(
+        'load',
+        () => {
+          if (this.oda !== oda || this.anim.length) return;
+          const k = this.hesapla();
+          if (Math.abs(k.s - this.kamera.s) > 1e-3) this.yenile();
+        },
+        { once: true },
+      );
+    }
   }
 
   /** Dünyanın ve katmanların (derinlik) transform'ları */

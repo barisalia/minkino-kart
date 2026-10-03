@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boyaBolgesi, sihirliBoya, tumAlanlar, type Cizgi } from '../../canlan/src/boya';
+import { BOYA_EN_COK, boyaBolgesi, boyaCozunurlugu, BOYUT, sihirliBoya, tumAlanlar, type Cizgi } from '../../canlan/src/boya';
 import { puanla } from '../../canlan/src/puan';
 import { daire, RESIMLER, resim, type Nokta } from '../../canlan/src/resimler';
 import { SUS } from '../../canlan/src/susler';
@@ -72,5 +72,15 @@ describe('Çiz Canlansın: boyama', () => {
       for (const s of g.sus) expect(parcalar.has(s.parca), `${r.id}: ${s.parca}`).toBe(true);
       for (const p of Object.keys(g.boya)) expect(parcalar.has(p), `${r.id}: ${p}`).toBe(true);
     }
+  });
+});
+
+describe('Çiz Canlansın: boya resminin çözünürlüğü', () => {
+  it('ekrandaki boy × cihaz piksel oranı; en az maske ızgarası, en çok 1024', () => {
+    expect(boyaCozunurlugu(380, 3)).toBe(BOYA_EN_COK);
+    expect(boyaCozunurlugu(300, 2)).toBe(600);
+    expect(boyaCozunurlugu(120, 1)).toBe(BOYUT);
+    expect(boyaCozunurlugu(Number.NaN, 2)).toBe(BOYUT);
+    expect(BOYA_EN_COK).toBeLessThanOrEqual(1024);
   });
 });

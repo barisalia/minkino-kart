@@ -397,18 +397,26 @@ export interface Kamera {
   tx: number;
   ty: number;
 }
+/** Arka plan resmi cihazda doğal pikselinin en çok bu katına büyür (üstü bulanık görünür; GORSEL-DENETIM.md #4) */
+export const PIKSEL_SINIR = 2.2;
+/**
+ * Kameranın en büyük ölçeği: ölçek × cihaz piksel oranı, resmin dünya pikseli başına doğal pikselinin (dogalBoy / ODA_H)
+ * PIKSEL_SINIR katını geçmez. Daha büyük çizim gelince sınır kendiliğinden açılır.
+ */
+export const yakinlikSiniri = (dogalBoy: number, dpr: number) => (PIKSEL_SINIR * dogalBoy) / ODA_H / Math.max(1, dpr);
 /**
  * Kadrajı ekrandaki güvenli bölgeye sığdırır: dünya ekranı hep tamamen kaplar (boş kenar yok); kadraj sığmıyorsa
- * ortası güvenli bölgenin ortasına gelir. guvenli: ekran içinde [sol, üst, sağ, alt] px.
+ * ortası güvenli bölgenin ortasına gelir. guvenli: ekran içinde [sol, üst, sağ, alt] px. enCok: ölçeğin üst sınırı
+ * (yakinlikSiniri; resim bulanıklaşmasın): yakınlık bunu geçmez, ama ekranı kaplamak her zaman önce gelir.
  */
-export function kameraHesap(kadraj: Kadraj, dunya: { w: number; h: number }, ekran: { w: number; h: number }, guvenli: [number, number, number, number] = [0, 0, ekran.w, ekran.h], yakin = 1, enAz = 1): Kamera {
+export function kameraHesap(kadraj: Kadraj, dunya: { w: number; h: number }, ekran: { w: number; h: number }, guvenli: [number, number, number, number] = [0, 0, ekran.w, ekran.h], yakin = 1, enAz = 1, enCok = Infinity): Kamera {
   const [x0, y0, x1, y1] = kadraj;
   const kw = Math.max(1, (x1 - x0) * dunya.w);
   const kh = Math.max(1, (y1 - y0) * dunya.h);
   const gw = Math.max(1, guvenli[2] - guvenli[0]);
   const gh = Math.max(1, guvenli[3] - guvenli[1]);
   const kapla = Math.max(ekran.w / dunya.w, ekran.h / dunya.h);
-  const s = Math.max(kapla * enAz, Math.min(gw / kw, gh / kh) * yakin);
+  const s = Math.max(kapla, Math.min(enCok, Math.max(kapla * enAz, Math.min(gw / kw, gh / kh) * yakin)));
   const cx = ((x0 + x1) / 2) * dunya.w;
   const cy = ((y0 + y1) / 2) * dunya.h;
   const gx = (guvenli[0] + guvenli[2]) / 2;
