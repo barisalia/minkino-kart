@@ -122,7 +122,7 @@ export function haritaEkrani(app: Uygulama): Ekran {
       h('span.ok-bolge-resim', { html: resim[b.id]() }),
       h('span.ok-bolge-ad', {}, b.ad),
       b.acik ? null : h('span.ok-yakinda', {}, svg(IKON.kilit), A.yakinda),
-      kayit.rozet.includes(b.id) ? h('span.ok-bolge-rozet', { html: rozet() }) : null,
+      kayit.rozet.includes(b.id) ? h('span.ok-bolge-rozet', { html: (b.rozetResim ?? rozet)() }) : null,
     );
     kart.addEventListener('click', () => {
       if (!b.acik) {
@@ -226,6 +226,8 @@ export function ikiliYeri(bahce: HTMLElement, duraklar: HTMLElement[], j: number
 
 export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
   const b = bolge(p.bolge ?? 'sayi') ?? BOLGELER[0];
+  // kendi ekranı olan bölge (Kelime Köprüsü: köprü ve resimli taşlar)
+  if (b.ekran) return b.ekran(app, p);
   const y = yas();
   const etkinlikler = bolgeEtkinlikleri(b.id);
   const oynanan = oynananlar(b.id, y);
@@ -461,14 +463,14 @@ export function sonucEkrani(app: Uygulama, p: { id: string } & Partial<BitisSonu
     if (p.rozet) {
       // rozet töreni: rozet büyür, Mino'nun göğsüne takılır
       el.dataset.durum = 'rozet';
-      const r = h('div.ok-buyuk-rozet', { html: rozet() }, h('span.ok-rozet-ad', {}, b.rozet));
+      const r = h('div.ok-buyuk-rozet', { html: (b.rozetResim ?? rozet)() }, h('span.ok-rozet-ad', {}, b.rozet));
       rozetKatman.append(r);
       rozetKatman.classList.add('acik');
       ses.sihir();
       konfetiPatlat(el, el.clientWidth / 2, el.clientHeight * 0.4, AZ_HAREKET ? 0 : 120);
-      await konus(O.mino.rozet);
+      await konus(b.rozetSoz ?? O.mino.rozet);
       if (kapandi) return;
-      const gogus = h('div.ok-gogus-rozet', { html: rozet() });
+      const gogus = h('div.ok-gogus-rozet', { html: (b.rozetResim ?? rozet)() });
       ikiz.el.querySelector('.ok-ikili-mino')?.append(gogus);
       rozetKatman.classList.remove('acik');
       oynat(gogus, 'ok-yapis');
@@ -487,11 +489,22 @@ export function sonucEkrani(app: Uygulama, p: { id: string } & Partial<BitisSonu
 }
 
 // ---------------------------------------------------------------- Albüm
-export function albumEkrani(app: Uygulama, p: { donus?: string } = {}): Ekran {
+export function albumEkrani(app: Uygulama, p: { donus?: string; bolge?: BolgeId; donusBolge?: BolgeId } = {}): Ekran {
   const kapanislar: (() => void)[] = [];
-  const sekme = (b: (typeof BOLGELER)[number]) =>
-    h(`button.ok-sekme${b.id === 'sayi' ? '.secili' : ''}${b.acik ? '' : '.ok-kilitli'}`, { type: 'button', style: `--r:${b.renk}`, disabled: !b.acik }, b.ad, b.acik ? null : svg(IKON.kilit));
-  const sayfa = albumSayfasi('sayi');
+  // açılan sayfa: istenen bölge, yoksa yapıştırılmayı bekleyen çıkartmanın bölgesi, yoksa Sayı Bahçesi
+  const bekleyenBolge = BOLGELER.find((b) => b.acik && kayit.bekleyen.some((id) => etkinlik(id)?.bolge === b.id))?.id;
+  const secili: BolgeId = bolge(p?.bolge ?? '')?.acik ? p.bolge! : (bekleyenBolge ?? 'sayi');
+  const donusBolge = p?.donusBolge ?? p?.bolge;
+  const sekme = (b: (typeof BOLGELER)[number]) => {
+    const s = h(`button.ok-sekme${b.id === secili ? '.secili' : ''}${b.acik ? '' : '.ok-kilitli'}`, { type: 'button', style: `--r:${b.renk}`, disabled: !b.acik, 'data-bolge': b.id }, b.ad, b.acik ? null : svg(IKON.kilit));
+    s.addEventListener('click', () => {
+      if (!b.acik || b.id === secili) return;
+      efekt.secim();
+      app.git('album', { donus: p?.donus, bolge: b.id, donusBolge });
+    });
+    return s;
+  };
+  const sayfa = albumSayfasi(secili);
   const tepsi = h('div.ok-tepsi');
   for (const id of [...kayit.bekleyen]) {
     const yuva = sayfa.yuva(id);
@@ -506,14 +519,15 @@ export function albumEkrani(app: Uygulama, p: { donus?: string } = {}): Ekran {
       if (!tepsi.children.length) tepsi.remove();
     });
   }
-  const rozetler = h('div.ok-album-rozetler', {}, ...BOLGELER.filter((b) => kayit.rozet.includes(b.id)).map((b) => h('div.ok-album-rozet', { html: rozet(), title: b.rozet })));
+  const rozetler = h('div.ok-album-rozetler', {}, ...BOLGELER.filter((b) => kayit.rozet.includes(b.id)).map((b) => h('div.ok-album-rozet', { html: (b.rozetResim ?? rozet)(), title: b.rozet })));
+  const geri = () => (p?.donus === 'bolge' ? app.git('bolge', { bolge: donusBolge }) : app.git('acilis'));
   const el = h(
     'div.ok-album',
-    {},
+    { 'data-bolge': secili },
     parkKatmanlari(null),
-    h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Geri', () => app.git(p?.donus === 'bolge' ? 'bolge' : 'acilis'), 'kucuk'), h('div.orta', {}, h('h1.ok-baslik', {}, A.album)), sesDugmesi()),
-    h('div.ok-album-govde', {}, h('div.ok-sekmeler', {}, ...BOLGELER.map(sekme)), h('div.ok-album-kitap', {}, h('div.ok-album-ust', {}, BOLGELER[0].ad, rozetler), sayfa.el), tepsi.children.length ? tepsi : null),
+    h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Geri', geri, 'kucuk'), h('div.orta', {}, h('h1.ok-baslik', {}, A.album)), sesDugmesi()),
+    h('div.ok-album-govde', {}, h('div.ok-sekmeler', {}, ...BOLGELER.map(sekme)), h('div.ok-album-kitap', {}, h('div.ok-album-ust', {}, bolge(secili)?.ad ?? '', rozetler), sayfa.el), tepsi.children.length ? tepsi : null),
   );
-  if (kayit.bekleyen.length) void konus(O.mino.yapistir);
+  if (tepsi.children.length) void konus(O.mino.yapistir);
   return { el, kapat: () => kapanislar.forEach((f) => f()) };
 }
