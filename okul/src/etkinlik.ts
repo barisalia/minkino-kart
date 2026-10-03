@@ -9,7 +9,7 @@
  * ortak sonuç ekranı (çıkartma yapıştırma, rozet) açılır.
  */
 import O from '../../content/okul.json';
-import SES from '../../content/okul-ses.json';
+import type { Ekran, Uygulama } from '../../src/uygulama';
 import type { Sahne } from './sahne';
 
 export type BolgeId = 'sayi' | 'ses' | 'kelime';
@@ -21,14 +21,17 @@ export interface Bolge {
   renk: string;
   /** açık mı (kapalıysa haritada "yakında") */
   acik: boolean;
-  /** rozet töreninde Mino'nun sözü (yoksa O.mino.rozet) */
-  rozetSozu?: string;
+  /** Bölgenin kendi ekranı (Kelime Köprüsü: köprü); yoksa ortak durak ekranı (ekranlar.ts → bolgeEkrani) */
+  ekran?: (app: Uygulama, p: { bolge?: BolgeId }) => Ekran;
+  /** Rozet görseli (HTML) ve töreni sözü; yoksa Sayı Ustası'nınkiler */
+  rozetResim?: () => string;
+  rozetSoz?: string;
 }
 
 export const BOLGELER: Bolge[] = [
   { id: 'sayi', ad: O.arayuz.bolgeler.sayi, rozet: O.arayuz.rozetler.sayi, renk: '#5DBE3F', acik: true },
-  { id: 'ses', ad: O.arayuz.bolgeler.ses, rozet: O.arayuz.rozetler.ses, renk: '#9B5CE0', acik: true, rozetSozu: SES.mino.rozet },
-  { id: 'kelime', ad: O.arayuz.bolgeler.kelime, rozet: O.arayuz.rozetler.kelime, renk: '#3E9DF2', acik: false },
+  { id: 'ses', ad: O.arayuz.bolgeler.ses, rozet: O.arayuz.rozetler.ses, renk: '#9B5CE0', acik: true },
+  { id: 'kelime', ad: O.arayuz.bolgeler.kelime, rozet: O.arayuz.rozetler.kelime, renk: '#3E9DF2', acik: true },
 ];
 export const bolge = (id: string) => BOLGELER.find((b) => b.id === id);
 

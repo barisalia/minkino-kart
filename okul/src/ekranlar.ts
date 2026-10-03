@@ -123,7 +123,7 @@ export function haritaEkrani(app: Uygulama): Ekran {
       h('span.ok-bolge-resim', { html: resim[b.id]() }),
       h('span.ok-bolge-ad', {}, b.ad),
       b.acik ? null : h('span.ok-yakinda', {}, svg(IKON.kilit), A.yakinda),
-      kayit.rozet.includes(b.id) ? h('span.ok-bolge-rozet', { html: rozet(b.id) }) : null,
+      kayit.rozet.includes(b.id) ? h('span.ok-bolge-rozet', { html: (b.rozetResim ?? rozet)() }) : null,
     );
     kart.addEventListener('click', () => {
       if (!b.acik) {
@@ -229,6 +229,8 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
   const b = bolge(p.bolge ?? 'sayi') ?? BOLGELER[0];
   // Ses Kulesi'nin kendi ekranı (okul/src/ses/kule.ts): harf odaları kulenin katlarında
   if (b.id === 'ses') return kuleEkrani(app, { ikili, parkKatmanlari, albumDugmesi: () => albumDugmesi(app, 'bolge', 'ses') });
+  // kendi ekranı olan bölge (Kelime Köprüsü: köprü ve resimli taşlar)
+  if (b.ekran) return b.ekran(app, p);
   const y = yas();
   const etkinlikler = bolgeEtkinlikleri(b.id);
   const oynanan = oynananlar(b.id, y);
@@ -468,14 +470,14 @@ export function sonucEkrani(app: Uygulama, p: { id: string } & Partial<BitisSonu
     if (p.rozet) {
       // rozet töreni: rozet büyür, Mino'nun göğsüne takılır
       el.dataset.durum = 'rozet';
-      const r = h('div.ok-buyuk-rozet', { html: rozet(b.id) }, h('span.ok-rozet-ad', {}, b.rozet));
+      const r = h('div.ok-buyuk-rozet', { html: (b.rozetResim ?? rozet)() }, h('span.ok-rozet-ad', {}, b.rozet));
       rozetKatman.append(r);
       rozetKatman.classList.add('acik');
       ses.sihir();
       konfetiPatlat(el, el.clientWidth / 2, el.clientHeight * 0.4, AZ_HAREKET ? 0 : 120);
-      await konus(b.rozetSozu ?? O.mino.rozet);
+      await konus(b.rozetSoz ?? O.mino.rozet);
       if (kapandi) return;
-      const gogus = h('div.ok-gogus-rozet', { html: rozet(b.id) });
+      const gogus = h('div.ok-gogus-rozet', { html: (b.rozetResim ?? rozet)() });
       ikiz.el.querySelector('.ok-ikili-mino')?.append(gogus);
       rozetKatman.classList.remove('acik');
       oynat(gogus, 'ok-yapis');
@@ -494,54 +496,45 @@ export function sonucEkrani(app: Uygulama, p: { id: string } & Partial<BitisSonu
 }
 
 // ---------------------------------------------------------------- Albüm
-export function albumEkrani(app: Uygulama, p: { donus?: string; bolge?: BolgeId } = {}): Ekran {
+export function albumEkrani(app: Uygulama, p: { donus?: string; bolge?: BolgeId; donusBolge?: BolgeId } = {}): Ekran {
   const kapanislar: (() => void)[] = [];
-  const bekleyenVar = (b: BolgeId) => kayit.bekleyen.some((id) => etkinlik(id)?.bolge === b);
-  // açılış sekmesi: istenen bölge, yoksa yapıştırılmayı bekleyen çıkartması olan, yoksa Sayı Bahçesi
-  const ilk = (p?.bolge && bolge(p.bolge)?.acik ? p.bolge : BOLGELER.find((b) => b.acik && bekleyenVar(b.id))?.id) ?? 'sayi';
-  const kitap = h('div.ok-album-kitap');
-  const tepsi = h('div.ok-tepsi');
-  const sekmeler = BOLGELER.map((b) => {
-    const s = h(`button.ok-sekme${b.acik ? '' : '.ok-kilitli'}`, { type: 'button', style: `--r:${b.renk}`, disabled: !b.acik, 'data-bolge': b.id }, b.ad, b.acik ? null : svg(IKON.kilit));
+  // açılan sayfa: istenen bölge, yoksa yapıştırılmayı bekleyen çıkartmanın bölgesi, yoksa Sayı Bahçesi
+  const bekleyenBolge = BOLGELER.find((b) => b.acik && kayit.bekleyen.some((id) => etkinlik(id)?.bolge === b.id))?.id;
+  const secili: BolgeId = bolge(p?.bolge ?? '')?.acik ? p.bolge! : (bekleyenBolge ?? 'sayi');
+  const donusBolge = p?.donusBolge ?? p?.bolge;
+  const sekme = (b: (typeof BOLGELER)[number]) => {
+    const s = h(`button.ok-sekme${b.id === secili ? '.secili' : ''}${b.acik ? '' : '.ok-kilitli'}`, { type: 'button', style: `--r:${b.renk}`, disabled: !b.acik, 'data-bolge': b.id }, b.ad, b.acik ? null : svg(IKON.kilit));
     s.addEventListener('click', () => {
-      if (!b.acik || s.classList.contains('secili')) return;
+      if (!b.acik || b.id === secili) return;
       efekt.secim();
-      goster(b.id);
+      app.git('album', { donus: p?.donus, bolge: b.id, donusBolge });
     });
     return s;
-  });
-  function goster(id: BolgeId) {
-    kapanislar.splice(0).forEach((f) => f());
-    sekmeler.forEach((s) => s.classList.toggle('secili', s.dataset.bolge === id));
-    const b = bolge(id) ?? BOLGELER[0];
-    const sayfa = albumSayfasi(id);
-    tepsi.replaceChildren();
-    for (const cid of [...kayit.bekleyen]) {
-      const yuva = sayfa.yuva(cid);
-      if (!yuva) continue;
-      const c = cikartmaEl(cid);
-      tepsi.append(c);
-      yuva.classList.add('ok-hedef');
-      void yapistirmaBekle(c, yuva, kapanislar).then(() => {
-        yapistir(kayit, cid);
-        kaydetKayit();
-        void konus(O.mino.yapisti);
-        if (!tepsi.children.length) tepsi.hidden = true;
-      });
-    }
-    tepsi.hidden = !tepsi.children.length;
-    const rozetEl = kayit.rozet.includes(id) ? h('div.ok-album-rozetler', {}, h('div.ok-album-rozet', { html: rozet(id), title: b.rozet })) : null;
-    kitap.replaceChildren(h('div.ok-album-ust', {}, b.ad, rozetEl), sayfa.el);
-    if (!tepsi.hidden) void konus(O.mino.yapistir);
+  };
+  const sayfa = albumSayfasi(secili);
+  const tepsi = h('div.ok-tepsi');
+  for (const id of [...kayit.bekleyen]) {
+    const yuva = sayfa.yuva(id);
+    if (!yuva) continue;
+    const c = cikartmaEl(id);
+    tepsi.append(c);
+    yuva.classList.add('ok-hedef');
+    void yapistirmaBekle(c, yuva, kapanislar).then(() => {
+      yapistir(kayit, id);
+      kaydetKayit();
+      void konus(O.mino.yapisti);
+      if (!tepsi.children.length) tepsi.remove();
+    });
   }
-  const geri = () => (p?.donus === 'bolge' ? app.git('bolge', { bolge: p.bolge }) : app.git('acilis'));
+  const rozetler = h('div.ok-album-rozetler', {}, ...BOLGELER.filter((b) => kayit.rozet.includes(b.id)).map((b) => h('div.ok-album-rozet', { html: (b.rozetResim ?? rozet)(), title: b.rozet })));
+  const geri = () => (p?.donus === 'bolge' ? app.git('bolge', { bolge: donusBolge }) : app.git('acilis'));
   const el = h(
     'div.ok-album',
-    {},
+    { 'data-bolge': secili },
     parkKatmanlari(null),
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Geri', geri, 'kucuk'), h('div.orta', {}, h('h1.ok-baslik', {}, A.album)), sesDugmesi()),
-    h('div.ok-album-govde', {}, h('div.ok-sekmeler', {}, ...sekmeler), kitap, tepsi),
+    h('div.ok-album-govde', {}, h('div.ok-sekmeler', {}, ...BOLGELER.map(sekme)), h('div.ok-album-kitap', {}, h('div.ok-album-ust', {}, bolge(secili)?.ad ?? '', rozetler), sayfa.el), tepsi.children.length ? tepsi : null),
   );
-  goster(ilk);
+  if (tepsi.children.length) void konus(O.mino.yapistir);
   return { el, kapat: () => kapanislar.forEach((f) => f()) };
 }

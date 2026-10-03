@@ -1,0 +1,126 @@
+{
+  "aciklama": "Okula Hazırım! · Ünite 3 Kelime Köprüsü (ekip/senaryo/okul-oncesi.md §4, §6). mino = anlatıcı sesi (Mino'nun ağzı); kino = Kino'nun kendi sesi. Resimli kelimelerin adı 'Kedi!' biçiminde söylenir (çoğu Kartlar'ın kaydı); heceler kelimeden hecele() ile üretilir ('Kar!', 'Puz!'). kelimeler: Kartlar'da olmayan yeni kelimeler. arayuz ekranda yazar, okunmaz.",
+  "mino": {
+    "kopru": "Kelime Köprüsü'ne hoş geldin!",
+    "tas": "Bir taş daha yerinde!",
+    "bitti": "Köprü tamam! Hadi karşıya geçelim!",
+    "senlik": "Yaşasın, karşıya geçtik!",
+    "rozet": "Kelime Ustası rozeti senin!",
+    "dinle": {
+      "giris": "Dinle ve resmi bul!",
+      "yakala": "O köpek Kino, senin gibi!"
+    },
+    "hecele": {
+      "giris": "Heceleri say, davula vur!",
+      "dinle": "Önce beni dinle!",
+      "sen": "Şimdi sen vur!",
+      "dur": "Dur Kino, beni dinle!",
+      "fazla": "Bir fazla oldu!",
+      "eksik": "Biraz daha vur!"
+    },
+    "tersi": {
+      "giris": "Kino bugün her şeyin tersini yapıyor!",
+      "yakala": "Tersini yaptın Kino!",
+      "sen": "Sen doğrusunu göster!",
+      "ciftler": {
+        "acik": { "iste": "Kino, kapı açık kalsın!", "soru": "Hangisi açık?", "a": "Açık!", "b": "Kapalı!", "ters": "Açık! Tersi kapalı." },
+        "buyuk": { "iste": "Kino, top büyük kalsın!", "soru": "Hangisi büyük?", "a": "Büyük!", "b": "Küçük!", "ters": "Büyük! Tersi küçük." },
+        "sicak": { "iste": "Kino, çorba sıcak kalsın!", "soru": "Hangisi sıcak?", "a": "Sıcak!", "b": "Soğuk!", "ters": "Sıcak! Tersi soğuk." },
+        "uzun": { "iste": "Kino, tren uzun kalsın!", "soru": "Hangisi uzun?", "a": "Uzun!", "b": "Kısa!", "ters": "Uzun! Tersi kısa." },
+        "dolu": { "iste": "Kino, bardak dolu kalsın!", "soru": "Hangisi dolu?", "a": "Dolu!", "b": "Boş!", "ters": "Dolu! Tersi boş." },
+        "kuru": { "iste": "Kino, havlu kuru kalsın!", "soru": "Hangisi kuru?", "a": "Kuru!", "b": "Islak!", "ters": "Kuru! Tersi ıslak." }
+      }
+    },
+    "boya": {
+      "giris": "Rengi dinle, kovaya dokun!",
+      "yakala": "Kino mavi oldu!",
+      "bitti": "Rengarenk oldu!"
+    },
+    "grup": {
+      "giris": "Meyveler sepete, hayvanlar çayıra, taşıtlar yola!",
+      "yakala": "Balık bir hayvan Kino!",
+      "meyve": "Bu bir meyve!",
+      "hayvan": "Bu bir hayvan!",
+      "tasit": "Bu bir taşıt!",
+      "bitti": "Hepsi yerli yerinde!"
+    },
+    "eksik": {
+      "giris": "Eksik kelimeyi bul!",
+      "yakala": "Ayakkabı yenmez Kino!",
+      "tekrar": "Bir daha dinle!",
+      "cumleler": {
+        "kemik": { "soru": "Kino bir … yedi.", "tam": "Kino bir kemik yedi!" },
+        "elma": { "soru": "Kino bir … yedi.", "tam": "Kino bir elma yedi!" },
+        "semsiye": { "soru": "Yağmurda … açarız.", "tam": "Yağmurda şemsiye açarız!" },
+        "balon": { "soru": "Mino bir … şişirdi.", "tam": "Mino bir balon şişirdi!" },
+        "ucak": { "soru": "Gökyüzünde bir … uçuyor.", "tam": "Gökyüzünde bir uçak uçuyor!" },
+        "havuc": { "soru": "Tavşan bir … yedi.", "tam": "Tavşan bir havuç yedi!" }
+      }
+    }
+  },
+  "kino": {
+    "dinle": "Kedi! İşte burada!",
+    "dinle_son": "Hav! Haklısın!",
+    "hecele": "Kavun! Bam bam bam bam bam!",
+    "hecele_son": "İki mi? Bam bam!",
+    "hecele_islak": "Şap! Suya düştüm!",
+    "tersi": {
+      "acik": "Kapattım! Güm!",
+      "buyuk": "Topu küçülttüm! Fış!",
+      "sicak": "Dondurma yaptım! Brr!",
+      "uzun": "Vagonları gönderdim! Çuf çuf!",
+      "dolu": "Hepsini içtim! Lık lık!",
+      "kuru": "Islattım! Şıp şıp!"
+    },
+    "boya": "Kovaya atlıyorum! Hop!",
+    "boya_son": "Silkelendim, tertemizim!",
+    "grup": "Balık yüzer, taşıt olur!",
+    "grup_son": "Tamam, balık hayvan!",
+    "grup_yanlis": {
+      "meyve": "Sepette o mu? Hi hi!",
+      "hayvan": "Bu çayırda otlamaz ki!",
+      "tasit": "Bu yolda gitmez ki!"
+    },
+    "eksik_dogru": "Mmm, çok güzel!",
+    "komik": {
+      "ayakkabi": "Ihh! Lastik tadı var!",
+      "bulut": "Bulut uçup gitti!",
+      "muz": "Muz şemsiye olmaz ki!",
+      "top": "Top açılmıyor!",
+      "elma": "Elma şişmiyor!",
+      "kitap": "Kitap şişmiyor!",
+      "fil": "Fil uçmaz ki!",
+      "araba": "Araba uçamaz ki!",
+      "tren": "Tren yenmez ki!",
+      "semsiye": "Şemsiye yenmez ki!"
+    },
+    "tekrar": ["Köprüye bir taş daha!", "Kelimeler çok eğlenceli!"]
+  },
+  "kelimeler": {
+    "kemik": "Kemik",
+    "cizme": "Çizme",
+    "ayakkabi": "Ayakkabı",
+    "kavun": "Kavun",
+    "papagan": "Papağan",
+    "bulut": "Bulut",
+    "kitap": "Kitap",
+    "kova": "Kova",
+    "havlu": "Havlu",
+    "perde": "Perde",
+    "sepet": "Sepet",
+    "meyve": "Meyve",
+    "hayvan": "Hayvan",
+    "tasit": "Taşıt"
+  },
+  "arayuz": {
+    "rozet": "Kelime Ustası",
+    "etkinlikler": {
+      "kelime-dinle": "Dinle, bul",
+      "kelime-hecele": "Alkışla hecele",
+      "kelime-tersi": "Tersi ne?",
+      "kelime-boya": "Boya kovası",
+      "kelime-grup": "Hangi grup?",
+      "kelime-eksik": "Eksik kelime"
+    }
+  }
+}

@@ -15,7 +15,8 @@ import { IKON } from '../../../src/ui/ikonlar';
 import { gorsel, kus, LOKOMOTIF, ton, vagon } from '../cizim';
 import { Dallar, kusBoyu } from '../dal';
 import { AZ_HAREKET, oynat } from '../efekt';
-import { etkinlikKaydet } from '../etkinlik';
+import { bolge, etkinlikKaydet } from '../etkinlik';
+import { rozet } from '../cizim';
 import { Ipucu, type Sahne } from '../sahne';
 import { ses } from '../sesler';
 import { geriGonder, hedefliSurukle } from '../surukle';
@@ -787,6 +788,13 @@ if (TEST_MODU && q.has('sifirla')) {
   } catch {
     /* yok say */
   }
+}
+
+// Ses Kulesi'nin rozeti ("Ses Dedektifi") ve töreni sözü; ekranı ekranlar.ts → bolgeEkrani'nde (kule.ts)
+const sesBolge = bolge('ses');
+if (sesBolge) {
+  sesBolge.rozetSoz = M.rozet;
+  sesBolge.rozetResim = () => rozet('ses');
 }
 
 for (const hf of HARFLER) {
