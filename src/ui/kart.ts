@@ -2,9 +2,11 @@ import { kart as kartBul, refCoz } from '../engine/katalog';
 import type { Kart, KartGirdi, KartRef } from '../engine/types';
 import { h } from './dom';
 
-// Karakter seçenek çizimleri pakete girmesin; sadece Mino'nun kendisi.
-// (Olumsuz desen bütün listeye uygulandığı için Mino aynı listeye geri eklenemiyor: ayrı liste.)
-const gorseller = import.meta.glob<string>(['../../assets/**/*.webp', '!../../assets/karakter/**', '!../../assets/sahne/**', '!../../assets/orman/**', '!../../assets/orman-karakter/**', '!../../assets/orman-esya/**', '!../../assets/parti/**', '!../../assets/parti-sahne/**', '!../../assets/film/**'], {
+// Yalnız kart resimlerinin klasörleri (content/sorular → "gorsel"). Eskiden bütün assets/**/*.webp alınıyordu:
+// mağaza ekran görüntüleri, pasta/okul/ege… çizimleri de Kartlar paketine (ve uygulamaya) boşuna giriyordu.
+// Yeni bir kart klasörü eklenirse buraya da yazılır (tests/unit/kart-gorsel.test.ts denetler).
+export const KART_GORSEL_KLASORLERI = ['hayvanlar', 'meyveler', 'renkler', 'tasitlar'] as const;
+const gorseller = import.meta.glob<string>(['../../assets/{hayvanlar,meyveler,renkler,tasitlar}/**/*.webp'], {
   eager: true,
   query: '?url',
   import: 'default',

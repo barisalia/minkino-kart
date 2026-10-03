@@ -38,4 +38,9 @@ if (kok) {
     app.git('menu');
     return true;
   });
+  // Oyundan geri gelindi ve sayfa önbellekten açıldı (geri tuşu / anaMenuyeDon): seçilmiş kart "gidiyor" hâlinde
+  // kalmasın, menü baştan kurulur (kartlar yine dokunulur)
+  addEventListener('pageshow', (e) => {
+    if (e.persisted) app.git('menu');
+  });
 }
