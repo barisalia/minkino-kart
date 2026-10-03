@@ -6,7 +6,8 @@ const KAYNAK = 'assets/uygulama/ikon-kaynak-2048.webp';
 (async () => {
   const kare = (n) => s(KAYNAK).resize(n, n).removeAlpha().png();
   await kare(1024).toFile('assets/uygulama/ikon-magaza-1024.png');
-  await kare(512).toFile('assets/uygulama/ikonlar/android/ic_launcher-playstore.png');
+  // Play simgesi 32 bit PNG (alfa kanallı) olmalı, yoksa Play Console kabul etmiyor
+  await s(KAYNAK).resize(512, 512).ensureAlpha().png({ compressionLevel: 9 }).toFile('assets/uygulama/ikonlar/android/ic_launcher-playstore.png');
   // iOS
   const dir = 'ios/App/App/Assets.xcassets/AppIcon.appiconset/';
   const c = JSON.parse(fs.readFileSync(dir + 'Contents.json', 'utf8'));
