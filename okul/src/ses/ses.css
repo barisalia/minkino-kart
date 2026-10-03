@@ -86,6 +86,12 @@
 .ok-kok .ok-ses-kart:active {
   translate: 0 3px;
 }
+.ok-kok .ok-ses-kart .ok-ses-img {
+  /* nefes: resim hafifçe esner (canlı dursun) */
+  transform-origin: 50% 88%;
+  animation: ok-ses-nefes 2.8s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.9s);
+}
 .ok-kok .ok-ses-img {
   width: 100%;
   height: 100%;
@@ -186,7 +192,10 @@
   justify-self: start;
 }
 .ok-kok .ok-ses-tanis .ok-ses-kart {
-  --ks: min(36cqw, 30cqh, 200px);
+  --ks: min(42cqw, 32cqh, 220px);
+}
+.ok-kok .ok-ses-tanis > .ok-ses-levha {
+  font-size: min(40cqw, 30cqh, 210px);
 }
 .ok-kok .ok-ses-final {
   font-size: min(34cqw, 50cqh, 220px);
@@ -373,49 +382,210 @@
   animation: ok-ses-cik 0.7s cubic-bezier(0.2, 1.5, 0.4, 1) forwards;
 }
 
-/* ---------------------------------------------------------------- 4 · Hangisi farklı? */
+/* ---------------------------------------------------------------- 4 · Hangisi farklı? (dalda dört kuş) */
 .ok-kok .ok-ses-farkli {
+  --ks: clamp(72px, min(30cqw, 26cqh), 132px);
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  place-content: center;
-  gap: min(5cqw, 4cqh, 24px);
-}
-.ok-kok .ok-ses-tas {
-  --ts: min(38cqw, 40cqh, 170px);
-  width: var(--ts);
-  height: var(--ts);
-  border-radius: 26%;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(120% 100% at 50% 15%, #fff 0%, #fffaf0 70%, #f8ecd8 100%);
-  border: 3px solid #efdcc2;
-  box-shadow:
-    0 6px 0 #e2c9a4,
-    0 12px 22px rgba(90, 54, 23, 0.14);
-  font-size: calc(var(--ts) * 0.66);
-  animation: ok-ses-gel 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
-  animation-delay: calc(var(--i, 0) * 80ms);
-  transition: opacity 0.25s, scale 0.25s;
-}
-.ok-kok .ok-ses-tas:active {
-  translate: 0 3px;
-}
-.ok-kok .ok-ses-tas.ok-dogru {
-  box-shadow:
-    0 0 0 6px #7ed957,
-    0 6px 0 #e2c9a4,
-    0 0 26px rgba(126, 217, 87, 0.7);
-  scale: 1.1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: calc(var(--ks) * 0.9);
 }
 @container alan (min-aspect-ratio: 13 / 10) {
   .ok-kok .ok-ses-farkli {
-    grid-template-columns: repeat(4, auto);
+    --ks: clamp(64px, min(19cqw, 40cqh), 132px);
   }
-  .ok-kok .ok-ses-tas {
-    --ts: min(21cqw, 70cqh, 170px);
+}
+.ok-kok .ok-ses-tas {
+  position: relative;
+  width: var(--ks);
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  animation: ok-ses-kon 0.6s cubic-bezier(0.25, 1.3, 0.45, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+  transition: opacity 0.25s;
+}
+.ok-kok .ok-ses-kus {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ok-kok .ok-ses-kus .ok-resim {
+  filter: hue-rotate(var(--ton, 0deg)) drop-shadow(0 3px 0 rgba(107, 58, 31, 0.18));
+}
+.ok-kok .ok-ses-tabela {
+  /* kuşun göğsündeki harf (kocaman, okunur) */
+  position: absolute;
+  left: 46%;
+  bottom: 10%;
+  width: 60%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 30%, #fff, #fff6e6);
+  box-shadow:
+    0 0 0 3px #f1dcbd,
+    0 4px 0 #e2c9a4;
+  font-size: calc(var(--ks) * 0.46);
+  pointer-events: none;
+}
+.ok-kok .ok-ses-tas:active .ok-ses-tabela {
+  scale: 0.94;
+}
+.ok-kok .ok-ses-tas.ok-dogru .ok-ses-tabela {
+  box-shadow:
+    0 0 0 5px #7ed957,
+    0 0 20px rgba(126, 217, 87, 0.8);
+}
+.ok-kok .ok-ses-tas.ok-ipucu .ok-ses-tabela {
+  box-shadow:
+    0 0 0 5px #ffd23f,
+    0 0 20px rgba(255, 210, 63, 0.9);
+}
+.ok-kok .ok-ses-tas.ok-ses-kino-sec .ok-ses-tabela {
+  box-shadow: 0 0 0 5px #ffb23f;
+}
+.ok-kok .ok-ses-tas.ok-ses-kino-sec {
+  box-shadow: none;
+}
+.ok-kok .ok-ses-ucan .ok-ses-kus {
+  position: absolute;
+  inset: 0;
+}
+.ok-kok .ok-ses-ucan .ok-ses-tabela {
+  font-size: clamp(30px, 8vmin, 56px);
+}
+@keyframes ok-ses-kon {
+  0% { opacity: 0; translate: 0 -90px; scale: 0.7; }
+  70% { opacity: 1; translate: 0 6px; scale: 1.05 0.94; }
+  100% { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+/* ---------------------------------------------------------------- 2 · İlk ses avı: sahneler (ağaç, tren, balonlar) */
+.ok-kok .ok-ses-av {
+  justify-content: space-between;
+  padding: 4px 0 2px;
+}
+.ok-kok .ok-ses-av > [data-sahne] {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+}
+/* ağaç: resimler tacın üstünde (meyve gibi) */
+.ok-kok .ok-ses-agac-resim {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 100%;
+  max-width: 100%;
+  translate: -50% 0;
+  object-fit: contain;
+  pointer-events: none;
+}
+.ok-kok .ok-ses-agac .ok-ses-kart {
+  --ks: min(28cqw, 27cqh, 150px);
+  position: absolute;
+  left: calc(50% + (var(--y) - 1) * min(30cqw, 40cqh));
+  top: calc(36% - (1 - (var(--y) - 1) * (var(--y) - 1)) * 14%);
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+/* tren: resimler vagonlarda, tren soldan gelir; doğru bulununca düdük çalıp gider */
+.ok-kok .ok-ses-tren {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 2%;
+  animation: ok-ses-tren-gel 1.1s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.ok-kok .ok-ses-tren.ok-ses-git {
+  transition: translate 0.9s cubic-bezier(0.5, 0, 0.8, 0.4);
+  translate: 120cqw 0;
+}
+.ok-kok .ok-ses-vagon {
+  position: relative;
+  width: min(25cqw, 50cqh, 190px);
+  margin-right: -1.5%;
+}
+.ok-kok .ok-ses-vagon-resim {
+  display: block;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+.ok-kok .ok-ses-vagon .ok-ses-kart {
+  --ks: 88%;
+  position: absolute;
+  left: 6%;
+  bottom: 52%;
+  z-index: 0;
+  animation: ok-ses-sallan 1.6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.4s);
+}
+.ok-kok .ok-ses-lokomotif {
+  width: min(24cqw, 52cqh, 190px);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+/* balonlar: resimler balonlara bağlı süzülür; doğru balon göğe uçar */
+.ok-kok .ok-ses-balonlar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: min(4cqw, 24px);
+}
+.ok-kok .ok-ses-balon {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ok-ses-suzul 2.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.8s);
+}
+.ok-kok .ok-ses-balon-resim {
+  width: min(16cqw, 20cqh, 110px);
+  margin-bottom: -6%;
+  pointer-events: none;
+  filter: hue-rotate(var(--ton, 0deg)) drop-shadow(0 4px 4px rgba(90, 54, 23, 0.15));
+}
+.ok-kok .ok-ses-balon .ok-ses-kart {
+  --ks: min(27cqw, 34cqh, 160px);
+}
+.ok-kok .ok-ses-balon.ok-ses-uc {
+  animation: ok-ses-yuksel 1.6s cubic-bezier(0.5, 0, 0.7, 0.5) forwards;
+}
+@container alan (min-aspect-ratio: 13 / 10) {
+  .ok-kok .ok-ses-agac .ok-ses-kart {
+    --ks: min(20cqw, 30cqh, 150px);
+    left: calc(50% + (var(--y) - 1) * min(22cqw, 44cqh));
   }
+  .ok-kok .ok-ses-balon-resim {
+    width: min(11cqw, 22cqh, 110px);
+  }
+  .ok-kok .ok-ses-balon .ok-ses-kart {
+    --ks: min(20cqw, 40cqh, 160px);
+  }
+}
+@keyframes ok-ses-tren-gel {
+  from { translate: -120cqw 0; }
+  to { translate: 0 0; }
+}
+@keyframes ok-ses-sallan {
+  0%, 100% { rotate: -2deg; }
+  50% { rotate: 2deg; }
+}
+@keyframes ok-ses-suzul {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+@keyframes ok-ses-yuksel {
+  to { translate: 0 -140cqh; opacity: 0; }
 }
 
 /* ---------------------------------------------------------------- 5 · Sesli kutu */
@@ -598,7 +768,7 @@
   /* kulenin çizim boyu; odalar onun iki yanında, merdiven aşağıdan yukarı */
   --T: min(100cqh, 680px);
   --b: clamp(66px, min(21cqw, 13.5cqh), 124px);
-  --dx: min(var(--T) * 0.3, 50cqw - var(--b) / 2 - 8px);
+  --dx: min(max(var(--T) * 0.3, 22cqw), 50cqw - var(--b) / 2 - 8px);
   position: absolute;
   inset: 0;
 }
@@ -749,8 +919,9 @@
 }
 .ok-kok .ok-kule-yakinda {
   position: absolute;
-  left: calc(50% + var(--T) * 0.1);
-  bottom: calc(var(--T) * 0.93);
+  left: calc(50% - var(--T) * 0.06);
+  bottom: calc(var(--T) * 0.9);
+  translate: -100% 0;
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -813,6 +984,10 @@
 @keyframes ok-ses-davet {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.06); }
+}
+@keyframes ok-ses-nefes {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.025, 0.975) translateY(1.5%); }
 }
 @keyframes ok-ses-nabiz {
   0%, 100% { transform: scale(1); }

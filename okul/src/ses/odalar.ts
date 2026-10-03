@@ -12,7 +12,8 @@ import { efekt } from '../../../src/audio/ses';
 import type { Soylenecek } from '../../../src/audio/konusma';
 import { h, sure, TEST_MODU } from '../../../src/ui/dom';
 import { IKON } from '../../../src/ui/ikonlar';
-import { DAL, gorsel, kus, LOKOMOTIF, ton, vagon } from '../cizim';
+import { gorsel, kus, LOKOMOTIF, ton, vagon } from '../cizim';
+import { Dallar, kusBoyu } from '../dal';
 import { AZ_HAREKET, oynat } from '../efekt';
 import { etkinlikKaydet } from '../etkinlik';
 import { Ipucu, type Sahne } from '../sahne';
@@ -452,8 +453,16 @@ async function izleTur(s: Sahne, hf: Harf, harf: string, ilk: boolean) {
       ses.sihir();
       const [x, y] = s.efekt.merkez(kagit);
       s.efekt.parilti(x, y, 12, 1.4);
+      // harf, odanın resmine dönüşür (A → arı) ve uçup gider
       oynat(resimK, 'ok-ses-cik');
       await s.soyle([hf.ses, kelime(hf.oda[ilk ? 0 : 1] ?? hf.oda[0]).uzun]);
+      if (!AZ_HAREKET && !s.kapandi()) {
+        const k = hf.oda[ilk ? 0 : 1] ?? hf.oda[0];
+        const bas = s.efekt.merkez(resimK);
+        resimK.style.visibility = 'hidden';
+        ses.kanat();
+        void s.efekt.ucur(h('div.ok-ses-ucan', {}, resimEl(k, hf.renk)), bas, [s.el.clientWidth + 90, bas[1] - 160], { ms: 1300, kavis: -140, boy1: 0.8, don: 18 });
+      }
       await s.ovgu(kagit);
     };
     svg.addEventListener('pointerdown', (e) => {
@@ -524,7 +533,11 @@ async function farkli(s: Sahne, hf: Harf) {
     );
     const dogruEl = taslar[tur.farkli];
     if (TEST_MODU) dogruEl.dataset.dogru = '1';
-    s.alan.replaceChildren(h('div.ok-ses-farkli', {}, h('span.ok-ses-dal', { html: DAL() }), h('div.ok-ses-kuslar', {}, ...taslar)));
+    const dallar = new Dallar('ok-ses-dallar');
+    const kap = h('div.ok-ses-farkli', {}, dallar.el);
+    s.alan.replaceChildren(kap);
+    dallar.duzenle(4, s.alan.clientWidth || 360, kusBoyu(kap));
+    taslar.forEach((b, i) => dallar.tunek(i).append(b));
     ses.kanat();
     s.el.dataset.sesTur = String(t);
     await s.soyle(M.farkli);

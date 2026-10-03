@@ -88,8 +88,9 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
   const kule = h(
     'div.ok-kule',
     {},
-    h('img.ok-kule-resim', { src: gorsel('okul/kule'), alt: '', draggable: 'false' }),
+    // merdiven kulenin arkasından dolanır (resmin altında)
     yol,
+    h('img.ok-kule-resim', { src: gorsel('okul/kule'), alt: '', draggable: 'false' }),
     ...odalar,
     yakinda,
     h('div.ok-kule-ikili', {}, ikiz.el),
@@ -109,7 +110,8 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
     const H = kule.clientHeight;
     if (!W || !H) return;
     yol.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    const m = odalar.map((d) => [d.offsetLeft + d.offsetWidth / 2, d.offsetTop + d.offsetHeight / 2] as const);
+    // odaların merkezi (kayma: translate -50% 50% → merkez offsetLeft, offsetTop + boy)
+    const m = odalar.map((d) => [d.offsetLeft, d.offsetTop + d.offsetHeight] as const);
     let p = `M${W / 2} ${H - 4}`;
     m.forEach(([x, y], i) => {
       const [x0, y0] = i ? m[i - 1] : [W / 2, H - 4];

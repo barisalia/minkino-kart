@@ -57,6 +57,8 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     }
     kaydetKayit();
     ekran = q.get('ekran') ?? 'acilis';
+    // &ekran=bolge&bolge=ses: doğrudan Ses Kulesi
+    if (q.get('bolge')) param = { bolge: q.get('bolge') };
     const id = q.get('etkinlik');
     if (id && etkinlik(id)) {
       ekran = q.get('ekran') ?? 'etkinlik';
