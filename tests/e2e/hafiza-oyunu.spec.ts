@@ -49,7 +49,9 @@ for (const [yas, kartSayisi] of [
       const y0 = els[0].getBoundingClientRect().top;
       return els.filter((e) => Math.abs(e.getBoundingClientRect().top - y0) < 2).length;
     });
-    expect(ilkSatir).toBe(yas === 3 ? 2 : 4);
+    // yatay ekranda ızgara tek / iki sıra (4 ya da 8 yan yana)
+    const yatay = page.viewportSize()!.width > page.viewportSize()!.height;
+    expect(ilkSatir).toBe(yatay ? (yas === 3 ? 4 : 8) : yas === 3 ? 2 : 4);
     await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => undefined))));
     await page.screenshot({ path: ekran(p, `hafiza-02-${yas}yas-kapali`) });
 

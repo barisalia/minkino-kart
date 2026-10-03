@@ -63,7 +63,10 @@ if (KAYIT) {
 export const konusSecenegi = (kim: string): KonusmaSecenegi =>
   kim === 'kino' ? KINO_SESI : { karakter: kim || null, ton: kim === 'mino' ? 1.12 : kim ? 0.9 : 1 };
 
-const FILM_GORSEL =import.meta.glob<string>('../../assets/film/*/arka-*.webp', { eager: true, query: '?url', import: 'default' });
+// Yalnız filmlerin kullandığı arka plan klasörleri (film / malzeme / ev / park) pakete girer: assets/film'de henüz
+// filmi olmayan sahneler (orman, plaj, kar …) uygulamayı ~6 MB büyütüyordu. Yeni film yeni bir klasör kullanırsa
+// buraya eklenir (tests/unit/film-arka.test.ts denetler).
+const FILM_GORSEL = import.meta.glob<string>('../../assets/film/{ev,park,mino-karpuz}/arka-*.webp', { eager: true, query: '?url', import: 'default' });
 const PAZAR_GORSEL = import.meta.glob<string>('../../assets/pazar/tezgah.webp', { eager: true, query: '?url', import: 'default' });
 /** Şarkı kayıtlarının hece / vuruş tabloları (assets/muzik/<ad>.json; kayıt <ad>-sozlu.mp3, <ad>-sozsuz.mp3) */
 const SARKILAR = import.meta.glob<SarkiJson>('../../assets/muzik/*.json', { eager: true, import: 'default' });

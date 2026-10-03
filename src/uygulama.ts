@@ -22,8 +22,26 @@ export interface BaslatSecenekleri {
   cikis?: () => void;
 }
 
-/** Tek başına açılan oyun sayfasından (/kartlar/, /pazar/ …) sitenin kökündeki ana menüye döner */
-export const anaMenuyeDon = () => location.assign('../');
+/**
+ * Tek başına açılan oyun sayfasından (/kartlar/, /pazar/ …) sitenin kökündeki ana menüye döner.
+ * Menüden gelindiyse geçmişte geri gidilir; değilse sayfa menüyle değiştirilir. Eskiden her dönüş geçmişe yeni bir
+ * menü ekliyordu (menü → oyun → menü …): Android'in geri tuşu menüde uygulamadan çıkmak yerine oyuna geri giriyordu.
+ */
+export const anaMenuyeDon = () => {
+  const menu = new URL('../', location.href);
+  if (menudenGelindi(menu)) history.back();
+  else location.replace(menu.href);
+};
+
+function menudenGelindi(menu: URL): boolean {
+  try {
+    if (!document.referrer || history.length < 2) return false;
+    const r = new URL(document.referrer);
+    return r.origin === menu.origin && r.pathname.replace(/index\.html$/, '') === menu.pathname;
+  } catch {
+    return false;
+  }
+}
 
 export class Uygulama {
   readonly kok: HTMLElement;

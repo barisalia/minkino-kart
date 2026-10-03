@@ -1022,6 +1022,27 @@
   -webkit-touch-callout: default;
   user-select: auto;
 }
+/* Alçak ekranda (yatay telefon) kart dikeyde sığmıyordu: "Tamam" ekranın altında kalıyor, pencere kapanamıyordu.
+   Resim solda, yazı ve düğme sağda; resim ekran boyuna sığar. */
+@media (max-height: 600px) {
+  .cc-kok .cc-kart-pencere {
+    display: grid;
+    grid-template-columns: auto minmax(150px, 220px);
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    column-gap: 18px;
+    max-width: min(94vw, 640px);
+    width: auto;
+    padding: 14px 16px;
+  }
+  .cc-kok .cc-kart-pencere img {
+    grid-row: 1 / span 2;
+    width: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 90px);
+    max-height: calc(100dvh - 90px);
+  }
+}
 
 /* ---------- Sihirli hâl ---------- */
 .cc-kok .cc-canli .cc-yer {
