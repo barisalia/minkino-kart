@@ -5,7 +5,7 @@
 //
 // Çalıştırma: npm run film:mp4            (dört çıktı)
 //             npm run film:mp4 -- dikey   (yalnız istenenler: dikey, kare, yatay, appstore)
-// Seçenek:    --film=mino-karpuz  --fps=30
+// Seçenek:    --film=mino-karpuz  --fps=30  --ornek=12.5 [--olcek=1.5 --png]  (kapak karesi: ekip/film/FILM-REHBERI.md §11)
 // Çıktılar:   dist-video/<film>-<format>.mp4 (repoya girmez) + <film>-<format>.jpg (örnek kare)
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -21,6 +21,9 @@ const CIKTI = 'dist-video';
 const PORT = 4175;
 // --ornek=5,30,58: video yerine yalnız bu saniyelerde kare (hızlı deneme): dist-video/ornek-<format>-<sn>.jpg
 const ORNEK = secenek('ornek', '').split(',').filter(Boolean).map(Number);
+// --olcek=1.5: kare aynı yerleşimde, piksel oranı 2 × ölçek (yatay 1920 → 2880 px; kapak için). --png: örnek kare PNG
+const OLCEK = Number(secenek('olcek', 1)) || 1;
+const PNG = arg.includes('--png');
 
 // ffmpeg: npm paketi (ffmpeg-static) varsa o, yoksa sistemdeki
 let FFMPEG = 'ffmpeg';
@@ -73,8 +76,9 @@ function ffmpeg(args, girdi) {
 async function kaydet(ad, f) {
   const bas = f.bas ?? 0;
   const DPR = 2;
+  const PO = DPR * OLCEK;
   const tarayici = await chromium.launch();
-  const sayfa = await (await tarayici.newContext({ viewport: { width: f.w / DPR, height: f.h / DPR }, deviceScaleFactor: DPR, locale: 'tr-TR' })).newPage();
+  const sayfa = await (await tarayici.newContext({ viewport: { width: f.w / DPR, height: f.h / DPR }, deviceScaleFactor: PO, locale: 'tr-TR' })).newPage();
   const hatalar = [];
   sayfa.on('pageerror', (e) => hatalar.push(String(e)));
   await sayfa.clock.install({ time: 1_000_000 });
@@ -118,7 +122,7 @@ async function kaydet(ad, f) {
       }
       await sayfa.evaluate(() => window.__animSenk(performance.now()));
       await sayfa.evaluate(() => Promise.all([...document.images].filter((i) => !i.complete).map((i) => new Promise((r) => (i.onload = i.onerror = r)))));
-      await sayfa.screenshot({ path: path.join(CIKTI, `ornek-${ad}-${sn}.jpg`), type: 'jpeg', quality: 88 });
+      await sayfa.screenshot(PNG ? { path: path.join(CIKTI, `ornek-${ad}-${sn}.png`), type: 'png' } : { path: path.join(CIKTI, `ornek-${ad}-${sn}.jpg`), type: 'jpeg', quality: 88 });
     }
     await tarayici.close();
     console.log(`✓ örnek kareler: ${ad} (${ORNEK.join(', ')} sn)`);
