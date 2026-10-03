@@ -77,7 +77,42 @@ function oku(): Kayit {
 
 let premium = oku().premium;
 
-export const premiumMu = () => premium;
+// ---------------------------------------------------------------- mağaza inceleme kilidi
+
+/**
+ * Mağaza inceleme ekibi (Google Play / App Store) satın alamaz, deneme başlatamaz: Ebeveyn Köşesi → "İnceleme kodu"
+ * ile bu cihazda bütün içerik açılır (kod denetimi: src/abonelik/inceleme.ts). Mağazanın abonelik durumundan
+ * bağımsızdır: RevenueCat "premium yok" dese de açık kalır.
+ */
+export const INCELEME_ANAHTARI = 'minkino-inceleme';
+
+function incelemeOku(): boolean {
+  try {
+    return localStorage.getItem(INCELEME_ANAHTARI) === '1';
+  } catch {
+    return false;
+  }
+}
+
+let inceleme = incelemeOku();
+
+/** İnceleme kilidi bu cihazda açık mı */
+export const incelemeAcikMi = () => inceleme;
+
+/** İnceleme kilidini açar: kaydedilir ve sayfaya duyurulur (kilit rozetleri kalkar) */
+export function incelemeAc() {
+  const degisti = !inceleme;
+  inceleme = true;
+  try {
+    localStorage.setItem(INCELEME_ANAHTARI, '1');
+  } catch {
+    /* gizli sekme: bu sayfa boyunca açık */
+  }
+  if (degisti && typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(ERISIM_OLAYI, { detail: { premium: true } }));
+}
+
+/** Premium erişim var mı: mağazadaki abonelik ya da inceleme kilidi */
+export const premiumMu = () => premium || inceleme;
 
 /** Mağazadan gelen yeni durum: kaydedilir, değiştiyse sayfaya duyurulur (kilit rozetleri yenilenir) */
 export function premiumAyarla(v: boolean) {
@@ -97,5 +132,5 @@ export function erisimDinle(fn: () => void): () => void {
   return () => window.removeEventListener(ERISIM_OLAYI, fn);
 }
 
-/** Bu içerik şu an kilitli mi (uygulamada, abonelik yokken, tablo "abonelik" diyorsa) */
-export const kilitli = (id: string): boolean => kilitliMi(id, { etkin: kilitlerEtkin(), premium });
+/** Bu içerik şu an kilitli mi (uygulamada, abonelik ya da inceleme kilidi yokken, tablo "abonelik" diyorsa) */
+export const kilitli = (id: string): boolean => kilitliMi(id, { etkin: kilitlerEtkin(), premium: premiumMu() });

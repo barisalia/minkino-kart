@@ -425,3 +425,69 @@
   color: #f2b53a;
   stroke: color-mix(in srgb, var(--kontur) 85%, #fff);
 }
+
+/* ---------------------------------------------------------------- inceleme kodu (src/abonelik/inceleme.ts) */
+.mk-kok .ik-pencere {
+  width: min(100%, 360px);
+  padding: 22px 20px 20px;
+}
+.mk-kok .ik-pencere h2 {
+  margin: 0 0 14px;
+  font-size: 1.25rem;
+}
+.mk-kok .ik-girdi {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 3px solid var(--kontur);
+  background: #fff;
+  color: var(--kontur);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  -webkit-user-select: text;
+  user-select: text;
+  outline: none;
+}
+.mk-kok .ik-girdi:focus {
+  border-color: var(--mavi);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mavi) 22%, transparent);
+}
+/* yanlış: ebeveyn kapısındaki gibi küçük, yumuşak sallanma; yazı yok */
+.mk-kok .ik-girdi.hata {
+  animation: mk-kapi-salla 0.5s ease-in-out;
+  border-color: color-mix(in srgb, var(--turuncu) 70%, white);
+}
+.mk-kok .ik-dugmeler {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.mk-kok .ik-dugmeler .dugme {
+  min-width: 120px;
+  font-size: 1.1rem;
+}
+.mk-kok .ik-basari {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 0 !important;
+  font-size: 1.05rem;
+  opacity: 1 !important;
+}
+.mk-kok .ik-onay {
+  font-size: 26px;
+  color: var(--yesil);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .ik-girdi.hata {
+    animation: none;
+  }
+}

@@ -4,10 +4,11 @@
  * parallax); büyükler için ebeveyn kapısı (yazıyla toplama sorusu). Uygulamada abonelikli kartlarda kilit rozeti.
  */
 import { abonelikEkrani, kilitliIcerik } from '../../src/abonelik/ekran';
+import { incelemeKoduAc } from '../../src/abonelik/inceleme';
 import { kilitleriKur } from '../../src/abonelik/kilit';
 import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
 import { saglayici } from '../../src/abonelik/satin';
-import { kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
+import { incelemeAcikMi, kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
 import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
@@ -300,7 +301,11 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
   // abonelik (yalnız uygulamada): durum + abonelik ekranı (satın alımları geri yükleme orada)
   const aboneDurum = h('p.ug-abone-durum');
   const durumYaz = () => {
-    aboneDurum.textContent = premiumMu() ? 'Minkino Premium etkin. Teşekkürler!' : 'Bazı oyunlar ücretsiz. Premium ile hepsi açılır.';
+    aboneDurum.textContent = incelemeAcikMi()
+      ? 'Tüm içerik açıldı (inceleme)'
+      : premiumMu()
+        ? 'Minkino Premium etkin. Teşekkürler!'
+        : 'Bazı oyunlar ücretsiz. Premium ile hepsi açılır.';
   };
   durumYaz();
   const aboneDugme = h('button.dugme.ug-abone-dugme', { type: 'button' }, svg(IKON.tac), 'Minkino Premium');
@@ -330,6 +335,13 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
       geriYukleDugme.removeAttribute('disabled');
     }
   });
+  // mağaza inceleme kodu (inceleme ekibi satın alamaz): sade, en altta; doğru kodla bu cihazda her şey açılır
+  const incelemeDugme = h('button.ince-dugme.ug-baglanti.ug-inceleme', { type: 'button' }, 'İnceleme kodu');
+  incelemeDugme.addEventListener('click', async () => {
+    efekt.dokunma();
+    await incelemeKoduAc(app.kok);
+    durumYaz();
+  });
   const platform = uygulamaPlatformu();
   const yonet = platform ? baglanti(ABONELIK_YONETIM[platform], 'Aboneliği yönet') : null;
   const el = h(
@@ -353,6 +365,7 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
         h('h2', {}, 'Bize yazın'),
         h('p', {}, 'Soru, öneri ya da sorun için:'),
         h('div.ug-baglantilar', {}, h('a.ince-dugme.ug-baglanti.ug-eposta', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
+        ...(uygulamada ? [h('div.ug-baglantilar.ug-inceleme-yer', {}, incelemeDugme)] : []),
       ),
     ),
   );
