@@ -20,6 +20,11 @@ const HAZIR = import.meta.glob<string>(
   { eager: true, query: '?url', import: 'default' },
 );
 const ROZET = import.meta.glob<string>('../../../assets/okul/rozet-ses.webp', { eager: true, query: '?url', import: 'default' });
+/** Çizilmiş çıkartmalar (assets/okul/odul/<ad>.webp): gelince kendiliğinden kullanılır */
+const ODUL = import.meta.glob<string>('../../../assets/okul/odul/*.webp', { eager: true, query: '?url', import: 'default' });
+/** Odanın çizilmiş çıkartması: önce <etkinlik id> (ses-a), sonra ses-<kahraman>, sonra <kahraman>; yoksa '' */
+export const odulAdres = (odaId: string, kahraman: string): string =>
+  [odaId, `ses-${kahraman}`, kahraman].map((ad) => ODUL[`../../../assets/okul/odul/${ad}.webp`]).find(Boolean) ?? '';
 
 /** Kelimenin görsel adresi ('' = yok, yer tutucu) */
 export function resimAdres(k: string): string {

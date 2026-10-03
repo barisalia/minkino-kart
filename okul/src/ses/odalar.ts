@@ -22,7 +22,7 @@ import { geriGonder, hedefliSurukle } from '../surukle';
 import { HARF_YOLU, izBaslat, izGecis, izOran, izToleransi, kinoYolu, yolD, type Iz } from './harf-yolu';
 import { avSozu, avTurlari, farkliTurlari, HARFLER, kelime, kutuTuru, ODA_ADIMLARI, odaId, odaSesiSozu, ORTAK, SES_ICERIK as S, sesleBaslar, type Harf } from './harfler';
 import { odaAdimi, odaAdimiYaz, ODA_ANAHTARI } from './oda-kayit';
-import { esyaAdres, kahramanEl, kuleKatAdres, pozAdres, pozla, resimAdres, resimEl } from './resim';
+import { esyaAdres, kahramanEl, kuleKatAdres, odulAdres, pozAdres, pozla, resimAdres, resimEl } from './resim';
 import type { Nokta } from '../../../canlan/src/resimler';
 
 const M = S.mino;
@@ -46,6 +46,9 @@ const harfYazi = (t: string, sinif = '') => h(`span.ok-ses-harf${sinif}`, { 'ari
 
 /** Odanın çıkartması / durak simgesi: büyük harf ve odanın resmi (A'lı arı) */
 export function odaSimgesi(hf: Harf): string {
+  // çizilmiş çıkartma geldiyse o (assets/okul/odul/), yoksa harf + kahraman
+  const odul = odulAdres(odaId(hf), hf.kahraman);
+  if (odul) return `<span class="ok-ses-simge ok-ses-simge-cizim"><img class="ok-resim" src="${odul}" alt="" draggable="false"></span>`;
   const r = pozAdres(hf.kahraman);
   return `<span class="ok-ses-simge" style="${harfStil(hf)}"><b>${hf.buyuk}</b>${r ? `<img class="ok-resim" src="${r}" alt="" draggable="false">` : ''}</span>`;
 }
