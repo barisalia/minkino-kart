@@ -288,10 +288,10 @@ export class Oyuncular {
       .animate(
         [
           { transform: 'translateY(0) scale(1, 1)' },
-          { transform: 'translateY(0) scale(1.12, 0.86)', offset: 0.18 },
-          { transform: `translateY(-${yukseklik * 0.85}%) scale(0.92, 1.1)`, offset: 0.4 },
+          { transform: 'translateY(0) scale(1.06, 0.95)', offset: 0.18 },
+          { transform: `translateY(-${yukseklik * 0.85}%) scale(0.96, 1.05)`, offset: 0.4 },
           { transform: `translateY(-${yukseklik}%) scale(1, 1)`, offset: 0.52 },
-          { transform: 'translateY(0) scale(1.14, 0.86)', offset: 0.8 },
+          { transform: 'translateY(0) scale(1.06, 0.95)', offset: 0.8 },
           { transform: 'translateY(0) scale(1, 1)' },
         ],
         { duration: sure(ms), easing: 'cubic-bezier(0.45, 0, 0.3, 1)' },
