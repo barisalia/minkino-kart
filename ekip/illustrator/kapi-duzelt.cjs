@@ -29,6 +29,7 @@ const ac = (m, W, H, r) => maxFiltre(tersle(maxFiltre(tersle(m), W, H, r)), W, H
 async function isle(ad) {
   const yol = DIR + ad + '.webp'; if (!fs.existsSync(yol)) return;
   const { data, info } = await s(fs.readFileSync(yol)).ensureAlpha().raw().toBuffer({ resolveWithObject: true }); const W = info.width, H = info.height, n = W * H;
+  if (W !== 529 || H !== 540) { console.log(ad + ': tuval ' + W + 'x' + H + ' (beklenen 529x540 değil), atlandı'); return; }
   if (ARALIK[ad]) { const m = poligonMaske(W, H, ARALIK[ad]); for (let i = 0; i < n; i++) if (m[i]) data[i * 4 + 3] = 0; }
   let mask = new Uint8Array(n); for (let i = 0; i < n; i++) mask[i] = data[i * 4 + 3] > 100 ? 1 : 0;
   const onceki = Uint8Array.from(mask);

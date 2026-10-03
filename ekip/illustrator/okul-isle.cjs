@@ -6,7 +6,9 @@ const ARA = process.env.OKUL_ARA || path.join(os.tmpdir(), 'minkino-okul-gemini'
 const G = 'C:/Users/Minkex/Desktop/minkino-film-gemini/okul';
 const HARITA = path.join(G, 'harita');   // okul/harita/: parlak yeni harita simgeleri (bahce, kule, kopru, okul) 2 kat çözünürlükle yuva oranında (OLCEK=2)
 const haritaAd = ['bahce', 'kule', 'kopru', 'okul'].filter((a) => fs.existsSync(path.join(HARITA, a + '.png')));
-const adlar = fs.readdirSync(G).filter((f) => f.endsWith('.png') && !/^sayfa-/.test(f)).map((f) => f.replace(/\.png$/, ''));
+// Recraft ile 3-4 kat keskinleştirilmiş yuvalar (agac 3072, tabak 4096 …): bu betik ASLA dokunmaz (yönetici, 2026-10-03). Yeniden üretmek için ZORLA=1.
+const ATLA = process.env.ZORLA ? [] : ['agac', 'dal', 'istasyon', 'kurabiye', 'piknik-ortusu', 'tabak', 'dal-2', 'tabak-2'];
+const adlar = fs.readdirSync(G).filter((f) => f.endsWith('.png') && !/^sayfa-/.test(f)).map((f) => f.replace(/\.png$/, '')).filter((a) => !ATLA.includes(a));
 const ayar = { agac: { delik: true, delikMin: 150 }, kopru: { delik: true, delikMin: 120 }, bahce: { delik: true, delikMin: 400 }, 'dal-2': { minOran: 0.0002 }, 'tabak-2': { delik: false } };
 execFileSync('node', ['ekip/illustrator/gemini-esya.cjs', '--girdi', G, '--cikti', ARA, '--max', '0', '--ayar', JSON.stringify(ayar), ...adlar], { stdio: 'inherit' });
 // yeniden çizilen yuvalar: <ad>-2 → <ad>

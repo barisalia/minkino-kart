@@ -9,4 +9,4 @@ if (kume.length) execFileSync('node', ['ekip/illustrator/gemini-esya.cjs', '--gi
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 (async () => { for (const a of kume) { const f = `assets/film/park/${a}.webp`, m = await s(fs.readFileSync(f)).metadata(), k = 1600 / Math.max(m.width, m.height);
   if (Math.abs(k - 1) < 0.001) continue;
-  const b = await s(fs.readFileSync(f)).resize(Math.round(m.width * k), Math.round(m.height * k), { kernel: 'lanczos3' }).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); fs.writeFileSync(f, b); console.log(a, Math.round(m.width * k) + 'x' + Math.round(m.height * k)); } })();
+  const b = await s(fs.readFileSync(f)).resize(Math.round(m.width * k), Math.round(m.height * k), { kernel: 'lanczos3' }).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); await require('./guvenli-yaz.cjs')(f, b); console.log(a, Math.round(m.width * k) + 'x' + Math.round(m.height * k)); } })();
