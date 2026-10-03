@@ -1,0 +1,2 @@
+/* Microphone permission (shown to grown-ups in the iOS permission dialog). */
+"NSMicrophoneUsageDescription" = "For grown-ups: in some games Minkino detects your child's blowing, voice and clapping instantly and only on this device. Audio is never recorded, stored or sent anywhere. Without permission, every game can be played by touch.";

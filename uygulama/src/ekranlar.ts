@@ -205,7 +205,7 @@ export function menuEkrani(app: Uygulama): Ekran {
     kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');
-      // yumuşak dokunma sesi (seçilince ayrıca "seçim" sesi; kilitli kartta sesi ebeveyn kapısı çalar)
+      // yumuşak dokunma sesi (seçilince ayrıca "seçim" sesi; kilitli kartta sesi kilit anı çalar)
       if (!a.hasAttribute('data-kilitli')) efekt.dokunma();
       // Mino basılan karta bakar (canlılık: karakterler çocuğun ne seçtiğiyle ilgilenir)
       if (AZ_HAREKET) return;
@@ -221,7 +221,8 @@ export function menuEkrani(app: Uygulama): Ekran {
       e.preventDefault();
       if (gidiyor) return;
       a.classList.remove('basili');
-      // abonelikli oyun (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
+      // abonelikli oyun (yalnız uygulamada): çocuğa kilit anı ("Bunu anne-babanla açabilirsin"); "Büyükler için" →
+      // ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
       if (kilitli(k.id)) {
         tepki('mir');
         // kilit rozeti tatlı bir sallanır (korkutmadan "bu büyüklerle açılır")

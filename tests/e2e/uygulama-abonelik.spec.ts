@@ -7,6 +7,14 @@ import { hataTopla } from './yardimci';
 
 const ekran = (ad: string, proje: string) => `tests/screens/${ad}-${proje}.png`;
 
+/** Kilitli içerik: önce çocuğa kilit anı (abonelik ekranı değil); büyük "Büyükler için"e basar, kapı açılır */
+async function buyuklerIcin(page: Page) {
+  await expect(page.locator('.kl-perde .kl-baslik')).toHaveText('Bunu anne-babanla açabilirsin');
+  await expect(page.locator('.ab-perde')).toHaveCount(0);
+  await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
+  await page.locator('.kl-perde').getByRole('button', { name: 'Büyükler için' }).click();
+}
+
 /** Ebeveyn kapısını doğru cevapla geçer (test modunda doğru toplam data-toplam'da) */
 async function kapiyiGec(page: Page) {
   const soru = page.locator('.ebeveyn-kapisi .kapi-soru');
@@ -37,8 +45,9 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await page.waitForTimeout(300);
   await page.screenshot({ path: ekran('uygulama-abonelik-menu', p) });
 
-  // kilitli karta dokununca oyuna gitmez, ebeveyn kapısı açılır (soru yazıyla, rakam yok)
+  // kilitli karta dokununca oyuna gitmez; çocuğa kilit anı, "Büyükler için" → ebeveyn kapısı (soru yazıyla, rakam yok)
   await page.locator('.ug-kart[data-oyun="pazar"]').click();
+  await buyuklerIcin(page);
   const soru = page.locator('.ebeveyn-kapisi .kapi-soru');
   await expect(soru).toBeVisible();
   await expect(soru).toHaveText(/^[A-ZÇĞİÖŞÜ][a-zçğıöşü ]+ artı [a-zçğıöşü ]+ kaç eder\?$/);
@@ -109,6 +118,7 @@ test('Uygulama: macera ve çizgi filmlerde ücretsiz bölüm açık, diğerleri 
   await page.screenshot({ path: ekran('uygulama-abonelik-macera', p), fullPage: true });
   // kilitli bölüm → kapı; kapatınca hiçbir şey açılmaz
   await page.locator('.sl-bolum-kart').click();
+  await buyuklerIcin(page);
   await expect(page.locator('.ebeveyn-kapisi')).toBeVisible();
   await page.locator('.ebeveyn-kapisi').getByRole('button', { name: 'Kapat' }).click();
   await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
@@ -125,6 +135,7 @@ test('Uygulama: macera ve çizgi filmlerde ücretsiz bölüm açık, diğerleri 
   await expect(page.locator('.fl-film-kart[data-film="kino-oyuncak"] .mk-kilit')).toBeVisible();
   await page.screenshot({ path: ekran('uygulama-abonelik-film', p) });
   await page.locator('.fl-film-kart[data-film="kino-oyuncak"]').click();
+  await buyuklerIcin(page);
   await expect(page.locator('.ebeveyn-kapisi')).toBeVisible();
   await kapiyiGec(page);
   // iOS: Apple'ın zorunlu yenileme metni
@@ -140,6 +151,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
   const hatalar = hataTopla(page);
   await page.goto('./?test=1&uygulama=ios&satin=iptal');
   await page.locator('.ug-kart[data-oyun="canlan"]').click();
+  await buyuklerIcin(page);
   await kapiyiGec(page);
   const ab = page.locator('.ab-perde');
   await expect(ab).toHaveAttribute('data-durum', 'hazir');
@@ -155,6 +167,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
   // mağaza yanıt vermiyor: ekran çökmez, tekrar dene görünür
   await page.goto('./?test=1&uygulama=ios&magaza=yok');
   await page.locator('.ug-kart[data-oyun="canlan"]').click();
+  await buyuklerIcin(page);
   await kapiyiGec(page);
   await expect(page.locator('.ab-perde')).toHaveAttribute('data-durum', 'hata');
   await expect(page.getByRole('button', { name: 'Tekrar dene' })).toBeVisible();

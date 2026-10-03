@@ -149,6 +149,11 @@ export const efekt = {
     can(NOTA(64), 0, 0.12, 0.22);
     can(NOTA(60), 0.13, 0.12, 0.3);
   },
+  /** Abonelikli içeriğe dokunulunca (çocuğa "anne-babanla aç" anı): sakin, inen iki küçük çan; uyarı sesi değil */
+  kilitNazik() {
+    can(NOTA(76), 0, 0.12, 0.4);
+    can(NOTA(72), 0.16, 0.12, 0.55);
+  },
   kilitli() {
     ton(300, 0, 0.1, 'square', 0.06, 250);
     ton(250, 0.1, 0.12, 'square', 0.06, 200);

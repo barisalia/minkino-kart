@@ -19,6 +19,13 @@ async function rakamYaz(page: Page, sayi: string) {
   for (const r of sayi) await page.locator('.ebeveyn-kapisi .tus', { hasText: new RegExp(`^${r}$`) }).click();
 }
 
+/** Kilitli içerik: önce çocuğa kilit anı (abonelik ekranı değil); büyük "Büyükler için"e basar, kapı açılır */
+async function buyuklerIcin(page: Page) {
+  await expect(page.locator('.kl-perde .kl-baslik')).toHaveText('Bunu anne-babanla açabilirsin');
+  await expect(page.locator('.ab-perde')).toHaveCount(0);
+  await page.locator('.kl-perde').getByRole('button', { name: 'Büyükler için' }).click();
+}
+
 async function kapiyiGec(page: Page) {
   const soru = page.locator('.ebeveyn-kapisi .kapi-soru');
   await expect(soru).toBeVisible();
@@ -72,6 +79,7 @@ test('Kabuk: ebeveyn kapısı iki basamak, yanlışta yumuşak sallanma, 3 yanl�
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./?test=1&uygulama=android');
   await page.locator('.ug-kart[data-oyun="pazar"]').click();
+  await buyuklerIcin(page);
   const kapi = page.locator('.ebeveyn-kapisi');
   await expect(kapi).toBeVisible();
   await expect(kapi.locator('.kapi-kutu')).toHaveCount(2);
@@ -108,6 +116,7 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./?test=1&uygulama=ios');
   await page.locator('.ug-kart[data-oyun="pasta"]').click();
+  await buyuklerIcin(page);
   await kapiyiGec(page);
   const ab = page.locator('.ab-perde');
   await expect(ab).toHaveAttribute('data-durum', 'hazir');

@@ -191,6 +191,11 @@
   paint-order: stroke fill;
   font-size: 1.4rem;
 }
+.mc-kok .mc-izin-kart .mc-izin-en {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.6;
+}
 .mc-kok .mc-izin-durum {
   min-height: 1.3em;
   font-weight: 600;
