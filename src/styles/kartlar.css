@@ -591,3 +591,47 @@
     font-size: 36px;
   }
 }
+
+/* ---------- Dar dikey telefon: başlık balonu tek satır (yaş "Kaç yaşındasın?" iki satıra kırılıyordu) ---------- */
+@media (max-width: 430px) {
+  .mk-kok .ust-cubuk .baslik-balon {
+    white-space: nowrap;
+    font-size: clamp(1.05rem, 5vw, 1.4rem);
+    gap: 8px;
+    padding-right: 16px;
+  }
+}
+
+/* ---------- Dokunma geri bildirimi: albüm sekmesi ve albüm kartları basınca ezilir ---------- */
+.mk-kok .sekme:active {
+  transform: translateY(2px) scale(0.92, 0.86);
+  transition-duration: 0.06s;
+}
+.mk-kok .album .kart:active {
+  transform: scale(1.06, 0.9);
+  transition: transform 0.06s;
+}
+
+/* ---------- Yatay tablet (1024×768, 1366×1024): gösterge solda, kartlar sağda; alt alta dizilince kartlar küçük kalıyordu ---------- */
+@media (orientation: landscape) and (min-height: 561px) and (min-aspect-ratio: 5/4) {
+  .mk-kok .oyun-alan {
+    flex-direction: row;
+    gap: clamp(16px, 2.5vw, 32px);
+  }
+  .mk-kok .oyun-alan .gosterge-alan {
+    flex: 1 1 42%;
+    min-width: 0;
+  }
+  .mk-kok .oyun-alan .secenek-alan {
+    flex: 1 1 58%;
+    min-width: 0;
+  }
+  /* açılış: KARTLAR rozeti oyna düğmesine değiyordu */
+  .mk-kok .acilis .kart-yelpaze {
+    margin-top: clamp(40px, 7vh, 70px);
+    height: min(60vw, 300px);
+  }
+  .mk-kok .acilis-alt {
+    gap: clamp(20px, 3.5vh, 36px);
+  }
+}
