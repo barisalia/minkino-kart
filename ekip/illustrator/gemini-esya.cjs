@@ -1,6 +1,6 @@
 // Gemini beyaz zeminli eşya çizimleri → şeffaf, kırpılmış WebP (genel sürüm; dedektif-esya.cjs'in yöntemi).
 // node gemini-esya.cjs --girdi <klasör> --cikti <klasör> [--desen <regex>] [--esit <regex>] [--arka <regex>] [--max 1024] [--ayar '{"ad":{"koyu":205,"sat":40,"minOran":0.02,"kes":[x0,y0,x1,y1]}}'] [ad ...]
-//  --esit  : eşleşen dosyalar (örn. ^kurabiye) aynı tuvale ortalanır, ölçek korunur (Gemini'nin ölçeği); tuval = grubun en büyük kutusu.
+//  --esit  : eşleşen dosyalar (örn. ^kurabiye) aynı tuvale ortalanır, ölçek korunur (Gemini'nin ölçeği); tuval = grubun en büyük kutusu. Regex'te yakalama grupları ayrı gruplar kurar: '^(boya-kovasi)|^(bardak)|(top)$' → üç ayrı ortak tuval.
 //  --esit-hiza orta|alt : ortak tuvalde dikey hizalama (varsayılan orta; cupcake gibi aynı tabanlı aşamalar için alt: tabanlar hizalanır, yatayda ortalanır).
 //  --arka  : eşleşen dosyalar kesilmez, arka plan olarak webp'e çevrilir (uzun kenar --arka-max, varsayılan 2048).
 //  --arka-onek : arka plan çıktı adına eklenen önek (varsayılan 'arka-': tezgah-uzak-1 → arka-tezgah-uzak-1.webp).
@@ -36,7 +36,9 @@ async function kes(dosya, ad, o) {
     const bi = new Uint8Array(n); for (let i = 0; i < n; i++) bi[i] = S[i] && Math.min(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]) > 243 ? 1 : 0;
     const e2 = new Uint8Array(n); for (let i = 0; i < n; i++) { if (!bi[i] || e2[i]) continue; let b2 = 0, s2 = 0; q[s2++] = i; e2[i] = 1; const uye = [i];
       while (b2 < s2) { const pp = q[b2++], x = pp % W; for (const d of [-1, 1, -W, W]) { const r = pp + d; if (r < 0 || r >= n || e2[r] || !bi[r]) continue; if ((d === -1 && x === 0) || (d === 1 && x === W - 1)) continue; e2[r] = 1; q[s2++] = r; uye.push(r); } }
-      if (uye.length >= (o.delikMin || 600)) for (const pp of uye) S[pp] = 0; } }
+      if (uye.length >= (o.delikMin || 600)) for (const pp of uye) S[pp] = 0; }
+    // deliğin kenar halkası: deliğe 3 px içinde kalan açık (min kanal > 175) pikseller de delik sayılır (kontur iç yüzündeki beyaz hale)
+    for (let pass = 0; pass < 14; pass++) { const sil = []; for (let i = 0; i < n; i++) { if (!S[i]) continue; const r = Math.min(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]); if (r < 175) continue; const x = i % W; if ((x > 0 && !S[i - 1] && !dis[i - 1]) || (x < W - 1 && !S[i + 1] && !dis[i + 1]) || (i >= W && !S[i - W] && !dis[i - W]) || (i + W < n && !S[i + W] && !dis[i + W])) sil.push(i); } for (const i of sil) S[i] = 0; } }
   // 4) iç (3 px erozyon) ve genel koyu kontur rengi
   const ic = new Uint8Array(n); for (let y = 3; y < H - 3; y++) for (let x = 3; x < W - 3; x++) { if (!S[y * W + x]) continue; let tam = 1; for (let dy = -3; dy <= 3 && tam; dy++) for (let dx = -3; dx <= 3; dx++) if (!S[(y + dy) * W + x + dx]) { tam = 0; break; } ic[y * W + x] = tam; }
   let kr = 0, kg = 0, kb = 0, kn = 0; for (let i = 0; i < n; i++) if (S[i] && !ic[i] && Math.min(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]) < 100) { kr += data[i * 3]; kg += data[i * 3 + 1]; kb += data[i * 3 + 2]; kn++; }
@@ -86,12 +88,13 @@ async function kes(dosya, ad, o) {
     const r = await kes(path.join(GIRDI, f), ad, o);
     const [x0, y0, x1, y1] = o.tuvalKoru ? [0, 0, r.W - 1, r.H - 1] : r.kutu, w = x1 - x0 + 1, h = y1 - y0 + 1;
     const kirp = await s(r.out, { raw: { width: r.W, height: r.H, channels: 4 } }).extract({ left: x0, top: y0, width: w, height: h }).png().toBuffer();
-    if (ESIT && ESIT.test(ad)) { esitGrup.push({ ad, kirp, w, h, parca: r.parca }); continue; }
+    if (ESIT && ESIT.test(ad)) { const em = ad.match(ESIT), anahtar = (em.slice(1).find((x) => x !== undefined)) || 'tek'; esitGrup.push({ ad, anahtar, kirp, w, h, parca: r.parca }); continue; }
     await yaz(ad, kirp, w, h, r.parca, r.kontur);
   }
-  if (esitGrup.length) { // aynı tuval: en büyük genişlik ve yükseklik, ortalanmış; sonra tek ölçekle (gerekirse) küçültme
-    const TW = Math.max(...esitGrup.map((e) => e.w)), TH = Math.max(...esitGrup.map((e) => e.h)); const olc = MAX && Math.max(TW, TH) > MAX ? MAX / Math.max(TW, TH) : 1;
-    for (const e of esitGrup) {
+  const gruplar = {}; for (const e of esitGrup) (gruplar[e.anahtar] = gruplar[e.anahtar] || []).push(e);
+  for (const grup of Object.values(gruplar)) { // aynı grup: ortak tuval (en büyük genişlik ve yükseklik), ortalanmış ya da tabandan hizalı; gerekirse tek ölçekle küçültme
+    const TW = Math.max(...grup.map((e) => e.w)), TH = Math.max(...grup.map((e) => e.h)); const olc = MAX && Math.max(TW, TH) > MAX ? MAX / Math.max(TW, TH) : 1;
+    for (const e of grup) {
       const tuval = await s({ create: { width: TW, height: TH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite([{ input: e.kirp, left: Math.round((TW - e.w) / 2), top: ESIT_HIZA === 'alt' ? TH - e.h : Math.round((TH - e.h) / 2) }]).png().toBuffer();
       const son = olc < 1 ? await s(tuval).resize(Math.round(TW * olc), Math.round(TH * olc), { kernel: 'lanczos3' }).png().toBuffer() : tuval;
       const buf = await s(son).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); fs.writeFileSync(path.join(CIKTI, e.ad + '.webp'), buf);

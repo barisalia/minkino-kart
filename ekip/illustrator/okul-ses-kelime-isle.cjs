@@ -7,8 +7,8 @@ const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const G = 'C:/Users/Minkex/Desktop/minkino-film-gemini', B = 'ekip/illustrator/gemini-esya.cjs';
 const calistir = (a) => execFileSync('node', [B, ...a], { stdio: 'inherit' });
 const liste = (d) => fs.existsSync(`${G}/${d}`) ? fs.readdirSync(`${G}/${d}`).filter((f) => f.endsWith('.png') && !/^sayfa-/.test(f)).map((f) => f.replace(/\.png$/, '')) : [];
-const DELIK = { 'meyve-sepeti-bos': 300, agil: 300, davul: 200, papagan: 200, 'boya-kovasi-kirmizi': 400, 'boya-kovasi-mavi': 400, 'boya-kovasi-sari': 400, 'boya-kovasi-yesil': 400, ip: 800, igne: 60 };
-const EK = { 'sicak-corba': { koyu: 235 }, 'bardak-bos': { koyu: 238 }, 'bardak-dolu': { koyu: 238 } };
+const DELIK = { 'meyve-sepeti-bos': 300, agil: 300, davul: 200, papagan: 200, 'boya-kovasi-kirmizi': 400, 'boya-kovasi-mavi': 400, 'boya-kovasi-sari': 400, 'boya-kovasi-yesil': 400, ip: 800, igne: 60, mum: 200, utu: 300, odul: 300, canta: 100, fincan: 250, valiz: 200 };
+const EK = { fincan: { koyu: 235 }, su: { minOran: 0.0003 }, deniz: { minOran: 0.0003 }, mum: { sat: 110 }, 'sicak-corba': { koyu: 235 }, 'bardak-bos': { koyu: 238 }, 'bardak-dolu': { koyu: 238 } };
 const ESIT = '^(boya-kovasi)|^(bardak)|^(kapi)|(top)$|^(havlu)';
 const ayarlar = (adlar) => JSON.stringify(Object.fromEntries(adlar.filter((a) => DELIK[a] || EK[a]).map((a) => [a, { ...(DELIK[a] ? { delik: true, delikMin: DELIK[a] } : {}), ...(EK[a] || {}) }])));
 (async () => {
