@@ -6,7 +6,7 @@ const { execFileSync } = require('child_process'), fs = require('fs');
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const G = 'C:/Users/Minkex/Desktop/minkino-film-gemini', B = 'ekip/illustrator/gemini-esya.cjs';
 const calistir = (a) => execFileSync('node', [B, ...a], { stdio: 'inherit' });
-const liste = (d) => fs.existsSync(`${G}/${d}`) ? fs.readdirSync(`${G}/${d}`).filter((f) => f.endsWith('.png') && !/^sayfa-/.test(f) && !/-eski.png$/.test(f)).map((f) => f.replace(/\.png$/, '')) : [];
+const liste = (d) => fs.existsSync(`${G}/${d}`) ? fs.readdirSync(`${G}/${d}`).filter((f) => f.endsWith('.png') && !/^sayfa-/.test(f) && !/-(eski|v1).png$/.test(f)).map((f) => f.replace(/\.png$/, '')) : [];
 const DELIK = { 'meyve-sepeti-bos': 300, agil: 300, davul: 200, papagan: 200, 'boya-kovasi-kirmizi': 400, 'boya-kovasi-mavi': 400, 'boya-kovasi-sari': 400, 'boya-kovasi-yesil': 400, ip: 800, igne: 60, mum: 200, utu: 300, odul: 300, canta: 100, fincan: 250, valiz: 200, ninni: 150, ihlamur: 200, ulke: 300, ucurtma: 100, dut: 60 };
 const EK = { ihlamur: { koyu: 235 }, fincan: { koyu: 235 }, su: { minOran: 0.0003 }, deniz: { minOran: 0.0003 }, mum: { sat: 110 }, 'sicak-corba': { koyu: 235 }, 'bardak-bos': { koyu: 238 }, 'bardak-dolu': { koyu: 238 } };
 const KAHRAMAN = '^(tavsan)|^(inek)|^(leylek)|^(nar-yuzlu)|^(elma-yuzlu)';   // harf odası kahramanları: karakter başına ortak tuval (pozlar aynı ölçek; zıplamada ayak yerden kalkar, o yüzden ortalanır)
@@ -18,6 +18,10 @@ const ayarlar = (adlar) => JSON.stringify(Object.fromEntries(adlar.filter((a) =>
   for (const a of arka) { const i = await s(`${G}/okul-ses/${a}.png`).resize(1920, 1080, { fit: 'cover', position: 'centre', kernel: 'lanczos3' }).removeAlpha().webp({ quality: 90, effort: 5 }).toFile(`assets/okul/ses/${a}.webp`); console.log(a, i.width + 'x' + i.height, Math.round(i.size / 1024) + ' KB'); }
   if (tekler.length) calistir(['--girdi', `${G}/okul-ses`, '--cikti', 'assets/okul/ses', '--max', '0', '--ayar', ayarlar(tekler), '--desen', '^(' + tekler.join('|') + ')\\.', ...tekler]);
   if (kahraman.length) calistir(['--girdi', `${G}/okul-ses`, '--cikti', 'assets/okul/ses', '--max', '900', '--esit', KAHRAMAN, '--desen', '^(' + kahraman.join('|') + ')\.', ...kahraman]);
+  // okul-odul: çıkartmalar ve rozetler → assets/okul/odul/<ad>.webp (kopru-senlik istisna: assets/okul/kelime/)
+  const odul = liste('okul-odul'), odulKelime = odul.filter((a) => a === 'kopru-senlik'), odulTek = odul.filter((a) => a !== 'kopru-senlik');
+  if (odulTek.length) { fs.mkdirSync('assets/okul/odul', { recursive: true }); calistir(['--girdi', `${G}/okul-odul`, '--cikti', 'assets/okul/odul', '--max', '0', '--ayar', ayarlar(odulTek), '--desen', '^(' + odulTek.join('|') + ')\.', ...odulTek]); }
+  if (odulKelime.length) calistir(['--girdi', `${G}/okul-odul`, '--cikti', 'assets/okul/kelime', '--max', '0', '--ayar', ayarlar(odulKelime), '--desen', '^kopru-senlik\.', ...odulKelime]);
   const kelime = liste('okul-kelime');
   if (kelime.length) calistir(['--girdi', `${G}/okul-kelime`, '--cikti', 'assets/okul/kelime', '--max', '0', '--esit', ESIT, '--ayar', ayarlar(kelime), '--desen', '^(' + kelime.join('|') + ')\\.', ...kelime]);
   if (fs.existsSync('assets/okul/kelime/kapi-kapali.webp')) execFileSync('node', ['ekip/illustrator/kapi-duzelt.cjs'], { stdio: 'inherit' });   // kapı kenarı cilası (Gemini kapılarında dış kenar konturlu değil)
