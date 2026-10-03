@@ -49,6 +49,12 @@ export const YUVA = {
   hamurKasesi: ['hamur-kasesi'],
   kasik: ['tahta-kasik'],
   tabak: ['servis-tabagi', 'tabak'],
+  /**
+   * Pasta otobüsü (açılış, akşam, raf; gün girişi): yandan, sağa bakar, yan kapağı KAPALI, tekerlekleri takılı; tuval
+   * 640:420 (kod çiziminin viewBox'ı), şeffaf zemin. Kapak ve tekerlek yerleri cizim.ts → OTOBUS_YERI (kodun yerleri;
+   * çizim başka yerdeyse orası ölçülür). Yoksa kod çizimi.
+   */
+  otobus: ['otobus'],
   kasa: ['kasa', 'kasa-pembe'],
   kumbara: ['kumbara', 'kumbara-otobus', 'kumbara-kavanoz'],
   jeton: ['jeton'],

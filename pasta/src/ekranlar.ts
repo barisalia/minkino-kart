@@ -10,7 +10,7 @@ import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { MinoCanli } from '../../pazar/src/mino-canli';
-import { JETON, KUMBARA, OTOBUS, SAPKA, urunSvg, yildizSvg } from './cizim';
+import { boyaFiltresi, JETON, KUMBARA, OTOBUS, SAPKA, urunSvg, yildizSvg } from './cizim';
 import { AZ_HAREKET, Efekt, parkAdres, salla } from './gorsel';
 import { boyaUygula, minoSapkaTak, parkKatmanlari, unluKino } from './gun';
 import { gunBitti, kaydet, kayit, toplamYildiz } from './kayit';
@@ -131,7 +131,7 @@ const KILIT = `<svg viewBox="0 0 40 44" aria-hidden="true"><path d="M11 20V13A9 
 function rafIkon(u: RafUrunu): string {
   if (u.tur === 'sapka') return SAPKA;
   const b = BOYA[u.deger] ?? BOYA.pembe;
-  return `<div class="ps-raf-otobus" style="--boya:${b.govde};--boya-koyu:${b.koyu}">${OTOBUS}</div>`;
+  return `<div class="ps-raf-otobus" style="--boya:${b.govde};--boya-koyu:${b.koyu};--boya-filtre:${boyaFiltresi(u.deger)}">${OTOBUS}</div>`;
 }
 
 export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yildiz?: number; mutlu?: number } = {}): Ekran {

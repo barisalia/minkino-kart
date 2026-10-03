@@ -1760,6 +1760,19 @@
   transform: none;
   opacity: 1;
 }
+/* görselli otobüs (cizim.ts → otobusSvg): görselin kapağı kapalıyken tente yok; kapak katlanınca tente açılır */
+.ps-kok .ps-otobus-resimli .ps-ob-tente {
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) 0.2s, opacity 0.2s 0.2s;
+}
+.ps-kok .ps-acik > .ps-otobus-resimli .ps-ob-tente {
+  opacity: 1;
+}
+/* görselli otobüsün boyası (dükkândan): yalnız pembe gövde döner (cizim.ts → boyaFiltreleri; --boya-filtre en yakın
+   atadan gelir: ekranın boyası ya da raftaki boya örneği) */
+.ps-kok .ps-ob-boyali {
+  filter: var(--boya-filtre, none);
+}
 .ps-kok .ps-giris-mino {
   position: absolute;
   left: 41%;

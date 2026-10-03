@@ -22,7 +22,7 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { MinoCanli } from '../../pazar/src/mino-canli';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
-import { HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
+import { boyaFiltresi, HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
 import { zigzagCiz } from './susleme';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
 import { ARKA, FIRIN_GOZLERI, FIRIN_ORAN, oranYaz, yuva } from './resimler';
@@ -103,6 +103,7 @@ export function boyaUygula(el: HTMLElement) {
   const b = BOYA[kayit.boya] ?? BOYA.pembe;
   el.style.setProperty('--boya', b.govde);
   el.style.setProperty('--boya-koyu', b.koyu);
+  el.style.setProperty('--boya-filtre', boyaFiltresi(kayit.boya));
 }
 /** Kino: unlu yüzüyle (kafa katmanına un lekeleri) */
 export function unluKino(): Karakter {
