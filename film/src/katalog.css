@@ -133,6 +133,18 @@
   width: 145.25%;
   height: 110.34%;
 }
+/* ortada logo ve tabela alt alta */
+.fl-kok .fl-k-orta {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2px, 1vw, 8px);
+}
+.fl-kok .fl-k-logo {
+  width: clamp(130px, 36vw, 280px);
+}
 /* ışıklı tabela: altın çerçeve, içinde yanıp sönen ampuller */
 .fl-kok .fl-k-tabela {
   position: relative;
@@ -442,6 +454,10 @@
   .fl-kok .fl-k-tabela {
     margin-bottom: 8px;
     padding: 7px 22px;
+  }
+  /* alçak ekranda logo perdenin saçağına biniyor: yalnız tabela kalır */
+  .fl-kok .fl-k-logo {
+    display: none;
   }
   .fl-kok .fl-k-baslik {
     font-size: clamp(1.4rem, 8dvh, 2.2rem);

@@ -1,0 +1,379 @@
+/* Kelime Köprüsü sahneleme (oyun gibi: göl, dere, çayır, yol). Yalnız transform / opacity, yaylı ivmeler. */
+
+/* sahnenin dışına uçan damla, Kino ya da uçan resim sayfayı genişletmesin (telefonda ekran küçülüp kaymasın) */
+.ok-kok .ok-etkinlik[data-etkinlik^='kelime-'],
+.ok-kok .ok-kopru-ekran {
+  overflow: clip;
+}
+
+/* sıçrayan damlacıklar (ortak.ts → sicrat) */
+.ok-kok .ok-k-damlacik {
+  position: absolute;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.85) 0 18%, transparent 40%), var(--renk, #6cc4ff);
+  pointer-events: none;
+}
+/* basılınca çöker ve toparlanır (taş, nesne) */
+.ok-kok .ok-k-bas {
+  animation: ok-k-bas 0.55s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes ok-k-bas {
+  0% { transform: none; }
+  25% { transform: translateY(6%) scale(1.12, 0.86); }
+  60% { transform: translateY(-3%) scale(0.96, 1.05); }
+  100% { transform: none; }
+}
+
+/* ---------------------------------------------------------------- 1 · Dinle, bul: göldeki resimli taşlar */
+.ok-kok .ok-k-gol {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.ok-kok .ok-k-gol-su {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: min(108cqw, 150cqh);
+  height: min(74cqh, 76cqw);
+  translate: -50% -50%;
+  object-fit: fill;
+  pointer-events: none;
+}
+.ok-kok .ok-k-gol-taslar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: 3cqmin 5cqmin;
+  padding-top: 6cqh;
+}
+.ok-kok .ok-k-gol-tas {
+  --tb: min(29cqw, 62cqh);
+  position: relative;
+  width: var(--tb);
+  height: calc(var(--tb) * 0.92);
+  padding: 0;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  touch-action: manipulation;
+  animation: ok-k-yuz 2.6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * -0.7s);
+}
+.ok-kok .ok-k-gol[data-n='4'] .ok-k-gol-tas {
+  --tb: min(22cqw, 60cqh);
+}
+@container alan (orientation: portrait) {
+  .ok-kok .ok-k-gol-tas,
+  .ok-kok .ok-k-gol[data-n='4'] .ok-k-gol-tas {
+    --tb: min(42cqw, 30cqh);
+  }
+}
+/* taş suda hafifçe yüzer */
+@keyframes ok-k-yuz {
+  from { translate: 0 0; rotate: -1.5deg; }
+  to { translate: 0 -5px; rotate: 1.5deg; }
+}
+.ok-kok .ok-k-gol-tas.ok-k-gel {
+  animation: ok-k-cik 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both, ok-k-yuz 2.6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * 110ms), calc(var(--i, 0) * -0.7s);
+}
+/* sudan çıkar */
+@keyframes ok-k-cik {
+  0% { opacity: 0; transform: translateY(40%) scale(0.5, 0.3); }
+  60% { opacity: 1; transform: translateY(-6%) scale(1.06, 1.08); }
+  100% { opacity: 1; transform: none; }
+}
+.ok-kok .ok-k-gol-tas-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 4px rgba(20, 70, 110, 0.28));
+  pointer-events: none;
+}
+.ok-kok .ok-k-madalyon {
+  position: relative;
+  width: 64%;
+  aspect-ratio: 1;
+  margin-top: -6%;
+  padding: 9%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #fff, #fff8ea);
+  box-shadow: inset 0 -4px 0 rgba(90, 54, 23, 0.08), 0 3px 6px rgba(60, 40, 20, 0.25);
+  pointer-events: none;
+}
+.ok-kok .ok-k-madalyon > .ok-resim {
+  width: 100%;
+  height: 100%;
+}
+.ok-kok .ok-k-gol-tas.ok-k-dogru,
+.ok-kok .ok-k-gol-tas.ok-k-kino-sec {
+  background: none;
+  box-shadow: none;
+}
+.ok-kok .ok-k-gol-tas.ok-k-dogru .ok-k-madalyon {
+  box-shadow: 0 0 0 6px #7ed957, 0 3px 6px rgba(60, 40, 20, 0.25);
+}
+.ok-kok .ok-k-gol-tas.ok-k-kino-sec .ok-k-madalyon {
+  box-shadow: 0 0 0 6px #ffc72c, 0 3px 6px rgba(60, 40, 20, 0.25);
+}
+.ok-kok .ok-k-gol-tas.ok-solgun {
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+/* ---------------------------------------------------------------- 2 · Hecele: dere ve basamak taşları */
+.ok-kok .ok-k-dere {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 4% 9%;
+}
+.ok-kok .ok-k-dere-su {
+  position: absolute;
+  inset: -6% -4%;
+  width: 108%;
+  height: 112%;
+  object-fit: fill;
+  pointer-events: none;
+}
+.ok-kok .ok-k-dere .ok-k-taslar {
+  position: relative;
+}
+.ok-kok .ok-k-hece-su {
+  width: calc(var(--hs, 60px) * 0.6);
+  flex: 0 0 auto;
+}
+.ok-kok .ok-k-hecele .ok-k-hece {
+  --hs: min(27cqw, 22cqh);
+}
+.ok-kok .ok-k-hecele[data-n="4"] .ok-k-hece {
+  --hs: min(20cqw, 20cqh);
+}
+@container alan (orientation: landscape) {
+  .ok-kok .ok-k-hecele .ok-k-hece {
+    --hs: min(15cqw, 42cqh);
+  }
+  .ok-kok .ok-k-hecele[data-n='4'] .ok-k-hece {
+    --hs: min(12cqw, 38cqh);
+  }
+  .ok-kok .ok-k-hece-resim {
+    width: min(30cqw, 76cqh);
+  }
+}
+
+/* ---------------------------------------------------------------- 3 · Tersi: eşya gözümüzün önünde değişir */
+.ok-kok .ok-k-pano > * {
+  grid-area: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+/* tren yatay: pano ve kartları geniş */
+.ok-kok .ok-k-pano[data-cift='uzun'] {
+  width: min(96cqw, 160cqh);
+  height: min(48cqw, 80cqh);
+}
+.ok-kok .ok-k-ters-kartlar .ok-k-ters-kart:has([data-cift='uzun']) {
+  width: clamp(150px, 44vw, 270px);
+  height: clamp(90px, 26vw, 150px);
+}
+@media (orientation: landscape) {
+  .ok-kok .ok-k-ters-kartlar .ok-k-ters-kart:has([data-cift='uzun']) {
+    width: clamp(140px, 52dvh, 240px);
+    height: clamp(80px, 27dvh, 130px);
+  }
+}
+.ok-kok .ok-k-tren .ok-k-vagon {
+  flex-basis: 22%;
+}
+.ok-kok .ok-k-tren .ok-k-lokomotif {
+  flex-basis: 33%;
+  width: 33%;
+}
+.ok-kok .ok-k-ters-kart > .ok-k-gorunus[data-cift='uzun'] {
+  inset: 6% 5%;
+  width: 90%;
+  height: 88%;
+}
+.ok-kok .ok-k-sars {
+  animation: ok-k-sars 0.4s ease-out;
+}
+@keyframes ok-k-sars {
+  0%, 100% { translate: 0 0; }
+  20% { translate: -6px 0; }
+  40% { translate: 5px 0; }
+  60% { translate: -3px 0; }
+  80% { translate: 2px 0; }
+}
+.ok-kok .ok-k-ters-don {
+  animation: ok-k-ters-don 0.6s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+@keyframes ok-k-ters-don {
+  0% { transform: perspective(600px) rotateY(0deg) scale(1); }
+  45% { transform: perspective(600px) rotateY(90deg) scale(0.92); }
+  100% { transform: perspective(600px) rotateY(0deg) scale(1); }
+}
+
+/* ---------------------------------------------------------------- 5 · Grup: sepet, çayır, yol */
+.ok-kok .ok-k-grup-yer {
+  --sr: #ff8fa8;
+  position: relative;
+  width: clamp(98px, 29vw, 150px);
+  aspect-ratio: 1;
+  cursor: pointer;
+}
+.ok-kok .ok-k-grup-yer[data-kategori='hayvan'] {
+  --sr: #8fd36c;
+}
+.ok-kok .ok-k-grup-yer[data-kategori='tasit'] {
+  --sr: #6cb8ff;
+}
+@media (orientation: landscape) {
+  .ok-kok .ok-k-grup-yer {
+    width: clamp(84px, 25dvh, 130px);
+  }
+}
+.ok-kok .ok-k-yer-resim {
+  position: absolute;
+  inset: 0;
+}
+/* çayır ve yol penceresi: sahnenin zemini görünür (gökyüzü kırpılır) */
+.ok-kok .ok-k-yer-pencere {
+  position: absolute;
+  inset: 14% 0 4%;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 6px 0 rgba(90, 54, 23, 0.14), inset 0 0 0 4px rgba(255, 255, 255, 0.7);
+}
+.ok-kok .ok-k-yer-pencere > .ok-resim {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+  scale: 2.2;
+  transform-origin: 50% 100%;
+}
+.ok-kok .ok-k-yer-ic {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 30%;
+  height: 58%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-end;
+  pointer-events: none;
+}
+.ok-kok .ok-k-grup-yer[data-kategori='meyve'] .ok-k-yer-ic {
+  left: 16%;
+  right: 16%;
+  top: 26%;
+  height: 36%;
+}
+.ok-kok .ok-k-yer-ic .ok-k-mini {
+  width: 42%;
+}
+/* meyve sepete düşer */
+.ok-kok .ok-k-dus {
+  animation: ok-k-dus 0.5s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes ok-k-dus {
+  0% { transform: translateY(-40%) scale(0.9, 1.15); }
+  55% { transform: translateY(4%) scale(1.15, 0.85); }
+  100% { transform: none; }
+}
+/* hayvan çayıra hoplar, sonra arada bir zıplar (canlı) */
+.ok-kok .ok-k-hopla {
+  animation: ok-k-dus 0.5s cubic-bezier(0.3, 1.5, 0.5, 1), ok-k-hop 1.8s ease-in-out 0.5s infinite;
+}
+@keyframes ok-k-hop {
+  0%, 60%, 100% { transform: none; }
+  70% { transform: translateY(2%) scale(1.06, 0.94); }
+  82% { transform: translateY(-14%) scale(0.96, 1.05); }
+  92% { transform: translateY(1%) scale(1.05, 0.95); }
+}
+/* taşıt yoldan girer, hafifçe sarsılarak durur */
+.ok-kok .ok-k-gir {
+  animation: ok-k-gir 0.75s cubic-bezier(0.2, 0.8, 0.35, 1.15) both;
+}
+@keyframes ok-k-gir {
+  0% { transform: translateX(-160%) skewX(-8deg); opacity: 0; }
+  20% { opacity: 1; }
+  80% { transform: translateX(6%) skewX(6deg); }
+  100% { transform: none; }
+}
+/* Kino'nun yoldaki balığı çırpınır */
+.ok-kok .ok-k-cirpin {
+  animation: ok-hmm 0.5s ease-in-out infinite;
+}
+/* Gemini'nin ağılı ve garajı: hayvanlar ağılın çimenine, taşıtlar garaj kapısına */
+.ok-kok .ok-k-grup-yer[data-cizim='resim'][data-kategori='hayvan'] .ok-k-yer-ic {
+  left: 14%;
+  right: 12%;
+  top: 30%;
+  height: 50%;
+}
+.ok-kok .ok-k-grup-yer[data-cizim='resim'][data-kategori='tasit'] .ok-k-yer-ic {
+  left: 22%;
+  right: 22%;
+  top: 46%;
+  height: 46%;
+}
+.ok-kok .ok-k-grup-yer[data-cizim='resim'][data-kategori='tasit'] .ok-k-mini {
+  width: 52%;
+  margin: -10% -8%;
+}
+.ok-kok .ok-k-grup-yer[data-cizim='resim'] .ok-k-etiket {
+  top: -20%;
+  width: 40%;
+}
+
+/* Gemini'nin boya kovaları: rengi boyanın kendisi ve kovanın altındaki boya lekesi gösterir */
+.ok-kok .ok-k-kova:has(.ok-k-kova-leke) {
+  position: relative;
+  aspect-ratio: 497 / 552;
+  isolation: isolate;
+}
+.ok-kok .ok-k-kova > .ok-resim {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.ok-kok .ok-k-kova-leke {
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  bottom: -8%;
+  height: 22%;
+  z-index: -1;
+  border-radius: 48% 52% 44% 56% / 60% 55% 45% 40%;
+  background: radial-gradient(ellipse at 38% 32%, rgba(255, 255, 255, 0.5) 0 12%, transparent 34%), var(--renk);
+  box-shadow: 18px 2px 0 -6px var(--renk), -16px 4px 0 -8px var(--renk);
+  pointer-events: none;
+}
+.ok-kok .ok-k-kova.ok-k-gel .ok-k-kova-leke {
+  animation: ok-k-leke 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 200ms);
+}
+@keyframes ok-k-leke {
+  from { transform: scale(0.2, 0.4); opacity: 0; }
+}
+
+/* sürüklenen resim hafifçe büyür ve eğilir (ikincil hareket) */
+.ok-kok .ok-k-oge.ok-tasiniyor {
+  scale: 1.1;
+  rotate: -4deg;
+  transition: scale 0.15s, rotate 0.15s;
+}

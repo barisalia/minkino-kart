@@ -81,12 +81,13 @@
   min-width: 0;
   order: 2;
 }
-.ug-kok .ug-logo .logo-yazi {
-  font-size: clamp(2.1rem, 10.5vw, 5rem);
+/* asıl MINKINO logosu (src/ui/logo.ts): genişlik verilir, boy kendi oranından; menü açılırken yumuşakça belirir */
+.ug-kok .ug-logo .mk-logo {
+  width: clamp(190px, 46vw, 440px);
+  animation: ug-logo-gel 0.7s cubic-bezier(0.3, 1.5, 0.5, 1) 0.1s both, mk-logo-suzul 3.6s ease-in-out 0.8s infinite;
 }
-.ug-kok .ug-logo .logo-yazi span {
-  -webkit-text-stroke: clamp(4px, 1.3vw, 8px) var(--kontur);
-  text-shadow: 0 clamp(3px, 1vw, 6px) 0 var(--kontur);
+@keyframes ug-logo-gel {
+  from { opacity: 0; transform: scale(0.6) rotate(-4deg); }
 }
 .ug-kok .ug-mino-kap {
   position: relative;
@@ -468,6 +469,11 @@
   filter: drop-shadow(0 6px 8px rgba(90, 54, 23, 0.18));
   animation: mk-kart-giris 0.5s cubic-bezier(0.25, 1.4, 0.5, 1) both;
 }
+.ug-kok .ug-ayarlar-logo {
+  width: min(64%, 220px);
+  margin: 10px auto 2px;
+  filter: drop-shadow(0 2px 0 rgba(90, 54, 23, 0.14));
+}
 .ug-kok .ug-ayarlar-ikon {
   font-size: 48px;
   opacity: 0.55;
@@ -557,8 +563,8 @@
   .ug-kok .ug-logo {
     order: 0;
   }
-  .ug-kok .ug-logo .logo-yazi {
-    font-size: clamp(1.7rem, min(5vw, 9dvh), 4.4rem);
+  .ug-kok .ug-logo .mk-logo {
+    width: min(100%, 27vw, 50dvh, 400px);
   }
   .ug-kok .ug-mino-kap {
     height: min(62dvh, 480px);
@@ -718,8 +724,8 @@
   .ug-kok .ug-logo {
     order: 0;
   }
-  .ug-kok .ug-logo .logo-yazi {
-    font-size: clamp(1.8rem, 8.5vw, 4.2rem);
+  .ug-kok .ug-logo .mk-logo {
+    width: clamp(190px, 54vw, 460px);
   }
   .ug-kok .ug-ikili {
     flex: 1 1 0;
@@ -752,7 +758,7 @@
   .ug-kok .ug-kart-yer,
   .ug-kok .ug-kart.secildi .ug-kart-govde,
   .ug-kok .ug-kart .mk-kilit,
-  .ug-kok .ug-logo .logo-yazi span {
+  .ug-kok .ug-logo .mk-logo {
     animation: none;
   }
 }

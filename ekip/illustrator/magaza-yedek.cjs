@@ -2,11 +2,11 @@
 // Çıktılar: public/ikon-1024.png (App Store/Play ikonu, alfasız), assets/uygulama/ikon-on.png + ikon-arka.png (Android uyarlanabilir 432x432, güvenli alan 264 px daire),
 // assets/uygulama/splash.png (2732x2732 krem zemin: ikon + logo), assets/uygulama/one-cikan.png (Play öne çıkan 1024x500, sağda logo), assets/uygulama/ekran-cerceve.png (dikey 1290x2796 zemin).
 // Alfasız (App Store/Play kuralı): ikon-1024, ikon-arka, splash, one-cikan, ekran-cerceve; ikon-on şeffaf (uyarlanabilir ön katman).
-// Kaynak: ekip/mino/mino-final.png, ekip/kino/kino-final.png, assets/uygulama/logo-minkino.png (logo-minkino.cjs). node magaza-yedek.cjs
+// Kaynak: ekip/mino/mino-final.png, ekip/kino/kino-final.png, assets/uygulama/logo-minkino-asil.png (Barış'ın verdiği asıl MINKINO logosu). node magaza-yedek.cjs
 const fs = require('fs'), path = require('path');
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const KREM = '#FFF4DD', KONTUR = '#5a3617';
-const MINO = 'ekip/mino/mino-final.png', KINO = 'ekip/kino/kino-final.png', LOGO = 'assets/uygulama/logo-minkino.png';
+const MINO = 'ekip/mino/mino-final.png', KINO = 'ekip/kino/kino-final.png', LOGO = 'assets/uygulama/logo-minkino-asil.png';
 const yaz = async (buf, yol, alfasiz = false) => { if (alfasiz) buf = await s(buf).flatten({ background: KREM }).removeAlpha().png().toBuffer(); fs.mkdirSync(path.dirname(yol), { recursive: true }); fs.writeFileSync(yol, buf); console.log(yol, (await s(buf).metadata()).width + 'x' + (await s(buf).metadata()).height, Math.round(buf.length / 1024) + ' KB'); };
 const svg = (w, h, govde) => Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">${govde}</svg>`);
 const bulut = (x, y, k, op = 1) => `<g transform="translate(${x} ${y}) scale(${k})" opacity="${op}"><ellipse cx="0" cy="0" rx="150" ry="62" fill="#fff"/><circle cx="-60" cy="-38" r="62" fill="#fff"/><circle cx="35" cy="-62" r="82" fill="#fff"/><circle cx="105" cy="-18" r="52" fill="#fff"/></g>`;

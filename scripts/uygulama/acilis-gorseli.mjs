@@ -1,6 +1,6 @@
 /**
  * Açılış görseli (splash): tasarımcının assets/uygulama/splash.png'sinden (2732², krem zemin, ortada Mino-Kino ikonu
- * + minkino logosu) Android ve iOS yerel açılış resimlerini üretir. Yeni paket yok (sharp zaten var).
+ * + asıl MINKINO logosu; kaynağı scripts/uygulama/splash-tasarla.cjs kurar) Android ve iOS yerel açılış resimlerini üretir. Yeni paket yok (sharp zaten var).
  *
  *   node scripts/uygulama/acilis-gorseli.mjs
  *

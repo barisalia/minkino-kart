@@ -21,10 +21,10 @@
       })();
     </script>
     <style>
-      /* açılış: JS yüklenene kadar beyaz değil, açılış ekranının kremi + logo (uygulamada yerel açılış görseliyle aynı) */
+      /* açılış: JS yüklenene kadar beyaz değil, açılış ekranının kremi + asıl MINKINO logosu (krem zeminde kenarsız temiz sürüm; uygulamada yerel açılış görseliyle aynı) */
       html, body { margin: 0; background: #fff4dd; }
       #acilis { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; background: #fff4dd; transition: opacity 0.32s ease-out; }
-      #acilis img { width: min(62vw, 360px); height: auto; animation: acilis-nefes 1.6s ease-in-out infinite alternate; transition: transform 0.32s ease-out; }
+      #acilis img { width: min(72vw, 420px); height: auto; filter: drop-shadow(0 5px 6px rgba(90, 54, 23, 0.2)); animation: acilis-nefes 1.6s ease-in-out infinite alternate; transition: transform 0.32s ease-out; }
       #acilis.gitti { opacity: 0; pointer-events: none; }
       #acilis.gitti img { transform: scale(1.12); animation: none; }
       @keyframes acilis-nefes { to { transform: scale(1.04); } }
@@ -32,7 +32,7 @@
     </style>
   </head>
   <body>
-    <div id="acilis" aria-hidden="true"><img src="./assets/uygulama/logo-minkino.png" alt="" width="1159" height="286" /></div>
+    <div id="acilis" aria-hidden="true"><img src="./assets/uygulama/logo-minkino-asil.webp" alt="" width="1400" height="276" /></div>
     <div id="minkino"></div>
     <script type="module" src="./uygulama/src/main.ts"></script>
   </body>

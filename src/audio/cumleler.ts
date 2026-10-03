@@ -14,6 +14,8 @@ import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { okulCumleleri, okulKinoCumleleri } from '../../okul/src/sayi';
+import { sesKulesiCumleleri, sesKulesiKinoCumleleri } from '../../okul/src/ses/harfler';
+import { kelimeCumleleri, kelimeKinoCumleleri } from '../../okul/src/kelime/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 
 interface FilmCumleleri {
@@ -211,6 +213,12 @@ export function tumCumleler(): string[] {
   // Okula Hazırım!: Mino, tavşan, kalıplar (Bir…On ile açılmış), rakam canlanmaları; Kino'nun cümleleri anlatıcı yedeği olarak da
   okulCumleleri().forEach(ekle);
   okulKinoCumleleri().forEach(ekle);
+  // Okula Hazırım · Ses Kulesi: harf sesleri, uzatılmış kelimeler, Mino; Kino'nun cümleleri anlatıcı yedeği olarak da
+  sesKulesiCumleleri().forEach(ekle);
+  sesKulesiKinoCumleleri().forEach(ekle);
+  // Okula Hazırım! · Kelime Köprüsü: Mino, kelimeler ("Kedi!"), heceler ("Kar!"), renkler; Kino'nunkiler yedek olarak da
+  kelimeCumleleri().forEach(ekle);
+  kelimeKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Mino (anlatıcı), kart hayvanları ve Pamuk (tonlu); Kino'nun cümleleri anlatıcı yedeği olarak da
   dedektifCumleleri().forEach(ekle);
   dedektifKinoCumleleri().forEach(ekle);
@@ -237,6 +245,9 @@ export function karakterCumleleri(): Record<string, string[]> {
   pastaKinoCumleleri().forEach(ekle);
   // Okula Hazırım!: Kino'nun cümleleri
   okulKinoCumleleri().forEach(ekle);
+  // Okula Hazırım · Ses Kulesi: Kino'nun cümleleri
+  sesKulesiKinoCumleleri().forEach(ekle);
+  kelimeKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Kino'nun cümleleri
   dedektifKinoCumleleri().forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)

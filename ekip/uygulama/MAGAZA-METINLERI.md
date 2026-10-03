@@ -142,6 +142,7 @@ Terms of Use: [link]
 | 4 | Sesli Macera (Salıncak ya da Elektrik) | **Her oyun bir hikâye** | **Every game tells a story** |
 | 5 | Çizgi film karesi | **Öğüt veren çizgi filmler** | **Cartoons with gentle lessons** |
 | 6 | Pasta Otobüsü ya da Çiz Canlansın | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
+| 7 | Okula Hazırım: Sayı Bahçesi, rakam çizme | **Okula hazırlık: sayılar, harfler** | **Ready for school: numbers & letters** |
 
 ---
 
