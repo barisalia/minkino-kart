@@ -1,0 +1,205 @@
+{
+    "ad":  "maymun-profil",
+    "kaynak":  "../hyan/maymun-yan.png",
+    "olcek":  1,
+    "ox":  0,
+    "oy":  0,
+    "koyuEsik":  80,
+    "konturW":  16,
+    "konturAl":  40,
+    "pay":  0.9,
+    "tohumPay":  40,
+    "konturRenk":  "#4A2010",
+    "sira":  "kuyruk,bacak-arka,bacak-on,govde,kol-on,kafa,kulak-on,goz,agiz,goz-kapali",
+    "gizli":  "goz-kapali",
+    "parcalar":  [
+                     {
+                         "kes":  false,
+                         "ozel":  true,
+                         "sekil":  "e:1380,790,58,72",
+                         "ad":  "goz"
+                     },
+                     {
+                         "kes":  false,
+                         "ozel":  true,
+                         "sekil":  "p:1385,935,1420,965,1480,975,1530,950,1560,940,1540,990,1480,1015,1420,1005",
+                         "ad":  "agiz"
+                     },
+                     {
+                         "kes":  true,
+                         "ozel":  false,
+                         "sekil":  "p:930,830,950,740,1010,695,1090,700,1135,760,1140,860,1105,940,1030,965,960,930",
+                         "ad":  "kulak-on"
+                     },
+                     {
+                         "kes":  true,
+                         "ozel":  false,
+                         "sekil":  "p:830,700,880,580,1000,480,1150,430,1300,420,1420,480,1500,600,1530,700,1560,780,1570,880,1550,960,1500,1060,1400,1140,1250,1190,1100,1200,980,1150,880,1050,830,900",
+                         "ad":  "kafa"
+                     },
+                     {
+                         "kes":  true,
+                         "ozel":  false,
+                         "sekil":  "p:990,1230,1120,1230,1135,1400,1130,1500,1150,1580,1120,1660,1040,1670,990,1640,985,1560,980,1400",
+                         "ad":  "kol-on"
+                     },
+                     {
+                         "kes":  true,
+                         "ozel":  false,
+                         "sekil":  "p:970,1700,1150,1700,1180,1780,1230,1840,1250,1900,1200,1930,1010,1930,980,1850,965,1760",
+                         "ad":  "bacak-on"
+                     },
+                     {
+                         "kes":  true,
+                         "ozel":  false,
+                         "sekil":  "p:1190,1700,1330,1700,1340,1800,1380,1850,1390,1900,1330,1920,1250,1900,1210,1800",
+                         "ad":  "bacak-arka"
+                     },
+                     {
+                         "kes":  true,
+                         "ozel":  false,
+                         "sekil":  "p:480,900,860,900,940,1250,940,1640,480,1640",
+                         "ad":  "kuyruk"
+                     }
+                 ],
+    "sert":  [
+
+             ],
+    "varsayilan":  "govde",
+    "yumusat":  [
+                    [
+                        "bacak-on",
+                        "govde",
+                        16
+                    ]
+                ],
+    "tamamla":  [
+                    {
+                        "kontur":  false,
+                        "sekil":  "e:1380,790,58,72",
+                        "ad":  "kafa",
+                        "renk":  "#FDC089"
+                    },
+                    {
+                        "kontur":  false,
+                        "sekil":  "p:1385,935,1420,965,1480,975,1530,950,1560,940,1540,990,1480,1015,1420,1005",
+                        "ad":  "kafa",
+                        "renk":  "#FDBF86"
+                    },
+                    {
+                        "kontur":  false,
+                        "sekil":  "p:930,830,950,740,1010,695,1090,700,1135,760,1140,860,1105,940,1030,965,960,930",
+                        "ad":  "kafa",
+                        "renk":  ""
+                    },
+                    {
+                        "kontur":  false,
+                        "sekil":  "p:900,1180,1380,1180,1400,1300,1300,1420,950,1420",
+                        "ad":  "govde",
+                        "renk":  ""
+                    },
+                    {
+                        "kontur":  false,
+                        "sekil":  "p:990,1230,1120,1230,1135,1400,1130,1500,1150,1580,1120,1660,1040,1670,990,1640,985,1560,980,1400",
+                        "ad":  "govde",
+                        "renk":  ""
+                    },
+                    {
+                        "kontur":  true,
+                        "sekil":  "e:1100,1730,215,110",
+                        "ad":  "govde",
+                        "renk":  ""
+                    },
+                    {
+                        "kontur":  false,
+                        "sekil":  "e:930,1600,60,50",
+                        "ad":  "kuyruk",
+                        "renk":  ""
+                    }
+                ],
+    "kapak":  [
+
+              ],
+    "yaylar":  {
+                   "goz-kapali":  "1320,800,1440,795,24"
+               },
+    "donme":  {
+                  "kafa":  [
+                               1180,
+                               1190
+                           ],
+                  "kulak-on":  [
+                                   1020,
+                                   830
+                               ],
+                  "goz":  [
+                              1380,
+                              790
+                          ],
+                  "agiz":  [
+                               1470,
+                               975
+                           ],
+                  "goz-kapali":  [
+                                     1380,
+                                     800
+                                 ],
+                  "kol-on":  [
+                                 1050,
+                                 1250
+                             ],
+                  "bacak-on":  [
+                                   1080,
+                                   1700
+                               ],
+                  "bacak-arka":  [
+                                     1260,
+                                     1700
+                                 ],
+                  "kuyruk":  [
+                                 930,
+                                 1600
+                             ],
+                  "govde":  [
+                                1130,
+                                1900
+                            ]
+              },
+    "bagli":  {
+                  "kulak-on":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "test":  [
+                 {
+                     "gizli":  "",
+                     "olcek":  "",
+                     "goster":  "",
+                     "ad":  "evre-1",
+                     "aci":  "bacak-on=-20;bacak-arka=20;kol-on=18;kuyruk=6;kafa=-2"
+                 },
+                 {
+                     "gizli":  "",
+                     "olcek":  "",
+                     "goster":  "",
+                     "ad":  "evre-3",
+                     "aci":  "bacak-on=20;bacak-arka=-20;kol-on=-18;kuyruk=-6;kafa=2"
+                 },
+                 {
+                     "gizli":  "goz",
+                     "olcek":  "",
+                     "goster":  "goz-kapali",
+                     "ad":  "goz-kapali",
+                     "aci":  "kafa=4"
+                 },
+                 {
+                     "gizli":  "",
+                     "olcek":  "",
+                     "goster":  "",
+                     "ad":  "kuyruk",
+                     "aci":  "kuyruk=-15"
+                 }
+             ],
+    "kenarLum":  165
+}
