@@ -8,7 +8,8 @@ import { kilitleriKur } from '../../src/abonelik/kilit';
 import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
 import { saglayici } from '../../src/abonelik/satin';
 import { kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
-import { ABONELIK_YONETIM, GIZLILIK_ADRESI, SARTLAR_ADRESI } from '../../src/kabuk/ayar';import { uygulamaPlatformu } from '../../src/kabuk/ortam';
+import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
+import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
 import { efekt } from '../../src/audio/ses';
 import '../../src/karakter/karakter.css';
@@ -16,6 +17,7 @@ import { Karakter, type HareketAdi, type Poz as KPoz } from '../../src/karakter/
 import { type Tepki } from '../../src/mino/mino';
 import { minoProfilYukle, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
+import { sinifOynat } from '../../src/ui/hareket';
 import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
@@ -28,6 +30,10 @@ const CIZIMLER = import.meta.glob<string>(
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
+/** Ebeveyn Köşesi resmi yuvası: assets/uygulama/ebeveyn-kosesi.webp (gözlüklü, kitaplı Mino); dosya gelince kullanılır */
+const EBEVEYN_RESIM = Object.values(
+  import.meta.glob<string>('../../assets/uygulama/ebeveyn-kosesi.webp', { eager: true, query: '?url', import: 'default' }),
+)[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const LOGO_RENK = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#3E9DF2', '#9B5CE0', '#FF7EB6'];
@@ -218,6 +224,8 @@ export function menuEkrani(app: Uygulama): Ekran {
       // abonelikli oyun (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
       if (kilitli(k.id)) {
         tepki('mir');
+        // kilit rozeti tatlı bir sallanır (korkutmadan "bu büyüklerle açılır")
+        void sinifOynat(a, 'kilit-salla', 650);
         void kilitliIcerik(app.kok);
         return;
       }
@@ -302,7 +310,7 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
     durumYaz();
   });
   // satın alımları geri yükle (mağaza kuralı: abonelik ekranına girmeden de bulunabilsin)
-  const geriYukleDugme = h('button.ince-dugme.ug-geri-yukle', { type: 'button' }, 'Satın alımları geri yükle');
+  const geriYukleDugme = h('button.ince-dugme.ug-baglanti.ug-geri-yukle', { type: 'button' }, 'Satın alımları geri yükle');
   geriYukleDugme.addEventListener('click', async () => {
     efekt.dokunma();
     const s = await saglayici();
@@ -334,11 +342,17 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
       h(
         'div.ug-ayarlar-kutu',
         {},
-        svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
+        // Gemini çizimi (gözlüklü, kitaplı Mino) gelince o; yoksa ikon
+        EBEVEYN_RESIM
+          ? h('img.ug-ayarlar-resim', { src: EBEVEYN_RESIM, alt: '', draggable: 'false', decoding: 'async' })
+          : svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
         ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
         h('h2', {}, 'Gizlilik ve güvenlik'),
         h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
         h('div.ug-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),
+        h('h2', {}, 'Bize yazın'),
+        h('p', {}, 'Soru, öneri ya da sorun için:'),
+        h('div.ug-baglantilar', {}, h('a.ince-dugme.ug-baglanti.ug-eposta', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
       ),
     ),
   );

@@ -13,7 +13,7 @@ import { efekt } from '../audio/ses';
 import { premiumAyarla, premiumMu } from '../engine/erisim';
 import { Karakter } from '../karakter/karakter';
 import { Mino } from '../mino/mino';
-import { GIZLILIK_ADRESI, SARTLAR_ADRESI } from '../kabuk/ayar';
+import { GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../kabuk/ayar';
 import { uygulamaPlatformu } from '../kabuk/ortam';
 import { ebeveynKapisiAc } from '../ui/ebeveyn-kapisi';
 import { h, sure, svg } from '../ui/dom';
@@ -52,6 +52,14 @@ const PLAN_AD: Record<PlanId, string> = { aylik: 'Aylık', yillik: 'Yıllık' };
  */
 export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '99 TL', yillik: '499 TL' };
 const YEDEK_DENEME_GUN = 7;
+
+/**
+ * Kahraman görseli yuvası: assets/uygulama/abonelik-kahraman.webp (16:9; Mino ve Kino solda el sallar, yıldız ve
+ * konfeti; orta ve sağ boş). Dosya gelince kendiliğinden kullanılır; yoksa canlı Mino ve Kino (bugünkü hâl).
+ */
+const KAHRAMAN = Object.values(
+  import.meta.glob<string>('../../assets/uygulama/abonelik-kahraman.webp', { eager: true, query: '?url', import: 'default' }),
+)[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -254,6 +262,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         h('span', { 'aria-hidden': 'true' }, ' · '),
         baglanti(SARTLAR_ADRESI, 'Kullanım koşulları', 'Terms of Use'),
       ),
+      h('p.ab-iletisim', {}, 'Bize yazın: ', h('a', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
     );
     const kapatDugme = yuvarlakDugme(IKON.kapat, 'Kapat', () => kapat(), 'kucuk ab-kapat');
     const el = h(
@@ -264,7 +273,9 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         'div.ab-ic',
         {},
         h('div.ab-ust', {}, kapatDugme, h('span.ab-not', {}, 'Bu ekran büyükler içindir.')),
-        h('div.ab-ikili', {}, minoKap, kinoKap),
+        KAHRAMAN
+          ? h('div.ab-kahraman', { 'aria-hidden': 'true' }, h('img', { src: KAHRAMAN, alt: '', draggable: 'false', decoding: 'async' }))
+          : h('div.ab-ikili', {}, minoKap, kinoKap),
         h('div.ab-kart', {}, kartIc),
       ),
     );

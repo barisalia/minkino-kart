@@ -23,6 +23,15 @@ if (kok) {
   // Test kısayolu: ?test=1&ekran=ayarlar
   if (q.has('test')) (window as unknown as { __uygulama: unknown }).__uygulama = { app };
   app.git((q.has('test') && q.get('ekran')) || 'menu');
+  // açılış logosu (index.html → #acilis): menü ilk karesini çizince yumuşakça kaybolur
+  const acilis = document.getElementById('acilis');
+  if (acilis)
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        acilis.classList.add('gitti');
+        window.setTimeout(() => acilis.remove(), q.has('test') ? 0 : 500);
+      }),
+    );
   // Android geri tuşu: Ebeveyn Köşesi'nden menüye; menüdeyken kabuk uygulamadan çıkar (src/kabuk/yerel.ts)
   geriDinle(() => {
     if (app.aktifAd === 'menu') return false;
