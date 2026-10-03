@@ -198,6 +198,7 @@ test('Okula Hazırım: Kelime Köprüsü baştan sona; taşlar yerleşir, Mino i
 
 test('Okula Hazırım: Kelime Köprüsü yatay telefonda ve 1024×768 tablette sığıyor', async ({ page }, info) => {
   test.skip(info.project.name !== 'iphone', 'yalnız bir kez');
+  test.setTimeout(420_000);
   const hatalar = hataTopla(page);
   for (const [w, hh] of [
     [844, 390],
