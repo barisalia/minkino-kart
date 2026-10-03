@@ -3,10 +3,10 @@
  * içinde ve birbirine binmeden, piknik yerleri örtünün içinde, kuşlar dala sığar, kırpma kutuları tuvalin içinde.
  */
 import { describe, expect, it } from 'vitest';
-import { CIZIM_KUTUSU } from '../../okul/src/cizim';
+import { CIZIM_KUTUSU, cizimOrani, DAL_TUNEK, DAL_UST, dalUstu } from '../../okul/src/cizim';
 import { dalDuzeni, sigar } from '../../okul/src/dal';
 import { elmaYerleri } from '../../okul/src/etkinlikler/kac-elma';
-import { kurabiyeYerleri } from '../../okul/src/etkinlikler/hangisinde-cok';
+import { kurabiyeYerleri, tabakYeri } from '../../okul/src/etkinlikler/hangisinde-cok';
 import { ortuYeri } from '../../okul/src/etkinlikler/piknik';
 
 describe('Kaç elma? ağacı', () => {
@@ -34,13 +34,30 @@ describe('Kaç elma? ağacı', () => {
 });
 
 describe('Hangisinde çok? tabağı', () => {
-  it('1-10 kurabiye tabağın iç dairesinde ve birbirine binmeden', () => {
+  it('tabak düğmenin altında, oranı korunur', () => {
+    const t = tabakYeri();
+    expect(t.ust).toBeGreaterThan(0);
+    expect(t.boy * cizimOrani('okul/tabak')).toBeCloseTo(1, 6);
+    expect(t.ust + t.boy).toBeCloseTo(t.H, 6);
+  });
+  it('1-10 kurabiye tabağın üstünde, kutunun içinde, en çok %14 üst üste', () => {
+    const t = tabakYeri();
     for (let n = 1; n <= 10; n++) {
       const k = kurabiyeYerleri(n);
       expect(k).toHaveLength(n);
-      for (const { x, y, c } of k) expect(Math.hypot(x - 50, y - 50) + c / 2, `${n}`).toBeLessThanOrEqual(39.01);
+      // kutu eni = 1 ölçüsüne çevir
+      const p = k.map(({ x, y, c }) => ({ x: x / 100, y: (y / 100) * t.H, c: c / 100 }));
+      for (const { x, y, c } of p) {
+        expect(x - c / 2, `${n}`).toBeGreaterThanOrEqual(0);
+        expect(x + c / 2, `${n}`).toBeLessThanOrEqual(1);
+        expect(y - c / 2, `${n}`).toBeGreaterThanOrEqual(0);
+        expect(y + c / 2, `${n}`).toBeLessThanOrEqual(t.H);
+        // kurabiyenin dibi tabağın üst yüzünde (dış kenar elipsinin içinde)
+        const d = ((x - t.dis.x) / t.dis.rx) ** 2 + ((y + c / 2 - t.dis.y) / t.dis.ry) ** 2;
+        expect(d, `${n}: ${x},${y}`).toBeLessThanOrEqual(1);
+      }
       for (let i = 0; i < n; i++)
-        for (let j = i + 1; j < n; j++) expect(Math.hypot(k[i].x - k[j].x, k[i].y - k[j].y), `${n}: ${i}-${j}`).toBeGreaterThanOrEqual(k[i].c * 0.99);
+        for (let j = i + 1; j < n; j++) expect(Math.hypot(p[i].x - p[j].x, p[i].y - p[j].y), `${n}: ${i}-${j}`).toBeGreaterThanOrEqual(p[i].c * 0.86);
     }
   });
 });
@@ -85,7 +102,46 @@ describe('Kuş dalları', () => {
   });
 });
 
+describe('Dal gövdesi', () => {
+  it('üst çizgi tünek boyunca kutunun içinde ve sürekli', () => {
+    for (let i = 1; i < DAL_UST.length; i++) expect(DAL_UST[i][0]).toBeGreaterThan(DAL_UST[i - 1][0]);
+    for (let u = DAL_TUNEK[0]; u <= DAL_TUNEK[1]; u += 0.01) {
+      const v = dalUstu(u);
+      expect(v).toBeGreaterThan(0.1);
+      expect(v).toBeLessThan(0.6);
+      expect(Math.abs(dalUstu(u + 0.01) - v)).toBeLessThan(0.02);
+    }
+  });
+});
+
 describe('Kırpma kutuları', () => {
+  it('kutu, görselin gerçek (saydam olmayan) çizim kutusu: tuvalin oranı aynı', async () => {
+    const sharp = (await import('sharp')).default;
+    for (const [ad, [W, H, x, y, w, hh]] of Object.entries(CIZIM_KUTUSU)) {
+      const { data, info } = await sharp(`assets/${ad}.webp`).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      // tuval oranı aynı (görsel büyütülse de kutu oranlarla geçerli)
+      expect(info.width / info.height, ad).toBeCloseTo(W / H, 2);
+      const s = info.width / W;
+      let x0 = info.width,
+        y0 = info.height,
+        x1 = -1,
+        y1 = -1;
+      for (let j = 0; j < info.height; j++)
+        for (let i = 0; i < info.width; i++)
+          if (data[(j * info.width + i) * 4 + 3] > 24) {
+            x0 = Math.min(x0, i);
+            x1 = Math.max(x1, i);
+            y0 = Math.min(y0, j);
+            y1 = Math.max(y1, j);
+          }
+      // %2 pay (kenar yumuşatması)
+      const pay = 0.02;
+      expect(Math.abs(x0 / s - x) / w, `${ad} x`).toBeLessThan(pay);
+      expect(Math.abs(y0 / s - y) / hh, `${ad} y`).toBeLessThan(pay);
+      expect(Math.abs((x1 + 1) / s - (x + w)) / w, `${ad} sağ`).toBeLessThan(pay);
+      expect(Math.abs((y1 + 1) / s - (y + hh)) / hh, `${ad} alt`).toBeLessThan(pay);
+    }
+  });
   it('çizim kutusu tuvalin içinde', () => {
     for (const [ad, [W, H, x, y, w, h]] of Object.entries(CIZIM_KUTUSU)) {
       expect(x >= 0 && y >= 0 && w > 0 && h > 0, ad).toBe(true);

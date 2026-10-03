@@ -5,7 +5,7 @@
  */
 import O from '../../../content/okul.json';
 import { h, TEST_MODU } from '../../../src/ui/dom';
-import { kurabiye, tabak } from '../cizim';
+import { cizimOrani, kurabiye, TABAK_YUZU, tabak } from '../cizim';
 import { oynat, tasi } from '../efekt';
 import { etkinlikKaydet } from '../etkinlik';
 import { Ipucu, type Sahne } from '../sahne';
@@ -14,45 +14,66 @@ import { ses } from '../sesler';
 
 const M = O.mino.hangisinde_cok;
 
+/** Tabak düğmesinin en/boy oranı: tabak (yandan, kırpılmış) altta, üstünde kurabiyelere yer */
+export const TABAK_KAP_ORAN = 2;
+
 /**
- * Kurabiyelerin tabaktaki yerleri (tabak kutusunun yüzdesi; tabak üstten yuvarlak). Kurabiyeler tabağın iç dairesine
- * halka (+ ortada bir-iki) dizilir; hepsi tabağın içinde, birbirine değmeden sayılabilir. c: kurabiye çapı (%).
+ * Tabağın düğme kutusundaki yeri (kutunun eni = 1): tabak kutunun altında, oranı korunur. ust: tabağın üst kenarı,
+ * boy: tabağın boyu, ic / dis: iç elips ve kenarın üst yüzü (cizim.ts → TABAK_YUZU) kutu ölçüsünde.
  */
-export function kurabiyeYerleri(n: number): { x: number; y: number; c: number }[] {
-  // iç daire yarıçapı (kutunun %'si): tabak kenarı %45'te, kurabiyeler kenarın biraz içinde
-  const P = 39;
-  // [halkadaki adet, ortadaki adet, kurabiye yarıçapı (iç daireye oranla)]
-  const plan: Record<number, [number, number, number]> = {
-    1: [0, 1, 0.42],
-    2: [2, 0, 0.42],
-    3: [3, 0, 0.44],
-    4: [4, 0, 0.4],
-    5: [5, 0, 0.36],
-    6: [5, 1, 0.33],
-    7: [6, 1, 0.32],
-    8: [7, 1, 0.29],
-    9: [8, 1, 0.27],
-    10: [8, 2, 0.25],
+export function tabakYeri() {
+  const H = 1 / TABAK_KAP_ORAN;
+  const boy = 1 / cizimOrani('okul/tabak');
+  const ust = H - boy;
+  const e = (k: { x: number; y: number; rx: number; ry: number }) => ({ x: k.x, y: ust + k.y * boy, rx: k.rx, ry: k.ry * boy });
+  return { H, ust, boy, ic: e(TABAK_YUZU.ic), dis: e(TABAK_YUZU.dis) };
+}
+
+/**
+ * Kurabiyelerin tabaktaki yerleri. Tabak yandan bakılan bir elips: kurabiyeler iç elipsin üstünde iki sıra (arka
+ * sıra biraz yukarıda, öndekilerin arasından ve biraz arkasından görünür; ön sıra tabağın ortasında); hepsi tabağın üstünde, sayılabilir (en çok %14
+ * üst üste). x: kutu eninin, y: kutu boyunun yüzdesi (kurabiyenin ortası); c: çap (enin %'si), ch: çap (boyun %'si).
+ */
+export function kurabiyeYerleri(n: number): { x: number; y: number; c: number; ch: number }[] {
+  const t = tabakYeri();
+  // [arka sıra, ön sıra]
+  const plan: Record<number, [number, number]> = {
+    1: [0, 1],
+    2: [0, 2],
+    3: [1, 2],
+    4: [2, 2],
+    5: [2, 3],
+    6: [3, 3],
+    7: [3, 4],
+    8: [4, 4],
+    9: [4, 5],
+    10: [5, 5],
   };
-  const [halka, orta, r] = plan[Math.max(1, Math.min(10, n))] ?? [n, 0, 0.25];
-  const R = 1 - r;
-  const yer: { x: number; y: number; c: number }[] = [];
-  const c = 2 * r * P;
-  if (orta === 1) yer.push({ x: 50, y: 50, c });
-  if (orta === 2) yer.push({ x: 50 - r * P, y: 50, c }, { x: 50 + r * P, y: 50, c });
-  const kay = halka === 8 && orta === 2 ? Math.PI / 8 : halka === 2 ? 0 : -Math.PI / 2;
-  for (let i = 0; i < halka; i++) {
-    const a = kay + (i / halka) * Math.PI * 2;
-    yer.push({ x: 50 + Math.cos(a) * R * P, y: 50 + Math.sin(a) * R * P, c });
-  }
-  return yer;
+  const k = Math.max(1, Math.min(10, Math.round(n)));
+  const [arka, on] = plan[k];
+  const enCok = Math.max(arka, on);
+  // kurabiye çapı (kutu eninin oranı) ve aralık
+  const c = Math.min(0.22, 0.78 / (enCok * 1.06));
+  const ara = c * 1.06;
+  // eşit sıralar yarım aralık kaydırılır: arka sıradakiler öndekilerin arasından görünür
+  const kay = arka === on ? ara / 4 : 0;
+  const yOn = t.ic.y - c * 0.12;
+  const yArka = yOn - c * 0.7;
+  const yer: { x: number; y: number; c: number; ch: number }[] = [];
+  const sira = (adet: number, y: number, dx: number) => {
+    for (let i = 0; i < adet; i++) yer.push({ x: 0.5 + (i - (adet - 1) / 2) * ara + dx, y, c, ch: c });
+  };
+  // önce arka sıra (öndekiler üstte çizilir)
+  sira(arka, yArka, kay);
+  sira(on, yOn, -kay);
+  return yer.map((p) => ({ x: p.x * 100, y: (p.y / t.H) * 100, c: p.c * 100, ch: (p.ch / t.H) * 100 }));
 }
 
 function tabakEl(taraf: 'sol' | 'sag', adet: number, buyuk: boolean): HTMLButtonElement {
   const yerler = kurabiyeYerleri(adet);
   const kurabiyeler = Array.from({ length: adet }, (_, i) => {
     const y = yerler[i];
-    return h('i.ok-kurabiye', { style: `--k:${i};--d:${((i * 47) % 20) - 10}deg;--x:${y.x.toFixed(2)}%;--y:${y.y.toFixed(2)}%;--c:${y.c.toFixed(2)}%`, html: kurabiye() });
+    return h('i.ok-kurabiye', { style: `--k:${i};--d:${((i * 47) % 20) - 10}deg;--x:${y.x.toFixed(2)}%;--y:${y.y.toFixed(2)}%;--c:${y.c.toFixed(2)}%;--ch:${y.ch.toFixed(2)}%`, html: kurabiye() });
   });
   return h(
     `button.ok-tabak${buyuk ? '.ok-buyuk' : ''}`,
