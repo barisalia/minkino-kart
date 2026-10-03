@@ -15,6 +15,16 @@ export interface Konum {
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
+/**
+ * Yatay ekranın yan dolgusu (macera.css → .mc-yan-dolgu): sahne ortada dikey bir bantta oynar, iki yanda oda görünür.
+ * Odanın geniş çizimi (genis: ör. parti-sahne/oda-genis, banyo/arkaplan-genis) klasördeyse yanlar gerçek oda olur;
+ * yoksa sahnenin kendi resminin bulanık devamı. Adresler: genisUrl / darUrl ('' = yok).
+ */
+export function yanDolgu(darUrl: string, genisUrl: string): HTMLElement {
+  const url = genisUrl || darUrl;
+  return h(`div.mc-yan-dolgu${genisUrl ? '.mc-yan-genis' : ''}`, { 'aria-hidden': 'true', style: `--resim:${url ? `url("${url}")` : 'none'}` });
+}
+
 export class Sahne {
   readonly el: HTMLElement;
   readonly dunya: HTMLElement;

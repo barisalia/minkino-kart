@@ -26,7 +26,7 @@ import { SessizlikSayaci, type Ozellik } from '../../ses-testi/src/analiz';
 import { Alkis } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import type { BolumArayuz } from './dogumgunu';
-import { Sahne } from './sahne';
+import { Sahne, yanDolgu } from './sahne';
 import { adres } from './gorsel';
 import { Kisi } from './banyo-karakter';
 import { SesSeviyesi } from './ege-seviye';
@@ -122,8 +122,9 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const sahne = new Sahne('parti-sahne/oda');
   sahne.el.classList.add('el-sahne');
   kok.append(sahne.el);
-  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın bulanık devamı (macera.css → .mc-yan-dolgu), karanlıkta kararır
-  kok.prepend(h('div.mc-yan-dolgu', { 'aria-hidden': 'true', style: `--resim:url("${adres('parti-sahne/oda')}")` }));
+  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın geniş çizimi (yoksa bulanık devamı; sahne.ts →
+  // yanDolgu), karanlıkta kararır
+  kok.prepend(yanDolgu(adres('parti-sahne/oda'), adres('parti-sahne/oda-genis')));
   const W = sahne.el.clientWidth || innerWidth;
   const H = sahne.el.clientHeight || innerHeight;
   /** Yatay ekranda dünya kare: arka plan resminin tamamı (pencere dahil) dünyada; kamera aşağıdan başlar */
