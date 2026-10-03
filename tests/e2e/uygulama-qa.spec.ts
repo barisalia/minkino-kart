@@ -80,3 +80,26 @@ test('QA: menüden açılan oyundan "Minkino’ya dön" menüye döner, geçmiş
   expect(dis).toEqual([]);
   expect(sorunlar).toEqual([]);
 });
+
+test('QA Çiz Canlansın: "Kartım" penceresi yatay telefonda sığar, "Tamam" ekranda', async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('./canlan/?test=1');
+  await expect(page.locator('.cc-kok')).toBeVisible();
+  // kart resmi 480×600 (dikey); eskiden pencere ekrandan taşıyor, "Tamam"a basılamıyordu
+  await page.evaluate(() => {
+    const c = document.createElement('canvas');
+    c.width = 480;
+    c.height = 600;
+    const perde = document.createElement('div');
+    perde.className = 'perde';
+    perde.innerHTML = `<div class="pencere cc-kart-pencere"><img alt="Resim kartım" src="${c.toDataURL()}"><p>Resmi basılı tutup kaydedebilirsin.</p><button class="dugme" type="button">Tamam</button></div>`;
+    document.querySelector('.cc-kok')!.append(perde);
+  });
+  const tamam = (await page.locator('.cc-kart-pencere button').boundingBox())!;
+  expect(tamam.y + tamam.height).toBeLessThanOrEqual(390);
+  expect(tamam.y).toBeGreaterThanOrEqual(0);
+  const resim = (await page.locator('.cc-kart-pencere img').boundingBox())!;
+  expect(resim.y + resim.height).toBeLessThanOrEqual(390);
+  expect(resim.height).toBeGreaterThan(200);
+  await page.screenshot({ path: 'tests/screens/qa-canlan-kart-yatay-sonra.png' });
+});
