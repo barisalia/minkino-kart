@@ -23,9 +23,8 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await page.goto('./?test=1&uygulama=android');
   await expect(page.locator('.ug-menu .mino svg')).toBeVisible();
 
-  // uygulamada Minik Sanatçı yok; abonelikli oyunlarda kilit, ücretsizlerde (Kartlar) ve bölümlü oyunlarda (macera, film) yok
-  await expect(page.locator('.ug-kart')).toHaveCount(6);
-  await expect(page.locator('.ug-kart[data-oyun="sanatci"]')).toHaveCount(0);
+  // 7 kart; abonelikli oyunlarda kilit, ücretsizlerde (Kartlar) ve bölümlü oyunlarda (macera, film) yok
+  await expect(page.locator('.ug-kart')).toHaveCount(7);
   for (const id of ['pazar', 'canlan', 'pasta']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`), id).toBeVisible();
   for (const id of ['kartlar', 'macera', 'film']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`), id).toHaveCount(0);
   // ızgara boşluksuz, kartlar ekranda
@@ -61,8 +60,8 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   const ab = page.locator('.ab-perde');
   await expect(ab).toBeVisible();
   await expect(ab).toHaveAttribute('data-durum', 'hazir');
-  await expect(ab.locator('.ab-mino .mino svg')).toBeVisible();
-  await expect(ab.locator('.ab-kino .kr-karakter')).toBeVisible();
+  // Mino ve Kino: Gemini kahraman görseli varsa o, yoksa canlı karakterler
+  await expect(ab.locator('.ab-kahraman img, .ab-mino .mino svg').first()).toBeVisible();
   await expect(ab.locator('.ab-baslik')).toHaveText('Minkino Premium');
   await expect(ab.locator('.ab-not')).toHaveText('Bu ekran büyükler içindir.');
   await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('₺99,00');
@@ -74,7 +73,7 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺499,00 / yıl');
   await expect(ab.getByRole('button', { name: 'Satın alımları geri yükle' })).toBeEnabled();
   // Android: Google Play'in otomatik yenileme metni; gizlilik ve koşullar web sitesinde
-  await expect(ab.locator('.ab-yasal')).toContainText('Google Play');
+  await expect(ab.locator('.ab-yasal').first()).toContainText('Google Play');
   await expect(ab.getByRole('link', { name: 'Gizlilik politikası' })).toHaveAttribute('href', /\/gizlilik\/$/);
   await expect(ab.getByRole('link', { name: 'Kullanım koşulları' })).toHaveAttribute('href', /\/sartlar\/$/);
   await page.waitForTimeout(400);
@@ -129,7 +128,7 @@ test('Uygulama: macera ve çizgi filmlerde ücretsiz bölüm açık, diğerleri 
   await expect(page.locator('.ebeveyn-kapisi')).toBeVisible();
   await kapiyiGec(page);
   // iOS: Apple'ın zorunlu yenileme metni
-  await expect(page.locator('.ab-yasal')).toContainText('Apple Kimliği');
+  await expect(page.locator('.ab-yasal').first()).toContainText('Apple Kimliği');
   await page.locator('.ab-perde').getByRole('button', { name: 'Kapat', exact: true }).click();
   await expect(page.locator('.ab-perde')).toHaveCount(0);
   await page.locator('.fl-film-kart[data-film="mino-karpuz"]').click();
@@ -162,7 +161,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
 
   // önceden abone (mağaza "premium" diyor): hiç kilit yok
   await page.goto('./?test=1&uygulama=ios&premium=1');
-  await expect(page.locator('.ug-kart')).toHaveCount(6);
+  await expect(page.locator('.ug-kart')).toHaveCount(7);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   expect(hatalar).toEqual([]);
 });
@@ -170,7 +169,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
 test('Uygulama, anahtar yok: kilit yok, abonelik ekranı "yakında" (çökmez)', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1&uygulama=ios&anahtar=yok');
-  await expect(page.locator('.ug-kart')).toHaveCount(6);
+  await expect(page.locator('.ug-kart')).toHaveCount(7);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   // ebeveyn köşesi → abonelik
   await page.locator('.ug-kapi').click();
@@ -181,13 +180,14 @@ test('Uygulama, anahtar yok: kilit yok, abonelik ekranı "yakında" (çökmez)',
   await expect(ab).toHaveAttribute('data-durum', 'yakinda');
   await expect(ab.locator('.ab-basla')).toHaveText('Yakında');
   await expect(ab.locator('.ab-basla')).toBeDisabled();
-  await expect(ab.locator('.ab-fiyat b').first()).toHaveText('—');
+  // mağaza yokken yedek fiyat (bilgi), deneme yazısı
+  await expect(ab.locator('.ab-fiyat b').first()).toHaveText('99 TL');
   await page.waitForTimeout(300);
   await page.screenshot({ path: ekran('uygulama-abonelik-yakinda', info.project.name) });
   expect(hatalar).toEqual([]);
 });
 
-test('Web sitesi: kilit yok, abonelik yok, Minik Sanatçı var', async ({ page }) => {
+test('Web sitesi: kilit yok, abonelik yok, 7 kart', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
   await expect(page.locator('.ug-kart')).toHaveCount(7);

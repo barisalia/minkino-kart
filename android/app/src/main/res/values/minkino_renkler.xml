@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Açılış zemini: capacitor.config.ts backgroundColor, ana menü ve açılış görseliyle aynı krem -->
+    <color name="minkino_krem">#FFF4DD</color>
+</resources>

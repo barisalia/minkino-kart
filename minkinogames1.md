@@ -12,13 +12,12 @@ Oturumlar arası karar defteri: [ORTAK_NOTLAR.md](ORTAK_NOTLAR.md) (yalnızca en
 | Uygulama | Klasör | Ne |
 |---|---|---|
 | Minkino Kartlar (+ Mino kedi) | `kartlar/index.html` (/kartlar/), `src/` | Sesli kart oyunu: 6 soru tipi, yaş × tema, albüm; Mino konuşan kedi |
-| Minik Sanatçı | `sanatci/` | Çocuk karalar → yapay zekâ "sihir" ile resme dönüşür (Cloudflare Worker `sunucu/sihir`) |
 | Çiz Canlansın | `canlan/` | Resmi çiz, puan al, çizim canlanır (3 yaş iz, 4 nokta, 5 kopya, 6 hafıza) |
 | Mikrofon testi | `ses-testi/` | Uyuyan Orman'ın ses analizinin deneme sayfası (üfleme, ince-kalın, alkış, ses şekli, sessizlik) |
 | **Uyuyan Orman** | `orman/` | Sesle/nefesle/alkışla oynanan orman: 6 bölge × yaşa göre 3 görev, harita, şenlik, Nefes Balonu, Papağan, Birlikte çal |
 
 **Canlı adresler** (her push'ta otomatik yayınlanır):
-- https://minkino-site.barisalidogan.workers.dev/ → kök (/) ana menü (`index.html` + `uygulama/src`); `/kartlar/`, `/pazar/`, `/canlan/`, `/sanatci/`, `/macera/`, `/film/`, `/orman/`, `/ses-testi/` (eski `/uygulama/` köke yönlenir)
+- https://minkino-site.barisalidogan.workers.dev/ → kök (/) ana menü (`index.html` + `uygulama/src`); `/kartlar/`, `/pazar/`, `/canlan/`, `/macera/`, `/film/`, `/orman/`, `/ses-testi/` (eski `/uygulama/` köke yönlenir)
 - GitHub Pages (`https://barisalia.github.io/minkino-kart/`) repoda henüz **kapalı**. Açmak için: Settings → Pages → Branch `gh-pages` → Save.
 
 ## 2. Çalıştırma
@@ -76,7 +75,7 @@ Barış'ın kuralı: **2D vektör, yüksek kalite, premium glossy cartoon, çocu
 ## 6. Sunucu ve yayın
 
 - `yayinla.yml` (her push): Recraft indir → eksik seslendirme/efekt → birim testleri → build → Cloudflare'e (`sunucu/site`, `minkino-site`) ve `gh-pages`'e yayın. Üretilen dosyaları repoya `[skip ci]` commit'iyle geri yazar, bu yüzden push'tan önce `git pull` yapın.
-- `sunucu.yml`: Minik Sanatçı'nın sihir Worker'ı (`sunucu/sihir`, Workers AI `flux-2-klein-4b`, günlük ücretsiz kota ~90 resim).
+- `sunucu.yml`: eski Minik Sanatçı'nın sihir Worker'ı (`sunucu/sihir`). Minik Sanatçı 2026-10-03 kaldırıldı; Worker'ı artık hiçbir oyun kullanmıyor (kod duruyor; Cloudflare'deki Worker'ı Barış silebilir).
 - GitHub secret adları: `ELEVENLABS_API_KEY`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, (isteğe bağlı) `GEMINI_API_KEY`, `RECRAFT_API_KEY`.
 
 ## 7. Güvenlik

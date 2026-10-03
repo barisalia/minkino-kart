@@ -4,7 +4,6 @@
 
 **Canlı sürümler (telefonda aç):**
 - Kart oyunu (+ Mino): https://barisalia.github.io/minkino-kart/
-- Minik Sanatçı: https://barisalia.github.io/minkino-kart/sanatci/
 - Çiz Canlansın: https://barisalia.github.io/minkino-kart/canlan/
 - Mikrofon testi (Uyuyan Orman ön denemesi): https://barisalia.github.io/minkino-kart/ses-testi/
 - Sesli Maceralar (hikâyeli ses oyunu; bölüm 1: Ada'nın Doğum Günü): https://minkino-site.barisalidogan.workers.dev/macera/

@@ -54,6 +54,7 @@ export const CIZIM: Record<string, Cizim> = {
   ordek: K(92, 1982),
   'ordek-profil': K(92, 2006),
   ayi: K(312, 1880),
+  'ayi-profil': K(390, 1890),
   inek: K(136, 1914),
   kus: K(142, 1906),
   maymun: K(88, 1954),

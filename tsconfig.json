@@ -12,5 +12,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "tests/unit", "sanatci/src", "canlan/src", "ses-testi/src", "orman/src", "macera/src", "pazar/src", "pasta/src", "okul/src", "film/src", "uygulama/src"]
+  "include": ["src", "tests/unit", "canlan/src", "ses-testi/src", "orman/src", "macera/src", "pazar/src", "pasta/src", "okul/src", "film/src", "uygulama/src"]
 }

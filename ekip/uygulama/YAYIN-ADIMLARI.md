@@ -15,7 +15,7 @@ Sıra önemli; her adımın yanında yaklaşık süresi var.
 |---|---|
 | Uygulama kimliği | `com.minkino.app`, adı **Minkino** |
 | Uygulama derlemesi | `npm run build:app` (web sitesi `npm run build` aynen duruyor) |
-| Uygulamada olmayanlar | Mikrofon testi, Uyuyan Orman, **Minik Sanatçı** (çocuk çizimi dış sunucuya gittiği için; web sitesinde duruyor) |
+| Uygulamada olmayanlar | Mikrofon testi, Uyuyan Orman (Minik Sanatçı 2026-10-03 tamamen kaldırıldı) |
 | Ücretsiz | Kartlar · Çizgi Filmler'den "Mino'nun Karpuzu" · Sesli Maceralar'dan "Elektrikler Kesildi!" (tek tablo: `src/engine/erisim.ts`) |
 | Abonelikle | Gerisi (Pazar, Çiz Canlansın, Pasta Otobüsü, diğer maceralar ve filmler) |
 | Abonelik | RevenueCat; yetki adı `premium`; ürünler `minkino_aylik`, `minkino_yillik` |
@@ -75,6 +75,7 @@ Kişisel geliştirici hesabı olduğu için Google, üretime çıkmadan önce **
 1. **Play Console → Uygulama oluştur**: ad "Minkino", dil Türkçe, Uygulama, Ücretsiz (abonelik uygulama içi satıştır), beyanlar.
 2. **Uygulama içeriği** (sol menü "Politika ve programlar → Uygulama içeriği"):
    - Gizlilik politikası: `https://minkino-site.barisalidogan.workers.dev/gizlilik/`
+   - **İletişim e-postası** (Ana sayfa → Mağaza girişi → Mağaza ayarları → İletişim bilgileri → E-posta): `minkinokids@gmail.com`
    - Reklamlar: **Hayır**.
    - Hedef kitle: **5 yaş ve altı, 6-8** (3-6 yaş için) → "Aileler" politikası uygulanır. Uygulama çocuklara yönelik.
    - Veri güvenliği: **Veri toplanmıyor / paylaşılmıyor.** (Mikrofon sesi cihazda anlık işlenir, cihazdan çıkmaz; satın alma Google Play üzerinden. RevenueCat anonim kimliği satın alma doğrulaması içindir.) Formda "Ses kayıtları" toplanmıyor işaretlenir.
@@ -105,7 +106,8 @@ Debug APK (Artifacts → minkino-debug-apk-N) Play'siz hızlı deneme içindir: 
 6. Codemagic → **Environment variables** → grup `revenuecat` → `REVENUECAT_IOS_KEY` (RevenueCat iOS public anahtarı; yoksa grup yine olsun, değer sonra girilebilir).
 7. **Start new build → ios-testflight**. Bitince IPA otomatik TestFlight'a yüklenir.
 8. App Store Connect → **TestFlight**: kendini "Dahili test" grubuna ekle, iPhone'a TestFlight uygulamasıyla kur.
-9. App Store'a gönderirken: Kategori **Eğitim**, "Çocuklar" bölümü **5 yaş ve altı / 6-8**; Gizlilik etiketi: **Veri toplanmıyor**; gizlilik URL'si ve kullanım koşulları URL'si (yukarıdaki adresler) açıklamaya ve uygulama bilgilerine. Abonelik açıklamasındaki otomatik yenileme metni MAGAZA-METINLERI §7'de.
+9. App Store Connect → **App Review bilgileri → İletişim e-postası**: `minkinokids@gmail.com`. **Destek URL**'si olarak gizlilik sayfası verilebilir (e-posta orada yazılı).
+10. App Store'a gönderirken: Kategori **Eğitim**, "Çocuklar" bölümü **5 yaş ve altı / 6-8**; Gizlilik etiketi: **Veri toplanmıyor**; gizlilik URL'si ve kullanım koşulları URL'si (yukarıdaki adresler) açıklamaya ve uygulama bilgilerine. Abonelik açıklamasındaki otomatik yenileme metni MAGAZA-METINLERI §7'de.
 
 ---
 
@@ -120,6 +122,5 @@ Debug APK (Artifacts → minkino-debug-apk-N) Play'siz hızlı deneme içindir: 
 
 ## 6. Eksikler / dikkat
 
-- **İkon ve açılış görseli:** şu an Capacitor'ın varsayılan ikonu duruyor. Tasarımcıdan 1024×1024 Minkino ikonu (köşesiz, şeffafsız) ve 2732×2732 açılış görseli gerekir; gelince kodcu `npx @capacitor/assets generate` ile yerleştirir.
-- **Minik Sanatçı web sitesinde:** gizlilik politikası "çizim yalnız ebeveyn onayıyla gönderilir" diyor; sitede bu onay şu an kapalı (`sanatci/src/ekranlar.ts` → `EBEVEYN_KAPISI = false`). Politika doğru olsun diye açılması gerekir (senin kararın).
+- **İkon ve açılış görseli:** yerinde. Açılış görseli tasarımcının `assets/uygulama/splash.png`'sinden `node scripts/uygulama/acilis-gorseli.mjs` ile android/ ve ios/ altına üretildi (krem zemin #FFF4DD, ortada Mino-Kino + logo; Android 12+ sistem açılışında ikon krem zemin üstünde).
 - **Gerçek cihaz denemesi:** iPhone ve Android'de mikrofon (üfleme, alkış), ses (hoparlörden mi), film yatay kilidi, arka plana alıp geri dönme, uçak modunda açılış, satın alma (lisans testi / sandbox).

@@ -13,7 +13,7 @@ import { efekt } from '../audio/ses';
 import { premiumAyarla, premiumMu } from '../engine/erisim';
 import { Karakter } from '../karakter/karakter';
 import { Mino } from '../mino/mino';
-import { GIZLILIK_ADRESI, SARTLAR_ADRESI } from '../kabuk/ayar';
+import { GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../kabuk/ayar';
 import { uygulamaPlatformu } from '../kabuk/ortam';
 import { ebeveynKapisiAc } from '../ui/ebeveyn-kapisi';
 import { h, sure, svg } from '../ui/dom';
@@ -28,11 +28,38 @@ export const YENILEME_METNI = {
     'Abonelik, iptal edilene kadar her dönem sonunda otomatik olarak yenilenir ve ücret Google Play hesabınızdan alınır. Ücretsiz deneme bitmeden iptal ederseniz ücret alınmaz. Aboneliğinizi istediğiniz zaman Google Play > Ödemeler ve abonelikler bölümünden yönetebilir ya da iptal edebilirsiniz.',
 } as const;
 
-/** Premium'la açılanlar (Kartlar zaten ücretsiz; bkz. src/engine/erisim.ts) */
-const ACILANLAR = ['Tüm Sesli Maceralar', 'Bütün çizgi filmler', 'Mino’nun Pazarı, Çiz Canlansın ve Pasta Otobüsü', 'Yeni bölümler geldikçe'];
+/** Aynı metinlerin İngilizcesi (MAGAZA-METINLERI.md §7): inceleme ekipleri için Türkçenin altında küçük yazıyla */
+export const YENILEME_METNI_EN = {
+  ios: 'Payment will be charged to your Apple ID account at confirmation of purchase. The subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your App Store account settings after purchase. Any unused portion of a free trial period will be forfeited when you purchase a subscription.',
+  android:
+    "Your subscription renews automatically at the end of each period until cancelled, and you will be charged through your Google Play account. If you cancel before the free trial ends, you won't be charged. You can manage or cancel your subscription anytime in Google Play > Payments & subscriptions.",
+} as const;
+
+/** Premium'la açılanlar (Kartlar zaten ücretsiz; bkz. src/engine/erisim.ts): ikon + renk + metin */
+const ACILANLAR: { ikon: keyof typeof IKON; renk: string; yazi: string }[] = [
+  { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Tüm Sesli Maceralar' },
+  { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Bütün çizgi filmler' },
+  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: 'Pazar, Pasta Otobüsü, Çiz Canlansın, Okula Hazırım' },
+  { ikon: 'sihir', renk: 'var(--mor)', yazi: 'Yeni bölümler geldikçe' },
+  { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Reklam yok, güvenli' },
+];
 
 const DONEM: Record<PlanId, string> = { aylik: 'ay', yillik: 'yıl' };
 const PLAN_AD: Record<PlanId, string> = { aylik: 'Aylık', yillik: 'Yıllık' };
+/**
+ * Mağaza yokken (anahtar yok, web) ya da mağazaya ulaşılamazken gösterilen fiyat (Barış'ın fiyatları, Türkiye).
+ * Satın alma her zaman mağazanın kendi fiyatıyla olur; bu yalnız bilgi.
+ */
+export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '99 TL', yillik: '499 TL' };
+const YEDEK_DENEME_GUN = 7;
+
+/**
+ * Kahraman görseli yuvası: assets/uygulama/abonelik-kahraman.webp (16:9; Mino ve Kino solda el sallar, yıldız ve
+ * konfeti; orta ve sağ boş). Dosya gelince kendiliğinden kullanılır; yoksa canlı Mino ve Kino (bugünkü hâl).
+ */
+const KAHRAMAN = Object.values(
+  import.meta.glob<string>('../../assets/uygulama/abonelik-kahraman.webp', { eager: true, query: '?url', import: 'default' }),
+)[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -106,11 +133,17 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         b.classList.toggle('secili', id === secili);
         b.setAttribute('aria-checked', String(id === secili));
         b.classList.toggle('bos', !v);
-        b.querySelector('.ab-fiyat b')!.textContent = v?.fiyat ?? '—';
+        // mağaza fiyatı; yoksa (anahtarsız / mağazaya ulaşılamıyor) yedek fiyat bilgi olarak
+        const fiyat = v?.fiyat ?? YEDEK_FIYAT[id];
+        b.querySelector('.ab-fiyat b')!.textContent = !v && el.dataset.durum === 'yukleniyor' ? '…' : fiyat;
         b.querySelector('.ab-aybasi')!.textContent = v?.ayBasi ? `ayda ${v.ayBasi}` : '';
-        b.setAttribute('aria-label', v ? `${PLAN_AD[id]}: ${v.fiyat} / ${DONEM[id]}` : PLAN_AD[id]);
+        b.setAttribute('aria-label', `${PLAN_AD[id]}: ${fiyat} / ${DONEM[id]}`);
       }
-      if (!p) return;
+      if (!p) {
+        deneme.textContent = `${YEDEK_DENEME_GUN} gün ücretsiz deneme`;
+        deneme.hidden = false;
+        return;
+      }
       const gun = p.denemeGun;
       deneme.textContent = gun ? `${gun} gün ücretsiz dene` : '';
       deneme.hidden = !gun;
@@ -122,7 +155,6 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     const yakinda = () => {
       el.dataset.durum = 'yakinda';
       planGoster();
-      deneme.hidden = true;
       basla.textContent = 'Yakında';
       basla.setAttribute('disabled', '');
       geriYukle.setAttribute('disabled', '');
@@ -146,6 +178,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         planGoster();
       } catch {
         el.dataset.durum = 'hata';
+        planGoster();
         durumYazi.textContent = 'Mağazaya şu an ulaşılamıyor. İnternet bağlantınızı kontrol edip tekrar deneyin.';
         tekrarDene.hidden = false;
         geriYukle.removeAttribute('disabled');
@@ -205,13 +238,14 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     };
 
     // ---------------------------------------------------------------- ekran
-    const baglanti = (adres: string, yazi: string) => h('a.ab-baglanti', { href: adres, target: '_blank', rel: 'noopener noreferrer' }, yazi);
+    const baglanti = (adres: string, yazi: string, en: string) =>
+      h('a.ab-baglanti', { href: adres, target: '_blank', rel: 'noopener noreferrer' }, yazi, h('small', { lang: 'en' }, en));
     const kartIc = h(
       'div.ab-kart-ic',
       {},
       h('h1.ab-baslik', {}, svg(IKON.tac, 'ab-tac'), 'Minkino Premium'),
       h('p.ab-alt', {}, 'Bütün oyunlar, maceralar ve filmler.'),
-      h('ul.ab-liste', {}, ...ACILANLAR.map((m) => h('li', {}, svg(IKON.onay, 'ab-tik'), m))),
+      h('ul.ab-liste', {}, ...ACILANLAR.map((m) => h('li', { style: `--r:${m.renk}` }, svg(IKON[m.ikon], `ab-tik ab-tik-${m.ikon}`), m.yazi))),
       planKutu,
       deneme,
       basla,
@@ -220,7 +254,15 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       tekrarDene,
       geriYukle,
       h('p.ab-yasal', {}, YENILEME_METNI[platform]),
-      h('p.ab-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), h('span', { 'aria-hidden': 'true' }, ' · '), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),
+      h('p.ab-yasal.ab-yasal-en', { lang: 'en' }, YENILEME_METNI_EN[platform]),
+      h(
+        'p.ab-baglantilar',
+        {},
+        baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası', 'Privacy Policy'),
+        h('span', { 'aria-hidden': 'true' }, ' · '),
+        baglanti(SARTLAR_ADRESI, 'Kullanım koşulları', 'Terms of Use'),
+      ),
+      h('p.ab-iletisim', {}, 'Bize yazın: ', h('a', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
     );
     const kapatDugme = yuvarlakDugme(IKON.kapat, 'Kapat', () => kapat(), 'kucuk ab-kapat');
     const el = h(
@@ -231,7 +273,9 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         'div.ab-ic',
         {},
         h('div.ab-ust', {}, kapatDugme, h('span.ab-not', {}, 'Bu ekran büyükler içindir.')),
-        h('div.ab-ikili', {}, minoKap, kinoKap),
+        KAHRAMAN
+          ? h('div.ab-kahraman', { 'aria-hidden': 'true' }, h('img', { src: KAHRAMAN, alt: '', draggable: 'false', decoding: 'async' }))
+          : h('div.ab-ikili', {}, minoKap, kinoKap),
         h('div.ab-kart', {}, kartIc),
       ),
     );

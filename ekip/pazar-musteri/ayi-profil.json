@@ -1,0 +1,62 @@
+﻿{
+    "ad":  "ayi-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "kafa",
+                 "kulak-on",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-on":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1030,
+                               1190
+                           ],
+                  "kulak-on":  [
+                                   790,
+                                   700
+                               ],
+                  "goz":  [
+                              1195,
+                              860
+                          ],
+                  "agiz":  [
+                               1350,
+                               1030
+                           ],
+                  "goz-kapali":  [
+                                     1195,
+                                     868
+                                 ],
+                  "kol-on":  [
+                                 925,
+                                 1290
+                             ],
+                  "bacak-on":  [
+                                   910,
+                                   1665
+                               ],
+                  "bacak-arka":  [
+                                     1125,
+                                     1665
+                                 ],
+                  "govde":  [
+                                980,
+                                1900
+                            ]
+              }
+}
