@@ -39,11 +39,17 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Mikrofon: sesle oynanan görevler (ses kaydedilmez, cihazda anlık işlenir). WebView isteği BridgeWebChromeClient'ta izne bağlanır. -->
+    <!-- Mikrofon: bazı oyunlarda üfleme, ses ve alkış algılama. Ses yalnız cihazda anlık işlenir; kaydedilmez,
+         saklanmaz, gönderilmez. İzin istenmeden önce büyüklere açıklama gösterilir (Sesli Maceralar "Büyükler için").
+         Microphone: blowing, voice and clap detection in some games, processed on-device only; audio is never
+         recorded, stored or uploaded. WebView isteği BridgeWebChromeClient'ta izne bağlanır. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- Çocuk uygulaması: reklam kimliği hiçbir kütüphaneden pakete girmesin (Aileler politikası) -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
     <!-- Mikrofonu olmayan cihazlar da kurabilsin (her görev dokunarak da oynanır) -->
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <!-- Google Play Aileler politikası: çocuklara yönelik uygulama reklam kimliği (AAID) kullanmaz. Bir kütüphane
+         eklemeye çalışsa da birleştirmede kaldırılır. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 </manifest>

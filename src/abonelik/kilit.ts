@@ -1,5 +1,6 @@
 /**
- * Kilitli kart / bölüm: köşede kilit rozeti; dokununca ebeveyn kapısı → abonelik ekranı.
+ * Kilitli kart / bölüm: köşede küçük kilit rozeti; dokununca çocuğa kilit anı ("Bunu anne-babanla açabilirsin";
+ * src/abonelik/kilit-ani.ts), oradan yalnız "Büyükler için" düğmesiyle ebeveyn kapısı → abonelik ekranı.
  * Kilitler yalnız uygulamada (anahtar varken) etkin; web sitesinde hiçbir şey kilitlenmez (src/engine/erisim.ts).
  */
 import './abonelik.css';
@@ -32,7 +33,8 @@ export function kilitleriKur(kartlar: [HTMLElement, string, HTMLElement?][]): ()
 }
 
 /**
- * Kilitliyse ebeveyn kapısı + abonelik ekranını açar ve false döner (çağıran içerik açmaz); açıksa true.
+ * Kilitliyse kilit anını (→ büyükler için ebeveyn kapısı → abonelik) açar ve false döner (çağıran içerik açmaz);
+ * açıksa true.
  * Abonelik alınırsa rozetler kendiliğinden kalkar; çocuk karta yeniden dokunur.
  */
 export function erisimVarMi(id: string, kok: HTMLElement): boolean {

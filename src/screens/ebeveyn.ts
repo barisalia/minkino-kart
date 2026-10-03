@@ -144,7 +144,7 @@ export function ebeveynEkrani(app: Uygulama): Ekran {
         'section.panel',
         {},
         h('h2', {}, 'Gizlilik ve güvenlik'),
-        h('p', {}, 'Reklam yok. Dış bağlantı yok. Çocuğunuzdan hiçbir veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. İnternet bağlantısı gerekmez.'),
+        h('p', {}, 'Reklam yok. Çocuğunuzdan hiçbir veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Kartlar internetsiz oynanır. Satın alma ve dış bağlantılar ebeveyn kapısının arkasındadır.'),
       ),
       h('section.panel', {}, h('h2', {}, 'Veriler'), sifirlaDugme, cikis ? h('button.ince-dugme', { type: 'button', style: 'margin-left:8px', onclick: () => cikis() }, 'Minkino’ya dön') : null),
       h('div.dipnot', {}, `Minkino Kartlar · sürüm ${SURUM}`),

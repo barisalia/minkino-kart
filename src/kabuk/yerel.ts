@@ -130,14 +130,14 @@ function kabuguKur() {
   void App.addListener('appStateChange', ({ isActive }) => arkaPlan(!isActive));
 
   // ---------------------------------------------------------------- Android geri tuşu
-  // Açık pencere (ebeveyn kapısı, abonelik) kapanır; sayfa kendi işleyebilir (menüde Ebeveyn Köşesi → menü);
+  // Açık pencere (kilit anı, ebeveyn kapısı, abonelik) kapanır; sayfa kendi işleyebilir (menüde Ebeveyn Köşesi → menü);
   // oyundan ana menüye dönülür; yalnız ana menüde uygulamadan çıkılır. (Dinleyici varken WebView'ın kendi geri
   // davranışı çalışmaz: geçmişte geri gidip aynı oyunu yeniden açmak yok.)
   let gidiliyor = false;
   window.addEventListener('pageshow', () => (gidiliyor = false));
   void App.addListener('backButton', () => {
     if (gidiliyor) return;
-    const pencereAcik = !!document.querySelector('.kapi-perde, .ab-perde:not(.cikiyor)');
+    const pencereAcik = !!document.querySelector('.kapi-perde, .ab-perde:not(.cikiyor), .kl-perde:not(.cikiyor)');
     const sayfaIsledi = !pencereAcik && !window.dispatchEvent(new CustomEvent(GERI_OLAYI, { cancelable: true }));
     const karar = geriKarari({ pencereAcik, sayfaIsledi, menude: menuSayfasiMi(location.pathname) });
     if (karar === 'pencere') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
