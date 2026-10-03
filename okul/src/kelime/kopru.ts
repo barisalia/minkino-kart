@@ -289,7 +289,11 @@ export function kopruEkrani(app: Uygulama): Ekran {
   }
 
   void (async () => {
-    await bekle(TEST_MODU ? 20 : 450);
+    // köprü görseli yüklenince sahne yumuşakça belirir, taşlar sırayla gelir (yarım çizim görünmez)
+    const kopruResim = sahne.querySelector<HTMLImageElement>('.ok-kp-kopru');
+    await Promise.race([kopruResim?.decode().catch(() => undefined), new Promise((r) => setTimeout(r, 1500))]);
+    sahne.classList.add('ok-kp-yuklendi');
+    await bekle(TEST_MODU ? 20 : 650);
     if (kapandi) return;
     if (yeni.length) {
       for (const id of yeni) {

@@ -29,7 +29,7 @@
   height: 100%;
 }
 .ok-kok .ok-k-gri {
-  filter: grayscale(1) brightness(1.5) contrast(1.08);
+  filter: grayscale(1) brightness(1.75) contrast(1.15);
 }
 .ok-kok .ok-k-renk {
   position: absolute;
@@ -273,8 +273,9 @@
 }
 .ok-kok .ok-k-pano {
   width: min(70cqw, 88cqh);
-  aspect-ratio: 1;
+  height: min(70cqw, 88cqh);
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
   padding: 7%;
   border-radius: 34px;
@@ -698,6 +699,16 @@
   width: min(100cqw, 140cqh);
   aspect-ratio: 440 / 300;
   container-type: inline-size;
+  opacity: 0;
+  scale: 0.96;
+  transition: opacity 0.45s ease-out, scale 0.6s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.ok-kok .ok-kp-sahne.ok-kp-yuklendi {
+  opacity: 1;
+  scale: 1;
+}
+.ok-kok .ok-kp-sahne:not(.ok-kp-yuklendi) .ok-kp-tas {
+  animation-play-state: paused;
 }
 @container kopru (orientation: portrait) {
   .ok-kok .ok-kp-sahne {

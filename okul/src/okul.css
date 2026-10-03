@@ -78,7 +78,7 @@
   }
 }
 
-.ok-kok .ekran > :not(.ok-park):not(.ok-efekt):not(.ok-rozet-katman) {
+.ok-kok .ekran > :not(.ok-park):not(.ok-efekt):not(.ok-rozet-katman):not(.konfeti) {
   position: relative;
   z-index: 1;
 }

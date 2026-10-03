@@ -1,5 +1,11 @@
 /* Kelime Köprüsü sahneleme (oyun gibi: göl, dere, çayır, yol). Yalnız transform / opacity, yaylı ivmeler. */
 
+/* sahnenin dışına uçan damla, Kino ya da uçan resim sayfayı genişletmesin (telefonda ekran küçülüp kaymasın) */
+.ok-kok .ok-etkinlik[data-etkinlik^='kelime-'],
+.ok-kok .ok-kopru-ekran {
+  overflow: clip;
+}
+
 /* sıçrayan damlacıklar (ortak.ts → sicrat) */
 .ok-kok .ok-k-damlacik {
   position: absolute;
@@ -162,6 +168,37 @@
 /* ---------------------------------------------------------------- 3 · Tersi: eşya gözümüzün önünde değişir */
 .ok-kok .ok-k-pano > * {
   grid-area: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+/* tren yatay: pano ve kartları geniş */
+.ok-kok .ok-k-pano[data-cift='uzun'] {
+  width: min(96cqw, 160cqh);
+  height: min(48cqw, 80cqh);
+}
+.ok-kok .ok-k-ters-kartlar .ok-k-ters-kart:has([data-cift='uzun']) {
+  width: clamp(150px, 44vw, 270px);
+  height: clamp(90px, 26vw, 150px);
+}
+@media (orientation: landscape) {
+  .ok-kok .ok-k-ters-kartlar .ok-k-ters-kart:has([data-cift='uzun']) {
+    width: clamp(140px, 52dvh, 240px);
+    height: clamp(80px, 27dvh, 130px);
+  }
+}
+.ok-kok .ok-k-tren .ok-k-vagon {
+  flex-basis: 22%;
+}
+.ok-kok .ok-k-tren .ok-k-lokomotif {
+  flex-basis: 33%;
+  width: 33%;
+}
+.ok-kok .ok-k-ters-kart > .ok-k-gorunus[data-cift='uzun'] {
+  inset: 6% 5%;
+  width: 90%;
+  height: 88%;
 }
 .ok-kok .ok-k-sars {
   animation: ok-k-sars 0.4s ease-out;
