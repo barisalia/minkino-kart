@@ -322,6 +322,8 @@ export function cimenKaynakEni(en: number, boy: number): number {
 }
 /** Köşe kümesinin (çalı + lale) oranı (en / boy) */
 export const KUME_ORAN = (PARK_RESIM.kume.w * 2752) / ((1 - PARK_RESIM.kume.y0) * 1536);
+/** Ayrı çizilmiş köşe kümesinin tuvali (assets/film/park/kume-sol|kume-sag.webp, 1600×1018, alta hizalı) */
+export const KUME_AYRI_ORAN = 1600 / 1018;
 
 // ---------------------------------------------------------------- bekleme çizgisi
 /** Sarı bekleme çizgisi (yerde, perspektifle yassı) */
