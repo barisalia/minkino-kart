@@ -986,6 +986,16 @@
   width: 100%;
   height: 100%;
 }
+/* abonelik kilidi rozeti (src/abonelik): yuvarlak odanın köşesinde küçük; sırası gelmemiş odada yalnız sıra kilidi */
+.ok-kok .ok-oda > .mk-kilit {
+  top: -6px;
+  right: -6px;
+  width: 30px;
+  height: 30px;
+}
+.ok-kok .ok-oda[data-durum='kilitli'] > .mk-kilit {
+  display: none;
+}
 /* kat yanar: yeni biten oda altın ışıkla parlar; sıradakinin kilidi uçar */
 .ok-kok .ok-oda.ok-oda-yandi {
   animation: ok-oda-yan 1.1s cubic-bezier(0.3, 1.4, 0.5, 1);

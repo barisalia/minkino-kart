@@ -5,7 +5,7 @@
  * Erişim: oda girişinde erisimVarMi('okul/ses-x') (A odası ücretsiz, gerisi abonelik; src/engine/erisim.ts).
  */
 import { efekt, konus } from '../../../src/audio/ses';
-import { erisimVarMi } from '../../../src/abonelik/kilit';
+import { erisimVarMi, kilitleriKur } from '../../../src/abonelik/kilit';
 import type { Karakter } from '../../../src/karakter/karakter';
 import type { Mino } from '../../../src/mino/mino';
 import { h, sure, svg, TEST_MODU } from '../../../src/ui/dom';
@@ -130,6 +130,8 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
     yol.innerHTML = `<path class="ok-kule-yol-dis" d="${p}"/><path class="ok-kule-yol-ic" d="${p}"/>`;
     yol.dataset.tamam = String(tamam);
   };
+  // abonelik kilidi rozeti (uygulamada, abonelik yokken; Sayı Bahçesi duraklarıyla aynı)
+  kapanis.push(kilitleriKur(odalar.map((d, i): [HTMLElement, string] => [d, `okul/${odaId(HARFLER[i])}`])));
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => ciz()) : null;
   ro?.observe(kule);
   kapanis.push(() => ro?.disconnect());
