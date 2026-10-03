@@ -5,6 +5,7 @@
  */
 import { erisimVarMi, kilitleriKur } from '../../src/abonelik/kilit';
 import { efekt } from '../../src/audio/ses';
+import { kilitli } from '../../src/engine/erisim';
 import { Karakter, type HareketAdi } from '../../src/karakter/karakter';
 import { Mino, type Tepki } from '../../src/mino/mino';
 import { h, sure, svg } from '../../src/ui/dom';
@@ -152,7 +153,9 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
 
   // ---------------------------------------------------------------- kartlar
   let gidiyor = false;
-  const filmler = katalog();
+  // uygulamada açık (ücretsiz) film en başta: çocuğun ilk gördüğü oynanabilir olsun, kilitliler baskın olmasın
+  // (sıralama kararlı; web sitesinde ve abonelikte sıra aynı kalır)
+  const filmler = katalog().sort((a, b) => Number(kilitli(`film/${a.ad}`)) - Number(kilitli(`film/${b.ad}`)));
   /** uygulamada abonelikli filmlerde kilit rozeti (kapağın sağ üstünde) */
   const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
   const kartlar = filmler.map((f, i) => {

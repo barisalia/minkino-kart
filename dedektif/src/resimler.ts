@@ -1,0 +1,118 @@
+/**
+ * Dedektif Mino görsel yuvaları (tek liste). Eşyalar kodla çizilmez: her eşya assets/dedektif/<ad>.webp ya da
+ * <ad>-<n>.webp dosyasından gelir (Gemini çizer, Adobe temizler; -1, -2 … sürüm eki: en büyük sürüm kullanılır).
+ * Yeni görsel gelince yalnız dosyayı klasöre koymak yeter: Vite derlemede klasörü tarar (pasta/src/resimler.ts kalıbı).
+ *
+ * Bir yuvanın yedekleri olabilir: önce assets/dedektif adayları, sonra depodaki başka bir çizim (ör. masa yerine
+ * Okul'un küçük masası). Hiçbiri yoksa: süs eşyası hiç konmaz; zorunlu eşya yerine yumuşak bir yer tutucu.
+ * Gemini'ye verilecek liste: EKSIK_LISTESI (ORTAK_NOTLAR.md "Gemini – Dedektif").
+ */
+const DEDEKTIF = import.meta.glob<string>('../../assets/dedektif/*.webp', { eager: true, query: '?url', import: 'default' });
+const BASKA = import.meta.glob<string>(
+  [
+    '../../assets/film/ev/{arka-uzak,arka-orta,arka-on}.webp',
+    '../../assets/film/mutfak/{arka-uzak,arka-orta}.webp',
+    '../../assets/okul/ses/{masa,kalem}.webp',
+    '../../assets/hayvanlar/{zurafa,ordek,kedi}.webp',
+  ],
+  { eager: true, query: '?url', import: 'default' },
+);
+
+/** Dosya yollarından ad → en yüksek sürümün adresi ("ad-3.webp" > "ad-1.webp" > "ad.webp") */
+export function surumTablosu(dosyalar: Record<string, string>): Map<string, string> {
+  const en = new Map<string, { n: number; url: string }>();
+  for (const [yol, url] of Object.entries(dosyalar)) {
+    const m = /([^/\\]+?)(?:-(\d+))?\.webp$/.exec(yol);
+    if (!m) continue;
+    // "roman-1" gibi sıra numaralı adlar sürüm değil: adın kendisi tabloda da durur
+    const ad = m[1];
+    const n = m[2] ? Number(m[2]) : 0;
+    const eski = en.get(ad);
+    if (!eski || n > eski.n) en.set(ad, { n, url });
+    const tam = /([^/\\]+?)\.webp$/.exec(yol)?.[1];
+    if (tam && tam !== ad && !en.has(tam)) en.set(tam, { n: -1, url });
+  }
+  return new Map([...en].map(([ad, v]) => [ad, v.url]));
+}
+
+const TABLO = surumTablosu(DEDEKTIF);
+const baska = (yol: string) => BASKA[`../../assets/${yol}.webp`] ?? null;
+
+/**
+ * Yuvalar: ad → [assets/dedektif adayları, depodaki yedek (assets/ altında yol), zorunlu mu].
+ * Zorunlu ve hiç görseli olmayan yuva yumuşak yer tutucuyla gösterilir.
+ */
+export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: boolean }> = {
+  // sahneler
+  koridor: { adaylar: ['koridor'], zorunlu: true },
+  'yatak-odasi': { adaylar: ['yatak-odasi'], zorunlu: true },
+  // eşyalar
+  masa: { adaylar: ['masa', 'calisma-masasi'], yedek: 'okul/ses/masa', zorunlu: true },
+  kalemlik: { adaylar: ['kalemlik-devrik', 'kalemlik'], yedek: 'okul/ses/kalem', zorunlu: false },
+  'lamba-dik': { adaylar: ['lamba-dik'], zorunlu: true },
+  'lamba-devrik': { adaylar: ['lamba-devrik'], zorunlu: true },
+  sosis: { adaylar: ['sosis'], zorunlu: false },
+  buyutec: { adaylar: ['buyutec'], zorunlu: false },
+  kapak: { adaylar: ['kapak'], zorunlu: false },
+  // ipuçları
+  'ipucu-kedi-pati-hali': { adaylar: ['ipucu-kedi-pati-hali'], zorunlu: true },
+  'ipucu-beyaz-tuy': { adaylar: ['ipucu-beyaz-tuy'], zorunlu: true },
+  'ipucu-sari-kanat-tozu': { adaylar: ['ipucu-sari-kanat-tozu'], zorunlu: true },
+  'ipucu-kopek-pati': { adaylar: ['ipucu-kopek-pati'], zorunlu: true },
+  // kartlar
+  'kart-zurafa-ayagi': { adaylar: ['kart-zurafa-ayagi'], zorunlu: true },
+  'kart-ordek-ayagi': { adaylar: ['kart-ordek-ayagi'], zorunlu: true },
+  'kart-kedi-pati-izi': { adaylar: ['kart-kedi-pati-izi'], zorunlu: true },
+  'kart-kedi-turuncu': { adaylar: ['kart-kedi-turuncu'], zorunlu: true },
+  'kart-kedi-siyah': { adaylar: ['kart-kedi-siyah'], zorunlu: true },
+  'kart-kedi-beyaz': { adaylar: ['kart-kedi-beyaz'], zorunlu: true },
+  'kart-sut-kasesi': { adaylar: ['kart-sut-kasesi'], zorunlu: true },
+  'kart-yastik': { adaylar: ['kart-yastik'], zorunlu: true },
+  'kart-sari-kelebek': { adaylar: ['kart-sari-kelebek'], zorunlu: true },
+  // kartın içinden çıkan hayvanlar (yanlış kart kendini anlatır)
+  zurafa: { adaylar: ['zurafa'], yedek: 'hayvanlar/zurafa', zorunlu: false },
+  ordek: { adaylar: ['ordek'], yedek: 'hayvanlar/ordek', zorunlu: false },
+  // Pamuk'un tek resmi (çizgi roman yedeği; asıl Pamuk iskelet: assets/karakter-iskelet/pamuk)
+  'pamuk-b': { adaylar: ['pamuk-b', 'pamuk'], zorunlu: true },
+  // çizgi roman kareleri (Gemini, aynı stil, 4:3); yoksa sahne çizimlerinden kurulur
+  'roman-1': { adaylar: ['roman-1'], zorunlu: false },
+  'roman-2': { adaylar: ['roman-2'], zorunlu: false },
+  'roman-3': { adaylar: ['roman-3'], zorunlu: false },
+  'roman-4': { adaylar: ['roman-4'], zorunlu: false },
+};
+
+/** Adaylardan ilk bulunan görselin adresi; yoksa yedek; o da yoksa null */
+export function resim(ad: string, tablo: Map<string, string> = TABLO): string | null {
+  const y = YUVA[ad];
+  for (const a of y?.adaylar ?? [ad]) {
+    const u = tablo.get(a);
+    if (u) return u;
+  }
+  return y?.yedek ? baska(y.yedek) : null;
+}
+
+/** Çalışma odası ve mutfak katmanları (film arka planları) */
+export const filmKatmani = (oda: 'ev' | 'mutfak', ad: 'arka-uzak' | 'arka-orta' | 'arka-on') => baska(`film/${oda}/${ad}`) ?? '';
+
+/** Henüz kendi dosyası olmayan (yedekle ya da yer tutucuyla duran) yuvalar */
+export function eksikler(tablo: Map<string, string> = TABLO): string[] {
+  return Object.entries(YUVA)
+    .filter(([, y]) => !y.adaylar.some((a) => tablo.has(a)))
+    .map(([ad]) => ad);
+}
+
+/**
+ * Gemini'ye verilecek eksik çizim listesi (ORTAK_NOTLAR.md "Gemini – Dedektif" ile aynı): dosya adı → ne.
+ * Hepsi beyaz zeminde tek nesne, Mino stili (parlak 2D çizgi film, sıcak koyu kahve kontur, yumuşak gölge).
+ */
+export const EKSIK_LISTESI: Record<string, string> = {
+  masa: 'çalışma masası (ahşap, önden ve hafif yukarıdan; üst yüzü düz ve boş, dört ayaklı; yatay ~3:2)',
+  'kalemlik-devrik': 'masada devrilmiş kalemlik ve etrafa dökülmüş 4-5 renkli kalem (yatay, alçak)',
+  sosis: 'tek pembe sosis (Kino\'nun sabah atıştırması), hafif kıvrık',
+  buyutec: 'el büyüteci: pirinç halka, koyu ahşap sap, cam içi BOŞ ve şeffaf olacak (Adobe camı siler); dik',
+  kapak: 'ana menü kartı: dedektif şapkalı Mino büyüteçle bakıyor, yanında devrik mavi lamba ve beyaz kedi Pamuk saklanıyor (yatay 4:3)',
+  'roman-1': 'çizgi roman karesi 1: halıda bir kedi pati izi, üstünde büyüteç (4:3)',
+  'roman-2': 'çizgi roman karesi 2: beyaz kedi Pamuk masaya zıplıyor (4:3)',
+  'roman-3': 'çizgi roman karesi 3: Pamuk kelebeği kovalarken mavi masa lambası devriliyor (4:3)',
+  'roman-4': 'çizgi roman karesi 4: Pamuk yatağın altından utangaç bakıyor, kuyruğu dışarıda (4:3)',
+};

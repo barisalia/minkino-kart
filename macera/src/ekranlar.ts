@@ -119,8 +119,21 @@ export function acilisEkrani(app: Uygulama): Ekran {
     [elKart, 'macera/elektrik'],
     [slKart, 'macera/salincak'],
   ]);
+  // uygulamada açık (ücretsiz) bölüm en üstte: çocuğun ilk gördüğü oynanabilir olsun, kilitliler baskın olmasın
+  // (sıralama kararlı; web sitesinde ve abonelikte sıra aynı kalır)
+  const bolumKartlari = (
+    [
+      [slKart, 'salincak'],
+      [kart, 'dogumgunu'],
+      [elKart, 'elektrik'],
+      [egeKart, 'ege'],
+      [banyoKart, 'banyo'],
+    ] as [HTMLElement, BolumAdi][]
+  )
+    .sort((a, b) => Number(kilitli(`macera/${a[1]}`)) - Number(kilitli(`macera/${b[1]}`)))
+    .map(([k]) => k);
   return {
-    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, app.secenekler.cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => app.secenekler.cikis?.(), 'kucuk') : h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, slKart, kart, elKart, egeKart, banyoKart, oyna)),
+    el: h('div.mc-acilis', { style: `--resim:url("${adres('parti-sahne/oda')}")` }, h('div.mc-acilis-arka'), h('div.ust-cubuk.mc-sag-ust', {}, app.secenekler.cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => app.secenekler.cikis?.(), 'kucuk') : h('div'), sesDugmesi()), h('div.mc-acilis-ic', {}, baslik, ...bolumKartlari, oyna)),
     kapat() {
       egeResim.kapat();
       kilitBirak();
@@ -163,6 +176,8 @@ export function izinEkrani(app: Uygulama): Ekran {
         h('h2', {}, 'Büyükler için'),
         h('p', {}, 'Bu oyun nefesle, sesle ve alkışla oynanır. Bunun için mikrofon gerekir.'),
         h('ul', {}, h('li', {}, 'Ses kaydedilmez, telefondan dışarı çıkmaz; her an işlenip silinir.'), h('li', {}, 'Kelimeler değil, sesin şekli dinlenir: üfleme, alkış, ince-kalın ses, sessizlik.'), h('li', {}, 'Her adım parmakla da oynanabilir.')),
+        // inceleme ekipleri ve Türkçe bilmeyen büyükler için (mağaza: izin isteği büyüğe açıklanmalı)
+        h('p.mc-izin-en', { lang: 'en' }, 'For grown-ups: this game listens for blowing, voice and clapping. Sound is processed instantly on this device and is never recorded, stored or sent. Every step can also be played by touch.'),
         ac,
         durumYazi,
         dokun,

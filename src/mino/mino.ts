@@ -85,6 +85,19 @@ export function minoPozYukle(): Promise<Record<'kuyruk' | 'govde' | 'yuz' | 'kol
   return pozYukleme;
 }
 
+/**
+ * Dedektif ekleri (şapka, büyüteç; ~190 KB gömülü WebP; ekip/mino/IFADELER.md "Dedektif Mino"): kendi küçük paketinde,
+ * yalnız dedektif() ilk çağrılınca bir kez yüklenir (scripts/mino/dedektif.mjs → mino-dedektif-svg.ts).
+ */
+let dedektifYukleme: Promise<Record<'sapka' | 'buyutec', string> | null> | null = null;
+export function minoDedektifYukle(): Promise<Record<'sapka' | 'buyutec', string> | null> {
+  dedektifYukleme ??= import('./mino-dedektif-svg').then(
+    (m) => m.MINO_DEDEKTIF_SVG,
+    () => null,
+  );
+  return dedektifYukleme;
+}
+
 /** Burun ifadeleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne) */
 export type MinoBurunIfade = 'burun-kasinti' | 'burun-tut' | 'hapsu';
 const burunMu = (ad: MinoIfade): ad is MinoBurunIfade => ad === 'burun-kasinti' || ad === 'burun-tut' || ad === 'hapsu';
@@ -461,6 +474,44 @@ export class Mino {
   }
   private pozEkleme: Promise<boolean> | null = null;
   private pozEklendi = false;
+
+  /**
+   * Dedektif Mino (IFADELER.md "Dedektif Mino"): sapka = kareli dedektif şapkası (kafada, en üstte); buyutec = sol
+   * gözünün önünde büyüteç tutan kol (asıl sol kol ve sol göz gizlenir; camdaki göz sabit resim olduğu için büyüteç
+   * açıkken göz kırpma ve mutlu göz atlanır). Verilmeyen alan değişmez. Dönen söz çizim hazır olunca çözülür.
+   */
+  dedektif(ayar: { sapka?: boolean; buyutec?: boolean }): Promise<void> {
+    if (ayar.sapka !== undefined) this.dedektifIstek.sapka = ayar.sapka;
+    if (ayar.buyutec !== undefined) this.dedektifIstek.buyutec = ayar.buyutec;
+    const uygula = () => {
+      this.el.classList.toggle('dedektif-sapka', this.dedektifIstek.sapka);
+      this.el.classList.toggle('dedektif-buyutec', this.dedektifIstek.buyutec);
+    };
+    if (!this.dedektifIstek.sapka && !this.dedektifIstek.buyutec) {
+      uygula();
+      return Promise.resolve();
+    }
+    this.dedektifEkleme ??= minoDedektifYukle().then((ekler) => {
+      const k = this.kok.querySelector(':scope > .k');
+      if (!ekler || !k) return false;
+      k.insertAdjacentHTML('beforeend', ekler.buyutec + ekler.sapka);
+      return true;
+    });
+    return this.dedektifEkleme.then((tamam) => {
+      if (!tamam) return;
+      // sonradan eklenen yüz ekleri (poz, ifade) şapkanın üstüne binmesin: şapka hep kafanın en sonunda
+      const k = this.kok.querySelector(':scope > .k');
+      const sapka = k?.querySelector(':scope > .m-dedektif-sapka');
+      if (k && sapka && k.lastElementChild !== sapka) k.append(sapka);
+      uygula();
+    });
+  }
+  /** dedektif() ile istenen ekler */
+  get dedektifSu(): Readonly<{ sapka: boolean; buyutec: boolean }> {
+    return this.dedektifIstek;
+  }
+  private dedektifIstek = { sapka: false, buyutec: false };
+  private dedektifEkleme: Promise<boolean> | null = null;
 
   /**
    * Film/animatik: Mino konuşuyor (açıkken ağız sese göre oynar; ses yoksa metnin ritmiyle). bilgi: cümle ve
@@ -875,6 +926,11 @@ export class Mino {
     }
     if (this.gozZorla) {
       gozKapali = 1;
+      mutlu = 0;
+    }
+    // büyüteç açıkken camdaki göz sabit resim: kapalı / mutlu göz çizgisi camın yanında yamalı durmasın
+    if (this.dedektifIstek.buyutec && this.el.classList.contains('dedektif-buyutec')) {
+      gozKapali = 0;
       mutlu = 0;
     }
     d.agiz = ara(d.agiz, agizHedef, TEST_MODU ? 1 : 0.35);

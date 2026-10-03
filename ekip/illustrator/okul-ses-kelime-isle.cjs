@@ -19,10 +19,12 @@ const ayarlar = (adlar) => JSON.stringify(Object.fromEntries(adlar.filter((a) =>
   if (tekler.length) calistir(['--girdi', `${G}/okul-ses`, '--cikti', 'assets/okul/ses', '--max', '0', '--ayar', ayarlar(tekler), '--desen', '^(' + tekler.join('|') + ')\\.', ...tekler]);
   if (kahraman.length) calistir(['--girdi', `${G}/okul-ses`, '--cikti', 'assets/okul/ses', '--max', '900', '--esit', KAHRAMAN, '--desen', '^(' + kahraman.join('|') + ')\.', ...kahraman]);
   // okul-odul: çıkartmalar ve rozetler → assets/okul/odul/<ad>.webp (kopru-senlik istisna: assets/okul/kelime/)
-  const odul = liste('okul-odul'), odulKelime = odul.filter((a) => a === 'kopru-senlik'), odulTek = odul.filter((a) => a !== 'kopru-senlik');
+  const odul = liste('okul-odul').filter((a) => !['kopru-senlik'].includes(a)), odulCik = odul.filter((a) => /^cikartma-/.test(a)), odulTek = odul.filter((a) => !/^cikartma-/.test(a));
+  if (odulCik.length) { fs.mkdirSync('assets/okul/odul', { recursive: true }); execFileSync('node', ['ekip/illustrator/cikartma-isle.cjs', `${G}/okul-odul`, 'assets/okul/odul', ...odulCik], { stdio: 'inherit' }); }   // çıkartmalar: kalın beyaz kenar içte kalır, dış zemin/gölge şeffaf
   if (odulTek.length) { fs.mkdirSync('assets/okul/odul', { recursive: true }); calistir(['--girdi', `${G}/okul-odul`, '--cikti', 'assets/okul/odul', '--max', '0', '--ayar', ayarlar(odulTek), '--desen', '^(' + odulTek.join('|') + ')\.', ...odulTek]); }
-  if (odulKelime.length) calistir(['--girdi', `${G}/okul-odul`, '--cikti', 'assets/okul/kelime', '--max', '0', '--ayar', ayarlar(odulKelime), '--desen', '^kopru-senlik\.', ...odulKelime]);
-  const kelime = liste('okul-kelime');
+  const SAHNE = ['kopru-senlik'];   // 16:9 sahneler: beyaz silinmez, 1920x1080 opak webp
+  for (const a of SAHNE) { const kaynak = [`${G}/okul-odul/${a}.png`, `${G}/okul-kelime/${a}.png`].find((f) => fs.existsSync(f)); if (kaynak) { const i = await s(kaynak).resize(1920, 1080, { fit: 'cover', position: 'centre', kernel: 'lanczos3' }).removeAlpha().webp({ quality: 90, effort: 5 }).toFile(`assets/okul/kelime/${a}.webp`); console.log(a, i.width + 'x' + i.height, Math.round(i.size / 1024) + ' KB (sahne)'); } }
+  const kelime = liste('okul-kelime').filter((a) => !['kopru-senlik'].includes(a));
   if (kelime.length) calistir(['--girdi', `${G}/okul-kelime`, '--cikti', 'assets/okul/kelime', '--max', '0', '--esit', ESIT, '--ayar', ayarlar(kelime), '--desen', '^(' + kelime.join('|') + ')\\.', ...kelime]);
   if (fs.existsSync('assets/okul/kelime/kapi-kapali.webp')) execFileSync('node', ['ekip/illustrator/kapi-duzelt.cjs'], { stdio: 'inherit' });   // kapı kenarı cilası (Gemini kapılarında dış kenar konturlu değil)
 })();

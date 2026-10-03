@@ -4,10 +4,11 @@
  * parallax); büyükler için ebeveyn kapısı (yazıyla toplama sorusu). Uygulamada abonelikli kartlarda kilit rozeti.
  */
 import { abonelikEkrani, kilitliIcerik } from '../../src/abonelik/ekran';
+import { incelemeKoduAc } from '../../src/abonelik/inceleme';
 import { kilitleriKur } from '../../src/abonelik/kilit';
 import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
 import { saglayici } from '../../src/abonelik/satin';
-import { kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
+import { incelemeAcikMi, kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
 import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
@@ -26,7 +27,7 @@ import { derinlik, menuOyunlari, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
-  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/okul/sayi-bloklari.webp', '../../assets/film/{kapak,park}/*.webp'],
+  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/okul/sayi-bloklari.webp', '../../assets/film/{kapak,park}/*.webp', '../../assets/film/ev/arka-uzak.webp', '../../assets/dedektif/{lamba-devrik,kart-kedi-pati-izi,pamuk-b,kapak}.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
@@ -205,7 +206,7 @@ export function menuEkrani(app: Uygulama): Ekran {
     kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');
-      // yumuşak dokunma sesi (seçilince ayrıca "seçim" sesi; kilitli kartta sesi ebeveyn kapısı çalar)
+      // yumuşak dokunma sesi (seçilince ayrıca "seçim" sesi; kilitli kartta sesi kilit anı çalar)
       if (!a.hasAttribute('data-kilitli')) efekt.dokunma();
       // Mino basılan karta bakar (canlılık: karakterler çocuğun ne seçtiğiyle ilgilenir)
       if (AZ_HAREKET) return;
@@ -221,7 +222,8 @@ export function menuEkrani(app: Uygulama): Ekran {
       e.preventDefault();
       if (gidiyor) return;
       a.classList.remove('basili');
-      // abonelikli oyun (yalnız uygulamada): ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
+      // abonelikli oyun (yalnız uygulamada): çocuğa kilit anı ("Bunu anne-babanla açabilirsin"); "Büyükler için" →
+      // ebeveyn kapısı → abonelik ekranı; abone olunca kilit kalkar
       if (kilitli(k.id)) {
         tepki('mir');
         // kilit rozeti tatlı bir sallanır (korkutmadan "bu büyüklerle açılır")
@@ -300,7 +302,11 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
   // abonelik (yalnız uygulamada): durum + abonelik ekranı (satın alımları geri yükleme orada)
   const aboneDurum = h('p.ug-abone-durum');
   const durumYaz = () => {
-    aboneDurum.textContent = premiumMu() ? 'Minkino Premium etkin. Teşekkürler!' : 'Bazı oyunlar ücretsiz. Premium ile hepsi açılır.';
+    aboneDurum.textContent = incelemeAcikMi()
+      ? 'Tüm içerik açıldı (inceleme)'
+      : premiumMu()
+        ? 'Minkino Premium etkin. Teşekkürler!'
+        : 'Bazı oyunlar ücretsiz. Premium ile hepsi açılır.';
   };
   durumYaz();
   const aboneDugme = h('button.dugme.ug-abone-dugme', { type: 'button' }, svg(IKON.tac), 'Minkino Premium');
@@ -330,6 +336,13 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
       geriYukleDugme.removeAttribute('disabled');
     }
   });
+  // mağaza inceleme kodu (inceleme ekibi satın alamaz): sade, en altta; doğru kodla bu cihazda her şey açılır
+  const incelemeDugme = h('button.ince-dugme.ug-baglanti.ug-inceleme', { type: 'button' }, 'İnceleme kodu');
+  incelemeDugme.addEventListener('click', async () => {
+    efekt.dokunma();
+    await incelemeKoduAc(app.kok);
+    durumYaz();
+  });
   const platform = uygulamaPlatformu();
   const yonet = platform ? baglanti(ABONELIK_YONETIM[platform], 'Aboneliği yönet') : null;
   const el = h(
@@ -353,6 +366,7 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
         h('h2', {}, 'Bize yazın'),
         h('p', {}, 'Soru, öneri ya da sorun için:'),
         h('div.ug-baglantilar', {}, h('a.ince-dugme.ug-baglanti.ug-eposta', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
+        ...(uygulamada ? [h('div.ug-baglantilar.ug-inceleme-yer', {}, incelemeDugme)] : []),
       ),
     ),
   );

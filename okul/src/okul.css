@@ -597,6 +597,18 @@
   border: 3px solid var(--kontur);
   font-size: 0.72rem;
 }
+/* uygulamada abonelikli durak: küçük kilit rozeti sol üstte (yaş rozeti sağ üstte); durak soluklaşmaz, baskın değil */
+.ok-kok .ok-durak > .mk-kilit {
+  top: -8px;
+  left: -10px;
+  right: auto;
+  width: 30px;
+  height: 30px;
+  border-width: 2.5px;
+}
+.ok-kok .ok-durak > .mk-kilit .ikon {
+  font-size: 16px;
+}
 .ok-kok .ok-durak-ikili {
   /* önerilen durağın hemen üstünde (durak yarıçapı kadar yukarı; üst sıranın yazısına değmez) */
   --ust: calc(clamp(72px, min(20vw, 11dvh), 108px) / 2 + 2px);

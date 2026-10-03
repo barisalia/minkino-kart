@@ -398,7 +398,8 @@
 }
 
 /* ---------------------------------------------------------------- kilit rozeti (kilitli kart / bölüm) */
-.mk-kok button[data-kilitli] {
+/* düşük öncelik (:where): kendi konumu olan kartları (Okul duraklarının position:absolute'u) bozmaz */
+.mk-kok :where(button[data-kilitli]) {
   position: relative;
 }
 .mk-kok .mk-kilit {
@@ -424,4 +425,222 @@
 .mk-kok .mk-kilit .ikon svg {
   color: #f2b53a;
   stroke: color-mix(in srgb, var(--kontur) 85%, #fff);
+}
+
+/* ---------------------------------------------------------------- inceleme kodu (src/abonelik/inceleme.ts) */
+.mk-kok .ik-pencere {
+  width: min(100%, 360px);
+  padding: 22px 20px 20px;
+}
+.mk-kok .ik-pencere h2 {
+  margin: 0 0 14px;
+  font-size: 1.25rem;
+}
+.mk-kok .ik-girdi {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 3px solid var(--kontur);
+  background: #fff;
+  color: var(--kontur);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  -webkit-user-select: text;
+  user-select: text;
+  outline: none;
+}
+.mk-kok .ik-girdi:focus {
+  border-color: var(--mavi);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mavi) 22%, transparent);
+}
+/* yanlış: ebeveyn kapısındaki gibi küçük, yumuşak sallanma; yazı yok */
+.mk-kok .ik-girdi.hata {
+  animation: mk-kapi-salla 0.5s ease-in-out;
+  border-color: color-mix(in srgb, var(--turuncu) 70%, white);
+}
+.mk-kok .ik-dugmeler {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.mk-kok .ik-dugmeler .dugme {
+  min-width: 120px;
+  font-size: 1.1rem;
+}
+.mk-kok .ik-basari {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 0 !important;
+  font-size: 1.05rem;
+  opacity: 1 !important;
+}
+.mk-kok .ik-onay {
+  font-size: 26px;
+  color: var(--yesil);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .ik-girdi.hata {
+    animation: none;
+  }
+}
+/* ---------------------------------------------------------------- kilit anı (çocuğa: "Bunu anne-babanla açabilirsin")
+   src/abonelik/kilit-ani.ts. Karartmayan krem perde, küçük kart: Mino + yumuşakça sallanan altın kilit, tek büyük
+   "Tamam"; altta yalnız büyüklerin okuyacağı küçük yazılı "Büyükler için" düğmesi. Abonelikten hiç söz edilmez. */
+.mk-kok .kl-perde {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  display: grid;
+  place-items: center;
+  align-items: safe center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: max(20px, var(--ust)) 20px max(20px, var(--alt));
+  background: rgba(255, 244, 221, 0.66);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  animation: mk-perde 0.25s both;
+}
+.mk-kok .kl-perde.cikiyor {
+  animation: kl-git 0.2s ease-in both;
+  pointer-events: none;
+}
+@keyframes kl-git {
+  to { opacity: 0; }
+}
+.mk-kok .kl-kart {
+  position: relative;
+  width: min(100%, 380px);
+  border-radius: 32px;
+  background: linear-gradient(180deg, #fff3d0 0%, #fffdf6 46%);
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 10px 0 var(--kontur-yumusak);
+  padding: 16px 20px 10px;
+  text-align: center;
+  animation: kl-gel 0.45s cubic-bezier(0.25, 1.35, 0.5, 1) both;
+}
+@keyframes kl-gel {
+  from { opacity: 0; transform: translateY(24px) scale(0.85); }
+}
+.mk-kok .kl-sahne {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: clamp(124px, 34vw, 156px);
+  margin-bottom: 4px;
+}
+.mk-kok .kl-mino {
+  position: relative;
+  flex: none;
+  height: 100%;
+  aspect-ratio: 1360 / 1790;
+}
+.mk-kok .kl-mino .mino {
+  position: absolute;
+  inset: 0;
+}
+/* kilit: menüdeki rozetin büyüğü (krem daire, altın kilit); iki kez yavaşça sallanır, sonra durur */
+.mk-kok .kl-kilit {
+  position: relative;
+  flex: none;
+  width: clamp(80px, 22vw, 96px);
+  aspect-ratio: 1;
+  margin-bottom: 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #ffffff 0%, #fff6dc 55%, #ffe8a8 100%);
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 5px 0 var(--kontur-yumusak), 0 6px 16px rgba(90, 54, 23, 0.12);
+  transform-origin: 50% 12%;
+  animation: kl-sallan 2.4s ease-in-out 0.4s 2 both;
+}
+.mk-kok .kl-kilit > .ikon {
+  font-size: clamp(42px, 12vw, 54px);
+}
+.mk-kok .kl-kilit > .ikon svg {
+  color: #f2b53a;
+  stroke: color-mix(in srgb, var(--kontur) 85%, #fff);
+}
+@keyframes kl-sallan {
+  0%, 100% { rotate: 0deg; }
+  22% { rotate: -9deg; }
+  55% { rotate: 7deg; }
+  80% { rotate: -3deg; }
+}
+/* kilidin çevresinde üç küçük parıltı (sakin, yavaş) */
+.mk-kok .kl-pirilti {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--sari);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: kl-pirilti 2.2s ease-in-out infinite both;
+}
+.mk-kok .kl-p1 { top: -6px; right: -4px; }
+.mk-kok .kl-p2 { bottom: 6px; left: -10px; width: 10px; height: 10px; animation-delay: 0.7s; }
+.mk-kok .kl-p3 { top: 30%; right: -14px; width: 9px; height: 9px; animation-delay: 1.4s; }
+@keyframes kl-pirilti {
+  0%, 100% { opacity: 0; scale: 0.4; }
+  50% { opacity: 1; scale: 1; }
+}
+.mk-kok .kl-baslik {
+  margin: 4px 0 14px;
+  font-size: clamp(1.25rem, 5.6vw, 1.5rem);
+  line-height: 1.2;
+}
+.mk-kok .kl-tamam {
+  min-width: min(100%, 220px);
+}
+/* büyükler için: küçük, sade, yazılı (çocuğu çekmeyen) */
+.mk-kok .kl-buyuk {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 14px auto 0;
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+.mk-kok .kl-buyuk > span:not(.ikon) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.mk-kok .kl-buyuk .ikon {
+  font-size: 20px;
+  color: var(--mavi);
+}
+.mk-kok .kl-buyuk small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.75;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .kl-kart,
+  .mk-kok .kl-kilit,
+  .mk-kok .kl-pirilti {
+    animation: none;
+  }
+  .mk-kok .kl-pirilti { opacity: 0.8; }
+}
+/* alçak yatay telefon: sahne küçük */
+@media (max-height: 540px) and (orientation: landscape) {
+  .mk-kok .kl-sahne { height: 96px; }
+  .mk-kok .kl-kilit { width: 68px; margin-bottom: 6px; }
+  .mk-kok .kl-kilit > .ikon { font-size: 38px; }
+  .mk-kok .kl-baslik { margin: 2px 0 10px; font-size: 1.15rem; }
+  .mk-kok .kl-buyuk { margin-top: 6px; }
 }

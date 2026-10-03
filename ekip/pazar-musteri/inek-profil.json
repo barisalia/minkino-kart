@@ -1,0 +1,61 @@
+﻿{
+    "ad":  "inek-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "kafa",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1100,
+                               1090
+                           ],
+                  "goz":  [
+                              1226,
+                              778
+                          ],
+                  "agiz":  [
+                               1380,
+                               985
+                           ],
+                  "goz-kapali":  [
+                                     1226,
+                                     786
+                                 ],
+                  "kol-on":  [
+                                 1030,
+                                 1190
+                             ],
+                  "bacak-on":  [
+                                   1040,
+                                   1650
+                               ],
+                  "bacak-arka":  [
+                                     1225,
+                                     1650
+                                 ],
+                  "kuyruk":  [
+                                 840,
+                                 1590
+                             ],
+                  "govde":  [
+                                1100,
+                                1880
+                            ]
+              }
+}

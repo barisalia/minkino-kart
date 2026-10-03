@@ -1,0 +1,67 @@
+﻿{
+    "ad":  "maymun-profil",
+    "boyut":  2048,
+    "sira":  [
+                 "kuyruk",
+                 "bacak-arka",
+                 "bacak-on",
+                 "govde",
+                 "kol-on",
+                 "kafa",
+                 "kulak-on",
+                 "goz",
+                 "agiz",
+                 "goz-kapali"
+             ],
+    "gizli":  [
+                  "goz-kapali"
+              ],
+    "bagli":  {
+                  "kulak-on":  "kafa",
+                  "goz":  "kafa",
+                  "agiz":  "kafa",
+                  "goz-kapali":  "kafa"
+              },
+    "donme":  {
+                  "kafa":  [
+                               1180,
+                               1190
+                           ],
+                  "kulak-on":  [
+                                   1052,
+                                   852
+                               ],
+                  "goz":  [
+                              1380,
+                              790
+                          ],
+                  "agiz":  [
+                               1470,
+                               975
+                           ],
+                  "goz-kapali":  [
+                                     1380,
+                                     800
+                                 ],
+                  "kol-on":  [
+                                 1090,
+                                 1230
+                             ],
+                  "bacak-on":  [
+                                   1100,
+                                   1685
+                               ],
+                  "bacak-arka":  [
+                                     1250,
+                                     1700
+                                 ],
+                  "kuyruk":  [
+                                 960,
+                                 1590
+                             ],
+                  "govde":  [
+                                1130,
+                                1900
+                            ]
+              }
+}
