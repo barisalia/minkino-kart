@@ -171,6 +171,8 @@
 .dd-kok .dd-katman {
   position: absolute;
   inset: 0;
+  /* katmanlar birbirini örtmesin: yalnız dokunulacak eşyalar (iz, lamba, düğme, kuyruk) kendisi açar */
+  pointer-events: none;
 }
 .dd-kok .dd-zemin {
   position: absolute;
@@ -338,7 +340,7 @@
   top: 0;
   height: 230px;
   width: auto;
-  filter: brightness(0) blur(1px);
+  filter: brightness(0.16) sepia(0.9) blur(0.8px);
   opacity: 0;
   transform-origin: 50% 100%;
 }
@@ -436,6 +438,14 @@
 .dd-kok .dd-oyuncular[data-yerlesim='sag'] .dd-mino-yer {
   left: calc(100% - var(--mino-w) * 1.02 - var(--mino-w) * var(--ko) * 0.82);
 }
+/* Kino koklarken büyütecin önünde görünsün */
+.dd-kok .dd-oyuncular.dd-onde {
+  z-index: 4;
+}
+.dd-kok .dd-delil:has(.dd-demek) .dd-delil-ekk {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
 /* kenar (dar ekranda lamba işi): ikisi de ekranın kenarına çekilir, ortası boş kalır */
 .dd-kok .dd-oyuncu {
   translate: 0 0;
@@ -474,13 +484,20 @@
   100% { transform: none; }
 }
 
-/* konuşma balonu */
-.dd-kok .dd-balon {
+/* konuşma balonları: her şeyin üstünde ayrı katman; konuşanın başının üstüne konur (oyuncular.ts → balonKonumla) */
+.dd-kok .dd-balonlar {
   position: absolute;
-  bottom: calc(100% + 4px);
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+.dd-kok .dd-balon {
+  --kay: 0px;
+  position: absolute;
   left: 50%;
+  top: 50%;
   width: max-content;
-  max-width: min(52vw, 340px);
+  max-width: min(60vw, 340px);
   padding: 0.38em 0.8em;
   background: #fff;
   border: 3px solid var(--kontur);
@@ -491,20 +508,18 @@
   text-align: center;
   color: var(--kontur);
   opacity: 0;
-  transform: translate(-50%, 8px) scale(0.6);
-  transform-origin: 50% 100%;
+  transform: translate(calc(-50% + var(--kay)), calc(-100% + 10px)) scale(0.6);
+  transform-origin: calc(50% - var(--kay)) 100%;
   transition: opacity 0.18s, transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
-  pointer-events: none;
-  z-index: 2;
 }
 .dd-kok .dd-balon.acik {
   opacity: 1;
-  transform: translate(-50%, 0) scale(1);
+  transform: translate(calc(-50% + var(--kay)), -100%) scale(1);
 }
 .dd-kok .dd-balon::after {
   content: '';
   position: absolute;
-  left: var(--kuyruk-x, 50%);
+  left: calc(50% - var(--kay));
   bottom: -11px;
   width: 16px;
   height: 16px;
@@ -513,52 +528,7 @@
   border-bottom: 3px solid var(--kontur);
   transform: translateX(-50%) rotate(45deg);
 }
-.dd-kok .dd-mino-yer .dd-balon {
-  left: 8%;
-  --kuyruk-x: 30%;
-  transform: translate(0, 8px) scale(0.6);
-  transform-origin: 30% 100%;
-}
-.dd-kok .dd-mino-yer .dd-balon.acik {
-  transform: none;
-}
-.dd-kok .dd-oyuncular[data-yerlesim='sag'] .dd-mino-yer .dd-balon {
-  left: auto;
-  right: 8%;
-  --kuyruk-x: 70%;
-  transform-origin: 70% 100%;
-}
-.dd-kok .dd-kino-yer .dd-balon {
-  left: auto;
-  right: 10%;
-  bottom: calc(100% - var(--kw) * 0.06);
-  --kuyruk-x: 72%;
-  transform: translate(0, 8px) scale(0.6);
-  transform-origin: 72% 100%;
-}
-.dd-kok .dd-kino-yer .dd-balon.acik {
-  transform: none;
-}
-.dd-kok .dd-oyuncular[data-yerlesim='sol'] .dd-kino-yer .dd-balon {
-  right: auto;
-  left: 10%;
-  --kuyruk-x: 28%;
-  transform-origin: 28% 100%;
-}
-/* dünyadaki Pamuk'un balonu kamerayla ölçeklenmesin */
-.dd-kok .dd-pamuk-dunya .dd-balon {
-  font-size: calc(clamp(15px, 1.6vmin + 9px, 23px) / var(--olcek, 1));
-  border-width: calc(3px / var(--olcek, 1));
-  border-radius: calc(18px / var(--olcek, 1));
-  max-width: calc(min(60vw, 360px) / var(--olcek, 1));
-  bottom: 88%;
-}
-.dd-kok .dd-pamuk-dunya .dd-balon::after {
-  width: calc(16px / var(--olcek, 1));
-  height: calc(16px / var(--olcek, 1));
-  bottom: calc(-11px / var(--olcek, 1));
-  border-width: calc(3px / var(--olcek, 1));
-}
+
 
 /* ---------------------------------------------------------------- pati izleri */
 .dd-kok .dd-izler {
@@ -596,14 +566,14 @@
 .dd-kok .dd-iz::before {
   content: '';
   position: absolute;
-  inset: -95%;
+  inset: -120%;
   border-radius: 50%;
 }
 .dd-kok .dd-iz img {
   display: block;
   height: 100%;
   width: auto;
-  opacity: 0.42;
+  opacity: 0.58;
   mix-blend-mode: multiply;
   transition: opacity 0.25s, transform 0.25s;
 }
@@ -760,8 +730,9 @@
 }
 .dd-kok .dd-pamuk-dunya {
   position: absolute;
-  width: 360px;
-  height: 360px;
+  /* oda boyunun ~%21'i: yatağın yanında kedi boyunda */
+  width: 255px;
+  height: 255px;
   translate: -50% -92.2%;
   transform-origin: 50% 92%;
   opacity: 0;
@@ -1149,6 +1120,15 @@
   object-fit: contain;
   display: block;
   transform-origin: 50% 90%;
+}
+.dd-kok .dd-ordek img.dd-ordek-ayak {
+  position: absolute;
+  left: 92%;
+  bottom: 2%;
+  width: 46%;
+  height: auto;
+  transform: translate(-50%, 0);
+  filter: drop-shadow(0 4px 4px rgba(30, 15, 5, 0.3));
 }
 .dd-kok .dd-zurafa-dilim {
   position: absolute;
@@ -1839,7 +1819,7 @@
 @media (orientation: landscape) {
   .dd-kok .dd-sorgu {
     --dw: min(46vh, 29vw);
-    --kw: min(23vh, 13vw);
+    --kw: min(26vh, 14.5vw);
   }
   .dd-kok .dd-delil {
     left: calc(40% - var(--dw) / 2);
@@ -1848,10 +1828,10 @@
   .dd-kok .dd-kartlar {
     left: auto;
     right: calc(var(--mino-w) * 0.74 + 3vw);
-    top: calc(50% + 24px);
+    top: calc(50% + 22px);
     transform: translateY(-50%);
     flex-direction: column;
-    gap: clamp(6px, 1.8vh, 16px);
+    gap: clamp(5px, 1.4vh, 16px);
   }
   .dd-kok .dd-roman-sayfa {
     width: min(96vw, 1180px);

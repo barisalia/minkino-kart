@@ -183,20 +183,20 @@ export const CALISMA = {
 
 /** Lambadan sağdaki kapıya giden izler (halının üstünden, terliklerin önünden) */
 export const CALISMA_IZLERI: IzNoktasi[] = [
-  { x: 0.55, y: 0.925, don: 78, h: 0.045 },
-  { x: 0.6, y: 0.955, don: 96, h: 0.046 },
-  { x: 0.65, y: 0.93, don: 80, h: 0.046 },
-  { x: 0.715, y: 0.96, don: 98, h: 0.047 },
-  { x: 0.78, y: 0.985, don: 84, h: 0.047 },
-  { x: 0.845, y: 0.99, don: 92, h: 0.047 },
-  { x: 0.91, y: 0.985, don: 86, h: 0.047 },
-  { x: 0.975, y: 0.99, don: 92, h: 0.047 },
+  { x: 0.55, y: 0.925, don: 78, h: 0.059 },
+  { x: 0.6, y: 0.955, don: 96, h: 0.06 },
+  { x: 0.65, y: 0.93, don: 80, h: 0.06 },
+  { x: 0.715, y: 0.96, don: 98, h: 0.061 },
+  { x: 0.78, y: 0.985, don: 84, h: 0.061 },
+  { x: 0.845, y: 0.99, don: 92, h: 0.061 },
+  { x: 0.91, y: 0.985, don: 86, h: 0.061 },
+  { x: 0.975, y: 0.99, don: 92, h: 0.061 },
 ];
 /** Koridor: önden ortaya kadar ortak iz, sonra ikiye ayrılır (perspektif: uzaktaki izler küçük) */
 export const KORIDOR_IZLERI: IzNoktasi[] = [
-  { x: 0.505, y: 0.975, don: -4, h: 0.05 },
-  { x: 0.485, y: 0.915, don: -8, h: 0.044 },
-  { x: 0.5, y: 0.862, don: 2, h: 0.038 },
+  { x: 0.505, y: 0.975, don: -4, h: 0.065 },
+  { x: 0.485, y: 0.915, don: -8, h: 0.057 },
+  { x: 0.5, y: 0.862, don: 2, h: 0.049 },
 ];
 export type Yol = 'mutfak' | 'yatak';
 /** Kapılar: sol kemerli kapı ve sağ kapı (eşikleri) */
@@ -205,22 +205,22 @@ export const KAPI = { sol: { x: 0.315, y: 0.745 }, sag: { x: 0.725, y: 0.805 } }
 export function yolIzleri(yan: 'sol' | 'sag'): IzNoktasi[] {
   return yan === 'sol'
     ? [
-        { x: 0.455, y: 0.83, don: -58, h: 0.034 },
-        { x: 0.405, y: 0.802, don: -64, h: 0.03 },
-        { x: 0.36, y: 0.775, don: -62, h: 0.027 },
+        { x: 0.455, y: 0.83, don: -58, h: 0.044 },
+        { x: 0.405, y: 0.802, don: -64, h: 0.039 },
+        { x: 0.36, y: 0.775, don: -62, h: 0.035 },
       ]
     : [
-        { x: 0.56, y: 0.845, don: 62, h: 0.036 },
-        { x: 0.62, y: 0.832, don: 70, h: 0.035 },
-        { x: 0.675, y: 0.818, don: 66, h: 0.033 },
+        { x: 0.56, y: 0.845, don: 62, h: 0.047 },
+        { x: 0.62, y: 0.832, don: 70, h: 0.046 },
+        { x: 0.675, y: 0.818, don: 66, h: 0.043 },
       ];
 }
 /** Yatak odası: izler halıdan yatağın ayak ucuna; kuyruk yatağın altından (ayak ucu bacağının yanında) sallanır */
 export const YATAK_IZLERI: IzNoktasi[] = [
-  { x: 0.6, y: 0.985, don: -64, h: 0.05 },
-  { x: 0.54, y: 0.945, don: -70, h: 0.048 },
-  { x: 0.48, y: 0.91, don: -62, h: 0.046 },
-  { x: 0.43, y: 0.875, don: -70, h: 0.044 },
+  { x: 0.6, y: 0.985, don: -64, h: 0.065 },
+  { x: 0.54, y: 0.945, don: -70, h: 0.062 },
+  { x: 0.48, y: 0.91, don: -62, h: 0.06 },
+  { x: 0.43, y: 0.875, don: -70, h: 0.057 },
 ];
 export const YATAK = {
   /** yatağın önden görünen kısmı (Pamuk bunun arkasında): çokgen, oran */
@@ -247,10 +247,10 @@ export const YATAK = {
 };
 /** Mutfak: Kino'nun izleri buzdolabının önünde biter */
 export const MUTFAK_IZLERI: IzNoktasi[] = [
-  { x: 0.52, y: 0.99, don: -70, h: 0.06 },
-  { x: 0.42, y: 0.95, don: -76, h: 0.058 },
-  { x: 0.32, y: 0.93, don: -70, h: 0.056 },
-  { x: 0.24, y: 0.9, don: -74, h: 0.054 },
+  { x: 0.52, y: 0.99, don: -70, h: 0.078 },
+  { x: 0.42, y: 0.95, don: -76, h: 0.075 },
+  { x: 0.32, y: 0.93, don: -70, h: 0.073 },
+  { x: 0.24, y: 0.9, don: -74, h: 0.07 },
 ];
 
 /** Yolların kapılara dağılımı: test modunda (ya da tohum 0) mutfak solda; değilse rastgele (tekrar oynayınca değişsin) */
@@ -401,14 +401,14 @@ export interface Kamera {
  * Kadrajı ekrandaki güvenli bölgeye sığdırır: dünya ekranı hep tamamen kaplar (boş kenar yok); kadraj sığmıyorsa
  * ortası güvenli bölgenin ortasına gelir. guvenli: ekran içinde [sol, üst, sağ, alt] px.
  */
-export function kameraHesap(kadraj: Kadraj, dunya: { w: number; h: number }, ekran: { w: number; h: number }, guvenli: [number, number, number, number] = [0, 0, ekran.w, ekran.h], yakin = 1): Kamera {
+export function kameraHesap(kadraj: Kadraj, dunya: { w: number; h: number }, ekran: { w: number; h: number }, guvenli: [number, number, number, number] = [0, 0, ekran.w, ekran.h], yakin = 1, enAz = 1): Kamera {
   const [x0, y0, x1, y1] = kadraj;
   const kw = Math.max(1, (x1 - x0) * dunya.w);
   const kh = Math.max(1, (y1 - y0) * dunya.h);
   const gw = Math.max(1, guvenli[2] - guvenli[0]);
   const gh = Math.max(1, guvenli[3] - guvenli[1]);
   const kapla = Math.max(ekran.w / dunya.w, ekran.h / dunya.h);
-  const s = Math.max(kapla, Math.min(gw / kw, gh / kh) * yakin);
+  const s = Math.max(kapla * enAz, Math.min(gw / kw, gh / kh) * yakin);
   const cx = ((x0 + x1) / 2) * dunya.w;
   const cy = ((y0 + y1) / 2) * dunya.h;
   const gx = (guvenli[0] + guvenli[2]) / 2;

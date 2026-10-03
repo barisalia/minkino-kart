@@ -112,7 +112,7 @@ class Vaka {
       h('div.dd-ust', {}, geri, this.serit.el, h('div.dd-ust-sag', {}, tekrar, sesD)),
     );
     this.efekt = new Efekt(this.el);
-    this.el.append(this.efekt.el);
+    this.el.append(this.efekt.el, this.oy.balonKatman);
     // çalışma odası: bütün halkaların ipuçlarıyla
     this.calisma = calismaOdasi(HALKALAR.flatMap((hk) => hk.ipuclari));
     this.dunya.kur(this.calisma, 'genel');
@@ -207,12 +207,15 @@ class Vaka {
     this.adim('giris');
     this.calisma.e.los?.classList.add('acik');
     dunya.kur(this.calisma, 'giris');
-    // Mino esneyerek soldan girer
-    void oy.kaydir('mino', -Math.min(420, window.innerWidth * 0.5), 0, 0, 0);
+    // Mino soldan yürüyerek girer, durup esner
+    const giris = -Math.min(460, window.innerWidth * 0.55);
+    void oy.kaydir('mino', giris, 0, 0, 0);
     void oy.kaydir('kino', Math.min(520, window.innerWidth * 0.7), 0, 0, 0);
-    await this.bekle(250);
-    oy.minoTepki('esne', 2);
-    await oy.don('mino', 1300);
+    await this.bekle(350);
+    await oy.minoYuruyerekGel(giris, 1700);
+    if (this.kapali) return;
+    oy.minoTepki('esne', 1.8);
+    await this.bekle(1300);
     if (this.kapali) return;
     // devrik lambayı görür: gözleri kocaman
     const l = CALISMA.lambaDevrik;
@@ -243,7 +246,8 @@ class Vaka {
     // Kino kayarak gelir, halıya çarpar
     ses.kay();
     oy.kinoIfade('heyecan', 1400);
-    await oy.don('kino', 900);
+    // halının üstünden kayar (zıplamadan), sonra halıya çarpar
+    await oy.kaydir('kino', 0, 0, 850, 0);
     ses.bum();
     const [kx, ky] = this.efekt.merkez(oy.kino.el, 0.5, 0.2);
     this.efekt.yildizlar(kx, ky);
@@ -480,6 +484,7 @@ class Vaka {
     const fx = tx + (sag ? 1 : -1) * Math.max(70, kinoH * 0.42);
     const fy = Math.min(k.height - 6, ty + kinoH * 0.38);
     this.adim(`kokla-${t.id}`);
+    oy.el.classList.add('dd-onde');
     await oy.git('kino', fx, fy, 900, 50);
     if (this.kapali) return;
     oy.kinoOynat('kokla', 1800);
@@ -490,6 +495,7 @@ class Vaka {
     await oy.soyle(K.kokla, 'kino');
     await this.bekle(700);
     await oy.don('kino', 800);
+    oy.el.classList.remove('dd-onde');
     this.sonBulus = performance.now();
     this.koklaniyor = false;
     const hk = this.aranan;
@@ -559,10 +565,10 @@ class Vaka {
       golge.animate(
         [
           { transform: `${p(0.36, 0.95)} translate(-50%, -100%) scale(0.9, 1.05)`, opacity: 0 },
-          { transform: `${p(0.38, 0.95)} translate(-50%, -100%) scale(1.08, 0.88)`, opacity: 1, offset: 0.2 },
+          { transform: `${p(0.38, 0.95)} translate(-50%, -100%) scale(1.08, 0.88)`, opacity: 0.62, offset: 0.2 },
           { transform: `${p(0.5, 0.56)} translate(-50%, -100%) rotate(-12deg) scale(0.95, 1.08)`, offset: 0.62 },
           { transform: `${p(0.6, 0.675)} translate(-50%, -100%) scale(1.06, 0.92)`, offset: 0.88 },
-          { transform: `${p(0.6, 0.675)} translate(-50%, -100%)`, opacity: 1 },
+          { transform: `${p(0.6, 0.675)} translate(-50%, -100%)`, opacity: 0.62 },
         ],
         { duration: sure(1100), easing: 'cubic-bezier(.4,0,.4,1)', fill: 'forwards' },
       ),
@@ -599,7 +605,7 @@ class Vaka {
     if (devrik) pop(devrik, 1.1);
     this.efekt.sars(4);
     // gölge kedi kaçar
-    void golge.animate([{ transform: `${p(0.6, 0.675)} translate(-50%, -100%)`, opacity: 1 }, { transform: `${p(0.9, 0.94)} translate(-50%, -100%) scale(0.9)`, opacity: 0 }], { duration: sure(800), easing: 'ease-in', fill: 'forwards' });
+    void golge.animate([{ transform: `${p(0.6, 0.675)} translate(-50%, -100%)`, opacity: 0.62 }, { transform: `${p(0.9, 0.94)} translate(-50%, -100%) scale(0.9)`, opacity: 0 }], { duration: sure(800), easing: 'ease-in', fill: 'forwards' });
     await this.bekle(700);
     dik?.getAnimations().forEach((a) => a.cancel());
     dik?.classList.remove('dd-gecmis');
@@ -936,17 +942,20 @@ class Vaka {
     if (this.kapali) return;
     this.fon.baslat();
     // lambayı masaya koy
-    this.adim('lamba-tasi');
     this.el.classList.add('dd-sahne-is');
     // dar ekranda Mino ve Kino kenara çekilir: lamba ve masa aralarında kalsın
     if (this.dar()) oy.yerlesim('kenar');
-    await oy.soyle(M.masaya_koy);
-    await this.lambaTasi();
+    // lamba Mino konuşurken de sürüklenebilir (dokunuş hiç beklemez)
+    const tasi = this.lambaTasi();
+    this.adim('lamba-tasi');
+    void oy.soyle(M.masaya_koy);
+    await tasi;
     if (this.kapali) return;
     // düğmesine dokun: lamba yanar, oda aydınlanır
+    const yak = this.lambaYak();
     this.adim('lamba-dugme');
-    await oy.soyle(M.dugme);
-    await this.lambaYak();
+    void oy.soyle(M.dugme);
+    await yak;
     this.el.classList.remove('dd-sahne-is');
     oy.yerlesim('iki');
     if (this.kapali) return;

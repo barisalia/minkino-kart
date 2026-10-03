@@ -244,6 +244,8 @@ export class Dunya {
     const a2 = oda.el.animate([{ transform: `translateX(${yon * W * 1.05}px) ${t2}` }, { transform: t2 }], { duration: sure(ms), easing: egri });
     await Promise.all([a1.finished.catch(() => undefined), a2.finished.catch(() => undefined)]);
     eski.el.remove();
+    // eski odaya geri dönülebilir (koridor ↔ mutfak): kalıcı "dışarıda" animasyonu kalmasın
+    a1.cancel();
     this.kameraBitti?.();
   }
 
@@ -295,7 +297,7 @@ export class Dunya {
 
   private hesapla(): Kamera {
     const { w, h: hgt } = this.boyut;
-    return kameraHesap(this.kadraj, { w: this.oda?.W ?? w, h: ODA_H }, { w, h: hgt }, this.guvenli(w, hgt), this.yakin);
+    return kameraHesap(this.kadraj, { w: this.oda?.W ?? w, h: ODA_H }, { w, h: hgt }, this.guvenli(w, hgt), this.yakin, w < hgt * 1.15 ? 1.18 : 1);
   }
 
   /** Dünyanın ve katmanların (derinlik) transform'ları */

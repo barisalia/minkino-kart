@@ -11,6 +11,7 @@ import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
 import { altPayi, boyGenislik, CIZIM } from '../../src/karakter/boy';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
 import { Mino, type Tepki } from '../../src/mino/mino';
+import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
 
@@ -41,6 +42,8 @@ function balon(): HTMLElement {
 export class Oyuncular {
   readonly el: HTMLElement;
   readonly mino = new Mino();
+  /** Mino yandan yürüyebilir (girişte odaya yürüyerek girer): önden ↔ yandan sarmal */
+  readonly yuruyen = new YuruyenMino(this.mino);
   readonly kino = new Karakter('kino', h('div'));
   pamuk: Karakter | null = null;
   readonly minoYer: HTMLElement;
@@ -50,6 +53,9 @@ export class Oyuncular {
   private kinoHareket: HTMLElement;
   private pamukHareket: HTMLElement | null = null;
   private balonlar: Record<'mino' | 'kino' | 'pamuk', HTMLElement> = { mino: balon(), kino: balon(), pamuk: balon() };
+  /** balonlar her şeyin üstünde ayrı bir katmanda (kartların, fotoğrafın üstünde); konuşanın başına göre konur */
+  readonly balonKatman: HTMLElement;
+  private pamukKaynak: HTMLElement | null = null;
   private sira: Promise<void> = Promise.resolve();
   private kapali = false;
   private yukSol = 0;
@@ -59,11 +65,12 @@ export class Oyuncular {
   son: { soz: Soylenecek; kim: Kim; ton?: number } | null = null;
 
   constructor() {
-    this.minoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), this.mino.el, this.balonlar.mino);
+    this.minoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), this.yuruyen.el);
     this.minoYer = h('div.dd-oyuncu.dd-mino-yer', { 'data-oyuncu': 'mino' }, this.minoHareket);
-    this.kinoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-kino-kutu', {}, this.kino.el), this.balonlar.kino);
+    this.kinoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-kino-kutu', {}, this.kino.el));
     this.kinoYer = h('div.dd-oyuncu.dd-kino-yer', { 'data-oyuncu': 'kino', style: `--ko:${KINO_ORAN.toFixed(3)};--ka:${KINO_ALT.toFixed(3)}` }, this.kinoHareket);
     this.el = h('div.dd-oyuncular', {}, this.minoYer, this.kinoYer);
+    this.balonKatman = h('div.dd-balonlar', { 'aria-hidden': 'true' }, this.balonlar.mino, this.balonlar.kino, this.balonlar.pamuk);
     this.kino.ekHareket = (p, t) => {
       p.yukSol = this.yukSol;
       p.yukSag = this.yukSag;
@@ -76,16 +83,17 @@ export class Oyuncular {
     if (this.pamukYer && this.pamukEkran) return this.pamukEkran;
     this.pamukEkran = new Karakter('pamuk', h('div'));
     this.pamuk = this.pamukEkran;
-    this.pamukHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-pamuk-kutu', {}, this.pamukEkran.el), this.balonlar.pamuk);
+    this.pamukHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-pamuk-kutu', {}, this.pamukEkran.el));
     this.pamukYer = h('div.dd-oyuncu.dd-pamuk-yer', { 'data-oyuncu': 'pamuk', style: `--po:${PAMUK_ORAN.toFixed(3)};--pa:${PAMUK_ALT.toFixed(3)}` }, this.pamukHareket);
     this.el.append(this.pamukYer);
+    this.pamukKaynak = null;
     return this.pamukEkran;
   }
   private pamukEkran: Karakter | null = null;
-  /** Yatak odasındaki (dünyadaki) Pamuk konuşsun: balon onun kabına taşınır */
+  /** Yatak odasındaki (dünyadaki) Pamuk konuşsun: balon onun başına göre konur */
   pamukBagla(k: Karakter, kap: HTMLElement) {
     this.pamuk = k;
-    kap.append(this.balonlar.pamuk);
+    this.pamukKaynak = kap;
   }
 
   kapat() {
@@ -108,6 +116,7 @@ export class Oyuncular {
       if (b) {
         b.querySelector('span')!.textContent = metin;
         b.classList.remove('acik');
+        this.balonKonumla(b, kim as 'mino' | 'kino' | 'pamuk');
         void b.offsetWidth;
         b.classList.add('acik');
       }
@@ -127,6 +136,28 @@ export class Oyuncular {
     this.sira = is.catch(() => undefined);
     return is;
   }
+  /** Balonu konuşanın başının üstüne koyar; ekranın kenarından taşmaz (kuyruğu yine başı gösterir) */
+  private balonKonumla(b: HTMLElement, kim: 'mino' | 'kino' | 'pamuk') {
+    const kap = this.balonKatman.getBoundingClientRect();
+    const kaynak = kim === 'mino' ? this.mino.el : kim === 'kino' ? this.kino.el : (this.pamukKaynak ?? this.pamuk?.el);
+    if (!kaynak) return;
+    const r = kaynak.getBoundingClientRect();
+    // başın tepesi: Mino'nun kutusu kulaklardan başlar (şapka biraz üstte); Kino ve Pamuk'un kare tuvalinde üstte boşluk var
+    const ust = kim === 'mino' ? r.top - r.height * 0.02 : r.top + r.height * 0.1;
+    const x = r.left - kap.left + r.width / 2;
+    const y = Math.max(b.offsetHeight + 70, ust - kap.top - 4);
+    b.style.left = `${x.toFixed(1)}px`;
+    b.style.top = `${y.toFixed(1)}px`;
+    const bw = b.offsetWidth;
+    const pay = 8;
+    let kay = 0;
+    if (x - bw / 2 < pay) kay = pay - (x - bw / 2);
+    if (x + bw / 2 > kap.width - pay) kay = kap.width - pay - (x + bw / 2);
+    // kuyruk balonun içinde kalsın
+    kay = Math.max(-bw / 2 + 22, Math.min(bw / 2 - 22, kay));
+    b.style.setProperty('--kay', `${kay.toFixed(1)}px`);
+  }
+
   /** Son cümleyi tekrar söyler */
   tekrar() {
     const s = this.son;
@@ -208,6 +239,8 @@ export class Oyuncular {
     if (kim === 'kino') this.kinoOynat('yuru', ms);
     if (kim === 'pamuk' && this.pamuk && !AZ_HAREKET) void this.pamuk.oynat('yuru', ms);
     const yon = dx < x0 ? -1 : 1;
+    // önceki (kalıcı) kaydırmalar birikmesin: yeni kayma şimdiki yerden başlar
+    hareket.getAnimations().forEach((x) => x.cancel());
     const a = hareket.animate(
       [
         { transform: `translate(${x0}px, ${y0}px)` },
@@ -218,10 +251,30 @@ export class Oyuncular {
     );
     await a.finished.catch(() => undefined);
   }
+  /**
+   * Mino yandan yürüyerek gelir: ekranda dx px uzaktan (eksi: soldan) yerine; adımlar yola göre (pati kaymaz).
+   * Yan çizim yüklenmediyse önden sekerek gelir.
+   */
+  async minoYuruyerekGel(dx: number, ms = 1600) {
+    const el = this.minoHareket;
+    const genis = this.minoYer.offsetWidth || 1;
+    const sn = sure(ms) / 1000;
+    const dongu = (Math.abs(dx) / genis) * (MINO_KUTU_GENISLIK / MINO_DONGU_YOLU);
+    this.yuruyen.el.classList.toggle('sola', dx > 0);
+    const yandan = !AZ_HAREKET && this.yuruyen.yuru(Math.min(4.5, Math.max(1.2, dongu / Math.max(0.1, sn))));
+    if (!yandan) return this.kaydir('mino', 0, 0, ms, 30);
+    this.konumlar.set(this.minoYer, [0, 0]);
+    el.getAnimations().forEach((x) => x.cancel());
+    const a = el.animate([{ transform: `translate(${dx}px, 0)` }, { transform: 'translate(0, 0)' }], { duration: sure(ms), easing: 'linear', fill: 'forwards' });
+    await a.finished.catch(() => undefined);
+    this.yuruyen.dur();
+    this.yuruyen.el.classList.remove('sola');
+  }
+
   /** Yerinde zıplama (esneyip basılır) */
   zipla(kim: 'mino' | 'kino' | 'pamuk', yukseklik = 18, ms = 620) {
     const yer = kim === 'mino' ? this.minoYer : kim === 'kino' ? this.kinoYer : this.pamukYer;
-    const govde = yer?.querySelector<HTMLElement>(':scope > .dd-hareket > :is(.mino, .dd-kino-kutu, .dd-pamuk-kutu)');
+    const govde = yer?.querySelector<HTMLElement>(':scope > .dd-hareket > :is(.mino-yuruyen, .dd-kino-kutu, .dd-pamuk-kutu)');
     if (!govde || AZ_HAREKET) return Promise.resolve();
     return govde
       .animate(

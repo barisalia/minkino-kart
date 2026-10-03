@@ -87,36 +87,44 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
   kartlar.forEach((k, i) => k.animate([{ transform: 'translateY(60px) scale(0.6) rotate(-10deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: sure(420), delay: sure(420 + i * 120), easing: 'cubic-bezier(.3,1.5,.5,1)', fill: 'backwards' }));
   setTimeout(() => !o.kapandi() && ses.kart(), sure(420));
   o.oy.mino.bak(0.4);
-  await oy.soyle(halka.soru);
-  if (o.kapandi()) return;
-
-  // 3) Kino atılır: yanlış bir kartı gösterir, patisiyle damgalar
-  const kinoKart = kartlar.find((k) => k.dataset.kart === halka.kinoKart);
-  if (halka.kino && kinoKart) {
-    oy.kinoPoz('isaret');
-    oy.kinoIfade('heyecan', 1600);
-    oy.kinoOynat('sevin', 700);
-    void oy.zipla('kino', 22, 560);
-    const damga = h('img.dd-damga', { src: resim('ipucu-kopek-pati') ?? '', alt: '', draggable: 'false' });
-    setTimeout(() => {
-      if (o.kapandi()) return;
-      kinoKart.append(damga);
-      oynat(damga, 'dd-damga-bas');
-      void salla(kinoKart);
-      ses.pop();
-    }, sure(380));
-    await oy.soyle(halka.kino, 'kino');
-    oy.kinoPoz(null);
-    if (o.kapandi()) return;
-  }
-  if (o.ilk) await oy.soyle(M.surukle);
-
-  // 4) seçim: sürükle ya da dokun
+  // kartlar açılır açılmaz tutulabilir (dokunuş beklemez); soru ve Kino'nun tahmini bu arada sürer
   let mesgul = false;
+  let tanitim = true;
   let durdurParmak: (() => void) | null = null;
   let sonHareket = performance.now();
+  const tanit = (async () => {
+    // 2) soru
+    await oy.soyle(halka.soru);
+    if (o.kapandi() || soru.cozuldu) return;
+    // 3) Kino atılır: yanlış bir kartı gösterir, patisiyle damgalar
+    const kinoKart = kartlar.find((k) => k.dataset.kart === halka.kinoKart);
+    if (halka.kino && kinoKart && !kinoKart.classList.contains('dd-soluk')) {
+      oy.kinoPoz('isaret');
+      oy.kinoIfade('heyecan', 1600);
+      oy.kinoOynat('sevin', 700);
+      void oy.zipla('kino', 22, 560);
+      const damga = h('img.dd-damga', { src: resim('ipucu-kopek-pati') ?? '', alt: '', draggable: 'false' });
+      setTimeout(() => {
+        if (o.kapandi()) return;
+        kinoKart.append(damga);
+        oynat(damga, 'dd-damga-bas');
+        void salla(kinoKart);
+        ses.pop();
+      }, sure(380));
+      await oy.soyle(halka.kino, 'kino');
+      oy.kinoPoz(null);
+      if (o.kapandi() || soru.cozuldu) return;
+    }
+    if (o.ilk && !soru.yanlislar.length) await oy.soyle(M.surukle);
+  })().finally(() => {
+    tanitim = false;
+    sonHareket = performance.now();
+    if (!soru.cozuldu && !o.kapandi()) o.adim('kart');
+  });
+
+  // 4) seçim: sürükle ya da dokun
   const ipucuZaman = window.setInterval(() => {
-    if (o.kapandi() || mesgul || durdurParmak) return;
+    if (o.kapandi() || mesgul || tanitim || durdurParmak) return;
     if (performance.now() - sonHareket > YARDIM.surukleSn * 1000) {
       // hangisinin doğru olduğunu söylemeden: açık kartlardan birinden ipucuna
       const acik = kartlar.filter((k) => !k.classList.contains('dd-soluk'));
@@ -130,7 +138,6 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
     durdurParmak = null;
     sonHareket = performance.now();
   };
-  o.adim('kart');
 
   await new Promise<void>((coz) => {
     const bitir = () => {
@@ -187,6 +194,8 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
       k.addEventListener('pointercancel', (e) => void birak(e));
     }
   });
+  // doğru kart erkenden bulunduysa Kino'nun sözü bitsin (konuşmalar üst üste binmesin)
+  await tanit;
   if (o.kapandi()) return;
 
   // 5) "Demek ki…": fotoğraf ve kart birleşip sonuç kartına döner; Mino söyler; kart dosyaya uçar
@@ -204,8 +213,11 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
     const a = delil.getBoundingClientRect();
     const b = hedef.getBoundingClientRect();
     const kopya = delil.cloneNode(true) as HTMLElement;
-    kopya.style.width = `${a.width}px`;
-    kopya.style.height = `${a.height}px`;
+    // uçan kopya: çevirme / ışık animasyonları ve ikinci fotoğraf kopyalanmaz, kendi yerleşimi yok (uçuş kabında durur)
+    kopya.classList.remove('dd-cevir', 'dd-isil', 'dd-uzerinde');
+    kopya.querySelector('.dd-delil-ekk')?.remove();
+    kopya.querySelector<HTMLElement>('.dd-demek')?.style.setProperty('opacity', '1');
+    kopya.style.cssText = `position:relative;left:auto;top:auto;width:${a.width}px;height:${a.height}px;rotate:-2deg`;
     delil.style.opacity = '0';
     perde.classList.add('kalkiyor');
     efekt.ucus();
@@ -337,6 +349,46 @@ async function yanlis(o: SorguSecenek, k: HTMLElement, delil: HTMLElement, sahne
   o.oy.mino.bak(0.4);
 }
 
+/**
+ * Kartın içinden çıkan hayvanın sahnesi: kart noktasından büyüyüp sahnenin önüne (ipucunun önü, ekranın altına yakın)
+ * zıplar. Döner: hayvanın kabı (ayak tabanı left/top noktasında) ve geri dönüş.
+ */
+function hayvanSahnesi(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement, sinif: string, boyOran: number, ...icerik: HTMLElement[]) {
+  const kk = o.kok.getBoundingClientRect();
+  const r = k.getBoundingClientRect();
+  const dar = kk.width < kk.height * 1.15;
+  const boy = Math.min(kk.height * boyOran, kk.width * (dar ? 0.7 : 0.42));
+  // sahne: dikeyde ortada, kartların hizasında; yatayda fotoğrafla kartların arasında, yerde
+  const sx = kk.width * (dar ? 0.5 : 0.56);
+  const sy = kk.height * (dar ? 0.78 : 0.97);
+  const z = h(`div.${sinif}`, { style: `left:${sx}px;top:${sy}px;width:${boy}px;height:${boy}px` }, ...icerik);
+  sahnecik.append(z);
+  const dx = r.left - kk.left + r.width / 2 - sx;
+  const dy = r.top - kk.top + r.height / 2 - sy;
+  const gel = z.animate(
+    [
+      { transform: `translate(${dx}px, ${dy}px) translate(-50%, -60%) scale(0.15)`, opacity: 0 },
+      { transform: `translate(${dx * 0.4}px, ${dy * 0.4 - boy * 0.35}px) translate(-50%, -100%) scale(0.85)`, opacity: 1, offset: 0.55 },
+      { transform: 'translate(-50%, -100%) scale(1.06, 0.92)', opacity: 1, offset: 0.82 },
+      { transform: 'translate(-50%, -100%) scale(1)', opacity: 1 },
+    ],
+    { duration: sure(620), easing: 'cubic-bezier(.3,.8,.4,1)', fill: 'forwards' },
+  );
+  const don = () =>
+    z
+      .animate(
+        [
+          { transform: 'translate(-50%, -100%) scale(1)', opacity: 1 },
+          { transform: `translate(${dx * 0.5}px, ${dy * 0.5 - boy * 0.25}px) translate(-50%, -100%) scale(0.5)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(${dx}px, ${dy}px) translate(-50%, -60%) scale(0.15)`, opacity: 0 },
+        ],
+        { duration: sure(420), easing: 'ease-in', fill: 'forwards' },
+      )
+      .finished.catch(() => undefined)
+      .then(() => z.remove());
+  return { z, boy, sy, gel: gel.finished.catch(() => undefined), don };
+}
+
 /** Zürafa: karttan çıkar, "Benim ayağım toynak!"; boynu uzar, tavana "tok" çarpar: "Hem bu odaya sığmam!" */
 async function zurafa(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {
   const url = resim('zurafa');
@@ -345,42 +397,47 @@ async function zurafa(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {
     await o.oy.soyle(KT.zurafa_sigmam, 'kart', KART_TON.zurafa);
     return;
   }
-  const r = k.getBoundingClientRect();
-  const kk = o.kok.getBoundingClientRect();
-  const boy = r.height * 1.35;
   // üç dilim: baş (üstte), boyun (uzayan), gövde (yerinde)
   const dilim = (sinif: string) => h(`div.dd-zurafa-dilim.${sinif}`, {}, h('img', { src: url, alt: '', draggable: 'false' }));
   const bas = dilim('dd-zd-bas');
   const boyun = dilim('dd-zd-boyun');
   const govde = dilim('dd-zd-govde');
-  const z = h('div.dd-zurafa', { style: `left:${r.left - kk.left + r.width / 2}px;top:${r.top - kk.top + r.height * 0.55}px;width:${boy}px;height:${boy}px` }, govde, boyun, bas);
-  sahnecik.append(z);
+  const s = hayvanSahnesi(o, k, sahnecik, 'dd-zurafa', 0.5, govde, boyun, bas);
   ses.pop();
-  await z.animate([{ transform: 'translate(-50%, -100%) scale(0.2)', opacity: 0 }, { transform: 'translate(-50%, -100%) scale(1.08)', opacity: 1, offset: 0.7 }, { transform: 'translate(-50%, -100%) scale(1)', opacity: 1 }], { duration: sure(420), easing: 'cubic-bezier(.3,1.4,.5,1)', fill: 'forwards' }).finished.catch(() => undefined);
+  await s.gel;
   await o.oy.soyle(KT.zurafa_toynak, 'kart', KART_TON.zurafa);
   if (o.kapandi()) return;
-  // boyun uzar: başın tepesi ekranın üstüne değene kadar
-  const tepe = r.top - kk.top + r.height * 0.55 - boy + boy * 0.07;
-  const uza = Math.max(30, tepe - 6);
-  const boyunH = boy * 0.1;
+  // boyun uzar: başın tepesi ekranın üstüne değene kadar (başın tepesi tuvalin ~%6'sında)
+  const tepe = s.sy - s.boy + s.boy * 0.06;
+  const uza = Math.max(30, tepe - 4);
+  const boyunH = s.boy * 0.1;
   ses.uza();
-  const ms = sure(700);
+  const ms = sure(800);
   const egri = 'cubic-bezier(.5,0,.75,0)';
   const a1 = bas.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${-uza}px)` }], { duration: ms, easing: egri, fill: 'forwards' });
   const a2 = boyun.animate([{ transform: 'scaleY(1)' }, { transform: `scaleY(${(boyunH + uza) / boyunH})` }], { duration: ms, easing: egri, fill: 'forwards' });
   await Promise.all([a1.finished.catch(() => undefined), a2.finished.catch(() => undefined)]);
   // tok!
   ses.tok();
-  o.efekt.sars(5);
-  const [bx] = o.efekt.merkez(bas, 0.38, 0.1);
-  o.efekt.yildizlar(bx, 18);
-  void bas.animate([{ transform: `translateY(${-uza}px)` }, { transform: `translateY(${-uza + 14}px) rotate(-6deg)`, offset: 0.3 }, { transform: `translateY(${-uza + 6}px) rotate(4deg)`, offset: 0.6 }, { transform: `translateY(${-uza + 8}px)` }], { duration: sure(500), fill: 'forwards' });
+  o.efekt.sars(6);
+  const [bx] = o.efekt.merkez(bas, 0.36, 0.1);
+  o.efekt.yildizlar(bx, 22);
+  void bas.animate(
+    [
+      { transform: `translateY(${-uza}px)` },
+      { transform: `translateY(${-uza + 16}px) rotate(-7deg)`, offset: 0.3 },
+      { transform: `translateY(${-uza + 6}px) rotate(5deg)`, offset: 0.6 },
+      { transform: `translateY(${-uza + 9}px) rotate(-2deg)` },
+    ],
+    { duration: sure(560), fill: 'forwards' },
+  );
   await o.oy.soyle(KT.zurafa_sigmam, 'kart', KART_TON.zurafa);
   // boyun kısalır, zürafa karta geri girer
-  bas.getAnimations().forEach((a) => a.cancel());
+  const b2 = bas.animate([{ transform: `translateY(${-uza + 9}px)` }, { transform: 'translateY(0)' }], { duration: sure(380), easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards' });
+  const n2 = boyun.animate([{ transform: `scaleY(${(boyunH + uza - 9) / boyunH})` }, { transform: 'scaleY(1)' }], { duration: sure(380), easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards' });
+  await Promise.all([b2.finished.catch(() => undefined), n2.finished.catch(() => undefined)]);
   a2.cancel();
-  await z.animate([{ transform: 'translate(-50%, -100%) scale(1)', opacity: 1 }, { transform: 'translate(-50%, -100%) scale(0.2)', opacity: 0 }], { duration: sure(300), easing: 'ease-in', fill: 'forwards' }).finished.catch(() => undefined);
-  z.remove();
+  await s.don();
 }
 
 /** Ördek: karttan çıkar, paytak paytak sallanır, ayaklarını açar: "Benim ayağım perdeli. Vak!" */
@@ -391,21 +448,20 @@ async function ordek(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {
     await o.oy.soyle(KT.ordek, 'kart', KART_TON.ordek);
     return;
   }
-  const r = k.getBoundingClientRect();
-  const kk = o.kok.getBoundingClientRect();
-  const boy = r.height * 1.05;
-  const d = h('div.dd-ordek', { style: `left:${r.left - kk.left + r.width / 2}px;top:${r.top - kk.top + r.height * 0.5}px;width:${boy}px;height:${boy}px` }, h('img', { src: url, alt: '', draggable: 'false' }));
-  sahnecik.append(d);
+  const img = h('img', { src: url, alt: '', draggable: 'false' });
+  const ayak = h('img.dd-ordek-ayak', { src: resim('kart-ordek-ayagi') ?? '', alt: '', draggable: 'false' });
+  const s = hayvanSahnesi(o, k, sahnecik, 'dd-ordek', 0.42, img, ayak);
   ses.pop();
-  await d.animate([{ transform: 'translate(-50%, -100%) scale(0.2)', opacity: 0 }, { transform: 'translate(-50%, -100%) scale(1)', opacity: 1 }], { duration: sure(380), easing: 'cubic-bezier(.3,1.4,.5,1)', fill: 'forwards' }).finished.catch(() => undefined);
-  const img = d.querySelector('img')!;
-  if (!AZ_HAREKET) void img.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-9deg) translateX(-6%)' }, { transform: 'rotate(9deg) translateX(6%)' }, { transform: 'rotate(0)' }], { duration: sure(520), iterations: 4, easing: 'ease-in-out' });
+  await s.gel;
+  if (!AZ_HAREKET) void img.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-10deg) translateX(-7%)' }, { transform: 'rotate(10deg) translateX(7%)' }, { transform: 'rotate(0)' }], { duration: sure(520), iterations: 4, easing: 'ease-in-out' });
+  // perdeli ayağını gösterir (ayak izi büyür, açılır)
+  if (!AZ_HAREKET) void ayak.animate([{ transform: 'translate(-50%, 0) scale(0.2) rotate(-20deg)', opacity: 0 }, { transform: 'translate(-50%, 0) scale(1.15) rotate(8deg)', opacity: 1, offset: 0.4 }, { transform: 'translate(-50%, 0) scale(1) rotate(0)', opacity: 1 }], { duration: sure(700), delay: sure(500), easing: 'cubic-bezier(.3,1.4,.5,1)', fill: 'both' });
   ses.vak();
   setTimeout(() => !o.kapandi() && ses.vak(), sure(900));
   await o.oy.soyle(KT.ordek, 'kart', KART_TON.ordek);
-  await d.animate([{ transform: 'translate(-50%, -100%) scale(1)', opacity: 1 }, { transform: 'translate(-50%, -100%) scale(0.2)', opacity: 0 }], { duration: sure(280), easing: 'ease-in', fill: 'forwards' }).finished.catch(() => undefined);
-  d.remove();
+  await s.don();
 }
+
 
 /** Yastık: karttaki uykucu kedi horlar (z harfleri yükselir): "Uyuyan kedi zıplamaz!" */
 async function yastik(o: SorguSecenek, k: HTMLElement) {

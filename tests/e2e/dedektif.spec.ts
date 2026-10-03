@@ -16,6 +16,12 @@ async function ortasi(l: Locator): Promise<[number, number]> {
   const b = (await l.boundingBox())!;
   return [b.x + b.width / 2, b.y + b.height / 2];
 }
+/** Ekranda gerçekten o noktaya dokun (üstünde başka bir şey varsa dokunuş ona gider: örtme hatası yakalanır) */
+async function dokun(page: Page, l: Locator) {
+  await page.waitForTimeout(150);
+  const [x, y] = await ortasi(l);
+  await page.mouse.click(x, y);
+}
 /** Fareyle sürükle (adım adım) */
 async function surukle(page: Page, kaynak: Locator, hedef: Locator) {
   const [x0, y0] = await ortasi(kaynak);
@@ -111,15 +117,15 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   await izleriYak(page, 'calisma');
   await izleriYak(page, 'koridor');
   await adimBekle(page, /^yol-sec$/);
-  await page.locator('.dd-sahne .dd-izler-yol[data-yol="mutfak"] .dd-iz').first().dispatchEvent('click');
+  await dokun(page, page.locator('.dd-sahne .dd-izler-yol[data-yol="mutfak"] .dd-iz').first());
   await adimBekle(page, /^mutfak$/);
   await adimBekle(page, /^yol-sec$/);
   await expect(page.locator('.dd-sahne .dd-izler-yol[data-yol="mutfak"]')).toHaveClass(/dd-soluk/);
-  await page.locator('.dd-sahne .dd-izler-yol[data-yol="yatak"] .dd-iz').first().dispatchEvent('click');
+  await dokun(page, page.locator('.dd-sahne .dd-izler-yol[data-yol="yatak"] .dd-iz').first());
   await izleriYak(page, 'yatak');
   // kuyruk ucuna dokun: Pamuk çıkar
   await adimBekle(page, /^kuyruk$/);
-  await page.locator('.dd-sahne .dd-kuyruk').dispatchEvent('click');
+  await dokun(page, page.locator('.dd-sahne .dd-kuyruk'));
   await adimBekle(page, /^(pamuk|final|lamba-tasi)$/);
   await expect(page.locator('.dd-goz.dd-cozuldu')).toHaveCount(4);
 
@@ -128,7 +134,7 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   await surukle(page, page.locator('.dd-sahne .dd-lamba-devrik'), page.locator('.dd-sahne .dd-masa-hedef'));
   await adimBekle(page, /^lamba-dugme$/);
   await expect(page.locator('.dd-sahne .dd-lamba-dik')).toHaveClass(/dd-yerinde/);
-  await page.locator('.dd-sahne .dd-lamba-dugme').dispatchEvent('click');
+  await dokun(page, page.locator('.dd-sahne .dd-lamba-dugme'));
   await expect(page.locator('.dd-sahne .dd-lamba-isik')).toHaveClass(/acik/);
   // Pamuk ışık yanınca Mino'yla Kino'nun arasına gelir, kelebeğe el sallanır
   await adimBekle(page, /^(kelebek|roman|bitti)$/);
