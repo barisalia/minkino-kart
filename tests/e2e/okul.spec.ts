@@ -224,11 +224,11 @@ for (const yas of [3, 6]) {
       await page.screenshot({ path: `tests/screens/okul-${info.project.name}-${yas}-${ad}.png` });
     };
     await page.goto(`./okul/?test=1&sifirla=1&yas=${yas}&tohum=${yas * 7}`);
-    // Okul Yolu: Sayı Bahçesi açık, Ses Kulesi ve Kelime Köprüsü yakında (kilitli)
+    // Okul Yolu: Sayı Bahçesi ve Ses Kulesi açık (Ses Kulesi: tests/e2e/okul-ses.spec.ts), Kelime Köprüsü yakında
     await expect(page.locator('.ok-harita .ok-bolge-kart')).toHaveCount(3);
-    await expect(page.locator('.ok-bolge-kart[data-bolge="ses"] .ok-yakinda')).toBeVisible();
+    await expect(page.locator('.ok-bolge-kart[data-bolge="ses"] .ok-yakinda')).toHaveCount(0);
     await expect(page.locator('.ok-bolge-kart[data-bolge="kelime"] .ok-yakinda')).toBeVisible();
-    await page.locator('.ok-bolge-kart[data-bolge="ses"]').click();
+    await page.locator('.ok-bolge-kart[data-bolge="kelime"]').click();
     await expect(page.locator('.ok-harita')).toBeVisible();
     await kareAl('harita');
     await page.locator('.ok-bolge-kart[data-bolge="sayi"]').click();

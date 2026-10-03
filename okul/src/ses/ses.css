@@ -69,7 +69,7 @@
   width: var(--ks);
   height: var(--ks);
   flex: 0 0 auto;
-  padding: 8%;
+  padding: calc(var(--ks) * 0.08);
   border-radius: 24%;
   background: radial-gradient(120% 100% at 50% 15%, #fff 0%, #fffaf0 70%, #f8ecd8 100%);
   border: 3px solid #efdcc2;
@@ -977,9 +977,10 @@
   to { opacity: 1; scale: 1; }
 }
 @keyframes ok-ses-cik {
-  0% { opacity: 0; scale: 0.2; transform: translate(-60%, -60%); }
-  60% { opacity: 1; scale: 1.15; transform: translate(0, -8%); }
-  100% { opacity: 1; scale: 1; transform: none; }
+  0% { opacity: 0; scale: 0.2; rotate: -20deg; }
+  55% { opacity: 1; scale: 1.18 0.9; rotate: 6deg; }
+  80% { scale: 0.94 1.06; rotate: -2deg; }
+  100% { opacity: 1; scale: 1; rotate: 0deg; }
 }
 @keyframes ok-ses-davet {
   0%, 100% { transform: scale(1); }
@@ -998,5 +999,108 @@
   .ok-kok .ok-ses-iz-bas,
   .ok-kok .ok-ses-final {
     animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- odanın kahramanı (A: arı) */
+.ok-kok .ok-ses-kahraman {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* havada süzülür: yukarı-aşağı ve hafif yalpalama (nefes) */
+  animation: ok-ses-havada 2.4s ease-in-out infinite;
+}
+.ok-kok .ok-ses-kart .ok-ses-kahraman > .ok-ses-img,
+.ok-kok .ok-ses-kahraman > .ok-ses-img {
+  animation: none;
+  transform-origin: 50% 85%;
+}
+.ok-kok .ok-ses-kahraman.ok-ses-poz > .ok-ses-img {
+  animation: ok-ses-ezil 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.ok-kok .ok-ses-kahraman.ok-ses-kon > .ok-ses-img {
+  animation: ok-ses-kon-ez 0.6s cubic-bezier(0.25, 1.5, 0.45, 1);
+}
+.ok-kok .ok-ses-ucan .ok-ses-kahraman {
+  animation: none;
+}
+.ok-kok .ok-ses-ucan .ok-ses-kahraman > .ok-ses-img {
+  /* kanat çırpar gibi titrek uçuş */
+  animation: ok-ses-titre 0.16s ease-in-out infinite alternate;
+}
+.ok-kok .ok-ses-av-ust {
+  display: flex;
+  align-items: center;
+  gap: min(3cqw, 16px);
+}
+.ok-kok .ok-ses-av-ust > .ok-ses-kahraman {
+  width: min(20cqw, 17cqh, 120px);
+  height: min(20cqw, 17cqh, 120px);
+  cursor: pointer;
+}
+.ok-kok .ok-ses-sepet-kahraman {
+  position: absolute;
+  right: -16%;
+  top: 14%;
+  width: 44%;
+  aspect-ratio: 1;
+  z-index: 4;
+  pointer-events: none;
+}
+.ok-kok .ok-ses-final-kap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: min(4cqw, 30px);
+}
+.ok-kok .ok-ses-final-kap > .ok-ses-kahraman {
+  width: min(36cqw, 40cqh, 240px);
+  height: min(36cqw, 40cqh, 240px);
+}
+@container alan (max-aspect-ratio: 1 / 1) {
+  .ok-kok .ok-ses-final-kap {
+    flex-direction: column;
+  }
+}
+/* izlenen harf toplanıp kahramana dönüşür */
+.ok-kok .ok-ses-iz-resim {
+  right: auto;
+  bottom: auto;
+  left: 22%;
+  top: 22%;
+  width: 56%;
+}
+.ok-kok .ok-ses-kagit.ok-ses-donus .ok-ses-iz-svg {
+  transition: scale 0.45s cubic-bezier(0.55, -0.4, 0.8, 0.4), opacity 0.4s ease-in 0.1s;
+  scale: 0.25;
+  opacity: 0;
+}
+@keyframes ok-ses-havada {
+  0%, 100% { translate: 0 0; rotate: -2deg; }
+  50% { translate: 0 -5%; rotate: 2deg; }
+}
+@keyframes ok-ses-ezil {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18, 0.84); }
+  65% { transform: scale(0.92, 1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes ok-ses-kon-ez {
+  0% { transform: scale(0.9, 1.15) translateY(-10%); }
+  40% { transform: scale(1.22, 0.8) translateY(4%); }
+  70% { transform: scale(0.94, 1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes ok-ses-titre {
+  from { transform: rotate(-4deg) scale(1, 0.97); }
+  to { transform: rotate(4deg) scale(1, 1.03); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ok-kok .ok-ses-kahraman,
+  .ok-kok .ok-ses-kahraman > .ok-ses-img {
+    animation: none !important;
   }
 }

@@ -71,6 +71,8 @@ export function izIlerle(iz: Iz, p: Nokta, tol: number): boolean {
     iz.bitti = true;
     return true;
   }
+  // başlamamış çizgi yalnız yeşil noktanın yakınından başlar (önceki çizgiden kayan parmak bunu doldurmasın)
+  if (iz.i === 0 && d(iz.n[0]) > tol * 1.25) return false;
   let en = iz.i;
   const son = Math.min(iz.n.length - 1, iz.i + PENCERE);
   for (let j = iz.i; j <= son; j++) if (d(iz.n[j]) <= tol) en = j;

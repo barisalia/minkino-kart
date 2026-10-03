@@ -35,5 +35,32 @@ export function resimEl(k: string, renk = '#9B5CE0'): HTMLElement {
   return h('span.ok-ses-yer', { style: `--r:${renk}`, 'data-yer-tutucu': k }, h('b', {}, ilkHarf(k)), h('small', {}, kelime(k).ad.toLocaleLowerCase('tr')));
 }
 
+/**
+ * Odanın kahramanı (A odasında arı): pozlar assets/okul/ses/<kelime>-<poz>.webp (ucan, mutlu); poz çizimi yoksa
+ * kelimenin kendi resmi. Kahraman odada uçar, harfe konar, izlenen harf ona dönüşür.
+ */
+export type Poz = '' | 'ucan' | 'mutlu';
+export const pozAdres = (k: string, poz: Poz = ''): string => (poz && YUVA[`../../../assets/okul/ses/${k}-${poz}.webp`]) || resimAdres(k);
+export const pozVar = (k: string, poz: Exclude<Poz, ''>) => !!YUVA[`../../../assets/okul/ses/${k}-${poz}.webp`];
+
+export function kahramanEl(k: string, renk: string, poz: Poz = ''): HTMLElement {
+  const adres = pozAdres(k, poz);
+  const ic = adres ? h('img.ok-ses-img', { src: adres, alt: '', draggable: 'false' }) : resimEl(k, renk);
+  return h('span.ok-ses-kahraman', { 'data-kelime': k, 'data-poz': poz || 'dur' }, ic);
+}
+
+/** Kahramanın pozunu değiştirir (ms sonra eski pozuna döner); squash ile geçiş */
+export function pozla(el: HTMLElement, poz: Poz, ms = 0) {
+  const k = el.dataset.kelime ?? '';
+  const img = el.querySelector('img');
+  const once = (el.dataset.poz === 'dur' ? '' : el.dataset.poz) as Poz;
+  if (img && pozAdres(k, poz)) img.src = pozAdres(k, poz);
+  el.dataset.poz = poz || 'dur';
+  el.classList.remove('ok-ses-poz');
+  void el.offsetWidth;
+  el.classList.add('ok-ses-poz');
+  if (ms > 0) window.setTimeout(() => el.isConnected && pozla(el, once), ms);
+}
+
 /** "Ses Dedektifi" rozetinin çizimi (assets/okul/rozet-ses.webp) varsa adresi */
 export const rozetSesAdres = (): string => ROZET['../../../assets/okul/rozet-ses.webp'] ?? '';
