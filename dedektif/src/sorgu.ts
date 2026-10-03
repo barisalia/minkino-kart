@@ -369,7 +369,7 @@ function hayvanSahnesi(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement, s
     [
       { transform: `translate(${dx}px, ${dy}px) translate(-50%, -60%) scale(0.15)`, opacity: 0 },
       { transform: `translate(${dx * 0.4}px, ${dy * 0.4 - boy * 0.35}px) translate(-50%, -100%) scale(0.85)`, opacity: 1, offset: 0.55 },
-      { transform: 'translate(-50%, -100%) scale(1.06, 0.92)', opacity: 1, offset: 0.82 },
+      { transform: 'translate(-50%, -100%) scale(1.04, 0.97)', opacity: 1, offset: 0.82 },
       { transform: 'translate(-50%, -100%) scale(1)', opacity: 1 },
     ],
     { duration: sure(620), easing: 'cubic-bezier(.3,.8,.4,1)', fill: 'forwards' },
@@ -389,7 +389,11 @@ function hayvanSahnesi(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement, s
   return { z, boy, sy, gel: gel.finished.catch(() => undefined), don };
 }
 
-/** Zürafa: karttan çıkar, "Benim ayağım toynak!"; boynu uzar, tavana "tok" çarpar: "Hem bu odaya sığmam!" */
+/**
+ * Zürafa: karttan çıkar, "Benim ayağım toynak!"; sonra gerçek boyuna doğru büyür (çizim hiç esnemez, orantısı aynı):
+ * başı ekranın tepesine "tok" diye çarpar, başının üstünde yıldızlar döner, sersemce sallanır: "Hem bu odaya sığmam!";
+ * küçülüp karta geri girer.
+ */
 async function zurafa(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {
   const url = resim('zurafa');
   if (!url) {
@@ -397,48 +401,41 @@ async function zurafa(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {
     await o.oy.soyle(KT.zurafa_sigmam, 'kart', KART_TON.zurafa);
     return;
   }
-  // üç dilim: baş (üstte), boyun (uzayan), gövde (yerinde)
-  const dilim = (sinif: string) => h(`div.dd-zurafa-dilim.${sinif}`, {}, h('img', { src: url, alt: '', draggable: 'false' }));
-  const bas = dilim('dd-zd-bas');
-  const boyun = dilim('dd-zd-boyun');
-  const govde = dilim('dd-zd-govde');
-  const s = hayvanSahnesi(o, k, sahnecik, 'dd-zurafa', 0.5, govde, boyun, bas);
+  const img = h('img', { src: url, alt: '', draggable: 'false' });
+  const govde = h('div.dd-zurafa-govde', {}, img);
+  const s = hayvanSahnesi(o, k, sahnecik, 'dd-zurafa', 0.42, govde);
   ses.pop();
   await s.gel;
   await o.oy.soyle(KT.zurafa_toynak, 'kart', KART_TON.zurafa);
   if (o.kapandi()) return;
-  // boyun uzar: başın tepesi ekranın üstüne değene kadar (başın tepesi tuvalin ~%6'sında)
-  const tepe = s.sy - s.boy + s.boy * 0.06;
-  const uza = Math.max(30, tepe - 4);
-  const boyunH = s.boy * 0.1;
+  // gerçek boyuna büyür (eşit ölçek, ayaklar yerde): başın tepesi (tuvalin ~%6'sı) ekranın üstüne değene kadar
+  const buyu = Math.max(1.15, Math.min(3, (s.sy - 2) / (s.boy * 0.94)));
   ses.uza();
-  const ms = sure(800);
+  const ms = sure(750);
   const egri = 'cubic-bezier(.5,0,.75,0)';
-  const a1 = bas.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${-uza}px)` }], { duration: ms, easing: egri, fill: 'forwards' });
-  const a2 = boyun.animate([{ transform: 'scaleY(1)' }, { transform: `scaleY(${(boyunH + uza) / boyunH})` }], { duration: ms, easing: egri, fill: 'forwards' });
-  await Promise.all([a1.finished.catch(() => undefined), a2.finished.catch(() => undefined)]);
-  // tok!
+  await govde.animate([{ transform: 'scale(1)' }, { transform: `scale(${buyu})` }], { duration: ms, easing: egri, fill: 'forwards' }).finished.catch(() => undefined);
+  if (o.kapandi()) return;
+  // tok! hafifçe geri seker, sersem sersem sallanır (yalnız dönme, esneme yok)
   ses.tok();
   o.efekt.sars(6);
-  const [bx] = o.efekt.merkez(bas, 0.36, 0.1);
-  o.efekt.yildizlar(bx, 22);
-  void bas.animate(
+  const [bx, by] = o.efekt.merkez(img, 0.36, 0.08);
+  o.efekt.yildizlar(bx, Math.max(14, by));
+  void govde.animate(
     [
-      { transform: `translateY(${-uza}px)` },
-      { transform: `translateY(${-uza + 16}px) rotate(-7deg)`, offset: 0.3 },
-      { transform: `translateY(${-uza + 6}px) rotate(5deg)`, offset: 0.6 },
-      { transform: `translateY(${-uza + 9}px) rotate(-2deg)` },
+      { transform: `scale(${buyu})` },
+      { transform: `scale(${buyu * 0.97}) rotate(-4deg)`, offset: 0.25 },
+      { transform: `scale(${buyu * 0.97}) rotate(3deg)`, offset: 0.5 },
+      { transform: `scale(${buyu * 0.97}) rotate(-2deg)`, offset: 0.75 },
+      { transform: `scale(${buyu * 0.97}) rotate(0deg)` },
     ],
-    { duration: sure(560), fill: 'forwards' },
+    { duration: sure(1400), easing: 'ease-in-out', fill: 'forwards' },
   );
   await o.oy.soyle(KT.zurafa_sigmam, 'kart', KART_TON.zurafa);
-  // boyun kısalır, zürafa karta geri girer
-  const b2 = bas.animate([{ transform: `translateY(${-uza + 9}px)` }, { transform: 'translateY(0)' }], { duration: sure(380), easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards' });
-  const n2 = boyun.animate([{ transform: `scaleY(${(boyunH + uza - 9) / boyunH})` }, { transform: 'scaleY(1)' }], { duration: sure(380), easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'forwards' });
-  await Promise.all([b2.finished.catch(() => undefined), n2.finished.catch(() => undefined)]);
-  a2.cancel();
+  // küçülür, karta geri girer
+  await govde.animate([{ transform: `scale(${buyu * 0.97})` }, { transform: 'scale(1)' }], { duration: sure(420), easing: 'cubic-bezier(.3,1.2,.5,1)', fill: 'forwards' }).finished.catch(() => undefined);
   await s.don();
 }
+
 
 /** Ördek: karttan çıkar, paytak paytak sallanır, ayaklarını açar: "Benim ayağım perdeli. Vak!" */
 async function ordek(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {

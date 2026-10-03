@@ -272,6 +272,8 @@ class Vaka {
     this.serit.aktif(hk.id);
     if (dunya.oda !== this.calisma) dunya.kur(this.calisma, hk.kadraj);
     this.calisma.e.los?.classList.add('acik');
+    // dikeyde Halka 3'te pencere ve pervaz birlikte görünsün (kelebek dışarıda); öbürlerinde zemin yakın çekim
+    dunya.darYakin = hk.id === 'neden' ? 1.3 : null;
     await dunya.git(this.aramaKadraji(hk), 1100);
     if (hk.ara) await oy.soyle(hk.ara);
     await this.ipuclariniBul(hk);
@@ -344,7 +346,21 @@ class Vaka {
           this.parmakDur = dur;
           this.sonra(3600, () => this.parmakBirak());
         });
-      } else void this.buyutec.git((g[0] + g[2]) / 2, (g[1] + g[3]) / 2, 500);
+      } else {
+        // büyüteç ipuçlarından uzak bir yerde başlar (aramak çocuğun işi): birkaç adaydan ipucuna en uzak olanı
+        const gw = g[2] - g[0];
+        const gh = g[3] - g[1];
+        const adaylar: [number, number][] = [
+          [g[0] + gw * 0.5, g[1] + gh * 0.5],
+          [g[0] + gw * 0.22, g[1] + gh * 0.45],
+          [g[0] + gw * 0.78, g[1] + gh * 0.45],
+          [g[0] + gw * 0.5, g[1] + gh * 0.18],
+          [g[0] + gw * 0.5, g[1] + gh * 0.8],
+        ];
+        const uzaklik = ([x, y]: [number, number]) => Math.min(...hedefler.map((hd) => Math.hypot(hd.yer().x - x, hd.yer().y - y)));
+        const [bx, by] = adaylar.reduce((a, b) => (uzaklik(b) > uzaklik(a) ? b : a));
+        void this.buyutec.git(bx, by, 500);
+      }
       this.sonBulus = performance.now();
       this.sonOynama = performance.now();
       const koku = window.setInterval(() => {
@@ -564,10 +580,10 @@ class Vaka {
     await tutar(
       golge.animate(
         [
-          { transform: `${p(0.36, 0.95)} translate(-50%, -100%) scale(0.9, 1.05)`, opacity: 0 },
-          { transform: `${p(0.38, 0.95)} translate(-50%, -100%) scale(1.08, 0.88)`, opacity: 0.62, offset: 0.2 },
-          { transform: `${p(0.5, 0.56)} translate(-50%, -100%) rotate(-12deg) scale(0.95, 1.08)`, offset: 0.62 },
-          { transform: `${p(0.6, 0.675)} translate(-50%, -100%) scale(1.06, 0.92)`, offset: 0.88 },
+          { transform: `${p(0.36, 0.95)} translate(-50%, -100%) scale(0.97, 1.03)`, opacity: 0 },
+          { transform: `${p(0.38, 0.95)} translate(-50%, -100%) scale(1.05, 0.96)`, opacity: 0.62, offset: 0.2 },
+          { transform: `${p(0.5, 0.56)} translate(-50%, -100%) rotate(-12deg) scale(0.97, 1.04)`, offset: 0.62 },
+          { transform: `${p(0.6, 0.675)} translate(-50%, -100%) scale(1.04, 0.97)`, offset: 0.88 },
           { transform: `${p(0.6, 0.675)} translate(-50%, -100%)`, opacity: 0.62 },
         ],
         { duration: sure(1100), easing: 'cubic-bezier(.4,0,.4,1)', fill: 'forwards' },
@@ -579,7 +595,7 @@ class Vaka {
     void golge.animate(
       [
         { transform: `${p(0.6, 0.675)} translate(-50%, -100%)` },
-        { transform: `${p(0.62, 0.64)} translate(-50%, -100%) rotate(14deg) scale(0.96, 1.1)` },
+        { transform: `${p(0.62, 0.64)} translate(-50%, -100%) rotate(14deg) scale(0.97, 1.04)` },
         { transform: `${p(0.6, 0.675)} translate(-50%, -100%)` },
       ],
       { duration: sure(700), easing: 'ease-in-out', fill: 'forwards' },
@@ -620,6 +636,7 @@ class Vaka {
     if (this.kapali) return;
     this.serit.aktif('nerede');
     if (dunya.oda !== this.calisma) dunya.kur(this.calisma, 'izler');
+    dunya.darYakin = null;
     oy.yerlesim(this.dar() ? 'iki' : 'sol');
     await dunya.git(this.ortala(CALISMA.lambaDevrik.x + 0.04, 'izler'), 1000);
     if (this.kapali) return;
@@ -895,8 +912,8 @@ class Vaka {
     const c = YATAK.cik;
     const yol = pamukKap.animate(
       [
-        { transform: 'translate(0, 0) scale(0.92, 0.82)' },
-        { transform: `translate(${((c.x - s.x) * W * 0.45).toFixed(0)}px, ${((c.y - s.y) * ODA_H * 0.3).toFixed(0)}px) scale(0.96, 0.9)`, offset: 0.45 },
+        { transform: 'translate(0, 0) scale(0.95, 0.9)' },
+        { transform: `translate(${((c.x - s.x) * W * 0.45).toFixed(0)}px, ${((c.y - s.y) * ODA_H * 0.3).toFixed(0)}px) scale(0.97, 0.93)`, offset: 0.45 },
         { transform: `translate(${((c.x - s.x) * W).toFixed(0)}px, ${((c.y - s.y) * ODA_H).toFixed(0)}px) scale(1)` },
       ],
       { duration: sure(2000), easing: 'cubic-bezier(.45,.05,.4,1)', fill: 'forwards' },
@@ -934,6 +951,8 @@ class Vaka {
     oy.yerlesim('iki');
     this.calisma.e.los?.classList.add('acik');
     // dar ekranda kamera devrik lambayla masanın arasına: ikisi de Mino ile Kino'nun arasında
+    // dikeyde lamba ve masa birlikte görünsün diye biraz geriden
+    dunya.darYakin = 1.4;
     const kd = this.ortala((CALISMA.lambaDevrik.x + CALISMA.masaUst.x) / 2, 'final');
     if (dogrudan) dunya.kur(this.calisma, kd);
     else await dunya.gec(this.calisma, kd, -1);
@@ -965,6 +984,7 @@ class Vaka {
     // pencerede kelebek: herkes el sallar, kelebek uçup gider
     this.adim('kelebek');
     const kel = this.calisma.e.kelebek;
+    dunya.darYakin = 1.3;
     await dunya.git(this.ortala(0.5, 'pencere'), 900);
     kel?.classList.add('dd-ucusuyor');
     oy.minoTepki('selam', 1.8);
@@ -978,6 +998,7 @@ class Vaka {
     ses.kanat();
     await this.bekle(900);
     oy.kinoPoz(null);
+    dunya.darYakin = 1.4;
     await dunya.git(this.ortala(CALISMA.masaUst.x - 0.04, 'final'), 900);
     await oy.soyle(D.pamuk.dikkat, 'pamuk');
     oy.kinoPoz('kalk');

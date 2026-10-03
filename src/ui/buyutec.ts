@@ -113,11 +113,11 @@ export class Buyutec {
     this.s.kap.classList.toggle('bt-kapali', !acik);
     if (!acik) this.surukle = null;
   }
-  /** Mercek bir noktaya kayar (ipucu gösterme, giriş); ms 0: hemen */
+  /** Mercek bir noktaya kayar (ipucu gösterme, giriş); ms 0: hemen. Kayarken hedef aramaz: bulmak çocuğun işi */
   async git(x: number, y: number, ms = 600) {
     const [x0, y0] = [this.x, this.y];
     if (!ms || TEST_MODU || AZ) {
-      this.konumla(x, y);
+      this.konumla(x, y, false);
       return;
     }
     // kayarken her karede hedefler de denetlenir (yalnız transform)
@@ -128,7 +128,7 @@ export class Buyutec {
         if (this.kapandi || this.surukle) return coz();
         const u = Math.min(1, (t - bas) / sn);
         const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
-        this.konumla(x0 + (x - x0) * e, y0 + (y - y0) * e);
+        this.konumla(x0 + (x - x0) * e, y0 + (y - y0) * e, false);
         if (u < 1) requestAnimationFrame(adim);
         else coz();
       };
@@ -146,7 +146,6 @@ export class Buyutec {
     this.gorulen.clear();
     this.biten.clear();
     this.yakin.clear();
-    this.denetle();
   }
   /** Görülmüş mü */
   gorulduMu(id: string) {
@@ -177,13 +176,13 @@ export class Buyutec {
     this.ciz();
   };
 
-  private konumla(x: number, y: number) {
+  private konumla(x: number, y: number, denetle = true) {
     const r = this.s.kap.getBoundingClientRect();
     // merceğin ortası kabın içinde kalır (kenarda yarısı dışarı taşabilir)
     this.x = Math.max(this.R * 0.3, Math.min(r.width - this.R * 0.3, x));
     this.y = Math.max(this.R * 0.3, Math.min(r.height - this.R * 0.3, y));
     this.ciz();
-    this.denetle();
+    if (denetle) this.denetle();
   }
 
   private ciz() {

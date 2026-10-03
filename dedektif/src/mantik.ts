@@ -115,7 +115,7 @@ export const HALKALAR: Halka[] = [
   {
     id: 'iz',
     kadraj: 'hali',
-    ipuclari: [{ id: 'pati-hali', oda: 'calisma', resim: 'kart-kedi-pati-izi', foto: 'ipucu-kedi-pati-hali', x: 0.565, y: 0.885, h: 0.075, don: -18, gizli: true }],
+    ipuclari: [{ id: 'pati-hali', oda: 'calisma', resim: 'kart-kedi-pati-izi', foto: 'ipucu-kedi-pati-hali', x: 0.555, y: 0.85, h: 0.075, don: -18, gizli: true }],
     soru: M.iz_kimin,
     kino: K.zurafa,
     kinoKart: 'zurafa-ayagi',

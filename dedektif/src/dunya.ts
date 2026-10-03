@@ -196,6 +196,12 @@ export function mutfak(): Oda {
 /** Kameranın kadrajı ekranda nereye sığsın: üst çubuğun altı; karakterlerin durduğu alt köşeler (dikeyde) dışarıda */
 export type Guvenli = (w: number, hgt: number) => [number, number, number, number];
 
+/**
+ * Dikey (dar) ekranda oda ekranı boydan kaplar; bu kadar yakından bakılır ki pencere / gök yalnız bir şerit kalsın,
+ * zemin, halı ve ipuçları ekranın ortasına gelsin (Barış: "ekranın yarısı gökyüzü"). Koridorda iki yol birlikte görünsün diye az.
+ */
+export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yatak: 1.6, mutfak: 1.4 };
+
 export class Dunya {
   readonly el: HTMLElement;
   oda: Oda | null = null;
@@ -205,6 +211,8 @@ export class Dunya {
   private anim: Animation[] = [];
   /** kamera bitti (büyüteç kopyası tazelensin) */
   kameraBitti: (() => void) | null = null;
+  /** dikey ekranda bu çekim için oda yakınlığı (null: odanın kendi değeri, DAR_YAKIN) */
+  darYakin: number | null = null;
 
   constructor(private guvenli: Guvenli) {
     this.el = h('div.dd-sahne');
@@ -297,7 +305,9 @@ export class Dunya {
 
   private hesapla(): Kamera {
     const { w, h: hgt } = this.boyut;
-    return kameraHesap(this.kadraj, { w: this.oda?.W ?? w, h: ODA_H }, { w, h: hgt }, this.guvenli(w, hgt), this.yakin, w < hgt * 1.15 ? 1.18 : 1);
+    const dar = w < hgt * 1.15;
+    const yakin = dar ? (this.darYakin ?? DAR_YAKIN[this.oda?.id ?? 'calisma']) : 1;
+    return kameraHesap(this.kadraj, { w: this.oda?.W ?? w, h: ODA_H }, { w, h: hgt }, this.guvenli(w, hgt), this.yakin, yakin);
   }
 
   /** Dünyanın ve katmanların (derinlik) transform'ları */

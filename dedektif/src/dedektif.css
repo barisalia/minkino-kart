@@ -684,7 +684,7 @@
 }
 /* saklanırken Pamuk biraz büzülür (yatağın altına sokulmuş), kuyruk dışarıda */
 .dd-kok .dd-pamuk-dunya.sakli .kr-karakter {
-  transform: scale(1.02, 0.9);
+  transform: scale(1, 0.94);
   transform-origin: 50% 92%;
   transition: transform 0.4s;
 }
@@ -939,7 +939,7 @@
 }
 @keyframes dd-cevir {
   0% { transform: none; }
-  50% { transform: scaleX(0.02) scaleY(1.04); }
+  50% { transform: perspective(900px) rotateY(88deg); }
   100% { transform: none; }
 }
 @keyframes dd-demek-gel {
@@ -1094,25 +1094,19 @@
   transform: translate(-50%, 0);
   filter: drop-shadow(0 4px 4px rgba(30, 15, 5, 0.3));
 }
-.dd-kok .dd-zurafa-dilim {
+/* zürafa bütün hâlinde büyür (eşit ölçek, ayaklar yerde; çizim hiç esnemez) */
+.dd-kok .dd-zurafa-govde {
   position: absolute;
   inset: 0;
+  transform-origin: 50% 94%;
 }
-.dd-kok .dd-zurafa-dilim img {
+.dd-kok .dd-zurafa-govde img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
   display: block;
 }
-.dd-kok .dd-zd-bas {
-  clip-path: inset(0 0 63.6% 0);
-}
-.dd-kok .dd-zd-boyun {
-  clip-path: inset(35.6% 0 53.6% 0);
-  transform-origin: 50% 46.4%;
-}
-.dd-kok .dd-zd-govde {
-  clip-path: inset(46% 0 0 0);
-}
+
 
 /* ---------------------------------------------------------------- efektler */
 .dd-kok .dd-efekt {
