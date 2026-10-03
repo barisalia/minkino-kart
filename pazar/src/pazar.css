@@ -657,6 +657,31 @@
 .pz-kok .pz-yuva:has(.pz-tasiniyor) {
   z-index: 50;
 }
+/* juice: tutunca ezilip uzar, yuvasına dönünce yaylanır (yalnız içteki resim; dış öğenin sürükleme transform'u bozulmaz) */
+.pz-kok .pz-urun.pz-tasiniyor > :not(.pz-urun-golge) {
+  animation: pz-tut 0.32s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.pz-kok .pz-urun.pz-geri-yay > :not(.pz-urun-golge) {
+  animation: pz-geri-yay 0.5s ease-out;
+}
+@keyframes pz-tut {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.14, 0.84); }
+  70% { transform: scale(0.94, 1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes pz-geri-yay {
+  0%, 55% { transform: scale(1); }
+  72% { transform: scale(1.12, 0.86); }
+  88% { transform: scale(0.96, 1.05); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .pz-urun.pz-tasiniyor > :not(.pz-urun-golge),
+  .pz-kok .pz-urun.pz-geri-yay > :not(.pz-urun-golge) {
+    animation: none;
+  }
+}
 .pz-kok .pz-urun.pz-parla::before {
   content: '';
   position: absolute;

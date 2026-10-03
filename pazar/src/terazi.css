@@ -14,7 +14,8 @@
 }
 .pz-kok .pz-terazi {
   position: relative;
-  width: min(92vw, 38vh, 540px);
+  /* tablette tezgâh genişti, terazi küçük kalıyordu */
+  width: min(92vw, 56vh, 620px);
   aspect-ratio: 440 / 210;
   margin-top: -4px;
   animation: pz-terazi-gel 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
@@ -79,9 +80,9 @@
 }
 /* ağır meyve (--a: 2 ananas, 3 karpuz) kefede daha büyük görünür */
 .pz-kok .pz-kefe-ic .pz-urun {
-  width: calc(40cqw * (0.7 + 0.3 * var(--a, 1)));
-  height: calc(40cqw * (0.7 + 0.3 * var(--a, 1)));
-  margin: 0 -4% -8%;
+  width: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
+  height: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
+  margin: 0 -6% -8%;
 }
 .pz-kok .pz-kefe-ic .pz-urun-golge {
   display: none;
