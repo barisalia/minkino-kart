@@ -543,12 +543,21 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
 .fl-kok .fl-acilis-alt {
   position: relative;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6vmin;
   font-size: clamp(1rem, 3.2vmin, 1.6rem);
   font-weight: 600;
   letter-spacing: 0.12em;
   color: #fff8ea;
   text-shadow: 0 2px 0 var(--kontur-yumusak);
   animation: fl-acilis-alt 1s ease-out 1.5s both;
+}
+/* asıl MINKINO logosu (turuncu ışınlı zeminde beyaz kenarlı sürüm) */
+.fl-kok .fl-acilis-logo {
+  width: clamp(170px, min(38vw, 46vh), 380px);
+  margin-top: 1vmin;
 }
 @keyframes fl-acilis-gir {
   from { transform: translateY(-60vh) scale(0.7) rotate(-4deg); opacity: 0; }

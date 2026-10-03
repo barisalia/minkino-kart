@@ -59,7 +59,9 @@ test('Film: Mino’nun Karpuzu animatiği baştan sona oynar, sonda öğüt kart
   await expect(page.locator('.fl-baslik')).toHaveText("Mino'nun Karpuzu");
   await page.screenshot({ path: `tests/screens/${info.project.name}-f0-film-kapak.png` });
   await page.getByRole('button', { name: 'Oynat' }).click();
-  await expect(page.locator('.fl-acilis-alt')).toHaveText('Minkino Çizgi Film');
+  // açılış kartı: asıl MINKINO logosu + Çizgi Film
+  await expect(page.locator('.fl-acilis-alt')).toHaveText('Çizgi Film');
+  await expect(page.locator('.fl-acilis-alt img.mk-logo')).toHaveAttribute('alt', 'Minkino');
   // sahne 1: Mino ve karpuz sahnede
   await expect(page.locator('.fl-sahne[data-sahne="1-pazar-kapaniyor"]')).toBeVisible();
   await expect(page.locator('.fl-nesne[data-oyuncu="mino"] .mino-svg')).toBeVisible();

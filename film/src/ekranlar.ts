@@ -3,6 +3,7 @@ import { konus } from '../../src/audio/ses';
 import { arkaPlanDinle, yonIste } from '../../src/kabuk/yon';
 import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
+import { minkinoLogo } from '../../src/ui/logo';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
@@ -116,7 +117,7 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
     kapak.classList.add('gizli');
     // ?kartsiz=1: açılış kartı ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
     if (q.has('kartsiz')) return baslatFilm();
-    const kart = h('div.fl-acilis', {}, h('i.fl-acilis-isik'), h('h2.fl-acilis-baslik', {}, dosya.baslik), h('p.fl-acilis-alt', {}, 'Minkino Çizgi Film'));
+    const kart = h('div.fl-acilis', {}, h('i.fl-acilis-isik'), h('h2.fl-acilis-baslik', {}, dosya.baslik), h('p.fl-acilis-alt', {}, minkinoLogo('kenarli', 'fl-acilis-logo'), 'Çizgi Film'));
     el.append(kart);
     hazirla();
     if (MUZIK) filmMuzik.dosyaCal({ ad: 'film-acilis', ses: 0.85, gec: 0.05 });

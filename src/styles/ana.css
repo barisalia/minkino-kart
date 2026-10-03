@@ -556,20 +556,29 @@
   align-items: center;
   gap: 4px;
 }
-.mk-kok .logo-yazi {
-  font-size: clamp(3.4rem, 17vw, 6.5rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  display: flex;
+/* Asıl MINKINO logosu (src/ui/logo.ts): resim hiç esnemez, genişliği yerleştiği yer verir */
+.mk-kok .mk-logo {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
-.mk-kok .logo-yazi span {
-  display: inline-block;
-  -webkit-text-stroke: clamp(5px, 1.6vw, 9px) var(--kontur);
-  paint-order: stroke fill;
-  text-shadow: 0 clamp(4px, 1.2vw, 7px) 0 var(--kontur);
-  animation: mk-harf 2.4s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.12s);
+.mk-kok .logo .mk-logo {
+  width: clamp(240px, 76vw, 470px);
+  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.16));
+  animation: mk-logo-suzul 3.2s ease-in-out infinite;
+}
+@keyframes mk-logo-suzul {
+  0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+  50% { transform: translateY(-6px) rotate(1.2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .logo .mk-logo {
+    animation: none;
+  }
 }
 @keyframes mk-harf {
   0%, 100% { transform: translateY(0) rotate(0); }

@@ -130,11 +130,22 @@
 }
 .mk-kok .ab-baslik {
   margin: 0;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
   font-size: clamp(1.6rem, 7vw, 2rem);
   color: var(--kontur);
+}
+.mk-kok .ab-logo {
+  width: clamp(180px, 58vw, 280px);
+  filter: drop-shadow(0 3px 0 rgba(90, 54, 23, 0.16));
+}
+.mk-kok .ab-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.1;
 }
 .mk-kok .ab-tac {
   font-size: 1.1em;

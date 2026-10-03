@@ -10,6 +10,7 @@ import { Karakter, type HareketAdi } from '../../src/karakter/karakter';
 import { Mino, type Tepki } from '../../src/mino/mino';
 import { h, sure, svg } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
+import { minkinoLogo } from '../../src/ui/logo';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import type { FilmDosya } from './motor';
@@ -220,7 +221,8 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
     'header.fl-k-ust',
     {},
     h('div.fl-k-dugmeler', {}, cikis ? yuvarlakDugme(IKON.geri, 'Geri', () => cikis(), 'kucuk') : h('div'), sesDugmesi()),
-    h('div.fl-k-sahne', {}, minoKap, tabela, kinoKap),
+    // ortada asıl MINKINO logosu (perdeli renkli zeminde beyaz kenarlı) ve altında ışıklı tabela
+    h('div.fl-k-sahne', {}, minoKap, h('div.fl-k-orta', {}, minkinoLogo('kenarli', 'fl-k-logo'), tabela), kinoKap),
   );
   const liste = h('nav.fl-k-liste', { 'aria-label': 'Çizgi filmler' }, h('ul.fl-k-izgara', {}, ...kartlar));
   const el = h(

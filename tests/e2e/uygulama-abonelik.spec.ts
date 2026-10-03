@@ -71,7 +71,9 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await expect(ab).toHaveAttribute('data-durum', 'hazir');
   // Mino ve Kino: Gemini kahraman görseli varsa o, yoksa canlı karakterler
   await expect(ab.locator('.ab-kahraman img, .ab-mino .mino svg').first()).toBeVisible();
-  await expect(ab.locator('.ab-baslik')).toHaveText('Minkino Premium');
+  // başlık: asıl MINKINO logosu (resim) + Premium
+  await expect(ab.getByRole('heading', { name: 'Minkino Premium' })).toBeVisible();
+  await expect(ab.locator('.ab-baslik img.mk-logo')).toBeVisible();
   await expect(ab.locator('.ab-not')).toHaveText('Bu ekran büyükler içindir.');
   await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('₺99,00');
   await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('₺499,00');
