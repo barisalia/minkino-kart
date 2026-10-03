@@ -33,7 +33,7 @@ async function bitene(page: Page, ad: string, adim: () => Promise<void>) {
   const son = Date.now() + 90_000;
   let sonHata: unknown = null;
   while (Date.now() < son) {
-    if (await page.locator('.ok-sonuc').count()) return;
+    if (await page.locator('.ok-sonuc:not(.cikiyor)').count()) return;
     try {
       await adim();
     } catch (e) {
@@ -126,7 +126,7 @@ async function oyna(page: Page, id: string, kareAl: (ad: string) => Promise<void
 }
 
 async function sonuc(page: Page, id: string, kareAl: (ad: string) => Promise<void>): Promise<boolean> {
-  const s = page.locator('.ok-sonuc');
+  const s = page.locator('.ok-sonuc:not(.cikiyor)');
   await expect(s).toHaveAttribute('data-etkinlik', id);
   await expect(s).toHaveAttribute('data-durum', 'yapistir', { timeout: 10000 });
   const yuva = page.locator(`.ok-yuva[data-yuva="${id}"]`);
