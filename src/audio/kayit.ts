@@ -14,7 +14,7 @@ interface Manifest extends SesManifest<Kayit> {
 }
 
 let manifest: Manifest | null = null;
-/** Kayıtların bulunduğu klasör (alt klasördeki uygulamalar için, ör. Minik Sanatçı: '../ses/') */
+/** Kayıtların bulunduğu klasör (alt klasördeki uygulamalar için, ör. Çiz Canlansın: '../ses/') */
 let kok = './ses/';
 /** Asıl klasörde kayıt bulunamazsa sırayla denenecek yedek klasörler (ör. tek dosyalık önizlemede './ses/') */
 let yedekler: string[] = [];

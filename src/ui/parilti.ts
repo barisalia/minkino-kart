@@ -1,11 +1,11 @@
 /**
  * Fırça ucunda parıltı: çizerken parmağın ucunda küçük bir ışık ve arkasında sönen yıldız tozları.
  * Parçacıklar havuzdan gelir (çöp üretmez), yalnız transform / opacity ile oynar. Az harekette kapalı.
- * Çiz Canlansın da kullanır.
+ * Çiz Canlansın kullanır.
  */
 import './parilti.css';
-import { TEST_MODU } from '../../src/ui/dom';
-import { azHareket } from '../../src/ui/hareket';
+import { TEST_MODU } from './dom';
+import { azHareket } from './hareket';
 
 export interface FircaParilti {
   kapat(): void;

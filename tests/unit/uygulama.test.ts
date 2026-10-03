@@ -5,12 +5,11 @@ import { kartGorselleri, OYUNLAR } from '../../uygulama/src/oyunlar';
 const MEVCUT = new Set(Object.keys(import.meta.glob('../../assets/**/*.webp')).map((y) => y.replace('../../assets/', '').replace(/\.webp$/, '')));
 
 describe('Ana menü oyun kartları', () => {
-  it('sekiz oyun, benzersiz kimlik ve doğru göreli adres', () => {
+  it('yedi oyun, benzersiz kimlik ve doğru göreli adres', () => {
     expect(OYUNLAR.map((k) => [k.id, k.adres])).toEqual([
       ['kartlar', './kartlar/'],
       ['pazar', './pazar/'],
       ['canlan', './canlan/'],
-      ['sanatci', './sanatci/'],
       ['macera', './macera/'],
       ['film', './film/'],
       ['okul', './okul/'],

@@ -144,12 +144,28 @@
   align-items: center;
   gap: 8px;
 }
+.mk-kok .ab-liste li {
+  gap: 10px;
+  line-height: 1.15;
+}
+/* her maddenin kendi renkli ikonu (müzik, oynat, yıldız, sihir, onay) */
 .mk-kok .ab-tik {
   flex: none;
-  font-size: 22px;
-  border-radius: 50%;
-  background: var(--yesil);
-  padding: 3px;
+  width: 34px;
+  height: 34px;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--r, var(--yesil));
+  border: 2.5px solid var(--kontur);
+  box-shadow: 0 2px 0 var(--kontur-yumusak);
+  color: #fff;
+  rotate: -4deg;
+}
+.mk-kok .ab-liste li:nth-child(even) .ab-tik {
+  rotate: 4deg;
+}
+.mk-kok .ab-tik svg {
+  stroke-width: 5;
 }
 
 .mk-kok .ab-planlar {
@@ -259,6 +275,11 @@
   opacity: 0.75;
   text-align: left;
 }
+/* İngilizce yenileme metni (inceleme ekipleri için): Türkçenin altında, daha soluk */
+.mk-kok .ab-yasal-en {
+  margin-top: 0;
+  opacity: 0.6;
+}
 .mk-kok .ab-baglantilar {
   margin: 4px 0 0;
   font-size: 0.9rem;
@@ -266,15 +287,22 @@
 .mk-kok .ab-baglanti {
   color: var(--kontur);
   font-weight: 600;
-  display: inline-block;
-  padding: 8px 4px;
+  display: inline-grid;
+  justify-items: center;
+  vertical-align: top;
+  min-height: 44px;
+  padding: 6px 4px;
+}
+.mk-kok .ab-baglanti small {
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.7;
 }
 .mk-kok .ab-perde.mesgul .ab-basla,
 .mk-kok .ab-perde.mesgul .ab-geri-yukle {
   pointer-events: none;
   opacity: 0.6;
 }
-.mk-kok .ab-perde[data-durum='yakinda'] .ab-fiyat b,
 .mk-kok .ab-perde[data-durum='yukleniyor'] .ab-fiyat b {
   opacity: 0.5;
 }
@@ -315,14 +343,17 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--sari);
-  border: 3px solid var(--kontur);
-  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  /* yumuşak, korkutmayan rozet: krem zemin, altın renkli küçük kilit, hafif eğik (hazine sandığı gibi) */
+  background: radial-gradient(circle at 35% 28%, #ffffff 0%, #fff6dc 55%, #ffe8a8 100%);
+  border: 3px solid color-mix(in srgb, var(--kontur) 80%, #fff);
+  box-shadow: 0 3px 0 var(--kontur-yumusak), 0 4px 10px rgba(90, 54, 23, 0.12);
+  rotate: -8deg;
   pointer-events: none;
 }
 .mk-kok .mk-kilit .ikon {
   font-size: 20px;
 }
 .mk-kok .mk-kilit .ikon svg {
-  color: var(--kontur);
+  color: #f2b53a;
+  stroke: color-mix(in srgb, var(--kontur) 85%, #fff);
 }

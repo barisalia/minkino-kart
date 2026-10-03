@@ -1368,13 +1368,109 @@
   align-items: safe center;
   padding-top: max(28px, env(safe-area-inset-top));
 }
-.mk-kok .kapi-cevap.hata { animation: mk-sallan 0.4s; border-color: var(--kirmizi); }
+/* ---------- Ebeveyn kapısı: sakin, okunaklı, iri tuşlar ---------- */
+.mk-kok .ebeveyn-kapisi {
+  width: min(100%, 440px);
+  padding-top: 34px;
+  background: linear-gradient(180deg, #f2f8ff 0%, #fffdf6 38%);
+}
+.mk-kok .kapi-rozet {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  translate: -50% 0;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e4f2ff;
+  border: var(--cizgi) solid var(--kontur);
+  box-shadow: 0 4px 0 var(--kontur-yumusak);
+  color: var(--mavi);
+  font-size: 30px;
+}
+.mk-kok .ebeveyn-kapisi .kapi-en {
+  margin: -8px 0 6px;
+  font-size: 0.8rem;
+  opacity: 0.55;
+}
+.mk-kok .ebeveyn-kapisi .kapi-soru.yazi {
+  margin: 4px 0 12px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: #fff;
+  border: 3px dashed color-mix(in srgb, var(--mavi) 45%, white);
+  font-size: clamp(1.3rem, 5.6vw, 1.7rem);
+}
+/* cevap: iki kutucuk */
+.mk-kok .ebeveyn-kapisi .kapi-cevap {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: auto;
+  height: auto;
+  margin: 0 auto 6px;
+  border: 0;
+  background: none;
+}
+.mk-kok .kapi-kutu {
+  width: 62px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  border: var(--cizgi) solid var(--kontur-yumusak);
+  background: #fff;
+  font-size: 2.3rem;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.mk-kok .kapi-kutu.dolu {
+  border-color: var(--kontur);
+  transform: translateY(-2px);
+}
+.mk-kok .kapi-not {
+  min-height: 1.3em;
+  margin: 0 0 8px !important;
+  font-size: 0.95rem;
+  color: #a2622a;
+  opacity: 1 !important;
+}
+/* yanlış: küçük, yumuşak bir sallanma (korkutmayan) */
+.mk-kok .kapi-cevap.hata { animation: mk-kapi-salla 0.5s ease-in-out; }
+.mk-kok .kapi-cevap.hata .kapi-kutu { border-color: color-mix(in srgb, var(--turuncu) 70%, white); }
+@keyframes mk-kapi-salla {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+.mk-kok .ebeveyn-kapisi .tus-takimi { gap: 12px; }
+.mk-kok .ebeveyn-kapisi .tus {
+  height: clamp(60px, 9dvh, 78px);
+  font-size: 2rem;
+  border-radius: 20px;
+}
+/* çok yanlıştan sonra dinlenme: tuşlar soluk, basılmaz */
+.mk-kok .ebeveyn-kapisi.dinleniyor .tus-takimi {
+  opacity: 0.35;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .kapi-cevap.hata { animation: none; }
+}
 /* alçak yatay ekran: tuşlar dört sütun, daha kısa */
 @media (max-height: 540px) and (orientation: landscape) {
   .mk-kok .ebeveyn-kapisi { width: min(100%, 560px); padding: 14px 16px; }
   .mk-kok .ebeveyn-kapisi h2 { font-size: 1.15rem; margin: 0 0 2px; }
   .mk-kok .ebeveyn-kapisi p { margin-bottom: 4px; }
-  .mk-kok .kapi-soru.yazi { min-height: 0; margin: 2px 0 6px; font-size: 1.2rem; }
+  .mk-kok .kapi-soru.yazi,
+  .mk-kok .ebeveyn-kapisi .kapi-soru.yazi { min-height: 0; margin: 2px 0 6px; padding: 4px 8px; font-size: 1.2rem; }
+  .mk-kok .ebeveyn-kapisi { padding-top: 14px; }
+  .mk-kok .kapi-rozet, .mk-kok .ebeveyn-kapisi .kapi-en { display: none; }
+  .mk-kok .kapi-kutu { width: 48px; height: 44px; font-size: 1.6rem; }
+  .mk-kok .kapi-not { margin-bottom: 4px !important; font-size: 0.85rem; }
   .mk-kok .kapi-cevap { height: 44px; margin-bottom: 8px; font-size: 1.6rem; }
   .mk-kok .ebeveyn-kapisi .tus-takimi { grid-template-columns: repeat(6, 1fr); gap: 6px; }
   .mk-kok .ebeveyn-kapisi .tus { height: 46px; font-size: 1.4rem; }

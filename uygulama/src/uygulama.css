@@ -133,7 +133,11 @@
   grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 2.8vw, 22px) clamp(10px, 2.6vw, 22px);
 }
-/* 8 kart: telefonda 2 × 4, yatayda 4 × 2 (hepsi tek hücre); geniş kart (Pasta Otobüsü) yalnız tablet dikeyde iki sütun */
+/* 7 kart (web ve uygulama, .ug-tek): geniş kart (Pasta Otobüsü) son sırayı doldurur: telefon dikeyde 2 × 4, yatay
+   telefonda 4 × 2 (iki hücre), tablette 3 × 3 (üç hücre). Çift sayıda kart olursa geniş kart yalnız 3 sütunda iki hücre. */
+.ug-kok .ug-izgara.ug-tek .ug-kart-yer.ug-genis {
+  grid-column: span 2;
+}
 
 /* ---------- Kart ---------- */
 .ug-kok .ug-kart-yer {
@@ -162,6 +166,8 @@
 }
 .ug-kok .ug-kart-govde {
   position: relative;
+  /* ad kartın enine göre ölçeklenir (dar yatay telefonda da kesilmeden sığsın) */
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -214,9 +220,9 @@
 .ug-kok .ug-kart-ad {
   flex: none;
   display: block;
-  padding: 6px 4px 1px;
+  padding: 6px 2px 1px;
   text-align: center;
-  font-size: clamp(0.85rem, min(4vw, 2.6dvh), 1.35rem);
+  font-size: clamp(0.72rem, 10.5cqi, 1.45rem);
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
@@ -239,10 +245,12 @@
 }
 /* küçük ikon rozeti (kalem, sihir, oynat) */
 .ug-kok .ug-kart-resim .ug-rozet {
+  --rb: clamp(28px, min(30cqh, 30cqw), 72px);
   z-index: 5;
-  width: auto;
-  height: min(28cqh, 28cqw);
-  padding: 5%;
+  width: var(--rb);
+  height: var(--rb);
+  /* iç boşluk rozetin kendi boyuna göre (yüzde kabın enine göre olurdu: küçük kartta ikon eziliyordu) */
+  padding: calc(var(--rb) * 0.2);
   border-radius: 50%;
   background: #fff;
   border: 3px solid var(--kontur);
@@ -295,26 +303,6 @@
 .ug-kok .ug-k-dinozor { left: 46%; bottom: 3%; height: min(80cqh, 96cqw); transform: translateX(-50%); }
 .ug-kok .ug-k-kalem { right: 6%; top: 7%; }
 
-/* Minik Sanatçı: çerçeveli resim + sihir */
-.ug-kok .ug-k-tablo {
-  left: 46%;
-  top: 50%;
-  height: min(80cqh, 90cqw);
-  aspect-ratio: 0.8;
-  padding: 3%;
-  background: #fff;
-  border: 5px solid #d9934f;
-  outline: 3px solid var(--kontur);
-  border-radius: 6px;
-  box-shadow: 0 4px 0 rgba(90, 54, 23, 0.35);
-  transform: translate(-50%, -50%) rotate(-5deg);
-}
-.ug-kok .ug-k-tablo img {
-  object-fit: cover;
-  object-position: 50% 40%;
-}
-.ug-kok .ug-k-sihir { right: 6%; top: 7%; color: #f2a900; }
-
 /* Sesli Maceralar: odada Ada, pasta, balon */
 .ug-kok .ug-k-balon { left: 80%; top: 3%; height: min(44cqh, 40cqw); transform: translateX(-50%) rotate(8deg); }
 .ug-kok .ug-k-pasta { left: 70%; bottom: 3%; height: min(46cqh, 52cqw); transform: translateX(-50%); }
@@ -339,7 +327,7 @@
     linear-gradient(#3b2b22, #3b2b22) bottom / 100% 13% no-repeat;
 }
 /* oynat gökyüzünde (sağ üst): kapaktaki karakterlerin üstüne binmez */
-.ug-kok .ug-k-oynat { right: 6%; top: 17%; height: min(30cqh, 30cqw); padding: 6% 5% 6% 7%; }
+.ug-kok .ug-k-oynat { right: 6%; top: 17%; padding: calc(var(--rb) * 0.2) calc(var(--rb) * 0.16) calc(var(--rb) * 0.2) calc(var(--rb) * 0.24); }
 
 /* ---------- Ebeveyn kapısı (küçük, köşede; dokununca yazılı toplama sorusu) ---------- */
 .ug-kok .ug-kose {
@@ -389,8 +377,14 @@
   top: -9px;
   left: -7px;
   right: auto;
-  width: clamp(30px, 8vmin, 42px);
-  height: clamp(30px, 8vmin, 42px);
+  width: clamp(32px, 8vmin, 44px);
+  height: clamp(32px, 8vmin, 44px);
+  /* kart gelince rozet yumuşakça belirir */
+  animation: ug-rozet-gel 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  animation-delay: calc(var(--i) * 110ms + 700ms);
+}
+.ug-kok .ug-kart .mk-kilit .ikon {
+  font-size: clamp(16px, 4.2vmin, 22px);
 }
 
 /* ---------- Ebeveyn köşesi ---------- */
@@ -458,7 +452,7 @@
   font-size: 0.95rem;
 }
 
-/* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada Okula Hazırım ve geniş Pasta Otobüsü) ---------- */
+/* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada geniş Pasta Otobüsü) ---------- */
 @media (min-width: 600px) and (orientation: portrait) {
   .ug-kok .ug-giris {
     height: clamp(160px, 34dvh, 460px);
@@ -471,11 +465,8 @@
   .ug-kok .ug-kart-yer.ug-genis {
     grid-column: span 2;
   }
-  .ug-kok .ug-izgara.ug-az .ug-kart-yer.ug-genis:not(:last-child) {
-    grid-column: span 2;
-  }
-  .ug-kok .ug-kart-ad {
-    font-size: clamp(1rem, 2.6vw, 1.5rem);
+  .ug-kok .ug-izgara.ug-tek .ug-kart-yer.ug-genis {
+    grid-column: span 3;
   }
   .ug-kok .ug-kapi-daire {
     width: 52px;
@@ -516,19 +507,14 @@
     align-items: center;
   }
   .ug-kok .ug-izgara {
+    --oran: 1.55;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
-    /* kartlar aşağı yukarı kare kalsın: ızgara 4 × 2, ekran yüksekliğine sığar */
-    width: min(100%, 1200px, calc((100dvh - var(--ust) - var(--alt) - 12px) * 1.8));
+    /* kartlar biraz dik (resim + ad): ızgara 4 × 2, ekranın eni ya da boyu hangisi önce dolarsa */
+    width: min(100%, 1200px, calc((100dvh - var(--ust) - var(--alt) - 14px) * var(--oran)));
     height: auto;
-    aspect-ratio: 1.8;
-    padding: 4px 0 8px;
-  }
-  /* dört sütunda adlar sığsın */
-  .ug-kok .ug-kart-ad {
-    font-size: clamp(0.72rem, min(1.5vw, 2.6dvh), 1.2rem);
-    padding-left: 0;
-    padding-right: 0;
+    aspect-ratio: var(--oran);
+    padding: 6px 0 8px;
   }
   .ug-kok .ug-kose {
     top: auto;
@@ -536,6 +522,30 @@
     bottom: var(--alt);
     left: max(16px, env(safe-area-inset-left));
     flex-direction: row-reverse;
+  }
+}
+
+/* alçak yatay telefon: sol sütun biraz dar, kartlara yer kalsın */
+@media (orientation: landscape) and (max-height: 440px) {
+  .ug-kok .ug-giris {
+    width: clamp(140px, 27vw, 300px);
+  }
+}
+/* yatay tablet (4:3, 3:2): 3 sütun, kartlar iri; 7 kartta geniş kart son sırayı doldurur */
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .ug-kok .ug-giris {
+    width: clamp(150px, 29vw, 400px);
+  }
+  .ug-kok .ug-izgara {
+    --oran: 1.12;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .ug-kok .ug-kart-yer.ug-genis {
+    grid-column: span 2;
+  }
+  .ug-kok .ug-izgara.ug-tek .ug-kart-yer.ug-genis {
+    grid-column: span 3;
   }
 }
 
@@ -675,6 +685,7 @@
   .ug-kok .ug-kart,
   .ug-kok .ug-kart-yer,
   .ug-kok .ug-kart.secildi .ug-kart-govde,
+  .ug-kok .ug-kart .mk-kilit,
   .ug-kok .ug-logo .logo-yazi span {
     animation: none;
   }

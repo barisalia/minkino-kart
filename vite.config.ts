@@ -3,13 +3,12 @@ import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 
-// Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Minik Sanatçı (/sanatci/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
+// Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
 // Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/), Okula Hazırım! (/okul/) …; /uygulama/ eski menü adresi, köke yönlendirir;
 // /gizlilik/ ve /sartlar/ mağazaların istediği sade sayfalar.
 const SAYFALAR = {
   menu: 'index.html',
   kartlar: 'kartlar/index.html',
-  sanatci: 'sanatci/index.html',
   canlan: 'canlan/index.html',
   sesTesti: 'ses-testi/index.html',
   orman: 'orman/index.html',
@@ -25,20 +24,22 @@ const SAYFALAR = {
 
 /**
  * Uygulama derlemesi (`npm run build:app` = `vite build --mode uygulama`, Capacitor'ın webDir'i dist/):
- * - Mikrofon testi, Uyuyan Orman ve Minik Sanatçı uygulamaya girmez (sanatçı çocuk çizimini dış sunucuya gönderir);
+ * - Mikrofon testi ve Uyuyan Orman uygulamaya girmez;
  *   eski /uygulama/ yönlendirmesi ve gizlilik/şartlar sayfaları da (bağlantılar web sitesine gider).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'sanatci', 'uygulama', 'gizlilik', 'sartlar'];
-/** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri, sanatçı sunucu ayarı) */
-const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html', 'sanatci'];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar'];
+/** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
+const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 
 function uygulamaKabugu(): Plugin {
   return {
     name: 'minkino-uygulama-kabugu',
     transformIndexHtml: {
       order: 'pre',
-      handler: (html) => html.replace(/<head>/i, '<head>\n    <script type="module" src="/src/kabuk/yerel.ts"></script>'),
+      // sayfa geçişlerinde ve açılışta beyaz parlama olmasın: zemin açılış ekranının kremi (capacitor.config.ts ile aynı)
+      handler: (html) =>
+        html.replace(/<head>/i, '<head>\n    <style>html,body{background:#FFF4DD}</style>\n    <script type="module" src="/src/kabuk/yerel.ts"></script>'),
     },
     closeBundle() {
       for (const d of UYGULAMADA_YOK_DOSYA) rmSync(resolve(__dirname, 'dist', d), { recursive: true, force: true });

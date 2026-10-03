@@ -5,7 +5,8 @@
 > **Teyit edilmesi gerekenler (Barış/yönetici):**
 > - Kitaplarla bağ cümlesi. Eski karar (ORTAK_NOTLAR 2026-09-24): "oyun kitaplara bağlı değil". Bu yüzden metinde QR ya da kod yok, yalnız "aynı dünya" deniyor.
 > - "Veri toplanmaz / reklam yok" cümleleri mağaza sürümünde gerçekten doğru mu? Üçüncü taraf ölçüm aracı ya da Sentry olmamalı.
-> - Minik Sanatçı listede yok, metinlerde de geçmiyor.
+> - Minik Sanatçı 2026-10-03 itibarıyla tamamen kaldırıldı (site ve uygulama); metinlerde geçmez.
+> - **Destek / iletişim e-postası (iki mağazada da): minkinokids@gmail.com**
 
 ---
 

@@ -7,7 +7,7 @@ export interface Ekran {
   kapat?: () => void;
 }
 
-/** Ekran adı (kart oyunu: acilis, yas, temalar, oyun, turSonu, album, ebeveyn, mino; Minik Sanatçı kendi ekranlarını kaydeder). */
+/** Ekran adı (kart oyunu: acilis, yas, temalar, oyun, turSonu, album, ebeveyn, mino; diğer oyunlar kendi ekranlarını kaydeder). */
 export type EkranAdi = string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Fabrika = (app: Uygulama, param: any) => Ekran;

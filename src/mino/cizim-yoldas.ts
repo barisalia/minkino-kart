@@ -1,5 +1,5 @@
 /**
- * Çizim yoldaşı: Çiz Canlansın ve Minik Sanatçı'da sahnede eşlik eden Mino.
+ * Çizim yoldaşı: Çiz Canlansın'da sahnede eşlik eden Mino.
  * Konuşmaz (anlatıcı konuşur, ağzı oynamaz). Çizerken fırçaya bakar, bitince sevinir, canlanan resme şaşırır
  * ve dans eder; sihir beklenirken elinde sihirli değnekle büyü yapar.
  * Bu modül tembel yüklenir (cizim-yoldas-yuva.ts): Mino'nun çizimi oyunların ilk paketine girmez.

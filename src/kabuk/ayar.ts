@@ -19,3 +19,9 @@ export const REVENUECAT = {
 export const SITE = 'https://minkino-site.barisalidogan.workers.dev';
 export const GIZLILIK_ADRESI = `${SITE}/gizlilik/`;
 export const SARTLAR_ADRESI = `${SITE}/sartlar/`;
+
+/** Mağazanın abonelik yönetim sayfası (Ebeveyn Köşesi → "Aboneliği yönet") */
+export const ABONELIK_YONETIM = {
+  ios: 'https://apps.apple.com/account/subscriptions',
+  android: 'https://play.google.com/store/account/subscriptions?package=com.minkino.app',
+} as const;

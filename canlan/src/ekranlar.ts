@@ -6,7 +6,7 @@ import { IKON } from '../../src/ui/ikonlar';
 import { konfetiPatlat } from '../../src/ui/konfeti';
 import { baslikBalon, sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { Tuval, type Cizgi } from '../../sanatci/src/tuval';
+import { Tuval, type Cizgi } from '../../src/ui/tuval';
 import { boyaBolgesi, boyaResmi, sihirliBoya, type Boya } from './boya';
 import { canliCizim, sablonSvg, yolD } from './canlandir';
 import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
@@ -20,7 +20,7 @@ import { SAHNE_RESIM, sahne } from './sahne';
 import { muzeSayisi, muzeyeAs } from './muze';
 import { yoldasYuvasi } from '../../src/mino/cizim-yoldas-yuva';
 import { azHareket } from '../../src/ui/hareket';
-import { fircaParilti } from '../../sanatci/src/parilti';
+import { fircaParilti } from '../../src/ui/parilti';
 
 const S = canlan as unknown as {
   hosgeldin: string; sec: string; mod: Record<Mod, string>; mod_ad: Record<Mod, string>; simdi: string; sayac: string[];
