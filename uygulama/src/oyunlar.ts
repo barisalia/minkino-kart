@@ -123,15 +123,10 @@ export const OYUNLAR: OyunKarti[] = [
     ad: 'Dedektif Mino',
     adres: './dedektif/',
     renk: '#8a5cd6',
-    // çalışma odasında devrik lamba, halıda pati izi, köşede suçlu ama sevimli Pamuk (oyunun kendi çizimleri;
-    // Gemini kapağı gelince: zemin 'dedektif/kapak', katmanlar boş)
-    zemin: 'film/ev/arka-uzak',
+    // Gemini kapağı: şapkalı Mino büyüteçle, devrik mavi lamba, saklanan Pamuk
+    zemin: 'dedektif/kapak',
     rozet: 'Yeni',
-    katmanlar: [
-      { gorsel: 'dedektif/lamba-devrik', sinif: 'ug-k-dd-lamba' },
-      { gorsel: 'dedektif/kart-kedi-pati-izi', sinif: 'ug-k-dd-iz' },
-      { gorsel: 'dedektif/pamuk-b', sinif: 'ug-k-dd-pamuk' },
-    ],
+    katmanlar: [],
   },
   {
     id: 'pasta',
