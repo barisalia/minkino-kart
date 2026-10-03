@@ -238,11 +238,11 @@ export const YATAK = {
     [0.02, 0.79],
   ] as [number, number][],
   /** yatağın altındaki karanlık aralık */
-  alt: { x0: 0.06, y0: 0.775, x1: 0.372, y1: 0.842 },
+  alt: { x0: 0.06, y0: 0.775, x1: 0.405, y1: 0.842 },
   /** sallanan kuyruk ucunun kökü (yatağın altında, ayak ucu bacağının hemen solunda) */
-  kuyruk: { x: 0.35, y: 0.83, h: 0.12 },
+  kuyruk: { x: 0.455, y: 0.77, h: 0.18 },
   /** Pamuk'un saklandığı yer ve çıkınca durduğu yer (ayak tabanı) */
-  saklan: { x: 0.24, y: 0.845 },
+  saklan: { x: 0.415, y: 0.85 },
   cik: { x: 0.53, y: 0.94 },
 };
 /** Mutfak: Kino'nun izleri buzdolabının önünde biter */

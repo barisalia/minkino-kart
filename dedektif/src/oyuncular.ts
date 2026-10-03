@@ -69,7 +69,7 @@ export class Oyuncular {
     this.minoYer = h('div.dd-oyuncu.dd-mino-yer', { 'data-oyuncu': 'mino' }, this.minoHareket);
     this.kinoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-kino-kutu', {}, this.kino.el));
     this.kinoYer = h('div.dd-oyuncu.dd-kino-yer', { 'data-oyuncu': 'kino', style: `--ko:${KINO_ORAN.toFixed(3)};--ka:${KINO_ALT.toFixed(3)}` }, this.kinoHareket);
-    this.el = h('div.dd-oyuncular', {}, this.minoYer, this.kinoYer);
+    this.el = h('div.dd-oyuncular', { style: `--ko:${KINO_ORAN.toFixed(3)}` }, this.minoYer, this.kinoYer);
     this.balonKatman = h('div.dd-balonlar', { 'aria-hidden': 'true' }, this.balonlar.mino, this.balonlar.kino, this.balonlar.pamuk);
     this.kino.ekHareket = (p, t) => {
       p.yukSol = this.yukSol;
@@ -119,6 +119,14 @@ export class Oyuncular {
         this.balonKonumla(b, kim as 'mino' | 'kino' | 'pamuk');
         void b.offsetWidth;
         b.classList.add('acik');
+        // konuşan yürür / kenara çekilirse balon başını izler (açık kaldıkça)
+        const bk = kim as 'mino' | 'kino' | 'pamuk';
+        const takip = () => {
+          if (this.kapali || !b.classList.contains('acik')) return;
+          this.balonKonumla(b, bk);
+          requestAnimationFrame(takip);
+        };
+        requestAnimationFrame(takip);
       }
       if (kim === 'kino') this.kino.konus(true);
       if (kim === 'pamuk') this.pamuk?.konus(true);

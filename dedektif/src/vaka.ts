@@ -15,7 +15,7 @@
  */
 import D from '../../content/dedektif.json';
 import { efekt } from '../../src/audio/ses';
-import { Karakter, svgGetir } from '../../src/karakter/karakter';
+import { Karakter } from '../../src/karakter/karakter';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Buyutec, type BuyutecHedef } from '../../src/ui/buyutec';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
@@ -829,8 +829,8 @@ class Vaka {
     const pamuk = new Karakter('pamuk', h('img', { src: resim('pamuk-b') ?? '', alt: '', draggable: 'false' }));
     pamukKap.append(pamuk.el);
     this.temizlik.push(() => pamuk.kapat());
-    const kuyruk = h('button.dd-kuyruk', { type: 'button', 'aria-label': 'Kuyruk' }, h('div.dd-kuyruk-ic'));
-    void this.kuyrukCiz(kuyruk.firstElementChild as HTMLElement);
+    // yatağın arkasında saklanan Pamuk'un ayak ucundan taşan kuyruğu: dokunma alanı (görünmez; kuyruğun kendisi iskelette)
+    const kuyruk = h('button.dd-kuyruk', { type: 'button', 'aria-label': 'Kuyruk' });
     const yt = yatakOdasi(pamukKap, kuyruk);
     oy.yerlesim(this.dar() ? 'iki' : 'sag');
     await dunya.gec(yt, 'yatak', 1);
@@ -841,35 +841,54 @@ class Vaka {
     // kuyruk ucu yatağın altından sallanır; gözler karanlıkta parlar
     this.fon.durdur();
     yt.e.alt.classList.add('acik');
+    // Pamuk yatağın arkasında: kuyruğu ayak ucunun yanından sallanır, patileri yatağın altından görünür
+    pamukKap.classList.add('acik', 'sakli');
+    pamuk.ekHareket = (p, t) => {
+      p.kuyruk += Math.sin(t * 6.5) * 24;
+      p.kulakSol += Math.sin(t * 3) * 4;
+    };
     kuyruk.classList.add('acik');
-    await dunya.git(this.ortala(YATAK.kuyruk.x + 0.04, [0.08, 0.5, 0.6, 1]), 900);
-    oy.mino.poz('isaret-sol');
-    await oy.soyle(M.kuyruk);
-    oy.mino.poz(null);
-    this.adim('kuyruk');
-    await new Promise<void>((coz) => {
+    await dunya.git(this.ortala(YATAK.saklan.x + 0.02, [0.08, 0.5, 0.6, 1]), 900);
+    oy.yerlesim('kenar');
+    // kuyruğa Mino fısıldarken de dokunulabilir
+    const dokunuldu = new Promise<void>((coz) => {
       let dur: (() => void) | null = null;
       const z = window.setTimeout(() => (dur = parmak(this.el, () => kuyruk.getBoundingClientRect())), sure(4000));
       this.zamanlar.push(z);
+      // kuyruğun ucunda ara ara minik pırıltı (dikkat çeker, korkutmaz)
+      const pir = window.setInterval(() => {
+        if (this.kapali) return;
+        const [x, y] = this.efekt.merkez(kuyruk, 0.62, 0.35);
+        this.efekt.isilti(x, y, 26);
+      }, 650);
+      this.temizlik.push(() => clearInterval(pir));
       kuyruk.addEventListener(
         'click',
         () => {
           clearTimeout(z);
+          clearInterval(pir);
           dur?.();
           coz();
         },
         { once: true },
       );
     });
+    this.adim('kuyruk');
+    oy.mino.poz('isaret-sol');
+    await Promise.race([oy.soyle(M.kuyruk), dokunuldu]);
+    oy.mino.poz(null);
+    await dokunuldu;
     if (this.kapali) return;
     // Pamuk yatağın altından yavaşça çıkar: kulakları düşük, patilerinde sarı kanat tozu
     kuyruk.classList.add('cekildi');
+    pamuk.ekHareket = null;
+    pamukKap.classList.remove('sakli');
+    oy.yerlesim(this.dar() ? 'iki' : 'sag');
     muzikCal('film-surpriz', 0.45);
     ses.pop();
     oy.kinoIfade('saskin', 2000);
     oy.minoTepki('sasir');
     this.adim('pamuk');
-    pamukKap.classList.add('acik');
     pamuk.ifade('uzgun');
     const W = yt.W;
     const s = YATAK.saklan;
@@ -903,27 +922,6 @@ class Vaka {
     await oy.soyle(M.olur_boyle);
     pamuk.ifade('mutlu', 1500);
     this.el.classList.remove('dd-sahne-is');
-  }
-
-  /** Pamuk'un iskeletinden yalnız kuyruğu (yatağın altından çıkan uç): kökü yatağın ayak ucunun arkasında */
-  private async kuyrukCiz(kap: HTMLElement) {
-    const metin = await svgGetir('pamuk');
-    if (!metin || this.kapali) return;
-    kap.innerHTML = metin.replace(/<\?xml[^>]*>/, '');
-    const svg = kap.querySelector('svg');
-    if (!svg) return;
-    svg.removeAttribute('width');
-    svg.removeAttribute('height');
-    for (const g of svg.querySelectorAll<SVGGElement>(':scope g[id]')) {
-      const id = g.id;
-      g.removeAttribute('id');
-      if (id !== 'kuyruk' && !g.closest('[data-kuyruk]')) g.style.display = 'none';
-      else g.dataset.kuyruk = '1';
-    }
-    // görünür kuyruğun kutusu: kök (1290, 1600) sol altta
-    svg.setAttribute('viewBox', '1180 1080 620 620');
-    kap.style.setProperty('--kok-x', `${(((1290 - 1180) / 620) * 100).toFixed(1)}%`);
-    kap.style.setProperty('--kok-y', `${(((1600 - 1080) / 620) * 100).toFixed(1)}%`);
   }
 
   // ---------------------------------------------------------------- final

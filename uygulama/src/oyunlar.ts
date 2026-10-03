@@ -119,6 +119,21 @@ export const OYUNLAR: OyunKarti[] = [
     ],
   },
   {
+    id: 'dedektif',
+    ad: 'Dedektif Mino',
+    adres: './dedektif/',
+    renk: '#8a5cd6',
+    // çalışma odasında devrik lamba, halıda pati izi, köşede suçlu ama sevimli Pamuk (oyunun kendi çizimleri;
+    // Gemini kapağı gelince: zemin 'dedektif/kapak', katmanlar boş)
+    zemin: 'film/ev/arka-uzak',
+    rozet: 'Yeni',
+    katmanlar: [
+      { gorsel: 'dedektif/lamba-devrik', sinif: 'ug-k-dd-lamba' },
+      { gorsel: 'dedektif/kart-kedi-pati-izi', sinif: 'ug-k-dd-iz' },
+      { gorsel: 'dedektif/pamuk-b', sinif: 'ug-k-dd-pamuk' },
+    ],
+  },
+  {
     id: 'pasta',
     ad: 'Pasta Otobüsü',
     adres: './pasta/',
@@ -131,7 +146,10 @@ export const OYUNLAR: OyunKarti[] = [
   },
 ];
 
-/** Menüde görünen kartlar (web ve uygulamada aynı 7 kart; Pasta geniş, son sırayı doldurur) */
+/**
+ * Menüde görünen kartlar (web ve uygulamada aynı 8 kart). Çift sayıda: telefon 2 × 4, yatay 4 × 2; 3 sütunda (tablet)
+ * geniş Pasta iki hücre kaplar, 3 × 3 boşluksuz.
+ */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
   if (!uygulama) return OYUNLAR;
   return OYUNLAR.filter((k) => !k.uygulamadaYok);

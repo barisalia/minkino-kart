@@ -313,6 +313,12 @@
 .ug-kok .ug-k-sayilar img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .ug-kok .ug-k-okul-elma { left: calc(50% + var(--b) * 0.03); bottom: calc(6% + var(--b) * 0.37); height: calc(var(--b) * 0.22); transform: translateX(-50%) rotate(8deg); }
 
+/* Dedektif Mino: pencereli odada devrik lamba, pati izi, köşeden bakan Pamuk */
+.ug-kok .ug-kart[data-oyun='dedektif'] .ug-kart-resim { background-position: 50% 80%; }
+.ug-kok .ug-k-dd-lamba { left: 29%; bottom: 4%; height: min(46cqh, 50cqw); transform: translateX(-50%) rotate(-4deg); }
+.ug-kok .ug-k-dd-iz { left: 60%; bottom: 6%; height: min(20cqh, 22cqw); transform: translateX(-50%) rotate(-16deg); opacity: 0.8; }
+.ug-kok .ug-k-dd-pamuk { right: -4%; bottom: 2%; height: min(64cqh, 70cqw); transform: scaleX(-1); }
+
 /* Çiz Canlansın: çayırda dinozor + kalem */
 .ug-kok .ug-k-dinozor { left: 46%; bottom: 3%; height: min(80cqh, 96cqw); transform: translateX(-50%); }
 .ug-kok .ug-k-kalem { right: 6%; top: 7%; }

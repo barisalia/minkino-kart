@@ -632,7 +632,8 @@
 .dd-kok .dd-yatak-alti {
   position: absolute;
   pointer-events: none;
-  background: radial-gradient(ellipse 60% 70% at 50% 30%, rgba(25, 14, 35, 0.8), rgba(25, 14, 35, 0) 80%);
+  background: linear-gradient(180deg, rgba(25, 14, 35, 0.9), rgba(25, 14, 35, 0.6) 65%, rgba(25, 14, 35, 0));
+  border-radius: 0 0 40% 40% / 0 0 60% 60%;
   opacity: 0.55;
   transition: opacity 0.6s;
 }
@@ -663,6 +664,7 @@
   92% { opacity: 1; transform: scaleY(0.1); }
   95% { opacity: 1; transform: scaleY(1); }
 }
+/* kuyruğun dokunma alanı (görünmez): saklanan Pamuk'un yatağın ayak ucundan taşan kuyruğunun üstünde, cömert */
 .dd-kok .dd-kuyruk {
   position: absolute;
   aspect-ratio: 1;
@@ -670,61 +672,23 @@
   border: 0;
   background: none;
   appearance: none;
-  transform: translate(-18%, -84%);
-  opacity: 0;
+  transform: translate(-50%, -50%);
   pointer-events: none;
-  transition: opacity 0.4s;
   cursor: pointer;
 }
 .dd-kok .dd-kuyruk.acik {
-  opacity: 1;
   pointer-events: auto;
-}
-.dd-kok .dd-kuyruk::before {
-  content: '';
-  position: absolute;
-  inset: -45%;
-  border-radius: 50%;
-}
-.dd-kok .dd-kuyruk.acik::after {
-  content: '';
-  position: absolute;
-  left: 55%;
-  top: 40%;
-  width: 160%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 240, 160, 0) 38%, rgba(255, 226, 110, 0.75) 50%, rgba(255, 226, 110, 0) 64%);
-  animation: dd-nabiz-halka 1.4s ease-out infinite;
-  pointer-events: none;
-}
-.dd-kok .dd-kuyruk-ic {
-  position: absolute;
-  inset: 0;
-  transform-origin: var(--kok-x, 18%) var(--kok-y, 84%);
-}
-.dd-kok .dd-kuyruk-ic svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-}
-.dd-kok .dd-kuyruk.acik .dd-kuyruk-ic {
-  animation: dd-kuyruk-salla 0.9s ease-in-out infinite alternate;
-}
-@keyframes dd-kuyruk-salla {
-  from { transform: rotate(-12deg); }
-  to { transform: rotate(16deg); }
 }
 .dd-kok .dd-kuyruk.cekildi {
   pointer-events: none;
 }
-.dd-kok .dd-kuyruk.cekildi .dd-kuyruk-ic {
-  animation: dd-kuyruk-cek 0.4s ease-in forwards;
+/* saklanırken Pamuk biraz büzülür (yatağın altına sokulmuş), kuyruk dışarıda */
+.dd-kok .dd-pamuk-dunya.sakli .kr-karakter {
+  transform: scale(1.02, 0.9);
+  transform-origin: 50% 92%;
+  transition: transform 0.4s;
 }
-@keyframes dd-kuyruk-cek {
-  to { transform: translate(-45%, 20%) rotate(-40deg) scale(0.5); opacity: 0; }
-}
+
 .dd-kok .dd-yatak-on {
   pointer-events: none;
 }
@@ -1443,12 +1407,12 @@
   right: 0;
   bottom: 0;
   height: 46%;
-  background: linear-gradient(180deg, rgba(30, 18, 40, 0), rgba(30, 18, 40, 0.6));
+  background: linear-gradient(180deg, rgba(30, 18, 40, 0), rgba(30, 18, 40, 0.78));
 }
 .dd-kok .dd-kurgu-saklan .dd-k-pamuk {
   left: 50%;
-  bottom: -26%;
-  height: 78%;
+  bottom: -42%;
+  height: 84%;
   transform: translateX(-50%);
 }
 .dd-kok .dd-k-toz {

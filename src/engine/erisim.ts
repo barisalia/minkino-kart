@@ -32,6 +32,7 @@ export const ERISIM: Record<string, Erisim> = {
   pazar: 'abonelik',
   canlan: 'abonelik',
   pasta: 'abonelik',
+  dedektif: 'abonelik',
 };
 
 /** Tablodan bir içeriğin erişim türü (oyun ya da 'oyun/bolum') */
