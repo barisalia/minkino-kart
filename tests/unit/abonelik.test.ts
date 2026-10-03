@@ -13,7 +13,7 @@ describe('erişim tablosu', () => {
     expect(kilitliMi('kartlar', ac)).toBe(false);
     expect(kilitliMi('film/mino-karpuz', ac)).toBe(false);
     expect(kilitliMi('macera/elektrik', ac)).toBe(false);
-    for (const id of ['pazar', 'canlan', 'pasta', 'film/kino-oyuncak', 'macera/dogumgunu', 'macera/ege', 'macera/banyo', 'macera/salincak'])
+    for (const id of ['pazar', 'canlan', 'pasta', 'dedektif', 'film/kino-oyuncak', 'macera/dogumgunu', 'macera/ege', 'macera/banyo', 'macera/salincak'])
       expect(kilitliMi(id, ac), id).toBe(true);
   });
   it('bölümlü oyunların menü kartı açık (içinde ücretsiz bölüm var); bilinmeyen içerik abonelikle', () => {
@@ -37,16 +37,17 @@ describe('erişim tablosu', () => {
 });
 
 describe('uygulama menüsü', () => {
-  it('web ve uygulama: aynı 7 kart (Minik Sanatçı kaldırıldı), sıra korunur, Pasta geniş ve sonda', () => {
+  it('web ve uygulama: aynı 8 kart (Dedektif Mino eklendi), sıra korunur, Pasta geniş ve sonda', () => {
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
-      expect(u.map((k) => k.id)).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'pasta']);
+      expect(u.map((k) => k.id)).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'pasta']);
       expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['pasta']);
-      // ızgara boşluksuz: 6 normal kart + geniş kart → 2 sütunda 2 × 4, 4 sütunda 4 × 2, 3 sütunda 3 × 3
+      // ızgara boşluksuz: 8 kart (çift) → 2 sütunda 2 × 4, 4 sütunda 4 × 2 (geniş kart bir hücre);
+      // 3 sütunda geniş kart iki hücre: 7 normal + 2 = 9 → 3 × 3
       const normal = u.filter((k) => !k.genis).length;
-      expect(normal).toBe(6);
-      expect((normal + 2) % 2).toBe(0);
-      expect((normal + 2) % 4).toBe(0);
-      expect((normal + 3) % 3).toBe(0);
+      expect(normal).toBe(7);
+      expect(u.length % 2).toBe(0);
+      expect(u.length % 4).toBe(0);
+      expect((normal + 2) % 3).toBe(0);
     }
   });
 });

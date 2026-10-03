@@ -15,6 +15,7 @@ import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { okulCumleleri, okulKinoCumleleri } from '../../okul/src/sayi';
 import { kelimeCumleleri, kelimeKinoCumleleri } from '../../okul/src/kelime/model';
+import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -214,6 +215,9 @@ export function tumCumleler(): string[] {
   // Okula Hazırım! · Kelime Köprüsü: Mino, kelimeler ("Kedi!"), heceler ("Kar!"), renkler; Kino'nunkiler yedek olarak da
   kelimeCumleleri().forEach(ekle);
   kelimeKinoCumleleri().forEach(ekle);
+  // Dedektif Mino: Mino (anlatıcı), kart hayvanları ve Pamuk (tonlu); Kino'nun cümleleri anlatıcı yedeği olarak da
+  dedektifCumleleri().forEach(ekle);
+  dedektifKinoCumleleri().forEach(ekle);
   return [...set];
 }
 
@@ -238,6 +242,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   // Okula Hazırım!: Kino'nun cümleleri
   okulKinoCumleleri().forEach(ekle);
   kelimeKinoCumleleri().forEach(ekle);
+  // Dedektif Mino: Kino'nun cümleleri
+  dedektifKinoCumleleri().forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

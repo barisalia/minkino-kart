@@ -1,0 +1,55 @@
+{
+  "ad": "kus-profil",
+  "boyut": 2048,
+  "sira": [
+    "kuyruk",
+    "bacak-arka",
+    "bacak-on",
+    "govde",
+    "kanat-on",
+    "kafa",
+    "goz",
+    "goz-kapali"
+  ],
+  "gizli": [
+    "goz-kapali"
+  ],
+  "bagli": {
+    "goz": "kafa",
+    "goz-kapali": "kafa"
+  },
+  "donme": {
+    "kafa": [
+      1000,
+      930
+    ],
+    "goz": [
+      1214,
+      630
+    ],
+    "goz-kapali": [
+      1214,
+      640
+    ],
+    "kanat-on": [
+      990,
+      1010
+    ],
+    "bacak-on": [
+      990,
+      1620
+    ],
+    "bacak-arka": [
+      1110,
+      1620
+    ],
+    "kuyruk": [
+      790,
+      1470
+    ],
+    "govde": [
+      1100,
+      1700
+    ]
+  }
+}

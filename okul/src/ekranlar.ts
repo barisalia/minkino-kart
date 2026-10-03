@@ -17,7 +17,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { BAHCE, etkinlikSimgesi, EV, KOPRU, KULE, OKUL, parkAdres, rozet } from './cizim';
-import { erisimVarMi } from '../../src/abonelik/kilit';
+import { erisimVarMi, kilitleriKur } from '../../src/abonelik/kilit';
 import { AZ_HAREKET, Efekt, oynat } from './efekt';
 import { bolge, bolgeEtkinlikleri, BOLGELER, etkinlik, oynananlar, yasUygun, type BolgeId } from './etkinlik';
 import { etkinlikBitti, kaydetKayit, kayit, siradaki, yapistir, type BitisSonucu } from './kayit';
@@ -304,10 +304,13 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
     }, TEST_MODU ? 10 : 450),
   );
   zamanlar.push(window.setTimeout(() => void konus(O.mino.bahce), TEST_MODU ? 10 : 400));
+  // uygulamada abonelikli duraklarda küçük kilit rozeti (dokununca kilit anı; web sitesinde kilit yok)
+  const kilitBirak = kilitleriKur(duraklar.map((d, i): [HTMLElement, string] => [d, `okul/${etkinlikler[i].id}`]));
   return {
     el,
     kapat() {
       zamanlar.forEach(clearTimeout);
+      kilitBirak();
       ikiz.kapat();
     },
   };

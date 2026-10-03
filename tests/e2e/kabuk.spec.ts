@@ -19,6 +19,13 @@ async function rakamYaz(page: Page, sayi: string) {
   for (const r of sayi) await page.locator('.ebeveyn-kapisi .tus', { hasText: new RegExp(`^${r}$`) }).click();
 }
 
+/** Kilitli içerik: önce çocuğa kilit anı (abonelik ekranı değil); büyük "Büyükler için"e basar, kapı açılır */
+async function buyuklerIcin(page: Page) {
+  await expect(page.locator('.kl-perde .kl-baslik')).toHaveText('Bunu anne-babanla açabilirsin');
+  await expect(page.locator('.ab-perde')).toHaveCount(0);
+  await page.locator('.kl-perde').getByRole('button', { name: 'Büyükler için' }).click();
+}
+
 async function kapiyiGec(page: Page) {
   const soru = page.locator('.ebeveyn-kapisi .kapi-soru');
   await expect(soru).toBeVisible();
@@ -27,15 +34,15 @@ async function kapiyiGec(page: Page) {
   await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
 }
 
-test('Kabuk: menü 6 ekran boyunda 7 iri kart, ızgarada boşluk yok, adlar kesilmiyor', async ({ page }) => {
+test('Kabuk: menü 6 ekran boyunda 8 iri kart, ızgarada boşluk yok, adlar kesilmiyor', async ({ page }) => {
   const hatalar = hataTopla(page);
   for (const [en, boy, ad] of BOYUTLAR) {
     await page.setViewportSize({ width: en, height: boy });
     await page.goto('./?test=1&uygulama=android');
     const kartlar = page.locator('.ug-kart');
-    await expect(kartlar).toHaveCount(7);
+    await expect(kartlar).toHaveCount(8);
     // sıra korunur, Pasta geniş ve sonda
-    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'pasta']);
+    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'pasta']);
     await page.waitForTimeout(1100);
     const kutular = await kartlar.evaluateAll((l) => l.map((k) => k.getBoundingClientRect().toJSON() as DOMRect));
     for (const k of kutular) {
@@ -55,12 +62,12 @@ test('Kabuk: menü 6 ekran boyunda 7 iri kart, ızgarada boşluk yok, adlar kesi
       }
     // boşluk yok: son sıradaki geniş kart ızgaranın sağ kenarına kadar gelir
     const sag = Math.max(...kutular.map((k) => k.right));
-    expect(Math.abs(kutular[6].right - sag), `${ad} son sıra dolu`).toBeLessThan(3);
+    expect(Math.abs(kutular[7].right - sag), `${ad} son sıra dolu`).toBeLessThan(3);
     // adlar sığıyor (… ile kesilmiyor)
     const kesik = await page.locator('.ug-kart-ad').evaluateAll((l) => l.filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent));
     expect(kesik, ad).toEqual([]);
     // kilit rozeti yumuşak (yalnız abonelikli oyunlarda)
-    for (const id of ['pazar', 'canlan', 'pasta']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`)).toBeVisible();
+    for (const id of ['pazar', 'canlan', 'pasta', 'dedektif']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`)).toBeVisible();
     await expect(page.locator('.ug-kart[data-oyun="kartlar"] .mk-kilit')).toHaveCount(0);
     await page.screenshot({ path: `tests/screens/${ad}.png` });
   }
@@ -72,6 +79,7 @@ test('Kabuk: ebeveyn kapısı iki basamak, yanlışta yumuşak sallanma, 3 yanl�
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./?test=1&uygulama=android');
   await page.locator('.ug-kart[data-oyun="pazar"]').click();
+  await buyuklerIcin(page);
   const kapi = page.locator('.ebeveyn-kapisi');
   await expect(kapi).toBeVisible();
   await expect(kapi.locator('.kapi-kutu')).toHaveCount(2);
@@ -108,6 +116,7 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./?test=1&uygulama=ios');
   await page.locator('.ug-kart[data-oyun="pasta"]').click();
+  await buyuklerIcin(page);
   await kapiyiGec(page);
   const ab = page.locator('.ab-perde');
   await expect(ab).toHaveAttribute('data-durum', 'hazir');
@@ -149,7 +158,7 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
 test('Kabuk: anahtar yokken kilit yok, abonelik ekranı "Yakında" ve yedek fiyat', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1&uygulama=android&anahtar=yok');
-  await expect(page.locator('.ug-kart')).toHaveCount(7);
+  await expect(page.locator('.ug-kart')).toHaveCount(8);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   await page.locator('.ug-kapi').click();
   await kapiyiGec(page);

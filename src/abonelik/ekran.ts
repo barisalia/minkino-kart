@@ -19,6 +19,7 @@ import { ebeveynKapisiAc } from '../ui/ebeveyn-kapisi';
 import { h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { yuvarlakDugme } from '../ui/ortak';
+import { kilitAniAc } from './kilit-ani';
 import { saglayici, type Plan, type PlanId } from './satin';
 
 /** Mağazaların zorunlu otomatik yenileme metinleri (MAGAZA-METINLERI.md §7) */
@@ -63,9 +64,13 @@ const KAHRAMAN = Object.values(
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** Kilitli içeriğe dokunulunca: önce ebeveyn kapısı, sonra abonelik ekranı. Abonelik olduysa true. */
+/**
+ * Kilitli içeriğe dokunulunca: önce çocuğa sakin kilit anı ("Bunu anne-babanla açabilirsin", src/abonelik/kilit-ani.ts);
+ * yalnız "Büyükler için" düğmesiyle ebeveyn kapısı, kapı geçilince abonelik ekranı. Satın alma ekranı çocuğa hiçbir
+ * zaman doğrudan gösterilmez (Google Play Aileler / Teacher Approved). Abonelik olduysa true.
+ */
 export async function kilitliIcerik(kok: HTMLElement): Promise<boolean> {
-  efekt.dokunma();
+  if ((await kilitAniAc(kok)) !== 'buyuk') return false;
   if (!(await ebeveynKapisiAc(kok))) return false;
   return abonelikEkrani(kok);
 }

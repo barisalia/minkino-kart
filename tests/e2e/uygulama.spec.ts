@@ -8,15 +8,16 @@ const BEKLENEN: Record<string, string> = {
   macera: './macera/',
   film: './film/',
   okul: './okul/',
+  dedektif: './dedektif/',
   pasta: './pasta/',
 };
 
-test('Ana menü: açılışta Mino ve 7 oyun kartı, görseller yüklü', async ({ page }, info) => {
+test('Ana menü: açılışta Mino ve 8 oyun kartı, görseller yüklü', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
   await expect(page.locator('.ug-menu .mino svg')).toBeVisible();
   const kartlar = page.locator('.ug-kart');
-  await expect(kartlar).toHaveCount(7);
+  await expect(kartlar).toHaveCount(8);
 
   // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor
   const boyut = page.viewportSize()!;
@@ -39,7 +40,8 @@ test('Ana menü: açılışta Mino ve 7 oyun kartı, görseller yüklü', async 
 
   // Kino Mino'nun yanında (parçalı iskelet yüklendi), yan oyun rozetleri kartlarda
   await expect(page.locator('.ug-kino .kr-iskeletli svg')).toBeVisible();
-  await expect(page.locator('.ug-yeni')).toHaveCount(6);
+  await expect(page.locator('.ug-yeni')).toHaveCount(7);
+  await expect(page.locator('.ug-kart[data-oyun="dedektif"] .ug-yeni')).toHaveText('Yeni');
   await expect(page.locator('.ug-kart[data-oyun="okul"] .ug-yeni')).toHaveText('Yeni');
   await expect(page.locator('.ug-kart[data-oyun="okul"] .ug-k-sayilar img')).toBeVisible();
   await expect(page.locator('.ug-kart[data-oyun="pasta"] .ug-yeni')).toHaveText('Yeni');
@@ -102,6 +104,7 @@ test('Her oyunun açılışındaki geri düğmesi ana menüye döner', async ({ 
     ['film', 'Geri'],
     ['pasta', 'Minkino’ya dön'],
     ['okul', 'Minkino’ya dön'],
+    ['dedektif', 'Minkino’ya dön'],
   ];
   for (const [oyun, etiket] of oyunlar) {
     await page.goto(`./${oyun}/?test=1`);
@@ -144,7 +147,7 @@ test('Ana menü: yatay ekranda da kartlar sığıyor', async ({ page }, info) =>
   const { width, height } = page.viewportSize()!;
   await page.setViewportSize({ width: height, height: width });
   await page.goto('./?test=1');
-  await expect(page.locator('.ug-kart')).toHaveCount(7);
+  await expect(page.locator('.ug-kart')).toHaveCount(8);
   for (const kart of await page.locator('.ug-kart').all()) {
     const k = (await kart.boundingBox())!;
     expect(k.x + k.width).toBeLessThanOrEqual(height + 1);
