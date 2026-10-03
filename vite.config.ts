@@ -16,6 +16,7 @@ const SAYFALAR = {
   pazar: 'pazar/index.html',
   pasta: 'pasta/index.html',
   okul: 'okul/index.html',
+  dedektif: 'dedektif/index.html',
   film: 'film/index.html',
   uygulama: 'uygulama/index.html',
   gizlilik: 'gizlilik/index.html',
