@@ -34,6 +34,8 @@ const IFADE_EKLERI: Record<string, string[]> = {
   mutlu: ['mutlu'],
   saskin: ['saskin'],
   kizgin: ['kizgin'],
+  // Pamuk (Dedektif Mino): utanmış (kızaran yanaklar, yere bakan gözler)
+  utanmis: ['utanmis'],
   // Kino (ekip/kino/IFADELER.md): banyo ifadeleri
   heyecan: ['heyecan'],
   sicak: ['sicak'],

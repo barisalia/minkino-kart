@@ -1,0 +1,160 @@
+/* Büyüteç (src/ui/buyutec.ts): pirinç halka, ahşap sap, cam parlaması; yakınlıkta sıcak ışıltı. Yalnız transform / opacity
+   canlanır. Kök sınıf altında: gömülünce başka uygulamayı bozmaz. */
+.mk-kok .bt-kap {
+  touch-action: none;
+}
+.mk-kok .bt-kapali {
+  pointer-events: none;
+}
+/* kaynakta gizli öğeler çıplak gözle görünmez, merceğin kopyasında görünür */
+.mk-kok .bt-gizli {
+  opacity: 0;
+}
+.mk-kok .bt-mercek .bt-gizli {
+  opacity: 1;
+}
+.mk-kok .bt-mercek {
+  --bt-r: 60px;
+  --bt-yakin: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--bt-r) * 2);
+  height: calc(var(--bt-r) * 2);
+  pointer-events: none;
+  z-index: 6;
+  will-change: transform;
+  transition: opacity 0.25s;
+}
+.mk-kok .bt-mercek.bt-gizlendi {
+  opacity: 0;
+}
+.mk-kok .bt-cam {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff8e8;
+  /* camın kenarında hafif içe gölge: bombeli görünsün */
+  box-shadow: inset 0 0 calc(var(--bt-r) * 0.22) rgba(90, 54, 23, 0.35);
+  isolation: isolate;
+}
+.mk-kok .bt-ic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.mk-kok .bt-kaynak {
+  position: absolute;
+  overflow: hidden;
+}
+.mk-kok .bt-kaynak > .bt-kopya {
+  pointer-events: none;
+}
+/* camın yansıması: sol üstte kavisli beyaz parlama */
+.mk-kok .bt-yansima {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(60% 40% at 32% 22%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(closest-side, rgba(255, 255, 255, 0) 80%, rgba(255, 246, 220, 0.35) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+/* bir şey bulununca camdan çapraz ışık süpürür */
+.mk-kok .bt-isilti {
+  position: absolute;
+  left: -60%;
+  top: -60%;
+  width: 70%;
+  height: 220%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+  transform: rotate(28deg) translateX(-120%);
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.mk-kok .bt-mercek.bt-parla .bt-isilti {
+  animation: bt-supur 0.7s cubic-bezier(0.3, 0.6, 0.3, 1);
+}
+@keyframes bt-supur {
+  0% { transform: rotate(28deg) translateX(-60%); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: rotate(28deg) translateX(330%); opacity: 0; }
+}
+/* çerçeve: pirinç halka (degrade, sıcak kahve kontur), sağ altta ahşap sap */
+.mk-kok .bt-cerceve {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mk-kok .bt-halka {
+  position: absolute;
+  inset: calc(var(--bt-r) * -0.13);
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, transparent calc(100% - var(--bt-r) * 0.15), #fbe7a1 calc(100% - var(--bt-r) * 0.13), #e3a93a calc(100% - var(--bt-r) * 0.07), #b97616 calc(100% - var(--bt-r) * 0.03), #6b3a1f 100%);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - var(--bt-r) * 0.15), #000 calc(100% - var(--bt-r) * 0.14));
+  mask: radial-gradient(closest-side, transparent calc(100% - var(--bt-r) * 0.15), #000 calc(100% - var(--bt-r) * 0.14));
+  filter: drop-shadow(0 calc(var(--bt-r) * 0.06) calc(var(--bt-r) * 0.06) rgba(90, 54, 23, 0.35));
+}
+/* yaklaştıkça halka sıcak bir ışıkla parlar (sıcak-soğuk) */
+.mk-kok .bt-halka::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--bt-r) * -0.12);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, transparent 72%, rgba(255, 214, 92, 0.85) 84%, rgba(255, 214, 92, 0) 100%);
+  opacity: calc(var(--bt-yakin) * var(--bt-yakin));
+  transition: opacity 0.2s;
+}
+.mk-kok .bt-sap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--bt-r) * 0.34);
+  height: calc(var(--bt-r) * 1.25);
+  border-radius: calc(var(--bt-r) * 0.17);
+  background: linear-gradient(90deg, #5a2f14, #8a4f24 35%, #a8642e 55%, #6b3a1f);
+  box-shadow: inset 0 calc(var(--bt-r) * -0.08) 0 rgba(0, 0, 0, 0.15), 0 calc(var(--bt-r) * 0.05) calc(var(--bt-r) * 0.08) rgba(90, 54, 23, 0.35);
+  transform: rotate(-45deg) translate(-50%, calc(var(--bt-r) * 0.98));
+  transform-origin: 0 0;
+}
+/* sapın halkaya bağlandığı pirinç bilezik */
+.mk-kok .bt-sap::before {
+  content: '';
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  top: 0;
+  height: 22%;
+  border-radius: calc(var(--bt-r) * 0.06);
+  background: linear-gradient(90deg, #b97616, #f4cf6b 45%, #c98a22);
+}
+.mk-kok .bt-resim {
+  position: absolute;
+  /* büyüteç resmi: halka camı tam çevreler, sap sağ altta (resim kare değilse de cam merkezde) */
+  left: -18%;
+  top: -18%;
+  width: 165%;
+  height: auto;
+}
+/* tutulunca hafif büyür (yay gibi) */
+.mk-kok .bt-mercek .bt-cam,
+.mk-kok .bt-mercek .bt-cerceve {
+  transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.mk-kok .bt-mercek.bt-tutuldu .bt-cam,
+.mk-kok .bt-mercek.bt-tutuldu .bt-cerceve {
+  transform: scale(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .bt-mercek.bt-parla .bt-isilti {
+    animation: none;
+  }
+}

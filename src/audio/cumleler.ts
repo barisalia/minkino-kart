@@ -14,6 +14,7 @@ import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { okulCumleleri, okulKinoCumleleri } from '../../okul/src/sayi';
+import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -210,6 +211,9 @@ export function tumCumleler(): string[] {
   // Okula Hazırım!: Mino, tavşan, kalıplar (Bir…On ile açılmış), rakam canlanmaları; Kino'nun cümleleri anlatıcı yedeği olarak da
   okulCumleleri().forEach(ekle);
   okulKinoCumleleri().forEach(ekle);
+  // Dedektif Mino: Mino (anlatıcı), kart hayvanları ve Pamuk (tonlu); Kino'nun cümleleri anlatıcı yedeği olarak da
+  dedektifCumleleri().forEach(ekle);
+  dedektifKinoCumleleri().forEach(ekle);
   return [...set];
 }
 
@@ -233,6 +237,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   pastaKinoCumleleri().forEach(ekle);
   // Okula Hazırım!: Kino'nun cümleleri
   okulKinoCumleleri().forEach(ekle);
+  // Dedektif Mino: Kino'nun cümleleri
+  dedektifKinoCumleleri().forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

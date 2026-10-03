@@ -1,0 +1,68 @@
+{
+  "aciklama": "Dedektif Mino · Vaka 1: Devrilen Lamba (ekip/senaryo/dedektif-mino.md v2). 'mino' = anlatıcı (Mino'nun sesi, ton 1.12); 'kino' = Kino'nun kendi sesi (content/seslendirme.json → karakter_sesleri.kino); 'kart' = kartın içindeki hayvan (anlatıcı sesi, tonlu: zürafa kalın, ördek ince); 'pamuk' = Pamuk (şimdilik anlatıcı sesinin ince tonu; Barış ayrı ses seçebilir). 'baslik', 'yazi' ekranda yazar, seslendirilmez. Kısa tutun.",
+  "baslik": "Dedektif Mino",
+  "vaka": "Vaka 1: Devrilen Lamba",
+  "yazi": {
+    "dosya": "Vaka Dosyam",
+    "cozuldu": "Çözüldü!",
+    "yakinda": "Yakında",
+    "demek_ki": "Demek ki…",
+    "basla": "Başla",
+    "tekrar": "Baştan oyna",
+    "roman": "Vaka 1"
+  },
+  "mino": {
+    "selam": "Yeni bir vaka var!",
+    "lambam": "Lambam devrilmiş! Kim yaptı?",
+    "vaka": "Bu bir vaka!",
+    "buyutec": "Büyüteci gezdir, ipucu ara!",
+    "buldun": ["Buldun!", "Bir ipucu!", "Harika dedektif!"],
+    "dokun": "İpucuna dokun!",
+    "surukle": "Doğru kartı ipucuna sürükle!",
+    "iz_kimin": "Bir iz! Bu iz kimin?",
+    "demek_kedi": "Demek ki buraya bir kedi gelmiş!",
+    "uyudum": "Ben bütün gece uyudum!",
+    "masaya": "Masaya bakalım!",
+    "tuy_kimin": "Masada bir tüy var. Bu tüy kimin?",
+    "turuncu": "Benim tüyüm turuncu!",
+    "demek_beyaz": "Demek ki beyaz bir kedi masaya zıplamış!",
+    "ben_degilim": "Oh, ben değilim!",
+    "pencere": "Pencereye bakalım!",
+    "bir_daha": "Bir ipucu daha var!",
+    "neden": "Kedi neden masaya zıpladı?",
+    "sut_yok": "Masada süt yok ki!",
+    "uyuyan": "Uyuyan kedi zıplamaz!",
+    "demek_kelebek": "Demek ki kelebeği kovalarken lambayı devirmiş!",
+    "izleri_takip": "İzleri takip et!",
+    "iki_yol": "İki yol var! Hangisi kedinin izi?",
+    "tirnak": "Bu izlerde tırnak var.",
+    "obur_yol": "Öbür yola bakalım!",
+    "kuyruk": "Şşş… Kuyruğa dokun!",
+    "olur_boyle": "Olur böyle. Birlikte kaldıralım!",
+    "masaya_koy": "Lambayı masaya koy!",
+    "dugme": "Şimdi düğmesine bas!",
+    "hikaye": "Beyaz bir kedi kelebeği kovaladı, lambayı devirdi ve yatağın altına saklandı!"
+  },
+  "kino": {
+    "dedektif": "Ben de dedektif olurum!",
+    "zurafa": "Zürafa! Kesin zürafa!",
+    "sen_misin": "Mino… sen misin?",
+    "minonun": "Mino'nun! Kesin Mino'nun!",
+    "pardon": "Hıhı… pardon Mino.",
+    "sut": "Süt içmek için!",
+    "sosis": "Hıhı… bunlar benim izlerim. Sosis!",
+    "kokla": "Burnum burada diyor!",
+    "cozuldu": "Vaka çözüldü! Ben de yardım ettim!"
+  },
+  "kart": {
+    "zurafa_toynak": "Benim ayağım toynak!",
+    "zurafa_sigmam": "Hem bu odaya sığmam!",
+    "ordek": "Benim ayağım perdeli. Vak!",
+    "siyah": "Benim tüyüm kapkara!"
+  },
+  "pamuk": {
+    "guzeldi": "Miyav… kelebek çok güzeldi.",
+    "ozur": "Lambayı devirdim. Özür dilerim!",
+    "dikkat": "Bir daha dikkat ederim!"
+  }
+}

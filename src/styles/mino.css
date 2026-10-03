@@ -298,6 +298,13 @@
 .mk-kok .mino:is(.ifade-burun-kasinti, .ifade-burun-tut, .ifade-hapsu) :is(.m-goz, .m-kapali-goz, .m-mutlu-goz, .m-agiz, .m-yanak),
 .mk-kok .mino.ifade-burun-tut :is(.kl, .kr) { opacity: 0 !important; }
 
+/* Dedektif Mino (mino.ts → dedektif; ekler mino-dedektif-svg.ts'ten tembel gelir; IFADELER.md "Dedektif Mino"):
+   şapka kafanın en üstünde; büyüteçte asıl sol kol (kalkık hâli de) ve sol göz gizli, yerine camdaki büyütülmüş göz. */
+.mk-kok .mino .m-dedektif { display: none; }
+.mk-kok .mino.dedektif-sapka .m-dedektif-sapka,
+.mk-kok .mino.dedektif-buyutec .m-dedektif-buyutec { display: inline; }
+.mk-kok .mino.dedektif-buyutec :is(.kl, .m-poz-kol-sol-yukari, .m-goz-sol) { opacity: 0 !important; }
+
 /* Pozlar (mino.ts → kol, otur, poz; ekler mino-poz-svg.ts'ten tembel gelir; IFADELER.md "Kalkık kollar", "Oturma",
    "Film 3"). Kalkık / bükük / sarılan kollar gövdeye bağlı, kafanın da önünde; yüz ekleri kafaya bağlı. */
 .mk-kok .mino .m-poz { display: none; }
