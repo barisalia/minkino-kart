@@ -491,6 +491,7 @@
   .mk-kok .ik-girdi.hata {
     animation: none;
   }
+}
 /* ---------------------------------------------------------------- kilit anı (çocuğa: "Bunu anne-babanla açabilirsin")
    src/abonelik/kilit-ani.ts. Karartmayan krem perde, küçük kart: Mino + yumuşakça sallanan altın kilit, tek büyük
    "Tamam"; altta yalnız büyüklerin okuyacağı küçük yazılı "Büyükler için" düğmesi. Abonelikten hiç söz edilmez. */
