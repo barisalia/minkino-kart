@@ -47,8 +47,13 @@ export const sesleBaslar = (k: string, h: Harf) => ilkHarf(k) === h.buyuk;
  * (Gemini listesi: ORTAK_NOTLAR.md → "Gemini – Ses Kulesi"); o da yoksa yumuşak yer tutucu kart.
  */
 export const HAZIR_RESIM: Record<string, string> = {
-  ari: 'hayvanlar/ari',
-  ayi: 'hayvanlar/ayi',
+  ari: 'okul/ses/ari',
+  ayi: 'okul/ses/ayi',
+  ekmek: 'okul/ses/ekmek',
+  nane: 'okul/ses/nane',
+  ip: 'okul/ses/ip',
+  igne: 'okul/ses/igne',
+  leylek: 'okul/ses/leylek',
   araba: 'tasitlar/araba',
   armut: 'meyveler/armut',
   aslan: 'hayvanlar/aslan',

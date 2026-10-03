@@ -22,12 +22,15 @@ import { geriGonder, hedefliSurukle } from '../surukle';
 import { HARF_YOLU, izBaslat, izGecis, izOran, izToleransi, kinoYolu, yolD, type Iz } from './harf-yolu';
 import { avSozu, avTurlari, farkliTurlari, HARFLER, kelime, kutuTuru, ODA_ADIMLARI, odaId, odaSesiSozu, ORTAK, SES_ICERIK as S, sesleBaslar, type Harf } from './harfler';
 import { odaAdimi, odaAdimiYaz, ODA_ANAHTARI } from './oda-kayit';
-import { kahramanEl, pozla, resimAdres, resimEl } from './resim';
+import { esyaAdres, kahramanEl, kuleKatAdres, pozla, resimAdres, resimEl } from './resim';
 import type { Nokta } from '../../../canlan/src/resimler';
 
 const M = S.mino;
 const K = S.kino;
 const NS = 'http://www.w3.org/2000/svg';
+const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
+/** test ya da gösterim (?onizleme=1): kısayollar (&sesadim, &sestur) ve izleme yolu öznitelikte */
+const GOSTERIM = TEST_MODU || q.has('onizleme');
 
 // ---------------------------------------------------------------- ortak parçalar
 /** Rengin koyu tonu (harfin yumuşak 3B gölgesi; siyah kontur yok) */
@@ -197,13 +200,18 @@ async function kahramanGelsin(s: Sahne, hf: Harf, kahraman: HTMLElement) {
 
 // ---------------------------------------------------------------- 2 · İlk ses avı
 /**
- * Her turda başka bir sahne (aynı üç kart üç kez değil): 1) resimler ağacın tacında, 2) oyuncak trenin vagonlarında
+ * Her turda başka bir sahne (aynı üç kart üç kez değil): 1) resimler hediye kutularından uzanır, 2) oyuncak trenin vagonlarında
  * gelir, 3) balonlara bağlı süzülür. Kartlar aynı düğmeler; sahne yalnız yerleşim ve canlılık.
  */
 function avSahnesi(t: number, kartlar: HTMLButtonElement[]): HTMLElement {
-  const tur = (['agac', 'tren', 'balon'] as const)[t % 3];
-  if (tur === 'agac') {
-    return h('div.ok-ses-agac', { 'data-sahne': tur }, h('img.ok-ses-agac-resim', { src: gorsel('okul/agac'), alt: '', draggable: 'false' }), ...kartlar.map((k, i) => (k.style.setProperty('--y', String(i)), k)));
+  const tur = (['hediye', 'tren', 'balon'] as const)[t % 3];
+  if (tur === 'hediye') {
+    const kutu = ['film/esya/hediye-kutusu', 'renkler/hediye', 'film/esya/hediye-kutusu'];
+    return h(
+      'div.ok-ses-hediyeler',
+      { 'data-sahne': tur },
+      ...kartlar.map((k, i) => h('div.ok-ses-hediye', { style: `--i:${i};${i === 2 ? ton(4) : ''}` }, k, h('img.ok-ses-hediye-resim.ok-tonlu', { src: esyaAdres(kutu[i]), alt: '', draggable: 'false' }))),
+    );
   }
   if (tur === 'tren') {
     const vagonlar = kartlar.map((k, i) => h('div.ok-ses-vagon', { style: `--i:${i}` }, k, h('span.ok-ses-vagon-resim', { html: vagon(i + 1) })));
@@ -225,7 +233,9 @@ async function av(s: Sahne, hf: Harf) {
   const ust = h('div.ok-ses-av-ust', {}, levha, kahraman);
   const turlar = avTurlari(hf, s.rnd);
   let saka = 0;
-  for (let t = 0; t < turlar.length; t++) {
+  // gösterim / test: &sestur=2 ile doğrudan üçüncü sahne
+  const ilkTur = GOSTERIM ? Math.min(turlar.length - 1, Number(q.get('sestur')) || 0) : 0;
+  for (let t = ilkTur; t < turlar.length; t++) {
     if (s.kapandi()) return;
     const tur = turlar[t];
     const kartlar = tur.secenekler.map((k, i) => resimKarti(k, hf, i));
@@ -270,6 +280,7 @@ async function av(s: Sahne, hf: Harf) {
             k.classList.add('ok-dogru');
             kartlar.forEach((x) => x !== k && x.classList.add('ok-solgun'));
             k.closest('.ok-ses-balon')?.classList.add('ok-ses-uc');
+            k.closest('.ok-ses-hediye')?.classList.add('ok-ses-acildi');
             // resim harfin levhasına uçar ("arı vızıldayarak harfin üstüne konar")
             if (!AZ_HAREKET) void s.efekt.ucur(h('div.ok-ses-ucan', {}, resimEl(ad, hf.renk)), s.efekt.merkez(k), s.efekt.merkez(levha), { ms: 650, boy1: 0.55, kavis: -80 }).then(() => oynat(levha, 'ok-ses-zipla'));
             pozla(kahraman, 'mutlu', 1500);
@@ -368,7 +379,7 @@ async function izleTur(s: Sahne, hf: Harf, harf: string, ilk: boolean) {
   // harf bitince kahramana dönüşür (A → arı) ve uçup gider
   const resimK = h('div.ok-ses-iz-resim', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan'));
   const kagit = h('div.ok-ses-kagit', { style: harfStil(hf), 'data-harf': harf }, svg, resimK);
-  if (TEST_MODU) {
+  if (GOSTERIM) {
     kagit.dataset.yol = JSON.stringify(yollar);
     (kagit as unknown as { __iz: Iz[] }).__iz = izler;
   }
@@ -748,7 +759,7 @@ async function kutu(s: Sahne, hf: Harf) {
 // ---------------------------------------------------------------- odalar
 const ADIMLAR: Record<(typeof ODA_ADIMLARI)[number], (s: Sahne, hf: Harf) => Promise<void>> = { tanis, av, izle, farkli, kutu };
 
-const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
+
 if (TEST_MODU && q.has('sifirla')) {
   try {
     localStorage.removeItem(ODA_ANAHTARI);
@@ -768,11 +779,18 @@ for (const hf of HARFLER) {
     async oyna(s) {
       s.el.dataset.harf = hf.id;
       s.el.style.cssText += `;${harfStil(hf)}`;
+      // kulenin odası: sıcak taş duvar; odanın rengiyle hafif ışık, duvarda kocaman harf ve kahramanın gölgesi
+      const kat = kuleKatAdres();
+      if (kat) {
+        s.el.querySelector('.ok-park')?.after(
+          h('div.ok-park.ok-ses-oda-arka', { 'aria-hidden': 'true', style: `background-image:url("${kat}")` }, h('span.ok-ses-duvar-harf', {}, hf.buyuk), h('span.ok-ses-duvar-kahraman', {}, kahramanEl(hf.oda[0], hf.renk, 'ucan'))),
+        );
+      }
       const n = ODA_ADIMLARI.length;
       s.turlar(n);
       // kaldığı yerden (test: &sesadim=2)
       let bas = Math.min(n - 1, odaAdimi(id));
-      if (TEST_MODU && q.has('sesadim')) bas = Math.max(0, Math.min(n - 1, Number(q.get('sesadim')) || 0));
+      if (GOSTERIM && q.has('sesadim')) bas = Math.max(0, Math.min(n, Number(q.get('sesadim')) || 0));
       if (bas > 0) {
         s.tur(bas);
         await s.soyle(M.devam);
@@ -794,6 +812,7 @@ for (const hf of HARFLER) {
       s.minoTepki('dans', 1.4);
       s.kinoOynat('dans', 1400);
       await s.soyle([hf.ses, M.oda_bitti]);
+      await s.bekle(1200);
     },
   });
 }

@@ -13,7 +13,8 @@ const HAZIR = import.meta.glob<string>(
     '../../../assets/meyveler/*.webp',
     '../../../assets/tasitlar/*.webp',
     '../../../assets/canlan/{ev,yildiz}.webp',
-    '../../../assets/renkler/{top,balon,gunes}.webp',
+    '../../../assets/renkler/{top,balon,gunes,hediye}.webp',
+    '../../../assets/film/esya/hediye-kutusu.webp',
     '../../../assets/dedektif/lamba-dik.webp',
   ],
   { eager: true, query: '?url', import: 'default' },
@@ -27,6 +28,9 @@ export function resimAdres(k: string): string {
   const yol = HAZIR_RESIM[k];
   return (yol && HAZIR[`../../../assets/${yol}.webp`]) || '';
 }
+
+/** Sahne eşyası (assets/<yol>.webp): hediye kutuları vb. */
+export const esyaAdres = (yol: string): string => HAZIR[`../../../assets/${yol}.webp`] ?? '';
 
 /** Kelimenin resmi (img) ya da yer tutucu kart */
 export function resimEl(k: string, renk = '#9B5CE0'): HTMLElement {
@@ -61,6 +65,9 @@ export function pozla(el: HTMLElement, poz: Poz, ms = 0) {
   el.classList.add('ok-ses-poz');
   if (ms > 0) window.setTimeout(() => el.isConnected && pozla(el, once), ms);
 }
+
+/** Kule odasının arka planı (assets/okul/ses/kule-kat.webp; her harf odasının zemini) */
+export const kuleKatAdres = (): string => YUVA['../../../assets/okul/ses/kule-kat.webp'] ?? '';
 
 /** "Ses Dedektifi" rozetinin çizimi (assets/okul/rozet-ses.webp) varsa adresi */
 export const rozetSesAdres = (): string => ROZET['../../../assets/okul/rozet-ses.webp'] ?? '';

@@ -8,13 +8,14 @@ import { efekt, konus } from '../../../src/audio/ses';
 import { erisimVarMi } from '../../../src/abonelik/kilit';
 import type { Karakter } from '../../../src/karakter/karakter';
 import type { Mino } from '../../../src/mino/mino';
-import { h, svg, TEST_MODU } from '../../../src/ui/dom';
+import { h, sure, svg, TEST_MODU } from '../../../src/ui/dom';
 import { IKON } from '../../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../../src/uygulama';
 import O from '../../../content/okul.json';
 import { gorsel, rozet } from '../cizim';
-import { AZ_HAREKET, oynat } from '../efekt';
+import { AZ_HAREKET, Efekt, oynat } from '../efekt';
+import { ses } from '../sesler';
 import { bolge } from '../etkinlik';
 import { kayit } from '../kayit';
 import { HARFLER, odaAcik, odaId, SES_ICERIK as S } from './harfler';
@@ -38,12 +39,17 @@ export const ODA_YERI: [-1 | 1, number][] = [
   [1, 0.83],
 ];
 
+/** Kuleye son bakıldığında bitmiş odalar: yeni biten oda kule açılınca ışıl ışıl yanar, sıradaki odanın kilidi uçar */
+let gorulen: Set<string> | null = null;
+
 export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
   const bolgeB = bolge('ses')!;
   const ikiz = b.ikili();
   const biten = kayit.biten;
   const oneriI = HARFLER.findIndex((hf, i) => odaAcik(i, biten) && !biten.includes(odaId(hf)));
   const kapanis: (() => void)[] = [];
+  const yeniBiten = gorulen ? HARFLER.map(odaId).filter((id) => biten.includes(id) && !gorulen!.has(id)) : [];
+  gorulen = new Set(biten);
   const odalar = HARFLER.map((hf, i) => {
     const id = odaId(hf);
     const acik = odaAcik(i, biten);
@@ -103,6 +109,9 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Harita', () => app.git('acilis'), 'kucuk'), h('div.orta', {}, h('h1.ok-baslik', {}, bolgeB.ad)), h('div.ust-grup', {}, b.albumDugmesi(), sesDugmesi())),
     h('div.ok-kule-kap', {}, kule, rozetEl),
   );
+  // efekt katmanı (parıltı) ekranın kökünde
+  const efektK = new Efekt(el);
+  el.append(efektK.el);
 
   // merdiven: odaları sırayla bağlayan noktalı yol (yerleşim ölçülerek çizilir)
   const ciz = () => {
@@ -126,6 +135,29 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
   kapanis.push(() => ro?.disconnect());
   const zamanlar = [
     window.setTimeout(ciz, 30),
+    ...yeniBiten.flatMap((id, n) => {
+      const i = HARFLER.findIndex((hf) => odaId(hf) === id);
+      const d = odalar[i];
+      const sonraki = odalar[i + 1];
+      return [
+        window.setTimeout(() => {
+          // oda yanar: altın ışık, parıltı
+          oynat(d, 'ok-oda-yandi');
+          ses.sihir();
+          const [x, y] = efektK.merkez(d);
+          efektK.parilti(x, y, 12, 1.2);
+        }, sure(700 + n * 1200)),
+        window.setTimeout(() => {
+          if (!sonraki || sonraki.dataset.durum === 'kilitli') return;
+          // sıradakinin kilidi uçup gider
+          const kilit = h('i.ok-oda-kilit.ok-oda-kilit-ucan', { html: IKON.kilit });
+          sonraki.append(kilit);
+          kilit.addEventListener('animationend', () => kilit.remove());
+          oynat(sonraki, 'ok-oda-acildi');
+          ses.pit(5);
+        }, sure(1500 + n * 1200)),
+      ];
+    }),
     window.setTimeout(() => {
       if (!AZ_HAREKET) ikiz.mino.tepki('selam');
       void konus([biten.some((x) => x.startsWith('ses-')) ? '' : S.mino.kule, S.mino.kule_soru]);

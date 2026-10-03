@@ -67,7 +67,7 @@
   --ks: min(30cqw, 46cqh, 190px);
   position: relative;
   width: var(--ks);
-  height: var(--ks);
+  aspect-ratio: 1;
   flex: 0 0 auto;
   padding: calc(var(--ks) * 0.08);
   border-radius: 24%;
@@ -82,6 +82,15 @@
   animation: ok-ses-gel 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   animation-delay: calc(var(--i, 0) * 90ms);
   transition: opacity 0.25s, scale 0.25s;
+}
+.ok-kok .ok-ses-kart > .ok-ses-img,
+.ok-kok .ok-ses-kart > .ok-ses-yer,
+.ok-kok .ok-ses-kart > .ok-ses-kahraman {
+  position: absolute;
+  left: 8%;
+  top: 8%;
+  width: 84%;
+  height: 84%;
 }
 .ok-kok .ok-ses-kart:active {
   translate: 0 3px;
@@ -126,7 +135,7 @@
 }
 .ok-kok .ok-ses-saklan,
 .ok-kok .ok-ses-kart.ok-gitti {
-  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 .ok-kok .ok-ses-davet {
@@ -468,33 +477,62 @@
 
 /* ---------------------------------------------------------------- 2 · İlk ses avı: sahneler (ağaç, tren, balonlar) */
 .ok-kok .ok-ses-av {
-  justify-content: space-between;
+  justify-content: center;
+  gap: 5cqh;
   padding: 4px 0 2px;
 }
 .ok-kok .ok-ses-av > [data-sahne] {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
   width: 100%;
   position: relative;
 }
-/* ağaç: resimler tacın üstünde (meyve gibi) */
-.ok-kok .ok-ses-agac-resim {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  height: 100%;
-  max-width: 100%;
-  translate: -50% 0;
-  object-fit: contain;
-  pointer-events: none;
+/* hediye kutuları: resimler kutulardan uzanır; doğru kutu açılır, resim zıplar */
+.ok-kok .ok-ses-hediyeler {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: min(4cqw, 26px);
+  padding-bottom: 2%;
 }
-.ok-kok .ok-ses-agac .ok-ses-kart {
-  --ks: min(28cqw, 27cqh, 150px);
-  position: absolute;
-  left: calc(50% + (var(--y) - 1) * min(30cqw, 40cqh));
-  top: calc(36% - (1 - (var(--y) - 1) * (var(--y) - 1)) * 14%);
-  translate: -50% -50%;
-  border-radius: 50%;
+.ok-kok .ok-ses-hediye {
+  position: relative;
+  width: min(30cqw, 34cqh, 190px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ok-ses-gel 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  animation-delay: calc(var(--i) * 110ms);
+}
+.ok-kok .ok-ses-hediye .ok-ses-kart {
+  --ks: 92%;
+  margin-bottom: -26%;
+  z-index: 0;
+  animation: ok-ses-uzan 0.7s cubic-bezier(0.25, 1.5, 0.45, 1) both, ok-ses-sallan 2.2s ease-in-out 0.8s infinite;
+  animation-delay: calc(var(--i) * 140ms + 200ms), calc(var(--i) * -0.5s);
+}
+.ok-kok .ok-ses-hediye-resim {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  pointer-events: none;
+  filter: hue-rotate(var(--ton, 0deg)) drop-shadow(0 6px 4px rgba(90, 54, 23, 0.2));
+}
+.ok-kok .ok-ses-hediye.ok-ses-acildi .ok-ses-kart {
+  animation: ok-ses-firla 0.7s cubic-bezier(0.25, 1.5, 0.45, 1) both;
+}
+.ok-kok .ok-ses-hediye.ok-ses-acildi .ok-ses-hediye-resim {
+  animation: ok-ses-zipla 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes ok-ses-uzan {
+  from { translate: 0 50%; opacity: 0; }
+  to { translate: 0 0; opacity: 1; }
+}
+@keyframes ok-ses-firla {
+  0% { translate: 0 0; }
+  45% { translate: 0 -40%; scale: 0.9 1.12; }
+  75% { translate: 0 -30%; scale: 1.08 0.94; }
+  100% { translate: 0 -32%; scale: 1.06; }
 }
 /* tren: resimler vagonlarda, tren soldan gelir; doğru bulununca düdük çalıp gider */
 .ok-kok .ok-ses-tren {
@@ -510,7 +548,7 @@
 }
 .ok-kok .ok-ses-vagon {
   position: relative;
-  width: min(25cqw, 50cqh, 190px);
+  width: min(23cqw, 50cqh, 190px);
   margin-right: -1.5%;
 }
 .ok-kok .ok-ses-vagon-resim {
@@ -529,7 +567,7 @@
   animation-delay: calc(var(--i, 0) * -0.4s);
 }
 .ok-kok .ok-ses-lokomotif {
-  width: min(24cqw, 52cqh, 190px);
+  width: min(21cqw, 52cqh, 190px);
   aspect-ratio: 1;
   pointer-events: none;
 }
@@ -549,7 +587,7 @@
   animation-delay: calc(var(--i) * -0.8s);
 }
 .ok-kok .ok-ses-balon-resim {
-  width: min(16cqw, 20cqh, 110px);
+  width: min(22cqw, 22cqh, 130px);
   margin-bottom: -6%;
   pointer-events: none;
   filter: hue-rotate(var(--ton, 0deg)) drop-shadow(0 4px 4px rgba(90, 54, 23, 0.15));
@@ -561,9 +599,31 @@
   animation: ok-ses-yuksel 1.6s cubic-bezier(0.5, 0, 0.7, 0.5) forwards;
 }
 @container alan (min-aspect-ratio: 13 / 10) {
-  .ok-kok .ok-ses-agac .ok-ses-kart {
-    --ks: min(20cqw, 30cqh, 150px);
-    left: calc(50% + (var(--y) - 1) * min(22cqw, 44cqh));
+  /* yatayda harf levhası ve kahraman solda, sahne sağda: sahne bütün yüksekliği kullanır */
+  .ok-kok .ok-ses-av {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 2cqw;
+  }
+  .ok-kok .ok-ses-av-ust {
+    flex-direction: column;
+    justify-content: center;
+  }
+  .ok-kok .ok-ses-av .ok-ses-levha-kucuk {
+    font-size: min(8cqw, 20cqh, 70px);
+  }
+  .ok-kok .ok-ses-av-ust > .ok-ses-kahraman {
+    width: min(14cqw, 30cqh, 120px);
+    height: min(14cqw, 30cqh, 120px);
+  }
+  .ok-kok .ok-ses-hediye {
+    width: min(19cqw, 46cqh, 170px);
+  }
+  .ok-kok .ok-ses-vagon {
+    width: min(17cqw, 56cqh, 190px);
+  }
+  .ok-kok .ok-ses-lokomotif {
+    width: min(16cqw, 56cqh, 190px);
   }
   .ok-kok .ok-ses-balon-resim {
     width: min(11cqw, 22cqh, 110px);
@@ -609,7 +669,7 @@
   position: relative;
 }
 .ok-kok .ok-ses-kutu .ok-ses-kart {
-  --ks: min(18cqw, 22cqh, 130px);
+  --ks: min(22cqw, 19cqh, 130px);
   z-index: 3;
 }
 .ok-kok .ok-ses-kutu .ok-ses-kart.ok-tasiniyor {
@@ -907,6 +967,34 @@
   width: 100%;
   height: 100%;
 }
+/* kat yanar: yeni biten oda altın ışıkla parlar; sıradakinin kilidi uçar */
+.ok-kok .ok-oda.ok-oda-yandi {
+  animation: ok-oda-yan 1.1s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.ok-kok .ok-oda.ok-oda-acildi {
+  animation: ok-oda-acil 0.8s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.ok-kok .ok-oda-kilit-ucan {
+  animation: ok-kilit-uc 0.9s cubic-bezier(0.4, 0, 0.7, 0.4) forwards;
+}
+@keyframes ok-oda-yan {
+  0% { scale: 1; filter: brightness(1); }
+  25% { scale: 0.88 1.1; filter: brightness(1.25); }
+  55% { scale: 1.22 0.9; filter: brightness(1.4) drop-shadow(0 0 18px #ffd23f); }
+  80% { scale: 0.96 1.04; }
+  100% { scale: 1; filter: brightness(1); }
+}
+@keyframes ok-oda-acil {
+  0% { scale: 1; }
+  35% { scale: 1.18 0.86; }
+  70% { scale: 0.94 1.08; }
+  100% { scale: 1; }
+}
+@keyframes ok-kilit-uc {
+  0% { translate: 0 0; rotate: 0deg; opacity: 1; }
+  30% { translate: 4px 6px; rotate: -10deg; opacity: 1; }
+  100% { translate: 40px -120px; rotate: 50deg; opacity: 0; }
+}
 .ok-kok .ok-oda-yarim {
   position: absolute;
   left: -4px;
@@ -955,8 +1043,76 @@
 }
 
 /* ---------------------------------------------------------------- oda ekranı (etkinlik) */
+/* harf odası: park yerine kulenin içi (assets/okul/ses/kule-kat.webp) */
+.ok-kok .ok-etkinlik[data-harf] .ok-secim,
+.ok-kok .ok-etkinlik[data-harf] > .ok-park:not(.ok-ses-oda-arka),
 .ok-kok .ok-etkinlik[data-harf] .ok-alan::before {
-  opacity: 0.85;
+  display: none;
+}
+.ok-kok .ok-ses-oda-arka {
+  background-color: #f3d9b0;
+  background-size: cover;
+  background-position: 50% 42%;
+  overflow: hidden;
+}
+/* odanın rengiyle sıcak ışık (ortada) ve yumuşak kenar gölgesi */
+.ok-kok .ok-ses-oda-arka::before,
+.ok-kok .ok-ses-oda-arka::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ok-kok .ok-ses-oda-arka::before {
+  background: radial-gradient(ellipse 55% 45% at 50% 34%, var(--r), transparent 75%);
+  opacity: 0.2;
+  mix-blend-mode: soft-light;
+}
+.ok-kok .ok-ses-oda-arka::after {
+  background:
+    radial-gradient(ellipse 85% 75% at 50% 45%, transparent 55%, rgba(80, 44, 20, 0.28) 100%),
+    linear-gradient(180deg, transparent 60%, rgba(255, 236, 205, 0.18));
+}
+/* duvara boyanmış kocaman harf (boş orta duvarda) */
+.ok-kok .ok-ses-duvar-harf {
+  position: absolute;
+  left: 50%;
+  top: 21%;
+  translate: -50% -50%;
+  font-size: clamp(120px, 34vmin, 320px);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--r);
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  text-shadow: 0 0.04em 0 var(--rk);
+}
+/* odanın kahramanı arkada, pencerelerin önünde süzülür */
+.ok-kok .ok-ses-duvar-kahraman {
+  position: absolute;
+  left: 8%;
+  top: 22%;
+  width: clamp(54px, 11vmin, 110px);
+  aspect-ratio: 1;
+  opacity: 0.92;
+  animation: ok-ses-gezin 16s ease-in-out infinite;
+}
+.ok-kok .ok-ses-duvar-kahraman .ok-ses-kahraman > .ok-ses-img {
+  animation: ok-ses-titre 0.18s ease-in-out infinite alternate;
+}
+@keyframes ok-ses-gezin {
+  0% { translate: 0 0; scale: -1 1; }
+  22% { translate: 32vw -6vh; scale: -1 1; }
+  48% { translate: 74vw 2vh; scale: -1 1; }
+  50% { translate: 74vw 2vh; scale: 1 1; }
+  74% { translate: 40vw -4vh; scale: 1 1; }
+  98% { translate: 0 0; scale: 1 1; }
+  100% { translate: 0 0; scale: -1 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ok-kok .ok-ses-duvar-kahraman {
+    animation: none;
+  }
 }
 
 /* ---------------------------------------------------------------- animasyonlar */

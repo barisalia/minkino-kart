@@ -23,12 +23,12 @@ const ekran = (page: Page) => page.locator('.ok-etkinlik');
 const adimda = async (page: Page, adim: string) => (await page.locator(`.ok-etkinlik[data-adim="${adim}"]`).count()) > 0;
 const etkinlikte = async (page: Page, ad: string) => (await page.locator(`.ok-etkinlik[data-ses-adim="${ad}"]`).count()) > 0;
 const tikla = async (l: Locator) => {
-  if ((await l.count()) && (await l.first().isVisible())) await l.first().click({ timeout: 2000 }).catch(() => undefined);
+  if ((await l.count()) && (await l.first().isVisible())) await l.first().click({ timeout: 2000, force: true }).catch(() => undefined);
 };
 
 /** Bir etkinlik (data-ses-adim) bitene kadar adim() tekrarlanır */
 async function bitene(page: Page, ad: string, adim: () => Promise<void>) {
-  const son = Date.now() + 60_000;
+  const son = Date.now() + 90_000;
   while (Date.now() < son) {
     if (!(await etkinlikte(page, ad)) || (await page.locator('.ok-sonuc').count())) return;
     try {

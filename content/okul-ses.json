@@ -2,10 +2,10 @@
   "aciklama": "Okula Hazırım! · Ünite 1 Ses Kulesi (ekip/senaryo/okul-oncesi.md 3, 5, 6). Harfin ADI değil SESİ söylenir: uzayan sesler uzatılarak yazılır (Aaa, Nnn, Lll), patlamalı t kısa (Tı, asla 'Te'). kelimeler.uzun: ilk sesi uzatılmış söyleyiş (Aaarı!); ilk sesi odanın sesi olmayan kelimelerde düz ad. mino = anlatıcı sesi, kino = Kino'nun kendi sesi. arayuz ekranda yazar, okunmaz. Ortak cümleler (övgü, 'Bir daha bakalım!', 'Ters oldu! Bak, böyle.', 'Ben çizerim!') content/okul.json'dan gelir.",
   "harfler": [
     { "id": "a", "buyuk": "A", "kucuk": "a", "ses": "Aaa!", "renk": "#F0413F", "kino": "ters", "oda": ["ari", "ayi"], "kelimeler": ["ari", "ayi", "araba", "armut", "aslan", "ananas"] },
-    { "id": "n", "buyuk": "N", "kucuk": "n", "ses": "Nnn!", "renk": "#3E9DF2", "kino": "ayna", "oda": ["nar", "nota"], "kelimeler": ["nar", "nota", "nane"] },
+    { "id": "n", "buyuk": "N", "kucuk": "n", "ses": "Nnn!", "renk": "#3E9DF2", "kino": "ayna", "oda": ["nar", "nane"], "kelimeler": ["nar", "nane", "nota"] },
     { "id": "e", "buyuk": "E", "kucuk": "e", "ses": "Eee!", "renk": "#5DBE3F", "kino": "ayna", "oda": ["elma", "ev"], "kelimeler": ["elma", "ev", "ekmek"] },
     { "id": "t", "buyuk": "T", "kucuk": "t", "ses": "Tı!", "renk": "#FF8A2B", "kino": "ters", "oda": ["top", "tavsan"], "kelimeler": ["top", "tavsan", "tren", "tavuk", "traktor"] },
-    { "id": "i", "buyuk": "İ", "kucuk": "i", "ses": "İii!", "renk": "#9B5CE0", "kino": "ters", "oda": ["inek", "itfaiye"], "kelimeler": ["inek", "ip", "itfaiye"] },
+    { "id": "i", "buyuk": "İ", "kucuk": "i", "ses": "İii!", "renk": "#9B5CE0", "kino": "ters", "oda": ["inek", "itfaiye"], "kelimeler": ["inek", "ip", "itfaiye", "igne"] },
     { "id": "l", "buyuk": "L", "kucuk": "l", "ses": "Lll!", "renk": "#FF5FA2", "kino": "ayna", "oda": ["limon", "lamba"], "kelimeler": ["limon", "lamba", "leylek", "lale"] }
   ],
   "sonraki_gruplar": ["O K U R I M", "Ü S Ö Y D Z", "Ç B G C Ş", "P H V Ğ F J"],
@@ -30,6 +30,7 @@
     "inek": { "ad": "İnek", "uzun": "İiinek!" },
     "ip": { "ad": "İp", "uzun": "İiip!" },
     "itfaiye": { "ad": "İtfaiye", "uzun": "İiitfaiye!" },
+    "igne": { "ad": "İğne", "uzun": "İiiğne!" },
     "limon": { "ad": "Limon", "uzun": "Lllimon!" },
     "lamba": { "ad": "Lamba", "uzun": "Lllamba!" },
     "leylek": { "ad": "Leylek", "uzun": "Llleylek!" },
