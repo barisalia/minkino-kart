@@ -680,6 +680,12 @@
   max-width: 420px;
   margin: 0 auto;
 }
+@media (orientation: landscape) {
+  .ok-kok .ok-sayfa[data-bolge='kelime'] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    max-width: none;
+  }
+}
 
 /* ---------------------------------------------------------------- Köprü (bölge ekranı) */
 .ok-kok .ok-kopru-ekran .ok-park {

@@ -114,6 +114,11 @@
   width: 100%;
   height: 100%;
 }
+.ok-kok .ok-k-gol-tas.ok-k-dogru,
+.ok-kok .ok-k-gol-tas.ok-k-kino-sec {
+  background: none;
+  box-shadow: none;
+}
 .ok-kok .ok-k-gol-tas.ok-k-dogru .ok-k-madalyon {
   box-shadow: 0 0 0 6px #7ed957, 0 3px 6px rgba(60, 40, 20, 0.25);
 }
