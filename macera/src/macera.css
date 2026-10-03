@@ -371,6 +371,12 @@
   inset: 0;
   background: var(--resim) center 82% / cover no-repeat, #bfe6d6;
 }
+/* dikey ekranda 9:16 oda çizimi (Sahne: dikey dosyası varsa); yatay çizimi kırpmak yerine */
+@media (orientation: portrait) {
+  .mc-kok .mc-dikey-var > .mc-oda {
+    background: var(--resim-dikey) center bottom / cover no-repeat, #bfe6d6;
+  }
+}
 .mc-kok .mc-oge,
 .mc-kok .mc-oyuncu {
   position: absolute;

@@ -10,7 +10,7 @@
 const DEDEKTIF = import.meta.glob<string>('../../assets/dedektif/*.webp', { eager: true, query: '?url', import: 'default' });
 const BASKA = import.meta.glob<string>(
   [
-    '../../assets/film/ev/{arka-uzak,arka-orta,arka-on}.webp',
+    '../../assets/film/ev/{arka-uzak,arka-orta,arka-on,oda-dikey}.webp',
     '../../assets/film/mutfak/{arka-uzak,arka-orta}.webp',
     '../../assets/okul/ses/{masa,kalem}.webp',
     '../../assets/hayvanlar/{zurafa,ordek,kedi}.webp',
@@ -92,7 +92,7 @@ export function resim(ad: string, tablo: Map<string, string> = TABLO): string | 
 }
 
 /** Çalışma odası ve mutfak katmanları (film arka planları) */
-export const filmKatmani = (oda: 'ev' | 'mutfak', ad: 'arka-uzak' | 'arka-orta' | 'arka-on') => baska(`film/${oda}/${ad}`) ?? '';
+export const filmKatmani = (oda: 'ev' | 'mutfak', ad: 'arka-uzak' | 'arka-orta' | 'arka-on' | 'oda-dikey') => baska(`film/${oda}/${ad}`) ?? '';
 
 /** Henüz kendi dosyası olmayan (yedekle ya da yer tutucuyla duran) yuvalar */
 export function eksikler(tablo: Map<string, string> = TABLO): string[] {

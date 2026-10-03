@@ -90,7 +90,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const mik = () => kulak.acik && !TEST_MODU;
 
   // ================================================================ sahne kurulumu
-  const sahne = new Sahne('parti-sahne/oda');
+  const sahne = new Sahne('parti-sahne/oda', 'parti-sahne/oda-dikey');
   sahne.el.classList.add('eg-sahne');
   kok.append(sahne.el);
   // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın geniş çizimi (yoksa bulanık devamı; sahne.ts → yanDolgu)

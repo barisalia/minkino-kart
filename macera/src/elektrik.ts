@@ -119,7 +119,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const mik = () => kulak.acik && !TEST_MODU;
 
   // ================================================================ sahne ve dünya ölçüsü
-  const sahne = new Sahne('parti-sahne/oda');
+  const sahne = new Sahne('parti-sahne/oda', 'parti-sahne/oda-dikey');
   sahne.el.classList.add('el-sahne');
   kok.append(sahne.el);
   // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın geniş çizimi (yoksa bulanık devamı; sahne.ts →

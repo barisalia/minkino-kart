@@ -32,8 +32,11 @@ export class Sahne {
   private karanlik: HTMLElement;
   private disko: HTMLElement;
 
-  constructor(arka: string) {
-    this.dunya = h('div.mc-dunya', {}, h('div.mc-oda', { style: `--resim:url("${adres(arka)}")` }));
+  /** dikey: dikey ekran (boy > en) için 9:16 oda çizimi (ör. parti-sahne/oda-dikey); dosya yoksa yatay çizim kırpılır */
+  constructor(arka: string, dikey = '') {
+    const d = dikey ? adres(dikey) : '';
+    const stil = `--resim:url("${adres(arka)}")${d ? `;--resim-dikey:url("${d}")` : ''}`;
+    this.dunya = h(`div.mc-dunya${d ? '.mc-dikey-var' : ''}`, {}, h('div.mc-oda', { style: stil }));
     this.karanlik = h('div.mc-karanlik');
     this.disko = h('div.mc-disko');
     this.on = h('div.mc-on');

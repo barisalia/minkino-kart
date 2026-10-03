@@ -441,3 +441,69 @@ export function dedektifCumleleri(): string[] {
 export function dedektifKinoCumleleri(): string[] {
   return topla(D.kino);
 }
+
+// ---------------------------------------------------------------- dikey çalışma odası (film/ev/oda-dikey, 1536×2752)
+/**
+ * Dikey ekranda (boy > en) çalışma odası 9:16 tek resimdir: üstte ince pencere şeridi, ortada duvar, altta geniş
+ * parke ve ortası boş oval halı (y ≈ 0.6-0.88). Eşyalar, ipuçları ve izler halıya / zemine; kadrajlar o orana.
+ * calismaYerlesim(true) tabloları (CALISMA, CALISMA_IZLERI, KADRAJ, ipuçları) yerinde bu değerlere çevirir,
+ * false yatay değerleri geri koyar (oda her vakada yeniden kurulur; dosya yoksa hep yatay).
+ */
+export const DIKEY_ORAN = 1536 / 2752;
+const DIKEY = {
+  calisma: {
+    masa: { x: 0.7, y: 0.635, h: 0.15 },
+    masaUst: { x: 0.7, y: 0.511 },
+    lambaDevrik: { x: 0.3, y: 0.73, h: 0.11 },
+    lambaDik: { x: 0.6, y: 0.513, h: 0.13 },
+    kalem: { x: 0.655, y: 0.505, h: 0.017, don: -8 },
+    cam: { x0: 0.235, y0: 0.004, x1: 0.765, y1: 0.112 },
+    pervaz: { x: 0.6, y: 0.135 },
+  },
+  izler: [
+    // Mino ile Kino alt köşelerde durur: izler halının üst yarısından sağa gider (dokunuş karakterlere gelmesin)
+    { x: 0.42, y: 0.735, don: 78, h: 0.04 },
+    { x: 0.49, y: 0.75, don: 96, h: 0.04 },
+    { x: 0.56, y: 0.735, don: 80, h: 0.04 },
+    { x: 0.63, y: 0.75, don: 98, h: 0.04 },
+    { x: 0.7, y: 0.735, don: 84, h: 0.04 },
+    { x: 0.77, y: 0.745, don: 92, h: 0.04 },
+    { x: 0.84, y: 0.73, don: 86, h: 0.04 },
+    { x: 0.91, y: 0.74, don: 92, h: 0.04 },
+  ] as IzNoktasi[],
+  kadraj: {
+    genel: [0, 0, 1, 1],
+    giris: [0, 0.4, 1, 1],
+    hali: [0, 0.55, 1, 0.95],
+    masa: [0.25, 0.36, 1, 0.68],
+    pencere: [0.05, 0, 0.95, 0.4],
+    sahne3: [0, 0.3, 1, 0.95],
+    izler: [0.2, 0.6, 1, 1],
+    final: [0, 0.35, 1, 1],
+  } as Partial<Record<KadrajAdi, Kadraj>>,
+  ipucu: {
+    'pati-hali': { x: 0.55, y: 0.8, h: 0.052 },
+    tuy: { x: 0.79, y: 0.505, h: 0.06 },
+    toz: { x: 0.6, y: 0.135, h: 0.042 },
+    kelebek: { x: 0.45, y: 0.08, h: 0.055 },
+  } as Record<string, { x: number; y: number; h: number }>,
+};
+const YATAY = {
+  oran: ODA_ORAN.calisma,
+  calisma: structuredClone(CALISMA),
+  izler: structuredClone(CALISMA_IZLERI),
+  kadraj: structuredClone(KADRAJ) as Record<KadrajAdi, Kadraj>,
+  ipucu: Object.fromEntries(HALKALAR.flatMap((hk) => hk.ipuclari).map((t) => [t.id, { x: t.x, y: t.y, h: t.h }])),
+};
+/** Çalışma odası yerleşimi dikey mi (calismaYerlesim son çağrısı) */
+export let calismaDikey = false;
+export function calismaYerlesim(dikey: boolean) {
+  calismaDikey = dikey;
+  ODA_ORAN.calisma = dikey ? DIKEY_ORAN : YATAY.oran;
+  const c = structuredClone(dikey ? DIKEY.calisma : YATAY.calisma);
+  for (const k of Object.keys(c) as (keyof typeof CALISMA)[]) Object.assign(CALISMA[k], c[k]);
+  CALISMA_IZLERI.splice(0, CALISMA_IZLERI.length, ...structuredClone(dikey ? DIKEY.izler : YATAY.izler));
+  const tablo = KADRAJ as Record<KadrajAdi, Kadraj>;
+  for (const [ad, k] of Object.entries(YATAY.kadraj) as [KadrajAdi, Kadraj][]) tablo[ad] = [...((dikey ? DIKEY.kadraj[ad] : undefined) ?? k)] as Kadraj;
+  for (const t of HALKALAR.flatMap((hk) => hk.ipuclari)) Object.assign(t, (dikey ? DIKEY.ipucu : YATAY.ipucu)[t.id]);
+}
