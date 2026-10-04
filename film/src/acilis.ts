@@ -1,12 +1,26 @@
 /**
- * Çizgi Filmler ortak açılışı (her filmden önce, ~10 sn): Mino ve Kino hoplayarak gelir, asıl MINKINO logosu
- * parıltıyla belirir, konfeti patlar, sonra filmin başlık kartı. Müzik: film-acilis jeneriği (7,9 sn).
+ * Çizgi Filmler ortak açılışı v3 (her filmden önce, ~10 sn): masal sahnesi (Recraft katmanları, assets/film/acilis/).
+ * Akış film-acilis jeneriğinin (7,9 sn) vuruşlarına oturur:
+ *   0,0 zemin yaklaşarak belirir, bulutlar süzülür · 0,8 perdeler açılır · 1,8 Mino / 2,2 Kino zıplayarak çıkar, 2,8 el sallar
+ *   4,6 logo tepeden düşer, 5,05 vuruşunda yere oturur (esneyip yaylanır), 5,55 parıltı süzülür, yıldızlar sırayla parlar
+ *   6,3 kurdele açılır, 6,55 vuruşunda film adı belirir · 7,55 ikisi sevinir · 9,5 yumuşak sönme (iris) → film
  * - Ekranın her yerine dokununca atlanır (ilk 0,5 sn hariç: filmi açtıran dokunuş açılışı geçmesin).
- * - Uzun açılış günde bir kez; aynı gün yeniden izlenince kısa açılış (logo + başlık, ~4,6 sn). İkisi de atlanır.
- * - Az hareket (prefers-reduced-motion): hop / konfeti yok, yumuşak belirme.
+ * - Uzun açılış günde bir kez; aynı gün yeniden izlenince kısa açılış (aynı resimler, ~4 sn). İkisi de atlanır.
+ * - Az hareket (prefers-reduced-motion): zıplama / düşme yok, yumuşak belirme.
  * Yalnız transform / opacity animasyonları (CSS); zamanlama film hızıyla (test modunda hızlı).
  */
 import './acilis.css';
+import ZEMIN from '../../assets/film/acilis/zemin.webp';
+import ZEMIN_DIK from '../../assets/film/acilis/zemin-dik.webp';
+import PERDE from '../../assets/film/acilis/perde.webp';
+import KURDELE from '../../assets/film/acilis/kurdele.webp';
+import BULUT from '../../assets/film/acilis/bulut.webp';
+import Y1 from '../../assets/film/acilis/yildiz-1.webp';
+import Y2 from '../../assets/film/acilis/yildiz-2.webp';
+import Y3 from '../../assets/film/acilis/yildiz-3.webp';
+import Y4 from '../../assets/film/acilis/yildiz-4.webp';
+import Y5 from '../../assets/film/acilis/yildiz-5.webp';
+import Y6 from '../../assets/film/acilis/yildiz-6.webp';
 import { Karakter } from '../../src/karakter/karakter';
 import { Mino } from '../../src/mino/mino';
 import { h } from '../../src/ui/dom';
@@ -16,11 +30,22 @@ import { filmMuzik } from './muzik';
 
 /** Uzun açılışın ve kısa açılışın süresi (sn, sönme dahil) */
 export const ACILIS_UZUN = 10.2;
-export const ACILIS_KISA = 4.6;
+export const ACILIS_KISA = 4;
 const ANAHTAR = 'minkino-film-acilis-v1';
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-const RENKLER = ['#ff5d8f', '#ffc72c', '#5dbe3f', '#3e9df2', '#9b5ce0', '#ff8a2b', '#17afa2'];
+
+/** logonun çevresindeki yıldızlar: resim, konum (logo kutusuna göre %), boy (logo eninin %'si), gecikme (sn) */
+const YILDIZLAR: [string, number, number, number, number][] = [
+  [Y1, -4, 8, 9, 0],
+  [Y4, 103, 2, 7, 0.25],
+  [Y5, 18, -38, 4.5, 0.5],
+  [Y2, 96, 92, 8, 0.12],
+  [Y6, 78, -34, 4, 0.7],
+  [Y3, 2, 98, 6, 0.4],
+  [Y5, 50, -52, 3.5, 0.9],
+  [Y6, -12, 58, 3.5, 1.05],
+];
 
 const bugun = () => new Date().toISOString().slice(0, 10);
 /** Bugün uzun açılış izlendi mi (localStorage yoksa: hayır) */
@@ -39,21 +64,17 @@ function izlendiYaz() {
   }
 }
 
-/** Konfeti: tepeden saçılan renkli kâğıtlar (her parçanın yolu CSS değişkenleriyle) */
-function konfeti(adet: number, tohum: number) {
-  return h(
-    'div.fl-in-konfeti',
-    { 'aria-hidden': 'true' },
-    ...Array.from({ length: adet }, (_, i) => {
-      const r = (k: number) => ((Math.sin((i + 1) * 12.9898 * k + tohum * 78.233) * 43758.5453) % 1 + 1) % 1;
-      return h('i', {
-        style:
-          `--x:${(r(1) * 100).toFixed(1)}%;--dx:${((r(2) - 0.5) * 30).toFixed(1)}vw;--d:${(r(3) * 0.6).toFixed(2)}s;` +
-          `--s:${(2.2 + r(4) * 1.6).toFixed(2)}s;--don:${Math.round((r(5) - 0.5) * 1440)}deg;--r:${RENKLER[i % RENKLER.length]};` +
-          `--en:${(0.9 + r(6) * 0.9).toFixed(2)}`,
-      });
-    }),
-  );
+/** Açılış resimlerini önceden indirip çözer (kapak ekranı açılınca bir kez) */
+let onYuklendi = false;
+export function acilisOnYukle() {
+  if (onYuklendi || typeof Image === 'undefined') return;
+  onYuklendi = true;
+  const dik = typeof matchMedia !== 'undefined' && matchMedia('(orientation: portrait)').matches;
+  for (const src of [dik ? ZEMIN_DIK : ZEMIN, PERDE, KURDELE, BULUT, Y1, Y2, Y3, Y4, Y5, Y6]) {
+    const r = new Image();
+    r.src = src;
+    void r.decode().catch(() => undefined);
+  }
 }
 
 export interface Acilis {
@@ -72,34 +93,67 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
   const uzun = o.zorlaUzun || !bugunIzlendi();
   if (uzun) izlendiYaz();
   const zamanlar: number[] = [];
+  let hazir = false;
   const sonra = (sn: number, is: () => void) => void zamanlar.push(window.setTimeout(is, (sn * 1000) / o.hiz));
   const efekt = (ad: string) => FILM_EFEKT[ad]?.();
+  const res = (src: string, sinif: string) => h(`img.${sinif}`, { src, alt: '', draggable: 'false', decoding: 'async' });
 
   const mino = new Mino();
   const kino = new Karakter('kino', h('div'));
-  const minoKap = h('div.fl-in-mino', {}, h('div.fl-in-zip', {}, mino.el));
-  const kinoKap = h('div.fl-in-kino', { 'data-karakter-kap': 'kino' }, h('div.fl-in-zip', {}, h('div.fl-in-kino-ic', {}, kino.el)));
-  const yildizlar = h(
-    'div.fl-in-yildizlar',
-    { 'aria-hidden': 'true' },
-    ...Array.from({ length: 9 }, (_, i) => h('i', { style: `--i:${i};--a:${i * 40}deg` })),
+  const minoKap = h('div.fl-in-mino', {}, h('div.fl-in-zip', {}, h('div.fl-in-yay', {}, mino.el)));
+  const kinoKap = h(
+    'div.fl-in-kino',
+    { 'data-karakter-kap': 'kino' },
+    h('div.fl-in-zip', {}, h('div.fl-in-yay', {}, h('div.fl-in-kino-ic', {}, kino.el))),
   );
-  const logo = h('div.fl-in-logo', {}, minkinoLogo('kenarli', 'fl-acilis-logo'), yildizlar);
+  const logoResim = minkinoLogo('kenarli', 'fl-acilis-logo');
+  const logo = h(
+    'div.fl-in-logo',
+    {},
+    h('div.fl-in-logo-dus', {}, h('div.fl-in-logo-yay', {}, logoResim, h('i.fl-in-parilti', { style: `--maske:url("${logoResim.src}")` }))),
+    h(
+      'div.fl-in-yildizlar',
+      { 'aria-hidden': 'true' },
+      ...YILDIZLAR.map(([src, x, y, boy, d]) => h('i', { style: `left:${x}%;top:${y}%;width:${boy}%;--d:${d}s` }, res(src, 'fl-in-yildiz'))),
+    ),
+  );
   const kart = h(
     'div.fl-in-kart',
     {},
-    h('h2.fl-acilis-baslik', {}, baslik),
-    h('p.fl-acilis-alt', {}, h('span.fl-in-film', {}, 'Çizgi Film')),
+    h(
+      'div.fl-in-kurdele',
+      {},
+      res(KURDELE, 'fl-in-kurdele-resim'),
+      h('h2.fl-acilis-baslik', {}, baslik),
+      h('p.fl-acilis-alt', {}, h('span.fl-in-film', {}, 'Çizgi Film')),
+    ),
   );
+  const bulut = (sinif: string) => h(`div.fl-in-bulut.${sinif}`, { 'aria-hidden': 'true' }, res(BULUT, 'fl-in-bulut-resim'));
   const el = h(
     'div.fl-acilis.fl-in',
-    { 'data-adim': '0', 'data-tur': uzun ? 'uzun' : 'kisa', 'aria-label': `${baslik}. Geçmek için dokun.`, role: 'button', tabindex: '0', ...(AZ_HAREKET ? { 'data-az': '1' } : {}) },
+    {
+      'data-adim': '0',
+      'data-tur': uzun ? 'uzun' : 'kisa',
+      'aria-label': `${baslik}. Geçmek için dokun.`,
+      role: 'button',
+      tabindex: '0',
+      ...(AZ_HAREKET ? { 'data-az': '1' } : {}),
+    },
+    h('div.fl-in-zemin', { 'aria-hidden': 'true' }, res(ZEMIN, 'fl-in-zemin-yatay'), res(ZEMIN_DIK, 'fl-in-zemin-dik')),
     h('i.fl-acilis-isik'),
+    bulut('b1'),
+    bulut('b2'),
+    bulut('b3'),
     h('div.fl-in-orta', {}, logo, kart),
     minoKap,
     kinoKap,
+    h('div.fl-in-perde.sol', { 'aria-hidden': 'true' }, res(PERDE, 'fl-in-perde-resim')),
+    h('div.fl-in-perde.sag', { 'aria-hidden': 'true' }, res(PERDE, 'fl-in-perde-resim')),
+    h('i.fl-in-iris', { 'aria-hidden': 'true' }),
   );
   el.style.setProperty('--hiz', String(o.hiz));
+  // kapalı perde: iki kanat ekranın yarısını örtecek kadar enine açılır (kanat eni = 0,52 × ekran boyu)
+  el.style.setProperty('--pk', Math.max(1.3, (innerWidth / 2 / (innerHeight * 0.52)) * 1.35).toFixed(3));
   const adim = (n: number) => (el.dataset.adim = String(n));
 
   let bitti = false;
@@ -108,65 +162,81 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
     bitti = true;
     zamanlar.forEach(clearTimeout);
     el.classList.add('bitti');
-    el.style.transitionDuration = `${(sonme / o.hiz).toFixed(2)}s`;
+    // önce iris kapanır (yarı süre), sonra her şey filme karışarak söner
+    const yari = (sonme * 0.5) / o.hiz;
+    el.style.setProperty('--sonme', `${yari.toFixed(3)}s`);
+    el.style.transition = `opacity ${yari.toFixed(3)}s ease-in ${yari.toFixed(3)}s`;
     o.bitti();
-    window.setTimeout(() => {
-      el.remove();
-      mino.kapat();
-      kino.kapat();
-    }, (sonme * 1000) / o.hiz + 80);
+    window.setTimeout(
+      () => {
+        el.remove();
+        mino.kapat();
+        kino.kapat();
+      },
+      (sonme * 1000) / o.hiz + 80,
+    );
+  };
+  const selam = () => {
+    if (!AZ_HAREKET) mino.tepki('selam');
+    void kino.oynat('sevin', 1500);
+  };
+  const sevin = () => {
+    if (!AZ_HAREKET) mino.tepki('zipla');
+    void kino.oynat('dans', 1800);
+    if (kino.ifadeVar('heyecan')) kino.ifade('heyecan', 1800);
   };
 
-  if (o.muzik) filmMuzik.dosyaCal({ ad: 'film-acilis', ses: 0.85, gec: 0.05 });
-  if (uzun) {
-    // 1: Mino soldan, Kino sağdan hoplayarak gelir
-    sonra(0.25, () => adim(1));
-    sonra(1.35, () => efekt('boing'));
-    sonra(1.75, () => efekt('boing'));
-    sonra(1.9, () => {
-      if (!AZ_HAREKET) mino.tepki('selam');
-      void kino.oynat('sevin', 1300);
-    });
-    // 2: logo zıplayarak belirir, yıldızlar parlar
-    sonra(2.6, () => {
-      adim(2);
-      efekt('parilti');
-    });
-    // 3: konfeti, ikisi sevinir
-    sonra(3.7, () => {
-      adim(3);
-      el.append(konfeti(42, 1));
-      efekt('final');
-      if (!AZ_HAREKET) mino.tepki('zipla');
-      void kino.oynat('dans', 1800);
-      if (kino.ifadeVar('heyecan')) kino.ifade('heyecan', 1800);
-    });
-    // 4: başlık kartı (logo yukarı, başlık gelir); Mino başlığa bakar, ikisi dans eder
-    sonra(5.7, () => {
-      adim(4);
-      efekt('hop');
-      mino.bak(1);
-    });
-    sonra(6.5, () => {
-      el.append(konfeti(24, 2));
-      if (!AZ_HAREKET) mino.tepki('dans');
-      void kino.oynat('sevin', 1200);
-    });
-    sonra(7.8, () => mino.bak(0));
-    sonra(ACILIS_UZUN - 0.7, () => bitir(0.7));
-  } else {
-    // kısa açılış: ikisi yanlarda, logo ve başlık birlikte
-    adim(5);
-    sonra(0.3, () => efekt('parilti'));
-    sonra(0.9, () => {
-      el.append(konfeti(26, 3));
-      if (!AZ_HAREKET) mino.tepki('selam');
-      void kino.oynat('sevin', 1200);
-    });
-    // jenerik kısa açılışta erkenden söner
-    sonra(ACILIS_KISA - 1.2, () => o.muzik && filmMuzik.dosyaSon(1.1));
-    sonra(ACILIS_KISA - 0.6, () => bitir(0.6));
-  }
+  // büyük resimler çözülmeden akış başlamasın (ilk açılışta boş sahne görünmesin); en çok 1,5 sn beklenir
+  const cozulecek = [...el.querySelectorAll<HTMLImageElement>('.fl-in-zemin img, .fl-in-perde-resim, .fl-acilis-logo')];
+  let basladi = false;
+  const basla = () => {
+    if (basladi || bitti) return;
+    basladi = true;
+    akis();
+  };
+  void Promise.all(cozulecek.map((r) => r.decode().catch(() => undefined))).then(basla);
+  window.setTimeout(basla, 1500 / o.hiz);
+
+  const akis = () => {
+    if (o.muzik) filmMuzik.dosyaCal({ ad: 'film-acilis', ses: 0.85, gec: 0.05 });
+    // adım: 0 kapalı perde · 1 zemin · 2 perde açık · 3 Mino · 4 Kino · 5 logo · 6 kurdele + başlık · 7 sevinç
+    if (uzun) {
+      sonra(0.05, () => adim(1));
+      sonra(0.8, () => {
+        adim(2);
+        efekt('fiu');
+      });
+      // zıplama inişi (animasyonun %64'ü) vuruşa düşer: Mino 1,8, Kino 2,2
+      sonra(1.29, () => adim(3));
+      sonra(1.8, () => efekt('boing'));
+      sonra(1.69, () => adim(4));
+      sonra(2.2, () => efekt('boing'));
+      sonra(2.8, selam);
+      sonra(4.6, () => adim(5));
+      sonra(5.05, () => efekt('parilti'));
+      sonra(6.3, () => adim(6));
+      sonra(7.55, () => {
+        adim(7);
+        sevin();
+      });
+      sonra(ACILIS_UZUN - 0.7, () => bitir(0.7));
+    } else {
+      // kısa açılış: aynı sahne, hızlı akış (perde açık başlar)
+      el.dataset.tur = 'kisa';
+      sonra(0.05, () => adim(2));
+      sonra(0.15, () => adim(4));
+      sonra(0.65, () => efekt('boing'));
+      sonra(0.4, () => adim(5));
+      sonra(0.9, () => efekt('parilti'));
+      sonra(1.1, () => adim(6));
+      sonra(1.5, selam);
+      // jenerik kısa açılışta erkenden söner
+      sonra(ACILIS_KISA - 1.2, () => o.muzik && filmMuzik.dosyaSon(1.1));
+      sonra(ACILIS_KISA - 0.6, () => bitir(0.6));
+    }
+    // dokununca atlanır (karta dokunup açtıran ilk dokunuş sayılmasın: kısa bir bekleme)
+    sonra(0.5, () => (hazir = true));
+  };
 
   const atla = () => {
     if (bitti) return;
@@ -174,8 +244,6 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
     bitir(0.45);
   };
   // dokununca atlanır (karta dokunup açtıran ilk dokunuş sayılmasın: kısa bir bekleme)
-  let hazir = false;
-  sonra(0.5, () => (hazir = true));
   el.addEventListener('pointerdown', () => hazir && atla());
   el.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') atla();

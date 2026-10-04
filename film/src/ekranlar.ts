@@ -9,7 +9,7 @@ import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import { Film, KAYIT, konusSecenegi, sesGunlugeYaz, type FilmDosya } from './motor';
 import { katalog } from './katalog';
 import { filmMuzik, KAPANIS_SURESI } from './muzik';
-import { acilisKur, type Acilis } from './acilis';
+import { acilisKur, acilisOnYukle, type Acilis } from './acilis';
 
 /** Jenerikler (film-acilis / film-kapanis) film müziğiyle birlikte: test modunda kapalı, süreler film hızıyla kısalır */
 const MUZIK = !TEST_MODU;
@@ -113,10 +113,12 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   };
 
   /**
-   * Açılış: ortak Çizgi Filmler açılışı (Mino ve Kino hoplar, MINKINO logosu, konfeti, başlık kartı; dokununca geçilir;
+   * Açılış: ortak Çizgi Filmler açılışı (perde açılır, Mino ve Kino zıplar, MINKINO logosu düşer, kurdelede film adı; dokununca geçilir;
    * uzunu günde bir kez, sonra kısası), bitince film başlar. ?uzun=1 ve MP4 kaydı: her zaman uzun açılış.
    */
   let acilis: Acilis | null = null;
+  // açılışın büyük resimleri kapak ekranındayken inmeye başlar (Oynat'a basılınca sahne boş kalmasın)
+  acilisOnYukle();
   const basla = () => {
     kapak.classList.add('gizli');
     // ?kartsiz=1: açılış ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
