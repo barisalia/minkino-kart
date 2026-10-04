@@ -144,7 +144,9 @@ function kabuguKur() {
     else if (karar === 'cik') void App.exitApp();
     else if (karar === 'menu') {
       gidiliyor = true;
-      location.assign(new URL('/index.html', location.href).href);
+      const menu = new URL('/index.html', location.href).href;
+      // krem perde + sesin kısılması (gecis.ts oyun kodunda zaten yüklü; kabuk açılışta ona bağlanmasın diye geç yüklenir)
+      void import('../ui/gecis').then((g) => g.sayfadanCik(() => location.assign(menu)), () => location.assign(menu));
     }
   });
 

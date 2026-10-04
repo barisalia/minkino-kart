@@ -119,6 +119,14 @@ export function seviyeleriUygula() {
   efektKanal.gain.setTargetAtTime(a.efekt ? 0.9 : 0, ctx.currentTime, 0.05);
 }
 
+export function anaSesiKis(sn = 0.2) {
+  // sayfa değişirken bütün ses ~0.2 sn'de yumuşakça kısılır (bir anda kopma yok); geri açmak: seviyeleriUygula()
+  if (!ctx || !ana) return;
+  ana.gain.cancelScheduledValues(ctx.currentTime);
+  ana.gain.setValueAtTime(ana.gain.value, ctx.currentTime);
+  ana.gain.linearRampToValueAtTime(0, ctx.currentTime + sn);
+}
+
 /** Konuşma sırasında müziği kısar. */
 export function muzikKis(kis: boolean) {
   if (!ctx || !muzikKanal || !efektKanal) return;

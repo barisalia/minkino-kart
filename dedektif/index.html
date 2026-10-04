@@ -9,8 +9,10 @@
     <meta name="apple-mobile-web-app-title" content="Dedektif Mino" />
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <title>Dedektif Mino</title>
+    <style>/* geçiş perdesi: oyun çizilene kadar beyaz değil menünün kremi; ilk ekran gelince açılır (src/ui/gecis.ts) */ html, body { background: #fff4dd; } #gecis-perde { position: fixed; inset: 0; z-index: 9999; background: #fff4dd; pointer-events: none; animation: gecis-emniyet 0.3s 4s forwards; } @keyframes gecis-emniyet { to { opacity: 0; visibility: hidden; } }</style>
   </head>
   <body>
+    <div id="gecis-perde" aria-hidden="true"></div>
     <div id="mino-dedektif"></div>
     <script type="module" src="./src/main.ts"></script>
   </body>

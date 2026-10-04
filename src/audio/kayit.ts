@@ -42,6 +42,10 @@ function veri(k: Kayit): Promise<ArrayBuffer> {
   return paket(k.p).then((ab) => ab.slice(k.b, k.b + k.u));
 }
 let calan: AudioBufferSourceNode | null = null;
+/** Çalan kaydın kendi ses düğümü: susunca kayıt bir anda kesilmez, ~0.18 sn'de kısılır. */
+let calanGuc: GainNode | null = null;
+/** Çalan kaydın sözü: durdurulunca kısılmayı beklemeden hemen çözülür (eskisi gibi). */
+let calanBitti: (() => void) | null = null;
 
 /** Manifest'i bir kez yükler (uygulama açılışında çağrılır). */
 export function kayitlariHazirla(): Promise<void> {
@@ -116,12 +120,17 @@ export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: K
     const src = c.createBufferSource();
     src.buffer = t;
     src.playbackRate.value = hiz;
-    src.connect(cikis);
+    const guc = c.createGain();
+    src.connect(guc);
+    guc.connect(cikis);
     calan = src;
+    calanGuc = guc;
+    calanBitti = () => coz(true);
     const emniyet = setTimeout(() => coz(true), (t.duration / hiz) * 1000 + 800);
     src.onended = () => {
       clearTimeout(emniyet);
       if (calan === src) calan = null;
+      guc.disconnect();
       coz(true);
     };
     src.start();
@@ -131,11 +140,22 @@ export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: K
 
 export function kayitDurdur() {
   try {
-    calan?.stop();
+    const c = baglam();
+    if (calan && calanGuc && c) {
+      // yumuşak kısılma (tık sesi ve kopma yok), sonra dur
+      calanGuc.gain.cancelScheduledValues(c.currentTime);
+      calanGuc.gain.setValueAtTime(calanGuc.gain.value, c.currentTime);
+      calanGuc.gain.linearRampToValueAtTime(0, c.currentTime + 0.18);
+      calan.stop(c.currentTime + 0.2);
+    } else calan?.stop();
   } catch {
     /* zaten durmuş */
   }
   calan = null;
+  calanGuc = null;
+  const bitti = calanBitti;
+  calanBitti = null;
+  bitti?.();
 }
 
 /**

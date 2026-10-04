@@ -3,6 +3,7 @@
  * sallarlar, dokununca tepki verirler), altında oyun kartları (sırayla gelir, yan oyun rozetleri, parmakla hafif
  * parallax); büyükler için ebeveyn kapısı (yazıyla toplama sorusu). Uygulamada abonelikli kartlarda kilit rozeti.
  */
+import { sayfadanCik } from '../../src/ui/gecis';
 import { abonelikEkrani, kilitliIcerik } from '../../src/abonelik/ekran';
 import { incelemeKoduAc } from '../../src/abonelik/inceleme';
 import { kilitleriKur } from '../../src/abonelik/kilit';
@@ -235,7 +236,8 @@ export function menuEkrani(app: Uygulama): Ekran {
       tepki('zipla');
       kinoOynat('sevin', 600);
       a.classList.add('secildi');
-      zamanlar.push(window.setTimeout(() => location.assign(a.href), sure(AZ_HAREKET ? 150 : 650)));
+      // kart zıplar, sonra krem perde iner ve ses kısılır (src/ui/gecis.ts): oyuna bir anda kopmadan geçilir
+      zamanlar.push(window.setTimeout(() => sayfadanCik(() => location.assign(a.href)), sure(AZ_HAREKET ? 30 : 350)));
     });
     return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}`, { style: `--i:${i}` }, a);
   });
