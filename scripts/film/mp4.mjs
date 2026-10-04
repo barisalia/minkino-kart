@@ -39,7 +39,7 @@ const dosya = JSON.parse(fs.readFileSync(`content/film/${FILM}.json`, 'utf8'));
 const sahneler = dosya.sahneler.filter((s) => s.sure);
 // sahne geçişi 0.7 sn (iris / kararma); sonraki sahne 'kes' ise geçiş yok
 // açılış kartı + film-acilis jeneriği (7,9 sn) filmden önce gelir; kapanış jeneriği (5 sn) öğüt kartından sonra
-const ACILIS = 7.9;
+const ACILIS = 10.2;
 const sahneBasi = (n) => ACILIS + sahneler.slice(0, n).reduce((t, s, i) => t + s.sure + (sahneler[i + 1]?.gecis === 'kes' ? 0 : 0.7), 0);
 const FORMATLAR = {
   dikey: { w: 1080, h: 1920, kadraj: 'dolu' },

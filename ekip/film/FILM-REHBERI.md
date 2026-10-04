@@ -1,6 +1,6 @@
 # Minkino Çizgi Filmler: animasyon ekibi rehberi
 
-**Ne yapıyoruz:** Uygulamanın içinde oynayan, **50-60 saniyelik**, 3-6 yaş için **eğitici kısa çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (paylaşmak, renkler, sayılar, el yıkamak…). Hikâye sade; süs sürprizler yok. **Final sorusu yok**; film anlatıcının kısa bir öğüdüyle biter ("Paylaşmak güzeldir."). (Barış, 2026-09-26)
+**Ne yapıyoruz:** Uygulamanın içinde oynayan, **90-120 saniyelik** (Barış 2026-10-04: "bir tık uzun, daha anlamlı"; önce ortak 10 sn açılış, film/src/acilis.ts), 3-6 yaş için **eğitici kısa çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (paylaşmak, renkler, sayılar, el yıkamak…). Hikâye sade; süs sürprizler yok. **Final sorusu yok**; film anlatıcının kısa bir öğüdüyle biter ("Paylaşmak güzeldir."). (Barış, 2026-09-26)
 
 **Ekip yöneticisi:** yerel yönetici (bu klasördeki yönetici oturumu). Herkes ona bağlı çalışır, işini ona teslim eder. Ürün sahibi Barış; kararları o verir.
 
