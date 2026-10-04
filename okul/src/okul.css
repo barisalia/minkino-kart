@@ -1243,9 +1243,10 @@
   z-index: -1;
 }
 .ok-kok .ok-e2-elmalar {
+  /* elmalar sayılabilecek boyda: sepetin kenarından biraz taşar */
   position: absolute;
-  left: 8%;
-  right: 8%;
+  left: -6%;
+  right: -6%;
   bottom: 50%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1262,9 +1263,9 @@
 }
 .ok-kok .ok-mini-elma {
   width: 100%;
-  max-width: 21%;
+  max-width: 27%;
   min-width: 0;
-  flex: 0 0 21%;
+  flex: 0 0 27%;
   margin-bottom: -6%;
 }
 .ok-kok .ok-e2-elmalar:not([data-n='1']):not([data-n='2']):not([data-n='3']):not([data-n='4']) .ok-mini-elma {
@@ -2410,10 +2411,11 @@
   }
   .ok-kok .ok-p-misafirler {
     z-index: 0;
-    bottom: calc(var(--ow) * 0.39);
+    bottom: calc(var(--ow) * 0.33);
   }
   .ok-kok .ok-p-misafir .ok-oyuncu {
-    --uzak: min(0.5, var(--p-uzak, 0.5));
+    /* en büyük misafir (ayı) bile ilerleme noktalarının altında kalır */
+    --uzak: min(0.42, var(--p-uzak, 0.42));
   }
 }
 

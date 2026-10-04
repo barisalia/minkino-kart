@@ -82,7 +82,7 @@ export function kuleEkrani(app: Uygulama, b: KuleBaglam): Ekran {
     });
     return d;
   });
-  const yakinda = h('button.ok-kule-yakinda', { type: 'button', 'aria-label': O.arayuz.yakinda }, svg(IKON.kilit), h('span', {}, S.sonraki_gruplar[0].split(' ').slice(0, 3).join(' '), '…'));
+  const yakinda = h('button.ok-kule-yakinda', { type: 'button', 'aria-label': O.arayuz.yakinda }, svg(IKON.kilit), h('span', {}, O.arayuz.yakinda));
   yakinda.addEventListener('click', () => {
     efekt.kilitli();
     oynat(yakinda, 'ok-hmm');
