@@ -2,6 +2,7 @@ import { kayitlariHazirla } from './audio/kayit';
 import { sayfaAdresi } from './kabuk/sayfa';
 import { sesiAc, sus } from './audio/ses';
 import { h, sure, TEST_MODU } from './ui/dom';
+import { sayfaAcildi, sayfadanCik } from './ui/gecis';
 
 export interface Ekran {
   el: HTMLElement;
@@ -30,8 +31,11 @@ export interface BaslatSecenekleri {
  */
 export const anaMenuyeDon = () => {
   const menu = new URL('../', location.href);
-  if (menudenGelindi(menu)) history.back();
-  else location.replace(sayfaAdresi(menu.href));
+  // krem perde iner, ses kısılır, sonra menüye geçilir (bir anda kopma / beyaz parlama yok)
+  sayfadanCik(() => {
+    if (menudenGelindi(menu)) history.back();
+    else location.replace(sayfaAdresi(menu.href));
+  });
 };
 
 function menudenGelindi(menu: URL): boolean {
@@ -73,7 +77,7 @@ export class Uygulama {
     if (eski) {
       eski.kapat?.();
       eski.el.classList.add('cikiyor');
-      setTimeout(() => eski.el.remove(), sure(300));
+      setTimeout(() => eski.el.remove(), sure(440));
     }
     if (this.aktifAd && this.aktifAd !== ad) this.gecmis.push({ ad: this.aktifAd, param: this.sonParam });
     if (this.gecmis.length > 10) this.gecmis.shift();
@@ -88,6 +92,8 @@ export class Uygulama {
     yeni.el.classList.add('ekran');
     yeni.el.dataset.ekran = ad;
     this.kok.append(yeni.el);
+    // ilk ekran çizilince sayfanın krem geçiş perdesi açılır (src/ui/gecis.ts)
+    if (!eski) sayfaAcildi(yeni.el);
     this.aktif = yeni;
     this.aktifAd = ad;
   }

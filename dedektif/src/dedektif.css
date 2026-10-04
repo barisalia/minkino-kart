@@ -18,7 +18,7 @@
   animation: dd-ekran-gel 0.45s ease-out both;
 }
 .dd-kok .ekran.cikiyor {
-  animation: mk-ekran-cikis 0.3s ease-in both;
+  animation: mk-ekran-cikis 0.42s cubic-bezier(0.5, 0, 0.75, 0) both;
 }
 @keyframes dd-ekran-gel {
   from { opacity: 0; }
