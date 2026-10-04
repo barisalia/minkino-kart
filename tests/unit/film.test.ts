@@ -33,6 +33,21 @@ describe('film: Mino’nun Karpuzu', () => {
   it('cümleler kısa: karakter ≤ 6 kelime', () => {
     for (const c of cumleler) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(6);
   });
+  it('v2: 90 sn civarı; sorun, duygu, dönüm noktası; sonda "Ne öğrendik?", bekleme ve öğüt Mino’dan', () => {
+    const toplam = sahneler.reduce((t, s) => t + s.sure, 0);
+    expect(toplam).toBeGreaterThanOrEqual(85);
+    expect(toplam).toBeLessThanOrEqual(120);
+    for (const c of ['Hiç kimseye vermem!', 'Bu karpuzu çok seviyorum.', 'Ama köpek çok aç.', 'Paylaşınca çok mutlu oldum.']) expect(cumleler, c).toContain(c);
+    expect(cumleler.filter((c) => c.includes('?'))).toEqual(['Vak! Bize de var mı?', 'Ne öğrendik?']);
+    const son = (sahneler.at(-1)!.olaylar as (Olay & { sure?: number })[]).filter((o) => o.yap === 'soyle').sort((a, b) => a.t - b.t);
+    const soru = son.find((o) => o.metin === 'Ne öğrendik?')!;
+    expect(son.at(-1)!.metin).toBe('Paylaşmak güzeldir.');
+    expect(son.at(-1)!.t - (soru.t + Number(soru.sure))).toBeGreaterThanOrEqual(2);
+    // hiçbir şey birden belirmez: göster / gizle en az 0,25 sn (aynı yerde yer değiştiren karpuz parçaları hariç)
+    for (const s of sahneler)
+      for (const o of s.olaylar as (Olay & { sure?: number })[])
+        if ((o.yap === 'goster' || o.yap === 'gizle') && !/^(karpuz|yarim\d|d\d)$/.test(o.kim)) expect(Number(o.sure), `${s.ad} ${o.kim}`).toBeGreaterThanOrEqual(0.25);
+  });
   it('zaman çizelgesi sahne süresi içinde, her olayın kimi sahnede var', () => {
     for (const s of sahneler) {
       const varlar = new Set(['kamera', 'isik', 'efekt', 'muzik', 'parilti', 'anlatici', 'stand', ...Object.keys(s.oyuncular ?? {}), ...Object.keys(s.esyalar ?? {})]);
@@ -351,12 +366,30 @@ const oSoz = (kim?: string) => oSahneler.flatMap((s) => s.olaylar.filter((o) => 
 const OYUNCAK_OGUT = 'Oyundan sonra toplarız.';
 
 describe('film: Kino ve Oyuncak Sepeti', () => {
-  it('cümleler ve öğüt (Mino anlatıcı, Kino kendi sesiyle en çok 3 kelime); soru yok', () => {
+  it('cümleler ve öğüt (Mino anlatıcı, Kino kendi sesiyle en çok 3 kelime); v2: duygular ve sonda tek soru "Ne öğrendik?"', () => {
     expect(oyuncak.seslendir).toBe(true);
-    expect(oSoz('kino')).toEqual(['Yaşasın!', 'Gol!', 'Bir gol daha!', 'Tertemiz!']);
-    expect(oSoz('mino')).toEqual(['Kino bugün çok oynadı!', 'Her yer oyuncak dolu!', 'Hadi, toplayalım!', OYUNCAK_OGUT]);
+    expect(oSoz('kino')).toEqual(['Yaşasın!', 'Üzgünüm, Mino.', 'Ama toplamak sıkıcı.', 'Gol!', 'Bir gol daha!', 'Tertemiz!', 'Hem de gol!']);
+    expect(oSoz('mino')).toEqual([
+      'Kino bugün çok oynadı!',
+      'Her yer oyuncak dolu!',
+      'Ah! Küpe bastım.',
+      'Canım biraz acıdı.',
+      'Yerdeki oyuncak ayağa takılır.',
+      'Hadi, toplayalım!',
+      'Süper fikir, Kino!',
+      'Her şey yerli yerinde!',
+      'Toplamak da eğlenceliymiş!',
+      'Ne öğrendik?',
+      OYUNCAK_OGUT,
+    ]);
     expect(oyuncak.sahneler.find((s) => 'ogut' in s)).toEqual({ ogut: OYUNCAK_OGUT });
-    for (const c of oSoz()) expect(c, c).not.toContain('?');
+    // tek soru: sonda Mino çocuğa sorar, en az 3 sn bekler, cevabı (öğüt) kendisi söyler; film öğütle biter
+    expect(oSoz().filter((c) => c.includes('?'))).toEqual(['Ne öğrendik?']);
+    const son = oSahneler[4].olaylar.filter((o) => o.yap === 'soyle').sort((a, b) => a.t - b.t);
+    const soru = son.find((o) => o.metin === 'Ne öğrendik?')!;
+    const cevap = son.at(-1)!;
+    expect(cevap.metin).toBe(OYUNCAK_OGUT);
+    expect(cevap.t - (soru.t + Number(soru.sure))).toBeGreaterThanOrEqual(3);
     for (const c of oSoz('kino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(3);
     for (const c of oSoz('mino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(5);
   });
@@ -367,11 +400,11 @@ describe('film: Kino ve Oyuncak Sepeti', () => {
     for (const c of oSoz('kino')) expect(kino.has(c), c).toBe(true);
     for (const c of oSoz('mino')) expect(kino.has(c), c).toBe(false);
   });
-  it('5 sahne, yaklaşık 60 sn, ev setinde; olaylar sahne içinde, kimi sahnede', () => {
+  it('5 sahne, v2: 90-120 sn, ev setinde; olaylar sahne içinde, kimi sahnede', () => {
     expect(oSahneler.length).toBe(5);
     const toplam = oSahneler.reduce((t, s) => t + s.sure, 0);
-    expect(toplam).toBeGreaterThanOrEqual(55);
-    expect(toplam).toBeLessThanOrEqual(64);
+    expect(toplam).toBeGreaterThanOrEqual(88);
+    expect(toplam).toBeLessThanOrEqual(120);
     expect(oyuncak.malzeme).toBe('ev');
     for (const s of oSahneler) {
       expect(s.arka).toBe('ev');

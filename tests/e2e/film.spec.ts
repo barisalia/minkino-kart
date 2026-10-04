@@ -16,7 +16,9 @@ test('Çizgi Filmler ekranı: kapaklı büyük kartlar, öğüt rozeti, süre; M
   await expect(page.locator('.fl-film-kart[data-film="mino-sepet"] .fl-k-ogut')).toHaveText('Yardım etmek');
   await expect(page.locator('.fl-film-kart[data-film="kino-lutfen"] .fl-k-ogut')).toHaveText('Lütfen demek');
   await expect(page.locator('.fl-film-kart[data-film="kino-oyuncak"] .fl-k-ogut')).toHaveText('Toplamak');
-  await expect(page.locator('.fl-k-sure').first()).toHaveText('1 dk');
+  // v2: en yeni film (Oyuncak Sepeti) ~1,5 dk → 2 dk; eski filmler 1 dk
+  await expect(page.locator('.fl-k-sure').first()).toHaveText('2 dk');
+  await expect(page.locator('.fl-film-kart[data-film="kino-kaydirak"] .fl-k-sure')).toHaveText('1 dk');
   // kapaklar yüklendi; kartlar ekrandan taşmıyor, dokunma alanı büyük
   const boyut = page.viewportSize()!;
   for (const k of await kartlar.all()) {
@@ -59,9 +61,10 @@ test('Film: Mino’nun Karpuzu animatiği baştan sona oynar, sonda öğüt kart
   await expect(page.locator('.fl-baslik')).toHaveText("Mino'nun Karpuzu");
   await page.screenshot({ path: `tests/screens/${info.project.name}-f0-film-kapak.png` });
   await page.getByRole('button', { name: 'Oynat' }).click();
-  // açılış kartı: asıl MINKINO logosu + Çizgi Film
+  // ortak açılış: Mino ve Kino, asıl MINKINO logosu, başlık kartı ve Çizgi Film
   await expect(page.locator('.fl-acilis-alt')).toHaveText('Çizgi Film');
-  await expect(page.locator('.fl-acilis-alt img.mk-logo')).toHaveAttribute('alt', 'Minkino');
+  await expect(page.locator('.fl-in .fl-in-mino .mino')).toHaveCount(1);
+  await expect(page.locator('.fl-in-logo img.mk-logo')).toHaveAttribute('alt', 'Minkino');
   // sahne 1: Mino ve karpuz sahnede
   await expect(page.locator('.fl-sahne[data-sahne="1-pazar-kapaniyor"]')).toBeVisible();
   await expect(page.locator('.fl-nesne[data-oyuncu="mino"] .mino-svg')).toBeVisible();
@@ -288,7 +291,7 @@ test("Film: Kino ve Oyuncak Sepeti: Çizgi Filmler'de ilk kart (Yeni), ev, sepet
     return { sahneler: w.__sahneler, sozler: w.__sozler };
   });
   expect(kayit.sahneler).toEqual(['1-oyun', '2-kayma', '3-gol', '4-topla', '5-kanepe']);
-  expect(kayit.sozler).toEqual(['Yaşasın!', 'Kino bugün çok oynadı!', 'Her yer oyuncak dolu!', 'Hadi, toplayalım!', 'Gol!', 'Bir gol daha!', 'Tertemiz!', 'Oyundan sonra toplarız.']);
+  expect(kayit.sozler).toEqual(['Yaşasın!', 'Kino bugün çok oynadı!', 'Her yer oyuncak dolu!', 'Ah! Küpe bastım.', 'Canım biraz acıdı.', 'Üzgünüm, Mino.', 'Yerdeki oyuncak ayağa takılır.', 'Ama toplamak sıkıcı.', 'Hadi, toplayalım!', 'Gol!', 'Süper fikir, Kino!', 'Bir gol daha!', 'Her şey yerli yerinde!', 'Tertemiz!', 'Toplamak da eğlenceliymiş!', 'Hem de gol!', 'Ne öğrendik?', 'Oyundan sonra toplarız.']);
   expect(hatalar).toEqual([]);
 });
 
@@ -307,4 +310,28 @@ test('Film: duraklat / devam', async ({ page }, info) => {
   expect(await page.locator('.fl-orta').evaluate((e) => e.style.transform)).toBe(kamera);
   await page.getByRole('button', { name: 'Devam' }).click();
   await expect(page.locator('.fl-sahne.duraklatildi')).toHaveCount(0);
+});
+
+test('Film: ortak açılış dokununca geçilir; uzun açılış günde bir kez, sonra kısa açılış', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await page.goto('./film/?onizleme=1&sessiz=1&film=kino-oyuncak');
+  await page.evaluate(() => localStorage.removeItem('minkino-film-acilis-v1'));
+  await page.getByRole('button', { name: 'Oynat' }).click();
+  // uzun açılış: Mino ve Kino hoplar, logo, konfeti, başlık kartı
+  await expect(page.locator('.fl-in[data-tur="uzun"]')).toBeVisible();
+  await expect(page.locator('.fl-in[data-adim="3"] .fl-in-konfeti').first()).toBeAttached({ timeout: 6000 });
+  // dokununca geçilir: film hemen başlar
+  await page.locator('.fl-in').click();
+  await expect(page.locator('.fl-in')).toHaveCount(0, { timeout: 2000 });
+  await expect(page.locator('.fl-sahne[data-sahne="1-oyun"]')).toBeVisible();
+  // aynı gün yeniden: kısa açılış, o da dokununca geçilir
+  await page.goto('./film/?onizleme=1&sessiz=1&film=kino-oyuncak');
+  await page.getByRole('button', { name: 'Oynat' }).click();
+  await expect(page.locator('.fl-in[data-tur="kisa"]')).toBeVisible();
+  await expect(page.locator('.fl-in .fl-acilis-baslik')).toHaveText('Kino ve Oyuncak Sepeti');
+  await page.waitForTimeout(700);
+  await page.locator('.fl-in').click();
+  await expect(page.locator('.fl-in')).toHaveCount(0, { timeout: 2000 });
+  expect(hatalar).toEqual([]);
 });

@@ -3,13 +3,13 @@ import { konus } from '../../src/audio/ses';
 import { arkaPlanDinle, yonIste } from '../../src/kabuk/yon';
 import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
-import { minkinoLogo } from '../../src/ui/logo';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import { Film, KAYIT, konusSecenegi, sesGunlugeYaz, type FilmDosya } from './motor';
 import { katalog } from './katalog';
-import { ACILIS_SURESI, filmMuzik, KAPANIS_SURESI } from './muzik';
+import { filmMuzik, KAPANIS_SURESI } from './muzik';
+import { acilisKur, type Acilis } from './acilis';
 
 /** Jenerikler (film-acilis / film-kapanis) film müziğiyle birlikte: test modunda kapalı, süreler film hızıyla kısalır */
 const MUZIK = !TEST_MODU;
@@ -112,20 +112,18 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
     void (film ?? hazirla()).oynat();
   };
 
-  /** Açılış: başlık kartı + film-acilis jeneriği (7,9 sn), sonra film başlar */
+  /**
+   * Açılış: ortak Çizgi Filmler açılışı (Mino ve Kino hoplar, MINKINO logosu, konfeti, başlık kartı; dokununca geçilir;
+   * uzunu günde bir kez, sonra kısası), bitince film başlar. ?uzun=1 ve MP4 kaydı: her zaman uzun açılış.
+   */
+  let acilis: Acilis | null = null;
   const basla = () => {
     kapak.classList.add('gizli');
-    // ?kartsiz=1: açılış kartı ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
+    // ?kartsiz=1: açılış ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
     if (q.has('kartsiz')) return baslatFilm();
-    const kart = h('div.fl-acilis', {}, h('i.fl-acilis-isik'), h('h2.fl-acilis-baslik', {}, dosya.baslik), h('p.fl-acilis-alt', {}, minkinoLogo('kenarli', 'fl-acilis-logo'), 'Çizgi Film'));
-    el.append(kart);
     hazirla();
-    if (MUZIK) filmMuzik.dosyaCal({ ad: 'film-acilis', ses: 0.85, gec: 0.05 });
-    sonra(ACILIS_SURESI / HIZ, () => {
-      baslatFilm();
-      kart.classList.add('bitti');
-      sonra(0.7, () => kart.remove());
-    });
+    acilis = acilisKur(dosya.baslik, { hiz: HIZ, muzik: MUZIK, zorlaUzun: KAYIT || q.has('uzun'), bitti: baslatFilm });
+    el.append(acilis.el);
   };
   oynatDugme.addEventListener('click', basla);
   // Çizgi Filmler ekranında karta dokunuldu: film hemen açılış kartıyla başlar
@@ -138,6 +136,7 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
       yonIste('serbest');
       arkaPlanBirak();
       zamanlar.forEach((z) => clearTimeout(z));
+      acilis?.kapat();
       film?.kapat();
       filmMuzik.dur(0.5);
     },
