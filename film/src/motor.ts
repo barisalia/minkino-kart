@@ -139,6 +139,8 @@ export interface Sahne {
   isikTon?: 'aksam' | 'sabah';
   /** kes: önceki sahneden doğrudan kesme (iris / kararma yok; konumlar sürer) */
   gecis?: 'iris' | 'karar' | 'kes';
+  /** kes geçişinde önceki karenin sönme süresi (sn, varsayılan 0.6) */
+  caprazSure?: number;
   oyuncular?: Record<string, OyuncuTanim>;
   esyalar?: Record<string, EsyaTanim>;
   olaylar: Olay[];
@@ -463,7 +465,19 @@ export class Film {
   // ---------------------------------------------------------------- sahne
   /** kesme: sonraki sahne doğrudan başlar (kapanış geçişi ve bekleme yok) */
   private async sahneOyna(s: Sahne, kesme = false) {
+    // kesme bile sert değil: önceki sahnenin son karesi yeni sahnenin üstünde yumuşakça söner (çapraz geçiş)
+    const onceki = s.gecis === 'kes' && this.dunya.childElementCount && this.katmanlar.orta.childElementCount ? (this.dunya.cloneNode(true) as HTMLElement) : null;
+    const eskiKam = { ...this.kam };
     this.kur(s);
+    if (onceki) {
+      this.capraz(onceki, Number(s.caprazSure ?? 0.6));
+      // kamera da yeni çerçeveye sıçramaz: önceki sahnenin kadrajından süzülerek gelir (sahnenin kendi kamera olayı bunu ezer)
+      const hedef = { ...this.kam };
+      this.kam = eskiKam;
+      this.tween(1, 'yumusak', (u) => {
+        this.kam = { x: eskiKam.x + (hedef.x - eskiKam.x) * u, y: eskiKam.y + (hedef.y - eskiKam.y) * u, z: eskiKam.z + (hedef.z - eskiKam.z) * u };
+      });
+    }
     this.sahneBas = this.saat;
     this.olaylar = [...s.olaylar].sort((a, b) => a.t - b.t);
     this.siradaki = 0;
@@ -669,6 +683,23 @@ export class Film {
   }
 
   // ---------------------------------------------------------------- geçiş
+  /** Çapraz geçiş: önceki sahnenin kopyası yeni dünyanın hemen üstünde (ışık ve alt yazının altında) söner */
+  private capraz(kopya: HTMLElement, sure: number) {
+    kopya.classList.add('fl-capraz');
+    kopya.setAttribute('aria-hidden', 'true');
+    // kopya yalnız resim: oyuncu / eşya adları ve katman adı taşımaz (seçiciler yeni sahneyi bulsun)
+    for (const e of kopya.querySelectorAll<HTMLElement>('[data-oyuncu],[data-esya],[data-tip],[data-tasinan]')) {
+      delete e.dataset.oyuncu;
+      delete e.dataset.esya;
+      delete e.dataset.tip;
+      delete e.dataset.tasinan;
+    }
+    kopya.querySelector('.fl-orta')?.classList.replace('fl-orta', 'fl-orta-kopya');
+    // kopyadaki SVG kimlikleri yeni sahnedekilerden sonra gelsin (url(#…) yeni çizimi göstersin)
+    this.dunya.after(kopya);
+    this.tween(sure, 'yumusak', (u) => (kopya.style.opacity = String(1 - u)), () => kopya.remove());
+  }
+
   private gecis(ac: boolean, tur: Sahne['gecis'] = 'iris') {
     const i = this.iris;
     i.classList.toggle('karar', tur === 'karar');
@@ -782,9 +813,17 @@ export class Film {
         n2.sekme = 0;
         if (o.yon !== undefined) n2.yon = Number(o.yon) === -1 ? -1 : 1;
         oy?.dur();
-        n.saydam = 0;
-        n2.saydam = 1;
-        this.tween(0.24, 'cik', (u) => (n2.ez = 0.16 * (1 - u)), () => (n2.ez = 0));
+        // iki çizim kısa bir çapraz geçişle yer değiştirir (birden belirme yok)
+        n2.saydam = 0;
+        this.tween(0.24, 'cik', (u) => {
+          n2.ez = 0.16 * (1 - u);
+          n2.saydam = Math.min(1, u * 2.2);
+          n.saydam = Math.max(0, 1 - u * 1.6);
+        }, () => {
+          n2.ez = 0;
+          n2.saydam = 1;
+          n.saydam = 0;
+        });
         return;
       }
       case 'goster':

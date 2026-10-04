@@ -16,6 +16,11 @@
   left: 0;
   top: 0;
 }
+/* kesme geçişi: önceki sahnenin son karesi yeni sahnenin üstünde söner (motor.ts → capraz) */
+.fl-kok .fl-dunya.fl-capraz {
+  pointer-events: none;
+  will-change: opacity;
+}
 .fl-kok .fl-katman {
   position: absolute;
   inset: 0;
@@ -129,7 +134,8 @@
   margin: -5px;
   border-radius: 50%;
   box-shadow: 0 0 0 200vmax #1e1a2e;
-  transform: scale(calc(var(--iris) * 260));
+  /* tam kapalıyken de ölçek 0 olmaz: scale(0) gölgeyi de yok eder, sahne bir kare çıplak görünürdü */
+  transform: scale(calc(var(--iris) * 260 + 0.02));
 }
 .fl-kok .fl-iris.karar i {
   box-shadow: none;
