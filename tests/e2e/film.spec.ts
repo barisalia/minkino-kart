@@ -190,7 +190,30 @@ test("Film: Mino'nun Sepeti: Çizgi Filmler'de ikinci kart, 5 sahne, öğüt kar
     return { sahneler: w.__sahneler, sozler: w.__sozler };
   });
   expect(kayit.sahneler).toEqual(['1-neseli-yol', '2-hepsi-dagildi', '3-topla', '4-bir-elma-eksik', '5-tesekkur']);
-  expect(kayit.sozler).toEqual(['Sepetim elma dolu!', 'Eyvah! Elmalarım!', 'Hepsi dağıldı.', 'Ben yardım ederim!', 'Bir elma eksik.', 'Orada, bankın altında!', 'Buldum!', 'Teşekkür ederim!', 'Rica ederim!', 'Yardım etmek güzeldir.']);
+  expect(kayit.sozler).toEqual([
+    'Anneme elma götürüyorum.',
+    'Sepetim elma dolu!',
+    'Eyvah! Elmalarım!',
+    'Ay! Ayağım takıldı.',
+    'Hepsi dağıldı.',
+    'Tek başıma toplayamam.',
+    'Çok üzüldüm.',
+    'Ben yardım ederim!',
+    'Sağ ol, Kino!',
+    'Birlikte çok kolay!',
+    'Hep birlikte!',
+    'Bir elma eksik.',
+    'En güzel elmam kayboldu.',
+    'Orada, bankın altında!',
+    'Buldum!',
+    'Sepet yine dolu!',
+    'Teşekkür ederim!',
+    'Rica ederim!',
+    'Yalnızken çok üzgündüm.',
+    'Sizinle her şey kolaylaştı.',
+    'Arkadaşlar yardımlaşır!',
+    'Yardım etmek güzeldir.',
+  ]);
   expect(hatalar).toEqual([]);
 });
 
