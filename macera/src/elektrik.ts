@@ -26,7 +26,7 @@ import { SessizlikSayaci, type Ozellik } from '../../ses-testi/src/analiz';
 import { Alkis } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import type { BolumArayuz } from './dogumgunu';
-import { Sahne, yanDolgu } from './sahne';
+import { Sahne, yanDolguEkle } from './sahne';
 import { adres } from './gorsel';
 import { Kisi } from './banyo-karakter';
 import { SesSeviyesi } from './ege-seviye';
@@ -124,7 +124,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   kok.append(sahne.el);
   // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın geniş çizimi (yoksa bulanık devamı; sahne.ts →
   // yanDolgu), karanlıkta kararır
-  kok.prepend(yanDolgu(adres('parti-sahne/oda'), adres('parti-sahne/oda-genis')));
+  yanDolguEkle(kok, adres('parti-sahne/oda'), adres('parti-sahne/oda-genis'));
   const W = sahne.el.clientWidth || innerWidth;
   const H = sahne.el.clientHeight || innerHeight;
   /** Yatay ekranda dünya kare: arka plan resminin tamamı (pencere dahil) dünyada; kamera aşağıdan başlar */

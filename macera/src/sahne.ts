@@ -25,6 +25,17 @@ export function yanDolgu(darUrl: string, genisUrl: string): HTMLElement {
   return h(`div.mc-yan-dolgu${genisUrl ? '.mc-yan-genis' : ''}`, { 'aria-hidden': 'true', style: `--resim:${url ? `url("${url}")` : 'none'}` });
 }
 
+/**
+ * Yan dolguyu sahne kökünün başına koyar. Geniş çizim varsa adresi köke --resim-genis olarak yazılır: yatay ekranda
+ * bandın kendi odası da aynı geniş çizimi tam ekran hizasında gösterir (macera.css), bant ile yanlar arasında dikiş kalmaz.
+ */
+export function yanDolguEkle(kok: HTMLElement, darUrl: string, genisUrl: string): HTMLElement {
+  const el = yanDolgu(darUrl, genisUrl);
+  kok.prepend(el);
+  if (genisUrl) kok.style.setProperty('--resim-genis', `url("${genisUrl}")`);
+  return el;
+}
+
 export class Sahne {
   readonly el: HTMLElement;
   readonly dunya: HTMLElement;

@@ -26,7 +26,7 @@ import { KayitCalar, sozleEsle, vurusaYakin } from '../../src/audio/sarki-kayit'
 import SARKI_SESI from '../../assets/muzik/banyo-sozlu.mp3?url';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import type { BolumArayuz } from './dogumgunu';
-import { Sahne, yanDolgu } from './sahne';
+import { Sahne, yanDolguEkle } from './sahne';
 import { ASKI_TOPUZ, BANYO_ORAN, banyoAdres, esya, fularSvg, RAF_YUZ, SEPET_KENAR, TABURE_YUZ } from './banyo-gorsel';
 import { Kisi, kopukHtml } from './banyo-karakter';
 import { Bugu, EkranDamlalari, geriDon, icinde, merkez, ovala, ParmakIpucu, Parcaciklar, surukle, yansiYazi, type IpucuTuru } from './banyo-efekt';
@@ -94,7 +94,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   sahne.dunya.querySelector<HTMLElement>('.mc-oda')?.style.setProperty('--resim', `url("${banyoAdres('arkaplan')}")`);
   kok.append(sahne.el);
   // yatay ekranda sahne ortada dikey bir bantta; iki yanı banyonun geniş çizimi (yoksa bulanık devamı; sahne.ts → yanDolgu)
-  kok.prepend(yanDolgu(banyoAdres('arkaplan'), banyoAdres('arkaplan-genis')));
+  yanDolguEkle(kok, banyoAdres('arkaplan'), banyoAdres('arkaplan-genis'));
   const parca = new Parcaciklar();
   sahne.dunya.append(parca.el);
   const damla = new EkranDamlalari();
