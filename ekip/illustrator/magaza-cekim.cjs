@@ -1,6 +1,6 @@
 // Mağaza ekran görüntüleri için ham oyun görüntüleri (Playwright, mobil emülasyon): assets/uygulama/ekran-ham/{telefon,tablet}/NN-ad.webp (+ ek/ klasörüne yedek sahneler).
 // Telefon 390x844 @3x (1170x2532), tablet 768x1024 @2.5x (1920x2560). Uygulama derlemesi gerekir (npm run build:app: Minik Sanatçı yok, ana menü kökte); sunucu: npx vite preview --port 4178 (ya da başka statik http).
-// Sıra magaza-ekran.cjs ile aynı: 01 ana menü (Mino ve Kino), 02 Ege (ses), 03 Pazar (say/eşleştir), 04 Salıncak (hikâye), 05 Çizgi film listesi (öğüt), 06 Pasta Otobüsü (güvenli/reklamsız), 07 Okula Hazırım (rakam çizme; sayılar, harfler).
+// Sıra magaza-ekran.cjs ile aynı: 01 ana menü (Mino ve Kino), 02 Ege (ses), 03 Pazar (say/eşleştir), 04 Salıncak (hikâye), 05 Çizgi film listesi (eğlenceli, eğitici), 06 Pasta Otobüsü (güvenli/reklamsız), 07 Okula Hazırım (rakam çizme; sayılar, harfler).
 // node magaza-cekim.cjs [taban=http://localhost:4178] [NN ...]
 const fs = require('fs'), path = require('path');
 const { chromium } = require(require.resolve('playwright', { paths: [process.cwd()] }));
