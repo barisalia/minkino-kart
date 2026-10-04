@@ -5,6 +5,7 @@
 const { execFileSync } = require('child_process'), fs = require('fs'), os = require('os'), path = require('path');
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const yaz = require('./guvenli-yaz.cjs');
+const { sogut } = require('./pamuk-sogut.cjs');   // pamuk-* pozları: krem kürk → oyundaki soğuk beyaz Pamuk (2026-10-04)
 const G = 'C:/Users/Minkex/Desktop/minkino-film-gemini/dedektif', ARA = path.join(os.tmpdir(), 'minkino-poz'), GIRDI = path.join(ARA, 'girdi'), CIKTI = path.join(ARA, 'cikti');
 const ADLAR = ['kino-kayma', 'kino-utanc', 'mino-rahat', 'pamuk-surunme', 'pamuk-ozur', 'pamuk-el-salla'].filter((a) => fs.existsSync(`${G}/${a}.png`));
 
@@ -47,5 +48,5 @@ async function halisiz(ad) { // kino-kayma
   for (const a of ADLAR) { if (a === 'kino-kayma') await halisiz(a); else fs.copyFileSync(`${G}/${a}.png`, path.join(GIRDI, a + '.png')); }
   if (!ADLAR.length) return;
   execFileSync('node', ['ekip/illustrator/gemini-esya.cjs', '--girdi', GIRDI, '--cikti', CIKTI, '--max', '0', '--ayar', JSON.stringify({ 'pamuk-ozur': { minOran: 0.00005 } }), ...ADLAR], { stdio: 'inherit' });
-  for (const a of ADLAR) { const buf = fs.readFileSync(path.join(CIKTI, a + '.webp')); if (await yaz(`assets/dedektif/poz-${a}.webp`, buf)) console.log(`poz-${a}.webp yazıldı`); }
+  for (const a of ADLAR) { let buf = fs.readFileSync(path.join(CIKTI, a + '.webp')); if (/^pamuk-/.test(a)) { const r = await sogut(buf); buf = r.buf; console.log(a + ': soğuk beyaza çevrildi (' + r.degisen + ' piksel)'); } if (await yaz(`assets/dedektif/poz-${a}.webp`, buf)) console.log(`poz-${a}.webp yazıldı`); }
 })();
