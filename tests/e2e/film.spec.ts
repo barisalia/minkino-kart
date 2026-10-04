@@ -318,9 +318,9 @@ test('Film: ortak açılış dokununca geçilir; uzun açılış günde bir kez,
   await page.goto('./film/?onizleme=1&sessiz=1&film=kino-oyuncak');
   await page.evaluate(() => localStorage.removeItem('minkino-film-acilis-v1'));
   await page.getByRole('button', { name: 'Oynat' }).click();
-  // uzun açılış: Mino ve Kino hoplar, logo, konfeti, başlık kartı
+  // uzun açılış: perde açılır, Mino ve Kino zıplar, logo düşer, kurdelede başlık
   await expect(page.locator('.fl-in[data-tur="uzun"]')).toBeVisible();
-  await expect(page.locator('.fl-in[data-adim="3"] .fl-in-konfeti').first()).toBeAttached({ timeout: 6000 });
+  await expect(page.locator('.fl-in[data-adim="6"] .fl-in-kurdele .fl-acilis-baslik')).toHaveText('Kino ve Oyuncak Sepeti', { timeout: 9000 });
   // dokununca geçilir: film hemen başlar
   await page.locator('.fl-in').click();
   await expect(page.locator('.fl-in')).toHaveCount(0, { timeout: 2000 });
