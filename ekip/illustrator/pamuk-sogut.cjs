@@ -32,7 +32,7 @@ async function sogut(webp) {
   const buf = await sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } }).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer();
   return { buf, degisen: n, genislik: info.width, yukseklik: info.height };
 }
-module.exports = { sogut, rgb2lab, agirlik };
+module.exports = { sogut, rgb2lab, lab2rgb, agirlik };
 if (require.main === module) {
   const fs = require('fs'); const [girdi, cikti] = process.argv.slice(2);
   if (!girdi) { // referans renkler: Lab ve ağırlık

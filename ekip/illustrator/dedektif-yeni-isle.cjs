@@ -5,6 +5,7 @@
 // sayfa-*.png ızgara kaynağıdır, atlanır. node dedektif-yeni-isle.cjs   (yeni dosya gelince yeniden çalıştır; güvenli)
 const { execFileSync } = require('child_process'), fs = require('fs');
 const guvenliYaz = require('./guvenli-yaz.cjs');
+const { sogutSahneRaw, AYAR: PAMUK_SAHNE } = require('./pamuk-sogut-sahne.cjs');   // kapak, roman-2..4: yalnız Pamuk'un kürkü soğuk beyaza (maskeli; sıkıştırmadan ÖNCE, tek kodlama)
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const G = 'C:/Users/Minkex/Desktop/minkino-film-gemini/dedektif', OUT = 'assets/dedektif';
 const var_ = (a) => fs.existsSync(`${G}/${a}.png`);
@@ -23,7 +24,9 @@ const SEFFAF = ['buyutec', 'masa', 'sosis', 'kalemlik-devrik'].filter(var_);
       girdi = girdi.extract({ left: x0, top: y0, width: w, height: h });
       console.log(a + ': çerçeve kutusu ' + w + 'x' + h + ' (x ' + x0 + ', y ' + y0 + ')');
     }
-    const b = await girdi.resize(W, H, { fit: 'cover', position: 'centre', kernel: 'lanczos3' }).webp({ quality: 90, effort: 5 }).toBuffer();
+    const ham = await girdi.resize(W, H, { fit: 'cover', position: 'centre', kernel: 'lanczos3' }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    if (PAMUK_SAHNE[a]) await sogutSahneRaw(ham.data, ham.info.width, ham.info.height, a);
+    const b = await s(ham.data, { raw: { width: ham.info.width, height: ham.info.height, channels: 3 } }).webp({ quality: 90, effort: 5 }).toBuffer();
     if (await guvenliYaz(`${OUT}/${a}.webp`, b)) console.log(`${a}: kaynak ${m.width}x${m.height} → ${W}x${H} (4:3 opak), ${Math.round(b.length / 1024)} KB`);
   }
   if (SEFFAF.length) {
