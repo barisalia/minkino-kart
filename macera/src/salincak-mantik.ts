@@ -43,8 +43,8 @@ export function salincakAyar(yas: number): SalincakAyar {
   };
 }
 
-/** Kolaylık: her yaşta 3. denemede kabul (2 yanlıştan sonra) */
-export const kabulMu = (yanlis: number) => yanlis >= 2;
+/** Kolaylık: her yaşta 2. denemede kabul (1 yanlıştan sonra) */
+export const kabulMu = (yanlis: number) => yanlis >= 1;
 /** Parmak ipucu: bu kadar saniyede ya da 2 yanlışta */
 export const IPUCU_SURE = 8;
 

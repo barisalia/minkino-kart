@@ -964,6 +964,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     ui.ipucu(mik() ? (ayar.hopPencere ? I.hop_halka : I.hop) : ayar.hopPencere ? I.hop_halka : I.hop_dokun);
     const artis = hopArtisi(ayar.hopSayisi);
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let n = 0;
       let yanlis = 0;
       let mesgul = false;
@@ -1106,6 +1107,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       if (yon === 1) sayac.uc();
     };
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let yanlis = 0;
       const ip = ipucu(kutu(BUYUK.alan));
       const yazi = rozet.querySelector('b')!;
@@ -1225,6 +1227,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     durumYaz('sus');
     ui.ipucu(mik() ? I.sus : I.sus_dokun);
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let yanlis = 0;
       let sessiz = false;
       let tutuyor = false;
@@ -1369,6 +1372,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     ui.ipucu(mik() ? I.kay : I.kay_dokun);
     const sonIsaret = dunya.querySelector<HTMLElement>('[data-el="kaydirak-son"]')!;
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let ilerleme = 0;
       let ses = false;
       let sessizlik = 0;
@@ -1528,6 +1532,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     ui.ipucu(mik() ? I.yavas : I.yavas_dokun);
     const sk = BUYUK;
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let n = 0;
       let yanlis = 0;
       let mesgul = false;
@@ -1783,6 +1788,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     durumYaz('fisilti', hedef);
     ui.ipucu(mik() ? I.fisilti : I.fisilti_dokun);
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let n = 0;
       let yanlis = 0;
       let mesgul = false;
@@ -1991,6 +1997,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     durumYaz('alkis', `${n}/${tur}`);
     ui.ipucu(mik() ? I.alkis : I.alkis_dokun);
     return gorev<number[]>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(Array.from({ length: n }, (_, i) => i * 600)), 25000); // takılırsa kendiliğinden geçer
       const a = new Alkis(kulak.ayar);
       const ip = ipucu(kutu(BUYUK.alan));
       a.onAlkis = () => {

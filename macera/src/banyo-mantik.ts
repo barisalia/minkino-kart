@@ -97,11 +97,11 @@ export const SERT_SURE = 0.6;
 /**
  * 5-6 yaş: yavaş ve uzun üfleme kocaman, sert (güçlü) ya da kısa üfleme minik baloncuk (minik de uçar, her
  * üflemede baloncuk çıkar). sure: üflemenin süresi (sn); sertSure: bu sürede sert üflenen kısım (sn);
- * basarisiz: arka arkaya minik sayısı (3. denemede kabul: 2 minikten sonra her üfleme kocaman; kilitlenme yok).
+ * basarisiz: arka arkaya minik sayısı (2. denemede kabul: 1 minikten sonra her üfleme kocaman; kilitlenme yok).
  */
 export function baloncukBoyu(sure: number, sertSure: number, yas: number, basarisiz = 0): 'kocaman' | 'minik' {
   if (kucukMu(yas)) return 'kocaman';
-  if (basarisiz >= 2) return 'kocaman';
+  if (basarisiz >= 1) return 'kocaman';
   return sure >= KOCAMAN_SURE && sertSure < SERT_SURE ? 'kocaman' : 'minik';
 }
 
@@ -152,7 +152,7 @@ export class Deneme {
   private gecen = 0;
   private gosterildi = false;
   constructor(
-    private yas: number,
+    readonly yas: number,
     private ipucuSure = 12,
     private ipucuYanlis = 2,
   ) {}
@@ -176,9 +176,9 @@ export class Deneme {
   hareket() {
     this.gecen = 0;
   }
-  /** bu (yeni) deneme kabul edilir mi: küçükler üçüncü denemede */
+  /** bu (yeni) deneme kabul edilir mi: her yaşta ikinci denemede */
   get kabul(): boolean {
-    return kucukMu(this.yas) && this.yanlis >= 2;
+    return this.yanlis >= 1;
   }
   get ipucuGosterildi() {
     return this.gosterildi;
@@ -188,7 +188,7 @@ export class Deneme {
    * cömertleşir (köpük yapma: yanlış yer de sayılır, her üfleme kocaman baloncuk).
    */
   get kolay(): boolean {
-    return this.yanlis >= 2 || this.gosterildi;
+    return this.yanlis >= 1 || this.gosterildi;
   }
 }
 

@@ -38,7 +38,7 @@ describe('Salıncak Kimin: yaş ayarı (yalnız senaryonun dediği sahnelerde)',
   });
   it('her yaşta 3. denemede kabul', () => {
     expect(kabulMu(0)).toBe(false);
-    expect(kabulMu(1)).toBe(false);
+    expect(kabulMu(1)).toBe(true);
     expect(kabulMu(2)).toBe(true);
   });
 });

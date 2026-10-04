@@ -51,7 +51,7 @@ export const EGE_RITIM = [0, 0.34, 1.04];
 export const IPUCU_SURE = 8;
 export const IPUCU_YANLIS = 2;
 export function kabulMu(_yas: number, yanlis: number): boolean {
-  return yanlis >= 2;
+  return yanlis >= 1;
 }
 
 // ---------------------------------------------------------------- mama

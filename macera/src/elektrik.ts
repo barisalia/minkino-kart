@@ -791,6 +791,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const oks = new Oksama(TEST_MODU ? 0.9 : 1.1);
     const ip = ipucu(() => new DOMRect(masa.getBoundingClientRect().left + masa.getBoundingClientRect().width * 0.25, masa.getBoundingClientRect().top + masa.getBoundingClientRect().height * 0.4, 1, 1), () => new DOMRect(masa.getBoundingClientRect().left + masa.getBoundingClientRect().width * 0.75, masa.getBoundingClientRect().top + masa.getBoundingClientRect().height * 0.4, 1, 1));
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       const ilerle = async () => {
         if (mesgul) return;
         mesgul = true;
@@ -1132,8 +1133,11 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const kamBas: [number, number] = [kamT[0], kamT[1]];
     await mSoyle(M.isik);
     // hedefler: koltuk (oturağı), perde (arka plandaki sağ perde), masa (üstü)
-    const hedefEl = (ad: string, x: number, y: number, w: number, hh: number) => {
-      const el = h('div.el-hedef', { 'data-el': `${ad}-hedef`, style: `left:${x - w / 2}%;bottom:${y}%;width:${w}%;height:${hh}%` });
+    // (kutular %30 büyük: ışık yaklaşınca yetsin; ekranda parlayan yıldız görünür → elektrik.css .el-hedef)
+    const hedefEl = (ad: string, x: number, y: number, w0: number, hh0: number) => {
+      const w = w0 * 1.3;
+      const hh = hh0 * 1.3;
+      const el = h('div.el-hedef', { 'data-el': `${ad}-hedef`, style: `left:${x - w / 2}%;bottom:${y - hh0 * 0.15}%;width:${w}%;height:${hh}%` });
       dunya.append(el);
       return el;
     };
@@ -1239,6 +1243,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         }
         void minoZipla(yer as ZiplamaYeri).then(async () => {
           ziplanan.push(yer as ZiplamaYeri);
+          HEDEF[yer as ZiplamaYeri].el.classList.add('bitti');
           if (ziplanan.length < ZIPLAMA_SAYISI) durumYaz('isik', ziplanan.length);
           if (ziplanan.length >= ZIPLAMA_SAYISI) {
             kinoSira = true;
@@ -1461,6 +1466,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const dugme = h('button.el-kulak-dugme', { type: 'button', 'aria-label': 'Dinle' }, h('i.el-kulak-halka'), h('span', { html: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 20a11 11 0 0 1 22 0c0 8-7 8-7 15a6 6 0 0 1-11 3"/><path d="M19 21a5 5 0 0 1 10 0c0 3-3 4-3 7"/></svg>' }));
     sahne.el.append(dugme);
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let gecen = 0;
       let dokunuyor = false;
       let sessiz = false;
@@ -1632,6 +1638,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ui.ipucu(mik() ? I.alkis : I.alkis_dokun);
     sahne.el.append(dugme);
     return gorev<number>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(hedef), 25000); // takılırsa kendiliğinden geçer
       const a = new Alkis(kulak.ayar);
       const ip = ipucu(kutu(dugme));
       const flas = () => {
@@ -1677,6 +1684,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     durumYaz('sarki', `${n}/${++yankiSira}`);
     ui.ipucu(I.sarki);
     return gorev<number[]>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(Array.from({ length: n }, (_, i) => i * 600)), 25000); // takılırsa kendiliğinden geçer
       const a = new Alkis(kulak.ayar);
       const ip = ipucu(kutu(yastik));
       a.onAlkis = (sira) => {
@@ -2075,6 +2083,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ui.ipucu(I.bagir);
     await sesliGorev(() =>
       gorev<void>((coz) => {
+        if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
         const ys = new YuksekSes();
         void ui.dugme(EL.dugme.geldi).then(() => coz());
         kulak.dinle((o) => {

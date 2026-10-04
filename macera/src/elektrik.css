@@ -413,6 +413,28 @@
 .mc-kok .el-hedef {
   position: absolute;
   pointer-events: none;
+  z-index: 999;
+}
+/* ışığın gideceği yer: karanlıkta parlayan, nabız gibi atan yıldız (Barış: "neresi belli değil") */
+.mc-kok .el-hedef::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(36px, 60%, 90px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: #ffe36e;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 0 8px #fff3b0);
+  animation: el-hedef-nabiz 1s ease-in-out infinite alternate;
+}
+.mc-kok .el-hedef.bitti::after {
+  display: none;
+}
+@keyframes el-hedef-nabiz {
+  from { scale: 0.8; opacity: 0.65; }
+  to { scale: 1.1; opacity: 1; }
 }
 .mc-kok .el-kemik {
   transition: opacity 0.2s;

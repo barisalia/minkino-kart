@@ -69,7 +69,7 @@ describe('Mino Banyo Yapmıyor: oyun mantığı', () => {
     expect(dolumHizi(0, 0, null, 0)).toBe(0);
   });
 
-  it('baloncuk: küçüklerde her üfleme sayılır; büyüklerde yarım saniyelik yavaş üfleme kocaman, sert ya da çok kısa minik; 3. denemede kabul', () => {
+  it('baloncuk: küçüklerde her üfleme sayılır; büyüklerde yarım saniyelik yavaş üfleme kocaman, sert ya da çok kısa minik; 2. denemede kabul', () => {
     expect(gerekenBaloncuk(3)).toBe(3);
     expect(gerekenBaloncuk(6)).toBe(2);
     expect(baloncukBoyu(0.2, 0, 4)).toBe('kocaman');
@@ -77,7 +77,8 @@ describe('Mino Banyo Yapmıyor: oyun mantığı', () => {
     expect(baloncukBoyu(0.55, 0, 6)).toBe('kocaman');
     expect(baloncukBoyu(0.3, 0, 6)).toBe('minik');
     expect(baloncukBoyu(1.5, 0.8, 6)).toBe('minik');
-    expect(baloncukBoyu(0.3, 0.9, 6, 1)).toBe('minik');
+    expect(baloncukBoyu(0.3, 0.9, 6, 0)).toBe('minik');
+    expect(baloncukBoyu(0.3, 0.9, 6, 1)).toBe('kocaman');
     expect(baloncukBoyu(0.3, 0.9, 6, 2)).toBe('kocaman');
   });
 
@@ -101,16 +102,16 @@ describe('Mino Banyo Yapmıyor: oyun mantığı', () => {
     expect(taramaMi(0, -60, 100)).toBe(false);
   });
 
-  it('deneme: 2 yanlışta ya da 12 sn\'de ipucu; 3-4 yaşta 3. denemede kabul', () => {
+  it('deneme: 2 yanlışta ya da 12 sn\'de ipucu; her yaşta 2. denemede kabul', () => {
     const d = new Deneme(3);
     expect(d.yanlisEkle()).toBe(false);
-    expect(d.kabul).toBe(false);
+    expect(d.kabul).toBe(true);
     expect(d.yanlisEkle()).toBe(true);
     expect(d.kabul).toBe(true);
     const b = new Deneme(6);
     b.yanlisEkle();
     b.yanlisEkle();
-    expect(b.kabul).toBe(false);
+    expect(b.kabul).toBe(true);
     expect(b.tik(11)).toBe(false);
     expect(b.tik(1.5)).toBe(true);
     b.hareket();

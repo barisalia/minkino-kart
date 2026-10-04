@@ -33,10 +33,10 @@ export function elektrikAyar(yas: number): ElektrikAyar {
   };
 }
 
-/** Kolaylık: her yaşta 3. denemede kabul (2 yanlıştan sonra) */
-export const kabulMu = (yanlis: number) => yanlis >= 2;
+/** Kolaylık: her yaşta 2. denemede kabul (1 yanlıştan sonra) */
+export const kabulMu = (yanlis: number) => yanlis >= 1;
 /** Parmak ipucu: bu kadar saniyede ya da 2 yanlışta */
-export const IPUCU_SURE = 12;
+export const IPUCU_SURE = 7;
 
 // ---------------------------------------------------------------- sahne 1: Kino'yu çağırmak
 /** Kino'nun masanın altından çıkış basamakları: kulak → burun → çıktı */

@@ -1227,6 +1227,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       durumYaz('ufle');
       const firladi = await sesliGorev(() =>
         gorev<boolean>((coz) => {
+          if (!TEST_MODU) setTimeout(() => coz(false), 25000); // takılırsa kendiliğinden geçer
           // üfleme algılaması kilitli ses sisteminden (katı mod); kolaylık yalnız buharın sönme hızında
           const u = new Ufleme(kulak.ayar, 0.5);
           let sertSure = 0;
@@ -1641,6 +1642,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       durumYaz('referans');
       referans = await sesliGorev(() =>
         gorev<number | null>((coz) => {
+          if (!TEST_MODU) setTimeout(() => coz(null), 20000); // takılırsa kendiliğinden geçer
           const perdeler: number[] = [];
           kulak.dinle((o) => {
             if (o.perde !== null && sesVar(o, kulak.ayar, 10)) perdeler.push(o.perde);
@@ -1668,6 +1670,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
      */
     const bekleKukla = (istenen: 'civciv' | 'ayi' | null) =>
       gorev<{ kim: 'civciv' | 'ayi'; fark: number; sesli: boolean }>((coz) => {
+        if (!TEST_MODU) setTimeout(() => coz({ kim: istenen ?? 'civciv', fark: (istenen ?? 'civciv') === 'civciv' ? 4 : -4, sesli: false }), 25000); // takılırsa kendiliğinden geçer
         const p = new Perde(kulak.ayar, referans ?? 280);
         let inceSure = 0;
         let kalinSure = 0;
@@ -2391,6 +2394,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
    */
   function sessizlik(hedef: number, bitisOran: number, gecenYaz: (g: number) => void, bas = 0): Promise<void> {
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       let gecen = bas;
       let dokunuyor = false;
       let uyari = 0;
@@ -2662,6 +2666,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   /** "İyi geceler Ege" fısıltısı: fısıltı başarı; yüksek sesle söylerse Ege kıpırdar, Ada "Şşş!" der. Dokunma: kalp. */
   function fisiltiBekle(): Promise<void> {
     return gorev<void>((coz) => {
+      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
       const sv = new SesSeviyesi(kulak.ayar);
       let yanlis = 0;
       const ip = ipucu(() => ege.yuzKutusu());

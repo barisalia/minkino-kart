@@ -52,7 +52,7 @@ describe('Elektrikler Kesildi: yaş ayarları (yalnız senaryonun dediği yerler
   });
   it('kolaylık: her yaşta 3. denemede kabul', () => {
     expect(kabulMu(0)).toBe(false);
-    expect(kabulMu(1)).toBe(false);
+    expect(kabulMu(1)).toBe(true);
     expect(kabulMu(2)).toBe(true);
   });
 });

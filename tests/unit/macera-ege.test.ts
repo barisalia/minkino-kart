@@ -38,9 +38,9 @@ describe('Ege Uyuyor: yaş ayarları (yalnız senaryonun dediği yerlerde)', () 
     expect(CEE_TURLARI).toEqual(['ada', 'can', 'elif', 'mino', 'hepsi']);
   });
   it('kolaylık: her yaşta 3. denemede kabul (kilitlenme yok)', () => {
-    expect(kabulMu(3, 1)).toBe(false);
+    expect(kabulMu(3, 1)).toBe(true);
     expect(kabulMu(3, 2)).toBe(true);
-    expect(kabulMu(6, 1)).toBe(false);
+    expect(kabulMu(6, 1)).toBe(true);
     expect(kabulMu(6, 2)).toBe(true);
   });
 });
