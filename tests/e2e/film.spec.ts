@@ -16,9 +16,9 @@ test('Çizgi Filmler ekranı: kapaklı büyük kartlar, öğüt rozeti, süre; M
   await expect(page.locator('.fl-film-kart[data-film="mino-sepet"] .fl-k-ogut')).toHaveText('Yardım etmek');
   await expect(page.locator('.fl-film-kart[data-film="kino-lutfen"] .fl-k-ogut')).toHaveText('Lütfen demek');
   await expect(page.locator('.fl-film-kart[data-film="kino-oyuncak"] .fl-k-ogut')).toHaveText('Toplamak');
-  // v2: en yeni film (Oyuncak Sepeti) ~1,5 dk → 2 dk; eski filmler 1 dk
+  // süre yukarı yuvarlanır: bütün filmler ~1,5 dk → 2 dk
   await expect(page.locator('.fl-k-sure').first()).toHaveText('2 dk');
-  await expect(page.locator('.fl-film-kart[data-film="kino-kaydirak"] .fl-k-sure')).toHaveText('1 dk');
+  await expect(page.locator('.fl-film-kart[data-film="kino-kaydirak"] .fl-k-sure')).toHaveText('2 dk');
   // kapaklar yüklendi; kartlar ekrandan taşmıyor, dokunma alanı büyük
   const boyut = page.viewportSize()!;
   for (const k of await kartlar.all()) {

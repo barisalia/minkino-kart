@@ -695,9 +695,21 @@ export class Film {
       delete e.dataset.tasinan;
     }
     kopya.querySelector('.fl-orta')?.classList.replace('fl-orta', 'fl-orta-kopya');
+    // Karakterler ve eşyalar yarı saydam görünmesin (başka kadrajın gökyüzü üstünde grimsi hayalet olur): kopyada yalnız
+    // arka plan kalır, kopya yeni dünyanın ALTINDA tam opak durur; yeni sahnenin arka plan katmanları üstünde belirir,
+    // oyuncular ve eşyalar (orta katman) baştan tam opak.
+    kopya.querySelectorAll('.fl-orta-kopya, .fl-on').forEach((e) => e.remove());
     // kopyadaki SVG kimlikleri yeni sahnedekilerden sonra gelsin (url(#…) yeni çizimi göstersin)
     this.dunya.after(kopya);
-    this.tween(sure, 'yumusak', (u) => (kopya.style.opacity = String(1 - u)), () => kopya.remove());
+    kopya.style.zIndex = '0';
+    this.dunya.style.zIndex = '1';
+    const arka = [this.katmanlar.uzak, this.katmanlar.tezgahlar, this.katmanlar.zemin, this.katmanlar.on];
+    const yaz = (v: string) => arka.forEach((k) => (k.style.opacity = v));
+    yaz('0');
+    this.tween(sure, 'yumusak', (u) => yaz(String(u)), () => {
+      yaz('');
+      kopya.remove();
+    });
   }
 
   private gecis(ac: boolean, tur: Sahne['gecis'] = 'iris') {
