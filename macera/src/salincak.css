@@ -660,3 +660,52 @@
     animation: none;
   }
 }
+
+/* yatay ekran: bölüm listesi iki sütun (telefonda tek kart görünüp gerisi aşağıda kalmasın); logo küçülür, Oyna altta */
+@media (orientation: landscape) and (max-height: 820px) {
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-acilis-ic {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 14px 16px;
+    width: min(94vw, 880px);
+    margin: 0 auto;
+    padding: 10px 0 26px;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo {
+    flex-basis: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.25em;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo .k0 {
+    margin-right: 0.28em;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo .k0,
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo .k1 {
+    font-size: clamp(2rem, 11vh, 4rem);
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) :is(.mc-bolum-kart, .sl-bolum-kart, .eg-bolum-kart, .el-bolum-kart, .bn-bolum-kart) {
+    width: calc(50% - 8px);
+    max-width: 420px;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-bolum-kart {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-bolum-kart .mc-bolum-resim {
+    flex: none;
+    width: clamp(72px, 20vh, 110px);
+    aspect-ratio: 1;
+    border-radius: 18px;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-bolum-kart b {
+    font-size: clamp(1.2rem, 5.5vh, 1.6rem);
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-oyna {
+    flex-basis: auto;
+    margin: 4px calc(25% - 8px) 0;
+  }
+}

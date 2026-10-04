@@ -1199,6 +1199,22 @@
     background-size: cover;
     transform: none;
   }
+  /* geniş çizim varken dikiş yok: bandın odası, ışık katmanları ve akşam/gece örtüleri tam ekran genişliğine uzar ve
+     yanlarla aynı geniş çizimi aynı hizada gösterir; kamera yaklaşınca bütün oda birlikte yaklaşır */
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-sahne-kok:has(> .mc-yan-genis) .mc-sahne {
+    overflow: visible;
+    box-shadow: none;
+  }
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-sahne-kok:has(> .mc-yan-genis)
+    :is(.mc-oda, .mc-karanlik, .mc-disko, .eg-aksam, .eg-gece) {
+    left: calc(-1 * var(--yan-en));
+    right: calc(-1 * var(--yan-en));
+  }
+  .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-sahne-kok:has(> .mc-yan-genis) .mc-oda {
+    background-image: var(--resim-genis);
+    background-position: center 82%;
+    background-size: cover;
+  }
   .mc-kok .mc-sahne-kok:has(.eg-sahne.aksamustu) .mc-yan-dolgu {
     filter: blur(var(--yan-bulanik, 7px)) brightness(0.62) saturate(0.8) sepia(0.25);
   }
