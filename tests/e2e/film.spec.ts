@@ -243,7 +243,27 @@ test("Film: Kino ve Sihirli Söz: Çizgi Filmler'de ikinci kart, pazar, satıcı
     return { sahneler: w.__sahneler, sozler: w.__sozler };
   });
   expect(kayit.sahneler).toEqual(['1-pazar', '2-ver', '3-fisilti', '4-lutfen', '5-tesekkur']);
-  expect(kayit.sozler).toEqual(["Bugün Kino'yla pazardayız!", 'Ver!', 'Ver! Ver!', 'Sihirli sözü söyle: Lütfen!', 'Lütfen…', 'Buyur! Bir de çilek!', 'Teşekkürler!', 'Lütfen demek sihirli bir sözdür.']);
+  expect(kayit.sozler).toEqual([
+    "Bugün Kino'yla pazardayız!",
+    'Elma! Kocaman elma!',
+    'Ayı amca elma satıyor.',
+    'Ver!',
+    'Ver! Ver!',
+    'Ayı bana kızdı.',
+    'Ben elma istiyordum.',
+    'Ver deyince ayı üzüldü.',
+    'Sihirli sözü söyle: Lütfen!',
+    'Sihirli bir söz…',
+    'Lütfen deyince herkes sevinir.',
+    'Biraz utanıyorum.',
+    'Lütfen…',
+    'Buyur! Bir de çilek!',
+    'Kibar sözler beni çok sevindirir.',
+    'Lütfen işe yaradı!',
+    'Teşekkürler!',
+    'Rica ederim, tatlı Kino!',
+    'Lütfen demek sihirli bir sözdür.',
+  ]);
   expect(hatalar).toEqual([]);
 });
 

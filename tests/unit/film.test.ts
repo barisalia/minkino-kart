@@ -270,9 +270,10 @@ const LUTFEN_OGUT = 'Lütfen demek sihirli bir sözdür.';
 describe('film: Kino ve Sihirli Söz', () => {
   it('cümleler ve öğüt (Mino anlatıcı, Kino kendi sesiyle, satıcı ayı tek cümle); soru yok', () => {
     expect(lutfen.seslendir).toBe(true);
-    expect(lSoz('kino')).toEqual(['Ver!', 'Ver! Ver!', 'Lütfen…', 'Teşekkürler!']);
-    expect(lSoz('mino')).toEqual(["Bugün Kino'yla pazardayız!", 'Sihirli sözü söyle: Lütfen!', LUTFEN_OGUT]);
-    expect(lSoz('ayi')).toEqual(['Buyur! Bir de çilek!']);
+    // v2: Kino'nun duyguları (kızdı, istiyordum, utanıyorum), Mino nedenini söyler, ayı kibar sözle sevinir
+    expect(lSoz('kino')).toEqual(['Elma! Kocaman elma!', 'Ver!', 'Ver! Ver!', 'Ayı bana kızdı.', 'Ben elma istiyordum.', 'Sihirli bir söz…', 'Biraz utanıyorum.', 'Lütfen…', 'Lütfen işe yaradı!', 'Teşekkürler!']);
+    expect(lSoz('mino')).toEqual(["Bugün Kino'yla pazardayız!", 'Ayı amca elma satıyor.', 'Ver deyince ayı üzüldü.', 'Sihirli sözü söyle: Lütfen!', 'Lütfen deyince herkes sevinir.', LUTFEN_OGUT]);
+    expect(lSoz('ayi')).toEqual(['Buyur! Bir de çilek!', 'Kibar sözler beni çok sevindirir.', 'Rica ederim, tatlı Kino!']);
     expect(lutfen.sahneler.find((s) => 'ogut' in s)).toEqual({ ogut: LUTFEN_OGUT });
     for (const c of [...lSoz(), LUTFEN_OGUT]) expect(c, c).not.toContain('?');
   });
@@ -288,11 +289,11 @@ describe('film: Kino ve Sihirli Söz', () => {
     for (const c of lSoz('kino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(3);
     for (const c of lSoz('ayi')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(6);
   });
-  it('5 sahne, yaklaşık 60 sn (sondaki şarkıyla 66 sn’yi geçmez), pazarda; olaylar sahne içinde; kimi, hedefi, taşınan eşyası sahnede', () => {
+  it('v2: 5 sahne, 85-120 sn, pazarda; olaylar sahne içinde; kimi, hedefi, taşınan eşyası sahnede', () => {
     expect(lSahneler.length).toBe(5);
     const toplam = lSahneler.reduce((t, s) => t + s.sure, 0);
-    expect(toplam).toBeGreaterThanOrEqual(55);
-    expect(toplam).toBeLessThanOrEqual(66);
+    expect(toplam).toBeGreaterThanOrEqual(85);
+    expect(toplam).toBeLessThanOrEqual(120);
     expect(lutfen.malzeme).toBe('mino-karpuz');
     for (const s of lSahneler) {
       expect(s.arka).toBe('pazar');
