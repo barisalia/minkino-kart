@@ -68,6 +68,21 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     await bekle(250);
   }
 
+  // 1b. teselli: Kino'nun başını okşa (sürt) ya da pat pat dokun (3 kez)
+  await gorevBekle(page, ['sev'], T);
+  const kino = el(page, 'kino');
+  await sabit(kino);
+  await ekran('1c-sev');
+  for (let i = 0; i < 12 && (await gorev(page)) === 'sev'; i++) {
+    const m = await merkez(kino, 0.5, 0.3);
+    await page.mouse.click(m.x, m.y);
+    if (i === 0) {
+      await bekle(150);
+      await ekran('1d-kalp');
+    }
+    await bekle(450);
+  }
+
   // 2. çekmece: önce yanlış eşya (eldiven: Kino'nun şapkası), sonra fener (5-6: pil de)
   await gorevBekle(page, ['cekmece'], T);
   await bekle(400);
@@ -143,6 +158,9 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
     await page.mouse.up();
     await gorevBekle(page, ['bul'], T);
     const ad = await hedef(page);
+    // duvarda sesin sahibinin büyümüş gölgesi var
+    await expect(page.locator(`.el-golge[data-golge="${ad}"]`)).toHaveCount(1);
+    if (tur === 0) await ekran('4a-golge');
     if (tur === 0) {
       // yanlış yere: "Burada yok"
       await dokun(page, el(page, 'koltuk'));

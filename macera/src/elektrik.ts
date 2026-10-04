@@ -541,13 +541,36 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       )
       .finished.catch(() => undefined);
 
+  /** Yumuşak çıkış: küçülüp solar, sonra kaldırılır (hiçbir şey birden kaybolmaz) */
+  const sondur = async (el: Element | null | undefined, ms = 320, kaldir = true) => {
+    if (!el) return;
+    await el
+      .animate([{ opacity: 1, scale: '1' }, { opacity: 0, scale: '0.6' }], { duration: sure(ms), easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' })
+      .finished.catch(() => undefined);
+    if (kaldir) {
+      el.remove();
+      // (yeniden eklenen düğme saydam kalmasın)
+      el.getAnimations().forEach((a) => a.cancel());
+    }
+  };
+  /** Yumuşak giriş: büyüyerek belirir */
+  const belir = (el: Element, ms = 380) =>
+    el.animate([{ opacity: 0, scale: '0.4' }, { opacity: 1, scale: '1.08', offset: 0.7 }, { opacity: 1, scale: '1' }], { duration: sure(ms), easing: 'cubic-bezier(0.3, 1.3, 0.5, 1)' });
+  /** Kalpçik: ekrandaki bir noktadan yukarı süzülür (Kino'yu okşarken) */
+  const kalp = (x: number, y: number) => {
+    const sr = sahne.el.getBoundingClientRect();
+    const e = h('i.el-kalp', { style: `left:${x - sr.left}px;top:${y - sr.top}px;--dx:${(Math.random() * 40 - 20).toFixed(0)}px` });
+    sahne.el.append(e);
+    setTimeout(() => e.remove(), sure(1300));
+  };
+
   // ================================================================ serbest dokunma (her an): Mino ve Kino tepki verir
   let sonSerbest = 0;
   let serbestAcik = true;
   const serbest = (k: Kisi) => (e: PointerEvent) => {
     // ışığın ya da sesin yerini gösterme görevlerinde dokunuş sahneye geçer (Kino'nun altındaki kemik gibi)
     const g = sahne.el.dataset.elGorev ?? '';
-    if (!serbestAcik || performance.now() - sonSerbest < 800 || g === 'kino' || g === 'isik' || g === 'bul') return;
+    if (!serbestAcik || performance.now() - sonSerbest < 800 || g === 'kino' || g === 'isik' || g === 'bul' || g === 'sev') return;
     sonSerbest = performance.now();
     e.stopPropagation();
     if (k === MN) {
@@ -660,8 +683,98 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     void balon(MN, B.gel, 1100);
     await bekle(500);
     await kSoyle(KN_.korkuyorum);
+    // Kino'yu teselli: başını okşa, her okşayışta titremesi azalır, kalpçikler uçar; sonunda derin bir "Ohh…"
+    await cek(Math.min(MN.x, KN.x) - bX(16), Math.max(MN.x, KN.x) + bX(16), Y(-3), Y(0) + bY(kisiH + 8), 2.2, 800);
+    await mSoyle(M.oksa);
+    await kinoSev();
+    korkut(0.45);
+    KN.kinoIfade('sicak', 2200);
+    void balon(KN, B.oh, 1200);
+    // derin nefes: göğüs şişer, omuzlar iner
+    KN.gov.animate([{ scale: '1 1' }, { scale: '1.05 1.08', offset: 0.45 }, { scale: '0.98 0.96', offset: 0.75 }, { scale: '1 1' }], { duration: sure(1300), easing: 'ease-in-out' });
+    await bekle(500);
+    await kSoyle(KN_.iyiyim);
+    MN.tepki('evet');
     ui.ilerleme(1, 7);
     await mSoyle(M.fener);
+  }
+
+  /**
+   * Kino'yu teselli: başını okşa (sürt) ya da hafifçe pat pat dokun. 3 okşayış: her birinde korku azalır (titreme
+   * yumuşar), kalpçik uçar, Kino gözlerini kapayıp başını ele yaslar. Yanlışı yok; 12 sn'de parmak ipucu.
+   */
+  function kinoSev(): Promise<void> {
+    const GEREK = 3;
+    durumYaz('sev', GEREK);
+    ui.ipucu(I.sev);
+    const bas_ = () => {
+      const r = KN.kap.getBoundingClientRect();
+      return new DOMRect(r.left + r.width * 0.3, r.top + r.height * 0.18, 1, 1);
+    };
+    const ip = ipucu(bas_, () => {
+      const r = KN.kap.getBoundingClientRect();
+      return new DOMRect(r.left + r.width * 0.7, r.top + r.height * 0.18, 1, 1);
+    });
+    return gorev<void>((coz) => {
+      let n = 0;
+      let son: [number, number] | null = null;
+      let yol = 0;
+      let sonOk = 0;
+      const oks = new Oksama(TEST_MODU ? 0.5 : 0.9);
+      const say = (x: number, y: number) => {
+        if (n >= GEREK || performance.now() - sonOk < 350) return;
+        sonOk = performance.now();
+        n++;
+        ip.ilerle();
+        durumYaz('sev', GEREK - n);
+        kalp(x, y - 10);
+        S.hisirti();
+        korkut(Math.max(0.5, 1 - n * 0.17));
+        KN.kinoIfade(n >= 2 ? 'sicak' : 'uzgun', 1600);
+        // başını ele yaslar: kafa yana eğilip geri gelir
+        KN.gov.animate([{ rotate: '0deg' }, { rotate: `${n % 2 ? 4 : -4}deg`, offset: 0.4 }, { rotate: '0deg' }], { duration: sure(700), easing: 'ease-in-out' });
+        if (n >= GEREK) setTimeout(coz, sure(500));
+      };
+      const bas = (e: PointerEvent) => {
+        e.stopPropagation();
+        son = [e.clientX, e.clientY];
+        yol = 0;
+        try {
+          KN.kap.setPointerCapture(e.pointerId);
+        } catch {
+          /* test */
+        }
+      };
+      const hareket = (e: PointerEvent) => {
+        if (!son) return;
+        const w = Math.max(1, KN.kap.getBoundingClientRect().width);
+        const dx = (e.clientX - son[0]) / w;
+        const dy = (e.clientY - son[1]) / w;
+        yol += Math.hypot(dx, dy);
+        son = [e.clientX, e.clientY];
+        if (oks.hareket(dx, dy)) say(e.clientX, e.clientY);
+      };
+      const birak = (e: PointerEvent) => {
+        // sürtmeden kısa dokunuş: pat pat (o da sayılır)
+        if (son && yol < 0.1) say(e.clientX, e.clientY);
+        son = null;
+      };
+      KN.kap.addEventListener('pointerdown', bas);
+      KN.kap.addEventListener('pointermove', hareket);
+      KN.kap.addEventListener('pointerup', birak);
+      KN.kap.addEventListener('pointercancel', birak);
+      KN.kap.classList.add('el-sevilir');
+      return () => {
+        bitir(ip);
+        KN.kap.classList.remove('el-sevilir');
+        KN.kap.removeEventListener('pointerdown', bas);
+        KN.kap.removeEventListener('pointermove', hareket);
+        KN.kap.removeEventListener('pointerup', birak);
+        KN.kap.removeEventListener('pointercancel', birak);
+        ui.ipucu(null);
+        durumYaz(null);
+      };
+    });
   }
 
   /** Kino'yu kısık sesle (ya da örtüyü okşayarak) çağır: kulak → burun → çıkış */
@@ -997,6 +1110,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     MN.tepki('gidik');
     void balon(MN, B.haha, 1000);
     await bekle(700);
+    // eşya Kino'nun başından süzülüp kalkar (birden kaybolmaz)
+    await ek?.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-140px)' }], { duration: sure(320), easing: 'ease-in', fill: 'forwards' }).finished.catch(() => undefined);
     ek?.remove();
     korkut(0.8);
     el.classList.remove('ucuyor');
@@ -1251,9 +1366,22 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       };
       calSes();
       KN.kinoOynat('kulakDik', 1000);
-      await bekle(1600);
+      // duvarda kocaman, kıpır kıpır bir gölge belirir (sesin sahibinin büyümüş gölgesi): Kino titrer
+      const golge = golgeKur(ad);
+      gece.hedef(...px(golgeYer().x, golgeYer().y + bY(10)));
+      await bekle(500);
+      korkut(1);
+      void KN.titre(900);
+      if (i === 0) await kSoyle(KN_.canavar);
+      else void balon(KN, B.iii, 900);
+      await bekle(i === 0 ? 300 : 900);
+      if (i === 0) await mSoyle(M.golge);
       await mSoyle(M.nereden);
       await sesKaynagiBul(ad, kaynaklar, calSes);
+      // komik açılış: gölge küçülerek asıl sahibine akar (saat, saksı, oyuncak kemik); Kino rahatlar
+      void golgeAc(golge, kaynaklar[ad], ad !== 'kemik');
+      korkut(0.3);
+      KN.kinoIfade('saskin', 1200);
       // bulundu: ışık oraya, adı konur
       if (ad === 'saat') {
         saat.classList.add('canli');
@@ -1267,8 +1395,9 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         await mSoyle(M.saksi);
       } else {
         // Kino kalkar: altından kemik çıkar
-        kemik.style.opacity = '1';
         kemik.style.zIndex = '9';
+        kemik.style.opacity = '1';
+        belir(kemik, 360);
         await KN.zipla(14, 600);
         void KN.git(KINO_OTUR.x + bX(6), KINO_OTUR.y, 400);
         await ucur(kemik, KINO_OTUR.x - bX(4), KINO_OTUR.y - bY(1), 450, 20);
@@ -1285,6 +1414,44 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     }
     ui.ilerleme(4, 7);
     void tasi(kemik, KINO_OTUR.x - bX(5), Y(-3), 500, 8);
+  }
+
+  /** Gölgelerin duvardaki yeri (5-6 yaşta sesin yerini ele vermesin: hep aynı yerde, odanın ortasında) */
+  function golgeYer() {
+    return { x: X(-6), y: DUVAR + bY(yatayTel ? 1 : 4) };
+  }
+  /** Sesin sahibinin büyümüş, kıpırdayan gölgesi (karanlığın üstünde; ışık halkasının içinde koyu görünür) */
+  function golgeKur(ad: SesKaynagi): HTMLElement {
+    const svg = ad === 'saat' ? SAAT_SVG : ad === 'saksi' ? SAKSI_SVG : KEMIK_SVG;
+    const g = koy(h('div.el-golge', { 'data-el': 'golge', 'data-golge': ad, html: tekil(svg) }), golgeYer().x, golgeYer().y, ad === 'kemik' ? 40 : yatayTel ? 26 : 32, 41);
+    g.style.opacity = '0';
+    g.animate([{ opacity: 0, scale: '0.5 0.3' }, { opacity: 1, scale: '1 1' }], { duration: sure(700), easing: 'cubic-bezier(0.3, 1.2, 0.5, 1)', fill: 'forwards' });
+    S.hisirti();
+    return g;
+  }
+  /** Gölge küçülüp sahibinin üstüne akar, solar: "Hiç korkunç değilmiş!" */
+  async function golgeAc(g: HTMLElement, sahibi: HTMLElement, balonlu: boolean) {
+    const a = g.getBoundingClientRect();
+    const b = sahibi.getBoundingClientRect();
+    const z = Math.max(0.01, kamZ);
+    const dx = (b.left + b.width / 2 - (a.left + a.width / 2)) / z;
+    const dy = (b.top + b.height / 2 - (a.top + a.height / 2)) / z;
+    const s = Math.max(0.15, Math.min(1, b.width / Math.max(1, a.width)));
+    g.classList.add('aciliyor');
+    g.getAnimations().forEach((x) => x.cancel());
+    g.style.opacity = '1';
+    await g
+      .animate(
+        [
+          { translate: '0px 0px', scale: '1', opacity: 1 },
+          { translate: `${dx * 0.4}px ${dy * 0.4 - 20}px`, scale: String((1 + s) / 2), opacity: 0.9, offset: 0.45 },
+          { translate: `${dx}px ${dy}px`, scale: String(s), opacity: 0 },
+        ],
+        { duration: sure(800), easing: 'cubic-bezier(0.45, 0, 0.3, 1)', fill: 'forwards' },
+      )
+      .finished.catch(() => undefined);
+    g.remove();
+    if (balonlu) void balon(KN, B.korkuncDegil, 1300);
   }
 
   /** Susup dinle: sessizlik halkası dolar (mikrofon: SessizlikSayaci; parmak: kulağa basılı tut) */
@@ -1440,7 +1607,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     MN.tepki('gidik');
     await bekle(1600);
     dondur();
-    fenerAgiz?.remove();
+    void sondur(fenerAgiz, 300);
     gece.hedef(bx, by);
     pencere.el.classList.remove('can-var');
     ui.ilerleme(5, 7);
@@ -1493,7 +1660,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         kulak.dinle(null);
         bitir(ip);
         dugme.removeEventListener('pointerdown', bas);
-        dugme.remove();
+        void sondur(dugme, 260);
         ui.ipucu(null);
         durumYaz(null);
       };
@@ -1648,7 +1815,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     });
     durumYaz(null);
     ui.ipucu(null);
-    cadirYer.remove();
+    void sondur(cadirYer, 300);
     // battaniye havada açılır, çadır olur
     await ucur(battaniye, CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORAN * 0.7), 450, 30, 16);
     battaniye.style.visibility = 'hidden';
@@ -1866,7 +2033,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     MN.tepki('gidik');
     await bekle(700);
     S.pop();
-    cokuk.remove();
+    // çöküntü solarken çadır kalkar (çapraz geçiş)
+    void sondur(cokuk, 380);
     cadir.classList.remove('coktu');
     cadir.animate([{ scale: '1 0.2' }, { scale: '1.05 1.1', offset: 0.6 }, { scale: '1 1' }], { duration: sure(500), easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
     mandallar.forEach((m) => (m.style.opacity = '1'));
@@ -1881,6 +2049,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const { cadir, CADIR } = sahne6Sonu!;
     // fener bizde (yerde, ışığı açık): önde
     const fener = koy(h('div.el-fener.yanik', { 'data-el': 'fener', role: 'button', 'aria-label': 'Fener' }, esya('fener', FENER_SVG, 'Fener')), X(-12), Y(dikey ? -3 : -9), 12, 14);
+    belir(fener, 420);
     gece.huzme(false);
     await bekle(300);
     // ışıklar gelir: vızz vızz, lamba titreyip yanar

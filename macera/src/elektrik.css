@@ -913,3 +913,50 @@
 .mc-kok .mc-sahne.el-sahne {
   container-type: size;
 }
+
+/* ---------------------------------------------------------------- Kino'yu okşama (teselli) */
+.mc-kok .el-sevilir {
+  cursor: grab;
+  touch-action: none;
+}
+.mc-kok .el-kalp {
+  position: absolute;
+  z-index: 60;
+  width: 34px;
+  height: 30px;
+  margin: -15px 0 0 -17px;
+  pointer-events: none;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cpath d='M20 34C8 25 2 18 2 11a9 9 0 0 1 18-3 9 9 0 0 1 18 3c0 7-6 14-18 23z' fill='%23ff6f91' stroke='%233a1210' stroke-width='3' stroke-linejoin='round'/%3E%3Cellipse cx='11' cy='10' rx='3.5' ry='2.4' fill='%23fff' opacity='.8' transform='rotate(-30 11 10)'/%3E%3C/svg%3E");
+  animation: el-kalp 1.2s cubic-bezier(0.25, 0.6, 0.4, 1) forwards;
+}
+@keyframes el-kalp {
+  0% { opacity: 0; scale: 0.3; translate: 0 0; }
+  20% { opacity: 1; scale: 1.15; }
+  100% { opacity: 0; scale: 0.9; translate: var(--dx, 0) -90px; }
+}
+
+/* ---------------------------------------------------------------- duvardaki gölge (komik açılış) */
+.mc-kok .el-golge {
+  pointer-events: none;
+  transform-origin: 50% 100%;
+}
+.mc-kok .el-golge svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: brightness(0) blur(1.5px);
+  opacity: 0.8;
+  animation: el-golge-kipir 1.1s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.mc-kok .el-golge.aciliyor svg {
+  animation: none;
+  filter: brightness(0) blur(1px);
+}
+@keyframes el-golge-kipir {
+  0%, 100% { transform: skewX(-6deg) scale(1, 1.25); }
+  50% { transform: skewX(6deg) scale(1.06, 1.18); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .el-golge svg { animation: none; }
+}
