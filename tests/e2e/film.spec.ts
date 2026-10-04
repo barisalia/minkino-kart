@@ -113,7 +113,26 @@ test('Film: Kino ve Elma Kulesi baştan sona oynar (Çizgi Filmler ekranından),
     return { __sahneler: w.__sahneler, __sozler: w.__sozler };
   });
   expect(kayit.__sahneler).toEqual(['1-neredeyse-bitti', '2-top', '3-kasanin-arkasinda', '4-ozur', '5-son-elma']);
-  expect(kayit.__sozler).toEqual(['Günaydın! Kulemin son elması bu.', 'Top! Top! Top!', 'Kulem!', 'Özür dilerim, Mino.', 'Olur böyle. Birlikte dizelim!', 'Yaşasın!', 'Hata yapınca özür dileriz.']);
+  expect(kayit.__sozler).toEqual([
+    'Günaydın! Kulemin son elması bu.',
+    'Bu kule için çok uğraştım.',
+    'Top! Top! Top!',
+    'Kulem!',
+    'Eyvah, kule yıkıldı!',
+    'Çok üzüldüm, Kino.',
+    'Mino kızacak…',
+    'Kino birden kayboldu.',
+    'Özür dilemeliyim.',
+    'Özür dilerim, Mino.',
+    'Özür dilediğin için sağ ol.',
+    'Dikkat edeceğim!',
+    'Olur böyle. Birlikte dizelim!',
+    'Hemen başlayalım!',
+    'Yaşasın!',
+    'Birlikte daha güzel!',
+    'Artık hiç üzgün değilim.',
+    'Hata yapınca özür dileriz.',
+  ]);
   expect(hatalar).toEqual([]);
 });
 

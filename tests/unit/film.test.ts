@@ -67,10 +67,20 @@ const elmaSoz = (kim?: string) => elmaSahneler.flatMap((s) => s.olaylar.filter((
 const ELMA_OGUT = 'Hata yapınca özür dileriz.';
 
 describe('film: Kino ve Elma Kulesi', () => {
-  it('senaryodaki 7 cümle ve öğüt (Barış onayladı: seslendirme açık)', () => {
+  it('v2 cümleleri: emek, duygular, Kino korkup saklanır, dönüm noktası (özür dilemeye karar verir); seslendirme açık', () => {
     expect(elma.seslendir).toBe(true);
-    expect(elmaSoz('kino')).toEqual(['Top! Top! Top!', 'Özür dilerim, Mino.', 'Yaşasın!']);
-    expect(elmaSoz('mino')).toEqual(['Günaydın! Kulemin son elması bu.', 'Kulem!', 'Olur böyle. Birlikte dizelim!', ELMA_OGUT]);
+    expect(elmaSoz('kino')).toEqual(['Top! Top! Top!', 'Eyvah, kule yıkıldı!', 'Mino kızacak…', 'Özür dilemeliyim.', 'Özür dilerim, Mino.', 'Dikkat edeceğim!', 'Hemen başlayalım!', 'Yaşasın!', 'Birlikte daha güzel!']);
+    expect(elmaSoz('mino')).toEqual([
+      'Günaydın! Kulemin son elması bu.',
+      'Bu kule için çok uğraştım.',
+      'Kulem!',
+      'Çok üzüldüm, Kino.',
+      'Kino birden kayboldu.',
+      'Özür dilediğin için sağ ol.',
+      'Olur böyle. Birlikte dizelim!',
+      'Artık hiç üzgün değilim.',
+      ELMA_OGUT,
+    ]);
     expect(elma.sahneler.find((s) => 'ogut' in s)).toEqual({ ogut: ELMA_OGUT });
   });
   it('bütün cümleler seslendirme listesinde', () => {
@@ -87,11 +97,11 @@ describe('film: Kino ve Elma Kulesi', () => {
     for (const c of elmaSoz('mino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(5);
     for (const c of elmaSoz('kino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(3);
   });
-  it('5 sahne, yaklaşık 58-62 sn; zaman çizelgesi sahne içinde, her olayın kimi sahnede var', () => {
+  it('v2: 5 sahne, 85-120 sn; zaman çizelgesi sahne içinde, her olayın kimi sahnede var', () => {
     expect(elmaSahneler.length).toBe(5);
     const toplam = elmaSahneler.reduce((t, s) => t + s.sure, 0);
-    expect(toplam).toBeGreaterThanOrEqual(55);
-    expect(toplam).toBeLessThanOrEqual(62);
+    expect(toplam).toBeGreaterThanOrEqual(85);
+    expect(toplam).toBeLessThanOrEqual(120);
     for (const s of elmaSahneler) {
       const varlar = new Set(['kamera', 'isik', 'efekt', 'muzik', 'parilti', 'anlatici', 'stand', 'toz', ...Object.keys(s.oyuncular ?? {}), ...Object.keys(s.esyalar ?? {})]);
       for (const o of s.olaylar) {
