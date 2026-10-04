@@ -130,8 +130,21 @@ const KAYDIRAK_OGUT = 'Sırayı beklemek güzeldir.';
 describe('film: Kino ve Kaydırak', () => {
   it('senaryodaki 9 cümle ve öğüt (Kino kendi sesiyle, Mino anlatıcı); soru yok', () => {
     expect(kaydirak.seslendir).toBe(true);
-    expect(kSoz('kino')).toEqual(['Kaydırak! Kaydırak!', 'Ben önce!', 'Sabrediyorum!', 'Sıra bende!', 'Yaşasın!']);
-    expect(kSoz('mino')).toEqual(['Parkta kaydırak sırası vardı.', 'Kino, sıra arkada.', 'Sıra herkese gelir.', KAYDIRAK_OGUT]);
+    // v2: Kino'nun duyguları (beklemek zor, çok uzun), neden (arkadaşlar üzülür), dönüm noktası (beklerken şarkı)
+    expect(kSoz('kino')).toEqual(['Kaydırak! Kaydırak!', 'Ben önce!', 'Ama beklemek zor.', 'En arkadayım.', 'Of, çok uzun!', 'La la la!', 'Sabrediyorum!', 'Sıra yaklaşıyor!', 'Sıra bende!', 'Yaşasın!', 'Beklemeye değdi!']);
+    expect(kSoz('mino')).toEqual([
+      'Parkta kaydırak sırası vardı.',
+      'Ada, Can ve Elif bekliyordu.',
+      'Kino sıranın önüne geçti!',
+      'Kino, sıra arkada.',
+      'Can da çok bekledi.',
+      'Araya girince arkadaşlar üzülür.',
+      'Sıra herkese gelir.',
+      'Aferin Kino!',
+      'Beklerken şarkı söyleyelim!',
+      'Herkes sırayla kaydı.',
+      KAYDIRAK_OGUT,
+    ]);
     expect(kaydirak.sahneler.find((s) => 'ogut' in s)).toEqual({ ogut: KAYDIRAK_OGUT });
     // soru yok
     for (const c of [...kSoz(), KAYDIRAK_OGUT]) expect(c, c).not.toContain('?');
@@ -147,11 +160,11 @@ describe('film: Kino ve Kaydırak', () => {
     for (const c of kSoz('mino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(5);
     for (const c of kSoz('kino')) expect(c.split(/\s+/).length, c).toBeLessThanOrEqual(3);
   });
-  it('5 sahne, yaklaşık 50-62 sn; olaylar sahne süresi içinde; her olayın kimi, hedefi ve ağzı sahnede', () => {
+  it('v2: 5 sahne, 85-120 sn; olaylar sahne süresi içinde; her olayın kimi, hedefi ve ağzı sahnede', () => {
     expect(kSahneler.length).toBe(5);
     const toplam = kSahneler.reduce((t, s) => t + s.sure, 0);
-    expect(toplam).toBeGreaterThanOrEqual(50);
-    expect(toplam).toBeLessThanOrEqual(62);
+    expect(toplam).toBeGreaterThanOrEqual(85);
+    expect(toplam).toBeLessThanOrEqual(120);
     for (const s of kSahneler) {
       expect(s.arka).toBe('park');
       const oyuncular = Object.keys(s.oyuncular);

@@ -150,7 +150,30 @@ test('Film: Kino ve Kaydırak: açılış kartı, 5 sahne, öğüt kartı ve kap
     return { sahneler: w.__sahneler, sozler: w.__sozler };
   });
   expect(kayit.sahneler).toEqual(['1-siranin-basi', '2-sira-arkada', '3-sona-git', '4-bekleme', '5-sira-bende']);
-  expect(kayit.sozler).toEqual(['Parkta kaydırak sırası vardı.', 'Kaydırak! Kaydırak!', 'Ben önce!', 'Kino, sıra arkada.', 'Sıra herkese gelir.', 'Sabrediyorum!', 'Sıra bende!', 'Yaşasın!', 'Sırayı beklemek güzeldir.']);
+  expect(kayit.sozler).toEqual([
+    'Parkta kaydırak sırası vardı.',
+    'Ada, Can ve Elif bekliyordu.',
+    'Kaydırak! Kaydırak!',
+    'Kino sıranın önüne geçti!',
+    'Ben önce!',
+    'Kino, sıra arkada.',
+    'Ama beklemek zor.',
+    'Can da çok bekledi.',
+    'Araya girince arkadaşlar üzülür.',
+    'Sıra herkese gelir.',
+    'En arkadayım.',
+    'Aferin Kino!',
+    'Of, çok uzun!',
+    'Beklerken şarkı söyleyelim!',
+    'La la la!',
+    'Sabrediyorum!',
+    'Sıra yaklaşıyor!',
+    'Sıra bende!',
+    'Yaşasın!',
+    'Beklemeye değdi!',
+    'Herkes sırayla kaydı.',
+    'Sırayı beklemek güzeldir.',
+  ]);
   expect(hatalar).toEqual([]);
 });
 
