@@ -33,6 +33,16 @@ async function rakamCiz(p) {
   await p.waitForTimeout(3500);
   await ciz(JSON.parse(await p.locator('.ok-kagit').getAttribute('data-yol')), 0.72);
 }
+// 06 Pasta Otobüsü: sipariş ortası. Parlayan (sıradaki) işe dokunulur; tabakta kremalı kurabiye, süs sırası gelince durulur
+async function pastaSiparis(p) {
+  for (let i = 0; i < 40; i++) {
+    if ((await p.locator('.ps-gun').getAttribute('data-adim')) === 'sus') break;
+    const s = p.locator('.ps-sirada').first();
+    if (await s.count()) await s.click({ force: true }).catch(() => {});
+    await p.waitForTimeout(900);
+  }
+  await p.waitForTimeout(1200);
+}
 // [klasör, ad, adres, bekleme ms, (isteğe bağlı) etkileşim]. Uygulama derlemesi (npm run build:app): ana menü sitenin kökünde
 const LISTE = [
   ['', '01-ana-menu', '/', 5000],
@@ -40,7 +50,7 @@ const LISTE = [
   ['', '03-pazar', '/pazar/?test=1&yas=5&ekran=pazar', 4500],
   ['', '04-salincak', '/macera/?test=1&ekran=bolum&yas=5&bolum=salincak', 4500],
   ['', '05-film', '/film/?test=1', 4000],
-  ['', '06-pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000], // 2026-10-03: sipariş ortası elle (parlayan işe dokunarak) çekildi
+  ['', '06-pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000, pastaSiparis], // sipariş ortası (parlayan işe dokunarak)
   ['', '07-okul', '/okul/?test=1&yas=5&sifirla=1&tohum=7&etkinlik=rakam-ciz', 500, rakamCiz],
   ['ek/', 'meyve-suyu', '/pazar/?test=1&yas=4&ekran=meyvesuyu', 4500],
   ['ek/', 'banyo', '/macera/?test=1&ekran=bolum&yas=5&bolum=banyo', 4500],

@@ -595,6 +595,12 @@
   .ps-kok .ps-balon {
     bottom: min(calc(100% - var(--ust) * var(--w) + 8 * var(--u)), calc(var(--W) - var(--bw) * 0.86 - var(--ust-pay, 30 * var(--u))));
   }
+  /* sabır kalbi balonun sağ kenarında, ses düğmesinin ve gün tahtasının altında (üstten taşıp kesilmesin) */
+  .ps-kok .ps-sabir {
+    top: 14px;
+    right: -11px;
+    z-index: 2;
+  }
   .ps-kok .ps-panel {
     --s: min(84cqw, 50cqh);
   }
