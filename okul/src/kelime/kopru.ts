@@ -64,15 +64,16 @@ export const yeniTaslar = (sira: string[], biten: string[], gorulen: string[]) =
 // ---------------------------------------------------------------- yerleşim (köprü görselinin kutusunda, 0..1)
 /** Taşların yeri: köprünün tahta yolu boyunca, bir aşağı bir yukarı (basamak taşları gibi) */
 const TAS_YER: [number, number][] = [
-  [0.235, 0.69],
-  [0.335, 0.5],
-  [0.445, 0.6],
+  // komşu taşlar arasında taş boyu kadar yer (üst üste binmez, numaraları görünür)
+  [0.245, 0.66],
+  [0.335, 0.46],
+  [0.445, 0.62],
   [0.555, 0.39],
-  [0.665, 0.52],
-  [0.775, 0.36],
+  [0.665, 0.56],
+  [0.775, 0.34],
 ];
 /** Mino ile Kino'nun ayaklarının yeri: başta sol kıyıda, şenlikte karşı kıyıda; yürüyüş köprünün üstünden */
-const IKILI_BAS: [number, number] = [0.22, 0.92];
+const IKILI_BAS: [number, number] = [0.17, 0.97];
 const IKILI_SON: [number, number] = [0.78, 0.72];
 /** Derenin taşların fırladığı yeri (köprünün altındaki su) */
 const DERE: [number, number] = [0.66, 0.8];
@@ -136,7 +137,13 @@ export function kopruEkrani(app: Uygulama): Ekran {
       h('b.ok-kp-no', {}, String(i + 1)),
     );
     t.addEventListener('click', () => {
-      if (!yasUygun(e, y)) return;
+      if (!yasUygun(e, y)) {
+        // sessiz kalmaz: "hmm" sallanması ve kilit sesi (bahçedeki büyükler durağı gibi)
+        efekt.kilitli();
+        oynat(t, 'ok-hmm');
+        void konus(O.mino.buyukler);
+        return;
+      }
       if (!erisimVarMi(`okul/${e.id}`, app.kok)) return;
       efekt.secim();
       app.git('etkinlik', { id: e.id });

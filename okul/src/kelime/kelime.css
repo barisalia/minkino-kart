@@ -743,9 +743,19 @@
 }
 @container kopru (orientation: portrait) {
   .ok-kok .ok-kp-sahne {
-    /* dikeyde köprü yanlardaki boş çimenden kırpılarak büyür */
-    width: min(128cqw, 140cqh);
-    top: 55%;
+    /* dikeyde köprü yanlardaki boş çimenden kırpılarak büyür (taşlar yine ekranın içinde) */
+    width: min(136cqw, 140cqh);
+    top: 52%;
+  }
+}
+/* yatay telefon: köprü yüksekliğe değil genişliğe göre büyür; kemerlerin tepesi gökyüzünde üst çubuğun arkasına
+   uzanır, taşlar (görselin %34-%66'sı) ekranda kalır ve parmak boyunda olur */
+@container kopru (aspect-ratio > 1.7) {
+  .ok-kok .ok-kp-sahne {
+    width: min(100cqw, 170cqh);
+    top: auto;
+    bottom: 0;
+    translate: -50% 0;
   }
 }
 .ok-kok .ok-kp-kopru {
@@ -806,6 +816,7 @@
 }
 .ok-kok .ok-kp-no {
   position: absolute;
+  z-index: 1;
   top: -4%;
   left: -4%;
   width: 32%;

@@ -61,6 +61,17 @@ export class Efekt {
 /** Sınıfı yeniden ekleyerek CSS animasyonunu baştan oynatır (zıpla, salla …) */
 export function oynat(e: Element | null | undefined, sinif: string) {
   if (!e) return;
+  // "Hmm" sallanması kendi giriş animasyonu olan elemanlarda (durak, oda, taş, bölge kartı) CSS sınıfıyla ezilir,
+  // hiç oynamazdı: WAAPI ile her zaman oynar (yalnız rotate, elemanın kendi açısına eklenir; transform'u bozulmaz)
+  if (sinif === 'ok-hmm' && typeof (e as HTMLElement).animate === 'function') {
+    if (AZ_HAREKET) return;
+    (e as HTMLElement).animate([{ rotate: '0deg' }, { rotate: '-7deg', offset: 0.2 }, { rotate: '6deg', offset: 0.45 }, { rotate: '-3deg', offset: 0.7 }, { rotate: '0deg' }], {
+      duration: 550,
+      easing: 'ease-in-out',
+      composite: 'add',
+    });
+    return;
+  }
   e.classList.remove(sinif);
   void (e as HTMLElement).offsetWidth;
   e.classList.add(sinif);
