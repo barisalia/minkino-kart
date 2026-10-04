@@ -685,3 +685,21 @@ body[data-kayit] .fl-kok .fl-karaoke.ust {
   bottom: auto;
   top: 5cqh;
 }
+
+/* Cila 3: geniş yatay telefonda (16:9'dan geniş) yan boşluklar düğmelere yeter:
+   duraklat ve ses sağ şeritte alt alta, filmin resminin üstüne binmez; ikisi aynı boyda */
+@media (orientation: landscape) and (min-aspect-ratio: 2/1) {
+  .fl-kok .fl-ust {
+    align-items: flex-start;
+  }
+  .fl-kok .fl-ust .ust-grup {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+/* oynatıcıda üç düğme aynı boyda (ses düğmesi duraklattan iri duruyordu) */
+.fl-kok .fl-ust .yuvarlak {
+  width: 56px;
+  height: 56px;
+  font-size: 26px;
+}

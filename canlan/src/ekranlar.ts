@@ -461,6 +461,7 @@ function kartPenceresi(b: Blob): HTMLElement {
   const kapat = h('button.dugme', { type: 'button', style: '--r:#5DBE3F' }, 'Tamam');
   const perde = h('div.perde', { role: 'dialog', 'aria-label': 'Kartım' }, h('div.pencere.cc-kart-pencere', {}, h('img', { src: url, alt: 'Resim kartım' }), h('p', {}, 'Resmi basılı tutup kaydedebilirsin.'), kapat));
   kapat.addEventListener('click', () => {
+    efekt.dokunma();
     perde.remove();
     URL.revokeObjectURL(url);
   });
@@ -495,11 +496,20 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
 
   const sonraki = SIRALI[(SIRALI.findIndex((x) => x.id === r.id) + 1) % SIRALI.length];
   const tekrar = h('button.dugme.cc-tekrar', { type: 'button', 'aria-label': 'Tekrar çiz', style: '--r:#FF8A2B' }, svg(IKON.tekrar), h('span', {}, 'Tekrar'));
-  tekrar.addEventListener('click', () => app.git('ciz', { id: r.id, mod: p.mod }));
+  tekrar.addEventListener('click', () => {
+    efekt.secim();
+    app.git('ciz', { id: r.id, mod: p.mod });
+  });
   const ileri = h('button.dugme.cc-sonraki', { type: 'button', 'aria-label': 'Sonraki resim' }, h('span', {}, 'Sonraki'), svg(IKON.oyna));
-  ileri.addEventListener('click', () => app.git('ciz', { id: sonraki.id, mod: p.mod }));
+  ileri.addEventListener('click', () => {
+    efekt.secim();
+    app.git('ciz', { id: sonraki.id, mod: p.mod });
+  });
   const tamamla = h('button.dugme.cc-tamamla', { type: 'button', 'aria-label': 'Tamamla', style: '--r:#3E9DF2', hidden: true }, svg(IKON.kalem), h('span', {}, 'Tamamla'));
-  tamamla.addEventListener('click', () => app.git('ciz', { id: r.id, mod: p.mod, devam: p.cizgiler }));
+  tamamla.addEventListener('click', () => {
+    efekt.secim();
+    app.git('ciz', { id: r.id, mod: p.mod, devam: p.cizgiler });
+  });
   // Nasıl çizdim? (çizimi sırayla yeniden çizer) ve paylaşılabilir kart
   let tekrarOynuyor = false;
   const nasil = yuvarlakDugme(IKON.oyna, 'Nasıl çizdim?', async () => {
