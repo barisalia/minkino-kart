@@ -219,7 +219,10 @@ export function muzeEkrani(app: Uygulama): Ekran {
   if (liste.length < 3) {
     for (let i = liste.length; i < 3; i++) duvar.append(h('div.cc-muze-cerceve.bos', { style: `--i:${i};--egim:${[-2, 1.5, -1][i]}deg` }, h('div.cc-cerceve-ic', {}, h('span', {}, '?'))));
     const hadi = h('button.dugme.cc-muze-hadi', { type: 'button', 'aria-label': 'Hadi çizelim' }, svg(IKON.kalem), h('span', {}, 'Hadi çizelim'));
-    hadi.addEventListener('click', () => app.git('liste'));
+    hadi.addEventListener('click', () => {
+      efekt.secim();
+      app.git('liste');
+    });
     duvar.append(hadi);
   }
 

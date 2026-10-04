@@ -1227,3 +1227,37 @@
     width: clamp(78px, 11vw, 120px);
   }
 }
+
+/* ---------- Cila 3: yatay telefonda Müzem ---------- */
+@media (orientation: landscape) and (max-height: 560px) {
+  /* az resim varken "Hadi çizelim" dördüncü sütunda: ekranın altında kalmaz, duvar ortalı durur */
+  .cc-kok .cc-muze .cc-muze-hadi {
+    grid-column: auto;
+    align-self: center;
+    justify-self: center;
+    font-size: 1.05rem;
+    white-space: nowrap;
+    padding: 0 0.8em;
+  }
+  /* yakından bakış: Mino resmin önüne değil yanına oturur; çerçeve başlığın altına sığar */
+  .cc-kok .cc-muze-perde .cc-muze-sahne {
+    width: min(70vw, calc(100dvh - 2 * var(--ust, 16px) - 40px), 560px);
+  }
+  .cc-kok .cc-muze-perde .cc-muze-buyuk-mino {
+    left: -34%;
+    bottom: -2%;
+    width: 30%;
+  }
+}
+/* dik telefonda üçüncü çerçeve tek başına sola yaslanmasın: ortaya gelir */
+@media (max-width: 699px) and (orientation: portrait) {
+  .cc-kok .cc-muze-duvar > .cc-muze-cerceve:nth-child(3):nth-last-child(2) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 11px);
+  }
+}
+/* yakından bakışta arka plan daha çok geri çekilir (başlık resmin arkasında karışmasın) */
+.cc-kok.cc-kok .cc-muze-perde {
+  background: radial-gradient(circle at 50% 45%, rgba(60, 36, 14, 0.55), rgba(30, 16, 4, 0.88));
+}

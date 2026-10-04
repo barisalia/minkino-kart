@@ -170,9 +170,15 @@
   }
   /* terazi tezgâhın üstünde, bandın ölçüsünde */
   .pz-kok .pz-pazar .pz-terazi {
-    width: min(calc(var(--bant) * 0.62), 46vh);
+    /* yatay telefonda kefeler (ve içindeki meyveler) iri görünsün: terazi bandın neredeyse tamamı */
+    width: min(calc(var(--bant) * 0.8), 62vh);
     /* terazi tezgâhın ön kenarında durur, sahnenin altına biraz yükselir (sahneye yer kalsın) */
     margin-top: calc(var(--bant) * -0.1);
+  }
+  /* yatay telefonda sepetteki ürünler de iri (stand küçük kaldığı için 0.09 çok ufaktı) */
+  .pz-kok .pz-pazar .pz-stand .pz-sepet-ic .pz-urun {
+    width: max(34px, calc(var(--sw) * 0.12 * var(--ks, 1)));
+    height: max(34px, calc(var(--sw) * 0.12 * var(--ks, 1)));
   }
   /* öndeki flamalar bandın ölçüsünde */
   .pz-kok .pz-pazar .pz-flama {

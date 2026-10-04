@@ -140,7 +140,12 @@ export function haritaEkrani(app: Uygulama): Ekran {
     return kart;
   });
   // kıvrımlı yol (evden okula); ilk açık bölgenin yanında Mino ile Kino
-  const yol = h('div.ok-yol', {}, yolCizgisi(), h('div.ok-yol-ev', { html: EV() }), ...bolgeler, h('div.ok-yol-okul', { html: OKUL() }), h('div.ok-yol-ikili', {}, ikiz.el));
+  // dikeyde ve yatayda ayrı yol: evden kartların arkasından geçip okulun kapısında biter (okul.css'teki yerlerle)
+  const dikey = yolCizgisi();
+  dikey.classList.add('ok-yol-dikey');
+  const yatay = yolCizgisi('M6 82 C16 84 22 66 30 60 S44 40 52 42 S66 62 74 58 S88 40 92 34');
+  yatay.classList.add('ok-yol-yatay');
+  const yol = h('div.ok-yol', {}, dikey, yatay, h('div.ok-yol-ev', { html: EV() }), ...bolgeler, h('div.ok-yol-okul', { html: OKUL() }), h('div.ok-yol-ikili', {}, ikiz.el));
 
   const el = h(
     'div.ok-harita',
@@ -365,6 +370,16 @@ function albumSayfasi(b: BolgeId, vurgu?: string): { el: HTMLElement; yuva: (id:
       const yapisti = kayit.cikartma.includes(e.id);
       const y = h(`div.ok-yuva${yapisti ? '.dolu' : ''}${e.id === vurgu ? '.ok-hedef' : ''}`, { 'data-yuva': e.id }, yapisti ? cikartmaEl(e.id) : h('span.ok-yuva-golge', { html: etkinlikSimgesi(e.id) }), h('span.ok-yuva-ad', {}, e.ad));
       yuvalar.set(e.id, y);
+      // dokunuşa cevap: dolu çıkartma zıplar, boş yuva "henüz yok" diye sallanır
+      y.addEventListener('click', () => {
+        if (y.classList.contains('dolu')) {
+          efekt.dokunma();
+          oynat(y.querySelector('.ok-cikartma'), 'ok-zipla');
+        } else if (!y.classList.contains('ok-hedef')) {
+          efekt.kilitli();
+          oynat(y, 'ok-hmm');
+        }
+      });
       return y;
     }),
   );
@@ -505,7 +520,12 @@ export function albumEkrani(app: Uygulama, p: { donus?: string; bolge?: BolgeId;
   const sekme = (b: (typeof BOLGELER)[number]) => {
     const s = h(`button.ok-sekme${b.id === secili ? '.secili' : ''}${b.acik ? '' : '.ok-kilitli'}`, { type: 'button', style: `--r:${b.renk}`, disabled: !b.acik, 'data-bolge': b.id }, b.ad, b.acik ? null : svg(IKON.kilit));
     s.addEventListener('click', () => {
-      if (!b.acik || b.id === secili) return;
+      if (!b.acik) return;
+      if (b.id === secili) {
+        efekt.dokunma();
+        oynat(s, 'ok-zipla');
+        return;
+      }
       efekt.secim();
       app.git('album', { donus: p?.donus, bolge: b.id, donusBolge });
     });

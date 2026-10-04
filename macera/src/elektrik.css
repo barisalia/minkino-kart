@@ -904,10 +904,10 @@
 }
 /* yatay ekranın yan dolgusu (macera.css → .mc-yan-dolgu): elektrik kesikken gece, loşta biraz açık */
 .mc-kok .mc-sahne-kok:has(.el-sahne.el-karanlik) .mc-yan-dolgu {
-  filter: blur(7px) brightness(0.32) saturate(0.6) hue-rotate(200deg);
+  filter: blur(var(--yan-bulanik, 7px)) brightness(0.32) saturate(0.6) hue-rotate(200deg);
 }
 .mc-kok .mc-sahne-kok:has(.el-sahne.el-los) .mc-yan-dolgu {
-  filter: blur(7px) brightness(0.5) saturate(0.7) sepia(0.2);
+  filter: blur(var(--yan-bulanik, 7px)) brightness(0.5) saturate(0.7) sepia(0.2);
 }
 /* sahne bir kap: yakın çekim, düğmeler ve ödül kartı sahnenin eni/boyuna göre (yatay ekranda sahne dar bir bant) */
 .mc-kok .mc-sahne.el-sahne {

@@ -358,7 +358,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
           sonBirakma = performance.now();
           minoCanli.izleBitti();
           if (hedefte) koy(e, id);
-          else geriGonder(e);
+          else {
+            // hedefe varmadan bırakıldı: yumuşak "pıt" sesi ve yuvasında yaylanma
+            efekt.dokunma();
+            geriGonder(e);
+          }
         },
       }),
     );

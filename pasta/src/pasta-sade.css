@@ -71,10 +71,7 @@
   margin-left: -8%;
 }
 .ps-kok .ps-b-grup {
-  padding-bottom: 4%;
-}
-.ps-kok .ps-b-grup::before {
-  height: 44%;
+  padding-bottom: 6%;
 }
 
 /* sıradaki iş: düğmenin resmi yumuşakça parlar (düğmenin kendi zıplama / sallanma tepkileri bozulmaz) */

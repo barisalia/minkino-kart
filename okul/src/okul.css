@@ -24,7 +24,8 @@
 .ok-kok .ok-kirp > .ok-resim {
   position: absolute;
   max-width: none;
-  object-fit: fill;
+  /* kutu çizimin oranında olduğu için iç kutu tuvalin oranında; contain: kutu yanlışlıkla esnese de çizim esnemez */
+  object-fit: contain;
 }
 .ok-kok .ok-ayna {
   transform: scaleX(-1);
@@ -93,6 +94,19 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* dar telefon: başlık ("Kelime Köprüsü") üç düğmenin arasına kesilmeden sığar */
+@media (max-width: 440px) {
+  .ok-kok .ust-cubuk {
+    gap: 6px;
+  }
+  .ok-kok .ust-cubuk .ust-grup {
+    gap: 6px;
+  }
+  .ok-kok .ok-baslik {
+    padding: 5px 11px;
+    font-size: clamp(0.95rem, 4vw, 1.15rem);
+  }
 }
 .ok-kok .yuvarlak.ok-album-dugme {
   --r: #ff8a2b;
@@ -287,6 +301,11 @@
   overflow: visible;
   pointer-events: none;
 }
+@media (orientation: portrait) {
+  .ok-kok .ok-yol-yatay {
+    display: none;
+  }
+}
 .ok-kok .ok-yol-dis,
 .ok-kok .ok-yol-ic {
   fill: none;
@@ -320,9 +339,9 @@
   width: clamp(64px, 18vw, 120px);
 }
 .ok-kok .ok-yol-okul {
-  left: 84%;
-  top: 8%;
-  width: clamp(80px, 22vw, 150px);
+  left: 83%;
+  top: 9%;
+  width: clamp(90px, 27vw, 170px);
 }
 .ok-kok .ok-yol-ev .ok-resim,
 .ok-kok .ok-yol-okul .ok-resim {
@@ -439,15 +458,18 @@
   .ok-kok .ok-harita .ust-cubuk .ok-logo-alt {
     font-size: clamp(1.4rem, 5dvh, 2.2rem);
   }
+  .ok-kok .ok-yol-dikey {
+    display: none;
+  }
   .ok-kok .ok-yol-ev {
-    left: 7%;
-    top: 74%;
-    width: clamp(60px, 11vw, 120px);
+    left: 6%;
+    top: 72%;
+    width: clamp(64px, min(11vw, 24dvh), 130px);
   }
   .ok-kok .ok-yol-okul {
-    left: 93%;
-    top: 26%;
-    width: clamp(70px, 12vw, 140px);
+    left: 91%;
+    top: 24%;
+    width: clamp(84px, min(14vw, 30dvh), 170px);
   }
   .ok-kok .ok-bolge-kart {
     width: clamp(110px, min(21vw, 38dvh), 220px);
@@ -464,12 +486,14 @@
     left: 74%;
     top: 58%;
   }
+  /* Mino ile Kino evin önünde, ilk kartın solunda: ne evi ne kartı örter */
   .ok-kok .ok-yol-ikili {
-    left: 13%;
-    top: 92%;
+    left: 17%;
+    top: 100%;
+    transform: translate(-50%, -96%) !important;
   }
   .ok-kok .ok-yol-ikili .ok-ikili {
-    --iw: clamp(54px, 16dvh, 110px);
+    --iw: clamp(50px, min(14dvh, 7vw), 96px);
   }
   .ok-kok .ok-harita-alt {
     position: absolute !important;
@@ -516,6 +540,8 @@
 }
 .ok-kok .ok-durak-no {
   position: absolute;
+  /* önerilen durağın parlayan halkası numarayı örtmesin */
+  z-index: 1;
   top: -10px;
   left: -10px;
   width: 30px;
@@ -616,7 +642,8 @@
   transform: translate(-50%, calc(-100% - var(--ust)));
   transition: left 1.1s ease-in-out, top 1.1s ease-in-out;
   pointer-events: auto;
-  z-index: 3;
+  /* duraklar (z 2) her zaman üstte: Mino ile Kino hiçbir durağın dokunuşunu ya da numarasını örtmez */
+  z-index: 1;
 }
 .ok-kok .ok-durak-ikili.ok-olculu {
   /* yer ölçülerek verildi (ekranlar.ts → ikiliYeri): sol-üst köşe */
@@ -670,10 +697,10 @@
 .ok-kok .ok-s-havuc2 { left: 26%; top: 20%; width: 74%; rotate: 16deg; }
 .ok-kok .ok-s-davul { left: 0; top: 10%; width: 100%; }
 .ok-kok .ok-simge-yigin > .ok-kirp { position: absolute; }
-/* tabak hafif yandan (elips), iki kurabiye tabağın içinde */
-.ok-kok .ok-s-tabak { left: 2%; bottom: 8%; width: 96%; height: 64%; }
-.ok-kok .ok-s-k1 { left: 12%; top: 34%; width: 42%; height: auto; }
-.ok-kok .ok-s-k2 { left: 46%; top: 38%; width: 42%; height: auto; }
+/* tabak yandan (elips, oranı korunur), iki kurabiye tabağın üstünde */
+.ok-kok .ok-s-tabak { left: 2%; bottom: 14%; width: 96%; }
+.ok-kok .ok-s-k1 { left: 10%; top: 26%; width: 42%; height: auto; }
+.ok-kok .ok-s-k2 { left: 48%; top: 30%; width: 42%; height: auto; }
 .ok-kok .ok-s-tren { left: 0; top: 0; width: 100%; height: 100%; }
 .ok-kok .ok-s-kus { left: 0; top: 0; width: 100%; height: 100%; }
 .ok-kok .ok-s-ortu { left: 0; bottom: 8%; width: 100%; }
@@ -854,7 +881,8 @@
   .ok-kok .ok-etkinlik:not([data-etkinlik='rakam-ciz']) .ok-orta {
     display: none;
   }
-  .ok-kok .ok-etkinlik:not([data-etkinlik='rakam-ciz']) .ok-park::after {
+  /* (harf odasının kendi arka planı .ok-ses-oda-arka hariç: yoksa yeşil şerit odanın tepesine biner) */
+  .ok-kok .ok-etkinlik:not([data-etkinlik='rakam-ciz']) .ok-park:not(.ok-ses-oda-arka)::after {
     content: '';
     position: absolute;
     left: 0;
@@ -1215,9 +1243,10 @@
   z-index: -1;
 }
 .ok-kok .ok-e2-elmalar {
+  /* elmalar sayılabilecek boyda: sepetin kenarından biraz taşar */
   position: absolute;
-  left: 8%;
-  right: 8%;
+  left: -6%;
+  right: -6%;
   bottom: 50%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1234,9 +1263,9 @@
 }
 .ok-kok .ok-mini-elma {
   width: 100%;
-  max-width: 21%;
+  max-width: 27%;
   min-width: 0;
-  flex: 0 0 21%;
+  flex: 0 0 27%;
   margin-bottom: -6%;
 }
 .ok-kok .ok-e2-elmalar:not([data-n='1']):not([data-n='2']):not([data-n='3']):not([data-n='4']) .ok-mini-elma {
@@ -1431,19 +1460,22 @@
   justify-content: space-around;
   gap: 8px;
 }
-/* tabak üstten yuvarlak (assets/okul/tabak.webp kırpılmış): kutu kare, kurabiyeler tabağın iç dairesinde (TS: kurabiyeYerleri) */
+/* tabak yandan (assets/okul/tabak.webp kırpılmış, oranı korunur) düğmenin altında; kurabiyeler iç elipsin üstünde iki
+   sıra (TS: kurabiyeYerleri, TABAK_KAP_ORAN = 2) */
 .ok-kok .ok-tabak {
   position: relative;
-  width: min(40cqw, 46cqh);
-  aspect-ratio: 1;
+  width: min(40cqw, 80cqh);
+  aspect-ratio: 2;
   flex: 0 0 auto;
 }
 .ok-kok .ok-tabak.ok-buyuk {
-  width: min(52cqw, 60cqh);
+  width: min(52cqw, 104cqh);
 }
 .ok-kok .ok-tabak-resim {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: flex-end;
   pointer-events: none;
 }
 .ok-kok .ok-tabak-resim .ok-resim {
@@ -1465,9 +1497,9 @@
 .ok-kok .ok-tabak .ok-tabak-ic .ok-kurabiye {
   position: absolute;
   left: calc(var(--x) - var(--c) / 2);
-  top: calc(var(--y) - var(--c) / 2);
+  top: calc(var(--y) - var(--ch) / 2);
   width: var(--c);
-  height: var(--c);
+  height: var(--ch);
   margin: 0;
 }
 .ok-kok .ok-kurabiye {
@@ -1515,10 +1547,10 @@
     --kb: clamp(28px, min(8cqw, 15cqh), 48px);
   }
   .ok-kok .ok-tabak {
-    width: min(28cqw, 66cqh);
+    width: min(34cqw, 110cqh);
   }
   .ok-kok .ok-tabak.ok-buyuk {
-    width: min(36cqw, 86cqh);
+    width: min(44cqw, 140cqh);
   }
   .ok-kok .ok-e4-tabaklar {
     padding-bottom: 4%;
@@ -1542,7 +1574,7 @@
 /* ---------------------------------------------------------------- 5 · Bir fazla, bir eksik (tren) */
 .ok-kok .ok-e5 {
   /* vagonlar çekme kolu kadar üst üste biner (%20): bir vagon 0.8 vw yer kaplar */
-  --vw: clamp(40px, min(calc(96cqw / (var(--n) * 0.8 + 2.1)), 28cqh), 130px);
+  --vw: clamp(40px, min(calc(96cqw / (var(--n) * 0.8 + 2.1)), 36cqh), 130px);
   position: absolute;
   inset: 0;
 }
@@ -1899,9 +1931,9 @@
   animation: ok-yapis 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 /* ---------------------------------------------------------------- dallar (dal.ts): kuşlar dalın gövdesine konar */
+/* dal hiç esnemez: kutu çizimin oranında (--dal-oran), yüksekliği eninden gelir; kesik kalın ucu ekranın kenarında */
 .ok-kok .ok-dallar {
-  /* dal yüksekliği: kuşa göre, ama dal en fazla %30 yatay esnesin (yapraklar bozulmasın) */
-  --dh: min(max(calc(var(--ks) * 1.3), 22cqw), 44cqh);
+  --dh: calc(60cqw / var(--dal-oran, 7.76));
   position: relative;
   width: 100%;
   height: var(--dh);
@@ -1909,19 +1941,17 @@
 }
 .ok-kok .ok-dallar[data-duzen='tek'],
 .ok-kok .ok-dallar[data-duzen='iki-kat'] {
-  --dh: min(max(calc(var(--ks) * 1.3), 32cqw), 40cqh);
+  --dh: calc(115cqw / var(--dal-oran, 7.76));
 }
 .ok-kok .ok-dallar[data-duzen='iki-kat'] {
-  height: calc(var(--dh) + var(--ks) * 1.15 + 8px);
+  height: calc(var(--dh) * 1.5 + var(--ks) * 1.15 + 8px);
 }
 .ok-kok .ok-dal {
   position: absolute;
   top: 0;
-  height: var(--dh);
 }
 .ok-kok .ok-dal > .ok-kirp {
   width: 100%;
-  height: 100%;
   filter: drop-shadow(0 4px 0 rgba(107, 58, 31, 0.16));
 }
 .ok-kok .ok-dal-0 {
@@ -1939,15 +1969,17 @@
 .ok-kok .ok-dallar[data-duzen='tek'] .ok-dal-1 {
   display: none;
 }
+/* alttaki dalın kuşları üstteki dalın gövdesine binmez */
 .ok-kok .ok-dallar[data-duzen='iki-kat'] .ok-dal-1 {
   right: -10%;
   width: 115%;
-  top: calc(var(--ks) * 1.15 + 8px);
+  top: calc(var(--dh) * 0.5 + var(--ks) * 1.15 + 8px);
 }
-/* tünek: dalın düz gövdesi (kalın uçtan %69'a kadar; ekran dışındaki parça hariç), gövdenin üst çizgisi dalın %47'sinde */
+/* tünek: gövdenin ince, hafif inen kısmı (cizim.ts → DAL_TUNEK). Tünek dalın üst kenarında; her konuk durduğu yerdeki
+   gövde çizgisine iner (dal.ts → Dallar.otur: margin-bottom) */
 .ok-kok .ok-tunek {
   position: absolute;
-  bottom: calc(53% - var(--ks) * 0.043);
+  bottom: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -1958,18 +1990,12 @@
   margin: 0 calc(var(--ks) * -0.04);
 }
 .ok-kok .ok-dal-0 .ok-tunek {
-  left: 10%;
-  right: 31%;
+  left: var(--tunek-bas, 29%);
+  right: var(--tunek-son, 10%);
 }
 .ok-kok .ok-dal-1 .ok-tunek {
-  left: 31%;
-  right: 10%;
-}
-.ok-kok .ok-dallar:not([data-duzen='yan']) .ok-dal-0 .ok-tunek {
-  left: 8.7%;
-}
-.ok-kok .ok-dallar:not([data-duzen='yan']) .ok-dal-1 .ok-tunek {
-  right: 8.7%;
+  left: var(--tunek-son, 10%);
+  right: var(--tunek-bas, 29%);
 }
 .ok-kok .ok-kus {
   position: relative;
@@ -2217,15 +2243,17 @@
 
 /* ---------------------------------------------------------------- 10 · Piknik! */
 .ok-kok .ok-e10 {
+  /* örtü çizimin oranında (2:1, hiç esnemez): eni --ow, boyu --ow / 2 */
+  --ow: min(110cqw, min(46cqh, 55cqw) * 2);
   position: absolute;
   inset: 0;
 }
-/* misafirler örtünün arka kenarında oturur (örtünün üstünde, yerlerin gerisinde): ayakları örtü boyunun %36'sında */
+/* misafirler örtünün arka kenarında oturur (örtünün üstünde, yerlerin gerisinde): ayakları örtü boyunun %35'inde */
 .ok-kok .ok-p-misafirler {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(min(46cqh, 55cqw) * 0.65);
+  bottom: calc(var(--ow) * 0.325);
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -2239,19 +2267,15 @@
   --uzak: var(--p-uzak, 0.9);
   cursor: pointer;
 }
-/* örtü (kırpılmış, yandan bakılan dörtgen): en çok %30 yatay esner; yerler örtünün içinde (piknik.ts → ortuYeri) */
+/* örtü (kırpılmış, yandan bakılan dörtgen): oranı korunur, kutu = örtü; yerler örtünün içinde (piknik.ts → ortuYeri) */
 .ok-kok .ok-p-ortu {
   position: absolute;
   left: 50%;
   bottom: 0;
   translate: -50% 0;
-  width: min(110cqw, 46cqh * 2.6);
-  height: min(46cqh, 55cqw);
+  width: var(--ow);
 }
 .ok-kok .ok-p-ortu > .ok-kirp {
-  position: absolute;
-  inset: 0;
-  height: 100%;
   filter: drop-shadow(0 6px 0 rgba(107, 58, 31, 0.14));
 }
 .ok-kok .ok-p-yerler {
@@ -2299,22 +2323,25 @@
   width: 84px;
   height: 54px;
 }
+/* tabak yandan elips, oranı korunur: düğmenin eni kadar, altta (üstünde elmalara yer) */
 .ok-kok .ok-p-tabak {
   position: absolute;
   inset: 0;
-  display: block;
+  display: flex;
+  align-items: flex-end;
 }
 .ok-kok .ok-p-tabak > .ok-kirp {
-  height: 100%;
+  width: 100%;
   filter: drop-shadow(0 3px 0 rgba(107, 58, 31, 0.18));
 }
+/* tabak oranında (yandan elips): kutunun eni kadar, altta */
 .ok-kok .ok-tabak-resim > .ok-kirp {
-  height: 100%;
+  width: 100%;
 }
 
 .ok-kok .ok-p-tabak-ic {
   position: absolute;
-  inset: -30% 14% 30%;
+  inset: -30% 14% 24%;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -2347,15 +2374,17 @@
   width: 136px;
   height: 78px;
 }
+/* kurabiyeler yandan bakılan tabağın üstünde (tabak altta, 136 × 44) */
 .ok-kok .ok-p-kim .ok-tabak-ic {
-  inset: 4% 14% 14%;
-  align-content: center;
+  inset: -30% 12% 24%;
+  flex-wrap: wrap-reverse;
+  align-content: flex-start;
 }
 .ok-kok .ok-p-kim-yuz,
 .ok-kok .ok-p-kim-kino {
   position: absolute;
-  left: -16px;
-  top: -24px;
+  left: -20px;
+  top: -4px;
   width: 58px;
   z-index: 2;
 }
@@ -2371,21 +2400,22 @@
     --uzak: min(0.8, var(--p-uzak, 0.8));
   }
 }
-/* yatay telefon (alan çok basık): örtü daha geniş (yatay esner), misafirler küçük ve örtünün arkasında durur,
-   yerleri örtmez */
+/* yatay telefon (alan çok basık): örtü biraz daha yüksek (esnemeden büyür), misafirler küçük ve örtünün arkasında
+   durur, yerleri örtmez */
 @container alan (aspect-ratio > 2) {
-  .ok-kok .ok-p-ortu {
-    width: min(96cqw, 46cqh * 3.6);
+  .ok-kok .ok-e10 {
+    --ow: min(96cqw, 130cqh);
   }
   .ok-kok .ok-p-yer {
     width: max(52px, calc(64% / var(--n)));
   }
   .ok-kok .ok-p-misafirler {
     z-index: 0;
-    bottom: calc(min(46cqh, 55cqw) * 0.78);
+    bottom: calc(var(--ow) * 0.33);
   }
   .ok-kok .ok-p-misafir .ok-oyuncu {
-    --uzak: min(0.5, var(--p-uzak, 0.5));
+    /* en büyük misafir (ayı) bile ilerleme noktalarının altında kalır */
+    --uzak: min(0.42, var(--p-uzak, 0.42));
   }
 }
 
@@ -2599,6 +2629,28 @@
   gap: 10px;
   padding-top: 10px;
   overflow: auto;
+}
+/* albüm ekranı dikeyde: çıkartmalar büyük (4 sütun), sayfa ekranın boşluğunu kullanır */
+@media (orientation: portrait) {
+  .ok-kok .ok-album-govde .ok-sayfa:not([data-bolge='ses']):not([data-bolge='kelime']) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ok-kok .ok-album-govde .ok-album-kitap {
+    padding: 14px 14px 18px;
+  }
+  .ok-kok .ok-album-govde .ok-yuva-ad {
+    font-size: clamp(0.7rem, 3vw, 0.9rem);
+  }
+}
+/* yatay telefon: sayfa ekrana sığacak kadar daralır (iki sıra çıkartma kaydırmadan görünür) */
+@media (orientation: landscape) and (max-height: 520px) {
+  .ok-kok .ok-album-govde .ok-album-kitap {
+    width: min(100%, 640px, calc((100dvh - 170px) * 2.15));
+  }
+  .ok-kok .ok-album-govde {
+    gap: 8px;
+    padding-top: 4px;
+  }
 }
 .ok-kok .ok-sekmeler {
   display: flex;

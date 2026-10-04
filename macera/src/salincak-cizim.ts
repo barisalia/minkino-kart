@@ -298,7 +298,7 @@ export const PARK_RESIM = {
   agacDibi: 0.8,
   bankUst: 0.65,
   tahterevalliUst: 0.74,
-  /** ön: çimenin üst kenarı (ortada) ve kaynak şeridi */
+  /** ön: çimenin üst kenarı (ortada) ve kaynak şeridi (y0 → 1; eni şeridin oranından: cimenKaynakEni, x0-x1 yalnız çimenin düz ortası) */
   cimenKenar: 0.802,
   cimenKaynak: { x0: 0.28, x1: 0.72, y0: 0.78 },
   /** ön: köşe kümesi (sol; sağdaki aynası): x 0-.34, y .55-1 */
@@ -313,8 +313,17 @@ export function cimenYeri(altPay: number): { alt: number; boy: number } {
   const { cimenKenar, cimenKaynak } = PARK_RESIM;
   return { alt: -altPay, boy: ((PARK.cimenUst + altPay) * (1 - cimenKaynak.y0)) / (1 - cimenKenar) };
 }
+/**
+ * Ön çimen şeridi için resmin ortasından kesilen kaynak eni (resim eninin oranı): şerit (en × boy, b) resmin altından
+ * (y0 → 1) eşit ölçekle, esnemeden kesilir. Şerit x0-x1'den genişse ortadan iki yana taşar.
+ */
+export function cimenKaynakEni(en: number, boy: number): number {
+  return Math.min(1, ((en / boy) * (1 - PARK_RESIM.cimenKaynak.y0)) / PARK_ORAN);
+}
 /** Köşe kümesinin (çalı + lale) oranı (en / boy) */
 export const KUME_ORAN = (PARK_RESIM.kume.w * 2752) / ((1 - PARK_RESIM.kume.y0) * 1536);
+/** Ayrı çizilmiş köşe kümesinin tuvali (assets/film/park/kume-sol|kume-sag.webp, 1600×1018, alta hizalı) */
+export const KUME_AYRI_ORAN = 1600 / 1018;
 
 // ---------------------------------------------------------------- bekleme çizgisi
 /** Sarı bekleme çizgisi (yerde, perspektifle yassı) */

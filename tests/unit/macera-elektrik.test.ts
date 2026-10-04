@@ -179,7 +179,7 @@ describe('Elektrikler Kesildi: içerik ve kurallar', () => {
     expect(elektrikKaynak.match(/sesliGorev\(/g)!.length).toBeGreaterThanOrEqual(5);
     expect(elektrikKaynak).toContain('ui.dugme(EL.dugme.geldi)');
     // doğum günü dosyası bu bölüm için değiştirilmez: salon yalnız karartılarak kullanılır
-    expect(elektrikKaynak).toContain("new Sahne('parti-sahne/oda')");
+    expect(elektrikKaynak).toContain("new Sahne('parti-sahne/oda', 'parti-sahne/oda-dikey')");
   });
 });
 

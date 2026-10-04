@@ -4,7 +4,7 @@
  * hizalama dönüşümünün tersiyle çocuğun çizimine taşınır.
  */
 import type { Donusum, Parcali } from './puan';
-import { parcaAlanlari } from './boya';
+import { boyaCozunurlugu, parcaAlanlari } from './boya';
 import type { Hareket, Nokta, Resim, SablonCizgi } from './resimler';
 import { SUS } from './susler';
 
@@ -81,6 +81,8 @@ export interface Canli {
   hayalet(parcalar: string[] | 'hepsi'): void;
   /** Bir parçanın boyasını koy (resim adresi, çizim koordinatında 1x1). null: kaldır. */
   boyaKoy(parca: string, url: string | null): void;
+  /** Boya resminin bu ekranda net görüneceği çözünürlüğü (px; boya.ts → boyaCozunurlugu) */
+  boyaPikseli(): number;
   /** Süsleri (yüz, parlama, pencere…) sırayla belirt. */
   susGoster(): void;
   /** Ekran noktasını çizim koordinatına çevirir. */
@@ -331,6 +333,11 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
       if (!g) return;
       g.boya.replaceChildren();
       if (url) g.boya.append(el('image', { href: url, x: 0, y: 0, width: 1, height: 1, preserveAspectRatio: 'none', class: 'cc-boya-resim' }));
+    },
+    boyaPikseli() {
+      // çizimin 1 birimi ekranda: sahnenin eni × k (yer ölçeği). Sahne henüz ekranda değilse ekranın kısa kenarından tahmin
+      const en = svg.getBoundingClientRect().width || Math.min(window.innerWidth, window.innerHeight) * 0.8;
+      return boyaCozunurlugu(en * k, window.devicePixelRatio || 1);
     },
     susGoster() {
       const g = SUS[r.id];

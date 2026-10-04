@@ -153,7 +153,19 @@ ANLATICI: "<kısa öğüt, ör. Paylaşmak güzeldir.>"   (soru yok)
 ## 11. Çizgi Filmler ekranı (/film/ açılışı) ve kapaklar
 
 - /film/ açılınca **Çizgi Filmler** seçme ekranı gelir (`film/src/katalog.ts`, `katalog.css`): her film büyük kapak kartı (kapak, ad, öğüt rozeti, süre, oynat). Karta dokununca film açılış kartı + jenerikle hemen başlar. `?film=<ad>` doğrudan o filmin kapağını (Oynat) açar; MP4 kaydı bunu kullanır. Filmdeki geri düğmesi bu ekrana döner.
-- **Yeni film eklenince:** (1) `katalog.ts` → `SIRA` listesinin başına `{ ad, ogut, renk, yeni: true }` ekle, eskisinden `yeni`yi kaldır; (2) kapak üret: filmin en güzel karesi (karakterler büyük, yüzler görünür, altyazı/düğme yok), `npm run film:mp4 -- yatay --film=<ad> --ornek=<sn>` ile kare al, 16:9 960 px webp (sharp), ≤120 KB → `assets/film/kapak/<ad>.webp`; (3) ana menü kartı en yeni kapağı gösterir: `uygulama/src/oyunlar.ts` → film kartının `zemin` adı.
+- **Yeni film eklenince:** (1) `katalog.ts` → `SIRA` listesinin başına `{ ad, ogut, renk, yeni: true }` ekle, eskisinden `yeni`yi kaldır; (2) kapak üret: filmin en güzel karesi (karakterler büyük, yüzler görünür, altyazı/düğme yok), `npm run film:mp4 -- yatay --film=<ad> --ornek=<sn> --olcek=1.5 --png` ile 2880×1620 PNG kare al (`dist-video/ornek-yatay-<sn>.png`), `node scripts/film/kapak.mjs <ad> <sn>` ile **2732×1536** webp yap → `assets/film/kapak/<ad>.webp` (kapak dikey iPad'de tam ekran açılır; 960 px bulanık kalıyordu, `ekip/kalite/GORSEL-DENETIM.md` #5). Hangi saniyeden alındığı aşağıdaki tabloya yazılır (yeniden üretmek için); (3) ana menü kartı en yeni kapağı gösterir: `uygulama/src/oyunlar.ts` → film kartının `zemin` adı.
+- **Kapak kareleri** (2026-10-03, 960 px kapaklar aynı anlardan 2732×1536 yeniden alındı; `yakın`: karenin 1/yakın boyundaki parçası, `sol üst`: parçanın köşesi):
+
+  | Film | Saniye | Ölçek (`--olcek`) | yakın · sol · üst |
+  |---|---|---|---|
+  | kino-oyuncak | 38.8 | 1.5 | 1 · 0 · 0 |
+  | kino-elma-kulesi | 62.1 | 1.5 | 1 · 0 · 0 |
+  | mino-karpuz | 38.1 | 1.5 | 1 · 0 · 0 |
+  | kino-lutfen | 48.2 | 1.75 | 1.2 · 0 · 0.03 |
+  | mino-sepet | 49 | 1.9 | 1.3 · 0.025 · 0.148 |
+  | kino-kaydirak | 22.5 | 1.6 | 1.1 · 0.06 · 0.09 |
+
+  Örnek: `npm run film:mp4 -- yatay --film=kino-lutfen --ornek=48.2 --olcek=1.75 --png` → `node scripts/film/kapak.mjs kino-lutfen 48.2 1.2 0 0.03`. Eski kapaklardan üçü (lutfen, sepet, kaydırak) çekimden sonra değişen insan boyları yüzünden piksel piksel aynı değil; aynı an ve aynı kadraj seçildi.
 
 ## 12. Film 5 (Kino ve Sihirli Söz) eklemeleri
 

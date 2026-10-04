@@ -30,10 +30,10 @@ export const parkAdres = (ad: string) => PARK[`../../assets/film/park/${ad}.webp
 export const GORSEL_YUVALARI: Record<string, [number, number, string]> = {
   agac: [768, 560, 'Kaç elma? ağacı: geniş yuvarlak taç, ELMASIZ (elmalar oyunda konur); taç resmin üst %65’i, gövde altta ortada'],
   kurabiye: [256, 256, 'çikolata parçacıklı yuvarlak kurabiye, üstten'],
-  tabak: [512, 220, 'boş beyaz tabak, hafif yandan (elips), kenarında ince desen'],
+  tabak: [512, 220, 'boş pembe kenarlı tabak, hafif yandan (elips), tuvali doldurur'],
   vagon: [300, 230, 'oyuncak tren vagonu, üstü açık (içine hayvan oturur), kırmızı, iki tekerlek, iki yanda bağlantı çubuğu; yandan'],
   'piknik-ortusu': [800, 340, 'kırmızı-beyaz kareli piknik örtüsü, yerde, perspektifte yamuk (üst kenar dar)'],
-  dal: [1000, 140, 'yatay uzun ağaç dalı, birkaç yaprak; kuşlar üstüne konar'],
+  dal: [1000, 140, 'yatay uzun ince ağaç dalı (kalın kesik ucu solda), birkaç yaprak; kuşlar üstüne konar'],
   istasyon: [360, 300, 'küçük tren istasyonu / depo: çizgili tente, iki direk, tahta platform (önü boş, vagon durur)'],
   bahce: [400, 340, 'harita: Sayı Bahçesi simgesi (elma ağacı ve çit)'],
   kule: [400, 380, 'harita: Ses Kulesi simgesi (mor kule, üstünde bayrak, ortada A)'],
@@ -54,13 +54,61 @@ export function resim(yol: string, sinif = '', stil = ''): string {
  * doldurur. Görsel değişirse bu ölçüler de güncellenir (sharp trim ile ölçüldü).
  */
 export const CIZIM_KUTUSU: Record<string, [number, number, number, number, number, number]> = {
-  'okul/tabak': [512, 220, 157, 11, 198, 198],
-  'okul/dal': [1000, 140, 33, 7, 257, 126],
+  // 2026-10-03 yeni çizimler: tabak yandan (elips), dal uzun ve ince (kalın kesik ucu solda)
+  'okul/tabak': [512, 220, 17, 55, 478, 156],
+  'okul/dal': [1000, 140, 30, 10, 939, 121],
   'okul/vagon': [300, 230, 12, 46, 275, 173],
-  'okul/piknik-ortusu': [800, 340, 91, 15, 620, 310],
-  'okul/istasyon': [360, 300, 15, 61, 330, 225],
+  'okul/piknik-ortusu': [800, 340, 92, 16, 618, 309],
+  'okul/istasyon': [360, 300, 16, 61, 328, 225],
   'okul/rozet-sayi': [300, 360, 21, 17, 260, 326],
 };
+/** Kırpılmış çizimin en/boy oranı (kutu bu oranda tutulur: görsel hiç esnemez) */
+export const cizimOrani = (yol: string) => {
+  const k = CIZIM_KUTUSU[yol];
+  return k ? k[4] / k[5] : 1;
+};
+
+/**
+ * Yandan bakılan tabakta (okul/tabak, kırpılmış kutunun oranı) yerler: tabağın iç (beyaz) elipsi ve dış kenarın üst
+ * yüzü. x: enin, y: boyun oranı (0 üst). Kurabiyeler iç elipsin üstüne dizilir (hangisinde-cok.ts → kurabiyeYerleri).
+ */
+export const TABAK_YUZU = {
+  ic: { x: 0.5, y: 0.465, rx: 0.34, ry: 0.279 },
+  dis: { x: 0.5, y: 0.43, rx: 0.5, ry: 0.43 },
+};
+
+/**
+ * Dalın ana gövdesinin üst çizgisi (kırpılmış kutunun oranı; u: kalın uçtan sağa, v: üstten). Kuşların ayakları bu
+ * çizgiye basar (dal.ts → Dallar.otur). Kalın uç (u < 0.29) dik yükselir, tünek değil; uçtaki yapraklar u > 0.92.
+ */
+export const DAL_UST: [number, number][] = [
+  [0.25, 0.2],
+  [0.29, 0.19],
+  [0.4, 0.215],
+  [0.45, 0.256],
+  [0.5, 0.281],
+  [0.55, 0.347],
+  [0.61, 0.397],
+  [0.66, 0.435],
+  [0.72, 0.43],
+  [0.82, 0.425],
+  [0.87, 0.446],
+  [0.92, 0.47],
+];
+/** Dalın tünek olan kısmı (u aralığı) */
+export const DAL_TUNEK: [number, number] = [0.29, 0.9];
+/** Üst çizginin u noktasındaki yüksekliği (v) */
+export function dalUstu(u: number): number {
+  const t = DAL_UST;
+  if (u <= t[0][0]) return t[0][1];
+  for (let i = 1; i < t.length; i++)
+    if (u <= t[i][0]) {
+      const [u0, v0] = t[i - 1];
+      const [u1, v1] = t[i];
+      return v0 + ((u - u0) / (u1 - u0)) * (v1 - v0);
+    }
+  return t[t.length - 1][1];
+}
 
 /**
  * Kırpılmış görsel: dış kutunun en-boy oranı çizimin oranıdır (CSS en ya da boy verince öteki kendiliğinden gelir;
@@ -83,7 +131,7 @@ const TON = [0, 200, 45, 120, 280, 25, 320, 160];
 export const ton = (i: number) => `--ton:${TON[i % TON.length]}deg`;
 
 export const kurabiye = () => resim('okul/kurabiye');
-/** Üstten bakılan yuvarlak tabak (kırpılmış: kutu = tabak) */
+/** Yandan bakılan tabak (kırpılmış: kutu = tabak, oranı korunur) */
 export const tabak = () => kirpik('okul/tabak');
 /** Vagon aynalanır: çekme kolu sağa, öndeki vagona (lokomotife) uzanır */
 export const vagon = (i: number) => kirpik('okul/vagon', 'ok-tonlu ok-ayna', ton(i));

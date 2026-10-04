@@ -7,7 +7,7 @@
  * Hamurun rengi CSS değişkeninden (--hamur): fırında pişerken kod yalnız bu rengi değiştirir.
  */
 import { agizKutusu, DESEN_ORAN, desenHedefleri, desenKutusu, gozKutusu, serpintiYerleri, yolD, YUZ_YERI, yuzHedefleri, type Desen, type Hedef, type Yuz } from './desen';
-import { ICECEK_KODU, RENK_KODU, type Boy, type Icecek, type Renk, type Sekil, type Sus, type Urun } from './model';
+import { BOYA, ICECEK_KODU, RENK_KODU, type Boy, type Icecek, type Renk, type Sekil, type Sus, type Urun } from './model';
 import { KREMA_DIK, seritAdlari, kalipAdlari, kapkekAdlari, kavanozAdlari, kremaAdlari, kurabiyeAdlari, resim, susParcaAdlari, yuva, type KurabiyeHal } from './resimler';
 
 export const K = '#6b3a1f';
@@ -651,6 +651,10 @@ export const KINO_CILEK_AGIZ = `<g class="ps-kino-cilek" opacity="0"><path d="M8
 /** Okul binası (Gün 3: okul önü; uzaktaki tepelerin önünde) */
 const OKUL_KOD = ince(`<svg viewBox="0 0 520 300" aria-hidden="true"><ellipse cx="260" cy="292" rx="250" ry="10" fill="${K}" opacity=".12"/><rect x="250" y="16" width="5" height="60" fill="${K}"/><path d="M255 18H300L292 30L300 42H255Z" fill="#FF5A5F" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M60 120L260 52L460 120Z" fill="#FF6F5E" stroke="${K}" stroke-width="7" stroke-linejoin="round"/><rect x="74" y="118" width="372" height="170" fill="#FFE9B8" stroke="${K}" stroke-width="7"/><rect x="214" y="80" width="92" height="50" fill="#FFE9B8" stroke="${K}" stroke-width="6"/><circle cx="260" cy="104" r="17" fill="#fff" stroke="${K}" stroke-width="5"/><path d="M260 92V104L268 110" stroke="${K}" stroke-width="4" stroke-linecap="round" fill="none"/><g fill="#8ED3FF" stroke="${K}" stroke-width="5"><rect x="100" y="146" width="56" height="46" rx="6"/><rect x="364" y="146" width="56" height="46" rx="6"/><rect x="100" y="214" width="56" height="46" rx="6"/><rect x="364" y="214" width="56" height="46" rx="6"/></g><g stroke="#fff" stroke-width="4" stroke-opacity=".8"><path d="M108 156L122 150M372 156L386 150M108 224L122 218M372 224L386 218"/></g><path d="M222 288V196C222 176 240 166 260 166C280 166 298 176 298 196V288Z" fill="#5DBE3F" stroke="${K}" stroke-width="6" stroke-linejoin="round"/><path d="M260 168V288" stroke="${K}" stroke-width="5"/><circle cx="248" cy="232" r="4" fill="#FFD84A"/><circle cx="272" cy="232" r="4" fill="#FFD84A"/><g fill="#FF8CC0" stroke="${K}" stroke-width="3"><circle cx="180" cy="140" r="7"/><circle cx="340" cy="140" r="7"/></g></svg>`);
 
+/** Otobüsün parçaları (kod çizimi ve resimli otobüs ortak): kapak açılınca görünen iç, dışarı kayan tezgâh, tenteye dönen şerit */
+const OB_ACIK = `<g class="ps-ob-acik"><rect x="148" y="78" width="352" height="166" rx="12" fill="#FFE6C2" stroke="${K}" stroke-width="7"/><rect x="160" y="92" width="328" height="18" rx="6" fill="#FFD29A"/><g fill="#FFB0CF" stroke="${K}" stroke-width="3"><circle cx="190" cy="100" r="7"/><circle cx="458" cy="100" r="7"/></g></g>`;
+const OB_TEZGAH = `<g class="ps-ob-tezgah"><path d="M134 236H514L526 264H122Z" fill="#E0A060" stroke="${K}" stroke-width="7" stroke-linejoin="round"/><path d="M140 246H508" stroke="#fff" stroke-width="5" stroke-opacity=".5" stroke-linecap="round"/></g>`;
+const OB_TENTE = `<g class="ps-ob-tente"><path d="M142 72H506V92C506 104 494 110 482 104C470 110 458 110 446 104C434 110 422 110 410 104C398 110 386 110 374 104C362 110 350 110 338 104C326 110 314 110 302 104C290 110 278 110 266 104C254 110 242 110 230 104C218 110 206 110 194 104C182 110 170 110 158 104C150 108 142 102 142 92Z" fill="#fff" stroke="${K}" stroke-width="6" stroke-linejoin="round"/><g fill="#FF5A7A"><path d="M178 74H214V104C206 108 194 110 186 104L178 106Z"/><path d="M250 74H286V104C278 108 266 110 258 104L250 106Z"/><path d="M322 74H358V104C350 108 338 110 330 104L322 106Z"/><path d="M394 74H430V104C422 108 410 110 402 104L394 106Z"/><path d="M466 74H502V100C494 106 482 108 474 104L466 106Z"/></g></g>`;
 /** Otobüs (yandan; sağa bakar). Kapak açılınca tente olur, tezgâh dışarı kayar. Boya: CSS --boya / --boya-koyu */
 const OTOBUS_KOD = ince(`<svg class="ps-otobus-svg" viewBox="0 0 640 420" aria-hidden="true" overflow="visible">
 <ellipse class="ps-ob-golge" cx="320" cy="392" rx="300" ry="16" fill="${K}" opacity=".2"/>
@@ -665,16 +669,102 @@ const OTOBUS_KOD = ince(`<svg class="ps-otobus-svg" viewBox="0 0 640 420" aria-h
 <rect x="38" y="84" width="88" height="96" rx="16" fill="#9EDCFF" stroke="${K}" stroke-width="7"/><path d="M52 100L80 100" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-opacity=".8"/>
 <rect x="604" y="230" width="24" height="26" rx="8" fill="#FFF3A0" stroke="${K}" stroke-width="6"/>
 <rect x="6" y="294" width="40" height="22" rx="9" fill="#C9D4DE" stroke="${K}" stroke-width="6"/><rect x="598" y="294" width="40" height="22" rx="9" fill="#C9D4DE" stroke="${K}" stroke-width="6"/>
-<g class="ps-ob-acik"><rect x="148" y="78" width="352" height="166" rx="12" fill="#FFE6C2" stroke="${K}" stroke-width="7"/><rect x="160" y="92" width="328" height="18" rx="6" fill="#FFD29A"/><g fill="#FFB0CF" stroke="${K}" stroke-width="3"><circle cx="190" cy="100" r="7"/><circle cx="458" cy="100" r="7"/></g></g>
+${OB_ACIK}
 </g>
-<g class="ps-ob-tezgah"><path d="M134 236H514L526 264H122Z" fill="#E0A060" stroke="${K}" stroke-width="7" stroke-linejoin="round"/><path d="M140 246H508" stroke="#fff" stroke-width="5" stroke-opacity=".5" stroke-linecap="round"/></g>
+${OB_TEZGAH}
 <g class="ps-ob-kapak"><g class="ps-ob-panel"><rect x="142" y="72" width="364" height="178" rx="14" style="fill:var(--boya,#FF8CC0)" stroke="${K}" stroke-width="7"/><path d="M160 92H488" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-opacity=".5"/><rect x="290" y="210" width="68" height="16" rx="8" fill="#fff" stroke="${K}" stroke-width="5"/>
 <g transform="translate(324 162)"><circle r="44" fill="#F3B54A" stroke="${K}" stroke-width="6"/><circle r="34" fill="#FF8CC0" stroke="${K}" stroke-width="4"/><g stroke-width="5" stroke-linecap="round"><path d="M-16-12l6-4" stroke="#fff"/><path d="M10-18l7 3" stroke="#6CC4FF"/><path d="M-20 8l3 7" stroke="#FFD84A"/><path d="M14 10l-6 5" stroke="#fff"/><path d="M-2 20l7 2" stroke="#7FE0C4"/><path d="M0-4l4 4" stroke="#FFD84A"/></g><path d="M-26-14C-22-24-12-30-2-31" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-opacity=".7"/></g>
 <g stroke-width="7" stroke-linecap="round"><path d="M188 140l10-6" stroke="#FFD84A"/><path d="M212 196l8 6" stroke="#6CC4FF"/><path d="M450 136l-8 7" stroke="#fff"/><path d="M432 196l10 2" stroke="#FFD84A"/><path d="M240 120l2 9" stroke="#fff"/><path d="M406 118l6 6" stroke="#7FE0C4"/></g></g>
-<g class="ps-ob-tente"><path d="M142 72H506V92C506 104 494 110 482 104C470 110 458 110 446 104C434 110 422 110 410 104C398 110 386 110 374 104C362 110 350 110 338 104C326 110 314 110 302 104C290 110 278 110 266 104C254 110 242 110 230 104C218 110 206 110 194 104C182 110 170 110 158 104C150 108 142 102 142 92Z" fill="#fff" stroke="${K}" stroke-width="6" stroke-linejoin="round"/><g fill="#FF5A7A"><path d="M178 74H214V104C206 108 194 110 186 104L178 106Z"/><path d="M250 74H286V104C278 108 266 110 258 104L250 106Z"/><path d="M322 74H358V104C350 108 338 110 330 104L322 106Z"/><path d="M394 74H430V104C422 108 410 110 402 104L394 106Z"/><path d="M466 74H502V100C494 106 482 108 474 104L466 106Z"/></g></g></g>
+${OB_TENTE}</g>
 <g class="ps-ob-teker" data-teker="arka"><circle cx="150" cy="334" r="46" fill="#4A3A3A" stroke="${K}" stroke-width="7"/><circle cx="150" cy="334" r="22" fill="#E8EEF4" stroke="${K}" stroke-width="5"/><path d="M150 316V352M132 334H168" stroke="${K}" stroke-width="5" stroke-linecap="round"/></g>
 <g class="ps-ob-teker" data-teker="on"><circle cx="500" cy="334" r="46" fill="#4A3A3A" stroke="${K}" stroke-width="7"/><circle cx="500" cy="334" r="22" fill="#E8EEF4" stroke="${K}" stroke-width="5"/><path d="M500 316V352M482 334H518" stroke="${K}" stroke-width="5" stroke-linecap="round"/></g>
 </svg>`);
+
+/**
+ * Otobüs görselinde (assets/pasta/otobus-*.webp, 640:420 tuval; resimler.ts → YUVA.otobus) hareketli parçaların yeri
+ * (kod çiziminin yerleri; çizim başka yerdeyse burası ölçülür): yan kapak (açılınca üstten katlanıp kalkar, ardından
+ * kodun tentesi, içi ve tezgâhı görünür) ve tekerlekler (giriş sırasında görselin kendi tekerleği döner).
+ */
+export const OTOBUS_YERI = {
+  kapak: { x: 142, y: 72, w: 364, h: 178 },
+  teker: [
+    { ad: 'arka', x: 150, y: 334, r: 50 },
+    { ad: 'on', x: 500, y: 334, r: 50 },
+  ],
+};
+
+/** Rengin 0-1 kanalları */
+function kanallar(hex: string): [number, number, number] {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+const PARLAKLIK = [0.2126, 0.7152, 0.0722] as const;
+
+/**
+ * Pembeyi hedef renge boyayan renk matrisi (feColorMatrix values, 20 sayı): pikselin parlaklığı korunur; pembe gövde
+ * tam hedef renk olur, gölgeli pembe aynı oranda koyu hedef rengi, parlama açık hedef rengi (renk tonu döndürmek
+ * sarıyı turuncu, naneyi koyu yeşil yapıyordu).
+ */
+export function boyaMatrisi(hedef: string, taban: string = BOYA.pembe.govde): string {
+  const t = kanallar(taban);
+  const lt = t[0] * PARLAKLIK[0] + t[1] * PARLAKLIK[1] + t[2] * PARLAKLIK[2];
+  const satir = (c: number) => PARLAKLIK.map((w) => +((c / lt) * w).toFixed(4)).join(' ') + ' 0 0';
+  const [r, g, b] = kanallar(hedef);
+  return `${satir(r)} ${satir(g)} ${satir(b)} 0 0 0 1 0`;
+}
+
+/**
+ * Pembe maske (iki feColorMatrix alfa satırı, çarpılır): kırmızı > yeşil VE mavi > yeşil. Kırmızı, turuncu, sarı
+ * (mavi ≤ yeşil), cam ve süs mavisi (kırmızı < yeşil), beyaz, kahve kontur maskenin dışında kalır.
+ */
+export const PEMBE_MASKE = ['0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 -4 0 0 -0.4', '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -6 6 0 -0.2'] as const;
+
+/**
+ * Otobüs görselinin boyası (dükkândan alınan nane, limon): yalnız pembe gövde boyanır (PEMBE_MASKE); cam, tekerlek,
+ * beyaz şeritler olduğu gibi kalır. Pembe (görselin kendi rengi) filtresiz.
+ */
+function boyaFiltreleri(): string {
+  return Object.entries(BOYA)
+    .filter(([ad]) => ad !== 'pembe')
+    .map(
+      ([ad, b]) =>
+        `<filter id="ps-boya-${ad}" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">` +
+        `<feColorMatrix in="SourceGraphic" type="matrix" values="${boyaMatrisi(b.govde)}" result="d"/>` +
+        `<feColorMatrix in="SourceGraphic" type="matrix" values="${PEMBE_MASKE[0]}" result="m1"/>` +
+        `<feColorMatrix in="SourceGraphic" type="matrix" values="${PEMBE_MASKE[1]}" result="m2"/>` +
+        `<feComposite in="m1" in2="m2" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="m"/>` +
+        `<feComposite in="d" in2="m" operator="in" result="b"/>` +
+        `<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="b"/></feMerge></filter>`,
+    )
+    .join('');
+}
+
+/** Görselli otobüsün boya filtresi (CSS --boya-filtre); pembe: filtresiz */
+export const boyaFiltresi = (ad: string) => (ad in BOYA && ad !== 'pembe' ? `url(#ps-boya-${ad})` : 'none');
+
+/**
+ * Otobüs: görsel varsa görsel (kapalı otobüs), yoksa kod çizimi. Görselli otobüste aynı sınıflar ve yerler: gövde
+ * (.ps-ob-govde, korna zıplaması), yan kapak (.ps-ob-panel: görselin kapak bölgesi, açılınca katlanır), tente / iç /
+ * tezgâh (kod parçaları, açılınca çıkar), tekerlekler (.ps-ob-teker: görselin tekerleği, girişte döner).
+ */
+export function otobusSvg(url: string | null): string {
+  if (!url) return OTOBUS_KOD;
+  const { kapak: k, teker } = OTOBUS_YERI;
+  const img = (ek = '') => `<image class="ps-ob-boyali" href="${url}" width="640" height="420" preserveAspectRatio="xMidYMax meet"${ek}/>`;
+  const kirp =
+    `<clipPath id="ps-ob-kapak-kirp" clipPathUnits="userSpaceOnUse"><rect x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}"/></clipPath>` +
+    teker.map((t) => `<clipPath id="ps-ob-teker-${t.ad}" clipPathUnits="userSpaceOnUse"><circle cx="${t.x}" cy="${t.y}" r="${t.r}"/></clipPath>`).join('');
+  const tekerler = teker
+    .map((t) => `<g class="ps-ob-teker" data-teker="${t.ad}" style="transform-box:view-box;transform-origin:${t.x}px ${t.y}px">${img(` clip-path="url(#ps-ob-teker-${t.ad})"`)}</g>`)
+    .join('');
+  return ince(
+    `<svg class="ps-otobus-svg ps-otobus-resimli" viewBox="0 0 640 420" aria-hidden="true" overflow="visible"><defs>${kirp}${boyaFiltreleri()}</defs>` +
+      `<ellipse class="ps-ob-golge" cx="320" cy="392" rx="300" ry="16" fill="${K}" opacity=".2"/>` +
+      `<g class="ps-ob-govde">${img()}${OB_ACIK}</g>${OB_TEZGAH}` +
+      `<g class="ps-ob-kapak"><g class="ps-ob-panel" style="transform-box:view-box;transform-origin:${k.x + k.w / 2}px ${k.y}px">${img(' clip-path="url(#ps-ob-kapak-kirp)"')}</g>${OB_TENTE}</g>` +
+      `${tekerler}</svg>`,
+  );
+}
 
 /** Akşamın kapanışında üstteki tabela (sevimli bulut) ve küçük yıldızlar için yıldız yolu */
 export const YILDIZ_YOLU = yildizYolu(50, 52, 44, 21);
@@ -715,5 +805,5 @@ export const RAF_SUSLERI = RAF_SUSLERI_KOD;
 export const SAPKA = SAPKA_KOD;
 export const MINO_SAPKA = MINO_SAPKA_KOD;
 export const OKUL = OKUL_KOD;
-export const OTOBUS = OTOBUS_KOD;
+export const OTOBUS = otobusSvg(yuva('otobus'));
 export const KALP = KALP_KOD;

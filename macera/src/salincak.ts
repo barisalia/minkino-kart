@@ -59,6 +59,7 @@ import {
   KOVA,
   kovaArkaSvg,
   kovaOnSvg,
+  KUME_AYRI_ORAN,
   KUME_ORAN,
   KUM,
   kumArkaSvg,
@@ -69,6 +70,7 @@ import {
   oturakSvg,
   PARK,
   PARK_ORAN,
+  cimenKaynakEni,
   PARK_RESIM,
   YILDIZ_SVG,
   ZINCIR,
@@ -191,16 +193,25 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   const gok = katman('div.sl-gok', 'arka-uzak', uzak, UZAK_H);
   const orta = katman('div.sl-orta', 'arka-orta', PARK.orta, ORTA_H);
   const cy = cimenYeri(ALT_PAY);
-  const { x0, x1, y0 } = PARK_RESIM.cimenKaynak;
+  // ön çimen şeridi resmin altından (y0 → 1) eşit ölçekle kesilir (esnemez): dünyanın eni kadar şerit için kaynak eni
+  // şeridin oranından gelir (ortada, x0-x1 aralığının biraz dışına taşar; kenarlar köşe öbeklerinin arkasında kalır)
+  const { y0 } = PARK_RESIM.cimenKaynak;
+  const cimenEn = cimenKaynakEni(WB, cy.boy);
   const cimen = h('div.sl-cimen', {
-    style: `background-image:url("${park('arka-on')}");background-size:${100 / (x1 - x0)}% ${100 / (1 - y0)}%;bottom:${Y(cy.alt)}%;height:${bY(cy.boy)}%`,
+    style: `background-image:url("${park('arka-on')}");background-size:${(100 / cimenEn).toFixed(3)}% ${100 / (1 - y0)}%;bottom:${Y(cy.alt)}%;height:${bY(cy.boy)}%`,
   });
-  /** Ön katmanın köşe kümesi (çalı, lale, taş): w eni (b); dünyada u ortası, v altı */
+  /**
+   * Köşe kümesi (çalı, lale, mantar, taş): w eni (b); dünyada u ortası, v altı. Ayrı çizim (film/park/kume-sol,
+   * kume-sag: şeffaf, ortak tuval, alta hizalı) varsa o, kendi oranında; yoksa ön katmanın köşesinden kesilir.
+   */
   const kume = (yon: 'sol' | 'sag', u: number, v: number, w: number, ek = '') => {
     const { kume: kk } = PARK_RESIM;
-    const e = h(`div.sl-kume.${yon}${ek}`, {
-      style: `background-image:url("${park('arka-on')}");background-size:${100 / kk.w}% ${100 / (1 - kk.y0)}%;aspect-ratio:${KUME_ORAN.toFixed(4)}`,
-    });
+    const ayri = park(`kume-${yon}`);
+    const e = ayri
+      ? h(`div.sl-kume.sl-kume-ayri.${yon}${ek}`, { style: `background-image:url("${ayri}");aspect-ratio:${KUME_AYRI_ORAN.toFixed(4)}` })
+      : h(`div.sl-kume.${yon}${ek}`, {
+          style: `background-image:url("${park('arka-on')}");background-size:${100 / kk.w}% ${100 / (1 - kk.y0)}%;aspect-ratio:${KUME_ORAN.toFixed(4)}`,
+        });
     e.style.setProperty('--x', String(X(u)));
     e.style.setProperty('--y', String(Y(v)));
     e.style.setProperty('--w', String(w));

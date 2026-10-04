@@ -14,6 +14,8 @@ const RESIMLER = import.meta.glob<string>('../../assets/banyo/*.webp', { eager: 
 
 export type EsyaAdi =
   | 'arkaplan'
+  /** yatay ekranın yan dolgusu için geniş banyo (~2.17:1; yoksa arkaplan bulanık) */
+  | 'arkaplan-genis'
   | 'kuvet-arka'
   | 'kuvet-on'
   | 'musluk-kirmizi'

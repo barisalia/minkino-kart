@@ -16,6 +16,7 @@ import {
   KARTLAR,
   kartSirasi,
   M,
+  PIKSEL_SINIR,
   romanKareleri,
   ROMAN,
   sonrakiAdim,
@@ -23,6 +24,7 @@ import {
   yolIzleri,
   yollariDiz,
   YARDIM,
+  yakinlikSiniri,
 } from '../../dedektif/src/mantik';
 import { eksikler, EKSIK_LISTESI, resim, surumTablosu, YUVA } from '../../dedektif/src/resimler';
 import { kayit, sifirla, vakaCozuldu } from '../../dedektif/src/kayit';
@@ -168,6 +170,33 @@ describe('Dedektif Mino: kamera', () => {
     expect(b.s).toBeCloseTo(a.s * 1.18, 5);
     // zemin (alt kenar) ekranın altında kalır
     expect(b.ty + dunya.h * b.s).toBeCloseTo(e.h, 3);
+  });
+  it('yakınlık sınırı: arka plan cihazda doğal pikselinin ×2.2 katından fazla büyümez; ekranı kaplamak önce gelir', () => {
+    expect(PIKSEL_SINIR).toBeCloseTo(2.2, 5);
+    // 1536 px boylu resim (film/ev): dikey iPhone @3x ve dikey iPad @2x
+    for (const [e, dpr] of [
+      [{ w: 430, h: 932 }, 3],
+      [{ w: 1024, h: 1366 }, 2],
+      [{ w: 932, h: 430 }, 3],
+    ] as const) {
+      const enCok = yakinlikSiniri(1536, dpr);
+      for (const kd of Object.values(KADRAJ))
+        for (const enAz of [1, 2]) {
+          const k = kameraHesap(kd, dunya, e, undefined, 1.4, enAz, enCok);
+          kapliyor(k, e);
+          const kapla = Math.max(e.w / dunya.w, e.h / dunya.h);
+          expect((k.s * dpr) / (1536 / 1000)).toBeLessThanOrEqual(Math.max(2.2, (kapla * dpr) / 1.536) + 1e-6);
+        }
+    }
+    // küçük resimde (koridor 1080, @3x) sınır kaplamanın altında kalır: yine boş kenar yok
+    const e = { w: 430, h: 932 };
+    kapliyor(kameraHesap(KADRAJ.koridor, { w: 1778, h: 1000 }, e, undefined, 1, 1.25, yakinlikSiniri(1080, 3)), e);
+    // dikeyde sınırlı yakınlıkta da zemin (alt kenar) ekranın altında
+    const k = kameraHesap(KADRAJ.hali, dunya, e, undefined, 1, 2, yakinlikSiniri(1536, 3));
+    expect(k.ty + dunya.h * k.s).toBeCloseTo(e.h, 3);
+    // büyük çizim gelince sınır açılır (eski yakın çekim aynen)
+    const buyuk = kameraHesap(KADRAJ.hali, dunya, e, undefined, 1, 2, yakinlikSiniri(4864, 3));
+    expect(buyuk.s).toBeCloseTo(kameraHesap(KADRAJ.hali, dunya, e, undefined, 1, 2).s, 5);
   });
 });
 

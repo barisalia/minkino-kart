@@ -59,7 +59,8 @@ import { Oyuncu } from './oyuncu';
 import { cocukBoyu, cocukOyuncu } from './ege-cocuk';
 import { boyGenislik } from '../../src/karakter/boy';
 import { AnneIskelet, anneIskeletVar } from './ege-anne';
-import { Sahne } from './sahne';
+import { adres } from './gorsel';
+import { Sahne, yanDolgu } from './sahne';
 import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
 import NINNI_SESI from '../../assets/muzik/ninni-sozlu.mp3?url';
 import './ege.css';
@@ -89,11 +90,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   const mik = () => kulak.acik && !TEST_MODU;
 
   // ================================================================ sahne kurulumu
-  const sahne = new Sahne('parti-sahne/oda');
+  const sahne = new Sahne('parti-sahne/oda', 'parti-sahne/oda-dikey');
   sahne.el.classList.add('eg-sahne');
   kok.append(sahne.el);
-  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın bulanık devamı (macera.css → .mc-yan-dolgu)
-  kok.prepend(h('div.mc-yan-dolgu', { 'aria-hidden': 'true', style: `--resim:${sahne.dunya.querySelector<HTMLElement>('.mc-oda')?.style.getPropertyValue('--resim') ?? 'none'}` }));
+  // yatay ekranda sahne ortada dikey bir bantta; iki yanı odanın geniş çizimi (yoksa bulanık devamı; sahne.ts → yanDolgu)
+  kok.prepend(yanDolgu(adres('parti-sahne/oda'), adres('parti-sahne/oda-genis')));
   const aksam = h('div.eg-aksam');
   const gece = h('div.eg-gece');
   sahne.dunya.append(aksam);

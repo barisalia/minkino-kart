@@ -160,6 +160,20 @@
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpolygon points='1,0 0,0 0,.56 0.53,.79 0.73,.84 0.76,1 1,1'/%3E%3C/svg%3E"), linear-gradient(to top, transparent, #000 14%);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpolygon points='1,0 0,0 0,.56 0.53,.79 0.73,.84 0.76,1 1,1'/%3E%3C/svg%3E"), linear-gradient(to top, transparent, #000 14%);
 }
+/* ayrı çizilmiş küme (film/park/kume-sol, kume-sag; salincak.ts → kume): kesme, maske yok; kendi oranında, dibi
+   kutunun altında (contain: tuval oranı değişse de esnemez) */
+.mc-kok .sl-kume.sl-kume-ayri.sol,
+.mc-kok .sl-kume.sl-kume-ayri.sag {
+  background-size: contain;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.mc-kok .sl-kume.sl-kume-ayri.sol {
+  background-position: 0 100%;
+}
+.mc-kok .sl-kume.sl-kume-ayri.sag {
+  background-position: 100% 100%;
+}
 .mc-kok .sl-bank svg,
 .mc-kok .sl-cerceve svg,
 .mc-kok .sl-kaydirak svg,

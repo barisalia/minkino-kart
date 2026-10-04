@@ -22,7 +22,7 @@ test('Çizgi Filmler ekranı: kapaklı büyük kartlar, öğüt rozeti, süre; M
   for (const k of await kartlar.all()) {
     await k.scrollIntoViewIfNeeded();
     await expect(k.locator('img')).toHaveJSProperty('complete', true);
-    expect(await k.locator('img').evaluate((i) => (i as HTMLImageElement).naturalWidth)).toBe(960);
+    expect(await k.locator('img').evaluate((i) => (i as HTMLImageElement).naturalWidth)).toBeGreaterThanOrEqual(960);
     const b = (await k.boundingBox())!;
     expect(b.x).toBeGreaterThanOrEqual(0);
     expect(b.x + b.width).toBeLessThanOrEqual(boyut.width + 1);

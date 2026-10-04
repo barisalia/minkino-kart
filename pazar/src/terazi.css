@@ -14,7 +14,8 @@
 }
 .pz-kok .pz-terazi {
   position: relative;
-  width: min(92vw, 38vh, 540px);
+  /* tablette tezgâh genişti, terazi küçük kalıyordu */
+  width: min(92vw, 56vh, 620px);
   aspect-ratio: 440 / 210;
   margin-top: -4px;
   animation: pz-terazi-gel 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
@@ -79,9 +80,9 @@
 }
 /* ağır meyve (--a: 2 ananas, 3 karpuz) kefede daha büyük görünür */
 .pz-kok .pz-kefe-ic .pz-urun {
-  width: calc(40cqw * (0.7 + 0.3 * var(--a, 1)));
-  height: calc(40cqw * (0.7 + 0.3 * var(--a, 1)));
-  margin: 0 -4% -8%;
+  width: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
+  height: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
+  margin: 0 -6% -8%;
 }
 .pz-kok .pz-kefe-ic .pz-urun-golge {
   display: none;
@@ -150,5 +151,44 @@
   .pz-kok .pz-terazi.dengede .pz-t-parilti,
   .pz-kok .pz-terazi.dengede .pz-t-yesil {
     animation: none;
+  }
+}
+
+/*
+ * Yatay tablet (1024x768, 1366x1024) terazi turu: terazi ile meyveler alt alta dizilince tezgâh ekranın yarısından
+ * fazlasını kaplıyor, müşteri ve stand küçük kalıyordu. Tezgâhta terazi solda, meyveler sağda (üçerli iki sıra) yan
+ * yana durur; tezgâh alçalır, sahne (stand + müşteri) büyür. Telefon yatayı (max-height 540px) bu kuraldan etkilenmez.
+ */
+@media (min-aspect-ratio: 5/4) and (min-height: 541px) {
+  .pz-kok .pz-pazar.pz-terazili .pz-tezgah {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: clamp(20px, 4vw, 56px);
+    padding-top: clamp(8px, 1.4vh, 14px);
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-terazi {
+    width: min(46vw, 62vh, 600px);
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler,
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler[data-adet] {
+    --pz-urun: min(12vw, 15vh, 150px);
+    display: grid;
+    grid-template-columns: repeat(3, var(--pz-urun));
+    gap: clamp(6px, 1.2vh, 14px) clamp(8px, 1.4vw, 18px);
+    margin: 0;
+    max-width: none;
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler:is([data-adet='7'], [data-adet='8'], [data-adet='9'], [data-adet='10']) {
+    grid-template-columns: repeat(4, var(--pz-urun));
+    --pz-urun: min(10vw, 13vh, 130px);
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler[data-adet='4'] {
+    grid-template-columns: repeat(2, var(--pz-urun));
+  }
+  /* sahne büyüdü: müşteri de standla birlikte büyür */
+  .pz-kok .pz-pazar.pz-terazili .pz-musteri-kap {
+    width: min(30cqw, 52cqh, 380px);
   }
 }

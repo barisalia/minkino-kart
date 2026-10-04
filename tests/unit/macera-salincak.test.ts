@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 import SL from '../../content/macera-salincak.json';
 import KAYIT from '../../assets/muzik/salincak.json';
@@ -24,7 +26,7 @@ import {
   surukleIlerle,
   yankiSonuc,
 } from '../../macera/src/salincak-mantik';
-import { CERCEVE, cimenYeri, kaymaNoktasi, KAYMA_YOLU, PARK, PARK_RESIM, parkV } from '../../macera/src/salincak-cizim';
+import { CERCEVE, cimenKaynakEni, cimenYeri, kaymaNoktasi, KAYMA_YOLU, KUME_AYRI_ORAN, KUME_ORAN, PARK, PARK_ORAN, PARK_RESIM, parkV } from '../../macera/src/salincak-cizim';
 
 describe('Salıncak Kimin: yaş ayarı (yalnız senaryonun dediği sahnelerde)', () => {
   it('3-4 yaş: 5 sallanış, zamanlama serbest, 2 dize; 5-6 yaş: 10 sallanış, halka penceresi, 4 dize', () => {
@@ -174,7 +176,7 @@ describe('Çizim ölçüleri', () => {
       once = p.y;
     }
   });
-  it('park arka planı: ufuk salıncak barının üstünde, zemin resmin kendi çimeni, çizili bank ve tahterevalli örtülü', () => {
+  it('park arka planı: ufuk salıncak barının üstünde, zemin resmin kendi çimeni, çizili bank ve tahterevalli örtülü', async () => {
     const bar = 52 + CERCEVE.bar;
     // ufuk (uzak tepeler) barın epey üstünde: gök ve tepeler görünür
     expect(parkV(PARK.uzak, PARK_RESIM.ufuk)).toBeGreaterThan(bar + 15);
@@ -188,6 +190,19 @@ describe('Çizim ölçüleri', () => {
     const c = cimenYeri(20);
     expect(c.alt).toBe(-20);
     expect(c.alt + (c.boy * (1 - PARK_RESIM.cimenKenar)) / (1 - PARK_RESIM.cimenKaynak.y0)).toBeCloseTo(PARK.cimenUst);
+    // şerit esnemez: kaynak bölgesinin oranı (resim pikseliyle) şeridin oranına eşit; köşe öbeklerine (x < 0.2) taşmaz
+    const en = cimenKaynakEni(400, c.boy);
+    expect((en * PARK_ORAN) / (1 - PARK_RESIM.cimenKaynak.y0)).toBeCloseTo(400 / c.boy, 6);
+    expect(0.5 - en / 2).toBeGreaterThan(0.2);
+    // köşe öbekleri de esnemez (kesilen bölge KUME_ORAN oranında)
+    expect(KUME_ORAN).toBeCloseTo((PARK_RESIM.kume.w * PARK_ORAN) / (1 - PARK_RESIM.kume.y0), 6);
+    // ayrı çizilmiş öbekler (varsa) kendi tuvalinin oranında durur
+    for (const yan of ['sol', 'sag']) {
+      const yol = `assets/film/park/kume-${yan}.webp`;
+      if (!existsSync(yol)) continue;
+      const m = await sharp(yol).metadata();
+      expect(KUME_AYRI_ORAN).toBeCloseTo(m.width! / m.height!, 3);
+    }
   });
 });
 

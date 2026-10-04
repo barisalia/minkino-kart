@@ -75,7 +75,14 @@ export function surukle(s: Surukle): () => void {
 export function geriGonder(el: HTMLElement) {
   el.style.transition = `transform ${sure(420)}ms cubic-bezier(0.3, 1.4, 0.5, 1)`;
   el.style.transform = '';
-  setTimeout(() => (el.style.transition = ''), sure(450));
+  // yuvaya oturunca küçük yaylanma (girdiyi engellemez)
+  el.classList.remove('pz-geri-yay');
+  void el.offsetWidth;
+  el.classList.add('pz-geri-yay');
+  setTimeout(() => {
+    el.style.transition = '';
+    el.classList.remove('pz-geri-yay');
+  }, sure(520));
 }
 
 /** Ürünü yeni kabına taşır ama ekranda eski yerinden oraya kayarak gider (FLIP). */
