@@ -353,6 +353,19 @@
 .dd-kok .dd-ara .bt-mercek {
   filter: drop-shadow(0 8px 10px rgba(40, 20, 10, 0.4));
 }
+/* Gemini büyüteci (assets/dedektif/buyutec.webp, 924×1101): camın şeffaf deliği 523×462 px, ortası (581.5, 331);
+   sap sol altta. Mercek kutusu 2R: R = deliğin yatay yarıçapı (262 px) → resim 924/262 R = %176 genişlik; deliğin ortası
+   kutunun ortasına. Tutulunca cam gibi resim de deliğin ortasından büyür (ikisi ayrı kaymasın). */
+.dd-kok .bt-mercek .bt-resim {
+  left: -61%;
+  top: -13.2%;
+  width: 176.3%;
+  transform-origin: 62.9% 30.1%;
+  transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.dd-kok .bt-mercek.bt-tutuldu .bt-resim {
+  transform: scale(1.06);
+}
 .dd-kok .dd-vaka.dd-vaka-flas::after {
   content: '';
   position: absolute;
@@ -471,6 +484,66 @@
 }
 .dd-kok .dd-oyuncular.dd-kino-kizardi .dd-kino-kutu::after {
   opacity: 1;
+}
+/* poz ekleri (poz.ts): karakterin kutusunda ayak çizgisine oturan tek resim; esneme WAAPI ile (transform), nefes
+   içteki katmanda; dokunuşları geçirir */
+.dd-kok .dd-poz {
+  position: absolute;
+  translate: -50% 0;
+  transform-origin: 50% var(--poz-oy, 99%);
+  pointer-events: none;
+  z-index: 1;
+}
+.dd-kok .dd-poz-ic {
+  position: relative;
+  height: 100%;
+  transform-origin: 50% var(--poz-oy, 99%);
+  animation: dd-poz-nefes 2.6s ease-in-out infinite;
+}
+.dd-kok .dd-poz-resim {
+  display: block;
+  height: 100%;
+  width: auto;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+/* Pamuk'un pozları krem çizildi, iskeleti soğuk beyaz: renk süzgeci (vaka.ts → #dd-pamuk-serin) kırmızıyı biraz kısıp
+   maviyi açar; krem beyaza döner, pembe kurdele ve mavi göz yerinde kalır */
+.dd-kok .dd-poz[data-poz^='pamuk'] .dd-poz-resim {
+  filter: url(#dd-pamuk-serin);
+}
+@keyframes dd-poz-nefes {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.008, 1.016); }
+}
+.dd-kok .dd-poz[data-poz='pamuk-surunme'] .dd-poz-ic {
+  animation: dd-poz-surun 0.5s ease-in-out infinite;
+}
+/* sürünürken gövde adım adım hafif iner kalkar */
+@keyframes dd-poz-surun {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-1.5%) rotate(-1deg); }
+}
+.dd-kok .dd-poz-sapka {
+  position: absolute;
+  pointer-events: none;
+}
+.dd-kok .dd-poz-sapka svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.dd-kok .dd-poz[data-poz='mino-rahat'] .dd-poz-sapka {
+  left: 21%;
+  top: -6%;
+  width: 52%;
+  transform: rotate(4deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dd-kok .dd-poz-ic {
+    animation: none !important;
+  }
 }
 /* dedektif şapkası kafaya düşer */
 .dd-kok .mino.dd-sapka-dus .m-dedektif-sapka {
@@ -1289,11 +1362,14 @@
   position: absolute;
   inset: 0;
 }
-.dd-kok .dd-kare-resim {
-  width: 100%;
-  height: 100%;
+/* Gemini karesi (4:3, opak): kendi kalın kahve çerçevesi üstte / altta ~%1.1. Karenin kendi çerçevesi var: resim
+   her yandan %1.8 kırpılır (çift çerçeve olmaz) */
+.dd-kok .dd-kare-ic > img.dd-kare-resim {
+  left: -1.8%;
+  top: -1.8%;
+  width: 103.6%;
+  height: 103.6%;
   object-fit: cover;
-  display: block;
 }
 .dd-kok .dd-kare-zemin,
 .dd-kok .dd-kare-zemin i {

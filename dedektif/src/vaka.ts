@@ -50,6 +50,7 @@ import {
   type Yol,
 } from './mantik';
 import { Oyuncular } from './oyuncular';
+import { pozlariYukle, PozYuvasi } from './poz';
 import { resim } from './resimler';
 import { kareleriGetir, romanKur, sirayla } from './roman';
 import { Fon, muzikCal, ses } from './sesler';
@@ -149,6 +150,7 @@ class Vaka {
     });
     // Mino'nun dedektif şapkası ve poz ekleri önceden yüklensin (giriş akıcı olsun)
     void this.oy.mino.poz(null);
+    pozlariYukle();
     void this.oy.mino.dedektif({ sapka: baslangic !== 'giris' });
     if (baslangic !== 'giris') this.oy.mino.el.classList.add('dd-sapkali');
     void this.akis(baslangic);
@@ -246,14 +248,18 @@ class Vaka {
     // Kino kayarak gelir, halıya çarpar
     ses.kay();
     oy.kinoIfade('heyecan', 1400);
-    // halının üstünden kayar (zıplamadan), sonra halıya çarpar
+    // halının üstünden kayar (zıplamadan; kayma pozu: patiler önde, kollar açık), sonra halıya çarpar
+    const kayma = !!resim('poz-kino-kayma');
+    void oy.kinoPozu.goster('kino-kayma');
     await oy.kaydir('kino', 0, 0, 850, 0);
     ses.bum();
     const [kx, ky] = this.efekt.merkez(oy.kino.el, 0.5, 0.2);
     this.efekt.yildizlar(kx, ky);
-    void oy.zipla('kino', 10, 380);
+    // çarpınca basılıp iskelete döner (pozun esnemesi zıplamanın yerini tutar: ikisi üst üste binmesin)
+    if (kayma) void oy.kinoPozu.birak();
+    else void oy.zipla('kino', 10, 380);
     oy.kinoIfade('saskin', 800);
-    await this.bekle(500);
+    await this.bekle(kayma ? 650 : 500);
     oy.kinoPoz('kalk');
     oy.kinoIfade('heyecan', 1500);
     oy.kinoOynat('sevin', 900);
@@ -822,11 +828,19 @@ class Vaka {
       await this.bekle(180);
     }
     if (mt.e.sosis) pop(mt.e.sosis, 1.2);
-    // Kino kızarır: kulaklar düşer, utanır
+    // Kino kızarır: utanç pozu (kızarık yanaklar, mahcup gülüş); poz yoksa kulaklar düşer, yanaklar pembeleşir
     oy.kinoIfade('uzgun', 2600);
-    oy.kinoPoz('dusun');
-    oy.el.classList.add('dd-kino-kizardi');
+    const utanc = !!resim('poz-kino-utanc');
+    if (utanc) void oy.kinoPozu.goster('kino-utanc');
+    else {
+      oy.kinoPoz('dusun');
+      oy.el.classList.add('dd-kino-kizardi');
+    }
     await oy.soyle(K.sosis, 'kino');
+    if (utanc) {
+      await this.bekle(250);
+      void oy.kinoPozu.birak();
+    }
     oy.kinoPoz(null);
     oy.el.classList.remove('dd-kino-kizardi');
     oy.minoTepki('gidik');
@@ -845,7 +859,9 @@ class Vaka {
     const pamukKap = h('div.dd-pamuk-dunya');
     const pamuk = new Karakter('pamuk', h('img', { src: resim('pamuk-b') ?? '', alt: '', draggable: 'false' }));
     pamukKap.append(pamuk.el);
-    this.temizlik.push(() => pamuk.kapat());
+    // sürünme ve özür pozları (kutu: Pamuk'un tuvaliyle aynı kare)
+    const pamukPoz = PozYuvasi.pamuk(pamukKap, pamuk.el);
+    this.temizlik.push(() => pamuk.kapat(), () => pamukPoz.temizle());
     // yatağın arkasında saklanan Pamuk'un ayak ucundan taşan kuyruğu: dokunma alanı (görünmez; kuyruğun kendisi iskelette)
     const kuyruk = h('button.dd-kuyruk', { type: 'button', 'aria-label': 'Kuyruk' });
     const yt = yatakOdasi(pamukKap, kuyruk);
@@ -910,18 +926,24 @@ class Vaka {
     const W = yt.W;
     const s = YATAK.saklan;
     const c = YATAK.cik;
+    // sürünme pozu: yerde, karnının üstünde yatağın altından çıkar, dışarıda doğrulup ayağa kalkar
+    // (pozun kendi esnemesi var: yol ayrıca basmaz, yoksa ikisi üst üste %10'u geçer)
+    const surun = !!resim('poz-pamuk-surunme');
+    if (surun) void pamukPoz.goster('pamuk-surunme');
+    const [b0, b1] = surun ? ['', ''] : [' scale(0.95, 0.9)', ' scale(0.97, 0.93)'];
     const yol = pamukKap.animate(
       [
-        { transform: 'translate(0, 0) scale(0.95, 0.9)' },
-        { transform: `translate(${((c.x - s.x) * W * 0.45).toFixed(0)}px, ${((c.y - s.y) * ODA_H * 0.3).toFixed(0)}px) scale(0.97, 0.93)`, offset: 0.45 },
+        { transform: `translate(0, 0)${b0}` },
+        { transform: `translate(${((c.x - s.x) * W * 0.45).toFixed(0)}px, ${((c.y - s.y) * ODA_H * 0.3).toFixed(0)}px)${b1}`, offset: 0.45 },
         { transform: `translate(${((c.x - s.x) * W).toFixed(0)}px, ${((c.y - s.y) * ODA_H).toFixed(0)}px) scale(1)` },
       ],
       { duration: sure(2000), easing: 'cubic-bezier(.45,.05,.4,1)', fill: 'forwards' },
     );
-    if (!AZ_HAREKET) void pamuk.oynat('yuru', 2000);
+    if (!AZ_HAREKET && !surun) void pamuk.oynat('yuru', 2000);
     void dunya.git(this.ortala(YATAK.cik.x - 0.03, [0.22, 0.42, 0.82, 1]), 1600);
     await yol.finished.catch(() => undefined);
     if (this.kapali) return;
+    if (surun) void pamukPoz.birak();
     pamukKap.classList.add('cikti');
     const [px0, py0] = this.efekt.merkez(pamukKap, 0.5, 0.92);
     this.efekt.parilti(px0, py0, 10, 0.7);
@@ -934,8 +956,11 @@ class Vaka {
     pamuk.ifade('utanmis');
     await oy.soyle(D.pamuk.guzeldi, 'pamuk');
     pamuk.ifade('uzgun');
+    // özür pozu: oturup patisini göğsüne koyar, gözleri dolu
+    void pamukPoz.goster('pamuk-ozur');
     await oy.soyle(D.pamuk.ozur, 'pamuk');
     oy.minoTepki('saril');
+    this.sonra(500, () => void pamukPoz.birak());
     await oy.soyle(M.olur_boyle);
     pamuk.ifade('mutlu', 1500);
     this.el.classList.remove('dd-sahne-is');
@@ -990,13 +1015,17 @@ class Vaka {
     oy.minoTepki('selam', 1.8);
     oy.kinoPoz('kalk');
     oy.kinoOynat('sevin', 1200);
-    if (oy.pamuk && !AZ_HAREKET) void oy.pamuk.oynat('sevin', 1200);
+    // Pamuk kelebeğe el sallar (el sallama pozu); poz yoksa sevinir
+    const salla = !!resim('poz-pamuk-el-salla') && !!oy.pamukPoz;
+    if (salla) void oy.pamukPoz?.goster('pamuk-el-salla');
+    else if (oy.pamuk && !AZ_HAREKET) void oy.pamuk.oynat('sevin', 1200);
     oy.pamuk?.ifade('mutlu', 2000);
     ses.kanat();
     await this.bekle(1100);
     kel?.classList.add('dd-gidiyor');
     ses.kanat();
     await this.bekle(900);
+    if (salla) void oy.pamukPoz?.birak();
     oy.kinoPoz(null);
     dunya.darYakin = 1.4;
     await dunya.git(this.ortala(CALISMA.masaUst.x - 0.04, 'final'), 900);
@@ -1012,6 +1041,17 @@ class Vaka {
     if (!AZ_HAREKET) konfetiPatlat(this.el, r.width / 2, r.height * 0.3, 90);
     await oy.soyle(K.cozuldu, 'kino');
     oy.kinoPoz(null);
+    if (this.kapali) return;
+    // vaka çözüldü: Mino gözlerini kapayıp derin bir oh çeker (rahat pozu; şapkası başında), sonra çizgi roman
+    if (resim('poz-mino-rahat')) {
+      await this.bekle(150);
+      void oy.minoPoz.goster('mino-rahat');
+      const [mx, my] = this.efekt.merkez(oy.mino.el, 0.5, 0.15);
+      this.sonra(300, () => this.efekt.parilti(mx, my, 6, 0.6));
+      await this.bekle(1700);
+      if (this.kapali) return;
+      await oy.minoPoz.birak();
+    }
   }
 
   /** Devrik lambayı masaya sürükle (dokunmak da olur): masada dik durur */

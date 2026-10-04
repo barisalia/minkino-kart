@@ -74,6 +74,13 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   ordek: { adaylar: ['ordek'], yedek: 'hayvanlar/ordek', zorunlu: false },
   // Pamuk'un tek resmi (çizgi roman yedeği; asıl Pamuk iskelet: assets/karakter-iskelet/pamuk)
   'pamuk-b': { adaylar: ['pamuk-b', 'pamuk'], zorunlu: true },
+  // poz ekleri (Gemini, şeffaf): hikâyenin birkaç anında iskeletin yerine kısa süre (poz.ts); yoksa iskelet kalır
+  'poz-kino-kayma': { adaylar: ['poz-kino-kayma'], zorunlu: false },
+  'poz-kino-utanc': { adaylar: ['poz-kino-utanc'], zorunlu: false },
+  'poz-mino-rahat': { adaylar: ['poz-mino-rahat'], zorunlu: false },
+  'poz-pamuk-surunme': { adaylar: ['poz-pamuk-surunme'], zorunlu: false },
+  'poz-pamuk-ozur': { adaylar: ['poz-pamuk-ozur'], zorunlu: false },
+  'poz-pamuk-el-salla': { adaylar: ['poz-pamuk-el-salla'], zorunlu: false },
   // çizgi roman kareleri (Gemini, aynı stil, 4:3); yoksa sahne çizimlerinden kurulur
   'roman-1': { adaylar: ['roman-1'], zorunlu: false },
   'roman-2': { adaylar: ['roman-2'], zorunlu: false },

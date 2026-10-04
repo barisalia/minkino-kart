@@ -10,10 +10,11 @@ import { KINO_SESI, konus } from '../../src/audio/ses';
 import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
 import { altPayi, boyGenislik, CIZIM } from '../../src/karakter/boy';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
-import { Mino, type Tepki } from '../../src/mino/mino';
+import { Mino, minoDedektifYukle, type Tepki } from '../../src/mino/mino';
 import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
+import { PozYuvasi } from './poz';
 
 /** Kino'nun kutusu Mino'nun kutu genişliğine göre (Mino kutusu 1360 × 1790; Kino 0.74 boy) */
 export const KINO_ORAN = boyGenislik('kino', 1);
@@ -56,6 +57,7 @@ export class Oyuncular {
   /** balonlar her şeyin üstünde ayrı bir katmanda (kartların, fotoğrafın üstünde); konuşanın başına göre konur */
   readonly balonKatman: HTMLElement;
   private pamukKaynak: HTMLElement | null = null;
+  private sapkaSvg: string | null = null;
   private sira: Promise<void> = Promise.resolve();
   private kapali = false;
   private yukSol = 0;
@@ -64,10 +66,25 @@ export class Oyuncular {
   /** son söylenen (tekrar dinle) */
   son: { soz: Soylenecek; kim: Kim; ton?: number } | null = null;
 
+  /** poz ekleri (poz.ts): iskeletin yerine kısa süre tek resim */
+  readonly minoPoz: PozYuvasi;
+  readonly kinoPozu: PozYuvasi;
+  pamukPoz: PozYuvasi | null = null;
+
   constructor() {
     this.minoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), this.yuruyen.el);
     this.minoYer = h('div.dd-oyuncu.dd-mino-yer', { 'data-oyuncu': 'mino' }, this.minoHareket);
-    this.kinoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-kino-kutu', {}, this.kino.el));
+    const kinoKutu = h('div.dd-kino-kutu', {}, this.kino.el);
+    this.kinoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), kinoKutu);
+    this.minoPoz = PozYuvasi.mino(this.yuruyen.el, this.mino.el);
+    this.kinoPozu = PozYuvasi.kino(kinoKutu, this.kino.el);
+    // rahatlayan Mino da dedektif şapkasını çıkarmaz: şapka (iskeletteki çizim) pozun başına konur
+    void minoDedektifYukle().then((e) => (this.sapkaSvg = e?.sapka ?? null));
+    this.minoPoz.ekler['mino-rahat'] = () => {
+      if (!this.sapkaSvg || !this.mino.dedektifSu.sapka) return null;
+      // şapkanın iskeletteki sınırı (mino-dedektif-svg.ts: translate(985 560) scale(0.7) translate(-1545 -822), resim 942×708)
+      return h('div.dd-poz-sapka', { html: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="649 68.6 659.4 495.6">${this.sapkaSvg}</svg>` });
+    };
     this.kinoYer = h('div.dd-oyuncu.dd-kino-yer', { 'data-oyuncu': 'kino', style: `--ko:${KINO_ORAN.toFixed(3)};--ka:${KINO_ALT.toFixed(3)}` }, this.kinoHareket);
     this.el = h('div.dd-oyuncular', { style: `--ko:${KINO_ORAN.toFixed(3)}` }, this.minoYer, this.kinoYer);
     this.balonKatman = h('div.dd-balonlar', { 'aria-hidden': 'true' }, this.balonlar.mino, this.balonlar.kino, this.balonlar.pamuk);
@@ -83,7 +100,9 @@ export class Oyuncular {
     if (this.pamukYer && this.pamukEkran) return this.pamukEkran;
     this.pamukEkran = new Karakter('pamuk', h('div'));
     this.pamuk = this.pamukEkran;
-    this.pamukHareket = h('div.dd-hareket', {}, h('i.dd-golge'), h('div.dd-pamuk-kutu', {}, this.pamukEkran.el));
+    const kutu = h('div.dd-pamuk-kutu', {}, this.pamukEkran.el);
+    this.pamukHareket = h('div.dd-hareket', {}, h('i.dd-golge'), kutu);
+    this.pamukPoz = PozYuvasi.pamuk(kutu, this.pamukEkran.el);
     this.pamukYer = h('div.dd-oyuncu.dd-pamuk-yer', { 'data-oyuncu': 'pamuk', style: `--po:${PAMUK_ORAN.toFixed(3)};--pa:${PAMUK_ALT.toFixed(3)}` }, this.pamukHareket);
     this.el.append(this.pamukYer);
     this.pamukKaynak = null;
@@ -98,6 +117,9 @@ export class Oyuncular {
 
   kapat() {
     this.kapali = true;
+    this.minoPoz.temizle();
+    this.kinoPozu.temizle();
+    this.pamukPoz?.temizle();
     this.mino.kapat();
     this.kino.kapat();
     this.pamuk?.kapat();
