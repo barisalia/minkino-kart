@@ -63,7 +63,8 @@ export function katalog(): KatalogFilm[] {
         ogut: s?.ogut ?? ogretir.charAt(0).toLocaleUpperCase('tr') + ogretir.slice(1),
         renk: s?.renk ?? '#9B5CE0',
         yeni: !!s?.yeni,
-        dakika: Math.max(1, Math.round(filmSuresi(f) / 60)),
+        // yukarı yuvarlanır: ~87 sn "2 dk" (aşağı yuvarlanınca 1,5 dakikalık film "1 dk" görünüyordu)
+        dakika: Math.max(1, Math.ceil(filmSuresi(f) / 60)),
         kapak: KAPAKLAR[`../../assets/film/kapak/${ad}.webp`] ?? '',
       };
     });
