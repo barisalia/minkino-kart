@@ -303,6 +303,13 @@
   transform-origin: 100% 50%;
   transform: scaleX(var(--pk, 2));
 }
+/* kısa açılış: perde baştan açık (kapalı perde bir an bile görünmesin) */
+.fl-kok .fl-in[data-tur='kisa'] .fl-in-perde.sol {
+  transform: translateX(-52%);
+}
+.fl-kok .fl-in[data-tur='kisa'] .fl-in-perde.sag {
+  transform: translateX(52%);
+}
 /* sağ kanat: resim aynalanır (kutu dönüşümü pozitif kalır, kanat ekranın içine doğru açılır) */
 .fl-kok .fl-in-perde.sag .fl-in-perde-resim {
   transform: scaleX(-1);
