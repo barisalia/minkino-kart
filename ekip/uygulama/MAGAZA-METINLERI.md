@@ -44,7 +44,7 @@ Minkino, 3-6 yaş için hazırlanmış Türkçe ve sesli eğitici bir oyun düny
  – Elektrikler Kesildi!: Karanlıktan korkan Kino'ya cesaret ver, battaniyeden çadır kur.
  – Salıncak Kimin?: Parkta sırayla sallanmayı, beklemeyi ve paylaşmayı keşfet.
 
-• **Çizgi Filmler:** Mino ile Kino'nun 6 kısa, eğitici çizgi filmi. Her biri yaklaşık bir dakika ve küçük bir öğütle bitiyor: paylaşmak, özür dilemek, oyundan sonra toplamak…
+• **Çizgi Filmler:** Mino ile Kino'nun 6 kısa, eğitici çizgi filmi. Her biri paylaşmak, özür dilemek, oyundan sonra toplamak gibi güzel bir davranışı anlatıyor.
 
 • **Çiz Canlansın:** Resmini çiz, boya, çizdiğin balık yüzsün, araba gitsin, kelebek uçsun! Yaşa göre yol takibi, noktaları birleştirme ya da bakarak çizim.
 
@@ -140,7 +140,7 @@ Terms of Use: [link]
 | 2 | Ege'de kukla ya da Banyo'da baloncuk | **Sesinle oyna: üfle, söyle!** | **Play with your voice!** |
 | 3 | Kartlar | **Say, eşleştir, öğren!** | **Count, match and learn!** |
 | 4 | Sesli Macera (Salıncak ya da Elektrik) | **Her oyun bir hikâye** | **Every game tells a story** |
-| 5 | Çizgi film karesi | **Öğüt veren çizgi filmler** | **Cartoons with gentle lessons** |
+| 5 | Çizgi film karesi | **Eğlenceli, eğitici çizgi filmler** | **Fun, educational cartoons** |
 | 6 | Pasta Otobüsü ya da Çiz Canlansın | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
 | 7 | Okula Hazırım: Sayı Bahçesi, rakam çizme | **Okula hazırlık: sayılar, harfler** | **Ready for school: numbers & letters** |
 
