@@ -11,6 +11,7 @@ import { saglayici } from '../../src/abonelik/satin';
 import { incelemeAcikMi, kilitli, premiumAyarla, premiumMu } from '../../src/engine/erisim';
 import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
+import { sayfaAdresi } from '../../src/kabuk/sayfa';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
 import { efekt } from '../../src/audio/ses';
 import '../../src/karakter/karakter.css';
@@ -200,7 +201,7 @@ export function menuEkrani(app: Uygulama): Ekran {
   const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
   const kartlar = oyunlar.map((k, i) => {
     const govde = h('span.ug-kart-govde', {}, kartResmi(k), h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
-    const a = h('a.ug-kart', { href: k.adres, 'data-oyun': k.id, 'aria-label': k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
+    const a = h('a.ug-kart', { href: sayfaAdresi(k.adres), 'data-oyun': k.id, 'aria-label': k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
     kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');

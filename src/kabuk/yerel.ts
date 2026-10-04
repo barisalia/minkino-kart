@@ -144,7 +144,7 @@ function kabuguKur() {
     else if (karar === 'cik') void App.exitApp();
     else if (karar === 'menu') {
       gidiliyor = true;
-      location.assign(new URL('/', location.href).href);
+      location.assign(new URL('/index.html', location.href).href);
     }
   });
 

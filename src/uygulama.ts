@@ -1,4 +1,5 @@
 import { kayitlariHazirla } from './audio/kayit';
+import { sayfaAdresi } from './kabuk/sayfa';
 import { sesiAc, sus } from './audio/ses';
 import { h, sure, TEST_MODU } from './ui/dom';
 
@@ -30,14 +31,14 @@ export interface BaslatSecenekleri {
 export const anaMenuyeDon = () => {
   const menu = new URL('../', location.href);
   if (menudenGelindi(menu)) history.back();
-  else location.replace(menu.href);
+  else location.replace(sayfaAdresi(menu.href));
 };
 
 function menudenGelindi(menu: URL): boolean {
   try {
     if (!document.referrer || history.length < 2) return false;
     const r = new URL(document.referrer);
-    return r.origin === menu.origin && r.pathname.replace(/index\.html$/, '') === menu.pathname;
+    return r.origin === menu.origin && r.pathname.replace(/index\.html$/, '') === menu.pathname.replace(/index\.html$/, '');
   } catch {
     return false;
   }
