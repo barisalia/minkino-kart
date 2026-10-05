@@ -27,7 +27,8 @@
     "zor": "Beklemek zor…",
     "on_oldu": "On oldu mu?",
     "yasasin": "Yaşasın!",
-    "sagol": "Bana mı? Sağ ol!"
+    "sagol": "Bana mı? Sağ ol!",
+    "bebek_degilim": "Ben bebek değilim ki!"
   },
   "balon": {
     "guzel": "Ooo, böyle daha güzel!",
@@ -36,6 +37,7 @@
     "yardim": "Yardım!",
     "pop": "Pop!",
     "ben_mino": "Ben Mino'yum!",
+    "yakismisti": "Ama bana yakışmıştı…",
     "sira_bende": "Sıra bende!",
     "bekledin": "Sen çok güzel bekledin. Bir tur daha senin!",
     "hadi": "Hadi bakalım…",

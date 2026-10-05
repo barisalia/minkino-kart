@@ -403,7 +403,12 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     };
   }
   /** Kino'nun bedeni: 'on' önden, 'yan' yan görünüş (koşu), 'ters' karnının üstünde (yan görünüş yatık) */
+  let kinoBedenSon: 'on' | 'yan' | 'ters' = 'on';
   const kinoBeden = (b: 'on' | 'yan' | 'ters') => {
+    // çizim değişirken (önden ↔ yandan) minik bir esneme: dönüş çizgi film gibi, birden atlamaz
+    if (b !== kinoBedenSon && KN.el.isConnected)
+      KN.el.animate([{ scale: '0.9 1.07', transformOrigin: '50% 100%' }, { scale: '1.04 0.97', transformOrigin: '50% 100%', offset: 0.6 }, { scale: '1 1', transformOrigin: '50% 100%' }], { duration: sure(240), easing: 'ease-out' });
+    kinoBedenSon = b;
     KN.el.classList.toggle('sl-yandan', b !== 'on');
     KN.el.classList.toggle('sl-ters', b === 'ters');
   };
@@ -816,6 +821,20 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     // dikeyde sol A ayağı ve büyük salıncak (tablette bebek oturağı da); kadraj koruması ayakları kesik bırakmaz
     return dar ? cekB(-86, 6, ZEMIN - 10, BAR_Y + 6, zmax, ms) : dikey ? cekB(-88, 34, ZEMIN - 10, BAR_Y + 6, zmax, ms) : cekB(-70, 30, ZEMIN - 10, BAR_Y + 6, zmax, ms);
   }
+  /**
+   * Salıncağı frenler: en az `ms` sürtünmeyle yavaşlar, iyice durulana kadar (en çok 1.5 sn daha) bekler, sonra durur
+   * (salınırken birden donmaz)
+   */
+  async function frenle(sk: SarkacDom, ms: number, surt = 6) {
+    sk.surt = surt;
+    try {
+      await bekle(ms);
+      for (let t = 0; t < 1500 && sk.s.genlik > 0.02; t += 100) await bekle(100);
+    } finally {
+      sk.surt = 1;
+    }
+    sk.s.durdur();
+  }
   /** Bank ve salıncak birlikte */
   function cekBankSalincak(ms = 1000) {
     return dar ? cekB(-128, -60, ZEMIN - 10, 96, 2.4, ms) : cekB(-140, 22, ZEMIN - 12, BAR_Y + 8, 2.2, ms);
@@ -947,13 +966,24 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       // takla atıp oturur
       S.hop(0.8);
       KN.gov.style.rotate = '';
-      await KN.gov.animate([{ rotate: '0deg', translate: '0 0' }, { rotate: '200deg', translate: '0 -40%', offset: 0.5 }, { rotate: '360deg', translate: '0 0' }], { duration: sure(620), easing: 'cubic-bezier(0.4, 0, 0.3, 1)' }).finished.catch(() => undefined);
-      kinoBeden('on');
+      // takla iki yarıda: tepede (dönerken) çizim önden görünüşe geçer ve oturuş yerine kayar; iniş yumuşak (birden atlamaz)
+      await KN.gov.animate([{ rotate: '0deg', translate: '0 0' }, { rotate: '180deg', translate: '0 -40%' }], { duration: sure(310), easing: 'cubic-bezier(0.4, 0, 0.6, 1)' }).finished.catch(() => undefined);
       const p = binYer(KINO_OTURMA);
+      const once = KN.el.getBoundingClientRect();
+      KN.el.classList.toggle('sl-yandan', false);
+      KN.el.classList.toggle('sl-ters', false);
+      kinoBedenSon = 'on';
       KN.el.style.setProperty('--x', String(p.x));
       KN.el.style.setProperty('--y', String(p.y));
       otur(KN, true);
+      const sonra = KN.el.getBoundingClientRect();
+      const olcek = sonra.width / Math.max(1, KN.el.offsetWidth) || 1;
+      const dy = (once.bottom - sonra.bottom) / olcek;
+      KN.el.animate([{ translate: `0px ${dy}px` }, { translate: '0px 0px' }], { duration: sure(310), easing: 'cubic-bezier(0.3, 0, 0.4, 1)' });
+      await KN.gov.animate([{ rotate: '180deg', translate: '0 -40%' }, { rotate: '360deg', translate: '0 0' }], { duration: sure(310), easing: 'cubic-bezier(0.4, 0, 0.3, 1)' }).finished.catch(() => undefined);
       S.pat();
+      // Mino alkışlar: "İşte böyle!"
+      MN.tepki('evet');
       await KN.gov.animate([{ scale: '1.12 0.86' }, { scale: '0.95 1.05' }, { scale: '1 1' }], { duration: sure(360), easing: 'ease-out' }).finished.catch(() => undefined);
     });
   }
@@ -1181,8 +1211,15 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     S.hop(0.7);
     kn.otur = false;
     kn.yukSol = kn.yukSag = 150;
-    KN.el.classList.add('sl-bas-asagi');
-    KN.el.style.setProperty('--y', String(binYer(-3).y));
+    // oturaktan kalkıp zincire tırmanır (yerinden birden atlamaz): FLIP
+    {
+      const once = KN.el.getBoundingClientRect();
+      KN.el.classList.add('sl-bas-asagi');
+      KN.el.style.setProperty('--y', String(binYer(-3).y));
+      const sonra = KN.el.getBoundingClientRect();
+      const olcek = sonra.width / Math.max(1, KN.el.offsetWidth) || 1;
+      KN.el.animate([{ translate: `${(once.left - sonra.left) / olcek}px ${(once.bottom - sonra.bottom) / olcek}px` }, { translate: '0px 0px' }], { duration: sure(500), easing: 'cubic-bezier(0.3, 0, 0.3, 1)' });
+    }
     await KN.gov.animate([{ rotate: '0deg' }, { rotate: '180deg' }], { duration: sure(500), easing: 'cubic-bezier(0.4, 0, 0.3, 1.3)' }).finished.catch(() => undefined);
     KN.gov.style.rotate = '180deg';
     BUYUK.s.genlikYap(0.34);
@@ -1338,17 +1375,23 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     kn.yukSol = kn.yukSag = 160;
     S.vizz(0.3);
     await KN.git(X(KUM_YER.x), Y(KUM_YER.y + 6), 460, 10, 'linear');
-    KN.el.classList.add('sl-gizli');
+    // kuma dalar: basılıp aşağı batar (birden kaybolmaz), yığın aynı anda kabarır
     S.puf();
+    const dal = KN.gov.animate([{ translate: '0 0', scale: '1 1', opacity: 1 }, { translate: '0 45%', scale: '1.15 0.5', opacity: 0 }], { duration: sure(200), easing: 'ease-in', fill: 'forwards' });
     const yigin = koy(h('div.sl-yigin', { 'data-el': 'yigin', html: kumYiginSvg() }), KUM_YER.x, KUM_YER.y + 5.5, 26, 8);
     kumSac(KUM_YER.x, KUM_YER.y + 10, 14);
     void balonGoster(balonKatman, yigin.getBoundingClientRect(), B.puf, 900, 0.2);
     void son;
+    await dal.finished.catch(() => undefined);
+    KN.el.classList.add('sl-gizli');
+    dal.cancel();
     await bekle(1300);
     // kumdan fırlar, silkelenir: kum Mino'ya sıçrar
     yigin.classList.add('gidiyor');
     setTimeout(() => yigin.remove(), sure(400));
     KN.el.classList.remove('sl-gizli');
+    // kumdan fırlarken büyüyerek çıkar (birden belirmez)
+    KN.gov.animate([{ translate: '0 45%', scale: '1.1 0.5', opacity: 0 }, { translate: '0 -6%', scale: '0.92 1.1', opacity: 1, offset: 0.6 }, { translate: '0 0', scale: '1 1', opacity: 1 }], { duration: sure(320), easing: 'ease-out' });
     kn.otur = false;
     kn.yukSol = kn.yukSag = 0;
     KN.katman = 12;
@@ -1496,11 +1539,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   // ================================================================ 5: Nazlı Mino
   async function sahne5() {
     // Can iner, banka döner; Mino biner, fularını düzeltir
-    const fren = BUYUK;
-    fren.surt = 6;
-    await bekle(900);
-    BUYUK.s.durdur();
-    fren.surt = 1;
+    await frenle(BUYUK, 900);
     await in_(CAN, ASKI.buyuk + 30, ZEMIN - 6, 11);
     CAN.selam(900);
     void CAN.git(X(CAN_BANK.x), Y(ZEMIN), 1400).then(() => {
@@ -1568,10 +1607,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
         await fularUcur().catch(() => undefined);
         await mSoyle(M.yumusak).catch(() => undefined);
         // salıncak durulur, tüyler iner, fular döner
-        sk.surt = 5;
-        await bekle(1200).catch(() => undefined);
-        sk.surt = 1;
-        BUYUK.s.durdur();
+        await frenle(sk, 1200, 5).catch(() => undefined);
         MN.pofuduk(0);
         await fularGeri().catch(() => undefined);
         mesgul = false;
@@ -1650,11 +1686,35 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await bekle(1500);
     MN.gozSik(false);
   }
+  /** Fular Kino'nun kafasından süzülüp Mino'nun boynuna döner (birden kaybolup belirmez); Kino biraz bozulur */
   async function fularGeri() {
-    KN.kap.querySelectorAll('.sl-kino-fular').forEach((e) => e.remove());
+    const eski = [...KN.kap.querySelectorAll<SVGElement>('.sl-kino-fular')];
+    const sr = sahne.el.getBoundingClientRect();
+    const k = KN.kap.getBoundingClientRect();
+    const [mx, my] = MN.fularEkran();
+    const x0 = k.left + k.width * 0.5 - sr.left;
+    const y0 = k.top + k.height * 0.08 - sr.top;
+    const w = MN.kap.getBoundingClientRect().width * 0.42;
+    const el = h('div.sl-fular', { html: fularSvg('kirmizi'), style: `left:${x0}px;top:${y0}px;width:${w}px` });
+    sahne.el.append(el);
+    eski.forEach((e) => e.remove());
     S.firr();
-    await bekle(300);
+    KN.kinoIfade('uzgun', 1400);
+    void balon(KN, B.yakismisti, 1300);
+    const dx = mx - sr.left - x0;
+    const dy = my - sr.top - y0;
+    await el
+      .animate(
+        [
+          { transform: 'translate(-50%, -50%) rotate(350deg)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${dx * 0.5}px), calc(-50% + ${dy * 0.5 - 90}px)) rotate(120deg)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(0deg)`, opacity: 1 },
+        ],
+        { duration: sure(700), easing: 'cubic-bezier(0.3, 0, 0.4, 1)', fill: 'forwards' },
+      )
+      .finished.catch(() => undefined);
     MN.fular(true);
+    void el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: sure(120), fill: 'forwards' }).finished.then(() => el.remove(), () => el.remove());
     MN.tepki('duzelt');
   }
 
@@ -1663,9 +1723,25 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     // Mino iner; anne Ege'yi kucaklayıp kalkar
     await in_(MN, ASKI.buyuk - 40, ZEMIN - 5, 12);
     MN.katman = 12;
+    // banktan kalkış: oturuş çizimi ayakta çizimine geçerken çöküp doğrulur (birden atlamaz)
+    const anneOnce = ANNE.el.getBoundingClientRect();
     ANNE.poz('ayakta');
     ANNE.el.style.setProperty('--y', String(Y(ZEMIN)));
     ANNE.el.style.setProperty('--x', String(X(ANNE_YER.x)));
+    {
+      const sonra = ANNE.el.getBoundingClientRect();
+      const olcek = sonra.width / Math.max(1, ANNE.el.offsetWidth) || 1;
+      // (gövdede: yürüme el'in translate'ini kullanır, bu ikisi üst üste biner)
+      const dy = (anneOnce.bottom - sonra.bottom) / olcek;
+      ANNE.gov.animate(
+        [
+          { transformOrigin: '50% 100%', translate: `0px ${dy}px`, scale: '1.04 0.9', opacity: 0.8 },
+          { transformOrigin: '50% 100%', translate: `0px ${dy * 0.3}px`, scale: '0.98 1.03', opacity: 1, offset: 0.6 },
+          { transformOrigin: '50% 100%', translate: '0px 0px', scale: '1 1', opacity: 1 },
+        ],
+        { duration: sure(520), easing: 'ease-out' },
+      );
+    }
     ANNE.katman = 10;
     const anneYol = ANNE.git(X(ASKI.bebek + 20), Y(ZEMIN - 1), 2600);
     // bu arada Kino bebek oturağına kendisi girer, sıkışır
@@ -1697,7 +1773,10 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     KN.koy(X(ASKI.bebek - 22), Y(ZEMIN - 4));
     S.pat();
     KN.kinoIfade('saskin', 1200);
-    await bekle(600);
+    // yere oturup kendini silkeler: "Ben bebek değilim ki!"; Mino kıkırdar
+    KN.kinoOynat('silkelen', 700);
+    MN.tepki('gidik');
+    await kSoyle(KN_.bebek_degilim);
     // anne Ege'yi oturtur
     void ANNE.balon(B.hadi, 1500);
     egeKap.classList.remove('kucakta');
