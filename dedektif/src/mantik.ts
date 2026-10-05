@@ -12,9 +12,18 @@ export const M = D.mino;
 export const K = D.kino;
 
 // ---------------------------------------------------------------- odalar
-export type OdaId = 'calisma' | 'koridor' | 'yatak' | 'mutfak';
-/** Odanın en / boy oranı (resimlerin kendi oranı: film/ev 2752×1536, koridor ve yatak odası 1920×1080) */
-export const ODA_ORAN: Record<OdaId, number> = { calisma: 2752 / 1536, koridor: 16 / 9, yatak: 16 / 9, mutfak: 2752 / 1536 };
+/** Vaka 1: ev odaları; Vaka 2: bahçenin üç bölümü (çamaşır ipi, çalılı yol, gölet kenarı) */
+export type OdaId = 'calisma' | 'koridor' | 'yatak' | 'mutfak' | 'bahce-ip' | 'bahce-yol' | 'bahce-golet';
+/** Odanın en / boy oranı (resimlerin kendi oranı: film/ev 2752×1536, koridor ve yatak odası 1920×1080, bahçe 4096×2286) */
+export const ODA_ORAN: Record<OdaId, number> = {
+  calisma: 2752 / 1536,
+  koridor: 16 / 9,
+  yatak: 16 / 9,
+  mutfak: 2752 / 1536,
+  'bahce-ip': 4096 / 2286,
+  'bahce-yol': 4096 / 2286,
+  'bahce-golet': 4096 / 2286,
+};
 /** Dünya biriminde oda yüksekliği (CSS px; kamera ölçekler) */
 export const ODA_H = 1000;
 export const odaW = (o: OdaId) => Math.round(ODA_H * ODA_ORAN[o]);
@@ -277,6 +286,17 @@ export const YARDIM = {
 };
 
 // ---------------------------------------------------------------- kart sorusu
+/** Kart sorusunun bilmesi gerekenler (Vaka 1'in Halka'sı da, Vaka 2'nin halkaları da bu kalıpta) */
+export interface SorguHalkasi {
+  id: string;
+  soru: string;
+  kino?: string;
+  kinoKart?: string;
+  kartlar: readonly string[];
+  dogru?: string;
+  demekKi: string;
+  demekResim: string;
+}
 export interface SecimSonucu {
   dogru: boolean;
   /** bu seçimden sonra doğru kart parlasın mı (2 yanlış) */
@@ -286,12 +306,12 @@ export interface SecimSonucu {
 }
 /** Bir halkanın kart sorusu: yanlış kartlar kendini anlatıp soluklaşır, 2 yanlıştan sonra doğru kart parlar. Kilitlenmez. */
 export class Soru {
-  readonly yanlislar: KartId[] = [];
+  readonly yanlislar: string[] = [];
   cozuldu = false;
-  constructor(readonly halka: Halka) {
+  constructor(readonly halka: SorguHalkasi) {
     if (!halka.dogru || !halka.kartlar.includes(halka.dogru)) throw new Error(`Halka ${halka.id}: doğru kart yok`);
   }
-  sec(id: KartId): SecimSonucu {
+  sec(id: string): SecimSonucu {
     if (!this.halka.kartlar.includes(id)) throw new Error(`Bu soruda olmayan kart: ${id}`);
     if (id === this.halka.dogru) {
       this.cozuldu = true;
@@ -301,7 +321,7 @@ export class Soru {
     return { dogru: false, parla: this.parlasin, yanlis: this.yanlislar.length };
   }
   /** seçilebilir kartlar (soluklaşan yanlışlar hariç) */
-  get acik(): KartId[] {
+  get acik(): string[] {
     return this.halka.kartlar.filter((k) => !this.yanlislar.includes(k));
   }
   get parlasin(): boolean {
@@ -310,7 +330,7 @@ export class Soru {
 }
 
 /** Kartları karıştırır; Kino'nun gösterdiği kart ortada olmasın (atılıp gösterişi görünsün diye kenarda) */
-export function kartSirasi(h: Halka, rnd: () => number = Math.random): KartId[] {
+export function kartSirasi(h: SorguHalkasi, rnd: () => number = Math.random): string[] {
   const a = [...h.kartlar];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rnd() * (i + 1));
@@ -327,28 +347,37 @@ export const sonrakiAdim = (a: Adim): Adim | null => ADIMLAR[ADIMLAR.indexOf(a) 
 export const halkaAdimi = (a: Adim): HalkaId | null => (a === 'iz' || a === 'tuy' || a === 'neden' || a === 'nerede' ? a : null);
 
 export interface DosyaGozu {
-  halka: HalkaId;
+  halka: string;
   /** bulunan ipuçları */
   ipuclari: string[];
   /** "Demek ki" kartı girdi mi */
   demek: boolean;
 }
+/** Dosyadaki bir göz için halkanın bilmesi gerekenler (Vaka 1 ve Vaka 2 halkaları) */
+export interface DosyaHalkasi {
+  id: string;
+  ipuclari: readonly { id: string; resim: string; foto?: string }[];
+  demekResim: string;
+}
 /** Ekranın üstündeki vaka dosyası: her halkaya bir göz; ipuçları ve "demek ki" kartları buraya yapışır */
 export class Dosya {
-  readonly gozler: DosyaGozu[] = HALKALAR.map((h) => ({ halka: h.id, ipuclari: [], demek: false }));
-  goz(h: HalkaId): DosyaGozu {
+  readonly gozler: DosyaGozu[];
+  constructor(readonly halkalar: readonly DosyaHalkasi[] = HALKALAR) {
+    this.gozler = halkalar.map((h) => ({ halka: h.id, ipuclari: [], demek: false }));
+  }
+  goz(h: string): DosyaGozu {
     return this.gozler.find((g) => g.halka === h)!;
   }
-  ipucuEkle(h: HalkaId, ipucu: string) {
+  ipucuEkle(h: string, ipucu: string) {
     const g = this.goz(h);
     if (!g.ipuclari.includes(ipucu)) g.ipuclari.push(ipucu);
   }
-  demekEkle(h: HalkaId) {
+  demekEkle(h: string) {
     this.goz(h).demek = true;
   }
   /** halkanın bütün ipuçları bulundu mu */
-  ipuclariTamam(h: HalkaId): boolean {
-    const t = halka(h).ipuclari;
+  ipuclariTamam(h: string): boolean {
+    const t = this.halkalar.find((x) => x.id === h)?.ipuclari ?? [];
     return t.every((i) => this.goz(h).ipuclari.includes(i.id));
   }
   /** çözülen halka sayısı */
@@ -356,14 +385,14 @@ export class Dosya {
     return this.gozler.filter((g) => g.demek).length;
   }
   get tamam(): boolean {
-    return this.cozulen === HALKALAR.length;
+    return this.cozulen === this.halkalar.length;
   }
-  /** Test kısayolu: bu adımdan önceki halkalar çözülmüş sayılır */
-  static adimdan(a: Adim): Dosya {
-    const d = new Dosya();
-    const n = ADIMLAR.indexOf(a);
-    for (const h of HALKALAR) {
-      if (ADIMLAR.indexOf(h.id) >= n) break;
+  /** Test kısayolu: bu adımdan önceki halkalar çözülmüş sayılır (adımlar: vakanın adım sırası) */
+  static adimdan(a: string, adimlar: readonly string[] = ADIMLAR, halkalar: readonly DosyaHalkasi[] = HALKALAR): Dosya {
+    const d = new Dosya(halkalar);
+    const n = adimlar.indexOf(a);
+    for (const h of halkalar) {
+      if (adimlar.indexOf(h.id) >= n) break;
       for (const i of h.ipuclari) d.ipucuEkle(h.id, i.id);
       d.demekEkle(h.id);
     }
@@ -435,11 +464,12 @@ export const ekranda = (k: Kamera, dunya: { w: number; h: number }, x: number, y
 const topla = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
 /** Anlatıcı sesiyle seslendirilen cümleler: Mino, kart hayvanları, Pamuk (tonlu çalınır); Kino'nunkiler yedek olarak da */
 export function dedektifCumleleri(): string[] {
-  return [...new Set([...topla(D.mino), ...topla(D.kart), ...topla(D.pamuk)])];
+  const v2 = D.vaka2;
+  return [...new Set([...topla(D.mino), ...topla(D.kart), ...topla(D.pamuk), ...topla(v2.mino), ...topla(v2.ordek), ...topla(v2.konuk)])];
 }
-/** Kino'nun kendi sesiyle seslendirilecek cümleler */
+/** Kino'nun kendi sesiyle seslendirilecek cümleler (iki vaka) */
 export function dedektifKinoCumleleri(): string[] {
-  return topla(D.kino);
+  return [...new Set([...topla(D.kino), ...topla(D.vaka2.kino)])];
 }
 
 // ---------------------------------------------------------------- dikey çalışma odası (film/ev/oda-dikey, 1536×2752)

@@ -21,10 +21,13 @@ function zemin(urller: string[], boy: number, x: number, y: number): HTMLElement
 }
 const CALISMA = () => [filmKatmani('ev', 'arka-uzak'), filmKatmani('ev', 'arka-orta'), filmKatmani('ev', 'arka-on')];
 
+/** Çizgi roman karesi: sıra ve resim (Vaka 1 karelerinin bir de yedek kurgusu var) */
+export type Kare = Pick<RomanKaresi, 'sira' | 'resim'> & { kurgu?: RomanKaresi['kurgu'] };
+
 /** Bir karenin içi (Gemini karesi ya da yedek kurgu) */
-export function kareIcerik(k: RomanKaresi): HTMLElement {
+export function kareIcerik(k: Kare): HTMLElement {
   const g = resim(k.resim);
-  if (g) return h('div.dd-kare-ic', {}, h('img.dd-kare-resim', { src: g, alt: '', draggable: 'false' }));
+  if (g || !k.kurgu) return h('div.dd-kare-ic', {}, h('img.dd-kare-resim', { src: g ?? '', alt: '', draggable: 'false' }));
   switch (k.kurgu) {
     case 'iz':
       return h('div.dd-kare-ic.dd-kurgu-iz', {}, zemin(CALISMA(), 330, 50, 100), img('kart-kedi-pati-izi', 'dd-k-iz'), h('div.dd-k-buyutec', {}, h('i.bt-halka'), h('i.bt-sap')));
@@ -45,12 +48,12 @@ export interface Roman {
   muhur: HTMLElement;
 }
 
-/** Çizgi roman sayfası (kareler henüz görünmez: goster() ile gelir) */
-export function romanKur(): Roman {
-  const kareler = ROMAN.map((k) => h('div.dd-kare', { 'data-kare': String(k.sira), style: `--i:${k.sira - 1}` }, kareIcerik(k), h('b.dd-kare-no', {}, String(k.sira))));
+/** Çizgi roman sayfası (kareler henüz görünmez: goster() ile gelir). Vaka 2 kendi karelerini ve başlığını verir. */
+export function romanKur(kareTablosu: readonly Kare[] = ROMAN, baslik: string = D.vaka, vaka = 'vaka1'): Roman {
+  const kareler = kareTablosu.map((k) => h('div.dd-kare', { 'data-kare': String(k.sira), style: `--i:${k.sira - 1}` }, kareIcerik(k), h('b.dd-kare-no', {}, String(k.sira))));
   const muhur = h('div.dd-muhur', {}, D.yazi.cozuldu);
   const alt = h('div.dd-roman-alt');
-  const el = h('div.dd-roman', { 'data-ekran-ici': 'roman' }, h('div.dd-roman-sayfa', {}, h('h2.dd-roman-baslik', {}, D.vaka), h('div.dd-roman-izgara', {}, ...kareler), muhur), alt);
+  const el = h('div.dd-roman', { 'data-ekran-ici': 'roman', 'data-vaka': vaka }, h('div.dd-roman-sayfa', {}, h('h2.dd-roman-baslik', {}, baslik), h('div.dd-roman-izgara', {}, ...kareler), muhur), alt);
   return { el, kareler, alt, muhur };
 }
 

@@ -15,8 +15,19 @@ import { h, sure } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
 import { resim } from './resimler';
 
-export type PozAd = 'kino-kayma' | 'kino-utanc' | 'mino-rahat' | 'pamuk-surunme' | 'pamuk-ozur' | 'pamuk-el-salla';
-export const POZLAR: PozAd[] = ['kino-kayma', 'kino-utanc', 'mino-rahat', 'pamuk-surunme', 'pamuk-ozur', 'pamuk-el-salla'];
+export type PozAd =
+  | 'kino-kayma'
+  | 'kino-utanc'
+  | 'mino-rahat'
+  | 'pamuk-surunme'
+  | 'pamuk-ozur'
+  | 'pamuk-el-salla'
+  // Vaka 2 (assets/dedektif2): Kino atkısız üzgün, Kino göğsüne sarılıp gülümser; Vakvak Anne yuvada, gagasında atkı
+  | 'kino-uzgun'
+  | 'kino-sarilma'
+  | 'ordek-kulucka'
+  | 'ordek-atki';
+export const POZLAR: PozAd[] = ['kino-kayma', 'kino-utanc', 'mino-rahat', 'pamuk-surunme', 'pamuk-ozur', 'pamuk-el-salla', 'kino-uzgun', 'kino-sarilma', 'ordek-kulucka', 'ordek-atki'];
 
 export interface PozOlcu {
   /** resmin görünen yüksekliği / karakterin normal görünen boyu (baş aynı büyüklükte kalsın) */
@@ -38,6 +49,11 @@ export const POZ_OLCU: Record<PozAd, PozOlcu> = {
   'pamuk-surunme': { boy: 0.74, x: 0.06 },
   'pamuk-ozur': { boy: 0.98 },
   'pamuk-el-salla': { boy: 1.04, x: -0.02 },
+  'kino-uzgun': { boy: 1.0 },
+  'kino-sarilma': { boy: 1.0 },
+  // yuvadaki ördek: resim yuvayla birlikte; ördek oturduğu için baş ayaktakinden alçakta
+  'ordek-kulucka': { boy: 0.9 },
+  'ordek-atki': { boy: 1.0 },
 };
 
 /** resimlerin çevresindeki şeffaf pay (gemini-esya.cjs: 6 px) */
@@ -126,6 +142,9 @@ export class PozYuvasi {
   }
   static mino(kutu: HTMLElement, rig: HTMLElement) {
     return new PozYuvasi(kutu, rig, CIZIM.mino);
+  }
+  static ordek(kutu: HTMLElement, rig: HTMLElement) {
+    return new PozYuvasi(kutu, rig, CIZIM.ordek);
   }
 
   get su(): PozAd | null {

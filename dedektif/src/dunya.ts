@@ -38,7 +38,7 @@ export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(pref
 const px = (v: number) => `${v.toFixed(1)}px`;
 
 /** Eşya (oda oranı; alt orta noktası x, y; boy h oda boyunun oranı) */
-function esya(ad: string, o: { x: number; y: number; h: number; don?: number }, sinif = '', W: number): HTMLElement | null {
+export function esya(ad: string, o: { x: number; y: number; h: number; don?: number }, sinif = '', W: number): HTMLElement | null {
   const url = resim(ad);
   if (!url) return null;
   return h(`img.dd-esya${sinif ? '.' + sinif.split(' ').join('.') : ''}`, {
@@ -51,7 +51,7 @@ function esya(ad: string, o: { x: number; y: number; h: number; don?: number }, 
 }
 
 /** Gizli ipucu (ortası x, y) */
-function ipucuEl(t: IpucuTanim, W: number): HTMLElement {
+export function ipucuEl(t: IpucuTanim, W: number): HTMLElement {
   const url = resim(t.resim) ?? '';
   return h(
     `div.dd-ipucu${t.gizli ? '.bt-gizli' : ''}`,
@@ -88,7 +88,7 @@ export interface Oda {
   e: Record<string, HTMLElement>;
 }
 
-function katman(sinif: string, derinlik: number, ...cocuk: (HTMLElement | null)[]) {
+export function katman(sinif: string, derinlik: number, ...cocuk: (HTMLElement | null)[]) {
   return { el: h(`div.dd-katman.${sinif}`, {}, ...cocuk), derinlik };
 }
 
@@ -209,13 +209,13 @@ export type Guvenli = (w: number, hgt: number) => [number, number, number, numbe
  * Dikey (dar) ekranda oda ekranı boydan kaplar; bu kadar yakından bakılır ki pencere / gök yalnız bir şerit kalsın,
  * zemin, halı ve ipuçları ekranın ortasına gelsin (Barış: "ekranın yarısı gökyüzü"). Koridorda iki yol birlikte görünsün diye az.
  */
-export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yatak: 1.6, mutfak: 1.4 };
+export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yatak: 1.6, mutfak: 1.4, 'bahce-ip': 1.6, 'bahce-yol': 1.75, 'bahce-golet': 1.3 };
 
 /**
  * Odaların arka plan resminin doğal boyu (px; resim yüklenene dek). Kamera bu resmi cihazda doğal pikselinin
  * PIKSEL_SINIR (×2.2) katından fazla büyütmez: DAR_YAKIN o sınıra kadar uygulanır (daha büyük çizim gelince tamamı).
  */
-const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536 };
+const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536, 'bahce-ip': 2286, 'bahce-yol': 2286, 'bahce-golet': 2286 };
 
 export class Dunya {
   readonly el: HTMLElement;

@@ -22,14 +22,21 @@ export const KINO_ALT = altPayi(CIZIM.kino);
 export const PAMUK_ORAN = boyGenislik('pamuk', 1);
 export const PAMUK_ALT = altPayi(CIZIM.pamuk);
 
-export type Kim = 'mino' | 'kino' | 'pamuk' | 'kart';
-/** Konuşanın sesi: kart hayvanları ve Pamuk anlatıcı kaydının tonlu çalınışı */
+/** Konuşanlar. Vaka 2'nin konukları (Vakvak Anne, Karabaş, tavşan, Ada) Pamuk'un balonunu kullanır (aynı anda biri). */
+export type Kim = 'mino' | 'kino' | 'pamuk' | 'kart' | 'ordek' | 'kopek' | 'tavsan' | 'ada';
+/** Konuşanın sesi: kart hayvanları, Pamuk ve konuklar anlatıcı kaydının tonlu çalınışı */
 export const SES: Record<Kim, KonusmaSecenegi> = {
   mino: {},
   kino: KINO_SESI,
   pamuk: { ton: 1.22 },
   kart: {},
+  ordek: { ton: 1.18 },
+  kopek: { ton: 0.86 },
+  tavsan: { ton: 1.26 },
+  ada: { ton: 1.12 },
 };
+/** balonu olan konuşan: Mino, Kino ya da konuk (Pamuk'un balonu) */
+const balonSahibi = (kim: Kim): 'mino' | 'kino' | 'pamuk' | null => (kim === 'kart' ? null : kim === 'mino' || kim === 'kino' ? kim : 'pamuk');
 /** Kart hayvanlarının tonu (zürafa kalın, ördek ince) */
 export const KART_TON: Record<string, number> = { zurafa: 0.8, ordek: 1.32, siyah: 0.9 };
 
@@ -114,6 +121,16 @@ export class Oyuncular {
     this.pamuk = k;
     this.pamukKaynak = kap;
   }
+  /**
+   * Vaka 2: konuşan konuk (dünyadaki Vakvak Anne, Ada; sorgudaki Karabaş, tavşan). Balon kap'ın başına konur
+   * (tepe: kabın üstünden aşağı, kabın boyunun oranı: tuvalin üstündeki boşluk), ağız Karakter'in (varsa).
+   */
+  konukBagla(k: Karakter | null, kap: HTMLElement, tepe = 0.1) {
+    this.pamuk = k;
+    this.pamukKaynak = kap;
+    this.konukTepe = tepe;
+  }
+  private konukTepe = 0.1;
 
   kapat() {
     this.kapali = true;
@@ -134,15 +151,16 @@ export class Oyuncular {
       const metin = (Array.isArray(soz) ? soz : [soz]).filter(Boolean).join(' ');
       const secenek: KonusmaSecenegi = ton ? { ...SES[kim], ton } : SES[kim];
       this.son = { soz, kim, ton };
-      const b = kim === 'kart' ? null : this.balonlar[kim];
-      if (b) {
+      const bs = balonSahibi(kim);
+      const b = bs ? this.balonlar[bs] : null;
+      if (b && bs) {
         b.querySelector('span')!.textContent = metin;
         b.classList.remove('acik');
-        this.balonKonumla(b, kim as 'mino' | 'kino' | 'pamuk');
+        this.balonKonumla(b, bs);
         void b.offsetWidth;
         b.classList.add('acik');
         // konuşan yürür / kenara çekilirse balon başını izler (açık kaldıkça)
-        const bk = kim as 'mino' | 'kino' | 'pamuk';
+        const bk = bs;
         const takip = () => {
           if (this.kapali || !b.classList.contains('acik')) return;
           this.balonKonumla(b, bk);
@@ -151,7 +169,7 @@ export class Oyuncular {
         requestAnimationFrame(takip);
       }
       if (kim === 'kino') this.kino.konus(true);
-      if (kim === 'pamuk') this.pamuk?.konus(true);
+      if (bs === 'pamuk') this.pamuk?.konus(true);
       this.mino.agizSus = kim !== 'mino';
       try {
         await konus(soz, secenek);
@@ -159,7 +177,7 @@ export class Oyuncular {
       } finally {
         this.mino.agizSus = false;
         if (kim === 'kino') this.kino.konus(false);
-        if (kim === 'pamuk') this.pamuk?.konus(false);
+        if (bs === 'pamuk') this.pamuk?.konus(false);
         if (b) setTimeout(() => b.classList.remove('acik'), sure(700));
       }
     });
@@ -173,7 +191,7 @@ export class Oyuncular {
     if (!kaynak) return;
     const r = kaynak.getBoundingClientRect();
     // başın tepesi: Mino'nun kutusu kulaklardan başlar (şapka biraz üstte); Kino ve Pamuk'un kare tuvalinde üstte boşluk var
-    const ust = kim === 'mino' ? r.top - r.height * 0.02 : r.top + r.height * 0.1;
+    const ust = kim === 'mino' ? r.top - r.height * 0.02 : r.top + r.height * (kim === 'pamuk' && this.pamukKaynak ? this.konukTepe : 0.1);
     const x = r.left - kap.left + r.width / 2;
     const y = Math.max(b.offsetHeight + 70, ust - kap.top - 4);
     b.style.left = `${x.toFixed(1)}px`;

@@ -10,7 +10,7 @@ import { efekt } from '../../src/audio/ses';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
 import { Efekt, oynat, parmak, pop, salla } from './efekt';
-import { KARTLAR, kartSirasi, M, Soru, YARDIM, type Halka, type KartId, type KartTepki } from './mantik';
+import { KARTLAR, kartSirasi, M, Soru, YARDIM, type KartTepki, type SorguHalkasi } from './mantik';
 import D from '../../content/dedektif.json';
 import { KART_TON, type Oyuncular } from './oyuncular';
 import { resim } from './resimler';
@@ -19,7 +19,14 @@ import { ses } from './sesler';
 const KT = D.kart;
 
 /** Doğru kartın ipucunun fotoğrafında oturduğu yer (fotoğrafın oranı) ve yalnız resmiyle mi oturduğu */
-const OTURMA: Record<string, { x: number; y: number; w: number; sade: boolean; don?: number }> = {
+export interface Oturma {
+  x: number;
+  y: number;
+  w: number;
+  sade: boolean;
+  don?: number;
+}
+const OTURMA: Record<string, Oturma> = {
   // pati izi halıdaki izin tam üstüne (çerçevesiz, izin rengine karışır)
   iz: { x: 0.5, y: 0.52, w: 0.36, sade: true, don: 0 },
   // beyaz kedi kartı tüyün yanına (aynı renk, yan yana)
@@ -28,11 +35,37 @@ const OTURMA: Record<string, { x: number; y: number; w: number; sade: boolean; d
   neden: { x: 0.5, y: 0.5, w: 0.62, sade: true, don: -6 },
 };
 
+/** Kartın görünüşü (Vaka 1: mantik.ts → KARTLAR; Vaka 2 kendi tablosunu verir) */
+export interface KartGorunus {
+  resim: string;
+  renk: string;
+  tepki?: string;
+}
+/** Yanlış kartın kendi sahnesi (Vaka 2): kart ipucunun üstüne gelir, kendini anlatır; sonra sorgu kartı yerine döndürür */
+export interface YanlisAni {
+  k: HTMLElement;
+  id: string;
+  delil: HTMLElement;
+  /** ipucu fotoğrafının ekrandaki kutusu */
+  ic: DOMRect;
+  sahnecik: HTMLElement;
+}
+
 export interface SorguSecenek {
   kok: HTMLElement;
   efekt: Efekt;
   oy: Oyuncular;
-  halka: Halka;
+  halka: SorguHalkasi;
+  /** kart görünüşleri (yoksa Vaka 1'in KARTLAR'ı) */
+  kartlar?: Record<string, KartGorunus>;
+  /** doğru kartın fotoğrafta oturduğu yer (yoksa Vaka 1'in tablosu) */
+  oturma?: Oturma;
+  /** yanlış kartın sahnesi (verilirse varsayılan "seker, köşeye çekilir, kendini anlatır" yerine) */
+  yanlisAni?: (a: YanlisAni) => Promise<void>;
+  /** doğru kart oturduktan sonra (ör. rüzgâr esip Kino'nun kulaklarını havalandırır) */
+  dogruAni?: () => Promise<void>;
+  /** 2 yanlıştan sonra (doğru kart zaten parlar; ör. iz kenarını bir kez parlatır) */
+  parlaAni?: () => void;
   /** ipucunun fotoğrafı ve (Halka 3) ikinci fotoğraf */
   foto: string;
   ekFoto?: string | null;
@@ -58,7 +91,8 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
   const ek = o.ekFoto ? h('img.dd-delil-ek', { src: o.ekFoto, alt: '', draggable: 'false' }) : null;
   const yuva = h('div.dd-delil-yuva');
   const delil = h('div.dd-delil', {}, h('div.dd-delil-ic', {}, foto, yuva), h('i.dd-bant'), ek ? h('div.dd-delil-ekk', {}, ek, h('i.dd-bant')) : null);
-  const kartlar = sira.map((id, i) => kartEl(id, i));
+  const tablo: Record<string, KartGorunus> = o.kartlar ?? KARTLAR;
+  const kartlar = sira.map((id, i) => kartEl(id, i, tablo));
   const satir = h('div.dd-kartlar', {}, ...kartlar.map((k) => h('div.dd-kart-yer', {}, k)));
   const sahnecik = h('div.dd-sahnecik');
   katman.append(perde, delil, satir, sahnecik);
@@ -174,15 +208,19 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
         // sürüklenip ipucunun üstüne bırakıldı ya da dokunuldu: kart ipucuna gider
         if (!tasindi || ustunde(k, delil)) {
           mesgul = true;
-          const id = k.dataset.kart as KartId;
+          const id = k.dataset.kart!;
           const sonuc = soru.sec(id);
           if (sonuc.dogru) {
             await dogruOturt(o, k, delil, yuva, kartlar);
+            if (o.dogruAni && !o.kapandi()) await o.dogruAni();
             bitir();
             return;
           }
-          await yanlis(o, k, delil, sahnecik, KARTLAR[id].tepki);
-          if (sonuc.parla) for (const x of kartlar) if (x.dataset.kart === halka.dogru) x.classList.add('dd-parla');
+          await yanlis(o, k, delil, sahnecik, id, tablo[id]?.tepki as KartTepki | undefined);
+          if (sonuc.parla) {
+            for (const x of kartlar) if (x.dataset.kart === halka.dogru) x.classList.add('dd-parla');
+            if (!o.kapandi()) o.parlaAni?.();
+          }
           mesgul = false;
           sonHareket = performance.now();
         } else {
@@ -229,8 +267,8 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
   katman.remove();
 }
 
-function kartEl(id: KartId, i: number): HTMLElement {
-  const t = KARTLAR[id];
+function kartEl(id: string, i: number, tablo: Record<string, KartGorunus>): HTMLElement {
+  const t = tablo[id];
   return h(
     'button.dd-kart',
     { type: 'button', 'data-kart': id, 'aria-label': id, style: `--i:${i};--kr:${t.renk}` },
@@ -249,7 +287,7 @@ function ustunde(k: HTMLElement, delil: HTMLElement): boolean {
 }
 
 /** Kartın şu anki görünen yerinden ipucunun bir noktasına (WAAPI); dönüş: kartın o anki dönüşümü */
-async function kartGotur(k: HTMLElement, hedef: DOMRect, x: number, y: number, boy: number, don = 0, ms = 420) {
+export async function kartGotur(k: HTMLElement, hedef: DOMRect, x: number, y: number, boy: number, don = 0, ms = 420) {
   const simdi = k.style.transform || 'none';
   // kartın yerleşik (dönüşümsüz) kutusu: şimdiki dönüşüm geçici olarak kaldırılıp ölçülür
   k.style.transform = '';
@@ -265,7 +303,7 @@ async function kartGotur(k: HTMLElement, hedef: DOMRect, x: number, y: number, b
   an.cancel();
 }
 
-async function geriDon(k: HTMLElement, ms = 420) {
+export async function geriDon(k: HTMLElement, ms = 420) {
   const simdi = k.style.transform || 'none';
   const an = k.animate([{ transform: simdi }, { transform: 'translate(0, 0) rotate(0) scale(1.04)', offset: 0.8 }, { transform: 'none' }], { duration: sure(ms), easing: 'cubic-bezier(.3,1.3,.5,1)' });
   k.style.transform = '';
@@ -274,12 +312,13 @@ async function geriDon(k: HTMLElement, ms = 420) {
 
 /** Doğru kart ipucuna tam oturur: tık, ışık halkası, parıltı, herkes sevinir */
 async function dogruOturt(o: SorguSecenek, k: HTMLElement, delil: HTMLElement, yuva: HTMLElement, kartlar: HTMLElement[]) {
-  const ot = OTURMA[o.halka.id] ?? { x: 0.5, y: 0.5, w: 0.5, sade: false };
+  const ot = o.oturma ?? OTURMA[o.halka.id] ?? { x: 0.5, y: 0.5, w: 0.5, sade: false };
   const ic = delil.querySelector('.dd-delil-foto')!.getBoundingClientRect();
   kartlar.forEach((x) => x !== k && x.classList.add('dd-cekil'));
   k.classList.add('dd-oturuyor');
   if (ot.sade) k.classList.add('dd-sade');
-  await kartGotur(k, ic, ot.x, ot.y, ic.width * ot.w, ot.don ?? 0, 460);
+  // sade kartın resmi kartın içinde %78 (kenar boşluğu): resim tam oturacağı boyda insin (yerine geçerken sıçramasın)
+  await kartGotur(k, ic, ot.x, ot.y, (ic.width * ot.w) / (ot.sade ? 0.78 : 1), ot.don ?? 0, 460);
   // kart yerine fotoğrafın içindeki yuvaya yapışır (aynı yer, artık fotoğrafla birlikte döner)
   const img = h('img.dd-oturan', { src: k.querySelector('img')?.getAttribute('src') ?? '', alt: '', draggable: 'false' });
   const kart = h(`div.dd-oturan-kap${ot.sade ? '.dd-sade' : ''}`, { style: `left:${ot.x * 100}%;top:${ot.y * 100}%;width:${ot.w * 100}%;--don:${ot.don ?? 0}deg` }, img);
@@ -299,9 +338,20 @@ async function dogruOturt(o: SorguSecenek, k: HTMLElement, delil: HTMLElement, y
 }
 
 /** Yanlış kart: oturmaz, seker; kendini anlatır; soluklaşır */
-async function yanlis(o: SorguSecenek, k: HTMLElement, delil: HTMLElement, sahnecik: HTMLElement, tepki?: KartTepki) {
+async function yanlis(o: SorguSecenek, k: HTMLElement, delil: HTMLElement, sahnecik: HTMLElement, id: string, tepki?: KartTepki) {
   const { oy } = o;
   const ic = delil.querySelector('.dd-delil-foto')!.getBoundingClientRect();
+  if (o.yanlisAni) {
+    // Vaka 2: kartın kendi sahnesi (ör. ayak izi gerçek boyunda ize konur: taşar ya da aşar)
+    efekt.yanlis();
+    oy.kinoIfade('saskin', 1000);
+    await o.yanlisAni({ k, id, delil, ic, sahnecik });
+    if (o.kapandi()) return;
+    await geriDon(k, 460);
+    k.classList.add('dd-soluk');
+    o.oy.mino.bak(0.4);
+    return;
+  }
   // ipucunun üstüne gelir, oturmaz: yumuşakça seker
   await kartGotur(k, ic, 0.5, 0.5, ic.width * 0.55, 0, 300);
   ses.sek();
