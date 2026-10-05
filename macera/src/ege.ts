@@ -549,6 +549,24 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await new Promise((r) => setTimeout(r, sure(ms)));
     el.classList.remove('acik');
   };
+  /** Yumuşak çıkış: küçülüp solar, sonra kaldırılır (hiçbir şey birden kaybolmaz) */
+  const sondur = async (el: Element | null | undefined, ms = 320, son: Keyframe = { opacity: 0, scale: '0.6' }) => {
+    if (!el) return;
+    await el
+      .animate([{ opacity: 1, scale: '1' }, son], { duration: sure(ms), easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' })
+      .finished.catch(() => undefined);
+    el.remove();
+  };
+  /** Poz çizimi değişirken minik bir esneme (çizim birden atlamış gibi durmasın) */
+  const pozGecis = (el: Element, ms = 420) =>
+    el.animate(
+      [
+        { transformOrigin: '50% 100%', scale: '1.03 0.94', opacity: 0.75 },
+        { transformOrigin: '50% 100%', scale: '0.99 1.03', opacity: 1, offset: 0.55 },
+        { transformOrigin: '50% 100%', scale: '1 1', opacity: 1 },
+      ],
+      { duration: sure(ms), easing: 'ease-out' },
+    );
   const yazi = (cx: number, cy: number, t: string, renk?: string, buyuk = false) => yansiYazi(sahne.el, cx, cy, t, renk, buyuk);
   /** Mino'nun çizimindeki bir noktanın ekran konumu */
   const minoEkran = ([x, y]: [number, number]): [number, number] => {
@@ -1102,9 +1120,13 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         (ad) => {
           if (ad !== 'ege') return void ip.yanlis();
           bitir(s, ip);
-          onluk.remove();
-          ege.onluk = true;
-          coz();
+          // önlük Ege'nin göğsüne süzülür, takılınca solar (birden kaybolmaz)
+          const g = ege.govdeKutusu();
+          void ortala(onluk, g, pxB(g.width * 0.6), oran('onluk'), 260).then(async () => {
+            ege.onluk = true;
+            await sondur(onluk, 220, { opacity: 0, scale: '1.1 0.8' });
+          });
+          setTimeout(coz, sure(320));
           return true;
         },
         govde,
@@ -1113,8 +1135,15 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     });
     durumYaz(null);
     efektCal(() => S.pop(), 300);
-    // mama boyunca Ege gülmez (kahkaha kuklalara saklı): gözü kasede
-    ege.ifade('bakiyor', 900);
+    await bekle(250);
+    // önlüğüne bakar, pıt pıt vurur (gülmez; kahkaha kuklalara saklı), göğsünde minik yıldızlar; Mino beğenir
+    const [ox, oy] = merkez(ege.el);
+    parca.parilti(ox, oy, 6, 'yildiz');
+    ege.ifade('saskin', 900);
+    ege.oynat('vur', 800);
+    mino.tepki('evet');
+    await mSoyle(M.yakisti);
+    ege.ifade('bakiyor', 600);
     ege.oynat('ayak', 700);
 
     // --- kaşık kaşık: daldır → üfle → ver
@@ -1852,8 +1881,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         (ad) => {
           if (!ad) return void ip.yanlis();
           bitir(se);
-          emzik.remove();
-          ege.emzik = true;
+          // emzik ağza süzülür, küçülerek oturur (birden kaybolmaz)
+          void ortala(emzik, ege.agizKutusu(), 4, oran('emzik'), 200).then(() => sondur(emzik, 180, { opacity: 0, scale: '0.5' }));
+          setTimeout(() => {
+            if (!kapandi) ege.emzik = true;
+          }, sure(240));
           efektCal(() => S.cup(), 700);
           void ege.balon(B.ege.cup, 1000);
           isBitti('emzik', ege.el);
@@ -1900,6 +1932,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         lamba.classList.remove('parliyor');
         lambaYak();
         isBitti('lamba', lamba);
+        // Ege tavanda beliren yıldızlara hayran hayran bakar
+        setTimeout(() => {
+          if (kapandi) return;
+          ege.ifade('saskin', 1300);
+          void ege.balon(B.ege.ooo, 1000);
+        }, sure(450));
       };
       lamba.addEventListener('pointerdown', lambaDokun);
       // perde: yana sürükle (kanatlar kapanır)
@@ -2041,7 +2079,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     parca.yuksel(zx, zy, 'z', 3);
     efektCal(() => S.kutuNota(62, 0.1, 2), 1500);
     muzikSus();
-    await bekle(1500);
+    await bekle(900);
+    // bulaşıcı esneme: Mino da kocaman esner
+    mino.tepki('esne', 1.4);
+    void balon(minoBalon, B.esne, 1400);
+    await bekle(1300);
   }
 
   /**
@@ -2089,7 +2131,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         await ninniDinlet(tum, hece, besikSalla);
         heceEl.forEach((e) => e.classList.remove('simdi'));
         // söyleme yaşa göre ilk dizelerden: kalan dizeler panelden kalkar
-        satirlar.slice(dize).forEach((s) => s.classList.add('gizli'));
+        const kalkan = satirlar.slice(dize);
+        await Promise.all(kalkan.map((s) => s.animate([{ opacity: 1 }, { opacity: 0 }], { duration: sure(300), fill: 'forwards' }).finished.catch(() => undefined)));
+        kalkan.forEach((s) => {
+          s.classList.add('gizli');
+          s.getAnimations().forEach((a) => a.cancel());
+        });
       }
       // --- sen söyle / salla
       await mSoyle(M.sen);
@@ -2108,7 +2155,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       panel.classList.add('bitti');
       await bekle(700);
     } finally {
-      panel.remove();
+      void sondur(panel, 360, { opacity: 0, scale: '0.85' });
       yildizlar.el.classList.add('gidiyor');
       setTimeout(() => yildizlar.el.remove(), sure(900));
     }
@@ -2536,8 +2583,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     } finally {
       durumYaz(null);
       ui.ipucu(null);
-      parla.remove();
-      halka.remove();
+      void sondur(parla, 260);
+      void sondur(halka, 260);
       minoKutu.classList.remove('kasiniyor');
       // tutabildiyse yüzü hıpşuya kadar "tutuyor"da kalır; sahne 8 hapşu yüzüne geçirir
       minoSerbest = true;
@@ -2615,6 +2662,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     anne.classList.remove('oturuyor');
     annePoz('sariliyor');
     anne.classList.add('sariliyor');
+    pozGecis(anneGov, 480);
     if (anneResim === 'sariliyor') {
       // çocuklar kanepeye koşar, anne kollarını açıp hepsine sarılır (anne kanepede oturur)
       const yer = anneOturYer('sariliyor');
