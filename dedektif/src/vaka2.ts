@@ -25,10 +25,10 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import D from '../../content/dedektif.json';
 import { DosyaSeridi } from './dosya';
 import { AZ_HAREKET, Dunya, type Oda } from './dunya';
-import { bahceGolet, bahceIp, bahceYol, Ruzgar } from './dunya2';
+import { bahceGolet, bahceIp, bahceKur, bahceYol, Ruzgar } from './dunya2';
 import { Efekt, oynat, parmak, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
-import { Dosya, izNotasi, K, M, ODA_H, YARDIM, type IpucuTanim, type Kadraj } from './mantik';
+import { Dosya, izNotasi, K, M, ODA_H, odaW, YARDIM, type IpucuTanim, type Kadraj } from './mantik';
 import {
   ADA_YERI,
   ADIMLAR2,
@@ -51,6 +51,7 @@ import {
   V2,
   YOL_PARCALARI,
   YUVA,
+  BAHCE_DIKEY,
   type Adim2,
   type BahceId,
   type Halka2,
@@ -160,18 +161,20 @@ class Vaka2 {
     this.ortak = { kok: this.el, efekt: this.efekt, oy: this.oy, rnd: this.rnd, kapandi: () => this.kapali, bekle: this.bekle, adim: (a) => this.adim(a) };
 
     // bahçe: üç bölüm
+    bahceKur();
     this.ip = bahceIp(halka2('ne').ipuclari);
-    const W = this.ip.W;
+    const W = odaW('bahce-yol');
+    const WG = odaW('bahce-golet');
     this.ada = new DunyaKarakteri('ada', ADA_YERI.x, ADA_YERI.y, W, 'dd-ada');
     this.balon = h('div.dd-balon-ada', {}, h('img', { src: resim('balon') ?? '', alt: '', draggable: 'false' }));
     this.ada.kutu.append(this.balon);
     this.yol = bahceYol(halka2('kim').ipuclari, this.ada.kap);
-    this.ordek = new DunyaKarakteri('ordek', YUVA.x, YUVA.y, W, 'dd-ordek-dunya');
+    this.ordek = new DunyaKarakteri('ordek', YUVA.x, YUVA.y, WG, 'dd-ordek-dunya');
     this.ordekPoz = PozYuvasi.ordek(this.ordek.kutu, this.ordek.k.el);
     this.yuva = h('img.dd-yuva', { src: resim('v2/yuva-yumurta') ?? '', alt: '', draggable: 'false' });
     this.atkiUst = h('img.dd-atki-ust', { src: resim('v2/atki-yerde') ?? '', alt: '', draggable: 'false' });
     this.yavrular = h('img.dd-yavrular', { src: resim('v2/yavru-atki') ?? '', alt: '', draggable: 'false' });
-    this.yuvaKap = h('div.dd-yuva-kap', { style: `left:${px(YUVA.x * W)};top:${px(YUVA.y * ODA_H)}` }, h('div.dd-yuva-ic', {}, this.yuva, this.atkiUst, this.yavrular), h('button.dd-yuva-dokun', { type: 'button', 'aria-label': 'Yumurtalar' }));
+    this.yuvaKap = h('div.dd-yuva-kap', { style: `left:${px(YUVA.x * WG)};top:${px(YUVA.y * ODA_H)}` }, h('div.dd-yuva-ic', {}, this.yuva, this.atkiUst, this.yavrular), h('button.dd-yuva-dokun', { type: 'button', 'aria-label': 'Yumurtalar' }));
     this.golet = bahceGolet(h('div.dd-yuva-katman', {}, this.ordek.kap, this.yuvaKap));
     this.temizlik.push(() => this.ada.kapat(), () => this.ordek.kapat(), () => this.ordekPoz.temizle(), () => this.ruzgar.kapat());
 
@@ -252,7 +255,8 @@ class Vaka2 {
   }
   /** Dar ekranda kamerayı oda oranındaki bir x'e ortalar (kadrajın dikeyi korunur); genişte kadraj aynen */
   private ortala(x: number, k: Kadraj, yari = 0.1): Kadraj {
-    if (!this.dar()) return k;
+    // dikey bahçe çizimi ekran oranında: kamera kadrajın tam eninde (dunya.ts), x'e ortalamaya gerek yok
+    if (!this.dar() || (this.dunya.oda && BAHCE_DIKEY[this.dunya.oda.id as BahceId])) return k;
     return [x - yari, k[1], x + yari, k[3]];
   }
   /** Bu çekimde Mino'nun kutu genişliği dünya biriminde (dünyadaki karakterler buna göre boylanır) */

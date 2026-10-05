@@ -7,7 +7,7 @@
  * Koordinatlar resmin oranı (x: en, y: boy; 0..1, sol üstten), boylar oda yüksekliğinin oranı (mantik.ts gibi).
  */
 import D from '../../content/dedektif.json';
-import type { IpucuTanim, Kadraj, OdaId, SorguHalkasi, DosyaHalkasi } from './mantik';
+import { ODA_ORAN, type IpucuTanim, type Kadraj, type OdaId, type SorguHalkasi, type DosyaHalkasi } from './mantik';
 
 export const V2 = D.vaka2;
 export const M2 = V2.mino;
@@ -232,8 +232,9 @@ export class RenkIzi {
   }
   /** sıradaki (alınmamış en soldaki) kırmızının sırası: kamera onu gösterir, yardımda o titrer */
   get siradaki(): number | null {
-    const l = this.parcalar.map((p, i) => [p, i] as const).filter(([p, i]) => p.tur === 'kirmizi' && !this.alinan.has(i));
-    return l.length ? l.reduce((a, b) => (b[0].x < a[0].x ? b : a))[1] : null;
+    // dizideki sıra izin yolu boyunca (yatayda soldan sağa; dikeyde yolun kıvrımı boyunca)
+    const i = this.parcalar.findIndex((p, j) => p.tur === 'kirmizi' && !this.alinan.has(j));
+    return i < 0 ? null : i;
   }
 }
 
@@ -342,3 +343,120 @@ export const KADRAJ2 = {
 
 /** Dosyadaki beş gözün halkaları (dosya şeridi bunlardan kurulur) */
 export const DOSYA2: readonly DosyaHalkasi[] = HALKALAR2;
+
+// ---------------------------------------------------------------- dikey bahçe (assets/dedektif2/bahce-*-dikey, 1536×2752)
+/**
+ * Dikey ekranda (boy > en) her bahçe bölümü kendi 9:16 çizimidir (Vaka 1'in film/ev/oda-dikey kalıbı): ipuçları,
+ * iz parçaları, Ada, çalılar ve yuva o resmin görünen zeminine. bahceYerlesim(oda, true) o bölümün tablolarını yerinde
+ * dikey değerlere çevirir, false yatayı geri koyar (vaka her açılışta yeniden kurulur; dosya yoksa o bölüm yatay kalır).
+ * Kamera dikeyde az yaklaşır (dunya.ts: kadraj tam en); koordinatlar ekranın ortasına, karakterlerin arasına göre.
+ */
+export const BAHCE_DIKEY_ORAN = 1536 / 2752;
+const kirmizi = (x: number, y: number, don: number): Parca => ({ tur: 'kirmizi', x, y, h: 0.022, don });
+type Yer = { x: number; y: number; h: number };
+const DIKEY2 = {
+  'bahce-ip': {
+    ip: {
+      bos: { x0: 0.46, x1: 0.57, y: 0.103 },
+      mandallar: [
+        { x: 0.49, y: 0.103, h: 0.026, don: 74 },
+        { x: 0.535, y: 0.104, h: 0.026, don: 104 },
+      ],
+      noktalar: [
+        [0.27, 0.08],
+        [0.31, 0.088],
+        [0.36, 0.094],
+        [0.41, 0.099],
+        [0.46, 0.102],
+        [0.51, 0.104],
+        [0.56, 0.103],
+        [0.61, 0.1],
+        [0.66, 0.096],
+        [0.71, 0.09],
+        [0.75, 0.083],
+      ] as [number, number][],
+      atki: { x: 0.513, y: 0.09, h: 0.11 },
+    },
+    ipucu: { mandal: { x: 0.53, y: 0.5, h: 0.045 } } as Record<string, Yer>,
+    kadraj: { ne: [0, 0, 1, 0.7] } as Partial<Record<Halka2Id, Kadraj>>,
+    kadraj2: { giris: [0, 0, 1, 0.6], ip: [0, 0, 1, 0.55] } as Record<string, Kadraj>,
+  },
+  'bahce-yol': {
+    parcalar: [
+      // kırmızı: çamurdan yolun kıvrımı boyunca yukarı (sırayla yükselen notalar)
+      kirmizi(0.27, 0.785, -14),
+      kirmizi(0.2, 0.72, 8),
+      kirmizi(0.26, 0.655, -20),
+      kirmizi(0.38, 0.61, 12),
+      kirmizi(0.52, 0.575, -8),
+      kirmizi(0.66, 0.535, 16),
+      // mavi: Ada'nın balon ipi (Ada yolun yukarısında, sağda)
+      { tur: 'mavi', x: 0.66, y: 0.852, h: 0.022, don: 10 },
+      { tur: 'mavi', x: 0.34, y: 0.7, h: 0.022, don: -12 },
+      { tur: 'mavi', x: 0.72, y: 0.49, h: 0.022, don: 18 },
+      { tur: 'yaprak', x: 0.45, y: 0.66, h: 0.034, don: 30 },
+      { tur: 'yaprak', x: 0.56, y: 0.885, h: 0.034, don: -40 },
+      { tur: 'yaprak', x: 0.3, y: 0.87, h: 0.034, don: 60 },
+    ] as Parca[],
+    ada: { x: 0.78, y: 0.465 },
+    ipucu: { 'ordek-izi': { x: 0.44, y: 0.83, h: 0.065 }, iplik: { x: 0.56, y: 0.836, h: 0.022 } } as Record<string, Yer>,
+    kadraj: { kim: [0, 0.5, 1, 1], renk: [0, 0.4, 1, 0.95] } as Partial<Record<Halka2Id, Kadraj>>,
+    kadraj2: { yol: [0, 0.4, 1, 1] } as Record<string, Kadraj>,
+  },
+  'bahce-golet': {
+    // üç çalı ekranın dikey ortasında, gölet arkada biraz sağda
+    calilar: [
+      { x0: 0.067, y0: 0.437, x1: 0.342, y1: 0.572 },
+      { x0: 0.35, y0: 0.44, x1: 0.62, y1: 0.575 },
+      { x0: 0.653, y0: 0.442, x1: 0.925, y1: 0.576 },
+    ],
+    son: [kirmizi(0.6, 0.665, -12), kirmizi(0.68, 0.63, 18)],
+    yuva: { x: 0.755, y: 0.635 },
+    ipucu: {} as Record<string, Yer>,
+    kadraj: { ses: [0, 0.16, 1, 0.86], sira: [0, 0.2, 1, 0.9] } as Partial<Record<Halka2Id, Kadraj>>,
+    kadraj2: { calilar: [0, 0.16, 1, 0.86], cali3: [0, 0.16, 1, 0.86], final: [0, 0.25, 1, 0.95] } as Record<string, Kadraj>,
+  },
+};
+const YATAY2 = structuredClone({
+  ip: IP,
+  parcalar: YOL_PARCALARI,
+  ada: ADA_YERI,
+  calilar: CALILAR,
+  son: GOLET_PARCALARI,
+  yuva: YUVA,
+  kadraj: Object.fromEntries(HALKALAR2.map((hk) => [hk.id, hk.kadraj])) as Record<Halka2Id, Kadraj>,
+  kadraj2: KADRAJ2 as Record<string, Kadraj>,
+  ipucu: Object.fromEntries(HALKALAR2.flatMap((hk) => hk.ipuclari).map((t) => [t.id, { x: t.x, y: t.y, h: t.h }])) as Record<string, Yer>,
+  oran: ODA_ORAN['bahce-ip'],
+});
+/** Hangi bahçe bölümü dikey kuruldu (bahceYerlesim son çağrısı) */
+export const BAHCE_DIKEY: Record<BahceId, boolean> = { 'bahce-ip': false, 'bahce-yol': false, 'bahce-golet': false };
+
+export function bahceYerlesim(oda: BahceId, dikey: boolean) {
+  BAHCE_DIKEY[oda] = dikey;
+  ODA_ORAN[oda] = dikey ? BAHCE_DIKEY_ORAN : YATAY2.oran;
+  const d = DIKEY2[oda];
+  const y = structuredClone(YATAY2);
+  const k2 = KADRAJ2 as Record<string, Kadraj>;
+  for (const ad of Object.keys(d.kadraj2)) k2[ad] = [...(dikey ? d.kadraj2[ad] : y.kadraj2[ad])] as Kadraj;
+  for (const hk of HALKALAR2) {
+    const dk = d.kadraj[hk.id];
+    if (dk) hk.kadraj = [...(dikey ? dk : y.kadraj[hk.id])] as Kadraj;
+    for (const t of hk.ipuclari) if (d.ipucu[t.id]) Object.assign(t, dikey ? d.ipucu[t.id] : y.ipucu[t.id]);
+  }
+  if (oda === 'bahce-ip') {
+    const k = dikey ? structuredClone(DIKEY2['bahce-ip'].ip) : y.ip;
+    Object.assign(IP.bos, k.bos);
+    Object.assign(IP.atki, k.atki);
+    IP.mandallar.splice(0, IP.mandallar.length, ...k.mandallar);
+    IP.noktalar.splice(0, IP.noktalar.length, ...k.noktalar);
+  } else if (oda === 'bahce-yol') {
+    YOL_PARCALARI.splice(0, YOL_PARCALARI.length, ...structuredClone(dikey ? DIKEY2['bahce-yol'].parcalar : y.parcalar));
+    Object.assign(ADA_YERI, dikey ? DIKEY2['bahce-yol'].ada : y.ada);
+  } else {
+    const g = DIKEY2['bahce-golet'];
+    CALILAR.forEach((c, i) => Object.assign(c, dikey ? g.calilar[i] : y.calilar[i]));
+    GOLET_PARCALARI.splice(0, GOLET_PARCALARI.length, ...structuredClone(dikey ? g.son : y.son));
+    Object.assign(YUVA, dikey ? g.yuva : y.yuva);
+  }
+}

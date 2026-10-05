@@ -52,7 +52,7 @@ export const POZ_OLCU: Record<PozAd, PozOlcu> = {
   'kino-uzgun': { boy: 1.0 },
   'kino-sarilma': { boy: 1.0 },
   // yuvadaki ördek: resim yuvayla birlikte; ördek oturduğu için baş ayaktakinden alçakta
-  'ordek-kulucka': { boy: 0.9 },
+  'ordek-kulucka': { boy: 1.0 },
   'ordek-atki': { boy: 1.0 },
 };
 

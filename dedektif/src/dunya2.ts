@@ -9,11 +9,20 @@
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET, esya, ipucuEl, katman, type Oda } from './dunya';
 import { ODA_H, odaW, type IpucuTanim } from './mantik';
-import { CALILAR, GOLET_PARCALARI, IP, YOL_PARCALARI, type BahceId, type Cali, type Parca } from './mantik2';
+import { BAHCE_DIKEY, BAHCELER, bahceYerlesim, CALILAR, GOLET_PARCALARI, IP, YOL_PARCALARI, type BahceId, type Cali, type Parca } from './mantik2';
 import { resim } from './resimler';
 
 const px = (v: number) => `${v.toFixed(1)}px`;
-const zeminUrl = (id: BahceId) => resim(`v2/${id}`) ?? '';
+const zeminUrl = (id: BahceId) => (BAHCE_DIKEY[id] && resim(`v2/${id}-dikey`)) || resim(`v2/${id}`) || '';
+
+/**
+ * Bahçenin yerleşimini seçer (odalar kurulmadan önce): dikey ekranda (boy > en) 9:16 çizimi olan her bölüm dikey,
+ * çizimi olmayan yatay kalır (mantik2.ts → bahceYerlesim).
+ */
+export function bahceKur() {
+  const dikeyEkran = typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
+  for (const id of BAHCELER) bahceYerlesim(id, dikeyEkran && !!resim(`v2/${id}-dikey`));
+}
 
 /** Renk izi parçası (iplik, mavi ip, yaprak): dokunulabilir */
 function parcaEl(p: Parca, i: number, W: number): HTMLElement {

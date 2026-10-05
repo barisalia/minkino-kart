@@ -32,6 +32,7 @@ import {
   type OdaId,
   yakinlikSiniri,
 } from './mantik';
+import { BAHCE_DIKEY, type BahceId } from './mantik2';
 import { filmKatmani, resim } from './resimler';
 
 export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -326,8 +327,11 @@ export class Dunya {
     let yakin = dar ? (this.darYakin ?? DAR_YAKIN[this.oda?.id ?? 'calisma']) : 1;
     // dikey çalışma odası zaten ekran oranında: kamera az yaklaşır (halı ve ipuçları hep görünür)
     // Pencere çekimi (kadraj odanın üst şeridinde) hariç: pencere ince bir şerit, kelebek üst çubuğun altında kalmasın diye yaklaşılır
-    const dikeyOda = this.oda?.id === 'calisma' && calismaDikey && this.kadraj[1] >= 0.05;
-    if (dikeyOda) yakin = Math.min(yakin, 1.1);
+    // dikey bahçe çizimleri de (mantik2.ts → BAHCE_DIKEY) aynı: tam en, az yakınlık
+    const id = this.oda?.id;
+    const dikeyOda = (id === 'calisma' && calismaDikey && this.kadraj[1] >= 0.05) || (!!id && id in BAHCE_DIKEY && BAHCE_DIKEY[id as BahceId]);
+    // bahçe dikeyde hiç yaklaşmaz (ip ve gök görünsün); çalışma odası hafif
+    if (dikeyOda) yakin = Math.min(yakin, id === 'calisma' ? 1.1 : 1);
     const enCok = yakinlikSiniri(this.dogalBoy(), window.devicePixelRatio || 1);
     let kd = this.kadraj;
     if (dikeyOda) {
