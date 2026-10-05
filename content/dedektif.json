@@ -64,5 +64,57 @@
     "guzeldi": "Miyav… kelebek çok güzeldi.",
     "ozur": "Lambayı devirdim. Özür dilerim!",
     "dikkat": "Bir daha dikkat ederim!"
+  },
+  "vaka2": {
+    "aciklama": "Vaka 2: Kino'nun Kayıp Atkısı (ekip/senaryo/dedektif-vaka2.md). 'mino' anlatıcı; 'kino' Kino'nun kendi sesi; 'ordek' Vakvak Anne ve 'konuk' (Karabaş, tavşan, Ada) anlatıcı sesinin tonlu hâli. 'vaka' ve 'yazi' ekranda yazar, seslendirilmez.",
+    "vaka": "Vaka 2: Kino'nun Kayıp Atkısı",
+    "yazi": {
+      "roman": "Vaka 2",
+      "kilitli": "Önce Vaka 1"
+    },
+    "mino": {
+      "kilitli": "Önce ilk vakayı çözelim!",
+      "mandal": "Mandal yerde. Atkıya ne oldu?",
+      "ip_kesik": "İp kesik değil ki!",
+      "kupkuru": "Çimler kupkuru!",
+      "demek_ruzgar": "Demek ki rüzgâr atkıyı uçurmuş!",
+      "kim_aldi": "Peki atkıyı kim aldı?",
+      "iz_uyar": "Bir iz! Kimin ayağı tam uyar?",
+      "demek_ordek": "Demek ki bir ördek buradan geçmiş!",
+      "renk": "Atkı ne renkti? O renkleri takip et!",
+      "demek_golet": "Demek ki ördek atkıyı gölete götürmüş!",
+      "dinle": "Şşş… Dinle! Çalılara dokun.",
+      "hangi_ses": "Ördek hangi sesi çıkarır?",
+      "senin_sesin": "O senin sesin!",
+      "demek_cali": "Demek ki ördek bu çalının arkasında!",
+      "arala": "Çalıyı kenara çek!",
+      "sirala": "Ne oldu? Sırayla diz!",
+      "once": "Önce ne oldu?",
+      "demek_yanlis": "Demek ki kimse çalmamış. Bir yanlış anlama!",
+      "titriyor": "Bak, yumurtalar titriyor.",
+      "ort": "Atkıyı yumurtaların üstüne ört!",
+      "dokun_yumurta": "Yumurtalara dokun!",
+      "hikaye": "Rüzgâr uçurdu, ördek buldu, yavrular ısındı!"
+    },
+    "kino": {
+      "atkim_yok": "Atkım yok! Biri çaldı!",
+      "hirsiz": "Hırsız! Kesin hırsız!",
+      "karabas": "Karabaş! Kesin Karabaş!",
+      "minicik": "Benim ayağım minicik!",
+      "mavi": "Mavi! Yok yok… kırmızı!",
+      "hav": "Hav hav!",
+      "sen_mi": "Atkımı sen mi aldın?",
+      "usumesin": "Yavrular üşümesin. Atkım onların olsun!",
+      "cozuldu": "Vaka çözüldü! Ben hediye ettim!"
+    },
+    "ordek": {
+      "buldum": "Yerde buldum. Kimsenin değil sandım.",
+      "tesekkur": "Teşekkürler Kino! Sen çok iyisin."
+    },
+    "konuk": {
+      "karabas": "Benim ayağım kocaman!",
+      "tavsan": "Ben zıplarım, iz bırakmam!",
+      "ada": "O benim balonumun ipi!"
+    }
   }
 }

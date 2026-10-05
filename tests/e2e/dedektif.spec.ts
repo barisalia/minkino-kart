@@ -66,10 +66,10 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   await page.goto('./dedektif/?test=1&sifirla=1');
   // açılış: dedektif Mino, vaka dosyası
   await expect(page.locator('.dd-acilis .mino svg')).toBeVisible();
-  await expect(page.locator('.dd-klasor')).toBeVisible();
+  await expect(page.locator('.dd-klasor[data-vaka="vaka1"]')).toBeVisible();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `tests/screens/dedektif-giris${ad === 'iphone' ? '' : '-' + ad}.png` });
-  await page.locator('.dd-klasor').click();
+  await page.locator('.dd-klasor[data-vaka="vaka1"]').click();
 
   // giriş → Halka 1: halıda pati izi
   await adimBekle(page, /^ara-iz$/);

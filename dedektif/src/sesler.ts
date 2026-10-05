@@ -198,6 +198,92 @@ export const ses = {
   kanat() {
     gurultu(0, 0.12, 1800, 3200, 0.03, 0.9);
   },
+  // ---------------------------------------------------------------- Vaka 2
+  /** rüzgâr uğultusu (yapraklar uçuşur) */
+  ruzgar(guc = 1) {
+    gurultu(0, 1.3, 300, 1400, 0.09 * guc, 0.7);
+    gurultu(0.25, 1.1, 900, 400, 0.05 * guc, 1.2);
+  },
+  /** çalı hışırtısı (dokununca sallanır) */
+  hisirti() {
+    for (let i = 0; i < 3; i++) gurultu(i * 0.07, 0.12, 3200, 5200, 0.05, 1.4);
+  },
+  /** kurbağa: "vırak!" (kalın, titrek) */
+  virak(yuksek = false) {
+    const v = yuksek ? 1.5 : 1;
+    ton(160, 0, 0.09, 'sawtooth', 0.09 * v, 120);
+    ton(150, 0.11, 0.2, 'sawtooth', 0.11 * v, 105);
+    ton(300, 0.11, 0.18, 'square', 0.03 * v, 210);
+  },
+  /** arı: "vıjjj" (vızıltı: titreşen testere) */
+  vizz(yuksek = false) {
+    const h = hazir();
+    if (!h) return;
+    const [c, cikis] = h;
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const lfo = c.createOscillator();
+    const lg = c.createGain();
+    const g = c.createGain();
+    const f = c.createBiquadFilter();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(230, t);
+    o.frequency.linearRampToValueAtTime(260, t + 0.45);
+    o.frequency.linearRampToValueAtTime(215, t + 0.9);
+    lfo.frequency.value = 24;
+    lg.gain.value = 14;
+    lfo.connect(lg).connect(o.frequency);
+    f.type = 'bandpass';
+    f.frequency.value = 900;
+    f.Q.value = 1.2;
+    const s = yuksek ? 0.14 : 0.09;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(s, t + 0.06);
+    g.gain.setValueAtTime(s, t + 0.75);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.95);
+    o.connect(f).connect(g).connect(cikis);
+    o.start(t);
+    lfo.start(t);
+    o.stop(t + 1);
+    lfo.stop(t + 1);
+  },
+  /** ördek: "vak… vak", ardından minik "çıt çıt" (yumurta kabuğu) */
+  vakvak(yuksek = false, kabuk = true) {
+    const v = yuksek ? 1.6 : 1;
+    ton(520, 0, 0.16, 'sawtooth', 0.07 * v, 380);
+    ton(780, 0, 0.12, 'square', 0.03 * v, 560);
+    ton(500, 0.34, 0.18, 'sawtooth', 0.07 * v, 360);
+    ton(760, 0.34, 0.13, 'square', 0.03 * v, 540);
+    if (kabuk) for (const t of [0.78, 0.92]) ton(3200, t, 0.025, 'square', 0.04 * v, 2400);
+  },
+  /** yumurta "çıt" (n: kaçıncı dokunuş, gittikçe güçlü) */
+  cit(n = 1) {
+    ton(2600 - n * 200, 0, 0.03, 'square', 0.05 + n * 0.02, 1800);
+    gurultu(0.01, 0.05, 4000, 2500, 0.05 + n * 0.02, 2);
+  },
+  /** yumurta "ÇAT!" ve civciv sevinci */
+  cat() {
+    ton(1400, 0, 0.05, 'square', 0.12, 700);
+    gurultu(0, 0.18, 3000, 900, 0.18, 1);
+    [84, 88, 91, 96].forEach((n, i) => can(NOTA(n), 0.15 + i * 0.07, 0.12, 0.45));
+    // üç minik "cik"
+    [0.5, 0.62, 0.74].forEach((t, i) => ton(2400 + i * 200, t, 0.07, 'sine', 0.08, 3000));
+  },
+  /** makas "şıp şıp" */
+  makas() {
+    for (const t of [0, 0.2]) {
+      ton(3000, t, 0.03, 'square', 0.05, 1800);
+      gurultu(t, 0.05, 5000, 3000, 0.06, 2);
+    }
+  },
+  /** üşüyen yumurtalar: "brrr" titreme */
+  brr() {
+    for (let i = 0; i < 6; i++) ton(170 + (i % 2) * 20, i * 0.07, 0.06, 'triangle', 0.05);
+  },
+  /** sıcacık: atkı yumurtalara örtüldü */
+  sicak() {
+    [72, 76, 79, 84].forEach((n, i) => can(NOTA(n), i * 0.09, 0.11, 0.6));
+  },
 };
 
 // ---------------------------------------------------------------- müzik (dosyadan)

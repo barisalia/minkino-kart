@@ -14,9 +14,13 @@ const BASKA = import.meta.glob<string>(
     '../../assets/film/mutfak/{arka-uzak,arka-orta}.webp',
     '../../assets/okul/ses/{masa,kalem}.webp',
     '../../assets/hayvanlar/{zurafa,ordek,kedi}.webp',
+    // Vaka 2: Ada'nın balonu (kırmızı balon, CSS ile maviye döner)
+    '../../assets/renkler/balon.webp',
   ],
   { eager: true, query: '?url', import: 'default' },
 );
+/** Vaka 2 "Kino'nun Kayıp Atkısı" çizimleri (assets/dedektif2): adlar Vaka 1'inkilerle çakışmasın diye 'v2/' önekiyle */
+const DEDEKTIF2 = import.meta.glob<string>('../../assets/dedektif2/*.webp', { eager: true, query: '?url', import: 'default' });
 
 /** Dosya yollarından ad → en yüksek sürümün adresi ("ad-3.webp" > "ad-1.webp" > "ad.webp") */
 export function surumTablosu(dosyalar: Record<string, string>): Map<string, string> {
@@ -36,7 +40,10 @@ export function surumTablosu(dosyalar: Record<string, string>): Map<string, stri
 }
 
 const TABLO = surumTablosu(DEDEKTIF);
+const TABLO2 = surumTablosu(DEDEKTIF2);
 const baska = (yol: string) => BASKA[`../../assets/${yol}.webp`] ?? null;
+/** Vaka 2 çizimi: 'v2/mandal' → assets/dedektif2/mandal.webp */
+const v2 = (a: string) => (a.startsWith('v2/') ? (TABLO2.get(a.slice(3)) ?? null) : undefined);
 
 /**
  * Yuvalar: ad → [assets/dedektif adayları, depodaki yedek (assets/ altında yol), zorunlu mu].
@@ -86,17 +93,26 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   'roman-2': { adaylar: ['roman-2'], zorunlu: false },
   'roman-3': { adaylar: ['roman-3'], zorunlu: false },
   'roman-4': { adaylar: ['roman-4'], zorunlu: false },
+  // Vaka 2 poz ekleri (assets/dedektif2): Kino üzgün (atkısız) ve sarılan; Vakvak Anne gagasında atkıyla
+  'poz-kino-uzgun': { adaylar: ['v2/kino-uzgun'], zorunlu: true },
+  'poz-kino-sarilma': { adaylar: ['v2/kino-sarilma'], zorunlu: true },
+  'poz-ordek-atki': { adaylar: ['v2/ordek-atki-gaga'], zorunlu: true },
+  'poz-ordek-kulucka': { adaylar: ['v2/ordek-kulucka'], zorunlu: true },
+  balon: { adaylar: [], yedek: 'renkler/balon', zorunlu: true },
 };
 
-/** Adaylardan ilk bulunan görselin adresi; yoksa yedek; o da yoksa null */
+/** Adaylardan ilk bulunan görselin adresi; yoksa yedek; o da yoksa null. 'v2/ad': Vaka 2 çizimi (assets/dedektif2). */
 export function resim(ad: string, tablo: Map<string, string> = TABLO): string | null {
   const y = YUVA[ad];
   for (const a of y?.adaylar ?? [ad]) {
-    const u = tablo.get(a);
+    const u = v2(a) ?? tablo.get(a);
     if (u) return u;
   }
   return y?.yedek ? baska(y.yedek) : null;
 }
+
+/** Vaka 2'nin bütün çizim adları (birim testi: her kullanılan ad bir dosya) */
+export const VAKA2_RESIMLERI = [...TABLO2.keys()];
 
 /** Çalışma odası ve mutfak katmanları (film arka planları) */
 export const filmKatmani = (oda: 'ev' | 'mutfak', ad: 'arka-uzak' | 'arka-orta' | 'arka-on' | 'oda-dikey') => baska(`film/${oda}/${ad}`) ?? '';
@@ -104,7 +120,7 @@ export const filmKatmani = (oda: 'ev' | 'mutfak', ad: 'arka-uzak' | 'arka-orta' 
 /** Henüz kendi dosyası olmayan (yedekle ya da yer tutucuyla duran) yuvalar */
 export function eksikler(tablo: Map<string, string> = TABLO): string[] {
   return Object.entries(YUVA)
-    .filter(([, y]) => !y.adaylar.some((a) => tablo.has(a)))
+    .filter(([, y]) => !y.adaylar.some((a) => (a.startsWith('v2/') ? TABLO2.has(a.slice(3)) : tablo.has(a))))
     .map(([ad]) => ad);
 }
 
