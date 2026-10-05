@@ -750,6 +750,11 @@
   opacity: 0;
   pointer-events: none;
 }
+/* yumuşak çıkış: halka, duş, şampuan, tarak birden kaybolmaz */
+.mc-kok .bn-sahne .gidiyor {
+  transition: opacity 0.45s ease-in, scale 0.45s ease-in;
+  scale: 0.75;
+}
 .mc-kok .bn-dus-akis {
   position: absolute;
   left: 3%;

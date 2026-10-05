@@ -386,6 +386,39 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   };
   /** Ekran → sahne kabı içinde yansı yazısı */
   const yazi = (cx: number, cy: number, t: string, renk?: string, buyuk = false) => yansiYazi(sahne.el, cx, cy, t, renk, buyuk);
+  /**
+   * Yerini değiştirmeden önce/sonra (FLIP): ayarla() öğeyi yeni yerine koyar; öğe eski yerinden yay çizerek süzülür,
+   * konunca minik bir esneme (hiçbir şey birden yer değiştirmez)
+   */
+  const konaFlip = (el: HTMLElement, ayarla: () => void, ms = 480, tepe = 40) => {
+    const once = el.getBoundingClientRect();
+    el.getAnimations().forEach((a) => a.cancel());
+    el.style.translate = '';
+    el.style.rotate = '';
+    ayarla();
+    const sonra = el.getBoundingClientRect();
+    const olcek = el.offsetWidth ? sonra.width / el.offsetWidth : 1;
+    const dx = (once.left + once.width / 2 - (sonra.left + sonra.width / 2)) / olcek;
+    const dy = (once.top + once.height / 2 - (sonra.top + sonra.height / 2)) / olcek;
+    if (Math.hypot(dx, dy) < 2) return Promise.resolve();
+    return el
+      .animate(
+        [
+          { translate: `${dx}px ${dy}px` },
+          { translate: `${dx * 0.45}px ${Math.min(dy, 0) * 0.5 - tepe}px`, offset: 0.45 },
+          { translate: '0px 4px', scale: '1.06 0.94', offset: 0.85 },
+          { translate: '0px 0px', scale: '1' },
+        ],
+        { duration: sure(ms), easing: 'cubic-bezier(0.4, 0, 0.6, 1)' },
+      )
+      .finished.then(() => undefined, () => undefined);
+  };
+  /** Yumuşak çıkış: küçülüp solar, sonra kaldırılır */
+  const sondur = async (el: Element | null | undefined, ms = 300, son: Keyframe = { opacity: 0, scale: '0.6' }) => {
+    if (!el) return;
+    await el.animate([{ opacity: 1 }, son], { duration: sure(ms), easing: 'ease-in', fill: 'forwards' }).finished.catch(() => undefined);
+    el.remove();
+  };
 
   // --- parmak ipucu
   const ipucuGoster = (tur: IpucuTuru, a: [number, number], b?: [number, number]) => ipEl.goster(tur, a, b);
@@ -707,14 +740,20 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
             asilan.push(f.renk);
             f.asili = true;
             const n = askiNokta[i];
-            f.el.style.translate = '';
-            f.el.style.setProperty('--x', String(n.x));
-            f.el.style.setProperty('--y', String(n.y - bY(KISI_W * 0.42 * 0.75)));
-            f.el.classList.add('asili');
+            // bırakıldığı yerden kancaya süzülür (birden atlamaz), sonra kancada sallanır
+            void konaFlip(f.el, () => {
+              f.el.style.setProperty('--x', String(n.x));
+              f.el.style.setProperty('--y', String(n.y - bY(KISI_W * 0.42 * 0.75)));
+            }, 380, 20).then(() => {
+              f.el.classList.add('asili');
+              bs.pop();
+              const [x, y] = merkez(f.el);
+              parca.parilti(x, y, 7);
+            });
             f.el.style.zIndex = '2';
-            bs.pop();
-            const [x, y] = merkez(f.el);
-            parca.parilti(x, y, 7);
+            // sahibi fuların kancaya asılışına bakıp sevinir
+            if (f.k === M) M.tepki('evet');
+            else KN.kinoOynat('coskulu', 700);
             kapatlar[fularlar.indexOf(f)]();
             if (fularlar.every((x) => x.asili)) setTimeout(coz, sure(400));
             return true;
@@ -868,7 +907,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
           durumZaman = 0;
           if (dd !== 'ilik' && !doldu && d.yanlisEkle()) ipucuGoster(kucuk ? 'dokun' : 'cevir', merkez(eksikMusluk()));
           if (dd !== 'soguk' && buz) {
-            buz.remove();
+            // buz parçası kafadan kayıp düşer, erir
+            void sondur(buz, 420, { opacity: 0, translate: '30px 140px' });
             buz = null;
           }
           if (dd !== 'sicak' && kinoKenarda) {
@@ -914,7 +954,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     durumYaz(null);
     KN.kinoDur();
     KN.kinoIfade(null);
-    buz?.remove();
+    void sondur(buz, 420, { opacity: 0, translate: '30px 140px' });
     if (kinoKenarda) {
       KN.katman = 4;
       await KN.git(KINO_KUVET_X + 6, AYAKTA_Y, 500, 8);
@@ -926,15 +966,15 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       await bekle(40);
     }
     await KN.git(KINO_KUVET_X, KINO_OTUR_Y, 500);
-    // ördek suya iner ve yüzer
-    ordek.getAnimations().forEach((a) => a.cancel());
-    ordek.style.translate = '';
-    ordek.style.rotate = '';
-    ordek.style.setProperty('--x', '50');
-    ordek.style.setProperty('--y', String(suCizgiY - bY(2.5)));
+    // ördek bulunduğu yerden suya hoplar ve yüzer (birden ışınlanmaz)
     ordek.style.zIndex = '5';
+    bs.vik();
+    await konaFlip(ordek, () => {
+      ordek.style.setProperty('--x', '50');
+      ordek.style.setProperty('--y', String(suCizgiY - bY(2.5)));
+    }, 560, 70);
     ordek.classList.add('yuzuyor');
-    girisZipla(ordek);
+    parca.halka(...merkez(ordek), 50);
     KN.kinoOynat('ic', 1500);
     KN.kinoIfade('keyif', 2000);
     void KN.balon(B.balon.ooh, 1300);
@@ -1195,7 +1235,12 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     sahne.el.dataset.bnSahne = '5';
     siraYak('kopurt', 'simdi');
     // ikisi de ayağa kalkar
-    M.el.querySelector("g.bn-sakal")?.remove();
+    // köpük sakal solup dağılır (birden kaybolmaz)
+    const sakal = M.el.querySelector('g.bn-sakal');
+    if (sakal) {
+      parca.sicrat(...M.bolgeEkran('kafa'), 'kopuk', 5, 0.5);
+      void sondur(sakal, 360, { opacity: 0, translate: '0 40px' });
+    }
     kopukYuzey.classList.add("ince");
     await Promise.all([M.git(MINO_KUVET_X, AYAKTA_Y, 500, 5), KN.git(KINO_KUVET_X, AYAKTA_Y, 500, 5)]);
     const sampuan = sahne.koy(h('div.bn-sise.bn-sise-sampuan', {}, esya('sampuan', '', 'Şampuan')), { x: 16, y: 2, w: 8, z: 9 });
@@ -1274,7 +1319,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     ui.ilerleme(toplam, toplam);
     // ikisi de bembeyaz köpük topu (kalan çamur da gider)
     for (const k of [M, KN]) {
-      for (const c of k.camurlar()) c.remove();
+      for (const c of k.camurlar()) void sondur(c, 400, { opacity: 0 });
       for (const b of ['kulak', 'kafa', 'gobek', 'kuyruk', 'pati', 'burun', 'sirt'] as Bolum[]) if (k.bolge(b)) k.kopuk(b, 1);
     }
     parca.yuksel(...merkez(suOn), 'baloncuk', 10, 90);
@@ -1415,7 +1460,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       ui.ipucu(null);
       durumYaz(null);
       panel.classList.add('bitti');
-      setTimeout(() => panel.remove(), sure(500));
+      void sondur(panel, 420, { opacity: 0, scale: '0.85' });
     }
     // güzel eşlik ettiyse kocaman kutlama; etmediyse de kısa sevinç (ceza yok)
     M.tepki('sevinc');
@@ -1595,7 +1640,12 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     const girdap = sahne.koy(h('div.bn-girdap', { html: girdapSvg() }), { x: 44, y: suCizgiY - bY(3), w: 16, z: 5 });
     ordekGirdaba(44);
     KN.kinoOynat('bak', 1600, -1);
-    setTimeout(() => void KN.balon(B.balon.hi, 1000), sure(900));
+    // Kino giden köpüğe el (pati) sallar: "Hoşça kal köpük!"
+    setTimeout(() => {
+      if (kapandi) return;
+      KN.kinoOynat('coskulu', 1400);
+      void kSoyle(B.kino.hosca).catch(() => undefined);
+    }, sure(900));
     const bas0 = performance.now();
     const boslukSure = TEST_MODU ? 60 : 3200;
     await gorev<void>((coz) =>
@@ -1922,13 +1972,14 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   async function sahne8() {
     sahne.el.dataset.bnSahne = '8';
     // ortayı boşaltırlar: ördek küvetten yere zıplar, havlular önde
-    ordek.getAnimations().forEach((a) => a.cancel());
-    ordek.style.translate = '';
-    ordek.style.rotate = '';
+    // (girdaptan kalan yerinden) yere hoplar: vık!
     ordek.style.zIndex = '10';
-    ordek.style.setProperty('--x', '52');
-    ordek.style.setProperty('--y', '1.5');
-    girisZipla(ordek);
+    ordek.classList.remove('yuzuyor');
+    bs.vik();
+    void konaFlip(ordek, () => {
+      ordek.style.setProperty('--x', '52');
+      ordek.style.setProperty('--y', '1.5');
+    }, 600, 90);
     havluMavi.style.zIndex = '10';
     havluTuruncu.style.zIndex = '11';
     // toplanma: havlular, sepet ve raf kadrajda; ikisi ortada, sepetin önünü kapatmadan durur
@@ -1990,14 +2041,19 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
             return false;
           }
           kapat();
-          ordek.style.translate = '';
-          ordek.style.setProperty('--x', String(rafNokta.x));
-          ordek.style.setProperty('--y', String(rafNokta.y));
-          ordek.style.zIndex = '2';
           ordek.classList.remove('yuzuyor');
-          bs.vik();
-          parca.parilti(...merkez(ordek), 6);
-          setTimeout(coz, sure(400));
+          // rafa süzülüp konar, "vık" der ve kafasını sallar
+          void konaFlip(ordek, () => {
+            ordek.style.setProperty('--x', String(rafNokta.x));
+            ordek.style.setProperty('--y', String(rafNokta.y));
+          }, 360, 16).then(() => {
+            ordek.style.zIndex = '2';
+            bs.vik();
+            parca.parilti(...merkez(ordek), 6);
+            yazi(...merkez(ordek), B.balon.vik, '#e8a722');
+            ordekIc.animate([{ rotate: '0deg' }, { rotate: '-12deg' }, { rotate: '10deg' }, { rotate: '0deg' }], { duration: sure(520), easing: 'ease-in-out' });
+          });
+          setTimeout(coz, sure(600));
           return true;
         },
       });
@@ -2410,7 +2466,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       kapat() {
         kapandi2 = true;
         clearTimeout(zaman);
-        for (const p of parcalar) p.remove();
+        // kuyruk ucu ve dikizleyen parçalar Mino fırlarken solar (birden kaybolmaz)
+        for (const p of parcalar) void sondur(p, 180, { opacity: 0 });
         if (yer.ad === 'havlu') havluTuruncu.style.zIndex = '7';
         KN.kinoDur();
       },
@@ -2566,11 +2623,14 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   }
   /** Tıpa çekilince ördek girdapta dönerek gidere yaklaşır */
   function ordekGirdaba(x: number) {
+    // ördek bulunduğu yerden (ışınlanmadan) girdaba dönerek kayar
+    const r = ordek.getBoundingClientRect();
+    const x0 = dunyada(r.left + r.width / 2, r.top).x;
     ordek.getAnimations().forEach((a) => a.cancel());
-    ordek.style.setProperty('--x', String(72));
+    ordek.style.setProperty('--x', x0.toFixed(2));
     ordek.style.setProperty('--y', String(suCizgiY - bY(1)));
     ordek.style.zIndex = '5';
-    const dx = ((x - 72) / 100) * W();
+    const dx = ((x - x0) / 100) * W();
     ordek.animate(
       [
         { translate: '0px 0px', rotate: '0deg' },
