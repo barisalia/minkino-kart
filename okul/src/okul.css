@@ -396,7 +396,7 @@
 }
 
 .ok-kok .ok-bolge-ad {
-  font-size: clamp(0.85rem, 3.6vw, 1.2rem);
+  font-size: clamp(1rem, 4.3vw, 1.25rem);
   line-height: 1.05;
   text-align: center;
   color: var(--kontur);
@@ -437,7 +437,7 @@
   transform: translate(-50%, -84%) !important;
 }
 .ok-kok .ok-yol-ikili .ok-ikili {
-  --iw: clamp(58px, min(16vw, 10dvh), 120px);
+  --iw: clamp(58px, min(21vw, 11dvh), 120px);
 }
 .ok-kok .ok-harita-alt {
   display: flex;
@@ -445,7 +445,7 @@
   min-height: 40px;
 }
 .ok-kok .ok-yas-dugme {
-  min-height: 48px;
+  min-height: 60px;
   min-width: 96px;
   padding: 0 18px;
   border-radius: 999px;
@@ -660,6 +660,25 @@
   z-index: 4;
   rotate: 10deg;
 }
+/* dikey telefon: duraklar ve Mino ile Kino iri (gökyüzü bomboş kalmasın, parmak rahat değsin), adlar okunur */
+@media (orientation: portrait) {
+  .ok-kok .ok-durak {
+    --ds: clamp(64px, min(21vw, 10.5dvh), 104px);
+  }
+  .ok-kok .ok-durak[data-durum='oneri'] {
+    --ds: clamp(72px, min(24vw, 12dvh), 116px);
+  }
+  .ok-kok .ok-durak-ikili {
+    --ust: calc(clamp(72px, min(24vw, 12dvh), 116px) / 2 + 2px);
+  }
+  .ok-kok .ok-durak-ikili .ok-ikili {
+    --iw: clamp(52px, min(17vw, 8.5dvh), 92px);
+  }
+  .ok-kok .ok-durak-ad {
+    font-size: 0.95rem;
+    max-width: 130px;
+  }
+}
 @media (orientation: landscape) {
   .ok-kok .ok-durak {
     --ds: clamp(64px, min(10vw, 17dvh), 96px);
@@ -671,10 +690,10 @@
     --ust: calc(clamp(68px, min(11vw, 19dvh), 104px) / 2 + 2px);
   }
   .ok-kok .ok-durak-ikili .ok-ikili {
-    --iw: clamp(36px, min(7vw, 11dvh), 72px);
+    --iw: clamp(44px, min(9vw, 14dvh), 80px);
   }
   .ok-kok .ok-durak-ad {
-    font-size: 0.8rem;
+    font-size: 0.88rem;
   }
 }
 
@@ -1482,8 +1501,8 @@
     align-items: flex-end;
   }
   .ok-kok .ok-e3-yuva .ok-havuc {
-    width: 58px;
-    height: 58px;
+    width: 62px;
+    height: 62px;
     flex: 0 0 auto;
   }
 }
