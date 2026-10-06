@@ -10,11 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- Telefon baştan sona yatay (iki yatay yön, sensörle): açılış ekranı da yatay gelir, dikey parlama olmaz.
-             Tablet (en kısa kenar >= 600 dp) MainActivity'de serbest bırakılır (Android 16+ büyük ekranda zaten yok sayar). -->
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
-            android:screenOrientation="sensorLandscape"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
