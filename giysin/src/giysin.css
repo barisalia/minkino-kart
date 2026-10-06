@@ -8,6 +8,7 @@
   opacity: 0;
   pointer-events: none;
   transform-origin: 50% 92%;
+  scale: 1.07;
 }
 .gy-kok {
   position: fixed;

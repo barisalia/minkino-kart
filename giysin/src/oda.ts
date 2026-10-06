@@ -537,8 +537,9 @@ export function odaEkrani(app: Uygulama): Ekran {
     balonKonum();
     balon.classList.add('acik');
     void oynat(balon, [{ transform: 'scale(0.2)', opacity: 0 }, { transform: 'scale(1.08)', opacity: 1, offset: 0.7 }, { transform: 'scale(1)', opacity: 1 }], 480, { easing: 'ease-out', fill: 'forwards' });
-    await kinoDe(K.istek);
-    await bekle(700);
+    // balon en az 2,4 sn görünür (ses kısa ya da kapalı olsa da çocuk resmi görsün)
+    await Promise.all([kinoDe(K.istek), bekle(2400)]);
+    await bekle(400);
     void oynat(balon, [{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(0.6)', opacity: 0 }], 300, { fill: 'forwards' });
     adimaGec('perde');
     pencere.classList.add('isaretli');
