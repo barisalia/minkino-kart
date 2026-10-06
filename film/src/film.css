@@ -227,6 +227,42 @@
     var(--kapak, radial-gradient(90% 70% at 50% 40%, #ffd79a, #ff9d5c 60%, #d8663f)) center / cover no-repeat;
   transition: opacity 0.5s;
 }
+/* başlık üstte, Oynat altta: kapak resmindeki karakterlerin yüzünü örtmesinler */
+.fl-kok .fl-kapak {
+  align-content: space-between;
+  overflow: hidden;
+  padding: max(72px, 9vh) 16px max(28px, 6vh, env(safe-area-inset-bottom));
+}
+/* dikeyde kapak kesilmeden görünür (cover Mino'yu ikiye bölüp büyütüyor, bulanıklaşıyordu); arkası aynı resmin
+   bulanık hali */
+@media (orientation: portrait) {
+  .fl-kok .fl-kapak::before,
+  .fl-kok .fl-kapak::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .fl-kok .fl-kapak::before {
+    inset: -30px;
+    background: var(--kapak, none) center / cover no-repeat, #3a2f4a;
+    filter: blur(16px) brightness(0.62);
+  }
+  .fl-kok .fl-kapak::after {
+    inset: 0;
+    background: var(--kapak, none) center / 100% auto no-repeat;
+  }
+}
+/* alçak yatay telefon: başlık üst düğmelerin arasında, Oynat en altta (Mino'nun başı ve gövdesi açıkta) */
+@media (orientation: landscape) and (max-height: 540px) {
+  .fl-kok .fl-kapak {
+    padding: 14px 90px max(12px, env(safe-area-inset-bottom));
+  }
+  .fl-kok .fl-baslik {
+    font-size: clamp(2rem, 11vh, 3.2rem);
+    -webkit-text-stroke-width: 7px;
+  }
+}
 .fl-kok .fl-kapak.gizli {
   opacity: 0;
   pointer-events: none;
