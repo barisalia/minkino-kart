@@ -69,19 +69,29 @@ export function acilisEkrani(app: Uygulama): Ekran {
   mino.el.addEventListener('pointerdown', () => mino.tepki('zipla'));
   // boşta durmaz: meyveleri düzeltir, yayalara bakar, mırlar
   const minoCanli = new MinoCanli(mino, { urunVar: () => true, musteriVar: () => false });
+  // ekran değişince (git → sus) konuşma kesilir: hoş geldin cümlesi bitmeden geçilmez; ikinci dokunuş yok sayılır
+  let gidiliyor = false;
+  let kapali = false;
   const oyna =h('button.dugme.pz-oyna', { type: 'button' }, svg(IKON.oyna), A.oyna);
   oyna.addEventListener('click', async () => {
+    if (gidiliyor) return;
+    gidiliyor = true;
     efekt.secim();
-    void konus(P.hosgeldin);
-    await bekle(sure(250));
+    clearTimeout(selam);
+    mino.tepki('selam');
+    // kayıt ~1.8 sn; kayıt/cihaz sesi takılırsa en çok 3.5 sn beklenir
+    await Promise.race([konus(P.hosgeldin), bekle(sure(3500))]);
+    if (kapali) return;
     app.git(durum.i.yas ? 'pazar' : 'yas', { sonra: 'pazar' });
   });
-  // ikinci oyun: Meyve Suyu Köşesi
+  // ikinci oyun: Meyve Suyu Köşesi (giriş cümlesini kendi ekranı söyler; burada söylenirse yarıda kesilirdi)
   const meyveSuyu = h('button.dugme.pz-ms-dugme', { type: 'button' }, svg(BARDAK_IKON), A.meyvesuyu);
   meyveSuyu.addEventListener('click', async () => {
+    if (gidiliyor) return;
+    gidiliyor = true;
     efekt.secim();
-    void konus(P.meyvesuyu.giris);
     await bekle(sure(250));
+    if (kapali) return;
     app.git(durum.i.yas ? 'meyvesuyu' : 'yas', { sonra: 'meyvesuyu' });
   });
   const cikis = app.secenekler.cikis;
@@ -120,6 +130,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   return {
     el,
     kapat() {
+      kapali = true;
       clearTimeout(selam);
       minoCanli.kapat();
       mino.kapat();
@@ -239,9 +250,10 @@ export function pazarEkrani(app: Uygulama): Ekran {
   let fazlaDendi = false;
   /** terazi dengelenince: kol ortada durup kefeler parlayınca biter (el çekilirse beklemeyi bırakır) */
   async function dengeBekle() {
+    const bu = ist;
     for (let k = 0; k < 80 && terazi && !terazi.dengede; k++) await bekle(sure(50));
     await bekle(sure(650));
-    if (aktif && denetle(ist, sepettekiler()) === 'tamam') bitir();
+    if (aktif && ist === bu && denetle(ist, sepettekiler()) === 'tamam') bitir();
   }
   const salla = (e: HTMLElement | null, sinif = 'pz-hayir') => {
     if (!e) return;
@@ -373,6 +385,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
       tasi(e, yuva);
       sepetGuncelle();
       teraziGuncelle();
+      // terazi: fazlayı geri alınca kefeler denkleşirse tur da biter (yoksa kefe parlar ama müşteri hep bekler)
+      if (ist.tur === 'terazi' && denetle(ist, sepettekiler()) === 'tamam') {
+        efekt.nota(8);
+        void dengeBekle();
+      }
     });
     return yuva;
   }
