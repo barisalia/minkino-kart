@@ -4,7 +4,7 @@ import { seviyeleriUygula, sesMotorunuAc } from './motor';
 import { muzikAyarUygula, muzikBaslat } from './muzik';
 
 export { efekt } from './efekt';
-export { KINO_SESI, konus, konusuyorMu, sus } from './konusma';
+export { KINO_SESI, konus, konusuyorMu, sus, tekrarSoyle } from './konusma';
 
 let acildi = false;
 

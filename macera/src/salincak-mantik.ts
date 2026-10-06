@@ -185,6 +185,22 @@ export class SalinimSayaci {
   }
 }
 
+/** Sayma görevi "takılırsa kendiliğinden geçer" süresi: sayım sürdükçe her sayıda baştan kurulur (10'a kadar saymak 25 sn'yi aşabilir) */
+export const SAYMA_EMNIYET_MS = 25000;
+/** ms boyunca ilerleme olmazsa bitti() çağrılır; yenile() saati baştan kurar, dur() iptal eder */
+export function emniyetSaati(ms: number, bitti: () => void) {
+  let t = setTimeout(bitti, ms);
+  return {
+    yenile() {
+      clearTimeout(t);
+      t = setTimeout(bitti, ms);
+    },
+    dur() {
+      clearTimeout(t);
+    },
+  };
+}
+
 /** Sayının Türkçe söylenişi (mevcut kayıtlar: "Bir!" … "On!") */
 export const SAYILAR = ['Bir!', 'İki!', 'Üç!', 'Dört!', 'Beş!', 'Altı!', 'Yedi!', 'Sekiz!', 'Dokuz!', 'On!'];
 export const sayiSoyle = (n: number) => SAYILAR[Math.max(1, Math.min(10, n)) - 1];

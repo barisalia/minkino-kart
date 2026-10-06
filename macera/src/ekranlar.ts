@@ -1,6 +1,6 @@
 /** Sesli Maceralar ekranları: açılış (bölüm seçimi), büyükler (mikrofon izni), bölüm */
 import M from '../../content/macera.json';
-import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
+import { efekt, KINO_SESI, tekrarSoyle } from '../../src/audio/ses';
 import { karakterCumleleri, normal } from '../../src/audio/cumleler';
 import { durum } from '../../src/engine/ilerleme';
 import { kilitli } from '../../src/engine/erisim';
@@ -193,7 +193,7 @@ export function bolumEkrani(app: Uygulama): Ekran {
   let sonYazi = '';
   // Tekrar dinle: Kino'nun cümlesi Kino'nun sesiyle (kendi sesi ya da kalın ton), diğerleri Mino tonuyla
   const kinoCumleleri = new Set(karakterCumleleri().kino);
-  const tekrarDinle = () => void konus(sonYazi, kinoCumleleri.has(normal(sonYazi)) ? KINO_SESI : { ton: 1.12 });
+  const tekrarDinle = () => void tekrarSoyle(sonYazi, kinoCumleleri.has(normal(sonYazi)) ? KINO_SESI : { ton: 1.12 });
   const balon = h('div.baslik-balon.mc-altyazi', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', tekrarDinle, 'kucuk'), yazi);
   const noktalar = h('div.mc-ilerleme');
   const ipucu = h('div.mc-ipucu');

@@ -15,6 +15,7 @@
 import E from '../../content/macera-ege.json';
 import { efekt, konus } from '../../src/audio/ses';
 import { DosyaMuzik, fonDosyasi } from '../../src/audio/dosya-muzik';
+import { sarkiSesiAyarla } from '../../src/audio/sarki-kayit';
 import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
@@ -522,13 +523,13 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
 
   const mSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     await konus(t, { ton: 1.12 });
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const anneSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     anne.classList.add('konusuyor');
     // anne konuşurken yalnız annenin ağzı oynar, Mino'nunki oynamaz (dudak senkronu: konuşanın ağzı)
@@ -541,7 +542,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       mino.agizSus = false;
       anneIsk?.konus(null);
     }
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const efektCal = (f: () => void, ms = 700) => {
     kulak.sustur(ms);
@@ -2185,7 +2186,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     if (TEST_MODU) return kutuyla();
     const bitis = ninniSonuMs(Math.max(...notalar.map((n) => n.satir)) + 1);
     const ses = new Audio(NINNI_SESI);
-    ses.volume = durum.i.ayarlar.seviye;
+    sarkiSesiAyarla(ses);
     kulak.sustur(bitis + 800);
     return ses.play().then(
       () =>
