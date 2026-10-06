@@ -14,7 +14,7 @@ import './abonelik.css';
 import { efekt, konus, sus } from '../audio/ses';
 import { metin } from '../audio/metin';
 import { Mino } from '../mino/mino';
-import { h, sure, svg } from '../ui/dom';
+import { h, perdeyeDokununca, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 
 /** 'buyuk': büyük "Büyükler için" düğmesine bastı (kapıya geçilir); 'kapat': çocuk "Tamam" dedi ya da kapattı */
@@ -97,7 +97,8 @@ export function kilitAniAc(kok: HTMLElement): Promise<KilitSecimi> {
       efekt.dokunma();
       bitir('buyuk');
     });
-    perde.addEventListener('click', (e) => e.target === perde && bitir('kapat'));
+    // çift dokunuşun ikincisi perdeye düşer: açılıştan hemen sonra perdeye dokunmak kapatmaz (src/ui/dom.ts)
+    perdeyeDokununca(perde, () => bitir('kapat'));
     // Esc (ve Android geri tuşu: src/kabuk/yerel.ts Esc gönderir) kapatır
     const klavye = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;

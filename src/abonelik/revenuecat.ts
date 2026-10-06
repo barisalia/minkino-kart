@@ -4,15 +4,26 @@
  * - Yetki: REVENUECAT.yetki ('premium'); ürünler minkino_aylik / minkino_yillik.
  * - Fiyat ve deneme süresi mağazadan gelir (yerel para birimiyle).
  */
-import { LOG_LEVEL, Purchases, PURCHASES_ERROR_CODE, type CustomerInfo, type PurchasesPackage, type PurchasesStoreProduct } from '@revenuecat/purchases-capacitor';
+import {
+  INTRO_ELIGIBILITY_STATUS,
+  LOG_LEVEL,
+  Purchases,
+  PURCHASES_ERROR_CODE,
+  type CustomerInfo,
+  type PurchasesPackage,
+  type PurchasesStoreProduct,
+} from '@revenuecat/purchases-capacitor';
 import { premiumAyarla } from '../engine/erisim';
 import { REVENUECAT } from '../kabuk/ayar';
 import type { Platform } from '../kabuk/ortam';
-import { ayaBol, denemeGunu, type Plan, type PlanId, type Saglayici } from './satin';
+import { ayaBol, denemeGunu, gosterilecekDeneme, type Plan, type PlanId, type Saglayici } from './satin';
 
 const premiumVar = (c: CustomerInfo) => !!c.entitlements.active[REVENUECAT.yetki];
 
-/** Pakette ücretsiz deneme var mı (iOS: introPrice 0; Android: varsayılan seçeneğin ücretsiz evresi) */
+/**
+ * Pakette ücretsiz deneme var mı (iOS: introPrice 0; Android: varsayılan seçeneğin ücretsiz evresi).
+ * iOS'ta introPrice ürünün bilgisidir, bu kullanıcının hakkı değil: hak ayrıca sorulur (iosDenemeHakki).
+ */
 function deneme(u: PurchasesStoreProduct): number | null {
   const bedava = u.defaultOption?.freePhase?.billingPeriod;
   if (bedava) return denemeGunu(bedava.unit, bedava.value);
@@ -23,7 +34,22 @@ function deneme(u: PurchasesStoreProduct): number | null {
 /** Ürün kimliği eşleşir mi (Android'de "minkino_aylik:taban-plan" biçiminde gelebilir) */
 const eslesir = (u: PurchasesStoreProduct, kimlik: string) => u.identifier === kimlik || u.identifier.startsWith(`${kimlik}:`);
 
-export async function revenueCatSaglayici(_p: Platform, anahtar: string): Promise<Saglayici> {
+/**
+ * iOS: bu Apple Kimliği ürünün ücretsiz denemesini hâlâ kullanabilir mi (daha önce denemiş, uygulamayı yeniden
+ * kurmuş ya da iptal edip dönen ebeveyn kullanamaz). Yalnız mağaza "uygun" derse true; bilinmiyorsa ya da
+ * sorulamadıysa false (RevenueCat'in önerisi: emin değilsen deneme vaat etme).
+ */
+async function iosDenemeHakki(kimlikler: string[]): Promise<Record<string, boolean>> {
+  if (!kimlikler.length) return {};
+  try {
+    const sonuc = await Purchases.checkTrialOrIntroductoryPriceEligibility({ productIdentifiers: kimlikler });
+    return Object.fromEntries(kimlikler.map((k) => [k, sonuc[k]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE]));
+  } catch {
+    return {};
+  }
+}
+
+export async function revenueCatSaglayici(p: Platform, anahtar: string): Promise<Saglayici> {
   // Hata ayıklama kaydı kapalı (anahtar ya da kimlik loga düşmesin)
   await Purchases.setLogLevel({ level: LOG_LEVEL.WARN }).catch(() => undefined);
   const { isConfigured } = await Purchases.isConfigured().catch(() => ({ isConfigured: false }));
@@ -40,6 +66,10 @@ export async function revenueCatSaglayici(_p: Platform, anahtar: string): Promis
       if (!teklif) throw new Error('Teklif yok');
       const bul = (kimlik: string, yedek: PurchasesPackage | null) => teklif.availablePackages.find((p) => eslesir(p.product, kimlik)) ?? yedek ?? undefined;
       paketler = { aylik: bul(REVENUECAT.urunler.aylik, teklif.monthly), yillik: bul(REVENUECAT.urunler.yillik, teklif.annual) };
+      const ios = p === 'ios';
+      const urunler = (['aylik', 'yillik'] as const).map((id) => paketler[id]?.product).filter((u): u is PurchasesStoreProduct => !!u);
+      // iOS'ta deneme hakkı kullanıcıya göre: yalnız denemesi olan ürünler için mağazaya sorulur
+      const hak = ios ? await iosDenemeHakki(urunler.filter((u) => deneme(u)).map((u) => u.identifier)) : {};
       const sonuc: Plan[] = [];
       for (const id of ['aylik', 'yillik'] as const) {
         const u = paketler[id]?.product;
@@ -48,7 +78,7 @@ export async function revenueCatSaglayici(_p: Platform, anahtar: string): Promis
           id,
           fiyat: u.priceString,
           ayBasi: id === 'yillik' ? (u.pricePerMonthString ?? ayaBol(u.price, u.currencyCode)) : null,
-          denemeGun: deneme(u),
+          denemeGun: gosterilecekDeneme(deneme(u), ios, hak[u.identifier]),
         });
       }
       if (!sonuc.length) throw new Error('Paket yok');

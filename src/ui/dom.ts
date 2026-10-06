@@ -46,6 +46,25 @@ export const TEST_MODU = typeof location !== 'undefined' && new URLSearchParams(
 /** Animasyon süresi (test modunda çok kısa). */
 export const sure = (ms: number) => (TEST_MODU ? Math.min(ms, 30) : ms);
 
+/**
+ * Arka plana (perdeye) dokununca kapanan pencereler açıldıktan sonra bu kadar ms dokunuşla kapanmaz: çocuk karta
+ * çift dokununca ikinci dokunuş açılan pencereyi hemen kapatmasın. Test modunda da kısalmaz (gerçek süre).
+ */
+export const PERDE_KORUMA_MS = 600;
+
+/** Perdeye dokunuş pencereyi kapatsın mı (saf; birim testi için): açılıştan bu yana koruma süresi geçti mi */
+export function perdeKapatabilirMi(acilis: number, simdi: number, koruma = PERDE_KORUMA_MS): boolean {
+  return simdi - acilis >= koruma;
+}
+
+/** `perde`nin kendisine (içindeki pencereye değil) dokununca `fn`; açılıştan sonraki ilk PERDE_KORUMA_MS yok sayılır */
+export function perdeyeDokununca(perde: HTMLElement, fn: () => void): void {
+  const acilis = performance.now();
+  perde.addEventListener('click', (e) => {
+    if (e.target === perde && perdeKapatabilirMi(acilis, performance.now())) fn();
+  });
+}
+
 export function dokun(el: HTMLElement, fn: (e: PointerEvent) => void) {
   el.addEventListener('click', (e) => fn(e as PointerEvent));
 }

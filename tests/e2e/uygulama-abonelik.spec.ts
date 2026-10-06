@@ -173,6 +173,19 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
   await kapiyiGec(page);
   await expect(page.locator('.ab-perde')).toHaveAttribute('data-durum', 'hata');
   await expect(page.getByRole('button', { name: 'Tekrar dene' })).toBeVisible();
+  // deneme hakkı bilinmiyor: deneme vaat edilmez
+  await expect(page.locator('.ab-deneme')).toBeHidden();
+  await expect(page.locator('.ab-basla')).toHaveText('Abone ol');
+
+  // deneme hakkı yok (iOS: denemeyi daha önce kullanan Apple Kimliği): "Abone ol", deneme yazısı yok
+  await page.goto('./?test=1&uygulama=ios&deneme=yok');
+  await page.locator('.ug-kart[data-oyun="canlan"]').click();
+  await buyuklerIcin(page);
+  await kapiyiGec(page);
+  await expect(page.locator('.ab-perde')).toHaveAttribute('data-durum', 'hazir');
+  await expect(page.locator('.ab-deneme')).toBeHidden();
+  await expect(page.locator('.ab-basla')).toHaveText('Abone ol');
+  await expect(page.locator('.ab-sonra')).toHaveText('₺499,00 / yıl. İstediğin zaman iptal edebilirsin.');
 
   // önceden abone (mağaza "premium" diyor): hiç kilit yok
   await page.goto('./?test=1&uygulama=ios&premium=1');
