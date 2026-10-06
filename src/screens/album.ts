@@ -6,7 +6,7 @@ import { temaDurumu } from '../engine/odul';
 import type { Tema } from '../engine/types';
 import { h, svg, TEST_MODU } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { kartEl } from '../ui/kart';
+import { kartEl, kartResimleriniYukle } from '../ui/kart';
 import { kartSesi } from '../audio/cumleler';
 import { azHareket, sinifOynat } from '../ui/hareket';
 import { baslikBalon, yuvarlakDugme } from '../ui/ortak';
@@ -57,6 +57,7 @@ export function albumSayfasi(t: Tema, sec: { yeni?: string[] } = {}): HTMLElemen
 }
 
 export function albumEkrani(app: Uygulama, param?: { tema?: string }): Ekran {
+  kartResimleriniYukle();
   let secili = temaBul(param?.tema ?? '') ?? TEMALAR[0];
   const sekmeler = h('div.album-sekmeler', { role: 'tablist' });
   const sayfaKutu = h('div.sayfa-kutu');
