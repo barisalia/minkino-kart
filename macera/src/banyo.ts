@@ -362,13 +362,13 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
 
   // --- konuşma: Mino (ince ton) ve Kino (kendi sesi varsa o; yoksa aynı ses, kalın ton; ağzı oynar, Mino'nunki durur)
   const mSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     await konus(t, { ton: 1.12 });
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const kSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     M.mino!.agizSus = true;
     KN.konus(true);
@@ -378,7 +378,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       KN.konus(false);
       M.mino!.agizSus = false;
     }
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const efektCal = (ad: string, ms = 1200) => {
     kulak.sustur(ms);

@@ -8,6 +8,7 @@
 import { baglam, efektCikisi, muzikCikisi } from '../../src/audio/motor';
 import { kulak } from '../../orman/src/kulak';
 import type { KampKayit } from './elektrik-mantik';
+import { sarkiSesiAyarla } from '../../src/audio/sarki-kayit';
 
 function hazir(cikis: 'efekt' | 'muzik' = 'efekt', pan = 0): [AudioContext, AudioNode] | null {
   const c = baglam();
@@ -543,6 +544,7 @@ export class KampCalar {
     kulak.sustur(ms + 350);
     const a = this.sesler[tur];
     try {
+      sarkiSesiAyarla(a);
       a.currentTime = basMs / 1000;
       void a.play().catch(() => undefined);
     } catch {

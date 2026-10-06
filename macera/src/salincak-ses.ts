@@ -7,7 +7,7 @@
  */
 import { baglam, efektCikisi } from '../../src/audio/motor';
 import { kulak } from '../../orman/src/kulak';
-import type { SarkiJson } from '../../src/audio/sarki-kayit';
+import { sarkiSesiAyarla, type SarkiJson } from '../../src/audio/sarki-kayit';
 
 function hazir(pan = 0): [AudioContext, AudioNode] | null {
   const c = baglam();
@@ -278,7 +278,7 @@ export class TekerlemeCalar {
     kulak.sustur(ms + 350);
     const a = this.sesler[tur];
     try {
-      a.volume = Math.max(0, Math.min(1, ses));
+      sarkiSesiAyarla(a, ses);
       a.currentTime = basMs / 1000;
       void a.play().catch(() => undefined);
     } catch {

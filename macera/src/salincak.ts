@@ -93,6 +93,8 @@ import {
   ritimTurlari,
   salincakAyar,
   SalinimSayaci,
+  SAYMA_EMNIYET_MS,
+  emniyetSaati,
   Sarkac,
   sayiSoyle,
   SERT_GENLIK,
@@ -507,13 +509,13 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   };
 
   const mSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     await konus(t, { ton: 1.12 });
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const kSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     MN.mino!.agizSus = true;
     KN.konus(true);
@@ -523,7 +525,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       KN.konus(false);
       MN.mino!.agizSus = false;
     }
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const balonKatman = h('div.el-balonlar.sl-balonlar');
   sahne.el.append(balonKatman);
@@ -1143,7 +1145,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       if (yon === 1) sayac.uc();
     };
     return gorev<void>((coz) => {
-      if (!TEST_MODU) setTimeout(() => coz(), 25000); // takılırsa kendiliğinden geçer
+      // takılırsa kendiliğinden geçer; çocuk saydıkça saat baştan kurulur (10'a kadar saymak 25 sn'yi aşabilir)
+      const emniyet = TEST_MODU ? null : emniyetSaati(SAYMA_EMNIYET_MS, () => coz());
       let yanlis = 0;
       const ip = ipucu(kutu(BUYUK.alan));
       const yazi = rozet.querySelector('b')!;
@@ -1163,6 +1166,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
           return;
         }
         yanlis = 0;
+        emniyet?.yenile();
         ip.ilerle();
         const n = sayac.sayi;
         yazi.textContent = String(n);
@@ -1194,6 +1198,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       };
       BUYUK.alan.addEventListener('pointerdown', bas);
       return () => {
+        emniyet?.dur();
         kapat();
         kapatA();
         kulak.dinle(null);

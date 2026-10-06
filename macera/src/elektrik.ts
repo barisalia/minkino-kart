@@ -427,13 +427,13 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   };
 
   const mSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     await konus(t, { ton: 1.12 });
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const kSoyle = async (t: string) => {
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
     ui.yazi(t);
     MN.mino!.agizSus = true;
     KN.konus(true);
@@ -443,7 +443,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       KN.konus(false);
       MN.mino!.agizSus = false;
     }
-    if (kapandi) throw IPTAL;
+    if (kapandi || ui.kapandiMi()) throw IPTAL;
   };
   const balonKatman = h('div.el-balonlar');
   sahne.el.append(balonKatman);

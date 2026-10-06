@@ -7,6 +7,17 @@
 import { durum } from '../engine/ilerleme';
 import { TEST_MODU } from '../ui/dom';
 
+/**
+ * Kayıtlı şarkı / tekerleme / ninni (HTMLAudioElement Web Audio'dan geçmez, sessize alma ona kendiliğinden
+ * ulaşmaz): müzik ayarına ve ses düzeyine uyar. iOS (WKWebView) volume'u yok saydığı için muted da kurulur.
+ * kat: çağıranın ek kısması (0-1).
+ */
+export function sarkiSesiAyarla(a: HTMLMediaElement, kat = 1) {
+  const { muzik, seviye } = durum.i.ayarlar;
+  a.muted = !muzik;
+  a.volume = muzik ? Math.max(0, Math.min(1, seviye * kat)) : 0;
+}
+
 export interface SarkiJson {
   bpm: number;
   baslangic_ms: number;
@@ -185,7 +196,7 @@ export class KayitCalar {
     sustur?.(this.sonMs + 800);
     if (url && !TEST_MODU) {
       const ses = new Audio(url);
-      ses.volume = durum.i.ayarlar.muzik ? Math.min(1, durum.i.ayarlar.seviye) : 0;
+      sarkiSesiAyarla(ses);
       this.ses = ses;
       this.kayitli = await ses.play().then(
         () => true,

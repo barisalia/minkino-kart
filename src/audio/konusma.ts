@@ -99,7 +99,57 @@ export interface KonusmaSecenegi {
 /** Kino'nun konuşması: kendi sesi yoksa anlatıcı sesinin kalın tonu. */
 export const KINO_SESI: KonusmaSecenegi = { karakter: 'kino', ton: 0.92 };
 
+/** Söylenmekte olan cümlenin, çağıranın beklediği sözü (tekrarSoyle bunu devralır). */
+interface Bekleyen {
+  coz: () => void;
+  devredildi: boolean;
+}
+let bekleyen: Bekleyen | null = null;
+
+function sarmala(ic: Promise<void>, onceki: Bekleyen | null): Promise<void> {
+  return new Promise<void>((coz, red) => {
+    const b: Bekleyen = {
+      devredildi: false,
+      coz: () => {
+        coz();
+        onceki?.coz();
+      },
+    };
+    bekleyen = b;
+    ic.then(
+      () => {
+        if (!b.devredildi) b.coz();
+      },
+      (e) => {
+        if (b.devredildi) return;
+        red(e);
+        onceki?.coz();
+      },
+    );
+  });
+}
+
 export function konus(girdi: Soylenecek, secenek: KonusmaSecenegi = {}): Promise<void> {
+  const ic = konusIc(girdi, secenek);
+  // test / konuşma kapalı / boş metin: çalan bir şey yok, devralınacak bir şey de yok
+  return konusuyor ? sarmala(ic, null) : ic;
+}
+
+/**
+ * "Tekrar dinle": bir cümle söylenirken çağrılırsa o cümleyi baştan söyler ve cümleyi bekleyen akış (sahnede
+ * `await konus(...)`) tekrar bitene kadar bekler; böylece hikâye sonraki cümleye atlamaz. Sessizken düz konus gibidir.
+ */
+export function tekrarSoyle(girdi: Soylenecek, secenek: KonusmaSecenegi = {}): Promise<void> {
+  const eski = konusuyor ? bekleyen : null;
+  if (eski) eski.devredildi = true;
+  const ic = konusIc(girdi, secenek);
+  if (!eski) return konusuyor ? sarmala(ic, null) : ic;
+  if (konusuyor) return sarmala(ic, eski);
+  void ic.then(eski.coz, eski.coz);
+  return ic;
+}
+
+function konusIc(girdi: Soylenecek, secenek: KonusmaSecenegi): Promise<void> {
   sus();
   const benim = sayac;
   let parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
