@@ -9,7 +9,7 @@
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET, esya, ipucuEl, katman, type Oda } from './dunya';
 import { ODA_H, odaW, type IpucuTanim } from './mantik';
-import { BAHCE_DIKEY, BAHCELER, bahceYerlesim, CALILAR, GOLET_PARCALARI, IP, YOL_PARCALARI, type BahceId, type Cali, type Parca } from './mantik2';
+import { BAHCE_DIKEY, BAHCELER, bahceYerlesim, CALILAR, GOLET_PARCALARI, HALKALAR2, IP, YOL_PARCALARI, type BahceId, type Cali, type Parca } from './mantik2';
 import { resim } from './resimler';
 
 const px = (v: number) => `${v.toFixed(1)}px`;
@@ -20,8 +20,60 @@ const zeminUrl = (id: BahceId) => (BAHCE_DIKEY[id] && resim(`v2/${id}-dikey`)) |
  * çizimi olmayan yatay kalır (mantik2.ts → bahceYerlesim).
  */
 export function bahceKur() {
-  const dikeyEkran = typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
-  for (const id of BAHCELER) bahceYerlesim(id, dikeyEkran && !!resim(`v2/${id}-dikey`));
+  for (const id of BAHCELER) bahceYerlesim(id, bahceDikeyOlmali(id));
+}
+const bahceDikeyOlmali = (id: BahceId) => typeof window !== 'undefined' && window.innerHeight > window.innerWidth && !!resim(`v2/${id}-dikey`);
+
+/** Öğeyi oda oranındaki yerine koyar (x, y: ortası ya da tabanı, öğenin kendi biçimine göre; h: boy) */
+function yerlestir(el: HTMLElement | null | undefined, o: { x: number; y: number; h?: number; don?: number }, W: number) {
+  if (!el) return;
+  el.style.left = px(o.x * W);
+  el.style.top = px(o.y * ODA_H);
+  if (o.h !== undefined) el.style.height = px(o.h * ODA_H);
+  el.style.setProperty('--don', `${o.don ?? 0}deg`);
+}
+
+/**
+ * Telefon vakanın ortasında döndü (web sitesinde yön serbest): bahçe bölümü yerinde yeni yönün yerleşimine geçer
+ * (mantik2.ts → bahceYerlesim): zemin resmi, oda eni, mandallar, ipuçları, iz parçaları, çalılar. Öğeler ve
+ * durumları (bulundu, alındı, aralandı) korunur. Vakanın kendi koyduğu dünyadakiler (Ada, Vakvak Anne, yuva) vaka2.ts'de.
+ * Yerleşim zaten bu yöne uygunsa false.
+ */
+export function bahceYenidenDiz(oda: Oda): boolean {
+  const id = oda.id as BahceId;
+  if (!BAHCELER.includes(id)) return false;
+  const dikey = bahceDikeyOlmali(id);
+  if (dikey === BAHCE_DIKEY[id]) return false;
+  bahceYerlesim(id, dikey);
+  const W = odaW(id);
+  oda.W = W;
+  oda.el.style.width = px(W);
+  const url = zeminUrl(id);
+  const zemin = oda.el.querySelector<HTMLImageElement>('img.dd-zemin');
+  if (zemin) zemin.src = url;
+  const { e } = oda;
+  // ipuçları (tanımlar bahceYerlesim ile yerinde güncellendi)
+  const tanimlar = HALKALAR2.flatMap((hk) => hk.ipuclari);
+  for (const [ad, el] of Object.entries(e)) {
+    const t = ad.startsWith('ipucu-') ? tanimlar.find((x) => x.id === ad.slice(6)) : undefined;
+    if (t) yerlestir(el, t, W);
+  }
+  if (id === 'bahce-ip') {
+    e.mandallar?.querySelectorAll<HTMLElement>(':scope > .dd-mandal-asili').forEach((m, i) => IP.mandallar[i] && yerlestir(m, IP.mandallar[i], W));
+    const a = IP.atki;
+    yerlestir(e.ani?.querySelector<HTMLElement>('.dd-ani-atki'), { x: a.x, y: IP.bos.y - a.h * 0.07 + a.h, h: a.h }, W);
+  } else if (id === 'bahce-yol') {
+    e.parcalar?.querySelectorAll<HTMLElement>(':scope > .dd-parca').forEach((p, i) => YOL_PARCALARI[i] && yerlestir(p, YOL_PARCALARI[i], W));
+  } else {
+    CALILAR.forEach((c, i) => {
+      const k = e[`cali-${i}`]?.querySelector<HTMLElement>(':scope > .dd-cali-kopya');
+      if (k) caliYerlestir(k, c, W, url);
+    });
+    if (e.yarimSol) caliYerlestir(e.yarimSol, CALILAR[2], W, url);
+    if (e.yarimSag) caliYerlestir(e.yarimSag, CALILAR[2], W, url);
+    e.son?.querySelectorAll<HTMLElement>(':scope > .dd-parca').forEach((p, i) => GOLET_PARCALARI[i] && yerlestir(p, GOLET_PARCALARI[i], W));
+  }
+  return true;
 }
 
 /** Renk izi parçası (iplik, mavi ip, yaprak): dokunulabilir */
@@ -67,20 +119,21 @@ export function caliKirpimi(yarim?: 'sol' | 'sag'): string {
 
 /** Çalının resimden kırpılmış kopyası (kutusu oda oranında); yarim: 'sol' / 'sag' yarısı */
 export function caliKopya(c: Cali, W: number, url: string, yarim?: 'sol' | 'sag'): HTMLElement {
+  const kirp = `polygon(${caliKirpimi(yarim)})`;
+  const el = h(`div.dd-cali-kopya${yarim ? '.dd-cali-' + yarim : ''}`, { style: `--kirp:${kirp}` }, h('i.dd-cali-resim'));
+  caliYerlestir(el, c, W, url);
+  return el;
+}
+/** Çalı kopyasının kutusu ve içindeki resmin yeri (kuruluşta ve telefon dönünce) */
+function caliYerlestir(el: HTMLElement, c: Cali, W: number, url: string) {
   const pay = 0.012;
   const x0 = (c.x0 - pay) * W;
   const y0 = (c.y0 - pay * 1.6) * ODA_H;
   const w = (c.x1 - c.x0 + pay * 2) * W;
   const hh = (c.y1 - c.y0 + pay * 2.6) * ODA_H;
-  const kirp = `polygon(${caliKirpimi(yarim)})`;
-  const ic = h('i.dd-cali-resim', {
-    style: `background-image:url("${url}");background-size:${px(W)} ${px(ODA_H)};background-position:${px(-x0)} ${px(-y0)}`,
-  });
-  return h(
-    `div.dd-cali-kopya${yarim ? '.dd-cali-' + yarim : ''}`,
-    { style: `left:${px(x0)};top:${px(y0)};width:${px(w)};height:${px(hh)};--kirp:${kirp}` },
-    ic,
-  );
+  Object.assign(el.style, { left: px(x0), top: px(y0), width: px(w), height: px(hh) });
+  const ic = el.querySelector<HTMLElement>(':scope > .dd-cali-resim');
+  if (ic) Object.assign(ic.style, { backgroundImage: `url("${url}")`, backgroundSize: `${px(W)} ${px(ODA_H)}`, backgroundPosition: `${px(-x0)} ${px(-y0)}` });
 }
 
 /** Çamaşır ipi köşesi: ipte iki açık mandal (sallanır), çimde düşen mandal (ipucu), anı katmanı (atkı uçar) */

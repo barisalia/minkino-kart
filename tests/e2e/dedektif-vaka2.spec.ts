@@ -287,3 +287,92 @@ for (const [en, boy] of [
     expect(hatalar).toEqual([]);
   });
 }
+
+// web sitesinde telefonun yönü serbest: vakanın ortasında dönünce bahçe yeni yönün çizimine geçer, iş ekranda kalır
+for (const [ad, bas, son] of [
+  ['dikeyden yataya', { width: 390, height: 844 }, { width: 844, height: 390 }],
+  ['yataydan dikeye', { width: 844, height: 390 }, { width: 390, height: 844 }],
+  ['dikeyden geniş yataya', { width: 430, height: 932 }, { width: 932, height: 430 }],
+] as const) {
+  test(`Dedektif Vaka 2: telefon ${ad} dönünce (DPR 3) ipuçları, renk izi, çalılar ve atkı ekranda`, async ({ browser }, info) => {
+    test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+    const ctx = await browser.newContext({ baseURL: info.project.use.baseURL, viewport: bas, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR' });
+    const page = await ctx.newPage();
+    const hatalar = hataTopla(page);
+    const don = async (b: { width: number; height: number }) => {
+      await page.setViewportSize(b);
+      await expect.poll(() => page.evaluate(() => innerWidth)).toBe(b.width);
+      await page.waitForTimeout(400);
+    };
+    const ekranda = async (l: Locator, pay = 0) => {
+      const [x, y] = await ortasi(l);
+      const { width: w, height: hh } = page.viewportSize()!;
+      expect(x, 'sol').toBeGreaterThan(pay);
+      expect(x, 'sağ').toBeLessThan(w - pay);
+      expect(y, 'üst').toBeGreaterThan(pay);
+      expect(y, 'alt').toBeLessThan(hh - pay);
+    };
+    const git = async (a: string, bekle: RegExp) => {
+      await page.setViewportSize(bas);
+      await page.goto(`./dedektif/?test=1&sifirla=1&ekran=vaka2&adim=${a}`);
+      await adimBekle(page, bekle);
+      await don(son);
+    };
+    // Halka 1: mandal (bahçe yeni yönün çizimine geçti)
+    await git('ne', /^ara-ne$/);
+    const zemin = page.locator('.dd-sahne .dd-dunya[data-oda="bahce-ip"] img.dd-zemin');
+    if (son.height > son.width) await expect(zemin).toHaveAttribute('src', /-dikey/);
+    else await expect(zemin).not.toHaveAttribute('src', /-dikey/);
+    await ekranda(page.locator('.dd-sahne [data-ipucu="mandal"]'), 15);
+    await ipucuBul(page, 'mandal');
+    // Halka 2: ördek izi ve kırmızı iplik
+    await git('kim', /^ara-kim$/);
+    for (const id of ['ordek-izi', 'iplik']) {
+      await ekranda(page.locator(`.dd-sahne [data-ipucu="${id}"]`), 15);
+      await ipucuBul(page, id);
+    }
+    await adimBekle(page, /^kart$/);
+    // Halka 3: renk izi: ikisi bir yönde, kalanlar döndükten sonra (hep ekranda bir kırmızı var)
+    await page.setViewportSize(bas);
+    await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka2&adim=renk');
+    await adimBekle(page, /^renk-izi$/);
+    const kirmizi = page.locator('.dd-sahne .dd-parca[data-tur="kirmizi"]:not(.dd-alindi)');
+    for (let n = 0; n < 2; n++) {
+      await gorunenDokun(page, kirmizi);
+      await page.waitForTimeout(150);
+    }
+    await don(son);
+    for (let n = 0; n < 8 && (await adim(page)) === 'renk-izi' && (await kirmizi.count()); n++) {
+      await gorunenDokun(page, kirmizi);
+      await page.waitForTimeout(150);
+    }
+    await adimBekle(page, /^(demek-renk|ses-dinle)$/);
+    // Halka 4: üç çalı (dönünce de ekranda; dar ekranda kamera sıradakine kayar)
+    await git('ses', /^ses-dinle$/);
+    for (let i = 0; i < 3; i++) {
+      const c = page.locator(`.dd-sahne .dd-cali[data-cali="${i}"] .dd-cali-kopya`);
+      await expect.poll(async () => {
+        const b = await c.boundingBox();
+        const v = page.viewportSize()!;
+        return !!b && b.x + b.width / 2 > 0 && b.x + b.width / 2 < v.width && b.y + b.height / 2 > 0 && b.y + b.height / 2 < v.height;
+      }).toBe(true);
+      await page.waitForTimeout(250);
+      await dokun(page, c);
+      await expect(page.locator(`.dd-sahne .dd-cali[data-cali="${i}"]`)).toHaveClass(/dinlendi/);
+    }
+    await adimBekle(page, /^(soru-ses|ses-kart)$/);
+    // Final: atkı ve yuva dönünce de ekranda; atkı yumurtalara örtülür
+    await git('final', /^atki-ort$/);
+    await page.waitForTimeout(300);
+    await ekranda(page.locator('.dd-atki-tasi'));
+    await ekranda(page.locator('.dd-sahne .dd-yuva-kap'));
+    await page.screenshot({ path: `tests/screens/vaka2-donus-final-${son.width}x${son.height}.png` });
+    for (let deneme = 0; deneme < 3 && (await adim(page)) === 'atki-ort'; deneme++) {
+      await surukle(page, page.locator('.dd-atki-tasi'), page.locator('.dd-sahne .dd-yuva-kap'));
+      await page.waitForTimeout(500);
+    }
+    await adimBekle(page, /^yumurta$/);
+    expect(hatalar).toEqual([]);
+    await ctx.close();
+  });
+}
