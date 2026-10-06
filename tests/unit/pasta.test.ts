@@ -21,6 +21,7 @@ import {
   HAMUR_RENK,
   hedefKalem,
   jetonHesapla,
+  kalanIs,
   kalemSec,
   karsilastir,
   MUSTERI_SAYISI,
@@ -35,6 +36,7 @@ import {
   siradakiIndeks,
   SON_OYNANAN,
   SUSLER,
+  susYeri,
   tesekkur,
   yildizHesapla,
   type Gun,
@@ -185,6 +187,37 @@ describe('karşılaştırma', () => {
     expect(hedefKalem([a, b])).toEqual(a.sip.kalemler[0]);
     expect(hedefKalem([{ ...b, verilen: [aynisi(k)] }], aynisi(k))).toBeNull();
   });
+  it('yarım süslü kurabiye günü kilitlemez: süsü tutan müşteri hedef kalır; konamayan süs beklenmez', () => {
+    // B: kalp, çilek ×2; kurabiye yanlışlıkla yıldız yapıldı, kremalandı, bir çilek kondu. Sonra C (yıldız, muz ×2) gelir.
+    const kB: Kalem = { urun: 'kurabiye', adet: 1, sekil: 'kalp', renk: 'pembe', sus: 'cilek', susAdet: 2, yigin: 0 };
+    const kC: Kalem = { urun: 'kurabiye', adet: 1, sekil: 'yildiz', renk: 'mavi', sus: 'muz', susAdet: 2, yigin: 0 };
+    const B = { sip: { musteri: 'ada', kalemler: [kB] }, verilen: [null] };
+    const C = { sip: { musteri: 'can', kalemler: [kC] }, verilen: [null] };
+    const parti: Parti = { urun: 'kurabiye', sekil: 'yildiz', parcalar: [{ renk: 'pembe', yigin: [], susler: ['cilek'] }] };
+    // süssüzken şekil tutan C öne geçerdi; çilek konmuşken B hedef kalır, ikinci çilek konabilir
+    expect(hedefKalem([B, C], { ...parti, parcalar: [{ renk: 'pembe', yigin: [], susler: [] }] })).toBe(kC);
+    expect(hedefKalem([B, C], parti)).toBe(kB);
+    expect(kalanIs(parti, kB)).toBe('sus');
+    expect(susYeri(parti, 'cilek', kB)).toBe(0);
+    expect(susYeri(parti, 'muz', kB)).toBe(-1);
+    // C'ye göre: muz konamaz (üstünde çilek var), çilek de istenmiyor → süs beklenmez, farklı da olsa verilebilir
+    expect(susYeri(parti, 'muz', kC)).toBe(-1);
+    expect(susYeri(parti, 'cilek', kC)).toBe(-1);
+    expect(kalanIs(parti, kC)).toBeNull();
+    // iki kurabiyeli partide süs, başka süsü olmayan kurabiyeye gider
+    const iki: Parti = { urun: 'kurabiye', sekil: 'kalp', parcalar: [{ renk: 'pembe', yigin: [], susler: ['muz'] }, { renk: 'pembe', yigin: [], susler: ['cilek'] }] };
+    const kIki: Kalem = { ...kB, adet: 2 };
+    expect(susYeri(iki, 'cilek', kIki)).toBe(1);
+    expect(kalanIs(iki, kIki)).toBe('sus');
+    iki.parcalar[1].susler.push('cilek');
+    expect(susYeri(iki, 'cilek', kIki)).toBe(-1);
+    expect(kalanIs(iki, kIki)).toBeNull();
+    // hedefsiz (müşteri yokken) en çok EN_COK_SUS tane, tek tür
+    expect(susYeri({ ...parti, parcalar: [{ renk: 'pembe', yigin: [], susler: ['cilek', 'cilek'] }] }, 'cilek', null)).toBe(0);
+    expect(susYeri({ ...parti, parcalar: [{ renk: 'pembe', yigin: [], susler: ['cilek', 'cilek', 'cilek'] }] }, 'cilek', null)).toBe(-1);
+    // kremasız parti önce krema ister
+    expect(kalanIs({ ...parti, parcalar: [{ renk: null, yigin: [], susler: [] }] }, kB)).toBe('krema');
+  });
   it('teşekkür: ördek sarı kremayı sever; tavşan ve ayı havuç/bal demez', () => {
     const sari: Parti = { urun: 'kurabiye', sekil: 'kalp', parcalar: [{ renk: 'sari', yigin: [], susler: [] }] };
     expect(tesekkur('ordek', [sari])).toBe(P.musteri.ordek[0]);
@@ -260,6 +293,18 @@ describe('jeton, yıldız, kayıt', () => {
     expect(toplamYildiz()).toBe(5);
     gunBitti(3, 3);
     expect(kayit.acikGun).toBe(3);
+    sifirla();
+  });
+  it('kayıt: günün jetonları gün bitince hemen kumbaraya yazılır (akşam sayımı beklenmez)', () => {
+    sifirla();
+    gunBitti(1, 3, 14);
+    expect(kayit.jeton).toBe(14);
+    expect(JSON.parse(globalThis.localStorage?.getItem('minkino-pasta-v1') ?? '{"jeton":14}').jeton).toBe(14);
+    gunBitti(2, 2, 0);
+    gunBitti(2, 2, -3);
+    expect(kayit.jeton).toBe(14);
+    gunBitti(2, 2, 6);
+    expect(kayit.jeton).toBe(20);
     sifirla();
   });
 });

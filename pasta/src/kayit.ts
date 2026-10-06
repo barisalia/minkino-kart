@@ -61,9 +61,13 @@ export function sifirla() {
 /** Toplam yıldız (her günün en iyisi) */
 export const toplamYildiz = (k: PastaKayit = kayit) => Object.values(k.yildiz).reduce((t, n) => t + n, 0);
 
-/** Gün bitti: yıldız yazılır (en iyisi kalır), bir sonraki gün açılır */
-export function gunBitti(gun: number, yildiz = 1) {
+/**
+ * Gün bitti: yıldız yazılır (en iyisi kalır), bir sonraki gün açılır; günün jetonları hemen kumbaraya yazılır
+ * (akşam sayımı yalnız gösterir; sayım bitmeden çıkılsa da jeton kaybolmaz)
+ */
+export function gunBitti(gun: number, yildiz = 1, jeton = 0) {
   if (!kayit.biten.includes(gun)) kayit.biten.push(gun);
+  kayit.jeton += Math.max(0, Math.floor(jeton) || 0);
   kayit.yildiz[String(gun)] = Math.max(kayit.yildiz[String(gun)] ?? 0, Math.max(1, Math.min(3, yildiz)));
   kayit.acikGun = Math.min(SON_OYNANAN, Math.max(kayit.acikGun, gun + 1));
   kaydet();

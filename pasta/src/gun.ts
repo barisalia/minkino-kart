@@ -32,7 +32,6 @@ import {
   BOYA,
   EN_COK_HAMUR,
   EN_COK_MUSTERI,
-  EN_COK_SUS,
   FIRIN,
   FIRIN_GOZ,
   firinHali,
@@ -41,11 +40,13 @@ import {
   hamurRengi,
   hedefKalem,
   jetonHesapla,
+  kalanIs,
   kalemSec,
   okuma,
   pisme,
   siparisSonucu,
   siradakiIndeks,
+  susYeri,
   tesekkur,
   yildizHesapla,
   type FirinHali,
@@ -443,14 +444,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     const k = hedefKalem(b, parti);
     return (k && b.find((m) => m.sip.kalemler.includes(k))) ?? b[0] ?? null;
   }
-  /** Tabaktaki partide (hedef kaleme göre) kalan iş: krema (zigzag dahil), süs; yoksa null (servise hazır) */
-  function kalanIs(parti: Parti, k: Kalem | null): 'krema' | 'sus' | null {
-    if (parti.parcalar.some((x) => !x.renk)) return 'krema';
-    if (!k) return null;
-    if (k.desen === 'zigzag' && parti.parcalar.some((x) => x.desen !== 'zigzag')) return 'krema';
-    if (k.sus && parti.parcalar.some((x) => x.susler.length < k.susAdet)) return 'sus';
-    return null;
-  }
 
   function musteriBas(m: PastaMusteri) {
     if (!m.hazir || m.bitti) return;
@@ -528,6 +521,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     if (!parti || m.bitti || !m.hazir) return;
     const i = kalemSec(m.sip, m.verilen, parti);
     if (i < 0) return;
+    // uyuyan müşteriye (tabağa dokunup ya da sürükleyip) verilince o da uyanır
+    if (m.uyuyor) {
+      m.uyan();
+      void soyle(P.musteri.uyandi, m);
+    }
     efekt.secim();
     m.verilen[i] = parti;
     const bas = efekt_.merkez(tabakEl);
@@ -974,19 +972,18 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     }
     const parti = tabak;
     const k = hedefKalem(bekleyenSiparisler(), parti);
-    const enAz = parti.parcalar.reduce((a, p, i) => (p.susler.length < parti.parcalar[a].susler.length ? i : a), 0);
-    const hedefParca = parti.parcalar[enAz];
+    // konabilen (üstünde başka süs olmayan, sınırı dolmamış) en az süslü kurabiye
+    const enAz = susYeri(parti, s, k);
     const [x, y] = efekt_.merkez(tabakEl, 0.5, 0.35);
     const bas = efekt_.merkez(b, 0.5, 0.3);
-    const sinir = k ? (k.sus === s ? k.susAdet : 0) : EN_COK_SUS;
-    if (hedefParca.susler.length >= sinir || hedefParca.susler.some((x2) => x2 !== s)) {
+    if (enAz < 0) {
       // yanlış ya da fazla süs: kayıp düşer, Kino yakalar (zararsız)
       ses.kay();
       void kinoYer_(susIkon(s), [x, y], P.kino.yedim);
       if (parlayan && parlayan !== b) ipucu(parlayan);
       return;
     }
-    hedefParca.susler.push(s);
+    parti.parcalar[enAz].susler.push(s);
     ses.tik(susSira++);
     // süs kavanozdan kavis çizerek kurabiyesinin üstüne uçar, sonra yerinde zıplar
     const yerEl = tabakIc.children[enAz] as HTMLElement | undefined;

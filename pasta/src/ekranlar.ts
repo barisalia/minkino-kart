@@ -138,7 +138,9 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   const gun = (Math.max(1, Math.min(GUN_SAYISI, p.gun ?? 1)) as Gun);
   const kazanc = Math.max(0, Math.floor(p.kazanc ?? 0));
   const yildiz = Math.max(1, Math.min(3, Math.floor(p.yildiz ?? 1)));
-  gunBitti(gun, yildiz);
+  // günün jetonları ekran açılırken kaydedilir; kumbara sayımı yalnız gösterir (önceki toplamdan sayarak)
+  const oncesi = kayit.jeton;
+  gunBitti(gun, yildiz, kazanc);
   let kapandi = false;
   const efekt_ = new Efekt(app.kok);
   const mino = new Mino();
@@ -148,7 +150,7 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
 
   // tezgâhta günün jetonları; kumbaraya dokununca sayılarak içine düşer
   const yigin = h('div.ps-aksam-jetonlar', {}, ...Array.from({ length: kazanc }, (_, i) => h('i.ps-aksam-jeton', { html: JETON, style: `--i:${i};--x:${(i % 6) * 15 - 37}px;--y:${-Math.floor(i / 6) * 9}px` })));
-  const kumbaraSayi = h('b.ps-kumbara-sayi', {}, String(kayit.jeton));
+  const kumbaraSayi = h('b.ps-kumbara-sayi', {}, String(oncesi));
   const kumbara = h('button.ps-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: KUMBARA }, kumbaraSayi);
   const sayac = h('b.ps-sayac');
   // günün yıldızları: önce boş, sırayla dolar
@@ -179,11 +181,14 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
       const [x, y] = efekt_.merkez(yer[i]);
       efekt_.parilti(x, y, 8, 0.7);
     }
-    if (kapandi) return;
+    // çocuk kumbaraya erken dokunduysa sayım başladı: yıldız sözü sayıları kesmesin
+    if (kapandi || sayimBasladi) return;
     await konus(P.mino.yildiz[yildiz - 1]);
   }
 
   let sayildi = kazanc === 0;
+  /** çocuk kumbaraya dokundu, sayım başladı (açılıştaki sözler artık söylenmez) */
+  let sayimBasladi = false;
   const rafCiz = () => {
     raf.replaceChildren(
       ...RAF.map((u) => {
@@ -243,6 +248,7 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   async function say() {
     if (sayildi) return;
     sayildi = true;
+    sayimBasladi = true;
     kumbara.classList.remove('ps-cagir');
     const { soz, adim } = sayim(kazanc);
     const jetonlar = [...yigin.children] as HTMLElement[];
@@ -260,15 +266,15 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
         }),
       );
       sayilan += adim[i];
-      kayit.jeton += adim[i];
-      kumbaraSayi.textContent = String(kayit.jeton);
+      // jetonlar ekran açılırken kaydedildi; burada yalnız sayı artar
+      kumbaraSayi.textContent = String(oncesi + sayilan);
       sayac.textContent = String(sayilan);
       salla(kumbara, 'ps-zipla');
       await soyle;
       await bekle(sure(150));
     }
-    kaydet();
     if (kapandi) return;
+    kumbaraSayi.textContent = String(kayit.jeton);
     efekt.dogru();
     efekt_.parilti(hedef[0], hedef[1], 10);
     await rafAc();
@@ -317,6 +323,8 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     await yildizGoster();
     if (kapandi) return;
     if (kazanc > 0) {
+      // erken dokunulduysa sayım sürüyor: "Kumbarada kaç jeton var?" sorulmaz, kumbara çağırmaz
+      if (sayimBasladi) return;
       kumbara.classList.add('ps-cagir');
       await konus(P.mino.kumbara);
     } else await rafAc();

@@ -253,22 +253,50 @@ export function siparisSonucu(sip: Siparis, verilen: readonly (Parti | null)[]):
 /**
  * Tabaktaki (ya da yapılmakta olan) parti hangi müşterinin kalemi için: en çok tutan kalem (şekil, adet, krema
  * rengi); eşitse gelişi en eski müşteri. Parti yoksa gelişi en eski müşterinin kalemi.
+ * Üstüne süs konmuşsa o süsü isteyen kalem öne geçer: sonradan gelen müşteri yarım süslü kurabiyeyi kendine çekmez.
  */
 export function hedefKalem(bekleyenler: readonly { sip: Siparis; verilen: readonly (Parti | null)[] }[], parti?: Parti | null, renk?: Renk | null): Kalem | null {
   const bos = bekleyenler.flatMap((m) => m.sip.kalemler.filter((_, i) => !m.verilen[i]));
   if (!parti) return bos[0] ?? null;
+  const konan = parti.parcalar.flatMap((p) => p.susler);
   let en: Kalem | null = null;
   let enPuan = -1;
   for (const k of bos) {
     if (k.urun !== parti.urun) continue;
     const r = renk ?? parti.parcalar[0]?.renk ?? null;
-    const puan = (k.urun !== 'kurabiye' || k.sekil === parti.sekil ? 4 : 0) + (k.adet === parti.parcalar.length ? 2 : 0) + (r && k.renk === r ? 1 : 0);
+    const susTutar = konan.length > 0 && !!k.sus && konan.every((s) => s === k.sus);
+    const puan = (susTutar ? 8 : 0) + (k.urun !== 'kurabiye' || k.sekil === parti.sekil ? 4 : 0) + (k.adet === parti.parcalar.length ? 2 : 0) + (r && k.renk === r ? 1 : 0);
     if (puan > enPuan) {
       enPuan = puan;
       en = k;
     }
   }
   return en;
+}
+
+/** Bu parçaya s süsü daha konabilir mi: üstünde başka süs yok ve sınır dolmadı (k: hedef kalem; yoksa en çok EN_COK_SUS) */
+const susSigar = (p: Parca, s: Sus, k: Kalem | null) => p.susler.every((x) => x === s) && p.susler.length < (k ? (k.sus === s ? k.susAdet : 0) : EN_COK_SUS);
+
+/** Süs dokunuşunda süsün konacağı parça: konabilenlerin en az süslüsü; -1: hiçbirine konmaz (kayar, Kino yer) */
+export function susYeri(parti: Parti, s: Sus, k: Kalem | null): number {
+  let en = -1;
+  parti.parcalar.forEach((p, i) => {
+    if (susSigar(p, s, k) && (en < 0 || p.susler.length < parti.parcalar[en].susler.length)) en = i;
+  });
+  return en;
+}
+
+/**
+ * Tabaktaki partide (hedef kaleme göre) kalan iş: krema (zigzag dahil), süs; yoksa null (servise hazır).
+ * Süs ancak konabiliyorsa beklenir: üstünde başka süs olan parça "bitti" sayılır (farklı da olsa verilir), gün kilitlenmez.
+ */
+export function kalanIs(parti: Parti, k: Kalem | null): 'krema' | 'sus' | null {
+  if (parti.parcalar.some((x) => !x.renk)) return 'krema';
+  if (!k) return null;
+  if (k.desen === 'zigzag' && parti.parcalar.some((x) => x.desen !== 'zigzag')) return 'krema';
+  const sus = k.sus;
+  if (sus && parti.parcalar.some((x) => susSigar(x, sus, k))) return 'sus';
+  return null;
 }
 
 // ---------------------------------------------------------------- fırın
