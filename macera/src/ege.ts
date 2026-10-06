@@ -59,6 +59,7 @@ import { Oyuncu } from './oyuncu';
 import { cocukBoyu, cocukOyuncu } from './ege-cocuk';
 import { boyGenislik } from '../../src/karakter/boy';
 import { AnneIskelet, anneIskeletVar } from './ege-anne';
+import { AnneGoz } from './anne-goz';
 import { adres } from './gorsel';
 import { Sahne, yanDolguEkle } from './sahne';
 import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
@@ -263,6 +264,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   // ayakta pozunda konuşurken ağzı oynar (katmanlı iskelet, ege-anne.ts): img'nin üstünde yalnız ağız yaması
   const anneIsk = egeAdres(ANNE_GORSEL) && anneIskeletVar() ? new AnneIskelet(anneBalon, () => anne.classList.add('iskeletli')) : null;
   if (anneIsk) anneGov.append(anneIsk.el);
+  // göz kırpma (anne-goz.ts): ayakta ve sarılıyor çizimlerinde; uyurken yok
+  const anneGoz = egeAdres(ANNE_GORSEL) ? new AnneGoz() : null;
+  if (anneGoz) anneGov.append(anneGoz.el);
   /** Görünen çizim: ayakta | uyuyor | sariliyor (uyanık oturuş çizimi yoksa kollarını açmış sarılıyor çizimi) */
   type AnneResim = 'ayakta' | 'uyuyor' | 'sariliyor';
   let anneResim = 'ayakta' as AnneResim;
@@ -273,6 +277,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     anne.classList.toggle('pozlu', ayri);
     anneResim = ayri && (r === 'uyuyor' || r === 'sariliyor') ? r : 'ayakta';
     anne.dataset.resim = anneResim;
+    // katmanlı uyku çizimi (anneNefes) ya da uyuyor: kırpış yok; sarılıyor yalnız kendi çizimi varsa
+    anneGoz?.poz(anneResim === 'ayakta' && !ayri ? 'anne' : anneResim === 'sariliyor' ? 'anne-sariliyor' : null);
     if (egeAdres(ANNE_GORSEL)) anneImg.src = ayri ? egeAdres(`${ANNE_GORSEL}-${r}`) : egeAdres(ANNE_GORSEL);
     anne.style.setProperty('--w', (ANNE_TUVAL[anneResim][0] * ANNE_B).toFixed(2));
   };
@@ -779,6 +785,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     ege.kapat();
     Object.values(iskeletler).forEach((i) => i?.kapat());
     anneIsk?.kapat();
+    anneGoz?.kapat();
     acikSurukle.forEach((s) => s.kapat());
     acikIpucu.forEach((i) => i.kapat());
     clearInterval(anneZzz);

@@ -1065,7 +1065,8 @@
   z-index: 4;
 }
 .ok-kok .ok-kule-ikili .ok-ikili {
-  --iw: clamp(46px, min(15cqw, calc(var(--T) * 0.13)), 96px);
+  /* kapıya göre boy (boy.ts oranları: Mino kapının yarısını biraz geçer); dikey telefonda en değil kule boyu belirler */
+  --iw: clamp(46px, min(22cqw, calc(var(--T) * 0.14)), 104px);
 }
 .ok-kok .ok-kule-rozet {
   width: clamp(56px, 16cqw, 90px);

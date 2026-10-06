@@ -725,3 +725,55 @@
     margin: 4px calc(25% - 8px) 0;
   }
 }
+
+/* yatay telefon (alçak ekran): beş bölüm kaydırmadan sığsın: logo üstte, altında 3 sütun × 2 sıra; altıncı göze
+   büyük Oyna düğmesi. Kartlar ekran yüksekliğine göre ölçeklenir (resim ve yazı yine büyük) */
+@media (orientation: landscape) and (max-height: 540px) {
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) {
+    overflow-y: hidden;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-acilis-ic {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: clamp(8px, 2.6vh, 14px) clamp(10px, 1.6vw, 16px);
+    width: min(100vw - 2 * max(12px, env(safe-area-inset-left), env(safe-area-inset-right)), 900px);
+    padding: max(8px, var(--ust)) 0 clamp(12px, 4vh, 22px);
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo .k0,
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-logo .k1 {
+    font-size: clamp(1.8rem, 10vh, 3rem);
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) :is(.mc-bolum-kart, .sl-bolum-kart, .eg-bolum-kart, .el-bolum-kart, .bn-bolum-kart) {
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    gap: 10px;
+    padding: 7px 10px 7px 7px;
+    border-radius: 24px;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) :is(.mc-bolum-kart .mc-bolum-resim, .sl-bk-resim, .eg-bk-resim, .el-bk-resim, .bn-bk-resim) {
+    flex: none;
+    width: clamp(64px, 23vh, 104px);
+    aspect-ratio: 1;
+    border-radius: 16px;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) :is(.mc-bolum-kart, .sl-bolum-kart, .eg-bolum-kart, .el-bolum-kart, .bn-bolum-kart) b {
+    font-size: clamp(1.05rem, 5vh, 1.4rem);
+    line-height: 1.12;
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) :is(.sl-bk-yazi, .eg-bk-yazi, .el-bk-yazi) small {
+    font-size: clamp(0.72rem, 3.2vh, 0.9rem);
+  }
+  .mc-kok .mc-acilis:has(.sl-bolum-kart) .mc-oyna {
+    margin: 0;
+    align-self: center;
+    justify-self: center;
+    min-height: clamp(64px, 20vh, 84px);
+    font-size: clamp(1.5rem, 8vh, 2rem);
+  }
+}

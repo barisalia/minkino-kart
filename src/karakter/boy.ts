@@ -47,6 +47,8 @@ export const CIZIM: Record<string, Cizim> = {
   ege: K(164, 1938),
   /** anne ayakta (assets/ege/anne.webp ve iskeleti aynı tuval) */
   anne: { kutu: [428, 1143], tepe: 8, taban: 1135 },
+  /** anne kollarını açmış, sarılıyor (assets/ege/anne-sariliyor.webp ve iskeleti aynı tuval; göz kırpma katmanı) */
+  'anne-sariliyor': { kutu: [876, 935], tepe: 4, taban: 931 },
   kopek: K(310, 1808),
   'kopek-profil': K(306, 1822),
   tavsan: K(112, 1936),
@@ -96,7 +98,7 @@ export type BoyTipi = keyof typeof BOY;
 
 /** Karakterin (ya da çiziminin: 'can-profil', 'kino-34') boy tipi; tabloda yoksa undefined */
 export function boyTipi(ad: string): BoyTipi | undefined {
-  const k = ad.replace(/-(profil|34)$/, '');
+  const k = ad.replace(/-(profil|34|sariliyor)$/, '');
   if ((COCUKLAR as readonly string[]).includes(k)) return 'cocuk';
   if (k === 'ege') return 'bebek';
   return k in BOY ? (k as BoyTipi) : undefined;

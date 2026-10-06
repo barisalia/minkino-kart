@@ -15,6 +15,7 @@ import { Karakter, type Poz } from '../../src/karakter/karakter';
 import { YandanKarakter, yandanVar } from '../../src/karakter/yandan';
 import { ANNE_TUVAL, egeAdres } from './ege-cizim';
 import { AnneIskelet, anneIskeletVar } from './ege-anne';
+import { AnneGoz } from './anne-goz';
 import { CAN_ASIK_AGIZ, CAN_UZGUN_KAS } from './salincak-cizim';
 import { AZ_HAREKET } from './oyuncu';
 
@@ -290,11 +291,13 @@ export class Anne {
   readonly kucak: HTMLElement;
   hal: AnneHal = 'ayakta';
   private iskelet: AnneIskelet | null = null;
+  /** göz kırpma (anne-goz.ts) */
+  private goz = new AnneGoz();
 
   constructor() {
     this.img = h('img.sl-anne-resim', { src: egeAdres('anne'), alt: 'Anne', draggable: 'false' }) as HTMLImageElement;
     this.kucak = h('div.sl-anne-kucak');
-    this.gov = h('div.sl-anne-gov', {}, this.img, this.kucak);
+    this.gov = h('div.sl-anne-gov', {}, this.img, this.goz.el, this.kucak);
     this.balonEl = h('div.mc-oy-balon.sl-kisi-balon');
     this.el = h('div.sl-anne', { 'data-el': 'anne' }, h('i.sl-golge'), this.gov, this.balonEl);
     // ayakta konuşurken (balon) ağzı oynar: Bölüm 2'nin katmanlı anne iskeleti (ege-anne.ts), img'nin üstünde
@@ -318,6 +321,7 @@ export class Anne {
     this.el.dataset.hal = hal;
     const ad = hal === 'ayakta' ? 'anne' : 'anne-sariliyor';
     this.img.src = egeAdres(ad) || egeAdres('anne');
+    this.goz.poz(egeAdres(ad) ? ad : 'anne');
     this.el.style.setProperty('--w', this.genislik.toFixed(2));
   }
 
@@ -374,5 +378,6 @@ export class Anne {
 
   kapat() {
     this.iskelet?.kapat();
+    this.goz.kapat();
   }
 }

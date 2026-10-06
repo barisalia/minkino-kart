@@ -629,6 +629,12 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     if (dar) zmax = Math.min(zmax, 2.2);
     let l = X(lb);
     let r = X(rb);
+    // dar dikey ekran: çekim biraz geniş (yakındaki salıncak, çocuklar ve anne kadraja girsin, daha az yakınlık)
+    if (dar) {
+      const pay = (r - l) * 0.14;
+      l -= pay;
+      r += pay;
+    }
     const alt = Y(altb);
     const ust = Y(ustb);
     const gw = W;
@@ -643,7 +649,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       const ustPx = Hd * (1 - ust / 100);
       const artan = Math.max(0, gh - bh * z);
       const tx = Math.min(0, Math.max(W - Wd * z, gw / 2 - cx * z));
-      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * 0.88 - ustPx * z));
+      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * (dar ? 1 : 0.88) - ustPx * z));
       return { z, tx, ty };
     };
     let c = hesap(l, r);
