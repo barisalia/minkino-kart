@@ -191,6 +191,44 @@ test('Ses Kulesi: yarıda çıkınca kaldığı etkinlikten devam; 6 oda bitince
   expect(hatalar).toEqual([]);
 });
 
+test('Ses Kulesi: son etkinlikten sonra şenlikte Geri\'ye basılırsa oda kaybolmaz; yeniden girince şenlik ve çıkartma', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'yalnız telefon');
+  const hatalar = hataTopla(page);
+  // 5. etkinlik (Sesli kutu) doğrudan
+  await page.goto('./okul/?test=1&sifirla=1&yas=4&tohum=5&etkinlik=ses-a&sesadim=4');
+  await expect(page.locator('.ok-etkinlik[data-ses-adim="kutu"]')).toBeVisible({ timeout: 15000 });
+  // şenlik ekrana gelir gelmez Geri (çocuk konfetiyi görünce çıkar)
+  await page.evaluate(() => {
+    new MutationObserver((_, o) => {
+      if (!document.querySelector('.ok-ses-final-kap')) return;
+      o.disconnect();
+      document.querySelector<HTMLButtonElement>('.ok-etkinlik .ok-geri')?.click();
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+  await bitene(page, 'kutu', async () => {
+    if (!(await adimda(page, 'kutu'))) return;
+    const kart = page.locator('.ok-ses-kutu .ok-ses-kart:not([data-yerde])').first();
+    if (!(await kart.count())) return;
+    const sepet = (await kart.getAttribute('data-sepet'))!;
+    await surukle(page, kart, page.locator(`.ok-ses-sepet[data-sepet="${sepet}"]`));
+    await page.waitForTimeout(150);
+  });
+  // kuleye döndü: oda bitmiş sayılmadı ama "yarım" (beş etkinlik kayıtlı)
+  await expect(page.locator('.ok-kule-ekran')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('.ok-oda[data-oda="ses-a"] .ok-oda-yarim')).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-okul-ses-v1') ?? '{}'))).toEqual({ 'ses-a': 5 });
+  // yeniden girince (uygulamayı kapatıp açmış gibi; &sesadim olmadan) baştan değil: şenlik, sonra çıkartma
+  await page.goto('./okul/?test=1&yas=4&tohum=5');
+  await page.locator('.ok-bolge-kart[data-bolge="ses"]').click();
+  await expect(page.locator('.ok-oda[data-oda="ses-a"] .ok-oda-yarim')).toBeVisible();
+  await page.locator('.ok-oda[data-oda="ses-a"]').click();
+  await expect(page.locator('.ok-sonuc')).toHaveAttribute('data-durum', 'yapistir', { timeout: 15000 });
+  const kayit = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-okul-v1') ?? '{}'));
+  expect(kayit.biten).toEqual(['ses-a']);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-okul-ses-v1') ?? '{}'))).toEqual({});
+  expect(hatalar).toEqual([]);
+});
+
 test('Ses Kulesi: yatay telefonda kule ve etkinlikler sığıyor', async ({ page }, info) => {
   test.skip(info.project.name !== 'iphone', 'yalnız telefon');
   const hatalar = hataTopla(page);

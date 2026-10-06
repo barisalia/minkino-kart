@@ -817,8 +817,8 @@ for (const hf of HARFLER) {
       }
       const n = ODA_ADIMLARI.length;
       s.turlar(n);
-      // kaldığı yerden (test: &sesadim=2)
-      let bas = Math.min(n - 1, odaAdimi(id));
+      // kaldığı yerden (test: &sesadim=2); n: beş etkinlik bitmiş ama şenlikte çıkılmış → doğrudan şenlik ve kayıt
+      let bas = Math.min(n, odaAdimi(id));
       if (GOSTERIM && q.has('sesadim')) bas = Math.max(0, Math.min(n, Number(q.get('sesadim')) || 0));
       if (bas > 0) {
         s.tur(bas);
@@ -830,8 +830,10 @@ for (const hf of HARFLER) {
         s.el.dataset.sesAdim = ODA_ADIMLARI[i];
         await ADIMLAR[ODA_ADIMLARI[i]](s, hf);
         if (s.kapandi()) return;
-        odaAdimiYaz(id, i + 1 < n ? i + 1 : 0);
+        // son etkinlikten sonra da n yazılır: şenlikte Geri'ye basılırsa oda kaybolmaz (bitişi etkinlikEkrani kaydeder)
+        odaAdimiYaz(id, i + 1);
       }
+      if (s.kapandi()) return;
       s.tur(n);
       const kahraman = kahramanEl(hf.kahraman, hf.renk, 'mutlu');
       s.alan.replaceChildren(h('div.ok-ses-final-kap', {}, h('div.ok-ses-levha.ok-ses-final', { style: harfStil(hf) }, harfYazi(hf.buyuk), harfYazi(hf.kucuk, '.ok-ses-kucuk')), kahraman));
@@ -842,6 +844,8 @@ for (const hf of HARFLER) {
       s.kinoOynat('dans', 1400);
       await s.soyle([hf.ses, M.oda_bitti]);
       await s.bekle(1200);
+      // şenlik tamam: hemen ardından etkinlikEkrani odayı bitti sayar; kaldığı yer artık gerekmez
+      if (!s.kapandi()) odaAdimiYaz(id, 0);
     },
   });
 }

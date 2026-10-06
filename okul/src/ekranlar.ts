@@ -240,8 +240,11 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
   const etkinlikler = bolgeEtkinlikleri(b.id);
   const oynanan = oynananlar(b.id, y);
   const oneri = siradaki(kayit, oynanan);
-  const yatay = typeof matchMedia !== 'undefined' && matchMedia('(orientation: landscape)').matches;
-  const yerler = durakYerleri(etkinlikler.length, yatay ? 5 : 3);
+  // telefon dönünce (okul yönü serbest) sütun sayısı ve Mino/Kino'nun yeri yeniden hesaplanır (aşağıda yeniden dizilir)
+  const yatayMq = typeof matchMedia !== 'undefined' ? matchMedia('(orientation: landscape)') : null;
+  const sutunSay = () => (yatayMq?.matches ? 5 : 3);
+  let sutun = sutunSay();
+  let yerler = durakYerleri(etkinlikler.length, sutun);
   const ikiz = ikili();
   const duraklar = etkinlikler.map((e, i) => {
     const uygun = yasUygun(e, y);
@@ -274,8 +277,8 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
     });
     return d;
   });
-  const yolD = yerler.map(([x, yy], i) => `${i ? 'L' : 'M'}${x} ${yy}`).join(' ');
-  const cizgi = yolCizgisi(yolD);
+  const yolD = () => yerler.map(([x, yy], i) => `${i ? 'L' : 'M'}${x} ${yy}`).join(' ');
+  let cizgi = yolCizgisi(yolD());
   // Mino ile Kino önerilen durağın yanında (önceki duraktan yürüyerek gelir)
   const oi = Math.max(0, etkinlikler.findIndex((e) => e.id === oneri));
   const once = Math.max(0, oi - 1);
@@ -290,8 +293,48 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
     h('div.ok-bahce-kap', {}, bahce, rozetEl),
   );
   const zamanlar: number[] = [];
+  let yurudu = false;
+  /** Dönüş/boyut değişince: sütunlar (yatay 5, dikey 3), yol çizgisi ve Mino/Kino'nun yeri yeni kutuya göre */
+  const yenidenDiz = () => {
+    const c = sutunSay();
+    if (c !== sutun) {
+      sutun = c;
+      yerler = durakYerleri(etkinlikler.length, c);
+      // (geçişsiz atlar: az hareket ayarında da her şeyin kısa bir geçişi var; ölçüm yeni yeri görsün)
+      duraklar.forEach((d, i) => {
+        d.style.transition = 'none';
+        d.style.left = `${yerler[i][0]}%`;
+        d.style.top = `${yerler[i][1]}%`;
+      });
+      const yeni = yolCizgisi(yolD());
+      cizgi.replaceWith(yeni);
+      cizgi = yeni;
+    }
+    // ilk yürüyüş daha başlamadıysa yerini kendisi ölçer; başladıysa yürümeden yeni yerine konur
+    if (yurudu) {
+      // eski yerinde (yeni kutunun dışında kalabilir) eni daralır: ölçmeden önce köşeye alınır
+      ikiliYer.style.transition = 'none';
+      ikiliYer.style.left = '0px';
+      ikiliYer.style.top = '0px';
+      const yer = ikiliYeri(bahce, duraklar, oi, ikiliYer);
+      ikiliYer.classList.toggle('ok-olculu', !!yer);
+      ikiliYer.style.left = yer ? `${yer[0]}px` : `${yerler[oi][0]}%`;
+      ikiliYer.style.top = yer ? `${yer[1]}px` : `${yerler[oi][1]}%`;
+    }
+    void bahce.offsetWidth;
+    ikiliYer.style.transition = '';
+    duraklar.forEach((d) => (d.style.transition = ''));
+  };
+  let diziKare = 0;
+  const diziPlanla = () => {
+    if (!diziKare) diziKare = requestAnimationFrame(() => ((diziKare = 0), yenidenDiz()));
+  };
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(diziPlanla) : null;
+  ro?.observe(bahce);
+  yatayMq?.addEventListener?.('change', diziPlanla);
   zamanlar.push(
     window.setTimeout(() => {
+      yurudu = true;
       // yürüyüş: ikili durağın yanında, başka durağa ve yazısına binmeyen yerde (düzen hazır olunca ölçülür)
       const bas = ikiliYeri(bahce, duraklar, once, ikiliYer);
       const son = ikiliYeri(bahce, duraklar, oi, ikiliYer);
@@ -318,6 +361,9 @@ export function bolgeEkrani(app: Uygulama, p: { bolge?: BolgeId } = {}): Ekran {
     el,
     kapat() {
       zamanlar.forEach(clearTimeout);
+      cancelAnimationFrame(diziKare);
+      ro?.disconnect();
+      yatayMq?.removeEventListener?.('change', diziPlanla);
       kilitBirak();
       ikiz.kapat();
     },

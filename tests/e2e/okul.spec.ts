@@ -323,3 +323,64 @@ test('Okula Hazırım: yatay telefonda ekranlar sığıyor, geri düğmeleri', a
   await expect(page.locator('.ok-harita')).toBeVisible();
   expect(hatalar).toEqual([]);
 });
+
+test('Okula Hazırım: Sayı Bahçesi telefon dönünce yeniden dizilir (iki yöne, DPR 3)', async ({ browser }, info) => {
+  test.skip(info.project.name !== 'iphone', 'yalnız telefon');
+  const YATAY = { width: 844, height: 390 };
+  const DIKEY = { width: 390, height: 844 };
+  const adres = './okul/?test=1&sifirla=1&yas=5&tohum=3&ekran=bolge&bolge=sayi&biten=kac-elma,sayi-karti';
+  /** Durakların yeri ve boyu (dönüşümsüz: giriş canlandırması karışmaz), yol çizgisi, Mino ile Kino'nun (yürüyüş bitince vardığı) yeri */
+  const duzen = (page: Page) =>
+    page.evaluate(() => ({
+      duraklar: [...document.querySelectorAll<HTMLElement>('.ok-durak')].map((d) => [d.offsetLeft, d.offsetTop, d.offsetWidth]),
+      yol: document.querySelector('.ok-yol-cizgi path')?.getAttribute('d'),
+    }));
+  for (const [bas, son] of [
+    [YATAY, DIKEY],
+    [DIKEY, YATAY],
+  ]) {
+    const ctx = await browser.newContext({ baseURL: info.project.use.baseURL, viewport: bas, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR' });
+    const page = await ctx.newPage();
+    const hatalar = hataTopla(page);
+    // önce dönmüş hâlin "ilk açılış" düzeni (karşılaştırma için)
+    await page.setViewportSize(son);
+    await page.goto(adres);
+    await expect(page.locator('.ok-durak-ikili.ok-olculu')).toHaveCount(1);
+    await page.waitForTimeout(300);
+    const beklenen = await duzen(page);
+    // şimdi öbür yönde açılıp çevrilir
+    await page.setViewportSize(bas);
+    await page.goto(adres);
+    await expect(page.locator('.ok-durak-ikili.ok-olculu')).toHaveCount(1);
+    await page.waitForTimeout(300);
+    const once = await duzen(page);
+    expect(once.duraklar).not.toEqual(beklenen.duraklar);
+    await page.setViewportSize(son);
+    await expect.poll(() => duzen(page), { timeout: 5000 }).toEqual(beklenen);
+    // duraklar ve Mino ile Kino ekranda, duraklar birbirine binmez (yürüyüş geçişi bitsin)
+    await page.waitForTimeout(1200);
+    const kutular = await page.locator('.ok-durak, .ok-durak-ikili .ok-ikili').evaluateAll((l) => l.map((e) => e.getBoundingClientRect().toJSON() as DOMRect));
+    for (const k of kutular) {
+      expect(k.x).toBeGreaterThanOrEqual(-2);
+      expect(k.y).toBeGreaterThanOrEqual(-2);
+      expect(k.x + k.width).toBeLessThanOrEqual(son.width + 2);
+      expect(k.y + k.height).toBeLessThanOrEqual(son.height + 2);
+    }
+    const daireler = kutular.slice(0, -1);
+    // Mino ile Kino önerilen durağın (3.: sepete-koy) yanında: yeni kutuda ölçüldü
+    await expect(page.locator('.ok-durak-ikili')).toHaveClass(/ok-olculu/);
+    const ik = kutular[kutular.length - 1];
+    const d = daireler[2];
+    const uzak = Math.hypot(ik.x + ik.width / 2 - (d.x + d.width / 2), ik.y + ik.height / 2 - (d.y + d.height / 2));
+    expect(uzak, 'Mino ile Kino önerilen durağın yanında').toBeLessThan(d.width * 0.5 + Math.max(ik.width, ik.height) + 8);
+    for (let i = 0; i < daireler.length; i++)
+      for (let j = i + 1; j < daireler.length; j++) {
+        const [a, b] = [daireler[i], daireler[j]];
+        const ust = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+        expect(ust, `durak ${i} ile ${j}`).toBeLessThan(a.width * a.height * 0.05);
+      }
+    await page.screenshot({ path: `tests/screens/okul-bahce-donus-${son.width}x${son.height}.png` });
+    expect(hatalar).toEqual([]);
+    await ctx.close();
+  }
+});
