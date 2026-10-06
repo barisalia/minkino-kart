@@ -37,17 +37,17 @@ describe('erişim tablosu', () => {
 });
 
 describe('uygulama menüsü', () => {
-  it('web ve uygulama: aynı 8 kart (Dedektif Mino eklendi), sıra korunur, Pasta geniş ve sonda', () => {
+  it('web ve uygulama: aynı 9 kart (Kino Ne Giysin? eklendi), sıra korunur, Pasta geniş ve sonda', () => {
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
-      expect(u.map((k) => k.id)).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'pasta']);
+      expect(u.map((k) => k.id)).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'giysin', 'pasta']);
       expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['pasta']);
-      // ızgara boşluksuz: 8 kart (çift) → 2 sütunda 2 × 4, 4 sütunda 4 × 2 (geniş kart bir hücre);
-      // 3 sütunda geniş kart iki hücre: 7 normal + 2 = 9 → 3 × 3
+      // ızgara boşluksuz (uygulama.css → data-adet='9'): 8 normal + geniş Pasta
+      // telefon dikey 2 sütun (Pasta 2 hücre) 2 × 5; yatay telefon 5 sütun (Pasta 2 hücre) 5 × 2; 3 sütun (Pasta 1 hücre) 3 × 3
       const normal = u.filter((k) => !k.genis).length;
-      expect(normal).toBe(7);
-      expect(u.length % 2).toBe(0);
-      expect(u.length % 4).toBe(0);
-      expect((normal + 2) % 3).toBe(0);
+      expect(normal).toBe(8);
+      expect((normal + 2) % 2).toBe(0);
+      expect((normal + 2) % 5).toBe(0);
+      expect((normal + 1) % 3).toBe(0);
     }
   });
 });

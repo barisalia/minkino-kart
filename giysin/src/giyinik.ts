@@ -71,6 +71,11 @@ export class GiyinikKino {
       }
     svg.append(this.kok);
     this.sirala();
+    // iskelet yüklenmeden giydirilenler (dış sahne, test kısayolu) şimdi görünür
+    for (const id of this.giyili) for (const p of giysi(id).parcalar) {
+      const g = this.katman.get(p);
+      if (g) g.style.opacity = '1';
+    }
     const kare = () => {
       this.raf = requestAnimationFrame(kare);
       for (const [p, g] of this.katman) {

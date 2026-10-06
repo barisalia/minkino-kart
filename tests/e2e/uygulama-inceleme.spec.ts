@@ -69,10 +69,10 @@ test('Inceleme kodu: yanlış kod sallanır (yazı yok), doğru kod bütün içe
 
   // ana menü: kilit yok; sayfa yeniden açılınca (mağaza "premium yok" der) yine açık
   await page.getByRole('button', { name: 'Ana menü' }).click();
-  await expect(page.locator('.ug-kart')).toHaveCount(8);
+  await expect(page.locator('.ug-kart')).toHaveCount(9);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   await page.goto('./?test=1&uygulama=android');
-  await expect(page.locator('.ug-kart')).toHaveCount(8);
+  await expect(page.locator('.ug-kart')).toHaveCount(9);
   await page.waitForTimeout(300);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   await page.locator('.ug-kart[data-oyun="pazar"]').click();

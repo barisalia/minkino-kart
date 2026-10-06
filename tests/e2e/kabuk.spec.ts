@@ -34,15 +34,15 @@ async function kapiyiGec(page: Page) {
   await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
 }
 
-test('Kabuk: menü 6 ekran boyunda 8 iri kart, ızgarada boşluk yok, adlar kesilmiyor', async ({ page }) => {
+test('Kabuk: menü 6 ekran boyunda 9 iri kart, ızgarada boşluk yok, adlar kesilmiyor', async ({ page }) => {
   const hatalar = hataTopla(page);
   for (const [en, boy, ad] of BOYUTLAR) {
     await page.setViewportSize({ width: en, height: boy });
     await page.goto('./?test=1&uygulama=android');
     const kartlar = page.locator('.ug-kart');
-    await expect(kartlar).toHaveCount(8);
+    await expect(kartlar).toHaveCount(9);
     // sıra korunur, Pasta geniş ve sonda
-    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'pasta']);
+    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'giysin', 'pasta']);
     await page.waitForTimeout(1100);
     const kutular = await kartlar.evaluateAll((l) => l.map((k) => k.getBoundingClientRect().toJSON() as DOMRect));
     for (const k of kutular) {
@@ -62,7 +62,7 @@ test('Kabuk: menü 6 ekran boyunda 8 iri kart, ızgarada boşluk yok, adlar kesi
       }
     // boşluk yok: son sıradaki geniş kart ızgaranın sağ kenarına kadar gelir
     const sag = Math.max(...kutular.map((k) => k.right));
-    expect(Math.abs(kutular[7].right - sag), `${ad} son sıra dolu`).toBeLessThan(3);
+    expect(Math.abs(kutular[8].right - sag), `${ad} son sıra dolu`).toBeLessThan(3);
     // adlar sığıyor (… ile kesilmiyor)
     const kesik = await page.locator('.ug-kart-ad').evaluateAll((l) => l.filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent));
     expect(kesik, ad).toEqual([]);
@@ -158,7 +158,7 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
 test('Kabuk: anahtar yokken kilit yok, abonelik ekranı "Yakında" ve yedek fiyat', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1&uygulama=android&anahtar=yok');
-  await expect(page.locator('.ug-kart')).toHaveCount(8);
+  await expect(page.locator('.ug-kart')).toHaveCount(9);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   await page.locator('.ug-kapi').click();
   await kapiyiGec(page);

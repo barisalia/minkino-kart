@@ -219,8 +219,40 @@ async function ikonlar(yer) {
   }
 }
 
+/** Gemini 2. parti: perdeler, dış sahne (karlı tepe), kardan adam parçaları, titreyen Kino pozu (iskelete hizalı) */
+async function gemini2() {
+  for (const ad of ['perde-sol', 'perde-sag']) {
+    const g = await oku(H + ad + '.png', 1000);
+    await yaz(g, onPlan(g), ad + '.webp');
+  }
+  await sahne('dis-kis', 'dis-kis-tepe.png');
+  const KARDAN = { 'top-buyuk': 'buyuk', 'top-orta': 'orta', 'top-kucuk': 'kucuk', havuc: 'havuc', 'goz-1': 'goz-1', 'goz-2': 'goz-2', 'kol-1': 'dalSol', 'kol-2': 'dalSag', 'dugme-1': 'dugme-1', 'dugme-2': 'dugme-2', 'dugme-3': 'dugme-3', atki: 'atki' };
+  for (const [k, ad] of Object.entries(KARDAN)) {
+    const g = await oku(H + `kardan-${k}.png`);
+    await yaz(g, onPlan(g), `kardan-${ad}.webp`, { en: 600 });
+  }
+  // titreyen Kino: iskeletin ön çizimiyle aynı kutuya (baş tepesi 193, ayak 1887 / 2048; orta 1040)
+  const g = await oku(H + 'kino-titreme-buyuk.png', 1600);
+  const m = onPlan(g);
+  let x0 = g.W, x1 = 0, y0 = g.H, y1 = 0;
+  for (let i = 0; i < m.length; i++) if (m[i]) { const x = i % g.W, y = (i / g.W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  const tmp = await yaz(g, m, 'tmp-titreme.webp', { kirp: false });
+  void tmp;
+  const N = 1024, s = ((1887 - 215) / 2048) * N / (y1 - y0);
+  const nw = Math.round(g.W * s), nh = Math.round(g.H * s);
+  const kucuk = await sharp(C + 'tmp-titreme.webp').resize(nw, nh).png().toBuffer();
+  const sol = Math.round((1040 / 2048) * N - ((x0 + x1) / 2) * s), ust = Math.round((215 / 2048) * N - y0 * s);
+  const ic = await sharp({ create: { width: N, height: N, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: kucuk, left: Math.max(0, sol), top: Math.max(0, ust) }])
+    .webp(Q)
+    .toFile(C + 'kino-titreme.webp');
+  try { fs.unlinkSync(C + 'tmp-titreme.webp'); } catch { /* sharp önbelleği tutuyor: elle silinir */ }
+  console.log('titreme', ic);
+}
+
 (async () => {
   if (process.argv[2] === 'gemini') return gemini();
+  if (process.argv[2] === 'gemini2') return gemini2();
   if (process.argv[2] === 'ikon') return ikonlar(JSON.parse(fs.readFileSync('giysin/src/giysi-yer.json', 'utf8')));
   fs.mkdirSync(C + 'giysi', { recursive: true });
   fs.mkdirSync(C + 'ikon', { recursive: true });

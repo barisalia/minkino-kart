@@ -9,15 +9,16 @@ const BEKLENEN: Record<string, string> = {
   film: './film/',
   okul: './okul/',
   dedektif: './dedektif/',
+  giysin: './giysin/',
   pasta: './pasta/',
 };
 
-test('Ana menü: açılışta Mino ve 8 oyun kartı, görseller yüklü', async ({ page }, info) => {
+test('Ana menü: açılışta Mino ve 9 oyun kartı, görseller yüklü', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
   await expect(page.locator('.ug-menu .mino svg')).toBeVisible();
   const kartlar = page.locator('.ug-kart');
-  await expect(kartlar).toHaveCount(8);
+  await expect(kartlar).toHaveCount(9);
 
   // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor
   const boyut = page.viewportSize()!;
@@ -40,7 +41,7 @@ test('Ana menü: açılışta Mino ve 8 oyun kartı, görseller yüklü', async 
 
   // Kino Mino'nun yanında (parçalı iskelet yüklendi), yan oyun rozetleri kartlarda
   await expect(page.locator('.ug-kino .kr-iskeletli svg')).toBeVisible();
-  await expect(page.locator('.ug-yeni')).toHaveCount(7);
+  await expect(page.locator('.ug-yeni')).toHaveCount(8);
   await expect(page.locator('.ug-kart[data-oyun="dedektif"] .ug-yeni')).toHaveText('Yeni');
   await expect(page.locator('.ug-kart[data-oyun="okul"] .ug-yeni')).toHaveText('Yeni');
   await expect(page.locator('.ug-kart[data-oyun="okul"] .ug-k-sayilar img')).toBeVisible();
@@ -147,7 +148,7 @@ test('Ana menü: yatay ekranda da kartlar sığıyor', async ({ page }, info) =>
   const { width, height } = page.viewportSize()!;
   await page.setViewportSize({ width: height, height: width });
   await page.goto('./?test=1');
-  await expect(page.locator('.ug-kart')).toHaveCount(8);
+  await expect(page.locator('.ug-kart')).toHaveCount(9);
   for (const kart of await page.locator('.ug-kart').all()) {
     const k = (await kart.boundingBox())!;
     expect(k.x + k.width).toBeLessThanOrEqual(height + 1);

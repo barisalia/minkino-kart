@@ -39,7 +39,7 @@ export const GIYSILER: Giysi[] = [
 export const giysi = (id: GiysiId): Giysi => GIYSILER.find((g) => g.id === id)!;
 
 /** Parçaların iskelet tuvalindeki yeri [x, y, en, boy] (ekip/giysin/varlik.cjs üretir) */
-export const PARCA_YERI = YER as Record<string, [number, number, number, number]>;
+export const PARCA_YERI = YER as unknown as Record<string, [number, number, number, number]>;
 
 /** Bölgelerin merkezleri (iskelet tuvali); el iki tane */
 export const BOLGE_MERKEZ: Record<Bolge, [number, number][]> = {

@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
   await p.goto(`http://localhost:4325/giysin/index.html?${sorgu}`, { timeout: 120000 });
   const t0 = Date.now();
   const olaylar = [
-    ...zamanlar.split(',').filter(Boolean).map((z) => ({ t: +z, f: async () => { await p.screenshot({ path: `tests/screens/${onek}-${z}.png` }); console.log(z, await p.evaluate(() => document.querySelector('.gy-ekran')?.dataset.adim)); } })),
+    ...zamanlar.split(',').filter(Boolean).map((z) => ({ t: +z, f: async () => { await p.screenshot({ path: `tests/screens/${onek}-${z}.png` }); console.log(z, await p.evaluate(() => document.querySelector('.gy-ekran')?.dataset.adim + ' ' + [...document.querySelectorAll('.gy-giysi')].map((b) => b.dataset.giysi + ':' + b.className.replace('gy-giysi', '')).join(' '))); } })),
     ...islem.map((s) => {
       const [tur, geri] = s.split(':');
       const [sec, z] = geri.split('@');

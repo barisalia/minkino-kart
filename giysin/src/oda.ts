@@ -94,7 +94,9 @@ export function odaEkrani(app: Uygulama): Ekran {
   const yanakSol = h('i.gy-yanak.sol');
   const yanakSag = h('i.gy-yanak.sag');
   const ekler = h('div.gy-kino-ekler', {}, parilti, yanakSol, yanakSag, buz);
-  const kinoKutu = h('div.gy-kino-kutu', {}, kino.el, ekler);
+  // titreyen Kino pozu (Gemini, iskelete hizalı): giyinmeden pencereye bakınca bir an iskeletin yerine geçer
+  const titremePoz = h('img.gy-poz', { src: resim('kino-titreme'), alt: '', draggable: 'false' });
+  const kinoKutu = h('div.gy-kino-kutu', {}, kino.el, titremePoz, ekler);
   const kinoYer = h('div.gy-kino-yer', {}, kinoKutu);
 
   // düşünce balonu: istek resimle (kardan adam)
@@ -103,12 +105,13 @@ export function odaEkrani(app: Uygulama): Ekran {
     { 'aria-hidden': 'true' },
     h('i.gy-balon-k1'),
     h('i.gy-balon-k2'),
-    h('div.gy-balon-ic', {}, h('img.b1', { src: resim('kardan-buyuk'), alt: '' }), h('img.b2', { src: resim('kardan-orta'), alt: '' }), h('img.b3', { src: resim('kardan-orta'), alt: '' }), h('img.b4', { src: resim('kardan-havuc'), alt: '' })),
+    h('div.gy-balon-ic', {}, h('img.b1', { src: resim('kardan-buyuk'), alt: '' }), h('img.b2', { src: resim('kardan-orta'), alt: '' }), h('img.b3', { src: resim('kardan-kucuk'), alt: '' }), h('img.b4', { src: resim('kardan-havuc'), alt: '' })),
   );
 
   // ayna anı: ayna aşağıdan kayar, içinde Kino'nun yansıması
   const yansima = new GiyinikKino();
-  const ayna = h('div.gy-ayna', { 'aria-hidden': 'true' }, h('div.gy-ayna-cam', {}, h('div.gy-yansima', {}, yansima.el), h('i.gy-ayna-parilti')), h('img.gy-ayna-cerceve', { src: resim('ayna'), alt: '' }));
+  // yansıma çerçevenin camının üstünde (camın oval kırpımıyla), yarı saydam: camın mavisi ve parıltısı görünür
+  const ayna = h('div.gy-ayna', { 'aria-hidden': 'true' }, h('img.gy-ayna-cerceve', { src: resim('ayna'), alt: '' }), h('div.gy-ayna-cam', {}, h('div.gy-yansima', {}, yansima.el), h('i.gy-ayna-parilti')));
 
   const dunya = h('div.gy-dunya', {}, oda, kapi, pencere, dolap, kinoYer, ayna);
   const surukleKat = h('div.gy-surukle-kat');
@@ -131,7 +134,9 @@ export function odaEkrani(app: Uygulama): Ekran {
     dikey = H > W * 1.1;
     oda.src = resim(dikey ? 'oda-dikey' : 'oda-yatay');
     const u = dikey ? W : Math.min(H, W * 0.5);
-    kapiPay = dikey ? W * 0.62 : W * 0.36;
+    const kh = dikey ? H * 0.46 : H * 0.8;
+    // kapı bu payın içinde (açılışta ekranın dışında; kamera kayınca görünür)
+    kapiPay = Math.max(dikey ? W * 0.62 : W * 0.36, kh * 0.5 + W * 0.16);
     const DW = W + kapiPay;
     Object.assign(dunya.style, { width: `${DW}px`, height: `${H}px` });
     const kutu = (e: HTMLElement, x: number, y: number, w: number, hh: number) => Object.assign(e.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${hh}px` });
@@ -141,15 +146,15 @@ export function odaEkrani(app: Uygulama): Ekran {
     kutu(oda, (DW - ow) / 2, Math.min(0, H - oh), ow, oh);
     const zemin = H * (dikey ? 0.84 : 0.9);
     // kapı (dünyanın solunda)
-    const kh = dikey ? H * 0.52 : H * 0.8;
-    kutu(kapi, kapiPay * (dikey ? 0.3 : 0.32), zemin - kh, kh * 0.5, kh);
+    kutu(kapi, (kapiPay - kh * 0.5) * 0.45, zemin - kh, kh * 0.5, kh);
     if (dikey) {
+      // dikey: üstte pencere, solda Kino, sağda dolap (giysiler iki sütun)
       const pw = W * 0.5;
-      kutu(pencere, kapiPay + W * 0.47, H * 0.1, pw, pw / 0.778);
-      kinoS = Math.min(W * 0.84, H * 0.42);
-      kutu(kinoYer, kapiPay + W * 0.3 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
-      const dw = W * 0.64;
-      kutu(dolap, kapiPay + W * 0.42, zemin + H * 0.05 - dw, dw, dw);
+      kutu(pencere, kapiPay + W * 0.06, H * 0.09, pw, pw / 0.778);
+      kinoS = Math.min(W * 0.66, H * 0.34);
+      kutu(kinoYer, kapiPay + W * 0.27 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      const dw = Math.min(W * 0.88, H * 0.5);
+      kutu(dolap, kapiPay + W * 0.98 - dw * 0.83, zemin + H * 0.09 - dw, dw, dw);
     } else {
       const ph = u * 0.7;
       kutu(pencere, kapiPay + W * 0.025, H * 0.07, ph * 0.778, ph);
@@ -187,7 +192,19 @@ export function odaEkrani(app: Uygulama): Ekran {
   function rafYerlesim() {
     const r = { x: parseFloat(dolap.style.left) - (kameraKapida ? 0 : kapiPay), y: parseFloat(dolap.style.top), w: parseFloat(dolap.style.width), h: parseFloat(dolap.style.height) };
     // giysiler dolabın iç alanından biraz taşar: büyük, net (4-5 yaş parmağı)
-    const ix = r.x + r.w * 0.1, iw = r.w * 0.8, iy = r.y + r.h * 0.1, ih = r.h * 0.8;
+    if (dikey) {
+      // dikey telefon: sağ yarıda iki sütun × dört sıra (dolabın önünde ve üstünde), iri
+      const sx = r.x + r.w * 0.14, sw = r.w * 0.72, sy = r.y + r.h * 0.04, sh = r.h * 0.92;
+      const boy = Math.min(sw / 2.15, sh / 4.2, 130);
+      DIZI.forEach((id, i) => {
+        const x = sx + (sw * ((i % 2) + 0.5)) / 2;
+        const y = sy + (sh * (Math.floor(i / 2) + 0.5)) / 4;
+        Object.assign(ikonlar.get(id)!.style, { left: `${x - boy / 2}px`, top: `${y - boy / 2}px`, width: `${boy}px`, height: `${boy}px` });
+      });
+      return;
+    }
+    const ix = r.x + r.w * 0.1, iw = r.w * 0.8;
+    const iy = r.y + r.h * 0.1, ih = r.h * 0.8;
     const boy = Math.min(iw / 2.75, ih / 3.05, 150);
     DIZI.forEach((id, i) => {
       const sira = i < 3 ? 0 : i < 6 ? 1 : 2;
@@ -562,18 +579,25 @@ export function odaEkrani(app: Uygulama): Ekran {
     // hava katman katman: gök önce, ağaç sonra (parallax), kar yağmaya başlar
     pencere.classList.add('acildi');
     void oynat(camIc.querySelector('.gy-k-gok'), [{ transform: 'translateX(-6%) scale(1.12)' }, { transform: 'none' }], 1700, { easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
+    void oynat(camIc.querySelector('.gy-k-orta'), [{ transform: 'translateX(-10%) scale(1.13)' }, { transform: 'none' }], 1700, { easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
     void oynat(camIc.querySelector('.gy-k-agac'), [{ transform: 'translateX(-16%) scale(1.15)', opacity: 0.6 }, { transform: 'none', opacity: 1 }], 1700, { easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
     await Promise.all([dalga(perdeSol.seritler, -1), dalga(perdeSag.seritler, 1)]);
     // perde topuzları hafifçe sallanır (takip)
     void oynat(perdeSol.el, [{ transform: 'none' }, { transform: 'rotate(1.2deg)' }, { transform: 'rotate(-0.6deg)' }, { transform: 'none' }], 900, { easing: 'ease-in-out' });
     void oynat(perdeSag.el, [{ transform: 'none' }, { transform: 'rotate(-1.2deg)' }, { transform: 'rotate(0.6deg)' }, { transform: 'none' }], 900, { easing: 'ease-in-out' });
-    await mino(M.kis);
-    // Kino pencereye bakar, üşür
-    kino.k.ifade('titreme', 1200);
-    kino.titreme = 0.6;
-    await kinoDe(K.brrr);
-    await bekle(500);
-    kino.titreme = 0;
+    void mino(M.kis);
+    await bekle(1500);
+    // Kino pencereye bakar, üşür: titreme pozu bir an iskeletin yerine geçer (buz sarkıtlı, kendini sarmış)
+    void oynat(titremePoz, [{ opacity: 0 }, { opacity: 1 }], 140, { fill: 'forwards' });
+    void oynat(kino.el, [{ opacity: 1 }, { opacity: 0 }], 140, { fill: 'forwards' });
+    const titre: Keyframe[] = [];
+    for (let i = 0; i <= 16; i++) titre.push({ transform: i === 0 || i === 16 ? 'none' : `translateX(${i % 2 ? 1.2 : -1.2}%) rotate(${i % 2 ? 0.8 : -0.8}deg) scale(0.97, 0.95)` });
+    void oynat(titremePoz, titre, 1300, { easing: 'linear', composite: 'add' });
+    void kinoDe(K.brrr);
+    await bekle(1300);
+    void oynat(titremePoz, [{ opacity: 1 }, { opacity: 0 }], 200, { fill: 'forwards' });
+    void oynat(kino.el, [{ opacity: 0 }, { opacity: 1 }], 200, { fill: 'forwards' });
+    kino.k.ifade('saskin', 800);
     adimaGec('dolap');
     dolap.classList.add('isaretli');
     void mino(M.dolap);
@@ -627,7 +651,7 @@ export function odaEkrani(app: Uygulama): Ekran {
 
   async function aynaAni() {
     adimaGec('ayna');
-    raf.classList.add('bitti');
+    raf.classList.add('bitti', 'gizli');
     // ayna aşağıdan kayar (hazırlık + abartı), Kino iki yöne döner, poz verir, ayna parlar
     ayna.style.opacity = '1';
     await oynat(ayna, [{ transform: 'translateY(110%)' }, { transform: 'translateY(-6%)', offset: 0.7 }, { transform: 'none' }], 650, { easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'forwards' });
@@ -744,7 +768,11 @@ export function odaEkrani(app: Uygulama): Ekran {
         raf.classList.add('acik');
       }
       if (atla === 'kapi') {
-        for (const g of GIYSILER) if (g.kis === 'gerekli') kino.giy(g.id, true);
+        for (const g of GIYSILER)
+          if (g.kis === 'gerekli') {
+            kino.giy(g.id, true);
+            yansima.giy(g.id, true);
+          }
         void aynaAni();
         return;
       }

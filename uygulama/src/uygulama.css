@@ -774,6 +774,13 @@
    telefon dikey 2 × 5 (Pasta iki hücre), yatay telefon 5 × 2 (Pasta iki hücre), 3 sütun (tablet) 3 × 3 (Pasta bir hücre) */
 .ug-kok .ug-izgara[data-adet='9'] {
   grid-template-rows: repeat(5, minmax(0, 1fr));
+  row-gap: clamp(8px, 1.2dvh, 22px);
+}
+/* dikey telefonda beş sıra kart: üstteki Mino ve logo biraz kısalır, kartlar iri kalır */
+@media (orientation: portrait) and (max-width: 599px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    height: clamp(96px, 12.5dvh, 440px);
+  }
 }
 @media (min-width: 600px) and (orientation: portrait) {
   .ug-kok .ug-izgara[data-adet='9'] {
@@ -791,6 +798,23 @@
     --oran: 1.94;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+  /* 5 sütunda kartlara yer: sol sütun (Mino, logo) biraz dar, adlar bir tık küçük (kesilmesin) */
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    width: clamp(130px, 23vw, 340px);
+  }
+  .ug-kok .ug-izgara[data-adet='9'] .ug-kart-ad {
+    font-size: clamp(0.62rem, 8.4cqi, 1.3rem);
+  }
+}
+/* küçük yatay telefon (667 px): kartlar 95 px'in altına düşmesin */
+@media (orientation: landscape) and (max-width: 760px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    width: clamp(88px, 14.5vw, 340px);
+  }
+  .ug-kok .ug-izgara[data-adet='9'] {
+    gap: 5px 8px;
+    padding: 2px 0 4px;
   }
 }
 @media (orientation: landscape) and (max-aspect-ratio: 3/2) {

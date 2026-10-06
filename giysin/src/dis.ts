@@ -54,9 +54,9 @@ export function disariEkrani(app: Uygulama, param?: { giyili?: GiysiId[] }): Ekr
     const yer = H * (dikey ? 0.82 : 0.9);
     const kutu = (e: HTMLElement, x: number, y: number, w: number, hh: number) => Object.assign(e.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${hh}px` });
     const ks = u * (dikey ? 0.62 : 0.74);
-    kutu(kinoYer, W * (dikey ? 0.27 : 0.28) - ks / 2, yer - ks * 0.93, ks, ks);
+    kutu(kinoYer, W * (dikey ? 0.27 : 0.25) - ks / 2, yer - ks * 0.93, ks, ks);
     const kw = u * (dikey ? 0.4 : 0.36);
-    kutu(kardanYer, W * (dikey ? 0.68 : 0.56) - kw / 2, yer - kw * 1.9 + kw * 0.04, kw, kw * 1.9);
+    kutu(kardanYer, W * (dikey ? 0.68 : 0.585) - kw / 2, yer - kw * 1.9 + kw * 0.04, kw, kw * 1.9);
     const mw = u * (dikey ? 0.48 : 0.5);
     kutu(minoYer, W * (dikey ? 0.74 : 0.84) - mw / 2, yer - mw * 1.0 + (dikey ? mw * 0.75 : 0), mw, mw);
     if (dikey) minoYer.style.top = `${H * 0.52}px`;

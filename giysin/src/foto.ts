@@ -16,21 +16,26 @@ export function duraganKino(giyili: GiysiId[]): HTMLElement {
   return k;
 }
 
-/** Kardan adam (parçalar); göz ve gülüş kodla (kömür: koyu yuvarlak, parlak nokta) */
-export function kardanAdam(): { el: HTMLElement; govde: HTMLElement; orta: HTMLElement; bas: HTMLElement; yuz: HTMLElement; gozSag: SVGElement; havuc: HTMLElement; dalSol: HTMLElement; dalSag: HTMLElement; atki: HTMLElement } {
+/** Kardan adam (Gemini parçaları: üç top, kömür gözler ve düğmeler, dal kollar, havuç, atkı); gülüş kodla (ince yay) */
+export function kardanAdam(): { el: HTMLElement; govde: HTMLElement; orta: HTMLElement; bas: HTMLElement; yuz: HTMLElement; gozSag: HTMLElement; havuc: HTMLElement; dalSol: HTMLElement; dalSag: HTMLElement; atki: HTMLElement } {
   const img = (ad: string, sinif: string) => h(`img.${sinif}`, { src: resim(ad), alt: '', draggable: 'false' });
   const govde = img('kardan-buyuk', 'gy-ka-govde');
-  const orta = img('kardan-orta', 'gy-ka-orta');
-  const yuz = h('div.gy-ka-yuz', {
-    html: `<svg viewBox="0 0 100 100" aria-hidden="true"><g class="gz-sol"><ellipse cx="33" cy="40" rx="8" ry="9" fill="#2a1d1b"/><circle cx="30.5" cy="36.5" r="2.6" fill="#fff"/></g><g class="gz-sag"><ellipse cx="67" cy="40" rx="8" ry="9" fill="#2a1d1b"/><circle cx="64.5" cy="36.5" r="2.6" fill="#fff"/></g><path d="M30 64 Q50 80 70 64" fill="none" stroke="#2a1d1b" stroke-width="5.5" stroke-linecap="round"/><circle cx="20" cy="58" r="6" fill="#ff9fb0" opacity=".55"/><circle cx="80" cy="58" r="6" fill="#ff9fb0" opacity=".55"/></svg>`,
-  });
-  const bas = h('div.gy-ka-bas', {}, img('kardan-orta', 'gy-ka-bas-top'), yuz);
+  const orta = h('div.gy-ka-orta', {}, img('kardan-orta', 'gy-ka-orta-top'), img('kardan-dugme-1', 'gy-ka-dugme d1'), img('kardan-dugme-2', 'gy-ka-dugme d2'));
+  const gozSag = img('kardan-goz-2', 'gy-ka-goz sag');
+  const yuz = h(
+    'div.gy-ka-yuz',
+    {},
+    img('kardan-goz-1', 'gy-ka-goz sol'),
+    gozSag,
+    h('div.gy-ka-gulus', { html: `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 62 Q50 78 70 62" fill="none" stroke="#3a2a28" stroke-width="5" stroke-linecap="round"/><circle cx="18" cy="56" r="7" fill="#ff9fb0" opacity=".5"/><circle cx="82" cy="56" r="7" fill="#ff9fb0" opacity=".5"/></svg>` }),
+  );
+  const bas = h('div.gy-ka-bas', {}, img('kardan-kucuk', 'gy-ka-bas-top'), yuz);
   const havuc = img('kardan-havuc', 'gy-ka-havuc');
   const dalSol = img('kardan-dalSol', 'gy-ka-dal-sol');
   const dalSag = img('kardan-dalSag', 'gy-ka-dal-sag');
   const atki = img('kardan-atki', 'gy-ka-atki');
   const el = h('div.gy-kardan', {}, dalSol, dalSag, govde, orta, atki, bas, havuc);
-  return { el, govde, orta, bas, yuz, gozSag: yuz.querySelector('.gz-sag') as SVGElement, havuc, dalSol, dalSag, atki };
+  return { el, govde, orta, bas, yuz, gozSag, havuc, dalSol, dalSag, atki };
 }
 
 export function fotoKaresi(giyili: GiysiId[], dikey = false): HTMLElement {

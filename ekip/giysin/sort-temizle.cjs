@@ -29,4 +29,23 @@ const fs = require('fs');
   fs.writeFileSync(yol, buf);
   await sharp(buf).webp({ quality: 86, alphaQuality: 100 }).toFile('assets/giysin/giysi/sort.webp');
   console.log('sort temiz');
+  // sağ eldiven: soluna atkı saçağı ve kol artığı karışmış; eldivenin en soldaki kırmızısından 14 px ötesi silinir
+  {
+    const y2 = 'ekip/giysin/parca/eldiven-sag.png';
+    const { data: d, info: f } = await sharp(y2).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const kirmizi = (i) => d[i * 4 + 3] > 150 && d[i * 4] > 150 && d[i * 4 + 1] < 110 && d[i * 4 + 2] < 110;
+    const say = new Int32Array(f.width);
+    for (let i = 0; i < f.width * f.height; i++) if (kirmizi(i)) say[i % f.width]++;
+    const x0 = say.findIndex((n) => n > f.height * 0.12);
+    const kes = Math.max(0, x0 - 5);
+    for (let i = 0; i < f.width * f.height; i++) {
+      const x = i % f.width;
+      if (x < kes) d[i * 4 + 3] = 0;
+      else if (x < kes + 3) d[i * 4 + 3] = Math.round(d[i * 4 + 3] * ((x - kes + 1) / 4));
+    }
+    const b2 = await sharp(d, { raw: { width: f.width, height: f.height, channels: 4 } }).png().toBuffer();
+    fs.writeFileSync(y2, b2);
+    await sharp(b2).webp({ quality: 86, alphaQuality: 100 }).toFile('assets/giysin/giysi/eldiven-sag.webp');
+    console.log('eldiven temiz', kes);
+  }
 })();
