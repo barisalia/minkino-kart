@@ -979,7 +979,7 @@
   right: 0;
   bottom: -2px;
   translate: 0 100%;
-  font: 700 clamp(16px, 3vmin, 24px) / 1.3 Fredoka, system-ui, sans-serif;
+  font: 700 clamp(17px, 4.4vmin, 26px) / 1.3 Fredoka, system-ui, sans-serif;
   color: #5a2e1a;
   text-align: center;
 }
