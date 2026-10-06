@@ -890,3 +890,33 @@
     opacity: 1;
   }
 }
+
+/* ---------------------------------------------------------------- görsel cila (orta ve son ekranlar) */
+/* dükkân rafı ürün sayısı kadar sütun: sağda boş bir sütun kalmasın */
+.ps-kok .ps-raf,
+.ps-kok .ps-aksam .ps-raf {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(64px, 1fr);
+}
+@media (orientation: portrait) {
+  /* akşam: otobüs sahnesi dikeyde daha iri (gökyüzü bomboş kalmasın); kumbara ve Mino ekranda */
+  .ps-kok .ps-aksam-sahne {
+    width: min(72vw, calc(44vh * 1.52));
+    translate: -7% 0;
+  }
+  .ps-kok .ps-aksam-jetonlar {
+    left: 40%;
+  }
+  /* açılış: başlık biraz aşağıda ve iri, gün kartları parmak boyu */
+  .ps-kok .ps-logo {
+    margin-top: 9vh;
+  }
+  .ps-kok .ps-logo-alt {
+    font-size: clamp(2.6rem, 13.5vw, 5.4rem);
+  }
+  .ps-kok .ps-gunler .ps-gun-kart {
+    width: clamp(96px, 27vw, 160px);
+    min-height: 128px;
+  }
+}
