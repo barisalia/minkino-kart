@@ -5,10 +5,11 @@ const { chromium } = require('playwright');
   const [, , sorgu, boyut, onek, zamanlar, ...islem] = process.argv;
   const [w, hh] = boyut.split('x').map(Number);
   const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: w, height: hh }, deviceScaleFactor: 1, hasTouch: false });
+  const dpr = Number(process.env.DPR ?? 1);
+  const p = await b.newPage({ viewport: { width: w, height: hh }, deviceScaleFactor: dpr, hasTouch: dpr > 1, isMobile: dpr > 1 });
   p.on('console', (m) => m.type() === 'error' && console.log('KONSOL:', m.text()));
   p.on('pageerror', (e) => console.log('HATA:', e.message));
-  await p.goto(`http://localhost:4325/giysin/index.html?${sorgu}`, { timeout: 120000 });
+  await p.goto(`http://localhost:${process.env.PORT ?? 4325}/giysin/index.html?${sorgu}`, { timeout: 120000, waitUntil: 'commit' });
   const t0 = Date.now();
   const olaylar = [
     ...zamanlar.split(',').filter(Boolean).map((z) => ({ t: +z, f: async () => { await p.screenshot({ path: `tests/screens/${onek}-${z}.png` }); console.log(z, await p.evaluate(() => document.querySelector('.gy-ekran')?.dataset.adim + ' ' + [...document.querySelectorAll('.gy-giysi')].map((b) => b.dataset.giysi + ':' + b.className.replace('gy-giysi', '')).join(' '))); } })),
@@ -19,6 +20,12 @@ const { chromium } = require('playwright');
         t: +z,
         f: async () => {
           if (tur === 'tikla') await p.locator(sec).first().click({ force: true }).catch((e) => console.log('tik', e.message));
+          if (tur === 'dokun') {
+            // Kino'nun tuvalinde (2048) bir noktaya dokun: dokun:x,y@ms
+            const [hx, hy] = sec.split(',').map(Number);
+            const k = await p.locator('.gy-kino').first().boundingBox();
+            await p.mouse.click(k.x + (hx / 2048) * k.width, k.y + (hy / 2048) * k.height);
+          }
           if (tur === 'surukle') {
             const [kaynak, hedef] = sec.split('>');
             const a = await p.locator(kaynak).first().boundingBox();

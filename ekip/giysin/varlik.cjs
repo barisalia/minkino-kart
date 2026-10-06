@@ -200,8 +200,9 @@ async function gemini() {
 
 /** dolap ikonları: Kino'nun üstündeki çizimin aynısı (çiftler birlikte, eldivenler yan yana sıkışık), en çok 360 px */
 async function ikonlar(yer) {
-  const ikon = { bere: ['bere'], atki: ['atki'], mont: ['mont'], eldiven: ['eldiven-sol', 'eldiven-sag'], bot: ['bot'], corap: ['corap'], sort: ['sort'], gozluk: ['gozluk'] };
+  const ikon = { bere: ['bere'], atki: ['atki'], mont: ['mont'], eldiven: ['eldiven-sol', 'eldiven-sag'], bot: ['bot'], corap: ['corap'], sort: ['sort'], gozluk: ['gozluk'], hirka: ['hirka'], cizme: ['cizme'], sapka: ['sapka'], mayo: ['mayo'], sandalet: ['sandalet'], yagmurluk: ['yagmurluk'], sepet: ['sepet'], kova: ['kova'], semsiye: ['semsiye-kapali'] };
   for (const [ad, liste] of Object.entries(ikon)) {
+    if (liste.some((n) => !yer[n])) continue;
     const konum = {};
     if (ad === 'eldiven') {
       const [s, g] = liste;
@@ -250,7 +251,247 @@ async function gemini2() {
   console.log('titreme', ic);
 }
 
+/** Kenarları beyaz zeminli tek eşya (Gemini): zemin silinir; yalnız en büyük parça (enBuyuk) ya da hepsi */
+async function esya(girdi, cikti, { en = 600, enBuyuk = false, sec, delik = false, filtre } = {}) {
+  const g = await oku(H + girdi, 1200);
+  let m = onPlan(g);
+  if (delik) {
+    // sap / kulp içindeki kapalı beyaz boşluklar (büyükleri) de zemin
+    const ters = Uint8Array.from(m, (v, i) => (v && g.d[i * 3] >= 236 && g.d[i * 3 + 1] >= 236 && g.d[i * 3 + 2] >= 236 ? 1 : 0));
+    const { et, liste } = parcalar(ters, g.W, g.H, 2500);
+    for (const p of liste) for (let i = 0; i < m.length; i++) if (et[i] === p.id) m[i] = 0;
+  }
+  if (filtre) {
+    const { et, liste } = parcalar(m, g.W, g.H, 30);
+    const tut = new Set(liste.filter((p) => filtre(p, g)).map((p) => p.id));
+    m = Uint8Array.from(et, (v) => (tut.has(v) ? 1 : 0));
+  } else if (enBuyuk || sec) {
+    const { et, liste } = parcalar(m, g.W, g.H, 200);
+    const p = sec ? sec(liste, g) : liste.sort((a, b) => b.n - a.n)[0];
+    m = sadece(et, p.id);
+  }
+  return yaz(g, m, cikti, { en });
+}
+
+/** Pencere manzarası: arka tam; orta (çit, çalı) ve ön (mevsim ağacı) beyaz zeminli */
+async function pencereKatmanlari(m) {
+  await sharp(H + `pencere-${m}-arka.png`).resize(1400).webp(Q).toFile(C + `pencere-${m}-arka.webp`);
+  for (const k of ['orta', 'on']) {
+    const g = await oku(H + `pencere-${m}-${k}.png`, 1400);
+    let mk = onPlan(g, [], k === 'on' ? 215 : 240);
+    if (k === 'on') {
+      // ön katman: yalnız ağaç (en büyük parça; savrulan yaprak / taç yaprağı kırıntıları atılır)
+      const { et, liste } = parcalar(mk, g.W, g.H, 50);
+      const enB = liste.sort((a, b) => b.n - a.n)[0];
+      mk = sadece(et, enB.id);
+      // ağaca bağlı ufuk çizgisi: ağacın gövde sütunlarının dışında, alt yarıda silinir
+      let x0 = g.W, x1 = 0;
+      for (let i = 0; i < mk.length; i++) if (mk[i] && ((i / g.W) | 0) < g.H * 0.5) { const x = i % g.W; x0 = Math.min(x0, x); x1 = Math.max(x1, x); }
+      for (let i = 0; i < mk.length; i++) {
+        const x = i % g.W, y = (i / g.W) | 0;
+        if (y > g.H * 0.55 && (x < x0 - 10 || x > x1 + 10)) mk[i] = 0;
+      }
+    }
+    await yaz(g, mk, `pencere-${m}-${k}.webp`, { kirp: false });
+  }
+}
+
+/** Dış sahne: yatay 1920 × 1072; dikey 1080 × 1920 (ortası `orta` oranında: sahnenin olay yeri) */
+async function sahneOrta(ad, girdi, orta = 0.5) {
+  const m = await sharp(H + girdi).metadata();
+  await sharp(H + girdi).resize(1920).webp(Q).toFile(`${C}${ad}-yatay.webp`);
+  const w = Math.round((m.height * 9) / 16);
+  const sol = Math.max(0, Math.min(m.width - w, Math.round(m.width * orta - w / 2)));
+  await sharp(H + girdi).extract({ left: sol, top: 0, width: w, height: m.height }).resize(1080, 1920).webp(Q).toFile(`${C}${ad}-dikey.webp`);
+  console.log(ad, 'yatay + dikey', { sol });
+}
+
+/**
+ * Kino'nun patisinde tutulan eşyalar (sepet, kova, şemsiye) iskelet tuvaline (2048) oturtulur; patinin parmakları
+ * (ekip/kino/kino-final.png, kapı sapının önünde kalsın diye) ayrı katman olarak eşyanın üstüne çizilir.
+ * Çıktı: ekip/giysin/parca/<ad>.png + .json (giysi katmanlarıyla aynı biçim)
+ */
+async function tutulanlar() {
+  const P = 'ekip/giysin/parca/';
+  const yerlestir = async (ad, kaynak, { en, x, y, aci = 0 }) => {
+    // kaynak: assets/giysin/esya-*.webp (şeffaf); (x, y): resmin üst-orta noktası tuvalde
+    let b = await sharp(kaynak).resize({ width: en }).png().toBuffer({ resolveWithObject: true });
+    let ox = x - b.info.width / 2, oy = y;
+    if (aci) {
+      const d = await sharp(b.data).rotate(aci, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer({ resolveWithObject: true });
+      ox -= (d.info.width - b.info.width) / 2;
+      oy -= (d.info.height - b.info.height) / 2;
+      b = d;
+    }
+    fs.writeFileSync(P + ad + '.png', b.data);
+    fs.writeFileSync(P + ad + '.json', JSON.stringify({ x: Math.round(ox), y: Math.round(oy), w: b.info.width, h: b.info.height }));
+    console.log(ad, Math.round(ox), Math.round(oy), b.info.width, b.info.height);
+  };
+  await yerlestir('sepet', C + 'esya-sepet.webp', { en: 390, x: 1330, y: 1462 });
+  await yerlestir('kova', C + 'esya-kova.webp', { en: 320, x: 1330, y: 1478 });
+  await yerlestir('semsiye-kapali', C + 'esya-semsiye-kapali.webp', { en: 250, x: 1352, y: 860, aci: 6 });
+  // açık şemsiye: Kino'nun arkasında (sap başın arkasından geçer, kubbe başın üstünde, kanca patinin altında).
+  // Gemini çiziminde sap eğik: önce sap dikleşecek kadar döndürülür, sonra sap uzatılır (kubbe + sap + kanca).
+  {
+    const kaynak = C + 'esya-semsiye-acik.webp';
+    const sat = async (b) => sharp(b).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const olc0 = (d, W, Y) => {
+      const gen = (y) => { let a = W, b = -1; for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 128) { a = Math.min(a, x); b = Math.max(b, x); } return [a, b]; };
+      let enGen = 0;
+      for (let y = 0; y < Y; y++) { const [a, b] = gen(y); enGen = Math.max(enGen, b - a); }
+      let kubbeAlt = 0;
+      for (let y = Math.round(Y * 0.3); y < Y; y++) { const [a, b] = gen(y); if (b - a < enGen * 0.15) { kubbeAlt = y; break; } }
+      let kancaUst = Y - 1;
+      for (let y = Math.round(kubbeAlt + (Y - kubbeAlt) * 0.45); y < Y; y++) { const [a, b] = gen(y); if (b - a > enGen * 0.045) { kancaUst = y; break; } }
+      const orta = (y) => { const [a, b] = gen(y); return (a + b) / 2; };
+      return { enGen, kubbeAlt, kancaUst, orta };
+    };
+    const s0 = await sat(kaynak);
+    const o0 = olc0(s0.data, s0.info.width, s0.info.height);
+    const y1 = o0.kubbeAlt + (o0.kancaUst - o0.kubbeAlt) * 0.15, y2 = o0.kubbeAlt + (o0.kancaUst - o0.kubbeAlt) * 0.85;
+    const aci = (Math.atan2(o0.orta(Math.round(y2)) - o0.orta(Math.round(y1)), y2 - y1) * 180) / Math.PI;
+    const dondu = await sharp(kaynak).flop().png().toBuffer(); void aci; // aynalanır: sap kubbeden sağ alta, patiye iner
+    const s1 = await sat(dondu);
+    const W = s1.info.width, Y = s1.info.height;
+    const o1 = olc0(s1.data, W, Y);
+    const sapX = o1.orta(o1.kancaUst - 3);
+    const KUBBE_EN = 1250, olc = KUBBE_EN / o1.enGen;
+    const NW = Math.round(W * olc);
+    const parca = (top, h, yeniH) => sharp(dondu).extract({ left: 0, top, width: W, height: h }).resize({ width: NW, height: yeniH ?? Math.round(h * olc), fit: 'fill' }).png().toBuffer({ resolveWithObject: true });
+    const kubbe = await parca(0, o1.kubbeAlt + 4);
+    const kanca = await parca(o1.kancaUst - 2, Y - o1.kancaUst + 2);
+    const sapH = 1150;
+    const sap = await parca(o1.kubbeAlt + 2, o1.kancaUst - o1.kubbeAlt, sapH);
+    const TH = kubbe.info.height + sapH + kanca.info.height - 10;
+    const dik = await sharp({ create: { width: NW, height: TH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+      .composite([{ input: sap.data, left: 0, top: kubbe.info.height - 5 }, { input: kanca.data, left: 0, top: kubbe.info.height + sapH - 10 }, { input: kubbe.data, left: 0, top: 0 }])
+      .png()
+      .toBuffer();
+    // sap patiden başın arkasına doğru sola eğik: kubbe başın üstünde ortalanır
+    const EGIM = 0;
+    const r = (EGIM * Math.PI) / 180;
+    const egik = await sharp(dik).rotate(EGIM, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer({ resolveWithObject: true });
+    // kavrama noktası (kancanın üstü) dönmeden önce merkeze göre; dönünce yeni yeri
+    const gx = sapX * olc - NW / 2, gy = kubbe.info.height + sapH - 10 - TH / 2;
+    const qx = gx * Math.cos(r) - gy * Math.sin(r) + egik.info.width / 2, qy = gx * Math.sin(r) + gy * Math.cos(r) + egik.info.height / 2;
+    // kavrama patide: (1300, 1540)
+    const x = Math.round(1300 - qx), y = Math.round(1540 - qy);
+    fs.writeFileSync(P + 'semsiye-acik.png', egik.data);
+    fs.writeFileSync(P + 'semsiye-acik.json', JSON.stringify({ x, y, w: egik.info.width, h: egik.info.height }));
+    // kanca: kavrama noktasının altı Kino'nun önünde (pati sapı tutuyor görünür)
+    const kesY = Math.round(qy) + 10;
+    const alt = await sharp(egik.data).extract({ left: 0, top: kesY, width: egik.info.width, height: egik.info.height - kesY }).png().toBuffer();
+    const ka = await sharp(alt).trim({ threshold: 1 }).png().toBuffer({ resolveWithObject: true });
+    fs.writeFileSync(P + 'semsiye-kanca.png', ka.data);
+    fs.writeFileSync(P + 'semsiye-kanca.json', JSON.stringify({ x: x - (ka.info.trimOffsetLeft ?? 0), y: y + kesY - (ka.info.trimOffsetTop ?? 0), w: ka.info.width, h: ka.info.height }));
+    console.log('semsiye-acik', { aci: +aci.toFixed(1), x, y, w: egik.info.width, h: egik.info.height, kanca: ka.info });
+  }
+  // patinin parmakları: patinin içinden taşma (kontur sınır), bileğin altı; kontur için 5 px genişler
+  {
+    const { data, info } = await sharp('ekip/kino/kino-final.png').ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const W = info.width;
+    const acik = (j) => data[j * 4 + 3] > 200 && data[j * 4] * 0.3 + data[j * 4 + 1] * 0.59 + data[j * 4 + 2] * 0.11 > 150;
+    const m = tasir({ W, H: info.height }, [[1300, 1555], [1330, 1560], [1280, 1570], [1350, 1545], [1240, 1560], [1320, 1530]].map(([x, y]) => y * W + x), (j) => acik(j) && ((j / W) | 0) >= 1512 && j % W > 1190 && j % W < 1410);
+    let mm = genis(m, W, info.height, 6);
+    for (let i = 0; i < mm.length; i++) if (data[i * 4 + 3] < 10 || ((i / W) | 0) < 1508) mm[i] = 0;
+    const rgba = Buffer.alloc(W * info.height * 4);
+    const a = yumusak(mm, W, info.height);
+    for (let i = 0; i < W * info.height; i++) {
+      rgba[i * 4] = data[i * 4]; rgba[i * 4 + 1] = data[i * 4 + 1]; rgba[i * 4 + 2] = data[i * 4 + 2];
+      rgba[i * 4 + 3] = Math.min(a[i], data[i * 4 + 3]);
+      if (!rgba[i * 4 + 3]) rgba[i * 4] = rgba[i * 4 + 1] = rgba[i * 4 + 2] = 0;
+    }
+    const tam = await sharp(rgba, { raw: { width: W, height: info.height, channels: 4 } }).png().toBuffer();
+    const k = await sharp(tam).trim({ threshold: 1 }).png().toBuffer({ resolveWithObject: true });
+    fs.writeFileSync(P + 'pati-sag.png', k.data);
+    fs.writeFileSync(P + 'pati-sag.json', JSON.stringify({ x: -(k.info.trimOffsetLeft ?? 0), y: -(k.info.trimOffsetTop ?? 0), w: k.info.width, h: k.info.height }));
+    console.log('pati', k.info);
+  }
+}
+
+/**
+ * Gemini Kino pozu iskeletin kutusuna (1024 kare, iskeletin 2048'ine oranla) hizalanır: yatay orta 1040,
+ * görselin üstü `ust`, altı `alt` (2048 biriminde). Pozla iskelet bir an yer değiştirince Kino yerinden oynamaz.
+ */
+async function poz(girdi, cikti, ust, alt) {
+  const g = await oku(H + girdi, 1600);
+  const m = onPlan(g);
+  let x0 = g.W, x1 = 0, y0 = g.H, y1 = 0;
+  for (let i = 0; i < m.length; i++) if (m[i]) { const x = i % g.W, y = (i / g.W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  const { o } = await yaz(g, m, 'tmp-poz.webp', { kirp: false });
+  void o;
+  const N = 1024, s = (((alt - ust) / 2048) * N) / (y1 - y0);
+  const kucuk = await sharp(C + 'tmp-poz.webp').resize(Math.round(g.W * s), Math.round(g.H * s)).png().toBuffer();
+  const sol = Math.round((1040 / 2048) * N - ((x0 + x1) / 2) * s), ustY = Math.round((ust / 2048) * N - y0 * s);
+  // tuvalden taşan kısım kırpılır (composite negatif konuma izin vermez)
+  const kirpX = Math.max(0, -sol), kirpY = Math.max(0, -ustY);
+  const meta = await sharp(kucuk).metadata();
+  const parca = await sharp(kucuk).extract({ left: kirpX, top: kirpY, width: Math.min(meta.width - kirpX, N - Math.max(0, sol)), height: Math.min(meta.height - kirpY, N - Math.max(0, ustY)) }).png().toBuffer();
+  await sharp({ create: { width: N, height: N, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: parca, left: Math.max(0, sol), top: Math.max(0, ustY) }])
+    .webp(Q)
+    .toFile(C + cikti);
+  sharp.cache(false);
+  try { fs.unlinkSync(C + 'tmp-poz.webp'); } catch { /* önbellek tutuyorsa elle silinir (assets'e girmesin) */ }
+  console.log('poz', cikti);
+}
+
+/** İlkbahar, yaz, sonbahar: pencere katmanları, dış sahneler, eşyalar, yeni giysiler + tutulanlar, ikonlar */
+async function mevsimler() {
+  for (const m of ['ilkbahar', 'yaz', 'sonbahar']) if (fs.existsSync(H + `pencere-${m}-on.png`)) await pencereKatmanlari(m);
+  await sahneOrta('dis-ilkbahar', 'dis-ilkbahar-cicekli-bahce.png', 0.5);
+  await sahneOrta('dis-yaz', 'dis-yaz-plaj.png', 0.5);
+  if (fs.existsSync(H + 'dis-sonbahar-yagmurlu-sokak.png')) await sahneOrta('dis-sonbahar', 'dis-sonbahar-yagmurlu-sokak.png', 0.6);
+  await esya('esya-sepet.png', 'esya-sepet.webp', { enBuyuk: true, delik: true });
+  await esya('esya-cicek-demeti.png', 'esya-cicek.webp');
+  await esya('esya-gunes-kremi.png', 'esya-krem.webp', { enBuyuk: true });
+  await esya('esya-kova-kurek.png', 'esya-kova.webp', { enBuyuk: true, delik: true });
+  await esya('esya-kova-kurek.png', 'esya-kurek.webp', { sec: (l) => l.sort((a, b) => b.n - a.n)[1] });
+  await esya('giysi-semsiye-kapali.png', 'esya-semsiye-kapali.webp', { enBuyuk: true });
+  await esya('giysi-semsiye-acik.png', 'esya-semsiye-acik.webp', { enBuyuk: true, en: 800 });
+  // albüm sayfaları (dört mevsim, fotoğraf yeri beyaz), Mevsim Ustası rozeti, Mino'nun yağmurluk topu hâli
+  const yuva = {};
+  for (const m of ['kis', 'ilkbahar', 'yaz', 'sonbahar']) {
+    if (!fs.existsSync(H + `album-sayfa-${m}.png`)) continue;
+    await esya(`album-sayfa-${m}.png`, `album-${m}.webp`, { enBuyuk: true, en: 700 });
+    // fotoğraf yuvası: sayfanın içindeki en büyük kapalı beyaz alan (oran olarak)
+    const { data, info } = await sharp(C + `album-${m}.webp`).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const W = info.width, Y = info.height;
+    const beyaz = Uint8Array.from({ length: W * Y }, (_, i) => (data[i * 4 + 3] > 200 && data[i * 4] > 238 && data[i * 4 + 1] > 238 && data[i * 4 + 2] > 238 ? 1 : 0));
+    const { liste } = parcalar(beyaz, W, Y, 1000);
+    const p = liste.sort((a, b) => b.n - a.n)[0];
+    yuva[m] = [+(p.x0 / W).toFixed(4), +(p.y0 / Y).toFixed(4), +((p.x1 - p.x0) / W).toFixed(4), +((p.y1 - p.y0) / Y).toFixed(4), +(W / Y).toFixed(4)];
+  }
+  fs.writeFileSync(C + 'album.json', JSON.stringify(yuva));
+  console.log('album yuva', yuva);
+  if (fs.existsSync(H + 'esya-rozet-mevsim-ustasi.png')) await esya('esya-rozet-mevsim-ustasi.png', 'rozet-mevsim.webp', { enBuyuk: true, en: 600 });
+  if (fs.existsSync(H + 'mino-yagmurluk-topu.png')) await esya('mino-yagmurluk-topu.png', 'mino-yagmurluk.webp', { enBuyuk: true, en: 700 });
+  // Recraft eşyaları (dış sahne ve tepkiler): kumdan kale, arı, su sıçraması, çamur birikintisi, dalga
+  await esya('r-kale.png', 'esya-kale.webp', { enBuyuk: true });
+  await esya('r-ari.png', 'esya-ari.webp', { en: 360 });
+  await esya('r-sicrama.png', 'esya-sicrama.webp', { en: 700 });
+  await esya('r-camur.png', 'esya-camur.webp', { en: 900 });
+  await esya('r-dalga.png', 'esya-dalga.webp', { en: 1100 });
+  await esya('r-birikinti.png', 'esya-birikinti.webp', { en: 900 });
+  // yağmur bulutu: ıslak Kino pozunun tepesindeki bulut ve damlaları
+  if (fs.existsSync(H + 'kino-islak-buyuk.png')) await esya('kino-islak-buyuk.png', 'esya-bulut.webp', { en: 500, filtre: (p, g) => p.cy < g.H * 0.24 });
+  // ıslak Kino (sonbahar penceresi): yağmur bulutu dahil, oturmuş; su birikintisi ayak hizasında
+  if (fs.existsSync(H + 'kino-islak-buyuk.png')) await poz('kino-islak-buyuk.png', 'kino-islak.webp', 20, 1930);
+  await tutulanlar();
+  const yer = JSON.parse(fs.readFileSync('giysin/src/giysi-yer.json', 'utf8'));
+  for (const ad of ['hirka', 'cizme', 'sapka', 'mayo', 'sandalet', 'yagmurluk', 'sepet', 'kova', 'semsiye-kapali', 'semsiye-acik', 'semsiye-kanca', 'pati-sag']) {
+    if (!fs.existsSync(`ekip/giysin/parca/${ad}.json`)) continue;
+    const b = JSON.parse(fs.readFileSync(`ekip/giysin/parca/${ad}.json`, 'utf8'));
+    await sharp(`ekip/giysin/parca/${ad}.png`).webp(Q).toFile(`${C}giysi/${ad}.webp`);
+    yer[ad] = [b.x, b.y, b.w, b.h];
+  }
+  fs.writeFileSync('giysin/src/giysi-yer.json', JSON.stringify(yer, null, 1) + '\n');
+  await ikonlar(yer);
+}
+
 (async () => {
+  if (process.argv[2] === 'mevsim') return mevsimler();
+  if (process.argv[2] === 'tutulan') return tutulanlar();
   if (process.argv[2] === 'gemini') return gemini();
   if (process.argv[2] === 'gemini2') return gemini2();
   if (process.argv[2] === 'ikon') return ikonlar(JSON.parse(fs.readFileSync('giysin/src/giysi-yer.json', 'utf8')));
