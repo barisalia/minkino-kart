@@ -14,6 +14,7 @@ import { Mino, minoDedektifYukle, type Tepki } from '../../src/mino/mino';
 import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
+import { BalonNobeti, tekTekrar } from './konusma-sira';
 import { PozYuvasi } from './poz';
 
 /** Kino'nun kutusu Mino'nun kutu genişliğine göre (Mino kutusu 1360 × 1790; Kino 0.74 boy) */
@@ -66,6 +67,7 @@ export class Oyuncular {
   private pamukKaynak: HTMLElement | null = null;
   private sapkaSvg: string | null = null;
   private sira: Promise<void> = Promise.resolve();
+  private balonNobeti = new BalonNobeti<'mino' | 'kino' | 'pamuk'>();
   private kapali = false;
   private yukSol = 0;
   private yukSag = 0;
@@ -153,16 +155,18 @@ export class Oyuncular {
       this.son = { soz, kim, ton };
       const bs = balonSahibi(kim);
       const b = bs ? this.balonlar[bs] : null;
+      // bu sözün balon açılışı: aynı konuşanın önceki sözünün kapanışı bu sözü kapatmaz
+      const nesil = bs ? this.balonNobeti.ac(bs) : 0;
       if (b && bs) {
         b.querySelector('span')!.textContent = metin;
         b.classList.remove('acik');
         this.balonKonumla(b, bs);
         void b.offsetWidth;
         b.classList.add('acik');
-        // konuşan yürür / kenara çekilirse balon başını izler (açık kaldıkça)
+        // konuşan yürür / kenara çekilirse balon başını izler (açık kaldıkça; yeni söz kendi izlemesini kurar)
         const bk = bs;
         const takip = () => {
-          if (this.kapali || !b.classList.contains('acik')) return;
+          if (this.kapali || !this.balonNobeti.gecerli(bk, nesil) || !b.classList.contains('acik')) return;
           this.balonKonumla(b, bk);
           requestAnimationFrame(takip);
         };
@@ -178,7 +182,7 @@ export class Oyuncular {
         this.mino.agizSus = false;
         if (kim === 'kino') this.kino.konus(false);
         if (bs === 'pamuk') this.pamuk?.konus(false);
-        if (b) setTimeout(() => b.classList.remove('acik'), sure(700));
+        if (b && bs) setTimeout(() => this.balonNobeti.gecerli(bs, nesil) && b.classList.remove('acik'), sure(700));
       }
     });
     this.sira = is.catch(() => undefined);
@@ -206,11 +210,12 @@ export class Oyuncular {
     b.style.setProperty('--kay', `${kay.toFixed(1)}px`);
   }
 
-  /** Son cümleyi tekrar söyler */
+  /** Son cümleyi tekrar söyler (art arda dokunuşlar birikmez: sırada ya da çalmakta en çok bir tekrar) */
   tekrar() {
     const s = this.son;
-    if (s) void this.soyle(s.soz, s.kim, s.ton);
+    if (s) this.tekrarla(() => this.soyle(s.soz, s.kim, s.ton));
   }
+  private tekrarla = tekTekrar();
 
   // ---------------------------------------------------------------- Mino
   minoTepki(t: Tepki, sn?: number) {

@@ -14,6 +14,7 @@ import {
   CALISMA,
   CALISMA_IZLERI,
   ekranda,
+  HALKALAR,
   KADRAJ,
   kameraHesap,
   KORIDOR_IZLERI,
@@ -93,15 +94,23 @@ export function katman(sinif: string, derinlik: number, ...cocuk: (HTMLElement |
   return { el: h(`div.dd-katman.${sinif}`, {}, ...cocuk), derinlik };
 }
 
+/** Çalışma odası dikey mi kurulmalı: dikey ekranda (boy > en) ve 9:16 çizim varsa tek resimli dikey oda; yoksa yatay */
+function calismaDikeyOlmali(): boolean {
+  return !!filmKatmani('ev', 'oda-dikey') && typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
+}
+/** Çalışma odasının katman zemini (dikeyde yalnız uzak katmanda tek resim) */
+function calismaZemin(ad: 'arka-uzak' | 'arka-orta' | 'arka-on', dikey: boolean): HTMLElement | null {
+  if (dikey) return ad === 'arka-uzak' ? h('img.dd-zemin', { src: filmKatmani('ev', 'oda-dikey'), alt: '', draggable: 'false' }) : null;
+  return h('img.dd-zemin', { src: filmKatmani('ev', ad), alt: '', draggable: 'false' });
+}
+
 /** Çalışma odası (film/ev katmanları): masa, devrik lamba, pencere, halı */
 export function calismaOdasi(ipuclari: IpucuTanim[]): Oda {
   // dikey ekranda (boy > en) ve 9:16 çizim varsa: tek resimli dikey oda (mantik.ts → calismaYerlesim); yoksa yatay
-  const dikeyUrl = filmKatmani('ev', 'oda-dikey');
-  const dikey = !!dikeyUrl && typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
+  const dikey = calismaDikeyOlmali();
   calismaYerlesim(dikey);
   const W = odaW('calisma');
-  const zemin = (ad: 'arka-uzak' | 'arka-orta' | 'arka-on') =>
-    dikey ? (ad === 'arka-uzak' ? h('img.dd-zemin', { src: dikeyUrl, alt: '', draggable: 'false' }) : null) : h('img.dd-zemin', { src: filmKatmani('ev', ad), alt: '', draggable: 'false' });
+  const zemin = (ad: 'arka-uzak' | 'arka-orta' | 'arka-on') => calismaZemin(ad, dikey);
   const e: Record<string, HTMLElement> = {};
   const ipucu = (id: string) => {
     const t = ipuclari.find((i) => i.id === id);
@@ -144,6 +153,71 @@ export function calismaOdasi(ipuclari: IpucuTanim[]): Oda {
   const katmanlar = [uzak, orta, on];
   const el = h('div.dd-dunya', { 'data-oda': 'calisma', 'data-dikey': dikey ? '1' : undefined, style: `width:${px(W)};height:${px(ODA_H)}` }, ...katmanlar.map((k) => k.el), anı, isik, los);
   return { id: 'calisma', el, W, katmanlar, e };
+}
+
+/**
+ * Telefon vakanın ortasında döndü (web sitesinde yön serbest): çalışma odası yerinde yeni yönün yerleşimine geçer
+ * (mantik.ts → calismaYerlesim): zemin resmi, oda eni, eşyalar, ipuçları, izler, ışık. Öğeler ve durumları (bulundu,
+ * yandı, taşındı) korunur; vaka sonra kamerayı aynı işe yeniden kurar. Yerleşim zaten bu yöne uygunsa false.
+ */
+export function calismaYenidenDiz(oda: Oda): boolean {
+  const dikey = calismaDikeyOlmali();
+  if (oda.id !== 'calisma' || dikey === calismaDikey) return false;
+  calismaYerlesim(dikey);
+  const W = odaW('calisma');
+  oda.W = W;
+  const yer = (el: HTMLElement | undefined, o: { x: number; y: number; h?: number; don?: number }) => {
+    if (!el) return;
+    el.style.left = px(o.x * W);
+    el.style.top = px(o.y * ODA_H);
+    if (o.h !== undefined) el.style.height = px(o.h * ODA_H);
+    el.style.setProperty('--don', `${o.don ?? 0}deg`);
+  };
+  const { e } = oda;
+  // zemin: dikeyde tek resim (uzak katman, derinliksiz); yatayda üç katman
+  const [uzak, orta, on] = oda.katmanlar;
+  const adlar = ['arka-uzak', 'arka-orta', 'arka-on'] as const;
+  [uzak, orta, on].forEach((k, i) => {
+    k.el.querySelectorAll(':scope > img.dd-zemin').forEach((z) => z.remove());
+    const z = calismaZemin(adlar[i], dikey);
+    if (z) k.el.prepend(z);
+    k.el.style.transform = '';
+  });
+  uzak.derinlik = dikey ? 0 : 0.035;
+  // ipuçları (tanımlar calismaYerlesim ile yerinde güncellendi)
+  const tanimlar = HALKALAR.flatMap((hk) => hk.ipuclari);
+  for (const [ad, el] of Object.entries(e)) {
+    if (!ad.startsWith('ipucu-')) continue;
+    const t = tanimlar.find((x) => x.id === ad.slice(6));
+    if (t) yer(el, t);
+  }
+  // pencerenin camı ve içindeki kelebek
+  const c = CALISMA.cam;
+  if (e.cam) Object.assign(e.cam.style, { left: px(c.x0 * W), top: px(c.y0 * ODA_H), width: px((c.x1 - c.x0) * W), height: px((c.y1 - c.y0) * ODA_H) });
+  const kt = tanimlar.find((x) => x.id === 'kelebek');
+  if (e.kelebek && kt) {
+    e.kelebek.style.left = `${(((kt.x - c.x0) / (c.x1 - c.x0)) * 100).toFixed(2)}%`;
+    e.kelebek.style.top = `${(((kt.y - c.y0) / (c.y1 - c.y0)) * 100).toFixed(2)}%`;
+    e.kelebek.style.height = px(kt.h * ODA_H);
+  }
+  // eşyalar, lambanın ışığı, finalde masadaki hedef ve lambanın düğmesi
+  yer(e.masa, CALISMA.masa);
+  yer(e.kalem, CALISMA.kalem);
+  yer(e.lambaDik, CALISMA.lambaDik);
+  yer(e.lambaDevrik, CALISMA.lambaDevrik);
+  if (e.isik) Object.assign(e.isik.style, { left: px(CALISMA.lambaDik.x * W), top: px((CALISMA.lambaDik.y - CALISMA.lambaDik.h * 0.72) * ODA_H) });
+  if (e.masaHedef) Object.assign(e.masaHedef.style, { left: `${(CALISMA.masaUst.x * W).toFixed(0)}px`, top: `${(CALISMA.masaUst.y * ODA_H).toFixed(0)}px` });
+  const dugme = oda.el.querySelector<HTMLElement>('.dd-lamba-dugme');
+  if (dugme && e.lambaDik) dugme.setAttribute('style', e.lambaDik.getAttribute('style') ?? '');
+  // Halka 4'ün pati izleri (iki yerleşimde de 8 iz)
+  e.izler?.querySelectorAll<HTMLElement>(':scope > .dd-iz').forEach((iz, i) => {
+    const p = CALISMA_IZLERI[i];
+    if (p) yer(iz, p);
+  });
+  oda.el.style.width = px(W);
+  if (dikey) oda.el.dataset.dikey = '1';
+  else delete oda.el.dataset.dikey;
+  return true;
 }
 
 /** Koridor: önden ortaya ortak iz, iki kapıya ayrılan izler (yanlar: hangi kapı mutfak) */
@@ -203,6 +277,9 @@ export function mutfak(): Oda {
   return { id: 'mutfak', el, W, katmanlar: [], e };
 }
 
+/** Kameranın işi (Dunya.kur / gec / git): kadrajın adı, dikdörtgeni ya da her hesapta onu üreten işlev */
+export type KadrajKaynak = KadrajAdi | Kadraj | (() => KadrajAdi | Kadraj);
+
 /** Kameranın kadrajı ekranda nereye sığsın: üst çubuğun altı; karakterlerin durduğu alt köşeler (dikeyde) dışarıda */
 export type Guvenli = (w: number, hgt: number) => [number, number, number, number];
 
@@ -222,7 +299,11 @@ export class Dunya {
   readonly el: HTMLElement;
   oda: Oda | null = null;
   kamera: Kamera = { s: 1, tx: 0, ty: 0 };
-  private kadraj: Kadraj = KADRAJ.genel;
+  /**
+   * Kameranın işi: kadrajın adı (her hesapta tablodan: oda yeniden dizilince yeni yerleşimin değeri), sabit dikdörtgen
+   * ya da her hesapta yeniden üreten işlev (telefon dönünce aynı iş yeni yönde yeniden kurulur)
+   */
+  private kadrajK: KadrajKaynak = 'genel';
   private yakin = 1;
   private anim: Animation[] = [];
   /** kamera bitti (büyüteç kopyası tazelensin) */
@@ -239,22 +320,22 @@ export class Dunya {
   }
 
   /** Odayı hemen kurar (geçişsiz) */
-  kur(oda: Oda, kadraj: KadrajAdi | Kadraj = 'genel') {
+  kur(oda: Oda, kadraj: KadrajKaynak = 'genel') {
     this.oda?.el.remove();
     this.oda = oda;
     this.el.append(oda.el);
     this.resimBekle(oda);
-    this.kadraj = typeof kadraj === 'string' ? KADRAJ[kadraj] : kadraj;
+    this.kadrajK = kadraj;
     this.uygula(this.hesapla());
   }
 
   /** Yeni oda yandan kayarak gelir (yon 1: sağdan) */
-  async gec(oda: Oda, kadraj: KadrajAdi | Kadraj, yon: 1 | -1 = 1, ms = 900) {
+  async gec(oda: Oda, kadraj: KadrajKaynak, yon: 1 | -1 = 1, ms = 900) {
     const eski = this.oda;
     this.oda = oda;
     this.el.append(oda.el);
     this.resimBekle(oda);
-    this.kadraj = typeof kadraj === 'string' ? KADRAJ[kadraj] : kadraj;
+    this.kadrajK = kadraj;
     const k = this.hesapla();
     this.uygula(k);
     if (!eski || TEST_MODU || AZ_HAREKET) {
@@ -276,8 +357,8 @@ export class Dunya {
   }
 
   /** Kamerayı bir kadraja kaydırır (yalnız transform) */
-  async git(kadraj: KadrajAdi | Kadraj, ms = 1100, yakin = 1) {
-    this.kadraj = typeof kadraj === 'string' ? KADRAJ[kadraj] : kadraj;
+  async git(kadraj: KadrajKaynak, ms = 1100, yakin = 1) {
+    this.kadrajK = kadraj;
     this.yakin = yakin;
     const eski = this.kamera;
     const yeni = this.hesapla();
@@ -298,11 +379,20 @@ export class Dunya {
     this.kameraBitti?.();
   }
 
-  /** Ekran boyu değişince kadraj korunur */
+  /** Ekran boyu değişince kadraj korunur (işlevse yeni boya göre yeniden üretilir) */
   yenile() {
     if (!this.oda) return;
     this.uygula(this.hesapla());
     this.kameraBitti?.();
+  }
+
+  /** Oda yerinde yeniden dizildi (telefon döndü: calismaYenidenDiz): süren kamera kaydı durur, kamera yeni yerleşime */
+  odaYenilendi() {
+    if (!this.oda) return;
+    this.anim.forEach((a) => a.cancel());
+    this.anim = [];
+    this.resimBekle(this.oda);
+    this.yenile();
   }
 
   /** Oda oranındaki nokta → sahne (ekran) px */
@@ -329,11 +419,12 @@ export class Dunya {
     // Pencere çekimi (kadraj odanın üst şeridinde) hariç: pencere ince bir şerit, kelebek üst çubuğun altında kalmasın diye yaklaşılır
     // dikey bahçe çizimleri de (mantik2.ts → BAHCE_DIKEY) aynı: tam en, az yakınlık
     const id = this.oda?.id;
-    const dikeyOda = (id === 'calisma' && calismaDikey && this.kadraj[1] >= 0.05) || (!!id && id in BAHCE_DIKEY && BAHCE_DIKEY[id as BahceId]);
+    const k0 = typeof this.kadrajK === 'function' ? this.kadrajK() : this.kadrajK;
+    let kd = typeof k0 === 'string' ? KADRAJ[k0] : k0;
+    const dikeyOda = (id === 'calisma' && calismaDikey && kd[1] >= 0.05) || (!!id && id in BAHCE_DIKEY && BAHCE_DIKEY[id as BahceId]);
     // bahçe dikeyde hiç yaklaşmaz (ip ve gök görünsün); çalışma odası hafif
     if (dikeyOda) yakin = Math.min(yakin, id === 'calisma' ? 1.1 : 1);
     const enCok = yakinlikSiniri(this.dogalBoy(), window.devicePixelRatio || 1);
-    let kd = this.kadraj;
     if (dikeyOda) {
       // dikey odada kadraj en az odanın %70'i boyunda ve tam eninde: kamera hafif yaklaşır, halı / masa / Mino-Kino birlikte
       const [, y0, , y1] = kd;
