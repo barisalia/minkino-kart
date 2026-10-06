@@ -237,7 +237,7 @@ export function menuEkrani(app: Uygulama): Ekran {
       kinoOynat('sevin', 600);
       a.classList.add('secildi');
       // kart zıplar, sonra krem perde iner ve ses kısılır (src/ui/gecis.ts): oyuna bir anda kopmadan geçilir
-      zamanlar.push(window.setTimeout(() => sayfadanCik(() => location.assign(a.href)), sure(AZ_HAREKET ? 30 : 350)));
+      zamanlar.push(window.setTimeout(() => sayfadanCik(() => location.assign(a.href), a.href), sure(AZ_HAREKET ? 30 : 350)));
     });
     return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}`, { style: `--i:${i}` }, a);
   });

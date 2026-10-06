@@ -832,3 +832,34 @@
 }
 .ug-kok .ug-k-giysin { left: 50%; bottom: 2%; height: min(88cqh, 100cqw); transform: translateX(-50%); }
 
+/* ---------- Yatay telefon (uygulamada telefon hep yatay): kartlar ekranın boyunu doldurur, adlar iki satıra sığar ----------
+   (sol sütun biraz dar; ızgara en-boy oranına bağlı kalmaz, altta boş şerit kalmaz; çentik ve alt çubuk dışarıda) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    width: clamp(110px, 19vw, 220px);
+  }
+  .ug-kok .ug-izgara[data-adet='9'] {
+    width: 100%;
+    max-width: 1200px;
+    height: calc(100dvh - var(--ust) - var(--alt) - 8px);
+    aspect-ratio: auto;
+    gap: clamp(8px, 2.6dvh, 14px) clamp(8px, 1.5vw, 14px);
+    padding: 6px 0 8px;
+  }
+  .ug-kok .ug-izgara[data-adet='9'] .ug-kart-ad,
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.3em;
+    padding: 4px 1px 0;
+    font-size: clamp(12px, 12cqi, 1.05rem);
+    line-height: 1.08;
+    white-space: normal;
+  }
+  /* geniş Pasta'nın adı öbürleriyle aynı boy (kart iki hücre: cqi yarıya iner) */
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+    font-size: clamp(12px, 5.9cqi, 1.05rem);
+  }
+}
+

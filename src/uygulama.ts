@@ -35,7 +35,7 @@ export const anaMenuyeDon = () => {
   sayfadanCik(() => {
     if (menudenGelindi(menu)) history.back();
     else location.replace(sayfaAdresi(menu.href));
-  });
+  }, menu.href);
 };
 
 function menudenGelindi(menu: URL): boolean {

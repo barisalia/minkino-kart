@@ -4,7 +4,8 @@
  *
  * - Kayıtlar: `minkino-*` localStorage kayıtları @capacitor/preferences'a yansır; silinmişse geri yüklenir.
  * - Arka plan (@capacitor/app appStateChange): ses, müzik, konuşma ve mikrofon durur; geri gelince ses devam eder.
- * - Ekran yönü (@capacitor/screen-orientation): film yatay kilitler, çıkınca serbest (src/kabuk/yon.ts).
+ * - Ekran yönü (@capacitor/screen-orientation): telefonda geniş sahneli oyunlar yatay, öbür sayfalar serbest; tablet
+ *   serbest, film oynarken yatay (src/kabuk/yon.ts, src/kabuk/yon-yonetici.ts).
  * - Android geri tuşu (@capacitor/app backButton): pencere kapanır / oyundan ana menüye / ana menüden çıkış.
  */
 import { App } from '@capacitor/app';
@@ -12,11 +13,38 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { aynaDepo, aynala, geriYukle, kaliciMi, type KaliciDepo } from './kalici';
-import { ARKA_PLAN_OLAYI, GERI_OLAYI, geriKarari, menuSayfasiMi, YON_OLAYI, type Yon } from './yon';
+import { ARKA_PLAN_OLAYI, GERI_OLAYI, geriKarari, menuSayfasiMi, SAYFA_YON_OLAYI, YON_OLAYI, type SayfaYonIstegi, type Yon } from './yon';
+import { yonYoneticisi, type YonEklentisi } from './yon-yonetici';
 
 if (Capacitor.isNativePlatform()) kabuguKur();
 
 function kabuguKur() {
+  // ---------------------------------------------------------------- ekran yönü (önce: sayfa ilk çizilmeden)
+  // Telefonda geniş sahneli oyunlar (src/kabuk/yon.ts → YATAY_SAYFALAR) yatay kilitli, menü / Kartlar / Okul / Canlan
+  // cihazı izler; tablet her yerde serbest, film oynarken yatay. Sayfalar arası geçişte gidilecek sayfanın yönü krem
+  // perde inerken ayarlanır (src/ui/gecis.ts → sayfadanCik): yatay oyun dikey açılıp sonra dönmez; menüye dönünce kilit
+  // kalkar. Katlanan telefon açılınca tablet sayılır (her seferinde ekrana yeniden bakılır).
+  const gorunum = matchMedia('(orientation: landscape)');
+  const yon = yonYoneticisi({
+    eklenti: ScreenOrientation as unknown as YonEklentisi,
+    ekran: () => screen,
+    yatayMi: () => gorunum.matches,
+    yonDegisince: (fn) => {
+      gorunum.addEventListener('change', fn);
+      return () => gorunum.removeEventListener('change', fn);
+    },
+  });
+  void yon.sayfaAcildi(location.pathname);
+  // önbellekten geri açılan sayfa (history.back): kendi yönüne döner
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) void yon.sayfaAcildi(location.pathname);
+  });
+  window.addEventListener(YON_OLAYI, (e) => void yon.istek(location.pathname, (e as CustomEvent<Yon>).detail));
+  window.addEventListener(SAYFA_YON_OLAYI, (e) => {
+    const d = (e as CustomEvent<SayfaYonIstegi>).detail;
+    d.bekle.push(yon.gitmedenOnce(d.yol));
+  });
+
   // ---------------------------------------------------------------- kayıtlar → Preferences
   const kalici: KaliciDepo = {
     get: async (key) => (await Preferences.get({ key })).value,
@@ -146,15 +174,7 @@ function kabuguKur() {
       gidiliyor = true;
       const menu = new URL('/index.html', location.href).href;
       // krem perde + sesin kısılması (gecis.ts oyun kodunda zaten yüklü; kabuk açılışta ona bağlanmasın diye geç yüklenir)
-      void import('../ui/gecis').then((g) => g.sayfadanCik(() => location.assign(menu)), () => location.assign(menu));
+      void import('../ui/gecis').then((g) => g.sayfadanCik(() => location.assign(menu), menu), () => location.assign(menu));
     }
   });
-
-  // ---------------------------------------------------------------- ekran yönü
-  window.addEventListener(YON_OLAYI, (e) => {
-    const yon = (e as CustomEvent<Yon>).detail;
-    void (yon === 'yatay' ? ScreenOrientation.lock({ orientation: 'landscape' }) : ScreenOrientation.unlock()).catch(() => undefined);
-  });
-  // sayfa değişince (film sayfasından menüye) kilit kalmasın
-  window.addEventListener('pagehide', () => void ScreenOrientation.unlock().catch(() => undefined));
 }

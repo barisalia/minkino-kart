@@ -8,6 +8,7 @@
  */
 import { sus } from '../audio/konusma';
 import { anaSesiKis, seviyeleriUygula } from '../audio/motor';
+import { sayfaYonunuHazirla } from '../kabuk/yon';
 import { sure, TEST_MODU } from './dom';
 
 export const KREM = '#fff4dd';
@@ -86,12 +87,15 @@ function perdeyiAc(p: HTMLElement) {
 /**
  * Giden sayfa: krem perde iner, konuşma ve müzik yumuşakça kısılır, sonra `git` çağrılır (location.assign/replace,
  * history.back). Aynı anda ikinci çıkış yok sayılır.
+ * `hedef` (gidilecek adres) verilirse uygulamada o sayfanın ekran yönü perde inerken ayarlanır (src/kabuk/yon.ts):
+ * telefonda yatay oyuna giderken ekran perdenin ardında döner, oyun dikey açılıp sonra dönmez; menüye dönünce kilit kalkar.
  */
-export function sayfadanCik(git: () => void) {
+export function sayfadanCik(git: () => void, hedef?: string) {
   if (cikiliyor) return;
   cikiliyor = true;
   sus();
   anaSesiKis();
+  const yon = hedef ? sayfaYonunuHazirla(hedef) : Promise.resolve();
   if (TEST_MODU) {
     git();
     return;
@@ -99,7 +103,7 @@ export function sayfadanCik(git: () => void) {
   const p = perdeKur();
   void p.offsetWidth; // başlangıç opaklığı çizilsin, geçiş çalışsın
   p.style.opacity = '1';
-  window.setTimeout(git, sure(PERDE_MS));
+  window.setTimeout(() => void yon.then(git), sure(PERDE_MS));
 }
 
 // Önbellekten geri açılan sayfa (geri tuşu / history.back): inik kalan perde açılır, ses geri gelir

@@ -1,5 +1,6 @@
 /** Film oynatıcı: kapak (başlık + Oynat), oynatma (duraklat / devam, ses), sonda öğüt kartı */
 import { konus } from '../../src/audio/ses';
+import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { arkaPlanDinle, yonIste } from '../../src/kabuk/yon';
 import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
@@ -58,7 +59,8 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   };
   const ust = h('div.ust-cubuk.fl-ust', {}, yuvarlakDugme(IKON.geri, 'Çizgi Filmler', listeyeDon, 'kucuk'), h('div.ust-grup', {}, duraklatDugme, sesDugmesi()));
   const sahneKap = h('div.fl-sahne-kap');
-  const cevir = h('div.fl-cevir', { 'aria-hidden': 'true', html: CEVIR });
+  // "telefonu çevir" simgesi yalnız web sitesinde: uygulamada telefon hep yatay, tablette film yatay kilitler
+  const cevir = uygulamaPlatformu() ? null : h('div.fl-cevir', { 'aria-hidden': 'true', html: CEVIR });
   const el = h('div.fl-ekran', {}, sahneKap, cevir, kapak, ust);
 
   // zamanlayıcılar (ekrandan çıkınca temizlenir)
