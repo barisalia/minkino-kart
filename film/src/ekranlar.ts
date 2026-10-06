@@ -9,7 +9,8 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import { Film, KAYIT, konusSecenegi, sesGunlugeYaz, type FilmDosya } from './motor';
 import { katalog } from './katalog';
-import { filmMuzik, KAPANIS_SURESI } from './muzik';
+import { dosyaTamponu, filmMuzik, KAPANIS_SURESI } from './muzik';
+import { baglam } from '../../src/audio/motor';
 import { acilisKur, acilisOnYukle, type Acilis } from './acilis';
 
 /** Jenerikler (film-acilis / film-kapanis) film müziğiyle birlikte: test modunda kapalı, süreler film hızıyla kısalır */
@@ -64,8 +65,12 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   const el = h('div.fl-ekran', {}, sahneKap, cevir, kapak, ust);
 
   // zamanlayıcılar (ekrandan çıkınca temizlenir)
+  // kapandıktan sonra yeni zamanlayıcı kurulmaz (ör. öğüt konuşması ekrandan çıkınca çözülür: jenerik sonraki ekranda çalmasın)
+  let kapandi = false;
   const zamanlar: number[] = [];
-  const sonra = (sn: number, is: () => void) => void zamanlar.push(window.setTimeout(is, sn * 1000));
+  const sonra = (sn: number, is: () => void) => {
+    if (!kapandi) zamanlar.push(window.setTimeout(is, sn * 1000));
+  };
 
   /** Kapanış jeneriği (film-kapanis, 5 sn): öğüt söylendikten sonra; bitince ekran "tamam" olur (MP4 kaydı bununla biter) */
   const kapanisJenerigi = (bekle: number) => {
@@ -121,6 +126,9 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   let acilis: Acilis | null = null;
   // açılışın büyük resimleri kapak ekranındayken inmeye başlar (Oynat'a basılınca sahne boş kalmasın)
   acilisOnYukle();
+  // jenerikler de önceden çözülür (geç inen jenerik atlandıktan sonra çalmasın, açılış kartıyla aynı anda başlasın)
+  const sb = MUZIK ? baglam() : null;
+  if (sb) for (const j of ['film-acilis', 'film-kapanis']) void dosyaTamponu(sb, j);
   const basla = () => {
     kapak.classList.add('gizli');
     // ?kartsiz=1: açılış ve jenerik atlanır (geliştirme / ekran görüntüsü; ürün oynatmasında yok)
@@ -137,6 +145,7 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   return {
     el,
     kapat() {
+      kapandi = true;
       yonIste('serbest');
       arkaPlanBirak();
       zamanlar.forEach((z) => clearTimeout(z));
