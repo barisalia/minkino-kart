@@ -133,9 +133,9 @@ function parcalar(m, W, Y, enAz) {
 const sadece = (et, id) => Uint8Array.from(et, (v) => (v === id ? 1 : 0));
 
 async function sahne(ad, girdi) {
-  // yatay 1920 × 1072, dikey (ortadan 9:16) 1080 × 1920
+  // yatay tam çözünürlük (en çok 2752; DPR 3 telefon için), dikey (ortadan 9:16) 1080 × 1920
   const m = await sharp(H + girdi).metadata();
-  await sharp(H + girdi).resize(1920).webp(Q).toFile(`${C}${ad}-yatay.webp`);
+  await sharp(H + girdi).resize(Math.min(m.width, 2752)).webp(Q).toFile(`${C}${ad}-yatay.webp`);
   const w = Math.round((m.height * 9) / 16);
   await sharp(H + girdi).extract({ left: Math.round((m.width - w) / 2), top: 0, width: w, height: m.height }).resize(1080, 1920).webp(Q).toFile(`${C}${ad}-dikey.webp`);
   console.log(ad, 'yatay + dikey');
@@ -299,7 +299,8 @@ async function pencereKatmanlari(m) {
 /** Dış sahne: yatay 1920 × 1072; dikey 1080 × 1920 (ortası `orta` oranında: sahnenin olay yeri) */
 async function sahneOrta(ad, girdi, orta = 0.5) {
   const m = await sharp(H + girdi).metadata();
-  await sharp(H + girdi).resize(1920).webp(Q).toFile(`${C}${ad}-yatay.webp`);
+  // telefon önce: yatay tam çözünürlük (DPR 3 telefonda 844 px genişlik = 2532 cihaz pikseli; 1920 bulanık kalır)
+  await sharp(H + girdi).resize(Math.min(m.width, 2752)).webp(Q).toFile(`${C}${ad}-yatay.webp`);
   const w = Math.round((m.height * 9) / 16);
   const sol = Math.max(0, Math.min(m.width - w, Math.round(m.width * orta - w / 2)));
   await sharp(H + girdi).extract({ left: sol, top: 0, width: w, height: m.height }).resize(1080, 1920).webp(Q).toFile(`${C}${ad}-dikey.webp`);
@@ -491,6 +492,16 @@ async function mevsimler() {
 
 (async () => {
   if (process.argv[2] === 'mevsim') return mevsimler();
+  if (process.argv[2] === 'keskin') {
+    // telefon önce: oda ve dört dış sahnenin yatay hâli tam çözünürlükte (DPR 3)
+    // oda: boş oda çizimi (ham'da kaynağı yok) crisp_upscale ile büyütüldü: ham/oda-buyuk.png → oda-yatay
+    if (fs.existsSync(H + 'oda-buyuk.png')) await sharp(H + 'oda-buyuk.png').resize(2752).webp(Q).toFile(C + 'oda-yatay.webp');
+    await sahne('dis-kis', 'dis-kis-tepe.png');
+    await sahneOrta('dis-ilkbahar', 'dis-ilkbahar-cicekli-bahce.png', 0.5);
+    await sahneOrta('dis-yaz', 'dis-yaz-plaj.png', 0.5);
+    await sahneOrta('dis-sonbahar', 'dis-sonbahar-yagmurlu-sokak.png', 0.6);
+    return;
+  }
   if (process.argv[2] === 'tutulan') return tutulanlar();
   if (process.argv[2] === 'gemini') return gemini();
   if (process.argv[2] === 'gemini2') return gemini2();
