@@ -5,7 +5,7 @@
  */
 import { efekt, konus } from '../audio/ses';
 import { metin } from '../audio/metin';
-import { h, svg, TEST_MODU } from './dom';
+import { h, perdeyeDokununca, svg, TEST_MODU } from './dom';
 import { sinifOynat } from './hareket';
 import { IKON } from './ikonlar';
 import { yuvarlakDugme } from './ortak';
@@ -170,7 +170,8 @@ export function ebeveynKapisiAc(kok: HTMLElement, o: { sesli?: boolean } = {}): 
       tuslar,
     );
     const perde = h('div.perde.kapi-perde', { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Ebeveyn kapısı' }, pencere);
-    perde.addEventListener('click', (e) => e.target === perde && bitir(false));
+    // köşe düğmesine çift dokununca ikinci dokunuş açılan kapıyı hemen kapatmasın
+    perdeyeDokununca(perde, () => bitir(false));
     kok.append(perde);
     yaz('');
     // önceki açılışta dinlenmeye girildiyse süre bitene kadar sürer

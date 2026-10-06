@@ -58,9 +58,14 @@ test('Aile politikası: kilitli oyuna dokununca abonelik ekranı kapısız asla 
     await expect(page.locator('.ab-perde')).toHaveCount(0);
   }
 
-  // perdeye dokunmak ve Esc de kapatır (abonelik açılmaz)
-  await page.locator('.ug-kart[data-oyun="canlan"]').click();
+  // çift dokunuş: ikinci dokunuş perdeye düşse de kilit anı hemen kapanmaz (açılıştan sonraki ilk 600 ms)
+  const kart = (await page.locator('.ug-kart[data-oyun="canlan"]').boundingBox())!;
+  await page.mouse.click(kart.x + kart.width / 2, kart.y + kart.height / 2);
+  await page.mouse.click(5, 5);
   await kilitAniGorunur(page);
+  await expect(page.locator('.kl-perde.cikiyor')).toHaveCount(0);
+  // perdeye dokunmak ve Esc de kapatır (abonelik açılmaz)
+  await page.waitForTimeout(650);
   await page.mouse.click(5, 5);
   await expect(page.locator('.kl-perde')).toHaveCount(0);
   await page.locator('.ug-kart[data-oyun="canlan"]').click();
@@ -68,6 +73,14 @@ test('Aile politikası: kilitli oyuna dokununca abonelik ekranı kapısız asla 
   await page.keyboard.press('Escape');
   await expect(page.locator('.kl-perde')).toHaveCount(0);
   await expect(page.locator('.ab-perde')).toHaveCount(0);
+  // ebeveyn kapısı da: köşe düğmesine çift dokununca kapı açık kalır
+  const kapiDugme = (await page.locator('.ug-kapi').boundingBox())!;
+  await page.mouse.click(kapiDugme.x + kapiDugme.width / 2, kapiDugme.y + kapiDugme.height / 2);
+  await page.mouse.click(5, 5);
+  await expect(page.locator('.ebeveyn-kapisi')).toBeVisible();
+  await page.waitForTimeout(650);
+  await page.mouse.click(5, 5);
+  await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
 
   // "Büyükler için" → yalnız ebeveyn kapısı (abonelik ekranı yok); kapı kapatılırsa abonelik hiç açılmaz
   await page.locator('.ug-kart[data-oyun="pazar"]').click();

@@ -48,6 +48,14 @@ export function paketEl(t: Tema, i = 0): HTMLElement {
 export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string; mod?: 'hafiza' }): Ekran {
   kartResimleriniYukle();
   let kilit = false;
+  /** Bekleyen oyuna geçiş ("X! Başlıyoruz!" sürerken): ekrandan çıkılınca ya da ebeveyn kapısı açılınca iptal */
+  let gidis = 0;
+  let iptal: (() => void) | null = null;
+  const gidisiIptalEt = () => {
+    gidis++;
+    iptal?.();
+    iptal = null;
+  };
   const hafizaModu = param?.mod === 'hafiza';
   const izgara = h('div.tema-izgara');
   TEMALAR.forEach((t, i) => {
@@ -65,8 +73,17 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string; mod?
       }
       kilit = true;
       efekt.secim();
+      const parlaktiMi = el.classList.contains('yeni-acildi');
       el.classList.add('yeni-acildi');
+      const benim = ++gidis;
+      iptal = () => {
+        kilit = false;
+        if (!parlaktiMi) el.classList.remove('yeni-acildi');
+      };
       await Promise.all([konus(metin('tema_basla', { tema: t.ad })), bekle(sure(700))]);
+      // bu arada Ana ekran / Albüm / Ebeveyn köşesine basıldıysa oyuna geçilmez
+      if (benim !== gidis) return;
+      iptal = null;
       app.git(hafizaModu ? 'hafiza' : 'oyun', { tema: t.id });
     });
     izgara.append(el);
@@ -91,6 +108,8 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string; mod?
 
   const album = albumDugmesi(() => app.git('album'));
   const ebeveyn = yuvarlakDugme(IKON.ebeveyn, 'Ebeveyn köşesi', async () => {
+    // kapı açılırken bekleyen oyuna geçiş iptal (oyun kapının altında başlamasın)
+    gidisiIptalEt();
     if (await ebeveynKapisi(app)) app.git('ebeveyn');
   }, 'kucuk');
 
@@ -107,5 +126,11 @@ export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string; mod?
     h('div.kaydir', {}, hafizaSerit, izgara),
   );
   void konus(hafizaModu ? [metin('hafiza_oyunu'), metin('tema_sor')] : metin('tema_sor'));
-  return { el };
+  return {
+    el,
+    kapat() {
+      // başka ekrana geçildi (Ana ekran, Albüm): bekleyen oyuna geçiş yapılmaz
+      gidisiIptalEt();
+    },
+  };
 }

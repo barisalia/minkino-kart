@@ -75,6 +75,17 @@ export function denemeGunu(birim: string | undefined, sayi: number | undefined):
   return null;
 }
 
+/**
+ * Ekranda gösterilecek deneme (gün; yoksa null). iOS'ta ürünün denemesi her kullanıcıya açık değildir (daha önce
+ * deneyen Apple Kimliği hemen öder): `uygun` mağazanın bu kullanıcı için cevabıdır, yalnız açıkça true ise deneme
+ * gösterilir; bilinmiyorsa deneme vaat edilmez. Android'de mağaza zaten yalnız hakkı olan teklifi verir.
+ */
+export function gosterilecekDeneme(gun: number | null, ios: boolean, uygun: boolean | undefined): number | null {
+  if (!gun) return null;
+  if (ios && uygun !== true) return null;
+  return gun;
+}
+
 /** Yıllık fiyatın aylığı (mağaza vermezse): para birimiyle biçimlenir */
 export function ayaBol(fiyat: number, paraBirimi: string): string | null {
   if (!(fiyat > 0) || !paraBirimi) return null;

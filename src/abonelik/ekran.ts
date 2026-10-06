@@ -125,7 +125,8 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     const planEl: Record<PlanId, HTMLButtonElement> = { aylik: planDugme('aylik'), yillik: planDugme('yillik') };
     const planKutu = h('div.ab-planlar', { role: 'radiogroup', 'aria-label': 'Planlar' }, planEl.aylik, planEl.yillik);
     const deneme = h('p.ab-deneme');
-    const basla = h('button.dugme.ab-basla', { type: 'button', disabled: true }, 'Ücretsiz denemeyi başlat');
+    // deneme yazısı yalnız mağaza bu kullanıcının hakkı olduğunu söyleyince (planGoster)
+    const basla = h('button.dugme.ab-basla', { type: 'button', disabled: true }, 'Abone ol');
     const sonraYazi = h('p.ab-sonra');
     const durumYazi = h('p.ab-durum', { role: 'status', 'aria-live': 'polite' });
     const geriYukle = h('button.ab-geri-yukle', { type: 'button' }, 'Satın alımları geri yükle');
@@ -146,8 +147,11 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         b.setAttribute('aria-label', `${PLAN_AD[id]}: ${fiyat} / ${DONEM[id]}`);
       }
       if (!p) {
-        deneme.textContent = `${YEDEK_DENEME_GUN} gün ücretsiz deneme`;
-        deneme.hidden = false;
+        // mağaza yokken (web, "Yakında") bilgi olarak; mağaza yüklenirken ya da ulaşılamazken deneme vaat edilmez
+        // (bu kullanıcının deneme hakkı bilinmiyor)
+        const bilgi = el.dataset.durum === 'yakinda';
+        deneme.textContent = bilgi ? `${YEDEK_DENEME_GUN} gün ücretsiz deneme` : '';
+        deneme.hidden = !bilgi;
         return;
       }
       const gun = p.denemeGun;

@@ -1,7 +1,7 @@
 /**
  * Test için sahte satın alma (yalnız ?test=1&uygulama=ios|android). Mağazaya ya da RevenueCat'e hiç gitmez.
  * Seçenekler (adres): &satin=iptal (kullanıcı vazgeçer), &satin=hata, &magaza=yok (planlar yüklenemez),
- * &premium=1 (açılışta abone). Çağrılar window.__sahteSatin.cagrilar'a yazılır (e2e denetler).
+ * &deneme=yok (deneme hakkı yok), &premium=1 (açılışta abone). Çağrılar window.__sahteSatin.cagrilar'a yazılır (e2e denetler).
  */
 import type { PlanId, Saglayici } from './satin';
 
@@ -24,9 +24,11 @@ export function sahteSaglayici(): Saglayici {
       await bekle();
       if (q.get('magaza') === 'yok') throw new Error('mağaza yok (sahte)');
       // mağazanın döndüreceği biçimde (yerel fiyat metni); değerler Barış'ın fiyatları
+      // &deneme=yok: bu kullanıcının deneme hakkı yok (iOS'ta denemeyi daha önce kullanmış Apple Kimliği)
+      const denemeGun = q.get('deneme') === 'yok' ? null : 7;
       return [
-        { id: 'aylik', fiyat: '₺99,00', ayBasi: null, denemeGun: 7 },
-        { id: 'yillik', fiyat: '₺499,00', ayBasi: '₺41,58', denemeGun: 7 },
+        { id: 'aylik', fiyat: '₺99,00', ayBasi: null, denemeGun },
+        { id: 'yillik', fiyat: '₺499,00', ayBasi: '₺41,58', denemeGun },
       ];
     },
     async satinAl(id: PlanId) {

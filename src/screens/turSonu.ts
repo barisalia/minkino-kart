@@ -2,6 +2,7 @@ import { efekt, konus } from '../audio/ses';
 import { buyukHarfBas, metin, sayiAdi } from '../audio/metin';
 import { temaBul } from '../engine/katalog';
 import { durum, kaydetDurum } from '../engine/ilerleme';
+import { kutlanacakTemalar } from '../engine/odul';
 import { bekle, h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { konfetiPatlat } from '../ui/konfeti';
@@ -65,7 +66,8 @@ export function turSonuEkrani(app: Uygulama, p: TurSonucu): Ekran {
     p.yeniKartlar.forEach((_, i) => setTimeout(() => !kapandi && efekt.yapis(), sure(500 + i * 260 + 380)));
     await Promise.all([konusma, bekle(sure(600 + p.yeniKartlar.length * 260))]);
     if (kapandi) return;
-    for (const id of p.acilanTemalar) {
+    // bu turda açılanlar ve önceki turlarda kutlaması kaçırılanlar (erken "Tekrar oyna", tur ortasında çıkış)
+    for (const id of kutlanacakTemalar(p.acilanTemalar, durum.i.album.length, durum.i.premium, durum.i.kutlananTemalar)) {
       if (durum.i.kutlananTemalar.includes(id)) continue;
       durum.i.kutlananTemalar.push(id);
       kaydetDurum();

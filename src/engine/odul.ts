@@ -53,3 +53,19 @@ export function temaDurumu(t: Tema, albumSayisi: number, premium: boolean, abone
 export function yeniAcilanlar(onceki: number, sonraki: number, premium: boolean): Tema[] {
   return TEMALAR.filter((t) => temaDurumu(t, onceki, premium).acik === false && temaDurumu(t, sonraki, premium).acik);
 }
+
+/**
+ * Kartla açılmış ama "Yeni paket açıldı!" kutlaması henüz yapılmamış temalar (kimlikleri). Çocuk tur sonunda
+ * kutlamadan önce "Tekrar oyna"ya basarsa ya da eşiği tur ortasında geçip çıkarsa kutlama kaybolmasın: bir sonraki
+ * tur sonunda gösterilir. Baştan açık temalar sayılmaz.
+ */
+export function kutlanmamisAcilanlar(albumSayisi: number, premium: boolean, kutlanan: readonly string[]): string[] {
+  return yeniAcilanlar(0, albumSayisi, premium)
+    .map((t) => t.id)
+    .filter((id) => !kutlanan.includes(id));
+}
+
+/** Tur sonunda kutlanacaklar: bu turda açılanlar önce, sonra önceden kutlanamamış olanlar (her biri bir kez) */
+export function kutlanacakTemalar(buTur: readonly string[], albumSayisi: number, premium: boolean, kutlanan: readonly string[]): string[] {
+  return [...new Set([...buTur, ...kutlanmamisAcilanlar(albumSayisi, premium, kutlanan)])].filter((id) => !kutlanan.includes(id));
+}

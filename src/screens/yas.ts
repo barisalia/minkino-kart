@@ -11,6 +11,8 @@ const RENK: Record<Yas, string> = { 3: '#F0413F', 4: '#3E9DF2', 5: '#5DBE3F', 6:
 
 export function yasEkrani(app: Uygulama, param?: { sonra?: string; sonraParam?: unknown }): Ekran {
   let kilit = false;
+  /** Geri'ye basılıp ekrandan çıkıldıysa bekleyen geçiş yapılmaz */
+  let kapandi = false;
   const izgara = h('div.yas-izgara');
   YASLAR.forEach((y, i) => {
     const mumlar = h('div.mumlar');
@@ -29,6 +31,7 @@ export function yasEkrani(app: Uygulama, param?: { sonra?: string; sonraParam?: 
       durum.i.yas = y;
       kaydetDurum();
       await Promise.all([konus(metin('yas_secildi', { yas: y })), bekle(sure(900))]);
+      if (kapandi) return;
       app.git(param?.sonra ?? 'temalar', param?.sonraParam);
     });
     izgara.append(kart);
@@ -47,5 +50,10 @@ export function yasEkrani(app: Uygulama, param?: { sonra?: string; sonraParam?: 
     izgara,
   );
   void konus([durum.i.album.length ? '' : metin('acilis'), metin('yas_sor')]);
-  return { el };
+  return {
+    el,
+    kapat() {
+      kapandi = true;
+    },
+  };
 }
