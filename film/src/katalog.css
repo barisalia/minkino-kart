@@ -364,7 +364,7 @@
   border-radius: 999px;
   background: rgba(30, 26, 46, 0.72);
   color: #fff;
-  font-size: clamp(0.85rem, 3.2vw, 1rem);
+  font-size: clamp(0.95rem, 3.9vw, 1.05rem);
 }
 .fl-kok .fl-k-sure svg,
 .fl-kok .fl-k-ogut svg {
@@ -405,7 +405,7 @@
   background: color-mix(in srgb, var(--r) 16%, white);
   border: 2.5px solid color-mix(in srgb, var(--r) 55%, var(--kontur));
   color: color-mix(in srgb, var(--r) 35%, var(--kontur));
-  font-size: clamp(0.85rem, 3.4vw, 1.05rem);
+  font-size: clamp(0.95rem, 4vw, 1.1rem);
   white-space: nowrap;
 }
 .fl-kok .fl-k-ogut .ikon {

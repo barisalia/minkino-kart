@@ -745,3 +745,9 @@ body[data-kayit] .fl-kok .fl-karaoke.ust {
   height: 56px;
   font-size: 26px;
 }
+/* telefonda parmak payı: görünen 56 px, dokunma alanı 76 px (.yuvarlak.kucuk gibi) */
+.fl-kok .fl-ust .yuvarlak::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
