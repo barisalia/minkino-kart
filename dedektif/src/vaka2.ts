@@ -24,8 +24,8 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import D from '../../content/dedektif.json';
 import { DosyaSeridi } from './dosya';
-import { AZ_HAREKET, Dunya, type Oda } from './dunya';
-import { bahceGolet, bahceIp, bahceKur, bahceYol, Ruzgar } from './dunya2';
+import { AZ_HAREKET, Dunya, type KadrajKaynak, type Oda } from './dunya';
+import { bahceGolet, bahceIp, bahceKur, bahceYenidenDiz, bahceYol, Ruzgar } from './dunya2';
 import { Efekt, oynat, parmak, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
 import { Dosya, izNotasi, K, M, ODA_H, odaW, YARDIM, type IpucuTanim, type Kadraj } from './mantik';
@@ -139,6 +139,10 @@ class Vaka2 {
   private rnd: () => number;
   private bulusSayisi = 0;
   private ortak: Ortak;
+  /** ekran boyu değişince (dönüş) o anki işin ek düzeltmesi (renk izinde: sıradaki kırmızı kadraja) */
+  private boyutSonrasi: (() => void) | null = null;
+  /** finalde Kino'nun önüne konan atkı (ekran px): dönünce ekranın içinde kalsın */
+  private atkiTasi: HTMLElement | null = null;
 
   constructor(
     private app: Uygulama,
@@ -201,8 +205,19 @@ class Vaka2 {
     this.buyutec.goster(false);
     this.dunya.kameraBitti = () => this.buyutec.yenile();
     const boyut = () => {
-      this.dunya.yenile();
+      // telefon vakanın ortasında döndü (web sitesinde yön serbest): bahçe bölümleri yeni yönün yerleşimine geçer;
+      // kamera aynı işi yeni yerde gösterir: ipuçları, iz parçaları ve çalılar ekranda kalır
+      const degisen = [this.ip, this.yol, this.golet].filter((o) => bahceYenidenDiz(o));
+      if (degisen.length) this.dunyadakileriDiz();
+      if (this.dunya.oda && degisen.includes(this.dunya.oda)) this.dunya.odaYenilendi();
+      else this.dunya.yenile();
       this.buyutec.yenile();
+      // (bir kare sonra: az hareket ayarında da her değişimin kısa bir geçişi var; ölçüm yeni yeri görsün)
+      requestAnimationFrame(() => {
+        if (this.kapali) return;
+        this.boyutSonrasi?.();
+        this.atkiSigdir();
+      });
     };
     window.addEventListener('resize', boyut);
     this.temizlik.push(() => window.removeEventListener('resize', boyut));
@@ -259,11 +274,18 @@ class Vaka2 {
     const { w, h: hh } = this.dunya.boyut;
     return w < hh * 1.15;
   }
-  /** Dar ekranda kamerayı oda oranındaki bir x'e ortalar (kadrajın dikeyi korunur); genişte kadraj aynen */
-  private ortala(x: number, k: Kadraj, yari = 0.1): Kadraj {
-    // dikey bahçe çizimi ekran oranında: kamera kadrajın tam eninde (dunya.ts), x'e ortalamaya gerek yok
-    if (!this.dar() || (this.dunya.oda && BAHCE_DIKEY[this.dunya.oda.id as BahceId])) return k;
-    return [x - yari, k[1], x + yari, k[3]];
+  /**
+   * Dar ekranda kamerayı oda oranındaki bir x'e ortalar (kadrajın dikeyi korunur); genişte kadraj aynen. İşlev döner
+   * (x ve kadraj da işlev: tablolar dönüşte yerinde değişir): kamera her hesapta, telefon dönünce de, yeniden kurar.
+   */
+  private ortala(x: () => number, k: () => Kadraj, yari = 0.1): () => Kadraj {
+    return () => {
+      const kd = k();
+      // dikey bahçe çizimi ekran oranında: kamera kadrajın tam eninde (dunya.ts), x'e ortalamaya gerek yok
+      if (!this.dar() || (this.dunya.oda && BAHCE_DIKEY[this.dunya.oda.id as BahceId])) return kd;
+      const cx = x();
+      return [cx - yari, kd[1], cx + yari, kd[3]];
+    };
   }
   /** Bu çekimde Mino'nun kutu genişliği dünya biriminde (dünyadaki karakterler buna göre boylanır) */
   private minoDunyaW() {
@@ -275,7 +297,7 @@ class Vaka2 {
     return this.golet;
   }
   /** Odaya geçer (zaten oradaysa yalnız kamera) */
-  private async odaya(oda: Oda, kd: Kadraj, yon: 1 | -1 = 1) {
+  private async odaya(oda: Oda, kd: KadrajKaynak, yon: 1 | -1 = 1) {
     this.ruzgar.es(oda, oda.id === 'bahce-ip' ? 1.1 : 0.45);
     if (this.dunya.oda === oda) return this.dunya.git(kd, 1000);
     ses.vuus();
@@ -308,7 +330,7 @@ class Vaka2 {
   private async giris() {
     const { oy, dunya } = this;
     this.adim('giris');
-    dunya.kur(this.ip, this.ortala(0.5, KADRAJ2.giris, 0.12));
+    dunya.kur(this.ip, this.ortala(() => 0.5, () => KADRAJ2.giris, 0.12));
     this.ruzgar.es(this.ip, 1.4);
     this.ip.e.mandallar?.classList.add('dd-ruzgarli');
     const giris = -Math.min(460, window.innerWidth * 0.55);
@@ -321,7 +343,7 @@ class Vaka2 {
     if (this.kapali) return;
     oy.kinoIfade('saskin', 1200);
     ses.pop();
-    void dunya.git(this.ortala(IP.atki.x, KADRAJ2.ip, 0.12), 900);
+    void dunya.git(this.ortala(() => IP.atki.x, () => KADRAJ2.ip, 0.12), 900);
     await this.bekle(450);
     // atkı yok: üzgün poz (atkısız boynu), mandallar boş sallanır
     void oy.kinoPozu.goster('kino-uzgun');
@@ -403,10 +425,17 @@ class Vaka2 {
   }
 
   /** Arama kadrajı: yatayda halkanın kadrajı; dikeyde ipuçlarının ortasına dar bir dilim */
-  private aramaKadraji(hk: Halka2): Kadraj {
-    if (!this.dar() || !hk.ipuclari.length) return hk.kadraj;
-    const xs = hk.ipuclari.map((t) => t.x);
-    return this.ortala((Math.min(...xs) + Math.max(...xs)) / 2, hk.kadraj, 0.12);
+  private aramaKadraji(hk: Halka2): () => Kadraj {
+    // (işlev: telefon dönünce kadraj yeni yöne ve yerleşime göre yeniden kurulur, ipuçları ekranda kalır)
+    const orta = this.ortala(
+      () => {
+        const xs = hk.ipuclari.map((t) => t.x);
+        return (Math.min(...xs) + Math.max(...xs)) / 2;
+      },
+      () => hk.kadraj,
+      0.12,
+    );
+    return () => (!this.dar() || !hk.ipuclari.length ? hk.kadraj : orta());
   }
 
   /** Makas kartı: perde aralanır, ip boydan boya parlar (kesik yok) */
@@ -467,7 +496,7 @@ class Vaka2 {
     const atki = ani?.querySelector<HTMLElement>('.dd-ani-atki');
     if (!ani || !atki) return;
     this.adim('canlandir');
-    await dunya.git(this.ortala(IP.atki.x, KADRAJ2.ip, 0.12), 800);
+    await dunya.git(this.ortala(() => IP.atki.x, () => KADRAJ2.ip, 0.12), 800);
     if (this.kapali) return;
     ani.classList.add('acik');
     await this.bekle(500);
@@ -722,9 +751,9 @@ class Vaka2 {
     this.serit.aktif('renk');
     oy.yerlesim('iki');
     const iz = new RenkIzi(YOL_PARCALARI);
-    const ilkKirmizi = YOL_PARCALARI[iz.siradaki ?? 0];
+    const ilk = iz.siradaki ?? 0;
     dunya.darYakin = null;
-    await this.odaya(this.yol, this.ortala(ilkKirmizi.x + 0.02, hk.kadraj, 0.12), 1);
+    await this.odaya(this.yol, this.ortala(() => YOL_PARCALARI[ilk].x + 0.02, () => hk.kadraj, 0.12), 1);
     if (this.kapali) return;
     // Ada çalıların önünde: boyu bu çekimde Mino'ya göre
     this.ada.boyla(this.minoDunyaW());
@@ -774,8 +803,10 @@ class Vaka2 {
         const k = this.el.getBoundingClientRect();
         const x = r.left - k.left + r.width / 2;
         if (Math.abs(x - k.width / 2) < k.width * 0.22) return;
-        void dunya.git(this.ortala(YOL_PARCALARI[i].x + 0.03, hk.kadraj, 0.12), 700);
+        void dunya.git(this.ortala(() => YOL_PARCALARI[i].x + 0.03, () => hk.kadraj, 0.12), 700);
       };
+      // telefon dönünce sıradaki kırmızı yeniden kadraja alınır
+      this.boyutSonrasi = kameraSiradaki;
       const tikla = async (e: Event) => {
         const el = e.currentTarget as HTMLElement;
         const i = Number(el.dataset.parca);
@@ -829,6 +860,7 @@ class Vaka2 {
         clearInterval(yardim);
         sakin();
         parcalar.forEach((el) => el.removeEventListener('click', h1));
+        this.boyutSonrasi = null;
         coz();
       };
       this.temizlik.push(() => clearInterval(yardim));
@@ -849,8 +881,9 @@ class Vaka2 {
   /** Mavi ipe dokunuldu: kamera Ada'ya kayar, Ada balonunu sallar: "O benim balonumun ipi!" */
   private async adaGoster() {
     const { dunya, oy } = this;
-    const geri = this.dar() ? this.ortala(ADA_YERI.x, halka2('renk').kadraj, 0.12) : null;
-    const kd: Kadraj = this.dar() ? this.ortala(ADA_YERI.x, [0, 0.42, 1, 1], 0.12) : [0.1, 0.42, 0.55, 1];
+    // (işlevler: telefon dönünce yeni yöne göre yeniden kurulur)
+    const adaya = this.ortala(() => ADA_YERI.x, () => [0, 0.42, 1, 1], 0.12);
+    const kd = (): Kadraj => (this.dar() ? adaya() : [0.1, 0.42, 0.55, 1]);
     this.adim('ada');
     await dunya.git(kd, 700);
     if (this.kapali) return;
@@ -862,8 +895,9 @@ class Vaka2 {
     oy.konukBagla(null, this.ada.kutu);
     if (this.kapali) return;
     const iz = YOL_PARCALARI.findIndex((p, i) => p.tur === 'kirmizi' && !this.yol.e.parcalar.querySelector(`[data-parca="${i}"]`)?.classList.contains('dd-alindi'));
-    const hedef = iz >= 0 ? this.ortala(YOL_PARCALARI[iz].x + 0.02, halka2('renk').kadraj, 0.12) : (geri ?? halka2('renk').kadraj);
-    await dunya.git(this.dar() ? hedef : halka2('renk').kadraj, 700);
+    // dar ekranda sıradaki kırmızıya (kalmadıysa Ada'ya) döner; genişte halkanın kadrajı
+    const hedef = this.ortala(() => (iz >= 0 ? YOL_PARCALARI[iz].x + 0.02 : ADA_YERI.x), () => halka2('renk').kadraj, 0.12);
+    await dunya.git(hedef, 700);
     this.adim('renk-izi');
   }
 
@@ -876,7 +910,7 @@ class Vaka2 {
     dunya.darYakin = null;
     const soru = new SesSorusu(CALILAR);
     const calilar = CALILAR.map((_, i) => this.golet.e[`cali-${i}`]);
-    const kd = (i: number) => this.ortala((CALILAR[i].x0 + CALILAR[i].x1) / 2, KADRAJ2.calilar, 0.1);
+    const kd = (i: number) => this.ortala(() => (CALILAR[i].x0 + CALILAR[i].x1) / 2, () => KADRAJ2.calilar, 0.1);
     if (dogrudan) dunya.kur(this.golet, kd(0));
     else await this.odaya(this.golet, kd(0), 1);
     if (this.kapali) return;
@@ -1065,10 +1099,45 @@ class Vaka2 {
   }
 
   /** Final çekimi: yuva ortada (dikeyde yuva biraz sağda: Vakvak Anne solunda, Kino sağ önde) */
-  private finalKadraj(): Kadraj {
-    // dikeyde yakın (gök yarım ekranı kaplamasın): yuva, Vakvak Anne ve çalı ekranı doldurur
-    this.dunya.darYakin = this.dar() ? 1.5 : null;
-    return this.dar() ? this.ortala(YUVA.x - 0.03, KADRAJ2.final, 0.1) : KADRAJ2.final;
+  private finalKadraj(): () => Kadraj {
+    // dikeyde yakın (gök yarım ekranı kaplamasın): yuva, Vakvak Anne ve çalı ekranı doldurur (yalnız dar ekranda etkili)
+    this.dunya.darYakin = 1.5;
+    // (işlev: genişte final kadrajı aynen; telefon dönünce yeni yöne göre yeniden kurulur)
+    return this.ortala(() => YUVA.x - 0.03, () => KADRAJ2.final, 0.1);
+  }
+
+  /** Bahçe dönüşte yeniden dizildi: vakanın dünyaya koyduğu Ada, Vakvak Anne ve yuva yeni yerlerine */
+  private dunyadakileriDiz() {
+    const W = odaW('bahce-yol');
+    const WG = odaW('bahce-golet');
+    for (const [el, x, y, w] of [
+      [this.ada.kap, ADA_YERI.x, ADA_YERI.y, W],
+      [this.ordek.kap, YUVA.x, YUVA.y, WG],
+      [this.yuvaKap, YUVA.x, YUVA.y, WG],
+    ] as const) {
+      el.style.left = px(x * w);
+      el.style.top = px(y * ODA_H);
+    }
+    // boyları da yeni çekimde Mino'ya göre (ilk açılıştaki gibi); kamera yerleşince
+    requestAnimationFrame(() => {
+      if (this.kapali) return;
+      if (this.ada.kap.classList.contains('acik')) this.ada.boyla(this.minoDunyaW());
+      if (this.ordek.kap.classList.contains('acik')) {
+        this.ordek.boyla(this.minoDunyaW());
+        this.yuvaBoyla();
+      }
+    });
+  }
+
+  /** Finalde Kino'nun önündeki atkı (ekran px) dönünce yine Kino'nun önünde ve ekranın içinde */
+  private atkiSigdir() {
+    const a = this.atkiTasi;
+    if (!a?.isConnected || a.classList.contains('dd-tutuldu')) return;
+    const kk = this.el.getBoundingClientRect();
+    const w = a.getBoundingClientRect().width || 100;
+    const [kx0, ky0] = this.efekt.merkez(this.oy.kinoYer, this.dar() ? 0.2 : 0.45, 0.82);
+    a.style.left = px(Math.max(w * 0.6 + 8, Math.min(kk.width - w * 0.6 - 8, kx0)));
+    a.style.top = px(Math.min(kk.height - w * 0.4 - 8, ky0));
   }
 
   /** Yuvanın, atkının ve yavruların boyu: Vakvak Anne'nin kutusuna göre */
@@ -1159,6 +1228,7 @@ class Vaka2 {
     atki.style.left = px(kx);
     atki.style.top = px(ky);
     this.el.append(atki);
+    this.atkiTasi = atki;
     oy.kinoIfade('heyecan', 900);
     if (this.kapali) return;
     // 2) yumurtalar açıkta titrer

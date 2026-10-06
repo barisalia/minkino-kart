@@ -177,6 +177,84 @@ test('Dedektif Mino: 10 sn bulunamazsa Kino koklar; büyüteç ve dosya ekranda'
   expect(hatalar).toEqual([]);
 });
 
+/** Öğenin ortası ekranda mı (pay: kenardan en az bu kadar içeride; ipucunda büyütecin erişebildiği yer) */
+async function ekranda(page: Page, l: Locator, pay = 0) {
+  const [x, y] = await ortasi(l);
+  const { width: w, height: hh } = page.viewportSize()!;
+  expect(x, 'sol').toBeGreaterThan(pay);
+  expect(x, 'sağ').toBeLessThan(w - pay);
+  expect(y, 'üst').toBeGreaterThan(pay);
+  expect(y, 'alt').toBeLessThan(hh - pay);
+}
+
+// web sitesinde telefonun yönü serbest: vakanın ortasında dönünce ipucu ve izler ekranda kalır, vaka sürer
+for (const [ad, bas, son] of [
+  ['dikeyden yataya', { width: 390, height: 844 }, { width: 844, height: 390 }],
+  ['yataydan dikeye', { width: 844, height: 390 }, { width: 390, height: 844 }],
+  ['dikeyden geniş yataya', { width: 430, height: 932 }, { width: 932, height: 430 }],
+] as const) {
+  test(`Dedektif Mino: telefon ${ad} dönünce (DPR 3) Halka 1 ipucu ve Halka 4 izleri ekranda`, async ({ browser }, info) => {
+    test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+    const ctx = await browser.newContext({ baseURL: info.project.use.baseURL, viewport: bas, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR' });
+    const page = await ctx.newPage();
+    const hatalar = hataTopla(page);
+    // Halka 1: halıdaki pati izi aranırken telefon döner
+    await page.goto('./dedektif/?test=1&sifirla=1&adim=iz');
+    await adimBekle(page, /^ara-iz$/);
+    const oda = page.locator('.dd-sahne .dd-dunya[data-oda="calisma"]');
+    // oda o yönün yerleşiminde (dikeyde 9:16 tek resim, yatayda üç katman)
+    const yerlesim = async (b: { width: number; height: number }) => {
+      if (b.height > b.width) await expect(oda).toHaveAttribute('data-dikey', '1');
+      else await expect(oda).not.toHaveAttribute('data-dikey', /.*/);
+      await expect(oda.locator('img.dd-zemin')).toHaveCount(b.height > b.width ? 1 : 3);
+    };
+    await yerlesim(bas);
+    await page.setViewportSize(son);
+    await expect.poll(() => page.evaluate(() => innerWidth)).toBe(son.width);
+    await page.waitForTimeout(400);
+    await yerlesim(son);
+    const iz = page.locator('.dd-sahne [data-ipucu="pati-hali"]');
+    await ekranda(page, iz, 15);
+    await ipucuBul(page, 'pati-hali');
+    await page.screenshot({ path: `tests/screens/dedektif-donus-halka1-${son.width}x${son.height}.png` });
+    await dogruKart(page);
+    await adimBekle(page, /^(demek-iz|ara-tuy)$/);
+
+    // Halka 4: izler yakılırken telefon önce döner, sonra geri döner
+    await page.setViewportSize(bas);
+    await page.goto('./dedektif/?test=1&sifirla=1&adim=nerede');
+    await adimBekle(page, /^iz-takip-calisma$/);
+    const sirada = page.locator('.dd-sahne .dd-izler-calisma .dd-iz.dd-sirada');
+    // (izin dokunma alanı geniş: bir dokunuş sonrakini de yakabilir; sonuncu iz dikeyde dönmeden de sağ kenarda)
+    const yak = async (n: number) => {
+      for (let k = 0; k < n && (await adim(page)) === 'iz-takip-calisma'; k++) {
+        if ((await sirada.getAttribute('data-iz')) !== '7') await ekranda(page, sirada);
+        const [x, y] = await ortasi(sirada);
+        await page.mouse.click(x, y);
+        await page.waitForTimeout(150);
+      }
+    };
+    // (dönüşün ekrana yansımasını bekler: oda o yönün yerleşiminde)
+    const don = async (b: { width: number; height: number }) => {
+      await page.setViewportSize(b);
+      await expect.poll(() => page.evaluate(() => innerWidth)).toBe(b.width);
+      await page.waitForTimeout(400);
+      if ((await adim(page)) === 'iz-takip-calisma') await yerlesim(b);
+    };
+    await yak(2);
+    await don(son);
+    await yak(3);
+    await page.screenshot({ path: `tests/screens/dedektif-donus-halka4-${son.width}x${son.height}.png` });
+    await don(bas);
+    await yak(2);
+    await don(son);
+    await yak(8);
+    await adimBekle(page, /^iz-takip-koridor$/);
+    expect(hatalar).toEqual([]);
+    await ctx.close();
+  });
+}
+
 for (const [en, boy] of [
   [844, 390],
   [932, 430],

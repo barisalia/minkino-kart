@@ -23,7 +23,7 @@ import { IKON } from '../../src/ui/ikonlar';
 import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import { DosyaSeridi } from './dosya';
-import { AZ_HAREKET, calismaOdasi, Dunya, koridor, mutfak, yatakOdasi, type Oda } from './dunya';
+import { AZ_HAREKET, calismaOdasi, calismaYenidenDiz, Dunya, koridor, mutfak, yatakOdasi, type Oda } from './dunya';
 import { Efekt, oynat, parmak, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
 import {
@@ -87,6 +87,8 @@ class Vaka {
   private rnd: () => number;
   private yollar: Record<'sol' | 'sag', Yol>;
   private bulusSayisi = 0;
+  /** ekran boyu değişince (dönüş) o anki işin ek düzeltmesi (iz takibinde: sıradaki iz kadraja) */
+  private boyutSonrasi: (() => void) | null = null;
 
   constructor(
     private app: Uygulama,
@@ -139,8 +141,13 @@ class Vaka {
     this.buyutec.goster(false);
     this.dunya.kameraBitti = () => this.buyutec.yenile();
     const boyut = () => {
-      this.dunya.yenile();
+      // telefon vakanın ortasında döndü (web sitesinde yön serbest): çalışma odası yeni yönün yerleşimine geçer;
+      // kamera aynı işi (arama kadrajı, sıradaki iz) yeni yerde gösterir: ipucu ve izler ekranda kalır
+      if (calismaYenidenDiz(this.calisma) && this.dunya.oda === this.calisma) this.dunya.odaYenilendi();
+      else this.dunya.yenile();
       this.buyutec.yenile();
+      // (bir kare sonra: az hareket ayarında da her değişimin kısa bir geçişi var; ölçüm yeni yeri görsün)
+      requestAnimationFrame(() => !this.kapali && this.boyutSonrasi?.());
     };
     window.addEventListener('resize', boyut);
     this.temizlik.push(() => window.removeEventListener('resize', boyut));
@@ -226,8 +233,9 @@ class Vaka {
     await this.bekle(1300);
     if (this.kapali) return;
     // devrik lambayı görür: gözleri kocaman
+    // (CALISMA yerinde güncellenir: telefon dönünce kadraj lambanın yeni yerine)
     const l = CALISMA.lambaDevrik;
-    void dunya.git([l.x - 0.2, l.y - 0.32, l.x + 0.2, 1], 900);
+    void dunya.git(() => [l.x - 0.2, l.y - 0.32, l.x + 0.2, 1], 900);
     oy.mino.bak(0.6);
     void oy.mino.ifade('saskin', 1800);
     oy.minoTepki('sasir');
@@ -286,7 +294,8 @@ class Vaka {
     this.calisma.e.los?.classList.add('acik');
     // dikeyde Halka 3'te pencere ve pervaz birlikte görünsün (kelebek dışarıda); öbürlerinde zemin yakın çekim
     dunya.darYakin = hk.id === 'neden' ? 1.3 : null;
-    await dunya.git(this.aramaKadraji(hk), 1100);
+    // (işlev: telefon dönünce kadraj yeni yöne göre yeniden kurulur, ipucu ekranda kalır)
+    await dunya.git(() => this.aramaKadraji(hk), 1100);
     if (hk.ara) await oy.soyle(hk.ara);
     await this.ipuclariniBul(hk);
     if (this.kapali) return;
@@ -650,7 +659,7 @@ class Vaka {
     if (dunya.oda !== this.calisma) dunya.kur(this.calisma, 'izler');
     dunya.darYakin = null;
     oy.yerlesim(this.dar() ? 'iki' : 'sol');
-    await dunya.git(this.ortala(CALISMA.lambaDevrik.x + 0.04, 'izler'), 1000);
+    await dunya.git(this.ortala(() => CALISMA.lambaDevrik.x + 0.04, 'izler'), 1000);
     if (this.kapali) return;
     // izler lambanın yanından başlar: sırayla belirir
     const izler = this.calisma.e.izler;
@@ -698,10 +707,13 @@ class Vaka {
     const dar = this.dar();
     // dikeyde iz hep ortada (Mino solda, Kino sağda: aradaki boşlukta); yatayda ortadaki geniş bölgede kalsın
     if (dar ? Math.abs(x - k.width / 2) < k.width * 0.09 : x > g[0] + (g[2] - g[0]) * 0.15 && x < g[0] + (g[2] - g[0]) * 0.8) return;
-    const oda = this.dunya.oda!;
-    const sx = (parseFloat(iz.style.left) || 0) / oda.W;
-    const sy = (parseFloat(iz.style.top) || 0) / ODA_H;
-    const kd: Kadraj = dar ? [sx - 0.1, Math.max(0, sy - 0.4), sx + 0.1, Math.min(1, sy + 0.08)] : [sx - 0.16, Math.max(0, sy - 0.42), sx + 0.34, Math.min(1, sy + 0.06)];
+    // (işlev: telefon dönünce izin yeni yerine ve yeni yöne göre yeniden hesaplanır)
+    const kd = (): Kadraj => {
+      const oda = this.dunya.oda!;
+      const sx = (parseFloat(iz.style.left) || 0) / oda.W;
+      const sy = (parseFloat(iz.style.top) || 0) / ODA_H;
+      return this.dar() ? [sx - 0.1, Math.max(0, sy - 0.4), sx + 0.1, Math.min(1, sy + 0.08)] : [sx - 0.16, Math.max(0, sy - 0.42), sx + 0.34, Math.min(1, sy + 0.06)];
+    };
     void this.dunya.git(kd, ms);
   }
   /** Dikey (dar) ekran: oda boydan kaplar, karakterler alt köşelerde; sahnedeki iş hep ortada olmalı */
@@ -709,11 +721,17 @@ class Vaka {
     const { w, h: hh } = this.dunya.boyut;
     return w < hh * 1.15;
   }
-  /** Dar ekranda kamerayı oda oranındaki bir x'e ortalar (kadrajın dikeyi korunur) */
-  private ortala(x: number, k: KadrajAdi | Kadraj): Kadraj | KadrajAdi {
-    if (!this.dar()) return k;
-    const [, y0, , y1] = typeof k === 'string' ? KADRAJ[k] : k;
-    return [x - 0.1, y0, x + 0.1, y1];
+  /**
+   * Dar ekranda kamerayı oda oranındaki bir x'e ortalar (kadrajın dikeyi korunur). İşlev döner: kamera her hesapta
+   * (telefon dönünce de) o anki yöne ve yerleşime göre yeniden kurar.
+   */
+  private ortala(x: () => number, k: KadrajAdi | Kadraj): () => Kadraj | KadrajAdi {
+    return () => {
+      if (!this.dar()) return k;
+      const [, y0, , y1] = typeof k === 'string' ? KADRAJ[k] : k;
+      const cx = x();
+      return [cx - 0.1, y0, cx + 0.1, y1];
+    };
   }
 
   /** İzleri sırayla yakar (dokun ya da üstünden kaydır); kamera izleri takip eder */
@@ -750,7 +768,11 @@ class Vaka {
         // kamera sıradaki izi kadrajda tutar
         if (kameraIzle) this.iziGoster(izler[i], 650);
       };
-      if (kameraIzle) this.iziGoster(izler[0], 700);
+      if (kameraIzle) {
+        this.iziGoster(izler[0], 700);
+        // telefon dönünce sıradaki iz yeniden kadraja alınır (ekranın dışında kalmasın)
+        this.boyutSonrasi = () => i < izler.length && this.iziGoster(izler[i], 0);
+      }
       const tikla = (e: Event) => {
         const n = izler.indexOf(e.currentTarget as HTMLElement);
         if (n >= i) void yak(n);
@@ -777,6 +799,7 @@ class Vaka {
         dur?.();
         this.el.removeEventListener('pointermove', kay);
         izler.forEach((e) => e.removeEventListener('click', tikla));
+        this.boyutSonrasi = null;
         coz();
       };
       this.temizlik.push(() => clearInterval(ipucu));
@@ -887,7 +910,7 @@ class Vaka {
       p.kulakSol += Math.sin(t * 3) * 4;
     };
     kuyruk.classList.add('acik');
-    await dunya.git(this.ortala(YATAK.saklan.x + 0.02, [0.08, 0.5, 0.6, 1]), 900);
+    await dunya.git(this.ortala(() => YATAK.saklan.x + 0.02, [0.08, 0.5, 0.6, 1]), 900);
     oy.yerlesim('kenar');
     // kuyruğa Mino fısıldarken de dokunulabilir
     const dokunuldu = new Promise<void>((coz) => {
@@ -946,7 +969,7 @@ class Vaka {
       { duration: sure(2000), easing: 'cubic-bezier(.45,.05,.4,1)', fill: 'forwards' },
     );
     if (!AZ_HAREKET && !surun) void pamuk.oynat('yuru', 2000);
-    void dunya.git(this.ortala(YATAK.cik.x - 0.03, [0.22, 0.42, 0.82, 1]), 1600);
+    void dunya.git(this.ortala(() => YATAK.cik.x - 0.03, [0.22, 0.42, 0.82, 1]), 1600);
     await yol.finished.catch(() => undefined);
     if (this.kapali) return;
     if (surun) void pamukPoz.birak();
@@ -984,7 +1007,7 @@ class Vaka {
     // dar ekranda kamera devrik lambayla masanın arasına: ikisi de Mino ile Kino'nun arasında
     // dikeyde lamba ve masa birlikte görünsün diye biraz geriden
     dunya.darYakin = 1.4;
-    const kd = this.ortala((CALISMA.lambaDevrik.x + CALISMA.masaUst.x) / 2, 'final');
+    const kd = this.ortala(() => (CALISMA.lambaDevrik.x + CALISMA.masaUst.x) / 2, 'final');
     if (dogrudan) dunya.kur(this.calisma, kd);
     else await dunya.gec(this.calisma, kd, -1);
     if (this.kapali) return;
@@ -1016,7 +1039,7 @@ class Vaka {
     this.adim('kelebek');
     const kel = this.calisma.e.kelebek;
     dunya.darYakin = 1.3;
-    await dunya.git(this.ortala(0.5, 'pencere'), 900);
+    await dunya.git(this.ortala(() => 0.5, 'pencere'), 900);
     kel?.classList.add('dd-ucusuyor');
     oy.minoTepki('selam', 1.8);
     oy.kinoPoz('kalk');
@@ -1034,7 +1057,7 @@ class Vaka {
     if (salla) void oy.pamukPoz?.birak();
     oy.kinoPoz(null);
     dunya.darYakin = 1.4;
-    await dunya.git(this.ortala(CALISMA.masaUst.x - 0.04, 'final'), 900);
+    await dunya.git(this.ortala(() => CALISMA.masaUst.x - 0.04, 'final'), 900);
     await oy.soyle(D.pamuk.dikkat, 'pamuk');
     oy.kinoPoz('kalk');
     oy.kinoIfade('heyecan', 2200);
