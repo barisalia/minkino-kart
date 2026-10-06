@@ -16,6 +16,7 @@ import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } fr
 import { kartKayitIpucu, kartPaylas, kartYap, tekrarOynat } from './kart';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
+import { katmanAc } from '../../src/kabuk/yon';
 import { YolIzi } from './yol-izi';
 import { resimSesi, resimSesiHazirla } from './ses';
 import { SUS } from './susler';
@@ -160,6 +161,7 @@ export function listeEkrani(app: Uygulama): Ekran {
   const modlar = h('div.cc-modlar', { role: 'radiogroup', 'aria-label': 'Nasıl çizelim?' });
 
   let gidiyor = false;
+  let secimZamani = 0;
   /** Seçilen kart öne çıkar, diğerleri geri çekilir; sonra çizime geçilir. */
   function sec(b: HTMLElement, git: () => void) {
     if (gidiyor) return;
@@ -167,7 +169,7 @@ export function listeEkrani(app: Uygulama): Ekran {
     efekt.secim();
     b.classList.add('secildi');
     izgara.classList.add('secim-var');
-    window.setTimeout(git, tamHareket() ? 280 : 0);
+    secimZamani = window.setTimeout(git, tamHareket() ? 280 : 0);
   }
   /** Dokunma hissi: basınca ezilir, bırakınca yaylanır (yalnız transform) */
   function dokunmaHissi(b: HTMLElement) {
@@ -230,7 +232,11 @@ export function listeEkrani(app: Uygulama): Ekran {
     h('div.kaydir', {}, izgara),
   );
   void konus(S.sec);
-  return { el };
+  return {
+    el,
+    // listeden çıkıldıysa (ör. Ana ekran) seçim gecikmesi çizime atmasın
+    kapat: () => clearTimeout(secimZamani),
+  };
 }
 
 // ---------------------------------------------------------------- Çizim
@@ -474,10 +480,16 @@ function kartPenceresi(b: Blob): HTMLElement {
   resim.addEventListener('contextmenu', (e) => e.stopPropagation());
   const ipucu = h('p', {}, kartKayitIpucu(uygulamaPlatformu()));
   const perde = h('div.perde', { role: 'dialog', 'aria-label': 'Kartım' }, h('div.pencere.cc-kart-pencere', {}, resim, ipucu, kapat));
-  kapat.addEventListener('click', () => {
-    efekt.dokunma();
+  const kapandi = () => {
+    birak();
     perde.remove();
     URL.revokeObjectURL(url);
+  };
+  // Android geri tuşu önce kartı kapatır (oyundan çıkmaz)
+  const birak = katmanAc(perde, kapandi);
+  kapat.addEventListener('click', () => {
+    efekt.dokunma();
+    kapandi();
   });
   return perde;
 }
@@ -555,9 +567,11 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   const gercekUrl = GERCEK_RESIM[`../../assets/canlan/${r.id}.webp`];
   let gercekte = false;
   let gercekVeri: string | null = null;
+  let sihirNo = 0;
   const sihirDugme = yuvarlakDugme(IKON.sihir, 'Sihirli hâli', async () => {
     if (!gercekUrl) return;
     gercekte = !gercekte;
+    const no = ++sihirNo;
     sihirDugme.classList.toggle('acik', gercekte);
     if (!gercekte) {
       canli.gercek(null);
@@ -565,8 +579,12 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
       return;
     }
     gercekVeri ??= await veriAdresi(gercekUrl).catch(() => gercekUrl);
+    // beklerken yeniden dokunulduysa (kapatıldı / yeniden açıldı) son dokunuş geçerli
+    if (no !== sihirNo) return;
     const anaParca = Object.keys(SUS[r.id]?.boya ?? {})[0];
-    const cocukRengi = boyalar.filter((b) => b.parca === anaParca).at(-1)?.renk;
+    // Array.at iOS 15.4'ten önce yok
+    const anaBoyalar = boyalar.filter((b) => b.parca === anaParca);
+    const cocukRengi = anaBoyalar[anaBoyalar.length - 1]?.renk;
     const oneri = SUS[r.id]?.boya[anaParca];
     canli.gercek(gercekVeri, { renkKaydir: cocukRengi && oneri ? tonFarki(cocukRengi, oneri) : 0, ayna: AYNALI.has(r.id) });
     efekt.kilitAcildi();

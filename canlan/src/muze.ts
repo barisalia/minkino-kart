@@ -6,13 +6,14 @@
 import './muze.css';
 import canlan from '../../content/canlan.json';
 import { efekt, konus } from '../../src/audio/ses';
+import { katmanAc } from '../../src/kabuk/yon';
 import { yoldasYuvasi } from '../../src/mino/cizim-yoldas-yuva';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { azHareket } from '../../src/ui/hareket';
 import { IKON } from '../../src/ui/ikonlar';
 import { baslikBalon, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { BOYUT, boyaResmi, type Boya } from './boya';
+import { BOYUT, boyalariSadelestir, boyaResmi, type Boya } from './boya';
 import { canliCizim, type Canli } from './canlandir';
 import type { Donusum, Parcali } from './puan';
 import { resim, type Mod, type Nokta } from './resimler';
@@ -132,7 +133,7 @@ export function muzeListe(): MuzeEseri[] {
 
 /** Canlanan resmi müzeye asar (en yenisi başta). */
 export function muzeyeAs(e: Omit<MuzeEseri, 'id' | 'tarih'>): void {
-  // aynı parçaya üst üste boyandıysa yalnız son boya görünür; hepsi saklanır (sıra önemli)
+  // görünen boyanın tamamı saklanır: altta kalanlar atılır, parça + renk başına tek maske (dokunuş sayısı fark etmez)
   const k: Kayitli = {
     id: `m${Date.now().toString(36)}`,
     r: e.resim,
@@ -143,7 +144,7 @@ export function muzeyeAs(e: Omit<MuzeEseri, 'id' | 'tarih'>): void {
     k: +e.kalinlik.toFixed(4),
     c: e.renk,
     p: e.parcalar.map((p) => ({ a: p.parca, n: noktaYaz(p.n) })),
-    b: e.boyalar.slice(-24).map((b) => ({ a: b.parca, r: b.renk, m: rleYaz(b.maske) })),
+    b: boyalariSadelestir(e.boyalar).map((b) => ({ a: b.parca, r: b.renk, m: rleYaz(b.maske) })),
   };
   hamYaz([k, ...hamOku()].slice(0, MUZE_EN_COK));
 }
@@ -255,6 +256,8 @@ function yakinBak(app: Uygulama, e: MuzeEseri, kaynak: HTMLElement, bitti: () =>
   const kapatD = yuvarlakDugme(IKON.kapat, 'Kapat', () => kapat(), 'cc-muze-kapat');
   const perde = h('div.cc-muze-perde', { role: 'dialog', 'aria-label': S.benim[e.resim] ?? 'Resim' }, h('div.cc-muze-sahne', {}, buyuk, yuva.el), kapatD);
   app.kok.append(perde);
+  // Android geri tuşu önce yakın bakışı kapatır (oyundan çıkmaz)
+  const birak = katmanAc(perde, () => kapat());
   boyalariKoy(e, s.canli);
   resimSesiHazirla(e.resim);
   // FLIP: küçük çerçevenin yerinden büyüyerek gelir
@@ -295,6 +298,7 @@ function yakinBak(app: Uygulama, e: MuzeEseri, kaynak: HTMLElement, bitti: () =>
   perde.addEventListener('click', (ev) => ev.target === perde && kapat());
   function kapat() {
     if (bitis) return;
+    birak();
     clearTimeout(baslat);
     perde.classList.add('kapaniyor');
     bitis = window.setTimeout(() => {

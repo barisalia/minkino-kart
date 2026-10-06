@@ -112,8 +112,14 @@ export async function kartYap(o: { svg: SVGSVGElement; sahneUrl?: string; baslik
   // resim çerçevesi
   const [rx, ry, rs] = [80, 90, 920];
   const yuvarla = (px: number, py: number, w: number, h: number, r: number) => {
+    // roundRect iOS 16'dan önce yok (dağıtım hedefi iOS 15): köşeler elle çizilir
     x.beginPath();
-    x.roundRect(px, py, w, h, r);
+    x.moveTo(px + r, py);
+    x.arcTo(px + w, py, px + w, py + h, r);
+    x.arcTo(px + w, py + h, px, py + h, r);
+    x.arcTo(px, py + h, px, py, r);
+    x.arcTo(px, py, px + w, py, r);
+    x.closePath();
   };
   x.fillStyle = 'rgba(90,54,23,0.18)';
   yuvarla(rx, ry + 16, rs, rs, 56);

@@ -259,5 +259,5 @@
 .cc-kok .cc-muze-kapat {
   position: absolute;
   top: calc(var(--ust, 16px) + 4px);
-  right: 16px;
+  right: max(16px, var(--yan, 16px));
 }
