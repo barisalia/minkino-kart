@@ -161,4 +161,59 @@ export const efekt = {
   sayfa() {
     hisirti(0, 0.25, 1200, 400, 0.15, 0.8);
   },
+  // Kino Ne Giysin?: çamur, su, şemsiye, arı, dalga, krem
+  /** çamurda adım: "vıcık" (aşağı kayan boğuk hışırtı + alçak lop) */
+  vicik() {
+    hisirti(0, 0.16, 700, 180, 0.24, 3);
+    ton(170, 0.02, 0.14, 'sine', 0.16, 70);
+  },
+  /** suya basma: "şlap" (geniş hışırtı, çabuk söner) */
+  sicrama() {
+    hisirti(0, 0.28, 3200, 500, 0.26, 0.6);
+    ton(260, 0, 0.1, 'sine', 0.12, 120);
+  },
+  /** şemsiye açılır: "pof!" */
+  pof() {
+    hisirti(0, 0.14, 400, 1600, 0.3, 0.8);
+    ton(140, 0, 0.16, 'sine', 0.2, 260);
+  },
+  /** arı vızıltısı (kısa, tatlı) */
+  vizilti(sure = 0.9) {
+    const h = hazir();
+    if (!h) return;
+    const [c, cikis] = h;
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const lfo = c.createOscillator();
+    const lg = c.createGain();
+    const g = c.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(210, t);
+    lfo.frequency.value = 9;
+    lg.gain.value = 22;
+    lfo.connect(lg).connect(o.frequency);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.05, t + 0.08);
+    g.gain.setValueAtTime(0.05, t + sure - 0.15);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + sure);
+    o.connect(g).connect(cikis);
+    o.start(t);
+    lfo.start(t);
+    o.stop(t + sure + 0.05);
+    lfo.stop(t + sure + 0.05);
+  },
+  /** dalga: uzun, kabaran hışırtı */
+  dalga() {
+    hisirti(0, 1.3, 300, 1400, 0.22, 0.5);
+    hisirti(0.5, 1.0, 2200, 600, 0.12, 0.7);
+  },
+  /** krem sürme: yumuşak "fış" */
+  ovala() {
+    hisirti(0, 0.12, 1800, 2600, 0.06, 1.4);
+  },
+  /** parıltı: ince çan */
+  tink() {
+    can(NOTA(96), 0, 0.12, 0.35);
+    can(NOTA(100), 0.07, 0.08, 0.3);
+  },
 };

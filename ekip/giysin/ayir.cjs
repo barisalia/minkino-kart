@@ -55,11 +55,13 @@ const kutu = (t) => t.split(',').map(Number);
     return t;
   };
   let en = [Infinity, 1, 0, 0];
-  for (let s = 0.75; s <= 1.15; s += 0.02) for (let dx = -240; dx <= 240; dx += 12) for (let dy = -240; dy <= 240; dy += 12) {
+  // SABIT=1: nano-banana düzenlemesi zaten hizalı (s 1, kayma 0); arama atlanır
+  if (process.env.SABIT) en = [maliyet(1, 0, 0), 1, 0, 0];
+  else for (let s = 0.75; s <= 1.15; s += 0.02) for (let dx = -240; dx <= 240; dx += 12) for (let dy = -240; dy <= 240; dy += 12) {
     const m = maliyet(s, dx, dy);
     if (m < en[0]) en = [m, s, dx, dy];
   }
-  for (const [ds, dd] of [[0.008, 4], [0.003, 1.5], [0.001, 0.5]]) {
+  if (!process.env.SABIT) for (const [ds, dd] of [[0.008, 4], [0.003, 1.5], [0.001, 0.5]]) {
     const [, s0, x0, y0] = en;
     for (let s = s0 - ds * 3; s <= s0 + ds * 3; s += ds) for (let dx = x0 - dd * 4; dx <= x0 + dd * 4; dx += dd) for (let dy = y0 - dd * 4; dy <= y0 + dd * 4; dy += dd) {
       const m = maliyet(s, dx, dy);

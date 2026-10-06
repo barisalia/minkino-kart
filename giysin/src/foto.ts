@@ -1,19 +1,30 @@
 /**
- * Fotoğraf karesi (polaroid ve albüm): dış sahne, kardan adam, giyinik Kino ve Mino. Durağan (iskelet yok):
- * Kino'nun ön çizimi + giysiler aynı 2048 tuvalde yüzde konumla.
+ * Fotoğraf karesi (polaroid ve albüm): mevsimin dış sahnesi, sahnenin hatırası (kardan adam, kumdan kale,
+ * su sıçraması, sepette çiçekler) ve giyinik Kino. Durağan (iskelet yok): Kino'nun ön çizimi + giysiler aynı
+ * 2048 tuvalde yüzde konumla (açık şemsiye Kino'nun arkasında).
  */
 import { h } from '../../src/ui/dom';
-import { giysi, PARCA_YERI, zSirasi, type GiysiId } from './model';
+import { ACIK_SEMSIYE, ARKA_PARCA, giysi, KAPALI_SEMSIYE, PARCA_YERI, parcaDosyasi, zSirasi, type GiysiId, type Mevsim } from './model';
 import { resim } from './resimler';
 
-export function duraganKino(giyili: GiysiId[]): HTMLElement {
-  const k = h('div.gy-durgun-kino', {}, h('img', { src: resim('kino-yedek'), alt: '', draggable: 'false' }));
+/** Sepetteki çiçek demeti (iskelet tuvalinde; sepetin arkasında, sapları sepetin içinde) */
+export const SEPET_CICEK: [number, number, number, number] = [1190, 1265, 270, 353];
+
+const yuzde = ([x, y, w, hh]: [number, number, number, number]) => `left:${(x / 20.48).toFixed(3)}%;top:${(y / 20.48).toFixed(3)}%;width:${(w / 20.48).toFixed(3)}%;height:${(hh / 20.48).toFixed(3)}%`;
+
+export function duraganKino(giyili: GiysiId[], cicek = false): HTMLElement {
+  const arka: HTMLElement[] = [];
+  const on: HTMLElement[] = [];
   for (const id of zSirasi(giyili))
     for (const p of giysi(id).parcalar) {
-      const [x, y, w, hh] = PARCA_YERI[p];
-      k.append(h('img', { src: resim(`giysi/${p}`), alt: '', draggable: 'false', style: `left:${(x / 20.48).toFixed(3)}%;top:${(y / 20.48).toFixed(3)}%;width:${(w / 20.48).toFixed(3)}%;height:${(hh / 20.48).toFixed(3)}%` }));
+      if (id === 'semsiye' && KAPALI_SEMSIYE.has(p)) continue;
+      if (id !== 'semsiye' && ACIK_SEMSIYE.has(p)) continue;
+      const yer = PARCA_YERI[p];
+      if (!yer) continue;
+      if (cicek && p === 'sepet') on.push(h('img', { src: resim('esya-cicek'), alt: '', draggable: 'false', style: yuzde(SEPET_CICEK) }));
+      (ARKA_PARCA.has(p) ? arka : on).push(h('img', { src: resim(`giysi/${parcaDosyasi(p)}`), alt: '', draggable: 'false', style: yuzde(yer) }));
     }
-  return k;
+  return h('div.gy-durgun-kino', {}, ...arka, h('img.gy-durgun-govde', { src: resim('kino-yedek'), alt: '', draggable: 'false' }), ...on);
 }
 
 /** Kardan adam (Gemini parçaları: üç top, kömür gözler ve düğmeler, dal kollar, havuç, atkı); gülüş kodla (ince yay) */
@@ -38,18 +49,29 @@ export function kardanAdam(): { el: HTMLElement; govde: HTMLElement; orta: HTMLE
   return { el, govde, orta, bas, yuz, gozSag, havuc, dalSol, dalSag, atki };
 }
 
-export function fotoKaresi(giyili: GiysiId[], dikey = false): HTMLElement {
-  const k = kardanAdam();
-  k.el.classList.add('tam');
+/** Fotoğrafta sahnenin hatırası (Kino'nun yanında) */
+function hatira(m: Mevsim): HTMLElement[] {
+  const img = (ad: string, sinif: string) => h(`img.${sinif}`, { src: resim(ad), alt: '', draggable: 'false' });
+  if (m === 'kis') {
+    const k = kardanAdam();
+    k.el.classList.add('tam');
+    return [h('div.gy-foto-kardan', {}, k.el)];
+  }
+  if (m === 'yaz') return [img('esya-kale', 'gy-foto-kale')];
+  if (m === 'ilkbahar') return [img('esya-ari', 'gy-foto-ari')];
+  return [img('esya-birikinti', 'gy-foto-birikinti'), img('esya-sicrama', 'gy-foto-sicrama')];
+}
+
+export function fotoKaresi(m: Mevsim, giyili: GiysiId[], dikey = false): HTMLElement {
   return h(
-    'div.gy-foto-kare',
+    `div.gy-foto-kare.${m}`,
     {},
-    h('img.gy-foto-zemin', { src: resim(dikey ? 'dis-kis-dikey' : 'dis-kis-yatay'), alt: '', draggable: 'false' }),
-    h('div.gy-foto-kardan', {}, k.el),
-    h('div.gy-foto-kino', {}, duraganKino(giyili)),
+    h('img.gy-foto-zemin', { src: resim(dikey ? `dis-${m}-dikey` : `dis-${m}-yatay`), alt: '', draggable: 'false' }),
+    ...hatira(m),
+    h('div.gy-foto-kino', {}, duraganKino(giyili, m === 'ilkbahar' && giyili.includes('sepet'))),
   );
 }
 
-export function polaroid(giyili: GiysiId[]): HTMLElement {
-  return h('div.gy-polaroid', {}, h('img.gy-polaroid-cerceve', { src: resim('polaroid'), alt: '', draggable: 'false' }), h('div.gy-polaroid-foto', {}, fotoKaresi(giyili)));
+export function polaroid(m: Mevsim, giyili: GiysiId[]): HTMLElement {
+  return h('div.gy-polaroid', {}, h('img.gy-polaroid-cerceve', { src: resim('polaroid'), alt: '', draggable: 'false' }), h('div.gy-polaroid-foto', {}, fotoKaresi(m, giyili)));
 }

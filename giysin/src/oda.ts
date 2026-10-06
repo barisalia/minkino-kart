@@ -1,5 +1,6 @@
 /**
- * Kino'nun odası: istek → perde → pencere (hava, mevsim ağacı) → dolap → giyinme (tepkiler) → ayna → kapı.
+ * Kino'nun odası: istek → perde → pencere (hava, mevsim ağacı) → dolap → giyinme (tepkiler) → küçük görev → ayna → kapı.
+ * Dört mevsim aynı oda; pencere manzarası, hava, dolaptaki giysiler, istek ve tepkiler mevsimin turundan (model.ts).
  *
  * Dünya (oda) ekrandan geniştir: kapı solda, ekran dışında bekler; Kino hazır olunca kamera kapıya kayar.
  * Yerleşim JS'te (ekran boyuna göre px): yatay telefon, dikey telefon ve tablet aynı mantıkla.
@@ -12,26 +13,38 @@ import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import G from '../../content/giysin.json';
-import { AZ, bekle, kavis, ms, oynat, YAY, YUMUSAK } from './anim';
+import { bekle, kavis, ms, oynat, YUMUSAK } from './anim';
 import { GiyinikKino } from './giyinik';
-import { BOLGE_MERKEZ, birak, bolgeUzakligi, eksikler, giysi, GIYSILER, MIKNATIS, siradaki, type GiysiId } from './model';
+import { askida, BOLGE_MERKEZ, birak, bolgeUzakligi, eksikler, giysi, MIKNATIS, siradaki, TURLAR, type GiysiId, type Mevsim, type Tepki } from './model';
+import { guvenliOlc, type Guvenli } from './guvenli';
 import { onYukle, resim } from './resimler';
+import { iyiTepki, kalpler, parilti, sendele, uymazTepki, zipla, type TepkiBaglami } from './tepkiler';
 
 const M = G.mino;
 const K = G.kino;
 const kinoSoyle = (t: string) => konus(t, KINO_SESI);
 
-type Adim = 'giris' | 'perde' | 'dolap' | 'giyin' | 'ayna' | 'kapi' | 'cikis';
+type Adim = 'giris' | 'perde' | 'dolap' | 'giyin' | 'gorev' | 'ayna' | 'kapi' | 'cikis';
 
-/** Kar taneleri (kodla: yumuşak beyaz daireler; transform ile düşer, döner) */
-function karKatmani(adet: number, sinif: string): HTMLElement {
-  const k = h(`div.gy-kar.${sinif}`, { 'aria-hidden': 'true' });
+/** Mevsimin istek cümlesi ve uymayan giysiye Mino'nun sözü */
+const ISTEK: Record<Mevsim, string> = { kis: K.istek, ilkbahar: K.istek_ilkbahar, yaz: K.istek_yaz, sonbahar: K.istek_sonbahar };
+const UYMAZ_SOZ: Record<Tepki, string> = { usu: M.kisin_degil, bugu: M.kisin_degil, sicak: M.sicak_gelir, camur: M.camur, islak: M.islanirsin, damla: M.yagmur };
+
+/**
+ * Pencere ve dış sahnenin havası: tanecikler (kodla, yumuşak şekiller; transform ile düşer, döner).
+ * kar: iri yavaş taneler · cicek: pembe taç yaprakları süzülür · gunes: parıltı tozları · yagmur: çizgi damlalar · yaprak: sonbahar yaprakları
+ */
+export function taneKatmani(adet: number, sinif: string, tur: 'kar' | 'cicek' | 'gunes' | 'yagmur' | 'yaprak'): HTMLElement {
+  const k = h(`div.gy-kar.${sinif}.${tur}`, { 'aria-hidden': 'true' });
+  const yakin = sinif.includes('yakin');
   for (let i = 0; i < adet; i++) {
-    const boy = sinif === 'yakin' ? 10 + Math.random() * 10 : 5 + Math.random() * 6;
-    const t = h('i', {
-      style: `left:${(Math.random() * 100).toFixed(1)}%;width:${boy.toFixed(0)}px;--b:${boy.toFixed(0)}px;--sure:${(sinif === 'yakin' ? 5 + Math.random() * 3 : 8 + Math.random() * 5).toFixed(1)}s;--gec:-${(Math.random() * 12).toFixed(1)}s;--salin:${(10 + Math.random() * 26).toFixed(0)}px`,
-    });
-    k.append(t);
+    const boy = tur === 'yagmur' ? (yakin ? 3 : 2) : yakin ? 10 + Math.random() * 10 : 5 + Math.random() * 6;
+    const sure = tur === 'yagmur' ? (yakin ? 0.55 : 0.8) + Math.random() * 0.25 : tur === 'gunes' ? 3 + Math.random() * 3 : yakin ? 5 + Math.random() * 3 : 8 + Math.random() * 5;
+    k.append(
+      h('i', {
+        style: `left:${(Math.random() * 100).toFixed(1)}%;width:${boy.toFixed(0)}px;--b:${boy.toFixed(0)}px;--sure:${sure.toFixed(2)}s;--gec:-${(Math.random() * 12).toFixed(1)}s;--salin:${(10 + Math.random() * 26).toFixed(0)}px;--don:${(Math.random() > 0.5 ? 1 : -1) * (180 + Math.random() * 360)}deg;--renk:${['#ffb3c8', '#ffd0dc', '#fff0f4'][i % 3]};--yaprak:${['#f08a24', '#e4572e', '#f4c430'][i % 3]};top:${tur === 'gunes' ? (Math.random() * 80).toFixed(0) + '%' : '0'}`,
+      }),
+    );
   }
   return k;
 }
@@ -51,25 +64,36 @@ function perdeKanadi(yan: 'sol' | 'sag'): { el: HTMLElement; seritler: HTMLEleme
   return { el, seritler };
 }
 
-export function odaEkrani(app: Uygulama): Ekran {
-  onYukle(['dis-kis-yatay', 'dis-kis-dikey', 'dolap-acik', 'kardan-buyuk', 'kardan-orta', 'ayna']);
+/** Düşünce balonunun içi: mevsimin isteği resimle */
+function balonIci(m: Mevsim): HTMLElement[] {
+  const im = (ad: string, sinif: string) => h(`img.${sinif}`, { src: resim(ad), alt: '' });
+  if (m === 'kis') return [im('kardan-buyuk', 'b1'), im('kardan-orta', 'b2'), im('kardan-kucuk', 'b3'), im('kardan-havuc', 'b4')];
+  if (m === 'ilkbahar') return [im('esya-sepet', 'c1'), im('esya-cicek', 'c2')];
+  if (m === 'yaz') return [im('esya-kale', 'y1'), im('esya-kova', 'y2'), im('esya-kurek', 'y3')];
+  return [im('esya-sicrama', 's1'), im('ikon/cizme', 's2')];
+}
+
+export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
+  const mevsim: Mevsim = param?.mevsim ?? 'kis';
+  const tur = TURLAR[mevsim];
+  onYukle([`dis-${mevsim}-yatay`, `dis-${mevsim}-dikey`, 'dolap-acik', 'ayna', mevsim === 'sonbahar' ? 'kino-islak' : 'kino-titreme']);
   const kapatilacak: (() => void)[] = [];
-  const zaman: number[] = [];
-  const sonra = (n: number, f: () => void) => zaman.push(window.setTimeout(f, ms(n)));
   let adim: Adim = 'giris';
-  let bitti = false;
 
   // ------------------------------------------------------------ öğeler
   const oda = h('img.gy-oda', { src: resim('oda-yatay'), alt: '', draggable: 'false' });
   // pencere manzarası üç katman (Gemini): arkada gök ve tepeler, ortada çit ve çalılar, önde mevsim ağacı
-  const manzara = h('img.gy-manzara.arka', { src: resim('pencere-kis-arka'), alt: '', draggable: 'false' });
-  const orta = h('img.gy-manzara.orta', { src: resim('pencere-kis-orta'), alt: '', draggable: 'false' });
-  const agac = h('img.gy-manzara.gy-agac', { src: resim('pencere-kis-on'), alt: 'Kış ağacı', draggable: 'false' });
-  const karUzak = karKatmani(26, 'uzak');
-  const karYakin = karKatmani(14, 'yakin');
-  const bugu = h('div.gy-bugu');
-  const camIc = h('div.gy-cam-ic', {}, h('div.gy-katman.gy-k-gok', {}, manzara), karUzak, h('div.gy-katman.gy-k-orta', {}, orta), h('div.gy-katman.gy-k-agac', {}, agac), karYakin, bugu);
-  const cam = h('div.gy-cam', {}, camIc);
+  const manzara = h('img.gy-manzara.arka', { src: resim(`pencere-${mevsim}-arka`), alt: '', draggable: 'false' });
+  const orta = h('img.gy-manzara.orta', { src: resim(`pencere-${mevsim}-orta`), alt: '', draggable: 'false' });
+  const agac = h('img.gy-manzara.gy-agac', { src: resim(`pencere-${mevsim}-on`), alt: `${G.yazi[mevsim]} ağacı`, draggable: 'false' });
+  const hava: HTMLElement[][] = {
+    kis: [[taneKatmani(26, 'uzak', 'kar')], [taneKatmani(14, 'yakin', 'kar'), h('div.gy-bugu')]],
+    ilkbahar: [[taneKatmani(10, 'uzak', 'cicek')], [taneKatmani(9, 'yakin', 'cicek'), h('div.gy-isik.bahar')]],
+    yaz: [[h('div.gy-gunes-parlak')], [taneKatmani(14, 'yakin', 'gunes'), h('div.gy-isik')]],
+    sonbahar: [[h('div.gy-yagmur-gok'), taneKatmani(34, 'uzak', 'yagmur')], [taneKatmani(5, 'yakin', 'yaprak'), taneKatmani(16, 'yakin', 'yagmur'), h('div.gy-cam-damla', {}, ...Array.from({ length: 7 }, (_, i) => h('i', { style: `left:${8 + i * 13 + Math.random() * 5}%;--gec:-${(Math.random() * 6).toFixed(1)}s;--sure:${(4 + Math.random() * 3).toFixed(1)}s;top:${(Math.random() * 30).toFixed(0)}%` })))]],
+  }[mevsim];
+  const camIc = h('div.gy-cam-ic', {}, h('div.gy-katman.gy-k-gok', {}, manzara), ...hava[0], h('div.gy-katman.gy-k-orta', {}, orta), h('div.gy-katman.gy-k-agac', {}, agac), ...hava[1]);
+  const cam = h(`div.gy-cam.${mevsim}`, {}, camIc);
   const perdeSol = perdeKanadi('sol');
   const perdeSag = perdeKanadi('sag');
   const perdeler = h('div.gy-perdeler', {}, perdeSol.el, perdeSag.el);
@@ -89,29 +113,25 @@ export function odaEkrani(app: Uygulama): Ekran {
   const dolap = h('div.gy-dolap', { role: 'button', 'aria-label': 'Dolap' }, dolapIc, dolapAcik, dolapKapali, h('div.gy-kapak-yer.sol', {}, kapakSol), h('div.gy-kapak-yer.sag', {}, kapakSag), h('div.gy-isaret.gy-isaret-dolap'));
 
   const kino = new GiyinikKino();
-  const parilti = h('div.gy-miknatis');
+  const parlti = h('div.gy-miknatis');
   const buz = h('img.gy-buz', { src: resim('buz'), alt: '', draggable: 'false' });
-  const yanakSol = h('i.gy-yanak.sol');
-  const yanakSag = h('i.gy-yanak.sag');
-  const ekler = h('div.gy-kino-ekler', {}, parilti, yanakSol, yanakSag, buz);
-  // titreyen Kino pozu (Gemini, iskelete hizalı): giyinmeden pencereye bakınca bir an iskeletin yerine geçer
-  const titremePoz = h('img.gy-poz', { src: resim('kino-titreme'), alt: '', draggable: 'false' });
-  const kinoKutu = h('div.gy-kino-kutu', {}, kino.el, titremePoz, ekler);
+  const ekler = h('div.gy-kino-ekler', {}, parlti, h('i.gy-yanak.sol'), h('i.gy-yanak.sag'), buz);
+  // mevsimin pencere pozu (Gemini, iskelete hizalı): kışın titreyen, sonbaharda ıslak Kino bir an iskeletin yerine geçer
+  const poz = mevsim === 'kis' || mevsim === 'sonbahar' ? h('img.gy-poz', { src: resim(mevsim === 'kis' ? 'kino-titreme' : 'kino-islak'), alt: '', draggable: 'false' }) : null;
+  const kinoKutu = h('div.gy-kino-kutu', {}, kino.el, ...(poz ? [poz] : []), ekler);
   const kinoYer = h('div.gy-kino-yer', {}, kinoKutu);
+  const tb: TepkiBaglami = { kino, kutu: kinoKutu, ekler, kinoDe: (t) => kinoDe(t) };
 
-  // düşünce balonu: istek resimle (kardan adam)
-  const balon = h(
-    'div.gy-balon',
-    { 'aria-hidden': 'true' },
-    h('i.gy-balon-k1'),
-    h('i.gy-balon-k2'),
-    h('div.gy-balon-ic', {}, h('img.b1', { src: resim('kardan-buyuk'), alt: '' }), h('img.b2', { src: resim('kardan-orta'), alt: '' }), h('img.b3', { src: resim('kardan-kucuk'), alt: '' }), h('img.b4', { src: resim('kardan-havuc'), alt: '' })),
-  );
+  // düşünce balonu: istek resimle
+  const balon = h('div.gy-balon', { 'aria-hidden': 'true' }, h('i.gy-balon-k1'), h('i.gy-balon-k2'), h(`div.gy-balon-ic.${mevsim}`, {}, ...balonIci(mevsim)));
 
   // ayna anı: ayna aşağıdan kayar, içinde Kino'nun yansıması
   const yansima = new GiyinikKino();
   // yansıma çerçevenin camının üstünde (camın oval kırpımıyla), yarı saydam: camın mavisi ve parıltısı görünür
   const ayna = h('div.gy-ayna', { 'aria-hidden': 'true' }, h('img.gy-ayna-cerceve', { src: resim('ayna'), alt: '' }), h('div.gy-ayna-cam', {}, h('div.gy-yansima', {}, yansima.el), h('i.gy-ayna-parilti')));
+
+  // küçük görev: güneş kremi tüpü (yaz)
+  const krem = h('img.gy-krem', { src: resim('esya-krem'), alt: '', draggable: 'false' });
 
   const dunya = h('div.gy-dunya', {}, oda, kapi, pencere, dolap, kinoYer, ayna);
   const surukleKat = h('div.gy-surukle-kat');
@@ -119,8 +139,9 @@ export function odaEkrani(app: Uygulama): Ekran {
   const cikis = app.secenekler.cikis;
   const geri = cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => cikis(), 'kucuk') : h('div', { style: 'width:56px' });
   const albumD = yuvarlakDugme(IKON.album, G.yazi.album, () => app.git('album'), 'kucuk gy-album-dugme');
-  const el = h('div.gy-ekran', {}, dunya, balon, h('div.gy-ust', {}, geri, albumD), surukleKat, flas);
+  const el = h(`div.gy-ekran.gy-oda-ekran.${mevsim}`, {}, dunya, balon, h('div.gy-ust', {}, geri, albumD), surukleKat, flas);
   el.dataset.adim = adim;
+  el.dataset.mevsim = mevsim;
   const adimaGec = (a: Adim) => {
     adim = a;
     el.dataset.adim = a;
@@ -128,12 +149,16 @@ export function odaEkrani(app: Uygulama): Ekran {
 
   // ------------------------------------------------------------ yerleşim (px)
   let W = 0, H = 0, dikey = false, kapiPay = 0, kinoS = 0;
+  let g: Guvenli = { ust: 0, sag: 0, alt: 0, sol: 0 };
   function yerlesim() {
     W = el.clientWidth || innerWidth;
     H = el.clientHeight || innerHeight;
     dikey = H > W * 1.1;
+    // telefon önce: çentik, yuvarlak köşe ve ana ekran çubuğu payı (güvenli alan) hesaba katılır
+    g = guvenliOlc(el);
+    const Wg = W - g.sol - g.sag;
     oda.src = resim(dikey ? 'oda-dikey' : 'oda-yatay');
-    const u = dikey ? W : Math.min(H, W * 0.5);
+    const u = dikey ? W : Math.min(H - g.alt * 0.5, Wg * 0.5);
     const kh = dikey ? H * 0.46 : H * 0.8;
     // kapı bu payın içinde (açılışta ekranın dışında; kamera kayınca görünür)
     kapiPay = Math.max(dikey ? W * 0.62 : W * 0.36, kh * 0.5 + W * 0.16);
@@ -144,27 +169,25 @@ export function odaEkrani(app: Uygulama): Ekran {
     const or = dikey ? 1080 / 1920 : 1920 / 1072;
     const ow = Math.max(DW, H * or), oh = ow / or;
     kutu(oda, (DW - ow) / 2, Math.min(0, H - oh), ow, oh);
-    const zemin = H * (dikey ? 0.84 : 0.9);
+    const zemin = dikey ? Math.min(H * 0.84, H - g.alt - H * 0.07) : Math.min(H * 0.9, H - g.alt - 6);
     // kapı (dünyanın solunda)
     kutu(kapi, (kapiPay - kh * 0.5) * 0.45, zemin - kh, kh * 0.5, kh);
     if (dikey) {
-      // dikey: üstte pencere, solda Kino, sağda dolap (giysiler iki sütun)
+      // dikey: üstte pencere (çentiğin ve geri düğmesinin altında), solda Kino, sağda dolap (giysiler iki sütun)
       const pw = W * 0.5;
-      kutu(pencere, kapiPay + W * 0.06, H * 0.09, pw, pw / 0.778);
+      kutu(pencere, kapiPay + g.sol + W * 0.06, Math.max(H * 0.09, g.ust + 70), pw, pw / 0.778);
       kinoS = Math.min(W * 0.66, H * 0.34);
-      kutu(kinoYer, kapiPay + W * 0.27 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      kutu(kinoYer, kapiPay + g.sol + W * 0.27 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
       const dw = Math.min(W * 0.88, H * 0.5);
-      kutu(dolap, kapiPay + W * 0.98 - dw * 0.83, zemin + H * 0.09 - dw, dw, dw);
+      kutu(dolap, kapiPay + W - g.sag - W * 0.02 - dw * 0.83, zemin + H * 0.09 - dw, dw, dw);
     } else {
       const ph = u * 0.7;
-      kutu(pencere, kapiPay + W * 0.025, H * 0.07, ph * 0.778, ph);
+      kutu(pencere, kapiPay + g.sol + Wg * 0.025, Math.max(H * 0.07, g.ust + 6), ph * 0.778, ph);
       kinoS = u * 0.86;
-      kutu(kinoYer, kapiPay + W * 0.47 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      kutu(kinoYer, kapiPay + g.sol + Wg * 0.47 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
       const dh = u * 0.96;
-      kutu(dolap, kapiPay + W - dh * 0.86, H - dh - H * 0.01, dh, dh);
+      kutu(dolap, kapiPay + W - g.sag * 0.5 - dh * 0.86, H - dh - H * 0.01, dh, dh);
     }
-    const kr = kinoYer.getBoundingClientRect();
-    void kr;
     // ayna: Kino'nun yanında, aşağıdan kayıp gelir
     const ah = kinoS * 1.05;
     kutu(ayna, parseFloat(kinoYer.style.left) + (dikey ? kinoS * 0.62 : kinoS * 0.86), zemin - ah * 0.98, ah * 0.5, ah);
@@ -180,11 +203,11 @@ export function odaEkrani(app: Uygulama): Ekran {
 
   // ------------------------------------------------------------ dolaptaki giysiler
   // dizilim: üstte askıdakiler (sallanır), ortada raf, altta ayakkabılar
-  const DIZI: GiysiId[] = ['mont', 'atki', 'sort', 'bere', 'gozluk', 'eldiven', 'corap', 'bot'];
+  const DIZI = tur.dizi;
+  const ASKIDA = askida(tur);
   const ikonlar = new Map<GiysiId, HTMLElement>();
   for (const id of DIZI) {
-    const askida = ['mont', 'atki', 'sort'].includes(id);
-    const b = h(`button.gy-giysi${askida ? '.askida' : ''}`, { type: 'button', 'aria-label': G.giysi[id], 'data-giysi': id }, h('img', { src: resim(`ikon/${id}`), alt: '', draggable: 'false' }));
+    const b = h(`button.gy-giysi${ASKIDA.includes(id) ? '.askida' : ''}`, { type: 'button', 'aria-label': G.giysi[id], 'data-giysi': id }, h('img', { src: resim(`ikon/${id}`), alt: '', draggable: 'false' }));
     ikonlar.set(id, b);
     raf.append(b);
   }
@@ -194,8 +217,10 @@ export function odaEkrani(app: Uygulama): Ekran {
     // giysiler dolabın iç alanından biraz taşar: büyük, net (4-5 yaş parmağı)
     if (dikey) {
       // dikey telefon: sağ yarıda iki sütun × dört sıra (dolabın önünde ve üstünde), iri
-      const sx = r.x + r.w * 0.14, sw = r.w * 0.72, sy = r.y + r.h * 0.04, sh = r.h * 0.92;
-      const boy = Math.min(sw / 2.15, sh / 4.2, 130);
+      const sx = Math.min(r.x + r.w * 0.14, W - g.sag - 8 - r.w * 0.72), sw = r.w * 0.72, sy = r.y + r.h * 0.04;
+      // en alt sıra ana ekran çubuğunun üstünde kalır
+      const sh = Math.min(r.h * 0.92, H - g.alt - 6 - sy);
+      const boy = Math.min(sw / 2.15, sh / 4.05, 130);
       DIZI.forEach((id, i) => {
         const x = sx + (sw * ((i % 2) + 0.5)) / 2;
         const y = sy + (sh * (Math.floor(i / 2) + 0.5)) / 4;
@@ -203,8 +228,12 @@ export function odaEkrani(app: Uygulama): Ekran {
       });
       return;
     }
-    const ix = r.x + r.w * 0.1, iw = r.w * 0.8;
-    const iy = r.y + r.h * 0.1, ih = r.h * 0.8;
+    // dolabın sağ kenarı ekranın dışında kalır: sütunlar biraz sola (son sütun tam görünsün)
+    // çentik / yuvarlak köşe tarafında son sütun güvenli alanın içinde kalır; alt sıra ana ekran çubuğunun üstünde
+    const iw = r.w * 0.7;
+    const ix = Math.min(r.x + r.w * 0.06, W - g.sag - 6 - iw);
+    const iy = r.y + r.h * 0.1;
+    const ih = Math.min(r.h * 0.8, H - g.alt - 4 - iy);
     const boy = Math.min(iw / 2.75, ih / 3.05, 150);
     DIZI.forEach((id, i) => {
       const sira = i < 3 ? 0 : i < 6 ? 1 : 2;
@@ -216,71 +245,11 @@ export function odaEkrani(app: Uygulama): Ekran {
     });
   }
 
-  // ------------------------------------------------------------ konuşma ve tepki
+  // ------------------------------------------------------------ konuşma
   let konusma = Promise.resolve();
   const mino = (t: string) => (konusma = konus(t));
   const kinoDe = (t: string) => (konusma = kinoSoyle(t));
-  /** Kino'nun kutusu: esneme / zıplama (alt-orta eksen) */
-  const zipla = (yuk = 1) =>
-    oynat(kinoKutu, [
-      { transform: 'none' },
-      { transform: `translateY(0) scale(${1 + 0.06 * yuk}, ${1 - 0.08 * yuk})`, offset: 0.18 },
-      { transform: `translateY(${-14 * yuk}%) scale(${1 - 0.05 * yuk}, ${1 + 0.07 * yuk})`, offset: 0.48 },
-      { transform: `translateY(0) scale(${1 + 0.07 * yuk}, ${1 - 0.07 * yuk})`, offset: 0.78 },
-      { transform: 'none' },
-    ], 620, { easing: 'linear' });
-  const sendele = () =>
-    oynat(kinoKutu, [
-      { transform: 'none' },
-      { transform: 'rotate(-7deg) translateX(-3%)', offset: 0.25 },
-      { transform: 'rotate(6deg) translateX(3%)', offset: 0.55 },
-      { transform: 'rotate(-3deg)', offset: 0.8 },
-      { transform: 'none' },
-    ], 900, { easing: 'ease-in-out' });
-
-  /** Kino titrer: buz sarkıtı, mavi yanaklar, takırdayan dişler */
-  async function usu() {
-    kino.k.ifade('titreme', 2200);
-    kino.titreme = 1;
-    void oynat(yanakSol, [{ opacity: 0 }, { opacity: 0.85 }], 300, { fill: 'forwards' });
-    void oynat(yanakSag, [{ opacity: 0 }, { opacity: 0.85 }], 300, { fill: 'forwards' });
-    void oynat(buz, [
-      { transform: 'scale(0.2, 0)', opacity: 0 },
-      { transform: 'scale(1.15, 1.2)', opacity: 1, offset: 0.6 },
-      { transform: 'scale(0.95, 0.94)', offset: 0.8 },
-      { transform: 'scale(1)', opacity: 1 },
-    ], 700, { delay: ms(250), fill: 'forwards', easing: 'ease-out' });
-    void oynat(kinoKutu, [{ transform: 'scale(1)' }, { transform: 'scale(0.95, 0.93)' }, { transform: 'scale(0.95, 0.93)' }, { transform: 'scale(1)' }], 2200, { easing: 'ease-in-out' });
-    efekt.dagit();
-    void kinoDe(K.brrr);
-    await bekle(1500);
-    kino.titreme = 0;
-    // buz damla gibi düşer, yanaklar söner
-    void oynat(buz, [{ transform: 'scale(1)', opacity: 1 }, { transform: 'translateY(30%) scale(0.9)', opacity: 1, offset: 0.3 }, { transform: 'translateY(160%) scale(0.6)', opacity: 0 }], 520, { fill: 'forwards', easing: 'cubic-bezier(.5,0,.9,.5)' });
-    void oynat(yanakSol, [{ opacity: 0.85 }, { opacity: 0 }], 500, { fill: 'forwards' });
-    void oynat(yanakSag, [{ opacity: 0.85 }, { opacity: 0 }], 500, { fill: 'forwards' });
-  }
-
-  /** Sıcacık: Kino kendini sarar (büzülüp şişer), gözler keyifle kapanır */
-  async function sicacik() {
-    kino.k.ifade('keyif', 1800);
-    void oynat(kinoKutu, [
-      { transform: 'none' },
-      { transform: 'scale(0.94, 0.95) rotate(-2deg)', offset: 0.3 },
-      { transform: 'scale(1.04, 1.03) rotate(2deg)', offset: 0.65 },
-      { transform: 'none' },
-    ], 1400, { easing: 'ease-in-out' });
-    kalpler();
-    void kinoDe(K.sicacik);
-    await bekle(1300);
-  }
-  function kalpler() {
-    for (let i = 0; i < 5; i++) {
-      const k = h('i.gy-kalp', { style: `left:${30 + Math.random() * 40}%;top:${30 + Math.random() * 20}%` });
-      ekler.append(k);
-      void oynat(k, [{ transform: 'translateY(0) scale(0.3)', opacity: 0 }, { transform: 'translateY(-40%) scale(1)', opacity: 1, offset: 0.3 }, { transform: `translate(${(Math.random() - 0.5) * 80}px, -260%) scale(0.8)`, opacity: 0 }], 1300, { delay: ms(i * 120), easing: 'ease-out' }).then(() => k.remove());
-    }
-  }
+  void konusma;
 
   // ------------------------------------------------------------ sürükleme
   let tasinan: { id: GiysiId; el: HTMLElement; kaynak: HTMLElement; dx: number; dy: number; x: number; y: number; t0: number; x0: number; y0: number } | null = null;
@@ -297,19 +266,27 @@ export function odaEkrani(app: Uygulama): Ekran {
     const r = kino.el.getBoundingClientRect();
     return { x: r.left + (tx / 2048) * r.width, y: r.top + (ty / 2048) * r.height };
   }
+  /** giysinin uçacağı yer: bölgenin en yakın merkezi (tutulan eşya hep sağ patiye) */
+  function hedefNokta(id: GiysiId, tx?: number, ty?: number) {
+    const g = giysi(id);
+    const ms = BOLGE_MERKEZ[g.bolge];
+    if (g.tutulan) return ms[1];
+    if (tx === undefined || ty === undefined) return ms[0];
+    return ms.reduce((a, b) => (Math.hypot(a[0] - tx, a[1] - ty!) < Math.hypot(b[0] - tx, b[1] - ty!) ? a : b));
+  }
   function miknatisGoster(id: GiysiId | null, x = 0, y = 0) {
     if (!id) {
-      parilti.classList.remove('acik');
+      parlti.classList.remove('acik');
       return;
     }
     const g = giysi(id);
     const t = tuvalde(x, y);
     if (bolgeUzakligi(g.bolge, t.x, t.y) <= MIKNATIS) {
-      const m = BOLGE_MERKEZ[g.bolge].reduce((a, b) => (Math.hypot(a[0] - t.x, a[1] - t.y) < Math.hypot(b[0] - t.x, b[1] - t.y) ? a : b));
-      parilti.style.left = `${(m[0] / 2048) * 100}%`;
-      parilti.style.top = `${(m[1] / 2048) * 100}%`;
-      parilti.classList.add('acik');
-    } else parilti.classList.remove('acik');
+      const m = hedefNokta(id, t.x, t.y);
+      parlti.style.left = `${(m[0] / 2048) * 100}%`;
+      parlti.style.top = `${(m[1] / 2048) * 100}%`;
+      parlti.classList.add('acik');
+    } else parlti.classList.remove('acik');
   }
 
   function surukleBasla(id: GiysiId, e: PointerEvent) {
@@ -345,7 +322,7 @@ export function odaEkrani(app: Uygulama): Ekran {
     // dokunup bırakmak (sürüklemeden): adını söyler; ipucundaysa kendiliğinden uçar
     if (performance.now() - t.t0 < 300 && Math.hypot(t.x - t.x0, t.y - t.y0) < 12) {
       if (ipucuId === t.id) {
-        const m = BOLGE_MERKEZ[giysi(t.id).bolge][0];
+        const m = hedefNokta(t.id);
         const hedef = ekranda(m[0], m[1]);
         await kavis(t.el, { x: cx, y: cy }, hedef, 520, { s0: 1, s1: 0.9 });
         await sonuc(t, hedef.x, hedef.y);
@@ -368,7 +345,7 @@ export function odaEkrani(app: Uygulama): Ekran {
   }
   /** Kino'nun üstündeki bir giysi dolaba uçar (çizim söner, kopyası dolaba süzülür) */
   async function kinodanDolaba(id: GiysiId) {
-    const m = BOLGE_MERKEZ[giysi(id).bolge][0];
+    const m = hedefNokta(id);
     const a = ekranda(m[0], m[1]);
     kino.giy(id, false);
     yansima.giy(id, false);
@@ -382,7 +359,7 @@ export function odaEkrani(app: Uygulama): Ekran {
 
   async function sonuc(t: { id: GiysiId; el: HTMLElement; kaynak: HTMLElement }, x: number, y: number) {
     const tv = tuvalde(x, y);
-    const s = birak(kino.giyilenler, t.id, tv.x, tv.y);
+    const s = birak(kino.giyilenler, t.id, tv.x, tv.y, tur);
     if (s.tur === 'iska') {
       await geriGonder(t.el, t.kaynak, { x, y });
       return;
@@ -395,14 +372,14 @@ export function odaEkrani(app: Uygulama): Ekran {
         const hedef = ekranda(m[0], m[1]);
         await kavis(t.el, { x, y }, hedef, 260, { s0: 1.2, s1: 0.8, tepe: -20 });
         kino.k.ifade('saskin', 1500);
-        void sendele();
+        void sendele(kinoKutu);
         void kinoDe(K[giysi(t.id).soru]);
         await bekle(900);
         await geriGonder(t.el, t.kaynak, hedef);
         return;
       }
       // giysi yerine "pıt" diye oturur
-      const m = BOLGE_MERKEZ[giysi(t.id).bolge][0];
+      const m = hedefNokta(t.id, tv.x, tv.y);
       const hedef = ekranda(m[0], m[1]);
       await oynat(t.el, [{ transform: t.el.style.transform, opacity: 1 }, { transform: `translate(${hedef.x}px, ${hedef.y}px) translate(-50%, -50%) scale(0.7)`, opacity: 0 }], 180, { easing: 'cubic-bezier(.5,0,.8,.5)', fill: 'forwards' });
       t.el.remove();
@@ -410,28 +387,29 @@ export function odaEkrani(app: Uygulama): Ekran {
       if (s.tur === 'sira') {
         // sıra şakası
         if (s.kural === 'once_corap') {
-          // çorap botun üstüne geçer (kocaman, komik), Kino ayağına bakar; çorap düşer, bot da çıkar
+          // çorap ayakkabının üstüne geçer (kocaman, komik), Kino ayağına bakar; çorap düşer, ayakkabı da çıkar
+          const ayakkabi = s.geri[1];
           kino.giy('corap', true, true);
-          kino.sira(['bot', 'corap']);
+          kino.sira([ayakkabi, 'corap']);
           kino.parcaDonusum('corap', 'translate(-2%, -1%) scale(1.22, 1.5)', 260);
           kino.k.ifade('saskin', 1800);
-          void zipla(0.5);
+          void zipla(kinoKutu, 0.5);
           await bekle(1300);
           await kino.dusur('corap');
           kino.parcaDonusum('corap', null, 10);
           kino.sira(null);
           void mino(M.once_corap);
-          await kinodanDolaba('bot');
+          await kinodanDolaba(ayakkabi);
           t.kaynak.classList.remove('bos');
           parlat('corap');
         } else {
           // mont atkının / eldivenin üstüne geçer: atkı içeride kaybolur, eldiven kolda
-          kino.giy('mont', true, true);
-          yansima.giy('mont', true);
-          kino.sira(['corap', 'bot', 'atki', 'eldiven', 'mont', 'bere', 'gozluk']);
+          kino.giy(t.id, true, true);
+          yansima.giy(t.id, true);
+          kino.sira(['corap', 'bot', 'atki', 'eldiven', t.id, 'bere', 'gozluk']);
           kino.k.ifade('saskin', 1800);
           if (s.geri.includes('eldiven')) {
-            void sendele();
+            void sendele(kinoKutu);
             void kinoDe(K.ellerim);
             await bekle(1100);
           } else await bekle(900);
@@ -446,35 +424,19 @@ export function odaEkrani(app: Uygulama): Ekran {
       kino.giy(t.id, true, true);
       yansima.giy(t.id, true);
       void oynat(kinoKutu, [{ transform: 'none' }, { transform: 'scale(1.03, 0.96)', offset: 0.35 }, { transform: 'scale(0.99, 1.02)', offset: 0.7 }, { transform: 'none' }], 300, { easing: 'ease-out' });
-      if (s.tur === 'kisinDegil') {
-        if (t.id === 'sort') await usu();
-        else {
-          // güneş gözlüğü: önce havalı poz, sonra buğulanır: göremiyorum
-          kino.k.ifade('keyif', 900);
-          void oynat(kinoKutu, [{ transform: 'none' }, { transform: 'rotate(-5deg) translateX(-2%)', offset: 0.4 }, { transform: 'rotate(-5deg) translateX(-2%)', offset: 0.75 }, { transform: 'none' }], 1100);
-          await bekle(1000);
-          ekler.classList.add('bugulu');
-          kino.k.ifade('saskin', 1400);
-          void sendele();
-          void kinoDe(K.goremiyorum);
-          await bekle(1100);
-          await bekle(500);
-          ekler.classList.remove('bugulu');
-        }
-        void mino(M.kisin_degil);
+      if (s.tur === 'uymaz') {
+        await uymazTepki(tb, s.tepki, t.id);
+        await bekle(200);
+        void mino(UYMAZ_SOZ[s.tepki]);
         await kinodanDolaba(t.id);
         return;
       }
       // doğru giysi: sevimli tepki
-      if (t.id === 'mont') await sicacik();
-      else {
-        kino.k.ifade('heyecan', 900);
-        void zipla(0.6);
-        await bekle(650);
-      }
-      if (!eksikler(kino.giyilenler).length) {
+      await iyiTepki(tb, tur.iyi[t.id]);
+      if (!eksikler(kino.giyilenler, tur).length) {
         await bekle(250);
-        await aynaAni();
+        if (tur.gorev) await gorev();
+        else await aynaAni();
       }
     } finally {
       mesgul = false;
@@ -498,8 +460,14 @@ export function odaEkrani(app: Uygulama): Ekran {
     surukleBasla(b.dataset.giysi as GiysiId, e);
   };
   raf.addEventListener('pointerdown', ikonBasla);
-  const hareket = (e: PointerEvent) => tasi(e.clientX, e.clientY);
-  const birakildi = () => void birakIslem();
+  const hareket = (e: PointerEvent) => {
+    tasi(e.clientX, e.clientY);
+    kremOvala(e);
+  };
+  const birakildi = () => {
+    kremBasili = false;
+    void birakIslem();
+  };
   window.addEventListener('pointermove', hareket);
   window.addEventListener('pointerup', birakildi);
   window.addEventListener('pointercancel', birakildi);
@@ -508,16 +476,141 @@ export function odaEkrani(app: Uygulama): Ekran {
     window.removeEventListener('pointerup', birakildi);
     window.removeEventListener('pointercancel', birakildi);
   });
-  // ipucu: 8 sn hareket yoksa sıradaki giysi parlar (dokununca kendiliğinden uçar)
+  // ipucu: 8 sn hareket yoksa sıradaki giysi parlar (dokununca kendiliğinden uçar); görevde sıradaki nokta büyür
   const ipucuSayac = window.setInterval(() => {
+    if (adim === 'gorev' && performance.now() - sonHareket > 6000) {
+      gorevIpucu();
+      sonHareket = performance.now();
+      return;
+    }
     if (adim !== 'giyin' || mesgul || tasinan) return;
     if (performance.now() - sonHareket > 8000) {
-      const id = siradaki(kino.giyilenler);
+      const id = siradaki(kino.giyilenler, tur);
       if (id) parlat(id);
       sonHareket = performance.now();
     }
   }, 500);
   kapatilacak.push(() => clearInterval(ipucuSayac));
+
+  // ------------------------------------------------------------ küçük görev
+  /** güneş kremi: burun ve iki kulak (tuval noktaları); şemsiye: patideki kapalı şemsiye */
+  const KREM_YERI: [number, number][] = [[915, 845], [420, 900], [1590, 880]];
+  let kremNoktalari: { x: number; y: number; dolu: number; el: HTMLElement; leke: HTMLElement; bitti: boolean }[] = [];
+  let kremBasili = false;
+  let kremSon: { x: number; y: number } | null = null;
+  let gorevBitti: (() => void) | null = null;
+
+  async function gorev() {
+    adimaGec('gorev');
+    raf.classList.add('gizli');
+    sonHareket = performance.now();
+    if (tur.gorev === 'krem') {
+      // tüp dolaptan Kino'nun yanına uçar; burun ve kulaklarda parlayan halkalar
+      const kr = kinoYer.getBoundingClientRect();
+      const d = dolap.getBoundingClientRect();
+      krem.style.width = `${kinoS * 0.17}px`;
+      surukleKat.append(krem);
+      efekt.ucus();
+      await kavis(krem, { x: d.left + d.width / 2, y: d.top + d.height * 0.5 }, { x: kr.left + kr.width * (dikey ? 0.95 : 0.92), y: kr.top + kr.height * 0.62 }, 700, { s0: 0.4, s1: 1, don: 360 });
+      kremNoktalari = KREM_YERI.map(([x, y]) => {
+        const leke = h('i.gy-krem-leke', { style: `left:${(x / 20.48).toFixed(2)}%;top:${(y / 20.48).toFixed(2)}%` });
+        const halka = h('i.gy-krem-halka', { style: `left:${(x / 20.48).toFixed(2)}%;top:${(y / 20.48).toFixed(2)}%` });
+        ekler.append(leke, halka);
+        return { x, y, dolu: 0, el: halka, leke, bitti: false };
+      });
+      void mino(M.krem);
+      await new Promise<void>((r) => (gorevBitti = r));
+      kino.k.ifade('keyif', 1500);
+      kalpler(ekler, 5);
+      void kinoDe(K.mis);
+      void oynat(krem, [{ opacity: 1 }, { opacity: 0 }], 400, { fill: 'forwards' }).then(() => krem.remove());
+      await bekle(1300);
+    } else {
+      // şemsiye: patideki kapalı şemsiye parlar; dokununca "pof!" diye açılır
+      kinoKutu.classList.add('gy-semsiye-isaret');
+      void mino(M.semsiye_ac);
+      await new Promise<void>((r) => (gorevBitti = r));
+      kinoKutu.classList.remove('gy-semsiye-isaret');
+      efekt.pof();
+      kino.semsiyeAc(true);
+      yansima.semsiyeAc(true, false);
+      void kinoDe(K.pof);
+      kino.k.ifade('heyecan', 1400);
+      await zipla(kinoKutu, 0.7);
+      parilti(ekler, 1000, 60, 5);
+      await bekle(500);
+    }
+    await aynaAni();
+  }
+  function kremDokun(i: number, miktar: number) {
+    const n = kremNoktalari[i];
+    if (!n || n.bitti) return;
+    n.dolu = Math.min(1, n.dolu + miktar);
+    n.leke.style.opacity = String(0.25 + n.dolu * 0.75);
+    n.leke.style.transform = `translate(-50%, -50%) scale(${0.5 + n.dolu * 0.6})`;
+    if (Math.random() < 0.35) efekt.ovala();
+    if (n.dolu >= 1) {
+      n.bitti = true;
+      n.el.remove();
+      // krem yayılır, sonra emilip parlar
+      void oynat(n.leke, [{ transform: 'translate(-50%,-50%) scale(1.1)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.25)', opacity: 0.9, offset: 0.4 }, { transform: 'translate(-50%,-50%) scale(0.9)', opacity: 0 }], 900, { fill: 'forwards' });
+      parilti(ekler, n.x, n.y, 4);
+      kino.k.ifade('keyif', 600);
+      if (kremNoktalari.every((k) => k.bitti)) {
+        const f = gorevBitti;
+        gorevBitti = null;
+        setTimeout(() => f?.(), ms(500));
+      }
+    }
+  }
+  function kremOvala(e: PointerEvent) {
+    if (adim !== 'gorev' || tur.gorev !== 'krem' || !kremBasili) return;
+    const t = tuvalde(e.clientX, e.clientY);
+    if (kremSon) {
+      const yol = Math.hypot(t.x - kremSon.x, t.y - kremSon.y);
+      kremNoktalari.forEach((n, i) => {
+        if (Math.hypot(n.x - t.x, n.y - t.y) < 230) kremDokun(i, yol / 900);
+      });
+    }
+    kremSon = t;
+    sonHareket = performance.now();
+  }
+  function gorevIpucu() {
+    if (tur.gorev === 'krem') {
+      const n = kremNoktalari.find((k) => !k.bitti);
+      if (n) void oynat(n.el, [{ transform: 'translate(-50%,-50%) scale(1)' }, { transform: 'translate(-50%,-50%) scale(1.5)' }, { transform: 'translate(-50%,-50%) scale(1)' }], 700, { iterations: 2 });
+      void mino(M.krem);
+    } else void mino(M.semsiye_ac);
+  }
+  kinoKutu.addEventListener('pointerdown', (e) => {
+    if (adim === 'gorev') {
+      sonHareket = performance.now();
+      if (tur.gorev === 'semsiye') {
+        const f = gorevBitti;
+        gorevBitti = null;
+        f?.();
+        return;
+      }
+      // dokunmak da sürer (3 yaş): dokunulan noktaya yakın olan dolar
+      kremBasili = true;
+      const t = tuvalde(e.clientX, e.clientY);
+      kremSon = t;
+      let en = -1, d = Infinity;
+      kremNoktalari.forEach((n, i) => {
+        const u = Math.hypot(n.x - t.x, n.y - t.y);
+        if (!n.bitti && u < d) {
+          d = u;
+          en = i;
+        }
+      });
+      if (en >= 0 && d < 420) kremDokun(en, 0.4);
+      return;
+    }
+    if (mesgul || tasinan || adim === 'giris') return;
+    efekt.dokunma();
+    kino.k.ifade('heyecan', 700);
+    void zipla(kinoKutu, 0.5);
+  });
 
   // ------------------------------------------------------------ adımlar
   async function giris() {
@@ -532,13 +625,13 @@ export function odaEkrani(app: Uygulama): Ekran {
       { transform: 'translateX(-2%) translateY(0)', offset: 0.92 },
       { transform: 'none' },
     ], 1500, { easing: 'linear' });
-    void zipla(0.8);
+    void zipla(kinoKutu, 0.8);
     kino.k.ifade('heyecan', 2200);
     balonKonum();
     balon.classList.add('acik');
     void oynat(balon, [{ transform: 'scale(0.2)', opacity: 0 }, { transform: 'scale(1.08)', opacity: 1, offset: 0.7 }, { transform: 'scale(1)', opacity: 1 }], 480, { easing: 'ease-out', fill: 'forwards' });
     // balon en az 2,4 sn görünür (ses kısa ya da kapalı olsa da çocuk resmi görsün)
-    await Promise.all([kinoDe(K.istek), bekle(2400)]);
+    await Promise.all([kinoDe(ISTEK[mevsim]), bekle(2400)]);
     await bekle(400);
     void oynat(balon, [{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(0.6)', opacity: 0 }], 300, { fill: 'forwards' });
     adimaGec('perde');
@@ -548,7 +641,7 @@ export function odaEkrani(app: Uygulama): Ekran {
   function balonKonum() {
     const r = kinoYer.getBoundingClientRect();
     const bw = Math.min(r.width * 0.62, 230);
-    Object.assign(balon.style, { width: `${bw}px`, height: `${bw * 0.78}px`, left: `${Math.min(W - bw - 8, r.left + r.width * (dikey ? 0.55 : 0.7))}px`, top: `${Math.max(56, r.top - bw * 0.15)}px` });
+    Object.assign(balon.style, { width: `${bw}px`, height: `${bw * 0.78}px`, left: `${Math.min(W - g.sag - bw - 8, r.left + r.width * (dikey ? 0.55 : 0.7))}px`, top: `${Math.max(56 + g.ust, r.top - bw * 0.15)}px` });
   }
 
   let perdeAcik = false;
@@ -557,8 +650,7 @@ export function odaEkrani(app: Uygulama): Ekran {
     perdeAcik = true;
     pencere.classList.remove('isaretli');
     efekt.cevir();
-    // kumaş dalgası: her şerit kendi gecikmesiyle kenara toplanır (hazırlık: önce hafif içe), uç geriden gelir
-    // sol kanat sola, sağ kanat sağa toplanır: her şerit kenara doğru kayar ve daralır (kıvrım sıklaşır);
+    // kumaş dalgası: sol kanat sola, sağ kanat sağa toplanır: her şerit kenara doğru kayar ve daralır (kıvrım sıklaşır);
     // ortadaki (elle çekilen) uç önce yola çıkar, kenardakiler geriden gelir; sonda hafif geri sekme
     const dalga = (seritler: HTMLElement[], yon: 1 | -1) => {
       const N = seritler.length;
@@ -577,7 +669,7 @@ export function odaEkrani(app: Uygulama): Ekran {
         }),
       );
     };
-    // hava katman katman: gök önce, ağaç sonra (parallax), kar yağmaya başlar
+    // hava katman katman: gök önce, ağaç sonra (parallax), hava başlar
     pencere.classList.add('acildi');
     void oynat(camIc.querySelector('.gy-k-gok'), [{ transform: 'translateX(-6%) scale(1.12)' }, { transform: 'none' }], 1700, { easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
     void oynat(camIc.querySelector('.gy-k-orta'), [{ transform: 'translateX(-10%) scale(1.13)' }, { transform: 'none' }], 1700, { easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
@@ -586,33 +678,68 @@ export function odaEkrani(app: Uygulama): Ekran {
     // perde topuzları hafifçe sallanır (takip)
     void oynat(perdeSol.el, [{ transform: 'none' }, { transform: 'rotate(1.2deg)' }, { transform: 'rotate(-0.6deg)' }, { transform: 'none' }], 900, { easing: 'ease-in-out' });
     void oynat(perdeSag.el, [{ transform: 'none' }, { transform: 'rotate(-1.2deg)' }, { transform: 'rotate(0.6deg)' }, { transform: 'none' }], 900, { easing: 'ease-in-out' });
-    void mino(M.kis);
+    void mino(M[mevsim]);
     await bekle(1500);
-    // Kino pencereye bakar, üşür: titreme pozu bir an iskeletin yerine geçer (buz sarkıtlı, kendini sarmış)
-    void oynat(titremePoz, [{ opacity: 0 }, { opacity: 1 }], 140, { fill: 'forwards' });
-    void oynat(kino.el, [{ opacity: 1 }, { opacity: 0 }], 140, { fill: 'forwards' });
-    const titre: Keyframe[] = [];
-    for (let i = 0; i <= 16; i++) titre.push({ transform: i === 0 || i === 16 ? 'none' : `translateX(${i % 2 ? 1.2 : -1.2}%) rotate(${i % 2 ? 0.8 : -0.8}deg) scale(0.97, 0.95)` });
-    void oynat(titremePoz, titre, 1300, { easing: 'linear', composite: 'add' });
-    void kinoDe(K.brrr);
-    await bekle(1300);
-    void oynat(titremePoz, [{ opacity: 1 }, { opacity: 0 }], 200, { fill: 'forwards' });
-    void oynat(kino.el, [{ opacity: 0 }, { opacity: 1 }], 200, { fill: 'forwards' });
-    kino.k.ifade('saskin', 800);
+    await pencereyeBakar();
     adimaGec('dolap');
     dolap.classList.add('isaretli');
     void mino(M.dolap);
   }
+
+  /** Kino pencereye bakıp havayı hisseder: kışın üşür, ilkbaharda koklar, yazın terler, sonbaharda ıslanır */
+  async function pencereyeBakar() {
+    if (poz) {
+      // Gemini pozu bir an iskeletin yerine geçer (titreyen ya da ıslak Kino)
+      void oynat(poz, [{ opacity: 0 }, { opacity: 1 }], 140, { fill: 'forwards' });
+      void oynat(kino.el, [{ opacity: 1 }, { opacity: 0 }], 140, { fill: 'forwards' });
+      const titre: Keyframe[] = [];
+      if (mevsim === 'kis') for (let i = 0; i <= 16; i++) titre.push({ transform: i === 0 || i === 16 ? 'none' : `translateX(${i % 2 ? 1.2 : -1.2}%) rotate(${i % 2 ? 0.8 : -0.8}deg) scale(0.97, 0.95)` });
+      // ıslak: başını hafifçe sallar, burnunu çeker (yavaş, üzgün)
+      else titre.push({ transform: 'none' }, { transform: 'rotate(-2deg) translateY(1%)', offset: 0.3 }, { transform: 'rotate(2deg)', offset: 0.6 }, { transform: 'none' });
+      void oynat(poz, titre, mevsim === 'kis' ? 1300 : 1500, { easing: mevsim === 'kis' ? 'linear' : 'ease-in-out', composite: 'add' });
+      if (mevsim === 'kis') void kinoDe(K.brrr);
+      else {
+        efekt.sicrama();
+        void mino(M.yagmur);
+      }
+      await bekle(mevsim === 'kis' ? 1300 : 1700);
+      void oynat(poz, [{ opacity: 1 }, { opacity: 0 }], 200, { fill: 'forwards' });
+      void oynat(kino.el, [{ opacity: 0 }, { opacity: 1 }], 200, { fill: 'forwards' });
+      kino.k.ifade('saskin', 800);
+      return;
+    }
+    if (mevsim === 'ilkbahar') {
+      // pencereden gelen çiçek kokusu: koklar, keyiflenir, taç yaprakları burnunun önünden geçer
+      void kino.k.oynat('kokla', 1400);
+      kino.k.ifade('keyif', 1600);
+      kalpler(ekler, 3);
+      void kinoDe(K.mis);
+      await bekle(1500);
+      return;
+    }
+    // yaz: güneş içeri vurur, Kino terler (dil dışarıda), elini yüzüne siper eder gibi geriye çekilir
+    kino.k.ifade('sicak', 1700);
+    void oynat(kinoKutu, [{ transform: 'none' }, { transform: 'scale(1.03, 0.96) rotate(-2deg)', offset: 0.3 }, { transform: 'scale(1.03, 0.96) rotate(-2deg)', offset: 0.7 }, { transform: 'none' }], 1500, { easing: 'ease-in-out' });
+    for (let i = 0; i < 4; i++) {
+      const d = h('i.gy-ter', { style: `left:${42 + (Math.random() - 0.5) * 10}%;top:${22 + Math.random() * 6}%` });
+      ekler.append(d);
+      void oynat(d, [{ transform: 'translate(-50%,-50%) scale(0.3)', opacity: 0 }, { transform: `translate(calc(-50% + ${(i % 2 ? 1 : -1) * 40}px), calc(-50% - 30px)) scale(1)`, opacity: 1, offset: 0.35 }, { transform: `translate(calc(-50% + ${(i % 2 ? 1 : -1) * 70}px), calc(-50% + 70px)) scale(0.8)`, opacity: 0 }], 800, { delay: ms(200 + i * 150) }).then(() => d.remove());
+    }
+    void kinoDe(K.sicak);
+    await bekle(1500);
+  }
+
   async function agacaDokun() {
     if (!perdeAcik) return;
     efekt.dokunma();
     void oynat(agac, [{ transform: 'none' }, { transform: 'rotate(-3deg)' }, { transform: 'rotate(2deg)' }, { transform: 'rotate(-1deg)' }, { transform: 'none' }], 700, { easing: 'ease-in-out' });
-    for (let i = 0; i < 6; i++) {
-      const p = h('i.gy-kar-puf', { style: `left:${20 + Math.random() * 60}%;top:${10 + Math.random() * 40}%` });
+    // ağaçtan mevsimin tanesi dökülür: kar, taç yaprağı, yaprak
+    for (let i = 0; i < 7; i++) {
+      const p = h(`i.gy-kar-puf.${mevsim}`, { style: `left:${55 + Math.random() * 35}%;top:${10 + Math.random() * 40}%` });
       camIc.append(p);
-      void oynat(p, [{ transform: 'translateY(0) scale(0.6)', opacity: 1 }, { transform: `translate(${(Math.random() - 0.5) * 40}px, 90px) scale(1)`, opacity: 0 }], 900, { delay: ms(i * 60) }).then(() => p.remove());
+      void oynat(p, [{ transform: 'translateY(0) scale(0.6) rotate(0deg)', opacity: 1 }, { transform: `translate(${(Math.random() - 0.5) * 50}px, 90px) scale(1) rotate(${(Math.random() - 0.5) * 360}deg)`, opacity: 0 }], 1000, { delay: ms(i * 60) }).then(() => p.remove());
     }
-    void mino(M.kis);
+    void mino(M[mevsim]);
   }
 
   let dolapAcikMi = false;
@@ -714,8 +841,7 @@ export function odaEkrani(app: Uygulama): Ekran {
     void oynat(kinoYer, [{ transform: getComputedStyle(kinoYer).transform }, { transform: `translateX(${parseFloat(kapi.style.left) - parseFloat(kinoYer.style.left) + parseFloat(kapi.style.width) * 0.5 - kinoS * 0.5}px) translateY(-4%) scale(0.72)`, opacity: 0.0 }], 800, { easing: 'ease-in', fill: 'forwards' });
     void oynat(dunya, [{ transform: 'translateX(0) scale(1)', transformOrigin: `${ox}px ${oy}px` }, { transform: 'translateX(0) scale(2.6)', transformOrigin: `${ox}px ${oy}px` }], 1000, { delay: ms(300), easing: 'cubic-bezier(.6,0,.9,.5)', fill: 'forwards' });
     await oynat(flas, [{ opacity: 0 }, { opacity: 1 }], 600, { delay: ms(700), fill: 'forwards' });
-    bitti = true;
-    app.git('disari', { giyili: [...kino.giyilenler] });
+    app.git('disari', { mevsim, giyili: [...kino.giyilenler] });
   }
 
   pencere.addEventListener('click', (e) => {
@@ -733,12 +859,6 @@ export function odaEkrani(app: Uygulama): Ekran {
   });
   dolap.addEventListener('click', () => void dolapAc());
   kapi.addEventListener('click', () => void kapiAc());
-  kinoKutu.addEventListener('pointerdown', () => {
-    if (mesgul || tasinan || adim === 'giris') return;
-    efekt.dokunma();
-    kino.k.ifade('heyecan', 700);
-    void zipla(0.5);
-  });
 
   // ------------------------------------------------------------ başlat
   const boyut = () => {
@@ -754,13 +874,13 @@ export function odaEkrani(app: Uygulama): Ekran {
     const q = new URLSearchParams(location.search);
     const atla = q.get('adim');
     if ((TEST_MODU || q.has('onizleme')) && atla) {
-      // test / gösterim kısayolları: &adim=perde | dolap | giyin | kapi
+      // test / gösterim kısayolları: &adim=perde | dolap | giyin | gorev | kapi
       kinoYer.style.opacity = '1';
       if (atla !== 'perde') {
         perdeAcik = true;
         pencere.classList.add('acildi', 'perde-acik');
       }
-      if (atla === 'giyin' || atla === 'kapi') {
+      if (atla === 'giyin' || atla === 'kapi' || atla === 'gorev') {
         dolapAcikMi = true;
         dolapAcik.style.opacity = '1';
         dolapKapali.style.opacity = '0';
@@ -768,12 +888,19 @@ export function odaEkrani(app: Uygulama): Ekran {
         kapakSag.style.opacity = '0';
         raf.classList.add('acik');
       }
-      if (atla === 'kapi') {
-        for (const g of GIYSILER)
-          if (g.kis === 'gerekli') {
-            kino.giy(g.id, true);
-            yansima.giy(g.id, true);
-          }
+      if (atla === 'kapi' || atla === 'gorev') {
+        for (const g of tur.gerekli) {
+          kino.giy(g, true);
+          yansima.giy(g, true);
+        }
+        if (atla === 'gorev' && tur.gorev) {
+          void gorev();
+          return;
+        }
+        if (tur.gorev === 'semsiye') {
+          kino.semsiyeAc(true, false);
+          yansima.semsiyeAc(true, false);
+        }
         void aynaAni();
         return;
       }
@@ -782,18 +909,13 @@ export function odaEkrani(app: Uygulama): Ekran {
     }
     void giris();
   });
-  void AZ;
-  void YAY;
 
   return {
     el,
     kapat: () => {
-      for (const z of zaman) clearTimeout(z);
       for (const f of kapatilacak) f();
       kino.kapat();
       yansima.kapat();
-      void bitti;
-      void sonra;
     },
   };
 }
