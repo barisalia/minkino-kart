@@ -232,8 +232,8 @@
   display: block;
   padding: 6px 2px 1px;
   text-align: center;
-  --ad: 10.6cqi;
-  font-size: clamp(0.8rem, var(--ad), 1.4rem);
+  --ad: 9.6cqi;
+  font-size: clamp(0.66rem, var(--ad), 1.4rem);
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
@@ -762,3 +762,11 @@
     animation: none;
   }
 }
+
+/* 800 px ve üstü yatay telefonda kart adları 10.5 px kalıyordu: okunur en küçük boy (667 px'te eski ölçek, sığsın) */
+@media (orientation: landscape) and (min-width: 800px) {
+  .ug-kok .ug-kart-ad {
+    font-size: clamp(0.76rem, var(--ad), 1.4rem);
+  }
+}
+
