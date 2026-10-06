@@ -1097,6 +1097,12 @@
   width: 31%;
   max-width: 130px;
 }
+/* alçak yatay telefonda vitrin ekranın altına dayanır: Mino'nun ayakları kesilmesin */
+@media (orientation: landscape) and (max-height: 540px) {
+  .cc-kok .cc-acilis-mino {
+    bottom: -2%;
+  }
+}
 /* dik ekranda kâğıdın altındaki boşluğu Mino doldurur (kâğıt kare kalır) */
 @media (max-aspect-ratio: 1/1) {
   .cc-kok .cc-alan.mino-var {
