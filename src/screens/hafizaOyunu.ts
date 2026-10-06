@@ -9,7 +9,7 @@ import { efekt, konus } from '../audio/ses';
 import { HAFIZA_DUZEN, hafizaDestesi, hafizaKartlariSec, HafizaDurumu, hafizaYildiz, type CevirSonucu } from '../engine/hafiza';
 import { durum, kaydetDurum } from '../engine/ilerleme';
 import { albumKartlari, kart, temaBul } from '../engine/katalog';
-import { yeniAcilanlar } from '../engine/odul';
+import { kutlanacakTemalar, yeniAcilanlar } from '../engine/odul';
 import type { Yas } from '../engine/types';
 import { bekle, h, sure, svg, TEST_MODU } from '../ui/dom';
 import { cevir, eslesmeyenSallan, eslesmeZipla, hafizaKartiEl } from '../ui/hafizaKart';
@@ -22,7 +22,17 @@ import type { Ekran, Uygulama } from '../uygulama';
 import { paketKutla } from './turSonu';
 import { minoYoldas } from './yoldas';
 
-export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}): Ekran {
+/** Oyun ortasında albüme bakılınca oyunun kaldığı yer: albümden geri dönülünce aynı deste, bulunan çiftler açık */
+export interface HafizaDevam {
+  yas: Yas;
+  deste: string[];
+  bulunan: number[];
+  hamle: number;
+  hata: number;
+  albumOnce: number;
+}
+
+export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string; devam?: HafizaDevam } = {}): Ekran {
   const yas = (durum.i.yas ?? 3) as Yas;
   const tema = temaBul(param.tema ?? '') ?? temaBul('hayvanlar')!;
   // bulunan çift albüme uçar: yalnız albümde yeri olan ve görseli bulunan kartlar
@@ -30,9 +40,15 @@ export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}):
     const k = kart(id);
     return !!k && k.album !== false && (k.tur !== 'resim' || gorselVarMi(k));
   };
-  const oyun = new HafizaDurumu(hafizaDestesi(hafizaKartlariSec(yas, tema.id, Math.random, uygun)));
+  const devam = param.devam && param.devam.yas === yas && param.devam.deste.length ? param.devam : null;
+  const oyun = new HafizaDurumu(devam ? devam.deste : hafizaDestesi(hafizaKartlariSec(yas, tema.id, Math.random, uygun)));
+  if (devam) {
+    devam.bulunan.forEach((i) => oyun.bulunan.add(i));
+    oyun.hamle = devam.hamle;
+    oyun.hata = devam.hata;
+  }
   const albumdekiler = new Set(albumKartlari(tema.id).map((k) => k.id));
-  const albumOnce = durum.i.album.length;
+  const albumOnce = devam ? devam.albumOnce : durum.i.album.length;
   let kapandi = false;
   let kilit = true;
   /** Çift karara bağlanırken dokunuşlar beklemede (durum test için ekranda da işaretli) */
@@ -43,9 +59,14 @@ export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}):
   let bosta: number | undefined;
   const ucuslar: Promise<void>[] = [];
 
-  const album = albumDugmesi(() => app.git('album', { tema: tema.id }));
+  const album = albumDugmesi(() => {
+    // geri dönülünce oyun kaldığı yerden sürsün (src/uygulama.ts → donusParametresi); açık duran tek kart kapanır
+    const yer: HafizaDevam = { yas, deste: oyun.deste, bulunan: [...oyun.bulunan], hamle: oyun.hamle, hata: oyun.hata, albumOnce };
+    app.donusParametresi({ tema: tema.id, devam: yer });
+    app.git('album', { tema: tema.id });
+  });
   const ilerleme = h('div.ilerleme', { 'aria-hidden': 'true' });
-  for (let i = 0; i < oyun.ciftSayisi; i++) ilerleme.append(h('i'));
+  for (let i = 0; i < oyun.ciftSayisi; i++) ilerleme.append(h(i < oyun.bulunan.size / 2 ? 'i.tamam' : 'i'));
   const yoldas = minoYoldas();
 
   const soyle = () => void konus(metin('hafiza_sor'));
@@ -65,6 +86,11 @@ export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}):
     const el = hafizaKartiEl(id, id);
     el.dataset.sira = String(i);
     el.addEventListener('click', () => void dokun(i));
+    // albümden dönülünce bulunmuş çiftlerin yerinde silik yuva kalır (albüme uçmuşlardı)
+    if (oyun.bulunan.has(i)) {
+      el.classList.add('acik', 'eslesti', 'alindi');
+      el.setAttribute('aria-label', kart(id)?.ad ?? 'Kart');
+    }
     izgara.append(el);
     return el;
   });
@@ -216,7 +242,8 @@ export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}):
       efekt.yildiz(i);
     }
     await konusma;
-    for (const id of acilan) {
+    // bu oyunda açılanlar ve önceden kutlaması kaçırılanlar (src/screens/turSonu.ts ile aynı)
+    for (const id of kutlanacakTemalar(acilan, durum.i.album.length, durum.i.premium, durum.i.kutlananTemalar)) {
       if (kapandi || durum.i.kutlananTemalar.includes(id)) continue;
       durum.i.kutlananTemalar.push(id);
       kaydetDurum();
@@ -237,11 +264,20 @@ export function hafizaOyunuEkrani(app: Uygulama, param: { tema?: string } = {}):
     const n = oyun.deste.length;
     const kolonlar = [d.kolon, d.satir, n / 2, ...(n <= 6 ? [n] : [])];
     kapatSigdir = izgaraSigdir(alan, izgara, n, { enBuyuk: yas === 3 ? 230 : 190, bosluk: yas >= 5 ? 10 : 16, kolonlar });
-    const konusma = konus([metin('hafiza_oyunu'), metin('hafiza_sor')]);
+    // albümden dönüldü ve bütün çiftler bulunmuştu: doğrudan bitiş
+    if (devam && oyun.bitti) {
+      el.dataset.hazir = '1';
+      await bitir();
+      return;
+    }
+    const konusma = konus(devam ? metin('hafiza_sor') : [metin('hafiza_oyunu'), metin('hafiza_sor')]);
     yoldas.dagit();
-    await dagit(elemanlar, yoldas.patiNoktasi(), { bas: 150, aralik: elemanlar.length > 8 ? 55 : 90, arkaDon: false, ses: () => efekt.dagit() });
+    // albümden dönülünce yalnız bulunmamış kartlar dağıtılır
+    const dagitilacak = elemanlar.filter((_, i) => !oyun.bulunan.has(i));
+    await dagit(dagitilacak, yoldas.patiNoktasi(), { bas: 150, aralik: dagitilacak.length > 8 ? 55 : 90, arkaDon: false, ses: () => efekt.dagit() });
     if (kapandi) return;
-    if (yas <= 4) {
+    // küçükler için açılıştaki kısa bakış yalnız oyunun başında (dönüşte kartlar yeniden gösterilmez)
+    if (yas <= 4 && !devam) {
       await bekle(sure(250));
       efekt.cevir();
       await Promise.all(elemanlar.map((e, i) => cevir(e, true, i * 50)));

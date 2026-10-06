@@ -52,29 +52,62 @@ export interface TurSonucu {
   acilanTemalar: string[];
 }
 
-export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
+/** Tur ortasında albüme bakılınca turun kaldığı yer: albümden geri dönülünce tur baştan başlamaz, buradan sürer */
+export interface TurDevam {
+  yas: Yas;
+  sorular: Soru[];
+  /** sıradaki (henüz çözülmemiş) soru */
+  sira: number;
+  ilkDenemede: number;
+  yeniKartlar: string[];
+  albumOnce: number;
+  /** sıradaki soruda yanlış yapılmıştı (dönünce ilk denemede sayılmaz) */
+  yanlisVar: boolean;
+}
+
+export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDevam }): Ekran {
   const yas = (durum.i.yas ?? 3) as Yas;
   const tema = temaBul(param.tema) ?? temaBul('hayvanlar')!;
   kartResimleriniYukle();
-  const sorular = turOlustur(yas, tema.id);
+  const devam = param.devam && param.devam.yas === yas && param.devam.sorular.length ? param.devam : null;
+  const sorular = devam ? devam.sorular : turOlustur(yas, tema.id);
   // Test kısayolu: ?test=1&tip=SAY → tur o tipteki bir soruyla başlar
-  const testTip = TEST_MODU ? new URLSearchParams(location.search).get('tip') : null;
+  const testTip = TEST_MODU && !devam ? new URLSearchParams(location.search).get('tip') : null;
   if (testTip) {
     const havuz = tumSorular(yas, tema.id).filter((q) => q.tip === testTip);
     if (havuz.length) sorular[0] = soruHazirla(havuz[Number(new URLSearchParams(location.search).get('n') ?? 0) % havuz.length]);
   }
-  const albumOnce = durum.i.album.length;
+  const albumOnce = devam ? devam.albumOnce : durum.i.album.length;
 
-  let sira = 0;
-  let ilkDenemede = 0;
-  const yeniKartlar: string[] = [];
+  let sira = devam ? Math.min(devam.sira, sorular.length) : 0;
+  let ilkDenemede = devam?.ilkDenemede ?? 0;
+  const yeniKartlar: string[] = devam ? [...devam.yeniKartlar] : [];
+  /** devam edilen soruda önceden yanlış yapılmıştı (yalnız ilk gösterilen soru için) */
+  let devamYanlis = devam?.yanlisVar ?? false;
+  /** Şu anki soru: çözüldü mü, yanlış yapıldı mı (albüme bakılırken turun yerini kaydetmek için) */
+  let anlik = { cozuldu: false, yanlis: false };
   let temizlikler: (() => void)[] = [];
   let kapandi = false;
   let bosta: number | undefined;
 
-  const album = albumDugmesi(() => app.git('album', { tema: tema.id }));
+  const album = albumDugmesi(() => {
+    // geri dönülünce tur kaldığı yerden sürsün (src/uygulama.ts → donusParametresi; kartlar zaten albümde kayıtlı)
+    if (sorular.length) {
+      const yer: TurDevam = {
+        yas,
+        sorular,
+        sira: anlik.cozuldu ? sira + 1 : sira,
+        ilkDenemede,
+        yeniKartlar: [...yeniKartlar],
+        albumOnce,
+        yanlisVar: !anlik.cozuldu && anlik.yanlis,
+      };
+      app.donusParametresi({ tema: tema.id, devam: yer });
+    }
+    app.git('album', { tema: tema.id });
+  });
   const ilerleme = h('div.ilerleme', { 'aria-hidden': 'true' });
-  sorular.forEach(() => ilerleme.append(h('i')));
+  sorular.forEach((_, i) => ilerleme.append(h(i < sira ? 'i.tamam' : 'i')));
 
   const hop = yuvarlakDugme(IKON.hoparlor, 'Soruyu tekrar dinle', () => void soruyuSoyle());
   hop.classList.add('soru-hop');
@@ -148,7 +181,10 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     alan.dataset.tip = s.tip;
     alan.replaceChildren(gosterge, secenek);
 
-    let yanlisVar = false;
+    let yanlisVar = devamYanlis;
+    devamYanlis = false;
+    anlik = { cozuldu: false, yanlis: yanlisVar };
+    const buSoru = anlik;
     let yanlisSayisi = 0;
     let cozuldu = false;
     let hazirOl: () => void = () => undefined;
@@ -164,12 +200,14 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
       dogru: (hedefEl, aciklama) => {
         if (cozuldu || kapandi) return;
         cozuldu = true;
+        buSoru.cozuldu = true;
         if (!yanlisVar) ilkDenemede++;
         void dogruAkisi(s, hedefEl, aciklama);
       },
       yanlis: (yEl, dogruEl, soldur = true) => {
         if (cozuldu || kapandi) return;
         yanlisVar = true;
+        buSoru.yanlis = true;
         yanlisSayisi++;
         efekt.yanlis();
         void yumusakSallan(yEl).then(() => soldur && !cozuldu && yEl.classList.add('soluk'));
@@ -237,6 +275,8 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
     await Promise.all([konusma, ucus, bekle(sure(1100))]);
     if (kapandi) return;
     sira++;
+    // sıradaki soru henüz gösterilmedi (geçiş sırasında albüme bakılırsa o sorudan sürer)
+    anlik = { cozuldu: false, yanlis: false };
     if (sira < sorular.length) {
       // soru geçişi: kalan kartlar sırayla düşüp kaybolur, yenilerini Mino dağıtır
       await topla([...alan.querySelectorAll<HTMLElement>('.izgara > *')]);
@@ -264,7 +304,12 @@ export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
   if (sorular.length === 0) {
     alan.append(h('div.yukleniyor', {}, 'Bu paket yakında!'));
   } else {
-    requestAnimationFrame(() => soruGoster());
+    // albümden dönülen tur bitmişse (son doğru cevaptan hemen sonra albüme bakıldı) doğrudan tur sonu
+    requestAnimationFrame(() => {
+      if (kapandi) return;
+      if (sira < sorular.length) soruGoster();
+      else bitir();
+    });
   }
 
   return {

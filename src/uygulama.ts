@@ -99,6 +99,14 @@ export class Uygulama {
   }
   private sonParam: unknown;
 
+  /**
+   * Açık ekranın geçmişe yazılacak parametresini değiştirir: `geri()` ile bu ekrana dönülünce ekran bu parametreyle
+   * kurulur (ör. tur ortasında albüme bakılınca tur kaldığı yerden sürer; src/screens/oyun.ts).
+   */
+  donusParametresi(param: unknown) {
+    this.sonParam = param;
+  }
+
   /** Beklenmedik bir hatada çocuğu boş ekranda bırakmayan toparlanma ekranı. */
   private hataEkrani(): Ekran {
     const dugme = h('button.dugme', { type: 'button' }, 'Baştan başla');
