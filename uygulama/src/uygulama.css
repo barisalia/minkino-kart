@@ -863,3 +863,19 @@
   }
 }
 
+/* küçük yatay telefon (667 × 375, iPhone SE / 8): beş sütunda kartlar 90 px'e iniyordu. Sol sütun (logo, Mino ile
+   Kino) daralır, kenar payı ve aralıklar bir tık incelir: kartlar 100 px'in üstünde kalır. Çentik ve alt çubuk
+   payı korunur (env); 844 / 932 px'lik telefonlar bu kuraldan etkilenmez. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) {
+    gap: 10px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    width: clamp(84px, 14.5vw, 110px);
+  }
+  .ug-kok .ug-izgara[data-adet='9'] {
+    column-gap: 8px;
+  }
+}
