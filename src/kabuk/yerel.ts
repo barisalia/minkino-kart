@@ -4,7 +4,8 @@
  *
  * - Kayıtlar: `minkino-*` localStorage kayıtları @capacitor/preferences'a yansır; silinmişse geri yüklenir.
  * - Arka plan (@capacitor/app appStateChange): ses, müzik, konuşma ve mikrofon durur; geri gelince ses devam eder.
- * - Ekran yönü (@capacitor/screen-orientation): film yatay kilitler, çıkınca serbest (src/kabuk/yon.ts).
+ * - Ekran yönü (@capacitor/screen-orientation): telefon hep yatay (yerel kilit); tablette film yatay kilitler, çıkınca
+ *   serbest (src/kabuk/yon.ts).
  * - Android geri tuşu (@capacitor/app backButton): pencere kapanır / oyundan ana menüye / ana menüden çıkış.
  */
 import { App } from '@capacitor/app';
@@ -12,7 +13,7 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { aynaDepo, aynala, geriYukle, kaliciMi, type KaliciDepo } from './kalici';
-import { ARKA_PLAN_OLAYI, GERI_OLAYI, geriKarari, menuSayfasiMi, YON_OLAYI, type Yon } from './yon';
+import { ARKA_PLAN_OLAYI, GERI_OLAYI, geriKarari, menuSayfasiMi, telefonMu, YON_OLAYI, yonKarari, type Yon } from './yon';
 
 if (Capacitor.isNativePlatform()) kabuguKur();
 
@@ -151,10 +152,16 @@ function kabuguKur() {
   });
 
   // ---------------------------------------------------------------- ekran yönü
-  window.addEventListener(YON_OLAYI, (e) => {
-    const yon = (e as CustomEvent<Yon>).detail;
-    void (yon === 'yatay' ? ScreenOrientation.lock({ orientation: 'landscape' }) : ScreenOrientation.unlock()).catch(() => undefined);
-  });
-  // sayfa değişince (film sayfasından menüye) kilit kalmasın
-  window.addEventListener('pagehide', () => void ScreenOrientation.unlock().catch(() => undefined));
+  // Telefon açılıştan itibaren yatay kilitli (yerel taraf: AndroidManifest + MainActivity, iOS Info.plist); JS ona
+  // dokunmaz. Tablet serbest; yalnız film yatay kilitler, çıkınca bırakır. (Katlanan telefon açılınca tablete döner:
+  // her istekte yeniden bakılır.)
+  const telefon = () => telefonMu(screen.width, screen.height);
+  const yonUygula = (yon: Yon) => {
+    const karar = yonKarari(yon, telefon());
+    if (karar === 'kilitle') void ScreenOrientation.lock({ orientation: 'landscape' }).catch(() => undefined);
+    else if (karar === 'birak') void ScreenOrientation.unlock().catch(() => undefined);
+  };
+  window.addEventListener(YON_OLAYI, (e) => yonUygula((e as CustomEvent<Yon>).detail));
+  // sayfa değişince (film sayfasından menüye) tablette kilit kalmasın
+  window.addEventListener('pagehide', () => yonUygula('serbest'));
 }

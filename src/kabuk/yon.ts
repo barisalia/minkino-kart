@@ -1,6 +1,7 @@
 /**
  * Uygulama kabuğuna istekler (olayla; web sitesinde dinleyen yoktur, hiçbir şey olmaz):
- * - Ekran yönü: film açılınca yatay kilit, çıkınca serbest (src/kabuk/yerel.ts → @capacitor/screen-orientation).
+ * - Ekran yönü: telefon hep yatay (yerel kilit); tablette film açılınca yatay kilit, çıkınca serbest
+ *   (src/kabuk/yerel.ts → @capacitor/screen-orientation).
  * - Arka plan: uygulama arka plana geçince / geri gelince duyurulur (oyunlar isterse duraklar).
  */
 export const YON_OLAYI = 'minkino:yon';
@@ -36,6 +37,25 @@ export function geriKarari(d: { pencereAcik: boolean; sayfaIsledi: boolean; menu
 }
 
 export type Yon = 'yatay' | 'serbest';
+
+/**
+ * Telefon mu (kısa kenar 600 dp'den küçük): uygulamada telefon baştan sona yatay kilitli (iki yatay yön, sensörle).
+ * Kilidi yerel taraf koyar: Android MainActivity (+ AndroidManifest sensorLandscape), iOS Info.plist (iPhone yalnız
+ * yatay). Tablet serbest döner. Aynı eşik MainActivity.java'da (smallestScreenWidthDp < 600).
+ */
+export const TELEFON_KISA_KENAR = 600;
+export function telefonMu(en: number, boy: number): boolean {
+  return Math.min(en, boy) < TELEFON_KISA_KENAR;
+}
+
+/**
+ * Uygulama kabuğunun yön isteğine cevabı (saf, test edilir): telefonda hiçbir şey yapılmaz (hep yatay kalır; eklentinin
+ * 'landscape' kilidi tek yöne kilitlerdi, 'unlock' Android'de dikeye bırakırdı); tablette film yatay kilitler, çıkınca serbest.
+ */
+export function yonKarari(yon: Yon, telefon: boolean): 'kilitle' | 'birak' | 'yok' {
+  if (telefon) return 'yok';
+  return yon === 'yatay' ? 'kilitle' : 'birak';
+}
 
 export function yonIste(yon: Yon) {
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent<Yon>(YON_OLAYI, { detail: yon }));
