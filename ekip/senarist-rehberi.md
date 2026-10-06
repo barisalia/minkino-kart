@@ -165,3 +165,9 @@ Nasıl biter, çocuk neyle ödüllendirilir?
    - Adaya varınca dans.
 
 Barış'ın ölçüsü: **"Ucuza kaçma, mantığa koy."** Görev listesi değil, çocuğun sesiyle ilerleyen bir hikâye istiyoruz.
+
+## Barış'ın yönü (2026-10-06)
+- 4-5 yaşındaki çocuk ve annesi en çok **şirinliğe ve görsele** bakar. Karmaşık sistemler, hikâye çerçeveleri ve oyunlar arası bağlantılar önerme.
+- Öncelik: kusursuz görsel kalite, sevimli karakter anları, hatasız ve akıcı oyun.
+- Eğitici içerik **yeterli** olsun ve **güzel görsellerle** anlatılsın: sayı, harf, kelime, renk, şekil açıkça ve resimle verilsin.
+- "Öğüt" kelimesi hiçbir yerde kullanılmaz.
