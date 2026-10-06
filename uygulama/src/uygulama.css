@@ -232,8 +232,8 @@
   display: block;
   padding: 6px 2px 1px;
   text-align: center;
-  --ad: 9.6cqi;
-  font-size: clamp(0.66rem, var(--ad), 1.4rem);
+  --ad: 10.6cqi;
+  font-size: clamp(0.8rem, var(--ad), 1.4rem);
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
@@ -686,7 +686,7 @@
   box-shadow: 0 3px 0 var(--kontur);
   color: color-mix(in srgb, var(--r) 80%, var(--kontur));
   font-weight: 700;
-  font-size: clamp(0.72rem, min(3vw, 2dvh), 1rem);
+  font-size: clamp(0.76rem, min(3vw, 2dvh), 1rem);
   line-height: 1.1;
   white-space: nowrap;
   rotate: 6deg;
