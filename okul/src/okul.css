@@ -564,7 +564,7 @@
   padding: 2px 8px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.92);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   line-height: 1.05;
   text-align: center;
   pointer-events: none;
@@ -621,7 +621,7 @@
   background: var(--mor);
   color: #fff;
   border: 3px solid var(--kontur);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
 }
 /* uygulamada abonelikli durak: küçük kilit rozeti sol üstte (yaş rozeti sağ üstte); durak soluklaşmaz, baskın değil */
 .ok-kok .ok-durak > .mk-kilit {
@@ -674,7 +674,7 @@
     --iw: clamp(36px, min(7vw, 11dvh), 72px);
   }
   .ok-kok .ok-durak-ad {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -965,6 +965,9 @@
 }
 .ok-kok .ok-kino-balon {
   background: #fff4dd;
+  /* Kino sağ kenarda: balon sola doğru açılır, ekranın kenarından taşmaz */
+  translate: -82% 0;
+  transform-origin: 88% 100%;
 }
 .ok-kok .ok-kino-balon.acik,
 .ok-kok .ok-oyuncu-balon.acik {
@@ -1121,7 +1124,7 @@
   position: absolute;
   right: 2%;
   bottom: 0;
-  width: min(42cqw, 30cqh);
+  width: min(52cqw, 36cqh);
   aspect-ratio: 1;
 }
 .ok-kok .ok-sepet-resim {
@@ -1135,7 +1138,7 @@
   position: absolute;
   left: 16%;
   right: 16%;
-  bottom: 46%;
+  bottom: 49%;
   display: flex;
   flex-wrap: wrap-reverse;
   justify-content: center;
@@ -1143,8 +1146,8 @@
 }
 .ok-kok .ok-sepet-elma {
   position: relative;
-  width: 24%;
-  margin: 0 -2% -9%;
+  width: 30%;
+  margin: 0 -3% -13%;
 }
 .ok-kok .ok-sepet-elma img {
   width: 100%;
@@ -1155,7 +1158,7 @@
   left: 50%;
   top: 52%;
   translate: -50% -50%;
-  font-size: clamp(0.7rem, 3cqw, 1.1rem);
+  font-size: clamp(0.95rem, 4cqw, 1.35rem);
   color: #fff;
   -webkit-text-stroke: 3px var(--kontur);
   paint-order: stroke fill;
@@ -1167,7 +1170,7 @@
     width: min(84cqw, 104cqh * 1.371);
   }
   .ok-kok .ok-sepet {
-    width: min(28cqw, 66cqh);
+    width: min(32cqw, 84cqh);
   }
 }
 
@@ -1243,16 +1246,25 @@
   z-index: -1;
 }
 .ok-kok .ok-e2-elmalar {
-  /* elmalar sayılabilecek boyda: sepetin kenarından biraz taşar */
+  /* elmalar sepetin ağzında yığın: görünen sepet resmin ~%70'i; elmalar ağızdan taşmaz, alt yarıları sepetin içinde */
   position: absolute;
-  left: -6%;
-  right: -6%;
-  bottom: 50%;
+  left: 13%;
+  right: 13%;
+  bottom: 44%;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   direction: ltr;
   align-items: end;
   z-index: 1;
+}
+.ok-kok .ok-e2-elmalar[data-n='9'],
+.ok-kok .ok-e2-elmalar[data-n='10'] {
+  grid-template-columns: repeat(5, 1fr);
+}
+/* üst sıra alttakinin arasına oturur (yığın) */
+.ok-kok .ok-e2-elmalar:not([data-n='1']):not([data-n='2']):not([data-n='3']):not([data-n='4']) .ok-mini-elma {
+  width: 118%;
+  margin: 0 0 -6% -2%;
 }
 .ok-kok .ok-e2-elmalar[data-n='1'],
 .ok-kok .ok-e2-elmalar[data-n='2'],
@@ -1263,10 +1275,10 @@
 }
 .ok-kok .ok-mini-elma {
   width: 100%;
-  max-width: 27%;
+  max-width: 34%;
   min-width: 0;
-  flex: 0 0 27%;
-  margin-bottom: -6%;
+  flex: 0 1 34%;
+  margin: 0 -2% -6%;
 }
 .ok-kok .ok-e2-elmalar:not([data-n='1']):not([data-n='2']):not([data-n='3']):not([data-n='4']) .ok-mini-elma {
   max-width: none;
@@ -1432,14 +1444,54 @@
   font-size: 1.4rem;
   min-width: 140px;
 }
+/* tavşan teşekkür ederken söz balonu istek etiketinin üstüne binmesin: etiket o an solar */
+.ok-kok .ok-e3-tavsan .ok-istek {
+  transition: opacity 0.18s;
+}
+.ok-kok .ok-e3-tavsan:has(.ok-oyuncu-balon.acik) .ok-istek {
+  opacity: 0;
+}
 @container alan (aspect-ratio > 1.15) {
   .ok-kok .ok-e3 {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr);
-    grid-template-rows: 1fr;
+    /* satır alana sığar: tavşan sütunu uzayıp sepeti "Ver" düğmesinin altına itmesin */
+    grid-template-rows: minmax(0, 1fr);
     grid-template-areas: 'yigin sepet tavsan';
   }
   .ok-kok .ok-e3-sepet {
     width: min(30cqw, 80cqh);
+  }
+  /* istek etiketi tavşanın yanında (üstünde değil): tavşan alanın boyuna sığar */
+  .ok-kok .ok-e3-tavsan .ok-istek {
+    position: absolute;
+    right: 78%;
+    top: 6%;
+    z-index: 2;
+  }
+  /* havuç yığını çimenin üstünde dursun, havada değil */
+  .ok-kok .ok-e3-yigin {
+    align-self: end;
+    margin-bottom: 2cqh;
+    row-gap: 0;
+  }
+  /* alçak yatay alanda havuçlar üst üste yığın (iki sıra havada asılı durmasın) */
+  .ok-kok .ok-e3-yuva {
+    width: 54px;
+    height: 32px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .ok-kok .ok-e3-yuva .ok-havuc {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 auto;
+  }
+}
+/* dikeyde de havuçlar sepetin altındaki çimene yakın */
+@container alan (aspect-ratio <= 1.15) {
+  .ok-kok .ok-e3-yigin {
+    align-self: start;
+    margin-top: 4cqh;
   }
 }
 
@@ -1879,6 +1931,11 @@
     width: 86%;
     aspect-ratio: 1;
   }
+  /* alçak yatay alanda rakamlar okunur boyda (7cqh telefonda ~14 px kalıyordu) */
+  .ok-kok .ok-plaka,
+  .ok-kok .ok-basamak .ok-rakam b {
+    font-size: clamp(1.5rem, 14cqh, 2.6rem);
+  }
   .ok-kok .ok-merdiven-elma {
     left: auto;
     right: 0;
@@ -1917,6 +1974,16 @@
   display: grid;
   grid-template-columns: repeat(5, 24px);
   gap: 8px;
+}
+/* 6-10 alkış: iki eşit sıra (5'li sırada tek nokta yalnız kalmasın) */
+.ok-kok .ok-e7-noktalar:has(> i:nth-child(6)) {
+  grid-template-columns: repeat(3, 24px);
+}
+.ok-kok .ok-e7-noktalar:has(> i:nth-child(7)) {
+  grid-template-columns: repeat(4, 24px);
+}
+.ok-kok .ok-e7-noktalar:has(> i:nth-child(9)) {
+  grid-template-columns: repeat(5, 24px);
 }
 .ok-kok .ok-e7-noktalar i {
   width: 24px;
@@ -2481,7 +2548,7 @@
   animation: ok-ipucu 1.2s ease-in-out infinite;
 }
 .ok-kok .ok-yuva-ad {
-  font-size: clamp(0.55rem, 2.3vw, 0.8rem);
+  font-size: clamp(0.72rem, 2.6vw, 0.85rem);
   line-height: 1.05;
   text-align: center;
   min-height: 2.1em;
