@@ -334,7 +334,7 @@
   box-shadow: 0 4px 0 var(--kontur-yumusak);
   color: var(--kontur);
   font: inherit;
-  font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+  font-size: clamp(0.95rem, 4.1vw, 1.1rem);
   transition: transform 0.15s;
 }
 .cc-kok .cc-mod .ikon {
