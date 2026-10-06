@@ -166,9 +166,9 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
       const vardi = hedef > 0 && i < hedef && !(sr.kapali && i === 0 && hedef === sr.noktalar.length);
       const sinif = ['cc-nokta', vardi ? 'yandi' : '', i === siradaki ? 'siradaki' : '', i === 0 ? 'ilk' : '', tek ? 'tek' : ''].filter(Boolean).join(' ');
       const g = sv('g', { class: sinif, transform: `translate(${x} ${y})`, 'data-i': i });
-      if (i === siradaki) g.append(sv('circle', { r: 0.05, class: 'cc-nokta-halka' }));
-      g.append(sv('circle', { r: tek ? 0.034 : 0.032, class: 'cc-nokta-daire' }));
-      const t = sv('text', { y: 0.012 });
+      if (i === siradaki) g.append(sv('circle', { r: 0.064, class: 'cc-nokta-halka' }));
+      g.append(sv('circle', { r: tek ? 0.046 : 0.042, class: 'cc-nokta-daire' }));
+      const t = sv('text', { y: 0.016 });
       t.textContent = tek ? '★' : String(i + 1);
       g.append(t);
       katman.append(g);
