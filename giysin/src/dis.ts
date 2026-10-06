@@ -506,22 +506,64 @@ export function disariEkrani(app: Uygulama, param?: { mevsim?: Mevsim; giyili?: 
     sonDugmeleri();
   }
 
-  /** Dört mevsim doldu: Mevsim Ustası rozeti ortada parlayarak belirir, konfeti, sonra albüme uçar */
+  /** Rozet grubunun yeri: Kino'nun üstüne binmez (Kino tam görünür, yanında sevinir). Yatayda Kino'nun boş yanında
+   *  (önce sol: sağda Mino ile makine), dikeyde Kino'nun başının üstünde; çentik ve üst düğmeler dışarıda. */
+  function rozetYeri(grup: HTMLElement) {
+    const e = el.getBoundingClientRect();
+    const k = kinoKutu.getBoundingClientRect();
+    // Kino'nun gövdesi kutusunun ortasında (şemsiye / sepet yanlara taşabilir): kabaca %20-%80, tepe %4
+    const kSol = k.left - e.left + k.width * 0.2, kSag = k.left - e.left + k.width * 0.8, kUst = k.top - e.top + k.height * 0.04;
+    const ust = g.ust + 76, alt = H - g.alt - 8;
+    const kisa = Math.min(W, H);
+    const solBos = kSol - g.sol, sagBos = W - g.sag - kSag;
+    // sağda Mino ile makine (kışta kardan adam da): yer yetiyorsa sol
+    const sol = solBos >= 120 || solBos >= sagBos;
+    let s: number;
+    if (dikey) s = Math.min(kisa * 0.42, 260, kUst - ust - 74);
+    else s = Math.min(kisa * 0.42, 260, (sol ? solBos : sagBos) - 24, alt - ust - 74);
+    s = Math.max(110, s);
+    grup.style.setProperty('--rs', `${Math.round(s)}px`);
+    const gw = Math.max(grup.offsetWidth, s), gh = grup.offsetHeight;
+    let x: number, y: number;
+    if (dikey) {
+      x = W / 2;
+      y = Math.max(ust + gh / 2, (ust + kUst) / 2);
+    } else {
+      x = sol ? g.sol + solBos / 2 : kSag + sagBos / 2;
+      y = Math.min(Math.max((ust + alt) / 2, ust + gh / 2), alt - gh / 2);
+    }
+    x = Math.min(Math.max(x, g.sol + gw / 2 + 8), W - g.sag - gw / 2 - 8);
+    grup.style.left = `${Math.round(x - grup.offsetWidth / 2)}px`;
+    grup.style.top = `${Math.round(y - gh / 2)}px`;
+  }
+
+  /** Dört mevsim doldu: Mevsim Ustası rozeti Kino'nun yanında parlayarak belirir, Kino tam görünür sevinip zıplar,
+   *  konfeti, sonra rozet albüme doğru küçülüp kaybolur */
   async function rozetToreni() {
-    const r = h('div.gy-rozet-toren', {}, h('i.gy-rozet-isik'), h('img', { src: resim('rozet-mevsim'), alt: G.yazi.rozet, draggable: 'false' }), h('span', {}, G.yazi.rozet));
+    const grup = h('div.gy-rozet-grup', {}, h('i.gy-rozet-isik'), h('img', { src: resim('rozet-mevsim'), alt: G.yazi.rozet, draggable: 'false' }), h('span', {}, G.yazi.rozet));
+    const r = h('div.gy-rozet-toren', {}, grup);
     el.append(r);
+    rozetYeri(grup);
     el.dataset.rozet = '1';
     efekt.kilitAcildi();
-    void oynat(r.querySelector('.gy-rozet-isik'), [{ transform: 'scale(0.3) rotate(0deg)', opacity: 0 }, { transform: 'scale(1) rotate(40deg)', opacity: 1, offset: 0.3 }, { transform: 'scale(1.1) rotate(160deg)', opacity: 0.8 }], 3000, { fill: 'forwards' });
-    await oynat(r.querySelector('img'), [{ transform: 'scale(0) rotate(-30deg)', opacity: 0 }, { transform: 'scale(1.15) rotate(6deg)', opacity: 1, offset: 0.65 }, { transform: 'scale(1) rotate(0deg)', opacity: 1 }], 700, { easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'forwards' });
-    void oynat(r.querySelector('span'), [{ transform: 'translateY(20px)', opacity: 0 }, { transform: 'none', opacity: 1 }], 400, { fill: 'forwards' });
+    void oynat(r, [{ opacity: 0 }, { opacity: 1 }], 400, { fill: 'forwards' });
+    void oynat(grup.querySelector('.gy-rozet-isik'), [{ transform: 'scale(0.3) rotate(0deg)', opacity: 0 }, { transform: 'scale(1) rotate(40deg)', opacity: 1, offset: 0.3 }, { transform: 'scale(1.1) rotate(160deg)', opacity: 0.85 }], 3000, { fill: 'forwards' });
+    // Kino rozeti görünce sevinir: yüzü heyecanlı, üç kez zıplar (tam opak, rozetin yanında)
+    kino.k.ifade('heyecan', 4200);
+    void (async () => {
+      for (let i = 0; i < 3 && !kapandi && r.isConnected; i++) {
+        await zipla(kinoKutu, i === 0 ? 1.1 : 0.8, 640);
+        await bekle(180);
+      }
+    })();
+    await oynat(grup.querySelector('img'), [{ transform: 'scale(0) rotate(-30deg)', opacity: 0 }, { transform: 'scale(1.15) rotate(6deg)', opacity: 1, offset: 0.65 }, { transform: 'scale(1) rotate(0deg)', opacity: 1 }], 700, { easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'forwards' });
+    void oynat(grup.querySelector('span'), [{ transform: 'translateY(20px)', opacity: 0 }, { transform: 'none', opacity: 1 }], 400, { fill: 'forwards' });
     efekt.konfeti();
-    kino.k.ifade('heyecan', 2500);
-    void zipla(kinoKutu, 1, 700);
     mino?.tepki('dans', 2);
     await konus(G.mino.rozet);
     await bekle(1600);
-    await oynat(r, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.5) translateY(-30%)' }], 500, { fill: 'forwards' });
+    void oynat(r, [{ opacity: 1 }, { opacity: 0 }], 500, { fill: 'forwards' });
+    await oynat(grup, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.5) translateY(-30%)' }], 500, { fill: 'forwards' });
     r.remove();
   }
 
