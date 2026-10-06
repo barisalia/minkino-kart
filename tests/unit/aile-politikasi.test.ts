@@ -55,6 +55,21 @@ describe('dış bağlantılar ebeveyn kapısının arkasında', () => {
   });
 });
 
+describe('paylaşım (sistem paylaşım penceresi) ebeveyn kapısının arkasında', () => {
+  it('navigator.share yalnız kartPaylas içinde; kartPaylas yalnız kapı geçildikten sonra çağrılır', () => {
+    const paylasan = dosyalar.filter((d) => /\.share\(|\.canShare\b/.test(d.metin)).map((d) => d.yol);
+    expect(paylasan).toEqual(['canlan/src/kart.ts']);
+    const cagiranlar = dosyalar.filter((d) => /kartPaylas\(/.test(d.metin.replace('export async function kartPaylas(', ''))).map((d) => d.yol);
+    expect(cagiranlar).toEqual(['canlan/src/ekranlar.ts']);
+    // Kartım düğmesi: önce ebeveyn kapısı, sonra paylaşım
+    const ekran = dosya('canlan/src/ekranlar.ts');
+    const govde = ekran.slice(ekran.indexOf("yuvarlakDugme(IKON.paylas, 'Kartım'"), ekran.indexOf("}, 'kucuk cc-kart')"));
+    const [kapi, paylas] = ['if (!(await ebeveynKapisiAc(app.kok))) return;', 'kartPaylas('].map((s) => govde.indexOf(s));
+    expect(kapi).toBeGreaterThan(0);
+    expect(paylas).toBeGreaterThan(kapi);
+  });
+});
+
 describe('reklam, analitik, üçüncü taraf SDK yok', () => {
   it('bağımlılıklarda yalnız Capacitor, yazı tipi ve RevenueCat', () => {
     const adlar = Object.keys(paket.dependencies);

@@ -165,6 +165,15 @@ export async function kartYap(o: { svg: SVGSVGElement; sahneUrl?: string; baslik
   return new Promise((coz) => c.toBlob((b) => coz(b!), 'image/png'));
 }
 
+/**
+ * Kart penceresindeki kaydetme ipucu. Android uygulamasının WebView'ında resmi basılı tutunca kaydetme menüsü yok
+ * (Web Share da yok): orada söz verilemez, ekran görüntüsü önerilir. iOS'ta "Fotoğraflar'a ekle" çıkar
+ * (Info.plist → NSPhotoLibraryAddUsageDescription), tarayıcıda "Resmi kaydet".
+ */
+export function kartKayitIpucu(platform: 'ios' | 'android' | null): string {
+  return platform === 'android' ? 'Kaydetmek için ekran görüntüsü alabilirsin.' : 'Resmi basılı tutup kaydedebilirsin.';
+}
+
 /** Web Share ile paylaşır; olmazsa 'goster' (görseli basılı tutup kaydetmek için). */
 export async function kartPaylas(b: Blob, ad: string): Promise<'paylasildi' | 'iptal' | 'goster'> {
   const dosya = new File([b], ad, { type: 'image/png' });

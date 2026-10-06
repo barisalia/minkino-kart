@@ -53,6 +53,24 @@ async function sihirliBoyaVeCanlandir(page: Page) {
   await expect(page.locator('.cc-sahne.canli')).toBeVisible();
 }
 
+/** Ebeveyn kapısını doğru cevapla geçer (test modunda toplam data-toplam'da). */
+async function kapiyiGec(page: Page) {
+  const soru = page.locator('.ebeveyn-kapisi .kapi-soru');
+  await expect(soru).toBeVisible();
+  for (const r of (await soru.getAttribute('data-toplam'))!) await page.locator('.ebeveyn-kapisi .tus', { hasText: new RegExp(`^${r}$`) }).click();
+  await page.getByRole('button', { name: 'tamam' }).click();
+  await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
+}
+
+/** Kâğıtta (0..1) gerçek dokunmatik parmaklar: CDP ile çok parmaklı dokunuş (Chromium). */
+async function parmaklar(page: Page) {
+  const cdp = await page.context().newCDPSession(page);
+  const r = (await page.locator('.cc-kagit .ms-tuval').boundingBox())!;
+  const nokta = ([x, y]: Nokta, id: number) => ({ x: r.x + x * r.width, y: r.y + y * r.height, id });
+  return (type: 'touchStart' | 'touchMove' | 'touchEnd', noktalar: [Nokta, number][]) =>
+    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: noktalar.map(([n, id]) => nokta(n, id)) });
+}
+
 async function bittiyse(page: Page) {
   // yol ve nokta modunda resim tamamlanınca kendiliğinden biter
   const sonuc = page.locator('.cc-sonuc');
@@ -121,7 +139,15 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   // Nasıl çizdim? ve kart
   await page.getByRole('button', { name: 'Nasıl çizdim?' }).click();
   await expect(page.locator('.cc-tekrar-katman')).toBeAttached();
+  // Kartım: paylaşım uygulamadan çıktığı için önce ebeveyn kapısı; kapatılırsa kart açılmaz
   await page.getByRole('button', { name: 'Kartım' }).click();
+  await expect(page.locator('.ebeveyn-kapisi')).toBeVisible();
+  await page.screenshot({ path: `tests/screens/${p}-39b-canlan-kart-kapi.png` });
+  await page.locator('.ebeveyn-kapisi').getByRole('button', { name: 'Kapat' }).click();
+  await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
+  await expect(page.locator('.cc-kart-pencere')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Kartım' }).click();
+  await kapiyiGec(page);
   const kartResmi = page.locator('.cc-kart-pencere img');
   await expect(kartResmi).toBeVisible({ timeout: 10000 });
   await page.waitForTimeout(300);
@@ -347,4 +373,117 @@ test('Çiz Canlansın: karalama canlanmaz, "Tekrar" önerilir', async ({ page })
   await expect(page.locator('.cc-boya-cubugu')).toBeHidden();
   await expect(page.locator('.cc-sahne.canli')).toHaveCount(0);
   expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: ikinci parmak / avuç çizgiye karışmaz (yalnız ilk parmak çizer)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./canlan/?test=1&yas=5&ekran=ciz&resim=ev&mod=kopya');
+  await expect(page.locator('.cc-kagit .ms-tuval')).toBeVisible();
+  const dokun = await parmaklar(page);
+  // 1. parmak soldan sağa çizer; 2. parmak (avuç) sağ altta durur, biraz kıpırdar, sonra kalkar
+  await dokun('touchStart', [[[0.2, 0.3], 1]]);
+  await dokun('touchStart', [[[0.2, 0.3], 1], [[0.85, 0.85], 2]]);
+  for (let i = 1; i <= 10; i++) await dokun('touchMove', [[[0.2 + i * 0.03, 0.3], 1], [[0.85, 0.85 - i * 0.005], 2]]);
+  await dokun('touchMove', [[[0.53, 0.3], 1]]); // 2. parmak kalktı: 1. parmak çizmeye devam eder
+  for (let i = 1; i <= 5; i++) await dokun('touchMove', [[[0.53 + i * 0.03, 0.3], 1]]);
+  await dokun('touchEnd', []);
+  const cizgiler = await page.evaluate(() => (window as unknown as { __tuval: { cizgiler: { noktalar: Nokta[] }[] } }).__tuval.cizgiler.map((c) => c.noktalar));
+  expect(cizgiler).toHaveLength(1);
+  // bütün noktalar 1. parmağın yolunda (y ≈ 0.3), en sağa kadar
+  for (const [, y] of cizgiler[0]) expect(Math.abs(y - 0.3)).toBeLessThan(0.02);
+  expect(Math.max(...cizgiler[0].map(([x]) => x))).toBeGreaterThan(0.65);
+  expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: yol modunda Temizle / Geri al boyalı yolu da siler', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./canlan/?test=1&yas=3&ekran=ciz&resim=ev&mod=iz');
+  await expect(page.locator('.cc-yol')).toBeVisible();
+  const dolu = page.locator('.cc-boya-izi circle.dolu');
+  // önce duvar, sonra kapı: yol kısmen boyanır, kendiliğinden bitmez
+  await ciz(page, 'ev', { atla: ['cati', 'kapi'] });
+  await expect.poll(() => dolu.count()).toBeGreaterThan(5);
+  const duvarSayisi = await dolu.count();
+  await ciz(page, 'ev', { atla: ['duvar', 'cati'] });
+  await expect.poll(() => dolu.count()).toBeGreaterThan(duvarSayisi);
+  // Geri al: kapının boyası gider, duvarınki kalır
+  await page.getByRole('button', { name: 'Geri al' }).click();
+  await expect.poll(() => dolu.count()).toBe(duvarSayisi);
+  // Temizle: hiç boya kalmaz
+  await page.getByRole('button', { name: 'Temizle' }).click();
+  await expect(dolu).toHaveCount(0);
+  // eski sayımla tek dokunuş resmi bitirmez
+  const r = (await page.locator('.cc-kagit .ms-tuval').boundingBox())!;
+  await page.mouse.click(r.x + 0.26 * r.width, r.y + 0.6 * r.height);
+  await page.waitForTimeout(900);
+  await expect(page.locator('.cc-sonuc')).toHaveCount(0);
+  expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: noktada "Tamamla" kaldığı şekilden devam eder, eski çizgiler kalır', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./canlan/?test=1&yas=4&ekran=ciz&resim=ev&mod=nokta');
+  await expect(page.locator('.cc-nokta').first()).toBeVisible();
+  const cizgiSayisi = () => page.evaluate(() => (window as unknown as { __tuval: { cizgiler: unknown[] } }).__tuval.cizgiler.length);
+  // yalnız duvarı birleştir (yarım resim)
+  await ciz(page, 'ev', { atla: ['cati', 'kapi'] });
+  await expect(page.locator('.cc-adimlar i.bitti')).toHaveCount(1);
+  const duvar = await page.evaluate(() => (window as unknown as { __tuval: { cizgiler: unknown[] } }).__tuval.cizgiler);
+  expect(duvar).toHaveLength(1);
+  // sonuç ekranındaki "Tamamla" ile aynı çağrı: biten çizgilerle çizime dön
+  await page.evaluate(
+    (devam) => (window as unknown as { __canlan: { app: { git: (a: string, p: unknown) => void } } }).__canlan.app.git('ciz', { id: 'ev', mod: 'nokta', devam, hata: 0 }),
+    duvar,
+  );
+  await expect(page.locator('.cc-ciz:not(.cikiyor) .cc-adimlar i')).toHaveCount(3);
+  // 2. şekilden (çatı) başlar; duvar çizgisi tuvalde
+  await expect(page.locator('.cc-ciz:not(.cikiyor) .cc-adimlar i.bitti')).toHaveCount(1);
+  await expect(page.locator('.cc-ciz:not(.cikiyor) .cc-adimlar i').nth(1)).toHaveClass('simdi');
+  await page.waitForTimeout(500);
+  expect(await cizgiSayisi()).toBe(1);
+  // çatıyı birleştirince duvar silinmez
+  await ciz(page, 'ev', { atla: ['duvar', 'kapi'] });
+  await expect(page.locator('.cc-adimlar i.bitti')).toHaveCount(2);
+  expect(await cizgiSayisi()).toBe(2);
+  await ciz(page, 'ev', { atla: ['duvar', 'cati'] });
+  await expect(page.locator('.cc-sonuc')).toBeVisible();
+  expect(Number(await page.locator('.cc-sonuc').getAttribute('data-yildiz'))).toBe(3);
+  expect(hatalar).toEqual([]);
+});
+
+test('Çiz Canlansın: Kartım kapısı ve kart penceresi telefonda (844×390, 390×844, DPR 3)', async ({ browser }, info) => {
+  test.skip(info.project.name !== 'iphone', 'telefon boyları tek projede');
+  for (const vp of [{ width: 844, height: 390 }, { width: 390, height: 844 }]) {
+    const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR', baseURL: info.project.use.baseURL });
+    const page = await ctx.newPage();
+    const hatalar = hataTopla(page);
+    await page.goto('./canlan/?test=1&yas=3&ekran=ciz&resim=balik&mod=iz');
+    await expect(page.locator('.cc-yol')).toBeVisible();
+    await ciz(page, 'balik');
+    await bittiyse(page);
+    await expect(page.locator('.cc-sonuc')).toBeVisible();
+    await page.getByRole('button', { name: 'Canlandır' }).click();
+    await expect(page.locator('.cc-sahne.canli')).toBeVisible();
+    await page.getByRole('button', { name: 'Kartım' }).click();
+    const kapi = page.locator('.ebeveyn-kapisi');
+    await expect(kapi).toBeVisible();
+    // kapı ekrana sığar: onay ve kapat düğmeleri görünür alanda
+    for (const el of [kapi.getByRole('button', { name: 'tamam' }), kapi.getByRole('button', { name: 'Kapat' })]) {
+      const b = (await el.boundingBox())!;
+      expect(b.y).toBeGreaterThanOrEqual(0);
+      expect(b.y + b.height).toBeLessThanOrEqual(vp.height + 1);
+    }
+    await page.screenshot({ path: `tests/screens/canlan-kart-kapi-${vp.width}x${vp.height}.png` });
+    await kapiyiGec(page);
+    const pencere = page.locator('.cc-kart-pencere');
+    await expect(pencere.locator('img')).toBeVisible({ timeout: 10000 });
+    await expect(pencere).toContainText('Resmi basılı tutup kaydedebilirsin.');
+    const tamam = (await pencere.getByRole('button', { name: 'Tamam' }).boundingBox())!;
+    expect(tamam.y + tamam.height).toBeLessThanOrEqual(vp.height + 1);
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `tests/screens/canlan-kart-pencere-${vp.width}x${vp.height}.png` });
+    await pencere.getByRole('button', { name: 'Tamam' }).click();
+    expect(hatalar).toEqual([]);
+    await ctx.close();
+  }
 });
