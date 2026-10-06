@@ -6,15 +6,20 @@ export interface Cizgi {
   noktalar: [number, number][]; // 0..1 arası
 }
 
+/** 'cizgi': yeni çizgi bitti; 'geriAl' / 'temizle' / 'yukle': çizgiler silindi ya da yeniden yüklendi */
+export type TuvalDegisimi = 'cizgi' | 'geriAl' | 'temizle' | 'yukle';
+
 export class Tuval {
   readonly el: HTMLCanvasElement;
   renk = '#F0413F';
   kalinlik = 0.022;
   silgi = false;
   cizgiler: Cizgi[] = [];
-  onDegisim: () => void = () => undefined;
+  onDegisim: (neden: TuvalDegisimi) => void = () => undefined;
   private ctx: CanvasRenderingContext2D;
   private aktif: Cizgi | null = null;
+  /** Çizen parmak: yalnız ilk dokunan parmak çizer (ikinci parmak ya da avuç çizgiye karışmaz) */
+  private parmak: number | null = null;
   private ro: ResizeObserver;
 
   constructor() {
@@ -26,9 +31,11 @@ export class Tuval {
     this.ro.observe(this.el);
     this.el.addEventListener('pointerdown', (e) => this.bas(e));
     this.el.addEventListener('pointermove', (e) => this.surukle(e));
-    this.el.addEventListener('pointerup', () => this.birak());
-    this.el.addEventListener('pointercancel', () => this.birak());
-    this.el.addEventListener('pointerleave', () => this.birak());
+    this.el.addEventListener('pointerup', (e) => this.birak(e));
+    this.el.addEventListener('pointercancel', (e) => this.birak(e));
+    this.el.addEventListener('pointerleave', (e) => this.birak(e));
+    // yakalama bir sebeple düşerse çizgi kapanır (yoksa sonraki dokunuşlar hep yok sayılırdı)
+    this.el.addEventListener('lostpointercapture', (e) => this.birak(e));
   }
 
   private nokta(e: PointerEvent): [number, number] {
@@ -38,6 +45,9 @@ export class Tuval {
 
   private bas(e: PointerEvent) {
     e.preventDefault();
+    // bir parmak çizerken gelen ikinci dokunuş (parmak, avuç) yok sayılır
+    if (this.aktif) return;
+    this.parmak = e.pointerId;
     this.el.setPointerCapture?.(e.pointerId);
     this.aktif = { renk: this.renk, kalinlik: this.silgi ? this.kalinlik * 2.2 : this.kalinlik, silgi: this.silgi, noktalar: [this.nokta(e)] };
     this.cizgiler.push(this.aktif);
@@ -45,35 +55,36 @@ export class Tuval {
   }
 
   private surukle(e: PointerEvent) {
-    if (!this.aktif) return;
+    if (!this.aktif || e.pointerId !== this.parmak) return;
     const olaylar = e.getCoalescedEvents?.() ?? [e];
     for (const o of olaylar) this.aktif.noktalar.push(this.nokta(o));
     this.ciz();
   }
 
-  private birak() {
-    if (!this.aktif) return;
+  private birak(e: PointerEvent) {
+    if (!this.aktif || e.pointerId !== this.parmak) return;
     this.aktif = null;
-    this.onDegisim();
+    this.parmak = null;
+    this.onDegisim('cizgi');
   }
 
   geriAl() {
     this.cizgiler.pop();
     this.ciz();
-    this.onDegisim();
+    this.onDegisim('geriAl');
   }
 
   temizle() {
     this.cizgiler = [];
     this.ciz();
-    this.onDegisim();
+    this.onDegisim('temizle');
   }
 
   /** Kayıtlı çizgileri geri yükler (yarım kalan çizime devam). */
   yukle(cizgiler: Cizgi[]) {
     this.cizgiler = cizgiler.map((c) => ({ ...c, noktalar: [...c.noktalar] }));
     this.ciz();
-    this.onDegisim();
+    this.onDegisim('yukle');
   }
 
   bosMu() {

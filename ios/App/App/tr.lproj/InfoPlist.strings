@@ -1,2 +1,4 @@
 /* Mikrofon izni (iOS izin penceresinde büyüklere gösterilir). Info.plist'teki metinle aynı tutun. */
 "NSMicrophoneUsageDescription" = "Büyükler için: Minkino bazı oyunlarda çocuğunuzun üflemesini, sesini ve alkışını yalnızca bu cihazda, anlık olarak algılar. Ses kaydedilmez, saklanmaz, hiçbir yere gönderilmez. İzin vermezseniz her oyun dokunarak oynanır.";
+/* Fotoğraflar'a ekleme izni (Çiz Canlansın kartı kaydedilirken). Info.plist'teki metinle aynı tutun. */
+"NSPhotoLibraryAddUsageDescription" = "Büyükler için: Çiz Canlansın'daki resim kartını yalnızca siz istediğinizde Fotoğraflar'a kaydetmek için. Minkino fotoğraflarınızı okumaz, hiçbir yere göndermez.";

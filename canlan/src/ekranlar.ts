@@ -13,7 +13,10 @@ import { noktaOyunu, parmakIpucu, type NoktaOyunu } from './nokta';
 import { enIyi, kaydet, kayit, yildizKaydet } from './ilerleme';
 import { AYAR, canlanirMi, ornekle, parcalaraBol, puanla, toparla } from './puan';
 import { MODLAR, RESIMLER, resim, yasModu, type Mod, type Nokta, type Resim } from './resimler';
-import { kartPaylas, kartYap, tekrarOynat } from './kart';
+import { kartKayitIpucu, kartPaylas, kartYap, tekrarOynat } from './kart';
+import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
+import { uygulamaPlatformu } from '../../src/kabuk/ortam';
+import { YolIzi } from './yol-izi';
 import { resimSesi, resimSesiHazirla } from './ses';
 import { SUS } from './susler';
 import { SAHNE_RESIM, sahne } from './sahne';
@@ -231,7 +234,7 @@ export function listeEkrani(app: Uygulama): Ekran {
 }
 
 // ---------------------------------------------------------------- Çizim
-export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizgi[] }): Ekran {
+export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizgi[]; hata?: number }): Ekran {
   const r = resim(p.id) ?? RESIMLER[0];
   const mod = p.mod;
   const tuval = new Tuval();
@@ -274,6 +277,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   // --- Canlı geri bildirim (yol boyanır / noktalar yanar)
   let geriBildirim: (p: Nokta) => void = () => undefined;
   let tamamMi = () => false;
+  let yolYenile: () => void = () => undefined;
 
   if (mod === 'iz') {
     const yollar = sv('g', { class: 'cc-yol' });
@@ -293,19 +297,18 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
       boyali.append(d);
       return d;
     });
-    const dolu = new Uint8Array(noktalar.length);
-    let sayi = 0;
+    const iz = new YolIzi(noktalar, tol);
+    const dolu = iz.dolu;
     ust.append(boyali);
-    geriBildirim = ([x, y]) => {
-      noktalar.forEach(([a, b], i) => {
-        if (!dolu[i] && Math.hypot(a - x, b - y) < tol) {
-          dolu[i] = 1;
-          sayi++;
-          daireler[i].classList.add('dolu');
-        }
-      });
+    geriBildirim = (n) => {
+      for (const i of iz.isle(n)) daireler[i].classList.add('dolu');
     };
-    tamamMi = () => sayi / noktalar.length >= 0.93;
+    // Geri al / Temizle / Tamamla: boya tuvalde kalan çizgilerden baştan (silinen çizginin boyası da gider)
+    yolYenile = () => {
+      iz.yenidenHesapla(tuval.cizgiler);
+      daireler.forEach((d, i) => d.classList.toggle('dolu', !!dolu[i]));
+    };
+    tamamMi = () => iz.oran() >= 0.93;
     // Bir süre çizilmezse parmak, boyanmamış ilk yolu gösterir
     const sinirlar: [number, number][] = [];
     let k = 0;
@@ -339,7 +342,7 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   }
 
   let nokta: NoktaOyunu | null = null;
-  if (mod === 'nokta') nokta = noktaOyunu({ r, kagit, ust, tuval, bitti: (hata) => bitir(hata) });
+  if (mod === 'nokta') nokta = noktaOyunu({ r, kagit, ust, tuval, bitti: (hata) => bitir(hata), devam: p.devam, hata: p.hata });
 
   let model: HTMLElement | null = null;
   if (mod === 'kopya') {
@@ -358,17 +361,24 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
     hareket();
   });
   tuval.el.addEventListener('pointermove', () => takip && hareket());
-  tuval.onDegisim = () => {
+  tuval.onDegisim = (neden) => {
     takip = false;
+    if (neden !== 'cizgi') yolYenile();
     const bos = tuval.bosMu();
     bitti.disabled = bos;
     bitti.classList.toggle('hazir', !bos);
     // her üç çizgide bir Mino başını sallar ("güzel gidiyor")
     if (!bos && ++cizgiSayisi % 3 === 0) yuva.yap((y) => y.onayla());
-    if (!bos && tamamMi() && !bitiyor) {
+    // kendiliğinden bitiş yalnız yeni bir çizgiyle (Tamamla'da yüklenen çizgiler hemen sonuca atmasın)
+    if (neden === 'cizgi' && !bos && tamamMi() && !bitiyor) {
       yuva.yap((y) => y.sevin());
       bitiyor = true;
-      setTimeout(() => !kapandi && bitir(), sure(650));
+      setTimeout(() => {
+        if (kapandi) return;
+        // arada Geri al / Temizle'ye basıldıysa bitmez
+        if (tamamMi() && !tuval.bosMu()) bitir();
+        else bitiyor = false;
+      }, sure(650));
     }
   };
 
@@ -455,11 +465,15 @@ export function cizEkrani(app: Uygulama, p: { id: string; mod: Mod; devam?: Cizg
   };
 }
 
-/** Paylaşım yoksa kartı gösterir (basılı tutup kaydetmek için). */
+/** Paylaşım yoksa kartı gösterir (basılı tutup kaydetmek için; Android uygulamasında ekran görüntüsüyle). */
 function kartPenceresi(b: Blob): HTMLElement {
   const url = URL.createObjectURL(b);
   const kapat = h('button.dugme', { type: 'button', style: '--r:#5DBE3F' }, 'Tamam');
-  const perde = h('div.perde', { role: 'dialog', 'aria-label': 'Kartım' }, h('div.pencere.cc-kart-pencere', {}, h('img', { src: url, alt: 'Resim kartım' }), h('p', {}, 'Resmi basılı tutup kaydedebilirsin.'), kapat));
+  const resim = h('img', { src: url, alt: 'Resim kartım' });
+  // kökteki sağ tık / basılı tutma engeli bu resme uygulanmaz: tarayıcının "Resmi kaydet" menüsü açılabilsin
+  resim.addEventListener('contextmenu', (e) => e.stopPropagation());
+  const ipucu = h('p', {}, kartKayitIpucu(uygulamaPlatformu()));
+  const perde = h('div.perde', { role: 'dialog', 'aria-label': 'Kartım' }, h('div.pencere.cc-kart-pencere', {}, resim, ipucu, kapat));
   kapat.addEventListener('click', () => {
     efekt.dokunma();
     perde.remove();
@@ -508,7 +522,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   const tamamla = h('button.dugme.cc-tamamla', { type: 'button', 'aria-label': 'Tamamla', style: '--r:#3E9DF2', hidden: true }, svg(IKON.kalem), h('span', {}, 'Tamamla'));
   tamamla.addEventListener('click', () => {
     efekt.secim();
-    app.git('ciz', { id: r.id, mod: p.mod, devam: p.cizgiler });
+    app.git('ciz', { id: r.id, mod: p.mod, devam: p.cizgiler, hata: p.hata });
   });
   // Nasıl çizdim? (çizimi sırayla yeniden çizer) ve paylaşılabilir kart
   let tekrarOynuyor = false;
@@ -521,7 +535,12 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
   const kart = yuvarlakDugme(IKON.paylas, 'Kartım', async () => {
     kart.disabled = true;
     try {
-      const b = await kartYap({ svg: canli.el, sahneUrl: SAHNE_RESIM[`../../assets/sahne/${r.sahne}.webp`], baslik: S.benim[r.id] ?? r.ad, yildiz: sonuc.yildiz });
+      // Kart o anki kareyle hemen hazırlanır; paylaşım (Mesajlar, e-posta…) uygulamadan dışarı çıktığı için önce
+      // ebeveyn kapısı (mağaza aile kuralı). Kapı geçilince paylaşım hemen açılır (dokunuşun izni sürerken).
+      const hazir = kartYap({ svg: canli.el, sahneUrl: SAHNE_RESIM[`../../assets/sahne/${r.sahne}.webp`], baslik: S.benim[r.id] ?? r.ad, yildiz: sonuc.yildiz });
+      hazir.catch(() => undefined);
+      if (!(await ebeveynKapisiAc(app.kok))) return;
+      const b = await hazir;
       const d = await kartPaylas(b, `${r.id}-kartim.png`);
       if (d === 'goster') app.kok.append(kartPenceresi(b));
     } finally {

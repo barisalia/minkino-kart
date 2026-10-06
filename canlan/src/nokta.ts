@@ -113,7 +113,25 @@ export interface NoktaOyunu {
   readonly hata: number;
 }
 
-export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement; tuval: Tuval; bitti: (hata: number) => void }): NoktaOyunu {
+/**
+ * "Tamamla" ile dönülünce kaldığı yerden: önceki oturumda biten çizgiler sırayla ilk şekillerdir
+ * (oyun şekilleri sırayla çizdirir), yani oyun bitenlerin sayısı kadar şekil ileriden başlar.
+ */
+export function devamBasi(seritSayisi: number, devam: readonly Cizgi[] | undefined): { s: number; bitenler: Cizgi[] } {
+  const bitenler = (devam ?? []).filter((c) => !c.silgi).slice(0, seritSayisi).map((c) => ({ ...c, noktalar: [...c.noktalar] }));
+  return { s: bitenler.length, bitenler };
+}
+
+export function noktaOyunu(o: {
+  r: Resim;
+  kagit: HTMLElement;
+  ust: SVGSVGElement;
+  tuval: Tuval;
+  bitti: (hata: number) => void;
+  /** "Tamamla": önceki oturumda biten çizgiler ve yanlış başlangıç sayısı */
+  devam?: Cizgi[];
+  hata?: number;
+}): NoktaOyunu {
   const { r, kagit, ust, tuval } = o;
   const seritler = hazirla(r);
   tuval.el.style.pointerEvents = 'none';
@@ -126,13 +144,16 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
   adimlar.className = 'cc-adimlar';
   kagit.append(adimlar);
 
-  let s = 0; // hangi çizgi
+  const bas0 = devamBasi(seritler.length, o.devam);
+  let s = bas0.s; // hangi çizgi
   let hedef = 0; // sıradaki nokta (0: başlangıç noktasına dokunulmalı)
   let toplam: Nokta[] = []; // bu çizginin yapışmış kısmı
   let yolParca: Nokta[] = []; // son noktadan beri parmağın izi
   let ciziyor = false;
-  let bitenler: Cizgi[] = [];
-  let hata = 0;
+  /** Çizen parmak (ikinci parmak / avuç yok sayılır) */
+  let parmak: number | null = null;
+  let bitenler: Cizgi[] = bas0.bitenler;
+  let hata = o.hata ?? 0;
   let kapandi = false;
   let bosta: number | undefined;
 
@@ -236,6 +257,8 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
   function bas(e: PointerEvent) {
     if (kapandi || s >= seritler.length) return;
     e.preventDefault();
+    // bir parmak çizerken ikinci dokunuş (parmak, avuç) ne çizer ne yanlış sayılır
+    if (ciziyor) return;
     bostaKur();
     const p = konum(e);
     const sr = seritler[s];
@@ -259,6 +282,7 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
     }
     kagit.setPointerCapture?.(e.pointerId);
     ciziyor = true;
+    parmak = e.pointerId;
     if (hedef === 0) {
       hedef = 1;
       toplam = [sr.noktalar[0]];
@@ -269,7 +293,7 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
   }
 
   function surukle(e: PointerEvent) {
-    if (!ciziyor) return;
+    if (!ciziyor || e.pointerId !== parmak) return;
     const sr = seritler[s];
     const olaylar = e.getCoalescedEvents?.() ?? [e];
     for (const ev of olaylar) {
@@ -293,8 +317,8 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
     ciz();
   }
 
-  function birak() {
-    if (!ciziyor) return;
+  function birak(e: PointerEvent) {
+    if (!ciziyor || e.pointerId !== parmak) return;
     ciziyor = false;
     // yarım kalan kısım geri çekilir
     yolParca = [];
@@ -306,6 +330,7 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
   kagit.addEventListener('pointermove', surukle);
   kagit.addEventListener('pointerup', birak);
   kagit.addEventListener('pointercancel', birak);
+  kagit.addEventListener('lostpointercapture', birak);
   ciz();
   bostaKur();
 
@@ -345,6 +370,7 @@ export function noktaOyunu(o: { r: Resim; kagit: HTMLElement; ust: SVGSVGElement
       kagit.removeEventListener('pointermove', surukle);
       kagit.removeEventListener('pointerup', birak);
       kagit.removeEventListener('pointercancel', birak);
+      kagit.removeEventListener('lostpointercapture', birak);
     },
   };
 }

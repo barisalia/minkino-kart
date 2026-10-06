@@ -31,6 +31,8 @@
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Büyükler için: Minkino bazı oyunlarda çocuğunuzun üflemesini, sesini ve alkışını yalnızca bu cihazda, anlık olarak algılar. Ses kaydedilmez, saklanmaz, hiçbir yere gönderilmez. İzin vermezseniz her oyun dokunarak oynanır.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Büyükler için: Çiz Canlansın'daki resim kartını yalnızca siz istediğinizde Fotoğraflar'a kaydetmek için. Minkino fotoğraflarınızı okumaz, hiçbir yere göndermez.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

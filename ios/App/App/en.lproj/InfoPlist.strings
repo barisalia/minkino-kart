@@ -1,2 +1,4 @@
 /* Microphone permission (shown to grown-ups in the iOS permission dialog). */
 "NSMicrophoneUsageDescription" = "For grown-ups: in some games Minkino detects your child's blowing, voice and clapping instantly and only on this device. Audio is never recorded, stored or sent anywhere. Without permission, every game can be played by touch.";
+/* Add-to-Photos permission (when the Draw & Come Alive card is saved). */
+"NSPhotoLibraryAddUsageDescription" = "For grown-ups: lets you save your child's picture card to Photos, only when you choose to. Minkino never reads your photos or sends them anywhere.";
