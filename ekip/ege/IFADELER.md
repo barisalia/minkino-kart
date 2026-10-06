@@ -55,3 +55,8 @@ Kaynak `assets/ege/anne.webp` (428×1143, ayakta pozu). Aynı tuvalde, aynı pik
 - Hepsi `govde`ye bağlıdır; dönme noktası 213.5,452.
 - Önizleme: `ekip/ege/anne-agizlar.png` (açık ve koyu zemin).
 - Kanepe ve sarılma pozlarında (`anne-sariliyor.webp`, `anne-uyuyor-*`) konuşma ağzı henüz yoktur. Gerekirse aynı yöntemle eklenir.
+
+### Anne: göz kırpma (`goz-kapali`, gizli)
+- Hem `anne.svg` (ayakta) hem `anne-sariliyor.svg` (sarılma pozu; yeni, yalnız `govde` + `goz-kapali`) için gizli `goz-kapali` katmanı: kapalı, gülümseyen gözler (∩ yay + 3 kirpik; göz kapağı rengi göz akının yerini alır, blush korunur). Bölgenin yamasıdır (yama dışı şeffaf), `govde`ye bağlı, dönme noktası göz hizasının ortası (anne 213.5,412; sarılma 437.5,294.5).
+- Kırpmak için: `goz-kapali` göster, ~120 ms sonra gizle. Varsayılan çizim değişmez (govde ve agiz dokunulmadı; tüm opak piksellerde fark 0).
+- Önizleme: `ekip/ege/anne-goz-onizleme.png` (üst: ayakta, alt: sarılma; sütunlar: açık | kapalı | kapalı koyu zemin). Üretim: `node ekip/illustrator/anne-goz.cjs` (idempotent), ardından `node scripts/karakter/iskelet-al.mjs`.

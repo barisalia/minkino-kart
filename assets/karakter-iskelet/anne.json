@@ -11,6 +11,7 @@
     "agiz-yuvarlak",
     "agiz-dis",
     "agiz-gulumse",
+    "goz-kapali",
     "kol-tasima"
   ],
   "gizli": [
@@ -21,7 +22,8 @@
     "agiz-dis",
     "agiz-gulumse",
     "govde-tasima",
-    "kol-tasima"
+    "kol-tasima",
+    "goz-kapali"
   ],
   "bagli": {
     "agiz": "govde",
@@ -30,7 +32,8 @@
     "agiz-orta": "govde",
     "agiz-yuvarlak": "govde",
     "agiz-dis": "govde",
-    "agiz-gulumse": "govde"
+    "agiz-gulumse": "govde",
+    "goz-kapali": "govde"
   },
   "donme": {
     "agiz": [
@@ -68,6 +71,10 @@
     "kol-tasima": [
       214,
       700
+    ],
+    "goz-kapali": [
+      213.5,
+      412
     ]
   },
   "tuval": [

@@ -19,6 +19,8 @@ const ANA = [
   ['ekip/ege', 'ege', 'ege'],
   // Anne (Ege bölümü): ayakta çizimi (anne.webp) + dudak senkronu ağızları; tuval 428×1143 (ekip/ege/IFADELER.md)
   ['ekip/ege', 'anne', 'anne'],
+  // Anne sarılma pozu (assets/ege/anne-sariliyor.webp): gizli goz-kapali katmanı (ekip/ege/IFADELER.md)
+  ['ekip/ege', 'anne-sariliyor', 'anne-sariliyor'],
 ];
 /**
  * İfade setleri (göster / gizle). Kaynak JSON'da "ifadeler" varsa o, yoksa buradaki tablo (tasarımcının ifade
