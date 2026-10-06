@@ -68,7 +68,7 @@
   border-radius: 999px;
   border: 3px solid var(--kontur);
   background: #fff8ea;
-  font-size: clamp(12px, 1.6vmin + 6px, 20px);
+  font-size: clamp(14px, 1.6vmin + 7px, 20px);
   white-space: nowrap;
 }
 .dd-kok .dd-kilit-salla {
