@@ -654,6 +654,13 @@
   cursor: grabbing;
   filter: drop-shadow(0 12px 10px rgba(90, 54, 23, 0.35));
 }
+/* ürün gidince yuvanın gölgesi de solar: tezgâhta sahipsiz koyu leke kalmasın */
+.pz-kok .pz-yuva {
+  transition: background-color 0.3s;
+}
+.pz-kok .pz-yuva:not(:has(.pz-urun)) {
+  background: none;
+}
 .pz-kok .pz-yuva:has(.pz-tasiniyor) {
   z-index: 50;
 }
