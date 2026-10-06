@@ -325,7 +325,9 @@ export function koy(kartlar: HTMLElement[], gecikme = 0): void {
 export function izgaraSigdir(kutu: HTMLElement, izgara: HTMLElement, n: number, sec: { oran?: number; bosluk?: number; enBuyuk?: number; ekW?: number; kolonlar?: number[] } = {}) {
   const hesapla = () => {
     // clientWidth yuvarlanır (483.6 → 484): 1 px pay yoksa son kart alt sıraya düşüp ekrandan taşabiliyor
-    const W = kutu.clientWidth - (sec.ekW ?? 0) - 1;
+    // kenarlarda pay: doğru kart büyüyüp parlarken ekranın kenarından kesilmesin
+    const pay = Math.round(Math.min(36, Math.max(16, kutu.clientWidth * 0.035)));
+    const W = kutu.clientWidth - (sec.ekW ?? 0) - 1 - pay;
     const H = kutu.clientHeight - 14; // kart altı gölge payı
     if (W <= 0 || H <= 0) return;
     const bosluk = sec.bosluk ?? Math.round(Math.min(22, Math.max(10, W * 0.035)));

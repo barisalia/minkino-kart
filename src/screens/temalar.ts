@@ -6,7 +6,7 @@ import { temaDurumu } from '../engine/odul';
 import type { Tema } from '../engine/types';
 import { bekle, h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { kartArkasi, kartEl } from '../ui/kart';
+import { kartArkasi, kartEl, kartResimleriniYukle } from '../ui/kart';
 import { albumDugmesi, baslikBalon, sesDugmesi, yuvarlakDugme } from '../ui/ortak';
 import { sinifOynat } from '../ui/hareket';
 import { ebeveynKapisi } from './ebeveyn';
@@ -46,6 +46,7 @@ export function paketEl(t: Tema, i = 0): HTMLElement {
 }
 
 export function temalarEkrani(app: Uygulama, param?: { yeniAcilan?: string; mod?: 'hafiza' }): Ekran {
+  kartResimleriniYukle();
   let kilit = false;
   const hafizaModu = param?.mod === 'hafiza';
   const izgara = h('div.tema-izgara');

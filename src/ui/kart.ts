@@ -22,6 +22,18 @@ export function gorselUrl(k: Kart | undefined): string | undefined {
   return k?.gorsel ? gorselMap.get(k.gorsel) : undefined;
 }
 
+let onYuklendi = false;
+/** Kart resimleri (~2 MB) tema seçilirken önceden yüklenir: kartlar bir an boş durup resim sonradan belirmesin */
+export function kartResimleriniYukle(): void {
+  if (onYuklendi || typeof Image === 'undefined') return;
+  onYuklendi = true;
+  for (const url of gorselMap.values()) {
+    const i = new Image();
+    i.decoding = 'async';
+    i.src = url;
+  }
+}
+
 export function gorselVarMi(k: Kart): boolean {
   return !!gorselUrl(k);
 }
@@ -102,6 +114,11 @@ function resimEl(k: Kart, sinif = 'kart-resim'): HTMLElement {
   if (!url) return yerTutucu();
   const img = h('img', { class: sinif, src: url, alt: k.ad, draggable: 'false', decoding: 'async' });
   img.addEventListener('error', () => img.replaceWith(yerTutucu()), { once: true });
+  // resim henüz yüklenmediyse kart bir an bembeyaz durup resim birden belirmesin: yüklenince yumuşakça gelir
+  if (!img.complete) {
+    img.classList.add('kart-yukleniyor');
+    img.addEventListener('load', () => img.classList.remove('kart-yukleniyor'), { once: true });
+  }
   return img;
 }
 

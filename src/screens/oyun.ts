@@ -8,7 +8,7 @@ import { soruHazirla, turOlustur } from '../engine/tur';
 import type { Soru, Yas } from '../engine/types';
 import { bekle, h, sure, TEST_MODU } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
-import { kartEl } from '../ui/kart';
+import { kartEl, kartResimleriniYukle } from '../ui/kart';
 import { konfetiPatlat } from '../ui/konfeti';
 import { azHareket, dagit, koy, merkez, parlat, topla, ucurKavis, yumusakSallan } from '../ui/hareket';
 import { albumDugmesi, yuvarlakDugme } from '../ui/ortak';
@@ -55,6 +55,7 @@ export interface TurSonucu {
 export function oyunEkrani(app: Uygulama, param: { tema: string }): Ekran {
   const yas = (durum.i.yas ?? 3) as Yas;
   const tema = temaBul(param.tema) ?? temaBul('hayvanlar')!;
+  kartResimleriniYukle();
   const sorular = turOlustur(yas, tema.id);
   // Test kısayolu: ?test=1&tip=SAY → tur o tipteki bir soruyla başlar
   const testTip = TEST_MODU ? new URLSearchParams(location.search).get('tip') : null;

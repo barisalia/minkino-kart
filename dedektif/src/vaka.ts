@@ -35,6 +35,7 @@ import {
   izNotasi,
   K,
   KADRAJ,
+  KARTLAR,
   M,
   ODA_H,
   yolIzleri,
@@ -97,6 +98,11 @@ class Vaka {
     if (TEST_MODU && Number(q.get('kokla')) > 0) YARDIM.koklaSn = Number(q.get('kokla')) / 1000;
     this.yollar = TEST_MODU && !q.has('tohum') ? { sol: 'mutfak', sag: 'yatak' } : yollariDiz(this.rnd);
     this.dosya = Dosya.adimdan(baslangic);
+    // seçim kartlarının resimleri şimdiden yüklenir: kartlar açılınca bir an boş kutu görünmesin
+    for (const k of Object.values(KARTLAR)) {
+      const i = new Image();
+      i.src = resim(k.resim) ?? '';
+    }
     this.serit = new DosyaSeridi(this.dosya);
     this.dunya = new Dunya((w, hh) => this.guvenli(w, hh));
     this.ara = h('div.dd-ara');

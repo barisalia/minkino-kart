@@ -16,7 +16,8 @@
   --dokunma: 72px;
   --ust: max(10px, env(safe-area-inset-top));
   --alt: max(12px, env(safe-area-inset-bottom));
-  --yan: max(12px, env(safe-area-inset-left));
+  /* yan boşluk iki yanda eşit: yatay telefonda çentik solda da sağda da olabilir (Android'de yalnız bir yanda) */
+  --yan: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
 
   position: fixed;
   inset: 0;
@@ -262,6 +263,11 @@
   display: grid;
   place-items: center;
   filter: drop-shadow(0 3px 0 rgba(90, 54, 23, 0.08));
+  transition: opacity 0.22s ease-out, scale 0.22s ease-out;
+}
+.mk-kok img.kart-yukleniyor {
+  opacity: 0;
+  scale: 0.92;
 }
 .mk-kok .kart-cizim svg {
   width: 88%;

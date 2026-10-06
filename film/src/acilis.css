@@ -527,6 +527,12 @@
     opacity: 1;
   }
 }
+/* ---------- dar yatay ekran (667×375, tablet): Mino ve Kino biraz küçük; Kino'nun kulağı kurdeledeki film adının üstüne binmez */
+@media (orientation: landscape) and (max-aspect-ratio: 19/10) {
+  .fl-kok .fl-in {
+    --kar: min(22vw, 46vh);
+  }
+}
 /* ---------- dikey ekran: logo ve kurdele üstte, Mino ve Kino altta, perde kenarı ince */
 @media (orientation: portrait) {
   .fl-kok .fl-in {

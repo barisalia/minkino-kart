@@ -776,4 +776,19 @@
     min-height: clamp(64px, 20vh, 84px);
     font-size: clamp(1.5rem, 8vh, 2rem);
   }
+  /* bitiş: "Bir daha / Ana sayfa" sağ alt köşede üst üste (sahnenin ortasındaki çocukların üstünü örtmesin) */
+  .mc-kok .mc-bolum[data-bolum='salincak'] .mc-dugme-yeri:has(.mc-son) {
+    left: auto;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    transform: none;
+  }
+  .mc-kok .mc-bolum[data-bolum='salincak'] .mc-son {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .mc-kok .mc-bolum[data-bolum='salincak'] .mc-son .dugme {
+    min-height: 56px;
+  }
 }

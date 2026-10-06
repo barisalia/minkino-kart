@@ -148,6 +148,12 @@ class Vaka2 {
     this.rnd = q.has('tohum') ? tohumlu(Number(q.get('tohum'))) : TEST_MODU ? tohumlu(7) : Math.random;
     if (TEST_MODU && Number(q.get('kokla')) > 0) YARDIM.koklaSn = Number(q.get('kokla')) / 1000;
     this.dosya = Dosya.adimdan(baslangic, ADIMLAR2, HALKALAR2);
+    // seçim kartlarının resimleri şimdiden yüklenir: kartlar açılınca bir an bembeyaz boş kutu görünmesin
+    // (sıralama soru kartları çizgi roman kareleridir: onlar da)
+    for (const ad of [...Object.values(KARTLAR2).map((k) => k.resim), 'v2/roman-1', 'v2/roman-2', 'v2/roman-3', 'v2/roman-4']) {
+      const i = new Image();
+      i.src = resim(ad) ?? '';
+    }
     this.serit = new DosyaSeridi(this.dosya);
     this.dunya = new Dunya((w, hh) => this.guvenli(w, hh));
     this.ara = h('div.dd-ara');

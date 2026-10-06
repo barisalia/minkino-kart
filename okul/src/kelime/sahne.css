@@ -371,6 +371,30 @@
   from { transform: scale(0.2, 0.4); opacity: 0; }
 }
 
+/*
+ * Yatayda göl ve dere havada asılı durmasın: oyun alanının altında çimen tepesi (dikeydeki gibi), su tepenin üstünde.
+ * Davul yatay telefonda alttan kesilmesin.
+ */
+@media (orientation: landscape) {
+  .ok-kok .ok-etkinlik[data-etkinlik='kelime-dinle'] .ok-alan::before,
+  .ok-kok .ok-etkinlik[data-etkinlik='kelime-hecele'] .ok-alan::before {
+    display: block;
+    --tepe: 62%;
+    left: -45%;
+    right: -45%;
+    bottom: -40%;
+    height: calc(var(--tepe) + 40%);
+    border-radius: 50% 50% 0 0 / 22% 22% 0 0;
+  }
+  .ok-kok .ok-k-gol-su {
+    top: 57%;
+  }
+  .ok-kok .ok-k-davul {
+    width: clamp(110px, 30dvh, 160px);
+    height: clamp(80px, 22dvh, 116px);
+  }
+}
+
 /* sürüklenen resim hafifçe büyür ve eğilir (ikincil hareket) */
 .ok-kok .ok-k-oge.ok-tasiniyor {
   scale: 1.1;

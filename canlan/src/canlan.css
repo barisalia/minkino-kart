@@ -334,7 +334,7 @@
   box-shadow: 0 4px 0 var(--kontur-yumusak);
   color: var(--kontur);
   font: inherit;
-  font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+  font-size: clamp(0.95rem, 4.1vw, 1.1rem);
   transition: transform 0.15s;
 }
 .cc-kok .cc-mod .ikon {
@@ -629,13 +629,13 @@
 .cc-kok .cc-nokta-daire {
   fill: #fff;
   stroke: var(--kontur);
-  stroke-width: 0.006;
+  stroke-width: 0.008;
   transform-box: fill-box;
   transform-origin: center;
   transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 .cc-kok .cc-nokta text {
-  font-size: 0.034px;
+  font-size: 0.046px;
   font-weight: 700;
   text-anchor: middle;
   fill: var(--kontur);
@@ -665,7 +665,7 @@
   fill: #5dbe3f;
   transform: scale(0.72);
 }
-.cc-kok .cc-nokta.yandi text { fill: #fff; font-size: 0.026px; }
+.cc-kok .cc-nokta.yandi text { fill: #fff; font-size: 0.034px; }
 .cc-kok .cc-nokta.tek .cc-nokta-daire { fill: #ff7eb6; }
 .cc-kok .cc-nokta.tek text { fill: #fff; }
 .cc-kok .cc-nokta.salla .cc-nokta-daire { animation: cc-nokta-salla 0.4s ease-in-out; }
@@ -1266,4 +1266,40 @@
 /* yakından bakışta arka plan daha çok geri çekilir (başlık resmin arkasında karışmasın) */
 .cc-kok.cc-kok .cc-muze-perde {
   background: radial-gradient(circle at 50% 45%, rgba(60, 36, 14, 0.55), rgba(30, 16, 4, 0.88));
+}
+
+/* ---------- Telefon önce: yatay telefonda kâğıt büyük, Mino renklerin altında, çentikten uzak ---------- */
+@media (orientation: landscape) and (max-height: 560px) {
+  /* Mino kâğıdın yanından renk sütununun altına iner: kâğıt (ve bakarak çizde örnek resim) büyür */
+  .cc-kok .cc-ciz .cc-alan.mino-var {
+    position: static;
+    padding-left: 0;
+  }
+  .cc-kok .cc-ciz .cc-palet {
+    align-self: start;
+    margin-top: 6px;
+  }
+  .cc-kok .cc-ciz .cc-alan > .cc-ciz-mino {
+    left: calc(var(--yan) + 16px);
+    bottom: var(--alt);
+    width: clamp(64px, calc((100dvh - var(--alt) - 290px) / 1.32), 100px);
+  }
+  .cc-kok .cc-ciz .cc-model {
+    width: 38%;
+  }
+  /* Müzem: Mino çentiğin altına girmez */
+  .cc-kok .cc-muze .cc-muze-mino {
+    left: var(--yan);
+  }
+  /* resim listesi: altı sütun; ilk sıranın kartları ekrana tam sığar (ad ve yıldızlar kesilmez), son sıra ev çubuğunun üstüne kayar */
+  .cc-kok .cc-izgara {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    max-width: none;
+    gap: 10px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  /* dar kartta uzun ad ("Gökkuşağı") üç noktayla kesilmesin */
+  .cc-kok .cc-izgara .cc-resim-ad {
+    font-size: clamp(0.9rem, 2.15vw, 1.1rem);
+  }
 }

@@ -201,9 +201,11 @@
   }
   .pz-kok .pz-pazar .pz-tezgah-ust .pz-ver {
     position: absolute;
-    top: 50%;
+    /* tezgâhın ortası, ama ev çubuğunun (alt güvenli alan) üstünde */
+    top: auto;
+    bottom: max(env(safe-area-inset-bottom, 0px) + 8px, 50% - 40px);
     left: calc(100% + var(--yan-en) / 2);
-    translate: -50% -50%;
+    translate: -50% 0;
     margin: 0;
     max-width: calc(var(--yan-en) - 2 * var(--kenar));
     min-height: 80px;
@@ -306,5 +308,38 @@
   .pz-kok .pz-senlik-alt .dugme {
     min-height: 60px;
     font-size: clamp(1.05rem, 5.4vh, 1.35rem);
+  }
+}
+
+/*
+ * Yatay telefonda terazili müşteri: terazi ve meyveler alt alta iki kat tezgâh oluyordu, sahne (stand, Mino, müşteri)
+ * minicik kalıyordu. Terazi solda, meyveler sağında üç sütun; tezgâh alçak kalır, karakterler öbür turlardaki boyda.
+ * Yan sütundaki konuşma balonu: uzun kelime ("Müşteriler") balonun dışına taşmasın.
+ */
+@media (min-aspect-ratio: 13/10) and (max-height: 540px) {
+  .pz-kok .pz-pazar.pz-terazili .pz-tezgah {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: 12px;
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-terazi {
+    width: min(calc(var(--bo) * 0.62), 56vh);
+    margin-top: 0;
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler,
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler[data-adet] {
+    --pz-urun: calc(var(--bo) * 0.15);
+    display: grid;
+    grid-template-columns: repeat(3, var(--pz-urun));
+    gap: 2px 4px;
+    margin: 0;
+  }
+  .pz-kok .pz-pazar.pz-terazili .pz-urunler[data-adet='4'] {
+    grid-template-columns: repeat(2, var(--pz-urun));
+  }
+  .pz-kok .pz-pazar .pz-baslik {
+    font-size: clamp(0.95rem, 4.5vh, 1.3rem);
   }
 }
