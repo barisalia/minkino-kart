@@ -366,7 +366,12 @@ export class Film {
       if ('ogut' in s) continue;
       // şarkı kaydı önceden çözülür: karaoke film saatiyle ilerler, kayıt geç başlamasın
       const c = baglam();
-      if (c) for (const o of s.olaylar) if (o.kim === 'sarki' && o.yap === 'basla') void dosyaTamponu(c, sarkiDosyasi(o));
+      if (c)
+        for (const o of s.olaylar) {
+          if (o.kim === 'sarki' && o.yap === 'basla') void dosyaTamponu(c, sarkiDosyasi(o));
+          // sahnenin dosya müzikleri de (geç inen parça olayından sonra başlamasın)
+          else if (this.muzik && o.kim === 'muzik' && o.yap === 'dosya') void dosyaTamponu(c, String(o.ad));
+        }
       for (const e of Object.values(s.esyalar ?? {})) {
         const u = esyaAdresi(e.tip, d.film, d.malzeme);
         if (u) adresler.add(u);
