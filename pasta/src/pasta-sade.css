@@ -583,10 +583,11 @@
   .ps-kok .ps-gun {
     --kid-k: 1.22;
     --yer-w: calc(100cqw / 2);
-    --bw: min(calc(var(--yer-w) * 0.8), calc(172 * var(--u)));
+    /* çentikli telefonda üst çubuk aşağı iner: sipariş balonu biraz küçülür, çocukların yüzünü örtmez */
+    --bw: calc(min(calc(var(--yer-w) * 0.8), calc(172 * var(--u))) - max(0px, env(safe-area-inset-top, 0px) - 10px) * 0.9);
     --gomul: 0.26;
     /* balonlar geri / ses düğmelerinin ve gün tahtasının altında başlar */
-    --ust-pay: 76px;
+    --ust-pay: calc(76px + max(0px, env(safe-area-inset-top, 0px) - 10px));
     --r2a: calc(var(--h) * 1.2);
     --r1a: calc(var(--h) * 1);
     --firin-oran: 0.6171;
@@ -594,6 +595,11 @@
   }
   .ps-kok .ps-balon {
     bottom: min(calc(100% - var(--ust) * var(--w) + 8 * var(--u)), calc(var(--W) - var(--bw) * 0.86 - var(--ust-pay, 30 * var(--u))));
+  }
+  /* çentikli telefonda balon aşağı inince çocuk da tezgâhın arkasında o kadar aşağıda durur: yüzü balonun altında kalmaz */
+  .ps-kok .ps-musteri > .ps-m-yol,
+  .ps-kok .ps-musteri > .ps-m-dokun {
+    translate: 0 calc(max(0px, env(safe-area-inset-top, 0px) - 10px) * 0.45);
   }
   /* sabır kalbi balonun sağ kenarında, ses düğmesinin ve gün tahtasının altında (üstten taşıp kesilmesin) */
   .ps-kok .ps-sabir {
@@ -901,8 +907,9 @@
 }
 @media (orientation: portrait) {
   /* akşam: otobüs sahnesi dikeyde daha iri (gökyüzü bomboş kalmasın); kumbara ve Mino ekranda */
-  .ps-kok .ps-aksam-sahne {
-    width: min(72vw, calc(44vh * 1.52));
+  .ps-kok .ps-aksam-sahne,
+  .ps-kok .ps-aksam.ps-raf-acik .ps-aksam-sahne {
+    width: min(78vw, calc(44vh * 1.52));
     translate: -7% 0;
   }
   .ps-kok .ps-aksam-jetonlar {
