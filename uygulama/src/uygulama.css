@@ -770,3 +770,41 @@
   }
 }
 
+/* ---------- 9 kart (Kino Ne Giysin? eklendi): geniş Pasta son sırada, ızgara her ekranda boşluksuz ----------
+   telefon dikey 2 × 5 (Pasta iki hücre), yatay telefon 5 × 2 (Pasta iki hücre), 3 sütun (tablet) 3 × 3 (Pasta bir hücre) */
+.ug-kok .ug-izgara[data-adet='9'] {
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+@media (min-width: 600px) and (orientation: portrait) {
+  .ug-kok .ug-izgara[data-adet='9'] {
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-kart-yer.ug-genis {
+    grid-column: span 1;
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+    --ad: 9.6cqi;
+  }
+}
+@media (orientation: landscape) {
+  .ug-kok .ug-izgara[data-adet='9'] {
+    --oran: 1.94;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .ug-kok .ug-izgara[data-adet='9'] {
+    --oran: 1.12;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-kart-yer.ug-genis {
+    grid-column: span 1;
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+    --ad: 9.6cqi;
+  }
+}
+.ug-kok .ug-k-giysin { left: 50%; bottom: 2%; height: min(88cqh, 100cqw); transform: translateX(-50%); }
+

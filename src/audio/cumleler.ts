@@ -17,6 +17,7 @@ import { okulCumleleri, okulKinoCumleleri } from '../../okul/src/sayi';
 import { sesKulesiCumleleri, sesKulesiKinoCumleleri } from '../../okul/src/ses/harfler';
 import { kelimeCumleleri, kelimeKinoCumleleri } from '../../okul/src/kelime/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
+import giysinJson from '../../content/giysin.json';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -222,6 +223,8 @@ export function tumCumleler(): string[] {
   // Dedektif Mino: Mino (anlatıcı), kart hayvanları ve Pamuk (tonlu); Kino'nun cümleleri anlatıcı yedeği olarak da
   dedektifCumleleri().forEach(ekle);
   dedektifKinoCumleleri().forEach(ekle);
+  // Kino Ne Giysin?: Mino (anlatıcı) ve giysi adları; Kino'nun cümleleri anlatıcı yedeği olarak da
+  for (const k of ['mino', 'giysi', 'kino'] as const) topla(giysinJson[k]).forEach(ekle);
   return [...set];
 }
 
@@ -250,6 +253,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   kelimeKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Kino'nun cümleleri
   dedektifKinoCumleleri().forEach(ekle);
+  // Kino Ne Giysin?: Kino'nun cümleleri
+  topla(giysinJson.kino).forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

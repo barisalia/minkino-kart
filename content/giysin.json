@@ -1,0 +1,54 @@
+{
+  "aciklama": "Kino Ne Giysin? (ekip/senaryo/kino-ne-giysin.md). 'mino' = anlatıcı (Mino'nun sesi); 'kino' = Kino'nun kendi sesi (en çok 3 kelime); 'giysi' = giysi adları (dokununca anlatıcı söyler). 'baslik', 'yazi' ekranda yazar, seslendirilmez.",
+  "baslik": "Kino Ne Giysin?",
+  "yazi": {
+    "album": "Kino'nun Albümü",
+    "kis": "Kış",
+    "ilkbahar": "İlkbahar",
+    "yaz": "Yaz",
+    "sonbahar": "Sonbahar",
+    "yakinda": "Yakında",
+    "tekrar": "Yeniden oyna"
+  },
+  "mino": {
+    "perde": "Dışarıda hava nasıl? Perdeyi aç!",
+    "kis": "Kış! Her yer kar.",
+    "dolap": "Dolabı aç, Kino'yu giydir!",
+    "surukle": "Giysiyi Kino'ya sürükle!",
+    "once_corap": "Önce çorap!",
+    "once_mont": "Önce mont!",
+    "eldiven_son": "Eldiven en son!",
+    "kisin_degil": "Bu kışın giyilmez!",
+    "hazir": "Hazır mısın?",
+    "kapi": "Kapıya dokun!",
+    "gulumse": "Gülümse!",
+    "albume": "Fotoğraf albüme!",
+    "yine": "Bir daha giydirelim mi?"
+  },
+  "kino": {
+    "istek": "Kardan adam yapacağım!",
+    "brrr": "Brrr!",
+    "sicacik": "Ohh, sıcacık!",
+    "el_icin": "Bu elime mi?",
+    "kafaya": "Bu kafaya mı?",
+    "ayaga": "Bu ayağa mı?",
+    "ustume": "Bu üstüme mi?",
+    "boyna": "Bu boyna mı?",
+    "goremiyorum": "Göremiyorum!",
+    "ellerim": "Ellerim nerede?",
+    "yakisti": "Çok yakıştı!",
+    "unuttuk": "Bir şey unuttuk!",
+    "yasasin": "Yaşasın!",
+    "oley": "Oley!"
+  },
+  "giysi": {
+    "mont": "Mont!",
+    "atki": "Atkı!",
+    "bere": "Bere!",
+    "eldiven": "Eldiven!",
+    "corap": "Çorap!",
+    "bot": "Bot!",
+    "sort": "Şort!",
+    "gozluk": "Güneş gözlüğü!"
+  }
+}

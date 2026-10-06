@@ -17,3 +17,7 @@ dist-video
 *.keystore
 *.p12
 *.7z
+
+# Kino Ne Giysin? ara dosyaları (ham üretimler, parça kırpımları)
+ekip/giysin/ham/
+ekip/giysin/parca/

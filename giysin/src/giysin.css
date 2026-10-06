@@ -1,0 +1,902 @@
+/* Kino Ne Giysin? (önek gy-). Kök sınıf altında: gömülünce başka uygulamayı bozmaz. Yalnız transform / opacity animasyonu. */
+.gy-kok {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #f9dcc0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.gy-kok .gy-ekran {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.gy-kok img {
+  -webkit-user-drag: none;
+}
+.gy-kok .gy-dunya {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.gy-kok .gy-dunya > *,
+.gy-kok .gy-oda {
+  position: absolute;
+}
+.gy-kok .gy-ekran > .gy-oda {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- üst düğmeler ---------- */
+.gy-kok .gy-ust {
+  position: absolute;
+  z-index: 30;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.gy-kok .gy-ust > * {
+  pointer-events: auto;
+}
+.gy-kok .gy-album-dugme {
+  --r: #ff8a2b;
+  --i: #fff;
+}
+.gy-kok .gy-baslik {
+  margin: 0;
+  font: 700 clamp(22px, 4.4vmin, 36px) / 1 Fredoka, system-ui, sans-serif;
+  color: #5a2e1a;
+  text-shadow: 0 2px 0 #fff;
+}
+
+/* ---------- işaret (dokun ipucu): yumuşak nabız halkası ---------- */
+.gy-kok .gy-isaret {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 28%, rgba(255, 236, 140, 0.55) 45%, rgba(255, 236, 140, 0) 70%);
+}
+.gy-kok .isaretli > .gy-isaret {
+  animation: gy-nabiz 1.4s ease-in-out infinite;
+}
+@keyframes gy-nabiz {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+.gy-kok .isaretli {
+  animation: gy-kipir 1.4s ease-in-out infinite;
+}
+@keyframes gy-kipir {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale(1.025) rotate(-0.6deg);
+  }
+}
+
+/* ---------- pencere ---------- */
+.gy-kok .gy-pencere {
+  cursor: pointer;
+}
+.gy-kok .gy-pencere-cerceve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.gy-kok .gy-cam {
+  position: absolute;
+  left: 20.5%;
+  right: 20.5%;
+  top: 13%;
+  bottom: 19.5%;
+  border-radius: 50% 50% 2% 2% / 32% 32% 2% 2%;
+  overflow: hidden;
+  background: #bcdcf6;
+}
+.gy-kok .gy-cam-ic {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-katman {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.gy-kok .gy-manzara {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% 70%;
+}
+.gy-kok .gy-agac {
+  object-position: 79% 70%;
+  transform-origin: 79% 85%;
+  cursor: pointer;
+}
+.gy-kok .gy-bugu {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 95%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 45%),
+    radial-gradient(ellipse at 85% 90%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 40%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 50%);
+  opacity: 0.85;
+  animation: gy-bugu 5s ease-in-out infinite;
+}
+@keyframes gy-bugu {
+  50% {
+    opacity: 0.55;
+  }
+}
+.gy-kok .gy-kar-puf {
+  position: absolute;
+  width: 12%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 40%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+/* kar: her tane kabın boyunca bir sütun; tane sütunun tepesinde, sütun aşağı kayar (yalnız transform) */
+.gy-kok .gy-kar {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.gy-kok .acildi .gy-kar,
+.gy-kok .gy-kar.dis {
+  opacity: 1;
+}
+.gy-kok .gy-kar i {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, #fff 0 42%, rgba(255, 255, 255, 0.55) 55%, rgba(255, 255, 255, 0) 72%) no-repeat 0 0 / var(--b) var(--b);
+  animation: gy-dus var(--sure) linear var(--gec) infinite;
+  will-change: transform;
+}
+.gy-kok .gy-kar.uzak i {
+  opacity: 0.75;
+}
+@keyframes gy-dus {
+  0% {
+    transform: translate3d(0, -6%, 0);
+  }
+  25% {
+    transform: translate3d(var(--salin), 20%, 0);
+  }
+  50% {
+    transform: translate3d(0, 46%, 0);
+  }
+  75% {
+    transform: translate3d(calc(var(--salin) * -1), 73%, 0);
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+/* perde: iki kanat, her biri dikey şeritler (kumaş dalgası) */
+.gy-kok .gy-perdeler {
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  top: -4%;
+  bottom: 8%;
+}
+.gy-kok .gy-perde {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60%;
+}
+.gy-kok .gy-perde-sol {
+  left: 0;
+  transform-origin: 0 0;
+}
+.gy-kok .gy-perde-sag {
+  right: 0;
+  transform-origin: 100% 0;
+}
+.gy-kok .gy-serit {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+.gy-kok .gy-perde-sol .gy-serit {
+  transform-origin: 0 0;
+}
+.gy-kok .gy-perde-sag .gy-serit {
+  transform-origin: 100% 0;
+}
+.gy-kok .perde-acik .gy-perde-sol .gy-serit,
+.gy-kok .perde-acik .gy-perde-sag .gy-serit {
+  display: none;
+}
+
+/* ---------- kapı ---------- */
+.gy-kok .gy-kapi {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.gy-kok .gy-kapi-cerceve,
+.gy-kok .gy-kapi-mentese,
+.gy-kok .gy-kapi-isik {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gy-kok .gy-kapi-mentese img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 13% 50%;
+}
+.gy-kok .gy-kapi-isik {
+  border-radius: 50% 50% 0 0 / 26% 26% 0 0;
+  inset: 4% 10% 0 10%;
+  width: auto;
+  height: auto;
+  background: radial-gradient(ellipse at 50% 70%, #fff 0 35%, #fff6c8 60%, #ffe39a 100%);
+  box-shadow: 0 0 60px 30px rgba(255, 246, 200, 0.85);
+  opacity: 0;
+}
+
+/* ---------- dolap ---------- */
+.gy-kok .gy-dolap {
+  cursor: pointer;
+}
+.gy-kok .gy-dolap > img,
+.gy-kok .gy-kapak-yer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gy-kok .gy-dolap-acik,
+.gy-kok .gy-dolap-ic {
+  opacity: 0;
+}
+.gy-kok .gy-kapak {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: visible;
+  will-change: transform;
+}
+/* menteşe: dış kenarlar (sarı kapağın sol / sağ ucu) */
+.gy-kok .gy-kapak-sol {
+  transform-origin: 21.2% 50%;
+}
+.gy-kok .gy-kapak-sag {
+  transform-origin: 78.8% 50%;
+}
+
+.gy-kok .gy-raf {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.gy-kok .gy-giysi {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: none;
+  opacity: 0;
+  touch-action: none;
+  transition: opacity 0.25s;
+}
+.gy-kok .gy-raf.acik .gy-giysi {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: grab;
+}
+.gy-kok .gy-raf.gizli .gy-giysi {
+  opacity: 0;
+  pointer-events: none;
+}
+.gy-kok .gy-giysi img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 3px rgba(80, 40, 20, 0.28));
+  transform-origin: 50% 0;
+}
+.gy-kok .gy-raf.acik .gy-giysi.askida img {
+  animation: gy-asili 3.2s ease-in-out infinite;
+}
+.gy-kok .gy-raf.acik .gy-giysi.askida:nth-child(2) img {
+  animation-delay: -1.1s;
+}
+.gy-kok .gy-raf.acik .gy-giysi.askida:nth-child(3) img {
+  animation-delay: -2.2s;
+}
+@keyframes gy-asili {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+.gy-kok .gy-giysi.bos {
+  opacity: 0 !important;
+}
+.gy-kok .gy-giysi.ipucu::before {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 248, 190, 0.95) 0 30%, rgba(255, 230, 120, 0) 70%);
+  animation: gy-nabiz 1.2s ease-in-out infinite;
+}
+.gy-kok .gy-giysi.ipucu img {
+  animation: gy-hopla 1.2s ease-in-out infinite;
+}
+@keyframes gy-hopla {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    transform: translateY(-9%) scale(1.06);
+  }
+}
+
+/* sürüklenen giysi: sabit katmanda */
+.gy-kok .gy-surukle-kat {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+.gy-kok .gy-tasinan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.gy-kok .gy-tasinan img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 8px rgba(80, 40, 20, 0.3));
+}
+
+/* ---------- Kino ---------- */
+.gy-kok .gy-kino-yer {
+  will-change: transform;
+}
+.gy-kok .gy-kino-kutu,
+.gy-kok .gy-kino,
+.gy-kok .gy-kino-ekler {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-kino-kutu {
+  transform-origin: 50% 92%;
+}
+.gy-kok .gy-kino {
+  transform-origin: 50% 92%;
+}
+.gy-kok .gy-kino-ekler {
+  pointer-events: none;
+}
+.gy-kok .gy-miknatis {
+  position: absolute;
+  width: 34%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 22%, rgba(255, 238, 150, 0.6) 42%, rgba(255, 238, 150, 0) 70%);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.18s,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.gy-kok .gy-miknatis.acik {
+  opacity: 1;
+  transform: scale(1);
+}
+.gy-kok .gy-buz {
+  position: absolute;
+  left: 44.6%;
+  top: 44.5%;
+  width: 4.6%;
+  opacity: 0;
+  transform-origin: 50% 0;
+}
+.gy-kok .gy-yanak {
+  position: absolute;
+  top: 44%;
+  width: 13%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(120, 180, 255, 0.75), rgba(120, 180, 255, 0) 70%);
+  opacity: 0;
+}
+.gy-kok .gy-yanak.sol {
+  left: 27%;
+}
+.gy-kok .gy-yanak.sag {
+  left: 60%;
+}
+.gy-kok .gy-kalp {
+  position: absolute;
+  width: 7%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 30% 30%, #ffd3e0, #ff6f9c 60%);
+  clip-path: path('M50 90 L12 52 A20 20 0 0 1 50 22 A20 20 0 0 1 88 52 Z');
+  opacity: 0;
+}
+.gy-kok .gy-kalp {
+  clip-path: polygon(50% 92%, 8% 50%, 6% 30%, 18% 12%, 34% 10%, 50% 24%, 66% 10%, 82% 12%, 94% 30%, 92% 50%);
+}
+.gy-kok .gy-kino-ekler::after {
+  content: '';
+  position: absolute;
+  left: 26%;
+  top: 28%;
+  width: 46%;
+  height: 16%;
+  border-radius: 40%;
+  background: rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.gy-kok .gy-kino-ekler.bugulu::after {
+  opacity: 1;
+}
+
+/* düşünce balonu */
+.gy-kok .gy-balon {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 10% 100%;
+}
+.gy-kok .gy-balon-ic {
+  position: absolute;
+  inset: 0;
+  border-radius: 48% 52% 50% 46% / 54% 50% 52% 48%;
+  background: #fff;
+  border: 4px solid #5a2e1a;
+  box-shadow: 0 6px 0 rgba(90, 46, 26, 0.18);
+}
+.gy-kok .gy-balon-k1,
+.gy-kok .gy-balon-k2 {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #5a2e1a;
+}
+.gy-kok .gy-balon-k1 {
+  width: 15%;
+  aspect-ratio: 1;
+  left: -6%;
+  bottom: -4%;
+}
+.gy-kok .gy-balon-k2 {
+  width: 8%;
+  aspect-ratio: 1;
+  left: -16%;
+  bottom: -16%;
+}
+.gy-kok .gy-balon-ic img {
+  position: absolute;
+}
+.gy-kok .gy-balon-ic .b1 {
+  width: 34%;
+  left: 33%;
+  bottom: 9%;
+}
+.gy-kok .gy-balon-ic .b2 {
+  width: 25%;
+  left: 37.5%;
+  bottom: 36%;
+}
+.gy-kok .gy-balon-ic .b3 {
+  width: 18%;
+  left: 41%;
+  bottom: 57%;
+}
+.gy-kok .gy-balon-ic .b4 {
+  width: 14%;
+  left: 50%;
+  bottom: 64%;
+}
+
+/* ayna */
+.gy-kok .gy-ayna {
+  opacity: 0;
+  z-index: 5;
+  will-change: transform;
+}
+.gy-kok .gy-ayna-cerceve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gy-kok .gy-ayna-cam {
+  position: absolute;
+  left: 16%;
+  right: 13%;
+  top: 16%;
+  bottom: 13%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(160deg, #e4f3fb, #a8cde4);
+}
+.gy-kok .gy-yansima {
+  position: absolute;
+  left: -70%;
+  width: 240%;
+  bottom: -14%;
+  aspect-ratio: 1;
+  transform: scaleX(-1);
+  opacity: 0.92;
+}
+.gy-kok .gy-yansima .gy-kino {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-ayna-parilti {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 30%;
+  width: 26%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+  opacity: 0;
+}
+
+/* beyaz flaş / ışık */
+.gy-kok .gy-beyaz {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- dış sahne ---------- */
+.gy-kok .gy-dis-sahne {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.gy-kok .gy-dis-zemin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 70%;
+}
+.gy-kok .gy-dis-sahne > div {
+  position: absolute;
+}
+.gy-kok .gy-dis-kino .gy-kino {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-dis-kino {
+  will-change: transform;
+}
+.gy-kok .gy-dis-mino .mino {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-kamera {
+  position: absolute;
+  width: 46%;
+  left: -6%;
+  top: 46%;
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 4px 3px rgba(60, 30, 20, 0.25));
+}
+.gy-kok .gy-yuvarlanan {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.gy-kok .gy-ucan-havuc,
+.gy-kok .gy-polaroid {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* kardan adam: genişlik 1 birim, boy 1,9 birim (yüzdeler kaba göre) */
+.gy-kok .gy-kardan {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-kardan > * {
+  position: absolute;
+  transform-origin: 50% 100%;
+}
+.gy-kok .gy-ka-govde {
+  left: 0;
+  width: 100%;
+  bottom: 0;
+}
+.gy-kok .gy-ka-orta {
+  left: 13%;
+  width: 74%;
+  bottom: 41%;
+}
+.gy-kok .gy-ka-bas {
+  left: 24%;
+  width: 52%;
+  aspect-ratio: 274 / 265;
+  bottom: 72%;
+}
+.gy-kok .gy-ka-bas-top {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gy-kok .gy-ka-yuz {
+  position: absolute;
+  inset: 14% 12% 10% 12%;
+  transform-origin: 50% 50%;
+}
+.gy-kok .gy-ka-yuz svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.gy-kok .gy-ka-yuz .gz-sag {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.gy-kok .gy-ka-havuc {
+  left: 49%;
+  width: 34%;
+  bottom: 81%;
+  transform-origin: 4% 50%;
+}
+.gy-kok .gy-ka-atki {
+  left: 30%;
+  width: 40%;
+  bottom: 62%;
+}
+.gy-kok .gy-ka-dal-sol {
+  left: -16%;
+  height: 30%;
+  bottom: 50%;
+  rotate: -42deg;
+  transform-origin: 80% 100%;
+}
+.gy-kok .gy-ka-dal-sag {
+  right: -16%;
+  height: 30%;
+  bottom: 50%;
+  rotate: 42deg;
+  transform-origin: 20% 100%;
+}
+
+/* polaroid */
+.gy-kok .gy-polaroid {
+  aspect-ratio: 274 / 308;
+  filter: drop-shadow(0 14px 14px rgba(60, 30, 20, 0.3));
+}
+.gy-kok .gy-album .gy-polaroid {
+  position: relative;
+  width: 100%;
+  filter: drop-shadow(0 8px 8px rgba(60, 30, 20, 0.25));
+}
+.gy-kok .gy-polaroid-cerceve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gy-kok .gy-polaroid-foto {
+  position: absolute;
+  left: 11.9%;
+  right: 12.2%;
+  top: 12.1%;
+  bottom: 26.2%;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #cfe6fa;
+}
+.gy-kok .gy-foto-kare {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-foto-zemin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 70%;
+}
+.gy-kok .gy-foto-kardan {
+  position: absolute;
+  left: 52%;
+  bottom: 6%;
+  width: 30%;
+  aspect-ratio: 1 / 1.9;
+}
+.gy-kok .gy-foto-kino {
+  position: absolute;
+  left: 2%;
+  bottom: 2%;
+  width: 60%;
+  aspect-ratio: 1;
+}
+.gy-kok .gy-durgun-kino {
+  position: absolute;
+  inset: 0;
+}
+.gy-kok .gy-durgun-kino img {
+  position: absolute;
+}
+.gy-kok .gy-durgun-kino img:first-child {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* son düğmesi */
+.gy-kok .gy-son {
+  position: absolute;
+  z-index: 35;
+  left: 0;
+  right: 0;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.gy-kok .gy-son.acik {
+  pointer-events: auto;
+}
+.gy-kok .gy-son-dugme {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 26px 10px 14px;
+  border-radius: 999px;
+  border: 4px solid #5a2e1a;
+  background: #ffd23f;
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.1), 0 5px 0 #5a2e1a;
+  font: 700 clamp(18px, 3.6vmin, 26px) / 1 Fredoka, system-ui, sans-serif;
+  color: #5a2e1a;
+  cursor: pointer;
+}
+.gy-kok .gy-son-ikon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #5a2e1a;
+}
+.gy-kok .gy-son-ikon svg {
+  width: 60%;
+  height: 60%;
+}
+
+/* ---------- albüm ---------- */
+.gy-kok .gy-album-izgara {
+  position: absolute;
+  inset: 76px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left));
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 2.4vmin, 26px);
+  align-items: center;
+  justify-items: center;
+}
+.gy-kok .gy-album-sayfa {
+  width: min(100%, 42vh);
+  padding: 10px 10px 14px;
+  border-radius: 18px;
+  background: #fffaf0;
+  border: 4px solid #5a2e1a;
+  box-shadow: 0 6px 0 rgba(90, 46, 26, 0.25);
+  display: grid;
+  gap: 8px;
+  rotate: calc((var(--i) - 1.5) * 1.6deg);
+}
+.gy-kok .gy-album-ad {
+  font: 700 clamp(16px, 3vmin, 24px) / 1 Fredoka, system-ui, sans-serif;
+  color: #5a2e1a;
+  text-align: center;
+}
+.gy-kok .gy-album-bos {
+  position: relative;
+  opacity: 0.55;
+}
+.gy-kok .gy-album-bos img {
+  width: 100%;
+  display: block;
+  filter: grayscale(0.6);
+}
+.gy-kok .gy-album-bos span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38%;
+  text-align: center;
+  font: 600 clamp(14px, 2.6vmin, 20px) / 1 Fredoka, system-ui, sans-serif;
+  color: #8a6a5a;
+}
+@media (orientation: portrait) {
+  .gy-kok .gy-album-izgara {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .gy-kok .gy-album-sayfa {
+    width: min(100%, 24vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gy-kok .gy-kar i,
+  .gy-kok .gy-raf.acik .gy-giysi.askida img,
+  .gy-kok .gy-bugu {
+    animation: none;
+  }
+}

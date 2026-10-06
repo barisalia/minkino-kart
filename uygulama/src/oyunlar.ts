@@ -129,6 +129,16 @@ export const OYUNLAR: OyunKarti[] = [
     katmanlar: [],
   },
   {
+    id: 'giysin',
+    ad: 'Kino Ne Giysin?',
+    adres: './giysin/',
+    renk: '#5BB8F0',
+    // karlı tepeler ve kış giysileriyle Kino (ekip/giysin/kart.cjs)
+    zemin: 'giysin/dis-kis-yatay',
+    rozet: 'Yeni',
+    katmanlar: [{ gorsel: 'giysin/kart-kino', sinif: 'ug-k-giysin' }],
+  },
+  {
     id: 'pasta',
     ad: 'Pasta Otobüsü',
     adres: './pasta/',
@@ -142,8 +152,8 @@ export const OYUNLAR: OyunKarti[] = [
 ];
 
 /**
- * Menüde görünen kartlar (web ve uygulamada aynı 8 kart). Çift sayıda: telefon 2 × 4, yatay 4 × 2; 3 sütunda (tablet)
- * geniş Pasta iki hücre kaplar, 3 × 3 boşluksuz.
+ * Menüde görünen kartlar (web ve uygulamada aynı 9 kart, Kino Ne Giysin? eklendi). Geniş Pasta son sırada: telefon
+ * dikeyde 2 × 5 (Pasta iki hücre), yatay telefonda 5 × 2 (Pasta iki hücre), 3 sütunda (tablet) 3 × 3 (Pasta bir hücre).
  */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
   if (!uygulama) return OYUNLAR;

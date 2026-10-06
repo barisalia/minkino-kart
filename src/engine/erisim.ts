@@ -37,6 +37,9 @@ export const ERISIM: Record<string, Erisim> = {
   canlan: 'abonelik',
   pasta: 'abonelik',
   dedektif: 'abonelik',
+  // Kino Ne Giysin?: ilk mevsim (Kış · Kardan adam) ücretsiz, diğer mevsimler abonelikle
+  'giysin/kis': 'ucretsiz',
+  'giysin/*': 'abonelik',
 };
 
 /** Tablodan bir içeriğin erişim türü (oyun ya da 'oyun/bolum') */
