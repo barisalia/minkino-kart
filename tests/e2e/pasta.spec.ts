@@ -266,3 +266,52 @@ test('Pasta Otobüsü: ekran kareleri ve dizilim (16:9 … 19.5:9 telefon, çok 
     if (a && c) expect(a.x + a.width <= c.x || c.x + c.width <= a.x || a.y + a.height <= c.y || c.y + c.height <= a.y).toBe(true);
   }
 });
+
+test('Pasta Otobüsü: uyuyan müşteriye tabağa dokunarak verilince uyanır (gözü kapalı, Zzz ile yemez)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pasta/?test=1&sifirla=1&ekran=gun&gun=1&sabir=1200');
+  await expect(page.locator('.ps-musteri.ps-uyuyor').first()).toBeVisible({ timeout: 20000 });
+  // yalnız tezgâhtaki parlayan işe dokun (müşteriye dokunma); tabak hazır olunca adım "servis" olur
+  for (let n = 0; n < 200; n++) {
+    const d = await durum(page).catch(() => null);
+    if (d?.adim === 'servis') break;
+    const hedef = page.locator('.ps-gun .ps-sirada');
+    if (d?.adim && (await hedef.count())) await hedef.first().click({ timeout: 3000 }).catch(() => undefined);
+    await page.waitForTimeout(80);
+  }
+  expect((await durum(page)).adim).toBe('servis');
+  await expect(page.locator('.ps-musteri.ps-uyuyor').first()).toBeVisible();
+  await page.locator('.ps-tabak').click();
+  const verilen = page.locator('.ps-musteri.ps-bitti');
+  await expect(verilen).toHaveCount(1, { timeout: 5000 });
+  await expect(verilen).not.toHaveClass(/ps-uyuyor/);
+  expect(hatalar).toEqual([]);
+});
+
+test('Pasta Otobüsü akşam: jetonlar ekran açılınca kaydedilir; erken kumbara dokunuşu sayımı bozmaz, kumbara çağırmaya devam etmez', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  // kumbara ekrana gelir gelmez (yıldızlar dolmadan) dokunulur
+  await page.addInitScript(() => {
+    const g = new MutationObserver(() => {
+      const k = document.querySelector<HTMLElement>('.ps-kumbara');
+      if (!k) return;
+      g.disconnect();
+      window.setTimeout(() => k.click(), 0);
+    });
+    g.observe(document, { childList: true, subtree: true });
+  });
+  await page.goto('./pasta/?test=1&sifirla=1&ekran=aksam&gun=1&kazanc=5&jeton=3');
+  await expect(page.locator('.ps-aksam')).toBeVisible();
+  // sayım bitmeden kayıtta zaten 3 + 5
+  const kayitli = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-pasta-v1') ?? '{}').jeton as number);
+  expect(kayitli).toBe(8);
+  await expect(page.locator('.ps-raf')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('.ps-kumbara-sayi')).toHaveText('8');
+  await expect(page.locator('.ps-sayac')).toHaveText('5');
+  await expect(page.locator('.ps-aksam-yildizlar')).toHaveAttribute('data-yildiz', /\d/);
+  await page.waitForTimeout(600);
+  await expect(page.locator('.ps-kumbara')).not.toHaveClass(/ps-cagir/);
+  const jeton = await page.evaluate(() => (window as unknown as { __pasta: { kayit: { jeton: number } } }).__pasta.kayit.jeton);
+  expect(jeton).toBe(8);
+  expect(hatalar).toEqual([]);
+});
