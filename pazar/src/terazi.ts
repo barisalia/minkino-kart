@@ -71,6 +71,7 @@ export class Terazi {
   private raf = 0;
   private son = 0;
   private w = 0;
+  private gozcu: ResizeObserver | null;
 
   constructor() {
     this.icSol = h('div.pz-kefe-ic');
@@ -81,6 +82,11 @@ export class Terazi {
     this.el = h('div.pz-terazi', { html: TABAN }, this.kol, this.kefeSol, this.kefeSag);
     this.son = performance.now();
     this.raf = requestAnimationFrame((t) => this.kare(t));
+    // genişlik vw/vh ile değişir (döndürme, tarayıcı çubuğu): kefeler px ile konduğu için yeniden ölçülür
+    this.gozcu = typeof ResizeObserver === 'function' ? new ResizeObserver(this.olc) : null;
+    this.gozcu?.observe(this.el);
+    addEventListener('resize', this.olc);
+    addEventListener('orientationchange', this.olc);
   }
 
   /** Kefelerdeki toplam ağırlıklar; kol yeni dengeye doğru salınır */
@@ -124,12 +130,15 @@ export class Terazi {
     if (this.dengede) this.el.classList.add('dengede');
   }
 
-  /** Boyut değişince (döndürme) yeniden ölçülsün */
-  olc() {
+  /** Boyut değişince (döndürme) yeniden ölçülsün; sonraki karede kefeler yeni ölçüyle kol uçlarına oturur */
+  readonly olc = () => {
     this.w = this.el.offsetWidth;
-  }
+  };
 
   kapat() {
     cancelAnimationFrame(this.raf);
+    this.gozcu?.disconnect();
+    removeEventListener('resize', this.olc);
+    removeEventListener('orientationchange', this.olc);
   }
 }

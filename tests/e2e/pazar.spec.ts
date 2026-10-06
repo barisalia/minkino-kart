@@ -150,6 +150,53 @@ test('Mino’nun Pazarı: terazi — müşterinin kefesini meyveyle dengele (6 y
   expect(hatalar).toEqual([]);
 });
 
+test('Mino’nun Pazarı: terazi — fazla konan meyve geri alınıp denge kurulunca tur biter (6 yaş)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=6&ekran=pazar&tur=terazi');
+  const ist = await istek(page);
+  await expect(page.locator('.pz-t-sol .pz-urun')).toHaveCount(ist.sol!.length);
+  const hedef = ist.sol!.reduce((a, id) => a + (AGIR[id] ?? 1), 0);
+  // hedef-1 hafif meyve, sonra ananas (2): denge hiç tutmadan bir fazla olur
+  for (let i = 0; i < hedef - 1; i++) {
+    await sepeteSurukle(page, page.locator('.pz-urunler .pz-yuva > .pz-urun:not([data-urun="ananas"])').first(), '.pz-t-sag');
+  }
+  await sepeteSurukle(page, page.locator('.pz-urunler .pz-urun[data-urun="ananas"]'), '.pz-t-sag');
+  await expect(page.locator('.pz-t-sag .pz-urun')).toHaveCount(hedef);
+  await page.waitForTimeout(500);
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(0);
+  // kefedeki bir hafif meyveye dokununca tezgâha döner, kefeler denkleşir ve müşteri sevinir
+  await page.locator('.pz-t-sag .pz-urun:not([data-urun="ananas"])').first().dispatchEvent('click');
+  await expect(page.locator('.pz-t-sag .pz-urun')).toHaveCount(hedef - 1);
+  await expect(page.locator('.pz-musteri.sevindi')).toBeVisible();
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino’nun Pazarı: terazi — telefon dönünce kefeler kol uçlarında kalır', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  /** sağ kefenin askı noktası ile kolun sağ ucu arasındaki uzaklık (px) */
+  const kayma = () =>
+    page.evaluate(() => {
+      const uc = document.querySelector('.pz-t-kol-svg circle[cx="370"]')!.getBoundingClientRect();
+      const kefe = document.querySelector('.pz-t-sag')!.getBoundingClientRect();
+      return Math.hypot(kefe.x + kefe.width / 2 - (uc.x + uc.width / 2), kefe.y - (uc.y + uc.height / 2));
+    });
+  for (const [w, h] of [
+    [390, 844],
+    [844, 390],
+  ]) {
+    await page.setViewportSize({ width: w, height: h });
+    if (w === 390) {
+      await page.goto('./pazar/?test=1&yas=6&ekran=pazar&tur=terazi');
+      await istek(page);
+    }
+    await page.waitForTimeout(400);
+    const genislik = await page.locator('.pz-terazi').evaluate((e) => (e as HTMLElement).offsetWidth);
+    expect(await kayma(), `${w}x${h}, terazi ${genislik}px`).toBeLessThan(6);
+  }
+  expect(hatalar).toEqual([]);
+});
+
 // ---------------------------------------------------------------- Meyve Suyu Köşesi (yan dal)
 interface MsVeri {
   hedef: string;
