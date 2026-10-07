@@ -53,6 +53,8 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   // sahneler
   koridor: { adaylar: ['koridor'], zorunlu: true },
   'yatak-odasi': { adaylar: ['yatak-odasi'], zorunlu: true },
+  // yatağın önü (Pamuk arkasında saklanır): yatak-odasi resminden yatağın kendi çizgisiyle kesilmiş saydam katman
+  'yatak-on': { adaylar: ['yatak-on'], zorunlu: false },
   // eşyalar
   masa: { adaylar: ['masa', 'calisma-masasi'], yedek: 'okul/ses/masa', zorunlu: true },
   kalemlik: { adaylar: ['kalemlik-devrik', 'kalemlik'], yedek: 'okul/ses/kalem', zorunlu: false },

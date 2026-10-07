@@ -253,20 +253,8 @@ export const YATAK_IZLERI: IzNoktasi[] = [
   { x: 0.437, y: 0.85, don: -70, h: 0.055 },
 ];
 export const YATAK = {
-  /** yatağın önden görünen kısmı (Pamuk bunun arkasında): çokgen, oran */
-  on: [
-    [0.02, 0.43],
-    [0.44, 0.43],
-    [0.44, 0.79],
-    [0.401, 0.79],
-    [0.401, 0.85],
-    [0.376, 0.85],
-    [0.376, 0.79],
-    [0.058, 0.79],
-    [0.058, 0.85],
-    [0.028, 0.85],
-    [0.02, 0.79],
-  ] as [number, number][],
+  /** yatağın ön katmanının odadaki kutusu (assets/dedektif/yatak-on.webp: yatak-odasi resminden yatağın çizgisiyle kesilmiş; 1920×1080 resimde 0,470 822×470 px) */
+  on: { x0: 0, y0: 470 / 1080, x1: 822 / 1920, y1: 1 - 140 / 1080 },
   /** yatağın altındaki karanlık aralık */
   alt: { x0: 0.06, y0: 0.775, x1: 0.405, y1: 0.842 },
   /** sallanan kuyruk ucunun kökü (yatağın altında, ayak ucu bacağının hemen solunda) */

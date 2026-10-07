@@ -767,6 +767,8 @@
 }
 
 .dd-kok .dd-yatak-on {
+  position: absolute;
+  display: block;
   pointer-events: none;
 }
 .dd-kok .dd-pamuk-dunya {

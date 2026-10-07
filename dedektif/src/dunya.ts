@@ -281,9 +281,13 @@ export function yatakOdasi(pamuk: HTMLElement, kuyruk: HTMLElement): Oda {
   const s = YATAK.saklan;
   pamuk.style.left = px(s.x * W);
   pamuk.style.top = px(s.y * ODA_H);
-  // yatağın önden görünen kısmı: aynı resim, yatağın çevresinden kırpılmış (Pamuk bunun arkasından çıkar)
-  const cokgen = YATAK.on.map(([x, y]) => `${(x * 100).toFixed(2)}% ${(y * 100).toFixed(2)}%`).join(', ');
-  const on = h('img.dd-zemin.dd-yatak-on', { src: url, alt: '', draggable: 'false', style: `clip-path:polygon(${cokgen})` });
+  // yatağın önü: aynı resimden yatağın kendi çizgisiyle (başlık, ayak ucu, bacaklar) kesilmiş saydam katman;
+  // Pamuk arkasında saklanır, patileri yatağın altındaki boşluktan, kuyruğu ayak ucunun yanından görünür
+  const o = YATAK.on;
+  const onUrl = resim('yatak-on');
+  const on = onUrl
+    ? h('img.dd-yatak-on', { src: onUrl, alt: '', draggable: 'false', style: `left:${px(o.x0 * W)};top:${px(o.y0 * ODA_H)};width:${px((o.x1 - o.x0) * W)};height:${px((o.y1 - o.y0) * ODA_H)}` })
+    : h('i.dd-yatak-on');
   const izler = h('div.dd-izler.dd-izler-yatak', {}, ...izlerEl(YATAK_IZLERI, 'kart-kedi-pati-izi', W, 'yatak'));
   e.izler = izler;
   e.alt = alt;
