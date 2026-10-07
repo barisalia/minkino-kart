@@ -190,28 +190,49 @@ export const CALISMA = {
   pervaz: { x: 0.61, y: 0.646 },
 };
 
-/** Lambadan sağdaki kapıya giden izler (halının üstünden, terliklerin önünden) */
+/**
+ * İzler odanın alt kenarına inmez: kamera odanın altını ekranın altına dayar, en alttaki iz telefonun ev çubuğunun
+ * (yatayda alttaki ~21 px) üstünde kalsın. Kural: iz merkezi y + h/2 ≤ IZ_ALT_SINIR (e2e: izler kenardan uzak).
+ */
+export const IZ_ALT_SINIR = 0.955;
+/** Lambadan sağa giden izler: halının alt kenarından, trenle terliklerin arasındaki boşluğa (terliklere basmaz) */
 export const CALISMA_IZLERI: IzNoktasi[] = [
-  { x: 0.55, y: 0.925, don: 78, h: 0.059 },
-  { x: 0.6, y: 0.955, don: 96, h: 0.06 },
-  { x: 0.65, y: 0.93, don: 80, h: 0.06 },
-  { x: 0.715, y: 0.96, don: 98, h: 0.061 },
-  { x: 0.78, y: 0.985, don: 84, h: 0.061 },
-  { x: 0.845, y: 0.99, don: 92, h: 0.061 },
-  { x: 0.91, y: 0.985, don: 86, h: 0.061 },
-  { x: 0.975, y: 0.99, don: 92, h: 0.061 },
+  { x: 0.54, y: 0.912, don: 78, h: 0.058 },
+  { x: 0.579, y: 0.89, don: 96, h: 0.058 },
+  { x: 0.617, y: 0.906, don: 80, h: 0.058 },
+  { x: 0.656, y: 0.885, don: 98, h: 0.058 },
+  { x: 0.694, y: 0.9, don: 82, h: 0.057 },
+  { x: 0.733, y: 0.876, don: 92, h: 0.057 },
+  { x: 0.771, y: 0.888, don: 78, h: 0.056 },
+  { x: 0.808, y: 0.864, don: 84, h: 0.056 },
 ];
 /** Koridor: önden ortaya kadar ortak iz, sonra ikiye ayrılır (perspektif: uzaktaki izler küçük) */
 export const KORIDOR_IZLERI: IzNoktasi[] = [
-  { x: 0.505, y: 0.975, don: -4, h: 0.065 },
-  { x: 0.485, y: 0.915, don: -8, h: 0.057 },
-  { x: 0.5, y: 0.862, don: 2, h: 0.049 },
+  { x: 0.508, y: 0.925, don: -4, h: 0.058 },
+  { x: 0.486, y: 0.882, don: -8, h: 0.052 },
+  { x: 0.5, y: 0.845, don: 2, h: 0.046 },
 ];
 export type Yol = 'mutfak' | 'yatak';
 /** Kapılar: sol kemerli kapı ve sağ kapı (eşikleri) */
 export const KAPI = { sol: { x: 0.315, y: 0.745 }, sag: { x: 0.725, y: 0.805 } };
-/** Ayrılan izler: kapıya doğru küçülür. Mutfağa gidenler büyük ve tırnaklı (Kino), yatak odasına gidenler küçük, yuvarlak. */
-export function yolIzleri(yan: 'sol' | 'sag'): IzNoktasi[] {
+/**
+ * Ayrılan izler: kapıya doğru küçülür. Mutfağa gidenler büyük ve tırnaklı (Kino), yatak odasına gidenler küçük, yuvarlak.
+ * dar (dikey telefon): kamera koridorun ortasından dar bir dilim görür, Mino ile Kino alt köşelerde durur; iki yol
+ * yanlara (kapılar zaten görünmez) değil, aradaki boşlukta derine doğru hafifçe ayrılır: her iz ekranda, karakterlerin üstünde.
+ */
+export function yolIzleri(yan: 'sol' | 'sag', dar = false): IzNoktasi[] {
+  if (dar)
+    return yan === 'sol'
+      ? [
+          { x: 0.47, y: 0.8, don: -26, h: 0.044 },
+          { x: 0.447, y: 0.745, don: -30, h: 0.04 },
+          { x: 0.425, y: 0.69, don: -28, h: 0.036 },
+        ]
+      : [
+          { x: 0.534, y: 0.8, don: 26, h: 0.044 },
+          { x: 0.557, y: 0.745, don: 30, h: 0.04 },
+          { x: 0.579, y: 0.69, don: 28, h: 0.036 },
+        ];
   return yan === 'sol'
     ? [
         { x: 0.455, y: 0.83, don: -58, h: 0.044 },
@@ -226,10 +247,10 @@ export function yolIzleri(yan: 'sol' | 'sag'): IzNoktasi[] {
 }
 /** Yatak odası: izler halıdan yatağın ayak ucuna; kuyruk yatağın altından (ayak ucu bacağının yanında) sallanır */
 export const YATAK_IZLERI: IzNoktasi[] = [
-  { x: 0.6, y: 0.985, don: -64, h: 0.065 },
-  { x: 0.54, y: 0.945, don: -70, h: 0.062 },
-  { x: 0.48, y: 0.91, don: -62, h: 0.06 },
-  { x: 0.43, y: 0.875, don: -70, h: 0.057 },
+  { x: 0.6, y: 0.91, don: -64, h: 0.06 },
+  { x: 0.545, y: 0.888, don: -70, h: 0.058 },
+  { x: 0.49, y: 0.868, don: -62, h: 0.057 },
+  { x: 0.437, y: 0.85, don: -70, h: 0.055 },
 ];
 export const YATAK = {
   /** yatağın önden görünen kısmı (Pamuk bunun arkasında): çokgen, oran */
@@ -256,10 +277,10 @@ export const YATAK = {
 };
 /** Mutfak: Kino'nun izleri buzdolabının önünde biter */
 export const MUTFAK_IZLERI: IzNoktasi[] = [
-  { x: 0.52, y: 0.99, don: -70, h: 0.078 },
-  { x: 0.42, y: 0.95, don: -76, h: 0.075 },
-  { x: 0.32, y: 0.93, don: -70, h: 0.073 },
-  { x: 0.24, y: 0.9, don: -74, h: 0.07 },
+  { x: 0.5, y: 0.905, don: -70, h: 0.072 },
+  { x: 0.41, y: 0.893, don: -76, h: 0.071 },
+  { x: 0.32, y: 0.88, don: -70, h: 0.07 },
+  { x: 0.24, y: 0.866, don: -74, h: 0.068 },
 ];
 
 /** Yolların kapılara dağılımı: test modunda (ya da tohum 0) mutfak solda; değilse rastgele (tekrar oynayınca değişsin) */
@@ -491,15 +512,16 @@ const DIKEY = {
     pervaz: { x: 0.6, y: 0.135 },
   },
   izler: [
-    // Mino ile Kino alt köşelerde durur: izler halının üst yarısından sağa gider (dokunuş karakterlere gelmesin)
-    { x: 0.42, y: 0.735, don: 78, h: 0.04 },
-    { x: 0.49, y: 0.75, don: 96, h: 0.04 },
-    { x: 0.56, y: 0.735, don: 80, h: 0.04 },
-    { x: 0.63, y: 0.75, don: 98, h: 0.04 },
-    { x: 0.7, y: 0.735, don: 84, h: 0.04 },
-    { x: 0.77, y: 0.745, don: 92, h: 0.04 },
-    { x: 0.84, y: 0.73, don: 86, h: 0.04 },
-    { x: 0.91, y: 0.74, don: 92, h: 0.04 },
+    // Mino ile Kino alt köşelerde durur: izler halının üst yarısından sağa gider (dokunuş karakterlere gelmesin).
+    // Kamera dikeyde odanın ortasından ~%75'ini görür (x ≈ 0.12-0.88): son iz de kenardan uzakta, ekranın içinde
+    { x: 0.37, y: 0.727, don: 78, h: 0.04 },
+    { x: 0.427, y: 0.757, don: 96, h: 0.04 },
+    { x: 0.484, y: 0.727, don: 80, h: 0.04 },
+    { x: 0.541, y: 0.757, don: 98, h: 0.04 },
+    { x: 0.598, y: 0.727, don: 84, h: 0.04 },
+    { x: 0.655, y: 0.755, don: 92, h: 0.04 },
+    { x: 0.712, y: 0.725, don: 86, h: 0.04 },
+    { x: 0.77, y: 0.75, don: 92, h: 0.04 },
   ] as IzNoktasi[],
   kadraj: {
     genel: [0, 0, 1, 1],

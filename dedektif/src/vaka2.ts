@@ -389,7 +389,7 @@ class Vaka2 {
     await this.odaya(oda, this.aramaKadraji(hk), 1);
     if (this.kapali) return;
     // dikeyde ipuçları zeminde, karakterlerin baş hizasında: ikisi de kenara çekilir (ortası boş kalır)
-    if (this.dar()) oy.yerlesim('kenar');
+    oy.yerlesim('iki', 'kenar');
     await this.ipuclariniBul(hk, oda);
     oy.yerlesim('iki');
     if (this.kapali) return;
@@ -906,7 +906,7 @@ class Vaka2 {
     const { oy, dunya } = this;
     if (this.kapali) return;
     this.serit.aktif('ses');
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     dunya.darYakin = null;
     const soru = new SesSorusu(CALILAR);
     const calilar = CALILAR.map((_, i) => this.golet.e[`cali-${i}`]);
@@ -1004,7 +1004,7 @@ class Vaka2 {
     const c3 = this.golet.e['cali-2'];
     const sol = this.golet.e.yarimSol;
     const sag = this.golet.e.yarimSag;
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     await dunya.git(this.finalKadraj(), 900);
     if (this.kapali) return;
     // Vakvak Anne'nin boyu bu çekimde (final de aynı çekim)
@@ -1153,7 +1153,7 @@ class Vaka2 {
     if (this.kapali) return;
     this.serit.aktif('sira');
     if (dogrudan) await this.yuvaHazir();
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     // Kino öfkeli ama sevimli: ayağını yere vurur
     this.adim('sen-mi');
     oy.kinoPoz('isaret');
@@ -1203,7 +1203,7 @@ class Vaka2 {
     if (dogrudan) await this.yuvaHazir();
     else await dunya.git(this.finalKadraj(), 700);
     if (this.kapali) return;
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     const w = this.ordek.w;
     // 1) Vakvak Anne kalkar: yuvadan çıkar (yumurtalar açıkta), gagasında atkı, Kino'ya doğru
     this.yuva.classList.add('acik');

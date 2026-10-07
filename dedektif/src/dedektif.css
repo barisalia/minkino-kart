@@ -696,6 +696,10 @@
 .dd-kok .dd-izler-yol.dd-soluk .dd-iz {
   pointer-events: none;
 }
+/* dikey koridorda iki yol yan yana derine gider: dokunma alanları birbirine binmesin (dokunulan yol seçilsin) */
+.dd-kok .dd-dunya[data-dar='1'] .dd-izler-yol .dd-iz::before {
+  inset: -45%;
+}
 .dd-kok .dd-izler-yol.dd-parla .dd-iz img {
   opacity: 0.9;
   animation: dd-iz-nabiz 0.9s ease-in-out infinite;

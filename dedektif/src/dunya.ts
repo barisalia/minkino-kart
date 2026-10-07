@@ -220,22 +220,53 @@ export function calismaYenidenDiz(oda: Oda): boolean {
   return true;
 }
 
+/** Koridordaki iki yolun izleri (dar: dikey telefon; mutfağa gidenler Kino'nun büyük, tırnaklı izleri) */
+type YolIzleri = (yan: 'sol' | 'sag', dar: boolean) => IzNoktasi[];
+const koridorDar = () => typeof window !== 'undefined' && window.innerWidth < window.innerHeight * 1.15;
+const yolNoktalari = (yolIzleri: YolIzleri, y: 'sol' | 'sag', tur: 'mutfak' | 'yatak', dar: boolean) => yolIzleri(y, dar).map((p) => (tur === 'mutfak' ? { ...p, h: p.h * 1.25 } : p));
+
 /** Koridor: önden ortaya ortak iz, iki kapıya ayrılan izler (yanlar: hangi kapı mutfak) */
-export function koridor(yollar: Record<'sol' | 'sag', 'mutfak' | 'yatak'>, yolIzleri: (yan: 'sol' | 'sag') => IzNoktasi[]): Oda {
+export function koridor(yollar: Record<'sol' | 'sag', 'mutfak' | 'yatak'>, yolIzleri: YolIzleri): Oda {
   const W = odaW('koridor');
   const e: Record<string, HTMLElement> = {};
+  const dar = koridorDar();
   const ortak = h('div.dd-izler.dd-izler-ortak', {}, ...izlerEl(KORIDOR_IZLERI, 'kart-kedi-pati-izi', W, 'ortak'));
   const yan = (y: 'sol' | 'sag') => {
     const tur = yollar[y];
     // mutfağa gidenler Kino'nun büyük, tırnaklı izleri; yatak odasına gidenler küçük, yuvarlak kedi izleri
-    const izler = yolIzleri(y).map((p) => (tur === 'mutfak' ? { ...p, h: p.h * 1.25 } : p));
-    return h(`div.dd-izler.dd-izler-yol.dd-yol-${tur}`, { 'data-yol': tur, 'data-yan': y }, ...izlerEl(izler, tur === 'mutfak' ? 'ipucu-kopek-pati' : 'kart-kedi-pati-izi', W, tur));
+    return h(`div.dd-izler.dd-izler-yol.dd-yol-${tur}`, { 'data-yol': tur, 'data-yan': y }, ...izlerEl(yolNoktalari(yolIzleri, y, tur, dar), tur === 'mutfak' ? 'ipucu-kopek-pati' : 'kart-kedi-pati-izi', W, tur));
   };
   e.ortak = ortak;
   e.sol = yan('sol');
   e.sag = yan('sag');
-  const el = h('div.dd-dunya', { 'data-oda': 'koridor', style: `width:${px(W)};height:${px(ODA_H)}` }, katman('dd-k-tek', 0, h('img.dd-zemin', { src: resim('koridor') ?? '', alt: '', draggable: 'false' }), ortak, e.sol, e.sag).el);
+  const el = h('div.dd-dunya', { 'data-oda': 'koridor', 'data-dar': dar ? '1' : undefined, style: `width:${px(W)};height:${px(ODA_H)}` }, katman('dd-k-tek', 0, h('img.dd-zemin', { src: resim('koridor') ?? '', alt: '', draggable: 'false' }), ortak, e.sol, e.sag).el);
   return { id: 'koridor', el, W, katmanlar: [], e };
+}
+
+/**
+ * Telefon koridordayken döndü: iki yolun izleri yeni yönün yerleşimine geçer (dikeyde aradaki boşlukta derine,
+ * yatayda kapılara). İzlerin durumu (yandı, soluk) korunur. Yön değişmediyse false.
+ */
+export function koridorYenidenDiz(oda: Oda, yolIzleri: YolIzleri): boolean {
+  const dar = koridorDar();
+  if (oda.id !== 'koridor' || dar === (oda.el.dataset.dar === '1')) return false;
+  for (const y of ['sol', 'sag'] as const) {
+    const kap = oda.e[y];
+    const tur = kap?.dataset.yol as 'mutfak' | 'yatak' | undefined;
+    if (!kap || !tur) continue;
+    const noktalar = yolNoktalari(yolIzleri, y, tur, dar);
+    kap.querySelectorAll<HTMLElement>(':scope > .dd-iz').forEach((iz, i) => {
+      const p = noktalar[i];
+      if (!p) return;
+      iz.style.left = px(p.x * oda.W);
+      iz.style.top = px(p.y * ODA_H);
+      iz.style.height = px(p.h * ODA_H);
+      iz.style.setProperty('--don', `${p.don}deg`);
+    });
+  }
+  if (dar) oda.el.dataset.dar = '1';
+  else delete oda.el.dataset.dar;
+  return true;
 }
 
 /** Yatak odası: izler yatağın ayak ucuna; yatağın altında karanlık aralık, sallanan beyaz kuyruk ucu, saklanan Pamuk */

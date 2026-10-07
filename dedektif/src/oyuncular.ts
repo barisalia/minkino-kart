@@ -48,6 +48,11 @@ function balon(): HTMLElement {
   return h('div.dd-balon', { 'aria-hidden': 'true' }, h('span'));
 }
 
+/** Oyuncuların ekrandaki dizilişi (Oyuncular.yerlesim) */
+type Yerlesim = 'iki' | 'sol' | 'sag' | 'kenar';
+/** Dikey (dar) ekran mı (vakaların dar() ölçüsüyle aynı: en < boy × 1.15) */
+const ekranDar = () => window.innerWidth < window.innerHeight * 1.15;
+
 export class Oyuncular {
   readonly el: HTMLElement;
   readonly mino = new Mino();
@@ -81,6 +86,7 @@ export class Oyuncular {
   pamukPoz: PozYuvasi | null = null;
 
   constructor() {
+    window.addEventListener('resize', this.yonDegisti);
     this.minoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), this.yuruyen.el);
     this.minoYer = h('div.dd-oyuncu.dd-mino-yer', { 'data-oyuncu': 'mino' }, this.minoHareket);
     const kinoKutu = h('div.dd-kino-kutu', {}, this.kino.el);
@@ -143,6 +149,7 @@ export class Oyuncular {
     this.kino.kapat();
     this.pamuk?.kapat();
     this.pamukEkran?.kapat();
+    window.removeEventListener('resize', this.yonDegisti);
   }
 
   // ---------------------------------------------------------------- konuşma
@@ -343,8 +350,17 @@ export class Oyuncular {
       )
       .finished.catch(() => undefined);
   }
-  /** Yerleşim: iki yan (Mino solda, Kino sağda), ikisi solda, ikisi sağda, kenar (ikisi de ekranın kenarına çekilir) */
-  yerlesim(d: 'iki' | 'sol' | 'sag' | 'kenar') {
-    this.el.dataset.yerlesim = d;
+  /**
+   * Yerleşim: iki yan (Mino solda, Kino sağda), ikisi solda, ikisi sağda, kenar (ikisi de ekranın kenarına çekilir).
+   * dar verilirse dikey (dar) ekranda o kullanılır; telefon işin ortasında dönünce yerleşim yeni yöne geçer
+   * (ör. dikeyde kenara çekilmiş Mino ile Kino yatayda yarı ekran dışında kalmasın).
+   */
+  yerlesim(d: Yerlesim, dar?: Yerlesim) {
+    this.yonlu = dar ? [d, dar] : null;
+    this.el.dataset.yerlesim = dar && ekranDar() ? dar : d;
   }
+  private yonlu: [Yerlesim, Yerlesim] | null = null;
+  private yonDegisti = () => {
+    if (this.yonlu && !this.kapali) this.el.dataset.yerlesim = ekranDar() ? this.yonlu[1] : this.yonlu[0];
+  };
 }
