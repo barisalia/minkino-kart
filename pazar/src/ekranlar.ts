@@ -190,7 +190,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
 
   const yazi = h('span', {}, P.basla);
   let sonSoz: string[] = [P.basla];
-  const balon = h('div.baslik-balon.pz-baslik', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(sonSoz), 'kucuk'), yazi);
+  // açılış şarkısı çalarken (el.dataset.sarki) cümle şarkının üstüne söylenmez
+  const balon = h('div.baslik-balon.pz-baslik', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => el.dataset.sarki !== 'caliyor' && void konus(sonSoz), 'kucuk'), yazi);
   const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: MUSTERI_SAYISI }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
   const musteriKap = h('div.pz-musteri-kap');
   const mino = new Mino();
@@ -436,7 +437,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       // müşterinin meyveleri sol kefeye teker teker konur: her birinde kefe biraz daha iner
       (ist.sol ?? []).forEach((id, k) =>
         setTimeout(() => {
-          if (terazi !== tz) return;
+          if (terazi !== tz || kapandi) return;
           tz.icSol.append(h('div.pz-urun.pz-hazir', { 'data-urun': id, style: `--a:${agirlik(id)}` }, urunResmi(id)));
           const sol = (ist.sol ?? []).slice(0, k + 1).reduce((a, x) => a + agirlik(x), 0);
           tz.agirliklar(sol, 0);
@@ -479,7 +480,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
     if (kapandi) return;
     mu.bekle(true);
 
-    const bitti = new Promise<void>((r) => (bitir = r));
+    // istek karşılanınca girdi hemen kapanır (müşteri cümlesini bitirirken sepet bozulmasın, yanlış ürün sayılmasın)
+    const bitti = new Promise<void>((r) => (bitir = () => ((aktif = false), r())));
     yazi.textContent = ist.yazi;
     sonHareket = performance.now();
     aktif = true;
@@ -615,7 +617,10 @@ export function odulAni(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElemen
   kok.append(el);
   const T = sure(1500);
   odulSesi();
-  const can = window.setTimeout(() => efekt.nota(7 + (sira % 3)), sure(300));
+  // yıldız uygulama kökünde uçar; oyun ekranından çıkılınca (yer kalktı ya da ekran soluyor) yarıda kesilir
+  const ayrildi = () => !hedef.isConnected || !!hedef.closest('.cikiyor');
+  const can = window.setTimeout(() => !ayrildi() && efekt.nota(7 + (sira % 3)), sure(300));
+  const bekci = window.setInterval(() => ayrildi() && el.getAnimations({ subtree: true }).forEach((a) => a.cancel()), 100);
   // yol: yükselir, asılı kalır, kavisle yerine uçar
   const yol = el.animate(
     [
@@ -664,7 +669,9 @@ export function odulAni(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElemen
     .catch(() => undefined)
     .then(() => {
       clearTimeout(can);
+      clearInterval(bekci);
       el.remove();
+      if (ayrildi()) return;
       otur();
       // yerine oturduğu anda halka ve parıltılar
       const bx = b.left + b.width / 2;

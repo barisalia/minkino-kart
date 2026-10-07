@@ -261,7 +261,8 @@ export function dagit(kartlar: HTMLElement[], kaynak: Nokta, sec: { bas?: number
       const orta = (d0 + d1) / 2;
       arka.animate([{ opacity: 1 }, { opacity: 1, offset: orta }, { opacity: 0, offset: orta + 0.001 }, { opacity: 0 }], { duration: ms, delay: gecikme, fill: 'both' });
     }
-    if (sec.ses) window.setTimeout(() => sec.ses?.(i), gecikme);
+    // ekrandan çıkıldıysa (eski ekran .cikiyor ile solar, sonra kaldırılır) kalan kartların sesi çalmaz
+    if (sec.ses) window.setTimeout(() => kart.isConnected && !kart.closest('.cikiyor') && sec.ses?.(i), gecikme);
     return anim.finished.catch(() => undefined).then(() => arka?.remove());
   });
   return Promise.all(isler).then(() => undefined);
