@@ -216,6 +216,8 @@ export class KayitCalar {
       const adim = () => {
         if (this.bitti) return;
         const t = this.zaman;
+        // şarkı sürerken hoparlör düğmesiyle sessize alınırsa (ya da müzik kapatılırsa) kayıt da hemen susar
+        if (this.ses) sarkiSesiAyarla(this.ses);
         if (this.kayitli) sustur?.(Math.max(0, this.sonMs - t) + 800);
         const k = hangiHece(this.s.tablo, t);
         while (this.sonHece < k) {
