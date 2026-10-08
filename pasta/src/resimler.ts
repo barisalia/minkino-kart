@@ -55,6 +55,8 @@ export const YUVA = {
    * çizim başka yerdeyse orası ölçülür). Yoksa kod çizimi.
    */
   otobus: ['otobus'],
+  /** otobüsün çizilmiş tekerleği (kare, şeffaf; lastik + jant + göbek): otobüs görselinin tekerleğinin üstüne oturur, jant döner */
+  teker: ['teker'],
   kasa: ['kasa', 'kasa-pembe'],
   kumbara: ['kumbara', 'kumbara-otobus', 'kumbara-kavanoz'],
   jeton: ['jeton'],

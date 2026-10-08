@@ -337,9 +337,23 @@
   font-size: clamp(0.95rem, 4.1vw, 1.1rem);
   transition: transform 0.15s;
 }
+/* mod ikonu: resimli, renkli; yumuşak renkli madalyonda (seçilince beyaz madalyon: renkli düğmede de okunur) */
 .cc-kok .cc-mod .ikon {
-  font-size: 30px;
-  color: var(--r);
+  width: clamp(40px, 11vw, 52px);
+  height: clamp(40px, 11vw, 52px);
+  font-size: inherit;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--r) 13%, #fff);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--r) 22%, transparent);
+  transition: transform 0.25s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+.cc-kok .cc-mod .ikon svg {
+  width: 84%;
+  height: 84%;
+  display: block;
 }
 .cc-kok .cc-mod.secili {
   background: var(--r);
@@ -348,7 +362,23 @@
   transform: translateY(-2px);
 }
 .cc-kok .cc-mod.secili .ikon {
-  color: #fff;
+  background: #fff;
+  box-shadow: 0 0 0 2.5px var(--kontur), inset 0 -3px 0 rgba(90, 54, 23, 0.12);
+  transform: scale(1.06) rotate(-4deg);
+}
+/* alçak yatay telefon: ikon yazının solunda (sıra alçak kalır, ikon yine iri) */
+@media (orientation: landscape) and (max-height: 560px) {
+  .cc-kok .cc-mod {
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    min-height: 64px;
+    padding: 5px 10px;
+  }
+  .cc-kok .cc-mod .ikon {
+    width: 48px;
+    height: 48px;
+  }
 }
 .cc-kok .cc-izgara {
   display: grid;
@@ -414,7 +444,20 @@
   z-index: 2;
   transform: scale(1.1) rotate(-3deg);
 }
-/* Müzem kartı */
+/* Müzem kartı: resim (Mino altın çerçeveli tabloya bakar) diğer kartlar gibi kare kutuda, sıcak ışıklı zeminde */
+.cc-kok .cc-muze-gorsel {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 16px;
+  background: radial-gradient(circle at 60% 40%, #fffaf0 0 30%, #ffefc8 75%);
+  padding: 4%;
+  animation: cc-gorsel-gir 0.5s cubic-bezier(0.3, 1.7, 0.5, 1) backwards;
+  animation-delay: 200ms;
+}
+.cc-kok .cc-muze-karti .cc-resim-ad {
+  font-weight: 700;
+}
 .cc-kok .cc-muze-karti {
   display: flex;
   flex-direction: column;
@@ -1086,22 +1129,23 @@
   height: 64px;
 }
 /* açılışta Mino vitrinin yanında durur; vitrine dokununca sevinir */
+/* Mino vitrinin solunda, çerçevenin önünde ayakta: gövdesi çerçevenin dışında (köşeye yarım binmez), ayakları
+   çerçevenin alt çizgisinde. Yeri sahnenin kendi payında ayrılır (--v: vitrin genişliği), ekran kenarına değmez,
+   kesilmez; Mino + vitrin birlikte ortalanır. */
 .cc-kok .cc-acilis-sahne {
+  --v: min(68vw, 40vh, 360px);
   position: relative;
+  padding: 0 0 calc(var(--v) * 0.05) calc(var(--v) * 0.24);
+}
+.cc-kok .cc-acilis-sahne > .cc-vitrin {
+  width: var(--v);
 }
 .cc-kok .cc-acilis-mino {
   position: absolute;
   z-index: 3;
-  left: -6%;
-  bottom: -9%;
-  width: 31%;
-  max-width: 130px;
-}
-/* alçak yatay telefonda vitrin ekranın altına dayanır: Mino'nun ayakları kesilmesin */
-@media (orientation: landscape) and (max-height: 540px) {
-  .cc-kok .cc-acilis-mino {
-    bottom: -2%;
-  }
+  left: 0;
+  bottom: 0;
+  width: calc(var(--v) * 0.36);
 }
 /* dik ekranda kâğıdın altındaki boşluğu Mino doldurur (kâğıt kare kalır) */
 @media (max-aspect-ratio: 1/1) {
@@ -1144,11 +1188,10 @@
     right: var(--yan);
   }
   .cc-kok .cc-acilis-sahne {
+    /* Mino'nun payı (vitrinin 0.24'ü) sütuna sığsın; ayak payıyla birlikte ekran yüksekliğine sığsın */
+    --v: min(38vw, calc((100dvh - var(--ust) - var(--alt) - 24px) / 1.05), 380px);
     grid-column: 1;
     grid-row: 1 / 3;
-  }
-  .cc-kok .cc-acilis .cc-vitrin {
-    width: min(42vw, calc(100dvh - var(--ust) - var(--alt) - 24px), 380px);
   }
   .cc-kok .cc-acilis .cc-logo {
     grid-column: 2;
