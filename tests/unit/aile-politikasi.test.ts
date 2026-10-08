@@ -13,7 +13,7 @@ import { KILIT_SES_ARALIGI, kilitSesiSoylensinMi } from '../../src/abonelik/kili
 
 /** Uygulamaya giren kaynaklar (orman, ses-testi, sunucu uygulama derlemesinde yok) */
 const KAYNAK = import.meta.glob<string>(
-  ['../../{src,uygulama,kartlar,pazar,canlan,macera,film,okul,pasta,dedektif}/**/*.ts', '!../../**/*.d.ts'],
+  ['../../{src,uygulama,kartlar,pazar,canlan,macera,film,pasta,dedektif}/**/*.ts', '!../../**/*.d.ts'],
   { eager: true, query: '?raw', import: 'default' },
 );
 const dosyalar = Object.entries(KAYNAK).map(([yol, metin]) => ({ yol: yol.replace('../../', ''), metin }));

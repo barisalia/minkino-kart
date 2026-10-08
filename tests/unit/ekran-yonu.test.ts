@@ -1,6 +1,6 @@
 /**
  * Ekran yönü (uygulama): telefonda (kısa kenar < 600 dp) geniş sahneli oyunlar yatay kilitli (iki yatay yön), menü /
- * Kartlar / Okula Hazırım / Çiz Canlansın cihazı izler; tablet her yerde serbest, yalnız film oynarken yatay.
+ * Kartlar / Çiz Canlansın cihazı izler; tablet her yerde serbest, yalnız film oynarken yatay.
  * Kilit çalışma anında (src/kabuk/yon-yonetici.ts → @capacitor/screen-orientation); yerel taraf yatay kilidi iki yönlü
  * yapar (Android MainActivity, iOS MinkinoBridgeViewController), uygulamanın tamamını zorlamaz.
  */
@@ -25,8 +25,8 @@ describe('sayfa yönü (telefonda)', () => {
     expect([...YATAY_SAYFALAR].sort()).toEqual(['dedektif', 'film', 'giysin', 'macera', 'pasta', 'pazar']);
     for (const y of ['/pasta/index.html', '/pazar/', '/macera/index.html', '/dedektif/index.html', '/film/', '/giysin/index.html']) expect(sayfaYonu(y), y).toBe('yatay');
   });
-  it('menü, Kartlar, Okul, Canlan cihazı izler', () => {
-    for (const y of ['/', '/index.html', '/kartlar/index.html', '/okul/', '/okul/index.html', '/canlan/index.html', '/gizlilik/']) expect(sayfaYonu(y), y).toBe('serbest');
+  it('menü, Kartlar, Canlan cihazı izler', () => {
+    for (const y of ['/', '/index.html', '/kartlar/index.html', '/canlan/index.html', '/gizlilik/']) expect(sayfaYonu(y), y).toBe('serbest');
   });
 });
 
