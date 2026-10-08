@@ -20,7 +20,7 @@ import { AYAK_BOYU, CALILAR, G2, IZ_YERI, K2, KARTLAR2, M2, OLAYLAR, olaySirasi,
 import type { Oyuncular } from './oyuncular';
 import { resim } from './resimler';
 import { ses } from './sesler';
-import { geriDon, kartGotur, type YanlisAni } from './sorgu';
+import { geriDon, kartGotur, olcuResmi, type YanlisAni } from './sorgu';
 
 export interface Ortak {
   kok: HTMLElement;
@@ -84,6 +84,7 @@ export function kimYanlis(o: Ortak) {
     const iz = IZ_YERI;
     // kartın çerçevesi kalkar: yalnız ayak silüeti izin üstüne iner
     a.k.classList.add('dd-sade', 'dd-olcu');
+    olcuResmi(a.k, true);
     await kartGotur(a.k, a.ic, iz.x, iz.y, a.ic.width * iz.w * oran * 1.28, iz.don, 520);
     if (o.kapandi()) return;
     ses.sek();
@@ -96,6 +97,7 @@ export function kimYanlis(o: Ortak) {
     a.k.classList.remove('dd-tasti', 'dd-yuzdu');
     const yan = a.delil.getBoundingClientRect();
     a.k.classList.remove('dd-sade', 'dd-olcu');
+    olcuResmi(a.k, false);
     await kartGotur(a.k, yan, 0.84, 0.74, Math.min(yan.width * 0.52, 200), 7, 360);
     if (o.kapandi()) return;
     if (a.id === 'kopek-izi') await konukCikar(o, a, 'kopek', G2.karabas, 'patisini');
