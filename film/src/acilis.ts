@@ -153,7 +153,19 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
   );
   el.style.setProperty('--hiz', String(o.hiz));
   // kapalı perde: iki kanat ekranın yarısını örtecek kadar enine açılır (kanat eni = 0,52 × ekran boyu)
-  el.style.setProperty('--pk', Math.max(1.3, (innerWidth / 2 / (innerHeight * 0.52)) * 1.35).toFixed(3));
+  // tablette ekran yatay döner (yonIste) açılış kurulduktan sonra: kanatlar yeni boyuta göre yeniden açılır, aralık kalmaz
+  const perdeAyarla = () => {
+    const kapali = !el.dataset.adim || el.dataset.adim === '0' || el.dataset.adim === '1';
+    const kanatlar = kapali ? [...el.querySelectorAll<HTMLElement>('.fl-in-perde')] : [];
+    // kapalı perde kayarak büyümesin (arada sahne görünürdü): yeni enine anında geçer
+    kanatlar.forEach((k) => (k.style.transition = 'none'));
+    el.style.setProperty('--pk', Math.max(1.3, (innerWidth / 2 / (innerHeight * 0.52)) * 1.35).toFixed(3));
+    if (kanatlar.length) void el.offsetWidth;
+    kanatlar.forEach((k) => (k.style.transition = ''));
+  };
+  perdeAyarla();
+  window.addEventListener('resize', perdeAyarla);
+  const perdeBirak = () => window.removeEventListener('resize', perdeAyarla);
   const adim = (n: number) => (el.dataset.adim = String(n));
 
   let bitti = false;
@@ -170,6 +182,7 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
     window.setTimeout(
       () => {
         el.remove();
+        perdeBirak();
         mino.kapat();
         kino.kapat();
       },
@@ -256,6 +269,7 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
     kapat() {
       zamanlar.forEach(clearTimeout);
       bitti = true;
+      perdeBirak();
       mino.kapat();
       kino.kapat();
     },
