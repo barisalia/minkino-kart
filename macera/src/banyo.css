@@ -97,14 +97,15 @@
   border: 3px solid var(--kontur);
   pointer-events: none;
 }
+/* simgeler büyük ve renkli (sıradakiler yalnız biraz soluk; gri değil) */
 .mc-kok .bn-sira i {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #eee6d8 center / 70% no-repeat;
-  border: 2.5px solid var(--kontur);
-  opacity: 0.55;
-  filter: grayscale(0.7);
+  background: #fff center / 72% no-repeat;
+  border: 3px solid var(--kontur);
+  opacity: 0.82;
+  filter: saturate(0.75);
   transition: opacity 0.3s, filter 0.3s;
 }
 .mc-kok .bn-sira i.simdi {
@@ -649,11 +650,30 @@
 .mc-kok .bn-perde,
 .mc-kok .bn-askilik,
 .mc-kok .bn-raf,
+.mc-kok .bn-raf-sise,
+.mc-kok .bn-paspas,
 .mc-kok .bn-tabure {
   pointer-events: none;
 }
+/* paspas yere yatık durur: gölgesi yok (arka plandaki düz elipsin üstünü örter) */
+.mc-kok .bn-sahne .mc-oge.bn-paspas > .bn-esya {
+  filter: none;
+}
 .mc-kok .bn-perde {
   transform-origin: 50% 0;
+}
+/* perde çubuğu sola, duvara kadar uzanır (çizimdeki çubukla aynı yükseklik ve renk): havada asılı durmaz */
+.mc-kok .bn-perde::before {
+  content: '';
+  position: absolute;
+  right: 97%;
+  top: 2.7%;
+  width: 900%;
+  height: 5%;
+  border: 2px solid #3a1210;
+  border-right: 0;
+  background: linear-gradient(180deg, #b9d8f4 0%, #7fa9d9 45%, #5b88c0 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55);
 }
 /* çamaşır sepeti: arka (sap + iç) ve ön kenar (hasır gövde) katmanı; içine düşen ikisinin arasında */
 .mc-kok .bn-sepet {
@@ -1147,8 +1167,13 @@
     padding: 5px;
   }
   .mc-kok .mc-bolum[data-bolum='banyo'] .bn-sira i {
-    width: 26px;
-    height: 26px;
+    width: 38px;
+    height: 38px;
+  }
+  /* banyo yatayda geniş bantta (4:3'e yakın) oynar: küvet, perde, tabure ve sepet yan yana açılır, ortada yığılmaz;
+     iki yanda düğmeler ve yazılar için ~200 px kalır (dar telefonda eski 3:4 bant) (banyo.ts → genisArka) */
+  .mc-kok .mc-bolum.mc-bolum[data-bolum='banyo'] {
+    --bant: max(75vh, min(calc(100vw - 400px), 133vh));
   }
 }
 
