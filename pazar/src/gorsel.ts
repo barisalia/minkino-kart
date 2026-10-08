@@ -62,6 +62,17 @@ export function flamaYerlestir(ekran: HTMLElement, kamera: HTMLElement): () => v
   };
 }
 
+/**
+ * Dokunulan ürün canlanır: ezilip zıplar, havada kıvrılır, yere basıp yaylanır; her ürün kendi notasını söyler.
+ * Yalnız içteki resim oynar (dış öğenin sürükleme transform'u bozulmaz).
+ */
+export function boing(e: HTMLElement) {
+  e.classList.remove('pz-boing', 'pz-geri-yay');
+  void e.offsetWidth;
+  e.classList.add('pz-boing');
+  window.setTimeout(() => e.classList.remove('pz-boing'), 700);
+}
+
 /** Uçuşan küçük parıltılar (x, y: 0..1, kaba göre) */
 export function parilti(kap: HTMLElement, x: number, y: number, adet = 8) {
   for (let i = 0; i < adet; i++) {

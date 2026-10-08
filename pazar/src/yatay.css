@@ -12,10 +12,6 @@
     /* bandın içindeki ürün / istek ölçüsü: yüksekliğe göre (iki sıra ürün ve sahne alçak ekrana sığsın) */
     --bo: min(var(--bant), 82vh);
     --yan-en: calc(50vw - var(--bant) / 2);
-    /* pazar resmi (kare) ekran boyunda ortada; iki yanda aynalanmış devamı (tenteler dikişte tam tente olur) */
-    background:
-      var(--resim, none) center bottom / auto 100% no-repeat,
-      linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
     isolation: isolate;
     /* yan panellerin kenar boşluğu (çentik güvenli alanı dahil) */
     --kenar: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
@@ -24,26 +20,17 @@
     padding: var(--ust) calc(var(--yan-en) + var(--yan)) var(--alt);
     gap: 0;
   }
-  /* iki yan: pazar resminin aynalanmış kopyası, ortadaki resmin kenarına bitişik (bulanık değil; sahnenin devamı).
-     Yaşayan sahnenin (bulut, flama) ve oyunun arkasında kalır */
-  .pz-kok .pz-pazar::before,
-  .pz-kok .pz-pazar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: -1;
-    width: max(0px, 50% - 50dvh);
-    pointer-events: none;
-    transform: scaleX(-1);
+  /* geniş resmin kendi bulutları var; kayan bulutlar ağaçların ve tentelerin önünden soluk leke gibi geçmesin */
+  .pz-kok .pz-bulutlar {
+    display: none;
   }
-  .pz-kok .pz-pazar::before {
-    left: 0;
-    background: var(--resim, none) left bottom / auto 100% no-repeat;
-  }
-  .pz-kok .pz-pazar::after {
-    right: 0;
-    background: var(--resim, none) right bottom / auto 100% no-repeat;
+  /* geniş pazar resmi (iki yanda tezgâhlar, meyve kasaları, ağaçlar; ortası açık gökyüzü): ekranın tamamı */
+  .pz-kok .pz-pazar > .pz-zemin,
+  .pz-kok .pz-acilis,
+  .pz-kok .pz-senlik {
+    background:
+      var(--resim-genis, var(--resim, none)) center 100% / cover no-repeat,
+      linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
   }
 
   /* üst çubuk iki yana ayrılır: solda geri + balon (altında), sağda ses; ortası boş (bandı örtmez) */
@@ -79,19 +66,20 @@
     border-radius: 26px;
     padding-right: 14px;
   }
-  /* yıldızlar sağ yanda, ses düğmesinin altında */
+  /* yıldızlar ekranın üstünde ortada, tek sırada ve büyük (yanda dörde bir bölünüp küçük kalıyordu) */
   .pz-kok .pz-pazar > .pz-yildizlar {
     position: absolute;
-    z-index: 2;
-    top: calc(var(--ust) + 84px);
-    right: var(--kenar);
-    width: calc(var(--yan-en) - var(--kenar) - 12px);
+    z-index: 6;
+    top: max(6px, var(--ust) - 4px);
+    left: 50%;
+    translate: -50% 0;
     margin: 0;
-    flex-wrap: wrap;
-    gap: 4px 8px;
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 2px 14px 4px;
   }
   .pz-kok .pz-pazar .pz-yildiz {
-    font-size: clamp(26px, 9vh, 40px);
+    font-size: clamp(30px, 11vh, 48px);
   }
 
   /* sahne ekranın üstünden başlar (üst çubuk yanlarda) */
@@ -100,7 +88,7 @@
   }
   /* müşteri bandın içinde biraz daha büyük; balon bandın ölçüsünde */
   .pz-kok .pz-pazar .pz-musteri-kap {
-    width: min(40cqw, 50cqh, 330px);
+    width: min(42cqw, 60cqh, 360px);
   }
   .pz-kok .pz-pazar .pz-istek-balon {
     padding: 5px 10px;
@@ -156,6 +144,15 @@
     padding-top: 8px;
     border-radius: 18px 18px 0 0;
   }
+  /* çizimli masa ekranın bir ucundan öbürüne uzanır (yanlarda çıplak zemin kalmasın); ürünler ortadaki bantta */
+  .pz-kok .pz-pazar .pz-tezgah.pz-gorselli {
+    --tz-ust: 20px;
+    padding-top: 16px;
+  }
+  .pz-kok .pz-pazar .pz-tezgah-resim {
+    left: calc(-1 * var(--yan-en) - 14px);
+    right: calc(-1 * var(--yan-en) - 14px);
+  }
   .pz-kok .pz-pazar .pz-urunler,
   .pz-kok .pz-pazar .pz-urunler[data-adet='6'] {
     --pz-urun: calc(var(--bo) * 0.21);
@@ -184,8 +181,8 @@
   }
   /* yatay telefonda sepetteki ürünler de iri (stand küçük kaldığı için 0.09 çok ufaktı) */
   .pz-kok .pz-pazar .pz-stand .pz-sepet-ic .pz-urun {
-    width: max(34px, calc(var(--sw) * 0.12 * var(--ks, 1)));
-    height: max(34px, calc(var(--sw) * 0.12 * var(--ks, 1)));
+    width: max(28px, calc(var(--sw) * 0.12 * var(--ks, 1)));
+    height: max(28px, calc(var(--sw) * 0.12 * var(--ks, 1)));
   }
   /* öndeki flamalar bandın ölçüsünde */
   .pz-kok .pz-pazar .pz-flama {
