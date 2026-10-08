@@ -165,13 +165,16 @@ test('Dedektif Vaka 2: seçim ekranı, kilit, vaka baştan sona, çizgi roman, i
   // Halka 5: sırala (önce bir yanlış: kart seker)
   await adimBekle(page, /^sira-kart$/);
   await page.screenshot({ path: ekranAdi('halka5-sira', p) });
-  await surukle(page, page.locator('.dd-olay[data-olay="2"]'), page.locator('.dd-sira-kare[data-kare="0"]'));
+  // (kareler sorgunun kendi kabında aranır: üç kare dolunca karelerin kopyası dosyaya uçar ve sorgu kapanır;
+  // kopya .dd-ucan içinde, asıl kareler o sırada görünmez: ekranda tek dizi var)
+  const kareSec = (i: number | string) => `.dd-sira-sorgu .dd-sira-kare[data-kare="${i}"]`;
+  await surukle(page, page.locator('.dd-olay[data-olay="2"]'), page.locator(kareSec(0)));
   await page.waitForTimeout(200);
-  await expect(page.locator('.dd-sira-kare.dolu')).toHaveCount(0);
+  await expect(page.locator('.dd-sira-sorgu .dd-sira-kare.dolu')).toHaveCount(0);
   for (const i of [0, 1, 2]) {
-    const kare = page.locator(`.dd-sira-kare[data-kare="${i}"]`);
-    // (önceki kart sekerken bırakılırsa oturmaz: çocuk gibi bir daha dener)
-    const oturdu = async () => !(await kare.count()) || !!(await kare.getAttribute('class', { timeout: 2000 }))?.includes('dolu');
+    const kare = page.locator(kareSec(i));
+    // (önceki kart sekerken bırakılırsa oturmaz: çocuk gibi bir daha dener; tek ölçüm: sorgu kapanırken de doğru)
+    const oturdu = () => page.evaluate((s) => document.querySelector(s)?.classList.contains('dolu') ?? true, kareSec(i));
     for (let d = 0; d < 3 && !(await oturdu()); d++) {
       await page.waitForTimeout(300);
       await surukle(page, page.locator(`.dd-olay[data-olay="${i}"]`), kare);
@@ -219,7 +222,8 @@ test('Dedektif Vaka 2: yardım hiç takılmaz (10 sn Kino koklar; renk izinde s�
   await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka2&adim=kim&kokla=1200');
   await adimBekle(page, /^ara-kim$/);
   await expect(page.locator('.bt-mercek:not(.bt-gizlendi)')).toHaveCount(1);
-  expect(await page.locator('.dd-sahne [data-ipucu="ordek-izi"]').evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
+  // (çıplak gözle yalnız çok soluk gölgesi ve göz kırpan yıldızı sezilir; merceğin camında bütünüyle görünür)
+  expect(await page.locator('.dd-sahne [data-ipucu="ordek-izi"]').evaluate((e) => Number(getComputedStyle(e).opacity) * Number(getComputedStyle(e.querySelector('img')!).opacity))).toBeLessThan(0.3);
   await adimBekle(page, /^kokla-(ordek-izi|iplik)$/, 15_000);
   await adimBekle(page, /^ara-kim$/, 15_000);
   expect(hatalar).toEqual([]);
@@ -317,6 +321,13 @@ for (const [ad, bas, son] of [
       await page.goto(`./dedektif/?test=1&sifirla=1&ekran=vaka2&adim=${a}`);
       await adimBekle(page, bekle);
       await don(son);
+      // yataya dönünce Mino ile Kino bütünüyle ekranda (dikeyde kenara çekilmişlerdi; dikeyin kenar dizilişi bilerek yarı dışarıda)
+      if (son.width > son.height)
+        for (const s of ['.dd-mino-yer .mino', '.dd-kino-yer .dd-kino-kutu']) {
+          const b = (await page.locator(s).boundingBox())!;
+          expect(b.x, `${s} sol`).toBeGreaterThanOrEqual(-1);
+          expect(b.x + b.width, `${s} sağ`).toBeLessThanOrEqual(son.width + 1);
+        }
     };
     // Halka 1: mandal (bahçe yeni yönün çizimine geçti)
     await git('ne', /^ara-ne$/);

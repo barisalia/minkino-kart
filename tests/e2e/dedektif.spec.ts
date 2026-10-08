@@ -89,12 +89,12 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   await expect(page.locator('.dd-delil .dd-delil-foto')).toBeVisible();
   await page.waitForTimeout(200);
   await page.screenshot({ path: `tests/screens/dedektif-halka${ad === 'iphone' ? '' : '-' + ad}.png` });
-  await surukle(page, page.locator('.dd-kart[data-kart="zurafa-ayagi"]'), page.locator('.dd-delil'));
-  await expect(page.locator('.dd-kart[data-kart="zurafa-ayagi"]')).toHaveClass(/dd-soluk/);
-  await surukle(page, page.locator('.dd-kart[data-kart="ordek-ayagi"]'), page.locator('.dd-delil'));
-  await expect(page.locator('.dd-kart[data-kart="ordek-ayagi"]')).toHaveClass(/dd-soluk/);
+  await surukle(page, page.locator('.dd-kart[data-kart="zurafa"]'), page.locator('.dd-delil'));
+  await expect(page.locator('.dd-kart[data-kart="zurafa"]')).toHaveClass(/dd-soluk/);
+  await surukle(page, page.locator('.dd-kart[data-kart="ordek"]'), page.locator('.dd-delil'));
+  await expect(page.locator('.dd-kart[data-kart="ordek"]')).toHaveClass(/dd-soluk/);
   // 2 yanlıştan sonra doğru kart parlar
-  await expect(page.locator('.dd-kart[data-kart="kedi-pati-izi"]')).toHaveClass(/dd-parla/);
+  await expect(page.locator('.dd-kart[data-kart="kedi"]')).toHaveClass(/dd-parla/);
   await dogruKart(page);
   await adimBekle(page, /^(demek-iz|ara-tuy)$/);
   await expect(page.locator('.dd-goz[data-halka="iz"]')).toHaveClass(/dd-cozuldu/);
@@ -168,7 +168,8 @@ test('Dedektif Mino: 10 sn bulunamazsa Kino koklar; büyüteç ve dosya ekranda'
   await adimBekle(page, /^ara-tuy$/);
   // büyüteç ekranda, ipucu çıplak gözle görünmez
   await expect(page.locator('.bt-mercek:not(.bt-gizlendi)')).toHaveCount(1);
-  expect(await page.locator('.dd-sahne [data-ipucu="tuy"]').evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
+  // (çıplak gözle yalnız çok soluk gölgesi ve göz kırpan yıldızı sezilir; merceğin camında bütünüyle görünür)
+  expect(await page.locator('.dd-sahne [data-ipucu="tuy"]').evaluate((e) => Number(getComputedStyle(e).opacity) * Number(getComputedStyle(e.querySelector('img')!).opacity))).toBeLessThan(0.3);
   // Kino koklar (burnuyla yeri gösterir)
   await adimBekle(page, /^kokla-tuy$/, 15_000);
   await adimBekle(page, /^ara-tuy$/, 15_000);
@@ -185,6 +186,14 @@ async function ekranda(page: Page, l: Locator, pay = 0) {
   expect(x, 'sağ').toBeLessThan(w - pay);
   expect(y, 'üst').toBeGreaterThan(pay);
   expect(y, 'alt').toBeLessThan(hh - pay);
+}
+/** İz bütünüyle ekranda ve kolay dokunulur: kenarlardan içeride, alt kenarı ev çubuğunun (~21 px) üstünde */
+async function izTamEkranda(page: Page, l: Locator) {
+  const b = (await l.boundingBox())!;
+  const { width: w, height: hh } = page.viewportSize()!;
+  expect(b.x, 'iz sol kenarda').toBeGreaterThan(8);
+  expect(b.x + b.width, 'iz sağ kenarda').toBeLessThan(w - 8);
+  expect(b.y + b.height, 'iz alt kenarda (ev çubuğu)').toBeLessThan(hh - 21);
 }
 
 // web sitesinde telefonun yönü serbest: vakanın ortasında dönünce ipucu ve izler ekranda kalır, vaka sürer
@@ -225,10 +234,10 @@ for (const [ad, bas, son] of [
     await page.goto('./dedektif/?test=1&sifirla=1&adim=nerede');
     await adimBekle(page, /^iz-takip-calisma$/);
     const sirada = page.locator('.dd-sahne .dd-izler-calisma .dd-iz.dd-sirada');
-    // (izin dokunma alanı geniş: bir dokunuş sonrakini de yakabilir; sonuncu iz dikeyde dönmeden de sağ kenarda)
+    // (izin dokunma alanı geniş: bir dokunuş sonrakini de yakabilir)
     const yak = async (n: number) => {
       for (let k = 0; k < n && (await adim(page)) === 'iz-takip-calisma'; k++) {
-        if ((await sirada.getAttribute('data-iz')) !== '7') await ekranda(page, sirada);
+        await izTamEkranda(page, sirada);
         const [x, y] = await ortasi(sirada);
         await page.mouse.click(x, y);
         await page.waitForTimeout(150);
@@ -250,6 +259,54 @@ for (const [ad, bas, son] of [
     await don(son);
     await yak(8);
     await adimBekle(page, /^iz-takip-koridor$/);
+    expect(hatalar).toEqual([]);
+    await ctx.close();
+  });
+}
+
+// Halka 4 telefonda (DPR 3): çalışma odası, koridor (iki yol), yatak odası; her iz bütünüyle ekranda, ev çubuğundan uzak
+for (const [en, boy, donus] of [
+  [390, 844, { width: 844, height: 390 }],
+  [844, 390, { width: 390, height: 844 }],
+  [932, 430, null],
+  [667, 375, null],
+] as const) {
+  test(`Dedektif Mino: ${en}×${boy} Halka 4 izleri ekranda${donus ? ' (koridorda döner)' : ''}`, async ({ browser }, info) => {
+    test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+    const ctx = await browser.newContext({ baseURL: info.project.use.baseURL, viewport: { width: en, height: boy }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR' });
+    const page = await ctx.newPage();
+    const hatalar = hataTopla(page);
+    await page.goto('./dedektif/?test=1&sifirla=1&adim=nerede');
+    // sıradaki ize (yalnız ona) dokunarak yakar; her biri dokunulmadan önce ekranda
+    const yak = async (oda: string) => {
+      await adimBekle(page, new RegExp(`^iz-takip-${oda}$`));
+      const sirada = page.locator('.dd-sahne .dd-iz.dd-sirada');
+      for (let k = 0; k < 12 && (await adim(page)) === `iz-takip-${oda}`; k++) {
+        await page.waitForTimeout(150);
+        if (!(await sirada.count())) continue;
+        await izTamEkranda(page, sirada);
+        await page.evaluate(() => document.querySelector<HTMLElement>('.dd-sahne .dd-iz.dd-sirada')?.click());
+      }
+    };
+    await yak('calisma');
+    await yak('koridor');
+    await adimBekle(page, /^yol-sec$/);
+    const yolIzleri = page.locator('.dd-sahne .dd-izler-yol .dd-iz');
+    for (const iz of await yolIzleri.all()) await izTamEkranda(page, iz);
+    if (donus) {
+      // koridorda telefon döner: iki yol yeni yönün yerleşimine geçer, yine hepsi ekranda
+      await page.setViewportSize(donus);
+      await expect.poll(() => page.evaluate(() => innerWidth)).toBe(donus.width);
+      await page.waitForTimeout(400);
+      const kor = page.locator('.dd-sahne .dd-dunya[data-oda="koridor"]');
+      if (donus.height > donus.width) await expect(kor).toHaveAttribute('data-dar', '1');
+      else await expect(kor).not.toHaveAttribute('data-dar', /.*/);
+      for (const iz of await yolIzleri.all()) await izTamEkranda(page, iz);
+    }
+    await page.screenshot({ path: `tests/screens/dedektif-yollar-${en}x${boy}${donus ? '-dondu' : ''}.png` });
+    await dokun(page, page.locator('.dd-sahne .dd-izler-yol[data-yol="yatak"] .dd-iz').first());
+    await yak('yatak');
+    await adimBekle(page, /^kuyruk$/);
     expect(hatalar).toEqual([]);
     await ctx.close();
   });
