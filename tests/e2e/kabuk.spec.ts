@@ -123,8 +123,8 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
   // Mino, Kino, başlık, ikonlu fayda listesi
   // Mino ve Kino: Gemini kahraman görseli varsa o, yoksa canlı karakterler
   await expect(ab.locator('.ab-kahraman img, .ab-mino .mino svg').first()).toBeVisible();
-  await expect(ab.locator('.ab-liste li')).toHaveCount(5);
-  await expect(ab.locator('.ab-liste .ab-tik')).toHaveCount(5);
+  await expect(ab.locator('.ab-liste li')).toHaveCount(6);
+  await expect(ab.locator('.ab-liste .ab-tik')).toHaveCount(6);
   // dönem başına fiyat (mağazadan), deneme yazısı
   await expect(ab.locator('.ab-plan-aylik')).toContainText('₺99,00');
   await expect(ab.locator('.ab-plan-aylik')).toContainText('/ ay');

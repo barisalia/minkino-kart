@@ -110,7 +110,8 @@ export class Uygulama {
   /** Beklenmedik bir hatada çocuğu boş ekranda bırakmayan toparlanma ekranı. */
   private hataEkrani(): Ekran {
     const dugme = h('button.dugme', { type: 'button' }, 'Baştan başla');
-    dugme.addEventListener('click', () => this.git('acilis'));
+    // açılış ekranı yalnız kart oyunu ailesinde kayıtlı; menü ve Kino Ne Giysin? sayfayı baştan yükler
+    dugme.addEventListener('click', () => (kayit.has('acilis') ? this.git('acilis') : location.reload()));
     return { el: h('div.yukleniyor', {}, h('div', { style: 'display:grid;gap:18px;justify-items:center;text-align:center' }, h('div', {}, 'Hımm, bir şey ters gitti.'), dugme)) };
   }
 

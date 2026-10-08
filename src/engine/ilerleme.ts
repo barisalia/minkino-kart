@@ -6,6 +6,8 @@ export interface Ayarlar {
   konusma: boolean;
   /** 0..1 ana ses seviyesi */
   seviye: number;
+  /** Hoparlör düğmesiyle sessize alınmadan önceki kanallar (Ebeveyn Köşesi seçimi); ses açılınca bunlara dönülür */
+  sesOnce?: { muzik: boolean; efekt: boolean; konusma: boolean };
 }
 
 export interface Ilerleme {

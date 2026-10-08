@@ -3,6 +3,7 @@
  * - Uygulamada: RevenueCat (src/abonelik/revenuecat.ts; yalnız uygulama derlemesinde pakete girer).
  * - Test (?test=1&uygulama=…): sahte sağlayıcı (src/abonelik/sahte.ts), gerçek SDK çağrısı yok.
  * - Web sitesinde ya da anahtar yokken: null → abonelik ekranı "yakında" der.
+ * - Anahtar var ama kurulum hata verdi: yine null; kilitler kapanmadığı için abonelik ekranı "mağazaya ulaşılamıyor" der.
  *
  * Fiyatlar uygulamaya yazılmaz: mağazanın yerel fiyatı (priceString) RevenueCat paketinden gelir.
  */
@@ -46,7 +47,8 @@ export function saglayici(): Promise<Saglayici | null> {
   if (hazir) return hazir;
   const p = uygulamaPlatformu();
   const anahtar = satinAlmaAnahtari(p);
-  hazir = p && anahtar ? kur(p, anahtar).catch((e) => (console.warn('Satın alma kurulamadı', e), null)) : Promise.resolve(null);
+  // kurulum hata verirse sonuç saklanmaz: bir sonraki çağrı (ör. "Tekrar dene") yeniden kurar
+  hazir = p && anahtar ? kur(p, anahtar).catch((e) => (console.warn('Satın alma kurulamadı', e), (hazir = null), null)) : Promise.resolve(null);
   return hazir;
 }
 
