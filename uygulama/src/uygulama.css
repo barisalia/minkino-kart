@@ -134,8 +134,8 @@
   grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 2.8vw, 22px) clamp(10px, 2.6vw, 22px);
 }
-/* 7 kart (web ve uygulama, .ug-tek): geniş kart (Pasta Otobüsü) son sırayı doldurur: telefon dikeyde 2 × 4, yatay
-   telefonda 4 × 2 (iki hücre), tablette 3 × 3 (üç hücre). Çift sayıda kart olursa geniş kart yalnız 3 sütunda iki hücre. */
+/* Tek sayıda kart (.ug-tek): geniş kart (Pasta Otobüsü) son sırayı doldurur (2 ve 4 sütunda iki, 3 sütunda üç hücre).
+   Çift sayıda kartta (şu an 8: web ve uygulama aynı) geniş kart yalnız 3 sütunda iki hücre; 2 ve 4 sütunda bir hücre. */
 .ug-kok .ug-izgara.ug-tek .ug-kart-yer.ug-genis {
   grid-column: span 2;
 }
@@ -307,12 +307,6 @@
 /* Pasta Otobüsü: parkta pembe otobüs (oyunun kod çizimi) */
 .ug-kok .ug-k-otobus { left: 50%; bottom: 3%; width: min(80cqw, 132cqh); aspect-ratio: 640 / 420; transform: translateX(-50%); }
 .ug-kok .ug-k-otobus svg { display: block; width: 100%; height: 100%; overflow: visible; }
-
-/* Okula Hazırım!: "1 2 3" blokları (assets/okul/sayi-bloklari.webp) ve ortadaki yüksek bloğun üstünde elma */
-.ug-kok .ug-kart[data-oyun="okul"] .ug-k { --b: min(86cqw, 150cqh); }
-.ug-kok .ug-k-sayilar { left: 50%; bottom: 6%; width: var(--b); aspect-ratio: 560 / 260; transform: translateX(-50%); }
-.ug-kok .ug-k-sayilar img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.ug-kok .ug-k-okul-elma { left: calc(50% + var(--b) * 0.03); bottom: calc(6% + var(--b) * 0.37); height: calc(var(--b) * 0.22); transform: translateX(-50%) rotate(8deg); }
 
 /* Dedektif Mino: pencereli odada devrik lamba, pati izi, köşeden bakan Pamuk */
 .ug-kok .ug-kart[data-oyun='dedektif'] .ug-kart-resim { background-position: 50% 80%; }
@@ -770,75 +764,30 @@
   }
 }
 
-/* ---------- 9 kart (Kino Ne Giysin? eklendi): geniş Pasta son sırada, ızgara her ekranda boşluksuz ----------
-   telefon dikey 2 × 5 (Pasta iki hücre), yatay telefon 5 × 2 (Pasta iki hücre), 3 sütun (tablet) 3 × 3 (Pasta bir hücre) */
-.ug-kok .ug-izgara[data-adet='9'] {
-  grid-template-rows: repeat(5, minmax(0, 1fr));
-  row-gap: clamp(8px, 1.2dvh, 22px);
-}
-/* dikey telefonda beş sıra kart: üstteki Mino ve logo biraz kısalır, kartlar iri kalır */
-@media (orientation: portrait) and (max-width: 599px) {
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
-    height: clamp(96px, 12.5dvh, 440px);
-  }
-}
+
+/* ---------- 8 kart: geniş Pasta son sırada, ızgara her ekranda boşluksuz ----------
+   telefon dikey 2 × 4 ve yatay telefon 4 × 2 (Pasta bir hücre, öbürleri gibi); 3 sütunda (tablet) 3 × 3, Pasta son sırada
+   iki hücre (üstteki .ug-kart-yer.ug-genis kuralı). Hücre sayısı: 2 ve 4 sütunda 8, 3 sütunda 7 + 2 = 9. */
 @media (min-width: 600px) and (orientation: portrait) {
-  .ug-kok .ug-izgara[data-adet='9'] {
-    grid-template-rows: repeat(3, minmax(0, 1fr));
-  }
-  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-kart-yer.ug-genis {
-    grid-column: span 1;
-  }
-  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
-    --ad: 9.6cqi;
-  }
-}
-@media (orientation: landscape) {
-  .ug-kok .ug-izgara[data-adet='9'] {
-    --oran: 1.94;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-  }
-  /* 5 sütunda kartlara yer: sol sütun (Mino, logo) biraz dar, adlar bir tık küçük (kesilmesin) */
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
-    width: clamp(130px, 23vw, 340px);
-  }
-  .ug-kok .ug-izgara[data-adet='9'] .ug-kart-ad {
-    font-size: clamp(0.62rem, 8.4cqi, 1.3rem);
-  }
-}
-/* küçük yatay telefon (667 px): kartlar 95 px'in altına düşmesin */
-@media (orientation: landscape) and (max-width: 760px) {
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
-    width: clamp(88px, 14.5vw, 340px);
-  }
-  .ug-kok .ug-izgara[data-adet='9'] {
-    gap: 5px 8px;
-    padding: 2px 0 4px;
+  /* geniş Pasta'nın adı öbürleriyle aynı boy (kart iki hücre: cqi yarıya iner) */
+  .ug-kok .ug-izgara[data-adet='8'] .ug-genis .ug-kart-ad {
+    --ad: 4.7cqi;
   }
 }
 @media (orientation: landscape) and (max-aspect-ratio: 3/2) {
-  .ug-kok .ug-izgara[data-adet='9'] {
-    --oran: 1.12;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: repeat(3, minmax(0, 1fr));
-  }
-  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-kart-yer.ug-genis {
-    grid-column: span 1;
-  }
-  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
-    --ad: 9.6cqi;
+  .ug-kok .ug-izgara[data-adet='8'] .ug-genis .ug-kart-ad {
+    --ad: 4.7cqi;
   }
 }
 .ug-kok .ug-k-giysin { left: 50%; bottom: 2%; height: min(88cqh, 100cqw); transform: translateX(-50%); }
 
-/* ---------- Yatay telefon (uygulamada telefon hep yatay): kartlar ekranın boyunu doldurur, adlar iki satıra sığar ----------
-   (sol sütun biraz dar; ızgara en-boy oranına bağlı kalmaz, altta boş şerit kalmaz; çentik ve alt çubuk dışarıda) */
+/* ---------- Yatay telefon (uygulamada telefon hep yatay): 4 × 2 kart ekranın boyunu doldurur, adlar iki satıra sığar ----------
+   (ızgara en-boy oranına bağlı kalmaz, altta boş şerit kalmaz; çentik ve alt çubuk dışarıda) */
 @media (orientation: landscape) and (max-height: 500px) {
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
-    width: clamp(110px, 19vw, 220px);
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='8']) .ug-giris {
+    width: clamp(120px, 23vw, 260px);
   }
-  .ug-kok .ug-izgara[data-adet='9'] {
+  .ug-kok .ug-izgara[data-adet='8'] {
     width: 100%;
     max-width: 1200px;
     height: calc(100dvh - var(--ust) - var(--alt) - 8px);
@@ -846,36 +795,30 @@
     gap: clamp(8px, 2.6dvh, 14px) clamp(8px, 1.5vw, 14px);
     padding: 6px 0 8px;
   }
-  .ug-kok .ug-izgara[data-adet='9'] .ug-kart-ad,
-  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+  .ug-kok .ug-izgara[data-adet='8'] .ug-kart-ad {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 2.3em;
     padding: 4px 1px 0;
-    font-size: clamp(12px, 12cqi, 1.05rem);
+    font-size: clamp(12px, 10cqi, 1.1rem);
     line-height: 1.08;
     white-space: normal;
   }
-  /* geniş Pasta'nın adı öbürleriyle aynı boy (kart iki hücre: cqi yarıya iner) */
-  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
-    font-size: clamp(12px, 5.9cqi, 1.05rem);
-  }
 }
 
-/* küçük yatay telefon (667 × 375, iPhone SE / 8): beş sütunda kartlar 90 px'e iniyordu. Sol sütun (logo, Mino ile
-   Kino) daralır, kenar payı ve aralıklar bir tık incelir: kartlar 100 px'in üstünde kalır. Çentik ve alt çubuk
-   payı korunur (env); 844 / 932 px'lik telefonlar bu kuraldan etkilenmez. */
+/* küçük yatay telefon (667 × 375, iPhone SE / 8): sol sütun (logo, Mino ile Kino) daralır, kenar payı ve aralıklar bir
+   tık incelir: kartlar iri kalır. Çentik ve alt çubuk payı korunur (env); 844 / 932 px'lik telefonlar etkilenmez. */
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='8']) {
     gap: 10px;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
   }
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
-    width: clamp(84px, 14.5vw, 110px);
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='8']) .ug-giris {
+    width: clamp(100px, 18vw, 130px);
   }
-  .ug-kok .ug-izgara[data-adet='9'] {
+  .ug-kok .ug-izgara[data-adet='8'] {
     column-gap: 8px;
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Büyüteç: çocuğun parmağıyla sahnede gezdirdiği mercek (ortak bileşen; Dedektif Mino, ileride Okul'un "Saklı harf"i).
+ * Büyüteç: çocuğun parmağıyla sahnede gezdirdiği mercek (ortak bileşen; Dedektif Mino).
  *
  * - Mercek sahnenin bir kopyasını büyütülmüş gösterir. Kaynakta `bt-gizli` sınıflı öğeler çıplak gözle görünmez
  *   (opacity 0), merceğin içinde görünür: "büyütecin altında izler belirir". `bt-yok` sınıflılar kopyaya hiç girmez.

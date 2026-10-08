@@ -42,7 +42,7 @@ test('Kabuk: menü 6 ekran boyunda 9 iri kart, ızgarada boşluk yok, adlar kesi
     const kartlar = page.locator('.ug-kart');
     await expect(kartlar).toHaveCount(9);
     // sıra korunur, Pasta geniş ve sonda
-    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'okul', 'dedektif', 'giysin', 'pasta']);
+    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'dedektif', 'giysin', 'pasta']);
     await page.waitForTimeout(1100);
     const kutular = await kartlar.evaluateAll((l) => l.map((k) => k.getBoundingClientRect().toJSON() as DOMRect));
     for (const k of kutular) {

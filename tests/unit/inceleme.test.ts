@@ -67,7 +67,7 @@ describe('inceleme kodu: erişim', () => {
     expect(depo.get(e.INCELEME_ANAHTARI)).toBe('1');
     expect(e.incelemeAcikMi()).toBe(true);
     expect(e.premiumMu()).toBe(true);
-    for (const id of ['pazar', 'canlan', 'pasta', 'dedektif', 'okul/*', 'film/kino-oyuncak', 'macera/ege']) expect(e.kilitli(id), id).toBe(false);
+    for (const id of ['pazar', 'canlan', 'pasta', 'dedektif', 'giysin/yaz', 'film/kino-oyuncak', 'macera/ege']) expect(e.kilitli(id), id).toBe(false);
 
     // RevenueCat'ten "premium yok" gelir (durum tazeleme): inceleme kilidi açık kalır
     e.premiumAyarla(false);

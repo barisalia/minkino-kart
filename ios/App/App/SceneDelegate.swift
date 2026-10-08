@@ -24,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 /// Ekran yonu sayfaya gore web tarafinda ayarlanir (src/kabuk/yon.ts, @capacitor/screen-orientation): iPhone'da genis
-/// sahneli oyunlar yatay, menu / Kartlar / Okul / Canlan serbest; iPad serbest (film yatay).
+/// sahneli oyunlar yatay, menu / Kartlar / Canlan serbest; iPad serbest (film yatay).
 /// Eklentinin 'landscape' kilidi tek yon birakir (landscapeRight ya da landscapeLeft): yatay kilit iki yonlu olsun,
 /// cocuk telefonu hangi yana cevirirse ekran duz dursun (dikey yok). Kilit sirasinda telefonun o anki yatay yonu istenir.
 class MinkinoBridgeViewController: CAPBridgeViewController {
