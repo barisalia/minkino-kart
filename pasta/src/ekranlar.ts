@@ -207,7 +207,10 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
       }),
     );
   };
+  /** jetonları uçmakta olan ürün: o sırada gelen ikinci dokunuş (çift dokunma) yeni alınan boyayı geri almasın */
+  let ucanUrun: string | null = null;
   async function rafBas(u: RafUrunu, b: HTMLElement) {
+    if (ucanUrun === u.id) return;
     if (kayit.alinan.includes(u.id)) {
       // alınmış boya: otobüs o renge boyanır (bedava)
       if (u.tur === 'boya') {
@@ -231,7 +234,9 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     if (u.tur === 'boya') kayit.boya = u.deger;
     kaydet();
     kumbaraSayi.textContent = String(kayit.jeton);
+    ucanUrun = u.id;
     await Promise.all(Array.from({ length: Math.min(u.fiyat, 10) }, (_, i) => efekt_.ucur(h('div.ps-ucan-jeton', { html: JETON }), k, hedef, { ms: 480, gecikme: i * 70, kavis: -70, boy1: 0.4 })));
+    ucanUrun = null;
     if (kapandi) return;
     efekt.kilitAcildi();
     efekt_.parilti(hedef[0], hedef[1], 12);
