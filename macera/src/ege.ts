@@ -1739,23 +1739,23 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       const e = alan(ege.el)!;
       const eh = e.a - e.u;
       // kuklalar Ege'den biraz küçük (çocuğun eline göre büyük: yakın çekim)
-      const AYI_W = EGE_W * (dikey ? 0.92 : 0.86);
-      const CIV_W = EGE_W * (dikey ? 0.86 : 0.8);
+      const AYI_W = EGE_W * (dikey ? 1.06 : 0.86);
+      const CIV_W = EGE_W * (dikey ? 1.0 : 0.8);
       // kuklalar alttan yükselir: tepeleri Ege'nin yanağı hizasında; kadrajın altı kuklaların bileğini keser
       // (el kuklası: kol görünmez)
-      const ayUst = e.u + eh * 0.3;
-      const cvUst = e.u + eh * 0.36;
+      const ayUst = e.u + eh * (dikey ? 0.26 : 0.3);
+      const cvUst = e.u + eh * (dikey ? 0.3 : 0.36);
       const ayY = 100 - (ayUst + bY(AYI_W * (1005 / 858)));
       const cvY = 100 - (cvUst + bY(CIV_W * (1014 / 837)));
-      const ayX = e.l - bX(AYI_W) * (dikey ? 0.05 : 0.2);
-      const cvX = e.r + bX(CIV_W) * (dikey ? 0.07 : 0.22);
+      const ayX = e.l - bX(AYI_W) * (dikey ? 0.05 : 0.3);
+      const cvX = e.r + bX(CIV_W) * (dikey ? 0.07 : 0.32);
       // kadraj: Ege başından kuklaların bileğine, iki yanda kuklalar
       const odak: Alan = { l: ayX - bX(AYI_W) * 0.5, r: cvX + bX(CIV_W) * 0.5, u: e.u - eh * 0.06, a: Math.min(100 - ayY, 100 - cvY) - bY(AYI_W) * 0.14 };
       // kadraj dışına çıkanlar solar (Ege ve sandalyesi kalır; beşik de civcivin arkasında kalabalık etmesin)
       cekimDisi([ada.el, can.el, elif.el, minoKutu, anne, besik], true);
       kaldir();
       const kamBitti = yakinKam(odak, dikey ? 2.4 : 2.8, 1400, true);
-      spotAc(odak);
+      spotAc({ ...odak, u: odak.u - (odak.a - odak.u) * 0.12 });
       for (const el of [ayi, civciv]) {
         el.style.zIndex = '13';
         el.classList.add('sahnede');

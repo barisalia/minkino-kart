@@ -1028,27 +1028,6 @@
   transform-origin: 49.46% 40.53%;
   transform: rotate(12.9deg) scaleY(var(--s, 0.15)) rotate(-12.9deg);
 }
-.mc-kok .eg-sahne .eg-kukla.konusuyor .eg-kukla-ic {
-  animation: eg-konus 0.8s ease-in-out;
-}
-@keyframes eg-konus {
-  15% { transform: translateY(-12%) scale(1.06, 0.95); }
-  35% { transform: translateY(0) scale(0.96, 1.05); }
-  55% { transform: translateY(-7%) scale(1.04, 0.97); }
-}
-.mc-kok .eg-sahne .eg-kukla-ayi.konusuyor .eg-kukla-ic {
-  animation: eg-konus-ayi 1.1s ease-in-out;
-}
-@keyframes eg-konus-ayi {
-  30% { transform: rotate(-7deg) scale(1.05); }
-  65% { transform: rotate(6deg) scale(1.04); }
-}
-.mc-kok .eg-sahne .eg-kukla.omuz .eg-kukla-ic {
-  animation: eg-omuz 0.8s ease-in-out;
-}
-@keyframes eg-omuz {
-  30%, 60% { transform: translateY(-5%) scale(1.06, 0.95) rotate(4deg); }
-}
 .mc-kok .eg-sahne .eg-kukla .eg-balon {
   bottom: 100%;
 }
@@ -1074,8 +1053,8 @@
     var(--rx, 220px) var(--ry, 220px) at calc(var(--yan) + var(--sx, 50%)) var(--sy, 50%),
     rgba(40, 22, 40, 0) 0%,
     rgba(40, 22, 40, 0) 55%,
-    rgba(40, 22, 40, 0.42) 85%,
-    rgba(30, 16, 34, 0.72) 130%
+    rgba(40, 22, 40, 0.34) 85%,
+    rgba(30, 16, 34, 0.6) 130%
   );
 }
 .mc-kok .eg-spot.acik {
@@ -1089,6 +1068,26 @@
   background: radial-gradient(circle, rgba(255, 236, 160, 0.95) 0%, rgba(255, 214, 120, 0.55) 35%, rgba(255, 200, 110, 0) 70%);
   opacity: 0;
   pointer-events: none;
+}
+/* yakın çekim çizimleri: ağzı kapalı / açık tam çizim (aynı çerçeve); yalnız gösteride (.sahnede) */
+.mc-kok .eg-sahne .eg-kukla-yakin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.mc-kok .eg-sahne .eg-kukla.yakin-var.sahnede .eg-kukla-ic > :not(.eg-kukla-yakin) {
+  opacity: 0;
+}
+.mc-kok .eg-sahne .eg-kukla.yakin-var.sahnede .eg-kukla-yakin.kapali,
+.mc-kok .eg-sahne .eg-kukla.yakin-var.sahnede.agzi-acik .eg-kukla-yakin.acik {
+  opacity: 1;
+}
+.mc-kok .eg-sahne .eg-kukla.yakin-var.sahnede.agzi-acik .eg-kukla-yakin.kapali {
+  opacity: 0;
 }
 /* sahnedeki kukla: hafif nefes gibi iner kalkar ve kıpırdar (konuşma animasyonu bunun üstüne eklenir) */
 .mc-kok .eg-sahne .eg-kukla.sahnede > .eg-kukla-ic {
