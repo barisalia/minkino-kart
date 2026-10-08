@@ -12,7 +12,7 @@ import { diziSuresi, dudakDizisi } from '../../src/audio/dudak';
 import type { KonusmaSecenegi } from '../../src/audio/konusma';
 import { baglam } from '../../src/audio/motor';
 import { sarkiTablosu, sozleEsle, type SarkiJson, type SarkiTablosu } from '../../src/audio/sarki-kayit';
-import { KINO_SESI, konus, sus } from '../../src/audio/ses';
+import { KINO_SESI, konus, konusuyorMu, sus } from '../../src/audio/ses';
 import { iskeletVar, svgGetir } from '../../src/karakter/karakter';
 import { yandanYukle } from '../../src/karakter/yandan';
 import { h, TEST_MODU } from '../../src/ui/dom';
@@ -419,8 +419,19 @@ export class Film {
     this.el.classList.toggle('duraklatildi', d);
     this.el.getAnimations({ subtree: true }).forEach((a) => (d ? a.pause() : a.play()));
     this.oyuncular.forEach((o) => o.duraklat(d));
-    if (d) sus();
+    if (d) {
+      // yarıda kesilen cümle kaybolmasın: devamda baştan söylenir
+      if (this.sonSoz && konusuyorMu()) this.kesikSoz = this.sonSoz;
+      sus();
+    }
     if (this.muzik) filmMuzik.duraklat(d);
+    if (!d && this.kesikSoz && !this.bitti) {
+      const k = this.kesikSoz;
+      this.kesikSoz = null;
+      // sahne değiştiyse eski oyuncunun ağzı oynatılmaz
+      if (k.oy && ![...this.oyuncular.values()].includes(k.oy)) k.oy = undefined;
+      if (this.sonSoz === k) this.sozCal(k);
+    }
   }
 
   kapat() {
@@ -1038,21 +1049,37 @@ export class Film {
     setTimeout(() => p.remove(), 1400 / this.hiz + 200);
   }
 
-  /** Alt yazı + (animatikte) cihaz sesi + konuşan karakterin ağzı */
+  /** Alt yazı + (animatikte) cihaz sesi + konuşan karakterin ağzı (Soz: dosyanın sonunda) */
   private soyle(kim: string, metin: string, sure?: number, oy?: Oyuncu, agizId?: string) {
     const sn = sure ?? 0.9 + metin.length * 0.075;
     this.altKim.textContent = kim ? (this.dosya as unknown as { adlar?: Record<string, string> }).adlar?.[kim] ?? kim : '';
     this.altMetin.textContent = metin;
     this.altyazi.classList.toggle('anlatici', !kim);
     this.altyazi.classList.add('acik');
-    this.altZaman = this.saat + sn;
     this.el.dataset.sonSoz = metin;
+    this.kesikSoz = null;
+    this.sozCal({ kim, metin, sn, oy, agizId });
+  }
+
+  /** Söylenmekte olan cümle (duraklatınca kesilirse devamda baştan söylenir) */
+  private sonSoz: Soz | null = null;
+  private kesikSoz: Soz | null = null;
+
+  /** Cümlenin sesi + konuşanın ağzı (soyle ve duraklatma sonrası tekrar) */
+  private sozCal(soz: Soz) {
+    const { kim, metin, sn, oy, agizId } = soz;
+    this.sonSoz = soz;
+    this.altZaman = this.saat + sn;
+    this.altyazi.classList.add('acik');
     // konuşma sırasında müzik kısılır (ducking)
     if (this.muzik) filmMuzik.kis(sn / this.hiz);
     // yalnız konuşanın ağzı sesle oynar (Kino konuşurken Mino susar)
     this.oyuncular.forEach((o, id) => o.sustur(!!kim && id !== kim));
     const konusSecenek = konusSecenegi(kim);
     const ses = this.ses ? konus(metin, konusSecenek) : null;
+    void ses?.then(() => {
+      if (!this.duraklat && this.sonSoz === soz) this.sonSoz = null;
+    });
     sesGunlugeYaz('konus', metin, konusSecenek);
     // konuşanın ağzı oynar (dudak senkronu): karakter kendi cümlesinde; anlatıcı cümlesinde (anlatıcı = Mino'nun
     // sesi) sahnede görünen Mino varsa o, yoksa kimse
@@ -1166,4 +1193,13 @@ export class Film {
     setTimeout(() => p.remove(), 1200);
     FILM_EFEKT.parilti();
   }
+}
+
+/** Söylenen bir cümle (duraklatmadan sonra baştan söylemek için) */
+interface Soz {
+  kim: string;
+  metin: string;
+  sn: number;
+  oy?: Oyuncu;
+  agizId?: string;
 }

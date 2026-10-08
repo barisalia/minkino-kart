@@ -49,6 +49,8 @@ export function konusmaMotorunuAc() {
 
 export function sus() {
   sayac++;
+  // yarıda kesilen cümle müziği/efektleri kısık bırakmasın (yeni cümle hemen yine kısar)
+  if (konusuyor) muzikKis(false);
   konusuyor = false;
   ani = null;
   kayitDurdur();

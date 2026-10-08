@@ -2737,6 +2737,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         coz();
       };
       ege.el.addEventListener('pointerdown', egeDokun);
+      // dokunma burada doğru cevap: her an açık dokunuş Mino'ya "Şşş!" dedirtmesin
+      const serbestti = egeSerbest;
+      egeSerbest = false;
       sv.onSoyleyis = (s) => {
         if (s.sonuc === 'fisilti' || kabulMu(yas, yanlis)) return coz();
         yanlis++;
@@ -2750,6 +2753,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       return () => {
         kulak.dinle(null);
         ege.el.removeEventListener('pointerdown', egeDokun);
+        egeSerbest = serbestti;
         bitir(ip);
       };
     });
