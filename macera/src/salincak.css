@@ -115,7 +115,7 @@
 }
 /* orta katmandaki çizili küçük salıncak kesilir (parkta tek büyük salıncak var: bizimki) */
 .mc-kok .sl-orta {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 42% 100%, 42% 51.2%, 24.6% 51.2%, 24.6% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 42% 100%, 42% 52.5%, 24.6% 52.5%, 24.6% 100%, 0 100%);
 }
 /* ön çimen: ön katmanın ortadaki çimen şeridi, dünyanın enine gerilmiş */
 .mc-kok .sl-cimen {
@@ -314,7 +314,7 @@
   pointer-events: auto;
 }
 
-/* ---------------------------------------------------------------- Kino: yan görünüş, ters, baş aşağı */
+/* ---------------------------------------------------------------- Kino: yan görünüş, ters (sahne 1) */
 .mc-kok .sl-kino-yan {
   position: absolute;
   left: 50%;
@@ -337,9 +337,6 @@
 }
 .mc-kok .bn-kisi.sl-ters .bn-cizim {
   pointer-events: none;
-}
-.mc-kok .bn-kisi.sl-bas-asagi .bn-kisi-gov {
-  transform-origin: 50% 50%;
 }
 .mc-kok .bn-kisi.sl-binen .bn-kisi-golge,
 .mc-kok .sl-cocuk.sl-binen .sl-golge,
