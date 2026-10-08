@@ -64,7 +64,12 @@ export interface IpucuTanim {
 }
 
 // ---------------------------------------------------------------- kartlar
-export type KartId = 'zurafa-ayagi' | 'ordek-ayagi' | 'kedi-pati-izi' | 'kedi-turuncu' | 'kedi-siyah' | 'kedi-beyaz' | 'sut-kasesi' | 'yastik' | 'sari-kelebek';
+/**
+ * Kartlar ipucunun kopyası değil, sorunun cevabıdır: Halka 1'de izi bırakabilecek HAYVANLAR (kedi, ördek, zürafa;
+ * çocuk izi hayvanın ayağıyla karşılaştırır), Halka 2'de üç kedi, Halka 3'te kedinin masaya zıplama NEDENLERİ
+ * (kelebeği kovalamak, süt içmek, uyumak: beyaz kedinin kendi sahnesi).
+ */
+export type KartId = 'zurafa' | 'ordek' | 'kedi' | 'kedi-turuncu' | 'kedi-siyah' | 'kedi-beyaz' | 'kedi-sut' | 'kedi-uyku' | 'kedi-kelebek';
 /** Yanlış kartın kendini anlatışı (öğretici ve komik; ceza yok) */
 export type KartTepki = 'zurafa' | 'ordek' | 'turuncu' | 'siyah' | 'sut' | 'yastik';
 export interface KartTanim {
@@ -76,15 +81,15 @@ export interface KartTanim {
   renk: string;
 }
 export const KARTLAR: Record<KartId, KartTanim> = {
-  'zurafa-ayagi': { id: 'zurafa-ayagi', resim: 'kart-zurafa-ayagi', tepki: 'zurafa', renk: '#f6c343' },
-  'ordek-ayagi': { id: 'ordek-ayagi', resim: 'kart-ordek-ayagi', tepki: 'ordek', renk: '#ff9f43' },
-  'kedi-pati-izi': { id: 'kedi-pati-izi', resim: 'kart-kedi-pati-izi', renk: '#a77b5a' },
+  zurafa: { id: 'zurafa', resim: 'zurafa', tepki: 'zurafa', renk: '#f6c343' },
+  ordek: { id: 'ordek', resim: 'ordek', tepki: 'ordek', renk: '#ff9f43' },
+  kedi: { id: 'kedi', resim: 'kart-kedi-gri', renk: '#b9b3c6' },
   'kedi-turuncu': { id: 'kedi-turuncu', resim: 'kart-kedi-turuncu', tepki: 'turuncu', renk: '#f39a3d' },
   'kedi-siyah': { id: 'kedi-siyah', resim: 'kart-kedi-siyah', tepki: 'siyah', renk: '#3b3340' },
   'kedi-beyaz': { id: 'kedi-beyaz', resim: 'kart-kedi-beyaz', renk: '#fbf7f2' },
-  'sut-kasesi': { id: 'sut-kasesi', resim: 'kart-sut-kasesi', tepki: 'sut', renk: '#7fb4e6' },
-  yastik: { id: 'yastik', resim: 'kart-yastik', tepki: 'yastik', renk: '#e2b7ef' },
-  'sari-kelebek': { id: 'sari-kelebek', resim: 'kart-sari-kelebek', renk: '#ffd23f' },
+  'kedi-sut': { id: 'kedi-sut', resim: 'kart-kedi-sut', tepki: 'sut', renk: '#7fb4e6' },
+  'kedi-uyku': { id: 'kedi-uyku', resim: 'kart-kedi-uyku', tepki: 'yastik', renk: '#e2b7ef' },
+  'kedi-kelebek': { id: 'kedi-kelebek', resim: 'kart-kedi-kelebek', renk: '#ffd23f' },
 };
 
 // ---------------------------------------------------------------- halkalar
@@ -127,11 +132,11 @@ export const HALKALAR: Halka[] = [
     ipuclari: [{ id: 'pati-hali', oda: 'calisma', resim: 'kart-kedi-pati-izi', foto: 'ipucu-kedi-pati-hali', x: 0.555, y: 0.85, h: 0.075, don: -18, gizli: true }],
     soru: M.iz_kimin,
     kino: K.zurafa,
-    kinoKart: 'zurafa-ayagi',
-    kartlar: ['zurafa-ayagi', 'ordek-ayagi', 'kedi-pati-izi'],
-    dogru: 'kedi-pati-izi',
+    kinoKart: 'zurafa',
+    kartlar: ['zurafa', 'ordek', 'kedi'],
+    dogru: 'kedi',
     demekKi: M.demek_kedi,
-    demekResim: 'kart-kedi-pati-izi',
+    demekResim: 'kart-kedi-gri',
   },
   {
     id: 'tuy',
@@ -156,11 +161,11 @@ export const HALKALAR: Halka[] = [
     ],
     soru: M.neden,
     kino: K.sut,
-    kinoKart: 'sut-kasesi',
-    kartlar: ['sut-kasesi', 'yastik', 'sari-kelebek'],
-    dogru: 'sari-kelebek',
+    kinoKart: 'kedi-sut',
+    kartlar: ['kedi-sut', 'kedi-uyku', 'kedi-kelebek'],
+    dogru: 'kedi-kelebek',
     demekKi: M.demek_kelebek,
-    demekResim: 'kart-sari-kelebek',
+    demekResim: 'kart-kedi-kelebek',
   },
   {
     id: 'nerede',

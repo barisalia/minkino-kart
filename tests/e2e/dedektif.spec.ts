@@ -89,12 +89,12 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   await expect(page.locator('.dd-delil .dd-delil-foto')).toBeVisible();
   await page.waitForTimeout(200);
   await page.screenshot({ path: `tests/screens/dedektif-halka${ad === 'iphone' ? '' : '-' + ad}.png` });
-  await surukle(page, page.locator('.dd-kart[data-kart="zurafa-ayagi"]'), page.locator('.dd-delil'));
-  await expect(page.locator('.dd-kart[data-kart="zurafa-ayagi"]')).toHaveClass(/dd-soluk/);
-  await surukle(page, page.locator('.dd-kart[data-kart="ordek-ayagi"]'), page.locator('.dd-delil'));
-  await expect(page.locator('.dd-kart[data-kart="ordek-ayagi"]')).toHaveClass(/dd-soluk/);
+  await surukle(page, page.locator('.dd-kart[data-kart="zurafa"]'), page.locator('.dd-delil'));
+  await expect(page.locator('.dd-kart[data-kart="zurafa"]')).toHaveClass(/dd-soluk/);
+  await surukle(page, page.locator('.dd-kart[data-kart="ordek"]'), page.locator('.dd-delil'));
+  await expect(page.locator('.dd-kart[data-kart="ordek"]')).toHaveClass(/dd-soluk/);
   // 2 yanlıştan sonra doğru kart parlar
-  await expect(page.locator('.dd-kart[data-kart="kedi-pati-izi"]')).toHaveClass(/dd-parla/);
+  await expect(page.locator('.dd-kart[data-kart="kedi"]')).toHaveClass(/dd-parla/);
   await dogruKart(page);
   await adimBekle(page, /^(demek-iz|ara-tuy)$/);
   await expect(page.locator('.dd-goz[data-halka="iz"]')).toHaveClass(/dd-cozuldu/);
