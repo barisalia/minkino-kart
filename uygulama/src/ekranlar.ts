@@ -356,20 +356,27 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
       h(
         'div.ug-ayarlar-kutu',
         {},
-        // Gemini çizimi (gözlüklü, kitaplı Mino) gelince o; yoksa ikon
-        EBEVEYN_RESIM
-          ? h('img.ug-ayarlar-resim', { src: EBEVEYN_RESIM, alt: '', draggable: 'false', decoding: 'async' })
-          : svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
-        // asıl MINKINO logosu (krem kutuda temiz sürüm)
-        minkinoLogo('sade', 'ug-ayarlar-logo'),
-        ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
-        h('h2', {}, 'Gizlilik ve güvenlik'),
-        h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
-        h('div.ug-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),
-        h('h2', {}, 'Bize yazın'),
-        h('p', {}, 'Soru, öneri ya da sorun için:'),
-        h('div.ug-baglantilar', {}, h('a.ince-dugme.ug-baglanti.ug-eposta', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
-        ...(uygulamada ? [h('div.ug-baglantilar.ug-inceleme-yer', {}, incelemeDugme)] : []),
+        // sahne: gözlüklü, kitaplı Mino (yoksa ikon) ve asıl MINKINO logosu; dikeyde üstte, yatayda solda
+        h(
+          'div.ug-ayarlar-sahne',
+          {},
+          EBEVEYN_RESIM
+            ? h('img.ug-ayarlar-resim', { src: EBEVEYN_RESIM, alt: '', draggable: 'false', decoding: 'async' })
+            : svg(IKON.ebeveyn, 'ug-ayarlar-ikon'),
+          minkinoLogo('sade', 'ug-ayarlar-logo'),
+        ),
+        h(
+          'div.ug-ayarlar-bilgi',
+          {},
+          ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
+          h('h2', {}, 'Gizlilik ve güvenlik'),
+          h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
+          h('div.ug-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),
+          h('h2', {}, 'Bize yazın'),
+          h('p', {}, 'Soru, öneri ya da sorun için:'),
+          h('div.ug-baglantilar', {}, h('a.ince-dugme.ug-baglanti.ug-eposta', { href: `mailto:${ILETISIM_EPOSTA}` }, ILETISIM_EPOSTA)),
+          ...(uygulamada ? [h('div.ug-baglantilar.ug-inceleme-yer', {}, incelemeDugme)] : []),
+        ),
       ),
     ),
   );

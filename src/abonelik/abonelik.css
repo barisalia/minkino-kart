@@ -59,7 +59,7 @@
   font-weight: 600;
 }
 
-/* Mino ve Kino kartın üst kenarında oturur */
+/* canlı Mino ve Kino (kahraman görseli yoksa): logonun üstünde */
 .mk-kok .ab-ikili {
   position: relative;
   z-index: 2;
@@ -67,8 +67,8 @@
   justify-content: center;
   align-items: flex-end;
   gap: 4px;
-  height: clamp(96px, 26vw, 128px);
-  margin-bottom: -22px;
+  height: clamp(110px, 30vw, 150px);
+  margin: 2px 0 4px;
   pointer-events: none;
 }
 .mk-kok .ab-mino,
@@ -99,33 +99,60 @@
   height: 110.34%;
 }
 
-/* kahraman görseli (assets/uygulama/abonelik-kahraman.webp varsa): kartın üstünde, alt kenarı kartın arkasına girer */
+/* sahne: kapat + Mino ve Kino + logo (dikeyde kartın üstünde; yatayda solda, kaydırınca yerinde durur) */
+.mk-kok .ab-sahne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mk-kok .ab-sahne .ab-ust {
+  align-self: stretch;
+}
+/* kahraman görseli (zemini şeffaf): gökyüzünde, arkasında yumuşak bir ışık; hafifçe süzülür */
 .mk-kok .ab-kahraman {
   position: relative;
   z-index: 0;
-  margin: 4px -6px -34px;
-  aspect-ratio: 16 / 9;
-  border-radius: 26px 26px 0 0;
-  overflow: hidden;
+  isolation: isolate;
+  width: min(76%, 330px);
+  aspect-ratio: 960 / 790;
+  margin: -6px auto 0;
   animation: ab-kahraman-gel 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.mk-kok .ab-kahraman::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 6% -6% 2%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55) 55%, rgba(255, 255, 255, 0) 100%);
 }
 .mk-kok .ab-kahraman img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: 0% 50%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  filter: drop-shadow(0 6px 10px rgba(90, 54, 23, 0.14));
+  animation: ab-suzul 4.5s ease-in-out 0.8s infinite;
 }
 @keyframes ab-kahraman-gel {
   from { opacity: 0; transform: translateY(-10px) scale(0.97); }
 }
+@keyframes ab-suzul {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -4px; }
+}
+.mk-kok .ab-baslik-yer {
+  text-align: center;
+}
 .mk-kok .ab-kart {
   position: relative;
+  margin-top: 12px;
   border-radius: 28px;
   background: #fffdf6;
   border: var(--cizgi) solid var(--kontur);
-  box-shadow: 0 10px 0 var(--kontur-yumusak);
-  padding: 30px 18px 18px;
+  box-shadow: 0 10px 0 var(--kontur-yumusak), 0 18px 40px rgba(90, 54, 23, 0.1);
+  padding: 24px 18px 18px;
   text-align: center;
 }
 .mk-kok .ab-baslik {
@@ -139,7 +166,7 @@
 }
 .mk-kok .ab-logo {
   width: clamp(180px, 58vw, 280px);
-  filter: drop-shadow(0 3px 0 rgba(90, 54, 23, 0.16));
+  filter: drop-shadow(0 3px 0 rgba(255, 255, 255, 0.9)) drop-shadow(0 4px 6px rgba(90, 54, 23, 0.16));
 }
 .mk-kok .ab-premium {
   display: inline-flex;
@@ -155,19 +182,22 @@
   stroke: var(--kontur);
 }
 .mk-kok .ab-alt {
-  margin: 4px 0 12px;
+  margin: 4px 0 0;
   font-weight: 500;
   opacity: 0.85;
 }
+/* açılanlar: düğmenin altında, krem kutuda */
 .mk-kok .ab-liste {
   list-style: none;
-  margin: 0 auto 14px;
-  padding: 0;
+  margin: 14px 0 6px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: #fff6de;
+  border: 2px solid var(--kontur-yumusak);
   display: grid;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   text-align: left;
-  width: fit-content;
-  max-width: 100%;
   font-weight: 500;
 }
 .mk-kok .ab-liste li {
@@ -404,9 +434,117 @@
   font-weight: 500;
 }
 
-/* alçak yatay telefon: karakterler küçük */
-@media (max-height: 540px) and (orientation: landscape) {
-  .mk-kok .ab-ikili { height: 84px; }
+/* ---------------------------------------------------------------- yatay (telefon ve tablet): iki sütun
+   solda sahne (kapat, Mino ve Kino büyük, logo; ekran boyu, kaydırınca yerinde durur), sağda kart: planlar, deneme,
+   büyük düğme ve geri yükleme ilk bakışta görünür; açılanlar ve yasal metinler kaydırınca. Çentik iki yanda --yan. */
+@media (orientation: landscape) and (min-width: 600px) {
+  .mk-kok .ab-ic {
+    width: min(100%, 1080px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(52%, 470px);
+    column-gap: clamp(16px, 3vw, 44px);
+    align-items: start;
+    padding: 0 max(var(--yan), 2vw);
+  }
+  .mk-kok .ab-sahne {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    padding: var(--ust) 0 var(--alt);
+  }
+  /* büyük ekranda sahne dikeyde ortada (kapat üstte kalır) */
+  .mk-kok .ab-sahne .ab-ust {
+    margin-bottom: auto;
+  }
+  .mk-kok .ab-baslik-yer {
+    margin-bottom: auto;
+  }
+  .mk-kok .ab-kahraman {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: 520px;
+    width: 100%;
+    aspect-ratio: auto;
+    margin: 0;
+  }
+  .mk-kok .ab-kahraman::before {
+    inset: 4% 2% 0;
+  }
+  .mk-kok .ab-ikili {
+    flex: 1 1 0;
+    min-height: 0;
+    height: auto;
+    max-height: 260px;
+    align-self: stretch;
+  }
+  .mk-kok .ab-baslik {
+    font-size: clamp(1.25rem, 3.4vw, 2rem);
+  }
+  .mk-kok .ab-logo {
+    width: clamp(150px, 24vw, 300px);
+  }
+  .mk-kok .ab-alt {
+    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+  }
+  .mk-kok .ab-kart {
+    align-self: center;
+    margin: calc(var(--ust) + 4px) 0 calc(var(--alt) + 12px);
+    padding: 24px 18px 16px;
+  }
+  .mk-kok .ab-gok {
+    height: 100%;
+  }
+}
+/* alçak yatay telefon (≤ 540 px boy): kart sıkı, planlar ve düğme ekrana sığar */
+@media (orientation: landscape) and (max-height: 540px) {
+  .mk-kok .ab-ust {
+    min-height: 48px;
+  }
+  .mk-kok .ab-not {
+    font-size: 0.8rem;
+    padding: 5px 12px;
+  }
+  .mk-kok .ab-kart {
+    padding: 20px 14px 12px;
+    border-radius: 24px;
+  }
+  .mk-kok .ab-planlar {
+    margin: 4px 0 6px;
+    gap: 8px;
+  }
+  .mk-kok .ab-plan {
+    min-height: 86px;
+    padding: 14px 6px 8px;
+    border-radius: 18px;
+  }
+  .mk-kok .ab-plan-ad {
+    font-size: 0.95rem;
+  }
+  .mk-kok .ab-fiyat b {
+    font-size: 1.2rem;
+  }
+  .mk-kok .ab-deneme {
+    margin: 4px 0 6px;
+    font-size: 1.05rem;
+  }
+  .mk-kok .ab-basla {
+    min-height: 58px;
+    font-size: 1.15rem;
+  }
+  .mk-kok .ab-sonra {
+    margin-top: 6px;
+    font-size: 0.82rem;
+  }
+  .mk-kok .ab-geri-yukle {
+    margin-top: 2px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-kok .ab-kahraman,
+  .mk-kok .ab-kahraman img {
+    animation: none;
+  }
 }
 
 /* ---------------------------------------------------------------- kilit rozeti (kilitli kart / bölüm) */

@@ -1,5 +1,6 @@
 /**
- * Abonelik ekranı (Minkino Premium): ebeveyn kapısından SONRA açılır. Mino ve Kino kartın üstünde oturur.
+ * Abonelik ekranı (Minkino Premium): ebeveyn kapısından SONRA açılır. Yatayda iki sütun: solda Mino ve Kino ile
+ * logo (yerinde durur), sağda planlar ve büyük düğme (844x390'da kaydırmadan görünür); dikeyde alt alta.
  * Aylık ve yıllık plan (fiyatlar mağazadan, yerel para birimiyle), deneme yazısı (paketten), "Satın alımları geri
  * yükle", mağazanın zorunlu otomatik yenileme metni, gizlilik ve kullanım koşulları bağlantıları.
  * Metinler: ekip/uygulama/MAGAZA-METINLERI.md §7.
@@ -57,11 +58,12 @@ export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '99 TL', yillik: '49
 const YEDEK_DENEME_GUN = 7;
 
 /**
- * Kahraman görseli yuvası: assets/uygulama/abonelik-kahraman.webp (16:9; Mino ve Kino solda el sallar, yıldız ve
- * konfeti; orta ve sağ boş). Dosya gelince kendiliğinden kullanılır; yoksa canlı Mino ve Kino (bugünkü hâl).
+ * Kahraman görseli: assets/uygulama/abonelik-kahraman-seffaf.webp (Mino ve Kino el sallar, yıldız ve konfeti; zemini
+ * şeffaf, gökyüzüne oturur). Kaynağı abonelik-kahraman.webp (16:9, krem zemin): karakterler kırpılıp zemin ayıklandı.
+ * Dosya yoksa canlı Mino ve Kino.
  */
 const KAHRAMAN = Object.values(
-  import.meta.glob<string>('../../assets/uygulama/abonelik-kahraman.webp', { eager: true, query: '?url', import: 'default' }),
+  import.meta.glob<string>('../../assets/uygulama/abonelik-kahraman-seffaf.webp', { eager: true, query: '?url', import: 'default' }),
 )[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -257,13 +259,10 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     // ---------------------------------------------------------------- ekran
     const baglanti = (adres: string, yazi: string, en: string) =>
       h('a.ab-baglanti', { href: adres, target: '_blank', rel: 'noopener noreferrer' }, yazi, h('small', { lang: 'en' }, en));
+    // kart: önce planlar ve büyük düğme (ilk bakışta fiyat ve düğme görünür), sonra açılanlar ve yasal metinler
     const kartIc = h(
       'div.ab-kart-ic',
       {},
-      // başlık: asıl MINKINO logosu (krem kartta temiz sürüm), altında taçlı Premium
-      h('h1.ab-baslik', {}, minkinoLogo('sade', 'ab-logo'), h('span.ab-premium', {}, svg(IKON.tac, 'ab-tac'), ' Premium')),
-      h('p.ab-alt', {}, 'Bütün oyunlar, maceralar ve filmler.'),
-      h('ul.ab-liste', {}, ...ACILANLAR.map((m) => h('li', { style: `--r:${m.renk}` }, svg(IKON[m.ikon], `ab-tik ab-tik-${m.ikon}`), m.yazi))),
       planKutu,
       deneme,
       basla,
@@ -271,6 +270,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       durumYazi,
       tekrarDene,
       geriYukle,
+      h('ul.ab-liste', {}, ...ACILANLAR.map((m) => h('li', { style: `--r:${m.renk}` }, svg(IKON[m.ikon], `ab-tik ab-tik-${m.ikon}`), m.yazi))),
       h('p.ab-yasal', {}, YENILEME_METNI[platform]),
       h('p.ab-yasal.ab-yasal-en', { lang: 'en' }, YENILEME_METNI_EN[platform]),
       h(
@@ -290,10 +290,20 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       h(
         'div.ab-ic',
         {},
-        h('div.ab-ust', {}, kapatDugme, h('span.ab-not', {}, 'Bu ekran büyükler içindir.')),
-        KAHRAMAN
-          ? h('div.ab-kahraman', { 'aria-hidden': 'true' }, h('img', { src: KAHRAMAN, alt: '', draggable: 'false', decoding: 'async' }))
-          : h('div.ab-ikili', {}, minoKap, kinoKap),
+        // sahne (yatayda solda, yerinde durur): kapat, Mino ve Kino, MINKINO logosu ve taçlı Premium
+        h(
+          'div.ab-sahne',
+          {},
+          h('div.ab-ust', {}, kapatDugme, h('span.ab-not', {}, 'Bu ekran büyükler içindir.')),
+          KAHRAMAN
+            ? h('div.ab-kahraman', { 'aria-hidden': 'true' }, h('img', { src: KAHRAMAN, alt: '', draggable: 'false', decoding: 'async' }))
+            : h('div.ab-ikili', {}, minoKap, kinoKap),
+          h('div.ab-baslik-yer', {},
+            h('h1.ab-baslik', {}, minkinoLogo('sade', 'ab-logo'), h('span.ab-premium', {}, svg(IKON.tac, 'ab-tac'), ' Premium')),
+            h('p.ab-alt', {}, 'Bütün oyunlar, maceralar ve filmler.'),
+          ),
+        ),
+        // planlar ve büyük düğme (yatayda sağda)
         h('div.ab-kart', {}, kartIc),
       ),
     );
