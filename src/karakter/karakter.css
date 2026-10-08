@@ -1,4 +1,9 @@
 /* Ortak karakter bileşeni (src/karakter/karakter.ts). Kök sınıf altında: gömülünce başka uygulamayı bozmaz. */
+/* Katman değişimleri (göz kırpma, ifade, bakış, konuşma ağzı) tek karede olur: iskelet içinde geçiş yok. Test
+   modundaki genel "transition 1ms" kuralı yeni katmanı ilk karede saydam başlatıyordu: bir kare gözsüz yüz. */
+.mk-kok :is(.kr-karakter, .yk-yandan) svg * {
+  transition: none !important;
+}
 .mk-kok .kr-karakter {
   position: absolute;
   inset: 0;

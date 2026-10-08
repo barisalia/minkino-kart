@@ -102,6 +102,8 @@ export interface TasiTanim {
   don?: number;
   /** olaylarda bu adla bırakılır */
   ad?: string;
+  /** parçanın arkasında (ör. patinin tuttuğu elma: pati önde kalır) */
+  arka?: boolean;
 }
 export interface OyuncuTanim extends Konum {
   /** 'mino' ya da karakter adı (kopek, tavsan, ordek…) */
@@ -404,7 +406,8 @@ export class Film {
         break;
       }
       const sonraki = liste[i + 1];
-      await this.sahneOyna(s, !!sonraki && !('ogut' in sonraki) && sonraki.gecis === 'kes');
+      // öğüt kartından önce iris kapanmaz: kart, canlı son sahnenin üstünde yumuşakça belirir
+      await this.sahneOyna(s, !!sonraki && !('ogut' in sonraki) && sonraki.gecis === 'kes', !!sonraki && 'ogut' in sonraki);
     }
     if (this.muzik) filmMuzik.dur(4);
     this.secenek.bitti?.();
@@ -480,7 +483,7 @@ export class Film {
 
   // ---------------------------------------------------------------- sahne
   /** kesme: sonraki sahne doğrudan başlar (kapanış geçişi ve bekleme yok) */
-  private async sahneOyna(s: Sahne, kesme = false) {
+  private async sahneOyna(s: Sahne, kesme = false, ogutOnce = false) {
     // kesme bile sert değil: önceki sahnenin son karesi yeni sahnenin üstünde yumuşakça söner (çapraz geçiş)
     const onceki = s.gecis === 'kes' && this.dunya.childElementCount && this.katmanlar.orta.childElementCount ? (this.dunya.cloneNode(true) as HTMLElement) : null;
     const eskiKam = { ...this.kam };
@@ -499,7 +502,7 @@ export class Film {
     this.siradaki = 0;
     if (s.gecis !== 'kes') this.gecis(true, s.gecis);
     await this.bekle(s.sure);
-    if (this.bitti || kesme) return;
+    if (this.bitti || kesme || ogutOnce) return;
     this.gecis(false, s.gecis === 'kes' ? 'iris' : s.gecis);
     await this.bekle(0.7);
     this.altyazi.classList.remove('acik');
@@ -526,7 +529,7 @@ export class Film {
       n.kirp = o.kirp ?? null;
       n.zemin = o.zemin ?? null;
       n.golgeEkle();
-      for (const t of o.tasi ?? []) oy.tasi(t.ad ?? t.tip, esyaAdresi(t.tip, this.dosya.film, this.dosya.malzeme) ?? '', t.parca, t.x, t.y, t.w, (ESYA_ORAN[t.tip] ?? 1), t.don ?? 0);
+      for (const t of o.tasi ?? []) oy.tasi(t.ad ?? t.tip, esyaAdresi(t.tip, this.dosya.film, this.dosya.malzeme) ?? '', t.parca, t.x, t.y, t.w, (ESYA_ORAN[t.tip] ?? 1), t.don ?? 0, !!t.arka);
       if (o.durus) oy.durus(o.durus, 0);
       if (o.ifade) oy.ifade(o.ifade);
       this.oyuncular.set(id, oy);
@@ -735,6 +738,7 @@ export class Film {
     this.tween(0.7, ac ? 'cik' : 'dus', (u) => {
       const v = a + (b - a) * u;
       i.style.setProperty('--iris', String(v));
+      i.classList.toggle('acik', v >= 1);
     });
   }
 
@@ -1164,7 +1168,8 @@ export class Film {
       k.satir = satir;
       // kutu kapanırken son satır görünür kalır (solarken boş kutu görünmesin)
       if (satir >= 0) k.satirlar.forEach((e, i) => e.classList.toggle('acik', i === satir));
-      k.kutu.classList.toggle('acik', satir >= 0);
+      // sözü olmayan satırda (ya da satır yokken) boş beyaz şerit görünmez
+      k.kutu.classList.toggle('acik', satir >= 0 && !!k.satirlar[satir]?.textContent?.trim());
     }
     if (hece !== k.hece || simdi !== k.simdi) {
       k.hece = hece;

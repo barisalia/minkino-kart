@@ -127,18 +127,20 @@
 }
 .fl-kok .fl-iris i {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 10px;
-  height: 10px;
-  margin: -5px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 200vmax #1e1a2e;
-  /* tam kapalıyken de ölçek 0 olmaz: scale(0) gölgeyi de yok eder, sahne bir kare çıplak görünürdü */
-  transform: scale(calc(var(--iris) * 260 + 0.02));
+  inset: 0;
+  /* delik yarıçapı --iris ile büyür: 0'da sahneyi tam örter, 1'de (80vmax > yarı köşegen) tamamen saydam.
+     Eskiden 10px'lik halka + 200vmax gölge ölçekleniyordu; kapalıyken gölge ~70px'lik lacivert lekeye büzülüyordu. */
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 0 max(0px, calc(var(--iris) * 80vmax - 1.5px)),
+    #1e1a2e calc(var(--iris) * 80vmax)
+  );
+}
+/* tam açıkken hiç çizilmez */
+.fl-kok .fl-iris.acik i {
+  visibility: hidden;
 }
 .fl-kok .fl-iris.karar i {
-  box-shadow: none;
   background: none;
 }
 .fl-kok .fl-iris.karar {
@@ -251,6 +253,22 @@
   .fl-kok .fl-kapak::after {
     inset: 0;
     background: var(--kapak, none) center / 100% auto no-repeat;
+  }
+  /* dikey kapak varsa ekranı o doldurur: başlık üstteki boş gökyüzünde, Oynat en altta (karakterler ortada açık) */
+  .fl-kok .fl-kapak.dikey-var {
+    background:
+      linear-gradient(180deg, rgba(30, 26, 46, 0.18), transparent 30%, transparent 78%, rgba(30, 26, 46, 0.35)),
+      var(--kapak-dikey) 50% 70% / cover no-repeat,
+      #3a2f4a;
+    padding-bottom: max(18px, 3vh, env(safe-area-inset-bottom));
+  }
+  .fl-kok .fl-kapak.dikey-var::before,
+  .fl-kok .fl-kapak.dikey-var::after {
+    display: none;
+  }
+  .fl-kok .fl-kapak.dikey-var .fl-oynat {
+    font-size: clamp(1.3rem, 5.4vw, 1.8rem);
+    min-width: min(52vw, 230px);
   }
 }
 /* alçak yatay telefon: başlık üst düğmelerin arasında, Oynat en altta (Mino'nun başı ve gövdesi açıkta) */
@@ -665,6 +683,11 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt.fl-ev-zemin {
 .fl-kok .fl-karaoke.acik {
   opacity: 1;
   transform: none;
+}
+/* görünen söz satırı yoksa şerit hiç görünmez (boş beyaz şerit olmasın) */
+.fl-kok .fl-karaoke:not(:has(.fl-k-satir.acik .fl-hece)) {
+  opacity: 0 !important;
+  transition: none;
 }
 .fl-kok .fl-k-nota {
   color: #9b5ce0;

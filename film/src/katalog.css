@@ -293,6 +293,25 @@
   pointer-events: none;
   transition: transform 0.4s ease-out;
 }
+.fl-kok .fl-k-kapak picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* dikey telefon: dikey kapak (assets/film/kapak/<ad>-dikey.webp) 4:5 kesitle; üstteki boş gökyüzü kısalır,
+   karakterler tam görünür; ad ve Oynat resmin altındaki şeritte (karakterlerin üstüne binmez) */
+@media (orientation: portrait) and (max-width: 699px) {
+  .fl-kok .fl-k-kapak.dikey-var {
+    aspect-ratio: 4 / 5;
+  }
+  .fl-kok .fl-k-kapak.dikey-var img {
+    object-position: 50% 80%;
+  }
+  /* üstü kusurlu dikey kapak: kesit en alttan (üst %30 görünmez) */
+  .fl-kok .fl-k-kapak.dikey-alt img {
+    object-position: 50% 100%;
+  }
+}
 .fl-kok .fl-film-kart.basili .fl-k-kapak img,
 .fl-kok .fl-film-kart.secildi .fl-k-kapak img {
   transform: scale(1.04);
