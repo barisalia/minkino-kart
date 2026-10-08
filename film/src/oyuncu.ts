@@ -444,8 +444,8 @@ export class Oyuncu {
     return this.karakter.hazir.then(() => this.parca(ad));
   }
 
-  /** Parçaya eşya takar (çizim birimleriyle merkez, genişlik, açı) */
-  tasi(ad: string, url: string, parca: string, x: number, y: number, w: number, oran: number, don = 0): Promise<void> {
+  /** Parçaya eşya takar (çizim birimleriyle merkez, genişlik, açı); arka: parçanın arkasında (patinin tuttuğu eşya) */
+  tasi(ad: string, url: string, parca: string, x: number, y: number, w: number, oran: number, don = 0, arka = false): Promise<void> {
     return this.parcaHazir(parca).then((g) => {
       if (!g) return;
       g.querySelector(`[data-tasinan="${ad}"]`)?.remove();
@@ -462,7 +462,8 @@ export class Oyuncu {
       im.dataset.y = String(y);
       im.dataset.w = String(w);
       im.dataset.don = String(don);
-      g.append(im);
+      if (arka) g.prepend(im);
+      else g.append(im);
     });
   }
 

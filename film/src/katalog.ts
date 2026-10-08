@@ -37,6 +37,10 @@ export interface KatalogFilm {
   /** Dakika (en az 1) */
   dakika: number;
   kapak: string;
+  /** dikey kapak (telefon dikeyken; assets/film/kapak/<ad>-dikey.webp, 1536×2752; üstü başlığa boş gökyüzü) */
+  kapakDikey: string;
+  /** dikey kapağın üst ~%30'u kusurlu (kesik ağaç, bulanık tente): yalnız alt kesiti kullanılır, kapak ekranında hiç */
+  dikeyUstKusurlu: boolean;
 }
 
 /** Filmin süresi: açılış jeneriği hariç sahneler + geçişler (sn) */
@@ -66,9 +70,20 @@ export function katalog(): KatalogFilm[] {
         // yukarı yuvarlanır: ~87 sn "2 dk" (aşağı yuvarlanınca 1,5 dakikalık film "1 dk" görünüyordu)
         dakika: Math.max(1, Math.ceil(filmSuresi(f) / 60)),
         kapak: KAPAKLAR[`../../assets/film/kapak/${ad}.webp`] ?? '',
+        kapakDikey: KAPAKLAR[`../../assets/film/kapak/${ad}-dikey.webp`] ?? '',
+        dikeyUstKusurlu: DIKEY_UST_KUSURLU.has(ad),
       };
     });
 }
+
+/**
+ * Gemini'nin dikey kapağında üst kısmı kusurlu olanlar (Kaydırak: ağacın tepesi düz kesik; Sihirli Söz: bulanık
+ * tente). Yeniden çizilene kadar Çizgi Filmler kartında kesitin altı (üst %30 dışarıda), film kapağında yatay kapak.
+ */
+const DIKEY_UST_KUSURLU = new Set(['kino-kaydirak', 'kino-lutfen']);
+
+/** dikey kapağın kullanıldığı ekran: dikey telefon (katalog.css'teki kuralla aynı) */
+export const KAPAK_DIKEY_MEDYA = '(orientation: portrait) and (max-width: 699px)';
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -161,10 +176,12 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
   /** uygulamada abonelikli filmlerde kilit rozeti (kapağın sağ üstünde) */
   const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
   const kartlar = filmler.map((f, i) => {
+    // dikey telefonda dikey kapak (aynı kart, resim dikey çizim): <picture> ekran dönünce kendisi değişir
+    const resim = f.kapak ? h('img', { src: f.kapak, alt: '', draggable: 'false', decoding: 'async' }) : h('span.fl-k-kapak-bos');
     const kapak = h(
-      'span.fl-k-kapak',
+      `span.fl-k-kapak${f.kapakDikey ? '.dikey-var' : ''}${f.dikeyUstKusurlu ? '.dikey-alt' : ''}`,
       {},
-      f.kapak ? h('img', { src: f.kapak, alt: '', draggable: 'false', decoding: 'async' }) : h('span.fl-k-kapak-bos'),
+      f.kapak && f.kapakDikey ? h('picture', {}, h('source', { media: KAPAK_DIKEY_MEDYA, srcset: f.kapakDikey }), resim) : resim,
       h('span.fl-k-parilti', { 'aria-hidden': 'true' }),
       ...(f.yeni ? [h('span.fl-k-yeni', { 'aria-hidden': 'true' }, 'Yeni')] : []),
       h('span.fl-k-sure', { 'aria-hidden': 'true' }, svg(SAAT), `${f.dakika} dk`),

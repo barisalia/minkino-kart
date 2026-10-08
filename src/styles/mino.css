@@ -332,3 +332,10 @@
 .mk-kok .mino:is(.poz-bak-sag, .poz-bak-sol) .m-goz { opacity: 0; }
 .mk-kok .mino.poz-bak-sag:not(.gozkapali, .mutlu) .m-poz-bak-sag,
 .mk-kok .mino.poz-bak-sol:not(.gozkapali, .mutlu) .m-poz-bak-sol { display: inline; }
+
+/* Yüz katmanları (göz, kırpma, mutlu göz, bakış, ifade ekleri) tek karede değişir: SVG içinde geçiş yok (yanak hariç).
+   Test modundaki genel "transition 1ms" kuralı yeni gözü ilk karede saydam başlatıyordu (eskisi gizlenmişken):
+   bir kare gözsüz Mino. */
+.mk-kok :is(.mino, .mino-profil) svg *:not(.m-yanak) {
+  transition: none !important;
+}

@@ -38,8 +38,12 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
 
   const oynatDugme = h('button.dugme.fl-oynat', { type: 'button' }, svg(IKON.oyna), 'Oynat');
   // kapak: filmin kendi karesi (assets/film/kapak) arkada, üstünde başlık ve Oynat; film listesi Çizgi Filmler ekranında
-  const resim = katalog().find((f) => f.ad === ad)?.kapak;
-  const kapak = h('div.fl-kapak', { style: resim ? `--kapak:url("${resim}")` : undefined }, h('h1.fl-baslik', {}, dosya.baslik), oynatDugme);
+  const kat = katalog().find((f) => f.ad === ad);
+  const resim = kat?.kapak;
+  // dikey telefonda dikey kapak (üstü başlığa boş gökyüzü, karakterler altta; Oynat en altta): film.css
+  const dikey = kat && !kat.dikeyUstKusurlu ? kat.kapakDikey : '';
+  const stil = [resim ? `--kapak:url("${resim}")` : '', dikey ? `--kapak-dikey:url("${dikey}")` : ''].filter(Boolean).join(';');
+  const kapak = h(`div.fl-kapak${dikey ? '.dikey-var' : ''}`, { style: stil || undefined }, h('h1.fl-baslik', {}, dosya.baslik), oynatDugme);
   const duraklatDegistir = () => {
     if (!film) return;
     film.duraklatDegistir();

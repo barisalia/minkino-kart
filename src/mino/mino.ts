@@ -22,6 +22,8 @@ const KOL_SAG = { x: 1205, y: 1290 };
 const AGIZ = { x: 1024, y: 992, g: 168 };
 /** Zıplama miktarları eski çizimin ölçeğinde yazıldı; yeni çizim daha büyük */
 const OLCEK = 1.35;
+/** üzgün kafanın (m-ifade-kafa) boyundan ölçeği: yana sarkık kulaklarla normal kafayla aynı iri görünsün */
+const UZGUN_KAFA_OLCEK = 0.92;
 
 /**
  * İfade ekleri ayrı pakette (gömülü WebP, ağır): yalnız gerektiğinde bir kez yüklenir. Film açılışta önceden çağırır.
@@ -942,7 +944,10 @@ export class Mino {
     s.setProperty('--govde', govde);
     // kafa fazla yukarı kalkarsa fuların üstünde boynun konturu görünür: yukarı en çok 6 birim
     const kafaYS = Math.max(-6, kafaY);
-    s.setProperty('--kafa', donus(BOYUN, kafaAci, 1, 1, 0, kafaYS));
+    // üzgün kafa (kulaklar yana sarkık) aynı ölçüde çizildi ama yana açılan kulaklar onu bedene göre iri gösteriyor:
+    // boyundan biraz küçülür (kafa ile birlikte değiştiği için geçiş görünmez)
+    const kafaO = this.ifadeAd === 'uzgun' ? UZGUN_KAFA_OLCEK : 1;
+    s.setProperty('--kafa', donus(BOYUN, kafaAci, kafaO, kafaO, 0, kafaYS));
     // burnu tutan kollar (gövdeye bağlı) omuzdan kafayla aynı açıda döner, kafa inip kalkınca uzar / kısalır: patiler burunda kalır
     if (bp && bi === 'burun-tut') {
       const boy = 1 - kafaYS / KOL_BOY; // kafa inerse (kafaY > 0) burun omza yaklaşır
