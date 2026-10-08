@@ -21,6 +21,20 @@
     radial-gradient(90% 40% at 20% 30%, rgba(255, 255, 255, 0.7), transparent 70%),
     linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
 }
+/* oyun ekranında pazar resmi ayrı katmanda (.pz-zemin): kamera yaklaşınca o da biraz yaklaşır (derinlik) */
+.pz-kok .pz-pazar {
+  isolation: isolate;
+  background: linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
+}
+.pz-kok .pz-zemin {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    var(--resim, none) center 100% / cover no-repeat,
+    radial-gradient(90% 40% at 20% 30%, rgba(255, 255, 255, 0.7), transparent 70%);
+}
 .pz-kok .ust-cubuk {
   z-index: 5;
 }
@@ -256,23 +270,26 @@
   -webkit-user-drag: none;
 }
 .pz-kok .pz-stand-arka { z-index: 1; filter: drop-shadow(0 8px 10px rgba(80, 45, 15, 0.25)); }
-.pz-kok .pz-stand-tente { z-index: 3; clip-path: inset(0 0 63% 0); }
-.pz-kok .pz-stand-tahta { z-index: 3; clip-path: inset(56% 0 0 0); }
+.pz-kok .pz-stand-tente { z-index: 2; clip-path: inset(0 0 63% 0); }
+.pz-kok .pz-stand-tahta { z-index: 4; clip-path: inset(56% 0 0 0); }
 /* görsel yoksa sade yer tutucu: tahta şeridi */
 .pz-kok .pz-stand-yedek.pz-stand-arka { background: linear-gradient(180deg, transparent 56%, var(--pz-tahta) 56% 71%, transparent 71%); }
-/* Mino standın içinde, tahtanın arkasında: fuları tahtanın kenarında, kulak uçları tentenin altında */
+/*
+ * Mino tezgâhın arkasında ayakta: göğsü, kolları ve başı tahtanın üstünde görünür (yalnız başı görünüyordu).
+ * Tentenin önünde durur (kulakları tentenin saçağına biner), tahtanın arkasında (bacakları gizli).
+ */
 .pz-kok .pz-stand .pz-mino {
   position: absolute;
-  z-index: 2;
-  left: 37%;
-  bottom: 28%;
-  width: 32%;
+  z-index: 3;
+  left: 29%;
+  bottom: 21%;
+  width: 42%;
   aspect-ratio: 1360 / 1790;
 }
 /* sepet tahtanın üstünde, sağda */
 .pz-kok .pz-stand .pz-sepet {
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   left: 64%;
   bottom: 33%;
   width: 31%;
@@ -470,6 +487,25 @@
   border-radius: inherit;
   pointer-events: none;
   background: repeating-linear-gradient(180deg, transparent 0 46px, rgba(90, 54, 23, 0.16) 46px 49px);
+}
+/* çizimli ön tezgâh: arka kenardaki yuvarlak tahta ve köşeler esnemez, tahtalar esner */
+.pz-kok .pz-tezgah.pz-gorselli {
+  background: none;
+  border-top: 0;
+  box-shadow: none;
+  border-radius: 0;
+  --tz-ust: clamp(22px, 3.6vh, 40px);
+  padding-top: calc(var(--tz-ust) * 0.85);
+}
+.pz-kok .pz-tezgah-resim {
+  position: absolute;
+  z-index: -1;
+  inset: 0 -14px calc(var(--alt) * -1 - 40px);
+  pointer-events: none;
+  border-style: solid;
+  border-width: var(--tz-ust) calc(var(--tz-ust) * 0.66) 0;
+  border-image: var(--tz) 165 110 0 fill / var(--tz-ust) calc(var(--tz-ust) * 0.66) 0 / 0 stretch;
+  filter: drop-shadow(0 -8px 12px rgba(70, 38, 12, 0.22));
 }
 .pz-kok .pz-tezgah-ust {
   position: relative;

@@ -12,10 +12,6 @@
     /* bandın içindeki ürün / istek ölçüsü: yüksekliğe göre (iki sıra ürün ve sahne alçak ekrana sığsın) */
     --bo: min(var(--bant), 82vh);
     --yan-en: calc(50vw - var(--bant) / 2);
-    /* pazar resmi (kare) ekran boyunda ortada; iki yanda aynalanmış devamı (tenteler dikişte tam tente olur) */
-    background:
-      var(--resim, none) center bottom / auto 100% no-repeat,
-      linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
     isolation: isolate;
     /* yan panellerin kenar boşluğu (çentik güvenli alanı dahil) */
     --kenar: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
@@ -24,26 +20,13 @@
     padding: var(--ust) calc(var(--yan-en) + var(--yan)) var(--alt);
     gap: 0;
   }
-  /* iki yan: pazar resminin aynalanmış kopyası, ortadaki resmin kenarına bitişik (bulanık değil; sahnenin devamı).
-     Yaşayan sahnenin (bulut, flama) ve oyunun arkasında kalır */
-  .pz-kok .pz-pazar::before,
-  .pz-kok .pz-pazar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: -1;
-    width: max(0px, 50% - 50dvh);
-    pointer-events: none;
-    transform: scaleX(-1);
-  }
-  .pz-kok .pz-pazar::before {
-    left: 0;
-    background: var(--resim, none) left bottom / auto 100% no-repeat;
-  }
-  .pz-kok .pz-pazar::after {
-    right: 0;
-    background: var(--resim, none) right bottom / auto 100% no-repeat;
+  /* geniş pazar resmi (iki yanda tezgâhlar, meyve kasaları, ağaçlar; ortası açık gökyüzü): ekranın tamamı */
+  .pz-kok .pz-pazar > .pz-zemin,
+  .pz-kok .pz-acilis,
+  .pz-kok .pz-senlik {
+    background:
+      var(--resim-genis, var(--resim, none)) center 62% / cover no-repeat,
+      linear-gradient(180deg, var(--pz-gok-1) 0%, #e3f4ff 38%, var(--pz-gok-2) 62%, #ffe7bf 100%);
   }
 
   /* üst çubuk iki yana ayrılır: solda geri + balon (altında), sağda ses; ortası boş (bandı örtmez) */
@@ -155,6 +138,15 @@
   .pz-kok .pz-pazar .pz-tezgah {
     padding-top: 8px;
     border-radius: 18px 18px 0 0;
+  }
+  /* çizimli masa ekranın bir ucundan öbürüne uzanır (yanlarda çıplak zemin kalmasın); ürünler ortadaki bantta */
+  .pz-kok .pz-pazar .pz-tezgah.pz-gorselli {
+    --tz-ust: 20px;
+    padding-top: 16px;
+  }
+  .pz-kok .pz-pazar .pz-tezgah-resim {
+    left: calc(-1 * var(--yan-en) - 14px);
+    right: calc(-1 * var(--yan-en) - 14px);
   }
   .pz-kok .pz-pazar .pz-urunler,
   .pz-kok .pz-pazar .pz-urunler[data-adet='6'] {

@@ -18,7 +18,8 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { AZ, Bardak, Blender, YABANMERSINI } from './blender';
 import { canliSahne } from './canli';
-import { gorselStil, odulAni, stand } from './ekranlar';
+import { gorselStil, musteriKutusu, odulAni, onTezgah, oran, oyunKamerasi, stand } from './ekranlar';
+import { Kamera } from './kamera';
 import { flamaYerlestir, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
 import { urunAdi } from './istek';
@@ -85,10 +86,12 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   canli.gun(0);
   const kamera = h('div.pz-kamera', {}, stand([h('div.pz-mino', {}, mino.el)], [blender.el]), musteriKap);
   const sahne = h('div.pz-sahne', {}, canli.ufuk, kamera);
-  const tezgah = h('div.pz-tezgah', {}, h('div.pz-tezgah-ust', {}, karDugme), urunler);
+  const tezgah = onTezgah(h('div.pz-tezgah-ust', {}, karDugme), urunler);
+  const zemin = h('div.pz-zemin', { 'aria-hidden': 'true' });
   const el = h(
     'div.pz-pazar.ms-ekran',
     { style: gorselStil('pazar/arkaplan'), 'data-yas': y },
+    zemin,
     canli.arka,
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Geri', () => app.git('acilis')), h('div.orta', {}, balon), sesDugmesi()),
     yildizlar,
@@ -96,6 +99,11 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     tezgah,
   );
   const flamaKapat = flamaYerlestir(el, kamera);
+  const kam = oyunKamerasi(el, sahne, kamera, tezgah, zemin, canli.arka, canli.ufuk);
+  // istek yakın çekimi sürerken çocuk tezgâha dokunursa kadraj hemen açılır (beklemeden oynar)
+  tezgah.addEventListener('pointerdown', () => aktif && kam.yakin && kam.genis(450));
+  /** blender'ın yakın çekim kutusu (kolu ve bardağıyla) */
+  const blenderKutu = () => kam.kutu(blender.el, { ust: 0.08, alt: 0.04, sol: 0.55, sag: 0.08 });
 
   let ist: MsIstek = msIstekUret(y, 0);
   let kapandi = false;
