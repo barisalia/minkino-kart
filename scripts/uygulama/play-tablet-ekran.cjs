@@ -1,5 +1,5 @@
 // Play tablet ekran görüntüleri (9:16, 1440x2560): iPad mağaza görüntülerinden, üst/alt zemin rengiyle genişletilerek
-const s = require(process.cwd() + '/node_modules/sharp');
+const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const fs = require('fs');
 (async () => {
   for (const dil of ['tr', 'en']) {

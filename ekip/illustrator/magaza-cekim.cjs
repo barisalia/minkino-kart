@@ -1,39 +1,125 @@
 // Mağaza ekran görüntüleri için ham oyun görüntüleri (Playwright, mobil emülasyon): assets/uygulama/ekran-ham/{telefon,tablet}/NN-ad.webp (+ ek/ klasörüne yedek sahneler).
-// Telefon 390x844 @3x (1170x2532), tablet 768x1024 @2.5x (1920x2560). Uygulama derlemesi gerekir (npm run build:app: Minik Sanatçı yok, ana menü kökte); sunucu: npx vite preview --port 4178 (ya da başka statik http).
-// Sıra magaza-ekran.cjs ile aynı: 01 ana menü (Mino ve Kino), 02 Ege (ses), 03 Pazar (say/eşleştir), 04 Salıncak (hikâye), 05 Çizgi film listesi (eğlenceli, eğitici), 06 Pasta Otobüsü (güvenli/reklamsız), 07 Okula Hazırım (rakam çizme; sayılar, harfler).
-// node magaza-cekim.cjs [taban=http://localhost:4178] [NN ...]
+// Telefon 390x844 @3x (1170x2532), tablet 768x1024 @2.5x (1920x2560). Uygulama derlemesi gerekir (npm run build:app: ana menü kökte); sunucu: npx vite preview --port 4178 (ya da başka statik http).
+// Sıra magaza-ekran.cjs ile aynı (başlıklar MAGAZA-METINLERI.md bölüm 6): 01 ana menü (8 kart), 02 Pazar (müşteri meyve ister), 03 Kino Ne Giysin? (dolap + Kino'nun komik tepkisi),
+// 04 Dedektif Mino (pati izi panoda, şüpheli kartları, Kino'nun komik tahmini), 05 Ege (kukla gösterisi sonu: Ege güldü), 06 Çizgi film karesi (Mino'nun Karpuzu), 07 Pasta Otobüsü (sipariş ortası).
+// Kilit yok: tarayıcıda abonelik kilitleri kapalı (src/engine/erisim.ts), test modu (?test=1) ile ebeveyn kapısı/abonelik ekranı açılmaz.
+// node magaza-cekim.cjs [taban=http://localhost:4178] [NN ...] [telefon|tablet]   ·   DENEME=klasör: @1x, o klasöre png (hızlı bakış)
 const fs = require('fs'), path = require('path');
 const { chromium } = require(require.resolve('playwright', { paths: [process.cwd()] }));
 const sharp = require(require.resolve('sharp', { paths: [process.cwd()] }));
-const TABAN = process.argv.slice(2).find((x) => x.startsWith('http')) || 'http://localhost:4178', NN = process.argv.slice(2).filter((x) => /^\d\d$/.test(x));
+const ARG = process.argv.slice(2);
+const TABAN = ARG.find((x) => x.startsWith('http')) || 'http://localhost:4178', NN = ARG.filter((x) => /^\d\d$/.test(x)), TURLER = ARG.filter((x) => ['telefon', 'tablet'].includes(x));
+const DENEME = process.env.DENEME;
 const HAM = 'assets/uygulama/ekran-ham/';
-// 07 Okula Hazırım · Rakamı çiz: 1. tur (Kino'nun ters çizdiği) baştan sona çizilir; 2. turda balonda "Parmağınla üstünden
-// geç!" yazarken rakamın ilk çizgisinin ~%70'i çizilmiş (parmak hâlâ ekranda) kare
-async function rakamCiz(p) {
-  const kagit = p.locator('.ok-kagit');
-  await kagit.waitFor();
-  await p.waitForTimeout(6000);
-  const ciz = async (yollar, oran) => {
-    const b = await p.locator('.ok-cizim-svg').boundingBox();
-    const xy = ([x, y]) => [b.x + x * b.width, b.y + y * b.height];
-    for (const y of yollar) {
-      const n = [];
-      for (let i = 0; i < y.length - 1; i++) for (let t = 0; t < 1; t += 0.1) n.push([y[i][0] + (y[i + 1][0] - y[i][0]) * t, y[i][1] + (y[i + 1][1] - y[i][1]) * t]);
-      n.push(y[y.length - 1]);
-      const son = oran < 1 ? Math.floor(n.length * oran) : n.length - 1;
-      await p.mouse.move(...xy(n[0])); await p.mouse.down();
-      for (let i = 1; i <= son; i++) await p.mouse.move(...xy(n[i]), { steps: 2 });
-      if (oran < 1) return;
-      await p.mouse.up(); await p.waitForTimeout(300);
-    }
-  };
-  const ilk = await kagit.getAttribute('data-rakam');
-  await ciz(JSON.parse(await kagit.getAttribute('data-yol')), 1);
-  await p.waitForFunction((r) => { const k = document.querySelector('.ok-kagit'); return k && k.dataset.rakam !== r; }, ilk, { timeout: 20000 });
-  await p.waitForTimeout(3500);
-  await ciz(JSON.parse(await p.locator('.ok-kagit').getAttribute('data-yol')), 0.72);
+
+const ortasi = async (l) => { const b = await l.boundingBox(); return [b.x + b.width / 2, b.y + b.height / 2, b]; };
+async function surukle(p, a, b, adim = 12) {
+  await p.mouse.move(a[0], a[1]); await p.mouse.down();
+  for (let i = 1; i <= adim; i++) await p.mouse.move(a[0] + ((b[0] - a[0]) * i) / adim, a[1] + ((b[1] - a[1]) * i) / adim);
+  await p.mouse.up();
 }
-// 06 Pasta Otobüsü: sipariş ortası. Parlayan (sıradaki) işe dokunulur; tabakta kremalı kurabiye, süs sırası gelince durulur
+/** Kamera kayarken ölçülen yer eskir: kutu iki ölçümde aynı kalana kadar bekle */
+async function sabit(l) {
+  let o = await l.boundingBox();
+  for (let i = 0; i < 30; i++) { await l.page().waitForTimeout(100); const s = await l.boundingBox(); if (o && s && Math.abs(o.x - s.x) < 1 && Math.abs(o.y - s.y) < 1 && Math.abs(o.width - s.width) < 1) return; o = s; }
+}
+// DENEME + SERI=1: etkileşim sırasında ara kareler (hangi anın en güzel olduğuna bakmak için)
+const ara = async (p, ad) => { if (DENEME && process.env.SERI) { fs.mkdirSync(DENEME, { recursive: true }); await p.screenshot({ path: path.join(DENEME, `ara-${ad}.png`) }); } };
+async function bekleKadar(fn, ms = 30000) { const t = Date.now(); while (Date.now() - t < ms) { if (await fn()) return true; await new Promise((r) => setTimeout(r, 150)); } throw new Error('zaman aşımı'); }
+
+// 03 Kino Ne Giysin? (kış, gerçek hız ?onizleme=1: tepkiler kısalmasın): dolap açık; Kino çorap, bot, atkı, bere giymiş;
+// sonra şort giyer: kışa uymaz, titrer (burnunda buz sarkıtı, mavi yanaklar, takırdayan dişler), o an
+async function giysinTepki(p) {
+  await p.locator('.gy-raf.acik').waitFor({ timeout: 15000 }); await p.waitForTimeout(1200);
+  const giydir = async (id, tx, ty, sonra = 1800) => {
+    const [x0, y0] = await ortasi(p.locator(`.gy-giysi[data-giysi="${id}"]`));
+    const k = await p.locator('.gy-kino').first().boundingBox();
+    await surukle(p, [x0, y0], [k.x + (tx / 2048) * k.width, k.y + (ty / 2048) * k.height + 18], 10);
+    await p.waitForTimeout(sonra);
+  };
+  for (const [id, x, y] of [['corap', 1050, 1810], ['bot', 1050, 1810], ['atki', 1000, 1000], ['bere', 975, 330]]) await giydir(id, x, y);
+  await p.waitForTimeout(1200);
+  await giydir('sort', 1030, 1600, 750);
+}
+// 04 Dedektif Mino · Vaka 1 (gerçek hız ?onizleme=1): büyüteç halıdaki pati izini bulur; iz fotoğrafı panoya asılır, altında üç
+// şüpheli kartı; Mino "Bir iz! Bu iz kimin?", Kino "Zürafa! Kesin zürafa!" (komik tahmin), o an
+async function dedektifBuyutec(p) {
+  await bekleKadar(async () => (await p.locator('.dd-vaka').getAttribute('data-adim')) === 'ara-iz', 45000);
+  await p.waitForTimeout(1500);
+  const [x, y] = await ortasi(p.locator('.dd-sahne [data-ipucu="pati-hali"]'));
+  await p.mouse.click(x + 40, y - 30);
+  for (const t of [300, 600, 900, 1200]) { await p.waitForTimeout(t); await ara(p, 'd1-' + t); }
+  await p.waitForTimeout(Number(process.env.DEDEKTIF_MS || 1100));
+}
+// 05 Sesli Maceralar · Şşş, Ege Uyuyor!: battaniye, mama, sepet; kuklalar Ada'ya ve Can'a; kukla gösterisi (yakın çekim), Ege kahkaha atar
+async function egeKukla(p) {
+  const gorev = async () => (await p.locator('.eg-sahne').getAttribute('data-eg-gorev')) ?? '';
+  const gorevBekle = async (adlar) => { await bekleKadar(async () => adlar.includes(await gorev())); return gorev(); };
+  const e = (ad) => p.locator(`[data-ege="${ad}"]`).first();
+  const sur = async (a, b) => { await sabit(a); if (!Array.isArray(b)) await sabit(b); await surukle(p, await ortasi(a), Array.isArray(b) ? b : await ortasi(b), 14); };
+  const dokun = async (l) => { const [x, y] = await ortasi(l); await p.mouse.click(x, y); };
+  const vp = p.viewportSize();
+  await gorevBekle(['battaniye']); await p.waitForTimeout(300);
+  await sur(e('battaniye'), [vp.width * 0.85, vp.height * 0.35]); await p.waitForTimeout(1000);
+  await sur(e('battaniye'), p.locator('[data-ege="anne"] .eg-anne-gov'));
+  await gorevBekle(['onluk']); await p.waitForTimeout(400);
+  await sur(e('onluk'), e('bebek'));
+  for (let i = 0; i < 40; i++) {
+    const g = await gorevBekle(['daldir', 'ufle', 'ver', 'sil']);
+    if (g === 'sil') break;
+    if (g === 'daldir') { await p.waitForTimeout(150); await sur(e('kasik'), e('kase')); await bekleKadar(async () => (await gorev()) !== 'daldir'); }
+    else if (g === 'ufle') { const [x, y] = await ortasi(e('kasik')); await p.mouse.move(x, y); await p.mouse.down(); await bekleKadar(async () => (await gorev()) !== 'ufle', 10000); await p.mouse.up(); }
+    else { await p.waitForTimeout(200); await sur(e('kasik'), e('agiz')); await bekleKadar(async () => (await gorev()) !== 'ver'); }
+  }
+  await p.waitForTimeout(300);
+  for (let i = 0; i < 16 && (await gorev()) === 'sil'; i++) {
+    const [ax, ay] = await ortasi(e('pecete')), [bx, by] = await ortasi(e('agiz'));
+    await p.mouse.move(ax, ay); await p.mouse.down();
+    for (let j = 0; j <= 34; j++) { const t = Math.min(1, j / 8); await p.mouse.move(ax + (bx - ax) * t + Math.sin(j * 0.9) * 34, ay + (by - ay) * t + Math.cos(j * 1.3) * 26 - 10); }
+    await p.mouse.up(); await p.waitForTimeout(150);
+  }
+  await gorevBekle(['sepet']); await p.waitForTimeout(300);
+  for (let i = 0; i < 12 && (await gorev()) === 'sepet'; i++) {
+    await p.waitForTimeout(300);
+    const kalan = p.locator('.eg-oyuncak:not([data-cikti])').first();
+    if (!(await kalan.count())) break;
+    await dokun(kalan);
+  }
+  await gorevBekle(['kukla-tak']); await p.waitForTimeout(500);
+  await sur(e('kukla-ayi'), p.locator('.mc-oyuncu[data-ad="ada"]')); await p.waitForTimeout(300);
+  await sur(e('kukla-civciv'), p.locator('.mc-oyuncu[data-ad="can"]'));
+  await gorevBekle(['civciv']); await ara(p, 'k1'); await dokun(e('kukla-civciv'));
+  await gorevBekle(['ayi']); await dokun(e('kukla-ayi'));
+  for (let i = 0; i < 4; i++) { await gorevBekle(['serbest']); await dokun(e(i % 2 ? 'kukla-ayi' : 'kukla-civciv')); if (i < 3) await ara(p, 'k4-' + i); }
+  // gösteri biter: "Güldü! Ege güldü!" (ışık açılır, herkes kadrajda, kuklalar Ada'nın ve Can'ın elinde)
+  await p.waitForTimeout(Number(process.env.KUKLA_MS || 500));
+}
+// 06 Çizgi film: Mino'nun Karpuzu kayıt görünümünde (düğmesiz, ekranı dolduran kadraj; test modu YOK), Oynat'tan FILM_SN saniye sonraki kare
+// Kare kesin: scripts/film/mp4.mjs gibi sahte saat (sayfa açılmadan kurulur, aşağıda saatKur) 30 fps adımla ilerler, CSS/WAAPI animasyonları ona sarılır
+async function filmKare(p) {
+  await p.locator('.fl-oynat').waitFor();
+  await p.evaluate(() => document.fonts.ready);
+  await p.waitForFunction(() => window.__filmKayit);
+  await p.clock.pauseAt((await p.evaluate(() => Date.now())) + 100);
+  await p.evaluate(() => {
+    const m = new WeakMap();
+    window.__animSenk = (now) => {
+      for (const a of document.getAnimations()) {
+        let b = m.get(a);
+        if (b === undefined) { b = now - (a.currentTime ?? 0); m.set(a, b); a.pause(); }
+        a.currentTime = Math.max(0, (now - b) * (a.playbackRate || 1));
+      }
+    };
+  });
+  await p.evaluate(() => document.querySelector('.fl-oynat').click());
+  // telefon 26 sn: Mino kocaman karpuzun üstünde (altyazısız); tablette o çekim kulakları keser, 50 sn: karpuz ikiye bölünmüş, paylaşma sahnesi
+  const sn = Number(process.env.FILM_SN || (p.viewportSize().width > 500 ? 50 : 26)), dt = 1000 / 30;
+  for (let g = 0; g < sn - 1e-6; g += dt / 1000) await p.clock.runFor(dt);
+  await p.evaluate(() => window.__animSenk(performance.now()));
+  await p.evaluate(() => Promise.all([...document.images].filter((i) => !i.complete).map((i) => new Promise((r) => (i.onload = i.onerror = r)))));
+}
+filmKare.saatKur = true;
+// 07 Pasta Otobüsü: sipariş ortası. Parlayan (sıradaki) işe dokunulur; tabakta kremalı kurabiye, süs sırası gelince durulur
 async function pastaSiparis(p) {
   for (let i = 0; i < 40; i++) {
     if ((await p.locator('.ps-gun').getAttribute('data-adim')) === 'sus') break;
@@ -46,33 +132,44 @@ async function pastaSiparis(p) {
 // [klasör, ad, adres, bekleme ms, (isteğe bağlı) etkileşim]. Uygulama derlemesi (npm run build:app): ana menü sitenin kökünde
 const LISTE = [
   ['', '01-ana-menu', '/', 5000],
-  ['', '02-ege', '/macera/?test=1&ekran=bolum&yas=5&bolum=ege', 4500],
-  ['', '03-pazar', '/pazar/?test=1&yas=5&ekran=pazar', 4500],
-  ['', '04-salincak', '/macera/?test=1&ekran=bolum&yas=5&bolum=salincak', 4500],
-  ['', '05-film', '/film/?test=1', 4000],
-  ['', '06-pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000, pastaSiparis], // sipariş ortası (parlayan işe dokunarak)
-  ['', '07-okul', '/okul/?test=1&yas=5&sifirla=1&tohum=7&etkinlik=rakam-ciz', 500, rakamCiz],
+  ['', '02-pazar', '/pazar/?test=1&yas=5&ekran=pazar', 4500],
+  ['', '03-giysin', '/giysin/?onizleme=1&sifirla=1&mevsim=kis&adim=giyin', 1500, giysinTepki],
+  ['', '04-dedektif', '/dedektif/?onizleme=1&sifirla=1&adim=iz', 500, dedektifBuyutec],
+  ['', '05-ege', '/macera/?test=1&ekran=bolum&yas=5&bolum=ege', 500, egeKukla],
+  ['', '06-film', '/film/?film=mino-karpuz&kayit=1&kadraj=dolu&sessiz=1', 2500, filmKare],
+  ['', '07-pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000, pastaSiparis], // sipariş ortası (parlayan işe dokunarak)
   ['ek/', 'meyve-suyu', '/pazar/?test=1&yas=4&ekran=meyvesuyu', 4500],
   ['ek/', 'banyo', '/macera/?test=1&ekran=bolum&yas=5&bolum=banyo', 4500],
+  ['ek/', 'salincak', '/macera/?test=1&ekran=bolum&yas=5&bolum=salincak', 4500],
+  ['ek/', 'film-liste', '/film/?test=1', 4000],
   ['ek/', 'kartlar-bul', '/kartlar/?test=1&yas=5&tema=hayvanlar&tip=BUL', 3500],
   ['ek/', 'pasta-acilis', '/pasta/?test=1', 4500],
   ['ek/', 'canlan-ciz', '/canlan/?test=1&yas=5&ekran=ciz&resim=araba&mod=kopya', 4500],
+  ['ek/', 'dedektif-vakalar', '/dedektif/?test=1&sifirla=1&cozuldu=1', 4000],
 ];
 const CIHAZ = { telefon: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3 }, tablet: { viewport: { width: 768, height: 1024 }, deviceScaleFactor: 2.5 } };
 (async () => {
   const br = await chromium.launch();
   for (const [tur, c] of Object.entries(CIHAZ)) {
-    const ctx = await br.newContext({ ...c, isMobile: true, hasTouch: true, locale: 'tr-TR' });
+    if (TURLER.length && !TURLER.includes(tur)) continue;
+    const ctx = await br.newContext({ ...c, ...(DENEME ? { deviceScaleFactor: 1 } : {}), isMobile: true, hasTouch: true, locale: 'tr-TR' });
     for (const [alt, ad, adres, bekle, etkilesim] of LISTE) {
-      if (NN.length && !(alt === '' && NN.includes(ad.slice(0, 2)))) continue;
+      if (NN.length ? !(alt === '' && NN.includes(ad.slice(0, 2))) : DENEME && alt) continue;
       const p = await ctx.newPage();
       try {
+        if (etkilesim && etkilesim.saatKur) await p.clock.install({ time: 1_000_000 });
         await p.goto(TABAN + adres, { waitUntil: 'load', timeout: 30000 }); await p.waitForTimeout(bekle);
         if (etkilesim) await etkilesim(p);
+        // fare imleci / odak halkası görünmesin
+        await p.mouse.move(-10, -10).catch(() => {});
+        await p.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
         const buf = await p.screenshot({ type: 'png' });
-        const yol = path.join(HAM, tur, alt ? 'ek' : '', (alt ? ad : ad) + '.webp'); fs.mkdirSync(path.dirname(yol), { recursive: true });
-        await sharp(buf).removeAlpha().webp({ quality: 95, effort: 5 }).toFile(yol); console.log(yol);
-      } catch (e) { console.log(tur, ad, 'HATA', String(e).slice(0, 100)); }
+        if (DENEME) { fs.mkdirSync(DENEME, { recursive: true }); const y = path.join(DENEME, `${tur}-${ad}.png`); fs.writeFileSync(y, buf); console.log(y); }
+        else {
+          const yol = path.join(HAM, tur, alt ? 'ek' : '', ad + '.webp'); fs.mkdirSync(path.dirname(yol), { recursive: true });
+          await sharp(buf).removeAlpha().webp({ quality: 95, effort: 5 }).toFile(yol); console.log(yol);
+        }
+      } catch (e) { console.log(tur, ad, 'HATA', String(e).slice(0, 160)); }
       await p.close();
     }
     await ctx.close();

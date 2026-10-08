@@ -1,5 +1,5 @@
 // Mağaza ekran görüntüleri: ham oyun görüntüsünü çerçeveli telefon/tablet içine koyar, üste başlık yazar, ekran-cerceve.png zemininde.
-// Girdi:  assets/uygulama/ekran-ham/telefon/NN-*.webp|png (dikey, ≈390x844 oranı) ve assets/uygulama/ekran-ham/tablet/NN-*.webp|png (≈3:4). NN = 01..06, ekip/uygulama/MAGAZA-METINLERI.md bölüm 6 sırası.
+// Girdi:  assets/uygulama/ekran-ham/telefon/NN-*.webp|png (dikey, ≈390x844 oranı) ve assets/uygulama/ekran-ham/tablet/NN-*.webp|png (≈3:4). NN = 01..07, ekip/uygulama/MAGAZA-METINLERI.md bölüm 6 sırası.
 // Başlıklar: MAGAZA-METINLERI.md bölüm 6 tablosundan okunur (Türkçe ve English). Çıktı: assets/uygulama/magaza-ekranlari/{tr,en}/{iphone-1290x2796,ipad-2048x2732,android-1080x1920}/NN.jpg
 // node magaza-ekran.cjs [tr|en] [iphone|ipad|android] [NN ...]   (verilmezse hepsi)
 const fs = require('fs'), path = require('path');
