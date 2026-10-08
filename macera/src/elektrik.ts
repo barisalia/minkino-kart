@@ -18,7 +18,7 @@ import '../../src/karakter/karakter.css';
 import './elektrik.css';
 import EL from '../../content/macera-elektrik.json';
 import { KINO_SESI, konus } from '../../src/audio/ses';
-import { muzikDurdur } from '../../src/audio/muzik';
+import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { durum } from '../../src/engine/ilerleme';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { konfetiPatlat } from '../../src/ui/konfeti';
@@ -612,6 +612,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     acik.forEach((o) => o.kapat());
     MN.kapat();
     KN.kapat();
+    // menünün genel müziği geri gelsin (banyo / ege gibi)
+    muzikBaslat();
   }
 
   // ================================================================ 1: Pıt!

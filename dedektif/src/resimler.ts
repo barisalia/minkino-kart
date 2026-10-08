@@ -52,6 +52,8 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   // sahneler
   koridor: { adaylar: ['koridor'], zorunlu: true },
   'yatak-odasi': { adaylar: ['yatak-odasi'], zorunlu: true },
+  // yatağın önü (Pamuk arkasında saklanır): yatak-odasi resminden yatağın kendi çizgisiyle kesilmiş saydam katman
+  'yatak-on': { adaylar: ['yatak-on'], zorunlu: false },
   // eşyalar
   masa: { adaylar: ['masa', 'calisma-masasi'], zorunlu: true },
   kalemlik: { adaylar: ['kalemlik-devrik', 'kalemlik'], zorunlu: false },
@@ -75,6 +77,11 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   'kart-sut-kasesi': { adaylar: ['kart-sut-kasesi'], zorunlu: true },
   'kart-yastik': { adaylar: ['kart-yastik'], zorunlu: true },
   'kart-sari-kelebek': { adaylar: ['kart-sari-kelebek'], zorunlu: true },
+  // cevap kartları (Recraft, Minkino stili): gri kedi (Halka 1), beyaz kedinin üç sahnesi (Halka 3)
+  'kart-kedi-gri': { adaylar: ['kart-kedi-gri'], yedek: 'hayvanlar/kedi', zorunlu: true },
+  'kart-kedi-kelebek': { adaylar: ['kart-kedi-kelebek'], zorunlu: true },
+  'kart-kedi-sut': { adaylar: ['kart-kedi-sut'], zorunlu: true },
+  'kart-kedi-uyku': { adaylar: ['kart-kedi-uyku'], zorunlu: true },
   // kartın içinden çıkan hayvanlar (yanlış kart kendini anlatır)
   zurafa: { adaylar: ['zurafa'], yedek: 'hayvanlar/zurafa', zorunlu: false },
   ordek: { adaylar: ['ordek'], yedek: 'hayvanlar/ordek', zorunlu: false },

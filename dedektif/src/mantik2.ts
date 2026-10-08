@@ -27,6 +27,8 @@ export const adim2mi = (a: string | null): a is Adim2 => !!a && (ADIMLAR2 as rea
 // ---------------------------------------------------------------- kartlar
 export interface Kart2 {
   resim: string;
+  /** izin üstünde ölçülürken görünen ayak izi (kartta hayvanın kendisi) */
+  olcu?: string;
   renk: string;
   tepki?: string;
 }
@@ -34,9 +36,10 @@ export const KARTLAR2: Record<string, Kart2> = {
   makas: { resim: 'v2/kart-makas', renk: '#ff7b7b', tepki: 'makas' },
   ruzgar: { resim: 'v2/kart-ruzgar', renk: '#8fd3ff' },
   yagmur: { resim: 'v2/kart-yagmur', renk: '#6fa8ea', tepki: 'yagmur' },
-  'kopek-izi': { resim: 'v2/kart-kopek-izi', renk: '#c98a5a', tepki: 'kopek' },
-  'tavsan-izi': { resim: 'v2/kart-tavsan-izi', renk: '#f2a7bd', tepki: 'tavsan' },
-  'ordek-izi': { resim: 'v2/kart-ordek-izi', renk: '#ff9f43' },
+  // ayak boyu sorusu: kartta hayvanın kendisi, izin üstüne inince kendi ayak izine dönüşür (ipucunun kopyası değil)
+  'kopek-izi': { resim: 'v2/kart-kopek', olcu: 'v2/kart-kopek-izi', renk: '#c98a5a', tepki: 'kopek' },
+  'tavsan-izi': { resim: 'v2/kart-tavsan', olcu: 'v2/kart-tavsan-izi', renk: '#f2a7bd', tepki: 'tavsan' },
+  'ordek-izi': { resim: 'v2/kart-ordek', olcu: 'v2/kart-ordek-izi', renk: '#ff9f43' },
   kurbaga: { resim: 'v2/kart-kurbaga', renk: '#6cc070' },
   ari: { resim: 'v2/kart-ari', renk: '#ffd23f' },
   ordek: { resim: 'v2/kart-ordek', renk: '#ffb347' },

@@ -22,7 +22,7 @@ import '../../src/karakter/karakter.css';
 import './salincak.css';
 import SL from '../../content/macera-salincak.json';
 import { KINO_SESI, konus } from '../../src/audio/ses';
-import { muzikDurdur } from '../../src/audio/muzik';
+import { muzikBaslat, muzikDurdur } from '../../src/audio/muzik';
 import { DosyaMuzik } from '../../src/audio/dosya-muzik';
 import { KayitCalar, sarkiTablosu } from '../../src/audio/sarki-kayit';
 import { durum } from '../../src/engine/ilerleme';
@@ -821,6 +821,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     EGE.kapat();
     kinoYan.kapat();
     (canYakin as Cocuk | null)?.kapat();
+    // menünün genel müziği geri gelsin (banyo / ege gibi)
+    muzikBaslat();
   }
 
   // ================================================================ çekimler (her ekran için)

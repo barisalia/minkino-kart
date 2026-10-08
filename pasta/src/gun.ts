@@ -14,6 +14,7 @@
 import P from '../../content/pasta.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
+import { arkaPlanDinle } from '../../src/kabuk/yon';
 import { Karakter } from '../../src/karakter/karakter';
 import { Mino } from '../../src/mino/mino';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
@@ -596,19 +597,29 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 
   // ---------------------------------------------------------------- yakın plan paneli açıkken gün durur
   let panelAcik = false;
+  // fırın ve sabır saatleri durur (panel açık ya da sayfa gizli); ikisi üst üste binerse süre bir kez kaydırılır
+  let durmaSayisi = 0;
+  let durBas = 0;
+  function saatDur() {
+    if (durmaSayisi++ === 0) durBas = performance.now();
+  }
+  function saatDevam() {
+    if (--durmaSayisi > 0) return;
+    // fırın ve sabır kaldığı yerden
+    const fark = performance.now() - durBas;
+    gozler.forEach((g) => g && (g.bas += fark));
+    sonGelis += fark;
+    son = performance.now();
+  }
   async function panelle<T>(f: () => Promise<T>): Promise<T> {
     panelAcik = true;
-    const dur = performance.now();
+    saatDur();
     el.classList.add('ps-panel-acik');
     adimGuncelle();
     try {
       return await f();
     } finally {
-      // fırın ve sabır kaldığı yerden
-      const fark = performance.now() - dur;
-      gozler.forEach((g) => g && (g.bas += fark));
-      sonGelis += fark;
-      son = performance.now();
+      saatDevam();
       panelAcik = false;
       el.classList.remove('ps-panel-acik');
       adimGuncelle();
@@ -1077,8 +1088,23 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 
   // ---------------------------------------------------------------- zaman
   let son = performance.now();
+  // telefon kilitlenince / uygulama arkaya geçince fırın ve sabır durur, dönünce kaldığı yerden sürer
+  let gizli = false;
+  const gizlilik = (arkada: boolean) => {
+    if (kapandi || arkada === gizli) return;
+    gizli = arkada;
+    if (arkada) saatDur();
+    else {
+      saatDevam();
+      sonDokunus = performance.now();
+    }
+  };
+  const gorunurluk = () => gizlilik(document.hidden);
+  document.addEventListener('visibilitychange', gorunurluk);
+  const arkaBirak = arkaPlanDinle((arkada) => gizlilik(arkada || document.hidden));
+  if (document.hidden) gizlilik(true);
   const tikZaman = window.setInterval(() => {
-    if (kapandi || !calisiyor || panelAcik) return;
+    if (kapandi || !calisiyor || panelAcik || gizli) return;
     const simdi = performance.now();
     const dt = simdi - son;
     son = simdi;
@@ -1130,6 +1156,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       kapandi = true;
       calisiyor = false;
       clearInterval(tikZaman);
+      document.removeEventListener('visibilitychange', gorunurluk);
+      arkaBirak();
       zamanlar.forEach(clearTimeout);
       giris.kapat();
       surukleBitir();
