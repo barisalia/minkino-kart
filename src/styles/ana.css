@@ -1005,6 +1005,8 @@
     width: min(100%, calc((100dvh - var(--dokunma) - var(--ust) - var(--alt) - 40px) / 1.1 * 4 + 72px));
     padding: 10px 4px 12px;
   }
+  /* küçük yatay telefonda (667×375) da paketler üçlü: ikili sırada tek paket ekrandan büyük, adı görünmüyordu */
+  .mk-kok .tema-izgara { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mk-kok .yas-kart b {
     font-size: clamp(3.4rem, 17dvh, 6rem);
   }
@@ -1095,45 +1097,53 @@
   color: var(--sari);
 }
 .mk-kok .paket-yildiz .bos { color: rgba(255, 255, 255, 0.5); }
-.mk-kok .paket.kilitli .paket-kapak {
-  filter: grayscale(0.85) brightness(0.9);
-  opacity: 0.75;
-}
+/* Kilitli paket: kendi renkli kapağı ve rengi kalır (biraz yumuşatılmış), köşede küçük sarı kilit rozeti
+   (albümdeki kilitli sekmeyle aynı dil; gri kutu + koca kilit ucuz duruyordu) */
 .mk-kok .paket.kilitli {
   background:
-    repeating-linear-gradient(-35deg, rgba(255, 255, 255, 0.1) 0 14px, transparent 14px 28px),
-    linear-gradient(180deg, #d9cbb8, #bca991);
+    repeating-linear-gradient(-35deg, rgba(255, 255, 255, 0.16) 0 14px, transparent 14px 28px),
+    linear-gradient(180deg, color-mix(in srgb, var(--r) 42%, #fff6e8), color-mix(in srgb, var(--r) 60%, #f3e3cc) 75%);
 }
+.mk-kok .paket.kilitli .paket-kapak {
+  filter: saturate(0.72) brightness(1.03);
+}
+.mk-kok .paket.kilitli .paket-yildiz { display: none; }
 .mk-kok .kilit-rozet {
+  --kr: clamp(34px, 8.4vw, 50px);
   position: absolute;
-  left: 50%;
-  top: 34%;
-  transform: translate(-50%, -50%);
-  width: 38%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #fff;
-  border: var(--cizgi) solid var(--kontur);
-  display: grid;
-  place-items: center;
-  font-size: clamp(28px, 9vw, 48px);
-  color: var(--kontur);
-  box-shadow: 0 5px 0 var(--kontur-yumusak);
+  top: 5%;
+  right: 5%;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
 }
-.mk-kok .kilit-rozet small {
-  position: absolute;
-  bottom: -14px;
-  padding: 1px 8px;
-  border-radius: 10px;
+.mk-kok .kilit-rozet > .ikon {
+  box-sizing: border-box;
+  width: var(--kr);
+  height: var(--kr);
+  padding: calc(var(--kr) * 0.2);
+  border-radius: 50%;
   background: var(--sari);
   border: 3px solid var(--kontur);
-  font-size: 15px;
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  color: var(--kontur);
+}
+.mk-kok .kilit-rozet small {
+  margin-top: -6px;
+  padding: 1px 7px 1px 5px;
+  border-radius: 10px;
+  background: #fff;
+  border: 3px solid var(--kontur);
+  font-size: clamp(13px, 3.4vw, 16px);
+  line-height: 1.15;
   display: flex;
   align-items: center;
   gap: 3px;
+  color: var(--kontur);
 }
-.mk-kok .kilit-rozet.tac { color: var(--turuncu); }
+.mk-kok .kilit-rozet small svg { color: var(--turuncu); }
 .mk-kok .paket.titre {
   animation: mk-sallan 0.5s;
 }
