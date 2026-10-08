@@ -950,3 +950,28 @@
     height: clamp(26px, 7.4vh, 36px);
   }
 }
+
+/* ---------------------------------------------------------------- akşam: jeton yığını tezgâhta, rozet sayımla çıkar */
+/* yığın otobüsün açık kapağının tahta rafında (kapak alt kenarı: tuvalin %59.5'i), Kino'nun sağında durur. Jetonlar
+   kutunun enine göre: sıra başına 5 jeton, her sıra yarım jeton kayık ve bir öncekinin üstüne biner. */
+.ps-kok .ps-aksam-sahne > .ps-aksam-jetonlar,
+.ps-kok .ps-aksam .ps-aksam-sahne > .ps-aksam-jetonlar {
+  position: absolute;
+  left: 57%;
+  width: 20%;
+  bottom: 40.5%;
+  height: 0;
+  z-index: 2;
+}
+.ps-kok .ps-aksam-sahne > .ps-aksam-jetonlar .ps-aksam-jeton {
+  left: calc(50% + (var(--n) * 0.62 - 0.5) * 30%);
+  bottom: 0;
+  width: 30%;
+  height: auto;
+  aspect-ratio: 1;
+  translate: 0 calc(var(--r) * -30%);
+  filter: drop-shadow(0 1px 0 rgba(58, 18, 16, 0.25));
+}
+.ps-kok .ps-kumbara-sayi.ps-sayi-gizli {
+  visibility: hidden;
+}

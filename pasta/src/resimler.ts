@@ -162,6 +162,46 @@ export function oranYaz(url: string, el: HTMLElement, degisken: string) {
   i.src = url;
 }
 
+/**
+ * Elemanların (ve içlerinin) kullandığı bütün görsel adresleri: <img src>, SVG <image href>, stil içindeki url("…")
+ * (arka plan, CSS değişkeni). data: adresleri ve #id göndermeleri atlanır.
+ */
+export function resimleriTopla(...kokler: (Element | null | undefined)[]): string[] {
+  const s = new Set<string>();
+  const ekle = (u: string | null | undefined) => {
+    if (u && !u.startsWith('data:') && !u.startsWith('#')) s.add(u);
+  };
+  const stilden = (st: string | null) => {
+    if (!st) return;
+    for (const m of st.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g)) ekle(m[2]);
+  };
+  for (const k of kokler) {
+    if (!k) continue;
+    for (const e of [k, ...k.querySelectorAll('*')]) {
+      if (e instanceof HTMLImageElement) ekle(e.getAttribute('src'));
+      else if (e.localName === 'image') ekle(e.getAttribute('href') ?? e.getAttribute('xlink:href'));
+      stilden(e.getAttribute('style'));
+    }
+  }
+  return [...s];
+}
+
+/**
+ * Görselleri indirip çözer (img.decode): hepsi hazır olunca (ya da en çok `enCok` ms sonra) biter. Dönen dizideki Image
+ * nesneleri tutuldukça çözülmüş hâl bellekte kalır (ekran açıkken ilk boyamada boş kutu görünmez).
+ */
+export function onYukle(urls: readonly string[], enCok = 6000): { hazir: Promise<void>; resimler: HTMLImageElement[] } {
+  const resimler = urls.map((u) => {
+    const i = new Image();
+    i.decoding = 'async';
+    i.src = u;
+    return i;
+  });
+  const hepsi = Promise.all(resimler.map((i) => i.decode().catch(() => undefined))).then(() => undefined);
+  const hazir = Promise.race([hepsi, new Promise<void>((r) => setTimeout(r, enCok))]);
+  return { hazir, resimler };
+}
+
 /** Kısayollar */
 export const yuva = (ad: keyof typeof YUVA) => resim(YUVA[ad]);
 

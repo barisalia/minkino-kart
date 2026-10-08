@@ -14,6 +14,7 @@ import { SEVIYE_TANE } from './desen';
 import { bardakSvg, urunSvg } from './cizim';
 import { AZ_HAREKET } from './gorsel';
 import { ses } from './sesler';
+import { onYukle, resimleriTopla } from './resimler';
 import { type Kalem, type Parti, type Siparis } from './model';
 
 /** test modunda yandan yürüyüş kapalı (hızlı testler); &yandan=1 açar */
@@ -141,6 +142,15 @@ export class PastaMusteri {
     );
     this.karakter.ekHareket = (p, t) => this.poz(p, t);
     void this.karakter.hazir.then(() => this.yanakTak());
+    // balon, içindeki resimler çözülmeden açılmaz (boş beyaz kutu görünmez)
+    this.balonResimHazir();
+  }
+
+  private balonResimHazir() {
+    const urls = resimleriTopla(this.balonIc);
+    if (!urls.length) return;
+    this.el.classList.add('ps-balon-bekle');
+    void onYukle(urls, 5000).hazir.then(() => this.el.classList.remove('ps-balon-bekle'));
   }
 
   /** Sabırsızlanınca kızaran yanaklar: kafa katmanına (kafa dönünce yanak da döner), ağzın iki yanına */

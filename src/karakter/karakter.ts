@@ -794,11 +794,19 @@ function dans(d: Kisilik['dans'], gecen: number, u: number, p: Poz) {
       p.kolSol += 40 * Math.abs(S(u * PI * 3)) * z;
       p.kolSag += 40 * Math.abs(S(u * PI * 3)) * z;
       break;
-    case 'don':
-      p.sx *= Math.cos(u * PI * 2);
-      p.don += 4 * S(u * PI * 4);
-      p.y -= 5 * Math.abs(S(u * PI * 2));
+    case 'don': {
+      // yerinde sevinçle sallanır, ortada çabuk bir tur döner (~0.4 sn); dönerken en ince hâli bile %70 eninde
+      // (kâğıt gibi incelmez), yan dönüş anı tek karede geçer, tur boyunca hafifçe havalanır
+      const t = Math.max(0, Math.min(1, (u - 0.32) / 0.3));
+      const c = Math.cos(t * PI * 2);
+      p.sx *= (c < 0 ? -1 : 1) * (0.7 + 0.3 * Math.abs(c));
+      p.don += 4 * S(u * PI * 4) * z;
+      p.y -= (4 * Math.abs(S(u * PI * 4)) + 12 * S(t * PI)) * z;
+      p.kolSol += 30 * z;
+      p.kolSag += 30 * z;
+      p.agizAcik = z > 0.3 ? 1 : 0;
       break;
+    }
     case 'kovala': {
       // köpek: kuyruk pervane gibi döner (3 tur), iki kez hoplar, patiler havada
       p.kuyruk += 1080 * u;

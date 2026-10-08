@@ -325,7 +325,9 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       // Mino blender'a bakar; kamera blender'a yaklaşır: döner, renk oluşur, bardağa dökülür (yakın çekim)
       minoCanli.bakin(1, 2800);
       dugmeGuncelle();
-      kam.odakla(blenderKutu, { doluluk: 0.82, enCok: 2.8, sure: 750, dikey: 0.5, tamEkran: true });
+      // kadraj blender ile müşteriyi birlikte alır: yalnız blender'a yaklaşınca müşteri ekranın kenarında yarım
+      // kalıyor, başı yan sütundaki konuşma balonunun altına giriyordu
+      kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, false), blenderKutu()), { doluluk: 0.94, enCok: 2.2, sure: 750, dikey: 0.5, tamEkran: true });
       await blender.karistir(
         icerik.map((x) => SU_KODU[MEYVE_RENGI[x]]),
         SU_KODU[sonuc],

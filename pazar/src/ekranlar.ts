@@ -53,7 +53,11 @@ export function oyunKamerasi(el: HTMLElement, sahne: HTMLElement, kamera: HTMLEl
       // yıldız rafı üstte ortada: odak onun altından başlar
       const pay = Math.max(0, s.left - e.left) * 0.4;
       const ust = (yildizlar?.getBoundingClientRect().bottom ?? e.top) + 4;
-      return new DOMRect(s.left - pay, ust, s.width + 2 * pay, Math.max(40, altY - ust));
+      // yan sütundaki konuşma balonu (sol üst) kadrajın içine girmez: yakın çekimde müşterinin yüzü balonun altında
+      // kalmasın diye odak alanı solda balonun sağından başlar (sağ yanda yalnız ses düğmesi var, pay orada kalır)
+      const balon = el.querySelector('.ust-cubuk .baslik-balon')?.getBoundingClientRect();
+      const sol = Math.max(s.left - pay, balon && balon.width ? balon.right + 8 : -Infinity);
+      return new DOMRect(sol, ust, s.right + pay - sol, Math.max(40, altY - ust));
     }
     const ust = Math.max(ustCubuk?.getBoundingClientRect().bottom ?? e.top, yildizlar?.getBoundingClientRect().bottom ?? e.top) + 6;
     return new DOMRect(e.left + 6, ust, e.width - 12, Math.max(40, altY - ust));
