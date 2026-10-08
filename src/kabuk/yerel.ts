@@ -20,7 +20,7 @@ if (Capacitor.isNativePlatform()) kabuguKur();
 
 function kabuguKur() {
   // ---------------------------------------------------------------- ekran yönü (önce: sayfa ilk çizilmeden)
-  // Telefonda geniş sahneli oyunlar (src/kabuk/yon.ts → YATAY_SAYFALAR) yatay kilitli, menü / Kartlar / Okul / Canlan
+  // Telefonda geniş sahneli oyunlar (src/kabuk/yon.ts → YATAY_SAYFALAR) yatay kilitli, menü / Kartlar / Canlan
   // cihazı izler; tablet her yerde serbest, film oynarken yatay. Sayfalar arası geçişte gidilecek sayfanın yönü krem
   // perde inerken ayarlanır (src/ui/gecis.ts → sayfadanCik): yatay oyun dikey açılıp sonra dönmez; menüye dönünce kilit
   // kalkar. Katlanan telefon açılınca tablet sayılır (her seferinde ekrana yeniden bakılır).

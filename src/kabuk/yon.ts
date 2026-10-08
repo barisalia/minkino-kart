@@ -78,7 +78,7 @@ export function telefonMu(en: number, boy: number): boolean {
 
 /**
  * Telefonda yatay kilitli sayfalar: geniş, sahneli oyunlar (Pasta Otobüsü, Mino'nun Pazarı, Sesli Maceralar,
- * Dedektif Mino, Çizgi Filmler, Kino Ne Giysin?). Öbürleri (menü, Kartlar, Okula Hazırım, Çiz Canlansın) iki yönde de
+ * Dedektif Mino, Çizgi Filmler, Kino Ne Giysin?). Öbürleri (menü, Kartlar, Çiz Canlansın) iki yönde de
  * güzel durur: cihazı izler.
  */
 export const YATAY_SAYFALAR: readonly string[] = ['pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin'];

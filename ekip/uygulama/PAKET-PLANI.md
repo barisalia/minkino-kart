@@ -4,7 +4,7 @@ Hazırlayan: kodcu, 2026-09-27. Durum: **Aşama 1 uygulandı (2026-10-02)**: Cap
 
 ## 1. Bugünkü durum (depodan ölçüldü)
 
-- **Derleme:** Vite, çok sayfalı (`vite.config.ts` → çok giriş: menü `/`, kartlar, pazar, canlan, macera, film, okul, pasta, orman, ses-testi).
+- **Derleme:** Vite, çok sayfalı (`vite.config.ts` → çok giriş: menü `/`, kartlar, pazar, canlan, macera, film, pasta, dedektif, giysin, orman, ses-testi).
   - `base: './'`; çıktı `dist/`.
   - Sayfalar arası gezinme göreli bağlantıyla (`../pazar/` gibi); ana menü `uygulama/` kartları `location.assign` ile oyuna gider.
 - **Boyut:**

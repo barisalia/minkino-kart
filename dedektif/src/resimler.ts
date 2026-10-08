@@ -3,8 +3,8 @@
  * <ad>-<n>.webp dosyasından gelir (Gemini çizer, Adobe temizler; -1, -2 … sürüm eki: en büyük sürüm kullanılır).
  * Yeni görsel gelince yalnız dosyayı klasöre koymak yeter: Vite derlemede klasörü tarar (pasta/src/resimler.ts kalıbı).
  *
- * Bir yuvanın yedekleri olabilir: önce assets/dedektif adayları, sonra depodaki başka bir çizim (ör. masa yerine
- * Okul'un küçük masası). Hiçbiri yoksa: süs eşyası hiç konmaz; zorunlu eşya yerine yumuşak bir yer tutucu.
+ * Bir yuvanın yedekleri olabilir: önce assets/dedektif adayları, sonra depodaki başka bir çizim (ör. zürafa
+ * yerine assets/hayvanlar/zurafa). Hiçbiri yoksa: süs eşyası hiç konmaz; zorunlu eşya yerine yumuşak bir yer tutucu.
  * Gemini'ye verilecek liste: EKSIK_LISTESI (ORTAK_NOTLAR.md "Gemini – Dedektif").
  */
 const DEDEKTIF = import.meta.glob<string>('../../assets/dedektif/*.webp', { eager: true, query: '?url', import: 'default' });
@@ -12,7 +12,6 @@ const BASKA = import.meta.glob<string>(
   [
     '../../assets/film/ev/{arka-uzak,arka-orta,arka-on,oda-dikey}.webp',
     '../../assets/film/mutfak/{arka-uzak,arka-orta}.webp',
-    '../../assets/okul/ses/{masa,kalem}.webp',
     '../../assets/hayvanlar/{zurafa,ordek,kedi}.webp',
     // Vaka 2: Ada'nın balonu (kırmızı balon, CSS ile maviye döner)
     '../../assets/renkler/balon.webp',
@@ -54,8 +53,8 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   koridor: { adaylar: ['koridor'], zorunlu: true },
   'yatak-odasi': { adaylar: ['yatak-odasi'], zorunlu: true },
   // eşyalar
-  masa: { adaylar: ['masa', 'calisma-masasi'], yedek: 'okul/ses/masa', zorunlu: true },
-  kalemlik: { adaylar: ['kalemlik-devrik', 'kalemlik'], yedek: 'okul/ses/kalem', zorunlu: false },
+  masa: { adaylar: ['masa', 'calisma-masasi'], zorunlu: true },
+  kalemlik: { adaylar: ['kalemlik-devrik', 'kalemlik'], zorunlu: false },
   'lamba-dik': { adaylar: ['lamba-dik'], zorunlu: true },
   'lamba-devrik': { adaylar: ['lamba-devrik'], zorunlu: true },
   sosis: { adaylar: ['sosis'], zorunlu: false },
