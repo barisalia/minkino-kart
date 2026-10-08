@@ -164,25 +164,34 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   // 7. iki salıncak birden: dize dinlenir, sonra iki kez dokunulur
   await gorevBekle(page, ['dinle', 'alkis'], T);
   await ekran('7-iki-salincak');
-  let tur = 0;
-  for (let i = 0; i < 400 && tur < (yas <= 4 ? 2 : 4); i++) {
-    const g = await gorevBekle(page, ['alkis', 'dinle'], T);
-    if (g === 'dinle') {
+  // Seri, son dokunuştan 1.4 sn (gerçek saat) sonra biter. Makine yüklüyken iki dokunuş arası uzarsa ya da dokunuş
+  // sallanan salıncağı ıskalarsa seri eksik kalır: oyun "Hı?" deyip dizeyi yeniden çalar ve aynı hedefle (2/tur) yine
+  // bekler. Test modunda dize çok kısa çaldığından 'dinle' arası yoklamada görülmeyebilir; bu yüzden hedef değişmezse
+  // yeniden dokunulur (oyun 3. denemede zaten kabul eder). Tur sayısı, alkışlanan farklı dize sayısıdır.
+  const turSayisi = yas <= 4 ? 2 : 4;
+  const dizeler = new Set<string>();
+  const odul = el(page, 'odul');
+  const bas7 = Date.now();
+  while (!(await odul.isVisible())) {
+    expect(Date.now() - bas7, 'alkış adımı takıldı').toBeLessThan(180000);
+    if ((await gorev(page)) !== 'alkis') {
       await bekle(120);
       continue;
     }
     const hd = await veri(page, 'hedef');
-    const n = Number(hd.split('/')[0]);
-    expect(n).toBe(2);
-    for (let j = 0; j < n; j++) {
+    expect(Number(hd.split('/')[0])).toBe(2);
+    dizeler.add(hd);
+    for (let j = 0; j < 2; j++) {
       await salincagaDokun(page);
       await bekle(280);
     }
-    if (tur === 0) await ekran('7b-alkis');
-    await expect.poll(async () => (await gorev(page)) + (await veri(page, 'hedef')), { timeout: T }).not.toBe('alkis' + hd);
-    tur++;
+    if (dizeler.size === 1) await ekran('7b-alkis');
+    await expect
+      .poll(async () => (await gorev(page)) + (await veri(page, 'hedef')), { timeout: 4000 })
+      .not.toBe('alkis' + hd)
+      .catch(() => undefined);
   }
-  expect(tur).toBe(yas <= 4 ? 2 : 4);
+  expect(dizeler.size).toBe(turSayisi);
   await expect(el(page, 'odul')).toBeVisible({ timeout: 60000 });
   await ekran('7c-sira-ustasi');
   await expect(page.locator('.mc-son')).toBeVisible({ timeout: 40000 });
