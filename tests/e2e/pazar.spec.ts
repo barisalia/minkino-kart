@@ -177,7 +177,7 @@ test('Mino’nun Pazarı: terazi — telefon dönünce kefeler kol uçlarında k
   /** sağ kefenin askı noktası ile kolun sağ ucu arasındaki uzaklık (px) */
   const kayma = () =>
     page.evaluate(() => {
-      const uc = document.querySelector('.pz-t-kol-svg circle[cx="370"]')!.getBoundingClientRect();
+      const uc = document.querySelector('.pz-t-uc-sag')!.getBoundingClientRect();
       const kefe = document.querySelector('.pz-t-sag')!.getBoundingClientRect();
       return Math.hypot(kefe.x + kefe.width / 2 - (uc.x + uc.width / 2), kefe.y - (uc.y + uc.height / 2));
     });

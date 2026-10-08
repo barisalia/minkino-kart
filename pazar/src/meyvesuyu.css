@@ -160,43 +160,67 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.pz-kok .ms-b-katman,
-.pz-kok .ms-b-kol-yer {
+.pz-kok .ms-b-katman {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
-.pz-kok .ms-b-katman svg,
-.pz-kok .ms-b-kol-yer svg {
+.pz-kok .ms-b-katman svg {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+/* çizim parçaları (blender.ts → PARCALAR): yerleri çizim alanına yüzdeyle */
+.pz-kok .ms-b-parca {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* camın parlaması: sürahinin sol kenarı boyunca iki ince ışık (sıvının da üstünde) */
+.pz-kok .ms-b-parlak {
+  position: absolute;
+  left: 46.2%;
+  top: 30%;
+  width: 2.6%;
+  height: 32%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.35));
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+.pz-kok .ms-b-parlak-ince {
+  left: 50.4%;
+  top: 31%;
+  width: 1.3%;
+  height: 11%;
 }
 /* sürüklenen meyve üstüne gelince: blender parlar ve hafifçe büyür */
 .pz-kok .ms-blender.pz-uzerinde {
   transform: scale(1.06);
   transition: transform 0.15s;
 }
-.pz-kok .ms-blender.pz-uzerinde .ms-b-arka {
+.pz-kok .ms-blender.pz-uzerinde .ms-b-surahi {
   filter: drop-shadow(0 0 10px rgba(255, 199, 44, 0.95));
 }
-/* sürahinin içi (cam şekline kırpılır) */
+/* sürahinin içi (camın iç şekline kırpılır; dibi motorun bileziğinin arkasında kalır) */
 .pz-kok .ms-b-ic {
   position: absolute;
-  left: 47.88%;
-  top: 15%;
-  width: 42.42%;
-  height: 60.56%;
+  left: 41.91%;
+  top: 24.41%;
+  width: 45.19%;
+  height: 42.82%;
   overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 91.4% 100%, 8.6% 100%);
-  border-radius: 0 0 10% 10%;
+  clip-path: polygon(9% 0, 99% 0, 95% 50%, 87% 100%, 18% 100%, 11% 50%);
 }
 .pz-kok .ms-meyveler {
   position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 6%;
+  left: 12%;
+  right: 10%;
+  bottom: 9%;
   top: 20%;
   display: flex;
   flex-wrap: wrap-reverse;
@@ -309,10 +333,10 @@
 }
 .pz-kok .ms-bicak {
   position: absolute;
-  left: 30%;
-  width: 40%;
-  bottom: 3%;
-  height: 10%;
+  left: 32%;
+  width: 36%;
+  bottom: 8%;
+  height: 9%;
 }
 .pz-kok .ms-bicak svg {
   display: block;
@@ -329,7 +353,6 @@
 }
 /* motor: basınca düğme çöker; çalışırken bütün blender titrer; meyve düşünce sürahi seker */
 .pz-kok .ms-b-dugme {
-  transform-box: fill-box;
   transform-origin: 50% 50%;
   transition: transform 0.12s;
 }
@@ -342,8 +365,13 @@
 @keyframes ms-nabiz {
   50% { transform: scale(1.18); }
 }
+/* motorun yeşil ışığı: çizimdeki lambanın üstünde parlayan ışık (hazırken ve çalışırken yanar) */
 .pz-kok .ms-b-isik {
-  opacity: 0.35;
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #f4ffe6, #9cf06a 45%, rgba(126, 217, 87, 0.55) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
   transition: opacity 0.2s;
 }
 .pz-kok .ms-donuyor .ms-b-isik,
@@ -380,19 +408,28 @@
   70% { transform: scale(0.99, 1.02); }
 }
 /* musluk kolu iner, su akar */
+/* kol gümüş musluğa bağlandığı yerden döner (çizimde 149, 205) */
 .pz-kok .ms-b-kol-yer {
-  transform-origin: 30.3% 52.78%;
+  transform-origin: 75% 90.4%;
   transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 .pz-kok .ms-dokuyor .ms-b-kol-yer {
-  transform: rotate(38deg);
+  transform: rotate(-32deg);
 }
+/* kapak çalışırken hafifçe zıplar */
+.pz-kok .ms-donuyor .ms-b-kapak {
+  animation: ms-kapak 0.14s linear infinite;
+}
+@keyframes ms-kapak {
+  50% { transform: translateY(-1.6%) rotate(0.6deg); }
+}
+/* musluğun ağzı (çizimde 139, 230) → bardak */
 .pz-kok .ms-akis {
   position: absolute;
-  left: 28.8%;
+  left: 40.4%;
   width: 3.6%;
-  top: 64.5%;
-  height: 29%;
+  top: 63.9%;
+  height: 31%;
   border-radius: 0 0 999px 999px;
   background: var(--su, #ffc72c);
   box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.45), 0 0 0 1.5px rgba(90, 54, 23, 0.55);
@@ -420,8 +457,9 @@
 /* ---------- Bardak ---------- */
 .pz-kok .ms-bardak-yer {
   position: absolute;
-  left: 17.6%;
-  top: 71.7%;
+  /* musluğun ağzının altında, altlığın üstünde (motorun sol önünde) */
+  left: 29.45%;
+  top: 72.8%;
   width: 25.5%;
   height: 22.8%;
   pointer-events: none;
@@ -608,6 +646,7 @@
   .pz-kok .ms-bicak,
   .pz-kok .ms-akis i,
   .pz-kok .ms-b-dugme,
+  .pz-kok .ms-b-kapak,
   .pz-kok .pz-yildiz.dolu,
   .pz-kok .pz-m-brr,
   .pz-kok .ms-karistir,

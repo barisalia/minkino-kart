@@ -43,13 +43,24 @@
 .pz-kok .pz-t-kol {
   position: absolute;
   inset: 0;
+  pointer-events: none;
 }
-.pz-kok .pz-t-taban,
-.pz-kok .pz-t-kol-svg {
+/* parçalar (terazi.ts): görseller çizim alanına yüzdeyle oturur */
+.pz-kok .pz-t-taban-resim,
+.pz-kok .pz-t-kol-resim {
+  position: absolute;
+  display: block;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.pz-kok .pz-t-taban > div,
+.pz-kok .pz-t-yesil {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
 }
 .pz-kok .pz-t-kol {
   z-index: 1;
@@ -57,12 +68,19 @@
   transform-origin: 50% 35.24%;
   will-change: transform;
 }
+/* kol uçlarındaki halkalar (kefelerin asıldığı nokta) */
+.pz-kok .pz-t-uc {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
 .pz-kok .pz-t-kefe {
   position: absolute;
   left: 0;
   top: 0;
   z-index: 2;
-  width: 29.55%;
+  /* kefe çizimi 126 / 440 birim; halkası üst ortada (kefenin üstü = halkanın ortası) */
+  width: 28.67%;
   translate: -50% 0;
   transform-origin: 50% 0;
   will-change: transform;
@@ -70,12 +88,18 @@
 }
 .pz-kok .pz-t-kefe-govde {
   position: relative;
+  /* halkanın ortası çizimin üstünden 7.5 birim aşağıda: kefe o kadar yukarı kayar */
+  margin-top: -5.95%;
   transition: transform 0.15s;
+  transform-origin: 50% 0;
 }
-.pz-kok .pz-t-kefe-svg {
+.pz-kok .pz-t-kefe-resim {
   display: block;
   width: 100%;
-  overflow: visible;
+  height: auto;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 .pz-kok .pz-t-sag.pz-uzerinde .pz-t-kefe-govde {
   transform: scale(1.08);
@@ -86,7 +110,7 @@
   position: absolute;
   left: 6%;
   right: 6%;
-  bottom: 29%;
+  bottom: 28%;
   display: flex;
   flex-wrap: wrap-reverse;
   justify-content: center;
@@ -95,9 +119,11 @@
 }
 /* ağır meyve (--a: 2 ananas, 3 karpuz) kefede daha büyük görünür */
 .pz-kok .pz-kefe-ic .pz-urun {
-  width: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
-  height: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
-  margin: 0 -6% -8%;
+  --u: max(40px, calc(52cqw * (0.75 + 0.25 * var(--a, 1))));
+  width: var(--u);
+  height: var(--u);
+  /* meyveler kefede yan yana yığılır (telefonda iki meyve bir sırada; üst sıra kolun ucuna kadar çıkmasın) */
+  margin: 0 calc(var(--u) * -0.22) calc(var(--u) * -0.16);
 }
 .pz-kok .pz-kefe-ic .pz-urun-golge {
   display: none;
@@ -125,15 +151,18 @@
   opacity: 1;
   animation: pz-fener-titre 0.8s ease-in-out infinite alternate;
 }
+/* kadranın yeşil dilimi dengede nabız gibi parlar (çizimin üstünde açık yeşil ışık) */
 .pz-kok .pz-t-yesil {
+  opacity: 0;
+  mix-blend-mode: screen;
   transition: opacity 0.3s;
 }
 .pz-kok .pz-terazi.dengede .pz-t-yesil {
   animation: pz-yesil 0.5s ease-in-out infinite alternate;
 }
 @keyframes pz-yesil {
-  from { opacity: 0.55; }
-  to { opacity: 1; }
+  from { opacity: 0.25; }
+  to { opacity: 0.95; }
 }
 /* teslim: sağ kefedekiler kavisle müşteriye uçar */
 .pz-kok .pz-terazi.pz-teslim .pz-t-sag .pz-kefe-ic {

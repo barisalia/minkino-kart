@@ -1,13 +1,15 @@
 /**
- * Meyve Suyu Köşesi: şeffaf blender ve bardak (SVG + kod, görsel dosya yok; stil kuralı: parlak, kalın koyu kahve kontur).
+ * Meyve Suyu Köşesi: şeffaf camlı blender (çizim parçaları, assets/pazar/blender-*) ve bardak (SVG + kod).
  *
- * Katmanlar (arkadan öne): sürahinin arka camı → içi (sıvı, girdap parçacıkları, meyveler, bıçak) → ön cam
- * (kontur, parlama, kapak, sap, musluk) → motor ve bardak altlığı → musluktan akan su → bardak.
+ * Katmanlar (arkadan öne): sürahinin içi (sıvı, girdap parçacıkları, meyveler, bıçak) → cam sürahi (sap, musluk;
+ * içi saydam) → cam parlaması → motor (bileziğin üstü açık), ışık, düğme → musluk kolu → kapak → bardak altlığı →
+ * musluktan akan su → bardak.
  * Karıştırma: motor titrer, bıçak döner, meyveler girdaba kapılıp parçalanır, renk sıvıda yavaş yavaş oluşur.
  * Dökme: musluk kolu iner, su bardağa akar, sürahi boşalır, bardak dolar, pipet takılır.
  * Yalnız transform / opacity (WAAPI ve CSS); hareketi azalt tercihinde sade.
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { adres } from './gorsel';
 import { blenderSesi, dokmeSesi, plopSesi } from './meyvesuyu-ses';
 
 const K = '#5a3617';
@@ -18,59 +20,27 @@ const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /** Ortak degrade tanımları (sayfada bir kez; kimlikler ms- önekli) */
 const TANIMLAR = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <linearGradient id="ms-kirmizi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b5e"/><stop offset=".55" stop-color="#f0413f"/><stop offset="1" stop-color="#c92f2d"/></linearGradient>
-  <linearGradient id="ms-krem" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f1dcc0"/></linearGradient>
   <linearGradient id="ms-cam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e6f5ff" stop-opacity=".75"/><stop offset=".5" stop-color="#d4ecff" stop-opacity=".35"/><stop offset="1" stop-color="#bfe0ff" stop-opacity=".7"/></linearGradient>
   <linearGradient id="ms-metal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9aa6b2"/><stop offset=".5" stop-color="#f4f8fb"/><stop offset="1" stop-color="#8a96a3"/></linearGradient>
 </defs></svg>`;
 
-// ---- blender (viewBox 330 × 360) ----
-const JAR = 'M150 44 L164 272 Q166 282 176 282 H280 Q290 282 292 272 L306 44 Z';
-const ARKA = `<svg class="ms-b-arka" viewBox="0 0 330 360" aria-hidden="true">
-  <path d="${JAR}" fill="url(#ms-cam)"/>
-  <ellipse cx="228" cy="48" rx="76" ry="8" fill="#cfe8ff" opacity=".6"/>
-</svg>`;
-const ON = `<svg class="ms-b-on" viewBox="0 0 330 360" aria-hidden="true">
-  <!-- sap -->
-  <path d="M300 78 Q330 80 326 120 L318 214 Q314 240 288 236" fill="none" stroke="${K}" stroke-width="22" stroke-linecap="round"/>
-  <path d="M300 78 Q330 80 326 120 L318 214 Q314 240 288 236" fill="none" stroke="#e9f6ff" stroke-width="10" stroke-linecap="round" opacity=".9"/>
-  <!-- sürahi konturu ve cam parlaması -->
-  <path d="${JAR}" fill="none" stroke="${K}" stroke-width="8" stroke-linejoin="round"/>
-  <path d="M170 70 L180 250" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".75"/>
-  <path d="M188 70 L192 120" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/>
-  <path d="M290 96 L283 230" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".4"/>
-  <!-- ölçü çizgileri -->
-  <path d="M274 110h16M276 150h14M278 190h12M280 230h10" stroke="${K}" stroke-width="4" stroke-linecap="round" opacity=".45"/>
-  <!-- kapak -->
-  <rect x="142" y="26" width="172" height="26" rx="12" fill="url(#ms-kirmizi)" stroke="${K}" stroke-width="7"/>
-  <rect x="206" y="8" width="44" height="24" rx="10" fill="url(#ms-kirmizi)" stroke="${K}" stroke-width="7"/>
-  <path d="M154 34h60" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/>
-  <!-- musluk: borusu, ağzı -->
-  <rect x="96" y="194" width="74" height="22" rx="9" fill="url(#ms-metal)" stroke="${K}" stroke-width="7"/>
-  <rect x="87" y="190" width="26" height="46" rx="10" fill="url(#ms-kirmizi)" stroke="${K}" stroke-width="7"/>
-  <path d="M95 200v22" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>
-</svg>`;
-/** Musluk kolu ayrı: dökerken iner */
-const KOL = `<svg class="ms-b-kol" viewBox="0 0 330 360" aria-hidden="true">
-  <path d="M100 190 L126 166" stroke="${K}" stroke-width="16" stroke-linecap="round"/>
-  <path d="M100 190 L126 166" stroke="#ffc72c" stroke-width="7" stroke-linecap="round"/>
-  <circle cx="128" cy="164" r="10" fill="#ffc72c" stroke="${K}" stroke-width="6"/>
-</svg>`;
-const MOTOR = `<svg class="ms-b-motor" viewBox="0 0 330 360" aria-hidden="true">
-  <!-- bardak altlığı -->
-  <rect x="36" y="334" width="130" height="18" rx="9" fill="url(#ms-metal)" stroke="${K}" stroke-width="7"/>
-  <path d="M50 340h100" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/>
-  <!-- sürahinin oturduğu bilezik -->
-  <rect x="160" y="268" width="136" height="26" rx="8" fill="#3f3f4f" stroke="${K}" stroke-width="7"/>
-  <!-- motor gövdesi -->
-  <path d="M156 292 H300 Q312 292 310 304 L302 344 Q300 354 290 354 H166 Q156 354 154 344 L146 304 Q144 292 156 292 Z" fill="url(#ms-kirmizi)" stroke="${K}" stroke-width="8" stroke-linejoin="round"/>
-  <path d="M162 302 H290" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".5"/>
-  <!-- düğme -->
-  <g class="ms-b-dugme">
-    <circle cx="228" cy="326" r="17" fill="#ffc72c" stroke="${K}" stroke-width="6"/>
-    <circle cx="223" cy="320" r="5" fill="#fff" opacity=".8"/>
-  </g>
-  <circle cx="176" cy="326" r="6" fill="#7ed957" stroke="${K}" stroke-width="4" class="ms-b-isik"/>
+// ---- blender (çizim alanı 330 × 360 birim) ----
+// Parçalar çizim (assets/pazar/blender-*; Recraft, pazar setinin stilinde). Yerleri blender-hazirla betiğinin ölçüleriyle:
+// sürahi (cam saydam: sıvı ve meyveler arkasından görünür), motor (bileziğin üstü açık: sürahi içine oturur),
+// musluk kolu (dökerken iner), kapak, motor düğmesi (nabız gibi atar, basınca çöker).
+const yer = (x: number, y: number, w: number, hh: number) => `left:${(x / 330) * 100}%;top:${(y / 360) * 100}%;width:${(w / 330) * 100}%;height:${(hh / 360) * 100}%`;
+const PARCALAR = {
+  surahi: yer(116.78, 49.17, 210.8, 200.47),
+  kapak: yer(128.59, 4, 170.26, 92.69),
+  motor: yer(140.74, 212.96, 158.74, 143.04),
+  dugme: yer(238.63, 261.99, 42.33, 37.04),
+  isik: yer(219.5, 267.7, 13.6, 13.6),
+  kol: yer(116.78, 171.06, 43.02, 37.28),
+};
+/** Bardak altlığı (bardağın altında, masada): küçük metal tabla */
+const ALTLIK = `<svg class="ms-b-altlik" viewBox="0 0 330 360" aria-hidden="true">
+  <rect x="86" y="341" width="106" height="15" rx="7.5" fill="url(#ms-metal)" stroke="${K}" stroke-width="5"/>
+  <path d="M98 346h80" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
 </svg>`;
 const BICAK = `<svg viewBox="0 0 60 20" aria-hidden="true"><path d="M4 8 Q18 2 30 10 Q42 18 56 12" fill="none" stroke="${K}" stroke-width="7" stroke-linecap="round"/><path d="M4 8 Q18 2 30 10 Q42 18 56 12" fill="none" stroke="url(#ms-metal)" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="11" r="5" fill="#9aa6b2" stroke="${K}" stroke-width="3"/></svg>`;
 /** Sıvının üstündeki dalga (iki dalga boyu: kaydıkça kesintisiz) */
@@ -170,17 +140,24 @@ export class Blender {
     this.bicak = h('div.ms-bicak', { html: BICAK });
     this.ic = h('div.ms-b-ic', {}, this.sivi, this.girdap, this.meyveler, this.bicak);
     this.akis = h('div.ms-akis', {}, h('i'));
-    this.kol = h('div.ms-b-kol-yer', { html: KOL });
+    const parca = (ad: keyof typeof PARCALAR, sinif: string) => h(`img.ms-b-parca.${sinif}`, { src: adres(`pazar/blender-${ad}`), alt: '', draggable: 'false', 'aria-hidden': 'true', style: PARCALAR[ad] });
+    this.kol = parca('kol', 'ms-b-kol-yer');
     this.bardak = new Bardak();
     this.bardak.dolu(0);
     this.el = h(
       'div.ms-blender',
       { role: 'region', 'aria-label': 'Blender' },
-      h('div.ms-b-katman', { html: ARKA }),
       this.ic,
-      h('div.ms-b-katman', { html: ON }),
+      parca('surahi', 'ms-b-surahi'),
+      // camın parlaması (sıvının da üstünde)
+      h('i.ms-b-parlak'),
+      h('i.ms-b-parlak.ms-b-parlak-ince'),
+      parca('motor', 'ms-b-motor'),
+      h('i.ms-b-isik', { style: PARCALAR.isik }),
+      parca('dugme', 'ms-b-dugme'),
       this.kol,
-      h('div.ms-b-katman.ms-b-motor-yer', { html: MOTOR }),
+      parca('kapak', 'ms-b-kapak'),
+      h('div.ms-b-katman', { html: ALTLIK }),
       this.akis,
       h('div.ms-bardak-yer', {}, this.bardak.el),
     );
