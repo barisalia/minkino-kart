@@ -223,7 +223,8 @@ export class Musteri {
         { duration: ms(380), easing: 'cubic-bezier(0.3, 1.5, 0.5, 1)', fill: 'forwards' },
       )
       .finished.catch(() => undefined);
-    const yazi = h('b.pz-m-nyam', { style: `left:${ax * 100}%;top:${ay * 100 - 18}%` }, nyam);
+    // "Nyam!" başın sağ üstünde, kulağın yanında (yüzü örtmez); sol kıyıdan taşmaz
+    const yazi = h('b.pz-m-nyam', { style: `left:${ax * 100 + 30}%;top:${ay * 100 - 36}%` }, nyam);
     this.el.append(yazi);
     void this.karakter.oynat('ye', 1100);
     await new Promise((r) => setTimeout(r, ms(120)));

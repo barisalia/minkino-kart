@@ -1,10 +1,11 @@
 /**
  * Yaşayan pazar: arka plan görselinin (pazar/arkaplan.webp) üstünde ayrı katmanlar.
- * Kayan bulutlar, rüzgârda dalgalanan flamalar, ara sıra geçen kuş sürüsü, uzakta yürüyen siluet yayalar,
+ * Kayan bulutlar, rüzgârda dalgalanan flamalar, ara sıra geçen kuş sürüsü, uzaktan geçen soluk küçük hayvanlar,
  * güneş ışını; gün ilerledikçe ışık tonu (sabah → öğle → akşamüstü). Şenlikte fenerler, uçan balonlar, havai fişek.
  * Hepsi yalnız transform / opacity ile hareket eder; hareketi azalt tercihinde ve test modunda sade.
  */
 import { h, TEST_MODU } from '../../src/ui/dom';
+import { adres } from './gorsel';
 
 export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SADE = AZ_HAREKET || TEST_MODU;
@@ -21,12 +22,15 @@ const KONTUR = '#5a3617';
 const BULUT =
   '<svg viewBox="0 0 240 124" aria-hidden="true"><defs><linearGradient id="pz-bulut-d" x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stop-color="#fff"/><stop offset="1" stop-color="#d9ebfb"/></linearGradient></defs><path d="M38 108c-20 0-26-26-6-34-2-22 22-34 40-22 6-28 52-36 66-8 14-14 44-6 44 18 24-4 40 20 26 36 10 4 6 10-4 10z" fill="url(#pz-bulut-d)" stroke="#a7c9e8" stroke-width="3.5" stroke-linejoin="round"/><path d="M78 46c6-14 26-18 38-8" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".9"/><ellipse cx="160" cy="62" rx="12" ry="6" fill="#fff" opacity=".8"/></svg>';
 const KUS = '<svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 12Q10 2 20 11Q30 2 38 12" fill="none" stroke="#3b3a5a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-/** Uzak yaya siluetleri (yetişkin, çocuk, sepetli, balonlu çocuk) */
-const SILUETLER = [
-  '<svg viewBox="0 0 40 90"><circle cx="20" cy="12" r="9"/><path d="M8 34q12-14 24 0l4 30h-8l-2 24h-6l-1-20-1 20h-6l-2-24H4z"/></svg>',
-  '<svg viewBox="0 0 30 60"><circle cx="15" cy="10" r="8"/><path d="M5 28q10-12 20 0l3 18h-6l-1 14h-5l-1-10-1 10H9l-1-14H2z"/></svg>',
-  '<svg viewBox="0 0 56 90"><circle cx="20" cy="12" r="9"/><path d="M8 34q12-14 24 0l4 30h-8l-2 24h-6l-1-20-1 20h-6l-2-24H4z"/><path d="M36 44h16l-3 14H39z"/><path d="M38 44q6-10 12 0" fill="none" stroke="currentColor" stroke-width="3"/></svg>',
-  '<svg viewBox="0 0 40 80"><circle cx="15" cy="30" r="8"/><path d="M5 48q10-12 20 0l3 18h-6l-1 14h-5l-1-10-1 10H9l-1-14H2z"/><path d="M24 40L32 16" stroke="currentColor" stroke-width="1.5"/><ellipse cx="33" cy="9" rx="7" ry="9"/></svg>',
+/**
+ * Uzaktan geçen küçük hayvanlar (pazarın müşterisi olmayanlar; çizimleri yandan): soluk, pastel, hafif bulanık
+ * (uzakta), her biri kendi yürüyüşüyle. bakar: çizimin baktığı yön (1 sağ, -1 sol); gidiş yönüne çevrilir.
+ */
+const YOLCULAR: { ad: string; bakar: 1 | -1; yuruyus: 'hop' | 'paytak' | 'sek' | 'emekle'; sure: [number, number] }[] = [
+  { ad: 'civciv', bakar: -1, yuruyus: 'hop', sure: [24, 32] },
+  { ad: 'tavuk', bakar: 1, yuruyus: 'paytak', sure: [24, 32] },
+  { ad: 'koyun', bakar: -1, yuruyus: 'sek', sure: [22, 30] },
+  { ad: 'kaplumbaga', bakar: 1, yuruyus: 'emekle', sure: [40, 50] },
 ];
 const BALON = (renk: string) =>
   `<svg viewBox="0 0 60 110" aria-hidden="true"><path d="M30 76q-4 14 2 22t-2 12" fill="none" stroke="${KONTUR}" stroke-width="2"/><path d="M30 4C14 4 4 18 4 34c0 20 16 36 26 42 10-6 26-22 26-42C56 18 46 4 30 4z" fill="${renk}" stroke="${KONTUR}" stroke-width="3.5"/><path d="M26 76h8l-4 6z" fill="${renk}" stroke="${KONTUR}" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="19" cy="22" rx="6" ry="9" fill="#fff" opacity=".55" transform="rotate(-20 19 22)"/></svg>`;
@@ -111,13 +115,24 @@ export function canliSahne(secenek: { senlik?: boolean } = {}): Canli {
     sonra(12000, () => suru.remove());
     sonra(ras(14000, 26000), kusSurusu);
   };
+  const yolcular = YOLCULAR.map((y) => ({ ...y, url: adres(`hayvanlar/${y.ad}`) })).filter((y) => y.url);
+  let sonYolcu = '';
   const yaya = () => {
+    sonra(ras(9000, 16000), yaya);
+    // aynı hayvan art arda geçmez
+    const aday = yolcular.filter((y) => y.ad !== sonYolcu);
+    if (!aday.length) return;
+    const t = sec(aday);
+    sonYolcu = t.ad;
     const yon = Math.random() < 0.5 ? 1 : -1;
-    const boy = ras(0.75, 1.1);
-    const y = h('div.pz-yaya', { style: `--yon:${yon};--boy:${boy.toFixed(2)};--sure:${ras(22, 34).toFixed(1)}s`, html: sec(SILUETLER) });
+    const sure = ras(...t.sure);
+    const y = h(
+      'div.pz-yaya',
+      { 'data-yuruyus': t.yuruyus, style: `--yon:${yon};--bak:${yon * t.bakar};--boy:${ras(0.8, 1.05).toFixed(2)};--sure:${sure.toFixed(1)}s` },
+      h('img', { src: t.url, alt: '', draggable: 'false' }),
+    );
     ufuk.append(y);
-    sonra(36000, () => y.remove());
-    sonra(ras(7000, 14000), yaya);
+    sonra(sure * 1000 + 500, () => y.remove());
   };
   if (!SADE) {
     sonra(ras(3000, 6000), kusSurusu);

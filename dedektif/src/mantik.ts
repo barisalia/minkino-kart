@@ -264,8 +264,12 @@ export const YATAK = {
   alt: { x0: 0.06, y0: 0.775, x1: 0.405, y1: 0.842 },
   /** sallanan kuyruk ucunun kökü (yatağın altında, ayak ucu bacağının hemen solunda) */
   kuyruk: { x: 0.455, y: 0.77, h: 0.18 },
-  /** Pamuk'un saklandığı yer ve çıkınca durduğu yer (ayak tabanı) */
-  saklan: { x: 0.415, y: 0.85 },
+  /**
+   * Pamuk'un saklandığı yer ve çıkınca durduğu yer (ayak tabanı). Saklanırken gövdesi ayak ucunun arkasında kalır
+   * (yatağın kenarından sağa yalnız sallanan kuyruğu taşar); kenar: saklanırken bu çizginin solu kırpılır
+   */
+  saklan: { x: 0.381, y: 0.85 },
+  kenar: 0.397,
   cik: { x: 0.53, y: 0.94 },
 };
 /** Mutfak: Kino'nun izleri buzdolabının önünde biter */

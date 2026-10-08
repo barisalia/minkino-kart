@@ -779,30 +779,6 @@
 .dd-kok .dd-yatak-alti.acik {
   opacity: 0.95;
 }
-.dd-kok .dd-goz-parla {
-  position: absolute;
-  top: 30%;
-  width: 4%;
-  aspect-ratio: 1.3;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, #e8f7ff 0 30%, #69b8ee 45%, rgba(105, 184, 238, 0) 72%);
-  opacity: 0;
-}
-.dd-kok .dd-goz-parla:first-child {
-  left: 52%;
-}
-.dd-kok .dd-goz-parla:nth-child(2) {
-  left: 60%;
-}
-.dd-kok .dd-yatak-alti.acik .dd-goz-parla {
-  animation: dd-goz-kirp 3.4s ease-in-out infinite;
-}
-@keyframes dd-goz-kirp {
-  0%, 40%, 100% { opacity: 0; }
-  50%, 88% { opacity: 1; transform: scaleY(1); }
-  92% { opacity: 1; transform: scaleY(0.1); }
-  95% { opacity: 1; transform: scaleY(1); }
-}
 /* kuyruğun dokunma alanı (görünmez): saklanan Pamuk'un yatağın ayak ucundan taşan kuyruğunun üstünde, cömert */
 .dd-kok .dd-kuyruk {
   position: absolute;
@@ -827,9 +803,19 @@
   transform-origin: 50% 92%;
   transition: transform 0.4s;
 }
+/* saklanırken gövdesi yatağın ayak ucunun arkasında: kenarın solu kırpılır (yatağın altındaki aralıktan patileri,
+   ayak ucunun yanından yüzü görünmez: kesim başının altından), dışarıda yalnız sallanan kuyruğu kalır. Çıkarken
+   kırpma kalkar. */
+.dd-kok .dd-pamuk-dunya.sakli {
+  /* kuyruk, ona giden pati izlerinin önünde (kırpma zaten yatağın gerisini gizler) */
+  z-index: 1;
+  clip-path: polygon(var(--sakli-sol, 0px) 57%, 260% 57%, 260% 160%, var(--sakli-sol, 0px) 160%);
+}
 
 .dd-kok .dd-yatak-on {
   position: absolute;
+  /* saklanan Pamuk'un (z 1) önünde */
+  z-index: 2;
   display: block;
   pointer-events: none;
 }
@@ -1345,10 +1331,15 @@
   gap: clamp(8px, 2vh, 18px);
   padding: calc(var(--ust) + 4px) var(--yan) var(--alt);
   background: rgba(40, 25, 15, 0);
-  transition: background 0.5s;
+  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(0);
+  transition: background 0.5s, backdrop-filter 0.5s, -webkit-backdrop-filter 0.5s;
 }
+/* oda ve karakterler yumuşak, karartılmış bir fon olur: romanın altından yarım kafalar kesik görünmez */
 .dd-kok .dd-roman.acik {
-  background: rgba(40, 25, 15, 0.62);
+  background: rgba(40, 25, 15, 0.66);
+  -webkit-backdrop-filter: blur(7px) saturate(0.85);
+  backdrop-filter: blur(7px) saturate(0.85);
 }
 .dd-kok .dd-roman-sayfa {
   position: relative;

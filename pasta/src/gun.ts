@@ -26,7 +26,7 @@ import { geriGonder, surukle } from '../../pazar/src/surukle';
 import { boyaFiltresi, HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MINO_SAPKA, OKUL, OTOBUS, RAF_SUSLERI, TABAK, TEPSI, kalipSvg, kremaDikSvg, susIkon, susKabiSvg, urunSvg } from './cizim';
 import { zigzagCiz } from './susleme';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
-import { ARKA, FIRIN_GOZLERI, FIRIN_ORAN, oranYaz, yuva } from './resimler';
+import { ARKA, FIRIN_GOZLERI, FIRIN_ORAN, onYukle, oranYaz, resimleriTopla, yuva } from './resimler';
 import { kayit } from './kayit';
 import {
   acikOlanlar,
@@ -61,7 +61,7 @@ import {
   type Sus,
   type Yer,
 } from './model';
-import { PastaMusteri, partiCizimi } from './musteri';
+import { PastaMusteri, partiCizimi, siparisResmi } from './musteri';
 import { ses } from './sesler';
 
 const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
@@ -1140,14 +1140,27 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   }
 
   // ---------------------------------------------------------------- açılış: otobüs parka gelir
-  const giris = otobusGirisi(el, () => {
+  tepsiCiz();
+  tabakCiz();
+  // günün bütün görselleri (tezgâh, fırın, kalıplar, torbalar, arka; bugünkü siparişlerin balon resimleri) otobüs
+  // gelirken indirilip çözülür; mutfak ancak hepsi hazır olunca açılır (yarım tezgâh, boş balon görünmez). Önce
+  // otobüsün kendi görselleri (girişte o görünür), sonra mutfağınkiler: yavaş bağlantıda ikisi birbirini beklemez.
+  const otobusYuk = onYukle([yuva('otobus'), yuva('teker'), yuva('tekerIsik')].filter((u): u is string => !!u), 4000);
+  const mutfakUrl = resimleriTopla(el, ...kuyruk.map((s) => siparisResmi(s)));
+  const onYuk = { resimler: [...otobusYuk.resimler], hazir: Promise.resolve() };
+  onYuk.hazir = otobusYuk.hazir.then(() => {
+    const m = onYukle(mutfakUrl, TEST_MODU ? 3000 : 7000);
+    onYuk.resimler.push(...m.resimler);
+    return m.hazir;
+  });
+  el.classList.add('ps-yukleniyor');
+  void onYuk.hazir.then(() => el.classList.remove('ps-yukleniyor'));
+  const giris = otobusGirisi(el, otobusYuk.hazir, onYuk.hazir, () => {
     calisiyor = true;
     son = performance.now();
     sonDokunus = performance.now();
   });
   void soyle(P.mino.geldi);
-  tepsiCiz();
-  tabakCiz();
   if (ozel) (window as unknown as Record<string, unknown>).__pastaGun = { kuyruk, musteriler, gozler, get tabak() { return tabak; } };
 
   return {
@@ -1166,6 +1179,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       mino.kapat();
       kino.kapat();
       musteriler.forEach((m) => m.kapat());
+      onYuk.resimler.length = 0;
     },
   };
 }
@@ -1174,7 +1188,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
  * Otobüs parka gelir: soldan yuvarlanarak gelir, durur (esneyip basılır), korna; yan kapağı yukarı açılıp tente olur,
  * Mino kapağın içinde el sallar; sonra kadraj kapağa yaklaşır ve tezgâh görünür. Dokununca hemen geçer.
  */
-function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => void } {
+function otobusGirisi(ekran: HTMLElement, otobusHazir: Promise<void>, hazir: Promise<void>, bitti: () => void): { kapat: () => void } {
   const mino = new Mino();
   minoSapkaTak(mino);
   const otobus = h('div.ps-otobus', { html: OTOBUS }, h('div.ps-giris-mino', {}, mino.el));
@@ -1189,11 +1203,17 @@ function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => voi
     mino.kapat();
     katman.remove();
   };
+  // mutfak görselleri hazır olmadan giriş kalkmaz (dokunulsa da: hazır olunca hemen geçer)
+  let mutfakHazir = false;
+  void hazir.then(() => (mutfakHazir = true));
   const gec = () => {
     if (bitirildi) return;
     bitirildi = true;
-    kapat();
-    bitti();
+    void hazir.then(() => {
+      if (kapandi) return;
+      kapat();
+      bitti();
+    });
   };
   // beklemek istemeyen çocuk dokununca giriş biter
   katman.addEventListener('pointerdown', gec);
@@ -1203,6 +1223,11 @@ function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => voi
       if (!kapandi) gec();
       return;
     }
+    // otobüsün kendi görselleri (gövde, tekerlek) çözülmeden yola çıkmaz: yarım otobüs (havada tente) görünmez
+    otobus.style.visibility = 'hidden';
+    await otobusHazir;
+    otobus.style.visibility = '';
+    if (kapandi) return;
     const tekerler = [...otobus.querySelectorAll<SVGGElement>('.ps-ob-teker')];
     const donus = tekerler.map((t) => t.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(720deg)' }], { duration: 1500, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'forwards' }));
     await otobus
@@ -1231,6 +1256,13 @@ function otobusGirisi(ekran: HTMLElement, bitti: () => void): { kapat: () => voi
     mino.tepki('selam');
     await new Promise((r) => setTimeout(r, 1100));
     if (kapandi) return;
+    // görseller daha inmediyse Mino el sallamayı sürdürür (en çok onYukle sınırı kadar)
+    if (!mutfakHazir) {
+      const salla_ = window.setInterval(() => !kapandi && mino.tepki('selam'), 1400);
+      await hazir;
+      clearInterval(salla_);
+      if (kapandi) return;
+    }
     // kadraj kapağa yaklaşır
     await katman
       .animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.4) translateY(6%)', opacity: 0 }], { duration: 550, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' })

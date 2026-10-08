@@ -204,17 +204,49 @@ export class Oyuncular {
     // başın tepesi: Mino'nun kutusu kulaklardan başlar (şapka biraz üstte); Kino ve Pamuk'un kare tuvalinde üstte boşluk var
     const ust = kim === 'mino' ? r.top - r.height * 0.02 : r.top + r.height * (kim === 'pamuk' && this.pamukKaynak ? this.konukTepe : 0.1);
     const x = r.left - kap.left + r.width / 2;
-    const y = Math.max(b.offsetHeight + 70, ust - kap.top - 4);
-    b.style.left = `${x.toFixed(1)}px`;
-    b.style.top = `${y.toFixed(1)}px`;
-    const bw = b.offsetWidth;
+    const yUst = ust - kap.top - 4;
     const pay = 8;
-    let kay = 0;
-    if (x - bw / 2 < pay) kay = pay - (x - bw / 2);
-    if (x + bw / 2 > kap.width - pay) kay = kap.width - pay - (x + bw / 2);
-    // kuyruk balonun içinde kalsın
-    kay = Math.max(-bw / 2 + 22, Math.min(bw / 2 - 22, kay));
-    b.style.setProperty('--kay', `${kay.toFixed(1)}px`);
+    b.style.left = `${x.toFixed(1)}px`;
+    b.style.removeProperty('max-width');
+    /** balonu [sol, sag] aralığına sığdırır (kuyruk yine başı gösterir); balonun ekrandaki kutusunu döner */
+    const yerlestir = (sol: number, sag: number) => {
+      const y = Math.max(b.offsetHeight + 70, yUst);
+      b.style.top = `${y.toFixed(1)}px`;
+      const bw = b.offsetWidth;
+      let kay = 0;
+      if (x - bw / 2 < sol) kay = sol - (x - bw / 2);
+      if (x + bw / 2 > sag) kay = sag - (x + bw / 2);
+      // kuyruk balonun içinde kalsın
+      kay = Math.max(-bw / 2 + 22, Math.min(bw / 2 - 22, kay));
+      b.style.setProperty('--kay', `${kay.toFixed(1)}px`);
+      return { l: x + kay - bw / 2, r: x + kay + bw / 2, t: y - b.offsetHeight, b: y };
+    };
+    let k = yerlestir(pay, kap.width - pay);
+    // sorgu kartları, delil fotoğrafı: balon onların üstüne binmez. Konuşanın yanındaki boş şeride daralır (yazı
+    // alt alta iner, balon yukarı uzar), kuyruk başı göstermeye devam eder.
+    const kok = this.balonKatman.parentElement;
+    const engeller = kok
+      ? [...kok.querySelectorAll('.dd-sorgu:not(.kapaniyor) .dd-kart:not(.dd-cekil), .dd-sorgu:not(.kapaniyor) .dd-delil, .dd-sorgu:not(.kapaniyor) .dd-cali-foto')]
+          .map((e) => e.getBoundingClientRect())
+          .filter((e) => e.width && e.height)
+          .map((e) => ({ l: e.left - kap.left - 6, r: e.right - kap.left + 6, t: e.top - kap.top - 6, b: e.bottom - kap.top + 6 }))
+      : [];
+    const carpar = (a: typeof k) => engeller.filter((e) => a.l < e.r && a.r > e.l && a.t < e.b && a.b > e.t);
+    for (let deneme = 0; deneme < 3; deneme++) {
+      const c = carpar(k);
+      if (!c.length) break;
+      // dikeyde balonla çakışan engellerin, konuşanın iki yanındaki en yakın kenarları: boş şerit
+      let sol = pay;
+      let sag = kap.width - pay;
+      for (const e of engeller) {
+        if (!(k.t < e.b && k.b > e.t)) continue;
+        if ((e.l + e.r) / 2 < x) sol = Math.max(sol, e.r);
+        else sag = Math.min(sag, e.l);
+      }
+      if (sag - sol < 84) break;
+      b.style.maxWidth = `${Math.floor(sag - sol)}px`;
+      k = yerlestir(sol, sag);
+    }
   }
 
   /** Son cümleyi tekrar söyler (art arda dokunuşlar birikmez: sırada ya da çalmakta en çok bir tekrar) */
