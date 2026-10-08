@@ -44,6 +44,7 @@ import {
   esya,
   FENER_ORAN,
   FENER_SVG,
+  GOLGE_CANAVAR,
   KEMIK_SVG,
   KOMODIN_ORAN,
   KOMODIN_SVG,
@@ -1121,9 +1122,10 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
 
   // ================================================================ 3: Işık lekesi
   async function sahne3() {
-    // herkes odanın ortasına; ışık lekesi duvarda
-    void MN.git(X(-19), Y(-1), 900, 0, undefined, true);
-    void KN.git(X(3), Y(0), 900);
+    // herkes odanın ortasına; ışık lekesi duvarda. Kino masanın solunda durur (önünde değil): masanın yıldızı
+    // yüzünü örtmesin
+    void MN.git(X(-27), Y(-1), 900, 0, undefined, true);
+    void KN.git(X(-13), Y(0), 900);
     // perdenin alt ucu (ışık oraya gelince Mino tırmanır); çekim onu da güvenli alana alır
     const perde = arkaNokta(452, 430);
     // (yatay telefonda perde çekime sığmaz: çekim yerde kalır, ışık üst kenara gelince kamera yukarı kayar)
@@ -1142,7 +1144,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const HEDEF: Record<ZiplamaYeri, { el: HTMLElement; ini: [number, number] }> = {
       koltuk: { el: hedefEl('koltuk', KOLTUK.x, KOLTUK.y + bY(koltukH * 0.2), bX(KOLTUK.w * 0.8), bY(koltukH * 0.75)), ini: [KOLTUK.x, KOLTUK.y + bY(koltukH * 0.32)] },
       perde: { el: hedefEl('perde', perde.x, perde.y - bY(14), bX(16), bY(30)), ini: [perde.x, perde.y - bY(12)] },
-      masa: { el: hedefEl('masa', MASA.x, MASA.y + bY(masaH * 0.4), bX(MASA.w * 0.8), bY(masaH * 0.6)), ini: [MASA.x, MASA.y + bY(masaH * 0.9)] },
+      masa: { el: hedefEl('masa', MASA.x + bX(4), MASA.y + bY(masaH * 0.4), bX(MASA.w * 0.8), bY(masaH * 0.6)), ini: [MASA.x, MASA.y + bY(masaH * 0.9)] },
     };
     const temizHedef = () => Object.values(HEDEF).forEach((h) => h.el.remove());
     durumYaz('isik', 0);
@@ -1302,7 +1304,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
       korkut(Math.max(0.15, 0.5 - n * 0.12));
       if (n === 1) void balon(KN, B.ii, 900);
       else KN.kinoIfade('saskin', 1200);
-      void KN.git(Math.min(X(8), KN.x + bX(2)), KN.y, 500);
+      void KN.git(Math.min(X(-8), KN.x + bX(1.6)), KN.y, 500);
       await bekle(500);
       MN.katman = 9;
       await MN.git(eskiX, eskiY, 650, 10);
@@ -1423,10 +1425,20 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   function golgeYer() {
     return { x: X(-6), y: DUVAR + bY(yatayTel ? 1 : 4) };
   }
-  /** Sesin sahibinin büyümüş, kıpırdayan gölgesi (karanlığın üstünde; ışık halkasının içinde koyu görünür) */
+  /**
+   * Sesin sahibinin büyümüş, kıpırdayan gölgesi (karanlığın üstünde; ışık halkasının içinde koyu görünür): önce sevimli
+   * bir canavar silueti (kulaklar, parlayan gözler; elektrik-cizim.ts → GOLGE_CANAVAR), ışık sahibini bulunca asıl
+   * eşyanın siluetine döner (golgeAc)
+   */
   function golgeKur(ad: SesKaynagi): HTMLElement {
     const svg = ad === 'saat' ? SAAT_SVG : ad === 'saksi' ? SAKSI_SVG : KEMIK_SVG;
-    const g = koy(h('div.el-golge', { 'data-el': 'golge', 'data-golge': ad, html: tekil(svg) }), golgeYer().x, golgeYer().y, ad === 'kemik' ? 40 : yatayTel ? 26 : 32, 41);
+    const g = koy(
+      h('div.el-golge', { 'data-el': 'golge', 'data-golge': ad }, h('div.el-golge-canavar', { html: GOLGE_CANAVAR[ad] }), h('div.el-golge-asil', { html: tekil(svg) })),
+      golgeYer().x,
+      golgeYer().y,
+      yatayTel ? 22 : 27,
+      41,
+    );
     g.style.opacity = '0';
     g.animate([{ opacity: 0, scale: '0.5 0.3' }, { opacity: 1, scale: '1 1' }], { duration: sure(700), easing: 'cubic-bezier(0.3, 1.2, 0.5, 1)', fill: 'forwards' });
     S.hisirti();
@@ -1434,6 +1446,10 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   }
   /** Gölge küçülüp sahibinin üstüne akar, solar: "Hiç korkunç değilmiş!" */
   async function golgeAc(g: HTMLElement, sahibi: HTMLElement, balonlu: boolean) {
+    // ışık değince canavar silueti asıl eşyanın siluetine döner (kulaklar iner, gözler söner), sonra sahibine akar
+    g.getAnimations().forEach((x) => x.finish());
+    g.classList.add('donusuyor');
+    await bekle(520);
     const a = g.getBoundingClientRect();
     const b = sahibi.getBoundingClientRect();
     const z = Math.max(0.01, kamZ);

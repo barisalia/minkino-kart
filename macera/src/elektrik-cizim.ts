@@ -234,6 +234,30 @@ export const APARTMAN_SVG = `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org
 <g fill="#ffd97a" opacity=".85"><rect x="10" y="190" width="18" height="22" rx="3"/><rect x="80" y="160" width="18" height="22" rx="3" opacity=".4"/><rect x="170" y="140" width="18" height="22" rx="3" opacity=".35"/><rect x="250" y="120" width="18" height="22" rx="3" opacity=".4"/><rect x="250" y="220" width="18" height="22" rx="3" opacity=".3"/></g>
 <g fill="#1f2556"><rect x="36" y="236" width="18" height="22" rx="3"/><rect x="100" y="210" width="18" height="22" rx="3"/><rect x="170" y="200" width="18" height="22" rx="3"/></g></svg>`;
 
+/**
+ * Karanlığın sesleri: duvardaki büyümüş gölge önce tanınır bir "canavar" silueti (kulaklı, parlayan gözlü; korkutucu
+ * değil, sevimli), ışık sesin sahibini bulunca asıl eşyanın siluetine döner ve ona akar (elektrik.ts → golgeKur/golgeAc).
+ * Hepsi 120×150; kenarlar CSS'te yumuşatılır (elektrik.css → .el-golge-canavar).
+ */
+const GOLGE_GOZ = (y: number) =>
+  `<g class="el-golge-goz"><ellipse cx="46" cy="${y}" rx="7" ry="8.5"/><ellipse cx="74" cy="${y}" rx="7" ry="8.5"/><circle cx="48" cy="${y - 3}" r="2.4" fill="#fff"/><circle cx="76" cy="${y - 3}" r="2.4" fill="#fff"/></g>`;
+export const GOLGE_CANAVAR: Record<'saat' | 'saksi' | 'kemik', string> = {
+  // saat → sivri kulaklı baykuş-canavar; sarkaç uzun, sallanan bir kuyruk olur
+  saat: `<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g class="el-golge-govde">
+<path d="M24 60L13 10L44 34Q60 29 76 34L107 10L96 60Q106 92 92 113Q79 128 60 128Q41 128 28 113Q14 92 24 60Z"/>
+<path d="M27 78Q6 88 9 112Q20 104 31 99Z"/><path d="M93 78Q114 88 111 112Q100 104 89 99Z"/>
+<path class="el-golge-kuyruk" d="M55 124Q50 138 58 148Q70 146 66 124Z"/></g>${GOLGE_GOZ(70)}</svg>`,
+  // saksı → yaprak boynuzlu, tüylü-dalgalı etekli canavar
+  saksi: `<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g class="el-golge-govde">
+<path d="M42 64Q26 34 34 6Q52 30 54 60Z"/><path d="M56 58Q54 26 68 2Q78 30 68 58Z"/><path d="M72 64Q90 36 108 28Q100 54 82 70Z"/>
+<path d="M20 146Q12 100 30 76Q43 58 60 58Q77 58 90 76Q108 100 100 146Q91 136 80 146Q70 136 60 146Q50 136 40 146Q30 136 20 146Z"/>
+<path d="M27 98Q6 90 3 70Q18 76 30 86Z"/><path d="M93 98Q114 90 117 70Q102 76 90 86Z"/></g>${GOLGE_GOZ(94)}</svg>`,
+  // oyuncak kemik → uzun kulaklı tavşan-canavar (kemiğin iki topuzu kulak olur)
+  kemik: `<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g class="el-golge-govde">
+<path d="M38 70Q16 22 30 4Q50 16 52 64Z"/><path d="M82 70Q104 22 90 4Q70 16 68 64Z"/>
+<path d="M60 54Q98 54 102 96Q106 138 82 144Q72 136 60 144Q48 136 38 144Q14 138 18 96Q22 54 60 54Z"/></g>${GOLGE_GOZ(90)}</svg>`,
+};
+
 let sayac = 0;
 /**
  * SVG'deki kimlikleri (degrade, desen) bu kopyaya özel yapar: aynı çizimin iki kopyası sayfada olunca (ya da biri
