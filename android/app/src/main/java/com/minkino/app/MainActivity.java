@@ -20,7 +20,7 @@ public class MainActivity extends BridgeActivity {
 
     /**
      * Ekran yonu sayfaya gore web tarafinda ayarlanir (src/kabuk/yon.ts, @capacitor/screen-orientation): telefonda
-     * genis sahneli oyunlar yatay, menu / Kartlar / Okul / Canlan serbest; tablet serbest (film yatay).
+     * genis sahneli oyunlar yatay, menu / Kartlar / Canlan serbest; tablet serbest (film yatay).
      * Eklentinin 'landscape' kilidi tek yone kilitler (SCREEN_ORIENTATION_LANDSCAPE): yatay kilit iki yonlu olsun,
      * cocuk telefonu hangi yana cevirirse ekran duz dursun (sensorle; dikey yok).
      */

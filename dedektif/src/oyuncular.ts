@@ -229,7 +229,7 @@ export class Oyuncular {
   kinoIfade(ad: string | null, ms = 0) {
     if (!ad || this.kino.ifadeVar(ad)) this.kino.ifade(ad, ms);
   }
-  /** Kino'nun duruşu (okul/src/sahne.ts kinoPoz ile aynı katmanlar): düşünür, kalk, işaret, otur */
+  /** Kino'nun duruşu (Kino iskeletinin katmanları): düşünür, kalk, işaret, otur */
   kinoPoz(p: KinoPoz) {
     const k = this.kino;
     const var_ = (id: string) => !!k.parcaG(id);
