@@ -182,10 +182,11 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
       // dikey: üstte pencere (çentiğin ve geri düğmesinin altında), solda Kino, sağda dolap (giysiler iki sütun)
       const pw = W * 0.5;
       kutu(pencere, kapiPay + g.sol + W * 0.06, Math.max(H * 0.09, g.ust + 70), pw, pw / 0.778);
-      kinoS = Math.min(W * 0.66, H * 0.34);
-      kutu(kinoYer, kapiPay + g.sol + W * 0.27 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      kinoS = Math.min(W * 0.62, H * 0.34);
+      kutu(kinoYer, kapiPay + g.sol + W * 0.25 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      // dolabın gövdesi sağ kenarda: gözlerin sol sütunu Kino'nun kulağının altında kalmaz
       const dw = Math.min(W * 0.88, H * 0.5);
-      kutu(dolap, kapiPay + W - g.sag - W * 0.02 - dw * 0.83, zemin + H * 0.09 - dw, dw, dw);
+      kutu(dolap, kapiPay + W - g.sag - 4 - dw * 0.79, zemin + H * 0.09 - dw, dw, dw);
     } else {
       const ph = u * 0.7;
       const px = g.sol + Wg * 0.025;
