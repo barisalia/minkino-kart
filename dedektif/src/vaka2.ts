@@ -1218,14 +1218,14 @@ class Vaka2 {
     // atkı Kino'ya uzatılır: gagadan Kino'nun önüne uçar
     const kk = this.el.getBoundingClientRect();
     const [gx, gy] = this.efekt.merkez(this.ordek.kutu, 0.3, 0.45);
-    const atkiW = Math.min(kk.width * 0.3, oy.kinoYer.getBoundingClientRect().width * 1.1);
+    const atkiW = Math.min(kk.width * 0.3, oy.kinoYer.getBoundingClientRect().width * (this.dar() ? 1.1 : 0.85));
     // atkı Kino'nun önüne (dikeyde Kino kenarda: atkı hep ekranın içinde, Kino'nun hemen solunda)
-    // (yatayda Kino'nun ayaklarının önünde, "elinde tutuyor" gibi: yüzü açık kalır; alt kenarı ekranın biraz altına taşabilir)
+    // (yatayda Kino'nun hemen solunda, yerde: Kino'nun yüzünü örtmez; atkı bütünüyle ekranda)
     const [ax, ay] = oy.ayak(oy.kinoYer);
     const kinoW = oy.kinoYer.getBoundingClientRect().width;
-    const [kx0, ky0] = this.dar() ? this.efekt.merkez(oy.kinoYer, 0.2, 0.82) : [ax - kinoW * 0.15, ay - atkiW * 0.12];
+    const [kx0, ky0] = this.dar() ? this.efekt.merkez(oy.kinoYer, 0.2, 0.82) : [ax - kinoW * 0.62, ay - atkiW * 0.12];
     const kx = Math.max(atkiW * 0.6 + 8, Math.min(kk.width - atkiW * 0.6 - 8, kx0));
-    const ky = Math.min(kk.height - atkiW * (this.dar() ? 0.4 : 0.2) - (this.dar() ? 8 : 4), ky0);
+    const ky = Math.min(kk.height - atkiW * 0.4 - 8, ky0);
     const atki = h('div.dd-atki-tasi', { style: `width:${px(atkiW)}` }, h('img', { src: resim('v2/atki-yerde') ?? '', alt: '', draggable: 'false' }));
     void this.ordekPoz.birak();
     ses.kart();
