@@ -19,7 +19,8 @@ test('Ana menü: açılışta Mino ve 8 oyun kartı, görseller yüklü', async 
   const kartlar = page.locator('.ug-kart');
   await expect(kartlar).toHaveCount(8);
 
-  // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor
+  // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor (giriş animasyonu bitince ölçülür)
+  await page.waitForTimeout(1100);
   const boyut = page.viewportSize()!;
   for (const [id, adres] of Object.entries(BEKLENEN)) {
     const kart = page.locator(`.ug-kart[data-oyun="${id}"]`);
