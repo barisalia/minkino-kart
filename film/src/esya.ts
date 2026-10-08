@@ -6,7 +6,7 @@ import { h } from '../../src/ui/dom';
 
 const K = '#5a3617';
 // arka-*: motor.ts; mino-sarilma-karpuz yerine karpuz.webp kullanılır
-const GORSELLER = import.meta.glob<string>(['../../assets/film/**/*.webp', '!**/arka-*.webp', '!**/acilis/**', '!**/mino-sarilma-karpuz.webp'], { eager: true, query: '?url', import: 'default' });
+const GORSELLER = import.meta.glob<string>(['../../assets/film/**/*.webp', '!**/kapak/**', '!**/arka-*.webp', '!**/acilis/**', '!**/mino-sarilma-karpuz.webp'], { eager: true, query: '?url', import: 'default' });
 
 const SVG: Record<string, string> = {
   karpuz: `<svg viewBox="0 0 200 150"><ellipse cx="100" cy="80" rx="92" ry="64" fill="#3f9a3a" stroke="${K}" stroke-width="7"/>
@@ -24,23 +24,16 @@ const SVG: Record<string, string> = {
     ${[[46, 36], [74, 36], [60, 56], [52, 30], [68, 30]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="3.5" ry="5.5" fill="#3a1f14"/>`).join('')}<path d="M30 26Q44 30 58 28" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5" fill="none"/></svg>`,
   cekirdek: `<svg viewBox="0 0 20 28"><path d="M10 2Q18 12 16 20Q13 27 10 27Q7 27 4 20Q2 12 10 2Z" fill="#3a1f14" stroke="${K}" stroke-width="2"/><ellipse cx="8" cy="12" rx="2" ry="4" fill="#fff" opacity=".4"/></svg>`,
   tabak: `<svg viewBox="0 0 200 60"><ellipse cx="100" cy="30" rx="94" ry="24" fill="#fff" stroke="${K}" stroke-width="6"/><ellipse cx="100" cy="28" rx="62" ry="13" fill="#eef3f7"/></svg>`,
-  // oyuncak küpler (Kino ve Oyuncak Sepeti): ön yüz, üst ve yan yüz; ön yüzde yazı yerine şekil (kalp, yıldız, daire)
-  'kup-kirmizi': kup('#f0524c', '#ff8a7a', '#c63c3c', 'M48 92C30 80 26 70 30 62c4-8 14-8 18 0c4-8 14-8 18 0c4 8 0 18-18 30z'),
-  'kup-sari': kup('#ffc83a', '#ffe17a', '#e0a21e', 'M48 50l6.5 13.2 14.5 2.1-10.5 10.2 2.5 14.5L48 83.2 35 90l2.5-14.5L27 65.3l14.5-2.1z'),
-  'kup-mavi': kup('#3e9df2', '#7cc2ff', '#2a78c8', 'M30 72a18 18 0 1 0 36 0a18 18 0 1 0-36 0z'),
-  'kup-yesil': kup('#5dbe3f', '#8fdc6a', '#3f9a2a', 'M48 52l20 34H28z'),
 };
 
-/** Oyuncak küp (3/4 görünüş): ön yüz 80 kare, üst ve sağ yüz 24 derinlik; ön yüzde krem şekil, sol üstte parlaklık */
-function kup(on: string, ust: string, yan: string, sekil: string) {
-  return `<svg viewBox="0 0 120 120"><g stroke="${K}" stroke-width="6" stroke-linejoin="round">
-    <path d="M8 32L32 8H112L88 32Z" fill="${ust}"/><path d="M88 32L112 8V88L88 112Z" fill="${yan}"/>
-    <rect x="8" y="32" width="80" height="80" rx="4" fill="${on}"/></g>
-    <rect x="18" y="42" width="60" height="60" rx="9" fill="#fff6dc" stroke="${K}" stroke-width="3.5" opacity=".95"/>
-    <path d="${sekil}" fill="${on}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
-    <path d="M16 38H42" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/>
-    <path d="M40 14H96" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".45"/></svg>`;
-}
+/**
+ * Resmin eşya kutusunda kapladığı oran (ortada): oyuncak küpler (assets/film/esya/kup-*.webp, Recraft çizimi,
+ * kırpılmış) eski kod küpün 120'lik kutusunda 110'luk yer kaplar; kutu, alt pay ve sahne konumları aynı kalır.
+ * Karakterin taşıdığı kopya da aynı oranla çizilir (oyuncu.ts → tasi).
+ */
+export const ESYA_IC: Record<string, number> = {
+  'kup-kirmizi': 110 / 120, 'kup-sari': 110 / 120, 'kup-mavi': 110 / 120, 'kup-yesil': 110 / 120,
+};
 
 /**
  * Katmanlı pozlar (ortak çerçevede üst üste; ekip notu assets/film/<film>/<ad>.json). Karpuz katmanı yerine bizim
@@ -120,7 +113,11 @@ export function esyaCiz(tip: string, film: string, malzeme?: string): HTMLElemen
   if (PARCA_ESYA[tip]) return parcaEsya(tip);
   // kendi klasöründe yoksa ortak malzeme ya da hazır setler (katmanlı pozlar hariç: onlar filmin kendi klasöründe)
   const dis = !GORSELLER[`../../assets/film/${film}/${tip}.webp`] && !KATMANLI[tip] ? esyaAdresi(tip, film, malzeme) : undefined;
-  if (dis) return h('img.fl-esya-resim', { src: dis, alt: '', draggable: 'false' });
+  if (dis) {
+    const ic = ESYA_IC[tip];
+    const stil = ic ? `inset:${(((1 - ic) / 2) * 100).toFixed(3)}%;width:auto;height:auto` : undefined;
+    return h('img.fl-esya-resim', { src: dis, alt: '', draggable: 'false', style: stil });
+  }
   const kat = KATMANLI[tip];
   if (kat) {
     const [W, H] = kat.cerceve;

@@ -47,7 +47,8 @@ import {
   KEMIK_SVG,
   KOMODIN_ORAN,
   KOMODIN_SVG,
-  kupSvg,
+  kupResim,
+  type KupRenk,
   LAMBA_ORAN,
   LAMBA_SVG,
   mandalSvg,
@@ -105,13 +106,8 @@ const merkezi = (r: DOMRect): [number, number] => [r.left + r.width / 2, r.top +
 /** Kişi çizimi (Mino ve Kino aynı kutu oranı) */
 const KISI_W = 24;
 const KISI_ORAN = 1790 / 1360;
-/** Küplerin renkleri (açık, orta, koyu) ve desenleri */
-const KUPLER: { renk: [string, string, string]; desen: 'yildiz' | 'kalp' | 'daire' | 'ucgen' }[] = [
-  { renk: ['#ffb3b3', '#f05a5a', '#b83a3a'], desen: 'yildiz' },
-  { renk: ['#b6dcff', '#3e9df2', '#2468b8'], desen: 'daire' },
-  { renk: ['#c8f0a8', '#5dbe3f', '#3d8a28'], desen: 'ucgen' },
-  { renk: ['#fff0a0', '#ffc72c', '#d69a10'], desen: 'kalp' },
-];
+/** Kuledeki küpler alttan üste (en üstteki sarıyı Kino koyar; çizimler elektrik-cizim.ts → kupResim) */
+const KUPLER: KupRenk[] = ['kirmizi', 'mavi', 'yesil', 'sari'];
 
 export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
   const yas = durum.i.yas ?? 4;
@@ -279,7 +275,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   // küp kule (masanın solunda, önde)
   const KULE = { x: X(-7.5), y: Y(1), w: 7 };
   // küpler aynı katmanda (masanın önünde, Kino ile Mino'nun arkasında); üst üste binen küpte sonraki üstte kalır
-  const kupler = KUPLER.map((k, i) => koy(h('div.el-kup', { html: kupSvg(k.renk, k.desen, `el-kup-${i}`) }), KULE.x, KULE.y + bY(i * 7 * 0.84), KULE.w, 7));
+  const kupler = KUPLER.map((renk, i) => koy(h('div.el-kup', {}, kupResim(renk)), KULE.x, KULE.y + bY(i * 7 * 0.84), KULE.w, 7));
   kupler[3].style.opacity = '0';
   // katlı battaniye (koltuğun oturağında)
   const battaniyeYer = { x: KOLTUK.x - bX(2), y: KOLTUK.y + bY(koltukH * 0.3), w: 13 };

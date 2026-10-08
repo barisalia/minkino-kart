@@ -410,6 +410,16 @@
   width: 100%;
   height: auto;
 }
+/* boyalı küp (assets/film/esya/kup-*.webp, kırpılmış): eski kod küpün 100'lük kutudaki yeri (x 5.75-94.25,
+   altı 96.25); kutu, kule adımı ve gölge aynı kalır */
+.mc-kok .el-kup > img {
+  display: block;
+  width: 88.5%;
+  height: auto;
+  margin: 7.4% 5.75% 3.75%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
 .mc-kok .el-hedef {
   position: absolute;
   pointer-events: none;

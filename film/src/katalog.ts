@@ -16,7 +16,13 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import type { FilmDosya } from './motor';
 
 const FILMLER = import.meta.glob<FilmDosya>('../../content/film/*.json', { eager: true, import: 'default' });
-const KAPAKLAR = import.meta.glob<string>('../../assets/film/kapak/*.webp', { eager: true, query: '?url', import: 'default' });
+// yenisi çizilen kapağın eski hali pakete girmez (<ad>-v2.webp varsa o kullanılır; eski dosya diskte kalır)
+// (Recraft 2026-10-08: Sihirli Söz yatay + dikey, Kaydırak dikey)
+const KAPAKLAR = import.meta.glob<string>(
+  ['../../assets/film/kapak/*.webp', '!**/kapak/kino-lutfen.webp', '!**/kapak/kino-lutfen-dikey.webp', '!**/kapak/kino-kaydirak-dikey.webp'],
+  { eager: true, query: '?url', import: 'default' },
+);
+const kapakAdres = (ad: string) => KAPAKLAR[`../../assets/film/kapak/${ad}-v2.webp`] ?? KAPAKLAR[`../../assets/film/kapak/${ad}.webp`] ?? '';
 
 /** Filmlerin ekrandaki sırası (en yeni üstte), öğüt rozeti ve kart rengi. Listede olmayan yeni film sona eklenir. */
 const SIRA: { ad: string; ogut: string; renk: string; yeni?: boolean }[] = [
@@ -39,8 +45,6 @@ export interface KatalogFilm {
   kapak: string;
   /** dikey kapak (telefon dikeyken; assets/film/kapak/<ad>-dikey.webp, 1536×2752; üstü başlığa boş gökyüzü) */
   kapakDikey: string;
-  /** dikey kapağın üst ~%30'u kusurlu (kesik ağaç, bulanık tente): yalnız alt kesiti kullanılır, kapak ekranında hiç */
-  dikeyUstKusurlu: boolean;
 }
 
 /** Filmin süresi: açılış jeneriği hariç sahneler + geçişler (sn) */
@@ -69,18 +73,11 @@ export function katalog(): KatalogFilm[] {
         yeni: !!s?.yeni,
         // yukarı yuvarlanır: ~87 sn "2 dk" (aşağı yuvarlanınca 1,5 dakikalık film "1 dk" görünüyordu)
         dakika: Math.max(1, Math.ceil(filmSuresi(f) / 60)),
-        kapak: KAPAKLAR[`../../assets/film/kapak/${ad}.webp`] ?? '',
-        kapakDikey: KAPAKLAR[`../../assets/film/kapak/${ad}-dikey.webp`] ?? '',
-        dikeyUstKusurlu: DIKEY_UST_KUSURLU.has(ad),
+        kapak: kapakAdres(ad),
+        kapakDikey: kapakAdres(`${ad}-dikey`),
       };
     });
 }
-
-/**
- * Gemini'nin dikey kapağında üst kısmı kusurlu olanlar (Kaydırak: ağacın tepesi düz kesik; Sihirli Söz: bulanık
- * tente). Yeniden çizilene kadar Çizgi Filmler kartında kesitin altı (üst %30 dışarıda), film kapağında yatay kapak.
- */
-const DIKEY_UST_KUSURLU = new Set(['kino-kaydirak', 'kino-lutfen']);
 
 /** dikey kapağın kullanıldığı ekran: dikey telefon (katalog.css'teki kuralla aynı) */
 export const KAPAK_DIKEY_MEDYA = '(orientation: portrait) and (max-width: 699px)';
@@ -179,7 +176,7 @@ export function katalogEkrani(app: Uygulama, p?: { sec?: string }): Ekran {
     // dikey telefonda dikey kapak (aynı kart, resim dikey çizim): <picture> ekran dönünce kendisi değişir
     const resim = f.kapak ? h('img', { src: f.kapak, alt: '', draggable: 'false', decoding: 'async' }) : h('span.fl-k-kapak-bos');
     const kapak = h(
-      `span.fl-k-kapak${f.kapakDikey ? '.dikey-var' : ''}${f.dikeyUstKusurlu ? '.dikey-alt' : ''}`,
+      `span.fl-k-kapak${f.kapakDikey ? '.dikey-var' : ''}`,
       {},
       f.kapak && f.kapakDikey ? h('picture', {}, h('source', { media: KAPAK_DIKEY_MEDYA, srcset: f.kapakDikey }), resim) : resim,
       h('span.fl-k-parilti', { 'aria-hidden': 'true' }),

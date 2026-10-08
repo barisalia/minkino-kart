@@ -307,10 +307,6 @@
   .fl-kok .fl-k-kapak.dikey-var img {
     object-position: 50% 80%;
   }
-  /* üstü kusurlu dikey kapak: kesit en alttan (üst %30 görünmez) */
-  .fl-kok .fl-k-kapak.dikey-alt img {
-    object-position: 50% 100%;
-  }
 }
 .fl-kok .fl-film-kart.basili .fl-k-kapak img,
 .fl-kok .fl-film-kart.secildi .fl-k-kapak img {

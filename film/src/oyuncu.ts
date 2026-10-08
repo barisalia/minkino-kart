@@ -444,17 +444,21 @@ export class Oyuncu {
     return this.karakter.hazir.then(() => this.parca(ad));
   }
 
-  /** Parçaya eşya takar (çizim birimleriyle merkez, genişlik, açı); arka: parçanın arkasında (patinin tuttuğu eşya) */
-  tasi(ad: string, url: string, parca: string, x: number, y: number, w: number, oran: number, don = 0, arka = false): Promise<void> {
+  /**
+   * Parçaya eşya takar (çizim birimleriyle merkez, genişlik, açı); arka: parçanın arkasında (patinin tuttuğu eşya).
+   * ic: resmin kutuda kapladığı oran (esya.ts → ESYA_IC); kutu (bırakınca dönen genişlik) aynı kalır.
+   */
+  tasi(ad: string, url: string, parca: string, x: number, y: number, w: number, oran: number, don = 0, arka = false, ic = 1): Promise<void> {
     return this.parcaHazir(parca).then((g) => {
       if (!g) return;
       g.querySelector(`[data-tasinan="${ad}"]`)?.remove();
-      const hh = w / oran;
+      const rw = w * ic;
+      const hh = rw / oran;
       const im = document.createElementNS('http://www.w3.org/2000/svg', 'image');
       im.setAttribute('href', url);
-      im.setAttribute('x', String(x - w / 2));
+      im.setAttribute('x', String(x - rw / 2));
       im.setAttribute('y', String(y - hh / 2));
-      im.setAttribute('width', String(w));
+      im.setAttribute('width', String(rw));
       im.setAttribute('height', String(hh));
       im.setAttribute('transform', `rotate(${don} ${x} ${y})`);
       im.dataset.tasinan = ad;
@@ -501,12 +505,12 @@ export class Oyuncu {
   }
 
   /** Ekrandaki bir eşyayı (merkez, genişlik px, açı) aynı yerde parçaya takar */
-  al(ad: string, url: string, parca: string, merkez: { x: number; y: number }, genislik: number, oran: number, don: number) {
+  al(ad: string, url: string, parca: string, merkez: { x: number; y: number }, genislik: number, oran: number, don: number, ic = 1) {
     const g = this.parca(parca);
     if (!g) return;
     const m = this.matris(g);
     const p = m.cizime(merkez.x, merkez.y);
-    void this.tasi(ad, url, parca, p.x, p.y, genislik / m.olcek, oran, don - m.aci);
+    void this.tasi(ad, url, parca, p.x, p.y, genislik / m.olcek, oran, don - m.aci, false, ic);
   }
 
   /** Parçadaki eşyayı bırakır: ekrandaki merkezi, genişliği (px) ve açısı döner */

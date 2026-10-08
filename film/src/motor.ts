@@ -16,7 +16,7 @@ import { KINO_SESI, konus, konusuyorMu, sus } from '../../src/audio/ses';
 import { iskeletVar, svgGetir } from '../../src/karakter/karakter';
 import { yandanYukle } from '../../src/karakter/yandan';
 import { h, TEST_MODU } from '../../src/ui/dom';
-import { esyaAdresi, esyaCiz, ESYA_ALT, ESYA_MERKEZ, ESYA_ORAN } from './esya';
+import { esyaAdresi, esyaCiz, ESYA_ALT, ESYA_IC, ESYA_MERKEZ, ESYA_ORAN } from './esya';
 import { FILM_EFEKT } from './efekt';
 import { dosyaTamponu, filmMuzik, type DosyaSecenegi, type Ruh } from './muzik';
 import { Oyuncu } from './oyuncu';
@@ -529,7 +529,7 @@ export class Film {
       n.kirp = o.kirp ?? null;
       n.zemin = o.zemin ?? null;
       n.golgeEkle();
-      for (const t of o.tasi ?? []) oy.tasi(t.ad ?? t.tip, esyaAdresi(t.tip, this.dosya.film, this.dosya.malzeme) ?? '', t.parca, t.x, t.y, t.w, (ESYA_ORAN[t.tip] ?? 1), t.don ?? 0, !!t.arka);
+      for (const t of o.tasi ?? []) oy.tasi(t.ad ?? t.tip, esyaAdresi(t.tip, this.dosya.film, this.dosya.malzeme) ?? '', t.parca, t.x, t.y, t.w, (ESYA_ORAN[t.tip] ?? 1), t.don ?? 0, !!t.arka, ESYA_IC[t.tip]);
       if (o.durus) oy.durus(o.durus, 0);
       if (o.ifade) oy.ifade(o.ifade);
       this.oyuncular.set(id, oy);
@@ -1017,7 +1017,7 @@ export class Film {
     if (!oy || !n) return;
     const r = n.el.getBoundingClientRect();
     const tip = (this.esyaTip.get(esya) ?? esya);
-    oy.al(esya, esyaAdresi(tip, this.dosya.film, this.dosya.malzeme) ?? '', parca, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, r.width * n.olcek, ESYA_ORAN[tip] ?? 1, n.don * n.yon);
+    oy.al(esya, esyaAdresi(tip, this.dosya.film, this.dosya.malzeme) ?? '', parca, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, r.width * n.olcek, ESYA_ORAN[tip] ?? 1, n.don * n.yon, ESYA_IC[tip]);
     n.saydam = 0;
   }
 

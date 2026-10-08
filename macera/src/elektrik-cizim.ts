@@ -26,23 +26,14 @@ const parla = (cx: number, cy: number, rx: number, ry: number, a = -20, o = 0.55
 const deg = (id: string, a: string, b: string, x2 = 0, y2 = 1) =>
   `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
 
-/** Küp (kule): ön yüz renkli, üst açık, yan koyu; ön yüzde yıldız / kalp / daire / üçgen */
-export function kupSvg(renk: [string, string, string], desen: 'yildiz' | 'kalp' | 'daire' | 'ucgen', id: string): string {
-  const [acik, orta, koyu] = renk;
-  const d = {
-    yildiz: '<path d="M40 44L44.7 54.2L55.8 55.3L47.4 62.7L49.9 73.6L40 67.9L30.1 73.6L32.6 62.7L24.2 55.3L35.3 54.2Z"/>',
-    kalp: '<path d="M40 72C28 63 22 56 23 49C24 43 31 41 35 45L40 50L45 45C49 41 56 43 57 49C58 56 52 63 40 72Z"/>',
-    daire: '<circle cx="40" cy="58" r="14"/>',
-    ucgen: '<path d="M40 44L55 70H25Z"/>',
-  }[desen];
-  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>${deg(`${id}-o`, acik, orta)}</defs>
-<g stroke="${K}" stroke-width="4.5" stroke-linejoin="round">
-<path d="M8 30L28 12H92L72 30Z" fill="${acik}"/>
-<path d="M72 30L92 12V74L72 94Z" fill="${koyu}"/>
-<rect x="8" y="30" width="64" height="64" rx="7" fill="url(#${id}-o)"/>
-</g>
-<g fill="#fff" opacity=".85" stroke="${K}" stroke-width="3" stroke-linejoin="round">${d}</g>
-${parla(22, 40, 9, 3.5, -10, 0.6)}<path d="M34 20H80" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".55"/></svg>`;
+/**
+ * Oyuncak küpler: Oyuncak Sepeti filmiyle aynı boyalı çizimler (assets/film/esya/kup-*.webp, Recraft, kırpılmış;
+ * kırmızı daire, sarı yıldız, mavi kalp, yeşil üçgen). Eski kod küpün kutudaki yeri elektrik.css'te (.el-kup img).
+ */
+const KUP_RESIM = import.meta.glob<string>('../../assets/film/esya/kup-*.webp', { eager: true, query: '?url', import: 'default' });
+export type KupRenk = 'kirmizi' | 'sari' | 'mavi' | 'yesil';
+export function kupResim(renk: KupRenk): HTMLElement {
+  return h('img', { src: KUP_RESIM[`../../assets/film/esya/kup-${renk}.webp`] ?? '', alt: '', draggable: 'false', decoding: 'async' });
 }
 
 /** Komodin (iki çekmeceli, ahşap): üst çekmecenin yeri boş (koyu oyuk); çekmece ayrı eleman (cekmeceSvg) */
