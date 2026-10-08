@@ -70,7 +70,7 @@ Diğer sahneler her yaşta aynı. Kolaylık kuralı: 2 yanlışta ya da 8 saniye
   - Ada: el sallama, zıplama.
   - Anne: ayakta ve oturan.
   - Ege: oturan; kıkırdama, bakma ve uyku ifadeleri Ege bölümünden.
-- **Yeni poz gerekebilir:** Kino baş aşağı zincire sarılı (kodla: gövde ters döner, patiler zincire kenetlenir); Kino kuma gömülü, yalnız kuyruğu dışarıda (kod: kum katmanı önde).
+- **Yeni poz gerekebilir:** Kino oturakta inmek istemiyor (kodla: oturur, kollar havada, başını iki yana sallar; 2026-10-08 Barış: baş aşağı Kino hata gibi görünüyordu); Kino kuma gömülü, yalnız kuyruğu dışarıda (kod: kum katmanı önde).
 
 ---
 

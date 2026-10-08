@@ -975,7 +975,9 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       S.hop(0.8);
       KN.gov.style.rotate = '';
       // takla iki yarıda: tepede (dönerken) çizim önden görünüşe geçer ve oturuş yerine kayar; iniş yumuşak (birden atlamaz)
-      await KN.gov.animate([{ rotate: '0deg', translate: '0 0' }, { rotate: '180deg', translate: '0 -40%' }], { duration: sure(310), easing: 'cubic-bezier(0.4, 0, 0.6, 1)' }).finished.catch(() => undefined);
+      // (ilk yarı tepede bekler: ikinci yarı başlayana dek bir kare bile dik görünüp geri atlamaz)
+      const ilkYari = KN.gov.animate([{ rotate: '0deg', translate: '0 0' }, { rotate: '180deg', translate: '0 -40%' }], { duration: sure(310), easing: 'cubic-bezier(0.4, 0, 0.6, 1)', fill: 'forwards' });
+      await ilkYari.finished.catch(() => undefined);
       const p = binYer(KINO_OTURMA);
       const once = KN.el.getBoundingClientRect();
       KN.el.classList.toggle('sl-yandan', false);
@@ -988,7 +990,11 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       const olcek = sonra.width / Math.max(1, KN.el.offsetWidth) || 1;
       const dy = (once.bottom - sonra.bottom) / olcek;
       KN.el.animate([{ translate: `0px ${dy}px` }, { translate: '0px 0px' }], { duration: sure(310), easing: 'cubic-bezier(0.3, 0, 0.4, 1)' });
-      await KN.gov.animate([{ rotate: '180deg', translate: '0 -40%' }, { rotate: '360deg', translate: '0 0' }], { duration: sure(310), easing: 'cubic-bezier(0.4, 0, 0.3, 1)' }).finished.catch(() => undefined);
+      const ikinciYari = KN.gov.animate([{ rotate: '180deg', translate: '0 -40%' }, { rotate: '360deg', translate: '0 0' }], { duration: sure(310), easing: 'cubic-bezier(0.4, 0, 0.3, 1)' });
+      ilkYari.cancel();
+      await ikinciYari.finished.catch(() => undefined);
+      // her durumda dik biter
+      KN.gov.style.rotate = '';
       S.pat();
       // Mino alkışlar: "İşte böyle!"
       MN.tepki('evet');
@@ -1214,30 +1220,23 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
 
   // ================================================================ 3: "Bir daha!"
   async function sahne3() {
-    // Can bekleme çizgisine gelir; Kino zincire baş aşağı sarılır
+    // Can bekleme çizgisine gelir; Kino oturakta kalır, kollarını kaldırıp "Bir daha!" der (inmek istemez)
     const canBekle = { x: ASKI.buyuk + (dar ? 24 : 30), y: ZEMIN - 7 };
     otur(CAN, false);
     CAN.katman = 11;
     void CAN.git(X(CAN_BANK.x), Y(ZEMIN), 300, false).then(() => CAN.git(X(canBekle.x), Y(canBekle.y), 1400));
     S.hop(0.7);
-    kn.otur = false;
+    // oturaktan kalkmaz: oturuşu bozulmadan kollar havaya, minik bir hop (salıncakla birlikte sallanır)
     kn.yukSol = kn.yukSag = 150;
-    // oturaktan kalkıp zincire tırmanır (yerinden birden atlamaz): FLIP
-    {
-      const once = KN.el.getBoundingClientRect();
-      KN.el.classList.add('sl-bas-asagi');
-      KN.el.style.setProperty('--y', String(binYer(-3).y));
-      const sonra = KN.el.getBoundingClientRect();
-      const olcek = sonra.width / Math.max(1, KN.el.offsetWidth) || 1;
-      KN.el.animate([{ translate: `${(once.left - sonra.left) / olcek}px ${(once.bottom - sonra.bottom) / olcek}px` }, { translate: '0px 0px' }], { duration: sure(500), easing: 'cubic-bezier(0.3, 0, 0.3, 1)' });
-    }
-    await KN.gov.animate([{ rotate: '0deg' }, { rotate: '180deg' }], { duration: sure(500), easing: 'cubic-bezier(0.4, 0, 0.3, 1.3)' }).finished.catch(() => undefined);
-    KN.gov.style.rotate = '180deg';
+    KN.kinoOynat('coskulu', 900);
+    await KN.gov.animate([{ scale: '1 1' }, { scale: '1.08 0.9', offset: 0.3 }, { scale: '0.96 1.05', offset: 0.65 }, { scale: '1 1' }], { duration: sure(480), easing: 'ease-out' }).finished.catch(() => undefined);
     BUYUK.s.genlikYap(0.34);
     await (dar ? cekB(-86, 16, ZEMIN - 10, BAR_Y + 6, 2.2, 900) : cekSalincak(900, 2.2));
     await kSoyle(KN_.bir_daha);
     CAN.uzgun(0.9);
     await bekle(400);
+    // "inmem!": başını iki yana sallar
+    void KN.kar?.oynat('hayir', 900);
     await mSoyle(M.inmiyor);
     await sesliGorev(() => susGorevi());
     // salıncak durdu; Kino'nun kulakları bir süre daha kendi kendine sallanır
@@ -1249,11 +1248,9 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await bekle(1800);
     kulakDur();
     kn.kulakSal = 0;
-    // Kino döner, iner, bekleme çizgisinin arkasına geçer; Can biner
-    await KN.gov.animate([{ rotate: '180deg' }, { rotate: '360deg' }], { duration: sure(420), easing: 'ease-in-out' }).finished.catch(() => undefined);
-    KN.gov.style.rotate = '';
-    KN.el.classList.remove('sl-bas-asagi');
+    // Kino kollarını indirir, iner, bekleme çizgisinin arkasına geçer; Can biner
     kn.yukSol = kn.yukSag = 0;
+    await bekle(250);
     await in_(KN, BEKLE.x, BEKLE.y, 13);
     KN.katman = 13;
     KN.kinoIfade('uzgun');
@@ -1777,8 +1774,11 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     KN.el.classList.remove('sl-sikisik');
     otur(KN, false);
     KN.gov.style.translate = '';
-    await atla(KN.el, dunya, X(ASKI.bebek - 22), Y(ZEMIN - 4), 800, 90, 13);
-    void KN.gov.animate([{ rotate: '0deg' }, { rotate: '-360deg' }], { duration: sure(700), easing: 'ease-out' });
+    // takla havadayken: yay boyunca tam tur döner, dik iner (yere inince dönmez)
+    const ucus = atla(KN.el, dunya, X(ASKI.bebek - 22), Y(ZEMIN - 4), 800, 90, 13);
+    const takla = KN.gov.animate([{ rotate: '0deg' }, { rotate: '-360deg' }], { duration: sure(760), easing: 'cubic-bezier(0.35, 0, 0.45, 1)' });
+    await ucus;
+    await takla.finished.catch(() => undefined);
     KN.el.classList.remove('sl-binen');
     hedefY.set(KN, Y(ZEMIN - 4));
     KN.koy(X(ASKI.bebek - 22), Y(ZEMIN - 4));

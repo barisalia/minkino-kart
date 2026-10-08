@@ -326,14 +326,21 @@ export const KUME_ORAN = (PARK_RESIM.kume.w * 2752) / ((1 - PARK_RESIM.kume.y0) 
 export const KUME_AYRI_ORAN = 1600 / 1018;
 
 // ---------------------------------------------------------------- bekleme çizgisi
-/** Sarı bekleme çizgisi (yerde, perspektifle yassı) */
+/**
+ * Sarı bekleme çizgisi: çimene boyanmış tek parça, uçları yuvarlak şerit (perspektifle yassı); eşyalar gibi koyu
+ * kahve konturlu, üstte parlak, altta yumuşak gölge. Ortasında iki pati izi: "burada beklenir".
+ */
 export function beklemeCizgisiSvg(): string {
-  let s = '';
-  for (let i = 0; i < 9; i++) {
-    const x = 20 + i * 70;
-    s += `<path d="M${x} 16 L${x + 48} 16 L${x + 44} 30 L${x - 4} 30 Z" fill="#ffd23a" stroke="#8a5a14" stroke-width="3" stroke-linejoin="round"/>`;
-  }
-  return `<svg viewBox="0 0 660 40" aria-hidden="true">${s}</svg>`;
+  // pati izi: perspektifle yassı (yerde)
+  const pati = (x: number) =>
+    `<g transform="translate(${x} 28) scale(1 .62)" fill="#e39a12"><ellipse cx="0" cy="3" rx="10" ry="7"/><circle cx="-11" cy="-6" r="3.8"/><circle cx="-4" cy="-10.5" r="3.8"/><circle cx="4" cy="-10.5" r="3.8"/><circle cx="11" cy="-6" r="3.8"/></g>`;
+  return `<svg viewBox="0 0 660 50" aria-hidden="true">
+    <ellipse cx="330" cy="40" rx="318" ry="9" fill="rgba(52,70,20,.22)"/>
+    <path d="M42 14 H618 Q640 14 638 26 Q636 38 614 38 H46 Q24 38 22 26 Q20 14 42 14 Z" fill="#ffd23a" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M28 30 Q34 35 48 35 H612 Q628 35 633 29" fill="none" stroke="#f0b21e" stroke-width="5" stroke-linecap="round"/>
+    <path d="M50 20 H600" stroke="#fff6c4" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+    ${pati(296)}${pati(364)}
+  </svg>`;
 }
 
 /** Can'ın asık yüzü: ağzın yerine ters kavis (kafa katmanına eklenir; Can iskeletinin ağız noktası 1020,885) */
