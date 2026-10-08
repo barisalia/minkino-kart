@@ -33,6 +33,8 @@ export type { BaslatSecenekleri };
 
 export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}): () => void {
   const app = new Uygulama(kok, secenekler);
+  // Kartlar'a özel zemin (resimli oyun odası) ve resimli parçalar kartlar.css'te bu sınıfın altında
+  kok.classList.add('kartlar-kok');
   const q = new URLSearchParams(location.search);
   if (q.has('test') && q.get('yas')) {
     // Test kısayolu: ?test=1&yas=5&tema=sayilar[&ekran=album][&mod=hafiza]

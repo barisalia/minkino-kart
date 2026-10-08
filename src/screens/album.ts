@@ -127,7 +127,11 @@ export function albumEkrani(app: Uygulama, param?: { tema?: string }): Ekran {
   TEMALAR.forEach((t) => {
     const acik = temaDurumu(t, durum.i.album.length, durum.i.premium).acik;
     const s = h('button.sekme', { style: `--r:${t.renk}`, 'data-tema': t.id, 'aria-label': t.ad, role: 'tab', type: 'button' }, kartEl(t.kapak));
-    if (!acik) s.classList.add('kilitli');
+    // kilitli sekme: kapak resmi renkli kalır, üstünde kilit rozeti (gri silik ikon ucuz duruyordu)
+    if (!acik) {
+      s.classList.add('kilitli');
+      s.append(h('i.sekme-kilit', { 'aria-hidden': 'true' }, svg(IKON.kilit)));
+    }
     s.addEventListener('click', () => {
       efekt.sayfa();
       goster(t);

@@ -635,3 +635,158 @@
     gap: clamp(20px, 3.5vh, 36px);
   }
 }
+
+/* ---------- Resimli zemin: sıcak oyun odası (yatay / dikey çizim); kartların arkasında sakin kalır ---------- */
+.mk-kok.kartlar-kok .zemin {
+  background: #fff3dc url('../../assets/kartlar/oda-yatay.webp') center bottom / cover no-repeat;
+}
+.mk-kok.kartlar-kok .zemin::before {
+  /* duvarı hafif ılıt, ortayı yumuşat: kartlar öne çıksın */
+  opacity: 1;
+  /* krem tül: oda arka planda kalır (oyuncak ayı, kart resimleriyle yarışmasın) */
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(255, 250, 238, 0.5), transparent 75%),
+    linear-gradient(180deg, rgba(255, 240, 214, 0.5), rgba(255, 236, 206, 0.42));
+  background-size: auto;
+}
+@media (orientation: portrait) {
+  .mk-kok.kartlar-kok .zemin {
+    background-image: url('../../assets/kartlar/oda-dikey.webp');
+  }
+}
+/* Mino ekranı da odada: Mino yerde durur */
+.mk-kok.kartlar-kok .mino-ekran {
+  background: none;
+}
+
+/* ---------- Kart arka yüzü: Mino ile Kino madalyonlu mor çizim ---------- */
+.mk-kok.kartlar-kok .kart-arka {
+  background: #6f35b8 url('../../assets/kartlar/kart-arka.webp') center / cover no-repeat;
+}
+.mk-kok.kartlar-kok .kart-arka::before,
+.mk-kok.kartlar-kok .kart-arka .arka-rozet {
+  display: none;
+}
+
+/* ---------- Albüm: kilitli sekme kapak resmiyle, üstünde kilit rozeti ---------- */
+.mk-kok .sekme.kilitli {
+  filter: none;
+  opacity: 1;
+  background: #fff8ec;
+}
+.mk-kok .sekme.kilitli .kart {
+  filter: saturate(0.8);
+}
+.mk-kok .sekme-kilit {
+  position: absolute;
+  right: -9px;
+  bottom: -9px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sari);
+  border: 3px solid var(--kontur);
+  box-shadow: 0 3px 0 var(--kontur-yumusak);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  color: var(--kontur);
+}
+
+/* ---------- Mino ekranı: çizilmiş düşünce bulutu ---------- */
+.mk-kok.kartlar-kok .dusunce {
+  --dw: clamp(118px, 31vw, 168px);
+  width: var(--dw);
+  height: calc(var(--dw) * 0.906);
+  aspect-ratio: auto;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: url('../../assets/kartlar/dusunce.webp') center / contain no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 0 var(--kontur-yumusak));
+  /* içerik bulutun gövdesine ortalanır (alttaki küçük kabarcıklar boş kalır) */
+  padding: 8% 10% 22% 12%;
+}
+.mk-kok.kartlar-kok .dusunce::after {
+  display: none;
+}
+.mk-kok.kartlar-kok .dusunce img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.mk-kok.kartlar-kok .dusunce b {
+  font-size: calc(var(--dw) * 0.4);
+  line-height: 1;
+}
+
+/* ---------- Tur sonu ve albüm: kaydırılan albüm düz bir çizgiyle kesilmez, alta doğru yumuşakça kaybolur ---------- */
+.mk-kok .tur-sonu > .kaydir,
+.mk-kok .album > .kaydir {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 34px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 34px), transparent);
+  padding-bottom: 26px;
+}
+/* Yatay telefon: yıldızlar + Mino + düğmeler solda, albüm sağda tam boy (siluetler kesilmeden görünür) */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mk-kok .tur-sonu {
+    display: grid;
+    grid-template-columns: minmax(200px, 30%) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    column-gap: 14px;
+  }
+  .mk-kok .tur-sonu .ts-ust {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+    align-content: center;
+  }
+  .mk-kok .tur-sonu .ts-mino {
+    justify-self: center;
+    grid-row: 2;
+    width: 84px;
+  }
+  .mk-kok .tur-sonu .yildizlar {
+    margin: 4px 0 6px;
+  }
+  .mk-kok .tur-sonu > .kaydir {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding-top: 6px;
+  }
+  .mk-kok .tur-sonu .album-sayfa {
+    margin-bottom: 0;
+  }
+  .mk-kok .tur-sonu .alt-dugmeler {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 0 0 4px;
+  }
+  /* Albüm: sekmeler solda iki sütun, sayfa sağda tam boy (yatayda sayfaya bir sıra bile sığmıyordu) */
+  .mk-kok .album {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 12px;
+  }
+  .mk-kok .album > .ust-cubuk {
+    grid-column: 1 / -1;
+  }
+  .mk-kok .album .album-sekmeler {
+    display: grid;
+    grid-template-columns: repeat(2, var(--dokunma));
+    grid-auto-rows: var(--dokunma);
+    gap: 12px 10px;
+    align-content: start;
+    overflow: visible;
+    padding: 6px 8px 0 4px;
+  }
+  .mk-kok .album > .kaydir {
+    padding-top: 6px;
+  }
+}

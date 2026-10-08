@@ -122,6 +122,32 @@ function resimEl(k: Kart, sinif = 'kart-resim'): HTMLElement {
   return img;
 }
 
+/**
+ * Renk ve şekil kartlarının resimleri (assets/renkler): boya kutusu, renk sepeti, parlak şekil.
+ * Resim yoksa (yeni bir renk/şekil eklendi ama çizilmedi) eski SVG çizimine düşülür.
+ */
+export function renkResmi(onek: 'boya' | 'sepet' | 'sekil', k: Kart): string | undefined {
+  const ad = onek === 'sekil' ? k.deger : k.id.replace(/^renk-/, '');
+  return ad ? gorselMap.get(`renkler/${onek}-${ad}.webp`) : undefined;
+}
+
+function cizimResim(url: string, alt: string): HTMLElement {
+  const img = h('img', { class: 'kart-resim', src: url, alt, draggable: 'false', decoding: 'async' });
+  if (!img.complete) {
+    img.classList.add('kart-yukleniyor');
+    img.addEventListener('load', () => img.classList.remove('kart-yukleniyor'), { once: true });
+  }
+  return img;
+}
+
+/**
+ * Boy sırası soruları (olcek 0.3-1): en küçük kart telefonda da seçilebilir büyüklükte kalsın diye
+ * görünen ölçek 0.5 + 0.5·olcek (0.3 → 0.65, 1 → 1). Sıra ve aradaki fark korunur.
+ */
+export function gorunenOlcek(olcek: number): number {
+  return Math.round((0.5 + 0.5 * Math.max(0, Math.min(1, olcek))) * 1000) / 1000;
+}
+
 function sayiRengi(n: number): string {
   return RENKLER[n % RENKLER.length];
 }
@@ -149,10 +175,14 @@ function icerik(r: KartRef, ornekGoster: boolean): HTMLElement {
 
 function tekIcerik(k: Kart, ornekGoster = false): HTMLElement {
   switch (k.tur) {
-    case 'renk':
-      return h('div.kart-cizim', { html: boyaSvg(k.deger ?? '#ccc') });
-    case 'sekil':
-      return h('div.kart-cizim', { html: sekilSvg(k.deger ?? 'daire', k.renk ?? '#3E9DF2') });
+    case 'renk': {
+      const url = renkResmi('boya', k);
+      return url ? cizimResim(url, k.ad) : h('div.kart-cizim', { html: boyaSvg(k.deger ?? '#ccc') });
+    }
+    case 'sekil': {
+      const url = renkResmi('sekil', k);
+      return url ? cizimResim(url, k.ad) : h('div.kart-cizim', { html: sekilSvg(k.deger ?? 'daire', k.renk ?? '#3E9DF2') });
+    }
     case 'sayi': {
       const n = Number(k.deger);
       const noktalar = h('div.sayi-noktalar');
@@ -178,6 +208,16 @@ export interface KartSecenek {
   sinif?: string;
   /** Harf kartlarında örnek resmi göster (albümde). Oyunda cevabı ele vermesin diye kapalı. */
   ornek?: boolean;
+  /**
+   * Geniş (yatay) kart. Verilmezse 4+ adetli kart geniş olur. Bir dizide kartlar aynı boyda olsun diye
+   * dizinin tamamı için `diziGenis()` ile verilir.
+   */
+  genis?: boolean;
+}
+
+/** Dizide 4+ adetli kart varsa hepsi geniş: biri ötekilerden küçük/farklı durmasın. */
+export function diziGenis(girdiler: KartGirdi[]): boolean {
+  return girdiler.some((g) => (refCoz(g).adet ?? 1) >= 4);
 }
 
 /** Bir kart referansını kart elemanına çevirir. */
@@ -189,12 +229,13 @@ export function kartEl(g: KartGirdi, sec: KartSecenek = {}): HTMLElement {
     'data-kart': r.kart ?? r.yazi ?? '',
   });
   if (sec.sinif) el.classList.add(...sec.sinif.split(' '));
-  if (r.olcek) el.style.setProperty('--olcek', String(r.olcek));
-  if ((r.adet ?? 1) >= 4) el.classList.add('genis');
+  if (r.olcek) el.style.setProperty('--olcek', String(gorunenOlcek(r.olcek)));
+  if (sec.genis ?? (r.adet ?? 1) >= 4) el.classList.add('genis');
 
   let ic: HTMLElement;
   if (bicim === 'renk' && k) {
-    ic = h('div.kart-cizim', { html: sepetSvg(k.deger ?? '#ccc') });
+    const url = renkResmi('sepet', k);
+    ic = url ? cizimResim(url, k.ad) : h('div.kart-cizim', { html: sepetSvg(k.deger ?? '#ccc') });
   } else {
     ic = icerik(r, !!sec.ornek);
   }
@@ -204,10 +245,10 @@ export function kartEl(g: KartGirdi, sec: KartSecenek = {}): HTMLElement {
 
 /** Kart dizisi için yükseklik/genişlik oranı (hepsi geniş kartsa yatay oran). */
 export function diziOrani(girdiler: KartGirdi[]): number {
-  return girdiler.length && girdiler.every((g) => (refCoz(g).adet ?? 1) >= 4) ? 0.78 : 1.12;
+  return diziGenis(girdiler) ? 0.78 : 1.12;
 }
 
-/** Kartın arka yüzü (Minkino desenli). */
+/** Kartın arka yüzü: Mino ile Kino madalyonlu mor desen (resim kartlar.css'te; resim yoksa CSS deseni + rozet). */
 export function kartArkasi(): HTMLElement {
   return h('div.kart-arka', {}, h('div.arka-rozet', {}, h('span', {}, 'm')));
 }
