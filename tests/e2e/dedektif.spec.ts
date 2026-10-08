@@ -169,7 +169,7 @@ test('Dedektif Mino: 10 sn bulunamazsa Kino koklar; büyüteç ve dosya ekranda'
   // büyüteç ekranda, ipucu çıplak gözle görünmez
   await expect(page.locator('.bt-mercek:not(.bt-gizlendi)')).toHaveCount(1);
   // (çıplak gözle yalnız çok soluk gölgesi ve göz kırpan yıldızı sezilir; merceğin camında bütünüyle görünür)
-  expect(Number(await page.locator('.dd-sahne [data-ipucu="tuy"] img').evaluate((e) => getComputedStyle(e).opacity))).toBeLessThan(0.3);
+  expect(await page.locator('.dd-sahne [data-ipucu="tuy"]').evaluate((e) => Number(getComputedStyle(e).opacity) * Number(getComputedStyle(e.querySelector('img')!).opacity))).toBeLessThan(0.3);
   // Kino koklar (burnuyla yeri gösterir)
   await adimBekle(page, /^kokla-tuy$/, 15_000);
   await adimBekle(page, /^ara-tuy$/, 15_000);

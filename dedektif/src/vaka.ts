@@ -351,6 +351,8 @@ class Vaka {
       this.aranan = hk;
       const hedefler: BuyutecHedef[] = kalan.map((t) => ({ id: t.id, yer: () => this.dunya.merkez(this.ipucuEl(t.id)!) }));
       this.buyutec.hedefleriKur(hedefler);
+      // aranan ipuçları çıplak gözle de sezilir (soluk gölge, göz kırpan yıldız: dedektif.css); öbür halkalarınkiler görünmez
+      for (const t of kalan) this.ipucuEl(t.id)?.classList.add('dd-aranan');
       this.buyutec.goster(true);
       this.buyutec.yenile();
       // büyüteç ilk kez: Mino'nun gözünün önünden sahnenin ortasına süzülür; parmak gezdirmeyi gösterir

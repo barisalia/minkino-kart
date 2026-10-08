@@ -228,14 +228,14 @@
   opacity: 0.92;
 }
 /*
- * Gizli ipucu çıplak gözle de sezilir (4 yaş "nereye bakayım?" demesin): yerinde çok soluk bir gölgesi durur, ara ara
+ * Aranan gizli ipucu çıplak gözle de sezilir (4 yaş "nereye bakayım?" demesin): yerinde çok soluk bir gölgesi durur, ara ara
  * küçük bir yıldız göz kırpar; mercek yaklaştıkça gölge koyulaşır (--yakin: büyütecin yakınlığı). Merceğin camında
  * ipucu bütünüyle görünür (açık okuma), yıldız camda yoktur.
  */
-.dd-kok .dd-ipucu.bt-gizli {
+.dd-kok .dd-ipucu.bt-gizli.dd-aranan {
   opacity: 1;
 }
-.dd-kok .dd-ipucu.bt-gizli img {
+.dd-kok .dd-ipucu.bt-gizli.dd-aranan img {
   opacity: calc(0.2 + var(--yakin, 0) * 0.3);
   filter: saturate(0.6);
   transition: opacity 0.3s;
@@ -244,7 +244,7 @@
   opacity: 0.92;
   filter: none;
 }
-.dd-kok .dd-ipucu.bt-gizli::before {
+.dd-kok .dd-ipucu.bt-gizli.dd-aranan::before {
   content: '';
   position: absolute;
   left: 62%;
@@ -271,7 +271,7 @@
   90% { opacity: 0; transform: scale(0.5) rotate(45deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dd-kok .dd-ipucu.bt-gizli::before {
+  .dd-kok .dd-ipucu.bt-gizli.dd-aranan::before {
     animation: none;
     opacity: 0.6;
     transform: none;
