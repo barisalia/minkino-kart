@@ -27,17 +27,19 @@ export interface Oturma {
   don?: number;
 }
 const OTURMA: Record<string, Oturma> = {
-  // pati izi halıdaki izin tam üstüne (çerçevesiz, izin rengine karışır)
-  iz: { x: 0.5, y: 0.52, w: 0.36, sade: true, don: 0 },
+  // kedi kartı halıdaki izin yanına (izi bırakan hayvan, yan yana)
+  iz: { x: 0.74, y: 0.7, w: 0.48, sade: false, don: 8 },
   // beyaz kedi kartı tüyün yanına (aynı renk, yan yana)
   tuy: { x: 0.74, y: 0.7, w: 0.48, sade: false, don: 8 },
-  // kelebek sarı tozun üstüne konar
-  neden: { x: 0.5, y: 0.5, w: 0.62, sade: true, don: -6 },
+  // kelebeği kovalayan kedi sarı tozun yanına
+  neden: { x: 0.72, y: 0.68, w: 0.52, sade: false, don: -6 },
 };
 
 /** Kartın görünüşü (Vaka 1: mantik.ts → KARTLAR; Vaka 2 kendi tablosunu verir) */
 export interface KartGorunus {
   resim: string;
+  /** ölçüde (kart ipucunun üstüne inince) görünen resim: hayvan kartı izin üstünde kendi ayak izine dönüşür */
+  olcu?: string;
   renk: string;
   tepki?: string;
 }
@@ -271,9 +273,23 @@ function kartEl(id: string, i: number, tablo: Record<string, KartGorunus>): HTML
   const t = tablo[id];
   return h(
     'button.dd-kart',
-    { type: 'button', 'data-kart': id, 'aria-label': id, style: `--i:${i};--kr:${t.renk}` },
+    { type: 'button', 'data-kart': id, 'aria-label': id, 'data-olcu': t.olcu ? (resim(t.olcu) ?? undefined) : undefined, style: `--i:${i};--kr:${t.renk}` },
     h('span.dd-kart-ic', {}, h('img', { src: resim(t.resim) ?? '', alt: '', draggable: 'false' })),
   );
+}
+
+/** Kart ölçüye geçer (ayak izine dönüşür) ya da kendi resmine döner; ölçü resmi yoksa bir şey olmaz */
+export function olcuResmi(k: HTMLElement, olcu: boolean) {
+  const img = k.querySelector<HTMLImageElement>('.dd-kart-ic img');
+  const u = k.dataset.olcu;
+  if (!img || !u) return;
+  if (olcu && !k.dataset.asil) {
+    k.dataset.asil = img.src;
+    img.src = u;
+  } else if (!olcu && k.dataset.asil) {
+    img.src = k.dataset.asil;
+    delete k.dataset.asil;
+  }
 }
 
 /** Kartın ortası ipucunun (biraz genişletilmiş) kutusunda mı */
@@ -316,7 +332,10 @@ async function dogruOturt(o: SorguSecenek, k: HTMLElement, delil: HTMLElement, y
   const ic = delil.querySelector('.dd-delil-foto')!.getBoundingClientRect();
   kartlar.forEach((x) => x !== k && x.classList.add('dd-cekil'));
   k.classList.add('dd-oturuyor');
-  if (ot.sade) k.classList.add('dd-sade');
+  if (ot.sade) {
+    k.classList.add('dd-sade');
+    olcuResmi(k, true);
+  }
   // sade kartın resmi kartın içinde %78 (kenar boşluğu): resim tam oturacağı boyda insin (yerine geçerken sıçramasın)
   await kartGotur(k, ic, ot.x, ot.y, (ic.width * ot.w) / (ot.sade ? 0.78 : 1), ot.don ?? 0, 460);
   // kart yerine fotoğrafın içindeki yuvaya yapışır (aynı yer, artık fotoğrafla birlikte döner)

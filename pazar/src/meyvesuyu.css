@@ -19,22 +19,11 @@
   font-size: 1.45em;
 }
 
-/* ---------- Kamera: müşteri gelince kadraj ona doğru yumuşakça yaklaşır ---------- */
+/* ---------- Kamera (kamera.ts): yakın çekimler JS ile (transform); derin katmanlar daha az yaklaşır ---------- */
 .pz-kok .pz-kamera {
   position: absolute;
   inset: 0;
-  transform-origin: 28% 92%;
-  transition: transform 1.3s cubic-bezier(0.45, 0.05, 0.25, 1);
-}
-.pz-kok .pz-kamera.pz-yakin {
-  transform: translateX(1.4%) scale(1.045);
-}
-/* uzaktaki yayalar yarı kadar kayar: derinlik */
-.pz-kok .pz-sahne > .pz-ufuk {
-  transition: transform 1.3s cubic-bezier(0.45, 0.05, 0.25, 1);
-}
-.pz-kok .pz-sahne.pz-yakin > .pz-ufuk {
-  transform: translateX(0.6%) scale(1.015);
+  /* will-change yok: yakın çekimde katman yeni ölçekte yeniden çizilir (bulanık büyütme olmaz) */
 }
 
 /* ---------- Düşen ürün: toz bulutları ve parıltı ---------- */
@@ -160,7 +149,7 @@
 /* ---------- Blender (standın tahtasının üstünde, sağda; Mino'nun yanında) ---------- */
 .pz-kok .ms-ekran .pz-stand .ms-blender {
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   left: 60%;
   bottom: 30%;
   width: 30%;
@@ -613,14 +602,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pz-kok .pz-kamera,
-  .pz-kok .pz-sahne > .pz-ufuk {
-    transition: none;
-  }
-  .pz-kok .pz-kamera.pz-yakin,
-  .pz-kok .pz-sahne.pz-yakin > .pz-ufuk {
-    transform: none;
-  }
   .pz-kok .ms-blender,
   .pz-kok .ms-leke,
   .pz-kok .ms-dalga,

@@ -18,8 +18,9 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { AZ, Bardak, Blender, YABANMERSINI } from './blender';
 import { canliSahne } from './canli';
-import { gorselStil, odulAni, stand } from './ekranlar';
-import { flamaYerlestir, parilti, resim } from './gorsel';
+import { gorselStil, musteriKutusu, odulAni, onTezgah, oran, oyunKamerasi, stand } from './ekranlar';
+import { Kamera } from './kamera';
+import { adres, boing, flamaYerlestir, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
 import { urunAdi } from './istek';
 import { brrSesi, icmeSesi } from './meyvesuyu-ses';
@@ -34,9 +35,9 @@ const yas = (): Yas => durum.i.yas ?? 4;
 const rastgele = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
 const onizleme = () => TEST_MODU || !!document.body.dataset.onizleme;
 
-/** Meyvenin resmi: mevcut görseller, yaban mersini kodla çizim */
+/** Meyvenin resmi: mevcut görseller; yaban mersini pazar setinden (yoksa kodla çizim) */
 function meyveResmi(id: string): HTMLElement {
-  if (id === 'yabanmersini') return h('div.pz-resim.ms-mersin', { role: 'img', 'aria-label': A.yabanmersini, html: YABANMERSINI });
+  if (id === 'yabanmersini') return adres('pazar/yabanmersini') ? resim('pazar/yabanmersini', '', A.yabanmersini) : h('div.pz-resim.ms-mersin', { role: 'img', 'aria-label': A.yabanmersini, html: YABANMERSINI });
   return resim(`meyveler/${id}`, '', urunAdi(id));
 }
 const meyveAdi = (id: string) => (id === 'yabanmersini' ? A.yabanmersini : urunAdi(id));
@@ -85,10 +86,12 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   canli.gun(0);
   const kamera = h('div.pz-kamera', {}, stand([h('div.pz-mino', {}, mino.el)], [blender.el]), musteriKap);
   const sahne = h('div.pz-sahne', {}, canli.ufuk, kamera);
-  const tezgah = h('div.pz-tezgah', {}, h('div.pz-tezgah-ust', {}, karDugme), urunler);
+  const tezgah = onTezgah(h('div.pz-tezgah-ust', {}, karDugme), urunler);
+  const zemin = h('div.pz-zemin', { 'aria-hidden': 'true' });
   const el = h(
     'div.pz-pazar.ms-ekran',
     { style: gorselStil('pazar/arkaplan'), 'data-yas': y },
+    zemin,
     canli.arka,
     h('div.ust-cubuk', {}, yuvarlakDugme(IKON.geri, 'Geri', () => app.git('acilis')), h('div.orta', {}, balon), sesDugmesi()),
     yildizlar,
@@ -96,6 +99,11 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     tezgah,
   );
   const flamaKapat = flamaYerlestir(el, kamera);
+  const kam = oyunKamerasi(el, sahne, kamera, tezgah, zemin, canli.arka, canli.ufuk);
+  // istek yakın çekimi sürerken çocuk tezgâha dokunursa kadraj hemen açılır (beklemeden oynar)
+  tezgah.addEventListener('pointerdown', () => aktif && kam.yakin && kam.genis(450));
+  /** blender'ın yakın çekim kutusu (kolu ve bardağıyla) */
+  const blenderKutu = () => kam.kutu(blender.el, { ust: 0.08, alt: 0.04, sol: 0.55, sag: 0.08 });
 
   let ist: MsIstek = msIstekUret(y, 0);
   let kapandi = false;
@@ -167,11 +175,18 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
           minoCanli.izleBasla();
         },
         tasi: (x) => minoCanli.izle(x),
-        birak: (hedefte) => {
+        birak: (hedefte, dokunus) => {
           sonBirakma = performance.now();
           minoCanli.izleBitti();
           if (hedefte) koy(e, id);
-          else geriGonder(e);
+          else {
+            geriGonder(e);
+            // dokununca meyve canlanır ve kendi notasını söyler
+            if (dokunus) {
+              boing(e);
+              efekt.nota(2 + (i % 6));
+            }
+          }
         },
       }),
     );
@@ -275,10 +290,13 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     setTimeout(() => minoCanli.karsila(), sure(450));
     kamera.classList.add('pz-yakin');
     sahne.classList.add('pz-yakin');
+    // gelen müşteri ile Mino birlikte; varınca istek yakın çekimi (müşteri ve bardaklı balonu)
+    kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, true), kam.kutu(mino.el, { alt: -0.35 })), { doluluk: 0.95, enCok: 1.3, sure: 1500 });
     await mu.gel();
     if (kapandi) return;
     mu.bekle(true);
     yazi.textContent = ist.yazi;
+    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.4, tamEkran: true });
     mu.konus(true);
 
     // doğru renk gelene kadar: meyve at → karıştır → dök → iç
@@ -292,8 +310,9 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       dugmeGuncelle();
       if (ilk) {
         ilk = false;
-        await soyle(ist.soz);
+        await Promise.all([soyle(ist.soz).then(() => mu.konus(false)), bekle(sure(kam.acik ? 1800 : 0))]);
         mu.konus(false);
+        if (aktif) kam.genis(1000);
       }
       await basti;
       if (kapandi) return;
@@ -303,9 +322,10 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       const icerik = blender.icindekiler;
       const sonuc = karisim(icerik) ?? 'kahverengi';
       el.dataset.sonuc = '';
-      // Mino blender'a bakar; blender döner, renk oluşur, bardağa dökülür
+      // Mino blender'a bakar; kamera blender'a yaklaşır: döner, renk oluşur, bardağa dökülür (yakın çekim)
       minoCanli.bakin(1, 2800);
       dugmeGuncelle();
+      kam.odakla(blenderKutu, { doluluk: 0.82, enCok: 2.8, sure: 750, dikey: 0.5, tamEkran: true });
       await blender.karistir(
         icerik.map((x) => SU_KODU[MEYVE_RENGI[x]]),
         SU_KODU[sonuc],
@@ -313,16 +333,19 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       if (kapandi) return;
       await blender.dok(SU_KODU[sonuc]);
       if (kapandi) return;
-      // Mino bardağı hazırlık-takip hareketiyle uzatır; bardak müşteriye uçar, müşteri içer
+      // Mino bardağı hazırlık-takip hareketiyle uzatır; kamera müşteriyi de kadraja alır, bardak ona uçar
       mino.tepki('sun');
       minoCanli.bakin(-0.9, 2000);
-      await bekle(sure(260));
+      kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, false), blenderKutu()), { doluluk: 0.94, enCok: 1.7, sure: 650, tamEkran: true });
+      await bekle(sure(kam.acik ? 680 : 260));
       await bardakUcur(SU_KODU[sonuc], mu);
       if (kapandi) return;
       const icilen = new Bardak(SU_KODU[sonuc]);
       icilen.dolu(1);
       icilen.el.classList.add('ms-pipetli');
       icmeSesi(3, 0.36);
+      // içerken yakın çekim: yalnız müşteri
+      kam.odakla(() => musteriKutusu(kam, musteriKap, false), { doluluk: 0.82, enCok: 2.1, sure: 800, dikey: 0.55, tamEkran: true });
       await mu.ic(icilen.el, icilen.sivi);
       if (kapandi) return;
       const dogru = sonuc === ist.hedef;
@@ -338,6 +361,8 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       await Promise.all([mu.burus(), soyle(soz)]);
       m.classList.remove('pz-burus');
       if (kapandi) return;
+      // bir daha denemek için kadraj açılır
+      kam.genis(800);
       yazi.textContent = ist.yazi;
       blender.bosalt();
       blender.yeniBardak();
@@ -356,9 +381,10 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     mu.kalpler();
     efekt.dogru();
     void resimSesi(ad);
-    parilti(sahne, 0.2, 0.5, 10);
+    const [mx, my] = oran(m, sahne, 0.45);
+    parilti(sahne, mx, my, 10);
     const r = sahne.getBoundingClientRect();
-    konfetiPatlat(app.kok, r.left + r.width * 0.2, r.top + r.height * 0.5, 36);
+    konfetiPatlat(app.kok, r.left + r.width * mx, r.top + r.height * my, 36);
     void odulAni(app.kok, m, yildizlar.children[i] as HTMLElement | undefined, i, mino);
     kayit.yildiz++;
     kaydet();
@@ -371,6 +397,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     minoCanli.ugurla();
     kamera.classList.remove('pz-yakin');
     sahne.classList.remove('pz-yakin');
+    kam.genis(1100);
     await mu.git();
   };
 
@@ -398,6 +425,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       canli.kapat();
       flamaKapat();
       blender.kapat();
+      kam.kapat();
       musteri?.kapat();
     },
   };

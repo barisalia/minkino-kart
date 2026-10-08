@@ -14,9 +14,12 @@ const sec = <T>(l: T[]) => l[Math.floor(Math.random() * l.length)];
 export const RENKLER = ['#F0413F', '#FF8A2B', '#FFC72C', '#5DBE3F', '#3E9DF2', '#9B5CE0', '#FF7EB6'];
 const KONTUR = '#5a3617';
 
-/** Arka plandaki bulutlarla aynı dil: yuvarlak tepecikler, altta açık mavi gölge, üstte parlak vurgu, kontursuz */
+/**
+ * Arka plandaki bulutlarla aynı dil: yuvarlak tepecikler, yumuşak açık mavi kontur, alta doğru mavileşen dolgu,
+ * üstte parlak vurgu (eski kontursuz düz beyaz bulut sahnede sert kenarlı beyaz leke gibi duruyordu)
+ */
 const BULUT =
-  '<svg viewBox="0 0 240 120" aria-hidden="true"><g fill="#fff"><circle cx="70" cy="72" r="34"/><circle cx="116" cy="54" r="44"/><circle cx="166" cy="72" r="32"/><circle cx="196" cy="86" r="20"/><rect x="36" y="72" width="180" height="34" rx="17"/></g><path d="M40 94h172a17 17 0 0 1-16 12H56a17 17 0 0 1-16-12z" fill="#d7e7f8"/><ellipse cx="100" cy="36" rx="20" ry="9" fill="#fff" opacity=".95"/><ellipse cx="96" cy="44" rx="30" ry="12" fill="#eef6ff" opacity=".7"/></svg>';
+  '<svg viewBox="0 0 240 124" aria-hidden="true"><defs><linearGradient id="pz-bulut-d" x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stop-color="#fff"/><stop offset="1" stop-color="#d9ebfb"/></linearGradient></defs><path d="M38 108c-20 0-26-26-6-34-2-22 22-34 40-22 6-28 52-36 66-8 14-14 44-6 44 18 24-4 40 20 26 36 10 4 6 10-4 10z" fill="url(#pz-bulut-d)" stroke="#a7c9e8" stroke-width="3.5" stroke-linejoin="round"/><path d="M78 46c6-14 26-18 38-8" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".9"/><ellipse cx="160" cy="62" rx="12" ry="6" fill="#fff" opacity=".8"/></svg>';
 const KUS = '<svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 12Q10 2 20 11Q30 2 38 12" fill="none" stroke="#3b3a5a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 /** Uzak yaya siluetleri (yetişkin, çocuk, sepetli, balonlu çocuk) */
 const SILUETLER = [
@@ -63,11 +66,12 @@ export function canliSahne(secenek: { senlik?: boolean } = {}): Canli {
   // bulutlar: üç katman, farklı hız ve boyda (uzaktaki küçük ve yavaş)
   const bulutlar = h('div.pz-bulutlar', { 'aria-hidden': 'true' });
   [
-    { top: 14, w: 34, sure: 95, o: 0.75 },
-    { top: 30, w: 22, sure: 140, o: 0.55 },
-    { top: 46, w: 44, sure: 75, o: 0.85 },
+    // gökyüzünün üst yarısında, küçük ve yarı saydam: karakterlerin arkasından kocaman beyaz leke gibi geçmez
+    { top: 5, w: 30, sure: 95, o: 0.8 },
+    { top: 15, w: 20, sure: 140, o: 0.55 },
+    { top: 24, w: 34, sure: 80, o: 0.7 },
   ].forEach((b, i) => {
-    const el = h('div.pz-bulut', { style: `top:${b.top}%;width:${b.w}vw;--sure:${b.sure}s;--g:${-ras(0.1, 0.9) * b.sure}s;opacity:${b.o};--i:${i}`, html: BULUT });
+    const el = h('div.pz-bulut', { style: `top:${b.top}%;width:min(${b.w}vw, ${(b.w * 1.15).toFixed(0)}vh);--sure:${b.sure}s;--g:${-ras(0.1, 0.9) * b.sure}s;opacity:${b.o};--i:${i}`, html: BULUT });
     bulutlar.append(el);
   });
 

@@ -64,7 +64,12 @@ export interface IpucuTanim {
 }
 
 // ---------------------------------------------------------------- kartlar
-export type KartId = 'zurafa-ayagi' | 'ordek-ayagi' | 'kedi-pati-izi' | 'kedi-turuncu' | 'kedi-siyah' | 'kedi-beyaz' | 'sut-kasesi' | 'yastik' | 'sari-kelebek';
+/**
+ * Kartlar ipucunun kopyası değil, sorunun cevabıdır: Halka 1'de izi bırakabilecek HAYVANLAR (kedi, ördek, zürafa;
+ * çocuk izi hayvanın ayağıyla karşılaştırır), Halka 2'de üç kedi, Halka 3'te kedinin masaya zıplama NEDENLERİ
+ * (kelebeği kovalamak, süt içmek, uyumak: beyaz kedinin kendi sahnesi).
+ */
+export type KartId = 'zurafa' | 'ordek' | 'kedi' | 'kedi-turuncu' | 'kedi-siyah' | 'kedi-beyaz' | 'kedi-sut' | 'kedi-uyku' | 'kedi-kelebek';
 /** Yanlış kartın kendini anlatışı (öğretici ve komik; ceza yok) */
 export type KartTepki = 'zurafa' | 'ordek' | 'turuncu' | 'siyah' | 'sut' | 'yastik';
 export interface KartTanim {
@@ -76,15 +81,15 @@ export interface KartTanim {
   renk: string;
 }
 export const KARTLAR: Record<KartId, KartTanim> = {
-  'zurafa-ayagi': { id: 'zurafa-ayagi', resim: 'kart-zurafa-ayagi', tepki: 'zurafa', renk: '#f6c343' },
-  'ordek-ayagi': { id: 'ordek-ayagi', resim: 'kart-ordek-ayagi', tepki: 'ordek', renk: '#ff9f43' },
-  'kedi-pati-izi': { id: 'kedi-pati-izi', resim: 'kart-kedi-pati-izi', renk: '#a77b5a' },
+  zurafa: { id: 'zurafa', resim: 'zurafa', tepki: 'zurafa', renk: '#f6c343' },
+  ordek: { id: 'ordek', resim: 'ordek', tepki: 'ordek', renk: '#ff9f43' },
+  kedi: { id: 'kedi', resim: 'kart-kedi-gri', renk: '#b9b3c6' },
   'kedi-turuncu': { id: 'kedi-turuncu', resim: 'kart-kedi-turuncu', tepki: 'turuncu', renk: '#f39a3d' },
   'kedi-siyah': { id: 'kedi-siyah', resim: 'kart-kedi-siyah', tepki: 'siyah', renk: '#3b3340' },
   'kedi-beyaz': { id: 'kedi-beyaz', resim: 'kart-kedi-beyaz', renk: '#fbf7f2' },
-  'sut-kasesi': { id: 'sut-kasesi', resim: 'kart-sut-kasesi', tepki: 'sut', renk: '#7fb4e6' },
-  yastik: { id: 'yastik', resim: 'kart-yastik', tepki: 'yastik', renk: '#e2b7ef' },
-  'sari-kelebek': { id: 'sari-kelebek', resim: 'kart-sari-kelebek', renk: '#ffd23f' },
+  'kedi-sut': { id: 'kedi-sut', resim: 'kart-kedi-sut', tepki: 'sut', renk: '#7fb4e6' },
+  'kedi-uyku': { id: 'kedi-uyku', resim: 'kart-kedi-uyku', tepki: 'yastik', renk: '#e2b7ef' },
+  'kedi-kelebek': { id: 'kedi-kelebek', resim: 'kart-kedi-kelebek', renk: '#ffd23f' },
 };
 
 // ---------------------------------------------------------------- halkalar
@@ -127,11 +132,11 @@ export const HALKALAR: Halka[] = [
     ipuclari: [{ id: 'pati-hali', oda: 'calisma', resim: 'kart-kedi-pati-izi', foto: 'ipucu-kedi-pati-hali', x: 0.555, y: 0.85, h: 0.075, don: -18, gizli: true }],
     soru: M.iz_kimin,
     kino: K.zurafa,
-    kinoKart: 'zurafa-ayagi',
-    kartlar: ['zurafa-ayagi', 'ordek-ayagi', 'kedi-pati-izi'],
-    dogru: 'kedi-pati-izi',
+    kinoKart: 'zurafa',
+    kartlar: ['zurafa', 'ordek', 'kedi'],
+    dogru: 'kedi',
     demekKi: M.demek_kedi,
-    demekResim: 'kart-kedi-pati-izi',
+    demekResim: 'kart-kedi-gri',
   },
   {
     id: 'tuy',
@@ -156,11 +161,11 @@ export const HALKALAR: Halka[] = [
     ],
     soru: M.neden,
     kino: K.sut,
-    kinoKart: 'sut-kasesi',
-    kartlar: ['sut-kasesi', 'yastik', 'sari-kelebek'],
-    dogru: 'sari-kelebek',
+    kinoKart: 'kedi-sut',
+    kartlar: ['kedi-sut', 'kedi-uyku', 'kedi-kelebek'],
+    dogru: 'kedi-kelebek',
     demekKi: M.demek_kelebek,
-    demekResim: 'kart-sari-kelebek',
+    demekResim: 'kart-kedi-kelebek',
   },
   {
     id: 'nerede',
@@ -190,28 +195,49 @@ export const CALISMA = {
   pervaz: { x: 0.61, y: 0.646 },
 };
 
-/** Lambadan sağdaki kapıya giden izler (halının üstünden, terliklerin önünden) */
+/**
+ * İzler odanın alt kenarına inmez: kamera odanın altını ekranın altına dayar, en alttaki iz telefonun ev çubuğunun
+ * (yatayda alttaki ~21 px) üstünde kalsın. Kural: iz merkezi y + h/2 ≤ IZ_ALT_SINIR (e2e: izler kenardan uzak).
+ */
+export const IZ_ALT_SINIR = 0.955;
+/** Lambadan sağa giden izler: halının alt kenarından, trenle terliklerin arasındaki boşluğa (terliklere basmaz) */
 export const CALISMA_IZLERI: IzNoktasi[] = [
-  { x: 0.55, y: 0.925, don: 78, h: 0.059 },
-  { x: 0.6, y: 0.955, don: 96, h: 0.06 },
-  { x: 0.65, y: 0.93, don: 80, h: 0.06 },
-  { x: 0.715, y: 0.96, don: 98, h: 0.061 },
-  { x: 0.78, y: 0.985, don: 84, h: 0.061 },
-  { x: 0.845, y: 0.99, don: 92, h: 0.061 },
-  { x: 0.91, y: 0.985, don: 86, h: 0.061 },
-  { x: 0.975, y: 0.99, don: 92, h: 0.061 },
+  { x: 0.54, y: 0.912, don: 78, h: 0.058 },
+  { x: 0.579, y: 0.89, don: 96, h: 0.058 },
+  { x: 0.617, y: 0.906, don: 80, h: 0.058 },
+  { x: 0.656, y: 0.885, don: 98, h: 0.058 },
+  { x: 0.694, y: 0.9, don: 82, h: 0.057 },
+  { x: 0.733, y: 0.876, don: 92, h: 0.057 },
+  { x: 0.771, y: 0.888, don: 78, h: 0.056 },
+  { x: 0.808, y: 0.864, don: 84, h: 0.056 },
 ];
 /** Koridor: önden ortaya kadar ortak iz, sonra ikiye ayrılır (perspektif: uzaktaki izler küçük) */
 export const KORIDOR_IZLERI: IzNoktasi[] = [
-  { x: 0.505, y: 0.975, don: -4, h: 0.065 },
-  { x: 0.485, y: 0.915, don: -8, h: 0.057 },
-  { x: 0.5, y: 0.862, don: 2, h: 0.049 },
+  { x: 0.508, y: 0.925, don: -4, h: 0.058 },
+  { x: 0.486, y: 0.882, don: -8, h: 0.052 },
+  { x: 0.5, y: 0.845, don: 2, h: 0.046 },
 ];
 export type Yol = 'mutfak' | 'yatak';
 /** Kapılar: sol kemerli kapı ve sağ kapı (eşikleri) */
 export const KAPI = { sol: { x: 0.315, y: 0.745 }, sag: { x: 0.725, y: 0.805 } };
-/** Ayrılan izler: kapıya doğru küçülür. Mutfağa gidenler büyük ve tırnaklı (Kino), yatak odasına gidenler küçük, yuvarlak. */
-export function yolIzleri(yan: 'sol' | 'sag'): IzNoktasi[] {
+/**
+ * Ayrılan izler: kapıya doğru küçülür. Mutfağa gidenler büyük ve tırnaklı (Kino), yatak odasına gidenler küçük, yuvarlak.
+ * dar (dikey telefon): kamera koridorun ortasından dar bir dilim görür, Mino ile Kino alt köşelerde durur; iki yol
+ * yanlara (kapılar zaten görünmez) değil, aradaki boşlukta derine doğru hafifçe ayrılır: her iz ekranda, karakterlerin üstünde.
+ */
+export function yolIzleri(yan: 'sol' | 'sag', dar = false): IzNoktasi[] {
+  if (dar)
+    return yan === 'sol'
+      ? [
+          { x: 0.479, y: 0.775, don: -26, h: 0.044 },
+          { x: 0.464, y: 0.715, don: -30, h: 0.04 },
+          { x: 0.45, y: 0.655, don: -28, h: 0.036 },
+        ]
+      : [
+          { x: 0.523, y: 0.775, don: 26, h: 0.044 },
+          { x: 0.538, y: 0.715, don: 30, h: 0.04 },
+          { x: 0.552, y: 0.655, don: 28, h: 0.036 },
+        ];
   return yan === 'sol'
     ? [
         { x: 0.455, y: 0.83, don: -58, h: 0.044 },
@@ -226,26 +252,14 @@ export function yolIzleri(yan: 'sol' | 'sag'): IzNoktasi[] {
 }
 /** Yatak odası: izler halıdan yatağın ayak ucuna; kuyruk yatağın altından (ayak ucu bacağının yanında) sallanır */
 export const YATAK_IZLERI: IzNoktasi[] = [
-  { x: 0.6, y: 0.985, don: -64, h: 0.065 },
-  { x: 0.54, y: 0.945, don: -70, h: 0.062 },
-  { x: 0.48, y: 0.91, don: -62, h: 0.06 },
-  { x: 0.43, y: 0.875, don: -70, h: 0.057 },
+  { x: 0.6, y: 0.91, don: -64, h: 0.06 },
+  { x: 0.545, y: 0.888, don: -70, h: 0.058 },
+  { x: 0.49, y: 0.868, don: -62, h: 0.057 },
+  { x: 0.437, y: 0.85, don: -70, h: 0.055 },
 ];
 export const YATAK = {
-  /** yatağın önden görünen kısmı (Pamuk bunun arkasında): çokgen, oran */
-  on: [
-    [0.02, 0.43],
-    [0.44, 0.43],
-    [0.44, 0.79],
-    [0.401, 0.79],
-    [0.401, 0.85],
-    [0.376, 0.85],
-    [0.376, 0.79],
-    [0.058, 0.79],
-    [0.058, 0.85],
-    [0.028, 0.85],
-    [0.02, 0.79],
-  ] as [number, number][],
+  /** yatağın ön katmanının odadaki kutusu (assets/dedektif/yatak-on.webp: yatak-odasi resminden yatağın çizgisiyle kesilmiş; 1920×1080 resimde 0,470 822×470 px) */
+  on: { x0: 0, y0: 470 / 1080, x1: 822 / 1920, y1: 1 - 140 / 1080 },
   /** yatağın altındaki karanlık aralık */
   alt: { x0: 0.06, y0: 0.775, x1: 0.405, y1: 0.842 },
   /** sallanan kuyruk ucunun kökü (yatağın altında, ayak ucu bacağının hemen solunda) */
@@ -256,10 +270,10 @@ export const YATAK = {
 };
 /** Mutfak: Kino'nun izleri buzdolabının önünde biter */
 export const MUTFAK_IZLERI: IzNoktasi[] = [
-  { x: 0.52, y: 0.99, don: -70, h: 0.078 },
-  { x: 0.42, y: 0.95, don: -76, h: 0.075 },
-  { x: 0.32, y: 0.93, don: -70, h: 0.073 },
-  { x: 0.24, y: 0.9, don: -74, h: 0.07 },
+  { x: 0.5, y: 0.905, don: -70, h: 0.072 },
+  { x: 0.41, y: 0.893, don: -76, h: 0.071 },
+  { x: 0.32, y: 0.88, don: -70, h: 0.07 },
+  { x: 0.24, y: 0.866, don: -74, h: 0.068 },
 ];
 
 /** Yolların kapılara dağılımı: test modunda (ya da tohum 0) mutfak solda; değilse rastgele (tekrar oynayınca değişsin) */
@@ -491,15 +505,16 @@ const DIKEY = {
     pervaz: { x: 0.6, y: 0.135 },
   },
   izler: [
-    // Mino ile Kino alt köşelerde durur: izler halının üst yarısından sağa gider (dokunuş karakterlere gelmesin)
-    { x: 0.42, y: 0.735, don: 78, h: 0.04 },
-    { x: 0.49, y: 0.75, don: 96, h: 0.04 },
-    { x: 0.56, y: 0.735, don: 80, h: 0.04 },
-    { x: 0.63, y: 0.75, don: 98, h: 0.04 },
-    { x: 0.7, y: 0.735, don: 84, h: 0.04 },
-    { x: 0.77, y: 0.745, don: 92, h: 0.04 },
-    { x: 0.84, y: 0.73, don: 86, h: 0.04 },
-    { x: 0.91, y: 0.74, don: 92, h: 0.04 },
+    // Mino ile Kino alt köşelerde durur: izler halının üst yarısından sağa gider (dokunuş karakterlere gelmesin).
+    // Kamera dikeyde odanın ortasından ~%75'ini görür (x ≈ 0.12-0.88): son iz de kenardan uzakta, ekranın içinde
+    { x: 0.37, y: 0.727, don: 78, h: 0.04 },
+    { x: 0.427, y: 0.757, don: 96, h: 0.04 },
+    { x: 0.484, y: 0.727, don: 80, h: 0.04 },
+    { x: 0.541, y: 0.757, don: 98, h: 0.04 },
+    { x: 0.598, y: 0.727, don: 84, h: 0.04 },
+    { x: 0.655, y: 0.755, don: 92, h: 0.04 },
+    { x: 0.712, y: 0.725, don: 86, h: 0.04 },
+    { x: 0.77, y: 0.75, don: 92, h: 0.04 },
   ] as IzNoktasi[],
   kadraj: {
     genel: [0, 0, 1, 1],

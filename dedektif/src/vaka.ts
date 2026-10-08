@@ -23,7 +23,7 @@ import { IKON } from '../../src/ui/ikonlar';
 import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import { DosyaSeridi } from './dosya';
-import { AZ_HAREKET, calismaOdasi, calismaYenidenDiz, Dunya, koridor, mutfak, yatakOdasi, type Oda } from './dunya';
+import { AZ_HAREKET, calismaOdasi, calismaYenidenDiz, Dunya, koridor, koridorYenidenDiz, mutfak, yatakOdasi, type Oda } from './dunya';
 import { Efekt, oynat, parmak, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
 import {
@@ -143,7 +143,10 @@ class Vaka {
     const boyut = () => {
       // telefon vakanın ortasında döndü (web sitesinde yön serbest): çalışma odası yeni yönün yerleşimine geçer;
       // kamera aynı işi (arama kadrajı, sıradaki iz) yeni yerde gösterir: ipucu ve izler ekranda kalır
-      if (calismaYenidenDiz(this.calisma) && this.dunya.oda === this.calisma) this.dunya.odaYenilendi();
+      // (koridorda: iki yolun izleri yeni yöne; dikeyde aradaki boşlukta, yatayda kapılara)
+      const oda = this.dunya.oda;
+      if (calismaYenidenDiz(this.calisma) && oda === this.calisma) this.dunya.odaYenilendi();
+      else if (oda && koridorYenidenDiz(oda, yolIzleri)) this.dunya.odaYenilendi();
       else this.dunya.yenile();
       this.buyutec.yenile();
       // (bir kare sonra: az hareket ayarında da her değişimin kısa bir geçişi var; ölçüm yeni yeri görsün)
@@ -348,6 +351,8 @@ class Vaka {
       this.aranan = hk;
       const hedefler: BuyutecHedef[] = kalan.map((t) => ({ id: t.id, yer: () => this.dunya.merkez(this.ipucuEl(t.id)!) }));
       this.buyutec.hedefleriKur(hedefler);
+      // aranan ipuçları çıplak gözle de sezilir (soluk gölge, göz kırpan yıldız: dedektif.css); öbür halkalarınkiler görünmez
+      for (const t of kalan) this.ipucuEl(t.id)?.classList.add('dd-aranan');
       this.buyutec.goster(true);
       this.buyutec.yenile();
       // büyüteç ilk kez: Mino'nun gözünün önünden sahnenin ortasına süzülür; parmak gezdirmeyi gösterir
@@ -658,7 +663,7 @@ class Vaka {
     this.serit.aktif('nerede');
     if (dunya.oda !== this.calisma) dunya.kur(this.calisma, 'izler');
     dunya.darYakin = null;
-    oy.yerlesim(this.dar() ? 'iki' : 'sol');
+    oy.yerlesim('sol', 'iki');
     await dunya.git(this.ortala(() => CALISMA.lambaDevrik.x + 0.04, 'izler'), 1000);
     if (this.kapali) return;
     // izler lambanın yanından başlar: sırayla belirir
@@ -712,7 +717,7 @@ class Vaka {
       const oda = this.dunya.oda!;
       const sx = (parseFloat(iz.style.left) || 0) / oda.W;
       const sy = (parseFloat(iz.style.top) || 0) / ODA_H;
-      return this.dar() ? [sx - 0.1, Math.max(0, sy - 0.4), sx + 0.1, Math.min(1, sy + 0.08)] : [sx - 0.16, Math.max(0, sy - 0.42), sx + 0.34, Math.min(1, sy + 0.06)];
+      return this.dar() ? [sx - 0.1, Math.max(0, sy - 0.4), sx + 0.1, Math.min(1, sy + 0.08)] : [sx - 0.16, Math.max(0, sy - 0.42), sx + 0.34, Math.min(1, sy + 0.09)];
     };
     void this.dunya.git(kd, ms);
   }
@@ -894,7 +899,7 @@ class Vaka {
     // yatağın arkasında saklanan Pamuk'un ayak ucundan taşan kuyruğu: dokunma alanı (görünmez; kuyruğun kendisi iskelette)
     const kuyruk = h('button.dd-kuyruk', { type: 'button', 'aria-label': 'Kuyruk' });
     const yt = yatakOdasi(pamukKap, kuyruk);
-    oy.yerlesim(this.dar() ? 'iki' : 'sag');
+    oy.yerlesim('sag', 'iki');
     await dunya.gec(yt, 'yatak', 1);
     if (this.kapali) return;
     yt.e.izler.classList.add('acik');
@@ -945,7 +950,7 @@ class Vaka {
     kuyruk.classList.add('cekildi');
     pamuk.ekHareket = null;
     pamukKap.classList.remove('sakli');
-    oy.yerlesim(this.dar() ? 'iki' : 'sag');
+    oy.yerlesim('sag', 'iki');
     muzikCal('film-surpriz', 0.45);
     ses.pop();
     oy.kinoIfade('saskin', 2000);
@@ -1015,7 +1020,7 @@ class Vaka {
     // lambayı masaya koy
     this.el.classList.add('dd-sahne-is');
     // dar ekranda Mino ve Kino kenara çekilir: lamba ve masa aralarında kalsın
-    if (this.dar()) oy.yerlesim('kenar');
+    oy.yerlesim('iki', 'kenar');
     // lamba Mino konuşurken de sürüklenebilir (dokunuş hiç beklemez)
     const tasi = this.lambaTasi();
     this.adim('lamba-tasi');
