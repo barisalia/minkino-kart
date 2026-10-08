@@ -2,8 +2,8 @@ import { efekt } from '../../audio/ses';
 import { refCoz } from '../../engine/katalog';
 import { dogruIndeks } from '../../engine/soru';
 import { h, TEST_MODU } from '../../ui/dom';
-import { izgaraSigdir, ucur } from '../../ui/hareket';
-import { diziOrani, kartEl } from '../../ui/kart';
+import { izgaraSigdir, kwGrubu, ucur } from '../../ui/hareket';
+import { diziGenis, diziOlcekli, diziOrani, kartEl } from '../../ui/kart';
 import type { SoruBaglam } from '../oyun';
 import { dogruCumlesi } from '../../audio/cumleler';
 
@@ -11,11 +11,14 @@ import { dogruCumlesi } from '../../audio/cumleler';
 export function secmeliCiz(b: SoruBaglam) {
   const s = b.soru;
   let yuva: HTMLElement | null = null;
+  // boy sırası (Ayıcık büyüyor): gösterge ve seçenek kartları aynı boyda, büyüme karşılaştırılabilsin
+  const boyGrubu = s.tip === 'SIRADAKI' && s.gosterge && diziOlcekli(s.gosterge) && diziOlcekli(s.kartlar) ? kwGrubu() : undefined;
 
   // ---- Gösterge ----
   if (s.tip === 'SAY' && s.gosterge?.length) {
     const dizi = h('div.izgara');
-    const kartlar = s.gosterge.map((g) => kartEl(g, { sinif: 'giris' }));
+    const gGenis = diziGenis(s.gosterge);
+    const kartlar = s.gosterge.map((g) => kartEl(g, { sinif: 'giris', genis: gGenis }));
     if (s.islem === '+' && kartlar.length === 2) {
       dizi.classList.add('islem-dizi');
       dizi.append(kartlar[0], h('div.islem-isaret', {}, '+'), kartlar[1]);
@@ -34,13 +37,15 @@ export function secmeliCiz(b: SoruBaglam) {
     });
     yuva = h('div.kart.soru-yuva', { style: `--i:${s.gosterge.length}` }, h('b', {}, '?'));
     yuva.classList.add('giris');
+    if (diziOlcekli(s.gosterge)) yuva.classList.add('olcekli');
     dizi.append(yuva);
-    b.temizlik(izgaraSigdir(b.gosterge, dizi, s.gosterge.length + 1, { enBuyuk: 170, bosluk: 10 }));
+    b.temizlik(izgaraSigdir(b.gosterge, dizi, s.gosterge.length + 1, { enBuyuk: 170, bosluk: 10, oran: diziOrani(s.gosterge), grup: boyGrubu }));
     b.gosterge.append(dizi);
   } else if (s.gosterge?.length) {
     const dizi = h('div.izgara');
+    const gosGenis = diziGenis(s.gosterge);
     s.gosterge.forEach((g, i) => {
-      const k = kartEl(g, { sinif: 'giris' });
+      const k = kartEl(g, { sinif: 'giris', genis: gosGenis });
       k.style.setProperty('--i', String(i));
       dizi.append(k);
     });
@@ -55,8 +60,10 @@ export function secmeliCiz(b: SoruBaglam) {
   const izgara = h('div.izgara.secenekler');
   const elemanlar: HTMLElement[] = [];
   let bitti = false;
+  // bir dizide kartlar aynı boyda: 4+ adetli kart varsa hepsi geniş
+  const sGenis = diziGenis(s.kartlar);
   s.kartlar.forEach((g, i) => {
-    const el = kartEl(g, { sinif: 'secenek giris' });
+    const el = kartEl(g, { sinif: 'secenek giris', genis: sGenis });
     el.style.setProperty('--i', String(i + (s.gosterge?.length ?? 0)));
     el.style.setProperty('--yon', i % 2 ? '1' : '-1');
     el.setAttribute('role', 'button');
@@ -70,12 +77,12 @@ export function secmeliCiz(b: SoruBaglam) {
         elemanlar.forEach((e) => e !== el && e.classList.add('soluk'));
         if (yuva) {
           // Sıradaki kart "?" yuvasına uçar
-          const klon = kartEl(g);
+          const klon = kartEl(g, { genis: sGenis });
           el.style.visibility = 'hidden';
           efekt.ucus();
           const oran = yuva.getBoundingClientRect().width / Math.max(1, el.getBoundingClientRect().width);
           void ucur(b.app.kok, klon, el, yuva, oran, 450).then(() => {
-            const yeni = kartEl(g, { sinif: 'dogru-oldu' });
+            const yeni = kartEl(g, { sinif: 'dogru-oldu', genis: sGenis });
             yuva!.replaceWith(yeni);
             b.dogru(yeni, dogruCumlesi(s, g));
           });
@@ -90,6 +97,6 @@ export function secmeliCiz(b: SoruBaglam) {
     elemanlar.push(el);
     izgara.append(el);
   });
-  b.temizlik(izgaraSigdir(b.secenek, izgara, s.kartlar.length, { enBuyuk: s.kartlar.length <= 2 ? 300 : 240, oran: diziOrani(s.kartlar) }));
+  b.temizlik(izgaraSigdir(b.secenek, izgara, s.kartlar.length, { enBuyuk: s.kartlar.length <= 2 ? 300 : 240, oran: diziOrani(s.kartlar), grup: boyGrubu }));
   b.secenek.append(izgara);
 }

@@ -289,28 +289,36 @@
   font-size: 13cqw;
   color: var(--kontur);
 }
+/*
+ * Adetli kart (3 elma…): nesneler kartı doldurur (~%70). Öğe boyu, kart içine (86cqw genişlik, --ih yükseklik)
+ * kolon × satır olarak sığan en büyük kare; tek kalan son sıra ortalanır (3 elma: üstte 2, altta 1).
+ */
 .mk-kok .kart-grup {
-  --kolon: 3;
+  --kolon: 1;
+  --satir: 1;
+  --ih: 96cqw;
+  --ara: 3cqw;
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-columns: repeat(var(--kolon), 1fr);
+  display: flex;
+  flex-wrap: wrap;
   align-content: center;
-  justify-items: center;
-  gap: 2%;
+  justify-content: center;
+  gap: var(--ara);
 }
-.mk-kok .kart-grup[data-adet='2'],
-.mk-kok .kart-grup[data-adet='4'] { --kolon: 2; }
+.mk-kok .kart-grup[data-adet='2'] { --kolon: 2; }
 .mk-kok .kart-grup[data-adet='3'],
+.mk-kok .kart-grup[data-adet='4'] { --kolon: 2; --satir: 2; }
 .mk-kok .kart-grup[data-adet='5'],
-.mk-kok .kart-grup[data-adet='6'],
+.mk-kok .kart-grup[data-adet='6'] { --kolon: 2; --satir: 3; }
 .mk-kok .kart-grup[data-adet='7'],
 .mk-kok .kart-grup[data-adet='8'],
-.mk-kok .kart-grup[data-adet='9'] { --kolon: 3; }
-.mk-kok .kart-grup[data-adet='10'] { --kolon: 4; }
+.mk-kok .kart-grup[data-adet='9'] { --kolon: 3; --satir: 3; }
+.mk-kok .kart-grup[data-adet='10'] { --kolon: 3; --satir: 4; }
 .mk-kok .grup-oge {
   position: relative;
-  width: 100%;
+  flex: 0 0 auto;
+  width: min((86cqw - (var(--kolon) - 1) * var(--ara)) / var(--kolon), (var(--ih) - (var(--satir) - 1) * var(--ara)) / var(--satir));
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -773,14 +781,11 @@
   aspect-ratio: 1.28 / 1;
   border-radius: 12.5% / 16%;
 }
-.mk-kok .kart.genis .kart-grup {
-  --kolon: 4;
-}
-.mk-kok .kart.genis .kart-grup[data-adet='4'],
+/* geniş kartın iç yüksekliği: 0.86 × genişlik / 1.28 */
+.mk-kok .kart.genis .kart-grup { --ih: 67cqw; }
 .mk-kok .kart.genis .kart-grup[data-adet='5'],
-.mk-kok .kart.genis .kart-grup[data-adet='6'] { --kolon: 3; }
-.mk-kok .kart.genis .kart-grup[data-adet='9'],
-.mk-kok .kart.genis .kart-grup[data-adet='10'] { --kolon: 5; }
+.mk-kok .kart.genis .kart-grup[data-adet='6'] { --kolon: 3; --satir: 2; }
+.mk-kok .kart.genis .kart-grup[data-adet='10'] { --kolon: 4; --satir: 3; }
 .mk-kok .izgara > .kart,
 .mk-kok .izgara > .hafiza-kart {
   width: var(--kw);

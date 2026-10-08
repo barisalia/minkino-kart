@@ -23,6 +23,8 @@ test('Kartlar: tur ortasında albüme bakıp geri dönünce tur kaldığı yerde
   for (let i = 0; i < 3; i++) await soruCevapla(page, i);
   // dördüncü soru ekranda: albüme bakılır
   await expect(page.locator('.ilerleme i.simdi')).toHaveCount(1);
+  // nokta "tamam" olunca soru hemen değişmez (övgü + kart uçuşu): dördüncü soru gerçekten ekrana gelince tip okunur
+  await expect(page.locator('.ilerleme i').nth(3)).toHaveClass(/simdi/);
   const soru = await page.locator('.oyun-alan').getAttribute('data-tip');
   await page.getByRole('button', { name: 'Albüm' }).click();
   await expect(page.locator('.album')).toBeVisible();
