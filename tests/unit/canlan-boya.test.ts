@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOYA_EN_COK, boyaBolgesi, boyaCozunurlugu, BOYUT, sihirliBoya, tumAlanlar, type Cizgi } from '../../canlan/src/boya';
+import { BOYA_EN_COK, boyaBolgesi, boyalariSadelestir, boyaCozunurlugu, BOYUT, sihirliBoya, tumAlanlar, type Cizgi } from '../../canlan/src/boya';
 import { puanla } from '../../canlan/src/puan';
 import { daire, RESIMLER, resim, type Nokta } from '../../canlan/src/resimler';
 import { SUS } from '../../canlan/src/susler';
@@ -82,5 +82,29 @@ describe('Çiz Canlansın: boya resminin çözünürlüğü', () => {
     expect(boyaCozunurlugu(120, 1)).toBe(BOYUT);
     expect(boyaCozunurlugu(Number.NaN, 2)).toBe(BOYUT);
     expect(BOYA_EN_COK).toBeLessThanOrEqual(1024);
+  });
+});
+
+describe('Çiz Canlansın: müze boyası sadeleşir', () => {
+  const m = (...i: number[]) => {
+    const a = new Uint8Array(8);
+    for (const k of i) a[k] = 1;
+    return a;
+  };
+  it('görünen her piksel aynı renkte kalır; çok dokunuş az kayda iner', () => {
+    const boyalar = [
+      { parca: 'govde', renk: 'sari', maske: m(0, 1, 2, 3, 4, 5) },
+      ...Array.from({ length: 30 }, (_, i) => ({ parca: 'goz', renk: i % 2 ? 'mavi' : 'kirmizi', maske: m(i % 8) })),
+      { parca: 'govde', renk: 'mavi', maske: m(4, 5, 6) },
+      { parca: 'govde', renk: 'sari', maske: m(7) },
+    ];
+    const s = boyalariSadelestir(boyalar);
+    const renk = (liste: { parca: string; renk: string; maske: Uint8Array }[], parca: string, i: number) => {
+      let r: string | undefined;
+      for (const b of liste) if (b.parca === parca && b.maske[i]) r = b.renk;
+      return r;
+    };
+    for (const parca of ['govde', 'goz']) for (let i = 0; i < 8; i++) expect(renk(s, parca, i), `${parca} ${i}`).toBe(renk(boyalar, parca, i));
+    expect(s.length).toBeLessThanOrEqual(4);
   });
 });

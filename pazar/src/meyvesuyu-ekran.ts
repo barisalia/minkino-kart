@@ -284,7 +284,8 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     // doğru renk gelene kadar: meyve at → karıştır → dök → iç
     let ilk = true;
     for (;;) {
-      const basti = new Promise<void>((r) => (basildi = r));
+      // karıştıra basılınca girdi hemen kapanır (istek cümlesi sürerken blender boşaltılamasın)
+      const basti = new Promise<void>((r) => (basildi = () => ((aktif = false), r())));
       aktif = true;
       el.classList.add('pz-aktif');
       sonHareket = performance.now();

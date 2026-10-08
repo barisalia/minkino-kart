@@ -1,15 +1,20 @@
 import { expect, test, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
 
+// sahnede boş bir nokta: yatay telefonda (844x390) y=500 ekranın dışında kalır, dokunuş hiç ulaşmaz
+const bos = (page: Page) => {
+  const v = page.viewportSize() ?? { width: 390, height: 844 };
+  return { x: 200, y: Math.min(500, Math.round(v.height * 0.7)) };
+};
 async function tut(page: Page, ms: number) {
-  await page.mouse.move(200, 500);
+  await page.mouse.move(bos(page).x, bos(page).y);
   await page.mouse.down();
   await page.waitForTimeout(ms);
   await page.mouse.up();
 }
 async function dokun(page: Page, kez: number) {
   for (let i = 0; i < kez; i++) {
-    await page.mouse.click(200, 500);
+    await page.mouse.click(bos(page).x, bos(page).y);
     await page.waitForTimeout(90);
   }
 }
@@ -37,7 +42,7 @@ test("Ada'nın Doğum Günü: dokunarak baştan sona (5 yaş)", async ({ page },
     await expect(page.locator('.mc-balon:not(.asili):not(.asiliyor)')).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(150);
     if (i === 2) {
-      await page.mouse.move(200, 500);
+      await page.mouse.move(bos(page).x, bos(page).y);
       await page.mouse.down();
       await page.waitForTimeout(900);
       await ekran(page, '102-macera-balon', p);
@@ -71,6 +76,8 @@ test("Ada'nın Doğum Günü: dokunarak baştan sona (5 yaş)", async ({ page },
   // dilim uçarken gelen dokunuş sayılmaz (çocuk art arda tıklarsa pasta karışmasın): sayı artana kadar tekrar dokun
   for (let i = 0; i < 5; i++) {
     await expect(async () => {
+      // son dilim tabağa inince yakın çekim hemen kapanabilir (yatay telefonda yakalanmıyordu): kapandıysa bölüm geçti
+      if (i === 4 && (await page.locator('.mc-kesim').count()) === 0) return;
       await dokun(page, 1);
       await expect(page.locator('.mc-kesim-yer.dolu')).toHaveCount(i + 1, { timeout: 1500 });
     }).toPass({ timeout: 15000 });

@@ -177,6 +177,19 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
   await expect(page.locator('.ab-deneme')).toBeHidden();
   await expect(page.locator('.ab-basla')).toHaveText('Abone ol');
 
+  // satın alma sağlayıcısı kurulamadı (anahtar var): kilitler duruyor, "bütün oyunlar açık" denmez, tekrar dene görünür
+  await page.goto('./?test=1&uygulama=ios&kurulum=hata');
+  await expect(page.locator('.ug-kart[data-oyun="canlan"] .mk-kilit')).toBeVisible();
+  await page.locator('.ug-kart[data-oyun="canlan"]').click();
+  await buyuklerIcin(page);
+  await kapiyiGec(page);
+  await expect(page.locator('.ab-perde')).toHaveAttribute('data-durum', 'hata');
+  await expect(page.locator('.ab-durum')).not.toContainText('bütün oyunlar açık');
+  await expect(page.getByRole('button', { name: 'Tekrar dene' })).toBeVisible();
+  // açılanlar listesi kilitli içeriğin hepsini anar
+  await expect(page.locator('.ab-liste')).toContainText('Dedektif Mino');
+  await expect(page.locator('.ab-liste')).toContainText('Kino Ne Giysin?');
+
   // deneme hakkı yok (iOS: denemeyi daha önce kullanan Apple Kimliği): "Abone ol", deneme yazısı yok
   await page.goto('./?test=1&uygulama=ios&deneme=yok');
   await page.locator('.ug-kart[data-oyun="canlan"]').click();

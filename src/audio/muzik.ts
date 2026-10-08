@@ -79,5 +79,10 @@ export function muzikAyarUygula() {
   const c = baglam();
   const cikis = muzikCikisi();
   if (!c || !cikis) return;
-  cikis.gain.setTargetAtTime(durum.i.ayarlar.muzik ? 1 : 0, c.currentTime, 0.2);
+  // muzikBaslat'ın 2 sn'lik açılış rampası hâlâ sıradaysa onu sil: yoksa ilk dokunuş sessize alma olduğunda
+  // rampa setTarget'ı ezer ve müzik yine 1'e çıkar. Değer şu anki düzeyden yumuşakça hedefe gider.
+  const t = c.currentTime;
+  cikis.gain.cancelScheduledValues(t);
+  cikis.gain.setValueAtTime(cikis.gain.value, t);
+  cikis.gain.setTargetAtTime(durum.i.ayarlar.muzik ? 1 : 0, t, 0.2);
 }
