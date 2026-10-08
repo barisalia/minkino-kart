@@ -42,7 +42,6 @@ import {
   NINNI_GECER,
   ninni,
   NINNI_DIZE,
-  NINNI_KISA_MS,
   NINNI_REF_MIDI,
   ninniSatirArasiMs,
   ninniSonuMs,
@@ -63,7 +62,7 @@ import { AnneIskelet, anneIskeletVar } from './ege-anne';
 import { AnneGoz } from './anne-goz';
 import { adres } from './gorsel';
 import { Sahne, yanDolguEkle } from './sahne';
-import { anlikFark, notaDegerlendir, referansBul, type Nota } from './sarki';
+import { notaDegerlendir, referansBul, type Nota } from './sarki';
 import NINNI_SESI from '../../assets/muzik/ninni-sozlu.mp3?url';
 import './ege.css';
 
@@ -460,10 +459,23 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       if (!disi) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: sure(800), easing: 'ease-out' });
     }
   };
-  /** Kamera odağı: alanın ortası z yakınlıkta kadrajın ortasına gelsin (kadrajHesap yine sınırlar) */
-  const odakla = (k: Alan, z: number): [number, number] => {
-    const o = (m: number) => (z <= 1.001 ? 50 : (m - 50 / z) / (1 - 1 / z));
-    return [o((k.l + k.r) / 2), o((k.u + k.a) / 2)];
+  /**
+   * Yakın çekim kamerası: alan ekranın ortasına, sığdığı en yakın çekimle (en çok zMax). Kadraj koruması yerine
+   * gerçek ekran payıyla: yatay telefonda sahne dar bir bant ama ekranın yanları da odayı gösterir (geniş çizim),
+   * yani genişlikte ekranın tamamı kullanılır. Kadrajdakiler zaten solduğundan yarım kalan yok.
+   */
+  const yakinKam = (k: Alan, zMax: number, ms: number, altaYasla = false) => {
+    const yan = kok.querySelector('.mc-yan-genis') ? Math.max(1, innerWidth / W()) : 1;
+    const ust = dikey ? PAY.ust : 5;
+    const z = Math.max(1, Math.min(zMax, (100 * yan) / (k.r - k.l + PAY.yan * 2), 100 / (k.a - k.u + ust + PAY.alt)));
+    const o = (m: number, pay: number) => Math.max(0, Math.min(100, z <= 1.001 ? 50 : (m - 50 / z - pay / 2 / z) / (1 - 1 / z)));
+    const x = o((k.l + k.r) / 2, 0);
+    // dikeyde üstte alt yazı şeridi: odak biraz aşağı
+    // altaYasla: kadrajın altı alanın altına oturur (artan boşluk yukarıda: dikey telefonda alt yazının altı)
+    const y = altaYasla && z > 1.001 ? Math.max(0, Math.min(100, (k.a - 100 / z) / (1 - 1 / z))) : o((k.u + k.a) / 2, ust - PAY.alt);
+    cekim = { x, y, z, tut: [] };
+    sahne.el.dataset.kamera = `${x.toFixed(1)} ${y.toFixed(1)} ${z.toFixed(2)}`;
+    return sahne.kamera(x, y, z, ms);
   };
   /** Son kamera çekiminin görünen dünya aralığı (% ; u/a üstten) */
   const gorunen = (): Alan => {
@@ -1727,29 +1739,23 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       const e = alan(ege.el)!;
       const eh = e.a - e.u;
       // kuklalar Ege'den biraz küçük (çocuğun eline göre büyük: yakın çekim)
-      const AYI_W = EGE_W * 0.86;
-      const CIV_W = EGE_W * 0.8;
-      const odak: Alan = { l: e.l - bX(AYI_W) * 0.78, r: e.r + bX(CIV_W) * 0.78, u: e.u - eh * 0.04, a: e.a - eh * 0.12 };
-      const z = dikey ? 2.1 : 2.5;
-      // kadraj dışına çıkanlar solar (Ege'nin sandalyesi ve kendisi kalır)
-      cekimDisi([ada.el, can.el, elif.el, minoKutu, anne], true);
+      const AYI_W = EGE_W * (dikey ? 0.92 : 0.86);
+      const CIV_W = EGE_W * (dikey ? 0.86 : 0.8);
+      // kuklalar alttan yükselir: tepeleri Ege'nin yanağı hizasında; kadrajın altı kuklaların bileğini keser
+      // (el kuklası: kol görünmez)
+      const ayUst = e.u + eh * 0.3;
+      const cvUst = e.u + eh * 0.36;
+      const ayY = 100 - (ayUst + bY(AYI_W * (1005 / 858)));
+      const cvY = 100 - (cvUst + bY(CIV_W * (1014 / 837)));
+      const ayX = e.l - bX(AYI_W) * (dikey ? 0.05 : 0.2);
+      const cvX = e.r + bX(CIV_W) * (dikey ? 0.07 : 0.22);
+      // kadraj: Ege başından kuklaların bileğine, iki yanda kuklalar
+      const odak: Alan = { l: ayX - bX(AYI_W) * 0.5, r: cvX + bX(CIV_W) * 0.5, u: e.u - eh * 0.06, a: Math.min(100 - ayY, 100 - cvY) - bY(AYI_W) * 0.14 };
+      // kadraj dışına çıkanlar solar (Ege ve sandalyesi kalır; beşik de civcivin arkasında kalabalık etmesin)
+      cekimDisi([ada.el, can.el, elif.el, minoKutu, anne, besik], true);
       kaldir();
-      const [ox, oy] = odakla(odak, z);
-      const kamBitti = kam(ox, oy, z, 1300, [() => odak]);
-      const g = gorunen();
+      const kamBitti = yakinKam(odak, dikey ? 2.4 : 2.8, 1400, true);
       spotAc(odak);
-      // kuklalar alttan yükselir: tepeleri Ege'nin yanağı hizasında, altları kadrajın altında
-      const yer = (w: number, oranH: number, ust: number) => ({ y: 100 - (ust + bY(w * oranH)), w });
-      const ustA = e.u + eh * 0.3;
-      const ustC = e.u + eh * 0.36;
-      const AY = yer(AYI_W, 1005 / 858, ustA);
-      const CV = yer(CIV_W, 1014 / 837, ustC);
-      // altı görünen kadrajın içinde kalırsa biraz aşağı (kolu görünmesin)
-      const alt = 100 - g.a - 1.5;
-      const ayY = Math.min(AY.y, alt);
-      const cvY = Math.min(CV.y, alt);
-      const ayX = e.l - bX(AYI_W) * 0.24;
-      const cvX = e.r + bX(CIV_W) * 0.26;
       for (const el of [ayi, civciv]) {
         el.style.zIndex = '13';
         el.classList.add('sahnede');
@@ -1772,7 +1778,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         isik,
         bitir: () => {
           spotAc(null);
-          cekimDisi([ada.el, can.el, elif.el, minoKutu, anne], false);
+          cekimDisi([ada.el, can.el, elif.el, minoKutu, anne, besik], false);
           for (const el of [ayi, civciv]) el.classList.remove('sahnede');
           isik.remove();
           const [ax, ay, aw] = AYI_YER();
@@ -2242,63 +2248,43 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     efektCal(() => S.kutuNota(62, 0.1, 2), 1500);
     muzikSus();
     await bekle(900);
-    // bulaşıcı esneme: Mino da kocaman esner
+    // kamera geri çekilir; bulaşıcı esneme: Mino da kocaman esner
+    await ninniBitir();
     mino.tepki('esne', 1.4);
     void balon(minoBalon, B.esne, 1400);
     await bekle(1300);
   }
 
   /**
-   * Ninni: önce ninninin kaydı (Gemini, sözlü) bir kez çalar, heceler kayıtla birlikte yanar (dinle); sonra çocuk
-   * kısık sesle söyler ya da beşiği sallar (her yön değişimi bir nota). Oyun kayıttaki notalara göre ilerler
-   * (assets/muzik/ninni.json). Dinlemede kaydın bütün dizeleri çalar; değerlendirme yaşa göre ilk `dize` dizeden.
-   * Doğru söylenen / sallanan her nota tavandaki bir yıldızı yakar, beşik sallanır. Yüksek seste Ege bir gözünü
-   * açar, Mino "Şşş, daha kısık!" der (cezasız). Sıra kuralı: kayıt çalarken mikrofon dinlemez; çocuk söylerken
-   * altyapı çalmaz (oyunun sesi mikrofona karışmasın, ekip/SES-SISTEMI.md).
+   * Ninni (yalnız ritim; hece paneli yok): yakın çekimde beşik ve üstünde yıldız kemeri. Önce ninninin kaydı
+   * (Gemini, sözlü) bir kez çalar; her notada beşik sallanır, kemerdeki yıldızlar sırayla atar (dinle). Sonra çocuk
+   * her vuruşta kısık sesle "laaa" der ya da beşiği sallar (her yön değişimi bir vuruş): ton aranmaz, vuruşta ses
+   * çıkması yeter. Tutan her vuruş bir yıldızı yakar. Oyun kayıttaki notalara göre ilerler (assets/muzik/ninni.json).
+   * Yüksek seste Ege bir gözünü açar, "Şşş, daha kısık!" (cezasız). Sıra kuralı: kayıt çalarken mikrofon dinlemez;
+   * çocuk söylerken altyapı çalmaz (oyunun sesi mikrofona karışmasın, ekip/SES-SISTEMI.md).
    */
   async function ninniGorevi(dize: number, dinlet: boolean): Promise<void> {
     // ninni başlayınca fon ve müzik kutusu susar
     muzikSus();
     const notalar = ninni(dize);
     const tum = dinlet ? ninni(NINNI_DIZE) : notalar;
-    const panel = h('div.mc-karaoke.eg-karaoke');
-    const heceEl = tum.map((n) => h('span.mc-hece', { style: `--h:${(n.midi - 58) / 16}` }, n.hece));
-    const satirlar: HTMLElement[] = [];
-    tum.forEach((n, i) => {
-      satirlar[n.satir] ??= h('div.mc-satir');
-      satirlar[n.satir].append(heceEl[i]);
-    });
-    const top = h('i.mc-top');
-    panel.append(...satirlar, top);
-    sahne.on.append(panel);
     const yildizlar = new NinniYildizlari(notalar.length);
+    await ninniYakin();
+    yildizlar.yerles(besik.getBoundingClientRect(), sahne.el.getBoundingClientRect());
     sahne.el.append(yildizlar.el);
-    const hece = (i: number) => {
-      heceEl.forEach((e, k) => e.classList.toggle('simdi', k === i));
-      const r = heceEl[i]?.getBoundingClientRect();
-      const p = panel.getBoundingClientRect();
-      if (r) top.style.transform = `translate(${r.left - p.left + r.width / 2}px, ${r.top - p.top - 14}px)`;
-    };
     let yon = 1;
     const besikSalla = (guc = 1) => {
       yon = -yon;
       besikIc.animate([{ rotate: `${-yon * 3 * guc}deg` }, { rotate: `${yon * 4 * guc}deg` }, { rotate: `${yon * 1 * guc}deg` }], { duration: sure(700), easing: 'ease-in-out', fill: 'forwards' });
     };
     try {
-      // --- dinle: ninninin kaydı (bütün dizeler), heceler kayıtla birlikte yanar
+      // --- dinle: ninninin kaydı (bütün dizeler); her notada sıradaki yıldız atar
       if (dinlet) {
         muzikSus();
         await mSoyle(M.dinle);
         ui.ipucu(I.ninni_dinle);
-        await ninniDinlet(tum, hece, besikSalla);
-        heceEl.forEach((e) => e.classList.remove('simdi'));
-        // söyleme yaşa göre ilk dizelerden: kalan dizeler panelden kalkar
-        const kalkan = satirlar.slice(dize);
-        await Promise.all(kalkan.map((s) => s.animate([{ opacity: 1 }, { opacity: 0 }], { duration: sure(300), fill: 'forwards' }).finished.catch(() => undefined)));
-        kalkan.forEach((s) => {
-          s.classList.add('gizli');
-          s.getAnimations().forEach((a) => a.cancel());
-        });
+        await ninniDinlet(tum, (i) => yildizlar.simdi(i % notalar.length), besikSalla);
+        yildizlar.simdi(-1);
       }
       // --- sen söyle / salla
       await mSoyle(M.sen);
@@ -2306,31 +2292,50 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       durumYaz('ninni');
       let yanlis = 0;
       for (;;) {
-        const iyi = await sesliGorev(() => (mik() ? ninniSoyle(notalar, hece, heceEl, yildizlar, besikSalla) : ninniSalla(notalar, hece, heceEl, yildizlar, besikSalla)), null);
+        const iyi = await sesliGorev(() => (mik() ? ninniSoyle(notalar, yildizlar, besikSalla) : ninniSalla(notalar, yildizlar, besikSalla)), null);
         if (iyi >= notalar.length * NINNI_GECER || kabulMu(yas, yanlis)) break;
         yanlis++;
-        heceEl.forEach((e) => e.classList.remove('iyi', 'kacti', 'bos'));
+        yildizlar.sifirla();
         await mSoyle(M.bir_daha);
       }
       durumYaz(null);
       ui.ipucu(null);
-      panel.classList.add('bitti');
-      await bekle(700);
+      yildizlar.simdi(-1);
+      // bütün yıldızlar bir kez parlar
+      yildizlar.el.classList.add('bitti');
+      await bekle(900);
     } finally {
-      void sondur(panel, 360, { opacity: 0, scale: '0.85' });
       yildizlar.el.classList.add('gidiyor');
       setTimeout(() => yildizlar.el.remove(), sure(900));
     }
   }
 
+  /** Ninni yakın çekimi: beşik ve üstündeki yıldız kemeri; çocuklar, Mino ve anne kadrajdan solar */
+  async function ninniYakin() {
+    cekimDisi([ada.el, can.el, elif.el, minoKutu, anne], true);
+    const b = alan(besik);
+    if (!b) return;
+    const bh = b.a - b.u;
+    const odak: Alan = { l: b.l - (b.r - b.l) * 0.04, r: b.r + (b.r - b.l) * 0.04, u: b.u - bh * 0.62, a: b.a + bh * 0.02 };
+    const bitti = yakinKam(odak, dikey ? 2.4 : 2.8, 1400);
+    spotAc(odak);
+    await bitti;
+  }
+  /** Ninniden sonra: kamera geri çekilir, herkes sahneye döner */
+  function ninniBitir(ms = 1100) {
+    spotAc(null);
+    cekimDisi([ada.el, can.el, elif.el, minoKutu, anne], false);
+    return kam(dikey ? 72 : 66, 94, dikey ? 1.6 : 1.3, ms, [besik]);
+  }
+
   /**
-   * Ninninin sözlü kaydını çalar; heceler kaydın zamanıyla (basMs) yanar, her hecede beşik hafifçe sallanır.
+   * Ninninin sözlü kaydını çalar; her nota kaydın zamanıyla (basMs) vurur (vurus), beşik hafifçe sallanır.
    * Kayıt çalarken mikrofon dinlemez (kulak.sustur). Kayıt açılamazsa (ya da testte) aynı notalar müzik kutusuyla.
    */
-  function ninniDinlet(notalar: Nota[], hece: (i: number) => void, besikSalla: (g?: number) => void): Promise<void> {
+  function ninniDinlet(notalar: Nota[], vurus: (i: number) => void, besikSalla: (g?: number) => void): Promise<void> {
     const kutuyla = async () => {
       for (const [i, n] of notalar.entries()) {
-        hece(i);
+        vurus(i);
         const ms = n.sureMs ?? NINNI_VURUS * 1000;
         efektCal(() => S.kutuNota(n.midi, 0.12, (ms / 1000) * 1.6), ms);
         besikSalla(0.6);
@@ -2355,7 +2360,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
               if (t >= (n.basMs ?? 0)) k = j;
             });
             if (k >= 0 && k !== simdi) {
-              hece((simdi = k));
+              vurus((simdi = k));
               besikSalla(0.6);
             }
             if (t >= bitis + 250 || ses.ended) coz();
@@ -2369,14 +2374,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     );
   }
 
-  /** Mikrofonla söyleme (dokunma: beşiği sallamak o notayı sayar). Dönüş: iyi nota sayısı */
-  async function ninniSoyle(notalar: Nota[], hece: (i: number) => void, heceEl: HTMLElement[], yildizlar: NinniYildizlari, besikSalla: (g?: number) => void): Promise<number> {
-    // çocuk kayıttan yavaş söyler; çok kısa hecelerde ton puanlanmaz, ses çıkarması yeter
+  /** Mikrofonla ritim: her vuruşta ses çıkması yeter (ton aranmaz; dokunma: beşiği sallamak o vuruşu sayar). Dönüş: tutan vuruş */
+  async function ninniSoyle(notalar: Nota[], yildizlar: NinniYildizlari, besikSalla: (g?: number) => void): Promise<number> {
+    // çocuk kayıttan yavaş söyler
     const YAVAS = ninniYavas(yas);
-    const kisa = (n: Nota) => (n.sureMs ?? 600) * YAVAS < NINNI_KISA_MS;
     let iyi = 0;
-    let referans: number | null = null;
-    const refPerdeler: number[] = [];
     let perdeler: number[] = [];
     let sesliKare = 0;
     let kareSay = 0;
@@ -2391,15 +2393,13 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       kareSay++;
       sv.kare(o);
       if (sesVar(o, kulak.ayar, 10)) sesliKare++;
-      if (o.perde !== null && sesVar(o, kulak.ayar, 10)) {
-        perdeler.push(o.perde);
-        if (simdiki.satir === 0 && simdiki.midi === NINNI_REF_MIDI) refPerdeler.push(o.perde);
-      }
+      if (o.perde !== null && sesVar(o, kulak.ayar, 10)) perdeler.push(o.perde);
       // yüksek ses: Ege bir gözünü açar
       if (sv.yuksekSure > 0.3 && performance.now() - kisikUyari > 3500) {
         kisikUyari = performance.now();
         ege.ifade('tek-goz', 1400);
-        void balon(minoBalon, M.kisik, 1300);
+        const [x, y] = ege.basUstu();
+        yazi(x, y - 10, M.kisik);
       }
     });
     try {
@@ -2409,25 +2409,19 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         sesliKare = 0;
         kareSay = 0;
         sallandi = false;
-        hece(i);
+        yildizlar.simdi(i);
         await bekle((n.sureMs ?? NINNI_VURUS * 1000) * YAVAS);
-        if (!referans) referans = referansBul(refPerdeler);
         const oran2 = kareSay ? sesliKare / kareSay : 0;
-        const r = sallandi ? 'dogru' : notaDegerlendir({ perdeler, sesli: oran2, midi: n.midi, referans, tolerans: 3, yalnizSes: !ayar.melodi || i < 2 || kisa(n), refMidi: NINNI_REF_MIDI });
-        const tamam = r === 'dogru' || r === 'ses';
-        heceEl[i].classList.add(tamam ? 'iyi' : r === 'sessiz' ? 'bos' : 'kacti');
-        if (tamam) {
+        const r = sallandi ? 'dogru' : notaDegerlendir({ perdeler, sesli: oran2, midi: n.midi, referans: null, tolerans: 3, yalnizSes: true, refMidi: NINNI_REF_MIDI });
+        if (r === 'dogru' || r === 'ses') {
           iyi++;
           yildizlar.yak(i);
           S.yildiz(i);
           besikSalla(0.8);
-        } else if (referans && r !== 'sessiz' && perdeler.length) {
-          // anlık: çok uzaksa Ege kaşını kaldırır (cezasız)
-          const f = anlikFark(perdeler[perdeler.length - 1], referans, n.midi, NINNI_REF_MIDI);
-          if (Math.abs(f) > 5) ege.ifade('tek-goz', 700);
         }
         if (notalar[i + 1] && notalar[i + 1].satir !== n.satir) {
           simdiki = null;
+          yildizlar.simdi(-1);
           await bekle(Math.max(700, ninniSatirArasiMs(n.satir) * YAVAS));
         }
       }
@@ -2439,11 +2433,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     return iyi;
   }
 
-  /** Mikrofonsuz: beşiği sağa-sola sallamak; her salınım bir nota (müzik kutusu çalar, yıldız yanar) */
-  function ninniSalla(notalar: Nota[], hece: (i: number) => void, heceEl: HTMLElement[], yildizlar: NinniYildizlari, besikSalla: (g?: number) => void): Promise<number> {
+  /** Mikrofonsuz: beşiği sağa-sola sallamak; her salınım bir vuruş (müzik kutusu çalar, yıldız yanar) */
+  function ninniSalla(notalar: Nota[], yildizlar: NinniYildizlari, besikSalla: (g?: number) => void): Promise<number> {
     return gorev<number>((coz) => {
       let i = 0;
-      hece(0);
+      yildizlar.simdi(0);
       const sal = new Salinim();
       const ip = new Ipucu(() => salIpucu(), TEST_MODU ? 400 : IPUCU_SURE * 1000);
       acikIpucu.add(ip);
@@ -2452,12 +2446,11 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         if (!n) return;
         ip.ilerle();
         efektCal(() => S.kutuNota(n.midi, 0.13, 1.1), 500);
-        heceEl[i].classList.add('iyi');
         yildizlar.yak(i);
         besikSalla(1);
         i++;
         if (i >= notalar.length) coz(notalar.length);
-        else hece(i);
+        else yildizlar.simdi(i);
       });
       return () => {
         surBitir();

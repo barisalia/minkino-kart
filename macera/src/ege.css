@@ -1327,11 +1327,27 @@
 }
 .mc-kok .eg-ny {
   position: absolute;
-  width: clamp(18px, 5vw, 28px);
+  width: var(--ny-w, clamp(18px, 5vw, 28px));
   transform: translate(-50%, -50%);
-  opacity: 0.28;
+  opacity: 0.3;
   filter: grayscale(1) brightness(1.6);
   transition: opacity 0.3s, filter 0.3s;
+}
+/* ritim: sıradaki vuruşun yıldızı atar */
+.mc-kok .eg-ny.simdi {
+  opacity: 0.85;
+  animation: eg-ny-atis 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.mc-kok .eg-ny.yandi.simdi {
+  opacity: 1;
+}
+@keyframes eg-ny-atis {
+  0% { scale: 1; }
+  35% { scale: 1.5; }
+  100% { scale: 1.15; }
+}
+.mc-kok .eg-ninni-yildiz.bitti .eg-ny.yandi {
+  animation: eg-ny-atis 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) both;
 }
 .mc-kok .eg-ny svg {
   display: block;
@@ -1340,21 +1356,6 @@
 .mc-kok .eg-ny.yandi {
   opacity: 1;
   filter: drop-shadow(0 0 6px #fff3a0);
-}
-.mc-kok .eg-karaoke {
-  background: rgba(34, 44, 104, 0.9);
-  color: #fff;
-}
-.mc-kok .eg-karaoke .mc-hece {
-  background: rgba(255, 255, 255, 0.14);
-}
-.mc-kok .eg-karaoke .mc-hece.simdi {
-  background: #ffc84a;
-  color: #3a2a10;
-}
-.mc-kok .eg-karaoke .mc-hece.iyi {
-  background: #7fd6a8;
-  color: #13351f;
 }
 
 /* ödül kartı */
