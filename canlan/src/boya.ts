@@ -170,6 +170,33 @@ export interface Boya {
 }
 
 /**
+ * Boyaları görüneni değiştirmeden sadeleştirir (müzeye asarken yer kaplamasın): sonradan boyanan yerin altında
+ * kalan eski boya atılır, kalanlar parça + renk başına tek maskede birleşir. Maskeler artık çakışmadığı için sıra
+ * önemsizdir; kayıt sayısı en çok parça × renk kadar olur (dokunuş sayısından bağımsız).
+ */
+export function boyalariSadelestir(boyalar: Boya[]): Boya[] {
+  const kapli = new Map<string, Uint8Array>();
+  const birlesik = new Map<string, Boya>();
+  for (let j = boyalar.length - 1; j >= 0; j--) {
+    const b = boyalar[j];
+    let ust = kapli.get(b.parca);
+    if (!ust) kapli.set(b.parca, (ust = new Uint8Array(b.maske.length)));
+    let hedef: Boya | undefined;
+    for (let i = 0; i < b.maske.length; i++) {
+      if (!b.maske[i] || ust[i]) continue;
+      ust[i] = 1;
+      if (!hedef) {
+        const anahtar = `${b.parca}\n${b.renk}`;
+        hedef = birlesik.get(anahtar);
+        if (!hedef) birlesik.set(anahtar, (hedef = { parca: b.parca, renk: b.renk, maske: new Uint8Array(b.maske.length) }));
+      }
+      hedef.maske[i] = 1;
+    }
+  }
+  return [...birlesik.values()];
+}
+
+/**
  * Dokunulan noktadaki bölgeyi bulur. Taşan bölgede şablon parçasına düşer; boşlukta (dışarıda) null.
  * p: çocuğun çizim koordinatında (0..1).
  */

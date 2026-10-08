@@ -19,6 +19,8 @@ export function sesiAc() {
 }
 
 export function ayarDegistir(degisim: Partial<typeof durum.i.ayarlar>) {
+  // Ebeveyn Köşesi'nden bir kanal değişti: hoparlör düğmesinin sakladığı eski seçim artık geçersiz
+  if (!('sesOnce' in degisim) && ('muzik' in degisim || 'efekt' in degisim || 'konusma' in degisim)) delete durum.i.ayarlar.sesOnce;
   Object.assign(durum.i.ayarlar, degisim);
   kaydetDurum();
   seviyeleriUygula();
@@ -30,8 +32,18 @@ export function tumSesKapaliMi() {
   const a = durum.i.ayarlar;
   return !a.muzik && !a.efekt && !a.konusma;
 }
+/**
+ * Çocuğun hoparlör düğmesi: sessize alırken ebeveynin kanal seçimini saklar, açarken ona döner (ör. ebeveyn yalnız
+ * müziği kapattıysa ses açılınca müzik kapalı kalır). Saklı seçim yoksa üç kanal da açılır.
+ */
 export function sessizeAlDegistir(): boolean {
+  const a = durum.i.ayarlar;
   const kapali = !tumSesKapaliMi();
-  ayarDegistir({ muzik: !kapali, efekt: !kapali, konusma: !kapali });
+  if (kapali) ayarDegistir({ muzik: false, efekt: false, konusma: false, sesOnce: { muzik: a.muzik, efekt: a.efekt, konusma: a.konusma } });
+  else {
+    const o = a.sesOnce;
+    const geri = o && (o.muzik || o.efekt || o.konusma) ? o : { muzik: true, efekt: true, konusma: true };
+    ayarDegistir({ ...geri, sesOnce: undefined });
+  }
   return kapali;
 }

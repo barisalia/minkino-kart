@@ -71,6 +71,25 @@ async function parmaklar(page: Page) {
     cdp.send('Input.dispatchTouchEvent', { type, touchPoints: noktalar.map(([n, id]) => nokta(n, id)) });
 }
 
+/** Android geri tuşunu taklit eder (kabuk GERI_OLAYI duyurur); sayfa işlediyse true. */
+async function geriTusu(page: Page) {
+  return page.evaluate(() => !window.dispatchEvent(new CustomEvent('minkino:geri', { cancelable: true })));
+}
+
+test('Çiz Canlansın: resim seçip hemen Ana ekrana dönülürse çizime atılmaz', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./canlan/?test=1&yas=5&ekran=liste');
+  const kart = page.locator('.cc-izgara [data-resim]').first();
+  await expect(kart).toBeVisible();
+  await page.evaluate(() => {
+    (document.querySelector('.cc-izgara [data-resim]') as HTMLElement).click();
+    (document.querySelector('[aria-label="Ana ekran"]') as HTMLElement).click();
+  });
+  await page.waitForTimeout(700);
+  await expect(page.locator('.cc-ciz')).toHaveCount(0);
+  expect(hatalar).toEqual([]);
+});
+
 async function bittiyse(page: Page) {
   // yol ve nokta modunda resim tamamlanınca kendiliğinden biter
   const sonuc = page.locator('.cc-sonuc');
@@ -129,7 +148,15 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   const d2 = await page.locator('[data-parca="kuyruk"]').getAttribute('transform');
   expect(d1).not.toEqual(d2);
 
-  // Sihirli hâl: kitap illüstrasyonuna dönüşür, tekrar basınca geri döner
+  // Sihirli hâl: hızlı çift dokunuş (resim yüklenirken) açık-kapalı karışmaz: kapalı kalır
+  await page.locator('.cc-sihir-dugme').evaluate((b: HTMLButtonElement) => {
+    b.click();
+    b.click();
+  });
+  await page.waitForTimeout(800);
+  await expect(page.locator('.cc-sonuc .cc-gercek')).toHaveCount(0);
+  await expect(page.locator('.cc-sihir-dugme.acik')).toHaveCount(0);
+  // kitap illüstrasyonuna dönüşür, tekrar basınca geri döner
   await page.getByRole('button', { name: 'Sihirli hâli' }).click();
   await expect(page.locator('.cc-sonuc .cc-gercek image')).toBeAttached();
   await page.waitForTimeout(1200);
@@ -152,7 +179,17 @@ test('Çiz Canlansın: açılış → liste → 3 yaş yol modunda top → yıld
   await expect(kartResmi).toBeVisible({ timeout: 10000 });
   await page.waitForTimeout(300);
   await kartResmi.screenshot({ path: `tests/screens/${p}-40-canlan-kart.png` });
+  // Android geri tuşu önce kartı kapatır, oyundan çıkmaz
+  expect(await geriTusu(page)).toBe(true);
+  await expect(page.locator('.cc-kart-pencere')).toHaveCount(0);
+  await expect(page.locator('.cc-sonuc')).toBeVisible();
+  expect(await geriTusu(page)).toBe(false);
+  await page.getByRole('button', { name: 'Kartım' }).click();
+  await kapiyiGec(page);
+  await expect(kartResmi).toBeVisible({ timeout: 10000 });
   await page.getByRole('button', { name: 'Tamam' }).click();
+  await expect(page.locator('.cc-kart-pencere')).toHaveCount(0);
+  expect(await geriTusu(page)).toBe(false);
   // Liste yıldızı kaydetti
   await page.getByRole('button', { name: 'Resimler' }).click();
   await expect(page.locator('[data-resim="balik"] .cc-kart-yildiz i.dolu').first()).toBeVisible();
@@ -298,6 +335,13 @@ test('Çiz Canlansın: Müzem — canlanan resim duvara asılır, dokununca yine
   await page.screenshot({ path: `tests/screens/${p}-43-canlan-muze-yakin.png` });
   await page.getByRole('button', { name: 'Kapat' }).click();
   await expect(perde).toHaveCount(0);
+  // Android geri tuşu yakın bakışı kapatır, müzede kalınır
+  await cerceve.click();
+  await expect(perde).toBeVisible();
+  expect(await geriTusu(page)).toBe(true);
+  await expect(perde).toHaveCount(0);
+  await expect(page.locator('.cc-muze')).toBeVisible();
+  expect(await geriTusu(page)).toBe(false);
 
   // listede Müzem kartı resim sayısını gösterir; oradan da girilir
   await page.getByRole('button', { name: 'Geri' }).click();
