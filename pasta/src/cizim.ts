@@ -691,6 +691,16 @@ export const OTOBUS_YERI = {
     { ad: 'arka', x: 150, y: 334, r: 50 },
     { ad: 'on', x: 500, y: 334, r: 50 },
   ],
+  /**
+   * Tasarımcının çizdiği tekerlek (assets/pasta/teker-*.webp: 1024 kare, tekerlek tuvali tam dolduruyor, dönme
+   * merkezi ortada, yönlü ışık yok) otobüs görselinin kendi tekerleğinin tam üstüne oturur: merkezler görselden
+   * ölçüldü (gri lastik ~43 + kontur), yarıçap eskisini örter. Tekerlek bütün döner; ışık katmanı
+   * (teker-isik-*.webp: parlama + gölge) üstünde durur, dönmez.
+   */
+  cizimTeker: [
+    { ad: 'arka', x: 150.5, y: 333, r: 47.5 },
+    { ad: 'on', x: 499.2, y: 333, r: 47.5 },
+  ],
 };
 
 /** Rengin 0-1 kanalları */
@@ -745,18 +755,28 @@ export const boyaFiltresi = (ad: string) => (ad in BOYA && ad !== 'pembe' ? `url
 /**
  * Otobüs: görsel varsa görsel (kapalı otobüs), yoksa kod çizimi. Görselli otobüste aynı sınıflar ve yerler: gövde
  * (.ps-ob-govde, korna zıplaması), yan kapak (.ps-ob-panel: görselin kapak bölgesi, açılınca katlanır), tente / iç /
- * tezgâh (kod parçaları, açılınca çıkar), tekerlekler (.ps-ob-teker: görselin tekerleği, girişte döner).
+ * tezgâh (kod parçaları, açılınca çıkar), tekerlekler (.ps-ob-teker: girişte döner). Çizilmiş tekerlek (tekerUrl)
+ * varsa o döner, üstünde dönmeyen ışık katmanı (isikUrl, .ps-ob-teker-isik); yoksa görselin kendi tekerleği.
  */
-export function otobusSvg(url: string | null): string {
+export function otobusSvg(url: string | null, tekerUrl: string | null = null, isikUrl: string | null = null): string {
   if (!url) return OTOBUS_KOD;
-  const { kapak: k, teker } = OTOBUS_YERI;
+  const { kapak: k, teker, cizimTeker } = OTOBUS_YERI;
   const img = (ek = '') => `<image class="ps-ob-boyali" href="${url}" width="640" height="420" preserveAspectRatio="xMidYMax meet"${ek}/>`;
   const kirp =
     `<clipPath id="ps-ob-kapak-kirp" clipPathUnits="userSpaceOnUse"><rect x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}"/></clipPath>` +
-    teker.map((t) => `<clipPath id="ps-ob-teker-${t.ad}" clipPathUnits="userSpaceOnUse"><circle cx="${t.x}" cy="${t.y}" r="${t.r}"/></clipPath>`).join('');
-  const tekerler = teker
-    .map((t) => `<g class="ps-ob-teker" data-teker="${t.ad}" style="transform-box:view-box;transform-origin:${t.x}px ${t.y}px">${img(` clip-path="url(#ps-ob-teker-${t.ad})"`)}</g>`)
-    .join('');
+    (tekerUrl ? '' : teker.map((t) => `<clipPath id="ps-ob-teker-${t.ad}" clipPathUnits="userSpaceOnUse"><circle cx="${t.x}" cy="${t.y}" r="${t.r}"/></clipPath>`).join(''));
+  const kare = (u: string, t: { x: number; y: number; r: number }) => `<image href="${u}" x="${t.x - t.r}" y="${t.y - t.r}" width="${t.r * 2}" height="${t.r * 2}"/>`;
+  const tekerler = tekerUrl
+    ? cizimTeker
+        .map(
+          (t) =>
+            `<g class="ps-ob-teker" data-teker="${t.ad}" style="transform-box:view-box;transform-origin:${t.x}px ${t.y}px">${kare(tekerUrl, t)}</g>` +
+            (isikUrl ? `<g class="ps-ob-teker-isik" data-teker="${t.ad}">${kare(isikUrl, t)}</g>` : ''),
+        )
+        .join('')
+    : teker
+        .map((t) => `<g class="ps-ob-teker" data-teker="${t.ad}" style="transform-box:view-box;transform-origin:${t.x}px ${t.y}px">${img(` clip-path="url(#ps-ob-teker-${t.ad})"`)}</g>`)
+        .join('');
   return ince(
     `<svg class="ps-otobus-svg ps-otobus-resimli" viewBox="0 0 640 420" aria-hidden="true" overflow="visible"><defs>${kirp}${boyaFiltreleri()}</defs>` +
       `<ellipse class="ps-ob-golge" cx="320" cy="392" rx="300" ry="16" fill="${K}" opacity=".2"/>` +
@@ -805,5 +825,5 @@ export const RAF_SUSLERI = RAF_SUSLERI_KOD;
 export const SAPKA = SAPKA_KOD;
 export const MINO_SAPKA = MINO_SAPKA_KOD;
 export const OKUL = OKUL_KOD;
-export const OTOBUS = otobusSvg(yuva('otobus'));
+export const OTOBUS = otobusSvg(yuva('otobus'), yuva('teker'), yuva('tekerIsik'));
 export const KALP = KALP_KOD;

@@ -41,7 +41,33 @@ const sv = <K extends keyof SVGElementTagNameMap>(ad: K, a: Record<string, strin
 const SIRALI = [...RESIMLER].sort((a, b) => a.zorluk - b.zorluk);
 const yas = () => durum.i.yas ?? 4;
 const aktifMod = (): Mod => kayit.mod[String(yas())] ?? yasModu(yas());
-const MOD_IKON: Record<Mod, string> = { iz: IKON.yol, nokta: IKON.noktalar, kopya: IKON.goz, hafiza: IKON.beyin };
+/**
+ * Mod düğmelerinin resimli ikonları (renkli, kahve konturlu; seçili düğmede de beyaz madalyon içinde okunur):
+ * yol: kalem kesikli yolu izler, nokta: numaralı noktalar birleşir, kopya: kocaman göz, hafıza: parlak beyin.
+ */
+const MK = '#5a3617';
+const MOD_IKON: Record<Mod, string> = {
+  iz:
+    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 50C16 30 26 54 36 36S50 18 54 16" fill="none" stroke="#F7B9B4" stroke-width="9" stroke-linecap="round"/>` +
+    `<path d="M8 50C16 30 26 54 36 36" fill="none" stroke="#F0413F" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 8"/>` +
+    `<circle cx="8" cy="50" r="5.5" fill="#5DBE3F" stroke="${MK}" stroke-width="2.5"/>` +
+    `<g transform="rotate(42 44 26)"><rect x="39" y="6" width="10" height="28" rx="2.5" fill="#FFC72C" stroke="${MK}" stroke-width="2.5"/><rect x="39" y="6" width="10" height="7" rx="2.5" fill="#FF8CB4" stroke="${MK}" stroke-width="2.5"/><path d="M39 34h10l-5 9z" fill="#FFE2B8" stroke="${MK}" stroke-width="2.5" stroke-linejoin="round"/><path d="M42.6 40.5h2.8L44 43z" fill="${MK}"/><path d="M42 15v16" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/></g></svg>`,
+  nokta:
+    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 48L24 18L40 42" fill="none" stroke="#3E9DF2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 42L52 14" fill="none" stroke="#9FCBF5" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 6"/>` +
+    [[12, 48, '1'], [24, 18, '2'], [40, 42, '3'], [52, 14, '4']]
+      .map(([x, y, n]) => `<circle cx="${x}" cy="${y}" r="8.5" fill="${n === '4' ? '#fff' : '#3E9DF2'}" stroke="${MK}" stroke-width="2.5"/><text x="${x}" y="${Number(y) + 4.2}" text-anchor="middle" font-size="12" font-weight="700" font-family="Fredoka, sans-serif" fill="${n === '4' ? '#3E9DF2' : '#fff'}">${n}</text>`)
+      .join('') +
+    `</svg>`,
+  kopya:
+    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 32C12 18 22 12 32 12S52 18 60 32C52 46 42 52 32 52S12 46 4 32Z" fill="#fff" stroke="${MK}" stroke-width="3" stroke-linejoin="round"/>` +
+    `<circle cx="32" cy="32" r="14" fill="#5DBE3F" stroke="${MK}" stroke-width="2.5"/><circle cx="32" cy="32" r="7" fill="${MK}"/><circle cx="27" cy="26.5" r="4" fill="#fff"/><circle cx="37" cy="37" r="1.8" fill="#fff" opacity=".8"/>` +
+    `<path d="M14 16L10 10M32 8V3M50 16L54 10" stroke="${MK}" stroke-width="3" stroke-linecap="round"/></svg>`,
+  hafiza:
+    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M31 12C26 7 16 8 14 16C7 17 4 25 8 31C4 37 8 46 15 46C17 53 26 56 31 51Z" fill="#B784F0" stroke="${MK}" stroke-width="3" stroke-linejoin="round"/>` +
+    `<path d="M33 12C38 7 48 8 50 16C57 17 60 25 56 31C60 37 56 46 49 46C47 53 38 56 33 51Z" fill="#9B5CE0" stroke="${MK}" stroke-width="3" stroke-linejoin="round"/>` +
+    `<path d="M14 24C18 24 21 27 21 31M22 40C25 38 28 39 29 42M42 20C40 24 42 28 46 28M50 37C46 37 43 40 44 44M24 15C23 18 24 21 27 22" fill="none" stroke="${MK}" stroke-width="2.5" stroke-linecap="round" opacity=".55"/>` +
+    `<ellipse cx="19" cy="18" rx="4" ry="2.5" fill="#fff" opacity=".7" transform="rotate(-30 19 18)"/><path d="M54 6l1.6 3.4 3.4 1.6-3.4 1.6L54 16l-1.6-3.4L49 11l3.4-1.6z" fill="#FFC72C" stroke="${MK}" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+};
 const MOD_RENK: Record<Mod, string> = { iz: '#F0413F', nokta: '#3E9DF2', kopya: '#5DBE3F', hafiza: '#9B5CE0' };
 const KALINLIK: Record<number, number> = { 3: 0.03, 4: 0.026, 5: 0.022, 6: 0.022 };
 const RENKLER = ['#F0413F', '#FF8A2B', '#FFB000', '#3FA535', '#3E9DF2', '#9B5CE0'];
@@ -59,6 +85,8 @@ function logo(): HTMLElement {
 
 /** Sihirli hâl: her resmin kitap illüstrasyonu (Recraft) */
 const GERCEK_RESIM = import.meta.glob<string>('../../assets/canlan/*.webp', { eager: true, query: '?url', import: 'default' });
+/** Müzem kartının resmi (Mino altın çerçeveli tabloya bakar); dosya yoksa kodla minik tablo */
+const MUZE_RESMI: string | undefined = GERCEK_RESIM['../../assets/canlan/muze-karti.webp'];
 /** İllüstrasyonu sola bakan resimler (sahnede aynalanır) */
 const AYNALI = new Set(['ucak']);
 
@@ -183,7 +211,8 @@ export function listeEkrani(app: Uygulama): Ekran {
     const muze = h(
       'button.cc-muze-karti',
       { type: 'button', 'aria-label': 'Müzem', style: '--i:0' },
-      h('span.cc-muze-karti-cerceve', {}, h('span.cc-mini-tablo', {}, h('i'))),
+      // resim: Mino altın çerçeveli tabloya hayranlıkla bakar (assets/canlan/muze-karti.webp); yoksa kodla minik tablo
+      MUZE_RESMI ? h('img.cc-muze-gorsel', { src: MUZE_RESMI, alt: '', decoding: 'async' }) : h('span.cc-muze-karti-cerceve', {}, h('span.cc-mini-tablo', {}, h('i'))),
       h('span.cc-resim-ad', {}, 'Müzem'),
       sayi ? h('span.cc-muze-sayi', {}, String(sayi)) : null,
     );

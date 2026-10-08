@@ -24,6 +24,17 @@ describe('Pasta otobüsü: görsel varsa görsel, yoksa kod çizimi', () => {
     expect(s.match(/href="\/x\/otobus-1\.webp"/g)!.length).toBe(2 + OTOBUS_YERI.teker.length);
     expect(s).toContain('viewBox="0 0 640 420"');
   });
+  it('çizilmiş tekerlek döner, ışık katmanı üstünde durur; otobüs görseli tekerlekte kırpılmaz', () => {
+    const s = otobusSvg('/x/otobus-1.webp', '/x/teker-1.webp', '/x/teker-isik-1.webp');
+    const n = OTOBUS_YERI.cizimTeker.length;
+    expect(s.match(/class="ps-ob-teker"/g)).toHaveLength(n);
+    expect(s.match(/class="ps-ob-teker-isik"/g)).toHaveLength(n);
+    expect(s.match(/href="\/x\/teker-1\.webp"/g)).toHaveLength(n);
+    expect(s.match(/href="\/x\/otobus-1\.webp"/g)).toHaveLength(2);
+    expect(s).not.toContain('ps-ob-teker-arka"');
+    // ışık dönen grubun içinde değil (yanında)
+    expect(s).toMatch(/<\/g><g class="ps-ob-teker-isik"/);
+  });
   it('boya: pembe gövde tam hedef renge, gölgesi koyu hedefe döner', () => {
     for (const ad of ['nane', 'limon']) {
       const sonuc = uygula(boyaMatrisi(BOYA[ad].govde), kanal(BOYA.pembe.govde));

@@ -927,3 +927,26 @@
     min-height: 128px;
   }
 }
+
+/* gün kartlarının yıldızları iri ve okunur: dolu yıldız parlak, boş yıldız gümüş yuva (soluk gri değil) */
+.ps-kok .ps-gunler .ps-gun-yildizlar {
+  gap: 2px;
+  padding: 3px 5px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2.5px solid var(--ps-k);
+  box-shadow: 0 2px 0 rgba(107, 58, 31, 0.25);
+}
+.ps-kok .ps-gunler .ps-gun-yildizlar i {
+  width: clamp(19px, 5.4vw, 28px);
+  height: clamp(19px, 5.4vw, 28px);
+}
+.ps-kok .ps-gunler .ps-gun-yildizlar i:not(.dolu) {
+  filter: grayscale(1) brightness(1.3) contrast(0.9);
+  opacity: 0.7;
+}
+@media (orientation: landscape) {
+  .ps-kok .ps-gunler .ps-gun-yildizlar i {
+    width: clamp(26px, 7.4vh, 36px);
+    height: clamp(26px, 7.4vh, 36px);
+  }
+}
