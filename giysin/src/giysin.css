@@ -345,11 +345,13 @@
   position: absolute;
   padding: 0;
   border: 0;
+  border-radius: 14%;
   background: none;
   pointer-events: none;
   opacity: 0;
   touch-action: none;
   transition: opacity 0.25s;
+  -webkit-tap-highlight-color: transparent;
 }
 .gy-kok .gy-raf.acik .gy-giysi {
   opacity: 1;
@@ -360,33 +362,67 @@
   opacity: 0;
   pointer-events: none;
 }
+/* giysi gözün içinde ortada, hepsi aynı kutuya sığar (alt payı rafın dudağı için biraz fazla) */
 .gy-kok .gy-giysi img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  left: 7%;
+  top: 7%;
+  width: 86%;
+  height: 80%;
   object-fit: contain;
-  filter: drop-shadow(0 5px 3px rgba(80, 40, 20, 0.28));
-  transform-origin: 50% 0;
+  filter: drop-shadow(0 3px 2px rgba(70, 32, 12, 0.35));
+  transform-origin: 50% 100%;
+  transition: opacity 0.2s, transform 0.2s;
 }
-.gy-kok .gy-raf.acik .gy-giysi.askida img {
-  animation: gy-asili 3.2s ease-in-out infinite;
+/* ince uzun şemsiye çapraz yatar: gözü öbürleri kadar doldurur */
+.gy-kok .gy-giysi[data-giysi='semsiye'] img {
+  top: -6%;
+  height: 112%;
+  rotate: -50deg;
+  transform-origin: 50% 50%;
 }
-.gy-kok .gy-raf.acik .gy-giysi.askida:nth-child(2) img {
-  animation-delay: -1.1s;
+/* gözde hafif nefes: her giysi kendi zamanında, sırayla */
+.gy-kok .gy-raf.acik .gy-giysi img {
+  animation: gy-gozde 3.4s ease-in-out infinite;
+  animation-delay: calc(var(--gy-sira, 0) * -0.43s);
 }
-.gy-kok .gy-raf.acik .gy-giysi.askida:nth-child(3) img {
-  animation-delay: -2.2s;
-}
-@keyframes gy-asili {
+@keyframes gy-gozde {
   0%,
   100% {
-    transform: rotate(-3deg);
+    transform: translateY(0) scale(1);
   }
   50% {
-    transform: rotate(3deg);
+    transform: translateY(-4%) scale(1.03);
   }
 }
-.gy-kok .gy-giysi.bos {
-  opacity: 0 !important;
+/* basınca göz parlar, giysi kabarır */
+.gy-kok .gy-giysi::after {
+  content: '';
+  position: absolute;
+  inset: 6%;
+  border-radius: 16%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 55%, rgba(255, 246, 200, 0.75) 0 35%, rgba(255, 236, 160, 0) 72%);
+  transition: opacity 0.15s;
+}
+.gy-kok .gy-raf.acik .gy-giysi:active::after {
+  opacity: 1;
+}
+.gy-kok .gy-raf.acik .gy-giysi:active img {
+  animation: none;
+  transform: scale(1.1);
+}
+/* boş göz: giysi Kino'da, gözde soluk kesik çizgili bir iz kalır */
+.gy-kok .gy-giysi.bos img {
+  opacity: 0;
+  animation: none;
+}
+.gy-kok .gy-raf.acik .gy-giysi.bos::after {
+  opacity: 1;
+  inset: 10%;
+  background: rgba(255, 240, 215, 0.12);
+  border: 2px dashed rgba(255, 238, 205, 0.55);
 }
 .gy-kok .gy-giysi.ipucu::before {
   content: '';
@@ -1644,7 +1680,7 @@
 @media (prefers-reduced-motion: reduce) {
   .gy-kok .gy-kar i,
   .gy-kok .gy-kar i::before,
-  .gy-kok .gy-raf.acik .gy-giysi.askida img,
+  .gy-kok .gy-raf.acik .gy-giysi img,
   .gy-kok .gy-bugu,
   .gy-kok .gy-isik,
   .gy-kok .gy-gunes-parlak,
