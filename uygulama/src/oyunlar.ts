@@ -34,8 +34,8 @@ export interface OyunKarti {
   /** Kartın köşesindeki küçük rozet: oyunun yeni yan oyunu ya da bölümleri (ör. "Meyve Suyu") */
   rozet?: string;
   /**
-   * geniş kart (otobüs yatay bir çizim): 7 kartta son sırayı doldurur (2 ve 4 sütunda iki, 3 sütunda üç hücre);
-   * ızgara her ekranda boşluksuz (uygulama.css → .ug-tek)
+   * geniş kart (otobüs yatay bir çizim): 8 kartta 3 sütunda (tablet) son sırada iki hücre, 2 ve 4 sütunda (telefon)
+   * bir hücre; ızgara her ekranda boşluksuz (uygulama.css → .ug-genis, data-adet='8')
    */
   genis?: boolean;
   /** Mağaza uygulamasında gösterilmez (yalnız web sitesindeki oyunlar için; şu an yok) */
@@ -106,19 +106,6 @@ export const OYUNLAR: OyunKarti[] = [
     katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
   },
   {
-    id: 'okul',
-    ad: 'Okula Hazırım',
-    adres: './okul/',
-    renk: '#5DBE3F',
-    // parkta "1 2 3" oyuncak blokları ve elma (bloklar: assets/okul/sayi-bloklari.webp yuvası; Gemini çizimi gelince değişir)
-    zemin: 'film/park/arka-uzak',
-    rozet: 'Yeni',
-    katmanlar: [
-      { gorsel: 'okul/sayi-bloklari', sinif: 'ug-k-sayilar' },
-      { gorsel: 'meyveler/elma', sinif: 'ug-k-okul-elma' },
-    ],
-  },
-  {
     id: 'dedektif',
     ad: 'Dedektif Mino',
     adres: './dedektif/',
@@ -152,8 +139,8 @@ export const OYUNLAR: OyunKarti[] = [
 ];
 
 /**
- * Menüde görünen kartlar (web ve uygulamada aynı 9 kart, Kino Ne Giysin? eklendi). Geniş Pasta son sırada: telefon
- * dikeyde 2 × 5 (Pasta iki hücre), yatay telefonda 5 × 2 (Pasta iki hücre), 3 sütunda (tablet) 3 × 3 (Pasta bir hücre).
+ * Menüde görünen kartlar (web ve uygulamada aynı 8 kart). Geniş Pasta son sırada: telefon dikeyde 2 × 4 ve yatay
+ * telefonda 4 × 2 (Pasta bir hücre), 3 sütunda (tablet) 3 × 3 (Pasta iki hücre).
  */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
   if (!uygulama) return OYUNLAR;

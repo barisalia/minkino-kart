@@ -410,7 +410,7 @@
 }
 
 /* ---------------------------------------------------------------- kilit rozeti (kilitli kart / bölüm) */
-/* düşük öncelik (:where): kendi konumu olan kartları (Okul duraklarının position:absolute'u) bozmaz */
+/* düşük öncelik (:where): kendi konumu olan kartları (ör. position:absolute ile konumlanan bölüm kartları) bozmaz */
 .mk-kok :where(button[data-kilitli]) {
   position: relative;
 }

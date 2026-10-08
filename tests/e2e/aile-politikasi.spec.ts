@@ -110,7 +110,7 @@ test('Aile politikası: kilitli oyuna dokununca abonelik ekranı kapısız asla 
   expect(hatalar).toEqual([]);
 });
 
-test('Aile politikası: macera, film ve okulda kilitli bölüm de önce kilit anı; ücretsiz içerik en üstte', async ({ page }) => {
+test('Aile politikası: macera ve filmde kilitli bölüm de önce kilit anı; ücretsiz içerik en üstte', async ({ page }) => {
   const hatalar = hataTopla(page);
   // Sesli Maceralar: ücretsiz bölüm (Elektrikler Kesildi!) en üstte, kilitliye dokununca kilit anı
   await page.goto('./macera/?test=1&uygulama=ios');
@@ -127,18 +127,6 @@ test('Aile politikası: macera, film ve okulda kilitli bölüm de önce kilit an
   await page.locator('.fl-film-kart[data-film="kino-oyuncak"]').click();
   await (await kilitAniGorunur(page)).getByRole('button', { name: 'Tamam' }).click();
   await expect(page.locator('.fl-ekran')).toHaveCount(0);
-
-  // Okula Hazırım: ilk 3 durak açık; 4. durakta küçük kilit rozeti, dokununca kilit anı
-  await page.goto('./okul/?test=1&uygulama=android&sifirla=1&yas=6&ekran=bolge');
-  await expect(page.locator('.ok-durak').first()).toBeVisible();
-  for (const id of ['kac-elma', 'sayi-karti', 'sepete-koy']) await expect(page.locator(`.ok-durak[data-etkinlik="${id}"] .mk-kilit`), id).toHaveCount(0);
-  const kilitliDurak = page.locator('.ok-durak[data-etkinlik="hangisinde-cok"]');
-  await expect(kilitliDurak.locator('.mk-kilit')).toBeVisible();
-  await kilitliDurak.click();
-  await kilitAniGorunur(page);
-  await page.keyboard.press('Escape');
-  await expect(page.locator('.kl-perde')).toHaveCount(0);
-  await expect(page.locator('.ok-etkinlik')).toHaveCount(0);
   expect(hatalar).toEqual([]);
 });
 

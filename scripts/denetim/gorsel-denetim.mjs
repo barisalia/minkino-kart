@@ -5,7 +5,7 @@
 //   npm run build:app
 //   npx vite preview --port 4302 --strictPort
 //   node scripts/denetim/gorsel-denetim.mjs            # bütün ekranlar × bütün cihazlar
-//   node scripts/denetim/gorsel-denetim.mjs pasta okul  # yalnız adı bu sözcüklerle başlayan ekranlar
+//   node scripts/denetim/gorsel-denetim.mjs pasta film  # yalnız adı bu sözcüklerle başlayan ekranlar
 //
 // DENETIM_CIHAZ=<ad> ile yalnız bir cihaz (paralel koşmak için; ozet.mjs hepsini birleştirir).
 // Çıktı: tests/screens/denetim-sonuc[-cihaz].json (ham ölçümler) ve tests/screens/denetim-<ekran>-ipad-*.png
@@ -49,12 +49,6 @@ const EKRANLAR = [
   ['film-oynuyor-pazar', 'film/?test=1&film=mino-karpuz', 7000, null, 'button:has-text("Oynat")'],
   ['film-oynuyor-park', 'film/?test=1&film=kino-kaydirak', 7000, null, 'button:has-text("Oynat")'],
   ['film-oynuyor-ev', 'film/?test=1&film=kino-oyuncak', 7000, null, 'button:has-text("Oynat")'],
-  ['okul-harita', 'okul/?test=1&sifirla=1&yas=5'],
-  ['okul-bolge', 'okul/?test=1&yas=5&ekran=bolge'],
-  ['okul-album', 'okul/?test=1&yas=5&ekran=album'],
-  ...['kac-elma', 'sepete-koy', 'piknik', 'hangisinde-cok', 'merdiven', 'kuslar', 'rakam-ciz', 'sayi-karti', 'bir-fazla', 'kac-alkis'].map(
-    (id) => [`okul-${id}`, `okul/?test=1&yas=5&tohum=4&etkinlik=${id}`, 2500],
-  ),
   ['pasta-acilis', 'pasta/?test=1&sifirla=1'],
   ['pasta-gun1', 'pasta/?test=1&sifirla=1&ekran=gun&gun=1', 3000, '.ps-musteri.ps-hazir'],
   ['pasta-gun2-siparis', 'pasta/?test=1&sifirla=1&ekran=gun&gun=2', 3000, '.ps-musteri.ps-hazir'],

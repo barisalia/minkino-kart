@@ -13,9 +13,6 @@ import maceraElektrikJson from '../../content/macera-elektrik.json';
 import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
-import { okulCumleleri, okulKinoCumleleri } from '../../okul/src/sayi';
-import { sesKulesiCumleleri, sesKulesiKinoCumleleri } from '../../okul/src/ses/harfler';
-import { kelimeCumleleri, kelimeKinoCumleleri } from '../../okul/src/kelime/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 import giysinJson from '../../content/giysin.json';
 
@@ -211,15 +208,6 @@ export function tumCumleler(): string[] {
   // Mino'nun Pasta Otobüsü: Mino, müşteriler, sipariş parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
   pastaCumleleri().forEach(ekle);
   pastaKinoCumleleri().forEach(ekle);
-  // Okula Hazırım!: Mino, tavşan, kalıplar (Bir…On ile açılmış), rakam canlanmaları; Kino'nun cümleleri anlatıcı yedeği olarak da
-  okulCumleleri().forEach(ekle);
-  okulKinoCumleleri().forEach(ekle);
-  // Okula Hazırım · Ses Kulesi: harf sesleri, uzatılmış kelimeler, Mino; Kino'nun cümleleri anlatıcı yedeği olarak da
-  sesKulesiCumleleri().forEach(ekle);
-  sesKulesiKinoCumleleri().forEach(ekle);
-  // Okula Hazırım! · Kelime Köprüsü: Mino, kelimeler ("Kedi!"), heceler ("Kar!"), renkler; Kino'nunkiler yedek olarak da
-  kelimeCumleleri().forEach(ekle);
-  kelimeKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Mino (anlatıcı), kart hayvanları ve Pamuk (tonlu); Kino'nun cümleleri anlatıcı yedeği olarak da
   dedektifCumleleri().forEach(ekle);
   dedektifKinoCumleleri().forEach(ekle);
@@ -246,11 +234,6 @@ export function karakterCumleleri(): Record<string, string[]> {
   topla((maceraSalincakJson as Record<string, unknown>).kino).forEach(ekle);
   // Mino'nun Pasta Otobüsü: Kino'nun cümleleri
   pastaKinoCumleleri().forEach(ekle);
-  // Okula Hazırım!: Kino'nun cümleleri
-  okulKinoCumleleri().forEach(ekle);
-  // Okula Hazırım · Ses Kulesi: Kino'nun cümleleri
-  sesKulesiKinoCumleleri().forEach(ekle);
-  kelimeKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Kino'nun cümleleri
   dedektifKinoCumleleri().forEach(ekle);
   // Kino Ne Giysin?: Kino'nun cümleleri

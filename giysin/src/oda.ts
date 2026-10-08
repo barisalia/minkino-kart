@@ -15,7 +15,7 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import G from '../../content/giysin.json';
 import { bekle, kavis, ms, oynat, YUMUSAK } from './anim';
 import { GiyinikKino } from './giyinik';
-import { askida, BOLGE_MERKEZ, birak, bolgeUzakligi, eksikler, giysi, MIKNATIS, siradaki, TURLAR, type GiysiId, type Mevsim, type Tepki } from './model';
+import { BOLGE_MERKEZ, birak, bolgeUzakligi, eksikler, giysi, MIKNATIS, siradaki, TURLAR, type GiysiId, type Mevsim, type Tepki } from './model';
 import { guvenliOlc, type Guvenli } from './guvenli';
 import { onYukle, resim } from './resimler';
 import { iyiTepki, kalpler, parilti, sendele, uymazTepki, zipla, type TepkiBaglami } from './tepkiler';
@@ -25,6 +25,12 @@ const K = G.kino;
 const kinoSoyle = (t: string) => konus(t, KINO_SESI);
 
 type Adim = 'giris' | 'perde' | 'dolap' | 'giyin' | 'gorev' | 'ayna' | 'kapi' | 'cikis';
+
+/** dolap-acik-goz çizimindeki gözler (dolap kutusunun oranı): 2 sütun × 4 sıra; çekmece sıranın altında (ekip/giysin/dolap-goz.cjs) */
+const DOLAP_SUTUN: [number, number][] = [[0.252, 0.486], [0.514, 0.748]];
+const DOLAP_SIRA: [number, number][] = [[0.108, 0.245], [0.268, 0.4], [0.424, 0.555], [0.579, 0.705]];
+/** gözlerin altı (en alt sıranın rafı): yatayda ekranın altına bu oran oturur, çekmece ekranın altından taşabilir */
+const GOZ_ALT = 0.728;
 
 /** Mevsimin istek cümlesi ve uymayan giysiye Mino'nun sözü */
 const ISTEK: Record<Mevsim, string> = { kis: K.istek, ilkbahar: K.istek_ilkbahar, yaz: K.istek_yaz, sonbahar: K.istek_sonbahar };
@@ -76,7 +82,7 @@ function balonIci(m: Mevsim): HTMLElement[] {
 export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
   const mevsim: Mevsim = param?.mevsim ?? 'kis';
   const tur = TURLAR[mevsim];
-  onYukle([`dis-${mevsim}-yatay`, `dis-${mevsim}-dikey`, 'dolap-acik', 'ayna', mevsim === 'sonbahar' ? 'kino-islak' : 'kino-titreme']);
+  onYukle([`dis-${mevsim}-yatay`, `dis-${mevsim}-dikey`, 'dolap-acik-goz', 'dolap-ic-goz', 'ayna', mevsim === 'sonbahar' ? 'kino-islak' : 'kino-titreme']);
   const kapatilacak: (() => void)[] = [];
   let adim: Adim = 'giris';
 
@@ -105,11 +111,11 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
 
   const kapakSol = h('img.gy-kapak.gy-kapak-sol', { src: resim('dolap-kapak-sol'), alt: '', draggable: 'false' });
   const kapakSag = h('img.gy-kapak.gy-kapak-sag', { src: resim('dolap-kapak-sag'), alt: '', draggable: 'false' });
-  const dolapAcik = h('img.gy-dolap-acik', { src: resim('dolap-acik'), alt: '', draggable: 'false' });
+  const dolapAcik = h('img.gy-dolap-acik', { src: resim('dolap-acik-goz'), alt: '', draggable: 'false' });
   const dolapKapali = h('img.gy-dolap-kapali', { src: resim('dolap-kapali'), alt: '', draggable: 'false' });
   const raf = h('div.gy-raf');
   // açılırken kapakların arkasında iç (yana açılmış kapaklar yok); kapaklar dönünce tam açık resim
-  const dolapIc = h('img.gy-dolap-ic', { src: resim('dolap-ic'), alt: '', draggable: 'false' });
+  const dolapIc = h('img.gy-dolap-ic', { src: resim('dolap-ic-goz'), alt: '', draggable: 'false' });
   const dolap = h('div.gy-dolap', { role: 'button', 'aria-label': 'Dolap' }, dolapIc, dolapAcik, dolapKapali, h('div.gy-kapak-yer.sol', {}, kapakSol), h('div.gy-kapak-yer.sag', {}, kapakSag), h('div.gy-isaret.gy-isaret-dolap'));
 
   const kino = new GiyinikKino();
@@ -176,17 +182,26 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
       // dikey: üstte pencere (çentiğin ve geri düğmesinin altında), solda Kino, sağda dolap (giysiler iki sütun)
       const pw = W * 0.5;
       kutu(pencere, kapiPay + g.sol + W * 0.06, Math.max(H * 0.09, g.ust + 70), pw, pw / 0.778);
-      kinoS = Math.min(W * 0.66, H * 0.34);
-      kutu(kinoYer, kapiPay + g.sol + W * 0.27 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      kinoS = Math.min(W * 0.62, H * 0.34);
+      kutu(kinoYer, kapiPay + g.sol + W * 0.25 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
+      // dolabın gövdesi sağ kenarda: gözlerin sol sütunu Kino'nun kulağının altında kalmaz
       const dw = Math.min(W * 0.88, H * 0.5);
-      kutu(dolap, kapiPay + W - g.sag - W * 0.02 - dw * 0.83, zemin + H * 0.09 - dw, dw, dw);
+      kutu(dolap, kapiPay + W - g.sag - 4 - dw * 0.79, zemin + H * 0.09 - dw, dw, dw);
     } else {
       const ph = u * 0.7;
-      kutu(pencere, kapiPay + g.sol + Wg * 0.025, Math.max(H * 0.07, g.ust + 6), ph * 0.778, ph);
+      const px = g.sol + Wg * 0.025;
+      kutu(pencere, kapiPay + px, Math.max(H * 0.07, g.ust + 6), ph * 0.778, ph);
+      // dolap iri: gözler ekranın yüksekliğini doldurur (taç üstte görünür, çekmece altta taşabilir);
+      // gövdenin sağ kenarı çentik / yuvarlak köşe payının içinde
+      const dh = Math.min((H - g.alt - 10) / (GOZ_ALT - 0.02), Wg * 0.62);
+      const dx = W - g.sag - 4 - dh * 0.79;
+      // yer varsa (tablet) dolap ayakları yerde, bütünüyle görünür; yoksa (telefon) gözlerin altı ekranın altında
+      const enAlt = H - g.alt - 6 - dh * GOZ_ALT, yerde = H * 0.99 - dh * 0.955;
+      kutu(dolap, kapiPay + dx, yerde >= g.ust + 4 ? Math.min(yerde, enAlt) : enAlt, dh, dh);
+      // Kino pencere ile dolabın gövdesi arasında ortada
       kinoS = u * 0.86;
-      kutu(kinoYer, kapiPay + g.sol + Wg * 0.47 - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
-      const dh = u * 0.96;
-      kutu(dolap, kapiPay + W - g.sag * 0.5 - dh * 0.86, H - dh - H * 0.01, dh, dh);
+      const kx = (px + ph * 0.778 + dx + dh * 0.21) / 2;
+      kutu(kinoYer, kapiPay + kx - kinoS / 2, zemin - kinoS * 0.93, kinoS, kinoS);
     }
     // ayna: Kino'nun yanında, aşağıdan kayıp gelir
     const ah = kinoS * 1.05;
@@ -202,46 +217,23 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
   }
 
   // ------------------------------------------------------------ dolaptaki giysiler
-  // dizilim: üstte askıdakiler (sallanır), ortada raf, altta ayakkabılar
-  const DIZI = tur.dizi;
-  const ASKIDA = askida(tur);
+  // dolabın içi 2 sütun × 4 sıra göz (dolap-acik-goz): her giysi kendi gözünde, ortada, aynı kutuya sığdırılmış.
+  // dizilim vücuda göre: üstte baş, ortada gövde, altta ayak (çocuk aradığını kolay bulur)
+  const SIRA_BOLGE = ['bas', 'goz', 'boyun', 'govde', 'bacak', 'el', 'ayak'];
+  const DIZI = [...tur.dizi].sort((a, b) => SIRA_BOLGE.indexOf(giysi(a).bolge) - SIRA_BOLGE.indexOf(giysi(b).bolge));
   const ikonlar = new Map<GiysiId, HTMLElement>();
-  for (const id of DIZI) {
-    const b = h(`button.gy-giysi${ASKIDA.includes(id) ? '.askida' : ''}`, { type: 'button', 'aria-label': G.giysi[id], 'data-giysi': id }, h('img', { src: resim(`ikon/${id}`), alt: '', draggable: 'false' }));
+  DIZI.forEach((id, i) => {
+    const b = h('button.gy-giysi', { type: 'button', 'aria-label': G.giysi[id], 'data-giysi': id, style: `--gy-sira:${i}` }, h('img', { src: resim(`ikon/${id}`), alt: '', draggable: 'false' }));
     ikonlar.set(id, b);
     raf.append(b);
-  }
+  });
   el.append(raf);
   function rafYerlesim() {
     const r = { x: parseFloat(dolap.style.left) - (kameraKapida ? 0 : kapiPay), y: parseFloat(dolap.style.top), w: parseFloat(dolap.style.width), h: parseFloat(dolap.style.height) };
-    // giysiler dolabın iç alanından biraz taşar: büyük, net (4-5 yaş parmağı)
-    if (dikey) {
-      // dikey telefon: sağ yarıda iki sütun × dört sıra (dolabın önünde ve üstünde), iri
-      const sx = Math.min(r.x + r.w * 0.14, W - g.sag - 8 - r.w * 0.72), sw = r.w * 0.72, sy = r.y + r.h * 0.04;
-      // en alt sıra ana ekran çubuğunun üstünde kalır
-      const sh = Math.min(r.h * 0.92, H - g.alt - 6 - sy);
-      const boy = Math.min(sw / 2.15, sh / 4.05, 130);
-      DIZI.forEach((id, i) => {
-        const x = sx + (sw * ((i % 2) + 0.5)) / 2;
-        const y = sy + (sh * (Math.floor(i / 2) + 0.5)) / 4;
-        Object.assign(ikonlar.get(id)!.style, { left: `${x - boy / 2}px`, top: `${y - boy / 2}px`, width: `${boy}px`, height: `${boy}px` });
-      });
-      return;
-    }
-    // dolabın sağ kenarı ekranın dışında kalır: sütunlar biraz sola (son sütun tam görünsün)
-    // çentik / yuvarlak köşe tarafında son sütun güvenli alanın içinde kalır; alt sıra ana ekran çubuğunun üstünde
-    const iw = r.w * 0.7;
-    const ix = Math.min(r.x + r.w * 0.06, W - g.sag - 6 - iw);
-    const iy = r.y + r.h * 0.1;
-    const ih = Math.min(r.h * 0.8, H - g.alt - 4 - iy);
-    const boy = Math.min(iw / 2.75, ih / 3.05, 150);
+    // her düğme gözün tamamı (büyük dokunma alanı); resim gözün içinde payla ortalanır (CSS)
     DIZI.forEach((id, i) => {
-      const sira = i < 3 ? 0 : i < 6 ? 1 : 2;
-      const kolon = i < 3 ? i : i < 6 ? i - 3 : i - 6;
-      const adet = sira === 2 ? 2 : 3;
-      const x = ix + (iw * (kolon + 0.5)) / adet;
-      const y = iy + (ih * (sira + 0.5)) / 3;
-      Object.assign(ikonlar.get(id)!.style, { left: `${x - boy / 2}px`, top: `${y - boy / 2}px`, width: `${boy}px`, height: `${boy}px` });
+      const [x0, x1] = DOLAP_SUTUN[i % 2], [y0, y1] = DOLAP_SIRA[Math.floor(i / 2)];
+      Object.assign(ikonlar.get(id)!.style, { left: `${r.x + r.w * x0}px`, top: `${r.y + r.h * y0}px`, width: `${r.w * (x1 - x0)}px`, height: `${r.h * (y1 - y0)}px` });
     });
   }
 

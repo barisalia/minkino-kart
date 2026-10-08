@@ -3,7 +3,7 @@ import { KARTLAR } from '../../src/engine/katalog';
 import { gorselUrl, KART_GORSEL_KLASORLERI } from '../../src/ui/kart';
 
 // Kart resimleri yalnız seçili klasörlerden pakete girer (eskiden bütün assets/**/*.webp: mağaza ekran görüntüleri,
-// pasta/okul çizimleri de Kartlar'a giriyordu). Her kartın resmi yine bulunmalı.
+// pasta çizimleri de Kartlar'a giriyordu). Her kartın resmi yine bulunmalı.
 describe('kart görselleri', () => {
   it('her resimli kartın görseli pakette', () => {
     const eksik = KARTLAR.filter((k) => k.gorsel && !gorselUrl(k)).map((k) => k.gorsel);

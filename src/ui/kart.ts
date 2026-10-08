@@ -3,7 +3,7 @@ import type { Kart, KartGirdi, KartRef } from '../engine/types';
 import { h } from './dom';
 
 // Yalnız kart resimlerinin klasörleri (content/sorular → "gorsel"). Eskiden bütün assets/**/*.webp alınıyordu:
-// mağaza ekran görüntüleri, pasta/okul/ege… çizimleri de Kartlar paketine (ve uygulamaya) boşuna giriyordu.
+// mağaza ekran görüntüleri, pasta/ege… çizimleri de Kartlar paketine (ve uygulamaya) boşuna giriyordu.
 // Yeni bir kart klasörü eklenirse buraya da yazılır (tests/unit/kart-gorsel.test.ts denetler).
 export const KART_GORSEL_KLASORLERI = ['hayvanlar', 'meyveler', 'renkler', 'tasitlar'] as const;
 const gorseller = import.meta.glob<string>(['../../assets/{hayvanlar,meyveler,renkler,tasitlar}/**/*.webp'], {
