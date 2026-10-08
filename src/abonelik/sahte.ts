@@ -1,12 +1,14 @@
 /**
  * Test için sahte satın alma (yalnız ?test=1&uygulama=ios|android). Mağazaya ya da RevenueCat'e hiç gitmez.
  * Seçenekler (adres): &satin=iptal (kullanıcı vazgeçer), &satin=hata, &magaza=yok (planlar yüklenemez),
- * &deneme=yok (deneme hakkı yok), &premium=1 (açılışta abone). Çağrılar window.__sahteSatin.cagrilar'a yazılır (e2e denetler).
+ * &deneme=yok (deneme hakkı yok), &kurulum=hata (sağlayıcı kurulamaz), &premium=1 (açılışta abone).
+ * Çağrılar window.__sahteSatin.cagrilar'a yazılır (e2e denetler).
  */
 import type { PlanId, Saglayici } from './satin';
 
 export function sahteSaglayici(): Saglayici {
   const q = new URLSearchParams(location.search);
+  if (q.get('kurulum') === 'hata') throw new Error('kurulum hatası (sahte)');
   // sahte mağazanın "hesabı" bu sekmede sayfalar arası sürer (gerçekte mağaza hesabı gibi)
   const oturum = (): boolean => {
     try {

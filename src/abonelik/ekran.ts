@@ -14,7 +14,7 @@ import { premiumAyarla, premiumMu } from '../engine/erisim';
 import { Karakter } from '../karakter/karakter';
 import { Mino } from '../mino/mino';
 import { GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../kabuk/ayar';
-import { uygulamaPlatformu } from '../kabuk/ortam';
+import { kilitlerEtkin, uygulamaPlatformu } from '../kabuk/ortam';
 import { ebeveynKapisiAc } from '../ui/ebeveyn-kapisi';
 import { h, sure, svg } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
@@ -42,6 +42,7 @@ const ACILANLAR: { ikon: keyof typeof IKON; renk: string; yazi: string }[] = [
   { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Tüm Sesli Maceralar' },
   { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Bütün çizgi filmler' },
   { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: 'Pazar, Pasta Otobüsü, Çiz Canlansın, Okula Hazırım' },
+  { ikon: 'goz', renk: 'var(--kirmizi)', yazi: 'Dedektif Mino ve Kino Ne Giysin? mevsimleri' },
   { ikon: 'sihir', renk: 'var(--mor)', yazi: 'Yeni bölümler geldikçe' },
   { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Reklam yok, güvenli' },
 ];
@@ -172,9 +173,19 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       durumYazi.textContent = 'Abonelik çok yakında burada olacak. Şimdilik bütün oyunlar açık!';
     };
 
+    /** Mağazaya ulaşılamıyor (planlar yüklenemedi ya da satın alma sağlayıcısı kurulamadı); "Tekrar dene" görünür */
+    const ulasilamadi = () => {
+      el.dataset.durum = 'hata';
+      planGoster();
+      durumYazi.textContent = 'Mağazaya şu an ulaşılamıyor. İnternet bağlantınızı kontrol edip tekrar deneyin.';
+      tekrarDene.hidden = false;
+      geriYukle.removeAttribute('disabled');
+    };
+
     const yukle = async () => {
       const s = await saglayici();
-      if (!s) return yakinda();
+      // anahtar var ama sağlayıcı kurulamadı: kilitler kapanmadı, "bütün oyunlar açık" denmez
+      if (!s) return kilitlerEtkin() ? ulasilamadi() : yakinda();
       el.dataset.durum = 'yukleniyor';
       durumYazi.textContent = 'Fiyatlar yükleniyor…';
       tekrarDene.hidden = true;
@@ -187,11 +198,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         geriYukle.removeAttribute('disabled');
         planGoster();
       } catch {
-        el.dataset.durum = 'hata';
-        planGoster();
-        durumYazi.textContent = 'Mağazaya şu an ulaşılamıyor. İnternet bağlantınızı kontrol edip tekrar deneyin.';
-        tekrarDene.hidden = false;
-        geriYukle.removeAttribute('disabled');
+        ulasilamadi();
       }
     };
     tekrarDene.addEventListener('click', () => void yukle());
@@ -224,7 +231,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     geriYukle.addEventListener('click', () =>
       void isle(async () => {
         const s = await saglayici();
-        if (!s) return;
+        if (!s) return void (durumYazi.textContent = 'Mağazaya şu an ulaşılamıyor. Lütfen tekrar deneyin.');
         durumYazi.textContent = 'Satın alımlar kontrol ediliyor…';
         try {
           if (await s.geriYukle()) {

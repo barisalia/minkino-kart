@@ -28,6 +28,36 @@ export function geriDinle(fn: () => boolean): () => void {
   return () => window.removeEventListener(GERI_OLAYI, d);
 }
 
+/** Açık katmanlar (oyunun kendi açılır pencereleri, yakın bakış …): geri tuşu önce en üsttekini kapatır. */
+const katmanlar: { el: Element; kapat: () => void }[] = [];
+let katmanDinleniyor = false;
+
+/**
+ * Oyunun açtığı pencereyi geri tuşuna bağlar: açıkken Android geri tuşu oyundan çıkmaz, önce bu pencere kapanır
+ * (`kapat` çağrılır). Pencere başka yoldan kapanınca dönen fonksiyon çağrılır; çağrılmasa da sayfadan kalkmış
+ * (`el` bağlı değil) pencere atlanır. Bırakma fonksiyonu döner.
+ */
+export function katmanAc(el: Element, kapat: () => void): () => void {
+  if (!katmanDinleniyor) {
+    katmanDinleniyor = true;
+    geriDinle(() => {
+      while (katmanlar.length) {
+        const k = katmanlar.pop()!;
+        if (!k.el.isConnected) continue;
+        k.kapat();
+        return true;
+      }
+      return false;
+    });
+  }
+  const k = { el, kapat };
+  katmanlar.push(k);
+  return () => {
+    const i = katmanlar.indexOf(k);
+    if (i >= 0) katmanlar.splice(i, 1);
+  };
+}
+
 /**
  * Geri tuşu kararı (saf, test edilir): açık pencere varsa kapanır, sayfa işlediyse bir şey yapılmaz,
  * ana menüdeyse çıkılır, oyundaysa ana menüye dönülür.
