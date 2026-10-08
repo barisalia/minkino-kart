@@ -235,13 +235,22 @@ export class Kukla {
       this.agiz = h('img.eg-kukla-agiz', { src: agiz, alt: '', draggable: 'false' });
       ic.append(h('img.mc-resim.eg-resim', { src: govde, alt: '', draggable: 'false' }), this.agiz);
     } else ic.append(esya(`kukla-${ad}`, ad === 'ayi' ? 'hayvanlar/ayi' : 'hayvanlar/civciv'));
+    // yakın çekim çizimleri (aynı çerçevede, tam çizim): ağzı kapalı (gülümser) ve açık; .sahnede iken bunlar görünür
+    // (katmanlı ağzın ezilen kenarı yakında seçilmesin). Ördeğin açık hali kendi tam çizimi.
+    const kapali = egeAdres(`kukla-${ad}-kapali`);
+    const acik = egeAdres(`kukla-${ad}-acik`) || egeAdres(`kukla-${ad}`);
+    if (kapali && acik) {
+      ic.append(h('img.eg-kukla-yakin.kapali', { src: kapali, alt: '', draggable: 'false' }), h('img.eg-kukla-yakin.acik', { src: acik, alt: '', draggable: 'false' }));
+    }
     this.el = h(`div.eg-esya.eg-kukla.eg-kukla-${ad}`, {}, ic, h('div.eg-balon'));
+    this.el.classList.toggle('yakin-var', !!(kapali && acik));
     this.ac(0);
   }
   /** Ağız açıklığı 0 (kapalı) … 1 (tam açık) */
   ac(a: number) {
     const s = 0.15 + 0.85 * Math.max(0, Math.min(1, a));
     this.el.style.setProperty('--s', s.toFixed(3));
+    this.el.classList.toggle('agzi-acik', a > 0.4);
   }
   get balonEl() {
     return this.el.querySelector<HTMLElement>('.eg-balon')!;

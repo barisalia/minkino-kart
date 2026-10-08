@@ -167,7 +167,7 @@
 }
 
 /* ipuçları (bahçe): çamurdaki izler çamura karışır */
-.dd-kok .dd-ipucu[data-ipucu='ordek-izi'] img {
+.dd-kok .dd-ipucu[data-ipucu='ordek-izi']:not(.bt-gizli) img {
   opacity: 0.92;
 }
 .dd-kok .dd-ipucu[data-ipucu='iplik'] img {

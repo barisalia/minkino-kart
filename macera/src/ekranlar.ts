@@ -193,7 +193,15 @@ export function bolumEkrani(app: Uygulama): Ekran {
   let sonYazi = '';
   // Tekrar dinle: Kino'nun cümlesi Kino'nun sesiyle (kendi sesi ya da kalın ton), diğerleri Mino tonuyla
   const kinoCumleleri = new Set(karakterCumleleri().kino);
-  const tekrarDinle = () => void tekrarSoyle(sonYazi, kinoCumleleri.has(normal(sonYazi)) ? KINO_SESI : { ton: 1.12 });
+  // şarkı / tekerleme sözü seslendirilmez (kayıt yok): hoparlör cihaz sesiyle şarkının üstüne okumasın
+  // (alt yazıda tek satır ya da art arda iki satır birlikte görünür)
+  const sarkiSatirlari = new Set(
+    [M.sarki.satirlar, EL.sarki, SL.sarki].flatMap((l) => l.flatMap((s, i) => [normal(s), normal(`${s} ${l[i + 1] ?? ''}`)])),
+  );
+  const sarkiSozu = (t: string) => sarkiSatirlari.has(normal(t));
+  const tekrarDinle = () => {
+    if (!sarkiSozu(sonYazi)) void tekrarSoyle(sonYazi, kinoCumleleri.has(normal(sonYazi)) ? KINO_SESI : { ton: 1.12 });
+  };
   const balon = h('div.baslik-balon.mc-altyazi', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', tekrarDinle, 'kucuk'), yazi);
   const noktalar = h('div.mc-ilerleme');
   const ipucu = h('div.mc-ipucu');

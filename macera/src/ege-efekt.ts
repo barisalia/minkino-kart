@@ -196,12 +196,42 @@ export class NinniYildizlari {
   readonly el: HTMLElement;
   private yildizlar: HTMLElement[];
   constructor(adet: number) {
+    // beşiğin üstünde bir kemer (gökkuşağı gibi): uçlar aşağıda, orta yukarıda
     this.yildizlar = Array.from({ length: adet }, (_, i) => {
-      const x = 8 + (84 * i) / Math.max(1, adet - 1);
-      const y = 22 + Math.sin(i * 0.9) * 10 + (i % 2) * 6;
+      const u = i / Math.max(1, adet - 1);
+      const a = Math.PI * (1 - u);
+      const x = 50 + Math.cos(a) * 46;
+      const y = 92 - Math.sin(a) * 80;
       return h('i.eg-ny', { style: `left:${x.toFixed(1)}%;top:${y.toFixed(1)}%`, html: YILDIZ_SVG });
     });
     this.el = h('div.eg-ninni-yildiz', { 'aria-hidden': 'true' }, ...this.yildizlar);
+  }
+  /** Kemeri beşiğin üstüne oturt (ekran kutuları; kap: yıldızların konduğu katman) */
+  yerles(besik: DOMRect, kap: DOMRect) {
+    const w = besik.width * 1.02;
+    const hh = besik.height * 0.62;
+    const s = this.el.style;
+    s.left = `${(besik.left - kap.left + (besik.width - w) / 2).toFixed(0)}px`;
+    s.width = `${w.toFixed(0)}px`;
+    s.top = `${(besik.top - kap.top - hh * 0.72).toFixed(0)}px`;
+    s.height = `${hh.toFixed(0)}px`;
+    s.right = 'auto';
+    // yıldız boyu kemerin uzunluğuna göre (sıkışmasın)
+    const yay = (Math.PI / 2) * (w + hh) * 0.75;
+    s.setProperty('--ny-w', `${Math.max(16, Math.min(34, (yay / this.yildizlar.length) * 0.82)).toFixed(1)}px`);
+  }
+  /** Sıradaki vuruşun yıldızı atar (-1: hiçbiri) */
+  simdi(i: number) {
+    this.yildizlar.forEach((e, k) => {
+      if (k !== i) return e.classList.remove('simdi');
+      e.classList.remove('simdi');
+      void e.offsetWidth;
+      e.classList.add('simdi');
+    });
+  }
+  /** Yeni deneme: yanan yıldızlar söner */
+  sifirla() {
+    this.yildizlar.forEach((e) => e.classList.remove('yandi', 'simdi'));
   }
   yak(i: number) {
     const e = this.yildizlar[i];
