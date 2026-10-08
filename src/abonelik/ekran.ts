@@ -58,12 +58,13 @@ export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '99 TL', yillik: '49
 const YEDEK_DENEME_GUN = 7;
 
 /**
- * Kahraman görseli: assets/uygulama/abonelik-kahraman-seffaf.webp (Mino ve Kino el sallar, yıldız ve konfeti; zemini
- * şeffaf, gökyüzüne oturur). Kaynağı abonelik-kahraman.webp (16:9, krem zemin): karakterler kırpılıp zemin ayıklandı.
+ * Kahraman görseli: assets/uygulama/abonelik-kahraman-kesik.webp (Mino ve Kino el sallar, yıldız ve konfeti; zemini
+ * şeffaf, gökyüzüne oturur). Kaynağı abonelik-kahraman.webp (16:9, krem zemin); tasarımcı zemini ayıklayıp kırptı
+ * (ekip/adobe-yanci/cikti/abonelik).
  * Dosya yoksa canlı Mino ve Kino.
  */
 const KAHRAMAN = Object.values(
-  import.meta.glob<string>('../../assets/uygulama/abonelik-kahraman-seffaf.webp', { eager: true, query: '?url', import: 'default' }),
+  import.meta.glob<string>('../../assets/uygulama/abonelik-kahraman-kesik.webp', { eager: true, query: '?url', import: 'default' }),
 )[0] as string | undefined;
 
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;

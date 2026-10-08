@@ -31,8 +31,8 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await page.goto('./?test=1&uygulama=android');
   await expect(page.locator('.ug-menu .mino svg')).toBeVisible();
 
-  // 9 kart; abonelikli oyunlarda kilit, ücretsizlerde (Kartlar) ve bölümlü oyunlarda (macera, film) yok
-  await expect(page.locator('.ug-kart')).toHaveCount(9);
+  // 8 kart; abonelikli oyunlarda kilit, ücretsizlerde (Kartlar) ve bölümlü oyunlarda (macera, film) yok
+  await expect(page.locator('.ug-kart')).toHaveCount(8);
   for (const id of ['pazar', 'canlan', 'pasta', 'dedektif']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`), id).toBeVisible();
   for (const id of ['kartlar', 'macera', 'film', 'giysin']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`), id).toHaveCount(0);
   // ızgara boşluksuz, kartlar ekranda
@@ -202,7 +202,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
 
   // önceden abone (mağaza "premium" diyor): hiç kilit yok
   await page.goto('./?test=1&uygulama=ios&premium=1');
-  await expect(page.locator('.ug-kart')).toHaveCount(9);
+  await expect(page.locator('.ug-kart')).toHaveCount(8);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   expect(hatalar).toEqual([]);
 });
@@ -210,7 +210,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
 test('Uygulama, anahtar yok: kilit yok, abonelik ekranı "yakında" (çökmez)', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1&uygulama=ios&anahtar=yok');
-  await expect(page.locator('.ug-kart')).toHaveCount(9);
+  await expect(page.locator('.ug-kart')).toHaveCount(8);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   // ebeveyn köşesi → abonelik
   await page.locator('.ug-kapi').click();
@@ -228,10 +228,10 @@ test('Uygulama, anahtar yok: kilit yok, abonelik ekranı "yakında" (çökmez)',
   expect(hatalar).toEqual([]);
 });
 
-test('Web sitesi: kilit yok, abonelik yok, 9 kart', async ({ page }) => {
+test('Web sitesi: kilit yok, abonelik yok, 8 kart', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
-  await expect(page.locator('.ug-kart')).toHaveCount(9);
+  await expect(page.locator('.ug-kart')).toHaveCount(8);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
   await page.locator('.ug-kapi').click();
   await kapiyiGec(page);
