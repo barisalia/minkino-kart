@@ -127,13 +127,47 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   /** zemin: dikey ekranda her şey biraz yukarıda (alt yazı ve ipucu kutusunun üstünde kalsın) */
   const Z = dikey ? 10 : 2;
   const taban = dikey ? 1.45 : 1.12;
-  /** Arka plan resmindeki bir nokta (1024×1024, cover, konum 24% 82%) sahnede nerede (x %, y alttan %) ve ölçek */
+  /**
+   * Oda çizimi: yatayda kare çizim (1024 birim, cover, konum 24% 82%). Dikey ekranda 9:16 çizim (oda-dikey, 1536×2752:
+   * üst kısmı kare çizimle aynı, 1.5 kat; macera.css → .mc-dikey-var). Dikeyde çizim yalnız tablette (3:4) kırpılır:
+   * dikey konum pencere ekranın üst kenarında kalacak, zemin yine geniş görünecek biçimde seçilir (üstte boş duvar
+   * kalmaz, pencere ve perde gerçek yerinde).
+   */
+  const dikeyResim = sahne.dunya.classList.contains('mc-dikey-var') && matchMedia('(orientation: portrait)').matches;
+  const ODA = dikeyResim ? { en: 1536, boy: 2752, k: 1.5 } : { en: 1024, boy: 1024, k: 1 };
+  const odaY = (() => {
+    if (!dikeyResim) return 0.82;
+    const s = Math.max(W() / ODA.en, H() / ODA.boy);
+    const kirp = ODA.boy * s - H();
+    if (kirp < 1) return 0.82;
+    // pencerenin ortası (kare çizimde y 244) ekranın %4 aşağısında; alt yarısı, perdesi ve pervazı görünür
+    return Math.max(0, Math.min(0.82, (244 * ODA.k * s - H() * 0.04) / kirp));
+  })();
+  const odaEl = sahne.dunya.querySelector<HTMLElement>('.mc-oda')!;
+  if (dikeyResim) odaEl.style.backgroundPosition = `24% ${(odaY * 100).toFixed(2)}%`;
+  /**
+   * Yatay ekranda odanın geniş çizimi (oda-genis, 4096×2286; macera.css → .mc-yan-genis) bandın odasını ekranın tam
+   * eninde gösterir (konum center 82%). Kare çizim onun içinde x 922'den 2260 px boyunda (scripts/kalite/
+   * oda-genis-birlestir.cjs). Geniş telefonda (en/boy > 1.79) çizim enden oturur, kare hesabı tutmaz: pencere ve perde
+   * gerçek çizimden hesaplanır.
+   */
+  const genisResim = !dikeyResim && getComputedStyle(odaEl).backgroundImage.includes('oda-genis');
+  const RESIM = genisResim
+    ? { en: 4096, boy: 2286, k: 2260 / 1024, x0: 922, y0: 0, px: 0.5, py: 0.82 }
+    : { en: ODA.en, boy: ODA.boy, k: ODA.k, x0: 0, y0: 0, px: 0.24, py: odaY };
+  /** Arka plan resmindeki bir nokta (kare çizimin 1024 birimiyle) sahnede nerede (x %, y alttan %) ve ölçek */
   const arkaNokta = (ix: number, iy: number) => {
     const w = W();
     const hh = H();
-    const s = Math.max(w / 1024, hh / 1024);
-    const X = (w - 1024 * s) * 0.24 + ix * s;
-    const Y = (hh - 1024 * s) * 0.82 + iy * s;
+    // odanın kutusu (dünyaya göre; geniş çizimde bandın iki yanına taşar)
+    const kl = genisResim ? odaEl.offsetLeft : 0;
+    const kt = genisResim ? odaEl.offsetTop : 0;
+    const kw = genisResim ? odaEl.offsetWidth || w : w;
+    const kh = genisResim ? odaEl.offsetHeight || hh : hh;
+    const s0 = Math.max(kw / RESIM.en, kh / RESIM.boy);
+    const s = s0 * RESIM.k;
+    const X = kl + (kw - RESIM.en * s0) * RESIM.px + (RESIM.x0 + ix * RESIM.k) * s0;
+    const Y = kt + (kh - RESIM.boy * s0) * RESIM.py + (RESIM.y0 + iy * RESIM.k) * s0;
     return { x: (X / w) * 100, y: ((hh - Y) / hh) * 100, ust: (Y / hh) * 100, s };
   };
 
@@ -2862,9 +2896,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     perdeAyarla(0.18);
     sahne.el.classList.add('final');
     efektCal(() => S.kutuNota(62, 0.12, 3), 2500);
-    const cr = pencere.getBoundingClientRect();
-    const sr = sahne.el.getBoundingClientRect();
-    void sahne.kamera(((cr.left + cr.width / 2 - sr.left) / sr.width) * 100, ((cr.top + cr.height / 2 - sr.top) / sr.height) * 100, 2.1, 3200);
+    finalKamera(3200);
     await bekle(3400);
   }
 
@@ -2926,6 +2958,27 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       ).onfinish = () => el.remove();
     }
     efektCal(() => S.yildiz(2), 600);
+  }
+
+  /**
+   * Final: kamera pencereden aya. Pencere sahnenin (yatayda ortadaki bandın) içinde ortalanır ve kenarlarda pay kalacak
+   * kadar yaklaşılır; dünya sahne kutusuna kırpılır (ege.css → .final), yanlardaki alt yazı / düğme şeritlerine taşmaz.
+   * Dikeyde üstte alt yazı şeridi: pencere onun altında kalan alana oturur. Pencerenin üstü ekran dışındaysa (dikey
+   * tablet) ay, pencerenin görünen kısmına iner.
+   */
+  function finalKamera(ms: number) {
+    const ust = dikey ? PAY.ust : 0;
+    const d = ((camR * 2) / H()) * 100;
+    const dx = ((camR * 2) / W()) * 100;
+    const z = Math.max(1, Math.min(2.1, 74 / dx, (100 - ust) * 0.78 / d));
+    const o = (m: number, pay: number) => Math.max(0, Math.min(100, z <= 1.001 ? 50 : (m - 50 / z - pay / 2 / z) / (1 - 1 / z)));
+    const x = o(cam.x, 0);
+    const y = o(cam.ust, ust);
+    // pencerenin ekranda görünen üst kesri (0: tamamı görünür)
+    const gorunenUst = (y * (1 - 1 / z) + ust / z - (cam.ust - d / 2)) / d;
+    if (gorunenUst > 0.05) pencere.style.setProperty('--ay-ust', `${(Math.min(0.6, gorunenUst) + (1 - Math.min(0.6, gorunenUst) - 0.26) * 0.35) * 100}%`);
+    sahne.el.dataset.kamera = `${x.toFixed(1)} ${y.toFixed(1)} ${z.toFixed(2)}`;
+    void sahne.kamera(x, y, z, ms);
   }
 
   function odulKarti() {

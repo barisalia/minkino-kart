@@ -63,6 +63,22 @@
 .mc-kok .eg-sahne.final .eg-pencere {
   z-index: 21;
 }
+/* final: ay gecenin karanlığından parlak çıkar ama perde kanatları onun önünde kalır (pencere çerçevelenir, ay boş bir
+   daire gibi duvarın üstüne binmez); perde gece ışığında loş */
+.mc-kok .eg-sahne.final .eg-perde {
+  z-index: 22;
+  filter: brightness(0.5) saturate(0.75) hue-rotate(-12deg);
+  transition: opacity 1.2s, filter 1.6s;
+}
+/* final: kamera aya yaklaşırken dünya sahne kutusuna kırpılır (yatayda ortadaki bant): yaklaşan oda yanlardaki alt
+   yazı / düğme şeritlerinin üstüne taşmaz. Geniş oda çizimiyle bant normalde taşar (macera.css), kırpma yumuşakça gelir. */
+.mc-kok .mc-sahne.eg-sahne {
+  clip-path: inset(0 -100vw);
+  transition: clip-path 1.4s ease;
+}
+.mc-kok .mc-sahne.eg-sahne.final {
+  clip-path: inset(0 0);
+}
 /* final: kamera aya yaklaşınca alt kenarda yarım kalan baş (anne, çocuklar) gecenin karanlığına karışır */
 .mc-kok .eg-sahne.final::after {
   content: '';
@@ -79,7 +95,7 @@
 .mc-kok .eg-pencere-ay {
   position: absolute;
   left: 58%;
-  top: 18%;
+  top: var(--ay-ust, 18%);
   width: 26%;
   aspect-ratio: 1;
   border-radius: 50%;
