@@ -636,6 +636,22 @@
   }
 }
 
+/* ---------- Boy sırası kartları: kare ve dar paylı (büyüme farkı büyük, en küçük resim yine seçilebilir) ---------- */
+.mk-kok .kart.olcekli {
+  aspect-ratio: 1;
+  border-radius: 16%;
+}
+.mk-kok .kart.olcekli .kart-ic {
+  inset: 3.5%;
+  /* küçük resim kartın altına otursun: büyüme göz hizasında karşılaştırılır */
+  place-items: end center;
+}
+/* resimlerin kendi şeffaf payı (%4.7) kırpılır gibi: çizim alt çizgide kalıp %8 büyür */
+.mk-kok .kart.olcekli .kart-resim {
+  transform-origin: 50% 95%;
+  scale: 1.08;
+}
+
 /* ---------- Resimli zemin: sıcak oyun odası (yatay / dikey çizim); kartların arkasında sakin kalır ---------- */
 .mk-kok.kartlar-kok .zemin {
   background: #fff3dc url('../../assets/kartlar/oda-yatay.webp') center bottom / cover no-repeat;

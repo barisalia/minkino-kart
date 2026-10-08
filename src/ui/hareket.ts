@@ -322,8 +322,29 @@ export function koy(kartlar: HTMLElement[], gecikme = 0): void {
   );
 }
 
+/**
+ * Aynı boyda kalması gereken ızgaralar (boy sırası sorusu: gösterge ve seçenek kartları): her ızgara kendi
+ * sığan boyunu bildirir, hepsine en küçüğü uygulanır. Yoksa dikey telefonda seçenek kartı göstergeden büyük
+ * çıkıp "0.5" ayı "0.8" ayıyla aynı boyda görünüyordu.
+ */
+export function kwGrubu() {
+  const uyeler = new Map<HTMLElement, number>();
+  return {
+    bildir(izgara: HTMLElement, kw: number) {
+      uyeler.set(izgara, kw);
+      const m = Math.min(...uyeler.values());
+      for (const e of uyeler.keys()) e.style.setProperty('--kw', `${m}px`);
+    },
+  };
+}
+
 /** Izgara elemanını kutusuna sığdırır ve boyut değişince yeniden hesaplar. */
-export function izgaraSigdir(kutu: HTMLElement, izgara: HTMLElement, n: number, sec: { oran?: number; bosluk?: number; enBuyuk?: number; ekW?: number; kolonlar?: number[] } = {}) {
+export function izgaraSigdir(
+  kutu: HTMLElement,
+  izgara: HTMLElement,
+  n: number,
+  sec: { oran?: number; bosluk?: number; enBuyuk?: number; ekW?: number; kolonlar?: number[]; grup?: ReturnType<typeof kwGrubu> } = {},
+) {
   const hesapla = () => {
     // clientWidth yuvarlanır (483.6 → 484): 1 px pay yoksa son kart alt sıraya düşüp ekrandan taşabiliyor
     // kenarlarda pay: doğru kart büyüyüp parlarken ekranın kenarından kesilmesin
@@ -334,7 +355,8 @@ export function izgaraSigdir(kutu: HTMLElement, izgara: HTMLElement, n: number, 
     const bosluk = sec.bosluk ?? Math.round(Math.min(22, Math.max(10, W * 0.035)));
     const { kolon, kw } = sigdir(W, H, n, sec.oran ?? 1.12, bosluk, sec.enBuyuk ?? 260, sec.kolonlar);
     izgara.style.setProperty('--kolon', String(kolon));
-    izgara.style.setProperty('--kw', `${kw}px`);
+    if (sec.grup) sec.grup.bildir(izgara, kw);
+    else izgara.style.setProperty('--kw', `${kw}px`);
     izgara.style.setProperty('--bosluk', `${bosluk}px`);
   };
   hesapla();

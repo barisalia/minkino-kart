@@ -23,10 +23,12 @@ describe('kart görselleri', () => {
     for (const k of KARTLAR.filter((k) => k.tur === 'sekil')) expect(renkResmi('sekil', k), k.id).toBeTruthy();
   });
 
-  it('boy sırası: en küçük kart da seçilebilir büyüklükte, sıra korunur', () => {
+  it('boy sırası: büyüme açıkça görülür, en küçük kart yine seçilebilir, sıra korunur', () => {
     const o = [0.3, 0.4, 0.5, 0.6, 0.75, 0.8, 1].map(gorunenOlcek);
-    expect(o[0]).toBeGreaterThanOrEqual(0.62);
+    expect(o[0]).toBeGreaterThanOrEqual(0.4);
     expect(o.at(-1)).toBe(1);
+    // 0.4 → 1 dizisi en az iki kat büyür (düzleşmesin)
+    expect(gorunenOlcek(1) / gorunenOlcek(0.4)).toBeGreaterThanOrEqual(1.95);
     for (let i = 1; i < o.length; i++) expect(o[i]).toBeGreaterThan(o[i - 1]);
   });
 

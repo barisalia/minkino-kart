@@ -2,8 +2,8 @@ import { efekt } from '../../audio/ses';
 import { refCoz } from '../../engine/katalog';
 import { dogruIndeks } from '../../engine/soru';
 import { h, TEST_MODU } from '../../ui/dom';
-import { izgaraSigdir, ucur } from '../../ui/hareket';
-import { diziGenis, diziOrani, kartEl } from '../../ui/kart';
+import { izgaraSigdir, kwGrubu, ucur } from '../../ui/hareket';
+import { diziGenis, diziOlcekli, diziOrani, kartEl } from '../../ui/kart';
 import type { SoruBaglam } from '../oyun';
 import { dogruCumlesi } from '../../audio/cumleler';
 
@@ -11,6 +11,8 @@ import { dogruCumlesi } from '../../audio/cumleler';
 export function secmeliCiz(b: SoruBaglam) {
   const s = b.soru;
   let yuva: HTMLElement | null = null;
+  // boy sırası (Ayıcık büyüyor): gösterge ve seçenek kartları aynı boyda, büyüme karşılaştırılabilsin
+  const boyGrubu = s.tip === 'SIRADAKI' && s.gosterge && diziOlcekli(s.gosterge) && diziOlcekli(s.kartlar) ? kwGrubu() : undefined;
 
   // ---- Gösterge ----
   if (s.tip === 'SAY' && s.gosterge?.length) {
@@ -35,8 +37,9 @@ export function secmeliCiz(b: SoruBaglam) {
     });
     yuva = h('div.kart.soru-yuva', { style: `--i:${s.gosterge.length}` }, h('b', {}, '?'));
     yuva.classList.add('giris');
+    if (diziOlcekli(s.gosterge)) yuva.classList.add('olcekli');
     dizi.append(yuva);
-    b.temizlik(izgaraSigdir(b.gosterge, dizi, s.gosterge.length + 1, { enBuyuk: 170, bosluk: 10 }));
+    b.temizlik(izgaraSigdir(b.gosterge, dizi, s.gosterge.length + 1, { enBuyuk: 170, bosluk: 10, oran: diziOrani(s.gosterge), grup: boyGrubu }));
     b.gosterge.append(dizi);
   } else if (s.gosterge?.length) {
     const dizi = h('div.izgara');
@@ -94,6 +97,6 @@ export function secmeliCiz(b: SoruBaglam) {
     elemanlar.push(el);
     izgara.append(el);
   });
-  b.temizlik(izgaraSigdir(b.secenek, izgara, s.kartlar.length, { enBuyuk: s.kartlar.length <= 2 ? 300 : 240, oran: diziOrani(s.kartlar) }));
+  b.temizlik(izgaraSigdir(b.secenek, izgara, s.kartlar.length, { enBuyuk: s.kartlar.length <= 2 ? 300 : 240, oran: diziOrani(s.kartlar), grup: boyGrubu }));
   b.secenek.append(izgara);
 }

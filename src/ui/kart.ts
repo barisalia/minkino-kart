@@ -141,11 +141,17 @@ function cizimResim(url: string, alt: string): HTMLElement {
 }
 
 /**
- * Boy sırası soruları (olcek 0.3-1): en küçük kart telefonda da seçilebilir büyüklükte kalsın diye
- * görünen ölçek 0.5 + 0.5·olcek (0.3 → 0.65, 1 → 1). Sıra ve aradaki fark korunur.
+ * Boy sırası soruları (olcek 0.3-1). Büyüme gözle hemen görülmeli: görünen ölçek 0.17 + 0.83·olcek
+ * (0.4 : 0.6 : 0.8 : 1 → 1 : 1.33 : 1.66 : 2). Bu kartlar kare ve iç payı dar (kartlar.css .olcekli):
+ * en küçük (0.3) resim telefonda da ~40 px kalır.
  */
 export function gorunenOlcek(olcek: number): number {
-  return Math.round((0.5 + 0.5 * Math.max(0, Math.min(1, olcek))) * 1000) / 1000;
+  return Math.round((0.17 + 0.83 * Math.max(0, Math.min(1, olcek))) * 1000) / 1000;
+}
+
+/** Dizide boy ölçekli kart var mı (kare, dar paylı kartlar; ızgara oranı 1). */
+export function diziOlcekli(girdiler: KartGirdi[]): boolean {
+  return girdiler.some((g) => refCoz(g).olcek !== undefined);
 }
 
 function sayiRengi(n: number): string {
@@ -229,7 +235,10 @@ export function kartEl(g: KartGirdi, sec: KartSecenek = {}): HTMLElement {
     'data-kart': r.kart ?? r.yazi ?? '',
   });
   if (sec.sinif) el.classList.add(...sec.sinif.split(' '));
-  if (r.olcek) el.style.setProperty('--olcek', String(gorunenOlcek(r.olcek)));
+  if (r.olcek !== undefined) {
+    el.style.setProperty('--olcek', String(gorunenOlcek(r.olcek)));
+    el.classList.add('olcekli');
+  }
   if (sec.genis ?? (r.adet ?? 1) >= 4) el.classList.add('genis');
 
   let ic: HTMLElement;
@@ -245,6 +254,7 @@ export function kartEl(g: KartGirdi, sec: KartSecenek = {}): HTMLElement {
 
 /** Kart dizisi için yükseklik/genişlik oranı (hepsi geniş kartsa yatay oran). */
 export function diziOrani(girdiler: KartGirdi[]): number {
+  if (diziOlcekli(girdiler)) return 1;
   return diziGenis(girdiler) ? 0.78 : 1.12;
 }
 
