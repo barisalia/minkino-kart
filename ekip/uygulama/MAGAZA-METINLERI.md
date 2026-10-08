@@ -50,6 +50,10 @@ Minkino, 3-6 yaş için hazırlanmış Türkçe ve sesli eğitici bir oyun düny
 
 • **Mino'nun Pasta Otobüsü:** Müşterinin resimli siparişine bak, aynısını yap: hamur, kalıp, fırın, krema, süs. Saymak, renkler, şekiller ve zaman, mutfakta!
 
+• **Kino Ne Giysin?:** Pencereden bak, havayı gör, dolaptan doğru giysileri seç; dört mevsim boyunca. Karda şort mu? Kino titremeye başlar!
+
+• **Dedektif Mino:** Büyüteçle ipuçlarını bul, şüphelileri ele, vakayı Mino ile birlikte çöz.
+
 **NEDEN MİNKİNO?**
 
 • Türkçe ve sesli: bütün yönergeler sevimli bir sesle okunur, okuma bilmeyen çocuk da rahatça oynar.
@@ -100,6 +104,10 @@ Minkino is a voice-powered learning world for children aged 3-6. Curious kitten 
 
 • **Mino's Bakery Bus:** Look at the customer's picture order and make the very same treat: dough, cookie cutter, oven, icing, sprinkles. Counting, colors, shapes and timing, right in the kitchen!
 
+• **What Should Kino Wear?:** Look out of the window, check the weather and pick the right clothes from the wardrobe, in all four seasons. Shorts in the snow? Kino starts to shiver!
+
+• **Detective Mino:** Find clues with the magnifying glass, rule out the suspects and solve the case together with Mino.
+
 **WHY MINKINO?**
 
 • Spoken instructions: every instruction is read aloud by a friendly voice, so pre-readers can play on their own.
@@ -136,14 +144,15 @@ Terms of Use: [link]
 ## 6. Ekran görüntüsü başlıkları (her biri ≤ 5 kelime)
 | # | Görüntü (öneri) | Türkçe | English |
 |---|---|---|---|
-| 1 | Ana menü: Mino ile Kino | **Mino ve Kino seni bekliyor!** | **Mino and Kino are waiting!** |
-| 2 | Ege'de kukla ya da Banyo'da baloncuk | **Sesinle oyna: üfle, söyle!** | **Play with your voice!** |
-| 3 | Kartlar | **Say, eşleştir, öğren!** | **Count, match and learn!** |
-| 4 | Sesli Macera (Salıncak ya da Elektrik) | **Her oyun bir hikâye** | **Every game tells a story** |
-| 5 | Çizgi film karesi | **Eğlenceli, eğitici çizgi filmler** | **Fun, educational cartoons** |
-| 6 | Pasta Otobüsü ya da Çiz Canlansın | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
+| 1 | Ana menü: 8 kart, Mino ile Kino | **Mino ve Kino seni bekliyor!** | **Mino and Kino are waiting!** |
+| 2 | Mino'nun Pazarı: müşteri meyve-sebze ister | **Say, eşleştir, öğren!** | **Count, match and learn!** |
+| 3 | Kino Ne Giysin?: kışın şort giyen Kino titrer | **Kino'yu havaya göre giydir!** | **Dress Kino for the weather!** |
+| 4 | Dedektif Mino: pati izi panoda, şüpheli kartları | **İpucunu bul, vakayı çöz!** | **Find clues, solve the case!** |
+| 5 | Sesli Maceralar: Ege'nin kukla gösterisi (ayı ve civciv kukla) | **Sesinle oyna: üfle, söyle!** | **Play with your voice!** |
+| 6 | Çizgi film karesi (Mino'nun Karpuzu) | **Eğlenceli, eğitici çizgi filmler** | **Fun, educational cartoons** |
+| 7 | Pasta Otobüsü: sipariş ortası | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
 
-> 2026-10-07: 7. görüntü (rakam çizme) kaldırılan bir oyundandı; mağaza setlerinden çıkarılmalı ya da başka oyunla yenilenmeli. 1. görüntüdeki menüde de eski kart var, yenilenmeli (assets/uygulama/magaza-ekranlari/*/*/01.jpg ve 07.jpg).
+> 2026-10-08: set yenilendi (Okula Hazırım çıktı; Kino Ne Giysin? ve Dedektif Mino girdi). Ham kareler `ekip/illustrator/magaza-cekim.cjs`, çerçeve ve başlık `ekip/illustrator/magaza-ekran.cjs`, Play tablet `scripts/uygulama/play-tablet-ekran.cjs`. **Boyutlar:** telefonda oyunlar yatay kilitli (src/kabuk/yon.ts), bu yüzden telefon setleri YATAY: `iphone-2796x1290` (App Store 6.7") ve `android-1920x1080` (Play telefon); tabletler dikey: `ipad-2048x2732`, `play-tablet-1440x2560`. Eski dikey telefon klasörleri (iphone-1290x2796, android-1080x1920) silindi; mağazadaki eski dikey telefon görselleri de kaldırılıp yenileri yüklenmeli. 5. kare: telefonda kukla gösterisi yakın çekim, tablette gösteri sonu (Ege güldü).
 
 ---
 
