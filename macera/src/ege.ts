@@ -357,7 +357,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   type Alan = { l: number; r: number; u: number; a: number };
   /** Dünyadaki kutu (% ; u/a üstten). Konumu --x/--y ile verilen öğede hedef konum (yürürken de doğru) */
   const alan = (el: HTMLElement): Alan | null => {
-    if (!el.isConnected || el.classList.contains('gizli') || el.classList.contains('gidiyor') || !el.offsetWidth) return null;
+    if (!el.isConnected || el.classList.contains('gizli') || el.classList.contains('gidiyor') || el.classList.contains('eg-cekim-disi') || !el.offsetWidth) return null;
     if (el.parentElement !== sahne.dunya) {
       // iç içe (beşikteki Ege): ekrandaki görünen kutusundan (yatarken dönmüş çizimin kutusu)
       const hedef = el === ege.el ? (ege.el.querySelector('.eg-ege-kutu') ?? el) : el;
@@ -447,6 +447,43 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     const c = kadrajHesap();
     sahne.el.dataset.kamera = `${c.x.toFixed(1)} ${c.y.toFixed(1)} ${c.z.toFixed(2)}`;
     return sahne.kamera(c.x, c.y, c.z, ms);
+  };
+  // --- yakın çekim (kukla gösterisi, ninni): kadraja girmeyenler yumuşakça solar (kadraj hesabına da girmez), sahne
+  // ışığı odağa düşer (spot: kenarlar loş; yatay ekranda yan bantlar da). Hepsi yalnız opacity / transform.
+  const spot = h('div.eg-spot', { 'aria-hidden': 'true' });
+  sahne.el.insertBefore(spot, sahne.on);
+  const cekimDisi = (els: (HTMLElement | null | undefined)[], disi: boolean) => {
+    for (const el of els) {
+      if (!el || el.classList.contains('eg-cekim-disi') === disi) continue;
+      el.classList.toggle('eg-cekim-disi', disi);
+      // geri gelirken de yumuşak (sınıfın geçişi kalkınca birden belirmesin)
+      if (!disi) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: sure(800), easing: 'ease-out' });
+    }
+  };
+  /** Kamera odağı: alanın ortası z yakınlıkta kadrajın ortasına gelsin (kadrajHesap yine sınırlar) */
+  const odakla = (k: Alan, z: number): [number, number] => {
+    const o = (m: number) => (z <= 1.001 ? 50 : (m - 50 / z) / (1 - 1 / z));
+    return [o((k.l + k.r) / 2), o((k.u + k.a) / 2)];
+  };
+  /** Son kamera çekiminin görünen dünya aralığı (% ; u/a üstten) */
+  const gorunen = (): Alan => {
+    const [x, y, z] = (sahne.el.dataset.kamera ?? '50 97 1').split(' ').map(Number);
+    const k = 1 - 1 / z;
+    return { l: x * k, r: x * k + 100 / z, u: y * k, a: y * k + 100 / z };
+  };
+  /** Spot ışığı: dünya alanının (yakın çekimden sonraki) ekran yerine; kapanınca solar */
+  const spotAc = (k: Alan | null) => {
+    if (k) {
+      const g = gorunen();
+      const z = 100 / (g.r - g.l);
+      const sx = ((((k.l + k.r) / 2 - g.l) * z) / 100) * W();
+      const sy = ((((k.u + k.a) / 2 - g.u) * z) / 100) * H();
+      spot.style.setProperty('--sx', `${sx.toFixed(0)}px`);
+      spot.style.setProperty('--sy', `${sy.toFixed(0)}px`);
+      spot.style.setProperty('--rx', `${Math.max(140, (((k.r - k.l) * z) / 100) * W() * 0.62).toFixed(0)}px`);
+      spot.style.setProperty('--ry', `${Math.max(140, (((k.a - k.u) * z) / 100) * H() * 0.62).toFixed(0)}px`);
+    }
+    spot.classList.toggle('acik', !!k);
   };
   /** Sahnedeki (görünen) çocuklar */
   const cocuklar = () => [ada, can, elif].map((o) => o.el).filter((el) => !el.classList.contains('gizli') && Math.abs(Number(el.style.getPropertyValue('--x')) - 50) < 55);
@@ -1615,27 +1652,146 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     durumYaz(null);
     ui.ipucu(null);
     await bekle(400);
-    await kam(52, 96, taban * 1.06, 700, [ada.el, can.el, ege.el]);
+
+    // --- kukla gösterisi: yakın çekim. Kamera Ege'ye yaklaşır; ayı solunda, civciv sağında, alttan kadraja girer
+    // (el kuklası: kolu kadrajın altında kalır). Ada, Can, Elif, Mino, anne ve sepet kadrajdan solar; spot Ege'de.
+    const kuklaIc = (k: Kukla) => k.el.querySelector<HTMLElement>('.eg-kukla-ic')!;
+    /** Konuşma: hazırlık (ezilir) → zıplar, başını Ege'ye eğer (uzar) → ördek iki kez "vak", ayı iki kez başını sallar */
+    const kuklaKonus = (k: Kukla) => {
+      const ayiMi = k.ad === 'ayi';
+      // Ege ayının sağında, civcivin solunda: baş ona doğru eğilir
+      const e = ayiMi ? 1 : -1;
+      const ms = ayiMi ? 1150 : 900;
+      const kf: Keyframe[] = ayiMi
+        ? [
+            { transform: 'none' },
+            { transform: 'translateY(3%) scale(1.07, 0.92)', offset: 0.1 },
+            { transform: `translateY(-13%) scale(0.95, 1.07) rotate(${5 * e}deg)`, offset: 0.27 },
+            { transform: `translateY(-5%) scale(1.05, 0.94) rotate(${8 * e}deg)`, offset: 0.42 },
+            { transform: `translateY(-11%) scale(0.97, 1.04) rotate(${4 * e}deg)`, offset: 0.56 },
+            { transform: `translateY(-4%) scale(1.05, 0.94) rotate(${7 * e}deg)`, offset: 0.7 },
+            { transform: 'translateY(1.5%) scale(1.03, 0.97) rotate(0deg)', offset: 0.86 },
+            { transform: 'none' },
+          ]
+        : [
+            { transform: 'none' },
+            { transform: 'translateY(4%) scale(1.09, 0.9)', offset: 0.12 },
+            { transform: `translateY(-17%) scale(0.92, 1.1) rotate(${9 * e}deg)`, offset: 0.3 },
+            { transform: `translateY(-9%) scale(1.04, 0.97) rotate(${-4 * e}deg)`, offset: 0.46 },
+            { transform: `translateY(-14%) scale(0.95, 1.06) rotate(${7 * e}deg)`, offset: 0.62 },
+            { transform: 'translateY(2.5%) scale(1.07, 0.93) rotate(0deg)', offset: 0.82 },
+            { transform: 'none' },
+          ];
+      kuklaIc(k).animate(kf, { duration: sure(ms), easing: 'ease-in-out', composite: 'add' });
+      // ağız / gaga: ördek hızlı iki "vak", ayı yavaş ve kocaman
+      const bas = performance.now();
+      const kapa = tik(() => {
+        const t = (performance.now() - bas) / Math.max(1, sure(ms));
+        const a = t < 0.2 || t > 0.9 ? 0 : Math.abs(Math.sin(((t - 0.2) / 0.7) * Math.PI * 2));
+        k.ac(a);
+        if (t >= 1) {
+          k.ac(0);
+          kapa();
+        }
+      });
+    };
+    /** Omuz silkme (orta ses: anlamadık) */
+    const kuklaOmuz = (k: Kukla) =>
+      kuklaIc(k).animate(
+        [{ transform: 'none' }, { transform: 'translateY(-5%) scale(1.06, 0.95) rotate(4deg)', offset: 0.3 }, { transform: 'translateY(-5%) scale(1.06, 0.95) rotate(-3deg)', offset: 0.6 }, { transform: 'none' }],
+        { duration: sure(800), easing: 'ease-in-out', composite: 'add' },
+      );
+    /** Ege güler: yüzü aydınlanır (arkasında sıcak ışık), zıplar, el çırpar, kıkırdar; kahkahada kocaman */
+    const egeGul = (g: 'kikir' | 'kahkaha', isik: HTMLElement, buyuk = false) => {
+      const ms = g === 'kahkaha' ? 1500 : 1100;
+      ege.ifade(g, ms + 500);
+      ege.oynat(g, ms);
+      setTimeout(() => {
+        if (!kapandi) ege.oynat('cirp', buyuk ? 900 : 650);
+      }, sure(ms * 0.75));
+      efektCal(() => S.kikir(g === 'kahkaha' ? 1 : 0.5), 1500);
+      void ege.balon(B.ege.hihi, 900);
+      isik.animate(
+        [
+          { opacity: 0, transform: 'translate(-50%, 50%) scale(0.7)' },
+          { opacity: buyuk ? 1 : 0.85, transform: 'translate(-50%, 50%) scale(1.08)', offset: 0.3 },
+          { opacity: buyuk ? 0.9 : 0.6, transform: 'translate(-50%, 50%) scale(1)', offset: 0.7 },
+          { opacity: 0, transform: 'translate(-50%, 50%) scale(0.95)' },
+        ],
+        { duration: sure(ms + 700), easing: 'ease-out' },
+      );
+      const [gx, gy] = ege.basUstu();
+      parca.parilti(gx, gy + 30, buyuk ? 10 : 6, 'yildiz');
+    };
+    const kuklaGosterisi = async () => {
+      const e = alan(ege.el)!;
+      const eh = e.a - e.u;
+      // kuklalar Ege'den biraz küçük (çocuğun eline göre büyük: yakın çekim)
+      const AYI_W = EGE_W * 0.86;
+      const CIV_W = EGE_W * 0.8;
+      const odak: Alan = { l: e.l - bX(AYI_W) * 0.78, r: e.r + bX(CIV_W) * 0.78, u: e.u - eh * 0.04, a: e.a - eh * 0.12 };
+      const z = dikey ? 2.1 : 2.5;
+      // kadraj dışına çıkanlar solar (Ege'nin sandalyesi ve kendisi kalır)
+      cekimDisi([ada.el, can.el, elif.el, minoKutu, anne], true);
+      kaldir();
+      const [ox, oy] = odakla(odak, z);
+      const kamBitti = kam(ox, oy, z, 1300, [() => odak]);
+      const g = gorunen();
+      spotAc(odak);
+      // kuklalar alttan yükselir: tepeleri Ege'nin yanağı hizasında, altları kadrajın altında
+      const yer = (w: number, oranH: number, ust: number) => ({ y: 100 - (ust + bY(w * oranH)), w });
+      const ustA = e.u + eh * 0.3;
+      const ustC = e.u + eh * 0.36;
+      const AY = yer(AYI_W, 1005 / 858, ustA);
+      const CV = yer(CIV_W, 1014 / 837, ustC);
+      // altı görünen kadrajın içinde kalırsa biraz aşağı (kolu görünmesin)
+      const alt = 100 - g.a - 1.5;
+      const ayY = Math.min(AY.y, alt);
+      const cvY = Math.min(CV.y, alt);
+      const ayX = e.l - bX(AYI_W) * 0.24;
+      const cvX = e.r + bX(CIV_W) * 0.26;
+      for (const el of [ayi, civciv]) {
+        el.style.zIndex = '13';
+        el.classList.add('sahnede');
+      }
+      // Ege'nin ardında sıcak ışık (gülünce yanar)
+      const isik = sahne.koy(h('i.eg-gul-isik', { 'aria-hidden': 'true' }), { x: (e.l + e.r) / 2, y: 100 - e.u - eh * 0.42, w: EGE_W * 1.5, z: 4 });
+      await Promise.all([kamBitti, tasi(ayi, ayX, ayY, 1250, AYI_W), (async () => {
+        await bekle(160);
+        await tasi(civciv, cvX, cvY, 1150, CIV_W);
+      })()]);
+      ege.bak(-1);
+      void balon(ayiK.balonEl, B.kukla_hi, 900);
+      kuklaKonus(ayiK);
+      await bekle(500);
+      ege.bak(1);
+      kuklaKonus(civK);
+      await bekle(700);
+      ege.bak(0);
+      return {
+        isik,
+        bitir: () => {
+          spotAc(null);
+          cekimDisi([ada.el, can.el, elif.el, minoKutu, anne], false);
+          for (const el of [ayi, civciv]) el.classList.remove('sahnede');
+          isik.remove();
+          const [ax, ay, aw] = AYI_YER();
+          const [cx, cy, cw] = CIV_YER();
+          void tasi(ayi, ax, ay, 1000, aw);
+          void tasi(civciv, cx, cy, 1000, cw);
+        },
+      };
+    };
+    const gosteri = await kuklaGosterisi();
 
     // --- kukla konuşturma
     let referans: number | null = null;
     let gulmeSay = 0;
-    /** Kukla konuşur (ağzı açılıp kapanır); Ege ona bakar ve güler (her konuşmada gülmesi büyür) */
+    /** Kukla konuşur (zıplar, başını Ege'ye eğer, ezilip uzar, ağzı açılıp kapanır); Ege ona bakar ve güler */
     const konustur = async (hangi: 'civciv' | 'ayi', inceFark = 3, sesli = false) => {
+      void sesli;
       const k = hangi === 'civciv' ? civK : ayiK;
-      (hangi === 'civciv' ? canI : adaI)?.kuklaSalla();
-      k.el.classList.remove('konusuyor');
-      void k.el.offsetWidth;
-      k.el.classList.add('konusuyor');
-      if (!sesli) {
-        // parmakla: ağız üç kez açılıp kapanır
-        const bas = performance.now();
-        const kapa = tik(() => {
-          const t = (performance.now() - bas) / 1000;
-          k.ac(t < 0.9 ? Math.abs(Math.sin(t * Math.PI * 3.4)) : 0);
-          if (t > 1) kapa();
-        });
-      }
+      kuklaKonus(k);
       if (hangi === 'civciv') {
         S.cikcik();
         void balon(k.balonEl, B.cik, 900);
@@ -1651,19 +1807,14 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         await bekle(800);
       } else await bekle(300);
       const g = gulme(gulmeSay, inceFark);
-      ege.ifade(g, 1400);
-      ege.oynat(g, 1200);
-      efektCal(() => S.kikir(g === 'kahkaha' ? 1 : 0.5), 1500);
-      void ege.balon(B.ege.hihi, 800);
-      await bekle(1200);
+      egeGul(g, gosteri.isik);
+      await bekle(1500);
       ege.bak(0);
       ege.ifade('bakiyor');
     };
     const omuzSilk = async () => {
       for (const k of [ayiK, civK]) {
-        k.el.classList.remove('omuz');
-        void k.el.offsetWidth;
-        k.el.classList.add('omuz');
+        kuklaOmuz(k);
         void balon(k.balonEl, B.kukla_hi, 900);
       }
       ege.ifade('bakiyor');
@@ -1787,17 +1938,20 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     }
     ui.ilerleme(SERBEST_KUKLA, SERBEST_KUKLA);
     ui.ipucu(null);
-    ege.ifade('kahkaha', 1800);
-    ege.oynat('kahkaha', 1600);
+    // final: iki kukla birlikte zıplar, Ege kahkahayla alkışlar (hâlâ yakın çekim)
+    kuklaKonus(ayiK);
+    setTimeout(() => kuklaKonus(civK), sure(180));
+    egeGul('kahkaha', gosteri.isik, true);
     const [hx, hy] = ege.basUstu();
     parca.yuksel(hx, hy, 'kalp', 5, 40);
-    efektCal(() => S.kikir(1), 1600);
+    await mSoyle(M.guldu);
+    // gösteri biter: kamera geri çekilir, kuklalar Ada ile Can'ın eline döner, herkes sahneye gelir.
+    // şaka: en büyük kahkahada anne kanepede kıpırdar. Herkes donar, "Şşş!", kıkır kıkır ("şşş" motifi burada ekilir)
+    gosteri.bitir();
     ada.poz('alkis', 1400);
     void ada.zipla(14);
     void can.zipla(14);
-    await mSoyle(M.guldu);
-    // şaka: en büyük kahkahada anne kanepede kıpırdar. Herkes donar, "Şşş!", kıkır kıkır ("şşş" motifi burada ekilir)
-    await kam(40, 94, taban, 700, [anne, ada.el, ege.el, minoKutu]);
+    await kam(40, 94, taban, 1100, [anne, ada.el, ege.el, minoKutu]);
     anneGov.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-2.5deg) scale(1.02)' }, { transform: 'rotate(1deg)' }, { transform: 'rotate(0)' }], { duration: sure(900) });
     efektCal(() => S.hisirti(), 500);
     void balon(anneBalon, B.anne_uykuda, 1700);
