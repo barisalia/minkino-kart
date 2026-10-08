@@ -429,6 +429,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
     if (terazi?.dengede && ist === bu) el.classList.add('pz-terazi-odak');
     await bekle(sure(650));
     if (aktif && ist === bu && denetle(ist, sepettekiler()) === 'tamam') bitir();
+    // tur bitmediyse (meyve bu arada geri alındı) yakın çekim söner; ürünler soluk kalmaz
+    else if (ist === bu) el.classList.remove('pz-terazi-odak');
   }
   const salla = (e: HTMLElement | null, sinif = 'pz-hayir') => {
     if (!e) return;

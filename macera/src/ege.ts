@@ -2575,6 +2575,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
       ay.ayarla(0.5);
       ege.el.dataset.uykulu = '1';
       await ninniGorevi(1, false);
+      // kısa ninni de yakın çekimdir: herkes sahneye dönmezse final boyunca anne ve çocuklar görünmez kalır
+      await ninniBitir();
       ege.ifade('uyuyor');
       delete ege.el.dataset.uykulu;
       egeUyku = true;
