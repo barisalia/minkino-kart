@@ -223,7 +223,7 @@ export function calismaYenidenDiz(oda: Oda): boolean {
 /** Koridordaki iki yolun izleri (dar: dikey telefon; mutfağa gidenler Kino'nun büyük, tırnaklı izleri) */
 type YolIzleri = (yan: 'sol' | 'sag', dar: boolean) => IzNoktasi[];
 const koridorDar = () => typeof window !== 'undefined' && window.innerWidth < window.innerHeight * 1.15;
-const yolNoktalari = (yolIzleri: YolIzleri, y: 'sol' | 'sag', tur: 'mutfak' | 'yatak', dar: boolean) => yolIzleri(y, dar).map((p) => (tur === 'mutfak' ? { ...p, h: p.h * 1.25 } : p));
+const yolNoktalari = (yolIzleri: YolIzleri, y: 'sol' | 'sag', tur: 'mutfak' | 'yatak', dar: boolean) => yolIzleri(y, dar).map((p) => (tur === 'mutfak' ? { ...p, h: p.h * 1.45 } : p));
 
 /** Koridor: önden ortaya ortak iz, iki kapıya ayrılan izler (yanlar: hangi kapı mutfak) */
 export function koridor(yollar: Record<'sol' | 'sag', 'mutfak' | 'yatak'>, yolIzleri: YolIzleri): Oda {

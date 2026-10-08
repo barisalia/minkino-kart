@@ -213,8 +213,8 @@ export class Buyutec {
         this.yakin.set(hd.id, oran);
         this.s.yakinlik?.(hd, oran);
       }
-      // merceğin içine girdi: merkezi camın iç kısmında
-      if (!this.gorulen.has(hd.id) && d < this.R * 0.72 + r * 0.35) {
+      // merceğin içine girdi: camın içinde bir yerde (cömert: çocuk tam üstüne getirmek zorunda değil)
+      if (!this.gorulen.has(hd.id) && d < this.R * 0.95 + r * 0.5) {
         this.gorulen.add(hd.id);
         this.parla();
         this.s.gordu?.(hd);

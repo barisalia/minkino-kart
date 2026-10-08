@@ -222,7 +222,8 @@ test('Dedektif Vaka 2: yardım hiç takılmaz (10 sn Kino koklar; renk izinde s�
   await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka2&adim=kim&kokla=1200');
   await adimBekle(page, /^ara-kim$/);
   await expect(page.locator('.bt-mercek:not(.bt-gizlendi)')).toHaveCount(1);
-  expect(await page.locator('.dd-sahne [data-ipucu="ordek-izi"]').evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
+  // (çıplak gözle yalnız çok soluk gölgesi ve göz kırpan yıldızı sezilir; merceğin camında bütünüyle görünür)
+  expect(Number(await page.locator('.dd-sahne [data-ipucu="ordek-izi"] img').evaluate((e) => getComputedStyle(e).opacity))).toBeLessThan(0.3);
   await adimBekle(page, /^kokla-(ordek-izi|iplik)$/, 15_000);
   await adimBekle(page, /^ara-kim$/, 15_000);
   expect(hatalar).toEqual([]);

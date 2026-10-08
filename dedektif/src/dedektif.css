@@ -227,6 +227,56 @@
 .dd-kok .bt-mercek .dd-ipucu.bt-gizli {
   opacity: 0.92;
 }
+/*
+ * Gizli ipucu çıplak gözle de sezilir (4 yaş "nereye bakayım?" demesin): yerinde çok soluk bir gölgesi durur, ara ara
+ * küçük bir yıldız göz kırpar; mercek yaklaştıkça gölge koyulaşır (--yakin: büyütecin yakınlığı). Merceğin camında
+ * ipucu bütünüyle görünür (açık okuma), yıldız camda yoktur.
+ */
+.dd-kok .dd-ipucu.bt-gizli {
+  opacity: 1;
+}
+.dd-kok .dd-ipucu.bt-gizli img {
+  opacity: calc(0.2 + var(--yakin, 0) * 0.3);
+  filter: saturate(0.6);
+  transition: opacity 0.3s;
+}
+.dd-kok .bt-mercek .dd-ipucu.bt-gizli img {
+  opacity: 0.92;
+  filter: none;
+}
+.dd-kok .dd-ipucu.bt-gizli::before {
+  content: '';
+  position: absolute;
+  left: 62%;
+  top: 22%;
+  width: max(34px, 80%);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background:
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 244, 190, 0.6) 35%, rgba(255, 230, 120, 0) 70%),
+    conic-gradient(from 45deg, transparent 0 20deg, rgba(255, 236, 150, 0.9) 22deg 24deg, transparent 26deg 110deg, rgba(255, 236, 150, 0.9) 112deg 114deg, transparent 116deg 200deg, rgba(255, 236, 150, 0.9) 202deg 204deg, transparent 206deg 290deg, rgba(255, 236, 150, 0.9) 292deg 294deg, transparent 296deg);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px rgba(255, 236, 140, 0.95));
+  animation: dd-ipucu-goz-kirp 2.2s ease-in-out infinite;
+}
+.dd-kok .bt-mercek .dd-ipucu.bt-gizli::before {
+  display: none;
+}
+@keyframes dd-ipucu-goz-kirp {
+  0%, 50%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  66% { opacity: 1; transform: scale(1) rotate(25deg); }
+  76% { opacity: 1; transform: scale(0.9) rotate(35deg); }
+  90% { opacity: 0; transform: scale(0.5) rotate(45deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dd-kok .dd-ipucu.bt-gizli::before {
+    animation: none;
+    opacity: 0.6;
+    transform: none;
+  }
+}
 .dd-kok .dd-ipucu.dd-goruldu::after {
   content: '';
   position: absolute;
@@ -688,6 +738,18 @@
 }
 .dd-kok .dd-izler-yol {
   transition: opacity 0.5s;
+}
+/*
+ * İki yolun izleri soluk gri değil, kendi renginde net görünür: kedinin yolu yanan izle aynı küçük, yuvarlak, koyu
+ * pati; Kino'nun (mutfak) yolu büyük, kahverengi, tırnaklı köpek patisi. Çocuk "hangisi kedinin izi?" sorusunu
+ * şekil ve renkle ayırır; yanan iz altın ışıltısıyla ikisinden de ayrı durur.
+ */
+.dd-kok .dd-izler-yol .dd-iz img {
+  opacity: 0.88;
+  mix-blend-mode: normal;
+}
+.dd-kok .dd-izler-yol.dd-yol-mutfak .dd-iz img {
+  filter: saturate(1.25) brightness(1.02);
 }
 .dd-kok .dd-izler-yol.dd-soluk {
   opacity: 0.28;
