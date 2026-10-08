@@ -6,7 +6,7 @@ import { h } from '../../src/ui/dom';
 
 const K = '#5a3617';
 // arka-*: motor.ts; mino-sarilma-karpuz yerine karpuz.webp kullanılır
-const GORSELLER = import.meta.glob<string>(['../../assets/film/**/*.webp', '!**/kapak/**', '!**/arka-*.webp', '!**/acilis/**', '!**/mino-sarilma-karpuz.webp'], { eager: true, query: '?url', import: 'default' });
+const GORSELLER = import.meta.glob<string>(['../../assets/film/**/*.webp', '!../../assets/film/kapak/**', '!**/arka-*.webp', '!**/acilis/**', '!**/mino-sarilma-karpuz.webp'], { eager: true, query: '?url', import: 'default' });
 
 const SVG: Record<string, string> = {
   karpuz: `<svg viewBox="0 0 200 150"><ellipse cx="100" cy="80" rx="92" ry="64" fill="#3f9a3a" stroke="${K}" stroke-width="7"/>

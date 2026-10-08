@@ -19,7 +19,7 @@ const FILMLER = import.meta.glob<FilmDosya>('../../content/film/*.json', { eager
 // yenisi çizilen kapağın eski hali pakete girmez (<ad>-v2.webp varsa o kullanılır; eski dosya diskte kalır)
 // (Recraft 2026-10-08: Sihirli Söz yatay + dikey, Kaydırak dikey)
 const KAPAKLAR = import.meta.glob<string>(
-  ['../../assets/film/kapak/*.webp', '!**/kapak/kino-lutfen.webp', '!**/kapak/kino-lutfen-dikey.webp', '!**/kapak/kino-kaydirak-dikey.webp'],
+  ['../../assets/film/kapak/*.webp', '!../../assets/film/kapak/kino-lutfen.webp', '!../../assets/film/kapak/kino-lutfen-dikey.webp', '!../../assets/film/kapak/kino-kaydirak-dikey.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const kapakAdres = (ad: string) => KAPAKLAR[`../../assets/film/kapak/${ad}-v2.webp`] ?? KAPAKLAR[`../../assets/film/kapak/${ad}.webp`] ?? '';
