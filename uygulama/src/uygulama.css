@@ -307,6 +307,10 @@
 /* Pasta Otobüsü: parkta pembe otobüs (oyunun kod çizimi) */
 .ug-kok .ug-k-otobus { left: 50%; bottom: 3%; width: min(80cqw, 132cqh); aspect-ratio: 640 / 420; transform: translateX(-50%); }
 .ug-kok .ug-k-otobus svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* tablette geniş kart (iki / üç hücre): otobüs kartın boyunu doldurur, küçük kalmaz */
+@media (min-width: 600px) and (min-height: 600px) {
+  .ug-kok .ug-genis .ug-k-otobus { bottom: -2%; width: min(84cqw, 158cqh); }
+}
 
 /* Dedektif Mino: pencereli odada devrik lamba, pati izi, köşeden bakan Pamuk */
 .ug-kok .ug-kart[data-oyun='dedektif'] .ug-kart-resim { background-position: 50% 80%; }
@@ -510,6 +514,67 @@
   font-size: 0.85rem;
   font-weight: 500;
   opacity: 0.7;
+}
+
+/* yatay (telefon ve tablet): geniş kutu iki sütun. Solda sıcak panelde kitaplı Mino ve logo (kaydırınca yerinde
+   durur), sağda abonelik, gizlilik ve iletişim; Mino kutunun içinde, kenara binmez. */
+@media (orientation: landscape) and (min-width: 600px) {
+  .ug-kok .ug-ayarlar-ic {
+    align-items: start;
+    padding-top: 6px;
+  }
+  .ug-kok .ug-ayarlar-kutu {
+    width: min(100%, 900px);
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: start;
+    gap: clamp(16px, 3vw, 36px);
+    padding: clamp(12px, 2vw, 22px);
+  }
+  .ug-kok .ug-ayarlar-sahne {
+    position: sticky;
+    top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: min(100%, calc(100dvh - 140px));
+    padding: 16px 12px 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 42%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 70%),
+      linear-gradient(180deg, #dff2ff 0%, #fff3d6 100%);
+    border: 2px solid var(--kontur-yumusak);
+  }
+  .ug-kok .ug-ayarlar-resim {
+    width: auto;
+    max-width: 100%;
+    height: clamp(150px, calc(100dvh - 190px), 380px);
+    margin: 0;
+  }
+  .ug-kok .ug-ayarlar-logo {
+    width: min(78%, 240px);
+    margin: 4px auto 0;
+  }
+  .ug-kok .ug-ayarlar-bilgi {
+    padding: 4px 4px 6px;
+  }
+  .ug-kok .ug-ayarlar-bilgi > h2:first-child {
+    margin-top: 2px;
+  }
+}
+/* alçak yatay telefon: başlık çubuğu ince, kutu ekrana yakın */
+@media (orientation: landscape) and (max-height: 540px) {
+  .ug-kok .ug-ayarlar .ust-cubuk {
+    min-height: 60px;
+  }
+  .ug-kok .ug-ayarlar .ust-cubuk h1 {
+    font-size: 1.25rem;
+  }
+  .ug-kok .ug-ayarlar-ic {
+    padding-top: 2px;
+  }
 }
 
 /* ---------- Tablet dikey: Mino büyük, altta 3 × 3 kart (son sırada geniş Pasta Otobüsü) ---------- */
