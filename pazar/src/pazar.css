@@ -409,6 +409,15 @@
   box-shadow: 0 5px 0 var(--kontur-yumusak);
   animation: pz-balon 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 0.45s both;
 }
+/* yakın çekimde kadrajdan taşacak / üst çubuğa binecek balon söner (ekranlar.ts → oyunKamerasi, kam.koru) */
+.pz-kok .pz-istek-balon.pz-kadraj-disi {
+  opacity: 0 !important;
+  transition: opacity 0.2s !important;
+}
+/* yakın çekimde o an üst çubuğa binen / ekrandan taşan balon (her karede denetlenir): hemen söner */
+.pz-kok .pz-istek-balon.pz-ustte {
+  opacity: 0 !important;
+}
 .pz-kok .pz-istek-balon::after {
   content: '';
   position: absolute;

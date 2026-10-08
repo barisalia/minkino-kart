@@ -69,6 +69,109 @@ export function oyunKamerasi(el: HTMLElement, sahne: HTMLElement, kamera: HTMLEl
     alan,
     (gizli) => el.classList.toggle('pz-tezgah-gizli', gizli),
   );
+  // Yakın çekimde istek balonu (kamera katmanında, müşterinin başının üstünde) ekrandan taşmamalı, üst çubuğa
+  // (geri, ses, konuşma balonu, yıldızlar) binmemeli. Varılacak kadraj önceden ölçülür: biraz kaydırmak yetiyorsa
+  // kadraj kayar (balon görünür kalır); yetmiyorsa balon geçiş başlamadan söner, kadraj açılınca geri gelir.
+  let koruSaat = 0;
+  const P = 6;
+  const ustCubukKutulari = () => [...el.querySelectorAll('.ust-cubuk > *, .ust-cubuk .baslik-balon, .pz-yildizlar')].map((x) => x.getBoundingClientRect()).filter((r) => r.width && r.height);
+  // yürüyerek gelen müşteri balonu da taşır: yakın çekimde her karede balonun gerçek yeri denetlenir, üst çubuğa
+  // biniyorsa ya da ekrandan taşıyorsa o kare söner (kamera önceden ölçemediği hareketler için)
+  let baglandi = false;
+  const canliDenetim = () => {
+    if (!el.isConnected) {
+      if (baglandi) return;
+    } else baglandi = true;
+    requestAnimationFrame(canliDenetim);
+    const balonlar = kamera.querySelectorAll<HTMLElement>('.pz-istek-balon');
+    if (!balonlar.length) return;
+    if (!kam.yakin) {
+      balonlar.forEach((b) => b.classList.remove('pz-ustte'));
+      return;
+    }
+    const e = el.getBoundingClientRect();
+    const ust = ustCubukKutulari();
+    for (const b of balonlar) {
+      const r = b.getBoundingClientRect();
+      const w = Math.max(r.width, b.offsetWidth);
+      const hh = Math.max(r.height, b.offsetHeight);
+      const [l, t] = [r.left + r.width / 2 - w / 2, r.top + r.height / 2 - hh / 2];
+      const kotu = l < e.left + 2 || t < e.top + 2 || l + w > e.right - 2 || t + hh > e.bottom - 2 || ust.some((u) => l < u.right && l + w > u.left && t < u.bottom && t + hh > u.top);
+      b.classList.toggle('pz-ustte', kotu);
+    }
+  };
+  if (kam.acik) requestAnimationFrame(canliDenetim);
+  kam.koru = (s, tx, ty, hedef, ms) => {
+    const balonlar = [...kamera.querySelectorAll<HTMLElement>('.pz-istek-balon')];
+    if (s <= 1.01) {
+      clearTimeout(koruSaat);
+      balonlar.forEach((b) => b.classList.remove('pz-kadraj-disi'));
+      return;
+    }
+    const e = el.getBoundingClientRect();
+    const ust = ustCubukKutulari();
+    const kutular = balonlar.map((b) => {
+      // balon açılış canlandırmasının ortasında küçük olabilir: boyu en az kendi düzen ölçüsü (ortası aynı)
+      const k = kam.kutu(b);
+      const w = Math.max(k.w, b.offsetWidth);
+      const hh = Math.max(k.h, b.offsetHeight);
+      return kam.ekranda({ x: k.x + k.w / 2 - w / 2, y: k.y + k.h / 2 - hh / 2, w, h: hh }, s, tx, ty);
+    });
+    const temiz = (r: DOMRect, dx: number, dy: number) => {
+      const [l, t, rr, bb] = [r.left + dx, r.top + dy, r.right + dx, r.bottom + dy];
+      if (l < e.left + P || t < e.top + P || rr > e.right - P || bb > e.bottom - P) return false;
+      return !ust.some((u) => l < u.right + P && rr > u.left - P && t < u.bottom + P && bb > u.top - P);
+    };
+    // aday kaydırmalar: hiç, ekranın kenarından içeri, üst çubuktaki her öğenin sağına / soluna / altına
+    const dxler = new Set([0]);
+    const dyler = new Set([0]);
+    for (const r of kutular) {
+      dxler.add(e.left + P - r.left).add(e.right - P - r.right);
+      dyler.add(e.top + P - r.top).add(e.bottom - P - r.bottom);
+      for (const u of ust) {
+        dxler.add(u.right + P + 1 - r.left).add(u.left - P - 1 - r.right);
+        dyler.add(u.bottom + P + 1 - r.top);
+      }
+    }
+    // kaydırma küçük kalsın (odaktaki karakter kadrajdan çıkmasın)
+    const enCokX = e.width * 0.2;
+    const enCokY = e.height * 0.2;
+    // odaktaki kutu (blender, müşteri…) kaydırınca ekrandan daha çok taşmasın
+    const hr = hedef ? kam.ekranda(hedef, s, tx, ty) : null;
+    const tasma = (dx: number, dy: number) =>
+      hr ? Math.max(0, e.left - (hr.left + dx)) + Math.max(0, hr.right + dx - e.right) + Math.max(0, e.top - (hr.top + dy)) + Math.max(0, hr.bottom + dy - e.bottom) : 0;
+    const ilkTasma = tasma(0, 0);
+    let en: { dx: number; dy: number } | null = null;
+    for (const dx of dxler) for (const dy of dyler) {
+      if (Math.abs(dx) > enCokX || Math.abs(dy) > enCokY) continue;
+      if (tasma(dx, dy) > ilkTasma + 1) continue;
+      if (!kutular.every((r) => temiz(r, dx, dy))) continue;
+      if (!en || Math.abs(dx) + Math.abs(dy) < Math.abs(en.dx) + Math.abs(en.dy)) en = { dx, dy };
+    }
+    clearTimeout(koruSaat);
+    // varılacak yer temiz olsa da geçişin ortasında balon üst çubuğun üstünden geçebilir: o zaman geçiş boyunca
+    // söner, kadraj oturunca geri gelir
+    let yoldaBiner = false;
+    if (en && ms > 0) {
+      const o = kam.kadraj;
+      const sr = sahne.getBoundingClientRect();
+      for (const t of [0.2, 0.4, 0.6, 0.8]) {
+        const ss = o.s + (s - o.s) * t;
+        const kx = o.tx + (tx + en.dx - o.tx) * t;
+        const ky = o.ty + (ty + en.dy - o.ty) * t;
+        yoldaBiner ||= kutular.some((r) => {
+          // kutunun katmandaki yeri (dönüşümsüz) ekrandan geri hesaplanır
+          const lx = (r.left - sr.left - tx) / s;
+          const ly = (r.top - sr.top - ty) / s;
+          const rr = new DOMRect(sr.left + kx + ss * lx, sr.top + ky + ss * ly, (r.width / s) * ss, (r.height / s) * ss);
+          return !temiz(rr, 0, 0);
+        });
+      }
+    }
+    balonlar.forEach((b) => b.classList.toggle('pz-kadraj-disi', !en || yoldaBiner));
+    if (en && yoldaBiner) koruSaat = window.setTimeout(() => balonlar.forEach((b) => b.classList.remove('pz-kadraj-disi')), ms + 60);
+    return en && (en.dx || en.dy) ? en : undefined;
+  };
   // tam ekran yakın çekimde (tezgâh aşağıda) çocuk ekranın herhangi bir yerine dokununca tezgâh hemen geri gelir
   el.addEventListener('pointerdown', () => el.classList.contains('pz-tezgah-gizli') && el.classList.contains('pz-aktif') && kam.genis(450), true);
   return kam;

@@ -135,7 +135,7 @@ export class Kamera {
       if (!tam) ty = Math.max(ty, H - s * H);
       // yaklaşmadıysa kaydırma da yok
       if (s === 1) tx = ty = 0;
-      this.uygula(s, tx, ty, ms);
+      this.uygula(s, tx, ty, ms, k);
     };
     this.son = () => kur(0);
     kur(o.sure ?? 1100);
@@ -150,7 +150,30 @@ export class Kamera {
     this.uygula(1, 0, 0, ms);
   }
 
-  private uygula(s: number, tx: number, ty: number, ms: number) {
+  /**
+   * Her kadraj değişiminde (geçiş başlamadan) hedef dönüşümle çağrılır: kamera katmanındaki öğeler (istek balonu)
+   * varılacak kadrajda ekrandan taşacak ya da üst çubuğun altında kalacaksa önceden gizlenebilsin.
+   */
+  koru: ((s: number, tx: number, ty: number, hedef: Kutu | null, ms: number) => { dx: number; dy: number } | void) | null = null;
+
+  /** Şu anki kadraj (geçiş başlamadan önceki hedef) */
+  get kadraj() {
+    return { s: this.s, tx: this.tx, ty: this.ty };
+  }
+
+  /** Kamera katmanındaki bir kutunun verilen dönüşümle ekrandaki yeri */
+  ekranda(k: Kutu, s: number, tx: number, ty: number): DOMRect {
+    const sr = this.sahne.getBoundingClientRect();
+    return new DOMRect(sr.left + tx + s * k.x, sr.top + ty + s * k.y, s * k.w, s * k.h);
+  }
+
+  private uygula(s: number, tx: number, ty: number, ms: number, hedef: Kutu | null = null) {
+    // korunan öğe (istek balonu) üst çubuğa binecekse kadraj biraz kayar
+    const kay = this.koru?.(s, tx, ty, hedef, sure(ms));
+    if (kay) {
+      tx += kay.dx;
+      ty += kay.dy;
+    }
     this.s = s;
     this.tx = tx;
     this.ty = ty;
