@@ -12,7 +12,7 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Mino } from '../../src/mino/mino';
 import { balonlar, canliSahne, havaiFisek } from './canli';
 import { BARDAK_IKON } from './blender';
-import { adres, flamaYerlestir, parilti, resim, tozKalkar } from './gorsel';
+import { adres, boing, flamaYerlestir, parilti, resim, tozKalkar } from './gorsel';
 import { MinoCanli } from './mino-canli';
 import { odulSesi } from './meyvesuyu-ses';
 import { kaydet, kayit } from './ilerleme';
@@ -22,6 +22,7 @@ import { pazarSarkisi, type PazarSarkisi } from './sarki';
 import { Terazi } from './terazi';
 import { geriGonder, surukle, tasi } from './surukle';
 import { Kamera, type Kutu } from './kamera';
+import { Karakter } from '../../src/karakter/karakter';
 
 const A = P.arayuz;
 const RENK_KODU = P.renk_kodu as Record<string, string>;
@@ -43,22 +44,34 @@ export function gorselStil(yol: string): string | undefined {
 export function oyunKamerasi(el: HTMLElement, sahne: HTMLElement, kamera: HTMLElement, tezgah: HTMLElement, zemin: HTMLElement, arka: HTMLElement, ufuk: HTMLElement): Kamera {
   const ustCubuk = el.querySelector('.ust-cubuk');
   const yildizlar = el.querySelector('.pz-yildizlar');
-  const alan = () => {
+  const alan = (tam: boolean) => {
     const e = el.getBoundingClientRect();
-    const t = tezgah.getBoundingClientRect();
+    // tezgâhın kayıp gitmeden önceki üst kenarı (offsetTop: kayma dönüşümünden etkilenmez)
+    const altY = tam ? e.bottom - 4 : e.top + tezgah.offsetTop;
     const s = sahne.getBoundingClientRect();
     if (YATAY_TELEFON()) {
+      // yıldız rafı üstte ortada: odak onun altından başlar
       const pay = Math.max(0, s.left - e.left) * 0.4;
-      return new DOMRect(s.left - pay, e.top + 8, s.width + 2 * pay, Math.max(40, t.top - e.top - 8));
+      const ust = (yildizlar?.getBoundingClientRect().bottom ?? e.top) + 4;
+      return new DOMRect(s.left - pay, ust, s.width + 2 * pay, Math.max(40, altY - ust));
     }
     const ust = Math.max(ustCubuk?.getBoundingClientRect().bottom ?? e.top, yildizlar?.getBoundingClientRect().bottom ?? e.top) + 6;
-    return new DOMRect(e.left + 6, ust, e.width - 12, Math.max(40, t.top - ust));
+    return new DOMRect(e.left + 6, ust, e.width - 12, Math.max(40, altY - ust));
   };
-  return new Kamera(sahne, kamera, [
-    { el: zemin, k: 0.22 },
-    { el: arka, k: 0.3 },
-    { el: ufuk, k: 0.5 },
-  ], alan);
+  const kam = new Kamera(
+    sahne,
+    kamera,
+    [
+      { el: zemin, k: 0.22 },
+      { el: arka, k: 0.3 },
+      { el: ufuk, k: 0.5 },
+    ],
+    alan,
+    (gizli) => el.classList.toggle('pz-tezgah-gizli', gizli),
+  );
+  // tam ekran yakın çekimde (tezgâh aşağıda) çocuk ekranın herhangi bir yerine dokununca tezgâh hemen geri gelir
+  el.addEventListener('pointerdown', () => el.classList.contains('pz-tezgah-gizli') && el.classList.contains('pz-aktif') && kam.genis(450), true);
+  return kam;
 }
 /**
  * Ön tezgâh: ürünlerin durduğu büyük ahşap masa (pazar/on-tezgah.webp çizimi: arka kenarında yuvarlak tahta,
@@ -74,7 +87,8 @@ export const YATAY_TELEFON = () => typeof matchMedia !== 'undefined' && matchMed
 
 /** Müşterinin kamera kutusu: balonla (istek) ya da balonsuz (yerken, içerken) */
 export function musteriKutusu(kam: Kamera, kap: HTMLElement, balonlu: boolean): Kutu {
-  return kam.kutu(kap, balonlu ? { ust: 0.62, sag: 0.25, alt: -0.12 } : { ust: 0.05, alt: -0.1, sol: 0.05, sag: 0.05 });
+  // yakın çekim belden yukarı: yüz ve balon ekranı doldurur
+  return kam.kutu(kap, balonlu ? { ust: 0.62, sag: 0.25, alt: -0.45 } : { ust: 0.05, alt: -0.38, sol: 0.05, sag: 0.05 });
 }
 
 /** Bir öğenin ekrandaki yeri, kabın kutusuna göre (0..1): parıltı / konfeti kamera yaklaşmışken de doğru yerde */
@@ -308,6 +322,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
   async function dengeBekle() {
     const bu = ist;
     for (let k = 0; k < 80 && terazi && !terazi.dengede; k++) await bekle(sure(50));
+    // denge anı: terazi öne çıkıp büyür (yakın çekim), tezgâhtaki öteki ürünler geri çekilir
+    if (terazi?.dengede && ist === bu) el.classList.add('pz-terazi-odak');
     await bekle(sure(650));
     if (aktif && ist === bu && denetle(ist, sepettekiler()) === 'tamam') bitir();
   }
@@ -388,6 +404,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
     if (ist.tur === 'terazi') {
       e.style.setProperty('--a', String(agirlik(id)));
       teraziGuncelle();
+      // meyve kefeye inince terazi kısa bir "pat" ile öne gelir
+      if (terazi) teraziVurgu(terazi.el);
       const r = denetle(ist, sepettekiler());
       if (r === 'tamam') {
         efekt.nota(8);
@@ -422,11 +440,17 @@ export function pazarEkrani(app: Uygulama): Ekran {
           minoCanli.izleBasla();
         },
         tasi: (x) => minoCanli.izle(x),
-        birak: (hedefte) => {
+        birak: (hedefte, dokunus) => {
           sonBirakma = performance.now();
           minoCanli.izleBitti();
           if (hedefte) koy(e, id);
-          else {
+          else if (dokunus) {
+            // dokununca ürün canlanır: zıplar, kıvrılır, kendi notasını söyler; Mino ona bakar
+            geriGonder(e);
+            boing(e);
+            efekt.nota(2 + (i % 6));
+            minoCanli.bakin(oran(e, sahne)[0] < 0.5 ? -0.7 : 0.7, 900);
+          } else {
             // hedefe varmadan bırakıldı: yumuşak "pıt" sesi ve yuvasında yaylanma
             efekt.dokunma();
             geriGonder(e);
@@ -483,6 +507,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     terazi?.kapat();
     terazi = null;
     teraziYer.replaceChildren();
+    el.classList.remove('pz-terazi-odak');
     sepet.classList.toggle('pz-gizli', ist.tur === 'terazi');
     el.classList.toggle('pz-terazili', ist.tur === 'terazi');
     if (ist.tur === 'terazi') {
@@ -496,6 +521,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
           tz.icSol.append(h('div.pz-urun.pz-hazir', { 'data-urun': id, style: `--a:${agirlik(id)}` }, urunResmi(id)));
           const sol = (ist.sol ?? []).slice(0, k + 1).reduce((a, x) => a + agirlik(x), 0);
           tz.agirliklar(sol, 0);
+          teraziVurgu(tz.el);
           efekt.yapis();
         }, sure(500 + k * 380)),
       );
@@ -544,10 +570,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
     aktif = true;
     el.classList.add('pz-aktif');
     // istek: yakın çekim müşteri ve balonunda (çocuk tezgâha dokununca hemen açılır, beklemek yok)
-    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.86, enCok: 1.75, sure: 900, dikey: 0.52 });
+    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.5, tamEkran: true });
     // müşteri isteğini söylerken ağzı oynar
     mu.konus(true);
-    await soyle(ist.soz);
+    // yakın çekim en az bir an sürer (kısa cümlede kadraj hemen kaçmasın); çocuk dokunursa beklemeden açılır
+    await Promise.all([soyle(ist.soz).then(() => mu.konus(false)), bekle(sure(kam.acik ? 1800 : 0))]);
     mu.konus(false);
     if (aktif) kam.genis(1000);
     await bitti;
@@ -573,7 +600,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     const r = sahne.getBoundingClientRect();
     konfetiPatlat(app.kok, r.left + r.width * mx, r.top + r.height * my, 40);
     // teslim: kamera müşteriyle Mino'yu birlikte alır (sepet müşteriye uzanır)
-    kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, false), kam.kutu(mino.el, { alt: -0.35 })), { doluluk: 0.92, enCok: 1.4, sure: 800 });
+    kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, false), kam.kutu(mino.el, { alt: -0.35 })), { doluluk: 0.92, enCok: 1.6, sure: 800, tamEkran: true });
     // yıldız müşterinin üstünden uçup üstteki yerine oturur
     // ödül anı: yıldız büyüyüp parlar, uçup yerine oturur; Mino kısa sevinir
     void odulAni(app.kok, m, yildizlar.children[i] as HTMLElement | undefined, i, mino);
@@ -588,7 +615,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       (async () => {
         await bekle(sure(750));
         // yerken ve dans ederken yakın çekim: yalnız müşteri (mutlu yüzü ekranı doldurur)
-        kam.odakla(() => musteriKutusu(kam, musteriKap, false), { doluluk: 0.8, enCok: 1.8, sure: 900, dikey: 0.55 });
+        kam.odakla(() => musteriKutusu(kam, musteriKap, false), { doluluk: 0.82, enCok: 2.1, sure: 900, dikey: 0.55, tamEkran: true });
         await mu.ye(yenen ? urunResmi(yenen) : null, RENK_KODU[urunRengi(yenen ?? '') ?? ''] ?? '#f4a340', A.nyam);
         mu.kalpler();
         await mu.dans();
@@ -637,6 +664,12 @@ export function pazarEkrani(app: Uygulama): Ekran {
       musteri?.kapat();
     },
   };
+}
+
+/** Terazi kısa bir an öne gelip yaylanır (meyve kefeye indi); `scale` ayrı özellik: girişteki transform'a karışmaz */
+function teraziVurgu(t: HTMLElement) {
+  if (AZ_ODUL) return;
+  t.animate([{ scale: '1' }, { scale: '1.07', offset: 0.35 }, { scale: '0.985', offset: 0.7 }, { scale: '1' }], { duration: sure(420), easing: 'ease-out' });
 }
 
 /** Ürünün düştüğü yerde (kabın içinde, ürünün altında) toz ve parıltı */
@@ -762,17 +795,33 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?
   const ms = p?.musteriler?.length ? p.musteriler : P.musteriler.slice(0, MUSTERI_SAYISI);
   ms.forEach(resimSesiHazirla);
   const sahne = h('div.pz-senlik-sahne');
+  // müşteriler iskeletleriyle canlı: sırayla kendi danslarını yapar, dokununca sevinip zıplar
+  const karakterler: Karakter[] = [];
   const hayvanlar = ms.map((ad, i) => {
-    const b = h('button.pz-senlik-hayvan', { type: 'button', style: `--i:${i}`, 'aria-label': ad, 'data-musteri': ad }, resim(`hayvanlar/${ad}`, '', ad));
+    const k = new Karakter(ad, resim(`hayvanlar/${ad}`, '', ad));
+    karakterler.push(k);
+    const b = h('button.pz-senlik-hayvan', { type: 'button', style: `--i:${i}`, 'aria-label': ad, 'data-musteri': ad }, h('i.pz-senlik-golge'), k.el);
     b.addEventListener('pointerdown', () => {
       b.classList.remove('zipla');
       void b.offsetWidth;
       b.classList.add('zipla');
       void resimSesi(ad);
-      parilti(sahne, (i + 0.5) / ms.length, 0.6, 6);
+      if (!k.mesgul) void k.oynat('sevin', 900);
+      const [x, y] = oran(b, sahne, 0.4);
+      parilti(sahne, x, y, 6);
     });
     return b;
   });
+  let dansSira = 0;
+  const dansEt = () => {
+    karakterler.forEach((k, i) => {
+      if (k.mesgul) return;
+      window.setTimeout(() => !k.mesgul && void k.oynat(dansSira % 2 ? 'sevin' : 'dans', 1300), i * 160);
+    });
+    dansSira++;
+  };
+  const ilkDans = window.setTimeout(dansEt, sure(500));
+  const hayvanDans = window.setInterval(dansEt, 2600);
   // Mino ortada dans eder; dokununca zıplar
   const mino = new Mino();
   mino.tepki('dans');
@@ -815,6 +864,9 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?
     el,
     kapat() {
       clearInterval(dans);
+      clearTimeout(ilkDans);
+      clearInterval(hayvanDans);
+      karakterler.forEach((k) => k.kapat());
       mino.kapat();
       canli.kapat();
       balonDur();

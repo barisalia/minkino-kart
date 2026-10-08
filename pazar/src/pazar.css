@@ -28,7 +28,8 @@
 }
 .pz-kok .pz-zemin {
   position: absolute;
-  inset: 0;
+  /* kamera kaydırınca kenarda boşluk açılmasın: resim ekrandan biraz taşar */
+  inset: -4% -12% 0;
   z-index: -1;
   pointer-events: none;
   background:
@@ -200,16 +201,23 @@
 .pz-kok .pz-baslik span {
   min-width: 0;
 }
+/* yıldızlar büyük, krem bir rafın üstünde (boşken de seçilir, dolunca parlar) */
 .pz-kok .pz-yildizlar {
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
-  gap: clamp(6px, 2vw, 14px);
+  align-self: center;
+  gap: clamp(4px, 1.6vw, 12px);
+  padding: 4px clamp(10px, 3vw, 18px) 6px;
+  border-radius: 999px;
+  background: rgba(255, 250, 238, 0.82);
+  border: 3px solid var(--kontur);
+  box-shadow: 0 4px 0 var(--kontur-yumusak);
 }
 .pz-kok .pz-yildiz {
-  font-size: clamp(28px, 7.5vw, 44px);
-  color: rgba(90, 54, 23, 0.22);
+  font-size: clamp(34px, 9.5vw, 56px);
+  color: rgba(90, 54, 23, 0.2);
   display: inline-flex;
   transition: color 0.2s;
 }
@@ -281,9 +289,9 @@
 .pz-kok .pz-stand .pz-mino {
   position: absolute;
   z-index: 3;
-  left: 29%;
-  bottom: 21%;
-  width: 42%;
+  left: 31%;
+  bottom: 31%;
+  width: 38%;
   aspect-ratio: 1360 / 1790;
 }
 /* sepet tahtanın üstünde, sağda */
@@ -301,8 +309,9 @@
 .pz-kok .pz-musteri-kap {
   position: absolute;
   left: max(1cqw, calc(50cqw - min(108cqw, 128cqh) * 0.5));
-  bottom: -2%;
-  width: min(36cqw, 46cqh, 330px);
+  /* müşteri standın önünde, ön masanın arkasında durur: ayakları masanın arkasında (tahtanın üstünde havada değil) */
+  bottom: -13%;
+  width: min(40cqw, 54cqh, 380px);
   aspect-ratio: 1;
   pointer-events: none;
   z-index: 5;
@@ -323,7 +332,7 @@
     left: 57%;
   }
   .pz-kok .pz-pazar .pz-musteri-kap {
-    width: min(44cqw, 46cqh, 330px);
+    width: min(48cqw, 54cqh, 380px);
   }
 }
 /* flama ipi standın üstünde (gorsel.ts → flamaYerlestir) */
@@ -487,6 +496,14 @@
   border-radius: inherit;
   pointer-events: none;
   background: repeating-linear-gradient(180deg, transparent 0 46px, rgba(90, 54, 23, 0.16) 46px 49px);
+}
+/* tam ekran yakın çekim (kamera.ts): ön tezgâh aşağı kayıp kadrajdan çıkar, kadraj açılınca geri gelir */
+.pz-kok .pz-pazar .pz-tezgah {
+  transition: translate 0.6s cubic-bezier(0.5, 0, 0.2, 1);
+}
+.pz-kok .pz-pazar.pz-tezgah-gizli .pz-tezgah {
+  translate: 0 calc(100% + 40px);
+  transition-timing-function: cubic-bezier(0.55, 0, 0.75, 0.4);
 }
 /* çizimli ön tezgâh: arka kenardaki yuvarlak tahta ve köşeler esnemez, tahtalar esner */
 .pz-kok .pz-tezgah.pz-gorselli {
@@ -719,9 +736,23 @@
   88% { transform: scale(0.96, 1.05); }
   100% { transform: scale(1); }
 }
+/* dokunulan ürün: ezilir, zıplar, havada kıvrılır, iner ve yaylanır (gorsel.ts → boing) */
+.pz-kok .pz-urun.pz-boing > :not(.pz-urun-golge) {
+  animation: pz-boing 0.62s linear;
+  transform-origin: 50% 92%;
+}
+@keyframes pz-boing {
+  0% { transform: none; animation-timing-function: ease-out; }
+  14% { transform: scale(1.2, 0.78); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  42% { transform: translateY(-30%) scale(0.88, 1.14) rotate(-9deg); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.5); }
+  62% { transform: translateY(0) scale(1.16, 0.84) rotate(4deg); animation-timing-function: ease-out; }
+  80% { transform: scale(0.96, 1.05) rotate(-2deg); }
+  100% { transform: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .pz-kok .pz-urun.pz-tasiniyor > :not(.pz-urun-golge),
-  .pz-kok .pz-urun.pz-geri-yay > :not(.pz-urun-golge) {
+  .pz-kok .pz-urun.pz-geri-yay > :not(.pz-urun-golge),
+  .pz-kok .pz-urun.pz-boing > :not(.pz-urun-golge) {
     animation: none;
   }
 }
@@ -833,15 +864,21 @@
   gap: clamp(4px, 2vw, 16px);
   width: min(100%, 700px);
 }
+/* müşteriler iskeletleriyle kendi danslarını yapar (ekranlar.ts); altlarında zemine oturan yumuşak gölge */
 .pz-kok .pz-senlik-hayvan {
+  position: relative;
   width: clamp(92px, 27vw, 150px);
   aspect-ratio: 1;
-  animation: pz-dans 1.1s ease-in-out calc(var(--i) * 0.18s) infinite;
   transform-origin: 50% 100%;
 }
-/* hayvanlar zemine otursun (gölgesiz yapıştırılmış gibi duruyordu) */
-.pz-kok .pz-senlik-hayvan img {
-  filter: drop-shadow(0 5px 3px rgba(70, 35, 10, 0.28));
+.pz-kok .pz-senlik-golge {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 1%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(70, 35, 10, 0.32), transparent);
 }
 .pz-kok .pz-senlik-hayvan.zipla {
   animation: pz-sevin 0.7s cubic-bezier(0.3, 1.6, 0.5, 1);
@@ -890,6 +927,8 @@
 .pz-kok .pz-stand .pz-sepet-ic .pz-urun {
   width: calc(var(--sw) * 0.09 * var(--ks, 1));
   height: calc(var(--sw) * 0.09 * var(--ks, 1));
+  /* sepetteki ürünler (paralar) biraz üst üste biner: yığın sepetin ağzında kalır, sepetin üstünde sütun olup havada durmaz */
+  margin: calc(var(--sw) * -0.012 * var(--ks, 1)) calc(var(--sw) * -0.017 * var(--ks, 1));
 }
 .pz-kok .pz-stand .pz-sepet-ic .pz-para b {
   font-size: calc(var(--sw) * 0.04 * var(--ks, 1));

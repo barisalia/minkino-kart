@@ -29,6 +29,11 @@ export interface OdakSecenek {
   sure?: number;
   /** hedefin görünen alandaki dikey yeri (0 üst, 0.5 orta, 1 alt) */
   dikey?: number;
+  /**
+   * tam ekran yakın çekim: ön tezgâh aşağı kayıp kadrajdan çıkar (yalnız oyuncuların sahnesi kalır);
+   * kadraj açılınca (genis) ya da çocuk ekrana dokununca hemen geri gelir
+   */
+  tamEkran?: boolean;
 }
 
 export interface DerinKatman {
@@ -50,8 +55,10 @@ export class Kamera {
     private sahne: HTMLElement,
     private katman: HTMLElement,
     private derin: DerinKatman[],
-    /** odaklanılabilecek görünen alan (ekran koordinatı): üst çubuğun altı, ön tezgâhın üstü */
-    private alan: () => DOMRect,
+    /** odaklanılabilecek görünen alan (ekran koordinatı): üst çubuğun altı, ön tezgâhın üstü (tam ekranda ekranın altı) */
+    private alan: (tamEkran: boolean) => DOMRect,
+    /** tam ekran yakın çekimde ön tezgâhı kadrajdan çıkarır / geri getirir */
+    private tezgahGizle: (gizli: boolean) => void = () => undefined,
   ) {
     this.acik = !AZ && (!TEST_MODU || !!document.body.dataset.onizleme);
     katman.style.transformOrigin = '0 0';
@@ -113,7 +120,9 @@ export class Kamera {
     const kur = (ms: number) => {
       const k = typeof hedef === 'function' ? hedef() : hedef;
       if (!k.w || !k.h) return;
-      const a = this.alan();
+      const tam = !!o.tamEkran;
+      this.tezgahGizle(tam);
+      const a = this.alan(tam);
       const sr = this.sahne.getBoundingClientRect();
       const H = this.sahne.clientHeight;
       const f = o.doluluk ?? 0.8;
@@ -123,7 +132,8 @@ export class Kamera {
       let tx = ax - s * (k.x + k.w / 2);
       let ty = ay - s * (k.y + k.h / 2);
       // kadrajın altı sahnenin altından yukarı kalkmaz (standın ayakları ön tezgâhın arkasında kalır)
-      ty = Math.max(ty, H - s * H);
+      // (tam ekranda tezgâh çekildi: kadraj belden yukarı olduğundan ayaklar zaten ekranın altında kalır)
+      if (!tam) ty = Math.max(ty, H - s * H);
       // yaklaşmadıysa kaydırma da yok
       if (s === 1) tx = ty = 0;
       this.uygula(s, tx, ty, ms);
@@ -135,7 +145,9 @@ export class Kamera {
   /** Geniş kadraja döner */
   genis(ms = 900) {
     this.son = null;
-    if (!this.acik || (!this.yakin && !this.tx && !this.ty)) return;
+    if (!this.acik) return;
+    this.tezgahGizle(false);
+    if (!this.yakin && !this.tx && !this.ty) return;
     this.uygula(1, 0, 0, ms);
   }
 

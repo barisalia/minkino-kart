@@ -10,8 +10,8 @@ export interface Surukle {
   hedef: () => HTMLElement;
   /** sürükleme başlayabilir mi */
   aktif: () => boolean;
-  /** bırakıldı: hedefin üstünde mi */
-  birak: (hedefte: boolean) => void;
+  /** bırakıldı: hedefin üstünde mi; dokunuş: parmak neredeyse kımıldamadan kalktı (sürükleme değil, dokunma) */
+  birak: (hedefte: boolean, dokunus: boolean) => void;
   basla?: () => void;
   /** parmak hareket etti (ekran koordinatı): ör. Mino gözleriyle izler */
   tasi?: (x: number, y: number) => void;
@@ -29,6 +29,12 @@ export function surukle(s: Surukle): () => void {
   let id: number | null = null;
   let x0 = 0;
   let y0 = 0;
+  // ürün parmağın hızına göre sallanır (sarkaç gibi geriden gelir): canlı bir şey taşınıyormuş gibi
+  let sonX = 0;
+  let sonT = 0;
+  let egim = 0;
+  let enUzak = 0;
+  let t0 = 0;
 
   const bas = (e: PointerEvent) => {
     if (id !== null || !s.aktif() || (e.pointerType === 'mouse' && e.button !== 0)) return;
@@ -36,6 +42,10 @@ export function surukle(s: Surukle): () => void {
     id = e.pointerId;
     x0 = e.clientX;
     y0 = e.clientY;
+    sonX = e.clientX;
+    sonT = t0 = performance.now();
+    egim = 0;
+    enUzak = 0;
     try {
       el.setPointerCapture(id);
     } catch {
@@ -47,7 +57,13 @@ export function surukle(s: Surukle): () => void {
   };
   const kaydir = (e: PointerEvent) => {
     if (e.pointerId !== id) return;
-    el.style.transform = `translate(${e.clientX - x0}px, ${e.clientY - y0}px) scale(1.18) rotate(-4deg)`;
+    const simdi = performance.now();
+    const hiz = ((e.clientX - sonX) / Math.max(8, simdi - sonT)) * 16;
+    sonX = e.clientX;
+    sonT = simdi;
+    egim = egim * 0.72 + Math.max(-20, Math.min(20, hiz * 1.5)) * 0.28;
+    enUzak = Math.max(enUzak, Math.hypot(e.clientX - x0, e.clientY - y0));
+    el.style.transform = `translate(${e.clientX - x0}px, ${e.clientY - y0}px) scale(1.18) rotate(${(egim - 4).toFixed(1)}deg)`;
     s.tasi?.(e.clientX, e.clientY);
     s.hedef().classList.toggle('pz-uzerinde', icinde(s.hedef().getBoundingClientRect(), e.clientX, e.clientY));
   };
@@ -57,7 +73,8 @@ export function surukle(s: Surukle): () => void {
     el.classList.remove('pz-tasiniyor');
     const h = s.hedef();
     h.classList.remove('pz-uzerinde');
-    s.birak(e.type === 'pointerup' && icinde(h.getBoundingClientRect(), e.clientX, e.clientY));
+    const dokunus = e.type === 'pointerup' && enUzak < 12 && performance.now() - t0 < 450;
+    s.birak(!dokunus && e.type === 'pointerup' && icinde(h.getBoundingClientRect(), e.clientX, e.clientY), dokunus);
   };
   el.addEventListener('pointerdown', bas);
   el.addEventListener('pointermove', kaydir);
