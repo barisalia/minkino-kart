@@ -389,7 +389,7 @@ class Vaka2 {
     await this.odaya(oda, this.aramaKadraji(hk), 1);
     if (this.kapali) return;
     // dikeyde ipuçları zeminde, karakterlerin baş hizasında: ikisi de kenara çekilir (ortası boş kalır)
-    if (this.dar()) oy.yerlesim('kenar');
+    oy.yerlesim('iki', 'kenar');
     await this.ipuclariniBul(hk, oda);
     oy.yerlesim('iki');
     if (this.kapali) return;
@@ -588,6 +588,8 @@ class Vaka2 {
       this.aranan = hk;
       const hedefler: BuyutecHedef[] = kalan.map((t) => ({ id: t.id, yer: () => this.dunya.merkez(this.ipucuEl(t.id)!) }));
       this.buyutec.hedefleriKur(hedefler);
+      // aranan ipuçları çıplak gözle de sezilir (soluk gölge, göz kırpan yıldız: dedektif.css); öbür halkalarınkiler görünmez
+      for (const t of kalan) this.ipucuEl(t.id)?.classList.add('dd-aranan');
       this.buyutec.goster(true);
       this.buyutec.yenile();
       const r = this.ara.getBoundingClientRect();
@@ -906,7 +908,7 @@ class Vaka2 {
     const { oy, dunya } = this;
     if (this.kapali) return;
     this.serit.aktif('ses');
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     dunya.darYakin = null;
     const soru = new SesSorusu(CALILAR);
     const calilar = CALILAR.map((_, i) => this.golet.e[`cali-${i}`]);
@@ -1004,7 +1006,7 @@ class Vaka2 {
     const c3 = this.golet.e['cali-2'];
     const sol = this.golet.e.yarimSol;
     const sag = this.golet.e.yarimSag;
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     await dunya.git(this.finalKadraj(), 900);
     if (this.kapali) return;
     // Vakvak Anne'nin boyu bu çekimde (final de aynı çekim)
@@ -1153,7 +1155,7 @@ class Vaka2 {
     if (this.kapali) return;
     this.serit.aktif('sira');
     if (dogrudan) await this.yuvaHazir();
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     // Kino öfkeli ama sevimli: ayağını yere vurur
     this.adim('sen-mi');
     oy.kinoPoz('isaret');
@@ -1203,7 +1205,7 @@ class Vaka2 {
     if (dogrudan) await this.yuvaHazir();
     else await dunya.git(this.finalKadraj(), 700);
     if (this.kapali) return;
-    oy.yerlesim(this.dar() ? 'kenar' : 'iki');
+    oy.yerlesim('iki', 'kenar');
     const w = this.ordek.w;
     // 1) Vakvak Anne kalkar: yuvadan çıkar (yumurtalar açıkta), gagasında atkı, Kino'ya doğru
     this.yuva.classList.add('acik');
@@ -1216,9 +1218,12 @@ class Vaka2 {
     // atkı Kino'ya uzatılır: gagadan Kino'nun önüne uçar
     const kk = this.el.getBoundingClientRect();
     const [gx, gy] = this.efekt.merkez(this.ordek.kutu, 0.3, 0.45);
-    const atkiW = Math.min(kk.width * 0.3, oy.kinoYer.getBoundingClientRect().width * 1.1);
+    const atkiW = Math.min(kk.width * 0.3, oy.kinoYer.getBoundingClientRect().width * (this.dar() ? 1.1 : 0.85));
     // atkı Kino'nun önüne (dikeyde Kino kenarda: atkı hep ekranın içinde, Kino'nun hemen solunda)
-    const [kx0, ky0] = this.efekt.merkez(oy.kinoYer, this.dar() ? 0.2 : 0.45, 0.82);
+    // (yatayda Kino'nun hemen solunda, yerde: Kino'nun yüzünü örtmez; atkı bütünüyle ekranda)
+    const [ax, ay] = oy.ayak(oy.kinoYer);
+    const kinoW = oy.kinoYer.getBoundingClientRect().width;
+    const [kx0, ky0] = this.dar() ? this.efekt.merkez(oy.kinoYer, 0.2, 0.82) : [ax - kinoW * 0.62, ay - atkiW * 0.12];
     const kx = Math.max(atkiW * 0.6 + 8, Math.min(kk.width - atkiW * 0.6 - 8, kx0));
     const ky = Math.min(kk.height - atkiW * 0.4 - 8, ky0);
     const atki = h('div.dd-atki-tasi', { style: `width:${px(atkiW)}` }, h('img', { src: resim('v2/atki-yerde') ?? '', alt: '', draggable: 'false' }));
