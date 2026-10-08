@@ -115,7 +115,9 @@ export function esyaCiz(tip: string, film: string, malzeme?: string): HTMLElemen
   const dis = !GORSELLER[`../../assets/film/${film}/${tip}.webp`] && !KATMANLI[tip] ? esyaAdresi(tip, film, malzeme) : undefined;
   if (dis) {
     const ic = ESYA_IC[tip];
-    const stil = ic ? `inset:${(((1 - ic) / 2) * 100).toFixed(3)}%;width:auto;height:auto` : undefined;
+    // (resim öğesinde inset + auto boy doğal boyuta döner: konum ve boy açıkça yazılır)
+    const pay = (((1 - (ic ?? 1)) / 2) * 100).toFixed(3);
+    const stil = ic ? `left:${pay}%;top:${pay}%;width:${(ic * 100).toFixed(3)}%;height:${(ic * 100).toFixed(3)}%` : undefined;
     return h('img.fl-esya-resim', { src: dis, alt: '', draggable: 'false', style: stil });
   }
   const kat = KATMANLI[tip];
