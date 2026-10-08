@@ -296,7 +296,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     if (kapandi) return;
     mu.bekle(true);
     yazi.textContent = ist.yazi;
-    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.5, tamEkran: true });
+    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.4, tamEkran: true });
     mu.konus(true);
 
     // doğru renk gelene kadar: meyve at → karıştır → dök → iç

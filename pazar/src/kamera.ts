@@ -62,7 +62,6 @@ export class Kamera {
   ) {
     this.acik = !AZ && (!TEST_MODU || !!document.body.dataset.onizleme);
     katman.style.transformOrigin = '0 0';
-    for (const d of derin) d.el.style.willChange = 'transform';
     if (this.acik && typeof ResizeObserver !== 'undefined') {
       // ekran dönünce / boyutu değişince son kadraj geçişsiz yeniden kurulur
       let ilk = true;

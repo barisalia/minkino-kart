@@ -23,7 +23,7 @@
 .pz-kok .pz-kamera {
   position: absolute;
   inset: 0;
-  will-change: transform;
+  /* will-change yok: yakın çekimde katman yeni ölçekte yeniden çizilir (bulanık büyütme olmaz) */
 }
 
 /* ---------- Düşen ürün: toz bulutları ve parıltı ---------- */

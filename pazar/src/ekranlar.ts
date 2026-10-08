@@ -88,7 +88,7 @@ export const YATAY_TELEFON = () => typeof matchMedia !== 'undefined' && matchMed
 /** Müşterinin kamera kutusu: balonla (istek) ya da balonsuz (yerken, içerken) */
 export function musteriKutusu(kam: Kamera, kap: HTMLElement, balonlu: boolean): Kutu {
   // yakın çekim belden yukarı: yüz ve balon ekranı doldurur
-  return kam.kutu(kap, balonlu ? { ust: 0.62, sag: 0.25, alt: -0.45 } : { ust: 0.05, alt: -0.38, sol: 0.05, sag: 0.05 });
+  return kam.kutu(kap, balonlu ? { ust: 0.62, sag: 0.25, alt: -0.5 } : { ust: 0.05, alt: -0.38, sol: 0.05, sag: 0.05 });
 }
 
 /** Bir öğenin ekrandaki yeri, kabın kutusuna göre (0..1): parıltı / konfeti kamera yaklaşmışken de doğru yerde */
@@ -570,7 +570,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     aktif = true;
     el.classList.add('pz-aktif');
     // istek: yakın çekim müşteri ve balonunda (çocuk tezgâha dokununca hemen açılır, beklemek yok)
-    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.5, tamEkran: true });
+    kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.4, tamEkran: true });
     // müşteri isteğini söylerken ağzı oynar
     mu.konus(true);
     // yakın çekim en az bir an sürer (kısa cümlede kadraj hemen kaçmasın); çocuk dokunursa beklemeden açılır
