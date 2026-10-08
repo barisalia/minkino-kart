@@ -173,14 +173,21 @@ export class Buyutec {
     const r = this.s.kap.getBoundingClientRect();
     this.R = this.s.yaricap?.() ?? Math.max(44, Math.min(110, Math.min(r.width, r.height) * 0.15));
     this.el.style.setProperty('--bt-r', `${this.R.toFixed(1)}px`);
-    this.ciz();
+    // ekran boyu değişti (telefon döndü): mercek ekrandaki oransal yerinde kalır (dikeyde alttaki mercek yatayda
+    // alt kenara sıkışıp Mino'nun üstüne binmesin)
+    const [w0, h0] = this.kapBoy;
+    if (w0 > 0 && h0 > 0 && r.width > 0 && r.height > 0 && (Math.abs(w0 - r.width) > 1 || Math.abs(h0 - r.height) > 1)) this.konumla((this.x / w0) * r.width, (this.y / h0) * r.height, false);
+    else this.ciz();
   };
+  /** merceğin son konumlandığı andaki kabın boyu (dönünce oransal yer için) */
+  private kapBoy: [number, number] = [0, 0];
 
   private konumla(x: number, y: number, denetle = true) {
     const r = this.s.kap.getBoundingClientRect();
     // merceğin ortası kabın içinde kalır (kenarda yarısı dışarı taşabilir)
     this.x = Math.max(this.R * 0.3, Math.min(r.width - this.R * 0.3, x));
     this.y = Math.max(this.R * 0.3, Math.min(r.height - this.R * 0.3, y));
+    if (r.width > 0 && r.height > 0) this.kapBoy = [r.width, r.height];
     this.ciz();
     if (denetle) this.denetle();
   }
@@ -206,8 +213,8 @@ export class Buyutec {
         this.yakin.set(hd.id, oran);
         this.s.yakinlik?.(hd, oran);
       }
-      // merceğin içine girdi: merkezi camın iç kısmında
-      if (!this.gorulen.has(hd.id) && d < this.R * 0.72 + r * 0.35) {
+      // merceğin içine girdi: camın içinde bir yerde (cömert: çocuk tam üstüne getirmek zorunda değil)
+      if (!this.gorulen.has(hd.id) && d < this.R * 0.95 + r * 0.5) {
         this.gorulen.add(hd.id);
         this.parla();
         this.s.gordu?.(hd);

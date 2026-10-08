@@ -56,9 +56,9 @@ describe('Dedektif Mino: vaka zinciri (ipucu → kart → demek ki)', () => {
       // her yanlış kart kendini anlatır (öğretici ve komik; ceza yok)
       for (const k of h.kartlar) if (k !== h.dogru) expect(KARTLAR[k].tepki, k).toBeTruthy();
     }
-    expect(halka('iz').dogru).toBe('kedi-pati-izi');
+    expect(halka('iz').dogru).toBe('kedi');
     expect(halka('tuy').dogru).toBe('kedi-beyaz');
-    expect(halka('neden').dogru).toBe('sari-kelebek');
+    expect(halka('neden').dogru).toBe('kedi-kelebek');
     // Halka 3'te iki ipucu: kanat tozu ve kelebek (ikisi de bulunmalı)
     expect(halka('neden').ipuclari.map((i) => i.id)).toEqual(['toz', 'kelebek']);
   });
@@ -66,15 +66,15 @@ describe('Dedektif Mino: vaka zinciri (ipucu → kart → demek ki)', () => {
   it('kart sorusu: yanlışlar soluklaşır, 2 yanlıştan sonra doğru kart parlar, doğruda çözülür; kilitlenmez', () => {
     const s = new Soru(halka('iz'));
     expect(s.acik).toHaveLength(3);
-    expect(s.sec('zurafa-ayagi')).toEqual({ dogru: false, parla: false, yanlis: 1 });
+    expect(s.sec('zurafa')).toEqual({ dogru: false, parla: false, yanlis: 1 });
     // aynı yanlış iki kez sayılmaz
-    expect(s.sec('zurafa-ayagi').yanlis).toBe(1);
-    expect(s.sec('ordek-ayagi')).toEqual({ dogru: false, parla: true, yanlis: 2 });
+    expect(s.sec('zurafa').yanlis).toBe(1);
+    expect(s.sec('ordek')).toEqual({ dogru: false, parla: true, yanlis: 2 });
     expect(s.parlasin).toBe(true);
-    expect(s.acik).toEqual(['kedi-pati-izi']);
-    expect(s.sec('kedi-pati-izi').dogru).toBe(true);
+    expect(s.acik).toEqual(['kedi']);
+    expect(s.sec('kedi').dogru).toBe(true);
     expect(s.cozuldu).toBe(true);
-    expect(() => s.sec('yastik')).toThrow();
+    expect(() => s.sec('kedi-uyku')).toThrow();
     expect(YARDIM.parlaYanlis).toBe(2);
     expect(YARDIM.koklaSn).toBe(10);
   });
