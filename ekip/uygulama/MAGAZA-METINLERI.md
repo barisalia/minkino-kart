@@ -148,11 +148,11 @@ Terms of Use: [link]
 | 2 | Mino'nun Pazarı: müşteri meyve-sebze ister | **Say, eşleştir, öğren!** | **Count, match and learn!** |
 | 3 | Kino Ne Giysin?: kışın şort giyen Kino titrer | **Kino'yu havaya göre giydir!** | **Dress Kino for the weather!** |
 | 4 | Dedektif Mino: pati izi panoda, şüpheli kartları | **İpucunu bul, vakayı çöz!** | **Find clues, solve the case!** |
-| 5 | Sesli Maceralar: Ege'nin kukla gösterisi | **Sesinle oyna: üfle, söyle!** | **Play with your voice!** |
+| 5 | Sesli Maceralar: Ege'nin kukla gösterisi (ayı ve civciv kukla) | **Sesinle oyna: üfle, söyle!** | **Play with your voice!** |
 | 6 | Çizgi film karesi (Mino'nun Karpuzu) | **Eğlenceli, eğitici çizgi filmler** | **Fun, educational cartoons** |
 | 7 | Pasta Otobüsü: sipariş ortası | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
 
-> 2026-10-08: set yenilendi (Okula Hazırım çıktı; Kino Ne Giysin? ve Dedektif Mino girdi). Ham kareler `ekip/illustrator/magaza-cekim.cjs`, çerçeve ve başlık `ekip/illustrator/magaza-ekran.cjs`, Play tablet `scripts/uygulama/play-tablet-ekran.cjs`. Tablette 6. kare paylaşma sahnesidir (karpuz ikiye bölünmüş), telefonda Mino karpuzun üstünde.
+> 2026-10-08: set yenilendi (Okula Hazırım çıktı; Kino Ne Giysin? ve Dedektif Mino girdi). Ham kareler `ekip/illustrator/magaza-cekim.cjs`, çerçeve ve başlık `ekip/illustrator/magaza-ekran.cjs`, Play tablet `scripts/uygulama/play-tablet-ekran.cjs`. **Boyutlar:** telefonda oyunlar yatay kilitli (src/kabuk/yon.ts), bu yüzden telefon setleri YATAY: `iphone-2796x1290` (App Store 6.7") ve `android-1920x1080` (Play telefon); tabletler dikey: `ipad-2048x2732`, `play-tablet-1440x2560`. Eski dikey telefon klasörleri (iphone-1290x2796, android-1080x1920) silindi; mağazadaki eski dikey telefon görselleri de kaldırılıp yenileri yüklenmeli. 5. kare: telefonda kukla gösterisi yakın çekim, tablette gösteri sonu (Ege güldü).
 
 ---
 

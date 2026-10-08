@@ -15,7 +15,7 @@ Ortak işler bir kez yapılır, her adımda iki mağaza birlikte ilerler. Bir ma
 | Kategori | Eğitim · Çocuklar 5 yaş ve altı + 6-8 |
 | Reklam / veri | Reklam yok · Veri toplanmıyor |
 | Metinler | [MAGAZA-METINLERI.md](MAGAZA-METINLERI.md) (aynı metin ikisine de; kısa açıklama Play'de, alt başlık Apple'da) |
-| Ekran görüntüleri | `assets/uygulama/magaza-ekranlari/<tr veya en>/`: Play için `android-1080x1920`, Apple için `iphone-1290x2796` ve `ipad-2048x2732` (6'şar tane) |
+| Ekran görüntüleri | `assets/uygulama/magaza-ekranlari/<tr veya en>/`: Play için `android-1920x1080` (telefon, yatay) ve `play-tablet-1440x2560`, Apple için `iphone-2796x1290` (6.7" telefon, yatay) ve `ipad-2048x2732` (7'şer tane; telefonda oyunlar yatay kilitli olduğu için telefon setleri yatay) |
 | İkon | Play: `assets/uygulama/ikonlar/android/ic_launcher-playstore.png` (512) + öne çıkan görsel `assets/uygulama/one-cikan.png` (1024×500). Apple: ikon pakette (Codemagic kendisi koyar) |
 | Abonelik ürünleri | `minkino_aylik` 99 TL · `minkino_yillik` 499 TL · 7 gün ücretsiz deneme (iki mağazada da **aynı ürün kimlikleri**) |
 

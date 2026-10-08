@@ -1,14 +1,14 @@
-// Mağaza ekran görüntüleri için ham oyun görüntüleri (Playwright, mobil emülasyon): assets/uygulama/ekran-ham/{telefon,tablet}/NN-ad.webp (+ ek/ klasörüne yedek sahneler).
-// Telefon 390x844 @3x (1170x2532), tablet 768x1024 @2.5x (1920x2560). Uygulama derlemesi gerekir (npm run build:app: ana menü kökte); sunucu: npx vite preview --port 4178 (ya da başka statik http).
+// Mağaza ekran görüntüleri için ham oyun görüntüleri (Playwright, mobil emülasyon): assets/uygulama/ekran-ham/{telefon-yatay,tablet}/NN-ad.webp (+ ek/ klasörüne yedek sahneler).
+// Telefon 932x430 @3x (2796x1290, yatay: telefonda oyunlar yatay kilitli), tablet 768x1024 @2.5x (1920x2560). Uygulama derlemesi gerekir (npm run build:app: ana menü kökte); sunucu: npx vite preview --port 4178 (ya da başka statik http).
 // Sıra magaza-ekran.cjs ile aynı (başlıklar MAGAZA-METINLERI.md bölüm 6): 01 ana menü (8 kart), 02 Pazar (müşteri meyve ister), 03 Kino Ne Giysin? (dolap + Kino'nun komik tepkisi),
-// 04 Dedektif Mino (pati izi panoda, şüpheli kartları, Kino'nun komik tahmini), 05 Ege (kukla gösterisi sonu: Ege güldü), 06 Çizgi film karesi (Mino'nun Karpuzu), 07 Pasta Otobüsü (sipariş ortası).
+// 04 Dedektif Mino (pati izi panoda, şüpheli kartları, Kino'nun komik tahmini), 05 Ege (yatay telefonda kukla gösterisi yakın çekim, tablette gösteri sonu: Ege güldü), 06 Çizgi film karesi (Mino'nun Karpuzu), 07 Pasta Otobüsü (sipariş ortası).
 // Kilit yok: tarayıcıda abonelik kilitleri kapalı (src/engine/erisim.ts), test modu (?test=1) ile ebeveyn kapısı/abonelik ekranı açılmaz.
-// node magaza-cekim.cjs [taban=http://localhost:4178] [NN ...] [telefon|tablet]   ·   DENEME=klasör: @1x, o klasöre png (hızlı bakış)
+// node magaza-cekim.cjs [taban=http://localhost:4178] [NN ...] [telefon-yatay|tablet]   ·   DENEME=klasör: @1x, o klasöre png (hızlı bakış)
 const fs = require('fs'), path = require('path');
 const { chromium } = require(require.resolve('playwright', { paths: [process.cwd()] }));
 const sharp = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const ARG = process.argv.slice(2);
-const TABAN = ARG.find((x) => x.startsWith('http')) || 'http://localhost:4178', NN = ARG.filter((x) => /^\d\d$/.test(x)), TURLER = ARG.filter((x) => ['telefon', 'tablet'].includes(x));
+const TABAN = ARG.find((x) => x.startsWith('http')) || 'http://localhost:4178', NN = ARG.filter((x) => /^\d\d$/.test(x)), TURLER = ARG.filter((x) => ['telefon-yatay', 'tablet'].includes(x));
 const DENEME = process.env.DENEME;
 const HAM = 'assets/uygulama/ekran-ham/';
 
@@ -90,8 +90,14 @@ async function egeKukla(p) {
   await sur(e('kukla-civciv'), p.locator('.mc-oyuncu[data-ad="can"]'));
   await gorevBekle(['civciv']); await ara(p, 'k1'); await dokun(e('kukla-civciv'));
   await gorevBekle(['ayi']); await dokun(e('kukla-ayi'));
-  for (let i = 0; i < 4; i++) { await gorevBekle(['serbest']); await dokun(e(i % 2 ? 'kukla-ayi' : 'kukla-civciv')); if (i < 3) await ara(p, 'k4-' + i); }
-  // gösteri biter: "Güldü! Ege güldü!" (ışık açılır, herkes kadrajda, kuklalar Ada'nın ve Can'ın elinde)
+  // yatay telefonda kukla gösterisinin yakın çekimi kadrajı doldurur (ayı, Ege, civciv büyük): ilk serbest dokunuştan hemen sonra
+  const yatayTelefon = vp.width > vp.height;
+  for (let i = 0; i < 4; i++) {
+    await gorevBekle(['serbest']); await dokun(e(i % 2 ? 'kukla-ayi' : 'kukla-civciv'));
+    if (yatayTelefon) { await p.waitForTimeout(150); return; }
+    if (i < 3) await ara(p, 'k4-' + i);
+  }
+  // dikey tablette yakın çekim boş duvarda kalır; gösteri biter: "Güldü! Ege güldü!" (ışık açılır, herkes kadrajda, kuklalar Ada'nın ve Can'ın elinde)
   await p.waitForTimeout(Number(process.env.KUKLA_MS || 500));
 }
 // 06 Çizgi film: Mino'nun Karpuzu kayıt görünümünde (düğmesiz, ekranı dolduran kadraj; test modu YOK), Oynat'tan FILM_SN saniye sonraki kare
@@ -112,7 +118,7 @@ async function filmKare(p) {
     };
   });
   await p.evaluate(() => document.querySelector('.fl-oynat').click());
-  // telefon 26 sn: Mino kocaman karpuzun üstünde (altyazısız); tablette o çekim kulakları keser, 50 sn: karpuz ikiye bölünmüş, paylaşma sahnesi
+  // 50 sn: karpuz ikiye bölünmüş, Mino paylaşıyor (yatay telefon ve tablet); dikey telefonda 26 sn (Mino karpuzun üstünde, altyazısız)
   const sn = Number(process.env.FILM_SN || (p.viewportSize().width > 500 ? 50 : 26)), dt = 1000 / 30;
   for (let g = 0; g < sn - 1e-6; g += dt / 1000) await p.clock.runFor(dt);
   await p.evaluate(() => window.__animSenk(performance.now()));
@@ -121,11 +127,14 @@ async function filmKare(p) {
 filmKare.saatKur = true;
 // 07 Pasta Otobüsü: sipariş ortası. Parlayan (sıradaki) işe dokunulur; tabakta kremalı kurabiye, süs sırası gelince durulur
 async function pastaSiparis(p) {
+  await p.locator('.ps-gun').waitFor({ timeout: 30000 });
   for (let i = 0; i < 40; i++) {
-    if ((await p.locator('.ps-gun').getAttribute('data-adim')) === 'sus') break;
+    const adim = await p.locator('.ps-gun').getAttribute('data-adim'); if (process.env.SERI) console.log('pasta adim', i, adim);
+    if (adim === 'sus' || adim === 'servis') break;
     const s = p.locator('.ps-sirada').first();
     if (await s.count()) await s.click({ force: true }).catch(() => {});
     await p.waitForTimeout(900);
+    if (i % 3 === 0) await ara(p, 'p' + String(i).padStart(2, '0') + '-' + (await p.locator('.ps-gun').getAttribute('data-adim')));
   }
   await p.waitForTimeout(1200);
 }
@@ -147,7 +156,8 @@ const LISTE = [
   ['ek/', 'canlan-ciz', '/canlan/?test=1&yas=5&ekran=ciz&resim=araba&mod=kopya', 4500],
   ['ek/', 'dedektif-vakalar', '/dedektif/?test=1&sifirla=1&cozuldu=1', 4000],
 ];
-const CIHAZ = { telefon: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3 }, tablet: { viewport: { width: 768, height: 1024 }, deviceScaleFactor: 2.5 } };
+// Telefonda oyunlar yatay kilitli (src/kabuk/yon.ts): telefon kareleri yatay 932x430 @3x = 2796x1290 (iPhone 6.7" yatay); tablet her yönde serbest, dikey kalır
+const CIHAZ = { 'telefon-yatay': { viewport: { width: 932, height: 430 }, deviceScaleFactor: 3 }, tablet: { viewport: { width: 768, height: 1024 }, deviceScaleFactor: 2.5 } };
 (async () => {
   const br = await chromium.launch();
   for (const [tur, c] of Object.entries(CIHAZ)) {
