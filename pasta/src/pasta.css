@@ -1176,9 +1176,15 @@
 .ps-kok .ps-yer[data-yer='2'] .ps-balon.ps-karsilastir {
   margin-left: calc(var(--bw) * -1.38);
 }
-.ps-kok .ps-musteri:not(.ps-hazir) .ps-balon {
+.ps-kok .ps-musteri:not(.ps-hazir) .ps-balon,
+.ps-kok .ps-musteri.ps-balon-bekle .ps-balon {
   opacity: 0;
   animation: none;
+}
+/* görseller çözülene dek mutfak gizli (otobüs girişi üstünü örter; yarım tezgâh hiç görünmez) */
+.ps-kok .ps-gun.ps-yukleniyor > .ps-sahne,
+.ps-kok .ps-gun.ps-yukleniyor > .ps-tezgah {
+  visibility: hidden;
 }
 @keyframes ps-balon-gel {
   0% { transform: scale(0.2); opacity: 0; }
@@ -2195,10 +2201,24 @@
     grid-column: 1;
     margin-top: -56px;
   }
+  /* otobüs sütunun ortasında, iki tekerleği açıkta: Kino otobüsün arkasında (solda) çimende, Mino iki tekerleğin
+     arasında kapağın önünde; grup (Kino'nun taşan payı dahil) sütunda ortalanır */
   .ps-kok .ps-acilis-sahne {
     grid-column: 1;
     grid-row: 2;
-    width: min(50vw, calc((100vh - 160px) * 1.52));
+    width: min(42vw, calc((100vh - 170px) * 1.52));
+    transform: translateX(8%);
+  }
+  .ps-kok .ps-acilis-kino {
+    left: -19%;
+    bottom: 1%;
+    width: 25%;
+  }
+  .ps-kok .ps-acilis-mino {
+    right: auto;
+    left: 39.5%;
+    bottom: 3%;
+    width: 21%;
   }
   .ps-kok .ps-gunler {
     grid-column: 2;

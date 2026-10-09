@@ -314,7 +314,8 @@
   width: min(40cqw, 54cqh, 380px);
   aspect-ratio: 1;
   pointer-events: none;
-  z-index: 5;
+  /* standın (z 1) önünde, ön tezgâhın (z 3) arkasında: bacakları masanın ön kenarının altında kalır */
+  z-index: 2;
 }
 /*
  * Uzun telefon ekranı (dikey, dar): sahne ekran genişliğiyle sınırlı kaldığından stand ile üstteki flamalar

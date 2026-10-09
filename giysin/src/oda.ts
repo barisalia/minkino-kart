@@ -194,7 +194,9 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
       // dolap iri: gözler ekranın yüksekliğini doldurur (taç üstte görünür, çekmece altta taşabilir);
       // gövdenin sağ kenarı çentik / yuvarlak köşe payının içinde
       const dh = Math.min((H - g.alt - 10) / (GOZ_ALT - 0.02), Wg * 0.62);
-      const dx = W - g.sag - 4 - dh * 0.79;
+      // küçük yatay telefonda sağ sütundaki gözler ekranın kenarına dayanmasın: güvenli alan + 12 px pay
+      const sagPay = H < 500 ? 12 : 4;
+      const dx = W - g.sag - sagPay - dh * 0.79;
       // yer varsa (tablet) dolap ayakları yerde, bütünüyle görünür; yoksa (telefon) gözlerin altı ekranın altında
       const enAlt = H - g.alt - 6 - dh * GOZ_ALT, yerde = H * 0.99 - dh * 0.955;
       kutu(dolap, kapiPay + dx, yerde >= g.ust + 4 ? Math.min(yerde, enAlt) : enAlt, dh, dh);

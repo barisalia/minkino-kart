@@ -275,12 +275,15 @@ export function yatakOdasi(pamuk: HTMLElement, kuyruk: HTMLElement): Oda {
   const e: Record<string, HTMLElement> = {};
   const url = resim('yatak-odasi') ?? '';
   const a = YATAK.alt;
-  const alt = h('div.dd-yatak-alti', { style: `left:${px(a.x0 * W)};top:${px(a.y0 * ODA_H)};width:${px((a.x1 - a.x0) * W)};height:${px((a.y1 - a.y0) * ODA_H)}` }, h('i.dd-goz-parla'), h('i.dd-goz-parla'));
+  const alt = h('div.dd-yatak-alti', { style: `left:${px(a.x0 * W)};top:${px(a.y0 * ODA_H)};width:${px((a.x1 - a.x0) * W)};height:${px((a.y1 - a.y0) * ODA_H)}` });
   const k = YATAK.kuyruk;
   kuyruk.style.cssText = `left:${px(k.x * W)};top:${px(k.y * ODA_H)};height:${px(k.h * ODA_H)}`;
   const s = YATAK.saklan;
   pamuk.style.left = px(s.x * W);
   pamuk.style.top = px(s.y * ODA_H);
+  // saklanırken yatağın kenarının solu kırpılır: yatağın altındaki aralıktan gövdesi görünmez, yalnız kuyruğu taşar
+  // (Pamuk kutusu 255 px, ortası s.x'te)
+  pamuk.style.setProperty('--sakli-sol', px((YATAK.kenar - s.x) * W + 127.5));
   // yatağın önü: aynı resimden yatağın kendi çizgisiyle (başlık, ayak ucu, bacaklar) kesilmiş saydam katman;
   // Pamuk arkasında saklanır, patileri yatağın altındaki boşluktan, kuyruğu ayak ucunun yanından görünür
   const o = YATAK.on;

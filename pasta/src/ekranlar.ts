@@ -149,8 +149,24 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   const otobus = h('div.ps-otobus.ps-aksam-otobus.ps-acik', { html: OTOBUS });
 
   // tezgâhta günün jetonları; kumbaraya dokununca sayılarak içine düşer
-  const yigin = h('div.ps-aksam-jetonlar', {}, ...Array.from({ length: kazanc }, (_, i) => h('i.ps-aksam-jeton', { html: JETON, style: `--i:${i};--x:${(i % 6) * 15 - 37}px;--y:${-Math.floor(i / 6) * 9}px` })));
-  const kumbaraSayi = h('b.ps-kumbara-sayi', {}, String(oncesi));
+  // jeton yığını otobüsün tezgâhında (açık kapağın tahta rafı, Kino'nun yanında) durur: sıra sıra, her sıra yarım jeton
+  // kayık (tuğla gibi); sayı rozeti sayım başlayınca çıkar
+  const SIRA = 5;
+  const yigin = h(
+    'div.ps-aksam-jetonlar',
+    {},
+    ...Array.from({ length: kazanc }, (_, i) => {
+      const sira = Math.floor(i / SIRA);
+      const n = i % SIRA;
+      return h('i.ps-aksam-jeton', { html: JETON, style: `--i:${i};--n:${(n - (SIRA - 1) / 2 + (sira % 2) * 0.5).toFixed(2)};--r:${sira}` });
+    }),
+  );
+  const kumbaraSayi = h(`b.ps-kumbara-sayi${kazanc > 0 ? '.ps-sayi-gizli' : ''}`, {}, String(oncesi));
+  const sayiGoster = () => {
+    if (!kumbaraSayi.classList.contains('ps-sayi-gizli')) return;
+    kumbaraSayi.classList.remove('ps-sayi-gizli');
+    salla(kumbaraSayi, 'ps-zipla');
+  };
   const kumbara = h('button.ps-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: KUMBARA }, kumbaraSayi);
   const sayac = h('b.ps-sayac');
   // günün yıldızları: önce boş, sırayla dolar
@@ -165,7 +181,7 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     ...parkKatmanlari(GUNLER[gun].yer),
     h('div.ps-aksam-gok', { 'aria-hidden': 'true' }),
     h('div.ust-cubuk', {}, h('div', { style: 'width:56px' }), h('div.orta', {}, h('div.baslik-balon.ps-aksam-baslik', {}, h('b.ps-aksam-no', { 'aria-label': A.gun.replace('{gun}', String(gun)) }, String(gun)), gunYildiz)), sesDugmesi()),
-    h('div.ps-aksam-ic', {}, h('div.ps-aksam-sahne', {}, otobus, h('div.ps-aksam-mino', {}, mino.el), h('div.ps-aksam-kino', {}, kino.el), h('div.ps-aksam-kasa', {}, yigin, kumbara, sayac)), raf, tamam),
+    h('div.ps-aksam-ic', {}, h('div.ps-aksam-sahne', {}, otobus, h('div.ps-aksam-mino', {}, mino.el), h('div.ps-aksam-kino', {}, kino.el), yigin, h('div.ps-aksam-kasa', {}, kumbara, sayac)), raf, tamam),
     efekt_.el,
   );
   boyaUygula(el);
@@ -255,6 +271,7 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     sayildi = true;
     sayimBasladi = true;
     kumbara.classList.remove('ps-cagir');
+    sayiGoster();
     const { soz, adim } = sayim(kazanc);
     const jetonlar = [...yigin.children] as HTMLElement[];
     const hedef = efekt_.merkez(kumbara, 0.5, 0.25);
@@ -286,6 +303,7 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   }
 
   async function rafAc() {
+    sayiGoster();
     rafCiz();
     raf.hidden = false;
     tamam.hidden = false;

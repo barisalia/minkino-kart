@@ -23,6 +23,9 @@ async function surukle(page: Page, kaynak: Locator, hedef: Locator) {
   await page.mouse.move(x0, y0);
   await page.mouse.down();
   for (let i = 1; i <= 10; i++) await page.mouse.move(x0 + ((x1 - x0) * i) / 10, y0 + ((y1 - y0) * i) / 10);
+  // parmak bırakmadan önce bir kare durur (gerçek sürüklemede hep olur). Test modunda her öğede 1 ms "transition: all"
+  // var: araya kare girmezse kartın transform'u başlangıçta kalır, oyun kartı yerinde ölçer ve kareye oturtmaz.
+  await page.waitForTimeout(60);
   await page.mouse.up();
 }
 async function ipucuBul(page: Page, id: string) {
@@ -224,7 +227,16 @@ test('Dedektif Vaka 2: yardım hiç takılmaz (10 sn Kino koklar; renk izinde s�
   await expect(page.locator('.bt-mercek:not(.bt-gizlendi)')).toHaveCount(1);
   // (çıplak gözle yalnız çok soluk gölgesi ve göz kırpan yıldızı sezilir; merceğin camında bütünüyle görünür)
   expect(await page.locator('.dd-sahne [data-ipucu="ordek-izi"]').evaluate((e) => Number(getComputedStyle(e).opacity) * Number(getComputedStyle(e.querySelector('img')!).opacity))).toBeLessThan(0.3);
-  await adimBekle(page, /^kokla-(ordek-izi|iplik)$/, 15_000);
+  // (test modunda koklama adımı ~0.3 sn sürer: aralıklı yoklama kaçırabilir; adım geçmişi sayfada kaydedilir)
+  await page.evaluate(() => {
+    const v = document.querySelector('.dd-vaka')!;
+    const w = window as unknown as { __adimlar: string[] };
+    w.__adimlar = [];
+    new MutationObserver(() => w.__adimlar.push(v.getAttribute('data-adim') ?? '')).observe(v, { attributes: true, attributeFilter: ['data-adim'] });
+  });
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __adimlar: string[] }).__adimlar.some((a) => /^kokla-(ordek-izi|iplik)$/.test(a))), { timeout: 15_000 })
+    .toBe(true);
   await adimBekle(page, /^ara-kim$/, 15_000);
   expect(hatalar).toEqual([]);
 });

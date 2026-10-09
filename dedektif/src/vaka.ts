@@ -61,6 +61,9 @@ export interface VakaParam {
   adim?: Adim;
 }
 
+/** Saklanan Pamuk'un kuyruğu dışarı doğru bu kadar açılır (derece; yatağın ayak ucundan taşan tek işaret) */
+const KUYRUK_ACI = 58;
+
 /** Basit tohumlu rastgele (testlerde aynı sıra) */
 function tohumlu(t: number): () => number {
   let s = t >>> 0 || 1;
@@ -905,13 +908,13 @@ class Vaka {
     yt.e.izler.classList.add('acik');
     await this.izTakip([...yt.e.izler.querySelectorAll<HTMLElement>('.dd-iz')], 4, true);
     if (this.kapali) return;
-    // kuyruk ucu yatağın altından sallanır; gözler karanlıkta parlar
+    // yatağın altı kararır; Pamuk ayak ucunun arkasında: dışarıda yalnız kuyruğu sallanır (tek işaret: kuyruk)
     this.fon.durdur();
     yt.e.alt.classList.add('acik');
-    // Pamuk yatağın arkasında: kuyruğu ayak ucunun yanından sallanır, patileri yatağın altından görünür
     pamukKap.classList.add('acik', 'sakli');
     pamuk.ekHareket = (p, t) => {
-      p.kuyruk += Math.sin(t * 6.5) * 24;
+      // kuyruk biraz dışarı açılır (yatağın kenarından taşsın), sallanır
+      p.kuyruk += KUYRUK_ACI + Math.sin(t * 6.5) * 16;
       p.kulakSol += Math.sin(t * 3) * 4;
     };
     kuyruk.classList.add('acik');

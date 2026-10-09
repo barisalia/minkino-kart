@@ -66,12 +66,13 @@
   border: 1.5px solid rgba(90, 54, 23, 0.6);
   pointer-events: none;
 }
-/* "Nyam!" yazısı ağzın üstünde zıplayarak belirir */
+/* "Nyam!" yazısı başın sağ üst yanında zıplayarak belirir (yüzü örtmez) */
 .pz-kok .pz-m-nyam {
   position: absolute;
   z-index: 6;
-  translate: -50% 0;
-  font-size: clamp(0.95rem, 4.2vw, 1.4rem);
+  translate: -30% -50%;
+  transform-origin: 0% 100%;
+  font-size: clamp(0.8rem, 3.4vw, 1.15rem);
   font-weight: 700;
   color: #fff;
   -webkit-text-stroke: 4px var(--kontur);
