@@ -14,6 +14,7 @@ import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
+import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri } from '../../kino-otobus/src/model';
 import giysinJson from '../../content/giysin.json';
 
 interface FilmCumleleri {
@@ -213,6 +214,9 @@ export function tumCumleler(): string[] {
   dedektifKinoCumleleri().forEach(ekle);
   // Kino Ne Giysin?: Mino (anlatıcı) ve giysi adları; Kino'nun cümleleri anlatıcı yedeği olarak da
   for (const k of ['mino', 'giysi', 'kino'] as const) topla(giysinJson[k]).forEach(ekle);
+  // Kino'nun Otobüsü: Mino (anlatıcı) ve istek parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
+  kinoOtobusCumleleri().forEach(ekle);
+  kinoOtobusKinoCumleleri().forEach(ekle);
   return [...set];
 }
 
@@ -238,6 +242,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   dedektifKinoCumleleri().forEach(ekle);
   // Kino Ne Giysin?: Kino'nun cümleleri
   topla(giysinJson.kino).forEach(ekle);
+  // Kino'nun Otobüsü: Kino'nun cümleleri
+  kinoOtobusKinoCumleleri().forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

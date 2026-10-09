@@ -1,0 +1,74 @@
+{
+  "aciklama": "Kino'nun Otobüsü · Dondurma (ekip/senaryo/kino-otobus.md). mino = anlatıcı sesi (Mino); kino = Kino'nun kendi sesi; parca = istek okumasının parçaları (kalıplar kino-otobus/src/model.ts içinde açılır: {Kap} kap adı, {sayi}/{Sayi} sayı adı, {tat} tat adı, {sus} süs adı). balon ve arayuz ekranda görünür, seslendirilmez.",
+  "mino": {
+    "geldi": "Kino'nun Otobüsü geldi!",
+    "kap_sor": "Külah mı, kâse mi?",
+    "kac_top": "Kaç top?",
+    "tam": "Tam istediği gibi!",
+    "farkli": "Biraz farklı, bak!",
+    "ikisine": "İkisine aynısı!",
+    "esit": "Eşit paylaştır!",
+    "sirada": "Sırada ne var?",
+    "kumbara": "Kumbarada kaç jeton?",
+    "susleyelim": "Otobüsü süsleyelim!",
+    "bitti": "Bugünlük bu kadar!",
+    "dokun": "Şimdi buna dokun!",
+    "bana_ver": "Şimdi bana ver!",
+    "ayni": "Aynısını yap!",
+    "oruntu": "Sırada hangi renk?",
+    "bir_fazla": "Tavşanınkinden bir fazla top!",
+    "serin": "Limon ya da çilek!",
+    "dogumgunu": "Bugün benim doğum günüm!",
+    "iyi_ki": "İyi ki doğdun Mino!",
+    "hedef": {
+      "3": "Bugün üç mutlu müşteri!",
+      "4": "Bugün dört mutlu müşteri!"
+    },
+    "hedef_tamam": "Hedef tamam!"
+  },
+  "kino": {
+    "hosgeldin": "Hoş geldin!",
+    "buyurun": "Buyurun!",
+    "ham": "Ham! Yanlışmış ama güzelmiş!",
+    "kule": "Ooo, kule!",
+    "dondurma": "Dondurmaaa!",
+    "cak": "Çak!",
+    "uyku": "Zzz… dondurma…",
+    "hav": "Hav!"
+  },
+  "parca": {
+    "kap": { "kulah": "Külahta", "kase": "Kâsede", "kupa": "Kupada" },
+    "kap_sayi": "{Kap}, {sayi} top:",
+    "tat": {
+      "cilek": "çilek",
+      "vanilya": "vanilya",
+      "cikolata": "çikolata",
+      "limon": "limon",
+      "fistik": "fıstık",
+      "yabanmersini": "yaban mersini"
+    },
+    "tat_ara": "{tat},",
+    "tat_son": "{tat}!",
+    "en_alt": "En altta {tat}!",
+    "orta": "ortada {tat}!",
+    "ust": "üstte {tat}!",
+    "sos": { "cikolata": "Çikolata soslu!", "cilek": "Çilek soslu!", "karamel": "Karamel soslu!" },
+    "sus": { "kiraz": "kiraz", "gofret": "gofret", "semsiye": "şemsiye", "kalp": "kalp şeker" },
+    "sus_sayi": "{Sayi} {sus}!",
+    "serpinti": "Serpintili!",
+    "besli": ["Beş!", "On!", "On beş!", "Yirmi!"]
+  },
+  "balon": {
+    "genel": ["Mmm!", "Soğuk!", "Bayıldım!"],
+    "ordek": "Vak, limon!",
+    "pamuk": "Pembe olsun!"
+  },
+  "arayuz": {
+    "baslik_ust": "Kino'nun",
+    "baslik_alt": "Otobüsü",
+    "gun": "Gün {gun}",
+    "yas_kucuk": "3-4",
+    "yas_buyuk": "5-6",
+    "bitti": "Tamam"
+  }
+}
