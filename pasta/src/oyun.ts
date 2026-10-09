@@ -1,5 +1,5 @@
 /**
- * Mino'nun Pasta Otobüsü — gömülebilir giriş noktası (pazar/src/oyun.ts gibi).
+ * Mino ile Kino'nun Pasta Otobüsü — gömülebilir giriş noktası (pazar/src/oyun.ts gibi).
  *   const kapat = oyunuBaslat(kokEleman, { cikis: () => anaMenuyeDon() });
  *
  * Test / gösterim: ?test=1&ekran=gun&gun=3 (doğrudan güne), &sifirla=1 (kaydı sıfırlar), &jeton=20,

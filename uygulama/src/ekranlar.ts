@@ -201,8 +201,11 @@ export function menuEkrani(app: Uygulama): Ekran {
   const oyunlar = menuOyunlari(uygulamada);
   const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
   const kartlar = oyunlar.map((k, i) => {
-    const govde = h('span.ug-kart-govde', {}, kartResmi(k), h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
-    const a = h('a.ug-kart', { href: sayfaAdresi(k.adres), 'data-oyun': k.id, 'aria-label': k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
+    const resim = kartResmi(k);
+    // uzun adın baş kısmı resmin sol üstünde küçük tabela (kartın boyu değişmez)
+    if (k.ust) resim.append(h('span.ug-kart-ust', { 'aria-hidden': 'true' }, k.ust));
+    const govde = h('span.ug-kart-govde', {}, resim, h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
+    const a = h('a.ug-kart', { href: sayfaAdresi(k.adres), 'data-oyun': k.id, 'aria-label': k.ust ? `${k.ust} ${k.ad}` : k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
     kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');

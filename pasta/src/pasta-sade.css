@@ -975,3 +975,142 @@
 .ps-kok .ps-kumbara-sayi.ps-sayi-gizli {
   visibility: hidden;
 }
+/* Kino jetonları beşli kuleler yapar (mino-kino-pasta.md §1c): yığından kuleye zıplayarak geçer; kule tabanı tezgâh
+   çizgisinde, her kat bir öncekinin üstüne yarım jetondan az biner. --t: kule (ortaya göre), --k: kat (0-4),
+   --ara: kuleler arası (jeton eni cinsinden; kule çoksa sıklaşır) */
+.ps-kok .ps-aksam-sahne > .ps-aksam-jetonlar .ps-aksam-jeton.ps-kulede {
+  left: calc(50% + (var(--t) * var(--ara, 1) - 0.5) * 30%);
+  translate: 0 calc(var(--k) * -24%);
+  transition:
+    left 0.24s cubic-bezier(0.3, 1.4, 0.5, 1),
+    translate 0.24s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.ps-kok .ps-aksam-jetonlar.ps-hemen .ps-aksam-jeton.ps-kulede {
+  transition: none;
+}
+/* kulenin tabanında temas gölgesi */
+.ps-kok .ps-aksam-sahne > .ps-aksam-jetonlar .ps-aksam-jeton.ps-kulede[data-k='0']::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 13%;
+  border-radius: 50%;
+  background: rgba(58, 18, 16, 0.28);
+  z-index: -1;
+}
+
+/* ---------------------------------------------------------------- başlık: "Mino ile Kino'nun" + iki yüz rozeti */
+.ps-kok .ps-logo-ust {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22em;
+}
+.ps-kok .ps-yuz-rozet {
+  position: relative;
+  flex: none;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff4dd;
+  box-shadow:
+    0 0 0 0.09em var(--ps-k, #3a1210),
+    0 0.08em 0 0.09em rgba(58, 18, 16, 0.3);
+  -webkit-text-stroke: 0;
+}
+.ps-kok .ps-yuz-mino {
+  background: #ffe1c2;
+  transform: rotate(4deg);
+}
+.ps-kok .ps-yuz-kino {
+  background: #d9efff;
+  transform: rotate(4deg);
+}
+/* kırpma: karakterin kafası rozetin ortasına gelir */
+.ps-kok .ps-yuz-ic {
+  position: absolute;
+  display: block;
+}
+.ps-kok .ps-yuz-mino .ps-yuz-ic {
+  width: 170%;
+  left: -30%;
+  top: -36%;
+}
+.ps-kok .ps-yuz-kino .ps-yuz-ic {
+  width: 175%;
+  aspect-ratio: 1;
+  left: -37%;
+  top: -14%;
+}
+.ps-kok .ps-yuz-ic > * {
+  width: 100%;
+}
+
+/* yatay tablette başlık sol üstte, geri düğmesinin hemen yanında: uzayan üst satırın Mino rozeti düğmeye binmesin */
+@media (orientation: landscape) and (max-aspect-ratio: 16/10) {
+  .ps-kok .ps-acilis .ps-logo {
+    translate: 40px 0;
+  }
+}
+/* açılış dikeyde: Mino ile Kino iki tekerleğin arasında, otobüsün önünde yan yana (tekerlekler açıkta; eskiden
+   ikisi de birer tekerleğin önünde duruyordu). Tekerlekler tuvalin %15-31 ve %70-86'sında. */
+@media (orientation: portrait) {
+  .ps-kok .ps-acilis-kino {
+    left: 29%;
+    bottom: 0;
+    width: 25%;
+  }
+  .ps-kok .ps-acilis-mino {
+    right: auto;
+    left: 49.5%;
+    bottom: 1%;
+    width: 20.5%;
+  }
+}
+/* giriş: Mino ile Kino kapağın penceresinde yan yana (gövdenin içinde; bel altı tezgâhın arkasında kırpılır),
+   tekerlekler önde ve açıkta */
+.ps-kok .ps-giris-mino {
+  left: 33%;
+}
+.ps-kok .ps-giris-kino {
+  position: absolute;
+  left: 49%;
+  bottom: 34%;
+  width: 21%;
+  aspect-ratio: 1;
+  clip-path: inset(-40% -20% 27% -20%);
+  transform: translateY(40%) scale(0.4);
+  opacity: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 0.08s,
+    opacity 0.2s 0.08s;
+}
+.ps-kok .ps-giris-kino.ps-goster {
+  transform: none;
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- Mino ile Kino (mino-kino-pasta.md) */
+/* Kino'nun hareket kabı: yerindeki kutuyu doldurur; hop ve koşu bunu taşır (yerin kendisi CSS'le konur, değişmez) */
+.ps-kok .ps-kino-hareket {
+  width: 100%;
+  height: 100%;
+}
+/* Kino bir iş yaparken (karşılama, servis koşusu, çak, zıplama) üstüne dokunulamaz: dokunuş arkasındakine gider */
+.ps-kok .ps-kino-yer[data-kino-is] svg * {
+  pointer-events: none;
+}
+/* çak yıldızları */
+.ps-kok .ps-cak-yildiz {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+}
+.ps-kok .ps-cak-yildiz svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

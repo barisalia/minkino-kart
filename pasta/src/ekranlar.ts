@@ -1,10 +1,11 @@
 /**
- * Mino'nun Pasta Otobüsü: açılış (otobüs parkta, üç günlük tablo; her günde yıldızlar) ve akşam (günün yıldızları,
+ * Mino ile Kino'nun Pasta Otobüsü: açılış (otobüs parkta, üç günlük tablo; her günde yıldızlar) ve akşam (günün yıldızları,
  * kumbara sayımı, dükkân rafı: pastacı şapkası, otobüs boyaları).
  */
 import P from '../../content/pasta.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import { Mino } from '../../src/mino/mino';
+import { Karakter } from '../../src/karakter/karakter';
 import { bekle, h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
@@ -16,6 +17,7 @@ import { boyaUygula, minoSapkaTak, parkKatmanlari, unluKino } from './gun';
 import { gunBitti, kaydet, kayit, toplamYildiz } from './kayit';
 import { alinabilir, BOYA, GUN_SAYISI, GUNLER, oynanirMi, RAF, satinAl, sayim, type Gun, type RafUrunu, type Yer } from './model';
 import { ses } from './sesler';
+import { KinoIsci } from './kino-is';
 
 const A = P.arayuz;
 const YER_ADI: Record<Yer, string> = { park: A.park, okul: A.okul, plaj: A.plaj, kar: A.kar, senlik: A.senlik };
@@ -37,10 +39,22 @@ function gunResmi(g: number): string[] {
 /** Üç yıldız yuvası (kazanılanlar dolu) */
 const yildizlar = (n: number, sinif = 'ps-yildizlar') => h(`div.${sinif}`, { 'aria-label': `${n} yıldız`, 'data-yildiz': String(n) }, ...[0, 1, 2].map((i) => h(`i${i < n ? '.dolu' : ''}`, { html: yildizSvg() })));
 
-function logo(): HTMLElement {
+/**
+ * Başlık: "Mino ile Kino'nun / Pasta Otobüsü"; üst satırın iki yanında yuvarlak yüz rozetleri (solda Mino, sağda
+ * Kino): iskeletlerin kendisi, kafası rozete kırpılır (yeni çizim yok; göz kırpar, nefes alır).
+ */
+function logo(mino: Mino, kino: Karakter): HTMLElement {
   const harfler = [...A.baslik_alt].map((c, i) => h('span', { style: `--i:${i}` }, c));
-  return h('div.ps-logo', { role: 'img', 'aria-label': `${A.baslik_ust} ${A.baslik_alt}` }, h('span.ps-logo-ust', {}, A.baslik_ust), h('span.ps-logo-alt', {}, ...harfler));
+  const rozet = (kim: 'mino' | 'kino', e: HTMLElement) => h(`span.ps-yuz-rozet.ps-yuz-${kim}`, { 'data-yuz': kim }, h('span.ps-yuz-ic', {}, e));
+  return h(
+    'div.ps-logo',
+    { role: 'img', 'aria-label': `${A.baslik_ust} ${A.baslik_alt}` },
+    h('span.ps-logo-ust', {}, rozet('mino', mino.el), h('span.ps-logo-ust-yazi', {}, A.baslik_ust), rozet('kino', kino.el)),
+    h('span.ps-logo-alt', {}, ...harfler),
+  );
 }
+/** "Mino ile Kino'nun Pasta Otobüsü!" açılışta logo belirince bir kez (oturum başına) söylenir */
+let basligiSoyledi = false;
 
 /** Kumbara rozeti: domuzcuk ve içindeki jeton sayısı */
 function kumbaraRozet(): { el: HTMLElement; sayi: HTMLElement } {
@@ -55,6 +69,15 @@ export function acilisEkrani(app: Uygulama): Ekran {
   const kino = unluKino();
   const minoCanli = new MinoCanli(mino, { urunVar: () => true, musteriVar: () => false });
   const selam = window.setTimeout(() => mino.tepki('selam'), sure(500));
+  // başlık rozetlerinin yüzleri (ayrı, küçük kopyalar)
+  const rozetMino = new Mino();
+  const rozetKino = new Karakter('kino', h('div'));
+  // logo belirince Mino başlığı bir kez söyler
+  const baslikSoz = window.setTimeout(() => {
+    if (basligiSoyledi) return;
+    basligiSoyledi = true;
+    void konus(P.mino.baslik_soyle);
+  }, sure(700));
   mino.el.addEventListener('pointerdown', () => mino.tepki('zipla'));
   kino.el.addEventListener('pointerdown', () => {
     efekt.dokunma();
@@ -104,7 +127,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     {},
     ...parkKatmanlari('park'),
     h('div.ust-cubuk', {}, cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => cikis(), 'kucuk') : h('div', { style: 'width:56px' }), h('div.orta'), yildizRozet, kumbara.el, sesDugmesi()),
-    h('div.ps-acilis-ic', {}, logo(), h('div.ps-acilis-sahne', {}, otobus, h('div.ps-acilis-mino', {}, mino.el), h('div.ps-acilis-kino', {}, kino.el)), gunlerSerit),
+    h('div.ps-acilis-ic', {}, logo(rozetMino, rozetKino), h('div.ps-acilis-sahne', {}, otobus, h('div.ps-acilis-mino', {}, mino.el), h('div.ps-acilis-kino', {}, kino.el)), gunlerSerit),
   );
   // sıradaki gün görünsün (şerit yana kayar)
   requestAnimationFrame(() => {
@@ -118,6 +141,9 @@ export function acilisEkrani(app: Uygulama): Ekran {
     el,
     kapat() {
       clearTimeout(selam);
+      clearTimeout(baslikSoz);
+      rozetMino.kapat();
+      rozetKino.kapat();
       minoCanli.kapat();
       mino.kapat();
       kino.kapat();
@@ -146,19 +172,28 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
   const mino = new Mino();
   minoSapkaTak(mino);
   const kino = unluKino();
+  const kinoYer = h('div.ps-aksam-kino', {}, kino.el);
   const otobus = h('div.ps-otobus.ps-aksam-otobus.ps-acik', { html: OTOBUS });
 
   // tezgâhta günün jetonları; kumbaraya dokununca sayılarak içine düşer
   // jeton yığını otobüsün tezgâhında (açık kapağın tahta rafı, Kino'nun yanında) durur: sıra sıra, her sıra yarım jeton
   // kayık (tuğla gibi); sayı rozeti sayım başlayınca çıkar
+  // Kino sonra bunları beşli kulelere dizer (--t kule, --k kat): sayım süresi değişmez, dizme yıldızlar dolarken olur
   const SIRA = 5;
+  const kuleSayisi = Math.ceil(kazanc / SIRA);
+  const ara = kuleSayisi > 1 ? Math.min(1.05, 3.4 / (kuleSayisi - 1)) : 1;
   const yigin = h(
     'div.ps-aksam-jetonlar',
-    {},
+    { style: `--ara:${ara.toFixed(3)}` },
     ...Array.from({ length: kazanc }, (_, i) => {
       const sira = Math.floor(i / SIRA);
       const n = i % SIRA;
-      return h('i.ps-aksam-jeton', { html: JETON, style: `--i:${i};--n:${(n - (SIRA - 1) / 2 + (sira % 2) * 0.5).toFixed(2)};--r:${sira}` });
+      return h('i.ps-aksam-jeton', {
+        html: JETON,
+        'data-k': String(n),
+        'data-kule': String(sira),
+        style: `--i:${i};--n:${(n - (SIRA - 1) / 2 + (sira % 2) * 0.5).toFixed(2)};--r:${sira};--t:${(sira - (kuleSayisi - 1) / 2).toFixed(2)};--k:${n}`,
+      });
     }),
   );
   const kumbaraSayi = h(`b.ps-kumbara-sayi${kazanc > 0 ? '.ps-sayi-gizli' : ''}`, {}, String(oncesi));
@@ -181,7 +216,7 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     ...parkKatmanlari(GUNLER[gun].yer),
     h('div.ps-aksam-gok', { 'aria-hidden': 'true' }),
     h('div.ust-cubuk', {}, h('div', { style: 'width:56px' }), h('div.orta', {}, h('div.baslik-balon.ps-aksam-baslik', {}, h('b.ps-aksam-no', { 'aria-label': A.gun.replace('{gun}', String(gun)) }, String(gun)), gunYildiz)), sesDugmesi()),
-    h('div.ps-aksam-ic', {}, h('div.ps-aksam-sahne', {}, otobus, h('div.ps-aksam-mino', {}, mino.el), h('div.ps-aksam-kino', {}, kino.el), yigin, h('div.ps-aksam-kasa', {}, kumbara, sayac)), raf, tamam),
+    h('div.ps-aksam-ic', {}, h('div.ps-aksam-sahne', {}, otobus, h('div.ps-aksam-mino', {}, mino.el), kinoYer, yigin, h('div.ps-aksam-kasa', {}, kumbara, sayac)), raf, tamam),
     efekt_.el,
   );
   boyaUygula(el);
@@ -200,6 +235,47 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     // çocuk kumbaraya erken dokunduysa sayım başladı: yıldız sözü sayıları kesmesin
     if (kapandi || sayimBasladi) return;
     await konus(P.mino.yildiz[yildiz - 1]);
+  }
+
+  /**
+   * Kino jetonları beşli kuleler yapar: jetonlar sırayla yığından kuleye zıplar, her 5 jetonda kule "tık" diye
+   * tamamlanır. Yıldızlar dolarken olur (ek süre yok); çocuk kumbaraya erken dokunursa dizme hemen biter.
+   */
+  const kinoIs = new KinoIsci(kino, kinoYer);
+  const kuleZaman: number[] = [];
+  let kulelerTamam = kazanc === 0;
+  const kuleBitir = () => {
+    kuleZaman.forEach(clearTimeout);
+    kuleZaman.length = 0;
+    yigin.classList.add('ps-hemen');
+    for (const j of yigin.children) j.classList.add('ps-kulede');
+    kinoIs.istifBitir();
+    kulelerTamam = true;
+    yigin.dataset.kule = 'tamam';
+  };
+  function kuleKur() {
+    if (kulelerTamam) return;
+    const jetonlar = [...yigin.children] as HTMLElement[];
+    const adim = sure(70);
+    kinoIs.istifle('sag', adim * jetonlar.length + 240);
+    jetonlar.forEach((j, i) =>
+      kuleZaman.push(
+        window.setTimeout(() => {
+          if (kapandi) return;
+          j.classList.add('ps-kulede');
+          // kule tamam (5. jeton ya da son jeton): tık + minik parıltı
+          if (i % SIRA === SIRA - 1 || i === jetonlar.length - 1) {
+            ses.kule(Math.floor(i / SIRA));
+            const [x, y] = efekt_.merkez(j, 0.5, 0.2);
+            efekt_.parilti(x, y, 3, 0.35);
+          }
+          if (i === jetonlar.length - 1) {
+            kulelerTamam = true;
+            yigin.dataset.kule = 'tamam';
+          }
+        }, adim * (i + 1)),
+      ),
+    );
   }
 
   let sayildi = kazanc === 0;
@@ -272,12 +348,15 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     sayimBasladi = true;
     kumbara.classList.remove('ps-cagir');
     sayiGoster();
+    // Kino daha diziyorsa kuleler hemen tamamlanır (sayım bekletilmez)
+    if (!kulelerTamam) kuleBitir();
     const { soz, adim } = sayim(kazanc);
     const jetonlar = [...yigin.children] as HTMLElement[];
     const hedef = efekt_.merkez(kumbara, 0.5, 0.25);
     let sayilan = 0;
     for (let i = 0; i < adim.length && !kapandi; i++) {
-      const grup = jetonlar.splice(-adim[i]);
+      // beşer sayarken bütün kuleler soldan sırayla (Beş! On! …), tek tek sayarken en üstteki jeton: hiçbir jeton havada kalmaz
+      const grup = kazanc > 10 ? jetonlar.splice(0, adim[i]) : jetonlar.splice(-adim[i]);
       const soyle = soz[i] ? konus(soz[i]) : Promise.resolve();
       await Promise.all(
         grup.map(async (j, k) => {
@@ -341,6 +420,8 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
 
   // açılış: "Bugünlük bu kadar!" söylendi (gün ekranında); şimdi yıldızlar, sonra kumbara
   void (async () => {
+    // Kino jetonları dizmeye başlar (yıldızlarla aynı anda)
+    kuleZaman.push(window.setTimeout(() => !kapandi && kuleKur(), sure(200)));
     await bekle(sure(300));
     if (kapandi) return;
     await yildizGoster();
@@ -357,7 +438,9 @@ export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yild
     el,
     kapat() {
       kapandi = true;
+      kuleZaman.forEach(clearTimeout);
       mino.kapat();
+      kinoIs.kapat();
       kino.kapat();
     },
   };

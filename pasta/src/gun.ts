@@ -1,5 +1,5 @@
 /**
- * Mino'nun Pasta Otobüsü: bir gün (tek ekran). Üstte pencere (sırada en çok 2 müşteri; yanlarında resimli sipariş
+ * Mino ile Kino'nun Pasta Otobüsü: bir gün (tek ekran). Üstte pencere (sırada en çok 2 müşteri; yanlarında resimli sipariş
  * balonu), altta tezgâh: HAMUR + tepsi, KALIPLAR, FIRIN (3 göz, hepsi açık), KREMA, SÜSLER (Gün 2+), SERVİS TABAĞI.
  *
  * Akış (hiç bekleme yok, işler paralel): hamur kabına dokun (her dokunuş bir top, hemen düşer) → kalıba dokun ("pof",
@@ -63,6 +63,7 @@ import {
 } from './model';
 import { PastaMusteri, partiCizimi, siparisResmi } from './musteri';
 import { ses } from './sesler';
+import { KinoIsci } from './kino-is';
 
 const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
 /** test ya da gösterim (?onizleme=1): durum ve sipariş verisi ekrana yazılır */
@@ -182,7 +183,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   minoSapkaTak(mino);
   // Mino ve Kino tezgâhın katmanında: yatayda Mino pencerenin solunda, Kino sağdaki rafta; dikeyde ikisi de üst katta
   const minoYer = h('div.ps-mino-yer', {}, mino.el);
-  const kinoYer = h('div.ps-kino-yer', { 'data-karakter-kap': 'kino' }, kino.el);
+  const kinoYer = h('div.ps-kino-yer', { 'data-karakter-kap': 'kino' }, h('div.ps-kino-hareket', {}, kino.el));
+  const kinoIs = new KinoIsci(kino, kinoYer);
   kinoYer.addEventListener('pointerdown', () => {
     efekt.dokunma();
     void kino.oynat('sevin', 900);
@@ -367,20 +369,44 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   const minoCanli = new MinoCanli(mino, { urunVar: () => !!tabak, musteriVar: () => musteriler.length > 0 });
   let kinoSonSoz = 0;
   /** Kino'nun kuyruğu pervane olur, iki kez hoplar */
-  let pervaneBas = -9;
-  kino.ekHareket = (pz) => {
-    const g = performance.now() / 1000 - pervaneBas;
-    if (g < 1.4) {
-      const z = Math.max(0, Math.min(1, g / 0.15, (1.4 - g) / 0.25));
-      pz.kuyruk += 40 * Math.sin(g * 40) * z;
-      pz.y -= 4 * Math.abs(Math.sin(g * 9)) * z;
-      pz.kulakSol += 10 * Math.sin(g * 18) * z;
-      pz.kulakSag += 10 * Math.sin(g * 18 + 1) * z;
-    }
+  const kinoPervane = () => kinoIs.pervane();
+  /** Kino'nun binmemesi gereken kutular: fırın, tezgâhtaki bütün eşyalar, Mino */
+  const kinoEngeller = () => [firin, ...tezgah.querySelectorAll('button'), mino.el].map((e) => e.getBoundingClientRect());
+  /** Mino ekranda Kino'nun hangi yanında */
+  const minoYonu = (): 'sol' | 'sag' => {
+    const a = mino.el.getBoundingClientRect();
+    const b = kinoIs.kutu();
+    return a.left + a.width / 2 < b.left + b.width / 2 ? 'sol' : 'sag';
   };
-  const kinoPervane = () => {
-    pervaneBas = performance.now() / 1000;
-    if (kino.ifadeVar('heyecan')) kino.ifade('heyecan', 1400);
+  /**
+   * Mutlu müşteride Mino ile Kino çak yapar: iki pati havada (0.5 sn), "şak!", üç yıldız. Bekletmez. Yan yanaysalar
+   * (dikey) patiler buluşur; uzaksalar (yatay) ikisi de patisini birbirine kaldırır, yıldızlar iki patiden çıkar.
+   */
+  const cak = () => {
+    const yon = minoYonu();
+    // Mino'ya doğru sıçrar (Mino engel sayılmaz: çakta patiler buluşur), fırın ve istasyonlar engel
+    kinoIs.cak(yon, 500, kinoEngeller().slice(0, -1), el.getBoundingClientRect());
+    // Mino'nun patileri sevinçle havada (tepki 'sevinc', servisle başladı). Mino.kol() kullanılmaz: kalkık kol için
+    // poz katmanlarını (~90 KB) Mino'ya ekler, sonraki her dokunuş ağırlaşıyordu (ölçüldü: dokunuş başı ~250 ms).
+    sonra(200, () => {
+      ses.sak();
+      const k = kinoIs.kutu();
+      const m = mino.el.getBoundingClientRect();
+      const e = efekt_.kutu();
+      const kx = (yon === 'sag' ? k.left + k.width * 0.78 : k.left + k.width * 0.22) - e.left;
+      const ky = k.top + k.height * 0.12 - e.top;
+      const mx = (yon === 'sag' ? m.left + m.width * 0.22 : m.left + m.width * 0.78) - e.left;
+      const my = m.top + m.height * 0.12 - e.top;
+      if (Math.hypot(kx - mx, ky - my) < k.width * 1.6) efekt_.yildizlar((kx + mx) / 2, Math.min(ky, my), 3);
+      else {
+        efekt_.yildizlar(kx, ky, 3);
+        efekt_.yildizlar(mx, my, 3);
+      }
+    });
+    if (performance.now() - kinoSonSoz > 2500) {
+      kinoSonSoz = performance.now();
+      void soyle(P.kino.cak, 'kino', false);
+    }
   };
   /** Kino bir şeyi yer: parça Kino'nun ağzına uçar, ham ham */
   const kinoYer_ = async (resim: string, [x, y]: [number, number], soz?: string) => {
@@ -419,6 +445,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     const m = new PastaMusteri(sip);
     if (ozel) m.el.dataset.siparis = JSON.stringify(sip);
     m.el.dataset.sira = String(gelen);
+    // karşılama dönüşümlü: bir müşteriye Mino, bir müşteriye Kino
+    const kinoKarsilar = gelen % 2 === 1;
+    m.el.dataset.karsilayan = kinoKarsilar ? 'kino' : 'mino';
     musteriler.push(m);
     yerindeki[yer] = m;
     gelen++;
@@ -431,9 +460,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     await m.gel(bas);
     if (kapandi) return;
     sonGelis = performance.now();
-    // Mino siparişi bir kez okur
     mino.bak(-0.6);
-    await soyle([P.mino.hosgeldin, ...okuma(m.sip)]);
+    if (kinoKarsilar) {
+      // Kino pencereye hop atar, patisini sallar: "Hoş geldin!"; siparişi yine Mino bir kez okur
+      kinoIs.selam(m.el.getBoundingClientRect().left + m.el.offsetWidth / 2);
+      void soyle(P.kino.hosgeldin, 'kino');
+      await soyle(okuma(m.sip));
+    } else await soyle([P.mino.hosgeldin, ...okuma(m.sip)]);
     mino.bak(0);
   }
 
@@ -537,6 +570,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     m.el.classList.add('ps-bitti');
     adimGuncelle();
     const hedef = efekt_.merkez(m.el, 0.5, 0.45);
+    // tabak aynı yolda, aynı sürede uçar; Kino yolun ilk yarısında yanından koşar, pencerede "Buyurun!" (tabak beklemez)
+    kinoIs.servis(hedef[0] + efekt_.kutu().left, sure(460), kinoEngeller(), el.getBoundingClientRect());
+    if (performance.now() - kinoSonSoz > 2500) {
+      kinoSonSoz = performance.now();
+      void soyle(P.kino.buyurun, 'kino', false);
+    }
     await efekt_.ucur(h('div.ps-ucan-tabak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, hedef, { ms: 460, kavis: -90, boy1: 0.85 });
     if (kapandi) return;
     const sonuc = siparisSonucu(m.sip, m.verilen);
@@ -555,6 +594,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       ekranSalla(el, 2.5);
       m.mutlu(2600);
       mino.tepki('sevinc');
+      cak();
       void soyle(P.mino.tam);
     } else {
       // farklı olan şey balonda bir an parlar; yine de yer ve sever
@@ -588,7 +628,16 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   }
   /** Gün tahtası: servis edilen müşterinin kalbi dolar (tam aynıysa dolu, farklıysa açık) */
   let servisSayisi = 0;
+  let hedefTuttu = false;
   function hedefCiz(ayni: boolean) {
+    // günün hedefi tutunca Mino ile Kino birlikte zıplar (bir kez; çak bittikten sonra)
+    if (!hedefTuttu && mutlu >= ayar.hedef) {
+      hedefTuttu = true;
+      sonra(sure(600), () => {
+        mino.tepki('zipla');
+        kinoIs.zipla();
+      });
+    }
     const k = hedefEl.children[servisSayisi++];
     k?.classList.add(ayni ? 'dolu' : 'yarim');
     hedefEl.dataset.mutlu = String(mutlu);
@@ -1151,7 +1200,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   onYuk.hazir = otobusYuk.hazir.then(() => {
     const m = onYukle(mutfakUrl, TEST_MODU ? 3000 : 7000);
     onYuk.resimler.push(...m.resimler);
-    return m.hazir;
+    // Kino'nun iskeleti (SVG'si ayrı iner) de: mutfak onsuz açılmaz (en çok görsel sınırı kadar)
+    const iskelet = Promise.race([kino.hazir, new Promise<void>((r) => setTimeout(r, TEST_MODU ? 3000 : 7000))]);
+    return Promise.all([m.hazir, iskelet]).then(() => undefined);
   });
   el.classList.add('ps-yukleniyor');
   void onYuk.hazir.then(() => el.classList.remove('ps-yukleniyor'));
@@ -1161,7 +1212,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     sonDokunus = performance.now();
   });
   void soyle(P.mino.geldi);
-  if (ozel) (window as unknown as Record<string, unknown>).__pastaGun = { kuyruk, musteriler, gozler, get tabak() { return tabak; } };
+  if (ozel) (window as unknown as Record<string, unknown>).__pastaGun = { kuyruk, musteriler, gozler, kinoIs, cak, kinoEngeller, get tabak() { return tabak; } };
 
   return {
     el: dis,
@@ -1177,6 +1228,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       tepsiSurukleBitir();
       minoCanli.kapat();
       mino.kapat();
+      kinoIs.kapat();
       kino.kapat();
       musteriler.forEach((m) => m.kapat());
       onYuk.resimler.length = 0;
@@ -1191,16 +1243,20 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
 function otobusGirisi(ekran: HTMLElement, otobusHazir: Promise<void>, hazir: Promise<void>, bitti: () => void): { kapat: () => void } {
   const mino = new Mino();
   minoSapkaTak(mino);
-  const otobus = h('div.ps-otobus', { html: OTOBUS }, h('div.ps-giris-mino', {}, mino.el));
+  // Mino ile Kino kapağın penceresinde, gövdenin içinde (tekerlekler önde, açıkta)
+  const kino = unluKino();
+  const otobus = h('div.ps-otobus', { html: OTOBUS }, h('div.ps-giris-mino', {}, mino.el), h('div.ps-giris-kino', {}, kino.el));
   const katman = h('div.ps-giris', { 'aria-hidden': 'true' }, ...parkKatmanlari((ekran.dataset.yer ?? 'park') as Yer), h('div.ps-giris-sahne', {}, otobus));
   ekran.append(katman);
   const sakin = AZ_HAREKET || TEST_MODU;
   const minoKopya = otobus.querySelector('.ps-giris-mino')!;
+  const kinoKopya = otobus.querySelector('.ps-giris-kino')!;
   let kapandi = false;
   let bitirildi = false;
   const kapat = () => {
     kapandi = true;
     mino.kapat();
+    kino.kapat();
     katman.remove();
   };
   // mutfak görselleri hazır olmadan giriş kalkmaz (dokunulsa da: hazır olunca hemen geçer)
@@ -1253,7 +1309,9 @@ function otobusGirisi(ekran: HTMLElement, otobusHazir: Promise<void>, hazir: Pro
     if (kapandi) return;
     ses.pof();
     minoKopya.classList.add('ps-goster');
+    kinoKopya.classList.add('ps-goster');
     mino.tepki('selam');
+    void kino.oynat('sevin', 900);
     await new Promise((r) => setTimeout(r, 1100));
     if (kapandi) return;
     // görseller daha inmediyse Mino el sallamayı sürdürür (en çok onYukle sınırı kadar)

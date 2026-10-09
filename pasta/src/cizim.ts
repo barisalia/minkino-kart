@@ -1,5 +1,5 @@
 /**
- * Mino'nun Pasta Otobüsü: çizimler (SVG metni). Gemini görseli gelen eşyada görsel kullanılır (resimler.ts:
+ * Mino ile Kino'nun Pasta Otobüsü: çizimler (SVG metni). Gemini görseli gelen eşyada görsel kullanılır (resimler.ts:
  * assets/pasta/<ad>.webp); gelmeyenlerde kod çizimi yedektir. Yedek stil: ince, sıcak kahve kontur #6b3a1f (Barış,
  * 2026-10-02: "siyah siyah duruyor"), yumuşak gölge, beyaz parlama.
  *

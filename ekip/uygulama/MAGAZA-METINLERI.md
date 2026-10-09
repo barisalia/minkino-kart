@@ -48,7 +48,7 @@ Minkino, 3-6 yaş için hazırlanmış Türkçe ve sesli eğitici bir oyun düny
 
 • **Çiz Canlansın:** Resmini çiz, boya, çizdiğin balık yüzsün, araba gitsin, kelebek uçsun! Yaşa göre yol takibi, noktaları birleştirme ya da bakarak çizim.
 
-• **Mino'nun Pasta Otobüsü:** Müşterinin resimli siparişine bak, aynısını yap: hamur, kalıp, fırın, krema, süs. Saymak, renkler, şekiller ve zaman, mutfakta!
+• **Mino ile Kino'nun Pasta Otobüsü:** Mino ile Kino'yla birlikte müşterinin resimli siparişine bak, aynısını yap: hamur, kalıp, fırın, krema, süs. Saymak, renkler, şekiller ve zaman, mutfakta!
 
 • **Kino Ne Giysin?:** Pencereden bak, havayı gör, dolaptan doğru giysileri seç; dört mevsim boyunca. Karda şort mu? Kino titremeye başlar!
 
@@ -102,7 +102,7 @@ Minkino is a voice-powered learning world for children aged 3-6. Curious kitten 
 
 • **Draw & Come Alive:** Draw a picture, color it in, and watch your fish swim, your car drive and your butterfly fly! Age-based modes: trace the path, connect the dots, or draw by looking.
 
-• **Mino's Bakery Bus:** Look at the customer's picture order and make the very same treat: dough, cookie cutter, oven, icing, sprinkles. Counting, colors, shapes and timing, right in the kitchen!
+• **Mino & Kino's Bakery Bus:** Team up with Mino and Kino, look at the customer's picture order and make the very same treat: dough, cookie cutter, oven, icing, sprinkles. Counting, colors, shapes and timing, right in the kitchen!
 
 • **What Should Kino Wear?:** Look out of the window, check the weather and pick the right clothes from the wardrobe, in all four seasons. Shorts in the snow? Kino starts to shiver!
 
@@ -136,8 +136,8 @@ Terms of Use: [link]
 ---
 
 ## 5. Yenilikler (ilk sürüm)
-- **TR:** "Minkino'nun ilk sürümü! Kartlar, Mino'nun Pazarı, 4 Sesli Macera, 6 çizgi film, Çiz Canlansın ve Mino'nun Pasta Otobüsü sizi bekliyor. İyi eğlenceler!"
-- **EN:** "Minkino's very first release! Cards, Mino's Market, 4 Voice Adventures, 6 cartoons, Draw & Come Alive and Mino's Bakery Bus are waiting for you. Have fun!"
+- **TR:** "Minkino'nun ilk sürümü! Kartlar, Mino'nun Pazarı, 4 Sesli Macera, 6 çizgi film, Çiz Canlansın ve Mino ile Kino'nun Pasta Otobüsü sizi bekliyor. İyi eğlenceler!"
+- **EN:** "Minkino's very first release! Cards, Mino's Market, 4 Voice Adventures, 6 cartoons, Draw & Come Alive and Mino & Kino's Bakery Bus are waiting for you. Have fun!"
 
 ---
 
@@ -150,7 +150,7 @@ Terms of Use: [link]
 | 4 | Dedektif Mino: pati izi panoda, şüpheli kartları | **İpucunu bul, vakayı çöz!** | **Find clues, solve the case!** |
 | 5 | Sesli Maceralar: Ege'nin kukla gösterisi (ayı ve civciv kukla) | **Sesinle oyna: üfle, söyle!** | **Play with your voice!** |
 | 6 | Çizgi film karesi (Mino'nun Karpuzu) | **Eğlenceli, eğitici çizgi filmler** | **Fun, educational cartoons** |
-| 7 | Pasta Otobüsü: sipariş ortası | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
+| 7 | Mino ile Kino'nun Pasta Otobüsü: sipariş ortası | **Reklamsız ve güvenli** | **No ads. Safe and simple.** |
 
 > 2026-10-08: set yenilendi (Okula Hazırım çıktı; Kino Ne Giysin? ve Dedektif Mino girdi). Ham kareler `ekip/illustrator/magaza-cekim.cjs`, çerçeve ve başlık `ekip/illustrator/magaza-ekran.cjs`, Play tablet `scripts/uygulama/play-tablet-ekran.cjs`. **Boyutlar:** telefonda oyunlar yatay kilitli (src/kabuk/yon.ts), bu yüzden telefon setleri YATAY: `iphone-2796x1290` (App Store 6.7") ve `android-1920x1080` (Play telefon); tabletler dikey: `ipad-2048x2732`, `play-tablet-1440x2560`. Eski dikey telefon klasörleri (iphone-1290x2796, android-1080x1920) silindi; mağazadaki eski dikey telefon görselleri de kaldırılıp yenileri yüklenmeli. 5. kare: telefonda kukla gösterisi yakın çekim, tablette gösteri sonu (Ege güldü).
 
@@ -167,13 +167,13 @@ Terms of Use: [link]
   - Tüm Sesli Maceralar
   - Bütün çizgi filmler
   - Tüm kart paketleri
-  - Pasta Otobüsü'nün bütün günleri
+  - Mino ile Kino'nun Pasta Otobüsü'nün bütün günleri
   - Yeni bölümler geldikçe
 - EN:
   - All Voice Adventures
   - Every cartoon
   - All card packs
-  - Every Bakery Bus day
+  - Every day of Mino & Kino's Bakery Bus
   - New episodes as they arrive
 
 **Planlar:**
@@ -227,7 +227,7 @@ Terms of Use: [link]
 | **Çizgi Filmler** | **Sosyal-duygusal ve değerler:** her film tek bir güzel dersle biter: paylaşmak, özür dilemek, yardım etmek, sıra beklemek, "lütfen" demek, oyundan sonra toplamak. **Türkçe:** dinleme ve anlama. | **Social-emotional and values:** each one-minute cartoon ends with a single gentle lesson: sharing, saying sorry, helping, waiting your turn, saying "please", tidying up after play. **Language:** listening comprehension. |
 | **Çiz Canlansın** | **Sanat:** çizme, boyama, renkleri seçme, yaratıcılık. **Hareket / ince motor:** yol takibi (3 yaş), noktaları birleştirme (4), bakarak çizim (5), hafızadan çizim (6); kalem kontrolü ve okuma-yazmaya hazırlık için çizgi çalışması. **Şekiller.** | **Art:** drawing, colouring, choosing colours, creativity. **Fine motor skills:** path tracing (age 3), dot-to-dot (4), copying (5), drawing from memory (6); pencil control and pre-writing line practice. **Shapes.** |
 | **Dedektif Mino** | **Bilişsel:** gözlem, ipucu toplama, neden-sonuç, akıl yürütme (hangi iz kimin?), sınıflama (pati izi, tüy rengi). **Uzamsal düşünme:** izleri odalar arasında takip etme. **Sosyal-duygusal:** hata yapanı affetmek, özür dilemek. **Türkçe:** hikâyeyi sıralama (4 kareli çizgi roman). | **Thinking skills:** observation, gathering clues, cause and effect, reasoning (whose footprint is this?), classifying (paw prints, fur colours). **Spatial thinking:** following a trail from room to room. **Social-emotional:** forgiving a mistake, saying sorry. **Language:** sequencing a story (4-panel comic). |
-| **Mino'nun Pasta Otobüsü** | **Matematik:** sayma, şekiller (kalıplar), renkler, örüntü ve sıra (adım adım tarif), zaman (fırında bekleme). **Bilişsel:** resimli siparişi aynen yapma (görsel eşleme, çalışan bellek). **Sosyal-duygusal:** müşteriyi bekletmeme, sabır, emeğin sonucunu paylaşma. | **Math:** counting, shapes (cookie cutters), colours, patterns and sequence (a recipe step by step), time (waiting for the oven). **Thinking skills:** recreating a picture order exactly (visual matching, working memory). **Social-emotional:** looking after customers, patience, sharing what you made. |
+| **Mino ile Kino'nun Pasta Otobüsü** (EN: Mino & Kino's Bakery Bus) | **Matematik:** sayma, şekiller (kalıplar), renkler, örüntü ve sıra (adım adım tarif), zaman (fırında bekleme). **Bilişsel:** resimli siparişi aynen yapma (görsel eşleme, çalışan bellek). **Sosyal-duygusal:** müşteriyi bekletmeme, sabır, emeğin sonucunu paylaşma. | **Math:** counting, shapes (cookie cutters), colours, patterns and sequence (a recipe step by step), time (waiting for the oven). **Thinking skills:** recreating a picture order exactly (visual matching, working memory). **Social-emotional:** looking after customers, patience, sharing what you made. |
 
 **Bütün oyunlarda ortak / Across all games**
 - TR: Okuma bilmeyen çocuk için her yönerge sesli okunur ve ikonla gösterilir; yanlış cevap cezalandırılmaz, ipucuyla doğruya yönlendirilir; yaşa göre zorluk (3-4 / 5-6). Reklam yok, satın alma ve dış bağlantılar ebeveyn kapısının arkasında.

@@ -205,7 +205,7 @@ export function tumCumleler(): string[] {
   }
   // Mino'nun Pazarı konuşmaları (kalıplar ürün/sayı/renk ile açılmış hâlde)
   pazarCumleleri().forEach(ekle);
-  // Mino'nun Pasta Otobüsü: Mino, müşteriler, sipariş parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
+  // Mino ile Kino'nun Pasta Otobüsü: Mino, müşteriler, sipariş parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
   pastaCumleleri().forEach(ekle);
   pastaKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Mino (anlatıcı), kart hayvanları ve Pamuk (tonlu); Kino'nun cümleleri anlatıcı yedeği olarak da
@@ -232,7 +232,7 @@ export function karakterCumleleri(): Record<string, string[]> {
   topla((maceraElektrikJson as Record<string, unknown>).kino).forEach(ekle);
   // Salıncak Kimin?: "kino" bölümü
   topla((maceraSalincakJson as Record<string, unknown>).kino).forEach(ekle);
-  // Mino'nun Pasta Otobüsü: Kino'nun cümleleri
+  // Mino ile Kino'nun Pasta Otobüsü: Kino'nun cümleleri
   pastaKinoCumleleri().forEach(ekle);
   // Dedektif Mino: Kino'nun cümleleri
   dedektifKinoCumleleri().forEach(ekle);

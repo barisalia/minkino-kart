@@ -129,6 +129,17 @@ export const ses = {
     ton(700, 0, 0.12, 'sine', 0.08, 1100);
     ton(900, 0.1, 0.12, 'sine', 0.07, 1300);
   },
+  /** Mino ile Kino çak yapar: iki pati havada "şak!" (kısa alkış patlaması + parlak nota) */
+  sak() {
+    gurultu(0, 0.09, 2600, 1200, 0.3, 1.2);
+    ton(NOTA(84), 0.02, 0.22, 'triangle', 0.12);
+    ton(NOTA(91), 0.06, 0.26, 'sine', 0.08);
+  },
+  /** akşam: beşli jeton kulesi tamamlandı, "tık" (her kulede bir nota yukarı) */
+  kule(sira = 0) {
+    ton(NOTA(76 + [0, 4, 7, 12, 16][sira % 5]), 0, 0.16, 'triangle', 0.15);
+    gurultu(0, 0.04, 5000, 3500, 0.06, 3);
+  },
   /** henüz değil: hafif "tık tık" */
   degil() {
     ton(520, 0, 0.06, 'sine', 0.1, 480);

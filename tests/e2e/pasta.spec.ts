@@ -37,6 +37,7 @@ async function zigzagKaydir(page: Page) {
 async function parlayaniIzle(page: Page, gun: number, kare?: (n: number) => Promise<void>) {
   const adimlar = new Set<string>();
   let zigzag = 0;
+  let dokunus = 0;
   for (let n = 0; n < 400; n++) {
     if (await page.locator('.ps-aksam').isVisible().catch(() => false)) break;
     if (await zigzagKaydir(page)) {
@@ -52,10 +53,11 @@ async function parlayaniIzle(page: Page, gun: number, kare?: (n: number) => Prom
     adimlar.add(d.adim);
     await kare?.(n);
     await hedef.first().click({ timeout: 3000 }).catch(() => undefined);
+    dokunus++;
     await page.waitForTimeout(60);
   }
   await expect(page.locator('.ps-aksam')).toBeVisible({ timeout: 20000 });
-  return { adimlar, zigzag, gun };
+  return { adimlar, zigzag, gun, dokunus };
 }
 
 test('Pasta Otobüsü: üç gün yalnız parlayan işi izleyerek baştan sona; her sipariş tam aynı', async ({ page }) => {
@@ -313,5 +315,251 @@ test('Pasta Otobüsü akşam: jetonlar ekran açılınca kaydedilir; erken kumba
   await expect(page.locator('.ps-kumbara')).not.toHaveClass(/ps-cagir/);
   const jeton = await page.evaluate(() => (window as unknown as { __pasta: { kayit: { jeton: number } } }).__pasta.kayit.jeton);
   expect(jeton).toBe(8);
+  // Kino'nun kuleleri erken dokunuşta hemen tamamlanır (sayım beklemez)
+  await expect(page.locator('.ps-aksam-jetonlar')).toHaveAttribute('data-kule', 'tamam');
+  expect(hatalar).toEqual([]);
+});
+
+// ================================================================ Mino ile Kino'nun Pasta Otobüsü (mino-kino-pasta.md)
+// Barış'ın 9 eski şikâyeti tekrar etmesin: her biri aşağıda ayrı bir denetim (§2 tablosu).
+
+type Kutu = { x: number; y: number; width: number; height: number };
+const kesisir = (a: Kutu, b: Kutu) => !(a.x + a.width <= b.x + 1 || b.x + b.width <= a.x + 1 || a.y + a.height <= b.y + 1 || b.y + b.height <= a.y + 1);
+
+/**
+ * Sayfaya her karede Kino'yu denetleyen gözcü kurar: Kino'nun kutusu (çizimi) hiçbir fırın gözüne, tezgâh eşyasına,
+ * üst çubuğa ya da müşteri balonuna binmez (#2, #6). Kino bir iş yaparken (data-kino-is) hamura dokunulur: dokunuş
+ * hemen işler, tepsiye top düşer (#1 bekleme yok).
+ */
+async function kinoGozcusu(page: Page) {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __kino: { ihlal: string[]; isler: string[]; dokunus: Record<string, number>; kilit: string[] } };
+    w.__kino = { ihlal: [], isler: [], dokunus: {}, kilit: [] };
+    const kes = (a: DOMRect, c: DOMRect) => !(a.right <= c.left + 1 || c.right <= a.left + 1 || a.bottom <= c.top + 1 || c.bottom <= a.top + 1);
+    let sonIs = '';
+    const tur = () => {
+      const yer = document.querySelector<HTMLElement>('.ps-gun .ps-kino-yer');
+      const svg = yer?.querySelector('svg');
+      if (yer && svg && !document.querySelector('.ps-giris')) {
+        const k = svg.getBoundingClientRect();
+        const is = yer.dataset.kinoIs ?? '';
+        // fırın, gözleri, üst çubuk, balonlar: hiç değmez
+        for (const e of document.querySelectorAll('.ps-goz, .ps-firin-dik, .ps-ust button, .ps-gun-etiket, .ps-musteri.ps-hazir .ps-balon')) {
+          const r = e.getBoundingClientRect();
+          if (r.width && kes(k, r)) w.__kino.ihlal.push(`${is || 'duruyor'}: ${e.getAttribute('aria-label') ?? e.className}`);
+        }
+        // tezgâhtaki eşyalar: Kino'nun gövdesi binmez (ayakları rafın arkasındaki kâsenin kepçesini sıyırabilir:
+        // dikey örtüşme Kino boyunun %25'inden az; kino-is.ts → DIKEY_PAY)
+        for (const e of document.querySelectorAll('.ps-tezgah button')) {
+          const r = e.getBoundingClientRect();
+          const dikey = Math.min(k.bottom, r.bottom) - Math.max(k.top, r.top);
+          const yatay = Math.min(k.right, r.right) - Math.max(k.left, r.left);
+          if (dikey > k.height * 0.25 && yatay > 1) w.__kino.ihlal.push(`${is || 'duruyor'}: ${e.getAttribute('aria-label')}`);
+        }
+        if (is && is !== sonIs) {
+          w.__kino.isler.push(is);
+          // iş sürerken hamura dokun: top hemen tepsiye düşmeli (tepsi doluysa top seker, Kino yer: o da işlemdir)
+          const tepsi = document.querySelector<HTMLElement>('.ps-tepsi-ic');
+          const hamur = document.querySelector<HTMLElement>('.ps-hamur-kabi');
+          const tepsiDolu = document.querySelector<HTMLElement>('.ps-tepsi')?.dataset.hazir === '1';
+          if (tepsi && hamur && !tepsiDolu && !document.querySelector('.ps-panel')) {
+            const once = Number(tepsi.dataset.adet ?? 0);
+            const r = hamur.getBoundingClientRect();
+            const ust = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+            hamur.click();
+            const sonra = Number(tepsi.dataset.adet ?? 0);
+            if (ust?.closest('.ps-hamur-kabi') && sonra === once + 1) w.__kino.dokunus[is] = (w.__kino.dokunus[is] ?? 0) + 1;
+            else if (sonra === once) {
+              /* tepsi sınırda: top seker (zararsız) */
+            } else w.__kino.kilit.push(is);
+            if (!ust?.closest('.ps-hamur-kabi')) w.__kino.kilit.push(`${is}: hamurun üstü kapalı`);
+          }
+        }
+        sonIs = is;
+      }
+      requestAnimationFrame(tur);
+    };
+    requestAnimationFrame(tur);
+  });
+}
+const kinoSonuc = (page: Page) => page.evaluate(() => (window as unknown as { __kino: { ihlal: string[]; isler: string[]; dokunus: Record<string, number>; kilit: string[] } }).__kino);
+
+test('Mino ile Kino: Kino karşılar, servis eder, çak yapar, hedefte zıplar; hiçbiri bekletmez ve fırına, istasyona, balona binmez; Gün 1 uzamaz', async ({ page }) => {
+  test.setTimeout(240_000);
+  const hatalar = hataTopla(page);
+  await kinoGozcusu(page);
+  await page.goto('./pasta/?test=1&sifirla=1&ekran=gun&gun=1');
+  await expect(page.locator('.ps-gun')).toBeVisible();
+  // #8 ilk karede tezgâh boş değil: giriş kalkar kalkmaz tezgâhın bütün resimleri çözülmüş, Mino ile Kino çizili
+  await expect(page.locator('.ps-giris')).toHaveCount(0, { timeout: 15000 });
+  const ilk = await page.evaluate(() => ({
+    yukleniyor: document.querySelector('.ps-gun')!.classList.contains('ps-yukleniyor'),
+    eksik: [...document.querySelectorAll<HTMLImageElement>('.ps-tezgah img, .ps-firin-dik img')].filter((i) => !i.complete || !i.naturalWidth).length,
+    kino: !!document.querySelector('.ps-kino-yer .kr-iskeletli svg'),
+    mino: !!document.querySelector('.ps-mino-yer svg'),
+  }));
+  expect(ilk).toEqual({ yukleniyor: false, eksik: 0, kino: true, mino: true });
+  // Gün 1 uzamaz. Önceki ölçüm (bu iş öncesi ve sonrası aynı makinede, 844×390, test modu): 24 dokunuş; süre boş
+  // makinede ~5 sn, yüklü makinede ~25 sn (ikisi de aynı). Dokunuş sayısı artmaz; süre bol payla sınırlı (bekleme
+  // eklenseydi her müşteride saniyeler eklenirdi).
+  const bas = Date.now();
+  const g1 = await parlayaniIzle(page, 1);
+  const sure = Date.now() - bas;
+  expect(g1.dokunus, 'Gün 1 dokunuş sayısı').toBeLessThanOrEqual(24);
+  expect(sure, 'Gün 1 süresi').toBeLessThan(60_000);
+  const k = await kinoSonuc(page);
+  // karşılama dönüşümlü (4 müşteriden 2'si), servis her müşteride, mutlu müşteride çak, hedef tutunca zıplama
+  for (const is of ['selam', 'servis', 'cak', 'zipla']) expect(k.isler, `Kino işi: ${is}`).toContain(is);
+  expect(k.isler.filter((x) => x === 'selam').length).toBe(2);
+  // #1 Kino'nun işleri sırasında dokunuş hemen işler
+  expect(k.kilit).toEqual([]);
+  // (tepsi o an doluysa dokunuş denenmez; gün boyunca en az iki işte denenmiş olmalı)
+  expect(Object.values(k.dokunus).reduce((a, b) => a + b, 0), `Kino işi sırasında hamur: ${JSON.stringify(k.dokunus)}`).toBeGreaterThanOrEqual(2);
+  // #2, #6 Kino hiçbir fırın gözüne, istasyona, UI'ye, balona binmez (her karede)
+  expect([...new Set(k.ihlal)]).toEqual([]);
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino ile Kino: ad ve başlık rozetleri; açılışta ve girişte tekerlekler açıkta (karakterler örtmez), Mino ile Kino pencerede', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  /** tekerleğin ortası ve dört yanı tekerleğin kendisi (gövde, Mino, Kino örtmez) */
+  const tekerAcik = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('.ps-otobus:not(.ps-raf-otobus) .ps-ob-teker')].flatMap((t) => {
+        const r = t.getBoundingClientRect();
+        if (!r.width) return [];
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        return [
+          [0, 0],
+          [0.32, 0],
+          [-0.32, 0],
+          [0, 0.32],
+          [0, -0.32],
+        ]
+          .map(([dx, dy]) => document.elementFromPoint(cx + dx * r.width, cy + dy * r.height))
+          .filter((e) => !e?.closest('.ps-ob-teker, .ps-ob-teker-isik'))
+          .map((e) => e?.closest('[class]')?.className.toString() ?? 'yok');
+      }),
+    );
+  for (const [w, hh] of [
+    [844, 390],
+    [932, 430],
+    [667, 375],
+    [390, 844],
+    [1024, 768],
+  ] as const) {
+    await page.setViewportSize({ width: w, height: hh });
+    await page.goto('./pasta/?test=1&sifirla=1');
+    await expect(page.locator('.ps-logo')).toHaveAttribute('aria-label', "Mino ile Kino'nun Pasta Otobüsü");
+    await expect(page.locator('.ps-logo-ust-yazi')).toHaveText("Mino ile Kino'nun");
+    await expect(page.locator('.ps-yuz-rozet .kr-iskeletli svg, .ps-yuz-rozet svg').first()).toBeVisible();
+    await expect(page.locator('.ps-yuz-rozet')).toHaveCount(2);
+    // başlık ekrana sığar, üst çubuğun düğmelerine binmez
+    const logo = (await page.locator('.ps-logo-ust').boundingBox())!;
+    expect(logo.x, `${w}x${hh} başlık sol`).toBeGreaterThanOrEqual(0);
+    expect(logo.x + logo.width, `${w}x${hh} başlık sağ`).toBeLessThanOrEqual(w);
+    for (const d of await page.locator('.ps-acilis .ust-cubuk button, .ps-acilis .ust-cubuk .ps-yildiz-rozet, .ps-acilis .ust-cubuk .ps-kumbara-rozet').all()) {
+      const b = await d.boundingBox();
+      if (b) expect(kesisir(logo, b), `${w}x${hh} başlık üst çubuğa biniyor`).toBe(false);
+    }
+    await page.waitForTimeout(400);
+    expect(await tekerAcik(), `${w}x${hh} açılış tekerlekleri`).toEqual([]);
+  }
+  // #9 giriş (gerçek hız): otobüs gelir, kapak açılır, Mino ile Kino pencerede; tekerlekler önde
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('./pasta/?onizleme=1&sifirla=1&ekran=gun&gun=1');
+  await expect(page.locator('.ps-giris-kino.ps-goster')).toHaveCount(1, { timeout: 15000 });
+  await expect(page.locator('.ps-giris-mino.ps-goster')).toHaveCount(1);
+  await page.waitForTimeout(600);
+  expect(await tekerAcik(), 'giriş tekerlekleri').toEqual([]);
+  // Mino ile Kino kapağın açıklığında (gövdenin içinde), tekerleklerin üstünde
+  const kapak = (await page.locator('.ps-giris .ps-ob-tezgah').boundingBox())!;
+  for (const s of ['.ps-giris-mino', '.ps-giris-kino']) {
+    const b = (await page.locator(`${s} svg`).first().boundingBox())!;
+    expect(b.x + b.width / 2, `${s} pencerede`).toBeGreaterThan(kapak.x);
+    expect(b.x + b.width / 2, `${s} pencerede`).toBeLessThan(kapak.x + kapak.width);
+  }
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino ile Kino: istasyonlar Kino eklenmeden önceki boyunda (#3); Kino fırına, istasyona binmez (#2)', async ({ page }) => {
+  // bu işten önce ölçüldü (Gün 2, test modu): [aria-label | sınıf, en, boy] px
+  const ONCE: Record<string, [string, number, number][]> = {
+    '844x390': [['yuvarlak', 72, 72], ['yildiz', 72, 72], ['kalp', 72, 72], ['cilek', 72, 76], ['cikolata', 72, 76], ['muz', 72, 76], ['Kasa', 83, 78], ['Hamur', 115, 96], ['Tepsi', 124, 72], ['ps-firin-dik', 186, 301], ['Fırın 1', 160, 85], ['Fırın 2', 160, 83], ['Fırın 3', 160, 84], ['pembe', 72, 108], ['mavi', 72, 108], ['sari', 72, 108], ['Servis tabağı', 137, 76]],
+    '390x844': [['yuvarlak', 64, 64], ['yildiz', 64, 64], ['kalp', 64, 64], ['cilek', 64, 68], ['cikolata', 64, 68], ['muz', 64, 68], ['Kasa', 77, 73], ['Hamur', 93, 77], ['Tepsi', 96, 64], ['ps-firin-dik', 164, 265], ['Fırın 1', 141, 75], ['Fırın 2', 141, 73], ['Fırın 3', 141, 74], ['pembe', 64, 99], ['mavi', 64, 99], ['sari', 64, 99], ['Servis tabağı', 125, 67]],
+    '1024x768': [['yuvarlak', 95, 95], ['yildiz', 95, 95], ['kalp', 95, 95], ['cilek', 95, 101], ['cikolata', 95, 101], ['muz', 95, 101], ['Kasa', 110, 103], ['Hamur', 152, 127], ['Tepsi', 164, 95], ['ps-firin-dik', 205, 332], ['Fırın 1', 176, 94], ['Fırın 2', 176, 91], ['Fırın 3', 176, 93], ['pembe', 95, 143], ['mavi', 95, 143], ['sari', 95, 143], ['Servis tabağı', 181, 100]],
+  };
+  for (const [ad, liste] of Object.entries(ONCE)) {
+    const [w, hh] = ad.split('x').map(Number);
+    await page.setViewportSize({ width: w, height: hh });
+    await page.goto('./pasta/?test=1&sifirla=1&ekran=gun&gun=2');
+    await expect(page.locator('.ps-musteri.ps-hazir').first()).toBeVisible({ timeout: 20000 });
+    await page.waitForTimeout(300);
+    const simdi = await page.evaluate(() =>
+      [...document.querySelectorAll('.ps-tezgah button, .ps-firin-dik')].map((e) => {
+        const r = e.getBoundingClientRect();
+        return [e.getAttribute('aria-label') || e.className, Math.round(r.width), Math.round(r.height)] as [string, number, number];
+      }),
+    );
+    expect(simdi.length, `${ad} istasyon sayısı`).toBe(liste.length);
+    for (let i = 0; i < liste.length; i++) {
+      expect(simdi[i][0], `${ad} sıra`).toBe(liste[i][0]);
+      expect(Math.abs(simdi[i][1] - liste[i][1]), `${ad} ${liste[i][0]} en`).toBeLessThanOrEqual(1);
+      expect(Math.abs(simdi[i][2] - liste[i][2]), `${ad} ${liste[i][0]} boy`).toBeLessThanOrEqual(1);
+    }
+    // Kino'nun kutusu hiçbir fırın gözünün dokunma alanıyla kesişmez; gövdesi hiçbir istasyona binmez
+    const kino = (await page.locator('.ps-kino-yer svg').boundingBox())!;
+    for (const e of await page.locator('.ps-goz, .ps-firin-dik').all()) {
+      const b = (await e.boundingBox())!;
+      expect(kesisir(kino, b), `${ad} Kino fırının üstünde`).toBe(false);
+    }
+    for (const e of await page.locator('.ps-tezgah button').all()) {
+      const b = (await e.boundingBox())!;
+      const dikey = Math.min(kino.y + kino.height, b.y + b.height) - Math.max(kino.y, b.y);
+      const yatay = Math.min(kino.x + kino.width, b.x + b.width) - Math.max(kino.x, b.x);
+      expect(dikey > kino.height * 0.25 && yatay > 1, `${ad} Kino ${await e.getAttribute('aria-label')} üstünde`).toBe(false);
+    }
+  }
+});
+
+test('Mino ile Kino akşam: Kino jetonları beşli kuleler yapar; kuleler tezgâhın çizgisine oturur (#9 havada jeton yok); Mino beşer sayar', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  for (const [w, hh] of [
+    [844, 390],
+    [390, 844],
+    [1024, 768],
+  ] as const) {
+    await page.setViewportSize({ width: w, height: hh });
+    await page.goto('./pasta/?test=1&sifirla=1&ekran=aksam&gun=1&kazanc=16&jeton=0');
+    await expect(page.locator('.ps-aksam-jetonlar')).toHaveAttribute('data-kule', 'tamam', { timeout: 10000 });
+    await page.waitForTimeout(400);
+    const kuleler = await page.evaluate(() => {
+      // tezgâhın üst yüzü: otobüs çiziminde (viewBox 640×420, ortalanmış) tahta rafın orta çizgisi y = 250
+      const s = document.querySelector('.ps-aksam-otobus svg')!.getBoundingClientRect();
+      const olcek = Math.min(s.width / 640, s.height / 420);
+      const tz = { top: s.top + (s.height - 420 * olcek) / 2 + 250 * olcek };
+      const js = [...document.querySelectorAll<HTMLElement>('.ps-aksam-jeton')];
+      const kule = new Map<string, { alt: number; n: number; x: number }>();
+      for (const j of js) {
+        const r = j.getBoundingClientRect();
+        const k = kule.get(j.dataset.kule!) ?? { alt: 0, n: 0, x: r.left };
+        k.n++;
+        if (j.dataset.k === '0') k.alt = r.bottom;
+        kule.set(j.dataset.kule!, k);
+      }
+      return { tz: tz.top, kuleler: [...kule.values()], hepsiKulede: js.every((j) => j.classList.contains('ps-kulede')) };
+    });
+    expect(kuleler.hepsiKulede).toBe(true);
+    expect(kuleler.kuleler.map((k) => k.n)).toEqual([5, 5, 5, 1]);
+    for (const k of kuleler.kuleler) expect(Math.abs(k.alt - kuleler.tz), `${w}x${hh} kule tabanı tezgâhta`).toBeLessThanOrEqual(2);
+    // kuleler yan yana, iç içe değil
+    for (let i = 1; i < kuleler.kuleler.length; i++) expect(kuleler.kuleler[i].x).toBeGreaterThan(kuleler.kuleler[i - 1].x + 4);
+  }
+  // sayım: kumbaraya dokununca kuleler soldan sırayla gider ("Beş! On! On beş!"), artan en son
+  await page.locator('.ps-kumbara').click();
+  await expect(page.locator('.ps-raf')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('.ps-sayac')).toHaveText('16');
+  await expect(page.locator('.ps-aksam-jeton')).toHaveCount(0);
   expect(hatalar).toEqual([]);
 });
