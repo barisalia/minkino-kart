@@ -19,12 +19,22 @@
   mix-blend-mode: normal;
   rotate: 14deg;
 }
+/* üç dosyada ad ve mühür küçülür (dosya daha dar): ad sığar, mühür adın üstüne binmez */
+.dd-kok .dd-dosyalar.dd-uc .dd-klasor-ad {
+  font-size: clamp(11px, 1.6vmin + 5px, 22px);
+  right: 30%;
+}
+.dd-kok .dd-dosyalar.dd-uc .dd-muhur.dd-muhur-kucuk {
+  top: 6%;
+  right: -4%;
+  font-size: clamp(11px, 1.4vmin + 6px, 20px);
+}
 @media (orientation: landscape) {
   .dd-kok .dd-dosyalar.dd-uc {
     gap: clamp(10px, 1.8vw, 24px);
   }
   .dd-kok .dd-dosyalar.dd-uc .dd-klasor {
-    width: min(17.5vw, 36vh);
+    width: min(18.5vw, 40vh);
   }
 }
 .dd-kok .dd-vk-kapak.dd-vk-agac {

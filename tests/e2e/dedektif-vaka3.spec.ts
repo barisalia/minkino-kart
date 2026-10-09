@@ -251,6 +251,15 @@ for (const [en, boy] of [
         expect(k.y + k.height, `${ad} alt`).toBeLessThanOrEqual(boy + 1);
       }
     };
+    // ipucu: ortası ekranda, üst çubuğun altında (kenarı taşabilir: büyüteç camın herhangi bir yerinde görür)
+    const ortada = async (l: Locator, ad: string) => {
+      for (const k of await l.evaluateAll((x) => x.map((e) => e.getBoundingClientRect().toJSON() as DOMRect))) {
+        expect(k.x + k.width / 2, `${ad} yatay`).toBeGreaterThan(8);
+        expect(k.x + k.width / 2, `${ad} yatay`).toBeLessThan(en - 8);
+        expect(k.y + k.height / 2, `${ad} dikey`).toBeGreaterThan(60);
+        expect(k.y + k.height / 2, `${ad} dikey`).toBeLessThan(boy - 8);
+      }
+    };
     for (const [a, bekle, ipuclari] of [
       ['sayi', /^ara-sayi$/, ['un']],
       ['cikis', /^ara-cikis$/, ['kirinti']],
@@ -261,7 +270,7 @@ for (const [en, boy] of [
       await page.goto(`./dedektif/?test=1&ekran=vaka3&adim=${a}`);
       await adimBekle(page, bekle);
       await page.waitForTimeout(200);
-      for (const id of ipuclari) await icinde(page.locator(`.dd-sahne [data-ipucu="${id}"]`), `${a}/${id}`);
+      for (const id of ipuclari) await ortada(page.locator(`.dd-sahne [data-ipucu="${id}"]`), `${a}/${id}`);
       await page.screenshot({ path: `tests/screens/vaka3-${a}-${en}x${boy}.png` });
       for (const id of ipuclari) await ipucuBul(page, id);
       if (a === 'sayi') {
@@ -277,11 +286,11 @@ for (const [en, boy] of [
     }
     await page.goto('./dedektif/?test=1&ekran=vaka3&adim=kovuk');
     await adimBekle(page, /^ara-kovuk$/);
-    await icinde(page.locator('.dd-sahne [data-ipucu="kuyruk"]'), 'kuyruk');
+    await ortada(page.locator('.dd-sahne [data-ipucu="kuyruk"]'), 'kuyruk');
     await page.goto('./dedektif/?test=1&ekran=vaka3&adim=final');
     await adimBekle(page, /^final-say$/);
     await icinde(page.locator('.dd-sahne .dd-v3-final-kurabiye'), 'final kurabiye');
-    await icinde(page.locator('.dd-sahne .dd-v3-findik'), 'Fındık');
+    await ortada(page.locator('.dd-sahne .dd-v3-findik'), 'Fındık');
     await page.screenshot({ path: `tests/screens/vaka3-final-${en}x${boy}.png` });
     expect(hatalar).toEqual([]);
   });

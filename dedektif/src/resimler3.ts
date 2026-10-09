@@ -58,7 +58,7 @@ const KAYNAK = import.meta.glob<string>(
     '../../assets/parti/sapka.webp',
     '../../assets/parti/flama.webp',
     '../../assets/renkler/balon.webp',
-    '../../assets/giysin/kart-kino.webp',
+    '../../assets/dedektif2/kino-sarilma.webp',
     '../../assets/dedektif/poz-mino-rahat.webp',
   ],
   { eager: true, query: '?url', import: 'default' },
@@ -388,8 +388,8 @@ export const YER_TUTUCU: Record<string, Tarif> = {
       await sahneKirp(t, 'v3/agac', [0.3, 0.42, 0.78, 0.98]);
       await t.resim('v3/findik-sarilma', t.w * 0.36, t.h * 0.42, t.w * 0.32, t.w * 0.32);
       await t.resim('dosya:dedektif/poz-mino-rahat', t.w * 0.02, t.h * 0.3, t.w * 0.32);
-      await t.resim('dosya:giysin/kart-kino', t.w * 0.68, t.h * 0.34, t.w * 0.3);
-      await t.resim('v3/palamut', t.w * 0.78, t.h * 0.24, t.w * 0.09, t.w * 0.09, { don: 18 });
+      await t.resim('dosya:dedektif2/kino-sarilma', t.w * 0.66, t.h * 0.3, t.w * 0.32);
+      await t.resim('v3/palamut', t.w * 0.77, t.h * 0.385, t.w * 0.06, t.w * 0.06, { don: 14 });
     },
   },
   // E5: Vaka Dosyam kapağı: ağaç, kovuktan bakan yanakları şiş Fındık
@@ -514,7 +514,7 @@ export const TURETILEN: Record<string, Tarif> = {
   // Halka 5: kovuğun içi (raflar ve kurabiyeler), kurabiyelere yakın, kar tanesine yakın
   'foto-kiler': { w: 1024, h: 768, ciz: (t) => sahneKirp(t, 'v3/kiler-ic', [0.3, 0.3, 0.92, 0.9]) },
   'foto-kiler-kurabiye': kare(640, (t) => sahneKirp(t, 'v3/kiler-ic', [0.45, 0.5, 0.69, 0.79])),
-  'foto-kar-tanesi': { w: 512, h: 768, ciz: (t) => sahneKirp(t, 'v3/kiler-ic', [0.35, 0.2, 0.49, 0.46]) },
+  'foto-kar-tanesi': kare(640, (t) => sahneKirp(t, 'v3/kiler-ic', [0.34, 0.19, 0.5, 0.48])),
   // Fındık'ın tabelası (finalde pencerede): yüzü ve soru balonu (yazı yok)
   tabela: {
     w: 768,
@@ -522,7 +522,7 @@ export const TURETILEN: Record<string, Tarif> = {
     async ciz(t) {
       await t.svg(svgSar(768, 640, `<rect x="30" y="40" width="708" height="560" rx="40" fill="#fff4dc" stroke="#5a3820" stroke-width="18"/><rect x="62" y="72" width="644" height="496" rx="26" fill="none" stroke="#f49ab8" stroke-width="12"/><path d="M440 110 C440 70 700 70 700 160 C700 240 560 250 520 240 L470 290 L486 230 C450 214 440 190 440 160 Z" fill="#fff" stroke="#5a3820" stroke-width="12" stroke-linejoin="round"/><path d="M548 140 C548 112 600 108 604 136 C606 156 578 160 576 182" stroke="#5a3820" stroke-width="16" fill="none" stroke-linecap="round"/><circle cx="576" cy="212" r="10" fill="#5a3820"/>`), 0, 0, t.w, t.h);
       // yüz: Fındık'ın başı (kırpım)
-      await t.resim('v3/findik', t.w * 0.08, t.h * 0.2, t.w * 0.46, t.w * 0.46, { kirp: [0.0, 0.2, 0.7, 0.9] });
+      await t.resim('v3/findik', t.w * 0.06, t.h * 0.16, t.w * 0.56, t.w * 0.56);
     },
   },
 };
