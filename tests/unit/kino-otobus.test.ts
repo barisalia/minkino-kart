@@ -38,7 +38,7 @@ import {
   type Yas,
   type Yuva,
 } from '../../kino-otobus/src/model';
-import { surumTablosu, VARLIK, yerTutucular } from '../../kino-otobus/src/varliklar';
+import { DOLAP_GOZLERI, dolapYerleri, surumTablosu, VARLIK, yerTutucular } from '../../kino-otobus/src/varliklar';
 
 const GUNLER_L: Gun[] = [1, 2, 3];
 const YASLAR: Yas[] = ['kucuk', 'buyuk'];
@@ -266,5 +266,26 @@ describe('Kino’nun Otobüsü: sözler, erişim, görseller', () => {
     expect(tablo.get('kulah')).toBe('u4');
     expect(yerTutucular(tablo)).not.toContain('top-cilek');
     expect(yerTutucular(tablo)).toContain('otobus');
+  });
+  it('dolap v2 (tek sıra 4 göz): her tat kabının dokunma kutusu en az 72u, kutular çakışmaz', () => {
+    // tezgâhta dolap 172u boyunda (kino-otobus.css → .ko-alt-kat 180u - 8u), eni görselin oranında
+    const boy = 172;
+    const en = boy * DOLAP_GOZLERI.oran;
+    for (const n of [3, 6]) {
+      const y = dolapYerleri(n);
+      expect(y).toHaveLength(n);
+      for (const k of y) {
+        expect((k.en / 100) * en).toBeGreaterThanOrEqual(72);
+        expect((k.boy / 100) * boy).toBeGreaterThanOrEqual(72);
+        expect(k.kapBoy).toBeLessThanOrEqual(100);
+      }
+      for (let i = 0; i < n; i++)
+        for (let j = i + 1; j < n; j++) {
+          const a = y[i], b = y[j];
+          const yatay = a.sol + a.en <= b.sol + 0.01 || b.sol + b.en <= a.sol + 0.01;
+          const dikey = a.ust + a.boy <= b.ust + 0.01 || b.ust + b.boy <= a.ust + 0.01;
+          expect(yatay || dikey, `${i}-${j}`).toBe(true);
+        }
+    }
   });
 });

@@ -83,10 +83,19 @@ export function dondurmaciKino(kirazSapka: boolean): Karakter {
   return kino;
 }
 
-/** iskeletin 2048 tuvalinde görselin kutusu */
+/**
+ * iskeletin 2048 tuvalinde görselin kutusu (kutu görselin en-boy oranında). Kino'nun ölçüleri giysin'in giysi
+ * tablosundan (giysin/src/giysi-yer.json: bere 482-1461 × 24-666, mont 636-1439 × 1109-1681; baş ortası x 975).
+ * - sapka (Gemini külah şapka, 794×1280): kulaklıklı başlığın iç astarının tepesi (görselin %58'i) başın tepesine
+ *   oturur, kulaklıklar başın iki yanına iner; kafa grubunda (her pozda başla döner).
+ * - onluk (1277×1280): göğüs parçasının üstü (görselin %30'u) göğse, eteği (%88) bacakların başına; boyun askısı
+ *   başın arkasında kalır; gövde grubunda (kollar önünde).
+ * - kirazSapka: dükkândaki kiraz tepeli şapka (Gün 3, bölüm D; görseli gelince ölçülür).
+ */
 const KINO_YERI = {
-  sapka: { x: 760, y: 60, en: 440, boy: 440 },
-  onluk: { x: 760, y: 1220, en: 540, boy: 540 },
+  sapka: { x: 975 - 370, y: 120 - 0.58 * 1193, en: 740, boy: 1193 },
+  onluk: { x: 1032 - 405, y: 1235 - 0.3 * 812, en: 810, boy: 812 },
+  kirazSapka: { x: 760, y: 60, en: 440, boy: 440 },
 };
 const resimG = (url: string, y: { x: number; y: number; en: number; boy: number }, sinif: string) => `<image class="${sinif}" href="${url}" x="${y.x}" y="${y.y}" width="${y.en}" height="${y.boy}" preserveAspectRatio="xMidYMid meet"/>`;
 
@@ -97,7 +106,7 @@ export function kinoGiydir(kino: Karakter, kirazSapka: boolean) {
   if (kafa) {
     const ad: VarlikAdi = kirazSapka ? 'sus-kino-kiraz-sapka' : 'kino-sapka';
     const u = adres(ad);
-    kafa.insertAdjacentHTML('beforeend', u ? `<g class="ko-kino-sapka">${resimG(u, KINO_YERI.sapka, '')}</g>` : kirazSapka ? KINO_KIRAZ_SAPKA : KINO_SAPKA);
+    kafa.insertAdjacentHTML('beforeend', u ? `<g class="ko-kino-sapka">${resimG(u, kirazSapka ? KINO_YERI.kirazSapka : KINO_YERI.sapka, '')}</g>` : kirazSapka ? KINO_KIRAZ_SAPKA : KINO_SAPKA);
   }
   if (govde && !govde.querySelector('.ko-kino-onluk')) {
     const u = adres('kino-onluk');

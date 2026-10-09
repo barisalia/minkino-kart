@@ -53,7 +53,7 @@ import {
 import { kutuOlcu, Musteri } from './musteri';
 import { dondurmaciKino, otobusAdresleri, otobusEl } from './otobus';
 import { ses } from './sesler';
-import { adres, DOLAP_GOZLERI, gorsel, IC_ARKA_PENCERE, kapAdi, manzaraAdres, sosSiseAdi, sosUstAdi, susAdi, susRafAdi, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
+import { adres, DOLAP_GOZLERI, dolapYerleri, gorsel, IC_ARKA_CERCEVE, kapAdi, manzaraAdres, sosSiseAdi, sosUstAdi, susAdi, susRafAdi, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
 import { onYukle, resimleriTopla } from './yukle';
 
 const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
@@ -195,13 +195,20 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const dolapUrl = adres('dolap');
   const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 3 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}");--dolap-oran:${DOLAP_GOZLERI.oran.toFixed(4)}` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), h('div.ko-dolap-ic', {}, ...tatDugmeleri));
   if (dolapUrl) {
-    // Gemini dolabı: kaplar görseldeki gözlere oturur (varliklar.ts → DOLAP_GOZLERI)
+    // Gemini dolabı: kaplar görseldeki gözlere (fazlası dolabın önüne) oturur (varliklar.ts → DOLAP_GOZLERI)
     dolap.classList.add('ko-resimli');
-    const gozler = tatDugmeleri.length > 3 ? DOLAP_GOZLERI.cift : DOLAP_GOZLERI.tek;
+    const yerler = dolapYerleri(tatDugmeleri.length);
     tatDugmeleri.forEach((b, i) => {
-      const g = gozler[i % gozler.length];
-      b.style.cssText += `left:${(g.x * 100).toFixed(2)}%;bottom:${((1 - g.alt) * 100).toFixed(2)}%;height:${(g.boy * 100).toFixed(2)}%`;
+      const y = yerler[i];
+      b.style.cssText += `left:${y.sol.toFixed(2)}%;top:${y.ust.toFixed(2)}%;width:${y.en.toFixed(2)}%;height:${y.boy.toFixed(2)}%;--kap-alt:${y.kapAlt.toFixed(2)}%;--kap-boy:${y.kapBoy.toFixed(2)}%`;
+      if (y.ust >= DOLAP_GOZLERI.sinir * 100 - 0.01) b.classList.add('ko-tat-on');
     });
+    // boş kalan gözde Kino'nun kepçesi durur
+    const bos = DOLAP_GOZLERI.goz.slice(tatDugmeleri.length);
+    if (bos.length) {
+      const x = bos[bos.length - 1];
+      dolap.querySelector('.ko-dolap-ic')!.append(h('i.ko-dolap-kepce', { 'aria-hidden': 'true', style: `left:${((x - DOLAP_GOZLERI.aralik / 2) * 100).toFixed(2)}%;width:${(DOLAP_GOZLERI.aralik * 100).toFixed(2)}%`, html: gorsel('kepce') }));
+    }
   }
 
   // iki hazırlık yuvası
@@ -225,9 +232,20 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
 
   const ustKat = h('div.ko-ust-kat', {}, pencere, raf);
   const altKat = h('div.ko-alt-kat', {}, h('i.ko-tezgah-on', { 'aria-hidden': 'true' }), kaplar, dolap, yuvalar, kumbaraYer);
+  // 3 kaplı günde tezgâh sıkışık: dolap daralmaz, öbürleri biraz incelir (kino-otobus.css → .ko-sik)
+  if (dolapUrl && ayar.kaplar.length >= 3) altKat.classList.add('ko-sik');
   const icArka = adres('ic-arka');
   if (icArka) {
-    ustKat.style.setProperty('--ic-arka', `url("${icArka}")`);
+    // Gemini pencere çerçevesi (gri maske şeffaf): 9 dilim; fırfır ve pervaz yatayda, yanlar dikeyde esner, her en-boyda
+    // pencereye oturur (varliklar.ts → IC_ARKA_CERCEVE)
+    const C = IC_ARKA_CERCEVE;
+    const kal = (px: number) => `calc(${(px * C.olcek).toFixed(3)} * var(--u))`;
+    pencere.style.setProperty('--ic-cerceve', `url("${icArka}")`);
+    pencere.style.setProperty('--ic-dilim', `${C.ust} ${C.sag} ${C.alt} ${C.sol}`);
+    pencere.style.setProperty('--ic-kalinlik', `${kal(C.ust)} ${kal(C.sag)} ${kal(C.alt)} ${kal(C.sol)}`);
+    pencere.style.setProperty('--ic-yan', kal(C.sol));
+    pencere.style.setProperty('--ic-ust', kal(C.ust));
+    pencere.style.setProperty('--ic-alt', kal(C.alt));
     ustKat.classList.add('ko-ic-resimli');
   }
   const tezgahOn = adres('tezgah-on');
@@ -264,15 +282,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (penH > 0) el.style.setProperty("--pen-h", `${penH.toFixed(1)}px`);
     const yk = slotlar[0].yuvaEl.getBoundingClientRect();
     if (yk.height) el.style.setProperty('--yuva-h', `${(yk.height - 24 * u).toFixed(1)}px`);
-    // iç duvar görseli: gri pencere alanı pencere kutusunun enine ve tepesine oturur (kamera dönüşümünden bağımsız ölçü)
-    if (icArka && pencere.offsetWidth) {
-      const P = IC_ARKA_PENCERE;
-      const en = pencere.offsetWidth / (P.x1 - P.x0);
-      const boy = en / P.oran;
-      ustKat.style.setProperty('--ic-boyut', `${en.toFixed(1)}px ${boy.toFixed(1)}px`);
-      ustKat.style.setProperty('--ic-yer', `${(pencere.offsetLeft - P.x0 * en).toFixed(1)}px ${(pencere.offsetTop - P.y0 * boy).toFixed(1)}px`);
-      ustKat.style.setProperty('--ic-kes', `${(pencere.offsetLeft + (P.kes - P.x0) * en).toFixed(1)}px`);
-    }
   };
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(olc) : null;
   ro?.observe(el);
@@ -392,13 +401,15 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const yer = b.querySelector('.ko-kepce-yer')!;
     const k = h('i.ko-kepce', { html: gorsel('kepce') });
     yer.append(k);
+    // Gemini kepçesi yatay (çanak solda, sap sağda): sağ üstten gelir, çanak kaba dalar (saat yönünde), kıvrılıp kalkar
     k.animate(
       [
-        { transform: 'translate(-50%, -80%) rotate(-30deg)', opacity: 0 },
-        { transform: 'translate(-50%, -30%) rotate(10deg)', opacity: 1, offset: 0.4 },
-        { transform: 'translate(-50%, -90%) rotate(-50deg)', opacity: 0 },
+        { transform: 'translate(-20%, -110%) rotate(-25deg)', opacity: 0 },
+        { transform: 'translate(-45%, -10%) rotate(28deg)', opacity: 1, offset: 0.45 },
+        { transform: 'translate(-55%, -20%) rotate(5deg)', opacity: 1, offset: 0.7 },
+        { transform: 'translate(-40%, -120%) rotate(-30deg)', opacity: 0 },
       ],
-      { duration: 280, easing: 'ease-out' },
+      { duration: 340, easing: 'ease-out' },
     ).finished.then(
       () => k.remove(),
       () => k.remove(),
