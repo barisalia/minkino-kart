@@ -1,5 +1,5 @@
 {
-  "aciklama": "Mino'nun Pasta Otobüsü (ekip/senaryo/pasta-otobusu.md). Mino = anlatıcı sesi; kino = Kino'nun kendi sesi; musteri = müşteri tepkileri (anlatıcı sesi, tonlu). Sipariş okuma parçalı kayıt: {sayı} (mevcut 'Bir!'…) + şekil + renk + süs. arayuz ekranda yazar, okunmaz. v2 (pasta-otobusu-v2.md): hedef, yıldız, desen, serpinti, yüz, içecek, bulaşık, özel müşteriler.",
+  "aciklama": "Mino ile Kino'nun Pasta Otobüsü (ekip/senaryo/pasta-otobusu.md; ortaklık: mino-kino-pasta.md). Mino = anlatıcı sesi; kino = Kino'nun kendi sesi; musteri = müşteri tepkileri (anlatıcı sesi, tonlu). Sipariş okuma parçalı kayıt: {sayı} (mevcut 'Bir!'…) + şekil + renk + süs. arayuz ekranda yazar, okunmaz. v2 (pasta-otobusu-v2.md): hedef, yıldız, desen, serpinti, yüz, içecek, bulaşık, özel müşteriler.",
   "mino": {
     "geldi": "Pasta otobüsü geldi!",
     "hosgeldin": "Hoş geldin!",
@@ -35,7 +35,8 @@
     "hedef_tamam": "Hedef tamam!",
     "dogumgunu": "Doğum günü kapkeği!",
     "iyi_ki": "İyi ki doğdun!",
-    "ege": "Ege bebek için, şekersiz!"
+    "ege": "Ege bebek için, şekersiz!",
+    "baslik_soyle": "Mino ile Kino'nun Pasta Otobüsü!"
   },
   "kino": {
     "citir": "Çıtır çıtır!",
@@ -46,7 +47,10 @@
     "bulasik": "Bulaşık bende!",
     "piril": "Pırıl pırıl!",
     "sil": "Siliyorum!",
-    "krema": "Mmm, krema!"
+    "krema": "Mmm, krema!",
+    "hosgeldin": "Hoş geldin!",
+    "buyurun": "Buyurun!",
+    "cak": "Çak!"
   },
   "musteri": {
     "tavsan": [
@@ -144,7 +148,7 @@
     }
   },
   "arayuz": {
-    "baslik_ust": "Mino'nun",
+    "baslik_ust": "Mino ile Kino'nun",
     "baslik_alt": "Pasta Otobüsü",
     "gun": "Gün {gun}",
     "park": "Park",

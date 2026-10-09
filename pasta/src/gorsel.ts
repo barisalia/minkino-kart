@@ -3,7 +3,7 @@
  * bir şeyin kavisle bir yerden bir yere uçması (jeton → kasa, tepsi → fırın). Park arka planı adresleri.
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
-import { KALP } from './cizim';
+import { KALP, yildizSvg } from './cizim';
 
 export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sakin = () => AZ_HAREKET || TEST_MODU;
@@ -140,6 +140,25 @@ export class Efekt {
       ],
       { duration: 520, easing: 'ease-out' },
     ).finished.then(() => p.remove(), () => p.remove());
+  }
+
+  /** Çak yıldızları: minik sarı yıldızlar bir noktadan yelpaze gibi yukarı fırlayıp söner */
+  yildizlar(x: number, y: number, adet = 3) {
+    if (sakin()) return;
+    for (let i = 0; i < adet; i++) {
+      const a = -Math.PI / 2 + (i - (adet - 1) / 2) * 0.7 + ras(-0.12, 0.12);
+      const r = ras(34, 48);
+      const p = h('i.ps-cak-yildiz', { style: `left:${x}px;top:${y}px`, html: yildizSvg() });
+      this.el.append(p);
+      p.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(.2) rotate(-40deg)', opacity: 0 },
+          { transform: `translate(-50%, -50%) translate(${(Math.cos(a) * r * 0.7).toFixed(0)}px, ${(Math.sin(a) * r * 0.7).toFixed(0)}px) scale(1.15) rotate(0deg)`, opacity: 1, offset: 0.35 },
+          { transform: `translate(-50%, -50%) translate(${(Math.cos(a) * r).toFixed(0)}px, ${(Math.sin(a) * r).toFixed(0)}px) scale(.7) rotate(25deg)`, opacity: 0 },
+        ],
+        { duration: 650, easing: 'cubic-bezier(.2,.8,.3,1)' },
+      ).finished.then(() => p.remove(), () => p.remove());
+    }
   }
 
   /** Yükselen yazı ("+3"): kalın konturlu, zıplayarak çıkar */

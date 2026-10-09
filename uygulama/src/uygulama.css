@@ -756,6 +756,28 @@
 @keyframes ug-rozet-gel {
   from { scale: 0; }
 }
+/* uzun adın baş kısmı ("Mino ile Kino'nun"): resmin sol üstünde küçük tabela; boyu resmin enine göre (cqi) */
+.ug-kok .ug-kart-ust {
+  position: absolute;
+  z-index: 5;
+  left: 4%;
+  top: 5%;
+  max-width: 90%;
+  padding: 0.12em 0.55em 0.16em;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid var(--kontur);
+  box-shadow: 0 2px 0 var(--kontur);
+  color: color-mix(in srgb, var(--r) 80%, var(--kontur));
+  font-weight: 700;
+  font-size: clamp(9px, 7cqi, 0.95rem);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  rotate: -3deg;
+  pointer-events: none;
+}
 @keyframes ug-rozet {
   0%, 80%, 100% { transform: none; }
   88% { transform: scale(1.12) rotate(-4deg); }

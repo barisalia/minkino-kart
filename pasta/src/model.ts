@@ -1,5 +1,5 @@
 /**
- * Mino'nun Pasta Otobüsü: oyunun saf mantığı (DOM yok; birim testleri buradan sınar).
+ * Mino ile Kino'nun Pasta Otobüsü: oyunun saf mantığı (DOM yok; birim testleri buradan sınar).
  * Tasarım: ekip/senaryo/pasta-otobusu.md (ilk sürüm), pasta-otobusu-v2.md (derinleştirme).
  *
  * SADE SÜRÜM (Barış, 2026-10-02: "çok karmaşık yapma, daha basit olmalı, şu an zor"): 3 gün, günde 4 müşteri, sırada

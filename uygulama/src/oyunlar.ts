@@ -24,6 +24,11 @@ export interface OyunKarti {
   id: string;
   /** Kısa ad (büyükler için, kartın altında) */
   ad: string;
+  /**
+   * Adın baş kısmı (uzun adlı oyun: "Mino ile Kino'nun" + "Pasta Otobüsü"): kart resminin sol üstünde küçük tabela
+   * olarak yazar, kartın boyu değişmez; erişilebilir ad ikisinin birleşimi.
+   */
+  ust?: string;
   /** Ana menü sayfasına (site kökü) göre göreli adres */
   adres: string;
   /** Kartın ana rengi */
@@ -127,6 +132,8 @@ export const OYUNLAR: OyunKarti[] = [
   },
   {
     id: 'pasta',
+    // tam ad: "Mino ile Kino'nun Pasta Otobüsü" (ekip/senaryo/mino-kino-pasta.md)
+    ust: "Mino ile Kino'nun",
     ad: 'Pasta Otobüsü',
     adres: './pasta/',
     renk: '#FF6FA8',

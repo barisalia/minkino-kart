@@ -1,4 +1,4 @@
-/** Mino'nun Pasta Otobüsü ilerlemesi (yalnız bu cihazda; localStorage, hata olursa sessizce bellekte kalır). */
+/** Mino ile Kino'nun Pasta Otobüsü ilerlemesi (yalnız bu cihazda; localStorage, hata olursa sessizce bellekte kalır). */
 import { RAF, SON_OYNANAN } from './model';
 
 const ANAHTAR = 'minkino-pasta-v1';
