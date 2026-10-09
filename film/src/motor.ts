@@ -274,6 +274,8 @@ export interface FilmSecenek {
   /** film müziği (Web Audio); test modunda kapalı */
   muzik?: boolean;
   bitti?: () => void;
+  /** Sahne kurulunca: arka plan resimleri (uzaktan öne) ve gök / duvar rengi (oynatıcının yan dolgusu için) */
+  arkaDegisti?: (resimler: string[], renk: string) => void;
 }
 
 /** Çalan şarkının karaokesi (Film.sarkiBasla) */
@@ -327,6 +329,8 @@ export class Film {
   private evMi = false;
   private ortaKaydir = 0;
   private ortaBuyut: Sahne['ortaBuyut'] | null = null;
+  /** önceki sahnenin arka plan anahtarı (yer + orta katman kaydırması / büyütmesi) */
+  private sonArka = '';
   private readonly hiz: number;
   private readonly ses: boolean;
   private readonly muzik: boolean;
@@ -485,11 +489,17 @@ export class Film {
   /** kesme: sonraki sahne doğrudan başlar (kapanış geçişi ve bekleme yok) */
   private async sahneOyna(s: Sahne, kesme = false, ogutOnce = false) {
     // kesme bile sert değil: önceki sahnenin son karesi yeni sahnenin üstünde yumuşakça söner (çapraz geçiş)
-    const onceki = s.gecis === 'kes' && this.dunya.childElementCount && this.katmanlar.orta.childElementCount ? (this.dunya.cloneNode(true) as HTMLElement) : null;
+    // Aynı arka plan (aynı yer, aynı katman kaydırması): kopya gerekmez, yeni dünyanın arka planı zaten aynı resim; kamera
+    // eski kadrajdan süzülür. Kopya üstüne binseydi kamera kayarken iki ayrı kadraj üst üste görünürdü (çift pozlama).
+    const arkaAnahtar = JSON.stringify([s.arka, s.ortaKaydir ?? 0, s.ortaBuyut ?? null]);
+    const ayniArka = arkaAnahtar === this.sonArka;
+    this.sonArka = arkaAnahtar;
+    const onceki = s.gecis === 'kes' && !ayniArka && this.dunya.childElementCount && this.katmanlar.orta.childElementCount ? (this.dunya.cloneNode(true) as HTMLElement) : null;
+    const surer = s.gecis === 'kes' && (!!onceki || (ayniArka && this.katmanlar.orta.childElementCount > 0));
     const eskiKam = { ...this.kam };
     this.kur(s);
-    if (onceki) {
-      this.capraz(onceki, Number(s.caprazSure ?? 0.6));
+    if (onceki) this.capraz(onceki, Number(s.caprazSure ?? 0.6));
+    if (surer) {
       // kamera da yeni çerçeveye sıçramaz: önceki sahnenin kadrajından süzülerek gelir (sahnenin kendi kamera olayı bunu ezer)
       const hedef = { ...this.kam };
       this.kam = eskiKam;
@@ -520,6 +530,10 @@ export class Film {
     this.ortaKaydir = s.ortaKaydir ?? 0;
     this.ortaBuyut = s.ortaBuyut ?? null;
     this.arka(s.arka);
+    if (this.secenek.arkaDegisti) {
+      const resimler = [...this.dunya.querySelectorAll<HTMLImageElement>('img.fl-arka')].map((i) => i.getAttribute('src') ?? '').filter(Boolean);
+      this.secenek.arkaDegisti(resimler, this.katmanlar.uzak.classList.contains('fl-ev') ? '#fff0da' : '#4aaef5');
+    }
     for (const [id, o] of Object.entries(s.oyuncular ?? {})) {
       const oy = new Oyuncu(o.tip, this.hiz, !!o.yan);
       const n = new Nesne(o, oy.el, oy.oran);

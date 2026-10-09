@@ -374,6 +374,36 @@
 .fl-kok .fl-sahne {
   container-type: size;
 }
+/* yatay telefonda 16:9 kadrajın iki yanı boş koyu bant değil: o sahnenin arka planı (gök, park, oda) ekran eninde,
+   bulanık ve biraz loş (ekranlar.ts → arkaDegisti). Durağan tek katman: bulanıklık bir kez çizilir (telefonda hafif). */
+.fl-kok .fl-yan-dolgu {
+  display: none;
+}
+@media (orientation: landscape) {
+  .fl-kok .fl-yan-dolgu {
+    display: block;
+    position: absolute;
+    inset: -30px;
+    background-position: center bottom;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    filter: blur(16px) brightness(0.7) saturate(1.05);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    will-change: transform;
+    pointer-events: none;
+  }
+  .fl-kok .fl-yan-dolgu.acik {
+    opacity: 1;
+  }
+  /* kadraj bulanık yanlardan hafif bir gölgeyle ayrılır */
+  .fl-kok .fl-sahne-kap {
+    box-shadow: 0 0 22px 4px rgba(20, 14, 30, 0.45);
+  }
+}
+body[data-kayit] .fl-kok .fl-yan-dolgu {
+  display: none;
+}
 /* alt yazı ve parıltılar kadraja göre ölçeklenir */
 .fl-kok .fl-altyazi {
   bottom: 4cqh;
