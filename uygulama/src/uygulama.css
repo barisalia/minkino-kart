@@ -916,6 +916,15 @@
 .ug-kok .ug-izgara[data-adet='9'] {
   grid-template-rows: repeat(5, minmax(0, 1fr));
 }
+/* dikey telefon (web): beş sıra kart iri kalsın diye üstteki logo ve Mino ile Kino küçülür, sıra aralığı 10 px */
+@media (orientation: portrait) and (max-width: 599px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    height: clamp(96px, 13dvh, 140px);
+  }
+  .ug-kok .ug-izgara[data-adet='9'] {
+    row-gap: 10px;
+  }
+}
 /* kapakta Kino'nun yüzü ve dondurması üst yarıda */
 .ug-kok .ug-kart[data-oyun='kino-otobus'] .ug-kart-resim {
   background-position: 50% 28%;

@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { menuOyunlari } from '../../uygulama/src/oyunlar';
 import { hataTopla } from './yardimci';
+
+/** web menüsündeki kart sayısı (8; Kino'nun Otobüsü bayrağı açılınca 9) */
+const MENU_ADET = menuOyunlari(false).length;
 
 const BEKLENEN: Record<string, string> = {
   kartlar: './kartlar/',
@@ -12,12 +16,12 @@ const BEKLENEN: Record<string, string> = {
   pasta: './pasta/',
 };
 
-test('Ana menü: açılışta Mino ve 8 oyun kartı, görseller yüklü', async ({ page }, info) => {
+test('Ana menü: açılışta Mino ve 8 (Kino’nun Otobüsü ile 9) oyun kartı, görseller yüklü', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
   await expect(page.locator('.ug-menu .mino svg')).toBeVisible();
   const kartlar = page.locator('.ug-kart');
-  await expect(kartlar).toHaveCount(8);
+  await expect(kartlar).toHaveCount(MENU_ADET);
 
   // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor (giriş animasyonu bitince ölçülür)
   await page.waitForTimeout(1100);
@@ -41,7 +45,9 @@ test('Ana menü: açılışta Mino ve 8 oyun kartı, görseller yüklü', async 
 
   // Kino Mino'nun yanında (parçalı iskelet yüklendi), yan oyun rozetleri kartlarda
   await expect(page.locator('.ug-kino .kr-iskeletli svg')).toBeVisible();
-  await expect(page.locator('.ug-yeni')).toHaveCount(7);
+  await expect(page.locator('.ug-yeni')).toHaveCount(menuOyunlari(false).filter((k) => k.rozet).length);
+  // Kino'nun Otobüsü (bayrak açıksa): kartın resmi Gemini kapağı
+  if (MENU_ADET === 9) expect(await page.locator('.ug-kart[data-oyun="kino-otobus"] .ug-kart-resim').evaluate((e) => getComputedStyle(e).backgroundImage)).toContain('kapak');
   await expect(page.locator('.ug-kart[data-oyun="dedektif"] .ug-yeni')).toHaveText('Yeni');
   await expect(page.locator('.ug-kart[data-oyun="pasta"] .ug-yeni')).toHaveText('Yeni');
   await expect(page.locator('.ug-kart[data-oyun="pasta"] .ug-k-otobus svg')).toBeVisible();
@@ -145,7 +151,7 @@ test('Ana menü: yatay ekranda da kartlar sığıyor', async ({ page }, info) =>
   const { width, height } = page.viewportSize()!;
   await page.setViewportSize({ width: height, height: width });
   await page.goto('./?test=1');
-  await expect(page.locator('.ug-kart')).toHaveCount(8);
+  await expect(page.locator('.ug-kart')).toHaveCount(MENU_ADET);
   for (const kart of await page.locator('.ug-kart').all()) {
     const k = (await kart.boundingBox())!;
     expect(k.x + k.width).toBeLessThanOrEqual(height + 1);
