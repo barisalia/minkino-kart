@@ -1235,28 +1235,34 @@
     font-size: clamp(0.95rem, 4.4vh, 1.2rem);
     border-radius: 26px;
   }
-  /* dar yan şerit (ör. 667×375, yatay tablet): hoparlör küçülür ve yazının sol üst köşesine yaslanır (float); yazı
-     şeridin bütün enini kullanır, uzun kelime ("çıkarmayalım") de satıra sığar; harf boyu şeridin enine göre */
+  /* dar yan şerit (ör. 667×375, yatay tablet): hoparlör küçülür ve yazının üstünde durur (yazı onun altına kaymaz);
+     yazı şeridin bütün enini kullanır, kelime ortasından bölünmez; harf boyu şeridin enine göre (en uzun kelime de
+     "çıkarmayalım" satıra sığar) */
   @media (max-aspect-ratio: 2/1) {
     .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi {
-      display: block;
-      padding: 7px 12px 9px 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      padding: 7px 12px 10px 8px;
       font-size: clamp(0.8rem, calc(var(--yan-en) * 0.076), 1.15rem);
       line-height: 1.16;
       border-radius: 22px;
-      overflow-wrap: break-word;
+      overflow-wrap: normal;
+      word-break: normal;
+      hyphens: none;
     }
     .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi > .yuvarlak.kucuk {
-      float: left;
-      width: 40px;
-      height: 40px;
-      margin: 0 7px 3px 0;
-      font-size: 19px;
+      flex: none;
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      font-size: 17px;
       box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1), 0 3px 0 var(--kontur);
     }
     .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi .mc-yazi {
       display: block;
-      padding-top: 2px;
+      padding: 0 0 0 4px;
     }
   }
   .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ilerleme {

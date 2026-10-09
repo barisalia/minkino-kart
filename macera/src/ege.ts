@@ -145,6 +145,12 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   })();
   const odaEl = sahne.dunya.querySelector<HTMLElement>('.mc-oda')!;
   if (dikeyResim) odaEl.style.backgroundPosition = `24% ${(odaY * 100).toFixed(2)}%`;
+  /** Dikey tablette çizimin dünyanın üstünde kırpılan kısmı (px): finalde oda yukarı uzar, pencere ortalanabilsin */
+  const odaUstPay = (() => {
+    if (!dikeyResim) return 0;
+    const s = Math.max(W() / ODA.en, H() / ODA.boy);
+    return Math.max(0, (ODA.boy * s - H()) * odaY);
+  })();
   /**
    * Yatay ekranda odanın geniş çizimi (oda-genis, 4096×2286; macera.css → .mc-yan-genis) bandın odasını ekranın tam
    * eninde gösterir (konum center 82%). Kare çizim onun içinde x 922'den 2260 px boyunda (scripts/kalite/
@@ -1079,16 +1085,18 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     anne.classList.add('yuruyor');
     await tasi(anne, SANDALYE.x - bX(11), Z + 7, 1000);
     const [tw, th] = ANNE_TUVAL.ayakta;
-    const kucakY = Z + 7 + bY(tw * ANNE_B * (th / tw) * 0.36);
+    // kucakta Ege annenin göğsünde, biraz yanda: annenin yüzü görünür (iki baş üst üste binip "hayalet" gibi durmaz)
+    const kucakY = Z + 7 + bY(tw * ANNE_B * (th / tw) * 0.24);
     ege.el.classList.add('kucakta');
     ege.el.style.zIndex = '7';
-    await tasi(ege.el, SANDALYE.x - bX(8), kucakY, 450);
+    // boşalan mama sandalyesi hemen kalkar: anne ile Ege onun önünden geçerken yarı saydam bir sandalye arkada kalmaz
+    mamaSeti?.sandalye.classList.add('gidiyor', 'hizli');
+    await tasi(ege.el, SANDALYE.x, kucakY, 450);
     // beşiğe taşır ve içine (yuvaya) yatırır: arka resim ile fistolu ön kenar arasında, başı yastıkta
     const hedefX = BESIK.x - bX(BESIK.w * 0.3);
     void tasi(anne, hedefX, Z + 7, 1300);
-    await tasi(ege.el, hedefX + bX(3), kucakY, 1300);
+    await tasi(ege.el, hedefX + bX(11), kucakY, 1300);
     anne.classList.remove('yuruyor');
-    mamaSeti?.sandalye.classList.add('gidiyor');
     await tasi(ege.el, BESIK.x - bX(BESIK.w * 0.08), BESIK.y + bY(besikH * 0.42), 600);
     ege.el.classList.remove('kucakta');
     ege.durum('yatik');
@@ -1840,12 +1848,15 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
         void balon(k.balonEl, B.ayi, 900);
       }
       ege.bak(hangi === 'civciv' ? 1 : -1);
+      // Ege'nin balonu konuşan kuklanın öbür yanında ve kuklanınkinden biraz sonra (balonlar üst üste binmesin)
+      ege.el.dataset.balonYan = hangi === 'civciv' ? 'sol' : 'sag';
       gulmeSay++;
       if (hangi === 'ayi') {
         ege.ifade('saskin');
+        await bekle(450);
         void ege.balon(B.ege.ooo, 800);
-        await bekle(800);
-      } else await bekle(300);
+        await bekle(700);
+      } else await bekle(450);
       const g = gulme(gulmeSay, inceFark);
       egeGul(g, gosteri.isik);
       await bekle(1500);
@@ -1988,6 +1999,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // gösteri biter: kamera geri çekilir, kuklalar Ada ile Can'ın eline döner, herkes sahneye gelir.
     // şaka: en büyük kahkahada anne kanepede kıpırdar. Herkes donar, "Şşş!", kıkır kıkır ("şşş" motifi burada ekilir)
     gosteri.bitir();
+    delete ege.el.dataset.balonYan;
     ada.poz('alkis', 1400);
     void ada.zipla(14);
     void can.zipla(14);
@@ -2304,7 +2316,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     const tum = dinlet ? ninni(NINNI_DIZE) : notalar;
     const yildizlar = new NinniYildizlari(notalar.length);
     await ninniYakin();
-    yildizlar.yerles(besik.getBoundingClientRect(), sahne.el.getBoundingClientRect());
+    // kemer beşiğin görünen çizimine göre (dış kutu çizimden geniş; kemer kayıyordu), kamera durduktan sonra
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    yildizlar.yerles((besikIc.firstElementChild as HTMLElement).getBoundingClientRect(), sahne.el.getBoundingClientRect());
     sahne.el.append(yildizlar.el);
     let yon = 1;
     const besikSalla = (guc = 1) => {
@@ -2894,6 +2908,14 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // kamera pencereden aya; perde biraz aralanır, müzik kutusu son notayı çalar
     perde.classList.remove('kapali');
     perdeAyarla(0.18);
+    // son çekimde yalnız pencere ve ay: anne, çocuklar, Mino (ve uyku Z'leri), beşik tamamen solar; kadrajın altında
+    // yarı saydam yüz / saç kalmaz
+    cekimDisi([ada.el, can.el, elif.el, minoKutu, anne, besik], true);
+    if (odaUstPay > 0) {
+      // dikey tablet: çizimin kırpılan üstü (pencerenin üst yayı) dünyanın üstüne uzar; ışık örtüleri de onunla
+      sahne.el.style.setProperty('--ust-pay', `${odaUstPay.toFixed(1)}px`);
+      odaEl.style.backgroundPosition = '24% 0%';
+    }
     sahne.el.classList.add('final');
     efektCal(() => S.kutuNota(62, 0.12, 3), 2500);
     finalKamera(3200);
@@ -2970,10 +2992,18 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     const ust = dikey ? PAY.ust : 0;
     const d = ((camR * 2) / H()) * 100;
     const dx = ((camR * 2) / W()) * 100;
-    const z = Math.max(1, Math.min(2.1, 74 / dx, (100 - ust) * 0.78 / d));
-    const o = (m: number, pay: number) => Math.max(0, Math.min(100, z <= 1.001 ? 50 : (m - 50 / z - pay / 2 / z) / (1 - 1 / z)));
+    let z = Math.max(1, Math.min(2.1, 74 / dx, (100 - ust) * 0.78 / d));
+    // görünen üst kenar dünyanın üstünden en çok bu kadar yukarıda olabilir (dikey tablet: oda finalde yukarı uzar)
+    const ustPay = (odaUstPay / H()) * 100;
+    // pencere dünyanın tepesine yakınsa (dikey tablet) kamera onu ortaya indiremez: pencere ortaya gelecek kadar
+    // yaklaşılır (pencere yine ekrana sığar)
+    const hedefY = 50 + ust / 2;
+    if ((cam.ust + ustPay) * z < hedefY - 2) z = Math.max(z, Math.min(hedefY / (cam.ust + ustPay), 80 / dx, ((100 - ust) * 0.74) / d, 3));
+    const o = (m: number, pay: number, enAz = 0) =>
+      Math.max(z <= 1.001 ? 0 : -enAz / (1 - 1 / z), Math.min(100, z <= 1.001 ? 50 : (m - 50 / z - pay / 2 / z) / (1 - 1 / z)));
     const x = o(cam.x, 0);
-    const y = o(cam.ust, ust);
+    // pencere alt yazının altında kalan alanın dikey ortasında
+    const y = o(cam.ust, ust, ustPay);
     // pencerenin ekranda görünen üst kesri (0: tamamı görünür)
     const gorunenUst = (y * (1 - 1 / z) + ust / z - (cam.ust - d / 2)) / d;
     if (gorunenUst > 0.05) pencere.style.setProperty('--ay-ust', `${(Math.min(0.6, gorunenUst) + (1 - Math.min(0.6, gorunenUst) - 0.26) * 0.35) * 100}%`);

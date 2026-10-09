@@ -98,7 +98,9 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
         // sıcakken verirse Ege surat asar, kaşık geri döner
         sicakDenendi = true;
         await bekle(200, 600);
-        await surukle(page, ege(page, 'kasik'), ege(page, 'agiz'), 12, gercekHiz);
+        // oyunda kaşığa basılı tutmak üflemek sayılır (sürükleme ~30 px'i geçince biter): gerçek hızda yavaş sürüklemek
+        // kaşığı yolda soğutup "ver" adımına geçirir (Ege "am" der). Sıcak kaşık denemesi kısa ve az adımlı sürüklenir.
+        await surukle(page, ege(page, 'kasik'), ege(page, 'agiz'), 4, false);
         await expect(ege(page, 'bebek')).toHaveAttribute('data-ifade', 'buzuk', { timeout: 4000 });
         await ekran('04-sicak');
         await bekle(900, 2500);

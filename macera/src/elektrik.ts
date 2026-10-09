@@ -1143,7 +1143,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     };
     const HEDEF: Record<ZiplamaYeri, { el: HTMLElement; ini: [number, number] }> = {
       koltuk: { el: hedefEl('koltuk', KOLTUK.x, KOLTUK.y + bY(koltukH * 0.2), bX(KOLTUK.w * 0.8), bY(koltukH * 0.75)), ini: [KOLTUK.x, KOLTUK.y + bY(koltukH * 0.32)] },
-      perde: { el: hedefEl('perde', perde.x, perde.y - bY(14), bX(16), bY(30)), ini: [perde.x, perde.y - bY(12)] },
+      // (Mino perdenin kumaşına tutunur: ucunun üstünde; altındaki duvar saatinin önünde havada asılı durmaz)
+      perde: { el: hedefEl('perde', perde.x, perde.y - bY(14), bX(16), bY(30)), ini: [perde.x, perde.y + bY(1)] },
       masa: { el: hedefEl('masa', MASA.x + bX(4), MASA.y + bY(masaH * 0.4), bX(MASA.w * 0.8), bY(masaH * 0.6)), ini: [MASA.x, MASA.y + bY(masaH * 0.9)] },
     };
     const temizHedef = () => Object.values(HEDEF).forEach((h) => h.el.remove());
@@ -1293,7 +1294,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
         S.vizzt();
         void balon(MN, B.vizzt, 900);
         MN.mino!.ifade('saskin', 1200);
-        await MN.git(hx, Math.max(DUVAR - bY(2), hy - bY(18)), 800, 0, 'cubic-bezier(0.5, 0, 0.9, 0.6)');
+        // perdeden yere kadar kayar (saatin önünde yarı yolda kalmaz)
+        await MN.git(hx, DUVAR - bY(2), 800, 0, 'cubic-bezier(0.5, 0, 0.9, 0.6)');
       } else {
         S.pat();
         MN.tepki('mir', 1);

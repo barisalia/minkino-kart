@@ -206,12 +206,20 @@ export class NinniYildizlari {
     });
     this.el = h('div.eg-ninni-yildiz', { 'aria-hidden': 'true' }, ...this.yildizlar);
   }
-  /** Kemeri beşiğin üstüne oturt (ekran kutuları; kap: yıldızların konduğu katman) */
+  /**
+   * Kemeri beşiğin üstüne oturt (ekran kutuları; besik: beşiğin görünen çizimi, kap: yıldızların konduğu katman).
+   * Kemer beşiğin ortasında; eni ekrana sığar (yanlarda 8 px pay), ekrandan taşmaz (yatay telefonda yakın çekim yan
+   * şeritleri de kullanır, sahne bandı taşabilir: sınır ekranın kendisi).
+   */
   yerles(besik: DOMRect, kap: DOMRect) {
-    const w = besik.width * 1.02;
+    const solS = 8;
+    const sagS = innerWidth - 8;
+    const w = Math.max(40, Math.min(besik.width * 1.02, sagS - solS));
     const hh = besik.height * 0.62;
+    const orta = besik.left + besik.width / 2;
+    const sol = Math.max(solS, Math.min(sagS - w, orta - w / 2));
     const s = this.el.style;
-    s.left = `${(besik.left - kap.left + (besik.width - w) / 2).toFixed(0)}px`;
+    s.left = `${(sol - kap.left).toFixed(0)}px`;
     s.width = `${w.toFixed(0)}px`;
     s.top = `${(besik.top - kap.top - hh * 0.72).toFixed(0)}px`;
     s.height = `${hh.toFixed(0)}px`;
