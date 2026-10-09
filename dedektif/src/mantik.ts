@@ -12,8 +12,11 @@ export const M = D.mino;
 export const K = D.kino;
 
 // ---------------------------------------------------------------- odalar
-/** Vaka 1: ev odaları; Vaka 2: bahçenin üç bölümü (çamaşır ipi, çalılı yol, gölet kenarı) */
-export type OdaId = 'calisma' | 'koridor' | 'yatak' | 'mutfak' | 'bahce-ip' | 'bahce-yol' | 'bahce-golet';
+/**
+ * Vaka 1: ev odaları; Vaka 2: bahçenin üç bölümü (çamaşır ipi, çalılı yol, gölet kenarı); Vaka 3: Pasta Otobüsü'nün içi,
+ * otobüsün yanı (park), büyük ağaç ve ağacın kovuğunun içi (kiler)
+ */
+export type OdaId = 'calisma' | 'koridor' | 'yatak' | 'mutfak' | 'bahce-ip' | 'bahce-yol' | 'bahce-golet' | 'otobus-ic' | 'otobus-yani' | 'agac' | 'kiler';
 /** Odanın en / boy oranı (resimlerin kendi oranı: film/ev 2752×1536, koridor ve yatak odası 1920×1080, bahçe 4096×2286) */
 export const ODA_ORAN: Record<OdaId, number> = {
   calisma: 2752 / 1536,
@@ -23,6 +26,11 @@ export const ODA_ORAN: Record<OdaId, number> = {
   'bahce-ip': 4096 / 2286,
   'bahce-yol': 4096 / 2286,
   'bahce-golet': 4096 / 2286,
+  // Vaka 3 (assets/dedektif3, Gemini 4096×2286; yer tutucular da bu oranda: resimler3.ts)
+  'otobus-ic': 4096 / 2286,
+  'otobus-yani': 4096 / 2286,
+  agac: 4096 / 2286,
+  kiler: 4096 / 2286,
 };
 /** Dünya biriminde oda yüksekliği (CSS px; kamera ölçekler) */
 export const ODA_H = 1000;
@@ -310,6 +318,8 @@ export interface SorguHalkasi {
   soru: string;
   kino?: string;
   kinoKart?: string;
+  /** Kino'nun tahmininden sonra Mino'nun kısa cevabı (Vaka 3: "Sen havuç sevmezsin ki.") */
+  kinoCevap?: string;
   kartlar: readonly string[];
   dogru?: string;
   demekKi: string;
@@ -480,14 +490,18 @@ export const ekranda = (k: Kamera, dunya: { w: number; h: number }, x: number, y
 
 // ---------------------------------------------------------------- seslendirme listesi
 const topla = (v: unknown): string[] => (typeof v === 'string' ? [v] : Array.isArray(v) ? v.flatMap(topla) : v && typeof v === 'object' ? Object.values(v).flatMap(topla) : []);
-/** Anlatıcı sesiyle seslendirilen cümleler: Mino, kart hayvanları, Pamuk (tonlu çalınır); Kino'nunkiler yedek olarak da */
+/**
+ * Anlatıcı sesiyle seslendirilen cümleler: Mino, kart hayvanları, Pamuk, Vakvak Anne, Fındık (tonlu çalınır); Kino'nunkiler
+ * yedek olarak da. Vaka 3'ün 'balon' sözleri (kuş, tavşan, kirpi, baykuş) yalnız balonda yazar: seslendirilmez.
+ */
 export function dedektifCumleleri(): string[] {
   const v2 = D.vaka2;
-  return [...new Set([...topla(D.mino), ...topla(D.kart), ...topla(D.pamuk), ...topla(v2.mino), ...topla(v2.ordek), ...topla(v2.konuk)])];
+  const v3 = D.vaka3;
+  return [...new Set([...topla(D.mino), ...topla(D.kart), ...topla(D.pamuk), ...topla(v2.mino), ...topla(v2.ordek), ...topla(v2.konuk), ...topla(v3.mino), ...topla(v3.findik)])];
 }
-/** Kino'nun kendi sesiyle seslendirilecek cümleler (iki vaka) */
+/** Kino'nun kendi sesiyle seslendirilecek cümleler (üç vaka) */
 export function dedektifKinoCumleleri(): string[] {
-  return [...new Set([...topla(D.kino), ...topla(D.vaka2.kino)])];
+  return [...new Set([...topla(D.kino), ...topla(D.vaka2.kino), ...topla(D.vaka3.kino)])];
 }
 
 // ---------------------------------------------------------------- dikey çalışma odası (film/ev/oda-dikey, 1536×2752)

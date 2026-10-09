@@ -116,5 +116,66 @@
       "tavsan": "Ben zıplarım, iz bırakmam!",
       "ada": "O benim balonumun ipi!"
     }
+  },
+  "vaka3": {
+    "aciklama": "Vaka 3: Kaybolan Yıldız Kurabiyeler (ekip/senaryo/dedektif-vaka3.md). 'mino' anlatıcı; 'kino' Kino'nun kendi sesi; 'findik' Fındık (anlatıcı sesinin ince, hızlı tonu). 'balon' yalnız balonda yazar, seslendirilmez (kuş, tavşan, kirpi, baykuş). 'vaka' ve 'yazi' ekranda yazar.",
+    "vaka": "Vaka 3: Kaybolan Yıldız Kurabiyeler",
+    "yazi": {
+      "roman": "Vaka 3",
+      "kilitli": "Önce Vaka 2"
+    },
+    "mino": {
+      "kilitli": "Önce ikinci vakayı çözelim!",
+      "burun": "Kino… burnunda ne var?",
+      "say": "Boş yerleri say. Kaç tane?",
+      "kac_kayip": "Kaç kurabiye kayıp?",
+      "ikisi_burada": "Ama ikisi burada!",
+      "bos_yer": "Bak, hâlâ boş yer var!",
+      "demek_dort": "Demek ki dört kurabiye kayıp!",
+      "nereden": "Kurabiyeler nereden çıktı?",
+      "kapi_kilitli": "Kapı içeriden kilitli!",
+      "sigmaz": "Kurabiye buraya sığmaz!",
+      "demek_pencere": "Demek ki pencereden çıkmış!",
+      "ustunde": "Kurabiyenin üstünde ne vardı?",
+      "havuc_sevmez": "Sen havuç sevmezsin ki.",
+      "demek_agac": "Demek ki kurabiyeler bu ağaca gelmiş!",
+      "kim_yasiyor": "Bu ağaçta kim yaşıyor?",
+      "demek_sincap": "Demek ki burada bir sincap yaşıyor!",
+      "kuyruga": "Şşş! Kuyruğa dokun.",
+      "yut": "Önce yut, sonra anlat!",
+      "kovuga": "Konuşamıyor. Kovuğa bakalım!",
+      "neden": "Fındık kurabiyeleri neden aldı?",
+      "butun": "Hiç yememiş ki! Hepsi bütün!",
+      "parti_yok": "Parti yok, balon yok!",
+      "demek_kis": "Demek ki kış için saklamış!",
+      "sayalim": "Hadi sayalım!",
+      "bir_dort": "Bir, iki, üç, dört!",
+      "hikaye": "Fındık aldı, kilere sakladı, sonra sormayı öğrendi!"
+    },
+    "kino": {
+      "alti": "Kurabiyeler! Hani altı taneydi?",
+      "ekmek": "Bu benim ekmeğim!",
+      "hepsi": "Altı! Hepsi!",
+      "kapidan": "Kapıdan! Kesin kapıdan!",
+      "kocaman": "Ben pencereden geçemem, kocamanım!",
+      "havuc": "Havuç! Havucu severim!",
+      "kus": "Kuş! Kuşlar ağaçta yaşar!",
+      "nerede": "Kurabiyelerimiz nerede?",
+      "acikmis": "Acıkmış! Kesin acıkmış!",
+      "sorsaydin": "Sorsaydın, verirdik!",
+      "tabii": "Tabii! İki tane al!"
+    },
+    "findik": {
+      "mmf": "Mmf! Mmf mmf!",
+      "sandim": "Pencerede duruyordu. Herkesin sandım.",
+      "alabilir": "Bir tane alabilir miyim?"
+    },
+    "balon": {
+      "kus_tohum": "Bunlar benim tohumlarım!",
+      "tavsan": "Havuç benim!",
+      "kus_tuy": "Benim tüyüm kanatta, kabarık değil!",
+      "kirpi": "Ben ağaca çıkamam ki!",
+      "baykus": "Şşş, uyuyorum!"
+    }
   }
 }

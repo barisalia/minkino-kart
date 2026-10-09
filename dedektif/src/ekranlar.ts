@@ -19,6 +19,8 @@ import { oynat } from './efekt';
 import { kayit } from './kayit';
 import { M } from './mantik';
 import { M2, ROMAN2, V2 } from './mantik2';
+import { M3, ROMAN3, V3, vaka3Gorunur } from './mantik3';
+import { hazirla3 } from './resimler3';
 import { filmKatmani, resim } from './resimler';
 import { kareleriGetir, romanKur, sirayla } from './roman';
 import { ses } from './sesler';
@@ -36,9 +38,19 @@ function sesKucuk() {
   return s;
 }
 
-type VakaId = 'vaka1' | 'vaka2';
+type VakaId = 'vaka1' | 'vaka2' | 'vaka3';
 /** Vaka 2 açık mı: Vaka 1 çözülünce */
 export const vaka2Acik = () => kayit.cozulen.includes('vaka1');
+/** Vaka 3 açık mı: Vaka 2 çözülünce (görünmesi ayrıca mantik3.ts → vaka3Gorunur: yayın bayrağı ya da ?vaka3=1) */
+export const vaka3Acik = () => kayit.cozulen.includes('vaka2');
+const VAKA_ADI: Record<VakaId, string> = { vaka1: D.vaka, vaka2: V2.vaka, vaka3: V3.vaka };
+const EKRAN: Record<VakaId, string> = { vaka1: 'vaka', vaka2: 'vaka2', vaka3: 'vaka3' };
+/** Vaka 3'ün görselleri (yer tutucular tarayıcıda kurulur): img hazır olunca yerine konur */
+function sonraYukle(i: HTMLImageElement, ad: string) {
+  const u = resim(ad);
+  if (u) i.src = u;
+  else void hazirla3().then(() => (i.src = resim(ad) ?? ''));
+}
 
 interface DosyaKapak {
   id: VakaId;
@@ -51,21 +63,24 @@ interface DosyaKapak {
 const KAPAKLAR: DosyaKapak[] = [
   { id: 'vaka1', no: '1', ad: D.vaka.replace(/^Vaka 1:\s*/, ''), foto: 'lamba-devrik', sus: 'kart-kedi-pati-izi' },
   { id: 'vaka2', no: '2', ad: V2.vaka.replace(/^Vaka 2:\s*/, ''), foto: 'v2/roman-1', sus: 'v2/iplik-kirmizi' },
+  { id: 'vaka3', no: '3', ad: V3.vaka.replace(/^Vaka 3:\s*/, ''), foto: 'v3/kapak', sus: 'v3/palamut' },
 ];
 
 /** Bir vakanın dosyası (kraft klasör, fotoğraf ataşlı) */
 function vakaDosyasi(k: DosyaKapak, cozuldu: boolean, kilitli: boolean, tik: () => void): HTMLElement {
   const b = h(
     `button.dd-klasor${kilitli ? '.dd-kilitli' : ''}`,
-    { type: 'button', 'aria-label': k.id === 'vaka1' ? D.vaka : V2.vaka, 'data-vaka': k.id },
+    { type: 'button', 'aria-label': VAKA_ADI[k.id], 'data-vaka': k.id },
     h('span.dd-klasor-sekme', {}, k.no),
-    h(`span.dd-klasor-foto${k.id === 'vaka2' ? '.dd-foto-genis' : ''}`, {}, h('img', { src: resim(k.foto) ?? '', alt: '', draggable: 'false' }), h('i.dd-atac')),
-    h('img.dd-klasor-iz', { src: resim(k.sus) ?? '', alt: '', draggable: 'false' }),
+    h(`span.dd-klasor-foto${k.id !== 'vaka1' ? '.dd-foto-genis' : ''}`, {}, h('img', { alt: '', draggable: 'false' }), h('i.dd-atac')),
+    h('img.dd-klasor-iz', { alt: '', draggable: 'false' }),
     h('span.dd-klasor-ad', {}, k.ad),
     kilitli ? h('span.dd-kilit', { html: IKON.kilit }) : h('span.dd-oynat', { html: IKON.oyna }),
-    kilitli ? h('span.dd-kilit-yazi', {}, V2.yazi.kilitli) : null,
+    kilitli ? h('span.dd-kilit-yazi', {}, k.id === 'vaka3' ? V3.yazi.kilitli : V2.yazi.kilitli) : null,
     cozuldu ? h('span.dd-muhur.dd-muhur-kucuk.bas', {}, D.yazi.cozuldu) : null,
   );
+  sonraYukle(b.querySelector<HTMLImageElement>('.dd-klasor-foto img')!, k.foto);
+  sonraYukle(b.querySelector<HTMLImageElement>('img.dd-klasor-iz')!, k.sus);
   b.addEventListener('click', () => {
     efekt.dokunma();
     tik();
@@ -84,22 +99,24 @@ export function acilisEkrani(app: Uygulama): Ekran {
   const acik2 = vaka2Acik();
   // Vaka 2 açıksa bahçenin büyük resimleri şimdiden yüklenmeye başlar (vaka açılınca beklemesin)
   if (acik2) for (const b of ['bahce-ip', 'bahce-yol', 'bahce-golet']) new Image().src = resim(`v2/${b}`) ?? '';
-  let dosya1: HTMLElement | null = null;
-  const dosyalar = KAPAKLAR.map((k) => {
-    const kilitli = k.id === 'vaka2' && !acik2;
+  const once: Partial<Record<VakaId, HTMLElement>> = {};
+  // Vaka 3 henüz yayında değil: yalnız bayrak ya da adres (?vaka3=1) açıksa üçüncü dosya görünür
+  const gorunen = KAPAKLAR.filter((k) => k.id !== 'vaka3' || vaka3Gorunur());
+  const dosyalar = gorunen.map((k) => {
+    const kilitli = (k.id === 'vaka2' && !acik2) || (k.id === 'vaka3' && !vaka3Acik());
     const d = vakaDosyasi(k, kayit.cozulen.includes(k.id), kilitli, () => {
       if (kilitli) {
-        // kilitli: dosya sallanır, Mino Vaka 1'i gösterir
+        // kilitli: dosya sallanır, Mino bir önceki vakayı gösterir
         oynat(d, 'dd-kilit-salla');
-        if (dosya1) oynat(dosya1, 'dd-hatirla');
+        oynat(once[k.id === 'vaka3' ? 'vaka2' : 'vaka1'], 'dd-hatirla');
         mino.tepki('hayir');
-        void konus(M2.kilitli);
+        void konus(k.id === 'vaka3' ? M3.kilitli : M2.kilitli);
         return;
       }
       ses.vaka();
-      app.git(k.id === 'vaka1' ? 'vaka' : 'vaka2', { adim: 'giris' });
+      app.git(EKRAN[k.id], { adim: 'giris' });
     });
-    if (k.id === 'vaka1') dosya1 = d;
+    once[k.id] = d;
     return d;
   });
   const el = h(
@@ -108,7 +125,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     oda(),
     h('div.dd-acilis-los'),
     h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.baslik)), h('div.dd-ust-sag', {}, dosyaD, sesKucuk())),
-    h('div.dd-acilis-sahne', {}, h('div.dd-acilis-mino', {}, mino.el), h('div.dd-acilis-kino', {}, kino.el), h('div.dd-dosyalar', {}, ...dosyalar)),
+    h('div.dd-acilis-sahne', {}, h('div.dd-acilis-mino', {}, mino.el), h('div.dd-acilis-kino', {}, kino.el), h(`div.dd-dosyalar${dosyalar.length > 2 ? '.dd-uc' : ''}`, {}, ...dosyalar)),
   );
   mino.el.addEventListener('pointerdown', () => {
     mino.tepki('gidik');
@@ -188,11 +205,36 @@ export function dosyaEkrani(app: Uygulama): Ekran {
     });
     kartlar.push(k);
   }
-  kartlar.push(h('div.dd-vaka-kart.dd-yakinda', { 'aria-label': D.yazi.yakinda }, h('span.dd-vk-kapak', {}, h('b', {}, '?')), h('span.dd-vk-ad', {}, 'Vaka 3'), h('span.dd-vk-yakinda', {}, D.yazi.yakinda)));
+  // Vaka 3 (görünürse): kapakta yanakları şiş Fındık
+  if (vaka3Gorunur()) {
+    if (kayit.cozulen.includes('vaka3')) {
+      const resimEl = h('img.dd-vk-yavru', { alt: '', draggable: 'false' }) as HTMLImageElement;
+      sonraYukle(resimEl, 'v3/findik-yanak');
+      const k = h('button.dd-vaka-kart.dd-cozulmus', { type: 'button', 'data-vaka': 'vaka3', 'aria-label': V3.vaka }, h('span.dd-vk-kapak.dd-vk-agac', {}, resimEl), h('span.dd-vk-ad', {}, V3.vaka), h('span.dd-muhur.dd-muhur-kucuk.bas', {}, D.yazi.cozuldu));
+      k.addEventListener('click', () => {
+        efekt.dokunma();
+        romanAc('vaka3');
+      });
+      kartlar.push(k);
+    } else {
+      const acik = vaka3Acik();
+      const k = h(`button.dd-vaka-kart.dd-bos${acik ? '' : '.dd-kilitli'}`, { type: 'button', 'data-vaka': 'vaka3', 'aria-label': V3.vaka }, h('span.dd-vk-kapak', {}, acik ? h('b', {}, '?') : h('span.dd-kilit', { html: IKON.kilit })), h('span.dd-vk-ad', {}, V3.vaka));
+      k.addEventListener('click', () => {
+        efekt.dokunma();
+        if (acik) app.git('vaka3', { adim: 'giris' });
+        else {
+          oynat(k, 'dd-kilit-salla');
+          void konus(M3.kilitli);
+        }
+      });
+      kartlar.push(k);
+    }
+  }
+  kartlar.push(h('div.dd-vaka-kart.dd-yakinda', { 'aria-label': D.yazi.yakinda }, h('span.dd-vk-kapak', {}, h('b', {}, '?')), h('span.dd-vk-ad', {}, vaka3Gorunur() ? 'Vaka 4' : 'Vaka 3'), h('span.dd-vk-yakinda', {}, D.yazi.yakinda)));
   const el = h('div.dd-dosya-ekran', {}, oda(), h('div.dd-acilis-los'), h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.yazi.dosya)), h('div.dd-ust-sag', {}, sesKucuk())), h('div.dd-vaka-izgara', {}, ...kartlar));
 
   function romanAc(vaka: VakaId) {
-    const r = vaka === 'vaka1' ? romanKur() : romanKur(ROMAN2, V2.vaka, 'vaka2');
+    const r = vaka === 'vaka1' ? romanKur() : vaka === 'vaka2' ? romanKur(ROMAN2, V2.vaka, 'vaka2') : romanKur(ROMAN3, V3.vaka, 'vaka3');
     r.muhur.classList.add('bas');
     el.append(r.el);
     const kapat = h('button.dd-roman-dugme.dd-rd-kapat', { type: 'button' }, h('span.dd-rd-ikon', { html: IKON.kapat }), h('span', {}, D.yazi.dosya));
@@ -204,7 +246,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
     r.alt.classList.add('acik');
     void kareleriGetir(r, [], (i) => ses.kare(i)).then(() => {
       const dur = sirayla(r, vaka === 'vaka1' ? 5200 : 4200);
-      void konus(vaka === 'vaka1' ? M.hikaye : M2.hikaye).then(dur);
+      void konus(vaka === 'vaka1' ? M.hikaye : vaka === 'vaka2' ? M2.hikaye : M3.hikaye).then(dur);
     });
   }
   return { el, kapat: () => kapatilacak.forEach((f) => f()) };

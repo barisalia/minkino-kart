@@ -6,14 +6,18 @@
  * Vaka 1 çözülünce açılır), dosya (Vaka Dosyam: çizgi romanlar).
  * Test / gösterim: ?test=1&ekran=vaka&adim=tuy (doğrudan bir halkaya), &ekran=vaka2&adim=kim, &sifirla=1 (kayıt
  * sıfırlanır), &cozuldu=1 (Vaka 1 çözülmüş sayılır), &cozuldu=2 (iki vaka da), &tohum=3 (sabit rastgelelik).
+ * Vaka 3 (gizli, mantik3.ts → VAKA3_YAYINDA): ?vaka=3 doğrudan vaka; ?vaka3=1 seçim ekranında üçüncü dosya;
+ * test: ?test=1&ekran=vaka3&adim=kim.
  */
 import { ekranKaydet, Uygulama, type BaslatSecenekleri } from '../../src/uygulama';
 import { acilisEkrani, dosyaEkrani } from './ekranlar';
 import { kayit, kaydet, sifirla } from './kayit';
 import { ADIMLAR, type Adim } from './mantik';
 import { adim2mi } from './mantik2';
+import { adim3mu } from './mantik3';
 import { vakaEkrani } from './vaka';
 import { vaka2Ekrani } from './vaka2';
+import { vaka3Ekrani } from './vaka3';
 
 export type { BaslatSecenekleri };
 
@@ -21,6 +25,7 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
   ekranKaydet('acilis', acilisEkrani);
   ekranKaydet('vaka', vakaEkrani);
   ekranKaydet('vaka2', vaka2Ekrani);
+  ekranKaydet('vaka3', vaka3Ekrani);
   ekranKaydet('dosya', dosyaEkrani);
 
   const app = new Uygulama(kok, secenekler);
@@ -34,18 +39,25 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     if (q.has('sifirla')) sifirla();
     if (q.has('cozuldu')) {
       const n = Number(q.get('cozuldu')) || 1;
-      for (const v of ['vaka1', 'vaka2'].slice(0, n)) if (!kayit.cozulen.includes(v)) kayit.cozulen.push(v);
+      for (const v of ['vaka1', 'vaka2', 'vaka3'].slice(0, n)) if (!kayit.cozulen.includes(v)) kayit.cozulen.push(v);
       kaydet();
     }
     ekran = q.get('ekran') ?? 'acilis';
     const a = q.get('adim');
     if (ekran === 'vaka2') {
       if (adim2mi(a)) param = { adim: a };
+    } else if (ekran === 'vaka3') {
+      param = { adim: adim3mu(a) ? a : 'giris' };
     } else if (a && (ADIMLAR as readonly string[]).includes(a)) {
       ekran = q.get('ekran') ?? 'vaka';
       param = { adim: a as Adim };
     }
     (window as unknown as { __dedektif: unknown }).__dedektif = { app, kayit };
+  }
+  // Vaka 3 (henüz seçim ekranında yok: mantik3.ts → VAKA3_YAYINDA): /dedektif/?vaka=3 doğrudan açar
+  if (ekran === 'acilis' && q.get('vaka') === '3') {
+    ekran = 'vaka3';
+    param = { adim: 'giris' };
   }
   app.git(ekran, param);
   return () => {
