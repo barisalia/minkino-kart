@@ -143,9 +143,26 @@ export const OYUNLAR: OyunKarti[] = [
  * telefonda 4 × 2 (Pasta bir hücre), 3 sütunda (tablet) 3 × 3 (Pasta iki hücre).
  */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
-  if (!uygulama) return OYUNLAR;
-  return OYUNLAR.filter((k) => !k.uygulamadaYok);
+  const hepsi = KINO_OTOBUS_MENUDE ? [...OYUNLAR, KINO_OTOBUS_KARTI] : OYUNLAR;
+  if (!uygulama) return hepsi;
+  return hepsi.filter((k) => !k.uygulamadaYok);
 }
+
+/**
+ * Kino'nun Otobüsü (dondurma): mekanik hazır, son çizimler (Gemini) bekleniyor. Menüde görünmesi için true yapılır
+ * (o gün kartın zemini kapak görseli olur: assets/kino-otobus/kapak.webp; menü ızgarası 9 karta göre denetlenir:
+ * tests/unit/abonelik.test.ts → "aynı 8 kart"). Şimdilik yalnız /kino-otobus/ adresinden denenir.
+ */
+export const KINO_OTOBUS_MENUDE = false;
+export const KINO_OTOBUS_KARTI: OyunKarti = {
+  id: 'kino-otobus',
+  ad: 'Kino’nun Otobüsü',
+  adres: './kino-otobus/',
+  renk: '#5FB4DC',
+  zemin: 'film/park/arka-uzak',
+  rozet: 'Yeni',
+  katmanlar: [],
+};
 
 /** Parallax derinliği: zemin arkada durur, katmanlar sırayla öne gelir (0 zemin … 1 en ön) */
 export const derinlik = (i: number, n: number) => (n <= 1 ? 1 : 0.45 + (0.55 * i) / (n - 1));

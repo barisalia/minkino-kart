@@ -78,10 +78,10 @@ export function telefonMu(en: number, boy: number): boolean {
 
 /**
  * Telefonda yatay kilitli sayfalar: geniş, sahneli oyunlar (Pasta Otobüsü, Mino'nun Pazarı, Sesli Maceralar,
- * Dedektif Mino, Çizgi Filmler, Kino Ne Giysin?). Öbürleri (menü, Kartlar, Çiz Canlansın) iki yönde de
- * güzel durur: cihazı izler.
+ * Dedektif Mino, Çizgi Filmler, Kino Ne Giysin?, Kino'nun Otobüsü). Öbürleri (menü, Kartlar, Çiz Canlansın) iki
+ * yönde de güzel durur: cihazı izler.
  */
-export const YATAY_SAYFALAR: readonly string[] = ['pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin'];
+export const YATAY_SAYFALAR: readonly string[] = ['pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus'];
 
 /** Sayfanın telefondaki yönü (adres yolundan: /pasta/index.html → yatay, / ve /kartlar/ → serbest) */
 export function sayfaYonu(yol: string): Yon {

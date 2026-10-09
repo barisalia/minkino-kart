@@ -15,6 +15,8 @@ const SAYFALAR = {
   macera: 'macera/index.html',
   pazar: 'pazar/index.html',
   pasta: 'pasta/index.html',
+  // Kino'nun Otobüsü (dondurma): menüde henüz yok (uygulama/src/oyunlar.ts → KINO_OTOBUS_MENUDE); /kino-otobus/ ile denenir
+  kinoOtobus: 'kino-otobus/index.html',
   dedektif: 'dedektif/index.html',
   giysin: 'giysin/index.html',
   film: 'film/index.html',

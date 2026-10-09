@@ -31,6 +31,10 @@ export const ERISIM: Record<string, Erisim> = {
   // Kino Ne Giysin?: ilk mevsim (Kış · Kardan adam) ücretsiz, diğer mevsimler abonelikle
   'giysin/kis': 'ucretsiz',
   'giysin/*': 'abonelik',
+  // Kino'nun Otobüsü: Gün 1 (Mino'lu öğretici, akşam sayımı, ilk iki otobüs süsü) ücretsiz; Gün 2-3 ve kalan süsler
+  // abonelikle ('kino-otobus/susler'). Yaş ayarı kilitlenmez.
+  'kino-otobus/gun-1': 'ucretsiz',
+  'kino-otobus/*': 'abonelik',
 };
 
 /** Tablodan bir içeriğin erişim türü (oyun ya da 'oyun/bolum') */
