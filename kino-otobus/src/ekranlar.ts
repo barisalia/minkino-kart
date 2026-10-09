@@ -51,7 +51,13 @@ function yasSec(kok: HTMLElement, bitti: (y: Yas) => void) {
     });
     return b;
   };
-  const perde = h('div.ko-yas-perde', { role: 'dialog', 'aria-label': 'Yaş' }, h('div.ko-yas-kutu', {}, dugme('kucuk', A.yas_kucuk, 2), dugme('buyuk', A.yas_buyuk, 3)));
+  // ilk açılış: Gemini kapağı (Kino dondurma uzatıyor) tam ekran, yaş düğmeleri altta
+  const kapak = adres('kapak');
+  const perde = h(
+    `div.ko-yas-perde${kapak ? '.ko-kapakli' : ''}`,
+    { role: 'dialog', 'aria-label': 'Yaş', style: kapak ? `--kapak:url("${kapak}")` : undefined },
+    h('div.ko-yas-kutu', {}, dugme('kucuk', A.yas_kucuk, 2), dugme('buyuk', A.yas_buyuk, 3)),
+  );
   kok.append(perde);
 }
 

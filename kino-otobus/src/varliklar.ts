@@ -66,7 +66,7 @@ const YOK: Yedek = { tur: 'yok' };
 export const VARLIK = {
   // ---- A · Gün 1
   otobus: kod(otobusSvg),
-  'ic-arka': YOK, // CSS ile çizilen krem fayans duvar (kino-otobus.css → .ko-duvar)
+  'ic-arka': YOK, // pencere çerçevesi (gri maske şeffaf, 9 dilim: IC_ARKA_CERCEVE); yoksa CSS çerçeve
   'tezgah-on': YOK, // CSS ile çizilen buz mavisi tezgâh yüzü (.ko-tezgah-on)
   dolap: YOK, // CSS ile çizilen dolap (.ko-dolap)
   'kap-cilek': kod(() => tatKabiSvg('cilek')),
@@ -84,7 +84,7 @@ export const VARLIK = {
   'kino-sapka': YOK, // Kino iskeletine kod çizimi (cizim.ts → KINO_SAPKA)
   'sus-kemik-tabela': kod(kemikTabelaSvg),
   'sus-flama': yen('parti/flama'),
-  kapak: YOK, // menü kartı (gelince uygulama/src/oyunlar.ts → KINO_OTOBUS_KARTI.zemin)
+  kapak: YOK, // menü kartının zemini (uygulama/src/oyunlar.ts → KINO_OTOBUS_KARTI.zemin) ve ilk açılış (yaş seçimi) perdesi
   // ---- D · Gün 2-3 ve süsler
   'kap-limon': kod(() => tatKabiSvg('limon')),
   'kap-fistik': kod(() => tatKabiSvg('fistik')),
@@ -179,7 +179,7 @@ export const YERLESIM = {
  * çakışmasın: kemik tabela ön tavanda, çatı külahı arka tavanda.
  */
 export const OTOBUS_YERI = {
-  tabela: { x: 0.735, y: 0.235, en: 0.15 },
+  tabela: { x: 0.69, y: 0.322, en: 0.12 },
   flama: { x: 0.4775, y: 0.405, en: 0.36 },
   kulah: { x: 0.255, y: 0.2, en: 0.12 },
   ampul: { x: 0.5, y: 0.31, en: 0.64 },
@@ -201,32 +201,58 @@ export const OTOBUS_YERI = {
 };
 
 /**
- * Dolap görselinde (A4, 1600×872) tat kaplarının yerleri. Oranlar dolap görselinin kutusuna göre (kutu görselin en-boy
- * oranında, gerilmez): x kabın ortası, alt kabın tabanı (tepeden), boy kabın boyu (kabın eni en-boy oranından).
- * Gözler: arka sıra y 0.163-0.274 (x ortaları 0.288 / 0.5 / 0.715), ön sıra y 0.337-0.469 (0.254 / 0.5 / 0.744).
- * Gün 1 (3 tat): kaplar ön sıradaki gözlere oturur, büyük. Gün 2-3 (6 tat): arka sıra arka gözlere, ön sıra ön gözlere.
+ * Dolap v2 görselinde (A4, 2000×970: tek sıra 4 büyük göz, hafif yukarıdan) tat kaplarının yerleri. Oranlar dolap
+ * görselinin kutusuna göre (kutu görselin en-boy oranında, gerilmez; x enin, y boyun oranı, tepeden).
+ * Gözlerin koyu içi: x 0.101-0.275 / 0.313-0.477 / 0.517-0.683 / 0.724-0.898, y 0.307-0.579.
+ * - Gün 1 (3 tat): kaplar ilk üç göze oturur; dördüncü gözde Kino'nun kepçesi durur.
+ * - 6 tatlı günler: dört kap gözlerde (Gün 1 ile aynı boy), kalan iki kap dolabın önünde tezgâhta (aynı boy; yakın
+ *   olduğu için arkadakileri örtmez: önün tepesi gözlerin altında).
+ * Dokunma kutuları kaptan büyüktür: gözde aralik × (tepeden göz altına), önde onEn × (göz altından dolabın altına);
+ * 844×390'da dolap ≈ 172u boy, 355u en → göz kutusu ≈ 73u × 111u, ön kutu ≈ 135u × 73u (en az 72u).
  */
 export const DOLAP_GOZLERI = {
-  oran: 1600 / 872,
-  tek: [
-    { x: 0.254, alt: 0.455, boy: 0.46 },
-    { x: 0.5, alt: 0.455, boy: 0.46 },
-    { x: 0.744, alt: 0.455, boy: 0.46 },
-  ],
-  cift: [
-    { x: 0.288, alt: 0.262, boy: 0.34 },
-    { x: 0.5, alt: 0.262, boy: 0.34 },
-    { x: 0.715, alt: 0.262, boy: 0.34 },
-    { x: 0.254, alt: 0.49, boy: 0.34 },
-    { x: 0.5, alt: 0.49, boy: 0.34 },
-    { x: 0.744, alt: 0.49, boy: 0.34 },
-  ],
+  oran: 2000 / 970,
+  /** gözlerin ortası (x) */
+  goz: [0.188, 0.395, 0.6, 0.811],
+  /** göz aralığı: göz dokunma kutusunun eni */
+  aralik: 0.205,
+  /** gözdeki kabın tabanı (tepeden; gözün koyu içinin dibi) */
+  gozAlt: 0.575,
+  /** göz dokunma kutusunun altı (tepeden); ön sıranın kutusu buradan başlar */
+  sinir: 0.608,
+  /** dolabın önündeki kaplar: x ortaları (1 ya da 2 kap), dokunma eni, kabın tabanı */
+  on: [[0.5], [0.29, 0.71]],
+  onEn: 0.38,
+  onAlt: 0.995,
+  /** kabın boyu (dolabın boyunun oranı; eni görselin en-boy oranından: 958 / 1024) */
+  kapBoy: 0.396,
 };
 
+/** Dolapta n tat kabının dokunma kutusu ve içindeki kabın yeri (yüzde, dolap kutusuna göre) */
+export function dolapYerleri(n: number): { sol: number; en: number; ust: number; boy: number; kapAlt: number; kapBoy: number }[] {
+  const D = DOLAP_GOZLERI;
+  const ust = -0.04;
+  const gozde = Math.min(n, D.goz.length);
+  const onde = Math.min(n - gozde, 2);
+  const yer = (x: number, en: number, u: number, a: number, kapTaban: number) => ({
+    sol: (x - en / 2) * 100,
+    en: en * 100,
+    ust: u * 100,
+    boy: (a - u) * 100,
+    kapAlt: ((a - kapTaban) / (a - u)) * 100,
+    kapBoy: (D.kapBoy / (a - u)) * 100,
+  });
+  return [
+    ...D.goz.slice(0, gozde).map((x) => yer(x, D.aralik, ust, D.sinir, D.gozAlt)),
+    ...(onde ? D.on[onde - 1] : []).map((x) => yer(x, D.onEn, D.sinir, 1.03, D.onAlt)),
+  ];
+}
+
 /**
- * İç duvar görselinde (A2, 2048×1143) gri pencere alanı (oran): gün ekranında görsel, gri alan pencere kutusunun enine
- * ve tepesine oturacak ölçekte çizilir (pencerenin mavi kaporta çerçevesi ve fayanslar çevrede görünür). kes: çerçevenin
- * sağ dış kenarı; sağındaki duvar (Gemini'nin kendi rafı ve kavanozları) rafın arkasına düşmesin diye orada düz fayans
- * duvar başlar.
+ * İç duvar v2 (A2, geniş pencere): betik gri maskeyi şeffaf yapar, çerçevenin dış kenarından kırpar
+ * (ekip/illustrator/kino-otobus-isle.cjs çıktısı, 3072×1018). Pencere kutusuna 9 dilim (CSS border-image) olarak
+ * oturur: dilimler görsel px'i (sol/sag: çerçeve kalınlığı, ust: fırfırın alt ucu, alt: grinin altından pervazın altına;
+ * cam: fırfırların arasında camın tepesi). olcek: görsel px başına tasarım birimi (--u); fırfır şeridi 844×390
+ * telefonda pencerenin enine yaklaşık kendi oranında oturur (yan kalınlık ≈ 30u).
  */
-export const IC_ARKA_PENCERE = { x0: 0.27, y0: 0.224, x1: 0.73, y1: 0.647, kes: 0.772, oran: 2048 / 1143 };
+export const IC_ARKA_CERCEVE = { en: 3072, boy: 1018, sol: 123, sag: 123, ust: 176, cam: 124, alt: 75, olcek: 0.244 };

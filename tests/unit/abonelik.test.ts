@@ -4,7 +4,7 @@ import { aynaDepo, aynala, geriYukle, type KaliciDepo } from '../../src/kabuk/ka
 import { ayaBol, denemeGunu } from '../../src/abonelik/satin';
 import { KAPI_BASAMAK, KAPI_HAK, kapiBeklemesi, kapiSorusu, sayiYazi } from '../../src/ui/ebeveyn-kapisi';
 import { geriKarari, menuSayfasiMi } from '../../src/kabuk/yon';
-import { menuOyunlari, OYUNLAR } from '../../uygulama/src/oyunlar';
+import { KINO_OTOBUS_MENUDE, menuOyunlari, OYUNLAR } from '../../uygulama/src/oyunlar';
 import { katalog } from '../../film/src/katalog';
 
 describe('erişim tablosu', () => {
@@ -37,17 +37,27 @@ describe('erişim tablosu', () => {
 });
 
 describe('uygulama menüsü', () => {
-  it('web ve uygulama: aynı 8 kart, sıra korunur, Pasta geniş ve sonda', () => {
+  it('web ve uygulama: aynı 8 kart (Kino’nun Otobüsü açılınca 9), sıra korunur, Pasta geniş ve sonda', () => {
+    const beklenen = ['kartlar', 'pazar', 'canlan', 'macera', 'film', 'dedektif', 'giysin', ...(KINO_OTOBUS_MENUDE ? ['kino-otobus'] : []), 'pasta'];
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
-      expect(u.map((k) => k.id)).toEqual(['kartlar', 'pazar', 'canlan', 'macera', 'film', 'dedektif', 'giysin', 'pasta']);
+      expect(u.map((k) => k.id)).toEqual(beklenen);
       expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['pasta']);
-      // ızgara boşluksuz (uygulama.css → data-adet='8'): 7 normal + geniş Pasta
-      // telefon dikey 2 sütun 2 × 4 ve yatay telefon 4 sütun 4 × 2 (Pasta 1 hücre); 3 sütun (Pasta 2 hücre) 3 × 3
       const normal = u.filter((k) => !k.genis).length;
-      expect(normal).toBe(7);
-      expect((normal + 1) % 2).toBe(0);
-      expect((normal + 1) % 4).toBe(0);
-      expect((normal + 2) % 3).toBe(0);
+      if (!KINO_OTOBUS_MENUDE) {
+        // ızgara boşluksuz (uygulama.css → data-adet='8'): 7 normal + geniş Pasta
+        // telefon dikey 2 sütun 2 × 4 ve yatay telefon 4 sütun 4 × 2 (Pasta 1 hücre); 3 sütun (Pasta 2 hücre) 3 × 3
+        expect(normal).toBe(7);
+        expect((normal + 1) % 2).toBe(0);
+        expect((normal + 1) % 4).toBe(0);
+        expect((normal + 2) % 3).toBe(0);
+      } else {
+        // data-adet='9': 8 normal + geniş Pasta; telefon dikey 2 × 5 ve yatay telefon 5 × 2 (Pasta 2 hücre);
+        // 3 sütun (tablet) 3 × 3 (Pasta 1 hücre)
+        expect(normal).toBe(8);
+        expect((normal + 2) % 2).toBe(0);
+        expect((normal + 2) % 5).toBe(0);
+        expect((normal + 1) % 3).toBe(0);
+      }
     }
   });
 });
