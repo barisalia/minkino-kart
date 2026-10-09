@@ -16,6 +16,21 @@ function katman(ad: VarlikAdi, sinif: string, y: { x: number; y: number; en: num
   return h(`div.ko-ob-sus.${sinif}`, { style: `left:${yuzde(y.x)};top:${yuzde(y.y)};width:${yuzde(y.en)}`, html: gorsel(ad) });
 }
 
+/**
+ * Teker katmanı: otobüs resminin teker dairesi (merkez x, y; yarıçap r tuval eninin oranı). Kutu 2r × 2r; arka plan
+ * resmin tamamı, teker kutunun ortasına gelecek kaydırmayla. Döndürülünce teker döner (giriş).
+ */
+export function tekerKatmani(url: string, t: { x: number; y: number; r: number }): HTMLElement {
+  const oran = 9 / 16; // tuvalin boy / en oranı
+  const resimEn = 1 / (2 * t.r); // kutu eni = 1
+  const resimBoy = resimEn * oran;
+  const px = (0.5 - t.x * resimEn) / (1 - resimEn);
+  const py = (0.5 - t.y * resimBoy) / (1 - resimBoy);
+  return h('i.ko-ob-teker', {
+    style: `left:${yuzde(t.x - t.r)};top:${yuzde(t.y - t.r / oran)};width:${yuzde(2 * t.r)};background-image:url("${url}");background-size:${(resimEn * 100).toFixed(1)}% auto;background-position:${yuzde(px)} ${yuzde(py)}`,
+  });
+}
+
 /** Otobüs: alınan süslerle */
 export function otobusEl(o: { alinan: readonly string[]; boya: string; acik?: boolean; sinif?: string }): HTMLElement {
   const el = h(`div.ko-otobus${o.sinif ? `.${o.sinif}` : ''}`, { 'aria-hidden': 'true' });
@@ -33,12 +48,17 @@ export function otobusGuncelle(el: HTMLElement, o: { alinan: readonly string[]; 
   el.dataset.boya = o.boya;
   const var_ = (id: string) => o.alinan.includes(id);
   const Y = OTOBUS_YERI;
+  const govde = h('div.ko-ob-govde-kap', { html: gorsel('otobus', 'ko-ob-govde-g') });
+  const url = adres('otobus');
+  el.classList.toggle('ko-ob-resimli', !!url);
+  // Gemini otobüsünde tekerler resmin parçası: girişte dönsünler diye aynı resimden kesilmiş yuvarlak katman
+  if (url) govde.append(...Y.teker.map((t) => tekerKatmani(url, t)));
   const parcalar: (HTMLElement | null)[] = [
     var_('cati-kulah') ? katman('sus-cati-kulah', 'ko-ob-catikulah', Y.kulah) : null,
-    h('div.ko-ob-govde-kap', { html: gorsel('otobus', 'ko-ob-govde-g') }),
+    govde,
     var_('ampul') ? katman('sus-ampul', 'ko-ob-ampul', Y.ampul) : null,
-    var_('flama') ? katman('sus-flama', 'ko-ob-flama', Y.flama) : null,
     h('div.ko-ob-kapak-acik', { style: `left:${yuzde(Y.kapak.x - Y.kapak.en / 2)};top:${yuzde(Y.kapak.y - Y.kapak.boy / 2)};width:${yuzde(Y.kapak.en)};height:${yuzde(Y.kapak.boy)}` }, h('i.ko-ob-isik'), h('div.ko-ob-tente', { html: tenteSvg() })),
+    var_('flama') ? katman('sus-flama', 'ko-ob-flama', Y.flama) : null,
     var_('kemik-tabela') ? katman('sus-kemik-tabela', 'ko-ob-tabela', Y.tabela) : null,
     ...(var_('jant') ? Y.jant.map((j) => katman('sus-jant', 'ko-ob-jant', j)) : []),
   ];

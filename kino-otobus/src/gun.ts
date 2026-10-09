@@ -53,7 +53,7 @@ import {
 import { kutuOlcu, Musteri } from './musteri';
 import { dondurmaciKino, otobusAdresleri, otobusEl } from './otobus';
 import { ses } from './sesler';
-import { adres, gorsel, kapAdi, manzaraAdres, sosSiseAdi, sosUstAdi, susAdi, susRafAdi, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
+import { adres, DOLAP_GOZLERI, gorsel, IC_ARKA_PENCERE, kapAdi, manzaraAdres, sosSiseAdi, sosUstAdi, susAdi, susRafAdi, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
 import { onYukle, resimleriTopla } from './yukle';
 
 const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
@@ -193,8 +193,16 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     return b;
   });
   const dolapUrl = adres('dolap');
-  const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 3 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}")` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), h('div.ko-dolap-ic', {}, ...tatDugmeleri));
-  if (dolapUrl) dolap.classList.add('ko-resimli');
+  const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 3 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}");--dolap-oran:${DOLAP_GOZLERI.oran.toFixed(4)}` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), h('div.ko-dolap-ic', {}, ...tatDugmeleri));
+  if (dolapUrl) {
+    // Gemini dolabı: kaplar görseldeki gözlere oturur (varliklar.ts → DOLAP_GOZLERI)
+    dolap.classList.add('ko-resimli');
+    const gozler = tatDugmeleri.length > 3 ? DOLAP_GOZLERI.cift : DOLAP_GOZLERI.tek;
+    tatDugmeleri.forEach((b, i) => {
+      const g = gozler[i % gozler.length];
+      b.style.cssText += `left:${(g.x * 100).toFixed(2)}%;bottom:${((1 - g.alt) * 100).toFixed(2)}%;height:${(g.boy * 100).toFixed(2)}%`;
+    });
+  }
 
   // iki hazırlık yuvası
   const slotlar: Slot[] = [0, 1].map((i) => {
@@ -218,7 +226,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const ustKat = h('div.ko-ust-kat', {}, pencere, raf);
   const altKat = h('div.ko-alt-kat', {}, h('i.ko-tezgah-on', { 'aria-hidden': 'true' }), kaplar, dolap, yuvalar, kumbaraYer);
   const icArka = adres('ic-arka');
-  if (icArka) ustKat.style.setProperty('--ic-arka', `url("${icArka}")`);
+  if (icArka) {
+    ustKat.style.setProperty('--ic-arka', `url("${icArka}")`);
+    ustKat.classList.add('ko-ic-resimli');
+  }
   const tezgahOn = adres('tezgah-on');
   if (tezgahOn) altKat.style.setProperty('--tezgah-on', `url("${tezgahOn}")`);
   const duzen = h('div.ko-duzen', { 'data-gun': String(gun) }, ustKat, altKat);
@@ -253,6 +264,15 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (penH > 0) el.style.setProperty("--pen-h", `${penH.toFixed(1)}px`);
     const yk = slotlar[0].yuvaEl.getBoundingClientRect();
     if (yk.height) el.style.setProperty('--yuva-h', `${(yk.height - 24 * u).toFixed(1)}px`);
+    // iç duvar görseli: gri pencere alanı pencere kutusunun enine ve tepesine oturur (kamera dönüşümünden bağımsız ölçü)
+    if (icArka && pencere.offsetWidth) {
+      const P = IC_ARKA_PENCERE;
+      const en = pencere.offsetWidth / (P.x1 - P.x0);
+      const boy = en / P.oran;
+      ustKat.style.setProperty('--ic-boyut', `${en.toFixed(1)}px ${boy.toFixed(1)}px`);
+      ustKat.style.setProperty('--ic-yer', `${(pencere.offsetLeft - P.x0 * en).toFixed(1)}px ${(pencere.offsetTop - P.y0 * boy).toFixed(1)}px`);
+      ustKat.style.setProperty('--ic-kes', `${(pencere.offsetLeft + (P.kes - P.x0) * en).toFixed(1)}px`);
+    }
   };
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(olc) : null;
   ro?.observe(el);
@@ -586,9 +606,45 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     }
     ses.slurp();
     yuvaCiz(s);
-    const so = s.kuleKap.querySelector(`.ko-alt[data-k="${s.yuva.secili}"] .ko-k-sos`);
-    salla(so, 'ko-sos-ak');
+    const so = s.kuleKap.querySelector<HTMLElement>(`.ko-alt[data-k="${s.yuva.secili}"] .ko-k-sos`);
+    if (so && !TEST_MODU && !AZ_HAREKET) void sosDok(sos, b, so);
+    else salla(so, 'ko-sos-ak');
     adimGuncelle();
+  }
+  /** Şişe raftan kulenin tepesine uçar, ağzı topun tepesine gelecek şekilde eğilir; sos o an yukarıdan aşağı akar */
+  async function sosDok(sos: Sos, b: HTMLElement, so: HTMLElement) {
+    const r = so.getBoundingClientRect();
+    if (!r.width) return salla(so, 'ko-sos-ak');
+    const en = r.width * 0.42;
+    const boy = en * (1024 / 437);
+    const sise = h('div.ko-sos-dok', { style: `width:${en.toFixed(1)}px;height:${boy.toFixed(1)}px`, html: gorsel(sosSiseAdi(sos)) });
+    so.style.clipPath = 'inset(0 0 100% 0)';
+    // 150° dönmüş şişenin ağzı merkezden (boy/2)·(sin150°, −cos150°) = (0.25·boy, 0.433·boy) uzakta: ağız topun tepesine
+    const [x, y] = efekt_.merkez(so, 0.5, 0.02);
+    const [x0, y0] = efekt_.merkez(b);
+    const dx = x - boy * 0.25 - x0;
+    const dy = y - boy * 0.433 - y0;
+    const kap = h('div.ko-ucan', { style: `left:${x0}px;top:${y0}px` }, sise);
+    efekt_.el.append(kap);
+    const yer = (ek: string) => `translate(-50%, -50%) translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) rotate(150deg)${ek}`;
+    const a = kap.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(0.9)' },
+        { transform: `translate(-50%, -50%) translate(${(dx / 2).toFixed(0)}px, ${(dy / 2 - 50).toFixed(0)}px) rotate(70deg)`, offset: 0.2 },
+        { transform: yer(''), offset: 0.38 },
+        { transform: yer(' scale(1.05, 0.92)'), offset: 0.6 },
+        { transform: yer(''), offset: 0.8 },
+        { transform: yer(' translateY(30px)'), opacity: 0 },
+      ],
+      { duration: sure(1000), easing: 'ease-in-out', fill: 'both' },
+    );
+    // sos, şişe yerine varınca akar
+    sonra(sure(380), () => {
+      so.style.clipPath = '';
+      salla(so, 'ko-sos-ak');
+    });
+    await a.finished.catch(() => undefined);
+    kap.remove();
   }
 
   function susBas(sus: Sus, b: HTMLElement) {
@@ -1054,7 +1110,7 @@ function otobusGirisi(ekran: HTMLElement, yer: Yer, hazir: Promise<void>, bitti:
       return;
     }
     const ob = katman.querySelector<HTMLElement>('.ko-giris-ob')!;
-    const tekerler = [...otobus.querySelectorAll<SVGGElement>('.ko-ob-teker')];
+    const tekerler = [...otobus.querySelectorAll<Element>('.ko-ob-teker')];
     const donus = tekerler.map((t) => t.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(720deg)' }], { duration: 1400, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'forwards' }));
     await ob
       .animate(

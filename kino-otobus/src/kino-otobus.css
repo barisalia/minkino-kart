@@ -97,11 +97,28 @@
   margin: 0 calc(-12 * var(--u));
   padding: 0 calc(12 * var(--u));
   background:
-    var(--ic-arka, none) center / cover no-repeat,
+    var(--ic-arka, none) var(--ic-yer, center) / var(--ic-boyut, cover) no-repeat,
     radial-gradient(circle at 50% 55%, rgba(201, 138, 75, 0.18) 0 9%, transparent 10%) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
     linear-gradient(90deg, rgba(90, 52, 35, 0.06) 1px, transparent 1px) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
     linear-gradient(0deg, rgba(90, 52, 35, 0.06) 1px, transparent 1px) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
     #fff6e4;
+}
+/* Gemini iç duvarı: pencere çerçevesinin sağında (rafın arkası) düz fayans duvar; köşede gölgeli bir kenar */
+.ko-kok .ko-ust-kat.ko-ic-resimli::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--ic-kes, 100%);
+  right: 0;
+  background:
+    linear-gradient(90deg, rgba(90, 52, 35, 0.16), transparent calc(10 * var(--u))),
+    radial-gradient(circle at 50% 55%, rgba(201, 138, 75, 0.18) 0 9%, transparent 10%) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
+    linear-gradient(90deg, rgba(90, 52, 35, 0.06) 1px, transparent 1px) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
+    linear-gradient(0deg, rgba(90, 52, 35, 0.06) 1px, transparent 1px) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
+    #fff6e4;
+  border-left: calc(3 * var(--u)) solid var(--ko-k);
+  pointer-events: none;
 }
 .ko-kok .ko-pencere {
   position: relative;
@@ -567,7 +584,7 @@
   top: 0;
   bottom: calc(-12 * var(--u));
   background:
-    var(--tezgah-on, none) center / 100% 100% no-repeat,
+    var(--tezgah-on, none) center top / 100% auto no-repeat,
     linear-gradient(180deg, #f2c88c 0 calc(8 * var(--u)), var(--ko-k) calc(8 * var(--u)) calc(11 * var(--u)), transparent calc(11 * var(--u))),
     radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4) 0 14%, transparent 15%) 0 calc(12 * var(--u)) / calc(36 * var(--u)) calc(36 * var(--u)),
     var(--ko-buz);
@@ -617,10 +634,32 @@
   box-shadow: 0 calc(4 * var(--u)) 0 var(--ko-k);
   padding: calc(8 * var(--u));
 }
+/* Gemini dolabı: görsel kendi en-boy oranında (gerilmez), kaplar görseldeki gözlere oturur (gun.ts → DOLAP_GOZLERI) */
 .ko-kok .ko-dolap.ko-resimli {
   border: 0;
   box-shadow: none;
+  background: none;
+  padding: 0;
+  justify-content: center;
+}
+.ko-kok .ko-dolap.ko-resimli .ko-dolap-cam {
+  display: none;
+}
+.ko-kok .ko-dolap.ko-resimli .ko-dolap-ic {
+  position: relative;
+  flex: 0 0 auto;
+  display: block;
+  height: 100%;
+  aspect-ratio: var(--dolap-oran);
   background: var(--dolap-url) center / 100% 100% no-repeat;
+}
+.ko-kok .ko-dolap.ko-resimli .ko-tat {
+  position: absolute;
+  aspect-ratio: 958 / 1024;
+  max-height: none;
+  padding: 0;
+  background: none;
+  transform: translateX(-50%);
 }
 .ko-kok .ko-dolap-cam {
   position: absolute;
@@ -687,7 +726,7 @@
   width: var(--yuva-w);
   border-radius: calc(20 * var(--u));
   border: calc(3 * var(--u)) dashed rgba(90, 52, 35, 0.35);
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: box-shadow 0.2s, background 0.2s;
 }
@@ -748,6 +787,7 @@
   align-items: flex-end;
   justify-content: center;
   gap: calc(2 * var(--u));
+  transition: right 0.25s ease;
 }
 .ko-kok .ko-alt {
   position: relative;
@@ -760,10 +800,14 @@
   box-shadow: 0 0 0 calc(3 * var(--u)) var(--kurdele);
   background: rgba(255, 255, 255, 0.6);
 }
+/* Ver düğmesi görününce kule sola kayar: düğme en üst topu (sosu) örtmesin */
+.ko-kok .ko-yuva:has(> .ko-ver:not([hidden])) .ko-yuva-kule {
+  right: calc(26 * var(--u));
+}
 .ko-kok .ko-ver {
   position: absolute;
-  right: calc(-8 * var(--u));
-  top: calc(8 * var(--u));
+  right: calc(-14 * var(--u));
+  top: calc(2 * var(--u));
   z-index: 5;
   width: calc(60 * var(--u));
   height: calc(60 * var(--u));
@@ -1306,6 +1350,29 @@
   inset: 0;
   filter: var(--boya-filtre, none);
 }
+/* Gemini otobüsü: yerde temas gölgesi (tekerlerin altı), girişte dönen teker katmanı (otobus.ts → tekerKatmani) */
+.ko-kok .ko-otobus.ko-ob-resimli::before {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 90%;
+  height: 5%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(90, 52, 35, 0.3), rgba(90, 52, 35, 0));
+  pointer-events: none;
+}
+.ko-kok i.ko-ob-teker {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+}
+/* görselin kapağı uzun: tente kapağın üstüne daha ince iner (çatı külahının dibine taşmasın) */
+.ko-kok .ko-ob-resimli .ko-ob-tente {
+  top: -30%;
+  height: 34%;
+}
 .ko-kok .ko-ob-sus {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -1794,7 +1861,7 @@
 /* ================================================================ dikey ekran (tablet dikey, web'de dikey telefon) */
 .ko-kok .ko-gun[data-yon='dikey'] .ko-duzen {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: 1fr auto auto auto;
   grid-template-areas: 'pencere pencere' 'yuvalar kumbara' 'dolap dolap' 'kaplar raf';
   gap: calc(8 * var(--u));
@@ -1833,6 +1900,14 @@
 }
 .ko-kok .ko-gun[data-yon='dikey'] .ko-dolap-ic {
   grid-auto-rows: calc(78 * var(--u));
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-dolap.ko-resimli {
+  min-width: 0;
+  aspect-ratio: var(--dolap-oran);
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-dolap.ko-resimli .ko-dolap-ic {
+  width: 100%;
+  height: 100%;
 }
 .ko-kok .ko-gun[data-yon='dikey'] .ko-yuvalar {
   grid-area: yuvalar;

@@ -162,33 +162,71 @@ export function manzaraAdres(mekan: 'park' | 'plaj', katman: 'arka-uzak' | 'arka
  * - top.boy: topun kutusunun boyu (en 1), adim: üst üste iki top arası (topun boyunun oranı)
  */
 export const YERLESIM = {
+  // Gemini görsellerinde ölçüldü (ekip/illustrator/kino-otobus-isle.cjs): külah 664×1024 (ağız elipsinin ortası tepeden
+  // %10), kâse 1024×982 (top ağız çizgisinin biraz altına, %20), top 1024×939 ortak tuval (tabandan hizalı)
   kap: {
-    kulah: { en: 1.0, boy: 1.0, agiz: 0.17 },
-    kase: { en: 1.25, boy: 1.25, agiz: 0.36 },
+    kulah: { en: 0.85, boy: 1.31, agiz: 0.054 },
+    kase: { en: 1.2, boy: 1.151, agiz: 0.148 },
     kupa: { en: 1.5, boy: 1.5, agiz: 0.3 },
   } satisfies Record<Kap, { en: number; boy: number; agiz: number }>,
-  top: { boy: 0.75, adim: 0.62 },
+  // üstteki topun fırfırı alttakinin kubbesine (tepeden %36) oturur
+  top: { boy: 0.917, adim: 0.64 },
 };
 
 /**
- * Otobüs süslerinin yeri (otobüs tuvalinin oranı: x, y merkez; en: tuval eninin oranı). Kod otobüsünün yerleri; A1
- * görseli gelince bu tablo görselde ölçülür.
+ * Otobüs süslerinin yeri (otobüs tuvalinin oranı: x, y merkez; en: tuval eninin oranı). A1 görselinde (1920×1080,
+ * otobüs ortada; tavan çizgisi y≈0.30, çatıda Gemini'nin üç toplu külahı x 0.35-0.64) ölçüldü. Süsler çatı külahıyla
+ * çakışmasın: kemik tabela ön tavanda, çatı külahı arka tavanda.
  */
 export const OTOBUS_YERI = {
-  tabela: { x: 0.48, y: 0.275, en: 0.2 },
-  flama: { x: 0.47, y: 0.37, en: 0.42 },
-  kulah: { x: 0.5, y: 0.16, en: 0.13 },
-  ampul: { x: 0.5, y: 0.35, en: 0.62 },
+  tabela: { x: 0.735, y: 0.235, en: 0.15 },
+  flama: { x: 0.4775, y: 0.405, en: 0.36 },
+  kulah: { x: 0.255, y: 0.2, en: 0.12 },
+  ampul: { x: 0.5, y: 0.31, en: 0.64 },
   jant: [
-    { x: 0.294, y: 0.811, en: 0.075 },
-    { x: 0.719, y: 0.811, en: 0.075 },
+    { x: 0.3183, y: 0.8372, en: 0.056 },
+    { x: 0.6969, y: 0.8366, en: 0.056 },
   ],
+  /** tekerlerin merkezi ve yarıçapı (r: tuval eninin oranı); girişte dönen teker katmanı bunlardan kesilir */
   teker: [
-    { x: 0.294, y: 0.811 },
-    { x: 0.719, y: 0.811 },
+    { x: 0.3183, y: 0.8372, r: 0.0478 },
+    { x: 0.6969, y: 0.8366, r: 0.0478 },
   ],
-  /** açık kapağın (tente ve tezgâh) yeri */
-  kapak: { x: 0.469, y: 0.494, en: 0.4, boy: 0.211 },
+  /** açık kapağın (tente ve tezgâh) yeri: yan kapak paneli (altındaki tahta raf açıkta kalır) */
+  kapak: { x: 0.4775, y: 0.518, en: 0.342, boy: 0.292 },
+  /** tekerlerin yere değdiği çizgi (tuval boyunun oranı) */
+  zemin: 0.925,
   /** Kino'nun basamakta durduğu yer (akşam) */
   basamak: { x: 0.8, y: 0.87 },
 };
+
+/**
+ * Dolap görselinde (A4, 1600×872) tat kaplarının yerleri. Oranlar dolap görselinin kutusuna göre (kutu görselin en-boy
+ * oranında, gerilmez): x kabın ortası, alt kabın tabanı (tepeden), boy kabın boyu (kabın eni en-boy oranından).
+ * Gözler: arka sıra y 0.163-0.274 (x ortaları 0.288 / 0.5 / 0.715), ön sıra y 0.337-0.469 (0.254 / 0.5 / 0.744).
+ * Gün 1 (3 tat): kaplar ön sıradaki gözlere oturur, büyük. Gün 2-3 (6 tat): arka sıra arka gözlere, ön sıra ön gözlere.
+ */
+export const DOLAP_GOZLERI = {
+  oran: 1600 / 872,
+  tek: [
+    { x: 0.254, alt: 0.455, boy: 0.46 },
+    { x: 0.5, alt: 0.455, boy: 0.46 },
+    { x: 0.744, alt: 0.455, boy: 0.46 },
+  ],
+  cift: [
+    { x: 0.288, alt: 0.262, boy: 0.34 },
+    { x: 0.5, alt: 0.262, boy: 0.34 },
+    { x: 0.715, alt: 0.262, boy: 0.34 },
+    { x: 0.254, alt: 0.49, boy: 0.34 },
+    { x: 0.5, alt: 0.49, boy: 0.34 },
+    { x: 0.744, alt: 0.49, boy: 0.34 },
+  ],
+};
+
+/**
+ * İç duvar görselinde (A2, 2048×1143) gri pencere alanı (oran): gün ekranında görsel, gri alan pencere kutusunun enine
+ * ve tepesine oturacak ölçekte çizilir (pencerenin mavi kaporta çerçevesi ve fayanslar çevrede görünür). kes: çerçevenin
+ * sağ dış kenarı; sağındaki duvar (Gemini'nin kendi rafı ve kavanozları) rafın arkasına düşmesin diye orada düz fayans
+ * duvar başlar.
+ */
+export const IC_ARKA_PENCERE = { x0: 0.27, y0: 0.224, x1: 0.73, y1: 0.647, kes: 0.772, oran: 2048 / 1143 };
