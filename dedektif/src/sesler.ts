@@ -284,6 +284,43 @@ export const ses = {
   sicak() {
     [72, 76, 79, 84].forEach((n, i) => can(NOTA(n), i * 0.09, 0.11, 0.6));
   },
+  // ---------------------------------------------------------------- Vaka 3
+  /** kapının sürgüsü: "tak" */
+  tak() {
+    ton(900, 0, 0.04, 'square', 0.09, 500);
+    gurultu(0, 0.06, 1800, 700, 0.12, 1.2);
+    ton(180, 0.01, 0.12, 'sine', 0.2, 90);
+  },
+  /** baca kapağından buhar: "fıss" */
+  fiss() {
+    gurultu(0, 0.7, 5200, 2600, 0.07, 0.8, 'highpass');
+  },
+  /** kuyruk içeri kaçar: "fırr" */
+  firr() {
+    gurultu(0, 0.28, 900, 3400, 0.09, 1.4);
+    ton(520, 0, 0.22, 'triangle', 0.05, 1100);
+  },
+  /** yanaklar boşalır: "pof" */
+  pof() {
+    ton(240, 0, 0.12, 'sine', 0.26, 110);
+    gurultu(0, 0.1, 900, 300, 0.1, 0.7, 'lowpass');
+  },
+  /** çiğneme: "hap hap" */
+  hapHap() {
+    for (const t of [0, 0.22]) {
+      ton(330, t, 0.07, 'triangle', 0.1, 220);
+      gurultu(t, 0.06, 1400, 700, 0.06, 1.1);
+    }
+  },
+  /** uyuyan baykuş: "hu" */
+  hu() {
+    ton(392, 0, 0.42, 'sine', 0.12, 370);
+    ton(330, 0.5, 0.5, 'sine', 0.1, 300);
+  },
+  /** kırıntı fışkırması: minik "pıt" */
+  pit() {
+    ton(1500, 0, 0.04, 'triangle', 0.06, 900);
+  },
 };
 
 // ---------------------------------------------------------------- müzik (dosyadan)

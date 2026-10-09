@@ -36,7 +36,7 @@ const img = (ad: string, sinif = '') => (sinif ? h(`img.${sinif}`, { src: resim(
 
 // ---------------------------------------------------------------- yanlış kart sahneleri (sorgu.ts → yanlisAni)
 /** Kart ipucunun üstüne gelir, oturmaz, yumuşakça seker; sonra köşeye çekilir (sorgu.ts varsayılanı gibi) */
-async function yaklasSek(o: Ortak, a: YanlisAni) {
+export async function yaklasSek(o: Ortak, a: YanlisAni) {
   await kartGotur(a.k, a.ic, 0.5, 0.5, a.ic.width * 0.55, 0, 300);
   ses.sek();
   void salla(a.delil);

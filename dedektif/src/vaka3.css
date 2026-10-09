@@ -1,0 +1,512 @@
+/* Dedektif Mino · Vaka 3 "Kaybolan Yıldız Kurabiyeler" (dedektif/src/vaka3.ts, dunya3.ts, sorgu3.ts) ve üç vakalı açılış.
+   Bütün kurallar .dd-kok altında. Canlandırmalar yalnız transform / opacity (ve tek tek translate / rotate / scale). */
+
+/* ---------------------------------------------------------------- açılış: üç vaka dosyası (Vaka 3 görünürse) */
+.dd-kok .dd-dosyalar.dd-uc {
+  gap: clamp(14px, 2.4vh, 28px);
+}
+.dd-kok .dd-dosyalar.dd-uc .dd-klasor {
+  width: min(58vw, 19vh);
+}
+.dd-kok .dd-dosyalar .dd-klasor[data-vaka='vaka3'] {
+  rotate: -1.5deg;
+  animation-delay: -0.9s;
+}
+.dd-kok .dd-klasor[data-vaka='vaka3'] .dd-klasor-iz {
+  width: 22%;
+  right: 7%;
+  top: 20%;
+  mix-blend-mode: normal;
+  rotate: 14deg;
+}
+@media (orientation: landscape) {
+  .dd-kok .dd-dosyalar.dd-uc {
+    gap: clamp(10px, 1.8vw, 24px);
+  }
+  .dd-kok .dd-dosyalar.dd-uc .dd-klasor {
+    width: min(17.5vw, 36vh);
+  }
+}
+.dd-kok .dd-vk-kapak.dd-vk-agac {
+  background: radial-gradient(circle at 50% 38%, #fff6e6, #f3cf9f);
+}
+
+/* ---------------------------------------------------------------- sahne */
+.dd-kok .dd-vaka3 .dd-sahne {
+  background: #5a3a24;
+}
+.dd-kok .dd-vaka3.dd-yukleniyor .dd-sahne,
+.dd-kok .dd-vaka3.dd-yukleniyor .dd-oyuncular {
+  opacity: 0;
+}
+.dd-kok .dd-vaka3 .dd-sahne,
+.dd-kok .dd-vaka3 .dd-oyuncular {
+  transition: opacity 0.5s;
+}
+/* sahnenin kendi resminden kırpılmış kopya (ön katman ya da incelenen parça) */
+.dd-kok .dd-v3-kirpim {
+  position: absolute;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- otobüsün içi: tepsi, kurabiyeler, un halkaları, sayma */
+.dd-kok .dd-v3-tepsi {
+  position: absolute;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 4px rgba(70, 40, 20, 0.3));
+}
+.dd-kok .dd-v3-tepsi-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dd-kok .dd-v3-tepsi-kurabiye {
+  position: absolute;
+  inset: 0;
+}
+.dd-kok .dd-v3-kurabiye {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(var(--don, 0deg));
+}
+.dd-kok .dd-ipucu.dd-v3-un {
+  transform: translate(-50%, -50%);
+}
+.dd-kok .dd-ipucu.dd-v3-un img {
+  position: absolute;
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+/* sayma düğmeleri: boş yerlerin üstünde; dokununca rakam belirir */
+.dd-kok .dd-v3-sayac,
+.dd-kok .dd-v3-final-kurabiyeler {
+  position: absolute;
+  pointer-events: none;
+}
+.dd-kok .dd-v3-say {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.dd-kok .dd-v3-sayac.acik:not(.dd-v3-sayildi) .dd-v3-say {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.dd-kok .dd-v3-sayac.acik .dd-v3-say:not(.sayildi)::after {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  border: 4px dashed rgba(255, 236, 160, 0.95);
+  animation: dd-v3-nabiz 1.3s ease-in-out infinite;
+}
+@keyframes dd-v3-nabiz {
+  0%, 100% { transform: scale(0.94); opacity: 0.55; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+.dd-kok .dd-v3-say b,
+.dd-kok .dd-v3-final-kurabiye b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  font: 700 calc(var(--rakam, 44px)) / 1 Fredoka, system-ui, sans-serif;
+  color: #fff;
+  -webkit-text-stroke: 5px var(--kontur);
+  paint-order: stroke fill;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.dd-kok .dd-v3-say b {
+  --rakam: 64px;
+}
+.dd-kok .sayildi b {
+  opacity: 1;
+}
+
+/* pencere: final (Fındık pervazın arkasında), tabela, yeni kurabiye */
+.dd-kok .dd-v3-pervaz {
+  z-index: 1;
+}
+.dd-kok .dd-v3-pencere-findik {
+  position: absolute;
+  aspect-ratio: 1;
+  transform: translate(-50%, -100%) translateY(30%);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.3, 1.3, 0.5, 1), opacity 0.3s;
+}
+.dd-kok .dd-v3-pencere-findik.acik {
+  opacity: 1;
+  transform: translate(-50%, -100%) translateY(4%);
+}
+.dd-kok .dd-v3-pencere-findik img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.dd-kok :is(.dd-v3-tabela, .dd-v3-yeni-kurabiye) {
+  position: absolute;
+  z-index: 2;
+  width: auto;
+  transform: translate(-50%, -100%) scale(0.4);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1), opacity 0.25s;
+  filter: drop-shadow(0 6px 4px rgba(70, 40, 20, 0.3));
+  pointer-events: none;
+}
+.dd-kok :is(.dd-v3-tabela, .dd-v3-yeni-kurabiye).acik {
+  opacity: 1;
+  transform: translate(-50%, -100%);
+}
+.dd-kok .dd-v3-tabela.dd-v3-goster {
+  animation: dd-v3-goster 0.8s ease-in-out;
+}
+@keyframes dd-v3-goster {
+  0%, 100% { scale: 1; }
+  40% { scale: 1.12; }
+  70% { scale: 0.97; }
+}
+
+/* ---------------------------------------------------------------- otobüsün yanı: yıldız şeker izi */
+.dd-kok .dd-v3-seker-izi .dd-iz img {
+  filter: drop-shadow(0 2px 2px rgba(80, 50, 10, 0.4));
+}
+.dd-kok .dd-v3-seker-izi:not(.acik) {
+  display: none;
+}
+.dd-kok .dd-v3-seker.dd-titre img {
+  animation: dd-v3-titre 0.4s ease-in-out 2;
+}
+@keyframes dd-v3-titre {
+  0%, 100% { translate: 0 0; }
+  25% { translate: -4px 0; }
+  75% { translate: 4px 0; }
+}
+
+/* ---------------------------------------------------------------- ağaç: kovuklar */
+.dd-kok .dd-v3-dudak {
+  z-index: 2;
+}
+.dd-kok .dd-ipucu.dd-v3-kovuk-ic {
+  transform: none;
+}
+/* kovuğun ağzı: içindekiler ağzın elipsine kırpılır */
+.dd-kok .dd-v3-agiz {
+  position: absolute;
+  inset: 0;
+  clip-path: ellipse(50% 50% at 50% 50%);
+}
+.dd-kok .dd-ipucu.dd-v3-kovuk-ic img.dd-v3-baykus {
+  position: absolute;
+  left: 50%;
+  bottom: -38%;
+  width: 104%;
+  height: auto;
+  transform: translate(-50%, 0);
+}
+.dd-kok .dd-v3-yuva-isaret {
+  position: absolute;
+  inset: 20%;
+}
+.dd-kok .dd-v3-yuva {
+  transform-origin: 50% 80%;
+}
+.dd-kok .dd-ipucu.dd-v3-kuyruk {
+  transform: translate(-50%, 0);
+  aspect-ratio: 431 / 1000;
+  z-index: 1;
+  transition: transform 0.35s cubic-bezier(0.5, 0, 0.6, 1), opacity 0.3s;
+}
+.dd-kok .dd-ipucu.dd-v3-kuyruk img {
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 0;
+  animation: dd-v3-kuyruk-salla 1.6s ease-in-out infinite;
+}
+@keyframes dd-v3-kuyruk-salla {
+  0%, 100% { rotate: -5deg; }
+  50% { rotate: 6deg; }
+}
+/* "fırr": içeri kaçar (dudağın arkasına, yukarı) */
+.dd-kok .dd-ipucu.dd-v3-kuyruk.dd-v3-kacti {
+  transform: translate(-50%, -70%);
+  opacity: 0;
+}
+.dd-kok .dd-ipucu.dd-v3-kuyruk.dd-v3-dokunulur {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.dd-kok .dd-ipucu.dd-v3-kuyruk.dd-v3-dokunulur::after {
+  content: '';
+  position: absolute;
+  inset: -30% -60%;
+}
+.dd-kok .dd-v3-kirintilar {
+  position: absolute;
+  z-index: 3;
+}
+.dd-kok .dd-v3-kirinti {
+  position: absolute;
+  top: 0;
+  width: 22px;
+}
+.dd-kok .dd-v3-findik-ic {
+  position: absolute;
+}
+.dd-kok .dd-v3-findik-dis {
+  position: absolute;
+  z-index: 4;
+  width: 0;
+  height: 0;
+}
+.dd-kok .dd-v3-findik {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% -100%;
+  opacity: 0;
+  filter: drop-shadow(0 6px 5px rgba(60, 30, 10, 0.3));
+}
+.dd-kok .dd-v3-findik-ic2 {
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 95%;
+}
+.dd-kok .dd-v3-findik-resim {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  animation: dd-v3-nefes 2.4s ease-in-out infinite;
+  transform-origin: 50% 95%;
+}
+@keyframes dd-v3-nefes {
+  0%, 100% { scale: 1 1; }
+  50% { scale: 1.015 0.985; }
+}
+/* finalde dört kurabiye (dokun / sürükle) */
+.dd-kok .dd-v3-final-kurabiye {
+  position: absolute;
+  width: 74px;
+  aspect-ratio: 1;
+  transform: translate(-50%, -100%);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  opacity: 0;
+  pointer-events: none;
+  touch-action: none;
+}
+.dd-kok .dd-v3-final-kurabiye.gorunur {
+  opacity: 1;
+}
+.dd-kok .dd-v3-final-kurabiye img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 4px 3px rgba(60, 30, 10, 0.35));
+}
+.dd-kok .dd-v3-final-kurabiye b {
+  --rakam: 46px;
+  top: 30%;
+}
+.dd-kok .dd-v3-final-kurabiyeler.acik:not(.dd-v3-sayildi) .dd-v3-final-kurabiye.gorunur,
+.dd-kok .dd-v3-final-kurabiye.dd-v3-tasinir:not(.verildi) {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.dd-kok .dd-v3-final-kurabiye.dd-v3-tasinir:not(.verildi) img {
+  animation: dd-v3-nabiz-kurabiye 1.4s ease-in-out infinite;
+}
+@keyframes dd-v3-nabiz-kurabiye {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.08; }
+}
+.dd-kok .dd-v3-final-kurabiye.dd-tutuldu {
+  z-index: 6;
+}
+
+/* ---------------------------------------------------------------- kiler */
+.dd-kok .dd-ipucu.dd-v3-kiler-ipucu {
+  border-radius: 18%;
+}
+.dd-kok .dd-ipucu.dd-v3-kiler-ipucu.dd-aranan::before {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  border-radius: 22%;
+  box-shadow: 0 0 0 3px rgba(255, 236, 150, 0.55);
+  animation: dd-v3-nabiz 1.6s ease-in-out infinite;
+}
+.dd-kok .dd-ipucu.dd-v3-kiler-ipucu.dd-alindi::before {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- oyuncular: Kino'nun burnu, ekmeği */
+.dd-kok .dd-v3-burun {
+  position: absolute;
+  left: 52%;
+  top: 44%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+.dd-kok .dd-v3-burun.dd-v3-palamut-burun {
+  top: 33%;
+  transform-origin: 50% 100%;
+}
+.dd-kok .dd-v3-ekmek {
+  position: absolute;
+  left: 26%;
+  top: 66%;
+  width: 34%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 4px 3px rgba(60, 30, 10, 0.3));
+}
+
+/* ---------------------------------------------------------------- uçanlar ve efektler */
+.dd-kok :is(.dd-v3-ucan-kurabiye, .dd-v3-ucan-kurabiye2, .dd-v3-ucan-palamut, .dd-v3-ucan-kirinti) {
+  display: block;
+  height: auto;
+  pointer-events: none;
+}
+.dd-kok .dd-v3-ucan-kurabiye {
+  position: absolute;
+  z-index: 9;
+}
+.dd-kok .dd-v3-ucan-kurabiye2,
+.dd-kok .dd-v3-ucan-palamut {
+  width: 64px;
+}
+.dd-kok .dd-v3-ucan-kirinti {
+  width: 36px;
+}
+.dd-kok .dd-v3-kalp {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+}
+.dd-kok .dd-v3-flas {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #fff;
+  pointer-events: none;
+  animation: dd-v3-flas 0.45s ease-out forwards;
+}
+@keyframes dd-v3-flas {
+  0% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+/* boş kalan yerler parlar (Halka 1, iki kurabiye kartı) */
+.dd-kok .dd-v3-bos-parla {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 5px solid #ffe066;
+  box-shadow: 0 0 18px rgba(255, 220, 90, 0.9);
+  animation: dd-v3-nabiz 0.8s ease-in-out infinite;
+}
+/* kapının sürgüsü (kartın üstünde) */
+.dd-kok .dd-v3-surgu {
+  position: absolute;
+  z-index: 9;
+  aspect-ratio: 3.2;
+  transform: translate(-50%, -50%);
+}
+.dd-kok .dd-v3-surgu-govde {
+  position: absolute;
+  left: 40%;
+  top: 20%;
+  width: 46%;
+  height: 60%;
+  border-radius: 10px;
+  background: #c48a52;
+  border: 3px solid var(--kontur);
+}
+.dd-kok .dd-v3-surgu-dil {
+  position: absolute;
+  left: 8%;
+  top: 36%;
+  width: 60%;
+  height: 28%;
+  border-radius: 8px;
+  background: #9a6a3c;
+  border: 3px solid var(--kontur);
+}
+/* baca buharı */
+.dd-kok .dd-v3-bulut {
+  position: absolute;
+  z-index: 9;
+  aspect-ratio: 1.6;
+  transform: translate(-50%, -50%);
+}
+.dd-kok .dd-v3-bulut i {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(90, 54, 23, 0.25);
+}
+.dd-kok .dd-v3-bulut i:nth-child(1) {
+  left: 0;
+  top: 30%;
+  width: 50%;
+  height: 70%;
+}
+.dd-kok .dd-v3-bulut i:nth-child(2) {
+  left: 28%;
+  top: 0;
+  width: 50%;
+  height: 80%;
+}
+.dd-kok .dd-v3-bulut i:nth-child(3) {
+  left: 52%;
+  top: 28%;
+  width: 48%;
+  height: 70%;
+}
+/* parti şapkası arar */
+.dd-kok .dd-v3-parti {
+  position: absolute;
+  z-index: 9;
+  transform: translate(-50%, -50%);
+}
+.dd-kok .dd-v3-parti img {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 3px rgba(60, 30, 10, 0.35));
+}
+.dd-kok .dd-v3-konuk-resim {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.dd-kok .dd-konuk .dd-v3-konuk-ek {
+  pointer-events: none;
+  filter: drop-shadow(0 3px 2px rgba(60, 30, 10, 0.3));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-kok :is(.dd-v3-findik-resim, .dd-v3-kuyruk img, .dd-v3-final-kurabiye img) {
+    animation: none !important;
+  }
+}

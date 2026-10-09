@@ -24,7 +24,7 @@ export const PAMUK_ORAN = boyGenislik('pamuk', 1);
 export const PAMUK_ALT = altPayi(CIZIM.pamuk);
 
 /** Konuşanlar. Vaka 2'nin konukları (Vakvak Anne, Karabaş, tavşan, Ada) Pamuk'un balonunu kullanır (aynı anda biri). */
-export type Kim = 'mino' | 'kino' | 'pamuk' | 'kart' | 'ordek' | 'kopek' | 'tavsan' | 'ada';
+export type Kim = 'mino' | 'kino' | 'pamuk' | 'kart' | 'ordek' | 'kopek' | 'tavsan' | 'ada' | 'findik' | 'balon';
 /** Konuşanın sesi: kart hayvanları, Pamuk ve konuklar anlatıcı kaydının tonlu çalınışı */
 export const SES: Record<Kim, KonusmaSecenegi> = {
   mino: {},
@@ -35,6 +35,10 @@ export const SES: Record<Kim, KonusmaSecenegi> = {
   kopek: { ton: 0.86 },
   tavsan: { ton: 1.26 },
   ada: { ton: 1.12 },
+  // Vaka 3: Fındık anlatıcı sesinin ince, hızlı tonu; 'balon' yalnız balonda yazan konuk sözü (kuş, tavşan, kirpi,
+  // baykuş): seslendirilmez, cihaz sesine de düşmez (sözün süresi kadar balon açık kalır)
+  findik: { ton: 1.36 },
+  balon: { cihazSesi: false },
 };
 /** balonu olan konuşan: Mino, Kino ya da konuk (Pamuk'un balonu) */
 const balonSahibi = (kim: Kim): 'mino' | 'kino' | 'pamuk' | null => (kim === 'kart' ? null : kim === 'mino' || kim === 'kino' ? kim : 'pamuk');

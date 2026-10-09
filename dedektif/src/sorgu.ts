@@ -150,6 +150,11 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
       await oy.soyle(halka.kino, 'kino');
       oy.kinoPoz(null);
       if (o.kapandi() || soru.cozuldu) return;
+      if (halka.kinoCevap) {
+        oy.minoTepki('gidik');
+        await oy.soyle(halka.kinoCevap);
+        if (o.kapandi() || soru.cozuldu) return;
+      }
     }
     if (o.ilk && !soru.yanlislar.length) await oy.soyle(M.surukle);
   })().finally(() => {

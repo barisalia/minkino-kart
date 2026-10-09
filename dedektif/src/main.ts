@@ -7,6 +7,7 @@ import '../../src/karakter/karakter.css';
 import '../../src/ui/buyutec.css';
 import './dedektif.css';
 import './vaka2.css';
+import './vaka3.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { anaMenuyeDon } from '../../src/uygulama';
 import { oyunuBaslat } from './oyun';

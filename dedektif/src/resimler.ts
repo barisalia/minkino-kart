@@ -7,6 +7,8 @@
  * yerine assets/hayvanlar/zurafa). Hiçbiri yoksa: süs eşyası hiç konmaz; zorunlu eşya yerine yumuşak bir yer tutucu.
  * Gemini'ye verilecek liste: EKSIK_LISTESI (ORTAK_NOTLAR.md "Gemini – Dedektif").
  */
+import { resim3 } from './resimler3';
+
 const DEDEKTIF = import.meta.glob<string>('../../assets/dedektif/*.webp', { eager: true, query: '?url', import: 'default' });
 const BASKA = import.meta.glob<string>(
   [
@@ -107,8 +109,12 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   balon: { adaylar: [], yedek: 'renkler/balon', zorunlu: true },
 };
 
-/** Adaylardan ilk bulunan görselin adresi; yoksa yedek; o da yoksa null. 'v2/ad': Vaka 2 çizimi (assets/dedektif2). */
+/**
+ * Adaylardan ilk bulunan görselin adresi; yoksa yedek; o da yoksa null. 'v2/ad': Vaka 2 çizimi (assets/dedektif2).
+ * 'v3/ad': Vaka 3'ün tek haritası (resimler3.ts: assets/dedektif3, yoksa yer tutucu).
+ */
 export function resim(ad: string, tablo: Map<string, string> = TABLO): string | null {
+  if (ad.startsWith('v3/')) return resim3(ad.slice(3));
   const y = YUVA[ad];
   for (const a of y?.adaylar ?? [ad]) {
     const u = v2(a) ?? tablo.get(a);
