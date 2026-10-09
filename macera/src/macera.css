@@ -1235,6 +1235,30 @@
     font-size: clamp(0.95rem, 4.4vh, 1.2rem);
     border-radius: 26px;
   }
+  /* dar yan şerit (ör. 667×375, yatay tablet): hoparlör küçülür ve yazının sol üst köşesine yaslanır (float); yazı
+     şeridin bütün enini kullanır, uzun kelime ("çıkarmayalım") de satıra sığar; harf boyu şeridin enine göre */
+  @media (max-aspect-ratio: 2/1) {
+    .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi {
+      display: block;
+      padding: 7px 12px 9px 7px;
+      font-size: clamp(0.8rem, calc(var(--yan-en) * 0.076), 1.15rem);
+      line-height: 1.16;
+      border-radius: 22px;
+      overflow-wrap: break-word;
+    }
+    .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi > .yuvarlak.kucuk {
+      float: left;
+      width: 40px;
+      height: 40px;
+      margin: 0 7px 3px 0;
+      font-size: 19px;
+      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1), 0 3px 0 var(--kontur);
+    }
+    .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-altyazi .mc-yazi {
+      display: block;
+      padding-top: 2px;
+    }
+  }
   .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ilerleme {
     right: auto;
     left: calc(100% + 20px + var(--bant));
@@ -1251,8 +1275,11 @@
   .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-ipucu {
     white-space: normal;
     border-radius: 22px;
-    font-size: clamp(0.95rem, 4.2vh, 1.15rem);
+    font-size: clamp(0.85rem, min(4.2vh, calc(var(--yan-en) * 0.072)), 1.15rem);
     line-height: 1.15;
+    padding: 8px 14px;
+    max-width: 100%;
+    overflow-wrap: break-word;
   }
   /* sağ yan: büyük düğme ve bitişteki düğmeler dikey ortada */
   .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-dugme-yeri {
@@ -1260,12 +1287,15 @@
     right: calc(var(--yan-en) / 2);
     bottom: 50%;
     transform: translate(50%, 50%);
+    width: max-content;
     max-width: calc(var(--yan-en) - 20px);
   }
+  /* büyük düğme şeridin eninde: harf boyu şeridin enine göre (dar şeritte "Öpücük gönder" kenardan taşmaz) */
   .mc-kok .mc-bolum:is([data-bolum='ege'], [data-bolum='banyo'], [data-bolum='elektrik']) .mc-buyuk-dugme {
-    font-size: clamp(1.6rem, 8vh, 2.3rem);
-    min-height: 84px;
-    padding: 0.2em 0.7em;
+    font-size: clamp(1.05rem, min(8vh, calc(var(--yan-en) * 0.115)), 2.3rem);
+    min-height: min(84px, 21vh);
+    max-width: 100%;
+    padding: 0.25em 0.6em;
     line-height: 1.05;
     white-space: normal;
   }

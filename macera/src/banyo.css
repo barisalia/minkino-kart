@@ -1204,8 +1204,93 @@
   }
 }
 
-/* köpük şarkısı: karaoke paneli sıranın (ıslat / köpürt …) yerini alır */
+/* köpük şarkısı: sıra (ıslat / köpürt …) şarkı boyunca gizlenir */
 .mc-kok .bn-sahne[data-bn-gorev='sarki'] .bn-sira {
   opacity: 0;
   transition: opacity 0.3s;
+}
+/* köpük şarkısı ritmi (hece paneli yok): başların üstünde o satırın vuruş köpükleri; vuruşta sıradaki atar, vuruşta
+   dokununca parlayıp dolar. Satırlar aynı yerde üst üste: biten satır yukarı süzülüp söner, yenisi aşağıdan gelir. */
+.mc-kok .bn-ritim {
+  position: absolute;
+  z-index: 14;
+  translate: -50% 0;
+  display: grid;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.8;
+  transition: opacity 0.35s, scale 0.45s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mc-kok .bn-ritim.gorunur {
+  opacity: 1;
+  scale: 1;
+}
+.mc-kok .bn-ritim-satir {
+  grid-area: 1 / 1;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.6vmin, 12px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 3px 10px rgba(60, 120, 170, 0.18);
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 0.35s, translate 0.45s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.mc-kok .bn-ritim-satir.acik {
+  opacity: 1;
+  translate: 0 0;
+}
+.mc-kok .bn-ritim-satir.gecti {
+  opacity: 0;
+  translate: 0 -18px;
+}
+.mc-kok .bn-ritim-kopuk {
+  --k: clamp(24px, 6.4vmin, 40px);
+  position: relative;
+  width: var(--k);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2.5px solid #5d94c6;
+  background: radial-gradient(circle at 34% 30%, #fff 0 14%, rgba(255, 255, 255, 0.35) 15% 38%, rgba(190, 225, 255, 0.35) 60%, rgba(255, 196, 235, 0.45) 100%);
+  box-shadow: inset -3px -4px 0 rgba(120, 170, 220, 0.25);
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+/* vuruş anı: köpük kabarıp iner (çocuk ritmi görür) */
+.mc-kok .bn-ritim-kopuk.simdi {
+  animation: bn-ritim-at 0.42s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes bn-ritim-at {
+  0% { scale: 1; }
+  35% { scale: 1.32; box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.85), inset -3px -4px 0 rgba(120, 170, 220, 0.25); }
+  100% { scale: 1; }
+}
+/* tutan vuruş: köpük parlar, renkle dolar, üstünde minik yıldız */
+.mc-kok .bn-ritim-kopuk.yandi {
+  border-color: #3a1210;
+  background: radial-gradient(circle at 34% 30%, #fff 0 15%, #9fe0ff 34%, #4fb3f2 72%, #ff9ad5 100%);
+  box-shadow: 0 0 12px 3px rgba(255, 236, 140, 0.9), inset -3px -4px 0 rgba(30, 90, 160, 0.3);
+  animation: bn-ritim-yan 0.5s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+.mc-kok .bn-ritim-kopuk.yandi::after {
+  content: '';
+  position: absolute;
+  right: -18%;
+  top: -22%;
+  width: 52%;
+  aspect-ratio: 1;
+  background: #ffd84a;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 0 2px #fff3b0);
+}
+@keyframes bn-ritim-yan {
+  0% { scale: 0.6; }
+  60% { scale: 1.35; }
+  100% { scale: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .bn-ritim-kopuk.simdi,
+  .mc-kok .bn-ritim-kopuk.yandi { animation: none; }
 }

@@ -66,7 +66,8 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
   const sahneKap = h('div.fl-sahne-kap');
   // "telefonu çevir" simgesi yalnız web sitesinde: uygulamada telefon hep yatay, tablette film yatay kilitler
   const cevir = uygulamaPlatformu() ? null : h('div.fl-cevir', { 'aria-hidden': 'true', html: CEVIR });
-  const el = h('div.fl-ekran', {}, sahneKap, cevir, kapak, ust);
+  const yanDolgu = h('div.fl-yan-dolgu', { 'aria-hidden': 'true' });
+  const el = h('div.fl-ekran', {}, yanDolgu, sahneKap, cevir, kapak, ust);
 
   // zamanlayıcılar (ekrandan çıkınca temizlenir)
   // kapandıktan sonra yeni zamanlayıcı kurulmaz (ör. öğüt konuşması ekrandan çıkınca çözülür: jenerik sonraki ekranda çalmasın)
@@ -113,6 +114,12 @@ export function filmEkrani(app: Uygulama, p?: { ad?: string; oynat?: boolean }):
         const son = dosya.sahneler.find((s) => 'ogut' in s) as { ogut: string } | undefined;
         duraklatDugme.hidden = true;
         if (son) ogutKarti(son.ogut);
+      },
+      // yatay telefonda 16:9 kadrajın iki yanı: o sahnenin arka planının bulanık, geniş kopyası (film.css)
+      arkaDegisti: (resimler, renk) => {
+        yanDolgu.style.backgroundImage = [...resimler].reverse().map((u) => `url("${u}")`).join(', ');
+        yanDolgu.style.backgroundColor = renk;
+        yanDolgu.classList.add('acik');
       },
     });
     sahneKap.replaceChildren(film.el);

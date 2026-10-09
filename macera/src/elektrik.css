@@ -972,23 +972,74 @@
   pointer-events: none;
   transform-origin: 50% 100%;
 }
-.mc-kok .el-golge svg {
+/* canavar silueti: koyu lacivert, yumuşak kenarlı (düz siyah leke değil); kulakları / kuyruğu kıpırdar, gözleri kırpar */
+.mc-kok .el-golge-canavar svg {
   display: block;
   width: 100%;
   height: auto;
-  filter: brightness(0) blur(1.5px);
-  opacity: 0.8;
-  animation: el-golge-kipir 1.1s ease-in-out infinite;
+  overflow: visible;
   transform-origin: 50% 100%;
+  animation: el-golge-kipir 1.3s ease-in-out infinite;
+  transition: opacity 0.45s ease, scale 0.5s cubic-bezier(0.5, 0, 0.3, 1);
 }
-.mc-kok .el-golge.aciliyor svg {
-  animation: none;
-  filter: brightness(0) blur(1px);
+.mc-kok .el-golge-govde {
+  fill: #191636;
+  opacity: 0.74;
+  filter: blur(2.2px);
+}
+.mc-kok .el-golge-goz {
+  fill: #ffe98a;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: el-golge-kirp 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 3px rgba(255, 233, 138, 0.9));
+}
+.mc-kok .el-golge-kuyruk {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: el-golge-kuyruk 0.9s ease-in-out infinite alternate;
+}
+/* asıl eşyanın silueti: ışık sesin sahibini bulunca canavarın yerine gelir */
+.mc-kok .el-golge-asil {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 0;
+  opacity: 0;
+  scale: 1.5;
+  transform-origin: 50% 100%;
+  transition: opacity 0.45s ease 0.1s, scale 0.5s cubic-bezier(0.3, 1.3, 0.5, 1) 0.1s;
+}
+.mc-kok .el-golge-asil svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: brightness(0) blur(1.2px);
+  opacity: 0.7;
+}
+.mc-kok .el-golge.donusuyor .el-golge-canavar svg {
+  opacity: 0;
+  scale: 0.55 0.4;
+  animation-play-state: paused;
+}
+.mc-kok .el-golge.donusuyor .el-golge-asil {
+  opacity: 1;
+  scale: 1;
 }
 @keyframes el-golge-kipir {
-  0%, 100% { transform: skewX(-6deg) scale(1, 1.25); }
-  50% { transform: skewX(6deg) scale(1.06, 1.18); }
+  0%, 100% { transform: skewX(-4deg) scale(1, 1.04); }
+  50% { transform: skewX(4deg) scale(1.04, 1); }
+}
+@keyframes el-golge-kirp {
+  0%, 44%, 52%, 100% { transform: scaleY(1); }
+  48% { transform: scaleY(0.1); }
+}
+@keyframes el-golge-kuyruk {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(14deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mc-kok .el-golge svg { animation: none; }
+  .mc-kok .el-golge-canavar svg,
+  .mc-kok .el-golge-goz,
+  .mc-kok .el-golge-kuyruk { animation: none; }
 }

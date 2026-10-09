@@ -184,6 +184,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   const dikey = W / H < 0.8;
   /** Dar dikey ekran (telefon): çekimler tek odaklı ve yakın; Can yakın çekim penceresinde */
   const dar = dikey && W < 600;
+  /** Dikey tablet (3:4): çekimler yakın (~1.5), zemin ekranın altına oturur; üstte boş gök kalmaz */
+  const tabletDikey = dikey && !dar;
   /** Alçak yatay telefon */
   const yatayTel = W / H > 1.3 && H < 500;
 
@@ -620,7 +622,9 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     const [b] = dunyaPx(r.right - r.width * (k instanceof Cocuk ? 0.22 : 0.1), 0);
     return { l: (a / Wd) * 100, r: (b / Wd) * 100 };
   };
-  const korunan = (): (Kisiler | Anne | HTMLElement)[] => [MN, KN, CAN, ADA, ANNE, egeKap, ...ayaklar];
+  // dikey tablette yakın çekimde salıncağın iki A ayağı kenarda kesilebilir (iskele, kişi değil; ikisi birden ekrana
+  // ancak uzak çekimde sığar); bebek oturağı yine korunur
+  const korunan = (): (Kisiler | Anne | HTMLElement)[] => [MN, KN, CAN, ADA, ANNE, egeKap, ...(tabletDikey ? ayaklar.slice(2) : ayaklar)];
   /**
    * Çekim: dünyadaki bir bölge (b: sol, sağ, alttan alt, alttan üst) güvenli alana sığsın; zmax en çok yakınlık.
    * Dünya ekranı her zaman örter. Kadraj koruması: bir kişi kenarda yarım kalacaksa önce onu tamamen dışarıda
@@ -651,7 +655,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
       const ustPx = Hd * (1 - ust / 100);
       const artan = Math.max(0, gh - bh * z);
       const tx = Math.min(0, Math.max(W - Wd * z, gw / 2 - cx * z));
-      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * (dar ? 1 : 0.88) - ustPx * z));
+      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * (dar || tabletDikey ? 1 : 0.88) - ustPx * z));
       return { z, tx, ty };
     };
     let c = hesap(l, r);
@@ -854,7 +858,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   async function sahne1() {
     ui.ilerleme(0, 7);
     // park: geniş plan; Can biraz geriden gelir, bankta beklemeye oturur
-    void cekB(dar ? -150 : -175, dar ? -60 : 60, ZEMIN - 12, BAR_Y + 20, dar ? 2 : 1.6, 0);
+    // (dikey tablette bank ve Ada yakın: geniş planın boş göğü yerine karakterler büyük)
+    void (tabletDikey ? cekB(-168, -30, ZEMIN - 12, BAR_Y + 20, 1.6, 0) : cekB(dar ? -150 : -175, dar ? -60 : 60, ZEMIN - 12, BAR_Y + 20, dar ? 2 : 1.6, 0));
     ADA.selam(1600);
     void balon(ADA, B.selam, 1200);
     await bekle(500);
@@ -864,7 +869,7 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     await CAN.git(X(CAN_BANK.x), Y(canBankY), 320, false);
     CAN.katman = 8;
     // Kino koşarak gelir: "Salıncak! Benim!"
-    void cekB(-130, dar ? -2 : 40, ZEMIN - 12, BAR_Y + 10, 2, 900);
+    void cekB(tabletDikey ? -118 : -130, dar ? -2 : tabletDikey ? 20 : 40, ZEMIN - 12, BAR_Y + 10, tabletDikey ? 1.6 : 2, 900);
     S.patiler(8, 0.09);
     const kos = kinoKos(ASKI.buyuk + 26, ZEMIN - 2, 1300);
     await bekle(400);
@@ -1139,7 +1144,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     ui.ilerleme(2, 7);
   }
   function cekSalincakVeBank(ms: number) {
-    return dar ? cekSalincak(ms) : cekBankSalincak(ms);
+    // dikey tablet: bankın ucu ve büyük salıncak yakın (~1.6); bankta oturanlar kadraj korumasıyla tam içeride / dışarıda
+    return dar ? cekSalincak(ms) : tabletDikey ? cekB(-112, 12, ZEMIN - 12, BAR_Y + 8, 1.6, ms) : cekBankSalincak(ms);
   }
 
   /** Salıncak her gelişinde bir alkış (ya da salıncağa dokunma); salınım tamamlanmadan gelen alkış sayılmaz */

@@ -22,7 +22,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { Perde, sesVar, Ufleme } from '../../orman/src/gorev';
 import { kulak } from '../../orman/src/kulak';
 import { davul, nota } from '../../orman/src/sesler';
-import { KayitCalar, sozleEsle, vurusaYakin } from '../../src/audio/sarki-kayit';
+import { KayitCalar, vurusaYakin } from '../../src/audio/sarki-kayit';
 import SARKI_SESI from '../../assets/muzik/banyo-sozlu.mp3?url';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import type { BolumArayuz } from './dogumgunu';
@@ -33,7 +33,6 @@ import { Bugu, EkranDamlalari, geriDon, icinde, merkez, ovala, ParmakIpucu, Parc
 import {
   BOLUM_BENIM,
   BANYO_SARKI,
-  BANYO_SOZ,
   baloncukBoyu,
   bolgeCoz,
   camurPlani,
@@ -1430,39 +1429,70 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
 
   /**
    * Köpük şarkısı (Gemini kaydı, assets/muzik/banyo.json): köpürtme bitince kısa kutlama. Oyun kaydın notalarına ve
-   * ritmine göre ilerler: heceler kaydın zamanıyla yanar (karaoke), Mino ile Kino kaydın vuruşlarında sırayla
-   * zıplar / dans eder. Çocuk ekrana (köpüğe) dokunarak alkışla eşlik eder: vuruşa yakın dokunuş büyük köpük ve
-   * parıltı, uzak olan küçük köpük (yumuşak tolerans, ceza yok). Geçme koşulu yok: şarkı bitince bölüm sürer.
+   * ritmine göre ilerler (yalnız ritim; hece paneli yok, Ege'nin ninnisi gibi): Mino ile Kino'nun başlarının üstünde
+   * o satırın vuruş köpükleri durur; kaydın her vuruşunda sıradaki köpük atar, Mino ile Kino sırayla zıplar / dans
+   * eder. Çocuk ekrana (köpüğe) dokunarak alkışla eşlik eder: vuruşa yakın dokunuş o köpüğü parlatıp patlatır (büyük
+   * köpük ve parıltı), uzak olan küçük köpük (yumuşak tolerans, ceza yok). Geçme koşulu yok: şarkı bitince bölüm sürer.
    * Ses kilidi: kayıt çalarken mikrofon dinlemez, bu yüzden alkış yalnız dokunmayla sayılır.
    */
   async function kopukSarkisi() {
     muzikKapat();
     kulak.dinle(null);
     const T = BANYO_SARKI;
-    const panel = h('div.mc-karaoke.bn-karaoke');
-    // heceler sözlerin yazımıyla, kelime kelime gruplu (kelime arası boşluk daha geniş)
-    const yazim = sozleEsle(BANYO_SOZ, T.heceler.map((x) => x.hece));
-    const heceEl = T.heceler.map((n, i) => h('span.mc-hece', { style: `--h:${(n.midi - 58) / 16}` }, yazim[i].yazi));
-    const satirlar = T.satirlar.map((s) => {
-      const kelimeler = new Map<number, HTMLElement>();
-      for (const x of s) {
-        const i = T.heceler.indexOf(x);
-        if (!kelimeler.has(yazim[i].kelime)) kelimeler.set(yazim[i].kelime, h('span.mc-kelime'));
-        kelimeler.get(yazim[i].kelime)!.append(heceEl[i]);
-      }
-      return h('div.mc-satir', {}, ...kelimeler.values());
+    // her vuruş, o anda söylenen satırın köpüğü (satır: vuruştan önce başlayan son hece; ilk vuruşlar ilk satırda)
+    const vurusSatir = T.vuruslar.map((v) => {
+      let s = T.heceler[0]?.satir ?? 0;
+      for (const x of T.heceler) if (x.basMs <= v + 160) s = x.satir;
+      return s;
     });
-    const top = h('i.mc-top');
-    panel.append(...satirlar, top);
-    sahne.on.append(panel);
-    const hece = (i: number) => {
-      heceEl.forEach((e, k) => {
-        e.classList.toggle('simdi', k === i);
-        e.classList.toggle('gecti', k < i);
+    const satirNo = [...new Set(vurusSatir)];
+    const kopukEl = T.vuruslar.map(() => h('i.bn-ritim-kopuk'));
+    const satirEl = satirNo.map((s) => h('div.bn-ritim-satir', {}, ...kopukEl.filter((_, i) => vurusSatir[i] === s)));
+    const ritim = h('div.bn-ritim', { 'aria-hidden': 'true', 'data-bn': 'ritim' }, ...satirEl);
+    sahne.on.append(ritim);
+    // yer: iki başın üstünde, ortada (karakterleri örtmez); üstte arayüz şeridi varsa onun altında
+    const yerles = () => {
+      const k = sahne.on.getBoundingClientRect();
+      const bas = [M, KN].map((x) => x.bolgeEkran('kafa'));
+      const kafaUst = Math.min(...bas.map(([, y]) => y)) - KN.bolge('kafa')!.r * KN.birim();
+      const ortaX = (bas[0][0] + bas[1][0]) / 2;
+      const ust = kok.closest('.mc-bolum')?.querySelector('.mc-ust')?.getBoundingClientRect();
+      const ustSinir = ust && ust.right > k.left + 40 && ust.left < k.right - 40 ? ust.bottom + 6 : k.top + 8;
+      const boy = ritim.offsetHeight || 40;
+      const y = Math.max(ustSinir, kafaUst - boy - 14);
+      ritim.style.left = `${(ortaX - k.left).toFixed(0)}px`;
+      ritim.style.top = `${(y - k.top).toFixed(0)}px`;
+    };
+    let acikSatir = -1;
+    const satirAc = (si: number) => {
+      if (si === acikSatir) return;
+      acikSatir = si;
+      satirEl.forEach((e, k) => {
+        e.classList.toggle('acik', k === si);
+        e.classList.toggle('gecti', k < si);
       });
-      const r = heceEl[i]?.getBoundingClientRect();
-      const p = panel.getBoundingClientRect();
-      if (r) top.style.transform = `translate(${r.left - p.left + r.width / 2}px, ${r.top - p.top - 14}px)`;
+    };
+    satirAc(0);
+    yerles();
+    requestAnimationFrame(() => {
+      ritim.classList.add('gorunur');
+      yerles();
+    });
+    const vurusAt = (i: number) => {
+      satirAc(satirNo.indexOf(vurusSatir[i]));
+      const e = kopukEl[i];
+      if (!e) return;
+      e.classList.remove('simdi');
+      void e.offsetWidth;
+      e.classList.add('simdi');
+    };
+    const kopukYak = (i: number) => {
+      const e = kopukEl[i];
+      if (!e || e.classList.contains('yandi')) return;
+      satirAc(satirNo.indexOf(vurusSatir[i]));
+      e.classList.add('yandi');
+      const r = e.getBoundingClientRect();
+      parca.parilti(r.left + r.width / 2, r.top + r.height / 2, 4);
     };
     durumYaz('sarki');
     ui.ipucu(B.ipucu.sarki);
@@ -1477,7 +1507,6 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       sustur: (ms) => kulak.sustur(ms),
       yedekNota: (x) => nota(x.midi, (x.sureMs / 1000) * 0.95, 0.2),
       onHece: (i) => {
-        hece(i);
         const x = T.heceler[i];
         // satır başında: 2. satır "Mino oldu pamukçuk" Mino sevinir, 3. satır "Ovala ovala" ikisi kıpırdar
         if (i > 0 && T.heceler[i - 1].satir !== x.satir) {
@@ -1487,6 +1516,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         }
       },
       onVurus: (i) => {
+        vurusAt(i);
         void (i % 2 ? KN : M).zipla(6, 360);
         if (i % 4 === 3) parca.yuksel(...merkez(suOn), 'baloncuk', 2, 80);
       },
@@ -1498,6 +1528,7 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
         sonVurus = y.sira;
         isabet++;
         sahne.el.dataset.bnAlkis = String(isabet);
+        kopukYak(y.sira);
         parca.yuksel(e.clientX, e.clientY, 'baloncuk', 5, 50);
         parca.parilti(e.clientX, e.clientY, 5);
         davul(false, 0.1);
@@ -1522,8 +1553,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       KN.kinoDur();
       ui.ipucu(null);
       durumYaz(null);
-      panel.classList.add('bitti');
-      void sondur(panel, 420, { opacity: 0, scale: '0.85' });
+      ritim.classList.add('bitti');
+      void sondur(ritim, 420, { opacity: 0, scale: '0.85' });
     }
     // güzel eşlik ettiyse kocaman kutlama; etmediyse de kısa sevinç (ceza yok)
     M.tepki('sevinc');
