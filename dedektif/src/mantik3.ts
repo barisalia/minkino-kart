@@ -96,9 +96,9 @@ export const HALKALAR3: Halka3[] = [
   {
     id: 'sayi',
     oda: 'otobus-ic',
-    kadraj: [0.32, 0.56, 0.68, 0.95],
+    kadraj: [0.25, 0.56, 0.59, 0.95],
     // tepsinin dört boş yerindeki un halkaları (tek ipucu: dördü birlikte)
-    ipuclari: [{ id: 'un', oda: 'otobus-ic', resim: 'v3/un-halka', foto: 'v3/foto-tepsi', x: 0.5, y: 0.79, h: 0.16, gizli: true }],
+    ipuclari: [{ id: 'un', oda: 'otobus-ic', resim: 'v3/un-halka', foto: 'v3/foto-tepsi', x: 0.42, y: 0.78, h: 0.15, gizli: true }],
     foto: 'v3/foto-tepsi',
     soru: M3.kac_kayip,
     kino: K3.hepsi,
@@ -112,7 +112,7 @@ export const HALKALAR3: Halka3[] = [
     id: 'cikis',
     oda: 'otobus-ic',
     kadraj: [0.06, 0.02, 0.94, 0.96],
-    ipuclari: [{ id: 'kirinti', oda: 'otobus-ic', resim: 'v3/ipucu-kirinti', x: 0.585, y: 0.683, h: 0.05, gizli: true }],
+    ipuclari: [{ id: 'kirinti', oda: 'otobus-ic', resim: 'v3/ipucu-kirinti', x: 0.6, y: 0.683, h: 0.05, gizli: true }],
     soru: M3.nereden,
     kino: K3.kapidan,
     kinoKart: 'kapi',
@@ -124,11 +124,11 @@ export const HALKALAR3: Halka3[] = [
   {
     id: 'yol',
     oda: 'otobus-yani',
-    kadraj: [0.3, 0.6, 0.78, 1],
+    kadraj: [0.3, 0.52, 0.76, 0.98],
     ipuclari: [
-      { id: 'tohum', oda: 'otobus-yani', resim: 'v3/ipucu-tohum', x: 0.42, y: 0.89, h: 0.06, gizli: true },
-      { id: 'havuc', oda: 'otobus-yani', resim: 'v3/havuc', x: 0.5, y: 0.905, h: 0.06, don: -12, gizli: true },
-      { id: 'seker', oda: 'otobus-yani', resim: 'v3/ipucu-yildiz-seker', x: 0.58, y: 0.89, h: 0.055, gizli: true },
+      { id: 'tohum', oda: 'otobus-yani', resim: 'v3/ipucu-tohum', x: 0.46, y: 0.832, h: 0.06, gizli: true },
+      { id: 'havuc', oda: 'otobus-yani', resim: 'v3/havuc', x: 0.51, y: 0.85, h: 0.06, don: -12, gizli: true },
+      { id: 'seker', oda: 'otobus-yani', resim: 'v3/ipucu-yildiz-seker', x: 0.56, y: 0.832, h: 0.055, gizli: true },
     ],
     // soru girişteki kurabiye fotoğrafına bakarak sorulur (cevabın adı söylenmez)
     foto: 'v3/foto-kurabiye',
@@ -144,10 +144,10 @@ export const HALKALAR3: Halka3[] = [
   {
     id: 'kim',
     oda: 'agac',
-    kadraj: [0.26, 0.42, 0.74, 1],
+    kadraj: [0.2, 0.42, 0.62, 1],
     ipuclari: [
-      { id: 'el-izi', oda: 'agac', resim: 'v3/ipucu-el-izi', x: 0.33, y: 0.93, h: 0.075, gizli: true },
-      { id: 'tuy', oda: 'agac', resim: 'v3/ipucu-tuy', x: 0.575, y: 0.665, h: 0.07, gizli: true },
+      { id: 'el-izi', oda: 'agac', resim: 'v3/ipucu-el-izi', x: 0.365, y: 0.93, h: 0.075, gizli: true },
+      { id: 'tuy', oda: 'agac', resim: 'v3/ipucu-tuy', x: 0.445, y: 0.76, h: 0.07, gizli: true },
     ],
     soru: M3.kim_yasiyor,
     kino: K3.kus,
@@ -162,8 +162,8 @@ export const HALKALAR3: Halka3[] = [
     oda: 'kiler',
     kadraj: [0.1, 0.12, 0.9, 0.95],
     ipuclari: [
-      { id: 'kurabiyeler', oda: 'kiler', resim: 'v3/foto-kiler-kurabiye', x: 0.75, y: 0.62, h: 0.2, gizli: false, kirp: { w: 0.2, h: 0.2 } },
-      { id: 'kar-tanesi', oda: 'kiler', resim: 'v3/foto-kar-tanesi', x: 0.2, y: 0.3, h: 0.22, gizli: false, kirp: { w: 0.12, h: 0.22 } },
+      { id: 'kurabiyeler', oda: 'kiler', resim: 'v3/foto-kiler-kurabiye', x: 0.567, y: 0.63, h: 0.2, gizli: false, kirp: { w: 0.2, h: 0.22 } },
+      { id: 'kar-tanesi', oda: 'kiler', resim: 'v3/foto-kar-tanesi', x: 0.42, y: 0.33, h: 0.2, gizli: false, kirp: { w: 0.1, h: 0.2 } },
     ] as IpucuTanim3[],
     foto: 'v3/foto-kiler',
     ekFoto: 'v3/foto-kar-tanesi',
@@ -185,20 +185,22 @@ export const DOSYA3: readonly DosyaHalkasi[] = HALKALAR3;
  * Tepsi tezgâhın üstünde, pencerenin önünde: altı yer (3 × 2; arka sıra biraz yukarıda). Girişte iki kurabiye (0 ve 4),
  * dört boş yer un halkalı. Yerler tepsinin kutusunun oranı (x, y: kurabiyenin ortası).
  */
-export const TEPSI = { x: 0.5, y: 0.862, w: 0.27 };
+export const TEPSI = { x: 0.42, y: 0.855, w: 0.25 };
+/** tepsi çiziminin boy / en oranı (yer-tutucu3.ts → tepsiSvg) */
+export const TEPSI_ORAN = 0.36;
 export const TEPSI_YERLERI: [number, number][] = [
-  [0.25, 0.38],
-  [0.5, 0.36],
-  [0.75, 0.38],
-  [0.25, 0.68],
-  [0.5, 0.7],
-  [0.75, 0.68],
+  [0.26, 0.3],
+  [0.5, 0.28],
+  [0.74, 0.3],
+  [0.24, 0.66],
+  [0.5, 0.68],
+  [0.76, 0.66],
 ];
 /** girişte tepside kalan iki kurabiyenin yerleri (TEPSI_YERLERI sırası); öbür dördü boş */
 export const KALAN = [0, 4];
 export const BOS_YERLER = TEPSI_YERLERI.map((_, i) => i).filter((i) => !KALAN.includes(i));
 /** kurabiyenin eni / tepsinin eni */
-export const KURABIYE_EN = 0.24;
+export const KURABIYE_EN = 0.2;
 /** Otobüsün parçaları (oda oranı): pencere, pervaz (ön katman kesimi), kapı ve sürgüsü, tavandaki baca kapağı */
 export const OTOBUS = {
   pencere: { x0: 0.355, y0: 0.27, x1: 0.645, y1: 0.69 },
@@ -218,9 +220,9 @@ export const OTOBUS = {
 /** Üç patika pencerenin altından başlar: gölete (tohum), banka (havuç), büyük ağaca (yıldız şeker) */
 export type Patika = 'golet' | 'bank' | 'agac';
 export const PATIKALAR: Record<Patika, { bas: [number, number]; son: [number, number]; ipucu: string }> = {
-  golet: { bas: [0.42, 0.9], son: [0.585, 0.66], ipucu: 'tohum' },
-  bank: { bas: [0.5, 0.92], son: [0.755, 0.71], ipucu: 'havuc' },
-  agac: { bas: [0.58, 0.9], son: [0.93, 0.83], ipucu: 'seker' },
+  golet: { bas: [0.46, 0.84], son: [0.585, 0.66], ipucu: 'tohum' },
+  bank: { bas: [0.51, 0.855], son: [0.755, 0.71], ipucu: 'havuc' },
+  agac: { bas: [0.56, 0.84], son: [0.93, 0.79], ipucu: 'seker' },
 };
 export interface IzNoktasi3 {
   x: number;
@@ -233,15 +235,15 @@ export interface IzNoktasi3 {
  * parmağı kaydırarak sırayla. Kural: son nokta ekranın içinde (ağacın dibine yakın), alt kenara inmez.
  */
 export const SEKER_IZI: IzNoktasi3[] = [
-  { x: 0.615, y: 0.885, h: 0.034, don: 10 },
-  { x: 0.65, y: 0.878, h: 0.033, don: -18 },
-  { x: 0.685, y: 0.87, h: 0.032, don: 24 },
+  { x: 0.595, y: 0.83, h: 0.034, don: 10 },
+  { x: 0.635, y: 0.824, h: 0.033, don: -18 },
+  { x: 0.675, y: 0.818, h: 0.032, don: 24 },
   // (eksik)
-  { x: 0.745, y: 0.858, h: 0.031, don: -8 },
-  { x: 0.78, y: 0.851, h: 0.03, don: 16 },
+  { x: 0.745, y: 0.808, h: 0.031, don: -8 },
+  { x: 0.78, y: 0.803, h: 0.03, don: 16 },
   // (eksik)
-  { x: 0.84, y: 0.842, h: 0.029, don: -20 },
-  { x: 0.875, y: 0.836, h: 0.028, don: 12 },
+  { x: 0.84, y: 0.795, h: 0.029, don: -20 },
+  { x: 0.875, y: 0.79, h: 0.028, don: 12 },
 ];
 /** İz sürme: sırayla dokunulur (atlanmaz; yanlış sıradaki şeker yalnız hafifçe titrer). Kilitlenmez. */
 export class SekerIzi {
@@ -292,7 +294,7 @@ export const KOVUK_ICI = {
   baykus: { kovuk: 'ust' as KovukId, h: 0.12 },
   yuva: { kovuk: 'orta' as KovukId },
   /** kuyruk ucunun kökü (alt dudağın arkasında) ve boyu */
-  kuyruk: { x: 0.548, y: 0.8, h: 0.15 },
+  kuyruk: { x: 0.548, y: 0.825, h: 0.13 },
 };
 /** Fındık kovuktan fırlayınca ağacın dibinde durduğu yer (ayak tabanı) ve boyu (Mino'nun 0.6'sı: boy.ts gibi) */
 export const FINDIK_YERI = { x: 0.62, y: 0.95 };
@@ -371,7 +373,7 @@ export const ROMAN3 = [
 // ---------------------------------------------------------------- kadrajlar (oda oranı)
 export const KADRAJ3 = {
   ic: [0.12, 0.08, 0.88, 1],
-  tepsi: [0.36, 0.62, 0.64, 0.98],
+  tepsi: [0.28, 0.62, 0.56, 0.98],
   pencere: [0.3, 0.2, 0.7, 0.85],
   yani: [0.25, 0.3, 0.85, 1],
   patikalar: [0.3, 0.6, 0.78, 1],

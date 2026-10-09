@@ -381,7 +381,7 @@ export function nedenYanlis(o: Ortak) {
     if (a.id === 'ac') {
       // kurabiyeler parlar: üstlerinde ısırık yok, hepsi bütün
       for (let i = 0; i < 2; i++) {
-        const [x, y] = kokNokta(o, r, 0.66 + i * 0.16, 0.5);
+        const [x, y] = kokNokta(o, r, 0.36 + i * 0.15, 0.52);
         o.efekt.halka(x, y, r.width * 0.09);
       }
       ses.ting();

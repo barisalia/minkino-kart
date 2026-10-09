@@ -28,6 +28,10 @@ export const ERISIM: Record<string, Erisim> = {
   canlan: 'abonelik',
   pasta: 'abonelik',
   dedektif: 'abonelik',
+  // Dedektif Mino vakaları: hepsi abonelikle (Vaka 3 henüz oyunda gizli: dedektif/src/mantik3.ts → VAKA3_YAYINDA)
+  'dedektif/vaka2': 'abonelik',
+  'dedektif/vaka3': 'abonelik',
+  'dedektif/*': 'abonelik',
   // Kino Ne Giysin?: ilk mevsim (Kış · Kardan adam) ücretsiz, diğer mevsimler abonelikle
   'giysin/kis': 'ucretsiz',
   'giysin/*': 'abonelik',

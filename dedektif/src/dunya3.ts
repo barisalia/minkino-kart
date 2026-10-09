@@ -20,6 +20,7 @@ import {
   OTOBUS,
   SEKER_IZI,
   TEPSI,
+  TEPSI_ORAN,
   TEPSI_YERLERI,
   type IpucuTanim3,
   type Kovuk,
@@ -28,7 +29,7 @@ import {
 import { resim } from './resimler';
 
 const px = (v: number) => `${v.toFixed(1)}px`;
-const img = (ad: string, sinif = '') => h(`img${sinif ? '.' + sinif.split(' ').join('.') : ''}`, { src: resim(ad) ?? '', alt: '', draggable: 'false' });
+const img = (ad: string, sinif = '') => h(sinif ? (`img.${sinif.split(' ').join('.')}` as 'img') : 'img', { src: resim(ad) ?? '', alt: '', draggable: 'false' });
 const zeminAdi: Record<Sahne3, string> = { 'otobus-ic': 'v3/otobus-ic', 'otobus-yani': 'v3/otobus-yani', agac: 'v3/agac', kiler: 'v3/kiler-ic' };
 export const zeminUrl = (s: Sahne3) => resim(zeminAdi[s]) ?? '';
 
@@ -53,7 +54,7 @@ export const kovukKutusu = (k: Kovuk, pay = 1 + k.dudak) => ({ x0: k.x - k.rx * 
  */
 export function dudakBicimi(k: Kovuk, ust = -0.08): string {
   const d = 1 + k.dudak;
-  const l: string[] = [];
+  const l: [number, number][] = [];
   const a0 = Math.asin(Math.max(-1, Math.min(1, ust)));
   const n = 28;
   // dış elips: sağdan (a0) alttan sola (π - a0)
@@ -80,7 +81,7 @@ export function otobusIc(ipuclari: IpucuTanim[]): Oda {
   const W = odaW(id);
   const e: Record<string, HTMLElement> = {};
   const tw = TEPSI.w * W;
-  const th = (tw * 520) / 1000;
+  const th = tw * TEPSI_ORAN;
   const tx = TEPSI.x * W;
   const ty = TEPSI.y * ODA_H;
   const k = tw * KURABIYE_EN;

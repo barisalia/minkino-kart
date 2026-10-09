@@ -325,7 +325,7 @@ export type Guvenli = (w: number, hgt: number) => [number, number, number, numbe
  * Dikey (dar) ekranda oda ekranı boydan kaplar; bu kadar yakından bakılır ki pencere / gök yalnız bir şerit kalsın,
  * zemin, halı ve ipuçları ekranın ortasına gelsin (Barış: "ekranın yarısı gökyüzü"). Koridorda iki yol birlikte görünsün diye az.
  */
-export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yatak: 1.6, mutfak: 1.4, 'bahce-ip': 1.6, 'bahce-yol': 1.75, 'bahce-golet': 1.3, 'otobus-ic': 1.5, 'otobus-yani': 1.5, agac: 1.4, kiler: 1.2 };
+export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yatak: 1.6, mutfak: 1.4, 'bahce-ip': 1.6, 'bahce-yol': 1.75, 'bahce-golet': 1.3, 'otobus-ic': 1, 'otobus-yani': 1.2, agac: 1, kiler: 1 };
 
 /**
  * Odaların arka plan resminin doğal boyu (px; resim yüklenene dek). Kamera bu resmi cihazda doğal pikselinin

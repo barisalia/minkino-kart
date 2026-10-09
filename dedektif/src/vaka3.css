@@ -132,10 +132,19 @@
 .dd-kok .sayildi b {
   opacity: 1;
 }
+.dd-kok .dd-v3-rakam-gizli .sayildi b {
+  opacity: 0;
+  transition-duration: 0.5s;
+}
 
 /* pencere: final (Fındık pervazın arkasında), tabela, yeni kurabiye */
+/* pervaz: pencerenin alt çerçevesinin kendi kopyası; yalnız finalde (Fındık arkasında dururken) önde */
 .dd-kok .dd-v3-pervaz {
   z-index: 1;
+  opacity: 0;
+}
+.dd-kok .dd-v3-pervaz.acik {
+  opacity: 1;
 }
 .dd-kok .dd-v3-pencere-findik {
   position: absolute;
@@ -348,8 +357,8 @@
   content: '';
   position: absolute;
   inset: -6%;
-  border-radius: 22%;
-  box-shadow: 0 0 0 3px rgba(255, 236, 150, 0.55);
+  border-radius: 50%;
+  box-shadow: 0 0 14px 4px rgba(255, 236, 150, 0.45);
   animation: dd-v3-nabiz 1.6s ease-in-out infinite;
 }
 .dd-kok .dd-ipucu.dd-v3-kiler-ipucu.dd-alindi::before {

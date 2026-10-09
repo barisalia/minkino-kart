@@ -47,15 +47,15 @@ export function findikTanesi(cx: number, cy: number, s: number, don = 0): string
 }
 
 // ---------------------------------------------------------------- eşyalar ve ipuçları
-/** Fırın tepsisi (üstten hafif eğik, gümüş, koyu kahve kontur) 1000 × 520 */
+/** Fırın tepsisi (tezgâhta, önden eğik bakış: üstü dar yamuk, gümüş, koyu kahve kontur) 1000 × 360 (TEPSI_ORAN) */
 export function tepsiSvg(): string {
   return svgSar(
     1000,
-    520,
-    `<rect x="18" y="24" width="964" height="470" rx="70" fill="url(#tg)" stroke="${KONTUR}" stroke-width="16"/>
-<rect x="62" y="70" width="876" height="380" rx="44" fill="url(#ti)" stroke="#8d96a1" stroke-width="8"/>
-<path d="M110 60 H860" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".7"/>
-<path d="M90 470 H910" stroke="#7d8692" stroke-width="10" stroke-linecap="round" opacity=".35"/>`,
+    360,
+    `<path d="M120 22 H880 C920 22 940 40 948 70 L984 300 C990 330 970 344 940 344 H60 C30 344 10 330 16 300 L52 70 C60 40 80 22 120 22 Z" fill="url(#tg)" stroke="${KONTUR}" stroke-width="16" stroke-linejoin="round"/>
+<path d="M150 62 H850 C870 62 884 74 888 92 L912 278 C914 292 904 302 888 302 H112 C96 302 86 292 88 278 L112 92 C116 74 130 62 150 62 Z" fill="url(#ti)" stroke="#8d96a1" stroke-width="8"/>
+<path d="M150 46 H850" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+<path d="M70 326 H930" stroke="#7d8692" stroke-width="8" stroke-linecap="round" opacity=".35"/>`,
     `<linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f4f7"/><stop offset="1" stop-color="#b7c0ca"/></linearGradient><linearGradient id="ti" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4dbe2"/><stop offset="1" stop-color="#e8edf1"/></linearGradient>`,
   );
 }
@@ -200,6 +200,23 @@ export function palamutKurabiyeSvg(): string {
     `<linearGradient id="hk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4c47e"/><stop offset="1" stop-color="#d48d43"/></linearGradient><linearGradient id="hc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5530"/><stop offset="1" stop-color="#5e3419"/></linearGradient>`,
   );
 }
+/** Otobüsün pembe yan kapısı (kapalı, iç sürgülü) 768 × 768 (B13 yer tutucu) */
+export function kapiSvg(): string {
+  return svgSar(
+    768,
+    768,
+    `<path d="M200 720 V150 C200 90 250 50 310 50 H458 C518 50 568 90 568 150 V720 Z" fill="#f6e2c0" stroke="${KONTUR}" stroke-width="16" stroke-linejoin="round"/>
+<path d="M236 704 V166 C236 116 270 86 318 86 H450 C498 86 532 116 532 166 V704 Z" fill="url(#kp)" stroke="${KONTUR}" stroke-width="12"/>
+<rect x="290" y="140" width="188" height="170" rx="40" fill="#bfe6f7" stroke="${KONTUR}" stroke-width="12"/>
+<path d="M312 180 L360 150 M318 230 L400 170" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".8"/>
+<rect x="276" y="360" width="216" height="150" rx="22" fill="#f28fb0" stroke="#c96a8e" stroke-width="8"/>
+<rect x="276" y="540" width="216" height="130" rx="22" fill="#f28fb0" stroke="#c96a8e" stroke-width="8"/>
+<circle cx="502" cy="450" r="18" fill="#ffd36b" stroke="${KONTUR}" stroke-width="8"/>
+<rect x="430" y="402" width="120" height="44" rx="14" fill="#c48a52" stroke="${KONTUR}" stroke-width="9"/>
+<rect x="470" y="414" width="110" height="20" rx="8" fill="#9a6a3c" stroke="${KONTUR}" stroke-width="7"/>`,
+    `<linearGradient id="kp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb3cb"/><stop offset="1" stop-color="#f48fb1"/></linearGradient>`,
+  );
+}
 /** Küçük kalp (Fındık'ın sevinci) 200 × 200 */
 export const kalpSvg = (renk = '#ff7aa2') =>
   svgSar(200, 200, `<path d="M100 172 C40 130 14 96 22 62 C30 30 74 22 100 54 C126 22 170 30 178 62 C186 96 160 130 100 172 Z" fill="${renk}" stroke="${KONTUR}" stroke-width="10" stroke-linejoin="round"/><ellipse cx="62" cy="64" rx="16" ry="10" fill="#fff" opacity=".6" transform="rotate(-30 62 64)"/>`);
@@ -271,7 +288,7 @@ const KOVUK_DEFS = `<radialGradient id="kd" cx=".5" cy=".35"><stop offset="0" st
 export function mese(x: number, y: number, s: number, kovuklar = true): string {
   // gövde ve kökler (ölçeksiz tasarım: taban ortası 0,0; gövde 0.26 en, 0.66 boy)
   const g = `<g transform="translate(${f(x)} ${f(y)}) scale(${f(s)})">
-<path d="M-560 0 C-470 -40 -420 -90 -380 -170 C-340 -420 -330 -820 -300 -1380 L300 -1380 C330 -820 340 -420 380 -170 C420 -90 470 -40 560 0 C380 30 -380 30 -560 0 Z" fill="url(#gv)" stroke="${KONTUR}" stroke-width="16" stroke-linejoin="round"/>
+<path d="M-560 0 C-470 -40 -420 -90 -380 -170 C-340 -420 -330 -820 -300 -1500 L300 -1500 C330 -820 340 -420 380 -170 C420 -90 470 -40 560 0 C380 30 -380 30 -560 0 Z" fill="url(#gv)" stroke="${KONTUR}" stroke-width="16" stroke-linejoin="round"/>
 <path d="M-200 -1300 C-180 -1000 -230 -700 -190 -380 M-40 -1340 C-20 -1060 -60 -760 -30 -460 M150 -1300 C170 -1020 130 -720 170 -420 M240 -260 C270 -160 330 -80 420 -30 M-250 -240 C-280 -140 -340 -70 -430 -26" stroke="#6e4325" stroke-width="14" fill="none" stroke-linecap="round" opacity=".7"/>
 <path d="M-240 -1340 C-230 -1100 -260 -880 -250 -700" stroke="#c58c5c" stroke-width="22" fill="none" stroke-linecap="round" opacity=".45"/></g>`;
   const tac = (cx: number, cy: number, r: number, renk = 'url(#tc)') => `<circle cx="${f(x + cx * s)}" cy="${f(y + cy * s)}" r="${f(r * s)}" fill="${renk}" stroke="${KONTUR}" stroke-width="16"/>`;
@@ -343,7 +360,9 @@ function patikaYolu([x0, y0]: [number, number], [x1, y1]: [number, number], egri
     sol.push(`${f(x + nx)},${f(y + ny)}`);
     sag.unshift(`${f(x - nx)},${f(y - ny)}`);
   }
-  return `<polygon points="${[...sol, ...sag].join(' ')}" fill="url(#py)" stroke="#a87a4c" stroke-width="10" stroke-linejoin="round"/>`;
+  // yuvarlak uçlar (patika toprağa yumuşakça biter)
+  const uc = (x: number, y: number, r: number) => `<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(r)}" ry="${f(r * 0.55)}" fill="url(#py)" stroke="#a87a4c" stroke-width="10"/>`;
+  return `${uc(ax, ay, w0 * SH)}${uc(bx, by, w1 * SH)}<polygon points="${[...sol, ...sag].join(' ')}" fill="url(#py)" stroke="#a87a4c" stroke-width="10" stroke-linejoin="round"/>${uc(ax, ay, w0 * SH * 0.92).replace('stroke="#a87a4c" stroke-width="10"', 'stroke="none"')}`;
 }
 /** Otobüsün yanı: çimen, üç patika, gölet ve sazlar, uzakta ağaç (otobüs ve bank resimlerden: resimler3.ts) */
 export function yaniOnSvg(): string {
@@ -351,7 +370,7 @@ export function yaniOnSvg(): string {
   const saz = [0.53, 0.545, 0.665, 0.68]
     .map((x, i) => `<path d="M${f(X(x))} ${f(Y(0.64))} C${f(X(x) + 10)} ${f(Y(0.58))} ${f(X(x) - 6)} ${f(Y(0.55))} ${f(X(x) + (i % 2 ? 14 : -10))} ${f(Y(0.52))}" stroke="#5f9a3a" stroke-width="12" fill="none" stroke-linecap="round"/><ellipse cx="${f(X(x) + (i % 2 ? 14 : -10))}" cy="${f(Y(0.535))}" rx="12" ry="30" fill="#8a5a35" stroke="${KONTUR}" stroke-width="6"/>`)
     .join('');
-  const yollar = [patikaYolu(PATIKALAR.golet.bas, PATIKALAR.golet.son, -0.03, 0.026, 0.008), patikaYolu(PATIKALAR.bank.bas, PATIKALAR.bank.son, 0.02, 0.028, 0.01), patikaYolu(PATIKALAR.agac.bas, PATIKALAR.agac.son, 0.05, 0.026, 0.014)].join('');
+  const yollar = [patikaYolu(PATIKALAR.golet.bas, PATIKALAR.golet.son, -0.03, 0.017, 0.007), patikaYolu(PATIKALAR.bank.bas, PATIKALAR.bank.son, 0.02, 0.017, 0.008), patikaYolu(PATIKALAR.agac.bas, PATIKALAR.agac.son, 0.05, 0.017, 0.011)].join('');
   const uzakAgac = mese(X(0.95), Y(0.86), 0.42, false);
   return svgSar(SW, SH, cimen(0.6) + golet + saz + uzakAgac + yollar, CIMEN_DEFS + MESE_DEFS + `<linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6f5"/><stop offset="1" stop-color="#4aa8dc"/></linearGradient><linearGradient id="py" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2c193"/><stop offset="1" stop-color="#cfa16c"/></linearGradient>`);
 }
@@ -370,10 +389,10 @@ export function icEkSvg(): string {
 export function kilerSvg(): string {
   const raf = (y: number, x0: number, x1: number) => `<rect x="${f(X(x0))}" y="${f(Y(y))}" width="${f(X(x1 - x0))}" height="${f(Y(0.05))}" rx="22" fill="url(#rf)" stroke="${KONTUR}" stroke-width="12"/><path d="M${f(X(x0) + 30)} ${f(Y(y) + 22)} H${f(X(x1) - 30)}" stroke="#e2b27c" stroke-width="10" stroke-linecap="round" opacity=".6"/>`;
   const ust = Array.from({ length: 8 }, (_, i) => palamut(X(0.33 + i * 0.075), Y(0.39), 150, (i % 2 ? 8 : -6), 10)).join('');
-  const alt = Array.from({ length: 4 }, (_, i) => findikTanesi(X(0.36 + i * 0.065), Y(0.655), 130, i * 12 - 10)).join('');
+  const alt = Array.from({ length: 4 }, (_, i) => findikTanesi(X(0.69 + i * 0.065), Y(0.655), 130, i * 12 - 10)).join('');
   const ic = `<rect width="${SW}" height="${SH}" fill="url(#ki)"/>
 <path d="M${f(X(0.1))} ${f(Y(0.2))} C${f(X(0.3))} ${f(Y(0.12))} ${f(X(0.7))} ${f(Y(0.12))} ${f(X(0.9))} ${f(Y(0.2))} M${f(X(0.08))} ${f(Y(0.85))} C${f(X(0.3))} ${f(Y(0.92))} ${f(X(0.7))} ${f(Y(0.92))} ${f(X(0.92))} ${f(Y(0.85))}" stroke="#7a4b2a" stroke-width="18" fill="none" opacity=".5"/>
-${raf(0.45, 0.28, 0.95)}${raf(0.72, 0.28, 0.95)}${ust}${alt}${karTanesi(X(0.2), Y(0.3), Y(0.085), Y(0.22))}`;
+${raf(0.45, 0.28, 0.95)}${raf(0.72, 0.28, 0.95)}${ust}${alt}${karTanesi(X(0.42), Y(0.33), Y(0.08), Y(0.25))}`;
   // ağzın kabuk çerçevesi: elips delikli dikdörtgen (evenodd), kalın dudak
   const cer = `<path fill-rule="evenodd" d="M0 0 H${SW} V${SH} H0 Z M${f(X(0.5) - X(0.47))} ${f(Y(0.5))} A${f(X(0.47))} ${f(Y(0.47))} 0 1 0 ${f(X(0.5) + X(0.47))} ${f(Y(0.5))} A${f(X(0.47))} ${f(Y(0.47))} 0 1 0 ${f(X(0.5) - X(0.47))} ${f(Y(0.5))} Z" fill="url(#cr)"/>
 <ellipse cx="${f(X(0.5))}" cy="${f(Y(0.5))}" rx="${f(X(0.47))}" ry="${f(Y(0.47))}" fill="none" stroke="${KONTUR}" stroke-width="18"/>

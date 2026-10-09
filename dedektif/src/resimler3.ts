@@ -14,7 +14,7 @@
  * Tuval işleri tarayıcıda, vaka açılırken bir kez (hazirla3). Dikey sahneler (B2, B4, B6) şimdilik kullanılmaz:
  * DIKEY3_HAZIR (çizim gelip ipuçlarının yerleri ölçülünce açılır); o zamana dek dikey ekranda yatay sahne kullanılır.
  */
-import { BOS_YERLER, KALAN, KURABIYE_EN, OTOBUS, TEPSI_YERLERI } from './mantik3';
+import { BOS_YERLER, KALAN, KURABIYE_EN, OTOBUS, TEPSI_ORAN, TEPSI_YERLERI } from './mantik3';
 import {
   agacOnSvg,
   ekmekSvg,
@@ -22,6 +22,7 @@ import {
   geceSvg,
   icEkSvg,
   kalpSvg,
+  kapiSvg,
   karYagisi,
   kilerSvg,
   kirintiSvg,
@@ -287,8 +288,8 @@ export const YER_TUTUCU: Record<string, Tarif> = {
     async ciz(t) {
       await t.svg(kilerSvg(), 0, 0, t.w, t.h);
       const k = t.w * 0.105;
-      await t.resim('v3/kurabiye', t.w * 0.655, t.h * 0.535, k, k, { don: -8 });
-      await t.resim('v3/kurabiye', t.w * 0.765, t.h * 0.54, k, k, { don: 10 });
+      await t.resim('v3/kurabiye', t.w * 0.47, t.h * 0.535, k, k, { don: -8 });
+      await t.resim('v3/kurabiye', t.w * 0.565, t.h * 0.54, k, k, { don: 10 });
     },
   },
   'ipucu-kirinti': { w: 600, h: 360, ciz: (t) => t.svg(kirintiSvg(), 0, 0, t.w, t.h) },
@@ -296,8 +297,8 @@ export const YER_TUTUCU: Record<string, Tarif> = {
   'ipucu-yildiz-seker': { w: 600, h: 360, ciz: (t) => t.svg(yildizSekerSvg(), 0, 0, t.w, t.h) },
   'ipucu-el-izi': { w: 700, h: 460, ciz: (t) => t.svg(elIziSvg(), 0, 0, t.w, t.h) },
   'ipucu-tuy': kare(520, (t) => t.svg(tuySvg(), 0, 0, t.w, t.h)),
-  // B13-B15: otobüsün kendi parçaları (otobüsün içinin çiziminden kırpım: çizim gelince o da kendiliğinden)
-  'kart-kapi': kare(768, (t) => parca(t, OTOBUS.kapi, 0.28)),
+  // B13: kapı (çizim); B14-B15: pencere ve baca kapağı (otobüsün içinin çiziminden kırpım)
+  'kart-kapi': kare(768, (t) => t.svg(kapiSvg(), 0, 0, t.w, t.h)),
   'kart-pencere': kare(768, (t) => parca(t, OTOBUS.pencere, 0.06)),
   'kart-baca': kare(768, (t) => parca(t, OTOBUS.baca, 0.12)),
   // B16, B21: orman sincabı (Fındık'ın yerine; Gemini B21'i çizince)
@@ -461,7 +462,7 @@ export const FOTO_TEPSI = { w: 1024, h: 768, tepsi: { x: 0.06, y: 0.14, w: 0.88 
 export function tepsiFotoYeri(i: number): [number, number, number] {
   const { w, h, tepsi: tp } = FOTO_TEPSI;
   const tw = w * tp.w;
-  const th = (tw * 520) / 1000;
+  const th = tw * TEPSI_ORAN;
   const tx = w * tp.x;
   const ty = h * tp.y + (h * 0.72 - th) / 2;
   const [x, y] = TEPSI_YERLERI[i];
@@ -470,7 +471,7 @@ export function tepsiFotoYeri(i: number): [number, number, number] {
 async function tepsiCiz(t: Tuval, halkalar: boolean) {
   const tp = FOTO_TEPSI.tepsi;
   const tw = t.w * tp.w;
-  const th = (tw * 520) / 1000;
+  const th = tw * TEPSI_ORAN;
   const tx = t.w * tp.x;
   const ty = t.h * tp.y + (t.h * 0.72 - th) / 2;
   await t.resim('v3/tepsi', tx, ty, tw, th);
@@ -512,8 +513,8 @@ export const TURETILEN: Record<string, Tarif> = {
   'demek-agac': kare(768, (t) => sahneKirp(t, 'v3/agac', [0.31, 0.25, 0.69, 0.93])),
   // Halka 5: kovuğun içi (raflar ve kurabiyeler), kurabiyelere yakın, kar tanesine yakın
   'foto-kiler': { w: 1024, h: 768, ciz: (t) => sahneKirp(t, 'v3/kiler-ic', [0.3, 0.3, 0.92, 0.9]) },
-  'foto-kiler-kurabiye': kare(640, (t) => sahneKirp(t, 'v3/kiler-ic', [0.64, 0.5, 0.86, 0.79])),
-  'foto-kar-tanesi': { w: 512, h: 768, ciz: (t) => sahneKirp(t, 'v3/kiler-ic', [0.13, 0.17, 0.27, 0.43]) },
+  'foto-kiler-kurabiye': kare(640, (t) => sahneKirp(t, 'v3/kiler-ic', [0.45, 0.5, 0.69, 0.79])),
+  'foto-kar-tanesi': { w: 512, h: 768, ciz: (t) => sahneKirp(t, 'v3/kiler-ic', [0.35, 0.2, 0.49, 0.46]) },
   // Fındık'ın tabelası (finalde pencerede): yüzü ve soru balonu (yazı yok)
   tabela: {
     w: 768,

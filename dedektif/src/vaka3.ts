@@ -293,7 +293,7 @@ class Vaka3 {
     oy.kinoIfade('heyecan', 900);
     await oy.kaydir('kino', 0, 0, 900, 22);
     if (this.kapali) return;
-    void dunya.git(this.kd(KADRAJ3.tepsi, 0.5, 0.14), 1000);
+    void dunya.git(this.kd(KADRAJ3.tepsi, undefined, 0.14), 1000);
     await this.bekle(500);
     // yakın plan: kurabiyenin üstünün fotoğrafı (flaş) dosyaya girer
     this.fotoCek();
@@ -628,13 +628,15 @@ class Vaka3 {
     const hk = halka3('sayi');
     this.s.aktif('sayi');
     oy.yerlesim('iki');
-    await this.odaya(this.ic, this.kd(hk.kadraj, 0.5, 0.13));
+    await this.odaya(this.ic, this.kd(hk.kadraj, undefined, 0.13));
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
     await this.ara_(hk.ipuclari, hk, this.ic, 'sayi');
     if (this.kapali) return;
     // boş yerleri say: her dokunuşta halkanın içinde rakam ve bir nota
     await this.say(this.ic.e.sayac, M3.say, 'say');
+    // rakamlar soru açılırken söner (kartların arkasında kalmasın)
+    this.ic.e.sayac.classList.add('dd-v3-rakam-gizli');
     oy.yerlesim('iki');
     if (this.kapali) return;
     await this.kartSorusu(hk, sayiYanlis(this.ortak), () => sayiDogru(this.ortak));
@@ -743,7 +745,7 @@ class Vaka3 {
     const hk = halka3('yol');
     this.s.aktif('yol');
     oy.yerlesim('iki');
-    await this.odaya(this.yani, this.kd(hk.kadraj, 0.5, 0.13), 1);
+    await this.odaya(this.yani, this.kd(hk.kadraj, undefined, 0.13), 1);
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
     await this.ara_(hk.ipuclari, hk, this.yani, 'yol');
@@ -898,8 +900,10 @@ class Vaka3 {
       else if (id === 'yuva') this.yuvaSalla();
       else if (id === 'kuyruk' && !kuyrukBekliyor) {
         kuyrukBekliyor = true;
+        // ilk dokunuş: kuyruk "fırr" diye kaçar; arama biter, kuyruk yeniden sarkınca ikinci dokunuş Fındık'ı çıkarır
         void this.kuyrukKac().then(() => {
-          if (arama.kuyruk() === 'cik') this.aramayiBitir();
+          arama.kuyruk();
+          this.aramayiBitir();
         });
       }
     };
@@ -1088,8 +1092,8 @@ class Vaka3 {
     }
     // kamera kovuğun içine girer (yakın plan; ağız çerçeve gibi önde)
     oy.yerlesim('iki');
-    if (dogrudan) dunya.kur(this.kiler, this.kd(hk.kadraj, 0.5, 0.14));
-    else await this.odaya(this.kiler, this.kd(hk.kadraj, 0.5, 0.14), 1);
+    if (dogrudan) dunya.kur(this.kiler, this.kd(hk.kadraj, undefined, 0.14));
+    else await this.odaya(this.kiler, this.kd(hk.kadraj, undefined, 0.14), 1);
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
     await this.ara_(hk.ipuclari, hk, this.kiler, 'neden');
@@ -1139,6 +1143,7 @@ class Vaka3 {
     oy.minoTepki('sevinc');
     await oy.soyle(M3.bir_dort);
     e.kurabiyeler.classList.remove('acik');
+    e.kurabiyeler.classList.add('dd-v3-rakam-gizli');
     if (this.kapali) return;
     // 3) Fındık utangaç: "Herkesin sandım."
     this.adim('sormak');
@@ -1335,6 +1340,7 @@ class Vaka3 {
     ses.pop();
     await this.bekle(500);
     // Fındık pencerede belirir (pervazın arkasında), balonu gösterir
+    e.pervaz.classList.add('acik');
     e.findik.classList.add('acik');
     ses.firr();
     await this.bekle(600);
