@@ -96,6 +96,11 @@ export interface KonusmaSecenegi {
    * yoksa anlatıcı kaydı `ton` ile çalınır (content/seslendirme.json → karakter_sesleri).
    */
   karakter?: string | null;
+  /**
+   * false: kaydı çalınamayan parça (kayıt yok ya da ses motoru henüz açılmadı — ilk dokunuştan önce) cihazın robotik
+   * Türkçe sesine düşmez; parçanın süresi kadar sessiz beklenir (ekrandaki balon / yazı yine görünür).
+   */
+  cihazSesi?: boolean;
 }
 
 /** Kino'nun konuşması: kendi sesi yoksa anlatıcı sesinin kalın tonu. */
@@ -174,7 +179,7 @@ function konusIc(girdi: Soylenecek, secenek: KonusmaSecenegi): Promise<void> {
           if (benim === sayac) ani = { kaynak: 'kayit', metin: p, bas: performance.now() };
         };
         const calindi = kayitVar(p, kayitSecenegi) && (await kayitCal(p, () => benim !== sayac, kayitSecenegi, basladi));
-        if (!calindi && benim === sayac) await tekParca(p, benim, secenek.ton ?? 1);
+        if (!calindi && benim === sayac) await (secenek.cihazSesi === false && !DOSYA.test(p) ? sessizParca(p, benim) : tekParca(p, benim, secenek.ton ?? 1));
         if (benim === sayac) ani = null;
       }
       if (benim === sayac) muzikKis(false);
@@ -185,6 +190,19 @@ function konusIc(girdi: Soylenecek, secenek: KonusmaSecenegi): Promise<void> {
       }
     }
   })();
+}
+
+/** Cihaz sesi istenmeyen parça: söylenecekmiş gibi kısa süre beklenir (akış ve balonlar aynı ritimde sürer). */
+function sessizParca(metin: string, benim: number): Promise<void> {
+  return new Promise<void>((coz) => {
+    if (benim !== sayac) return coz();
+    const t = setTimeout(son, 500 + metin.length * 55);
+    function son() {
+      clearTimeout(t);
+      coz();
+    }
+    bitir = son;
+  });
 }
 
 function tekParca(metin: string, benim: number, ton = 1): Promise<void> {

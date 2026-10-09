@@ -8,7 +8,7 @@
  * Yalnız transform / opacity; her sahne ~8 sn.
  */
 import { efekt } from '../../src/audio/efekt';
-import { konus, KINO_SESI } from '../../src/audio/konusma';
+import { kinoSoyle, minoSoyle } from './soz';
 import { erisimVarMi } from '../../src/abonelik/kilit';
 import { Mino } from '../../src/mino/mino';
 import { h, TEST_MODU } from '../../src/ui/dom';
@@ -25,7 +25,7 @@ import { taneKatmani } from './oda';
 import { guvenliOlc, type Guvenli } from './guvenli';
 import { onYukle, resim } from './resimler';
 
-const kinoDe = (t: string) => konus(t, KINO_SESI);
+const kinoDe = kinoSoyle;
 
 export function disariEkrani(app: Uygulama, param?: { mevsim?: Mevsim; giyili?: GiysiId[] }): Ekran {
   const mevsim: Mevsim = param?.mevsim ?? 'kis';
@@ -471,7 +471,7 @@ export function disariEkrani(app: Uygulama, param?: { mevsim?: Mevsim; giyili?: 
       kamera.style.opacity = '1';
       void oynat(kamera, [{ transform: 'scale(0)', opacity: 0 }, { transform: 'scale(1.15)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], 380);
     }
-    await konus(G.mino.gulumse);
+    await minoSoyle(G.mino.gulumse);
     kino.k.ifade('heyecan', 2500);
     void oynat(kamera, [{ transform: 'none' }, { transform: 'scale(1.15, 0.88)', offset: 0.4 }, { transform: 'none' }], 260);
     efekt.dagit();
@@ -491,7 +491,7 @@ export function disariEkrani(app: Uygulama, param?: { mevsim?: Mevsim; giyili?: 
     await bekle(1300);
     const a = albumD.getBoundingClientRect();
     efekt.ucus();
-    void konus(G.mino.albume);
+    void minoSoyle(G.mino.albume);
     await kavis(p, { x: W / 2, y: H * 0.47 }, { x: a.left + a.width / 2, y: a.top + a.height / 2 }, 800, { s0: 1, s1: 0.12, don: 12, tepe: -60 });
     p.remove();
     const rozet = fotoEkle(mevsim, giyili);
@@ -560,7 +560,7 @@ export function disariEkrani(app: Uygulama, param?: { mevsim?: Mevsim; giyili?: 
     void oynat(grup.querySelector('span'), [{ transform: 'translateY(20px)', opacity: 0 }, { transform: 'none', opacity: 1 }], 400, { fill: 'forwards' });
     efekt.konfeti();
     mino?.tepki('dans', 2);
-    await konus(G.mino.rozet);
+    await minoSoyle(G.mino.rozet);
     await bekle(1600);
     void oynat(r, [{ opacity: 1 }, { opacity: 0 }], 500, { fill: 'forwards' });
     await oynat(grup, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.5) translateY(-30%)' }], 500, { fill: 'forwards' });
@@ -587,7 +587,7 @@ export function disariEkrani(app: Uygulama, param?: { mevsim?: Mevsim; giyili?: 
     }
     son.classList.add('acik');
     for (const [i, b] of [...son.children].entries()) void oynat(b, [{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], 480, { delay: ms(i * 120), easing: 'ease-out', fill: 'backwards' });
-    void konus(G.mino.yine);
+    void minoSoyle(G.mino.yine);
   }
 
   requestAnimationFrame(() => void oyna());

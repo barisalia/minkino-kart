@@ -7,7 +7,7 @@
  * Bütün hareketler transform / opacity; dokunma hiçbir animasyonda kilitlenmez (sürükleme her an çalışır).
  */
 import { efekt } from '../../src/audio/efekt';
-import { konus, KINO_SESI } from '../../src/audio/konusma';
+import { kinoSoyle, minoSoyle } from './soz';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
@@ -22,7 +22,6 @@ import { iyiTepki, kalpler, parilti, sendele, uymazTepki, zipla, type TepkiBagla
 
 const M = G.mino;
 const K = G.kino;
-const kinoSoyle = (t: string) => konus(t, KINO_SESI);
 
 type Adim = 'giris' | 'perde' | 'dolap' | 'giyin' | 'gorev' | 'ayna' | 'kapi' | 'cikis';
 
@@ -241,7 +240,7 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
 
   // ------------------------------------------------------------ konuşma
   let konusma = Promise.resolve();
-  const mino = (t: string) => (konusma = konus(t));
+  const mino = (t: string) => (konusma = minoSoyle(t));
   const kinoDe = (t: string) => (konusma = kinoSoyle(t));
   void konusma;
 
@@ -322,7 +321,7 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
         await sonuc(t, hedef.x, hedef.y);
         return;
       }
-      void konus(G.giysi[t.id]);
+      void minoSoyle(G.giysi[t.id]);
       await geriGonder(t.el, t.kaynak, { x: cx, y: cy });
       return;
     }
