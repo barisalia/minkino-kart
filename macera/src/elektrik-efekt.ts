@@ -194,8 +194,24 @@ ${bina}
 /** Ekran katmanında konuşma balonu (karanlığın altında kalmasın): hedefin tepesinde, kısa süre */
 export function balonGoster(katman: HTMLElement, hedef: DOMRect, yazi: string, ms = 1300, ust = 0.02) {
   const k = katman.getBoundingClientRect();
-  const el = h('div.el-balon', { style: `left:${(hedef.left + hedef.width / 2 - k.left).toFixed(0)}px;top:${(hedef.top + hedef.height * ust - k.top).toFixed(0)}px` }, yazi);
+  const x = hedef.left + hedef.width / 2 - k.left;
+  const y = hedef.top + hedef.height * ust - k.top;
+  const el = h('div.el-balon', { style: `left:${x.toFixed(0)}px;top:${y.toFixed(0)}px` }, yazi);
   katman.append(el);
+  // ekrandan taşmasın: balon katmanın (ve ekranın) içinde kalır, kenardan 8 px pay; kuyruğu yine hedefi gösterir
+  const w = el.offsetWidth;
+  const bh = el.offsetHeight;
+  const sol = Math.max(0, -k.left);
+  const sag = Math.min(k.width, innerWidth - k.left);
+  if (w && sag - sol > w + 16) {
+    const x2 = Math.max(sol + w / 2 + 8, Math.min(sag - w / 2 - 8, x));
+    if (x2 !== x) {
+      el.style.left = `${x2.toFixed(0)}px`;
+      el.style.setProperty('--kuyruk', `${Math.max(-w / 2 + 18, Math.min(w / 2 - 18, x - x2)).toFixed(0)}px`);
+    }
+  }
+  const ustSinir = Math.max(0, -k.top) + bh + 8;
+  if (bh && y < ustSinir) el.style.top = `${ustSinir.toFixed(0)}px`;
   void el.offsetWidth;
   el.classList.add('acik');
   setTimeout(() => el.classList.remove('acik'), sure(ms));

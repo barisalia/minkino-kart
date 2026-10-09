@@ -92,6 +92,39 @@
 @keyframes eg-final-karar {
   from { opacity: 0; }
 }
+/* final, dikey tablet: çizimin kırpılan üstü (pencerenin üst yayı) dünyanın üstüne uzar, pencere ortalanır; oda ve
+   ışık örtüleri birlikte uzar (ege.ts → finalKamera, --ust-pay) */
+.mc-kok .eg-sahne.final :is(.mc-oda, .eg-aksam, .eg-gece) {
+  top: calc(-1 * var(--ust-pay, 0px));
+}
+/* final, yatay ekran: yan şeritler gece rengine geçer (bant kenarındaki duvarla aynı ton, aynı puantiye); bandın
+   kenarı yumuşakça şeride karışır, dikiş görünmez */
+@property --eg-kenar {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+.mc-kok .mc-sahne.eg-sahne.final {
+  --eg-kenar: 7%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--eg-kenar), #000 calc(100% - var(--eg-kenar)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--eg-kenar), #000 calc(100% - var(--eg-kenar)), transparent 100%);
+  transition: clip-path 1.4s ease, --eg-kenar 2s ease;
+}
+@media (orientation: portrait) {
+  .mc-kok .mc-sahne.eg-sahne.final {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+.mc-kok .mc-bolum[data-bolum='ege']:has(.eg-sahne.final) {
+  background:
+    radial-gradient(circle, rgba(118, 132, 214, 0.32) 0 4px, transparent 5px) 0 0 / 40px 40px,
+    linear-gradient(180deg, #283670 0%, #2d3e74 45%, #2a3a68 62%, #19203f 82%, #0e1130 100%);
+}
+.mc-kok .mc-sahne-kok:has(.eg-sahne.final) .mc-yan-dolgu {
+  opacity: 0;
+  transition: opacity 1.8s ease;
+}
 .mc-kok .eg-pencere-ay {
   position: absolute;
   left: 58%;
@@ -273,6 +306,9 @@
   scale: 0.7;
   pointer-events: none;
 }
+.mc-kok .eg-sahne .gidiyor.hizli {
+  transition-duration: 0.25s;
+}
 .mc-kok .eg-sahne [data-ege] .eg-resim {
   pointer-events: none;
 }
@@ -380,6 +416,13 @@
 }
 .mc-kok .eg-sahne .eg-balon.acik {
   transform: translateX(-50%) scale(1);
+}
+/* kukla gösterisi: Ege'nin balonu konuşan kuklanın öbür yanında (kuklanın balonuyla üst üste binmez) */
+.mc-kok .eg-sahne .eg-ege[data-balon-yan='sol'] > .eg-balon {
+  left: 14%;
+}
+.mc-kok .eg-sahne .eg-ege[data-balon-yan='sag'] > .eg-balon {
+  left: 86%;
 }
 .mc-kok .eg-sahne .eg-balon::after {
   content: '';

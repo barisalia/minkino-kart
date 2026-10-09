@@ -1494,6 +1494,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
       const r = e.getBoundingClientRect();
       parca.parilti(r.left + r.width / 2, r.top + r.height / 2, 4);
     };
+    // alt yazı şarkının işini söyler (önceki "Gözlerini kapat…" şarkı boyunca kalmasın)
+    await mSoyle(B.mino.sarki);
     durumYaz('sarki');
     ui.ipucu(B.ipucu.sarki);
     // dans: Kino baştan sona dans eder, Mino da; her vuruşta biri zıplar (sırayla)

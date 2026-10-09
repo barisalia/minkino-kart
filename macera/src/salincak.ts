@@ -149,6 +149,8 @@ const EGE_OTURMA = 1.7 * EGE_K;
  * 5.4 b üstünde, altı KOVA.h - 5.4 altında), Ege'nin başı barın altında kalsın
  */
 const ZINCIR_BEBEK = CERCEVE.bar - 4 - (KOVA.h - 5.4) * EGE_K;
+/** Ödül kartındaki oturan Kino çiziminin adresi (bir kez üretilir) */
+const KINO_OTURAN: { url: Promise<string> | null } = { url: null };
 /** Test modunda fizik daha hızlı akar (bekleme kısalsın) */
 const FIZIK = TEST_MODU ? 2.6 : 1;
 
@@ -645,17 +647,23 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     const ust = Y(ustb);
     const gw = W;
     const gh = H - GUVEN.ust - GUVEN.alt;
-    const hesap = (l: number, r: number) => {
+    // dikey tablette (3:4) geniş bölge ekrana enden sığınca üstte boş gök kalıyordu (ekranın yarısı): her çekim ~1.3 kat
+    // yakın; bölgenin iki yanı biraz kırpılabilir (kişiler yine kadraj korumasıyla ya tamamen içeride ya dışarıda)
+    const YAKIN = tabletDikey ? 1.3 : 1;
+    const hesap = (l: number, r: number, yakin = YAKIN) => {
       const bw = ((r - l) / 100) * Wd;
       const bh = ((ust - alt) / 100) * Hd;
-      const z = Math.max(1, Math.min(zmax, gw / Math.max(1, bw), gh / Math.max(1, bh)));
+      const z = Math.max(1, Math.min(zmax * yakin, (gw * yakin) / Math.max(1, bw), gh / Math.max(1, bh)));
       const cx = ((l + r) / 200) * Wd;
       // dikeyde bölge güvenli alana enden sığar, boyda yer artar: artan yer çoğunlukla üste (gök, ağaçlar) gider,
       // zemin ekranın altında az kalır (bölgenin altı güvenli alanın altına yakın)
       const ustPx = Hd * (1 - ust / 100);
       const artan = Math.max(0, gh - bh * z);
       const tx = Math.min(0, Math.max(W - Wd * z, gw / 2 - cx * z));
-      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * (dar || tabletDikey ? 1 : 0.88) - ustPx * z));
+      // dikey tablette (3:4) artan yer çok: üçte biri alta (çimen) gider, üstte yarım ekran boş gök kalmaz;
+      // dünyanın altı yetmezse kalan yine üste
+      const ustePay = tabletDikey ? 0.65 : dar ? 1 : 0.88;
+      const ty = Math.min(0, Math.max(H - Hd * z, GUVEN.ust + artan * ustePay - ustPx * z));
       return { z, tx, ty };
     };
     let c = hesap(l, r);
@@ -676,7 +684,9 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
         const uygun = (tx: number) => {
           const yl = (-tx / c.z / Wd) * 100;
           const yr = ((W - tx) / c.z / Wd) * 100;
-          return yl <= l + 0.01 && yr >= r - 0.01 && tx <= 0 && tx >= W - Wd * c.z;
+          // bölge ekrandan genişse (dikey tablette yakın çekim) kadraj bölgenin içinde kalsın yeter
+          const sigar = r - l > yr - yl ? yl >= l - 0.01 && yr <= r + 0.01 : yl <= l + 0.01 && yr >= r - 0.01;
+          return sigar && tx <= 0 && tx >= W - Wd * c.z;
         };
         const aday = (gorunen >= 0.5 ? [icine, disina] : [disina, icine]).find(uygun);
         if (aday !== undefined) {
@@ -703,7 +713,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
         l = Math.min(l, kk.l - 0.6);
         r = Math.max(r, kk.r + 0.6);
       }
-      c = hesap(l, r);
+      // (bölgenin tamamı sığsın: dikey tablet yakınlığı burada bırakılır, kimse yarım kalmaz)
+      c = hesap(l, r, 1);
     }
     kamZ = c.z;
     kamT = [c.tx, c.ty];
@@ -1114,6 +1125,25 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     }
   }
 
+  /**
+   * Sayı rozeti ekran katmanında, sağ üstte ilerleme noktalarının altında: alt yazının ve konuşma balonlarının altında
+   * kalmaz (dünyada barın üstündeyken alt yazı şeridinin altına giriyordu); salıncağın yanındaki gökte durur.
+   */
+  function rozetKoy(rozet: HTMLElement) {
+    const sr = sahne.el.getBoundingClientRect();
+    // görünen ilerleme şeridi (sağ üstte; birden çok / gizli eleman olabilir)
+    const il = Array.from(document.querySelectorAll('.mc-ilerleme'))
+      .map((e) => e.getBoundingClientRect())
+      .find((r) => r.width > 0 && r.height > 0 && r.left + r.width / 2 > innerWidth / 2);
+    const ust = il && il.height ? il.bottom - sr.top + 10 : GUVEN.ust + 4;
+    // rozetin ortası ilerleme şeridinin ortasının altında (CSS: translate 50%); ekran kenarından taşmaz
+    const sag = Math.max(44, il && il.width ? sr.right - (il.left + il.width / 2) : 44);
+    rozet.style.top = `${ust.toFixed(0)}px`;
+    rozet.style.right = `${sag.toFixed(0)}px`;
+    rozet.style.left = 'auto';
+    sahne.el.append(rozet);
+  }
+
   // ================================================================ 2: Say bakalım
   async function sahne2() {
     // salıncak sallanmaya devam eder (Kino ayaklarıyla güç verir)
@@ -1123,8 +1153,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     yakinAc(true);
     await cekSalincakVeBank(1000);
     await mSoyle(ayar.sayi === 5 ? M.say_5 : M.say_10);
-    const rozet = h('div.sl-rozet', { 'data-el': 'sayi' }, h('span.sl-rozet-yildiz', { html: YILDIZ_SVG }), h('b', {}, ''));
-    koy(rozet, ASKI.buyuk, BAR_Y + 3, 12, 12);
+    const rozet = h('div.sl-rozet.ekran', { 'data-el': 'sayi' }, h('span.sl-rozet-yildiz', { html: YILDIZ_SVG }), h('b', {}, ''));
+    rozetKoy(rozet);
     await sesliGorev(() => saymaGorevi(rozet));
     pompa();
     // son sayıda Can ayağa fırlar: "Sıra bende!"
@@ -1365,7 +1395,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   /** Kino merdivene koşar, tırmanır, tepede oturur; çocuğun uzun sesiyle (ya da parmakla) kayar, kuma gömülür */
   async function kaydiraktanKay(sira: number) {
     const alt = merdivenB(0);
-    const kamKay = () => (dar ? cekB(KAYDIRAK_SOL + 2, KUM_YER.x + 22, ZEMIN - 10, KAYDIRAK_Y + 54, 2.2, 1000) : cekB(KAYDIRAK_SOL - 30, KUM_YER.x + 28, ZEMIN - 12, KAYDIRAK_Y + 58, 2, 1000));
+    // (üst sınır: tepede kollarını kaldırıp oturan Kino'nun kulakları da alt yazının altında kalsın)
+    const kamKay = () => (dar ? cekB(KAYDIRAK_SOL + 2, KUM_YER.x + 22, ZEMIN - 10, KAYDIRAK_Y + 62, 2.2, 1000) : cekB(KAYDIRAK_SOL - 30, KUM_YER.x + 28, ZEMIN - 12, KAYDIRAK_Y + 68, 2, 1000));
     void kamKay();
     await kinoKos(alt.u - 4, ZEMIN - 1, sira ? 900 : 1500);
     // merdiven: yan görünüşle basamak basamak tırmanır
@@ -2127,19 +2158,65 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     });
   }
 
-  function odulKarti() {
+  /**
+   * Kino'nun oturuş çizimi (iskeletin oturma gövdesi ve kuyruğu açık): kart için tek seferlik resim adresi. (Bölüm
+   * akışı bu satırlardan önce çalıştığı için işlev bildirimi ve modül düzeyinde önbellek; let/const TDZ'ye düşer.)
+   */
+  function kinoOturan(kaynak: string): Promise<string> {
+    return (KINO_OTURAN.url ??= fetch(kaynak)
+      .then((r) => r.text())
+      .then((svg) => {
+        const ac = (id: string, gorunur: boolean) => {
+          const re = new RegExp(`<g id="${id}"( display="none")?`);
+          return (s: string) => s.replace(re, `<g id="${id}"${gorunur ? '' : ' display="none"'}`);
+        };
+        const s = [ac('govde', false), ac('kuyruk', false), ac('govde-oturma', true), ac('kuyruk-oturma', true)].reduce((t, f) => f(t), svg);
+        return URL.createObjectURL(new Blob([s], { type: 'image/svg+xml' }));
+      })
+      .catch(() => kaynak));
+  }
+
+  /**
+   * Ödül kartının resmi: sahnedeki salıncağın küçüğü, aynı çizimlerle (çerçeve, zincirler, ahşap oturak, bebek
+   * oturağı). Kino ahşap oturakta oturur, Ege bebek oturağının içinde; yerleri oyundaki binişle aynı ölçüden (b).
+   */
+  function kartSahnesi(): HTMLElement[] {
     const kino = ISKELET['../../assets/karakter-iskelet/kino.svg'] ?? '';
     const ege = ISKELET['../../assets/karakter-iskelet/ege.svg'] ?? '';
+    // çerçeve SVG'si resmin %96'sı genişlikte, altı %2 yukarıda; viewBox eni (2·dış ayak + 6) b, zemin 1.5 b yukarıda
+    const kutuEn = 2 * CERCEVE.disAyak + 6;
+    const hx = 96 / kutuEn;
+    const vy = hx * 1.6;
+    const zemin = 2 + 1.5 * vy;
+    const kutu = (u: number, alt: number, w: number, ek = '') => `left:${(50 + (u - w / 2) * hx).toFixed(2)}%;bottom:${(zemin + alt * vy).toFixed(2)}%;width:${(w * hx).toFixed(2)}%;${ek}`;
+    const parcalar: HTMLElement[] = [];
+    const zincir = (u: number, L: number) => h('div.sl-odul-parca', { style: kutu(u, CERCEVE.bar - L, 2, `height:${(L * vy).toFixed(2)}%`), html: zincirSvg(L) });
+    // büyük salıncak: zincirler, oturak, oturan Kino (oyundaki gibi oturağın önünde)
+    const ucB = CERCEVE.bar - ZINCIR.buyuk;
+    for (const s of [-1, 1]) parcalar.push(zincir(ASKI.buyuk + (s * OTURAK.zincirAra) / 2, ZINCIR.buyuk));
+    const oturakH = (OTURAK.w * (OTURAK.h * 10 + 8)) / (OTURAK.w * 10);
+    parcalar.push(h('div.sl-odul-parca', { style: kutu(ASKI.buyuk, ucB + 1.2 - oturakH, OTURAK.w), html: oturakSvg() }));
+    if (kino) {
+      const img = h('img.sl-odul-parca', { alt: '', style: kutu(ASKI.buyuk, ucB - 0.7 - KINO_OTURMA, KISI_W) }) as HTMLImageElement;
+      void kinoOturan(kino).then((u) => (img.src = u));
+      parcalar.push(img);
+    }
+    // bebek oturağı: zincirler, arka, Ege, ön (bacak delikli)
+    const ucE = CERCEVE.bar - ZINCIR_BEBEK;
+    for (const s of [-1, 1]) parcalar.push(zincir(ASKI.bebek + (s * KOVA.zincirAra * EGE_K) / 2, ZINCIR_BEBEK));
+    const kovaW = KOVA.w * EGE_K;
+    const kovaAlt = ucE + 5.4 * EGE_K - kovaW * (140 / 160);
+    parcalar.push(h('div.sl-odul-parca', { style: kutu(ASKI.bebek, kovaAlt, kovaW), html: kovaArkaSvg() }));
+    if (ege) parcalar.push(h('img.sl-odul-parca', { src: ege, alt: '', style: kutu(ASKI.bebek, ucE - (2.8 + 1.7) * EGE_K, EGE_W) }));
+    parcalar.push(h('div.sl-odul-parca', { style: kutu(ASKI.bebek, kovaAlt, kovaW), html: kovaOnSvg() }));
+    return parcalar;
+  }
+
+  function odulKarti() {
     const kart = h(
       'div.sl-odul',
       { 'data-el': 'odul' },
-      h(
-        'div.sl-odul-resim',
-        { style: `background-image:url("${park('arka-uzak')}")` },
-        h('div.sl-odul-salincak', { html: kartSalincak() }),
-        kino ? h('img.sl-odul-kino', { src: kino, alt: '' }) : null,
-        ege ? h('img.sl-odul-ege', { src: ege, alt: '' }) : null,
-      ),
+      h('div.sl-odul-resim', { style: `background-image:url("${park('arka-uzak')}")` }, h('div.sl-odul-salincak', { html: kartSalincak() }), ...kartSahnesi()),
       h('b', {}, SL.kart),
     );
     sahne.el.append(kart);
