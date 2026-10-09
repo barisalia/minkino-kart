@@ -557,9 +557,12 @@ body[data-kadraj='dolu'] .fl-kok .fl-zemin-alt img.ayna {
   opacity: 0;
   animation: fl-toz 1s cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
 }
+/* toz topağı çabuk söner: büyüyüp yarı saydam asılı kalan "hayalet" yuvarlak bırakmaz */
 @keyframes fl-toz {
   0% { transform: translate(0, 0) scale(0.25); opacity: 0; }
   14% { opacity: 0.95; }
+  45% { opacity: 0.55; }
+  75% { transform: translate(calc(var(--dx) * 0.9), calc(var(--dy) * 0.9)) scale(calc(var(--s) * 0.85)); opacity: 0; }
   100% { transform: translate(var(--dx), var(--dy)) scale(var(--s)); opacity: 0; }
 }
 /* en parlak elma: tepesinde dönen minik yıldız ışıltı */
