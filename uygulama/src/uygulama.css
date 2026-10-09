@@ -871,10 +871,10 @@
 /* ---------- Yatay telefon (uygulamada telefon hep yatay): 4 × 2 kart ekranın boyunu doldurur, adlar iki satıra sığar ----------
    (ızgara en-boy oranına bağlı kalmaz, altta boş şerit kalmaz; çentik ve alt çubuk dışarıda) */
 @media (orientation: landscape) and (max-height: 500px) {
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='8']) .ug-giris {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'])) .ug-giris {
     width: clamp(120px, 23vw, 260px);
   }
-  .ug-kok .ug-izgara[data-adet='8'] {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9']) {
     width: 100%;
     max-width: 1200px;
     height: calc(100dvh - var(--ust) - var(--alt) - 8px);
@@ -882,7 +882,7 @@
     gap: clamp(8px, 2.6dvh, 14px) clamp(8px, 1.5vw, 14px);
     padding: 6px 0 8px;
   }
-  .ug-kok .ug-izgara[data-adet='8'] .ug-kart-ad {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9']) .ug-kart-ad {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -897,15 +897,68 @@
 /* küçük yatay telefon (667 × 375, iPhone SE / 8): sol sütun (logo, Mino ile Kino) daralır, kenar payı ve aralıklar bir
    tık incelir: kartlar iri kalır. Çentik ve alt çubuk payı korunur (env); 844 / 932 px'lik telefonlar etkilenmez. */
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='8']) {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'])) {
     gap: 10px;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
   }
-  .ug-kok .ug-menu:has(.ug-izgara[data-adet='8']) .ug-giris {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'])) .ug-giris {
     width: clamp(100px, 18vw, 130px);
   }
-  .ug-kok .ug-izgara[data-adet='8'] {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9']) {
     column-gap: 8px;
+  }
+}
+
+/* ---------- 9 kart (Kino'nun Otobüsü menüde, Pasta'dan önce): ızgara her ekranda boşluksuz ----------
+   telefon dikey 2 × 5 (geniş Pasta son sırada iki hücre: .ug-tek), yatay telefon 5 × 2 (Pasta iki hücre: .ug-tek),
+   3 sütunda (tablet dikey ve 4:3 / 3:2 yatay) 3 × 3 (Pasta bir hücre). Hücre: 2 ve 5 sütunda 8 + 2 = 10, 3 sütunda 9. */
+.ug-kok .ug-izgara[data-adet='9'] {
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+/* kapakta Kino'nun yüzü ve dondurması üst yarıda */
+.ug-kok .ug-kart[data-oyun='kino-otobus'] .ug-kart-resim {
+  background-position: 50% 28%;
+}
+@media (min-width: 600px) and (orientation: portrait) {
+  .ug-kok .ug-izgara[data-adet='9'] {
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-kart-yer.ug-genis {
+    grid-column: span 1;
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+    --ad: 9.6cqi;
+  }
+}
+@media (orientation: landscape) {
+  .ug-kok .ug-izgara[data-adet='9'] {
+    --oran: 1.94;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .ug-kok .ug-izgara[data-adet='9'] {
+    --oran: 1.12;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-kart-yer.ug-genis {
+    grid-column: span 1;
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='9'] .ug-genis .ug-kart-ad {
+    --ad: 9.6cqi;
+  }
+}
+/* yatay telefonda beş sütun: sol sütun (logo, Mino ile Kino) bir tık daha dar, kartlar iri kalır */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    width: clamp(110px, 19vw, 220px);
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
+    width: clamp(92px, 14vw, 110px);
   }
 }

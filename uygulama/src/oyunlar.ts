@@ -146,19 +146,21 @@ export const OYUNLAR: OyunKarti[] = [
 ];
 
 /**
- * Menüde görünen kartlar (web ve uygulamada aynı 8 kart). Geniş Pasta son sırada: telefon dikeyde 2 × 4 ve yatay
- * telefonda 4 × 2 (Pasta bir hücre), 3 sütunda (tablet) 3 × 3 (Pasta iki hücre).
+ * Menüde görünen kartlar (web ve uygulamada aynı kartlar; geniş Pasta hep sonda).
+ * - 8 kart: telefon dikeyde 2 × 4 ve yatay telefonda 4 × 2 (Pasta bir hücre), 3 sütunda (tablet) 3 × 3 (Pasta iki hücre).
+ * - 9 kart (Kino'nun Otobüsü açılınca, Pasta'dan önce): telefon dikeyde 2 × 5 (Pasta son sırada iki hücre), yatay
+ *   telefonda 5 × 2 (Pasta iki hücre), 3 sütunda (tablet) 3 × 3 (Pasta bir hücre). uygulama.css → data-adet='9'.
  */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
-  const hepsi = KINO_OTOBUS_MENUDE ? [...OYUNLAR, KINO_OTOBUS_KARTI] : OYUNLAR;
+  const hepsi = KINO_OTOBUS_MENUDE ? [...OYUNLAR.filter((k) => !k.genis), KINO_OTOBUS_KARTI, ...OYUNLAR.filter((k) => k.genis)] : OYUNLAR;
   if (!uygulama) return hepsi;
   return hepsi.filter((k) => !k.uygulamadaYok);
 }
 
 /**
- * Kino'nun Otobüsü (dondurma): mekanik hazır, son çizimler (Gemini) bekleniyor. Menüde görünmesi için true yapılır
- * (o gün kartın zemini kapak görseli olur: assets/kino-otobus/kapak.webp; menü ızgarası 9 karta göre denetlenir:
- * tests/unit/abonelik.test.ts → "aynı 8 kart"). Şimdilik yalnız /kino-otobus/ adresinden denenir.
+ * Kino'nun Otobüsü (dondurma): Gün 1'in bütün çizimleri Gemini'den (bölüm A); Gün 2-3'ün tatları, sosları ve süsleri
+ * (bölüm D) bekleniyor. Menüde görünmesi için true yapılır: kartın zemini kapak görseli (assets/kino-otobus/kapak.webp),
+ * menü 9 kart ızgarasına geçer (uygulama.css → data-adet='9'; testler bayrağa göre 8 ya da 9 kart bekler).
  */
 export const KINO_OTOBUS_MENUDE = false;
 export const KINO_OTOBUS_KARTI: OyunKarti = {
@@ -166,7 +168,8 @@ export const KINO_OTOBUS_KARTI: OyunKarti = {
   ad: 'Kino’nun Otobüsü',
   adres: './kino-otobus/',
   renk: '#5FB4DC',
-  zemin: 'film/park/arka-uzak',
+  // Gemini kapağı: Kino otobüsün penceresinden üç toplu dondurma uzatıyor, önde tavşan (metinsiz)
+  zemin: 'kino-otobus/kapak',
   rozet: 'Yeni',
   katmanlar: [],
 };
