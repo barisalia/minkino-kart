@@ -6,7 +6,7 @@
 import { h } from '../../src/ui/dom';
 import { mumSvg, SORU_TOPU } from './cizim';
 import { SUSLER, type Kap, type Sos, type Sus, type TatIstek } from './model';
-import { gorsel, kapAdi, sosUstAdi, susAdi, topAdi, YERLESIM } from './varliklar';
+import { adres, gorsel, kapAdi, sosUstAdi, susAdi, topAdi, YERLESIM } from './varliklar';
 
 /** Çizilecek kule: istenen (serin ve "?" toplu) ya da yapılan */
 export interface KuleVeri {
@@ -85,8 +85,10 @@ export function kuleCiz(d: KuleVeri, o: { gizliTop?: ReadonlySet<number>; sinif?
     // tek tek süsler: tepedeki sıralı yerlere (aynı türler yan yana), konuş sırasıyla
     const tekler = d.susler.filter((s) => s !== 'serpinti');
     const sirali = SUSLER.flatMap((s) => tekler.filter((x) => x === s));
+    // mumlu kupada tepenin ortası mumun: süsler yanlardaki yerlere (kiraz mumun arkasında kalmasın)
+    const yerler = d.mum ? SUS_YERI.slice(1) : SUS_YERI;
     sirali.forEach((s, j) => {
-      const [x, y] = SUS_YERI[j % SUS_YERI.length];
+      const [x, y] = yerler[j % yerler.length];
       const b = SUS_BOY[s];
       el.append(
         h('div.ko-k-sus', {
@@ -96,7 +98,7 @@ export function kuleCiz(d: KuleVeri, o: { gizliTop?: ReadonlySet<number>; sinif?
         }),
       );
     });
-    if (d.mum) el.append(h(`div.ko-k-mum${d.mum === 'sonuk' ? '.ko-sonuk' : ''}`, { style: `bottom:calc(var(--t) * ${(ust + YT.boy * 0.85).toFixed(3)})`, html: d.mum === 'sonuk' ? mumSvg(true) : gorsel('mum') }));
+    if (d.mum) el.append(h(`div.ko-k-mum${d.mum === 'sonuk' ? '.ko-sonuk' : ''}`, { style: `bottom:calc(var(--t) * ${(ust + YT.boy * 0.85).toFixed(3)})`, html: d.mum === 'sonuk' ? (adres('mum') ? gorsel('mum', 'ko-mum-sonuk') : mumSvg(true)) : gorsel('mum') }));
   }
   return el;
 }
