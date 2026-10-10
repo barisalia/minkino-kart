@@ -1,0 +1,29 @@
+{
+  "aciklama": "Seri 2 karakter → ElevenLabs voice_id eşlemesi (Barış'ın 2026-10-10 Voice Design sesleri). Model eleven_v4. Anahtar ortam değişkeninde (ELEVENLABS_API_KEY), dosyaya yazılmaz.",
+  "model": "eleven_v4",
+  "bicim": "mp3_44100_128",
+  "dil": "tr",
+  "ayarlar": { "stability": 0.4, "similarity_boost": 0.75, "style": 0.25, "use_speaker_boost": true },
+  "sesler": {
+    "anlatici": "ft8ETnGK5wfQHpkjnVP2",
+    "kino": "mnd0d7jTJaLJl0qbeAyG",
+    "anne": "WqGM7U04GnQsqgVyumSY",
+    "baba": "BPGao31oIDrNIkpHSZGL",
+    "lokum": "k4FgffsVVBqLkYX9lS2v",
+    "babaanne": "eFLhEWprT6lK0nO7xQtw",
+    "dede": "IDXxPYTQNZ9qnoBgBvbH",
+    "mino": "U5Yg9Cl0WUYCovjolhzm",
+    "nehir": "IXH6rJkyynxn3lD5O7yQ",
+    "bidik": "gXsMWz0XRvtPDZitHMkd",
+    "bidicik": "srpMpX0gd4MeawzKMJwC",
+    "bidik-baba": "yunBEZzZP7dVOPKOFHgX",
+    "tuhaf-teyze": "bZkL6S2LOLDywNXYyrNk",
+    "palyaco-tavsan": "Ym8UraPAeEVc7BphgK3C",
+    "zipzip": "dXW9TQ0XSgWzUjMf9zKw",
+    "zipzip-erkek": "zCieqqNJvrBIGmXON5an",
+    "kelime-yutan-tavsan": "9cnHYPv4XMmx4NVWn178",
+    "tombi": "rI3n1hS7mby0ND3tKl1u",
+    "bulut": "ZyHU3tm4hc4VPnxh6jni",
+    "disci": "0b0ZDvYSNwuOMaEfkt1z"
+  }
+}
