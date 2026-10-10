@@ -321,3 +321,248 @@ for (const [ad, bas, son] of [
     await ctx.close();
   });
 }
+
+// ---------------------------------------------------------------- kod incelemesinin bulduğu hatalar
+test('Dedektif Vaka 3: Halka 4 delilinde el izi + kızıl tüy; 2 yanlışta tüy kabarır', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka3&adim=kim');
+  await adimBekle(page, /^ara-kim$/);
+  await ipucuBul(page, 'el-izi');
+  await ipucuBul(page, 'tuy');
+  await adimBekle(page, /^kart$/);
+  const tuy = page.locator('.dd-sorgu .dd-delil-ekk img');
+  await expect(tuy).toHaveCount(1);
+  await expect.poll(() => tuy.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
+  await kart(page, 'kus', true);
+  await kart(page, 'kirpi', true);
+  await expect(page.locator('.dd-sorgu .dd-delil-ekk')).toHaveClass(/dd-isil/);
+  await page.screenshot({ path: 'tests/screens/vaka3-halka4-tuy.png' });
+  expect(hatalar).toEqual([]);
+});
+
+// gerçek hızda (koklama ~4 sn sürer): Kino koklarken ipucu bulunur, arama biter
+test('Dedektif Vaka 3: arama bitince koklamaya giden Kino geri döner, adım bozulmaz', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  test.setTimeout(90_000);
+  const hatalar = hataTopla(page);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('./dedektif/?onizleme=1&sifirla=1&ekran=vaka3&adim=sayi');
+  await page.mouse.click(5, 200);
+  await adimBekle(page, /^kokla-un$/, 30_000);
+  await expect(page.locator('.dd-oyuncular')).toHaveClass(/dd-onde/);
+  // gerçek hızda mercek yavaş kayar: görülene, sonra alınana dek dokun
+  const un = page.locator('.dd-sahne [data-ipucu="un"]');
+  for (let d = 0; d < 20 && !(await un.getAttribute('class'))?.includes('dd-alindi'); d++) {
+    const [x, y] = await ortasi(un);
+    await page.mouse.click(x, y);
+    await page.waitForTimeout(350);
+  }
+  await expect(un).toHaveClass(/dd-alindi/);
+  await adimBekle(page, /^say$/, 10_000);
+  await expect(page.locator('.dd-oyuncular')).not.toHaveClass(/dd-onde/, { timeout: 1500 });
+  // Kino yerine döner (hareket katmanı başlangıç yerinde)
+  await expect
+    .poll(() => page.locator('.dd-kino-yer > .dd-hareket').evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).m41 ** 2 + new DOMMatrix(getComputedStyle(e).transform).m42 ** 2), { timeout: 3000 })
+    .toBeLessThan(1);
+  await page.waitForTimeout(1500);
+  expect(await adim(page)).toBe('say');
+  expect(hatalar).toEqual([]);
+});
+
+test('Dedektif Vaka 3: kovuklar (gerçek hız): baykuşa art arda dokunmak birikmez; arama bitince kovuklar sönmüş', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  test.setTimeout(150_000);
+  const hatalar = hataTopla(page);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('./dedektif/?onizleme=1&sifirla=1&cozuldu=2&ekran=vaka3&adim=kovuk');
+  await page.mouse.click(5, 200);
+  await adimBekle(page, /^ara-kovuk$/, 30_000);
+  await ipucuBul2(page, 'baykus');
+  // baykuş tepki verirken art arda dokunuşlar: tek sallanma (söz de tek)
+  const baykus = page.locator('.dd-sahne [data-ipucu="baykus"]');
+  const [bx, by] = await ortasi(baykus);
+  for (let i = 0; i < 6; i++) {
+    await page.mouse.click(bx, by);
+    await page.waitForTimeout(90);
+  }
+  expect(await page.locator('.dd-sahne .dd-v3-baykus').evaluate((b) => b.getAnimations().length)).toBeLessThanOrEqual(1);
+  await ipucuBul2(page, 'kuyruk');
+  await adimBekle(page, /^(kuyruk|findik|mmf)$/, 20_000);
+  // arama bitti: hiçbir kovukta aranıyor / görüldü işareti (nabız halkası, göz kırpan yıldız, soluk baykuş) kalmaz
+  await expect(page.locator('.dd-sahne .dd-ipucu.dd-aranan, .dd-sahne .dd-ipucu.dd-goruldu')).toHaveCount(0);
+  if ((await adim(page)) === 'kuyruk') await dokun(page, page.locator('.dd-sahne [data-ipucu="kuyruk"]'));
+  await adimBekle(page, /^(findik|mmf)$/, 20_000);
+  await expect(page.locator('.dd-sahne .dd-ipucu.dd-aranan, .dd-sahne .dd-ipucu.dd-goruldu')).toHaveCount(0);
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: 'tests/screens/vaka3-findik-kovuklar-sonuk.png' });
+  expect(hatalar).toEqual([]);
+});
+
+test('Dedektif Vaka 3: Vaka Dosyam romanı kareleri hazır olunca açılır (boş kare yok)', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=3&vaka3=1&ekran=dosya');
+  await page.locator('.dd-vaka-kart[data-vaka="vaka3"]').click();
+  const kareler = page.locator('.dd-roman[data-vaka="vaka3"] img.dd-kare-resim');
+  await expect(kareler).toHaveCount(4);
+  for (const s of await kareler.evaluateAll((x) => x.map((i) => (i as HTMLImageElement).getAttribute('src') ?? ''))) expect(s.length).toBeGreaterThan(0);
+  await expect.poll(() => kareler.evaluateAll((x) => x.every((i) => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  expect(hatalar).toEqual([]);
+});
+
+test('Dedektif Vaka 3: finalde Fındık\'a en yakın iki kurabiye de verilir; ikisi verilince kalanlar taşınmaz', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka3&adim=final');
+  await adimBekle(page, /^final-say$/);
+  await say(page, '.dd-sahne .dd-v3-final-kurabiye');
+  await adimBekle(page, /^ver$/);
+  const kur = page.locator('.dd-sahne .dd-v3-final-kurabiye');
+  await expect(page.locator('.dd-sahne .dd-v3-final-kurabiye.dd-v3-tasinir')).toHaveCount(4);
+  // sağdaki kurabiye Fındık'ın arkasında kalmaz
+  const sag = (await kur.nth(3).boundingBox())!;
+  const f = (await page.locator('.dd-sahne .dd-v3-findik').boundingBox())!;
+  expect(sag.x + sag.width).toBeLessThanOrEqual(f.x + f.width * 0.2);
+  await surukle(page, kur.nth(3), page.locator('.dd-sahne .dd-v3-findik'));
+  await expect(kur.nth(3)).toHaveClass(/verildi/);
+  await surukle(page, kur.nth(2), page.locator('.dd-sahne .dd-v3-findik'));
+  await expect(kur.nth(2)).toHaveClass(/verildi/);
+  await adimBekle(page, /^(saril|palamut|son|roman|bitti)$/);
+  await expect(kur.nth(0)).not.toHaveClass(/dd-v3-tasinir|verildi/);
+  await expect(kur.nth(1)).not.toHaveClass(/dd-v3-tasinir|verildi/);
+  expect(hatalar).toEqual([]);
+});
+
+for (const [en, boy] of [
+  [844, 390],
+  [667, 375],
+  [1024, 768],
+  [768, 1024],
+] as const) {
+  test(`Dedektif Vaka 3: Halka 2'de (${en}×${boy}) tepsi ya bütünüyle ekranda ya da sönük`, async ({ page }, info) => {
+    test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+    await page.setViewportSize({ width: en, height: boy });
+    await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka3&adim=cikis');
+    await adimBekle(page, /^ara-cikis$/);
+    await page.waitForTimeout(1200);
+    const t = await page.locator('.dd-sahne .dd-v3-tepsi').evaluate((e) => ({ r: e.getBoundingClientRect().toJSON() as DOMRect, o: Number(getComputedStyle(e).opacity) }));
+    const icinde = t.r.x >= -1 && t.r.y >= -1 && t.r.x + t.r.width <= en + 1 && t.r.y + t.r.height <= boy + 1;
+    expect(icinde || t.o === 0, JSON.stringify(t)).toBe(true);
+  });
+}
+
+// ---------------------------------------------------------------- vakadan çıkınca hiçbir şey sürmez
+/**
+ * Sayfaya kanca: çıkıştan (__iz.kesik) sonra tıklayan setInterval'ler (geç kurulanlar da), yeni Web Audio sesleri (osilatör,
+ * tampon), müzik / konuşma çalma, kopmuş (ekrandan kalkmış) öğelerin ölçülmesi (el ipucu döngüsü kaynak() ile ölçer).
+ */
+async function izKur(page: Page) {
+  await page.addInitScript(() => {
+    const z = { kesik: false, tik: {} as Record<string, number>, ses: 0, oynat: 0, kopuk: 0, kopukNe: [] as string[] };
+    (window as unknown as { __iz: typeof z }).__iz = z;
+    const si = window.setInterval.bind(window);
+    let no = 0;
+    // uygulamanın genel ninni müziği (src/audio/muzik.ts: 100 ms'lik planlayıcı) her ekranda çalar: sayılmaz
+    let muzikte = false;
+    window.setInterval = ((fn: TimerHandler, ms?: number, ...a: unknown[]) => {
+      const muzik = ms === 100;
+      const ad = `${++no}@${ms}${z.kesik ? ' (çıkıştan sonra kuruldu)' : ''}:${(new Error().stack ?? '').split('\n').slice(2, 4).join(' ').replace(/\s+/g, ' ').slice(0, 160)}`;
+      return si(() => {
+        if (z.kesik && !muzik) z.tik[ad] = (z.tik[ad] ?? 0) + 1;
+        muzikte = muzik;
+        try {
+          if (typeof fn === 'function') (fn as (...x: unknown[]) => void)(...a);
+        } finally {
+          muzikte = false;
+        }
+      }, ms);
+    }) as typeof window.setInterval;
+    const AC = window.AudioContext.prototype as unknown as Record<string, (...x: unknown[]) => unknown>;
+    for (const m of ['createOscillator', 'createBufferSource']) {
+      const asil = AC[m];
+      AC[m] = function (this: AudioContext, ...x: unknown[]) {
+        if (z.kesik && !muzikte) z.ses++;
+        return asil.apply(this, x);
+      };
+    }
+    const oyn = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      if (z.kesik) z.oynat++;
+      return oyn.call(this);
+    };
+    if (window.speechSynthesis) {
+      const konus = window.speechSynthesis.speak.bind(window.speechSynthesis);
+      window.speechSynthesis.speak = (u: SpeechSynthesisUtterance) => {
+        if (z.kesik) z.oynat++;
+        konus(u);
+      };
+    }
+    const olc = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function (this: Element) {
+      if (z.kesik && !this.isConnected) {
+        z.kopuk++;
+        if (z.kopukNe.length < 5) z.kopukNe.push(String(this.className).slice(0, 60));
+      }
+      return olc.call(this);
+    };
+  });
+}
+type Iz = { tik: Record<string, number>; ses: number; oynat: number; kopuk: number; kopukNe: string[] };
+const iz = (page: Page) => page.evaluate(() => (window as unknown as { __iz: Iz }).__iz);
+/** Geri ile çık; çıkış geçişi bitince 3 sn boyunca: eski zamanlayıcı tıkı, yeni ses, kopuk ölçüm, el ipucu yok */
+async function cikVeDinle(page: Page) {
+  await page.evaluate(() => ((window as unknown as { __iz: { kesik: boolean } }).__iz.kesik = true));
+  await page.locator('.dd-vaka3 .dd-geri').click();
+  await expect(page.locator('.dd-vaka3')).toHaveCount(0, { timeout: 5000 });
+  await page.waitForTimeout(1500);
+  const a = await iz(page);
+  await page.waitForTimeout(3000);
+  const b = await iz(page);
+  const tiklar = Object.entries(b.tik).filter(([ad, n]) => n > (a.tik[ad] ?? 0));
+  expect(tiklar, 'çıkıştan sonra tıklamaya devam eden zamanlayıcı').toEqual([]);
+  expect(b.ses - a.ses, 'çıkıştan sonra yeni ses').toBe(0);
+  expect(b.oynat - a.oynat, 'çıkıştan sonra müzik / konuşma').toBe(0);
+  expect(b.kopuk, `kalkmış ekranı ölçen döngü (${b.kopukNe.join(', ')})`).toBe(0);
+  await expect(page.locator('.dd-parmak')).toHaveCount(0);
+}
+
+test('Dedektif Vaka 3: finalde (kurabiyeler uçarken, gerçek hız) çıkınca ses, zamanlayıcı, döngü sürmez', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  test.setTimeout(90_000);
+  const hatalar = hataTopla(page);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await izKur(page);
+  await page.goto('./dedektif/?onizleme=1&sifirla=1&cozuldu=2&ekran=vaka3&adim=final');
+  // ses motoru açılsın (dokunuş)
+  await page.mouse.click(5, 200);
+  await adimBekle(page, /^final$/);
+  await page.waitForTimeout(1600);
+  expect(await adim(page)).toBe('final');
+  await cikVeDinle(page);
+  expect(hatalar).toEqual([]);
+});
+
+test('Dedektif Vaka 3: kurabiye verirken (el ipucu açık) çıkınca el döngüsü ve zamanlayıcılar durur', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await izKur(page);
+  await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=2&ekran=vaka3&adim=final');
+  await adimBekle(page, /^final-say$/);
+  await say(page, '.dd-sahne .dd-v3-final-kurabiye');
+  await adimBekle(page, /^ver$/);
+  await expect(page.locator('.dd-vaka3 .dd-parmak')).toHaveCount(1, { timeout: 5000 });
+  await cikVeDinle(page);
+  expect(hatalar).toEqual([]);
+});
+
+test('Dedektif Vaka 3: sayarken çıkınca sayma yardımı durur', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await izKur(page);
+  await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=2&ekran=vaka3&adim=final');
+  await adimBekle(page, /^final-say$/);
+  await cikVeDinle(page);
+  expect(hatalar).toEqual([]);
+});

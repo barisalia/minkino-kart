@@ -8,6 +8,8 @@ import {
   B3,
   BOS_YERLER,
   F3,
+  FINAL_KURABIYELER,
+  FINDIK_YERI,
   halka3,
   halka3Adimi,
   HALKALAR3,
@@ -112,6 +114,14 @@ describe('Vaka 3: halkalar ve kartlar', () => {
     // "Sen havuç sevmezsin ki." Kino'nun havuç tahmininden sonra
     expect(halka3('yol').kinoCevap).toBe(M3.havuc_sevmez);
   });
+  it('iki ipuçlu halkada ikinci ipucu da delilde: Halka 4 el izi + kızıl tüy (kuş tüyden söz eder, tüy kabarır)', () => {
+    const kim = halka3('kim');
+    const ilk = kim.foto ?? kim.ipuclari[0].foto ?? kim.ipuclari[0].resim;
+    expect(ilk).toBe('v3/ipucu-el-izi');
+    expect(kim.ekFoto).toBe('v3/ipucu-tuy');
+    expect(kim.ipuclari.map((t) => t.foto ?? t.resim)).toContain(kim.ekFoto);
+    expect(B3.kus_tuy.toLocaleLowerCase('tr')).toContain('tüy');
+  });
 });
 
 describe('Vaka 3: sayma, iz, kovuk', () => {
@@ -165,6 +175,10 @@ describe('Vaka 3: sayma, iz, kovuk', () => {
   });
   it('final: Fındık\'a iki kurabiye; roman 4 kare; dosya beş göz', () => {
     expect(VERILECEK).toBe(2);
+    // dört kurabiye soldan sağa, sağdaki de Fındık'ın önünde değil solunda (arkasında yarım kalmaz)
+    const xs = FINAL_KURABIYELER.map(([x]) => x);
+    expect([...xs].sort((a, b) => a - b)).toEqual(xs);
+    expect(FINDIK_YERI.x - xs[xs.length - 1]).toBeGreaterThanOrEqual(0.085);
     expect(ROMAN3.map((r) => r.sira)).toEqual([1, 2, 3, 4]);
     const d = Dosya.adimdan('kim', ADIMLAR3, HALKALAR3);
     expect(d.gozler.map((g) => g.demek)).toEqual([true, true, true, false, false]);

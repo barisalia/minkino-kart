@@ -141,18 +141,47 @@ export function oynat(e: Element | null | undefined, sinif: string) {
   e.classList.add(sinif);
 }
 
+/** Katman başına açık el ipuçları (ekran kapanınca hepsi birden durur: parmaklariDurdur) */
+const ACIK_PARMAKLAR = new WeakMap<HTMLElement, Set<() => void>>();
+const KAPALI_KATMANLAR = new WeakSet<HTMLElement>();
+
+/**
+ * Ekran kapanırken: bu katmandaki bütün el ipuçları durur, katman kapanmış sayılır (sonradan geç kalan bir zamanlayıcı
+ * parmak açmak isterse açılmaz). Elde tutulan "dur" tutamaçları sonradan çağrılırsa zararsız.
+ */
+export function parmaklariDurdur(katman: HTMLElement) {
+  KAPALI_KATMANLAR.add(katman);
+  const acik = ACIK_PARMAKLAR.get(katman);
+  ACIK_PARMAKLAR.delete(katman);
+  acik?.forEach((dur) => dur());
+}
+
 /**
  * El ipucu: parmak bir noktaya dokunur ya da bir yerden bir yere sürükler (tekrar eder). Döner: durdur.
  * kaynak / hedef ekran (client) dikdörtgenleri verir: kamera ya da kartlar kayınca da doğru yere gider.
+ * Döngü ekran kapanınca (parmaklariDurdur) ya da katman sayfadan kalkınca kendiliğinden biter.
  */
 export function parmak(katman: HTMLElement, kaynak: () => DOMRect | null, hedef?: () => DOMRect | null): () => void {
+  if (KAPALI_KATMANLAR.has(katman)) return () => undefined;
   const el = h('div.dd-parmak', {
     html: '<svg viewBox="0 0 48 56"><path d="M18 4c3 0 5 2 5 5v17l3-1c2-6 11-4 10 2l4-1c3 0 5 3 4 6l-3 14c-1 5-5 8-10 8H21c-4 0-7-2-9-5L3 34c-2-3 1-7 5-5l5 4V9c0-3 2-5 5-5z" fill="#fff" stroke="#5a3617" stroke-width="3.5" stroke-linejoin="round"/></svg>',
   });
   katman.append(el);
   let dur = false;
+  const durdur = () => {
+    dur = true;
+    el.remove();
+    ACIK_PARMAKLAR.get(katman)?.delete(durdur);
+  };
+  let acik = ACIK_PARMAKLAR.get(katman);
+  if (!acik) ACIK_PARMAKLAR.set(katman, (acik = new Set()));
+  acik.add(durdur);
+  let bagliydi = katman.isConnected;
   const dongu = async () => {
     while (!dur) {
+      // ekran sayfadan kalktıysa (kapatılmayı unutsa da) döngü kendini bitirir
+      if (katman.isConnected) bagliydi = true;
+      else if (bagliydi) return durdur();
       const a = kaynak();
       const k = katman.getBoundingClientRect();
       if (!a || TEST_MODU) {
@@ -194,8 +223,5 @@ export function parmak(katman: HTMLElement, kaynak: () => DOMRect | null, hedef?
     }
   };
   void dongu();
-  return () => {
-    dur = true;
-    el.remove();
-  };
+  return durdur;
 }

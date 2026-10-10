@@ -165,7 +165,9 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
 
   // 4) seçim: sürükle ya da dokun
   const ipucuZaman = window.setInterval(() => {
-    if (o.kapandi() || mesgul || tanitim || durdurParmak) return;
+    // ekran soru açıkken kapandıysa: yardım zamanlayıcısı kendini siler (el ipucu ekranla birlikte durdu)
+    if (o.kapandi()) return clearInterval(ipucuZaman);
+    if (mesgul || tanitim || durdurParmak) return;
     if (performance.now() - sonHareket > YARDIM.surukleSn * 1000) {
       // hangisinin doğru olduğunu söylemeden: açık kartlardan birinden ipucuna
       const acik = kartlar.filter((k) => !k.classList.contains('dd-soluk'));
