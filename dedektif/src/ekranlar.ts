@@ -234,7 +234,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
   const el = h('div.dd-dosya-ekran', {}, oda(), h('div.dd-acilis-los'), h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.yazi.dosya)), h('div.dd-ust-sag', {}, sesKucuk())), h('div.dd-vaka-izgara', {}, ...kartlar));
 
   /**
-   * Vaka 3'ün romanı: kareler tarayıcıda kurulan yer tutuculardan (hazirla3; ilk açılışta biraz sürer). Hazır olmadan
+   * Vaka 3'ün romanı: kareler Gemini çizimi (assets/dedektif3/roman-1..4); vakanın tuval bileşimleri (hazirla3) ilk açılışta biraz sürer. Hazır olmadan
    * açılırsa kareler boş kalırdı: o arada kapak "yükleniyor" diye nabız atar, ikinci dokunuş yok sayılır.
    */
   let romanBekliyor = false;

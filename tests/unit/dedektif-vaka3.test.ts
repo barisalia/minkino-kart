@@ -262,10 +262,10 @@ describe('Vaka 3: görsel haritası (tek yer, bölüm B adları)', () => {
     }
     // dikey sahneler açık: yerleri ölçüldü (mantik3.ts → DIKEY3)
     expect(DIKEY3_HAZIR).toBe(true);
-    // bölüm B'nin 28 çizimi de geldi; yer tutucuda yalnız bölüm E (roman kareleri, kapak) kalır
-    for (const a of B_LISTESI) expect(eksikler3(), a).not.toContain(a);
-    // henüz çizimi gelmeyenler listesi bölüm B / E adlarından oluşur
-    for (const a of eksikler3()) expect([...B_LISTESI, ...E_LISTESI] as string[]).toContain(a);
+    // bölüm B'nin 28 ve E'nin 5 çizimi de geldi: yer tutucuyla duran dosya yok
+    expect(eksikler3()).toEqual([]);
+    // bölüm E'nin (roman kareleri, kapak) yer tutucusu kaldırıldı: yalnız Gemini çizimi
+    for (const a of E_LISTESI) expect(a in YER_TUTUCU, a).toBe(false);
   });
   it('kodda kullanılan her v3 görseli tanımlı (kartlar, ipuçları, fotoğraflar, demek ki, roman)', () => {
     const adlar = [

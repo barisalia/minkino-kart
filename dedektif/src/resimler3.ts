@@ -7,7 +7,8 @@
  *     Dosyayı klasöre koymak yeter, kod değişmez (Vite derlemede klasörü tarar; -2, -3 sürüm eki: en büyüğü).
  *  2. KULLAN: depoda zaten olan bir çizim (yeniden kullanım tablosu, senaryodaki "Yeniden kullanılan"lar).
  *  3. YER_TUTUCU: çizim gelene kadar özenli bir yer tutucu (tuvalde kurulur: var olan çizimlerden kırpım / bileşim ve
- *     SVG; yer-tutucu3.ts). Yalnız dosya yoksa üretilir.
+ *     SVG; yer-tutucu3.ts). Yalnız dosya yoksa üretilir. Bölüm B ve E'nin bütün çizimleri geldi: oyunda hiçbiri
+ *     kurulmaz; bölüm E'nin (roman, kapak) yer tutucusu kaldırıldı, B'ninkiler yalnız yedek.
  *  4. TURETILEN: her zaman kodla kurulan bileşimler (kartlardaki 2/4/6 kurabiye, delil fotoğrafları): kaynakları
  *     yukarıdaki sırayla çözülür, Gemini çizimi gelince onlar da kendiliğinden onunla kurulur.
  *
@@ -19,7 +20,6 @@ import {
   agacOnSvg,
   ekmekSvg,
   elIziSvg,
-  geceSvg,
   icEkSvg,
   kalpSvg,
   kapiSvg,
@@ -242,7 +242,7 @@ const SABIT: Record<string, () => string> = {
   'kirinti-tek': () => svgSar(80, 80, `${YS_DEFS}${yildizSeker(40, 40, 30, -80)}`),
 };
 
-// ---------------------------------------------------------------- yer tutucular (bölüm B, E)
+// ---------------------------------------------------------------- yer tutucular (yalnız bölüm B; çizimleri geldi, yedek)
 const kare = (n: number, ciz: (t: Tuval) => Promise<void>): Tarif => ({ w: n, h: n, ciz });
 /** sahne yer tutucularının boyu (4096 × 2286'nın küçüğü: yalnız çizim gelene dek) */
 const SW = 2560;
@@ -360,57 +360,6 @@ export const YER_TUTUCU: Record<string, Tarif> = {
   }),
   palamut: kare(600, (t) => t.svg(palamutSvg(), 0, 0, t.w, t.h)),
   'palamut-kurabiye': kare(600, (t) => t.svg(palamutKurabiyeSvg(), 0, 0, t.w, t.h)),
-  // E1-E4: çizgi roman kareleri (4:3)
-  'roman-1': {
-    w: 1600,
-    h: 1200,
-    async ciz(t) {
-      await sahneKirp(t, 'v3/otobus-ic', [0.52, 0.28, 0.98, 0.9]);
-      await t.svg(geceSvg(1600, 1200), 0, 0, t.w, t.h);
-      for (let i = 0; i < 6; i++) await t.resim('v3/kurabiye', t.w * (0.14 + i * 0.12), t.h * 0.64, t.w * 0.11, t.w * 0.11, { don: (i % 2 ? 8 : -8) });
-      await t.resim('v3/findik-kuyruk', t.w * 0.86, t.h * 0.42, t.w * 0.1, undefined, { don: 160 });
-    },
-  },
-  'roman-2': {
-    w: 1600,
-    h: 1200,
-    async ciz(t) {
-      await sahneKirp(t, 'v3/otobus-ic', [0.52, 0.28, 0.98, 0.9]);
-      await t.svg(geceSvg(1600, 1200), 0, 0, t.w, t.h);
-      await t.resim('v3/findik-yanak', t.w * 0.28, t.h * 0.18, t.w * 0.5, t.w * 0.5);
-      await t.resim('v3/kurabiye', t.w * 0.36, t.h * 0.66, t.w * 0.14, t.w * 0.14, { don: -12 });
-      await t.resim('v3/kurabiye', t.w * 0.47, t.h * 0.68, t.w * 0.14, t.w * 0.14, { don: 10 });
-    },
-  },
-  'roman-3': {
-    w: 1600,
-    h: 1200,
-    async ciz(t) {
-      await sahneKirp(t, 'v3/otobus-yani', [0.5, 0.4, 0.93, 0.98]);
-      await t.svg(svgSar(1600, 1200, `${YS_DEFS}${[0, 1, 2, 3, 4, 5].map((i) => yildizSeker(160 + i * 150, 1000 - i * 40 + (i % 2) * 30, 22, -90 + i * 20)).join('')}`), 0, 0, t.w, t.h);
-      await t.resim('v3/findik', t.w * 0.5, t.h * 0.3, t.w * 0.4, t.w * 0.4, { ayna: true, don: 8 });
-    },
-  },
-  'roman-4': {
-    w: 1600,
-    h: 1200,
-    async ciz(t) {
-      await sahneKirp(t, 'v3/agac', [0.46, 0.42, 0.88, 0.98]);
-      await t.resim('v3/findik-sarilma', t.w * 0.36, t.h * 0.42, t.w * 0.32, t.w * 0.32);
-      await t.resim('dosya:dedektif/poz-mino-rahat', t.w * 0.02, t.h * 0.3, t.w * 0.32);
-      await t.resim('dosya:dedektif2/kino-sarilma', t.w * 0.66, t.h * 0.3, t.w * 0.32);
-      await t.resim('v3/palamut', t.w * 0.77, t.h * 0.385, t.w * 0.06, t.w * 0.06, { don: 14 });
-    },
-  },
-  // E5: Vaka Dosyam kapağı: ağaç, kovuktan bakan yanakları şiş Fındık
-  kapak: {
-    w: 1600,
-    h: 1200,
-    async ciz(t) {
-      await sahneKirp(t, 'v3/agac', [0.555, 0.43, 0.89, 0.88]);
-      await t.resim('v3/findik-yanak', t.w * 0.3, t.h * 0.2, t.w * 0.46, t.w * 0.46);
-    },
-  },
 };
 
 /** Otobüs içinin bir parçası (kapı, pencere, baca) kart için: kutunun çevresi biraz payla, karenin ortasına */
@@ -449,7 +398,7 @@ async function parca(t: Tuval, k: { x0: number; y0: number; x1: number; y1: numb
   t.c.roundRect?.(t.w * 0.04, t.h * 0.04, t.w * 0.92, t.h * 0.92, r);
   t.c.stroke();
 }
-/** Sahneden kırpım tuvali doldurur (kare / roman) */
+/** Sahneden kırpım tuvali doldurur (kart, fotoğraf) */
 async function sahneKirp(t: Tuval, ad: string, k: [number, number, number, number]) {
   await t.resim(ad, 0, 0, t.w, t.h, { kirp: k });
 }

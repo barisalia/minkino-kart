@@ -40,6 +40,14 @@
 .dd-kok .dd-vk-kapak.dd-vk-agac {
   background: radial-gradient(circle at 50% 38%, #fff6e6, #f3cf9f);
 }
+/* çizgi roman: Vaka 3 kareleri (Gemini, 4:3, kendi çerçevesi yok) karenin içini tam doldurur; Vaka 1-2 karelerinin çift
+   çerçeve kırpımı (dedektif.css: her yandan %1.8) burada gerekmez, kenardaki kuyruk ucu ve palamutlar kesilmez */
+.dd-kok .dd-roman[data-vaka='vaka3'] .dd-kare-ic > img.dd-kare-resim {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-position: 50% 50%;
+}
 
 /* ---------------------------------------------------------------- sahne */
 .dd-kok .dd-vaka3 .dd-sahne {
@@ -192,6 +200,10 @@
   transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1), opacity 0.25s;
   filter: drop-shadow(0 6px 4px rgba(70, 40, 20, 0.3));
   pointer-events: none;
+}
+/* yeni kurabiye tabelanın önünde (dikeyde pervaz dar: ikisi üst üste biner) */
+.dd-kok .dd-v3-yeni-kurabiye {
+  z-index: 3;
 }
 .dd-kok :is(.dd-v3-tabela, .dd-v3-yeni-kurabiye).acik {
   opacity: 1;
