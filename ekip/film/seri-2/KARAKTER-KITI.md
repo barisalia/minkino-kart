@@ -1,6 +1,7 @@
-# Kino'nun Burnu: karakter kiti (Recraft istemleri)
+# Kino ve Ailesi: karakter kiti (Recraft istemleri)
 
 > 2026-10-10 · Senarist/karakter tasarımı. **TASLAK: kredi harcamadan önce toplam Barış'a söylenir ve onay alınır** (minkinogames1.md §5 kuralı).
+> **Değişiklik notu (2. sürüm):** Koku İzi kaldırıldı (Barış). Kitte değişenler: Kino'nun burnu artık **normal boy** ("yüzün yıldızı" değil); göz sayfasındaki "koklarken sıkılmış göz" yerine "sıkıca kapalı göz (ağlama/kahkaha)"; koku kutusu yok; Baba'nın kayıp gözlüğü yok. Bölüm 1 pozları yeni senaryoya göre P1-P10 + F1-F2. Başka bir çizim değişmedi.
 > Model: **Recraft `recraftv4_1_pro_vector`** (çıktı SVG), görsel başına **~12 kredi**. Hedef bütçe: **~500 kredi** (yeniden deneme payı dahil).
 > İlgili: [SERI-KITABI.md](SERI-KITABI.md) (karakterler, boy tablosu) · [bolum-01.md](bolum-01.md) · [URETIM-YOLU.md](URETIM-YOLU.md) (Adobe → Blender teslim sözleşmesi) · [../../blender-pilot/rig/kino.json](../../blender-pilot/rig/kino.json) (pilot rig).
 
@@ -22,7 +23,7 @@
 - **Deneme payı** her fazın içinde kalır. Bir faz payını aşarsa yeni faza geçmeden yöneticiye söylenir.
 - **Kit dışı krediler** (bu tabloda yok):
   - Adobe Turntable (Firefly, tasarımcının kredisi): Kino yan + 3/4, Anne, Baba, Lokum, Mino yan = 6 üretim × ~20 ≈ **120 Firefly kredisi**.
-  - Bölüm 1'e özel pozlar (P1-P8) ve arka planlar. Öneri: Gemini (ücretsiz) + Adobe temizlik. Recraft'la yapılırsa +~100-125 kredi.
+  - Bölüm 1'e özel pozlar (P1-P10), iki albüm fotoğrafı (F1-F2) ve arka planlar. Öneri: Gemini (ücretsiz) + Adobe temizlik. Recraft'la yapılırsa +~145-185 kredi.
 
 ---
 
@@ -77,7 +78,7 @@ STYLE: Original character art for a premium modern 2D preschool TV animation ser
 
 **`KINO`**
 ```
-CHARACTER, KINO: a 5-year-old anthropomorphic beagle-like puppy boy who walks upright, about 2.6 heads tall, chubby but sturdy with short strong legs. White fur (#FFFDF8, shade #EADFD3). Long, soft, rounded floppy ears in warm chestnut brown (#9A5A32) that hang down to his shoulders. ONE chestnut patch around his LEFT eye only (on the viewer's right side); the right eye area is white. A chestnut saddle patch on his back. Tail: chestnut with a bright white tip, held up like a little flag. A large, glossy, dark cocoa nose (#3A2420), a little bigger than usual: the star of his face. Short white rounded muzzle. Big curious eyes, short expressive brows. Clothes: a grass-green short-sleeved crew-neck T-shirt (#5DAE4B), a navy-blue neckerchief (#26386E) tied with a small knot at the front, red sneakers (#D94A3C) with white soles and white laces. White paw-hands with four short rounded fingers.
+CHARACTER, KINO: a 5-year-old anthropomorphic beagle-like puppy boy who walks upright, about 2.6 heads tall, chubby but sturdy with short strong legs. White fur (#FFFDF8, shade #EADFD3). Long, soft, rounded floppy ears in warm chestnut brown (#9A5A32) that hang down to his shoulders. ONE chestnut patch around his LEFT eye only (on the viewer's right side); the right eye area is white. A chestnut saddle patch on his back. Tail: chestnut with a bright white tip, held up like a little flag. A small, glossy, dark cocoa button nose (#3A2420). Short white rounded muzzle. Big curious eyes, short expressive brows. Clothes: a grass-green short-sleeved crew-neck T-shirt (#5DAE4B), a navy-blue neckerchief (#26386E) tied with a small knot at the front, red sneakers (#D94A3C) with white soles and white laces. White paw-hands with four short rounded fingers.
 ```
 
 **`ANNE`**
@@ -128,7 +129,7 @@ MODEL SHEET: the same character shown twice at exactly the same scale, both stan
 CUT-OUT PUPPET PARTS SHEET, front view, matching the character design exactly. Every body part is a separate, COMPLETE, closed vector shape with its own full outline, laid out like a tidy exploded diagram on white with clear empty space around each part; no part touches or overlaps another. Draw every part in full, including the areas that would normally be hidden behind other parts. Every limb segment has FULLY ROUND circular ends at its joints, like paper-puppet joints, so that it overlaps its neighbour when rotated. Arrange the parts in body order from top to bottom:
 1 head with a BLANK face: only the white muzzle shape and the chestnut patch around the left eye area, NO eyes, NO brows, NO mouth, NO nose; the full skull drawn including where the ears attach;
 2 left ear, 3 right ear (long chestnut floppy ears, each with a round top cap);
-4 the big glossy nose on its own;
+4 the glossy nose on its own;
 5 neck: a short white rounded cylinder;
 6 torso: the green T-shirt body, with the white lower belly and hips drawn completely below the hem as a rounded shape;
 7 the navy neckerchief with its front knot as one piece;
@@ -144,7 +145,7 @@ No floating eyes or mouths, no labels, no numbers, no guide lines.
 
 **K3 · Ağız sayfası (dudak senkronu, 9 ağız)** · 1:1
 ```
-MOUTH SHAPES SHEET for lip-sync, in this character's own style. Nine separate tiles in a neat 3 by 3 grid with even white space between them. Each tile shows the SAME white rounded muzzle piece (the lower snout) at the same size and position, with the same big glossy dark cocoa nose on top and a short philtrum line splitting into a soft W-shaped upper lip; only the mouth changes. Mouth interior dark red-brown (#5A1E1E), tongue soft coral (#F08A8A), small white teeth.
+MOUTH SHAPES SHEET for lip-sync, in this character's own style. Nine separate tiles in a neat 3 by 3 grid with even white space between them. Each tile shows the SAME white rounded muzzle piece (the lower snout) at the same size and position, with the same glossy dark cocoa nose on top and a short philtrum line splitting into a soft W-shaped upper lip; only the mouth changes. Mouth interior dark red-brown (#5A1E1E), tongue soft coral (#F08A8A), small white teeth.
 Row 1: (1) closed, lips pressed together in a gentle resting smile; (2) slightly open, top teeth visible; (3) wide, stretched sideways, both rows of teeth (as in "e").
 Row 2: (4) big open round mouth with tongue visible (as in "a"); (5) medium round open "o"; (6) small puckered round "u".
 Row 3: (7) lower lip tucked under the top teeth ("f"); (8) slightly open with the tongue tip touching behind the top teeth ("l"); (9) teeth together, lips stretched ("s").
@@ -155,7 +156,7 @@ Nothing else in the image.
 ```
 EYES, BROWS AND EXPRESSION SWAP SHEET for this character, laid out in clean rows on white with even spacing, every piece a separate closed shape. Eyes come in LEFT/RIGHT pairs at the same size and spacing as on the model sheet. Each eye is built from separate stacked shapes: white of the eye, dark-brown pupil with two white catchlights, and eyelid shapes. IMPORTANT: the character's LEFT eye sits on the chestnut patch, so all LEFT eyelid shapes are chestnut (#9A5A32); all RIGHT eyelid shapes are white.
 Row 1 eye pairs: open neutral; half-closed (mid-blink); fully closed blink (flat curved line); happy closed (upward arcs).
-Row 2 eye pairs: wide surprised (smaller pupils); squeezed shut while sniffing (tight crescents); teary (extra large catchlights, wet lower lid); sleepy (heavy half lids).
+Row 2 eye pairs: wide surprised (smaller pupils); squeezed tightly shut (tight crescents, for a big cry or a big laugh); teary (extra large catchlights, wet lower lid); sleepy (heavy half lids).
 Row 3: pupils alone in five positions (center, left, right, up, down).
 Row 4 brow pairs: neutral; raised high; worried (inner ends up); cross (inner ends down); one brow raised.
 Row 5: three expression mouths on the same white muzzle piece with the nose: sad closed frown; big laugh with tongue out; wobbly worried mouth.
@@ -282,7 +283,7 @@ Row 3: pupils alone in five positions.
 Row 4 thick short brow pairs: neutral; raised high; worried; stern; one raised.
 Row 5: three expression mouths on the same muzzle piece with nose and moustache: big belly laugh; yawning wide open; snoring with a small round open mouth.
 ```
-*Gözlük (bölüm 1'deki kayıp gözlük) eşya olarak çizilir, kit dışı.*
+*Baba'nın uyurken yüzüne kapanan gazetesi eşya olarak çizilir, kit dışı.*
 
 **B5 · Yan parça sayfası (Turntable'dan sonra)** · 1:1 · *referans: Turntable yan çıktısı*
 ```
@@ -360,7 +361,7 @@ FACE SWAP SHEET for TWO characters, every piece a separate closed shape, clean r
 
 ## 6. Kit dışı: Bölüm 1 pozları (bütçeye dahil değil)
 
-Bölüm 1'in P1-P8 pozları ([bolum-01.md](bolum-01.md)) kit gelince çizilir. Öneri: kitin model sayfası referans verilerek **Gemini** (ücretsiz), sonra Adobe'de temizlik ve parçalara ayırma. Recraft'la yapılacaksa her biri `STYLE` + `DNA` + tek cümlelik poz tarifi (ör. *"Full body, side view facing right: lying on his tummy on the floor, arms spread wide, ears spread flat, tail down, eyes closed in frustration."*), 8 × 12 = ~96 kredi (+ pay ~125).
+Bölüm 1'in P1-P10 pozları ve F1-F2 albüm fotoğrafları ([bolum-01.md](bolum-01.md)) kit gelince çizilir. Bebek Kino (F1) Lokum kitinden türetilir: iki kulak kestane, sol gözde kestane leke, açık yeşil tulum. Öneri: kitin model sayfası referans verilerek **Gemini** (ücretsiz), sonra Adobe'de temizlik ve parçalara ayırma. Recraft'la yapılacaksa her biri `STYLE` + `DNA` + tek cümlelik poz tarifi (ör. *"Full body, side view facing right: sitting down hard on his bottom on the floor, legs straight out in front, ears flying up, surprised face."*), 12 × 12 = ~144 kredi (+ pay ~185).
 
 ## 7. Kontrol listesi (her görselden sonra)
 
