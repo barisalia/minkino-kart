@@ -22,7 +22,7 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
 import { KALP } from './cizim';
 import { AZ_HAREKET, Efekt, ekranSalla, salla } from './efekt';
-import { kayit } from './kayit';
+import { gunBitti as kayitGunBitti, kaydet, kayit } from './kayit';
 import { kuleCiz, kuleOlcu } from './kule';
 import {
   bosYuva,
@@ -857,6 +857,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     m.el.dataset.sonuc = sonuc.ayni ? 'ayni' : 'farkli';
     await jetonVer(m, jetonHesapla(sonuc.ayni));
     if (kapandi) return;
+    // son müşteri ödedi: gün hemen kaydedilir (akşam yalnız gösterir; "Bugünlük bu kadar!"da çıkılsa da jeton kalır)
+    if (++odenen >= TOPLAM) gunuKaydet();
     if (mutlu >= ayar.hedef && !hedefSoylendi) {
       hedefSoylendi = true;
       void soyle(K.mino.hedef_tamam, 'mino', false);
@@ -1011,14 +1013,24 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   }
 
   // ---------------------------------------------------------------- günün sonu
+  let odenen = 0;
+  let kaydedildi = false;
+  /** Günün jetonları kumbaraya, gün bitti (bir sonraki gün açılır); bir kez */
+  function gunuKaydet() {
+    if (kaydedildi) return;
+    kaydedildi = true;
+    kayitGunBitti(kayit, gun, bugun, mutlu);
+    kaydet();
+  }
   async function gunBitti() {
+    gunuKaydet();
     calisiyor = false;
     adimGuncelle();
     await bekle(500);
     if (kapandi) return;
     await soyle(K.mino.bitti);
     await bekle(400);
-    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, mutlu });
+    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, mutlu, kaydedildi: true });
   }
 
   // ---------------------------------------------------------------- açılış: otobüs gelir, görseller çözülür

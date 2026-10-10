@@ -27,7 +27,7 @@ import { boyaFiltresi, HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MIN
 import { zigzagCiz } from './susleme';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
 import { ARKA, FIRIN_GOZLERI, FIRIN_ORAN, onYukle, oranYaz, resimleriTopla, yuva } from './resimler';
-import { kayit } from './kayit';
+import { gunBitti as kayitGunBitti, kayit } from './kayit';
 import {
   acikOlanlar,
   BOYA,
@@ -1181,11 +1181,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       await bekle(150);
     }
     if (kapandi) return;
+    // jetonlar toplandı: gün hemen kaydedilir (akşam yalnız gösterir; "bitti" cümlesinde çıkılsa da jeton kalır)
+    const yildiz = yildizHesapla(mutlu, ayar.hedef);
+    kayitGunBitti(gun, yildiz, bugun);
     await soyle(P.mino.bitti);
     mino.tepki('dans');
     await bekle(900);
-    const yildiz = yildizHesapla(mutlu, ayar.hedef);
-    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, yildiz, mutlu });
+    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, yildiz, mutlu, kaydedildi: true });
   }
 
   // ---------------------------------------------------------------- açılış: otobüs parka gelir

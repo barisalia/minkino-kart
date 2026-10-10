@@ -116,3 +116,88 @@ test('Kino’nun Otobüsü: yanlış dokunuşlar zararsız; yanlış topu Kino y
   await page.screenshot({ path: 'tests/screens/kino-otobus-gun2.png' });
   expect(hatalar.filter(agDisi)).toEqual([]);
 });
+
+const ANAHTAR = 'minkino-kino-otobus-v1';
+const yerelKayit = (page: Page) => page.evaluate((a) => JSON.parse(localStorage.getItem(a) ?? '{}') as { jeton?: number; biten?: number[]; acikGun?: number }, ANAHTAR);
+
+test('Kino’nun Otobüsü: son müşteri ödeyince gün hemen kaydedilir; "Bugünlük bu kadar"da geri basılsa da jeton kalır', async ({ page }) => {
+  test.setTimeout(240_000);
+  const hatalar = hataTopla(page);
+  await page.goto('./kino-otobus/?test=1&sifirla=1&ekran=gun&gun=2&yas=kucuk');
+  await expect(page.locator('.ko-musteri.ko-hazir').first()).toBeVisible({ timeout: 20000 });
+  // akşama geçiş tutulur: çocuk "Bugünlük bu kadar!" sırasında geri basmış gibi (akşam hiç açılmaz)
+  await page.evaluate(() => {
+    const w = window as unknown as { __koOtobus: { app: { git: (ad: string, p?: unknown) => void } }; __aksamIstendi?: boolean };
+    const asil = w.__koOtobus.app.git.bind(w.__koOtobus.app);
+    w.__koOtobus.app.git = (ad, p) => (ad === 'aksam' ? void (w.__aksamIstendi = true) : asil(ad, p));
+  });
+  let kaydedildi = false;
+  for (let n = 0; n < 600; n++) {
+    if (await page.evaluate(() => !!(window as unknown as { __aksamIstendi?: boolean }).__aksamIstendi)) {
+      kaydedildi = true;
+      break;
+    }
+    const adim = await page.locator('.ko-gun').getAttribute('data-adim').catch(() => null);
+    const hedef = page.locator('.ko-gun .ko-sirada');
+    if (!adim || !(await hedef.count())) {
+      await page.waitForTimeout(60);
+      continue;
+    }
+    await hedef.first().click({ timeout: 3000 }).catch(() => undefined);
+    await page.waitForTimeout(adim === 'ye' ? 300 : 60);
+  }
+  expect(kaydedildi).toBe(true);
+  await expect(page.locator('.ko-aksam')).toHaveCount(0);
+  expect((await yerelKayit(page)).biten).toContain(2);
+  // "Bugünlük bu kadar!" sırasında geri
+  await page.locator('.ko-gun .ko-ust button[aria-label="Geri"]').click();
+  await expect(page.locator('.ko-acilis')).toBeVisible();
+  const k = await yerelKayit(page);
+  expect(k.jeton).toBe(15);
+  expect(k.acikGun).toBe(3);
+  await expect(page.locator('.ko-gun-kart[data-gun="3"]')).not.toHaveClass(/ko-kilitli/);
+  await expect(page.locator('.ko-gun-kart[data-gun="2"]')).toHaveClass(/ko-biten/);
+  expect(hatalar.filter(agDisi)).toEqual([]);
+});
+
+test('Kino’nun Otobüsü: gün kartına çift dokunuş günü bir kez açar', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./kino-otobus/?test=1&sifirla=1&yas=kucuk&ekran=acilis');
+  await expect(page.locator('.ko-gun-kart[data-gun="1"]')).toBeVisible();
+  const gidilen = await page.evaluate(async () => {
+    const app = (window as unknown as { __koOtobus: { app: { git: (ad: string, p?: unknown) => void } } }).__koOtobus.app;
+    const asil = app.git.bind(app);
+    const liste: string[] = [];
+    app.git = (ad, p) => {
+      liste.push(ad);
+      asil(ad, p);
+    };
+    const kart = document.querySelector<HTMLButtonElement>('.ko-gun-kart[data-gun="1"]')!;
+    kart.click();
+    kart.click();
+    await new Promise((r) => setTimeout(r, 400));
+    return liste;
+  });
+  expect(gidilen).toEqual(['gun']);
+  await expect(page.locator('.ko-gun[data-gun="1"]')).toBeVisible();
+  expect(hatalar.filter(agDisi)).toEqual([]);
+});
+
+test('Kino’nun Otobüsü: ?onizleme=1 ile kilitli güne atlanmaz, ilerleme yazılmaz', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./kino-otobus/?test=1&sifirla=1&yas=kucuk&ekran=acilis');
+  await expect(page.locator('.ko-acilis')).toBeVisible();
+  await page.goto('./kino-otobus/?onizleme=1&ekran=gun&gun=2&jeton=99');
+  await expect(page.locator('.ko-acilis')).toBeVisible();
+  await expect(page.locator('.ko-gun')).toHaveCount(0);
+  const k = await yerelKayit(page);
+  expect(k.acikGun).toBe(1);
+  expect(k.jeton).toBe(0);
+  await page.goto('./kino-otobus/?onizleme=1&ekran=aksam&gun=1&kazanc=50');
+  await expect(page.locator('.ko-acilis')).toBeVisible();
+  expect((await yerelKayit(page)).jeton).toBe(0);
+  // sırası gelmiş güne gidilir
+  await page.goto('./kino-otobus/?onizleme=1&ekran=gun&gun=1');
+  await expect(page.locator('.ko-gun[data-gun="1"]')).toBeVisible();
+  expect(hatalar.filter(agDisi)).toEqual([]);
+});

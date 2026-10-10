@@ -75,6 +75,9 @@ export function acilisEkrani(app: Uygulama): Ekran {
     salla(otobus, 'ko-zipla');
   });
 
+  // gün kartına iki kez dokunulursa gün ekranı iki kez kurulmasın (açılış cümlesi yarıda kesilir)
+  let gidiliyor = false;
+  let kapali = false;
   const kartlar = Array.from({ length: GUN_SAYISI }, (_, i) => (i + 1) as Gun).map((g) => {
     const sirasiGeldi = g <= kayit.acikGun;
     const biten = kayit.biten.includes(g);
@@ -89,16 +92,18 @@ export function acilisEkrani(app: Uygulama): Ekran {
       sirasiGeldi ? null : h('i.ko-gun-kilit', { html: KILIT }),
     );
     b.addEventListener('click', async () => {
+      if (gidiliyor) return;
       if (!sirasiGeldi) {
         efekt.kilitli();
         salla(b, 'ko-hayir');
         return;
       }
       if (!erisimVarMi(`kino-otobus/gun-${g}`, app.kok)) return;
+      gidiliyor = true;
       efekt.secim();
       salla(b, 'ko-zipla');
       await bekle(sure(200));
-      app.git('gun', { gun: g });
+      if (!kapali) app.git('gun', { gun: g });
     });
     return b;
   });
@@ -122,6 +127,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   return {
     el,
     kapat() {
+      kapali = true;
       clearTimeout(selam);
       kilitBirak();
       kino.kapat();
@@ -140,14 +146,17 @@ function susResmi(s: OtobusSusu): string {
   return gorsel(ad[s.tur]!);
 }
 
-export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; mutlu?: number } = {}): Ekran {
+export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; mutlu?: number; kaydedildi?: boolean } = {}): Ekran {
   const gun = Math.max(1, Math.min(GUN_SAYISI, Math.floor(p.gun ?? 1))) as Gun;
   const kazanc = Math.max(0, Math.floor(p.kazanc ?? 0));
   const yas = kayit.yas ?? 'kucuk';
-  // günün jetonları ekran açılırken kaydedilir; sayım yalnız gösterir
-  const oncesi = kayit.jeton;
-  gunBitti(kayit, gun, kazanc, p.mutlu ?? 0);
-  kaydet();
+  // günün jetonları son müşteri ödeyince kaydedildi (gun.ts → gunuKaydet); sayım yalnız gösterir. Test kısayolunda
+  // (?test=1&ekran=aksam) burada kaydedilir.
+  const oncesi = p.kaydedildi ? Math.max(0, kayit.jeton - kazanc) : kayit.jeton;
+  if (!p.kaydedildi) {
+    gunBitti(kayit, gun, kazanc, p.mutlu ?? 0);
+    kaydet();
+  }
   let kapandi = false;
   const efekt_ = new Efekt(app.kok);
   const kino = dondurmaciKino(kayit.alinan.includes('kino-sapka'));

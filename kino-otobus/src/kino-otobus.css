@@ -1708,7 +1708,7 @@
   place-items: end;
 }
 .ko-kok .ko-yas-perde.ko-kapakli .ko-yas-kutu {
-  padding: max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) 20px;
+  padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 }
 /* yatayda düğmeler sağda alt alta (Kino ortada, yüzü ve dondurması açıkta) */
 @media (orientation: landscape) {
