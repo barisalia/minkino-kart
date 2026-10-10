@@ -189,7 +189,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     return b;
   });
   const rafEsya = [...sosDugmeleri, ...susDugmeleri];
-  const raf = h('div.ko-raf', { 'data-n': String(rafEsya.length), style: `--sutun:${Math.ceil(rafEsya.length / (rafEsya.length > 1 ? 2 : 1))}` }, ...rafEsya);
+  const rafSutun = Math.ceil(rafEsya.length / (rafEsya.length > 1 ? 2 : 1));
+  const raf = h('div.ko-raf', { 'data-n': String(rafEsya.length), style: `--sutun:${rafSutun}` }, ...rafEsya);
 
   // kaplar
   // külah rafı: iç içe külahlar (sabah az; külah yapınca dolar, hiç bitmez)
@@ -273,6 +274,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const tezgahOn = adres('tezgah-on');
   if (tezgahOn) altKat.style.setProperty('--tezgah-on', `url("${tezgahOn}")`);
   const duzen = h('div.ko-duzen', { 'data-gun': String(gun) }, ustKat, altKat);
+  // dikeyde kaplar (166u) ile raf yan yana: dar telefonda dolu raf (Gün 3: 4 sütun) sığmaz, şişeler kap düğmelerinin
+  // üstüne binerdi; o zaman raf kendi şeridine geçer (olc → .ko-raf-serit). Gereken en: 24u kenar + kaplar + 8u + raf
+  const yanYanaEn = 24 + 166 + 8 + Math.max(rafSutun * 64 + (rafSutun - 1) * 4 + 8, rafEsya.length === 1 ? 150 : 0);
   const kamera = h('div.ko-kamera', {}, duzen);
 
   // üst çubuk: geri, gün ve hedef kalpleri, ses
@@ -296,6 +300,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const u = yatay ? Math.min(r.height / 390, (sahneEn - pay) / 840) : Math.min((r.width - pay) / 420, r.height / 820);
     el.style.setProperty('--u', `${u.toFixed(4)}px`);
     el.dataset.yon = yatay ? 'yatay' : 'dikey';
+    duzen.classList.toggle('ko-raf-serit', !yatay && (r.width - pay) / u < yanYanaEn);
+    // kısa telefonda (375×667: boy sınırlı, artan yer yok) şerit biraz alçalır, pencere müşteri balonlarına yer bıraksın
+    duzen.classList.toggle('ko-kisa', !yatay && r.height / u < 880);
+    // külah tezgâhı kartı (yatay tasarım 620×320) çok kareleşiyorsa dikey düzenine geçer (kino-otobus.css → .ko-is-dik)
+    el.classList.toggle('ko-is-dik', Math.min(0.92 * r.width, 620 * u) / Math.min(0.86 * r.height, 320 * u) < 1.6);
     el.style.setProperty('--sahne-en', `${sahneEn.toFixed(1)}px`);
     // müşteri katının ve yuvanın ölçüsü (kule ve karakter boyları bunun katı)
     const mk = pencere.querySelector('.ko-musteriler')!.getBoundingClientRect();

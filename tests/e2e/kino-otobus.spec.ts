@@ -139,8 +139,14 @@ test('Kino’nun Otobüsü: dokunsal hazırlık (kepçe, sos dök, serpinti sall
   await page.goto('./kino-otobus/?test=1&sifirla=1&ekran=gun&gun=3&yas=buyuk');
   await expect(page.locator('.ko-musteri.ko-hazir').first()).toBeVisible({ timeout: 20000 });
   const yuva = page.locator('.ko-yuva[data-yuva="0"]');
-  // dikey telefonda (yalnız web) Gün 3'ün iki sıralı rafı kap düğmelerinin kenarına biner: tıklama doğrudan
-  await page.locator('.ko-kap-dugme[data-kap="kase"]').dispatchEvent('click');
+  // dikey telefonda Gün 3'ün rafı kap düğmelerinin üstünde kendi şeridinde: hiçbir şişe/süs bir kap düğmesine binmez
+  const binen = await page.evaluate(() => {
+    const kutu = (s: string) => [...document.querySelectorAll(s)].map((e) => e.getBoundingClientRect());
+    const kaplar = kutu('.ko-kap-dugme');
+    return kutu('.ko-raf-esya').filter((r) => kaplar.some((k) => Math.min(r.right, k.right) - Math.max(r.left, k.left) > 1 && Math.min(r.bottom, k.bottom) - Math.max(r.top, k.top) > 1)).length;
+  });
+  expect(binen).toBe(0);
+  await page.locator('.ko-kap-dugme[data-kap="kase"]').click();
   // kepçe: tattan yuvaya sürüklenir (tatın içinde ovalanınca top oluşur)
   const tat = await orta(page, '.ko-tat[data-tat="cilek"]');
   const y0 = await orta(page, '.ko-yuva[data-yuva="0"]');

@@ -2103,6 +2103,54 @@
 .ko-kok .ko-gun[data-yon='dikey'] .ko-kumbara-yer {
   grid-area: kumbara;
 }
+/*
+ * dolu raf (Gün 3: 3 sos + 5 süs, 3 kap) dar telefonda kap düğmelerinin yanına sığmaz (şişe ve kiraz düğmelerin
+ * üstüne biniyordu; gun.ts → olc, yanYanaEn): raf düğmelerin üstünde tam genişlik iki sıralı şerit, kaplar altında
+ * tek sıra. Geniş dikey ekranda (tablet) yan yana düzen kalır. Her şey kendi
+ * alanında; pencere biraz kısalır ama müşteriler dar ekranda zaten genişlikle sınırlı (--pen-h), küçülmezler.
+ */
+.ko-kok .ko-gun[data-yon='dikey'] .ko-duzen.ko-raf-serit {
+  grid-template-rows: 1fr auto auto auto auto;
+  grid-template-areas: 'pencere pencere' 'yuvalar kumbara' 'dolap dolap' 'raf raf' 'kaplar kaplar';
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit .ko-raf {
+  align-self: stretch;
+  grid-template-columns: repeat(var(--sutun, 4), minmax(0, 1fr));
+  grid-auto-rows: calc(var(--raf-sira) * var(--u));
+  column-gap: calc(10 * var(--u));
+  justify-items: center;
+  margin-bottom: 0;
+  padding-left: calc(10 * var(--u));
+  padding-right: calc(10 * var(--u));
+  --raf-sira: 72;
+}
+/* üst raf tahtası alt sıranın üstünde (sıra + aralık 4u) */
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit .ko-raf::before {
+  bottom: calc((var(--raf-sira) + 4) * var(--u));
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit .ko-raf-esya {
+  width: 100%;
+  max-width: calc(96 * var(--u));
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit .ko-kaplar,
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit .ko-kaplar[data-n='3'] {
+  grid-template-columns: none;
+  grid-template-rows: calc(66 * var(--u));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, calc(112 * var(--u)));
+  justify-content: space-evenly;
+  gap: calc(12 * var(--u));
+  padding: 0 0 calc(4 * var(--u));
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit .ko-kaplar[data-n='3'] .ko-kap-dugme[data-kap='kupa'] {
+  grid-column: auto;
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit.ko-kisa .ko-raf {
+  --raf-sira: 62;
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf-serit.ko-kisa .ko-kaplar {
+  grid-template-rows: calc(58 * var(--u));
+}
 
 /* az hareket */
 @media (prefers-reduced-motion: reduce) {
@@ -2957,6 +3005,50 @@
 .ko-kok .ko-is-kapat svg {
   width: 56%;
   height: 56%;
+}
+/*
+ * dar dikey ekranda (telefon; gun.ts → olc, .ko-is-dik) külah tezgâhı: yatay kart (620×320) kareye yakın kalıyor,
+ * sürahi kartın sağ kenarından taşıp kesiliyordu. Burada kart kareye yakın; Kino arkada solda (açık kapak yüzünü
+ * örtmesin diye makine sağda), sürahi/kalıp ve yeni külahlar tezgâhın önünde solda; hepsi kartın içinde. Tablet
+ * dikeyde yatay kart sığar, o kalır.
+ */
+.ko-kok .ko-gun.ko-is-dik .ko-is-kart {
+  width: min(92%, calc(400 * var(--u)));
+  height: auto;
+  max-height: 86%;
+  aspect-ratio: 1 / 1.05;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-duvar {
+  inset: 0 0 40% 0;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-tezgah {
+  height: 40%;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-kino {
+  left: -4%;
+  bottom: 30%;
+  height: 58%;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-makine {
+  left: 41%;
+  bottom: 7%;
+  width: 56%;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-surahi {
+  left: 5%;
+  bottom: 7%;
+  height: 34%;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-kalip {
+  left: 10%;
+  bottom: 8%;
+  height: 36%;
+}
+.ko-kok .ko-gun.ko-is-dik .ko-is-kulahlar {
+  left: 3%;
+  right: 61%;
+  bottom: 6%;
+  height: 26%;
 }
 
 /* el ipucu: top, sos ve süste el kaptan yuvaya sürükler */
