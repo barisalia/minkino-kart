@@ -32,7 +32,8 @@ export const ERISIM: Record<string, Erisim> = {
   canlan: 'abonelik',
   pasta: 'abonelik',
   dedektif: 'abonelik',
-  // Dedektif Mino vakaları: hepsi abonelikle (Vaka 3 henüz oyunda gizli: dedektif/src/mantik3.ts → VAKA3_YAYINDA)
+  // Dedektif Mino vakaları: hepsi abonelikle (Vaka 3 yayında: dedektif/src/mantik3.ts → VAKA3_YAYINDA; dosyaya
+  // dokununca dedektif/<vaka> sorulur: dedektif/src/ekranlar.ts)
   'dedektif/vaka2': 'abonelik',
   'dedektif/vaka3': 'abonelik',
   'dedektif/*': 'abonelik',

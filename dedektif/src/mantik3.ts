@@ -8,8 +8,8 @@
  * otobüsün yanı (park), büyük ağaç, ağacın kovuğunun içi (kiler). Koordinatlar resmin oranı (x: en, y: boy; 0..1, sol
  * üstten), boylar oda yüksekliğinin oranı (mantik.ts gibi).
  *
- * YAYIN: Vaka 3 henüz oyunda seçilemez (VAKA3_YAYINDA = false). Denemek için: /dedektif/?vaka=3 (doğrudan vaka) ya da
- * /dedektif/?vaka3=1 (seçim ekranında üçüncü dosya). Açmak için VAKA3_YAYINDA = true.
+ * YAYIN: Vaka 3 oyunda (VAKA3_YAYINDA = true): seçim ekranında üçüncü dosya, Vaka 2 çözülünce açılır; abonelikle
+ * (src/engine/erisim.ts → dedektif/vaka3). Geri almak için false: o zaman yalnız web'de /dedektif/?vaka=3 ya da ?vaka3=1.
  */
 import D from '../../content/dedektif.json';
 import { ODA_ORAN, type DosyaHalkasi, type IpucuTanim, type Kadraj, type OdaId, type SorguHalkasi } from './mantik';
@@ -23,7 +23,7 @@ export const B3 = V3.balon;
 
 // ---------------------------------------------------------------- yayın bayrağı
 /** Vaka 3 oyunda (seçim ekranı, Vaka Dosyam) görünsün mü. false: yalnız web'de ?vaka=3 / ?vaka3=1 ile açılır. */
-export const VAKA3_YAYINDA = false;
+export const VAKA3_YAYINDA = true;
 /** Uygulama (mağaza) derlemesi mi: orada bayrak kapalıyken hiçbir adres parametresi Vaka 3'ü açmaz */
 const UYGULAMA = import.meta.env?.MODE === 'uygulama';
 /**
@@ -132,7 +132,7 @@ export const HALKALAR3: Halka3[] = [
     oda: 'otobus-yani',
     kadraj: [0.36, 0.55, 0.8, 0.95],
     ipuclari: [
-      { id: 'tohum', oda: 'otobus-yani', resim: 'v3/ipucu-tohum', x: 0.462, y: 0.715, h: 0.06, gizli: true },
+      { id: 'tohum', oda: 'otobus-yani', resim: 'v3/ipucu-tohum', x: 0.518, y: 0.73, h: 0.055, gizli: true },
       { id: 'havuc', oda: 'otobus-yani', resim: 'v3/havuc', x: 0.575, y: 0.722, h: 0.06, don: -12, gizli: true },
       { id: 'seker', oda: 'otobus-yani', resim: 'v3/ipucu-yildiz-seker', x: 0.66, y: 0.77, h: 0.055, gizli: true },
     ],
@@ -344,7 +344,7 @@ const YATAY3: Tablo3 = {
     },
   },
   'otobus-yani': {
-    ipucu: { tohum: { x: 0.462, y: 0.715, h: 0.06 }, havuc: { x: 0.575, y: 0.722, h: 0.06, don: -12 }, seker: { x: 0.66, y: 0.77, h: 0.055 } },
+    ipucu: { tohum: { x: 0.518, y: 0.73, h: 0.055 }, havuc: { x: 0.575, y: 0.722, h: 0.06, don: -12 }, seker: { x: 0.66, y: 0.77, h: 0.055 } },
     kadraj: { yol: [0.36, 0.55, 0.8, 0.95] },
     kadraj3: { yani: [0.05, 0.15, 0.85, 1], patikalar: [0.36, 0.55, 0.8, 0.95], izSonu: [0.6, 0.45, 1, 1] },
     // ağaç kolunun ortası: (0.66, 0.77) → (0.95, 0.643); çalının üstünden geçer. Yolda iki şeker eksik (aralık uzun)
@@ -382,7 +382,7 @@ const YATAY3: Tablo3 = {
 
 const DIKEY3: Tablo3 = {
   'otobus-ic': {
-    ipucu: { un: { x: 0.755, y: 0.836, h: 0.07 }, kirinti: { x: 0.82, y: 0.645, h: 0.045 } },
+    ipucu: { un: { x: 0.755, y: 0.836, h: 0.07 }, kirinti: { x: 0.835, y: 0.625, h: 0.045 } },
     // tepsi resmin sağ altında, karakterlerin önünde: sayarken kamera tepsiye yaklaşır (dar kadraj: dunya.ts tam en yapmaz),
     // sahnenin altı ekranın altına dayanır, tepsi karakterlerin başının üstüne çıkar (vaka3.ts: ikisi solda)
     kadraj: { sayi: [0.56, 0.72, 0.95, 0.9], cikis: [0, 0.3, 1, 1] },
@@ -408,13 +408,14 @@ const DIKEY3: Tablo3 = {
       kapi: { x0: 0, y0: 0.21, x1: 0.27, y1: 0.8 },
       surgu: { x: 0.12, y: 0.585 },
       baca: { x0: 0.29, y0: 0.02, x1: 0.66, y1: 0.115 },
-      tabela: { x: 0.69, y: 0.626, h: 0.1 },
-      yeniKurabiye: { x: 0.64, y: 0.618, h: 0.05 },
-      findik: { x: 0.8, y: 0.665, h: 0.17 },
+      // dar pervaz: tabela sağa (Fındık'ın önünde), palamut kurabiyesi solda, tabelanın önünde (arkasında kalıp kaybolmasın)
+      tabela: { x: 0.735, y: 0.64, h: 0.085 },
+      yeniKurabiye: { x: 0.635, y: 0.628, h: 0.068 },
+      findik: { x: 0.85, y: 0.665, h: 0.17 },
     },
   },
   'otobus-yani': {
-    ipucu: { tohum: { x: 0.33, y: 0.775, h: 0.045 }, havuc: { x: 0.475, y: 0.775, h: 0.045, don: -12 }, seker: { x: 0.485, y: 0.878, h: 0.045 } },
+    ipucu: { tohum: { x: 0.375, y: 0.84, h: 0.042 }, havuc: { x: 0.475, y: 0.775, h: 0.045, don: -12 }, seker: { x: 0.485, y: 0.878, h: 0.045 } },
     kadraj: { yol: [0, 0.6, 1, 1] },
     kadraj3: { yani: [0, 0.05, 1, 1], patikalar: [0, 0.6, 1, 1], izSonu: [0, 0.45, 1, 1] },
     // sağ kol: (0.55, 0.855) → (0.92, 0.787); son şeker telefonda da ekranda (x ≤ 0.88)

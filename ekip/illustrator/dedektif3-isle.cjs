@@ -7,6 +7,8 @@
 //  - E (şeffaf): gemini-esya.cjs ile beyaz zemin KENARDAN akıtılarak silinir (çizimin içindeki beyazlar kalır, kahve kontur
 //    halesiz), kırpılır. Kartlar (kart-*) ortak tuvale ortalanır: üç kart aynı boy (Barış: "üç kart aynı boy, aynı çerçeve dışı boşluk").
 //  - Fındık'ın pozları (findik, findik-*) ortak tuvalde tabandan hizalı: poz değişince Fındık yerinde kalır.
+//  - Yeniden çizimler (<ad>-v2.png, -v3 …): eski anahtarın YERİNE geçer (ipucu-tohum-v2.png → ipucu-tohum.webp) ve bilerek
+//    ezer (guvenli-yaz atlanır). -vN varsa eski PNG işlenmez; birden çoksa en büyük N. '-eski' ekli PNG'ler hiç işlenmez.
 //  - Ön katmanlar (kovuk dudakları, pervaz) ayrı dosya değil: oyun sahnenin kendi resminden elips / şerit biçimiyle keser (dunya3.ts).
 const { execFileSync } = require('child_process'), fs = require('fs'), os = require('os'), path = require('path');
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
@@ -14,21 +16,34 @@ const guvenliYaz = require('./guvenli-yaz.cjs');
 const gi = process.argv.indexOf('--girdi');
 const G = gi >= 0 ? process.argv.splice(gi, 2)[1] : 'ekip/gemini/yeni/dedektif3', O = 'assets/dedektif3', ARA = path.join(os.tmpdir(), 'dedektif3-kes');
 const ATLA = []; // bilerek elle düzeltilen dosyalar (betik yeniden üretmesin)
-const ARKA = /^(otobus-ic|otobus-yani|agac|kiler-ic)(-dikey)?$|^roman-\d$|^kapak$/;
+/** yeniden çizim eki: 'ipucu-tohum-v2' → anahtar 'ipucu-tohum', sürüm 2 */
+const SURUM = /-v(\d+)$/;
+const hedef = (ad) => ad.replace(SURUM, '');
+const surum = (ad) => Number(SURUM.exec(ad)?.[1] ?? 0);
+const ARKA_DESEN = /^(otobus-ic|otobus-yani|agac|kiler-ic)(-dikey)?$|^roman-\d$|^kapak$/;
+const ARKA = { test: (ad) => ARKA_DESEN.test(hedef(ad)) };
 /** çıktının uzun kenarı (px) */
-const EN = (ad) => (/^(otobus|agac|kiler)/.test(ad) ? 4096 : /^(roman|kapak)/.test(ad) ? 2048 : /^findik/.test(ad) ? 1280 : 1024);
+const EN = (ad) => ((ad = hedef(ad)), /^(otobus|agac|kiler)/.test(ad) ? 4096 : /^(roman|kapak)/.test(ad) ? 2048 : /^findik/.test(ad) ? 1280 : 1024);
 
 if (!fs.existsSync(G)) {
   console.log(`Girdi klasörü yok: ${G} (Gemini bölüm B'yi çizince oraya PNG olarak konur)`);
   process.exit(0);
 }
 const secili = process.argv.slice(2);
-const tum = fs.readdirSync(G).filter((f) => f.endsWith('.png')).map((f) => f.replace(/\.png$/, '')).filter((a) => !ATLA.includes(a) && (!secili.length || secili.includes(a)));
+// '-eski' ekli PNG'ler (yenisi gelince saklanan eski çizim) işlenmez
+const pngler = fs.readdirSync(G).filter((f) => f.endsWith('.png') && !/-eski\.png$/.test(f)).map((f) => f.replace(/\.png$/, ''));
+/** her anahtarın en yeni çizimi: -vN varsa eskisinin yerine o */
+const enYeni = new Map();
+for (const a of pngler) if (!enYeni.has(hedef(a)) || surum(a) > surum(enYeni.get(hedef(a)))) enYeni.set(hedef(a), a);
+const tum = [...enYeni.values()].filter((a) => !ATLA.includes(hedef(a)) && (!secili.length || secili.includes(a) || secili.includes(hedef(a))));
 const kesilecek = tum.filter((a) => !ARKA.test(a));
 const webp = (img) => img.webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer();
 async function yaz(ad, buf) {
-  const m = await s(buf).metadata();
-  if (await guvenliYaz(path.join(O, ad + '.webp'), buf)) console.log(`${ad}: ${m.width}x${m.height}, ${Math.round(buf.length / 1024)} KB`);
+  const m = await s(buf).metadata(), yol = path.join(O, hedef(ad) + '.webp');
+  // yeniden çizim (-vN): eski anahtarın yerine bilerek yazılır (eskisi büyük olsa bile)
+  if (surum(ad)) fs.writeFileSync(yol, buf);
+  else if (!(await guvenliYaz(yol, buf))) return;
+  console.log(`${hedef(ad)}${surum(ad) ? ` (yeniden çizim: ${ad})` : ''}: ${m.width}x${m.height}, ${Math.round(buf.length / 1024)} KB`);
 }
 const kucult = (img, m, n) => (Math.max(m.width, m.height) > n ? img.resize(m.width >= m.height ? n : null, m.width >= m.height ? null : n, { kernel: 'lanczos3' }) : img);
 

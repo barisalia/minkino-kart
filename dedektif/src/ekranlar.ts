@@ -7,6 +7,7 @@
  * yavrular); dokununca roman açılır ve Mino hikâyeyi bir kez daha okur. Sonraki vaka "Yakında".
  */
 import D from '../../content/dedektif.json';
+import { erisimVarMi } from '../../src/abonelik/kilit';
 import { efekt } from '../../src/audio/ses';
 import { Karakter } from '../../src/karakter/karakter';
 import { Mino } from '../../src/mino/mino';
@@ -100,7 +101,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   // Vaka 2 açıksa bahçenin büyük resimleri şimdiden yüklenmeye başlar (vaka açılınca beklemesin)
   if (acik2) for (const b of ['bahce-ip', 'bahce-yol', 'bahce-golet']) new Image().src = resim(`v2/${b}`) ?? '';
   const once: Partial<Record<VakaId, HTMLElement>> = {};
-  // Vaka 3 henüz yayında değil: yalnız bayrak ya da adres (?vaka3=1) açıksa üçüncü dosya görünür
+  // Vaka 3: bayrak (mantik3.ts → VAKA3_YAYINDA) ya da web'de adres (?vaka3=1) açıksa üçüncü dosya görünür
   const gorunen = KAPAKLAR.filter((k) => k.id !== 'vaka3' || vaka3Gorunur());
   const dosyalar = gorunen.map((k) => {
     const kilitli = (k.id === 'vaka2' && !acik2) || (k.id === 'vaka3' && !vaka3Acik());
@@ -113,6 +114,8 @@ export function acilisEkrani(app: Uygulama): Ekran {
         void konus(k.id === 'vaka3' ? M3.kilitli : M2.kilitli);
         return;
       }
+      // erişim: Dedektif abonelikle (src/engine/erisim.ts → dedektif/<vaka>); kilitliyse kilit anı açılır, vaka açılmaz
+      if (!erisimVarMi(`dedektif/${k.id}`, app.kok)) return;
       ses.vaka();
       app.git(EKRAN[k.id], { adim: 'giris' });
     });
@@ -170,7 +173,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
     kartlar.push(k);
   } else {
     const k = h('button.dd-vaka-kart.dd-bos', { type: 'button', 'data-vaka': 'vaka1', 'aria-label': D.vaka }, h('span.dd-vk-kapak', {}, h('b', {}, '?')), h('span.dd-vk-ad', {}, D.vaka));
-    k.addEventListener('click', () => app.git('vaka', { adim: 'giris' }));
+    k.addEventListener('click', () => erisimVarMi('dedektif/vaka1', app.kok) && app.git('vaka', { adim: 'giris' }));
     kartlar.push(k);
   }
   // Vaka 2: kapakta atkılı yavrular
@@ -197,7 +200,9 @@ export function dosyaEkrani(app: Uygulama): Ekran {
     );
     k.addEventListener('click', () => {
       efekt.dokunma();
-      if (acik) app.git('vaka2', { adim: 'giris' });
+      if (acik) {
+        if (erisimVarMi('dedektif/vaka2', app.kok)) app.git('vaka2', { adim: 'giris' });
+      }
       else {
         oynat(k, 'dd-kilit-salla');
         void konus(M2.kilitli);
@@ -221,7 +226,9 @@ export function dosyaEkrani(app: Uygulama): Ekran {
       const k = h(`button.dd-vaka-kart.dd-bos${acik ? '' : '.dd-kilitli'}`, { type: 'button', 'data-vaka': 'vaka3', 'aria-label': V3.vaka }, h('span.dd-vk-kapak', {}, acik ? h('b', {}, '?') : h('span.dd-kilit', { html: IKON.kilit })), h('span.dd-vk-ad', {}, V3.vaka));
       k.addEventListener('click', () => {
         efekt.dokunma();
-        if (acik) app.git('vaka3', { adim: 'giris' });
+        if (acik) {
+          if (erisimVarMi('dedektif/vaka3', app.kok)) app.git('vaka3', { adim: 'giris' });
+        }
         else {
           oynat(k, 'dd-kilit-salla');
           void konus(M3.kilitli);
@@ -234,7 +241,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
   const el = h('div.dd-dosya-ekran', {}, oda(), h('div.dd-acilis-los'), h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.yazi.dosya)), h('div.dd-ust-sag', {}, sesKucuk())), h('div.dd-vaka-izgara', {}, ...kartlar));
 
   /**
-   * Vaka 3'ün romanı: kareler tarayıcıda kurulan yer tutuculardan (hazirla3; ilk açılışta biraz sürer). Hazır olmadan
+   * Vaka 3'ün romanı: kareler Gemini çizimi (assets/dedektif3/roman-1..4); vakanın tuval bileşimleri (hazirla3) ilk açılışta biraz sürer. Hazır olmadan
    * açılırsa kareler boş kalırdı: o arada kapak "yükleniyor" diye nabız atar, ikinci dokunuş yok sayılır.
    */
   let romanBekliyor = false;
