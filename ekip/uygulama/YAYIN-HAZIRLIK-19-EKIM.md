@@ -16,10 +16,12 @@
 - ✓ **Mağaza metinleri (§4.2 1-9):** Ada'nın Doğum Günü (5. macera), Meyve Suyu Köşesi, Tart Bakalım; Pasta'nın adı "Mino ile Kino'nun Pasta Otobüsü"; "Yenilikler" (5 macera, Dedektif, Giysin); §7 abonelik listesi uygulamadakiyle aynı (Kartlar ücretsiz, "Tüm kart paketleri" çıktı); §8 Pazar satırına ölçme ve renk karışımı; yayımlanmamış kitaba atıf yapan cümle çıktı; ücretsiz olanlar açıkça yazıldı; "Kişisel veri toplanmaz" cümlesi RevenueCat'e göre düzeltildi ("çocuğunuzdan kişisel veri toplanmaz… yalnızca mağazanın satın alma bilgisi işlenir").
 - ✓ **E5 yaş:** metne dokunulmadı; "3-6" ve "3-8"in geçtiği her yer MAGAZA-METINLERI.md'nin başında listelendi. Karar Barış'ın.
 - ✓ **Gizlilik politikası:** Çiz Canlansın "Kartım" paragrafı (TR + EN): kart cihazda yapılır; paylaşma/kaydetme yalnız ebeveyn kapısından sonra, cihazın kendi paylaşım menüsü ya da fotoğraf arşiviyle; hiçbir yere yüklenmez, bize gelmez; iletişim minkinokids@gmail.com. Ebeveyn kapısı maddesine "paylaşma" eklendi, tarih 10 Ekim. Şartlar: kendi çiziminden yapılan kartı kişisel paylaşma izni eklendi, tarih 10 Ekim. İki sayfanın görünen metninde "barisalidogan" yok (birim testi bekçisi: `tests/unit/aile-politikasi.test.ts`).
-- ✓ **Kino'nun Otobüsü uygulama paketinden çıktı** (`vite.config.ts → UYGULAMADA_YOK`, `KINO_OTOBUS_MENUDE` false iken). Web derlemesinde `/kino-otobus/` denemek için duruyor. Menüye açılınca (`uygulama/src/oyunlar.ts → KINO_OTOBUS_MENUDE = true`, tek satır) sayfa pakete kendiliğinden geri girer.
-- ✓ **Dedektif Vaka 3:** uygulama derlemesinde `VAKA3_YAYINDA` false iken `?vaka=3`, `?vaka3=1` ve test kısayolu `ekran=vaka3` yok sayılır, vaka seçimi açılır (`dedektif/src/mantik3.ts → vaka3Gorunur`, `dedektif/src/oyun.ts`). Web'de deneme adresleri çalışmaya devam eder. Testler: `tests/unit/dedektif-vaka3.test.ts`, `tests/e2e/dedektif-uygulama.spec.ts` (UYGULAMA_DIST ile).
+- (tarihçe; 2026-10-10 (2) menüde açıldı) ✓ **Kino'nun Otobüsü uygulama paketinden çıktı** (`vite.config.ts → UYGULAMADA_YOK`, `KINO_OTOBUS_MENUDE` false iken). Web derlemesinde `/kino-otobus/` denemek için duruyor. Menüye açılınca (`uygulama/src/oyunlar.ts → KINO_OTOBUS_MENUDE = true`, tek satır) sayfa pakete kendiliğinden geri girer.
+- (tarihçe; 2026-10-10 (2) VAKA3_YAYINDA = true) ✓ **Dedektif Vaka 3:** uygulama derlemesinde `VAKA3_YAYINDA` false iken `?vaka=3`, `?vaka3=1` ve test kısayolu `ekran=vaka3` yok sayılır, vaka seçimi açılır (`dedektif/src/mantik3.ts → vaka3Gorunur`, `dedektif/src/oyun.ts`). Web'de deneme adresleri çalışmaya devam eder. Testler: `tests/unit/dedektif-vaka3.test.ts`, `tests/e2e/dedektif-uygulama.spec.ts` (UYGULAMA_DIST ile).
 - ✓ **Ekran görüntüsü 01 (ana menü)** yeniden çekildi: Pasta kartında "Mino ile Kino'nun" tabelası var. 4 boyut × TR/EN (`iphone-2796x1290`, `android-1920x1080` yatay; `ipad-2048x2732`, `play-tablet-1440x2560` dikey). 02-07 değişmedi.
 - Denetim: `npm test` (52 dosya), `npm run build`, `npm run build:app`, e2e kabuk + uygulama + aile-politikasi (26), dedektif-uygulama (uygulama derlemesiyle) geçti.
+- ✓ **2026-10-10 (2), yeni içerik yayında:** `KINO_OTOBUS_MENUDE = true` (menüde 9. kart; sayfa uygulama paketine girdi) ve `VAKA3_YAYINDA = true` (Dedektif Vaka 3 "Kaybolan Yıldız Kurabiyeler", Vaka 2 çözülünce açılır). Mağaza metinleri (§3, §4, §5, §7, §8) ve ekran görüntüleri güncellendi: 01 dokuz kartlı menü, 07 Kino'nun Otobüsü (eski Pasta karesi çıktı; gerekçe MAGAZA-METINLERI.md §6). 4 boyut × TR/EN, 56 görsel, boyutları denetlendi. Erişim: Kino'nun Otobüsü Gün 1 ücretsiz, Gün 2-3 ve kalan süsler abonelikle; Vaka 3 abonelikle (`src/engine/erisim.ts`).
+- ✓ **Gizlilik denetimi (yeni içerik):** Kino'nun Otobüsü ve Vaka 3 çevrimdışı ve yalnız yerel: ağ çağrısı (`fetch`, XHR, WebSocket, sendBeacon) yok, mikrofon/kamera/paylaşım yok, yeni bağımlılık yok (package.json aynı). İlerleme yalnız cihazda (`localStorage`: `minkino-kino-otobus-v1`, Vaka 3 için mevcut `minkino-dedektif-v1`). Veri güvenliği / App Privacy formlarında, PrivacyInfo.xcprivacy'de ve gizlilik politikasında değişiklik gerekmez.
 
 **Hâlâ Barış'ın işi (kod değil):**
 1. **Veri formları (E1):** Play Console → Veri güvenliği ve App Store Connect → Uygulama Gizliliği: "Satın alma geçmişi" = toplanıyor, kullanıcı kimliğine bağlı, yalnız uygulama işlevi, takip yok, paylaşılmıyor (bkz. §8 adım 6). PrivacyInfo.xcprivacy de aynısını söylüyor; form ile dosya çelişmemeli.
@@ -27,7 +29,7 @@
 3. **Mağaza sözleşmeleri:** Apple "Paid Apps" + banka/vergi; Google ödeme profili.
 4. **Yaş kararı (E5):** "3-6" mı "3-8" mi; yerleri MAGAZA-METINLERI.md'nin başında.
 5. **Kendi alan adı (§5):** gizlilik/şartlar adresi hâlâ `minkino-site.barisalidogan.workers.dev`; mağaza açıklamasındaki ve formlardaki bağlantılarda bu ad görünüyor. Alan adı alınınca kodcu `src/kabuk/ayar.ts → SITE` ve MAGAZA-METINLERI.md'yi değiştirir.
-6. Metinleri ve yeni 01 görsellerini mağazalara yüklemek (§8 adım 8-9), inceleme notları, Tart Bakalım çizimi gelmezse düğmeyi gizleme kararı (yönetici).
+6. Metinleri ve yeni görselleri (01 dokuz kartlı menü, 07 Kino'nun Otobüsü; 7 görselin hepsi yeniden üretildi, 06 ve 07 başlıkları değişti) mağazalara yüklemek (§8 adım 8-9), inceleme notları, Tart Bakalım çizimi gelmezse düğmeyi gizleme kararı (yönetici).
 
 ---
 
@@ -63,9 +65,9 @@
 
 ## 2. Pakette ne var, kullanıcı ne görüyor?
 
-**Uygulama derlemesi** (`npm run build:app`, `vite.config.ts`): ana menü, kartlar, canlan, macera, pazar, pasta, dedektif, giysin, film sayfaları girer (kino-otobus 2026-10-10'dan beri `KINO_OTOBUS_MENUDE` false iken girmez). Girmeyenler: ses-testi, orman (Uyuyan Orman), eski /uygulama/ yönlendirmesi, gizlilik, şartlar (bunlar web sitesine bağlanır). **Okula Hazırım tamamen yok** (klasör, sayfa, içerik ve kod içinde iz kalmamış; mikrofon metinlerinde de geçmiyor).
+**Uygulama derlemesi** (`npm run build:app`, `vite.config.ts`): ana menü, kartlar, canlan, macera, pazar, pasta, dedektif, giysin, film ve (2026-10-10 (2)'den beri, `KINO_OTOBUS_MENUDE = true`) kino-otobus sayfaları girer. Girmeyenler: ses-testi, orman (Uyuyan Orman), eski /uygulama/ yönlendirmesi, gizlilik, şartlar (bunlar web sitesine bağlanır). **Okula Hazırım tamamen yok** (klasör, sayfa, içerik ve kod içinde iz kalmamış; mikrofon metinlerinde de geçmiyor).
 
-**Ana menü: 8 kart** (`uygulama/src/oyunlar.ts`, `KINO_OTOBUS_MENUDE = false`). Erişim tablosu: `src/engine/erisim.ts`.
+**Ana menü: 9 kart** (`uygulama/src/oyunlar.ts`, `KINO_OTOBUS_MENUDE = true`; 2026-10-10 (2) öncesi 8 kart). Erişim tablosu: `src/engine/erisim.ts`.
 
 | # | Kart | İçinde görünenler | Ücretsiz / Premium |
 |---|---|---|---|
@@ -74,14 +76,16 @@
 | 3 | Çiz Canlansın (rozet "Müzem") | Çizim, Müzem, "Kartım" (paylaş/kaydet, ebeveyn kapılı) | Premium |
 | 4 | Sesli Maceralar (rozet "Yeni: Salıncak") | 5 bölüm: Ada'nın Doğum Günü, Şşş Ege Uyuyor!, Mino Banyo Yapmıyor!, Elektrikler Kesildi!, Salıncak Kimin? | Yalnız **Elektrikler Kesildi!** ücretsiz |
 | 5 | Çizgi Filmler | 6 film (Mino'nun Karpuzu, Mino'nun Sepeti, Kino ve Elma Kulesi, Kino ve Kaydırak, Kino ve Sihirli Söz, Kino ve Oyuncak Sepeti) | Yalnız **Mino'nun Karpuzu** ücretsiz |
-| 6 | Dedektif Mino (rozet "Yeni") | Vaka 1 "Devrilen Lamba", Vaka 2 (Vaka 1 çözülünce açılır). **Vaka 3 gizli** (`VAKA3_YAYINDA = false`) | Premium |
+| 6 | Dedektif Mino (rozet "Yeni") | Vaka 1 "Devrilen Lamba", Vaka 2 (Vaka 1 çözülünce açılır), **Vaka 3 "Kaybolan Yıldız Kurabiyeler"** (Vaka 2 çözülünce açılır; `VAKA3_YAYINDA = true`) | Premium |
 | 7 | Kino Ne Giysin? (rozet "Yeni") | 4 mevsim | Yalnız **Kış** ücretsiz |
-| 8 | Mino ile Kino'nun Pasta Otobüsü (geniş kart; altta "Pasta Otobüsü", üstte "Mino ile Kino'nun" tabelası) | 3 gün | Premium |
+| 8 | Kino'nun Otobüsü (rozet "Yeni") | Dondurma otobüsü, 3 gün (park, plaj, doğum günü), akşam kumbara sayımı, otobüs süs dükkânı | Yalnız **Gün 1** ücretsiz (ilk iki süs dahil) |
+| 9 | Mino ile Kino'nun Pasta Otobüsü (geniş kart; altta "Pasta Otobüsü", üstte "Mino ile Kino'nun" tabelası) | 3 gün | Premium |
 
 Ayrıca menünün köşesindeki ayar düğmesi → ebeveyn kapısı → **Ebeveyn Köşesi**: ayarlar, "Aboneliği yönet", gizlilik ve şartlar bağlantıları, minkinokids@gmail.com, en altta "İnceleme kodu".
 
 **Pakette olup kullanıcının göremedikleri:**
 - ✓ YAPILDI (2026-10-10): sayfa uygulama paketinden çıkarıldı (bayrak false iken). Eski tespit: [ÖNEMLİ] **Kino'nun Otobüsü** sayfası pakette (çizimleriyle birlikte), menüde kartı yok; uygulamada adres çubuğu olmadığı için ulaşılamaz. Zararsız ama paketi büyütüyor ve "gizli özellik" gibi görünebilir. Öneri: açılana kadar `vite.config.ts` → `UYGULAMADA_YOK` listesine `kinoOtobus` eklensin (kodcu, 1 satır). Karar yöneticinin.
+- 2026-10-10 (2): ikisi de artık yayında (yukarıdaki tablo); bu iki madde tarihçe.
 - Dedektif Vaka 3 kodu pakette. ✓ 2026-10-10: uygulama derlemesinde `?vaka=3`, `?vaka3=1` ve `ekran=vaka3` artık yok sayılıyor (yalnız `VAKA3_YAYINDA = true` açar); web'de deneme adresleri çalışır.
 
 ---
@@ -204,7 +208,7 @@ Ayrıca menünün köşesindeki ayar düğmesi → ebeveyn kapısı → **Ebevey
 2. **[ENGEL] E1 / E2** (yukarıda).
 3. **[ÖNEMLİ] Google üretim erişimi**: kapalı test 12+ kişiyle **kesintisiz 14 gün** tamamlanmadan "Üretime erişim için başvur" düğmesi açılmaz; başvurunun incelenmesi de birkaç gün (en çok ~7 gün) sürebilir. 19 Ekim hedefi buna bağlı: Play Console → Kontrol paneli'ndeki sayaç kontrol edilsin; gün dolduğu gün başvurulsun. Test sırasında kişi sayısı 12'nin altına düşmemeli.
 4. **[ÖNEMLİ] Tart Bakalım**: çürük domates ve kompost **yer tutucu çizim** (lekeler + sinek). Gemini Ek B (ekip/gemini/IS-LISTESI-YENI.md) gelmeden yayına giderse "kusursuz görsel" kuralına aykırı. Seçenek: çizim 17 Ekim'e kadar gelmezse Tart Bakalım düğmesi bu sürümde gizlensin (yönetici kararı).
-5. ✓ YAPILDI (2026-10-10): Kino'nun Otobüsü uygulama paketinde yok; menüde açılmıyor. Açılacağı gün tek satır: `KINO_OTOBUS_MENUDE = true`.
+5. ✓ YAPILDI (2026-10-10): Kino'nun Otobüsü uygulama paketinde yok; menüde açılmıyor. Açılacağı gün tek satır: `KINO_OTOBUS_MENUDE = true`. **2026-10-10 (2): açıldı (bayrak true), sayfa pakette ve menüde.**
 6. **[ÖNEMLİ] Gerçek cihaz turu** (YAYIN-ADIMLARI §6): iPhone + Android telefon + iPad'de mikrofon (Sesli Maceralar), film yatay kilidi, arka plana alıp dönme, uçak modunda açılış, sandbox/lisans testi satın alma, geri yükleme, gizlilik bağlantısının tarayıcıda açılması, "Kartım" paylaşımı (iOS) ve Android'deki "ekran görüntüsü" ipucu.
 7. **[ÖNEMLİ] Seslendirme**: her yeni sürümde önce "Yayınla" iş akışı (eksik cümleler), sonra Android derlemesi; derleme özetinde "Seslendirme denetimi" 0 olmalı. Tart Bakalım ve Pasta'nın yeni cümleleri bu yoldan geçmeli.
 8. [KÜÇÜK] AndroidManifest'te AD_ID satırı iki kez.
