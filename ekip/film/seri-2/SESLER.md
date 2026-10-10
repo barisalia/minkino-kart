@@ -93,6 +93,27 @@ Uygulamadaki Mino sesi kullanılır; çocuk onu o sesten tanır.
 
 Örnek: *[excited] Vak vak! Kim en hızlı? [laughs] Tabii ki ben!*
 
+## Genel kullanım komik karakter: Bıdık (keçi yavrusu)
+
+Bütün oyunlarda ve filmlerde kullanılacak sakar, tuhaf sesli komik karakter. Ağzındaki sözün ortasına "meee" kaçırır, hıçkırır, kendi şakasına güler.
+
+> Very funny, weird and goofy cartoon character voice, a clumsy baby goat, native Turkish speaker. Nasal, wobbly, squeaky-raspy voice that cracks unexpectedly, random hiccups, accidentally bleats "meee" in the middle of words, laughs at his own jokes with a silly snort. Unpredictable rhythm, big comic energy, like a classic cartoon sidekick. Still clear enough for kids to understand. Clean studio recording.
+
+Örnek: *[excited] Merhabaaa! Ben Bıdık! [hiccups] Hıp! Pardon… [laughs] Bugün çok güzel bir gün, meeeerhaba diyorum herkese! [snorts] Hihihi!*
+
+Genel replikler (her oyunda kullanılır):
+| Dosya | Metin |
+|---|---|
+| bidik-selam | [excited] Merhabaaa! Ben Bıdık! [hiccups] Hıp! |
+| bidik-oha | [gasps] Ohaaa! Bu ne güzel böyle?! |
+| bidik-eyvah | [surprised] Eyvah eyvah eyvah! [hiccups] Hıp! |
+| bidik-aferin | [excited] Süpeeer! Meeeeh-şallah! [laughs] |
+| bidik-tekrar | [chuckles] Olmadı mı? Hiç dert değil, bir daha! |
+| bidik-dusun | [curious] Hımmm… Hımmmmm… [hiccups] Hıp! Unuttum. |
+| bidik-dustu | [gasps] Aaa! [laughs harder] Ben yine düştüm! |
+| bidik-gule | [whispers] Bir sır vereyim mi? [snorts] Hihihi, söylemem! |
+| bidik-hosca | [happy] Hoşça kaaal! Meeee! [giggles] |
+
 ## Tek bölümlük yan karakterler
 
 | Karakter | İstem | Örnek |
