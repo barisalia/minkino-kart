@@ -158,11 +158,12 @@ export function menuOyunlari(uygulama: boolean): OyunKarti[] {
 }
 
 /**
- * Kino'nun Otobüsü (dondurma): Gün 1'in bütün çizimleri Gemini'den (bölüm A); Gün 2-3'ün tatları, sosları ve süsleri
- * (bölüm D) bekleniyor. Menüde görünmesi için true yapılır: kartın zemini kapak görseli (assets/kino-otobus/kapak.webp),
- * menü 9 kart ızgarasına geçer (uygulama.css → data-adet='9'; testler bayrağa göre 8 ya da 9 kart bekler).
+ * Kino'nun Otobüsü (dondurma): Gün 1-3'ün bütün çizimleri Gemini'den (bölüm A ve D; varliklar.ts → yerTutucular() boş).
+ * true: menüde görünür (kartın zemini kapak görseli, assets/kino-otobus/kapak.webp), menü 9 kart ızgarasına geçer
+ * (uygulama.css → data-adet='9'; testler bayrağa göre 8 ya da 9 kart bekler) ve sayfa uygulama derlemesine girer
+ * (vite.config.ts → UYGULAMADA_YOK bu bayrağa bağlı).
  */
-export const KINO_OTOBUS_MENUDE = false;
+export const KINO_OTOBUS_MENUDE = true;
 export const KINO_OTOBUS_KARTI: OyunKarti = {
   id: 'kino-otobus',
   ad: 'Kino’nun Otobüsü',
