@@ -1,0 +1,143 @@
+/* Oyunlu çizgi film deneme sayfası (oyunlu/kinonun-bir-gunu.html). Kök sınıf .oy-kok */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #2a1a12;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.oy-kok {
+  position: fixed;
+  inset: 0;
+  font-family: Fredoka, system-ui, sans-serif;
+  color: #fff;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.oy-kok .oy-tuval {
+  position: absolute;
+  inset: 0;
+  display: block;
+  touch-action: none;
+}
+.oy-kok .oy-kapak,
+.oy-kok .oy-son {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 2vh, 16px);
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: radial-gradient(ellipse at 50% 40%, #ffe7b8 0%, #f6c27a 45%, #c97f45 100%);
+  color: #401312;
+  text-align: center;
+}
+.oy-kok .oy-son {
+  background: rgba(42, 26, 18, 0.72);
+  color: #fff;
+}
+.oy-kok .oy-kapak-ust {
+  font-weight: 600;
+  font-size: clamp(14px, 3.2vmin, 22px);
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+.oy-kok .oy-kapak-baslik {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(30px, 9vmin, 64px);
+  line-height: 1.05;
+  color: #fff;
+  -webkit-text-stroke: 0.08em #401312;
+  paint-order: stroke fill;
+}
+.oy-kok .oy-kapak-alt {
+  font-size: clamp(12px, 2.8vmin, 17px);
+  opacity: 0.8;
+}
+.oy-kok .oy-oynat {
+  width: clamp(72px, 20vmin, 110px);
+  height: clamp(72px, 20vmin, 110px);
+  border-radius: 50%;
+  border: 5px solid #401312;
+  background: #ff8a2b;
+  box-shadow: 0 6px 0 #401312;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.oy-kok .oy-oynat:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #401312;
+}
+.oy-kok .oy-ucgen {
+  width: 0;
+  height: 0;
+  margin-left: 12%;
+  border-style: solid;
+  border-width: 1.1em 0 1.1em 1.8em;
+  border-color: transparent transparent transparent #fff;
+  font-size: clamp(14px, 3.8vmin, 20px);
+}
+.oy-kok .oy-yaslar {
+  display: flex;
+  gap: 10px;
+}
+.oy-kok .oy-yas,
+.oy-kok .oy-dugme {
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 24px;
+  border: 3px solid #401312;
+  background: #fff4dd;
+  color: #401312;
+  font: 600 clamp(14px, 3.2vmin, 18px) Fredoka, system-ui, sans-serif;
+  cursor: pointer;
+}
+.oy-kok .oy-yas.secili {
+  background: #7cc35b;
+  color: #fff;
+}
+.oy-kok .oy-son-baslik {
+  font-weight: 700;
+  font-size: clamp(24px, 7vmin, 44px);
+}
+.oy-kok .oy-son-alt {
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+/* ebeveyn için küçük, soluk duraklat düğmesi (OYUNLU-FORMAT §2) */
+.oy-kok .oy-duraklat {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(40, 24, 16, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  opacity: 0.55;
+  cursor: pointer;
+}
+.oy-kok .oy-duraklat i {
+  display: block;
+  width: 5px;
+  height: 16px;
+  border-radius: 2px;
+  background: #fff;
+}
+.oy-kok.oy-durakli .oy-duraklat {
+  opacity: 1;
+  background: rgba(40, 24, 16, 0.6);
+}
+.oy-kok.oy-durakli .oy-tuval {
+  filter: brightness(0.75);
+}

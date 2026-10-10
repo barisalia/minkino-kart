@@ -133,8 +133,13 @@ export class Kukla {
     for (const ad of Object.keys(pr)) hesap(ad);
   }
 
-  /** Kuklayı çizer. taban: kare koordinatından canvas pikseline dönüşüm (konum, ölçek, DPR) */
-  ciz(ctx: CanvasRenderingContext2D, taban: Matris) {
+  /**
+   * Kuklayı çizer. taban: kare koordinatından canvas pikseline dönüşüm (konum, ölçek, DPR).
+   * secim (isteğe bağlı): yalnız ya da hariç tutulacak çizim adımları (parça, küme ya da yuva adı). Ör. kucaktaki
+   * çocuk için önce kol kümesi hariç beden, sonra çocuk, sonra yalnız kol kümesi (kol çocuğun önünden sarar).
+   */
+  ciz(ctx: CanvasRenderingContext2D, taban: Matris, secim?: { yalniz?: string[]; haric?: string[] }) {
+    if (secim) return this.secerekCiz(ctx, taban, secim);
     this.hesapla();
     ctx.save();
     ctx.imageSmoothingEnabled = true;
@@ -160,6 +165,28 @@ export class Kukla {
       }
     }
     ctx.restore();
+  }
+
+  private secerekCiz(ctx: CanvasRenderingContext2D, taban: Matris, secim: { yalniz?: string[]; haric?: string[] }) {
+    const ad = (c: KuklaCizim) => (typeof c === 'string' ? c : 'yuva' in c ? c.yuva : c.kume);
+    const asil = this.iskelet.cizim;
+    const yalniz = secim.yalniz && new Set(secim.yalniz), haric = secim.haric && new Set(secim.haric);
+    const sec: KuklaCizim[] = [];
+    for (const c of asil) {
+      if (typeof c !== 'string' && 'kume' in c) {
+        // kümenin içinden parça seçilebilir (ör. yalnız ön kol ve el: kucaktaki çocuğun önünden sarar)
+        const tum = (!yalniz || yalniz.has(c.kume)) && !haric?.has(c.kume);
+        const parcalar = c.parcalar.filter((p) => (tum || yalniz?.has(p)) && !haric?.has(p));
+        if (parcalar.length) sec.push({ kume: c.kume, parcalar });
+      } else if ((!yalniz || yalniz.has(ad(c))) && !haric?.has(ad(c))) sec.push(c);
+    }
+    // geçici çizim sırası (iskelet paylaşılan nesne olabilir: hemen geri konur)
+    (this.iskelet as { cizim: KuklaCizim[] }).cizim = sec;
+    try {
+      this.ciz(ctx, taban);
+    } finally {
+      (this.iskelet as { cizim: KuklaCizim[] }).cizim = asil;
+    }
   }
 }
 
