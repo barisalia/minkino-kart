@@ -47,13 +47,13 @@
 | **Mino** (komşu) | 5 | 1.30 | ~2.6 | Kino'dan bir tık kısa; sivri kulaklarla eşit görünür |
 | **Anne** | yetişkin | 2.16 | ~3.7 | Kino × 1.60 |
 | **Baba** | yetişkin | 2.36 | ~3.7 | Kino × 1.75, göbekli |
-| **Babaanne** | yaşlı | 2.05 | ~3.4 | Kino × 1.52 (öneri, kit yok): Anne'den biraz kısa, tombul |
-| **Dede** | yaşlı | 2.20 | ~3.5 | Kino × 1.63 (öneri, kit yok): hafif kambur |
 | **Bıdık** (§2.7) | 5 | 1.25 | ~2.3 | öneri, kit yok; boynuz tomurcukları hariç. Mino'dan bir tık kısa |
 | **Bıdıcık** (§2.7) | ~1,5 | 0.80 | ~1.9 | öneri, kit yok; Lokum'dan küçük |
 | **Tombi** (§2.7) | 6 | 1.45 | ~2.4 | öneri, kit yok; arkadaşların en irisi, tombul |
 | **Bulut** (§2.7) | 5 | 1.25 | ~2.4 | öneri, kit yok; yün kabarıklığı dahil |
 | **Zıpzıp** (§2.7) | 5 | 1.25 | ~2.5 | öneri, kit yok; dik kulaklar hariç |
+| **Babaanne** | yaşlı | 2.05 | ~3.4 | Kino × 1.52 (kit: assets/karakter/babaanne): Anne'den biraz kısa, tombul |
+| **Dede** | yaşlı | 2.20 | ~3.5 | Kino × 1.63 (kit: assets/karakter/dede): hafif kambur |
 
 Tablo tek yerdir. Rig ve sahne kurucu bu oranlarla ölçekler. Yan karakterlerin satırları yalnız öneridir; kitleri gelince makine tablosuna eklenir. **Kukla kitlerinin makine tablosu:** [assets/karakter/aile-boy.json](../../../assets/karakter/aile-boy.json) (Kino = 1; kitler Kino C ile aynı birimde çizilir, aynı ölçekle basılınca bu boylar çıkar; tests/unit/kukla-aile.test.ts denetler). 2026-10-10: Anne ve Baba yetişkin oranına çekildi (eski Kino × 1.37 / 1.48 "uzun çocuk" gibi duruyordu).
 
