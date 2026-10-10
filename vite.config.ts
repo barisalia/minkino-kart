@@ -22,6 +22,8 @@ const SAYFALAR = {
   dedektif: 'dedektif/index.html',
   giysin: 'giysin/index.html',
   film: 'film/index.html',
+  // Oyunlu çizgi film (Kino ve Ailesi) deneme sayfası: yalnız web'de, menüde yok; Barış onaylayınca uygulamaya girer
+  oyunlu: 'oyunlu/kinonun-bir-gunu.html',
   uygulama: 'uygulama/index.html',
   gizlilik: 'gizlilik/index.html',
   sartlar: 'sartlar/index.html',
@@ -36,7 +38,7 @@ const SAYFALAR = {
  *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus'])];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 
