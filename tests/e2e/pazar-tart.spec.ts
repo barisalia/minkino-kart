@@ -153,7 +153,8 @@ test('Tart Bakalım: çürük domates — verilirse müşteri geri verir, kompos
   const ist = await istek(page);
   expect(ist.kasa.filter((k) => k.curuk)).toHaveLength(1);
   const curuk = page.locator('.tb-urun[data-curuk="1"]');
-  await expect(curuk.locator('.tb-leke')).toBeAttached();
+  // çürüğün kendi çizimi (assets/pazar/domates-curuk, Gemini) ya da yer tutucu lekeler
+  await expect(curuk.locator('img[src*="domates-curuk"], .tb-leke').first()).toBeAttached();
   await expect(curuk.locator('.tb-sinek')).toBeAttached();
   // çürük ve istenen kadar sağlam leğene
   await surukle(page, curuk, legen(page));
