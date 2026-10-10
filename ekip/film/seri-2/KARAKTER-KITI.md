@@ -371,3 +371,80 @@ Bölüm 1'in P1-P10 pozları ve F1-F2 albüm fotoğrafları ([bolum-01.md](bolum
 - [ ] Parça sayfasında her parça kapalı ve tam; eklem uçları daire.
 - [ ] Ağız sayfasında muzzle ve burun dokuz karede aynı yerde, aynı boyda.
 - [ ] Dosya `ekip/film/seri-2/kit/<kod>.svg` olarak kaydedildi; harcanan kredi ve kalan bakiye ORTAK_NOTLAR'a yazıldı.
+
+---
+
+## 8. Ek: Oyunlu Bölüm 1 "Kino'nun Bir Günü" için çizim listesi
+
+> 2026-10-10 · [OYUNLU-FORMAT.md](OYUNLU-FORMAT.md) · [oyunlu-bolum-01.md](oyunlu-bolum-01.md). Kit (§5) dışında bölümün istediği her şey burada. **Kredi harcamadan önce toplam Barış'a söylenir ve onay alınır** (§0 kuralı). Hepsi §3 `STYLE` bloğuyla, aynı çizgi ve renk diliyle çizilir.
+> **Durum işaretleri:**
+> - ✓ var, yeniden kullanılır (yanına kit karakteriyle bir deneme kare konur; çizgi rengi ya da gölge tutmazsa aynı kompozisyon yeniden çizilir);
+> - ⇄ Bölüm 1 ile ortak (zaten gerekiyor, bir kez yapılır);
+> - ✗ yeni.
+
+### 8.1 Kit ekleri: kostüm sayfaları (2 görsel)
+
+Aynı dönme noktalarına oturur. Rig yalnız katmanı değiştirir.
+
+| Kod | Ne | Nerede | Not |
+|---|---|---|---|
+| **K8** ✗ | **Kino pijama parça sayfası**: pijama gövdesi (kalça dahil), üst kol ×2, alt kol ×2, uyluk ×2, baldır ×2; krem zemin, küçük yeşil yıldızlar; yalınayak beyaz ayak ×2 | S1, S3 | Mavi yok (seri kuralı). K2 düzeninde, yuvarlak eklemlerle. |
+| **K9** ✗ | **Banyo gövdesi sayfası (Kino + Lokum)**: kıyafetsiz beyaz üst gövde ve omuzlar; Kino'nun sırt eyer lekesi, Lokum'un tombul gövdesi; kollar kitteki beyaz alt kollarla birleşir; ıslak kulak ×2 (Kino, düz ve damlalı) | S7, Oyun 5 | Küvette yalnız bel üstü görünür; alt gövde çizilmez. |
+
+### 8.2 Arka planlar: 2 yeni, 2 ortak, 2 yeniden kullanım
+
+| Kod | Yer | Durum | Not |
+|---|---|---|---|
+| M0 | Çınar Apartmanı cephesi | ⇄ | **Ek katman ✗: kapı önü taş basamaklar yakın planı** (Oyun 3 arkası, önceden yumuşatılmış). Yeni bir arka plan değil, cephenin yakın katmanı. |
+| M1 | Çocuk odası, sabah + gece ışığı | ⇄ | Komodin üstü boş (taş ve gece lambası eşya olarak konur). |
+| **M3** | **Banyo**: lavabo + ayna (sol uç), küvet (sağ uç), karolu duvar, küçük pencere; sabah ve akşam ışığı | ✗ | Bölüm 2 "Banyo Yok!" de kullanır. Ayna **içi boş** çizilir (Oyun 1'de kamera aynadan bakar). Küvet arka ve ön kenar ayrı katman. Eski `assets/banyo/arkaplan` Mino Banyo'nundur, yalnız düzen örneği. |
+| **M4** | **Babaanne'nin bahçesi**: limon ağacı, uzun kahvaltı masası (örtülü), 6 sandalye, fesleğen-domates tarhı, apartmanın arka duvarı | ✗ | Dizinin daimi seti. Masa önden; altı kişi masanın arkasında yüzü bize dönük oturur. |
+| M5 | Sokak (parka yol) | ✓ `assets/film/sokak` | Stil denemesi şart. |
+| M6 | Park | ✓ `assets/film/park` (+ `esya/kaydirak`, `salincak`, `kum-havuzu`, `bank`) | Seri kitabı "uyarlanabilir" diyor. Küçük kaydırak = `esya/kaydirak` küçültülmüş; büyük kaydırak park katmanındaki. |
+
+### 8.3 Bölüme özel pozlar (Gemini + Adobe, §6 yolu; Recraft'la yapılırsa her biri ~12 kredi)
+
+| Kod | Poz | Durum |
+|---|---|---|
+| OP1 | Lokum karyolada ayakta, iki eliyle parmaklıkları tutmuş, zıplıyor | ✗ |
+| OP2 | Kino'nun başı pijamanın içinde sıkışmış, kollar havada, kulak uçları yakadan çıkmaya çalışıyor (pijama + Kino bir arada) | ✗ |
+| OP3 | Baba masada oturarak uyuyor, başı göğsüne düşmüş, fırıncı önlüklü | ✗ |
+| OP4 | Kino basamakta oturmuş, ayakkabısına eğilmiş (yan) | ✗ |
+| OP5 | Kino diz çökmüş, Lokum'a eğilmiş (yan) | ✗ |
+| OP6 | Kino ile Lokum yerde sarılıyor | ✗ |
+| OP7 | Lokum mama sandalyesinde oturuyor | ✗ |
+| OP8 | Babaanne bankta oturuyor, eli hırka cebinde | ✗ |
+| OP9 | Baba kapüşonlu havlulara sarılı iki çocuğu birden kucaklamış | ✗ |
+| OP10 | Kino köpükte sırtüstü yüzüyor, kulakları suda iki yana yayılmış | ✗ |
+| OP11 | **Tepeden:** Lokum'un başı tabağın üst kenarından bakıyor (gözler, burun ucu, iki kulak) | ✗ |
+| P5, P9, P10 | Lokum yerde ağlıyor · yatakta Kino (+ Anne) · Lokum karyolada uyuyor | ⇄ Bölüm 1 |
+
+### 8.4 Eşyalar (şeffaf; oyun eşyaları ★, en küçük boy telefonda 72 px)
+
+Eşyalar **sayfa sayfa** üretilir (bir görselde 4-8 eşya, aralarında boşluk; Adobe ayırır). Kredi görsel başına (~12), eşya başına değil.
+
+| Sayfa | Eşyalar | Durum |
+|---|---|---|
+| **E1 · Lavabo** ✗ | ★ kum saati (cam, ahşap kapaklı; kum ayrı katman), Kino'nun yeşil diş fırçası, Lokum'un minik pembe fırçası, macun tüpü (sıkılmış ve düz), diş bardağı, ★ köpük topu (beyaz kabarcık kümesi, 3 boy) | ✗ |
+| **E2 · Kahvaltı** ✗ | simit sepeti (fırın sepeti), ★ simit, ★ büyük beyaz tabak (tepeden), ★ 5 küçük kâse (tepeden, boş), ★ zeytin, ★ domates dilimi, ★ peynir üçgeni, ★ salatalık dilimi, ★ kızarmış ekmek üçgeni, pişi tepsisi, ince belli çay bardağı + tabağı, **masa örtüsü üstten (oyun zemini)** | ✗ (çaydanlık ⇄ Bölüm 1) |
+| **E3 · Ayakkabı** ✗ | ★ **Kino'nun sağ spor ayakkabısı yakın plan** (önden 3/4, iri; bağcık delikleri net, bağcık YOK: bağcıklar ip fiziğiyle kodla çizilir), ★ bağcık uçları (plastik uç, 2), ★ hazır fiyonk (son kare için) | ✗ |
+| **E4 · Park ve bant** ✗ | Lokum'un puseti, ★ teneke yara bandı kutusu (açık ve kapalı), ★ 3 yara bandı (sarı yıldızlı, kırmızı kalpli, krem kuzulu; her biri kâğıtlı ve kâğıtsız), ★ kâğıt sekmesi, ★ parlak çakıl taşı | ✗ |
+| **E5 · Küvet deneyi** ✗ | ★ sünger, ★ plastik top (kırmızı-beyaz), ★ pembe sabun kalıbı, ★ iki tahmin minderi ("yüzer": dalgada ördek resmi; "batar": dipte taş resmi), 2 kapüşonlu havlu (yeşil: Kino, pembe: Lokum) | ✗ |
+| **E6 · Yatak** ✗ | masal kitabı *Küçük Kuzu* (kapalı + açık çift sayfa), yerdeki terlikler (Kino) | ✗ |
+| Ortak / var | Kuzu, ay biçimli gece lambası, yorgan, çaydanlık | ⇄ Bölüm 1 |
+| Ortak / var | lastik ördek `assets/banyo/ordek`, köpük `assets/banyo/kopuk`, mama sandalyesi `assets/film/esya/mama-sandalyesi`, basamak taburesi `assets/banyo/tabure`, çamaşır sepeti `assets/banyo/sepet` | ✓ (stil denemesiyle) |
+
+**Kodla çizilenler (çizim istemez):** macun kıvrımı, köpük kabarcıkları, kum akışı, bağcıklar (ip fiziği; beyaz şerit + koyu kahve kontur), su yüzeyi, halkalar, sıçrama ve kabarcıklar, parıltılar, gözyaşları.
+
+### 8.5 Toplam
+
+| | Görsel | Kredi (Recraft vektör, ~12) | +%30 pay |
+|---|---|---|---|
+| Kit ekleri (K8, K9) | 2 | 24 | 31 |
+| Yeni arka plan (M3, M4) + M0 basamak katmanı | 3 | 36 | 47 |
+| Eşya sayfaları (E1-E6) | 6 | 72 | 94 |
+| **Toplam Recraft** | **11** | **132** | **~170** |
+| Pozlar OP1-OP11 | 11 | Gemini (ücretsiz) + Adobe temizlik | (Recraft'la: +~170) |
+
+- **Sıra:** Önce M4 bahçe ile E2 kahvaltı sayfası (en çok görünen ve en Türk sahne). Kino kiti (Faz 1) onaylanmadan bu liste başlamaz.
+- Yeniden kullanılanlar (✓) için önce kit karakteriyle **bir deneme kare** yapılır. Tutmazsa Barış'a "yeniden çizelim mi?" diye toplam kredisiyle sorulur.
