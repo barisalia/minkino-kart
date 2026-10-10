@@ -164,9 +164,28 @@
 .ko-kok .ko-mz-on {
   background-position: center bottom;
 }
-/* doğum günü bahçesi (D19, tek görsel, kareye yakın): geniş pencerede flama, balonlar ve çit görünsün */
+/*
+ * doğum günü bahçesi (pencere-dogumgunu v2: çerçevesiz 16:9 bahçe partisi; flama üstte %0-30, balonlar %22-40, çit
+ * %37-57). Pencere 16:9'dan genişse görsel tepeden hizalanır: perdenin altında flama, balonlar ve çitin tamamı kalır;
+ * daha darsa (tablet penceresi, dikey ekran) boyu sığar, yanlardan kırpılır: o zaman sola kayar ki ağaçtan sarkan
+ * sol flama, sol ve orta balonlar ve çit birlikte kalsın (ortalanınca iki flama da köşelerde kesiliyordu).
+ */
+.ko-kok .ko-manzara[data-yer='dogumgunu'] {
+  container-type: size;
+}
 .ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
-  background-position: center 22%;
+  background-position: center 0%;
+}
+@container (max-aspect-ratio: 3/2) {
+  .ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
+    background-position: 18% 0%;
+  }
+}
+/* çok dar (dikey telefonda tam ekran akşam): orta balon demeti de girsin */
+@container (max-aspect-ratio: 2/3) {
+  .ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
+    background-position: 27% 0%;
+  }
 }
 .ko-kok .ko-mz-balonlar i {
   position: absolute;

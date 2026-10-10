@@ -62,6 +62,12 @@ export const YUVA = {
   teker: ['teker'],
   /** tekerleğin dönmeyen ışık katmanı (parlama + gölge; aynı kare tuval), tekerleğin üstünde durur */
   tekerIsik: ['teker-isik'],
+  /**
+   * Kino'nun pastacı önlüğü (krem, pembe cepli, kurabiyeli) ve şapkası (beyaz, açık mavi şeritli; Mino'nunkiyle aynı
+   * aile). Kino iskeletinin gövde / kafa grubuna bağlanır: gun.ts → KINO_GIYSI_YERI. Yoksa Kino giysisiz.
+   */
+  kinoOnluk: ['kino-onluk'],
+  kinoSapka: ['kino-sapka'],
   kasa: ['kasa', 'kasa-pembe'],
   kumbara: ['kumbara', 'kumbara-otobus', 'kumbara-kavanoz'],
   jeton: ['jeton'],

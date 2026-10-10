@@ -19,11 +19,14 @@ const G = gi >= 0 ? process.argv.splice(gi, 2)[1] : 'ekip/gemini/yeni/kino-otobu
 const ATLA = [];   // bilerek elle düzeltilen dosyalar buraya (betik yeniden üretmesin)
 const ARKA = ['ic-arka', 'pencere-dogumgunu', 'kapak'];
 /** çıktının uzun kenarı (px): ekranda en büyük hâli × DPR 3 */
-const EN = { otobus: 1920, 'tezgah-on': 2800, dolap: 2000, 'ic-arka': 3072, 'pencere-dogumgunu': 2048, kapak: 2400, 'sus-flama': 1600, 'sus-ampul': 2400, 'sus-kemik-tabela': 1280, 'kino-onluk': 1280, 'kino-sapka': 1280 };
+const EN = { otobus: 1920, 'tezgah-on': 2800, dolap: 2000, 'ic-arka': 3072, 'pencere-dogumgunu': 2752, kapak: 2400, 'sus-flama': 1600, 'sus-ampul': 2400, 'sus-kemik-tabela': 1280, 'kino-onluk': 1280, 'kino-sapka': 1280 };
 const VARSAYILAN_EN = 1024;
 /**
  * Zemin kalan görsellerde kırpma (oran: tuvalin eni/boyu). pencere-dogumgunu: Gemini kendi pencere çerçevesini ve
  * çubuklu yan camları da çizdi; oyunun kendi çerçevesi (ic-arka) olduğu için yalnız orta camın içindeki bahçe alınır.
+ * Kırpma yalnız ilk çizime (v1) uygulanır: pencere-dogumgunu-v2 çerçevesiz, kenardan kenara bahçe partisi (16:9, ortası
+ * açık); tamamı alınır ve hem gün içi penceresinde hem tam ekran akşam sahnesinde kullanılır (uzun kenar 2752: DPR 3
+ * telefonda tam ekran net).
  */
 const KIRP = { 'pencere-dogumgunu': { sol: 0.2762, ust: 0.1107, en: 0.4506, boy: 0.7585 } };
 /** gemini-esya ayarları (dosya başına) */
@@ -143,7 +146,7 @@ async function icCerceve() {
   // 2) arka planlar (zemin kalır)
   for (const ad of tum.filter((a) => ARKA.includes(a) && !(a === 'ic-arka' && kaynak.get(a).n > 1))) {
     let img = s(path.join(GI, ad + '.png')).removeAlpha(), m = await img.metadata();
-    const k = KIRP[ad];
+    const k = kaynak.get(ad).n > 1 ? null : KIRP[ad];
     if (k) {
       const kutu = { left: Math.round(k.sol * m.width), top: Math.round(k.ust * m.height), width: Math.round(k.en * m.width), height: Math.round(k.boy * m.height) };
       img = s(await img.extract(kutu).png().toBuffer());
