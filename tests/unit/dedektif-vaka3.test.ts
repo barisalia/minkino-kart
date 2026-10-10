@@ -8,6 +8,8 @@ import {
   B3,
   BOS_YERLER,
   F3,
+  FINAL_KURABIYELER,
+  FINDIK_YERI,
   halka3,
   halka3Adimi,
   HALKALAR3,
@@ -173,6 +175,10 @@ describe('Vaka 3: sayma, iz, kovuk', () => {
   });
   it('final: Fındık\'a iki kurabiye; roman 4 kare; dosya beş göz', () => {
     expect(VERILECEK).toBe(2);
+    // dört kurabiye soldan sağa, sağdaki de Fındık'ın önünde değil solunda (arkasında yarım kalmaz)
+    const xs = FINAL_KURABIYELER.map(([x]) => x);
+    expect([...xs].sort((a, b) => a - b)).toEqual(xs);
+    expect(FINDIK_YERI.x - xs[xs.length - 1]).toBeGreaterThanOrEqual(0.085);
     expect(ROMAN3.map((r) => r.sira)).toEqual([1, 2, 3, 4]);
     const d = Dosya.adimdan('kim', ADIMLAR3, HALKALAR3);
     expect(d.gozler.map((g) => g.demek)).toEqual([true, true, true, false, false]);

@@ -626,7 +626,8 @@
   border: 3px solid var(--kontur);
   border-radius: 18px;
   box-shadow: 0 4px 0 rgba(90, 54, 23, 0.3);
-  font-size: clamp(15px, 1.6vmin + 9px, 23px);
+  /* en küçük telefonda da okunur (667×375: 16 px) */
+  font-size: clamp(16px, 1.6vmin + 10px, 23px);
   line-height: 1.2;
   text-align: center;
   color: var(--kontur);
@@ -1913,8 +1914,9 @@
     opacity: 0.75;
   }
 }
+/* "Yakında": soluk ama saydam değil (arkadaki raf içinden görünüp kart yarım kalmış gibi durmasın) */
 .dd-kok .dd-yakinda {
-  opacity: 0.62;
+  filter: saturate(0.35) brightness(1.04);
   cursor: default;
 }
 .dd-kok .dd-vk-yakinda {

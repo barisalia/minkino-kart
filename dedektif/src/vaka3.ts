@@ -763,6 +763,10 @@ class Vaka3 {
     const hk = halka3('cikis');
     this.s.aktif('cikis');
     oy.yerlesim('iki');
+    // Halka 1'in tepsisi bu halkada iş görmez: kamera onu ekranın kenarında yarım bırakırsa söner (tepsiDenetle)
+    this.tepsiIzle = true;
+    // kamera her kaydığında bildirmez (yerleşim değişince de oynar): halka boyunca ara ara bakılır
+    const tepsiDur = this.aralik(() => this.tepsiDenetle(), 400);
     await this.odaya(this.ic, this.kd(hk.kadraj, 0.55, 0.14));
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
@@ -772,6 +776,28 @@ class Vaka3 {
     await this.kartSorusu(hk, cikisYanlis(this.ortak), () => cikisDogru(this.ortak));
     if (this.kapali) return;
     await this.kinoPencere();
+    tepsiDur();
+    this.tepsiIzle = false;
+    this.tepsiDenetle(true);
+  }
+
+  /** Halka 2'de tepsi (kurabiyeler, un halkaları, sayaç): ekrana bütünüyle sığmıyorsa yumuşakça söner, sığınca görünür */
+  private tepsiIzle = false;
+  private tepsiOnceki: boolean | null = null;
+  /** Ara ara bakılır; iki ardışık ölçüm aynıysa uygulanır (kamera kayarken titremesin). hemen: tek ölçüm yeter */
+  private tepsiDenetle(hemen = false) {
+    if (this.kapali || !this.ic) return;
+    const sahne = this.ic.el;
+    if (!this.tepsiIzle || this.dunya.oda !== this.ic) {
+      sahne.classList.remove('dd-v3-tepsi-sakli');
+      this.tepsiOnceki = null;
+      return;
+    }
+    const r = this.ic.e.tepsi.getBoundingClientRect();
+    const k = this.el.getBoundingClientRect();
+    const tasar = r.left < k.left - 1 || r.right > k.right + 1 || r.top < k.top - 1 || r.bottom > k.bottom + 1;
+    if (hemen || tasar === this.tepsiOnceki) sahne.classList.toggle('dd-v3-tepsi-sakli', tasar);
+    this.tepsiOnceki = tasar;
   }
 
   /** Kino rahatlar: kafasını pencerenin aralığına sokmaya çalışır, kulağı takılır, güler */
@@ -1247,8 +1273,8 @@ class Vaka3 {
     oy.kinoIfade('heyecan', 1400);
     await oy.soyle(K3.tabii, 'kino');
     if (this.kapali) return;
-    // 5) iki kurabiyeyi Fındık'ın patisine sürükle
-    await this.kurabiyeVer(kurabiyeler.slice(0, VERILECEK));
+    // 5) dört kurabiyeden ikisini (hangisi olursa) Fındık'ın patisine sürükle
+    await this.kurabiyeVer(kurabiyeler, VERILECEK);
     if (this.kapali) return;
     // 6) sarılır, kuyruğu kalp yapar (kalpler)
     this.adim('saril');
@@ -1278,19 +1304,24 @@ class Vaka3 {
     ses.tik();
   }
 
-  /** İki kurabiyeyi Fındık'ın patisine sürükle (dokunmak da olur): kurabiye patiye uçar, kaybolur */
-  private kurabiyeVer(kurabiyeler: HTMLElement[]): Promise<void> {
+  /**
+   * Dört kurabiyeden ikisini Fındık'ın patisine sürükle (dokunmak da olur): hangisi olursa (çocuk çoğu kez Fındık'a en
+   * yakın olanı dener). Kurabiye patiye uçar, kaybolur; ikincisi verilince kalanlar yerinde durur (taşınmaz).
+   */
+  private kurabiyeVer(kurabiyeler: HTMLElement[], adet: number): Promise<void> {
     this.adim('ver');
     this.el.classList.add('dd-sahne-is');
     const hedef = () => this.findik!.getBoundingClientRect();
-    let kalan = kurabiyeler.length;
+    let verilen = 0;
+    let kalan = adet;
     return new Promise<void>((coz) => {
       let dur: (() => void) | null = null;
       let z = 0;
       const ipucu = () => {
         clearTimeout(z);
         z = this.sonra(4000, () => {
-          const k = kurabiyeler.find((x) => !x.classList.contains('verildi'));
+          // el ipucu Fındık'a en yakın (en sağdaki) verilmemiş kurabiyeden
+          const k = kurabiyeler.filter((x) => x.classList.contains('dd-v3-tasinir') && !x.classList.contains('verildi')).pop();
           dur?.();
           if (k) dur = parmak(this.el, () => k.getBoundingClientRect(), hedef);
         });
@@ -1305,6 +1336,8 @@ class Vaka3 {
         let s: { id: number; x0: number; y0: number; tasindi: boolean } | null = null;
         const ver = async () => {
           k.classList.add('verildi');
+          // yeterince verildi: öbürleri yerinde kalır (sayılır ama taşınmaz)
+          if (++verilen >= adet) for (const x of kurabiyeler) if (x !== k && !x.classList.contains('verildi')) x.classList.remove('dd-v3-tasinir', 'dd-tutuldu');
           const a = k.getBoundingClientRect();
           const kk = this.el.getBoundingClientRect();
           const [hx, hy] = this.efekt.merkez(this.findik!, 0.42, 0.62);
@@ -1322,7 +1355,7 @@ class Vaka3 {
           } else ipucu();
         };
         k.addEventListener('pointerdown', (e) => {
-          if (k.classList.contains('verildi')) return;
+          if (k.classList.contains('verildi') || !k.classList.contains('dd-v3-tasinir')) return;
           clearTimeout(z);
           dur?.();
           dur = null;
@@ -1341,7 +1374,8 @@ class Vaka3 {
           const { tasindi } = s;
           s = null;
           k.classList.remove('dd-tutuldu');
-          if (!tasindi || yakin(e.clientX, e.clientY)) {
+          const verilebilir = k.classList.contains('dd-v3-tasinir') && verilen < adet;
+          if (verilebilir && (!tasindi || yakin(e.clientX, e.clientY))) {
             k.style.translate = '';
             await ver();
             return;
@@ -1349,7 +1383,7 @@ class Vaka3 {
           const t = k.style.translate || '0px 0px';
           await tutar(k.animate([{ translate: t }, { translate: '0px 0px' }], { duration: sure(380), easing: 'cubic-bezier(.3,1.2,.5,1)' }));
           k.style.translate = '';
-          if (!this.kapali) ipucu();
+          if (!this.kapali && verilen < adet) ipucu();
         };
         k.addEventListener('pointerup', (e) => void birak(e));
         k.addEventListener('pointercancel', (e) => void birak(e));

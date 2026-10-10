@@ -341,7 +341,17 @@ export const YER_TUTUCU: Record<string, Tarif> = {
     await t.resim('v3/kurabiye', t.w * 0.27, t.h * 0.58, t.w * 0.25, t.w * 0.25, { don: 12 });
   }),
   // B25: kovuktan sarkan kabarık kuyruk ucu (sincabın kuyruğu, ters çevrilmiş)
-  'findik-kuyruk': { w: 431, h: 1000, ciz: (t) => t.resim('dosya:orman-karakter/sincap', 0, 0, t.w, t.h, { kirp: [0.66, 0.02, 0.97, 0.74], don: 180 }) },
+  // Sincap çiziminde kuyruğun bir yanı gövdenin arkasında: tek kırpım dümdüz kesik, ince bir şerit gibi duruyordu.
+  // Kırpım ve aynası yan yana (kesik kenarlar birbirinin içinde kalır): iki yanı da tüylü, gür bir kuyruk ucu.
+  'findik-kuyruk': {
+    w: 560,
+    h: 1000,
+    ciz: async (t) => {
+      const k: [number, number, number, number] = [0.64, 0.06, 0.88, 0.72];
+      await t.resim('dosya:orman-karakter/sincap', 0, 0, t.w * 0.62, t.h, { kirp: k, don: 180 });
+      await t.resim('dosya:orman-karakter/sincap', t.w * 0.38, 0, t.w * 0.62, t.h, { kirp: k, don: 180, ayna: true });
+    },
+  },
   // B26: uyuyan baykuş (gözleri kapalı: gözlerin üstü yüz rengiyle örtülür, iki sakin kavis)
   baykus: kare(768, async (t) => {
     await t.resim('dosya:orman-karakter/baykus', 0, 0, t.w, t.h);

@@ -301,18 +301,21 @@ export const KOVUKLAR: Record<KovukId, Kovuk> = {
 export const KOVUK_ICI = {
   baykus: { kovuk: 'ust' as KovukId, h: 0.12 },
   yuva: { kovuk: 'orta' as KovukId },
-  /** kuyruk ucunun kökü (alt dudağın arkasında) ve boyu */
-  kuyruk: { x: 0.548, y: 0.825, h: 0.13 },
+  /** kuyruk ucunun kökü (alt kovuğun karanlığında, dudağın arkasından sarkar) ve boyu: telefonda da kolay görülsün diye iri */
+  kuyruk: { x: 0.548, y: 0.83, h: 0.17 },
 };
 /** Fındık kovuktan fırlayınca ağacın dibinde durduğu yer (ayak tabanı) ve boyu (Mino'nun 0.6'sı: boy.ts gibi) */
 export const FINDIK_YERI = { x: 0.62, y: 0.95 };
 export const FINDIK_BOY = 0.6;
-/** Finalde Fındık'ın önüne dizilen dört kurabiye (ağacın dibinde, toprakta) */
+/**
+ * Finalde Fındık'ın önüne dizilen dört kurabiye (ağacın dibinde, toprakta). Sağdaki de Fındık'a değmez (arada boşluk:
+ * kurabiye onun arkasında yarım kalmasın, çocuk sürükleyeceği yeri görsün). Dikey telefonda da soldaki ekranda kalır.
+ */
 export const FINAL_KURABIYELER: [number, number][] = [
-  [0.4, 0.93],
-  [0.455, 0.94],
-  [0.51, 0.935],
-  [0.565, 0.94],
+  [0.395, 0.93],
+  [0.44, 0.94],
+  [0.485, 0.935],
+  [0.53, 0.94],
 ];
 /** Kuyruğa kaç kez dokunulunca Fındık çıkar (ilkinde "fırr" diye kaçar) */
 export const KUYRUK_DOKUNUS = 2;

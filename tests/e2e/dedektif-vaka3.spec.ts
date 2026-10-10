@@ -411,6 +411,48 @@ test('Dedektif Vaka 3: Vaka Dosyam romanı kareleri hazır olunca açılır (bo�
   expect(hatalar).toEqual([]);
 });
 
+test('Dedektif Vaka 3: finalde Fındık\'a en yakın iki kurabiye de verilir; ikisi verilince kalanlar taşınmaz', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+  const hatalar = hataTopla(page);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka3&adim=final');
+  await adimBekle(page, /^final-say$/);
+  await say(page, '.dd-sahne .dd-v3-final-kurabiye');
+  await adimBekle(page, /^ver$/);
+  const kur = page.locator('.dd-sahne .dd-v3-final-kurabiye');
+  await expect(page.locator('.dd-sahne .dd-v3-final-kurabiye.dd-v3-tasinir')).toHaveCount(4);
+  // sağdaki kurabiye Fındık'ın arkasında kalmaz
+  const sag = (await kur.nth(3).boundingBox())!;
+  const f = (await page.locator('.dd-sahne .dd-v3-findik').boundingBox())!;
+  expect(sag.x + sag.width).toBeLessThanOrEqual(f.x + f.width * 0.2);
+  await surukle(page, kur.nth(3), page.locator('.dd-sahne .dd-v3-findik'));
+  await expect(kur.nth(3)).toHaveClass(/verildi/);
+  await surukle(page, kur.nth(2), page.locator('.dd-sahne .dd-v3-findik'));
+  await expect(kur.nth(2)).toHaveClass(/verildi/);
+  await adimBekle(page, /^(saril|palamut|son|roman|bitti)$/);
+  await expect(kur.nth(0)).not.toHaveClass(/dd-v3-tasinir|verildi/);
+  await expect(kur.nth(1)).not.toHaveClass(/dd-v3-tasinir|verildi/);
+  expect(hatalar).toEqual([]);
+});
+
+for (const [en, boy] of [
+  [844, 390],
+  [667, 375],
+  [1024, 768],
+  [768, 1024],
+] as const) {
+  test(`Dedektif Vaka 3: Halka 2'de (${en}×${boy}) tepsi ya bütünüyle ekranda ya da sönük`, async ({ page }, info) => {
+    test.skip(info.project.name !== 'iphone', 'bir kez yeter');
+    await page.setViewportSize({ width: en, height: boy });
+    await page.goto('./dedektif/?test=1&sifirla=1&ekran=vaka3&adim=cikis');
+    await adimBekle(page, /^ara-cikis$/);
+    await page.waitForTimeout(1200);
+    const t = await page.locator('.dd-sahne .dd-v3-tepsi').evaluate((e) => ({ r: e.getBoundingClientRect().toJSON() as DOMRect, o: Number(getComputedStyle(e).opacity) }));
+    const icinde = t.r.x >= -1 && t.r.y >= -1 && t.r.x + t.r.width <= en + 1 && t.r.y + t.r.height <= boy + 1;
+    expect(icinde || t.o === 0, JSON.stringify(t)).toBe(true);
+  });
+}
+
 // ---------------------------------------------------------------- vakadan çıkınca hiçbir şey sürmez
 /**
  * Sayfaya kanca: çıkıştan (__iz.kesik) sonra tıklayan setInterval'ler (geç kurulanlar da), yeni Web Audio sesleri (osilatör,
