@@ -179,15 +179,21 @@ export function acilisKur(baslik: string, o: { hiz: number; muzik: boolean; zorl
     el.style.setProperty('--sonme', `${yari.toFixed(3)}s`);
     el.style.transition = `opacity ${yari.toFixed(3)}s ease-in ${yari.toFixed(3)}s`;
     o.bitti();
-    window.setTimeout(
-      () => {
-        el.remove();
-        perdeBirak();
-        mino.kapat();
-        kino.kapat();
-      },
-      (sonme * 1000) / o.hiz + 80,
-    );
+    // söndükten sonra kalkar: sönme bitmeden (film ilk sahnesini kurarken kareler gecikince) kaldırılırsa krem halka ve
+    // logo izi tek karede kaybolurdu. Geçiş bitince kalkar; olmazsa biraz sonra (yedek zamanlayıcı)
+    let kalkti = false;
+    const kaldir = () => {
+      if (kalkti) return;
+      kalkti = true;
+      el.remove();
+      perdeBirak();
+      mino.kapat();
+      kino.kapat();
+    };
+    el.addEventListener('transitionend', (e) => {
+      if (e.target === el && e.propertyName === 'opacity') kaldir();
+    });
+    window.setTimeout(kaldir, (sonme * 1000) / o.hiz + 1200);
   };
   const selam = () => {
     if (!AZ_HAREKET) mino.tepki('selam');

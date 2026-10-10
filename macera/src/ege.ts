@@ -211,17 +211,18 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
   pencereYerles();
   // tablet döndürülünce (dikey ↔ yatay) ya da pencere boyu değişince oda çizimi değişir: pencere, ay ve perde onunla
-  // hizalı kalır; finaldeysek kamera yeniden pencereye bakar
-  let odaKare = 0;
-  const odaYenile = () => {
-    cancelAnimationFrame(odaKare);
-    odaKare = requestAnimationFrame(() => {
-      odaHesapla();
-      pencereYerles();
-      if (sahne.el.classList.contains('final')) finalKamera(0);
-    });
-  };
-  addEventListener('resize', odaYenile);
+  // hizalı kalır; finaldeysek kamera yeniden pencereye bakar. Sahnenin kendi kutusu izlenir (yerleşim bittikten sonra
+  // haber verir; pencerenin resize olayı, yatay bant henüz oturmadan gelebiliyor)
+  let odaBoy = `${W()}x${H()}`;
+  const odaIzle = new ResizeObserver(() => {
+    const boy = `${W()}x${H()}`;
+    if (boy === odaBoy) return;
+    odaBoy = boy;
+    odaHesapla();
+    pencereYerles();
+    if (sahne.el.classList.contains('final')) finalKamera(0);
+  });
+  odaIzle.observe(sahne.el);
   const perdeAyarla = (p: number) => perde.style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
   perdeAyarla(0);
 
@@ -894,8 +895,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
 
   const temizle = () => {
     cancelAnimationFrame(raf);
-    cancelAnimationFrame(odaKare);
-    removeEventListener('resize', odaYenile);
+    odaIzle.disconnect();
     kulak.dinle(null);
     muzikSus();
     mino.kapat();
