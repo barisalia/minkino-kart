@@ -2,6 +2,7 @@ import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { KINO_OTOBUS_MENUDE } from './uygulama/src/oyunlar';
 
 // Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
 // Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/), Dedektif Mino (/dedektif/) …; /uygulama/ eski menü adresi, köke yönlendirir;
@@ -15,7 +16,8 @@ const SAYFALAR = {
   macera: 'macera/index.html',
   pazar: 'pazar/index.html',
   pasta: 'pasta/index.html',
-  // Kino'nun Otobüsü (dondurma): menüde henüz yok (uygulama/src/oyunlar.ts → KINO_OTOBUS_MENUDE); /kino-otobus/ ile denenir
+  // Kino'nun Otobüsü (dondurma): menüde henüz yok (uygulama/src/oyunlar.ts → KINO_OTOBUS_MENUDE); web'de /kino-otobus/ ile
+  // denenir; uygulama derlemesine bayrak açılana kadar girmez (aşağıda UYGULAMADA_YOK)
   kinoOtobus: 'kino-otobus/index.html',
   dedektif: 'dedektif/index.html',
   giysin: 'giysin/index.html',
@@ -29,9 +31,12 @@ const SAYFALAR = {
  * Uygulama derlemesi (`npm run build:app` = `vite build --mode uygulama`, Capacitor'ın webDir'i dist/):
  * - Mikrofon testi ve Uyuyan Orman uygulamaya girmez;
  *   eski /uygulama/ yönlendirmesi ve gizlilik/şartlar sayfaları da (bağlantılar web sitesine gider).
+ * - Kino'nun Otobüsü menüde değilken (oyunlar.ts → KINO_OTOBUS_MENUDE = false) sayfası da uygulamaya girmez: bitmemiş
+ *   yer tutucu çizimler mağaza uygulamasında hiçbir yoldan açılamaz. Web derlemesinde /kino-otobus/ denemek için kalır.
+ *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar'];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 

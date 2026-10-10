@@ -22,11 +22,17 @@ export const F3 = V3.findik;
 export const B3 = V3.balon;
 
 // ---------------------------------------------------------------- yayın bayrağı
-/** Vaka 3 oyunda (seçim ekranı, Vaka Dosyam) görünsün mü. false: yalnız ?vaka=3 / ?vaka3=1 ile açılır. */
+/** Vaka 3 oyunda (seçim ekranı, Vaka Dosyam) görünsün mü. false: yalnız web'de ?vaka=3 / ?vaka3=1 ile açılır. */
 export const VAKA3_YAYINDA = false;
-/** Bu sayfada Vaka 3 görünür mü (bayrak ya da adres: ?vaka=3, ?vaka3=1, test kısayolu ekran=vaka3) */
-export function vaka3Gorunur(adres: string = typeof location !== 'undefined' ? location.search : ''): boolean {
+/** Uygulama (mağaza) derlemesi mi: orada bayrak kapalıyken hiçbir adres parametresi Vaka 3'ü açmaz */
+const UYGULAMA = import.meta.env?.MODE === 'uygulama';
+/**
+ * Bu sayfada Vaka 3 görünür mü: bayrak ya da (yalnız web derlemesinde) adres: ?vaka=3, ?vaka3=1, test kısayolu
+ * ekran=vaka3. Uygulama derlemesinde bayrak kapalıysa her zaman false (bitmemiş vaka mağazada açılamaz).
+ */
+export function vaka3Gorunur(adres: string = typeof location !== 'undefined' ? location.search : '', uygulama = UYGULAMA): boolean {
   if (VAKA3_YAYINDA) return true;
+  if (uygulama) return false;
   const q = new URLSearchParams(adres);
   return q.get('vaka') === '3' || q.has('vaka3') || q.get('ekran') === 'vaka3';
 }

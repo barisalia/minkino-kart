@@ -14,7 +14,7 @@ import { acilisEkrani, dosyaEkrani } from './ekranlar';
 import { kayit, kaydet, sifirla } from './kayit';
 import { ADIMLAR, type Adim } from './mantik';
 import { adim2mi } from './mantik2';
-import { adim3mu } from './mantik3';
+import { adim3mu, vaka3Gorunur } from './mantik3';
 import { vakaEkrani } from './vaka';
 import { vaka2Ekrani } from './vaka2';
 import { vaka3Ekrani } from './vaka3';
@@ -54,8 +54,14 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     }
     (window as unknown as { __dedektif: unknown }).__dedektif = { app, kayit };
   }
-  // Vaka 3 (henüz seçim ekranında yok: mantik3.ts → VAKA3_YAYINDA): /dedektif/?vaka=3 doğrudan açar
-  if (ekran === 'acilis' && q.get('vaka') === '3') {
+  // Vaka 3 (henüz seçim ekranında yok: mantik3.ts → VAKA3_YAYINDA): web'de /dedektif/?vaka=3 doğrudan açar.
+  // Uygulama derlemesinde bayrak kapalıyken vaka3Gorunur() false: ?vaka=3 da test kısayolu ekran=vaka3 de yok sayılır.
+  if (!vaka3Gorunur()) {
+    if (ekran === 'vaka3') {
+      ekran = 'acilis';
+      param = undefined;
+    }
+  } else if (ekran === 'acilis' && q.get('vaka') === '3') {
     ekran = 'vaka3';
     param = { adim: 'giris' };
   }

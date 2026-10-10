@@ -18,6 +18,8 @@ const KAYNAK = import.meta.glob<string>(
 );
 const dosyalar = Object.entries(KAYNAK).map(([yol, metin]) => ({ yol: yol.replace('../../', ''), metin }));
 const dosya = (yol: string) => dosyalar.find((d) => d.yol === yol)!.metin;
+/** Sitenin gizlilik ve şartlar sayfaları (mağaza kayıtlarında bağlantısı var) */
+const SAYFA = import.meta.glob<string>(['../../gizlilik/index.html', '../../sartlar/index.html'], { eager: true, query: '?raw', import: 'default' });
 
 describe('satın alma ekranı ebeveyn kapısının arkasında', () => {
   it('abonelikEkrani yalnız kapı geçildikten sonra çağrılır (kilitliIcerik, Ebeveyn Köşesi, Kartlar ebeveyn ekranı)', () => {
@@ -67,6 +69,16 @@ describe('paylaşım (sistem paylaşım penceresi) ebeveyn kapısının arkasın
     const [kapi, paylas] = ['if (!(await ebeveynKapisiAc(app.kok))) return;', 'kartPaylas('].map((s) => govde.indexOf(s));
     expect(kapi).toBeGreaterThan(0);
     expect(paylas).toBeGreaterThan(kapi);
+  });
+  it('gizlilik politikası Kartım\'ı anlatır (TR + EN); gizlilik ve şartlarda kişisel ad yok, iletişim minkinokids', () => {
+    const gizlilik = SAYFA['../../gizlilik/index.html'];
+    const sartlar = SAYFA['../../sartlar/index.html'];
+    expect(gizlilik).toContain('<h2>Çiz Canlansın: "Kartım"</h2>');
+    expect(gizlilik).toContain('<h2>Draw &amp; Come Alive: "My Card"</h2>');
+    for (const s of [gizlilik, sartlar]) {
+      expect(s.toLowerCase()).not.toContain('barisalidogan');
+      expect(s).toContain('minkinokids@gmail.com');
+    }
   });
 });
 

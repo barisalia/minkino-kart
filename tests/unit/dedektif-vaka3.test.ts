@@ -48,6 +48,11 @@ describe('Vaka 3: gizli bayrak ve erişim', () => {
     expect(vaka3Gorunur('?vaka3=1')).toBe(true);
     expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim')).toBe(true);
   });
+  it('uygulama (mağaza) derlemesinde bayrak kapalıyken hiçbir adres parametresi açmaz', () => {
+    expect(vaka3Gorunur('?vaka=3', true)).toBe(false);
+    expect(vaka3Gorunur('?vaka3=1', true)).toBe(false);
+    expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim', true)).toBe(false);
+  });
   it('abonelikle (Vaka 2 gibi): dedektif/vaka3 abonelik', () => {
     expect(erisimTuru('dedektif/vaka3')).toBe('abonelik');
     expect(erisimTuru('dedektif/vaka2')).toBe('abonelik');
