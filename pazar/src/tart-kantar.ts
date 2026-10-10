@@ -12,7 +12,7 @@
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { type Cisim, type Dunya } from './fizik';
 import { adres } from './gorsel';
-import { ARKA_KIRP, legenDunyasi, LEGEN_BOY, LEGEN_KESIT, ON_KIRP } from './tart-legen';
+import { ARKA_KIRP, IC_SAG, IC_SOL, legenDunyasi, LEGEN_BOY, LEGEN_KESIT, ON_KIRP } from './tart-legen';
 import { carpmaSesi, sarsSesi } from './tart-ses';
 import { BOLGE_ACI, ibreAcisi, IBRE_EN, toplam, yaricap, type KasaMeyve, type TartIstek } from './tart';
 
@@ -123,10 +123,15 @@ interface Govde {
   ic: HTMLElement;
   /** son çizilen dönüşüm (değişmediyse yazılmaz) */
   son: string;
+  /**
+   * leğene indi (ilk değişte bir kez sayıldı). Leğenin içinde tutulup geri bırakılınca yeniden sayılmaz;
+   * leğenden çıkıp yeniden gelen meyve yeni gövdedir, yeniden sayılır.
+   */
+  indi: boolean;
 }
 
 export interface KantarOlay {
-  /** meyve leğene ilk kez değdi */
+  /** meyve leğene ilk kez değdi (leğende kaldıkça bir kez) */
   degdi?: (km: KasaMeyve, ilk: boolean) => void;
   /** leğendeki meyve parmakla tutuldu */
   tutuldu?: (km: KasaMeyve) => void;
@@ -217,15 +222,29 @@ export class Kantar {
   }
 
   bosalt() {
+    this.tutulan = null;
+    this.el.classList.remove('tb-tutuyor');
     for (const g of this.govdeler) g.el.remove();
     this.govdeler = [];
     for (const c of [...this.dunya.cisimler]) this.dunya.cikar(c);
     this.agirlikGuncelle();
   }
 
-  /** Leğendeki (parmakta olmayan) meyveler */
+  /** Leğene inmiş (havada ya da parmakta olmayan) meyveler: sayım ve "Ver" yalnız bunlarla */
   get icindekiler(): KasaMeyve[] {
-    return this.govdeler.filter((g) => !g.c.tutuluyor).map((g) => g.km);
+    return this.govdeler.filter((g) => g.indi && !g.c.tutuluyor).map((g) => g.km);
+  }
+  /** Parmakta ya da henüz leğene inmemiş (havada) meyve var mı */
+  get hareketli(): boolean {
+    return !!this.tutulan || this.govdeler.some((g) => !g.indi || g.c.tutuluyor);
+  }
+  /** Havadaki meyveler leğene inene kadar bekler (en çok `enCok` ms) */
+  otur(enCok = 1500): Promise<void> {
+    const t0 = performance.now();
+    return new Promise((bitti) => {
+      const bak = () => (!this.hareketli || !this.acik || performance.now() - t0 > enCok ? bitti() : setTimeout(bak, 40));
+      bak();
+    });
   }
   get adet() {
     return this.govdeler.length;
@@ -269,8 +288,7 @@ export class Kantar {
   birak(km: KasaMeyve, x: number, y: number, vx = 0, vy = 0): void {
     const r = yaricap(km);
     let [wx, wy] = this.dunyada(x, y);
-    const k = LEGEN_KESIT;
-    wx = Math.max(k[0][0] + r + 0.5, Math.min(k[k.length - 1][0] - r - 0.5, wx));
+    wx = Math.max(IC_SOL + r + 0.5, Math.min(IC_SAG - r - 0.5, wx));
     wy = Math.min(wy, this.yiginTepesi(wx, r));
     const c = this.dunya.ekle(wx, wy, r, { sek: km.meyve === 'patates' ? 0.18 : km.meyve === 'elma' ? 0.38 : 0.3 });
     // fırlatılan meyve fırlatıldığı yönde uçar (sınırlı)
@@ -286,7 +304,7 @@ export class Kantar {
     const el = h('div.tb-govde', { style: `width:calc(${(c.r * 2).toFixed(2)} * var(--o) * 1px);height:calc(${(c.r * 2).toFixed(2)} * var(--o) * 1px)`, 'data-meyve': km.meyve, 'data-curuk': km.curuk ? '1' : '0' }, cizim);
     const ic = cizim.querySelector<HTMLElement>('.tb-meyve-ic')!;
     this.fizikEl.append(el);
-    const g: Govde = { c, km, el, ic, son: '' };
+    const g: Govde = { c, km, el, ic, son: '', indi: false };
     this.govdeler.push(g);
     this.ciz(true);
     this.uyan();
@@ -337,7 +355,11 @@ export class Kantar {
     if (!g) return;
     if (ilk) {
       this.agirlikGuncelle();
-      this.olay.degdi?.(g.km, true);
+      // leğenin içinde tutulup geri bırakılan meyve yeniden sayılmaz (Mino sayıyı tekrarlamaz)
+      if (!g.indi) {
+        g.indi = true;
+        this.olay.degdi?.(g.km, true);
+      }
       // kadran: yeni ağırlıkla ibre sıçrar, leğen yaylanır
       this.aciHiz += Math.min(240, hiz * 0.35);
       this.sagHiz += Math.min(60, hiz * 0.12);
@@ -447,18 +469,25 @@ export class Kantar {
       this.al(g.km);
       return;
     }
-    // leğene geri düşer (fırlatılırsa fırlatıldığı yöne)
+    this.legeneGeriKoy(g, tu.vx, tu.vy);
+  };
+
+  /** Tutulan meyve leğene geri düşer (fırlatılırsa fırlatıldığı yöne); sayımı gövdede kalır (g.indi) */
+  private legeneGeriKoy(g: Govde, vx: number, vy: number) {
+    const c = g.c;
+    g.el.classList.remove('tb-tutulan');
+    this.el.classList.remove('tb-tutuyor');
     c.tutuluyor = false;
+    // fizik için yeniden değmeli (ağırlığı inince eklenir)
     c.degdi = false;
-    const k = LEGEN_KESIT;
-    c.x = Math.max(k[0][0] + c.r + 0.5, Math.min(k[k.length - 1][0] - c.r - 0.5, c.x));
+    c.x = Math.max(IC_SOL + c.r + 0.5, Math.min(IC_SAG - c.r - 0.5, c.x));
     // başka bir cismin içine bırakılmasın
     for (const x of this.govdeler) if (x !== g && !x.c.tutuluyor && Math.hypot(x.c.x - c.x, x.c.y - c.y) < x.c.r + c.r) c.y = Math.min(c.y, this.yiginTepesiHaric(c.x, c.r, g));
-    c.vx = Math.max(-260, Math.min(260, tu.vx / this.o));
-    c.vy = Math.max(-300, Math.min(400, tu.vy / this.o));
+    c.vx = Math.max(-260, Math.min(260, vx / this.o));
+    c.vy = Math.max(-300, Math.min(400, vy / this.o));
     this.dunya.uyandir();
     this.uyan();
-  };
+  }
 
   private yiginTepesiHaric(x: number, r: number, haric: Govde): number {
     const tut = haric.c.tutuluyor;
@@ -550,9 +579,19 @@ export class Kantar {
     return this.govdeler.map((g) => ({ km: g.km, r: g.ic.getBoundingClientRect(), el: g.el }));
   }
 
-  /** Etkileşimi açar / kapar (teslimde kapalı) */
+  /** Etkileşimi açar / kapar (teslimde kapalı). Kapanınca parmaktaki meyve bırakılır: leğene geri düşer */
   etkin(v: boolean) {
     this.girdi = v;
+    const tu = this.tutulan;
+    if (!v && tu) {
+      this.tutulan = null;
+      try {
+        this.el.releasePointerCapture(tu.id);
+      } catch {
+        /* yok say */
+      }
+      if (tu.g.c.tutuluyor && this.govdeler.includes(tu.g)) this.legeneGeriKoy(tu.g, 0, 0);
+    }
     this.el.classList.toggle('tb-kapali', !v);
   }
 

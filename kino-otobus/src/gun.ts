@@ -22,7 +22,7 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
 import { KALP } from './cizim';
 import { AZ_HAREKET, Efekt, ekranSalla, salla } from './efekt';
-import { kayit } from './kayit';
+import { gunBitti as kayitGunBitti, kaydet, kayit } from './kayit';
 import { kuleCiz, kuleOlcu } from './kule';
 import {
   bosYuva,
@@ -597,7 +597,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
         if (!kuleSoylendi) {
           kuleSoylendi = true;
           void soyle(K.kino.kule, 'kino', false);
-          if (gun === 1) yakin(s.yuvaEl, 1.35, 'kule', { odak: s.i, ms: 800 });
         }
       }
     })();
@@ -709,6 +708,15 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   let hedefSoylendi = false;
   let calisiyor = false;
   let ogretici = false;
+  let ilkIstekGosterildi = false;
+  /** İstek balonu bir an büyür (kamera yerine): çocuk ne istendiğini görür */
+  function balonBuyut(b: HTMLElement) {
+    if (TEST_MODU || AZ_HAREKET) return;
+    b.classList.remove('ko-balon-acil', 'ko-balon-buyu');
+    void b.offsetWidth;
+    b.classList.add('ko-balon-buyu');
+    b.addEventListener('animationend', () => b.classList.remove('ko-balon-buyu'), { once: true });
+  }
 
   async function musteriGelsin(s: Slot) {
     const sip = kuyruk.shift();
@@ -729,8 +737,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     yuvaCiz(s);
     adimGuncelle();
     void soyle(K.kino.hosgeldin, 'kino', false);
-    // yakın çekim: müşteri ve balon büyür (dokununca hemen biter)
-    yakin(s.yerEl.closest('.ko-slot')!, 1.45, `istek-${sip.no}`, { odak: s.i, ms: 900 });
+    // günün ilk isteğinde yakın çekim (dokununca hemen biter); sonrakilerde kamera oynamaz, yalnız balon büyür
+    // (dolap ve kaplar ekrandan kaymaz, hedefler parmağın altından kaçmaz)
+    if (!ilkIstekGosterildi) {
+      ilkIstekGosterildi = true;
+      yakin(s.yerEl.closest('.ko-slot')!, 1.45, `istek-${sip.no}`, { odak: s.i, ms: 900 });
+    } else balonBuyut(m.balon);
     await soyle(okuma(sip));
     if (ogretici) adimGuncelle(true);
   }
@@ -808,8 +820,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     kopya.classList.add('ko-ucan-kule');
     await efekt_.ucur(kopya, bas, hedef, { ms: 480, kavis: -110, boy1: 0.8 });
     if (kapandi) return;
-    // tadım yakın çekimi (girdiyi kilitlemez, dokununca biter)
-    yakin(s.yerEl.closest('.ko-slot')!, 1.5, `tat-${m.sip.no}`, { odak: s.i, ms: 1000 });
     const lokma = kopya.cloneNode(true) as HTMLElement;
     lokma.classList.remove('ko-ucan-kule');
     if (dogumgunu) {
@@ -857,6 +867,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     m.el.dataset.sonuc = sonuc.ayni ? 'ayni' : 'farkli';
     await jetonVer(m, jetonHesapla(sonuc.ayni));
     if (kapandi) return;
+    // son müşteri ödedi: gün hemen kaydedilir (akşam yalnız gösterir; "Bugünlük bu kadar!"da çıkılsa da jeton kalır)
+    if (++odenen >= TOPLAM) gunuKaydet();
     if (mutlu >= ayar.hedef && !hedefSoylendi) {
       hedefSoylendi = true;
       void soyle(K.mino.hedef_tamam, 'mino', false);
@@ -1011,14 +1023,24 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   }
 
   // ---------------------------------------------------------------- günün sonu
+  let odenen = 0;
+  let kaydedildi = false;
+  /** Günün jetonları kumbaraya, gün bitti (bir sonraki gün açılır); bir kez */
+  function gunuKaydet() {
+    if (kaydedildi) return;
+    kaydedildi = true;
+    kayitGunBitti(kayit, gun, bugun, mutlu);
+    kaydet();
+  }
   async function gunBitti() {
+    gunuKaydet();
     calisiyor = false;
     adimGuncelle();
     await bekle(500);
     if (kapandi) return;
     await soyle(K.mino.bitti);
     await bekle(400);
-    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, mutlu });
+    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, mutlu, kaydedildi: true });
   }
 
   // ---------------------------------------------------------------- açılış: otobüs gelir, görseller çözülür

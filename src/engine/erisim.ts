@@ -25,7 +25,9 @@ export const ERISIM: Record<string, Erisim> = {
   'macera/*': 'abonelik',
   // Bütünüyle abonelikle
   pazar: 'abonelik',
-  // Mino'nun Pazarı bölümleri (Oyna, Meyve Suyu, Tart Bakalım): oyunla birlikte abonelikle
+  // Mino'nun Pazarı bölümleri (Oyna, Meyve Suyu, Tart Bakalım): oyunla birlikte abonelikle. DİKKAT: bu satırı kod
+  // sorgulamaz; Pazar'ın tamamı ana menü kartının kilidiyle ('pazar') kapanır. Tart'ı ayrı açmak için yalnız burayı
+  // değiştirmek yetmez, pazar açılışında da erisimVarMi('pazar/tart') gerekir.
   'pazar/tart': 'abonelik',
   canlan: 'abonelik',
   pasta: 'abonelik',

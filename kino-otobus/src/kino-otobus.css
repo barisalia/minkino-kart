@@ -417,6 +417,27 @@
 .ko-kok .ko-balon.ko-zipla {
   animation: ko-zipla 0.4s ease-out;
 }
+/* yeni istek: kamera yerine balon bir an büyür (kuyruğu müşteriye bakar, oradan büyür) */
+.ko-kok .ko-balon.ko-balon-buyu {
+  z-index: 6;
+  animation: ko-balon-buyu 1.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+@keyframes ko-balon-buyu {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  22% {
+    transform: scale(1.32);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 .ko-kok .ko-b-ic {
   display: flex;
   align-items: flex-end;
@@ -1708,7 +1729,7 @@
   place-items: end;
 }
 .ko-kok .ko-yas-perde.ko-kapakli .ko-yas-kutu {
-  padding: max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) 20px;
+  padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 }
 /* yatayda düğmeler sağda alt alta (Kino ortada, yüzü ve dondurması açıkta) */
 @media (orientation: landscape) {
@@ -1820,7 +1841,7 @@
 }
 .ko-kok .ko-aksam-jeton {
   position: absolute;
-  left: calc(var(--n) * 26px + var(--r) % 2 * 13px);
+  left: var(--x, 0px);
   bottom: calc(var(--r) * 14px);
   width: 34px;
   height: 34px;
