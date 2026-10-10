@@ -4,13 +4,16 @@
  * sunucusu gibi). Vaka seçimi, Vaka 2'nin açılışı ve bir halkası, Vaka Dosyam; eksik dosya ve konsol hatası yok.
  * Yalnız UYGULAMA_DIST verilince koşar (ör. UYGULAMA_DIST=dist, build:app'ten sonra).
  */
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
+import { KINO_OTOBUS_MENUDE } from '../../uygulama/src/oyunlar';
 
 const KOK = process.env.UYGULAMA_DIST ? resolve(process.env.UYGULAMA_DIST) : '';
 const PORT = 4331;
+/** dedektif/src/mantik3.ts → VAKA3_YAYINDA (modül JSON içe aktardığı için kaynaktan okunur) */
+const VAKA3_YAYINDA = /VAKA3_YAYINDA = true/.test(readFileSync(resolve('dedektif/src/mantik3.ts'), 'utf8'));
 const TUR: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript',
@@ -66,4 +69,18 @@ test('Uygulama derlemesi: Dedektif iki vaka, Vaka 2 açılır ve oynanır, dosya
   // içindeki her adres açıkça index.html (src/kabuk/sayfa.ts); Dedektif'in kendi ekranları sayfa değiştirmez
   await page.goto(`http://localhost:${PORT}/dedektif/?test=1`);
   await expect(page.locator('.dd-klasor')).toHaveCount(0);
+});
+
+test('Uygulama derlemesi: gizli Vaka 3 hiçbir adres parametresiyle açılmaz; Kino’nun Otobüsü pakette yok', async ({ page }) => {
+  test.skip(test.info().project.name !== 'iphone', 'bir kez yeter');
+  test.skip(VAKA3_YAYINDA && KINO_OTOBUS_MENUDE, 'ikisi de yayında');
+  if (!VAKA3_YAYINDA) {
+    for (const ek of ['vaka=3', 'vaka3=1', 'test=1&sifirla=1&cozuldu=2&vaka=3', 'test=1&sifirla=1&ekran=vaka3&adim=kim', 'test=1&sifirla=1&cozuldu=2&vaka3=1']) {
+      await page.goto(`http://localhost:${PORT}/dedektif/index.html?${ek}`);
+      await expect(page.locator('.dd-klasor'), ek).toHaveCount(2);
+      await expect(page.locator('.dd-klasor[data-vaka="vaka3"]'), ek).toHaveCount(0);
+      await expect(page.locator('.dd-vaka3, [data-ekran="vaka3"]'), ek).toHaveCount(0);
+    }
+  }
+  if (!KINO_OTOBUS_MENUDE) expect(existsSync(join(KOK, 'kino-otobus'))).toBe(false);
 });
