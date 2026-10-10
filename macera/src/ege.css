@@ -71,13 +71,16 @@
   transition: opacity 1.2s, filter 1.6s;
 }
 /* final: kamera aya yaklaşırken dünya sahne kutusuna kırpılır (yatayda ortadaki bant): yaklaşan oda yanlardaki alt
-   yazı / düğme şeritlerinin üstüne taşmaz. Geniş oda çizimiyle bant normalde taşar (macera.css), kırpma yumuşakça gelir. */
-.mc-kok .mc-sahne.eg-sahne {
-  clip-path: inset(0 -100vw);
-  transition: clip-path 1.4s ease;
-}
+   yazı / düğme şeritlerinin üstüne taşmaz. Geniş oda çizimiyle bant normalde taşar (macera.css), kırpma yumuşakça gelir.
+   Kırpma yalnız finalde: clip-path sahneyi ayrı bir katman yığını yapar; bölüm boyunca dursa ödül kartı (.eg-odul) alt
+   yazı / düğme şeritlerinin altında kalırdı. */
 .mc-kok .mc-sahne.eg-sahne.final {
   clip-path: inset(0 0);
+  animation: eg-final-kirp 1.4s ease both;
+}
+@keyframes eg-final-kirp {
+  from { clip-path: inset(0 -100vw); }
+  to { clip-path: inset(0 0); }
 }
 /* final: kamera aya yaklaşınca alt kenarda yarım kalan baş (anne, çocuklar) gecenin karanlığına karışır */
 .mc-kok .eg-sahne.final::after {
@@ -108,7 +111,7 @@
   --eg-kenar: 7%;
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--eg-kenar), #000 calc(100% - var(--eg-kenar)), transparent 100%);
   mask-image: linear-gradient(to right, transparent 0, #000 var(--eg-kenar), #000 calc(100% - var(--eg-kenar)), transparent 100%);
-  transition: clip-path 1.4s ease, --eg-kenar 2s ease;
+  transition: --eg-kenar 2s ease;
 }
 @media (orientation: portrait) {
   .mc-kok .mc-sahne.eg-sahne.final {

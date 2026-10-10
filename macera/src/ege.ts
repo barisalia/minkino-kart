@@ -133,34 +133,41 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
    * dikey konum pencere ekranın üst kenarında kalacak, zemin yine geniş görünecek biçimde seçilir (üstte boş duvar
    * kalmaz, pencere ve perde gerçek yerinde).
    */
-  const dikeyResim = sahne.dunya.classList.contains('mc-dikey-var') && matchMedia('(orientation: portrait)').matches;
-  const ODA = dikeyResim ? { en: 1536, boy: 2752, k: 1.5 } : { en: 1024, boy: 1024, k: 1 };
-  const odaY = (() => {
-    if (!dikeyResim) return 0.82;
-    const s = Math.max(W() / ODA.en, H() / ODA.boy);
-    const kirp = ODA.boy * s - H();
-    if (kirp < 1) return 0.82;
-    // pencerenin ortası (kare çizimde y 244) ekranın %4 aşağısında; alt yarısı, perdesi ve pervazı görünür
-    return Math.max(0, Math.min(0.82, (244 * ODA.k * s - H() * 0.04) / kirp));
-  })();
   const odaEl = sahne.dunya.querySelector<HTMLElement>('.mc-oda')!;
-  if (dikeyResim) odaEl.style.backgroundPosition = `24% ${(odaY * 100).toFixed(2)}%`;
+  let dikeyResim = false;
   /** Dikey tablette çizimin dünyanın üstünde kırpılan kısmı (px): finalde oda yukarı uzar, pencere ortalanabilsin */
-  const odaUstPay = (() => {
-    if (!dikeyResim) return 0;
-    const s = Math.max(W() / ODA.en, H() / ODA.boy);
-    return Math.max(0, (ODA.boy * s - H()) * odaY);
-  })();
+  let odaUstPay = 0;
   /**
    * Yatay ekranda odanın geniş çizimi (oda-genis, 4096×2286; macera.css → .mc-yan-genis) bandın odasını ekranın tam
    * eninde gösterir (konum center 82%). Kare çizim onun içinde x 922'den 2260 px boyunda (scripts/kalite/
    * oda-genis-birlestir.cjs). Geniş telefonda (en/boy > 1.79) çizim enden oturur, kare hesabı tutmaz: pencere ve perde
    * gerçek çizimden hesaplanır.
    */
-  const genisResim = !dikeyResim && getComputedStyle(odaEl).backgroundImage.includes('oda-genis');
-  const RESIM = genisResim
-    ? { en: 4096, boy: 2286, k: 2260 / 1024, x0: 922, y0: 0, px: 0.5, py: 0.82 }
-    : { en: ODA.en, boy: ODA.boy, k: ODA.k, x0: 0, y0: 0, px: 0.24, py: odaY };
+  let genisResim = false;
+  let RESIM = { en: 1024, boy: 1024, k: 1, x0: 0, y0: 0, px: 0.24, py: 0.82 };
+  /**
+   * Oda çiziminin hesabı; ilk kurulumda ve ekran dönünce / boyu değişince yeniden (dikey çizim yalnız dikey ekranda,
+   * CSS medya sorgusuyla). Satır içi konum yalnız dikey çizimde; yatayda CSS'in konumu geçerli kalır.
+   */
+  const odaHesapla = () => {
+    dikeyResim = sahne.dunya.classList.contains('mc-dikey-var') && matchMedia('(orientation: portrait)').matches;
+    const ODA = dikeyResim ? { en: 1536, boy: 2752, k: 1.5 } : { en: 1024, boy: 1024, k: 1 };
+    const s = Math.max(W() / ODA.en, H() / ODA.boy);
+    const kirp = ODA.boy * s - H();
+    // pencerenin ortası (kare çizimde y 244) ekranın %4 aşağısında; alt yarısı, perdesi ve pervazı görünür
+    const odaY = !dikeyResim || kirp < 1 ? 0.82 : Math.max(0, Math.min(0.82, (244 * ODA.k * s - H() * 0.04) / kirp));
+    odaUstPay = dikeyResim ? Math.max(0, kirp * odaY) : 0;
+    // final, dikey tablet: çizimin kırpılan üstü (pencerenin üst yayı) dünyanın üstüne uzar (ege.css → --ust-pay)
+    const finalUst = sahne.el.classList.contains('final') && odaUstPay > 0;
+    if (finalUst) sahne.el.style.setProperty('--ust-pay', `${odaUstPay.toFixed(1)}px`);
+    else sahne.el.style.removeProperty('--ust-pay');
+    odaEl.style.backgroundPosition = finalUst ? '24% 0%' : dikeyResim ? `24% ${(odaY * 100).toFixed(2)}%` : '';
+    genisResim = !dikeyResim && getComputedStyle(odaEl).backgroundImage.includes('oda-genis');
+    RESIM = genisResim
+      ? { en: 4096, boy: 2286, k: 2260 / 1024, x0: 922, y0: 0, px: 0.5, py: 0.82 }
+      : { en: ODA.en, boy: ODA.boy, k: ODA.k, x0: 0, y0: 0, px: 0.24, py: odaY };
+  };
+  odaHesapla();
   /** Arka plan resmindeki bir nokta (kare çizimin 1024 birimiyle) sahnede nerede (x %, y alttan %) ve ölçek */
   const arkaNokta = (ix: number, iy: number) => {
     const w = W();
@@ -178,25 +185,43 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
 
   // --- pencere: gece gökyüzü (ay, yıldızlar) ve perde (iki kanat; sürükleyince kapanır)
-  const cam = arkaNokta(264, 244);
-  const camR = 158 * cam.s;
-  const pencere = h('div.eg-pencere', { style: `left:${cam.x}%;top:${cam.ust}%;width:${camR * 2}px;height:${camR * 2}px`, 'data-ege': 'pencere' }, h('i.eg-pencere-ay'), ...Array.from({ length: 6 }, (_, i) => h('i.eg-pencere-yildiz', { style: `--i:${i}` })));
+  const pencere = h('div.eg-pencere', { 'data-ege': 'pencere' }, h('i.eg-pencere-ay'), ...Array.from({ length: 6 }, (_, i) => h('i.eg-pencere-yildiz', { style: `--i:${i}` })));
   sahne.dunya.append(pencere);
-  const perdeSol = arkaNokta(22, 0);
-  const perdeOrta = arkaNokta(266, 0);
-  const perdeSag = arkaNokta(510, 0);
-  const perdeAlt = arkaNokta(0, 492);
-  // dikey ekranda arka planın sol ucu ekran dışında: perdenin sol kanadı görünen kenardan başlar (pencerenin
-  // görünen kısmını yine örter)
-  const perdeL = dikey ?Math.max(perdeSol.x, 1.5) : perdeSol.x;
   const perde = h(
     'div.eg-perde',
-    { style: `left:${perdeL}%;top:0;width:${perdeSag.x - perdeL}%;height:${perdeAlt.ust}%`, 'data-ege': 'perde' },
+    { 'data-ege': 'perde' },
     h('div.eg-perde-kanat.sol', { style: `--resim:url("${egeAdres('perde-kapali')}")` }),
     h('div.eg-perde-kanat.sag', { style: `--resim:url("${egeAdres('perde-kapali')}")` }),
   );
-  void perdeOrta;
   sahne.dunya.append(perde);
+  let cam = arkaNokta(264, 244);
+  let camR = 158 * cam.s;
+  /** Pencere ve perde çizimdeki yerlerinde (oda hesabından sonra; ekran dönünce yeniden) */
+  const pencereYerles = () => {
+    cam = arkaNokta(264, 244);
+    camR = 158 * cam.s;
+    Object.assign(pencere.style, { left: `${cam.x}%`, top: `${cam.ust}%`, width: `${camR * 2}px`, height: `${camR * 2}px` });
+    const perdeSol = arkaNokta(22, 0);
+    const perdeSag = arkaNokta(510, 0);
+    const perdeAlt = arkaNokta(0, 492);
+    // dikey ekranda arka planın sol ucu ekran dışında: perdenin sol kanadı görünen kenardan başlar (pencerenin
+    // görünen kısmını yine örter)
+    const perdeL = W() / H() < 0.8 ? Math.max(perdeSol.x, 1.5) : perdeSol.x;
+    Object.assign(perde.style, { left: `${perdeL}%`, top: '0', width: `${perdeSag.x - perdeL}%`, height: `${perdeAlt.ust}%` });
+  };
+  pencereYerles();
+  // tablet döndürülünce (dikey ↔ yatay) ya da pencere boyu değişince oda çizimi değişir: pencere, ay ve perde onunla
+  // hizalı kalır; finaldeysek kamera yeniden pencereye bakar
+  let odaKare = 0;
+  const odaYenile = () => {
+    cancelAnimationFrame(odaKare);
+    odaKare = requestAnimationFrame(() => {
+      odaHesapla();
+      pencereYerles();
+      if (sahne.el.classList.contains('final')) finalKamera(0);
+    });
+  };
+  addEventListener('resize', odaYenile);
   const perdeAyarla = (p: number) => perde.style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
   perdeAyarla(0);
 
@@ -869,6 +894,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
 
   const temizle = () => {
     cancelAnimationFrame(raf);
+    cancelAnimationFrame(odaKare);
+    removeEventListener('resize', odaYenile);
     kulak.dinle(null);
     muzikSus();
     mino.kapat();
@@ -2911,12 +2938,9 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // son çekimde yalnız pencere ve ay: anne, çocuklar, Mino (ve uyku Z'leri), beşik tamamen solar; kadrajın altında
     // yarı saydam yüz / saç kalmaz
     cekimDisi([ada.el, can.el, elif.el, minoKutu, anne, besik], true);
-    if (odaUstPay > 0) {
-      // dikey tablet: çizimin kırpılan üstü (pencerenin üst yayı) dünyanın üstüne uzar; ışık örtüleri de onunla
-      sahne.el.style.setProperty('--ust-pay', `${odaUstPay.toFixed(1)}px`);
-      odaEl.style.backgroundPosition = '24% 0%';
-    }
     sahne.el.classList.add('final');
+    // dikey tablet: çizimin kırpılan üstü (pencerenin üst yayı) dünyanın üstüne uzar; ışık örtüleri de onunla (odaHesapla)
+    odaHesapla();
     efektCal(() => S.kutuNota(62, 0.12, 3), 2500);
     finalKamera(3200);
     await bekle(3400);
@@ -2989,7 +3013,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
    * tablet) ay, pencerenin görünen kısmına iner.
    */
   function finalKamera(ms: number) {
-    const ust = dikey ? PAY.ust : 0;
+    const ust = W() / H() < 0.8 ? PAY.ust : 0;
     const d = ((camR * 2) / H()) * 100;
     const dx = ((camR * 2) / W()) * 100;
     let z = Math.max(1, Math.min(2.1, 74 / dx, (100 - ust) * 0.78 / d));

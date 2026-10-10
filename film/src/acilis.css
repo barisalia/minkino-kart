@@ -324,22 +324,25 @@
   transition: none;
 }
 /* ---------- iris: sonda ortadaki logoya doğru kapanan krem halka, sonra filme karışır */
+/* Delik yarıçapı (--fl-in-iris) küçülür; dışı her yerde krem. Eskiden 160vmax gölgeli daire ölçekleniyordu: 0.12'ye
+   inince gölge de küçülüyor, halkanın dışında başlık kartı yeniden görünüyordu (filme geçerken çift görüntü). */
+@property --fl-in-iris {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
 .fl-kok .fl-in-iris {
+  /* başta delik ekranın en uzak köşesinden biraz büyük: kapanma hemen görünür */
+  --fl-in-iris: 76vmax;
   position: absolute;
-  left: 50%;
-  top: 46%;
-  width: 240vmax;
-  aspect-ratio: 1;
-  margin: -120vmax;
-  border-radius: 50%;
-  box-shadow: 0 0 0 160vmax #fff1dc;
-  transform: scale(1);
+  inset: 0;
+  background: radial-gradient(circle at 50% 46%, transparent 0 var(--fl-in-iris), #fff1dc calc(var(--fl-in-iris) + 1px));
   opacity: 0;
 }
 .fl-kok .fl-in.bitti .fl-in-iris {
+  --fl-in-iris: 14.4vmax;
   opacity: 1;
-  transform: scale(0.12);
-  transition: transform var(--sonme, 0.35s) cubic-bezier(0.55, 0, 0.75, 0.4);
+  transition: --fl-in-iris var(--sonme, 0.35s) cubic-bezier(0.55, 0, 0.75, 0.4);
 }
 /* ---------- anahtar kareler */
 @keyframes fl-in-yaklas {

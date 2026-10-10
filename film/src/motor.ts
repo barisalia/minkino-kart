@@ -221,6 +221,8 @@ class Nesne {
   golge: HTMLElement | null = null;
   /** salla olayının sırası: yenisi gelince eskisi biter */
   sallaNo = 0;
+  /** görünüşü (oyuncu tipi / eşya tipi): kesmede aynı adlı nesne başka çizime dönmüş mü */
+  tur = '';
   constructor(readonly k: Konum, cocuk: HTMLElement, readonly oran: number, merkez?: [number, number]) {
     this.x = k.x;
     this.y = k.y;
@@ -266,6 +268,28 @@ class Nesne {
   }
 }
 
+/** Nesnenin kesme anındaki dünya kutusu (%; y alttan) ve duruşu */
+interface NesneIzi {
+  tur: string;
+  x: number;
+  y: number;
+  w: number;
+  don: number;
+  yon: number;
+  l: number;
+  r: number;
+  alt: number;
+  ust: number;
+}
+/** görünmeyen (saydam) nesnenin izi yok */
+function nesneIzi(n: Nesne): NesneIzi | null {
+  if (n.saydam < 0.05) return null;
+  const w = n.k.w * n.olcek;
+  const hh = w / n.oran;
+  const alt = n.y - n.alt * hh;
+  return { tur: n.tur, x: n.x, y: n.y, w, don: n.don, yon: n.yon, l: n.x - w / 2, r: n.x + w / 2, alt, ust: alt + hh };
+}
+
 export interface FilmSecenek {
   /** oynatma hızı (test modunda hızlı) */
   hiz?: number;
@@ -303,6 +327,8 @@ export class Film {
   /** akşam ışığı uzak katmanda biraz daha güçlü */
   private isikUzak: HTMLElement;
   private iris: HTMLElement;
+  /** kısa karartma (kesmede yerleşim değişince): bkz. dalis */
+  private dalisEl: HTMLElement;
   private altyazi: HTMLElement;
   private altKim: HTMLElement;
   private altMetin: HTMLElement;
@@ -322,6 +348,10 @@ export class Film {
   private tut: string[] = [];
   private konusan: string | null = null;
   private duzelt = { x: 0, y: 0 };
+  /** düzeltmenin hızı (yay): düzeltme birden başlamaz, hızlanıp yavaşlayarak gelir */
+  private duzeltHiz = { x: 0, y: 0 };
+  /** bu karenin film saatiyle süresi (sn): kamera düzeltmesi kare hızından bağımsız */
+  private kareDt = 0;
   private altZaman = 0;
   private bitti = false;
   private tezgahVar = false;
@@ -353,10 +383,11 @@ export class Film {
     this.isikUzak = h('div.fl-isik-uzak');
     this.isikEl = h('div.fl-isik');
     this.iris = h('div.fl-iris', {}, h('i'));
+    this.dalisEl = h('div.fl-dalis', { 'aria-hidden': 'true' });
     this.altKim = h('b.fl-alt-kim');
     this.altMetin = h('span.fl-alt-metin');
     this.altyazi = h('div.fl-altyazi', { 'aria-live': 'polite' }, this.altKim, this.altMetin);
-    this.el = h('div.fl-sahne', {}, this.dunya, this.isikEl, this.iris, this.altyazi);
+    this.el = h('div.fl-sahne', {}, this.dunya, this.isikEl, this.dalisEl, this.iris, this.altyazi);
     this.onYukle();
   }
 
@@ -472,7 +503,9 @@ export class Film {
       this.altyazi.classList.remove('acik');
     }
     this.nesneler.forEach((n) => n.uygula());
+    this.kareDt = this.duraklat ? 0 : dt * this.hiz;
     this.kameraUygula();
+    this.kareDt = 0;
     if (this.karaoke) this.karaokeGuncelle(this.karaoke);
   }
 
@@ -482,31 +515,74 @@ export class Film {
   }
 
   private tween(sure: number, egri: string | undefined, adim: (u: number) => void, bitti?: () => void) {
-    this.tweenler.push({ bas: this.saat, sure: Math.max(0.001, sure), egri: EGRI[egri ?? 'yumusak'] ?? EGRI.yumusak, adim, bitti });
+    const tw: Tween = { bas: this.saat, sure: Math.max(0.001, sure), egri: EGRI[egri ?? 'yumusak'] ?? EGRI.yumusak, adim, bitti };
+    this.tweenler.push(tw);
+    return tw;
+  }
+
+  /** süren kamera hareketi (kesmedeki süzülme ya da kamera olayı) */
+  private kamTween: Tween | null = null;
+  /**
+   * Kamera hareketi: yenisi başlayınca süren eskisi biter (yeni hareket kameranın o anki yerinden başlar). İkisi birlikte
+   * sürseydi kısa olan bitince uzun olan kamerayı kendi yoluna geri çekerdi: kadraj tek karede sıçrardı.
+   */
+  private kameraGit(sure: number, egri: string | undefined, hedef: { x: number; y: number; z: number }) {
+    if (this.kamTween) this.tweenler = this.tweenler.filter((t) => t !== this.kamTween);
+    const a = { ...this.kam };
+    const tw = this.tween(sure, egri, (u) => {
+      this.kam = { x: a.x + (hedef.x - a.x) * u, y: a.y + (hedef.y - a.y) * u, z: a.z + (hedef.z - a.z) * u };
+    }, () => {
+      if (this.kamTween === tw) this.kamTween = null;
+    });
+    this.kamTween = tw;
   }
 
   // ---------------------------------------------------------------- sahne
   /** kesme: sonraki sahne doğrudan başlar (kapanış geçişi ve bekleme yok) */
   private async sahneOyna(s: Sahne, kesme = false, ogutOnce = false) {
-    // kesme bile sert değil: önceki sahnenin son karesi yeni sahnenin üstünde yumuşakça söner (çapraz geçiş)
-    // Aynı arka plan (aynı yer, aynı katman kaydırması): kopya gerekmez, yeni dünyanın arka planı zaten aynı resim; kamera
-    // eski kadrajdan süzülür. Kopya üstüne binseydi kamera kayarken iki ayrı kadraj üst üste görünürdü (çift pozlama).
+    // Kesme hiçbir zaman sert değil:
+    // - başka yer: önceki sahnenin arka planı yeni sahnenin altında söner (capraz), kamera eski kadrajdan süzülür;
+    // - aynı yer, herkes yerinde (sahne kaldığı yerden sürer): kamera eski kadrajdan yeni kadraja süzülür;
+    // - aynı yer ama karakterler / eşyalar başka yerde (yeni çekim): kısa karartma (dalis). Kamera kayarken karakterler
+    //   tek karede sıçramaz; iki kadraj da üst üste binmez (çift pozlama yok).
     const arkaAnahtar = JSON.stringify([s.arka, s.ortaKaydir ?? 0, s.ortaBuyut ?? null]);
     const ayniArka = arkaAnahtar === this.sonArka;
     this.sonArka = arkaAnahtar;
-    const onceki = s.gecis === 'kes' && !ayniArka && this.dunya.childElementCount && this.katmanlar.orta.childElementCount ? (this.dunya.cloneNode(true) as HTMLElement) : null;
-    const surer = s.gecis === 'kes' && (!!onceki || (ayniArka && this.katmanlar.orta.childElementCount > 0));
+    const kes = s.gecis === 'kes' && this.dunya.childElementCount > 0 && this.katmanlar.orta.childElementCount > 0;
+    const kopya = kes ? (this.dunya.cloneNode(true) as HTMLElement) : null;
+    const gorunum = kes ? this.gorunum() : null;
     const eskiKam = { ...this.kam };
+    const eskiDuzelt = { ...this.duzelt };
+    const eskiDuzeltHiz = { ...this.duzeltHiz };
     this.kur(s);
-    if (onceki) this.capraz(onceki, Number(s.caprazSure ?? 0.6));
-    if (surer) {
+    let suz = false;
+    if (kopya && gorunum) {
+      if (!ayniArka) {
+        this.capraz(kopya, Number(s.caprazSure ?? 0.6));
+        suz = true;
+      } else if (this.yerlesimDegisti(gorunum)) this.dalis(kopya);
+      else {
+        // sahne kaldığı yerden sürer: kameranın güvenli alan düzeltmesi de sıfırdan başlamaz (kadraj tek karede kaymaz).
+        // Sahnenin açılış kamera olayı (ilk anlarda) yeni bir "tut" listesi veriyorsa baştan o geçerli: düzeltme önce
+        // sahnenin kendi listesine, birkaç kare sonra olayınkine doğru gidip gelmesin (kadraj hafifçe sallanmasın)
+        this.duzelt = eskiDuzelt;
+        this.duzeltHiz = eskiDuzeltHiz;
+        this.ilkKare = false;
+        const acilis = s.olaylar.find((o) => o.kim === 'kamera' && o.t <= 0.1 && Array.isArray(o.tut));
+        if (acilis) this.tut = acilis.tut as string[];
+        suz = true;
+      }
+    }
+    if (suz) {
       // kamera da yeni çerçeveye sıçramaz: önceki sahnenin kadrajından süzülerek gelir (sahnenin kendi kamera olayı bunu ezer)
       const hedef = { ...this.kam };
       this.kam = eskiKam;
-      this.tween(1, 'yumusak', (u) => {
-        this.kam = { x: eskiKam.x + (hedef.x - eskiKam.x) * u, y: eskiKam.y + (hedef.y - eskiKam.y) * u, z: eskiKam.z + (hedef.z - eskiKam.z) * u };
-      });
+      this.kameraGit(1, 'yumusak', hedef);
     }
+    // yeni sahne aynı karede yerine oturur: sahne, karenin hesabından (kare) sonra kurulduğu için bu yapılmazsa bir kare
+    // boyunca oyuncular konumsuz (ekran dışında) ve kamera eski haliyle çizilirdi (tek karelik boş arka plan)
+    this.nesneler.forEach((n) => n.uygula());
+    this.kameraUygula();
     this.sahneBas = this.saat;
     this.olaylar = [...s.olaylar].sort((a, b) => a.t - b.t);
     this.siradaki = 0;
@@ -524,6 +600,7 @@ export class Film {
     this.nesneler.clear();
     // önceki sahnenin süren tween'leri (kesmede kamera / yol) yeni sahneye karışmasın
     this.tweenler = [];
+    this.kamTween = null;
     Object.values(this.katmanlar).forEach((k) => k.replaceChildren());
     this.tezgahVar = !!s.tezgah;
     this.evMi = s.arka === 'ev';
@@ -538,6 +615,7 @@ export class Film {
       const oy = new Oyuncu(o.tip, this.hiz, !!o.yan);
       const n = new Nesne(o, oy.el, oy.oran);
       n.el.dataset.oyuncu = id;
+      n.tur = `${o.tip}${o.yan ? ':yan' : ''}`;
       n.alt = oy.alt;
       n.merkezY = 0.6;
       n.kirp = o.kirp ?? null;
@@ -554,6 +632,7 @@ export class Film {
       const n = new Nesne(e, esyaCiz(e.tip, this.dosya.film, this.dosya.malzeme), ESYA_ORAN[e.tip] ?? 1, ESYA_MERKEZ[e.tip]);
       n.el.dataset.esya = id;
       n.el.dataset.tip = e.tip;
+      n.tur = e.tip;
       this.esyaTip.set(id, e.tip);
       n.alt = ESYA_ALT[e.tip] ?? 0;
       n.kirp = e.kirp ?? null;
@@ -568,6 +647,7 @@ export class Film {
     this.tut = s.tut ?? [];
     this.konusan = null;
     this.duzelt = { x: 0, y: 0 };
+    this.duzeltHiz = { x: 0, y: 0 };
     this.ilkKare = true;
     this.isikAyarla(s.isik ?? 0);
     this.el.classList.toggle('sabah', s.isikTon === 'sabah');
@@ -686,10 +766,25 @@ export class Film {
       const c = l < Infinity ? Math.min(hedef, Math.max(0.75, 1 / this.kam.z, (100 * W) / (S * this.kam.z * (r - l + 8)))) : hedef;
       this.zCarpan += (c - this.zCarpan) * (this.ilkKare ? 1 : 0.06);
     }
-    const k = this.ilkKare ? 1 : 0.12;
-    this.ilkKare = false;
-    this.duzelt.x += (hx - this.duzelt.x) * k;
-    this.duzelt.y += (hy - this.duzelt.y) * k;
+    if (this.ilkKare) {
+      this.ilkKare = false;
+      this.duzelt = { x: hx, y: hy };
+      this.duzeltHiz = { x: 0, y: 0 };
+      return;
+    }
+    // kritik sönümlü yay: konuşan / tutulan değişince kadraj tek karede kaymaya başlamaz, hızlanıp yavaşlayarak oturur
+    // (eskiden her kare farkın %12'si: ilk karede birden kayıyordu)
+    const dt = this.kareDt;
+    if (dt <= 0) return;
+    const w = 2 / 0.18;
+    const x = w * dt;
+    const e = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+    for (const ek of ['x', 'y'] as const) {
+      const fark = this.duzelt[ek] - (ek === 'x' ? hx : hy);
+      const t = (this.duzeltHiz[ek] + w * fark) * dt;
+      this.duzeltHiz[ek] = (this.duzeltHiz[ek] - w * t) * e;
+      this.duzelt[ek] = (ek === 'x' ? hx : hy) + (fark + t) * e;
+    }
   }
 
   private kameraUygula() {
@@ -717,10 +812,10 @@ export class Film {
 
   // ---------------------------------------------------------------- geçiş
   /** Çapraz geçiş: önceki sahnenin kopyası yeni dünyanın hemen üstünde (ışık ve alt yazının altında) söner */
-  private capraz(kopya: HTMLElement, sure: number) {
+  /** önceki karenin kopyası yalnız resim: oyuncu / eşya adları ve katman adı taşımaz (seçiciler yeni sahneyi bulsun) */
+  private kopyaHazirla(kopya: HTMLElement) {
     kopya.classList.add('fl-capraz');
     kopya.setAttribute('aria-hidden', 'true');
-    // kopya yalnız resim: oyuncu / eşya adları ve katman adı taşımaz (seçiciler yeni sahneyi bulsun)
     for (const e of kopya.querySelectorAll<HTMLElement>('[data-oyuncu],[data-esya],[data-tip],[data-tasinan]')) {
       delete e.dataset.oyuncu;
       delete e.dataset.esya;
@@ -728,6 +823,71 @@ export class Film {
       delete e.dataset.tasinan;
     }
     kopya.querySelector('.fl-orta')?.classList.replace('fl-orta', 'fl-orta-kopya');
+  }
+
+  /** Kesmede ekranda görünen: kadraj (orta katmanın dünya %'si; y alttan) ve görünür nesnelerin dünya kutuları */
+  private gorunum() {
+    const E = this.el.getBoundingClientRect();
+    const L = this.katmanlar.orta.getBoundingClientRect();
+    const kadraj = L.width && L.height ? { l: ((E.left - L.left) / L.width) * 100, r: ((E.right - L.left) / L.width) * 100, alt: ((L.bottom - E.bottom) / L.height) * 100, ust: ((L.bottom - E.top) / L.height) * 100 } : null;
+    const izler = new Map<string, NesneIzi>();
+    this.nesneler.forEach((n, id) => {
+      const iz = nesneIzi(n);
+      if (iz) izler.set(id, iz);
+    });
+    return { kadraj, izler };
+  }
+
+  /**
+   * Aynı yerde kesme: yeni sahnenin başı önceki sahnenin sonundan farklı mı (eski kadrajda görünen bir oyuncu / eşya
+   * yer değiştirmiş, belirmiş, kaybolmuş, dönmüş ya da başka çizime geçmiş)? Kadraj dışındaki farklar sayılmaz.
+   */
+  private yerlesimDegisti(g: ReturnType<Film['gorunum']>) {
+    const k = g.kadraj;
+    if (!k) return false;
+    const gorunur = (z: NesneIzi | null | undefined): z is NesneIzi => !!z && z.r > k.l && z.l < k.r && z.ust > k.alt && z.alt < k.ust;
+    const idler = new Set([...g.izler.keys(), ...this.nesneler.keys()]);
+    for (const id of idler) {
+      const a = g.izler.get(id);
+      const n = this.nesneler.get(id);
+      const b = n ? nesneIzi(n) : null;
+      if (!gorunur(a) && !gorunur(b)) continue;
+      if (!a || !b) return true;
+      if (a.tur !== b.tur || a.yon !== b.yon || Math.abs(a.x - b.x) > 0.4 || Math.abs(a.y - b.y) > 0.4 || Math.abs(a.w - b.w) > 0.3 || Math.abs(a.don - b.don) > 3) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Kısa karartma: önceki sahnenin son karesi (donmuş kopya) kısa sürede koyulaşır, tam karanlıkta yeni sahne (kendi
+   * kadrajı ve yerleşimiyle) altında hazırdır, karanlık açılır. Toplam ~0.6 sn; sahne süreleri değişmez.
+   */
+  private dalis(kopya: HTMLElement) {
+    this.kopyaHazirla(kopya);
+    this.dunya.style.zIndex = '';
+    this.dunya.after(kopya);
+    const [kapan, bekle, acil] = [0.18, 0.06, 0.36];
+    const top = kapan + bekle + acil;
+    const d = this.dalisEl.style;
+    d.opacity = '0';
+    this.tween(top, 'dogrusal', (u) => {
+      const t = u * top;
+      // eski kare donuk: karartma hemen başlar (donukluk görünmesin); karanlıktan yavaşlayarak çıkar (yeni kare hemen
+      // belirmeye başlar)
+      if (t < kapan) d.opacity = (t / kapan).toFixed(3);
+      else {
+        // tam karanlıkta eski kare kalkar
+        if (kopya.isConnected) kopya.remove();
+        d.opacity = t < kapan + bekle ? '1' : (1 - EGRI.cik((t - kapan - bekle) / acil)).toFixed(3);
+      }
+    }, () => {
+      kopya.remove();
+      d.opacity = '0';
+    });
+  }
+
+  private capraz(kopya: HTMLElement, sure: number) {
+    this.kopyaHazirla(kopya);
     // Karakterler ve eşyalar yarı saydam görünmesin (başka kadrajın gökyüzü üstünde grimsi hayalet olur): kopyada yalnız
     // arka plan kalır, kopya yeni dünyanın ALTINDA tam opak durur; yeni sahnenin arka plan katmanları üstünde belirir,
     // oyuncular ve eşyalar (orta katman) baştan tam opak.
@@ -742,6 +902,7 @@ export class Film {
     this.tween(sure, 'yumusak', (u) => yaz(String(u)), () => {
       yaz('');
       kopya.remove();
+      this.dunya.style.zIndex = '';
     });
   }
 
@@ -762,11 +923,8 @@ export class Film {
     const egri = o.egri as string | undefined;
     if (o.kim === 'kamera') {
       if (Array.isArray(o.tut)) this.tut = o.tut as string[];
-      const a = { ...this.kam };
-      const [x, y, z] = [Number(o.x ?? a.x), Number(o.y ?? a.y), Number(o.z ?? a.z)];
-      this.tween(sure, egri ?? 'yumusak', (u) => {
-        this.kam = { x: a.x + (x - a.x) * u, y: a.y + (y - a.y) * u, z: a.z + (z - a.z) * u };
-      });
+      const a = this.kam;
+      this.kameraGit(sure, egri ?? 'yumusak', { x: Number(o.x ?? a.x), y: Number(o.y ?? a.y), z: Number(o.z ?? a.z) });
       return;
     }
     if (o.kim === 'isik') {

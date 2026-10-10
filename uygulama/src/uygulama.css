@@ -756,27 +756,33 @@
 @keyframes ug-rozet-gel {
   from { scale: 0; }
 }
-/* uzun adın baş kısmı ("Mino ile Kino'nun"): resmin sol üstünde küçük tabela; boyu resmin enine göre (cqi) */
+/* uzun adın baş kısmı ("Mino ile Kino'nun"): resmin sol üstünde küçük tabela; boyu resmin enine göre (cqi).
+   Hiç kesilmez: dar kartta (küçük yatay telefon, 4 sütun) okunur boyda kalıp iki satıra iner ("Mino ile / Kino'nun").
+   Parlak kapak ışığının (::after, z 6) üstünde: yazı soluklaşmaz. */
 .ug-kok .ug-kart-ust {
   position: absolute;
-  z-index: 5;
+  z-index: 7;
   left: 4%;
   top: 5%;
-  max-width: 90%;
-  padding: 0.12em 0.55em 0.16em;
-  border-radius: 999px;
+  max-width: 92%;
+  padding: 0.14em 0.55em 0.18em;
+  border-radius: 0.8em;
   background: #fff;
   border: 2px solid var(--kontur);
   box-shadow: 0 2px 0 var(--kontur);
   color: color-mix(in srgb, var(--r) 80%, var(--kontur));
   font-weight: 700;
-  font-size: clamp(9px, 7cqi, 0.95rem);
+  font-size: clamp(11px, 7cqi, 0.95rem);
   line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
+  text-wrap: balance;
   rotate: -3deg;
   pointer-events: none;
+}
+/* uygulamada kilitli kartta sol üst köşede kilit rozeti: tabela rozetin altından başlar (üst üste binmez). Rozetin alt
+   kenarı (kartın üstünden boy - 9 px; hafif eğik) eksi resmin kart içindeki payı (çizgi + iç boşluk + resim çerçevesi) */
+.ug-kok .ug-kart[data-kilitli] .ug-kart-ust {
+  top: calc(clamp(32px, 8vmin, 44px) - 4px - var(--cizgi) - clamp(5px, 1.2vmin, 9px));
 }
 @keyframes ug-rozet {
   0%, 80%, 100% { transform: none; }

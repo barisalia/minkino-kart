@@ -262,6 +262,9 @@ async function oyna(page: Page, yas: number, ekran: (ad: string) => Promise<unkn
   await gorevBekle(page, ['saril'], T);
   await expect(ege(page, 'anne')).toHaveAttribute('data-resim', 'sariliyor');
   await expect(ege(page, 'anne')).toHaveClass(/sariliyor/);
+  // ödül kartı birazdan sahneye gelir: sahne kırpılmamış (kırpma yalnız finalde), yani ayrı katman yığını değil; kart
+  // alt yazı / düğme şeritlerinin üstünde görünür
+  expect(await page.locator(SAHNE).evaluate((e) => getComputedStyle(e).clipPath)).toBe('none');
   await ekran('22-saril');
   await bekle(200, 3000);
   await ekran('22-aferin');
@@ -290,6 +293,48 @@ test('Ege Uyuyor: açılış kartı', async ({ page }, info) => {
   await page.screenshot({ path: `tests/screens/${info.project.name}-ege-acilis.png` });
   await page.locator('.eg-bolum-kart').click();
   await expect(page.locator('.eg-sahne')).toBeVisible({ timeout: 15000 });
+  expect(hatalar).toEqual([]);
+});
+
+test('Ege Uyuyor: ekran dönünce oda, pencere ve perde yeniden hizalanır', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  const vp = page.viewportSize()!;
+  const yan = { width: vp.height, height: vp.width };
+  /** pencere ve perdenin yeri (dünyanın %'si) ve odanın satır içi konumu */
+  const olc = () =>
+    page.evaluate(() => {
+      const s = (q: string) => (document.querySelector(q) as HTMLElement).style;
+      const p = s('[data-ege="pencere"]');
+      const d = s('[data-ege="perde"]');
+      return { pencere: [p.left, p.top, p.width].map(parseFloat), perde: [d.left, d.width, d.height].map(parseFloat), oda: s('.eg-sahne .mc-oda').backgroundPosition };
+    });
+  const ac = async () => {
+    await page.goto('./macera/?test=1&ekran=bolum&yas=5&bolum=ege');
+    await gorevBekle(page, ['battaniye']);
+    await page.waitForTimeout(300);
+  };
+  // döndürülmüş ekranda baştan açılan bölümün ölçüleri: dönünce aynısı olmalı
+  await page.setViewportSize(yan);
+  await ac();
+  const hedefYan = await olc();
+  await page.setViewportSize(vp);
+  await ac();
+  const hedefDik = await olc();
+  await page.setViewportSize(yan);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-ege-dondu.png` });
+  const yakin = (a: number[], b: number[]) => a.forEach((v, i) => expect(Math.abs(v - b[i]), `${a} ~ ${b}`).toBeLessThan(0.6));
+  const donmus = await olc();
+  expect(donmus.oda).toBe(hedefYan.oda);
+  yakin(donmus.pencere, hedefYan.pencere);
+  yakin(donmus.perde, hedefYan.perde);
+  // geri dönünce de
+  await page.setViewportSize(vp);
+  await page.waitForTimeout(400);
+  const geri = await olc();
+  expect(geri.oda).toBe(hedefDik.oda);
+  yakin(geri.pencere, hedefDik.pencere);
+  yakin(geri.perde, hedefDik.perde);
   expect(hatalar).toEqual([]);
 });
 

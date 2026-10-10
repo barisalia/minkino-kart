@@ -116,6 +116,14 @@
     linear-gradient(180deg, rgba(255, 120, 80, 0.3), rgba(255, 170, 80, 0.22) 55%, rgba(120, 60, 140, 0.2));
   mix-blend-mode: multiply;
 }
+/* kesmede kısa karartma (motor.ts → dalis): aynı yerde yeni çekim; karakterler kamera kayarken tek karede sıçramaz */
+.fl-kok .fl-dalis {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: #1e1a2e;
+}
 /* iris geçişi: ortası açık daire, dışı karanlık (--iris 0 kapalı … 1 açık) */
 .fl-kok .fl-iris {
   --iris: 0;

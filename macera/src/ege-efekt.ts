@@ -191,6 +191,16 @@ export class TavanYildizlari {
   }
 }
 
+/** Ekranın sol / sağ güvenli alan payı (px; çentik, yuvarlak köşe): env(safe-area-inset-*) gizli bir ölçü kutusundan */
+function yanGuvenliAlan(): [number, number] {
+  const o = h('div', { 'aria-hidden': 'true', style: 'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;pointer-events:none;padding:0 env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px)' });
+  document.body.append(o);
+  const c = getComputedStyle(o);
+  const r: [number, number] = [parseFloat(c.paddingLeft) || 0, parseFloat(c.paddingRight) || 0];
+  o.remove();
+  return r;
+}
+
 /** Ninni yıldızları: doğru söylenen (ya da sallanan) her nota bir yıldız yakar */
 export class NinniYildizlari {
   readonly el: HTMLElement;
@@ -212,8 +222,10 @@ export class NinniYildizlari {
    * şeritleri de kullanır, sahne bandı taşabilir: sınır ekranın kendisi).
    */
   yerles(besik: DOMRect, kap: DOMRect) {
-    const solS = 8;
-    const sagS = innerWidth - 8;
+    // çentikli yatay telefonda uç yıldızlar çentiğin / yuvarlak köşenin altına girmesin: güvenli alan payı da eklenir
+    const [gSol, gSag] = yanGuvenliAlan();
+    const solS = 8 + gSol;
+    const sagS = innerWidth - 8 - gSag;
     const w = Math.max(40, Math.min(besik.width * 1.02, sagS - solS));
     const hh = besik.height * 0.62;
     const orta = besik.left + besik.width / 2;
