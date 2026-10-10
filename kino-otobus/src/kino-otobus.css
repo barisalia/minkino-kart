@@ -2506,8 +2506,8 @@
 .ko-kok .ko-leke {
   position: absolute;
   top: calc(-4 * var(--u));
-  width: calc(80 * var(--u));
-  height: calc(64 * var(--u));
+  width: calc(84 * var(--u));
+  height: calc(72 * var(--u));
   transform: translate(-50%, -50%);
   display: grid;
   place-items: center;

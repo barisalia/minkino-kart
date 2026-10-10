@@ -77,6 +77,10 @@ export function duvarSusleri(): Duvar {
         // Gün 1 (raf tek sıra): kara tahta ses düğmesinin solunda, kavanoz rafı altında tam enle
         const tBoy = Math.min(b.boy - 2 * pay, 72 * u, (b.en - pay) / TAHTA);
         if (tBoy >= 36 * u) koy(tahta, b.sol + (b.en - tBoy * TAHTA) / 2, b.ust + pay, tBoy * TAHTA, tBoy);
+        // geniş duvarda (tablet) kara tahtanın solunda sarkan lamba
+        const lEn = 30 * u;
+        const bosSol = (b.en - tBoy * TAHTA) / 2;
+        if (bosSol >= lEn + 2 * pay) koy(lamba, b.sol + bosSol / 2 - lEn / 2, b.ust - 4 * u, lEn, lEn * 1.6);
         const kBoy = Math.min(alti.boy - pay, 64 * u, (alti.en - 2 * pay) / KAV);
         koy(kavanoz, alti.sol + (alti.en - kBoy * KAV) / 2, alti.ust + alti.boy - kBoy, kBoy * KAV, kBoy);
         return;
