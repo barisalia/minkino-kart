@@ -1,7 +1,7 @@
 /** Dedektif Mino · Vaka 3 "Kaybolan Yıldız Kurabiyeler": mantık (dedektif/src/mantik3.ts), görsel haritası, cümleler, gizlilik */
 import { describe, expect, it } from 'vitest';
 import { karakterCumleleri, normal, tumCumleler } from '../../src/audio/cumleler';
-import { erisimTuru } from '../../src/engine/erisim';
+import { ERISIM, erisimTuru, kilitliMi } from '../../src/engine/erisim';
 import { Dosya, kameraHesap, kartSirasi, Soru, dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 import {
   ADIMLAR3,
@@ -48,24 +48,36 @@ const rnd = (t: number) => () => {
   return t / 4294967296;
 };
 
-describe('Vaka 3: gizli bayrak ve erişim', () => {
-  it('oyunda henüz seçilemez; ?vaka=3, ?vaka3=1 ya da test kısayoluyla görünür', () => {
-    expect(VAKA3_YAYINDA).toBe(false);
-    expect(vaka3Gorunur('')).toBe(false);
-    expect(vaka3Gorunur('?test=1&cozuldu=2')).toBe(false);
+describe('Vaka 3: yayın bayrağı ve erişim', () => {
+  it('bayrak açıksa her yerde (uygulamada da) görünür; kapalıysa yalnız web adresiyle (?vaka=3, ?vaka3=1, test kısayolu)', () => {
+    if (VAKA3_YAYINDA) {
+      for (const adres of ['', '?test=1&cozuldu=2', '?vaka=3']) {
+        expect(vaka3Gorunur(adres), adres).toBe(true);
+        expect(vaka3Gorunur(adres, true), `uygulama ${adres}`).toBe(true);
+      }
+    } else {
+      expect(vaka3Gorunur('')).toBe(false);
+      expect(vaka3Gorunur('?test=1&cozuldu=2')).toBe(false);
+    }
     expect(vaka3Gorunur('?vaka=3')).toBe(true);
     expect(vaka3Gorunur('?vaka3=1')).toBe(true);
     expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim')).toBe(true);
   });
   it('uygulama (mağaza) derlemesinde bayrak kapalıyken hiçbir adres parametresi açmaz', () => {
-    expect(vaka3Gorunur('?vaka=3', true)).toBe(false);
-    expect(vaka3Gorunur('?vaka3=1', true)).toBe(false);
-    expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim', true)).toBe(false);
+    expect(vaka3Gorunur('?vaka=3', true)).toBe(VAKA3_YAYINDA);
+    expect(vaka3Gorunur('?vaka3=1', true)).toBe(VAKA3_YAYINDA);
+    expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim', true)).toBe(VAKA3_YAYINDA);
   });
-  it('abonelikle (Vaka 2 gibi): dedektif/vaka3 abonelik', () => {
+  it('abonelikle (Vaka 2 gibi): dedektif/vaka3 tabloda abonelik; kilitler etkinken abone değilse kilitli', () => {
+    expect(ERISIM['dedektif/vaka3']).toBe('abonelik');
     expect(erisimTuru('dedektif/vaka3')).toBe('abonelik');
     expect(erisimTuru('dedektif/vaka2')).toBe('abonelik');
+    expect(erisimTuru('dedektif/vaka1')).toBe('abonelik');
     expect(erisimTuru('dedektif')).toBe('abonelik');
+    expect(kilitliMi('dedektif/vaka3', { etkin: true, premium: false })).toBe(true);
+    expect(kilitliMi('dedektif/vaka3', { etkin: true, premium: true })).toBe(false);
+    // web sitesinde (kilitler etkin değil) açık
+    expect(kilitliMi('dedektif/vaka3', { etkin: false, premium: false })).toBe(false);
   });
   it('kayıt: Vaka 3 dosyaya üçüncü vaka olarak girer', () => {
     sifirla();

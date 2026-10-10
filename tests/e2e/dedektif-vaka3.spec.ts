@@ -1,5 +1,5 @@
 /**
- * Dedektif Mino · Vaka 3 "Kaybolan Yıldız Kurabiyeler" (/dedektif/?vaka=3; seçim ekranında henüz gizli): vaka baştan
+ * Dedektif Mino · Vaka 3 "Kaybolan Yıldız Kurabiyeler" (/dedektif/?vaka=3; seçim ekranında VAKA3_YAYINDA ile): vaka baştan
  * sona (telefon ve tablet): un halkaları → boş yerleri say → kart (6 yanlış, 2 yanlış, 4 doğru) → pervazda kırıntı →
  * kart (kapı yanlış, pencere doğru) → üç patika (tohum, havuç, yıldız şeker) → kart (tohum yanlış, yıldız şeker doğru) →
  * yıldız şeker izi → el izi + tüy → kart (kuş ve kirpi yanlış: sincap parlar) → kovuklar (baykuş, kuyruk iki kez) →
@@ -7,8 +7,13 @@
  * Fındık'a sürükle) → çizgi roman → Vaka Dosyam'da üç vaka. Ayrıca: gizlilik, yerleşim (4 ekran), dönüş.
  * Kareler: tests/screens/vaka3-*.png (git'e girmez).
  */
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
+
+/** dedektif/src/mantik3.ts → VAKA3_YAYINDA (modül JSON içe aktardığı için kaynaktan okunur) */
+const VAKA3_YAYINDA = /VAKA3_YAYINDA = true/.test(readFileSync(resolve('dedektif/src/mantik3.ts'), 'utf8'));
 
 /** zaman çarpanı (gerçek hızda beklemeler uzar) */
 let Z = 1;
@@ -66,11 +71,19 @@ async function kart(page: Page, id: string, yanlis: boolean) {
 }
 let ekranAdi = (ad: string, proje: string) => `tests/screens/vaka3-${ad}${proje === 'iphone' ? '' : '-' + proje}.png`;
 
-test('Dedektif Vaka 3: oyunda gizli; ?vaka3=1 ile üçüncü dosya (Vaka 2 çözülmeden kilitli)', async ({ page }) => {
+test('Dedektif Vaka 3: yayın bayrağına göre üçüncü dosya (kapalıyken ?vaka3=1 ile); Vaka 2 çözülmeden kilitli', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=2');
-  await expect(page.locator('.dd-klasor')).toHaveCount(2);
-  await expect(page.locator('.dd-klasor[data-vaka="vaka3"]')).toHaveCount(0);
+  await expect(page.locator('.dd-klasor')).toHaveCount(VAKA3_YAYINDA ? 3 : 2);
+  await expect(page.locator('.dd-klasor[data-vaka="vaka3"]')).toHaveCount(VAKA3_YAYINDA ? 1 : 0);
+  if (VAKA3_YAYINDA) {
+    // Vaka 1 çözülmüş, Vaka 2 çözülmemiş: üçüncü dosya kilitli, dokununca açılmaz
+    await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=1');
+    await expect(page.locator('.dd-klasor[data-vaka="vaka3"]')).toHaveClass(/dd-kilitli/);
+    await page.locator('.dd-klasor[data-vaka="vaka3"]').click();
+    await page.waitForTimeout(300);
+    await expect(page.locator('.dd-acilis')).toHaveCount(1);
+  }
   await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=1&vaka3=1');
   await expect(page.locator('.dd-klasor')).toHaveCount(3);
   await expect(page.locator('.dd-klasor[data-vaka="vaka3"]')).toHaveClass(/dd-kilitli/);
@@ -294,6 +307,23 @@ for (const [en, boy] of [
     await icinde(page.locator('.dd-sahne .dd-v3-final-kurabiye'), 'final kurabiye');
     await ortada(page.locator('.dd-sahne .dd-v3-findik'), 'Fındık');
     await page.screenshot({ path: `tests/screens/vaka3-final-${en}x${boy}.png` });
+    // seçim ekranı (üç dosya) ve Vaka Dosyam (üç vaka + Yakında) ekranda, dosyalar üst üste binmez
+    await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=2&vaka3=1');
+    await expect(page.locator('.dd-klasor')).toHaveCount(3);
+    await page.waitForTimeout(300);
+    await icinde(page.locator('.dd-klasor'), 'dosya');
+    const d = await page.locator('.dd-klasor').evaluateAll((x) => x.map((e) => e.getBoundingClientRect().toJSON() as DOMRect));
+    for (let i = 0; i < d.length; i++)
+      for (let j = i + 1; j < d.length; j++) {
+        const [a, b] = [d[i], d[j]];
+        expect(Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 4 && Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 4, `dosya ${i} ile ${j} üst üste`).toBe(false);
+      }
+    await page.screenshot({ path: `tests/screens/vaka3-secim-${en}x${boy}.png` });
+    await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=3&vaka3=1&ekran=dosya');
+    await expect(page.locator('.dd-vaka-kart')).toHaveCount(4);
+    await page.waitForTimeout(300);
+    await icinde(page.locator('.dd-vaka-kart'), 'Vaka Dosyam kartı');
+    await page.screenshot({ path: `tests/screens/vaka3-dosyam-${en}x${boy}.png` });
     expect(hatalar).toEqual([]);
   });
 }

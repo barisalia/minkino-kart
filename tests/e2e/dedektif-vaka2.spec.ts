@@ -6,8 +6,13 @@
  * (bir yanlış sekme) → atkı yumurtalara örtülür → üç dokunuşla çatlar → çizgi roman → Vaka Dosyam'da iki vaka.
  * Kareler: tests/screens/vaka2-*.png (git'e girmez).
  */
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
+
+/** dedektif/src/mantik3.ts → VAKA3_YAYINDA: yayındaysa seçim ekranında üçüncü dosya da var */
+const DOSYA_SAYISI = /VAKA3_YAYINDA = true/.test(readFileSync(resolve('dedektif/src/mantik3.ts'), 'utf8')) ? 3 : 2;
 
 const adim = (page: Page) => page.locator('.dd-vaka').getAttribute('data-adim');
 async function adimBekle(page: Page, beklenen: RegExp, timeout = 30_000) {
@@ -69,7 +74,7 @@ test('Dedektif Vaka 2: seçim ekranı, kilit, vaka baştan sona, çizgi roman, i
   test.setTimeout(300_000);
   // Vaka 1 çözülmeden Vaka 2 kilitli: dokununca açılmaz
   await page.goto('./dedektif/?test=1&sifirla=1');
-  await expect(page.locator('.dd-klasor')).toHaveCount(2);
+  await expect(page.locator('.dd-klasor')).toHaveCount(DOSYA_SAYISI);
   await expect(page.locator('.dd-klasor[data-vaka="vaka2"]')).toHaveClass(/dd-kilitli/);
   await page.locator('.dd-klasor[data-vaka="vaka2"]').click();
   await page.waitForTimeout(300);
@@ -259,11 +264,16 @@ for (const [en, boy] of [
         expect(k.y + k.height, `${ad} alt`).toBeLessThanOrEqual(boy + 1);
       }
     };
-    // seçim ekranı: iki dosya ekranda, üst üste binmez
+    // seçim ekranı: dosyalar (iki, Vaka 3 yayındaysa üç) ekranda, üst üste binmez
     await page.goto('./dedektif/?test=1&sifirla=1&cozuldu=1');
+    await expect(page.locator('.dd-klasor')).toHaveCount(DOSYA_SAYISI);
     await icinde(page.locator('.dd-klasor'), 'dosya');
-    const [a, b] = await page.locator('.dd-klasor').evaluateAll((x) => x.map((e) => e.getBoundingClientRect().toJSON() as DOMRect));
-    expect(Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 4 && Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 4, 'dosyalar üst üste').toBe(false);
+    const d = await page.locator('.dd-klasor').evaluateAll((x) => x.map((e) => e.getBoundingClientRect().toJSON() as DOMRect));
+    for (let i = 0; i < d.length; i++)
+      for (let j = i + 1; j < d.length; j++) {
+        const [a, b] = [d[i], d[j]];
+        expect(Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 4 && Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 4, `dosya ${i} ile ${j} üst üste`).toBe(false);
+      }
     await page.screenshot({ path: `tests/screens/vaka2-secim-${en}x${boy}.png` });
     // Halka 2: ayak kartları ve ipucu fotoğrafı
     await page.goto('./dedektif/?test=1&ekran=vaka2&adim=kim');

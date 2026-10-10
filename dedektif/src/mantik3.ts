@@ -8,8 +8,8 @@
  * otobüsün yanı (park), büyük ağaç, ağacın kovuğunun içi (kiler). Koordinatlar resmin oranı (x: en, y: boy; 0..1, sol
  * üstten), boylar oda yüksekliğinin oranı (mantik.ts gibi).
  *
- * YAYIN: Vaka 3 henüz oyunda seçilemez (VAKA3_YAYINDA = false). Denemek için: /dedektif/?vaka=3 (doğrudan vaka) ya da
- * /dedektif/?vaka3=1 (seçim ekranında üçüncü dosya). Açmak için VAKA3_YAYINDA = true.
+ * YAYIN: Vaka 3 oyunda (VAKA3_YAYINDA = true): seçim ekranında üçüncü dosya, Vaka 2 çözülünce açılır; abonelikle
+ * (src/engine/erisim.ts → dedektif/vaka3). Geri almak için false: o zaman yalnız web'de /dedektif/?vaka=3 ya da ?vaka3=1.
  */
 import D from '../../content/dedektif.json';
 import { ODA_ORAN, type DosyaHalkasi, type IpucuTanim, type Kadraj, type OdaId, type SorguHalkasi } from './mantik';
@@ -23,7 +23,7 @@ export const B3 = V3.balon;
 
 // ---------------------------------------------------------------- yayın bayrağı
 /** Vaka 3 oyunda (seçim ekranı, Vaka Dosyam) görünsün mü. false: yalnız web'de ?vaka=3 / ?vaka3=1 ile açılır. */
-export const VAKA3_YAYINDA = false;
+export const VAKA3_YAYINDA = true;
 /** Uygulama (mağaza) derlemesi mi: orada bayrak kapalıyken hiçbir adres parametresi Vaka 3'ü açmaz */
 const UYGULAMA = import.meta.env?.MODE === 'uygulama';
 /**

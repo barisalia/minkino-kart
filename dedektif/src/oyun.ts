@@ -6,7 +6,7 @@
  * Vaka 1 çözülünce açılır), dosya (Vaka Dosyam: çizgi romanlar).
  * Test / gösterim: ?test=1&ekran=vaka&adim=tuy (doğrudan bir halkaya), &ekran=vaka2&adim=kim, &sifirla=1 (kayıt
  * sıfırlanır), &cozuldu=1 (Vaka 1 çözülmüş sayılır), &cozuldu=2 (iki vaka da), &tohum=3 (sabit rastgelelik).
- * Vaka 3 (gizli, mantik3.ts → VAKA3_YAYINDA): ?vaka=3 doğrudan vaka; ?vaka3=1 seçim ekranında üçüncü dosya;
+ * Vaka 3 (mantik3.ts → VAKA3_YAYINDA; Vaka 2 çözülünce açılır): ?vaka=3 doğrudan vaka; ?vaka3=1 bayrak kapalıyken üçüncü dosya;
  * test: ?test=1&ekran=vaka3&adim=kim.
  */
 import { ekranKaydet, Uygulama, type BaslatSecenekleri } from '../../src/uygulama';
@@ -54,14 +54,15 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
     }
     (window as unknown as { __dedektif: unknown }).__dedektif = { app, kayit };
   }
-  // Vaka 3 (henüz seçim ekranında yok: mantik3.ts → VAKA3_YAYINDA): web'de /dedektif/?vaka=3 doğrudan açar.
+  // Vaka 3 (mantik3.ts → VAKA3_YAYINDA): web'de /dedektif/?vaka=3 doğrudan açar; uygulamada yalnız Vaka 2 çözülmüşse
+  // (kilit kuralı adresle atlanmaz).
   // Uygulama derlemesinde bayrak kapalıyken vaka3Gorunur() false: ?vaka=3 da test kısayolu ekran=vaka3 de yok sayılır.
   if (!vaka3Gorunur()) {
     if (ekran === 'vaka3') {
       ekran = 'acilis';
       param = undefined;
     }
-  } else if (ekran === 'acilis' && q.get('vaka') === '3') {
+  } else if (ekran === 'acilis' && q.get('vaka') === '3' && (import.meta.env?.MODE !== 'uygulama' || kayit.cozulen.includes('vaka2'))) {
     ekran = 'vaka3';
     param = { adim: 'giris' };
   }
