@@ -1,10 +1,12 @@
 # Minkino: mağaza metinleri (Google Play + App Store)
 
 > Yazan: Senarist, 2026-10-02. Yöneticinin isteğiyle; yarınki yayın için.
-> Köşeli parantezli yerler **[...]** yayından önce doldurulmalı: fiyat, deneme süresi, bağlantılar.
+> **2026-10-10 güncelleme (yayın mühendisi, YAYIN-HAZIRLIK-19-EKIM.md):** Ada'nın Doğum Günü (5. macera), Meyve Suyu Köşesi ve Tart Bakalım eklendi; deneme süresi (7 gün) ve gizlilik/şartlar adresleri yazıldı; yayımlanmamış kitaba atıf yapan cümle çıkarıldı; §7 uygulamadaki listeyle (src/abonelik/ekran.ts, src/engine/erisim.ts) aynı yapıldı; "Yenilikler" güncellendi. Uzun açıklamada artık doldurulacak yer yok. §7'deki `[fiyat]`, `[ay|yıl]`, `[12 + 7 = ?]` yer tutucu değil, uygulamanın ekranda kendisi doldurduğu değişkenler.
+> **Yaş ifadesi (karar Barış'ın, metne dokunulmadı):** "3-6" geçen yerler: §1 Apple altyazı yedeği ("…3-6 yaş"), §1 EN altyazı ("ages 3-6"), §1 EN kısa açıklama ("ages 3-6"), §3 TR uzun açıklamanın 2. paragrafı ("3-6 yaş için"), §4 EN uzun açıklama ("aged 3-6"); ayrıca sitenin `index.html` ve `kartlar/index.html` sayfa açıklaması (meta description). "3-8" geçen yerler: `gizlilik/index.html` (TR "3-8 yaş", EN "ages 3-8") ve `sartlar/index.html` (TR "3-8 yaş", EN "aged 3-8"). Play hedef kitlesi (§8): "5 yaş ve altı" + "6-8". Zorluk ayarı "3-4 / 5-6" bir yaş aralığı iddiası değil, değişmesi gerekmez.
+> **Tart Bakalım:** çürük domates/kompost çizimi yer tutucuysa ve düğme bu sürümde gizlenirse, Tart Bakalım metinden de (§3, §4, §5, §8) çıkarılmalı.
 > **Teyit edilmesi gerekenler (Barış/yönetici):**
-> - Kitaplarla bağ cümlesi. Eski karar (ORTAK_NOTLAR 2026-09-24): "oyun kitaplara bağlı değil". Bu yüzden metinde QR ya da kod yok, yalnız "aynı dünya" deniyor.
-> - "Veri toplanmaz / reklam yok" cümleleri mağaza sürümünde gerçekten doğru mu? Üçüncü taraf ölçüm aracı ya da Sentry olmamalı.
+> - Kitaplarla bağ: kitap henüz yayımlanmadığı için uzun açıklamada kitaba atıf yok (2026-10-10). Kitap çıkınca bir cümle eklenebilir.
+> - "Veri toplanmaz / reklam yok" cümleleri mağaza sürümünde gerçekten doğru mu? Üçüncü taraf ölçüm aracı ya da Sentry olmamalı. (2026-10-10: doğru; tek üçüncü taraf RevenueCat, yalnız satın alma bilgisi; "Güvenli ve sade" maddesi buna göre yazıldı.)
 > - Minik Sanatçı 2026-10-03 itibarıyla tamamen kaldırıldı (site ve uygulama); metinlerde geçmez.
 > - **Destek / iletişim e-postası (iki mağazada da): minkinokids@gmail.com**
 
@@ -36,9 +38,10 @@ Minkino, 3-6 yaş için hazırlanmış Türkçe ve sesli eğitici bir oyun düny
 
 • **Kartlar:** Bul, eşleştir, say, farklı olanı seç, sıradakini bil, hafızanı dene. Hayvanlar, meyveler, taşıtlar, renkler, şekiller, sayılar ve harfler. Her doğru cevap albüme yeni bir kart kazandırır.
 
-• **Mino'nun Pazarı:** Hayvan müşteriler sırayla gelip ister; çocuğunuz meyve ve sebzeleri sepete koyar. Renkler, sayma ve paylaşma pazarda öğrenilir.
+• **Mino'nun Pazarı:** Hayvan müşteriler sırayla gelip ister; çocuğunuz meyve ve sebzeleri sepete koyar. **Meyve Suyu Köşesi**'nde meyveleri blendera atıp renkleri karıştırır: kırmızıyla sarı turuncu olur! **Tart Bakalım**'da müşterinin istediği kadar domatesi sayar ya da kantarda tartar. Renkler, sayma, ölçme ve paylaşma pazarda öğrenilir.
 
-• **Sesli Maceralar:** Hikâyeli bölümler. Her görev hikâyenin bir parçası:
+• **Sesli Maceralar:** 5 hikâyeli bölüm. Her görev hikâyenin bir parçası:
+ – Ada'nın Doğum Günü: Ada'ya sürpriz parti! Balonları şişir, saklanıp sus, "Sürpriz!" de, şarkı söyle, mumları üfle.
  – Şşş, Ege Uyuyor!: Bebek Ege'yi doyur, kuklalarla güldür, ninniyle uyut.
  – Mino Banyo Yapmıyor!: Çamura bulanan Mino ile Kino'yu köpürt, durula, kurula.
  – Elektrikler Kesildi!: Karanlıktan korkan Kino'ya cesaret ver, battaniyeden çadır kur.
@@ -66,17 +69,15 @@ Minkino, 3-6 yaş için hazırlanmış Türkçe ve sesli eğitici bir oyun düny
 
 • Reklam yok.
 • Çocuğunuzun sesi kaydedilmez, hiçbir yere gönderilmez; mikrofon yalnızca o anda sesin şeklini ölçer.
-• Kişisel veri toplanmaz. Çocuğun adı yalnızca cihazda kalır.
-• Satın alma ve ayarlar ebeveyn kapısının arkasındadır.
+• Çocuğunuzdan kişisel veri toplanmaz. Çocuğun adı, ilerlemesi ve çizimleri yalnızca cihazda kalır. Abonelik için yalnızca mağazanın satın alma bilgisi işlenir.
+• Satın alma, paylaşma ve ayarlar ebeveyn kapısının arkasındadır.
 
 **ABONELİK**
 
-Bazı oyunlar ücretsiz. Tüm oyunları, maceraları ve filmleri açmak için Minkino Premium'a abone olabilirsiniz. [N] gün ücretsiz deneme. Abonelik, deneme süresi bitmeden iptal edilmezse otomatik yenilenir. Ayrıntılar abonelik ekranında.
+Kartlar, bir çizgi film (Mino'nun Karpuzu), bir macera (Elektrikler Kesildi!) ve Kino Ne Giysin?'in kış bölümü ücretsiz. Tüm oyunları, maceraları ve filmleri açmak için Minkino Premium'a abone olabilirsiniz: aylık ya da yıllık. Yeni abonelere 7 gün ücretsiz deneme. Abonelik, deneme ya da dönem bitmeden iptal edilmezse otomatik yenilenir. Ayrıntılar abonelik ekranında.
 
-Mino ile Kino'yu kitaplarından tanıyorsanız, o dünya burada canlanıyor. Tanımıyorsanız, tanışmanın tam zamanı!
-
-Gizlilik politikası: [bağlantı]
-Kullanım koşulları: [bağlantı]
+Gizlilik politikası: https://minkino-site.barisalidogan.workers.dev/gizlilik/
+Kullanım koşulları: https://minkino-site.barisalidogan.workers.dev/sartlar/
 
 ---
 
@@ -90,9 +91,10 @@ Minkino is a voice-powered learning world for children aged 3-6. Curious kitten 
 
 • **Cards:** Find, match, count, spot the odd one out, guess what comes next, and test your memory. Animals, fruits, vehicles, colors, shapes, numbers and letters. Every right answer wins a new card for the album.
 
-• **Mino's Market:** Animal customers come one by one with their orders; your child fills their baskets with fruits and vegetables. Colors, counting and sharing, all at the market.
+• **Mino's Market:** Animal customers come one by one with their orders; your child fills their baskets with fruits and vegetables. At the **Juice Corner**, toss fruit into the blender and mix colors: red and yellow make orange! In **Weigh It!**, count out the tomatoes a customer asks for or weigh them on the scales. Colors, counting, measuring and sharing, all at the market.
 
-• **Voice Adventures:** Story episodes where every task is part of the story:
+• **Voice Adventures:** 5 story episodes where every task is part of the story:
+ – Ada's Birthday: A surprise party for Ada! Blow up the balloons, hide and keep quiet, shout "Surprise!", sing and blow out the candles.
  – Shh, Baby Ege Is Sleeping!: Feed baby Ege, make him giggle with puppets, sing him a lullaby.
  – Mino Won't Take a Bath!: Mino and Kino are covered in mud. Soap them up, rinse and dry!
  – The Lights Went Out!: Help scared Kino be brave and build a blanket fort.
@@ -121,23 +123,21 @@ Minkino is a voice-powered learning world for children aged 3-6. Curious kitten 
 
 • No ads.
 • Your child's voice is never recorded or sent anywhere; the microphone only measures the shape of the sound in the moment.
-• No personal data is collected. Your child's name stays on the device.
-• Purchases and settings are behind a parental gate.
+• No personal data is collected from your child. Your child's name, progress and drawings stay on the device. For the subscription, only the store's purchase information is processed.
+• Purchases, sharing and settings are behind a parental gate.
 
 **SUBSCRIPTION**
 
-Some games are free. Subscribe to Minkino Premium to unlock all games, adventures and cartoons. [N]-day free trial. The subscription renews automatically unless cancelled before the trial ends. See the subscription screen for details.
+Cards, one cartoon (Mino's Watermelon), one adventure (The Lights Went Out!) and the winter chapter of What Should Kino Wear? are free. Subscribe to Minkino Premium, monthly or yearly, to unlock all games, adventures and cartoons. New subscribers get a 7-day free trial. The subscription renews automatically unless cancelled before the trial or current period ends. See the subscription screen for details.
 
-If you know Mino and Kino from their books, their world comes to life here. If not, it's the perfect time to meet them!
-
-Privacy Policy: [link]
-Terms of Use: [link]
+Privacy Policy: https://minkino-site.barisalidogan.workers.dev/gizlilik/
+Terms of Use: https://minkino-site.barisalidogan.workers.dev/sartlar/
 
 ---
 
 ## 5. Yenilikler (ilk sürüm)
-- **TR:** "Minkino'nun ilk sürümü! Kartlar, Mino'nun Pazarı, 4 Sesli Macera, 6 çizgi film, Çiz Canlansın ve Mino ile Kino'nun Pasta Otobüsü sizi bekliyor. İyi eğlenceler!"
-- **EN:** "Minkino's very first release! Cards, Mino's Market, 4 Voice Adventures, 6 cartoons, Draw & Come Alive and Mino & Kino's Bakery Bus are waiting for you. Have fun!"
+- **TR:** "Minkino'nun ilk sürümü! Kartlar, Meyve Suyu Köşesi ve Tart Bakalım'la Mino'nun Pazarı, Ada'nın Doğum Günü dahil 5 Sesli Macera, 6 çizgi film, Çiz Canlansın, Dedektif Mino, Kino Ne Giysin? ve Mino ile Kino'nun Pasta Otobüsü sizi bekliyor. İyi eğlenceler!"
+- **EN:** "Minkino's very first release! Cards, Mino's Market with the Juice Corner and Weigh It!, 5 Voice Adventures including Ada's Birthday, 6 cartoons, Draw & Come Alive, Detective Mino, What Should Kino Wear? and Mino & Kino's Bakery Bus are waiting for you. Have fun!"
 
 ---
 
@@ -162,19 +162,21 @@ Terms of Use: [link]
 **Alt başlık:** "Bütün oyunlar, maceralar ve filmler." · **EN:** "All games, adventures and cartoons."
 **Ebeveyn notu (üstte):** "Bu ekran büyükler içindir." · **EN:** "This screen is for grown-ups."
 
-**Ne açılıyor (madde):**
+**Ne açılıyor (madde):** uygulamadaki liste (`src/abonelik/ekran.ts → ACILANLAR`) ile aynı. Kartlar bütünüyle ücretsiz olduğu için burada yok (`src/engine/erisim.ts`). Ücretsiz olanlar: Kartlar, Mino'nun Karpuzu (film), Elektrikler Kesildi! (macera), Kino Ne Giysin? Kış.
 - TR:
   - Tüm Sesli Maceralar
   - Bütün çizgi filmler
-  - Tüm kart paketleri
-  - Mino ile Kino'nun Pasta Otobüsü'nün bütün günleri
+  - Pazar, Mino ile Kino'nun Pasta Otobüsü, Çiz Canlansın
+  - Dedektif Mino ve Kino Ne Giysin? mevsimleri
   - Yeni bölümler geldikçe
+  - Reklam yok, güvenli
 - EN:
   - All Voice Adventures
   - Every cartoon
-  - All card packs
-  - Every day of Mino & Kino's Bakery Bus
+  - Mino's Market, Mino & Kino's Bakery Bus, Draw & Come Alive
+  - Detective Mino and every season of What Should Kino Wear?
   - New episodes as they arrive
+  - No ads, safe
 
 **Planlar:**
 | Plan | Türkçe | English |
@@ -185,8 +187,8 @@ Terms of Use: [link]
 > Fiyatlar Barış'ın kararı (2026-10-02): aylık 99 TL, yıllık 499 TL. Yıllık plan 12 × 99 = 1.188 TL yerine 499 TL, yani %58 daha ucuz. Uygulamada fiyatın elle yazılmaması, mağazadan (RevenueCat) yerel para birimiyle çekilmesi önerilir; yurt dışında mağaza kendi fiyatını gösterir.
 
 **Deneme:**
-- TR: "[N] gün ücretsiz dene" · düğme: **"Ücretsiz denemeyi başlat"**
-- EN: "Try [N] days free" · button: **"Start free trial"**
+- TR: "7 gün ücretsiz dene" · düğme: **"Ücretsiz denemeyi başlat"** (yalnız deneme hakkı olana gösterilir; yoksa "Abone ol")
+- EN: "Try 7 days free" · button: **"Start free trial"**
 - Deneme sonrası (küçük, düğmenin altında):
   - TR: "Deneme bitince [fiyat] / [ay|yıl]. İstediğin zaman iptal edebilirsin."
   - EN: "Then [price] / [month|year]. Cancel anytime."
@@ -222,7 +224,7 @@ Terms of Use: [link]
 | Oyun | Öğrenme kazanımları (TR) | Learning goals (EN) |
 |---|---|---|
 | **Kartlar** | **Matematik:** sayıları tanıma ve sayma, şekiller, örüntüde sıradakini bulma, farklı olanı seçme (sınıflama). **Türkçe / erken okuryazarlık:** harflerle tanışma (harfin sesi), resim-kelime eşleme, kelime dağarcığı (hayvanlar, meyveler, taşıtlar). **Renkler.** **Bilişsel:** görsel hafıza (Hafıza oyunu), dikkat. | **Math:** recognising numbers and counting, shapes, completing patterns, spotting the odd one out (classifying). **Early literacy:** meeting letters by their sounds, matching pictures to words, vocabulary (animals, fruit, vehicles). **Colours.** **Thinking skills:** visual memory (Memory game), attention. |
-| **Mino'nun Pazarı** | **Matematik:** istenen kadar sayma, birebir eşleme, az-çok. **Renkler** ve meyve-sebze adları. **Sosyal-duygusal:** sırayla hizmet etme, müşteriyi dinleme, paylaşma, sabır. **Türkçe:** sözlü yönergeyi anlama (dinleme). | **Math:** counting out a requested amount, one-to-one matching, more and fewer. **Colours** and names of fruit and vegetables. **Social-emotional:** serving customers in turn, listening, sharing, patience. **Language:** following spoken instructions (listening). |
+| **Mino'nun Pazarı** (Meyve Suyu Köşesi, Tart Bakalım dahil) | **Matematik:** istenen kadar sayma, birebir eşleme, az-çok. **Ölçme (Tart Bakalım):** ağır-hafif, kantarda yarım ve bir kilo, sayarak ve tartarak istenen miktarı bulma. **Renkler** ve meyve-sebze adları; **renk karışımı (Meyve Suyu Köşesi):** kırmızı + sarı = turuncu gibi ara renkler. **Sosyal-duygusal:** sırayla hizmet etme, müşteriyi dinleme, paylaşma, sabır. **Türkçe:** sözlü yönergeyi anlama (dinleme). | **Math:** counting out a requested amount, one-to-one matching, more and fewer. **Measuring (Weigh It!):** heavy and light, half a kilo and a kilo on the scales, finding an amount by counting and by weighing. **Colours** and names of fruit and vegetables; **mixing colours (Juice Corner):** red + yellow = orange and other secondary colours. **Social-emotional:** serving customers in turn, listening, sharing, patience. **Language:** following spoken instructions (listening). |
 | **Sesli Maceralar** (Ege Uyuyor, Banyo, Elektrikler Kesildi, Salıncak Kimin?, Doğum Günü) | **Sosyal-duygusal:** empati (bebeği uyutmak, korkan arkadaşa cesaret vermek), sıra beklemek, paylaşmak, özbakım (banyo). **Müzik ve hareket:** ritim, alkış, yüksek-alçak ses, sessizlik (öz denetim, sabır). **Türkçe:** hikâyeyi dinleme ve takip etme, sözlü yönerge. Her sesli görev dokunarak da oynanır. | **Social-emotional:** empathy (soothing a baby, encouraging a scared friend), waiting your turn, sharing, self-care (bath time). **Music and movement:** rhythm, clapping, loud and soft, silence (self-regulation, patience). **Language:** listening to and following a story, spoken instructions. Every voice task can also be played by touch. |
 | **Çizgi Filmler** | **Sosyal-duygusal ve değerler:** her film tek bir güzel dersle biter: paylaşmak, özür dilemek, yardım etmek, sıra beklemek, "lütfen" demek, oyundan sonra toplamak. **Türkçe:** dinleme ve anlama. | **Social-emotional and values:** each one-minute cartoon ends with a single gentle lesson: sharing, saying sorry, helping, waiting your turn, saying "please", tidying up after play. **Language:** listening comprehension. |
 | **Çiz Canlansın** | **Sanat:** çizme, boyama, renkleri seçme, yaratıcılık. **Hareket / ince motor:** yol takibi (3 yaş), noktaları birleştirme (4), bakarak çizim (5), hafızadan çizim (6); kalem kontrolü ve okuma-yazmaya hazırlık için çizgi çalışması. **Şekiller.** | **Art:** drawing, colouring, choosing colours, creativity. **Fine motor skills:** path tracing (age 3), dot-to-dot (4), copying (5), drawing from memory (6); pencil control and pre-writing line practice. **Shapes.** |
@@ -237,4 +239,4 @@ Terms of Use: [link]
 - TR: **NE ÖĞRENİR?** Harfler ve sesler, sayılar ve sayma, kelimeler, renkler, şekiller, örüntüler, hafıza ve dikkat; sıra beklemek, paylaşmak, özür dilemek, sabır ve empati. MEB Okul Öncesi Eğitim Programı'nın (2024) Türkçe, Matematik, Sanat, Müzik ve Sosyal-Duygusal alanlarıyla uyumlu.
 - EN: **WHAT DOES MY CHILD LEARN?** Letters and sounds, numbers and counting, words, colours, shapes, patterns, memory and attention; taking turns, sharing, saying sorry, patience and empathy. Aligned with the Turkish Ministry of Education's Preschool Curriculum (2024): Language, Math, Art, Music and Social-Emotional skills.
 
-> **Barış'a not (yaş):** Play Console'da hedef yaş "5 yaş ve altı" + "6-8" seçilecekse mağaza metinlerindeki "3-6 yaş" ifadeleri "3-8 yaş" olarak güncellenmeli (gizlilik ve kullanım koşulları sayfaları 2026-10-03'te 3-8 yapıldı). Uzun açıklamada Dedektif Mino henüz yok; senarist eklemeli.
+> **Barış'a not (yaş):** Play Console'da hedef yaş "5 yaş ve altı" + "6-8" seçilecekse mağaza metinlerindeki "3-6 yaş" ifadeleri "3-8 yaş" olarak güncellenmeli (gizlilik ve kullanım koşulları sayfaları 2026-10-03'te 3-8 yapıldı). Karar Barış'ın; geçtiği yerlerin listesi dosyanın başında.
