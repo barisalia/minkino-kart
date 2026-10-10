@@ -1,7 +1,7 @@
 /**
  * Kino'nun Otobüsü: dükkânın içi (yalnız süs, hiçbiri dokunuşu almaz). Sıcak ışık, pencerenin tepesinde sallanan
  * külah zinciri (var olan külah ve top görselleri), duvarda resimli kara tahta menü, kavanozlu raf ve sarkan lamba
- * (Ek C yer tutucuları), dolabın camından yükselen soğuk buhar.
+ * (Ek C Gemini görselleri), dolabın camından yükselen soğuk buhar.
  *
  * Duvar süsleri ses düğmesinin solunda ve sos rafının üstünde kalan boş duvara yerleşir (duvarYerlestir: her ölçüde
  * yeniden; yer yoksa o süs gizlenir). Dikey ekranda (tablet dikey) duvar yok: yalnız ışık, zincir ve buhar.
@@ -52,6 +52,13 @@ export interface Duvar {
   gizle(): void;
 }
 
+/**
+ * Duvar süslerinin en/boy oranı (Gemini görselleri, kino-otobus-isle.cjs kırpımı: kara-tahta 1024×926, kavanoz-rafi
+ * 1024×499, lamba 497×1024). Kutular bu oranda kurulur: görsel ezilmez, kesilmez, kutuyu tam doldurur (lambanın
+ * kordonu kutunun tepesinde).
+ */
+export const DUVAR_ORAN = { tahta: 1024 / 926, kavanoz: 1024 / 499, lamba: 497 / 1024 };
+
 /** Duvar süsleri: kara tahta, kavanoz rafı, lamba */
 export function duvarSusleri(): Duvar {
   const tahta = h('div.ko-duvar-tahta', { html: gorsel('kara-tahta') });
@@ -70,17 +77,17 @@ export function duvarSusleri(): Duvar {
     gizle,
     yerlestir(b, alti, u) {
       gizle();
-      const TAHTA = 240 / 180;
-      const KAV = 240 / 150;
+      const { tahta: TAHTA, kavanoz: KAV, lamba: LAMBA } = DUVAR_ORAN;
       const pay = 6 * u;
       if (alti.boy >= 40 * u && alti.en >= 80 * u) {
         // Gün 1 (raf tek sıra): kara tahta ses düğmesinin solunda, kavanoz rafı altında tam enle
-        const tBoy = Math.min(b.boy - 2 * pay, 72 * u, (b.en - pay) / TAHTA);
+        const tBoy = Math.min(b.boy - 2 * pay, 76 * u, (b.en - pay) / TAHTA);
         if (tBoy >= 36 * u) koy(tahta, b.sol + (b.en - tBoy * TAHTA) / 2, b.ust + pay, tBoy * TAHTA, tBoy);
-        // geniş duvarda (tablet) kara tahtanın solunda sarkan lamba
-        const lEn = 30 * u;
+        // geniş duvarda (tablet) kara tahtanın solunda sarkan lamba (kordon tepeden)
+        const lBoy = Math.min(58 * u, b.boy + 4 * u);
+        const lEn = lBoy * LAMBA;
         const bosSol = (b.en - tBoy * TAHTA) / 2;
-        if (bosSol >= lEn + 2 * pay) koy(lamba, b.sol + bosSol / 2 - lEn / 2, b.ust - 4 * u, lEn, lEn * 1.6);
+        if (bosSol >= lEn + 2 * pay) koy(lamba, b.sol + bosSol / 2 - lEn / 2, b.ust - 4 * u, lEn, lBoy);
         const kBoy = Math.min(alti.boy - pay, 64 * u, (alti.en - 2 * pay) / KAV);
         koy(kavanoz, alti.sol + (alti.en - kBoy * KAV) / 2, alti.ust + alti.boy - kBoy, kBoy * KAV, kBoy);
         return;
@@ -97,8 +104,9 @@ export function duvarSusleri(): Duvar {
         koy(kavanoz, b.sol + kalan - kBoy * KAV, b.ust + b.boy - kBoy, kBoy * KAV, kBoy);
         kalan -= kBoy * KAV + pay;
       }
-      const lEn = 30 * u;
-      if (kalan >= lEn) koy(lamba, b.sol + Math.max(0, kalan / 2 - lEn / 2), b.ust - 4 * u, lEn, Math.min(b.boy * 0.9, lEn * 1.6));
+      const lBoy = Math.min(b.boy * 0.95, 58 * u);
+      const lEn = lBoy * LAMBA;
+      if (kalan >= lEn) koy(lamba, b.sol + Math.max(0, kalan / 2 - lEn / 2), b.ust - 4 * u, lEn, lBoy);
     },
   };
 }

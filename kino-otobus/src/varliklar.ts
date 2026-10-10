@@ -17,9 +17,7 @@ import {
   hamurSurahiSvg,
   jantSvg,
   kalpSekerSvg,
-  karaTahtaSvg,
   kaseSvg,
-  kavanozRafiSvg,
   kemikTabelaSvg,
   kepceSvg,
   kirazSvg,
@@ -28,12 +26,8 @@ import {
   kulahMakinesiSvg,
   kulahSvg,
   kupaSvg,
-  lambaSvg,
-  lekeSvg,
   mumSvg,
   otobusSvg,
-  sinekSvg,
-  sungerSvg,
   serpintiKavanozSvg,
   serpintiUstSvg,
   semsiyeSvg,
@@ -119,15 +113,15 @@ export const VARLIK = {
   'sus-ampul': kod(ampulSvg),
   'sus-jant': kod(jantSvg),
   'sus-kino-kiraz-sapka': YOK, // Kino'nun kafa grubuna (otobus.ts → KINO_YERI.kirazSapka); yoksa kod çizimi (cizim.ts → KINO_KIRAZ_SAPKA)
-  // ---- Ek C · dükkânın içi, dokunsal hazırlık ve yan işler (yer tutucu kod çizimi; Gemini dosyası gelince o)
-  'kara-tahta': kod(karaTahtaSvg), // resimli menü (yazısız), duvarda
-  'kavanoz-rafi': kod(kavanozRafiSvg), // duvar rafı, üç kavanoz
-  lamba: kod(lambaSvg), // sarkan sıcak lamba
-  'leke-cilek': kod(() => lekeSvg('cilek')),
-  'leke-cikolata': kod(() => lekeSvg('cikolata')),
-  'leke-vanilya': kod(() => lekeSvg('vanilya')),
-  sunger: kod(sungerSvg),
-  sinek: kod(sinekSvg),
+  // ---- Ek C · dükkânın içi, dokunsal hazırlık ve yan işler (Gemini; külah makinesi, kapağı, sürahi ve hamur hâlâ yer tutucu)
+  'kara-tahta': YOK, // resimli menü (yazısız), duvarda; kutu görselin oranında (dukkan-ic.ts → DUVAR_ORAN)
+  'kavanoz-rafi': YOK, // duvar rafı, üç kavanoz
+  lamba: YOK, // sarkan lamba (Gemini'nin ışık konisi betikte silinir; parıltı CSS: .ko-duvar-lamba::after)
+  'leke-cilek': YOK, // tezgâh lekeleri: üçü aynı biçim ve oran (CSS .ko-leke-g)
+  'leke-cikolata': YOK,
+  'leke-vanilya': YOK,
+  sunger: YOK, // parmağın altındaki sünger (isler.ts → SUNGER_ORAN)
+  sinek: YOK, // 5-6 yaş sinek (CSS .ko-sinek)
   'kulah-makinesi': kod(kulahMakinesiSvg),
   'kulah-makinesi-kapak': kod(kulahMakinesiKapakSvg),
   'hamur-surahi': kod(hamurSurahiSvg),

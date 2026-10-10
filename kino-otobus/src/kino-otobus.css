@@ -2309,11 +2309,12 @@
   transform-origin: 50% 0;
   animation: ko-tahta-sallan 4.5s ease-in-out infinite;
 }
+/* parıltı ampulün ortasında (Gemini lambası: ampul kutunun dibinde) */
 .ko-kok .ko-duvar-lamba::after {
   content: '';
   position: absolute;
   left: 50%;
-  top: 70%;
+  top: 92%;
   width: 260%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
@@ -2503,6 +2504,10 @@
   height: 0;
   z-index: 6;
 }
+/* dikeyde yuvalar ve kumbara dolabın hemen üstünde biter: lekeler dolabın kenarına iner (yuvaların altına binmesin) */
+.ko-kok .ko-gun[data-yon='dikey'] .ko-lekeler {
+  top: calc(16 * var(--u));
+}
 .ko-kok .ko-leke {
   position: absolute;
   top: calc(-4 * var(--u));
@@ -2515,9 +2520,10 @@
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
 }
+/* Gemini lekesi 1024×641 (üçü aynı oran) */
 .ko-kok .ko-leke-g {
   width: calc(58 * var(--u));
-  height: calc(34 * var(--u));
+  height: calc(36.3 * var(--u));
   opacity: calc(0.18 + 0.82 * var(--kir, 1));
   scale: calc(0.72 + 0.28 * var(--kir, 1));
   transition:
@@ -2556,12 +2562,13 @@
     background-position: 0% 0;
   }
 }
+/* Gemini sineği 978×1024; dokunma alanı ::before ile 78u × 80u */
 .ko-kok .ko-sinek {
   position: absolute;
-  top: calc(-34 * var(--u));
-  width: calc(44 * var(--u));
-  height: calc(40 * var(--u));
-  margin-left: calc(-22 * var(--u));
+  top: calc(-38 * var(--u));
+  width: calc(42 * var(--u));
+  height: calc(44 * var(--u));
+  margin-left: calc(-21 * var(--u));
   z-index: 2;
   cursor: pointer;
   touch-action: none;
@@ -2578,11 +2585,6 @@
 .ko-kok .ko-sinek.ko-vizil .ko-sinek-ic {
   animation: ko-vizil 1.7s ease-in-out infinite;
 }
-.ko-kok .ko-sinek .ko-sinek-kanat {
-  transform-box: fill-box;
-  transform-origin: 50% 90%;
-  animation: ko-kanat 0.07s linear infinite alternate;
-}
 @keyframes ko-vizil {
   0%,
   100% {
@@ -2596,11 +2598,6 @@
   }
   75% {
     transform: translate(calc(-14 * var(--u)), calc(-6 * var(--u))) rotate(6deg);
-  }
-}
-@keyframes ko-kanat {
-  to {
-    transform: scaleY(0.55);
   }
 }
 
@@ -2999,7 +2996,6 @@
   .ko-kok .ko-duvar-tahta,
   .ko-kok .ko-duvar-lamba,
   .ko-kok .ko-sinek-ic,
-  .ko-kok .ko-sinek-kanat,
   .ko-kok .ko-is-kosesi-k,
   .ko-kok .ko-is-kosesi::after,
   .ko-kok .ko-sos-akis {
