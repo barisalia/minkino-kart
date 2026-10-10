@@ -762,9 +762,11 @@
 .ug-kok .ug-kart-ust {
   position: absolute;
   z-index: 7;
-  left: 4%;
+  --ust-sol: 4%;
+  left: var(--ust-sol);
   top: 5%;
-  max-width: 92%;
+  /* sağ üstteki "Yeni" rozetine (resmin sağından ~40 px) değmez: sığmazsa iki satıra iner */
+  max-width: calc(100% - var(--ust-sol) - 46px);
   padding: 0.14em 0.55em 0.18em;
   border-radius: 0.8em;
   background: #fff;
@@ -779,10 +781,11 @@
   rotate: -3deg;
   pointer-events: none;
 }
-/* uygulamada kilitli kartta sol üst köşede kilit rozeti: tabela rozetin altından başlar (üst üste binmez). Rozetin alt
-   kenarı (kartın üstünden boy - 9 px; hafif eğik) eksi resmin kart içindeki payı (çizgi + iç boşluk + resim çerçevesi) */
+/* uygulamada kilitli kartta sol üst köşede kilit rozeti: tabela rozetin sağından başlar (üst üste binmez; dikey telefonda
+   Pasta kartının resmi alçak, alta inse resmi örterdi). Rozetin sağ kenarı (kartın solundan boy - 7 px; hafif eğik) eksi
+   resmin kart içindeki payı (çizgi + iç boşluk + resim çerçevesi) + 6 px boşluk */
 .ug-kok .ug-kart[data-kilitli] .ug-kart-ust {
-  top: calc(clamp(32px, 8vmin, 44px) - 4px - var(--cizgi) - clamp(5px, 1.2vmin, 9px));
+  --ust-sol: calc(clamp(32px, 8vmin, 44px) + 2px - var(--cizgi) - clamp(5px, 1.2vmin, 9px));
 }
 @keyframes ug-rozet {
   0%, 80%, 100% { transform: none; }
