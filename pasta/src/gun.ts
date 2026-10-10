@@ -437,8 +437,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   let mutlu = 0;
   let uyuyanOldu = false;
 
+  /** servis edilmiş, yiyip dans eden müşteriler (gidene kadar değil, dansı bitene kadar) */
+  const yiyenler = new Set<PastaMusteri>();
+  /**
+   * Yeni müşteri soldan yürür: yerinin solunda yiyen / dans eden müşteri varsa önünden geçip kalpleri, lokmayı, dansı
+   * örtmesin; dans bitene kadar beklenir (sayaç her 100 ms yeniden dener).
+   */
+  const yolKapali = (yer: number) => [...yiyenler].some((m) => {
+    const y = yerindeki.indexOf(m);
+    return y >= 0 && yerler[y].offsetLeft < yerler[yer].offsetLeft;
+  });
+
   async function musteriGelsin() {
-    const yer = yerindeki.findIndex((x) => !x);
+    const yer = yerindeki.findIndex((x, j) => !x && !yolKapali(j));
     const i = siradakiIndeks(kuyruk, musteriler.map((m) => m.ad));
     if (yer < 0 || i < 0) return;
     const sip = kuyruk.splice(i, 1)[0];
@@ -567,6 +578,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     tabakCiz();
     if (tabak) salla(tabakEl, 'ps-zipla');
     m.bitti = true;
+    yiyenler.add(m);
     m.el.classList.add('ps-bitti');
     adimGuncelle();
     const hedef = efekt_.merkez(m.el, 0.5, 0.45);
@@ -612,6 +624,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     jetonDussun(m, para.jeton, para.bahsis);
     void soyle(tesekkur(m.ad, m.verilen), m);
     await m.dans();
+    yiyenler.delete(m);
     if (kapandi) return;
     minoCanli.ugurla();
     // sağa yürüyerek gider

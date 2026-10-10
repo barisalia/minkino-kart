@@ -160,6 +160,22 @@ test('Kino’nun Otobüsü: son müşteri ödeyince gün hemen kaydedilir; "Bug�
   expect(hatalar.filter(agDisi)).toEqual([]);
 });
 
+test('Kino’nun Otobüsü akşam: jetonlar beşli sıralarda yan yana (tek sütun değil); sayımdan sonra tek sayı kalır', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./kino-otobus/?test=1&sifirla=1&yas=kucuk&ekran=aksam&gun=1&kazanc=15');
+  await expect(page.locator('.ko-aksam-jeton')).toHaveCount(15);
+  const xler = await page.locator('.ko-aksam-jeton').evaluateAll((js) => js.map((j) => Math.round(j.getBoundingClientRect().left)));
+  // beş sütun, ikinci sıra yarım jeton kaymış: en az 5 farklı x, sıradaki jetonlar soldan sağa
+  expect(new Set(xler).size).toBeGreaterThanOrEqual(5);
+  expect(xler[1]).toBeGreaterThan(xler[0]);
+  expect(xler[5]).not.toBe(xler[0]);
+  await page.locator('.ko-aksam-kumbara').click();
+  await expect(page.locator('.ko-dukkan')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('.ko-kumbara-sayi')).toHaveText('15');
+  await expect(page.locator('.ko-sayac')).toBeHidden();
+  expect(hatalar.filter(agDisi)).toEqual([]);
+});
+
 test('Kino’nun Otobüsü: gün kartına çift dokunuş günü bir kez açar', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./kino-otobus/?test=1&sifirla=1&yas=kucuk&ekran=acilis');

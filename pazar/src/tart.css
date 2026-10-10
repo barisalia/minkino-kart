@@ -20,6 +20,17 @@
   --tb-s: max(46px, calc(var(--tb-w) * 0.19));
 }
 
+/* yatay tablet: tezgâh ekranın alt yarısına sıkışmasın; kantar, yığın ve kompost ~%20 iri */
+@media (min-aspect-ratio: 13/10) and (min-height: 541px) {
+  .pz-kok .tb-ekran {
+    --tb-w: min(43vw, 48vh, 480px);
+  }
+}
+/* uzaktan geçen soluk hayvanlar Tart'ta tezgâh hizasında bekleyen müşteri hayaleti gibi duruyor: gösterilmez */
+.pz-kok .tb-ekran .pz-yaya {
+  display: none;
+}
+
 /* ---------- Ön tezgâh: kompost | yığın | kantar ---------- */
 .pz-kok .tb-tezgah {
   position: relative;

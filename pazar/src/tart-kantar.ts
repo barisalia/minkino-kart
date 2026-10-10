@@ -12,7 +12,7 @@
 import { h, TEST_MODU } from '../../src/ui/dom';
 import { type Cisim, type Dunya } from './fizik';
 import { adres } from './gorsel';
-import { ARKA_KIRP, legenDunyasi, LEGEN_BOY, LEGEN_KESIT, ON_KIRP } from './tart-legen';
+import { ARKA_KIRP, IC_SAG, IC_SOL, legenDunyasi, LEGEN_BOY, LEGEN_KESIT, ON_KIRP } from './tart-legen';
 import { carpmaSesi, sarsSesi } from './tart-ses';
 import { BOLGE_ACI, ibreAcisi, IBRE_EN, toplam, yaricap, type KasaMeyve, type TartIstek } from './tart';
 
@@ -288,8 +288,7 @@ export class Kantar {
   birak(km: KasaMeyve, x: number, y: number, vx = 0, vy = 0): void {
     const r = yaricap(km);
     let [wx, wy] = this.dunyada(x, y);
-    const k = LEGEN_KESIT;
-    wx = Math.max(k[0][0] + r + 0.5, Math.min(k[k.length - 1][0] - r - 0.5, wx));
+    wx = Math.max(IC_SOL + r + 0.5, Math.min(IC_SAG - r - 0.5, wx));
     wy = Math.min(wy, this.yiginTepesi(wx, r));
     const c = this.dunya.ekle(wx, wy, r, { sek: km.meyve === 'patates' ? 0.18 : km.meyve === 'elma' ? 0.38 : 0.3 });
     // fırlatılan meyve fırlatıldığı yönde uçar (sınırlı)
@@ -481,8 +480,7 @@ export class Kantar {
     c.tutuluyor = false;
     // fizik için yeniden değmeli (ağırlığı inince eklenir)
     c.degdi = false;
-    const k = LEGEN_KESIT;
-    c.x = Math.max(k[0][0] + c.r + 0.5, Math.min(k[k.length - 1][0] - c.r - 0.5, c.x));
+    c.x = Math.max(IC_SOL + c.r + 0.5, Math.min(IC_SAG - c.r - 0.5, c.x));
     // başka bir cismin içine bırakılmasın
     for (const x of this.govdeler) if (x !== g && !x.c.tutuluyor && Math.hypot(x.c.x - c.x, x.c.y - c.y) < x.c.r + c.r) c.y = Math.min(c.y, this.yiginTepesiHaric(c.x, c.r, g));
     c.vx = Math.max(-260, Math.min(260, vx / this.o));

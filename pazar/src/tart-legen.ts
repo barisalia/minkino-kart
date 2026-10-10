@@ -62,12 +62,22 @@ export const ON_KIRP = cokgen([
   [0, 497],
 ]);
 
-/** Leğenin fizik dünyası: iç kesit ve iki yandan yukarı, hafifçe dışa açılan görünmez duvar */
+/**
+ * Görünmez yan duvarlar kenardan bu kadar içeride dik yükselir; kenardan oraya kısa, içe eğik bir rampa (DUDAK_UST
+ * yükseklikte) iner. Dudağın üstüne düşen meyve rampadan içeri yuvarlanır: kenarda / sepetin önünde havada durmaz.
+ */
+export const DUDAK_IC = 6;
+const DUDAK_UST = 8;
+/** Meyvenin merkezi bu x'lerin arasında kalır (yarıçap kadar içeride): bırakma ve geri koyma sınırları */
+export const IC_SOL = LEGEN_KESIT[0][0] + DUDAK_IC;
+export const IC_SAG = LEGEN_KESIT[LEGEN_KESIT.length - 1][0] - DUDAK_IC;
+
+/** Leğenin fizik dünyası: iç kesit, kenarlarda içe eğik kısa rampa ve üstünde dik görünmez duvar */
 export function legenDunyasi(): Dunya {
   const d = new Dunya();
   const k = LEGEN_KESIT;
   const [sx, sy] = k[0];
   const [ex, ey] = k[k.length - 1];
-  d.cizgi([[sx - 9, -110], [sx, sy], ...k.slice(1, -1), [ex, ey], [ex + 9, -110]]);
+  d.cizgi([[IC_SOL, -110], [IC_SOL, sy - DUDAK_UST], [sx, sy], ...k.slice(1, -1), [ex, ey], [IC_SAG, ey - DUDAK_UST], [IC_SAG, -110]]);
   return d;
 }

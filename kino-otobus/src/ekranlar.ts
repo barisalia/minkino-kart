@@ -172,7 +172,11 @@ export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; m
   const yigin = h(
     'div.ko-aksam-jetonlar',
     {},
-    ...Array.from({ length: kazanc }, (_, i) => h('i.ko-aksam-jeton', { html: gorsel('jeton'), style: `--n:${i % SIRA};--r:${Math.floor(i / SIRA)}` })),
+    // sıralar yarım jeton kaydırılır (tuğla gibi); konum burada hesaplanır (CSS calc'ta % işlemi yok)
+    ...Array.from({ length: kazanc }, (_, i) => {
+      const r = Math.floor(i / SIRA);
+      return h('i.ko-aksam-jeton', { html: gorsel('jeton'), style: `--x:${(i % SIRA) * 26 + (r % 2) * 13}px;--r:${r}` });
+    }),
   );
   const kumbaraSayi = h('b.ko-kumbara-sayi', {}, String(oncesi));
   const kumbara = h('button.ko-kumbara.ko-aksam-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: gorsel('kumbara-kavanoz') }, kumbaraSayi);
@@ -300,6 +304,8 @@ export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; m
     }
     if (kapandi) return;
     kumbaraSayi.textContent = String(kayit.jeton);
+    // sayım bitti: yandaki sayaç kalkar, tek sayı (kavanozdaki) kalır
+    sayac.hidden = true;
     efekt.dogru();
     efekt_.parilti(hedef[0], hedef[1], 10, 0.8, '#FFE45C');
     await dukkanAc();
