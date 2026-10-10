@@ -21,7 +21,11 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { geriGonder, surukle } from '../../pazar/src/surukle';
 import { KALP } from './cizim';
+import { ekranMerkez, elSurukle, icinde, Tutulan } from './dokunsal';
+import { dolapBuhari, duvarSusleri, kulahZinciri, sicakIsik } from './dukkan-ic';
 import { AZ_HAREKET, Efekt, ekranSalla, salla } from './efekt';
+import { KULAH_STOK, kepceBirak, kepceDolum, kulahAzMi, kulahKullan, kulahYap, lekeDuserMi, Sallama, SALLAMA_GEREK, sosDolum } from './el-isi';
+import { isKosesi, KulahPaneli, kulahYigini, Temizlik, type IsOrtami } from './isler';
 import { gunBitti as kayitGunBitti, kaydet, kayit } from './kayit';
 import { kuleCiz, kuleOlcu } from './kule';
 import {
@@ -33,6 +37,7 @@ import {
   okuma,
   secimiIlerlet,
   siparisSonucu,
+  SOS_RENK,
   sosKoy,
   susKoy,
   topKoy,
@@ -97,6 +102,8 @@ interface Slot {
   kuleKap: HTMLElement;
   verDugme: HTMLButtonElement;
   surukleBirak: (() => void)[];
+  /** müşterinin sevinci (dans, çak) sürerken: dokununca biter */
+  atla: (() => void) | null;
 }
 
 export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
@@ -159,41 +166,52 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     h('i.ko-mino-gecis-yer', { 'aria-hidden': 'true' }),
     h('div.ko-musteriler', {}, slotEl[0].kap, h('div.ko-kino-bosluk', {}, kinoYer), slotEl[1].kap),
     h('i.ko-pencere-cerceve', { 'aria-hidden': 'true' }),
+    // dükkânın içi: fırfırın altında sallanan külah zinciri (Kino'nun arkasında, müşterilerin önünde)
+    kulahZinciri(),
   );
   // Kino da müşteriler gibi belden yukarı (tezgâhın arkasında), boyu tablodan
   const kinoOlcu = kutuOlcu('kino', 0.8);
   kinoYer.setAttribute('style', `width:calc(var(--pen-h) * ${kinoOlcu.en.toFixed(4)});bottom:calc(var(--pen-h) * ${kinoOlcu.alt.toFixed(4)});aspect-ratio:${kinoOlcu.oran}`);
 
   // raf: soslar ve süsler (Gün 1'de yalnız çikolata sos); hiçbir zaman küçülmez, artınca iki sıra
+  // dokunuş her zaman geçerli; sürükleme dokunsal yol (şişeyi eğip dök, kavanozu salla, süsü sürükle)
+  const surukleKaldir: (() => void)[] = [];
   const sosDugmeleri = ayar.soslar.map((s) => {
     const b = h('button.ko-raf-esya.ko-sos', { type: 'button', 'data-sos': s, 'aria-label': `${s} sos`, html: gorsel(sosSiseAdi(s)) });
     b.addEventListener('click', () => sosBas(s, b));
+    surukleKaldir.push(sosSurukle(s, b));
     return b;
   });
   const susDugmeleri = ayar.susler.map((s) => {
     const b = h('button.ko-raf-esya.ko-sus', { type: 'button', 'data-sus': s, 'aria-label': s, html: gorsel(susRafAdi(s)) });
     b.addEventListener('click', () => susBas(s, b));
+    surukleKaldir.push(s === 'serpinti' ? serpintiSurukle(b) : susSurukle(s, b));
     return b;
   });
   const rafEsya = [...sosDugmeleri, ...susDugmeleri];
   const raf = h('div.ko-raf', { 'data-n': String(rafEsya.length), style: `--sutun:${Math.ceil(rafEsya.length / (rafEsya.length > 1 ? 2 : 1))}` }, ...rafEsya);
 
   // kaplar
+  // külah rafı: iç içe külahlar (sabah az; külah yapınca dolar, hiç bitmez)
+  let kulahStok: number = KULAH_STOK.bas;
   const kapDugmeleri = ayar.kaplar.map((k) => {
-    const b = h('button.ko-kap-dugme', { type: 'button', 'data-kap': k, 'aria-label': k, html: gorsel(kapAdi(k)) });
+    const b = h('button.ko-kap-dugme', { type: 'button', 'data-kap': k, 'aria-label': k, html: k === 'kulah' ? kulahYigini(kulahStok) : gorsel(kapAdi(k)) });
     b.addEventListener('click', () => kapBas(k, b));
     return b;
   });
   const kaplar = h('div.ko-kaplar', { 'data-n': String(kapDugmeleri.length) }, ...kapDugmeleri);
+  const kulahDugme = kapDugmeleri[ayar.kaplar.indexOf('kulah')] ?? null;
 
-  // dondurma dolabı: tat kapları (Gün 1 tek sıra, büyük)
+  // dondurma dolabı: tat kapları (Gün 1 tek sıra, büyük); kepçeyle sürükleyince top oluşur
   const tatDugmeleri = ayar.tatlar.map((t) => {
     const b = h('button.ko-tat', { type: 'button', 'data-tat': t, 'aria-label': t, html: gorsel(tatKabiAdi(t)) }, h('i.ko-kepce-yer'));
     b.addEventListener('click', () => tatBas(t, b));
+    surukleKaldir.push(kepceSurukle(t, b));
     return b;
   });
   const dolapUrl = adres('dolap');
-  const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 3 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}");--dolap-oran:${DOLAP_GOZLERI.oran.toFixed(4)}` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), h('div.ko-dolap-ic', {}, ...tatDugmeleri));
+  const dolapIc = h('div.ko-dolap-ic', {}, ...tatDugmeleri, dolapBuhari());
+  const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 3 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}");--dolap-oran:${DOLAP_GOZLERI.oran.toFixed(4)}` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), dolapIc);
   if (dolapUrl) {
     // Gemini dolabı: kaplar görseldeki gözlere (fazlası dolabın önüne) oturur (varliklar.ts → DOLAP_GOZLERI)
     dolap.classList.add('ko-resimli');
@@ -216,7 +234,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const kuleKap = h('div.ko-yuva-kule');
     const verDugme = h('button.ko-ver', { type: 'button', 'aria-label': 'Ver', hidden: true }, svg(IKON.onay));
     const yuvaEl = h('div.ko-yuva', { 'data-yuva': String(i), style: `--kurdele:${YUVA_RENK[i]}` }, h('i.ko-kurdele', { 'aria-hidden': 'true' }), h('i.ko-yuva-altlik', { 'aria-hidden': 'true' }), kuleKap, verDugme);
-    return { i, musteri: null, yuva: bosYuva(), ucan: [new Set<number>(), new Set<number>()], mum: null, yerEl: slotEl[i].yerEl, balonYer: slotEl[i].balonYer, yuvaEl, kuleKap, verDugme, surukleBirak: [] };
+    return { i, musteri: null, yuva: bosYuva(), ucan: [new Set<number>(), new Set<number>()], mum: null, yerEl: slotEl[i].yerEl, balonYer: slotEl[i].balonYer, yuvaEl, kuleKap, verDugme, surukleBirak: [], atla: null };
   });
   const yuvalar = h('div.ko-yuvalar', {}, ...slotlar.map((s) => s.yuvaEl));
 
@@ -224,13 +242,17 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   let bugun = 0;
   const kumbaraSayi = h('b.ko-kumbara-sayi', {}, '0');
   const kumbara = h('button.ko-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: gorsel('kumbara-kavanoz') }, kumbaraSayi);
-  const kumbaraYer = h('div.ko-kumbara-yer', {}, h('i.ko-golge', { 'aria-hidden': 'true' }), kumbara);
+  // kumbaranın üstünde külah makinesi (iş köşesi): külah azalınca parlar, dokununca külah yapılır
+  const kose = isKosesi(() => kulahPaneliAc());
+  const kumbaraYer = h('div.ko-kumbara-yer', {}, kose.el, h('i.ko-golge', { 'aria-hidden': 'true' }), kumbara);
   kumbara.addEventListener('click', () => {
     efekt.dokunma();
     salla(kumbara, 'ko-zipla');
   });
 
-  const ustKat = h('div.ko-ust-kat', {}, pencere, raf);
+  // duvar süsleri (kara tahta, kavanoz rafı, lamba): sos rafının üstündeki boş duvara (olc → duvarYerlestir)
+  const duvar = duvarSusleri();
+  const ustKat = h('div.ko-ust-kat', {}, duvar.el, pencere, raf);
   const altKat = h('div.ko-alt-kat', {}, h('i.ko-tezgah-on', { 'aria-hidden': 'true' }), kaplar, dolap, yuvalar, kumbaraYer);
   // 3 kaplı günde tezgâh sıkışık: dolap daralmaz, öbürleri biraz incelir (kino-otobus.css → .ko-sik)
   if (dolapUrl && ayar.kaplar.length >= 3) altKat.classList.add('ko-sik');
@@ -259,7 +281,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const ust = h('div.ust-cubuk.ko-ust', {}, yuvarlakDugme(IKON.geri, 'Geri', () => app.git('acilis'), 'kucuk'), h('div.orta', {}, gunEtiket), sesDugmesi());
 
   const elIpucu = h('div.ko-el-ipucu', { 'aria-hidden': 'true' }, h('i.ko-el-dalga'), h('span.ko-el-el', {}, svg(IKON.el)));
-  const sahne = h('div.ko-sahne', {}, kamera, efekt_.el);
+  const sahne = h('div.ko-sahne', {}, kamera, sicakIsik(), efekt_.el);
   const el = h('div.ko-gun', { 'data-gun': String(gun), 'data-yer': ayar.yer, 'data-yas': yas }, sahne, ust, elIpucu);
 
   // ölçü: --u (tasarım birimi: 844×390 telefonda ~1 px), yön
@@ -282,7 +304,25 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (penH > 0) el.style.setProperty("--pen-h", `${penH.toFixed(1)}px`);
     const yk = slotlar[0].yuvaEl.getBoundingClientRect();
     if (yk.height) el.style.setProperty('--yuva-h', `${(yk.height - 24 * u).toFixed(1)}px`);
+    duvarYerlestir(u, yatay);
   };
+  /** duvar süsleri: sos rafının üstünde, ses düğmesinin solunda kalan boş duvar (dikeyde duvar yok) */
+  function duvarYerlestir(u: number, yatay: boolean) {
+    const k = ustKat.getBoundingClientRect();
+    const r = raf.getBoundingClientRect();
+    const sesD = ust.lastElementChild?.getBoundingClientRect();
+    if (!yatay || !k.width || !r.width || !sesD) return duvar.gizle();
+    const sag = Math.min(sesD.left - 6 * u, k.right - 8 * u);
+    const sol = r.left;
+    const tepe = k.top + 2 * u;
+    const alt = r.top - 2 * u;
+    const sesAlti = Math.min(alt, sesD.bottom + 2 * u);
+    duvar.yerlestir(
+      { sol: sol - k.left, ust: tepe - k.top, en: sag - sol, boy: sesAlti - tepe },
+      { sol: sol - k.left, ust: sesAlti - k.top, en: k.right - 8 * u - sol, boy: alt - sesAlti },
+      u,
+    );
+  }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(olc) : null;
   ro?.observe(el);
 
@@ -292,7 +332,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     sonDokunus = performance.now();
     elIpucuGizle();
     const t = e.target as Element;
-    if (t.closest('button, .ko-musteri, .ko-kule, .ko-kino-yer, .ko-balon, .ko-yuva')) return;
+    if (t.closest('button, .ko-musteri, .ko-kule, .ko-kino-yer, .ko-balon, .ko-yuva, .ko-leke, .ko-sinek, .ko-is-panel')) return;
     const k = efekt_.kutu();
     efekt_.buzYildizi(e.clientX - k.left, e.clientY - k.top);
   });
@@ -353,9 +393,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
 
   // ---------------------------------------------------------------- Kino
   let kinoBas = -9;
+  /** çak: Kino müşterinin yanına eğilip patisini kaldırır (yon -1 sol müşteri, 1 sağ) */
+  let cakBas = -9;
+  let cakYon = 1;
   kino.ekHareket = (pz) => {
     // dokununca kulakları sallanır, hoplar
-    const g = performance.now() / 1000 - kinoBas;
+    const simdi = performance.now() / 1000;
+    const g = simdi - kinoBas;
     if (g < 1.2) {
       const z = Math.max(0, Math.min(1, g / 0.12, (1.2 - g) / 0.25));
       pz.kulakSol += 14 * Math.sin(g * 20) * z;
@@ -363,6 +407,20 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       pz.y -= 3 * Math.abs(Math.sin(g * 9)) * z;
       pz.kuyruk += 30 * Math.sin(g * 30) * z;
     }
+    const c = simdi - cakBas;
+    if (c < 0.85) {
+      const z = Math.max(0, Math.min(1, c / 0.18, (0.85 - c) / 0.2));
+      // sol müşteri: Kino'nun ekranda soldaki kolu (kol-sol)
+      if (cakYon < 0) pz.yukSol = 155 * z;
+      else pz.yukSag = 155 * z;
+      pz.don += cakYon * 7 * z;
+      pz.kuyruk += 25 * Math.sin(c * 28) * z;
+    }
+  };
+  /** Kino'nun küçük tepkisi (her dokunsal işte): kulak sallanır, hop, kuyruk */
+  const kinoTepki = (heyecan = false) => {
+    kinoBas = performance.now() / 1000;
+    if (heyecan && kino.ifadeVar('heyecan')) kino.ifade('heyecan', 700);
   };
   kinoYer.addEventListener('click', () => {
     efekt.dokunma();
@@ -539,6 +597,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     }
     ses.tik();
     efekt.secim();
+    if (kap === 'kulah') kulahAlindi();
     s.ucan[s.yuva.secili]?.clear();
     yuvaCiz(s);
     const kk = s.kuleKap.querySelector(`.ko-alt[data-k="${s.yuva.secili}"] .ko-k-kap`);
@@ -552,18 +611,21 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   }
 
   let kuleSoylendi = false;
-  function tatBas(tat: Tat, b: HTMLElement) {
+  /** Top: dokununca Kino kepçeler; kepçe sürüklenip bırakılınca (elBas: topun ekrandaki yeri) top oradan iner */
+  function tatBas(tat: Tat, b: HTMLElement, elBas?: [number, number]) {
     const s = aktifSlot();
     const r = topKoy(s.yuva, tat);
-    salla(b, 'ko-bas');
+    if (!elBas) salla(b, 'ko-bas');
     if (r === 'kapYok') {
       ses.degil();
       kapDugmeleri.forEach((d) => salla(d, 'ko-cagir'));
       seyrekSoyle(K.mino.kap_sor, 'mino', 5000);
+      // kepçedeki top kaba geri döner
+      if (elBas) void efekt_.ucur(h('div.ko-ucan-parca', { html: gorsel(topAdi(tat)), style: `width:${(40 * birim()).toFixed(0)}px` }), elBas, efekt_.merkez(b, 0.5, 0.4), { ms: 300, kavis: -40, boy1: 0.3 });
       return;
     }
-    kepce(b);
-    const bas = efekt_.merkez(b, 0.5, 0.3);
+    if (!elBas) kepce(b);
+    const bas = elBas ?? efekt_.merkez(b, 0.5, 0.3);
     if (r === 'tasti') {
       // kap dolu: Kino havada yakalar, yer
       void kinoYesin(gorsel(topAdi(tat)), bas);
@@ -584,6 +646,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       const top = s.kuleKap.querySelector(`.ko-alt[data-k="${k}"] .ko-k-top[data-i="${n}"]`);
       salla(top, 'ko-pof');
       ses.pof(n);
+      kinoTepki();
       if (top) {
         const [x, y] = efekt_.merkez(top, 0.5, 0.4);
         efekt_.parilti(x, y, 3, 0.45, '#DDF6FF');
@@ -657,10 +720,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     kap.remove();
   }
 
-  function susBas(sus: Sus, b: HTMLElement) {
+  function susBas(sus: Sus, b: HTMLElement, elBas?: [number, number]) {
     const s = aktifSlot();
     const r = susKoy(s.yuva, sus);
-    salla(b, 'ko-bas');
+    if (!elBas) salla(b, 'ko-bas');
     if (r === 'topYok') {
       ses.degil();
       return;
@@ -682,9 +745,357 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     adimGuncelle();
     const j = s.yuva.kaplar[k].susler.filter((x) => x !== 'serpinti').length - 1;
     const parca = s.kuleKap.querySelector<HTMLElement>(`.ko-alt[data-k="${k}"] .ko-k-sus:last-of-type`);
-    // süs tepeye "pıt" diye düşer, sapı sallanır
-    salla(parca, 'ko-pit');
-    ses.pit(j);
+    const otur = () => {
+      // süs tepeye "pıt" diye düşer, sapı sallanır
+      if (parca) parca.style.opacity = '';
+      salla(parca, 'ko-pit');
+      ses.pit(j);
+      kinoTepki();
+    };
+    if (!elBas || !parca || TEST_MODU || AZ_HAREKET) return otur();
+    // sürüklenen süs bırakıldığı yerden tepedeki yerine kayar, yaylanarak oturur
+    parca.style.opacity = '0';
+    const pr = parca.getBoundingClientRect();
+    void efekt_.ucur(h('div.ko-ucan-parca', { html: gorsel(susAdi(sus)), style: `width:${pr.width.toFixed(0)}px` }), elBas, efekt_.merkez(parca), { ms: 200, kavis: -20, boy0: 1.3 }).then(() => !kapandi && otur());
+  }
+
+  // ---------------------------------------------------------------- dokunsal hazırlık (sürükleme; dokunuş da geçerli)
+  const birim = () => parseFloat(el.style.getPropertyValue('--u')) || 1;
+  /** parmağın altındaki yuva */
+  const yuvaAltinda = (x: number, y: number) => slotlar.find((s) => icinde(s.yuvaEl.getBoundingClientRect(), x, y, 12 * birim())) ?? null;
+  /** parmağın altındaki yuvada üstüne bir şey konabilecek (topu olan) kap: varsa o seçilir */
+  function topluHedef(x: number, y: number): { s: Slot; k: number } | null {
+    const s = yuvaAltinda(x, y);
+    if (!s) return null;
+    const altlar = [...s.kuleKap.querySelectorAll<HTMLElement>('.ko-alt')];
+    const alt = altlar.find((a) => icinde(a.getBoundingClientRect(), x, y, 6 * birim()));
+    const k = alt ? Number(alt.dataset.k) : s.yuva.secili;
+    return s.yuva.kaplar[k]?.toplar.length ? { s, k } : null;
+  }
+  /** hedef yuvayı etkin, kabı seçili yapar (dokunuşlardaki gibi) */
+  function hedefSec(h_: { s: Slot; k: number }) {
+    if (aktif !== h_.s.i) aktifSec(h_.s.i);
+    if (h_.s.yuva.secili !== h_.k) {
+      h_.s.yuva.secili = h_.k;
+      yuvaCiz(h_.s);
+    }
+  }
+  /** kulenin en üst topunun tepesi (efekt katmanına göre) */
+  function kuleTepesi(s: Slot, k: number): [number, number] {
+    const top = s.kuleKap.querySelector(`.ko-alt[data-k="${k}"] .ko-k-top:last-of-type`);
+    return top ? efekt_.merkez(top, 0.5, 0.12) : efekt_.merkez(s.kuleKap, 0.5, 0.3);
+  }
+  const yuvaVurgula = (s: Slot | null) => slotlar.forEach((o) => o.yuvaEl.classList.toggle('ko-uzerinde', o === s));
+  /** Döndürülmüş aracın içindeki bir nokta: tutma noktasından (gx, gy) uzaklık (vx, vy px, dönmeden önce), açı derece */
+  const donukNokta = (gx: number, gy: number, vx: number, vy: number, aci: number): [number, number] => {
+    const a = (aci * Math.PI) / 180;
+    return [gx + vx * Math.cos(a) - vy * Math.sin(a), gy + vx * Math.sin(a) + vy * Math.cos(a)];
+  };
+
+  /** Kepçe: tatın içinde sürükledikçe kepçede top büyür ("kırt kırt"); yuvaya (ya da herhangi bir yere) bırakınca iner */
+  function kepceSurukle(tat: Tat, b: HTMLElement) {
+    let tut: Tutulan | null = null;
+    let topEl: HTMLElement | null = null;
+    let dolum = 0;
+    let kaziYol = 0;
+    let parcaYol = 0;
+    return elSurukle(b, {
+      basla: (x, y) => {
+        const en = 104 * birim();
+        topEl = h('span.ko-kepce-top', { html: gorsel(topAdi(tat)) });
+        topEl.style.setProperty('--d', '0');
+        tut = new Tutulan(efekt_, h('div.ko-kepce-tut', {}, h('span.ko-kepce-tut-g', { html: gorsel('kepce') }), topEl), { sinif: 'ko-tut-kepce', en, boy: en * (345 / 1024), tx: 0.72, ty: 0.5 });
+        tut.yer(x, y);
+        tut.dondur(-12);
+        dolum = 0;
+        kaziYol = 0;
+        ses.sikk();
+        salla(b, 'ko-kepcelendi');
+        void kino.oynat('bak', 400);
+      },
+      tasi: (x, y, dx, dy) => {
+        if (!tut || !topEl) return;
+        tut.yer(x, y, dx);
+        const yolU = Math.hypot(dx, dy) / birim();
+        const tatta = icinde(b.getBoundingClientRect(), x, y);
+        const once = dolum;
+        dolum = kepceDolum(dolum, yolU, tatta);
+        topEl.style.setProperty('--d', dolum.toFixed(3));
+        if (tatta && dolum < 1) {
+          kaziYol += yolU;
+          parcaYol += yolU;
+          if (kaziYol > 22) {
+            kaziYol = 0;
+            ses.kazi();
+            salla(b, 'ko-kepcelendi');
+          }
+          if (parcaYol > 34) {
+            parcaYol = 0;
+            const [px, py] = tut.nokta(0.22, 0.3);
+            efekt_.parilti(px, py, 2, 0.35, '#DDF6FF');
+          }
+        }
+        if (once < 1 && dolum >= 1) {
+          // top tamam: pop, kepçede yaylanır
+          ses.pop();
+          const [px, py] = tut.nokta(0.22, 0);
+          efekt_.pof(px, py, 0.45, '#FFFFFF');
+          salla(topEl, 'ko-top-tamam');
+          kinoTepki(true);
+        }
+        yuvaVurgula(yuvaAltinda(x, y));
+      },
+      birak: (x, y) => {
+        yuvaVurgula(null);
+        const t = tut;
+        tut = null;
+        if (!t) return;
+        if (kepceBirak(dolum, icinde(b.getBoundingClientRect(), x, y)) === 'geri') {
+          // vazgeçti: top kaba geri erir
+          ses.kazi();
+          void t.don_(null);
+          return;
+        }
+        if (dolum < 1) ses.pop();
+        const bas = t.nokta(0.22, 0.05);
+        void t.don_(null);
+        const hedef = yuvaAltinda(x, y);
+        if (hedef && hedef.i !== aktif) aktifSec(hedef.i);
+        tatBas(tat, b, bas);
+      },
+    });
+  }
+
+  /** Sos: şişeyi kulenin üstüne götür, eğilir ve dökülür; tuttukça sos yukarıdan aşağı yayılır */
+  function sosSurukle(sos: Sos, b: HTMLElement) {
+    let tut: Tutulan | null = null;
+    let hedef: { s: Slot; k: number } | null = null;
+    let soEl: HTMLElement | null = null;
+    let dolum = 0;
+    let ustunde = false;
+    let son = 0;
+    let raf = 0;
+    let damla = 0;
+    let akis: HTMLElement | null = null;
+    let gx = 0;
+    let gy = 0;
+    let boy = 0;
+    const akisCiz = () => {
+      if (!tut || !ustunde || !hedef || dolum >= 1 || TEST_MODU || AZ_HAREKET) {
+        akis?.remove();
+        akis = null;
+        return;
+      }
+      const kk = efekt_.kutu();
+      const [ax, ay] = donukNokta(gx - kk.left, gy - kk.top + tut.kalkis, 0, -boy * 0.5, tut.aci);
+      const [hx, hy] = kuleTepesi(hedef.s, hedef.k);
+      if (!akis) {
+        akis = h('i.ko-sos-akis', { style: `--renk:${SOS_RENK[sos].ana}` });
+        efekt_.el.append(akis);
+      }
+      const uzun = Math.max(6, Math.hypot(hx - ax, hy - ay));
+      const aci = (Math.atan2(hy - ay, hx - ax) * 180) / Math.PI - 90;
+      akis.style.cssText = `--renk:${SOS_RENK[sos].ana};left:${ax.toFixed(1)}px;top:${ay.toFixed(1)}px;height:${uzun.toFixed(1)}px;transform:translateX(-50%) rotate(${aci.toFixed(1)}deg)`;
+    };
+    const bitir = () => {
+      if (!hedef) return;
+      ses.slurp();
+      if (soEl) {
+        soEl.style.clipPath = '';
+        salla(soEl, 'ko-sos-oturdu');
+      }
+      const [x, y] = kuleTepesi(hedef.s, hedef.k);
+      efekt_.parilti(x, y, 4, 0.5);
+      kinoTepki(true);
+      adimGuncelle();
+    };
+    const dongu = (t: number) => {
+      if (!tut) return;
+      const ms = son ? Math.min(60, t - son) : 0;
+      son = t;
+      if (ustunde && hedef && dolum < 1) {
+        const once = dolum;
+        dolum = sosDolum(dolum, ms);
+        if (soEl) soEl.style.clipPath = `inset(0 0 ${((1 - dolum) * 100).toFixed(1)}% 0)`;
+        if (Math.floor(dolum * 4) > Math.floor(once * 4) && dolum < 1) ses.damla(damla++);
+        if (dolum >= 1) bitir();
+      }
+      akisCiz();
+      raf = requestAnimationFrame(dongu);
+    };
+    return elSurukle(b, {
+      basla: (x, y) => {
+        const r = b.querySelector('.ko-g')?.getBoundingClientRect() ?? b.getBoundingClientRect();
+        boy = Math.max(r.height * 1.45, 70 * birim());
+        tut = new Tutulan(efekt_, gorsel(sosSiseAdi(sos)), { sinif: 'ko-tut-sise', en: boy * (437 / 1024), boy, tx: 0.5, ty: 0.5 });
+        tut.yer(x, y);
+        gx = x;
+        gy = y;
+        hedef = null;
+        soEl = null;
+        dolum = 0;
+        damla = 0;
+        son = 0;
+        b.classList.add('ko-tasiniyor');
+        raf = requestAnimationFrame(dongu);
+      },
+      tasi: (x, y, dx) => {
+        if (!tut) return;
+        tut.yer(x, y, dx);
+        gx = x;
+        gy = y;
+        const h_ = topluHedef(x, y);
+        // dökülmeye başlanan kule bitene kadar hedef o kalır; yenisi bitince
+        if (h_ && (!hedef || dolum >= 1) && !(hedef && hedef.s === h_.s && hedef.k === h_.k)) {
+          hedefSec(h_);
+          const r = sosKoy(h_.s.yuva, sos);
+          if (r === 'kondu') {
+            yuvaCiz(h_.s);
+            hedef = h_;
+            dolum = 0;
+            soEl = h_.s.kuleKap.querySelector<HTMLElement>(`.ko-alt[data-k="${h_.k}"] .ko-k-sos`);
+            if (soEl) soEl.style.clipPath = 'inset(0 0 100% 0)';
+            ses.damla(damla++);
+            adimGuncelle();
+          } else if (r === 'ayni' && !hedef) {
+            hedef = h_;
+            dolum = 1;
+            salla(h_.s.kuleKap.querySelector(`.ko-alt[data-k="${h_.k}"] .ko-k-sos`), 'ko-zipla');
+          }
+        }
+        ustunde = !!hedef && !!h_ && h_.s === hedef.s;
+        const dokuyor = ustunde && dolum < 1;
+        tut.dondur(dokuyor ? 160 : h_ ? 40 : 0);
+        // dökerken şişe kulenin biraz üstüne kalkar: sos şeridi görünür
+        tut.yukari(dokuyor ? boy * 0.75 : 0);
+        yuvaVurgula(h_?.s ?? null);
+      },
+      birak: () => {
+        cancelAnimationFrame(raf);
+        yuvaVurgula(null);
+        ustunde = false;
+        akisCiz();
+        const t = tut;
+        tut = null;
+        // dökmeye başladıysa kalanı kendiliğinden akar
+        if (hedef && dolum < 1) {
+          dolum = 1;
+          bitir();
+        }
+        if (t) void t.don_(ekranMerkez(b), 280).then(() => b.classList.remove('ko-tasiniyor'));
+        else b.classList.remove('ko-tasiniyor');
+      },
+    });
+  }
+
+  /** Serpinti: kavanozu kulenin üstünde salla; her sallamada taneler yağar, üçüncüde serpinti tamam */
+  function serpintiSurukle(b: HTMLElement) {
+    let tut: Tutulan | null = null;
+    let sallama = new Sallama();
+    let hedef: { s: Slot; k: number } | null = null;
+    let serpEl: HTMLElement | null = null;
+    let tamam = false;
+    let boy = 0;
+    let gx = 0;
+    let gy = 0;
+    const tamamla = () => {
+      if (tamam || !hedef) return;
+      tamam = true;
+      ses.cingirak();
+      if (serpEl) serpEl.style.opacity = '';
+      salla(serpEl, 'ko-serp');
+      const [x, y] = kuleTepesi(hedef.s, hedef.k);
+      efekt_.parilti(x, y, 5, 0.55, '#FFE45C');
+      kinoTepki(true);
+      adimGuncelle();
+    };
+    return elSurukle(b, {
+      basla: (x, y) => {
+        const r = b.querySelector('.ko-g')?.getBoundingClientRect() ?? b.getBoundingClientRect();
+        boy = r.height * 1.1;
+        tut = new Tutulan(efekt_, gorsel('serpinti-kavanoz'), { sinif: 'ko-tut-kavanoz', en: boy * 0.9, boy, tx: 0.5, ty: 0.5 });
+        tut.yer(x, y);
+        sallama = new Sallama();
+        hedef = null;
+        serpEl = null;
+        tamam = false;
+        b.classList.add('ko-tasiniyor');
+      },
+      tasi: (x, y, dx, dy) => {
+        if (!tut) return;
+        tut.yer(x, y, dx * 1.6);
+        gx = x;
+        gy = y;
+        const h_ = topluHedef(x, y);
+        tut.dondur(h_ ? 170 : 0);
+        yuvaVurgula(h_?.s ?? null);
+        if (!h_) return;
+        if (!sallama.ekle(dx / birim(), dy / birim())) return;
+        const n = sallama.sayi;
+        ses.tikir(n);
+        const kk = efekt_.kutu();
+        const [ax, ay] = donukNokta(gx - kk.left, gy - kk.top, 0, -boy * 0.42, tut.aci);
+        if (!hedef || hedef.s !== h_.s || hedef.k !== h_.k) {
+          hedefSec(h_);
+          const r = susKoy(h_.s.yuva, 'serpinti');
+          if (r === 'kondu') yuvaCiz(h_.s);
+          hedef = h_;
+          tamam = r !== 'kondu';
+          serpEl = h_.s.kuleKap.querySelector<HTMLElement>(`.ko-alt[data-k="${h_.k}"] .ko-k-serpinti`);
+          if (serpEl && !tamam) serpEl.style.opacity = '0.3';
+          adimGuncelle();
+        }
+        const [hx, hy] = kuleTepesi(h_.s, h_.k);
+        efekt_.serpinti(ax, ay, hx, hy, 9);
+        salla(h_.s.kuleKap.querySelector(`.ko-alt[data-k="${h_.k}"] .ko-kule`), 'ko-serp-titre');
+        if (serpEl && !tamam) serpEl.style.opacity = String(Math.min(1, 0.3 + (0.7 * n) / SALLAMA_GEREK));
+        if (n >= SALLAMA_GEREK) tamamla();
+      },
+      birak: () => {
+        yuvaVurgula(null);
+        // bir kez bile salladıysa serpinti tamamlanır
+        if (hedef && !tamam) tamamla();
+        const t = tut;
+        tut = null;
+        if (t) void t.don_(ekranMerkez(b), 280).then(() => b.classList.remove('ko-tasiniyor'));
+        else b.classList.remove('ko-tasiniyor');
+      },
+    });
+  }
+
+  /** Süs (kiraz, gofret, şemsiye, kalp): sürükle, kulenin üstüne bırak; tepeye kayıp yaylanarak oturur */
+  function susSurukle(sus: Sus, b: HTMLElement) {
+    let tut: Tutulan | null = null;
+    return elSurukle(b, {
+      basla: (x, y) => {
+        const en = 54 * birim();
+        tut = new Tutulan(efekt_, gorsel(susAdi(sus)), { sinif: 'ko-tut-sus', en, boy: en });
+        tut.yer(x, y);
+        tut.buyut(1.15);
+        b.classList.add('ko-tasiniyor');
+        ses.tik();
+      },
+      tasi: (x, y, dx) => {
+        tut?.yer(x, y, dx);
+        yuvaVurgula(topluHedef(x, y)?.s ?? null);
+      },
+      birak: (x, y) => {
+        yuvaVurgula(null);
+        const t = tut;
+        tut = null;
+        if (!t) return;
+        const h_ = topluHedef(x, y);
+        if (!h_) {
+          void t.don_(ekranMerkez(b), 280).then(() => b.classList.remove('ko-tasiniyor'));
+          return;
+        }
+        const bas = t.nokta(0.5, 0.5);
+        t.kaldir();
+        b.classList.remove('ko-tasiniyor');
+        hedefSec(h_);
+        susBas(sus, b, bas);
+      },
+    });
   }
 
   function yeBas(s: Slot) {
@@ -700,6 +1111,77 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const resim = kat.tur === 'top' ? gorsel(topAdi(kat.tat)) : kat.tur === 'sos' ? gorsel(sosUstAdi(kat.sos)) : kat.tur === 'sus' ? gorsel(susAdi(kat.sus)) : gorsel(kapAdi(kat.kap));
     // yanlış topu yediyse: "Ham! Yanlışmış ama güzelmiş!"
     void kinoYesin(resim, bas, onceki?.tur === 'ye' ? K.kino.ham : undefined);
+  }
+
+  // ---------------------------------------------------------------- yan işler (isteğe bağlı; hiçbir şeyi beklemez)
+  const isOrtami: IsOrtami = {
+    efekt: efekt_,
+    yas,
+    u: birim,
+    kapandi: () => kapandi,
+    kinoSevin: () => {
+      kinoTepki(true);
+      void kino.oynat('sevin', 700);
+    },
+    soyle: (soz, kim) => seyrekSoyle(soz, kim, 6000),
+    kirazSapka: kayit.alinan.includes('kino-sapka'),
+  };
+  // temizlik: lekeler dolabın üst kenarına (tezgâha) damlar
+  const temizlik = new Temizlik(isOrtami);
+  dolapIc.append(temizlik.el);
+  let verilenSayisi = 0;
+  function lekeleriDusur() {
+    temizlik.dus([22, 50, 78]);
+  }
+
+  // külah: alındıkça raf azalır (en az 1); az kalınca iş köşesi parlar; dolu raf için külah yapılır
+  let kulahAzSoylendi = false;
+  function kulahCiz() {
+    if (kulahDugme) kulahDugme.innerHTML = kulahYigini(kulahStok);
+    kose.isVar(kulahAzMi(kulahStok));
+    el.dataset.kulah = String(kulahStok);
+  }
+  function kulahAlindi() {
+    const once = kulahStok;
+    kulahStok = kulahKullan(kulahStok);
+    if (kulahStok === once) return;
+    kulahCiz();
+    if (kulahStok <= KULAH_STOK.enAz && !ogretici && !kulahAzSoylendi) {
+      kulahAzSoylendi = true;
+      seyrekSoyle(K.mino.kulah_az, 'mino', 60000);
+    }
+  }
+  let panel: KulahPaneli | null = null;
+  function kulahPaneliAc() {
+    if (panel || kapandi) return;
+    elIpucuGizle();
+    yakinBitir?.();
+    panel = new KulahPaneli(
+      isOrtami,
+      (yerler) => {
+        panel = null;
+        void kulahlarGelsin(yerler);
+      },
+      () => (panel = null),
+    );
+    el.append(panel.el);
+  }
+  /** taze külahlar tezgâhtaki yığına uçar, raf dolar */
+  async function kulahlarGelsin(yerler: [number, number][]) {
+    const hedef = kulahDugme ? efekt_.merkez(kulahDugme, 0.5, 0.45) : null;
+    kulahStok = kulahYap();
+    kulahAzSoylendi = false;
+    if (hedef)
+      await Promise.all(
+        yerler.map(async (y, i) => {
+          await efekt_.ucur(h('div.ko-ucan-parca', { html: gorsel('kulah'), style: `width:${(34 * birim()).toFixed(0)}px` }), y, hedef, { ms: 520, gecikme: i * 130, kavis: -90 });
+          if (kapandi) return;
+          ses.pit(i);
+          salla(kulahDugme, 'ko-zipla');
+          efekt_.parilti(hedef[0], hedef[1], 3, 0.45, '#FFE45C');
+        }),
+      );
+    if (!kapandi) kulahCiz();
   }
 
   // ---------------------------------------------------------------- müşteriler
@@ -749,6 +1231,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
 
   function musteriBas(s: Slot, balon = false) {
     const m = s.musteri;
+    // sevinç anında dokunmak: dans biter, müşteri el sallayıp gider
+    if (m?.bitti && s.atla) {
+      s.atla();
+      efekt.dokunma();
+      return;
+    }
     if (!m || !m.hazir || m.bitti) return;
     efekt.dokunma();
     if (!balon && verilebilir(s.yuva, m.sip) && yuvaIsi(m.sip, s.yuva, ayar.tatlar).tur === 'ver') {
@@ -814,6 +1302,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     ses.ksilofon();
     void kino.oynat('sevin', 700);
     void soyle(K.kino.buyurun, 'kino', false);
+    // yoğun an: verirken tezgâha dondurma damlar (her ikinci verişte; silmek isteğe bağlı)
+    if (lekeDuserMi(++verilenSayisi, temizlik.sayi, m.sip.tur === 'ogretici')) lekeleriDusur();
     const kisiEl = m.anaKisi.el;
     const [ax, ay] = m.anaKisi.agiz();
     const hedef = efekt_.merkez(kisiEl, ax, ay);
@@ -866,7 +1356,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     }
     hedefCiz(sonuc.ayni);
     m.el.dataset.sonuc = sonuc.ayni ? 'ayni' : 'farkli';
-    await jetonVer(m, jetonHesapla(sonuc.ayni));
+    // jetonlar kumbaraya uçarken müşteri dans eder, Kino ile çak yapar (~1 sn; müşteriye dokununca biter)
+    const jeton = jetonVer(m, jetonHesapla(sonuc.ayni));
+    await atlanabilir(s, Promise.all([m.dans(), cakYap(s, m)]));
+    if (kapandi) return;
+    const gidis = m.git();
+    await jeton;
     if (kapandi) return;
     // son müşteri ödedi: gün hemen kaydedilir (akşam yalnız gösterir; "Bugünlük bu kadar!"da çıkılsa da jeton kalır)
     if (++odenen >= TOPLAM) gunuKaydet();
@@ -876,9 +1371,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       const [x, y] = efekt_.merkez(hedefEl);
       efekt_.parilti(x, y, 10, 0.8, '#FFE45C');
     }
-    await m.dans();
-    if (kapandi) return;
-    await m.git();
+    await gidis;
     for (const kisi of m.kisiler) if (kisi.mino) minolar.delete(kisi.mino);
     m.kapat();
     m.el.remove();
@@ -896,6 +1389,57 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       if (o.musteri && !o.musteri.bitti) aktifSec(o.i);
     }
     adimGuncelle();
+  }
+
+  /** Bir sevinç anını bekler; o müşteriye dokunulursa hemen biter */
+  function atlanabilir(s: Slot, p: Promise<unknown>): Promise<void> {
+    return new Promise<void>((coz) => {
+      const bitir = () => {
+        if (s.atla !== bitir) return;
+        s.atla = null;
+        coz();
+      };
+      s.atla = bitir;
+      p.then(bitir, bitir);
+    });
+  }
+
+  /** Çak: Kino müşteriye eğilip patisini kaldırır, müşteri de eğilir; patiler buluşunca yıldız ve "Çak!" */
+  async function cakYap(s: Slot, m: Musteri) {
+    if (TEST_MODU || AZ_HAREKET || kapandi) return;
+    cakYon = s.i === 0 ? -1 : 1;
+    cakBas = performance.now() / 1000;
+    const sinif = s.i === 0 ? 'ko-cak-sol' : 'ko-cak-sag';
+    // kalkık kol ayrı katman (iskelet): o yanın asıl kolu gizlenir (film/src/oyuncu.ts gibi)
+    const kolId = cakYon < 0 ? 'kol-sol' : 'kol-sag';
+    const kalkik = !!kino.parcaG(`${kolId}-yukari`);
+    if (kalkik) {
+      kino.ek(`${kolId}-yukari`, true);
+      kino.gizle(kolId, true);
+    }
+    kinoYer.classList.add(sinif);
+    m.el.classList.add('ko-cak');
+    await bekle(330);
+    if (kapandi) return;
+    const k = kino.el.getBoundingClientRect();
+    const kisi = m.anaKisi.el.getBoundingClientRect();
+    const kk = efekt_.kutu();
+    // patiler buluşur: Kino'nun kafasının müşteri yanındaki kenarı (Kino ile müşterinin arası), yanak hizası
+    const kafa = kino.parcaG('kafa')?.getBoundingClientRect();
+    if (k.width && kisi.width) {
+      const x = kafa?.width ? (cakYon < 0 ? kafa.left : kafa.right) : cakYon < 0 ? k.left + k.width * 0.2 : k.right - k.width * 0.2;
+      const y = kafa?.height ? kafa.top + kafa.height * 0.6 : k.top + k.height * 0.3;
+      efekt_.cak(x - kk.left + cakYon * 6 * birim(), y - kk.top);
+    }
+    ses.cak();
+    seyrekSoyle(K.kino.cak, 'kino', 9000);
+    await bekle(420);
+    kinoYer.classList.remove(sinif);
+    m.el.classList.remove('ko-cak');
+    if (kalkik) {
+      kino.ek(`${kolId}-yukari`, false);
+      kino.gizle(kolId, false);
+    }
   }
 
   // gün tahtası: tam istediği gibiyse dolu kalp
@@ -997,14 +1541,25 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     elIpucu.classList.remove('ko-goster');
   }
   function elIpucuBak(simdi: number, hemen = false) {
-    if (elGoster || !parlayan || yakinBitir) return;
+    if (elGoster || !parlayan || yakinBitir || panel) return;
     if (!hemen && (simdi - sonDokunus < IPUCU_MS || bekleyenSoz > 0)) return;
     if (TEST_MODU && q.get('ipucu') !== '1') return;
     if (!hemen) seyrekSoyle(K.mino.sirada, 'mino', 30000);
     const k = el.getBoundingClientRect();
     const r = parlayan.getBoundingClientRect();
-    elIpucu.style.setProperty('--x', `${(r.left - k.left + r.width / 2).toFixed(0)}px`);
-    elIpucu.style.setProperty('--y', `${(r.top - k.top + r.height * 0.55).toFixed(0)}px`);
+    const x = r.left - k.left + r.width / 2;
+    const y = r.top - k.top + r.height * 0.55;
+    elIpucu.style.setProperty('--x', `${x.toFixed(0)}px`);
+    elIpucu.style.setProperty('--y', `${y.toFixed(0)}px`);
+    // kendiliğinden çıkan ipucu (öğretici değil): top, sos, süs için el kaptan yuvaya sürükler (dokunmak da olur)
+    const s = calisilacak();
+    const surukle = !hemen && !!s && (adimAdi === 'top' || adimAdi === 'sos' || adimAdi === 'sus');
+    elIpucu.classList.toggle('ko-surukle', surukle);
+    if (surukle && s) {
+      const y_ = s.yuvaEl.getBoundingClientRect();
+      elIpucu.style.setProperty('--dx', `${(y_.left - k.left + y_.width / 2 - x).toFixed(0)}px`);
+      elIpucu.style.setProperty('--dy', `${(y_.top - k.top + y_.height * 0.45 - y).toFixed(0)}px`);
+    }
     elIpucu.classList.add('ko-goster');
     elGoster = true;
   }
@@ -1085,8 +1640,21 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   void soyle(K.mino.geldi);
   void soyle((K.mino.hedef as Record<string, string>)[String(ayar.hedef)]);
   for (const s of slotlar) yuvaCiz(s);
+  kulahCiz();
   requestAnimationFrame(olc);
-  if (ozel) (window as unknown as Record<string, unknown>).__koGun = { slotlar, get aktif() { return aktif; } };
+  if (ozel)
+    (window as unknown as Record<string, unknown>).__koGun = {
+      slotlar,
+      get aktif() {
+        return aktif;
+      },
+      get kulahStok() {
+        return kulahStok;
+      },
+      /** test: tezgâha leke düşürür */
+      lekeDusur: lekeleriDusur,
+      kino,
+    };
 
   return {
     el,
@@ -1100,6 +1668,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       arkaBirak();
       giris.kapat();
       yakinBitir?.();
+      surukleKaldir.forEach((f) => f());
+      temizlik.kapat();
+      panel?.kapat();
       kino.kapat();
       for (const s of slotlar) {
         s.surukleBirak.forEach((f) => f());

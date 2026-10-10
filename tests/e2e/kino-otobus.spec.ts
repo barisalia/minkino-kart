@@ -117,6 +117,101 @@ test('Kino’nun Otobüsü: yanlış dokunuşlar zararsız; yanlış topu Kino y
   expect(hatalar.filter(agDisi)).toEqual([]);
 });
 
+/** Parmakla sürükler (adım adım); ara: yolun ortasında çağrılır (ör. sallama) */
+async function surukle(page: Page, a: { x: number; y: number }, z: { x: number; y: number }, ara?: () => Promise<void>) {
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) {
+    await page.mouse.move(a.x + ((z.x - a.x) * i) / 10, a.y + ((z.y - a.y) * i) / 10);
+    await page.waitForTimeout(16);
+  }
+  await ara?.();
+  await page.mouse.up();
+}
+const orta = async (page: Page, sec: string) => {
+  const r = (await page.locator(sec).first().boundingBox())!;
+  return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+};
+
+test('Kino’nun Otobüsü: dokunsal hazırlık (kepçe, sos dök, serpinti salla, süs sürükle) ve yan işler (silme, sinek, külah)', async ({ page }) => {
+  test.setTimeout(120_000);
+  const hatalar = hataTopla(page);
+  await page.goto('./kino-otobus/?test=1&sifirla=1&ekran=gun&gun=3&yas=buyuk');
+  await expect(page.locator('.ko-musteri.ko-hazir').first()).toBeVisible({ timeout: 20000 });
+  const yuva = page.locator('.ko-yuva[data-yuva="0"]');
+  // dikey telefonda (yalnız web) Gün 3'ün iki sıralı rafı kap düğmelerinin kenarına biner: tıklama doğrudan
+  await page.locator('.ko-kap-dugme[data-kap="kase"]').dispatchEvent('click');
+  // kepçe: tattan yuvaya sürüklenir (tatın içinde ovalanınca top oluşur)
+  const tat = await orta(page, '.ko-tat[data-tat="cilek"]');
+  const y0 = await orta(page, '.ko-yuva[data-yuva="0"]');
+  await surukle(page, tat, y0);
+  await expect(yuva.locator('.ko-k-top')).toHaveCount(1);
+  // tatın üstünde azıcık kımıldatıp bırakmak vazgeçmektir: top eklenmez
+  await surukle(page, tat, { x: tat.x + 14, y: tat.y });
+  await expect(yuva.locator('.ko-k-top')).toHaveCount(1);
+  // sos: şişe kulenin üstünde tutulur, akar
+  const kule = await orta(page, '.ko-yuva[data-yuva="0"] .ko-kule');
+  await surukle(page, await orta(page, '.ko-sos[data-sos="karamel"]'), kule, () => page.waitForTimeout(800));
+  await expect(yuva.locator('.ko-k-sos')).toHaveCount(1);
+  // serpinti: kavanoz kulenin üstünde sallanır
+  await surukle(page, await orta(page, '.ko-sus[data-sus="serpinti"]'), { x: kule.x, y: kule.y - 20 }, async () => {
+    for (let i = 0; i < 6; i++) {
+      await page.mouse.move(kule.x + (i % 2 ? 30 : -30), kule.y - 20, { steps: 3 });
+      await page.waitForTimeout(20);
+    }
+  });
+  await expect(yuva.locator('.ko-k-serpinti')).toHaveCount(1);
+  // süs: şemsiyeyi kulenin üstüne bırak
+  await surukle(page, await orta(page, '.ko-sus[data-sus="semsiye"]'), kule);
+  await expect(yuva.locator('.ko-k-sus[data-sus="semsiye"]')).toHaveCount(1);
+  // boşa bırakılan süs rafa döner
+  await surukle(page, await orta(page, '.ko-sus[data-sus="kalp"]'), { x: 20, y: 200 });
+  await expect(yuva.locator('.ko-k-sus[data-sus="kalp"]')).toHaveCount(0);
+
+  // temizlik: 5-6 yaşta üç leke ve bir sinek; ovunca silinir, sineğe dokununca kaçar
+  await page.evaluate(() => (window as unknown as { __koGun: { lekeDusur: () => void } }).__koGun.lekeDusur());
+  await expect(page.locator('.ko-leke')).toHaveCount(3);
+  await expect(page.locator('.ko-sinek')).toHaveCount(1, { timeout: 5000 });
+  await page.locator('.ko-sinek').click({ force: true });
+  await expect(page.locator('.ko-sinek')).toHaveCount(0);
+  const ilk = await orta(page, '.ko-leke');
+  await page.mouse.move(ilk.x, ilk.y);
+  await page.mouse.down();
+  for (let i = 0; i < 14; i++) await page.mouse.move(ilk.x + (i % 2 ? 22 : -22), ilk.y, { steps: 3 });
+  await page.mouse.up();
+  await expect(page.locator('.ko-leke')).toHaveCount(2);
+  // dokunuş da siler (iki dokunuş bir leke)
+  for (let i = 0; i < 4; i++) await page.locator('.ko-leke:not(.ko-silindi)').first().click({ force: true });
+  await expect(page.locator('.ko-leke')).toHaveCount(0);
+  await expect(page.locator('.ko-tutulan')).toHaveCount(0, { timeout: 3000 });
+
+  // külah: gün başında az (iş köşesi parlar); 5-6: hamur → bas → yuvarla (dokunuşla), raf dolar
+  const stok = () => page.evaluate(() => (window as unknown as { __koGun: { kulahStok: number } }).__koGun.kulahStok);
+  expect(await stok()).toBe(2);
+  await expect(page.locator('.ko-is-kosesi')).toHaveClass(/ko-is-var/);
+  await page.locator('.ko-is-kosesi').click();
+  const panel = page.locator('.ko-is-panel');
+  await expect(panel).toHaveAttribute('data-adim', 'hamur');
+  await page.locator('.ko-is-surahi').click();
+  await expect(panel).toHaveAttribute('data-adim', 'bas', { timeout: 5000 });
+  await page.locator('.ko-is-makine').click();
+  await expect(panel).toHaveAttribute('data-adim', 'yuvarla', { timeout: 5000 });
+  await page.locator('.ko-is-disk').click();
+  await expect(panel).toHaveCount(0, { timeout: 5000 });
+  await expect.poll(stok, { timeout: 5000 }).toBe(4);
+  await expect(page.locator('.ko-kulah-yigin-k')).toHaveCount(4);
+  await expect(page.locator('.ko-is-kosesi')).not.toHaveClass(/ko-is-var/);
+  // iş yarıda bırakılabilir: çarpı
+  await page.locator('.ko-is-kosesi').click();
+  await page.locator('.ko-is-kapat').click();
+  await expect(panel).toHaveCount(0);
+  expect(await stok()).toBe(4);
+  // müşteri hâlâ bekliyor, oyun sürüyor (hiçbir şey kilitlenmedi)
+  await expect(page.locator('.ko-musteri.ko-hazir').first()).toBeVisible();
+  await page.screenshot({ path: 'tests/screens/kino-otobus-dokunsal.png' });
+  expect(hatalar.filter(agDisi)).toEqual([]);
+});
+
 const ANAHTAR = 'minkino-kino-otobus-v1';
 const yerelKayit = (page: Page) => page.evaluate((a) => JSON.parse(localStorage.getItem(a) ?? '{}') as { jeton?: number; biten?: number[]; acikGun?: number }, ANAHTAR);
 

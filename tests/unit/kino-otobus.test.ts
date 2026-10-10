@@ -264,9 +264,9 @@ describe('Kino’nun Otobüsü: sözler, erişim, görseller', () => {
     expect(KINO_OTOBUS_KARTI.zemin).toBe('kino-otobus/kapak');
     expect(fs.existsSync(path.resolve(__dirname, '../../assets/kino-otobus/kapak.webp'))).toBe(true);
   });
-  it('görsel haritası IS-LISTESI-YENI.md adlarıyla (A ve D bölümleri, 43 görsel); dosya gelince yer tutucu kalkar', () => {
+  it('görsel haritası IS-LISTESI-YENI.md adlarıyla (A ve D bölümleri 43, Ek C 12 görsel); dosya gelince yer tutucu kalkar', () => {
     const adlar = Object.keys(VARLIK).filter((a) => !['jeton', 'kumbara-kavanoz'].includes(a));
-    expect(adlar).toHaveLength(43);
+    expect(adlar).toHaveLength(55);
     for (const a of ['otobus', 'top-cilek', 'kap-yabanmersini', 'sos-karamel-ust', 'serpinti-kavanoz', 'kalp-seker', 'pencere-dogumgunu', 'sus-kino-kiraz-sapka', 'kapak']) expect(adlar).toContain(a);
     const tablo = surumTablosu({ '/a/top-cilek.webp': 'u1', '/a/top-cilek-2.png': 'u2', '/a/kulah.png': 'u3', '/a/kulah.webp': 'u4' });
     expect(tablo.get('top-cilek')).toBe('u2');
