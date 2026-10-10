@@ -42,7 +42,7 @@ export const YENILEME_METNI_EN = {
 const ACILANLAR: { ikon: keyof typeof IKON; renk: string; yazi: string }[] = [
   { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Tüm Sesli Maceralar' },
   { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Bütün çizgi filmler' },
-  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: "Pazar, Pasta Otobüsü, Kino'nun Otobüsü, Çiz Canlansın" },
+  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: "Pazar, Mino ile Kino'nun Pasta Otobüsü, Kino'nun Otobüsü, Çiz Canlansın" },
   { ikon: 'goz', renk: 'var(--kirmizi)', yazi: 'Dedektif Mino ve Kino Ne Giysin? mevsimleri' },
   { ikon: 'sihir', renk: 'var(--mor)', yazi: 'Yeni bölümler geldikçe' },
   { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Reklam yok, güvenli' },
