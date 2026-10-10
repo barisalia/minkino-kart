@@ -98,9 +98,38 @@ function el(y) {
  * Eli yeni bileğe taşır: ölçek s, yeni kol ekseni açısı (derece, atan2 ile; aşağı = 90). Kino'nun sağ eli (ekranın solu)
  * ya da sol eli. Çizgi kalınlığı fırçadan geldiği için ölçekle değişmez; parmak çizgileri iz ile korunur.
  */
-function elYerlestir(y, bilek, s, eksenAci) {
+function elYerlestir(y, bilek, s, eksenAci, olgun = null) {
   const e = el(y);
-  return tasi(e.katman, yerlestir(e.bilek, bilek, s, eksenAci - e.aci), { olcek: s });
+  const yer = yerlestir(e.bilek, bilek, s, eksenAci - e.aci);
+  if (!olgun) return tasi(e.katman, yer, { olcek: s });
+  const b = elBukucu(e.bilek, e.aci, olgun);
+  return tasi(e.katman, (p) => yer(b(p)), { olcek: s });
+}
+
+/**
+ * Yetişkin eli (Kino'nun eli, olgunlaştırılmış): bilekten kol ekseni boyunca u, ona dik v. Avuç (u < u0) aynen kalır;
+ * parmaklar (u > u0) yumuşak bir geçişle `parmak` oranında uzar, el `en` oranında incelir. Çizim yöntemi ve çizgi
+ * aynı (Kino'nun yolları büküldü): yalnız oran yetişkin. olgun: { parmak: 0.3, en: 0.9, u0: 70, gecis: 50 }
+ */
+function elBukucu(merkez, aciDer, { parmak = 0.3, en = 0.9, u0 = 70, gecis = 50, avucEn = null } = {}) {
+  const a = (aciDer * Math.PI) / 180, ca = Math.cos(a), sa = Math.sin(a);
+  const uzat = (z) => (z <= 0 ? 0 : z < gecis ? (z * z) / (2 * gecis) : z - gecis / 2);
+  const harita = (x, yy) => {
+    const dx = x - merkez[0], dy = yy - merkez[1];
+    const u = dx * ca + dy * sa, v = -dx * sa + dy * ca;
+    const u2 = u + parmak * uzat(u - u0);
+    // avuç (bilek yanı) avucEn ile, parmaklar en ile incelir; arası yumuşak
+    const t = Math.max(0, Math.min(1, (u - u0 * 0.3) / (u0 * 1.2)));
+    const v2 = v * ((avucEn ?? en) + (en - (avucEn ?? en)) * t * t * (3 - 2 * t));
+    return [merkez[0] + u2 * ca - v2 * sa, merkez[1] + u2 * sa + v2 * ca];
+  };
+  return (p) => p.abs().unarc().unshort().iterate((sg, i, x, yy) => {
+    const c = sg[0];
+    if (c === 'H') { const q = harita(sg[1], yy); return [['L', q[0], q[1]]]; }
+    if (c === 'V') { const q = harita(x, sg[1]); return [['L', q[0], q[1]]]; }
+    for (let k = 1; k + 1 < sg.length; k += 2) { const q = harita(sg[k], sg[k + 1]); sg[k] = q[0]; sg[k + 1] = q[1]; }
+    return undefined;
+  });
 }
 
 // ---------- kuyruk ----------
@@ -204,4 +233,4 @@ function yuzSetleri(o) {
   return { goz, kaslar, agiz: ag };
 }
 
-module.exports = { R, P, G, Z, KW, orj, sekil, tamam, cizgi, donustur, tasi, yerlestir, ayna, el, elYerlestir, KOL, kuyruk, KUYRUK_KOK, kulak, KULAK_KOK, GOZ1, GOZ2, GOZ_HALLERI, KAS1, KAS2, KAS_HALLERI, kas, N, agizlar, acikAgiz, yuzSetleri };
+module.exports = { R, P, G, Z, KW, orj, sekil, tamam, cizgi, donustur, tasi, yerlestir, ayna, el, elYerlestir, elBukucu, KOL, kuyruk, KUYRUK_KOK, kulak, KULAK_KOK, GOZ1, GOZ2, GOZ_HALLERI, KAS1, KAS2, KAS_HALLERI, kas, N, agizlar, acikAgiz, yuzSetleri };
