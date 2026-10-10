@@ -2,7 +2,7 @@
 
 > 2026-10-09 · Kaynak belgeler: `ekip/senaryo/kino-otobus.md`, `ekip/senaryo/dedektif-vaka3.md`, `ekip/film/bolum-1-yagmurlu-gun.md`, `ekip/senaryo/mino-kino-pasta.md` (Ek A).
 > Bütün yeni çizimleri **Gemini** çizer (Recraft yok). Şeffaflık ve temizlik Adobe'da; kodcu bağlar. Stil kuralı: `ekip/stil-rehberi.md`.
-> **Toplam: 87 yeni görsel** (bölüm A-E) + Pasta için 2 (Ek A) = 89.
+> **Toplam: 87 yeni görsel** (bölüm A-E) + Pasta için 2 (Ek A) + Pazar Tart Bakalım için 3 (Ek B) = 92.
 
 ## 0. Nasıl kullanılır
 
@@ -261,6 +261,18 @@ Bölüm 1'in kapağı çizilmez: film motorundan kare alınır (`FILM-REHBERI.md
 |---|---|---|---|---|
 | X1 | `pasta/kino-onluk-1.webp` | K | E | Upload Kino. A small cream baker's apron for this puppy character with a pink pocket and a tiny cookie embroidered on it, drawn alone without the puppy, front view, sized to fit his body exactly. + S-NESNE |
 | X2 | `pasta/kino-sapka-1.webp` | K | E | Upload Kino and the existing Mino chef hat. A small white baker's hat for this puppy with a thin blue band, the same family as the attached hat, drawn alone, sized to sit between his ears. + S-NESNE |
+
+## Ek B · Mino'nun Pazarı: Tart Bakalım (3 görsel, bölüm A-E dışında)
+> 2026-10-10 · Oyun hazır, şimdilik yer tutucuyla çalışıyor: çürük domates = sağlam domates çizimi + kodla kahve lekeler; kompost kutusu = kodla SVG. Dosyalar aşağıdaki adlarla `assets/pazar/` içine konunca oyun **kendiliğinden** onları kullanır (kod değişmez: `pazar/src/tart-kantar.ts` → `meyveCizimi`, `pazar/src/tart-ekran.ts` → kompost).
+> Kaynak (yüklenecek): `assets/meyveler/domates.webp` (Y1 için birebir aynı domates). Stil örneği: `assets/pazar/sepet.webp`.
+
+| # | Dosya | Boyut | Şeffaf | İstem |
+|---|---|---|---|---|
+| Y1 | `pazar/domates-curuk.webp` | K | E | Upload the tomato. The very same tomato, same shape, same size, same outline and same leafy stem position, but gently overripe and bruised: three or four soft brown bruise spots, a little wrinkled skin on one side, the green stem slightly wilted and droopy, the red a bit duller. Still cute and clean for small children: no mold fuzz, no worms, no flies, no face. + S-NESNE |
+| Y2 | `pazar/kompost.webp` | K | E | A small cute green garden compost bin without its lid (open top), rounded friendly shape, a light green leaf emblem on the front, a simple happy face (two dot eyes, small smile, pink cheeks), front view. + S-NESNE |
+| Y3 | `pazar/kompost-kapak.webp` | K (sonra kırpılır) | E | Upload Y2. Only the matching dark green rounded lid of this compost bin with a small handle on top, drawn alone, front view, the same width as the bin's top. + S-NESNE |
+
+**Kontrol:** Y1 sağlam domatesin yanına konup bakılır: aynı domates, yalnız çürümüş (tiksindirici değil). Y2 ve Y3 üst üste konunca kapak kutuya tam oturmalı (kod kapağı sol kenarından menteşe gibi açar).
 
 ## Sıra özeti
 1. **A** (20): Kino'nun Otobüsü'nün ücretsiz günü. Önce A1 ve A8 tek örnek üretilir, stil onaylanınca kalanlar.

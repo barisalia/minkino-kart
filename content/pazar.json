@@ -1,5 +1,5 @@
 {
-  "aciklama": "Mino'nun Pazarı: hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler. Cümleler seslendirilir (ElevenLabs); {urun} {sayi} {Sayi} {Renk} yerine kelime gelir. 'arayuz' yalnız ekranda yazar, okunmaz (düğme, balon ve ipucu yazıları). 'meyvesuyu': Meyve Suyu Köşesi cümleleri, okunur ({Renk} yerine suyun rengi). 'urunler', 'renkler', 'musteriler' veri; okunmaz. Kısa tutun.",
+  "aciklama": "Mino'nun Pazarı: hayvan müşteriler ister, çocuk meyve/sebzeyi sepete sürükler. Cümleler seslendirilir (ElevenLabs); {urun} {sayi} {Sayi} {Renk} yerine kelime gelir. 'arayuz' yalnız ekranda yazar, okunmaz (düğme, balon ve ipucu yazıları). 'meyvesuyu': Meyve Suyu Köşesi cümleleri, okunur ({Renk} yerine suyun rengi). 'tart': Tart Bakalım cümleleri, okunur ({Sayi} {urun}). 'urunler', 'renkler', 'musteriler' veri; okunmaz. Kısa tutun.",
   "hosgeldin": "Mino'nun Pazarı'na hoş geldin!",
   "basla": "Müşteriler geliyor!",
   "istek": {
@@ -42,6 +42,22 @@
     "kahverengi": "Hepsi karışınca kahverengi!",
     "doldu": "Blender doldu!"
   },
+  "tart": {
+    "giris": "Tart bakalım!",
+    "istek_say": "{Sayi} {urun} lütfen!",
+    "istek_kilo": "Bir kilo {urun} lütfen!",
+    "istek_yarim": "Yarım kilo {urun} lütfen!",
+    "sayilar": ["Bir!", "İki!", "Üç!", "Dört!", "Beş!", "Altı!", "Yedi!", "Sekiz!", "Dokuz!", "On!"],
+    "hazir": "Oldu! Ver'e bas!",
+    "cikar": "Birini çıkar!",
+    "surukle": "Leğene sürükle!",
+    "curuk_gordu": "Çürük! Komposta at!",
+    "curuk_ver": "Iıh! Bu çürük!",
+    "kompost": ["Kompost bayıldı!", "Hımm, kompost sevindi!"],
+    "taze": "Bu taze, atma!",
+    "doldu": "Leğen doldu!",
+    "dogru": ["Tam istediğim!", "Ellerine sağlık!"]
+  },
   "arayuz": {
     "baslik_ust": "Mino'nun",
     "baslik_alt": "Pazarı",
@@ -61,7 +77,13 @@
     "karistir": "Karıştır",
     "blender": "Blender",
     "bardak": "Meyve suyu",
-    "yabanmersini": "yaban mersini"
+    "yabanmersini": "yaban mersini",
+    "tart": "Tart Bakalım",
+    "kompost": "Kompost",
+    "legen": "Leğen",
+    "kg_bir": "1 kg",
+    "kg_yarim": "½ kg",
+    "curuk": "çürük"
   },
   "urunler": {
     "say": ["elma", "muz", "cilek", "havuc"],

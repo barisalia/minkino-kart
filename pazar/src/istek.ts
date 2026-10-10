@@ -7,6 +7,7 @@ import { buyukHarfBas, sayiAdi } from '../../src/audio/metin';
 import { kart } from '../../src/engine/katalog';
 import type { Yas } from '../../src/engine/types';
 import { meyveSuyuCumleleri } from './meyvesuyu';
+import { tartCumleleri } from './tart';
 
 export type Rnd = () => number;
 export type Tur = 'tek' | 'renk' | 'sayi' | 'iki' | 'ayir' | 'toplama' | 'ode' | 'terazi';
@@ -221,5 +222,7 @@ export function pazarCumleleri(): string[] {
   c.push(P.hosgeldin, P.basla, ...P.dogru, ...P.yanlis, P.az, P.fazla, P.meyve_degil, P.sebze_degil, P.yardim, P.sayalim, P.surukle, P.senlik, P.senlik_dokun);
   // Meyve Suyu Köşesi (yan dal)
   c.push(...meyveSuyuCumleleri());
+  // Tart Bakalım (yan dal)
+  c.push(...tartCumleleri());
   return [...new Set(c)];
 }
