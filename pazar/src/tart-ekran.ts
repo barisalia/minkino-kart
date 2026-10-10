@@ -116,7 +116,7 @@ export function tartEkrani(app: Uygulama): Ekran {
   const resimli = !!(kompostUrl && kapakUrl);
   const kapak = resimli ? h('i.tb-k-kapak', {}, h('img', { src: kapakUrl, alt: '', draggable: 'false' })) : h('i.tb-k-kapak', { html: KOMPOST_KAPAK });
   const govde = resimli ? h('div.tb-k-govde', {}, h('img', { src: kompostUrl, alt: '', draggable: 'false' })) : h('div.tb-k-govde', { html: KOMPOST_GOVDE });
-  const kompost = h('div.tb-kompost', { role: 'region', 'aria-label': A.kompost }, h('i.tb-k-golge'), govde, kapak);
+  const kompost = h(`div.tb-kompost${resimli ? '.tb-resimli' : ''}`, { role: 'region', 'aria-label': A.kompost }, h('i.tb-k-golge'), govde, kapak);
   const verYazi = h('span', {}, A.ver);
   const ver = h('button.dugme.pz-ver.tb-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
 

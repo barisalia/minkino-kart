@@ -30,7 +30,14 @@ import {
   vaka3Gorunur,
   VERILECEK,
   TEPSI_YERLERI,
+  TEPSI3,
+  OTOBUS,
+  KOVUK_ICI,
+  SAHNE3_DIKEY,
+  DIKEY_SAHNELER3,
+  sahne3Yerlesim,
 } from '../../dedektif/src/mantik3';
+import { ODA_ORAN } from '../../dedektif/src/mantik';
 import { B_LISTESI, DIKEY3_HAZIR, E_LISTESI, eksikler3, tanimli, YER_TUTUCU } from '../../dedektif/src/resimler3';
 import { kayit, sifirla, vakaCozuldu } from '../../dedektif/src/kayit';
 import { dudakBicimi } from '../../dedektif/src/dunya3';
@@ -185,7 +192,7 @@ describe('Vaka 3: sayma, iz, kovuk', () => {
     expect(Dosya.adimdan('final', ADIMLAR3, HALKALAR3).tamam).toBe(true);
   });
   it('sahneler (16:9) her kadrajda ekranı tamamen kaplar (telefon ve tablet)', () => {
-    const dunya = { w: 1000 * (4096 / 2286), h: 1000 };
+    const dunya = { w: 1000 * (2752 / 1536), h: 1000 };
     for (const e of [
       { w: 844, h: 390 },
       { w: 932, h: 430 },
@@ -203,6 +210,48 @@ describe('Vaka 3: sayma, iz, kovuk', () => {
   });
 });
 
+describe('Vaka 3: dikey sahneler (9:16 çizimler)', () => {
+  const icinde = (x: number, y: number) => x >= 0 && x <= 1 && y >= 0 && y <= 1;
+  it('dikeye geçince oran, ipuçları, tepsi, iz, kovuklar ve final dikey çizimin; yataya dönünce eski değerler aynen', () => {
+    const once = JSON.stringify({ h: HALKALAR3, k: KADRAJ3, t: TEPSI3, o: OTOBUS, s: SEKER_IZI, kv: KOVUKLAR, ky: KOVUK_ICI, f: FINDIK_YERI, fk: FINAL_KURABIYELER, oran: ODA_ORAN });
+    for (const s of DIKEY_SAHNELER3) sahne3Yerlesim(s, true);
+    try {
+      for (const s of DIKEY_SAHNELER3) {
+        expect(SAHNE3_DIKEY[s]).toBe(true);
+        expect(ODA_ORAN[s]).toBeCloseTo(1536 / 2752, 5);
+      }
+      for (const t of HALKALAR3.filter((h) => h.oda !== 'kiler').flatMap((h) => h.ipuclari)) expect(icinde(t.x, t.y), t.id).toBe(true);
+      // sağdaki (alt) kovuk dikeyde de en sağda; üç kovuk üst üste
+      expect(KOVUKLAR.alt.x).toBeGreaterThan(KOVUKLAR.orta.x);
+      expect(KOVUKLAR.ust.y).toBeLessThan(KOVUKLAR.orta.y);
+      expect(KOVUKLAR.orta.y).toBeLessThan(KOVUKLAR.alt.y);
+      // kuyruğun kökü alt ağzın karanlığında (ortasının altında), ağzın içinde
+      const a = KOVUKLAR.alt;
+      expect(KOVUK_ICI.kuyruk.y).toBeGreaterThan(a.y);
+      expect(KOVUK_ICI.kuyruk.y).toBeLessThan(a.y + a.ry * 0.8);
+      expect(Math.abs(KOVUK_ICI.kuyruk.x - a.x)).toBeLessThan(a.rx * 0.5);
+      // iz soldan sağa, telefonda da ekranda (kamera tam en: kenarlardan ~%9 kırpılır)
+      for (let i = 1; i < SEKER_IZI.length; i++) expect(SEKER_IZI[i].x).toBeGreaterThan(SEKER_IZI[i - 1].x);
+      for (const p of SEKER_IZI) expect(p.x).toBeLessThan(0.89);
+      // tepsinin altı yeri tepsinin kutusunda; final kurabiyeleri soldan sağa, Fındık'tan ayrı
+      for (const [x, y] of TEPSI3.yerler) expect(x >= TEPSI3.kutu.x0 && x <= TEPSI3.kutu.x1 && y >= TEPSI3.kutu.y0 && y <= TEPSI3.kutu.y1).toBe(true);
+      const xs = FINAL_KURABIYELER.map(([x]) => x);
+      expect([...xs].sort((p, q) => p - q)).toEqual(xs);
+      expect(FINDIK_YERI.x - xs[xs.length - 1]).toBeGreaterThanOrEqual(0.085);
+    } finally {
+      for (const s of DIKEY_SAHNELER3) sahne3Yerlesim(s, false);
+    }
+    expect(JSON.parse(JSON.stringify({ h: HALKALAR3, k: KADRAJ3, t: TEPSI3, o: OTOBUS, s: SEKER_IZI, kv: KOVUKLAR, ky: KOVUK_ICI, f: FINDIK_YERI, fk: FINAL_KURABIYELER, oran: ODA_ORAN }))).toEqual(JSON.parse(once));
+  });
+  it('yatayda da tepsinin yerleri kutusunda, kuyruğun kökü alt ağzın karanlığında', () => {
+    for (const [x, y] of TEPSI3.yerler) expect(x >= TEPSI3.kutu.x0 && x <= TEPSI3.kutu.x1 && y >= TEPSI3.kutu.y0 && y <= TEPSI3.kutu.y1).toBe(true);
+    const a = KOVUKLAR.alt;
+    expect(KOVUK_ICI.kuyruk.y).toBeGreaterThan(a.y);
+    expect(KOVUK_ICI.kuyruk.y).toBeLessThan(a.y + a.ry * 0.8);
+    expect(Math.abs(KOVUK_ICI.kuyruk.x - a.x)).toBeLessThan(a.rx * 0.5);
+  });
+});
+
 describe('Vaka 3: görsel haritası (tek yer, bölüm B adları)', () => {
   it('bölüm B\'nin 28 dosyası ve E\'nin 5 dosyası haritada; çizimi olmayanın yer tutucusu var (dikeyler hariç)', () => {
     expect(B_LISTESI).toHaveLength(28);
@@ -211,8 +260,10 @@ describe('Vaka 3: görsel haritası (tek yer, bölüm B adları)', () => {
       if (ad.endsWith('-dikey')) continue;
       expect(tanimli(ad), ad).toBe(true);
     }
-    // dikey sahneler ipuçlarının yerleri ölçülünce açılır
-    expect(DIKEY3_HAZIR).toBe(false);
+    // dikey sahneler açık: yerleri ölçüldü (mantik3.ts → DIKEY3)
+    expect(DIKEY3_HAZIR).toBe(true);
+    // bölüm B'nin 28 çizimi de geldi; yer tutucuda yalnız bölüm E (roman kareleri, kapak) kalır
+    for (const a of B_LISTESI) expect(eksikler3(), a).not.toContain(a);
     // henüz çizimi gelmeyenler listesi bölüm B / E adlarından oluşur
     for (const a of eksikler3()) expect([...B_LISTESI, ...E_LISTESI] as string[]).toContain(a);
   });
