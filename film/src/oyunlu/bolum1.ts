@@ -16,6 +16,7 @@ import { kucagaOtur, kucakCiz, kucakDurusu, KUCAK, lokumKucakta } from './kucak'
 import { AynaSahnesi, type Parmak } from './kum-saati';
 import { kameraKaris, kameraMatris, kameraYolu, type Kamera, type KameraAnahtar, type Ortam, type Segment, type Sozler } from './oynatici';
 import { efekt, muzik, muzikSon } from './ses';
+import { arkaCiz, dprli, resim, sinirliKamera, type Mekan } from './mekan';
 import kinoJson from '../../../assets/karakter/kino-yeni/kino-yeni.json';
 import anneJson from '../../../assets/karakter/anne/anne.json';
 import lokumJson from '../../../assets/karakter/lokum/lokum.json';
@@ -23,13 +24,6 @@ import lokumJson from '../../../assets/karakter/lokum/lokum.json';
 const KIT_GORSEL: Record<string, string> = import.meta.glob<string>('../../../assets/karakter/{kino-yeni,anne,lokum}/**/*.webp', { eager: true, query: '?url', import: 'default' });
 const MEKAN: Record<string, string> = import.meta.glob<string>('../../../assets/film-seri2/{oda-sabah,oda-sabah-yorgan,oda-sabah-karyola,banyo-sabah,banyo-sabah-yumusak}.webp', { eager: true, query: '?url', import: 'default' });
 const mekan = (ad: string) => MEKAN[`../../../assets/film-seri2/${ad}.webp`];
-
-const resim = async (a: string) => {
-  const i = new Image();
-  i.src = a;
-  await i.decode();
-  return i;
-};
 
 // ---------------------------------------------------------------- akış (zaman çizelgesi kurucu)
 interface AkisOlay {
@@ -125,37 +119,6 @@ class HikayeParcasi implements Segment {
 }
 
 // ---------------------------------------------------------------- arka plan ve kamera
-interface Mekan {
-  img: HTMLImageElement;
-  /** dikey kadrajda resmin üstü / altı bu satır bantlarının tekrarıyla sürer (sahnenin devamı, siyah değil) */
-  ust: [number, number];
-  alt: [number, number];
-}
-function arkaCiz(o: Ortam, m: Mekan, kam: Matris) {
-  const { ctx, dpr, H } = o;
-  ctx.setTransform(kam[0] * dpr, 0, 0, kam[3] * dpr, kam[4] * dpr, kam[5] * dpr);
-  const s = kam[3];
-  const ymin = -kam[5] / s, ymax = (H - kam[5]) / s;
-  const W = m.img.width, Y = m.img.height;
-  if (ymin < 0) {
-    const [a, b] = m.ust, P = b - a;
-    for (let y = a - P; y + P > ymin; y -= P) ctx.drawImage(m.img, 0, a, W, P, 0, y, W, P + 1);
-  }
-  if (ymax > Y) {
-    const [a, b] = m.alt, P = b - a;
-    for (let y = a + P; y < ymax; y += P) ctx.drawImage(m.img, 0, a, W, P, 0, y - 1, W, P + 1);
-  }
-  ctx.drawImage(m.img, 0, 0);
-}
-/** yatayda kamera resmin dışına taşmaz; dikeyde yalnız yatay sınır */
-function sinirliKamera(k: Kamera, o: Ortam, img: { width: number; height: number }): Kamera {
-  const g = Math.min(k.g, img.width);
-  const gy = (g * o.H) / o.W;
-  const x = Math.max(g / 2, Math.min(img.width - g / 2, k.x));
-  const y = o.dikey || gy > img.height ? k.y : Math.max(gy / 2, Math.min(img.height - gy / 2, k.y));
-  return { x, y, g };
-}
-const dprli = (m: Matris, dpr: number): Matris => [m[0] * dpr, m[1] * dpr, m[2] * dpr, m[3] * dpr, m[4] * dpr, m[5] * dpr];
 
 
 // ---------------------------------------------------------------- bölüm

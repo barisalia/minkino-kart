@@ -1,0 +1,123 @@
+{
+  "$sema": "film2-seri-1",
+  "aciklama": "Kino ve Ailesi (Seri 2) dizi dosyası: her bölümde aynı olan açılış (15 sn, M0 apartman), kapanış jeneriği (15 sn; YouTube bitiş ekranı alanları boş) ve mekânlar, kitler. Biçim: film/src/film2/bicim.ts. Önizleme: /film/bolum.html (npm run dev).",
+  "dizi": "Kino ve Ailesi",
+  "kitler": {
+    "kino": "kino-yeni/kino-yeni.json",
+    "anne": "anne/anne.json",
+    "baba": "baba/baba.json",
+    "lokum": "lokum/lokum.json",
+    "babaanne": "babaanne/babaanne.json",
+    "dede": "dede/dede.json",
+    "mino": "mino-yeni/mino-yeni.json"
+  },
+  "mekanlar": {
+    "apartman": { "resim": "apartman", "olcek": 0.1, "ust": [0, 60], "alt": [1480, 1536], "not": "M0 Çınar Apartmanı cephesi. Pencere camları: üst sol 724-1012, üst orta 1212-1538, üst sağ 1738-2026 (y 270-600, korkuluk üstü 476); alt sol 790-1012, alt sağ 1738-2026 (y 740-1080, korkuluk üstü 948)" },
+    "oda-sabah": { "resim": "oda-sabah", "olcek": 0.275, "zemin": 1330, "ust": [0, 80], "alt": [1440, 1536], "not": "M1 çocuk odası, sabah. Yatak x 30-1100 (yorgan eşyası oda-sabah-yorgan 284,920), karyola 1570-2250, kilim 1170-2390" },
+    "oda-gece": { "resim": "oda-gece", "olcek": 0.275, "zemin": 1330, "ust": [0, 80], "alt": [1440, 1536], "not": "M1 çocuk odası, gece lambası" },
+    "salon": { "resim": "salon", "olcek": 0.275, "zemin": 1330, "not": "M2 salon + antre: Gemini çiziyor (assets/film-seri2/salon.webp, 2752×1536)" },
+    "krem": { "renk": "#fff4dd", "boyut": [1920, 1080], "olcek": 0.09, "not": "jenerik zemini (dünya = 1920×1080 piksel)" }
+  },
+  "acilis": {
+    "kimlik": "acilis",
+    "ad": "Seri açılışı",
+    "mekan": "apartman",
+    "sure": 15,
+    "kararma": { "gir": 0.7, "cik": 0.8 },
+    "not": "Kamera sokaktan yukarı kayar, pencerelerde aile el sallar, geri çekilir, logo. Babaanne, Dede ve Mino kitleri gelince kendiliğinden görünürler.",
+    "isaretler": { "logo": 9.6 },
+    "oyuncular": {
+      "anne": { "kit": "anne", "x": 868, "y": 652, "pencere": { "kirp": [724, 270, 288, 330], "on": [700, 470, 340, 175] } },
+      "lokum": { "kit": "lokum", "x": 868, "y": 652, "kucakta": "anne" },
+      "kino": { "kit": "kino", "x": 1375, "y": 740, "pencere": { "kirp": [1212, 270, 326, 330], "on": [1160, 470, 440, 175] } },
+      "baba": { "kit": "baba", "x": 1882, "y": 652, "pencere": { "kirp": [1738, 270, 288, 330], "on": [1680, 470, 400, 175] } },
+      "dede": { "kit": "dede", "x": 900, "y": 1120, "pencere": { "kirp": [790, 740, 222, 330], "on": [770, 940, 290, 175] } },
+      "babaanne": { "kit": "babaanne", "x": 1882, "y": 1120, "pencere": { "kirp": [1738, 740, 288, 330], "on": [1680, 940, 400, 175] } }
+    },
+    "kamera": [
+      { "t": 0, "x": 1376, "y": 1160, "g": 1500 },
+      { "t": 5.2, "x": 1376, "y": 700, "g": 1750, "gecis": 4.6 },
+      { "t": 8.6, "x": 1376, "y": 640, "g": 1620, "gecis": 3 },
+      { "t": 11.4, "x": 1376, "y": 768, "g": 2752, "gecis": 2.6 }
+    ],
+    "replikler": [],
+    "olaylar": [
+      { "t": 0, "kim": "kino", "yap": "kulak", "durum": "kalk" },
+      { "t": 2.6, "kim": "dede", "yap": "el-salla", "taraf": "sag", "sure": 2.2 },
+      { "t": 3.0, "kim": "babaanne", "yap": "el-salla", "sure": 2.2 },
+      { "t": 3.4, "kim": "baba", "yap": "ifade", "gozler": "gozler-kapali", "agiz": "agiz-kahkaha" },
+      { "t": 3.4, "kim": "baba", "yap": "poz", "alanlar": { "kolSag": 60, "kolSol": -60, "dirsekSag": 40, "dirsekSol": -40, "kafaA": -4 }, "sure": 1.8, "not": "esneme" },
+      { "t": 5.3, "kim": "baba", "yap": "ifade", "gozler": "gozler-mutlu" },
+      { "t": 4.6, "kim": "lokum", "yap": "el-salla", "taraf": "sol", "sure": 2.4 },
+      { "t": 4.6, "kim": "anne", "yap": "bak", "yon": "lokum" },
+      { "t": 5.6, "kim": "kino", "yap": "kay", "y": 588, "sure": 0.55, "not": "korkuluğun üstünden başını çıkarır" },
+      { "t": 5.6, "kim": "kino", "yap": "ifade", "gozler": "gozler-mutlu", "agiz": "agiz-genis" },
+      { "t": 6.1, "kim": "kino", "yap": "kulak", "durum": "normal", "gecis": 0.25 },
+      { "t": 6.6, "kim": "kino", "yap": "kulak", "durum": "kalk", "gecis": 0.25 },
+      { "t": 7.6, "kim": "kino", "yap": "el-salla", "taraf": "sol", "sure": 3.2 },
+      { "t": 7.6, "kim": "anne", "yap": "el-salla", "taraf": "sag", "sure": 3 },
+      { "t": 7.8, "kim": "baba", "yap": "el-salla", "taraf": "sol", "sure": 3 },
+      { "t": 7.6, "kim": "lokum", "yap": "el-salla", "taraf": "sol", "sure": 3.2 },
+      { "t": 7.7, "kim": "dede", "yap": "el-salla", "taraf": "sag", "sure": 3 },
+      { "t": 7.9, "kim": "babaanne", "yap": "el-salla", "sure": 3 },
+      { "t": 7.6, "kim": "anne", "yap": "ifade", "gozler": "gozler-mutlu" }
+    ],
+    "muzik": [
+      { "t": 0, "ad": "film-acilis", "ses": 0.55, "gir": 0.4, "dongu": false },
+      { "t": 7.5, "ad": "film-merak", "ses": 0.42, "gir": 0.8, "cik": 1.2 }
+    ],
+    "efektler": [{ "t": 1.0, "ad": "kus" }, { "t": 3.6, "ad": "kus-cik" }, { "t": 9.6, "ad": "parilti" }],
+    "yazilar": [{ "t": "logo", "son": 15, "tur": "logo" }]
+  },
+  "kapanis": {
+    "kimlik": "kapanis",
+    "ad": "Kapanış jeneriği",
+    "mekan": "krem",
+    "sure": 15,
+    "kararma": { "gir": 0.7, "cik": 1.0 },
+    "not": "Orta ve alt (y %44-%82) YouTube bitiş ekranına boş: iki video kutusu ve abone ol düğmesi (film/src/film2/gorsel.ts → BITIS_ALANLARI; önizlemede ?kilavuz=1). Bitiş ekranı en çok 20 sn: son 5 sn bölümün kapanış kartına düşer.",
+    "oyuncular": {
+      "kino": { "kit": "kino", "x": 150, "y": 1062, "z": 12 },
+      "lokum": { "kit": "lokum", "x": 1770, "y": 1062, "z": 12 }
+    },
+    "esyalar": {
+      "b1": { "tur": "blok", "x": 420, "y": 1058, "olcek": 0.75, "renk": "#e5483f", "gorunur": false },
+      "b2": { "tur": "blok", "x": 520, "y": 1058, "olcek": 0.75, "renk": "#f2c230", "gorunur": false },
+      "b3": { "tur": "blok", "x": 620, "y": 1058, "olcek": 0.75, "renk": "#3e9df2", "gorunur": false },
+      "b4": { "tur": "blok", "x": 720, "y": 1058, "olcek": 0.75, "renk": "#5dbe3f", "gorunur": false },
+      "b5": { "tur": "blok", "x": 1200, "y": 1058, "olcek": 0.75, "renk": "#e5483f", "gorunur": false },
+      "b6": { "tur": "blok", "x": 1300, "y": 1058, "olcek": 0.75, "renk": "#f2c230", "gorunur": false },
+      "b7": { "tur": "blok", "x": 1400, "y": 1058, "olcek": 0.75, "renk": "#3e9df2", "gorunur": false },
+      "b8": { "tur": "blok", "x": 1500, "y": 1058, "olcek": 0.75, "renk": "#5dbe3f", "gorunur": false }
+    },
+    "kamera": [{ "t": 0, "x": 960, "y": 540, "g": 1920 }],
+    "replikler": [],
+    "olaylar": [
+      { "t": 0.9, "kim": "b1", "yap": "dus" }, { "t": 0.9, "kim": "b1", "yap": "goster" },
+      { "t": 1.2, "kim": "b2", "yap": "dus" }, { "t": 1.2, "kim": "b2", "yap": "goster" },
+      { "t": 1.5, "kim": "b3", "yap": "dus" }, { "t": 1.5, "kim": "b3", "yap": "goster" },
+      { "t": 1.8, "kim": "b4", "yap": "dus" }, { "t": 1.8, "kim": "b4", "yap": "goster" },
+      { "t": 2.1, "kim": "b5", "yap": "dus" }, { "t": 2.1, "kim": "b5", "yap": "goster" },
+      { "t": 2.4, "kim": "b6", "yap": "dus" }, { "t": 2.4, "kim": "b6", "yap": "goster" },
+      { "t": 2.7, "kim": "b7", "yap": "dus" }, { "t": 2.7, "kim": "b7", "yap": "goster" },
+      { "t": 3.0, "kim": "b8", "yap": "dus" }, { "t": 3.0, "kim": "b8", "yap": "goster" },
+      { "t": 0.6, "kim": "kino", "yap": "el-salla", "taraf": "sol", "sure": 2.4 },
+      { "t": 1.0, "kim": "lokum", "yap": "el-salla", "taraf": "sag", "sure": 2.4 },
+      { "t": 3.4, "kim": "lokum", "yap": "zipla", "yukseklik": 0.6 },
+      { "t": 4.2, "kim": "kino", "yap": "ifade", "gozler": "gozler-mutlu" },
+      { "t": 8.0, "kim": "kino", "yap": "el-salla", "taraf": "sol", "sure": 2.2 },
+      { "t": 8.4, "kim": "lokum", "yap": "el-salla", "taraf": "sag", "sure": 2.2 },
+      { "t": 12.0, "kim": "kino", "yap": "zipla", "yukseklik": 0.5 },
+      { "t": 12.3, "kim": "lokum", "yap": "zipla", "yukseklik": 0.5 }
+    ],
+    "muzik": [
+      { "t": 0, "ad": "film-kapanis", "ses": 0.5, "gir": 0.3, "dongu": false },
+      { "t": 4.6, "ad": "film-kutlama", "ses": 0.32, "gir": 1.2, "cik": 2.5 }
+    ],
+    "efektler": [
+      { "t": 1.35, "ad": "blok" }, { "t": 1.65, "ad": "blok" }, { "t": 1.95, "ad": "blok" }, { "t": 2.25, "ad": "blok" },
+      { "t": 2.55, "ad": "blok" }, { "t": 2.85, "ad": "blok" }, { "t": 3.15, "ad": "blok" }, { "t": 3.45, "ad": "blok" }
+    ],
+    "yazilar": [{ "t": 0.3, "son": 15, "tur": "minkino", "satirlar": ["Kino ve Ailesi", "Bir Minkino çizgi filmi"] }]
+  }
+}

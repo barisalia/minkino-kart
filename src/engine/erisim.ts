@@ -20,6 +20,9 @@ export const ERISIM: Record<string, Erisim> = {
   // Çizgi Filmler: yalnız "Mino'nun Karpuzu" ücretsiz
   'film/mino-karpuz': 'ucretsiz',
   'film/*': 'abonelik',
+  // Kino ve Ailesi (Seri 2, Çizgi Filmler içinde yeni dizi; ÖNERİ, menüde değil: film/src/film2/katalog.ts → SERI2_MENUDE):
+  // Bölüm 1 ücretsiz, gerisi 'film/*' ile abonelikle
+  'film/seri2-bolum-01': 'ucretsiz',
   // Sesli Maceralar: yalnız "Elektrikler Kesildi!" ücretsiz
   'macera/elektrik': 'ucretsiz',
   'macera/*': 'abonelik',

@@ -60,10 +60,12 @@ export interface CalanSoz extends SozTanim {
 }
 export class Sozler {
   calan: CalanSoz[] = [];
+  /** kayıttan gelen gerçek süreler (sn; ses dosyası varsa metnin tahmini yerine) */
+  ozelSure: Record<string, number> = {};
   constructor(readonly tablo: Record<string, SozTanim>) {}
   sure(id: string) {
     const s = this.tablo[id];
-    return s ? sozSuresi(s.metin, s.kim === 'anlatici') : 0;
+    return s ? (this.ozelSure[id] ?? sozSuresi(s.metin, s.kim === 'anlatici')) : 0;
   }
   /** cümleyi başlatır (saat: film saati); süresini döner */
   soyle(id: string, saat: number): number {
@@ -114,8 +116,8 @@ export interface Segment {
   dokun?(tur: 'bas' | 'kay' | 'kalk', x: number, y: number): void;
 }
 
-const ALTYAZI_RENK: Record<string, string> = { anlatici: '#ffe9a8', kino: '#b8f0a0', anne: '#ffd27a', lokum: '#ffc4dc' };
-const KISI_ADI: Record<string, string> = { anlatici: '', kino: 'Kino', anne: 'Anne', lokum: 'Lokum' };
+const ALTYAZI_RENK: Record<string, string> = { anlatici: '#ffe9a8', kino: '#b8f0a0', anne: '#ffd27a', lokum: '#ffc4dc', baba: '#a8d8ff', babaanne: '#ffb8a0', dede: '#e2d2b0', mino: '#ffd0f0' };
+const KISI_ADI: Record<string, string> = { anlatici: '', kino: 'Kino', anne: 'Anne', lokum: 'Lokum', baba: 'Baba', babaanne: 'Babaanne', dede: 'Dede', mino: 'Mino' };
 
 export class Oynatici {
   readonly ctx: CanvasRenderingContext2D;
@@ -129,6 +131,8 @@ export class Oynatici {
   bitti = false;
   /** bölüm adı (başlık kartı) ve başlığın göründüğü an aralığı */
   baslik: { metin: string; ust: string; bas: number; son: number } | null = null;
+  /** altyazı canvas'a çizilsin mi (YouTube kaydında hayır: altyazı ayrı .srt dosyası) */
+  altyaziGoster = true;
   onParca?: (ad: string) => void;
   onBitti?: () => void;
 
@@ -201,7 +205,7 @@ export class Oynatici {
       ctx.fillRect(0, 0, this.W, this.H);
     }
     this.baslikCiz();
-    this.altyaziCiz();
+    if (this.altyaziGoster) this.altyaziCiz();
   }
 
   private baslikCiz() {

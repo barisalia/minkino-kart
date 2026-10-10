@@ -21,7 +21,7 @@ export interface AyakHedef {
  * kısaltır / uzatır (önden görünüşte öne kalkan bacak kısalır). Ayakkabı yere paralel kalır.
  * kalcaA / kalcaY: kalça parçasının açısı ve aşağı kayması (ayak dünyada sabit kalsın diye düşülür).
  */
-export function bacakKur(k: Kukla, t: Taraf, h: AyakHedef, kalcaA = 0, kalcaY = 0) {
+export function bacakKur(k: Kukla, t: Taraf, h: AyakHedef, kalcaA = 0, kalcaY = 0, enAz = 0.55) {
   const pr = k.iskelet.parcalar;
   const kalca = pr[`bacak-ust-${t}`].pivot, bilek = pr[`ayak-${t}`].pivot;
   const dx = bilek[0] - kalca[0], dy = bilek[1] - kalca[1];
@@ -32,7 +32,7 @@ export function bacakKur(k: Kukla, t: Taraf, h: AyakHedef, kalcaA = 0, kalcaY = 
   const a = (Math.atan2(vy, vx) - Math.atan2(dy, dx)) * DERECE;
   // bacak boyu: uyluk kalçadan boyuna ölçeklenir (baldır onun içinde); içe kayan baldırda olduğu gibi kenarda
   // basamak kalmaz. Ayakkabı ölçeği geri alır (ayakkabı ezilmez).
-  const boy = Math.hypot(dx, dy), sy = Math.max(0.55, Math.min(1.15, Math.hypot(vx, vy) / boy));
+  const boy = Math.hypot(dx, dy), sy = Math.max(enAz, Math.min(1.15, Math.hypot(vx, vy) / boy));
   k.poz[`bacak-ust-${t}`] = { a, sy };
   k.poz[`bacak-alt-${t}`] = {};
   const o = h.olcek ?? 1;
