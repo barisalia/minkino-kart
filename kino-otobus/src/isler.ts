@@ -19,7 +19,7 @@ import { HAMUR_DOLU_MS, kulahAdimlari, lekelerUret, sil, temizlikAyari, YUVARLA_
 import type { Yas } from './model';
 import { dondurmaciKino } from './otobus';
 import { ses } from './sesler';
-import { gorsel, type VarlikAdi } from './varliklar';
+import { adres, gorsel, KULAH_MAKINESI, SURAHI, type VarlikAdi } from './varliklar';
 
 const sakin = () => TEST_MODU || AZ_HAREKET;
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, sakin() ? Math.min(ms, 60) : sure(ms)));
@@ -269,9 +269,33 @@ export function kulahYigini(stok: number): string {
   return `<span class="ko-kulah-yigin" data-stok="${n}">${Array.from({ length: n }, (_, i) => `<span class="ko-kulah-yigin-k" style="--i:${i};--n:${n}">${gorsel('kulah')}</span>`).join('')}</span>`;
 }
 
+/**
+ * Külah makinesinin ölçüleri CSS değişkeni olarak (varliklar.ts → KULAH_MAKINESI): kutu görselin oranında, plaka,
+ * menteşe, kapalıyken maske (kapak görseli ∪ kapağın en geniş satırının altı ∪ kulp köşesi)
+ */
+export function makineStili(): string {
+  const M = KULAH_MAKINESI;
+  const y = (v: number) => `${(v * 100).toFixed(2)}%`;
+  const kapak = adres('kulah-makinesi-kapak');
+  return [
+    `--oran:${M.oran}`,
+    `--plaka-sol:${y(M.plaka.x)}`,
+    `--plaka-ust:${y(M.plaka.y)}`,
+    `--plaka-en:${y(M.plaka.en)}`,
+    `--plaka-boy:${y(M.plaka.boy)}`,
+    `--mentese:${y(M.mentese.x)} ${y(M.mentese.y)}`,
+    `--kapak-alt:${y(M.kapakAlt)}`,
+    `--kulp-en:${y(1 - M.kulp.x)}`,
+    `--kulp-boy:${y(1 - M.kulp.y)}`,
+    kapak && adres('kulah-makinesi') ? `--kapak-maske:url("${kapak}")` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
+}
+
 /** Kumbaranın üstündeki küçük külah makinesi (iş köşesi): külah azalınca parlar, buhar çıkarır */
 export function isKosesi(ac: () => void): { el: HTMLButtonElement; isVar: (var_: boolean) => void } {
-  const el = h('button.ko-is-kosesi', { type: 'button', 'aria-label': 'Külah yap' }, h('span.ko-is-kosesi-g', { html: gorsel('kulah-makinesi') }), h('span.ko-is-kosesi-k', { html: gorsel('kulah-makinesi-kapak') }), h('i.ko-is-kosesi-raf', { 'aria-hidden': 'true' })) as HTMLButtonElement;
+  const el = h('button.ko-is-kosesi', { type: 'button', 'aria-label': 'Külah yap', style: makineStili() }, h('span.ko-is-kosesi-g', { html: gorsel('kulah-makinesi') }), h('span.ko-is-kosesi-k', { html: gorsel('kulah-makinesi-kapak') }), h('i.ko-is-kosesi-raf', { 'aria-hidden': 'true' })) as HTMLButtonElement;
   el.addEventListener('click', () => {
     ortakEfekt.dokunma();
     salla(el, 'ko-bas');
@@ -315,11 +339,13 @@ export class KulahPaneli {
   ) {
     this.adimlar = kulahAdimlari(o.yas);
     this.kino = dondurmaciKino(o.kirazSapka);
-    this.hamurEl = h('i.ko-is-hamur', { 'aria-hidden': 'true' });
+    this.hamurEl = h('i.ko-is-hamur', { 'aria-hidden': 'true', style: `--hamur:${SURAHI.hamur}` });
+    // pişmiş gofret: plakadan kalkıp plakanın üstünde dik durur (kendi oranında)
     this.disk = h('div.ko-is-disk', { html: gorsel('kulah-hamuru') });
-    this.plaka = h('div.ko-is-plaka', {}, this.hamurEl, this.disk);
+    this.plaka = h('div.ko-is-plaka', {}, this.hamurEl);
+    // kapak görseli makinenin tuvalinde kapalı yerinde: --in 1 kapalı (dönüşüm yok), 0 açık (menteşeden döner)
     this.kapak = h('div.ko-is-kapak', { html: gorsel('kulah-makinesi-kapak') });
-    this.makine = h('div.ko-is-makine', { role: 'button', 'aria-label': 'Külah makinesi' }, h('div.ko-is-makine-g', { html: gorsel('kulah-makinesi') }), this.plaka, this.kapak);
+    this.makine = h('div.ko-is-makine', { role: 'button', 'aria-label': 'Külah makinesi', style: makineStili() }, h('div.ko-is-makine-g', { html: gorsel('kulah-makinesi') }), this.plaka, this.kapak, this.disk);
     this.kalip = h('div.ko-is-kalip', { html: gorsel('kulah') });
     this.kulahlar = h('div.ko-is-kulahlar');
     if (this.adimlar[0] === 'hamur') this.surahi = h('div.ko-is-surahi', { role: 'button', 'aria-label': 'Hamur', html: gorsel('hamur-surahi') });
@@ -353,8 +379,22 @@ export class KulahPaneli {
     if (!sakin()) {
       this.kart.animate([{ transform: 'scale(.6)', opacity: 0 }, { transform: 'scale(1.04)', opacity: 1, offset: 0.7 }, { transform: 'none' }], { duration: 320, easing: 'ease-out' });
       void this.kino.oynat('var', 700);
+      // makine kapalı gelir, kapak açılır (plaka ve hamur görünür)
+      this.kapakKoy(true);
+      this.zaman.push(window.setTimeout(() => this.kapakKoy(false), 420));
     }
     ses.vuup();
+  }
+  private zaman: number[] = [];
+  /** kapak kapalı (makineye oturur; plakanın arka kenarı maskelenir) ya da açık */
+  private kapakKoy(kapali: boolean) {
+    this.kapak.style.setProperty('--in', kapali ? '1' : '0');
+    this.makine.classList.toggle('ko-kapali', kapali);
+    this.makine.classList.remove('ko-oturdu');
+    if (!kapali) return;
+    // kapak inince (geçiş bitince) maske açılır
+    if (sakin()) this.makine.classList.add('ko-oturdu');
+    else this.zaman.push(window.setTimeout(() => this.makine.classList.contains('ko-kapali') && this.makine.classList.add('ko-oturdu'), 300));
   }
 
   private get suanki(): KulahAdimi | 'bitti' {
@@ -394,9 +434,11 @@ export class KulahPaneli {
         this.hamurAyarla(Math.min(1, this.hamur + ms / HAMUR_DOLU_MS));
         if (this.hamur >= 1) {
           ses.pop();
-          this.akis(false);
+          this.akis(null);
         }
       }
+      // sürahi dönerken akış ağzından ayrılmasın
+      if (ustunde && this.hamur < 1) this.akis(tut.donukNokta(...SURAHI.agiz));
       raf = requestAnimationFrame(dongu);
     };
     this.kaldir.push(
@@ -404,7 +446,7 @@ export class KulahPaneli {
         aktif: () => this.suanki === 'hamur' && !this.mesgul,
         basla: (x, y) => {
           const r = s.getBoundingClientRect();
-          tut = new Tutulan(this.ef, gorsel('hamur-surahi'), { sinif: 'ko-tut-surahi', en: r.width, boy: r.height, tx: 0.5, ty: 0.55 });
+          tut = new Tutulan(this.ef, gorsel('hamur-surahi'), { sinif: 'ko-tut-surahi', en: r.width, boy: r.height, tx: 0.62, ty: 0.55 });
           tut.yer(x, y);
           s.classList.add('ko-tasiniyor');
           son = 0;
@@ -415,11 +457,11 @@ export class KulahPaneli {
           tut.yer(x, y, dx);
           ustunde = icinde(this.makine.getBoundingClientRect(), x, y, 20 * this.o.u());
           tut.dondur(ustunde ? -75 : 0);
-          this.akis(ustunde && this.hamur < 1, tut);
+          this.akis(ustunde && this.hamur < 1 ? tut.donukNokta(...SURAHI.agiz) : null);
         },
         birak: () => {
           cancelAnimationFrame(raf);
-          this.akis(false);
+          this.akis(null);
           const t = tut;
           tut = null;
           ustunde = false;
@@ -435,42 +477,78 @@ export class KulahPaneli {
       void this.hamurOtomatik();
     });
   }
-  /** sürahinin ağzından plakaya hamur şeridi */
+  /**
+   * sürahinin ağzından (ağız: efekt katmanında) plakaya dikey hamur şeridi; plakanın elipsinde ağzın altına düşer
+   * (ağız plakanın dışındaysa plakanın en yakın kenarına)
+   */
   private akisEl: HTMLElement | null = null;
-  private akis(acik: boolean, tut?: Tutulan) {
-    if (!acik || !tut || sakin()) {
+  private akis(agiz: [number, number] | null) {
+    if (!agiz || sakin()) {
       this.akisEl?.remove();
       this.akisEl = null;
       return;
     }
-    const [ax, ay] = tut.nokta(0.08, 0.2);
-    const [px, py] = this.ekranYeri(this.plaka, 0.5, 0.5);
+    const [ax, ay] = agiz;
+    const [sol] = this.ekranYeri(this.plaka, 0.1, 0.5);
+    const [sag, py] = this.ekranYeri(this.plaka, 0.9, 0.5);
+    const x = Math.max(sol, Math.min(sag, ax));
     if (!this.akisEl) {
-      this.akisEl = h('i.ko-hamur-akis');
+      this.akisEl = h('i.ko-hamur-akis', { style: `--hamur:${SURAHI.hamur}` });
       this.ef.el.append(this.akisEl);
     }
     const boy = Math.max(4, py - ay);
-    this.akisEl.style.cssText = `left:${((ax + px) / 2).toFixed(1)}px;top:${ay.toFixed(1)}px;height:${boy.toFixed(1)}px`;
+    this.akisEl.style.left = `${x.toFixed(1)}px`;
+    this.akisEl.style.top = `${ay.toFixed(1)}px`;
+    this.akisEl.style.height = `${boy.toFixed(1)}px`;
   }
+  /** dokununca Kino'nun yerine sürahi kendisi gelir, ağzı plakanın üstünde eğilip döker, yerine döner */
   private async hamurOtomatik() {
-    if (!this.surahi) return;
+    const s = this.surahi;
+    if (!s) return;
     this.mesgul = true;
     ses.slurp();
     if (!sakin()) {
-      const r = this.surahi.getBoundingClientRect();
-      const m = this.makine.getBoundingClientRect();
-      const dx = m.left + m.width * 0.62 - (r.left + r.width / 2);
-      const dy = m.top - r.height * 0.15 - (r.top + r.height / 2);
-      await this.surahi.animate(
-        [{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) rotate(-75deg)`, offset: 0.35 }, { transform: `translate(${dx}px, ${dy}px) rotate(-80deg)`, offset: 0.75 }, { transform: 'none' }],
-        { duration: sure(1100), easing: 'ease-in-out' },
-      ).ready;
-    }
-    for (let i = 1; i <= 8; i++) {
-      await bekle(70);
-      if (this.kapandi) return;
-      this.hamurAyarla(i / 8);
-    }
+      const r = s.getBoundingClientRect();
+      const k = this.ef.kutu();
+      // hedef: ağız plakanın üstünde, ortasının biraz solunda; sürahi ortasından -75° döner. Eğik sürahi kartın
+      // tepesinden taşmasın (kesilmesin): gerekirse bütünüyle küçülür (oranı bozulmaz)
+      const [hx, hy0] = this.ekranYeri(this.plaka, 0.36, 0);
+      const hy = hy0 - this.makine.getBoundingClientRect().height * 0.12;
+      const a = (-75 * Math.PI) / 180;
+      const don = (x: number, y: number): [number, number] => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
+      const [ox, oy] = don((SURAHI.agiz[0] - 0.5) * r.width, (SURAHI.agiz[1] - 0.5) * r.height);
+      const tepe = Math.max(...[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([i, j]) => oy - don((i * r.width) / 2, (j * r.height) / 2)[1]));
+      const kartUst = this.kart.getBoundingClientRect().top - k.top + 10 * this.o.u();
+      const o = Math.max(0.55, Math.min(1, (hy - kartUst) / tepe));
+      const dx = hx - o * ox - (r.left - k.left + r.width / 2);
+      const dy = hy - o * oy - (r.top - k.top + r.height / 2);
+      const T = sure(1500);
+      const an = s.animate(
+        [
+          { transform: 'none' },
+          { transform: `translate(${dx}px, ${dy}px) rotate(-75deg) scale(${o})`, offset: 0.3 },
+          { transform: `translate(${dx}px, ${dy}px) rotate(-75deg) scale(${o})`, offset: 0.78 },
+          { transform: 'none' },
+        ],
+        { duration: T, easing: 'ease-in-out' },
+      );
+      // eğilince akış başlar, hamur yayılır; sürahi doğrulurken akış kesilir
+      await bekle(T * 0.3);
+      for (let i = 1; i <= 10; i++) {
+        if (this.kapandi) return an.cancel();
+        this.akis([hx, hy]);
+        this.hamurAyarla(i / 10);
+        await bekle((T * 0.46) / 10);
+      }
+      this.akis(null);
+      await an.finished.catch(() => undefined);
+    } else
+      for (let i = 1; i <= 8; i++) {
+        await bekle(70);
+        if (this.kapandi) return;
+        this.hamurAyarla(i / 8);
+      }
+    if (this.kapandi) return;
     this.mesgul = false;
     await this.hamurTamamla();
   }
@@ -491,21 +569,26 @@ export class KulahPaneli {
     this.ilerle();
   }
 
-  // ---- kapağı bas: dokun ya da kapağı aşağı sürükle
+  // ---- kapağı bas: dokun ya da makinenin üstünde aşağı sürükle (kapak parmakla iner)
   private baglaMakine() {
     let inis = 0;
     this.kaldir.push(
-      elSurukle(this.kapak, {
+      elSurukle(this.makine, {
         aktif: () => this.suanki === 'bas' && !this.mesgul,
         basla: () => {
           inis = 0;
+          this.kapak.classList.add('ko-tutuluyor');
         },
         tasi: (_x, _y, _dx, dy) => {
           inis = Math.max(0, inis + dy);
           this.kapak.style.setProperty('--in', Math.min(1, inis / (40 * this.o.u())).toFixed(3));
-          if (inis > 30 * this.o.u()) void this.bas();
+          if (inis > 30 * this.o.u()) {
+            this.kapak.classList.remove('ko-tutuluyor');
+            void this.bas();
+          }
         },
         birak: () => {
+          this.kapak.classList.remove('ko-tutuluyor');
           if (this.suanki === 'bas' && !this.mesgul) this.kapak.style.setProperty('--in', '0');
         },
       }),
@@ -518,23 +601,26 @@ export class KulahPaneli {
   private async bas() {
     if (this.mesgul || this.suanki !== 'bas') return;
     this.mesgul = true;
-    this.makine.classList.add('ko-kapali');
-    this.kapak.style.setProperty('--in', '1');
+    this.makine.classList.remove('ko-sirada');
+    this.kapakKoy(true);
+    // kapak inince: tak, makine hafifçe çöker (ezilmeden), buhar
+    await bekle(260);
+    if (this.kapandi) return;
     ses.tak();
     salla(this.makine, 'ko-ezil');
-    const [x, y] = this.ekranYeri(this.makine, 0.5, 0.25);
+    const [x, y] = this.ekranYeri(this.makine, 0.45, 0.08);
     this.ef.buhar(x, y, 5);
     if (!sakin()) void this.kino.oynat('bak', 700);
-    await bekle(750);
+    await bekle(900);
     if (this.kapandi) return;
     this.ef.buhar(x, y, 3);
-    // pişti: kapak kalkar, hamur altın gofret olmuş
-    this.makine.classList.remove('ko-kapali');
-    this.kapak.style.setProperty('--in', '0');
+    // pişti: kapak açılır, hamur altın gofret olmuş, gofret plakadan kalkıp dik durur
+    this.kapakKoy(false);
     this.makine.classList.add('ko-pisti');
     ses.pop();
-    this.ef.parilti(x, y + 20, 6, 0.6, '#FFE45C');
-    await bekle(250);
+    const [px, py] = this.ekranYeri(this.plaka, 0.42, 0.2);
+    this.ef.parilti(px, py, 6, 0.6, '#FFE45C');
+    await bekle(450);
     if (this.kapandi) return;
     this.mesgul = false;
     this.ilerle();
@@ -579,6 +665,8 @@ export class KulahPaneli {
         },
       }),
     );
+    // gofret makinenin içinde: dokunuşu makinenin kapak sürüklemesine geçmesin (parmağı gofret tutar)
+    this.disk.addEventListener('pointerdown', (e) => e.stopPropagation());
     this.disk.addEventListener('click', () => {
       if (this.suanki === 'yuvarla' && !this.mesgul) void this.yuvarla(false);
     });
@@ -595,10 +683,11 @@ export class KulahPaneli {
       const dy = k.top + k.height * 0.4 - (d.top + d.height / 2);
       await this.disk
         .animate(
+          // gofret kalıba uçar, dönerek küçülür ve kalıpta külah olur (oranı bozulmaz)
           suruklendi
-            ? [{ transform: `translate(${dx}px, ${dy}px) scale(.7, .7)`, opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) scale(.12, .7) rotate(20deg)`, opacity: 0 }]
-            : [{ transform: 'none' }, { transform: `translate(${dx * 0.5}px, ${dy * 0.5 - 30}px) rotate(200deg) scale(.8, .8)`, offset: 0.5 }, { transform: `translate(${dx}px, ${dy}px) rotate(360deg) scale(.12, .7)`, opacity: 0 }],
-          { duration: sure(suruklendi ? 260 : 600), easing: 'ease-in', fill: 'forwards' },
+            ? [{ transform: `translate(${dx}px, ${dy}px) scale(.7)`, opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) rotate(220deg) scale(.15)`, opacity: 0 }]
+            : [{ transform: 'none' }, { transform: `translate(${dx * 0.5}px, ${dy * 0.5 - 30}px) rotate(200deg) scale(.8)`, offset: 0.5 }, { transform: `translate(${dx}px, ${dy}px) rotate(420deg) scale(.15)`, opacity: 0 }],
+          { duration: sure(suruklendi ? 300 : 650), easing: 'ease-in', fill: 'forwards' },
         )
         .finished.catch(() => undefined);
     }
@@ -637,7 +726,8 @@ export class KulahPaneli {
     if (this.kapandi) return;
     this.kapandi = true;
     this.kaldir.forEach((f) => f());
-    this.akis(false);
+    this.zaman.forEach(clearTimeout);
+    this.akis(null);
     this.kino.kapat();
     if (birakti) {
       ses.vuup(true);

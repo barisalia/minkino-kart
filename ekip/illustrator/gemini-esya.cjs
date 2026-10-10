@@ -5,7 +5,7 @@
 //  --arka  : eşleşen dosyalar kesilmez, arka plan olarak webp'e çevrilir (uzun kenar --arka-max, varsayılan 2048).
 //  --arka-onek : arka plan çıktı adına eklenen önek (varsayılan 'arka-': tezgah-uzak-1 → arka-tezgah-uzak-1.webp).
 //  --max   : kesilmiş eşyanın uzun kenarı bu değeri aşarsa küçültülür (varsayılan 1024; 0 = küçültme yok).
-// Dosya başına ayar: delik (içi boş nesne: kapalı saf beyaz bölgeler şeffaf olur; delikMin px), kenarKapali (görüntü kenarına değen nesne), tohum [[x,y]] (zemin yalnız bu noktalardan akar), tuvalKoru (kırpma yok, tam tuval; arka planla üst üste binen katmanlar için), minOran, sat, koyu, kes.
+// Dosya başına ayar: delik (içi boş nesne: kapalı saf beyaz bölgeler şeffaf olur; delikMin px; delikNokta [[x,y]]: yalnız bu noktaları içerenler),kenarKapali (görüntü kenarına değen nesne), tohum [[x,y]] (zemin yalnız bu noktalardan akar), tuvalKoru (kırpma yok, tam tuval; arka planla üst üste binen katmanlar için), minOran, sat, koyu, kes.
 // Yöntem: koyu veya doygun pikseller = çizim, 1 px şişirilip kenardan akıtılan dış bölge zemin; kapalı iç beyazlar (tabak, süt, tüy) kalır; kenar halesi iç renge göre alfadan çıkarılır.
 // Beyaz/açık nesnelerde (tabak, kâse) çizgi açık griyse --ayar ile koyu eşiği yükseltin (örn. "koyu":205).
 const fs = require('fs'), path = require('path');
@@ -37,7 +37,9 @@ async function kes(dosya, ad, o) {
     const bi = new Uint8Array(n); for (let i = 0; i < n; i++) bi[i] = S[i] && Math.min(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]) > 243 ? 1 : 0;
     const e2 = new Uint8Array(n); for (let i = 0; i < n; i++) { if (!bi[i] || e2[i]) continue; let b2 = 0, s2 = 0; q[s2++] = i; e2[i] = 1; const uye = [i];
       while (b2 < s2) { const pp = q[b2++], x = pp % W; for (const d of [-1, 1, -W, W]) { const r = pp + d; if (r < 0 || r >= n || e2[r] || !bi[r]) continue; if ((d === -1 && x === 0) || (d === 1 && x === W - 1)) continue; e2[r] = 1; q[s2++] = r; uye.push(r); } }
-      if (uye.length >= (o.delikMin || 600)) for (const pp of uye) S[pp] = 0; }
+      // delikNokta [[x,y]]: yalnız bu noktaları içeren beyaz bölgeler delik olur (kulp boşluğu; büyük beyaz parlamalar kalır)
+      const noktada = !o.delikNokta || o.delikNokta.some(([dx, dy]) => e2[dy * W + dx] && uye.includes(dy * W + dx));
+      if (uye.length >= (o.delikMin || 600) && noktada) for (const pp of uye) S[pp] = 0; }
     // deliğin kenar halkası: deliğe 3 px içinde kalan açık (min kanal > 175) pikseller de delik sayılır (kontur iç yüzündeki beyaz hale)
     for (let pass = 0; pass < 14; pass++) { const sil = []; for (let i = 0; i < n; i++) { if (!S[i]) continue; const r = Math.min(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]); if (r < 175) continue; const x = i % W; if ((x > 0 && !S[i - 1] && !dis[i - 1]) || (x < W - 1 && !S[i + 1] && !dis[i + 1]) || (i >= W && !S[i - W] && !dis[i - W]) || (i + W < n && !S[i + W] && !dis[i + W])) sil.push(i); } for (const i of sil) S[i] = 0; } }
   // 4) iç (3 px erozyon) ve genel koyu kontur rengi

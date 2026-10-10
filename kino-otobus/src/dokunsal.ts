@@ -124,7 +124,7 @@ export class Tutulan {
   constructor(
     private efekt: Efekt,
     icerik: string | HTMLElement,
-    o: { sinif?: string; en: number; boy: number; tx?: number; ty?: number },
+    private o: { sinif?: string; en: number; boy: number; tx?: number; ty?: number },
   ) {
     this.ic = typeof icerik === 'string' ? h('div.ko-tutulan-ic', { html: icerik }) : icerik;
     this.el = h(`div.ko-tutulan${o.sinif ? `.${o.sinif}` : ''}`, { style: `width:${o.en.toFixed(1)}px;height:${o.boy.toFixed(1)}px;--tx:${((o.tx ?? 0.5) * 100).toFixed(1)}%;--ty:${((o.ty ?? 0.5) * 100).toFixed(1)}%` }, this.ic);
@@ -173,6 +173,13 @@ export class Tutulan {
     const r = this.ic.getBoundingClientRect();
     const k = this.efekt.kutu();
     return [r.left - k.left + r.width * ox, r.top - k.top + r.height * oy];
+  }
+  /** efekt katmanına göre aracın içindeki bir nokta, dönüş ve ölçek hesaba katılarak (ör. eğik sürahinin ağzı) */
+  donukNokta(ox: number, oy: number): [number, number] {
+    const dx = (ox - (this.o.tx ?? 0.5)) * this.o.en * this.olcek;
+    const dy = (oy - (this.o.ty ?? 0.5)) * this.o.boy * this.olcek;
+    const a = ((this.don + this.egim) * Math.PI) / 180;
+    return [this.x + dx * Math.cos(a) - dy * Math.sin(a), this.y + this.ofs + dx * Math.sin(a) + dy * Math.cos(a)];
   }
   /** yerine (ekran koordinatı) kayarak döner ve kalkar */
   async don_(hedef: [number, number] | null, ms = 300) {
