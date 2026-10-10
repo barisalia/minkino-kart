@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#BFE6FF" />
+    <meta name="description" content="Minkino — 3-6 yaş için sesli, eğitici oyunlar" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Minkino" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./ikon-180.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>Minkino</title>
+    <script>
+      // Kartlar eskiden sitenin kökündeydi: eski Kartlar bağlantıları (?yas=…, ?tema=…, ?kategori=…) /kartlar/'a gider
+      (function () {
+        var q = new URLSearchParams(location.search);
+        if (['yas', 'tema', 'mod', 'tip', 'kategori'].some(function (k) { return q.has(k); })) location.replace('./kartlar/' + location.search + location.hash);
+      })();
+    </script>
+    <style>
+      /* açılış: JS yüklenene kadar beyaz değil, açılış ekranının kremi + asıl MINKINO logosu (krem zeminde kenarsız temiz sürüm; uygulamada yerel açılış görseliyle aynı) */
+      html, body { margin: 0; background: #fff4dd; }
+      #acilis { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; background: #fff4dd; transition: opacity 0.32s ease-out; }
+      #acilis img { width: min(72vw, 420px); height: auto; filter: drop-shadow(0 5px 6px rgba(90, 54, 23, 0.2)); animation: acilis-nefes 1.6s ease-in-out infinite alternate; transition: transform 0.32s ease-out; }
+      #acilis.gitti { opacity: 0; pointer-events: none; }
+      #acilis.gitti img { transform: scale(1.12); animation: none; }
+      @keyframes acilis-nefes { to { transform: scale(1.04); } }
+      @media (prefers-reduced-motion: reduce) { #acilis img { animation: none; } }
+    </style>
+    <script type="module" crossorigin src="./assets/menu-KkQkipBx.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/dom-K9_YOGGc.js">
+    <link rel="modulepreload" crossorigin href="./assets/preload-helper-Ct5FWWRu.js">
+    <link rel="modulepreload" crossorigin href="./assets/ses-CmVGGama.js">
+    <link rel="modulepreload" crossorigin href="./assets/mino-ospML1VU.js">
+    <link rel="modulepreload" crossorigin href="./assets/uygulama-IK-fa1QU.js">
+    <link rel="modulepreload" crossorigin href="./assets/yol-Bnaffcks.js">
+    <link rel="modulepreload" crossorigin href="./assets/pamuk-b-DpGIhZt0.js">
+    <link rel="modulepreload" crossorigin href="./assets/arka-uzak-KPttRe9s.js">
+    <link rel="modulepreload" crossorigin href="./assets/mino-sepet-CRAaxtHe.js">
+    <link rel="modulepreload" crossorigin href="./assets/kume-sag-mTrohXi2.js">
+    <link rel="modulepreload" crossorigin href="./assets/kume-sol-CkMJRlYD.js">
+    <link rel="modulepreload" crossorigin href="./assets/kart-kino-PQlO6EBk.js">
+    <link rel="modulepreload" crossorigin href="./assets/tavuk-CQIrwR12.js">
+    <link rel="modulepreload" crossorigin href="./assets/tavsan-B26DqL7c.js">
+    <link rel="modulepreload" crossorigin href="./assets/zurafa-BmFUC2XX.js">
+    <link rel="modulepreload" crossorigin href="./assets/kus-D8Rvf4ZH.js">
+    <link rel="modulepreload" crossorigin href="./assets/kapak-D2MVYDV_.js">
+    <link rel="modulepreload" crossorigin href="./assets/uzum-4pJ2Tnxx.js">
+    <link rel="modulepreload" crossorigin href="./assets/elma-DHGBH8QC.js">
+    <link rel="modulepreload" crossorigin href="./assets/yuva-DGF2W5rX.js">
+    <link rel="modulepreload" crossorigin href="./assets/zeynep-BMNne9nD.js">
+    <link rel="modulepreload" crossorigin href="./assets/flama-D7fFdhNy.js">
+    <link rel="modulepreload" crossorigin href="./assets/dosya-muzik-DMOYjTPW.js">
+    <link rel="modulepreload" crossorigin href="./assets/yabanmersini-CwxfR4S0.js">
+    <link rel="modulepreload" crossorigin href="./assets/sepet-CM88rJXm.js">
+    <link rel="modulepreload" crossorigin href="./assets/yelkenli-BOvbsFDd.js">
+    <link rel="modulepreload" crossorigin href="./assets/karakter-BzJhsmNs.js">
+    <link rel="modulepreload" crossorigin href="./assets/erisim-L8qnopqh.js">
+    <link rel="modulepreload" crossorigin href="./assets/ebeveyn-kapisi-CzCJNazb.js">
+    <link rel="modulepreload" crossorigin href="./assets/logo-Bm6y1Ocj.js">
+    <link rel="modulepreload" crossorigin href="./assets/ekran-e8ZAnuGz.js">
+    <link rel="modulepreload" crossorigin href="./assets/kilit-GDclTWYl.js">
+    <link rel="modulepreload" crossorigin href="./assets/yuruyus-OPNTKD9Q.js">
+    <link rel="modulepreload" crossorigin href="./assets/mino-profil-2_qT5Rlw.js">
+    <link rel="modulepreload" crossorigin href="./assets/tezgah-on-1-Pd1CeOzV.js">
+    <link rel="modulepreload" crossorigin href="./assets/kumbara-kavanoz-1-CuBV_f1s.js">
+    <link rel="modulepreload" crossorigin href="./assets/cizim-CbxsKIpG.js">
+    <link rel="stylesheet" crossorigin href="./assets/dom-DPNNYLPK.css">
+    <link rel="stylesheet" crossorigin href="./assets/mino-BfZWYSS6.css">
+    <link rel="stylesheet" crossorigin href="./assets/ekran-BOSP4rFE.css">
+    <link rel="stylesheet" crossorigin href="./assets/karakter-D_fv1bib.css">
+    <link rel="stylesheet" crossorigin href="./assets/menu-FP5r1P7C.css">
+    <link rel="stylesheet" crossorigin href="./assets/ana-D6iEyRMi.css">
+  </head>
+  <body>
+    <div id="acilis" aria-hidden="true"><img src="./assets/logo-minkino-asil-BqOYQ4v2.webp" alt="" width="1400" height="276" /></div>
+    <div id="minkino"></div>
+  </body>
+</html>
