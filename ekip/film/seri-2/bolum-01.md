@@ -1,345 +1,344 @@
-# Ela ile Efe · Bölüm 1: Kocaman Kule
+# Kino'nun Burnu · Bölüm 1: Kuzu Nerede?
 
-> Durum: TASLAK (2026-10-09). Barış'la konuşulmadan animatiğe geçilmez.
-> Süre: **~6 dk 20 sn** (seri açılışı dahil). Üretim: Blender 2D cut-out ([URETIM-YOLU.md](URETIM-YOLU.md)). Sahne dosyası `content/film2/bolum-01.json`.
-> Görsel kodları (A…, B…, C…, D…, T…) `ekip/gemini/IS-LISTESI-SERI2.md` dosyasındaki numaralardır.
+> Durum: **TASLAK** (2026-10-10). Barış görmeden animatiğe geçilmez.
+> **Değişiklik notu:** Bu dosya "Ela ile Efe · Bölüm 1: Kocaman Kule" senaryosunun yerine geçti (eski sürüm git geçmişinde).
+> Süre: **~6 dk 45 sn** (seri açılışı ve jenerik dahil). Üretim: Blender 2D cut-out ([URETIM-YOLU.md](URETIM-YOLU.md)). Sahne dosyası: `content/film2/bolum-01.json`.
+> Karakter kodları ve kit: [KARAKTER-KITI.md](KARAKTER-KITI.md). Seri kitabı: [SERI-KITABI.md](SERI-KITABI.md).
 
 ## Künye
-- **Konu:**
-  - İkizler babalarından uzun bir kule yapmak ister.
-  - Kule dokuz bloğa ulaşınca küçük kardeş Nil "Bum!" diye yıkar.
-  - Efe çok kızar, Ela çok üzülür.
-  - Anne üçüyle yere oturur, birlikte "balon nefesi" alırlar.
-  - Sakinleşince Efe bir fikir bulur: biri büyük, biri Nil'in yıkması için iki kule.
-- **Gösterdiği:** Kızmak ve üzülmek olur. Önce derin bir nefes, sonra bir yol bulunur.
-- **Resimle bilgi:** 1'den 10'a sayma, 5 renk (kırmızı, turuncu, sarı, yeşil, mavi), 4 şekil (daire, yıldız, kalp, üçgen bloklardaki resimler).
-- **Duygu eğrisi:** heyecan → dikkat ve gerilim (sallanan kule) → şaşkınlık (BUM!) → öfke ve üzüntü → sakinleşme → fikir → neşe → sıcak huzur.
-- **Bugünün hazinesi:** kulenin tepesindeki minik kırmızı bayrak.
-- **Kapanış kartı:** *"Kızınca önce balon nefesi."*
 
-## Mekânlar
-| Yer | Katmanlar (z) | Görsel |
+- **Konu:**
+  - Pazar sabahı. Babaanne alt katta pişi kızartıyor, koku eve kadar geliyor.
+  - Tam inilecekken Lokum'un oyuncağı **Kuzu** kaybolur. Lokum Kuzu'suz gitmez.
+  - Herkes arar; Mino yukarıya bakar, Baba'nın kayıp gözlüğünü bulur ama Kuzu yok.
+  - Kino sabırsızlanır: "Pişiler soğuyacak!"
+  - Lokum ıslak burnunu ona sürünce Kino'ya fikir gelir: Kuzu, Lokum gibi kokar.
+  - Kino kardeşinin kokusunun izini sürer. Yolda pişi kurdelesi onu çeker; "Kokla… üfle." diye durur, kardeşini seçer.
+  - Kuzu balkonda, Dede'nin fesleğen saksısında "dikilmiş" çıkar: Lokum büyüsün diye dikmiş.
+  - Bahçede pişiler hâlâ sıcak: Babaanne saklamış.
+- **Gösterdiği:** Beklemek zor. Yardım edince bekleme kısalır, kardeş de mutlu olur.
+- **Resimle bilgi:**
+  - yer sözcükleri: **altında, üstünde, içinde, arkasında** (her biri ekranda net bir resimle),
+  - **1-7 sayma** (masadaki pişiler),
+  - koku = bir duyu (burun simgesi).
+- **Duygu eğrisi:** heves (pişi!) → şaşkınlık (Kuzu yok) → sabırsızlık ve kızgınlık → fikir → iz sürme coşkusu → iç çekişme (pişi mi, Kuzu mu?) → sakinleşme ve seçim → kahkaha (saksıdaki Kuzu) → sıcak huzur (sofra).
+- **Günün kokusu:** pişi, fesleğen, Lokum.
+- **Kapanış kartı:** *"Önce kardeşim, sonra pişi!"*
+
+## Mekânlar (dördü de dizi boyunca tekrar kullanılır)
+
+| Kod | Yer | Katmanlar (z) |
 |---|---|---|
-| Apartman dışı, sabah | gök+deniz+çatılar (-60), bina (-8), ön plan dallar (+4) | D2, D3, D4 (D1 kompozisyon referansı) |
-| İkizlerin odası | pencere dışı gök (-60), boş oda duvar+pencere+kapı+parke (-25), raf+kitaplık (-8), yataklar ve alçak masa (0), halı (0, yer), ön plan oyuncak sandığı+saksı (+4) | D5-D12 |
+| M1 | **Çocuk odası, sabah** (dar set: yalnız yatak köşesi) | pencere dışı gök ve çınar (-60), duvar + pencere + perde (-25), Kino'nun yatağı + Lokum'un karyolası (0), ön plan: yere düşmüş yastık (+4) |
+| M2 | **Salon + antre** (tek geniş set; kamera kayarak antreye geçer) | pencere dışı (-60), duvar, kapı, kitaplık, büfe (-25), kanepe, minder, kilim (-8 ve 0), ön plan: sehpa, saksı (+4). Antre ucu: ayakkabılık, terlikler, dış kapı (0). Balkon kapısı tül perdeyle (0). |
+| M3 | **Balkon** | sokak, karşı apartmanlar, çınar (-60/-25), balkon zemini ve korkuluk (0), saksılar (0), ön plan: çamaşır askısındaki küçük çorap (+4) |
+| M4 | **Babaanne'nin bahçesi** (zemin kat) | gök (-60), apartman cephesi ve balkon (-25), limon ağacı (-8), kahvaltı masası (0), ön plan: limon dalı + fesleğen tarhı (+4) |
+
+**Not:** Dört mekân bu bölüm için çoktur (kural ≤ 2 yeni). Ama dördü de dizinin **daimi setleri**; Bölüm 2'den itibaren yeni mekân sayısı 0-1'e iner.
 
 ## Oyuncular
-Ela, Efe (tam kit + Turntable açıları), Nil, Anne, Baba (hafif kit), Tosbi, peluş Mino ve Kino (eşya).
+
+| Karakter | Kit | Bu bölümde |
+|---|---|---|
+| Kino | tam kit + 3/4 + yan | her sahne |
+| Lokum | tam kit + yan | her sahne |
+| Anne | tam kit + yan | S1-S3, S7 |
+| Baba | tam kit + yan | S2-S3, S5 (ses), S7 |
+| Mino | tam kit + yan | S3-S7 |
+| Babaanne, Dede | önden kit; **masada oturur** (belden yukarı) | S2 (ses), S6 (Dede balkondan seslenir), S7 |
+
+## Bölüme özel pozlar (kit dışında; Gemini ya da Recraft, bkz. KARAKTER-KITI §6)
+
+| Kod | Poz |
+|---|---|
+| P1 | Kino yatakta uyuyor, kulak yüzüne düşmüş (yan yatış) |
+| P2 | Kino kilimde yüzüstü, kollar iki yana açık ("of ya!") |
+| P3 | Kino emekleyerek kanepenin altına bakıyor (yandan, kıç havada, kuyruk sallanır) |
+| P4 | Kino çamaşır sepetine kafa üstü dalmış (yalnız arka bacaklar ve kuyruk görünür) |
+| P5 | Lokum yere oturmuş ağlıyor (bacaklar önde açık) |
+| P6 | Baba kanepede sırtüstü uyuyor, gazete yüzünde |
+| P7 | Babaanne ve Dede masada oturuyor (belden yukarı; kit parçalarından kurulabilir) |
+| P8 | Kino'nun burnu pişi kurdelesine "çekiliyor": gövde öne yatık, kulaklar uçuşuyor, ayaklar kayıyor |
+
+## Eşyalar (aynı stil, şeffaf)
+
+Kuzu (krem örgü kuzu, düz renk; temiz + toprak lekeli iki hâl), Baba'nın gazetesi, Baba'nın gözlüğü, Baba'nın çorabı, yarım yenmiş muz kabuğu, çamaşır sepeti ve havlu, küçük sulama kabı, büyük fesleğen saksısı, pişi tabağı ve üstünü örten bez, 7 pişi, ince belli çay bardakları (7), çaydanlık, kahvaltılık (peynir, zeytin, domates tabakları), kolonya şişesi, Kino'nun koku kutusu.
+
+## Koku kurdeleleri (Blender, kodla)
+
+- Kurdele = Blender'da tek bir eğri (bezier) + kalınlık + düz renk malzeme, 3 px çikolata kontur.
+- Kurdele uçtan başlayarak "çizilir" (bevel factor animasyonu), hafifçe dalgalanır (gürültü modifier, yavaş).
+- Üstünde kokunun simgeleri (kitten küçük PNG'ler) eğri boyunca akar (follow path).
+- Bu bölümde iki kurdele:
+  - **Lokum kurdelesi:** krem-pembe; simgeler: süt damlası, sabun köpüğü, muz dilimi.
+  - **Pişi kurdelesi:** altın sarısı, daha kalın; simgeler: pişi, buhar kıvrımı.
 
 ## Ses ve müzik
-- **Müzik:** mevcut dosyalar (`assets/muzik/`):
-  - `film-merak` (heves),
-  - `film-kovalamaca` (kule yapımı, hafif),
-  - `film-surpriz` (çok kısa, yıkılmadan önce),
-  - `film-uzgun` (öfke-üzüntü),
-  - `film-kutlama` (iki kule).
-  - Kapanış: Seri 1'deki `kapanis` sentezinin WAV kaydı.
+
+- **Müzik** (mevcut `assets/muzik/`):
+  - `film-acilis` (seri açılışı),
+  - `film-merak` (sabah, iz sürme başı),
+  - `film-kovalamaca` (iz sürme),
+  - `film-surpriz` (kurdele beliriyor, çok kısa),
+  - `film-uzgun` (Lokum ağlıyor; Kino'nun "of ya"sı, hafif),
+  - `film-gecis` (sahne geçişleri),
+  - `film-kutlama` (Kuzu bulundu),
+  - `film-kapanis` (günün kokusu ve jenerik).
+  - Dizinin kendi açılış müziği sonra yapılır; şimdilik `film-acilis`.
 - **Efektler (WAV):**
-  - mevcut: `pof`, `kikir`, `tik`, `ayak`, `huzun`, `eri`, `final`, `hih`
-  - yeni: `blok-tak` (tahta tık, 3 çeşit), `kule-yikil` (tahta takırtı çağlayanı, 2 sn), `fosur` (balon nefesi verme), `firtina-mini` (küçük gümbürtü, sevimli), `parilti`, `bas-tok` (yatağa hafif kafa çarpma), `marti`.
-  - Sentez gerekenler bir kez WAV'a kaydedilir.
+  - mevcut: `pof`, `kikir`, `tik`, `ayak`, `huzun`, `final`, `hih`, `marti`
+  - yeni: `koklama` (3 kısa burun çekişi), `burun-seyirme` (minik "bıp" yay sesi), `kurdele` (yumuşak parıltılı hışırtı, 1 sn), `horlama` (sevimli, 2 çeşit), `terlik` (terlik şapırtısı), `kapi-zili` (ding-dong), `guruldama` (karın guruldaması, komik), `hapsu` (Lokum), `cay-kasigi` (ince belli bardakta kaşık), `sulama` (küçük su şırıltısı), `kus-cik` (sabah kuşları, fon).
 
 ## Kamera dili
-- Kamera hep **çocuk göz hizasında** (~90 cm). Büyükler kadraja girince alttan, sıcak görünür.
-- Geniş plan, sonra belden yukarı, sonra yakın. Duygu doruğunda yakın plan ve yavaş yaklaşma.
-- Ön plan katmanı (oyuncak sandığı, saksı) kamera kaydıkça önden geçer ve derinlik verir. Odak oyun düzlemindedir; arka hafif bulanık.
+
+- Kamera **çocuk göz hizasında** (~80 cm). Büyükler kadraja alttan, sıcak girer.
+- Kurdele anlarında kamera kurdeleyi **izler** (yan kaydırma), Kino kurdelenin önünde koşar: derinlik için ön plan eşyaları hızla geçer.
+- Duygu doruğunda (Kino ikiye bölünmüş) yavaş yaklaşma, arka plan hafif bulanık.
+- "Sence ne kokusu?" anında Kino doğrudan kameraya bakar, kamera 2 sn sabit.
+
+## Sahne dosyası notu (animatör için)
+
+Bütün olaylar mevcut sözcüklerle yazılır: `git, soyle, ifade, bak, al, birak, salla, tepki, don-aci, poz, el, kas, kamera, isik`. Bölüme yeni gereken üç şey:
+- `kurdele` (başlangıç, uç noktalar, renk, simge listesi, süre),
+- `kulak` (kalk/in/uçuş; ikincil hareket zaten yayla pişirilir, bu yalnız hedef açı),
+- `kuyruk` (bayrak/sallanma/düşük).
 
 ---
 
-## SERİ AÇILIŞI (0:00-0:12)
-- Gök mavisi zemin, yumuşak bulutlar. Ortada **"Ela ile Efe"** yazısı (Blender metni, yuvarlak kalın yazı, sarı ve mavi). Müzik: açılış enstrümantali.
-- Ela yazının solundan topuzlarını sallayarak fırlar: ELA: "Hadi bakalım!"
-- Efe sağdan yavaşça kafasını uzatır, bere kulakları titrer: EFE: "Bir dakika… bir bakayım."
-- İkisi birbirine bakar, güler, yazının arkasına saklanır. Yazı bir kez zıplar.
+## SERİ AÇILIŞI (0:00-0:15)
 
----
-
-## PERDE 1 · "Babadan uzun" (0:12-2:05)
-
-### Sahne 1 · Apartman dışı, sabah (0:12-0:28)
-- **Kamera:** geniş plan, deniz ve çatılar. 3. kattaki balkona yavaşça yaklaşır. Gök ve deniz çok az, bina orta hızda, ön plan dalları hızlı kayar.
+- **Arka plan:** krem zemin, yumuşak tek renk.
 - **Olur:**
-  - Martı geçer (`marti`).
-  - Balkonda Tosbi güneşleniyor, kafası dışarıda. Kamera yaklaşırken kafasını yavaşça kaldırıp bakar, göz kırpar.
-- **Müzik:** `film-merak`, düşük.
-- ANLATICI: "Bu sabah Ela ile Efe'nin evinde büyük bir iş vardı."
-- **Geçiş:** pencereden içeri yumuşak kesme.
+  - Soldan altın sarısı bir kurdele kıvrılarak ekrana akar (`kurdele`).
+  - Arkasından Kino burnu önde, gözleri kapalı, kokluyor (`koklama`), kurdeleyi izleyerek yürür. Kulakları her adımda sallanır.
+  - Kino'nun hemen arkasında Lokum, aynı pozla paytak paytak gelir, burnu havada.
+  - Kurdele ortada düğümlenir ve **"Kino'nun Burnu"** yazısına dönüşür (Blender metni; yuvarlak, kalın, yeşil-kırmızı).
+  - KİNO (kameraya, kulak kalkar, kuyruk bayrak): **"Burnum bir şey buldu!"**
+  - LOKUM (koklar, koklar…): **"Hapşu!"** (`hapsu`) Yazı bir kez zıplar.
+- **Müzik:** `film-acilis`.
 
-### Sahne 2 · Oda (0:28-0:58)
-- **Kamera:** geniş plan, odanın tamamı. Kapı solda, yataklar arkada, halı ortada.
+---
+
+## SAHNE 1 · Çocuk odası, sabah (0:15-0:50) · M1
+
+- **Kamera:** yatak köşesine yakın plan; Kino'nun yüzü kadrajın ortasında.
 - **Olur:**
-  - Efe blok kutusunu (D15) halının üstüne sürükleyerek getirir. Kutu ağırdır: Efe geriye yaslanır, ayakları kayar, dili dışarıda (B24 `cek` pozu, sonra yürüyüş).
-  - Ela arkadan koşarak gelir, çantası zıplar. Kutunun kapağını açar.
-  - Bloklar ışıl ışıl görünür. Kamera kutunun içine kısa bir yaklaşma yapar.
-- ELA: "Hadi bakalım! Kule yapıyoruz!"
-- Baba elinde kahve fincanıyla kapıda belirir, kapı pervazına yaslanır.
-- EFE (3/4, babaya döner): "Senden de uzun bir kule!"
-- BABA (kaşlar kalkık, abartılı): "Benden uzun mu? Hiç sanmam!"
-- BABA: "Kahvaltıdan sonra ölçeriz."
-- Baba göz kırpar, çıkar. İkizler birbirine bakar, el çırparlar (`kikir`).
-- **Oyunculuk:**
-  - Ela'nın sevinci tek ayak zıplaması (A20).
-  - Efe'ninki iki elini yumruk yapıp küçük "yes!" sallaması (el: yumruk).
+  - Kino uyuyor (P1), bir kulağı yüzüne düşmüş, her nefeste kulak hafifçe kalkıp iner. Fon: `kus-cik`.
+  - Kapı aralığından **altın sarısı pişi kurdelesi** süzülür, burnunun altında kıvrılır.
+  - Burun seğirir (`burun-seyirme`, 3 kare değiştirme). Bir kulak kalkar. Sonra öteki.
+  - Kino gözleri kapalı oturur, burnu havada, kurdeleyi kokluyor (`koklama`).
+- KİNO (gözler kapalı): "Hımm… sıcak… hamur… yağ…"
+- Gözleri kocaman açılır (göz: şaşkın-geniş).
+- KİNO: **"Pişi!"**
+- **Kamera:** yana kayar; karyolada ayakta, Kuzu'ya sarılmış Lokum görünür.
+- LOKUM: "Abi!"
+- KİNO: "Lokum! Babaanne pişi yapmış!"
+- LOKUM (zıplar, Kuzu da zıplar): "Pişi! Pişi!"
+- **Oyunculuk:** Lokum, Kuzu'yu havaya kaldırıp ona da "koklatır". **Kuzu'yu bu sahnede net göster** (izleyici hatırlasın).
+- ANNE (kapıda belirir, 3/4): "Günaydın uykucular. Hadi, Babaanne bekliyor."
+- **Geçiş:** Kino yataktan fırlar, kamera onunla birlikte sağa kayar → `film-gecis` ile salona kesme.
 
-### Sahne 3 · Halı, kule başlıyor (0:58-1:40)
-- **Kamera:** belden yukarı, ikizler halıda diz çökmüş (A15, B15). Kule ortada. Sayı arttıkça kamera hafifçe yukarı kayar.
-- **Olur:** sayma. Her blokta `blok-tak`, blok konunca hafif ezilir ve yerine oturur.
-  - Efe dikkatle koyar: iki eliyle tutar, dilini çıkarır, yavaşça bırakır.
-  - Ela hızlıca koyar: tek eliyle tak!
-  - Blokların yüzündeki resimler görünür.
-- ANLATICI: "Kırmızı blok. Bir!" (Efe, kırmızı daire)
-- ANLATICI: "Turuncu blok. İki!" (Ela, turuncu kare)
-- ANLATICI: "Sarı, üç! Yeşil, dört! Mavi, beş!" (hızlanır; ikizler sırayla)
-- ELA: "Şimdi altı!"
-- Ela altıncı bloğu (kırmızı) hızla ve **yamuk** koyar. Kule sallanır: üç sallantı, giderek azalır.
-- İkizler donar. Kamera yüzlerine hızlı yaklaşır: ikisinin de gözleri kocaman, nefesler tutulu, yanaklar şişkin. Efe'nin bere kulakları dikilir. Müzik bir an susar.
-- EFE (fısıltı): "Yavaaaş…"
-- Efe tek parmağıyla bloğu düzeltir: tık.
-- İkisi aynı anda "Ohhh" diye nefes verir. Ela'nın kakülü havalanır. Müzik geri gelir.
-- ELA (fısıltı, sırıtarak): "Pardon."
+## SAHNE 2 · Salon ve antre (0:50-1:40) · M2
 
-### Sahne 4 · Tosbi geliyor (1:40-2:05)
-- **Kamera:** yer hizası. Tosbi soldan kadraja girer, çok yavaş. Hızlandırılmış değildir, gerçekten yavaştır; komedi bundan çıkar.
+- **Kamera:** salon geniş plan.
 - **Olur:**
-  - Kule arka planda, Tosbi ön planda kuleye doğru ilerliyor.
-  - Kesme: ikizler fark eder. İkisi aynı anda kafalarını Tosbi'ye çevirir; kafa önce, bere kulakları ve topuzlar arkadan gelir.
-- EFE: "Tosbi, olmaz! Kule bizim!"
-- Ela emekleyerek Tosbi'ye gider, onu iki eliyle nazikçe kaldırır. Tosbi kafasını kabuğuna çeker (`pof` küçük).
-- Ela onu balkon kapısının yanındaki sepetine koyar (D18) ve bir marul yaprağı verir (D19).
-- ELA: "Al, marul. Afiyet olsun!"
-- Tosbi kafasını çıkarır, marulu yavaşça ısırır (3 kare ısırma).
-- Ela kameraya döner, gülümser.
+  - Baba kanepede sırtüstü uyuyor, gazete yüzünde (P6). Gazete her horlamada kalkıp iner (`horlama`).
+  - Kino koşarak girer (yürüyüş döngüsü hızlı), kanepenin başında frenler.
+- KİNO: "Baba! Babaanne pişi yapmış!"
+- Baba'nın gazetesi kayar, bir göz açılır.
+- BABA (uykulu): "Pişi mi?… Kalktım. Kalktım…"
+- Gözü kapanır. Bir horlama. Kino burnunu Baba'nın burnuna yaklaştırır, Baba'nın burnu seğirir (aynı `burun-seyirme`; burnun babadan geldiği ilk kez görülür).
+- BABA (doğrulur): "Kalktım!"
+- **Kamera:** sağa, antreye kayar. Anne Lokum'u kucağında taşır, yere bırakır. Kino tek ayakkabısını giymiş, tek ayak üstünde sekiyor.
+- Açık balkon kapısından aşağıdan ses gelir:
+- BABAANNE (uzaktan, ses): "Pişiler sıcaaak! Çay demlendi!"
+- KİNO (balkona doğru bağırır): "Geliyoruuuz!"
+- **Olur:** Lokum kapının önünde durur. Kollarına bakar: boş. Etrafına bakar.
+- LOKUM: "Kuzu?"
+- Alt dudak titrer (ağız: üzgün-titrek). Yere oturur (P5).
+- LOKUM (ağlar): "Kuzu yok!" (`huzun`)
+- **Müzik:** `film-merak` kesilir; `film-uzgun` çok hafif girer.
+- ANNE (çömelir, göz hizasında): "Kuzu'suz gitmek istemiyorsun."
+- LOKUM (başını sallar): "Kuzu!"
+- KİNO (tek ayakkabıyla, kollar iki yana): "Ama pişiler soğuyacak!"
 
----
+## SAHNE 3 · Arama (1:40-2:40) · M2
 
-## PERDE 2 · "Bum!" (2:05-3:00)
-
-### Sahne 5 · Dokuz blok (2:05-2:35)
-- **Kamera:** kule boyunca yukarıdan aşağı yavaş kaydırma. Kule artık ikizlerin boyunu geçiyor.
+- **Kamera:** geniş plan; hızlı, komik kesmeler (her biri ~4 sn).
 - **Olur:**
-  - ANLATICI: "Altı, yedi, sekiz…" (bloklar hızlı montajla konur; her birinde `blok-tak`)
-  - Ela parmak uçlarında dokuzuncuyu koyar (A16), dili dışarıda, topuzlar titrer.
-  - ANLATICI: "Dokuz!"
-  - EFE: "Tepesi eksik! Kırmızı çatı!"
-  - İkizler kutuya bakar, boş. Ela çantasına bakar, yok.
-  - Efe çömelir, ellerini dizlerine koyar (B22, imza poz). EFE: "Bir dakika… bir bakayım."
-  - Gözlerini kısar, kafası yavaşça yatağın altına döner. Kesme: yatağın altında karanlıkta kırmızı çatı bloğu (D14) parlıyor.
-  - EFE: "Buldum! Yatağın altında!"
-  - Efe emekleyerek yatağın altına girer (B16 → B17). Yalnız ayakları ve şortunun arkası dışarıda kalır, ayakları çırpınır. Yatak ön kenarı ön katman olarak Efe'yi keser.
-  - Ela yatağın yanında diz çökmüş, içeri bakıyor: "Uzanabiliyor musun?"
-  - EFE (içeriden, boğuk): "Neredeyse…"
+  1. Anne minderlerin arkasına bakar. Yok.
+  2. Baba buzdolabını açar (antrenin ucundan görünen mutfak kapısı; buzdolabı yalnız kapağıyla, tek eşya). İçine bakar.
+     - BABA: "Burada yok… Ama peynir var."
+     - ANNE (kaş kalkık): "Murat."
+     - BABA: "Kapattım."
+  3. `kapi-zili`. Anne kapıyı açar: **Mino**, kırmızı fuları ve turkuaz elbisesiyle.
+     - MİNO: "Günaydın! Babaannen beni de çağırdı!"
+     - KİNO: "Mino! Kuzu kayboldu."
+     - MİNO (göğsünü gerer): "Ben yukarıdan bakarım!"
+  4. Mino zıplayıp büfenin üstüne çıkar (zıplama pozu, ezilip uzama), kuyruğu sallanır. Bir şey kaldırır:
+     - MİNO: "Buldum!"
+     - Elinde **Baba'nın gözlüğü**.
+     - BABA (takar, gözleri kocaman görünür): "Gözlüğüm! Üç gündür arıyordum!"
+     - Herkes güler (`kikir`), Lokum gülmez.
+- **Kamera:** Kino'ya yaklaşma.
+- KİNO: "Of ya! Hep bekliyoruz!"
+- Kino kilime yüzüstü kapaklanır (P2). Kulaklar iki yana yayılır. Kuyruk yere düşer.
+- `guruldama`. Kino karnına bakar.
+- ANNE (yanına oturur): "Sabırsızlandın."
+- KİNO (yüzü kilimde): "Karnım da sabırsızlandı."
+- Anne güler, Kino'nun sırtını okşar. **Çözümü söylemez.**
+- **Oyunculuk:** Kino'nun öfkesi kısa ve gerçek; ağlamaz, mızırdanmaz, bedeniyle "pes" eder. Sonra hemen fikre gider.
 
-### Sahne 6 · Nil (2:35-3:00)
-- **Kamera:** geniş plan. Kapıda Nil belirir (C1 yürüyüş), uykudan yeni kalkmış, saçında tepe topuzu yamuk.
-- **Müzik:** `film-surpriz` kısa ve sinsi pizzicato hissi, düşük.
-- Nil kuleyi görür, gözleri kocaman olur, iki elini açar (C4 "daha" ifadesi). Paytak yürür: her adımda gövdesi iki yana sallanır.
-- NİL: "Daha!"
-- Ela yatağa doğru bakıyor, Nil'i görmüyor. Kamera Nil'in arkasından alçak açı verir: kule dev gibi, Nil minicik ve kararlı.
-- Ela döner, görür. Kamera hızlı yakın plan.
-- ELA: "Nil! Hayııır!"
-- Çok geç. Nil iki eliyle kuleye dokunur (C6 itme pozu).
-- NİL: "BUM!"
-- **Kule yıkılır** (Blender rigid body):
-  - Bloklar 1,5 sn yavaş çekimde dağılır. Küçük kamera sarsıntısı, `kule-yikil`.
-  - Bloklar halıda seker. Biri Tosbi'nin sepetine yuvarlanır; Tosbi kafasını kabuğuna çeker (`pof`).
-  - Bir blok peluş Kino'nun kafasına konar.
-- Aynı anda yatağın altında: `bas-tok`. EFE (içeriden): "Ay!"
-- Sessizlik. Yalnız son blok yavaşça yuvarlanıp durur: tık.
+## SAHNE 4 · "Burnum bir şey buldu!" (2:40-3:15) · M2
+
+- **Kamera:** yerde, Kino'nun göz hizasında (alçak çekim). Lokum'un çıplak ayakları kadraja girer.
+- **Olur:**
+  - Lokum burnunu çekerek gelir, Kino'nun sırtına yığılır, ıslak burnunu onun tüyüne sürer.
+  - KİNO: "Iyy, Lokum! Islak burun!"
+  - Kino döner, Lokum'u koklar (`koklama`). Lokum gıdıklanır (`kikir`).
+  - KİNO (gözler kapalı, sayar gibi): "Süt… sabun… bir de muz."
+  - Durur. **Bir kulak kalkar. Sonra öteki.** Kuyruk bayrak olur.
+  - KİNO (doğrulur): "Kuzu da senin gibi kokar!"
+  - KİNO (kameraya değil, ileriye; imza pozu): **"Burnum bir şey buldu!"**
+- **Kurdele:** Lokum'un başından **krem-pembe kurdele** (`kurdele`, `film-surpriz` kısa) yükselir; süt damlası, sabun köpüğü, muz dilimi simgeleri üstünde akar. Kurdele salonda kıvrılarak kanepeye doğru iner.
+- Kino yavaşça kameraya döner:
+- KİNO: **"Sence Kuzu nerede?"**
+- **2 sn sessizlik.** Kamera sabit; Kino göz kırpar, kuyruk bekler.
+- MİNO: "Ben de geliyorum!"
+- LOKUM (ayağa kalkar): "Abi, bekle!"
+
+## SAHNE 5 · İz sürme (3:15-4:35) · M2
+
+- **Müzik:** `film-kovalamaca`, hafif.
+- **Kamera:** kurdeleyi izleyen yan kaydırma; Kino önde, Lokum arkasında koklayarak, Mino en arkada büfeden büfeye atlayarak.
+
+**5a · Altında** (3:15-3:35)
+- Kurdele kanepenin altına dalar.
+- Kino emekler (P3), kafasını kanepenin altına sokar. Kuyruk dışarıda sallanır.
+- KİNO (boğuk): "Kanepenin… altında!"
+- Bir şey çeker: **Baba'nın çorabı.** Koklar. Burnu kırışır.
+- KİNO: "Iyy! Babamın çorabı!"
+- BABA (antreden, gözlükle): "Hah! O da kayıptı!"
+- **Ekranda:** çorap kanepenin altındayken kısa bir an "altında" resmi netleşir (kanepe + altındaki nesne, kamera duraklar). Yazı yok; Kino'nun sözü yeter.
+
+**5b · Üstünde** (3:35-3:55)
+- Kurdele kitaplığın üstüne tırmanır.
+- MİNO: "Yukarı benim işim!"
+- Mino zıplar, rafın üstüne çıkar, bir şey kaldırır: **muz kabuğu.**
+- MİNO: "Rafın üstünde muz kabuğu!"
+- LOKUM (gururla): "Benim!"
+- Kino yüzünü patisine gömer, güler.
+
+**5c · İçinde** (3:55-4:10)
+- Kurdele çamaşır sepetine iner.
+- KİNO: "Sepetin içinde!"
+- Kino sepete kafa üstü dalar (P4): yalnız arka bacaklar ve kuyruk görünür, kuyruk sallanır.
+- Çıkar: kafasında havlu, kulakları havlunun altından sarkıyor.
+- LOKUM (kahkaha): "Abi!" (`kikir`)
+- Kurdele sepetten çıkıp balkon kapısına, tül perdeye doğru gider.
+
+**5d · Pişi mi, Kuzu mu?** (4:10-4:35)
+- Balkon kapısı aralanır. Aşağıdan **kalın, altın sarısı pişi kurdelesi** yükselir, içeri dolar ve krem kurdelenin önünden geçer. İki kurdele çaprazlanır.
+- **Kamera:** yavaş yaklaşma, Kino'nun yüzü.
+- Kino'nun burnu pişiye "çekilir" (P8): gövde öne yatar, kulaklar pişiye doğru uçuşur, ayakları kilimde kayar.
+- KİNO (büyülenmiş): "Pişi… pişi beni çağırıyor…"
+- Arkadan, küçük bir ses:
+- LOKUM: "Abi… Kuzu?"
+- Kino durur. Bir ayağı pişiye, burnu pişiye; gözü Lokum'a.
+- Kino gözlerini kapar. **"Kokla…"** (burnundan derin çeker, kulaklar kalkar) **"…üfle."** (ağızdan üfler, kulaklar yumuşakça iner). Bir kez daha.
+- **Müzik:** her şey susar; yalnız iki nefes sesi.
+- KİNO (gözler açık, sakin): "Önce Kuzu."
+- Pişi kurdelesi incelip geri çekilir. Krem kurdele parlar, tül perdenin arkasına uzanır.
+- KİNO: "Perdenin… arkasında!"
+
+## SAHNE 6 · Balkon (4:35-5:20) · M3
+
+- **Kamera:** perdenin açılmasıyla balkona geçiş (perde ön planda kayar). Geniş plan: saksılar, sokak, çınar.
+- **Olur:**
+  - Krem kurdele en büyük fesleğen saksısında biter, bir sarmal çizip söner.
+  - Fesleğenlerin arasında, toprağa yarı gömülü, **Kuzu** oturuyor. Yanında Lokum'un küçük sulama kabı. Kuzu biraz ıslak ve toprak lekeli.
+  - `film-kutlama` girer.
+- MİNO: "Kuzu saksıda!"
+- KİNO (kahkaha ile): "Lokum! Kuzu'yu sen mi diktin?"
+- LOKUM (ciddi ciddi başını sallar): "Büyüsün!"
+- KİNO: "Kuzu çiçek değil ki!"
+- Lokum Kuzu'yu çeker, sıkıca sarılır. Toprak taneleri düşer.
+- Kino Kuzu'yu koklar.
+- KİNO: "Kuzu artık fesleğen kokuyor!"
+- Balkon korkuluğunun altından, bahçeden **Dede'nin kasketi**, sonra kaşları belirir (aşağıdan yukarı bakış).
+- DEDE: "Bak sen şu işe. Fesleğenlerimden kuzu çıktı."
+- Herkes güler (`kikir`).
+- DEDE: "Hadi inin. Pişiler bekliyor."
+- KİNO (gözler kocaman): "Pişiler!"
+- **Burun burun:** Lokum Kino'nun yanağını tutar, burnunu burnuna değdirir.
+- LOKUM: "Abi!"
+- Kino'nun kuyruğu bayrak olur, sallanır.
+
+## SAHNE 7 · Babaanne'nin bahçesi (5:20-6:10) · M4
+
+- **Kamera:** limon ağacının altında kahvaltı masası, geniş plan. Ön planda limon dalı kayar.
+- **Olur:**
+  - Babaanne ve Dede masada oturuyor (P7). Masada ince belli çay bardakları, peynir, zeytin, domates, üstü bezle örtülü bir tabak.
+  - Kino, Lokum (Kuzu kucağında), Mino, Anne ve gözlüklü Baba gelip oturur (oturma pozu: masa alt bedeni örter, yalnız belden yukarı).
+- KİNO: "Babaanne! Pişiler soğudu mu?"
+- Babaanne bezi kaldırır: pişilerden buhar yükselir (kısa altın kurdele parıltısı).
+- BABAANNE: "Sizin için sakladım, sıcacık!"
+- **Sayma:** Babaanne pişileri tek tek tabaklara koyar, her biri kısa bir `tik` ile.
+  - BABAANNE: "Bir, iki, üç…"
+  - KİNO ile LOKUM (birlikte, Lokum yalnız sona yetişir): "…dört, beş, altı, yedi!"
+  - **Ekranda:** 7 pişi masada yan yana dizili görünür, her biri sayıldıkça hafif zıplar.
+- Kino pişisini iki patisiyle tutar, koklar, ısırır, gözleri kapanır.
+- KİNO (ağzı dolu): "Mmm… Babaanne, sen bir tanesin."
+- Lokum pişisinden bir lokmayı Kuzu'nun ağzına tutar.
+- MİNO: "Kuzu da acıkmış!"
+- **Süregelen şaka:** Baba çay bardağının başında, gözlüğü burnunda, yavaşça uyuyakalır (`horlama`). Dede tek söz etmeden bir pişiyi Baba'nın burnunun altına tutar. Burun seğirir.
+- BABA (doğrulur): "Kalktım!"
+- DEDE (pişiyi kendisi yer): "Bak sen şu işe."
+- Herkes güler.
+- Babaanne kolonya şişesini çıkarır, herkes avuçlarını uzatır (`tik`). Kino koklar:
+- KİNO: "Limon!"
+
+## SAHNE 8 · Günün kokusu (6:10-6:30) · M4
+
+- **Işık:** sıcak, limon ağacının altında yumuşak öğle ışığı; arka plan bulanık.
+- **Kamera:** Kino'ya yakın plan, yavaş yaklaşma.
+- Kino gözlerini kapar, derin koklar (`koklama`).
+- Başının üstünde sırayla üç küçük simge belirir (her biri hafif `kurdele` parıltısıyla): **pişi**, **fesleğen yaprağı**, **Lokum'un yüzü**.
+- KİNO: "Bugün… pişi, fesleğen… bir de Lokum kokuyordu."
+- Lokum kadraja girer, burun burun.
+- LOKUM: "Abi!"
+- **Kapanış kartı** (Blender: krem zemin, ortada pişi ve Kuzu çizimi, yuvarlak kalın yazı):
+  - ***"Önce kardeşim, sonra pişi!"***
+  - Kart Kino'nun sesiyle bir kez söylenir.
+- **Müzik:** `film-kapanis`.
+
+## KAPANIŞ JENERİĞİ (6:30-6:45)
+
+- Krem zemin, altın kurdele soldan sağa akar, Kino ve Lokum peşinden koklayarak geçer. Lokum hapşırır (`hapsu`). Yazılar Blender metni.
 
 ---
 
-## PERDE 3 · "İki fırtına" (3:00-3:35)
+## Konuşma sayımı ve seslendirme
 
-### Sahne 7 · Öfke ve üzüntü (3:00-3:35)
-- **Kamera:** Efe yatağın altından geri geri çıkar, elinde kırmızı çatı bloğu, yüzü mutlu. Döner. Kamera onun bakışına keser: halı dolusu dağınık blok.
-- **Efe, yakın plan, yavaş yaklaşma:**
-  - Yüz donar: ağız açık (şaşkın O), sonra kaşlar iner, yanaklar kızarır (yanak opaklığı artar). Elleri yumruk olur.
-  - Başının üstünde **öfke bulutu** (D16) belirir: küçük gri bulut, şişer, içinde küçük bir şimşek çakar (`firtina-mini`).
-- **Müzik:** `film-uzgun` girer, düşük.
-- EFE (tepinir, B18; her tepinişte `ayak` ve bulut büyür): "Nil! Kulemizi yıktın!"
-- EFE: "Hiç adil değil!"
-- **Ela, yakın plan:**
-  - Kesme: Ela halıya oturmuş, dizlerini kucaklamış (A17). Alt dudağı titrer, gözleri dolar (ağlayan göz ve titreyen ağız).
-  - ELA (alçak sesle): "Kulemiz gitti…"
-- **Nil:** Efe'nin bağırmasından ürker. Önce şaşırır, sonra yüzü buruşur, ağlamaya başlar (C4 ağlama). Bağırmaz; sevimli bir "ıııh" yeter.
-- ANLATICI: "Efe'nin içi kaynıyordu. Ela'nın ise gözleri dolmuştu."
-- **Oyunculuk notu:** Bu sahne 35 sn'yi geçmez. Duygu gerçek ama kısa; 3 yaşındaki izleyiciyi korkutmaz. Bulut sevimli bir çizimdir, korkunç değil.
+| Karakter | Satır | Yaklaşık karakter |
+|---|---|---|
+| Kino | ~32 | ~620 |
+| Lokum | ~13 | ~70 |
+| Anne | 4 | ~110 |
+| Baba | 7 | ~120 |
+| Mino | 8 | ~160 |
+| Babaanne | 3 | ~80 |
+| Dede | 3 | ~90 |
+| **Toplam** | **~70** | **~1.250** |
 
----
+- Sesleri Barış seçer (ElevenLabs). Kino'nun yeni sesi uygulamadaki Kino'dan büyük olmalı. Mino uygulamadaki sesini korur. Dizide anlatıcı yok.
+- Dudak senkronu için CI'da harf zamanlı üretim (URETIM-YOLU §2.5).
 
-## PERDE 4 · "Balon nefesi" (3:35-5:00)
+## Üretim kontrol listesi (animatik öncesi)
 
-### Sahne 8 · Anne (3:35-3:58)
-- **Kamera:** geniş plan. Anne kapıdan hızlı ama sakin adımlarla girer (yan görünüş yürüyüş).
-- Anne Nil'i kucağına alır (C13), sallar; Nil hemen susar, Anne'nin kazağına yanağını yaslar.
-- Anne halıya, ikizlerin arasına diz çöker (C12). Kamera göz hizasına iner: üç çocuk ve anne aynı karede.
-- ANNE: "Kuleniz yıkılmış."
-- EFE (kollarını bağlar, B19, bulut hâlâ başında): "Nil yıktı!"
-- ANNE (Efe'ye): "Çok kızmışsın."
-- ANNE (Ela'ya, elini sırtına koyar): "Sen de çok üzülmüşsün."
-- Ela burnunu çekerek başını sallar. Efe yavaşça başını sallar, kaşları hâlâ çatık.
-
-### Sahne 9 · Balon nefesi (3:58-4:35)
-- **Kamera:** dörtlü yakın plan, sonra her nefeste ikizlerin yüzlerine sırayla kısa kesmeler.
-- **Müzik:** `film-uzgun` söner, yumuşak ton (sentez `yumusak` WAV'ı) girer.
-- ANNE: "Gelin, balon nefesi yapalım."
-- ANNE (elini karnına koyar): "Karnımız balon olsun."
-- Anne gösterir:
-  - Burundan uzun nefes alır, karnı ve yanakları şişer. Mesh deform gövdeyi şişirir, komik ama yumuşak.
-  - Ağzından yavaşça "fuuu" diye verir (`fosur`).
-- İkizler taklit eder (A18/B20 nefes al, A19/B21 nefes ver). Nil de taklit eder ama dudaklarıyla "pırrr" yapar; herkes bir an güler (`kikir`). Komik nefes molası.
-- ANLATICI: "Bir…" (birinci nefes: Efe'nin bulutu biraz küçülür, şimşek söner)
-- ANLATICI: "İki…" (bulut açık griye döner. Ela'nın gözündeki yaş kurur, ağzı düzleşir.)
-- ANLATICI: "Üç!" (bulut küçücük beyaz bulut olur, `parilti` ile parıltıya dönüşüp söner)
-- EFE (gözünü açar, şaşkın, kendi kafasının üstüne bakar): "Geçti… biraz."
-- ELA (burnunu çeker, gülümser): "Benimki de."
-- ANNE: "Kızmak da üzülmek de olur."
-- **Kamera:** yavaşça geri çekilir; dördü yan yana, ışık bir tık ısınır.
-
-### Sahne 10 · Fikir (4:35-5:00)
-- **Kamera:** belden yukarı, Anne ve Nil ortada, ikizler iki yanda.
-- ANNE (Nil'i hafifçe zıplatır): "Nil küçük. Yıkmayı çok seviyor."
-- NİL (mutlu): "Bum!"
-- Efe düşünür: başını yana eğer, perçemini parmağıyla çevirir. Sonra imza pozu (B22).
-- EFE: "Bir dakika… bir bakayım."
-- Gözleri yavaşça kocaman olur, bere kulakları dikilir. Fikir anı: yumuşak `parilti`, müzik bir nota çıkar.
-- EFE: "İki kule yapalım!"
-- EFE: "Biri bizim, biri Nil'in!"
-- ELA (tek ayakla zıplar, yumruk havada, A20): "Yıkma kulesi! Hadi bakalım!"
-- NİL: "Daha!"
-
----
-
-## PERDE 5 · "İki kule" (5:00-5:55)
-
-### Sahne 11 · Montaj (5:00-5:35)
-- **Müzik:** `film-kutlama`.
-- **Kamera:** geniş plan, sabit; hareket karakterlerde. Kesmelerle üç kısa an.
-  1. **Nil'in kulesi (halıda):**
-     - Ela, Nil'le üç blok üst üste koyar. NİL: "Bum!" Kule yıkılır, Nil kahkaha atar. Ela da güler.
-     - Bir daha kurarlar. NİL: "Bum!" Tekrar gülerler.
-     - Gag iki kez; ikincisinde Ela da Nil'le birlikte "Bum!" der.
-  2. **Büyük kule (alçak masada, Nil'in boyu yetmez):**
-     - Efe yan görünüşte yürüyerek blokları masaya taşır, Ela gelir, birlikte dizerler.
-     - Sayma bu sefer hızlıdır, çocuklar sayar:
-       - ELA: "Bir, iki, üç…"
-       - EFE: "…dört, beş, altı…"
-       - İKİSİ: "…yedi, sekiz, dokuz!"
-  3. **Çatı:** Efe kırmızı çatı bloğunu (D14) iki eliyle en üste koyar, parmak uçlarında. Tabure yok: masa alçak, Efe yerden yetişir (güvenlik).
-     - İKİSİ: "On!"
-     - Çatının tepesinde minik kırmızı bayrak sallanır (D22, yay fiziği).
-
-### Sahne 12 · Baba ölçer (5:35-5:55)
-- **Kamera:** alçak açı. Baba kapıda, eğilip girer.
-- BABA: "Ölçme vakti!"
-- Baba kulenin yanında dimdik durur. Kamera yavaşça yukarı kayar: masanın üstündeki kulenin bayrağı Baba'nın kafasının bir karış üstünde.
-- Baba abartılı şaşırır: elleri yanaklarında, ağzı O (C18).
-- BABA: "Benden uzun! İnanamıyorum!"
-- İkizler zıplar, birbirine çak yapar (el: açık avuç, iki el temas karesi). ELA ve EFE: "Yaşasın!"
-- Kesme: Tosbi sepetinden çıkmış, çok yavaş Nil'in üç bloklu kulesine çarpar. En üst blok düşer: tık.
-- NİL (Tosbi'ye, kahkahayla): "Bum!"
-- Herkes güler. Tosbi kafasını kabuğuna çeker.
-
----
-
-## KAPANIŞ · "Bugünün hazinesi" (5:55-6:20)
-
-### Sahne 13 · Akşamüstü (5:55-6:12)
-- **Işık:** sıcak turuncu akşam tonu, pencereden uzun ışık şeridi.
-- **Kamera:** halıda bağdaş kurmuş ikizler (A22, B25). Ortada Nil.
-- **Müzik:** kapanış.
-- Nil elinde minik kırmızı bayrakla gelir (çatıdan düşmüş). Bayrağı Efe'ye uzatır.
-- NİL (ilk kez net söyler): "Al… Efe."
-- Efe şaşırır, sonra gülümser, Nil'e sarılır. Bere kulakları Nil'in yanağını gıdıklar, Nil kıkırdar.
-- EFE (bayrağı Ela'ya uzatır): "Bugünün hazinesi!"
-- Ela bayrağı uğur böceği çantasına koyar (A21). Çanta kapanır: küçük `tik`, `parilti`.
-- ANLATICI: "Kule yıkıldı. Ama birlikte yeniden yaptılar."
-- **Kamera:** yavaşça geri çekilir; oda, iki kule, peluş Mino ve Kino, sepetinde uyuyan Tosbi.
-
-### Kapanış kartı (6:12-6:20)
-- Krem zemin. Ortada büyük kırmızı bayrak resmi (D22), üstünde Blender metni: **"Bugünün hazinesi"**, altında: ***"Kızınca önce balon nefesi."***
-- ANLATICI kartı okur. `final` efekti.
-
----
-
-## Cümle listesi (seslendirilecek)
-
-**Anlatıcı (13):**
-- "Bu sabah Ela ile Efe'nin evinde büyük bir iş vardı."
-- "Kırmızı blok. Bir!"
-- "Turuncu blok. İki!"
-- "Sarı, üç! Yeşil, dört! Mavi, beş!"
-- "Altı, yedi, sekiz…"
-- "Dokuz!"
-- "Efe'nin içi kaynıyordu. Ela'nın ise gözleri dolmuştu."
-- "Bir…"
-- "İki…"
-- "Üç!"
-- "Kule yıkıldı. Ama birlikte yeniden yaptılar."
-- "Bugünün hazinesi."
-- "Kızınca önce balon nefesi."
-
-**Ela (13):**
-- "Hadi bakalım!" (açılış)
-- "Hadi bakalım! Kule yapıyoruz!"
-- "Şimdi altı!"
-- "Pardon."
-- "Al, marul. Afiyet olsun!"
-- "Uzanabiliyor musun?"
-- "Nil! Hayııır!"
-- "Kulemiz gitti…"
-- "Benimki de."
-- "Yıkma kulesi! Hadi bakalım!"
-- "Bum!"
-- "Bir, iki, üç…"
-- "Yaşasın!"
-
-**Efe (16):**
-- "Bir dakika… bir bakayım." (açılış)
-- "Senden de uzun bir kule!"
-- "Yavaaaş…"
-- "Tosbi, olmaz! Kule bizim!"
-- "Tepesi eksik! Kırmızı çatı!"
-- "Bir dakika… bir bakayım."
-- "Buldum! Yatağın altında!"
-- "Neredeyse…"
-- "Ay!"
-- "Nil! Kulemizi yıktın!"
-- "Hiç adil değil!"
-- "Geçti… biraz."
-- "İki kule yapalım!"
-- "Biri bizim, biri Nil'in!"
-- "…dört, beş, altı…"
-- "Bugünün hazinesi!"
-
-**İkisi birlikte (3):** "…yedi, sekiz, dokuz!" · "On!" · "Yaşasın!"
-
-**Nil (5):** "Daha!" · "BUM!" · "Bum!" · "Al… Efe." · (gülüş ve ağlama sesleri, kelimesiz)
-
-**Anne (7):**
-- "Kuleniz yıkılmış."
-- "Çok kızmışsın."
-- "Sen de çok üzülmüşsün."
-- "Gelin, balon nefesi yapalım."
-- "Karnımız balon olsun."
-- "Kızmak da üzülmek de olur."
-- "Nil küçük. Yıkmayı çok seviyor."
-
-**Baba (4):** "Benden uzun mu? Hiç sanmam!" · "Kahvaltıdan sonra ölçeriz." · "Ölçme vakti!" · "Benden uzun! İnanamıyorum!"
-
-Toplam ~60 kısa cümle, **~1.300 karakter**. Bütün cümleler kurala uyar: anlatıcı ≤ 12 kelime, karakter ≤ 6 kelime. "Öğüt" kelimesi geçmez.
-
-## Yapım listesi (bu bölüme özel)
-- **Pozlar:**
-  - Ela: A15-A22.
-  - Efe: B15-B25 (B24 kutu çekme).
-  - Nil: C4, C6, C7.
-  - Anne: C12, C13.
-  - Baba: C18, C19.
-  - Tosbi: C20-C22.
-- **Eşyalar:**
-  - Bloklar `assets/film/esya/kup-kirmizi|sari|mavi|yesil` (mevcut, resimli: daire, yıldız, kalp, üçgen) + D13 turuncu kare blok.
-  - D14 çatı bloğu, D15 kutu, D16-D17 bulutlar, D18-D19 Tosbi'nin sepeti ve marul, D20-D21 peluşlar, D22 bayrak.
-  - Kahve fincanı: Baba'nın elinde, D23.
-- **Fizik:** kule yıkılması ve Nil'in kulesinin yıkılması rigid body.
-- **Blender metinleri:** seri logosu, kapanış kartı yazısı. Görselde yazı yok.
+- [ ] Kit: Kino, Lokum, Anne, Baba, Mino (tam); Babaanne, Dede (önden + oturma).
+- [ ] Bölüm pozları P1-P8.
+- [ ] Dört mekânın katmanları (M1-M4) ve eşya listesi.
+- [ ] Kurdele aracı (`kurdele` olayı) sahne kurucuya eklendi.
+- [ ] Yeni efektler WAV olarak kaydedildi.
+- [ ] Barış senaryoyu ve kart cümlesini onayladı.
