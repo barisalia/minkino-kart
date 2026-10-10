@@ -1,13 +1,13 @@
 {
  "ad": "baba",
- "aciklama": "Baba (Murat) kesme kukla kiti (ön görünüş), Kino C kitinden türetildi. Koordinatlar 2300x3820 karesinde, Kino ile aynı birim; açı derece, + saat yönü. sag = karakterin sağı = ekranın solu. gozluk ayrı parça (o: 0 ile gizlenir).",
+ "aciklama": "Baba (Murat) kesme kukla kiti (ön görünüş), Kino C kitinden türetildi. Koordinatlar 2300x3820 karesinde, Kino ile aynı birim; açı derece, + saat yönü. sag = karakterin sağı = ekranın solu. gozluk isteğe bağlı eşya: varsayılan gizli (o: 1 ile takılır).",
  "kur": "ekip/karakter/baba/kit-kur.cjs",
  "boyut": [
   2300,
   3820
  ],
  "zemin": 3700,
- "tepe": 118,
+ "tepe": 114,
  "birim": "Kino C (kino-yeni) ile aynı birim: aynı ölçekle basılınca boylar assets/karakter/aile-boy.json tablosundaki gibi",
  "cizgi": {
   "renk": "#401312",
@@ -17,10 +17,10 @@
   "kafa": {
    "resim": "kafa.webp",
    "kutu": [
-    712,
-    108,
-    876,
-    984
+    752,
+    104,
+    796,
+    1004
    ],
    "pivot": [
     1150,
@@ -35,14 +35,14 @@
   "kulak-sag": {
    "resim": "kulak-sag.webp",
    "kutu": [
-    496,
-    172,
-    420,
-    844
+    512,
+    180,
+    416,
+    840
    ],
    "pivot": [
-    855.4390855997628,
-    252.4984973405585
+    869.4390855997628,
+    258.49849734055846
    ],
    "ust": "kafa",
    "sinir": [
@@ -53,14 +53,14 @@
   "kulak-sol": {
    "resim": "kulak-sol.webp",
    "kutu": [
-    1384,
-    172,
-    420,
-    844
+    1372,
+    180,
+    416,
+    840
    ],
    "pivot": [
-    1444.5609144002372,
-    252.4984973405585
+    1430.5609144002372,
+    258.49849734055846
    ],
    "ust": "kafa",
    "sinir": [
@@ -71,9 +71,9 @@
   "gozler-acik": {
    "resim": "gozler-acik.webp",
    "kutu": [
-    972,
-    484,
-    356,
+    980,
+    464,
+    340,
     152
    ],
    "pivot": [
@@ -87,9 +87,9 @@
    "resim": "gozler-yari.webp",
    "kutu": [
     976,
-    548,
+    524,
     348,
-    88
+    92
    ],
    "pivot": [
     1150,
@@ -102,7 +102,7 @@
    "resim": "gozler-kapali.webp",
    "kutu": [
     980,
-    556,
+    532,
     340,
     44
    ],
@@ -117,7 +117,7 @@
    "resim": "gozler-mutlu.webp",
    "kutu": [
     980,
-    536,
+    512,
     340,
     60
    ],
@@ -132,8 +132,8 @@
    "resim": "gozler-sola.webp",
    "kutu": [
     972,
-    484,
-    356,
+    464,
+    340,
     152
    ],
    "pivot": [
@@ -146,9 +146,9 @@
   "gozler-saga": {
    "resim": "gozler-saga.webp",
    "kutu": [
-    972,
-    484,
-    356,
+    988,
+    464,
+    340,
     152
    ],
    "pivot": [
@@ -162,9 +162,9 @@
    "resim": "gozler-saskin.webp",
    "kutu": [
     972,
-    484,
+    456,
     356,
-    160
+    164
    ],
    "pivot": [
     1150,
@@ -176,10 +176,10 @@
   "kaslar-notr": {
    "resim": "kaslar-notr.webp",
    "kutu": [
-    976,
-    420,
-    348,
-    64
+    980,
+    396,
+    340,
+    60
    ],
    "pivot": [
     1150,
@@ -191,10 +191,10 @@
   "kaslar-kalkik": {
    "resim": "kaslar-kalkik.webp",
    "kutu": [
-    976,
-    388,
-    348,
-    88
+    980,
+    360,
+    340,
+    92
    ],
    "pivot": [
     1150,
@@ -206,10 +206,10 @@
   "kaslar-uzgun": {
    "resim": "kaslar-uzgun.webp",
    "kutu": [
-    984,
-    404,
-    332,
-    76
+    988,
+    380,
+    324,
+    72
    ],
    "pivot": [
     1150,
@@ -221,9 +221,9 @@
   "kaslar-kizgin": {
    "resim": "kaslar-kizgin.webp",
    "kutu": [
-    976,
-    432,
-    348,
+    980,
+    404,
+    340,
     64
    ],
    "pivot": [
@@ -237,13 +237,13 @@
    "resim": "agiz-gulumse.webp",
    "kutu": [
     1052,
-    860,
+    848,
     280,
-    88
+    92
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -252,13 +252,13 @@
    "resim": "agiz-az.webp",
    "kutu": [
     1096,
-    888,
+    876,
     112,
-    68
+    72
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -267,13 +267,13 @@
    "resim": "agiz-orta.webp",
    "kutu": [
     1080,
-    880,
+    872,
     148,
     96
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -282,13 +282,13 @@
    "resim": "agiz-genis.webp",
    "kutu": [
     1060,
-    864,
+    852,
     196,
     140
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -297,13 +297,13 @@
    "resim": "agiz-o.webp",
    "kutu": [
     1104,
-    884,
+    872,
     88,
     100
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -312,13 +312,13 @@
    "resim": "agiz-e.webp",
    "kutu": [
     1072,
-    880,
+    872,
     168,
     76
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -327,13 +327,13 @@
    "resim": "agiz-kahkaha.webp",
    "kutu": [
     1048,
-    852,
+    844,
     232,
     164
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -342,13 +342,13 @@
    "resim": "agiz-uzgun.webp",
    "kutu": [
     1084,
-    900,
+    892,
     128,
     48
    ],
    "pivot": [
     1146,
-    924
+    914
    ],
    "ust": "kafa",
    "yuva": "agiz"
@@ -357,55 +357,41 @@
    "resim": "burun.webp",
    "kutu": [
     1060,
-    672,
+    704,
     192,
     168
    ],
    "pivot": [
     1150,
-    768
+    800
    ],
    "ust": "kafa"
   },
   "yanaklar": {
    "resim": "yanaklar.webp",
    "kutu": [
-    908,
-    700,
-    504,
-    80
+    932,
+    696,
+    452,
+    68
    ],
    "pivot": [
     1150,
-    742
-   ],
-   "ust": "kafa"
-  },
-  "biyik": {
-   "resim": "biyik.webp",
-   "kutu": [
-    980,
-    800,
-    340,
-    96
-   ],
-   "pivot": [
-    1150,
-    850
+    730
    ],
    "ust": "kafa"
   },
   "gozluk": {
    "resim": "gozluk.webp",
    "kutu": [
-    840,
-    476,
-    620,
-    188
+    860,
+    448,
+    580,
+    192
    ],
    "pivot": [
     1150,
-    560
+    540
    ],
    "ust": "kafa"
   },
@@ -446,10 +432,10 @@
   "bacak-ust-sag": {
    "resim": "bacak-ust-sag.webp",
    "kutu": [
-    860,
-    2104,
-    272,
-    904
+    840,
+    2096,
+    300,
+    912
    ],
    "pivot": [
     998,
@@ -466,10 +452,10 @@
   "bacak-alt-sag": {
    "resim": "bacak-alt-sag.webp",
    "kutu": [
-    844,
+    836,
     2772,
-    252,
-    900
+    264,
+    912
    ],
    "pivot": [
     978,
@@ -504,10 +490,10 @@
   "bacak-ust-sol": {
    "resim": "bacak-ust-sol.webp",
    "kutu": [
-    1168,
-    2104,
-    272,
-    904
+    1160,
+    2096,
+    300,
+    912
    ],
    "pivot": [
     1302,
@@ -524,10 +510,10 @@
   "bacak-alt-sol": {
    "resim": "bacak-alt-sol.webp",
    "kutu": [
-    1204,
+    1200,
     2772,
-    252,
-    900
+    264,
+    912
    ],
    "pivot": [
     1322,
@@ -600,10 +586,10 @@
   "kol-alt-sag": {
    "resim": "kol-alt-sag.webp",
    "kutu": [
-    540,
+    548,
     1688,
-    232,
-    608
+    224,
+    604
    ],
    "pivot": [
     676,
@@ -620,10 +606,10 @@
   "el-sag": {
    "resim": "el-sag.webp",
    "kutu": [
-    452,
-    2148,
-    312,
-    324
+    472,
+    2152,
+    272,
+    352
    ],
    "pivot": [
     624,
@@ -662,8 +648,8 @@
    "kutu": [
     1528,
     1688,
-    232,
-    608
+    224,
+    604
    ],
    "pivot": [
     1624,
@@ -680,10 +666,10 @@
   "el-sol": {
    "resim": "el-sol.webp",
    "kutu": [
-    1492,
-    2100,
-    400,
-    380
+    1520,
+    2104,
+    344,
+    412
    ],
    "pivot": [
     1676,
@@ -725,7 +711,6 @@
   {
    "yuva": "agiz"
   },
-  "biyik",
   "gozluk",
   "kulak-sag",
   "kulak-sol",
@@ -814,7 +799,6 @@
   "agiz-e",
   "agiz-kahkaha",
   "agiz-uzgun",
-  "biyik",
   "gozluk",
   "kulak-sag",
   "kulak-sol",
@@ -841,7 +825,8 @@
   "agiz-o",
   "agiz-e",
   "agiz-kahkaha",
-  "agiz-uzgun"
+  "agiz-uzgun",
+  "gozluk"
  ],
  "bagli": {
   "kafa": "govde",
@@ -868,7 +853,6 @@
   "agiz-uzgun": "kafa",
   "burun": "kafa",
   "yanaklar": "kafa",
-  "biyik": "kafa",
   "gozluk": "kafa",
   "govde": "kalca",
   "bacak-ust-sag": "kalca",
@@ -891,12 +875,12 @@
    1090
   ],
   "kulak-sag": [
-   855.4390855997628,
-   252.4984973405585
+   869.4390855997628,
+   258.49849734055846
   ],
   "kulak-sol": [
-   1444.5609144002372,
-   252.4984973405585
+   1430.5609144002372,
+   258.49849734055846
   ],
   "gozler-acik": [
    1150,
@@ -944,51 +928,47 @@
   ],
   "agiz-gulumse": [
    1146,
-   924
+   914
   ],
   "agiz-az": [
    1146,
-   924
+   914
   ],
   "agiz-orta": [
    1146,
-   924
+   914
   ],
   "agiz-genis": [
    1146,
-   924
+   914
   ],
   "agiz-o": [
    1146,
-   924
+   914
   ],
   "agiz-e": [
    1146,
-   924
+   914
   ],
   "agiz-kahkaha": [
    1146,
-   924
+   914
   ],
   "agiz-uzgun": [
    1146,
-   924
+   914
   ],
   "burun": [
    1150,
-   768
+   800
   ],
   "yanaklar": [
    1150,
-   742
-  ],
-  "biyik": [
-   1150,
-   850
+   730
   ],
   "gozluk": [
    1150,
-   560
+   540
   ],
   "govde": [
    1150,

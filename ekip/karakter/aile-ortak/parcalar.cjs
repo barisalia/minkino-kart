@@ -120,4 +120,92 @@ function uzuvKatman({ a, ra, b, rb, renk, golge, bilyeA = true, bilyeB = true, g
   return k;
 }
 
-module.exports = { blok, TUM, ust, boya, ince, hilal, kulaklar, kulakCiz, bant, uzuvKatman, uzuvYumusak };
+/**
+ * Uzuv profili: orta çizgi noktaları [x, y, rA, rB] (rA yönün solundaki yarı genişlik, rB sağındaki; aşağı inen
+ * uzuvda rA ekranın solu). Catmull-Rom ile sık örneklenir; yarıçaplar da aynı eğriyle yumuşak değişir.
+ * Döner: { o: [{ p, t, n, ra, rb }], at(t) en yakın örnek, kenar(t, yan, iceri) kenar noktası (yan +1 = A, -1 = B) }
+ */
+function profil(nokta, n = 72) {
+  const L = nokta.length;
+  const cr = (a, b, c, d, t) => a.map((_, i) => 0.5 * (2 * b[i] + (-a[i] + c[i]) * t + (2 * a[i] - 5 * b[i] + 4 * c[i] - d[i]) * t * t + (-a[i] + 3 * b[i] - 3 * c[i] + d[i]) * t * t * t));
+  const ham = [];
+  const m = Math.ceil(n / (L - 1));
+  for (let s = 0; s < L - 1; s++) {
+    const p0 = nokta[Math.max(0, s - 1)], p1 = nokta[s], p2 = nokta[s + 1], p3 = nokta[Math.min(L - 1, s + 2)];
+    for (let i = 0; i < m + (s === L - 2 ? 1 : 0); i++) ham.push(cr(p0, p1, p2, p3, i / m));
+  }
+  const o = ham.map((q, i) => {
+    const a = ham[Math.max(0, i - 1)], b = ham[Math.min(ham.length - 1, i + 1)];
+    const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+    return { p: [q[0], q[1]], t: i / (ham.length - 1), n: [-dy / l, dx / l], ra: q[2], rb: q[3] };
+  });
+  const at = (t) => o[Math.max(0, Math.min(o.length - 1, Math.round(t * (o.length - 1))))];
+  const kenar = (t, yan, iceri = 0) => {
+    const s = at(t), r = (yan > 0 ? s.ra : s.rb) - iceri;
+    return [s.p[0] + s.n[0] * yan * r, s.p[1] + s.n[1] * yan * r];
+  };
+  /** eksen boyunca kesit noktası: f = -1 (B kenarı) … +1 (A kenarı) */
+  const kesit = (t, f) => {
+    const s = at(t), r = f > 0 ? s.ra * f : s.rb * f;
+    return [s.p[0] + s.n[0] * r, s.p[1] + s.n[1] * r];
+  };
+  return { o, at, kenar, kesit };
+}
+
+/**
+ * El işi uzuv (Kino'nun kol ve bacakları gibi): profil boyunca kıvrımlı, incelip kalınlaşan boru; uçlarda eklem
+ * bilyeleri (uçta rA = rB olmalı, bilye pivotta dursun). Gölge ekranın sağındaki yanda, genişliği uzuvun o
+ * noktadaki eninin `golgeOran` katı (baldır şişince gölge de genişler, bilekte incelir: Kino'daki gibi kavisli sınır).
+ * vurgu: gölge yanındaki kenarda ucu incelen ek mürekkep (çizgi gölgede kalınlaşır, ışıkta ince kalır: el çizimi).
+ * isik: ışık yanında ince parlak şerit rengi (kumaş için), isikT: [t0, t1] aralığı.
+ */
+function uzuvEl({ nokta, renk, golge, golgeOran = 0.3, vurgu = 14, vurguT = [0.12, 0.88], isik = null, isikT = [0.15, 0.8], isikGen = 22, bilyeA = true, bilyeB = true }) {
+  const pr = profil(nokta);
+  const o = pr.o, L = o.length;
+  const kenarN = (yan, ic = 0) => o.map((s) => { const r = (yan > 0 ? s.ra : s.rb) - ic; return [s.p[0] + s.n[0] * yan * r, s.p[1] + s.n[1] * yan * r]; });
+  const sec = (n) => n.filter((_, i) => i % 3 === 0 || i === n.length - 1);
+  const uc = (n) => n.map((p, i) => (i === 0 || i === n.length - 1 ? [...p, 'k'] : p));
+  const d = Y.kapali([...uc(sec(kenarN(1))), ...uc(sec(kenarN(-1)).reverse())]);
+  const bilye = (s, ek = 0) => { const r = (s.ra + s.rb) / 2, k = (s.ra - s.rb) / 2; return Z.daire(s.p[0] + s.n[0] * k, s.p[1] + s.n[1] * k, r + ek); };
+  // gölge / ışık kırpması bilyeden 1.5 px taşar: eklemde üstteki parçanın bilye kenarında açık renkli yay izi kalmasın
+  // (beyaz dolgu ile gölgenin aynı kenarda yarı saydam üst üste binmesi)
+  const kirp = [d];
+  const k = [K.tamam(d, renk)];
+  if (bilyeA) { k.push(K.tamam(bilye(o[0]), renk)); kirp.push(bilye(o[0], 1.5)); }
+  if (bilyeB) { k.push(K.tamam(bilye(o[L - 1]), renk)); kirp.push(bilye(o[L - 1], 1.5)); }
+  // ekranın sağı hangi yan: n'nin x bileşeni (+ ise A yanı sağda)
+  const sagYan = o[Math.floor(L / 2)].n[0] > 0 ? 1 : -1;
+  if (golge) {
+    const dis = o.map((s) => { const r = (sagYan > 0 ? s.ra : s.rb) + 30; return [s.p[0] + s.n[0] * sagYan * r, s.p[1] + s.n[1] * sagYan * r]; });
+    const ic = o.map((s) => { const r = (sagYan > 0 ? s.ra : s.rb) - golgeOran * (s.ra + s.rb); return [s.p[0] + s.n[0] * sagYan * r, s.p[1] + s.n[1] * sagYan * r]; });
+    // uçlardan eksen boyunca bilye yarıçapı kadar uzat: eklemin altında da gölge sürsün
+    const uzat = (n) => {
+      const t0 = [o[0].n[1], -o[0].n[0]], t1 = [o[L - 1].n[1], -o[L - 1].n[0]];
+      const r0 = (o[0].ra + o[0].rb) / 2, r1 = (o[L - 1].ra + o[L - 1].rb) / 2;
+      return [[n[0][0] - t0[0] * r0, n[0][1] - t0[1] * r0], ...n, [n[L - 1][0] + t1[0] * r1, n[L - 1][1] + t1[1] * r1]];
+    };
+    k.push(boya(Y.kapali([...uc(sec(uzat(dis))), ...uc(sec(uzat(ic)).reverse())]), golge, kirp));
+  }
+  if (isik) {
+    const i0 = Math.round(isikT[0] * (L - 1)), i1 = Math.round(isikT[1] * (L - 1));
+    const yol = [];
+    for (let i = i0; i <= i1; i += Math.max(1, Math.round((i1 - i0) / 6))) {
+      const s = o[i], r = (sagYan > 0 ? s.rb : s.ra) - 34;
+      yol.push([s.p[0] - s.n[0] * sagYan * r, s.p[1] - s.n[1] * sagYan * r]);
+    }
+    k.push(boya(Z.inceSerit(Y.zincir(yol), isikGen, 4), isik, kirp));
+  }
+  if (vurgu) {
+    const i0 = Math.round(vurguT[0] * (L - 1)), i1 = Math.round(vurguT[1] * (L - 1));
+    const yol = [];
+    // merkez kenarın 1.5 px dışında: çizginin içine taşan kısım vurgu/2 - 1.5 px (alttaki çizgiyle arada boşluk kalmaz)
+    for (let i = i0; i <= i1; i += Math.max(1, Math.round((i1 - i0) / 16))) {
+      const s = o[i], r = (sagYan > 0 ? s.ra : s.rb) + 1.5;
+      yol.push([s.p[0] + s.n[0] * sagYan * r, s.p[1] + s.n[1] * sagYan * r]);
+    }
+    k.push(ince(yol, vurgu, 1));
+  }
+  return k;
+}
+
+module.exports = { blok, TUM, ust, boya, ince, hilal, kulaklar, kulakCiz, bant, uzuvKatman, uzuvYumusak, profil, uzuvEl };
