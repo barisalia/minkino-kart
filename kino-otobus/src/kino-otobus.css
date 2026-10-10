@@ -164,6 +164,10 @@
 .ko-kok .ko-mz-on {
   background-position: center bottom;
 }
+/* doğum günü bahçesi (D19, tek görsel, kareye yakın): geniş pencerede flama, balonlar ve çit görünsün */
+.ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
+  background-position: center 22%;
+}
 .ko-kok .ko-mz-balonlar i {
   position: absolute;
   top: calc(10% + var(--i) * 3%);
@@ -559,8 +563,9 @@
   align-self: flex-end;
   display: grid;
   grid-template-columns: repeat(var(--sutun, 1), calc(64 * var(--u)));
-  grid-auto-rows: calc(66 * var(--u));
-  gap: calc(6 * var(--u));
+  /* iki sıralı rafın üst sırası geniş telefonda (844×390) ses düğmesinin altında kalmasın: sıra 62u, aralık 4u */
+  grid-auto-rows: calc(62 * var(--u));
+  gap: calc(4 * var(--u));
   align-content: end;
   padding: 0 calc(4 * var(--u)) calc(4 * var(--u));
   margin-bottom: calc(2 * var(--u));
@@ -582,7 +587,7 @@
   bottom: 0;
 }
 .ko-kok .ko-raf::before {
-  bottom: calc(72 * var(--u));
+  bottom: calc(66 * var(--u));
 }
 .ko-kok .ko-raf[data-n='1']::before,
 .ko-kok .ko-raf[data-n='0']::before {
@@ -1004,6 +1009,36 @@
   width: calc(var(--t) * 0.36);
   height: calc(var(--t) * 0.5);
   transform: translateX(-50%);
+}
+/* Mino üfleyince: Gemini mumunun alevi kesilir (fitil kalır), fitilden minik duman yükselir */
+.ko-kok .ko-mum-sonuk {
+  clip-path: inset(30.5% 0 0 0);
+}
+.ko-kok .ko-k-mum.ko-sonuk::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  width: calc(var(--t) * 0.14);
+  aspect-ratio: 1;
+  margin-left: calc(var(--t) * -0.07);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 30%, rgba(214, 218, 230, 0.7) 32% 58%, transparent 62%);
+  animation: ko-duman 1.4s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes ko-duman {
+  from {
+    transform: translateY(40%) scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-140%) scale(1.5);
+    opacity: 0;
+  }
 }
 .ko-kok .ko-serin {
   position: relative;
@@ -1472,7 +1507,9 @@
   aspect-ratio: 3;
 }
 .ko-kok .ko-ob-ampul {
-  aspect-ratio: 5;
+  aspect-ratio: 4.81;
+  /* ampul dizisi uçlarından bağlanır: çatı külahı yoksa arka köşeden kola doğru hafif eğik (varliklar.ts → OTOBUS_YERI) */
+  transform: translate(-50%, -50%) rotate(var(--don, 0deg));
 }
 .ko-kok .ko-ob-jant {
   aspect-ratio: 1;
@@ -2004,6 +2041,10 @@
   grid-area: raf;
   align-self: stretch;
   grid-auto-rows: calc(72 * var(--u));
+}
+/* üst raf tahtası alt sıranın üstünde (sıra 72u + aralık 4u) */
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf::before {
+  bottom: calc(76 * var(--u));
 }
 .ko-kok .ko-gun[data-yon='dikey'] .ko-kaplar {
   grid-area: kaplar;

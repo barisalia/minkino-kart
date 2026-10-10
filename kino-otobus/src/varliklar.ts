@@ -104,11 +104,11 @@ export const VARLIK = {
   'kalp-seker': kod(kalpSekerSvg),
   kupa: kod(kupaSvg),
   mum: kod(() => mumSvg(false)),
-  'pencere-dogumgunu': YOK, // park manzarası + kodla balon ve flama (gun.ts → manzara)
+  'pencere-dogumgunu': YOK, // yalnız orta camın bahçesi (betik kırpar); yoksa park manzarası + kodla balon ve flama (gun.ts → manzara)
   'sus-cati-kulah': kod(catiKulahSvg),
   'sus-ampul': kod(ampulSvg),
   'sus-jant': kod(jantSvg),
-  'sus-kino-kiraz-sapka': YOK, // Kino iskeletine kod çizimi (cizim.ts → KINO_KIRAZ_SAPKA)
+  'sus-kino-kiraz-sapka': YOK, // Kino'nun kafa grubuna (otobus.ts → KINO_YERI.kirazSapka); yoksa kod çizimi (cizim.ts → KINO_KIRAZ_SAPKA)
   // ---- yeniden kullanılanlar
   jeton: yen('pasta/jeton-1'),
   'kumbara-kavanoz': yen('pasta/kumbara-kavanoz-1'),
@@ -182,7 +182,10 @@ export const OTOBUS_YERI = {
   tabela: { x: 0.69, y: 0.322, en: 0.12 },
   flama: { x: 0.4775, y: 0.405, en: 0.36 },
   kulah: { x: 0.255, y: 0.2, en: 0.12 },
-  ampul: { x: 0.5, y: 0.31, en: 0.64 },
+  // ampul dizisi (D21, uçları görselin tepesinde, ortası sarkık): çatı külahı varsa külahın gövdesinden kolun kırmızı
+  // topuna; yoksa çatının arka köşesinden kola (don: derece, eksi = sağ uç yukarı)
+  ampul: { x: 0.482, y: 0.305, en: 0.49 },
+  ampulKulahsiz: { x: 0.446, y: 0.358, en: 0.56, don: -3.3 },
   jant: [
     { x: 0.3183, y: 0.8372, en: 0.056 },
     { x: 0.6969, y: 0.8366, en: 0.056 },

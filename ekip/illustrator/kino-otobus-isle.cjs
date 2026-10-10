@@ -19,8 +19,13 @@ const G = gi >= 0 ? process.argv.splice(gi, 2)[1] : 'ekip/gemini/yeni/kino-otobu
 const ATLA = [];   // bilerek elle düzeltilen dosyalar buraya (betik yeniden üretmesin)
 const ARKA = ['ic-arka', 'pencere-dogumgunu', 'kapak'];
 /** çıktının uzun kenarı (px): ekranda en büyük hâli × DPR 3 */
-const EN = { otobus: 1920, 'tezgah-on': 2800, dolap: 2000, 'ic-arka': 3072, 'pencere-dogumgunu': 2048, kapak: 2400, 'sus-flama': 1600, 'sus-kemik-tabela': 1280, 'kino-onluk': 1280, 'kino-sapka': 1280 };
+const EN = { otobus: 1920, 'tezgah-on': 2800, dolap: 2000, 'ic-arka': 3072, 'pencere-dogumgunu': 2048, kapak: 2400, 'sus-flama': 1600, 'sus-ampul': 2400, 'sus-kemik-tabela': 1280, 'kino-onluk': 1280, 'kino-sapka': 1280 };
 const VARSAYILAN_EN = 1024;
+/**
+ * Zemin kalan görsellerde kırpma (oran: tuvalin eni/boyu). pencere-dogumgunu: Gemini kendi pencere çerçevesini ve
+ * çubuklu yan camları da çizdi; oyunun kendi çerçevesi (ic-arka) olduğu için yalnız orta camın içindeki bahçe alınır.
+ */
+const KIRP = { 'pencere-dogumgunu': { sol: 0.2762, ust: 0.1107, en: 0.4506, boy: 0.7585 } };
 /** gemini-esya ayarları (dosya başına) */
 // kino-onluk: boyun askısının içi kapalı beyaz bölge → delik (şeffaf)
 const AYAR = { otobus: { tuvalKoru: true }, 'kino-onluk': { delik: true } };
@@ -137,7 +142,13 @@ async function icCerceve() {
   }
   // 2) arka planlar (zemin kalır)
   for (const ad of tum.filter((a) => ARKA.includes(a) && !(a === 'ic-arka' && kaynak.get(a).n > 1))) {
-    const img = s(path.join(GI, ad + '.png')).removeAlpha(), m = await img.metadata();
+    let img = s(path.join(GI, ad + '.png')).removeAlpha(), m = await img.metadata();
+    const k = KIRP[ad];
+    if (k) {
+      const kutu = { left: Math.round(k.sol * m.width), top: Math.round(k.ust * m.height), width: Math.round(k.en * m.width), height: Math.round(k.boy * m.height) };
+      img = s(await img.extract(kutu).png().toBuffer());
+      m = { width: kutu.width, height: kutu.height };
+    }
     await yaz(ad, await kucult(img, m, EN[ad]).webp({ quality: 90, effort: 5 }).toBuffer());
   }
 
@@ -179,7 +190,8 @@ async function icCerceve() {
     for (const ad of ustler) {
       const b = kes(ad), u = await satirlar(b), ust = Math.max(0, topTepe - Math.round(top.H * 0.012));
       // akıntılar topun tabanını geçmesin: tuvale sığacak kadar
-      const k = Math.min((kubbeEn * 1.08) / enGenis(u.r, 0, u.H), (top.H - ust) / u.H);
+      // tuvalden taşmasın (topun kubbesi tuvalin enine yakınsa 1.08 katı sığmaz)
+      const k = Math.min((kubbeEn * 1.08) / enGenis(u.r, 0, u.H), (top.H - ust) / u.H, top.W / u.W);
       const w = Math.round(u.W * k), hh = Math.round(u.H * k);
       const kucuk = await s(b).resize(w, hh, { kernel: 'lanczos3' }).png().toBuffer();
       const t = await s({ create: { width: top.W, height: top.H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })

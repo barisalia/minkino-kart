@@ -825,7 +825,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (dogumgunu) {
       // Mino mumu üfler, herkes alkışlar
       const mino = m.anaKisi.mino;
-      const lokmaKap = h('div.ko-m-lokma.ko-dogumgunu', {}, lokma);
+      // kupa Mino'nun ağzının önünde (yerken olduğu gibi): mum pencerenin fırfırının altında, üflenince görünür
+      const lokmaKap = h('div.ko-m-lokma.ko-dogumgunu', { style: `left:${ax * 100}%;top:${ay * 100}%;transform:translateX(-50%)` }, lokma);
       kisiEl.append(lokmaKap);
       mino?.tepki('evet');
       await bekle(600);
