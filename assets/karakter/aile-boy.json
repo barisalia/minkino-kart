@@ -1,0 +1,23 @@
+{
+ "aciklama": "Kino ve Ailesi (Seri 2) boy tablosu: TEK YER. Boy = görünen en üst noktadan (kafa ya da kulak) zemine, Kino C = 1 (kinoBoyKare: Kino kitinin ölçülen boyu, kare birimi). Kitler aynı birimde çizilir (kare birimi her kitte aynı boy); tepe ve zemin kitin json'unda. Ölçü: kas = kafa sayısı (boy / kafa boyu). Denetim: tests/unit/kukla-aile.test.ts",
+ "birim": "kino",
+ "kinoBoyKare": 2038,
+ "boy": {
+  "kino": 1,
+  "anne": 1.6,
+  "baba": 1.75,
+  "lokum": 0.7
+ },
+ "kafaSayisi": {
+  "kino": 2.3,
+  "anne": 3.7,
+  "baba": 3.7,
+  "lokum": 2.0
+ },
+ "kit": {
+  "kino": "kino-yeni/kino-yeni.json",
+  "anne": "anne/anne.json",
+  "baba": "baba/baba.json",
+  "lokum": "lokum/lokum.json"
+ }
+}
