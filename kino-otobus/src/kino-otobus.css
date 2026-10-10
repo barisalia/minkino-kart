@@ -2686,16 +2686,29 @@
   position: absolute;
   inset: calc(-8 * var(--u));
 }
+/* makine ve kapak aynı tuvalde (varliklar.ts → KULAH_MAKINESI): kapak dönüşümsüz tam oturur */
 .ko-kok .ko-is-kosesi-g,
 .ko-kok .ko-is-kosesi-k {
   position: absolute;
   left: 0;
   right: 0;
   bottom: calc(6 * var(--u));
-  aspect-ratio: 240 / 160;
+  aspect-ratio: var(--oran, 1.5);
 }
-.ko-kok .ko-is-kosesi-k {
-  bottom: calc(10 * var(--u));
+/*
+ * kapalı makine: plakanın arka kenarı kapağın yanlarından taşmasın. Makine görselinin kapağın en geniş satırından
+ * yukarısı yalnız kapağın içinde görünür; gövdenin kulbu açıkta (maske katmanları birleşir)
+ */
+.ko-kok .ko-is-kosesi-g,
+.ko-kok .ko-is-makine.ko-oturdu .ko-is-makine-g {
+  -webkit-mask:
+    var(--kapak-maske) 0 0 / 100% 100% no-repeat,
+    linear-gradient(transparent var(--kapak-alt), #000 var(--kapak-alt)) 0 0 / 100% 100% no-repeat,
+    linear-gradient(#000, #000) 100% 100% / var(--kulp-en) var(--kulp-boy) no-repeat;
+  mask:
+    var(--kapak-maske) 0 0 / 100% 100% no-repeat,
+    linear-gradient(transparent var(--kapak-alt), #000 var(--kapak-alt)) 0 0 / 100% 100% no-repeat,
+    linear-gradient(#000, #000) 100% 100% / var(--kulp-en) var(--kulp-boy) no-repeat;
 }
 .ko-kok .ko-is-kosesi-raf {
   position: absolute;
@@ -2814,12 +2827,14 @@
   width: 100%;
   height: 100%;
 }
+/* makine kutusu görselin oranında (makine ve kapak ortak tuval: varliklar.ts → KULAH_MAKINESI, isler.ts → makineStili) */
 .ko-kok .ko-is-makine {
+  --kapak-aci: 75deg;
   position: absolute;
   left: 33%;
   bottom: 16%;
   width: 30%;
-  aspect-ratio: 240 / 160;
+  aspect-ratio: var(--oran, 1.5);
   z-index: 3;
   cursor: pointer;
   touch-action: none;
@@ -2828,38 +2843,62 @@
   position: absolute;
   inset: 0;
 }
+/* waffle plakasının iç elipsi (görselde ölçüldü) */
 .ko-kok .ko-is-plaka {
   position: absolute;
-  left: 18.3%;
-  width: 63.4%;
-  top: 32.5%;
-  height: 37.5%;
+  left: var(--plaka-sol);
+  top: var(--plaka-ust);
+  width: var(--plaka-en);
+  height: var(--plaka-boy);
 }
+/* dökülen hamur: plakanın elipsinde ortadan yayılır (--d 0..1); pişince altın renge döner, gofret kalkınca söner */
 .ko-kok .ko-is-hamur {
   position: absolute;
-  inset: 6%;
+  inset: 5%;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 40% 35%, #fffbe8, #ffe29a 60%, #f2c86e);
-  border: calc(2 * var(--u)) solid rgba(90, 52, 35, 0.55);
+  background: radial-gradient(ellipse at 42% 36%, #fffbe8, var(--hamur, #fde79f) 55%, #f2cf7a);
+  border: calc(2 * var(--u)) solid rgba(90, 52, 35, 0.5);
   transform: scale(var(--d, 0));
-  transition: transform 0.1s linear;
+  transition:
+    transform 0.1s linear,
+    opacity 0.35s 0.25s,
+    background 0.3s;
 }
+.ko-kok .ko-is-makine.ko-pisti .ko-is-hamur {
+  background: radial-gradient(ellipse at 42% 36%, #ffe7a6, #f2b85e 60%, #d9923f);
+  opacity: 0;
+}
+/*
+ * pişmiş gofret: plakanın ortasından kalkar ve plakanın üstünde dik durur (görselin kendi oranında; açık kapağın
+ * önünde, menteşe tarafında kapağa değmez). Yer `translate` ile; ko-sirada'nın transform animasyonu bunu bozmaz.
+ */
 .ko-kok .ko-is-disk {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 82%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%) scaleY(0.42);
+  z-index: 2;
+  left: calc(var(--plaka-sol) + var(--plaka-en) * 0.42);
+  top: calc(var(--plaka-ust) + var(--plaka-boy) * 0.55);
+  width: calc(var(--plaka-en) * 0.5);
+  aspect-ratio: 1024 / 1007;
+  translate: -50% -100%;
   opacity: 0;
   pointer-events: none;
   touch-action: none;
 }
-.ko-kok .ko-is-makine.ko-pisti .ko-is-hamur {
-  opacity: 0;
-}
 .ko-kok .ko-is-makine.ko-pisti .ko-is-disk {
   opacity: 1;
+  animation: ko-disk-kalk 0.55s 0.15s cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
+}
+.ko-kok .ko-is-makine.ko-pisti .ko-is-disk.ko-sirada {
+  animation:
+    ko-disk-kalk 0.55s 0.15s cubic-bezier(0.3, 1.5, 0.5, 1) backwards,
+    ko-sirada-kule 1.25s 0.7s ease-in-out infinite;
+}
+@keyframes ko-disk-kalk {
+  from {
+    opacity: 0;
+    translate: -50% -15%;
+    scale: 0.35;
+  }
 }
 .ko-kok .ko-is-panel[data-adim='yuvarla'] .ko-is-disk {
   pointer-events: auto;
@@ -2869,32 +2908,34 @@
 .ko-kok .ko-is-disk.ko-gitti {
   opacity: 0 !important;
 }
-/* kapak açıkken yukarıda ve geride eğik; kapanınca (--in 1) plakanın üstüne oturur */
+/* kapak: --in 1 kapalı (yerinde, dönüşüm yok), 0 açık (menteşeden sağa-yukarı döner) */
 .ko-kok .ko-is-kapak {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  aspect-ratio: 240 / 160;
-  transform-origin: 85% 60%;
-  transform: translateY(calc(10% - (1 - var(--in, 0)) * 58%)) rotate(calc((1 - var(--in, 0)) * 16deg));
-  transition: transform 0.16s cubic-bezier(0.3, 1.4, 0.5, 1);
-  touch-action: none;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: var(--mentese, 92% 53%);
+  transform: rotate(calc((1 - var(--in, 0)) * var(--kapak-aci)));
+  transition: transform 0.42s cubic-bezier(0.34, 1.25, 0.5, 1);
 }
+.ko-kok .ko-is-kapak.ko-tutuluyor {
+  transition-duration: 0.08s;
+}
+/* kapak oturunca makine hafifçe aşağı iner (oranı bozulmaz) */
 .ko-kok .ko-is-makine.ko-ezil {
-  animation: ko-ezil 0.35s ease-out;
+  animation: ko-ezil 0.3s ease-out;
 }
 @keyframes ko-ezil {
   35% {
-    transform: scale(1.06, 0.9);
+    transform: translateY(calc(3 * var(--u)));
   }
   70% {
-    transform: scale(0.98, 1.03);
+    transform: translateY(calc(-1 * var(--u)));
   }
 }
 .ko-kok .ko-is-kalip {
   position: absolute;
-  left: 67%;
+  left: 69%;
   bottom: 18%;
   height: 46%;
   aspect-ratio: 664 / 1024;
@@ -2943,7 +2984,7 @@
   left: 72%;
   bottom: 18%;
   height: 50%;
-  aspect-ratio: 160 / 180;
+  aspect-ratio: 1024 / 947;
   z-index: 4;
   cursor: grab;
   transition:
@@ -2975,7 +3016,7 @@
   width: calc(9 * var(--u));
   transform: translateX(-50%);
   border-radius: calc(5 * var(--u));
-  background: #ffe29a;
+  background: var(--hamur, #fde79f);
   border: calc(2 * var(--u)) solid var(--ko-k);
   pointer-events: none;
   z-index: 7;
@@ -3029,10 +3070,12 @@
   bottom: 30%;
   height: 58%;
 }
+/* makine biraz dar: açık kapak (menteşeden sağa-yukarı döner) kartın sağ kenarından taşmasın */
 .ko-kok .ko-gun.ko-is-dik .ko-is-makine {
-  left: 41%;
+  --kapak-aci: 70deg;
+  left: 37%;
   bottom: 7%;
-  width: 56%;
+  width: 49%;
 }
 .ko-kok .ko-gun.ko-is-dik .ko-is-surahi {
   left: 5%;

@@ -14,16 +14,12 @@ import {
   ampulSvg,
   catiKulahSvg,
   gofretSvg,
-  hamurSurahiSvg,
   jantSvg,
   kalpSekerSvg,
   kaseSvg,
   kemikTabelaSvg,
   kepceSvg,
   kirazSvg,
-  kulahHamuruSvg,
-  kulahMakinesiKapakSvg,
-  kulahMakinesiSvg,
   kulahSvg,
   kupaSvg,
   mumSvg,
@@ -113,7 +109,7 @@ export const VARLIK = {
   'sus-ampul': kod(ampulSvg),
   'sus-jant': kod(jantSvg),
   'sus-kino-kiraz-sapka': YOK, // Kino'nun kafa grubuna (otobus.ts → KINO_YERI.kirazSapka); yoksa kod çizimi (cizim.ts → KINO_KIRAZ_SAPKA)
-  // ---- Ek C · dükkânın içi, dokunsal hazırlık ve yan işler (Gemini; külah makinesi, kapağı, sürahi ve hamur hâlâ yer tutucu)
+  // ---- Ek C · dükkânın içi, dokunsal hazırlık ve yan işler (Gemini)
   'kara-tahta': YOK, // resimli menü (yazısız), duvarda; kutu görselin oranında (dukkan-ic.ts → DUVAR_ORAN)
   'kavanoz-rafi': YOK, // duvar rafı, üç kavanoz
   lamba: YOK, // sarkan lamba (Gemini'nin ışık konisi betikte silinir; parıltı CSS: .ko-duvar-lamba::after)
@@ -122,10 +118,10 @@ export const VARLIK = {
   'leke-vanilya': YOK,
   sunger: YOK, // parmağın altındaki sünger (isler.ts → SUNGER_ORAN)
   sinek: YOK, // 5-6 yaş sinek (CSS .ko-sinek)
-  'kulah-makinesi': kod(kulahMakinesiSvg),
-  'kulah-makinesi-kapak': kod(kulahMakinesiKapakSvg),
-  'hamur-surahi': kod(hamurSurahiSvg),
-  'kulah-hamuru': kod(kulahHamuruSvg),
+  'kulah-makinesi': YOK, // kapaksız makine, açık waffle plakası; kapakla ortak tuval (KULAH_MAKINESI)
+  'kulah-makinesi-kapak': YOK, // kubbe kapak, makinenin tuvalinde kapalı yerinde (dönüşümsüz tam oturur)
+  'hamur-surahi': YOK, // ağzı solda (SURAHI.agiz)
+  'kulah-hamuru': YOK, // pişmiş gofret, üstten yuvarlak (kendi oranında: HAMUR_DISK_ORAN)
   // ---- yeniden kullanılanlar
   jeton: yen('pasta/jeton-1'),
   'kumbara-kavanoz': yen('pasta/kumbara-kavanoz-1'),
@@ -276,3 +272,25 @@ export function dolapYerleri(n: number): { sol: number; en: number; ust: number;
  * telefonda pencerenin enine yaklaşık kendi oranında oturur (yan kalınlık ≈ 30u).
  */
 export const IC_ARKA_CERCEVE = { en: 3072, boy: 1018, sol: 123, sag: 123, ust: 176, cam: 124, alt: 75, olcek: 0.244 };
+
+/**
+ * Külah makinesi ve kapağı (Ek C): ikisi aynı tuvalde (ekip/illustrator/kino-otobus-isle.cjs → makineKapak, 1400×1057).
+ * Kapak görseli makinenin üstünde kapalı yerinde durur: kapalıyken dönüşüm yok, açılırken menteşeden döner.
+ * Oranlar tuvalin eni/boyu (x, y tepeden):
+ * - plaka: waffle plakasının iç elipsi (hamur buraya yayılır, gofret buradan kalkar)
+ * - mentese: kapağın en geniş satırında sağ ucu (kapak bu noktadan sağa-yukarı açılır)
+ * - kapakAlt: kapağın en geniş satırı. Gemini'nin kapağı plakadan biraz alçak açıdan çizilmiş: kapalıyken plakanın arka
+ *   kenarı kapağın iki yanından taşar; makine görselinde bu satırın üstü yalnız kapağın içinde görünür (CSS maskesi)
+ * - kulp: gövdenin kulbu maskede açıkta kalır (x'in sağı, y'nin altı)
+ */
+export const KULAH_MAKINESI = {
+  oran: 1.324,
+  plaka: { x: 0.0509, y: 0.1271, en: 0.8202, boy: 0.6372 },
+  mentese: { x: 0.9233, y: 0.5306 },
+  kapakAlt: 0.5306,
+  kulp: { x: 0.8962, y: 0.4314 },
+};
+/** Hamur sürahisi (1024×947): ağzının ucu (kutunun oranı; döküş akışı buradan başlar) ve hamurun rengi */
+export const SURAHI = { oran: 1024 / 947, agiz: [0.02, 0.17] as [number, number], hamur: '#FDE79F' };
+/** Pişmiş gofret (kulah-hamuru, 1024×1007): en / boy */
+export const HAMUR_DISK_ORAN = 1024 / 1007;
