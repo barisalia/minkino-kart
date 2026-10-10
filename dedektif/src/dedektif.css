@@ -1898,6 +1898,21 @@
   right: -8%;
   top: 6%;
 }
+/* roman kareleri hazırlanırken (Vaka 3: ilk açılış): kapak yumuşakça nabız atar */
+.dd-kok .dd-vaka-kart.dd-yukleniyor {
+  cursor: progress;
+  animation: dd-vk-yukleniyor 0.9s ease-in-out infinite;
+}
+@keyframes dd-vk-yukleniyor {
+  0%, 100% { scale: 1; }
+  50% { scale: 0.96; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dd-kok .dd-vaka-kart.dd-yukleniyor {
+    animation: none;
+    opacity: 0.75;
+  }
+}
 .dd-kok .dd-yakinda {
   opacity: 0.62;
   cursor: default;

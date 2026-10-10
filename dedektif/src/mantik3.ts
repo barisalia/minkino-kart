@@ -155,6 +155,8 @@ export const HALKALAR3: Halka3[] = [
       { id: 'el-izi', oda: 'agac', resim: 'v3/ipucu-el-izi', x: 0.365, y: 0.93, h: 0.075, gizli: true },
       { id: 'tuy', oda: 'agac', resim: 'v3/ipucu-tuy', x: 0.445, y: 0.76, h: 0.07, gizli: true },
     ],
+    // delil: el izi; yanında az önce bulunan kızıl tüy (kuş "Benim tüyüm…" der, 2 yanlışta tüy kabarır: sorgu3 → tuyKabar)
+    ekFoto: 'v3/ipucu-tuy',
     soru: M3.kim_yasiyor,
     kino: K3.kus,
     kinoKart: 'kus',

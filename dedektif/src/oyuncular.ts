@@ -335,11 +335,15 @@ export class Oyuncular {
     if (kim === 'kino') this.kinoOynat('yuru', ms);
     if (kim === 'pamuk' && this.pamuk && !AZ_HAREKET) void this.pamuk.oynat('yuru', ms);
     const yon = dx < x0 ? -1 : 1;
-    // önceki (kalıcı) kaydırmalar birikmesin: yeni kayma şimdiki yerden başlar
-    hareket.getAnimations().forEach((x) => x.cancel());
+    // önceki (kalıcı) kaydırmalar birikmesin: yeni kayma şimdiki yerden başlar. Önceki kayma yarıda kesildiyse
+    // (ör. koklamaya giderken arama bitti) o anki yerinden başlar, hedefine sıçramaz.
+    const surenler = hareket.getAnimations();
+    const yarida = surenler.some((x) => x.playState === 'running');
+    const simdi = yarida ? getComputedStyle(hareket).transform : 'none';
+    surenler.forEach((x) => x.cancel());
     const a = hareket.animate(
       [
-        { transform: `translate(${x0}px, ${y0}px)` },
+        { transform: yarida && simdi !== 'none' ? simdi : `translate(${x0}px, ${y0}px)` },
         { transform: `translate(${(x0 + dx) / 2}px, ${Math.min(y0, dy) - (AZ_HAREKET ? 0 : yay)}px) rotate(${yon * 3}deg)`, offset: 0.5 },
         { transform: `translate(${dx}px, ${dy}px)` },
       ],

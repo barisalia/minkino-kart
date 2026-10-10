@@ -340,12 +340,15 @@ export class Fon {
 
 /** Tek seferlik müzik (sürpriz, kutlama): müzik kanalından (ayara ve sessize almaya uyar) */
 const tamponlar = new Map<string, Promise<AudioBuffer | null>>();
-export function muzikCal(ad: 'film-kutlama' | 'film-surpriz', duzey = 0.5) {
+/** Döner: durdur (ekran kapanınca: henüz yüklenmediyse hiç çalmaz, çalıyorsa kesilir) */
+export function muzikCal(ad: 'film-kutlama' | 'film-surpriz', duzey = 0.5): () => void {
   const url = muzikAdres(ad);
-  if (!url || TEST_MODU) return;
+  if (!url || TEST_MODU) return () => undefined;
   const c = sesMotorunuAc();
   const kanal = muzikCikisi();
-  if (!c || !kanal) return;
+  if (!c || !kanal) return () => undefined;
+  let durdu = false;
+  let kaynak: AudioBufferSourceNode | null = null;
   muzikAyarUygula();
   let p = tamponlar.get(url);
   if (!p) {
@@ -356,7 +359,7 @@ export function muzikCal(ad: 'film-kutlama' | 'film-surpriz', duzey = 0.5) {
     tamponlar.set(url, p);
   }
   void p.then((b) => {
-    if (!b || c.state === 'closed') return;
+    if (!b || durdu || c.state === 'closed') return;
     const s = c.createBufferSource();
     const g = c.createGain();
     g.gain.value = duzey;
@@ -364,5 +367,15 @@ export function muzikCal(ad: 'film-kutlama' | 'film-surpriz', duzey = 0.5) {
     s.connect(g).connect(kanal);
     s.start();
     s.onended = () => g.disconnect();
+    kaynak = s;
   });
+  return () => {
+    durdu = true;
+    try {
+      kaynak?.stop();
+    } catch {
+      /* zaten bitti */
+    }
+    kaynak = null;
+  };
 }

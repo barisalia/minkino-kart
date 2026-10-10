@@ -345,7 +345,9 @@ export async function sesSorgu(o: SesSecenek): Promise<void> {
     if (!soru.cozuldu && !o.kapandi()) o.adim('ses-kart');
   });
   const yardim = window.setInterval(() => {
-    if (o.kapandi() || mesgul || tanitim || durParmak) return;
+    // ekran soru açıkken kapandıysa: yardım zamanlayıcısı kendini siler
+    if (o.kapandi()) return clearInterval(yardim);
+    if (mesgul || tanitim || durParmak) return;
     if (performance.now() - sonHareket > YARDIM.surukleSn * 1000) {
       // 2 yanlıştan sonra doğrusu (ördek → ördeğin çalısı); öncesinde açık bir karttan bir çalıya
       const acik = kartlar.filter((k) => !k.classList.contains('dd-soluk'));
@@ -537,7 +539,8 @@ export async function siraSorgu(o: SiraSecenek): Promise<HTMLElement[]> {
     sonHareket = performance.now();
   };
   const yardim = window.setInterval(() => {
-    if (o.kapandi() || mesgul || tanitim || durParmak) return;
+    if (o.kapandi()) return clearInterval(yardim);
+    if (mesgul || tanitim || durParmak) return;
     if (performance.now() - sonHareket > YARDIM.surukleSn * 1000) {
       const j = sira.siradaki;
       if (j === null) return;
