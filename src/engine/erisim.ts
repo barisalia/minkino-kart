@@ -25,6 +25,8 @@ export const ERISIM: Record<string, Erisim> = {
   'macera/*': 'abonelik',
   // Bütünüyle abonelikle
   pazar: 'abonelik',
+  // Mino'nun Pazarı bölümleri (Oyna, Meyve Suyu, Tart Bakalım): oyunla birlikte abonelikle
+  'pazar/tart': 'abonelik',
   canlan: 'abonelik',
   pasta: 'abonelik',
   dedektif: 'abonelik',

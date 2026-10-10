@@ -1,0 +1,565 @@
+/*
+ * Tart Bakalım (tart-ekran.ts, tart-kantar.ts): ön tezgâhta kompost, meyve yığını ve kantar (leğen + kadran).
+ * Kök sınıf .pz-kok altında; hareket yalnız transform / opacity. Ölçüler iki değişkenle:
+ *   --tb-w: leğenin eni (kantarın ölçüsü), --tb-s: yığındaki meyvenin boyu (parmak için iri).
+ */
+
+/* ---------- Açılış ve şenlik: üçüncü oyun düğmesi ---------- */
+.pz-kok .tb-dugme {
+  --r: var(--mavi);
+  min-height: 62px;
+  font-size: clamp(1.15rem, 4.6vw, 1.5rem);
+}
+.pz-kok .tb-dugme .ikon {
+  font-size: 1.45em;
+}
+
+/* ---------- Ölçüler ---------- */
+.pz-kok .tb-ekran {
+  --tb-w: min(36vw, 40vh, 400px);
+  --tb-s: max(46px, calc(var(--tb-w) * 0.19));
+}
+
+/* ---------- Ön tezgâh: kompost | yığın | kantar ---------- */
+.pz-kok .tb-tezgah {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-template-areas: 'kompost kasa kantar ver';
+  align-items: end;
+  justify-content: center;
+  column-gap: clamp(8px, 2.4vw, 26px);
+  padding-bottom: clamp(4px, 1.2vh, 12px);
+}
+.pz-kok .tb-tezgah > .tb-ver {
+  grid-area: ver;
+  align-self: center;
+}
+/* Ver yokken de yeri dursun (kantar kaymasın) */
+.pz-kok .tb-tezgah > .tb-ver[hidden] {
+  display: inline-flex;
+  visibility: hidden;
+}
+/* dar dikey ekran: kantar üstte ortada; altında kompost, yığın ve Ver */
+@media (max-aspect-ratio: 3/5) {
+  .pz-kok .tb-ekran {
+    --tb-w: min(62vw, 30vh, 300px);
+    --tb-s: max(46px, calc(var(--tb-w) * 0.2));
+  }
+  .pz-kok .tb-tezgah {
+    grid-template-columns: auto auto auto;
+    grid-template-areas:
+      'kantar kantar kantar'
+      'kompost kasa ver';
+    row-gap: 6px;
+  }
+  .pz-kok .tb-tezgah > .tb-kantar {
+    justify-self: center;
+  }
+  .pz-kok .tb-tezgah > .tb-ver {
+    min-height: 64px;
+    padding: 0 0.6em;
+  }
+}
+.pz-kok .tb-tezgah > .tb-kompost {
+  grid-area: kompost;
+}
+.pz-kok .tb-tezgah > .tb-kasa {
+  grid-area: kasa;
+}
+.pz-kok .tb-tezgah > .tb-kantar {
+  grid-area: kantar;
+}
+
+/* tam ekran yakın çekimde tezgâh kantarıyla birlikte kadrajdan çıkar (kantar tezgâhın üstüne taşar) */
+.pz-kok .tb-ekran.pz-tezgah-gizli .pz-tezgah {
+  translate: 0 calc(100% + 40px + var(--tb-w) * 0.6);
+}
+
+/* ---------- Kantar: leğen, sap, kadran, ayak ---------- */
+.pz-kok .tb-kantar {
+  --o: 2;
+  position: relative;
+  z-index: 5;
+  width: var(--tb-w);
+  /* leğen + sap + kadran + ayak (birimler leğen enine göre: tart-kantar.ts) */
+  height: calc(var(--tb-w) * 0.79);
+  /* leğen tezgâhın üstüne, sahneye doğru yükselir (tezgâh alçak kalsın) */
+  margin-top: calc(var(--tb-w) * -0.22);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pz-kok .tb-kantar.tb-tutuyor {
+  z-index: 40;
+}
+.pz-kok .tb-legen {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+.pz-kok .tb-kefe-kutu {
+  position: absolute;
+  inset: 0;
+}
+.pz-kok .tb-legen-arka,
+.pz-kok .tb-legen-on {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: 0 100%;
+  pointer-events: none;
+}
+.pz-kok .tb-legen-arka {
+  filter: drop-shadow(0 6px 6px rgba(80, 45, 15, 0.22));
+}
+.pz-kok .tb-legen-on {
+  z-index: 2;
+}
+.pz-kok .tb-fizik {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: visible;
+}
+.pz-kok .tb-hedef {
+  position: absolute;
+  z-index: 0;
+  left: -6%;
+  right: -6%;
+  top: calc(var(--tb-w) * -0.32);
+  height: calc(var(--tb-w) * 0.68);
+  /* leğenin üstünden taşan meyvelere dokunuş da kantara gelsin */
+  pointer-events: auto;
+}
+.pz-kok .tb-legen.tb-sarsildi .tb-kefe-kutu > .tb-legen-arka,
+.pz-kok .tb-legen.tb-sarsildi .tb-kefe-kutu > .tb-legen-on {
+  animation: tb-sars 0.42s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+@keyframes tb-sars {
+  20% { transform: rotate(-2.2deg) scale(1.02, 0.97); }
+  45% { transform: rotate(1.6deg); }
+  70% { transform: rotate(-0.8deg); }
+}
+.pz-kok .tb-legen.tb-hayir {
+  animation: pz-hayir 0.45s ease-in-out;
+}
+/* sap (çizimin direğinden bir dilim), kadran (çizimin üstü), ayak (çizimin altı) */
+.pz-kok .tb-sap,
+.pz-kok .tb-kadran,
+.pz-kok .tb-ayak {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  background-repeat: no-repeat;
+}
+.pz-kok .tb-sap {
+  z-index: 1;
+  top: calc(var(--tb-w) * 0.3);
+  width: calc(var(--tb-w) * 0.07);
+  height: calc(var(--tb-w) * 0.1);
+  background-size: calc(691 / 87 * 100%) auto;
+  background-position: 50.2% 50%;
+}
+.pz-kok .tb-kadran {
+  z-index: 3;
+  top: calc(var(--tb-w) * 0.345);
+  width: calc(var(--tb-w) * 0.55);
+  aspect-ratio: 691 / 380;
+  background-size: 100% auto;
+  background-position: 0 0;
+  filter: drop-shadow(0 4px 4px rgba(80, 45, 15, 0.2));
+}
+.pz-kok .tb-ayak {
+  z-index: 2;
+  top: calc(var(--tb-w) * 0.6);
+  width: calc(var(--tb-w) * 0.41);
+  aspect-ratio: 515 / 212;
+  background-size: calc(691 / 515 * 100%) auto;
+  background-position: 51.1% 100%;
+}
+.pz-kok .tb-yuz-yer,
+.pz-kok .tb-ibre-yer,
+.pz-kok .tb-yuz,
+.pz-kok .tb-ibre-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+/* ibre yeşile girince bölge parlar */
+.pz-kok .tb-kantar.tb-yesil-parla .tb-yesil {
+  animation: tb-yesil 0.9s ease-out;
+}
+.pz-kok .tb-kantar.tb-tamam .tb-kadran {
+  filter: drop-shadow(0 0 10px rgba(120, 230, 90, 0.9)) drop-shadow(0 4px 4px rgba(80, 45, 15, 0.2));
+}
+@keyframes tb-yesil {
+  0% { filter: brightness(1); }
+  25% { filter: brightness(1.45) saturate(1.3); }
+  100% { filter: brightness(1); }
+}
+
+/* ---------- Leğendeki meyveler (fizik) ---------- */
+.pz-kok .tb-govde {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+.pz-kok .tb-govde.tb-tutulan {
+  z-index: 10;
+  filter: drop-shadow(0 10px 8px rgba(90, 54, 23, 0.35));
+}
+.pz-kok .tb-meyve-cizim {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.pz-kok .tb-meyve-ic {
+  position: absolute;
+  inset: 0;
+}
+.pz-kok .tb-meyve-ic > img,
+.pz-kok .tb-meyve-ic > .tb-yedek {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+.pz-kok .tb-meyve-ic > .tb-yedek {
+  border-radius: 50%;
+  background: #e8352f;
+  border: 3px solid #5a3617;
+}
+.pz-kok .tb-govde .tb-meyve-ic {
+  filter: drop-shadow(0 2px 0 rgba(90, 54, 23, 0.25));
+}
+
+/* ---------- Çürük (yer tutucu: domates çizimi + kahve lekeler + sinek) ---------- */
+.pz-kok .tb-curuk > img {
+  filter: saturate(0.78) sepia(0.28) brightness(0.97);
+}
+.pz-kok .tb-leke-yer {
+  position: absolute;
+  inset: 8% 8% 6%;
+  pointer-events: none;
+}
+.pz-kok .tb-leke {
+  width: 100%;
+  height: 100%;
+}
+.pz-kok .tb-sinek {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 30%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  animation: tb-sinek-don 1.7s linear var(--g, 0s) infinite;
+}
+.pz-kok .tb-sinek > svg {
+  position: absolute;
+  left: -17px;
+  top: -13px;
+  width: 34px;
+  height: 26px;
+  animation: tb-sinek-salin 0.5s ease-in-out infinite alternate;
+}
+.pz-kok .tb-kanat {
+  transform-origin: 20px 12px;
+  animation: tb-kanat 0.06s linear infinite alternate;
+}
+@keyframes tb-sinek-don {
+  from { transform: rotate(0deg) translateX(calc(var(--tb-s) * 0.62)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(calc(var(--tb-s) * 0.62)) rotate(-360deg); }
+}
+@keyframes tb-sinek-salin {
+  from { transform: translateY(-5px) rotate(-8deg); }
+  to { transform: translateY(5px) rotate(10deg); }
+}
+@keyframes tb-kanat {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(0.35); }
+}
+
+/* ---------- Yığın (piramit): alt sıra 4, üstteki daha az; üst sıralar öndedir ---------- */
+.pz-kok .tb-kasa {
+  position: relative;
+  z-index: 6;
+  width: calc(var(--tb-s) * (var(--sutun, 4) * 0.88 + 0.12));
+  height: calc(var(--tb-s) * (1 + (var(--satir, 3) - 1) * 0.68));
+}
+.pz-kok .tb-kasa.tb-surukleniyor {
+  z-index: 30;
+}
+.pz-kok .tb-kasa::before {
+  /* yığının altında yumuşak gölge */
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -4px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(90, 54, 23, 0.3), transparent);
+}
+.pz-kok .tb-yuva {
+  position: absolute;
+  z-index: calc(var(--s) + 1);
+  left: calc(50% + var(--x) * var(--tb-s) * 0.88 - var(--tb-s) / 2);
+  bottom: calc(var(--s) * var(--tb-s) * 0.68);
+  width: var(--tb-s);
+  height: var(--tb-s);
+  animation: pz-dus 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--i) * 0.05s) both;
+}
+.pz-kok .tb-yuva.tb-tutulan {
+  z-index: 20;
+}
+.pz-kok .tb-yuva.tb-bos > .pz-urun {
+  opacity: 0;
+  pointer-events: none;
+}
+.pz-kok .tb-yuva.tb-gitti {
+  visibility: hidden;
+}
+.pz-kok .tb-urun .pz-urun-golge {
+  display: none;
+}
+
+/* ---------- Kompost kutusu (yer tutucu çizim) ---------- */
+.pz-kok .tb-kompost {
+  position: relative;
+  z-index: 4;
+  width: calc(var(--tb-s) * 1.25);
+  aspect-ratio: 1;
+  margin-bottom: 2px;
+  transition: transform 0.15s;
+}
+.pz-kok .tb-k-govde {
+  position: absolute;
+  inset: 0;
+}
+.pz-kok .tb-k-govde img,
+.pz-kok .tb-k-kapak img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.pz-kok .tb-k-govde svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.25));
+}
+.pz-kok .tb-k-kapak {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6%;
+  height: 33%;
+  transform-origin: 8% 80%;
+  transition: transform 0.22s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.pz-kok .tb-k-kapak svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.pz-kok .tb-k-golge {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -5px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(90, 54, 23, 0.3), transparent);
+}
+.pz-kok .tb-kompost.pz-uzerinde {
+  transform: scale(1.1);
+}
+.pz-kok .tb-kompost.pz-uzerinde .tb-k-kapak,
+.pz-kok .tb-kompost.tb-acik .tb-k-kapak {
+  transform: rotate(-38deg) translateY(-6%);
+}
+.pz-kok .tb-kompost.pz-parla {
+  animation: tb-kompost-cag 1.1s ease-in-out infinite;
+}
+.pz-kok .tb-kompost.pz-parla .tb-k-govde svg {
+  filter: drop-shadow(0 0 8px rgba(255, 230, 100, 0.95)) drop-shadow(0 4px 0 rgba(90, 54, 23, 0.25));
+}
+@keyframes tb-kompost-cag {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-5px) rotate(-3deg); }
+}
+/* çürüğü yuttu: zıplar, gözleri sevinçle kısılır */
+.pz-kok .tb-kompost.tb-yedi {
+  animation: tb-yedi 0.7s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.pz-kok .tb-kompost.tb-yedi .tb-k-goz {
+  animation: tb-goz 0.9s ease-in-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes tb-yedi {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.18, 0.82); }
+  55% { transform: scale(0.92, 1.12) translateY(-10px); }
+  80% { transform: scale(1.04, 0.96); }
+}
+@keyframes tb-goz {
+  10%, 80% { transform: scaleY(0.25); }
+}
+.pz-kok .tb-kompost.tb-hayir {
+  animation: pz-hayir 0.45s ease-in-out;
+}
+
+/* ---------- Uçan meyve, para, sayı rozeti (uygulama kökünde, sabit konum) ---------- */
+.pz-kok .tb-ucan {
+  position: fixed;
+  z-index: 65;
+  pointer-events: none;
+}
+.pz-kok .tb-para-ucan {
+  position: fixed;
+  z-index: 66;
+  width: clamp(30px, 7vh, 46px);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+.pz-kok .tb-para-ucan > img,
+.pz-kok .tb-para-ucan > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pz-kok .tb-para-ucan > i {
+  border-radius: 50%;
+  background: var(--sari);
+  border: 3px solid var(--kontur);
+}
+.pz-kok .tb-kasa-para {
+  pointer-events: none;
+}
+.pz-kok .tb-sepet-para {
+  width: 30%;
+  aspect-ratio: 1;
+  margin: -6% -4%;
+  animation: pz-dustu 0.42s linear;
+}
+.pz-kok .tb-sayi {
+  position: fixed;
+  z-index: 66;
+  translate: -50% -100%;
+  font-size: clamp(2.4rem, 13vh, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  -webkit-text-stroke: 6px var(--kontur);
+  paint-order: stroke fill;
+  pointer-events: none;
+  animation: tb-sayi 1.15s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+@keyframes tb-sayi {
+  0% { transform: scale(0.3); opacity: 0; }
+  18% { transform: scale(1.25) translateY(-8px); opacity: 1; }
+  35% { transform: scale(1) translateY(-14px); }
+  75% { opacity: 1; }
+  100% { transform: translateY(-60px); opacity: 0; }
+}
+
+/* ---------- Balon: kilo ağırlığı ---------- */
+.pz-kok .tb-istek .tb-kilo {
+  width: clamp(54px, 13vw, 84px);
+  aspect-ratio: 1;
+}
+.pz-kok .tb-kilo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- Ver: istenen olunca parlar, nabız gibi atar ---------- */
+.pz-kok .tb-ver.tb-hazir {
+  animation: tb-ver 1s ease-in-out infinite;
+  box-shadow: 0 0 0 5px rgba(255, 230, 100, 0.9), 0 6px 0 var(--kontur);
+}
+@keyframes tb-ver {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.09); }
+}
+
+/* ---------- Yatay telefon: yığın solda, kantar ortada-sağda, kompost en solda; Ver sağ sütunda ---------- */
+@media (min-aspect-ratio: 13/10) and (max-height: 540px) {
+  .pz-kok .tb-ekran {
+    --tb-w: min(32vw, 70vh, 300px);
+    --tb-s: max(46px, calc(var(--tb-w) * 0.18));
+  }
+  .pz-kok .tb-ekran .pz-tezgah {
+    padding-top: 10px;
+  }
+  /* tezgâhın içeriği bandın dışına, ekranın sol kenarına kadar uzanır (sağ sütun Ver'in) */
+  .pz-kok .tb-tezgah {
+    /* Ver'in konumu .pz-tezgah'a göre (öteki pazar ekranlarıyla aynı yer) */
+    position: static;
+    grid-template-columns: auto auto auto;
+    grid-template-areas: 'kompost kasa kantar';
+    margin-left: calc(-1 * var(--yan-en) + var(--kenar));
+    margin-right: calc(-0.35 * var(--yan-en));
+    justify-content: space-evenly;
+    column-gap: 6px;
+    padding-bottom: max(4px, env(safe-area-inset-bottom, 0px));
+  }
+  /* "Ver" sağ yanın ortasında, büyük (pazar ve meyve suyundaki gibi) */
+  .pz-kok .pz-pazar .tb-tezgah > .tb-ver {
+    position: absolute;
+    top: auto;
+    bottom: max(env(safe-area-inset-bottom, 0px) + 8px, 50% - 40px);
+    left: calc(100% + var(--yan-en) / 2);
+    translate: -50% 0;
+    margin: 0;
+    max-width: calc(var(--yan-en) - 2 * var(--kenar));
+    min-height: 80px;
+    font-size: clamp(1.4rem, 7.5vh, 2rem);
+    padding: 0.15em 0.8em;
+    white-space: nowrap;
+  }
+  .pz-kok .pz-pazar .tb-tezgah > .tb-ver[hidden] {
+    display: none;
+  }
+  .pz-kok .tb-kantar {
+    margin-top: calc(var(--tb-w) * -0.34);
+  }
+  .pz-kok .tb-istek .tb-kilo {
+    width: calc(var(--bo) * 0.15);
+  }
+  /* açılışta üç düğme alçak ekrana sığsın (Oyna ses düğmesine binmesin) */
+  .pz-kok .pz-acilis .pz-oyna {
+    min-height: min(84px, 19vh);
+  }
+  .pz-kok .pz-acilis .pz-ms-dugme,
+  .pz-kok .pz-acilis .tb-dugme {
+    min-height: min(62px, 14.5vh);
+  }
+  .pz-kok .pz-acilis .pz-acilis-dugmeler {
+    gap: min(12px, 2.2vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pz-kok .tb-sinek,
+  .pz-kok .tb-sinek > svg,
+  .pz-kok .tb-kanat,
+  .pz-kok .tb-ver.tb-hazir,
+  .pz-kok .tb-kompost.pz-parla {
+    animation: none;
+  }
+}

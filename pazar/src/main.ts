@@ -9,6 +9,7 @@ import './canli.css';
 import './terazi.css';
 import './musteri.css';
 import './meyvesuyu.css';
+import './tart.css';
 import './yatay.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { anaMenuyeDon } from '../../src/uygulama';

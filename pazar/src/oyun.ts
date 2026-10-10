@@ -12,6 +12,7 @@ import { ekranKaydet, Uygulama, type BaslatSecenekleri } from '../../src/uygulam
 import { acilisEkrani, pazarEkrani, senlikEkrani } from './ekranlar';
 import { kayit } from './ilerleme';
 import { meyveSuyuEkrani } from './meyvesuyu-ekran';
+import { tartEkrani } from './tart-ekran';
 
 export type { BaslatSecenekleri };
 
@@ -22,6 +23,7 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
   ekranKaydet('pazar', pazarEkrani);
   ekranKaydet('senlik', senlikEkrani);
   ekranKaydet('meyvesuyu', meyveSuyuEkrani);
+  ekranKaydet('tart', tartEkrani);
 
   const app = new Uygulama(kok, secenekler);
   kok.classList.add('pz-kok');

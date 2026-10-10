@@ -23,6 +23,7 @@ import { Terazi } from './terazi';
 import { geriGonder, surukle, tasi } from './surukle';
 import { Kamera, type Kutu } from './kamera';
 import { Karakter } from '../../src/karakter/karakter';
+import { KANTAR_IKON } from './tart-kantar';
 
 const A = P.arayuz;
 const RENK_KODU = P.renk_kodu as Record<string, string>;
@@ -265,6 +266,16 @@ export function acilisEkrani(app: Uygulama): Ekran {
     if (kapali) return;
     app.git(durum.i.yas ? 'meyvesuyu' : 'yas', { sonra: 'meyvesuyu' });
   });
+  // üçüncü oyun: Tart Bakalım (kantar ve leğen; giriş cümlesini kendi ekranı söyler)
+  const tart = h('button.dugme.tb-dugme', { type: 'button' }, svg(KANTAR_IKON), A.tart);
+  tart.addEventListener('click', async () => {
+    if (gidiliyor) return;
+    gidiliyor = true;
+    efekt.secim();
+    await bekle(sure(250));
+    if (kapali) return;
+    app.git(durum.i.yas ? 'tart' : 'yas', { sonra: 'tart' });
+  });
   const cikis = app.secenekler.cikis;
   const sol = cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => cikis(), 'kucuk') : bosluk();
   const yasDugme = durum.i.yas
@@ -289,7 +300,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
       {},
       logo(),
       h('div.pz-acilis-sahne', {}, stand([h('div.pz-mino', {}, mino.el)], [h('div.pz-acilis-meyveler', {}, ...meyveler)])),
-      h('div.pz-acilis-dugmeler', {}, oyna, meyveSuyu),
+      h('div.pz-acilis-dugmeler', {}, oyna, meyveSuyu, tart),
       h(
         'div.pz-acilis-alt',
         {},
@@ -898,8 +909,8 @@ export function odulAni(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElemen
 }
 
 // ---------------------------------------------------------------- Şenlik (5 müşteri mutlu)
-export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?: 'pazar' | 'meyvesuyu'; yildiz?: number }): Ekran {
-  // hangi oyundan gelindi: "Bir daha" onu açar, yanındaki düğme öteki oyunu (pazar ↔ meyve suyu)
+export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?: 'pazar' | 'meyvesuyu' | 'tart'; yildiz?: number }): Ekran {
+  // hangi oyundan gelindi: "Bir daha" onu açar, yanındaki düğme öteki oyunu (pazar ↔ meyve suyu / tart)
   const kaynak = p?.kaynak ?? 'pazar';
   const ms = p?.musteriler?.length ? p.musteriler : P.musteriler.slice(0, MUSTERI_SAYISI);
   ms.forEach(resimSesiHazirla);
