@@ -2,7 +2,7 @@
 
 > 2026-10-09 · Kaynak belgeler: `ekip/senaryo/kino-otobus.md`, `ekip/senaryo/dedektif-vaka3.md`, `ekip/film/bolum-1-yagmurlu-gun.md`, `ekip/senaryo/mino-kino-pasta.md` (Ek A).
 > Bütün yeni çizimleri **Gemini** çizer (Recraft yok). Şeffaflık ve temizlik Adobe'da; kodcu bağlar. Stil kuralı: `ekip/stil-rehberi.md`.
-> **Toplam: 87 yeni görsel** (bölüm A-E) + Pasta için 2 (Ek A) + Pazar Tart Bakalım için 3 (Ek B) = 92.
+> **Toplam: 87 yeni görsel** (bölüm A-E) + Pasta için 2 (Ek A) + Pazar Tart Bakalım için 3 (Ek B) + Kino'nun Otobüsü dükkân içi ve yan işler için 12 (Ek C) = 104.
 
 ## 0. Nasıl kullanılır
 
@@ -274,6 +274,28 @@ Bölüm 1'in kapağı çizilmez: film motorundan kare alınır (`FILM-REHBERI.md
 | Y3 | `pazar/kompost-kapak.webp` | K (sonra kırpılır) | E | Upload Y2. Only the matching dark green rounded lid of this compost bin with a small handle on top, drawn alone, front view, the same width as the bin's top. + S-NESNE |
 
 **Kontrol:** Y1 sağlam domatesin yanına konup bakılır: aynı domates, yalnız çürümüş (tiksindirici değil). Y2 ve Y3 üst üste konunca kapak kutuya tam oturmalı (kod kapağı sol kenarından menteşe gibi açar).
+
+## Ek C · Kino'nun Otobüsü: dükkânın içi, dokunsal hazırlık ve yan işler (12 görsel, bölüm A-E dışında)
+> 2026-10-10 · Oyun hazır, şimdilik **yer tutucu kod çizimleriyle** çalışıyor (kino-otobus/src/cizim.ts). Dosyalar aşağıdaki adlarla `assets/kino-otobus/` içine konunca oyun **kendiliğinden** onları kullanır (kod değişmez: `kino-otobus/src/varliklar.ts` → VARLIK). Hepsi **E** (beyaz zemin Adobe'da silinir, kesik WebP alfa).
+> Nerede: kara tahta, kavanoz rafı ve lamba sos rafının üstündeki duvarda; lekeler dolabın üst kenarında (tezgâh); sünger parmağın altında; sinek lekenin üstünde (5-6 yaş); külah makinesi kumbaranın üstünde ve külah yapma tezgâhında (kapak ayrı oynar).
+> Stil örneği (ikinci görsel olarak yüklenir): `assets/kino-otobus/kulah.webp`, `assets/kino-otobus/sos-cikolata-sise.webp`. Renk: buz mavisi (#9FDCF5), krem, bal rengi ahşap; kalın koyu kahve kontur.
+
+| # | Dosya | Boyut | İstem |
+|---|---|---|---|
+| C1 | `kino-otobus/kara-tahta.webp` | 4:3, en az 2048×1536 | A small hanging chalkboard menu for a toddler ice cream truck, honey-colored rounded wooden frame, hanging from a little nail on a short string, the dark green-grey board shows only simple colorful chalk doodles: a cone with a pink and a cream scoop, a bowl with a green scoop, a small star and a heart. Pictures only, absolutely no letters, no numbers, no text. Front view. + S-NESNE |
+| C2 | `kino-otobus/kavanoz-rafi.webp` | G 16:10, en az 2400×1500 | A short honey-colored wooden wall shelf with three cute glass jars standing on it: one with round colorful candy balls and a pink lid, one with golden wafer sticks and an ice-blue lid, one with shiny red cherries and a mint lid. Jars sit on the shelf board at the bottom of the image. Front view. + S-NESNE |
+| C3 | `kino-otobus/lamba.webp` | D 9:16, en az 1152×2048 | A single cute pendant lamp hanging from a thin dark brown cord from the very top of the image, rounded ice-blue lamp shade with a cream rim, a warm glowing yellow bulb peeking below, a soft warm glow. Front view. + S-NESNE |
+| C4 | `kino-otobus/leke-cilek.webp` | G 16:9, en az 2048×1152 | A single small cute puddle of melted pink strawberry ice cream on a flat surface seen from the front and slightly above, soft rounded blob shape with one or two little round drops beside it, one small glossy highlight. Clean and appetizing, not dirty. + S-NESNE |
+| C5 | `kino-otobus/leke-cikolata.webp` | G 16:9, en az 2048×1152 | Same as C4 but melted chocolate brown ice cream. Upload C4 so the shape and size match. + S-NESNE |
+| C6 | `kino-otobus/leke-vanilya.webp` | G 16:9, en az 2048×1152 | Same as C4 but melted cream-yellow vanilla ice cream. Upload C4 so the shape and size match. + S-NESNE |
+| C7 | `kino-otobus/sunger.webp` | G 4:3, en az 2048×1536 | A single cute kitchen sponge, soft yellow sponge block with a few round holes and a green scrubbing layer on top, rounded corners, a few tiny white soap bubbles on it. Front view, slightly from above. + S-NESNE |
+| C8 | `kino-otobus/sinek.webp` | K | A single very cute friendly little fly for toddlers, round slate-blue body, huge shiny friendly eyes, tiny smile, rosy cheeks, two small transparent pale-blue wings up, six tiny legs tucked in. Not scary, not gross, like a baby cartoon bug. Front view. + S-NESNE |
+| C9 | `kino-otobus/kulah-makinesi.webp` | G 3:2, en az 2400×1600 | A single cute round waffle cone maker (waffle iron) seen from the front and slightly above, ice-blue rounded body with a cream handle on the right side, small pink power light in front, LID OPEN AND REMOVED: only the bottom half with an empty grey waffle-grid plate is visible, no lid. + S-NESNE |
+| C10 | `kino-otobus/kulah-makinesi-kapak.webp` | G 3:2, en az 2400×1600 | Upload C9. Only the matching rounded ice-blue lid of this waffle maker, drawn alone, a small cream handle on top and a little brown paw print on the dome, same width as the machine body, seen from the front. + S-NESNE |
+| C11 | `kino-otobus/hamur-surahi.webp` | K | A single cute cream-colored batter jug with a spout on the left and a handle on the right, a thin ice-blue stripe, filled with pale yellow pancake batter visible at the top. Front view. + S-NESNE |
+| C12 | `kino-otobus/kulah-hamuru.webp` | K | A single freshly baked round golden waffle (flat thin round waffle cone dough before rolling), crisp golden-brown diamond grid pattern, slightly darker edge, one small glossy highlight. Seen straight from above, perfectly round. + S-NESNE |
+
+**Kontrol:** C9 ve C10 üst üste konunca kapak gövdeye tam oturmalı (kod kapağı kaldırıp indirir); C4-C6 aynı biçim ve boyda; C1'de **hiç yazı yok**; sinek tiksindirici değil, şirin.
 
 ## Sıra özeti
 1. **A** (20): Kino'nun Otobüsü'nün ücretsiz günü. Önce A1 ve A8 tek örnek üretilir, stil onaylanınca kalanlar.

@@ -2155,3 +2155,854 @@
   cursor: pointer;
   animation: ko-ver-gel 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both;
 }
+
+/* ================================================================ dükkânın içi (yalnız süs; dokunuş almaz) */
+/* sıcak ışık: lambadan amber parıltı (yumuşak ışık karışımı) ve köşelerde yumuşak gölge */
+.ko-kok .ko-sicak-isik {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.ko-kok .ko-isik-parilti,
+.ko-kok .ko-isik-golge {
+  position: absolute;
+  inset: 0;
+}
+.ko-kok .ko-isik-parilti {
+  background:
+    radial-gradient(ellipse 55% 70% at 84% 4%, rgba(255, 196, 110, 0.55), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 18% 0%, rgba(255, 214, 150, 0.35), transparent 70%);
+  mix-blend-mode: soft-light;
+  animation: ko-isik-nefes 7s ease-in-out infinite;
+}
+.ko-kok .ko-isik-golge {
+  background: radial-gradient(ellipse 75% 80% at 50% 42%, transparent 62%, rgba(110, 60, 30, 0.16) 100%);
+}
+@keyframes ko-isik-nefes {
+  50% {
+    opacity: 0.75;
+  }
+}
+
+/* pencerenin tepesinde sallanan külah zinciri (Kino'nun arkasında, müşterilerin önünde) */
+.ko-kok .ko-zincir {
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--ic-yan, calc(8 * var(--u))) + 10 * var(--u));
+  right: calc(var(--ic-yan, calc(8 * var(--u))) + 10 * var(--u));
+  top: calc(var(--ic-ust, calc(10 * var(--u))) - 4 * var(--u));
+  height: calc(14 * var(--u));
+  pointer-events: none;
+}
+.ko-kok .ko-zincir-ip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ko-kok .ko-zincir-kulah {
+  position: absolute;
+  top: calc(var(--sark) * 14 * var(--u) - 2 * var(--u));
+  width: calc(17 * var(--u));
+  height: calc(36 * var(--u));
+  margin-left: calc(-8.5 * var(--u));
+  transform-origin: 50% 0;
+  animation: ko-zincir-salla 3.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.55s);
+}
+.ko-kok .ko-zincir-kulah::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(1.5 * var(--u));
+  height: calc(5 * var(--u));
+  background: var(--ko-k);
+}
+.ko-kok .ko-zincir-top,
+.ko-kok .ko-zincir-kap {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.ko-kok .ko-zincir-top {
+  top: calc(4 * var(--u));
+  width: 118%;
+  aspect-ratio: 1024 / 939;
+  z-index: 1;
+}
+.ko-kok .ko-zincir-kap {
+  top: calc(13 * var(--u));
+  width: 92%;
+  aspect-ratio: 664 / 1024;
+}
+@keyframes ko-zincir-salla {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+/* dolabın camından yükselen soğuk buhar */
+.ko-kok .ko-buhar {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 6%;
+  height: 34%;
+  z-index: 4;
+  pointer-events: none;
+}
+.ko-kok .ko-buhar i {
+  position: absolute;
+  bottom: 0;
+  left: calc(6% + var(--i) * 23%);
+  width: 20%;
+  aspect-ratio: 1.7;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 55%, rgba(255, 255, 255, 0.75), rgba(235, 248, 255, 0.35) 45%, transparent 70%);
+  opacity: 0;
+  animation: ko-buhar-yuksel 4.6s ease-out infinite;
+  animation-delay: calc(var(--i) * -1.15s);
+}
+@keyframes ko-buhar-yuksel {
+  0% {
+    transform: translateY(30%) scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-150%) scale(1.5, 1.3);
+    opacity: 0;
+  }
+}
+
+/* duvar süsleri: kara tahta, kavanoz rafı, lamba (gun.ts → duvarYerlestir) */
+.ko-kok .ko-duvar {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.ko-kok .ko-duvar > * {
+  position: absolute;
+}
+.ko-kok .ko-duvar > [hidden] {
+  display: none;
+}
+.ko-kok .ko-duvar-tahta {
+  transform-origin: 50% 2%;
+  animation: ko-tahta-sallan 6s ease-in-out infinite;
+  filter: drop-shadow(0 calc(3 * var(--u)) calc(2 * var(--u)) rgba(90, 52, 35, 0.25));
+}
+.ko-kok .ko-duvar-kavanoz {
+  filter: drop-shadow(0 calc(3 * var(--u)) calc(2 * var(--u)) rgba(90, 52, 35, 0.2));
+}
+.ko-kok .ko-duvar-lamba {
+  transform-origin: 50% 0;
+  animation: ko-tahta-sallan 4.5s ease-in-out infinite;
+}
+.ko-kok .ko-duvar-lamba::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: 260%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 220, 140, 0.55), transparent 65%);
+}
+@keyframes ko-tahta-sallan {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(1.6deg);
+  }
+}
+/* Gün 1: tek şişelik raf genişler; üstünde kara tahta ve kavanozlar */
+.ko-kok .ko-raf[data-n='1'] {
+  min-width: calc(150 * var(--u));
+  justify-content: center;
+}
+
+/* ================================================================ dokunsal hazırlık */
+/* parmağın tuttuğu araç (kepçe, şişe, kavanoz, süs, sünger): tutma noktası etrafında döner */
+.ko-kok .ko-tutulan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  transform-origin: var(--tx) var(--ty);
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 calc(6 * var(--u)) calc(4 * var(--u)) rgba(90, 52, 35, 0.28));
+}
+.ko-kok .ko-tutulan-ic,
+.ko-kok .ko-kepce-tut {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.ko-kok .ko-kepce-tut-g {
+  position: absolute;
+  inset: 0;
+}
+/* kepçedeki top: sürükledikçe büyür (--d 0..1), tamamlanınca yaylanır */
+.ko-kok .ko-kepce-top {
+  position: absolute;
+  left: 22.5%;
+  bottom: 64%;
+  width: 42%;
+  aspect-ratio: 1024 / 939;
+  transform: translateX(-50%) scale(calc(0.18 + 0.82 * var(--d, 0)));
+  transform-origin: 50% 100%;
+  transition: transform 0.08s linear;
+}
+.ko-kok .ko-kepce-top.ko-top-tamam {
+  animation: ko-top-tamam 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes ko-top-tamam {
+  35% {
+    scale: 1.22 0.82;
+  }
+  70% {
+    scale: 0.92 1.1;
+  }
+}
+/* sürüklenen araç rafta yarı saydam kalır (yerini gösterir) */
+.ko-kok .ko-tasiniyor {
+  opacity: 0.3;
+  transition: opacity 0.12s;
+}
+/* sürüklenen şey bir yuvanın üstünde */
+.ko-kok .ko-yuva.ko-uzerinde {
+  box-shadow: 0 0 0 calc(5 * var(--u)) rgba(255, 228, 92, 0.95), 0 0 calc(22 * var(--u)) rgba(255, 210, 63, 0.95);
+  transform: scale(1.03);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+/* şişeden akan sos */
+.ko-kok .ko-sos-akis {
+  position: absolute;
+  width: calc(7 * var(--u));
+  border-radius: calc(4 * var(--u));
+  background: var(--renk);
+  border: calc(1.5 * var(--u)) solid var(--ko-k);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  animation: ko-sos-dalga 0.18s ease-in-out infinite alternate;
+}
+@keyframes ko-sos-dalga {
+  to {
+    width: calc(5.5 * var(--u));
+  }
+}
+.ko-kok .ko-k-sos.ko-sos-oturdu {
+  animation: ko-sos-oturdu 0.35s ease-out;
+}
+@keyframes ko-sos-oturdu {
+  45% {
+    transform: scale(1.08, 0.9);
+  }
+}
+.ko-kok .ko-kule.ko-serp-titre {
+  animation: ko-serp-titre 0.16s ease-in-out;
+}
+@keyframes ko-serp-titre {
+  50% {
+    transform: translateY(calc(2 * var(--u))) scale(1.02, 0.98);
+  }
+}
+.ko-kok .ko-serpinti-tane {
+  position: absolute;
+  width: calc(7 * var(--u));
+  height: calc(3 * var(--u));
+  border-radius: calc(2 * var(--u));
+  pointer-events: none;
+}
+.ko-kok .ko-kopuk {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0 18%, rgba(225, 246, 255, 0.75) 40%, rgba(160, 220, 250, 0.3) 72%);
+  border: 1.5px solid rgba(95, 180, 220, 0.6);
+  pointer-events: none;
+}
+.ko-kok .ko-cak-yildiz {
+  position: absolute;
+  width: calc(64 * var(--u));
+  height: calc(64 * var(--u));
+  pointer-events: none;
+}
+.ko-kok .ko-cak-yildiz svg {
+  width: 100%;
+  height: 100%;
+}
+.ko-kok .ko-cak-yildiz path:first-child {
+  stroke: #ffe45c;
+}
+.ko-kok .ko-cak-cizgi {
+  position: absolute;
+  width: calc(20 * var(--u));
+  height: calc(5 * var(--u));
+  border-radius: calc(3 * var(--u));
+  background: #ffe45c;
+  border: 1.5px solid var(--ko-k);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+.ko-kok .ko-buhar-tutam {
+  position: absolute;
+  width: calc(36 * var(--u));
+  height: calc(26 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.5) 50%, transparent 72%);
+  pointer-events: none;
+}
+
+/* çak: Kino müşterinin yanına eğilir, müşteri de Kino'ya */
+.ko-kok .ko-kino-yer {
+  transition: transform 0.22s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+/* Kino çakarken hoplar: tezgâhın arkasındaki kalkık patisi görünür */
+.ko-kok .ko-kino-yer.ko-cak-sol {
+  transform: translateX(-50%) translate(-12%, -16%) rotate(-5deg);
+}
+.ko-kok .ko-kino-yer.ko-cak-sag {
+  transform: translateX(-50%) translate(12%, -16%) rotate(5deg);
+}
+.ko-kok .ko-m-yol {
+  transition:
+    translate 0.22s cubic-bezier(0.3, 1.3, 0.5, 1),
+    rotate 0.22s;
+}
+.ko-kok .ko-musteri[data-taraf='sol'].ko-cak .ko-m-yol {
+  translate: 9% 0;
+  rotate: 4deg;
+}
+.ko-kok .ko-musteri[data-taraf='sag'].ko-cak .ko-m-yol {
+  translate: -9% 0;
+  rotate: -4deg;
+}
+
+/* ================================================================ yan işler */
+/* tezgâh lekeleri: dolabın üst kenarında (tezgâh çizgisi); dokunma kutusu ≥ 72u */
+.ko-kok .ko-lekeler {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  z-index: 6;
+}
+.ko-kok .ko-leke {
+  position: absolute;
+  top: calc(-4 * var(--u));
+  width: calc(84 * var(--u));
+  height: calc(72 * var(--u));
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ko-kok .ko-leke-g {
+  width: calc(58 * var(--u));
+  height: calc(34 * var(--u));
+  opacity: calc(0.18 + 0.82 * var(--kir, 1));
+  scale: calc(0.72 + 0.28 * var(--kir, 1));
+  transition:
+    opacity 0.12s,
+    scale 0.12s;
+}
+.ko-kok .ko-leke.ko-silindi .ko-leke-g {
+  animation: ko-leke-git 0.3s ease-in forwards;
+}
+@keyframes ko-leke-git {
+  40% {
+    scale: 1.15;
+    opacity: 0.5;
+  }
+  100% {
+    scale: 0;
+    opacity: 0;
+  }
+}
+.ko-kok .ko-tezgah-parla {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-12 * var(--u));
+  height: calc(18 * var(--u));
+  border-radius: calc(9 * var(--u));
+  background: linear-gradient(100deg, transparent 0 42%, rgba(255, 255, 255, 0.95) 50%, transparent 58%) 0 0 / 300% 100% no-repeat;
+  animation: ko-parla-gec 1s ease-in-out forwards;
+  pointer-events: none;
+}
+@keyframes ko-parla-gec {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+.ko-kok .ko-sinek {
+  position: absolute;
+  top: calc(-34 * var(--u));
+  width: calc(44 * var(--u));
+  height: calc(40 * var(--u));
+  margin-left: calc(-22 * var(--u));
+  z-index: 2;
+  cursor: pointer;
+  touch-action: none;
+}
+.ko-kok .ko-sinek::before {
+  content: '';
+  position: absolute;
+  inset: calc(-18 * var(--u));
+}
+.ko-kok .ko-sinek-ic {
+  position: absolute;
+  inset: 0;
+}
+.ko-kok .ko-sinek.ko-vizil .ko-sinek-ic {
+  animation: ko-vizil 1.7s ease-in-out infinite;
+}
+.ko-kok .ko-sinek .ko-sinek-kanat {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  animation: ko-kanat 0.07s linear infinite alternate;
+}
+@keyframes ko-vizil {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  25% {
+    transform: translate(calc(14 * var(--u)), calc(-8 * var(--u))) rotate(8deg);
+  }
+  50% {
+    transform: translate(0, calc(-14 * var(--u))) rotate(-4deg);
+  }
+  75% {
+    transform: translate(calc(-14 * var(--u)), calc(-6 * var(--u))) rotate(6deg);
+  }
+}
+@keyframes ko-kanat {
+  to {
+    transform: scaleY(0.55);
+  }
+}
+
+/* külah rafı: iç içe külahlar (1-4) */
+.ko-kok .ko-kulah-yigin {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* uçları altta birleşik yelpaze: kaç külah kaldığı bir bakışta görünür */
+.ko-kok .ko-kulah-yigin-k {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  height: calc(96% - (var(--n) - 1) * 6%);
+  aspect-ratio: 664 / 1024;
+  transform-origin: 50% 96%;
+  transform: translateX(-50%) rotate(calc((var(--i) - (var(--n) - 1) / 2) * 17deg));
+}
+
+/* iş köşesi: kumbaranın üstündeki küçük külah makinesi */
+.ko-kok .ko-is-kosesi {
+  position: absolute;
+  left: 50%;
+  top: calc(4 * var(--u));
+  z-index: 2;
+  width: min(100%, calc(72 * var(--u)));
+  height: calc(56 * var(--u));
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ko-kok .ko-is-kosesi::before {
+  content: '';
+  position: absolute;
+  inset: calc(-8 * var(--u));
+}
+.ko-kok .ko-is-kosesi-g,
+.ko-kok .ko-is-kosesi-k {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(6 * var(--u));
+  aspect-ratio: 240 / 160;
+}
+.ko-kok .ko-is-kosesi-k {
+  bottom: calc(10 * var(--u));
+}
+.ko-kok .ko-is-kosesi-raf {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: 0;
+  height: calc(8 * var(--u));
+  border-radius: calc(4 * var(--u));
+  background: linear-gradient(180deg, #f2c88c, #d99c55);
+  border: calc(2.5 * var(--u)) solid var(--ko-k);
+}
+.ko-kok .ko-is-kosesi.ko-is-var .ko-is-kosesi-k {
+  animation: ko-kapak-hop 1.3s ease-in-out infinite;
+}
+.ko-kok .ko-is-kosesi.ko-is-var::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 calc(10 * var(--u)) calc(6 * var(--u)) rgba(255, 228, 92, 0.85);
+  animation: ko-is-isik 1.3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes ko-kapak-hop {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translateY(-16%) rotate(-6deg);
+  }
+  40% {
+    transform: translateY(-4%) rotate(2deg);
+  }
+}
+@keyframes ko-is-isik {
+  50% {
+    opacity: 0.4;
+    transform: scale(1.4);
+  }
+}
+
+/* külah yapma tezgâhı (açılır pencere) */
+.ko-kok .ko-is-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  background: rgba(70, 40, 20, 0.38);
+  animation: ko-panel-ac 0.2s ease-out;
+}
+.ko-kok .ko-is-panel.ko-kapaniyor {
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+@keyframes ko-panel-ac {
+  from {
+    opacity: 0;
+  }
+}
+.ko-kok .ko-is-kart {
+  --k: var(--u, 1px);
+  position: relative;
+  width: min(92%, calc(620 * var(--u)));
+  height: min(86%, calc(320 * var(--u)));
+  border-radius: calc(28 * var(--u));
+  border: calc(4 * var(--u)) solid var(--ko-k);
+  box-shadow: 0 calc(8 * var(--u)) 0 var(--ko-k), 0 calc(20 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  background: #fff6e4;
+}
+.ko-kok .ko-is-duvar {
+  position: absolute;
+  inset: 0 0 34% 0;
+  background:
+    radial-gradient(ellipse 50% 80% at 50% 0%, rgba(255, 214, 140, 0.55), transparent 70%),
+    radial-gradient(circle at 50% 55%, rgba(201, 138, 75, 0.18) 0 9%, transparent 10%) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
+    linear-gradient(90deg, rgba(90, 52, 35, 0.06) 1px, transparent 1px) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
+    linear-gradient(0deg, rgba(90, 52, 35, 0.06) 1px, transparent 1px) 0 0 / calc(44 * var(--u)) calc(44 * var(--u)),
+    #fff6e4;
+}
+.ko-kok .ko-is-tezgah {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, #f2c88c 0 calc(12 * var(--u)), var(--ko-k) calc(12 * var(--u)) calc(15 * var(--u)), transparent calc(15 * var(--u))),
+    repeating-linear-gradient(90deg, rgba(90, 52, 35, 0.07) 0 calc(2 * var(--u)), transparent calc(2 * var(--u)) calc(60 * var(--u))),
+    #e9b46a;
+  border-top: calc(3 * var(--u)) solid var(--ko-k);
+}
+.ko-kok .ko-is-kino {
+  position: absolute;
+  left: 1%;
+  bottom: 6%;
+  height: 88%;
+  aspect-ratio: 1;
+  z-index: 1;
+}
+.ko-kok .ko-is-kino .kr-karakter {
+  position: absolute;
+  inset: 0;
+}
+.ko-kok .ko-is-kino svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ko-kok .ko-is-makine {
+  position: absolute;
+  left: 33%;
+  bottom: 16%;
+  width: 30%;
+  aspect-ratio: 240 / 160;
+  z-index: 3;
+  cursor: pointer;
+  touch-action: none;
+}
+.ko-kok .ko-is-makine-g {
+  position: absolute;
+  inset: 0;
+}
+.ko-kok .ko-is-plaka {
+  position: absolute;
+  left: 18.3%;
+  width: 63.4%;
+  top: 32.5%;
+  height: 37.5%;
+}
+.ko-kok .ko-is-hamur {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 35%, #fffbe8, #ffe29a 60%, #f2c86e);
+  border: calc(2 * var(--u)) solid rgba(90, 52, 35, 0.55);
+  transform: scale(var(--d, 0));
+  transition: transform 0.1s linear;
+}
+.ko-kok .ko-is-disk {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 82%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) scaleY(0.42);
+  opacity: 0;
+  pointer-events: none;
+  touch-action: none;
+}
+.ko-kok .ko-is-makine.ko-pisti .ko-is-hamur {
+  opacity: 0;
+}
+.ko-kok .ko-is-makine.ko-pisti .ko-is-disk {
+  opacity: 1;
+}
+.ko-kok .ko-is-panel[data-adim='yuvarla'] .ko-is-disk {
+  pointer-events: auto;
+  cursor: grab;
+}
+.ko-kok .ko-is-disk.ko-tasiniyor,
+.ko-kok .ko-is-disk.ko-gitti {
+  opacity: 0 !important;
+}
+/* kapak açıkken yukarıda ve geride eğik; kapanınca (--in 1) plakanın üstüne oturur */
+.ko-kok .ko-is-kapak {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  aspect-ratio: 240 / 160;
+  transform-origin: 85% 60%;
+  transform: translateY(calc(10% - (1 - var(--in, 0)) * 58%)) rotate(calc((1 - var(--in, 0)) * 16deg));
+  transition: transform 0.16s cubic-bezier(0.3, 1.4, 0.5, 1);
+  touch-action: none;
+}
+.ko-kok .ko-is-makine.ko-ezil {
+  animation: ko-ezil 0.35s ease-out;
+}
+@keyframes ko-ezil {
+  35% {
+    transform: scale(1.06, 0.9);
+  }
+  70% {
+    transform: scale(0.98, 1.03);
+  }
+}
+.ko-kok .ko-is-kalip {
+  position: absolute;
+  left: 67%;
+  bottom: 18%;
+  height: 46%;
+  aspect-ratio: 664 / 1024;
+  z-index: 3;
+  opacity: 0.32;
+  filter: grayscale(0.6) brightness(1.15);
+  transition:
+    opacity 0.25s,
+    filter 0.25s;
+}
+.ko-kok .ko-is-panel[data-adim='hamur'] .ko-is-kalip {
+  opacity: 0;
+}
+.ko-kok .ko-is-kalip.ko-oldu {
+  opacity: 1;
+  filter: none;
+}
+.ko-kok .ko-is-kulahlar {
+  position: absolute;
+  left: 77%;
+  right: 3%;
+  bottom: 18%;
+  height: 30%;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.ko-kok .ko-is-yeni {
+  height: 100%;
+  aspect-ratio: 664 / 1024;
+  margin: 0 -2%;
+  transform: rotate(calc((var(--i) - 1) * 10deg));
+}
+.ko-kok .ko-is-yeni.ko-pit {
+  animation: ko-yeni-pit 0.4s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes ko-yeni-pit {
+  from {
+    scale: 0.2;
+    translate: 0 -60%;
+  }
+}
+.ko-kok .ko-is-surahi {
+  position: absolute;
+  left: 72%;
+  bottom: 18%;
+  height: 50%;
+  aspect-ratio: 160 / 180;
+  z-index: 4;
+  cursor: grab;
+  transition:
+    opacity 0.3s,
+    translate 0.3s;
+}
+.ko-kok .ko-is-surahi.ko-gitti {
+  opacity: 0;
+  translate: 60% 0;
+  pointer-events: none;
+}
+.ko-kok .ko-is-panel .ko-sirada {
+  filter: drop-shadow(0 0 calc(6 * var(--u)) rgba(255, 210, 63, 1));
+  animation: ko-sirada-kule 1.25s ease-in-out infinite;
+}
+/* sıradaki işin genel z-index'i (2) panelde katmanları bozmasın */
+.ko-kok .ko-gun .ko-is-panel .ko-is-makine {
+  z-index: 3;
+}
+.ko-kok .ko-gun .ko-is-panel .ko-is-surahi {
+  z-index: 4;
+}
+.ko-kok .ko-is-kalip,
+.ko-kok .ko-is-kulahlar {
+  pointer-events: none;
+}
+.ko-kok .ko-hamur-akis {
+  position: absolute;
+  width: calc(9 * var(--u));
+  transform: translateX(-50%);
+  border-radius: calc(5 * var(--u));
+  background: #ffe29a;
+  border: calc(2 * var(--u)) solid var(--ko-k);
+  pointer-events: none;
+  z-index: 7;
+}
+.ko-kok .ko-is-kapat {
+  position: absolute;
+  right: calc(10 * var(--u));
+  top: calc(10 * var(--u));
+  z-index: 6;
+  width: calc(60 * var(--u));
+  height: calc(60 * var(--u));
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ko-k);
+  border: calc(3 * var(--u)) solid var(--ko-k);
+  box-shadow: 0 calc(3 * var(--u)) 0 var(--ko-k);
+  cursor: pointer;
+}
+.ko-kok .ko-is-kapat::before {
+  content: '';
+  position: absolute;
+  inset: calc(-8 * var(--u));
+}
+.ko-kok .ko-is-kapat .ikon,
+.ko-kok .ko-is-kapat svg {
+  width: 56%;
+  height: 56%;
+}
+
+/* el ipucu: top, sos ve süste el kaptan yuvaya sürükler */
+.ko-kok .ko-el-ipucu.ko-goster.ko-surukle .ko-el-el {
+  animation: ko-el-surukle 2.2s ease-in-out infinite;
+}
+.ko-kok .ko-el-ipucu.ko-goster.ko-surukle .ko-el-dalga {
+  animation: ko-el-dalga 2.2s ease-out infinite;
+}
+@keyframes ko-el-surukle {
+  0% {
+    transform: translate(14%, 26%) rotate(-8deg);
+    opacity: 0;
+  }
+  12% {
+    transform: translate(14%, 26%) rotate(-8deg);
+    opacity: 1;
+  }
+  24% {
+    transform: translate(0, 0) rotate(-8deg) scale(0.94);
+  }
+  72% {
+    transform: translate(var(--dx, 0), var(--dy, 0)) rotate(-8deg) scale(0.94);
+    opacity: 1;
+  }
+  86%,
+  100% {
+    transform: translate(calc(var(--dx, 0px) + 10%), calc(var(--dy, 0px) + 20%)) rotate(-8deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ko-kok .ko-isik-parilti,
+  .ko-kok .ko-zincir-kulah,
+  .ko-kok .ko-buhar i,
+  .ko-kok .ko-duvar-tahta,
+  .ko-kok .ko-duvar-lamba,
+  .ko-kok .ko-sinek-ic,
+  .ko-kok .ko-sinek-kanat,
+  .ko-kok .ko-is-kosesi-k,
+  .ko-kok .ko-is-kosesi::after,
+  .ko-kok .ko-sos-akis {
+    animation: none !important;
+  }
+}

@@ -152,4 +152,53 @@ export const ses = {
   ufle() {
     gurultu(0, 0.5, 1500, 600, 0.12, 0.5);
   },
+  // ---------------------------------------------------------------- dokunsal hazırlık ve yan işler
+  /** kepçe soğuk dondurmayı kazır: kısa, yumuşak "kırt" (sürüklerken seyrek) */
+  kazi() {
+    gurultu(0, 0.09, 2600 + Math.random() * 800, 1400, 0.07, 1.8);
+  },
+  /** top kepçede tamamlandı: tatlı "pop" */
+  pop() {
+    ton(380, 0, 0.12, 'sine', 0.16, 820);
+    ton(NOTA(84), 0.05, 0.18, 'triangle', 0.07);
+  },
+  /** sos akarken: kısa, kalın damla sesi (kat kat yükselir) */
+  damla(sira = 0) {
+    ton(260 + sira * 40, 0, 0.12, 'sine', 0.1, 140);
+  },
+  /** serpinti kavanozu sallanır: minik tıkırtı (sallamaya göre nota) */
+  tikir(sira = 0) {
+    for (let i = 0; i < 3; i++) ton(NOTA(86 + ((sira * 3 + i * 4) % 10)), i * 0.03, 0.08, 'sine', 0.05);
+    gurultu(0, 0.1, 6500, 4500, 0.05, 3);
+  },
+  /** sünger: ıslak gıcırtı (sürüklerken seyrek) */
+  gicir() {
+    ton(1100 + Math.random() * 300, 0, 0.09, 'sine', 0.05, 1500);
+    gurultu(0, 0.08, 1800, 900, 0.04, 2);
+  },
+  /** pırıl pırıl: yükselen ince çan dizisi */
+  piril() {
+    [84, 88, 91, 96].forEach((n, i) => ton(NOTA(n), i * 0.07, 0.3, 'sine', 0.09));
+  },
+  /** sinek vızıldar ve uçar gider */
+  vizz() {
+    ton(190, 0, 0.5, 'sawtooth', 0.025, 260);
+    ton(196, 0, 0.5, 'square', 0.015, 300);
+  },
+  /** külah makinesinin kapağı kapanır: tok "tak" ve cızırtı */
+  tak() {
+    ton(150, 0, 0.12, 'triangle', 0.22, 90);
+    gurultu(0.04, 0.7, 5000, 3000, 0.07, 0.7);
+  },
+  /** gofret yuvarlanır: "fırrr" */
+  firr() {
+    gurultu(0, 0.35, 800, 2600, 0.09, 1);
+    ton(300, 0, 0.3, 'sine', 0.06, 600);
+  },
+  /** Kino ile müşteri çak yapar */
+  cak() {
+    gurultu(0, 0.07, 2400, 1800, 0.25, 0.9);
+    ton(NOTA(79), 0.02, 0.2, 'triangle', 0.1);
+    ton(NOTA(84), 0.06, 0.24, 'triangle', 0.08);
+  },
 };

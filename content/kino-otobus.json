@@ -24,7 +24,8 @@
       "3": "Bugün üç mutlu müşteri!",
       "4": "Bugün dört mutlu müşteri!"
     },
-    "hedef_tamam": "Hedef tamam!"
+    "hedef_tamam": "Hedef tamam!",
+    "kulah_az": "Külahlar azaldı!"
   },
   "kino": {
     "hosgeldin": "Hoş geldin!",
@@ -34,7 +35,9 @@
     "dondurma": "Dondurmaaa!",
     "cak": "Çak!",
     "uyku": "Zzz… dondurma…",
-    "hav": "Hav!"
+    "hav": "Hav!",
+    "piril": "Pırıl pırıl!",
+    "taze": "Taze külah!"
   },
   "parca": {
     "kap": { "kulah": "Külahta", "kase": "Kâsede", "kupa": "Kupada" },

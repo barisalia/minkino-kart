@@ -171,6 +171,104 @@ export class Efekt {
     );
   }
 
+  /** Serpinti yağmuru: kavanozun ağzından (x0, y0) kulenin tepesine (x1, y1) renkli taneler düşer */
+  serpinti(x0: number, y0: number, x1: number, y1: number, adet = 8) {
+    if (sakin()) return;
+    const renkler = ['#FF5A7A', '#FFD84A', '#6CC4FF', '#7FE0C4', '#B98BFF', '#FF8A2B'];
+    for (let i = 0; i < adet; i++) {
+      const p = h('i.ko-serpinti-tane', { style: `left:${x0 + ras(-8, 8)}px;top:${y0}px;background:${renkler[i % renkler.length]}` });
+      this.el.append(p);
+      const dx = x1 - x0 + ras(-18, 18);
+      const dy = y1 - y0 + ras(-6, 10);
+      const a0 = ras(0, 180);
+      sil(
+        p.animate(
+          [
+            { transform: `translate(-50%, -50%) rotate(${a0}deg) scale(.6)`, opacity: 1 },
+            { transform: `translate(-50%, -50%) translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) rotate(${a0 + ras(180, 400)}deg) scale(1)`, opacity: 1, offset: 0.85 },
+            { transform: `translate(-50%, -50%) translate(${dx.toFixed(0)}px, ${(dy + 4).toFixed(0)}px) rotate(${a0 + 420}deg) scale(1)`, opacity: 0 },
+          ],
+          { duration: ras(380, 560), delay: i * 18, easing: 'cubic-bezier(.4,0,.8,.6)', fill: 'backwards' },
+        ),
+        p,
+      );
+    }
+  }
+
+  /** Sünger köpüğü: minik baloncuk yükselip patlar */
+  kopuk(x: number, y: number, boy = 1) {
+    if (sakin()) return;
+    const r = ras(10, 20) * boy;
+    const p = h('i.ko-kopuk', { style: `left:${x + ras(-14, 14)}px;top:${y + ras(-6, 6)}px;width:${r.toFixed(0)}px;height:${r.toFixed(0)}px` });
+    this.el.append(p);
+    const dy = -ras(20, 46);
+    sil(
+      p.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(.2)', opacity: 0.95 },
+          { transform: `translate(-50%, -50%) translate(${ras(-10, 10).toFixed(0)}px, ${(dy * 0.7).toFixed(0)}px) scale(1)`, opacity: 0.95, offset: 0.7 },
+          { transform: `translate(-50%, -50%) translate(0, ${dy.toFixed(0)}px) scale(1.35)`, opacity: 0 },
+        ],
+        { duration: ras(520, 820), easing: 'ease-out' },
+      ),
+      p,
+    );
+  }
+
+  /** Çak: iki pati buluşunca parlayan yıldız ve dışa fırlayan çizgiler */
+  cak(x: number, y: number) {
+    if (sakin()) return;
+    const y_ = h('i.ko-cak-yildiz', { html: BUZ_YILDIZ, style: `left:${x}px;top:${y}px` });
+    this.el.append(y_);
+    sil(
+      y_.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(.2) rotate(0deg)', opacity: 1 },
+          { transform: 'translate(-50%, -50%) scale(1.5) rotate(30deg)', opacity: 1, offset: 0.35 },
+          { transform: 'translate(-50%, -50%) scale(1.9) rotate(45deg)', opacity: 0 },
+        ],
+        { duration: 520, easing: 'ease-out' },
+      ),
+      y_,
+    );
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const c = h('i.ko-cak-cizgi', { style: `left:${x}px;top:${y}px;--a:${((a * 180) / Math.PI).toFixed(0)}deg` });
+      this.el.append(c);
+      sil(
+        c.animate(
+          [
+            { transform: `translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) translateX(10px) scaleX(.3)`, opacity: 1 },
+            { transform: `translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) translateX(46px) scaleX(1)`, opacity: 0 },
+          ],
+          { duration: 420, easing: 'ease-out' },
+        ),
+        c,
+      );
+    }
+    this.parilti(x, y, 6, 0.7, '#FFE45C');
+  }
+
+  /** Buhar tutamları (külah makinesi): yükselip dağılır */
+  buhar(x: number, y: number, adet = 4) {
+    if (sakin()) return;
+    for (let i = 0; i < adet; i++) {
+      const p = h('i.ko-buhar-tutam', { style: `left:${x + ras(-30, 30)}px;top:${y}px` });
+      this.el.append(p);
+      sil(
+        p.animate(
+          [
+            { transform: 'translate(-50%, -50%) scale(.4)', opacity: 0 },
+            { transform: `translate(-50%, -50%) translate(${ras(-8, 8).toFixed(0)}px, -30px) scale(1)`, opacity: 0.85, offset: 0.4 },
+            { transform: `translate(-50%, -50%) translate(${ras(-16, 16).toFixed(0)}px, -80px) scale(1.6)`, opacity: 0 },
+          ],
+          { duration: ras(800, 1100), delay: i * 110, easing: 'ease-out', fill: 'backwards' },
+        ),
+        p,
+      );
+    }
+  }
+
   /** Bir görüntüyü bir noktadan ötekine kavisle uçurur (efekt katmanında; bitince kalkar) */
   async ucur(icerik: HTMLElement, [x0, y0]: [number, number], [x1, y1]: [number, number], o: { ms?: number; kavis?: number; boy0?: number; boy1?: number; gecikme?: number; don?: number } = {}) {
     const { ms = 420, kavis = -60, boy0 = 1, boy1 = 1, gecikme = 0, don = 0 } = o;
