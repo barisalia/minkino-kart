@@ -30,7 +30,15 @@ const MEKANLAR = {
   'banyo-aksam': 'm3-banyo-aksam-v2.png',
   bahce: 'm4-bahce.png',
   apartman: 'm0-apartman.png',
+  'basamak-yakin': 'm0-basamak-yakin.png',
 };
+/**
+ * Küvetin ön paneli (kuvet-on-kenar.png: banyo v2 ile aynı tuval, yalnız ön panel çizili, gerisi beyaz) →
+ * banyo-kuvet-on.webp (kırpılmış; yeri KUVET_ON çıktısında). Akşam banyosunda karakter küvetin içindeyken ön katman.
+ * Kesme gemini-esya.cjs ile (zemin kenardan akar, panelin açık içi kalır), tuval korunur; sonra saydam kenar kırpılır.
+ * Hizası banyo-sabah / banyo-aksam v2 ile denetlenir (panelin konturu arka planın konturuna düşmeli).
+ */
+const KUVET = 'kuvet-on-kenar.png';
 /** kesim kutuları (kaynak pikseli) */
 const YORGAN = { x: 284, y: 920, w: 766, h: 322 };
 const KARYOLA = { x: 1556, y: 726, w: 708, h: 450 };
@@ -137,6 +145,58 @@ function karyolaKesici(data, w, h) {
       await yazdir(`${ad}-yumusak.webp`, await webp(yumusak));
     }
   }
+  const kuvet = path.join(KAYNAK, KUVET);
+  if (fs.existsSync(kuvet)) katmanlar['banyo-kuvet-on'] = await kuvetOn(kuvet);
   // kesimlerin yeri (film/src/oyunlu/bolum1.ts aynı sayıları kullanır)
   console.log('ön katmanlar (x, y, w, h):', JSON.stringify(katmanlar));
 })();
+
+async function kuvetOn(png) {
+  const os = require('os');
+  const { execFileSync } = require('child_process');
+  const gecici = fs.mkdtempSync(path.join(os.tmpdir(), 'kuvet-on-'));
+  fs.mkdirSync(path.join(gecici, 'g'));
+  fs.copyFileSync(png, path.join(gecici, 'g', 'kuvet.png'));
+  execFileSync(process.execPath, [path.join(__dirname, 'gemini-esya.cjs'), '--girdi', path.join(gecici, 'g'), '--cikti', path.join(gecici, 'c'), '--max', '0', '--ayar', JSON.stringify({ kuvet: { tuvalKoru: true } })], { stdio: 'inherit', cwd: KOK });
+  const tam = fs.readFileSync(path.join(gecici, 'c', 'kuvet.webp'));
+  const { data, info } = await sharp(tam).raw().toBuffer({ resolveWithObject: true });
+  const W = info.width, H = info.height;
+  let x0 = W, y0 = H, x1 = 0, y1 = 0;
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++)
+      if (data[(y * W + x) * 4 + 3] > 4) {
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+      }
+  const kutu = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+  // hiza denetimi: panelin koyu konturu arka planda da koyu mu (±6 px kaydırmalarda en iyisi 0,0 olmalı)
+  // iki arka plan aynı kaydırmayı buluyorsa (Gemini tuvali 1-2 px kaymış) konum ona göre düzeltilir
+  const kaymalar = [];
+  for (const arka of ['m3-banyo-sabah-v2.png', 'm3-banyo-aksam-v2.png']) {
+    const yol = path.join(KAYNAK, arka);
+    if (!fs.existsSync(yol)) continue;
+    const a = await sharp(yol).removeAlpha().raw().toBuffer();
+    const k = await sharp(png).removeAlpha().raw().toBuffer();
+    const koyu = (d, i) => parlaklik(d, i * 3) < 100;
+    const noktalar = [];
+    for (let y = kutu.y; y < kutu.y + kutu.h; y += 2) for (let x = kutu.x; x < kutu.x + kutu.w; x += 2) if (koyu(k, y * W + x)) noktalar.push([x, y]);
+    let en = { dx: 0, dy: 0, oran: -1 };
+    for (let dy = -6; dy <= 6; dy++)
+      for (let dx = -6; dx <= 6; dx++) {
+        let t = 0;
+        for (const [x, y] of noktalar) if (koyu(a, (y + dy) * W + x + dx)) t++;
+        const oran = t / noktalar.length;
+        if (oran > en.oran) en = { dx, dy, oran };
+      }
+    let t0 = 0;
+    for (const [x, y] of noktalar) if (koyu(a, y * W + x)) t0++;
+    kaymalar.push(en);
+    console.log(`kuvet-on hiza (${arka}): kaydırmasız ${(100 * t0 / noktalar.length).toFixed(1)}% kontur örtüşür; en iyi kaydırma ${en.dx},${en.dy} → ${(100 * en.oran).toFixed(1)}%`);
+  }
+  await yazdir('banyo-kuvet-on.webp', await webp(sharp(tam).extract({ left: kutu.x, top: kutu.y, width: kutu.w, height: kutu.h })));
+  fs.rmSync(gecici, { recursive: true, force: true });
+  const k0 = kaymalar[0];
+  const ayni = k0 && kaymalar.every((k) => k.dx === k0.dx && k.dy === k0.dy && k.oran > 0.97);
+  const [dx, dy] = ayni ? [k0.dx, k0.dy] : [0, 0];
+  if (dx || dy) console.log(`kuvet-on: konum ${dx},${dy} px düzeltildi`);
+  return { boyut: [W, H], on: { kuvet: [kutu.x + dx, kutu.y + dy, kutu.w, kutu.h] } };
+}

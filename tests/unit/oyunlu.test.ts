@@ -10,6 +10,7 @@ import { Sozler, type SozTanim } from '../../film/src/oyunlu/oynatici';
 import { agizSec, etiketAn, etiketBedeni, etiketsiz, etiketZamanlari } from '../../film/src/oyunlu/seslendirme';
 import { kostumGiydir, PIJAMA } from '../../film/src/oyunlu/kostum';
 import { kopukYolu } from '../../film/src/oyunlu/kum-saati';
+import { kumSeviyeleri } from '../../film/src/oyunlu/esya';
 import { ESIK, YardimMerdiveni } from '../../film/src/oyunlu/yardim';
 
 const kelime = (m: string) => m.split(/\s+/).filter(Boolean).length;
@@ -187,5 +188,22 @@ describe('seslendirme: etiketler, ağız, süreler', () => {
     s.altyaziAcik = false;
     expect(s.altyazi(11)).toBeNull();
     expect(s.etiket('s1-kino1', 'esne')?.bas).toBeLessThan(0.1);
+  });
+});
+
+describe('Eşyalar (Gemini çizimi): kum saati', () => {
+  it('kum akarken üstteki yüzey iner, alttaki tepecik yükselir; bitince üst hazne boş', () => {
+    let once = kumSeviyeleri(0);
+    for (let p = 0.1; p <= 1.001; p += 0.1) {
+      const s = kumSeviyeleri(p);
+      expect(s.ust).toBeGreaterThanOrEqual(once.ust);
+      expect(s.alt).toBeLessThan(once.alt);
+      once = s;
+    }
+    expect(kumSeviyeleri(1).ust).toBeGreaterThan(kumSeviyeleri(0.5).ust);
+  });
+  it('kum saati katmanları ve öteki eşyalar assets/film-seri2/esya altında', () => {
+    for (const ad of ['kum-saati-bos', 'kum-saati-ust-kum', 'kum-saati-alt-kum', 'dis-fircasi-kino', 'dis-fircasi-lokum', 'macun-tupu', 'macun-kapak', 'macun-kulesi', 'havlu-kino', 'tabure', 'saksi', 'yastik'])
+      expect(existsSync(resolve('assets/film-seri2/esya', `${ad}.webp`)), ad).toBe(true);
   });
 });

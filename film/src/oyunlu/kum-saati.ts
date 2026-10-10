@@ -18,7 +18,8 @@
 import { carp, type Matris } from '../kukla';
 import { Aktor, eliGotur, kirp, kolCoz, kuyrukSalla, nefes, yeniDurus, type Durus } from './aktor';
 import { kucagaOtur, kucakCiz, kucakDurusu, lokumKucakta } from './kucak';
-import { DIS, disAgzi, disNoktasi, firca, gulusEgrisi, hayaletEl, KONTUR, kopukTopu, kumSaati, parilti } from './cizim';
+import { DIS, disAgzi, disNoktasi, gulusEgrisi, hayaletEl, KONTUR, kopukTopu, parilti } from './cizim';
+import { firca, FIRCA_SAP, kumSaati } from './esya';
 import type { AktifSoz } from './oynatici';
 import { konusmaAgzi } from './ses';
 import { etiketBedeni } from './seslendirme';
@@ -580,10 +581,11 @@ export class AynaSahnesi {
     }
     const e = 1 - Math.exp(-dt * 16);
     this.fb = [this.fb[0] + (hedef[0] - this.fb[0]) * e, this.fb[1] + (hedef[1] - this.fb[1]) * e];
-    // el: fırça sapının ucunda
+    // el: fırça sapının ucunda (sapın ekseni kılların ucundan FIRCA_SAP kadar yanda; çizimdeki aynalamayla)
     const L = this.fircaBoy;
     const yon = this.fircaYonu;
-    const el: [number, number] = [this.fb[0] + Math.cos(yon) * L * 0.78, this.fb[1] + Math.sin(yon) * L * 0.78];
+    const sap = FIRCA_SAP.kino * L;
+    const el: [number, number] = [this.fb[0] + Math.cos(yon) * L * 0.78 + Math.sin(yon) * sap, this.fb[1] + Math.sin(yon) * L * 0.78 - Math.cos(yon) * sap];
     const gm = carp(k.dunya(), k.k.matris('govde'));
     const hedefKit = uyg(ters(gm), el);
     const omuz: [number, number] = [590, 1300], dirsek: [number, number] = [483, 1515], bilek: [number, number] = [452, 1640];
@@ -672,7 +674,7 @@ export class AynaSahnesi {
       ctx.translate(this.fb[0], this.fb[1]);
       ctx.rotate(this.fircaYonu);
       ctx.scale(1, -1);
-      firca(ctx, this.fircaBoy, '#5fb85a', this.fircaliyor || this.oto ? 1 : 0, tS);
+      firca(ctx, 'kino', this.fircaBoy, this.fircaliyor || this.oto ? 1 : 0, tS);
       ctx.restore();
     }
     k.ciz(ctx, Mf, { yalniz: ['kol-sag', 'kol-ust-sag-dikis'] });
@@ -683,7 +685,7 @@ export class AynaSahnesi {
     if (this.kumGorunur) {
       ctx.save();
       ctx.translate(ky.x, ky.y - ky.h * 0.06);
-      kumSaati(ctx, ky.w, ky.h, this.kum, this.fircaliyor || (!!this.oto && this.evre === 'oyun'), tS, this.evre === 'bitis' ? Math.max(0, 1 - this.bt / 1.5) : 0);
+      kumSaati(ctx, ky.h, this.kum, this.fircaliyor || (!!this.oto && this.evre === 'oyun'), tS, this.evre === 'bitis' ? Math.max(0, 1 - this.bt / 1.5) : 0);
       ctx.restore();
     }
     // parçacıklar
@@ -766,7 +768,7 @@ export class AynaSahnesi {
     ctx.translate(820, 1120);
     ctx.rotate(-2.3 + 0.08 * Math.sin(tS * 9));
     ctx.scale(1, -1);
-    firca(ctx, 300, '#f08bb0', 0.5, tS);
+    firca(ctx, 'lokum', 300, 0.5, tS);
     ctx.restore();
   }
 }

@@ -10,7 +10,8 @@
 import type { KuklaIskelet, Matris } from '../kukla';
 import { carp } from '../kukla';
 import { Aktor, aralik, eliGotur, kirp, kolKaldir, kuyrukSalla, nefes, tasan, yeniDurus, type Durus } from './aktor';
-import { bezelyeBalonu, damla, firca, gunesHuzmesi, havlu, KONTUR, kumSaati, macun, tabure, tup } from './cizim';
+import { bezelyeBalonu, damla, gunesHuzmesi, KONTUR } from './cizim';
+import { esyaCiz, esyaYukle, firca, FIRCA_SAP, havluAsili, havluTut, kapak, KULE_ORAN, kumSaati, macunKulesi, tabure, tup, tupAgzi } from './esya';
 import { kostumGiydir, PIJAMA } from './kostum';
 import { kucagaOtur, kucakCiz, kucakDurusu, KUCAK, lokumKucakta } from './kucak';
 import { AynaSahnesi, type Parmak } from './kum-saati';
@@ -217,6 +218,8 @@ export function bolumKur(b: BolumBaglam): Bolum {
   const ANNE_YER: [number, number] = [2090, 1330];
   const LOKUM_KARYOLA: [number, number] = [1905, 1062 - (1600 - 1320) * ODA_O];
   const KARYOLA_UST = 790;
+  /** ön katman saksı: alt ortası (zeminin en önü) ve boyu (dünya) */
+  const SAKSI = [2470, 1532, 470] as const;
 
   let s1KinoOnde = false;
   let s1LokumOnde = false;
@@ -470,6 +473,10 @@ export function bolumKur(b: BolumBaglam): Bolum {
     if (s1LokumOnde) kucakCiz(ctx, M, anne, lokum);
     else anne.ciz(ctx, M);
     if (s1KinoOnde) kino.ciz(ctx, M);
+    // ön katman: kameraya yakın yerde saksı (Anne girerken ve Kino koşarken arkasından geçer; derinlik)
+    ctx.setTransform(...M);
+    ctx.translate(SAKSI[0], SAKSI[1]);
+    esyaCiz(ctx, 'saksi', SAKSI[2]);
   };
   const s1 = new HikayeParcasi('sahne1-gunaydin', S1_SURE, a1.olaylar, b, s1Ileri, s1Ciz, (t) => Math.max(1 - t / 1.0, aralik(t, S1_SURE - 0.9, S1_SURE)), () => {
     kino.gorunur = true;
@@ -478,10 +485,22 @@ export function bolumKur(b: BolumBaglam): Bolum {
   // ================================================================ SAHNE 2 · Lavabo (M3, sabah)
   const BAN_O = 0.31;
   const CAM = { x: 287, y: 209, w: 386, h: 563 };
-  const TABURE: [number, number] = [770, 1405];
   const KINO_YER: [number, number] = [770, 1405 - 118];
+  /** tabure: alt ortası; zeminde biraz önde (kameraya yakın), üstü Kino'nun ayağında; boy görselin oranından */
+  const TABURE: [number, number] = [770, KINO_YER[1] + 170];
   const ANNE2: [number, number] = [1010, 1392];
   const KUM_YER: [number, number] = [592, 908];
+  /** kum saatinin boyu (dünya; genişliği görselin oranından) */
+  const KUM_BOY = 96;
+  /** macun tüpü: lavabonun kenarında yatarken tutuş noktası, ağzının yönü, boyu (sondan ağza) ve kalınlığı */
+  const TUP_BOY = 120;
+  const TUP_KALIN = 46;
+  const TUP_YER: [number, number] = [470, 912 - TUP_KALIN / 2];
+  const TUP_ACI_YER = 0;
+  /** elde: ağız sağ aşağıya, kulenin tepesine bakar */
+  const TUP_ACI_EL = 0.3;
+  /** omuzdaki havlu (Kino'nun gövde karesinde): üst kenarın ortası ve genişlik */
+  const HAVLU_OMUZ = [1100, 990, 330] as const;
   const a2 = new Akis(b.sozler);
   a2.muzik('film-merak', 0.3, 0.1);
   a2.bekle(0.9).isaret('sicrat1').efekt('sapir', 0.45).bekle(1.1).isaret('sicrat2').efekt('sapir', 0.45).bekle(0.9);
@@ -552,6 +571,27 @@ export function bolumKur(b: BolumBaglam): Bolum {
   /** macun kulesinin boyu (0..1) ve bezelyeye inişi */
   const kuleBoyu = (t: number) => aralik(t, A2.macun + 0.3, A2.macun + 1.8) * (1 - aralik(t, A2.bezelye + 0.5, A2.bezelye + 1.0));
   const kuleVar = (t: number) => t > A2.macun + 0.3;
+  /** tüp elde mi (0..1): macundan bezelyeye kadar */
+  const tupElde = (t: number) => aralik(t, A2.macun - 0.4, A2.macun) * (1 - aralik(t, A2.bezelye - 0.2, A2.bezelye + 0.3));
+  /**
+   * macun tüpünün yeri (tutuş noktası, dünya) ve ağzının yönü: lavabonun kenarında yatar; elde ağzı kulenin
+   * tepesindedir (kule büyüdükçe tüp yükselir), gövdesi solda; sıkarken hafifçe sallanır. Kino'nun o anki duruşuyla.
+   */
+  function tupDurumu(t: number): { yer: [number, number]; aci: number; mc: number } {
+    const mc = tupElde(t);
+    if (mc <= 0) return { yer: TUP_YER, aci: TUP_ACI_YER, mc };
+    const bas = fircaBasi();
+    const sik = aralik(t, A2.macun + 0.3, A2.macun + 1.6) * (1 - aralik(t, A2.macun + 1.6, A2.macun + 1.8));
+    const kuleY = kuleVar(t) ? KULE_GEN * KULE_ORAN * (0.16 + 0.84 * kuleBoyu(t)) : 0;
+    const tutAci = TUP_ACI_EL + 0.07 * Math.sin(t * 22) * sik;
+    const ag = tupAgzi(TUP_BOY, tutAci);
+    const tx = bas[0] + 4 - ag[0], ty = bas[1] - kuleY - 2 - ag[1];
+    return {
+      yer: [TUP_YER[0] + (tx - TUP_YER[0]) * mc, TUP_YER[1] + (ty - TUP_YER[1]) * mc - Math.sin(Math.PI * mc) * 40],
+      aci: TUP_ACI_YER + (tutAci - TUP_ACI_YER) * mc,
+      mc,
+    };
+  }
 
   function s2Kino(t: number): Durus {
     const d = yeniDurus();
@@ -600,6 +640,14 @@ export function bolumKur(b: BolumBaglam): Bolum {
     if (mc > 0) {
       eliGotur(d, kino, 'sag', [600, 1470], mc);
       eliGotur(d, kino, 'sol', [1060, 1440], mc);
+      // tüp eldeyken sağ el tüpün ortasını tutar (tüpün yeri sol eldeki fırçaya göre)
+      const te = tupElde(t);
+      if (te > 0) {
+        kino.yaz(d);
+        kino.k.hesapla();
+        const kit = govdeKaresi(kino, tupDurumu(t).yer);
+        eliGotur(d, kino, 'sag', [kit[0] - 30, kit[1] + 20], te);
+      }
       d.gozler = t > A2.bezelye ? 'gozler-saga' : 'gozler-sola';
       d.kafaA += -3 * mc;
       d.kafaY += 12 * mc;
@@ -703,19 +751,24 @@ export function bolumKur(b: BolumBaglam): Bolum {
     ctx.translate(820, 1120);
     ctx.rotate(-2.3);
     ctx.scale(1, -1);
-    firca(ctx, 300, '#f08bb0');
+    firca(ctx, 'lokum', 300);
     ctx.restore();
   };
 
-  /** Kino'nun fırçası sol elinde: başı (dünya) */
+  /** Kino'nun fırçası sol elinde: kıllarının ucu (dünya); sapın ekseni elin içinden geçer */
   const FIRCA_L = 420;
+  const FIRCA_ACI = -0.12;
   const fircaBasi = (): [number, number] => {
     const y = kino.dunyaNoktasi('el-sol', [1284, 1690]);
-    return [y[0] - FIRCA_L * BAN_O * 0.78, y[1] - 4];
+    const L = FIRCA_L * BAN_O;
+    return [y[0] - L * 0.78, y[1] - 4 - FIRCA_SAP.kino * L];
   };
+  /** macun kulesi: tam boyda genişliği ve yüksekliği (dünya) */
+  const KULE_GEN = FIRCA_L * BAN_O * 0.42;
   const kuleUcu = (): [number, number] => {
     const p = fircaBasi();
-    return [p[0], p[1] - 70 * BAN_O * 4];
+    // Anne fazlasını kulenin tepesinden alır (kule o an tam boyda)
+    return [p[0], p[1] - KULE_GEN * KULE_ORAN * 0.85];
   };
 
   function s2Ileri(t: number, dt: number) {
@@ -738,60 +791,54 @@ export function bolumKur(b: BolumBaglam): Bolum {
     // havlu: omzunda; kurularken iki elin arasında (kısa bir çapraz geçişle)
     const ku = aralik(t, A2.kurula, A2.kurula + 0.3) * (1 - aralik(t, A2.pofuduk - 0.1, A2.pofuduk + 0.2));
     const elde = Math.max(0, Math.min(1, (ku - 0.25) / 0.45));
-    if (elde > 0) {
-      const a = kino.dunyaNoktasi('el-sag', [430, 1700]), b2 = kino.dunyaNoktasi('el-sol', [1280, 1700]);
-      ctx.save();
-      ctx.setTransform(...M);
-      ctx.globalAlpha = elde;
-      havlu(ctx, a, b2, 46, 2.6);
-      ctx.restore();
-    }
     if (elde < 1) {
+      // omzunda asılı (gövdenin karesinde: omuzla birlikte nefes alır)
       const g = carp(M, carp(kino.dunya(), kino.k.matris('govde')));
       ctx.save();
       ctx.setTransform(...g);
       ctx.globalAlpha = 1 - elde;
-      ctx.beginPath();
-      ctx.moveTo(1000, 1070);
-      ctx.quadraticCurveTo(1110, 1020, 1185, 1110);
-      ctx.lineTo(1160, 1400);
-      ctx.quadraticCurveTo(1095, 1440, 1035, 1400);
-      ctx.closePath();
-      ctx.fillStyle = '#62b56a';
-      ctx.fill();
-      ctx.lineWidth = 8.5;
-      ctx.strokeStyle = KONTUR;
-      ctx.stroke();
-      ctx.strokeStyle = '#f2e7b8';
-      ctx.lineWidth = 12;
-      ctx.beginPath();
-      ctx.moveTo(1050, 1360);
-      ctx.lineTo(1150, 1366);
-      ctx.stroke();
+      ctx.translate(HAVLU_OMUZ[0], HAVLU_OMUZ[1]);
+      havluAsili(ctx, HAVLU_OMUZ[2]);
       ctx.restore();
     }
-    // fırça sol elde (ekranın sağı): dünyada yatay, başı sola (lavaboya doğru), kıllar yukarı; el sapın önünde
+    if (elde > 0) {
+      // iki elde: üst köşeler ellerde, havlu yüzün altını ve göğsü örter; eller havlunun önünde
+      const a = kino.dunyaNoktasi('el-sag', [430, 1700]), b2 = kino.dunyaNoktasi('el-sol', [1280, 1700]);
+      ctx.save();
+      ctx.setTransform(...M);
+      ctx.globalAlpha = elde;
+      havluTut(ctx, a, b2);
+      ctx.restore();
+      if (elde > 0.5) kino.ciz(ctx, M, { yalniz: ['el-sag'] });
+    }
+    // fırça sol elde (ekranın sağı): dünyada yatay, başı sola (lavaboya doğru), kıllar yukarı; el sapın önünde.
+    // macun kulesi kılların üstünde, tabanı kılların arkasında kalır (önce kule, sonra fırça)
     const bas = fircaBasi();
     ctx.save();
     ctx.setTransform(...M);
     ctx.translate(bas[0], bas[1]);
-    ctx.rotate(-0.12);
-    firca(ctx, FIRCA_L * BAN_O, '#5fb85a');
+    ctx.rotate(FIRCA_ACI);
     if (kuleVar(t)) {
-      ctx.translate(0, -FIRCA_L * BAN_O * 0.17);
-      macun(ctx, 24 * (0.55 + 0.45 * kuleBoyu(t)), kuleBoyu(t));
+      ctx.save();
+      ctx.translate(0, FIRCA_L * BAN_O * 0.035);
+      macunKulesi(ctx, KULE_GEN, kuleBoyu(t), t);
+      ctx.restore();
     }
+    firca(ctx, 'kino', FIRCA_L * BAN_O);
     ctx.restore();
     kino.ciz(ctx, M, { yalniz: ['el-sol'] });
-    // macun tüpü: lavabonun kenarında durur; macun anında sağ ele (ekranın solu) gelir, ağzı fırçaya dönük
-    const mc = aralik(t, A2.macun - 0.4, A2.macun) * (1 - aralik(t, A2.bezelye - 0.2, A2.bezelye + 0.3));
-    const yer: [number, number] = [455, 895];
-    const el = kino.dunyaNoktasi('el-sag', [440, 1700]);
+    // macun tüpü: lavabonun kenarında yatar (kapağı yanında); macun anında sağ elde (ekranın solu), ağzı kulenin
+    // tepesinde (tupDurumu); el tüpün ortasını tutar ve önünde çizilir
+    const { yer: [yerX, yerY], aci, mc } = tupDurumu(t);
     ctx.save();
     ctx.setTransform(...M);
-    ctx.translate(yer[0] + (el[0] + 24 - yer[0]) * mc, yer[1] + (el[1] - 8 - yer[1]) * mc - Math.sin(Math.PI * mc) * 40);
-    ctx.rotate(-0.15 * mc);
-    tup(ctx, 300 * BAN_O, aralik(t, A2.macun + 0.3, A2.macun + 1.6));
+    ctx.translate(TUP_YER[0] - TUP_BOY * 0.62, TUP_YER[1] + TUP_KALIN * 0.5);
+    kapak(ctx, TUP_BOY);
+    ctx.restore();
+    ctx.save();
+    ctx.setTransform(...M);
+    ctx.translate(yerX, yerY);
+    tup(ctx, TUP_BOY, aci);
     ctx.restore();
     if (mc > 0.5) kino.ciz(ctx, M, { yalniz: ['el-sag'] });
     // bezelye balonu (resimle bilgi): fırçanın üstünde
@@ -870,7 +917,7 @@ export function bolumKur(b: BolumBaglam): Bolum {
     ctx.translate(x, y);
     const g = Math.min(1, (t - A2.cep - 0.3) / 0.25);
     ctx.scale(g, g);
-    kumSaati(ctx, 62, 84, ayna.kum, false, t);
+    kumSaati(ctx, KUM_BOY, ayna.kum, false, t);
     ctx.restore();
   }
 
@@ -880,7 +927,7 @@ export function bolumKur(b: BolumBaglam): Bolum {
     ctx.setTransform(...M);
     ctx.save();
     ctx.translate(TABURE[0], TABURE[1]);
-    tabure(ctx, 270, 125);
+    tabure(ctx, TABURE[1] - KINO_YER[1]);
     ctx.restore();
     kino.ciz(ctx, M);
     s2Esyalar(ctx, M, t);
@@ -1017,7 +1064,7 @@ export function bolumKur(b: BolumBaglam): Bolum {
         yorgan = oy;
         karyola = ok;
         ayna.yansima = by;
-        await Promise.all([...[kino, anne, lokum, kinoA, anneA, lokumA].map((a) => a.yukle()), seslendirmeYukle(Object.keys(b.sozler.tablo))]);
+        await Promise.all([...[kino, anne, lokum, kinoA, anneA, lokumA].map((a) => a.yukle()), esyaYukle(), seslendirmeYukle(Object.keys(b.sozler.tablo))]);
       })();
       return yukleniyor;
     },
