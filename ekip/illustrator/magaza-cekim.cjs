@@ -1,7 +1,7 @@
 // Mağaza ekran görüntüleri için ham oyun görüntüleri (Playwright, mobil emülasyon): assets/uygulama/ekran-ham/{telefon-yatay,tablet}/NN-ad.webp (+ ek/ klasörüne yedek sahneler).
 // Telefon 932x430 @3x (2796x1290, yatay: telefonda oyunlar yatay kilitli), tablet 768x1024 @2.5x (1920x2560). Uygulama derlemesi gerekir (npm run build:app: ana menü kökte); sunucu: npx vite preview --port 4178 (ya da başka statik http).
-// Sıra magaza-ekran.cjs ile aynı (başlıklar MAGAZA-METINLERI.md bölüm 6): 01 ana menü (8 kart), 02 Pazar (müşteri meyve ister), 03 Kino Ne Giysin? (dolap + Kino'nun komik tepkisi),
-// 04 Dedektif Mino (pati izi panoda, şüpheli kartları, Kino'nun komik tahmini), 05 Ege (yatay telefonda kukla gösterisi yakın çekim, tablette gösteri sonu: Ege güldü), 06 Çizgi film karesi (Mino'nun Karpuzu), 07 Pasta Otobüsü (sipariş ortası).
+// Sıra magaza-ekran.cjs ile aynı (başlıklar MAGAZA-METINLERI.md bölüm 6): 01 ana menü (9 kart), 02 Pazar (müşteri meyve ister), 03 Kino Ne Giysin? (dolap + Kino'nun komik tepkisi),
+// 04 Dedektif Mino (pati izi panoda, şüpheli kartları, Kino'nun komik tahmini), 05 Ege (yatay telefonda kukla gösterisi yakın çekim, tablette gösteri sonu: Ege güldü), 06 Çizgi film karesi (Mino'nun Karpuzu), 07 Kino'nun Otobüsü (Gün 3, tezgâhta iki süslü dondurma; eski Pasta karesi ek/pasta).
 // Kilit yok: tarayıcıda abonelik kilitleri kapalı (src/engine/erisim.ts), test modu (?test=1) ile ebeveyn kapısı/abonelik ekranı açılmaz.
 // node magaza-cekim.cjs [taban=http://localhost:4178] [NN ...] [telefon-yatay|tablet]   ·   DENEME=klasör: @1x, o klasöre png (hızlı bakış)
 const fs = require('fs'), path = require('path');
@@ -138,6 +138,50 @@ async function pastaSiparis(p) {
   }
   await p.waitForTimeout(1200);
 }
+// 07 Kino'nun Otobüsü · Gün 3 (5-6 yaş, doğum günü bahçesi; bütün tezgâh açık: 6 tat, 3 kap, 8 sos/süs). Önce test
+// kısayoluyla Gün 3 açılır (kayıt), sonra gerçek hızda (?onizleme=1) yalnız parlayan işe dokunularak oynanır.
+// Varsayılan (mağaza karesi): KO_AN=ver:4 + KO_IKI: kuşun şemsiyeli-kalpli kâsesi hazırken bekletilir, öbür yuvada Mino'nun
+// kirazlı doğum günü kupası da yapılır: tezgâhta iki süslü dondurma, pencerede iki müşteri resimli istekleriyle.
+// KO_AN=ver:N → N. dondurma bitip "ver" sırası gelince; KO_IKI=0 → tek dondurma;
+// KO_AN=mutlu:N → N. dondurma verildikten KO_MS ms sonra (müşteri seviniyor: kalpler, konfeti; denendi, kareler zayıf)
+async function kinoDondurma(p) {
+  const taban = p.url().split('/kino-otobus/')[0];
+  await p.goto(taban + '/kino-otobus/?test=1&sifirla=1&yas=buyuk&ekran=gun&gun=3&alinan=flama,jant', { waitUntil: 'load' });
+  await p.locator('.ko-gun').waitFor({ timeout: 30000 });
+  await p.goto(taban + '/kino-otobus/?onizleme=1&ekran=gun&gun=3', { waitUntil: 'load' });
+  await p.locator('.ko-musteri.ko-hazir').first().waitFor({ timeout: 30000 });
+  await p.waitForTimeout(1500);
+  const [tur, nS] = (process.env.KO_AN || 'ver:4').split(':'), N = Number(nS) || 1;
+  let verSayisi = 0, oncekiAdim = '', ikinci = false;
+  for (let i = 0; i < 400; i++) {
+    const adim = await p.locator('.ko-gun').getAttribute('data-adim').catch(() => null);
+    const s = p.locator('.ko-gun .ko-sirada').first();
+    if (!adim || !(await s.count())) { await p.waitForTimeout(200); continue; }
+    if (adim === 'ver' && oncekiAdim !== 'ver') {
+      if (ikinci) { await p.waitForTimeout(Number(process.env.KO_MS || 900)); return; }
+      verSayisi++;
+      await ara(p, `ver-${verSayisi}`);
+      if (tur === 'ver' && verSayisi === N) {
+        // KO_IKI=1: bu dondurma bekletilir, öbür yuvadaki müşterininki de yapılır: tezgâhta iki hazır dondurma
+        if (process.env.KO_IKI !== '0') {
+          ikinci = true; oncekiAdim = '';
+          await p.locator('.ko-yuva:not(.ko-aktif)').first().click({ position: { x: 20, y: 30 }, force: true });
+          await p.waitForTimeout(600);
+          continue;
+        }
+        await p.waitForTimeout(Number(process.env.KO_MS || 900)); return;
+      }
+    }
+    oncekiAdim = adim;
+    await s.click({ force: true }).catch(() => {});
+    if (adim === 'ver' && tur === 'mutlu' && verSayisi === N) {
+      const ms = Number(process.env.KO_MS || 2200);
+      for (let t = 400; t <= ms; t += 400) { await p.waitForTimeout(400); await ara(p, `mutlu-${N}-${t}`); }
+      return;
+    }
+    await p.waitForTimeout(adim === 'top' ? 650 : 750);
+  }
+}
 // [klasör, ad, adres, bekleme ms, (isteğe bağlı) etkileşim]. Uygulama derlemesi (npm run build:app): ana menü sitenin kökünde
 const LISTE = [
   ['', '01-ana-menu', '/', 5000],
@@ -146,7 +190,8 @@ const LISTE = [
   ['', '04-dedektif', '/dedektif/?onizleme=1&sifirla=1&adim=iz', 500, dedektifBuyutec],
   ['', '05-ege', '/macera/?test=1&ekran=bolum&yas=5&bolum=ege', 500, egeKukla],
   ['', '06-film', '/film/?film=mino-karpuz&kayit=1&kadraj=dolu&sessiz=1', 2500, filmKare],
-  ['', '07-pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000, pastaSiparis], // sipariş ortası (parlayan işe dokunarak)
+  ['', '07-otobus', '/kino-otobus/?test=1&sifirla=1', 1000, kinoDondurma],
+  ['ek/', 'pasta', '/pasta/?test=1&sifirla=1&ekran=gun&gun=2&firin=600,600000', 6000, pastaSiparis], // eski 07: sipariş ortası (parlayan işe dokunarak)
   ['ek/', 'meyve-suyu', '/pazar/?test=1&yas=4&ekran=meyvesuyu', 4500],
   ['ek/', 'banyo', '/macera/?test=1&ekran=bolum&yas=5&bolum=banyo', 4500],
   ['ek/', 'salincak', '/macera/?test=1&ekran=bolum&yas=5&bolum=salincak', 4500],
