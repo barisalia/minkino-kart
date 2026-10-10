@@ -32,15 +32,15 @@
 
 | Karakter | Yaş | Boy | Kafa sayısı | Not |
 |---|---|---|---|---|
-| **Kino** | 5 | **1.35** | ~2.6 | ana karakter |
-| **Lokum** | 2 | 0.95 | ~2.0 | Kino'nun omzuna gelir (Kino × 0.70) |
+| **Kino** | 5 | **1.35** | ~2.3 | ana karakter (Kino C) |
+| **Lokum** | 2 | 0.95 | ~2.0 | Kino × 0.70; kafası Kino'nunkinden de büyük (bebek) |
 | **Mino** (komşu) | 5 | 1.30 | ~2.6 | Kino'dan bir tık kısa; sivri kulaklarla eşit görünür |
-| **Anne** | yetişkin | 1.85 | ~3.2 | Kino × 1.37 |
-| **Baba** | yetişkin | 2.00 | ~3.3 | Kino × 1.48, göbekli |
-| **Babaanne** | yaşlı | 1.70 | ~3.0 | Anne'den biraz kısa, tombul |
-| **Dede** | yaşlı | 1.80 | ~3.1 | hafif kambur |
+| **Anne** | yetişkin | 2.16 | ~3.7 | Kino × 1.60 |
+| **Baba** | yetişkin | 2.36 | ~3.7 | Kino × 1.75, göbekli |
+| **Babaanne** | yaşlı | 2.05 | ~3.4 | Kino × 1.52 (öneri, kit yok): Anne'den biraz kısa, tombul |
+| **Dede** | yaşlı | 2.20 | ~3.5 | Kino × 1.63 (öneri, kit yok): hafif kambur |
 
-Tablo tek yerdir. Rig ve sahne kurucu bu oranlarla ölçekler.
+Tablo tek yerdir. Rig ve sahne kurucu bu oranlarla ölçekler. **Kukla kitlerinin makine tablosu:** [assets/karakter/aile-boy.json](../../../assets/karakter/aile-boy.json) (Kino = 1; kitler Kino C ile aynı birimde çizilir, aynı ölçekle basılınca bu boylar çıkar; tests/unit/kukla-aile.test.ts denetler). 2026-10-10: Anne ve Baba yetişkin oranına çekildi (eski Kino × 1.37 / 1.48 "uzun çocuk" gibi duruyordu).
 
 ### 2.0 Anlatıcı (YENİ)
 

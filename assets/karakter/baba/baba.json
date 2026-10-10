@@ -1,0 +1,1054 @@
+{
+ "ad": "baba",
+ "aciklama": "Baba (Murat) kesme kukla kiti (ön görünüş), Kino C kitinden türetildi. Koordinatlar 2300x3820 karesinde, Kino ile aynı birim; açı derece, + saat yönü. sag = karakterin sağı = ekranın solu. gozluk ayrı parça (o: 0 ile gizlenir).",
+ "kur": "ekip/karakter/baba/kit-kur.cjs",
+ "boyut": [
+  2300,
+  3820
+ ],
+ "zemin": 3700,
+ "tepe": 118,
+ "birim": "Kino C (kino-yeni) ile aynı birim: aynı ölçekle basılınca boylar assets/karakter/aile-boy.json tablosundaki gibi",
+ "cizgi": {
+  "renk": "#401312",
+  "kalinlik": 8.5
+ },
+ "parcalar": {
+  "kafa": {
+   "resim": "kafa.webp",
+   "kutu": [
+    712,
+    108,
+    876,
+    984
+   ],
+   "pivot": [
+    1150,
+    1090
+   ],
+   "ust": "govde",
+   "sinir": [
+    -20,
+    20
+   ]
+  },
+  "kulak-sag": {
+   "resim": "kulak-sag.webp",
+   "kutu": [
+    496,
+    172,
+    420,
+    844
+   ],
+   "pivot": [
+    855.4390855997628,
+    252.4984973405585
+   ],
+   "ust": "kafa",
+   "sinir": [
+    -25,
+    25
+   ]
+  },
+  "kulak-sol": {
+   "resim": "kulak-sol.webp",
+   "kutu": [
+    1384,
+    172,
+    420,
+    844
+   ],
+   "pivot": [
+    1444.5609144002372,
+    252.4984973405585
+   ],
+   "ust": "kafa",
+   "sinir": [
+    -25,
+    25
+   ]
+  },
+  "gozler-acik": {
+   "resim": "gozler-acik.webp",
+   "kutu": [
+    972,
+    484,
+    356,
+    152
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "gozler-yari": {
+   "resim": "gozler-yari.webp",
+   "kutu": [
+    976,
+    548,
+    348,
+    88
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "gozler-kapali": {
+   "resim": "gozler-kapali.webp",
+   "kutu": [
+    980,
+    556,
+    340,
+    44
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "gozler-mutlu": {
+   "resim": "gozler-mutlu.webp",
+   "kutu": [
+    980,
+    536,
+    340,
+    60
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "gozler-sola": {
+   "resim": "gozler-sola.webp",
+   "kutu": [
+    972,
+    484,
+    356,
+    152
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "gozler-saga": {
+   "resim": "gozler-saga.webp",
+   "kutu": [
+    972,
+    484,
+    356,
+    152
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "gozler-saskin": {
+   "resim": "gozler-saskin.webp",
+   "kutu": [
+    972,
+    484,
+    356,
+    160
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "gozler"
+  },
+  "kaslar-notr": {
+   "resim": "kaslar-notr.webp",
+   "kutu": [
+    976,
+    420,
+    348,
+    64
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "kaslar"
+  },
+  "kaslar-kalkik": {
+   "resim": "kaslar-kalkik.webp",
+   "kutu": [
+    976,
+    388,
+    348,
+    88
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "kaslar"
+  },
+  "kaslar-uzgun": {
+   "resim": "kaslar-uzgun.webp",
+   "kutu": [
+    984,
+    404,
+    332,
+    76
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "kaslar"
+  },
+  "kaslar-kizgin": {
+   "resim": "kaslar-kizgin.webp",
+   "kutu": [
+    976,
+    432,
+    348,
+    64
+   ],
+   "pivot": [
+    1150,
+    600
+   ],
+   "ust": "kafa",
+   "yuva": "kaslar"
+  },
+  "agiz-gulumse": {
+   "resim": "agiz-gulumse.webp",
+   "kutu": [
+    1052,
+    860,
+    280,
+    88
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-az": {
+   "resim": "agiz-az.webp",
+   "kutu": [
+    1096,
+    888,
+    112,
+    68
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-orta": {
+   "resim": "agiz-orta.webp",
+   "kutu": [
+    1080,
+    880,
+    148,
+    96
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-genis": {
+   "resim": "agiz-genis.webp",
+   "kutu": [
+    1060,
+    864,
+    196,
+    140
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-o": {
+   "resim": "agiz-o.webp",
+   "kutu": [
+    1104,
+    884,
+    88,
+    100
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-e": {
+   "resim": "agiz-e.webp",
+   "kutu": [
+    1072,
+    880,
+    168,
+    76
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-kahkaha": {
+   "resim": "agiz-kahkaha.webp",
+   "kutu": [
+    1048,
+    852,
+    232,
+    164
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "agiz-uzgun": {
+   "resim": "agiz-uzgun.webp",
+   "kutu": [
+    1084,
+    900,
+    128,
+    48
+   ],
+   "pivot": [
+    1146,
+    924
+   ],
+   "ust": "kafa",
+   "yuva": "agiz"
+  },
+  "burun": {
+   "resim": "burun.webp",
+   "kutu": [
+    1060,
+    672,
+    192,
+    168
+   ],
+   "pivot": [
+    1150,
+    768
+   ],
+   "ust": "kafa"
+  },
+  "yanaklar": {
+   "resim": "yanaklar.webp",
+   "kutu": [
+    908,
+    700,
+    504,
+    80
+   ],
+   "pivot": [
+    1150,
+    742
+   ],
+   "ust": "kafa"
+  },
+  "biyik": {
+   "resim": "biyik.webp",
+   "kutu": [
+    980,
+    800,
+    340,
+    96
+   ],
+   "pivot": [
+    1150,
+    850
+   ],
+   "ust": "kafa"
+  },
+  "gozluk": {
+   "resim": "gozluk.webp",
+   "kutu": [
+    840,
+    476,
+    620,
+    188
+   ],
+   "pivot": [
+    1150,
+    560
+   ],
+   "ust": "kafa"
+  },
+  "govde": {
+   "resim": "govde.webp",
+   "kutu": [
+    632,
+    916,
+    1036,
+    1292
+   ],
+   "pivot": [
+    1150,
+    2100
+   ],
+   "ust": "kalca",
+   "sinir": [
+    -15,
+    15
+   ]
+  },
+  "kalca": {
+   "resim": "kalca.webp",
+   "kutu": [
+    864,
+    2020,
+    572,
+    348
+   ],
+   "pivot": [
+    1150,
+    2210
+   ],
+   "ust": null,
+   "kume": "bacaklar",
+   "dolgu": "kalca.dolgu.webp"
+  },
+  "bacak-ust-sag": {
+   "resim": "bacak-ust-sag.webp",
+   "kutu": [
+    860,
+    2104,
+    272,
+    904
+   ],
+   "pivot": [
+    998,
+    2240
+   ],
+   "ust": "kalca",
+   "sinir": [
+    -35,
+    35
+   ],
+   "kume": "bacaklar",
+   "dolgu": "bacak-ust-sag.dolgu.webp"
+  },
+  "bacak-alt-sag": {
+   "resim": "bacak-alt-sag.webp",
+   "kutu": [
+    844,
+    2772,
+    252,
+    900
+   ],
+   "pivot": [
+    978,
+    2890
+   ],
+   "ust": "bacak-ust-sag",
+   "sinir": [
+    -10,
+    70
+   ],
+   "kume": "bacaklar",
+   "dolgu": "bacak-alt-sag.dolgu.webp"
+  },
+  "ayak-sag": {
+   "resim": "ayak-sag.webp",
+   "kutu": [
+    696,
+    3496,
+    440,
+    240
+   ],
+   "pivot": [
+    968,
+    3520
+   ],
+   "ust": "bacak-alt-sag",
+   "sinir": [
+    -30,
+    30
+   ]
+  },
+  "bacak-ust-sol": {
+   "resim": "bacak-ust-sol.webp",
+   "kutu": [
+    1168,
+    2104,
+    272,
+    904
+   ],
+   "pivot": [
+    1302,
+    2240
+   ],
+   "ust": "kalca",
+   "sinir": [
+    -35,
+    35
+   ],
+   "kume": "bacaklar",
+   "dolgu": "bacak-ust-sol.dolgu.webp"
+  },
+  "bacak-alt-sol": {
+   "resim": "bacak-alt-sol.webp",
+   "kutu": [
+    1204,
+    2772,
+    252,
+    900
+   ],
+   "pivot": [
+    1322,
+    2890
+   ],
+   "ust": "bacak-ust-sol",
+   "sinir": [
+    -10,
+    70
+   ],
+   "kume": "bacaklar",
+   "dolgu": "bacak-alt-sol.dolgu.webp"
+  },
+  "ayak-sol": {
+   "resim": "ayak-sol.webp",
+   "kutu": [
+    1164,
+    3496,
+    440,
+    240
+   ],
+   "pivot": [
+    1332,
+    3520
+   ],
+   "ust": "bacak-alt-sol",
+   "sinir": [
+    -30,
+    30
+   ]
+  },
+  "kuyruk": {
+   "resim": "kuyruk.webp",
+   "kutu": [
+    1184,
+    1796,
+    668,
+    416
+   ],
+   "pivot": [
+    1462,
+    2150
+   ],
+   "ust": "kalca",
+   "sinir": [
+    -35,
+    35
+   ]
+  },
+  "kol-ust-sag": {
+   "resim": "kol-ust-sag.webp",
+   "kutu": [
+    548,
+    1144,
+    384,
+    728
+   ],
+   "pivot": [
+    808,
+    1266
+   ],
+   "ust": "govde",
+   "sinir": [
+    -60,
+    175
+   ],
+   "kume": "kol-sag",
+   "dolgu": "kol-ust-sag.dolgu.webp"
+  },
+  "kol-alt-sag": {
+   "resim": "kol-alt-sag.webp",
+   "kutu": [
+    540,
+    1688,
+    232,
+    608
+   ],
+   "pivot": [
+    676,
+    1784
+   ],
+   "ust": "kol-ust-sag",
+   "sinir": [
+    -150,
+    150
+   ],
+   "kume": "kol-sag",
+   "dolgu": "kol-alt-sag.dolgu.webp"
+  },
+  "el-sag": {
+   "resim": "el-sag.webp",
+   "kutu": [
+    452,
+    2148,
+    312,
+    324
+   ],
+   "pivot": [
+    624,
+    2214
+   ],
+   "ust": "kol-alt-sag",
+   "sinir": [
+    -45,
+    45
+   ],
+   "kume": "kol-sag",
+   "dolgu": "el-sag.dolgu.webp"
+  },
+  "kol-ust-sol": {
+   "resim": "kol-ust-sol.webp",
+   "kutu": [
+    1368,
+    1144,
+    384,
+    728
+   ],
+   "pivot": [
+    1492,
+    1266
+   ],
+   "ust": "govde",
+   "sinir": [
+    -175,
+    60
+   ],
+   "kume": "kol-sol",
+   "dolgu": "kol-ust-sol.dolgu.webp"
+  },
+  "kol-alt-sol": {
+   "resim": "kol-alt-sol.webp",
+   "kutu": [
+    1528,
+    1688,
+    232,
+    608
+   ],
+   "pivot": [
+    1624,
+    1784
+   ],
+   "ust": "kol-ust-sol",
+   "sinir": [
+    -150,
+    150
+   ],
+   "kume": "kol-sol",
+   "dolgu": "kol-alt-sol.dolgu.webp"
+  },
+  "el-sol": {
+   "resim": "el-sol.webp",
+   "kutu": [
+    1492,
+    2100,
+    400,
+    380
+   ],
+   "pivot": [
+    1676,
+    2214
+   ],
+   "ust": "kol-alt-sol",
+   "sinir": [
+    -45,
+    45
+   ],
+   "kume": "kol-sol",
+   "dolgu": "el-sol.dolgu.webp"
+  }
+ },
+ "cizim": [
+  "kuyruk",
+  {
+   "kume": "bacaklar",
+   "parcalar": [
+    "bacak-alt-sag",
+    "bacak-alt-sol",
+    "bacak-ust-sag",
+    "bacak-ust-sol",
+    "kalca"
+   ]
+  },
+  "ayak-sag",
+  "ayak-sol",
+  "govde",
+  "kafa",
+  "yanaklar",
+  "burun",
+  {
+   "yuva": "gozler"
+  },
+  {
+   "yuva": "kaslar"
+  },
+  {
+   "yuva": "agiz"
+  },
+  "biyik",
+  "gozluk",
+  "kulak-sag",
+  "kulak-sol",
+  {
+   "kume": "kol-sag",
+   "parcalar": [
+    "el-sag",
+    "kol-alt-sag",
+    "kol-ust-sag"
+   ]
+  },
+  {
+   "kume": "kol-sol",
+   "parcalar": [
+    "el-sol",
+    "kol-alt-sol",
+    "kol-ust-sol"
+   ]
+  }
+ ],
+ "yuvalar": {
+  "gozler": {
+   "varsayilan": "gozler-acik",
+   "secenekler": [
+    "gozler-acik",
+    "gozler-yari",
+    "gozler-kapali",
+    "gozler-mutlu",
+    "gozler-sola",
+    "gozler-saga",
+    "gozler-saskin"
+   ]
+  },
+  "kaslar": {
+   "varsayilan": "kaslar-notr",
+   "secenekler": [
+    "kaslar-notr",
+    "kaslar-kalkik",
+    "kaslar-uzgun",
+    "kaslar-kizgin"
+   ]
+  },
+  "agiz": {
+   "varsayilan": "agiz-gulumse",
+   "secenekler": [
+    "agiz-gulumse",
+    "agiz-az",
+    "agiz-orta",
+    "agiz-genis",
+    "agiz-o",
+    "agiz-e",
+    "agiz-kahkaha",
+    "agiz-uzgun"
+   ]
+  }
+ },
+ "sira": [
+  "kuyruk",
+  "bacak-alt-sag",
+  "bacak-alt-sol",
+  "bacak-ust-sag",
+  "bacak-ust-sol",
+  "kalca",
+  "ayak-sag",
+  "ayak-sol",
+  "govde",
+  "kafa",
+  "yanaklar",
+  "burun",
+  "gozler-acik",
+  "gozler-yari",
+  "gozler-kapali",
+  "gozler-mutlu",
+  "gozler-sola",
+  "gozler-saga",
+  "gozler-saskin",
+  "kaslar-notr",
+  "kaslar-kalkik",
+  "kaslar-uzgun",
+  "kaslar-kizgin",
+  "agiz-gulumse",
+  "agiz-az",
+  "agiz-orta",
+  "agiz-genis",
+  "agiz-o",
+  "agiz-e",
+  "agiz-kahkaha",
+  "agiz-uzgun",
+  "biyik",
+  "gozluk",
+  "kulak-sag",
+  "kulak-sol",
+  "el-sag",
+  "kol-alt-sag",
+  "kol-ust-sag",
+  "el-sol",
+  "kol-alt-sol",
+  "kol-ust-sol"
+ ],
+ "gizli": [
+  "gozler-yari",
+  "gozler-kapali",
+  "gozler-mutlu",
+  "gozler-sola",
+  "gozler-saga",
+  "gozler-saskin",
+  "kaslar-kalkik",
+  "kaslar-uzgun",
+  "kaslar-kizgin",
+  "agiz-az",
+  "agiz-orta",
+  "agiz-genis",
+  "agiz-o",
+  "agiz-e",
+  "agiz-kahkaha",
+  "agiz-uzgun"
+ ],
+ "bagli": {
+  "kafa": "govde",
+  "kulak-sag": "kafa",
+  "kulak-sol": "kafa",
+  "gozler-acik": "kafa",
+  "gozler-yari": "kafa",
+  "gozler-kapali": "kafa",
+  "gozler-mutlu": "kafa",
+  "gozler-sola": "kafa",
+  "gozler-saga": "kafa",
+  "gozler-saskin": "kafa",
+  "kaslar-notr": "kafa",
+  "kaslar-kalkik": "kafa",
+  "kaslar-uzgun": "kafa",
+  "kaslar-kizgin": "kafa",
+  "agiz-gulumse": "kafa",
+  "agiz-az": "kafa",
+  "agiz-orta": "kafa",
+  "agiz-genis": "kafa",
+  "agiz-o": "kafa",
+  "agiz-e": "kafa",
+  "agiz-kahkaha": "kafa",
+  "agiz-uzgun": "kafa",
+  "burun": "kafa",
+  "yanaklar": "kafa",
+  "biyik": "kafa",
+  "gozluk": "kafa",
+  "govde": "kalca",
+  "bacak-ust-sag": "kalca",
+  "bacak-alt-sag": "bacak-ust-sag",
+  "ayak-sag": "bacak-alt-sag",
+  "bacak-ust-sol": "kalca",
+  "bacak-alt-sol": "bacak-ust-sol",
+  "ayak-sol": "bacak-alt-sol",
+  "kuyruk": "kalca",
+  "kol-ust-sag": "govde",
+  "kol-alt-sag": "kol-ust-sag",
+  "el-sag": "kol-alt-sag",
+  "kol-ust-sol": "govde",
+  "kol-alt-sol": "kol-ust-sol",
+  "el-sol": "kol-alt-sol"
+ },
+ "donme": {
+  "kafa": [
+   1150,
+   1090
+  ],
+  "kulak-sag": [
+   855.4390855997628,
+   252.4984973405585
+  ],
+  "kulak-sol": [
+   1444.5609144002372,
+   252.4984973405585
+  ],
+  "gozler-acik": [
+   1150,
+   600
+  ],
+  "gozler-yari": [
+   1150,
+   600
+  ],
+  "gozler-kapali": [
+   1150,
+   600
+  ],
+  "gozler-mutlu": [
+   1150,
+   600
+  ],
+  "gozler-sola": [
+   1150,
+   600
+  ],
+  "gozler-saga": [
+   1150,
+   600
+  ],
+  "gozler-saskin": [
+   1150,
+   600
+  ],
+  "kaslar-notr": [
+   1150,
+   600
+  ],
+  "kaslar-kalkik": [
+   1150,
+   600
+  ],
+  "kaslar-uzgun": [
+   1150,
+   600
+  ],
+  "kaslar-kizgin": [
+   1150,
+   600
+  ],
+  "agiz-gulumse": [
+   1146,
+   924
+  ],
+  "agiz-az": [
+   1146,
+   924
+  ],
+  "agiz-orta": [
+   1146,
+   924
+  ],
+  "agiz-genis": [
+   1146,
+   924
+  ],
+  "agiz-o": [
+   1146,
+   924
+  ],
+  "agiz-e": [
+   1146,
+   924
+  ],
+  "agiz-kahkaha": [
+   1146,
+   924
+  ],
+  "agiz-uzgun": [
+   1146,
+   924
+  ],
+  "burun": [
+   1150,
+   768
+  ],
+  "yanaklar": [
+   1150,
+   742
+  ],
+  "biyik": [
+   1150,
+   850
+  ],
+  "gozluk": [
+   1150,
+   560
+  ],
+  "govde": [
+   1150,
+   2100
+  ],
+  "kalca": [
+   1150,
+   2210
+  ],
+  "bacak-ust-sag": [
+   998,
+   2240
+  ],
+  "bacak-alt-sag": [
+   978,
+   2890
+  ],
+  "ayak-sag": [
+   968,
+   3520
+  ],
+  "bacak-ust-sol": [
+   1302,
+   2240
+  ],
+  "bacak-alt-sol": [
+   1322,
+   2890
+  ],
+  "ayak-sol": [
+   1332,
+   3520
+  ],
+  "kuyruk": [
+   1462,
+   2150
+  ],
+  "kol-ust-sag": [
+   808,
+   1266
+  ],
+  "kol-alt-sag": [
+   676,
+   1784
+  ],
+  "el-sag": [
+   624,
+   2214
+  ],
+  "kol-ust-sol": [
+   1492,
+   1266
+  ],
+  "kol-alt-sol": [
+   1624,
+   1784
+  ],
+  "el-sol": [
+   1676,
+   2214
+  ]
+ }
+}
