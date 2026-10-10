@@ -404,19 +404,6 @@ ${raf(0.45, 0.28, 0.95)}${raf(0.72, 0.28, 0.95)}${ust}${alt}${karTanesi(X(0.42),
     `<radialGradient id="ki" cx=".55" cy=".45"><stop offset="0" stop-color="#c88a52"/><stop offset=".7" stop-color="#8a5532"/><stop offset="1" stop-color="#5e361c"/></radialGradient><linearGradient id="rf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d39a5e"/><stop offset="1" stop-color="#a86d3b"/></linearGradient><radialGradient id="cr" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#9a6a42"/><stop offset="1" stop-color="#6e4325"/></radialGradient>${PALAMUT_DEFS}`,
   );
 }
-/** Ay ve yıldızlar (roman: gece) */
-export function geceSvg(w: number, h: number): string {
-  const yildizlar = [
-    [0.15, 0.2],
-    [0.3, 0.12],
-    [0.72, 0.18],
-    [0.85, 0.3],
-    [0.55, 0.08],
-  ]
-    .map(([x, y]) => `<polygon points="${yildizNoktalari(x * w, y * h, w * 0.012, -90, 0.45)}" fill="#fff6c2"/>`)
-    .join('');
-  return svgSar(w, h, `<rect width="${w}" height="${h}" fill="#1d2a5c" opacity=".55"/>${yildizlar}<circle cx="${f(w * 0.72)}" cy="${f(h * 0.2)}" r="${f(w * 0.06)}" fill="#fff4c4" stroke="${KONTUR}" stroke-width="8"/><circle cx="${f(w * 0.745)}" cy="${f(h * 0.185)}" r="${f(w * 0.055)}" fill="#3a4a80" opacity=".0"/>`);
-}
 /** Şişmiş yanaklar (Fındık'ın yanak pozu yer tutucusu): iki yuvarlak balon yanak, kenarı çizgili */
 export function yanakSvg(w: number, h: number, sol: [number, number], sag: [number, number], r: number, renk: string): string {
   const y = (x: number, yy: number) => `<ellipse cx="${f(x)}" cy="${f(yy)}" rx="${f(r)}" ry="${f(r * 0.86)}" fill="${renk}" stroke="${KONTUR}" stroke-width="${f(r * 0.07)}"/><ellipse cx="${f(x)}" cy="${f(yy + r * 0.2)}" rx="${f(r * 0.5)}" ry="${f(r * 0.3)}" fill="#ff8fa3" opacity=".5"/><ellipse cx="${f(x - r * 0.35)}" cy="${f(yy - r * 0.35)}" rx="${f(r * 0.22)}" ry="${f(r * 0.13)}" fill="#fff" opacity=".6"/>`;

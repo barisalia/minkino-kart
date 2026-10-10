@@ -12,8 +12,9 @@ import { adres, geldiMi, gorsel, OTOBUS_YERI, type VarlikAdi } from './varliklar
 const yuzde = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 /** Bir süs katmanı: merkez (x, y) ve en (otobüs tuvalinin oranı) */
-function katman(ad: VarlikAdi, sinif: string, y: { x: number; y: number; en: number }): HTMLElement {
-  return h(`div.ko-ob-sus.${sinif}`, { style: `left:${yuzde(y.x)};top:${yuzde(y.y)};width:${yuzde(y.en)}`, html: gorsel(ad) });
+function katman(ad: VarlikAdi, sinif: string, y: { x: number; y: number; en: number; don?: number }): HTMLElement {
+  const don = y.don ? `;--don:${y.don}deg` : '';
+  return h(`div.ko-ob-sus.${sinif}`, { style: `left:${yuzde(y.x)};top:${yuzde(y.y)};width:${yuzde(y.en)}${don}`, html: gorsel(ad) });
 }
 
 /**
@@ -56,7 +57,7 @@ export function otobusGuncelle(el: HTMLElement, o: { alinan: readonly string[]; 
   const parcalar: (HTMLElement | null)[] = [
     var_('cati-kulah') ? katman('sus-cati-kulah', 'ko-ob-catikulah', Y.kulah) : null,
     govde,
-    var_('ampul') ? katman('sus-ampul', 'ko-ob-ampul', Y.ampul) : null,
+    var_('ampul') ? katman('sus-ampul', 'ko-ob-ampul', var_('cati-kulah') ? Y.ampul : Y.ampulKulahsiz) : null,
     h('div.ko-ob-kapak-acik', { style: `left:${yuzde(Y.kapak.x - Y.kapak.en / 2)};top:${yuzde(Y.kapak.y - Y.kapak.boy / 2)};width:${yuzde(Y.kapak.en)};height:${yuzde(Y.kapak.boy)}` }, h('i.ko-ob-isik'), h('div.ko-ob-tente', { html: tenteSvg() })),
     var_('flama') ? katman('sus-flama', 'ko-ob-flama', Y.flama) : null,
     var_('kemik-tabela') ? katman('sus-kemik-tabela', 'ko-ob-tabela', Y.tabela) : null,
@@ -90,12 +91,13 @@ export function dondurmaciKino(kirazSapka: boolean): Karakter {
  *   oturur, kulaklıklar başın iki yanına iner; kafa grubunda (her pozda başla döner).
  * - onluk (1277×1280): göğüs parçasının üstü (görselin %30'u) göğse, eteği (%88) bacakların başına; boyun askısı
  *   başın arkasında kalır; gövde grubunda (kollar önünde).
- * - kirazSapka: dükkândaki kiraz tepeli şapka (Gün 3, bölüm D; görseli gelince ölçülür).
+ * - kirazSapka (D23, kiraz tepeli dondurma topu şapka, 942×1024): topun akıntılı alt kenarı (görselin %75'i) başın
+ *   tepesinin biraz altına oturur, eni başın üstünü örter; kafa grubunda.
  */
 const KINO_YERI = {
   sapka: { x: 975 - 370, y: 120 - 0.58 * 1193, en: 740, boy: 1193 },
   onluk: { x: 1032 - 405, y: 1235 - 0.3 * 812, en: 810, boy: 812 },
-  kirazSapka: { x: 760, y: 60, en: 440, boy: 440 },
+  kirazSapka: { x: 975 - 350, y: 240 - 0.75 * 760, en: 700, boy: 760 },
 };
 const resimG = (url: string, y: { x: number; y: number; en: number; boy: number }, sinif: string) => `<image class="${sinif}" href="${url}" x="${y.x}" y="${y.y}" width="${y.en}" height="${y.boy}" preserveAspectRatio="xMidYMid meet"/>`;
 

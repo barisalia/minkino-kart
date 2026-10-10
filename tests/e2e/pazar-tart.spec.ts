@@ -91,13 +91,70 @@ test('Tart Bakalım: 4 yaş sayar — fazlası "Ver"de olmaz, bir tane çıkarı
   expect(hatalar).toEqual([]);
 });
 
+/** Saymada Mino'nun söylediği sayılar (sırayla, virgüllü) */
+const sayilar = async (page: Page) => (await page.locator('.tb-ekran').getAttribute('data-sayilar')) ?? '';
+const legendeki = async (page: Page) => (JSON.parse((await page.locator('.tb-ekran').getAttribute('data-legen')) ?? '[]') as unknown[]).length;
+
+test('Tart Bakalım: leğenin içinde tutulup geri bırakılan meyve yeniden sayılmaz; çıkıp gelen yeniden sayılır', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=4&ekran=tart&meyve=elma&curuk=0');
+  await istek(page);
+  await surukle(page, saglam(page), legen(page));
+  await expect.poll(() => sayilar(page)).toBe('1');
+  await page.waitForTimeout(500);
+  // leğenin içinde tut, biraz taşı, leğene bırak: "Bir!" tekrarlanmaz
+  for (let i = 0; i < 2; i++) {
+    await surukle(page, page.locator('.tb-govde').first(), legen(page), 0.2);
+    await page.waitForTimeout(900);
+  }
+  expect(await sayilar(page)).toBe('1');
+  expect(await legendeki(page)).toBe(1);
+  // leğenden yığına çıkarılıp yeniden konunca yeniden sayılır (leğende yine bir tane)
+  await surukle(page, page.locator('.tb-govde').first(), page.locator('.tb-kasa'), 0.5);
+  await expect(page.locator('.tb-govde')).toHaveCount(0);
+  await expect.poll(() => legendeki(page)).toBe(0);
+  await surukle(page, saglam(page), legen(page));
+  await expect.poll(() => sayilar(page)).toBe('1,1');
+  await surukle(page, saglam(page), legen(page));
+  await expect.poll(() => sayilar(page)).toBe('1,1,2');
+  expect(hatalar).toEqual([]);
+});
+
+test('Tart Bakalım: arka arkaya hızlı bırakılan meyveler doğru sayılır; Ver havadakinin inmesini bekler', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=3&ekran=tart&meyve=elma&curuk=0');
+  const ist = await istek(page);
+  expect(ist.mod).toBe('say');
+  // biri leğene inince "Ver" görünür; kalanlar beklemeden, öncekiler havadayken: "Bir! İki! …"
+  await surukle(page, saglam(page), legen(page), 0.05);
+  await expect(page.locator('.tb-ver')).toBeVisible();
+  for (let i = 1; i < ist.adet!; i++) await surukle(page, saglam(page), legen(page), 0.05);
+  // sonuncusu daha havadayken Ver: meyve inince sayılır, müşteri alır ("az" denmez)
+  expect(await legendeki(page)).toBeLessThan(ist.adet!);
+  await ver(page);
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1, { timeout: 6000 });
+  expect(hatalar).toEqual([]);
+});
+
+test('Tart Bakalım: hızlı iki bırakış "Bir, İki" sayılır', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=4&ekran=tart&meyve=elma&curuk=0');
+  await istek(page);
+  await surukle(page, saglam(page), legen(page), 0.05);
+  await surukle(page, saglam(page), legen(page), 0.05);
+  await expect.poll(() => sayilar(page)).toBe('1,2');
+  await expect.poll(() => legendeki(page)).toBe(2);
+  expect(hatalar).toEqual([]);
+});
+
 test('Tart Bakalım: çürük domates — verilirse müşteri geri verir, komposta atılınca kompost sevinir', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./pazar/?test=1&yas=3&ekran=tart&meyve=domates&curuk=1');
   const ist = await istek(page);
   expect(ist.kasa.filter((k) => k.curuk)).toHaveLength(1);
   const curuk = page.locator('.tb-urun[data-curuk="1"]');
-  await expect(curuk.locator('.tb-leke')).toBeAttached();
+  // çürüğün kendi çizimi (assets/pazar/domates-curuk, Gemini) ya da yer tutucu lekeler
+  await expect(curuk.locator('img[src*="domates-curuk"], .tb-leke').first()).toBeAttached();
   await expect(curuk.locator('.tb-sinek')).toBeAttached();
   // çürük ve istenen kadar sağlam leğene
   await surukle(page, curuk, legen(page));

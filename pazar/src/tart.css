@@ -20,6 +20,17 @@
   --tb-s: max(46px, calc(var(--tb-w) * 0.19));
 }
 
+/* yatay tablet: tezgâh ekranın alt yarısına sıkışmasın; kantar, yığın ve kompost ~%20 iri */
+@media (min-aspect-ratio: 13/10) and (min-height: 541px) {
+  .pz-kok .tb-ekran {
+    --tb-w: min(43vw, 48vh, 480px);
+  }
+}
+/* uzaktan geçen soluk hayvanlar Tart'ta tezgâh hizasında bekleyen müşteri hayaleti gibi duruyor: gösterilmez */
+.pz-kok .tb-ekran .pz-yaya {
+  display: none;
+}
+
 /* ---------- Ön tezgâh: kompost | yığın | kantar ---------- */
 .pz-kok .tb-tezgah {
   position: relative;
@@ -393,8 +404,38 @@
 .pz-kok .tb-kompost.pz-parla {
   animation: tb-kompost-cag 1.1s ease-in-out infinite;
 }
-.pz-kok .tb-kompost.pz-parla .tb-k-govde svg {
+.pz-kok .tb-kompost.pz-parla .tb-k-govde svg,
+.pz-kok .tb-kompost.pz-parla .tb-k-govde img,
+.pz-kok .tb-kompost.pz-parla .tb-k-kapak img {
   filter: drop-shadow(0 0 8px rgba(255, 230, 100, 0.95)) drop-shadow(0 4px 0 rgba(90, 54, 23, 0.25));
+}
+/*
+ * Gemini çizimi (assets/pazar/kompost + kompost-kapak; ekip/illustrator/tart-isle.cjs): kapak gövdenin ağzına oturur.
+ * Ölçüler çizimin pikselinden (gövde 937 × 1024, kapak 1024 × 676 → 0.95 ölçekle 973 × 642; kapağın alt bandı
+ * gövdenin kenarını 200 px örter): kutu 973 × 1466. Menteşe kapağın sol kenarında, flanşın altında (çizimde %78).
+ */
+.pz-kok .tb-kompost.tb-resimli {
+  width: calc(var(--tb-s) * 1.5);
+  aspect-ratio: 973 / 1466;
+}
+.pz-kok .tb-kompost.tb-resimli .tb-k-govde {
+  inset: auto;
+  left: 1.85%;
+  width: 96.3%;
+  top: 30.15%;
+  height: 69.85%;
+}
+.pz-kok .tb-kompost.tb-resimli:not(.pz-parla) .tb-k-govde img {
+  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.22));
+}
+.pz-kok .tb-kompost.tb-resimli .tb-k-kapak {
+  top: 0;
+  height: 43.8%;
+  transform-origin: 3% 78%;
+}
+.pz-kok .tb-kompost.tb-resimli.pz-uzerinde .tb-k-kapak,
+.pz-kok .tb-kompost.tb-resimli.tb-acik .tb-k-kapak {
+  transform: rotate(-34deg) translate(-4%, -10%);
 }
 @keyframes tb-kompost-cag {
   0%, 100% { transform: none; }

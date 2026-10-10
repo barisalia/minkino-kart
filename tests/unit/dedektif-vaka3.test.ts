@@ -1,13 +1,15 @@
 /** Dedektif Mino · Vaka 3 "Kaybolan Yıldız Kurabiyeler": mantık (dedektif/src/mantik3.ts), görsel haritası, cümleler, gizlilik */
 import { describe, expect, it } from 'vitest';
 import { karakterCumleleri, normal, tumCumleler } from '../../src/audio/cumleler';
-import { erisimTuru } from '../../src/engine/erisim';
+import { ERISIM, erisimTuru, kilitliMi } from '../../src/engine/erisim';
 import { Dosya, kameraHesap, kartSirasi, Soru, dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 import {
   ADIMLAR3,
   B3,
   BOS_YERLER,
   F3,
+  FINAL_KURABIYELER,
+  FINDIK_YERI,
   halka3,
   halka3Adimi,
   HALKALAR3,
@@ -28,7 +30,14 @@ import {
   vaka3Gorunur,
   VERILECEK,
   TEPSI_YERLERI,
+  TEPSI3,
+  OTOBUS,
+  KOVUK_ICI,
+  SAHNE3_DIKEY,
+  DIKEY_SAHNELER3,
+  sahne3Yerlesim,
 } from '../../dedektif/src/mantik3';
+import { ODA_ORAN } from '../../dedektif/src/mantik';
 import { B_LISTESI, DIKEY3_HAZIR, E_LISTESI, eksikler3, tanimli, YER_TUTUCU } from '../../dedektif/src/resimler3';
 import { kayit, sifirla, vakaCozuldu } from '../../dedektif/src/kayit';
 import { dudakBicimi } from '../../dedektif/src/dunya3';
@@ -39,24 +48,36 @@ const rnd = (t: number) => () => {
   return t / 4294967296;
 };
 
-describe('Vaka 3: gizli bayrak ve erişim', () => {
-  it('oyunda henüz seçilemez; ?vaka=3, ?vaka3=1 ya da test kısayoluyla görünür', () => {
-    expect(VAKA3_YAYINDA).toBe(false);
-    expect(vaka3Gorunur('')).toBe(false);
-    expect(vaka3Gorunur('?test=1&cozuldu=2')).toBe(false);
+describe('Vaka 3: yayın bayrağı ve erişim', () => {
+  it('bayrak açıksa her yerde (uygulamada da) görünür; kapalıysa yalnız web adresiyle (?vaka=3, ?vaka3=1, test kısayolu)', () => {
+    if (VAKA3_YAYINDA) {
+      for (const adres of ['', '?test=1&cozuldu=2', '?vaka=3']) {
+        expect(vaka3Gorunur(adres), adres).toBe(true);
+        expect(vaka3Gorunur(adres, true), `uygulama ${adres}`).toBe(true);
+      }
+    } else {
+      expect(vaka3Gorunur('')).toBe(false);
+      expect(vaka3Gorunur('?test=1&cozuldu=2')).toBe(false);
+    }
     expect(vaka3Gorunur('?vaka=3')).toBe(true);
     expect(vaka3Gorunur('?vaka3=1')).toBe(true);
     expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim')).toBe(true);
   });
   it('uygulama (mağaza) derlemesinde bayrak kapalıyken hiçbir adres parametresi açmaz', () => {
-    expect(vaka3Gorunur('?vaka=3', true)).toBe(false);
-    expect(vaka3Gorunur('?vaka3=1', true)).toBe(false);
-    expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim', true)).toBe(false);
+    expect(vaka3Gorunur('?vaka=3', true)).toBe(VAKA3_YAYINDA);
+    expect(vaka3Gorunur('?vaka3=1', true)).toBe(VAKA3_YAYINDA);
+    expect(vaka3Gorunur('?test=1&ekran=vaka3&adim=kim', true)).toBe(VAKA3_YAYINDA);
   });
-  it('abonelikle (Vaka 2 gibi): dedektif/vaka3 abonelik', () => {
+  it('abonelikle (Vaka 2 gibi): dedektif/vaka3 tabloda abonelik; kilitler etkinken abone değilse kilitli', () => {
+    expect(ERISIM['dedektif/vaka3']).toBe('abonelik');
     expect(erisimTuru('dedektif/vaka3')).toBe('abonelik');
     expect(erisimTuru('dedektif/vaka2')).toBe('abonelik');
+    expect(erisimTuru('dedektif/vaka1')).toBe('abonelik');
     expect(erisimTuru('dedektif')).toBe('abonelik');
+    expect(kilitliMi('dedektif/vaka3', { etkin: true, premium: false })).toBe(true);
+    expect(kilitliMi('dedektif/vaka3', { etkin: true, premium: true })).toBe(false);
+    // web sitesinde (kilitler etkin değil) açık
+    expect(kilitliMi('dedektif/vaka3', { etkin: false, premium: false })).toBe(false);
   });
   it('kayıt: Vaka 3 dosyaya üçüncü vaka olarak girer', () => {
     sifirla();
@@ -112,6 +133,14 @@ describe('Vaka 3: halkalar ve kartlar', () => {
     // "Sen havuç sevmezsin ki." Kino'nun havuç tahmininden sonra
     expect(halka3('yol').kinoCevap).toBe(M3.havuc_sevmez);
   });
+  it('iki ipuçlu halkada ikinci ipucu da delilde: Halka 4 el izi + kızıl tüy (kuş tüyden söz eder, tüy kabarır)', () => {
+    const kim = halka3('kim');
+    const ilk = kim.foto ?? kim.ipuclari[0].foto ?? kim.ipuclari[0].resim;
+    expect(ilk).toBe('v3/ipucu-el-izi');
+    expect(kim.ekFoto).toBe('v3/ipucu-tuy');
+    expect(kim.ipuclari.map((t) => t.foto ?? t.resim)).toContain(kim.ekFoto);
+    expect(B3.kus_tuy.toLocaleLowerCase('tr')).toContain('tüy');
+  });
 });
 
 describe('Vaka 3: sayma, iz, kovuk', () => {
@@ -165,13 +194,17 @@ describe('Vaka 3: sayma, iz, kovuk', () => {
   });
   it('final: Fındık\'a iki kurabiye; roman 4 kare; dosya beş göz', () => {
     expect(VERILECEK).toBe(2);
+    // dört kurabiye soldan sağa, sağdaki de Fındık'ın önünde değil solunda (arkasında yarım kalmaz)
+    const xs = FINAL_KURABIYELER.map(([x]) => x);
+    expect([...xs].sort((a, b) => a - b)).toEqual(xs);
+    expect(FINDIK_YERI.x - xs[xs.length - 1]).toBeGreaterThanOrEqual(0.085);
     expect(ROMAN3.map((r) => r.sira)).toEqual([1, 2, 3, 4]);
     const d = Dosya.adimdan('kim', ADIMLAR3, HALKALAR3);
     expect(d.gozler.map((g) => g.demek)).toEqual([true, true, true, false, false]);
     expect(Dosya.adimdan('final', ADIMLAR3, HALKALAR3).tamam).toBe(true);
   });
   it('sahneler (16:9) her kadrajda ekranı tamamen kaplar (telefon ve tablet)', () => {
-    const dunya = { w: 1000 * (4096 / 2286), h: 1000 };
+    const dunya = { w: 1000 * (2752 / 1536), h: 1000 };
     for (const e of [
       { w: 844, h: 390 },
       { w: 932, h: 430 },
@@ -189,6 +222,48 @@ describe('Vaka 3: sayma, iz, kovuk', () => {
   });
 });
 
+describe('Vaka 3: dikey sahneler (9:16 çizimler)', () => {
+  const icinde = (x: number, y: number) => x >= 0 && x <= 1 && y >= 0 && y <= 1;
+  it('dikeye geçince oran, ipuçları, tepsi, iz, kovuklar ve final dikey çizimin; yataya dönünce eski değerler aynen', () => {
+    const once = JSON.stringify({ h: HALKALAR3, k: KADRAJ3, t: TEPSI3, o: OTOBUS, s: SEKER_IZI, kv: KOVUKLAR, ky: KOVUK_ICI, f: FINDIK_YERI, fk: FINAL_KURABIYELER, oran: ODA_ORAN });
+    for (const s of DIKEY_SAHNELER3) sahne3Yerlesim(s, true);
+    try {
+      for (const s of DIKEY_SAHNELER3) {
+        expect(SAHNE3_DIKEY[s]).toBe(true);
+        expect(ODA_ORAN[s]).toBeCloseTo(1536 / 2752, 5);
+      }
+      for (const t of HALKALAR3.filter((h) => h.oda !== 'kiler').flatMap((h) => h.ipuclari)) expect(icinde(t.x, t.y), t.id).toBe(true);
+      // sağdaki (alt) kovuk dikeyde de en sağda; üç kovuk üst üste
+      expect(KOVUKLAR.alt.x).toBeGreaterThan(KOVUKLAR.orta.x);
+      expect(KOVUKLAR.ust.y).toBeLessThan(KOVUKLAR.orta.y);
+      expect(KOVUKLAR.orta.y).toBeLessThan(KOVUKLAR.alt.y);
+      // kuyruğun kökü alt ağzın karanlığında (ortasının altında), ağzın içinde
+      const a = KOVUKLAR.alt;
+      expect(KOVUK_ICI.kuyruk.y).toBeGreaterThan(a.y);
+      expect(KOVUK_ICI.kuyruk.y).toBeLessThan(a.y + a.ry * 0.8);
+      expect(Math.abs(KOVUK_ICI.kuyruk.x - a.x)).toBeLessThan(a.rx * 0.5);
+      // iz soldan sağa, telefonda da ekranda (kamera tam en: kenarlardan ~%9 kırpılır)
+      for (let i = 1; i < SEKER_IZI.length; i++) expect(SEKER_IZI[i].x).toBeGreaterThan(SEKER_IZI[i - 1].x);
+      for (const p of SEKER_IZI) expect(p.x).toBeLessThan(0.89);
+      // tepsinin altı yeri tepsinin kutusunda; final kurabiyeleri soldan sağa, Fındık'tan ayrı
+      for (const [x, y] of TEPSI3.yerler) expect(x >= TEPSI3.kutu.x0 && x <= TEPSI3.kutu.x1 && y >= TEPSI3.kutu.y0 && y <= TEPSI3.kutu.y1).toBe(true);
+      const xs = FINAL_KURABIYELER.map(([x]) => x);
+      expect([...xs].sort((p, q) => p - q)).toEqual(xs);
+      expect(FINDIK_YERI.x - xs[xs.length - 1]).toBeGreaterThanOrEqual(0.085);
+    } finally {
+      for (const s of DIKEY_SAHNELER3) sahne3Yerlesim(s, false);
+    }
+    expect(JSON.parse(JSON.stringify({ h: HALKALAR3, k: KADRAJ3, t: TEPSI3, o: OTOBUS, s: SEKER_IZI, kv: KOVUKLAR, ky: KOVUK_ICI, f: FINDIK_YERI, fk: FINAL_KURABIYELER, oran: ODA_ORAN }))).toEqual(JSON.parse(once));
+  });
+  it('yatayda da tepsinin yerleri kutusunda, kuyruğun kökü alt ağzın karanlığında', () => {
+    for (const [x, y] of TEPSI3.yerler) expect(x >= TEPSI3.kutu.x0 && x <= TEPSI3.kutu.x1 && y >= TEPSI3.kutu.y0 && y <= TEPSI3.kutu.y1).toBe(true);
+    const a = KOVUKLAR.alt;
+    expect(KOVUK_ICI.kuyruk.y).toBeGreaterThan(a.y);
+    expect(KOVUK_ICI.kuyruk.y).toBeLessThan(a.y + a.ry * 0.8);
+    expect(Math.abs(KOVUK_ICI.kuyruk.x - a.x)).toBeLessThan(a.rx * 0.5);
+  });
+});
+
 describe('Vaka 3: görsel haritası (tek yer, bölüm B adları)', () => {
   it('bölüm B\'nin 28 dosyası ve E\'nin 5 dosyası haritada; çizimi olmayanın yer tutucusu var (dikeyler hariç)', () => {
     expect(B_LISTESI).toHaveLength(28);
@@ -197,10 +272,12 @@ describe('Vaka 3: görsel haritası (tek yer, bölüm B adları)', () => {
       if (ad.endsWith('-dikey')) continue;
       expect(tanimli(ad), ad).toBe(true);
     }
-    // dikey sahneler ipuçlarının yerleri ölçülünce açılır
-    expect(DIKEY3_HAZIR).toBe(false);
-    // henüz çizimi gelmeyenler listesi bölüm B / E adlarından oluşur
-    for (const a of eksikler3()) expect([...B_LISTESI, ...E_LISTESI] as string[]).toContain(a);
+    // dikey sahneler açık: yerleri ölçüldü (mantik3.ts → DIKEY3)
+    expect(DIKEY3_HAZIR).toBe(true);
+    // bölüm B'nin 28 ve E'nin 5 çizimi de geldi: yer tutucuyla duran dosya yok
+    expect(eksikler3()).toEqual([]);
+    // bölüm E'nin (roman kareleri, kapak) yer tutucusu kaldırıldı: yalnız Gemini çizimi
+    for (const a of E_LISTESI) expect(a in YER_TUTUCU, a).toBe(false);
   });
   it('kodda kullanılan her v3 görseli tanımlı (kartlar, ipuçları, fotoğraflar, demek ki, roman)', () => {
     const adlar = [

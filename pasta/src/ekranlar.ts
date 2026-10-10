@@ -90,6 +90,9 @@ export function acilisEkrani(app: Uygulama): Ekran {
   });
 
   // gün tablosu: Gün 1-3 (yer ve o günün yeniliği resimli; kilitli günde asma kilit, biten günde yıldızlar)
+  // gün kartına iki kez dokunulursa gün ekranı iki kez kurulmasın (açılış cümlesi yarıda kesilir)
+  let gidiliyor = false;
+  let kapali = false;
   const kartlar = Array.from({ length: GUN_SAYISI }, (_, i) => (i + 1) as Gun).map((g) => {
     const acik = oynanirMi(g) && g <= kayit.acikGun;
     const biten = kayit.biten.includes(g);
@@ -106,15 +109,17 @@ export function acilisEkrani(app: Uygulama): Ekran {
       acik ? null : h('i.ps-gun-kilit', { html: KILIT }),
     );
     b.addEventListener('click', async () => {
+      if (gidiliyor) return;
       if (!acik) {
         efekt.kilitli();
         salla(b, 'ps-hayir');
         return;
       }
+      gidiliyor = true;
       efekt.secim();
       salla(b, 'ps-zipla');
       await bekle(sure(220));
-      app.git('gun', { gun: g });
+      if (!kapali) app.git('gun', { gun: g });
     });
     return b;
   });
@@ -140,6 +145,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   return {
     el,
     kapat() {
+      kapali = true;
       clearTimeout(selam);
       clearTimeout(baslikSoz);
       rozetMino.kapat();
@@ -160,13 +166,14 @@ function rafIkon(u: RafUrunu): string {
   return `<div class="ps-raf-otobus" style="--boya:${b.govde};--boya-koyu:${b.koyu};--boya-filtre:${boyaFiltresi(u.deger)}">${OTOBUS}</div>`;
 }
 
-export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yildiz?: number; mutlu?: number } = {}): Ekran {
+export function aksamEkrani(app: Uygulama, p: { gun?: Gun; kazanc?: number; yildiz?: number; mutlu?: number; kaydedildi?: boolean } = {}): Ekran {
   const gun = (Math.max(1, Math.min(GUN_SAYISI, p.gun ?? 1)) as Gun);
   const kazanc = Math.max(0, Math.floor(p.kazanc ?? 0));
   const yildiz = Math.max(1, Math.min(3, Math.floor(p.yildiz ?? 1)));
-  // günün jetonları ekran açılırken kaydedilir; kumbara sayımı yalnız gösterir (önceki toplamdan sayarak)
-  const oncesi = kayit.jeton;
-  gunBitti(gun, yildiz, kazanc);
+  // günün jetonları gün bitince kaydedildi (gun.ts); kumbara sayımı yalnız gösterir (önceki toplamdan sayarak).
+  // Test kısayolunda (?test=1&ekran=aksam) burada kaydedilir.
+  const oncesi = p.kaydedildi ? Math.max(0, kayit.jeton - kazanc) : kayit.jeton;
+  if (!p.kaydedildi) gunBitti(gun, yildiz, kazanc);
   let kapandi = false;
   const efekt_ = new Efekt(app.kok);
   const mino = new Mino();

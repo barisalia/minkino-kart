@@ -23,9 +23,10 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import D from '../../content/dedektif.json';
 import { DosyaSeridi } from './dosya';
 import { AZ_HAREKET, Dunya, type KadrajKaynak, type Oda } from './dunya';
-import { agacSahnesi, kilerSahnesi, otobusIc, otobusYani } from './dunya3';
-import { Efekt, oynat, parmak, pop } from './efekt';
+import { agacSahnesi, kilerSahnesi, otobusIc, otobusYani, sahne3Kur, sahne3YenidenDiz } from './dunya3';
+import { Efekt, oynat, parmak, parmaklariDurdur, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
+import { tekTekrar } from './konusma-sira';
 import { Dosya, izNotasi, K, M, ODA_H, YARDIM, type IpucuTanim, type Kadraj } from './mantik';
 import {
   ADIMLAR3,
@@ -42,6 +43,7 @@ import {
   M3,
   OTOBUS,
   ROMAN3,
+  SAHNE3_DIKEY,
   Sayma,
   SEKER_IZI,
   SekerIzi,
@@ -50,6 +52,7 @@ import {
   type Adim3,
   type Halka3,
   type IpucuTanim3,
+  type Sahne3,
 } from './mantik3';
 import { Oyuncular } from './oyuncular';
 import { pozlariYukle } from './poz';
@@ -75,6 +78,13 @@ function tohumlu(t: number): () => number {
 const px = (v: number) => `${v.toFixed(1)}px`;
 const tutar = (a: Animation | null | undefined) => (a ? a.finished.then(() => undefined, () => undefined) : Promise.resolve());
 const img = (ad: string, sinif = '') => h(`img${sinif ? '.' + sinif : ''}`, { src: resim(ad) ?? '', alt: '', draggable: 'false' });
+const guvenle = (f: () => void) => {
+  try {
+    f();
+  } catch {
+    /* yok say */
+  }
+};
 
 /** Kart sorusunun halkaya özel parçaları */
 const OTURMA3: Record<string, Oturma> = {
@@ -160,6 +170,8 @@ class Vaka3 {
     if (ADIMLAR3.indexOf(this.baslangic) > ADIMLAR3.indexOf('giris') && ADIMLAR3.indexOf(this.baslangic) <= ADIMLAR3.indexOf('yol')) serit.ipucu('yol', resim('v3/foto-kurabiye') ?? '');
     // kart resimleri şimdiden yüklenir (kartlar açılınca boş beyaz kutu görünmesin)
     for (const k of Object.values(KARTLAR3)) new Image().src = resim(k.resim) ?? '';
+    // dikey ekranda dikey eşi olan sahne kendi 9:16 çizimiyle (yerleri mantik3.ts → DIKEY3)
+    sahne3Kur();
     this.ic = otobusIc(halka3('sayi').ipuclari.concat(halka3('cikis').ipuclari));
     this.yani = otobusYani(halka3('yol').ipuclari);
     this.agac = agacSahnesi(halka3('kim').ipuclari);
@@ -181,7 +193,10 @@ class Vaka3 {
     this.buyutec.goster(false);
     this.dunya.kameraBitti = () => this.buyutec.yenile();
     const boyut = () => {
-      this.dunya.yenile();
+      // telefon döndü: dikey eşi olan sahneler yerinde yeni yönün çizimine ve yerlerine geçer (durumları korunur)
+      const dondu = [this.ic, this.yani, this.agac].map((o) => sahne3YenidenDiz(o)).some(Boolean);
+      if (dondu) this.dunya.odaYenilendi();
+      else this.dunya.yenile();
       this.buyutec.yenile();
       requestAnimationFrame(() => {
         if (this.kapali) return;
@@ -190,7 +205,7 @@ class Vaka3 {
       });
     };
     window.addEventListener('resize', boyut);
-    this.temizlik.push(() => window.removeEventListener('resize', boyut));
+    this.temizle(() => window.removeEventListener('resize', boyut));
     void this.akis(this.baslangic);
   }
 
@@ -198,24 +213,47 @@ class Vaka3 {
   kapat() {
     this.kapali = true;
     this.zamanlar.forEach(clearTimeout);
-    this.temizlik.forEach((f) => {
-      try {
-        f();
-      } catch {
-        /* yok say */
-      }
-    });
+    this.zamanlar = [];
+    const t = this.temizlik;
+    this.temizlik = [];
+    t.forEach(guvenle);
+    // el ipuçları (aramanın, saymanın, şeker izinin, kurabiye vermenin, kuyruğun) hep birlikte durur
+    this.parmakBirak();
+    parmaklariDurdur(this.el);
     this.fon.durdur();
     this.buyutec?.kapat();
     this.oy.kapat();
   }
+  /** Kapanınca yapılacak iş; ekran çoktan kapandıysa (geç kurulan iş) hemen yapılır */
+  private temizle(f: () => void) {
+    if (this.kapali) guvenle(f);
+    else this.temizlik.push(f);
+  }
+  /**
+   * Bekler. Ekran kapandıysa hiç dönmez: bekleyen akış (final, palamut, son) orada durur, sonraki ses / müzik çalmaz
+   * (kapat() kurulmuş zamanlayıcıları da siler: onları bekleyenler de dönmez).
+   */
   private bekle = (ms: number): Promise<void> =>
     new Promise((r) => {
-      if (this.kapali) return r();
+      if (this.kapali) return;
       this.zamanlar.push(window.setTimeout(r, sure(ms)));
     });
-  private sonra(ms: number, fn: () => void) {
-    this.zamanlar.push(window.setTimeout(() => !this.kapali && fn(), sure(ms)));
+  private sonra(ms: number, fn: () => void): number {
+    if (this.kapali) return 0;
+    const z = window.setTimeout(() => !this.kapali && fn(), sure(ms));
+    this.zamanlar.push(z);
+    return z;
+  }
+  /** setInterval: kapanınca durur. Geç kurulan da: ekran kapandıysa hiç kurulmaz, kurulduysa ilk tıkta kendini siler. */
+  private aralik(fn: () => void, ms: number): () => void {
+    if (this.kapali) return () => undefined;
+    const z = window.setInterval(() => {
+      if (this.kapali) return clearInterval(z);
+      fn();
+    }, ms);
+    const dur = () => clearInterval(z);
+    this.temizle(dur);
+    return dur;
   }
   private adim(ad: string) {
     this.el.dataset.adim = ad;
@@ -233,7 +271,8 @@ class Vaka3 {
   private ortala(x: () => number, k: () => Kadraj, yari = 0.12): () => Kadraj {
     return () => {
       const kd = k();
-      if (!this.dar()) return kd;
+      // dikey çizimli sahnede kadraj zaten o çizimin (tam en ya da tepsi gibi dar): ortalanmaz
+      if (!this.dar() || SAHNE3_DIKEY[this.dunya.oda?.id as Sahne3]) return kd;
       const cx = x();
       return [cx - yari, kd[1], cx + yari, kd[3]];
     };
@@ -329,6 +368,7 @@ class Vaka3 {
     void dunya.git(this.kd(KADRAJ3.ic, 0.5, 0.14), 900);
     oy.minoTepki('sasir');
     await oy.mino.dedektif({ sapka: true });
+    if (this.kapali) return;
     oy.mino.el.classList.add('dd-sapkali');
     oynat(oy.mino.el, 'dd-sapka-dus');
     ses.pop();
@@ -338,6 +378,7 @@ class Vaka3 {
     });
     await this.bekle(420);
     await oy.mino.dedektif({ buyutec: true });
+    if (this.kapali) return;
     ses.vaka();
     oy.minoTepki('zipla');
     oynat(this.el, 'dd-vaka-flas');
@@ -363,6 +404,7 @@ class Vaka3 {
     const boy = Math.min(kk.width, kk.height) * 0.32;
     const foto = h('div.dd-uc-foto', { style: `width:${px(boy)};height:${px(boy)}` }, img('v3/foto-kurabiye'));
     void this.efekt.ucur(foto, [x0, y0], [x1, y1], { ms: 900, kavis: -60, boy0: 0.4, boy1: 0.2, don: -10, gecikme: 300 }).then(() => {
+      if (this.kapali) return;
       ses.yapis();
       this.s.ipucu('yol', resim('v3/foto-kurabiye') ?? '');
     });
@@ -452,20 +494,33 @@ class Vaka3 {
         void this.buyutec.git(bx, by, 500);
       }
       this.sonBulus = performance.now();
-      const koku = window.setInterval(() => {
-        if (this.kapali || this.koklaniyor) return;
+      this.aramaTemizle = this.aralik(() => {
+        if (this.koklaniyor) return;
         if (performance.now() - this.sonBulus > YARDIM.koklaSn * 1000) {
           const sec = this.ozelGordu ? kalan.filter((x) => x.id === 'kuyruk') : kalan;
           const t = sec.find((x) => !(hk && this.dosya.goz(hk.id).ipuclari.includes(x.id)) && !this.buyutec.gorulduMu(x.id));
           if (t) void this.kokla(t);
         }
       }, 1000);
-      this.temizlik.push(() => clearInterval(koku));
-      this.aramaTemizle = () => clearInterval(koku);
     });
   }
+  /**
+   * Arama biter: koku yardımı, koklamaya giden Kino, el ipucu, "dokun!" zamanlayıcısı durur; aranan yerlerin işaretleri
+   * (soluk gölge + göz kırpan yıldız: dd-aranan, nabız halkası: dd-goruldu) söner. Görülmemiş ipucu yine gizli kalır
+   * (bt-gizli), görülmüş olan (ör. uyuyan baykuş) sahnenin parçası olarak sade durur.
+   */
   private aramayiBitir() {
     this.aramaTemizle?.();
+    this.aramaTemizle = null;
+    this.koklaIptal();
+    clearTimeout(this.dokunZaman);
+    this.parmakBirak();
+    for (const t of this.aramaIpuclari) {
+      const el = this.ipucuEl(t.id);
+      if (!el) continue;
+      el.classList.remove('dd-aranan', 'dd-goruldu');
+      el.style.removeProperty('--yakin');
+    }
     this.buyutec.goster(false);
     const c = this.aramaBitti;
     this.aramaBitti = null;
@@ -506,13 +561,12 @@ class Vaka3 {
     this.oy.minoTepki('sevinc');
     this.oy.kinoIfade('heyecan', 900);
     clearTimeout(this.dokunZaman);
-    this.dokunZaman = window.setTimeout(() => {
-      if (this.kapali || !el.classList.contains('dd-goruldu')) return;
+    this.dokunZaman = this.sonra(YARDIM.dokunSn * 1000, () => {
+      if (!el.classList.contains('dd-goruldu')) return;
       this.parmakBirak();
       this.parmakDur = parmak(this.el, () => el.getBoundingClientRect());
       void this.oy.soyle(M.dokun);
-    }, sure(YARDIM.dokunSn * 1000));
-    this.zamanlar.push(this.dokunZaman);
+    });
   }
 
   private async dokundu(hd: BuyutecHedef) {
@@ -545,18 +599,36 @@ class Vaka3 {
     kart.style.width = `${boy}px`;
     kart.style.height = `${boy}px`;
     await this.efekt.ucur(kart, [x0, y0], [kk.width / 2, kk.height * 0.45], { ms: 420, kavis: -30, boy0: 0.35, boy1: 1, don: 4 });
+    if (this.kapali) return;
     await this.efekt.ucur(kart, [kk.width / 2, kk.height * 0.45], [x1, y1], { ms: 560, kavis: -60, boy0: 1, boy1: 0.2, don: -12, gecikme: 260 });
+    if (this.kapali) return;
     ses.yapis();
     this.s.ipucu(hk.id, foto);
-    if (this.kapali) return;
     if (this.dosya.ipuclariTamam(hk.id)) this.aramayiBitir();
     else await this.oy.soyle(M.bir_daha);
   }
+
+  /** Koklamaya giden Kino'yu geri çağırır (arama bitince: kart sorusu açılırken Kino önde kalmasın) */
+  private koklaIptal() {
+    this.koklaNesil++;
+    if (!this.koklaniyor) return;
+    this.koklaniyor = false;
+    this.koku?.remove();
+    this.koku = null;
+    this.oy.el.classList.remove('dd-onde');
+    if (this.el.dataset.adim?.startsWith('kokla-')) this.adim(this.koklaOnceki);
+    if (!this.kapali) void this.oy.don('kino', 500);
+  }
+  private koklaNesil = 0;
+  private koklaOnceki = '';
+  private koku: HTMLElement | null = null;
 
   private async kokla(t: IpucuTanim) {
     const el = this.ipucuEl(t.id);
     if (!el) return;
     this.koklaniyor = true;
+    const nesil = ++this.koklaNesil;
+    const bitti = () => this.kapali || nesil !== this.koklaNesil;
     const { oy } = this;
     const m = this.dunya.merkez(el);
     const a = this.ara.getBoundingClientRect();
@@ -568,19 +640,25 @@ class Vaka3 {
     const fx = tx + (sag ? 1 : -1) * Math.max(70, kinoH * 0.42);
     const fy = Math.min(k.height - 6, ty + kinoH * 0.38);
     const onceki = this.el.dataset.adim ?? '';
+    this.koklaOnceki = onceki;
     this.adim(`kokla-${t.id}`);
     oy.el.classList.add('dd-onde');
     await oy.git('kino', fx, fy, 900, 50);
-    if (this.kapali) return;
+    if (bitti()) return;
     oy.kinoOynat('kokla', 1800);
     ses.kokla();
     const koku = h('i.dd-koku', { style: `left:${tx}px;top:${ty}px` });
+    this.koku = koku;
     this.efekt.el.append(koku);
     this.sonra(3200, () => koku.remove());
     await oy.soyle(K.kokla, 'kino');
+    if (bitti()) return;
     await this.bekle(700);
+    if (bitti()) return;
     await oy.don('kino', 800);
+    if (bitti()) return;
     oy.el.classList.remove('dd-onde');
+    this.koku = null;
     this.sonBulus = performance.now();
     this.koklaniyor = false;
     if (this.el.dataset.adim === `kokla-${t.id}`) this.adim(onceki);
@@ -630,7 +708,8 @@ class Vaka3 {
     oy.yerlesim('iki');
     await this.odaya(this.ic, this.kd(hk.kadraj, undefined, 0.13));
     if (this.kapali) return;
-    oy.yerlesim('iki', 'kenar');
+    // dikey çizimde tepsi sağ altta: ikisi de sola çekilir (tepsi Kino'nun arkasında kalmasın)
+    oy.yerlesim('iki', SAHNE3_DIKEY['otobus-ic'] ? 'sol' : 'kenar');
     await this.ara_(hk.ipuclari, hk, this.ic, 'sayi');
     if (this.kapali) return;
     // boş yerleri say: her dokunuşta halkanın içinde rakam ve bir nota
@@ -669,22 +748,21 @@ class Vaka3 {
         this.efekt.parilti(x, y, 5, 0.45);
         this.oy.minoTepki(n % 2 ? 'evet' : 'sevinc');
         if (sayma.bitti) {
-          clearInterval(yardim);
+          yardimDur();
           this.el.classList.remove('dd-sahne-is');
           kap.classList.add('dd-v3-sayildi');
           this.sonra(600, coz);
         }
       };
       dugmeler.forEach((d, i) => d.addEventListener('click', () => tik(i)));
-      const yardim = window.setInterval(() => {
-        if (this.kapali || dur) return;
+      const yardimDur = this.aralik(() => {
+        if (dur) return;
         if (performance.now() - son > YARDIM.surukleSn * 1000) {
           const i = sayma.siradaki;
           if (i === null) return;
           dur = parmak(this.el, () => dugmeler[i].getBoundingClientRect());
         }
       }, 500);
-      this.temizlik.push(() => clearInterval(yardim));
     });
   }
 
@@ -694,6 +772,10 @@ class Vaka3 {
     const hk = halka3('cikis');
     this.s.aktif('cikis');
     oy.yerlesim('iki');
+    // Halka 1'in tepsisi bu halkada iş görmez: kamera onu ekranın kenarında yarım bırakırsa söner (tepsiDenetle)
+    this.tepsiIzle = true;
+    // kamera her kaydığında bildirmez (yerleşim değişince de oynar): halka boyunca ara ara bakılır
+    const tepsiDur = this.aralik(() => this.tepsiDenetle(), 400);
     await this.odaya(this.ic, this.kd(hk.kadraj, 0.55, 0.14));
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
@@ -703,6 +785,28 @@ class Vaka3 {
     await this.kartSorusu(hk, cikisYanlis(this.ortak), () => cikisDogru(this.ortak));
     if (this.kapali) return;
     await this.kinoPencere();
+    tepsiDur();
+    this.tepsiIzle = false;
+    this.tepsiDenetle(true);
+  }
+
+  /** Halka 2'de tepsi (kurabiyeler, un halkaları, sayaç): ekrana bütünüyle sığmıyorsa yumuşakça söner, sığınca görünür */
+  private tepsiIzle = false;
+  private tepsiOnceki: boolean | null = null;
+  /** Ara ara bakılır; iki ardışık ölçüm aynıysa uygulanır (kamera kayarken titremesin). hemen: tek ölçüm yeter */
+  private tepsiDenetle(hemen = false) {
+    if (this.kapali || !this.ic) return;
+    const sahne = this.ic.el;
+    if (!this.tepsiIzle || this.dunya.oda !== this.ic) {
+      sahne.classList.remove('dd-v3-tepsi-sakli');
+      this.tepsiOnceki = null;
+      return;
+    }
+    const r = this.ic.e.tepsi.getBoundingClientRect();
+    const k = this.el.getBoundingClientRect();
+    const tasar = r.left < k.left - 1 || r.right > k.right + 1 || r.top < k.top - 1 || r.bottom > k.bottom + 1;
+    if (hemen || tasar === this.tepsiOnceki) sahne.classList.toggle('dd-v3-tepsi-sakli', tasar);
+    this.tepsiOnceki = tasar;
   }
 
   /** Kino rahatlar: kafasını pencerenin aralığına sokmaya çalışır, kulağı takılır, güler */
@@ -774,6 +878,11 @@ class Vaka3 {
     const kadraj = (): Kadraj => {
       const i = iz.siradaki ?? SEKER_IZI.length - 1;
       const x = SEKER_IZI[Math.min(SEKER_IZI.length - 1, i + 1)].x;
+      // dikey çizimde kamera tam eni gösterir (dunya.ts): iz ekranın ortasında, sıradaki şekerin boyunda
+      if (SAHNE3_DIKEY['otobus-yani']) {
+        const y = SEKER_IZI[Math.min(SEKER_IZI.length - 1, i)].y;
+        return [0, Math.max(0, Math.min(0.3, y - 0.5)), 1, Math.min(1, Math.max(0.7, y + 0.2))];
+      }
       return this.dar() ? [x - 0.13, 0.55, x + 0.11, 1] : [Math.max(0, Math.min(0.5, x - 0.42)), 0.5, Math.min(1, Math.max(x + 0.12, 0.5)), 1];
     };
     this.boyutSonrasi = () => void dunya.git(kadraj, 0);
@@ -826,8 +935,8 @@ class Vaka3 {
       this.el.addEventListener('pointerdown', bas);
       window.addEventListener('pointerup', kalk);
       window.addEventListener('pointermove', kay);
-      const yardim = window.setInterval(() => {
-        if (this.kapali || dur) return;
+      const yardimDur = this.aralik(() => {
+        if (dur) return;
         if (performance.now() - son > YARDIM.izSn * 1000) {
           const i = iz.siradaki;
           if (i === null) return;
@@ -836,20 +945,21 @@ class Vaka3 {
         }
       }, 500);
       const sok = () => {
-        clearInterval(yardim);
+        yardimDur();
         this.el.removeEventListener('pointerdown', bas);
         window.removeEventListener('pointerup', kalk);
         window.removeEventListener('pointermove', kay);
       };
-      this.temizlik.push(sok);
+      this.temizle(sok);
       const bitir = () => {
         sok();
         dur?.();
+        dur = null;
         this.boyutSonrasi = null;
         this.el.classList.remove('dd-sahne-is');
         oy.yerlesim('iki');
         sekerler.forEach((s, i) => this.sonra(i * 70, () => oynat(s, 'dd-sec')));
-        void dunya.git([0.62, 0.45, 1, 1], 900);
+        void dunya.git(KADRAJ3.izSonu, 900);
         this.sonra(900, coz);
       };
     });
@@ -882,8 +992,7 @@ class Vaka3 {
     const arama = new KovukArama();
     const e = this.agac.e;
     // kovuktan yıldız kırıntılar düşer (ara ara)
-    const dus = window.setInterval(() => !this.kapali && !arama.bitti && this.kirintiDusur(), sure(1400));
-    this.temizlik.push(() => clearInterval(dus));
+    const dusDur = this.aralik(() => !arama.bitti && this.kirintiDusur(), sure(1400));
     const hedefler: IpucuTanim[] = (['baykus', 'yuva', 'kuyruk'] as const).map((id) => ({ id, oda: 'agac', resim: '', x: 0, y: 0, h: 0, gizli: true }));
     let kuyrukBekliyor = false;
     this.ozelGordu = (id) => {
@@ -896,7 +1005,8 @@ class Vaka3 {
     };
     this.ozelDokundu = (id) => {
       this.parmakBirak();
-      if (id === 'baykus') this.baykusUyan();
+      // baykuş tepki verirken (sallanıp "Şşş" derken) yeni dokunuş yok sayılır: sözü sıraya birikip akışı geciktirmez
+      if (id === 'baykus') this.baykusTek(() => this.baykusUyan());
       else if (id === 'yuva') this.yuvaSalla();
       else if (id === 'kuyruk' && !kuyrukBekliyor) {
         kuyrukBekliyor = true;
@@ -909,11 +1019,11 @@ class Vaka3 {
     };
     await this.ara_(hedefler, null, this.agac, 'kovuk');
     // ikinci dokunuş: kuyruk yeniden sarkar, çocuk ona dokununca Fındık fırlar
-    if (this.kapali) return;
     this.ozelGordu = null;
     this.ozelDokundu = null;
+    if (this.kapali) return;
     await this.kuyrukIkinci(arama);
-    clearInterval(dus);
+    dusDur();
     if (this.kapali) return;
     await this.findikFirlar();
     if (this.kapali) return;
@@ -928,14 +1038,16 @@ class Vaka3 {
     kap.append(k);
     void tutar(k.animate([{ transform: 'translate(-50%, 0) rotate(0)', opacity: 0 }, { transform: 'translate(-50%, 20px) rotate(90deg)', opacity: 1, offset: 0.2 }, { transform: `translate(-50%, ${ODA_H * 0.13}px) rotate(400deg)`, opacity: 0 }], { duration: 1600, easing: 'ease-in' })).then(() => k.remove());
   }
-  /** Baykuş bir an uyanır: "Şşş, uyuyorum!" (balonda), sonra yine uyur */
-  private baykusUyan() {
+  /** Baykuş tepkisi tek seferde bir tane (sırada ya da sürerken yeni dokunuş yok sayılır) */
+  private baykusTek = tekTekrar();
+  /** Baykuş bir an uyanır: "Şşş, uyuyorum!" (balonda), sonra yine uyur. Döner: sallanma ve söz bitince. */
+  private baykusUyan(): Promise<void> {
     const el = this.agac.e['ipucu-baykus'];
     const b = el.querySelector<HTMLElement>('.dd-v3-baykus');
     ses.hu();
-    if (b && !AZ_HAREKET) void b.animate([{ transform: 'translate(-50%, 0) rotate(0)' }, { transform: 'translate(-50%, -8%) rotate(-6deg)', offset: 0.3 }, { transform: 'translate(-50%, -8%) rotate(5deg)', offset: 0.6 }, { transform: 'translate(-50%, 0) rotate(0)' }], { duration: sure(1200), easing: 'ease-in-out' });
+    const an = b && !AZ_HAREKET ? b.animate([{ transform: 'translate(-50%, 0) rotate(0)' }, { transform: 'translate(-50%, -8%) rotate(-6deg)', offset: 0.3 }, { transform: 'translate(-50%, -8%) rotate(5deg)', offset: 0.6 }, { transform: 'translate(-50%, 0) rotate(0)' }], { duration: sure(1200), easing: 'ease-in-out' }) : null;
     this.oy.konukBagla(null, el, -0.1);
-    void this.oy.soyle(V3.balon.baykus, 'balon');
+    return Promise.all([tutar(an), this.oy.soyle(V3.balon.baykus, 'balon')]).then(() => undefined);
   }
   private yuvaSalla() {
     const y = this.agac.e.yuva;
@@ -960,8 +1072,10 @@ class Vaka3 {
     el.classList.add('dd-v3-dokunulur');
     ses.firr();
     return new Promise<void>((coz) => {
-      const z = window.setTimeout(() => (this.parmakDur = parmak(this.el, () => el.getBoundingClientRect())), sure(5000));
-      this.zamanlar.push(z);
+      const z = this.sonra(5000, () => {
+        this.parmakBirak();
+        this.parmakDur = parmak(this.el, () => el.getBoundingClientRect());
+      });
       const tik = () => {
         clearTimeout(z);
         this.parmakBirak();
@@ -993,7 +1107,7 @@ class Vaka3 {
     const dx = (a.x - FINDIK_YERI.x) * this.agac.W;
     const dy = (a.y + a.ry * 0.4 - FINDIK_YERI.y) * ODA_H;
     ses.firr();
-    muzikCal('film-surpriz', 0.45);
+    this.temizle(muzikCal('film-surpriz', 0.45));
     if (!AZ_HAREKET)
       await tutar(
         this.findik.animate(
@@ -1007,6 +1121,7 @@ class Vaka3 {
           { duration: sure(1000), easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'forwards' },
         ),
       );
+    if (this.kapali) return;
     this.findik.style.opacity = '1';
     ses.pop();
     const [x, y] = this.efekt.merkez(this.findik, 0.5, 0.4);
@@ -1051,8 +1166,8 @@ class Vaka3 {
       this.sonra(250 + i * 520, () => void this.kirintiPuskur(i === 2));
     }
     await soz;
-    await this.bekle(400);
     if (this.kapali) return;
+    await this.bekle(400);
     oy.kinoIfade('saskin', 2000);
     oy.minoTepki('gidik');
     await oy.soyle(M3.yut);
@@ -1063,8 +1178,10 @@ class Vaka3 {
       ses.hapHap();
       if (ic && !AZ_HAREKET) await tutar(ic.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06, 0.95)' }, { transform: 'scale(0.97, 1.03)' }, { transform: 'scale(1)' }], { duration: sure(500) }));
       else await this.bekle(500);
+      if (this.kapali) return;
     }
     if (ic && !AZ_HAREKET) await tutar(ic.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-8deg)' }, { transform: 'rotate(8deg)' }, { transform: 'rotate(-6deg)' }, { transform: 'rotate(0)' }], { duration: sure(800) }));
+    if (this.kapali) return;
     this.oy.konukBagla(null, this.findik);
   }
   /** Fındık'ın ağzından kırıntı fışkırır, Kino'nun burnuna konar */
@@ -1076,6 +1193,7 @@ class Vaka3 {
     const [x1, y1] = this.efekt.merkez(kutu, 0.52, 0.45);
     ses.pit();
     await this.efekt.ucur(img('v3/ipucu-kirinti', 'dd-v3-ucan-kirinti'), [x0, y0], [x1, y1], { ms: 420, kavis: -50, boy0: 0.6, boy1: 1, don: 200 });
+    if (this.kapali) return;
     if (son) this.burunaKoy('v3/ipucu-kirinti', 0.18);
     void this.oy.zipla('kino', 6, 300);
   }
@@ -1092,8 +1210,10 @@ class Vaka3 {
     }
     // kamera kovuğun içine girer (yakın plan; ağız çerçeve gibi önde)
     oy.yerlesim('iki');
-    if (dogrudan) dunya.kur(this.kiler, this.kd(hk.kadraj, undefined, 0.14));
-    else await this.odaya(this.kiler, this.kd(hk.kadraj, undefined, 0.14), 1);
+    // dar ekranda kamera ipuçlarının (raftaki kurabiyeler, kar tanesi) ortasına
+    const kx = hk.ipuclari.reduce((s, t) => s + t.x, 0) / hk.ipuclari.length;
+    if (dogrudan) dunya.kur(this.kiler, this.kd(hk.kadraj, kx, 0.14));
+    else await this.odaya(this.kiler, this.kd(hk.kadraj, kx, 0.14), 1);
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
     await this.ara_(hk.ipuclari, hk, this.kiler, 'neden');
@@ -1126,16 +1246,21 @@ class Vaka3 {
     // 1) "pof, pof!": iki kurabiye ağzından düşer; ikisi kovuktan gelir; yan yana dizilir
     const kurabiyeler = [...e.kurabiyeler.querySelectorAll<HTMLElement>('.dd-v3-final-kurabiye')];
     for (let i = 0; i < 2; i++) {
+      if (this.kapali) return;
       ses.pof();
       if (i === 1) this.findikPoz('findik');
       await this.kurabiyeGetir(kurabiyeler[i], this.findik, 0.36, 0.5);
+      if (this.kapali) return;
       await this.bekle(250);
     }
     const alt = KOVUKLAR.alt;
     for (let i = 2; i < 4; i++) {
+      if (this.kapali) return;
       const [hx, hy] = dunya.ekranda(alt.x, alt.y);
       await this.kurabiyeGetir(kurabiyeler[i], null, hx, hy);
     }
+    // kurabiyeler uçarken çıkıldıysa sayma (yardım zamanlayıcısı, söz) hiç başlamaz
+    if (this.kapali) return;
     oy.kinoIfade('heyecan', 1400);
     // 2) "Hadi sayalım!": dört kurabiyeye dokun
     await this.say(e.kurabiyeler, M3.sayalim, 'final-say');
@@ -1156,6 +1281,7 @@ class Vaka3 {
     // 4) bir adım öne çıkar, patilerini birleştirir: "Bir tane alabilir miyim?"
     this.findikPoz('findik');
     if (!AZ_HAREKET && this.findik) await tutar(this.findik.animate([{ transform: 'translate(0, 0)' }, { transform: `translate(${-this.findik.offsetWidth * 0.12}px, -14px)`, offset: 0.5 }, { transform: `translate(${-this.findik.offsetWidth * 0.18}px, 0)` }], { duration: sure(600), easing: 'ease-in-out', fill: 'forwards' }));
+    if (this.kapali) return;
     await this.bekle(300);
     await this.findikKonus(F3.alabilir);
     if (this.kapali) return;
@@ -1163,8 +1289,8 @@ class Vaka3 {
     oy.kinoIfade('heyecan', 1400);
     await oy.soyle(K3.tabii, 'kino');
     if (this.kapali) return;
-    // 5) iki kurabiyeyi Fındık'ın patisine sürükle
-    await this.kurabiyeVer(kurabiyeler.slice(0, VERILECEK));
+    // 5) dört kurabiyeden ikisini (hangisi olursa) Fındık'ın patisine sürükle
+    await this.kurabiyeVer(kurabiyeler, VERILECEK);
     if (this.kapali) return;
     // 6) sarılır, kuyruğu kalp yapar (kalpler)
     this.adim('saril');
@@ -1187,28 +1313,34 @@ class Vaka3 {
     const [x1, y1] = this.efekt.merkez(dugme);
     const w = dugme.getBoundingClientRect().width || 60;
     await this.efekt.ucur(img('v3/kurabiye', 'dd-v3-ucan-kurabiye2'), [x0, y0], [x1, y1], { ms: 520, kavis: -80, boy0: 0.5, boy1: 1, don: 200 });
+    if (this.kapali) return;
     dugme.style.width = '';
     dugme.classList.add('gorunur');
     void w;
     ses.tik();
   }
 
-  /** İki kurabiyeyi Fındık'ın patisine sürükle (dokunmak da olur): kurabiye patiye uçar, kaybolur */
-  private kurabiyeVer(kurabiyeler: HTMLElement[]): Promise<void> {
+  /**
+   * Dört kurabiyeden ikisini Fındık'ın patisine sürükle (dokunmak da olur): hangisi olursa (çocuk çoğu kez Fındık'a en
+   * yakın olanı dener). Kurabiye patiye uçar, kaybolur; ikincisi verilince kalanlar yerinde durur (taşınmaz).
+   */
+  private kurabiyeVer(kurabiyeler: HTMLElement[], adet: number): Promise<void> {
     this.adim('ver');
     this.el.classList.add('dd-sahne-is');
     const hedef = () => this.findik!.getBoundingClientRect();
-    let kalan = kurabiyeler.length;
+    let verilen = 0;
+    let kalan = adet;
     return new Promise<void>((coz) => {
       let dur: (() => void) | null = null;
       let z = 0;
       const ipucu = () => {
         clearTimeout(z);
-        z = window.setTimeout(() => {
-          const k = kurabiyeler.find((x) => !x.classList.contains('verildi'));
+        z = this.sonra(4000, () => {
+          // el ipucu Fındık'a en yakın (en sağdaki) verilmemiş kurabiyeden
+          const k = kurabiyeler.filter((x) => x.classList.contains('dd-v3-tasinir') && !x.classList.contains('verildi')).pop();
+          dur?.();
           if (k) dur = parmak(this.el, () => k.getBoundingClientRect(), hedef);
-        }, sure(4000));
-        this.zamanlar.push(z);
+        });
       };
       ipucu();
       const yakin = (x: number, y: number) => {
@@ -1220,11 +1352,14 @@ class Vaka3 {
         let s: { id: number; x0: number; y0: number; tasindi: boolean } | null = null;
         const ver = async () => {
           k.classList.add('verildi');
+          // yeterince verildi: öbürleri yerinde kalır (sayılır ama taşınmaz)
+          if (++verilen >= adet) for (const x of kurabiyeler) if (x !== k && !x.classList.contains('verildi')) x.classList.remove('dd-v3-tasinir', 'dd-tutuldu');
           const a = k.getBoundingClientRect();
           const kk = this.el.getBoundingClientRect();
           const [hx, hy] = this.efekt.merkez(this.findik!, 0.42, 0.62);
           k.style.visibility = 'hidden';
           await this.efekt.ucur(img('v3/kurabiye', 'dd-v3-ucan-kurabiye2'), [a.left - kk.left + a.width / 2, a.top - kk.top + a.height / 2], [hx, hy], { ms: 420, kavis: -40, boy1: 0.8 });
+          if (this.kapali) return;
           ses.tik();
           efekt.dogru();
           this.efekt.parilti(hx, hy, 6, 0.5);
@@ -1236,7 +1371,7 @@ class Vaka3 {
           } else ipucu();
         };
         k.addEventListener('pointerdown', (e) => {
-          if (k.classList.contains('verildi')) return;
+          if (k.classList.contains('verildi') || !k.classList.contains('dd-v3-tasinir')) return;
           clearTimeout(z);
           dur?.();
           dur = null;
@@ -1255,7 +1390,8 @@ class Vaka3 {
           const { tasindi } = s;
           s = null;
           k.classList.remove('dd-tutuldu');
-          if (!tasindi || yakin(e.clientX, e.clientY)) {
+          const verilebilir = k.classList.contains('dd-v3-tasinir') && verilen < adet;
+          if (verilebilir && (!tasindi || yakin(e.clientX, e.clientY))) {
             k.style.translate = '';
             await ver();
             return;
@@ -1263,7 +1399,7 @@ class Vaka3 {
           const t = k.style.translate || '0px 0px';
           await tutar(k.animate([{ translate: t }, { translate: '0px 0px' }], { duration: sure(380), easing: 'cubic-bezier(.3,1.2,.5,1)' }));
           k.style.translate = '';
-          ipucu();
+          if (!this.kapali && verilen < adet) ipucu();
         };
         k.addEventListener('pointerup', (e) => void birak(e));
         k.addEventListener('pointercancel', (e) => void birak(e));
@@ -1294,10 +1430,11 @@ class Vaka3 {
     const dy = (a.y + a.ry * 0.3 - FINDIK_YERI.y) * ODA_H;
     this.findikPoz('findik');
     if (!AZ_HAREKET) await tutar(f.animate([{ transform: getComputedStyle(f).transform === 'none' ? 'translate(0,0)' : getComputedStyle(f).transform, opacity: 1 }, { transform: `translate(${dx * 0.5}px, ${dy - 80}px)`, opacity: 1, offset: 0.5 }, { transform: `translate(${dx}px, ${dy}px) scale(0.5)`, opacity: 0 }], { duration: sure(700), easing: 'ease-in', fill: 'forwards' }));
+    if (this.kapali) return;
     ses.hisirti();
     await this.bekle(600);
-    if (this.kapali) return;
     if (!AZ_HAREKET) await tutar(f.animate([{ transform: `translate(${dx}px, ${dy}px) scale(0.5)`, opacity: 0 }, { transform: `translate(${dx * 0.5}px, ${dy - 80}px)`, opacity: 1, offset: 0.5 }, { transform: 'translate(0, 0)', opacity: 1 }], { duration: sure(700), easing: 'ease-out', fill: 'forwards' }));
+    if (this.kapali) return;
     // palamut Fındık'ın patisinden Kino'nun burnuna
     const kutu = oy.kinoYer.querySelector<HTMLElement>('.dd-kino-kutu');
     if (!kutu) return;
@@ -1305,6 +1442,7 @@ class Vaka3 {
     const [x1, y1] = this.efekt.merkez(kutu, 0.52, 0.36);
     ses.kart();
     await this.efekt.ucur(img('v3/palamut', 'dd-v3-ucan-palamut'), [x0, y0], [x1, y1], { ms: 620, kavis: -90, boy0: 0.6, boy1: 1, don: 360 });
+    if (this.kapali) return;
     const p = this.burunaKoy('v3/palamut', 0.2);
     if (p) p.classList.add('dd-v3-palamut-burun');
     oy.kinoIfade('saskin', 2600);
@@ -1314,8 +1452,10 @@ class Vaka3 {
     if (p && !AZ_HAREKET) await tutar(p.animate([{ rotate: '0deg' }, { rotate: '-18deg' }, { rotate: '14deg' }, { rotate: '-22deg' }, { rotate: '10deg' }], { duration: sure(1600), easing: 'ease-in-out' }));
     else await this.bekle(1600);
     oy.kinoEkHareket(null);
+    if (this.kapali) return;
     // düşer
     if (p && !AZ_HAREKET) await tutar(p.animate([{ transform: 'translate(-50%, -50%)', opacity: 1 }, { transform: 'translate(-50%, 300%) rotate(220deg)', opacity: 1, offset: 0.7 }, { transform: 'translate(-50%, 260%) rotate(260deg)', opacity: 0 }], { duration: sure(800), easing: 'ease-in', fill: 'forwards' }));
+    if (this.kapali) return;
     ses.tok();
     this.burunTemizle();
     oy.kinoOynat('sevin', 1200);
@@ -1355,10 +1495,12 @@ class Vaka3 {
     const [fx, fy] = this.efekt.merkez(e.findik, 0.45, 0.6);
     e.yeni.classList.remove('acik');
     await this.efekt.ucur(img('v3/palamut-kurabiye', 'dd-v3-ucan-palamut'), [kx, ky], [fx, fy], { ms: 600, kavis: -60, boy0: 1, boy1: 0.9 });
+    // uçuş sürerken çıkıldıysa kutlama müziği menüde çalmasın
+    if (this.kapali) return;
     e.findik.querySelector('img')!.src = resim('v3/findik-sarilma') ?? '';
     ses.sicak();
     this.efekt.parilti(fx, fy, 10, 0.8);
-    muzikCal('film-kutlama', 0.5);
+    this.temizle(muzikCal('film-kutlama', 0.5));
     const r = this.el.getBoundingClientRect();
     if (!AZ_HAREKET) konfetiPatlat(this.el, r.width / 2, r.height * 0.3, 80);
     oy.minoTepki('dans');

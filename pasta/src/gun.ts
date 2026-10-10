@@ -27,7 +27,7 @@ import { boyaFiltresi, HAMUR_KABI, JETON, KALP, KAPAK_DESENI, KASA, KINO_UN, MIN
 import { zigzagCiz } from './susleme';
 import { AZ_HAREKET, Efekt, ekranSalla, parkAdres, salla } from './gorsel';
 import { ARKA, FIRIN_GOZLERI, FIRIN_ORAN, onYukle, oranYaz, resimleriTopla, yuva } from './resimler';
-import { kayit } from './kayit';
+import { gunBitti as kayitGunBitti, kayit } from './kayit';
 import {
   acikOlanlar,
   BOYA,
@@ -108,15 +108,42 @@ export function boyaUygula(el: HTMLElement) {
   el.style.setProperty('--boya-koyu', b.koyu);
   el.style.setProperty('--boya-filtre', boyaFiltresi(kayit.boya));
 }
-/** Kino: unlu yüzüyle (kafa katmanına un lekeleri) */
+/**
+ * Kino'nun pastacı önlüğü ve şapkası: iskeletin 2048 tuvalinde görselin kutusu (kino-otobus/src/otobus.ts → KINO_YERI
+ * ile aynı yol; ölçüler giysin/src/giysi-yer.json'daki Kino tablosundan: gövde 750-1345, fular ~1190-1280, başın tepesi
+ * ~205, baş ortası x 975).
+ * - onluk (kino-onluk-1, 1280×1215): göğüs parçasının üst kenarı (görselin %24'ü) fuların altına (y ~1250), etek
+ *   bacakların başına iner; boyun askısı başın arkasında kalır, bel bağları kolların arkasından sarkar. Gövde grubunda:
+ *   kollar ve fular önünde durur, her pozda gövdeyle döner.
+ * - sapka (kino-sapka-1, 1280×1076): şeridin altındaki ağız başın tepesini sarar (alt kenarı y ~475), kulakların
+ *   arasında; Mino'nunki gibi hafif yatık (+5°). Kafa grubunda: her pozda başla döner.
+ */
+const KINO_GIYSI_YERI = {
+  onluk: { x: 530, y: 1066, en: 890, boy: 753 },
+  sapka: { x: 530, y: -280, en: 900, boy: 757, don: 5 },
+};
+/** Kino: pastacı önlüğü + şapkası (görseller varsa) ve unlu yüzü (kafa katmanına un lekeleri) */
 export function unluKino(): Karakter {
   const kino = new Karakter('kino', h('div'));
   void kino.hazir.then(() => {
     const kafa = kino.parcaG('kafa');
+    const govde = kino.parcaG('govde');
     if (kafa && !kafa.querySelector('.ps-kino-un')) kafa.insertAdjacentHTML('beforeend', KINO_UN);
+    const onluk = yuva('kinoOnluk');
+    if (govde && onluk && !govde.querySelector('.ps-kino-onluk')) {
+      const y = KINO_GIYSI_YERI.onluk;
+      govde.insertAdjacentHTML('beforeend', `<image class="ps-kino-onluk" href="${onluk}" x="${y.x}" y="${y.y}" width="${y.en}" height="${y.boy}" preserveAspectRatio="xMidYMid meet"/>`);
+    }
+    const sapka = yuva('kinoSapka');
+    if (kafa && sapka && !kafa.querySelector('.ps-kino-sapka')) {
+      const y = KINO_GIYSI_YERI.sapka;
+      kafa.insertAdjacentHTML('beforeend', `<g class="ps-kino-sapka" transform="rotate(${y.don} 975 300)"><image href="${sapka}" x="${y.x}" y="${y.y}" width="${y.en}" height="${y.boy}" preserveAspectRatio="xMidYMid meet"/></g>`);
+    }
   });
   return kino;
 }
+/** Kino'nun giysi görselleri (önceden indirilir: Kino giyinik görünsün) */
+export const kinoGiysiAdresleri = (): string[] => [yuva('kinoOnluk'), yuva('kinoSapka')].filter((u): u is string => !!u);
 /**
  * Mekân katmanları (gökyüzü-tepeler, orta, ön): park (okul önünde ortada okul binası), plaj (assets/film/plaj), karlı
  * bahçe (assets/film/kar). Pencereden bu görünür.
@@ -437,8 +464,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   let mutlu = 0;
   let uyuyanOldu = false;
 
+  /** servis edilmiş, yiyip dans eden müşteriler (gidene kadar değil, dansı bitene kadar) */
+  const yiyenler = new Set<PastaMusteri>();
+  /**
+   * Yeni müşteri soldan yürür: yerinin solunda yiyen / dans eden müşteri varsa önünden geçip kalpleri, lokmayı, dansı
+   * örtmesin; dans bitene kadar beklenir (sayaç her 100 ms yeniden dener).
+   */
+  const yolKapali = (yer: number) => [...yiyenler].some((m) => {
+    const y = yerindeki.indexOf(m);
+    return y >= 0 && yerler[y].offsetLeft < yerler[yer].offsetLeft;
+  });
+
   async function musteriGelsin() {
-    const yer = yerindeki.findIndex((x) => !x);
+    const yer = yerindeki.findIndex((x, j) => !x && !yolKapali(j));
     const i = siradakiIndeks(kuyruk, musteriler.map((m) => m.ad));
     if (yer < 0 || i < 0) return;
     const sip = kuyruk.splice(i, 1)[0];
@@ -567,6 +605,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     tabakCiz();
     if (tabak) salla(tabakEl, 'ps-zipla');
     m.bitti = true;
+    yiyenler.add(m);
     m.el.classList.add('ps-bitti');
     adimGuncelle();
     const hedef = efekt_.merkez(m.el, 0.5, 0.45);
@@ -612,6 +651,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     jetonDussun(m, para.jeton, para.bahsis);
     void soyle(tesekkur(m.ad, m.verilen), m);
     await m.dans();
+    yiyenler.delete(m);
     if (kapandi) return;
     minoCanli.ugurla();
     // sağa yürüyerek gider
@@ -1181,11 +1221,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
       await bekle(150);
     }
     if (kapandi) return;
+    // jetonlar toplandı: gün hemen kaydedilir (akşam yalnız gösterir; "bitti" cümlesinde çıkılsa da jeton kalır)
+    const yildiz = yildizHesapla(mutlu, ayar.hedef);
+    kayitGunBitti(gun, yildiz, bugun);
     await soyle(P.mino.bitti);
     mino.tepki('dans');
     await bekle(900);
-    const yildiz = yildizHesapla(mutlu, ayar.hedef);
-    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, yildiz, mutlu });
+    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, yildiz, mutlu, kaydedildi: true });
   }
 
   // ---------------------------------------------------------------- açılış: otobüs parka gelir
@@ -1194,7 +1236,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   // günün bütün görselleri (tezgâh, fırın, kalıplar, torbalar, arka; bugünkü siparişlerin balon resimleri) otobüs
   // gelirken indirilip çözülür; mutfak ancak hepsi hazır olunca açılır (yarım tezgâh, boş balon görünmez). Önce
   // otobüsün kendi görselleri (girişte o görünür), sonra mutfağınkiler: yavaş bağlantıda ikisi birbirini beklemez.
-  const otobusYuk = onYukle([yuva('otobus'), yuva('teker'), yuva('tekerIsik')].filter((u): u is string => !!u), 4000);
+  const otobusYuk = onYukle([yuva('otobus'), yuva('teker'), yuva('tekerIsik'), ...kinoGiysiAdresleri()].filter((u): u is string => !!u), 4000);
   const mutfakUrl = resimleriTopla(el, ...kuyruk.map((s) => siparisResmi(s)));
   const onYuk = { resimler: [...otobusYuk.resimler], hazir: Promise.resolve() };
   onYuk.hazir = otobusYuk.hazir.then(() => {

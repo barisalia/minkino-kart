@@ -563,3 +563,91 @@ test('Mino ile Kino akşam: Kino jetonları beşli kuleler yapar; kuleler tezgâ
   await expect(page.locator('.ps-aksam-jeton')).toHaveCount(0);
   expect(hatalar).toEqual([]);
 });
+
+test('Pasta Otobüsü: gün kartına çift dokunuş günü bir kez açar', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pasta/?test=1&sifirla=1');
+  await expect(page.locator('.ps-gun-kart[data-gun="1"]')).toBeVisible();
+  const gidilen = await page.evaluate(async () => {
+    const app = (window as unknown as { __pasta: { app: { git: (ad: string, p?: unknown) => void } } }).__pasta.app;
+    const asil = app.git.bind(app);
+    const liste: string[] = [];
+    app.git = (ad, p) => {
+      liste.push(ad);
+      asil(ad, p);
+    };
+    const kart = document.querySelector<HTMLButtonElement>('.ps-gun-kart[data-gun="1"]')!;
+    kart.click();
+    kart.click();
+    await new Promise((r) => setTimeout(r, 400));
+    return liste;
+  });
+  expect(gidilen).toEqual(['gun']);
+  await expect(page.locator('.ps-gun[data-gun="1"]')).toBeVisible();
+  expect(hatalar).toEqual([]);
+});
+
+test('Pasta Otobüsü: son müşteriden sonra gün hemen kaydedilir; "bitti" cümlesinde geri basılsa da jeton kalır', async ({ page }) => {
+  test.setTimeout(240_000);
+  const hatalar = hataTopla(page);
+  await page.goto('./pasta/?test=1&sifirla=1&ekran=gun&gun=1');
+  await expect(page.locator('.ps-gun')).toBeVisible();
+  // akşama geçiş tutulur: çocuk "bitti" cümlesi sırasında geri basmış gibi (akşam hiç açılmaz)
+  await page.evaluate(() => {
+    const w = window as unknown as { __pasta: { app: { git: (ad: string, p?: unknown) => void } }; __aksamIstendi?: boolean };
+    const asil = w.__pasta.app.git.bind(w.__pasta.app);
+    w.__pasta.app.git = (ad, p) => (ad === 'aksam' ? void (w.__aksamIstendi = true) : asil(ad, p));
+  });
+  const aksamIstendi = () => page.evaluate(() => !!(window as unknown as { __aksamIstendi?: boolean }).__aksamIstendi);
+  let kaydedildi = false;
+  for (let n = 0; n < 500; n++) {
+    if (await aksamIstendi()) {
+      kaydedildi = true;
+      break;
+    }
+    if (await zigzagKaydir(page)) continue;
+    const d = await durum(page).catch(() => null);
+    const hedef = page.locator('.ps-gun .ps-sirada');
+    if (!d?.adim || !(await hedef.count())) {
+      await page.waitForTimeout(60);
+      continue;
+    }
+    await hedef.first().click({ timeout: 3000 }).catch(() => undefined);
+    await page.waitForTimeout(60);
+  }
+  expect(kaydedildi).toBe(true);
+  await expect(page.locator('.ps-aksam')).toHaveCount(0);
+  const yerel = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-pasta-v1') ?? '{}') as { biten?: number[]; jeton?: number });
+  expect(yerel.biten).toContain(1);
+  expect(yerel.jeton).toBe(16);
+  await page.locator('.ps-gun .ps-ust button[aria-label="Geri"]').click();
+  await expect(page.locator('.ps-acilis')).toBeVisible();
+  const jeton = await page.evaluate(() => (window as unknown as { __pasta: { kayit: { jeton: number } } }).__pasta.kayit.jeton);
+  expect(jeton).toBe(16);
+  await expect(page.locator('.ps-gun-kart[data-gun="2"]')).not.toHaveClass(/ps-kilitli/);
+  expect(hatalar).toEqual([]);
+});
+
+test('Pasta Otobüsü: ?onizleme=1 kaydı değiştirmez, sırası gelmemiş güne atlamaz', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  type Yerel = { acikGun?: number; jeton?: number; yildiz?: Record<string, number>; alinan?: string[] };
+  const yerel = () => page.evaluate(() => JSON.parse(localStorage.getItem('minkino-pasta-v1') ?? '{}') as Yerel);
+  await page.goto('./pasta/?test=1&sifirla=1&ekran=acilis');
+  await expect(page.locator('.ps-acilis')).toBeVisible();
+  const once = await yerel();
+  await page.goto('./pasta/?onizleme=1&ekran=gun&gun=3&jeton=99&yildiz=9&alinan=sapka&sifirla=1');
+  await expect(page.locator('.ps-acilis')).toBeVisible();
+  await expect(page.locator('.ps-gun')).toHaveCount(0);
+  const k = await yerel();
+  expect(k.acikGun).toBe(once.acikGun);
+  expect(k.jeton).toBe(once.jeton);
+  expect(k.yildiz).toEqual(once.yildiz);
+  expect(k.alinan).toEqual(once.alinan);
+  await page.goto('./pasta/?onizleme=1&ekran=aksam&gun=1&kazanc=50');
+  await expect(page.locator('.ps-acilis')).toBeVisible();
+  expect((await yerel()).jeton).toBe(once.jeton);
+  // sırası gelmiş güne gidilir
+  await page.goto('./pasta/?onizleme=1&ekran=gun&gun=1');
+  await expect(page.locator('.ps-gun[data-gun="1"]')).toBeVisible({ timeout: 15000 });
+  expect(hatalar).toEqual([]);
+});

@@ -116,7 +116,7 @@ export function tartEkrani(app: Uygulama): Ekran {
   const resimli = !!(kompostUrl && kapakUrl);
   const kapak = resimli ? h('i.tb-k-kapak', {}, h('img', { src: kapakUrl, alt: '', draggable: 'false' })) : h('i.tb-k-kapak', { html: KOMPOST_KAPAK });
   const govde = resimli ? h('div.tb-k-govde', {}, h('img', { src: kompostUrl, alt: '', draggable: 'false' })) : h('div.tb-k-govde', { html: KOMPOST_GOVDE });
-  const kompost = h('div.tb-kompost', { role: 'region', 'aria-label': A.kompost }, h('i.tb-k-golge'), govde, kapak);
+  const kompost = h(`div.tb-kompost${resimli ? '.tb-resimli' : ''}`, { role: 'region', 'aria-label': A.kompost }, h('i.tb-k-golge'), govde, kapak);
   const verYazi = h('span', {}, A.ver);
   const ver = h('button.dugme.pz-ver.tb-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
 
@@ -203,6 +203,7 @@ export function tartEkrani(app: Uygulama): Ekran {
       if (ist.mod === 'say') {
         const n = saglam();
         sayiRozeti(km, n);
+        if (onizleme()) el.dataset.sayilar = [el.dataset.sayilar, n].filter(Boolean).join(',');
         const soz = [T.sayilar[n - 1] ?? String(n)];
         efekt.nota(Math.min(10, n + 2));
         if (hazir && !hazirDendi) {
@@ -444,6 +445,11 @@ export function tartEkrani(app: Uygulama): Ekran {
                 if (km.curuk) efekt.vizilti(0.6);
                 return;
               }
+              // teslimde / çürük geri gelirken parmaktaki meyve yığına döner
+              if (mesgul) {
+                geriGonder(e);
+                return;
+              }
               if (hedefte && aktif) {
                 if (kantar.adet >= LEGEN_KAPASITE) {
                   geriGonder(e);
@@ -583,6 +589,15 @@ export function tartEkrani(app: Uygulama): Ekran {
   ver.addEventListener('click', async () => {
     if (!aktif || mesgul) return;
     sonHareket = performance.now();
+    // parmaktaki ya da havadaki meyve önce leğene insin: "Ver" yalnız leğendekileri sayar
+    if (kantar.hareketli) {
+      mesgul = true;
+      kantar.etkin(false);
+      await kantar.otur(1500);
+      mesgul = false;
+      if (kapandi || !aktif) return;
+      kantar.etkin(true);
+    }
     const r = tartDenetle(ist, kantar.icindekiler);
     if (r === 'tamam') {
       bitir();
@@ -637,6 +652,7 @@ export function tartEkrani(app: Uygulama): Ekran {
     ver.classList.remove('tb-hazir');
     ver.hidden = true;
     el.dataset.mod = ist.mod;
+    delete el.dataset.sayilar;
     testVerisi();
 
     const ad = musteriler[i];

@@ -26,11 +26,11 @@ export const ODA_ORAN: Record<OdaId, number> = {
   'bahce-ip': 4096 / 2286,
   'bahce-yol': 4096 / 2286,
   'bahce-golet': 4096 / 2286,
-  // Vaka 3 (assets/dedektif3, Gemini 4096×2286; yer tutucular da bu oranda: resimler3.ts)
-  'otobus-ic': 4096 / 2286,
-  'otobus-yani': 4096 / 2286,
-  agac: 4096 / 2286,
-  kiler: 4096 / 2286,
+  // Vaka 3 (assets/dedektif3, Gemini 2752×1536; dikey eşleri mantik3.ts → sahne3Yerlesim; yer tutucular da bu oranda)
+  'otobus-ic': 2752 / 1536,
+  'otobus-yani': 2752 / 1536,
+  agac: 2752 / 1536,
+  kiler: 2752 / 1536,
 };
 /** Dünya biriminde oda yüksekliği (CSS px; kamera ölçekler) */
 export const ODA_H = 1000;

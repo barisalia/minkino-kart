@@ -26,7 +26,7 @@ import D from '../../content/dedektif.json';
 import { DosyaSeridi } from './dosya';
 import { AZ_HAREKET, Dunya, type KadrajKaynak, type Oda } from './dunya';
 import { bahceGolet, bahceIp, bahceKur, bahceYenidenDiz, bahceYol, Ruzgar } from './dunya2';
-import { Efekt, oynat, parmak, pop } from './efekt';
+import { Efekt, oynat, parmak, parmaklariDurdur, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
 import { Dosya, izNotasi, K, M, ODA_H, odaW, YARDIM, type IpucuTanim, type Kadraj } from './mantik';
 import {
@@ -250,9 +250,17 @@ class Vaka2 {
         /* yok say */
       }
     });
+    // el ipuçları hep birlikte durur (renk izi, çalılar, kartlar, atkı, yuva: yerel "dur" tutamaçları da)
+    this.parmakBirak();
+    parmaklariDurdur(this.el);
     this.fon.durdur();
     this.buyutec.kapat();
     this.oy.kapat();
+  }
+  /** Kapanınca yapılacak iş; ekran çoktan kapandıysa hemen yapılır */
+  private temizle(f: () => void) {
+    if (this.kapali) f();
+    else this.temizlik.push(f);
   }
   private bekle = (ms: number): Promise<void> =>
     new Promise((r) => {
@@ -703,6 +711,8 @@ class Vaka2 {
     if (this.kapali) return;
     if (this.dosya.ipuclariTamam(hk.id)) {
       this.aramaTemizle?.();
+      // koklamaya giden Kino geri döner (kart sorusu açılırken önde yürümesin)
+      this.koklaIptal();
       this.buyutec.goster(false);
       const c = this.aramaBitti;
       this.aramaBitti = null;
@@ -712,10 +722,26 @@ class Vaka2 {
     }
   }
 
+  /** Koklamaya giden Kino'yu geri çağırır (arama bitince) */
+  private koklaIptal() {
+    this.koklaNesil++;
+    if (!this.koklaniyor) return;
+    this.koklaniyor = false;
+    this.koku?.remove();
+    this.koku = null;
+    this.oy.el.classList.remove('dd-onde');
+    if (this.aranan && this.el.dataset.adim?.startsWith('kokla-')) this.adim(`ara-${this.aranan.id}`);
+    if (!this.kapali) void this.oy.don('kino', 500);
+  }
+  private koklaNesil = 0;
+  private koku: HTMLElement | null = null;
+
   private async kokla(t: IpucuTanim) {
     const el = this.ipucuEl(t.id);
     if (!el) return;
     this.koklaniyor = true;
+    const nesil = ++this.koklaNesil;
+    const bitti = () => this.kapali || nesil !== this.koklaNesil;
     const { oy } = this;
     const m = this.dunya.merkez(el);
     const a = this.ara.getBoundingClientRect();
@@ -729,20 +755,26 @@ class Vaka2 {
     this.adim(`kokla-${t.id}`);
     oy.el.classList.add('dd-onde');
     await oy.git('kino', fx, fy, 900, 50);
-    if (this.kapali) return;
+    if (bitti()) return;
     oy.kinoOynat('kokla', 1800);
     ses.kokla();
     const koku = h('i.dd-koku', { style: `left:${tx}px;top:${ty}px` });
+    this.koku = koku;
     this.efekt.el.append(koku);
     this.sonra(3200, () => koku.remove());
     await oy.soyle(K.kokla, 'kino');
+    if (bitti()) return;
     await this.bekle(700);
+    if (bitti()) return;
     await oy.don('kino', 800);
+    if (bitti()) return;
     oy.el.classList.remove('dd-onde');
+    this.koku = null;
     this.sonBulus = performance.now();
     this.koklaniyor = false;
+    // adım hâlâ koklamaysa aramaya döner (arama bitip soru açıldıysa onun adımına dokunmaz)
     const hk = this.aranan;
-    if (hk) this.adim(`ara-${hk.id}`);
+    if (hk && this.el.dataset.adim === `kokla-${t.id}`) this.adim(`ara-${hk.id}`);
   }
 
   // ---------------------------------------------------------------- Halka 3: renk izi
@@ -1088,7 +1120,7 @@ class Vaka2 {
     this.ruzgar.firtina(this.golet, 5);
     this.efekt.parilti(ux, uy, 8, 0.7);
     if (!AZ_HAREKET) void this.ordek.kap.animate([{ transform: 'translate(-50%, calc(var(--taban) * -1)) scale(0.9, 1.08)', opacity: 0 }, { transform: 'translate(-50%, calc(var(--taban) * -1)) scale(1.05, 0.96)', opacity: 1, offset: 0.55 }, { transform: 'translate(-50%, calc(var(--taban) * -1))', opacity: 1 }], { duration: sure(620), delay: sure(160), easing: 'cubic-bezier(.3,.8,.4,1)', fill: 'backwards' });
-    muzikCal('film-surpriz', 0.45);
+    this.temizle(muzikCal('film-surpriz', 0.45));
     await Promise.all([tutar(a1), tutar(a2)]);
     if (this.kapali) return;
     const [x, y] = this.efekt.merkez(this.ordek.kap, 0.5, 0.5);
@@ -1291,7 +1323,7 @@ class Vaka2 {
     oy.kinoOynat('sevin', 1200);
     void oy.zipla('kino', 24);
     oy.minoTepki('dans');
-    muzikCal('film-kutlama', 0.5);
+    this.temizle(muzikCal('film-kutlama', 0.5));
     const r = this.el.getBoundingClientRect();
     if (!AZ_HAREKET) konfetiPatlat(this.el, r.width / 2, r.height * 0.3, 90);
     this.yavrularYuru();
@@ -1430,7 +1462,7 @@ class Vaka2 {
         this.atkiUst.classList.add('dd-gitti');
         this.yavrular.classList.add('acik');
         if (!AZ_HAREKET) void this.yavrular.animate([{ transform: 'translate(-50%, -100%) scale(0.8, 1.12)', opacity: 0 }, { transform: 'translate(-50%, -100%) scale(1.06, 0.94)', opacity: 1, offset: 0.45 }, { transform: 'translate(-50%, -100%) scale(0.98, 1.02)', offset: 0.75 }, { transform: 'translate(-50%, -100%)', opacity: 1 }], { duration: sure(620), easing: 'cubic-bezier(.3,.8,.4,1)' });
-        muzikCal('film-surpriz', 0.45);
+        this.temizle(muzikCal('film-surpriz', 0.45));
         this.oy.minoTepki('sevinc');
         await this.bekle(900);
         coz();

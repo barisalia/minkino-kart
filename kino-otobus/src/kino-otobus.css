@@ -164,6 +164,29 @@
 .ko-kok .ko-mz-on {
   background-position: center bottom;
 }
+/*
+ * doğum günü bahçesi (pencere-dogumgunu v2: çerçevesiz 16:9 bahçe partisi; flama üstte %0-30, balonlar %22-40, çit
+ * %37-57). Pencere 16:9'dan genişse görsel tepeden hizalanır: perdenin altında flama, balonlar ve çitin tamamı kalır;
+ * daha darsa (tablet penceresi, dikey ekran) boyu sığar, yanlardan kırpılır: o zaman sola kayar ki ağaçtan sarkan
+ * sol flama, sol ve orta balonlar ve çit birlikte kalsın (ortalanınca iki flama da köşelerde kesiliyordu).
+ */
+.ko-kok .ko-manzara[data-yer='dogumgunu'] {
+  container-type: size;
+}
+.ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
+  background-position: center 0%;
+}
+@container (max-aspect-ratio: 3/2) {
+  .ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
+    background-position: 18% 0%;
+  }
+}
+/* çok dar (dikey telefonda tam ekran akşam): orta balon demeti de girsin */
+@container (max-aspect-ratio: 2/3) {
+  .ko-kok .ko-manzara[data-yer='dogumgunu'] .ko-mz {
+    background-position: 27% 0%;
+  }
+}
 .ko-kok .ko-mz-balonlar i {
   position: absolute;
   top: calc(10% + var(--i) * 3%);
@@ -417,6 +440,27 @@
 .ko-kok .ko-balon.ko-zipla {
   animation: ko-zipla 0.4s ease-out;
 }
+/* yeni istek: kamera yerine balon bir an büyür (kuyruğu müşteriye bakar, oradan büyür) */
+.ko-kok .ko-balon.ko-balon-buyu {
+  z-index: 6;
+  animation: ko-balon-buyu 1.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+@keyframes ko-balon-buyu {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  22% {
+    transform: scale(1.32);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 .ko-kok .ko-b-ic {
   display: flex;
   align-items: flex-end;
@@ -538,8 +582,9 @@
   align-self: flex-end;
   display: grid;
   grid-template-columns: repeat(var(--sutun, 1), calc(64 * var(--u)));
-  grid-auto-rows: calc(66 * var(--u));
-  gap: calc(6 * var(--u));
+  /* iki sıralı rafın üst sırası geniş telefonda (844×390) ses düğmesinin altında kalmasın: sıra 62u, aralık 4u */
+  grid-auto-rows: calc(62 * var(--u));
+  gap: calc(4 * var(--u));
   align-content: end;
   padding: 0 calc(4 * var(--u)) calc(4 * var(--u));
   margin-bottom: calc(2 * var(--u));
@@ -561,7 +606,7 @@
   bottom: 0;
 }
 .ko-kok .ko-raf::before {
-  bottom: calc(72 * var(--u));
+  bottom: calc(66 * var(--u));
 }
 .ko-kok .ko-raf[data-n='1']::before,
 .ko-kok .ko-raf[data-n='0']::before {
@@ -983,6 +1028,36 @@
   width: calc(var(--t) * 0.36);
   height: calc(var(--t) * 0.5);
   transform: translateX(-50%);
+}
+/* Mino üfleyince: Gemini mumunun alevi kesilir (fitil kalır), fitilden minik duman yükselir */
+.ko-kok .ko-mum-sonuk {
+  clip-path: inset(30.5% 0 0 0);
+}
+.ko-kok .ko-k-mum.ko-sonuk::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  width: calc(var(--t) * 0.14);
+  aspect-ratio: 1;
+  margin-left: calc(var(--t) * -0.07);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 30%, rgba(214, 218, 230, 0.7) 32% 58%, transparent 62%);
+  animation: ko-duman 1.4s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes ko-duman {
+  from {
+    transform: translateY(40%) scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-140%) scale(1.5);
+    opacity: 0;
+  }
 }
 .ko-kok .ko-serin {
   position: relative;
@@ -1451,7 +1526,9 @@
   aspect-ratio: 3;
 }
 .ko-kok .ko-ob-ampul {
-  aspect-ratio: 5;
+  aspect-ratio: 4.81;
+  /* ampul dizisi uçlarından bağlanır: çatı külahı yoksa arka köşeden kola doğru hafif eğik (varliklar.ts → OTOBUS_YERI) */
+  transform: translate(-50%, -50%) rotate(var(--don, 0deg));
 }
 .ko-kok .ko-ob-jant {
   aspect-ratio: 1;
@@ -1708,7 +1785,7 @@
   place-items: end;
 }
 .ko-kok .ko-yas-perde.ko-kapakli .ko-yas-kutu {
-  padding: max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) 20px;
+  padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 }
 /* yatayda düğmeler sağda alt alta (Kino ortada, yüzü ve dondurması açıkta) */
 @media (orientation: landscape) {
@@ -1820,7 +1897,7 @@
 }
 .ko-kok .ko-aksam-jeton {
   position: absolute;
-  left: calc(var(--n) * 26px + var(--r) % 2 * 13px);
+  left: var(--x, 0px);
   bottom: calc(var(--r) * 14px);
   width: 34px;
   height: 34px;
@@ -1983,6 +2060,10 @@
   grid-area: raf;
   align-self: stretch;
   grid-auto-rows: calc(72 * var(--u));
+}
+/* üst raf tahtası alt sıranın üstünde (sıra 72u + aralık 4u) */
+.ko-kok .ko-gun[data-yon='dikey'] .ko-raf::before {
+  bottom: calc(76 * var(--u));
 }
 .ko-kok .ko-gun[data-yon='dikey'] .ko-kaplar {
   grid-area: kaplar;

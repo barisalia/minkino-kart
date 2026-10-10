@@ -170,6 +170,22 @@ export class KinoIsci {
     this.kalk = { bas: this.t, sure: ms / 1000, yan: yon > 0 ? 'sag' : 'sol', aci: 80 };
     this.kulakBas = this.t;
     const x = `${dx.toFixed(1)}px`;
+    if (Math.abs(dx) < r.width * 0.3) {
+      // yol kapalı (kalıplar, kâse yanında; koşu birkaç piksel kalırdı): yerinde, tabağa doğru eğilerek iki yüksek
+      // hop, patisi havada ("Buyurun!"). Zıplama kadar yüksek (balon ve fırına binmez).
+      this.oynat(
+        [
+          { transform: 'none' },
+          { transform: `translate(calc(${x} * .5), -28%) scale(.96, 1.05) rotate(${yon * 6}deg)`, offset: 0.24 },
+          { transform: `translate(${x}, 0) scale(1.07, .93)`, offset: 0.46 },
+          { transform: `translate(${x}, -22%) rotate(${yon * 6}deg)`, offset: 0.7 },
+          { transform: `translate(calc(${x} * .5), 0) scale(1.04, .96)`, offset: 0.88 },
+          { transform: 'none' },
+        ],
+        ms + 260,
+      );
+      return;
+    }
     // koşu: küçük hoplarla ileri (ilk yarı), pencerede bir an, sonra yerine
     this.oynat(
       [

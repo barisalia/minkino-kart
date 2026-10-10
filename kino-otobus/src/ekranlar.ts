@@ -75,6 +75,9 @@ export function acilisEkrani(app: Uygulama): Ekran {
     salla(otobus, 'ko-zipla');
   });
 
+  // gün kartına iki kez dokunulursa gün ekranı iki kez kurulmasın (açılış cümlesi yarıda kesilir)
+  let gidiliyor = false;
+  let kapali = false;
   const kartlar = Array.from({ length: GUN_SAYISI }, (_, i) => (i + 1) as Gun).map((g) => {
     const sirasiGeldi = g <= kayit.acikGun;
     const biten = kayit.biten.includes(g);
@@ -89,16 +92,18 @@ export function acilisEkrani(app: Uygulama): Ekran {
       sirasiGeldi ? null : h('i.ko-gun-kilit', { html: KILIT }),
     );
     b.addEventListener('click', async () => {
+      if (gidiliyor) return;
       if (!sirasiGeldi) {
         efekt.kilitli();
         salla(b, 'ko-hayir');
         return;
       }
       if (!erisimVarMi(`kino-otobus/gun-${g}`, app.kok)) return;
+      gidiliyor = true;
       efekt.secim();
       salla(b, 'ko-zipla');
       await bekle(sure(200));
-      app.git('gun', { gun: g });
+      if (!kapali) app.git('gun', { gun: g });
     });
     return b;
   });
@@ -122,6 +127,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   return {
     el,
     kapat() {
+      kapali = true;
       clearTimeout(selam);
       kilitBirak();
       kino.kapat();
@@ -140,14 +146,17 @@ function susResmi(s: OtobusSusu): string {
   return gorsel(ad[s.tur]!);
 }
 
-export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; mutlu?: number } = {}): Ekran {
+export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; mutlu?: number; kaydedildi?: boolean } = {}): Ekran {
   const gun = Math.max(1, Math.min(GUN_SAYISI, Math.floor(p.gun ?? 1))) as Gun;
   const kazanc = Math.max(0, Math.floor(p.kazanc ?? 0));
   const yas = kayit.yas ?? 'kucuk';
-  // günün jetonları ekran açılırken kaydedilir; sayım yalnız gösterir
-  const oncesi = kayit.jeton;
-  gunBitti(kayit, gun, kazanc, p.mutlu ?? 0);
-  kaydet();
+  // günün jetonları son müşteri ödeyince kaydedildi (gun.ts → gunuKaydet); sayım yalnız gösterir. Test kısayolunda
+  // (?test=1&ekran=aksam) burada kaydedilir.
+  const oncesi = p.kaydedildi ? Math.max(0, kayit.jeton - kazanc) : kayit.jeton;
+  if (!p.kaydedildi) {
+    gunBitti(kayit, gun, kazanc, p.mutlu ?? 0);
+    kaydet();
+  }
   let kapandi = false;
   const efekt_ = new Efekt(app.kok);
   const kino = dondurmaciKino(kayit.alinan.includes('kino-sapka'));
@@ -163,7 +172,11 @@ export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; m
   const yigin = h(
     'div.ko-aksam-jetonlar',
     {},
-    ...Array.from({ length: kazanc }, (_, i) => h('i.ko-aksam-jeton', { html: gorsel('jeton'), style: `--n:${i % SIRA};--r:${Math.floor(i / SIRA)}` })),
+    // sıralar yarım jeton kaydırılır (tuğla gibi); konum burada hesaplanır (CSS calc'ta % işlemi yok)
+    ...Array.from({ length: kazanc }, (_, i) => {
+      const r = Math.floor(i / SIRA);
+      return h('i.ko-aksam-jeton', { html: gorsel('jeton'), style: `--x:${(i % SIRA) * 26 + (r % 2) * 13}px;--r:${r}` });
+    }),
   );
   const kumbaraSayi = h('b.ko-kumbara-sayi', {}, String(oncesi));
   const kumbara = h('button.ko-kumbara.ko-aksam-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: gorsel('kumbara-kavanoz') }, kumbaraSayi);
@@ -291,6 +304,8 @@ export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; m
     }
     if (kapandi) return;
     kumbaraSayi.textContent = String(kayit.jeton);
+    // sayım bitti: yandaki sayaç kalkar, tek sayı (kavanozdaki) kalır
+    sayac.hidden = true;
     efekt.dogru();
     efekt_.parilti(hedef[0], hedef[1], 10, 0.8, '#FFE45C');
     await dukkanAc();

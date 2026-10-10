@@ -24,7 +24,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import { DosyaSeridi } from './dosya';
 import { AZ_HAREKET, calismaOdasi, calismaYenidenDiz, Dunya, koridor, koridorYenidenDiz, mutfak, yatakOdasi, type Oda } from './dunya';
-import { Efekt, oynat, parmak, pop } from './efekt';
+import { Efekt, oynat, parmak, parmaklariDurdur, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
 import {
   ADIMLAR,
@@ -186,9 +186,16 @@ class Vaka {
         /* yok say */
       }
     });
+    // el ipuçları hep birlikte durur (yerel "dur" tutamaçları temizliğe girmese de)
+    parmaklariDurdur(this.el);
     this.fon.durdur();
     this.buyutec.kapat();
     this.oy.kapat();
+  }
+  /** Kapanınca yapılacak iş; ekran çoktan kapandıysa hemen yapılır */
+  private temizle(f: () => void) {
+    if (this.kapali) f();
+    else this.temizlik.push(f);
   }
   private bekle = (ms: number): Promise<void> =>
     new Promise((r) => {
@@ -954,7 +961,7 @@ class Vaka {
     pamuk.ekHareket = null;
     pamukKap.classList.remove('sakli');
     oy.yerlesim('sag', 'iki');
-    muzikCal('film-surpriz', 0.45);
+    this.temizle(muzikCal('film-surpriz', 0.45));
     ses.pop();
     oy.kinoIfade('saskin', 2000);
     oy.minoTepki('sasir');
@@ -1073,7 +1080,7 @@ class Vaka {
     void oy.zipla('kino', 24);
     void oy.zipla('pamuk', 16);
     oy.minoTepki('dans');
-    muzikCal('film-kutlama', 0.5);
+    this.temizle(muzikCal('film-kutlama', 0.5));
     const r = this.el.getBoundingClientRect();
     if (!AZ_HAREKET) konfetiPatlat(this.el, r.width / 2, r.height * 0.3, 90);
     await oy.soyle(K.cozuldu, 'kino');

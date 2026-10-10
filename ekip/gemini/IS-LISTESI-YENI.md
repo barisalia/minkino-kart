@@ -264,6 +264,7 @@ Bölüm 1'in kapağı çizilmez: film motorundan kare alınır (`FILM-REHBERI.md
 
 ## Ek B · Mino'nun Pazarı: Tart Bakalım (3 görsel, bölüm A-E dışında)
 > 2026-10-10 · Oyun hazır, şimdilik yer tutucuyla çalışıyor: çürük domates = sağlam domates çizimi + kodla kahve lekeler; kompost kutusu = kodla SVG. Dosyalar aşağıdaki adlarla `assets/pazar/` içine konunca oyun **kendiliğinden** onları kullanır (kod değişmez: `pazar/src/tart-kantar.ts` → `meyveCizimi`, `pazar/src/tart-ekran.ts` → kompost).
+> 2026-10-10 · **Geldi, bağlandı** (Y1-Y3): ekip/illustrator/tart-isle.cjs (zemin kenardan akıtılır, kırpılır; çürük domates sağlam domatesin karesine aynı en ve tabanla oturur). Kapağın gövdeye oturuşu pazar/src/tart.css → .tb-kompost.tb-resimli.
 > Kaynak (yüklenecek): `assets/meyveler/domates.webp` (Y1 için birebir aynı domates). Stil örneği: `assets/pazar/sepet.webp`.
 
 | # | Dosya | Boyut | Şeffaf | İstem |

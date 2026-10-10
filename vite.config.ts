@@ -16,8 +16,8 @@ const SAYFALAR = {
   macera: 'macera/index.html',
   pazar: 'pazar/index.html',
   pasta: 'pasta/index.html',
-  // Kino'nun Otobüsü (dondurma): menüde henüz yok (uygulama/src/oyunlar.ts → KINO_OTOBUS_MENUDE); web'de /kino-otobus/ ile
-  // denenir; uygulama derlemesine bayrak açılana kadar girmez (aşağıda UYGULAMADA_YOK)
+  // Kino'nun Otobüsü (dondurma): menüde ve uygulama derlemesinde bayrağa bağlı (uygulama/src/oyunlar.ts →
+  // KINO_OTOBUS_MENUDE; kapalıyken aşağıda UYGULAMADA_YOK); web'de /kino-otobus/ her zaman açılır
   kinoOtobus: 'kino-otobus/index.html',
   dedektif: 'dedektif/index.html',
   giysin: 'giysin/index.html',

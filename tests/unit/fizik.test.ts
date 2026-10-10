@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Dunya } from '../../pazar/src/fizik';
-import { LEGEN_KESIT, legenDunyasi } from '../../pazar/src/tart-legen';
+import { IC_SAG, IC_SOL, LEGEN_KESIT, legenDunyasi } from '../../pazar/src/tart-legen';
 
 const kosu = (d: Dunya, sn: number) => {
   for (let t = 0; t < sn; t += 1 / 60) d.adim(1 / 60);
@@ -87,5 +87,23 @@ describe('çember fiziği', () => {
     }
     // 360 karelik benzetim bu makinede çok kısa sürer (telefonda kare başına < 1 ms)
     expect(ms).toBeLessThan(1500);
+  });
+
+  it('leğen: kenarın üstüne düşen meyve dudakta / sepetin önünde havada durmaz, içeri yuvarlanır', () => {
+    const k = LEGEN_KESIT;
+    const sy = k[0][1];
+    // dolu leğen: 10 meyve, ikisi kenara en yakın yerden (kantar.birak bırakma yerini bu sınırlara kırpar)
+    const d = legenDunyasi();
+    const cs = Array.from({ length: 8 }, (_, i) => d.ekle(IC_SOL + 9 + ((i * 23) % (IC_SAG - IC_SOL - 18)), -30 - i * 14, 8.5));
+    cs.push(d.ekle(IC_SOL + 9, -150, 8.5), d.ekle(IC_SAG - 9, -165, 8.5));
+    kosu(d, 8);
+    for (const c of cs) {
+      expect(c.uyuyor).toBe(true);
+      // gövdesi kenar çizgisinin üstüne çıkan meyve dudağın üstünde değil, içinde (rampaların arasında) durur
+      if (c.y < sy - c.r * 0.5) {
+        expect(c.x - c.r).toBeGreaterThan(IC_SOL - 0.6);
+        expect(c.x + c.r).toBeLessThan(IC_SAG + 0.6);
+      }
+    }
   });
 });

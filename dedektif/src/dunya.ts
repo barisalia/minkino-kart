@@ -34,6 +34,7 @@ import {
   yakinlikSiniri,
 } from './mantik';
 import { BAHCE_DIKEY, type BahceId } from './mantik2';
+import { SAHNE3_DIKEY, type Sahne3 } from './mantik3';
 import { filmKatmani, resim } from './resimler';
 
 export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -331,7 +332,7 @@ export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yat
  * Odaların arka plan resminin doğal boyu (px; resim yüklenene dek). Kamera bu resmi cihazda doğal pikselinin
  * PIKSEL_SINIR (×2.2) katından fazla büyütmez: DAR_YAKIN o sınıra kadar uygulanır (daha büyük çizim gelince tamamı).
  */
-const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536, 'bahce-ip': 2286, 'bahce-yol': 2286, 'bahce-golet': 2286, 'otobus-ic': 2286, 'otobus-yani': 2286, agac: 2286, kiler: 2286 };
+const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536, 'bahce-ip': 2286, 'bahce-yol': 2286, 'bahce-golet': 2286, 'otobus-ic': 1536, 'otobus-yani': 1536, agac: 1536, kiler: 1536 };
 
 export class Dunya {
   readonly el: HTMLElement;
@@ -455,11 +456,11 @@ export class Dunya {
     let yakin = dar ? (this.darYakin ?? DAR_YAKIN[this.oda?.id ?? 'calisma']) : 1;
     // dikey çalışma odası zaten ekran oranında: kamera az yaklaşır (halı ve ipuçları hep görünür)
     // Pencere çekimi (kadraj odanın üst şeridinde) hariç: pencere ince bir şerit, kelebek üst çubuğun altında kalmasın diye yaklaşılır
-    // dikey bahçe çizimleri de (mantik2.ts → BAHCE_DIKEY) aynı: tam en, az yakınlık
+    // dikey bahçe çizimleri (mantik2.ts → BAHCE_DIKEY) ve Vaka 3'ün dikey sahneleri (mantik3.ts → SAHNE3_DIKEY; tam enli kadrajda) de aynı: tam en, az yakınlık
     const id = this.oda?.id;
     const k0 = typeof this.kadrajK === 'function' ? this.kadrajK() : this.kadrajK;
     let kd = typeof k0 === 'string' ? KADRAJ[k0] : k0;
-    const dikeyOda = (id === 'calisma' && calismaDikey && kd[1] >= 0.05) || (!!id && id in BAHCE_DIKEY && BAHCE_DIKEY[id as BahceId]);
+    const dikeyOda = (id === 'calisma' && calismaDikey && kd[1] >= 0.05) || (!!id && id in BAHCE_DIKEY && BAHCE_DIKEY[id as BahceId]) || (!!id && id in SAHNE3_DIKEY && SAHNE3_DIKEY[id as Sahne3] && kd[2] - kd[0] >= 0.9);
     // bahçe dikeyde hiç yaklaşmaz (ip ve gök görünsün); çalışma odası hafif
     if (dikeyOda) yakin = Math.min(yakin, id === 'calisma' ? 1.1 : 1);
     const enCok = yakinlikSiniri(this.dogalBoy(), window.devicePixelRatio || 1);

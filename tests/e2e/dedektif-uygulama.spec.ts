@@ -1,7 +1,8 @@
 /**
  * Dedektif Mino uygulama derlemesinde (Capacitor benzeri sunucu): `npm run build:app` çıktısı (dist/) klasör adresleri
  * index.html'e çözmeyen, bilinmeyen her yolu kökteki index.html'e düşüren bir sunucudan açılır (Capacitor'ın yerel
- * sunucusu gibi). Vaka seçimi, Vaka 2'nin açılışı ve bir halkası, Vaka Dosyam; eksik dosya ve konsol hatası yok.
+ * sunucusu gibi). Vaka seçimi, Vaka 2'nin açılışı ve bir halkası, Vaka Dosyam; Vaka 3 yayın bayrağına göre (yayındaysa
+ * Vaka 2 çözülünce açılır, adresle atlanmaz; değilse hiçbir adresle açılmaz); eksik dosya ve konsol hatası yok.
  * Yalnız UYGULAMA_DIST verilince koşar (ör. UYGULAMA_DIST=dist, build:app'ten sonra).
  */
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
@@ -14,6 +15,8 @@ const KOK = process.env.UYGULAMA_DIST ? resolve(process.env.UYGULAMA_DIST) : '';
 const PORT = 4331;
 /** dedektif/src/mantik3.ts → VAKA3_YAYINDA (modül JSON içe aktardığı için kaynaktan okunur) */
 const VAKA3_YAYINDA = /VAKA3_YAYINDA = true/.test(readFileSync(resolve('dedektif/src/mantik3.ts'), 'utf8'));
+/** seçim ekranındaki dosya sayısı */
+const DOSYA = VAKA3_YAYINDA ? 3 : 2;
 const TUR: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript',
@@ -43,7 +46,7 @@ test.beforeAll(async () => {
 });
 test.afterAll(() => new Promise<void>((r) => (sunucu ? sunucu.close(() => r()) : r())));
 
-test('Uygulama derlemesi: Dedektif iki vaka, Vaka 2 açılır ve oynanır, dosyalar yerelde', async ({ page }) => {
+test('Uygulama derlemesi: Dedektif vakaları, Vaka 2 açılır ve oynanır, dosyalar yerelde', async ({ page }) => {
   test.skip(test.info().project.name !== 'iphone', 'bir kez yeter');
   const sorunlar: string[] = [];
   page.on('console', (m) => m.type() === 'error' && sorunlar.push(`konsol: ${m.text()}`));
@@ -51,7 +54,7 @@ test('Uygulama derlemesi: Dedektif iki vaka, Vaka 2 açılır ve oynanır, dosya
   page.on('response', (r) => r.status() >= 400 && sorunlar.push(`${r.status()} ${r.url()}`));
   // uygulamada her adres açıkça index.html (src/kabuk/sayfa.ts); klasör adresi menüye düşer
   await page.goto(`http://localhost:${PORT}/dedektif/index.html?test=1&sifirla=1&cozuldu=1`);
-  await expect(page.locator('.dd-klasor')).toHaveCount(2);
+  await expect(page.locator('.dd-klasor')).toHaveCount(DOSYA);
   await page.locator('.dd-klasor[data-vaka="vaka2"]').click();
   await expect.poll(() => page.locator('.dd-vaka').getAttribute('data-adim'), { timeout: 30_000 }).toBe('ara-ne');
   // bahçe resmi ve Vaka 2 çizimleri yüklendi (bozuk resim yok)
@@ -61,7 +64,7 @@ test('Uygulama derlemesi: Dedektif iki vaka, Vaka 2 açılır ve oynanır, dosya
   await page.screenshot({ path: 'tests/screens/vaka2-uygulama.png' });
   // geri: vaka seçimi; Vaka Dosyam iki vakalı
   await page.locator('.dd-vaka .dd-geri').click();
-  await expect(page.locator('.dd-klasor')).toHaveCount(2);
+  await expect(page.locator('.dd-klasor')).toHaveCount(DOSYA);
   await page.locator('.dd-dosya-dugme').click();
   await expect(page.locator('.dd-vaka-kart[data-vaka="vaka2"]')).toHaveCount(1);
   expect(sorunlar).toEqual([]);
@@ -69,6 +72,37 @@ test('Uygulama derlemesi: Dedektif iki vaka, Vaka 2 açılır ve oynanır, dosya
   // içindeki her adres açıkça index.html (src/kabuk/sayfa.ts); Dedektif'in kendi ekranları sayfa değiştirmez
   await page.goto(`http://localhost:${PORT}/dedektif/?test=1`);
   await expect(page.locator('.dd-klasor')).toHaveCount(0);
+});
+
+test('Uygulama derlemesi: Vaka 3 yayında: üçüncü dosya, Vaka 2 çözülmeden kilitli (adresle de açılmaz); çözülünce açılır', async ({ page }) => {
+  test.skip(test.info().project.name !== 'iphone', 'bir kez yeter');
+  test.skip(!VAKA3_YAYINDA, 'Vaka 3 yayında değil');
+  const sorunlar: string[] = [];
+  page.on('console', (m) => m.type() === 'error' && sorunlar.push(`konsol: ${m.text()}`));
+  page.on('pageerror', (e) => sorunlar.push(`hata: ${String(e)}`));
+  page.on('response', (r) => r.status() >= 400 && sorunlar.push(`${r.status()} ${r.url()}`));
+  // Vaka 2 çözülmedi: üçüncü dosya kilitli; dokununca da ?vaka=3 ile de açılmaz
+  await page.goto(`http://localhost:${PORT}/dedektif/index.html?test=1&sifirla=1&cozuldu=1`);
+  await expect(page.locator('.dd-klasor')).toHaveCount(3);
+  await expect(page.locator('.dd-klasor[data-vaka="vaka3"]')).toHaveClass(/dd-kilitli/);
+  await page.locator('.dd-klasor[data-vaka="vaka3"]').click();
+  await page.waitForTimeout(400);
+  await expect(page.locator('.dd-acilis')).toHaveCount(1);
+  await page.goto(`http://localhost:${PORT}/dedektif/index.html?vaka=3`);
+  await expect(page.locator('.dd-klasor')).toHaveCount(3);
+  await expect(page.locator('.dd-vaka3')).toHaveCount(0);
+  // Vaka 2 çözülünce açılır: kapak fotoğrafı yerelde yüklü, vaka başlar
+  await page.goto(`http://localhost:${PORT}/dedektif/index.html?test=1&sifirla=1&cozuldu=2`);
+  const d3 = page.locator('.dd-klasor[data-vaka="vaka3"]');
+  await expect(d3).not.toHaveClass(/dd-kilitli/);
+  await expect.poll(() => d3.locator('.dd-klasor-foto img').evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth >= 1024)).toBe(true);
+  await page.screenshot({ path: 'tests/screens/vaka3-uygulama-secim.png' });
+  await d3.click();
+  await expect.poll(() => page.locator('.dd-vaka').getAttribute('data-adim'), { timeout: 30_000 }).toMatch(/^(giris|ara-sayi)$/);
+  await page.waitForTimeout(800);
+  const bozuk = await page.evaluate(() => [...document.images].filter((i) => i.complete && i.naturalWidth === 0 && i.getAttribute('src')).map((i) => i.src));
+  expect(bozuk).toEqual([]);
+  expect(sorunlar).toEqual([]);
 });
 
 test('Uygulama derlemesi: gizli Vaka 3 hiçbir adres parametresiyle açılmaz; Kino’nun Otobüsü pakette yok', async ({ page }) => {
