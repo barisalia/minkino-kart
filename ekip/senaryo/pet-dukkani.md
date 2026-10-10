@@ -1,6 +1,7 @@
 # Pati Dükkânı (çalışma adı) · pet dükkânı işletme oyunu
 
-> **Durum: TASLAK, Barış onayı bekliyor** (2026-10-10). Barış "tamam" demeden kodcuya ve Gemini'ye gitmez.
+> **Durum: ONAYLANDI (2026-10-10), üretim başlıyor.** Barış'ın kararları §20'de. Gemini'nin ilk iş listesi: [IS-LISTESI-PATI.md](../gemini/IS-LISTESI-PATI.md).
+> Barış'ın kararıyla **Kino ve Mino bu oyunda yok.** Dükkânı bir insan işletiyor: **Nehir abla** (§10).
 > Barış'ın fikri: "Pet shop işletmeciliği gibi bir iş yapma oyunu yapalım, petleri zaten toplu üretirsin, çok güzel kaliteli bir iş yapılabilir."
 > Bu belgenin kuralı (Kino'nun Otobüsü dersinden): **Tezgâh yok, sipariş yok, "müşteri gelir, hayvan ister, ver" yok, jeton yok, kumbara yok.** Hayvanlar bir şey istemez, söylemez. Çocuk onlara bakar, bedenlerinden anlar ve eliyle bakımlarını yapar.
 
@@ -81,11 +82,11 @@
 
 ## 4. Tek cümle ve iki ilke
 
-**Tek cümle:** Bugün Pati Dükkânı senin. Sabah kepengi açıyorsun, gün boyu yavru hayvanlara bakıp ne hissettiklerini bedenlerinden anlıyor ve eline göre bakıyorsun. Akşam hepsini uyutup dükkânı kapatıyorsun. Bölüm sonunda her biri sevgiyle yeni yuvasına gidiyor.
+**Tek cümle:** Nehir abla'nın Pati Dükkânı'nda bugün sen onun ortağısın. Sabah kepengi açıyorsun, gün boyu yavru hayvanlara bakıp ne hissettiklerini bedenlerinden anlıyor ve eline göre bakıyorsun. Akşam hepsini uyutup dükkânı kapatıyorsun. Bölüm sonunda her biri sevgiyle yeni yuvasına gidiyor.
 
-**İlke 1 · Dükkân hayvan satmaz.** Para, fiyat ve kasa yok. Pati Dükkânı hayvanların bakıldığı ve yuva beklediği bir yer; rafta mama ve oyuncak da var. Hayvanlar **sahiplendirilir**. Bugünün ailelerine ve çocuk uygulamasına en uygun yol bu. (ONAY BEKLİYOR, §20.)
+**İlke 1 · Dükkân hayvan satmaz.** Para, fiyat ve kasa yok. Pati Dükkânı hayvanların bakıldığı ve yuva beklediği bir yer; rafta mama ve oyuncak da var. Hayvanlar **sahiplendirilir**. Bugünün ailelerine ve çocuk uygulamasına en uygun yol bu. (Barış onayladı: "satılmasın".)
 
-**İlke 2 · Dükkân hayvanları gerçek hayvan gibidir.** Dört ayak üstünde dururlar, giysi giymezler, konuşmazlar. Kino ve Mino gibi konuşan, giyinen karakterlerden böylece ayrılırlar (Mickey ile Pluto gibi). Seslendirme yok, yalnız hayvan sesleri var: "hav", "miyav", "vuik vuik", cik cik. (ONAY BEKLİYOR, §20.)
+**İlke 2 · Dükkân hayvanları gerçek hayvan gibidir.** Dört ayak üstünde dururlar, giysi giymezler, konuşmazlar. Dükkânda konuşan tek kişi insan olan Nehir abla'dır; hayvanla insan arasındaki fark böylece nettir. Seslendirme yok, yalnız hayvan sesleri var: "hav", "miyav", "vuik vuik", cik cik. (Barış onayladı.)
 
 ---
 
@@ -118,7 +119,7 @@ Bölüm başına 3 hayvan. Hepsi yavru, iri başlı, kocaman gözlü.
 | **Uykulu** | esner, gözleri yarı kapanır, başı düşer | yastık | tavan lambasının ipini çeker, ışık kısılır; kuşa örtü indirir; köpeğe peluş koyar | kıvrılır, iç çeker, uyur. Uyurken "zzz" yerine kulak ucu seğirir | Uykulu hayvana top: top yanından yuvarlanır, hayvan bakmaz bile |
 | **Üşümüş** | büzülür, titrer, kulakları düşük | kar tanesi | battaniyeyi sürükleyip üstüne bırakır; kaplumbağada ısı lambasını açar | battaniyenin içinde kıvrılır, kuyruk dışarıdan pıt pıt vurur | Üşüyen hayvana su: kokladı, titremeye devam |
 | **Oyun istiyor** | oyun eğilmesi, zıplar, oyuncağını getirir | top | köpeğe top fırlatır, kediye tüy sallar, hamsterin çarkını çevirir, kuşa çan çalar | kovalar, yakalar, getirir, koşar | Oyun isteyene battaniye: battaniyeyi kafasına geçirip hayalet gibi koşar (komik) |
-| **Korkmuş** (gök gürültüsü, yeni gelen) | yere yapışır, geri çekilir, gözleri kocaman | titreyen kalp | eli yavaşça yaklaştırıp yavaş okşar; kediyi kutusunda bırakır (bazı hayvanlar yalnız kalmak ister); balığın ışığını kısar | yavaş yavaş gevşer, sonra eline sokulur | Hızlı el: hayvan biraz daha geri çekilir, Kino "yavaş yavaş" der |
+| **Korkmuş** (gök gürültüsü, yeni gelen) | yere yapışır, geri çekilir, gözleri kocaman | titreyen kalp | eli yavaşça yaklaştırıp yavaş okşar; kediyi kutusunda bırakır (bazı hayvanlar yalnız kalmak ister); balığın ışığını kısar | yavaş yavaş gevşer, sonra eline sokulur | Hızlı el: hayvan biraz daha geri çekilir, Nehir abla "yavaş yavaş" der |
 | **Tüyleri karışık** | arka ayağıyla kulağını kaşır, tüyleri kabarık | fırça | fırçayı tüy yönünde uzun uzun sürter (5-6: yön önemli) | gözlerini kapar, keyiften esner; tüy yumakları yere düşer | Ters yönde fırçalama: tüyler diken diken olur, hayvan silkelenir |
 
 - **Bir hayvan aynı anda tek ihtiyaç gösterir.** 5-6'da salonda aynı anda en çok iki hayvan bir şey ister.
@@ -136,7 +137,7 @@ Bölüm başına 3 hayvan. Hepsi yavru, iri başlı, kocaman gözlü.
 ### 7b. Sabah açılışı (~15 sn, her gün, el ritüeli)
 - Çocuk kepengi parmağıyla yukarı sürükler (takır takır sesi). Kepenk açılınca camın ardından hayvanlar görünür ve hepsi kapıya koşar.
 - Kapıdaki tabelaya dokunur, tabela döner: ay yüzlü lacivert taraf gider, güneş yüzlü yeşil taraf gelir. Kapı zili çalar. Tabelada yazı yoktur.
-- Mino: *"Günaydın! Dükkân açıldı!"* Kino koşarak gelir, Fındık onu yalar.
+- Nehir abla kapının yanında: *"Günaydın ortağım!"* Fındık ona koşar, bacaklarına sarılır, Nehir abla gülerek çömelir ve Fındık yüzünü yalar.
 - 3. günde ritüel kısalır: kepenge bir dokunuş yeter.
 
 ### 7c. Salon (oyunun asıl ekranı)
@@ -148,14 +149,14 @@ Bölüm başına 3 hayvan. Hepsi yavru, iri başlı, kocaman gözlü.
        │ │  minder, çit     │  │  tırmalama ağacı │  │   (rafın üstü)   │         │  3 köşe yan yana,
        │ │   [Fındık]       │  │   [Tarçın]       │  │    [Pırıl]       │         │  her biri ~260 px
        │ └──────────────────┘  └──────────────────┘  └──────────────────┘         │
-       │ [Mino]   kapı, tabela, mama rafı, hatıra panosu      [atölye köşesi ✧]  │
+       │ [Nehir]  kapı, tabela, mama rafı, hatıra panosu      [atölye köşesi ✧]  │
  y 390 └──────────────────────────────────────────────────────────────────────────┘
 ```
 - **Tek ekran, kaydırma yok.** Salon onaylı stilde düz karşıdan bir oda: duvarda raflar, mama torbaları, hatıra panosu, kapı.
 - **Hayvanlar salonda en az 150 px boyunda.** Hâlleri uzaktan okunacak kadar abartılıdır: titreme çizgileri, sarkan kulak, kocaman esneme.
 - **Köşeye dokunmak** kamerayı o köşeye yaklaştırır (7d). Pazar'ın kamerası (`pazar/src/kamera.ts`).
 - **Atölye köşesi** (sağ alt): mini iş olunca parlar (§9). İsteğe bağlıdır.
-- **Mino** sol altta anlatıcıdır. Kino salonda dolaşır, hayvanlarla oynar, yanlış yaptıklarını gösterir (§10).
+- **Nehir abla** sol altta, belden yukarı durur: anlatıcı ve rehberdir. Ara sıra salona yürür, bir hayvanı kucaklar, mama torbalarını düzeltir, yerine döner (§10). Hayvanlar ona hep bir şey yapar (yalar, omzuna tırmanır).
 - **Gün sonu:** güneş sağ kenara varınca salonun ışığı turuncuya döner. Bu bir zaman sınırı değildir. Gün, planındaki bakım anları bitince akşama döner (§8a).
 
 ### 7d. Yakın çekim (bakımın yapıldığı yer)
@@ -181,22 +182,22 @@ Bölüm başına 3 hayvan. Hepsi yavru, iri başlı, kocaman gözlü.
 - Çocuk topu fiskeyle atar (hız ve yön parmaktan). Fındık koşar, topu ağzına alır, geri getirir, ayağının dibine bırakır. 3 atıştan sonra yorulur, dili dışarıda çimene yatar.
 
 ### 7f. Akşam kapanışı (~40 sn, oyunsuz değil ama sakin)
-- Salonun ışığı turuncu, pencereden gün batımı. Mino: *"Herkes uyusun."*
+- Salonun ışığı turuncu, pencereden gün batımı. Nehir abla: *"Herkes uyusun."*
 - Her hayvanı sırayla yatırmak: battaniye, peluş, kafes örtüsü, akvaryum ışığı. Her biri tek dokunuşla ya da sürüklemeyle yapılır, kısa ve yumuşak.
 - Son iş: çocuk tavan lambasının ipini çeker, salon kararır, gece lambası yanar. Kepengi aşağı indirir, tabelayı ay yüzüne çevirir.
-- **Sürpriz (Bölüm 2):** Kepenk inince Fıstık uyanır ve çarkta deli gibi koşar. Mino güler: *"Fıstık gece hayvanı!"*
+- **Sürpriz (Bölüm 2):** Kepenk inince Fıstık uyanır ve çarkta deli gibi koşar. Nehir abla güler: *"Fıstık gece hayvanı!"*
 - Günün fotoğrafı: O günün en çok tekrar edilen anı (Tarçın'ın tüye atlaması gibi) polaroid olur, panoya uçar.
 
 ### 7g. Yuvaya gidiş (bölüm sonu, ~45 sn)
 - Kapı zili çalar. Aile kapıda (mevcut insan karakter iskeletleri, §10).
 - Çocuk **yuva sepetini** hazırlar: hayvanın o bölümde en çok oynadığı oyuncak, battaniyesi ve peluşu sepetin yanında parlar. Çocuk onları sepete koyar. Hangisini koyduğu serbesttir.
 - Çocuk hayvanın tasmasının rengini seçer (kırmızı, mavi, sarı) ve takar (köpek, kedi, tavşan, kobay). Hayvan sepete zıplar.
-- Veda: hayvan çocuğa son bir kez sokulur, aile el sallar, kapı kapanır. Mino: *"Fındık'ın artık bir evi var!"*
+- Veda: hayvan çocuğa son bir kez sokulur, aile el sallar, kapı kapanır. Nehir abla bir an gözlerini siler, gülümser: *"Fındık'ın artık bir evi var!"*
 - Kalıcı iz: Polaroid panoya asılır. Sonraki bölümlerde aile hayvanla dükkânın önünden geçer, camdan el sallar (2 sn, arka plan anı).
-- **Diken (Bölüm 3) yuvaya gitmez:** Gece bahçede çocuk kutunun kapağını açar. Diken çalılığa doğru yürür, bir kez dönüp bakar. Mino: *"Diken evine döndü."*
+- **Diken (Bölüm 3) yuvaya gitmez:** Gece bahçede çocuk kutunun kapağını açar. Diken çalılığa doğru yürür, bir kez dönüp bakar. Nehir abla: *"Diken evine döndü."*
 
 ### 7h. Dikey telefon (390×844)
-- Salon: üç köşe alt alta değil, yan yana ama ekranın üst yarısında. Alt yarıda Mino, mama rafı ve atölye köşesi büyük bir şerit olur.
+- Salon: üç köşe alt alta değil, yan yana ama ekranın üst yarısında. Alt yarıda Nehir abla, mama rafı ve atölye köşesi büyük bir şerit olur.
 - Yakın çekim: yaşam alanı üstte, hayvan büyük; bakım rafı altta, 4 eşya yan yana.
 
 ---
@@ -220,8 +221,8 @@ Bölüm başına 3 hayvan. Hepsi yavru, iri başlı, kocaman gözlü.
 | Bölüm | Hayvanlar | Gün 1 olayı | Gün 2 olayı | Gün 3 olayı | Mini işler | Final |
 |---|---|---|---|---|---|---|
 | **1 · Dükkân Açılıyor** (ücretsiz) | Fındık, Tarçın, Pırıl | **Yeni gelenler:** üç kutu, köşe kurma | **Gök gürültüsü:** üçü de korkar, her biri başka biçimde sakinleşir (Fındık sarılmak ister, Tarçın kutusunda yalnız kalmak ister, Pırıl'ın ışığı kısılır) | **Tüy günü:** Fındık ile Tarçın tüy döker, fırçalama, süpürme | süpürme, yumak sarma | Fındık Can'ın ailesine, Tarçın Elif'e, Pırıl Deniz'e gider |
-| **2 · Gece Hayvanı** | Pofuduk, Fıstık, Limon | **Ürkek tavşan:** Pofuduk kutudan çıkmaz, yavaş el | **Fıstık uyuyor:** gündüz herkes sessiz, Fıstık'ı uyandırmamak. Kino parmak ucunda yürür | **Limon'un şarkısı:** çan ezgisi, akşam gece partisi (Fıstık çarkta) | karton ev, raf dizme | Pofuduk Zeynep'e, Fıstık Ada'ya, Limon Ege'nin ailesine |
-| **3 · Kirpi Misafir** | Tospik, Kurabiye, Diken | **Bahçede yaralı kirpi:** Diken'in sessiz kutusu | **Karlı gün:** herkes üşür, ısı lambası, battaniyeler | **Diken iyileşti:** gece bahçe, doğaya dönüş | yumak sarma, karton ev | Tospik Kino'nun ailesine (Lokum'un en sevdiği), Kurabiye Can'a (Fındık'la arkadaş olur), Diken doğaya |
+| **2 · Gece Hayvanı** | Pofuduk, Fıstık, Limon | **Ürkek tavşan:** Pofuduk kutudan çıkmaz, yavaş el | **Fıstık uyuyor:** gündüz herkes sessiz, Fıstık'ı uyandırmamak. Nehir abla parmak ucunda yürür, çocuğa "şşş" yapar | **Limon'un şarkısı:** çan ezgisi, akşam gece partisi (Fıstık çarkta) | karton ev, raf dizme | Pofuduk Zeynep'e, Fıstık Ada'ya, Limon Deniz'e (Pırıl'ın yanına) |
+| **3 · Kirpi Misafir** | Tospik, Kurabiye, Diken | **Bahçede yaralı kirpi:** Diken'in sessiz kutusu | **Karlı gün:** herkes üşür, ısı lambası, battaniyeler; Ege annesiyle uğrar (§10c) | **Diken iyileşti:** gece bahçe, doğaya dönüş | yumak sarma, karton ev | Tospik Ege'nin ailesine (Ege'nin en sevdiği), Kurabiye Can'a (Fındık'la arkadaş olur), Diken doğaya |
 
 - Bölüm 1'in hayvanları Bölüm 2'de yoktur, yuvalarına gitmişlerdir. Dükkân her bölümde yeni yüzlerle canlanır. Eski dostlar yalnız camdan el sallayarak görünür.
 - **Güven, ilerlemenin kendisidir:** Her hayvanın ilk günkü hâli ürkek ya da coşkun, üçüncü günkü hâli çocuğa alışmış ve sakin. Örneğin: Pofuduk Gün 1'de yalnız tünelden bakar, Gün 2'de yavaş ele burnunu uzatır, Gün 3'te çocuk köşeye girer girmez kendisi yanına zıplar. Bu üç basamak hayvanın poz setinden gelir. Yeni sistem değildir.
@@ -245,7 +246,7 @@ Barış'ın sevdiği "temizlik, eşya üretimi gibi küçük işler". Atölye k�
 | İş | Ne olur | El hareketi | Yaşa göre | Sonucu (kalıcı iz) | Hangi oyunumuza benziyor, farkı ne? |
 |---|---|---|---|---|---|
 | **Süpürme** | Fırçalamadan sonra salona tüy yumakları, samandan çöpler düşer. Taşan su gölcüğü de olabilir. | Süpürgeyi sürükle, tüyler süpürgenin önünde birikip top olur, faraşa it | 3-4: dokunuş da süpürür. 5-6: tüyler tek yığında toplanmalı | Toplanan tüy yumağı kediye oyuncak olur. Tarçın onu kovalar | Kino'nun Otobüsü'ndeki tezgâh silme yerinde ovmaktı. Burada çöpleri **bir yere toplamak** var, sürükleyerek it |
-| **Yumak sarma** (eşya üretimi) | Atölye masasında bir makara ip | Parmağı makaranın etrafında **daire çizdirerek** sar, yumak büyür. Rengi çocuk seçer (5 renk) | 3-4: her yöne daire sayılır. 5-6: yumak büyüdükçe daire büyür | Yeni yumak oyuncak rafına uçar. Kedi ya da kobay onunla oynar. Mino rengi söyler: *"Kırmızı yumak!"* | Bizde dairesel el hareketi yok. Yeni |
+| **Yumak sarma** (eşya üretimi) | Atölye masasında bir makara ip | Parmağı makaranın etrafında **daire çizdirerek** sar, yumak büyür. Rengi çocuk seçer (5 renk) | 3-4: her yöne daire sayılır. 5-6: yumak büyüdükçe daire büyür | Yeni yumak oyuncak rafına uçar. Kedi ya da kobay onunla oynar. Nehir abla rengi söyler: *"Kırmızı yumak!"* | Bizde dairesel el hareketi yok. Yeni |
 | **Karton ev** (eşya üretimi) | Boş bir karton kutu | Kapı çizgisini parmakla izle (kesilir), kapağı katla (yukarı sürükle), damgayla süsle (pati, kalp, yıldız) | 3-4: kapı yolu kalın ve kısa. 5-6: yuvarlak kapı, pencere de var | Kutu ev, Tarçın'ın ya da Pofuduk'un köşesine konur, hayvan hemen içine girer, kafası kapıdan çıkar | Çiz Canlansın'ın iz sürmesi kullanılır ama amaç çizmek değil, bir şey **yapmak**. Damga serbest süsleme |
 | **Raf dizme** | Mama ve oyuncak kutuları karışmış | Kutuları rafa sürükle | 3-4: renge göre (kırmızı kutular bir rafa). 5-6: renge ve büyüklüğe göre (büyükten küçüğe) | Raf düzgün olunca dükkânın vitrini ışıl ışıl olur, kapıdan bir yavru kedi dışarıdan bakıp el sallar | Pazar'daki say ve ver değil, **sınıflama**. Doğru cevap yok sayılmaz, sıralama serbest; uyan kutu "tık" diye oturur |
 
@@ -253,13 +254,52 @@ Barış'ın sevdiği "temizlik, eşya üretimi gibi küçük işler". Atölye k�
 
 ## 10. Karakterler
 
-- **Çocuk:** Dükkânın bugünkü sahibidir. Mino ona dükkânı emanet etmiştir.
-- **Mino (anlatıcı):** Sol altta durur. Her şeyi o söyler, kısa ve sıcak. Kedileri iyi anlar ve 5-6 yaşta ipuçlarını "kedi gözüyle" verir: *"Kuyruğu sallanıyor, sıkıldı."* Önlüklü 4 poz.
-- **Kino (sakar yardımcı):** Hevesli ve hızlıdır. Çocuğun yerine yanlış yapar ki çocuk yapmasın. Pofuduk'a koşar, Pofuduk kaçar; Kino kulaklarını indirir: *"Ayy, çok hızlıydım."* Fındık onu yalar, Kino kıkırdar. Gök gürültüsünde Fındık'la birlikte o da battaniyenin altına girer. Yardım merdiveninde (18 sn) ilk adımı o gösterir. Önlüklü 6 poz.
-- **Kino'nun hangi çizimi:** onaylı stildeki Seri 2 Kino (`assets/karakter/kino-yeni`). Mino da Seri 2 kitinden. Böylece dükkânla aynı dünyada durur.
-- **Lokum (konuk, Bölüm 3):** Kino'nun 2 yaşındaki kardeşi, Babaanne'yle uğrar. Tospik'i çok sever, ona hızlı dokunmak ister. Çocuk Lokum'a "yavaş el"i gösterir (çocuğun elini Lokum'un patisinin üstünde yavaşça kaydırır). Bölüm sonunda Tospik Kino'nun ailesine gider.
-- **Aileler:** Can, Elif, Deniz, Zeynep, Ada ve Ege'nin annesi (mevcut insan iskeletleri). Yalnız kapıda belirir, el sallar, sepeti alır. Yeni poz gerekmez: sepet, ailenin kolunun önüne kodla yerleştirilir.
-- **Yeni karakter yok.** Yalnız 9 hayvan yeni.
+Barış'ın kararı: **Kino ve Mino bu oyunda yok.** Dükkânın başında bir insan var: **Nehir abla**. Mino'nun anlatıcılığı da Kino'nun yardımcılığı da ona geçti. Tek karakter yetiyor (ikincinin neden gerekmediği §10b'de).
+
+- **Çocuk:** Nehir abla'nın **ortağı**dır. Dükkânın bakım işlerini o yapar, Nehir abla yol gösterir.
+
+### 10a. Nehir abla (dükkânı işleten)
+- **Neden genç bir yetişkin, neden çocuk değil:**
+  - Dükkânı bir çocuğun işletmesi 3-6 yaşa da anneye de inandırıcı gelmez. Canlılara bakan bir yerde güvenilir bir büyük gerekir.
+  - "Abla" Türk çocuğuna hem yakın hem güvenli gelir: anne kadar büyük değildir, öğretmen kadar resmî değildir. Çocuk onun yanında "büyük işi" yapan ortaktır ve kendini önemli hisseder.
+  - Çocuk yaşta bir dükkân sahibi, çocuğun kendi rolünü (ortak) gölgelerdi; iki çocuktan hangisinin işi yaptığı karışırdı.
+  - Mevcut anlatıcı sesi genç bir kadın sesi. Nehir abla bu sesle konuşabilir; kulak alışkın, yeni ses gerekmez (son karar Barış'ın, §15).
+- **Ad:** **Nehir.** Kısa, yumuşak, 3 yaşındaki çocuğun söyleyebileceği bir ad. Kino ailesindeki (Defne, Murat, Nazlı, Hasan) ve oyunlardaki (Ada, Can, Elif, Deniz, Zeynep, Ege, Su) adlarla çakışmaz. Çocuk ona "Nehir abla" der.
+- **Yaş ve boy:** 22-25 yaş. Boyu anne iskeletiyle aynıdır: çocuk karakterlerin yaklaşık **1.35 katı** (insan karakter boyu kuralı). Salonda hayvan köşelerinin üst kenarına kadar uzanır. Yakın çekimde belden yukarısı ekranın kenarında büyük görünür, hiçbir zaman minicik kalmaz. Hayvanlar ona göre ölçülür: Fındık dizine kadar gelir, Tarçın kucağına sığar, Fıstık avucuna.
+- **Görünüş:**
+  - yuvarlak, sevimli yüz; kocaman koyu kahve gözler; burnunda ve yanaklarında birkaç düz çil; yumuşak pembe yanak lekeleri;
+  - kalın, dalgalı kestane saç, tepede dağınık bir topuz; topuza takılı sarı bir kurşun kalem; alnına düşen iki kısa tutam;
+  - krem renkli, kolları dirseğe kadar kıvrılmış uzun kollu tişört;
+  - **çimen yeşili önlük**: göğüste küçük bir pati izi nakışı (yazı yok), önde iki büyük cep. Sol cepten bir havuç ucu, sağ cepten bir fırça sapı ve bir kemik bisküvi görünür;
+  - bileğinde dükkânın yumaklarından örülmüş rengârenk bir ip bileklik;
+  - bol kesim hardal sarısı pantolon, paçaları bir kez kıvrık; beyaz-turuncu spor ayakkabı;
+  - önlüğe yapışmış birkaç tüy (krem ve turuncu, tek tük, düz çizgiyle; doku değil).
+  - Renkler (ilk istemde): ten #F2C6A0, saç #7A4A2A, önlük #7FBF6A, tişört #FFF3DC, pantolon #E5B54A, ayakkabı #FFFFFF ve #F28C3A.
+- **Kişilik:** Sıcak, sakin, hep gülümseyen; biraz dalgın (kalemini her seferinde topuzunda bulur). Her hayvanı adıyla ve huyuyla tanır, onlara "minik" der. Hiç telaşlanmaz; gök gürültüsünde bile yumuşak konuşur. Yuvaya gidişlerde bir an gözleri dolar, sonra en çok o sevinir.
+- **Komik yanı:** Sakarlık değil, hayvanların ona sevgisi. Fındık her sabah yüzünü yalar. Tarçın omzuna tırmanıp topuzuna yaslanır. Limon topuzuna konup kalemi gagalar. Kurabiye cebindeki havucu çalar. Nehir abla her seferinde kıkırdar: *"Hihi, gıdıklıyor!"*
+- **Konuşma tarzı:**
+  - Çocuğa "ortağım" der: *"Günaydın ortağım!"*
+  - "Biz" diliyle, emir yerine davetle konuşur: *"Battaniyeyi örtelim."*
+  - Soru sormaz, gösterir: *"Bak, kulakları düştü."*
+  - "Yanlış" demez, hayvanın gözünden söyler: *"Pofuduk biraz ürktü. Yavaşça deneyelim."*
+  - Övgüsünü hayvan üzerinden yapar: *"Fındık sana bayıldı!"*
+  - Cümleleri kısadır: en çok 6 kelime, ~30 harf.
+- **Görevleri:**
+  - **Anlatıcı:** sol altta belden yukarı durur, konuşurken ağzı oynar (6 ağız, `src/audio/dudak.ts`).
+  - **İpucu:** 5-6 yaşta beden dilini adlandırır: *"Kuyruğu sallanıyor, sıkıldı."*
+  - **Yardım merdiveni:** 18 sn'de çömelip ilk adımı yapar (*"Bak, böyle!"*), 30 sn'de kalanını birlikte bitirir (§14).
+  - **Ritüeller:** sabah kepengi birlikte kaldırırlar, tabelayı çocuk çevirir. Akşam eksik kalan bakımları o tamamlar.
+  - **Yuvaya gidiş:** sepeti aileye o uzatır, hayvanla son kez sarılır.
+  - **Yanlışı göstermek** (Kino'nun eski işi) ona verilmez; bir büyüğün yanlış yapması öğretici durmaz. Yerine bir kez, Bölüm 2'nin ilk gününde, anısını anlatır: *"Ben ilk gün çok hızlı gitmiştim."* Bölüm 3'te bunu küçük konuk Ege gösterir (§10c).
+
+### 10b. İkinci karakter neden yok
+Kino'nun iki işi vardı: güldürmek ve yanlışı göstermek. Güldürmeyi hayvanlar yapıyor (Nehir abla'yı yalayan, topuzuna konan, cebini soyan hayvanlar). Yanlışı hayvanların kendi tepkisi gösteriyor (hızlı ele kaçan tavşan, kabuğuna çekilen kaplumbağa). İkinci bir insan hem görsel bütçeyi büyütür hem Barış'ın "karmaşık olmasın" ölçüsüne ters düşer.
+
+### 10c. Konuklar ve aileler
+- **Ege (konuk, Bölüm 3, Gün 2):** Annesinin kucağında gelir (mevcut iskeletler). Tospik'e hızlı uzanır, Tospik kabuğuna çekilir. Çocuk Ege'nin elini yavaşça kaydırarak "yavaş el"i gösterir. Tospik kafasını çıkarır, Ege kıkırdar. Bölüm sonunda Tospik Ege'nin ailesine gider.
+- **Aileler:** Can, Elif, Deniz, Zeynep, Ada ve Ege'nin annesi (mevcut insan iskeletleri). Yalnız kapıda belirir, el sallar, sepeti alır. Yeni poz gerekmez; sepet ailenin kolunun önüne kodla yerleştirilir. Boyları Nehir abla'yla aynı boy tablosundan gelir.
+- **Stil notu:** Mevcut iskeletler ile onaylı stildeki Nehir abla yan yana konunca fark göze batarsa, aile kapı pozları onaylı stilde Gemini'ye çizdirilir (ayrı iş, sayıma girmedi).
+- **Yeni karakter:** yalnız Nehir abla ve 9 hayvan.
 
 ---
 
@@ -267,14 +307,14 @@ Barış'ın sevdiği "temizlik, eşya üretimi gibi küçük işler". Atölye k�
 
 | Ne | Nasıl görünür |
 |---|---|
-| **Empati: duyguları bedenden okumak** | mutlu, uykulu, korkmuş, üşümüş, sıkılmış. 5-6'da balon yok, yalnız beden. Mino duygunun adını söyler: *"Korkmuş."* |
+| **Empati: duyguları bedenden okumak** | mutlu, uykulu, korkmuş, üşümüş, sıkılmış. 5-6'da balon yok, yalnız beden. Nehir abla duygunun adını söyler: *"Korkmuş."* |
 | **Herkes başka türlü sakinleşir** | Gök gürültüsü günü: Fındık sarılmak ister, Tarçın yalnız kalmak ister, Pırıl karanlık ister |
 | **Sorumluluk ve rutin** | her gün aynı sıra: sabah su ve mama, gün boyu oyun, akşam uyku ve kapanış. Gün sonunda bütün kaplar dolu, herkes uyuyor |
-| **Nazik dokunuş** | okşama hıza duyarlı: yavaş el sevilir, hızlı el ürkütür. Pofuduk ve Lokum anı |
+| **Nazik dokunuş** | okşama hıza duyarlı: yavaş el sevilir, hızlı el ürkütür. Pofuduk ve Ege anı |
 | **Sabır** | Tospik'in marula yavaş yürümesi; ürkek Pofuduk'un günden güne alışması |
 | **Hayvanları tanımak** | balık okşanmaz; hamster gece hayvanıdır; tavşan çoğunlukla saman yer; kuş gece örtüyle uyur; kaplumbağa sıcağı sever; kirpi yabani bir hayvandır, iyileşince doğaya döner |
 | **Ölçü ve sayma** | köpeğe 2 ölçek, kediye 1 ölçek, balığa bir tutam. Ölçekler kaba dökülürken sayılır: "Bir, iki!" |
-| **Renkler** | battaniye, yumak ve tasma rengi çocuğun seçimi. Mino rengi söyler |
+| **Renkler** | battaniye, yumak ve tasma rengi çocuğun seçimi. Nehir abla rengi söyler |
 | **Büyük-küçük, sınıflama** | raf dizme; büyük köpeğe büyük yatak, küçük hamstere küçük ev |
 
 ---
@@ -324,8 +364,8 @@ Her şeye yaş farkı konmaz. Köşe kurma, top atma, tüy sallama, uyutma, yuva
 
 ## 14. Yardım merdiveni ve kurallar
 
-- **Yardım merdiveni** (OYUNLU-FORMAT §4 ile aynı): 5 sn'de hayvan bakışıyla gereken eşyaya bakar, eşya parlar. 10 sn'de Mino kısa bir cümleyle söyler, minik el hareketi gösterir. 18 sn'de Kino ilk adımı gösterir (*"Bak, böyle!"*). 30 sn'de Kino işi bitirir (*"Ben yaparım, sen bak!"*).
-- **Kilit yok.** Hiçbir ihtiyaç süreyle kötüleşmez. Hayvan hastalanmaz, ağlamaz, kaçmaz, ölmez. Çocuk hiç bakmasa da gün akşama döner. Akşam kapanışında bütün bakımları Kino ve Mino tamamlar.
+- **Yardım merdiveni** (OYUNLU-FORMAT §4 ile aynı): 5 sn'de hayvan bakışıyla gereken eşyaya bakar, eşya parlar. 10 sn'de Nehir abla kısa bir cümleyle söyler, minik el hareketi gösterir. 18 sn'de Nehir abla çömelip ilk adımı yapar (*"Bak, böyle!"*). 30 sn'de kalanını birlikte bitirirler (*"Birlikte bitirelim."*).
+- **Kilit yok.** Hiçbir ihtiyaç süreyle kötüleşmez. Hayvan hastalanmaz, ağlamaz, kaçmaz, ölmez. Çocuk hiç bakmasa da gün akşama döner. Akşam kapanışında eksik bakımları Nehir abla tamamlar.
 - **Banyo ve yıkama yok** (Mino Banyo'nun işi).
 - **"Yanlış" sözü yok.** Yanlış eşya hayvanın komik bir tepkisiyle karşılanır, eşya rafına döner.
 - **Mikrofon yok.** Limon'un şarkısı çanlarla çalınır.
@@ -334,14 +374,18 @@ Her şeye yaş farkı konmaz. Köşe kurma, top atma, tüy sallama, uyutma, yuva
 
 ## 15. Seslendirme
 
-Kurallar: Anlatıcı Mino sesi; Kino'nun sesini Barış seçer. Cümleler 30 karakter civarında. Hayvanlar konuşmaz; hayvan sesleri efekt.
+Kurallar:
+- Konuşan tek karakter **Nehir abla.** Ses önerisi: mevcut anlatıcı sesi (genç kadın, `content/seslendirme.json`). Ayrı bir ses istenirse Barış ElevenLabs'te seçer.
+- Hayvanlar konuşmaz; sesleri efekttir.
+- Cümleler ~30 harf, soru yok, "yanlış" yok.
 
-**Mino (anlatıcı), Bölüm 1 örnekleri**
+**Nehir abla, Bölüm 1**
 | Anahtar | Cümle |
 |---|---|
-| dukkan_acildi | "Günaydın! Dükkân açıldı!" |
+| gunaydin | "Günaydın ortağım!" |
 | kepenk | "Kepengi kaldıralım." |
 | tabela | "Tabelayı çevirelim." |
+| acildi | "Dükkân açıldı!" |
 | yeni_gelenler | "Yeni dostlar geldi!" |
 | kose_kur | "Ona bir köşe kuralım." |
 | acikti | "Karnı acıkmış." |
@@ -351,34 +395,34 @@ Kurallar: Anlatıcı Mino sesi; Kino'nun sesini Barış seçer. Cümleler 30 kar
 | oyun_istiyor | "Oyun oynamak istiyor." |
 | korktu | "Korkmuş." |
 | tuyleri_karisik | "Tüyleri karışmış." |
+| ipucu_kulak | "Bak, kulakları düştü." |
+| ipucu_kuyruk | "Kuyruğu sallanıyor, sıkıldı." |
+| ipucu_esniyor | "Esniyor, uykusu var." |
+| ipucu_titriyor | "Titriyor, üşümüş." |
 | yavas_el | "Yavaşça, yavaşça." |
 | bir_tutam | "Bir tutam yeter." |
 | iki_olcek | "İki ölçek mama." |
+| bak_boyle | "Bak, böyle!" |
+| birlikte | "Birlikte bitirelim." |
+| bayildi_findik / _tarcin / _piril | "Fındık sana bayıldı!" (3 hayvan) |
+| gidikliyor | "Hihi, gıdıklıyor!" |
 | gok_gurultusu | "Gök gürlüyor!" |
 | herkes_baska | "Herkes başka sakinleşir." |
 | tarcin_yalniz | "Tarçın biraz yalnız kalsın." |
 | herkes_uyusun | "Herkes uyusun." |
 | isigi_kapat | "Işığı kapatalım." |
-| iyi_geceler | "İyi geceler, dostlar!" |
+| iyi_geceler | "İyi geceler, minikler!" |
 | yuva_sepeti | "Sepetini hazırlayalım." |
 | tasma | "Tasmasını takalım." |
 | evi_var_findik / _tarcin / _piril | "Fındık'ın artık bir evi var!" (3 hayvan) |
 | renkler | "Kırmızı!" … (5 renk; varsa mevcut kayıtlar) |
 | sayilar | "Bir", "İki" (mevcut kayıtlar) |
 
-**Kino**
-| Anahtar | Cümle |
-|---|---|
-| cok_hizliydim | "Ayy, çok hızlıydım." |
-| bak_boyle | "Bak, böyle!" |
-| ben_yaparim | "Ben yaparım, sen bak!" |
-| gidikliyor | "Hihi, gıdıklıyor!" |
-| ben_de_korktum | "Ben de biraz korktum." |
-| sss | "Şşş, Fıstık uyuyor." |
+**Nehir abla, Bölüm 2-3 örnekleri:** "Ben ilk gün çok hızlı gitmiştim.", "Şşş, Fıstık uyuyor.", "Fıstık gece hayvanı!", "Limon şarkını söylüyor!", "Isı lambasını açalım.", "Ege'ye yavaşı gösterelim.", "Diken iyileşti!", "Diken evine döndü."
 
 **Balonlar (seslendirilmez):** "Hav!", "Miyav!", "Vuik vuik!", "Cik cik!", "Mmm!", "Bir daha!"
 
-Bölüm 1 için yaklaşık 45 yeni cümle (~900 karakter), üç bölümle yaklaşık 85 cümle.
+Bölüm 1 için yaklaşık 48 yeni cümle (~950 karakter); üç bölümle yaklaşık 90 cümle.
 
 ---
 
@@ -476,9 +520,15 @@ Toplam **62 eşya** (10 sayfa × 6 + 2 tekil). İçlerinde balon resimleri yoktu
 ### 16f. Karakterler ve kapak
 | # | Ne | Adet | Not |
 |---|---|---|---|
-| K1 | Mino önlüklü: anlatır, gösterir (patisiyle işaret), sevinir, "şşş" (parmak dudakta) | 4 | Seri 2 Mino kiti yüklenir, S-KİLİT; önce önlüklü model, sonra 2×2 sayfa |
-| K2 | Kino önlüklü: koşar, utanır (kulaklar inik), kıkırdar (yüzü yalanmış), battaniye taşır, kucağında Tarçın, el sallar | 6 | Seri 2 Kino (`kino-yeni`) yüklenir; önce önlüklü model, sonra 2×3 sayfa |
-| K3 | Kapak (menü kartı): dükkânın önünde Kino, kucağında Tarçın, ayağının dibinde topuyla Fındık, camda Pırıl, onaylı stil, yazısız | 1 | 4:3, ≥ 2732×2048 |
+| N1 | **Model sayfası:** tam boy önden, 3/4 (sağa), yan (sağa), aynı tuvalde yan yana | 3 | ilk sohbet; bütün setin kaynağı. İstem: `ekip/gemini/IS-LISTESI-PATI.md` madde 2 |
+| N2 | **İfadeler** (belden yukarı, 3/4, 2×3): gülümseyerek anlatır, gözleri kapalı güler, şaşırır ("aa!"), "şşş" (parmak dudakta), şefkatli ve endişeli (korkan hayvana), kıkırdar (yüzü yalanmış) | 6 | anlatıcı köşesinde kullanılır |
+| N3 | **Ağız sayfası** (2×3): aynı alt yüz (burundan çeneye), aynı yer ve boy; yalnız ağız değişir: kapalı gülümseme, "a", "e", "o", "u", geniş gülüş | 6 | `dudak.ts`'nin 6 ağzı; N2'nin üstüne konur |
+| N4 | **Hayvanla, Bölüm 1** (tam boy, 2×3): Fındık'ı kucaklar, omzunda Tarçın, çömelip elini yavaşça uzatır, eğilip ölçekle mama döker, battaniye taşır, el sallar | 6 | kucak pozlarında hayvan modeli de yüklenir |
+| N5 | **Hayvanla, Bölüm 2-3** (2×3): avucunda Fıstık, parmağında Limon, kucağında Pofuduk, çömelip Tospik'e marul uzatır, Diken'in kutusunu iki eliyle tutar, yuva sepetini uzatır | 6 | Bölüm 1 onaylanınca |
+| N6 | **Hareket** (2×2, yan): yürür 1, yürür 2, kepengi kaldırır, lamba ipini çeker | 4 | salon içinde yürüme |
+| K1 | **Kapak** (menü kartı): dükkânın önünde Nehir abla, kucağında Tarçın, ayağının dibinde topuyla Fındık, camda Pırıl, onaylı stil, yazısız | 1 | 4:3, ≥ 2732×2048 |
+
+- **Nehir abla toplam 31 görsel, 6 sohbet.** Her sayfada model sayfası ve stil referansı yüklenir; istemde "exactly the same woman, same face, same hair bun with the yellow pencil, same green apron with two pockets, same colors" zorunlu.
 
 ### 16g. Sayım
 | Grup | Görsel | Gemini sohbeti |
@@ -486,10 +536,10 @@ Toplam **62 eşya** (10 sayfa × 6 + 2 tekil). İçlerinde balon resimleri yoktu
 | Hayvanlar (9 × 18) | **162** | 9 × 5 + 2 kadro = 47 |
 | Arka planlar | **25** | 25 |
 | Eşyalar | **62** | 12 |
-| Karakter pozları ve kapak | **11** | 5 |
-| **Toplam** | **260** | **~89** |
+| Nehir abla ve kapak | **32** | 7 |
+| **Toplam** | **281** | **~91** |
 
-**Bölüm 1 (önce bu, ücretsiz bölüm):** 3 hayvan × 18 = 54; arka plan 13 (dış 2, salon 2, köşe 3 + gece 3, bahçe, pano, atölye); eşya ~44 (kuş, kaplumbağa, kirpi eşyaları sonra); karakter ve kapak 11. **Yaklaşık 122 görsel, ~45 sohbet.** Gemini Pro kotası her gün 10:00'da sıfırlanır. Bölüm 1 iki güne yayılır.
+**Bölüm 1 (önce bu, ücretsiz bölüm):** 3 hayvan × 18 = 54; arka plan 13 (dış 2, salon 2, köşe 3 + gece 3, bahçe, pano, atölye); eşya ~44 (kuş, kaplumbağa, kirpi eşyaları sonra); Nehir abla 25 (N1, N2, N3, N4, N6) ve kapak 1. **Yaklaşık 137 görsel, ~46 sohbet.** Gemini Pro kotası her gün 10:00'da sıfırlanır. Bölüm 1 iki güne yayılır.
 
 ---
 
@@ -509,11 +559,13 @@ Toplam **62 eşya** (10 sayfa × 6 + 2 tekil). İçlerinde balon resimleri yoktu
 | ovma algısı | `macera/src/banyo-mantik.ts` | fırçalama (yön eklenir) |
 | kayıt kalıbı | `kino-otobus/src/kayit.ts` | ilerleme: `minkino-pati-v1` |
 | kilit anı, erişim | `src/abonelik/kilit-ani.ts`, `src/engine/erisim.ts` | bölüm kilitleri |
-| karakter iskeletleri | `assets/karakter-iskelet` | yuvaya gidişteki aileler |
+| karakter iskeletleri | `assets/karakter-iskelet` | yuvaya gidişteki aileler, Ege |
+| dudak senkronu | `src/audio/dudak.ts` | Nehir abla konuşurken 6 ağız |
 | yardım merdiveni | OYUNLU-FORMAT §4 (film motoru için planlanıyor) | ortak modül olarak yazılırsa ikisi paylaşır |
 
 **Yeni yazılacak:**
 - `pati/src/hayvan.ts`: hayvanın durum makinesi (hâl → poz), nefes, göz kırpma, kuyruk sallama (köpek ve kedi kuyruğu Adobe'da ayrı parça), poz geçişinde ezilme-esneme.
+- `pati/src/nehir.ts`: Nehir abla: anlatıcı köşesi (ifade ve ağız), salonda yürüme, hayvanla etkileşim pozları, yardım merdiveninde gösterme.
 - `pati/src/ihtiyac.ts`: saf mantık, birim testli: gün planından ihtiyaç açma, aynı anda en çok bir/iki hayvan, yaş ayarı, güven basamağı (Gün 1-2-3 davranışı).
 - `pati/src/salon.ts` ve `pati/src/yakin.ts`: salon, köşeler, yakın çekim, bakım rafı, kenardaki çağrı penceresi.
 - `pati/src/oksa.ts`: hıza ve yöne duyarlı okşama ve yavaş yaklaşma (Pofuduk, Tospik).
@@ -544,12 +596,14 @@ Toplam **62 eşya** (10 sayfa × 6 + 2 tekil). İçlerinde balon resimleri yoktu
 ---
 
 ## 19. MVP sırası
-1. **Kadro sayfası + Fındık'ın 18 görseli** Barış'a gösterilir (stil ve şirinlik onayı). Onay gelmeden kalan hayvanlara geçilmez.
+1. **Gemini ilk parti** (`ekip/gemini/IS-LISTESI-PATI.md`): kadro sayfaları, Nehir abla model sayfası, Bölüm 1'in üç hayvanı, salon. Kadro ve Nehir abla çıkınca Barış'a gösterilir (stil ve şirinlik), sonra poz setlerine geçilir.
 2. Bölüm 1, iki yaş ayarı, telefonda kusursuz.
 3. Bölüm 2 (Pofuduk, Fıstık, Limon).
-4. Bölüm 3 (Tospik, Kurabiye, Diken; Lokum konuk).
+4. Bölüm 3 (Tospik, Kurabiye, Diken; Ege konuk).
 
-## 20. ONAY BEKLİYOR (Barış)
-1. **Seçenek A, "Canlı Dükkân"** mı? (B'nin köşe kurması ve C'nin yuvaya gidişi içinde.)
-2. **Dükkân hayvan satmaz, sahiplendirir** (para, fiyat, kasa yok). "İşletme" duygusu kepenk, tabela, raf, atölye ve bakım düzeninden gelir.
-3. **Dükkân hayvanları konuşmaz ve giyinmez;** Kino ile Mino'nun yanında Pluto gibi dururlar.
+## 20. Barış'ın kararları (2026-10-10)
+1. **Seçenek A, "Canlı Dükkân" onaylandı** (B'nin köşe kurması ve C'nin yuvaya gidişi içinde).
+2. **Hayvanlar satılmaz, sahiplendirilir** (İlke 1). Barış: "önemli değil, satılmasın." Para, fiyat, kasa yok.
+3. **Kino ve Mino bu oyunda yok.** Dükkânın başında insan bir karakter: **Nehir abla** (§10). Anlatıcı ve rehber o; tek karakter.
+4. **Dükkân hayvanları konuşmaz ve giyinmez** (İlke 2).
+5. Seslendirme Nehir abla'ya göre yeniden yazıldı (§15). Ses: mevcut anlatıcı sesi önerildi, son seçim Barış'ın.
