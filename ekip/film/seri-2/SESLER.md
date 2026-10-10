@@ -114,6 +114,27 @@ Genel replikler (her oyunda kullanılır):
 | bidik-gule | [whispers] Bir sır vereyim mi? [snorts] Hihihi, söylemem! |
 | bidik-hosca | [happy] Hoşça kaaal! Meeee! [giggles] |
 
+## Bıdıcık (Bıdık'ın bebek kardeşi): "Bıdık bebek" sesi
+
+Barış 2026-10-10'da üretti. Lokum'dan da bebek ve çok tatlı. Bıdık ile Bıdıcık bir ikili:
+- Bıdık sakar ağabey; bir şey yapar, ters gider.
+- Bıdıcık onu taklit eder, kıkırdar, en tatlı tepkiyi o verir.
+
+Genel kullanım: oyunlarda 3-4 yaş için doğru cevapta sevinç, bekleme anlarında kıkırdama, sarılma.
+
+| Dosya | Metin |
+|---|---|
+| bidicik-abi | [excited] Bıdık abiii! [giggles] |
+| bidicik-yasasin | [laughs] Yaşasııın! [giggles] |
+| bidicik-bende | [happy] Ben de! Ben de! |
+| bidicik-meee | [giggles] Meee! Meee! [laughs] |
+| bidicik-aaa | [gasps] Aaa! [happy] Güzeeel! |
+| bidicik-daha | [excited] Daha! Daha! [giggles] |
+| bidicik-sarilma | [happy] Sayılma! Sayılmaaa! [giggles] |
+| bidicik-uyku | [yawns] Uykum geldi… [sighs] |
+| bidicik-taklit | [hiccups] Hıp! [laughs] Ben de hıp! |
+| bidicik-cicik | [giggles] Bıdıcık bıdıcık! |
+
 ## Tek bölümlük yan karakterler
 
 | Karakter | İstem | Örnek |
