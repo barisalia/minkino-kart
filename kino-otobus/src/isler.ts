@@ -23,6 +23,8 @@ import { gorsel, type VarlikAdi } from './varliklar';
 
 const sakin = () => TEST_MODU || AZ_HAREKET;
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, sakin() ? Math.min(ms, 60) : sure(ms)));
+/** Gemini süngeri 1024×711: boy / en (kutu görselin oranında, ezilmez) */
+const SUNGER_ORAN = 711 / 1024;
 
 export interface IsOrtami {
   efekt: Efekt;
@@ -111,7 +113,8 @@ export class Temizlik {
       kimildadi = false;
       yol = 0;
       const en = 64 * u();
-      sunger = new Tutulan(this.o.efekt, gorsel('sunger'), { sinif: 'ko-sunger', en, boy: en * (100 / 140), tx: 0.5, ty: 0.6 });
+      // tutma noktası süngerin sarı gövdesinde (yeşil ovma yüzü üstte)
+      sunger = new Tutulan(this.o.efekt, gorsel('sunger'), { sinif: 'ko-sunger', en, boy: en * SUNGER_ORAN, tx: 0.5, ty: 0.6 });
       sunger.yer(e.clientX, e.clientY);
       ses.gicir();
       dinle(true);

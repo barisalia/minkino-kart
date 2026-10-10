@@ -31,7 +31,7 @@ const VARSAYILAN_EN = 1024;
 const KIRP = { 'pencere-dogumgunu': { sol: 0.2762, ust: 0.1107, en: 0.4506, boy: 0.7585 } };
 /** gemini-esya ayarları (dosya başına) */
 // kino-onluk: boyun askısının içi kapalı beyaz bölge → delik (şeffaf)
-const AYAR = { otobus: { tuvalKoru: true }, 'kino-onluk': { delik: true } };
+const AYAR = { otobus: { tuvalKoru: true }, 'kino-onluk': { delik: true }, 'kara-tahta': { delik: true }, lamba: { sat: 85 } };
 
 const secili = process.argv.slice(2);
 // ad → en yüksek sürümün dosyası ("ic-arka-v2" > "ic-arka")
