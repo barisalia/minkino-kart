@@ -23,7 +23,7 @@ import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import D from '../../content/dedektif.json';
 import { DosyaSeridi } from './dosya';
 import { AZ_HAREKET, Dunya, type KadrajKaynak, type Oda } from './dunya';
-import { agacSahnesi, kilerSahnesi, otobusIc, otobusYani } from './dunya3';
+import { agacSahnesi, kilerSahnesi, otobusIc, otobusYani, sahne3Kur, sahne3YenidenDiz } from './dunya3';
 import { Efekt, oynat, parmak, parmaklariDurdur, pop } from './efekt';
 import { vakaCozuldu } from './kayit';
 import { tekTekrar } from './konusma-sira';
@@ -43,6 +43,7 @@ import {
   M3,
   OTOBUS,
   ROMAN3,
+  SAHNE3_DIKEY,
   Sayma,
   SEKER_IZI,
   SekerIzi,
@@ -51,6 +52,7 @@ import {
   type Adim3,
   type Halka3,
   type IpucuTanim3,
+  type Sahne3,
 } from './mantik3';
 import { Oyuncular } from './oyuncular';
 import { pozlariYukle } from './poz';
@@ -168,6 +170,8 @@ class Vaka3 {
     if (ADIMLAR3.indexOf(this.baslangic) > ADIMLAR3.indexOf('giris') && ADIMLAR3.indexOf(this.baslangic) <= ADIMLAR3.indexOf('yol')) serit.ipucu('yol', resim('v3/foto-kurabiye') ?? '');
     // kart resimleri şimdiden yüklenir (kartlar açılınca boş beyaz kutu görünmesin)
     for (const k of Object.values(KARTLAR3)) new Image().src = resim(k.resim) ?? '';
+    // dikey ekranda dikey eşi olan sahne kendi 9:16 çizimiyle (yerleri mantik3.ts → DIKEY3)
+    sahne3Kur();
     this.ic = otobusIc(halka3('sayi').ipuclari.concat(halka3('cikis').ipuclari));
     this.yani = otobusYani(halka3('yol').ipuclari);
     this.agac = agacSahnesi(halka3('kim').ipuclari);
@@ -189,7 +193,10 @@ class Vaka3 {
     this.buyutec.goster(false);
     this.dunya.kameraBitti = () => this.buyutec.yenile();
     const boyut = () => {
-      this.dunya.yenile();
+      // telefon döndü: dikey eşi olan sahneler yerinde yeni yönün çizimine ve yerlerine geçer (durumları korunur)
+      const dondu = [this.ic, this.yani, this.agac].map((o) => sahne3YenidenDiz(o)).some(Boolean);
+      if (dondu) this.dunya.odaYenilendi();
+      else this.dunya.yenile();
       this.buyutec.yenile();
       requestAnimationFrame(() => {
         if (this.kapali) return;
@@ -264,7 +271,8 @@ class Vaka3 {
   private ortala(x: () => number, k: () => Kadraj, yari = 0.12): () => Kadraj {
     return () => {
       const kd = k();
-      if (!this.dar()) return kd;
+      // dikey çizimli sahnede kadraj zaten o çizimin (tam en ya da tepsi gibi dar): ortalanmaz
+      if (!this.dar() || SAHNE3_DIKEY[this.dunya.oda?.id as Sahne3]) return kd;
       const cx = x();
       return [cx - yari, kd[1], cx + yari, kd[3]];
     };
@@ -700,7 +708,8 @@ class Vaka3 {
     oy.yerlesim('iki');
     await this.odaya(this.ic, this.kd(hk.kadraj, undefined, 0.13));
     if (this.kapali) return;
-    oy.yerlesim('iki', 'kenar');
+    // dikey çizimde tepsi sağ altta: ikisi de sola çekilir (tepsi Kino'nun arkasında kalmasın)
+    oy.yerlesim('iki', SAHNE3_DIKEY['otobus-ic'] ? 'sol' : 'kenar');
     await this.ara_(hk.ipuclari, hk, this.ic, 'sayi');
     if (this.kapali) return;
     // boş yerleri say: her dokunuşta halkanın içinde rakam ve bir nota
@@ -869,6 +878,11 @@ class Vaka3 {
     const kadraj = (): Kadraj => {
       const i = iz.siradaki ?? SEKER_IZI.length - 1;
       const x = SEKER_IZI[Math.min(SEKER_IZI.length - 1, i + 1)].x;
+      // dikey çizimde kamera tam eni gösterir (dunya.ts): iz ekranın ortasında, sıradaki şekerin boyunda
+      if (SAHNE3_DIKEY['otobus-yani']) {
+        const y = SEKER_IZI[Math.min(SEKER_IZI.length - 1, i)].y;
+        return [0, Math.max(0, Math.min(0.3, y - 0.5)), 1, Math.min(1, Math.max(0.7, y + 0.2))];
+      }
       return this.dar() ? [x - 0.13, 0.55, x + 0.11, 1] : [Math.max(0, Math.min(0.5, x - 0.42)), 0.5, Math.min(1, Math.max(x + 0.12, 0.5)), 1];
     };
     this.boyutSonrasi = () => void dunya.git(kadraj, 0);
@@ -945,7 +959,7 @@ class Vaka3 {
         this.el.classList.remove('dd-sahne-is');
         oy.yerlesim('iki');
         sekerler.forEach((s, i) => this.sonra(i * 70, () => oynat(s, 'dd-sec')));
-        void dunya.git([0.62, 0.45, 1, 1], 900);
+        void dunya.git(KADRAJ3.izSonu, 900);
         this.sonra(900, coz);
       };
     });
@@ -1196,8 +1210,10 @@ class Vaka3 {
     }
     // kamera kovuğun içine girer (yakın plan; ağız çerçeve gibi önde)
     oy.yerlesim('iki');
-    if (dogrudan) dunya.kur(this.kiler, this.kd(hk.kadraj, undefined, 0.14));
-    else await this.odaya(this.kiler, this.kd(hk.kadraj, undefined, 0.14), 1);
+    // dar ekranda kamera ipuçlarının (raftaki kurabiyeler, kar tanesi) ortasına
+    const kx = hk.ipuclari.reduce((s, t) => s + t.x, 0) / hk.ipuclari.length;
+    if (dogrudan) dunya.kur(this.kiler, this.kd(hk.kadraj, kx, 0.14));
+    else await this.odaya(this.kiler, this.kd(hk.kadraj, kx, 0.14), 1);
     if (this.kapali) return;
     oy.yerlesim('iki', 'kenar');
     await this.ara_(hk.ipuclari, hk, this.kiler, 'neden');

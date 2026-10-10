@@ -207,12 +207,14 @@ test('Dedektif Vaka 3: vaka baştan sona, çizgi roman, üç vakalı Vaka Dosyam
   await oyna(page, info.project.name, null);
 });
 
-// gerçek hızda, yatay telefon (844×390, DPR 3): yalnız elle (VAKA3_GERCEK=<kare klasörü> npx playwright test -g "gerçek hız")
+// gerçek hızda, yatay telefon (844×390, DPR 3): yalnız elle (VAKA3_GERCEK=<kare klasörü> npx playwright test -g "gerçek hız");
+// başka boy: VAKA3_BOYUT=390x844 (dikey sahneler) ya da 768x1024 (tablet, DPR 2)
 test('Dedektif Vaka 3: gerçek hız, yatay telefon', async ({ browser }, info) => {
   const klasor = process.env.VAKA3_GERCEK;
   test.skip(!klasor || info.project.name !== 'iphone', 'elle çalıştırılır');
   test.setTimeout(1_200_000);
-  const ctx = await browser.newContext({ baseURL: info.project.use.baseURL, viewport: { width: 844, height: 390 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR' });
+  const [en, boy] = (process.env.VAKA3_BOYUT ?? '844x390').split('x').map(Number);
+  const ctx = await browser.newContext({ baseURL: info.project.use.baseURL, viewport: { width: en, height: boy }, deviceScaleFactor: Math.min(en, boy) >= 600 ? 2 : 3, isMobile: true, hasTouch: true, locale: 'tr-TR' });
   const page = await ctx.newPage();
   await oyna(page, 'gercek', klasor!);
   await ctx.close();

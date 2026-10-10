@@ -85,9 +85,10 @@
   position: absolute;
   inset: 0;
 }
+/* tepsideki kurabiye ve un halkası tepsiye yatık (çizimin tepsisi perspektifte yayvan: --basik, dunya3.ts) */
 .dd-kok .dd-v3-kurabiye {
   position: absolute;
-  transform: translate(-50%, -50%) rotate(var(--don, 0deg));
+  transform: translate(-50%, -50%) scaleY(var(--basik, 1)) rotate(var(--don, 0deg));
 }
 .dd-kok .dd-ipucu.dd-v3-un {
   transform: translate(-50%, -50%);
@@ -95,7 +96,7 @@
 .dd-kok .dd-ipucu.dd-v3-un img {
   position: absolute;
   height: auto;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scaleY(var(--basik, 1));
 }
 /* sayma düğmeleri: boş yerlerin üstünde; dokununca rakam belirir */
 .dd-kok .dd-v3-sayac,
@@ -209,6 +210,11 @@
 .dd-kok .dd-v3-seker-izi .dd-iz img {
   filter: drop-shadow(0 2px 2px rgba(80, 50, 10, 0.4));
 }
+/* şekerler sık (dikey çizimde iyice): geniş dokunma alanları üst üste biner; sıradaki (alınmamış ilk) en üstte kalsın diye
+   öndekiler üstte (alınanlar zaten dokunuş almaz: dedektif.css → .dd-yandi) */
+.dd-kok .dd-v3-seker-izi .dd-v3-seker {
+  z-index: calc(20 - var(--i, 0));
+}
 .dd-kok .dd-v3-seker-izi:not(.acik) {
   display: none;
 }
@@ -249,16 +255,22 @@
 .dd-kok .dd-v3-yuva {
   transform-origin: 50% 80%;
 }
+/*
+ * kuyruk ucu (Gemini çizimi findik-kuyruk, 825 × 1280): kökü üstte, ortanın biraz solunda. Kök ağzın karanlığında: üstü
+ * karanlığa karışır (düz kesik görünmez), kuyruk dudağın önünden sarkar (dudaktan önde)
+ */
 .dd-kok .dd-ipucu.dd-v3-kuyruk {
   transform: translate(-50%, 0);
-  aspect-ratio: 560 / 1000;
-  z-index: 1;
+  aspect-ratio: 825 / 1280;
+  z-index: 3;
   transition: transform 0.35s cubic-bezier(0.5, 0, 0.6, 1), opacity 0.3s;
 }
 .dd-kok .dd-ipucu.dd-v3-kuyruk img {
   width: 100%;
   height: 100%;
-  transform-origin: 50% 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.55) 7%, #000 15%);
+  mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.55) 7%, #000 15%);
+  transform-origin: 41.5% 0;
   animation: dd-v3-kuyruk-salla 1.6s ease-in-out infinite;
 }
 @keyframes dd-v3-kuyruk-salla {
