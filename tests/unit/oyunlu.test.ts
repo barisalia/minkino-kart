@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 import icerik from '../../content/oyunlu/kinonun-bir-gunu.json';
 import kinoJson from '../../assets/karakter/kino-yeni/kino-yeni.json';
 import type { KuklaIskelet } from '../../film/src/kukla';
-import { sozSuresi } from '../../film/src/oyunlu/aktor';
+import sesBilgi from '../../content/oyunlu/kinonun-bir-gunu.ses.json';
+import { sozSuresi, yeniDurus } from '../../film/src/oyunlu/aktor';
+import { Sozler, type SozTanim } from '../../film/src/oyunlu/oynatici';
+import { agizSec, etiketAn, etiketBedeni, etiketsiz, etiketZamanlari } from '../../film/src/oyunlu/seslendirme';
 import { kostumGiydir, PIJAMA } from '../../film/src/oyunlu/kostum';
 import { kopukYolu } from '../../film/src/oyunlu/kum-saati';
 import { ESIK, YardimMerdiveni } from '../../film/src/oyunlu/yardim';
@@ -110,5 +113,79 @@ describe('pijama kostümü (KARAKTER-KITI §8.1 K8 yerine)', () => {
       expect(existsSync(resolve('assets/karakter/kino-yeni', q.resim)), q.resim).toBe(true);
       if (q.dolgu) expect(existsSync(resolve('assets/karakter/kino-yeni', q.dolgu)), q.dolgu).toBe(true);
     }
+  });
+});
+
+describe('seslendirme: etiketler, ağız, süreler', () => {
+  const sozler = Object.entries(icerik.sozler) as [string, { kim: string; metin: string; ses?: string }][];
+  const KIT_AGIZ = ['agiz-az', 'agiz-e', 'agiz-genis', 'agiz-gulumse', 'agiz-kahkaha', 'agiz-o', 'agiz-orta', 'agiz-uzgun'];
+  it('her sözün kaydı ve süresi var; altyazıda etiket yok', () => {
+    for (const [id, s] of sozler) {
+      expect(existsSync(resolve('assets/ses-seri2', `${id}.mp3`)), id).toBe(true);
+      const b = (sesBilgi.sozler as Record<string, { sure: number; tepe: number }>)[id];
+      expect(b?.sure, id).toBeGreaterThan(0.4);
+      expect(b.tepe, id).toBeLessThan(b.sure);
+      expect(s.metin, id).not.toMatch(/\[|\]/);
+      expect(s.ses, id).toBeTruthy();
+    }
+  });
+  it('etiketsiz: köşeli parantezler ve fazla boşluk silinir', () => {
+    expect(etiketsiz('[sneezes] Hapşu! [giggles]')).toBe('Hapşu!');
+    expect(etiketsiz('[surprised] Iı… [giggles] biraz çok oldu.')).toBe('Iı… biraz çok oldu.');
+    expect(etiketsiz("[happy] Dişler pırıl pırıldı. [chuckles] Lokum'un iki dişi bile.")).toBe("Dişler pırıl pırıldı. Lokum'un iki dişi bile.");
+  });
+  it('etiket anı metindeki yerinden: baştaki esneme başta, sondaki kıkırdama sonda, süre içinde', () => {
+    const [esne] = etiketZamanlari('[yawns] Günaydın, Lokum!', 2.2);
+    expect(esne.tur).toBe('esne');
+    expect(esne.bas).toBeLessThan(0.1);
+    expect(esne.son).toBeGreaterThan(0.6);
+    expect(esne.son).toBeLessThan(1.3);
+    const h = etiketZamanlari('[sneezes] Hapşu! [giggles]', 2.6);
+    expect(h.map((e) => e.tur)).toEqual(['hapsu', 'gul']);
+    expect(h[1].bas).toBeGreaterThan(h[0].son - 0.3);
+    expect(h[1].son).toBeLessThanOrEqual(2.6);
+    // ton etiketleri ([excited], [softly]) bedeni oynatmaz
+    expect(etiketZamanlari('[excited] Bir!', 0.7)).toEqual([]);
+    expect(etiketAn(h, 0.2)?.tur).toBe('hapsu');
+  });
+  it('ağız: sesin şekli kitin 8 ağzından birine; gülerken kahkaha', () => {
+    for (const s of ['kapali', 'az', 'orta', 'yuvarlak', 'dis', 'gulumse'] as const)
+      for (const g of [0, 0.4, 0.9]) for (const e of [null, 'gul', 'esne', 'hapsu', 'sasir'] as const) expect(KIT_AGIZ).toContain(agizSec(s, g, e));
+    expect(agizSec('orta', 0.9)).toBe('agiz-genis');
+    expect(agizSec('orta', 0.5)).toBe('agiz-orta');
+    expect(agizSec('yuvarlak', 0.5)).toBe('agiz-o');
+    expect(agizSec('kapali', 0.5)).toBe('agiz-gulumse');
+    expect(agizSec('orta', 0.8, 'gul')).toBe('agiz-kahkaha');
+  });
+  it('beden: esnerken kollar kalkar, gülerken kafa sarsılır', () => {
+    const d = yeniDurus();
+    etiketBedeni(d, etiketZamanlari('[yawns] Günaydın!', 2), 0.45);
+    expect(d.kolSag).toBeGreaterThan(60);
+    expect(d.gozler).toBe('gozler-kapali');
+    const g = etiketZamanlari('Abi! [giggles]', 1.6);
+    const ys = Array.from({ length: 12 }, (_, i) => {
+      const x = yeniDurus();
+      etiketBedeni(x, g, g[0].bas + 0.1 + i * 0.03);
+      return x.kafaY;
+    });
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThan(3);
+    const h = yeniDurus();
+    etiketBedeni(h, etiketZamanlari('[yawns] Günaydın!', 2), 0.45, 1, ['esne']);
+    expect(h.kolSag).toBe(0);
+  });
+  it('Sozler: kaydı olan sözün süresi kaydınki; altyazı kapatılınca görünmez; bitiş anı', () => {
+    const s = new Sozler(icerik.sozler as Record<string, SozTanim>, { 's1-kino1': 2.21 });
+    expect(s.sure('s1-kino1')).toBe(2.21);
+    expect(s.sure('s1-lok1')).toBeCloseTo(sozSuresi('Abi! Abi!'));
+    const calan: string[] = [];
+    s.onSoyle = (id) => calan.push(id);
+    s.soyle('s1-kino1', 10);
+    expect(calan).toEqual(['s1-kino1']);
+    expect(s.bitis()).toBeCloseTo(12.21);
+    expect(s.aktif('kino', 10.5)?.etiketler[0].tur).toBe('esne');
+    expect(s.altyazi(11)?.id).toBe('s1-kino1');
+    s.altyaziAcik = false;
+    expect(s.altyazi(11)).toBeNull();
+    expect(s.etiket('s1-kino1', 'esne')?.bas).toBeLessThan(0.1);
   });
 });
