@@ -108,15 +108,42 @@ export function boyaUygula(el: HTMLElement) {
   el.style.setProperty('--boya-koyu', b.koyu);
   el.style.setProperty('--boya-filtre', boyaFiltresi(kayit.boya));
 }
-/** Kino: unlu yüzüyle (kafa katmanına un lekeleri) */
+/**
+ * Kino'nun pastacı önlüğü ve şapkası: iskeletin 2048 tuvalinde görselin kutusu (kino-otobus/src/otobus.ts → KINO_YERI
+ * ile aynı yol; ölçüler giysin/src/giysi-yer.json'daki Kino tablosundan: gövde 750-1345, fular ~1190-1280, başın tepesi
+ * ~205, baş ortası x 975).
+ * - onluk (kino-onluk-1, 1280×1215): göğüs parçasının üst kenarı (görselin %24'ü) fuların altına (y ~1250), etek
+ *   bacakların başına iner; boyun askısı başın arkasında kalır, bel bağları kolların arkasından sarkar. Gövde grubunda:
+ *   kollar ve fular önünde durur, her pozda gövdeyle döner.
+ * - sapka (kino-sapka-1, 1280×1076): şeridin altındaki ağız başın tepesini sarar (alt kenarı y ~475), kulakların
+ *   arasında; Mino'nunki gibi hafif yatık (+5°). Kafa grubunda: her pozda başla döner.
+ */
+const KINO_GIYSI_YERI = {
+  onluk: { x: 530, y: 1066, en: 890, boy: 753 },
+  sapka: { x: 530, y: -280, en: 900, boy: 757, don: 5 },
+};
+/** Kino: pastacı önlüğü + şapkası (görseller varsa) ve unlu yüzü (kafa katmanına un lekeleri) */
 export function unluKino(): Karakter {
   const kino = new Karakter('kino', h('div'));
   void kino.hazir.then(() => {
     const kafa = kino.parcaG('kafa');
+    const govde = kino.parcaG('govde');
     if (kafa && !kafa.querySelector('.ps-kino-un')) kafa.insertAdjacentHTML('beforeend', KINO_UN);
+    const onluk = yuva('kinoOnluk');
+    if (govde && onluk && !govde.querySelector('.ps-kino-onluk')) {
+      const y = KINO_GIYSI_YERI.onluk;
+      govde.insertAdjacentHTML('beforeend', `<image class="ps-kino-onluk" href="${onluk}" x="${y.x}" y="${y.y}" width="${y.en}" height="${y.boy}" preserveAspectRatio="xMidYMid meet"/>`);
+    }
+    const sapka = yuva('kinoSapka');
+    if (kafa && sapka && !kafa.querySelector('.ps-kino-sapka')) {
+      const y = KINO_GIYSI_YERI.sapka;
+      kafa.insertAdjacentHTML('beforeend', `<g class="ps-kino-sapka" transform="rotate(${y.don} 975 300)"><image href="${sapka}" x="${y.x}" y="${y.y}" width="${y.en}" height="${y.boy}" preserveAspectRatio="xMidYMid meet"/></g>`);
+    }
   });
   return kino;
 }
+/** Kino'nun giysi görselleri (önceden indirilir: Kino giyinik görünsün) */
+export const kinoGiysiAdresleri = (): string[] => [yuva('kinoOnluk'), yuva('kinoSapka')].filter((u): u is string => !!u);
 /**
  * Mekân katmanları (gökyüzü-tepeler, orta, ön): park (okul önünde ortada okul binası), plaj (assets/film/plaj), karlı
  * bahçe (assets/film/kar). Pencereden bu görünür.
@@ -1209,7 +1236,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   // günün bütün görselleri (tezgâh, fırın, kalıplar, torbalar, arka; bugünkü siparişlerin balon resimleri) otobüs
   // gelirken indirilip çözülür; mutfak ancak hepsi hazır olunca açılır (yarım tezgâh, boş balon görünmez). Önce
   // otobüsün kendi görselleri (girişte o görünür), sonra mutfağınkiler: yavaş bağlantıda ikisi birbirini beklemez.
-  const otobusYuk = onYukle([yuva('otobus'), yuva('teker'), yuva('tekerIsik')].filter((u): u is string => !!u), 4000);
+  const otobusYuk = onYukle([yuva('otobus'), yuva('teker'), yuva('tekerIsik'), ...kinoGiysiAdresleri()].filter((u): u is string => !!u), 4000);
   const mutfakUrl = resimleriTopla(el, ...kuyruk.map((s) => siparisResmi(s)));
   const onYuk = { resimler: [...otobusYuk.resimler], hazir: Promise.resolve() };
   onYuk.hazir = otobusYuk.hazir.then(() => {

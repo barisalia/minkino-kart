@@ -104,7 +104,7 @@ export const VARLIK = {
   'kalp-seker': kod(kalpSekerSvg),
   kupa: kod(kupaSvg),
   mum: kod(() => mumSvg(false)),
-  'pencere-dogumgunu': YOK, // yalnız orta camın bahçesi (betik kırpar); yoksa park manzarası + kodla balon ve flama (gun.ts → manzara)
+  'pencere-dogumgunu': YOK, // v2: çerçevesiz 16:9 bahçe partisi (gün içi pencere + tam ekran akşam); yoksa park manzarası + kodla balon ve flama (gun.ts → manzara)
   'sus-cati-kulah': kod(catiKulahSvg),
   'sus-ampul': kod(ampulSvg),
   'sus-jant': kod(jantSvg),
