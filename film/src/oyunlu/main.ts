@@ -4,7 +4,10 @@
  *
  * Adres seçenekleri: ?yas=3|4|5|6 (yoksa uygulamanın yaş ayarı), ?izle=1 (yalnız izle: oyunu Kino oynar),
  * ?an=kum-saati (an tekrarı: diş oyunu kısa girişle), ?hiz=N (test: saat N kat hızlı), ?kayit=1 (kare kare kayıt:
- * window.oyunluKayit; oyunu sanal parmak oynar).
+ * window.oyunluKayit; oyunu sanal parmak oynar), ?altyazi=1|0 (altyazı; seslendirme varken varsayılan kapalı).
+ *
+ * Seslendirme: her söz kendi kaydıyla (assets/ses-seri2, süreler content/oyunlu/<bölüm>.ses.json). Altyazı düğmesi
+ * (ebeveyn için, duraklatın yanında) seçimi cihazda saklar.
  */
 import '@fontsource/fredoka/latin-ext-500.css';
 import '@fontsource/fredoka/latin-ext-600.css';
@@ -14,18 +17,32 @@ import { sesiAc } from '../../../src/audio/ses';
 import { durum } from '../../../src/engine/ilerleme';
 import { h } from '../../../src/ui/dom';
 import icerik from '../../../content/oyunlu/kinonun-bir-gunu.json';
+import sesBilgi from '../../../content/oyunlu/kinonun-bir-gunu.ses.json';
 import { bolumKur } from './bolum1';
 import { Oynatici, Sozler, type SozTanim } from './oynatici';
 import { filmMuzik } from '../muzik';
-import { muzikSon, sesDurum, sesiIsle } from './ses';
+import { gunluk, konus, konusmaDuraklat, konusmaSustur, muzikSon, sesAdresi, sesDurum, sesiIsle } from './ses';
 
 const q = new URLSearchParams(location.search);
 const KAYIT = q.has('kayit');
 const HIZ = Math.max(0.1, Number(q.get('hiz') ?? 1) || 1);
 const KAYIT_ANAHTARI = 'minkino-oyunlu-v1';
+sesDurum.hiz = HIZ;
 
 let yas = Number(q.get('yas') ?? durum.i.yas ?? 3);
-const sozler = new Sozler(icerik.sozler as Record<string, SozTanim>);
+// kaydı olan sözün süresi kaydın gerçek süresi (zaman çizelgesi ona göre kurulur)
+const SES_BILGI = sesBilgi.sozler as Record<string, { sure: number; tepe?: number }>;
+const sesli = (id: string) => !!SES_BILGI[id] && !!sesAdresi(id);
+const sureler: Record<string, number> = {};
+for (const id of Object.keys(icerik.sozler)) if (sesli(id)) sureler[id] = SES_BILGI[id].sure;
+const sozler = new Sozler(icerik.sozler as Record<string, SozTanim>, sureler);
+sozler.onSoyle = (id, bas) => {
+  if (sesli(id)) konus(id, bas);
+};
+/** seslendirme varsa altyazı varsayılan kapalı (çocuk uygulaması); ebeveyn açabilir, seçim cihazda kalır */
+const SESLI_BOLUM = Object.keys(icerik.sozler).every(sesli);
+const altyaziQ = q.get('altyazi');
+sozler.altyaziAcik = altyaziQ !== null ? altyaziQ !== '0' : (oku().altyazi ?? !SESLI_BOLUM);
 const kok = document.getElementById('oyunlu')!;
 const tuval = h('canvas.oy-tuval', { 'aria-label': "Kino'nun Bir Günü" }) as HTMLCanvasElement;
 kok.append(tuval);
@@ -38,7 +55,16 @@ function kur() {
   // yeni bölüm görselleri yüklenmeden çizilmez
   basladi = false;
   kurulanYas = yas;
-  bolum = bolumKur({ sozler, saat: () => oynatici.saat, yasBuyuk: yas >= 5, izle: q.has('izle'), simule: KAYIT });
+  konusmaSustur();
+  bolum = bolumKur({
+    sozler,
+    saat: () => oynatici.saat,
+    yasBuyuk: yas >= 5,
+    izle: q.has('izle'),
+    simule: KAYIT,
+    sesli,
+    tepe: (id) => (sesli(id) ? (SES_BILGI[id].tepe ?? null) : null),
+  });
   oynatici = new Oynatici(tuval, bolum.parcalar, sozler);
   oynatici.baslik = { metin: icerik.baslik, ust: icerik.dizi, bas: 0.6, son: 4.6 };
   oynatici.onParca = (ad) => {
@@ -62,6 +88,8 @@ interface Kayit {
   bolum?: string;
   sonParca?: string;
   oyunlar?: Record<string, { kez: number; cocuk: boolean }>;
+  /** ebeveynin altyazı seçimi */
+  altyazi?: boolean;
 }
 function oku(): Kayit {
   try {
@@ -143,9 +171,26 @@ const duraklatDugme = h('button.oy-duraklat', { type: 'button', 'aria-label': 'D
 duraklatDugme.addEventListener('click', () => {
   oynatici.duraklat = !oynatici.duraklat;
   filmMuzik.duraklat(oynatici.duraklat);
+  konusmaDuraklat(oynatici.duraklat);
   kok.classList.toggle('oy-durakli', oynatici.duraklat);
   duraklatDugme.setAttribute('aria-label', oynatici.duraklat ? 'Devam' : 'Duraklat');
 });
+// altyazı düğmesi (ebeveyn için, soluk): açık / kapalı
+const altyaziDugme = h('button.oy-altyazi', { type: 'button' }, h('span', {}, 'Aa')) as HTMLButtonElement;
+const altyaziGoster = () => {
+  altyaziDugme.classList.toggle('acik', sozler.altyaziAcik);
+  altyaziDugme.setAttribute('aria-label', sozler.altyaziAcik ? 'Altyazıyı kapat' : 'Altyazıyı aç');
+  altyaziDugme.setAttribute('aria-pressed', String(sozler.altyaziAcik));
+};
+altyaziGoster();
+altyaziDugme.addEventListener('click', () => {
+  sozler.altyaziAcik = !sozler.altyaziAcik;
+  kaydet({ altyazi: sozler.altyaziAcik });
+  altyaziGoster();
+  // duraklatılmışken de hemen görünsün
+  if (oynatici.duraklat && basladi) oynatici.ciz();
+});
+const dugmeler = () => kok.append(duraklatDugme, altyaziDugme);
 
 function kapakEkrani() {
   const yasDugme = (etiket: string, deger: number) => {
@@ -172,7 +217,7 @@ function kapakEkrani() {
     kapak.remove();
     // kapakta yüklenen bölüm kullanılır; yaş değiştiyse yeniden kurulur (görseller tarayıcı önbelleğinden)
     if (kurulanYas !== yas) kur();
-    kok.append(duraklatDugme);
+    dugmeler();
     if (q.get('an') === 'kum-saati') void oynat(bolum.anBaslangic.i, bolum.anBaslangic.t);
     else void oynat();
   });
@@ -182,13 +227,14 @@ function kapakEkrani() {
 
 function sonEkrani() {
   duraklatDugme.remove();
+  altyaziDugme.remove();
   const bastan = h('button.oy-dugme', { type: 'button' }, 'Baştan izle') as HTMLButtonElement;
   const tekrar = h('button.oy-dugme', { type: 'button' }, 'Diş oyununu tekrar oyna') as HTMLButtonElement;
   const son = h('div.oy-son', {}, h('div.oy-son-baslik', {}, 'Sahne 1-2 bitti'), h('div.oy-son-alt', {}, 'Devamı: Sahne 3 "Kendim giyinirim"'), bastan, tekrar);
   const git = (an: boolean) => {
     son.remove();
     kur();
-    kok.append(duraklatDugme);
+    dugmeler();
     if (an) void oynat(bolum.anBaslangic.i, bolum.anBaslangic.t);
     else void oynat();
   };
@@ -201,8 +247,24 @@ function sonEkrani() {
 // ---------------------------------------------------------------- test ve kayıt arayüzü
 declare global {
   interface Window {
-    oyunlu?: { parca: () => string | undefined; kopuk: () => [number, number] | null; kum: () => number; evre: () => string };
-    oyunluKayit?: { hazir: Promise<void>; adim: (n: number) => void; bitti: () => boolean; saat: () => number; sesiIsle: (sure: number) => Promise<string>; fps: number };
+    oyunlu?: {
+      parca: () => string | undefined;
+      kopuk: () => [number, number] | null;
+      kum: () => number;
+      evre: () => string;
+      sozler: () => { id: string; bas: number; sure: number }[];
+      altyazi: () => boolean;
+    };
+    oyunluKayit?: {
+      hazir: Promise<void>;
+      adim: (n: number) => void;
+      bitti: () => boolean;
+      saat: () => number;
+      sesiIsle: (sure: number) => Promise<string>;
+      fps: number;
+      /** günlükteki konuşma sayısı (seslendirme kayda girdi mi) */
+      konusma: () => number;
+    };
   }
 }
 window.oyunlu = {
@@ -210,6 +272,8 @@ window.oyunlu = {
   kopuk: () => bolum?.kopukEkran() ?? null,
   kum: () => bolum?.ayna.kum ?? 0,
   evre: () => bolum?.ayna.evre ?? '',
+  sozler: () => sozler.gecmis,
+  altyazi: () => sozler.altyaziAcik,
 };
 
 if (KAYIT) {
@@ -233,6 +297,7 @@ if (KAYIT) {
     bitti: () => oynatici.bitti,
     saat: () => oynatici.saat,
     sesiIsle,
+    konusma: () => gunluk.filter((o) => o.tur === 'konus').length,
   };
 } else {
   void document.fonts.load('600 20px Fredoka').catch(() => undefined);

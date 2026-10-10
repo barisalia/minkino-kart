@@ -141,3 +141,36 @@ body {
 .oy-kok.oy-durakli .oy-tuval {
   filter: brightness(0.75);
 }
+/* altyazı aç / kapat (ebeveyn için; seslendirme varken varsayılan kapalı) */
+.oy-kok .oy-altyazi {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: calc(max(10px, env(safe-area-inset-left)) + 52px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(40, 24, 16, 0.28);
+  display: grid;
+  place-items: center;
+  opacity: 0.55;
+  cursor: pointer;
+}
+.oy-kok .oy-altyazi span {
+  display: block;
+  padding: 1px 5px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  color: #fff;
+  font: 600 12px/1.1 Fredoka, system-ui, sans-serif;
+  text-decoration: line-through;
+}
+.oy-kok .oy-altyazi.acik span {
+  background: #fff;
+  color: #401312;
+  text-decoration: none;
+}
+.oy-kok.oy-durakli .oy-altyazi {
+  opacity: 1;
+  background: rgba(40, 24, 16, 0.6);
+}

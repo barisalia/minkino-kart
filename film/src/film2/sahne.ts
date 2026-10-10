@@ -95,7 +95,7 @@ export class BolumSahnesi implements Segment {
     this.cizelge = zamanla(s, (r) => b.sesler.get(r.kimlik)?.sure);
     for (const r of this.cizelge.replikler) {
       const k = b.sesler.get(r.kimlik);
-      if (k) b.sozler.ozelSure[r.kimlik] = k.sure;
+      if (k) b.sozler.sureler[r.kimlik] = k.sure;
       else b.eksik.add(`ses: ${r.kimlik} (${r.kim}) "${r.metin}"`);
     }
     const coz = this.cizelge.coz;

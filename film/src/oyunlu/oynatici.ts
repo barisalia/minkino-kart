@@ -10,6 +10,7 @@
 import type { Matris } from '../kukla';
 import { sozSuresi } from './aktor';
 import { sesDurum } from './ses';
+import { etiketsiz, etiketZamanlari, type EtiketAralik } from './seslendirme';
 
 export interface Kamera {
   x: number;
@@ -49,23 +50,58 @@ export function kameraYolu(anahtar: KameraAnahtar[], t: number, dikey: boolean):
 
 // ---------------------------------------------------------------- sözler (altyazı + ağız)
 export interface SozTanim {
+  /** altyazı (etiketsiz) */
   kim: string;
   metin: string;
+  /** seslendirmeye verilen etiketli metin ("[yawns] Günaydın, Lokum!"): beden etiketleri buradan */
+  ses?: string;
   tur?: 'oyun';
 }
 export interface CalanSoz extends SozTanim {
   id: string;
   bas: number;
   sure: number;
+  etiketler: EtiketAralik[];
+}
+/** konuşan kişinin o anki sözü: x sözün içindeki saniye */
+export interface AktifSoz {
+  id: string;
+  metin: string;
+  x: number;
+  etiketler: readonly EtiketAralik[];
 }
 export class Sozler {
   calan: CalanSoz[] = [];
-  /** kayıttan gelen gerçek süreler (sn; ses dosyası varsa metnin tahmini yerine) */
-  ozelSure: Record<string, number> = {};
-  constructor(readonly tablo: Record<string, SozTanim>) {}
+  /** söz başlarken (seslendirme: kaydı çalar) */
+  onSoyle?: (id: string, bas: number) => void;
+  /** altyazı görünsün mü (seslendirme varken varsayılan kapalı; ebeveyn açar) */
+  altyaziAcik = true;
+  private etiketOnbellek = new Map<string, EtiketAralik[]>();
+  /**
+   * sureler: sözün kaydının gerçek süresi (sn); kaydı olmayan söz metnin hece sayısından. Sonradan da doldurulabilir
+   * (Seri 2 bölüm hattı: film/src/film2/sahne.ts kayıtların sürelerini sözler kurulduktan sonra yazar).
+   */
+  constructor(
+    readonly tablo: Record<string, SozTanim>,
+    readonly sureler: Record<string, number> = {},
+  ) {}
   sure(id: string) {
     const s = this.tablo[id];
-    return s ? (this.ozelSure[id] ?? sozSuresi(s.metin, s.kim === 'anlatici')) : 0;
+    return s ? (this.sureler[id] ?? sozSuresi(etiketsiz(s.metin), s.kim === 'anlatici')) : 0;
+  }
+  /** sözün beden etiketleri (esneme, gülme, hapşırma …) ve sözün içindeki yaklaşık anları */
+  etiketler(id: string): EtiketAralik[] {
+    let e = this.etiketOnbellek.get(id);
+    if (!e) {
+      const s = this.tablo[id];
+      e = s?.ses ? etiketZamanlari(s.ses, this.sure(id)) : [];
+      this.etiketOnbellek.set(id, e);
+    }
+    return e;
+  }
+  /** sözdeki ilk beden etiketinin aralığı (sözün başına göre; yoksa null) */
+  etiket(id: string, tur: EtiketAralik['tur']): EtiketAralik | null {
+    return this.etiketler(id).find((e) => e.tur === tur) ?? null;
   }
   /** cümleyi başlatır (saat: film saati); süresini döner */
   soyle(id: string, saat: number): number {
@@ -74,22 +110,34 @@ export class Sozler {
     const sure = this.sure(id);
     // aynı kişinin önceki cümlesi biter (üst üste konuşmaz)
     this.calan = this.calan.filter((c) => c.kim !== s.kim && saat < c.bas + c.sure + 1.2);
-    this.calan.push({ ...s, id, bas: saat, sure });
+    this.calan.push({ ...s, id, bas: saat, sure, etiketler: this.etiketler(id) });
+    this.gecmis.push({ id, bas: saat, sure });
+    this.onSoyle?.(id, saat);
     return sure;
   }
   /** kişinin şu an söylediği cümle ve cümlenin içindeki saniye */
-  aktif(kim: string, saat: number): { metin: string; x: number } | null {
-    for (const c of this.calan) if (c.kim === kim && saat >= c.bas && saat < c.bas + c.sure) return { metin: c.metin, x: saat - c.bas };
+  aktif(kim: string, saat: number): AktifSoz | null {
+    for (const c of this.calan) if (c.kim === kim && saat >= c.bas && saat < c.bas + c.sure) return { id: c.id, metin: c.metin, x: saat - c.bas, etiketler: c.etiketler };
     return null;
+  }
+  /** son konuşmanın bittiği an (film saati; hiç konuşma yoksa -Infinity) */
+  bitis(): number {
+    let t = -Infinity;
+    for (const c of this.calan) t = Math.max(t, c.bas + c.sure);
+    return t;
   }
   /** ekrandaki altyazı: en son başlayan, bitişinden 0,6 sn sonrasına kadar */
   altyazi(saat: number): CalanSoz | null {
+    if (!this.altyaziAcik) return null;
     let en: CalanSoz | null = null;
     for (const c of this.calan) if (saat >= c.bas && saat < c.bas + c.sure + 0.6 && (!en || c.bas > en.bas)) en = c;
     return en;
   }
+  /** söylenenlerin sırası (test: konuşmalar üst üste binmiyor mu) */
+  gecmis: { id: string; bas: number; sure: number }[] = [];
   temizle() {
     this.calan = [];
+    this.gecmis = [];
   }
 }
 
@@ -131,8 +179,13 @@ export class Oynatici {
   bitti = false;
   /** bölüm adı (başlık kartı) ve başlığın göründüğü an aralığı */
   baslik: { metin: string; ust: string; bas: number; son: number } | null = null;
-  /** altyazı canvas'a çizilsin mi (YouTube kaydında hayır: altyazı ayrı .srt dosyası) */
-  altyaziGoster = true;
+  /** altyazı canvas'a çizilsin mi (Sozler.altyaziAcik ile aynı bayrak; Seri 2 YouTube kaydında kapalı: ayrı .srt) */
+  get altyaziGoster() {
+    return this.sozler.altyaziAcik;
+  }
+  set altyaziGoster(v: boolean) {
+    this.sozler.altyaziAcik = v;
+  }
   onParca?: (ad: string) => void;
   onBitti?: () => void;
 
@@ -205,7 +258,7 @@ export class Oynatici {
       ctx.fillRect(0, 0, this.W, this.H);
     }
     this.baslikCiz();
-    if (this.altyaziGoster) this.altyaziCiz();
+    this.altyaziCiz();
   }
 
   private baslikCiz() {
@@ -247,7 +300,8 @@ export class Oynatici {
     ctx.globalAlpha = Math.max(0, g);
     ctx.font = `600 ${boy}px Fredoka, system-ui, sans-serif`;
     const ad = KISI_ADI[s.kim] ?? '';
-    const metin = ad ? `${ad}: ${s.metin}` : s.metin;
+    const yazi = etiketsiz(s.metin);
+    const metin = ad ? `${ad}: ${yazi}` : yazi;
     const satirlar = sar(ctx, metin, W * 0.86);
     const gen = Math.max(...satirlar.map((l) => ctx.measureText(l).width)) + boy * 1.4;
     const yuk = satirlar.length * boy * 1.25 + boy * 0.7;

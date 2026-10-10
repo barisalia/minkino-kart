@@ -9,13 +9,14 @@
  */
 import type { KuklaIskelet, Matris } from '../kukla';
 import { carp } from '../kukla';
-import { Aktor, aralik, eliGotur, heceAgzi, kirp, kolKaldir, kuyrukSalla, nefes, tasan, yeniDurus, type Durus } from './aktor';
+import { Aktor, aralik, eliGotur, kirp, kolKaldir, kuyrukSalla, nefes, tasan, yeniDurus, type Durus } from './aktor';
 import { bezelyeBalonu, damla, firca, gunesHuzmesi, havlu, KONTUR, kumSaati, macun, tabure, tup } from './cizim';
 import { kostumGiydir, PIJAMA } from './kostum';
 import { kucagaOtur, kucakCiz, kucakDurusu, KUCAK, lokumKucakta } from './kucak';
 import { AynaSahnesi, type Parmak } from './kum-saati';
 import { kameraKaris, kameraMatris, kameraYolu, type Kamera, type KameraAnahtar, type Ortam, type Segment, type Sozler } from './oynatici';
-import { efekt, muzik, muzikSon } from './ses';
+import { efekt, konusmaAgzi, muzik, muzikSon, seslendirmeYukle } from './ses';
+import { etiketBedeni, type EtiketTur } from './seslendirme';
 import { arkaCiz, dprli, resim, sinirliKamera, type Mekan } from './mekan';
 import kinoJson from '../../../assets/karakter/kino-yeni/kino-yeni.json';
 import anneJson from '../../../assets/karakter/anne/anne.json';
@@ -42,8 +43,9 @@ class Akis {
     this.t += s;
     return this;
   }
-  isaret(ad: string) {
-    this.an[ad] = this.t;
+  /** şimdiki ana (ya da dt sn sonrasına) ad verir */
+  isaret(ad: string, dt = 0) {
+    this.an[ad] = this.t + dt;
     return this;
   }
   soz(id: string, sonra = 0.35, ad = id) {
@@ -75,6 +77,10 @@ export interface BolumBaglam {
   izle: boolean;
   /** kayıt: oyunu sanal parmak oynar */
   simule: boolean;
+  /** sözün kendi seslendirmesi var mı (varsa sentez efekt eşi çalmaz: esneme, hapşırık, kıkırdama seste) */
+  sesli: (id: string) => boolean;
+  /** kaydın en yüksek anı (sn; hapşırığın patlaması) */
+  tepe: (id: string) => number | null;
 }
 
 class HikayeParcasi implements Segment {
@@ -149,16 +155,21 @@ export function bolumKur(b: BolumBaglam): Bolum {
     soyle: (id: string) => b.sozler.soyle(id, b.saat()),
     aktif: (kim: string) => b.sozler.aktif(kim, b.saat()),
     efekt: (ad: string, n?: number) => efekt(ad, n),
+    bitis: () => b.sozler.bitis(),
+    sesli: b.sesli,
+    tepe: b.tepe,
   };
-  const sesAgzi = (d: Durus, kim: string, guc = 1) => {
+  /** konuşanın ağzı (sesin genliği) + etiketin bedeni (esneme, gülme …); haric: sahnenin kendi hareketi olanlar */
+  const sesAgzi = (d: Durus, kim: string, guc = 1, haric: EtiketTur[] = []) => {
     const s = b.sozler.aktif(kim, b.saat());
     if (!s) return false;
-    const h = heceAgzi(s.metin, s.x);
+    const h = konusmaAgzi(s);
     if (h) {
       d.agiz = h.agiz;
       d.kafaY += -9 * h.guc * guc;
       d.kafaA += 1.5 * Math.sin(s.x * 7) * h.guc * guc;
     }
+    etiketBedeni(d, s.etiketler, s.x, Math.max(0.75, guc), haric);
     return true;
   };
 
@@ -168,8 +179,17 @@ export function bolumKur(b: BolumBaglam): Bolum {
   a1.muzik('film-merak', 0.32, 0.2).efekt('kus', 0.6).efekt('kus', 2.6);
   a1.bekle(1.4).soz('s1-anl1', 0.25);
   a1.isaret('zipla').soz('s1-lok1', 0.2);
-  a1.isaret('kulak1').bekle(0.6).isaret('kulak2').bekle(0.7).isaret('esne').efekt('esne').bekle(1.5).isaret('otur').bekle(1.0);
-  a1.soz('s1-kino1', 0.3);
+  a1.isaret('kulak1').bekle(0.6).isaret('kulak2').bekle(0.7);
+  const esne = b.sesli('s1-kino1') ? b.sozler.etiket('s1-kino1', 'esne') : null;
+  if (esne) {
+    // esneme Kino'nun sesinde ([yawns]): söz yatarken başlar, esneme biterken oturur, "Günaydın" otururken gelir
+    a1.isaret('esne', esne.bas).isaret('esneSon', esne.son).isaret('otur', esne.son - 0.15).isaret('gunaydin', esne.son);
+    a1.soz('s1-kino1', 0);
+    a1.bekle(Math.max(0.3, a1.an.otur + 1.0 - a1.t));
+  } else {
+    a1.isaret('esne').efekt('esne').bekle(1.5).isaret('esneSon').isaret('otur').bekle(1.0).isaret('gunaydin');
+    a1.soz('s1-kino1', 0.3);
+  }
   a1.isaret('anneGel').efekt('ayak', 0.4).efekt('ayak', 1.2).efekt('ayak', 2.0).bekle(2.5).isaret('anneAl').efekt('hop', 0.3).bekle(1.5);
   a1.soz('s1-anne1', 0.25);
   a1.isaret('firla').efekt('hop', 0.3).efekt('inen', 0.95).soz('s1-kino2', 0.3);
@@ -226,7 +246,7 @@ export function bolumKur(b: BolumBaglam): Bolum {
       d.kolSol = -20;
       d.dirsekSol = 30;
       // esneme: ağız kocaman, kulaklar havaya
-      const es = aralik(t, A1.esne, A1.esne + 0.35) * (1 - aralik(t, A1.esne + 1.15, A1.esne + 1.5));
+      const es = aralik(t, A1.esne, A1.esne + 0.35) * (1 - aralik(t, A1.esneSon - 0.35, A1.esneSon));
       if (es > 0) {
         d.agiz = es > 0.3 ? 'agiz-kahkaha' : 'agiz-o';
         d.kaslar = 'kaslar-kalkik';
@@ -236,7 +256,7 @@ export function bolumKur(b: BolumBaglam): Bolum {
         kolKaldir(d, 'sag', es, 150, 30);
         kolKaldir(d, 'sol', es, 150, 30);
       }
-      if (t > A1.esne + 1.2) d.gozler = 'gozler-yari';
+      if (t > A1.esneSon - 0.3) d.gozler = 'gozler-yari';
     } else {
       nefes(d, t, 0.34);
       d.gozler = t < A1.otur + 0.8 ? 'gozler-yari' : 'gozler-saga';
@@ -244,9 +264,9 @@ export function bolumKur(b: BolumBaglam): Bolum {
       d.kafaA = 4 * (1 - otur);
     }
     // "Günaydın, Lokum!" el sallar
-    const sal = aralik(t, A1['s1-kino1'] - 0.1, A1['s1-kino1'] + 0.3) * (1 - aralik(t, A1['s1-kino1:son'], A1['s1-kino1:son'] + 0.4));
+    const sal = aralik(t, A1.gunaydin - 0.1, A1.gunaydin + 0.3) * (1 - aralik(t, A1['s1-kino1:son'], A1['s1-kino1:son'] + 0.4));
     if (sal > 0) {
-      kolKaldir(d, 'sol', tasan(sal, 1.3), 120, 40 + 25 * Math.sin((t - A1['s1-kino1']) * 14));
+      kolKaldir(d, 'sol', tasan(sal, 1.3), 120, 40 + 25 * Math.sin((t - A1.gunaydin) * 14));
       d.gozler = 'gozler-mutlu';
     }
     // fırla: çömel, sıçra, yere in
@@ -321,7 +341,8 @@ export function bolumKur(b: BolumBaglam): Bolum {
       d.agiz = 'agiz-genis';
       kuyrukSalla(d, t, 4, 18);
     }
-    if (t > A1.otur + 0.3) sesAgzi(d, 'kino');
+    // yatarken esneme sahnenin kendi hareketi (kollar gerinir); ağız yine sesin genliğiyle
+    sesAgzi(d, 'kino', t > A1.otur + 0.3 ? 1 : 0.3, ['esne']);
     kirp(d, t, 1);
     return d;
   }
@@ -464,7 +485,9 @@ export function bolumKur(b: BolumBaglam): Bolum {
   const a2 = new Akis(b.sozler);
   a2.muzik('film-merak', 0.3, 0.1);
   a2.bekle(0.9).isaret('sicrat1').efekt('sapir', 0.45).bekle(1.1).isaret('sicrat2').efekt('sapir', 0.45).bekle(0.9);
-  a2.soz('s2-lok1', 0.2).efekt('kikir', -0.6);
+  a2.soz('s2-lok1', 0.2);
+  // seslendirmede Lokum'un gülmesi kaydın içinde ([laughs]); yoksa sentez kıkırdama
+  if (!b.sesli('s2-lok1')) a2.efekt('kikir', -0.6);
   a2.isaret('kurula').bekle(1.7).isaret('pofuduk').efekt('pof').bekle(1.4);
   a2.isaret('macun').efekt('macun', 0.3).bekle(1.7);
   a2.soz('s2-kino1', 0.3);
@@ -994,7 +1017,7 @@ export function bolumKur(b: BolumBaglam): Bolum {
         yorgan = oy;
         karyola = ok;
         ayna.yansima = by;
-        await Promise.all([kino, anne, lokum, kinoA, anneA, lokumA].map((a) => a.yukle()));
+        await Promise.all([...[kino, anne, lokum, kinoA, anneA, lokumA].map((a) => a.yukle()), seslendirmeYukle(Object.keys(b.sozler.tablo))]);
       })();
       return yukleniyor;
     },

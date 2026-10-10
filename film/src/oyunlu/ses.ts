@@ -2,11 +2,17 @@
  * Oyunlu filmin sesleri: Web Audio sentezi efektler (dosya ve kredi yok), dosya müziği (film/src/muzik.ts) ve
  * MP4/WebM kaydı için günlük. Kayıtta (?kayit=1) ses çalınmaz: olaylar sahte saatle günlüğe yazılır, sonra
  * OfflineAudioContext'te aynı kodla işlenir (film/src/kayit.ts ile aynı yol).
- * Konuşma seslendirmesi yok (yeni sesleri Barış seçecek): cümleler altyazıyla, ağız hece ritmiyle oynar.
+ *
+ * Seslendirme (Seri 2 karakter sesleri, assets/ses-seri2/<söz>.mp3; scripts/film/oyunlu-ses.mjs hazırlar): her söz
+ * kendi kaydıyla çalar, konuşurken film müziği kısılır. Ağız kaydın genliğinden, film saatine göre seçilir (canlıda
+ * ve kare kare kayıtta aynı kare); sesi olmayan söz hece ritmiyle oynar.
  */
-import { baglam, baglamiDegistir, efektCikisi } from '../../../src/audio/motor';
+import { sekilDizisi, zarfCikar, type AgizSekli } from '../../../src/audio/dudak-mantik';
+import { baglam, baglamiDegistir, efektCikisi, konusmaCikisi } from '../../../src/audio/motor';
 import { FILM_EFEKT } from '../efekt';
 import { dosyaTamponu, filmMuzik, type DosyaSecenegi } from '../muzik';
+import { heceAgzi } from './aktor';
+import { agizSec, etiketAn, etiketsiz, type EtiketAralik } from './seslendirme';
 
 const hazir = (): [BaseAudioContext, AudioNode] | null => {
   const c = baglam() as BaseAudioContext | null;
@@ -141,12 +147,162 @@ for (const ad of ['kus', 'kikir', 'tik', 'pof', 'parilti', 'hop', 'inen', 'ayak'
 export interface SesOlay {
   /** saniye (film saati) */
   t: number;
-  tur: 'efekt' | 'muzik' | 'muzikSon';
+  tur: 'efekt' | 'muzik' | 'muzikSon' | 'konus';
   ad: string;
   arg?: unknown;
 }
 export const gunluk: SesOlay[] = [];
-export const sesDurum = { kayit: false, saat: 0 };
+/** hiz: test saati hızlandırıyorsa (?hiz=N) seslendirme çalmaz (görüntüye yetişemez) */
+export const sesDurum = { kayit: false, saat: 0, hiz: 1 };
+
+// ---------------------------------------------------------------- seslendirme
+const SES_DOSYA: Record<string, string> = import.meta.glob<string>('../../../assets/ses-seri2/*.mp3', { eager: true, query: '?url', import: 'default' });
+/** sözün kaydının adresi (yoksa null: söz altyazı ve hece ritmiyle) */
+export const sesAdresi = (id: string): string | null => SES_DOSYA[`../../../assets/ses-seri2/${id}.mp3`] ?? null;
+
+interface SozSesi {
+  tampon: AudioBuffer;
+  /** 10 ms'de bir ağız şekli ve genlik (sözün tepesine göre 0..1) */
+  sekil: AgizSekli[];
+  guc: Float32Array;
+}
+const ADIM_MS = 10;
+const sozSesleri = new Map<string, SozSesi>();
+const yuklenen = new Map<string, Promise<void>>();
+
+/** Sözlerin kayıtlarını indirip çözer, ağız dizilerini çıkarır (bir kez; yüklenemeyen söz sessiz kalır) */
+export function seslendirmeYukle(idler: string[]): Promise<void> {
+  return Promise.all(
+    idler.map((id) => {
+      const adres = sesAdresi(id);
+      if (!adres) return Promise.resolve();
+      let p = yuklenen.get(id);
+      if (!p) {
+        p = (async () => {
+          const veri = await (await fetch(adres)).arrayBuffer();
+          const OAC = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext: typeof OfflineAudioContext }).webkitOfflineAudioContext;
+          const tampon = await new OAC(1, 1, 44100).decodeAudioData(veri);
+          const x = tampon.getChannelData(0);
+          const zarf = zarfCikar(x, tampon.sampleRate, ADIM_MS);
+          // genlik: yükselirken hızlı, alçalırken yumuşak; sözün tepesine göre
+          const guc = new Float32Array(zarf.length);
+          let d = 0;
+          for (let i = 0; i < zarf.length; i++) {
+            const r = zarf[i].rms;
+            d += (r - d) * (r > d ? 0.6 : 0.25);
+            guc[i] = d;
+          }
+          const tepe = Math.max(0.02, ...guc);
+          for (let i = 0; i < guc.length; i++) guc[i] = Math.min(1, guc[i] / tepe);
+          sozSesleri.set(id, { tampon, sekil: sekilDizisi(zarf, ADIM_MS), guc });
+        })().catch(() => undefined);
+        yuklenen.set(id, p);
+      }
+      return p;
+    }),
+  ).then(() => undefined);
+}
+
+/** Konuşan sözün ağzı (x: sözün içindeki sn): kaydı varsa genlikten, yoksa hece ritminden; söz bittiyse null */
+export function konusmaAgzi(s: { id: string; metin: string; x: number; etiketler: readonly EtiketAralik[] }): { agiz: string; guc: number } | null {
+  const v = sozSesleri.get(s.id);
+  const e = etiketAn(s.etiketler, s.x)?.tur ?? null;
+  if (!v) {
+    const h = heceAgzi(etiketsiz(s.metin), s.x);
+    return h && e ? { agiz: agizSec(e === 'gul' ? 'orta' : 'az', h.guc, e), guc: h.guc } : h;
+  }
+  const i = Math.floor((s.x * 1000) / ADIM_MS);
+  if (i < 0 || i >= v.sekil.length) return null;
+  const g = v.guc[i];
+  return { agiz: agizSec(v.sekil[i], g, e), guc: v.sekil[i] === 'gulumse' || v.sekil[i] === 'kapali' ? 0 : g };
+}
+
+/** Çalan konuşmalar (duraklatınca durur, devamda kaldığı yerden sürer) */
+interface CalanSes {
+  src: AudioBufferSourceNode;
+  tampon: AudioBuffer;
+  /** bağlam saatinde başlangıç ve kaydın içinden başlama noktası */
+  bas: number;
+  ofs: number;
+}
+let calanSesler: CalanSes[] = [];
+let duranSesler: { tampon: AudioBuffer; ofs: number }[] = [];
+let sesDurakli = false;
+
+function tamponCal(tampon: AudioBuffer, ofs: number) {
+  const c = baglam();
+  const cikis = konusmaCikisi();
+  if (!c || !cikis || ofs >= tampon.duration - 0.03) return;
+  const src = c.createBufferSource();
+  src.buffer = tampon;
+  src.connect(cikis);
+  const t = c.currentTime + 0.01;
+  src.start(t, Math.max(0, ofs));
+  const k: CalanSes = { src, tampon, bas: t, ofs: Math.max(0, ofs) };
+  calanSesler.push(k);
+  src.onended = () => {
+    calanSesler = calanSesler.filter((x) => x !== k);
+    src.disconnect();
+  };
+  // konuşurken müzik geri planda
+  filmMuzik.kis(tampon.duration - ofs + 0.15);
+}
+
+/**
+ * Sözün kaydını çalar. bas: sözün film saatindeki başlangıcı (kayıtta günlüğe tam o an yazılır; canlıda geç
+ * kalınan kısım atlanır).
+ */
+export function konus(id: string, bas: number) {
+  if (sesDurum.kayit) {
+    if (sozSesleri.has(id)) gunluk.push({ t: bas, tur: 'konus', ad: id });
+    return;
+  }
+  const v = sozSesleri.get(id);
+  if (!v || sesDurum.hiz !== 1) return;
+  const ofs = Math.max(0, sesDurum.saat - bas);
+  if (sesDurakli) duranSesler.push({ tampon: v.tampon, ofs });
+  else tamponCal(v.tampon, ofs);
+}
+
+/** Film duraklayınca konuşma da durur; devamda kaldığı yerden */
+export function konusmaDuraklat(d: boolean) {
+  if (d === sesDurakli) return;
+  sesDurakli = d;
+  const c = baglam();
+  if (d) {
+    for (const k of calanSesler) {
+      if (c) duranSesler.push({ tampon: k.tampon, ofs: k.ofs + Math.max(0, c.currentTime - k.bas) });
+      k.src.onended = null;
+      try {
+        k.src.stop();
+      } catch {
+        /* zaten durmuş */
+      }
+      k.src.disconnect();
+    }
+    calanSesler = [];
+  } else {
+    const d2 = duranSesler;
+    duranSesler = [];
+    for (const k of d2) tamponCal(k.tampon, k.ofs);
+  }
+}
+
+/** Baştan oynatırken yarım kalan konuşma susar */
+export function konusmaSustur() {
+  duranSesler = [];
+  sesDurakli = false;
+  for (const k of calanSesler) {
+    k.src.onended = null;
+    try {
+      k.src.stop();
+    } catch {
+      /* zaten durmuş */
+    }
+    k.src.disconnect();
+  }
+  calanSesler = [];
+}
 
 export function efekt(ad: string, n?: number) {
   if (sesDurum.kayit) gunluk.push({ t: sesDurum.saat, tur: 'efekt', ad, arg: n });
@@ -176,11 +332,24 @@ export async function sesiIsle(sure: number): Promise<string> {
   try {
     for (const o of gunluk) if (o.tur === 'muzik') await dosyaTamponu(vekil as unknown as BaseAudioContext, o.ad);
     const olaylar = [...gunluk].sort((a, b) => a.t - b.t);
+    // konuşmalar örnek hassasiyetiyle tam anında başlar (ağız film saatine göre oynar: ses ile aynı kare)
+    const cikis = konusmaCikisi();
+    for (const o of olaylar) {
+      const v = o.tur === 'konus' ? sozSesleri.get(o.ad) : undefined;
+      if (!v || !cikis || o.t >= sure) continue;
+      const src = oc.createBufferSource();
+      src.buffer = v.tampon;
+      src.connect(cikis);
+      src.start(Math.max(0, o.t));
+    }
     let i = 0;
     const cal = (o: SesOlay) => {
       if (o.tur === 'efekt') EFEKT[o.ad]?.(o.arg as number | undefined);
       else if (o.tur === 'muzik') filmMuzik.dosyaCal(o.arg as DosyaSecenegi);
-      else filmMuzik.dosyaSon(o.arg as number);
+      else if (o.tur === 'konus') {
+        const v = sozSesleri.get(o.ad);
+        if (v) filmMuzik.kis(v.tampon.duration + 0.15);
+      } else filmMuzik.dosyaSon(o.arg as number);
     };
     while (i < olaylar.length && olaylar[i].t <= 0) cal(olaylar[i++]);
     for (let t = ADIM; t < sure - ADIM; t += ADIM) {

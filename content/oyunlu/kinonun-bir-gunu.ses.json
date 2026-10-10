@@ -1,0 +1,121 @@
+{
+  "aciklama": "Seslendirme süreleri (sn): scripts/film/oyunlu-ses.mjs üretir, elle değiştirmeyin. Sesler assets/ses-seri2/<söz>.mp3 (kaynak ekip/ses/seri2-gelen, ElevenLabs eleven_v4).",
+  "sozler": {
+    "s1-anl1": {
+      "sure": 4.04,
+      "tepe": 2.13
+    },
+    "s1-lok1": {
+      "sure": 2.12,
+      "tepe": 0.92
+    },
+    "s1-kino1": {
+      "sure": 2.21,
+      "tepe": 0.06
+    },
+    "s1-anne1": {
+      "sure": 3.47,
+      "tepe": 1.73
+    },
+    "s1-kino2": {
+      "sure": 2.43,
+      "tepe": 0.72
+    },
+    "s1-anne2": {
+      "sure": 3.96,
+      "tepe": 3.32
+    },
+    "s1-kino3": {
+      "sure": 2.92,
+      "tepe": 0.51
+    },
+    "s1-anl2": {
+      "sure": 3.83,
+      "tepe": 0.99
+    },
+    "s1-lok2": {
+      "sure": 0.99,
+      "tepe": 0.16
+    },
+    "s2-lok1": {
+      "sure": 1.69,
+      "tepe": 1.3
+    },
+    "s2-kino1": {
+      "sure": 2.81,
+      "tepe": 1.88
+    },
+    "s2-anne1": {
+      "sure": 2.52,
+      "tepe": 1.06
+    },
+    "s2-anne2": {
+      "sure": 1.68,
+      "tepe": 1.26
+    },
+    "s2-anl1": {
+      "sure": 3.26,
+      "tepe": 2.12
+    },
+    "o1-cagri": {
+      "sure": 1.48,
+      "tepe": 0.3
+    },
+    "o1-yukari": {
+      "sure": 1.78,
+      "tepe": 1.11
+    },
+    "o1-yardim": {
+      "sure": 1.38,
+      "tepe": 0.57
+    },
+    "o1-bak": {
+      "sure": 1.37,
+      "tepe": 0.23
+    },
+    "o1-bitirim": {
+      "sure": 1.19,
+      "tepe": 0.63
+    },
+    "o1-hapsu": {
+      "sure": 2.58,
+      "tepe": 1.46
+    },
+    "o1-bir": {
+      "sure": 0.71,
+      "tepe": 0.17
+    },
+    "o1-iki": {
+      "sure": 0.65,
+      "tepe": 0.1
+    },
+    "o1-uc": {
+      "sure": 0.67,
+      "tepe": 0.18
+    },
+    "o1-dort": {
+      "sure": 0.8,
+      "tepe": 0.34
+    },
+    "o1-pft": {
+      "sure": 1.34,
+      "tepe": 0.1
+    },
+    "o1-bitti": {
+      "sure": 1.29,
+      "tepe": 0.59
+    },
+    "s2-lok2": {
+      "sure": 0.78,
+      "tepe": 0.38
+    },
+    "s2-anl2": {
+      "sure": 4.12,
+      "tepe": 2.02
+    },
+    "s2-anne3": {
+      "sure": 2.66,
+      "tepe": 1.47
+    }
+  }
+}

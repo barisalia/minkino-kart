@@ -7,8 +7,27 @@ import { hataTopla } from './yardimci';
  */
 declare global {
   interface Window {
-    oyunlu?: { parca: () => string | undefined; kopuk: () => [number, number] | null; kum: () => number; evre: () => string };
+    oyunlu?: {
+      parca: () => string | undefined;
+      kopuk: () => [number, number] | null;
+      kum: () => number;
+      evre: () => string;
+      sozler: () => { id: string; bas: number; sure: number }[];
+      altyazi: () => boolean;
+    };
   }
+}
+
+/** seslendirme: hiçbir söz bir öncekinin üstüne binmez, araya nefes payı girer */
+async function konusmalarSirali(page: Page) {
+  const s = await page.evaluate(() => window.oyunlu!.sozler());
+  expect(s.length).toBeGreaterThan(5);
+  const sirali = [...s].sort((a, b) => a.bas - b.bas);
+  for (let i = 1; i < sirali.length; i++) {
+    const o = sirali[i - 1];
+    expect(sirali[i].bas - (o.bas + o.sure), `${o.id} → ${sirali[i].id}`).toBeGreaterThanOrEqual(0.15);
+  }
+  return sirali.map((x) => x.id);
 }
 
 async function oyunaKadar(page: Page, adres: string) {
@@ -44,6 +63,12 @@ test.describe('telefon yatay 844×390', () => {
     await page.screenshot({ path: `tests/screens/${info.project.name}-oyunlu-0-kapak-yatay.png` });
     await page.getByRole('button', { name: 'Oynat' }).click();
     await expect(page.locator('#oyunlu')).toHaveAttribute('data-parca', 'sahne1-gunaydin', { timeout: 30_000 });
+    // seslendirme var: altyazı varsayılan kapalı, ebeveyn düğmesiyle açılır ve seçim saklanır
+    expect(await page.evaluate(() => window.oyunlu!.altyazi())).toBe(false);
+    await page.getByRole('button', { name: 'Altyazıyı aç' }).click();
+    expect(await page.evaluate(() => window.oyunlu!.altyazi())).toBe(true);
+    await page.getByRole('button', { name: 'Altyazıyı kapat' }).click();
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-oyunlu-v1') ?? '{}').altyazi)).toBe(false);
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `tests/screens/${info.project.name}-oyunlu-1-sahne1-yatay.png` });
     await expect(page.locator('#oyunlu')).toHaveAttribute('data-parca', 'sahne2-lavabo', { timeout: 30_000 });
@@ -61,6 +86,9 @@ test.describe('telefon yatay 844×390', () => {
     // kayıt yalnız cihazda
     const kayit = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-oyunlu-v1') ?? '{}'));
     expect(kayit.oyunlar['kum-saati'].kez).toBe(1);
+    const sira = await konusmalarSirali(page);
+    expect(sira.slice(0, 3)).toEqual(['s1-anl1', 's1-lok1', 's1-kino1']);
+    expect(sira).toContain('o1-bitti');
     expect(hatalar).toEqual([]);
   });
 });
@@ -71,6 +99,10 @@ test('dikey: an tekrarı, hiç dokunulmazsa yardım merdiveni oyunu kendisi biti
   await page.screenshot({ path: `tests/screens/${info.project.name}-oyunlu-4-oyun-dikey.png` });
   await expect.poll(() => page.evaluate(() => window.oyunlu!.evre()), { timeout: 60_000 }).toMatch(/bitis|sonra/);
   await expect(page.locator('#oyunlu')).toHaveAttribute('data-durum', 'son', { timeout: 30_000 });
+  // yardım cümleleri ve sayma sırayla: üst üste binmez; 5-6'da Kino dörde kadar sayar
+  const sira = await konusmalarSirali(page);
+  expect(sira.filter((id) => /^o1-(bir|iki|uc|dort)$/.test(id))).toEqual(['o1-bir', 'o1-iki', 'o1-uc', 'o1-dort']);
+  expect(sira).toEqual(expect.arrayContaining(['o1-cagri', 'o1-yukari', 'o1-yardim', 'o1-bak', 'o1-bitirim', 'o1-pft', 'o1-bitti']));
   // diş oyunu tekrar: yeni oyun dolu kum saatiyle başlar
   await page.getByRole('button', { name: 'Diş oyununu tekrar oyna' }).click();
   await expect(page.locator('#oyunlu')).toHaveAttribute('data-parca', 'oyun1-kum-saati', { timeout: 30_000 });

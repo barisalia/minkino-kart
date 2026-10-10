@@ -16,16 +16,32 @@
  * çizim aynanın camına kırpılıp küçültülerek basılır; oyun kadrajına varınca F = ekran. Yani kesme yok.
  */
 import { carp, type Matris } from '../kukla';
-import { Aktor, eliGotur, heceAgzi, kirp, kolCoz, kuyrukSalla, nefes, yeniDurus, type Durus } from './aktor';
+import { Aktor, eliGotur, kirp, kolCoz, kuyrukSalla, nefes, yeniDurus, type Durus } from './aktor';
 import { kucagaOtur, kucakCiz, kucakDurusu, lokumKucakta } from './kucak';
 import { DIS, disAgzi, disNoktasi, firca, gulusEgrisi, hayaletEl, KONTUR, kopukTopu, kumSaati, parilti } from './cizim';
+import type { AktifSoz } from './oynatici';
+import { konusmaAgzi } from './ses';
+import { etiketBedeni } from './seslendirme';
 import { YardimMerdiveni, type Basamak } from './yardim';
 
 export interface SahneSes {
   soyle(id: string): number;
-  aktif(kim: string): { metin: string; x: number } | null;
+  aktif(kim: string): AktifSoz | null;
   efekt(ad: string, n?: number): void;
+  /** son konuşmanın bittiği an (sahne saati) */
+  bitis(): number;
+  /** sözün kendi seslendirmesi var mı */
+  sesli(id: string): boolean;
+  /** kaydın en yüksek anı (sn) */
+  tepe(id: string): number | null;
 }
+/**
+ * Oyunun konuşma sırası: oyun sesleri üst üste binmez, aralarında nefes payı kalır. say: Kino'nun sayması (bekleyen
+ * yardım cümlesini düşürür); yardim: merdivenin cümlesi (sırada 2,5 sn'den fazla bekleyen düşer: an geçti);
+ * olay: çağrı, bitiş cümleleri (sırasını bekler, düşmez).
+ */
+type KonusTur = 'say' | 'yardim' | 'olay';
+const NEFES = 0.3;
 /** dokunuş (F pikseli) */
 export interface Parmak {
   bas: boolean;
@@ -212,15 +228,44 @@ export class AynaSahnesi {
     return uyg(kafa, [723, 800]);
   }
 
-  /** oyunu başlatır: köpük belirir, anlatıcı çağırır */
+  /** oyunu başlatır: köpük belirir, anlatıcı çağırır (5-6: ardından "Yukarı, aşağı") */
   basla() {
     this.evre = 'oyun';
     this.ot = 0;
     this.ses.efekt('kopuk');
-    const s = this.ses.soyle('o1-cagri');
-    if (this.yasBuyuk) this.sonraSoyle.push({ t: s + 0.3, id: 'o1-yukari' });
+    this.konus('o1-cagri', 'olay', this.sonSaat);
+    if (this.yasBuyuk) this.konus('o1-yukari', 'olay', this.sonSaat);
   }
-  private sonraSoyle: { t: number; id: string }[] = [];
+
+  // ---------------------------------------------------------------- konuşma sırası
+  private kuyruk: { id: string; tur: KonusTur; t: number; bas?: () => void }[] = [];
+  /** son adımın sahne saati (konuşma sırası için) */
+  private sonSaat = 0;
+  private konus(id: string, tur: KonusTur, tS: number, bas?: () => void) {
+    if (tur === 'say') this.kuyruk = this.kuyruk.filter((k) => k.tur !== 'yardim');
+    if (tur === 'yardim' && this.kuyruk.some((k) => k.tur !== 'olay' || k.id === id)) return;
+    this.kuyruk.push({ id, tur, t: tS, bas });
+    this.kuyrukIsle(tS);
+  }
+  /** sıradaki cümle: önceki konuşma bitip nefes payı geçince başlar */
+  private kuyrukIsle(tS: number) {
+    while (this.kuyruk.length) {
+      const k = this.kuyruk[0];
+      if (k.tur === 'yardim' && tS - k.t > 2.5) {
+        this.kuyruk.shift();
+        continue;
+      }
+      if (tS < this.ses.bitis() + NEFES) return;
+      this.kuyruk.shift();
+      this.ses.soyle(k.id);
+      k.bas?.();
+      return;
+    }
+  }
+  /** kimse konuşmuyor ve sırada cümle yok */
+  private get sessiz() {
+    return !this.kuyruk.length && this.sonSaat >= this.ses.bitis() + NEFES;
+  }
 
   dokun(tur: 'bas' | 'kay' | 'kalk', x: number, y: number) {
     this.parmak = { bas: tur !== 'kalk', x, y };
@@ -238,29 +283,28 @@ export class AynaSahnesi {
   private alan() {
     return (this.yasBuyuk ? 45 : 60) * (Math.min(this.W, this.H) / 390) * this.yardim.miknatis;
   }
-  private otoBaslat(kalan: number, hiz: number, soz?: string) {
+  private otoBaslat(kalan: number, hiz: number, soz?: string, tur: KonusTur = 'yardim') {
     this.oto = { kalan, hiz };
-    if (soz) this.ses.soyle(soz);
+    if (soz) this.konus(soz, tur, this.sonSaat);
   }
 
   /** dt ilerlet; tS: sahnenin saati (canlılık) */
   adim(dt: number, tS: number) {
+    this.sonSaat = tS;
+    this.kuyrukIsle(tS);
     // ---- oyun mantığı
     this.fircaliyor = false;
     if (this.evre === 'oyun') {
       this.ot += dt;
-      for (const s of [...this.sonraSoyle]) if (this.ot >= s.t) {
-        this.ses.soyle(s.id);
-        this.sonraSoyle.splice(this.sonraSoyle.indexOf(s), 1);
-      }
       const [fx, fy] = this.kopukF();
       const p = this.parmak;
-      const hapsuyor = tS - this.hapsu < 1.4;
+      const hapsuyor = tS - this.hapsu < this.hapsuAn + 0.95;
       if (p.bas && !hapsuyor) {
         if (Math.hypot(p.x - fx, p.y - fy) <= this.alan()) this.fircaliyor = true;
         else {
           const [nx, ny] = this.burunF();
-          if (Math.hypot(p.x - nx, p.y - ny) < this.kino.o * 120 && tS - this.hapsu > 4) this.hapsuBaslat(tS);
+          // hapşırık konuşmanın üstüne binmez
+          if (Math.hypot(p.x - nx, p.y - ny) < this.kino.o * 120 && tS - this.hapsu > 4 && this.sessiz) this.hapsuBaslat(tS);
         }
       }
       const basamak = this.yardim.adim(dt, this.fircaliyor);
@@ -273,20 +317,23 @@ export class AynaSahnesi {
         if (this.oto.kalan <= 0) this.oto = null;
       }
       if (hiz > 0 && !hapsuyor) this.ilerle(dt * hiz, tS);
-      if (this.u >= 1) this.bitisBaslat();
+      if (this.u >= 1) this.bitisBaslat(tS);
     } else if (this.evre === 'bitis') {
       const once = this.bt;
-      this.bt += dt;
+      // gargara Kino'nun son sözü ("Dört!", "Ben bitiririm!") bitince başlar: ağzı doluyken konuşmaz
+      if (this.bt > 0 || this.sessiz) this.bt += dt;
       const gec = (t: number) => once < t && this.bt >= t;
       if (gec(0.55)) this.ses.efekt('gulu');
       if (gec(1.95)) this.ses.efekt('pft');
-      if (gec(2.25)) this.ses.soyle('o1-pft');
-      if (gec(2.8)) {
-        this.ses.efekt('parilti');
-        this.ses.soyle('o1-bitti');
-        for (let i = 0; i < 3; i++) this.parcacikAt('parilti', ...this.agizF([712 + (i - 1) * 200, 900 - (i === 1 ? 140 : 40)]), 1.2);
-      }
-      if (this.bt > 4.9) this.bitti = true;
+      // Lokum taklit eder ("Pft!"), sonra anlatıcı: sırayla, üst üste değil
+      if (gec(2.25)) this.konus('o1-pft', 'olay', tS);
+      if (gec(2.3))
+        this.konus('o1-bitti', 'olay', tS, () => {
+          this.ses.efekt('parilti');
+          for (let i = 0; i < 3; i++) this.parcacikAt('parilti', ...this.agizF([712 + (i - 1) * 200, 900 - (i === 1 ? 140 : 40)]), 1.2);
+        });
+      // son cümle bitince (en az 4,9 sn) film sürer
+      if (this.bt > 4.9 && this.sessiz && tS >= this.ses.bitis() + 0.5) this.bitti = true;
     }
     // dişlerin parlaması yumuşak
     for (let i = 0; i < 12; i++) this.dis[i] += (this.disHedef[i] - this.dis[i]) * Math.min(1, dt * 6);
@@ -322,7 +369,7 @@ export class AynaSahnesi {
     }
     // 5-6: bölge bitince Kino sayar
     if (this.yasBuyuk && simdi.bolge > once.bolge && this.sayilan < 4) {
-      this.ses.soyle(['o1-bir', 'o1-iki', 'o1-uc'][this.sayilan++]);
+      this.konus(['o1-bir', 'o1-iki', 'o1-uc'][this.sayilan++], 'say', tS);
     }
     if (tS - this.sonFircaSesi > 0.3) {
       this.sonFircaSesi = tS;
@@ -339,12 +386,14 @@ export class AynaSahnesi {
     }
   }
 
-  private bitisBaslat() {
+  private bitisBaslat(tS: number) {
     this.evre = 'bitis';
     this.bt = 0;
     this.u = 1;
     this.disHedef.fill(1);
-    if (this.yasBuyuk && this.sayilan < 4) this.ses.soyle('o1-dort');
+    // bitince yardım cümlesi gereksiz: sırada bekleyen düşer
+    this.kuyruk = this.kuyruk.filter((k) => k.tur !== 'yardim');
+    if (this.yasBuyuk && this.sayilan < 4) this.konus('o1-dort', 'say', tS);
     this.sayilan = 4;
     this.ses.efekt('ding');
     this.oto = null;
@@ -354,18 +403,35 @@ export class AynaSahnesi {
   private basamak(b: Basamak, tS: number) {
     if (b === 'parla') this.ses.efekt('can');
     else if (b === 'soyle') {
-      this.ses.soyle('o1-yardim');
+      this.konus('o1-yardim', 'yardim', tS);
       this.elGoster = tS;
     } else if (b === 'goster') this.otoBaslat(3, 1, 'o1-bak');
-    else this.otoBaslat(Infinity, 2.6, 'o1-bitirim');
+    else this.otoBaslat(Infinity, 2.6, 'o1-bitirim', 'olay');
   }
 
+  /**
+   * Hapşırık: seslendirmede Kino'nun kaydı hapşırığın nefes alışıyla başlar, patlama kaydın en yüksek anında
+   * (hapsuAn); kayıt yoksa sentez efekt ve patlamada söz.
+   */
   private hapsuBaslat(tS: number) {
     this.hapsu = tS;
-    this.ses.efekt('hapsu');
-    this.hapsuSoz = true;
+    if (this.ses.sesli('o1-hapsu')) {
+      this.hapsuAn = Math.max(0.3, Math.min(2, this.ses.tepe('o1-hapsu') ?? 0.45));
+      this.ses.soyle('o1-hapsu');
+      this.hapsuSoz = false;
+    } else {
+      this.hapsuAn = 0.45;
+      this.ses.efekt('hapsu');
+      this.hapsuSoz = true;
+    }
+    this.hapsuParcacik = true;
   }
   private hapsuSoz = false;
+  private hapsuParcacik = false;
+  /** hapşırığın patlama anı (hapşırık başlangıcından sn) */
+  private hapsuAn = 0.45;
+  /** Kino konuşurken "Iii" ağzı sesin genliğiyle biraz açılır (0..1) */
+  private kinoSes = 0;
 
   private parcacikAt(tur: Parcacik['tur'], x: number, y: number, omur: number) {
     const a = Math.random() * Math.PI * 2, h = tur === 'kopuk' ? 60 + Math.random() * 80 : 20;
@@ -384,19 +450,30 @@ export class AynaSahnesi {
     const fark = (fx - k.x) / (k.o * 900);
     d.gozler = this.evre === 'oyun' ? (fark < -0.1 ? 'gozler-sola' : fark > 0.12 ? 'gozler-saga' : 'gozler-acik') : 'gozler-acik';
     if (this.fircaliyor || this.oto) d.kafaA += 1.8 * Math.sin(t * 7);
-    // hapşırık
+    // Kino konuşuyor ("Bak, böyle!", "Bir!"): "Iii" ağzı sesle açılır, gülerken omuzları sarsılır
+    const sk = this.ses.aktif('kino');
+    this.kinoSes = 0;
+    if (sk) {
+      const h = konusmaAgzi(sk);
+      this.kinoSes = h?.guc ?? 0;
+      d.kafaY += -7 * this.kinoSes;
+      etiketBedeni(d, sk.etiketler, sk.x, 0.8, ['hapsu']);
+    }
+    // hapşırık: nefes alır (kafa geri), hapsuAn'da patlar (kafa öne)
     const hx = t - this.hapsu;
-    if (hx >= 0 && hx < 1.4) {
-      const al = yumusak(hx / 0.45) * (1 - yumusak((hx - 0.45) / 0.12));
-      const at = hx >= 0.45 ? Math.exp(-(hx - 0.45) * 4) : 0;
+    const hA = this.hapsuAn;
+    if (hx >= 0 && hx < hA + 0.95) {
+      const al = yumusak(hx / hA) * (1 - yumusak((hx - hA) / 0.12));
+      const at = hx >= hA ? Math.exp(-(hx - hA) * 4) : 0;
       d.kafaA += -5 * al + 7 * at;
       d.kafaY += -26 * al + 30 * at;
-      d.gozler = hx < 0.9 ? 'gozler-kapali' : 'gozler-yari';
+      d.gozler = hx < hA + 0.45 ? 'gozler-kapali' : 'gozler-yari';
       d.kaslar = 'kaslar-kalkik';
-      d.agiz = hx < 0.45 ? 'agiz-o' : 'agiz-genis';
-      if (hx >= 0.45 && this.hapsuSoz) {
+      d.agiz = hx < hA ? 'agiz-o' : 'agiz-genis';
+      if (hx >= hA && this.hapsuParcacik) {
+        this.hapsuParcacik = false;
+        if (this.hapsuSoz) this.ses.soyle('o1-hapsu');
         this.hapsuSoz = false;
-        this.ses.soyle('o1-hapsu');
         const [nx, ny] = this.burunF();
         for (let i = 0; i < 9; i++) this.parcacikAt('kopuk', nx, ny, 0.9);
         this.sonKikir = t - 10;
@@ -435,7 +512,8 @@ export class AynaSahnesi {
     da.gozler = 'gozler-saga';
     da.kafaA = 3;
     if (this.evre === 'bitis' && this.bt > 2.4) da.gozler = 'gozler-mutlu';
-    if (t - this.hapsu > 0.5 && t - this.hapsu < 2) {
+    const hb = t - this.hapsu - this.hapsuAn;
+    if (hb > 0.05 && hb < 1.55) {
       da.gozler = 'gozler-mutlu';
       da.agiz = 'agiz-genis';
     }
@@ -453,19 +531,22 @@ export class AynaSahnesi {
     // kikir: hapşırıkta ve ara ara
     const kk = t - this.sonKikir;
     if (kk > 7 && this.evre === 'oyun') this.sonKikir = t;
-    const kikir = t - this.hapsu > 0.7 && t - this.hapsu < 1.8;
+    const kikir = hb > 0.25 && hb < 1.35;
     if ((kk < 0.9 && this.evre === 'oyun') || kikir) {
       dl.gozler = 'gozler-mutlu';
       dl.agiz = 'agiz-kahkaha';
       dl.kalcaY += 8 * Math.abs(Math.sin(t * 14));
-      if (kikir && t - this.hapsu < 0.75) this.ses.efekt('kikir');
+      if (kikir && hb < 0.3) this.ses.efekt('kikir');
     }
     if (this.evre === 'bitis' && this.bt > 2.15 && this.bt < 2.8) {
       dl.agiz = 'agiz-o';
       dl.yanak = 0.6;
     }
     const sl = this.ses.aktif('lokum');
-    if (sl) dl.agiz = heceAgzi(sl.metin, sl.x)?.agiz ?? dl.agiz;
+    if (sl) {
+      dl.agiz = konusmaAgzi(sl)?.agiz ?? dl.agiz;
+      etiketBedeni(dl, sl.etiketler, sl.x);
+    }
     lokumKucakta(dl);
     kirp(dl, t, 5);
     kuyrukSalla(dl, t, 2.2, 12);
@@ -555,13 +636,13 @@ export class AynaSahnesi {
     // Kino: beden, "Iii" ağzı, burun, köpük, fırça, fırçayı tutan kol
     const k = this.kino;
     const gargara = this.evre === 'bitis' && this.bt > 0.35 && this.bt < 2.65;
-    const hapsuyor = tS - this.hapsu >= 0 && tS - this.hapsu < 1.3;
+    const hapsuyor = tS - this.hapsu >= 0 && tS - this.hapsu < this.hapsuAn + 0.85;
     k.ciz(ctx, Mf, { haric: ['kol-sag', 'kol-ust-sag-dikis', 'burun'] });
     if (!gargara && !hapsuyor) {
       const kafa = carp(Mf, carp(k.dunya(), k.k.matris('kafa')));
       ctx.setTransform(...kafa);
       const ac = this.evre === 'once' ? Math.min(1, this.sirit) : this.evre === 'bitis' ? Math.min(1, Math.max(0.6, (this.bt - 2.65) / 0.3)) : 1;
-      disAgzi(ctx, this.dis, ac);
+      disAgzi(ctx, this.dis, ac * (1 + 0.45 * this.kinoSes));
     }
     k.ciz(ctx, Mf, { yalniz: ['burun'] });
     // köpük
