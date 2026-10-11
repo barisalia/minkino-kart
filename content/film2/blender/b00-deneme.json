@@ -1,0 +1,187 @@
+{
+ "ad": "b00-deneme",
+ "aciklama": "Blender hattı deneme sahnesi (M2 salon): Baba ayakta uyuklar, Lokum arkada Kuzu'yla oynar, Anne çay doldurur; Kino koşarak girer, çorabını arar, minderleri atar, minder Baba'ya çarpar, Baba zıplayarak uyanır. Konumlar m2-salon.png (3168x1344) pikseli; açılar derece, + saat yönü; kemik:y/x kukla boyu cinsinden.",
+ "fps": 30,
+ "sure": 21.5,
+ "cozunurluk": [1920, 1080],
+ "kino_boy_px": 430,
+ "mekan": {
+  "resim": "ekip/gemini/yeni/seri2-mekan/m2-salon.png",
+  "yukseklik": 2.0,
+  "zemin_py": 1180,
+  "derinlik": 2.5,
+  "bukum": [
+   { "ad": "nazar", "pivot": [1715, 330], "kutu": [1655, 330, 1777, 483], "yumusak": 26, "aci": 7, "periyot": 2.4 },
+   { "ad": "ceket", "pivot": [776, 376], "kutu": [713, 376, 843, 610], "yumusak": 30, "aci": 3, "periyot": 3.3, "asagi": true },
+   { "ad": "perde-sol", "pivot": [2795, 150], "kutu": [2730, 150, 2870, 1170], "yumusak": 40, "aci": 1.1, "periyot": 4.1, "asagi": true },
+   { "ad": "perde-sag", "pivot": [3095, 150], "kutu": [3020, 150, 3168, 1170], "yumusak": 40, "aci": 1.1, "periyot": 3.7, "asagi": true }
+  ]
+ },
+ "kamera": {
+  "lens": 35,
+  "fstop": 4.5,
+  "el": 0.004,
+  "anahtarlar": [
+   { "t": 0.0, "x": 1300, "yakin": 1.0 },
+   { "t": 3.0, "x": 1480, "yakin": 1.0 },
+   { "t": 5.4, "x": 1420, "yakin": 1.04 },
+   { "t": 7.0, "x": 1260, "yakin": 1.14 },
+   { "t": 10.3, "x": 1480, "yakin": 1.1 },
+   { "t": 13.2, "x": 1700, "yakin": 1.1 },
+   { "t": 16.4, "x": 1420, "yakin": 1.12 },
+   { "t": 21.5, "x": 1500, "yakin": 1.0 }
+  ]
+ },
+ "karakterler": [
+  { "ad": "lokum", "kit": "lokum", "x": 690, "y": 1015, "derinlik": 1.0 },
+  { "ad": "baba", "kit": "baba", "x": 1790, "y": 1112, "derinlik": 0.3 },
+  { "ad": "anne", "kit": "anne", "x": 2290, "y": 1165, "derinlik": 0.0 },
+  { "ad": "kino", "kit": "kino-yeni", "x": 1000, "y": 1215, "derinlik": -0.35 }
+ ],
+ "esya_kaynak": [
+  { "ad": "caydanlik", "kaynak": "ekip/gemini/yeni/seri2-esya/caydanlik.png" },
+  { "ad": "kuzu", "kaynak": "ekip/gemini/yeni/seri2-esya/kuzu.png" },
+  { "ad": "cay-bardagi", "kaynak": "ekip/gemini/yeni/seri2-esya/cay-bardagi.png" },
+  { "ad": "yastik", "kaynak": "assets/film-seri2/esya/yastik.webp" },
+  { "ad": "saksi", "kaynak": "assets/film-seri2/esya/saksi.webp" },
+  { "ad": "tabure", "kaynak": "assets/film-seri2/esya/tabure.webp" }
+ ],
+ "esya": {
+  "tabure": { "yer": [2475, 1172], "gen_px": 175, "derinlik": -0.05 },
+  "bardak": { "resim": "cay-bardagi", "yer": [2475, 1060], "gen_px": 44, "derinlik": -0.07 },
+  "caydanlik": { "yer": [2380, 900], "gen_px": 150, "derinlik": 0.0, "ayna": true, "cap": [0.86, 0.62] },
+  "yastik1": { "resim": "yastik", "yer": [1160, 885], "gen_px": 125, "derinlik": 0.5, "aci": 8 },
+  "yastik2": { "resim": "yastik", "yer": [1300, 885], "gen_px": 125, "derinlik": 0.5, "aci": -7 },
+  "kuzu": { "yer": [690, 900], "gen_px": 78, "derinlik": 1.0 },
+  "saksi": { "yer": [2980, 1440], "gen_px": 560, "derinlik": -1.5 }
+ },
+ "akis": [
+  { "kaynak": "caydanlik", "nokta": [0.06, 0.52], "hedef": "bardak", "hedef_nokta": [0.5, 0.9], "t": 3.75, "sure": 1.5, "kalinlik": 0.6 }
+ ],
+ "buhar": [
+  { "esya": "bardak", "nokta": [0.5, 1.0], "boy_px": 34, "yuksel": 0.1, "aralik": 0.4 },
+  { "esya": "caydanlik", "nokta": [0.45, 1.0], "boy_px": 30, "yuksel": 0.09, "aralik": 0.55, "opak": 0.4 }
+ ],
+ "kus": { "x_aralik": [2875, 2985], "y": 682, "gen_px": 44 },
+ "olaylar": [
+  { "t": 0.0, "tip": "uyu", "kim": "baba", "sure": 10.85, "bas_dus": [4.7, 8.1] },
+  { "t": 0.3, "tip": "konus", "kim": "baba", "ses": "b00-blender-baba-horul", "arka": true },
+
+  { "t": 0.0, "tip": "tut", "esya": "kuzu", "kim": "lokum", "kemik": ["el-sag", "el-sol"], "gecis": 0, "ofset": [0, 0.02], "on": -0.06, "aci_takip": 0.3 },
+  { "t": 0.4, "tip": "poz", "kim": "lokum", "anahtarlar": [
+   [0.0, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}], [0.7, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}, "asma"],
+   [1.0, {"kol-ust-sag": 12, "kol-ust-sol": -12, "kol-alt-sag": -124, "kol-alt-sol": 124, "kok:y": 0.04}, "asma"],
+   [1.3, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [1.6, {"kol-ust-sag": 15, "kol-ust-sol": -15, "kol-alt-sag": -130, "kol-alt-sol": 130, "kok:y": 0.05}, "asma"],
+   [1.95, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [2.35, {"kol-ust-sag": 15, "kol-ust-sol": -15, "kol-alt-sag": -130, "kol-alt-sol": 130, "kok:y": 0.05}, "asma"],
+   [2.75, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [3.15, {"kol-ust-sag": 12, "kol-ust-sol": -12, "kol-alt-sag": -124, "kol-alt-sol": 124, "kok:y": 0.04}, "asma"],
+   [3.6, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [5.5, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [6.0, {"kol-ust-sag": 3, "kol-ust-sol": -3, "kol-alt-sag": -105, "kol-alt-sol": 105, "kok:y": 0.03}, "asma"],
+   [6.6, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [8.2, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [8.6, {"kol-ust-sag": -2, "kol-ust-sol": 2, "kol-alt-sag": -92, "kol-alt-sol": 92, "kok:y": 0.03}, "asma"],
+   [9.1, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [12.6, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [13.0, {"kol-ust-sag": 6, "kol-ust-sol": -6, "kol-alt-sag": -111, "kol-alt-sol": 111, "kok:y": 0.04}, "asma"],
+   [13.5, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [15.2, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [15.6, {"kol-ust-sag": 0, "kol-ust-sol": 0, "kol-alt-sag": -99, "kol-alt-sol": 99, "kok:y": 0.03}, "asma"],
+   [16.1, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [18.5, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [18.9, {"kol-ust-sag": 120, "kol-ust-sol": -120, "kol-alt-sag": -25, "kol-alt-sol": 25}, "asma"],
+   [20.6, {"kol-ust-sag": 120, "kol-ust-sol": -120, "kol-alt-sag": -25, "kol-alt-sol": 25}],
+   [21.3, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}],
+   [21.5, {"kol-ust-sag": -20, "kol-ust-sol": 20, "kol-alt-sag": -55, "kol-alt-sol": 55}]
+  ], "serbest": true },
+  { "t": 0.8, "tip": "sallan", "kim": "lokum", "sure": 2.9, "periyot": 0.62, "genlik": 0.03 },
+  { "t": 1.07, "tip": "konus", "kim": "lokum", "ses": "b00-blender-lokum1", "gul": true },
+  { "t": 0.9, "tip": "yuz", "kim": "lokum", "sure": 2.9, "gozler": "mutlu" },
+  { "t": 2.7, "tip": "bak", "kim": "lokum", "yon": "sag", "sure": 2.2 },
+  { "t": 10.9, "tip": "bak", "kim": "lokum", "yon": "sag", "sure": 1.6 },
+  { "t": 11.0, "tip": "yuz", "kim": "lokum", "sure": 1.0, "kaslar": "kalkik", "agiz": "o" },
+  { "t": 18.6, "tip": "konus", "kim": "lokum", "ses": "b00-blender-lokum2", "gul": true },
+  { "t": 18.6, "tip": "yuz", "kim": "lokum", "sure": 2.4, "gozler": "mutlu" },
+  { "t": 18.7, "tip": "sallan", "kim": "lokum", "sure": 2.0, "periyot": 0.42, "genlik": 0.035, "zipla": true },
+
+  { "t": 0.0, "tip": "tut", "esya": "caydanlik", "kim": "anne", "kemik": "el-sol", "gecis": 0, "on": 0.012, "nokta": [1300, 2040],
+    "egim": [[0, 0], [3.25, 0], [3.75, 42, "asma"], [5.25, 42], [5.8, 0]] },
+  { "t": 2.5, "tip": "poz", "kim": "anne", "anahtarlar": [
+   [2.5, {}], [3.3, {"kol-ust-sol": -48, "kol-alt-sol": -35, "el-sol": -10, "kafa": 5}, "asma"],
+   [5.4, {"kol-ust-sol": -48, "kol-alt-sol": -35, "el-sol": -10, "kafa": 5}], [6.1, {}]] },
+  { "t": 4.0, "tip": "konus", "kim": "anne", "ses": "b00-blender-anne1" },
+  { "t": 3.3, "tip": "bak", "kim": "anne", "yon": "sag", "sure": 0.6 },
+  { "t": 6.3, "tip": "yuz", "kim": "anne", "sure": 1.4, "kaslar": "kalkik" },
+  { "t": 10.85, "tip": "yuz", "kim": "anne", "sure": 1.6, "gozler": "saskin", "kaslar": "kalkik", "agiz": "o" },
+  { "t": 10.85, "tip": "poz", "kim": "anne", "anahtarlar": [[10.85, {}], [11.1, {"kol-ust-sag": 60, "kol-alt-sag": -110, "kok:y": 0.01}, "asma"], [12.3, {"kol-ust-sag": 60, "kol-alt-sag": -110}], [12.8, {}]] },
+  { "t": 13.3, "tip": "konus", "kim": "anne", "ses": "b00-blender-anne2" },
+  { "t": 13.25, "tip": "yuz", "kim": "anne", "sure": 0.9, "gozler": "mutlu" },
+  { "t": 14.2, "tip": "poz", "kim": "anne", "anahtarlar": [[14.2, {}], [14.6, {"kol-ust-sol": -30, "kol-alt-sol": -20, "kafa": -6}, "asma"], [15.8, {"kol-ust-sol": -25, "kol-alt-sol": -15, "kafa": 4}], [16.4, {}]] },
+  { "t": 18.8, "tip": "yuz", "kim": "anne", "sure": 2.6, "gozler": "mutlu" },
+  { "t": 18.8, "tip": "sallan", "kim": "anne", "sure": 1.8, "periyot": 0.5, "genlik": 0.012 },
+
+  { "t": 2.4, "tip": "kos", "kim": "kino", "bas": -260, "hedef": 1000, "sure": 2.5, "hizli_bas": true },
+  { "t": 4.9, "tip": "yuz", "kim": "kino", "sure": 1.1, "agiz": "orta" },
+  { "t": 5.1, "tip": "bak", "kim": "kino", "yon": "sol", "sure": 0.45 },
+  { "t": 5.6, "tip": "bak", "kim": "kino", "yon": "sag", "sure": 0.5 },
+  { "t": 6.1, "tip": "yuz", "kim": "kino", "sure": 2.0, "gozler": "saskin", "kaslar": "kalkik" },
+  { "t": 6.3, "tip": "konus", "kim": "kino", "ses": "b00-blender-kino1" },
+  { "t": 6.0, "tip": "poz", "kim": "kino", "anahtarlar": [
+   [6.0, {}], [6.15, {"kol-ust-sag": -12, "kol-ust-sol": 12, "kok:y": -0.02}, "yumusak"],
+   [6.45, {"kol-ust-sag": 128, "kol-ust-sol": -128, "kol-alt-sag": -28, "kol-alt-sol": 28, "kok:y": 0.03}, "asma"],
+   [7.5, {"kol-ust-sag": 118, "kol-ust-sol": -118, "kol-alt-sag": -35, "kol-alt-sol": 35}], [8.05, {}]] },
+  { "t": 7.6, "tip": "bak", "kim": "kino", "yon": "sol", "sure": 0.35 },
+  { "t": 8.0, "tip": "bak", "kim": "kino", "yon": "sag", "sure": 2.4 },
+  { "t": 8.05, "tip": "poz", "kim": "kino", "anahtarlar": [
+   [8.05, {}], [8.35, {"kol-ust-sag": -30, "kol-ust-sol": -52, "kol-alt-sag": -10, "kol-alt-sol": 15, "kok:y": -0.035}],
+   [8.5, {"kol-ust-sag": -30, "kol-ust-sol": -52, "kol-alt-sag": -10, "kol-alt-sol": 15, "kok:y": -0.035}],
+   [8.82, {"kol-ust-sag": 95, "kol-ust-sol": -95, "kol-alt-sag": -60, "kol-alt-sol": 60, "kok:y": 0.02}, "hazirlik"],
+   [8.98, {"kol-ust-sag": 125, "kol-ust-sol": -125, "kol-alt-sag": -10, "kol-alt-sol": 10, "kok:y": 0.03}, "asma"],
+   [9.3, {"kol-ust-sag": 10, "kol-ust-sol": -10}],
+   [9.5, {"kol-ust-sag": -30, "kol-ust-sol": -52, "kol-alt-sag": -10, "kol-alt-sol": 15, "kok:y": -0.035}],
+   [9.65, {"kol-ust-sag": -30, "kol-ust-sol": -52, "kol-alt-sag": -10, "kol-alt-sol": 15, "kok:y": -0.035}],
+   [10.0, {"kol-ust-sag": 95, "kol-ust-sol": -95, "kol-alt-sag": -60, "kol-alt-sol": 60, "kok:y": 0.02}, "hazirlik"],
+   [10.17, {"kol-ust-sag": 125, "kol-ust-sol": -125, "kol-alt-sag": -10, "kol-alt-sol": 10, "kok:y": 0.03}, "asma"],
+   [10.55, {}]] },
+  { "t": 8.85, "tip": "konus", "kim": "kino", "ses": "b00-blender-kino2" },
+  { "t": 10.85, "tip": "yuz", "kim": "kino", "sure": 1.6, "gozler": "saskin", "kaslar": "kalkik" },
+  { "t": 10.9, "tip": "poz", "kim": "kino", "anahtarlar": [[10.9, {}], [11.15, {"kol-ust-sag": 45, "kol-ust-sol": -45, "kol-alt-sag": -120, "kol-alt-sol": 120, "kok:y": -0.02}, "asma"], [12.2, {"kol-ust-sag": 40, "kol-ust-sol": -40, "kol-alt-sag": -115, "kol-alt-sol": 115}], [12.7, {}]] },
+  { "t": 16.4, "tip": "yuz", "kim": "kino", "sure": 2.0, "gozler": "mutlu" },
+  { "t": 16.5, "tip": "konus", "kim": "kino", "ses": "b00-blender-kino3", "gul": true },
+  { "t": 17.3, "tip": "zipla", "kim": "kino", "yukseklik": 0.14, "sure": 0.42, "kollar": 110 },
+  { "t": 18.6, "tip": "bak", "kim": "kino", "yon": "sol", "sure": 1.8 },
+  { "t": 18.8, "tip": "sallan", "kim": "kino", "sure": 2.4, "periyot": 0.38, "genlik": 0.02 },
+  { "t": 18.8, "tip": "yuz", "kim": "kino", "sure": 2.5, "gozler": "mutlu" },
+
+  { "t": 8.45, "tip": "tut", "esya": "yastik1", "kim": "kino", "kemik": ["el-sag", "el-sol"], "bitis": 8.97, "gecis": 0.12, "on": -0.05, "ofset": [0, -0.06] },
+  { "t": 8.97, "tip": "at", "esya": "yastik1", "varis": 9.85, "hedef": { "px": [520, 1260], "derinlik": -0.2 }, "donus": 560 },
+  { "t": 9.6, "tip": "tut", "esya": "yastik2", "kim": "kino", "kemik": ["el-sag", "el-sol"], "bitis": 10.17, "gecis": 0.12, "on": -0.05, "ofset": [0, -0.06] },
+  { "t": 10.17, "tip": "at", "esya": "yastik2", "varis": 10.85, "hedef": { "kim": "baba", "kemik": "kafa", "nokta": [1150, 620] }, "donus": 380,
+    "sek": { "zemin_py": 1135, "vx": 0.55, "vz": 0.9 } },
+
+  { "t": 10.82, "tip": "poz", "kim": "baba", "anahtarlar": [[10.82, {}], [10.92, {"kafa": -16, "govde": -4}, "asma"], [11.4, {}]] },
+  { "t": 10.85, "tip": "yuz", "kim": "baba", "sure": 2.2, "gozler": "saskin", "kaslar": "kalkik" },
+  { "t": 11.05, "tip": "zipla", "kim": "baba", "yukseklik": 0.17, "sure": 0.5, "kollar": 115 },
+  { "t": 11.2, "tip": "konus", "kim": "baba", "ses": "b00-blender-baba1" },
+  { "t": 12.9, "tip": "poz", "kim": "baba", "anahtarlar": [
+   [12.9, {}], [13.4, {"kol-ust-sag": 165, "kol-alt-sag": -140, "kafa": 6}, "asma"],
+   [13.7, {"kol-ust-sag": 160, "kol-alt-sag": -128, "kafa": 6}], [14.0, {"kol-ust-sag": 165, "kol-alt-sag": -140, "kafa": 6}],
+   [14.3, {"kol-ust-sag": 160, "kol-alt-sag": -128, "kafa": 6}], [14.6, {"kol-ust-sag": 165, "kol-alt-sag": -140, "kafa": 6}], [15.3, {}]] },
+  { "t": 13.0, "tip": "yuz", "kim": "baba", "sure": 2.4, "gozler": "yari" },
+  { "t": 18.7, "tip": "yuz", "kim": "baba", "sure": 2.8, "gozler": "mutlu" },
+  { "t": 18.8, "tip": "sallan", "kim": "baba", "sure": 2.0, "periyot": 0.45, "genlik": 0.015 }
+ ],
+ "replikler": [
+  { "kimlik": "b00-blender-baba-horul", "kim": "baba", "metin": "[snoring] Hrrr... fıss... hrrr... fıss..." },
+  { "kimlik": "b00-blender-lokum1", "kim": "lokum", "metin": "[giggles] Kuzu! Hop, hop!" },
+  { "kimlik": "b00-blender-anne1", "kim": "anne", "metin": "[happy] Çaylar hazır, mis gibi!" },
+  { "kimlik": "b00-blender-kino1", "kim": "kino", "metin": "[gasps] Çorabım nerede?!" },
+  { "kimlik": "b00-blender-kino2", "kim": "kino", "metin": "Burada yok! Burada da yok!" },
+  { "kimlik": "b00-blender-baba1", "kim": "baba", "metin": "[surprised] Çay mı? Kalktım!" },
+  { "kimlik": "b00-blender-anne2", "kim": "anne", "metin": "[chuckles] Önce çay, sonra çorap!" },
+  { "kimlik": "b00-blender-kino3", "kim": "kino", "metin": "[giggles] Tamam anne!" },
+  { "kimlik": "b00-blender-lokum2", "kim": "lokum", "metin": "[laughs] Baba hop!" }
+ ]
+}
