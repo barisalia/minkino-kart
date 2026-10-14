@@ -144,30 +144,35 @@ class Esya:
         self.yuk = self.gen * ih / iw
         cap = tuple(t.get('cap', (0.5, 0.0)))
         self.cap = cap
-        self.ob = duzlem('esya-' + ad, yol, self.gen, self.yuk, kol, cap=cap)
+        malz = None
+        if 'dolum' in t:   # alttan yükselen dolum (bardak): her esyaya kendi malzemesi
+            malz = resim_malzemesi(yol, kesme=t['dolum'].get('v0', 0.0))
+        self.ob = duzlem('esya-' + ad, yol, self.gen, self.yuk, kol, cap=cap, malz=malz)
         self.n = n
         p = mekan.nokta(*t['yer'], d) if 'yer' in t else Vector((0, d, 0))
         self.P = [p.copy() for _ in range(n)]
         self.R = [t.get('aci', 0.0)] * n
         self.S = [1.0] * n
+        self.SY = [1.0] * n      # yalnız dikey ölçek çarpanı (akışın uzaması)
+        self.ZE = [0.0] * n      # zıplama gibi, çocuklara geçmeyen dikey ek (dünya birimi)
         self.ayna = -1.0 if t.get('ayna') else 1.0
         self.gor = [t.get('gorunur', True)] * n
 
     def yerel(self, u, v, f):
         """Resimdeki (u, v) (0..1, sol-alt) noktasının dünya yeri."""
         lx = (u - self.cap[0]) * self.gen * self.ayna * self.S[f]
-        lz = (v - self.cap[1]) * self.yuk * self.S[f]
+        lz = (v - self.cap[1]) * self.yuk * self.S[f] * self.SY[f]
         r = -math.radians(self.R[f])
         c, s = math.cos(r), math.sin(r)
-        return self.P[f] + Vector((c * lx - s * lz, 0, s * lx + c * lz))
+        return self.P[f] + Vector((c * lx - s * lz, 0, s * lx + c * lz + self.ZE[f]))
 
     def pisir(self):
         dizi_yaz(self.ob, 'location', 0, [p.x for p in self.P])
         dizi_yaz(self.ob, 'location', 1, [p.y for p in self.P])
-        dizi_yaz(self.ob, 'location', 2, [p.z for p in self.P])
+        dizi_yaz(self.ob, 'location', 2, [p.z + z for p, z in zip(self.P, self.ZE)])
         dizi_yaz(self.ob, 'rotation_euler', 1, [math.radians(r) for r in self.R])  # +Y ekseni: kameradan saat yönü
         dizi_yaz(self.ob, 'scale', 0, [s * self.ayna for s in self.S])
-        dizi_yaz(self.ob, 'scale', 2, self.S)
+        dizi_yaz(self.ob, 'scale', 2, [s * sy for s, sy in zip(self.S, self.SY)])
         gorunurluk_yaz(self.ob, self.gor)
 
 
@@ -188,12 +193,17 @@ class Kurucu:
         sc = bpy.context.scene
         self.kol = sc.collection
         self.lens = sahne['kamera'].get('lens', 35)
-        self.mekan = Mekan(sahne['mekan'], self.kol, self.lens)
-        with open(bul('assets/karakter/aile-boy.json'), encoding='utf-8') as f:
-            boy = json.load(f)
-        self.m = self.mekan.boy(sahne['kino_boy_px'], 0) / boy['kinoBoyKare']
+        mt = dict(sahne['mekan'])
+        if 'plaka' in mt:   # hazirla.mjs'in ürettiği temiz plaka (çizili nesnesi silinmiş kare)
+            mt['resim'] = os.path.join(self.hazir, mt['plaka'] + '.png')
+        self.mekan = Mekan(mt, self.kol, self.lens)
+        self.m = 1.0
+        if sahne.get('karakterler'):
+            with open(bul('assets/karakter/aile-boy.json'), encoding='utf-8') as f:
+                boy = json.load(f)
+            self.m = self.mekan.boy(sahne['kino_boy_px'], 0) / boy['kinoBoyKare']
         self.c = {}
-        for k in sahne['karakterler']:
+        for k in sahne.get('karakterler', []):
             d = k.get('derinlik', 0.0)
             p = self.mekan.nokta(k['x'], k['y'], d)
             gor = k.get('gorunusler') or {'on': f'assets/karakter/{k["kit"]}/{k["kit"]}.json'}
@@ -599,6 +609,116 @@ class Kurucu:
             dizi_yaz(ob, 'scale', 0, SX)
             gorunurluk_yaz(ob, gor)
 
+    # --- karaktersiz ses (anlatıcı, resme çizili karakter, efekt)
+    def ol_ses(self, ev):
+        s = self.ses[ev['ses']]
+        k = {'kimlik': ev['ses'], 't': round(ev['t'] - s['bas'], 3)}
+        if 'kazanc' in ev:
+            k['kazanc'] = ev['kazanc']
+        self.klipler.append(k)
+
+    # --- parça hareketi (kesme kukla: inek başı, kuyruk, kamyon, tekerlek, bardak)
+    def esya_hareket(self, e, t):
+        """Esya JSON alanları (hepsi isteğe bağlı, sırayla uygulanır):
+        hareket        [[t, px, py, kolaylik?]]  mekân pikselinde yol
+        bag            {esya, nokta:[u,v], on, aci_takip}  başka parçanın resmindeki noktaya bağlı (çocuk)
+        aci_anahtar    [[t, derece, kolaylik?]]  (+ saat yönü)
+        salinim        [{kanal: aci|x|y|olcek|olcek_y, genlik, periyot, faz, t0, t1, harmonik}]
+        zipla          {genlik_px, periyot, t0, t1}  çocuklara geçen sekme (kamyon yaylanması)
+        teker          {yaricap_px}  yatay yoldan dönme açısı
+        olcek_anahtar  [[t, olcek, olcek_y?, kolaylik?]]
+        gorunur_anahtar [[t, true|false]]
+        kirpma         {aralik:[a, b], tohum, kare}  göz kapağı: yalnız kırpma karelerinde görünür
+        dolum          {anahtarlar:[[t, 0..1, kolaylik?]], v0, v1}  resmin alttan v0 → v1 arası görünür
+        """
+        fps, n, mk = self.fps, self.n, self.mekan
+        d = t.get('derinlik', 0.0)
+
+        def egri(an, i, tt, kol=None):
+            return anahtar_deger([(a[0], a[i], a[kol] if kol is not None and len(a) > kol else 'yumusak') for a in an], tt)
+
+        if 'hareket' in t:
+            an = t['hareket']
+            for f in range(n):
+                tt = f / fps
+                e.P[f] = mk.nokta(egri(an, 1, tt, 3), egri(an, 2, tt, 3), d)
+        if 'bag' in t:
+            b = t['bag']
+            ebe = self.e[b['esya']]
+            for f in range(n):
+                p = ebe.yerel(b['nokta'][0], b['nokta'][1], f)
+                p.y = ebe.P[f].y + b.get('on', -0.002)
+                e.P[f] = p
+                e.R[f] = e.R[f] + ebe.R[f] * b.get('aci_takip', 1.0)
+                e.S[f] = e.S[f] * ebe.S[f]
+        if 'aci_anahtar' in t:
+            for f in range(n):
+                e.R[f] += egri(t['aci_anahtar'], 1, f / fps, 2)
+        if 'olcek_anahtar' in t:
+            an = t['olcek_anahtar']
+            for f in range(n):
+                e.S[f] *= egri(an, 1, f / fps, 3)
+                if len(an[0]) > 2:
+                    e.SY[f] *= egri(an, 2, f / fps, 3)
+        for s in t.get('salinim', []):
+            t0, t1 = s.get('t0', 0.0), s.get('t1', self.sh['sure'])
+            for f in range(n):
+                tt = f / fps
+                if not (t0 <= tt <= t1):
+                    continue
+                zarf = min(1.0, (tt - t0) / 0.3, (t1 - tt) / 0.3)
+                faz = 2 * math.pi * tt / s['periyot'] + s.get('faz', 0.0)
+                v = math.sin(faz) + s.get('harmonik', 0.0) * math.sin(2 * faz + 0.7)
+                v *= s['genlik'] * zarf
+                k = s['kanal']
+                if k == 'aci':
+                    e.R[f] += v
+                elif k == 'x':
+                    e.P[f] = e.P[f] + Vector((mk.boy(v, d), 0, 0))
+                elif k == 'y':
+                    e.P[f] = e.P[f] + Vector((0, 0, mk.boy(v, d)))
+                elif k == 'olcek':
+                    e.S[f] *= 1 + v
+                elif k == 'olcek_y':
+                    e.SY[f] *= 1 + v
+        if 'zipla' in t:
+            z = t['zipla']
+            t0, t1 = z.get('t0', 0.0), z.get('t1', self.sh['sure'])
+            for f in range(n):
+                tt = f / fps
+                if t0 <= tt <= t1:
+                    zarf = min(1.0, (tt - t0) / 0.2, (t1 - tt) / 0.2)
+                    e.ZE[f] += mk.boy(z['genlik_px'], d) * zarf * abs(math.sin(math.pi * tt / z['periyot']))
+        if 'teker' in t:
+            r = mk.boy(t['teker']['yaricap_px'], d)
+            for f in range(n):
+                e.R[f] += math.degrees((e.P[f].x - e.P[0].x) / r)
+        if 'gorunur_anahtar' in t:
+            an = sorted(t['gorunur_anahtar'])
+            for f in range(n):
+                g = e.gor[f]
+                for a in an:
+                    if a[0] <= f / fps:
+                        g = bool(a[1])
+                e.gor[f] = g
+        if 'kirpma' in t:
+            import random
+            k = t['kirpma']
+            r = random.Random(k.get('tohum', 1))
+            e.gor = [False] * n
+            f = int(r.uniform(0.5, 1.5) * fps)
+            while f < n:
+                for i in range(k.get('kare', 4)):
+                    if f + i < n:
+                        e.gor[f + i] = True
+                f += int(r.uniform(*k.get('aralik', [2.0, 4.0])) * fps)
+        if 'dolum' in t:
+            dl = t['dolum']
+            v0, v1 = dl.get('v0', 0.0), dl.get('v1', 1.0)
+            m = e.ob.data.materials[0]
+            dizi_yaz(m.node_tree, 'nodes["kesme"].inputs[1].default_value', 0,
+                     [v0 + (v1 - v0) * egri(dl['anahtarlar'], 1, f / fps, 2) for f in range(n)])
+
     # --- kamera
     def kamera(self):
         k = self.sh['kamera']
@@ -614,7 +734,8 @@ class Kurucu:
         ob = bpy.data.objects.new('kamera', cam)
         self.kol.objects.link(ob)
         ob.rotation_euler = (math.radians(90), 0, 0)
-        an = [(a['t'], a['x'], a.get('yakin', 1.0), a.get('e', 'gircik')) for a in k['anahtarlar']]
+        an = [(a['t'], a['x'], a.get('yakin', 1.0), a.get('e', 'gircik'), a.get('y')) for a in k['anahtarlar']]
+        dikey = all(a[4] is not None for a in an)   # 'y' (kadraj ortası, piksel) verilmişse dikey de kayar
         X, Y, Z, F = [], [], [], []
         alt = (mk.zemin - mk.H) * mk.pxm
         for f in range(self.n):
@@ -622,7 +743,15 @@ class Kurucu:
             px = anahtar_deger([(a[0], a[1], a[3]) for a in an], t)
             yk = anahtar_deger([(a[0], a[2], a[3]) for a in an], t)
             D = mk.D0 / yk
-            z = alt + mk.D0 * (36.0 / self.lens * 9 / 16) / (2 * yk) + k.get('z_pay', 0.0)
+            if dikey:
+                py = anahtar_deger([(a[0], a[4], a[3]) for a in an], t)
+                yy = mk.H / 2 / yk
+                py = min(mk.H - yy, max(yy, py))           # kadraj resmin dışına taşmaz
+                xx = yy * 16 / 9
+                px = min(mk.W - xx, max(xx, px))
+                z = (mk.zemin - py) * mk.pxm + k.get('z_pay', 0.0)
+            else:
+                z = alt + mk.D0 * (36.0 / self.lens * 9 / 16) / (2 * yk) + k.get('z_pay', 0.0)
             el = k.get('el', 0.004)
             X.append((px - mk.W / 2) * mk.pxm + el * gurultu(t, 'kx', 0.35))
             Y.append(-D)
@@ -638,14 +767,30 @@ class Kurucu:
     def kur(self):
         sh = self.sh
         self.zzz = []
-        olaylar = sorted(sh['olaylar'], key=lambda e: e['t'])
+        olaylar = sorted(sh.get('olaylar', []), key=lambda e: e['t'])
         esya_olay = []
         for ev in olaylar:
             tip = ev['tip']
             if tip in ('tut', 'at'):
                 esya_olay.append(ev)
                 continue
+            if tip == 'ses':
+                self.ol_ses(ev)
+                continue
             getattr(self, 'ol_' + tip)(self.c[ev['kim']], ev)
+        # parça hareketleri: önce ebeveynler (bag zinciri)
+        bitti = set()
+
+        def hareket(ad):
+            if ad in bitti:
+                return
+            t = sh['esya'][ad]
+            if 'bag' in t:
+                hareket(t['bag']['esya'])
+            self.esya_hareket(self.e[ad], t)
+            bitti.add(ad)
+        for ad in sh.get('esya', {}):
+            hareket(ad)
         for c in self.c.values():
             canlilik.dinleme(c, [(a, b, k.taban.x + k.X[min(a, self.n - 1)], ad) for a, b, k, ad in self.konusanlar])
             canlilik.kirpma(c)
@@ -665,8 +810,10 @@ class Kurucu:
                 es = self.e[t['esya']]
                 f0, f1 = kare(t.get('t', 0), self.fps), kare(t.get('bitis', sh['sure']), self.fps)
                 kay = (lambda es, t, f0, f1: lambda f: es.yerel(*t['nokta'], f) if f0 <= f < f1 else None)(es, t, f0, f1)
-                self.parcacik('buhar-' + t['esya'], 'buhar', kay, self.mekan.boy(t.get('boy_px', 40), 0), t.get('omur', 1.8),
-                              t.get('aralik', 0.35), t.get('yuksel', 0.12), kac=7, opak=t.get('opak', 0.55))
+                self.parcacik('buhar-' + t['esya'] + str(len(self.kol.objects)), t.get('resim', 'buhar'), kay,
+                              self.mekan.boy(t.get('boy_px', 40), 0), t.get('omur', 1.8),
+                              t.get('aralik', 0.35), t.get('yuksel', 0.12), kac=t.get('kac', 7), opak=t.get('opak', 0.55),
+                              salinim=t.get('salinim', 0.02), buyu=t.get('buyu', 1.8))
         for c, f0, f1 in self.zzz:
             P = c.ana.kit['parcalar']['kafa']['kutu']
 
@@ -705,26 +852,21 @@ def render_ayarla(sc, sh, o):
     sc.world = w
 
 
-def main():
-    o = argumanlar()
-    t0 = time.time()
-    with open(bul(o['sahne']), encoding='utf-8') as f:
-        sh = json.load(f)
+def sahne_isle(sh, o, is_, cikti, t0, sec=None):
+    """Tek sahneyi kurar, isteğe bağlı render eder. sec: yalnız bu kareler (--tek)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    ortak._malz.clear()   # önceki kesitin malzemeleri silindi
     sc = bpy.context.scene
-    k = Kurucu(sh, os.path.abspath(o['is']), o)
+    k = Kurucu(sh, is_, o)
     sc.frame_end = k.n
     k.kur()
     render_ayarla(sc, sh, o)
-    with open(os.path.join(k.is_, 'klipler.json'), 'w', encoding='utf-8') as f:
-        json.dump({'fps': k.fps, 'sure': sh['sure'], 'klipler': k.klipler}, f, ensure_ascii=False, indent=1)
-    print(f'[sahne] kuruldu: {k.n} kare, {time.time() - t0:.1f} sn')
+    print(f'[sahne] {sh.get("ad", "")} kuruldu: {k.n} kare, {time.time() - t0:.1f} sn')
     if o['blend']:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(o['blend']))
-    cikti = os.path.join(k.is_, 'kare')
     os.makedirs(cikti, exist_ok=True)
-    if o['tek']:
-        for fr in [int(x) for x in o['tek'].split(',')]:
+    if sec is not None:
+        for fr in sec:
             sc.frame_set(fr)
             sc.render.filepath = os.path.join(cikti, f'tek-{fr:04d}.png')
             bpy.ops.render.render(write_still=True)
@@ -733,6 +875,53 @@ def main():
         sc.render.filepath = os.path.join(cikti, '')
         bpy.ops.render.render(animation=True)
         print(f'[sahne] render bitti: {time.time() - t0:.1f} sn')
+    return k
+
+
+def main():
+    o = argumanlar()
+    t0 = time.time()
+    with open(bul(o['sahne']), encoding='utf-8') as f:
+        sh = json.load(f)
+    is_ = os.path.abspath(o['is'])
+    tek = [int(x) for x in o['tek'].split(',')] if o['tek'] else None
+    if 'kesitler' not in sh:
+        k = sahne_isle(sh, o, is_, os.path.join(is_, 'kare'), t0, tek)
+        with open(os.path.join(is_, 'klipler.json'), 'w', encoding='utf-8') as f:
+            json.dump({'fps': k.fps, 'sure': sh['sure'], 'klipler': k.klipler}, f, ensure_ascii=False, indent=1)
+        return
+    # Kurgu: art arda kesitler, her biri kendi mekânı / kamerası / parçalarıyla; aralarında 'gecis' sn çapraz geçiş.
+    # Hepsi tek Blender sürecinde sırayla render edilir (bilgisayar paylaşımlı). --tek: kurgu zamanındaki kareler.
+    # --kesit 2: yalnız o kesit.
+    fps = sh.get('fps', 30)
+    gecis = sh.get('gecis', 0.5)
+    ortak_alan = {a: v for a, v in sh.items() if a not in ('kesitler', 'replikler')}
+    bas, kesitler, klipler = 0.0, [], []
+    for i, ks in enumerate(sh['kesitler']):
+        kesitler.append({'klasor': f'kesit-{i + 1:02d}', 'bas': round(bas, 4), 'sure': ks['sure']})
+        bas += ks['sure'] - gecis
+    toplam = round(bas + gecis, 4)
+    for i, ks in enumerate(sh['kesitler']):
+        b = kesitler[i]['bas']
+        if o.get('kesit') and int(o['kesit']) != i + 1:
+            continue
+        sec = None
+        if tek is not None:
+            sec = [fr - int(round(b * fps)) for fr in tek if b * fps < fr <= (b + ks['sure']) * fps]
+            if not sec:
+                continue
+        alt = dict(ortak_alan)
+        alt.update(ks)
+        k = sahne_isle(alt, o, is_, os.path.join(is_, kesitler[i]['klasor']), t0, sec)
+        for c in k.klipler:
+            c = dict(c)
+            c['t'] = round(c['t'] + b, 3)
+            klipler.append(c)
+    if not o['tek'] and not o.get('kesit'):
+        with open(os.path.join(is_, 'klipler.json'), 'w', encoding='utf-8') as f:
+            json.dump({'fps': fps, 'sure': toplam, 'gecis': gecis, 'kesitler': kesitler, 'klipler': klipler},
+                      f, ensure_ascii=False, indent=1)
+    print(f'[sahne] kurgu: {len(kesitler)} kesit, {toplam:.2f} sn')
 
 
 main()

@@ -1,0 +1,268 @@
+{
+ "ad": "e01-sut-onizleme",
+ "aciklama": "Eğitici film 'Bir Bardak Sütün Yolculuğu' önizlemesi (ekip/film/egitici/SERI-PLANI.md Film 1, sahne 3, 7, 9, 12 replikleri). Kesitler: çayır (kare-1, Sarıkız ot yer) → köy yolu (kare-3, kamyon gider) → bakkal (kare-7) → mutfak (kare-4, bardak dolar). Gemini karelerine çizili inek / kamyon / fincan temiz plakayla silinir, yerine hareketli parçalar konur. Konumlar kare pikseli (2752x1536).",
+ "fps": 30,
+ "cozunurluk": [1920, 1080],
+ "gecis": 0.5,
+ "esya_kaynak": [
+  { "ad": "sarikiz-govde", "kaynak": "ekip/gemini/yeni/egitici-sut/sarikiz-govde.png", "kirp": false },
+  { "ad": "sarikiz-bas", "kaynak": "ekip/gemini/yeni/egitici-sut/sarikiz-bas.png", "kirp": false },
+  { "ad": "sarikiz-kuyruk", "kaynak": "ekip/gemini/yeni/egitici-sut/sarikiz-kuyruk.png", "kirp": false },
+  { "ad": "kamyon-govde", "kaynak": "ekip/gemini/yeni/egitici-sut/kamyon-govde.png", "kirp": false },
+  { "ad": "kamyon-teker", "kaynak": "ekip/gemini/yeni/egitici-sut/kamyon-teker.png", "kirp": false },
+  { "ad": "bardak-bos", "kaynak": "ekip/gemini/yeni/egitici-sut/bardak-bos.png", "kirp": false },
+  { "ad": "bardak-dolu", "kaynak": "ekip/gemini/yeni/egitici-sut/bardak-dolu.png", "kirp": false }
+ ],
+ "plakalar": [
+  {
+   "ad": "k1-plaka",
+   "resim": "ekip/gemini/yeni/egitici-sut/kare-1.png",
+   "bolgeler": [
+    {
+     "yontem": "satir",
+     "pencere": 60,
+     "taraf": "sag",
+     "y_aralik": [0, 699],
+     "cokgen": [[470, 1060], [480, 940], [560, 930], [600, 880], [650, 720], [720, 600], [850, 555], [1000, 545], [1250, 555], [1425, 610], [1505, 715], [1550, 835], [1600, 858], [1690, 845], [1740, 890], [1765, 945], [1812, 982], [1818, 1050], [1860, 1080], [1865, 1200], [1852, 1258], [1852, 1318], [1852, 1388], [1300, 1392], [900, 1372], [640, 1355], [610, 1262], [600, 1120], [500, 1112]]
+    },
+    {
+     "yontem": "satir",
+     "pencere": 60,
+     "y_aralik": [700, 1536],
+     "cokgen": [[470, 1060], [480, 940], [560, 930], [600, 880], [650, 720], [720, 600], [850, 555], [1000, 545], [1250, 555], [1425, 610], [1505, 715], [1550, 835], [1600, 858], [1690, 845], [1740, 890], [1765, 945], [1812, 982], [1818, 1050], [1860, 1080], [1865, 1200], [1852, 1258], [1852, 1318], [1852, 1388], [1300, 1392], [900, 1372], [640, 1355], [610, 1262], [600, 1120], [500, 1112]]
+    }
+   ],
+   "yasak": [{ "cokgen": [[1742, 805], [1915, 790], [2320, 780], [2320, 1450], [1895, 1450], [1895, 940], [1760, 935], [1742, 900]]}]
+  },
+  {
+   "ad": "k3-plaka",
+   "resim": "ekip/gemini/yeni/egitici-sut/kare-3.png",
+   "bolgeler": [
+    {
+     "yontem": "satir",
+     "pencere": 60,
+     "taraf": "sol",
+     "y_aralik": [0, 865],
+     "cokgen": [[140, 1150], [215, 1120], [300, 1100], [370, 1095], [372, 1000], [378, 860], [440, 795], [520, 788], [718, 788], [722, 745], [848, 745], [852, 795], [950, 805], [1150, 808], [1210, 835], [1240, 900], [1290, 960], [1330, 1000], [1348, 1130], [1354, 1250], [1344, 1300], [1325, 1360], [900, 1360], [560, 1356], [340, 1330], [215, 1285], [140, 1245]]
+    },
+    {
+     "yontem": "satir",
+     "pencere": 60,
+     "y_aralik": [866, 1229],
+     "cokgen": [[140, 1150], [215, 1120], [300, 1100], [370, 1095], [372, 1000], [378, 860], [440, 795], [520, 788], [718, 788], [722, 745], [848, 745], [852, 795], [950, 805], [1150, 808], [1210, 835], [1240, 900], [1290, 960], [1330, 1000], [1348, 1130], [1354, 1250], [1344, 1300], [1325, 1360], [900, 1360], [560, 1356], [340, 1330], [215, 1285], [140, 1245]]
+    },
+    {
+     "yontem": "satir",
+     "pencere": 60,
+     "taraf": "sag",
+     "y_aralik": [1230, 1536],
+     "cokgen": [[140, 1150], [215, 1120], [300, 1100], [370, 1095], [372, 1000], [378, 860], [440, 795], [520, 788], [718, 788], [722, 745], [848, 745], [852, 795], [950, 805], [1150, 808], [1210, 835], [1240, 900], [1290, 960], [1330, 1000], [1348, 1130], [1354, 1250], [1344, 1300], [1325, 1360], [900, 1360], [560, 1356], [340, 1330], [215, 1285], [140, 1245]]
+    }
+   ]
+  },
+  {
+   "ad": "k4-plaka",
+   "resim": "ekip/gemini/yeni/egitici-sut/kare-4.png",
+   "bolgeler": [
+    { "yontem": "satir", "pencere": 20, "taraf": "sol", "cokgen": [[1705, 842], [1766, 842], [1766, 872], [1790, 872], [1792, 912], [1658, 912], [1662, 872], [1705, 872]] },
+    { "yontem": "kaydir", "ara": [40, 120], "bant": 200, "cokgen": [[1655, 910], [1797, 910], [1803, 960], [1790, 992], [1658, 992], [1650, 950]] }
+   ],
+   "yasak": [{ "cokgen": [[1791, 770], [1990, 770], [1990, 895], [1791, 895]]}]
+  }
+ ],
+ "on_plan": [
+  {
+   "ad": "k3-on",
+   "resim": "ekip/gemini/yeni/egitici-sut/kare-3.png",
+   "kutu": [1580, 660, 2400, 1515],
+   "sinir": [[1590, 830], [1640, 800], [1690, 700], [1760, 666], [1880, 666], [1932, 720], [1962, 800], [2030, 900], [2062, 1025], [2118, 994], [2268, 990], [2300, 1005], [2340, 1030], [2368, 1080], [2380, 1250], [2392, 1508], [1590, 1508]],
+   "zemin": [
+    [[1686, 853], [1736, 853], [1736, 881], [1686, 881]],
+    [[2080, 900], [2400, 900], [2400, 975], [2080, 975]],
+    [[2165, 992], [2245, 992], [2245, 1000], [2165, 1000]],
+    [[2296, 1010], [2328, 1010], [2328, 1026], [2296, 1026]],
+    [[2312, 1046], [2348, 1046], [2348, 1056], [2312, 1056]],
+    [[1982, 1225], [2072, 1225], [2072, 1310], [1982, 1310]]
+   ]
+  }
+ ],
+ "replikler": [
+  { "kimlik": "e01-anlatici1", "kim": "anlatici", "metin": "[warmly] Her şey burada başlar: Dede'nin köyünde." },
+  { "kimlik": "e01-dede1", "kim": "dede", "metin": "[chuckles] Bu Sarıkız. Bütün gün yeşil ot yer." },
+  {
+   "kimlik": "e01-moo",
+   "efekt": true,
+   "sure": 1.8,
+   "metin": "A single friendly cartoon cow moo, warm and long 'moooo', close, clean, no background noise, no music"
+  },
+  { "kimlik": "e01-kino1", "kim": "kino", "metin": "[laughs] Muuuu!" },
+  {
+   "kimlik": "e01-cayir-kus",
+   "efekt": true,
+   "sure": 4,
+   "metin": "Soft sunny countryside meadow ambience, a few gentle songbirds chirping in the distance, very calm, no music"
+  },
+  { "kimlik": "e01-anlatici2", "kim": "anlatici", "metin": "[excited] Süt kamyonu sütü fabrikaya götürür." },
+  {
+   "kimlik": "e01-kamyon",
+   "efekt": true,
+   "sure": 3.5,
+   "metin": "Small cute cartoon milk truck driving away on a country dirt road, soft engine putter, one short friendly double horn honk 'beep beep', no music"
+  },
+  { "kimlik": "e01-kino2", "kim": "kino", "metin": "[excited] Güle güle süt!" },
+  { "kimlik": "e01-anlatici3", "kim": "anlatici", "metin": "[playfully] Bakkaldan alınır… ve bardağa dökülür!" },
+  {
+   "kimlik": "e01-dokulme",
+   "efekt": true,
+   "sure": 2.2,
+   "metin": "Milk being poured from a glass bottle into a drinking glass, gentle liquid pouring and soft glug, close up, no music"
+  },
+  { "kimlik": "e01-lokum1", "kim": "lokum", "metin": "[excited] Süüüt geldiii!" },
+  { "kimlik": "e01-anlatici4", "kim": "anlatici", "metin": "[warmly] Sen de bugün süt içerken düşün: Sarıkız'a teşekkürler!" }
+ ],
+ "kesitler": [
+  {
+   "ad": "k1-cayir",
+   "sure": 10.9,
+   "mekan": { "yukseklik": 2, "zemin_py": 1536, "derinlik": 0.04, "plaka": "k1-plaka" },
+   "kamera": { "lens": 35, "fstop": 64, "el": 0.002, "anahtarlar": [{ "t": 0, "x": 1150, "y": 880, "yakin": 1.12},{ "t": 10.9, "x": 1360, "y": 930, "yakin": 1.32, "e": "yumusak"}] },
+   "esya": {
+    "golge": { "resim": "golge", "bag": { "esya": "govde", "nokta": [0.5, 0.035], "on": 0.004, "aci_takip": 0}, "gen_px": 1050, "cap": [0.5, 0.5] },
+    "govde": { "resim": "sarikiz-govde", "yer": [900, 1345], "cap": [0.5, 0.043], "gen_px": 930, "salinim": [{ "kanal": "olcek_y", "genlik": 0.006, "periyot": 3}] },
+    "kuyruk": {
+     "resim": "sarikiz-kuyruk",
+     "bag": { "esya": "govde", "nokta": [0.074, 0.863], "on": 0.003 },
+     "cap": [0.78, 0.947],
+     "gen_px": 193,
+     "aci": 8,
+     "salinim": [{ "kanal": "aci", "genlik": 13, "periyot": 1.5, "harmonik": 0.45},{ "kanal": "aci", "genlik": 5, "periyot": 0.55, "faz": 1.3, "t0": 6.8, "t1": 8.8}]
+    },
+    "bas": {
+     "resim": "sarikiz-bas",
+     "bag": { "esya": "govde", "nokta": [0.901, 0.827], "on": -0.003 },
+     "cap": [0.17, 0.314],
+     "gen_px": 492,
+     "aci_anahtar": [[0, 44], [1.3, 44], [1.75, 8, "gircik"], [2.7, 8], [3.15, 46, "gircik"], [4.3, 46], [4.75, 10, "gircik"], [5.6, 10], [6.05, 44, "gircik"], [6.6, 44], [6.95, -8, "asma"], [8.7, -8], [9.2, 40, "gircik"], [10.9, 40]],
+     "salinim": [
+      { "kanal": "aci", "genlik": 2.6, "periyot": 0.42, "t0": 0, "t1": 1.4 },
+      { "kanal": "aci", "genlik": 2.6, "periyot": 0.42, "t0": 3.1, "t1": 4.4 },
+      { "kanal": "aci", "genlik": 2.6, "periyot": 0.42, "t0": 6, "t1": 6.7 },
+      { "kanal": "aci", "genlik": 2.6, "periyot": 0.42, "t0": 9.2, "t1": 10.9 },
+      { "kanal": "aci", "genlik": 1.6, "periyot": 0.16, "t0": 7.05, "t1": 8.6 },
+      { "kanal": "olcek", "genlik": 0.012, "periyot": 0.42 }
+     ]
+    },
+    "kapak1": { "resim": "kapak", "bag": { "esya": "bas", "nokta": [0.506, 0.629], "on": -0.0005}, "cap": [0.5, 0.5], "gen_px": 33.472, "kirpma": { "aralik": [2.2, 3.6], "tohum": 3} },
+    "kapak2": { "resim": "kapak", "bag": { "esya": "bas", "nokta": [0.711, 0.652], "on": -0.0005}, "cap": [0.5, 0.5], "gen_px": 29.834, "kirpma": { "aralik": [2.2, 3.6], "tohum": 3} }
+   },
+   "olaylar": [
+    { "tip": "ses", "ses": "e01-cayir-kus", "t": 0.3, "kazanc": -9 },
+    { "tip": "ses", "ses": "e01-anlatici1", "t": 0.35 },
+    { "tip": "ses", "ses": "e01-dede1", "t": 3.35 },
+    { "tip": "ses", "ses": "e01-moo", "t": 7 },
+    { "tip": "ses", "ses": "e01-kino1", "t": 8.75 }
+   ]
+  },
+  {
+   "ad": "k2-yol",
+   "sure": 6,
+   "mekan": { "yukseklik": 2, "zemin_py": 1536, "derinlik": 0.04, "plaka": "k3-plaka" },
+   "kamera": {
+    "lens": 35,
+    "fstop": 64,
+    "el": 0.002,
+    "anahtarlar": [{ "t": 0, "x": 1100, "y": 840, "yakin": 1.1},{ "t": 1, "x": 1150, "y": 840, "yakin": 1.1},{ "t": 6, "x": 1600, "y": 830, "yakin": 1.12, "e": "yumusak"}]
+   },
+   "esya": {
+    "golge": { "resim": "golge", "bag": { "esya": "kamyon", "nokta": [0.5, -0.075], "on": 0.004, "aci_takip": 0}, "gen_px": 1000, "cap": [0.5, 0.5] },
+    "kamyon": {
+     "resim": "kamyon-govde",
+     "hareket": [[0, 862, 1283], [0.7, 862, 1283], [1.9, 1012, 1283, "hazirlik"], [5.8, 3302, 1283, "dogru"], [6, 3419, 1283, "dogru"]],
+     "cap": [0.5, 0],
+     "gen_px": 993,
+     "zipla": { "genlik_px": 4, "periyot": 0.21 },
+     "salinim": [{ "kanal": "aci", "genlik": 0.5, "periyot": 0.37, "t0": 0.7}]
+    },
+    "teker1": {
+     "resim": "kamyon-teker",
+     "bag": { "esya": "kamyon", "nokta": [0.232, 0.066], "on": 0.002, "aci_takip": 0 },
+     "cap": [0.5, 0.5],
+     "gen_px": 199,
+     "teker": { "yaricap_px": 82 }
+    },
+    "teker2": {
+     "resim": "kamyon-teker",
+     "bag": { "esya": "kamyon", "nokta": [0.733, 0.066], "on": 0.002, "aci_takip": 0 },
+     "cap": [0.5, 0.5],
+     "gen_px": 199,
+     "teker": { "yaricap_px": 82 }
+    },
+    "on": { "resim": "k3-on", "yer": [1580, 660], "cap": [0, 1], "gen_px": 820, "derinlik": -0.03 }
+   },
+   "buhar": [
+    {
+     "esya": "kamyon",
+     "resim": "toz",
+     "nokta": [0.16, -0.06],
+     "t": 0.9,
+     "bitis": 5.4,
+     "boy_px": 70,
+     "omur": 1.1,
+     "aralik": 0.11,
+     "yuksel": 0.05,
+     "opak": 0.75,
+     "kac": 12,
+     "salinim": 0.01,
+     "buyu": 1.6
+    }
+   ],
+   "olaylar": [{ "tip": "ses", "ses": "e01-anlatici2", "t": 0.5},{ "tip": "ses", "ses": "e01-kamyon", "t": 0.55, "kazanc": -5},{ "tip": "ses", "ses": "e01-kino2", "t": 3.2}]
+  },
+  {
+   "ad": "k3-bakkal",
+   "sure": 2.4,
+   "mekan": { "yukseklik": 2, "zemin_py": 1536, "derinlik": 0.04, "resim": "ekip/gemini/yeni/egitici-sut/kare-7.png" },
+   "kamera": { "lens": 35, "fstop": 64, "el": 0.002, "anahtarlar": [{ "t": 0, "x": 1376, "y": 768, "yakin": 1},{ "t": 2.4, "x": 1330, "y": 820, "yakin": 1.28, "e": "yumusak"}] },
+   "esya": { },
+   "olaylar": [{ "tip": "ses", "ses": "e01-anlatici3", "t": 0.25}]
+  },
+  {
+   "ad": "k4-mutfak",
+   "sure": 8.2,
+   "mekan": { "yukseklik": 2, "zemin_py": 1536, "derinlik": 0.04, "plaka": "k4-plaka" },
+   "kamera": {
+    "lens": 35,
+    "fstop": 64,
+    "el": 0.0015,
+    "anahtarlar": [
+     { "t": 0, "x": 1712, "y": 900, "yakin": 2.5 },
+     { "t": 2.5, "x": 1716, "y": 902, "yakin": 2.65 },
+     { "t": 3.5, "x": 1520, "y": 800, "yakin": 1.18, "e": "yumusak" },
+     { "t": 5, "x": 1450, "y": 790, "yakin": 1.18 },
+     { "t": 8.2, "x": 1000, "y": 800, "yakin": 1.42, "e": "yumusak" }
+    ]
+   },
+   "esya": {
+    "bardak": { "resim": "bardak-bos", "yer": [1722, 1000], "cap": [0.5, 0.0504], "gen_px": 100, "derinlik": -0.01 },
+    "sut": {
+     "resim": "bardak-dolu",
+     "yer": [1722, 1000],
+     "cap": [0.5, 0.0504],
+     "gen_px": 98.5,
+     "derinlik": -0.012,
+     "dolum": { "v0": 0.09, "v1": 0.8, "anahtarlar": [[0, 0], [0.3, 0], [2.3, 1, "yumusak"]] }
+    },
+    "akis": {
+     "resim": "sut-akis",
+     "cap": [0.5, 1],
+     "gen_px": 13,
+     "derinlik": -0.014,
+     "hareket": [[0, 1737, 840], [2.3, 1737, 840], [2.55, 1737, 890.453, "gircik"]],
+     "olcek_anahtar": [[0, 1, 0], [0.15, 1, 0], [0.3, 1, 1.854, "dogru"], [2.3, 1, 0.606, "yumusak"], [2.55, 1, 0, "gircik"]],
+     "gorunur_anahtar": [[0, false], [0.15, true], [2.6, false]]
+    }
+   },
+   "olaylar": [{ "tip": "ses", "ses": "e01-dokulme", "t": 0.1, "kazanc": -4},{ "tip": "ses", "ses": "e01-lokum1", "t": 2.5},{ "tip": "ses", "ses": "e01-anlatici4", "t": 3.85}]
+  }
+ ]
+}

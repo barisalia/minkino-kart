@@ -2,6 +2,8 @@
 /**
  * Blender sahnesinin repliklerini ElevenLabs (content/film2/sesler.json: model, ses kimlikleri, ayarlar) ile üretir.
  * Sahne JSON'undaki "replikler" listesi: [{ kimlik, kim, metin }]. Çıktı: <is>/ses/<kimlik>.mp3 (var olan atlanır).
+ * Ses efekti (inek möölemesi, motor…): { kimlik, efekt: true, metin: <İngilizce tarif>, sure: <sn> } → ElevenLabs
+ * sound-generation (saniyesi ~40 kredi; kısa tutun).
  * KREDİ HARCAR. Kuru deneme: --kuru. Anahtar: ELEVENLABS_API_KEY (süreçte yoksa Windows kullanıcı ortamından okunur,
  * hiçbir yere yazılmaz/yazdırılmaz).
  *   node scripts/film/blender/ses-uret.mjs --sahne content/film2/blender/b00-deneme.json --is <klasor> [--kuru] [--zorla]
@@ -21,7 +23,7 @@ fs.mkdirSync(klasor, { recursive: true });
 
 const yap = sahne.replikler.filter((r) => process.argv.includes('--zorla') || !fs.existsSync(path.join(klasor, `${r.kimlik}.mp3`)));
 console.log(`${sahne.replikler.length} replik, ${yap.length} üretilecek (${yap.reduce((t, r) => t + r.metin.length, 0)} harf)`);
-if (process.argv.includes('--kuru')) { for (const r of yap) console.log(' ', r.kimlik, r.kim, r.metin); process.exit(0); }
+if (process.argv.includes('--kuru')) { for (const r of yap) console.log(' ', r.kimlik, r.efekt ? `efekt ${r.sure ?? 1.5} sn` : r.kim, r.metin); process.exit(0); }
 
 let anahtar = process.env.ELEVENLABS_API_KEY;
 if (!anahtar && process.platform === 'win32') {
@@ -31,12 +33,18 @@ if (!anahtar) { console.error('ELEVENLABS_API_KEY yok'); process.exit(1); }
 
 for (const r of yap) {
   const ses = ayar.sesler[r.kim];
+  if (!r.efekt && !ses) { console.error(`HATA ${r.kimlik}: '${r.kim}' için ses kimliği yok`); continue; }
+  const [adres, govde] = r.efekt
+    ? [`https://api.elevenlabs.io/v1/sound-generation?output_format=${ayar.bicim}`,
+      { text: r.metin, duration_seconds: r.sure ?? 1.5, prompt_influence: r.etki ?? 0.5 }]
+    : [`https://api.elevenlabs.io/v1/text-to-speech/${ses}?output_format=${ayar.bicim}`,
+      { text: r.metin, model_id: ayar.model, language_code: ayar.dil, voice_settings: ayar.ayarlar }];
   let y;
   for (let d = 0; d < 3; d++) {
-    y = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ses}?output_format=${ayar.bicim}`, {
+    y = await fetch(adres, {
       method: 'POST',
       headers: { 'xi-api-key': anahtar, 'content-type': 'application/json', accept: 'audio/mpeg' },
-      body: JSON.stringify({ text: r.metin, model_id: ayar.model, language_code: ayar.dil, voice_settings: ayar.ayarlar }),
+      body: JSON.stringify(govde),
     });
     if (y.ok || (y.status !== 429 && y.status < 500)) break;
     await new Promise((c) => setTimeout(c, 2500 * (d + 1)));

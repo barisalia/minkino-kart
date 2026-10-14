@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
  * Blender sahnesi için ön hazırlık (kredi harcamaz, Blender'sız):
- *  1) Sahne JSON'undaki "esya_kaynak" listesi beyaz zeminliyse kenardan taşma doldurmayla şeffaflaştırır → <is>/hazir/<ad>.png
+ *  1) Sahne JSON'undaki "esya_kaynak" listesi düz renk zeminliyse (beyaz, nane yeşili…) zemini şeffaflaştırır → <is>/hazir/<ad>.png
+ *     ("kirp": false → resim boyu korunur, koordinatlar kaynakla aynı kalır). "plakalar": mekân resminden çizili nesneyi
+ *     silinmiş temiz plaka, "on_plan": önden geçen figür katmanı (plaka.mjs).
  *  2) Canlılık hareketlerinin küçük çizimlerini (kuş 2 kare, buhar, Zzz) düz 2D SVG'den basar → <is>/hazir/
  *  3) Her repliği (<is>/ses/<kimlik>.mp3) çözer: süre + kare başına ses genliği (ağız için) → <is>/hazir/ses.json
  *   node scripts/film/blender/hazirla.mjs --sahne content/film2/blender/b00-deneme.json --is <klasor>
@@ -11,6 +13,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { zeminSil, temizPlaka, onPlan } from './plaka.mjs';
 
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const require = createRequire(import.meta.url);
@@ -30,44 +33,6 @@ const fps = sahne.fps ?? 30;
 
 /** Depoda ya da ana kopyada (Gemini çıktıları depoya girmez) dosyayı bulur. */
 export const kaynak = (yol) => bul(path.join(KOK, yol), path.join(ANA, yol));
-
-async function zeminSil(giris, cikis) {
-  const { data, info } = await sharp(giris).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const { width: w, height: h } = info;
-  const beyaz = (i) => { const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2]; return Math.min(r, g, b) > 244 && Math.max(r, g, b) - Math.min(r, g, b) < 12; };
-  if (data[3] < 250) { await sharp(giris).png().toFile(cikis); return; } // zaten şeffaf
-  const dis = new Uint8Array(w * h);
-  const yigin = [];
-  for (let x = 0; x < w; x++) { yigin.push(x, (h - 1) * w + x); }
-  for (let y = 0; y < h; y++) { yigin.push(y * w, y * w + w - 1); }
-  while (yigin.length) {
-    const i = yigin.pop();
-    if (dis[i] || !beyaz(i)) continue;
-    dis[i] = 1;
-    const x = i % w, y = (i / w) | 0;
-    if (x > 0) yigin.push(i - 1); if (x < w - 1) yigin.push(i + 1);
-    if (y > 0) yigin.push(i - w); if (y < h - 1) yigin.push(i + w);
-  }
-  // yalnız en büyük dolu parça (ve ona yakın büyüklüktekiler) kalır: kenara taşmış komşu çizim kırıntıları atılır
-  const etiket = new Int32Array(w * h).fill(-1); const boy = [];
-  for (let i0 = 0; i0 < w * h; i0++) {
-    if (dis[i0] || etiket[i0] >= 0) continue;
-    const id = boy.length; let n = 0; const st = [i0]; etiket[i0] = id;
-    while (st.length) { const i = st.pop(); n++; const x = i % w, y = (i / w) | 0;
-      for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1])
-        if (j >= 0 && !dis[j] && etiket[j] < 0) { etiket[j] = id; st.push(j); } }
-    boy.push(n);
-  }
-  const enBuyuk = Math.max(...boy);
-  for (let i = 0; i < w * h; i++) if (!dis[i] && boy[etiket[i]] < enBuyuk * 0.08) dis[i] = 1;
-  const a = Buffer.alloc(w * h);
-  for (let i = 0; i < w * h; i++) a[i] = dis[i] ? 0 : 255;
-  // kenarı 1 px yumuşat (tırtıl olmasın)
-  const yum = await sharp(a, { raw: { width: w, height: h, channels: 1 } }).blur(0.8).extractChannel(0).raw().toBuffer();
-  for (let i = 0; i < w * h; i++) data[i * 4 + 3] = dis[i] ? 0 : Math.min(255, Math.round(yum[i] * 1.6));
-  // boş kenarları kırp
-  await sharp(data, { raw: { width: w, height: h, channels: 4 } }).trim({ threshold: 1 }).png().toFile(cikis);
-}
 
 const CIZGI = '#401312';
 const svgler = {
@@ -97,6 +62,21 @@ const svgler = {
     <path d="M18 22 H58 L20 62 H62" fill="none" stroke="#5a7bbf" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/></svg>`,
   cay: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="256"><rect x="9" y="0" width="14" height="256" rx="7" fill="#c8551f" opacity="0.92"/>
     <rect x="12" y="0" width="4" height="256" rx="2" fill="#f0a060" opacity="0.8"/></svg>`,
+  // yer gölgesi: yumuşak kenarlı koyu elips (nesnenin altında)
+  golge: `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="128"><defs><radialGradient id="g">
+    <stop offset="0" stop-color="#2c3a1c" stop-opacity="0.34"/><stop offset="0.7" stop-color="#2c3a1c" stop-opacity="0.26"/><stop offset="1" stop-color="#2c3a1c" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="256" cy="64" rx="254" ry="62" fill="url(#g)"/></svg>`,
+  // kapalı göz kapağı (inek): ten rengi elips + aşağı kıvrık kirpik çizgisi
+  kapak: `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="130" viewBox="0 0 100 130">
+    <ellipse cx="50" cy="65" rx="47" ry="63" fill="#fbefe1"/>
+    <path d="M12 70 Q50 100 88 70" fill="none" stroke="#3b2416" stroke-width="10" stroke-linecap="round"/></svg>`,
+  // dökülen süt akışı (yukarıdan aşağı)
+  'sut-akis': `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="256"><rect x="6" y="0" width="28" height="256" rx="14" fill="#cfd8e2"/>
+    <rect x="9" y="0" width="22" height="256" rx="11" fill="#ffffff"/><rect x="13" y="0" width="5" height="256" rx="2.5" fill="#eef3f8"/></svg>`,
+  // toz bulutu (kamyon tekerleği / egzoz)
+  toz: `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><defs><radialGradient id="g">
+    <stop offset="0" stop-color="#efe0c4" stop-opacity="0.95"/><stop offset="0.6" stop-color="#e6d3b0" stop-opacity="0.6"/><stop offset="1" stop-color="#e6d3b0" stop-opacity="0"/></radialGradient></defs>
+    <circle cx="128" cy="128" r="126" fill="url(#g)"/></svg>`,
 };
 
 for (const [ad, svg] of Object.entries(svgler)) await sharp(Buffer.from(svg)).png().toFile(path.join(hazir, `${ad}.png`));
@@ -105,7 +85,21 @@ for (const e of sahne.esya_kaynak ?? []) {
   const giris = kaynak(e.kaynak);
   if (!giris) { console.error('esya kaynağı yok:', e.kaynak); continue; }
   const cikis = path.join(hazir, `${e.ad}.png`);
-  if (!fs.existsSync(cikis)) await zeminSil(giris, cikis);
+  if (!fs.existsSync(cikis)) await zeminSil(giris, cikis, { kirp: e.kirp });
+}
+
+// temiz plaka (çizili nesnesi silinmiş mekân) ve ön plan katmanı; --plaka ile yeniden üretilir
+for (const p of sahne.plakalar ?? []) {
+  const cikis = path.join(hazir, `${p.ad}.png`);
+  if (fs.existsSync(cikis) && !process.argv.includes('--plaka')) continue;
+  await temizPlaka(kaynak(p.resim), cikis, p.bolgeler, p.yasak ?? []);
+  console.log('plaka', p.ad);
+}
+for (const o of sahne.on_plan ?? []) {
+  const cikis = path.join(hazir, `${o.ad}.png`);
+  if (fs.existsSync(cikis) && !process.argv.includes('--plaka')) continue;
+  await onPlan(kaynak(o.resim), cikis, o);
+  console.log('ön plan', o.ad);
 }
 
 const sesler = {};

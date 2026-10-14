@@ -170,11 +170,12 @@ def gorunurluk_yaz(obj, gorunur):
 _malz = {}
 
 
-def resim_malzemesi(yol, saydam_carpan=None):
-    """Işıksız (emission) + alfa: renkler çizimle birebir. saydam_carpan: değer düğümü (buhar solması için)."""
+def resim_malzemesi(yol, saydam_carpan=None, kesme=None):
+    """Işıksız (emission) + alfa: renkler çizimle birebir. saydam_carpan: değer düğümü (buhar solması için).
+    kesme: resmin yalnız v < kesme kısmı görünür ('kesme' düğümü; bardağın dolması gibi alttan yükselen dolum)."""
     yol = os.path.abspath(yol)
-    anah = (yol, saydam_carpan is not None)
-    if anah in _malz and saydam_carpan is None:
+    anah = (yol, saydam_carpan is not None or kesme is not None)
+    if anah in _malz and saydam_carpan is None and kesme is None:
         return _malz[anah]
     img = bpy.data.images.load(yol, check_existing=True)
     img.alpha_mode = 'STRAIGHT'
@@ -198,13 +199,27 @@ def resim_malzemesi(yol, saydam_carpan=None):
         c.inputs[1].default_value = saydam_carpan
         nt.links.new(alfa, c.inputs[0])
         alfa = c.outputs[0]
+    if kesme is not None:
+        uv = nt.nodes.new('ShaderNodeTexCoord')
+        ay = nt.nodes.new('ShaderNodeSeparateXYZ')
+        nt.links.new(uv.outputs['UV'], ay.inputs[0])
+        es = nt.nodes.new('ShaderNodeMath')
+        es.operation = 'LESS_THAN'
+        es.name = 'kesme'
+        es.inputs[1].default_value = kesme
+        nt.links.new(ay.outputs['Y'], es.inputs[0])
+        c2 = nt.nodes.new('ShaderNodeMath')
+        c2.operation = 'MULTIPLY'
+        nt.links.new(alfa, c2.inputs[0])
+        nt.links.new(es.outputs[0], c2.inputs[1])
+        alfa = c2.outputs[0]
     nt.links.new(alfa, kar.inputs['Fac'])
     nt.links.new(say.outputs[0], kar.inputs[1])
     nt.links.new(isik.outputs[0], kar.inputs[2])
     nt.links.new(kar.outputs[0], cik.inputs['Surface'])
     m.surface_render_method = 'BLENDED'
     m.use_backface_culling = False
-    if saydam_carpan is None:
+    if saydam_carpan is None and kesme is None:
         _malz[anah] = m
     return m
 
