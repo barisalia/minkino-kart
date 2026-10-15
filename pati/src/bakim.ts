@@ -286,7 +286,9 @@ export class Bakim {
     }
     if (e === 'yem') {
       const nokta: [number, number] = [ras(AKVARYUM.x0 + 120, AKVARYUM.x1 - 120), AKVARYUM.y0 - 120];
-      await this.esyaUcur(e, this.efektNokta(...nokta), false);
+      // yakın çekimde akvaryumun üstü ekranın tepesine dayanır: kutu ekranın içinde sallansın (yarısı kesilmesin)
+      const [ex, ey] = this.efektNokta(...nokta);
+      await this.esyaUcur(e, [ex, Math.max(ey, tutBoy(this.o.kok) * 0.6 + 6)], false);
       ses.tikir(1);
       return this.yemTutam(nokta);
     }

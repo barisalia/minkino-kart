@@ -21,8 +21,17 @@
   overflow: hidden;
   overflow: clip;
   background: var(--pt-zemin);
+  /* dikeyde sahnenin altındaki zemin şeridi de akşam / gece ışığına girer */
+  transition: background-color 1.6s ease-in-out;
   user-select: none;
   -webkit-user-select: none;
+}
+/* zemin şeridi: salon zemininin akşam (turuncu çarpımı) ve gece (gece resmi) rengi */
+.pt-kok .pt-ekran[data-isik='aksam'] {
+  background-color: #ea7e34;
+}
+.pt-kok .pt-ekran[data-isik='gece'] {
+  background-color: #414255;
 }
 
 /* ================================================================ sahne ve kamera */

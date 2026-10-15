@@ -48,7 +48,8 @@ const POZ_YEDEK: Record<Poz, Poz[]> = {
   top: [],
   atla: ['sevinc', 'oyun'],
   rahat: ['uyku'],
-  uykulu: ['uyku'],
+  // uyku pozuna düşmez: akşam "Herkes uyusun" denince hayvan uyanık sallanır, dokununca kıvrılır (yoksa dokunuş görünmez)
+  uykulu: [],
   yuz2: [],
 };
 /** Poz sayfası gelmeden kullanılan tek resim (kadro kesimi / model) */
