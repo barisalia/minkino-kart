@@ -671,7 +671,7 @@ export function uykuEkrani(app: Uygulama, param?: UykuParam): Ekran {
       kemikKinoya();
       efekt.yapis();
       await ezEsne(KK.sek, [[1.07, 0.9], [0.98, 1.04]], 260);
-      kino.ifade('keyif', 2200);
+      kino.ifade('heyecan', 2200);
       void kino.oynat('huy', 1400);
       yardim1?.sifirla();
       await kinoSoyle(CUMLE.kino.kemik).catch(() => undefined);
@@ -852,7 +852,7 @@ export function uykuEkrani(app: Uygulama, param?: UykuParam): Ekran {
         yigin.el.dataset.durum = 'yerde';
         efekt.pof();
         void ezEsne(yigin.ic, [[1.12, 0.8], [0.96, 1.06]], 320);
-        kino.ifade('keyif', 1800);
+        kino.ifade('heyecan', 1800);
         await kinoSoyle(CUMLE.kino.ayak).catch(() => undefined);
         mino.bak(1);
         await minoSoyle(CUMLE.mino.ortun_dustu).catch(() => undefined);
