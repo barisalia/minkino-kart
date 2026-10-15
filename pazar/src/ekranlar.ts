@@ -482,10 +482,18 @@ export function pazarEkrani(app: Uygulama): Ekran {
   }
 
   let dusunZaman = 0;
+  let yanlisKamZaman = 0;
   function yanlisUrun() {
     hata++;
     efekt.yanlis();
     void musteri?.hayir();
+    // doğru üründeki gibi: tepki anında kamera müşteriye yaklaşır (şaşkın → üzgün yüzü okunur), sonra geri açılır.
+    // Tezgâh kısa süre kadrajdan çıkar; çocuk ekrana dokununca beklemeden geri gelir (oyunKamerasi → pointerdown)
+    if (kam.acik && aktif) {
+      kam.odakla(() => musteriKutusu(kam, musteriKap, false), { doluluk: 0.82, enCok: 2.1, sure: 500, dikey: 0.55, tamEkran: true });
+      clearTimeout(yanlisKamZaman);
+      yanlisKamZaman = window.setTimeout(() => aktif && !kapandi && kam.genis(800), 1700);
+    }
     // Mino "hayır" demez: patisi çenede düşünür (poz), sonra bırakır
     void mino.poz('dusun');
     clearTimeout(dusunZaman);
