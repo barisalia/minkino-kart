@@ -1226,6 +1226,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     await m.hazirSoz;
     await m.gel();
     if (kapandi) return;
+    // istek balonu beklerken de yüzün önüne binmesin (Mino'nun iri başı balonun kuyruğuna değiyordu): açılış bitince ve
+    // ilk istekteki yakın çekimden sonra bir kez daha (servisten sonra servis kendisi izler)
+    const balonAyir = () => (kapandi || m.bitti || !m.el.isConnected ? undefined : m.balonuYuzdenAyir());
+    window.setTimeout(balonAyir, 500);
+    window.setTimeout(balonAyir, 1700);
     yuvaCiz(s);
     adimGuncelle();
     void soyle(K.kino.hosgeldin, 'kino', false);

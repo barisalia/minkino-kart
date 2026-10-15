@@ -28,17 +28,27 @@ export function gorunenOran(ad: string): number {
   return Math.max(0.6, Math.min(1.02, 0.9 * Math.sqrt(b / BOY.cocuk)));
 }
 
+/** Figürün tezgâh çizgisinin üstünde kalan payı (üstten): çoğu karakterde bel (%57) */
+const GORUNEN_PAY = 0.57;
+/**
+ * Kendi payı olanlar. Mino'nun başı iri (ağzı figürün %56'sında): bel hizasında ağzı tezgâh çizgisine denk geliyordu.
+ * Göğsü ve kolları da görünsün diye %74'ü tezgâhın üstünde ve biraz büyük: yüzü ve tadımdaki dondurma tezgâhın üstünde.
+ * Basamak / tabure yok; yalnız ölçek ve dikey yer.
+ */
+const OZEL: Record<string, { pay: number; olcek: number }> = { mino: { pay: 0.74, olcek: 1.08 } };
+
 /**
  * Karakterin kutusu (müşteri katının yüksekliği = 1): kutunun eni ve tabandan aşağı kayması. Görünen kısım figürün
- * üst %57'si (bel tezgâh çizgisinde).
+ * üst %57'si (bel tezgâh çizgisinde; Mino: OZEL).
  */
 export function kutuOlcu(ad: string, olcek = 1): { en: number; alt: number; oran: string } {
   const c = CIZIM[ad] ?? CIZIM.kino;
   const [kw, kh] = c.kutu;
   const fig = (c.taban - c.tepe) / kh;
-  const gorunen = gorunenOran(ad) * olcek;
-  const kutuBoy = gorunen / 0.57 / fig;
-  const bel = c.tepe / kh + 0.57 * fig;
+  const oz = OZEL[ad];
+  const figurBoy = (gorunenOran(ad) / GORUNEN_PAY) * olcek * (oz?.olcek ?? 1);
+  const kutuBoy = figurBoy / fig;
+  const bel = c.tepe / kh + (oz?.pay ?? GORUNEN_PAY) * fig;
   return { en: (kutuBoy * kw) / kh, alt: -kutuBoy * (1 - bel), oran: `${kw} / ${kh}` };
 }
 
@@ -243,7 +253,10 @@ export class Musteri {
     const yer = Math.max(0, solda ? r.left - pen.left - 2 : pen.right - 2 - r.right);
     const kay = Math.min(tasma, yer);
     const kalan = tasma - kay;
-    if (kay > 0.5) b.style.translate = `${(solda ? -kay : kay).toFixed(1)}px 0`;
+    // yakın çekimde (kamera büyütmüş) ölçüler ekranda büyük: kayma balonun kendi ölçeğine çevrilir
+    const ana = b.parentElement;
+    const buyutme = ana && ana.offsetWidth ? Math.max(0.2, ana.getBoundingClientRect().width / ana.offsetWidth) : 1;
+    if (kay > 0.5) b.style.translate = `${((solda ? -kay : kay) / buyutme).toFixed(1)}px 0`;
     if (kalan > 0.5) {
       b.style.transformOrigin = solda ? '0 50%' : '100% 50%';
       b.style.scale = Math.max(0.6, (r.width - kalan) / r.width).toFixed(3);
@@ -302,6 +315,24 @@ export class Musteri {
     const tx = `translateX(${(-kutu.width / 2).toFixed(1)}px)`;
     const ty = (oran: number) => `translateY(${(yb * oran).toFixed(1)}px)`;
     lokma.style.transform = `${tx} scale(.3)`;
+    // Mino yerinde hoplar (sevinç, 'ham'): dondurma yerinde kalırsa başı inince dondurma ağzını ve gözlerinin altını
+    // örtüyordu. Patisinde tutar gibi yüzü izler (tepesi hep alt dudakta, yumuşak).
+    let takip = 0;
+    if (k.mino && !AZ_HAREKET) {
+      let sx = yer.x - kat.left;
+      let sy = yer.ust - kat.top - fark;
+      const izle = () => {
+        if (!lokma.isConnected) return;
+        const y = this.lokmaYeri();
+        const kt = efekt.kutu();
+        sx += (y.x - kt.left - sx) * 0.4;
+        sy += (y.ust - kt.top - fark - sy) * 0.4;
+        lokma.style.left = `${sx.toFixed(1)}px`;
+        lokma.style.top = `${sy.toFixed(1)}px`;
+        takip = requestAnimationFrame(izle);
+      };
+      takip = requestAnimationFrame(izle);
+    }
     if (this.ad === 'pamuk' && pembe) this.el.classList.add('ko-kizardi');
     if (this.ad === 'ayi') this.el.classList.add('ko-burun');
     await lokma.animate([{ transform: `${tx} ${ty(0.12)} scale(.3)`, opacity: 0 }, { transform: `${tx} ${ty(0)} scale(1)`, opacity: 1 }], { duration: sure(300), easing: 'cubic-bezier(.3,1.5,.5,1)', fill: 'forwards' }).finished.catch(() => undefined);
@@ -314,6 +345,7 @@ export class Musteri {
       await bekle(330);
     }
     await lokma.animate([{ transform: `${tx} ${ty(0)} scale(1)`, opacity: 1 }, { opacity: 0, transform: `${tx} ${ty(0.18)} scale(.6)` }], { duration: sure(260), fill: 'forwards' }).finished.catch(() => undefined);
+    cancelAnimationFrame(takip);
     lokma.remove();
   }
 
