@@ -444,6 +444,12 @@ export class PastaMusteri {
   }
   private gulusZaman = 0;
 
+  /** Şaşkın yüz (iri gözler, küçük "o" ağız) ve gövdenin kısa basılıp toparlanması */
+  saskin(ms = 1500) {
+    this.karakter.ifade('saskin', ms);
+    void this.karakter.oynat('var', 450);
+  }
+
   kapat() {
     clearTimeout(this.gulusZaman);
     this.karakter.kapat();

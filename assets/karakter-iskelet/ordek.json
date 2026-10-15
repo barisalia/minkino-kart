@@ -10,13 +10,23 @@
     "kafa",
     "gaga-ic",
     "gaga-alt",
+    "gaga-alt-mutlu",
+    "gaga-alt-saskin",
     "gaga",
     "goz-sol",
     "goz-sag",
-    "goz-kapali"
+    "goz-kapali",
+    "goz-mutlu",
+    "goz-saskin",
+    "goz-uzgun"
   ],
   "gizli": [
-    "goz-kapali"
+    "goz-kapali",
+    "goz-mutlu",
+    "goz-saskin",
+    "goz-uzgun",
+    "gaga-alt-mutlu",
+    "gaga-alt-saskin"
   ],
   "bagli": {
     "gaga": "kafa",
@@ -24,7 +34,12 @@
     "gaga-ic": "kafa",
     "goz-sol": "kafa",
     "goz-sag": "kafa",
-    "goz-kapali": "kafa"
+    "goz-kapali": "kafa",
+    "goz-mutlu": "kafa",
+    "goz-saskin": "kafa",
+    "goz-uzgun": "kafa",
+    "gaga-alt-mutlu": "kafa",
+    "gaga-alt-saskin": "kafa"
   },
   "donme": {
     "kafa": [
@@ -74,6 +89,26 @@
     "govde": [
       1024,
       1985
+    ],
+    "goz-mutlu": [
+      1022.5,
+      553.4
+    ],
+    "goz-saskin": [
+      1022.5,
+      548.5
+    ],
+    "goz-uzgun": [
+      1022.5,
+      548.5
+    ],
+    "gaga-alt-mutlu": [
+      1024,
+      839
+    ],
+    "gaga-alt-saskin": [
+      1024,
+      839
     ]
   }
 }

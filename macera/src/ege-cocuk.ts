@@ -20,7 +20,19 @@ const HIZA: Record<string, { a: number; bx: number; by: number; tuval: [number, 
   can: { a: 0.3171, bx: -111.9, by: -25.9, tuval: [422, 558] },
   // Elif: oyundaki parti çizimi biraz farklı (kolları daha açık), hiza yaklaşık
   elif: { a: 0.315, bx: -131.9, by: -26.6, tuval: [366, 583] },
+  // Deniz, Zeynep (Doğum Günü konukları): iskelet parti çiziminin üstüne alfa örtüşmesiyle oturtuldu (IoU 0.99)
+  deniz: { a: 0.2774, bx: -92.4, by: -18.8, tuval: [378, 521] },
+  zeynep: { a: 0.2794, bx: -110.4, by: 19.9, tuval: [352, 565] },
 };
+
+/**
+ * sade: yalnız yüz canlanır (göz kırpma, konuşan ağız). İskelet yalnız normal / şapkalı duruşta görünür; kollar,
+ * kafa ve topuzlar dönmez (parça döndürme yok), nefes ve salınım oyuncunun bütün gövdesinde (macera.css mc-oy-govde).
+ * Öbür pozlar (alkış, dans, şaşkın, selam, dilek, saklanma) tasarımcının poz çizimleri: poz değişimiyle oynar.
+ */
+export interface IskeletSecenek {
+  sade?: boolean;
+}
 
 /**
  * Çocuğun parti tuvalindeki çizim ölçüsü (boy tablosu için): iskeletin tepe / tabanı tuvale taşınır. Parti pozlarının
@@ -48,7 +60,15 @@ export class CocukIskelet {
   private oyuncu: Oyuncu | null = null;
   private balonEl: Element | null = null;
 
-  constructor(readonly ad: string) {
+  private readonly sade: boolean;
+  /** Konuşma sesi bu çocuğun (ör. Ada'nın cümlesi çalıyor): ağız sese göre açılır */
+  private sesli = false;
+
+  constructor(
+    readonly ad: string,
+    secenek: IskeletSecenek = {},
+  ) {
+    this.sade = !!secenek.sade;
     const z = HIZA[ad];
     const [tw, th] = z.tuval;
     const boy = 2048 * z.a;
@@ -64,6 +84,11 @@ export class CocukIskelet {
 
   /** Oyuncunun pozu → iskelet durumu; false: poz resmi gösterilsin */
   poz(p: Poz): boolean {
+    if (this.sade) {
+      if (p !== 'normal' && p !== 'sapkali') return false;
+      this.durumYap('normal');
+      return true;
+    }
     const d: Durum | null =
       p === 'normal' || p === 'sapkali' ? 'normal'
       : p === 'selam' ? 'selam'
@@ -110,7 +135,24 @@ export class CocukIskelet {
   }
 
   /** Her kare: durumun kol / kafa hareketi, yürüyüş, konuşma */
+  /** Bu çocuğun konuşma sesi çalıyor mu (true: ağız sese göre; false: yalnız balon açıkken ritimle) */
+  konusSesli(acik: boolean) {
+    this.sesli = acik;
+  }
+
   private hareket(p: KPoz, _t: number) {
+    if (this.sade) {
+      // parçalar yerinde: kafa, topuz, kol dönmez; bekleme nefesi gövdenin (oyuncunun) CSS'inde
+      p.kafa = 0;
+      p.kafaY = 0;
+      p.kulakSol = 0;
+      p.kulakSag = 0;
+      p.sx = 1;
+      p.sy = 1;
+      const balon = !!this.balonEl?.classList.contains('acik');
+      this.karakter.konus(this.sesli || balon, this.sesli);
+      return;
+    }
     const t = performance.now() / 1000;
     const g = t - this.durumBas;
     const hizli = this.ad === 'can';
@@ -170,9 +212,9 @@ export class CocukIskelet {
 }
 
 /** Oyuncu kurar; iskeleti varsa parçalı iskeletle (Karakter), yoksa eskisi gibi resimlerle */
-export function cocukOyuncu(s: OyuncuSecenek): { oyuncu: Oyuncu; iskelet: CocukIskelet | null } {
+export function cocukOyuncu(s: OyuncuSecenek, secenek: IskeletSecenek = {}): { oyuncu: Oyuncu; iskelet: CocukIskelet | null } {
   if (!HIZA[s.ad] || !iskeletVar(s.ad)) return { oyuncu: new Oyuncu(s), iskelet: null };
-  const isk = new CocukIskelet(s.ad);
+  const isk = new CocukIskelet(s.ad, secenek);
   const oyuncu = new Oyuncu({ ...s, iskelet: { el: isk.el, poz: (p) => isk.poz(p) } });
   isk.bagla(oyuncu);
   oyuncu.el.classList.add('eg-iskeletli');

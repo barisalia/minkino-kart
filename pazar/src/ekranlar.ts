@@ -481,11 +481,15 @@ export function pazarEkrani(app: Uygulama): Ekran {
     for (const e of urunler.querySelectorAll<HTMLElement>('.pz-urun')) e.classList.toggle('pz-parla', uygunMu(ist, e.dataset.urun ?? ''));
   }
 
+  let dusunZaman = 0;
   function yanlisUrun() {
     hata++;
     efekt.yanlis();
     void musteri?.hayir();
-    mino.tepki('hayir');
+    // Mino "hayır" demez: patisi çenede düşünür (poz), sonra bırakır
+    void mino.poz('dusun');
+    clearTimeout(dusunZaman);
+    dusunZaman = window.setTimeout(() => void mino.poz(null), sure(1300));
     const soz = ist.tur === 'ayir' ? (ist.grup === 'meyve' ? P.meyve_degil : P.sebze_degil) : rastgele(P.yanlis);
     if (hata >= 2) {
       parlat();
@@ -702,8 +706,9 @@ export function pazarEkrani(app: Uygulama): Ekran {
     el.classList.remove('pz-aktif');
     if (kapandi) return;
 
-    // müşteri sevinir, teşekkür eder, yıldız
+    // müşteri sevinir (gülen yüz), teşekkür eder, yıldız
     m.classList.add('sevindi');
+    mu.mutlu(1300);
     sepet.classList.add('pz-teslim');
     terazi?.el.classList.add('pz-teslim');
     urunler.querySelectorAll('.pz-parla').forEach((e) => e.classList.remove('pz-parla'));
@@ -737,6 +742,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
         // yerken ve dans ederken yakın çekim: yalnız müşteri (mutlu yüzü ekranı doldurur)
         kam.odakla(() => musteriKutusu(kam, musteriKap, false), { doluluk: 0.82, enCok: 2.1, sure: 900, dikey: 0.55, tamEkran: true });
         await mu.ye(yenen ? urunResmi(yenen) : null, RENK_KODU[urunRengi(yenen ?? '') ?? ''] ?? '#f4a340', A.nyam);
+        mu.mutlu(2400);
         mu.kalpler();
         await mu.dans();
       })(),
@@ -774,6 +780,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       bitir();
       sarki?.durdur();
       clearInterval(ipucuSayaci);
+      clearTimeout(dusunZaman);
       minoCanli.kapat();
       sokuler.splice(0).forEach((f) => f());
       mino.kapat();

@@ -117,6 +117,11 @@ class Kisi {
     else if (this.karakter?.ifadeVar('heyecan')) this.karakter.ifade('heyecan', ms);
     this.mino?.tepki('sevinc');
   }
+  saskin(ms: number) {
+    if (this.karakter?.ifadeVar('saskin')) this.karakter.ifade('saskin', ms);
+    if (this.karakter) void this.oynat('var', 420);
+    this.mino?.tepki('sasir');
+  }
   gozKapa(ms: number) {
     if (this.karakter?.ifadeVar('keyif')) this.karakter.ifade('keyif', ms);
   }
@@ -242,6 +247,10 @@ export class Musteri {
 
   mutlu(ms = 1600) {
     for (const k of this.kisiler) k.mutlu(ms);
+  }
+  /** Şaşkın yüz ("farklı oldu"): iri gözler, küçük "o" ağız, gövde kısa basılıp toparlanır */
+  saskin(ms = 700) {
+    for (const k of this.kisiler) k.saskin(ms);
   }
   dans() {
     return Promise.all(this.kisiler.map((k) => k.oynat('dans', 1100)));

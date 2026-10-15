@@ -98,6 +98,16 @@ export class KinoIsci {
       }
     }
     const kv = this.kino;
+    // bakış: gözler sıradaki işin yerine (göz katmanı değişimi)
+    const b = this.bakis;
+    if (b && t - b.bas >= b.sure) this.bakis = null;
+    const yuzBos = !kv.ifadeSu;
+    const bakSol = yuzBos && !!this.bakis && this.bakis.yan === 'sol' && !!kv.parcaG('goz-bak-sol');
+    const bakSag = yuzBos && !!this.bakis && this.bakis.yan === 'sag' && !!kv.parcaG('goz-bak-sag');
+    kv.ek('goz-bak-sol', bakSol);
+    kv.ek('goz-bak-sag', bakSag);
+    kv.gizle('goz-sol', bakSol || bakSag);
+    kv.gizle('goz-sag', bakSol || bakSag);
     const ks = sol >= YUK_ESIK && !!kv.parcaG('kol-sol-yukari');
     const kg = sag >= YUK_ESIK && !!kv.parcaG('kol-sag-yukari');
     kv.ek('kol-sol-yukari', ks);
@@ -232,6 +242,28 @@ export class KinoIsci {
   istifBitir() {
     this.istif = null;
   }
+
+  /**
+   * Yanlış dokunuş: Kino sıradaki işin yerine bakar (gözler o yana: goz-bak-* katmanı) ve o yana doğru küçük bir
+   * hop yapar; bütün gövde hareketi, parça dönmez. Başka bir iş sürüyorsa (servis, çak) yalnız bakar.
+   */
+  bak(hedefX: number) {
+    const r = this.kutu();
+    this.bakis = { bas: this.t, sure: 1.1, yan: hedefX < r.left + r.width / 2 ? 'sol' : 'sag' };
+    if (this.mesgul) return;
+    const d = this.bakis.yan === 'sol' ? -1 : 1;
+    this.oynat(
+      [
+        { transform: 'none' },
+        { transform: 'translateY(0) scale(1.06, .94)', offset: 0.18 },
+        { transform: `translate(${d * 5}%, -12%) scale(.97, 1.04)`, offset: 0.5 },
+        { transform: `translate(${d * 3}%, 0) scale(1.05, .95)`, offset: 0.78 },
+        { transform: 'none' },
+      ],
+      520,
+    );
+  }
+  private bakis: { bas: number; sure: number; yan: 'sol' | 'sag' } | null = null;
 
   /** Hedef tamam: iki kez zıplar */
   zipla() {

@@ -18,6 +18,7 @@ import { davul, nota } from '../../orman/src/sesler';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import { adres, resim } from './gorsel';
 import { FIGURLER, Oyuncu } from './oyuncu';
+import { cocukOyuncu, type CocukIskelet } from './ege-cocuk';
 import { MINO_SVG } from '../../src/mino/mino-svg';
 import { Sahne } from './sahne';
 import { anlikFark, melodi, notaDegerlendir, REF_MIDI, referansBul, satirSonuMs, tepeNota, type Nota, type NotaSonucu } from './sarki';
@@ -65,7 +66,8 @@ const BALON_TON = [0, 200, 60, 280, 130, 330];
 export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
   const yas = durum.i.yas ?? 4;
   const adaYer: [number, number] = [...ADA_YER];
-  const sahne = new Sahne('parti-sahne/oda');
+  // dikey telefonda 9:16 oda çizimi (Ege ve Elektrik gibi); yatay çizim kırpılıp pencere ekranı kaplamasın
+  const sahne = new Sahne('parti-sahne/oda', 'parti-sahne/oda-dikey');
   kok.append(sahne.el);
 
   // --------------------------------------------------------------- dekor
@@ -76,8 +78,16 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
   sahne.koy(resim('parti/masa', '', 'Masa'), { x: 50, y: 2, w: 54, z: 6 });
   const pasta = sahne.koy(h('div.mc-pasta', {}, resim('parti/pasta', 'mc-pasta-resim', 'Pasta')), { x: 50, y: 17, w: 32, z: 7 });
 
-  const ada = new Oyuncu({ ad: 'ada', resim: 'parti/ada', boy: 30.2, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
-  const konuklar = KONUKLAR.map((ad) => new Oyuncu({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }));
+  // Çocuklar parçalı iskeletle canlı (ege-cocuk.ts, sade): normal / şapkalı duruşta göz kırpar, konuşurken ağzı
+  // oynar, nefes ve salınım bütün gövdede; alkış, dans, şaşkın, selam, dilek, saklanma tasarımcının poz çizimleri.
+  const iskeletler: CocukIskelet[] = [];
+  const cocuk = (s: ConstructorParameters<typeof Oyuncu>[0]) => {
+    const { oyuncu, iskelet } = cocukOyuncu(s, { sade: true });
+    if (iskelet) iskeletler.push(iskelet);
+    return { oyuncu, iskelet };
+  };
+  const { oyuncu: ada, iskelet: adaI } = cocuk({ ad: 'ada', resim: 'parti/ada', boy: 30.2, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
+  const konuklar = KONUKLAR.map((ad) => cocuk({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }).oyuncu);
   const oy = { ada };
   const konukAd = KONUKLAR;
   for (const k of konuklar) {
@@ -102,7 +112,13 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
   const adaSoyle = async (t: string) => {
     ui.yazi(t);
-    await konus(t, { ton: 1.28 });
+    // konuşan Ada: ağzı sese göre açılır (iskelet görünürken)
+    adaI?.konusSesli(true);
+    try {
+      await konus(t, { ton: 1.28 });
+    } finally {
+      adaI?.konusSesli(false);
+    }
   };
   const efektCal = (ad: string, sus = 1200) => {
     kulak.sustur(sus);
@@ -139,6 +155,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     cancelAnimationFrame(raf);
     kulak.dinle(null);
     mino.kapat();
+    iskeletler.forEach((i) => i.kapat());
   };
 
   const balonSayisi = { 3: 3, 4: 4, 5: 5, 6: 6 }[yas] ?? 4;
@@ -166,8 +183,11 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       k.katman = z;
       await k.git(x, y, 900);
       kapi.classList.remove('acik');
-      void k.balon(M.tepki.selam, 900);
-      await k.selamVer();
+      // önce el sallar (poz çizimi, gövde iki yana), sonra "Merhaba!" der: konuşurken yüzü iskelette, ağzı oynar
+      k.poz('selam', 650);
+      void k.figur('selam', 1, 520).then(() => k.figur('selam', -1, 520));
+      await bekle(560);
+      await k.balon(M.tepki.selam, 900);
     }
     await soyle(D.arkadaslar);
     await soyle(D.surpriz_plan);
@@ -220,7 +240,8 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     minoKutu.classList.remove('sakli');
     efektCal('duduk', 900);
     sahne.titret(1);
-    oy.ada.poz('saskin', 2600);
+    // şaşkın poz kısa: "Vay!" derken iskelet görünür, ağzı konuşur
+    oy.ada.poz('saskin', 1500);
     void oy.ada.zipla(34);
     mino.tepki('zipla');
     konfeti(50, 35, 140);
@@ -252,8 +273,10 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await dans();
 
     await sahne.kamera(50, 50, 1, 900);
-    oy.ada.poz('mutlu');
+    // teşekkürü konuşan yüzle söyler (iskelet), bitince sevinç pozu
+    oy.ada.poz('normal');
     await adaSoyle(M.ada.tesekkur);
+    oy.ada.poz('mutlu');
     konfeti(50, 30, 160);
     efektCal('yasasin', 2000);
     await soyle(D.son);

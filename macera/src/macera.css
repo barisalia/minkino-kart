@@ -561,7 +561,19 @@
 .mc-kok .mc-oy-sapka.acik {
   transform: translate(-50%, -88%) rotate(var(--sd)) scale(1);
 }
-.mc-kok .mc-oy-balon {
+/* çocukların parçalı iskeleti (ege-cocuk.ts; Doğum Günü ve Ege): parti tuvaline tasarımcının hizasıyla oturur */
+.mc-kok .mc-oyuncu .eg-cocuk-iskelet {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+.mc-kok .mc-oyuncu .eg-cocuk-iskelet[hidden] {
+  display: none;
+}
+/* poz resmine geçerken: yeni resim (z 2) belirene kadar iskelet altta görünür kalır */
+.mc-kok .mc-oyuncu .eg-cocuk-iskelet.onceki {
+  z-index: 1;
+}.mc-kok .mc-oy-balon {
   position: absolute;
   z-index: 5;
   left: 50%;

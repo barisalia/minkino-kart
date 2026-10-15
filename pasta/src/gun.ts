@@ -638,6 +638,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     } else {
       // farklı olan şey balonda bir an parlar; yine de yer ve sever
       m.karsilastir(sonuc.farklar);
+      // müşteri önce şaşırır (iri gözler, "o" ağız), sonra tadar ve sever: "farklı da olsa güzel"
+      m.saskin(1500);
       mino.tepki('sasir');
       void soyle(P.mino.farkli);
       await bekle(1600);
@@ -789,9 +791,13 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   // ---------------------------------------------------------------- tezgâh işleri
   const ipucu = (...e: HTMLElement[]) => e.forEach((x) => salla(x, 'ps-ipucu'));
   const yanlis = () => {
-    // yanlış dokunuş zararsız: sıradaki işin yeri bir kez zıplar
+    // yanlış dokunuş zararsız: sıradaki işin yeri bir kez zıplar, Kino oraya bakıp o yana hoplar (sözsüz ipucu)
     ses.degil();
-    if (parlayan) ipucu(parlayan);
+    if (parlayan) {
+      ipucu(parlayan);
+      const r = parlayan.getBoundingClientRect();
+      kinoIs.bak(r.left + r.width / 2);
+    }
   };
   let kinoHamurDedi = false;
 

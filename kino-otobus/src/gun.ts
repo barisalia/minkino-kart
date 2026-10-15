@@ -1343,6 +1343,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       lokmaKap.remove();
     }
     const pembe = verilen.every((d) => d.toplar.every((t) => t === 'cilek'));
+    // farklı oldu: müşteri önce şaşırır (iri gözler, "o" ağız), sonra tadar ve sever
+    if (!sonuc.ayni && !dogumgunu) {
+      m.saskin(700);
+      await bekle(600);
+      if (kapandi) return;
+    }
     await m.tat(lokma, pembe);
     if (kapandi) return;
     const limonlu = verilen.some((d) => d.toplar.includes('limon'));

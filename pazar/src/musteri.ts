@@ -199,10 +199,21 @@ export class Musteri {
     this.karakter.konus(acik);
   }
 
-  /** Yanlış ürün: kafasını iki yana sallar; üzgün ifadesi olan karakter kısa süre üzülür */
+  /**
+   * Yanlış ürün: önce şaşırır (iri gözler, küçük "o" ağız, gövde basılıp toparlanır), sonra kısa bir an üzülür ve
+   * hemen normal yüzüne döner (çocuğu suçlamaz). Kafa dönmez: yüz katman değişimi, hareket bütün gövdede.
+   */
   hayir() {
-    this.karakter.ifade('uzgun', 1500);
-    return this.karakter.oynat('hayir', 650);
+    this.karakter.ifadeSirasi([
+      ['saskin', 600],
+      ['uzgun', 800],
+    ]);
+    return this.karakter.oynat('var', 520);
+  }
+
+  /** Doğru ürün: gülen yüz (^ ^ gözler, açık gülüş) */
+  mutlu(ms = 2000) {
+    this.karakter.ifade('mutlu', ms);
   }
 
   /** Ürünü alır, ağzına götürüp üç ısırıkta yer (her ısırıkta kırıntılar, "Nyam!"); para ise yalnız sevinir */
@@ -302,7 +313,8 @@ export class Musteri {
    */
   async burus() {
     this.mesgul = true;
-    this.karakter.ifade('uzgun', 1500);
+    // "ıyy": yüz normal kalır, gözler sıkılır (üzgün yüz yalnız yanlış üründe, kısa)
+    this.karakter.ifade(null);
     const k = this.karakter;
     let t0 = -1;
     const sure = AZ ? 0.4 : TEST_MODU ? 0.03 : 1.3;

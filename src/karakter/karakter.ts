@@ -241,9 +241,29 @@ export class Karakter {
    * sonra normale döner; null normale döndürür. Karakterde o ifade yoksa (ya da tek görselse) bir şey olmaz.
    */
   ifade(ad: string | null, ms = 0) {
+    clearTimeout(this.siraZaman);
+    this.ifadeYap(ad, ms);
+  }
+  private ifadeYap(ad: string | null, ms: number) {
     this.ifadeAd = ad && this.setler[ad] ? ad : null;
     this.ifadeBitis = ms && this.ifadeAd ? performance.now() + (TEST_MODU ? 30 : ms) : 0;
   }
+
+  /**
+   * Sırayla ifadeler (ör. şaşkın 0,6 sn → mutlu 1,2 sn), sonunda normal yüz. Yüz yalnız katman değişimidir (poz
+   * değişimi), parça dönmez. Karakterde olmayan ifadenin süresinde yüz normal kalır; yeni bir ifade() sırayı keser.
+   */
+  ifadeSirasi(adimlar: [string, number][]) {
+    clearTimeout(this.siraZaman);
+    const adim = (i: number) => {
+      const a = adimlar[i];
+      if (!a) return;
+      this.ifadeYap(a[0], a[1]);
+      if (i + 1 < adimlar.length) this.siraZaman = window.setTimeout(() => adim(i + 1), TEST_MODU ? 30 : a[1]);
+    };
+    adim(0);
+  }
+  private siraZaman = 0;
 
   /**
    * İskeletin bir parçasının SVG grubu (ör. film: Kino'nun kafasına elma takmak). İskelet yüklenmeden (ya da
@@ -302,6 +322,7 @@ export class Karakter {
   }
 
   kapat() {
+    clearTimeout(this.siraZaman);
     cancelAnimationFrame(this.raf);
     this.raf = 0;
     this.hareket?.coz();

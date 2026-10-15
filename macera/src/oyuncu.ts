@@ -114,6 +114,7 @@ export class Oyuncu {
   }
 
   private iskelet: OyuncuSecenek['iskelet'] | null;
+  private iskeletGizle = 0;
 
   private goster(p: Poz) {
     const sapkaliVar = this.resimler.has('sapkali');
@@ -121,7 +122,19 @@ export class Oyuncu {
     // iskelet bu pozu oynatıyorsa resimler kapanır
     const iskeletle = this.iskelet?.poz(p) ?? false;
     if (this.iskelet) {
-      this.iskelet.el.hidden = !iskeletle;
+      const el = this.iskelet.el;
+      // iskeletten poz resmine geçerken iskelet kısa süre altta kalır (resim belirirken karakter saydamlaşmasın)
+      clearTimeout(this.iskeletGizle);
+      if (!iskeletle && !el.hidden) {
+        el.classList.add('onceki');
+        this.iskeletGizle = window.setTimeout(() => {
+          el.hidden = true;
+          el.classList.remove('onceki');
+        }, 160);
+      } else {
+        el.hidden = !iskeletle;
+        el.classList.remove('onceki');
+      }
       if (iskeletle) hedef = '' as Poz;
     }
     if (hedef === 'normal' && this.sapkaTakili && sapkaliVar) hedef = 'sapkali';
