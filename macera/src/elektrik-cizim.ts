@@ -20,6 +20,44 @@ export function elAdres(ad: string, yedek?: string): string {
 /** Adobe pozu geldi mi (kino-buzulmus, mino-avlaniyor) */
 export const pozVar = (ad: 'kino-buzulmus' | 'mino-avlaniyor') => !!GORSEL[`../../assets/elektrik/${ad}.webp`];
 
+/**
+ * Gemini eşya sayfası (G8) çizimleri: ekip/illustrator/elektrik-isle.cjs → assets/elektrik/<ad>.webp + olcu.json
+ * (komodin, komodin-acik, fener, fener-acik, pil, saat, saksi, kemik, sandalye, lamba, cadir, cokuk). Çift pozlar
+ * (komodin / komodin-acik, fener / fener-acik) aynı tuvalde: üst üste konup sınıfla değiştirilir (poz değişimi).
+ * Çizim yoksa her yerde kod çizimi (yedek) kalır.
+ */
+const OLCU = import.meta.glob<{ olcu: Record<string, [number, number]> }>('../../assets/elektrik/olcu.json', { eager: true, import: 'default' });
+const OLCU_TABLO: Record<string, [number, number]> = Object.values(OLCU)[0]?.olcu ?? {};
+/** assets/elektrik/<ad>.webp (Gemini çizimi) var mı */
+export const resimVar = (...adlar: string[]) => adlar.every((ad) => !!GORSEL[`../../assets/elektrik/${ad}.webp`]);
+/** Çizimin boy / en oranı: Gemini çizimi varsa onunki (olcu.json), yoksa kod çiziminin oranı */
+export function oran(ad: string, yedek: number): number {
+  const o = resimVar(ad) ? OLCU_TABLO[ad] : undefined;
+  return o ? o[1] / o[0] : yedek;
+}
+/** Bir eşyanın HTML'i (düğme, ödül kartı, gölge gibi kopyalar için): Gemini çizimi varsa <img>, yoksa kod çizimi */
+export function esyaHtml(ad: string, svg: string): string {
+  const url = resimVar(ad) ? elAdres(ad) : '';
+  return url ? `<img class="el-resim" src="${url}" alt="" draggable="false">` : tekil(svg);
+}
+/**
+ * Karakter iskeletine eklenecek SVG parçası (Kino'nun ağzındaki fener gibi): Gemini çizimi varsa <image>, yoksa kod
+ * çiziminin içi. vb: kod çiziminin viewBox eni/boyu (yerleşim dönüşümü ona göre yazılı; resim aynı kutuya oturur).
+ */
+export function esyaSvgParca(ad: string, svg: string, vbW: number, vbH: number): string {
+  const url = resimVar(ad) ? elAdres(ad) : '';
+  if (!url) return tekil(svg).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+  const h = vbW * oran(ad, vbH / vbW);
+  return `<image href="${url}" x="0" y="${((vbH - h) / 2).toFixed(1)}" width="${vbW}" height="${h.toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`;
+}
+/** İki pozlu eşya (kapalı + açık, aynı tuval): ikisi üst üste; kapsayıcıdaki .acik sınıfı açık pozu gösterir */
+export function ikiPoz(ad: string, acikAd: string, alt = ''): HTMLElement[] {
+  return [
+    h('img.mc-resim.el-resim.el-poz-kapali', { src: elAdres(ad), alt, draggable: 'false' }),
+    h('img.mc-resim.el-resim.el-poz-acik', { src: elAdres(acikAd), alt: '', draggable: 'false' }),
+  ];
+}
+
 /** Parlama (beyaz, yarı saydam): cx, cy, rx, ry, açı */
 const parla = (cx: number, cy: number, rx: number, ry: number, a = -20, o = 0.55) =>
   `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(${a} ${cx} ${cy})" fill="#fff" opacity="${o}"/>`;

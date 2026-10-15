@@ -41,9 +41,15 @@ import {
   COKUK_SVG,
   ELDIVEN_ORAN,
   ELDIVEN_SVG,
+  elAdres,
   esya,
+  esyaHtml,
+  esyaSvgParca,
   FENER_ORAN,
   FENER_SVG,
+  ikiPoz,
+  oran,
+  resimVar,
   GOLGE_CANAVAR,
   KEMIK_SVG,
   KOMODIN_ORAN,
@@ -106,6 +112,21 @@ const kutu = (el: Element) => () => el.getBoundingClientRect();
 const merkezi = (r: DOMRect): [number, number] => [r.left + r.width / 2, r.top + r.height / 2];
 /** Kişi çizimi (Mino ve Kino aynı kutu oranı) */
 const KISI_W = 24;
+/**
+ * Gemini eşya çizimleri (assets/elektrik; yoksa kod çizimi). Çiftler birlikte gelir: komodin + açık hâli, fener + pil
+ * kapağı açık hâli, çadır + çökmüş battaniye.
+ */
+const RESIM = {
+  komodin: resimVar('komodin', 'komodin-acik'),
+  fenerAcik: resimVar('fener', 'fener-acik'),
+  saat: resimVar('saat'),
+  cadir: resimVar('cadir', 'cokuk'),
+};
+/** Çadır çiziminde sandalyelerin yeri (en oranı, ortadan): elektrik-isle.cjs'in kestiği çizimden ölçülü */
+const CADIR_SANDALYE = 0.35;
+const CADIR_ORANI = oran('cadir', CADIR_ORAN);
+/** Mandalların çadırdaki yeri (en ve boy oranı): kod çiziminde çadırın yan köşeleri, Gemini çiziminde sandalye arkalıklarının tepesi */
+const MANDAL_YER = RESIM.cadir ? { x: 0.43, y: 0.55 } : { x: 0.37, y: 0.28 };
 const KISI_ORAN = 1790 / 1360;
 /** Kuledeki küpler alttan üste (en üstteki sarıyı Kino koyar; çizimler elektrik-cizim.ts → kupResim) */
 const KUPLER: KupRenk[] = ['kirmizi', 'mavi', 'yesil', 'sari'];
@@ -254,21 +275,33 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const lamba = koy(h('div.el-lamba.yanik', { 'data-el': 'lamba' }, h('i.el-lamba-hale'), esya('lamba', LAMBA_SVG, 'Lamba')), LAMBA.x, LAMBA.y, LAMBA.w, 2);
   // komodin (sol arka) + çekmece + üstünde saksı
   const KOMODIN = { x: X(dikey ? -27 : -30), y: ARKA(), w: 20 };
-  const komodinH = KOMODIN.w * KOMODIN_ORAN;
-  const komodin = koy(h('div.el-komodin', { 'data-el': 'komodin' }, esya('komodin', KOMODIN_SVG, 'Komodin')), KOMODIN.x, KOMODIN.y, KOMODIN.w, 3);
+  const komodinH = KOMODIN.w * oran('komodin', KOMODIN_ORAN);
+  // Gemini çizimi: kapalı ve açık komodin üst üste (çekmece açılınca poz değişir); yoksa kod çizimi + ayrı çekmece
+  const komodin = koy(h('div.el-komodin', { 'data-el': 'komodin' }, ...(RESIM.komodin ? ikiPoz('komodin', 'komodin-acik', 'Komodin') : [esya('komodin', KOMODIN_SVG, 'Komodin')])), KOMODIN.x, KOMODIN.y, KOMODIN.w, 3);
   const cekmece = h(
     'div.el-cekmece',
     { 'data-el': 'cekmece', style: `left:${CEKMECE_YER.x * 100}%;top:${CEKMECE_YER.y * 100}%;width:${CEKMECE_YER.w * 100}%;height:${CEKMECE_YER.h * 100}%` },
     h('div.el-cekmece-ic', { html: CEKMECE_IC_SVG }),
     h('div.el-cekmece-on', { html: tekil(CEKMECE_ON_SVG) }),
   );
+  // (Gemini komodininde çekmece çizimin içinde: kutu yalnız ipucu ve bırakma yeri olarak çizimin çekmece yüzünde durur)
+  if (RESIM.komodin) {
+    komodin.classList.add('resimli');
+    Object.assign(cekmece.style, { left: '20%', top: '34%', width: '58%', height: '38%' });
+  }
   komodin.append(cekmece);
-  const SAKSI = { x: KOMODIN.x + bX(4), y: KOMODIN.y + bY(komodinH * 0.86), w: 8 };
+  // komodinin üstü (eşyaların durduğu yüzey): Gemini çiziminde tabla daha ince
+  const komodinUst = KOMODIN.y + bY(komodinH * (RESIM.komodin ? 0.9 : 0.86));
+  // (Gemini'nin çalar saati komodinin üstünde, saksının yanında: duvarda asılı çalar saat olmaz)
+  const SAKSI = { x: KOMODIN.x + bX(RESIM.saat ? 5 : 4), y: komodinUst, w: RESIM.saat ? 7 : 8 };
   const saksi = koy(h('div.el-saksi', { 'data-el': 'saksi' }, esya('saksi', SAKSI_SVG, 'Saksı'), h('i.el-damla'), h('i.el-damla.d2')), SAKSI.x, SAKSI.y, SAKSI.w, 4);
   // duvar saati (komodin ile lambanın arasında, duvarda)
   // (yatay telefonda ekran alçak: saat duvarda daha aşağıda, sahne 4 çekimine Kino ile birlikte sığsın)
-  const SAAT = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : yatayTel ? 5 : 20), w: 10 };
-  const saat = koy(h('div.el-saat', { 'data-el': 'saat' }, esya('saat', SAAT_SVG, 'Saat')), SAAT.x, SAAT.y, SAAT.w, 1);
+  const SAAT_DUVAR = { x: X(dikey ? -6 : -8), y: DUVAR + bY(dikey ? 24 : yatayTel ? 5 : 20), w: 10 };
+  /** sahne 4 çekiminin üst sınırı (duvardaki gölge de girsin): saat komodine inse de aynı kalır */
+  const SAAT_CEKIM_UST = SAAT_DUVAR.y + bY(10 * SAAT_ORAN + 4);
+  const SAAT = RESIM.saat ? { x: KOMODIN.x - bX(5), y: komodinUst, w: 6.5 } : SAAT_DUVAR;
+  const saat = koy(h('div.el-saat', { 'data-el': 'saat' }, esya('saat', SAAT_SVG, 'Saat')), SAAT.x, SAAT.y, SAAT.w, RESIM.saat ? 4 : 1);
   // masa (ortada, örtülü): Kino altına saklanır
   const MASA = { x: X(5), y: Y(8), w: 32 };
   const masaH = MASA.w * (349 / 512);
@@ -280,7 +313,14 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   kupler[3].style.opacity = '0';
   // katlı battaniye (koltuğun oturağında)
   const battaniyeYer = { x: KOLTUK.x - bX(2), y: KOLTUK.y + bY(koltukH * 0.3), w: 13 };
-  const battaniye = koy(h('div.el-battaniye', { 'data-el': 'battaniye' }, esya('battaniye', '', 'Battaniye', 'ege/battaniye-anne')), battaniyeYer.x, battaniyeYer.y, battaniyeYer.w, 4);
+  // (Gemini çadırı varsa battaniye onun yıldızlı battaniyesi: koltukta yığılı duran, çadır olan aynı battaniye)
+  const battaniye = koy(
+    h('div.el-battaniye', { 'data-el': 'battaniye' }, RESIM.cadir ? h('img.mc-resim.el-resim', { src: elAdres('cokuk'), alt: 'Battaniye', draggable: 'false' }) : esya('battaniye', '', 'Battaniye', 'ege/battaniye-anne')),
+    battaniyeYer.x,
+    battaniyeYer.y,
+    battaniyeYer.w,
+    4,
+  );
 
   // ================================================================ karakterler
   const MN = new Kisi('mino');
@@ -553,6 +593,55 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   /** Yumuşak giriş: büyüyerek belirir */
   const belir = (el: Element, ms = 380) =>
     el.animate([{ opacity: 0, scale: '0.4' }, { opacity: 1, scale: '1.08', offset: 0.7 }, { opacity: 1, scale: '1' }], { duration: sure(ms), easing: 'cubic-bezier(0.3, 1.3, 0.5, 1)' });
+  /**
+   * Komodinin çekmecesi açılır / kapanır. Açılış: komodin çekişle önce basılır (hazırlık), çekmece "pat" diye açılınca
+   * (poz değişimi: kapalı → açık çizim) bütün gövde çekiş yönüne kayar, esneyip sarsılarak toparlanır. Kapanış: itilir,
+   * "tak" diye kapanınca öbür yana sekip basılır. Kod çiziminde aynı gövde hareketi + çekmece kayması.
+   * yon: çekenin tarafı (1 sağ, -1 sol)
+   */
+  const cekmeceAc = async (ac: boolean, yon = 1) => {
+    const ms = sure(ac ? 620 : 480);
+    // [en, boy, kayma (komodin eninin %'si), an]
+    const KARE: [number, number, number, number][] = ac
+      ? [
+          [1, 1, 0, 0],
+          [1.05, 0.94, -0.6, 0.24],
+          [0.96, 1.05, 3.2, 0.42],
+          [1.03, 0.97, -1.4, 0.6],
+          [0.99, 1.01, 0.6, 0.78],
+          [1, 1, 0, 1],
+        ]
+      : [
+          [1, 1, 0, 0],
+          [0.97, 1.03, -1.6, 0.3],
+          [1.06, 0.93, 1.2, 0.5],
+          [0.98, 1.02, 0, 0.72],
+          [1, 1, 0, 1],
+        ];
+    const kw = komodin.offsetWidth;
+    const kh = komodin.offsetHeight;
+    komodin.animate(
+      KARE.map(([sx, sy, tx, offset]) => ({ scale: `${sx} ${sy}`, translate: `${(tx * yon).toFixed(1)}% 0`, offset })),
+      { duration: ms, easing: 'ease-out' },
+    );
+    // üstündeki saat ve saksı tablayla birlikte kayar, iner kalkar (havada kalmazlar)
+    // (mc-oge: left ortası, translateX(-50%) offsetLeft'e girmez → offsetLeft = orta)
+    const km = komodin.offsetLeft;
+    for (const e of [saat, saksi]) {
+      if (Math.abs(e.offsetTop + e.offsetHeight - komodin.offsetTop) > kh * 0.4) continue; // (duvardaki kod saati)
+      const ox = e.offsetLeft - km;
+      e.animate(
+        KARE.map(([sx, sy, tx, offset]) => ({ translate: `${((tx * yon * kw) / 100 + (sx - 1) * ox).toFixed(2)}px ${(-(sy - 1) * kh * 0.92).toFixed(2)}px`, offset })),
+        { duration: ms, easing: 'ease-out', composite: 'add' },
+      );
+    }
+    // poz, gövdenin en basık anında değişir (açılışta çekmece "pat", kapanışta "tak")
+    await bekle(ac ? 620 * 0.26 : 480 * 0.34);
+    S.cekmece(!ac);
+    komodin.classList.toggle('acik', ac);
+    cekmece.classList.toggle('acik', ac);
+    await bekle(ac ? 620 * 0.74 : 480 * 0.66);
+  };
   /** Kalpçik: ekrandaki bir noktadan yukarı süzülür (Kino'yu okşarken) */
   const kalp = (x: number, y: number) => {
     const sr = sahne.el.getBoundingClientRect();
@@ -893,9 +982,11 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     void MN.git(KOMODIN.x + bX(14), Y(0), 1000, 0, undefined, true);
     void KN.git(KOMODIN.x + bX(34), Y(1), 1100);
     await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(45), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 1100);
-    S.cekmece();
-    cekmece.classList.add('acik');
-    await bekle(700);
+    // Mino çekmeceyi çeker (zorlanır), çekmece yaylı açılır
+    MN.tepki('zorlan');
+    await bekle(250);
+    await cekmeceAc(true);
+    await bekle(250);
     // yakın çekim: yukarıdan açık çekmece (içi karanlık; parmağın altında küçük ışık halkası)
     const esyalar = cekmeceEsyalari(yas);
     const yakin = h('div.el-yakin', { 'data-el': 'yakin' });
@@ -903,14 +994,16 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const hale = h('i.el-yakin-hale');
     const karanlik = h('i.el-yakin-karanlik');
     yakin.append(ic);
-    const ORAN: Record<EsyaAd, number> = { fener: FENER_ORAN, pil: PIL_ORAN, eldiven: ELDIVEN_ORAN, rende: RENDE_ORAN };
+    const ORAN: Record<EsyaAd, number> = { fener: oran('fener', FENER_ORAN), pil: oran('pil', PIL_ORAN), eldiven: ELDIVEN_ORAN, rende: RENDE_ORAN };
     const SVG: Record<EsyaAd, string> = { fener: FENER_SVG, pil: PIL_SVG, eldiven: ELDIVEN_SVG, rende: RENDE_SVG };
     const GEN: Record<EsyaAd, number> = { fener: 34, pil: 20, eldiven: 19, rende: 15 };
     const YER: [number, number, number][] = esyalar.length === 3 ? [[22, 50, -8], [52, 46, 6], [80, 52, -4]] : [[17, 52, -6], [43, 44, 5], [68, 50, 8], [88, 60, -12]];
     const esyaEl = new Map<EsyaAd, HTMLElement>();
     esyalar.forEach((ad, i) => {
       const [x, y, d] = YER[i];
-      const el = h(`div.el-yesya`, { 'data-esya': ad, role: 'button', 'aria-label': ad, style: `left:${x}%;top:${y}%;width:${GEN[ad]}%;--d:${d}deg;aspect-ratio:${1 / ORAN[ad]}` }, esya(ad, SVG[ad], ad));
+      // (Gemini feneri iki pozlu: kapalı ve pil kapağı açık; pilsiz fenerin kapağı, yanmayınca açılır)
+      const ic = ad === 'fener' && RESIM.fenerAcik ? ikiPoz('fener', 'fener-acik', ad) : [esya(ad, SVG[ad], ad)];
+      const el = h(`div.el-yesya`, { 'data-esya': ad, role: 'button', 'aria-label': ad, style: `left:${x}%;top:${y}%;width:${GEN[ad]}%;--d:${d}deg;aspect-ratio:${1 / ORAN[ad]}` }, ...ic);
       esyaEl.set(ad, el);
       yakin.append(el);
     });
@@ -1007,8 +1100,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     yakin.classList.remove('acik');
     await bekle(450);
     yakin.remove();
-    S.cekmece(true);
-    cekmece.classList.remove('acik');
+    void cekmeceAc(false);
     gece.seviye('fener');
     const [mx, my] = px(X(-4), DUVAR + bY(14));
     gece.hedef(mx, my, true);
@@ -1054,6 +1146,14 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     S.tik();
     void salla(el, 0.4);
     await bekle(500);
+    if (RESIM.fenerAcik) {
+      // pil kapağı "pof" diye açılır (poz değişimi): fener basılıp esner, yuvası boş görünür
+      S.pof();
+      el.classList.add('acik');
+      void el.animate([{ scale: '1 1' }, { scale: '1.08 0.88', offset: 0.25 }, { scale: '0.96 1.06', offset: 0.6 }, { scale: '1 1' }], { duration: sure(420), easing: 'ease-out' });
+      void balonGoster(balonKatman, el.getBoundingClientRect(), B.pof, 800);
+      await bekle(350);
+    }
     await mSoyle(M.pil_yok);
   }
 
@@ -1075,17 +1175,61 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     });
     durumYaz(null);
     ui.ipucu(null);
-    // pil fenerin gövdesine kayar, kaybolur
     const pr = pil.getBoundingClientRect();
     const fr = fener.getBoundingClientRect();
     const k = pil.style.translate || '0px 0px';
-    await pil
-      .animate([{ translate: k, scale: '1', opacity: 1 }, { translate: `${fr.left + fr.width * 0.35 - (pr.left + pr.width / 2) + parseFloat(k)}px ${fr.top + fr.height / 2 - (pr.top + pr.height / 2) + parseFloat(k.split(' ')[1] ?? '0')}px`, scale: '0.5', opacity: 0 }], { duration: sure(380), fill: 'forwards', easing: 'ease-in' })
-      .finished.catch(() => undefined);
-    pil.style.visibility = 'hidden';
-    S.yerlesti();
+    const kx = parseFloat(k);
+    const ky = parseFloat(k.split(' ')[1] ?? '0');
+    // pilin merkezini ekranda (cx, cy) noktasına götüren translate
+    const yer = (cx: number, cy: number) => `${cx - (pr.left + pr.width / 2) + kx}px ${cy - (pr.top + pr.height / 2) + ky}px`;
+    if (RESIM.fenerAcik) {
+      // pil düzelir, açık kapağın ağzına gelir, yuvaya kayar (kayma); yerine oturunca kapak "klik" diye kapanır
+      // (poz değişimi: açık → kapalı fener) ve fener ezilip esner. Yuva: fener-acik çiziminde en .27-.57, boy .32-.70
+      const YUVA = { x: 0.42, y: 0.51, w: 0.3 };
+      // (pilin dönüksüz eni: offsetWidth; boyu yuvanın enine iner)
+      // (yerleşim koordinatlarıyla: sürükleme ya da geri dönüş animasyonu sürerken ölçülen ekran kutusu yanıltmasın.
+      // .el-yesya'nın sol / üst noktası ortasıdır; fener dönüksüz, pilin translate'i ortasını oraya kaydırır)
+      const fw = fener.offsetWidth;
+      const fh = fener.offsetHeight;
+      const sOlcek = Math.min(1, (YUVA.w * fw) / Math.max(1, pil.offsetWidth));
+      const pilOrta = [pil.offsetLeft, pil.offsetTop];
+      const yuvaYer = (ex: number, ey: number) => `${fener.offsetLeft - fw / 2 + fw * ex - pilOrta[0] - pil.offsetWidth / 2}px ${fener.offsetTop - fh / 2 + fh * ey - pilOrta[1] - pil.offsetHeight / 2}px`;
+      const simdi = getComputedStyle(pil).translate;
+      pil.style.zIndex = '4';
+      pil.style.setProperty('--d', '0deg');
+      await pil
+        .animate(
+          [
+            { translate: simdi && simdi !== 'none' ? simdi : k, scale: '1' },
+            { translate: yuvaYer(YUVA.x - YUVA.w * 0.95, YUVA.y - 0.3), scale: String(sOlcek), offset: 0.5 },
+            { translate: yuvaYer(YUVA.x - YUVA.w * 0.95, YUVA.y), scale: String(sOlcek), offset: 0.68 },
+            { translate: yuvaYer(YUVA.x, YUVA.y), scale: `${sOlcek * 1.04} ${sOlcek * 0.94}` },
+          ],
+          { duration: sure(760), fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.6, 1)' },
+        )
+        .finished.catch(() => undefined);
+      await bekle(120);
+      // klik: kapak kapanır, pil içeride kalır
+      S.yerlesti();
+      S.tik();
+      fener.classList.remove('acik');
+      pil.style.visibility = 'hidden';
+      void balonGoster(balonKatman, fener.getBoundingClientRect(), B.klik, 800);
+      await fener
+        // (.el-yesya ortalaması translate'te: -50% -50% korunur)
+        .animate([{ scale: '1 1', translate: '-50% -50%' }, { scale: '0.9 1.1', translate: '-50% -58%', offset: 0.22 }, { scale: '1.07 0.93', translate: '-50% -50%', offset: 0.5 }, { scale: '0.98 1.02', offset: 0.75 }, { scale: '1 1', translate: '-50% -50%' }], { duration: sure(460), easing: 'ease-out' })
+        .finished.catch(() => undefined);
+    } else {
+      // kod çizimi: pil fenerin gövdesine kayar, kaybolur; fener "klik" diye basılıp toparlanır
+      await pil
+        .animate([{ translate: k, scale: '1', opacity: 1 }, { translate: yer(fr.left + fr.width * 0.35, fr.top + fr.height / 2), scale: '0.5', opacity: 0 }], { duration: sure(380), fill: 'forwards', easing: 'ease-in' })
+        .finished.catch(() => undefined);
+      pil.style.visibility = 'hidden';
+      S.yerlesti();
+      void balonGoster(balonKatman, fener.getBoundingClientRect(), B.klik, 800);
+      void otur(fener);
+    }
     fener.dataset.pil = '1';
-    void otur(fener);
     await bekle(300);
     await fenerYak(fener, yakin);
   }
@@ -1354,7 +1498,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     void KN.git(KINO_OTUR.x, KINO_OTUR.y, 500);
     const kemik = koy(h('div.el-kemik', { 'data-el': 'kemik' }, esya('kemik', KEMIK_SVG, 'Oyuncak kemik')), KINO_OTUR.x + bX(2), KINO_OTUR.y + bY(1), 10, 7);
     kemik.style.opacity = '0';
-    await cek(X(-31), X(17), Y(-3), SAAT.y + bY(10 * SAAT_ORAN + 4), 1.8, 1000);
+    await cek(X(-31), X(17), Y(-3), SAAT_CEKIM_UST, 1.8, 1000);
     // birden bir ses: Kino büzülür
     korkut(0.9);
     await kSoyle(KN_.ne_o);
@@ -1435,7 +1579,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   function golgeKur(ad: SesKaynagi): HTMLElement {
     const svg = ad === 'saat' ? SAAT_SVG : ad === 'saksi' ? SAKSI_SVG : KEMIK_SVG;
     const g = koy(
-      h('div.el-golge', { 'data-el': 'golge', 'data-golge': ad }, h('div.el-golge-canavar', { html: GOLGE_CANAVAR[ad] }), h('div.el-golge-asil', { html: tekil(svg) })),
+      h('div.el-golge', { 'data-el': 'golge', 'data-golge': ad }, h('div.el-golge-canavar', { html: GOLGE_CANAVAR[ad] }), h('div.el-golge-asil', { html: esyaHtml(ad, svg) })),
       golgeYer().x,
       golgeYer().y,
       yatayTel ? 22 : 27,
@@ -1585,7 +1729,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     await bekle(600);
     await mSoyle(M.can);
     // fener düğmesi (parmak karşılığı): ekranın altında
-    const fenerDugme = h('button.el-fener-dugme', { type: 'button', 'aria-label': 'Fener', 'data-el': 'fener-dugme', html: tekil(FENER_SVG) });
+    const fenerDugme = h('button.el-fener-dugme', { type: 'button', 'aria-label': 'Fener', 'data-el': 'fener-dugme', html: esyaHtml('fener', FENER_SVG) });
     for (const [tur, n] of ayar.isaretler.entries()) {
       let deneme = 0;
       while (true) {
@@ -1614,7 +1758,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // şaka: Kino feneri ağzına alıp sallar, ışık tavanda döner; Can gülmekten pencereden kaybolur
     void cek(X(-40), X(40), Y(-3), camUst, 1.2, 900);
     await bekle(700);
-    const fenerAgiz = KN.ekle('kafa', 'el-kino-ek', `<g transform="translate(640 900) rotate(-6 250 110) scale(3.6)">${tekil(FENER_SVG).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '')}</g>`);
+    const fenerAgiz = KN.ekle('kafa', 'el-kino-ek', `<g transform="translate(640 900) rotate(-6 250 110) scale(3.6)">${esyaSvgParca('fener', FENER_SVG, 170, 80)}</g>`);
     fenerAgiz?.classList.add('yanik');
     KN.kinoOynat('coskulu', 2400);
     S.hop();
@@ -1753,13 +1897,15 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // (tabanı ipucu şeridinin üstünde kalsın: ışıklı yerler ve finaldeki ikili alttaki yazı/düğmelerin altında kalmasın)
     const CADIR = { x: X(-2), y: Y(dikey ? 2 : -4), w: 42 };
     const yerler = [
-      { x: CADIR.x - bX(CADIR.w * 0.42), y: CADIR.y },
-      { x: CADIR.x + bX(CADIR.w * 0.42), y: CADIR.y },
+      { x: CADIR.x - bX(CADIR.w * (RESIM.cadir ? CADIR_SANDALYE : 0.42)), y: CADIR.y },
+      { x: CADIR.x + bX(CADIR.w * (RESIM.cadir ? CADIR_SANDALYE : 0.42)), y: CADIR.y },
     ];
+    // (Gemini sandalyesi çadır çizimindeki sandalyelerin boyunda)
+    const SANDALYE_W = RESIM.cadir ? 12.5 : 11;
     const isikYer = yerler.map((p, i) => koy(h('div.el-yer', { 'data-el': `sandalye-yeri-${i + 1}` }), p.x, p.y - bY(2), 14, 21));
     const sandalyeler = [
-      koy(h('div.el-sandalye', { 'data-el': 'sandalye-1' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? -25 : -36), Y(dikey ? -2 : -1), 11, 8),
-      koy(h('div.el-sandalye', { 'data-el': 'sandalye-2' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? 25 : 37), Y(dikey ? -1 : 0), 11, 8),
+      koy(h('div.el-sandalye', { 'data-el': 'sandalye-1' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? -25 : -36), Y(dikey ? -2 : -1), SANDALYE_W, 8),
+      koy(h('div.el-sandalye', { 'data-el': 'sandalye-2' }, esya('sandalye', SANDALYE_SVG, 'Sandalye')), X(dikey ? 25 : 37), Y(dikey ? -1 : 0), SANDALYE_W, 8),
     ];
     // karakterler kenara
     // (dikey telefonda dar çekim: karakterler arkaya, masanın iki yanına; sandalyeler önde görünür)
@@ -1841,18 +1987,22 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     ui.ipucu(null);
     void sondur(cadirYer, 300);
     // battaniye havada açılır, çadır olur
-    await ucur(battaniye, CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORAN * 0.7), 450, 30, 16);
+    await ucur(battaniye, CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORANI * 0.7), 450, 30, 16);
     battaniye.style.visibility = 'hidden';
     S.hisirti(true);
     const cadir = koy(
-      h('div.el-cadir', { 'data-el': 'cadir' }, h('div.el-cadir-cizim', { html: tekil(CADIR_SVG) }), h('div.el-cadir-lamba', {}, esya('gece-lambasi', '', 'Gece lambası', 'ege/gece-lambasi')), h('div.el-isiklar', {}, ...Array.from({ length: ayar.alkis }, (_, i) => h('i', { style: `--i:${i};--n:${ayar.alkis}` })))),
+      h('div.el-cadir', { 'data-el': 'cadir' }, RESIM.cadir ? h('div.el-cadir-cizim', {}, h('img.mc-resim.el-resim', { src: elAdres('cadir'), alt: 'Çadır', draggable: 'false' }), h('i.el-cadir-isik')) : h('div.el-cadir-cizim', { html: tekil(CADIR_SVG) }), h('div.el-cadir-lamba', {}, esya('gece-lambasi', '', 'Gece lambası', 'ege/gece-lambasi')), h('div.el-isiklar', {}, ...Array.from({ length: ayar.alkis }, (_, i) => h('i', { style: `--i:${i};--n:${ayar.alkis}` })))),
       CADIR.x,
       CADIR.y,
       CADIR.w,
       10,
     );
     cadir.animate([{ scale: '0.2 0.05', opacity: 0 }, { scale: '1.08 0.9', opacity: 1, offset: 0.6 }, { scale: '0.96 1.05', offset: 0.8 }, { scale: '1 1' }], { duration: sure(650), easing: 'cubic-bezier(0.3, 1.2, 0.5, 1)' });
-    sandalyeler.forEach((s) => (s.style.zIndex = '9'));
+    // (Gemini çadırının sandalyeleri çizimin içinde: ayrı sandalyeler battaniye inerken çadırın içinde kalır)
+    sandalyeler.forEach((s) => {
+      s.style.zIndex = '9';
+      if (RESIM.cadir) s.animate([{ opacity: 1 }, { opacity: 0 }], { duration: sure(160), delay: sure(260), fill: 'forwards' });
+    });
     await bekle(700);
 
     // mandallar
@@ -1874,8 +2024,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
           ip.ilerle();
           // mandal çadırın köşesine (sandalyenin tepesi) uçar, "çıt"
           m.style.setProperty('rotate', '0deg');
-          const sx = i ? CADIR.x + bX(CADIR.w * 0.37) : CADIR.x - bX(CADIR.w * 0.37);
-          await ucur(m, sx, CADIR.y + bY(CADIR.w * CADIR_ORAN * 0.28), 420, 26);
+          const sx = CADIR.x + bX(CADIR.w * MANDAL_YER.x) * (i ? 1 : -1);
+          await ucur(m, sx, CADIR.y + bY(CADIR.w * CADIR_ORANI * MANDAL_YER.y), 420, 26);
           S.cit();
           void balon(m, B.cit, 700);
           void otur(m);
@@ -2033,12 +2183,30 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     KN.katman = 9;
     await KN.git(CADIR.x, CADIR.y + bY(2), 520, 8);
     KN.el.classList.add('el-icerde');
-    await bekle(250);
-    void salla(sandalyeler[1], 1.4);
+    await bekle(200);
+    // Kino içeride kıpırdanır: çadır iki yana esner (kuyruğu sandalyeye çarpar)
+    await cadir
+      .animate([{ scale: '1 1' }, { scale: '1.04 0.97', offset: 0.25 }, { scale: '0.97 1.03', offset: 0.5 }, { scale: '1.05 0.95', offset: 0.75 }, { scale: '1 1' }], { duration: sure(440), easing: 'ease-in-out' })
+      .finished.catch(() => undefined);
+    // çöker: battaniye önce bir an kabarır, sonra yere basılıp yayılır (ezilme); yere değince yığılmış battaniyeye döner
+    // (poz değişimi: dik çadır → çökmüş battaniye), o da yaylanıp oturur
     S.cokus();
+    const cokme = cadir.animate([{ scale: '1 1' }, { scale: '0.97 1.06', offset: 0.25 }, { scale: '1.2 0.28' }], { duration: sure(300), easing: 'cubic-bezier(0.55, 0, 0.9, 0.55)', fill: 'forwards' });
+    await cokme.finished.catch(() => undefined);
     cadir.classList.add('coktu');
-    const cokuk = koy(h('div.el-cokuk', { 'data-el': 'cokuk', html: tekil(COKUK_SVG) }, h('i.el-tumsek')), CADIR.x, CADIR.y - bY(1), CADIR.w * 1.05, 11);
-    sandalyeler.forEach((s, i) => s.animate([{ rotate: '0deg' }, { rotate: `${i ? 14 : -14}deg` }, { rotate: '0deg' }], { duration: sure(500), easing: 'ease-out' }));
+    const cokukIc = RESIM.cadir ? [h('img.mc-resim.el-resim', { src: elAdres('cokuk'), alt: '', draggable: 'false' }), h('i.el-tumsek', { style: `--resim:url("${elAdres('cokuk')}")` })] : [h('i.el-tumsek')];
+    const cokuk = koy(h(`div.el-cokuk${RESIM.cadir ? '.resimli' : ''}`, { 'data-el': 'cokuk', html: RESIM.cadir ? '' : tekil(COKUK_SVG) }, ...cokukIc), CADIR.x, CADIR.y - bY(1), CADIR.w * (RESIM.cadir ? 0.74 : 1.05), 11);
+    cokuk.animate([{ scale: '1.3 0.45' }, { scale: '0.92 1.14', offset: 0.4 }, { scale: '1.04 0.95', offset: 0.7 }, { scale: '1 1' }], { duration: sure(520), easing: 'ease-out' });
+    // sandalyeler savrulur: iki yana kayar, basılıp toparlanır (Gemini çiziminde çadırın içinden yeniden görünürler)
+    sandalyeler.forEach((s, i) => {
+      s.getAnimations().forEach((a) => a.cancel());
+      s.style.opacity = '1';
+      s.animate(
+        [{ translate: '0 0', scale: '1 1' }, { translate: `${i ? 22 : -22}% 0`, scale: '1.12 0.88', offset: 0.3 }, { translate: `${i ? 12 : -12}% 0`, scale: '0.95 1.05', offset: 0.6 }, { translate: '0 0', scale: '1 1' }],
+        { duration: sure(600), easing: 'ease-out' },
+      );
+    });
+    void balon(cokuk, B.pof, 800);
     mandallar.forEach((m) => (m.style.opacity = '0'));
     MN.mino!.ifade('saskin', 1600);
     MN.tepki('sasir');
@@ -2060,7 +2228,10 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     // çöküntü solarken çadır kalkar (çapraz geçiş)
     void sondur(cokuk, 380);
     cadir.classList.remove('coktu');
+    cokme.cancel();
     cadir.animate([{ scale: '1 0.2' }, { scale: '1.05 1.1', offset: 0.6 }, { scale: '1 1' }], { duration: sure(500), easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
+    // (Gemini çadırı: ayrı sandalyeler yine çadırın içinde kalır)
+    if (RESIM.cadir) sandalyeler.forEach((s) => s.animate([{ opacity: 1 }, { opacity: 0 }], { duration: sure(200), delay: sure(120), fill: 'forwards' }));
     mandallar.forEach((m) => (m.style.opacity = '1'));
     void balon(cadir, B.hop, 800);
     await bekle(800);
@@ -2148,8 +2319,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     fener.classList.remove('yanik');
     void otur(fener);
     durumYaz(null);
-    S.cekmece();
-    cekmece.classList.add('acik');
+    void cekmeceAc(true, -1);
     void cek(Math.min(KOMODIN.x, X(-12)) - bX(14), X(24), Y(-11), KOMODIN.y + bY(komodinH + 8), 1.6, 700);
     await bekle(600);
     durumYaz('koy');
@@ -2173,21 +2343,22 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     fener.animate([{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '0 20%' }], { duration: sure(250), fill: 'forwards' });
     await bekle(250);
     fener.remove();
-    S.cekmece(true);
-    cekmece.classList.remove('acik');
-    await bekle(500);
+    await cekmeceAc(false, -1);
+    await bekle(200);
 
     // final: Kino lambayı kendisi kapatır
     // (Mino çadırın önüne: çadırın ve mandalların önünde)
     MN.katman = 15;
     void MN.git(CADIR.x - bX(CADIR.w * (dikey ? 0.5 : 0.62)), Y(-6), 700, 0, undefined, true);
-    await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), LAMBA.y + bY(LAMBA.w * LAMBA_ORAN + 4), 1.3, 900);
+    await cek(X(dikey ? -34 : -40), X(dikey ? 34 : 40), Y(-10), LAMBA.y + bY(LAMBA.w * oran('lamba', LAMBA_ORAN) + 4), 1.3, 900);
     KN.katman = 3;
     await KN.git(LAMBA.x + bX(6), LAMBA.y - bY(1), 1000);
     await kSoyle(KN_.kapatirim);
     KN.kinoOynat('sevin', 600);
     const ip = lamba.querySelector<SVGGElement>('.el-lamba-ip');
-    ip?.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(9px)' }, { transform: 'translateY(0)' }], { duration: sure(400), easing: 'cubic-bezier(0.3, 1.6, 0.5, 1)' });
+    if (ip) ip.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(9px)' }, { transform: 'translateY(0)' }], { duration: sure(400), easing: 'cubic-bezier(0.3, 1.6, 0.5, 1)' });
+    // (Gemini lambasında ip çizimin içinde: Kino zinciri çekince bütün lamba aşağı yaylanır)
+    else lamba.animate([{ translate: '0 0', scale: '1 1' }, { translate: '0 1.2%', scale: '1.03 0.97', offset: 0.35 }, { translate: '0 -0.6%', scale: '0.99 1.02', offset: 0.7 }, { translate: '0 0', scale: '1 1' }], { duration: sure(420), easing: 'ease-out' });
     await bekle(200);
     S.tik();
     lamba.classList.remove('yanik');
@@ -2199,7 +2370,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     cadir.classList.add('lamba');
     S.lambaTik();
     // loş odada çadırın çevresi gece lambasıyla aydınlık kalır
-    gece.hedef(...px(CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORAN * 0.45)));
+    gece.hedef(...px(CADIR.x, CADIR.y + bY(CADIR.w * CADIR_ORANI * 0.45)));
     gece.delik(Math.min(W, H) * (dikey ? 0.32 : 0.3) / Math.max(1, kamZ));
     await bekle(500);
     KN.katman = 15;
@@ -2219,7 +2390,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     MN.tepki('evet');
     await bekle(700);
     // (yakın: bitişteki düğmeler altta çıkınca ikisinin yüzü üstte açık kalsın)
-    await cek(CADIR.x - bX(CADIR.w * 0.52), CADIR.x + bX(CADIR.w * 0.52), CADIR.y - bY(3), CADIR.y + bY(CADIR.w * CADIR_ORAN + 6), 2.2, 1400);
+    await cek(CADIR.x - bX(CADIR.w * 0.52), CADIR.x + bX(CADIR.w * 0.52), CADIR.y - bY(3), CADIR.y + bY(CADIR.w * CADIR_ORANI + 6), 2.2, 1400);
     ui.ilerleme(7, 7);
     await mSoyle(M.son);
     odulKarti();
@@ -2231,7 +2402,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     const kart = h(
       'div.el-odul',
       { 'data-el': 'odul' },
-      h('div.el-odul-resim', {}, kino ? h('img.el-odul-kino', { src: kino, alt: '' }) : null, h('div.el-odul-fener', { html: tekil(FENER_SVG) })),
+      h('div.el-odul-resim', {}, kino ? h('img.el-odul-kino', { src: kino, alt: '' }) : null, h('div.el-odul-fener', { html: esyaHtml('fener', FENER_SVG) })),
       h('b', {}, EL.kart),
     );
     sahne.el.append(kart);
