@@ -38,6 +38,17 @@ export class GiyinikKino {
    * giysi yaklaşınca ona bakar. Bir ifade açıkken ifadenin gözü kalır. null: karşıya bakar.
    */
   bakYan: 'sol' | 'sag' | null = null;
+  /**
+   * Takip: sürüklenen giysinin ekrandaki yeri (null: takip yok). Varken Kino heyecanlanır: kaşlar kalkar (şaşkın göz
+   * setinin kopyası), ağız açık sevinç (agiz-heyecan), göz bebekleri giysiye kayar (yalnız öteleme; parça dönmez).
+   * bakYan'dan önce gelir. Bir ifade açıkken ifadenin yüzü kalır.
+   */
+  takip: { x: number; y: number } | null = null;
+  /** takip gözünün katmanı ve iki gözün bebek grubu (bebek + parıltılar) */
+  private takipG: SVGGElement | null = null;
+  private bebekler: SVGGElement[] = [];
+  /** göz bebeğinin şu anki kayması (tuval birimi); hedefe yumuşak yaklaşır */
+  private bebek: [number, number] = [0, 0];
 
   constructor() {
     this.k = new Karakter('kino', h('img', { src: resim('kino-yedek'), alt: '', draggable: 'false' }));
@@ -71,8 +82,27 @@ export class GiyinikKino {
   }
 
   private bakisSon: 'sol' | 'sag' | null = null;
+  private takipSon = false;
   private bakisUygula() {
     const k = this.k;
+    const takip = !k.ifadeSu && !!this.takip && !!this.takipG;
+    if (takip !== this.takipSon) {
+      this.takipSon = takip;
+      this.takipG!.style.opacity = takip ? '1' : '0';
+      k.ek('agiz-heyecan', takip);
+      k.gizle('agiz', takip);
+      k.gizle('dil', takip);
+      if (!takip) this.bebek = [0, 0];
+      this.bakisSon = null;
+      k.ek('goz-bak-sol', false);
+      k.ek('goz-bak-sag', false);
+      k.gizle('goz-sol', takip);
+      k.gizle('goz-sag', takip);
+    }
+    if (takip) {
+      this.takipCiz();
+      return;
+    }
     const yan = !k.ifadeSu && this.bakYan && k.parcaG(`goz-bak-${this.bakYan}`) ? this.bakYan : null;
     if (yan === this.bakisSon) return;
     this.bakisSon = yan;
@@ -80,6 +110,49 @@ export class GiyinikKino {
     k.ek('goz-bak-sag', yan === 'sag');
     k.gizle('goz-sol', !!yan);
     k.gizle('goz-sag', !!yan);
+  }
+
+  /** Takip gözü kafayla birlikte durur; göz bebekleri giysiye doğru kayar (en çok beyazın kenarına kadar) */
+  private takipCiz() {
+    const g = this.takipG!;
+    const t = this.k.parcaG('goz-saskin')?.style.transform ?? '';
+    if (g.style.transform !== t) g.style.transform = t;
+    const r = this.k.el.querySelector('svg')?.getBoundingClientRect();
+    let hx = 0;
+    let hy = 0;
+    if (r?.width && this.takip) {
+      // iki gözün ortası tuvalde ~ (965, 758) / 2048
+      const dx = this.takip.x - (r.left + (965 / 2048) * r.width);
+      const dy = this.takip.y - (r.top + (758 / 2048) * r.height);
+      const d = Math.hypot(dx, dy) || 1;
+      // yakında da belirgin: Kino'nun çeyrek eninden uzakta tam kayma
+      const g2 = Math.min(1, d / (r.width * 0.25));
+      hx = (dx / d) * g2 * 46;
+      hy = (dy / d) * g2 * 40;
+    }
+    const [bx, by] = this.bebek;
+    this.bebek = [bx + (hx - bx) * 0.35, by + (hy - by) * 0.35];
+    const tr = `translate(${this.bebek[0].toFixed(1)}px, ${this.bebek[1].toFixed(1)}px)`;
+    for (const b of this.bebekler) b.style.transform = tr;
+  }
+
+  /** goz-saskin'in kopyası (kalkık kaşlı iri gözler); her gözün bebeği ve parıltıları bir grupta, kaydırılabilir */
+  private takipKur() {
+    const kaynak = this.k.parcaG('goz-saskin');
+    if (!kaynak) return;
+    const g = kaynak.cloneNode(true) as SVGGElement;
+    g.dataset.parca = 'goz-takip';
+    g.style.opacity = '0';
+    const el = [...g.querySelectorAll('ellipse')];
+    // sıra: [beyaz, bebek, parıltı, parıltı] × 2 göz
+    for (let i = 0; i + 3 < el.length && i < 8; i += 4) {
+      const grup = document.createElementNS(NS, 'g') as SVGGElement;
+      el[i].after(grup);
+      grup.append(el[i + 1], el[i + 2], el[i + 3]);
+      this.bebekler.push(grup);
+    }
+    kaynak.after(g);
+    this.takipG = g;
   }
 
   private gorunur(p: string, id: GiysiId) {
@@ -124,6 +197,7 @@ export class GiyinikKino {
     svg.append(this.kok);
     this.sirala();
     this.ekleriKur();
+    this.takipKur();
     // iskelet yüklenmeden giydirilenler (dış sahne, test kısayolu) şimdi görünür
     this.goster();
     const kare = () => {

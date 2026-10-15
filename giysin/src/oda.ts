@@ -307,9 +307,9 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
     yaklasma(cx, cy);
   }
   /**
-   * Giysi Kino'ya yaklaşınca (kutusuna ~200 px, küçük ekranda boyunun yarısı) Kino gözleriyle ona bakar ve sevinçle
-   * hafifçe zıplar (bütün gövde: çömelip esner, inişte basılır; kol / parça dönmez). Uzaklaşınca ya da bırakınca karşıya
-   * döner. Hiçbir şeyi bekletmez.
+   * Giysi Kino'ya yaklaşınca (kutusuna ~200 px, küçük ekranda boyunun yarısı) Kino heyecanlanır: kaşlar kalkar, ağzı
+   * sevinçle açılır, göz bebekleri giysiyi izler (giyinik.ts → takip) ve iki kez sevinçle zıplar (bütün gövde: çömelip
+   * esner, inişte basılır; kol / parça dönmez). Uzaklaşınca ya da bırakınca karşıya döner. Hiçbir şeyi bekletmez.
    */
   let yakin = false;
   let sonHop = 0;
@@ -321,10 +321,11 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
     const d = Math.hypot(Math.max(g.l - cx, 0, cx - g.r), Math.max(g.t - cy, 0, cy - g.b));
     const simdi = d < Math.min(200, r.height * 0.5);
     const orta = r.left + r.width / 2;
+    kino.takip = simdi ? { x: cx, y: cy } : null;
     kino.bakYan = simdi && Math.abs(cx - orta) > r.width * 0.1 ? (cx < orta ? 'sol' : 'sag') : null;
-    if (simdi && !yakin && !mesgul && performance.now() - sonHop > 900) {
+    if (simdi && !yakin && !mesgul && performance.now() - sonHop > 1300) {
       sonHop = performance.now();
-      void zipla(kinoKutu, 0.4, 480);
+      void zipla(kinoKutu, 0.6, 460).then(() => (yakin && !mesgul ? zipla(kinoKutu, 0.45, 420) : undefined));
     }
     yakin = simdi;
   }
@@ -335,6 +336,7 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
     miknatisGoster(null);
     yakin = false;
     kino.bakYan = null;
+    kino.takip = null;
     sonHareket = performance.now();
     const cx = t.x - t.dx * 0.4, cy = t.y - t.dy * 0.4 - 18;
     // dokunup bırakmak (sürüklemeden): adını söyler; ipucundaysa kendiliğinden uçar
