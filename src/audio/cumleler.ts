@@ -17,6 +17,7 @@ import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/man
 import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri } from '../../kino-otobus/src/model';
 import giysinJson from '../../content/giysin.json';
 import patiJson from '../../content/pati.json';
+import uykuJson from '../../content/uyku.json';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -220,6 +221,8 @@ export function tumCumleler(): string[] {
   kinoOtobusKinoCumleleri().forEach(ekle);
   // Pati Dükkânı (İlk Gün dilimi): yalnız Nehir abla konuşur (hayvan sesleri Web Audio)
   topla(patiJson.nehir).forEach(ekle);
+  // Uyku Vakti (uygulama/src/uyku.ts): Mino (anlatıcı) ve hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
+  for (const k of ['mino', 'hazir', 'kino'] as const) topla(uykuJson[k]).forEach(ekle);
   return [...set];
 }
 
@@ -247,6 +250,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   topla(giysinJson.kino).forEach(ekle);
   // Kino'nun Otobüsü: Kino'nun cümleleri
   kinoOtobusKinoCumleleri().forEach(ekle);
+  // Uyku Vakti: Kino'nun cümleleri
+  topla(uykuJson.kino).forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

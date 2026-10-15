@@ -1,0 +1,28 @@
+{
+  "aciklama": "Uyku Vakti (ekip/senaryo/GECE-ISI.md): Mino anlatıcı sesiyle, Kino kendi sesiyle. Etiketler eleven_v3'e olduğu gibi gider; cihaz sesine düşünce silinir (src/audio/konusma.ts).",
+  "mino": {
+    "davet": "[yawns] Bizi yatırır mısın?",
+    "oyuncak": "Önce oyuncaklar yerine.",
+    "yastik": "Şimdi yastıklar!",
+    "battaniye": "Battaniyemi örter misin?",
+    "sicacik": "[sighs happily] Mırr... sıcacık.",
+    "ortun_dustu": "[laughs] Kino, örtün düştü!",
+    "ay": "[whispers] İyi geceler, Ay!",
+    "lamba": "Gece lambasını yakar mısın?",
+    "iyi_geceler": "[whispers] İyi geceler. Yarın yine oynarız.",
+    "uykulu": "[sleepy] Mmm... yarın..."
+  },
+  "kino": {
+    "kemik": "[giggles] Bu benim uyku kemiğim!",
+    "ayak": "[giggles] Hihi, ayağım dışarıda!",
+    "tamam": "[yawns] Tamam, tamam... uyuyorum.",
+    "hav": "[whispers] Hav...",
+    "iyi_geceler": "[whispers] İyi geceler.",
+    "horul": "[snoring softly] Hırr... fiuu..."
+  },
+  "hazir": {
+    "uykum": "Uykum geldi...",
+    "gunaydin": "Günaydın!",
+    "sayilar": ["Bir!", "İki!", "Üç!"]
+  }
+}

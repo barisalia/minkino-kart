@@ -9,10 +9,10 @@ import { TEST_MODU } from '../ui/dom';
 import { baglam, muzikCikisi, sesMotorunuAc } from './motor';
 import { muzikAyarUygula } from './muzik';
 
-// Yalnız bu iki dosya pakete girer; yoksa sözlük boş kalır (derleme bozulmaz)
-const DOSYALAR = import.meta.glob<string>('../../assets/muzik/{menu-dongu,ege-fon}.mp3', { eager: true, query: '?url', import: 'default' });
+// Yalnız bu dosyalar pakete girer; yoksa sözlük boş kalır (derleme bozulmaz)
+const DOSYALAR = import.meta.glob<string>('../../assets/muzik/{menu-dongu,ege-fon,ninni-sozsuz}.mp3', { eager: true, query: '?url', import: 'default' });
 
-export type FonAdi = 'menu-dongu' | 'ege-fon';
+export type FonAdi = 'menu-dongu' | 'ege-fon' | 'ninni-sozsuz';
 export const fonDosyasi = (ad: FonAdi): string | null => DOSYALAR[`../../assets/muzik/${ad}.mp3`] ?? null;
 
 /**

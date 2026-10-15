@@ -13,6 +13,7 @@ export const IKON = {
   yildiz: `<svg viewBox="0 0 48 48"><path d="m24 4 5.9 12 13.2 1.9-9.5 9.3 2.2 13.1L24 34.1l-11.8 6.2 2.2-13.1-9.5-9.3L18.1 16z" fill="currentColor" stroke="#5a3617" stroke-width="3" stroke-linejoin="round"/></svg>`,
   tekrar: s('<path d="M38 24a14 14 0 1 1-4.1-9.9"/><path d="M36 6v9h-9" /> '),
   izgara: s('<rect x="8" y="8" width="13" height="13" rx="3" fill="currentColor"/><rect x="27" y="8" width="13" height="13" rx="3" fill="currentColor"/><rect x="8" y="27" width="13" height="13" rx="3" fill="currentColor"/><rect x="27" y="27" width="13" height="13" rx="3" fill="currentColor"/>'),
+  ay: s('<path d="M33 8a17 17 0 1 0 8 26A14 14 0 0 1 33 8z"/><path d="M38 9v5M35.5 11.5h5" stroke-width="3"/>'),
   ebeveyn: s('<circle cx="24" cy="24" r="6"/><path d="M24 5v6M24 37v6M5 24h6M37 24h6M10.6 10.6l4.2 4.2M33.2 33.2l4.2 4.2M10.6 37.4l4.2-4.2M33.2 14.8l4.2-4.2"/>'),
   kapat: s('<path d="m13 13 22 22M35 13 13 35"/>'),
   geri: s('<path d="M29 10 15 24l14 14"/>'),

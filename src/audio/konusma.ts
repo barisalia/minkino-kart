@@ -235,7 +235,8 @@ function tekParca(metin: string, benim: number, ton = 1): Promise<void> {
       setTimeout(son, 400);
       return;
     }
-    const u = new SpeechSynthesisUtterance(metin);
+    // ses etiketleri ([yawns], [whispers] …) yalnız ElevenLabs içindir; cihaz sesi bunları okumasın
+    const u = new SpeechSynthesisUtterance(metin.replace(/\[[^\]]*\]\s*/g, '').trim());
     u.lang = 'tr-TR';
     if (turkceSes) u.voice = turkceSes;
     u.rate = HIZ;
