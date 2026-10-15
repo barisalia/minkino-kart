@@ -190,9 +190,10 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
   const GUVEN = { ust: dikey ? 104 : 78, alt: dikey ? 84 : 56 };
   /**
    * Çekim: dünyadaki bir bölge (% : sol, sağ, alttan alt, alttan üst) güvenli alana sığsın; zmax en çok yakınlık.
-   * Dünya ekranı her zaman örter (kenar boşluğu görünmez).
+   * Dünya ekranı her zaman örter (kenar boşluğu görünmez). koru=false: kadraj koruması yok (kısa eşya yakın çekimi;
+   * kenardaki kişi yarım görünebilir).
    */
-  const cek = (l: number, r: number, alt: number, ust: number, zmax = 1.6, ms = 1100) => {
+  const cek = (l: number, r: number, alt: number, ust: number, zmax = 1.6, ms = 1100, koru = true) => {
     const gw = W;
     const gh = H - GUVEN.ust - GUVEN.alt;
     const hesap = (l: number, r: number) => {
@@ -208,7 +209,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     let c = hesap(l, r);
     // kadraj koruması (Ege ve banyodaki gibi): Mino ya da Kino kenarda yarım kalmaz; yarım kalacaksa çekim onu da
     // içine alacak kadar genişler (yakınlık düşer), neredeyse tamamen dışarıdaysa dışarı itilir
-    for (const k of [MN, KN, MN, KN]) {
+    for (const k of koru ? [MN, KN, MN, KN] : []) {
       const kk = kisiKutu(k);
       if (!kk) continue;
       const vl = ((-c.tx / c.z) / Wd) * 100;
@@ -978,15 +979,19 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
 
   // ================================================================ 2: Çekmecede fener
   async function sahne2() {
-    // komodine gidilir, çekmece açılır
-    void MN.git(KOMODIN.x + bX(14), Y(0), 1000, 0, undefined, true);
-    void KN.git(KOMODIN.x + bX(34), Y(1), 1100);
-    await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(45), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 1100);
+    // komodine gidilir, çekmece açılır. Yatay telefonda komodin küçük ve önündeki Mino onu örtüyordu: Mino komodinin
+    // yanında durur, çekmece anında kamera komodine yaklaşır (yaylı açılış büyük görünür), yakın çekimden sonra açılır
+    // (yatay telefonda sahne ortadaki dar bant: yatayTel değil, ekranın kendisi yatay ve alçak)
+    const telYatay = innerWidth / innerHeight > 1.3 && innerHeight <= 500;
+    void MN.git(KOMODIN.x + bX(telYatay ? 30 : 14), Y(0), 1000, 0, undefined, true);
+    void KN.git(KOMODIN.x + bX(telYatay ? 50 : 34), Y(1), 1100);
+    await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(telYatay ? 58 : 45), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 1100);
+    if (telYatay) await cek(KOMODIN.x - bX(13), KOMODIN.x + bX(13), KOMODIN.y - bY(1), KOMODIN.y + bY(komodinH * 0.82), 3.4, 800, false);
     // Mino çekmeceyi çeker (zorlanır), çekmece yaylı açılır
     MN.tepki('zorlan');
     await bekle(250);
     await cekmeceAc(true);
-    await bekle(250);
+    await bekle(telYatay ? 650 : 250);
     // yakın çekim: yukarıdan açık çekmece (içi karanlık; parmağın altında küçük ışık halkası)
     const esyalar = cekmeceEsyalari(yas);
     const yakin = h('div.el-yakin', { 'data-el': 'yakin' });
