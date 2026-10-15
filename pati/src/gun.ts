@@ -24,9 +24,9 @@ import { Hayvan } from './hayvan';
 import { adimSayisi, gerekenEsya, GunAkisi, gununAni, HAYVANLAR, ILK_BEKLEME, planKaristir, YARDIM, type EsyaAdi, type HayvanAdi, type Ihtiyac, type IhtiyacTuru, type Yas, type YardimAdimi } from './ihtiyac';
 import { kaydet, kayit } from './kayit';
 import { Nehir } from './nehir';
-import { AKVARYUM, KOSE, Sahne, kutuStil, type Alan } from './sahne';
+import { AKVARYUM, BALIK_BOY, KOSE, KOSE_TAKIM, Sahne, TAKIM_TABAN, kutuStil, type Alan } from './sahne';
 import { ses } from './sesler';
-import { DUSUNCE_BALONU, esyaAdresi, hayvanAdresleri, NEHIR, pozAdresi, SALON, type Poz } from './varliklar';
+import { adres, DUSUNCE_BALONU, esyaAdresi, hayvanAdresleri, NEHIR, pozAdresi, SALON, type Poz } from './varliklar';
 
 const N = P.nehir;
 const q = new URLSearchParams(typeof location !== 'undefined' ? location.search : '');
@@ -43,7 +43,13 @@ function hayvanlariKur(): Record<HayvanAdi, Hayvan> {
   return {
     findik: new Hayvan({ ad: 'findik', boy: 470, x: (KOSE.findik.x0 + KOSE.findik.x1) / 2 - 20, y: 1034 }),
     tarcin: new Hayvan({ ad: 'tarcin', boy: 440, x: (KOSE.tarcin.x0 + KOSE.tarcin.x1) / 2, y: 1034 }),
-    piril: new Hayvan({ ad: 'piril', boy: 250, x: (AKVARYUM.x0 + AKVARYUM.x1) / 2, y: 900, alan: { x0: AKVARYUM.x0 + 150, x1: AKVARYUM.x1 - 150, y0: AKVARYUM.y0 + 250, y1: AKVARYUM.y1 - 24 } }),
+    piril: new Hayvan({
+      ad: 'piril',
+      boy: BALIK_BOY,
+      x: (AKVARYUM.x0 + AKVARYUM.x1) / 2,
+      y: AKVARYUM.y0 + BALIK_BOY * 1.4,
+      alan: { x0: AKVARYUM.x0 + BALIK_BOY * 0.65, x1: AKVARYUM.x1 - BALIK_BOY * 0.65, y0: AKVARYUM.y0 + BALIK_BOY + 8, y1: AKVARYUM.y1 + (BALIK_BOY < 200 ? 4 : -24) },
+    }),
   };
 }
 
@@ -87,7 +93,8 @@ export function patiEkrani(app: Uygulama): Ekran {
     const k = KOSE[hy];
     const kose = h('button.pt-kose', { type: 'button', 'data-kose': hy, 'aria-label': hy, style: kutuStil({ x0: k.x0, y0: k.y0 - 60, x1: k.x1, y1: k.y1 + 40 }) });
     kose.addEventListener('click', (e) => koseDokun(hy, e));
-    sahne.katman.append(kose, hayvanlar[hy].el);
+    sahne.katman.append(kose);
+    (hy === 'piril' ? sahne.suIc : sahne.katman).append(hayvanlar[hy].el);
   }
   const balonKur = (hy: HayvanAdi, esya: EsyaAdi) => {
     const hv = hayvanlar[hy];
@@ -401,7 +408,21 @@ export function patiEkrani(app: Uygulama): Ekran {
     const k = KOSE[hy];
     // fotoğraf: o köşenin gündüz hâli (salonun kesiti) ve hayvanın o anki pozu
     const genis = k.x1 - k.x0;
-    const resim = h('div.pt-foto-resim', { style: `background-image:url("${SALON}");background-size:${(2752 / genis) * 100}% auto;background-position:${(k.x0 / (2752 - genis)) * 100}% ${((k.y0 - 40) / (1536 - (k.y1 - k.y0 + 80))) * 100}%` }, h('img', { src: pozAdresi(hy, poz).url, alt: '' }));
+    // kare: köşenin sahnedeki kutusu; köşe takımı ve hayvan aynı sahne ölçüsüyle yerleşir
+    const bx0 = k.x0;
+    const by1 = k.y1 + 40;
+    const bh = k.y1 - k.y0 + 80;
+    const yuzde = (v: number, b: number) => `${((v / b) * 100).toFixed(2)}%`;
+    const takimAd = { findik: KOSE_TAKIM.kopek, tarcin: KOSE_TAKIM.kedi, piril: KOSE_TAKIM.akvaryum }[hy];
+    const takimUrl = adres(takimAd.ad);
+    const hv = hayvanlar[hy];
+    const hy_ = hy === 'piril' ? AKVARYUM.y0 + hv.ayar.boy * 1.35 : hv.evY;
+    const resim = h(
+      'div.pt-foto-resim',
+      { style: `background-image:url("${SALON}");background-size:${(2752 / genis) * 100}% auto;background-position:${(k.x0 / (2752 - genis)) * 100}% ${((k.y0 - 40) / (1536 - bh)) * 100}%` },
+      takimUrl ? h('img.pt-foto-takim', { src: takimUrl, alt: '', style: `left:${yuzde(takimAd.x - takimAd.en / 2 - bx0, genis)};width:${yuzde(takimAd.en, genis)};bottom:${yuzde(by1 - TAKIM_TABAN, bh)}` }) : null,
+      h('img.pt-foto-hayvan', { src: pozAdresi(hy, poz).url, alt: '', style: `left:${yuzde(hv.evX - bx0, genis)};height:${yuzde(hv.ayar.boy, bh)};bottom:${yuzde(by1 - hy_, bh)}` }),
+    );
     resim.dataset.hayvan = hy;
     const kart = h('button.pt-polaroid', { type: 'button', 'aria-label': 'Günün fotoğrafı', 'data-an': an }, resim);
     const flas = h('div.pt-flas');
@@ -476,6 +497,7 @@ export function patiEkrani(app: Uygulama): Ekran {
       for (const z of zamanlar) clearTimeout(z);
       for (const hv of Object.values(hayvanlar)) hv.kapat();
       bakim.kapat();
+      nehir.kapat();
       sahne.kapat();
       void yukle;
     },

@@ -261,7 +261,7 @@ export class Bakim {
     if (e === 'top') return this.topAt(hy, [hv.evX - 40, hv.evY - 380], [-6, -10]);
     if (e === 'minder') return this.minderKoy(hy, [hv.evX, hv.evY - 200]);
     if (e === 'kus') {
-      const hedef: [number, number] = [hv.x + 140, hv.y - hv.ayar.boy - 110];
+      const hedef: [number, number] = [hv.x + 150, hv.y - hv.ayar.boy * 0.8];
       this.kullanimaAl('kus', true);
       const kus = h('img.pt-ucan-esya', { src: esyaAdresi('kus'), alt: '' });
       const [ex, ey] = this.efektNokta(...hedef);

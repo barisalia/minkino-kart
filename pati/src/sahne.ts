@@ -11,7 +11,7 @@
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import type { HayvanAdi } from './ihtiyac';
-import { GECE_LAMBASI, IP, IP_KUTU, SALON, SALON_GECE } from './varliklar';
+import { adres, GECE_LAMBASI, IP, IP_KUTU, SALON, SALON_GECE } from './varliklar';
 
 export const SAHNE_W = 2752;
 export const SAHNE_H = 1536;
@@ -28,12 +28,28 @@ export const KOSE: Record<HayvanAdi, Kutu> = {
   tarcin: { x0: 1373, y0: 490, x1: 1979, y1: 1045 },
   piril: { x0: 2062, y0: 490, x1: 2658, y1: 1045 },
 };
-/** Akvaryumun suyu (üçüncü oyuğun içi; köşe sayfası G5 gelene kadar oyuk akvaryum olur) */
-export const AKVARYUM: Kutu = { x0: 2110, y0: 536, x1: 2590, y1: 1000 };
+/**
+ * Köşe takımları (G5, kose-sayfasi): oyukların içinde, hayvanların arkasında. Akvaryum gelince Pırıl onun suyunda
+ * yüzer (su kutusu resimden ölçüldü: x %7.8-92.2, y %8.8-53.8); gelmediyse oyuğun içi su olur.
+ */
+export const KOSE_TAKIM = {
+  kopek: { ad: 'kose-kopek', x: 990, en: 600 },
+  kedi: { ad: 'kose-kedi', x: 1676, en: 600 },
+  akvaryum: { ad: 'kose-akvaryum', x: 2360, en: 600 },
+} as const;
+export const TAKIM_TABAN = 1040;
+const TANK = adres('kose-akvaryum');
+const TANK_BOY = 600 * (615 / 707);
+/** Akvaryumun suyu (sahne birimi) */
+export const AKVARYUM: Kutu = TANK
+  ? { x0: 2060 + 600 * 0.078, y0: TAKIM_TABAN - TANK_BOY + TANK_BOY * 0.088, x1: 2060 + 600 * 0.922, y1: TAKIM_TABAN - TANK_BOY + TANK_BOY * 0.538 }
+  : { x0: 2110, y0: 536, x1: 2590, y1: 1000 };
+/** Pırıl'ın boyu: akvaryumda küçük (gerçek boy), oyukta büyük */
+export const BALIK_BOY = TANK ? 150 : 250;
 /** Köşelerin ortası (kadrajın odağı) */
 const KOSELER_ORTA = (KOSE.findik.x0 + KOSE.piril.x1) / 2;
 /** Dikey telefonda genişliğe sığacak alan */
-const DIKEY_EN = KOSE.piril.x1 - KOSE.findik.x0 + 140;
+const DIKEY_EN = KOSE.piril.x1 - KOSE.findik.x0 + 60;
 
 export const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const EGRI = 'cubic-bezier(0.42, 0, 0.18, 1)';
@@ -57,6 +73,7 @@ export class Sahne {
   readonly geceEl: HTMLElement;
   readonly ipEl: HTMLElement;
   readonly suEl: HTMLElement;
+  readonly suIc: HTMLElement;
   s = 1;
   tx = 0;
   ty = 0;
@@ -74,25 +91,36 @@ export class Sahne {
       { style: `left:${ix0}px;top:${iy0}px;width:${ix1 - ix0}px;height:${iy1 - iy0}px` },
       h('img', { src: IP, alt: '', draggable: 'false' }),
     );
-    this.suEl = h('div.pt-su', { style: kutuStil(AKVARYUM) }, h('i.pt-su-yuzey'));
+    this.suEl = h(`div.pt-su${TANK ? '.pt-su-tank' : ''}`, { style: kutuStil(AKVARYUM) });
     this.katman = h('div.pt-katman');
+    // köşe takımları (hayvanların arkasında)
+    for (const k of Object.values(KOSE_TAKIM)) {
+      const u = adres(k.ad);
+      if (u) this.katman.append(h('img.pt-kose-takim', { src: u, alt: '', draggable: 'false', 'data-takim': k.ad, style: `left:${k.x - k.en / 2}px;top:${TAKIM_TABAN}px;width:${k.en}px` }));
+    }
+    /** balığın yüzdüğü su: suyun dışına taşan balık kesilir (camın içinde) */
+    this.suIc = h('div.pt-su-ic', { style: `clip-path: inset(${AKVARYUM.y0}px ${SAHNE_W - AKVARYUM.x1}px ${SAHNE_H - AKVARYUM.y1 - (TANK ? 0 : 60)}px ${AKVARYUM.x0}px)` });
+    this.katman.append(this.suIc);
     this.aksamEl = h('div.pt-aksam');
-    this.geceEl = h('div.pt-gece', {}, SALON_GECE ? h('img', { src: SALON_GECE, alt: '' }) : null);
+    // gece: G7 resmi gündüzün hemen üstünde (hayvanlar onun önünde, kendi filtreleriyle kararır); yoksa lacivert örtü
+    this.geceEl = SALON_GECE ? h('img.pt-salon.pt-salon-gece', { src: SALON_GECE, alt: '', draggable: 'false' }) : h('div.pt-gece');
     this.sahne = h(
       'div.pt-sahne',
       { style: `width:${SAHNE_W}px;height:${SAHNE_H}px` },
       h('img.pt-salon', { src: SALON, alt: '', draggable: 'false' }),
       // lamba ipi: salondaki ipin üstü duvar rengiyle örtülür, kesilmiş ip tam yerine konur (çekilince esner)
       h('i.pt-ip-ortu', { style: `left:${ix0 + 14}px;top:${iy0 + 8}px;width:${ix1 - ix0 - 28}px;height:${iy1 - iy0 - 10}px` }),
-      this.suEl,
+      SALON_GECE ? this.geceEl : null,
+      TANK ? null : this.suEl,
       this.katman,
+      TANK ? this.suEl : null,
       this.ipEl,
       this.aksamEl,
-      this.geceEl,
+      SALON_GECE ? null : this.geceEl,
       // ay gece lambası (G4): soldaki dolabın üstünde, yalnız gece yanar (gece katmanının üstünde, karanlıkta parlak)
       GECE_LAMBASI ? h('img.pt-gece-lambasi', { src: GECE_LAMBASI, alt: '', draggable: 'false' }) : null,
     );
-    this.el = h('div.pt-sahne-kok', {}, this.sahne);
+    this.el = h(`div.pt-sahne-kok${SALON_GECE ? '.pt-gece-resimli' : ''}`, {}, this.sahne);
     if (typeof ResizeObserver !== 'undefined') {
       this.ro = new ResizeObserver(() => this.kur(0));
       this.ro.observe(this.el);
@@ -108,8 +136,9 @@ export class Sahne {
     const W = this.el.clientWidth || 844;
     const H = this.el.clientHeight || 390;
     if (H > W) {
+      // dikey: köşeler genişliğe sığar; üst çubuk rafın mamalarını örtmesin diye sahne biraz aşağıda başlar
       const s = W / DIKEY_EN;
-      return [s, sinirla(W / 2 - s * KOSELER_ORTA, W - SAHNE_W * s, 0), 0];
+      return [s, sinirla(W / 2 - s * KOSELER_ORTA, W - SAHNE_W * s, 0), Math.min(64, H * 0.07)];
     }
     const s = Math.max(W / SAHNE_W, H / SAHNE_H);
     return [s, sinirla(W / 2 - s * KOSELER_ORTA, W - SAHNE_W * s, 0), (H - SAHNE_H * s) / 2];
@@ -192,6 +221,8 @@ export class Sahne {
     this.aksamEl.style.opacity = hal === 'aksam' ? '1' : '0';
     this.geceEl.style.opacity = hal === 'gece' ? '1' : '0';
     this.el.dataset.isik = hal;
+    // sahne dışındakiler (Nehir abla) de aynı ışığa girsin
+    if (this.el.parentElement) this.el.parentElement.dataset.isik = hal;
   }
 
   kapat() {

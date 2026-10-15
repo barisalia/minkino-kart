@@ -372,7 +372,7 @@
   left: 0;
   top: 0;
   width: 600px;
-  translate: -50% -78%;
+  translate: -50% -88%;
   transform-origin: 50% 100%;
   pointer-events: none;
   z-index: 1;
@@ -624,9 +624,9 @@
 }
 @media (orientation: portrait) {
   .pt-kok .pt-nehir {
-    left: 4%;
+    left: 6%;
     bottom: 1%;
-    height: 56%;
+    height: 60%;
   }
   .pt-kok .pt-nehir-gel.pt-yakin .pt-nehir {
     transform: translateY(110%);
@@ -785,16 +785,12 @@
     filter: none;
   }
 }
-.pt-kok .pt-foto-resim img {
+.pt-kok .pt-foto-takim {
   position: absolute;
-  left: 50%;
-  bottom: 7%;
-  height: 76%;
-  translate: -50% 0;
 }
-.pt-kok .pt-foto-resim[data-hayvan='piril'] img {
-  bottom: 30%;
-  height: 40%;
+.pt-kok .pt-foto-hayvan {
+  position: absolute;
+  translate: -50% 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -832,8 +828,9 @@
 /* ay gece lambası: soldaki dolabın üstünde, yalnız gece */
 .pt-kok .pt-gece-lambasi {
   position: absolute;
-  left: 196px;
-  top: 1212px;
+  /* duvarda, kedi köşesinin altında (iki ekran yönünde de görünür) */
+  left: 1620px;
+  top: 1062px;
   width: 112px;
   opacity: 0;
   transition: opacity 1.2s ease-in-out 0.6s;
@@ -842,4 +839,81 @@
 .pt-kok .pt-sahne-kok[data-isik='gece'] .pt-gece-lambasi {
   opacity: 1;
   filter: drop-shadow(0 0 26px rgba(255, 226, 140, 0.9));
+}
+
+/* ================================================================ köşe takımları (G5) */
+.pt-kok .pt-kose-takim {
+  position: absolute;
+  translate: 0 -100%;
+  pointer-events: none;
+}
+.pt-kok .pt-su-ic {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* akvaryum varken: balığın önünde ince bir cam tonu (balık suyun içinde görünsün) */
+.pt-kok .pt-su.pt-su-tank {
+  background: rgba(150, 210, 245, 0.18);
+  border-top: 0;
+}
+
+/* akşam ve gece Nehir abla da salonun ışığına girer */
+.pt-kok .pt-nehir-resim {
+  transition: filter 1.2s ease-in-out;
+}
+.pt-kok .pt-ekran[data-isik='aksam'] .pt-nehir-resim {
+  filter: sepia(0.35) saturate(1.25) brightness(0.96);
+}
+.pt-kok .pt-ekran[data-isik='gece'] .pt-nehir-resim {
+  filter: brightness(0.55) saturate(0.75) hue-rotate(-12deg);
+}
+
+/* gece resmi (G7) varken: salonun üstündeki hayvanlar ve eşyalar aynı geceye kararır */
+.pt-kok .pt-salon-gece {
+  opacity: 0;
+  pointer-events: none;
+}
+.pt-kok .pt-gece-resimli .pt-katman,
+.pt-kok .pt-gece-resimli .pt-ip {
+  transition: filter 1.2s ease-in-out;
+}
+.pt-kok .pt-gece-resimli[data-isik='gece'] .pt-katman,
+.pt-kok .pt-gece-resimli[data-isik='gece'] .pt-ip {
+  filter: brightness(0.52) saturate(0.8) hue-rotate(-14deg);
+}
+
+/* Nehir abla anlatıcı karesi (G6, belden yukarı): ağız ve göz yamaları resmin oranıyla */
+.pt-kok .pt-nehir-kat {
+  position: relative;
+  height: 100%;
+}
+.pt-kok .pt-nehir-agiz,
+.pt-kok .pt-nehir-goz {
+  position: absolute;
+  pointer-events: none;
+}
+.pt-kok .pt-nehir-goz {
+  opacity: 0;
+}
+.pt-kok .pt-nehir-goz.acik {
+  opacity: 1;
+}
+.pt-kok .pt-nehir.pt-nehir-anlatici {
+  height: 80%;
+  bottom: 0;
+  left: max(0px, env(safe-area-inset-left));
+}
+.pt-kok .pt-nehir-gel.pt-yakin .pt-nehir.pt-nehir-anlatici {
+  transform: translateY(78%);
+}
+@media (orientation: portrait) {
+  .pt-kok .pt-nehir.pt-nehir-anlatici {
+    height: 44%;
+    left: 3%;
+    bottom: 0;
+  }
+  .pt-kok .pt-nehir-gel.pt-yakin .pt-nehir.pt-nehir-anlatici {
+    transform: translateY(110%);
+  }
 }

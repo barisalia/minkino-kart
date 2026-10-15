@@ -105,4 +105,4 @@ export const IP = adres('gecici-ip')!;
 export const IP_KUTU = (gecici as Record<string, number[]>)['gecici-ip'];
 
 /** Nehir abla (anlatıcı sayfası G6 gelene kadar 3/4 model) */
-export const NEHIR = adres('nehir-anlatici-1', 'nehir-34')!;
+export const NEHIR = adres('nehir-anlatici-5', 'nehir-34')!;
