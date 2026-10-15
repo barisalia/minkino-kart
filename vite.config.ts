@@ -59,6 +59,36 @@ function uygulamaKabugu(): Plugin {
   };
 }
 
+/**
+ * Ortak stil (src/styles/ana.css) her sayfada oyun stillerinden ÖNCE yüklensin (geliştirmedeki import sırası).
+ * Derlemede ana.css birçok sayfanın ortak, JS'siz stil parçası olur ve Vite onun <link>'ini sayfanın kendi stilinden
+ * SONRA yazar: '.mk-kok .ekran { display:flex }' gibi genel kurallar oyunların eşit özgüllükteki kurallarını eziyordu
+ * (Pazar / Maceralar açılışı, Kino'nun Otobüsü üst çubuğu …). Burada tek yerde düzeltilir: ana'nın bağlantısı
+ * sayfanın ilk stil bağlantısının önüne taşınır. Yalnız derlemede (geliştirmede sıra zaten doğru).
+ */
+function anaStilOnce(): Plugin {
+  return {
+    name: 'minkino-ana-stil-once',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler: (html, ctx) => {
+        const ana = Object.values(ctx.bundle ?? {}).find(
+          (d) => d.type === 'asset' && d.fileName.endsWith('.css') && (d.names ?? []).includes('ana.css'),
+        );
+        if (!ana) return html;
+        const dosya = ana.fileName.split('/').pop()!;
+        const baglantilar = [...html.matchAll(/[ \t]*<link rel="stylesheet"[^>]*>\r?\n?/g)];
+        const anaBag = baglantilar.find((m) => m[0].includes(`/${dosya}"`) || m[0].includes(`"${dosya}"`));
+        if (!anaBag || baglantilar[0] === anaBag) return html;
+        const ilk = baglantilar[0];
+        const kalan = html.slice(0, anaBag.index) + html.slice(anaBag.index! + anaBag[0].length);
+        return kalan.slice(0, ilk.index) + anaBag[0] + kalan.slice(ilk.index);
+      },
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const uygulama = mode === 'uygulama';
   // RevenueCat public SDK anahtarları: yalnız uygulama derlemesine, ortam değişkeninden (ya da .env.uygulama)
@@ -70,7 +100,7 @@ export default defineConfig(({ mode }) => {
   );
   return {
     base: './',
-    plugins: uygulama ? [uygulamaKabugu()] : [],
+    plugins: uygulama ? [anaStilOnce(), uygulamaKabugu()] : [anaStilOnce()],
     define: {
       __REVENUECAT_IOS_KEY__: JSON.stringify(env.REVENUECAT_IOS_KEY ?? ''),
       __REVENUECAT_ANDROID_KEY__: JSON.stringify(env.REVENUECAT_ANDROID_KEY ?? ''),
