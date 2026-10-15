@@ -23,8 +23,8 @@ test('Ana menü: açılışta Mino ve 8 (Kino’nun Otobüsü ile 9) oyun kartı
   const kartlar = page.locator('.ug-kart');
   await expect(kartlar).toHaveCount(MENU_ADET);
 
-  // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor (giriş animasyonu bitince ölçülür)
-  await page.waitForTimeout(1100);
+  // her kart ekranda, doğru bağlantıda ve ekran dışına taşmıyor (giriş animasyonu bitince ölçülür: 9 kartta sonuncusu ~1,7 sn)
+  await page.waitForTimeout(2000);
   const boyut = page.viewportSize()!;
   for (const [id, adres] of Object.entries(BEKLENEN)) {
     const kart = page.locator(`.ug-kart[data-oyun="${id}"]`);
@@ -161,4 +161,51 @@ test('Ana menü: yatay ekranda da kartlar sığıyor', async ({ page }, info) =>
   await page.waitForTimeout(300);
   await page.screenshot({ path: `tests/screens/${info.project.name}-uygulama-yatay.png` });
   expect(hatalar).toEqual([]);
+});
+
+test('Ana menü: kart canlanır (meyveler sepete, dinozor ve Kino zıplar, balon yükselir, otobüs seker, üç kart hoplar)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./?test=1');
+  await expect(page.locator('.ug-kart')).toHaveCount(MENU_ADET);
+  // dokunuş sayfayı hemen değiştirir (test modu): canlanma sınıfı elle verilip her katmanın hareketi ölçülür
+  const adlar = await page.evaluate(() => {
+    for (const a of document.querySelectorAll('.ug-kart')) a.classList.add('canlan');
+    const ad = (s: string) => [...document.querySelectorAll(s)].map((e) => getComputedStyle(e).animationName);
+    return {
+      meyve: ad('.ug-k-meyve > .ug-k-ic'),
+      dinozor: ad('.ug-k-dinozor > .ug-k-ic'),
+      balon: ad('.ug-k-balon > .ug-k-ic'),
+      kino: ad('.ug-k-giysin > .ug-k-ic'),
+      otobus: ad('.ug-k-otobus > .ug-k-ic'),
+      mini: ad('.ug-k-mini > .ug-k-ic'),
+    };
+  });
+  expect(adlar.meyve).toEqual(['ug-k-sepete', 'ug-k-sepete']);
+  expect(adlar.dinozor).toEqual(['ug-k-hop']);
+  expect(adlar.balon).toEqual(['ug-k-yuksel']);
+  expect(adlar.kino).toEqual(['ug-k-hop']);
+  expect(adlar.otobus).toEqual(['ug-k-hop']);
+  expect(adlar.mini).toEqual(['ug-k-hop', 'ug-k-hop', 'ug-k-hop']);
+  expect(hatalar).toEqual([]);
+});
+
+test('Ana menü: yatay telefonda logo ve Mino ile Kino solda, kartlar sağda ekrana sığar (844×390, 667×375)', async ({ browser }, info) => {
+  test.skip(info.project.name !== 'iphone', 'yalnız telefon projesinde');
+  for (const [width, height] of [
+    [844, 390],
+    [667, 375],
+  ]) {
+    const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR', baseURL: info.project.use.baseURL });
+    const page = await ctx.newPage();
+    await page.goto('./?test=1');
+    await expect(page.locator('.ug-kart')).toHaveCount(MENU_ADET);
+    await page.waitForTimeout(2000);
+    // derlemede ana.css menü css'inden sonra yükleniyor: '.mk-kok .ekran' sütun düzeni yatay düzeni ezmemeli
+    expect(await page.locator('.ug-menu').evaluate((e) => getComputedStyle(e).flexDirection)).toBe('row');
+    const g = (await page.locator('.ug-giris').boundingBox())!;
+    const iz = (await page.locator('.ug-izgara').boundingBox())!;
+    expect(g.x + g.width).toBeLessThanOrEqual(iz.x + 1);
+    expect(iz.y + iz.height).toBeLessThanOrEqual(height + 1);
+    await ctx.close();
+  }
 });

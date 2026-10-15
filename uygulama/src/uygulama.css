@@ -283,6 +283,10 @@
   left: 50%;
   width: min(42cqw, 50cqh);
   aspect-ratio: 0.8;
+}
+/* küçük kartın çerçevesi iç sarmalda: kart hoplayınca çerçevesiyle birlikte hoplar */
+.ug-kok .ug-k-mini > .ug-k-ic {
+  box-sizing: border-box;
   padding: 7%;
   border-radius: 14%/11%;
   background: #fff;
@@ -292,17 +296,21 @@
 .ug-kok .ug-k-mini img {
   object-position: 50% 50%;
 }
-.ug-kok .ug-k-mini-sol { transform: translate(-50%, -48%) translateX(-46%) rotate(-14deg); background: #eaf5ff; }
-.ug-kok .ug-k-mini-sag { transform: translate(-50%, -48%) translateX(46%) rotate(14deg); background: #eaf9e3; }
-.ug-kok .ug-k-mini-orta { transform: translate(-50%, -54%); background: #fff1e6; }
+.ug-kok .ug-k-mini-sol { transform: translate(-50%, -48%) translateX(-46%) rotate(-14deg); }
+.ug-kok .ug-k-mini-sag { transform: translate(-50%, -48%) translateX(46%) rotate(14deg); }
+.ug-kok .ug-k-mini-orta { transform: translate(-50%, -54%); }
+.ug-kok .ug-k-mini-sol > .ug-k-ic { background: #eaf5ff; }
+.ug-kok .ug-k-mini-sag > .ug-k-ic { background: #eaf9e3; }
+.ug-kok .ug-k-mini-orta > .ug-k-ic { background: #fff1e6; }
 
 /* Pazar: tezgâh, üstünde sepet ve meyveler */
 .ug-kok .ug-kart[data-oyun="pazar"] .ug-k { --t: min(84cqh, 92cqw); }
 .ug-kok .ug-k-tezgah { left: 50%; bottom: -2cqh; height: var(--t); transform: translateX(-50%); }
-.ug-kok .ug-k-sepet { left: 61%; bottom: calc(var(--t) * 0.41 - 2cqh); height: calc(var(--t) * 0.3); transform: translateX(-50%); }
+.ug-kok .ug-k-sepet { left: calc(50% + var(--t) * 0.12); bottom: calc(var(--t) * 0.41 - 2cqh); height: calc(var(--t) * 0.3); transform: translateX(-50%); }
 .ug-kok .ug-k-meyve { height: calc(var(--t) * 0.2); bottom: calc(var(--t) * 0.42 - 2cqh); transform: translateX(-50%); }
-.ug-kok .ug-k-meyve-1 { left: 32%; }
-.ug-kok .ug-k-meyve-2 { left: 44%; transform: translateX(-50%) rotate(-12deg); }
+/* yerler tezgâhın ortasından tezgâh boyuyla (--t): kart yatık da dik de olsa meyveler tezgâhın üstünde kalır */
+.ug-kok .ug-k-meyve-1 { left: calc(50% - var(--t) * 0.196); }
+.ug-kok .ug-k-meyve-2 { left: calc(50% - var(--t) * 0.065); transform: translateX(-50%) rotate(-12deg); }
 
 /* Pasta Otobüsü: parkta pembe otobüs (oyunun kod çizimi) */
 .ug-kok .ug-k-otobus { left: 50%; bottom: 3%; width: min(80cqw, 132cqh); aspect-ratio: 640 / 420; transform: translateX(-50%); }
@@ -604,7 +612,9 @@
 
 /* ---------- Yatay: solda Mino ve logo, sağda 4 × 2 kart ---------- */
 @media (orientation: landscape) {
-  .ug-kok .ug-menu {
+  /* bir üst özgüllük (.mk-kok.ug-kok): derlemede ana.css bu dosyadan SONRA yükleniyor, '.mk-kok .ekran' sütun düzeni
+     ve dolgusu eşit özgüllükle bunu eziyordu (yatay telefonda logo üstte, kartlar ekrandan taşıyordu) */
+  .mk-kok.ug-kok .ug-menu {
     flex-direction: row;
     align-items: stretch;
     gap: clamp(10px, 2.4vw, 32px);
@@ -978,5 +988,97 @@
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
   .ug-kok .ug-menu:has(.ug-izgara[data-adet='9']) .ug-giris {
     width: clamp(92px, 14vw, 110px);
+  }
+}
+
+/* ---------- Kart canlanır (ekranlar.ts → kartCanlan): dokununca 0,42 sn, kart zıplamasıyla birlikte, perde inmeden;
+   boşta (.bos, her 8 sn'de bir "Yeni" rozetli kart) daha yavaş, iki kez, yerine döner. Hareket iç sarmalda (.ug-k-ic):
+   dış kutu yerleşimi (transform) ve parallaxı (translate) taşır. Parça dönmez: hop, ezilip esneme, kayma, yükselme. ---------- */
+.ug-kok .ug-k-ic {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+}
+.ug-kok .ug-kart.canlan {
+  --cs: 0.42s;
+  --cn: 1;
+  --cy: normal;
+  /* Kartlar'daki üç küçük kartın sıra aralığı */
+  --ca: 0.06s;
+}
+.ug-kok .ug-kart.canlan.bos {
+  --cs: 0.6s;
+  --cn: 2;
+  --cy: alternate;
+  --ca: 0.14s;
+}
+/* zıplayanlar: dinozor, Kino, otobüs (tekerlekleriyle), oynat düğmesi; --zy zıplama yüksekliği (kendi boyunun %'si),
+   --ez ezilme payı */
+.ug-kok .ug-kart.canlan :is(.ug-k-dinozor, .ug-k-giysin, .ug-k-otobus) > .ug-k-ic,
+.ug-kok .ug-kart.canlan .ug-k-oynat {
+  animation: ug-k-hop var(--cs) linear var(--cn) both;
+}
+.ug-kok .ug-k-dinozor { --zy: -10%; }
+.ug-kok .ug-k-giysin { --zy: -10%; }
+/* geniş otobüs daha az ezilir (yayları üstünde hafif bir sekme) */
+.ug-kok .ug-k-otobus { --zy: -12%; --ez: 0.06; }
+.ug-kok .ug-k-oynat { --zy: -24%; transform-origin: 50% 100%; }
+.ug-kok .ug-k-mini { --zy: -15%; }
+@keyframes ug-k-hop {
+  0% { transform: none; animation-timing-function: ease-out; }
+  16% { transform: scale(calc(1 + var(--ez, 0.13)), calc(1 - var(--ez, 0.13) * 1.2)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  48% { transform: translateY(var(--zy)) scale(calc(1 - var(--ez, 0.13) * 0.6), calc(1 + var(--ez, 0.13) * 0.75)); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  72% { transform: scale(calc(1 + var(--ez, 0.13) * 0.75), calc(1 - var(--ez, 0.13) * 0.9)); animation-timing-function: ease-out; }
+  87% { transform: scale(0.97, 1.03); animation-timing-function: ease-in-out; }
+  100% { transform: none; }
+}
+/* Kartlar: üç küçük kart soldan sağa sırayla hoplar */
+.ug-kok .ug-kart.canlan .ug-k-mini > .ug-k-ic {
+  animation: ug-k-hop calc(var(--cs) * 0.8) linear var(--cn) both;
+}
+.ug-kok .ug-kart.canlan .ug-k-mini-orta > .ug-k-ic { animation-delay: var(--ca); }
+.ug-kok .ug-kart.canlan .ug-k-mini-sag > .ug-k-ic { animation-delay: calc(var(--ca) * 2); }
+/* Pazar: elma ile muz sepete hoplar (dokununca sepette kalır; boşta geri hoplar) */
+.ug-kok .ug-kart.canlan .ug-k-meyve > .ug-k-ic {
+  animation: ug-k-sepete var(--cs) linear var(--cn) var(--cy) both;
+}
+.ug-kok .ug-kart.canlan .ug-k-meyve-2 > .ug-k-ic { animation-delay: calc(var(--ca) * 1.2); }
+.ug-kok .ug-k-meyve-1 { --mx: calc(var(--t) * 0.28); --my: -42%; }
+.ug-kok .ug-k-meyve-2 { --mx: calc(var(--t) * 0.21); --my: -52%; }
+@keyframes ug-k-sepete {
+  0% { transform: none; animation-timing-function: ease-out; }
+  14% { transform: scale(1.14, 0.84); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  50% { transform: translate(calc(var(--mx) * 0.55), calc(var(--my) - 34%)) scale(0.92, 1.1); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  80% { transform: translate(var(--mx), var(--my)) scale(1.1, 0.88); animation-timing-function: ease-out; }
+  100% { transform: translate(var(--mx), var(--my)) scale(0.94); }
+}
+/* Sesli Maceralar: balon hafifçe çöküp yükselir, yükselirken yana kayar */
+.ug-kok .ug-kart.canlan .ug-k-balon > .ug-k-ic {
+  animation: ug-k-yuksel var(--cs) linear var(--cn) var(--cy) both;
+}
+@keyframes ug-k-yuksel {
+  0% { transform: none; animation-timing-function: ease-out; }
+  18% { transform: translateY(4%) scale(1.05, 0.94); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
+  60% { transform: translate(-4%, -17%) scale(0.96, 1.05); animation-timing-function: ease-out; }
+  100% { transform: translate(-6%, -24%) scale(1); }
+}
+/* yalnız kapak resmi olan kart (Dedektif, Kino'nun Otobüsü) boşta bütün olarak ezilip esneyerek hoplar */
+.ug-kok .ug-kart.canlan.bos[data-kapak] .ug-kart-govde {
+  transform-origin: 50% 100%;
+  animation: ug-kapak-hop 0.6s linear 2 both;
+}
+@keyframes ug-kapak-hop {
+  0% { transform: none; animation-timing-function: ease-out; }
+  18% { transform: translateY(2px) scale(1.03, 0.96); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  50% { transform: translateY(-9px) scale(0.98, 1.03); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  78% { transform: translateY(1px) scale(1.02, 0.98); animation-timing-function: ease-out; }
+  100% { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ug-kok .ug-kart.canlan .ug-k-ic,
+  .ug-kok .ug-kart.canlan .ug-k-oynat,
+  .ug-kok .ug-kart.canlan .ug-kart-govde {
+    animation: none;
   }
 }

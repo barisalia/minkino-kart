@@ -54,7 +54,7 @@ function kartResmi(k: OyunKarti): HTMLElement {
     const sinif = c.sinif.split(' ').join('.');
     const d = `--d:${derinlik(i, n).toFixed(2)}`;
     if (c.kod === 'otobus') {
-      kap.append(h(`span.ug-k.${sinif}`, { style: d, html: OTOBUS }));
+      kap.append(h(`span.ug-k.${sinif}`, { style: d }, h('span.ug-k-ic', { html: OTOBUS })));
       return;
     }
     if (c.ikon) {
@@ -66,7 +66,8 @@ function kartResmi(k: OyunKarti): HTMLElement {
     const url = c.gorsel ? adres(c.gorsel) : '';
     if (!url) return;
     const img = h('img', { src: url, alt: '', draggable: 'false', decoding: 'async' });
-    kap.append(c.cerceve ? h(`span.ug-k.${sinif}.ug-cerceve`, { style: d }, img) : h(`span.ug-k.${sinif}`, { style: d }, img));
+    // iç sarmal (.ug-k-ic): canlanma hareketi onda oynar; dış kutu yerleşim (transform) ve parallax (translate) taşır
+    kap.append(h(`span.ug-k.${sinif}${c.cerceve ? '.ug-cerceve' : ''}`, { style: d }, h('span.ug-k-ic', {}, img)));
   });
   return kap;
 }
@@ -200,12 +201,45 @@ export function menuEkrani(app: Uygulama): Ekran {
   const uygulamada = !!uygulamaPlatformu();
   const oyunlar = menuOyunlari(uygulamada);
   const kilitKartlari: [HTMLElement, string, HTMLElement][] = [];
+  /** "Yeni" rozetli kartlar: boşta sırayla kendi canlanmasını yapar (çocuk yeni oyunu fark eder) */
+  const yeniKartlar: HTMLElement[] = [];
+  /**
+   * Kart canlanır (uygulama.css → .canlan): Pazar'ın meyveleri sepete hoplar, dinozor ve Kino ezilip esneyerek zıplar,
+   * balon yükselir, otobüs tekerlekleri üstünde zıplar, Kartlar'ın üç küçük kartı sırayla hoplar. Dokununca 0,42 sn
+   * (kart zıplamasıyla birlikte, perde inmeden); boşta (bos) daha yavaş, iki kez ve yerine döner. Parça dönmez.
+   */
+  const kartCanlan = (a: HTMLElement, bos: boolean) => {
+    if (AZ_HAREKET) return;
+    a.classList.remove('canlan', 'bos');
+    void a.offsetWidth;
+    a.classList.add('canlan');
+    if (!bos) return;
+    a.classList.add('bos');
+    zamanlar.push(
+      window.setTimeout(() => {
+        if (!gidiyor) a.classList.remove('canlan', 'bos');
+      }, 1500),
+    );
+  };
+  let yeniSira = 0;
+  // her 8 sn'de bir (gerçek süre; test modunda kapalı: sure() 30 ms'ye kısaltırdı)
+  const canlanPlanla = (): void => {
+    zamanlar.push(
+      window.setTimeout(() => {
+        if (!gidiyor && !document.hidden && yeniKartlar.length) kartCanlan(yeniKartlar[yeniSira++ % yeniKartlar.length], true);
+        canlanPlanla();
+      }, 8000),
+    );
+  };
   const kartlar = oyunlar.map((k, i) => {
     const resim = kartResmi(k);
     // uzun adın baş kısmı resmin sol üstünde küçük tabela (kartın boyu değişmez)
     if (k.ust) resim.append(h('span.ug-kart-ust', { 'aria-hidden': 'true' }, k.ust));
     const govde = h('span.ug-kart-govde', {}, resim, h('span.ug-kart-ad', {}, k.ad), ...(k.rozet ? [h('span.ug-yeni', { 'aria-hidden': 'true' }, k.rozet)] : []));
     const a = h('a.ug-kart', { href: sayfaAdresi(k.adres), 'data-oyun': k.id, 'aria-label': k.ust ? `${k.ust} ${k.ad}` : k.ad, style: `--r:${k.renk};--i:${i}`, draggable: 'false' }, govde);
+    // katmanı olmayan (yalnız kapak resmi) kart boşta kendi canlanmasında bütün olarak hoplar
+    if (!k.katmanlar.length) a.dataset.kapak = '';
+    if (k.rozet?.startsWith('Yeni')) yeniKartlar.push(a);
     kilitKartlari.push([a, k.id, govde]);
     a.addEventListener('pointerdown', () => {
       a.classList.add('basili');
@@ -239,12 +273,14 @@ export function menuEkrani(app: Uygulama): Ekran {
       tepki('zipla');
       kinoOynat('sevin', 600);
       a.classList.add('secildi');
+      kartCanlan(a, false);
       // kart zıplar, sonra krem perde iner ve ses kısılır (src/ui/gecis.ts): oyuna bir anda kopmadan geçilir
       zamanlar.push(window.setTimeout(() => sayfadanCik(() => location.assign(a.href), a.href), sure(AZ_HAREKET ? 30 : 350)));
     });
     return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}`, { style: `--i:${i}` }, a);
   });
   const kilitBirak = kilitleriKur(kilitKartlari);
+  if (!AZ_HAREKET && !TEST_MODU) canlanPlanla();
 
   // ebeveyn köşesi: yazıyla toplama sorusu (mağaza kuralı; eskiden "basılı tut")
   const kapi = h('button.ug-kapi', { type: 'button', 'aria-label': 'Ebeveyn köşesi' }, h('span.ug-kapi-daire', {}, svg(IKON.ebeveyn)));

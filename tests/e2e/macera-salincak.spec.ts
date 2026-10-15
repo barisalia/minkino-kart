@@ -243,3 +243,27 @@ test('Salıncak Kimin: açılış kartı', async ({ page }, info) => {
   await expect(page.locator('.sl-sahne')).toBeVisible({ timeout: 15000 });
   expect(hatalar).toEqual([]);
 });
+
+test('Salıncak Kimin: köşe çalıları kendi oranında (ayrı çizim, esnemez)', async ({ browser }, info) => {
+  test.skip(info.project.name !== 'iphone', 'yalnız telefon projesinde');
+  for (const [width, height] of [
+    [844, 390],
+    [667, 375],
+    [390, 844],
+  ]) {
+    const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR', baseURL: info.project.use.baseURL });
+    const page = await ctx.newPage();
+    await page.goto('./macera/?test=1&ekran=bolum&yas=5&bolum=salincak');
+    await expect(page.locator('.sl-kume')).toHaveCount(6);
+    const kumeler = await page.locator('.sl-kume').evaluateAll((l) =>
+      l.map((e) => ({ ayri: e.classList.contains('sl-kume-ayri'), oran: (e as HTMLElement).offsetWidth / (e as HTMLElement).offsetHeight, boyut: getComputedStyle(e).backgroundSize })),
+    );
+    for (const k of kumeler) {
+      // ayrı çizim (assets/film/park/kume-sol|sag.webp, 1600×1018): kutu resmin oranında, resim kutuya sığar (gerilmez)
+      expect(k.ayri).toBe(true);
+      expect(k.boyut).toBe('contain');
+      expect(Math.abs(k.oran - 1600 / 1018)).toBeLessThan(0.03);
+    }
+    await ctx.close();
+  }
+});
