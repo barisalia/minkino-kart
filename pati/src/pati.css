@@ -1,0 +1,845 @@
+/*
+ * Pati Dükkânı. Bütün kurallar .pt-kok altında (gömülünce başka oyunu bozmaz).
+ * Sahne içindeki ölçüler "sahne birimi" (salon resminin pikseli, 2752×1536); kamera sahneyi ölçekler (--s).
+ * Animasyonlar yalnız transform / opacity; parça döndürme yok (bütün gövde, poz değişimi, ezilme-esneme).
+ */
+.pt-kok {
+  --pt-k: #3b2416;
+  --pt-krem: #fff4dd;
+  --pt-zemin: #eaad6f;
+  --pt-duvar: #fff1d6;
+  background: var(--pt-zemin);
+}
+.pt-kok button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.pt-kok .pt-ekran {
+  position: absolute;
+  inset: 0;
+  /* clip: odak/scrollIntoView kutuyu kaydıramaz */
+  overflow: hidden;
+  overflow: clip;
+  background: var(--pt-zemin);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ================================================================ sahne ve kamera */
+.pt-kok .pt-sahne-kok {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  overflow: clip;
+}
+.pt-kok .pt-sahne {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.pt-kok .pt-salon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+.pt-kok .pt-katman {
+  position: absolute;
+  inset: 0;
+}
+/* salondaki lamba ipinin üstü duvar rengiyle örtülür; kesilmiş ip tam yerine oturur (çekilince esner) */
+.pt-kok .pt-ip-ortu {
+  position: absolute;
+  background: var(--pt-duvar);
+  pointer-events: none;
+}
+.pt-kok .pt-ip {
+  position: absolute;
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+.pt-kok .pt-ip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pt-kok .pt-ip.pt-ip-parla img {
+  animation: pt-ip-nabiz 1.1s ease-in-out infinite;
+}
+@keyframes pt-ip-nabiz {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 228, 92, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 22px #ffe45c) drop-shadow(0 0 8px #fff);
+  }
+}
+.pt-kok .pt-ip-alan {
+  position: absolute;
+  background: none;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.pt-kok .pt-ekran[data-ip='1'] .pt-ip-alan {
+  pointer-events: auto;
+}
+/* akvaryum suyu (köşe sayfası G5 gelene kadar oyuğun içi) */
+.pt-kok .pt-su {
+  position: absolute;
+  background: rgba(96, 186, 245, 0.42);
+  border-top: 12px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+/* ışık: akşam turuncu, gece lacivert (G7 gelince gece resmi) */
+.pt-kok .pt-aksam,
+.pt-kok .pt-gece {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.pt-kok .pt-aksam {
+  background: #ffb877;
+  mix-blend-mode: multiply;
+}
+.pt-kok .pt-gece {
+  background: #4a5596;
+  mix-blend-mode: multiply;
+}
+.pt-kok .pt-gece:has(img) {
+  background: none;
+  mix-blend-mode: normal;
+}
+.pt-kok .pt-gece img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* köşeler: dokunma alanı */
+.pt-kok .pt-kose {
+  position: absolute;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ================================================================ hayvan */
+.pt-kok .pt-hayvan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.pt-kok .pt-yon {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: var(--boy);
+  width: calc(var(--boy) * var(--oran, 1));
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+}
+.pt-kok .pt-hareket,
+.pt-kok .pt-dongu,
+.pt-kok .pt-nefes,
+.pt-kok .pt-poz {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+}
+.pt-kok .pt-resim {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+}
+.pt-kok .pt-goz-yama {
+  position: absolute;
+  opacity: 0;
+}
+.pt-kok .pt-goz-yama.acik {
+  opacity: 1;
+}
+.pt-kok .pt-nefes {
+  animation: pt-nefes 3s ease-in-out infinite;
+}
+.pt-kok .pt-piril .pt-nefes {
+  animation-duration: 1.8s;
+}
+@keyframes pt-nefes {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.01, 1.03);
+  }
+}
+.pt-kok [data-hal='uyku'] .pt-nefes {
+  animation-duration: 4.8s;
+}
+/* hâller: ihtiyaç bedenle gösterilir (pozun üstüne bütün gövde döngüsü) */
+.pt-kok [data-hal='ac'] .pt-dongu {
+  animation: pt-yalan 2.2s ease-in-out infinite;
+}
+@keyframes pt-yalan {
+  0%,
+  55%,
+  100% {
+    transform: none;
+  }
+  70% {
+    transform: translateY(2%) scale(1.02, 0.95);
+  }
+  85% {
+    transform: translateY(1%) scale(1.01, 0.97);
+  }
+}
+.pt-kok .pt-findik[data-hal='oyun'] .pt-dongu {
+  animation: pt-hopla 1.3s ease-in-out infinite;
+}
+@keyframes pt-hopla {
+  0%,
+  45%,
+  100% {
+    transform: none;
+  }
+  12% {
+    transform: scale(1.06, 0.92);
+  }
+  26% {
+    transform: translateY(-9%) scale(0.97, 1.05);
+  }
+  38% {
+    transform: scale(1.05, 0.94);
+  }
+}
+.pt-kok .pt-tarcin[data-hal='oyun'] .pt-dongu,
+.pt-kok .pt-tarcin.pt-izliyor .pt-dongu {
+  animation: pt-popo 0.42s ease-in-out infinite alternate;
+}
+.pt-kok .pt-tarcin.pt-pusu .pt-dongu {
+  animation: pt-popo 0.12s ease-in-out infinite alternate;
+}
+@keyframes pt-popo {
+  from {
+    transform: translateX(-1%) scale(1, 1);
+  }
+  to {
+    transform: translateX(1.5%) scale(1.03, 0.97);
+  }
+}
+.pt-kok [data-hal='usudu'] .pt-dongu {
+  animation: pt-titre 0.11s linear infinite alternate;
+}
+@keyframes pt-titre {
+  from {
+    transform: translateX(-1.2%);
+  }
+  to {
+    transform: translateX(1.2%);
+  }
+}
+.pt-kok [data-hal='uykulu'] .pt-dongu {
+  animation: pt-sallan 2.8s ease-in-out infinite;
+}
+@keyframes pt-sallan {
+  0%,
+  100% {
+    transform: translateX(0) scale(1, 1);
+  }
+  50% {
+    transform: translateX(1.5%) scale(1.02, 0.96);
+  }
+}
+/* gerçek uyku pozu yoksa: kıvrılmış gibi ezik */
+.pt-kok [data-hal='uyku'][data-yedek] .pt-dongu {
+  transform: scale(1.06, 0.84);
+}
+/* yardım merdiveni: hayvan ışıldar */
+.pt-kok .pt-cagir .pt-resim {
+  animation: pt-isilda 1.4s ease-in-out infinite;
+}
+@keyframes pt-isilda {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 12px #ffe45c);
+  }
+}
+/* uyku: z harfleri */
+.pt-kok .pt-zz {
+  position: absolute;
+  left: calc(var(--boy) * 0.15);
+  bottom: calc(var(--boy) * 0.75);
+  width: 200px;
+  height: 260px;
+  opacity: 0;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+.pt-kok .pt-zz.acik {
+  opacity: 1;
+}
+.pt-kok .pt-zz i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font: 700 84px/1 Fredoka, system-ui, sans-serif;
+  font-style: normal;
+  color: #fff;
+  -webkit-text-stroke: 9px var(--pt-k);
+  paint-order: stroke fill;
+  animation: pt-z 2.4s ease-out infinite;
+  opacity: 0;
+}
+.pt-kok .pt-zz i:nth-child(2) {
+  animation-delay: 0.8s;
+}
+.pt-kok .pt-zz i:nth-child(3) {
+  animation-delay: 1.6s;
+}
+@keyframes pt-z {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(90px, -220px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* ================================================================ eşyalar sahnede */
+.pt-kok .pt-mama-kabi {
+  position: absolute;
+  width: 300px;
+  translate: -50% -100%;
+  opacity: 0;
+  transform: scale(0.5);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.25s,
+    transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  pointer-events: none;
+  z-index: 3;
+}
+.pt-kok .pt-mama-kabi.acik {
+  opacity: 1;
+  transform: scale(calc(0.8 + 0.2 * var(--dolu, 1)));
+}
+.pt-kok .pt-top {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 130px;
+  height: 130px;
+  margin: -130px 0 0 -65px;
+  pointer-events: none;
+  z-index: 3;
+}
+.pt-kok .pt-top.pt-agizda {
+  left: 74%;
+  top: 40%;
+  margin: 0;
+  width: 26%;
+  height: auto;
+  transform: none !important;
+}
+.pt-kok .pt-gizli {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.pt-kok .pt-minder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 600px;
+  translate: -50% -78%;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+/* düşünce balonu (3-4): ekranda hep aynı boyda kalır (kameranın ölçeğinin tersi) */
+.pt-kok .pt-balon {
+  position: absolute;
+  width: 300px;
+  height: 260px;
+  transform: translate(-20%, -100%) scale(calc(0.36 / var(--s, 0.3)));
+  transform-origin: 20% 100%;
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+  z-index: 5;
+}
+.pt-kok .pt-balon.acik {
+  opacity: 1;
+  animation: pt-balon-gel 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.pt-kok .pt-yakin .pt-balon {
+  opacity: 0;
+}
+@keyframes pt-balon-gel {
+  from {
+    scale: 0.4;
+  }
+  to {
+    scale: 1;
+  }
+}
+.pt-kok .pt-balon-ic {
+  position: absolute;
+  inset: 0 0 50px 30px;
+  background: #fff;
+  border: 10px solid var(--pt-k);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.pt-kok .pt-balon-ic img {
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+}
+.pt-kok .pt-balon-k1,
+.pt-kok .pt-balon-k2 {
+  position: absolute;
+  background: #fff;
+  border: 8px solid var(--pt-k);
+  border-radius: 50%;
+}
+.pt-kok .pt-balon-k1 {
+  width: 46px;
+  height: 46px;
+  left: -10px;
+  bottom: -40px;
+}
+.pt-kok .pt-balon-k2 {
+  width: 28px;
+  height: 28px;
+  left: -44px;
+  bottom: -84px;
+}
+
+/* ================================================================ bakım rafı */
+.pt-kok .pt-raf {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(255, 244, 221, 0.94);
+  border: 3px solid var(--pt-k);
+  border-radius: 24px;
+  box-shadow: 0 5px 0 rgba(59, 36, 22, 0.35);
+  transition:
+    transform 0.38s cubic-bezier(0.3, 1.3, 0.5, 1),
+    opacity 0.25s;
+  opacity: 0;
+  pointer-events: none;
+}
+.pt-kok .pt-raf.acik {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pt-kok .pt-ekran[data-taraf='sag'] .pt-raf,
+.pt-kok .pt-ekran[data-taraf='sol'] .pt-raf {
+  /* üst çubuğun (geri, ses) altında kalır */
+  top: calc(50% + 32px);
+  flex-direction: column;
+}
+.pt-kok .pt-ekran[data-taraf='sag'] .pt-raf {
+  right: max(8px, env(safe-area-inset-right));
+  transform: translate(140%, -50%);
+}
+.pt-kok .pt-ekran[data-taraf='sol'] .pt-raf {
+  left: max(8px, env(safe-area-inset-left));
+  transform: translate(-140%, -50%);
+}
+.pt-kok .pt-ekran[data-taraf='sag'] .pt-raf.acik,
+.pt-kok .pt-ekran[data-taraf='sol'] .pt-raf.acik {
+  transform: translate(0, -50%);
+}
+.pt-kok .pt-ekran[data-taraf='alt'] .pt-raf {
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  flex-direction: row;
+  transform: translate(-50%, 140%);
+}
+.pt-kok .pt-ekran[data-taraf='alt'] .pt-raf.acik {
+  transform: translate(-50%, 0);
+}
+.pt-kok .pt-raf-esya {
+  position: relative;
+  width: 96px;
+  height: min(80px, calc((100dvh - 118px) / 4 - 8px));
+  padding: 6px;
+  border: 0;
+  border-radius: 18px;
+  background: #fffaf0;
+  box-shadow: inset 0 0 0 2px rgba(59, 36, 22, 0.15);
+  cursor: grab;
+  transition: opacity 0.2s;
+}
+.pt-kok .pt-ekran[data-taraf='alt'] .pt-raf-esya {
+  width: 80px;
+  height: 96px;
+}
+.pt-kok .pt-raf-esya img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.pt-kok .pt-raf-esya.pt-parla {
+  background: #fff3a8;
+  box-shadow:
+    0 0 0 4px #ffd84a,
+    0 0 18px 4px rgba(255, 216, 74, 0.8);
+  animation: pt-raf-zipla 1.1s ease-in-out infinite;
+}
+@keyframes pt-raf-zipla {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  20% {
+    transform: translateY(-8px) scale(0.96, 1.05);
+  }
+  40% {
+    transform: translateY(0) scale(1.05, 0.95);
+  }
+}
+.pt-kok .pt-raf-esya.pt-kullanimda,
+.pt-kok .pt-raf-esya.pt-tutuldu {
+  opacity: 0.35;
+}
+.pt-kok .pt-tutulan-resim,
+.pt-kok .pt-ucan-esya {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ================================================================ efekt katmanı (kino-otobus/src/efekt.ts sınıfları) */
+.pt-kok .ko-efekt {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  overflow: hidden;
+}
+.pt-kok .ko-ucan {
+  position: absolute;
+  pointer-events: none;
+}
+.pt-kok .ko-parilti {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--renk, #fff);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+.pt-kok .ko-pof-bulut {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(90, 52, 35, 0.25);
+}
+.pt-kok .ko-kalp {
+  position: absolute;
+  width: 30px;
+}
+.pt-kok .ko-tutulan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  transform-origin: var(--tx) var(--ty);
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 6px 4px rgba(59, 36, 22, 0.28));
+}
+.pt-kok .pt-tane {
+  position: absolute;
+  width: 9px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b0703a;
+  border: 1.5px solid var(--pt-k);
+}
+.pt-kok .pt-pul {
+  position: absolute;
+  width: 8px;
+  height: 6px;
+  border-radius: 40%;
+  background: #ff9a3a;
+  border: 1.5px solid var(--pt-k);
+}
+
+/* ================================================================ Nehir abla */
+.pt-kok .pt-nehir {
+  position: absolute;
+  z-index: 15;
+  left: max(2px, env(safe-area-inset-left));
+  bottom: -60%;
+  height: 128%;
+  pointer-events: none;
+  transform: translateY(100%);
+  transition: transform 0.8s cubic-bezier(0.3, 1.2, 0.5, 1);
+}
+.pt-kok .pt-nehir-gel .pt-nehir {
+  transform: translateY(0);
+}
+.pt-kok .pt-nehir-gel.pt-yakin .pt-nehir {
+  transform: translateY(75%);
+}
+.pt-kok .pt-nehir-govde {
+  height: 100%;
+  transform-origin: 50% 60%;
+}
+.pt-kok .pt-nehir-resim {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+@media (orientation: portrait) {
+  .pt-kok .pt-nehir {
+    left: 4%;
+    bottom: 1%;
+    height: 56%;
+  }
+  .pt-kok .pt-nehir-gel.pt-yakin .pt-nehir {
+    transform: translateY(110%);
+  }
+}
+
+/* ================================================================ üst çubuk */
+.pt-kok .pt-ust {
+  position: absolute;
+  z-index: 30;
+  top: max(8px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  right: max(10px, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.pt-kok .pt-ust > * {
+  pointer-events: auto;
+}
+.pt-kok .pt-ust-bosluk {
+  flex: 1;
+  pointer-events: none;
+}
+
+/* ================================================================ açılış: yaş */
+.pt-kok .pt-yas-perde {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 4vmin, 28px);
+  background: rgba(30, 24, 60, 0.25);
+  transition: opacity 0.4s;
+}
+.pt-kok .pt-yas-perde.kapan {
+  opacity: 0;
+  pointer-events: none;
+}
+.pt-kok .pt-baslik {
+  margin: 0;
+  font: 700 clamp(36px, 9vmin, 68px) / 1 Fredoka, system-ui, sans-serif;
+  color: var(--pt-krem);
+  -webkit-text-stroke: 7px var(--pt-k);
+  paint-order: stroke fill;
+  text-shadow: 0 5px 0 var(--pt-k);
+  letter-spacing: 0.01em;
+}
+.pt-kok .pt-yas-kutu {
+  display: flex;
+  gap: clamp(14px, 4vmin, 32px);
+}
+.pt-kok .pt-yas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 150px;
+  padding: 10px 18px 8px;
+  border-radius: 30px;
+  background: var(--pt-krem);
+  border: 4px solid var(--pt-k);
+  box-shadow: 0 7px 0 var(--pt-k);
+  color: var(--pt-k);
+  font: 700 34px/1 Fredoka, system-ui, sans-serif;
+  cursor: pointer;
+  animation: pt-yas-nefes 2.4s ease-in-out infinite;
+}
+.pt-kok .pt-yas:nth-child(2) {
+  animation-delay: 0.6s;
+}
+.pt-kok .pt-yas:active {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--pt-k);
+}
+@keyframes pt-yas-nefes {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.04;
+  }
+}
+.pt-kok .pt-yas-resim {
+  display: flex;
+  align-items: flex-end;
+  height: 84px;
+}
+.pt-kok .pt-yas-resim img {
+  height: 100%;
+}
+.pt-kok .pt-yas-resim img + img {
+  height: 86%;
+  margin-left: -8px;
+}
+
+/* ================================================================ günün fotoğrafı */
+.pt-kok .pt-flas {
+  position: absolute;
+  inset: 0;
+  z-index: 44;
+  background: #fff;
+  pointer-events: none;
+  animation: pt-flas 0.6s ease-out forwards;
+}
+@keyframes pt-flas {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.pt-kok .pt-polaroid {
+  position: absolute;
+  z-index: 45;
+  left: 50%;
+  top: 50%;
+  width: min(62vmin, 330px);
+  padding: 12px 12px 54px;
+  background: #fff;
+  border: 3px solid var(--pt-k);
+  border-radius: 8px;
+  box-shadow: 0 10px 0 rgba(59, 36, 22, 0.3);
+  transform: translate(-50%, -50%) scale(0.4) rotate(-6deg);
+  opacity: 0;
+  transition:
+    transform 0.8s cubic-bezier(0.3, 1.4, 0.5, 1),
+    opacity 0.3s;
+  cursor: pointer;
+}
+.pt-kok .pt-polaroid.acik {
+  transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+  opacity: 1;
+}
+.pt-kok .pt-foto-resim {
+  position: relative;
+  aspect-ratio: 600 / 635;
+  overflow: hidden;
+  border: 2px solid var(--pt-k);
+  background-repeat: no-repeat;
+  animation: pt-foto-belir 1.8s ease-out both;
+}
+@keyframes pt-foto-belir {
+  from {
+    opacity: 0.2;
+    filter: sepia(1) brightness(1.4);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+.pt-kok .pt-foto-resim img {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  height: 76%;
+  translate: -50% 0;
+}
+.pt-kok .pt-foto-resim[data-hayvan='piril'] img {
+  bottom: 30%;
+  height: 40%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-kok .pt-nefes,
+  .pt-kok .pt-dongu,
+  .pt-kok .pt-yas {
+    animation: none !important;
+  }
+}
+
+/* ================================================================ G4 eşyaları */
+/* düşünce balonu resmi (kuyruğu altta sağda: balon hayvanın başının sol üstünde durur) */
+.pt-kok .pt-balon:has(.pt-balon-resim) {
+  width: 290px;
+  height: 310px;
+  transform: translate(-62%, -100%) scale(calc(0.36 / var(--s, 0.3)));
+  transform-origin: 62% 100%;
+}
+.pt-kok .pt-balon-resim,
+.pt-kok .pt-balon-zemin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.pt-kok .pt-balon-esya {
+  position: absolute;
+  left: 17%;
+  top: 11%;
+  width: 66%;
+  height: 50%;
+  object-fit: contain;
+}
+/* ay gece lambası: soldaki dolabın üstünde, yalnız gece */
+.pt-kok .pt-gece-lambasi {
+  position: absolute;
+  left: 196px;
+  top: 1212px;
+  width: 112px;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out 0.6s;
+  pointer-events: none;
+}
+.pt-kok .pt-sahne-kok[data-isik='gece'] .pt-gece-lambasi {
+  opacity: 1;
+  filter: drop-shadow(0 0 26px rgba(255, 226, 140, 0.9));
+}

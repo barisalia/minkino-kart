@@ -85,6 +85,8 @@ const SAYFALAR = {
   tarcin: ['bos', 'goz', 'usudu', 'oyun', 'atla', 'uyku', 'rahat', 'yiyor'],
   piril: ['yuz1', 'yuz2', 'goz', 'ac', 'yiyor', 'sevinc', 'uykulu', 'uyku'],
 };
+/** G4 eşya sayfası kareleri (soldan sağa, üstten alta) */
+const ESYA_SAYFA = ['mama-kabi-bos', 'mama-kabi-dolu', 'su-kabi-bos', 'su-kabi-dolu', 'mama-torbasi', 'olcek', 'yem-kutusu', 'battaniye', 'top', 'tuy-degnek', 'dusunce-balonu', 'gece-lambasi'];
 /** Beyaz olmayan piksellerin satır / sütun dağılımından çizim bantları (aralar beyaz) */
 function bantlar(dolu, enAzBosluk, enAzBant) {
   const b = [];
@@ -106,8 +108,8 @@ function bantlar(dolu, enAzBosluk, enAzBant) {
   }
   return b;
 }
-async function sayfaKes(hayvan, kareler) {
-  const dosya = [`${hayvan}-hareket-sayfasi.png`, `${hayvan}-hareket-sayfasi.jpg`].map((f) => path.join(G, f)).find((f) => fs.existsSync(f));
+async function sayfaKes(hayvan, kareler, o = {}) {
+  const dosya = (o.dosya ? [o.dosya] : [`${hayvan}-hareket-sayfasi.png`, `${hayvan}-hareket-sayfasi.jpg`]).map((f) => path.join(G, f)).find((f) => fs.existsSync(f));
   if (!dosya) return console.log(`${hayvan}: poz sayfası yok (bekleniyor)`);
   const { data, info } = await s(dosya).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width, H = info.height;
@@ -118,7 +120,13 @@ async function sayfaKes(hayvan, kareler) {
   const kutular = [];
   for (const [y0, y1] of satirlar) {
     const sutunDolu = Array.from({ length: W }, (_, x) => { let n = 0; for (let y = y0; y <= y1; y += 2) if (cizim(x, y)) n++; return n > 1; });
-    for (const [x0, x1] of bantlar(sutunDolu, Math.round(W * 0.012), Math.round(W * 0.05))) kutular.push([x0, y0, x1, y1]);
+    // 4 sütun beklenir: kareler birbirine çok yakınsa (baloncuk, yem tanesi) daha dar boşlukla yeniden bölünür
+    let b = [];
+    for (const bosluk of [0.012, 0.006, 0.003]) {
+      b = bantlar(sutunDolu, Math.round(W * bosluk), Math.round(W * 0.05));
+      if (b.length >= kareler.length / satirlar.length) break;
+    }
+    for (const [x0, x1] of b) kutular.push([x0, y0, x1, y1]);
   }
   if (kutular.length !== kareler.length) {
     console.log(`${hayvan}: ${kutular.length} kare bulundu, ${kareler.length} bekleniyordu; kesilmedi`, JSON.stringify(kutular));
@@ -134,6 +142,11 @@ async function sayfaKes(hayvan, kareler) {
   }
   // aynı ölçek, aynı taban çizgisi (balık: ortada)
   const hiza = hayvan === 'piril' ? 'orta' : 'alt';
+  if (o.esya) {
+    // eşya sayfası: her eşya kendi kutusuna kırpılır (ince parçalar ve balonun küçük daireleri korunsun)
+    execFileSync('node', [ESYA_KES, '--girdi', girdi, '--cikti', CIKTI, '--max', '1024', '--ayar', JSON.stringify(o.ayar || {})], { stdio: 'inherit', cwd: KOK });
+    return;
+  }
   execFileSync('node', [ESYA_KES, '--girdi', girdi, '--cikti', CIKTI, '--esit', `^${hayvan}-`, '--esit-hiza', hiza, '--max', '1100'], { stdio: 'inherit', cwd: KOK });
   await gozYamasi(hayvan, kareler.includes('bos') ? 'bos' : 'yuz1', 'goz');
 }
@@ -188,7 +201,13 @@ async function gozYamasi(hayvan, ana, goz) {
     const ax = k.x + x, ay = k.y + y, bx = ax + ox, by = ay + oy, o = (y * k.w + x) * 4;
     if (bx < 0 || by < 0 || bx >= W || by >= H) continue;
     const bi = (by * W + bx) * 4, ai = (ay * W + ax) * 4;
-    const yum = Math.min(1, Math.min(x, y, k.w - 1 - x, k.h - 1 - y) / kenar);
+    // yalnız iki gözün kendi kutusu (ağız ve burun yamaya girmez: arada kayma olsa da çift görünmez)
+    let yum = 0;
+    for (const g of cift) {
+      const bx0 = g.x0 - gw * 0.5 - k.x, bx1 = g.x1 + gw * 0.5 - k.x, by0 = g.y0 - gh * 0.75 - k.y, by1 = g.y1 + gh * 0.4 - k.y;
+      const ic = Math.min(x - bx0, bx1 - x, y - by0, by1 - y);
+      yum = Math.max(yum, Math.min(1, Math.max(0, ic / (gw * 0.22))));
+    }
     out[o] = B.data[bi]; out[o + 1] = B.data[bi + 1]; out[o + 2] = B.data[bi + 2];
     out[o + 3] = Math.round(Math.min(A.data[ai + 3], B.data[bi + 3]) * yum);
   }
@@ -207,4 +226,7 @@ async function gozYamasi(hayvan, ana, goz) {
   if (yap('salon')) await salon();
   if (yap('esya')) await esya();
   if (yap('poz')) for (const [h, k] of Object.entries(SAYFALAR)) await sayfaKes(h, k);
+  // G4 eşya sayfası (3×4): esya-<ad>.webp; oyun geçici eşyaların yerine bunları kendiliğinden seçer
+  if (yap('esya-sayfa'))
+    await sayfaKes('esya', ESYA_SAYFA, { dosya: 'esya-sayfasi.png', esya: true, ayar: { 'esya-dusunce-balonu': { minOran: 0.0005 }, 'esya-tuy-degnek': { minOran: 0.0005 } } });
 })();

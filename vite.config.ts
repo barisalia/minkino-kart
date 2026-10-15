@@ -2,7 +2,7 @@ import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
-import { KINO_OTOBUS_MENUDE } from './uygulama/src/oyunlar';
+import { KINO_OTOBUS_MENUDE, PATI_MENUDE } from './uygulama/src/oyunlar';
 
 // Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
 // Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/), Dedektif Mino (/dedektif/) …; /uygulama/ eski menü adresi, köke yönlendirir;
@@ -20,6 +20,8 @@ const SAYFALAR = {
   // KINO_OTOBUS_MENUDE; kapalıyken aşağıda UYGULAMADA_YOK); web'de /kino-otobus/ her zaman açılır
   kinoOtobus: 'kino-otobus/index.html',
   dedektif: 'dedektif/index.html',
+  // Pati Dükkânı (İlk Gün dilimi): menüde değil; uygulama derlemesine PATI_MENUDE true olunca girer (uygulama/src/oyunlar.ts)
+  pati: 'pati/index.html',
   giysin: 'giysin/index.html',
   film: 'film/index.html',
   // Oyunlu çizgi film (Kino ve Ailesi) deneme sayfası: yalnız web'de, menüde yok; Barış onaylayınca uygulamaya girer
@@ -38,7 +40,7 @@ const SAYFALAR = {
  *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus'])];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 

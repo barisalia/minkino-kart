@@ -1,0 +1,42 @@
+{
+  "aciklama": "Pati Dükkânı · İlk Gün dilimi (ekip/senaryo/pet-dukkani.md §15, ekip/OYUN-GELISTIRME-3GUN.md İş 1). Konuşan tek kişi Nehir abla; hayvanlar konuşmaz. gun1: [hayvan, ihtiyaç] (sıra oyunda küçük rastgelelikle karışır).",
+  "arayuz": {
+    "baslik": "Pati Dükkânı",
+    "yas_kucuk": "3-4",
+    "yas_buyuk": "5-6"
+  },
+  "gun1": [
+    ["findik", "ac"],
+    ["tarcin", "oyun"],
+    ["piril", "ac"],
+    ["findik", "oyun"],
+    ["tarcin", "usudu"]
+  ],
+  "nehir": {
+    "gunaydin": "Günaydın ortağım!",
+    "ihtiyac": {
+      "ac": "Karnı acıkmış.",
+      "oyun": "Oyun oynamak istiyor.",
+      "usudu": "Üşümüş."
+    },
+    "ipucu": {
+      "ac": "Bak, kulakları düştü.",
+      "oyun": "Kuyruğu sallanıyor, sıkıldı.",
+      "usudu": "Titriyor, üşümüş."
+    },
+    "iki_olcek": "İki ölçek mama.",
+    "bir_tutam": "Bir tutam yeter.",
+    "bak_boyle": "Bak, böyle!",
+    "birlikte": "Birlikte bitirelim.",
+    "bayildi": {
+      "findik": "Fındık sana bayıldı!",
+      "tarcin": "Tarçın sana bayıldı!",
+      "piril": "Pırıl sana bayıldı!"
+    },
+    "herkes_uyusun": "Herkes uyusun.",
+    "isigi_kapat": "Işığı kapatalım.",
+    "iyi_geceler": "İyi geceler, minikler!",
+    "yarin": "Yarın görüşürüz!",
+    "sayi": ["Bir!", "İki!"]
+  }
+}

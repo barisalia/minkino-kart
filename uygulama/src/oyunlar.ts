@@ -164,6 +164,11 @@ export function menuOyunlari(uygulama: boolean): OyunKarti[] {
  * (vite.config.ts → UYGULAMADA_YOK bu bayrağa bağlı).
  */
 export const KINO_OTOBUS_MENUDE = true;
+/**
+ * Pati Dükkânı ("İlk Gün" dilimi): Barış görüp "tamam" deyince true olur. false: menüde yok, sayfa uygulama derlemesine
+ * girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /pati/ adresinden açılır.
+ */
+export const PATI_MENUDE = false;
 export const KINO_OTOBUS_KARTI: OyunKarti = {
   id: 'kino-otobus',
   ad: 'Kino’nun Otobüsü',

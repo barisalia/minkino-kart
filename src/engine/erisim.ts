@@ -47,6 +47,9 @@ export const ERISIM: Record<string, Erisim> = {
   // abonelikle ('kino-otobus/susler'). Yaş ayarı kilitlenmez.
   'kino-otobus/gun-1': 'ucretsiz',
   'kino-otobus/*': 'abonelik',
+  // Pati Dükkânı: Bölüm 1 "Dükkân Açılıyor" (Fındık, Tarçın, Pırıl) ücretsiz; Bölüm 2-3 abonelikle
+  'pati/bolum-1': 'ucretsiz',
+  'pati/*': 'abonelik',
 };
 
 /** Tablodan bir içeriğin erişim türü (oyun ya da 'oyun/bolum') */

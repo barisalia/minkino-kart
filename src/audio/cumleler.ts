@@ -16,6 +16,7 @@ import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri } from '../../kino-otobus/src/model';
 import giysinJson from '../../content/giysin.json';
+import patiJson from '../../content/pati.json';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -217,6 +218,8 @@ export function tumCumleler(): string[] {
   // Kino'nun Otobüsü: Mino (anlatıcı) ve istek parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
   kinoOtobusCumleleri().forEach(ekle);
   kinoOtobusKinoCumleleri().forEach(ekle);
+  // Pati Dükkânı (İlk Gün dilimi): yalnız Nehir abla konuşur (hayvan sesleri Web Audio)
+  topla(patiJson.nehir).forEach(ekle);
   return [...set];
 }
 
