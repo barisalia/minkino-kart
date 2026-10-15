@@ -234,9 +234,9 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     oy.ada.katman = 4;
     await soyle(D.surpriz_simdi);
     await surprizBekle();
-    // ışıklar yanar, herkes fırlar
-    await sahne.isik(true, 250);
+    // ışıklar yanar, herkes fırlar; Ada'nın karartması ışıkla birlikte kalkar (oda aydınlanıp Ada bir an kara siluet kalmasın)
     oy.ada.el.classList.remove('karanlikta');
+    await sahne.isik(true, 250);
     minoKutu.classList.remove('sakli');
     efektCal('duduk', 900);
     sahne.titret(1);
