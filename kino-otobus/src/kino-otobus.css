@@ -2521,12 +2521,13 @@
 .ko-kok .ko-kino-yer {
   transition: transform 0.22s cubic-bezier(0.3, 1.3, 0.5, 1);
 }
-/* Kino çakarken hoplar: tezgâhın arkasındaki kalkık patisi görünür */
+/* Kino çakarken hoplar: tezgâhın arkasındaki kalkık patisi görünür. Yana kayma (--cak-x) gun.ts → cakYap'ta ölçülür:
+   Kino müşterinin yanında kalır, başı yüzünün önüne geçmez */
 .ko-kok .ko-kino-yer.ko-cak-sol {
-  transform: translateX(-50%) translate(-12%, -16%) rotate(-5deg);
+  transform: translateX(-50%) translate(var(--cak-x, 0px), -16%) rotate(-5deg);
 }
 .ko-kok .ko-kino-yer.ko-cak-sag {
-  transform: translateX(-50%) translate(12%, -16%) rotate(5deg);
+  transform: translateX(-50%) translate(var(--cak-x, 0px), -16%) rotate(5deg);
 }
 .ko-kok .ko-m-yol {
   transition:
@@ -2534,11 +2535,11 @@
     rotate 0.22s;
 }
 .ko-kok .ko-musteri[data-taraf='sol'].ko-cak .ko-m-yol {
-  translate: 9% 0;
+  translate: var(--cak-m, 0px) 0;
   rotate: 4deg;
 }
 .ko-kok .ko-musteri[data-taraf='sag'].ko-cak .ko-m-yol {
-  translate: -9% 0;
+  translate: var(--cak-m, 0px) 0;
   rotate: -4deg;
 }
 

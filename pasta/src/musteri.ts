@@ -9,6 +9,7 @@
 import { BOY, boyOrani, boyTipi, CIZIM, altPayi, ustPayi, yanOlcek } from '../../src/karakter/boy';
 import { Karakter, type Poz } from '../../src/karakter/karakter';
 import { YandanKarakter, yandanVar } from '../../src/karakter/yandan';
+import { genislet, kesisir, yuzKutulari, type YuzKutulari } from '../../src/karakter/yuz';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { SEVIYE_TANE } from './desen';
 import { bardakSvg, urunSvg } from './cizim';
@@ -365,15 +366,72 @@ export class PastaMusteri {
     });
     this.balon.append(yanYana);
     this.balon.classList.add('ps-karsilastir');
+    // genişleyen balon pencereye sığmak için kayınca başın önüne gelebilir: yüzün yanına (sığmazsa küçülerek) alınır
+    this.balonuYuzdenAyir();
+    requestAnimationFrame(() => this.balonuYuzdenAyir());
   }
 
-  /** Yer: tabaktaki ilk parça ağzının önüne gelir, üç ısırıkta biter (kırıntılar) */
-  async ye(resim: string, sonuk?: string) {
+  /** Göz + kaş ve ağız kutuları (ekran) */
+  yuz(): YuzKutulari {
+    return yuzKutulari(this.karakter.el);
+  }
+
+  /**
+   * Karşılaştırma balonu yüzü örtüyorsa yüzün daha geniş yanına taşınır (pencerenin içinde kalır); yer dar ise o yana
+   * sığacak kadar küçülür. Şaşkın ve mutlu yüz baştan sona açıkta kalır.
+   */
+  private balonuYuzdenAyir() {
+    const b = this.balon;
+    if (!b.isConnected || !b.classList.contains('ps-karsilastir')) return;
+    b.style.translate = '';
+    b.style.scale = '';
+    const yuz = this.yuz().yuz;
+    const r = b.getBoundingClientRect();
+    if (!yuz || !r.width) return;
+    const pay = Math.max(6, r.height * 0.06);
+    const y = genislet(yuz, pay);
+    if (!kesisir(y, r)) return;
+    const sinir = (this.el.closest('.ps-gun')?.querySelector('.ps-pencere') ?? this.el.closest('.ps-gun') ?? document.body).getBoundingClientRect();
+    const sag = sinir.right - pay - y.right;
+    const sol = y.left - (sinir.left + pay);
+    const yer = Math.max(sag, sol);
+    const olcek = Math.max(0.55, Math.min(1, yer / r.width));
+    const en = r.width * olcek;
+    const hedefSol = sag >= sol ? y.right : y.left - en;
+    b.style.transformOrigin = '0 0';
+    b.style.scale = olcek < 1 ? String(olcek.toFixed(3)) : '';
+    b.style.translate = `${(hedefSol - r.left).toFixed(1)}px 0`;
+  }
+
+  /** Kurabiyenin tadımdaki yeri (yolun içinde, oran): ortası ağzın ortası, tepesi alt dudakta; göz ve kaşlar hep açıkta */
+  agizAlti(): [number, number] {
     const [ax, ay] = this.karakter.k.agiz;
-    const lokma = h('div.ps-m-lokma', { style: `left:${ax * 100}%;top:${ay * 100}%`, html: resim });
+    const yol = this.yol.getBoundingClientRect();
+    const { goz, agiz } = this.yuz();
+    if (!agiz || !yol.width || !yol.height) return [ax, ay];
+    const temas = Math.max(agiz.bottom - (agiz.bottom - agiz.top) * 0.15, goz ? goz.bottom + 2 : -1e9);
+    return [((agiz.left + agiz.right) / 2 - yol.left) / yol.width, (temas - yol.top) / yol.height];
+  }
+
+  /** Kurabiyenin yeneceği nokta (ekran): ağzın ortasının hemen altı */
+  lokmaNoktasi(): [number, number] {
+    const [ax, ay] = this.agizAlti();
+    const yol = this.yol.getBoundingClientRect();
+    return [yol.left + yol.width * ax, yol.top + yol.height * ay];
+  }
+
+  /** Yer: tabaktaki ilk parça ağzının hemen altına gelir (tepesi alt dudakta), üç ısırıkta biter (kırıntılar) */
+  async ye(resim: string, sonuk?: string) {
+    const [ax, ay] = this.agizAlti();
+    const lokma = h('div.ps-m-lokma.ps-m-lokma-alt', { style: `left:${ax * 100}%;top:${ay * 100}%`, html: resim });
     this.yol.append(lokma);
+    // görünen çizimin tepesi tam alt dudakta (kutunun boş üstü kadar yukarı)
+    const ciz = lokma.querySelector('svg, img')?.getBoundingClientRect();
+    const kutu = lokma.getBoundingClientRect();
+    const yolK = this.yol.getBoundingClientRect();
+    if (ciz && ciz.height && yolK.height && ciz.top !== kutu.top) lokma.style.top = `${((ay - (ciz.top - kutu.top) / yolK.height) * 100).toFixed(2)}%`;
     await lokma
-      .animate([{ transform: 'translate(-50%, -50%) translateY(60%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%, -50%) scale(1.1)', opacity: 1, offset: 0.7 }, { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }], {
+      .animate([{ transform: 'translate(-50%, 0) translateY(40%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%, 0) scale(1.1)', opacity: 1, offset: 0.7 }, { transform: 'translate(-50%, 0) scale(1)', opacity: 1 }], {
         duration: sure(360),
         easing: 'cubic-bezier(.3,1.5,.5,1)',
         fill: 'forwards',
@@ -392,7 +450,7 @@ export class PastaMusteri {
       // her ısırık: "ham"
       ses.ham();
       const kalan = 1 - (i + 1) / 3;
-      lokma.animate([{ transform: `translate(-50%, -50%) scale(${(kalan + 1 / 3).toFixed(2)})` }, { transform: `translate(-50%, -50%) scale(${Math.max(0.05, kalan).toFixed(2)}) rotate(${i % 2 ? -8 : 8}deg)` }], {
+      lokma.animate([{ transform: `translate(-50%, 0) scale(${(kalan + 1 / 3).toFixed(2)})` }, { transform: `translate(-50%, 0) scale(${Math.max(0.05, kalan).toFixed(2)}) rotate(${i % 2 ? -8 : 8}deg)` }], {
         duration: sure(200),
         fill: 'forwards',
       });
@@ -408,8 +466,9 @@ export class PastaMusteri {
       const p = h('i.ps-m-kirinti', { style: `left:${ax * 100}%;top:${ay * 100}%` });
       this.yol.append(p);
       const dx = ras(-50, 50);
-      const dy = ras(-40, -12);
-      p.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx * 0.6}px, ${dy}px)`, opacity: 1, offset: 0.35 }, { transform: `translate(${dx}px, ${-dy * 1.8}px) rotate(120deg)`, opacity: 0 }], {
+      // kırıntılar yana saçılıp aşağı düşer (yukarı, gözlere uçmaz)
+      const dy = ras(4, 12);
+      p.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx * 0.6}px, ${dy}px)`, opacity: 1, offset: 0.35 }, { transform: `translate(${dx}px, ${dy * 5}px) rotate(120deg)`, opacity: 0 }], {
         duration: 650,
         easing: 'ease-out',
       }).finished.then(

@@ -14,6 +14,7 @@ import K from '../../content/kino-otobus.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import type { Soylenecek } from '../../src/audio/konusma';
 import { arkaPlanDinle } from '../../src/kabuk/yon';
+import { birlesim, genislet, kaydir, kavisKacir, yuzKutulari, type Kutu } from '../../src/karakter/yuz';
 import { Mino } from '../../src/mino/mino';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
@@ -1259,13 +1260,28 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   }
 
   /** Jetonlar müşteriden kumbara kavanozuna yay çizerek düşer (havada jeton kalmaz) */
+  /** Ekrandaki bütün yüzler (müşteriler ve Kino), efekt katmanına göre, pay kadar büyütülmüş */
+  function yuzEngelleri(pay: number): Kutu[] {
+    const k = efekt_.kutu();
+    const yuzler = [...slotlar.flatMap((s) => (s.musteri ? [s.musteri.yuz().yuz] : [])), yuzKutulari(kinoYer).yuz];
+    return yuzler.flatMap((y) => (y ? [genislet(kaydir(y, -k.left, -k.top), pay)] : []));
+  }
+
   async function jetonVer(m: Musteri, adet: number) {
-    const bas = efekt_.merkez(m.el, 0.5, 0.35);
+    // paralar yüzden değil gövdeden çıkar (ağzın altı, tezgâh çizgisinin hemen üstü) ve yüzlerin altından kumbaraya akar
+    const kat = efekt_.kutu();
+    const jy = 15 * birim();
+    const { yuz } = m.yuz();
+    const pen = pencere.getBoundingClientRect();
+    const govdeY = Math.max(yuz ? yuz.bottom + jy + 2 : 0, pen.bottom - jy * 1.4) - kat.top;
+    const bas: [number, number] = yuz ? [(yuz.left + yuz.right) / 2 - kat.left, govdeY] : efekt_.merkez(m.el, 0.5, 0.85);
     const hedef = efekt_.merkez(kumbara, 0.5, 0.3);
-    efekt_.yazi(bas[0], bas[1] - 20, `+${adet}`);
+    const kavis = kavisKacir(bas, hedef, -60, yuzEngelleri(jy + 4 * birim()));
+    // "+n" kumbaranın üstünde belirir (yüzün önünde değil)
+    efekt_.yazi(hedef[0], hedef[1] - 34 * birim(), `+${adet}`);
     await Promise.all(
       Array.from({ length: adet }, async (_, i) => {
-        await efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), bas, hedef, { ms: 620, gecikme: i * 140, kavis: -120, boy0: 1, boy1: 0.6, don: 360 });
+        await efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), bas, hedef, { ms: 620, gecikme: i * 140, kavis, boy0: 1, boy1: 0.6, don: 360 });
         if (kapandi) return;
         bugun++;
         kumbaraSayi.textContent = String(bugun);
@@ -1287,6 +1303,9 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     }
     m.bitti = true;
     m.el.classList.add('ko-bitti');
+    // şaşırma, tadım ve sevinç boyunca istek balonu yüzün önüne kaymaz (müşteri hoplayıp dans ederken de)
+    m.balonuYuzdenAyir();
+    const balonIzle = window.setInterval(() => (kapandi || !m.el.isConnected ? clearInterval(balonIzle) : m.balonuYuzdenAyir()), 200);
     const verilen: Dondurma[] = s.yuva.kaplar.map((d) => ({ ...d, toplar: [...d.toplar], susler: [...d.susler] }));
     const sonuc = siparisSonucu(m.sip, verilen);
     const dogumgunu = m.sip.tur === 'dogumgunu';
@@ -1315,9 +1334,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (lekeDuserMi(++verilenSayisi, temizlik.sayi, m.sip.tur === 'ogretici')) lekeleriDusur();
     const kisiEl = m.anaKisi.el;
     const [ax, ay] = m.anaKisi.agiz();
-    const hedef = efekt_.merkez(kisiEl, ax, ay);
+    // dondurma tadımdaki yerine uçar: ağzın hemen altı (yüzün önünden geçmez, göz ve kaşlar açıkta)
+    const kat = efekt_.kutu();
+    const ly = m.lokmaYeri();
+    // görünen dondurmanın (kutunun içindeki çizimler) tepesi ağzın altına iner; uçuş alttan gelir (aşağı kavis) ve
+    // hiç büyümez: tepesi yol boyunca son yerinin, yani alt dudağın üstüne çıkmaz
+    const kk = s.kuleKap.getBoundingClientRect();
+    const ciz = birlesim([...s.kuleKap.querySelectorAll('.ko-g, img, svg')].map((e) => e.getBoundingClientRect())) ?? kk;
+    const boy1 = 0.75;
+    const hedef: [number, number] = dogumgunu
+      ? efekt_.merkez(kisiEl, ax, ay)
+      : [ly.x - kat.left - boy1 * ((ciz.left + ciz.right) / 2 - (kk.left + kk.width / 2)), ly.ust - kat.top - boy1 * (ciz.top - (kk.top + kk.height / 2))];
     kopya.classList.add('ko-ucan-kule');
-    await efekt_.ucur(kopya, bas, hedef, { ms: 480, kavis: -110, boy1: 0.8 });
+    await efekt_.ucur(kopya, bas, hedef, dogumgunu ? { ms: 480, kavis: -110, boy1: 0.8 } : { ms: 480, kavis: 30, boy0: 0.85, boy1 });
     if (kapandi) return;
     const lokma = kopya.cloneNode(true) as HTMLElement;
     lokma.classList.remove('ko-ucan-kule');
@@ -1349,17 +1378,18 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       await bekle(600);
       if (kapandi) return;
     }
-    await m.tat(lokma, pembe);
+    await m.tat(lokma, pembe, efekt_);
     if (kapandi) return;
     const limonlu = verilen.some((d) => d.toplar.includes('limon'));
     m.soz(m.ad === 'ordek' && limonlu ? K.balon.ordek : K.balon.genel[m.sip.no % K.balon.genel.length]);
-    const [hx, hy] = efekt_.merkez(m.el, 0.5, 0.3);
+    // sevinç efektleri başın üstünde açılır ve yukarı uçar: mutlu yüz hep açıkta
+    const [hx, hy] = m.basUstu(efekt_, 14 * birim());
     if (sonuc.ayni) {
       mutlu++;
       efekt.dogru();
-      efekt_.konfeti(hx, hy);
+      efekt_.konfeti(hx, hy, 20, 0);
       efekt_.kalpler(hx, hy, 7);
-      efekt_.buyukKalp(...efekt_.merkez(m.el, 0.5, 0.08));
+      efekt_.buyukKalp(...m.basUstu(efekt_, 40 * birim()));
       salla(m.el, 'ko-cok-mutlu');
       m.mutlu(2200);
       void soyle(K.mino.tam, 'mino', false);
@@ -1375,6 +1405,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const jeton = jetonVer(m, jetonHesapla(sonuc.ayni));
     await atlanabilir(s, Promise.all([m.dans(), cakYap(s, m)]));
     if (kapandi) return;
+    clearInterval(balonIzle);
     const gidis = m.git();
     await jeton;
     if (kapandi) return;
@@ -1432,19 +1463,45 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       kino.ek(`${kolId}-yukari`, true);
       kino.gizle(kolId, true);
     }
+    // Kino müşterinin YANINA hoplar, yüzünün önüne geçmez: başı (kulaklar, şapka) ile müşterinin yüzü arasındaki boşluk
+    // ölçülür; Kino ve müşterinin birbirine eğilmesi bu boşluğu aşmaz (boşluk yoksa Kino biraz geri çekilir)
+    const yuz = m.yuz().yuz;
+    const kinoBas = birlesim(['kafa', 'kulak-sol', 'kulak-sag', 'kopuk-sac'].map((id) => kino.parcaG(id)?.getBoundingClientRect()));
+    const yerK = kinoYer.getBoundingClientRect();
+    const yolK = m.el.getBoundingClientRect();
+    let kinoKay = 0.12 * yerK.width;
+    let musteriKay = 0.09 * yolK.width;
+    if (yuz && kinoBas) {
+      // pay: müşteri sevinçle hoplarken yüzü biraz kayar
+      const pay = 8 * birim() + (yuz.right - yuz.left) * 0.08;
+      const bosluk = cakYon < 0 ? kinoBas.left - yuz.right : yuz.left - kinoBas.right;
+      // eğilmenin payı: Kino 5° (başı müşteriye doğru), müşteri 4° (yüzün merkezin üstündeki kısmı Kino'ya doğru)
+      const kinoEgim = Math.sin((5 * Math.PI) / 180) * Math.max(0, yerK.top + yerK.height / 2 - kinoBas.top);
+      const musteriEgim = Math.sin((4 * Math.PI) / 180) * Math.max(0, yolK.top + yolK.height / 2 - yuz.top);
+      const kalan = bosluk - pay - kinoEgim - musteriEgim;
+      kinoKay = Math.max(-0.1 * yerK.width, Math.min(kinoKay, kalan > 0 ? kalan * 0.65 : kalan));
+      musteriKay = Math.max(0, Math.min(musteriKay, kalan - kinoKay));
+    }
+    kinoYer.style.setProperty('--cak-x', `${(cakYon * kinoKay).toFixed(1)}px`);
+    m.el.style.setProperty('--cak-m', `${(-cakYon * musteriKay).toFixed(1)}px`);
     kinoYer.classList.add(sinif);
     m.el.classList.add('ko-cak');
     await bekle(330);
     if (kapandi) return;
     const k = kino.el.getBoundingClientRect();
-    const kisi = m.anaKisi.el.getBoundingClientRect();
     const kk = efekt_.kutu();
-    // patiler buluşur: Kino'nun kafasının müşteri yanındaki kenarı (Kino ile müşterinin arası), yanak hizası
+    // patiler buluşur: yıldız Kino ile müşterinin arasında, iki yüzün de üstünde (hiçbir yüzün önüne düşmez)
     const kafa = kino.parcaG('kafa')?.getBoundingClientRect();
-    if (k.width && kisi.width) {
-      const x = kafa?.width ? (cakYon < 0 ? kafa.left : kafa.right) : cakYon < 0 ? k.left + k.width * 0.2 : k.right - k.width * 0.2;
-      const y = kafa?.height ? kafa.top + kafa.height * 0.6 : k.top + k.height * 0.3;
-      efekt_.cak(x - kk.left + cakYon * 6 * birim(), y - kk.top);
+    if (k.width) {
+      const boy = 0.7;
+      const r = 64 * boy * 0.75 * birim();
+      const musYuz = m.yuz().yuz;
+      const kinoYuz = yuzKutulari(kinoYer).yuz;
+      const kinoKenar = kafa?.width ? (cakYon < 0 ? kafa.left : kafa.right) : cakYon < 0 ? k.left + k.width * 0.2 : k.right - k.width * 0.2;
+      const x = musYuz ? (kinoKenar + (cakYon < 0 ? musYuz.right : musYuz.left)) / 2 : kinoKenar;
+      const ust = Math.min(musYuz?.top ?? 1e9, kinoYuz?.top ?? 1e9, kafa?.height ? kafa.top + kafa.height * 0.4 : k.top + k.height * 0.2);
+      const y = Math.max(kk.top + r * 0.7, ust - r);
+      efekt_.cak(x - kk.left, y - kk.top, boy);
     }
     ses.cak();
     seyrekSoyle(K.kino.cak, 'kino', 9000);

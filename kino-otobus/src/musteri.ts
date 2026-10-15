@@ -10,7 +10,8 @@ import { Karakter } from '../../src/karakter/karakter';
 import { Mino } from '../../src/mino/mino';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { ARTI, GUNES, OK, TER } from './cizim';
-import { AZ_HAREKET } from './efekt';
+import { birlesim, genislet, kesisir, yuzKutulari, type YuzKutulari } from '../../src/karakter/yuz';
+import { AZ_HAREKET, type Efekt } from './efekt';
 import { kuleCiz, kuleOlcu, type KuleVeri } from './kule';
 import { type Fark, type Istenen, type Siparis } from './model';
 import { gorsel, topAdi } from './varliklar';
@@ -108,7 +109,8 @@ class Kisi {
   }
   oynat(ad: 'var' | 'sevin' | 'dans' | 'ye' | 'bak' | 'yuru', ms: number): Promise<void> {
     if (this.karakter) return this.karakter.oynat(ad, ms);
-    const t = ({ var: 'selam', sevin: 'sevinc', dans: 'dans', ye: 'ham', bak: 'evet', yuru: 'zipla' } as const)[ad];
+    // Mino müşteri dans yerine yerinde hoplar (sevinç): dansın yana salınışı yüzünü Kino'nun başının arkasına sokuyordu
+    const t = ({ var: 'selam', sevin: 'sevinc', dans: 'sevinc', ye: 'ham', bak: 'evet', yuru: 'zipla' } as const)[ad];
     this.mino?.tepki(t);
     return bekle(ms);
   }
@@ -124,6 +126,10 @@ class Kisi {
   }
   gozKapa(ms: number) {
     if (this.karakter?.ifadeVar('keyif')) this.karakter.ifade('keyif', ms);
+  }
+  /** Göz + kaş ve ağız kutuları (ekran) */
+  yuz(): YuzKutulari {
+    return yuzKutulari(this.el);
   }
   agiz(): [number, number] {
     if (this.karakter) return this.karakter.k.agiz;
@@ -214,6 +220,36 @@ export class Musteri {
     b.classList.add('ko-soz-acil');
   }
 
+  /**
+   * İstek balonu yüzün önüne binmesin (dar dikey telefonda Mino, sevinip hoplarken balonun altına kayıyordu): balon
+   * yüzden dışa doğru (pencerenin içinde kalarak) kayar, yer yetmezse dış kenarından küçülür.
+   */
+  balonuYuzdenAyir() {
+    const b = this.balon;
+    if (!b.isConnected) return;
+    b.style.translate = '';
+    b.style.scale = '';
+    const y = this.yuz().yuz;
+    const r = b.getBoundingClientRect();
+    if (!y || !r.width) return;
+    const yuz = genislet(y, (y.right - y.left) * 0.12);
+    const solda = r.left + r.width / 2 < (yuz.left + yuz.right) / 2;
+    // balonun yüze bakan kuyruğu (::after) da sayılır
+    const kuyruk = r.width * 0.12;
+    const rk = { left: solda ? r.left : r.left - kuyruk, right: solda ? r.right + kuyruk : r.right, top: r.top, bottom: r.bottom };
+    if (!kesisir(yuz, rk)) return;
+    const pen = (b.closest('.ko-pencere') ?? document.body).getBoundingClientRect();
+    const tasma = solda ? rk.right - yuz.left : yuz.right - rk.left;
+    const yer = Math.max(0, solda ? r.left - pen.left - 2 : pen.right - 2 - r.right);
+    const kay = Math.min(tasma, yer);
+    const kalan = tasma - kay;
+    if (kay > 0.5) b.style.translate = `${(solda ? -kay : kay).toFixed(1)}px 0`;
+    if (kalan > 0.5) {
+      b.style.transformOrigin = solda ? '0 50%' : '100% 50%';
+      b.style.scale = Math.max(0.6, (r.width - kalan) / r.width).toFixed(3);
+    }
+  }
+
   /** Farklı olan parçalar balonda bir an parlar */
   karsilastir(farklar: Fark[][]) {
     const f = [...new Set(farklar.flat())];
@@ -222,27 +258,72 @@ export class Musteri {
     window.setTimeout(() => this.balon.classList.remove('ko-farkli'), TEST_MODU ? 50 : 1800);
   }
 
+  /** Bütün kişilerin yüz kutuları birlikte (paylaşmada iki kardeş) */
+  yuz(): YuzKutulari {
+    const y = this.kisiler.map((k) => k.yuz());
+    const goz = birlesim(y.map((x) => x.goz));
+    const agiz = birlesim(y.map((x) => x.agiz));
+    return { goz, agiz, yuz: birlesim([goz, agiz]) };
+  }
+
   /**
-   * Tadım: dondurma ağzının önüne gelir; gözlerini kapayıp yalar (girdi kilitlenmez). resim: kulenin kopyası.
-   * Pamuk pembe dondurmada yanakları kızarır; ayının burnuna dondurma bulaşır.
+   * Dondurmanın tadımdaki yeri (ekran): ortası ağzın ortası, görünen tepesi alt dudakta (göz ve kaşlar hep açıkta).
+   * Ağız kutusu yoksa (iskelet yüklenmeden) kişiliğin ağız noktası.
    */
-  async tat(resim: HTMLElement, pembe: boolean) {
+  lokmaYeri(): { x: number; ust: number; en: number } {
     const k = this.anaKisi;
+    const kr = k.el.getBoundingClientRect();
+    const { goz, agiz } = k.yuz();
     const [ax, ay] = k.agiz();
-    const lokma = h('div.ko-m-lokma', { style: `left:${ax * 100}%;top:${ay * 100}%` }, resim);
-    k.el.append(lokma);
+    const x = agiz ? (agiz.left + agiz.right) / 2 : kr.left + kr.width * ax;
+    const temas = agiz ? agiz.bottom - (agiz.bottom - agiz.top) * 0.15 : kr.top + kr.height * ay;
+    return { x, ust: Math.max(temas, goz ? goz.bottom + 2 : -1e9), en: kr.width * 0.6 };
+  }
+
+  /**
+   * Tadım: dondurma ağzın hemen ALTINA gelir (tepesi alt dudağa değer; göz ve kaşlar hep açıkta), gözlerini kapayıp yalar
+   * (girdi kilitlenmez). resim: kulenin kopyası. Pencere tezgâh çizgisinde kesildiği için dondurma efekt katmanında
+   * durur: müşteri onu tezgâhın üstünde tutar. Pamuk pembe dondurmada yanakları kızarır; ayının burnuna dondurma bulaşır.
+   */
+  async tat(resim: HTMLElement, pembe: boolean, efekt: Efekt) {
+    const k = this.anaKisi;
+    const kat = efekt.kutu();
+    const yer = this.lokmaYeri();
+    const lokma = h('div.ko-m-lokma.ko-m-lokma-alt', { style: `left:${(yer.x - kat.left).toFixed(1)}px;top:${(yer.ust - kat.top).toFixed(1)}px;width:${yer.en.toFixed(1)}px` }, resim);
+    efekt.el.append(lokma);
+    // görünen dondurmanın (kap ve top çizimleri) tepesi tam alt dudakta (kule kutunun tabanından yukarı çizilir)
+    // (kule kutusu sıfır yükseklikte, çizim tabandan yukarı taşar: ölçüler px; yüzde kullanılmaz, dönüşüm kökü çizimin tepesi)
+    const kutu = lokma.getBoundingClientRect();
+    const cizim = birlesim([...lokma.querySelectorAll('.ko-g, img, svg')].map((e) => e.getBoundingClientRect()));
+    const fark = cizim ? cizim.top - kutu.top : 0;
+    const yb = cizim ? cizim.bottom - cizim.top : 0;
+    lokma.style.top = `${(yer.ust - kat.top - fark).toFixed(1)}px`;
+    lokma.style.transformOrigin = `${(kutu.width / 2).toFixed(1)}px ${fark.toFixed(1)}px`;
+    const tx = `translateX(${(-kutu.width / 2).toFixed(1)}px)`;
+    const ty = (oran: number) => `translateY(${(yb * oran).toFixed(1)}px)`;
+    lokma.style.transform = `${tx} scale(.3)`;
     if (this.ad === 'pamuk' && pembe) this.el.classList.add('ko-kizardi');
     if (this.ad === 'ayi') this.el.classList.add('ko-burun');
-    await lokma.animate([{ transform: 'translate(-50%, -30%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%, -40%) scale(1)', opacity: 1 }], { duration: sure(300), easing: 'cubic-bezier(.3,1.5,.5,1)', fill: 'forwards' }).finished.catch(() => undefined);
+    await lokma.animate([{ transform: `${tx} ${ty(0.12)} scale(.3)`, opacity: 0 }, { transform: `${tx} ${ty(0)} scale(1)`, opacity: 1 }], { duration: sure(300), easing: 'cubic-bezier(.3,1.5,.5,1)', fill: 'forwards' }).finished.catch(() => undefined);
     k.gozKapa(1100);
     void k.oynat('ye', 1000);
     for (const kk of this.kisiler.slice(1)) void kk.oynat('ye', 1000);
     for (let i = 0; i < 2; i++) {
-      lokma.animate([{ transform: 'translate(-50%, -40%) scale(1)' }, { transform: 'translate(-50%, -46%) scale(.94, 1.04)' }, { transform: 'translate(-50%, -40%) scale(1)' }], { duration: sure(300) });
+      // yalar: dondurma ağza doğru hafifçe uzanıp iner (tepesi ağzın ortasını geçmez)
+      lokma.animate([{ transform: `${tx} ${ty(0)} scale(1)` }, { transform: `${tx} ${ty(-0.03)} scale(.96, 1.03)` }, { transform: `${tx} ${ty(0)} scale(1)` }], { duration: sure(300) });
       await bekle(330);
     }
-    await lokma.animate([{ opacity: 1 }, { opacity: 0, transform: 'translate(-50%, -20%) scale(.6)' }], { duration: sure(260), fill: 'forwards' }).finished.catch(() => undefined);
+    await lokma.animate([{ transform: `${tx} ${ty(0)} scale(1)`, opacity: 1 }, { opacity: 0, transform: `${tx} ${ty(0.18)} scale(.6)` }], { duration: sure(260), fill: 'forwards' }).finished.catch(() => undefined);
     lokma.remove();
+  }
+
+  /** Başın üstü (efekt katmanına göre): kalpler, konfeti burada açılır, yüze inmez. yari: efektin yarı boyu (px) */
+  basUstu(efekt: Efekt, yari: number): [number, number] {
+    const k = efekt.kutu();
+    const { goz, yuz } = this.yuz();
+    if (!goz || !yuz) return efekt.merkez(this.el, 0.5, 0.12);
+    const alin = goz.top - (goz.bottom - goz.top) * 0.5;
+    return [(yuz.left + yuz.right) / 2 - k.left, Math.max(yari, alin - yari - k.top)];
   }
 
   mutlu(ms = 1600) {

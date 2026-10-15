@@ -127,7 +127,8 @@ export class Efekt {
     );
   }
 
-  konfeti(x: number, y: number, adet = 20) {
+  /** dus: patlayan konfetinin sonra aşağı düşüşü (px); başın üstünde 0 verilir ki yüze inmesin */
+  konfeti(x: number, y: number, adet = 20, dus = 150) {
     if (sakin()) return;
     const renkler = ['#FF8DB4', '#FFE45C', '#8ED3F2', '#A9DB8C', '#8C88E0', '#FFF1C2'];
     for (let i = 0; i < adet; i++) {
@@ -143,7 +144,7 @@ export class Efekt {
           [
             { transform: 'translate(-50%, -50%) scale(.4) rotate(0deg)', opacity: 1 },
             { transform: `translate(-50%, -50%) translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(1) rotate(${ras(180, 360).toFixed(0)}deg)`, opacity: 1, offset: 0.35 },
-            { transform: `translate(-50%, -50%) translate(${(dx * 1.3).toFixed(0)}px, ${(dy + 150).toFixed(0)}px) scale(.9) rotate(${ras(500, 900).toFixed(0)}deg)`, opacity: 0 },
+            { transform: `translate(-50%, -50%) translate(${(dx * 1.3).toFixed(0)}px, ${(dy + dus).toFixed(0)}px) scale(.9) rotate(${ras(500, 900).toFixed(0)}deg)`, opacity: 0 },
           ],
           { duration: ras(1000, 1500), delay: ras(0, 120), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'backwards' },
         ),
@@ -215,17 +216,17 @@ export class Efekt {
     );
   }
 
-  /** Çak: iki pati buluşunca parlayan yıldız ve dışa fırlayan çizgiler */
-  cak(x: number, y: number) {
+  /** Çak: iki pati buluşunca parlayan yıldız ve dışa fırlayan çizgiler. boy: yıldızın ve çizgilerin ölçeği */
+  cak(x: number, y: number, boy = 1) {
     if (sakin()) return;
     const y_ = h('i.ko-cak-yildiz', { html: BUZ_YILDIZ, style: `left:${x}px;top:${y}px` });
     this.el.append(y_);
     sil(
       y_.animate(
         [
-          { transform: 'translate(-50%, -50%) scale(.2) rotate(0deg)', opacity: 1 },
-          { transform: 'translate(-50%, -50%) scale(1.5) rotate(30deg)', opacity: 1, offset: 0.35 },
-          { transform: 'translate(-50%, -50%) scale(1.9) rotate(45deg)', opacity: 0 },
+          { transform: `translate(-50%, -50%) scale(${(0.2 * boy).toFixed(2)}) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(-50%, -50%) scale(${(1.5 * boy).toFixed(2)}) rotate(30deg)`, opacity: 1, offset: 0.35 },
+          { transform: `translate(-50%, -50%) scale(${(1.9 * boy).toFixed(2)}) rotate(45deg)`, opacity: 0 },
         ],
         { duration: 520, easing: 'ease-out' },
       ),
@@ -238,15 +239,15 @@ export class Efekt {
       sil(
         c.animate(
           [
-            { transform: `translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) translateX(10px) scaleX(.3)`, opacity: 1 },
-            { transform: `translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) translateX(46px) scaleX(1)`, opacity: 0 },
+            { transform: `translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) translateX(${(10 * boy).toFixed(0)}px) scaleX(.3)`, opacity: 1 },
+            { transform: `translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) translateX(${(46 * boy).toFixed(0)}px) scaleX(1)`, opacity: 0 },
           ],
           { duration: 420, easing: 'ease-out' },
         ),
         c,
       );
     }
-    this.parilti(x, y, 6, 0.7, '#FFE45C');
+    this.parilti(x, y, 6, 0.7 * boy, '#FFE45C');
   }
 
   /** Buhar tutamları (külah makinesi): yükselip dağılır */

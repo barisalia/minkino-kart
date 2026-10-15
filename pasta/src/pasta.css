@@ -979,7 +979,7 @@
   filter: drop-shadow(0 0 6px #fff36b) drop-shadow(0 3px 0 rgba(58, 18, 16, 0.25));
 }
 @keyframes ps-jeton-dus {
-  0% { transform: translateY(-160px) rotate(-200deg) scale(0.6); opacity: 0; }
+  0% { transform: translateY(calc(-1 * var(--dus, 160px))) rotate(-200deg) scale(0.6); opacity: 0; }
   60% { transform: translateY(6px) rotate(10deg); opacity: 1; }
   80% { transform: translateY(-10px); }
   100% { transform: none; }
@@ -1129,6 +1129,10 @@
   width: 30%;
   aspect-ratio: 1;
   pointer-events: none;
+}
+/* kurabiye ağzın altında (musteri.ts → ye): ısırdıkça dudağa doğru küçülür, göz ve kaşlar hep açıkta */
+.ps-kok .ps-m-lokma-alt {
+  transform-origin: 50% 0;
 }
 .ps-kok .ps-m-lokma svg {
   width: 100%;

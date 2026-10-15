@@ -105,7 +105,8 @@ export class Efekt {
   }
 
   /** Konfeti: renkli kâğıtlar patlayıp dönerek düşer (doğru sipariş) */
-  konfeti(x: number, y: number, adet = 22) {
+  /** dus: patlayan konfetinin sonra aşağı düşüşü (px); başın üstünde 0 verilir ki yüze inmesin */
+  konfeti(x: number, y: number, adet = 22, dus = 160) {
     if (sakin()) return;
     const renkler = ['#FF5A7A', '#FFD84A', '#6CC4FF', '#7FE0C4', '#B98BFF', '#FF8A2B'];
     for (let i = 0; i < adet; i++) {
@@ -120,7 +121,7 @@ export class Efekt {
         [
           { transform: 'translate(-50%, -50%) scale(.4) rotate(0deg)', opacity: 1 },
           { transform: `translate(-50%, -50%) translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(1) rotate(${ras(180, 360).toFixed(0)}deg)`, opacity: 1, offset: 0.35 },
-          { transform: `translate(-50%, -50%) translate(${(dx * 1.3).toFixed(0)}px, ${(dy + 160).toFixed(0)}px) scale(.9) rotate(${ras(500, 900).toFixed(0)}deg)`, opacity: 0 },
+          { transform: `translate(-50%, -50%) translate(${(dx * 1.3).toFixed(0)}px, ${(dy + dus).toFixed(0)}px) scale(.9) rotate(${ras(500, 900).toFixed(0)}deg)`, opacity: 0 },
         ],
         { duration: ras(1100, 1600), delay: ras(0, 120), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'backwards' },
       ).finished.then(() => p.remove(), () => p.remove());

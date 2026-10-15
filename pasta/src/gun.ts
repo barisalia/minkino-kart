@@ -16,6 +16,7 @@ import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
 import { arkaPlanDinle } from '../../src/kabuk/yon';
 import { Karakter } from '../../src/karakter/karakter';
+import { genislet, kaydir, kavisKacir, type Kutu } from '../../src/karakter/yuz';
 import { Mino } from '../../src/mino/mino';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
@@ -535,18 +536,52 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
   }
 
   /** Jetonlar müşterinin önünde tezgâha düşer, az sonra kendiliğinden kasaya uçar */
+  /** Ekran birimi (CSS --u gibi: yatayda 844×390, dikeyde 390×844 tasarım ölçüsüne göre) */
+  function birim() {
+    const r = el.getBoundingClientRect();
+    return r.width >= r.height ? Math.min(r.width / 844, r.height / 390) : Math.min(r.width / 390, r.height / 844);
+  }
+  /** Başın üstü (efekt katmanına göre): kalpler, konfeti, "+n" burada açılır ve yüze inmez. yari: efektin yarı boyu */
+  function basUstu(m: PastaMusteri, yari: number): [number, number] {
+    const k = efekt_.kutu();
+    const { goz, yuz } = m.yuz();
+    if (!goz || !yuz) return efekt_.merkez(m.el, 0.5, 0.1);
+    const alin = goz.top - (goz.bottom - goz.top) * 0.5;
+    return [(yuz.left + yuz.right) / 2 - k.left, Math.max(yari, alin - yari - k.top)];
+  }
+  /** Ekrandaki müşterilerin yüzleri (efekt katmanına göre), pay kadar büyütülmüş */
+  function yuzEngelleri(pay: number): Kutu[] {
+    const k = efekt_.kutu();
+    return musteriler.flatMap((m) => {
+      const y = m.yuz().yuz;
+      return y ? [genislet(kaydir(y, -k.left, -k.top), pay)] : [];
+    });
+  }
+
   function jetonDussun(m: PastaMusteri, adet: number, bahsis: number) {
     const r = m.el.getBoundingClientRect();
     const k = jetonKatmani.getBoundingClientRect();
-    const x = ((r.left + r.width / 2 - k.left) / Math.max(1, k.width)) * 100;
+    // jetonlar yüzün üstünden değil, ağzın altından (gövde hizasından) tezgâha düşer; kısa müşterinin (ördek, kuş)
+    // yüzü tezgâha yakınsa jetonlar yüzün yanına (kasaya doğru) düşer
+    const yuz = m.yuz().yuz;
+    const jt = 40 * birim();
+    const yayilim = ((adet + bahsis - 1) * 0.62 + 1) * jt;
+    let cx = r.left + r.width / 2;
+    if (yuz && yuz.bottom > k.top - jt * 0.6 - 8 * birim()) {
+      const sag = yuz.right + yayilim / 2 + 6 * birim();
+      cx = sag + yayilim / 2 < k.right ? sag : yuz.left - yayilim / 2 - 6 * birim();
+    }
+    const x = ((cx - k.left) / Math.max(1, k.width)) * 100;
+    const dus = yuz ? Math.max(24, Math.min(160, k.top - yuz.bottom - 24 * birim())) : 160;
     for (let i = 0; i < adet + bahsis; i++) {
-      const j = h(`i.ps-jeton${i >= adet ? '.ps-bahsis' : ''}`, { 'aria-hidden': 'true', html: JETON, style: `left:calc(${x.toFixed(1)}% + ${((i - (adet + bahsis - 1) / 2) * 0.62).toFixed(2)} * var(--jeton));--i:${i}` });
+      const j = h(`i.ps-jeton${i >= adet ? '.ps-bahsis' : ''}`, { 'aria-hidden': 'true', html: JETON, style: `left:calc(${x.toFixed(1)}% + ${((i - (adet + bahsis - 1) / 2) * 0.62).toFixed(2)} * var(--jeton));--i:${i};--dus:${dus.toFixed(0)}px` });
       jetonKatmani.append(j);
       yerdeJeton++;
       window.setTimeout(() => !kapandi && ses.singir(i), sure(260 + i * 90));
     }
-    const [yx, yy] = efekt_.merkez(m.el, 0.5, 0.15);
-    efekt_.yazi(yx, yy, `+${adet + bahsis}`);
+    // "+n" kasanın üstünde belirir (yüzün önünde değil)
+    const [yx, yy] = efekt_.merkez(kasa, 0.5, 0);
+    efekt_.yazi(yx, yy - 10 * birim(), `+${adet + bahsis}`);
     el.classList.add('ps-jeton-var');
     sonra(sure(TEST_MODU ? 300 : 1100), () => void jetonTopla());
   }
@@ -564,7 +599,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
         const bas = efekt_.merkez(j);
         j.remove();
         // yüksek bir yay çizerek döne döne kasanın çekmecesine
-        const kavis = -Math.max(90, Math.abs(hedef[0] - bas[0]) * 0.35);
+        // yay müşterilerin yüzünün önünden geçecekse alçalır (paralar yüzlerin altından akar)
+        const kavis = kavisKacir(bas, hedef, -Math.max(90, Math.abs(hedef[0] - bas[0]) * 0.35), yuzEngelleri(34 * birim()));
         await efekt_.ucur(h('div.ps-ucan-jeton', { html: JETON }), bas, hedef, { ms: 640, gecikme: i * 150, kavis, boy0: 1.1, boy1: 0.55, don: 540 });
         if (kapandi) return;
         bugun++;
@@ -608,27 +644,31 @@ export function gunEkrani(app: Uygulama, p: { gun?: Gun } = {}): Ekran {
     yiyenler.add(m);
     m.el.classList.add('ps-bitti');
     adimGuncelle();
-    const hedef = efekt_.merkez(m.el, 0.5, 0.45);
+    // tabak ağzın altına (kurabiyenin yeneceği yere) iner: yüzün önünden geçmez
+    const [lx, ly] = m.lokmaNoktasi();
+    const kat = efekt_.kutu();
+    const hedef: [number, number] = [lx - kat.left, ly - kat.top + 40 * birim()];
     // tabak aynı yolda, aynı sürede uçar; Kino yolun ilk yarısında yanından koşar, pencerede "Buyurun!" (tabak beklemez)
     kinoIs.servis(hedef[0] + efekt_.kutu().left, sure(460), kinoEngeller(), el.getBoundingClientRect());
     if (performance.now() - kinoSonSoz > 2500) {
       kinoSonSoz = performance.now();
       void soyle(P.kino.buyurun, 'kino', false);
     }
-    await efekt_.ucur(h('div.ps-ucan-tabak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, hedef, { ms: 460, kavis: -90, boy1: 0.85 });
+    await efekt_.ucur(h('div.ps-ucan-tabak', { html: partiCizimi(parti, 'ps-mini').join('') }), bas, hedef, { ms: 460, kavis: kavisKacir(bas, hedef, -90, yuzEngelleri(10 * birim())), boy1: 0.85 });
     if (kapandi) return;
     const sonuc = siparisSonucu(m.sip, m.verilen);
     const para = jetonHesapla(sonuc.ayni, m.sabir, m.uyudu);
     m.el.dataset.sonuc = sonuc.ayni ? 'ayni' : 'farkli';
-    const [hx, hy] = efekt_.merkez(m.el, 0.5, 0.3);
+    // sevinç efektleri başın üstünde açılır ve yukarı uçar: şaşkın / mutlu yüz hep açıkta
+    const [hx, hy] = basUstu(m, 16 * birim());
     if (sonuc.ayni) {
       mutlu++;
       efekt.dogru();
-      efekt_.konfeti(hx, hy);
+      efekt_.konfeti(hx, hy, 22, 0);
       efekt_.kalpler(hx, hy, 8);
       efekt_.parilti(hx, hy, 10);
       // büyük sevinç: müşteri iki kez hoplar, başının üstünde kocaman kalp açılır
-      efekt_.buyukKalp(...efekt_.merkez(m.el, 0.5, 0.05));
+      efekt_.buyukKalp(...basUstu(m, 40 * birim()));
       salla(m.el, 'ps-cok-mutlu');
       ekranSalla(el, 2.5);
       m.mutlu(2600);
