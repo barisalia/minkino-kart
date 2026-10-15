@@ -14,7 +14,9 @@ import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } fr
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { sayfaAdresi } from '../../src/kabuk/sayfa';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
-import { efekt } from '../../src/audio/ses';
+import { efekt, konus } from '../../src/audio/ses';
+import uykuJson from '../../content/uyku.json';
+import { aksamMiSimdi, gunaydinSoylendi, uykuAcilisi, uykuEtkinMi, uykuResmi, uykuyaGec } from './uyku';
 import '../../src/karakter/karakter.css';
 import { Karakter, type HareketAdi, type Poz as KPoz } from '../../src/karakter/karakter';
 import { type Tepki } from '../../src/mino/mino';
@@ -135,6 +137,20 @@ export function menuEkrani(app: Uygulama): Ekran {
       kinoOynat('bak', 1000);
     },
   ];
+  // Uyku Vakti (uyku.ts; bayrak kapalıyken hiçbiri yok): akşam (19-06) boşta esnerler, ay lambası belirir;
+  // sabah (ritüelden sonraki ilk açılış) Mino gerinip "Günaydın!" der, Kino sevinçle zıplar (bir kez)
+  const uykuAcik = uykuEtkinMi();
+  const aksam = uykuAcik && aksamMiSimdi();
+  const gunaydin = uykuAcik && uykuAcilisi() === 'gunaydin';
+  if (aksam)
+    BOS.push(() => {
+      // önce Mino, 0,4 sn sonra Kino esner (menü sessiz kalır)
+      tepki('esne');
+      sonra(400, () => {
+        kinoOynat('huy', 1400);
+        kinoIfade('keyif', 1600);
+      });
+    });
   let bosSira = 0;
   const bosPlanla = () => {
     sonra(5200 + Math.random() * 2600, () => {
@@ -289,11 +305,48 @@ export function menuEkrani(app: Uygulama): Ekran {
     if (await ebeveynKapisiAc(app.kok)) app.git('ayarlar');
   });
 
+  // akşam daveti: ebeveyn düğmesinin yanında (dikeyde altında) ay lambası; logoyu, Kino'yu, kartları örtmez (64 px resim, 88 px dokunma alanı); dokununca Mino esner,
+  // "Uykum geldi..." der, krem perde iner, uyku ekranı açılır
+  const ayLamba = aksam
+    ? h(
+        'button.ug-ay-lamba',
+        { type: 'button', 'aria-label': 'Uyku vakti' },
+        h(
+          'span.ug-ay-ic',
+          {},
+          uykuResmi('lamba-yanik')
+            ? h('img', { src: uykuResmi('lamba-yanik')!, alt: '', draggable: 'false', decoding: 'async' })
+            : h('span.ug-ay-yer', {}, svg(IKON.ay)),
+        ),
+      )
+    : null;
+  ayLamba?.addEventListener('click', async () => {
+    if (gidiyor) return;
+    gidiyor = true;
+    efekt.tink();
+    void sinifOynat(ayLamba, 'basildi', 200);
+    tepki('esne');
+    kinoOynat('huy', 1200);
+    await Promise.race([konus(uykuJson.hazir.uykum, { ton: 1.12 }), new Promise((r) => setTimeout(r, sure(2600)))]);
+    uykuyaGec(app);
+  });
+  if (gunaydin) {
+    gunaydinSoylendi();
+    sonra(AZ_HAREKET || TEST_MODU ? 300 : 2600, () => {
+      tepki('esne');
+      void konus(uykuJson.hazir.gunaydin, { ton: 1.12 });
+      sonra(700, () => {
+        kinoOynat('sevin', 1300);
+        kinoIfade('heyecan', 1300);
+      });
+    });
+  }
+
   const el = h(
     'div.ug-menu',
-    {},
+    gunaydin ? { 'data-gunaydin': '1' } : {},
     h('div.ug-gok', { 'aria-hidden': 'true' }, h('i.ug-bulut.ug-bulut-1'), h('i.ug-bulut.ug-bulut-2'), h('i.ug-bulut.ug-bulut-3')),
-    h('div.ug-kose', {}, kapi),
+    h('div.ug-kose', {}, ...(ayLamba ? [ayLamba] : []), kapi),
     h('header.ug-giris', {}, logo(), h('div.ug-ikili', {}, minoKap, kinoKap)),
     // tek sayıda kart (uygulamada 7): geniş kart (Pasta Otobüsü) son sırayı doldurur, ızgarada boşluk kalmaz
     h('nav.ug-oyunlar', { 'aria-label': 'Oyunlar' }, h(`ul.ug-izgara${oyunlar.length % 2 ? '.ug-tek' : ''}`, { 'data-adet': String(oyunlar.length) }, ...kartlar)),
@@ -331,6 +384,17 @@ export function menuEkrani(app: Uygulama): Ekran {
       kino.kapat();
     },
   };
+}
+
+/** Ebeveyn Köşesi → "Uyku vakti": her saatte ritüeli başlatır (kapı zaten geçildi). Bayrak kapalıyken yok. */
+function uykuBolumu(app: Uygulama): HTMLElement[] {
+  if (!uykuEtkinMi()) return [];
+  const dugme = h('button.dugme.ug-uyku-dugme', { type: 'button' }, svg(IKON.ay), 'Uyku vaktini başlat');
+  dugme.addEventListener('click', () => {
+    efekt.secim();
+    uykuyaGec(app);
+  });
+  return [h('h2', {}, 'Uyku vakti'), h('p', {}, "Mino ile Kino'yu birlikte yatırın. Uygulama sabaha kadar uyur."), dugme];
 }
 
 // ---------------------------------------------------------------- Ebeveyn köşesi (ebeveyn kapısından sonra)
@@ -408,6 +472,7 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
           'div.ug-ayarlar-bilgi',
           {},
           ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
+          ...uykuBolumu(app),
           h('h2', {}, 'Gizlilik ve güvenlik'),
           h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
           h('div.ug-baglantilar', {}, baglanti(GIZLILIK_ADRESI, 'Gizlilik politikası'), baglanti(SARTLAR_ADRESI, 'Kullanım koşulları')),

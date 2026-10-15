@@ -8,12 +8,15 @@ import { sesKokuAyarla } from '../../src/audio/kayit';
 import { geriDinle } from '../../src/kabuk/yon';
 import { ekranKaydet, Uygulama } from '../../src/uygulama';
 import { ayarlarEkrani, menuEkrani } from './ekranlar';
+import { uykuAcilisi, uykuEkrani, uykuOdadaMi } from './uyku';
 
 // Ana menü sitenin kökünde (/); seslendirme kayıtları kökteki ses/ klasöründe, diğer uygulamalarla ortak
 sesKokuAyarla('./ses/');
 
 ekranKaydet('menu', menuEkrani);
 ekranKaydet('ayarlar', ayarlarEkrani);
+// Uyku Vakti (uyku.ts; bayrak UYKU_ACIK, deneme ?uyku=1&saat=21)
+ekranKaydet('uyku', uykuEkrani);
 
 const kok = document.getElementById('minkino');
 if (kok) {
@@ -22,7 +25,10 @@ if (kok) {
   const q = new URLSearchParams(location.search);
   // Test kısayolu: ?test=1&ekran=ayarlar
   if (q.has('test')) (window as unknown as { __uygulama: unknown }).__uygulama = { app };
-  app.git((q.has('test') && q.get('ekran')) || 'menu');
+  /** Açılış: gece ritüeli bittiyse sabah 06:00'ya kadar doğrudan uyuyan oda (bayrak kapalıyken hiç olmaz) */
+  const ilkEkran = () => (uykuAcilisi() === 'kilit' ? 'uyku' : 'menu');
+  const ilk = (q.has('test') && q.get('ekran')) || ilkEkran();
+  app.git(ilk, ilk === 'uyku' && uykuAcilisi() === 'kilit' ? { oda: true } : undefined);
   // açılış logosu (index.html → #acilis): menü ilk karesini çizince yumuşakça kaybolur
   const acilis = document.getElementById('acilis');
   if (acilis)
@@ -32,15 +38,19 @@ if (kok) {
         window.setTimeout(() => acilis.remove(), q.has('test') ? 0 : 500);
       }),
     );
-  // Android geri tuşu: Ebeveyn Köşesi'nden menüye; menüdeyken kabuk uygulamadan çıkar (src/kabuk/yerel.ts)
+  // Android geri tuşu: Ebeveyn Köşesi'nden menüye; menüdeyken kabuk uygulamadan çıkar (src/kabuk/yerel.ts).
+  // Uyuyan odada da uygulamadan çıkılır (kilit bozulmaz); ritüelin ortasında menüye dönülür.
   geriDinle(() => {
     if (app.aktifAd === 'menu') return false;
+    if (app.aktifAd === 'uyku' && uykuOdadaMi()) return false;
     app.git('menu');
     return true;
   });
   // Oyundan geri gelindi ve sayfa önbellekten açıldı (geri tuşu / anaMenuyeDon): seçilmiş kart "gidiyor" hâlinde
   // kalmasın, menü baştan kurulur (kartlar yine dokunulur)
   addEventListener('pageshow', (e) => {
-    if (e.persisted) app.git('menu');
+    if (!e.persisted) return;
+    if (uykuAcilisi() === 'kilit') app.git('uyku', { oda: true });
+    else app.git('menu');
   });
 }

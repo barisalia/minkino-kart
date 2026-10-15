@@ -1082,3 +1082,115 @@
     animation: none;
   }
 }
+
+/* ---------- Uyku Vakti: akşam menüde ay lambası (uyku.ts; bayrak kapalıyken yok) ----------
+   Ebeveyn düğmesinin köşesinde (yatayda yanında, dikeyde altında): 64 px görünen lamba, 88 px dokunma alanı;
+   yavaşça iner-kalkar, 8 sn'de bir minik "nefes" alır. İkilinin köşesinde Kino'nun yüzünü / logoyu örtüyordu
+   (menü sıkı: 9 kart); burada logoyu, Kino'yu ve kartları örtmez (844×390, 667×375, 390×844, 768×1024 ölçüldü). */
+.ug-kok .ug-ay-lamba {
+  position: relative;
+  flex: none;
+  width: 88px;
+  height: 88px;
+  margin: -12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  animation: ug-ay-suzul 2.4s ease-in-out infinite;
+}
+.ug-kok .ug-ay-ic {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  transform-origin: 50% 100%;
+  animation: ug-ay-nefes 8s ease-in-out infinite;
+}
+.ug-kok .ug-ay-ic img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* yer tutucu (Gemini lambası gelene kadar): sade krem daire, kahve kontur, ay ikonu */
+.ug-kok .ug-ay-yer {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffe89a;
+  border: 3px solid #3b2416;
+  color: #3b2416;
+}
+.ug-kok .ug-ay-yer .ikon,
+.ug-kok .ug-ay-yer svg {
+  width: 34px;
+  height: 34px;
+}
+.ug-kok .ug-ay-lamba.basildi .ug-ay-ic {
+  animation: ug-ay-bas 0.16s ease-out;
+}
+@keyframes ug-ay-suzul {
+  50% { transform: translateY(-3px); }
+}
+@keyframes ug-ay-nefes {
+  0%, 90%, 100% { transform: scale(1); }
+  95% { transform: scale(1.06); }
+}
+@keyframes ug-ay-bas {
+  40% { transform: scale(1.02, 0.88); }
+  75% { transform: scale(0.98, 1.08); }
+}
+.ug-kok .ug-uyku-dugme {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+}
+.ug-kok .ug-uyku-dugme svg {
+  width: 26px;
+  height: 26px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ug-kok .ug-ay-lamba,
+  .ug-kok .ug-ay-ic {
+    animation: none;
+  }
+}
+@media (orientation: portrait) {
+  .ug-kok .ug-kose:has(.ug-ay-lamba) {
+    flex-direction: column-reverse;
+    gap: 6px;
+  }
+}
+/* yatayda lambanın ve ebeveyn düğmesinin dokunma alanları üst üste binmesin */
+@media (orientation: landscape) {
+  .ug-kok .ug-kose:has(.ug-ay-lamba) {
+    gap: 24px;
+  }
+}
+/* dar yatay telefon (667×375): sol sütun dar, lamba kartlara binmesin diye düğmenin üstünde */
+@media (orientation: landscape) and (max-width: 760px) {
+  .ug-kok .ug-kose:has(.ug-ay-lamba) {
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+/* dar dikey telefon (360×780): lamba biraz küçük, kartların üstüne binmez */
+@media (orientation: portrait) and (max-width: 380px) {
+  .ug-kok .ug-kose:has(.ug-ay-lamba) {
+    gap: 2px;
+  }
+  .ug-kok .ug-ay-ic {
+    width: 54px;
+    height: 54px;
+  }
+  .ug-kok .ug-ay-yer {
+    width: 50px;
+    height: 50px;
+  }
+}
