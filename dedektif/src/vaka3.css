@@ -331,21 +331,27 @@
   filter: drop-shadow(0 6px 5px rgba(60, 30, 10, 0.3));
 }
 .dd-kok .dd-v3-findik-ic2 {
+  position: relative;
   width: 100%;
   height: 100%;
   transform-origin: 50% 95%;
 }
+/* poz geçişinde iki resim üst üste (eski basılıp söner, yeni esneyerek oturur) */
 .dd-kok .dd-v3-findik-resim {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
-  animation: dd-v3-nefes 2.4s ease-in-out infinite;
+  animation: dd-v3-nefes 2.6s ease-in-out infinite;
   transform-origin: 50% 95%;
 }
+/* nefes: taban sabit, göğüs kabarır (boy uzar, en az incelir), bırakırken bir an hafif basılır */
 @keyframes dd-v3-nefes {
   0%, 100% { scale: 1 1; }
-  50% { scale: 1.015 0.985; }
+  42% { scale: 0.99 1.025; }
+  72% { scale: 1.004 0.996; }
 }
 /* finalde dört kurabiye (dokun / sürükle) */
 .dd-kok .dd-v3-final-kurabiye {

@@ -304,12 +304,37 @@ export function odaEkrani(app: Uygulama, param?: { mevsim?: Mevsim }): Ekran {
     const cx = x - tasinan.dx * 0.4, cy = y - tasinan.dy * 0.4 - (ilk ? 0 : 18);
     tasinan.el.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%) scale(${ilk ? 1.05 : 1.22}) rotate(${Math.max(-12, Math.min(12, (x - tasinan.x0) * 0.04))}deg)`;
     miknatisGoster(tasinan.id, cx, cy);
+    yaklasma(cx, cy);
+  }
+  /**
+   * Giysi Kino'ya yaklaşınca (kutusuna ~200 px, küçük ekranda boyunun yarısı) Kino gözleriyle ona bakar ve sevinçle
+   * hafifçe zıplar (bütün gövde: çömelip esner, inişte basılır; kol / parça dönmez). Uzaklaşınca ya da bırakınca karşıya
+   * döner. Hiçbir şeyi bekletmez.
+   */
+  let yakin = false;
+  let sonHop = 0;
+  function yaklasma(cx: number, cy: number) {
+    const r = kino.el.getBoundingClientRect();
+    if (!r.width) return;
+    // gövdenin kutusu (tuvalin ortası; kenarlardaki boşluk sayılmaz)
+    const g = { l: r.left + r.width * 0.28, r: r.right - r.width * 0.28, t: r.top + r.height * 0.12, b: r.bottom - r.height * 0.05 };
+    const d = Math.hypot(Math.max(g.l - cx, 0, cx - g.r), Math.max(g.t - cy, 0, cy - g.b));
+    const simdi = d < Math.min(200, r.height * 0.5);
+    const orta = r.left + r.width / 2;
+    kino.bakYan = simdi && Math.abs(cx - orta) > r.width * 0.1 ? (cx < orta ? 'sol' : 'sag') : null;
+    if (simdi && !yakin && !mesgul && performance.now() - sonHop > 900) {
+      sonHop = performance.now();
+      void zipla(kinoKutu, 0.4, 480);
+    }
+    yakin = simdi;
   }
   async function birakIslem() {
     const t = tasinan;
     if (!t) return;
     tasinan = null;
     miknatisGoster(null);
+    yakin = false;
+    kino.bakYan = null;
     sonHareket = performance.now();
     const cx = t.x - t.dx * 0.4, cy = t.y - t.dy * 0.4 - 18;
     // dokunup bırakmak (sürüklemeden): adını söyler; ipucundaysa kendiliğinden uçar

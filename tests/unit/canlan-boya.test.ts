@@ -76,12 +76,13 @@ describe('Çiz Canlansın: boyama', () => {
 });
 
 describe('Çiz Canlansın: boya resminin çözünürlüğü', () => {
-  it('ekrandaki boy × cihaz piksel oranı; en az maske ızgarası, en çok 1024', () => {
-    expect(boyaCozunurlugu(380, 3)).toBe(BOYA_EN_COK);
+  it('ekrandaki boy × cihaz piksel oranı; en az maske ızgarası, en çok 1536', () => {
+    expect(boyaCozunurlugu(380, 3)).toBe(1144);
+    expect(boyaCozunurlugu(600, 3)).toBe(BOYA_EN_COK);
     expect(boyaCozunurlugu(300, 2)).toBe(600);
     expect(boyaCozunurlugu(120, 1)).toBe(BOYUT);
     expect(boyaCozunurlugu(Number.NaN, 2)).toBe(BOYUT);
-    expect(BOYA_EN_COK).toBeLessThanOrEqual(1024);
+    expect(BOYA_EN_COK).toBeLessThanOrEqual(1536);
   });
 });
 

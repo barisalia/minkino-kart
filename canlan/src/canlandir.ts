@@ -336,7 +336,8 @@ export function canliCizim(r: Resim, parcalar: Parcali[], donusum: Donusum, o: {
     },
     boyaPikseli() {
       // çizimin 1 birimi ekranda: sahnenin eni × k (yer ölçeği). Sahne henüz ekranda değilse ekranın kısa kenarından tahmin
-      const en = svg.getBoundingClientRect().width || Math.min(window.innerWidth, window.innerHeight) * 0.8;
+      // clientWidth: yerleşimdeki boy (ekran girişindeki scale(1.02) gibi geçici dönüşümler ölçüyü küçültmez)
+      const en = svg.clientWidth || svg.getBoundingClientRect().width || Math.min(window.innerWidth, window.innerHeight) * 0.8;
       return boyaCozunurlugu(en * k, window.devicePixelRatio || 1);
     },
     susGoster() {

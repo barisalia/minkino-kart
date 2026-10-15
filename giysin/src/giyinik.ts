@@ -33,6 +33,11 @@ export class GiyinikKino {
   islak = 0;
   /** silkinme: ıslak köpek gibi baştan kuyruğa sallanır (0-1) */
   silkin = 0;
+  /**
+   * Bakış: gözler o yana (iskeletin goz-bak-sol / goz-bak-sag katmanı; katman değişimi, parça dönmez). Sürüklenen
+   * giysi yaklaşınca ona bakar. Bir ifade açıkken ifadenin gözü kalır. null: karşıya bakar.
+   */
+  bakYan: 'sol' | 'sag' | null = null;
 
   constructor() {
     this.k = new Karakter('kino', h('img', { src: resim('kino-yedek'), alt: '', draggable: 'false' }));
@@ -60,8 +65,21 @@ export class GiyinikKino {
         p.kuyruk += Math.sin(t * 40) * 40 * this.silkin;
       }
       if (this.kuyrukPervane) p.kuyruk = (t * 900 * this.kuyrukPervane) % 360;
+      this.bakisUygula();
     };
     void this.k.hazir.then(() => this.kur());
+  }
+
+  private bakisSon: 'sol' | 'sag' | null = null;
+  private bakisUygula() {
+    const k = this.k;
+    const yan = !k.ifadeSu && this.bakYan && k.parcaG(`goz-bak-${this.bakYan}`) ? this.bakYan : null;
+    if (yan === this.bakisSon) return;
+    this.bakisSon = yan;
+    k.ek('goz-bak-sol', yan === 'sol');
+    k.ek('goz-bak-sag', yan === 'sag');
+    k.gizle('goz-sol', !!yan);
+    k.gizle('goz-sag', !!yan);
   }
 
   private gorunur(p: string, id: GiysiId) {

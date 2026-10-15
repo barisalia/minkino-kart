@@ -130,6 +130,83 @@ function titrekKopya(r: Resim): Nokta[][] {
   }));
 }
 
+type EkranNoktasi = { x: number; y: number };
+/**
+ * Düşük puanda gösterilecek eksik çizgiler: hayalet katmanının yolları (en çok 3, çizim sırasıyla), ekran noktaları
+ * olarak (parmak bunların üstünden geçer) ve ilkinin ortası (Mino o yana döner). Hayalet yoksa null.
+ */
+function eksikYolu(kok: Element): { yollar: EkranNoktasi[][]; orta: EkranNoktasi } | null {
+  const yollar: EkranNoktasi[][] = [];
+  for (const p of kok.querySelectorAll<SVGPathElement>('.cc-hayalet path')) {
+    const m = p.getScreenCTM();
+    if (!m || typeof p.getTotalLength !== 'function') continue;
+    const L = p.getTotalLength();
+    const u = L * Math.hypot(m.a, m.b);
+    if (u <= 4) continue;
+    const n = Math.max(12, Math.min(90, Math.round(u / 6)));
+    const yol: EkranNoktasi[] = [];
+    for (let i = 0; i <= n; i++) {
+      const q = p.getPointAtLength((L * i) / n);
+      yol.push({ x: m.a * q.x + m.c * q.y + m.e, y: m.b * q.x + m.d * q.y + m.f });
+    }
+    yollar.push(yol);
+    if (yollar.length >= 3) break;
+  }
+  if (!yollar.length) return null;
+  return { yollar, orta: yollar[0][Math.floor(yollar[0].length / 2)] };
+}
+
+/**
+ * Beyaz parmak eksik çizgilerin üstünden basarak geçer (her eksik parça bir tur; tek parçaysa iki tur), sonra söner.
+ * Mino o yana sekerken başlar. Dokunuşu engellemez; ekran kapanınca durur.
+ */
+function eksikGoster(sh: HTMLElement, yollar: EkranNoktasi[][]): { kapat(): void } {
+  // sahnenin dışına (oyun kökünde, sabit konumda): el simgesi kâğıdın alt kenarındaki çizgide de kesilmez
+  const el = h('div.cc-el.cc-eksik-el', {}, svg(IKON.el));
+  el.style.opacity = '0';
+  (sh.closest<HTMLElement>('.cc-kok') ?? document.body).append(el);
+  const r = sh.getBoundingClientRect();
+  // sahne sonradan kayarsa (ekran dönünce) yol sahneyle birlikte kalsın: sahneye göre oran, her karede ekrana çevrilir
+  const oranlar = yollar.map((yol) => yol.map((p) => [(p.x - r.left) / Math.max(1, r.width), (p.y - r.top) / Math.max(1, r.height)] as const));
+  const turSayisi = Math.max(2, oranlar.length);
+  let raf = 0;
+  const GEC = TEST_MODU ? 0 : 650;
+  const TUR = TEST_MODU ? 200 : 1500;
+  const ARA = TEST_MODU ? 50 : 350;
+  const t0 = performance.now();
+  const kare = (t: number) => {
+    const g = t - t0 - GEC;
+    if (g < 0) {
+      raf = requestAnimationFrame(kare);
+      return;
+    }
+    const tur = Math.floor(g / (TUR + ARA));
+    if (tur >= turSayisi) {
+      el.style.transition = 'opacity 0.3s';
+      el.style.opacity = '0';
+      window.setTimeout(() => el.remove(), 350);
+      return;
+    }
+    const k = Math.min(1, (g - tur * (TUR + ARA)) / TUR);
+    const u = k * k * (3 - 2 * k);
+    const oran = oranlar[tur % oranlar.length];
+    const [ox, oy] = oran[Math.min(oran.length - 1, Math.round(u * (oran.length - 1)))];
+    const s = sh.getBoundingClientRect();
+    el.style.left = `${(s.left + ox * s.width).toFixed(1)}px`;
+    el.style.top = `${(s.top + oy * s.height).toFixed(1)}px`;
+    el.style.opacity = '1';
+    el.classList.toggle('basiyor', k < 1);
+    raf = requestAnimationFrame(kare);
+  };
+  raf = requestAnimationFrame(kare);
+  return {
+    kapat() {
+      cancelAnimationFrame(raf);
+      el.remove();
+    },
+  };
+}
+
 // ---------------------------------------------------------------- Açılış
 export function acilisEkrani(app: Uygulama): Ekran {
   const r = resim('balik')!;
@@ -139,7 +216,18 @@ export function acilisEkrani(app: Uygulama): Ekran {
   const c = canliCizim(r, p.parcalar, p.donusum, { kalinlik: 0.03, renk: r.renk });
   vitrin.append(c.el);
   const boyalar = sihirliBoya(r, titrekKopya(r).map((n) => ({ n, kalinlik: 0.03 })), p.donusum);
-  new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca), BOYUT, c.boyaPikseli()).toDataURL()));
+  // boya, vitrin ekrana yerleşince ekrandaki gerçek boyuyla (× DPR) çizilir: önceden ölçülürse sahne henüz DOM'da
+  // değildi, tahmini boy küçük kalıp boya telefonda büyütülüp bulanıklaşıyordu
+  let boyaKare = 0;
+  const boyaCiz = (deneme = 0) => {
+    if (!c.el.isConnected && deneme < 20) {
+      boyaKare = requestAnimationFrame(() => boyaCiz(deneme + 1));
+      return;
+    }
+    const R = c.boyaPikseli();
+    new Set(boyalar.map((b) => b.parca)).forEach((parca) => c.boyaKoy(parca, boyaResmi(boyalar.filter((b) => b.parca === parca), BOYUT, R).toDataURL()));
+  };
+  boyaKare = requestAnimationFrame(() => boyaCiz());
   c.susGoster();
   c.baslat();
   // Mino vitrinin köşesinde: balığa bakar, dokununca sevinir (kendisine dokunulunca da tepki verir)
@@ -176,6 +264,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   return {
     el,
     kapat: () => {
+      cancelAnimationFrame(boyaKare);
       c.durdur();
       yuva.kapat();
     },
@@ -687,6 +776,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
 
   let kapandi = false;
   let bitirBoya: () => void = () => undefined;
+  let eksikParmak: { kapat(): void } | null = null;
   void (async () => {
     await bekle(sure(350));
     // Yıldız ödülü: her yıldız resmin ortasından tek tek uçup yerine konar, Mino sevinir
@@ -698,12 +788,18 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
       await bekle(sure(tamHareket() ? 120 : 380));
     }
     if (kapandi) return;
-    if (!sonuc.yildiz || !canlanirMi(sonuc.yildiz)) yuva.yap((y) => y.nazik());
     const canlanir = canlanirMi(sonuc.yildiz);
     if (!canlanir) {
       dugmeler.hidden = false;
       canli.hayalet(sonuc.eksik.length ? sonuc.eksik : 'hepsi');
       tekrar.classList.add('vurgu');
+      // Mino eksik parçayı nazikçe gösterir: o yana seker, yüzüyle bakar; beyaz parmak hayalet çizginin üstünden bir kez
+      // geçer (söz yok; anlatıcının "bir daha deneyelim"i). Yol bulunamazsa eski teselli.
+      const yol = eksikYolu(canli.el);
+      if (yol) {
+        yuva.yap((y) => y.goster(yol.orta.x, sure(1400 + Math.max(2, yol.yollar.length) * 1850)));
+        eksikParmak = eksikGoster(sh, yol.yollar);
+      } else yuva.yap((y) => y.nazik());
       await konus([sonuc.yildiz ? S.yildiz[String(sonuc.yildiz)] : '', S.tekrar]);
       return;
     }
@@ -774,6 +870,7 @@ export function sonucEkrani(app: Uygulama, p: { id: string; mod: Mod; cizgiler: 
     kapat() {
       kapandi = true;
       bitirBoya();
+      eksikParmak?.kapat();
       canli.durdur();
       yuva.kapat();
     },

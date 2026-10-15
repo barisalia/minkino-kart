@@ -55,7 +55,7 @@ import {
   type Sahne3,
 } from './mantik3';
 import { Oyuncular } from './oyuncular';
-import { pozlariYukle } from './poz';
+import { BAS, ESNE, pozlariYukle } from './poz';
 import { resim } from './resimler';
 import { hazirla3 } from './resimler3';
 import { kareleriGetir, romanKur, sirayla } from './roman';
@@ -1138,12 +1138,76 @@ class Vaka3 {
     this.findik.style.width = px(b);
     this.findik.style.height = px(b);
   }
+  /**
+   * Fındık'ın pozu: Kino / Pamuk'un PozYuvasi geçişiyle aynı (poz.ts → BAS / ESNE). Eski resim basılıp söner, yeni resim
+   * basık doğup esneyerek ayak çizgisine oturur (iki resim üst üste: arada boşluk, yanıp sönme yok). Parça dönmez.
+   */
   private findikPoz(ad: 'findik' | 'findik-yanak' | 'findik-utangac' | 'findik-sarilma') {
     if (!this.findikResim) return;
-    const r = this.findikResim;
-    const ic = r.parentElement;
-    if (ic && !AZ_HAREKET) void ic.animate([{ transform: 'scale(1.07, 0.93)' }, { transform: 'scale(0.96, 1.05)', offset: 0.55 }, { transform: 'scale(1)' }], { duration: sure(380), easing: 'cubic-bezier(.3,.7,.4,1)' });
-    r.src = resim(`v3/${ad}`) ?? r.src;
+    const eski = this.findikResim;
+    const ic = eski.parentElement;
+    const url = resim(`v3/${ad}`);
+    if (!ic || !url || eski.getAttribute('src') === url) return;
+    if (AZ_HAREKET) {
+      eski.src = url;
+      return;
+    }
+    const yeni = img(`v3/${ad}`, 'dd-v3-findik-resim') as HTMLImageElement;
+    ic.append(yeni);
+    this.findikResim = yeni;
+    const s = (x: number, y: number) => `scale(${x}, ${y})`;
+    void eski
+      .animate(
+        [
+          { transform: s(1, 1), opacity: 1 },
+          { transform: s(...BAS), opacity: 1, offset: 0.55 },
+          { transform: s(...BAS), opacity: 1, offset: 0.75 },
+          { transform: s(...BAS), opacity: 0 },
+        ],
+        { duration: sure(200), easing: 'ease-in', fill: 'forwards' },
+      )
+      .finished.then(() => eski.remove(), () => eski.remove());
+    void yeni.animate(
+      [
+        { transform: s(...BAS), opacity: 0 },
+        { transform: s(...BAS), opacity: 1, offset: 0.12 },
+        { transform: s(...ESNE), opacity: 1, offset: 0.55 },
+        { transform: s(1.015, 0.985), opacity: 1, offset: 0.8 },
+        { transform: s(1, 1), opacity: 1 },
+      ],
+      { duration: sure(420), delay: sure(100), easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'backwards' },
+    );
+  }
+  /** Fındık sevinçle zıplar: çömelir (basılır), esneyerek kalkar, havada toparlanır, inişte basılıp oturur (bütün gövde) */
+  private findikZipla(yuk = 0.14, ms = 520): Promise<void> {
+    const ic = this.findik?.querySelector<HTMLElement>('.dd-v3-findik-ic2');
+    if (!ic || AZ_HAREKET) return this.bekle(ms);
+    const y = `${(-yuk * 100).toFixed(1)}%`;
+    return tutar(
+      ic.animate(
+        [
+          { transform: 'translateY(0) scale(1, 1)' },
+          { transform: 'translateY(0) scale(1.08, 0.92)', offset: 0.16 },
+          { transform: `translateY(${y}) scale(0.95, 1.07)`, offset: 0.42 },
+          { transform: `translateY(${y}) scale(1, 1)`, offset: 0.56 },
+          { transform: 'translateY(0) scale(0.97, 1.03)', offset: 0.78 },
+          { transform: 'translateY(0) scale(1.07, 0.93)', offset: 0.88 },
+          { transform: 'translateY(0) scale(1, 1)' },
+        ],
+        { duration: sure(ms), easing: 'ease-in-out' },
+      ),
+    );
+  }
+  /** Kurabiyeyi ağzına atar: yanaklar her ısırıkta şişer (yanak pozu + yana genişleme vuruşu, "hap") */
+  private async findikIsir(kez = 2) {
+    const ic = this.findik?.querySelector<HTMLElement>('.dd-v3-findik-ic2');
+    this.findikPoz('findik-yanak');
+    await this.bekle(260);
+    for (let i = 0; i < kez && !this.kapali; i++) {
+      ses.hapHap();
+      if (ic && !AZ_HAREKET) await tutar(ic.animate([{ transform: 'scale(1, 1)' }, { transform: 'scale(1.06, 0.95)', offset: 0.35 }, { transform: 'scale(0.98, 1.02)', offset: 0.7 }, { transform: 'scale(1, 1)' }], { duration: sure(360), easing: 'ease-out' }));
+      else await this.bekle(360);
+    }
   }
   private findikKonus(soz: string) {
     if (this.findik) this.oy.konukBagla(null, this.findik, 0.04);
@@ -1248,6 +1312,9 @@ class Vaka3 {
     for (let i = 0; i < 2; i++) {
       if (this.kapali) return;
       ses.pof();
+      // her "pof"ta yanaklar boşalır gibi gövde bir an incelir, uzar (ikincide şiş yanaklar iner)
+      const ic = this.findik?.querySelector<HTMLElement>('.dd-v3-findik-ic2');
+      if (ic && !AZ_HAREKET) void ic.animate([{ transform: 'scale(1, 1)' }, { transform: 'scale(0.94, 1.06)', offset: 0.3 }, { transform: 'scale(1.03, 0.97)', offset: 0.7 }, { transform: 'scale(1, 1)' }], { duration: sure(380), easing: 'ease-out' });
       if (i === 1) this.findikPoz('findik');
       await this.kurabiyeGetir(kurabiyeler[i], this.findik, 0.36, 0.5);
       if (this.kapali) return;
@@ -1280,7 +1347,8 @@ class Vaka3 {
     if (this.kapali) return;
     // 4) bir adım öne çıkar, patilerini birleştirir: "Bir tane alabilir miyim?"
     this.findikPoz('findik');
-    if (!AZ_HAREKET && this.findik) await tutar(this.findik.animate([{ transform: 'translate(0, 0)' }, { transform: `translate(${-this.findik.offsetWidth * 0.12}px, -14px)`, offset: 0.5 }, { transform: `translate(${-this.findik.offsetWidth * 0.18}px, 0)` }], { duration: sure(600), easing: 'ease-in-out', fill: 'forwards' }));
+    // adım: bütün gövde küçük bir sekişle öne gelir (çömelip esner, inişte basılır)
+    if (!AZ_HAREKET && this.findik) await Promise.all([tutar(this.findik.animate([{ transform: 'translate(0, 0)' }, { transform: `translate(${-this.findik.offsetWidth * 0.18}px, 0)` }], { duration: sure(600), easing: 'ease-in-out', fill: 'forwards' })), this.findikZipla(0.07, 600)]);
     if (this.kapali) return;
     await this.bekle(300);
     await this.findikKonus(F3.alabilir);
@@ -1295,6 +1363,7 @@ class Vaka3 {
     // 6) sarılır, kuyruğu kalp yapar (kalpler)
     this.adim('saril');
     this.findikPoz('findik-sarilma');
+    void this.findikZipla(0.1, 560).then(() => (this.kapali ? undefined : this.findikZipla(0.06, 460)));
     ses.sicak();
     this.kalpler();
     oy.minoTepki('saril');
@@ -1364,6 +1433,10 @@ class Vaka3 {
           efekt.dogru();
           this.efekt.parilti(hx, hy, 6, 0.5);
           this.oy.kinoIfade('heyecan', 900);
+          // Fındık kurabiyeyi ağzına atar: yanaklar her ısırıkta şişer; ilkinden sonra sevinçle hoplar
+          await this.findikIsir(2);
+          if (this.kapali) return;
+          if (kalan > 1) void this.findikZipla(0.08, 460);
           if (--kalan <= 0) {
             clearTimeout(z);
             this.el.classList.remove('dd-sahne-is');

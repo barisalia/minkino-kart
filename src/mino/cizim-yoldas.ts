@@ -26,6 +26,12 @@ export interface CizimYoldas {
   onayla(): void;
   /** Nazik teselli (sihir olmadı): başını sallar, mırlar. */
   nazik(): void;
+  /**
+   * Eksik parçayı nazikçe gösterir (düşük puan): ekrandaki x'e doğru bütün gövdesiyle bir adım seker (çömelir, esner,
+   * inişte basılır), yüzü ve gözleri o yana döner (işaret pozu, kol kalkmaz), çocuk parmağın yolu izlerken orada bekler,
+   * sonra yerine seker. Kol / parça döndürme yok. ms: orada bekleme süresi.
+   */
+  goster(x: number, ms?: number): void;
   /** Sihirli değnekle büyü döngüsü (açık / kapalı). */
   buyu(acik: boolean): void;
   /** Değneğin yıldız ucunun ekrandaki yeri (değnek yoksa null). */
@@ -70,6 +76,7 @@ export function cizimYoldasi(): CizimYoldas {
   let bakZaman = 0;
   let bosZaman = 0;
   let buyuZaman = 0;
+  let gosterZaman = 0;
   let sonDokunma = 0;
   let sonIzle = 0;
   let kapandi = false;
@@ -167,6 +174,52 @@ export function cizimYoldasi(): CizimYoldas {
       window.setTimeout(() => !kapandi && mino.tepki('mir', 1.8), TEST_MODU ? 50 : 1300);
       bosta();
     },
+    goster(x, ms = 2600) {
+      buyuAcik = false;
+      el.classList.remove('buyu');
+      clearTimeout(buyuZaman);
+      clearTimeout(gosterZaman);
+      clearTimeout(bosZaman);
+      clearTimeout(bakZaman);
+      const r = el.getBoundingClientRect();
+      const yon = x >= r.left + r.width / 2 ? 1 : -1;
+      void mino.poz(yon > 0 ? 'isaret-sag' : 'isaret-sol', { kol: false });
+      mino.bak(yon * 0.9);
+      const dx = yon * Math.min(Math.abs(x - (r.left + r.width / 2)) * 0.3, r.width * 0.22);
+      const git = `translate(${dx.toFixed(1)}px, 0px)`;
+      if (!az)
+        el.animate(
+          [
+            { transform: 'translate(0px, 0px) scale(1, 1)' },
+            { transform: 'translate(0px, 0px) scale(1.06, 0.93)', offset: 0.18 },
+            { transform: `translate(${(dx * 0.55).toFixed(1)}px, -9%) scale(0.95, 1.06)`, offset: 0.48 },
+            { transform: `${git} scale(1.06, 0.94)`, offset: 0.8 },
+            { transform: `${git} scale(1, 1)` },
+          ],
+          { duration: 560, easing: 'ease-in-out', fill: 'forwards' },
+        );
+      gosterZaman = window.setTimeout(() => {
+        if (kapandi) return;
+        void mino.poz(null);
+        mino.bak(0);
+        if (!az) {
+          el.getAnimations().forEach((a) => {
+            if (!('animationName' in a)) a.cancel();
+          });
+          el.animate(
+            [
+              { transform: `${git} scale(1, 1)` },
+              { transform: `${git} scale(1.05, 0.95)`, offset: 0.18 },
+              { transform: `translate(${(dx * 0.45).toFixed(1)}px, -7%) scale(0.96, 1.05)`, offset: 0.5 },
+              { transform: 'translate(0px, 0px) scale(1.05, 0.95)', offset: 0.82 },
+              { transform: 'translate(0px, 0px) scale(1, 1)' },
+            ],
+            { duration: 520, easing: 'ease-in-out' },
+          );
+        }
+        bosta();
+      }, TEST_MODU ? 100 : ms);
+    },
     buyu(acik) {
       buyuAcik = acik;
       el.classList.toggle('buyu', acik);
@@ -192,6 +245,7 @@ export function cizimYoldasi(): CizimYoldas {
       clearTimeout(bakZaman);
       clearTimeout(bosZaman);
       clearTimeout(buyuZaman);
+      clearTimeout(gosterZaman);
       mino.kapat();
     },
   };

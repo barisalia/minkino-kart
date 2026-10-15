@@ -163,11 +163,15 @@ function eserSahnesi(e: MuzeEseri): { sh: HTMLElement; canli: Canli } | null {
 /** Boyaları parça parça resme çevirir (ağır: çerçeveler sırayla, kare kare boyanır). */
 const boyaOnbellek = new Map<string, Map<string, string>>();
 function boyalariKoy(e: MuzeEseri, canli: Canli) {
-  let m = boyaOnbellek.get(e.id);
+  // boya, çerçevenin ekrandaki boyunda (× DPR) çizilir: duvardaki küçük çerçeve ile yakından bakış ayrı önbellekte
+  // (eskiden hep 360 px çizilip büyütülüyordu; kayıt aynı, yalnız resim keskin)
+  const R = canli.boyaPikseli();
+  const anahtar = `${e.id}@${R}`;
+  let m = boyaOnbellek.get(anahtar);
   if (!m) {
     m = new Map();
-    for (const parca of new Set(e.boyalar.map((b) => b.parca))) m.set(parca, boyaResmi(e.boyalar.filter((b) => b.parca === parca)).toDataURL());
-    boyaOnbellek.set(e.id, m);
+    for (const parca of new Set(e.boyalar.map((b) => b.parca))) m.set(parca, boyaResmi(e.boyalar.filter((b) => b.parca === parca), BOYUT, R).toDataURL());
+    boyaOnbellek.set(anahtar, m);
   }
   for (const [parca, url] of m) canli.boyaKoy(parca, url);
   if (SUS[e.resim]) canli.susGoster();

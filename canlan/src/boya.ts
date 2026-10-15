@@ -10,8 +10,11 @@ import { SUS } from './susler';
 
 /** Boya maskesinin ızgarası (kova doldurma, müze kaydı): hızlı kalsın diye sabit */
 export const BOYUT = 360;
-/** Boya resminin en büyük çözünürlüğü (px; telefonda da çizim hızlı kalsın) */
-export const BOYA_EN_COK = 1024;
+/**
+ * Boya resminin en büyük çözünürlüğü (px). Telefonda (DPR 3) açılış vitrini ~1120 px, Müzem'de yakından bakış daha
+ * büyük: 1024 sınırı onları yeniden ×1.1-1.5 büyütüyordu. İşler yalnız boyanın kutusunda yapıldığı için 1536 da hızlı.
+ */
+export const BOYA_EN_COK = 1536;
 
 /**
  * Boya resminin çözünürlüğü: çizimin ekrandaki boyu (CSS px) × cihaz piksel oranı; en az BOYUT, en çok BOYA_EN_COK.
