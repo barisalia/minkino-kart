@@ -317,8 +317,10 @@
 }
 
 /* ================================================================ sahne çerçevesi: sahne en çok 2.17:1 (19.5:9 telefon) genişlikte,
-   ortada; daha geniş ekranda iki yan otobüsün fayanslı iç duvarı (eşyalar birbirinden uzaklaşmaz, hiçbir şey yayılmaz) */
-.ps-kok .ps-gun-dis {
+   ortada; daha geniş ekranda iki yan otobüsün fayanslı iç duvarı (eşyalar birbirinden uzaklaşmaz, hiçbir şey yayılmaz).
+   Seçici .mk-kok.ps-kok: derlemede ana.css bu dosyadan SONRA yükleniyor; '.mk-kok .ekran' dolgusu (10/12 px) ve flex'i
+   sahneyi küçültüyordu (844×390'da 798×368, istasyonlar %5 küçük). Bir üst özgüllük, sıra ne olursa olsun bunu geçerli kılar. */
+.mk-kok.ps-kok .ps-gun-dis {
   padding: 0;
   display: grid;
   place-items: center;

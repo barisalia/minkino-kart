@@ -218,6 +218,16 @@
   right: var(--yan);
   align-items: flex-start;
 }
+/* üst çubuğun boş yerleri sahneyi örtmez: yalnız düğmeler ve alt yazı balonu dokunuş alır (Ege'de perdenin balonun
+   yanında kalan köşesi, çubuğun boş .orta kutusuna gidip yutuluyordu) */
+.mc-kok .mc-ust,
+.mc-kok .mc-ust .orta {
+  pointer-events: none;
+}
+.mc-kok .mc-ust > :not(.orta),
+.mc-kok .mc-ust .orta > * {
+  pointer-events: auto;
+}
 .mc-kok .mc-altyazi {
   font-size: clamp(0.98rem, 4.2vw, 1.45rem);
   line-height: 1.18;
