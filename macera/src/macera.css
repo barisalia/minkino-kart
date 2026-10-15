@@ -202,7 +202,11 @@
 }
 
 /* ---------------------------------------------------------------- bölüm ekranı */
-.mc-kok .mc-bolum {
+/* Seçiciler .mk-kok.mc-kok: tam derlemede ana.css bu dosyadan SONRA yükleniyor; '.mk-kok .ekran' dolgusu,
+   '.mk-kok .ust-cubuk' position:relative'i ve '.mk-kok .baslik-balon' dolgusu bunları eziyordu. Yatay telefonda üst
+   çubuk akışa girip alt yazı balonu ekranın ortasına iniyor, perdenin yıldızını örtüp dokunuşu yutuyordu (Elektrik
+   ışık görevi perdede takılıyordu; tek sayfa derlemede sıra farklı olduğu için görünmüyordu). */
+.mk-kok.mc-kok .mc-bolum {
   padding: 0;
   overflow: hidden;
 }
@@ -210,7 +214,7 @@
   position: absolute;
   inset: 0;
 }
-.mc-kok .mc-ust {
+.mk-kok.mc-kok .mc-ust {
   position: absolute;
   z-index: 20;
   top: var(--ust);
@@ -228,7 +232,7 @@
 .mc-kok .mc-ust .orta > * {
   pointer-events: auto;
 }
-.mc-kok .mc-altyazi {
+.mk-kok.mc-kok .mc-altyazi {
   font-size: clamp(0.98rem, 4.2vw, 1.45rem);
   line-height: 1.18;
   padding-right: 16px;
