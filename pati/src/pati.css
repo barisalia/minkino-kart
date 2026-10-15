@@ -611,7 +611,7 @@
   transform: translateY(0);
 }
 .pt-kok .pt-nehir-gel.pt-yakin .pt-nehir {
-  transform: translateY(75%);
+  transform: translateY(105%);
 }
 .pt-kok .pt-nehir-govde {
   height: 100%;
@@ -905,7 +905,7 @@
   left: max(0px, env(safe-area-inset-left));
 }
 .pt-kok .pt-nehir-gel.pt-yakin .pt-nehir.pt-nehir-anlatici {
-  transform: translateY(78%);
+  transform: translateY(105%);
 }
 @media (orientation: portrait) {
   .pt-kok .pt-nehir.pt-nehir-anlatici {
