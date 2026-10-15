@@ -1174,8 +1174,9 @@
   .cc-kok {
     --dokunma: 64px;
   }
-  /* açılış: solda canlı vitrin, sağda logo ve Oyna */
-  .cc-kok .cc-acilis {
+  /* açılış: solda canlı vitrin, sağda logo ve Oyna. Ekran kökleri .mk-kok.cc-kok ile: derlemede ana.css bu dosyadan SONRA
+     yüklenir, eşit özgüllükteki '.mk-kok .ekran { display: flex }' ızgarayı eziyordu (açılış, çizim, sonuç yatayda dağılıyordu) */
+  .mk-kok.cc-kok .cc-acilis {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
@@ -1208,7 +1209,7 @@
     min-height: 76px;
   }
   /* çizim: renkler solda iki sütun, Bitti sağda; kâğıt ortada büyük (alt sıra kâğıdı küçültüyordu) */
-  .cc-kok .cc-ciz {
+  .mk-kok.cc-kok .cc-ciz {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(0, 1fr);
@@ -1241,7 +1242,7 @@
     min-height: 64px;
   }
   /* sonuç: resim solda, boya ve düğmeler sağda */
-  .cc-kok .cc-sonuc {
+  .mk-kok.cc-kok .cc-sonuc {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
