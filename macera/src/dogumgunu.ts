@@ -53,10 +53,17 @@ const KONUK_CIZIM: Record<KonukAd, { oran: number; boy?: number; golge?: number;
   zeynep: { boy: 33.9, oran: 352 / 565, golge: 20.7, sapka: { x: 50.3, y: 14.8, w: 25.6, d: 6 } },
 };
 /** Konukların parti sırasındaki yerleri (x, alttan y) */
-const YER: Record<KonukAd, [number, number, number]> = { can: [23, 2, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [79, 2, 7] };
+const YER_YATAY: Record<KonukAd, [number, number, number]> = { can: [23, 2, 7], elif: [34, 21, 4], deniz: [66, 21, 4], zeynep: [79, 2, 7] };
 /** Saklanma yerleri (x, y, katman): koltuğun, masanın, hediyelerin arkası */
 const SAKLI: Record<KonukAd, [number, number, number]> = { can: [16, 13, 2], elif: [37, 5, 5], deniz: [63, 5, 5], zeynep: [84, 3, 4] };
 const ADA_YER: [number, number] = [50, 30];
+/**
+ * Dikey ekran (telefon / tablet dik): sahne dar, çocuklar yan yana sığmaz. Ada ortada ve biraz önde (pastanın arkasında
+ * ama konukların önünde, katman 5), Elif ile Deniz iki yana ve hafif arkaya açılır; Can ile Zeynep önde köşelerde.
+ * Kimse kimsenin yüzünü örtmez (örtüşme ölçüldü: 0 px).
+ */
+const YER_DIKEY: Record<KonukAd, [number, number, number]> = { can: [22, 2, 7], elif: [16, 25, 3], deniz: [83, 25, 3], zeynep: [78, 2, 7] };
+const ADA_YER_DIKEY: [number, number] = [50, 22];
 /** Balonların flamadaki yerleri */
 const BALON_YER: [number, number][] = [
   [10, 68], [26, 64], [42, 62], [58, 62], [74, 64], [90, 68],
@@ -65,7 +72,11 @@ const BALON_TON = [0, 200, 60, 280, 130, 330];
 
 export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void> {
   const yas = durum.i.yas ?? 4;
-  const adaYer: [number, number] = [...ADA_YER];
+  const dikey = innerWidth / innerHeight < 0.8;
+  const YER = dikey ? YER_DIKEY : YER_YATAY;
+  const adaYer: [number, number] = [...(dikey ? ADA_YER_DIKEY : ADA_YER)];
+  /** Ada'nın katmanı: dikeyde konukların önünde (pasta ve masanın arkasında kalır) */
+  const ADA_Z = dikey ? 5 : 4;
   // dikey telefonda 9:16 oda çizimi (Ege ve Elektrik gibi); yatay çizim kırpılıp pencere ekranı kaplamasın
   const sahne = new Sahne('parti-sahne/oda', 'parti-sahne/oda-dikey');
   kok.append(sahne.el);
@@ -86,7 +97,8 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     if (iskelet) iskeletler.push(iskelet);
     return { oyuncu, iskelet };
   };
-  const { oyuncu: ada, iskelet: adaI } = cocuk({ ad: 'ada', resim: 'parti/ada', boy: 30.2, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
+  // dikeyde Ada biraz önde: bir parça büyük (önde duran yakın görünür)
+  const { oyuncu: ada, iskelet: adaI } = cocuk({ ad: 'ada', resim: 'parti/ada', boy: dikey ? 32.6 : 30.2, oran: 345 / 622, golge: 24, sapka: { x: 50.4, y: 27.6, w: 28, d: -4 } });
   const konuklar = KONUKLAR.map((ad) => cocuk({ ad, resim: `parti/${ad}`, boy: 15.5, ...KONUK_CIZIM[ad] }).oyuncu);
   const oy = { ada };
   const konukAd = KONUKLAR;
@@ -231,7 +243,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
     await bekle(700);
     await oy.ada.git(adaYer[0], adaYer[1], 1600);
     kapi.classList.remove('acik');
-    oy.ada.katman = 4;
+    oy.ada.katman = ADA_Z;
     await soyle(D.surpriz_simdi);
     await surprizBekle();
     // ışıklar yanar, herkes fırlar; Ada'nın karartması ışıkla birlikte kalkar (oda aydınlanıp Ada bir an kara siluet kalmasın)
@@ -782,7 +794,7 @@ export async function dogumGunu(kok: HTMLElement, ui: BolumArayuz): Promise<void
       sahne.koy(h('div.mc-tabak.dolu', { style: `--g:${i * 90}ms` }, h('i.mc-tabak-bos'), resim('parti/dilim', '', 'Dilim')), { x, y: 11 + (i % 2) * 2, w: 8, z: 8 });
     });
     // pasta bitti: Ada artık pastanın değil masanın arkasında durur
-    adaYer[1] = 21;
+    adaYer[1] = dikey ? 16 : 21;
     oy.ada.koy(adaYer[0], adaYer[1]);
     await bekle(500);
     yakin.remove();
