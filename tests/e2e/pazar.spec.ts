@@ -59,6 +59,48 @@ test('Mino’nun Pazarı: açılış → pazar, sürükleyerek 1 müşteri (3 ya
   expect(hatalar).toEqual([]);
 });
 
+test('Mino’nun Pazarı (K3): dokunmak da yeter; ilk yanlışta doğru ürün parlamaz, müşteri komik tepki verir', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=3&ekran=pazar');
+  const ist = await istek(page);
+  const [urun] = Object.keys(ist.istenen);
+  // yanlış ürüne dokun: sepete girmez, hiçbir ürün parlamaz
+  await page.locator(`.pz-urunler .pz-urun:not([data-urun="${urun}"])`).first().tap();
+  await page.waitForTimeout(200);
+  await expect(page.locator('.pz-sepet-ic .pz-urun')).toHaveCount(0);
+  await expect(page.locator('.pz-urun.pz-parla, .pz-urun.pz-parla-hafif')).toHaveCount(0);
+  // ikinci yanlış da parlatmaz
+  await page.locator(`.pz-urunler .pz-urun:not([data-urun="${urun}"])`).last().tap();
+  await page.waitForTimeout(200);
+  await expect(page.locator('.pz-urun.pz-parla, .pz-urun.pz-parla-hafif')).toHaveCount(0);
+  // doğru ürüne dokun: sepete uçar, müşteri sevinir
+  await page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`).tap();
+  await expect(page.locator('.pz-musteri.sevindi')).toBeVisible();
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino’nun Pazarı (K3): ipucu merdiveni, 35 sn sonra doğru ürün hafifçe parlar (süreler 1/50)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&merdiven=1&yas=3&ekran=pazar');
+  const ist = await istek(page);
+  const [urun] = Object.keys(ist.istenen);
+  const dogru = page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`);
+  await expect(dogru).toHaveClass(/pz-parla-hafif/, { timeout: 4000 });
+  await expect(page.locator('.pz-urunler .pz-urun.pz-parla-hafif')).toHaveCount(1);
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino’nun Pazarı (K3): 5 yaşta iki ürün isteğinin balonunda resim yok, müşteri söyler', async ({ page }, info) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=5&ekran=pazar&tur=iki');
+  await istek(page);
+  await expect(page.locator('.pz-istek-balon .pz-istek-dinle')).toBeVisible();
+  await expect(page.locator('.pz-istek-balon .pz-resim')).toHaveCount(0);
+  await page.screenshot({ path: `tests/screens/${info.project.name}-a7-pazar-5yas-resimsiz.png` });
+  expect(hatalar).toEqual([]);
+});
+
 test('Mino’nun Pazarı: köpek yandan yürüyerek gelir, tezgâhta önden döner, yandan yürüyerek gider', async ({ page }) => {
   const hatalar = hataTopla(page);
   // test modunda yandan yürüyüş kapalı; &yandan=1 açar (yürüyüş gerçek hızda)

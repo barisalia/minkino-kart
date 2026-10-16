@@ -66,6 +66,24 @@ describe('pazar: istek üretme', () => {
     }
   });
 
+  it('K3: 3 yaşta tezgâhta istenenle aynı renkte bir tuzak ürün var (resme dikkatle bakmak gerekir)', () => {
+    for (let t = 1; t <= 100; t++) {
+      const ist = istekUret(3, 0, tohumlu(t));
+      const [u] = Object.keys(ist.istenen);
+      expect(ist.tezgah.filter((x) => x !== u && urunRengi(x) === urunRengi(u)).length, ist.tezgah.join()).toBeGreaterThanOrEqual(1);
+      expect(ist.resimsiz).toBeFalsy();
+    }
+  });
+
+  it('K3: 5-6 yaşta iki ürün ve toplama isteğinde balon resimsiz (müşteri söyler), 3-4 yaşta resimli', () => {
+    for (let t = 1; t <= 40; t++) {
+      expect(istekUret(5, 0, tohumlu(t)).resimsiz).toBe(true);
+      expect(istekUret(6, 0, tohumlu(t)).resimsiz).toBe(true);
+      expect(istekUret(4, 0, tohumlu(t)).resimsiz).toBeFalsy();
+      expect(istekUret(4, 0, tohumlu(t), 'iki').resimsiz).toBeFalsy();
+    }
+  });
+
   it('4 yaş renk: tezgâhta istenen renkte tam bir ürün var', () => {
     for (let t = 1; t <= 100; t++) {
       const ist = istekUret(4, 1, tohumlu(t));

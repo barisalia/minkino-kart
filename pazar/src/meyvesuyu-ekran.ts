@@ -14,6 +14,7 @@ import { Mino } from '../../src/mino/mino';
 import { bekle, h, karistir, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { konfetiPatlat } from '../../src/ui/konfeti';
+import { MERDIVEN } from '../../src/ui/ipucu-merdiveni';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { AZ, Bardak, Blender, YABANMERSINI } from './blender';
@@ -148,7 +149,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       dolduDendi = true;
       return;
     }
-    e.classList.remove('pz-parla');
+    e.classList.remove('pz-parla', 'pz-parla-hafif');
     tasi(e, blender.meyveler);
     setTimeout(() => blender.dustu(SU_KODU[MEYVE_RENGI[id]]), sure(260));
     efekt.yapis();
@@ -224,14 +225,19 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   karDugme.addEventListener('click', () => basla(false));
   blender.el.addEventListener('click', () => basla(true));
 
-  // uzun süre hareket yoksa: doğru meyveler parlar, "Meyveyi blendere at!"
+  // uzun süre hareket yoksa (ipucu merdiveni, src/ui/ipucu-merdiveni.ts): 12 sn yalnız ne yapılacağı söylenir
+  // ("Meyveyi blendere at!"; cevap değil), 35 sn doğru meyveler hafifçe parlar
+  let parladi = false;
   const ipucuSayaci = setInterval(() => {
-    if (!aktif || ipucu || TEST_MODU || performance.now() - sonHareket < 12000) return;
-    ipucu = true;
-    if (blender.icindekiler.length) void soyle(M.bas);
-    else {
-      parlat();
-      void soyle(M.at);
+    if (!aktif || TEST_MODU) return;
+    const bos = performance.now() - sonHareket;
+    if (!ipucu && bos >= MERDIVEN.bak) {
+      ipucu = true;
+      void soyle(blender.icindekiler.length ? M.bas : M.at);
+    } else if (!parladi && bos >= MERDIVEN.parla && !blender.icindekiler.length) {
+      parladi = true;
+      const dogru = dogruSecim(ist) ?? [];
+      for (const e of urunler.querySelectorAll<HTMLElement>('.pz-urun')) e.classList.toggle('pz-parla-hafif', dogru.includes(e.dataset.urun ?? ''));
     }
   }, 1000);
 
@@ -270,6 +276,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     ist = msIstekUret(y, i, Math.random, i > 0 ? ist.hedef : undefined);
     hata = 0;
     ipucu = false;
+    parladi = false;
     dolduDendi = false;
     basDendi = false;
     canli.gun(i / (MS_MUSTERI - 1));

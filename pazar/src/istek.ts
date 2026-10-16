@@ -58,6 +58,11 @@ export interface Istek {
   dugmeli: boolean;
   /** terazi: müşterinin kefesindeki ürünler (toplam ağırlığı dengelenmeli) */
   sol?: string[];
+  /**
+   * 5-6 yaş: balonda ürünün resmi yok, müşteri ne istediğini yalnız söyler (çocuk dinleyip karar verir; resmi
+   * kopyalamaz). Kalite denetimi 2026-10-16, K3.
+   */
+  resimsiz?: boolean;
 }
 
 export type Sonuc = 'tamam' | 'az' | 'fazla';
@@ -93,6 +98,15 @@ function karistir<T>(a: T[], rnd: Rnd): T[] {
 function farkli(havuz: readonly string[], n: number, rnd: Rnd, haric: string[] = []): string[] {
   return karistir(havuz.filter((x) => !haric.includes(x)), rnd).slice(0, n);
 }
+/**
+ * Tuzak ürün: istenenle aynı renkte başka bir ürün (elma ↔ çilek/domates, muz ↔ limon/mısır, havuç ↔ portakal).
+ * Çocuk ilk bakışta karıştırabilir; dikkatle bakınca ayırır. Uygun yoksa rastgele farklı bir ürün.
+ */
+function tuzak(u: string, havuz: readonly string[], rnd: Rnd, haric: string[] = []): string {
+  const renk = urunRengi(u);
+  const benzer = havuz.filter((x) => x !== u && !haric.includes(x) && urunRengi(x) === renk);
+  return benzer.length ? sec(benzer, rnd) : farkli(havuz, 1, rnd, [u, ...haric])[0];
+}
 const tekrarla = (id: string, n: number) => Array.from({ length: n }, () => id);
 /** İkinci cümle parçası küçük harfle başlasın (yazıda) */
 const kucukBas = (s: string) => s.charAt(0).toLocaleLowerCase('tr') + s.slice(1);
@@ -105,7 +119,9 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?
     case 'tek': {
       const u = sec(URUN.say, rnd);
       const s = doldur(I.tek, { urun: u });
-      return { tur, istenen: { [u]: 1 }, tezgah: karistir([u, ...farkli(tum, 2, rnd, [u])], rnd), soz: [s], yazi: s, dugmeli: false };
+      // biri istenenle aynı renkte tuzak (resme dikkatle bakmak gerekir)
+      const t = tuzak(u, tum, rnd);
+      return { tur, istenen: { [u]: 1 }, tezgah: karistir([u, t, ...farkli(tum, 1, rnd, [u, t])], rnd), soz: [s], yazi: s, dugmeli: false };
     }
     case 'renk': {
       const renk = sec(Object.keys(RENKLER), rnd);
@@ -129,8 +145,8 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?
       const nb = arasi(1, 2, rnd);
       const s1 = doldur(I.iki, { urun: a, sayi: na });
       const s2 = doldur(I.sayi, { urun: b, sayi: nb });
-      const tezgah = [...tekrarla(a, na + 1), ...tekrarla(b, nb + 1), ...farkli(tum, 1, rnd, [a, b])];
-      return { tur, istenen: { [a]: na, [b]: nb }, tezgah: karistir(tezgah, rnd), soz: [s1, s2], yazi: `${s1} ${kucukBas(s2)}`, dugmeli: true };
+      const tezgah = [...tekrarla(a, na + 1), ...tekrarla(b, nb + 1), tuzak(a, tum, rnd, [b])];
+      return { tur, istenen: { [a]: na, [b]: nb }, tezgah: karistir(tezgah, rnd), soz: [s1, s2], yazi: `${s1} ${kucukBas(s2)}`, dugmeli: true, resimsiz: yas >= 5 };
     }
     case 'ayir': {
       const grup: Grup = rnd() < 0.5 ? 'meyve' : 'sebze';
@@ -145,8 +161,8 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?
       const daha = arasi(1, Math.min(3, 5 - bende), rnd);
       const s1 = doldur(I.bende, { urun: u, sayi: bende });
       const s2 = doldur(I.daha, { sayi: daha });
-      const tezgah = [...tekrarla(u, daha + 2), ...farkli(tum, 1, rnd, [u])];
-      return { tur, istenen: { [u]: daha }, bende, tezgah: karistir(tezgah, rnd), soz: [s1, s2], yazi: `${s1} ${s2}`, dugmeli: true };
+      const tezgah = [...tekrarla(u, daha + 2), tuzak(u, tum, rnd)];
+      return { tur, istenen: { [u]: daha }, bende, tezgah: karistir(tezgah, rnd), soz: [s1, s2], yazi: `${s1} ${s2}`, dugmeli: true, resimsiz: yas >= 5 };
     }
     case 'terazi': {
       const s = I.terazi;

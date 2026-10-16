@@ -185,6 +185,13 @@
   filter: saturate(0.6) brightness(1.12) contrast(0.85) blur(0.5px);
   animation: pz-yaya-git var(--sure) linear forwards;
 }
+/* müşteri tezgâhtayken (yakın çekim) uzak yayalar silinir: kadrajda "sıradaki müşterinin hayaleti" gibi durmasın */
+.pz-kok .pz-yaya {
+  transition: opacity 0.6s;
+}
+.pz-kok .pz-sahne.pz-yakin .pz-yaya {
+  opacity: 0;
+}
 .pz-kok .pz-yaya img {
   display: block;
   width: 100%;

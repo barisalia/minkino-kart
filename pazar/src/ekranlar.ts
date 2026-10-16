@@ -1,12 +1,13 @@
 /** Mino'nun Pazarı ekranları: açılış, pazar (5 müşteri), şenlik */
 import P from '../../content/pazar.json';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
-import { efekt, konus } from '../../src/audio/ses';
+import { efekt, konus, konusuyorMu } from '../../src/audio/ses';
 import { durum } from '../../src/engine/ilerleme';
 import type { Yas } from '../../src/engine/types';
 import { bekle, h, karistir, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { konfetiPatlat } from '../../src/ui/konfeti';
+import { ipucuMerdiveni, type Merdiven } from '../../src/ui/ipucu-merdiveni';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { Mino } from '../../src/mino/mino';
@@ -326,6 +327,8 @@ export function acilisEkrani(app: Uygulama): Ekran {
 function istekGorseli(ist: Istek): HTMLElement {
   const grup = (id: string, n: number, on = '') => h('div.pz-istek-grup', {}, h('b', {}, `${on}${n}`), urunResmi(id));
   const [u] = Object.keys(ist.istenen);
+  // 5-6 yaş: müşteri ne istediğini yalnız söyler; balonda kulak + soru işareti (dokununca yeniden söyler)
+  if (ist.resimsiz) return h('div.pz-istek.pz-istek-dinle', { 'aria-label': ist.yazi }, svg(IKON.hoparlor), h('b.pz-soru', {}, '?'));
   switch (ist.tur) {
     case 'tek':
       return h('div.pz-istek', {}, urunResmi(u));
@@ -425,9 +428,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
   let kapandi = false;
   let hata = 0;
   let verHata = 0;
-  let sonHareket = performance.now();
   let sonBirakma = 0;
-  let ipucu = false;
   let musteri: Musteri | null = null;
   let bitir: () => void = () => undefined;
   const sokuler: (() => void)[] = [];
@@ -476,17 +477,54 @@ export function pazarEkrani(app: Uygulama): Ekran {
     }
   }
 
-  /** Doğru ürünleri parlat (2 hatadan sonra ya da uzun süre hareket yoksa) */
+  /** İpucunun anlamlı olduğu istekler (terazi ve parada her ürün "uygun": parlatmak bir şey söylemez) */
+  const ipucuAnlamli = () => ist.tur !== 'terazi' && ist.tur !== 'ode';
+  const dogruUrunler = () => [...urunler.querySelectorAll<HTMLElement>('.pz-urun')].filter((e) => uygunMu(ist, e.dataset.urun ?? ''));
+  /** İpucu merdiveninin son basamağı (35 sn): doğru ürünler hafifçe parlar */
   function parlat() {
-    for (const e of urunler.querySelectorAll<HTMLElement>('.pz-urun')) e.classList.toggle('pz-parla', uygunMu(ist, e.dataset.urun ?? ''));
+    if (!ipucuAnlamli()) return;
+    const dogru = new Set(dogruUrunler());
+    for (const e of urunler.querySelectorAll<HTMLElement>('.pz-urun')) e.classList.toggle('pz-parla-hafif', dogru.has(e));
+  }
+
+  /**
+   * İpucu merdiveni (src/ui/ipucu-merdiveni.ts): yanlış ürün cevabı ele vermez. 12 sn Mino doğru ürüne bakar,
+   * 25 sn müşteri isteğini yeniden söyler (hiç dokunulmadıysa "Sepete sürükle!"), 35 sn doğru ürünler hafifçe parlar.
+   */
+  let merdiven: Merdiven | null = null;
+  let dokundu = false;
+  function merdivenKur() {
+    merdiven?.dur();
+    dokundu = false;
+    merdiven = ipucuMerdiveni(
+      {
+        bak: () => {
+          const d = ipucuAnlamli() ? dogruUrunler()[0] : null;
+          if (d) minoCanli.bakin(oran(d, sahne)[0] < 0.5 ? -0.8 : 0.8, 2200);
+        },
+        soz: () => void soyle(dokundu ? ist.soz : [...ist.soz, P.surukle]),
+        parla: parlat,
+        tekrar: () => void soyle(ist.soz),
+      },
+      { mesgul: konusuyorMu },
+    );
   }
 
   let dusunZaman = 0;
   let yanlisKamZaman = 0;
-  function yanlisUrun() {
+  let komikSira = Math.floor(Math.random() * 2);
+  function yanlisUrun(e?: HTMLElement) {
     hata++;
-    efekt.yanlis();
-    void musteri?.hayir();
+    merdiven?.dokunuldu();
+    // yanlış ürün komik bir sonuç verir: müşteri şaşırıp üzülür ya da yüzünü buruşturur ("ıyy"), ürün tezgâhta zıplar
+    if (komikSira++ % 2 === 0 || !musteri) {
+      efekt.yanlis();
+      void musteri?.hayir();
+    } else {
+      efekt.pof();
+      void musteri.burus();
+    }
+    if (e) setTimeout(() => !kapandi && boing(e), sure(420));
     // doğru üründeki gibi: tepki anında kamera müşteriye yaklaşır (şaşkın → üzgün yüzü okunur), sonra geri açılır.
     // Tezgâh kısa süre kadrajdan çıkar; çocuk ekrana dokununca beklemeden geri gelir (oyunKamerasi → pointerdown)
     if (kam.acik && aktif) {
@@ -499,24 +537,31 @@ export function pazarEkrani(app: Uygulama): Ekran {
     clearTimeout(dusunZaman);
     dusunZaman = window.setTimeout(() => void mino.poz(null), sure(1300));
     const soz = ist.tur === 'ayir' ? (ist.grup === 'meyve' ? P.meyve_degil : P.sebze_degil) : rastgele(P.yanlis);
-    if (hata >= 2) {
-      parlat();
-      void soyle([soz, P.yardim]);
-    } else void soyle(soz);
+    // ilk yanlışta parlama yok; ikinci yanlıştan sonra (en az 10 sn geçtiyse) müşteri isteğini yeniden söyler (dolaylı)
+    if (hata >= 2 && merdiven && merdiven.gecen() >= 10_000 && !merdiven.geldi('soz')) void soyle([soz, ...ist.soz]);
+    else void soyle(soz);
   }
 
-  function koy(e: HTMLElement, id: string) {
-    sonHareket = performance.now();
+  function koy(e: HTMLElement, id: string, dokunus = false) {
+    dokundu = true;
+    merdiven?.dokunuldu();
     if (!aktif) {
       geriGonder(e);
       return;
     }
     if (!uygunMu(ist, id)) {
-      geriGonder(e);
-      yanlisUrun();
+      if (dokunus && !TEST_MODU) {
+        // dokunulan yanlış ürün sepete doğru sekip geri döner (sürüklenmiş gibi)
+        const a = e.getBoundingClientRect();
+        const b = hedefEl().getBoundingClientRect();
+        e.style.transition = `transform ${sure(200)}ms ease-out`;
+        e.style.transform = `translate(${((b.left + b.width / 2 - (a.left + a.width / 2)) * 0.4).toFixed(0)}px, ${((b.top + b.height / 2 - (a.top + a.height / 2)) * 0.4).toFixed(0)}px) scale(1.1)`;
+        setTimeout(() => geriGonder(e), sure(210));
+      } else geriGonder(e);
+      yanlisUrun(e);
       return;
     }
-    e.classList.remove('pz-parla');
+    e.classList.remove('pz-parla', 'pz-parla-hafif');
     tasi(e, kap());
     // ürün sepete düşünce küçük bir sekme (kayma bittikten sonra)
     // ürün sekip yerleşir; para dönerek kavisle düşer ve şıngırdar
@@ -567,7 +612,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
         hedef: hedefEl,
         aktif: () => aktif && e.parentElement === yuva,
         basla: () => {
-          sonHareket = performance.now();
+          dokundu = true;
+          merdiven?.dokunuldu();
           efekt.secim();
           minoCanli.izleBasla();
         },
@@ -576,8 +622,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
           sonBirakma = performance.now();
           minoCanli.izleBitti();
           if (hedefte) koy(e, id);
-          else if (dokunus) {
-            // dokununca ürün canlanır: zıplar, kıvrılır, kendi notasını söyler; Mino ona bakar
+          else if (dokunus && aktif) {
+            // dokunmak da yeter: ürün sepete uçar (3 yaş sürüklemeden oynar; "Mino ile oyna" ile aynı)
+            koy(e, id, true);
+          } else if (dokunus) {
+            // müşteri yokken dokununca ürün canlanır: zıplar, kıvrılır, kendi notasını söyler; Mino ona bakar
             geriGonder(e);
             boing(e);
             efekt.nota(2 + (i % 6));
@@ -624,13 +673,6 @@ export function pazarEkrani(app: Uygulama): Ekran {
     void soyle(soz);
   });
 
-  // uzun süre hareket yoksa: doğru ürün parlar, "Sepete sürükle!"
-  const ipucuSayaci = setInterval(() => {
-    if (!aktif || ipucu || TEST_MODU || performance.now() - sonHareket < 12000) return;
-    ipucu = true;
-    parlat();
-    void soyle(P.surukle);
-  }, 1000);
 
   const tur = async (i: number) => {
     ist = istekUret(y, i, Math.random, i === 0 && zorla ? zorla : undefined);
@@ -662,7 +704,8 @@ export function pazarEkrani(app: Uygulama): Ekran {
     canli.gun(i / (MUSTERI_SAYISI - 1));
     hata = 0;
     verHata = 0;
-    ipucu = false;
+    merdiven?.dur();
+    merdiven = null;
     sokuler.splice(0).forEach((f) => f());
     sepet.classList.remove('pz-say', 'pz-teslim');
     delete sepet.dataset.toplam;
@@ -696,11 +739,13 @@ export function pazarEkrani(app: Uygulama): Ekran {
     mu.bekle(true);
 
     // istek karşılanınca girdi hemen kapanır (müşteri cümlesini bitirirken sepet bozulmasın, yanlış ürün sayılmasın)
-    const bitti = new Promise<void>((r) => (bitir = () => ((aktif = false), r())));
+    const bitti = new Promise<void>((r) => (bitir = () => ((aktif = false), merdiven?.dur(), r())));
     yazi.textContent = ist.yazi;
-    sonHareket = performance.now();
     aktif = true;
     el.classList.add('pz-aktif');
+    merdivenKur();
+    // resimsiz istek balonuna dokununca müşteri isteğini yeniden söyler
+    m.querySelector('.pz-istek-balon')?.addEventListener('click', () => aktif && void soyle(ist.soz));
     // istek: yakın çekim müşteri ve balonunda (çocuk tezgâha dokununca hemen açılır, beklemek yok)
     kam.odakla(() => musteriKutusu(kam, musteriKap, true), { doluluk: 0.9, enCok: 2, sure: 900, dikey: 0.4, tamEkran: true });
     // müşteri isteğini söylerken ağzı oynar
@@ -719,7 +764,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     mu.mutlu(1300);
     sepet.classList.add('pz-teslim');
     terazi?.el.classList.add('pz-teslim');
-    urunler.querySelectorAll('.pz-parla').forEach((e) => e.classList.remove('pz-parla'));
+    urunler.querySelectorAll('.pz-parla, .pz-parla-hafif').forEach((e) => e.classList.remove('pz-parla', 'pz-parla-hafif'));
     efekt.dogru();
     void resimSesi(ad);
     // Mino sepeti patisiyle müşteriye uzatır
@@ -787,7 +832,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       aktif = false;
       bitir();
       sarki?.durdur();
-      clearInterval(ipucuSayaci);
+      merdiven?.dur();
       clearTimeout(dusunZaman);
       minoCanli.kapat();
       sokuler.splice(0).forEach((f) => f());

@@ -775,6 +775,33 @@
   animation: pz-parla 1s ease-in-out infinite alternate;
   z-index: -1;
 }
+/* ipucu merdiveninin son basamağı (35 sn): yumuşak, yavaş hale; "buna dokun" diye itmez */
+.pz-kok .pz-urun.pz-parla-hafif::before {
+  content: '';
+  position: absolute;
+  inset: -4%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 230, 120, 0.8) 0%, rgba(255, 199, 44, 0.4) 45%, transparent 70%);
+  animation: pz-parla 2.2s ease-in-out infinite alternate;
+  z-index: -1;
+}
+/* 5-6 yaş resimsiz istek: kulak + soru işareti (müşteri söyler, çocuk dinler) */
+.pz-kok .pz-istek.pz-istek-dinle {
+  cursor: pointer;
+}
+.pz-kok .pz-istek.pz-istek-dinle svg {
+  width: clamp(40px, 11vw, 64px);
+  height: clamp(40px, 11vw, 64px);
+  color: var(--kontur);
+}
+.pz-kok .pz-istek.pz-istek-dinle .pz-soru {
+  font-size: clamp(2rem, 9vw, 3.2rem);
+  font-weight: 700;
+  color: var(--turuncu);
+  -webkit-text-stroke: 4px var(--kontur);
+  paint-order: stroke fill;
+  line-height: 1;
+}
 @keyframes pz-parla {
   from { transform: scale(0.85); opacity: 0.6; }
   to { transform: scale(1.12); opacity: 1; }
