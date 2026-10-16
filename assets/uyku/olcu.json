@@ -1,0 +1,100 @@
+{
+ "kaynak": [
+  "ekip/gemini/yeni/uyku/oda-sayfasi.png",
+  "ekip/gemini/yeni/uyku/yatak-sayfasi.png"
+ ],
+ "olcu": {
+  "pencere-acik": [
+   593,
+   666
+  ],
+  "pencere-kapali": [
+   593,
+   666
+  ],
+  "lamba-sonuk": [
+   241,
+   303
+  ],
+  "lamba-yanik": [
+   241,
+   303
+  ],
+  "sepet": [
+   525,
+   352
+  ],
+  "sepet-on": [
+   525,
+   352
+  ],
+  "minder": [
+   679,
+   385
+  ],
+  "minder-on": [
+   679,
+   385
+  ],
+  "hali": [
+   766,
+   257
+  ],
+  "komodin": [
+   336,
+   299
+  ],
+  "oyuncak-sepeti": [
+   560,
+   254
+  ],
+  "raf": [
+   463,
+   292
+  ],
+  "resim": [
+   395,
+   336
+  ],
+  "yastik-mino": [
+   367,
+   250
+  ],
+  "yastik-kino": [
+   443,
+   347
+  ],
+  "battaniye-mino": [
+   533,
+   425
+  ],
+  "battaniye-kino": [
+   577,
+   476
+  ],
+  "yigin-mino": [
+   538,
+   310
+  ],
+  "yigin-kino": [
+   548,
+   316
+  ],
+  "top": [
+   240,
+   240
+  ],
+  "kupler": [
+   282,
+   253
+  ],
+  "tren": [
+   277,
+   233
+  ],
+  "kemik": [
+   298,
+   153
+  ]
+ }
+}

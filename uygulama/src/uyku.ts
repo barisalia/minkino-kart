@@ -147,8 +147,8 @@ const YATAY: Yerlesim = {
   raf: { x: 15, y: 30, w: '27cqh' },
   resim: { x: 85, y: 35, hh: '21cqh' },
   hali: { x: 50, y: 99, w: '50cqw', enCokBoy: '24cqh' },
-  komodin: { x: 48, y: 71, w: '17cqh' },
-  lamba: { x: 48, ustunde: 'komodin', w: '19cqh' },
+  komodin: { x: 48, y: 71, w: '26cqh' },
+  lamba: { x: 48, ustunde: 'komodin', w: '18.5cqh' },
   'yatak-mino': { x: 28, y: 71.5, w: '37cqh' },
   'yatak-kino': { x: 69, y: 71.5, w: '48cqh' },
   'mino-ayakta': { x: 28, y: 81, hh: '40cqh' },
@@ -161,22 +161,22 @@ const YATAY: Yerlesim = {
   'yastik-kino-yatak': { x: 75, y: 59, w: '23cqh' },
   'battaniye-mino-bekle': { x: 8, y: 95, w: '22cqh' },
   'battaniye-kino-bekle': { x: 19, y: 95, w: '22cqh' },
-  'battaniye-mino-yatak': { x: 28, y: 72, w: '38cqh', enCokBoy: '16cqh' },
-  'battaniye-kino-yatak': { x: 69, y: 72, w: '49cqh', enCokBoy: '17cqh' },
+  'battaniye-mino-yatak': { x: 28, y: 80.5, w: '32cqh' },
+  'battaniye-kino-yatak': { x: 69, y: 86.5, w: '40cqh' },
   'yigin-kino': { x: 84, y: 82, w: '20cqh' },
-  top: { x: 38, y: 95, w: '12cqh' },
+  top: { x: 39, y: 95, w: '12cqh' },
   kupler: { x: 47, y: 95, w: '10.5cqh' },
-  tren: { x: 56.5, y: 95, w: '15cqh' },
-  kemik: { x: 65.5, y: 94, w: '15cqh' },
+  tren: { x: 55.5, y: 95, w: '13cqh' },
+  kemik: { x: 64, y: 94, w: '13cqh' },
   'oyuncak-sepeti': { x: 89, y: 98, w: '22cqh' },
 };
 const DIKEY: Yerlesim = {
-  pencere: { x: 50, ust: 5, w: '62cqw', enCokBoy: '40cqh' },
+  pencere: { x: 50, ust: 9, w: '62cqw', enCokBoy: '40cqh' },
   raf: { x: 0, y: 0, gizli: true },
   resim: { x: 0, y: 0, gizli: true },
   hali: { x: 50, y: 92.5, w: '86cqw', enCokBoy: '15cqh' },
-  komodin: { x: 50, y: 63, w: '15cqw' },
-  lamba: { x: 50, ustunde: 'komodin', w: '17cqw' },
+  komodin: { x: 50, y: 63, w: '22cqw' },
+  lamba: { x: 50, ustunde: 'komodin', w: '16.5cqw' },
   'yatak-mino': { x: 26, y: 66, w: '34cqw' },
   'yatak-kino': { x: 72, y: 66, w: '42cqw' },
   'mino-ayakta': { x: 26, y: 74, hh: '36cqw' },
@@ -189,14 +189,14 @@ const DIKEY: Yerlesim = {
   'yastik-kino-yatak': { x: 78, y: 60, w: '20cqw' },
   'battaniye-mino-bekle': { x: 15, y: 91, w: '21cqw' },
   'battaniye-kino-bekle': { x: 36, y: 91, w: '22cqw' },
-  'battaniye-mino-yatak': { x: 26, y: 66.6, w: '35cqw', enCokBoy: '15cqw' },
-  'battaniye-kino-yatak': { x: 72, y: 66.6, w: '43cqw', enCokBoy: '16cqw' },
+  'battaniye-mino-yatak': { x: 26, y: 72, w: '30cqw' },
+  'battaniye-kino-yatak': { x: 72, y: 72.8, w: '36cqw' },
   'yigin-kino': { x: 82, y: 76.5, w: '19cqw' },
-  top: { x: 15, y: 90, w: '12cqw' },
-  kupler: { x: 33.2, y: 90, w: '10cqw' },
-  tren: { x: 51.4, y: 90, w: '14cqw' },
-  kemik: { x: 71.4, y: 89.5, w: '14cqw' },
-  'oyuncak-sepeti': { x: 90, y: 94, w: '19cqw' },
+  top: { x: 23, y: 90, w: '11cqw' },
+  kupler: { x: 39.4, y: 90, w: '9.5cqw' },
+  tren: { x: 56.8, y: 90, w: '13cqw' },
+  kemik: { x: 76, y: 89.5, w: '13cqw' },
+  'oyuncak-sepeti': { x: 91.5, y: 94, w: '17cqw' },
 };
 
 // ---------------------------------------------------------------- yardımcılar
@@ -358,14 +358,23 @@ export function uykuEkrani(app: Uygulama, param?: UykuParam): Ekran {
     el.style.left = `${y.x}%`;
     el.style.width = y.w ?? 'auto';
     el.style.height = y.hh ?? 'auto';
-    el.style.maxHeight = y.enCokBoy ?? '';
+    // DPR 3'te kaynak çözünürlüğünü aşmasın (büyütme yok): en çok resmin piksel boyu / 3 (resim kutuda alta / üste
+    // yaslı kalır: object-position)
+    const ad = el.dataset.ad as Varlik | undefined;
+    const o = ad && resim(ad) ? OLCU[ad] : undefined;
+    el.style.maxWidth = o ? `${(o[0] / 3).toFixed(1)}px` : '';
+    const boyCap = o ? `${(o[1] / 3).toFixed(1)}px` : '';
+    el.style.maxHeight = y.enCokBoy && boyCap ? `min(${y.enCokBoy}, ${boyCap})` : (y.enCokBoy ?? boyCap);
     if (y.ust !== undefined) {
       el.style.top = `${y.ust}%`;
       el.style.translate = '-50% 0';
     } else if (y.ustunde) {
       const alt = tablo_[y.ustunde];
       const altOran = oran('komodin');
-      el.style.top = `calc(${alt.y}% - ${alt.w} / ${altOran.toFixed(4)} + 0.6cqmin)`;
+      // komodinin eni kaynak sınırına (piksel / 3) takılabilir: lamba gerçek enin üstüne oturur
+      const ko = resim('komodin') ? OLCU.komodin : undefined;
+      const altEn = ko ? `min(${alt.w}, ${(ko[0] / 3).toFixed(1)}px)` : alt.w;
+      el.style.top = `calc(${alt.y}% - ${altEn} / ${altOran.toFixed(4)} + 0.6cqmin)`;
       el.style.translate = '-50% -100%';
     } else {
       el.style.top = `${y.y}%`;
@@ -525,7 +534,8 @@ export function uykuEkrani(app: Uygulama, param?: UykuParam): Ekran {
     const k = kok.getBoundingClientRect();
     const r = hedef.getBoundingClientRect();
     elIpucu.style.left = `${r.left - k.left + r.width / 2}px`;
-    elIpucu.style.top = `${r.top - k.top + r.height * 0.55}px`;
+    // pencerede üst yarı (alt kısmının önünde gece lambası durur)
+    elIpucu.style.top = `${r.top - k.top + r.height * (hedef === pencere.el ? 0.28 : 0.55)}px`;
     elIpucu.classList.add('acik');
   };
   class Yardim {

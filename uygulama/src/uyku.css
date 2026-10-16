@@ -68,6 +68,7 @@
 }
 .mk-kok.ug-kok .ug-u-resim {
   object-fit: contain;
+  object-position: 50% 100%;
   pointer-events: none;
 }
 /* yer tutucu: düz renk, kalın koyu kahve kontur (Gemini çizimi gelene kadar) */
@@ -217,17 +218,18 @@
 .mk-kok.ug-kok .ug-u-gece {
   position: absolute;
   inset: 0;
-  background: #24305e;
+  /* gerçek çizimlerle ayarlandı: #24305E %50 odayı griye çekiyordu; daha açık, doygun mavi daha çok örtü: gece mavisi */
+  background: #4f5cbf;
   mix-blend-mode: multiply;
   opacity: 0;
   transition: opacity 1.2s ease-in-out;
   pointer-events: none;
 }
 .mk-kok.ug-kok .ug-u-gece-acik .ug-u-gece {
-  opacity: 0.5;
+  opacity: 0.72;
 }
 .mk-kok.ug-kok .ug-u-koyu .ug-u-gece {
-  opacity: 0.7;
+  opacity: 0.86;
   transition-duration: 4s;
 }
 /* düz, sert kenarlı soluk sarı daire (gradyan yok) */
@@ -310,4 +312,8 @@ body > .ug-u-gecis.ac {
   .mk-kok.ug-kok .ug-u-el.acik {
     animation: none;
   }
+}
+/* pencere tepeden yerleşir: resim kutunun üstüne yaslı */
+.mk-kok.ug-kok .ug-u-pencere .ug-u-resim {
+  object-position: 50% 0;
 }

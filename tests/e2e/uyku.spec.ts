@@ -18,6 +18,11 @@ const tikla = async (page: Page, sec: string) => {
   await page.locator(sec).first().click({ force: true });
   await page.waitForTimeout(150);
 };
+/** Pencerenin üst yarısı (alt kısmının önünde gece lambası durur) */
+const pencereyeDokun = async (page: Page) => {
+  await page.locator('.ug-u-pencere').click({ force: true, position: { x: 30, y: 30 } });
+  await page.waitForTimeout(150);
+};
 async function surukle(page: Page, kaynak: string, hedef: string) {
   const a = (await page.locator(kaynak).first().boundingBox())!;
   const b = (await page.locator(hedef).first().boundingBox())!;
@@ -80,7 +85,7 @@ for (const boy of BOYLAR) {
       await tikla(page, '.ug-u-yigin');
       await adimBekle(page, 'perde');
       await expect(page.locator('.ug-u-battaniye[data-sahip="kino"]')).toHaveAttribute('data-durum', 'ortulu');
-      await tikla(page, '.ug-u-pencere');
+      await pencereyeDokun(page);
       await adimBekle(page, 'lamba');
       await expect(page.locator('.ug-u-pencere')).toHaveAttribute('data-durum', 'kapali');
       await tikla(page, '.ug-u-lamba');
@@ -116,7 +121,7 @@ for (const boy of BOYLAR) {
       await expect(page.locator('.ug-u-yigin:not(.ug-u-yok)')).toHaveCount(1);
       await surukle(page, '.ug-u-yigin', '.ug-u-yatak[data-sahip="kino"]');
       await adimBekle(page, 'perde');
-      await tikla(page, '.ug-u-pencere');
+      await pencereyeDokun(page);
       await adimBekle(page, 'lamba');
       await tikla(page, '.ug-u-lamba');
       await adimBekle(page, 'oda');

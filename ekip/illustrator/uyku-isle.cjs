@@ -12,8 +12,8 @@
 //   eşya zıplamaz). Kayma raporlanır (≤ 1 px hedef).
 // - Yatağın ön kenarı (sepet-on, minder-on): yatakla AYNI tuvalde, yalnız ön kenar (karakterin önüne gelen kısım).
 //   Maske önceliği: 1) tasarımcının elle çizdiği maske ekip/gemini/yeni/uyku/<sepet|minder>-on-maske.png (yatağın kırpılmış
-//   çıktısıyla aynı boyda; beyaz = ön kenar), 2) yoksa elips yayı: yatağın kutusunda içi (minder / yastık yüzeyi) bir
-//   elips sayılır, elipsin alt yayının altında kalan yatak pikselleri ön kenardır (--on ile ayarlanır). Kontrol için
+//   çıktısıyla aynı boyda; beyaz = ön kenar), 2) yoksa çizimin kendi kenarı izlenir (onKenari: sepette pembe minderin
+//   alt sınırı, minderde U biçimli iç kontur), 3) --on verilirse elips yayı. Kontrol için
 //   ekip/gemini/yeni/uyku/on-onizleme.png yazılır (ön kenar kırmızımsı).
 // - Daha yüksek çözünürlüklü mevcut dosya ezilmez (guvenli-yaz.cjs; ZORLA=1).
 const fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');
@@ -46,16 +46,71 @@ const AYAR = {
   sepet: { delik: true, delikMin: 400 },
   yastik: {},
 };
+// hiza: 'ortusme' (siluetlerin en çok örtüştüğü ölçek + kayma) ya da 'kornis' (perdesi kapalı pencerede çerçevenin üstü
+// görünmüyor, yalnız korniş var: iki resmin en geniş yeri olan korniş aynı boya ölçeklenir, sol üstten hizalanır)
 const CIFTLER = [
-  ['pencere-acik', 'pencere-kapali'],
-  ['lamba-sonuk', 'lamba-yanik'],
+  ['pencere-acik', 'pencere-kapali', 'kornis'],
+  ['lamba-sonuk', 'lamba-yanik', 'ortusme'],
 ];
 // en uzun kenar sınırı (DPR 3'te kaynak boyundan büyük basılmasın: halı yatay telefonda ~1270 px)
 const MAX = { hali: 1600, pencere: 1200, varsayilan: 1024 };
 const maxBul = (ad) => (ad === 'hali' ? MAX.hali : ad.startsWith('pencere') ? MAX.pencere : MAX.varsayilan);
 // yatağın içi (elips; kutunun oranı): ön kenar bu elipsin alt yayının altında kalan kısım
-const ON_VARSAYILAN = { sepet: { cx: 0.5, cy: 0.42, rx: 0.4, ry: 0.22 }, minder: { cx: 0.5, cy: 0.4, rx: 0.4, ry: 0.2 } };
-const ON = { ...ON_VARSAYILAN, ...JSON.parse(arg('on', '{}')) };
+// (yalnız --on verilirse; varsayılan: çizimin kenarı izlenir, onKenari)
+const ON = JSON.parse(arg('on', '{}'));
+const ON_YONTEM = { sepet: 'renk', minder: 'kontur' };
+
+/**
+ * Ön kenarın üst çizgisi (her sütun için y), çizimin kendi kenarını izleyerek. Alttan yukarı taranır:
+ * - sepet ('renk'): hasırın ve halatın üstünde ilk pembe minder pikseli; ön kenar onun altındaki her şey (halat ve onu
+ *   minderden ayıran kontur dahil). Minderin görünmediği yan sütunlarda bulunan noktalara uydurulan ikinci derece eğri.
+ * - minder ('kontur'): alttaki dış konturdan sonra gelen ilk koyu kontur (U biçimli iç kenar) çizgisinin üstü; yanlarda
+ *   (U'nun dışında) bu çizgi dış konturun kendisi: sütunun hepsi ön kenar.
+ * Sonra 9 sütunluk ortanca ile yumuşatılır.
+ */
+function onKenari(yontem, d, W, H) {
+  const px = (x, y) => { const i = (y * W + x) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+  const koyu = (x, y) => { const [r, g, b, a] = px(x, y); return a > 200 && (r + g + b) / 3 < 100; };
+  const pembe = (x, y) => { const [r, g, b, a] = px(x, y); return a > 200 && r > 190 && r - g > 35 && b > g - 12; };
+  const kenar = new Float64Array(W).fill(NaN);
+  const ust = new Int32Array(W).fill(-1), alt = new Int32Array(W).fill(-1);
+  for (let x = 0; x < W; x++) for (let y = 0; y < H; y++) if (px(x, y)[3] > 128) { if (ust[x] < 0) ust[x] = y; alt[x] = y; }
+  for (let x = 0; x < W; x++) {
+    if (alt[x] < 0) continue;
+    if (yontem === 'renk') {
+      for (let y = alt[x]; y >= ust[x] + 4; y--) if (pembe(x, y) && pembe(x, y - 1) && pembe(x, y - 2) && pembe(x, y - 3)) { kenar[x] = y + 1; break; }
+    } else {
+      let y = alt[x];
+      while (y > ust[x] && !koyu(x, y)) y--; // alttaki dış konturun başı
+      while (y > ust[x] && koyu(x, y)) y--; // dış kontur
+      while (y > ust[x] && !koyu(x, y)) y--; // ön kenarın dolgusu
+      while (y > ust[x] && koyu(x, y)) y--; // iç kenarın konturu
+      kenar[x] = y + 1;
+    }
+  }
+  if (yontem === 'renk') {
+    // ikinci derece eğri (en küçük kareler) bulunan noktalara; boş sütunlar ondan
+    const nk = [];
+    for (let x = 0; x < W; x++) if (!Number.isNaN(kenar[x])) nk.push([x / W, kenar[x] / H]);
+    if (nk.length > 10) {
+      const S = [0, 0, 0, 0, 0], T = [0, 0, 0];
+      for (const [u, v] of nk) { S[0]++; S[1] += u; S[2] += u * u; S[3] += u ** 3; S[4] += u ** 4; T[0] += v; T[1] += u * v; T[2] += u * u * v; }
+      const M = [[S[4], S[3], S[2], T[2]], [S[3], S[2], S[1], T[1]], [S[2], S[1], S[0], T[0]]];
+      for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) { const f = M[j][i] / M[i][i]; for (let k = i; k < 4; k++) M[j][k] -= f * M[i][k]; }
+      const c = M[2][3] / M[2][2], b = (M[1][3] - M[1][2] * c) / M[1][1], a = (M[0][3] - M[0][2] * c - M[0][1] * b) / M[0][0];
+      for (let x = 0; x < W; x++) if (Number.isNaN(kenar[x]) && alt[x] >= 0) { const u = x / W; kenar[x] = Math.max(ust[x], Math.min(alt[x], (a * u * u + b * u + c) * H)); }
+    }
+  }
+  for (let x = 0; x < W; x++) if (Number.isNaN(kenar[x])) kenar[x] = alt[x] < 0 ? H : ust[x];
+  const yum = new Float64Array(W);
+  for (let x = 0; x < W; x++) {
+    const p = [];
+    for (let k = -4; k <= 4; k++) p.push(kenar[Math.min(W - 1, Math.max(0, x + k))]);
+    p.sort((m, n) => m - n);
+    yum[x] = p[4];
+  }
+  return yum;
+}
 
 function bantlar(say, uzunluk, esik, enAz) {
   const b = []; let bas = -1;
@@ -142,11 +197,32 @@ async function sayfaKes(sayfa, tmp) {
   };
   // çiftler aynı tuvalde (elektrik-isle.cjs yöntemi: siluet örtüşmesi en büyük ölçek + kayma)
   const ciftte = new Set();
-  for (const [a, b] of CIFTLER) {
+  for (const [a, b, hiza] of CIFTLER) {
     if (!ham[a] || !ham[b]) continue;
     ciftte.add(a); ciftte.add(b);
     const ma = await s(ham[a]).metadata(), mb = await s(ham[b]).metadata();
     const wa = ma.width, ha = ma.height, wb = mb.width, hb = mb.height;
+    if (hiza === 'kornis') {
+      // korniş (en üstteki, en geniş çubuk) iki resimde aynı boyda ve aynı yerde: ikinci resim ilkinin enine ölçeklenir
+      const k = wa / wb, hbk = Math.round(hb * k);
+      const bBuf = await s(ham[b]).resize(wa, hbk, { kernel: 'lanczos3' }).png().toBuffer();
+      const TH = Math.max(ha, hbk);
+      for (const [ad, buf] of [[a, ham[a]], [b, bBuf]]) {
+        const tuval = await s({ create: { width: wa, height: TH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite([{ input: buf, left: 0, top: 0 }]).png().toBuffer();
+        await yaz(ad, tuval);
+      }
+      // kontrol: kornişin uçları (en üst %6 içindeki dolu piksellerin sınırı) iki resimde
+      const uc = async (buf) => {
+        const { data: d, info: i } = await s(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+        const yy = Math.round(i.height * 0.06);
+        let x0 = i.width, x1 = -1, y0 = i.height;
+        for (let y = 0; y < yy; y++) for (let x = 0; x < i.width; x++) if (d[(y * i.width + x) * 4 + 3] > 128) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); }
+        return [x0, x1, y0];
+      };
+      const ua = await uc(ham[a]), ub = await uc(bBuf);
+      console.log(`  çift ${a}/${b} (korniş): ikinci ×${k.toFixed(3)}, korniş uçları ${ua.join(',')} / ${ub.join(',')} (sol, sağ, üst px)`);
+      continue;
+    }
     const K = 160 / Math.max(wa, ha);
     const maske = async (buf, w, h) => { const { data: d } = await s(buf).resize(Math.max(1, Math.round(w)), Math.max(1, Math.round(h))).ensureAlpha().raw().toBuffer({ resolveWithObject: true }); const m = new Uint8Array(Math.round(w) * Math.round(h)); for (let i = 0; i < m.length; i++) m[i] = d[i * 4 + 3] > 128 ? 1 : 0; return m; };
     const aw = Math.round(wa * K), ah = Math.round(ha * K), mA = await maske(ham[a], aw, ah);
@@ -190,7 +266,7 @@ async function sayfaKes(sayfa, tmp) {
       const { data: m } = await s(elMaske).resize(W, H, { fit: 'fill' }).greyscale().raw().toBuffer({ resolveWithObject: true });
       onMi = (x, y) => m[y * W + x] / 255;
       console.log(`  ${yatak}-on: elle çizilmiş maske (${path.relative(KOK, elMaske)})`);
-    } else {
+    } else if (ON[yatak]) {
       const o = ON[yatak];
       onMi = (x, y) => {
         const u = x / W, v = y / H, t = (u - o.cx) / o.rx;
@@ -198,7 +274,11 @@ async function sayfaKes(sayfa, tmp) {
         // 1.5 px yumuşak geçiş (kenarda tırtık olmasın)
         return Math.max(0, Math.min(1, ((v - yay) * H) / 1.5 + 0.5));
       };
-      console.log(`  ${yatak}-on: elips yayı ${JSON.stringify(o)} (ayar: --on; elle maske: ${path.relative(KOK, elMaske)})`);
+      console.log(`  ${yatak}-on: elips yayı ${JSON.stringify(o)} (--on)`);
+    } else {
+      const kenar = onKenari(ON_YONTEM[yatak], d, W, H);
+      onMi = (x, y) => Math.max(0, Math.min(1, (y - kenar[x]) / 1.5 + 0.5));
+      console.log(`  ${yatak}-on: çizimin kenarı izlendi (${ON_YONTEM[yatak]}); ortada üst çizgi y=${kenar[Math.round(W / 2)].toFixed(0)}/${H} (elle maske: ${path.relative(KOK, elMaske)})`);
     }
     const on = Buffer.from(d);
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const j = (y * W + x) * 4; on[j + 3] = Math.round(d[j + 3] * onMi(x, y)); }
