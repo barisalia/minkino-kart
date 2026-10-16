@@ -120,6 +120,8 @@ const ISKELET = import.meta.glob<string>(['../../assets/karakter-iskelet/kino.sv
 const kutu = (el: Element) => () => el.getBoundingClientRect();
 const merkezi = (r: DOMRect): [number, number] => [r.left + r.width / 2, r.top + r.height / 2];
 
+/** Dikey ön çimen çiziminde (arka-on-dikey, 1536×2752) çimenin üst kenarı, ortada (üstten oran) */
+const ON_DIKEY_KENAR = 0.767;
 /** Dünyanın eni (b); park katmanlarının yerleşimi salincak-cizim.ts → PARK */
 const WB = 400;
 /** Zeminin (v = 0) altında kalan çimen payı (b); dünyanın üstü uzak katmanın (gök) üst kenarı */
@@ -225,7 +227,16 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
   };
   // kenar çalıları: ağaçların dibinde, ön çimenin arkasında (altları çimenin kenarında kalır)
   const CALI = { w: 104, alt: 40 };
-  dunya.append(gok, orta, kume('sol', -WB / 2 + CALI.w * 0.42, CALI.alt, CALI.w), kume('sag', WB / 2 - CALI.w * 0.42, CALI.alt, CALI.w), cimen);
+  /**
+   * Dar dikey ekranda (telefon) ön çimen kendi dikey çiziminden (assets/film/park/arka-on-dikey, 1536×2752, gök
+   * şeffaf; ekip/illustrator/netlik-isle.cjs): ekranın eni kadar, kamera kaydırsa da yakınlaşsa da ekranda aynı boyda
+   * kalır (DPR 3'te kaynak pikselinin altında; yatay şerit dikeyde 1.56 kat büyüyordu). Çimenin üst kenarı (çizimde
+   * ortada y = ON_DIKEY_KENAR) dünyanın çimen çizgisine (v = PARK.cimenUst) bağlı; çizimin altı dip yeşiliyle uzar
+   * (salincak.css). Köşe çalıları çizimin kendisi (ekranın köşelerinde, ön planda).
+   */
+  const onDikeyUrl = dar ? park('arka-on-dikey') : '';
+  const onDikey = onDikeyUrl ? h('div.sl-on-dikey', { style: `background-image:url("${onDikeyUrl}")` }) : null;
+  dunya.append(gok, orta, kume('sol', -WB / 2 + CALI.w * 0.42, CALI.alt, CALI.w), kume('sag', WB / 2 - CALI.w * 0.42, CALI.alt, CALI.w), onDikey ?? cimen);
   // ön çiçek öbekleri: yalnız kenarlarda, düzenli (karakterlerin yürüdüğü orta boş kalır)
   for (const [yon, u, v, w] of [
     ['sol', -176, -4, 58],
@@ -590,7 +601,28 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     gok.style.transitionDuration = d;
     gok.style.transform = `translateX(${((-kamT[0] * (1 - PARALAKS)) / kamZ).toFixed(1)}px)`;
     sahne.el.dataset.kamera = kamZ.toFixed(2);
+    onDikeyKoy();
   };
+  /**
+   * Dikey ön çimen kameranın o anki dönüşümünü (geçiş sürerken de) akışın kare döngüsünde izler: ekranda sabit en, üst
+   * kenarı dünyanın çimen çizgisinde. Dünyanın içinde durur (eşyalar ve kişiler önünde, uzak katmanlar arkasında kalsın).
+   */
+  const onDikeyKoy = () => {
+    if (!onDikey) return;
+    const t = getComputedStyle(dunya).transform;
+    const m = t && t !== 'none' ? new DOMMatrixReadOnly(t) : new DOMMatrixReadOnly();
+    const z = m.a || 1;
+    const en = W;
+    const boy = (en * 2752) / 1536;
+    const kenarY = Hd * (1 - Y(PARK.cimenUst) / 100);
+    // dünya koordinatında sol üst: ekranın sol kenarı, kenar çizgisi çizimdeki kenarla çakışır; ölçek 1/z
+    const x = -m.e / z;
+    const y = kenarY - (ON_DIKEY_KENAR * boy) / z;
+    onDikey.style.width = `${en}px`;
+    onDikey.style.height = `${boy}px`;
+    onDikey.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) scale(${(1 / z).toFixed(5)})`;
+  };
+  if (onDikey) tikler.add(onDikeyKoy);
   kamUygula(0);
   /** Güvenli alan (px): üstte düğme ve yazı, altta ipucu (arayüzden ölçülür) */
   const GUVEN = { ust: dikey ? 104 : 72, alt: dikey ? 84 : 56 };

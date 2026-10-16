@@ -4,6 +4,11 @@
 .mc-kok .bn-sahne .mc-oda {
   background-position: center 82%;
 }
+/* dikey ekranda dik banyo çizimi (banyo.ts → dikeyArka, DIKEY_KONUM): alttan ve sağdan hizalı */
+.mc-kok .bn-sahne.bn-dikey-arka .mc-oda {
+  background-image: var(--resim-dikey);
+  background-position: 100% 100%;
+}
 /* dar (dikey telefon) ekranda eşyalar ve karakterler biraz daha büyük (banyo.ts → bPx ile aynı) */
 .mc-kok .mc-sahne.bn-sahne {
   --b: min(1.3vw, 0.75vh);

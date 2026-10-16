@@ -123,6 +123,26 @@
   width: 100%;
   background-position: 50% 100%;
 }
+/* dar dikey ekranda ön çimen: kendi dikey çizimi (salincak.ts → onDikey), ekranın eni kadar; çizimin altı dip yeşiliyle
+   uzar (kamera yakınlaşınca çimen ekranın altına kadar insin) */
+.mc-kok .sl-on-dikey {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+.mc-kok .sl-on-dikey::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 2px);
+  height: 300%;
+  background: rgb(138, 181, 57);
+}
 /* köşe kümesi (çalı, lale, taş): resmin köşesinden; kümenin önündeki çimen parçası kesilir (ön çimenle karışmasın) */
 .mc-kok .sl-kume {
   left: calc(var(--x) * 1%);

@@ -17,3 +17,9 @@ Kurallar:
 | 6 | Salıncak | arka-on, dikey sürüm | 1536x2752 dikey | ekip/gemini/yeni/netlik/salincak-arka-dikey.png |
 | 7 | Banyo | arkaplan, dikey sürüm | 1536x2752 dikey | ekip/gemini/yeni/netlik/banyo-arka-dikey.png |
 | 8 | Pazar | arkaplan-genis | en az 3200 px en; iki yarı halinde çizilip birleştirilebilir | ekip/gemini/yeni/netlik/pazar-arka-sol.png, pazar-arka-sag.png |
+
+## Durum (2026-10-16, kodcu)
+
+- İşlendi ve oyunda: #1 flama, #3 pasta-üstü + kapı, #4 terazi kefesi, #5 Elektrik çekmece yakın çekimi, #6 Salıncak dikey ön çimen, #7 Banyo dikey arka plan. Betik: `node ekip/illustrator/netlik-isle.cjs [flama|pasta-kapi|kefe|komodin|salincak|banyo]`.
+- Bekleniyor: #2 Mino parti pozları, #8 Pazar geniş arka plan.
+- Hâlâ yakın çekimi sınırlayan (netlik.ts): Doğum Günü yatayda flama (~1.03 kat; pasta yakın çekimi 1.7 ister, flama en az ~4600 px en gerekir), dikeyde oda-dikey (~1.09); Elektrik ve Banyo oda çizimleri (1.0); Salıncak dikeyde uzak ve orta katman (~1.11).

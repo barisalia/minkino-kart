@@ -515,6 +515,47 @@
   scale: 1;
 }
 
+/* ---------------------------------------------------------------- komodin yakın çekimi (büyük çizim)
+   Oda büyütülmez: komodinin büyük çizimi (1212 px) ortaya gelir, oda kararır. En çok 400 px: DPR 3'te kaynak
+   pikselinin altında (src/ui/netlik.ts kuralı). */
+.mc-kok .el-kyakin {
+  position: absolute;
+  z-index: 14;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 55% at 50% 58%, rgba(40, 36, 82, 0.55), rgba(10, 10, 32, 0.9) 75%);
+  opacity: 0;
+  transition: opacity 0.45s;
+}
+.mc-kok .el-kyakin.acik {
+  opacity: 1;
+}
+/* yatay ekranda sahne ortada bir bant: yakın çekimin karartısı yanlardaki odayı da örter (dikiş görünmesin) */
+.mc-kok .mc-sahne-kok:has(> .mc-yan-dolgu) .el-kyakin {
+  left: calc(-1 * var(--yan-en, 0px));
+  right: calc(-1 * var(--yan-en, 0px));
+}
+.mc-kok .el-kyakin-isik {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: min(120cqw, 640px, 150cqh);
+  aspect-ratio: 1.6;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 240, 200, 0.28), rgba(255, 240, 200, 0) 100%);
+}
+.mc-kok .el-kyakin-govde {
+  --gw: min(80cqw, 400px, 62cqh * 1212 / 1065);
+  position: absolute;
+  /* kapalı komodinin gövdesi (tuvalin sol %91'i) ortada */
+  left: calc(50% - var(--gw) * 0.456);
+  top: calc(58% - var(--gw) * 1065 / 1212 / 2);
+  width: var(--gw);
+  aspect-ratio: 1212 / 1065;
+  transform-origin: 0 100%;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.45)) brightness(0.94);
+}
 /* ---------------------------------------------------------------- çekmece yakın çekim */
 .mc-kok .el-yakin {
   position: absolute;

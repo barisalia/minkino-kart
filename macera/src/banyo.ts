@@ -78,6 +78,21 @@ const KV = { oran: 1792 / 2432, ayak: 0.8415, onKenar: 0.385, suOrta: 0.33, arka
 const arkaKenar = (u: number) => KV.arkaOrta - 0.6 * (u - 0.5) ** 2;
 /** geniş arka plandaki (arkaplan-genis, 4096×1738) beyaz paspas elipsinin kutusu: sol, üst, sağ, alt */
 const PASPAS_GENIS = [2505, 1405, 3345, 1668] as const;
+/** Dik çizimin (arkaplan-dikey, 1536×2752) ekrandaki hizası (background-position oranı): alttan ve sağdan */
+const DIKEY_KONUM: [number, number] = [1, 1];
+/** Dik çizimde (piksel) raf, askılık ve paspas elipsi */
+const DIKEY_NOKTA = {
+  /** askılığın iki ucu (görünüyor mu ölçüsü) ve fularların asıldığı 1. ve 4. topuz (yakın topuzlarda iki fular üst üste
+   * biniyordu: arkadakini tutmak zorlaşıyordu) */
+  askiUc: [[1292, 1700], [1445, 1750]] as [number, number][],
+  topuz: [[1292, 1687], [1450, 1752]] as [number, number][],
+  /** rafın iki ucu, şişelerin ve ördeğin durduğu üst yüz */
+  rafUc: [[1262, 1475], [1470, 1475]] as [number, number][],
+  rafSise: [[1292, 1475], [1332, 1475]] as [number, number][],
+  rafOrdek: [1440, 1478] as [number, number],
+  /** desenli paspasın kutusu (sol, üst, sağ, alt): çizimdeki beyaz elipsin yeri (elips çizimden silindi; paspas ondan yassı) */
+  paspas: [1021, 2520, 1450, 2655] as const,
+};
 const KISI_W = 27;
 const KISI_ORAN = 1790 / 1360;
 const MINO_KUVET_X = 34;
@@ -118,6 +133,16 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   /** dikey ekran (telefon / dikey tablet): sahne yatay çizildiği için üstte boş duvar kalır */
   const kucukEkranMi = W() / H() < 0.8;
   /**
+   * Dikey ekranda dik banyo çizimi (arkaplan-dikey, 1536×2752): yatay çizim dikeyde 3.3 kat büyüyüp yalnız karolar
+   * görünüyordu. Dik çizim ekranı örter (cover), alttan ve sağdan hizalı (DIKEY_KONUM; sağ duvardaki raf ve askılık
+   * kadrajda, pencere solda biraz kesilir). Raf, askılık ve paspas elipsi çizimin kendisinden (DIKEY_NOKTA).
+   */
+  const dikeyArka = kucukEkranMi && cizimVar('arkaplan-dikey');
+  if (dikeyArka) {
+    sahne.el.classList.add('bn-dikey-arka');
+    sahne.dunya.querySelector<HTMLElement>('.mc-oda')?.style.setProperty('--resim-dikey', `url("${banyoAdres('arkaplan-dikey')}")`);
+  }
+  /**
    * Kameranın taban yakınlığı: dikeyde küvete yaklaşılır, duvarın boş üstü azalır (alttan sabit). Karakterler
    * kadrajdan taşacaksa kadraj koruması (kam) odağı kaydırır ya da yakınlığı düşürür.
    */
@@ -146,13 +171,17 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   // kalıyordu (dil suyun içinde); biraz daha yüksekte oturur
   const KINO_OTUR_Y = OTUR_Y + kisiH * 0.08;
 
-  /** Arka plan resmindeki bir nokta (1344×768) sahnede nerede, görünüyor mu (background: cover, center 82%) */
+  /**
+   * Arka plan resmindeki bir nokta (1344×768; background: cover, center 82%) sahnede nerede, görünüyor mu. Dik çizimde
+   * (dikeyArka) nokta 1536×2752 çiziminde (cover, DIKEY_KONUM).
+   */
   const arkaNokta = (ix: number, iy: number) => {
     const w = W();
     const hh = H();
-    const s = Math.max(w / 1344, hh / 768);
-    const X = (w - 1344 * s) * 0.5 + ix * s;
-    const Y = (hh - 768 * s) * 0.82 + iy * s;
+    const [RW, RH, KX, KY] = dikeyArka ? [1536, 2752, DIKEY_KONUM[0], DIKEY_KONUM[1]] : [1344, 768, 0.5, 0.82];
+    const s = Math.max(w / RW, hh / RH);
+    const X = (w - RW * s) * KX + ix * s;
+    const Y = (hh - RH * s) * KY + iy * s;
     return { x: (X / w) * 100, y: ((hh - Y) / hh) * 100, gorunur: X > w * 0.04 && X < w * 0.96 && Y > hh * 0.12 && Y < hh };
   };
   /** Ekran noktası → dünya konumu (%; y alttan) */
@@ -188,15 +217,16 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   const genisRaf = genisArka ? { sol: genisNokta(3035, 712), orta: genisNokta(3120, 712), sag: genisNokta(3395, 712) } : null;
   const genisAskiVar = !!genisAski?.every((n) => n.gorunur);
   const genisRafVar = !!genisRaf && genisRaf.sol.gorunur && genisRaf.sag.gorunur;
-  const askiArka = [arkaNokta(1100, 430), arkaNokta(1300, 430)];
-  const rafArka = [arkaNokta(1080, 315), arkaNokta(1300, 315)];
+  const D = DIKEY_NOKTA;
+  const askiArka = dikeyArka ? [arkaNokta(...D.askiUc[0]), arkaNokta(...D.askiUc[1])] : [arkaNokta(1100, 430), arkaNokta(1300, 430)];
+  const rafArka = dikeyArka ? [arkaNokta(...D.rafUc[0]), arkaNokta(...D.rafUc[1])] : [arkaNokta(1080, 315), arkaNokta(1300, 315)];
   const askiVar = !genisArka && askiArka.every((n) => n.gorunur);
   const rafVar = !genisArka && rafArka.every((n) => n.gorunur);
   /** duvar eşyası sağ kenardan taşmasın: dikeyde kamera yaklaşınca da (≈1.3 kat) kadrajda kalacak kadar içeri alınır */
   const duvarX = (x: number, w: number) => Math.min(x, kucukEkranMi ? 50 + 36 - bX(w) / 2 : 100 - bX(w) / 2 - 3);
   let askiNokta: [{ x: number; y: number }, { x: number; y: number }];
   if (genisAskiVar && genisAski) askiNokta = [genisAski[0], genisAski[1]];
-  else if (askiVar) askiNokta = [arkaNokta(1128, 425), arkaNokta(1218, 432)];
+  else if (askiVar) askiNokta = dikeyArka ? [arkaNokta(...D.topuz[0]), arkaNokta(...D.topuz[1])] : [arkaNokta(1128, 425), arkaNokta(1218, 432)];
   else {
     // askılık (üç topuzlu ahşap çubuk): fularlar iki yandaki topuza asılır
     const AW = 28;
@@ -217,8 +247,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
     rafNokta = genisRaf.sag;
     rafSise = [genisRaf.sol, genisRaf.orta];
   } else if (rafVar) {
-    rafNokta = arkaNokta(1170, 312);
-    rafSise = [arkaNokta(1090, 312), arkaNokta(1125, 312)];
+    rafNokta = dikeyArka ? arkaNokta(...D.rafOrdek) : arkaNokta(1170, 312);
+    rafSise = dikeyArka ? [arkaNokta(...D.rafSise[0]), arkaNokta(...D.rafSise[1])] : [arkaNokta(1090, 312), arkaNokta(1125, 312)];
   } else {
     // raf (ördeğin yeri): ördek rafın üst yüzünün sağ yanına, şişeler sol yanına oturur
     const RW = 24;
@@ -251,7 +281,11 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
   // paspas: arka plandaki düz beyaz elipsin üstüne desenli paspas (karakterlerin altında kalır)
   // (elipsin kutusu: geniş çizimde 4096×1738, dar çizimde 1344×768 birimiyle; assets/banyo/hizalama.json → paspas)
   if (cizimVar('paspas')) {
-    const p = genisArka ? { a: genisNokta(PASPAS_GENIS[0], PASPAS_GENIS[1]), b: genisNokta(PASPAS_GENIS[2], PASPAS_GENIS[3]) } : { a: arkaNokta(874, 620), b: arkaNokta(1246, 738) };
+    const p = genisArka
+      ? { a: genisNokta(PASPAS_GENIS[0], PASPAS_GENIS[1]), b: genisNokta(PASPAS_GENIS[2], PASPAS_GENIS[3]) }
+      : dikeyArka
+        ? { a: arkaNokta(D.paspas[0], D.paspas[1]), b: arkaNokta(D.paspas[2], D.paspas[3]) }
+        : { a: arkaNokta(874, 620), b: arkaNokta(1246, 738) };
     sahne.koy(h('div.bn-paspas', {}, esya('paspas', '', '')), { x: (p.a.x + p.b.x) / 2, y: p.b.y - 0.6, w: ((p.b.x - p.a.x) / 100) * W() / bPx() * 1.06, z: 2 });
   }
   const kuvetArka = sahne.koy(h('div.bn-kuvet.bn-kuvet-arka', {}, esya('kuvet-arka', '', 'Küvet')), { ...KUVET, z: 3 });

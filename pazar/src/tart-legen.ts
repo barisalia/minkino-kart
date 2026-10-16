@@ -1,16 +1,18 @@
 /**
  * Tart Bakalım leğeninin ölçüleri (DOM yok; fizik testleri de kullanır).
  *
- * Leğen: terazi kefesi çizimi (assets/pazar/terazi-kefe.webp, 631 × 497) zincirleri kırpılmış hâliyle. Kırpılan
- * kutu çizimin y = KIRP_UST … 497 arası; fizik birimi: kutunun eni 100 birim. Leğenin iç kesiti (yan görünüş) bu
+ * Leğen: terazi kefesi çizimi (assets/pazar/terazi-kefe.webp, 2009 × 1491 px; 2026-10-16 Gemini netlik çizimi,
+ * eskisinden biraz basık) zincirleri kırpılmış hâliyle. Ölçüler çizimin eni 631 birim sayılarak (eski çizimin pikseli;
+ * çizim 631 × 468.3 birim). Kırpılan kutu çizimin y = KIRP_UST … KEFE_BOY arası; fizik birimi: kutunun eni 100 birim.
+ * Leğenin iç kesiti (yan görünüş) bu
  * birimlerle çoklu çizgi; iki yandan yukarı görünmez duvarlar (meyve atılınca dışarı kaçmasın).
  */
 import { Dunya } from './fizik';
 
 export const KEFE_EN = 631;
-export const KEFE_BOY = 497;
+export const KEFE_BOY = (631 * 1491) / 2009;
 /** zincirler bu çizginin üstünde kalır (kenarın üst çizgisi korunur) */
-export const KIRP_UST = 268;
+export const KIRP_UST = 254;
 /** çizim pikselinden fizik birimine */
 const B = 100 / KEFE_EN;
 export const LEGEN_BOY = (KEFE_BOY - KIRP_UST) * B;
@@ -18,14 +20,14 @@ const nokta = (x: number, y: number): [number, number] => [x * B, (y - KIRP_UST)
 
 /** İç kesit (soldan sağa): kenar → eğim → düz dip → eğim → kenar */
 export const LEGEN_KESIT: [number, number][] = [
-  nokta(20, 328),
-  nokta(55, 358),
-  nokta(115, 388),
-  nokta(190, 404),
-  nokta(441, 404),
-  nokta(516, 388),
-  nokta(576, 358),
-  nokta(611, 328),
+  nokta(20, 320),
+  nokta(55, 345),
+  nokta(110, 368),
+  nokta(190, 386),
+  nokta(441, 386),
+  nokta(521, 368),
+  nokta(576, 345),
+  nokta(611, 320),
 ];
 
 /** Kenarın üstündeki çizim (zincir izi kalmasın): kırpma çokgeni, kırpılmış kutuya göre yüzde */
@@ -33,33 +35,33 @@ const yuzdeX = (x: number) => (x / KEFE_EN) * 100;
 const yuzdeY = (y: number) => ((y - KIRP_UST) / (KEFE_BOY - KIRP_UST)) * 100;
 const cokgen = (n: [number, number][]) => `polygon(${n.map(([x, y]) => `${yuzdeX(x).toFixed(2)}% ${yuzdeY(y).toFixed(2)}%`).join(',')})`;
 export const ARKA_KIRP = cokgen([
-  [0, 334],
-  [18, 316],
-  [60, 302],
-  [150, 287],
-  [316, 276],
-  [480, 287],
-  [572, 302],
-  [613, 316],
-  [631, 334],
-  [631, 497],
-  [0, 497],
+  [0, 322],
+  [18, 307],
+  [60, 293],
+  [150, 277],
+  [316, 262],
+  [480, 277],
+  [572, 293],
+  [613, 307],
+  [631, 322],
+  [631, KEFE_BOY],
+  [0, KEFE_BOY],
 ]);
 /** Ön dudak: kenarın ön yüzü ve gövde; leğenin içindeki meyvelerin altı bunun arkasında kalır */
 export const ON_KIRP = cokgen([
-  [0, 336],
-  [10, 341],
-  [40, 354],
-  [100, 373],
-  [200, 389],
-  [316, 395],
-  [432, 389],
-  [531, 373],
-  [591, 354],
-  [621, 341],
-  [631, 336],
-  [631, 497],
-  [0, 497],
+  [0, 324],
+  [12, 330],
+  [40, 340],
+  [107, 353],
+  [200, 364],
+  [316, 370],
+  [432, 364],
+  [525, 353],
+  [591, 340],
+  [619, 330],
+  [631, 324],
+  [631, KEFE_BOY],
+  [0, KEFE_BOY],
 ]);
 
 /**

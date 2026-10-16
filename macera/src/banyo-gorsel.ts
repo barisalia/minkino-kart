@@ -16,6 +16,8 @@ export type EsyaAdi =
   | 'arkaplan'
   /** yatay ekranın yan dolgusu için geniş banyo (~2.17:1; yoksa arkaplan bulanık) */
   | 'arkaplan-genis'
+  /** dikey telefon için dik banyo (1536×2752; ekip/illustrator/netlik-isle.cjs): kendi penceresi, aynası, rafı, askılığı */
+  | 'arkaplan-dikey'
   | 'kuvet-arka'
   | 'kuvet-on'
   | 'musluk-kirmizi'

@@ -118,6 +118,8 @@ const KISI_W = 24;
  */
 const RESIM = {
   komodin: resimVar('komodin', 'komodin-acik'),
+  /** çekmece yakın çekimi: komodinin büyük çizimi (kapalı ve açık; ekip/illustrator/netlik-isle.cjs) */
+  komodinYakin: resimVar('komodin-yakin', 'komodin-yakin-acik'),
   fenerAcik: resimVar('fener', 'fener-acik'),
   saat: resimVar('saat'),
   cadir: resimVar('cadir', 'cokuk'),
@@ -645,6 +647,65 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     cekmece.classList.toggle('acik', ac);
     await bekle(ac ? 620 * 0.74 : 480 * 0.66);
   };
+  /**
+   * Çekmece yakın çekimi (Barış: oda resmi kaynağının üstüne büyütülmez): kamera komodinin büyük çizimine geçer.
+   * Büyük çizim odadaki komodinin yerinden büyüyerek ekranın ortasına gelir (oda kararır), çekmece orada açılır;
+   * kapanırken odadaki komodinin üstüne geri küçülür. Çizim ekranda kaynak pikselinin altında kalır (elektrik.css:
+   * en çok 400 px; DPR 3'te 1200 px, çizim 1212 px).
+   */
+  const komodinYakin = () => {
+    const govde = h('div.el-kyakin-govde', {}, ...ikiPoz('komodin-yakin', 'komodin-yakin-acik', 'Komodin'));
+    const el = h('div.el-kyakin', { 'data-el': 'komodin-yakin', 'aria-hidden': 'true' }, h('i.el-kyakin-isik'), govde);
+    sahne.el.append(el);
+    /** odadaki komodinin yeri (iki çizimde gövde tuvalin aynı payını kaplar: ~%91, sol-alt hizalı) */
+    const odadan = () => {
+      const k = komodin.getBoundingClientRect();
+      const g = govde.getBoundingClientRect();
+      const s = k.width / Math.max(1, g.width);
+      return `translate(${(k.left - g.left).toFixed(1)}px, ${(k.bottom - g.bottom).toFixed(1)}px) scale(${s.toFixed(4)})`;
+    };
+    const gec = (ac: boolean) => {
+      const kf = [
+        { transform: odadan(), opacity: 0.5 },
+        { transform: 'none', opacity: 1 },
+      ];
+      el.classList.toggle('acik', ac);
+      return govde
+        .animate(ac ? kf : kf.reverse(), { duration: sure(ac ? 650 : 480), easing: ac ? 'cubic-bezier(0.3, 1.15, 0.45, 1)' : 'cubic-bezier(0.5, 0, 0.75, 0.4)', fill: 'forwards' })
+        .finished.catch(() => undefined);
+    };
+    return {
+      ac: async () => {
+        void el.offsetWidth;
+        await gec(true);
+      },
+      /** çekmece yaylı açılır (odadaki cekmeceAc'ın gövde hareketi, büyük çizimde; poz en basık anda değişir) */
+      cekmece: async () => {
+        govde.animate(
+          [
+            { scale: '1 1', translate: '0 0', offset: 0 },
+            { scale: '1.05 0.94', translate: '-0.6% 0', offset: 0.24 },
+            { scale: '0.96 1.05', translate: '3.2% 0', offset: 0.42 },
+            { scale: '1.03 0.97', translate: '-1.4% 0', offset: 0.6 },
+            { scale: '0.99 1.01', translate: '0.6% 0', offset: 0.78 },
+            { scale: '1 1', translate: '0 0', offset: 1 },
+          ],
+          { duration: sure(620), easing: 'ease-out' },
+        );
+        await bekle(620 * 0.26);
+        S.cekmece(false);
+        govde.classList.add('acik');
+        // odadaki komodin de açık kalır (yakın çekim kapanınca öyle görünür)
+        komodin.classList.add('acik');
+        cekmece.classList.add('acik');
+        await bekle(620 * 0.74);
+      },
+      kapat: async () => {
+        await gec(false);
+        el.remove();
+      },
+    };
+  };
   /** Kalpçik: ekrandaki bir noktadan yukarı süzülür (Kino'yu okşarken) */
   const kalp = (x: number, y: number) => {
     const sr = sahne.el.getBoundingClientRect();
@@ -988,12 +1049,16 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     void MN.git(KOMODIN.x + bX(telYatay ? 30 : 14), Y(0), 1000, 0, undefined, true);
     void KN.git(KOMODIN.x + bX(telYatay ? 50 : 34), Y(1), 1100);
     await cek(KOMODIN.x - bX(14), KOMODIN.x + bX(telYatay ? 58 : 45), Y(-2), KOMODIN.y + bY(komodinH + 10), 2, 1100);
-    if (telYatay) await cek(KOMODIN.x - bX(13), KOMODIN.x + bX(13), KOMODIN.y - bY(1), KOMODIN.y + bY(komodinH * 0.82), 3.4, 800, false);
-    // Mino çekmeceyi çeker (zorlanır), çekmece yaylı açılır
+    // Mino çekmeceyi çeker (zorlanır), çekmece yaylı açılır: büyük çizim varsa yakın çekimde (oda büyütülmez), yoksa
+    // (eski düzen) kamera odadaki komodine yaklaşır
+    const kYakin = RESIM.komodinYakin && RESIM.komodin ? komodinYakin() : null;
+    if (kYakin) await kYakin.ac();
+    else if (telYatay) await cek(KOMODIN.x - bX(13), KOMODIN.x + bX(13), KOMODIN.y - bY(1), KOMODIN.y + bY(komodinH * 0.82), 3.4, 800, false);
     MN.tepki('zorlan');
     await bekle(250);
-    await cekmeceAc(true);
-    await bekle(telYatay ? 650 : 250);
+    if (kYakin) await kYakin.cekmece();
+    else await cekmeceAc(true);
+    await bekle(telYatay || kYakin ? 650 : 250);
     // yakın çekim: yukarıdan açık çekmece (içi karanlık; parmağın altında küçük ışık halkası)
     const esyalar = cekmeceEsyalari(yas);
     const yakin = h('div.el-yakin', { 'data-el': 'yakin' });
@@ -1107,6 +1172,7 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
     yakin.classList.remove('acik');
     await bekle(450);
     yakin.remove();
+    if (kYakin) await kYakin.kapat();
     void cekmeceAc(false);
     gece.seviye('fener');
     const [mx, my] = px(X(-4), DUVAR + bY(14));
