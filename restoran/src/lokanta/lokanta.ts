@@ -182,8 +182,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     });
     if (!kinoMesgul) kino.yerKoy(Y.kino.x, Y.kino.y);
     zSira(kino);
-    minoEl.style.left = pct(yon === 'yatay' ? 56 : 77);
-    minoEl.style.top = pct(yon === 'yatay' ? 52 : 34);
+    minoEl.style.left = pct(yon === 'yatay' ? 56 : 50);
+    minoEl.style.top = pct(yon === 'yatay' ? 52 : 44);
     if (kapida?.hazir) {
       kapida.kisi.yerKoy(Y.bekleme.x, Y.bekleme.y);
       zSira(kapida.kisi);
@@ -230,6 +230,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   let hizmet = 0;
   let kapandi = false;
   let tepsi: Urun[] = [];
+  const tepkiGunlugu: { musteri: string; istek: string; tepki: string; neden?: string }[] = [];
   let istasyon: IstasyonEkrani | null = null;
   const masadaki = () => masalar.filter((m) => m.oturan).length;
 
@@ -346,7 +347,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const kutuH = k.boy / (k.olcu.taban - k.olcu.tepe);
     const belYuk = (k.olcu.taban - k.olcu.bel) * kutuH;
     const kalcaAlti = k.boy < 1.3 ? 0.02 : 0.18;
-    const dy = MASA_H - kalcaAlti - belYuk;
+    // poz karesi: figür gerçekten oturuyor, ayaklar yerde (kısalar yükseltilmiş sandalyede); kukla / resim: ayakta çizim
+    const dy = k.pozlu ? Math.max(0, MASA_H - 0.15 - 0.42 * k.boy) : MASA_H - kalcaAlti - belYuk;
     const kirp = MASA_H - dy - 0.12 + (1 - k.olcu.taban) * kutuH;
     k.el.style.setProperty('--rs-otur-dy', dy.toFixed(3));
     k.el.style.setProperty('--rs-otur-kirp', Math.max(0, kirp).toFixed(3));
@@ -531,6 +533,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     sesler.cal('pof', { guc: 0.6 });
     ipucuGuncelle();
     const sonuc = tepkiHesapla(o.m, o.plan.istek, u);
+    tepkiGunlugu.push({ musteri: o.m.id, istek: o.plan.istek.tur, tepki: sonuc.tepki, neden: sonuc.neden });
     const yeniKesif = !!(sonuc.sevdigi && !(kayit.pano[o.m.id] ?? []).includes(sonuc.sevdigi));
     await yemekYe(o, tabak, sonuc);
     if (kapandi) return;
@@ -877,6 +880,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       istasyon: !!istasyon,
       minoKonusuyor,
       ipucu: merdiven.gelen.slice(),
+      tepkiler: tepkiGunlugu.slice(),
+      bekleyen: masalar.map((m) => (m.oturan?.durum === 'bekliyor' ? m.oturan.m.id : null)).find(Boolean) ?? null,
     }),
   };
 

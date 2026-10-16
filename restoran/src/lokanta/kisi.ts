@@ -43,6 +43,8 @@ const KITLER: Record<string, { j: KitJson; klasor: string }> = {
   kino: { j: kinoJson as unknown as KitJson, klasor: 'kino-yeni' },
 };
 const OLCU = olcuJson as Record<string, { en: number; boy: number; tepe: number; taban: number; bel: number }>;
+/** Gemini poz sayfalarının ölçüsü (ekip/illustrator/restoran/restoran-isle.cjs yazar): poz → tuval ve figür tepe / taban */
+const POZ_OLCU = import.meta.glob<Record<string, { en: number; boy: number; tepe: number; taban: number }>>('../../../assets/restoran/kisi/*/olcu.json', { eager: true, import: 'default' });
 
 /** Bir çizimin kutusu ve figürün tepe / taban / bel çizgisi (kutu yüksekliğinin oranı) */
 export interface KisiOlcu {
@@ -60,6 +62,9 @@ function kitTepe(j: KitJson): number {
 
 /** Kişinin hangi görselle çizileceği ve ölçüsü */
 export function kisiOlcu(ad: string): KisiOlcu {
+  const p = POZ_OLCU[`../../../assets/restoran/kisi/${ad}/olcu.json`];
+  const ayakta = p?.giris ?? p?.selam ?? p?.mutlu ?? p?.tepsi ?? p?.konus;
+  if (ayakta) return { oran: ayakta.en / ayakta.boy, tepe: ayakta.tepe / ayakta.boy, taban: ayakta.taban / ayakta.boy, bel: (ayakta.tepe + (ayakta.taban - ayakta.tepe) * 0.6) / ayakta.boy };
   const k = KITLER[ad];
   if (k) {
     const [W, H] = k.j.boyut;
@@ -94,7 +99,8 @@ export class Kisi {
   private kukla: Kukla | null = null;
   private canvas: HTMLCanvasElement | null = null;
   private img: HTMLImageElement | null = null;
-  private pozlu = false;
+  /** Gemini poz kareleriyle mi çiziliyor (oturuş karesi gerçekten oturuyor) */
+  pozlu = false;
   private ifadeAd: Ifade = null;
   private ifadeBitis = 0;
   private konusuyor = false;
@@ -117,7 +123,7 @@ export class Kisi {
     this.el = h('div.rs-kisi', { 'data-kisi': ad });
     this.el.append(this.govde);
     this.boyutla();
-    const pozResim = varlik(`kisi/${ad}/otur`) ?? varlik(`kisi/${ad}/giris`);
+    const pozResim = ['giris', 'otur', 'mutlu', 'tepsi', 'konus'].map((p) => varlik(`kisi/${ad}/${p}`)).find(Boolean);
     if (pozResim) {
       this.pozlu = true;
       this.img = h('img.rs-kisi-resim', { src: pozResim, alt: '', draggable: 'false' }) as HTMLImageElement;
@@ -157,6 +163,8 @@ export class Kisi {
     this.el.style.setProperty('--rs-kutu-oran', o.oran.toFixed(4));
     this.el.style.setProperty('--rs-alt-pay', (1 - o.taban).toFixed(4));
     this.el.style.setProperty('--rs-bel', o.bel.toFixed(4));
+    // e2e ölçüsü: kutunun hangi dilimi figür (tepe..taban)
+    this.el.dataset.figur = `${o.tepe.toFixed(4)},${o.taban.toFixed(4)}`;
   }
 
   /** Ekrandaki figür boyu (u cinsinden) */
@@ -247,6 +255,10 @@ export class Kisi {
     this.yerKoy(x, y);
     this.poz('giris');
     if (sakin()) return;
+    // yürüyüş kareleri varsa adım adım değişir (Kino: yuru-1 / yuru-2)
+    const adimlar = this.pozlu ? ['yuru-1', 'yuru-2'].map((p) => varlik(`kisi/${this.ad}/${p}`)).filter((u): u is string => !!u) : [];
+    let adimNo = 0;
+    const adimZaman = adimlar.length === 2 && this.img ? window.setInterval(() => (this.img!.src = adimlar[adimNo++ % 2]), 220) : 0;
     const adim = Math.max(2, Math.round(ms / 300));
     const k: Keyframe[] = [];
     for (let i = 0; i <= adim * 2; i++) k.push({ transform: i % 2 ? 'translateY(-7%) scale(0.98, 1.03)' : 'scale(1.02, 0.97)', offset: i / (adim * 2) });
@@ -257,6 +269,10 @@ export class Kisi {
       await this.el.animate([bas, { left: `${x}%`, top: `${y}%` }], { duration: ms, easing: 'ease-in-out' }).finished;
     } catch {
       await bekle(ms);
+    }
+    if (adimZaman) {
+      clearInterval(adimZaman);
+      this.poz(this.el.dataset.poz ?? 'giris');
     }
   }
 
@@ -274,6 +290,8 @@ export class Kisi {
   poz(ad: string) {
     this.el.dataset.poz = ad;
     if (!this.pozlu || !this.img) return;
+    // Kino'nun garson sayfasında 'giris' yok: boştaki duruşu tepsiyle
+    if (this.ad === 'kino' && ad === 'giris') ad = 'tepsi';
     const u = varlik(`kisi/${this.ad}/${ad}`) ?? (this.oturuyor ? varlik(`kisi/${this.ad}/otur`) : varlik(`kisi/${this.ad}/giris`));
     if (u && this.img.src !== u) this.img.src = u;
   }
