@@ -100,6 +100,21 @@ export function minoDedektifYukle(): Promise<Record<'sapka' | 'buyutec', string>
   return dedektifYukleme;
 }
 
+/** Kostüm yerleri (kostum()): şapka, üst giysi, alet */
+export type MinoKostumYer = 'bas' | 'ust' | 'alet';
+export const MINO_KOSTUM_YERLERI: readonly MinoKostumYer[] = ['bas', 'ust', 'alet'];
+/** Kostüm parçası: resim adresi ve çizimin 2048'lik koordinatlarındaki kutusu [x, y, en, boy] */
+export interface MinoKostumParca {
+  src: string;
+  kutu: [number, number, number, number];
+}
+/** Kutusu verilmeyen parçanın yeri: şapka kulakların arasında, üst gövdede (fuların altından kalçaya), alet sağ patide */
+const KOSTUM_KUTU: Record<MinoKostumYer, [number, number, number, number]> = {
+  bas: [700, 160, 648, 330],
+  ust: [740, 1250, 568, 460],
+  alet: [1240, 1180, 260, 620],
+};
+
 /** Burun ifadeleri (ekip/mino/IFADELER.md, "Burun ekleri"; Ege 8. sahne) */
 export type MinoBurunIfade = 'burun-kasinti' | 'burun-tut' | 'hapsu';
 const burunMu = (ad: MinoIfade): ad is MinoBurunIfade => ad === 'burun-kasinti' || ad === 'burun-tut' || ad === 'hapsu';
@@ -514,6 +529,64 @@ export class Mino {
   }
   private dedektifIstek = { sapka: false, buyutec: false };
   private dedektifEkleme: Promise<boolean> | null = null;
+
+  /**
+   * Kostüm (Mino Ne Giysin?, ekip/senaryo/MINO-NE-GIYSIN.md §1): çizimin içine resim katmanları; kafa, gövde ve sağ
+   * kolla birlikte hareket eder (döndürme eklemez). bas: şapka, kafanın (.k) en sonunda (ifade / dedektif eklerinin
+   * de üstünde); ust: üst giysi, gövdenin (.g) içinde, kolların ve fuların ALTINDA (fular görünür kalır); alet: sağ
+   * kolun (.kr) sonunda. Değer: resim adresi (yerin varsayılan kutusuyla) ya da { src, kutu } (çizimin 2048'lik
+   * koordinatlarında [x, y, en, boy]; ölçüler assets/mino-giysin/kostum-yer.json); null çıkarır; verilmeyen yer
+   * değişmez. Kostüm varken poz() çağrılmaz (kalkık kol alet katmanını taşımaz).
+   */
+  kostum(ayar: Partial<Record<MinoKostumYer, string | MinoKostumParca | null>>) {
+    for (const yer of MINO_KOSTUM_YERLERI) {
+      if (!(yer in ayar)) continue;
+      const deger = ayar[yer];
+      const p = typeof deger === 'string' ? { src: deger, kutu: KOSTUM_KUTU[yer] } : deger;
+      const eski = this.kostumEl[yer];
+      if (!p) {
+        eski?.remove();
+        this.kostumEl[yer] = null;
+        this.kostumIstek[yer] = null;
+        continue;
+      }
+      const im = eski ?? document.createElementNS('http://www.w3.org/2000/svg', 'image');
+      im.setAttribute('class', `m-kostum m-kostum-${yer}`);
+      im.setAttribute('href', p.src);
+      const [x, y, en, boy] = p.kutu;
+      im.setAttribute('x', String(x));
+      im.setAttribute('y', String(y));
+      im.setAttribute('width', String(en));
+      im.setAttribute('height', String(boy));
+      im.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      this.kostumIstek[yer] = { src: p.src, kutu: [x, y, en, boy] };
+      if (!eski) {
+        const ana = yer === 'bas' ? ':scope > .k' : yer === 'ust' ? ':scope > .g' : ':scope > .kr';
+        this.kok.querySelector(ana)?.append(im);
+        this.kostumEl[yer] = im;
+      }
+    }
+    // sonradan eklenen yüz ekleri şapkanın üstüne binmesin: şapka hep kafanın en sonunda
+    const sapka = this.kostumEl.bas;
+    if (sapka?.parentNode && sapka.parentNode.lastChild !== sapka) sapka.parentNode.append(sapka);
+  }
+  /** kostum() ile giydirilenler */
+  get kostumSu(): Readonly<Record<MinoKostumYer, MinoKostumParca | null>> {
+    return this.kostumIstek;
+  }
+  /** Kostüm katmanının resmi (kodla öteleme / ezilme için; yoksa null) */
+  kostumResmi(yer: MinoKostumYer): SVGImageElement | null {
+    return this.kostumEl[yer];
+  }
+  private kostumIstek: Record<MinoKostumYer, MinoKostumParca | null> = { bas: null, ust: null, alet: null };
+  private kostumEl: Record<MinoKostumYer, SVGImageElement | null> = { bas: null, ust: null, alet: null };
+
+  /** Çizimin (2048'lik) bir noktasının ekrandaki yeri (bir şeyi tam o noktaya uçurmak için; dönüşümler hariç) */
+  ekranNoktasi(x: number, y: number): { x: number; y: number } {
+    const r = this.kok.getBoundingClientRect();
+    const vb = this.kok.viewBox.baseVal;
+    return { x: r.left + ((x - vb.x) / vb.width) * r.width, y: r.top + ((y - vb.y) / vb.height) * r.height };
+  }
 
   /**
    * Film/animatik: Mino konuşuyor (açıkken ağız sese göre oynar; ses yoksa metnin ritmiyle). bilgi: cümle ve

@@ -1,0 +1,16 @@
+{
+  "aciklama": "Mino'nun kostüm parçalarının yeri: çizimin 2048'lik koordinatlarında [x, y, en, boy] (src/mino/mino.ts → kostum). Resim kutuya oranı korunarak sığar (ortalı). Gemini sayfası gelince ekip/illustrator/mino-giysin-isle.cjs yeniden yazar; elle düzeltme de burada. Önizleme: node ekip/illustrator/mino-giysin-isle.cjs --onizleme → ekip/illustrator/mino-giysin/kostum-onizleme.png",
+  "bas-doktor": [660, 250, 728, 230],
+  "bas-itfaiye": [670, 170, 708, 290],
+  "bas-asci": [740, -60, 568, 470],
+  "bas-bahce": [640, 180, 768, 280],
+  "bas-bahce-cicek": [640, 180, 768, 280],
+  "ust-doktor": [740, 1250, 568, 460],
+  "ust-itfaiye": [740, 1250, 568, 460],
+  "ust-asci": [740, 1250, 568, 460],
+  "ust-bahce": [740, 1250, 568, 460],
+  "alet-doktor": [1250, 1330, 260, 420],
+  "alet-itfaiye": [1290, 960, 220, 900],
+  "alet-asci": [1300, 1100, 160, 650],
+  "alet-bahce": [1240, 1420, 330, 290]
+}
