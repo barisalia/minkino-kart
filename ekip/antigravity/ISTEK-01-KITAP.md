@@ -1,6 +1,13 @@
-# ⛔ BEKLEMEDE: Barış onay vermeden BAŞLAMA
+# ✅ ONAYLANDI (Barış, 2026-10-16: "tamam yapın ilkini")
 
-Barış (2026-10-16): "bu kitap işlerini bana sormadan başlamayın, hepinize söylüyorum." Bu dosya yalnız taslak. Barış kendisi "başla" demeden hiçbir kitap işi (kod, görsel, metin) yapılmaz.
+İlk kitap onaylandı. Örnek kitap "Mino'nun Balonu" İPTAL. Bunun yerine onaylı metin kullanılacak:
+**ekip/senaryo/KITAP-MINO-KINO.md → §2 "Kino Okula Başlıyor"** (kapak + 14 sayfa + ebeveyn sayfası).
+- Metin, resim tarifi, "canlanan" anlar ve saklı uğur böceği her sayfada yazılı. Metni DEĞİŞTİRME; sorun görürsen CEVAP-01'e yaz.
+- Yazım rehberi: ekip/senaryo/CAILLOU-KITAP-REHBERI.md.
+- Kararlar: başlık "Kino Okula Başlıyor"; okul önlüğü VAR (açık mavi, yakalı); öğretmen ceylan "Ceren Öğretmen"; Bulut kömür siyahı yüzlü, bembeyaz kabarık yünlü utangaç kuzu (ilk kez çizilecek, önce tek karakter sayfası).
+- Görsel çıta (Barış): "premium 2D vector illustration, glossy cartoon finish with soft highlights, high-end toddler picture-book style" + onaylı stil referansı (ekip/stil/onayli-stil-oda.png) + karakter sayfası (ekip/film/seri-2/karakter/v6/aile-model.png). Ucuz ikon/sticker görünümü reddedilir.
+- Sıra: (1) Bulut ve Ceren Öğretmen karakter sayfaları + kapak → Barış'a göster, onay → (2) 14 sayfa resim + canlanan anlar için çok pozlu sayfalar → (3) kitap bileşeni ve bağlama.
+- Her aşamanın sonunda CEVAP-01.md'ye yaz; Barış görmeden bir sonraki aşamaya geçme.
 
 # Antigravity'ye iş: Uygulamaya "Kitaplar" bölümü (3D hisli kitap)
 
