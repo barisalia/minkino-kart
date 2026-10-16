@@ -10,6 +10,14 @@ import type { Efekt } from './efekt';
 const ESIK = 10;
 /** Sürükleme bitince o dokunuşun tıklaması bu kadar süre yutulur (ms) */
 const YUT_MS = 400;
+/**
+ * Kısa kayma: parmak bu kadar az (px) ve bu kadar kısa (ms) kımıldayıp kalktıysa sürükleme değil, kayan bir DOKUNUŞTUR
+ * (küçük parmak dokunurken birkaç mm kayar). birak(…, kisa=true) ile bildirilir; çağıran onu dokunuş gibi işler.
+ */
+export const KISA_YOL = 30;
+export const KISA_MS = 500;
+/** Sürükleme kısa kayma mı (başlangıçtan en uzak yer px, süre ms) */
+export const kisaKayma = (enUzak: number, ms: number) => enUzak < KISA_YOL && ms < KISA_MS;
 
 export interface SurukleSecenek {
   /** sürükleme başlayabilir mi (false: yalnız dokunuş) */
@@ -18,8 +26,8 @@ export interface SurukleSecenek {
   basla(x: number, y: number): void;
   /** parmak kımıldadı: konum ve son hareket (px) */
   tasi(x: number, y: number, dx: number, dy: number): void;
-  /** parmak kalktı (ya da tarayıcı dokunuşu kesti) */
-  birak(x: number, y: number): void;
+  /** parmak kalktı (ya da tarayıcı dokunuşu kesti); kisa: kayan bir dokunuştu (kisaKayma), dokunuş gibi işlenebilir */
+  birak(x: number, y: number, kisa: boolean): void;
 }
 
 /** Elemanı sürüklenebilir yapar; dokunuş (tıklama) aynen çalışır. Dönen: dinleyicileri kaldırır. */
@@ -31,6 +39,8 @@ export function elSurukle(el: HTMLElement, s: SurukleSecenek): () => void {
   let sx = 0;
   let sy = 0;
   let bitis = -1e9;
+  let t0 = 0;
+  let enUzak = 0;
   el.style.touchAction = 'none';
   const bas = (e: PointerEvent) => {
     if (id !== null || (e.pointerType === 'mouse' && e.button !== 0)) return;
@@ -38,6 +48,8 @@ export function elSurukle(el: HTMLElement, s: SurukleSecenek): () => void {
     suruklen = false;
     x0 = sx = e.clientX;
     y0 = sy = e.clientY;
+    t0 = performance.now();
+    enUzak = 0;
     // parmak hızla çıksa da hareket bu elemana gelsin (dokunuşun tıklaması yine bu elemanda olur)
     try {
       el.setPointerCapture(e.pointerId);
@@ -47,6 +59,7 @@ export function elSurukle(el: HTMLElement, s: SurukleSecenek): () => void {
   };
   const kaydir = (e: PointerEvent) => {
     if (e.pointerId !== id) return;
+    enUzak = Math.max(enUzak, Math.hypot(e.clientX - x0, e.clientY - y0));
     if (!suruklen) {
       if (Math.hypot(e.clientX - x0, e.clientY - y0) < ESIK) return;
       if (s.aktif && !s.aktif()) {
@@ -73,7 +86,7 @@ export function elSurukle(el: HTMLElement, s: SurukleSecenek): () => void {
     if (!suruklen) return;
     suruklen = false;
     bitis = performance.now();
-    s.birak(e.clientX, e.clientY);
+    s.birak(e.clientX, e.clientY, e.type === 'pointerup' && kisaKayma(enUzak, bitis - t0));
   };
   // sürüklemenin sonundaki tıklama dokunuş sayılmaz
   const tik = (e: MouseEvent) => {

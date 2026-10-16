@@ -197,6 +197,20 @@ describe('Kino’nun Otobüsü: sıradaki iş (parlayanı izleyen çocuk her ist
     expect(kapIsi(ist, { kap: 'kase', toplar: ['cilek'], sos: 'cilek', susler: ['kiraz'] }, false).tur).toBe('ye');
     expect(kapIsi(ist, { kap: 'kase', toplar: ['cilek'], sos: null, susler: ['kiraz'] }, false).tur).toBe('ver');
   });
+  it('sıradaki top balondaki sırayı izler (vanilya, çikolata, vanilya, çikolata; önce iki vanilya değil)', () => {
+    const ist = { kap: 'kupa' as const, toplar: ['vanilya', 'cikolata', 'vanilya', 'cikolata'] as Tat[], sos: null, susler: {} };
+    const d = { kap: 'kupa' as const, toplar: [] as Tat[], sos: null, susler: [] };
+    const sira: string[] = [];
+    for (let i = 0; i < 4; i++) {
+      const is = kapIsi(ist, d, false);
+      if (is.tur !== 'top') throw new Error(is.tur);
+      sira.push(is.tat);
+      d.toplar.push(is.tat);
+    }
+    expect(sira).toEqual(ist.toplar);
+    // çocuk başka sırayla koyduysa da (sıra önemsizken) eksik olan önerilir
+    expect(kapIsi(ist, { ...d, toplar: ['cikolata'] }, false)).toEqual({ tur: 'top', tat: 'vanilya' });
+  });
 });
 
 describe('Kino’nun Otobüsü: akşam', () => {

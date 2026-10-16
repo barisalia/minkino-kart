@@ -247,18 +247,18 @@
 .ko-kok .ko-yer {
   position: relative;
   flex: 0 0 auto;
-  width: calc(var(--pen-h) * 0.64);
+  width: calc(var(--pen-h) * var(--kisi-o, 1) * 0.64);
   height: 100%;
 }
 .ko-kok .ko-yer[data-adet='2'] {
-  width: calc(var(--pen-h) * 0.95);
+  width: calc(var(--pen-h) * var(--kisi-o, 1) * 1.05);
 }
 .ko-kok .ko-b-iki {
   flex-direction: column;
 }
 .ko-kok .ko-kino-bosluk {
   position: relative;
-  flex: 0 0 calc(var(--pen-h) * 0.72);
+  flex: 0 0 calc(var(--pen-h) * var(--kisi-o, 1) * 0.72);
   height: 100%;
 }
 .ko-kok .ko-mino-gecis-yer {

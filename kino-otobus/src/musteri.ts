@@ -105,7 +105,8 @@ class Kisi {
     olcek = 1,
   ) {
     const o = kutuOlcu(ad, olcek);
-    const stil = `width:calc(var(--pen-h) * ${o.en.toFixed(4)});bottom:calc(var(--pen-h) * ${o.alt.toFixed(4)});aspect-ratio:${o.oran}`;
+    // --kisi-o: telefonda (pencere boydan sınırlıyken) karakterler biraz küçülür (gun.ts → olc)
+    const stil = `width:calc(var(--pen-h) * var(--kisi-o, 1) * ${o.en.toFixed(4)});bottom:calc(var(--pen-h) * (var(--kisi-o, 1) * ${o.alt.toFixed(4)} + var(--kisi-kalk, 0)));aspect-ratio:${o.oran}`;
     if (ad === 'mino') {
       this.mino = new Mino();
       this.el = h('div.ko-kisi.ko-kisi-mino', { style: stil }, this.mino.el);
@@ -172,7 +173,7 @@ export class Musteri {
   ) {
     this.sip = sip;
     this.ad = sip.musteri;
-    this.kisiler = sip.ikinci ? [new Kisi(sip.musteri, 0.74), new Kisi(sip.ikinci, 0.74)] : [new Kisi(sip.musteri)];
+    this.kisiler = sip.ikinci ? [new Kisi(sip.musteri, 0.82), new Kisi(sip.ikinci, 0.82)] : [new Kisi(sip.musteri)];
     this.balonIc = balonResmi(sip);
     this.balon = h('div.ko-balon', { 'data-tur': sip.tur }, this.balonIc, h('b.ko-balon-soz', { 'aria-hidden': 'true' }));
     const ter = sip.terli ? h('div.ko-ter', { 'aria-hidden': 'true' }, h('i', { html: TER }), h('i', { html: TER })) : null;

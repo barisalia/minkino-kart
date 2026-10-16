@@ -24,6 +24,7 @@ import {
   temizlikAyari,
 } from '../../kino-otobus/src/el-isi';
 import { VARLIK } from '../../kino-otobus/src/varliklar';
+import { KISA_MS, KISA_YOL, kisaKayma } from '../../kino-otobus/src/dokunsal';
 
 describe('Kino’nun Otobüsü: dokunsal hazırlık', () => {
   it('kepçe: tatta sürükledikçe top büyür, dışarıda daha yavaş; en çok 1', () => {
@@ -34,6 +35,15 @@ describe('Kino’nun Otobüsü: dokunsal hazırlık', () => {
     expect(kepceBirak(0.1, true)).toBe('geri');
     expect(kepceBirak(0.1, false)).toBe('ver');
     expect(kepceBirak(0.6, true)).toBe('ver');
+    // kayan dokunuş (parmak tatın üstünde birkaç px kayıp hemen kalktı) dokunuştur: top konur, kaybolmaz
+    expect(kepceBirak(0.1, true, true)).toBe('dokunus');
+    expect(kepceBirak(0.6, true, true)).toBe('ver');
+  });
+  it('kayan dokunuş: az yol ve kısa süre dokunuştur, uzun ya da uzak sürükleme değildir', () => {
+    expect(kisaKayma(14, 150)).toBe(true);
+    expect(kisaKayma(KISA_YOL - 1, KISA_MS - 1)).toBe(true);
+    expect(kisaKayma(KISA_YOL + 5, 150)).toBe(false);
+    expect(kisaKayma(14, KISA_MS + 100)).toBe(false);
   });
   it('sos: şişe kulenin üstünde tutuldukça akar, ~0.7 sn’de tamam', () => {
     let d = 0;

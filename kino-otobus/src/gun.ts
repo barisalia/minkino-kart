@@ -67,6 +67,8 @@ const ozelMi = () => TEST_MODU || (typeof document !== 'undefined' && !!document
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, AZ_HAREKET ? Math.min(ms, 200) : sure(ms)));
 /** Dokunulmazsa el ipucu bu kadar sonra çıkar (ms) */
 const IPUCU_MS = 5000;
+/** Karakter ölçeği (müşteriler, Kino): pencerenin kullanılan boy oranına göre (1: boydan sınırlı) */
+export const kisiOlcek = (oran: number) => (oran >= 0.9 ? 0.8 : oran <= 0.7 ? 1 : 1 - ((oran - 0.7) / 0.2) * 0.2);
 /** müşteri yuvalarının renkleri (kurdele): sol pembe, sağ nane */
 const YUVA_RENK = ['#FF8DB4', '#7FD6B0'];
 
@@ -105,6 +107,10 @@ interface Slot {
   surukleBirak: (() => void)[];
   /** müşterinin sevinci (dans, çak) sürerken: dokununca biter */
   atla: (() => void) | null;
+  /** kule parmakta (sürükleniyor): bu sırada kule yeniden çizilmez (çizilirse parmaktaki kule kopar, bırakma kaybolur) */
+  tasiniyor: boolean;
+  /** sürükleme sırasında ertelenen çizim */
+  cizBekle: boolean;
 }
 
 export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
@@ -172,7 +178,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   );
   // Kino da müşteriler gibi belden yukarı (tezgâhın arkasında), boyu tablodan
   const kinoOlcu = kutuOlcu('kino', 0.8);
-  kinoYer.setAttribute('style', `width:calc(var(--pen-h) * ${kinoOlcu.en.toFixed(4)});bottom:calc(var(--pen-h) * ${kinoOlcu.alt.toFixed(4)});aspect-ratio:${kinoOlcu.oran}`);
+  kinoYer.setAttribute('style', `width:calc(var(--pen-h) * var(--kisi-o, 1) * ${kinoOlcu.en.toFixed(4)});bottom:calc(var(--pen-h) * (var(--kisi-o, 1) * ${kinoOlcu.alt.toFixed(4)} + var(--kisi-kalk, 0)));aspect-ratio:${kinoOlcu.oran}`);
 
   // raf: soslar ve süsler (Gün 1'de yalnız çikolata sos); hiçbir zaman küçülmez, artınca iki sıra
   // dokunuş her zaman geçerli; sürükleme dokunsal yol (şişeyi eğip dök, kavanozu salla, süsü sürükle)
@@ -236,7 +242,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const kuleKap = h('div.ko-yuva-kule');
     const verDugme = h('button.ko-ver', { type: 'button', 'aria-label': 'Ver', hidden: true }, svg(IKON.onay));
     const yuvaEl = h('div.ko-yuva', { 'data-yuva': String(i), style: `--kurdele:${YUVA_RENK[i]}` }, h('i.ko-kurdele', { 'aria-hidden': 'true' }), h('i.ko-yuva-altlik', { 'aria-hidden': 'true' }), kuleKap, verDugme);
-    return { i, musteri: null, yuva: bosYuva(), ucan: [new Set<number>(), new Set<number>()], mum: null, yerEl: slotEl[i].yerEl, balonYer: slotEl[i].balonYer, yuvaEl, kuleKap, verDugme, surukleBirak: [], atla: null };
+    return { i, musteri: null, yuva: bosYuva(), ucan: [new Set<number>(), new Set<number>()], mum: null, yerEl: slotEl[i].yerEl, balonYer: slotEl[i].balonYer, yuvaEl, kuleKap, verDugme, surukleBirak: [], atla: null, tasiniyor: false, cizBekle: false };
   });
   const yuvalar = h('div.ko-yuvalar', {}, ...slotlar.map((s) => s.yuvaEl));
 
@@ -312,6 +318,15 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     // dar pencerede karakterler yan yana sığsın: genişlikten de sınırlanır
     const penH = Math.min(mk.height, mk.width / 3.6);
     if (penH > 0) el.style.setProperty("--pen-h", `${penH.toFixed(1)}px`);
+    // karakterlerin ölçeği: pencere boydan sınırlıysa (yatay telefon: karakterler pencereyi dolduruyordu) %80, enden
+    // sınırlıysa (dikey: karakterler zaten küçük) tam boy; arası yumuşak geçer. Balonlar küçülmez (istek okunur kalır).
+    // küçülen karakter biraz yükselir (tezgâhın üstünde gövdesi daha çok görünür): yüzü ve tadımdaki dondurma tezgâh
+    // çizgisinin üstünde kalır, başın üstünde gökyüzü açılır
+    if (penH > 0) {
+      const ko = kisiOlcek(penH / mk.height);
+      el.style.setProperty('--kisi-o', ko.toFixed(3));
+      el.style.setProperty('--kisi-kalk', ((1 - ko) * 0.6).toFixed(3));
+    }
     const yk = slotlar[0].yuvaEl.getBoundingClientRect();
     if (yk.height) el.style.setProperty('--yuva-h', `${(yk.height - 24 * u).toFixed(1)}px`);
     duvarYerlestir(u, yatay);
@@ -493,45 +508,92 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const en = cift ? 0.5 : 1;
     return `min(calc(var(--yuva-h) * ${(0.92 / Math.max(o.boy, 1.9)).toFixed(4)}), calc(var(--yuva-w) * ${((0.86 * en) / o.en).toFixed(4)}), calc(var(--u) * ${cift ? 46 : 62}))`;
   };
+  /** müşterisi gelmiş ve dondurmasını bekliyor */
+  const bekliyor = (s: Slot) => !!s.musteri?.hazir && !s.musteri.bitti;
+  /**
+   * Yuvadaki dondurma kime verilir (ver düğmesi, müşteriye dokunuş): kendi müşterisi bekliyorsa ona; kendi müşterisi
+   * yoksa (gitti, yenisi gelmedi) bekleyen öbür müşteriye. Verilemiyorsa null.
+   */
+  function verHedefi(s: Slot): Slot | null {
+    if (bekliyor(s)) return verilebilir(s.yuva, s.musteri!.sip) ? s : null;
+    const o = slotlar[1 - s.i];
+    return bekliyor(o) && verilebilir(s.yuva, o.musteri!.sip) ? o : null;
+  }
+  /** Yuvada yapılan dondurma hangi siparişe göre (kap sayısı, paylaşmada seçim): kendi müşterisi, yoksa bekleyen öbürü */
+  const yuvaSiparisi = (s: Slot) => (bekliyor(s) ? s.musteri!.sip : bekliyor(slotlar[1 - s.i]) ? slotlar[1 - s.i].musteri!.sip : (s.musteri?.sip ?? null));
+  /** müşterinin bırakma alanı: müşteri katındaki yeri (balonu dahil) ve karakterlerin kendisi (ekran) */
+  function birakmaAlani(m: Slot): DOMRect[] {
+    const r = [slotEl[m.i].kap.getBoundingClientRect()];
+    for (const k of m.musteri?.kisiler ?? []) r.push(k.el.getBoundingClientRect());
+    return r;
+  }
+  /**
+   * Sürüklenen kule nereye bırakıldı: parmağın altındaki bekleyen müşteri (iki müşterinin alanı da tutarsa kendi
+   * müşterisi önce); o müşteriye bu yuvadan verilebiliyorsa o.
+   */
+  function birakmaHedefi(s: Slot, x: number, y: number): Slot | null {
+    const pay = 24 * birim();
+    const adaylar = [s, slotlar[1 - s.i]].filter((m) => bekliyor(m) && verilebilir(s.yuva, m.musteri!.sip));
+    return adaylar.find((m) => birakmaAlani(m).some((r) => icinde(r, x, y, pay))) ?? null;
+  }
   function yuvaCiz(s: Slot) {
-    s.surukleBirak.forEach((f) => f());
-    s.surukleBirak = [];
     const y = s.yuva;
-    const cift = y.kaplar.length > 1;
-    s.kuleKap.replaceChildren(
-      ...y.kaplar.map((d, k) => {
-        const kule = kuleCiz({ ...d, mum: k === 0 ? s.mum : null }, { gizliTop: s.ucan[k] });
-        const alt = h(`div.ko-alt${k === y.secili && cift ? '.ko-secili' : ''}`, { 'data-k': String(k), style: `--t:${kuleBoyutu(d, cift)}` }, kule);
-        s.surukleBirak.push(
-          surukle({
-            el: kule,
-            hedef: () => s.musteri?.el ?? s.yerEl,
-            aktif: () => !!s.musteri?.hazir && !s.musteri.bitti && verilebilir(s.yuva, s.musteri.sip),
-            birak: (hedefte, dokunus) => {
-              if (dokunus) {
-                geriGonder(kule);
-                kuleBas(s, k);
-              } else if (hedefte) {
-                kule.style.transform = '';
-                void servis(s);
-              } else geriGonder(kule);
-            },
-          }),
-        );
-        // sürüklenemiyorken de dokunuş çalışır
-        kule.addEventListener('click', () => {
-          if (s.musteri?.hazir && !s.musteri.bitti && verilebilir(s.yuva, s.musteri.sip)) return;
-          kuleBas(s, k);
-        });
-        return alt;
-      }),
-    );
+    if (s.tasiniyor) {
+      // kule parmakta: yeniden çizilirse sürükleme kopar (bırakınca dondurma verilemezdi); bırakınca çizilir
+      s.cizBekle = true;
+    } else {
+      s.cizBekle = false;
+      s.surukleBirak.forEach((f) => f());
+      s.surukleBirak = [];
+      const cift = y.kaplar.length > 1;
+      s.kuleKap.replaceChildren(
+        ...y.kaplar.map((d, k) => {
+          const kule = kuleCiz({ ...d, mum: k === 0 ? s.mum : null }, { gizliTop: s.ucan[k] });
+          const alt = h(`div.ko-alt${k === y.secili && cift ? '.ko-secili' : ''}`, { 'data-k': String(k), style: `--t:${kuleBoyutu(d, cift)}` }, kule);
+          let sonX = 0;
+          let sonY = 0;
+          s.surukleBirak.push(
+            surukle({
+              el: kule,
+              hedef: () => (verHedefi(s) ?? s).yerEl,
+              // bekleyen herhangi bir müşteriye verilebiliyorsa sürüklenir
+              aktif: () => [s, slotlar[1 - s.i]].some((m) => bekliyor(m) && verilebilir(s.yuva, m.musteri!.sip)),
+              basla: () => {
+                s.tasiniyor = true;
+              },
+              tasi: (x, y_) => {
+                sonX = x;
+                sonY = y_;
+              },
+              // bırakma yeri birakmaHedefi ile (iki müşteriden biri olabilir); surukle()'nin tek hedefi yalnız vurgu için
+              birak: (_hedefte, dokunus) => {
+                s.tasiniyor = false;
+                const m = dokunus ? null : birakmaHedefi(s, sonX, sonY);
+                if (dokunus) {
+                  geriGonder(kule);
+                  kuleBas(s, k);
+                } else if (m) {
+                  kule.style.transform = '';
+                  void servis(m, s);
+                  return;
+                } else geriGonder(kule);
+                if (s.cizBekle) yuvaCiz(s);
+              },
+            }),
+          );
+          // sürüklenemiyorken de dokunuş çalışır
+          kule.addEventListener('click', () => {
+            if (verHedefi(s)) return;
+            kuleBas(s, k);
+          });
+          return alt;
+        }),
+      );
+    }
     s.kuleKap.dataset.kap = String(y.kaplar.length);
     s.yuvaEl.classList.toggle('ko-aktif', aktif === s.i);
     s.yuvaEl.dataset.dolu = y.kaplar.some((d) => d.toplar.length) ? '1' : '0';
-    const m = s.musteri;
-    const verir = !!m && m.hazir && !m.bitti && verilebilir(y, m.sip);
-    s.verDugme.hidden = !verir;
+    s.verDugme.hidden = !verHedefi(s);
     if (ozel) s.yuvaEl.dataset.yuva_durum = JSON.stringify(y);
   }
   /** son dokunulan kule (dokunuş ve sürükleme aynı anda iki kez saymasın) */
@@ -566,7 +628,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       if ((e.target as Element).closest('.ko-ver, .ko-kule')) return;
       aktifSec(s.i);
     });
-    s.verDugme.addEventListener('click', () => void servis(s));
+    s.verDugme.addEventListener('click', () => {
+      const m = verHedefi(s);
+      if (m) void servis(m, s);
+      else void servis(s);
+    });
   });
 
   /** Kulenin kopyası (uçuş ve tadım): ölçüsü piksele çevrilir (yuvanın dışında da aynı boy) */
@@ -596,7 +662,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const aktifSlot = () => slotlar[aktif];
   function kapBas(kap: Kap, b: HTMLElement) {
     const s = aktifSlot();
-    const kacKap = s.musteri?.sip.istek.length ?? 1;
+    const kacKap = yuvaSiparisi(s)?.istek.length ?? 1;
     const r = kapKoy(s.yuva, kap, kacKap);
     salla(b, 'ko-bas');
     if (r.olay === 'ayni') {
@@ -645,14 +711,18 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const d = s.yuva.kaplar[k];
     const n = d.toplar.length - 1;
     s.ucan[k].add(n);
-    if (s.musteri) secimiIlerlet(s.yuva, s.musteri.sip);
+    const sip = yuvaSiparisi(s);
+    if (sip) secimiIlerlet(s.yuva, sip);
     yuvaCiz(s);
     adimGuncelle();
     void (async () => {
       await yuvayaUcur(s, gorsel(topAdi(tat)), bas, `.ko-k-top[data-i="${n}"]`, k);
       if (kapandi) return;
       if (!s.ucan[k].delete(n)) return;
-      yuvaCiz(s);
+      // top yerine indi: kule yeniden kurulmaz, yalnız top görünür (çocuk o an kuleyi sürüklüyor olabilir)
+      const inen = s.kuleKap.querySelector(`.ko-alt[data-k="${k}"] .ko-k-top[data-i="${n}"][data-tat="${tat}"]`);
+      if (inen) inen.classList.remove('ko-gizli');
+      else yuvaCiz(s);
       const top = s.kuleKap.querySelector(`.ko-alt[data-k="${k}"] .ko-k-top[data-i="${n}"]`);
       salla(top, 'ko-pof');
       ses.pof(n);
@@ -855,12 +925,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
         }
         yuvaVurgula(yuvaAltinda(x, y));
       },
-      birak: (x, y) => {
+      birak: (x, y, kisa) => {
         yuvaVurgula(null);
         const t = tut;
         tut = null;
         if (!t) return;
-        if (kepceBirak(dolum, icinde(b.getBoundingClientRect(), x, y)) === 'geri') {
+        const sonuc = kepceBirak(dolum, icinde(b.getBoundingClientRect(), x, y), kisa);
+        if (sonuc === 'dokunus') {
+          // kayan dokunuş: dokunmuş gibi Kino kepçeler, top yuvaya uçar
+          void t.don_(null, 0);
+          tatBas(tat, b);
+          return;
+        }
+        if (sonuc === 'geri') {
           // vazgeçti: top kaba geri erir
           ses.kazi();
           void t.don_(null);
@@ -980,13 +1057,20 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
         tut.yukari(dokuyor ? boy * 0.75 : 0);
         yuvaVurgula(h_?.s ?? null);
       },
-      birak: () => {
+      birak: (_x, _y, kisa) => {
         cancelAnimationFrame(raf);
         yuvaVurgula(null);
         ustunde = false;
         akisCiz();
         const t = tut;
         tut = null;
+        if (kisa && !hedef) {
+          // kayan dokunuş (hiçbir kuleye gitmedi): dokunmuş gibi sos dökülür
+          t?.kaldir();
+          b.classList.remove('ko-tasiniyor');
+          sosBas(sos, b);
+          return;
+        }
         // dökmeye başladıysa kalanı kendiliğinden akar
         if (hedef && dolum < 1) {
           dolum = 1;
@@ -1061,12 +1145,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
         if (serpEl && !tamam) serpEl.style.opacity = String(Math.min(1, 0.3 + (0.7 * n) / SALLAMA_GEREK));
         if (n >= SALLAMA_GEREK) tamamla();
       },
-      birak: () => {
+      birak: (_x, _y, kisa) => {
         yuvaVurgula(null);
         // bir kez bile salladıysa serpinti tamamlanır
         if (hedef && !tamam) tamamla();
         const t = tut;
         tut = null;
+        if (kisa && !hedef) {
+          // kayan dokunuş: dokunmuş gibi serpilir
+          t?.kaldir();
+          b.classList.remove('ko-tasiniyor');
+          susBas('serpinti', b);
+          return;
+        }
         if (t) void t.don_(ekranMerkez(b), 280).then(() => b.classList.remove('ko-tasiniyor'));
         else b.classList.remove('ko-tasiniyor');
       },
@@ -1089,12 +1180,19 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
         tut?.yer(x, y, dx);
         yuvaVurgula(topluHedef(x, y)?.s ?? null);
       },
-      birak: (x, y) => {
+      birak: (x, y, kisa) => {
         yuvaVurgula(null);
         const t = tut;
         tut = null;
         if (!t) return;
         const h_ = topluHedef(x, y);
+        if (!h_ && kisa) {
+          // kayan dokunuş: dokunmuş gibi süs konur
+          t.kaldir();
+          b.classList.remove('ko-tasiniyor');
+          susBas(sus, b);
+          return;
+        }
         if (!h_) {
           void t.don_(ekranMerkez(b), 280).then(() => b.classList.remove('ko-tasiniyor'));
           return;
@@ -1231,7 +1329,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const balonAyir = () => (kapandi || m.bitti || !m.el.isConnected ? undefined : m.balonuYuzdenAyir());
     window.setTimeout(balonAyir, 500);
     window.setTimeout(balonAyir, 1700);
-    yuvaCiz(s);
+    // etkin yuvanın müşterisi yoksa ve yuva boşsa yeni gelen müşterinin yuvası etkin olur (dondurma ona yapılır)
+    const ak = slotlar[aktif];
+    if (ak !== s && !bekliyor(ak) && !ak.yuva.kaplar.length) aktifSec(s.i);
+    slotlar.forEach(yuvaCiz);
     adimGuncelle();
     void soyle(K.kino.hosgeldin, 'kino', false);
     // günün ilk isteğinde yakın çekim (dokununca hemen biter); sonrakilerde kamera oynamaz, yalnız balon büyür
@@ -1256,6 +1357,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     efekt.dokunma();
     if (!balon && verilebilir(s.yuva, m.sip) && yuvaIsi(m.sip, s.yuva, ayar.tatlar).tur === 'ver') {
       void servis(s);
+      return;
+    }
+    // müşterisi olmayan öbür yuvada bu müşterinin dondurması hazırsa o verilir
+    const o = slotlar[1 - s.i];
+    if (!balon && !bekliyor(o) && verilebilir(o.yuva, m.sip) && yuvaIsi(m.sip, o.yuva, ayar.tatlar).tur === 'ver') {
+      void servis(s, o);
       return;
     }
     // isteği bir daha dinlet; yuvası etkin olur
@@ -1298,11 +1405,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     );
   }
 
-  async function servis(s: Slot) {
+  /** Dondurmayı verir: s müşterinin yeri, kaynak dondurmanın yapıldığı yuva (çoğunlukla aynı; müşterisi gitmiş yuvadan öbür müşteriye de verilir) */
+  async function servis(s: Slot, kaynak: Slot = s) {
     const m = s.musteri;
     if (!m || !m.hazir || m.bitti || kapandi) return;
-    if (!verilebilir(s.yuva, m.sip)) {
-      salla(s.yuvaEl, 'ko-hayir');
+    if (!verilebilir(kaynak.yuva, m.sip)) {
+      salla(kaynak.yuvaEl, 'ko-hayir');
       ses.degil();
       return;
     }
@@ -1311,26 +1419,26 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     // şaşırma, tadım ve sevinç boyunca istek balonu yüzün önüne kaymaz (müşteri hoplayıp dans ederken de)
     m.balonuYuzdenAyir();
     const balonIzle = window.setInterval(() => (kapandi || !m.el.isConnected ? clearInterval(balonIzle) : m.balonuYuzdenAyir()), 200);
-    const verilen: Dondurma[] = s.yuva.kaplar.map((d) => ({ ...d, toplar: [...d.toplar], susler: [...d.susler] }));
+    const verilen: Dondurma[] = kaynak.yuva.kaplar.map((d) => ({ ...d, toplar: [...d.toplar], susler: [...d.susler] }));
     const sonuc = siparisSonucu(m.sip, verilen);
     const dogumgunu = m.sip.tur === 'dogumgunu';
     if (m.sip.tur === 'ogretici') ogretici = false;
     // Mino'nun doğum günü: Kino kupaya mum diker
     if (dogumgunu) {
-      s.mum = 'yanik';
-      yuvaCiz(s);
+      kaynak.mum = 'yanik';
+      yuvaCiz(kaynak);
       ses.pit(3);
       await bekle(450);
     }
-    const kopya = kuleKopya(s.kuleKap);
-    const bas = efekt_.merkez(s.kuleKap, 0.5, 0.5);
-    s.yuva = bosYuva();
-    s.ucan.forEach((u) => u.clear());
-    s.mum = null;
-    yuvaCiz(s);
-    // öbür yuvada bekleyen varsa o etkin olur
-    const obur = slotlar[1 - s.i];
-    if (obur.musteri?.hazir && !obur.musteri.bitti) aktifSec(obur.i);
+    const kopya = kuleKopya(kaynak.kuleKap);
+    const bas = efekt_.merkez(kaynak.kuleKap, 0.5, 0.5);
+    kaynak.yuva = bosYuva();
+    kaynak.ucan.forEach((u) => u.clear());
+    kaynak.mum = null;
+    yuvaCiz(kaynak);
+    // bekleyen başka müşteri varsa onun yuvası etkin olur
+    const obur = slotlar.find((o) => o !== s && bekliyor(o));
+    if (obur) aktifSec(obur.i);
     adimGuncelle();
     ses.ksilofon();
     void kino.oynat('sevin', 700);
@@ -1344,8 +1452,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const ly = m.lokmaYeri();
     // görünen dondurmanın (kutunun içindeki çizimler) tepesi ağzın altına iner; uçuş alttan gelir (aşağı kavis) ve
     // hiç büyümez: tepesi yol boyunca son yerinin, yani alt dudağın üstüne çıkmaz
-    const kk = s.kuleKap.getBoundingClientRect();
-    const ciz = birlesim([...s.kuleKap.querySelectorAll('.ko-g, img, svg')].map((e) => e.getBoundingClientRect())) ?? kk;
+    const kk = kaynak.kuleKap.getBoundingClientRect();
+    const ciz = birlesim([...kaynak.kuleKap.querySelectorAll('.ko-g, img, svg')].map((e) => e.getBoundingClientRect())) ?? kk;
     const boy1 = 0.75;
     const hedef: [number, number] = dogumgunu
       ? efekt_.merkez(kisiEl, ax, ay)
@@ -1430,7 +1538,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     s.musteri = null;
     biten++;
     durumYaz();
-    yuvaCiz(s);
+    slotlar.forEach(yuvaCiz);
     if (biten === 2 && gun === 2) minoGecsin();
     if (biten >= TOPLAM) void gunBitti();
     else if (kuyruk.length) sonra(TEST_MODU ? 50 : 500, () => void musteriGelsin(s));
@@ -1552,7 +1660,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   // ---------------------------------------------------------------- sıradaki iş (parlama, el ipucu)
   /** Hangi yuva çalışılmalı: etkin yuvada bekleyen müşteri varsa o, yoksa öbürü */
   function calisilacak(): Slot | null {
-    const bekliyor = (s: Slot) => !!s.musteri?.hazir && !s.musteri.bitti;
     const a = slotlar[aktif];
     if (bekliyor(a)) return a;
     const o = slotlar[1 - aktif];
@@ -1580,11 +1687,14 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (!calisiyor) return null;
     const s = calisilacak();
     if (!s?.musteri) return null;
-    if (s.i !== aktif) return { ad: 'yuva', el: s.yuvaEl };
+    // etkin yuvanın müşterisi gitmiş ama içinde dondurma varsa: o dondurma bekleyen müşteriye tamamlanıp verilir
+    const ak = slotlar[aktif];
+    const kaynak = s.i !== aktif && ak.yuva.kaplar.length ? ak : s;
+    if (kaynak.i !== aktif) return { ad: 'yuva', el: s.yuvaEl };
     // uçmakta olan top varken kule işi sayılmaz (top inince yeniden bakılır)
-    const is = yuvaIsi(s.musteri.sip, s.yuva, ayar.tatlar);
-    if (is.tur === 'ye' && s.ucan.some((u) => u.size)) return null;
-    const r = isEl(s, is);
+    const is = yuvaIsi(s.musteri.sip, kaynak.yuva, ayar.tatlar);
+    if (is.tur === 'ye' && kaynak.ucan.some((u) => u.size)) return null;
+    const r = isEl(kaynak, is);
     return r.el ? { ad: r.ad, el: r.el } : null;
   }
   let parlayan: HTMLElement | null = null;

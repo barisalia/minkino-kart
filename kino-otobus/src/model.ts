@@ -350,8 +350,11 @@ export function kapIsi(ist_: Istenen, d: Dondurma | undefined, sira: boolean, ac
     }
     if (fazla) return { tur: 'ye' };
     if (kalan.length) {
+      // balondaki sırayla: kule balondaki gibi gidiyorsa sıradaki top (vanilya, çikolata, vanilya, çikolata), yoksa
       // istek sırasındaki ilk eksik tat
-      const eksik = ist_.toplar.find((t) => kalan.includes(t)) ?? kalan[0];
+      const sirada = ist_.toplar[n];
+      const balondaki = d.toplar.every((t, i) => tatUyar(ist_.toplar[i], t));
+      const eksik = (balondaki && sirada !== undefined && kalan.includes(sirada) ? sirada : null) ?? ist_.toplar.find((t) => kalan.includes(t)) ?? kalan[0];
       return { tur: 'top', tat: serinCoz(eksik, acik) };
     }
   }

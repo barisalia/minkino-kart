@@ -22,8 +22,12 @@ export const KEPCE_VAZGEC = 0.35;
 export function kepceDolum(onceki: number, yolU: number, tatta: boolean): number {
   return sinirla(onceki + (yolU * (tatta ? 1 : KEPCE_DIS_ORAN)) / KEPCE_YOL);
 }
-/** Bırakınca ne olur: yuvaya mı gider, kaba mı döner */
-export const kepceBirak = (dolum: number, tatUstunde: boolean): 'ver' | 'geri' => (tatUstunde && dolum < KEPCE_VAZGEC ? 'geri' : 'ver');
+/**
+ * Bırakınca ne olur: yuvaya mı gider, kaba mı döner. kisa: parmak tatın üstünde biraz kayıp hemen kalktı (kayan
+ * dokunuş, dokunsal.ts → kisaKayma): bu bir dokunuştur, top yine konur ('dokunus'; eskiden 'geri' sayılıp top
+ * kaybolurdu: iki toplu siparişte ikinci dokunuş "olmuyordu").
+ */
+export const kepceBirak = (dolum: number, tatUstunde: boolean, kisa = false): 'ver' | 'geri' | 'dokunus' => (tatUstunde && dolum < KEPCE_VAZGEC ? (kisa ? 'dokunus' : 'geri') : 'ver');
 
 // ---------------------------------------------------------------- sos
 /** Şişe kulenin üstünde bu kadar tutulunca sos tamamen akar (ms); bırakılırsa kalan kendiliğinden akar */

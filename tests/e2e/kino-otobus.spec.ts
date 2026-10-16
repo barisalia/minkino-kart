@@ -111,8 +111,8 @@ test('Kino’nun Otobüsü: yanlış dokunuşlar zararsız; yanlış topu Kino y
   await page.locator('.ko-tat[data-tat="vanilya"]').click();
   // farklı dondurma da verilir: müşteri yine sever, 2 jeton
   await page.locator('.ko-yuva[data-yuva="1"] .ko-ver').click();
-  await expect(page.locator('.ko-musteri[data-sonuc="farkli"]')).toHaveCount(1, { timeout: 10000 });
-  await expect.poll(async () => (await durum(page)).bugun, { timeout: 10000 }).toBe(2);
+  // (test modunda müşteri çabuk gider: data-sonuc'a değil sayaca bakılır) 2 jeton, mutlu sayılmaz
+  await expect.poll(async () => ((d) => `${d.bugun}/${d.mutlu}`)(await durum(page)), { timeout: 10000 }).toBe('2/0');
   await page.screenshot({ path: 'tests/screens/kino-otobus-gun2.png' });
   expect(hatalar.filter(agDisi)).toEqual([]);
 });
@@ -152,9 +152,12 @@ test('Kino’nun Otobüsü: dokunsal hazırlık (kepçe, sos dök, serpinti sall
   const y0 = await orta(page, '.ko-yuva[data-yuva="0"]');
   await surukle(page, tat, y0);
   await expect(yuva.locator('.ko-k-top')).toHaveCount(1);
-  // tatın üstünde azıcık kımıldatıp bırakmak vazgeçmektir: top eklenmez
+  // tatın üstünde hızla azıcık kayan parmak dokunuştur: top eklenir (eskiden "vazgeçti" sayılıp top kayboluyordu)
   await surukle(page, tat, { x: tat.x + 14, y: tat.y });
-  await expect(yuva.locator('.ko-k-top')).toHaveCount(1);
+  await expect(yuva.locator('.ko-k-top')).toHaveCount(2);
+  // tatın üstünde uzun uzun gezinip bırakmak vazgeçmektir: top eklenmez
+  await surukle(page, tat, { x: tat.x + 14, y: tat.y }, () => page.waitForTimeout(600));
+  await expect(yuva.locator('.ko-k-top')).toHaveCount(2);
   // sos: şişe kulenin üstünde tutulur, akar
   const kule = await orta(page, '.ko-yuva[data-yuva="0"] .ko-kule');
   await surukle(page, await orta(page, '.ko-sos[data-sos="karamel"]'), kule, () => page.waitForTimeout(800));
@@ -318,3 +321,186 @@ test('Kino’nun Otobüsü: ?onizleme=1 ile kilitli güne atlanmaz, ilerleme yaz
   await expect(page.locator('.ko-gun[data-gun="1"]')).toBeVisible();
   expect(hatalar.filter(agDisi)).toEqual([]);
 });
+
+// ---------------------------------------------------------------- telefon: gerçek hız, gerçek dokunuş (Barış 2026-10-16)
+/**
+ * Barış'ın bulduğu üç hata bir daha olmasın: (1) iki-üç toplu siparişte bir dokunuş "olmuyordu" (parmak tatın üstünde
+ * birkaç px kayınca kepçe sürüklemesi sayılıp "vazgeçti" diye top kayboluyordu); (2) dondurma müşteriye
+ * sürüklenemiyordu (son top kuleye inerken kule yeniden çiziliyor, parmaktaki kule kopuyordu; müşterisi gitmiş yuvadaki
+ * dondurma öbür müşteriye hiç verilemiyordu); (3) yatay telefonda müşteriler pencereyi dolduruyordu.
+ * Gerçek hızda (?onizleme=1, test kısaltması yok), dokunmatik olaylarla (CDP touch), 844×390 ve 390×844, DPR3.
+ */
+const TELEFON = [
+  { ad: 'yatay', viewport: { width: 844, height: 390 } },
+  { ad: 'dikey', viewport: { width: 390, height: 844 } },
+];
+type Nokta = { x: number; y: number };
+async function parmak(page: Page) {
+  const cdp = await page.context().newCDPSession(page);
+  const d = (p: Nokta, type: 'touchStart' | 'touchMove' | 'touchEnd') => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x: p.x, y: p.y }] });
+  return {
+    /** dokunuş; kay > 0: parmak kalkarken o kadar px kayar (küçük çocuk dokunuşu) */
+    async dokun(p: Nokta, kay = 0) {
+      await d(p, 'touchStart');
+      for (let i = 1; i <= 3 && kay; i++) {
+        await d({ x: p.x + (kay * i) / 3, y: p.y + (kay * i) / 6 }, 'touchMove');
+        await page.waitForTimeout(16);
+      }
+      await page.waitForTimeout(40);
+      await d({ x: p.x + kay, y: p.y + kay / 2 }, 'touchEnd');
+    },
+    async surukle(a: Nokta, z: Nokta) {
+      await d(a, 'touchStart');
+      for (let i = 1; i <= 14; i++) {
+        await d({ x: a.x + ((z.x - a.x) * i) / 14, y: a.y + ((z.y - a.y) * i) / 14 }, 'touchMove');
+        await page.waitForTimeout(16);
+      }
+      await page.waitForTimeout(40);
+      await d(z, 'touchEnd');
+    },
+  };
+}
+const kayitla = (page: Page, yas: 'kucuk' | 'buyuk') =>
+  page.addInitScript(([a, y]) => localStorage.setItem(a, JSON.stringify({ jeton: 0, acikGun: 3, biten: [], alinan: [], boya: 'buz', yas: y, mutlu: {} })), [ANAHTAR, yas] as const);
+interface KoMusteri {
+  bitti: boolean;
+  kisiler: { el: HTMLElement }[];
+  yuz(): { yuz: { left: number; right: number; top: number; bottom: number } | null };
+}
+type KoGun = { slotlar: { i: number; musteri: KoMusteri | null; kuleKap: HTMLElement; yuvaEl: HTMLElement }[]; aktif: number };
+
+/**
+ * Bir günü gerçek hızda, parlayan işi izleyerek oynar: tat, sos ve süse KAYAN dokunuşla (14 px) dokunur; dondurmayı
+ * ver düğmesiyle değil, son toptan hemen sonra kuleyi müşterinin yüzüne sürükleyerek verir. Her sürükleme tutmalı.
+ */
+async function gercekHizdaOyna(page: Page) {
+  const p = await parmak(page);
+  let surukleme = 0;
+  // ilerleme izlenir: oyun 30 sn hiç ilerlemezse (dokunuş tutmuyor ya da sıradaki iş yok) nerede takıldığı yazılır
+  let sonDurum = '';
+  let sonIlerleme = Date.now();
+  for (let n = 0; n < 900; n++) {
+    if (await page.locator('.ko-aksam').isVisible().catch(() => false)) break;
+    const durumNe = await page.evaluate(() => `${document.querySelector<HTMLElement>('.ko-gun')?.dataset.durum} ${[...document.querySelectorAll<HTMLElement>('.ko-yuva')].map((y) => y.dataset.yuva_durum).join(' ')}`);
+    if (durumNe !== sonDurum) {
+      sonDurum = durumNe;
+      sonIlerleme = Date.now();
+    } else if (Date.now() - sonIlerleme > 30000) {
+      const ne = await page.evaluate(() => ({ adim: document.querySelector<HTMLElement>('.ko-gun')?.dataset.adim, sirada: document.querySelector('.ko-sirada')?.className, sinif: document.querySelector('.ko-gun')?.className, musteri: [...document.querySelectorAll<HTMLElement>('.ko-musteri')].map((m) => `${m.dataset.musteri}:${m.className}`) }));
+      throw new Error(`oyun 30 sn ilerlemedi: ${sonDurum} ${JSON.stringify(ne)}`);
+    }
+    const d = await page.evaluate(() => {
+      const g = document.querySelector<HTMLElement>('.ko-gun');
+      const s = g?.querySelector('.ko-sirada')?.getBoundingClientRect();
+      return g && s?.width ? { adim: g.dataset.adim ?? '', yakin: g.classList.contains('ko-yakin'), x: s.left + s.width / 2, y: s.top + s.height / 2 } : null;
+    });
+    if (!d || !d.adim || d.yakin) {
+      await page.waitForTimeout(120);
+      continue;
+    }
+    if (d.adim === 'ver') {
+      const v = await page.evaluate(`(() => {
+        const g = window.__koGun;
+        const s = g.slotlar[g.aktif];
+        const m = s.musteri && !s.musteri.bitti ? s.musteri : g.slotlar.find((o) => o.musteri && !o.musteri.bitti).musteri;
+        const k = s.kuleKap.querySelector('.ko-kule').getBoundingClientRect();
+        const y = m.yuz().yuz;
+        return { i: s.i, a: { x: k.left + k.width / 2, y: k.top + k.height * 0.6 }, z: { x: (y.left + y.right) / 2, y: (y.top + y.bottom) / 2 } };
+      })()`) as { i: number; a: Nokta; z: Nokta };
+      surukleme++;
+      await p.surukle(v.a, v.z);
+      // sürüklenen kule müşteriye verildi (yuva boşaldı)
+      await expect.poll(() => page.evaluate((i) => (window as unknown as { __koGun: KoGun }).__koGun.slotlar[i].kuleKap.childElementCount, v.i), { timeout: 1500 }).toBe(0);
+      await page.waitForTimeout(250);
+      continue;
+    }
+    await p.dokun(d, d.adim === 'top' || d.adim === 'sos' || d.adim === 'sus' ? 14 : 0);
+    await page.waitForTimeout(d.adim === 'ye' ? 450 : 220);
+  }
+  await expect(page.locator('.ko-aksam')).toBeVisible({ timeout: 20000 });
+  return surukleme;
+}
+
+for (const boy of TELEFON) {
+  test.describe(`Kino’nun Otobüsü telefon ${boy.ad}`, () => {
+    test.use({ viewport: boy.viewport, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+    test.beforeEach(({}, info) => test.skip(info.project.name !== 'iphone', 'telefon boyları ayrı veriliyor'));
+
+    for (const yas of ['kucuk', 'buyuk'] as const) {
+      test(`gerçek hızda üç gün (${yas}): kayan dokunuşlar top/sos koyar, kule müşteriye sürüklenir, herkes tam aynı`, async ({ page }) => {
+        test.setTimeout(420_000);
+        const hatalar = hataTopla(page);
+        await kayitla(page, yas);
+        for (const gun of [1, 2, 3]) {
+          await page.goto(`./kino-otobus/?onizleme=1&ekran=gun&gun=${gun}`);
+          await expect(page.locator(`.ko-gun[data-gun="${gun}"]`)).toBeVisible();
+          // beş dondurma da sürüklenerek verilir; beş müşteri de tam istediği gibi
+          expect(await gercekHizdaOyna(page)).toBe(5);
+          expect(((await yerelKayit(page)) as { mutlu?: Record<string, number> }).mutlu?.[String(gun)]).toBe(5);
+        }
+        expect(hatalar.filter(agDisi)).toEqual([]);
+      });
+    }
+
+    test('müşterisi gitmiş yuvadaki dondurma öbür bekleyen müşteriye sürüklenir', async ({ page }) => {
+      test.setTimeout(240_000);
+      const hatalar = hataTopla(page);
+      await page.goto('./kino-otobus/?test=1&sifirla=1&ekran=gun&gun=1&yas=kucuk');
+      await expect(page.locator('.ko-musteri.ko-hazir').first()).toBeVisible({ timeout: 20000 });
+      // sıra bitene kadar parlayanı izle; tek müşteri kalınca dur
+      for (let n = 0; n < 400; n++) {
+        const d = JSON.parse((await page.locator('.ko-gun').getAttribute('data-durum')) ?? '{}') as { kuyruk: number };
+        if (d.kuyruk === 0 && (await page.locator('.ko-musteri').count()) === 1 && (await page.locator('.ko-musteri.ko-hazir:not(.ko-bitti)').count()) === 1) break;
+        await page.locator('.ko-gun .ko-sirada').first().click({ timeout: 2000 }).catch(() => undefined);
+        await page.waitForTimeout(60);
+      }
+      const bos = await page.evaluate(() => (window as unknown as { __koGun: KoGun }).__koGun.slotlar.find((s) => !s.musteri)!.i);
+      const sip = JSON.parse((await page.locator('.ko-musteri').getAttribute('data-siparis'))!) as { istek: { kap: string; toplar: string[]; sos: string | null }[] };
+      // çocuk müşterisi olmayan yuvada yapar
+      await page.locator(`.ko-yuva[data-yuva="${bos}"]`).click({ position: { x: 20, y: 30 } });
+      await expect(page.locator(`.ko-yuva[data-yuva="${bos}"]`)).toHaveClass(/ko-aktif/);
+      await page.locator(`.ko-kap-dugme[data-kap="${sip.istek[0].kap}"]`).click();
+      for (const t of sip.istek[0].toplar) await page.locator(`.ko-tat[data-tat="${t}"]`).click();
+      if (sip.istek[0].sos) await page.locator(`.ko-sos[data-sos="${sip.istek[0].sos}"]`).click();
+      // ver düğmesi o yuvada da çıkar (dondurma bekleyen müşteriye gider)
+      await expect(page.locator(`.ko-yuva[data-yuva="${bos}"] .ko-ver`)).toBeVisible();
+      const p = await parmak(page);
+      const a = await orta(page, `.ko-yuva[data-yuva="${bos}"] .ko-kule`);
+      const z = await page.evaluate(() => {
+        const r = (window as unknown as { __koGun: KoGun }).__koGun.slotlar.find((s) => s.musteri)!.musteri!.yuz().yuz!;
+        return { x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2 };
+      });
+      await p.surukle(a, z);
+      await expect(page.locator('.ko-musteri[data-sonuc="ayni"]')).toHaveCount(1, { timeout: 5000 });
+      await expect(page.locator('.ko-aksam')).toBeVisible({ timeout: 20000 });
+      expect(hatalar.filter(agDisi)).toEqual([]);
+    });
+
+    test('müşteriler pencereye göre ölçülü, yüzleri tezgâhın üstünde ve okunur', async ({ page }) => {
+      const hatalar = hataTopla(page);
+      for (const gun of [1, 2, 3]) {
+        await page.goto(`./kino-otobus/?test=1&sifirla=1&ekran=gun&gun=${gun}&yas=buyuk`);
+        await expect(page.locator('.ko-musteri.ko-hazir')).toHaveCount(gun === 1 ? 1 : 2, { timeout: 20000 });
+        await page.waitForTimeout(300);
+        const olcu = await page.evaluate(() => {
+          const g = (window as unknown as { __koGun: KoGun }).__koGun;
+          const pen = document.querySelector('.ko-pencere')!.getBoundingClientRect();
+          return g.slotlar.flatMap((s) => {
+            const y = s.musteri?.yuz().yuz;
+            return y ? [{ ust: y.top, alt: y.bottom, en: y.right - y.left, penUst: pen.top, penAlt: pen.bottom, penBoy: pen.height }] : [];
+          });
+        });
+        expect(olcu.length).toBeGreaterThan(0);
+        for (const o of olcu) {
+          // yüz tezgâh çizgisinin (pencerenin alt kenarı) üstünde ve okunur boyda
+          expect(o.alt).toBeLessThanOrEqual(o.penAlt + 1);
+          expect(o.en).toBeGreaterThanOrEqual(28);
+          // yatay telefonda karakter pencereyi doldurmaz: yüzün üstünde pencerenin en az %25'i boş kalır
+          if (boy.ad === 'yatay') expect((o.ust - o.penUst) / o.penBoy).toBeGreaterThanOrEqual(0.25);
+        }
+        if (gun === 2) await page.screenshot({ path: `tests/screens/kino-otobus-telefon-${boy.ad}.png` });
+      }
+      expect(hatalar.filter(agDisi)).toEqual([]);
+    });
+  });
+}
