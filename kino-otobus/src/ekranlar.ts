@@ -1,11 +1,12 @@
 /**
- * Kino'nun Otobüsü: açılış (parkta otobüs, yaş seçimi, üç gün) ve akşam (kumbara sayımı, otobüs süs dükkânı).
- * Kilitler: Gün 1 ücretsiz, Gün 2-3 ve ilk iki süsten sonrakiler abonelikle (src/engine/erisim.ts); yaş ayarı
- * kilitlenmez. Web sitesinde hiçbir şey kilitli değil.
+ * Kino'nun Otobüsü: açılış (parkta otobüs, yaş seçimi, üç gün) ve gün sonu ödülü (V3 §5: üç kart, tek seçim).
+ * Kilitler: Gün 1 ücretsiz, Gün 2-3 ve her kategorinin ilk ödülünden sonrakiler abonelikle (src/engine/erisim.ts →
+ * kino-otobus/*); yaş ayarı kilitlenmez. Web sitesinde hiçbir şey kilitli değil.
  */
 import K from '../../content/kino-otobus.json';
 import { erisimVarMi, kilitleriKur } from '../../src/abonelik/kilit';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
+import { kilitli } from '../../src/engine/erisim';
 import { bekle, h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
@@ -13,22 +14,20 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { KALP, KILIT, KINO_KIRAZ_SAPKA } from './cizim';
 import { AZ_HAREKET, Efekt, salla } from './efekt';
 import { manzara } from './gun';
+import { ozelSecimi } from './gun-ek';
 import { gunBitti, kaydet, kayit } from './kayit';
-import { alinabilir, dukkan, GUN_SAYISI, GUNLER, sayim, satinAl, type Gun, type OtobusSusu, type Yas } from './model';
+import { kuleCiz } from './kule';
+import { GUN_SAYISI, GUNLER, gunOdulleri, odulAl, OTOBUS_SUSLERI, type Gun, type OdulKarti, type OtobusSusu, type Sus, type Tat, type Yas } from './model';
 import { dondurmaciKino, kinoGiydir, otobusEl, otobusGuncelle, kapakAc } from './otobus';
 import { ses } from './sesler';
-import { adres, gorsel, type VarlikAdi } from './varliklar';
+import { adres, gorsel, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
 
 const A = K.arayuz;
+const sapkali = () => kayit.acilan.gorunum.includes('kino-sapka');
 
 function logo(): HTMLElement {
   const harfler = [...A.baslik_alt].map((c, i) => h('span', { style: `--i:${i}` }, c));
   return h('div.ko-logo', { role: 'img', 'aria-label': `${A.baslik_ust} ${A.baslik_alt}` }, h('span.ko-logo-ust', {}, A.baslik_ust), h('span.ko-logo-alt', {}, ...harfler));
-}
-
-/** Kumbara rozeti: kavanoz ve içindeki jeton */
-function kumbaraRozet(): HTMLElement {
-  return h('div.ko-kumbara-rozet', { role: 'img', 'aria-label': `Kumbara: ${kayit.jeton}` }, h('span.ko-kr-ikon', { html: gorsel('kumbara-kavanoz') }), h('b', {}, String(kayit.jeton)));
 }
 
 /** Yaş seçimi: iki büyük düğme (3-4, 5-6). İlk açılışta kendiliğinden; sonra üst çubuktaki küçük yaş düğmesiyle. */
@@ -63,14 +62,14 @@ function yasSec(kok: HTMLElement, bitti: (y: Yas) => void) {
 
 // ---------------------------------------------------------------- Açılış
 export function acilisEkrani(app: Uygulama): Ekran {
-  const kino = dondurmaciKino(kayit.alinan.includes('kino-sapka'));
+  const kino = dondurmaciKino(sapkali());
   kino.el.addEventListener('pointerdown', () => {
     efekt.dokunma();
     void kino.oynat('sevin', 900);
   });
-  const otobus = otobusEl({ alinan: kayit.alinan, boya: kayit.boya, acik: true, sinif: 'ko-acilis-otobus' });
+  const otobus = otobusEl({ alinan: kayit.acilan.gorunum, boya: kayit.boya, acik: true, sinif: 'ko-acilis-otobus' });
   otobus.addEventListener('pointerdown', () => {
-    if (kayit.alinan.includes('korna')) ses.dondurmaKorna();
+    if (kayit.acilan.gorunum.includes('korna')) ses.dondurmaKorna();
     else ses.korna();
     salla(otobus, 'ko-zipla');
   });
@@ -103,6 +102,11 @@ export function acilisEkrani(app: Uygulama): Ekran {
       efekt.secim();
       salla(b, 'ko-zipla');
       await bekle(sure(200));
+      // sabah: iki ya da daha çok yeni tat açıldıysa Kino kapları dizer, çocuk bugünün özel tadını seçer
+      if (kayit.acilan.tat.length >= 2) {
+        kayit.ozelTat = await ozelSecimi(el, kayit.acilan.tat.slice(-3));
+        kaydet();
+      }
       if (!kapali) app.git('gun', { gun: g });
     });
     return b;
@@ -114,7 +118,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
     'div.ko-acilis',
     {},
     manzara('park'),
-    h('div.ust-cubuk.ko-ust', {}, cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => cikis(), 'kucuk') : h('div', { style: 'width:56px' }), h('div.orta'), yasDugme, kumbaraRozet(), sesDugmesi()),
+    h('div.ust-cubuk.ko-ust', {}, cikis ? yuvarlakDugme(IKON.geri, 'Minkino’ya dön', () => cikis(), 'kucuk') : h('div', { style: 'width:56px' }), h('div.orta'), yasDugme, sesDugmesi()),
     h('div.ko-acilis-ic', {}, logo(), h('div.ko-acilis-sahne', {}, otobus, h('div.ko-acilis-kino', {}, kino.el)), h('div.ko-gunler', {}, ...kartlar)),
   );
   yasDugme.addEventListener('click', () => {
@@ -135,195 +139,185 @@ export function acilisEkrani(app: Uygulama): Ekran {
   };
 }
 
-// ---------------------------------------------------------------- Akşam
-/** Dükkândaki süsün resmi */
+// ---------------------------------------------------------------- Gün sonu ödülü (üç kart)
+/** Görünüm süsünün resmi (otobüs süsü, boya kovası, korna, Kino'nun kiraz şapkası) */
 function susResmi(s: OtobusSusu): string {
   const ad: Partial<Record<OtobusSusu['tur'], VarlikAdi>> = { tabela: 'sus-kemik-tabela', flama: 'sus-flama', kulah: 'sus-cati-kulah', ampul: 'sus-ampul', jant: 'sus-jant' };
   if (s.tur === 'boya') return `<i class="ko-boya-kova" data-boya="${s.deger}"></i>`;
   if (s.tur === 'korna') return `<i class="ko-korna-ikon">${svg(IKON.hoparlor).outerHTML}</i>`;
-  // Kino'nun kiraz tepeli şapkası: görseli yoksa iskeletteki kod çizimiyle aynı
   if (s.tur === 'sapka') return adres('sus-kino-kiraz-sapka') ? gorsel('sus-kino-kiraz-sapka') : `<svg class="ko-yt" viewBox="770 30 420 420" aria-hidden="true">${KINO_KIRAZ_SAPKA}</svg>`;
   return gorsel(ad[s.tur]!);
 }
 
-export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; mutlu?: number; kaydedildi?: boolean } = {}): Ekran {
+/** Kartın büyük resmi (yazı ve fiyat yok): tat kabı ve üstünde top; süs bir külahın tepesinde; görünüm; ısmarla kupası */
+function kartResmi(k: OdulKarti): HTMLElement {
+  const r = h('span.ko-kart-resim');
+  if (!k.id) {
+    const kule = kuleCiz({ kap: 'kupa', toplar: ['cilek', 'vanilya', 'cikolata'], sos: 'cilek', susler: ['kiraz'] }, { sinif: 'ko-kart-kule' });
+    r.append(kule);
+  } else if (k.kategori === 'tat') {
+    r.append(h('span.ko-kart-kap', { html: gorsel(tatKabiAdi(k.id as Tat)) }), h('span.ko-kart-top', { html: gorsel(topAdi(k.id as Tat)) }));
+  } else if (k.kategori === 'sus') {
+    r.append(kuleCiz({ kap: 'kulah', toplar: ['vanilya'], sos: null, susler: [k.id as Sus, k.id as Sus] }, { sinif: 'ko-kart-kule' }));
+  } else {
+    r.innerHTML = susResmi(OTOBUS_SUSLERI.find((s) => s.id === k.id)!);
+  }
+  return r;
+}
+/** Kartın adı (Mino söyler) */
+function kartAdi(k: OdulKarti): string {
+  const O = K.mino.odul as unknown as Record<string, Record<string, string>>;
+  return k.id ? O[k.kategori][k.id] : K.mino.odul.ismarla;
+}
+/** Kartın kilidi: kategorinin ilk ödülü ve ısmarla ücretsiz; sonrakiler abonelikle */
+const kartKilidi = (k: OdulKarti) => (k.ilk || !k.id ? null : 'kino-otobus/odul');
+
+export function odulEkrani(app: Uygulama, p: { gun?: number; mutlu?: number; kaydedildi?: boolean } = {}): Ekran {
   const gun = Math.max(1, Math.min(GUN_SAYISI, Math.floor(p.gun ?? 1))) as Gun;
-  const kazanc = Math.max(0, Math.floor(p.kazanc ?? 0));
-  const yas = kayit.yas ?? 'kucuk';
-  // günün jetonları son müşteri ödeyince kaydedildi (gun.ts → gunuKaydet); sayım yalnız gösterir. Test kısayolunda
-  // (?test=1&ekran=aksam) burada kaydedilir.
-  const oncesi = p.kaydedildi ? Math.max(0, kayit.jeton - kazanc) : kayit.jeton;
+  // gün son müşteri ödeyince kaydedildi (gun.ts → gunuKaydet); test kısayolunda (?test=1&ekran=odul) burada
   if (!p.kaydedildi) {
-    gunBitti(kayit, gun, kazanc, p.mutlu ?? 0);
+    gunBitti(kayit, gun, p.mutlu ?? 0);
     kaydet();
   }
   let kapandi = false;
   const efekt_ = new Efekt(app.kok);
-  const kino = dondurmaciKino(kayit.alinan.includes('kino-sapka'));
-  const otobus = otobusEl({ alinan: kayit.alinan, boya: kayit.boya, acik: true, sinif: 'ko-aksam-otobus' });
+  const kino = dondurmaciKino(sapkali());
+  const otobus = otobusEl({ alinan: kayit.acilan.gorunum, boya: kayit.boya, acik: true, sinif: 'ko-aksam-otobus' });
   otobus.addEventListener('pointerdown', () => {
-    if (kayit.alinan.includes('korna')) ses.dondurmaKorna();
+    if (kayit.acilan.gorunum.includes('korna')) ses.dondurmaKorna();
     else ses.korna();
     salla(otobus, 'ko-zipla');
   });
 
-  // tezgâhta günün jetonları (beşli sıralar, tezgâh çizgisinde)
-  const SIRA = 5;
-  const yigin = h(
-    'div.ko-aksam-jetonlar',
-    {},
-    // sıralar yarım jeton kaydırılır (tuğla gibi); konum burada hesaplanır (CSS calc'ta % işlemi yok)
-    ...Array.from({ length: kazanc }, (_, i) => {
-      const r = Math.floor(i / SIRA);
-      return h('i.ko-aksam-jeton', { html: gorsel('jeton'), style: `--x:${(i % SIRA) * 26 + (r % 2) * 13}px;--r:${r}` });
-    }),
+  const odulKartlari = gunOdulleri(kayit.acilan);
+  const kavanoz = h('div.ko-odul-kavanoz', { html: gorsel('kumbara-kavanoz') }, h('i.ko-kumbara-dolgu', { style: '--dolu:1' }));
+  const kartDugmeleri = odulKartlari.map((k, i) =>
+    h(
+      `button.ko-kart${k.id ? '' : '.ko-kart-ismarla'}`,
+      { type: 'button', 'data-kategori': k.kategori, 'data-id': k.id ?? 'ismarla', 'aria-label': kartAdi(k), style: `--i:${i}` },
+      h('span.ko-kart-ic', {}, kartResmi(k)),
+    ),
   );
-  const kumbaraSayi = h('b.ko-kumbara-sayi', {}, String(oncesi));
-  const kumbara = h('button.ko-kumbara.ko-aksam-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: gorsel('kumbara-kavanoz') }, kumbaraSayi);
-  const sayac = h('b.ko-sayac', { 'aria-hidden': 'true' });
-  const raf = h('div.ko-dukkan', { hidden: true });
-  const tamam = h('button.ko-tamam', { type: 'button', hidden: true, 'aria-label': A.bitti }, svg(IKON.onay));
+  const kartlar = h('div.ko-kartlar', {}, ...kartDugmeleri);
+  const tamam = h('button.ko-tamam.ko-odul-tamam', { type: 'button', hidden: true, 'aria-label': A.bitti }, svg(IKON.onay));
+  const kinoKap = h('div.ko-aksam-kino', {}, kino.el);
   const el = h(
-    'div.ko-aksam',
+    'div.ko-aksam.ko-odul',
     {},
     manzara(GUNLER[gun].yer),
     h('div.ko-aksam-gok', { 'aria-hidden': 'true' }),
     h('div.ust-cubuk.ko-ust', {}, h('div', { style: 'width:56px' }), h('div.orta', {}, h('div.baslik-balon.ko-aksam-baslik', {}, h('b.ko-aksam-no', { 'aria-label': A.gun.replace('{gun}', String(gun)) }, String(gun)))), sesDugmesi()),
-    h(
-      'div.ko-aksam-ic',
-      {},
-      h('div.ko-aksam-sahne', {}, otobus, h('div.ko-aksam-kino', {}, kino.el)),
-      h('div.ko-aksam-sag', {}, h('div.ko-aksam-tezgah', {}, yigin, h('div.ko-aksam-kavanoz', {}, h('i.ko-golge'), kumbara, sayac)), raf),
-      tamam,
-    ),
+    h('div.ko-aksam-ic', {}, h('div.ko-aksam-sahne', {}, otobus, kinoKap), h('div.ko-odul-sag', {}, kavanoz, kartlar), tamam),
     efekt_.el,
   );
+  const kilitBirak = kilitleriKur(
+    kartDugmeleri.flatMap((b, i) => {
+      const id = kartKilidi(odulKartlari[i]);
+      return id ? [[b, id] as [HTMLElement, string]] : [];
+    }),
+  );
 
-  let sayildi = kazanc === 0;
-  let sayimBasladi = false;
-  const kilitler: [HTMLElement, string][] = [];
-  let kilitBirak = () => {};
-  function rafCiz() {
-    kilitBirak();
-    kilitler.length = 0;
-    raf.replaceChildren(
-      ...dukkan(gun).map((u) => {
-        const alindi = kayit.alinan.includes(u.id);
-        const yeter = kayit.jeton >= u.fiyat;
-        const secili = u.tur === 'boya' && kayit.boya === u.deger;
-        const fiyat = h('span.ko-fiyat', { 'aria-hidden': 'true', 'data-fiyat': String(u.fiyat) }, ...Array.from({ length: u.fiyat }, (_, i) => h(`i${i < kayit.jeton ? '.ko-var' : ''}`, { html: gorsel('jeton') })));
-        const b = h(
-          `button.ko-dukkan-urun${alindi ? '.ko-alindi' : yeter ? '.ko-yeter' : '.ko-yetmez'}${secili ? '.ko-secili' : ''}`,
-          { type: 'button', 'data-sus': u.id, 'aria-label': `${u.id} ${u.fiyat}` },
-          h('span.ko-dukkan-resim', { html: susResmi(u) }),
-          alindi ? h('i.ko-dukkan-tamam', {}, svg(IKON.onay)) : fiyat,
-        );
-        if (!u.ucretsiz && !alindi) kilitler.push([b, 'kino-otobus/susler']);
-        b.addEventListener('click', () => void rafBas(u, b));
-        return b;
-      }),
-    );
-    kilitBirak = kilitleriKur(kilitler);
-  }
-  /** jetonları uçmakta olan süs: o sırada gelen ikinci dokunuş yeni alınanı geri almasın */
-  let ucan: string | null = null;
-  async function rafBas(u: OtobusSusu, b: HTMLElement) {
-    if (ucan === u.id) return;
-    if (kayit.alinan.includes(u.id)) {
-      // alınmış boya: otobüs o renge boyanır (bir daha dokununca buz mavisine döner)
-      if (u.tur === 'boya') {
-        kayit.boya = kayit.boya === u.deger ? 'buz' : u.deger!;
-        kaydet();
-        otobusGuncelle(otobus, { alinan: kayit.alinan, boya: kayit.boya, acik: true });
-        ses.tik();
-        rafCiz();
-      } else if (u.tur === 'korna') ses.dondurmaKorna();
-      else salla(b, 'ko-zipla');
-      return;
-    }
-    if (!u.ucretsiz && !erisimVarMi('kino-otobus/susler', app.kok)) return;
-    if (!alinabilir(kayit, u)) {
-      // yetmedi: "yeter mi?" fiyatın jetonları kumbaradakilerle karşılaştırılır
-      efekt.kilitli();
-      salla(b, 'ko-hayir');
-      return;
-    }
-    const k = efekt_.merkez(kumbara);
-    const hedef = efekt_.merkez(b);
-    satinAl(kayit, u.id);
-    if (u.tur === 'boya') kayit.boya = u.deger!;
-    kaydet();
-    kumbaraSayi.textContent = String(kayit.jeton);
-    ucan = u.id;
-    await Promise.all(Array.from({ length: u.fiyat }, (_, i) => efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), k, hedef, { ms: 420, gecikme: i * 60, kavis: -70, boy1: 0.4 })));
-    ucan = null;
-    if (kapandi) return;
-    efekt.kilitAcildi();
-    // süs otobüse anında takılır
-    otobusGuncelle(otobus, { alinan: kayit.alinan, boya: kayit.boya, acik: true });
-    const [ox, oy] = efekt_.merkez(otobus, 0.5, 0.45);
-    efekt_.parilti(ox, oy, 12);
-    efekt_.pof(ox, oy, 1.4);
-    salla(otobus, 'ko-zipla');
-    if (u.tur === 'korna') ses.dondurmaKorna();
-    if (u.tur === 'sapka') {
-      kinoGiydir(kino, true);
-      void kino.oynat('sevin', 900);
-    }
-    rafCiz();
-    salla(raf.querySelector(`[data-sus="${u.id}"]`), 'ko-zipla');
-  }
-
-  async function say() {
-    if (sayildi) return;
-    sayildi = true;
-    sayimBasladi = true;
-    kumbara.classList.remove('ko-cagir');
-    const { soz, adim } = sayim(kazanc, yas);
-    const jetonlar = [...yigin.children] as HTMLElement[];
-    const hedef = efekt_.merkez(kumbara, 0.5, 0.25);
-    let sayilan = 0;
-    for (let i = 0; i < adim.length && !kapandi; i++) {
-      const grup = jetonlar.splice(0, adim[i]);
-      const soyle = soz[i] ? konus(soz[i]) : Promise.resolve();
-      await Promise.all(
-        grup.map(async (j, k) => {
-          const bas = efekt_.merkez(j);
-          j.style.visibility = 'hidden';
-          await efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), bas, hedef, { ms: 400, gecikme: k * 60, kavis: -80, boy1: 0.5, don: 200 });
-          ses.singir(k);
-        }),
-      );
-      sayilan += adim[i];
-      kumbaraSayi.textContent = String(oncesi + sayilan);
-      sayac.textContent = String(sayilan);
-      salla(sayac, 'ko-zipla');
-      salla(kumbara, 'ko-zipla');
-      await soyle;
-      await bekle(sure(120));
-    }
-    if (kapandi) return;
-    kumbaraSayi.textContent = String(kayit.jeton);
-    // sayım bitti: yandaki sayaç kalkar, tek sayı (kavanozdaki) kalır
-    sayac.hidden = true;
-    efekt.dogru();
-    efekt_.parilti(hedef[0], hedef[1], 10, 0.8, '#FFE45C');
-    await dukkanAc();
-  }
-
-  async function dukkanAc() {
-    rafCiz();
-    raf.hidden = false;
-    tamam.hidden = false;
-    el.classList.add('ko-dukkan-acik');
-    void kino.oynat('sevin', 800);
-    await konus(K.mino.susleyelim);
-  }
-
-  kumbara.addEventListener('click', () => {
+  let secilen = false;
+  let onizlenen: HTMLElement | null = null;
+  /** İlk dokunuş: ön izleme (Mino adını söyler, Kino tadına bakar ya da süsü gösterir); ikinci dokunuş: seçim */
+  async function kartBas(b: HTMLElement, k: OdulKarti) {
+    if (secilen || kapandi || !el.classList.contains('ko-kartlar-acik')) return;
+    const kilit = kartKilidi(k);
+    if (kilit && !erisimVarMi(kilit, app.kok)) return;
     efekt.dokunma();
-    if (!sayildi) void say();
-    else salla(kumbara, 'ko-zipla');
+    if (onizlenen !== b) {
+      onizlenen?.classList.remove('ko-onizleme');
+      onizlenen = b;
+      b.classList.add('ko-onizleme');
+      salla(b, 'ko-zipla');
+      void konus(kartAdi(k));
+      // Kino tadına bakar (tat, ısmarla) ya da süsü havada gösterir
+      void kino.oynat(k.kategori === 'tat' || !k.id ? 'ye' : 'sevin', 800);
+      if (kino.ifadeVar('heyecan')) kino.ifade('heyecan', 800);
+      return;
+    }
+    await sec(b, k);
+  }
+  /** Seçim: kart yerine uçar (tat dolaba, süs rafa, görünüm otobüse / Kino'ya); öbürleri kavanoza geri girer */
+  async function sec(b: HTMLElement, k: OdulKarti) {
+    if (secilen) return;
+    secilen = true;
+    el.classList.add('ko-secildi');
+    b.classList.add('ko-secilen');
+    efekt.dogru();
+    const { boya } = odulAl(kayit.acilan, k);
+    if (boya) kayit.boya = boya;
+    if (k.id && k.kategori === 'tat') {
+      kayit.ozelTat = k.id as Tat;
+      kayit.yeni = { tat: k.id as Tat };
+    } else if (k.id && k.kategori === 'sus') kayit.yeni = { sus: k.id as Sus };
+    kaydet();
+    const bas = efekt_.merkez(b);
+    const hedef = k.kategori === 'gorunum' && k.id === 'kino-sapka' ? efekt_.merkez(kino.el, 0.5, 0.2) : efekt_.merkez(otobus, 0.5, 0.5);
+    // öbür kartlar küçülüp kavanoza girer
+    const kv = efekt_.merkez(kavanoz, 0.5, 0.4);
+    for (const o of kartDugmeleri) {
+      if (o === b) continue;
+      const r = efekt_.merkez(o);
+      o.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${(kv[0] - r[0]).toFixed(0)}px, ${(kv[1] - r[1]).toFixed(0)}px) scale(0.15)`, opacity: 0 }], { duration: sure(520), easing: 'ease-in', fill: 'forwards' });
+    }
+    const resim = b.querySelector('.ko-kart-resim')!.cloneNode(true) as HTMLElement;
+    resim.style.width = `${b.getBoundingClientRect().width * 0.7}px`;
+    b.style.visibility = 'hidden';
+    await efekt_.ucur(h('div.ko-ucan-kart', {}, resim), bas, hedef, { ms: 620, kavis: -80, boy0: 1, boy1: 0.4 });
+    if (kapandi) return;
+    efekt_.parilti(hedef[0], hedef[1], 10, 0.8, '#FFE45C');
+    efekt_.pof(hedef[0], hedef[1], 1.1);
+    otobusGuncelle(otobus, { alinan: kayit.acilan.gorunum, boya: kayit.boya, acik: true });
+    salla(otobus, 'ko-zipla');
+    if (k.id === 'korna') ses.dondurmaKorna();
+    if (k.id === 'kino-sapka') kinoGiydir(kino, true);
+    // Kino seçilene tepki verir
+    if (!k.id) {
+      // Kino'ya dondurma ısmarla: kocaman kupayı bir dikişte yer, beyni donar, titrer, güler
+      void kino.oynat('ye', 900);
+      await bekle(sure(900));
+      salla(kinoKap, 'ko-titre');
+      kino.konus(true);
+      await konus(K.kino.beyin, KINO_SESI);
+      kino.konus(false);
+    } else if (k.kategori === 'tat') {
+      void kino.oynat('ye', 900);
+      if (kino.ifadeVar('keyif')) kino.ifade('keyif', 1000);
+      kino.konus(true);
+      await konus((K.kino as Record<string, string>)[`tat_${k.id}`] ?? K.kino.dondurma, KINO_SESI);
+      kino.konus(false);
+    } else {
+      void kino.oynat('sevin', 900);
+      await konus(kartAdi(k));
+    }
+    if (kapandi) return;
+    void konus(K.mino.odul.yarina);
+    tamam.hidden = false;
+  }
+  kartDugmeleri.forEach((b, i) => {
+    b.addEventListener('click', () => void kartBas(b, odulKartlari[i]));
+    // kartı otobüse sürüklemek de seçer (dokunuş gibi; kilit aynı)
+    let x0 = 0;
+    let y0 = 0;
+    let surukleniyor = false;
+    b.addEventListener('pointerdown', (e) => {
+      x0 = e.clientX;
+      y0 = e.clientY;
+      surukleniyor = true;
+    });
+    b.addEventListener('pointerup', (e) => {
+      if (!surukleniyor) return;
+      surukleniyor = false;
+      const r = otobus.getBoundingClientRect();
+      const uzak = Math.hypot(e.clientX - x0, e.clientY - y0) > 30;
+      if (uzak && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+        const k = odulKartlari[i];
+        const kilit = kartKilidi(k);
+        if (kilit && !erisimVarMi(kilit, app.kok)) return;
+        void sec(b, k);
+      }
+    });
   });
 
   tamam.addEventListener('click', async () => {
@@ -346,14 +340,18 @@ export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; m
     if (!kapandi) app.git('acilis');
   });
 
+  // açılış: Kino kavanozu sallar, jetonlar yay çizerek kartların üstüne yağar, kartlar arkadan öne sekerek açılır
   void (async () => {
     await bekle(sure(300));
     if (kapandi) return;
-    if (kazanc > 0) {
-      if (sayimBasladi) return;
-      kumbara.classList.add('ko-cagir');
-      await konus(K.mino.kumbara);
-    } else await dukkanAc();
+    salla(kavanoz, 'ko-titre');
+    void kino.oynat('sevin', 900);
+    ses.singir(0);
+    const kv = efekt_.merkez(kavanoz, 0.5, 0.3);
+    await Promise.all(kartDugmeleri.map((b, i) => efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), kv, efekt_.merkez(b, 0.5, 0.3), { ms: 480, gecikme: i * 120, kavis: -70, boy0: 0.8, boy1: 0.6 }).then(() => !kapandi && ses.singir(i + 1))));
+    if (kapandi) return;
+    el.classList.add('ko-kartlar-acik');
+    void konus(K.mino.odul.hangisi);
   })();
 
   return {
@@ -365,3 +363,6 @@ export function aksamEkrani(app: Uygulama, p: { gun?: number; kazanc?: number; m
     },
   };
 }
+
+/** Bu kart kilitli mi (test / gösterim) */
+export const odulKilitliMi = (k: OdulKarti) => !!kartKilidi(k) && kilitli(kartKilidi(k)!);

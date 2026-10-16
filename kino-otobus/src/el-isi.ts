@@ -4,7 +4,7 @@
  * - Dokunsal hazırlık: kepçe tatta sürüklendikçe top büyür; sos şişesi kulenin üstünde tutuldukça sos akar; serpinti
  *   kavanozu kulenin üstünde sallandıkça serpinti yağar. Her birinin dokunuş karşılığı var (gun.ts eski dokunuşlar).
  * - Yan işler (isteğe bağlı, hiçbir şeyi beklemez, süre ve hata yok): tezgâhı silme (lekeler, 5-6'da sinek), külah
- *   yapma (5-6'da önce hamur dökülür) ve külahları rafa dizme. Külah hiç bitmez: az kalınca iş köşesi parlar.
+ *   yapma (5-6'da önce hamur dökülür) ve külahları rafa dizme. Külah biter (rafta 3 yuva): yap ya da kâse ver (V3 §3).
  */
 import type { Yas } from './model';
 
@@ -111,12 +111,18 @@ export function lekelerUret(yas: Yas, tohum = 0): Leke[] {
 }
 
 // ---------------------------------------------------------------- külah stoğu ve külah yapımı
-/** Külah rafı: gün başında az (sabah hazırlığı), en çok 4; hiç bitmez (en az 1: Kino tezgâhın altından alır) */
-export const KULAH_STOK = { bas: 2, dolu: 4, az: 2, enAz: 1 } as const;
+/**
+ * Külah rafı (V3 §3): 3 yuvalı tahta raf, gün başında 2 külah. Külah BİTER: biten külah ya yapılır (makine, 3 taze
+ * külah) ya da müşteriye kâse verilir; çocuğun kararı. Kâse ve kupa sınırsız.
+ */
+export const KULAH_STOK = { bas: 2, dolu: 3, enAz: 0 } as const;
 export const kulahKullan = (stok: number) => Math.max(KULAH_STOK.enAz, stok - 1);
-export const kulahAzMi = (stok: number) => stok <= KULAH_STOK.az;
-/** Bir külah yapımı rafı doldurur */
+export const kulahVarMi = (stok: number) => stok > 0;
+/** Bir külah yapımı rafı doldurur (3 taze külah) */
 export const kulahYap = () => KULAH_STOK.dolu;
+/** Külah isteyen müşteri rafta külah yokken bu kadar bekleyince makineye bakar; makine ancak bundan sonra parlar (ms) */
+export const KULAH_BAK_MS = 12000;
+export const KULAH_PARLA_MS = 20000;
 
 export type KulahAdimi = 'hamur' | 'bas' | 'yuvarla';
 /** Külah yapımının adımları: 3-4 kapağı bas ve yuvarla (hamur hazır); 5-6 önce hamuru kendisi döker */

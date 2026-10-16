@@ -5,16 +5,20 @@
  *
  * Akış (hiç bekleme yok, her istasyon her an açık): kap seç (dokunduğun son yuva etkin) → tat kabına dokun (her
  * dokunuş bir top; Kino kepçeler, top yay çizerek uçar, "pof") → sos → süs → yeşil "ver" düğmesine dokun ya da
- * kuleyi müşteriye sürükle. Yanlış top: kuleye dokun, Kino en üsttekini yer. Kontrol: aynıysa kalpler ve 3 jeton;
- * farklıysa farklı parça balonda parlar, 2 jeton. Ret, ağlama, sabır sayacı yok.
- * Sıradaki işin yeri hafifçe parlar; 5 sn dokunulmazsa minik el. Gün 1'in ilk müşterisi Mino: her adımda el hemen
- * görünür, "Şimdi buna dokun!". Yakın çekimler (istek, kule, tadım, Kino'nun yemesi) ≤ 1 sn, dokununca hemen biter.
+ * kuleyi müşteriye sürükle. Yanlış top: kuleye dokun, Kino en üsttekini yer. Ret, ağlama, sabır sayacı yok.
+ *
+ * V3 (ekip/senaryo/KINO-OTOBUS-V3.md): üç tür istek (resimli, ipuçlu, sürpriz), müşterinin zevki (bayıldı / mmm /
+ * komik), külah biter (yap ya da kâse ver), her müşteri top sayısı kadar jeton bırakır (çocuk dokundukça Mino sayar),
+ * kumbara dolunca gün sonu üç kart (app.git('odul')). "Şuna dokun" yok: ipucu merdiveni 12 sn bakış, 20 sn Mino
+ * durumu anlatır, 30 sn parlama, 40 sn el. Yakın çekim (zoom) yok: poz ve yüz değişimi, ezilme-esneme. Gizli
+ * sürprizler (§8): külah zinciri, dolap camı, kumbara hokkabazlığı, kaçan balon, Lokum'un burnu, Zıpzıp, Tombi'nin
+ * külahı, kara tahta, Kino'nun hapşırığı ve şapkası.
  */
 import K from '../../content/kino-otobus.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import type { Soylenecek } from '../../src/audio/konusma';
 import { arkaPlanDinle } from '../../src/kabuk/yon';
-import { birlesim, genislet, kaydir, kavisKacir, yuzKutulari, type Kutu } from '../../src/karakter/yuz';
+import { birlesim, yuzKutulari } from '../../src/karakter/yuz';
 import { Mino } from '../../src/mino/mino';
 import { h, sure, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
@@ -25,24 +29,36 @@ import { KALP } from './cizim';
 import { ekranMerkez, elSurukle, icinde, Tutulan } from './dokunsal';
 import { dolapBuhari, duvarSusleri, kulahZinciri, sicakIsik } from './dukkan-ic';
 import { AZ_HAREKET, Efekt, ekranSalla, salla } from './efekt';
-import { KULAH_STOK, kepceBirak, kepceDolum, kulahAzMi, kulahKullan, kulahYap, lekeDuserMi, Sallama, SALLAMA_GEREK, sosDolum } from './el-isi';
+import { KULAH_BAK_MS, KULAH_PARLA_MS, KULAH_STOK, kepceBirak, kepceDolum, kulahKullan, kulahVarMi, kulahYap, lekeDuserMi, Sallama, SALLAMA_GEREK, sosDolum } from './el-isi';
 import { isKosesi, KulahPaneli, kulahYigini, Temizlik, type IsOrtami } from './isler';
-import { gunBitti as kayitGunBitti, kaydet, kayit } from './kayit';
+import { gorulduYaz, gunBitti as kayitGunBitti, kaydet, kayit } from './kayit';
 import { kuleCiz, kuleOlcu } from './kule';
 import {
+  acikGun,
   bosYuva,
-  GUNLER,
+  durumSozu,
+  durumTopSozu,
+  tatSozu,
+  etiketsiz,
   gunPlani,
-  jetonHesapla,
+  KUMBARA_HEDEF,
   kapKoy,
+  musteriSozu,
+  musteriTanim,
+  odeme,
   okuma,
+  rastgeleUret,
+  sayiSecenekleri,
+  sayiSozu,
   secimiIlerlet,
   siparisSonucu,
   SOS_RENK,
   sosKoy,
   susKoy,
+  tepkiHesapla,
   topKoy,
   verilebilir,
+  yalnizKapFarkli,
   ye,
   yuvaIsi,
   type Dondurma,
@@ -50,30 +66,40 @@ import {
   type Is,
   type Kap,
   type Katman,
+  type Siparis,
   type Sos,
   type Sus,
   type Tat,
+  type Tepki,
   type Yer,
   type Yuva,
 } from './model';
+import { iskeletVar } from '../../src/karakter/karakter';
+import { kitVar } from './kit-musteri';
 import { kutuOlcu, Musteri } from './musteri';
 import { dondurmaciKino, otobusAdresleri, otobusEl } from './otobus';
 import { ses } from './sesler';
-import { adres, DOLAP_GOZLERI, dolapYerleri, gorsel, IC_ARKA_CERCEVE, kapAdi, manzaraAdres, sosSiseAdi, sosUstAdi, susAdi, susRafAdi, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
+import { adres, DOLAP_GOZLERI, dolapYerleri, duraganResim, gorsel, IC_ARKA_CERCEVE, kapAdi, manzaraAdres, sosSiseAdi, sosUstAdi, susAdi, susRafAdi, tatKabiAdi, topAdi, type VarlikAdi } from './varliklar';
+import { KUMBARA_CENTIK, lokumSesi } from './gun-ek';
 import { onYukle, resimleriTopla } from './yukle';
 
 const q = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
 const ozelMi = () => TEST_MODU || (typeof document !== 'undefined' && !!document.body?.dataset.onizleme);
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, AZ_HAREKET ? Math.min(ms, 200) : sure(ms)));
-/** Dokunulmazsa el ipucu bu kadar sonra çıkar (ms) */
-const IPUCU_MS = 5000;
+/**
+ * İpucu merdiveni (V3 §7; son dokunuştan sayılır): 12 sn müşteri eksik şeye bakar, 20 sn Mino durumu bir daha
+ * anlatır, 30 sn eksik şey hafifçe parlar, 40 sn minik el. Parlama 30 sn'den önce hiç çıkmaz.
+ */
+export const IPUCU = { bak: 12000, anlat: 20000, parla: 30000, el: 40000 } as const;
+/** Jetonlara dokunulmazsa kumbara bu kadar sonra hafifçe sallanır (dolaylı) */
+const JETON_SALLA_MS = 12000;
 /** Karakter ölçeği (müşteriler, Kino): pencerenin kullanılan boy oranına göre (1: boydan sınırlı) */
 export const kisiOlcek = (oran: number) => (oran >= 0.9 ? 0.8 : oran <= 0.7 ? 1 : 1 - ((oran - 0.7) / 0.2) * 0.2);
 /** müşteri yuvalarının renkleri (kurdele): sol pembe, sağ nane */
 const YUVA_RENK = ['#FF8DB4', '#7FD6B0'];
 
 /** Sıradaki iş (parlama, test): istasyonun adı */
-export type AdimAdi = 'kap' | 'top' | 'sos' | 'sus' | 'ye' | 'ver' | 'sec' | 'yuva';
+export type AdimAdi = 'kap' | 'top' | 'sos' | 'sus' | 'ye' | 'ver' | 'sec' | 'yuva' | 'makine';
 
 /** Pencere manzarası: park, plaj (assets/film), doğum günü bahçesi (görseli yoksa park + kodla balonlar ve flama) */
 export function manzara(yer: Yer): HTMLElement {
@@ -111,15 +137,56 @@ interface Slot {
   tasiniyor: boolean;
   /** sürükleme sırasında ertelenen çizim */
   cizBekle: boolean;
+  /** yuvanın önündeki jeton sırası (müşterinin bıraktığı, kumbaraya gidecek) */
+  jetonSira: HTMLElement;
+  /** sırada bekleyen jeton */
+  jeton: number;
+  /** bu sıradan sayılan (Mino'nun sayısı) */
+  jetonSayilan: number;
+  /** jetonların indiği an (12 sn dokunulmazsa kumbara sallanır) */
+  jetonZaman: number;
+  /** son jetondan sonra "Kaç jeton oldu?" sorulacak (5-6) */
+  kacSor: boolean;
 }
 
 export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const gun = Math.max(1, Math.min(3, Math.floor(p.gun ?? 1))) as Gun;
   const yas = kayit.yas ?? 'kucuk';
-  const ayar = GUNLER[gun];
   const ozel = ozelMi();
-  const kuyruk = gunPlani(gun, yas);
+  // ödülle açılanlar tezgâhta: özel tat (iki ya da daha çoksa sabah seçilir; o zamana dek dünkü ya da son açılan),
+  // özel süs (son açılan)
+  const acTat = kayit.acilan.tat;
+  let ozelTat: Tat | null = kayit.ozelTat && acTat.includes(kayit.ozelTat) ? kayit.ozelTat : (acTat.at(-1) ?? null);
+  const ozelSus: Sus | null = kayit.acilan.sus.at(-1) ?? null;
+  const ayar = acikGun(gun, ozelTat, ozelSus);
+  const tohum = TEST_MODU && q.has('tohum') ? Number(q.get('tohum')) || 1 : Math.floor(Math.random() * 1e9);
+  // müşterinin resmi / iskeleti yoksa havuzdan düşer (G-OT1 kesimleri gelmeden de oyun çalışır)
+  const varMi = (ad: string) => {
+    const t = musteriTanim(ad);
+    if (!t) return false;
+    if (t.kaynak === 'kit') return kitVar(ad);
+    if (t.kaynak === 'duragan') return !!duraganResim(ad);
+    return t.kaynak === 'mino' || iskeletVar(ad);
+  };
+  const kuyruk: Siparis[] = gunPlani(gun, yas, {
+    tohum,
+    gorulen: kayit.gorulen,
+    ilk: !kayit.biten.length,
+    ozelTat,
+    ozelSus,
+    yeni: kayit.yeni,
+    varMi,
+    // test: belli müşteriler önce (sürprizler: ?musteriler=lokum,zipzip)
+    once: TEST_MODU ? (q.get('musteriler')?.split(',').filter(Boolean) ?? []) : [],
+  });
+  const plan = [...kuyruk];
   const TOPLAM = kuyruk.length;
+  gorulduYaz(
+    kayit,
+    plan.flatMap((s) => [s.musteri, s.ikinci ?? '']).filter((a) => a && a !== 'mino'),
+  );
+  kaydet();
+  const rastgele = rastgeleUret(tohum + 7);
   let kapandi = false;
   const zamanlar: number[] = [];
   const sonra = (ms: number, f: () => void) => zamanlar.push(window.setTimeout(() => !kapandi && f(), ms));
@@ -128,9 +195,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   let sira: Promise<void> = Promise.resolve();
   let bekleyenSoz = 0;
   const minolar = new Set<Mino>();
-  const kino = dondurmaciKino(kayit.alinan.includes('kino-sapka'));
-  /** Sırayla söyler: 'mino' anlatıcı (Mino'nun sesi), 'kino' Kino. onemli değilse ve sırada söz varsa söylenmez. */
-  const soyle = (soz: Soylenecek, kim: 'mino' | 'kino' = 'mino', onemli = true): Promise<void> => {
+  const kino = dondurmaciKino(kayit.acilan.gorunum.includes('kino-sapka'));
+  /**
+   * Sırayla söyler: 'mino' anlatıcı (Mino'nun sesi), 'kino' Kino, 'musteri' müşterinin hazır kaydı (dosya yolu).
+   * onemli değilse ve sırada söz varsa söylenmez.
+   */
+  const soyle = (soz: Soylenecek, kim: 'mino' | 'kino' | 'musteri' = 'mino', onemli = true): Promise<void> => {
     if (!onemli && bekleyenSoz > 0) return Promise.resolve();
     bekleyenSoz++;
     const is = sira.then(async () => {
@@ -190,7 +260,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     return b;
   });
   const susDugmeleri = ayar.susler.map((s) => {
-    const b = h('button.ko-raf-esya.ko-sus', { type: 'button', 'data-sus': s, 'aria-label': s, html: gorsel(susRafAdi(s)) });
+    const b = h(`button.ko-raf-esya.ko-sus${s === ozelSus ? '.ko-ozel' : ''}`, { type: 'button', 'data-sus': s, 'aria-label': s, html: gorsel(susRafAdi(s)) });
     b.addEventListener('click', () => susBas(s, b));
     surukleKaldir.push(s === 'serpinti' ? serpintiSurukle(b) : susSurukle(s, b));
     return b;
@@ -200,7 +270,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const raf = h('div.ko-raf', { 'data-n': String(rafEsya.length), style: `--sutun:${rafSutun}` }, ...rafEsya);
 
   // kaplar
-  // külah rafı: iç içe külahlar (sabah az; külah yapınca dolar, hiç bitmez)
+  // külah rafı: 3 yuvalı tahta raf (gün başında 2 külah; biter: yap ya da kâse ver)
   let kulahStok: number = KULAH_STOK.bas;
   const kapDugmeleri = ayar.kaplar.map((k) => {
     const b = h('button.ko-kap-dugme', { type: 'button', 'data-kap': k, 'aria-label': k, html: k === 'kulah' ? kulahYigini(kulahStok) : gorsel(kapAdi(k)) });
@@ -212,14 +282,14 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
 
   // dondurma dolabı: tat kapları (Gün 1 tek sıra, büyük); kepçeyle sürükleyince top oluşur
   const tatDugmeleri = ayar.tatlar.map((t) => {
-    const b = h('button.ko-tat', { type: 'button', 'data-tat': t, 'aria-label': t, html: gorsel(tatKabiAdi(t)) }, h('i.ko-kepce-yer'));
+    const b = h(`button.ko-tat${t === ozelTat ? '.ko-ozel' : ''}`, { type: 'button', 'data-tat': t, 'aria-label': t, html: gorsel(tatKabiAdi(t)) }, h('i.ko-kepce-yer'));
     b.addEventListener('click', () => tatBas(t, b));
     surukleKaldir.push(kepceSurukle(t, b));
     return b;
   });
   const dolapUrl = adres('dolap');
   const dolapIc = h('div.ko-dolap-ic', {}, ...tatDugmeleri, dolapBuhari());
-  const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 3 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}");--dolap-oran:${DOLAP_GOZLERI.oran.toFixed(4)}` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), dolapIc);
+  const dolap = h('div.ko-dolap', { 'data-sira': ayar.tatlar.length > 4 ? '2' : '1', style: dolapUrl ? `--dolap-url:url("${dolapUrl}");--dolap-oran:${DOLAP_GOZLERI.oran.toFixed(4)}` : undefined }, h('i.ko-dolap-cam', { 'aria-hidden': 'true' }), dolapIc);
   if (dolapUrl) {
     // Gemini dolabı: kaplar görseldeki gözlere (fazlası dolabın önüne) oturur (varliklar.ts → DOLAP_GOZLERI)
     dolap.classList.add('ko-resimli');
@@ -241,21 +311,39 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const slotlar: Slot[] = [0, 1].map((i) => {
     const kuleKap = h('div.ko-yuva-kule');
     const verDugme = h('button.ko-ver', { type: 'button', 'aria-label': 'Ver', hidden: true }, svg(IKON.onay));
-    const yuvaEl = h('div.ko-yuva', { 'data-yuva': String(i), style: `--kurdele:${YUVA_RENK[i]}` }, h('i.ko-kurdele', { 'aria-hidden': 'true' }), h('i.ko-yuva-altlik', { 'aria-hidden': 'true' }), kuleKap, verDugme);
-    return { i, musteri: null, yuva: bosYuva(), ucan: [new Set<number>(), new Set<number>()], mum: null, yerEl: slotEl[i].yerEl, balonYer: slotEl[i].balonYer, yuvaEl, kuleKap, verDugme, surukleBirak: [], atla: null, tasiniyor: false, cizBekle: false };
+    // jeton sırası: yuvanın önünde, tezgâh çizgisinde (bütün sıra tek dokunma kutusu)
+    const jetonSira = h('button.ko-jeton-sira', { type: 'button', 'data-yuva': String(i), 'aria-label': 'Jetonlar', hidden: true });
+    const yuvaEl = h('div.ko-yuva', { 'data-yuva': String(i), style: `--kurdele:${YUVA_RENK[i]}` }, h('i.ko-kurdele', { 'aria-hidden': 'true' }), h('i.ko-yuva-altlik', { 'aria-hidden': 'true' }), kuleKap, verDugme, jetonSira);
+    return { i, musteri: null, yuva: bosYuva(), ucan: [new Set<number>(), new Set<number>()], mum: null, yerEl: slotEl[i].yerEl, balonYer: slotEl[i].balonYer, yuvaEl, kuleKap, verDugme, surukleBirak: [], atla: null, tasiniyor: false, cizBekle: false, jetonSira, jeton: 0, jetonSayilan: 0, jetonZaman: 0, kacSor: false };
   });
   const yuvalar = h('div.ko-yuvalar', {}, ...slotlar.map((s) => s.yuvaEl));
 
-  // kumbara kavanozu (tezgâh çizgisinde, temas gölgesiyle)
+  // kumbara kavanozu (tezgâh çizgisinde, temas gölgesiyle): rakam yok; yan yüzünde üç çentik, jeton geldikçe içi
+  // yükselir (jeton yığını maskesi), dolunca kapağı "pıt" diye bir kez zıplar
   let bugun = 0;
-  const kumbaraSayi = h('b.ko-kumbara-sayi', {}, '0');
-  const kumbara = h('button.ko-kumbara', { type: 'button', 'aria-label': 'Kumbara', html: gorsel('kumbara-kavanoz') }, kumbaraSayi);
+  const HEDEF_JETON = KUMBARA_HEDEF[yas];
+  const kumbaraDolgu = h('i.ko-kumbara-dolgu', { 'aria-hidden': 'true', style: '--dolu:0' });
+  const kumbara = h(
+    'button.ko-kumbara',
+    { type: 'button', 'aria-label': 'Kumbara', html: gorsel('kumbara-kavanoz') },
+    kumbaraDolgu,
+    h('i.ko-kumbara-centik', { 'aria-hidden': 'true' }, ...KUMBARA_CENTIK.map((c) => h('i', { style: `--c:${c}` }))),
+  );
   // kumbaranın üstünde külah makinesi (iş köşesi): külah azalınca parlar, dokununca külah yapılır
   const kose = isKosesi(() => kulahPaneliAc());
   const kumbaraYer = h('div.ko-kumbara-yer', {}, kose.el, h('i.ko-golge', { 'aria-hidden': 'true' }), kumbara);
+  // kumbara: 5 hızlı dokunuşta Kino üç jetonla hokkabazlık yapar (gizli sürpriz)
+  const kumbaraDokunus: number[] = [];
   kumbara.addEventListener('click', () => {
     efekt.dokunma();
     salla(kumbara, 'ko-zipla');
+    const t = performance.now();
+    kumbaraDokunus.push(t);
+    while (kumbaraDokunus.length && t - kumbaraDokunus[0] > 2500) kumbaraDokunus.shift();
+    if (kumbaraDokunus.length >= 5) {
+      kumbaraDokunus.length = 0;
+      void hokkabaz();
+    }
   });
 
   // duvar süsleri (kara tahta, kavanoz rafı, lamba): sos rafının üstündeki boş duvara (olc → duvarYerlestir)
@@ -362,59 +450,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     efekt_.buzYildizi(e.clientX - k.left, e.clientY - k.top);
   });
 
-  // ---------------------------------------------------------------- yakın çekim (kamera; ≤ 1 sn, dokununca biter)
-  let yakinBitir: (() => void) | null = null;
-  let yutulacakTik = false;
-  const sonYakin = new Map<string, number>();
-  function yakin(hedef: Element, olcek: number, ad: string, o: { ms?: number; odak?: number | 'kino'; aralik?: number } = {}) {
-    if (TEST_MODU || AZ_HAREKET || yakinBitir || kapandi) return;
-    const simdi = performance.now();
-    if (simdi - (sonYakin.get(ad) ?? -1e9) < (o.aralik ?? 0)) return;
-    sonYakin.set(ad, simdi);
-    const k = kamera.getBoundingClientRect();
-    const r = hedef.getBoundingClientRect();
-    if (!k.width || !r.width) return;
-    const cx = r.left + r.width / 2 - k.left;
-    const cy = r.top + r.height / 2 - k.top;
-    const tx = Math.min(0, Math.max(k.width - k.width * olcek, k.width / 2 - cx * olcek));
-    const ty = Math.min(0, Math.max(k.height - k.height * olcek, k.height / 2 - cy * olcek));
-    const hedefT = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${olcek})`;
-    el.classList.add('ko-yakin');
-    el.dataset.odak = o.odak === undefined ? '' : String(o.odak);
-    const a = kamera.animate([{ transform: 'none' }, { transform: hedefT }], { duration: 300, easing: 'cubic-bezier(.3,.7,.3,1)', fill: 'forwards' });
-    const zaman = window.setTimeout(() => bitir(), 300 + (o.ms ?? 1000));
-    const bitir = () => {
-      if (yakinBitir !== bitir) return;
-      yakinBitir = null;
-      clearTimeout(zaman);
-      a.cancel();
-      kamera.animate([{ transform: hedefT }, { transform: 'none' }], { duration: 260, easing: 'ease-out' });
-      el.classList.remove('ko-yakin');
-      delete el.dataset.odak;
-    };
-    yakinBitir = bitir;
-  }
-  // yakın çekimdeyken dokunuş yalnız kamerayı geri açar (o dokunuşun tıklaması yutulur)
-  el.addEventListener(
-    'pointerdown',
-    (e) => {
-      if (!yakinBitir) return;
-      yakinBitir();
-      yutulacakTik = true;
-      e.stopPropagation();
-    },
-    true,
-  );
-  el.addEventListener(
-    'click',
-    (e) => {
-      if (!yutulacakTik) return;
-      yutulacakTik = false;
-      e.stopPropagation();
-      e.preventDefault();
-    },
-    true,
-  );
+  // yakın çekim (kamera zoom) yok (V3 §11): bütün anlar aynı ölçekte poz ve yüz değişimiyle; görsel kaynak pikselinin
+  // üstüne büyütülmez (src/ui/netlik.ts)
 
   // ---------------------------------------------------------------- Kino
   let kinoBas = -9;
@@ -447,19 +484,77 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     kinoBas = performance.now() / 1000;
     if (heyecan && kino.ifadeVar('heyecan')) kino.ifade('heyecan', 700);
   };
+  // Kino'ya dokunuş: 3. dokunuşta soğuktan hapşırır, 5.'de kiraz şapkası varsa şapka zıplar (gizli sürpriz)
+  let kinoDokunus = 0;
   kinoYer.addEventListener('click', () => {
     efekt.dokunma();
     kinoBas = performance.now() / 1000;
+    kinoDokunus++;
     void kino.oynat('sevin', 800);
     if (kino.ifadeVar('heyecan')) kino.ifade('heyecan', 900);
     const [x, y] = efekt_.merkez(kino.el, 0.5, 0.3);
     efekt_.kalpler(x, y, 2);
-    // bazen hapşırır (dondurma dolabı soğuk)
-    if (Math.random() < 0.25) {
+    if (kinoDokunus % 5 === 3) {
       ses.hapsu();
       efekt_.pof(x, y + 20, 0.6);
+      surpriz('hapsu');
+    } else if (kinoDokunus % 5 === 0 && kayit.acilan.gorunum.includes('kino-sapka')) {
+      const sapka = kino.parcaG('kafa')?.querySelector<SVGGElement>('.ko-kino-sapka') ?? null;
+      if (sapka) salla(sapka as unknown as HTMLElement, 'ko-sapka-zipla');
+      ses.pit(4);
+      surpriz('sapka');
     } else seyrekSoyle(K.kino.hav, 'kino', 2500);
   });
+  // ---------------------------------------------------------------- gizli sürprizler (V3 §8; hiçbiri ipucuyla gösterilmez)
+  // 1. külah zinciri: her külah bir nota; soldan sağa sırayla dokununca "Dondurmaaa" kornası, Kino dans eder
+  const zincirKulahlari = [...pencere.querySelectorAll<HTMLElement>('.ko-zincir-kulah')];
+  let zincirSira = 0;
+  let zincirZaman = 0;
+  zincirKulahlari.forEach((k, i) =>
+    k.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      ses.nota(i);
+      salla(k, 'ko-zincir-dokun');
+      const t = performance.now();
+      zincirSira = i === zincirSira && t - zincirZaman < 3000 ? i + 1 : i === 0 ? 1 : 0;
+      zincirZaman = t;
+      if (zincirSira === zincirKulahlari.length) {
+        zincirSira = 0;
+        surpriz('zincir');
+        ses.dondurmaKorna();
+        void kino.oynat('dans', 1400);
+      }
+    }),
+  );
+  // 2. dolabın camı: üç dokunuşta buğuya kalp çizilir, Kino göz kırpar
+  let camDokunus: number[] = [];
+  dolap.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('.ko-tat, .ko-leke, .ko-sinek')) return;
+    const t = performance.now();
+    camDokunus = [...camDokunus.filter((x) => t - x < 2500), t];
+    if (camDokunus.length < 3) return;
+    camDokunus = [];
+    surpriz('cam');
+    dolap.querySelector('.ko-cam-kalp')?.remove();
+    const kalp = h('i.ko-cam-kalp', { 'aria-hidden': 'true', html: '<svg viewBox="0 0 40 36"><path d="M20 32C9 24 4 18 4 12C4 7 8 4 12 4C15.5 4 18 6 20 9C22 6 24.5 4 28 4C32 4 36 7 36 12C36 18 31 24 20 32Z" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" pathLength="100"/></svg>' });
+    dolap.append(kalp);
+    window.setTimeout(() => kalp.remove(), TEST_MODU ? 300 : 3500);
+    ses.gicir();
+    if (kino.ifadeVar('keyif')) kino.ifade('keyif', 500);
+    kinoBas = performance.now() / 1000;
+  });
+  // 8. kara tahta: resmine dokunulan tatın adını Mino söyler (çilek, vanilya, fıstık)
+  duvar.el.querySelector<HTMLElement>('.ko-duvar-tahta')?.addEventListener('click', (e) => {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    if (y < 0.33 || y > 0.86) return;
+    const t: Tat = x > 0.5 ? 'fistik' : y < 0.52 ? 'cilek' : 'vanilya';
+    surpriz('tahta');
+    salla(e.currentTarget as HTMLElement, 'ko-zipla');
+    void soyle(tatSozu(t, true), 'mino');
+  });
+
   /** Kino bir şeyi yer: ağzına uçar, ham ham, dili dışarıda keyif */
   async function kinoYesin(icerik: string, [x, y]: [number, number], soz?: string) {
     const [ax, ay] = kino.k.agiz;
@@ -473,7 +568,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     kino.ek('dil-disarida', true);
     sonra(sure(1000), () => kino.ek('dil-disarida', false));
     efekt_.parilti(hedef[0], hedef[1], 4, 0.5);
-    yakin(kino.el, 1.5, 'kino', { odak: 'kino', ms: 700, aralik: 25000 });
     if (soz) seyrekSoyle(soz, 'kino', 7000);
   }
   /** Kino kepçeyi daldırır: kepçe kabın üstünde döner (girdi kilitlenmez, üst üste biner) */
@@ -663,6 +757,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   function kapBas(kap: Kap, b: HTMLElement) {
     const s = aktifSlot();
     const kacKap = yuvaSiparisi(s)?.istek.length ?? 1;
+    // rafta külah yok: Kino rafın altına bakar, boş elini gösterir, omuz silker (komik; ceza değil)
+    if (kap === 'kulah' && !kulahVarMi(kulahStok)) {
+      bosKulah(b);
+      return;
+    }
     const r = kapKoy(s.yuva, kap, kacKap);
     salla(b, 'ko-bas');
     if (r.olay === 'ayni') {
@@ -1207,7 +1306,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   }
 
   function yeBas(s: Slot) {
-    const onceki = s.musteri ? yuvaIsi(s.musteri.sip, s.yuva, ayar.tatlar) : null;
+    const onceki = s.musteri ? yuvaIsi(s.musteri.sip, s.yuva) : null;
     const yer = s.kuleKap.querySelector(`.ko-alt[data-k="${s.yuva.secili}"] .ko-kule`);
     const bas = yer ? efekt_.merkez(yer, 0.5, 0.15) : efekt_.merkez(s.kuleKap);
     const k = s.yuva.secili;
@@ -1232,7 +1331,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       void kino.oynat('sevin', 700);
     },
     soyle: (soz, kim) => seyrekSoyle(soz, kim, 6000),
-    kirazSapka: kayit.alinan.includes('kino-sapka'),
+    kirazSapka: kayit.acilan.gorunum.includes('kino-sapka'),
   };
   // temizlik: lekeler dolabın üst kenarına (tezgâha) damlar
   const temizlik = new Temizlik(isOrtami);
@@ -1242,11 +1341,16 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     temizlik.dus([22, 50, 78]);
   }
 
-  // külah: alındıkça raf azalır (en az 1); az kalınca iş köşesi parlar; dolu raf için külah yapılır
-  let kulahAzSoylendi = false;
+  // külah (V3 §3): alındıkça raf azalır ve BİTER. Çocuğun üç yolu: külah yap (makine, 3 taze külah), kâse ver ya da
+  // bekletip sıradakine geç. Makine yalnız buharıyla işaret verir; ancak külah isteyen müşteri 20 sn bekleyince parlar.
+  let kulahBittiSoylendi = false;
   function kulahCiz() {
-    if (kulahDugme) kulahDugme.innerHTML = kulahYigini(kulahStok);
-    kose.isVar(kulahAzMi(kulahStok));
+    if (kulahDugme) {
+      kulahDugme.innerHTML = kulahYigini(kulahStok);
+      kulahDugme.classList.toggle('ko-kulah-yok', !kulahVarMi(kulahStok));
+    }
+    kose.el.classList.toggle('ko-buhar-cok', !kulahVarMi(kulahStok));
+    if (kulahVarMi(kulahStok)) kose.isVar(false);
     el.dataset.kulah = String(kulahStok);
   }
   function kulahAlindi() {
@@ -1254,16 +1358,34 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     kulahStok = kulahKullan(kulahStok);
     if (kulahStok === once) return;
     kulahCiz();
-    if (kulahStok <= KULAH_STOK.enAz && !ogretici && !kulahAzSoylendi) {
-      kulahAzSoylendi = true;
-      seyrekSoyle(K.mino.kulah_az, 'mino', 60000);
+    if (!kulahVarMi(kulahStok)) {
+      // son külah: raf hafifçe sallanır, boş kâğıt kılıf "pıt" diye çöker; Kino günde bir kez "Külah bitti!"
+      salla(kulahDugme, 'ko-raf-salla');
+      ses.pit(0);
+      if (!kulahBittiSoylendi) {
+        kulahBittiSoylendi = true;
+        void soyle(K.kino.kulah_bitti, 'kino', false);
+      }
     }
+  }
+  /** Boş rafa dokunuş: Kino rafın altına eğilip bakar, boş patisini gösterir, omuz silker */
+  function bosKulah(b: HTMLElement) {
+    salla(b, 'ko-hayir');
+    ses.degil();
+    void kino.oynat('bak', 500).then(() => !kapandi && void kino.oynat('hayir', 700));
+    if (kino.ifadeVar('saskin')) kino.ifade('saskin', 900);
+    kose.el.classList.add('ko-buhar-cok');
+    salla(kose.el, 'ko-zipla');
+    if (!kulahBittiSoylendi) {
+      kulahBittiSoylendi = true;
+      void soyle(K.kino.kulah_bitti, 'kino', false);
+    }
+    adimGuncelle();
   }
   let panel: KulahPaneli | null = null;
   function kulahPaneliAc() {
     if (panel || kapandi) return;
     elIpucuGizle();
-    yakinBitir?.();
     panel = new KulahPaneli(
       isOrtami,
       (yerler) => {
@@ -1278,7 +1400,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   async function kulahlarGelsin(yerler: [number, number][]) {
     const hedef = kulahDugme ? efekt_.merkez(kulahDugme, 0.5, 0.45) : null;
     kulahStok = kulahYap();
-    kulahAzSoylendi = false;
+    kose.isVar(false);
     if (hedef)
       await Promise.all(
         yerler.map(async (y, i) => {
@@ -1297,9 +1419,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   let mutlu = 0;
   let hedefSoylendi = false;
   let calisiyor = false;
-  let ogretici = false;
-  let ilkIstekGosterildi = false;
-  /** İstek balonu bir an büyür (kamera yerine): çocuk ne istendiğini görür */
+  /** istek okuması (Mino isteği eksiksiz okur) yalnız günün ilk 2 resimli isteğinde; sonra balon kendi konuşur */
+  let okunanResimli = 0;
+  /** Zıpzıp sıradakinin önüne atladı mı (günde bir) */
+  let zipzipAtladi = false;
+  /** İstek balonu bir an zıplar (kamera yerine; büyütme yok): çocuk ne istendiğini görür */
   function balonBuyut(b: HTMLElement) {
     if (TEST_MODU || AZ_HAREKET) return;
     b.classList.remove('ko-balon-acil', 'ko-balon-buyu');
@@ -1308,9 +1432,46 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     b.addEventListener('animationend', () => b.classList.remove('ko-balon-buyu'), { once: true });
   }
 
+  /**
+   * Müşterinin isteğini kim söyler (V3 §1.3, §9): sesi olan müşteri kendi söyler (kaydı gelene dek balonda yazı;
+   * Lokum'un hazır kaydı var); Mino emir vermez, durumu anlatır. Resimli istek yalnız günün ilk 2 resimlisinde okunur.
+   */
+  function istekSoyle(m: Musteri, tekrar = false): Promise<void> {
+    const sip = m.sip;
+    if (m.tanim?.ses) {
+      const c = musteriSozu(m.ad, 'istek');
+      if (c) m.soz(etiketsiz(c), true);
+      const kayitli = lokumSesi(m.ad, 'istek');
+      if (kayitli) void soyle(kayitli, 'musteri');
+    }
+    let soz: string[];
+    if (sip.tur === 'resimli') {
+      if (!tekrar && okunanResimli < 2) {
+        okunanResimli++;
+        soz = okuma(sip);
+      } else soz = [durumSozu(sip)];
+    } else if (sip.tur === 'ipucu' || sip.tur === 'surpriz') {
+      soz = [durumSozu(sip)];
+      const n = sip.ipucu?.top ? durumTopSozu(sip.ipucu.top) : null;
+      if (n) soz.push(n);
+    } else soz = okuma(sip);
+    const p = soyle(soz, 'mino', !tekrar);
+    if (!tekrar && sip.ipucu?.ozellik === 'yeni') void soyle(K.kino.yeni_dene, 'kino', false);
+    return p;
+  }
+
   async function musteriGelsin(s: Slot) {
+    if (kapandi) return;
+    // Zıpzıp sıradakinin önüne atlar (gizli sürpriz §8.6): dokunulursa utanıp yerine döner, dokunulmazsa ilk o alır
+    const zi = kuyruk.findIndex((x) => x.musteri === 'zipzip');
+    let atladi = false;
+    if (!zipzipAtladi && zi > 0 && !kuyruk[0].ogretici && kuyruk[0].tur !== 'dogumgunu') {
+      zipzipAtladi = true;
+      atladi = true;
+      kuyruk.unshift(...kuyruk.splice(zi, 1));
+    }
     const sip = kuyruk.shift();
-    if (!sip || kapandi) return;
+    if (!sip) return;
     const m = new Musteri(sip, s.i === 0 ? 'sol' : 'sag');
     if (ozel) m.el.dataset.siparis = JSON.stringify(sip);
     s.musteri = m;
@@ -1318,14 +1479,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     s.yerEl.dataset.adet = String(m.kisiler.length);
     s.balonYer.replaceChildren(m.balon);
     for (const kisi of m.kisiler) if (kisi.mino) minolar.add(kisi.mino);
-    if (sip.tur === 'ogretici') ogretici = true;
     m.el.addEventListener('click', () => musteriBas(s));
     m.balon.addEventListener('click', () => musteriBas(s, true));
     await m.hazirSoz;
     await m.gel();
     if (kapandi) return;
-    // istek balonu beklerken de yüzün önüne binmesin (Mino'nun iri başı balonun kuyruğuna değiyordu): açılış bitince ve
-    // ilk istekteki yakın çekimden sonra bir kez daha (servisten sonra servis kendisi izler)
+    if (atladi && (await zipzipOnce(s, m))) return;
     const balonAyir = () => (kapandi || m.bitti || !m.el.isConnected ? undefined : m.balonuYuzdenAyir());
     window.setTimeout(balonAyir, 500);
     window.setTimeout(balonAyir, 1700);
@@ -1334,15 +1493,46 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (ak !== s && !bekliyor(ak) && !ak.yuva.kaplar.length) aktifSec(s.i);
     slotlar.forEach(yuvaCiz);
     adimGuncelle();
-    void soyle(K.kino.hosgeldin, 'kino', false);
-    // günün ilk isteğinde yakın çekim (dokununca hemen biter); sonrakilerde kamera oynamaz, yalnız balon büyür
-    // (dolap ve kaplar ekrandan kaymaz, hedefler parmağın altından kaçmaz)
-    if (!ilkIstekGosterildi) {
-      ilkIstekGosterildi = true;
-      yakin(s.yerEl.closest('.ko-slot')!, 1.45, `istek-${sip.no}`, { odak: s.i, ms: 900 });
-    } else balonBuyut(m.balon);
-    await soyle(okuma(sip));
-    if (ogretici) adimGuncelle(true);
+    if (!m.tanim?.ses) void soyle(K.kino.hosgeldin, 'kino', false);
+    balonBuyut(m.balon);
+    await istekSoyle(m);
+  }
+
+  /**
+   * Zıpzıp önce: yana zıplayıp pencerenin önüne geçer, "Ben önce!". 3.5 sn içinde dokunulursa utanır, yerine döner
+   * (sıra eski hâline gelir, dönen: true); dokunulmazsa ilk o alışveriş yapar.
+   */
+  async function zipzipOnce(s: Slot, m: Musteri): Promise<boolean> {
+    m.el.classList.add('ko-zipzip-once');
+    m.soz(etiketsiz(musteriSozu('zipzip', 'istek') ?? 'Ben önce!'));
+    m.ezEsnet();
+    void m.anaKisi.oynat('sevin', 600);
+    surpriz('zipzip');
+    const geri = await new Promise<boolean>((coz) => {
+      const z = window.setTimeout(() => coz(false), TEST_MODU ? 1500 : 3500);
+      m.el.addEventListener(
+        'pointerdown',
+        () => {
+          clearTimeout(z);
+          coz(true);
+        },
+        { once: true },
+      );
+    });
+    m.el.classList.remove('ko-zipzip-once');
+    if (!geri || kapandi) return false;
+    // utandı: yanakları kızarır, yerine döner; sıra eski hâline gelir
+    surpriz('zipzip-geri');
+    m.el.classList.add('ko-utandi');
+    m.bitti = true;
+    await m.git();
+    m.kapat();
+    m.el.remove();
+    m.balon.remove();
+    s.musteri = null;
+    kuyruk.splice(Math.min(1, kuyruk.length), 0, m.sip);
+    if (!kapandi) void musteriGelsin(s);
+    return true;
   }
 
   function musteriBas(s: Slot, balon = false) {
@@ -1355,52 +1545,214 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     }
     if (!m || !m.hazir || m.bitti) return;
     efekt.dokunma();
-    if (!balon && verilebilir(s.yuva, m.sip) && yuvaIsi(m.sip, s.yuva, ayar.tatlar).tur === 'ver') {
+    if (!balon && verilebilir(s.yuva, m.sip) && yuvaIsi(m.sip, s.yuva).tur === 'ver') {
       void servis(s);
       return;
     }
     // müşterisi olmayan öbür yuvada bu müşterinin dondurması hazırsa o verilir
     const o = slotlar[1 - s.i];
-    if (!balon && !bekliyor(o) && verilebilir(o.yuva, m.sip) && yuvaIsi(m.sip, o.yuva, ayar.tatlar).tur === 'ver') {
+    if (!balon && !bekliyor(o) && verilebilir(o.yuva, m.sip) && yuvaIsi(m.sip, o.yuva).tur === 'ver') {
       void servis(s, o);
+      return;
+    }
+    // Lokum'a dokununca Kino eğilip burnuna minik dondurma sürer (gizli sürpriz §8.5; ziyaret başına bir kez)
+    if (!balon && m.ad === 'lokum' && !m.el.classList.contains('ko-burunlu')) {
+      void lokumBurun(s, m);
       return;
     }
     // isteği bir daha dinlet; yuvası etkin olur
     m.dikkat();
     aktifSec(s.i);
-    void soyle(okuma(m.sip), 'mino', false);
+    void istekSoyle(m, true);
   }
 
-  /** Jetonlar müşteriden kumbara kavanozuna yay çizerek düşer (havada jeton kalmaz) */
-  /** Ekrandaki bütün yüzler (müşteriler ve Kino), efekt katmanına göre, pay kadar büyütülmüş */
-  function yuzEngelleri(pay: number): Kutu[] {
-    const k = efekt_.kutu();
-    const yuzler = [...slotlar.flatMap((s) => (s.musteri ? [s.musteri.yuz().yuz] : [])), yuzKutulari(kinoYer).yuz];
-    return yuzler.flatMap((y) => (y ? [genislet(kaydir(y, -k.left, -k.top), pay)] : []));
+  /** Kino eğilir, Lokum'un burnuna minik dondurma sürer; Lokum kıkırdar */
+  async function lokumBurun(s: Slot, m: Musteri) {
+    m.el.classList.add('ko-burunlu');
+    surpriz('lokum');
+    void cakYap(s, m);
+    await bekle(330);
+    if (kapandi) return;
+    const y = m.yuz().yuz;
+    const kk = efekt_.kutu();
+    if (y) {
+      const nokta = h('i.ko-burun-dondurma', { 'aria-hidden': 'true', html: gorsel(topAdi('cilek')), style: `left:${((y.left + y.right) / 2 - kk.left).toFixed(1)}px;top:${(y.top + (y.bottom - y.top) * 0.42 - kk.top).toFixed(1)}px` });
+      efekt_.el.append(nokta);
+      window.setTimeout(() => nokta.remove(), TEST_MODU ? 200 : 2600);
+    }
+    ses.pit(2);
+    m.mutlu(1600);
+    m.ezEsnet();
+    const kayitli = lokumSesi('lokum', 'kikir');
+    if (kayitli) void soyle(kayitli, 'musteri', false);
+    m.soz('Iii!');
   }
 
-  async function jetonVer(m: Musteri, adet: number) {
-    // paralar yüzden değil gövdeden çıkar (ağzın altı, tezgâh çizgisinin hemen üstü) ve yüzlerin altından kumbaraya akar
-    const kat = efekt_.kutu();
-    const jy = 15 * birim();
-    const { yuz } = m.yuz();
-    const pen = pencere.getBoundingClientRect();
-    const govdeY = Math.max(yuz ? yuz.bottom + jy + 2 : 0, pen.bottom - jy * 1.4) - kat.top;
-    const bas: [number, number] = yuz ? [(yuz.left + yuz.right) / 2 - kat.left, govdeY] : efekt_.merkez(m.el, 0.5, 0.85);
+  // ---------------------------------------------------------------- para: kısa sayma (V3 §4)
+  /** "Kaç jeton oldu?" bugün kaç kez soruldu (5-6, en çok 2) */
+  let kacSoruldu = 0;
+  let kumbaraDolduMu = false;
+  /** Kumbaranın içi: jeton geldikçe yükselir (rakam yok); hedefte kapağı bir kez "pıt" */
+  function kumbaraGuncelle() {
+    const oran = Math.min(1, bugun / HEDEF_JETON);
+    kumbaraDolgu.style.setProperty('--dolu', oran.toFixed(3));
+    if (oran >= 1 && !kumbaraDolduMu) {
+      kumbaraDolduMu = true;
+      kumbara.classList.add('ko-kumbara-dolu');
+      salla(kumbara, 'ko-kapak-pit');
+      ses.pit(4);
+      const [x, y] = efekt_.merkez(kumbara, 0.5, 0.1);
+      efekt_.parilti(x, y, 8, 0.6, '#FFE45C');
+    }
+    durumYaz();
+  }
+  /** Sıradaki jetonların çizimi (yan yana, temas gölgeli) */
+  function jetonCiz(s: Slot) {
+    s.jetonSira.replaceChildren(...Array.from({ length: s.jeton }, (_, i) => h('i.ko-sira-jeton', { style: `--i:${i}`, html: gorsel('jeton') })));
+    s.jetonSira.hidden = s.jeton === 0;
+    s.jetonSira.dataset.n = String(s.jeton);
+  }
+  /** Bir jeton kumbaraya uçar (bas: ekran yeri); sayilsin: Mino sayar */
+  async function jetonUcur(bas: [number, number], sira: number) {
     const hedef = efekt_.merkez(kumbara, 0.5, 0.3);
-    const kavis = kavisKacir(bas, hedef, -60, yuzEngelleri(jy + 4 * birim()));
-    // "+n" kumbaranın üstünde belirir (yüzün önünde değil)
-    efekt_.yazi(hedef[0], hedef[1] - 34 * birim(), `+${adet}`);
+    await efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), bas, hedef, { ms: 420, kavis: -70, boy0: 1, boy1: 0.6, don: 0 });
+    if (kapandi) return;
+    bugun++;
+    salla(kumbara, 'ko-zipla');
+    ses.singir(sira);
+    efekt_.parilti(hedef[0], hedef[1], 3, 0.45, '#FFE45C');
+    kumbaraGuncelle();
+  }
+  /**
+   * Müşteri, top sayısı kadar jetonu kendi yuvasının önüne bırakır (iki sekme). Yuvanın önünde eski jeton kalmışsa önce
+   * o sayılmadan "şıngır" diye kumbaraya kayar (sıralar karışmaz).
+   */
+  async function jetonBirak(s: Slot, m: Musteri, adet: number) {
+    if (s.jeton) await kalanJetonlar(s);
+    const kat = efekt_.kutu();
+    const { yuz } = m.yuz();
+    const jy = 15 * birim();
+    const pen = pencere.getBoundingClientRect();
+    const bas: [number, number] = yuz ? [(yuz.left + yuz.right) / 2 - kat.left, Math.max(yuz.bottom + jy, pen.bottom - jy * 1.4) - kat.top] : efekt_.merkez(m.el, 0.5, 0.85);
+    const hedef = efekt_.merkez(s.yuvaEl, 0.5, 0.02);
+    s.jeton = 0;
+    s.jetonSayilan = 0;
+    s.kacSor = yas === 'buyuk' && kacSoruldu < 2 && adet >= 2;
+    if (s.kacSor) kacSoruldu++;
     await Promise.all(
       Array.from({ length: adet }, async (_, i) => {
-        await efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), bas, hedef, { ms: 620, gecikme: i * 140, kavis, boy0: 1, boy1: 0.6, don: 360 });
+        await efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), bas, hedef, { ms: 460, gecikme: i * 110, kavis: -40, boy0: 1, boy1: 0.75, don: 0 });
         if (kapandi) return;
-        bugun++;
-        kumbaraSayi.textContent = String(bugun);
-        salla(kumbara, 'ko-zipla');
-        ses.singir(i);
-        efekt_.parilti(hedef[0], hedef[1], 4, 0.5, '#FFE45C');
-        durumYaz();
+        s.jeton++;
+        jetonCiz(s);
+        ses.tak();
+        salla(s.jetonSira.lastElementChild, 'ko-jeton-sek');
+      }),
+    );
+    s.jetonZaman = performance.now();
+    durumYaz();
+  }
+  /** Jeton sırasına dokunuş: sıradaki jeton kumbaraya uçar, Mino sayar ("Bir!", "İki!" …); son jetonda kavanoz zıplar */
+  function jetonSay(s: Slot, bas?: [number, number]) {
+    if (!s.jeton || kapandi) return;
+    const son = s.jetonSira.lastElementChild as HTMLElement | null;
+    const yer = bas ?? (son ? efekt_.merkez(son) : efekt_.merkez(s.jetonSira));
+    s.jeton--;
+    s.jetonSayilan++;
+    s.jetonZaman = performance.now();
+    jetonCiz(s);
+    const n = s.jetonSayilan;
+    void soyle(sayiSozu(n), 'mino');
+    void jetonUcur(yer, n).then(() => {
+      if (s.jeton || kapandi) return;
+      salla(kumbara, 'ko-cok-zipla');
+      if (s.kacSor) {
+        s.kacSor = false;
+        void kacJeton(n);
+      }
+    });
+  }
+  /** Gün sonunda (ya da yeni sıra inerken) kalan jetonlar sayılmadan "şıngır" diye kumbaraya kayar */
+  async function kalanJetonlar(s: Slot) {
+    const n = s.jeton;
+    if (!n) return;
+    const yerler = [...s.jetonSira.children].map((c) => efekt_.merkez(c));
+    s.jeton = 0;
+    jetonCiz(s);
+    await Promise.all(yerler.map((y, i) => new Promise<void>((coz) => window.setTimeout(() => void jetonUcur(y, i).then(coz), i * 70))));
+  }
+  /** 5-6: "Kaç jeton oldu?" kumbaranın yanında üç rakam balonu (doğru, bir eksik, bir fazla); 10 sn dokunulmazsa söner */
+  let sayiBalonlari: HTMLElement | null = null;
+  async function kacJeton(n: number) {
+    sayiBalonlari?.remove();
+    await soyle(K.mino.odeme.kac, 'mino');
+    if (kapandi) return;
+    const kap = h('div.ko-sayi-balonlar', { 'data-dogru': String(n) });
+    let bitti = false;
+    const kapat = () => {
+      if (bitti) return;
+      bitti = true;
+      kap.classList.add('ko-sonuyor');
+      window.setTimeout(() => kap.remove(), 300);
+      if (sayiBalonlari === kap) sayiBalonlari = null;
+    };
+    for (const sayi of sayiSecenekleri(n, rastgele)) {
+      const b = h('button.ko-sayi-balon', { type: 'button', 'data-sayi': String(sayi) }, String(sayi));
+      b.addEventListener('click', async () => {
+        if (bitti) return;
+        efekt.dokunma();
+        if (sayi === n) {
+          // doğru: kavanoz parlar
+          kapat();
+          efekt.dogru();
+          const [x, y] = efekt_.merkez(kumbara, 0.5, 0.4);
+          efekt_.parilti(x, y, 10, 0.7, '#FFE45C');
+          salla(kumbara, 'ko-cok-zipla');
+          void soyle(sayiSozu(n), 'mino');
+        } else {
+          // yanlış değil, yeniden sayalım: jetonlar kavanozda bir kez daha zıplayıp sayılır, Mino güler
+          kapat();
+          for (let i = 1; i <= n; i++) {
+            salla(kumbara, 'ko-zipla');
+            ses.singir(i);
+            await soyle(sayiSozu(i), 'mino');
+            if (kapandi) return;
+          }
+        }
+      });
+      kap.append(b);
+    }
+    kumbaraYer.append(kap);
+    sayiBalonlari = kap;
+    window.setTimeout(kapat, TEST_MODU ? 4000 : 10000);
+  }
+  // jeton sırası: dokunuş ya da jetonu kumbaraya sürükleme
+  for (const s of slotlar) {
+    s.jetonSira.addEventListener('click', () => jetonSay(s));
+    let tut: Tutulan | null = null;
+    surukleKaldir.push(
+      elSurukle(s.jetonSira, {
+        aktif: () => s.jeton > 0,
+        basla: (x, y) => {
+          const en = 40 * birim();
+          tut = new Tutulan(efekt_, gorsel('jeton'), { sinif: 'ko-tut-jeton', en, boy: en });
+          tut.yer(x, y);
+          const son = s.jetonSira.lastElementChild as HTMLElement | null;
+          if (son) son.style.visibility = 'hidden';
+        },
+        tasi: (x, y, dx) => tut?.yer(x, y, dx),
+        birak: (x, y, kisa) => {
+          const t = tut;
+          tut = null;
+          const son = s.jetonSira.lastElementChild as HTMLElement | null;
+          if (son) son.style.visibility = '';
+          if (!t) return;
+          const k = efekt_.kutu();
+          if (kisa || icinde(kumbaraYer.getBoundingClientRect(), x, y, 24 * birim())) {
+            t.kaldir();
+            jetonSay(s, [x - k.left, y - k.top]);
+          } else void t.don_(son ? ekranMerkez(son) : ekranMerkez(s.jetonSira), 240);
+        },
       }),
     );
   }
@@ -1420,9 +1772,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     m.balonuYuzdenAyir();
     const balonIzle = window.setInterval(() => (kapandi || !m.el.isConnected ? clearInterval(balonIzle) : m.balonuYuzdenAyir()), 200);
     const verilen: Dondurma[] = kaynak.yuva.kaplar.map((d) => ({ ...d, toplar: [...d.toplar], susler: [...d.susler] }));
-    const sonuc = siparisSonucu(m.sip, verilen);
+    const tepki: Tepki = tepkiHesapla(m.sip, verilen, m.tanim);
+    const resimli = m.sip.tur !== 'ipucu' && m.sip.tur !== 'surpriz';
+    const sonuc = resimli ? siparisSonucu(m.sip, verilen) : null;
     const dogumgunu = m.sip.tur === 'dogumgunu';
-    if (m.sip.tur === 'ogretici') ogretici = false;
     // Mino'nun doğum günü: Kino kupaya mum diker
     if (dogumgunu) {
       kaynak.mum = 'yanik';
@@ -1444,14 +1797,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     void kino.oynat('sevin', 700);
     void soyle(K.kino.buyurun, 'kino', false);
     // yoğun an: verirken tezgâha dondurma damlar (her ikinci verişte; silmek isteğe bağlı)
-    if (lekeDuserMi(++verilenSayisi, temizlik.sayi, m.sip.tur === 'ogretici')) lekeleriDusur();
+    if (lekeDuserMi(++verilenSayisi, temizlik.sayi, !!m.sip.ogretici)) lekeleriDusur();
     const kisiEl = m.anaKisi.el;
     const [ax, ay] = m.anaKisi.agiz();
     // dondurma tadımdaki yerine uçar: ağzın hemen altı (yüzün önünden geçmez, göz ve kaşlar açıkta)
     const kat = efekt_.kutu();
     const ly = m.lokmaYeri();
-    // görünen dondurmanın (kutunun içindeki çizimler) tepesi ağzın altına iner; uçuş alttan gelir (aşağı kavis) ve
-    // hiç büyümez: tepesi yol boyunca son yerinin, yani alt dudağın üstüne çıkmaz
     const kk = kaynak.kuleKap.getBoundingClientRect();
     const ciz = birlesim([...kaynak.kuleKap.querySelectorAll('.ko-g, img, svg')].map((e) => e.getBoundingClientRect())) ?? kk;
     const boy1 = 0.75;
@@ -1466,7 +1817,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (dogumgunu) {
       // Mino mumu üfler, herkes alkışlar
       const mino = m.anaKisi.mino;
-      // kupa Mino'nun ağzının önünde (yerken olduğu gibi): mum pencerenin fırfırının altında, üflenince görünür
       const lokmaKap = h('div.ko-m-lokma.ko-dogumgunu', { style: `left:${ax * 100}%;top:${ay * 100}%;transform:translateX(-50%)` }, lokma);
       kisiEl.append(lokmaKap);
       mino?.tepki('evet');
@@ -1485,44 +1835,69 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       lokmaKap.remove();
     }
     const pembe = verilen.every((d) => d.toplar.every((t) => t === 'cilek'));
-    // farklı oldu: müşteri önce şaşırır (iri gözler, "o" ağız), sonra tadar ve sever
-    if (!sonuc.ayni && !dogumgunu) {
-      m.saskin(700);
-      await bekle(600);
+    // komik olacaksa müşteri önce şaşırır (iri gözler, "o" ağız), sonra tadar
+    if (tepki === 'komik' && !dogumgunu) {
+      m.saskin(600);
+      await bekle(500);
       if (kapandi) return;
     }
-    await m.tat(lokma, pembe, efekt_);
+    // Bıdık külahı da yer (gizli şaka): üç ısırık, "kıtır kıtır", "Hıp! Pardon!"
+    const kemir = m.ad === 'bidik' && verilen.some((d) => d.kap === 'kulah') ? () => ses.kitir() : undefined;
+    await m.tat(lokma, pembe, efekt_, { kemir });
     if (kapandi) return;
-    const limonlu = verilen.some((d) => d.toplar.includes('limon'));
-    m.soz(m.ad === 'ordek' && limonlu ? K.balon.ordek : K.balon.genel[m.sip.no % K.balon.genel.length]);
-    // sevinç efektleri başın üstünde açılır ve yukarı uçar: mutlu yüz hep açıkta
+    if (kemir) {
+      m.soz(etiketsiz(musteriSozu('bidik', 'bayildi') ?? 'Hıp! Pardon!'));
+      surpriz('bidik');
+    }
+    // tepki (V3 §2.3): bayıldı / mmm / komik; sevinç efektleri başın üstünde açılır, yüz hep açıkta
     const [hx, hy] = m.basUstu(efekt_, 14 * birim());
-    if (sonuc.ayni) {
+    const sozu = (ne: 'bayildi' | 'komik') => (m.tanim?.ses ? musteriSozu(m.ad, ne) : null);
+    const balonSoz = (l: readonly string[]) => l[m.sip.no % l.length];
+    if (tepki === 'bayildi') {
       mutlu++;
       efekt.dogru();
       efekt_.konfeti(hx, hy, 20, 0);
       efekt_.kalpler(hx, hy, 7);
       efekt_.buyukKalp(...m.basUstu(efekt_, 40 * birim()));
       salla(m.el, 'ko-cok-mutlu');
-      m.mutlu(2200);
-      void soyle(K.mino.tam, 'mino', false);
-    } else {
-      m.karsilastir(sonuc.farklar);
+      m.bayildi(2200);
+      const lk = lokumSesi(m.ad, 'bayildi');
+      if (lk) void soyle(lk, 'musteri', false);
+      if (!kemir) m.soz(etiketsiz(sozu('bayildi') ?? (m.ad === 'ordek' && verilen.some((d) => d.toplar.includes('limon')) ? K.balon.ordek : balonSoz(K.balon.bayildi))));
+      void soyle(K.mino.tepki.bayildi, 'mino', false);
+    } else if (tepki === 'mmm') {
+      mutlu++;
+      efekt.dogru();
       efekt_.kalpler(hx, hy, 3);
       m.mutlu(1400);
-      void soyle(K.mino.farkli, 'mino', false);
+      m.ezEsnet();
+      void m.anaKisi.oynat('var', 500);
+      if (!kemir) m.soz(balonSoz(K.balon.mmm));
+      void soyle(K.mino.tepki.mmm, 'mino', false);
+    } else {
+      // sevmediği varsa onun gag'ı; yoksa "farklı" (şaşkın, titreme, "!")
+      const sevmedi = !!m.tanim?.sevmez && verilen.some((d) => m.tanim!.sevmez!(d));
+      if (sonuc && !sonuc.ayni) m.karsilastir(sonuc.farklar);
+      efekt_.yazi(hx, hy, '!');
+      if (!kemir) m.soz(etiketsiz(sozu('komik') ?? balonSoz(K.balon.komik)));
+      await m.komik(sevmedi ? m.tanim?.gag : undefined);
+      if (kapandi) return;
+      efekt_.kalpler(hx, hy, 2);
+      void soyle(yalnizKapFarkli(m.sip, verilen) ? K.mino.tepki.kase : K.mino.tepki.komik, 'mino', false);
     }
-    hedefCiz(sonuc.ayni);
-    m.el.dataset.sonuc = sonuc.ayni ? 'ayni' : 'farkli';
-    // jetonlar kumbaraya uçarken müşteri dans eder, Kino ile çak yapar (~1 sn; müşteriye dokununca biter)
-    const jeton = jetonVer(m, jetonHesapla(sonuc.ayni));
-    await atlanabilir(s, Promise.all([m.dans(), cakYap(s, m)]));
+    hedefCiz(tepki !== 'komik');
+    m.el.dataset.sonuc = tepki;
+    // ödeme: top sayısı kadar jeton (bayıldıysa +1 bahşiş), yuvanın önüne iner; çocuk dokundukça Mino sayar
+    const jeton = jetonBirak(s, m, odeme(verilen, tepki, yas));
+    await atlanabilir(s, Promise.all([tepki === 'komik' ? Promise.resolve() : m.dans(), cakYap(s, m)]));
     if (kapandi) return;
+    // Tombi dondurmayı bitirince külahı da ister (gizli sürpriz §8.7)
+    if (m.ad === 'tombi') await tombiKulah(m);
     clearInterval(balonIzle);
     const gidis = m.git();
     await jeton;
     if (kapandi) return;
-    // son müşteri ödedi: gün hemen kaydedilir (akşam yalnız gösterir; "Bugünlük bu kadar!"da çıkılsa da jeton kalır)
+    // son müşteri ödedi: gün hemen kaydedilir ("Bugünlük bu kadar!"da çıkılsa da gün biter)
     if (++odenen >= TOPLAM) gunuKaydet();
     if (mutlu >= ayar.hedef && !hedefSoylendi) {
       hedefSoylendi = true;
@@ -1540,6 +1915,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     durumYaz();
     slotlar.forEach(yuvaCiz);
     if (biten === 2 && gun === 2) minoGecsin();
+    // kaçan balon: her müşteriden sonra %20 (gizli sürpriz §8.4)
+    if (biten < TOPLAM && (rastgele() < 0.2 || (TEST_MODU && q.get('balon') === '1'))) kacanBalon();
     if (biten >= TOPLAM) void gunBitti();
     else if (kuyruk.length) sonra(TEST_MODU ? 50 : 500, () => void musteriGelsin(s));
     else {
@@ -1548,6 +1925,95 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       if (o.musteri && !o.musteri.bitti) aktifSec(o.i);
     }
     adimGuncelle();
+  }
+
+  /** Tombi boş külaha bakar: külaha dokunulursa Kino bir külah daha uzatır; rafta yoksa Tombi omuz silker */
+  async function tombiKulah(m: Musteri) {
+    const [x, y] = m.basUstu(efekt_, 20 * birim());
+    const b = h('button.ko-tombi-kulah', { type: 'button', 'aria-label': 'Külah', html: gorsel('kulah'), style: `left:${(x + 30 * birim()).toFixed(1)}px;top:${(y + 10 * birim()).toFixed(1)}px` });
+    efekt_.el.append(b);
+    m.soz(K.balon.tombi_kulah);
+    const alindi = await new Promise<boolean>((coz) => {
+      const z = window.setTimeout(() => coz(false), TEST_MODU ? 1500 : 3200);
+      b.addEventListener(
+        'click',
+        () => {
+          clearTimeout(z);
+          coz(true);
+        },
+        { once: true },
+      );
+    });
+    b.remove();
+    if (!alindi || kapandi) return;
+    surpriz('tombi');
+    if (kulahVarMi(kulahStok) && kulahDugme) {
+      kulahAlindi();
+      await efekt_.ucur(h('div.ko-ucan-parca', { html: gorsel('kulah'), style: `width:${(30 * birim()).toFixed(0)}px` }), efekt_.merkez(kulahDugme), [x, y], { ms: 420, kavis: -80 });
+      if (kapandi) return;
+      ses.kitir();
+      m.bayildi(1200);
+      m.soz(etiketsiz(musteriSozu('tombi', 'bayildi') ?? 'Mmm!'));
+      await bekle(700);
+    } else {
+      m.saskin(600);
+      void kino.oynat('hayir', 600);
+      await bekle(600);
+    }
+  }
+
+  /** Kaçan balon pencerenin önünden süzülür; dokunulursa bir müşterinin kafasına "bop" diye çarpar ve sekip uçar */
+  function kacanBalon() {
+    if (kapandi || !adres('kacan-balon')) return;
+    const b = h('button.ko-kacan-balon', { type: 'button', 'aria-label': 'Balon', html: gorsel('kacan-balon') });
+    pencere.append(b);
+    const a = b.animate([{ transform: 'translate(-30%, 10%)' }, { transform: 'translate(380%, -10%)', offset: 0.5 }, { transform: 'translate(800%, 5%)' }], { duration: TEST_MODU ? 4000 : 7000, easing: 'linear' });
+    a.finished.then(
+      () => b.remove(),
+      () => b.remove(),
+    );
+    b.addEventListener(
+      'click',
+      () => {
+        a.pause();
+        surpriz('balon');
+        const m = slotlar.map((s) => s.musteri).find((x) => x && !x.bitti);
+        const r = b.getBoundingClientRect();
+        const kk = efekt_.kutu();
+        const bas: [number, number] = [r.left + r.width / 2 - kk.left, r.top + r.height / 2 - kk.top];
+        b.remove();
+        const hedef: [number, number] = m ? m.basUstu(efekt_, 8 * birim()) : [bas[0], -40];
+        void efekt_.ucur(h('div.ko-ucan-balon', { html: gorsel('kacan-balon') }), bas, hedef, { ms: 380, kavis: -40 }).then(() => {
+          if (kapandi) return;
+          ses.bop();
+          if (m) {
+            m.saskin(500);
+            window.setTimeout(() => !kapandi && m.mutlu(900), 520);
+          }
+          void efekt_.ucur(h('div.ko-ucan-balon', { html: gorsel('kacan-balon') }), hedef, [hedef[0] + 140, -60], { ms: 700, kavis: -90 });
+        });
+      },
+      { once: true },
+    );
+  }
+
+  /** Kino üç jetonla hokkabazlık yapar, jetonlar kavanoza geri düşer (kumbaraya 5 hızlı dokunuş) */
+  async function hokkabaz() {
+    surpriz('kumbara');
+    const [kx, ky] = efekt_.merkez(kino.el, 0.5, 0.05);
+    void kino.oynat('sevin', 1400);
+    const jetonlar = [0, 1, 2].map((i) => {
+      const j = h('i.ko-hokkabaz-jeton', { style: `left:${kx.toFixed(0)}px;top:${ky.toFixed(0)}px;--i:${i}`, html: gorsel('jeton') });
+      efekt_.el.append(j);
+      return j;
+    });
+    await bekle(TEST_MODU ? 50 : 1500);
+    jetonlar.forEach((j, i) => {
+      const r = j.getBoundingClientRect();
+      const kk = efekt_.kutu();
+      j.remove();
+      void efekt_.ucur(h('div.ko-ucan-jeton', { html: gorsel('jeton') }), [r.left + r.width / 2 - kk.left, r.top + r.height / 2 - kk.top], efekt_.merkez(kumbara, 0.5, 0.3), { ms: 420, gecikme: i * 100, kavis: -60, boy1: 0.6 }).then(() => !kapandi && ses.singir(i));
+    });
   }
 
   /** Bir sevinç anını bekler; o müşteriye dokunulursa hemen biter */
@@ -1657,7 +2123,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     );
   }
 
-  // ---------------------------------------------------------------- sıradaki iş (parlama, el ipucu)
+  // ---------------------------------------------------------------- sıradaki iş ve geç ipucu (V3 §7)
   /** Hangi yuva çalışılmalı: etkin yuvada bekleyen müşteri varsa o, yoksa öbürü */
   function calisilacak(): Slot | null {
     const a = slotlar[aktif];
@@ -1683,6 +2149,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
         return { ad: 'ver', el: s.verDugme };
     }
   }
+  /**
+   * Sıradaki iş (test ve geç ipucu; ekranda hemen görünmez): .ko-sirada yalnız işarettir, parlama 30 sn'de (.ko-parla).
+   * Külah istenip rafta yoksa sıradaki iş külah makinesidir (ya da kâse: çocuk seçer).
+   */
   function siradakiAdim(): { ad: AdimAdi; el: HTMLElement } | null {
     if (!calisiyor) return null;
     const s = calisilacak();
@@ -1692,33 +2162,24 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     const kaynak = s.i !== aktif && ak.yuva.kaplar.length ? ak : s;
     if (kaynak.i !== aktif) return { ad: 'yuva', el: s.yuvaEl };
     // uçmakta olan top varken kule işi sayılmaz (top inince yeniden bakılır)
-    const is = yuvaIsi(s.musteri.sip, kaynak.yuva, ayar.tatlar);
+    const is = yuvaIsi(s.musteri.sip, kaynak.yuva);
     if (is.tur === 'ye' && kaynak.ucan.some((u) => u.size)) return null;
+    if (is.tur === 'kap' && is.kap === 'kulah' && !kulahVarMi(kulahStok)) return panel ? null : { ad: 'makine', el: kose.el };
     const r = isEl(kaynak, is);
     return r.el ? { ad: r.ad, el: r.el } : null;
   }
   let parlayan: HTMLElement | null = null;
   let adimAdi: AdimAdi | null = null;
-  let ogreticiAdim = '';
-  function adimGuncelle(ogreticiSoyle = false) {
+  function adimGuncelle() {
     const a = siradakiAdim();
     adimAdi = a?.ad ?? null;
     if (a?.el !== parlayan) {
-      parlayan?.classList.remove('ko-sirada');
+      parlayan?.classList.remove('ko-sirada', 'ko-parla');
       parlayan = a?.el ?? null;
       parlayan?.classList.add('ko-sirada');
       elIpucuGizle();
     }
     el.dataset.adim = adimAdi ?? '';
-    // öğretici (Gün 1, Mino): el hemen görünür; adım değişince "Şimdi buna dokun!"
-    if (ogretici && a) {
-      const anahtar = `${a.ad}:${a.el.dataset.kap ?? a.el.dataset.tat ?? a.el.dataset.sos ?? ''}`;
-      if (anahtar !== ogreticiAdim || ogreticiSoyle) {
-        ogreticiAdim = anahtar;
-        if (bekleyenSoz === 0 || ogreticiSoyle) void soyle(a.ad === 'ver' ? K.mino.bana_ver : K.mino.dokun, 'mino', false);
-      }
-      if (!elGoster) sonra(sure(400), () => elIpucuBak(performance.now(), true));
-    }
     durumYaz();
   }
   let elGoster = false;
@@ -1727,20 +2188,17 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     elGoster = false;
     elIpucu.classList.remove('ko-goster');
   }
-  function elIpucuBak(simdi: number, hemen = false) {
-    if (elGoster || !parlayan || yakinBitir || panel) return;
-    if (!hemen && (simdi - sonDokunus < IPUCU_MS || bekleyenSoz > 0)) return;
-    if (TEST_MODU && q.get('ipucu') !== '1') return;
-    if (!hemen) seyrekSoyle(K.mino.sirada, 'mino', 30000);
+  /** 40 sn: minik el (top, sos, süs için kaptan yuvaya sürükler; dokunmak da olur) */
+  function elIpucuGoster() {
+    if (elGoster || !parlayan || panel) return;
     const k = el.getBoundingClientRect();
     const r = parlayan.getBoundingClientRect();
     const x = r.left - k.left + r.width / 2;
     const y = r.top - k.top + r.height * 0.55;
     elIpucu.style.setProperty('--x', `${x.toFixed(0)}px`);
     elIpucu.style.setProperty('--y', `${y.toFixed(0)}px`);
-    // kendiliğinden çıkan ipucu (öğretici değil): top, sos, süs için el kaptan yuvaya sürükler (dokunmak da olur)
     const s = calisilacak();
-    const surukle = !hemen && !!s && (adimAdi === 'top' || adimAdi === 'sos' || adimAdi === 'sus');
+    const surukle = !!s && (adimAdi === 'top' || adimAdi === 'sos' || adimAdi === 'sus');
     elIpucu.classList.toggle('ko-surukle', surukle);
     if (surukle && s) {
       const y_ = s.yuvaEl.getBoundingClientRect();
@@ -1750,6 +2208,43 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     elIpucu.classList.add('ko-goster');
     elGoster = true;
   }
+  /** Merdivenin hangi basamağı çalıştı (son dokunuşla sıfırlanır) */
+  let merdiven = { bas: -1, bak: false, anlat: false, parla: false, el: false };
+  /**
+   * İpucu merdiveni (her 250 ms): son dokunuştan beri geçen süreye göre. Külah istenip rafta yoksa müşteri 12 sn'de
+   * makineye bakar, makine 20 sn'de parlar.
+   */
+  function ipucuMerdiveni(simdi: number) {
+    if (merdiven.bas !== sonDokunus) {
+      merdiven = { bas: sonDokunus, bak: false, anlat: false, parla: false, el: false };
+      parlayan?.classList.remove('ko-parla');
+      kose.isVar(false);
+      elIpucuGizle();
+    }
+    const s = calisilacak();
+    const m = s?.musteri;
+    if (!m || !m.hazir || m.bitti || !parlayan || panel) return;
+    // test: ?ipucu=1 ile merdiven 10 kat hızlı (bekleme olmadan denetlenir)
+    const gecen = (simdi - sonDokunus) * (TEST_MODU ? (q.get('ipucu') === '1' ? 10 : 0) : 1);
+    const makine = adimAdi === 'makine';
+    if (gecen >= (makine ? KULAH_BAK_MS : IPUCU.bak) && !merdiven.bak) {
+      merdiven.bak = true;
+      m.bak(parlayan);
+    }
+    if (gecen >= IPUCU.anlat && !merdiven.anlat && bekleyenSoz === 0) {
+      merdiven.anlat = true;
+      void istekSoyle(m, true);
+    }
+    if (gecen >= (makine ? KULAH_PARLA_MS : IPUCU.parla) && !merdiven.parla) {
+      merdiven.parla = true;
+      parlayan.classList.add('ko-parla');
+      if (makine) kose.isVar(true);
+    }
+    if (gecen >= IPUCU.el && !merdiven.el) {
+      merdiven.el = true;
+      elIpucuGoster();
+    }
+  }
 
   // ---------------------------------------------------------------- zaman (yalnız ipucu ve müşteri gelişi; istasyonlarda süre yok)
   let gizli = false;
@@ -1758,32 +2253,60 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const arkaBirak = arkaPlanDinle((arkada) => (gizli = arkada || document.hidden));
   const tikZaman = window.setInterval(() => {
     if (kapandi || !calisiyor || gizli) return;
+    const simdi = performance.now();
     adimGuncelle();
-    elIpucuBak(performance.now());
+    ipucuMerdiveni(simdi);
+    // jetonlara 12 sn dokunulmazsa kumbara hafifçe sallanır (dolaylı; bir kez)
+    for (const s of slotlar)
+      if (s.jeton && s.jetonZaman && simdi - s.jetonZaman > JETON_SALLA_MS) {
+        s.jetonZaman = 0;
+        salla(kumbara, 'ko-hafif-salla');
+      }
   }, 250);
+  /** gizli sürpriz bulundu (test: el.dataset.surprizler) */
+  const bulunan = new Set<string>();
+  function surpriz(ad: string) {
+    bulunan.add(ad);
+    if (ozel) el.dataset.surprizler = [...bulunan].join(' ');
+  }
   function durumYaz() {
-    if (ozel) el.dataset.durum = JSON.stringify({ biten, mutlu, bugun, kuyruk: kuyruk.length, aktif, adim: adimAdi, toplam: TOPLAM });
+    if (ozel) el.dataset.durum = JSON.stringify({ biten, mutlu, bugun, kuyruk: kuyruk.length, aktif, adim: adimAdi, toplam: TOPLAM, jeton: slotlar.map((s) => s.jeton), kulah: kulahStok, kacSoruldu });
   }
 
-  // ---------------------------------------------------------------- günün sonu
+  // ---------------------------------------------------------------- günün sonu (V3 §1.8)
   let odenen = 0;
   let kaydedildi = false;
-  /** Günün jetonları kumbaraya, gün bitti (bir sonraki gün açılır); bir kez */
+  /** Gün bitti (bir sonraki gün açılır), bugünkü "yeni" tüketildi; bir kez */
   function gunuKaydet() {
     if (kaydedildi) return;
     kaydedildi = true;
-    kayitGunBitti(kayit, gun, bugun, mutlu);
+    kayitGunBitti(kayit, gun, mutlu);
+    if (kayit.yeni && plan.some((s) => s.ipucu?.ozellik === 'yeni' || s.istek.some((d) => (kayit.yeni?.tat && d.toplar.includes(kayit.yeni.tat)) || (kayit.yeni?.sus && d.susler[kayit.yeni.sus])))) kayit.yeni = null;
     kaydet();
   }
   async function gunBitti() {
     gunuKaydet();
     calisiyor = false;
     adimGuncelle();
-    await bekle(500);
+    // dokunulmayan jetonlar sayılmadan "şıngır" diye kumbaraya kayar
+    await Promise.all(slotlar.map((s) => kalanJetonlar(s)));
     if (kapandi) return;
-    await soyle(K.mino.bitti);
     await bekle(400);
-    if (!kapandi) app.git('aksam', { gun, kazanc: bugun, mutlu, kaydedildi: true });
+    // kumbara dolmadıysa Kino kendi cebinden bir avuç atar: her gün ödül var
+    if (bugun < HEDEF_JETON) {
+      void soyle(K.kino.benden, 'kino');
+      void kino.oynat('sevin', 900);
+      const bas = efekt_.merkez(kino.el, 0.6, 0.5);
+      const eksik = HEDEF_JETON - bugun;
+      await Promise.all(Array.from({ length: Math.min(eksik, 6) }, (_, i) => new Promise<void>((coz) => window.setTimeout(() => void jetonUcur(bas, i).then(coz), i * 90))));
+      bugun = Math.max(bugun, HEDEF_JETON);
+      kumbaraGuncelle();
+    }
+    if (kapandi) return;
+    salla(kumbara, 'ko-cok-zipla');
+    await soyle(K.mino.odul.doldu);
+    await bekle(300);
+    if (!kapandi) app.git('odul', { gun, mutlu, kaydedildi: true });
   }
 
   // ---------------------------------------------------------------- açılış: otobüs gelir, görseller çözülür
@@ -1804,6 +2327,12 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   ];
   const urls = [...resimleriTopla(el), ...parcaAdlari.map((a) => adres(a)).filter((u): u is string => !!u), ...otobusAdresleri()];
   const iskeletler = ['kino', ...kuyruk.flatMap((s) => [s.musteri, s.ikinci ?? ''])].filter(Boolean);
+  // durağan müşterilerin resimleri de önceden çözülür
+  for (const ad of iskeletler) {
+    const r = duraganResim(ad);
+    if (r) urls.push(r.url);
+  }
+  if (adres('kacan-balon')) urls.push(adres('kacan-balon')!);
   const yuk = onYukle(urls, iskeletler, TEST_MODU ? 3000 : 8000);
   el.classList.add('ko-yukleniyor');
   const baslat = () => {
@@ -1812,10 +2341,10 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     sonDokunus = performance.now();
     olc();
     void musteriGelsin(slotlar[0]);
-    // ikinci müşteri hemen ardından (öğreticide Mino'ya verilince)
+    // ikinci müşteri hemen ardından (ilk oynayışta Mino'ya verilince: Mino anlatırken tezgâh sakin)
     const ikinci = () => {
       if (kapandi) return;
-      if (ogretici) {
+      if (plan[0]?.ogretici && slotlar[0].musteri?.sip.ogretici && !slotlar[0].musteri.bitti) {
         sonra(400, ikinci);
         return;
       }
@@ -1838,6 +2367,20 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       get kulahStok() {
         return kulahStok;
       },
+      set kulahStok(n: number) {
+        kulahStok = n;
+        kulahCiz();
+      },
+      plan,
+      /** test: jeton sırası (yuva) */
+      jetonSay: (i: number) => jetonSay(slotlar[i]),
+      /** test: kaçan balonu hemen çıkarır */
+      kacanBalon,
+      /** test: son dokunuşu geriye alır (ipucu merdiveni) */
+      dokunusGeri: (ms: number) => (sonDokunus -= ms),
+      get sonDokunus() {
+        return sonDokunus;
+      },
       /** test: tezgâha leke düşürür */
       lekeDusur: lekeleriDusur,
       kino,
@@ -1854,7 +2397,6 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       document.removeEventListener('visibilitychange', gorunurluk);
       arkaBirak();
       giris.kapat();
-      yakinBitir?.();
       surukleKaldir.forEach((f) => f());
       temizlik.kapat();
       panel?.kapat();
@@ -1873,8 +2415,8 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
  * kadraj kapağa yaklaşır ve tezgâh görünür. Bütün görseller çözülmeden tezgâh açılmaz; dokununca (hazırsa) hemen geçer.
  */
 function otobusGirisi(ekran: HTMLElement, yer: Yer, hazir: Promise<void>, bitti: () => void): { kapat: () => void } {
-  const otobus = otobusEl({ alinan: kayit.alinan, boya: kayit.boya, sinif: 'ko-giris-otobus' });
-  const kino = dondurmaciKino(kayit.alinan.includes('kino-sapka'));
+  const otobus = otobusEl({ alinan: kayit.acilan.gorunum, boya: kayit.boya, sinif: 'ko-giris-otobus' });
+  const kino = dondurmaciKino(kayit.acilan.gorunum.includes('kino-sapka'));
   const kinoKap = h('div.ko-giris-kino', {}, kino.el);
   const katman = h('div.ko-giris', { 'aria-hidden': 'true' }, manzara(yer), h('div.ko-giris-sahne', {}, h('div.ko-giris-ob', {}, otobus, kinoKap)));
   ekran.append(katman);
@@ -1930,7 +2472,7 @@ function otobusGirisi(ekran: HTMLElement, yer: Yer, hazir: Promise<void>, bitti:
     await hazir;
     if (kapandi) return;
     await katman
-      .animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.2) translateY(4%)', opacity: 0 }], { duration: 500, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' })
+      .animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, easing: 'ease-in', fill: 'forwards' })
       .finished.catch(() => undefined);
     if (!kapandi) gec();
   })();

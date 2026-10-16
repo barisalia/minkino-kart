@@ -201,4 +201,18 @@ export const ses = {
     ton(NOTA(79), 0.02, 0.2, 'triangle', 0.1);
     ton(NOTA(84), 0.06, 0.24, 'triangle', 0.08);
   },
+  /** külah zincirinin notası (soldan sağa do re mi …) */
+  nota(sira = 0) {
+    ton(NOTA(GAM[sira % GAM.length]), 0, 0.3, 'triangle', 0.14);
+    ton(NOTA(GAM[sira % GAM.length] + 12), 0, 0.2, 'sine', 0.04);
+  },
+  /** külah ısırığı: kıtır */
+  kitir() {
+    gurultu(0, 0.06, 3500, 1800, 0.16, 2);
+    gurultu(0.07, 0.05, 3000, 1500, 0.12, 2);
+  },
+  /** kaçan balon kafaya değer: bop */
+  bop() {
+    ton(220, 0, 0.16, 'sine', 0.22, 520);
+  },
 };

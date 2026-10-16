@@ -37,7 +37,17 @@ import { SOSLAR, TATLAR, type Kap, type Sos, type Sus, type Tat } from './model'
 const DOSYALAR = import.meta.glob<string>('../../assets/kino-otobus/*.{webp,png}', { eager: true, query: '?url', import: 'default' });
 /** başka oyunlardan yeniden kullanılanlar (IS-LISTESI-YENI.md → "Yeniden kullanılanlar") */
 const YENIDEN = import.meta.glob<string>(
-  ['../../assets/pasta/jeton-1.webp', '../../assets/pasta/kumbara-kavanoz-1.webp', '../../assets/parti/flama.webp', '../../assets/film/park/*.webp', '../../assets/film/plaj/*.webp'],
+  [
+    '../../assets/pasta/jeton-1.webp',
+    '../../assets/pasta/kumbara-kavanoz-1.webp',
+    '../../assets/pasta/kurabiye-yildiz-altin.webp',
+    '../../assets/pasta/susler-muz.webp',
+    '../../assets/pasta/susler-cikolata-tek.webp',
+    '../../assets/parti/flama.webp',
+    '../../assets/film/esya/balon.webp',
+    '../../assets/film/park/*.webp',
+    '../../assets/film/plaj/*.webp',
+  ],
   { eager: true, query: '?url', import: 'default' },
 );
 
@@ -122,6 +132,19 @@ export const VARLIK = {
   'kulah-makinesi-kapak': YOK, // kubbe kapak, makinenin tuvalinde kapalı yerinde (dönüşümsüz tam oturur)
   'hamur-surahi': YOK, // ağzı solda (SURAHI.agiz)
   'kulah-hamuru': YOK, // pişmiş gofret, üstten yuvarlak (kendi oranında: HAMUR_DISK_ORAN)
+  // ---- V3: ödülle açılan tatlar (kino-otobus-tat-boya.cjs: çilek → vişne, limon → portakal, yaban mersini → pamuk
+  // şeker; Lab ton kaydırma) ve süsler (Pasta'nın süsleri)
+  'kap-visne': kod(() => tatKabiSvg('visne')),
+  'kap-portakal': kod(() => tatKabiSvg('portakal')),
+  'kap-pamukseker': kod(() => tatKabiSvg('pamukseker')),
+  'top-visne': kod(() => topSvg('visne')),
+  'top-portakal': kod(() => topSvg('portakal')),
+  'top-pamukseker': kod(() => topSvg('pamukseker')),
+  'sus-yildiz': yen('pasta/kurabiye-yildiz-altin'),
+  'sus-muz': yen('pasta/susler-muz'),
+  'sus-cikolata-parca': yen('pasta/susler-cikolata-tek'),
+  // kaçan balon (gizli sürpriz)
+  'kacan-balon': yen('film/esya/balon'),
   // ---- yeniden kullanılanlar
   jeton: yen('pasta/jeton-1'),
   'kumbara-kavanoz': yen('pasta/kumbara-kavanoz-1'),
@@ -148,7 +171,7 @@ export function gorsel(ad: VarlikAdi, sinif = ''): string {
 }
 
 /** Hâlâ Gemini dosyası gelmemiş yuvalar (rapor ve geliştirici sayfası için) */
-export const yerTutucular = (tablo: Map<string, string> = TABLO): VarlikAdi[] => (Object.keys(VARLIK) as VarlikAdi[]).filter((a) => !tablo.has(a) && !['jeton', 'kumbara-kavanoz'].includes(a));
+export const yerTutucular = (tablo: Map<string, string> = TABLO): VarlikAdi[] => (Object.keys(VARLIK) as VarlikAdi[]).filter((a) => !tablo.has(a) && VARLIK[a].tur !== 'yeniden');
 
 // ---------------------------------------------------------------- adlar
 export const topAdi = (t: Tat) => `top-${t}` as VarlikAdi;
@@ -156,8 +179,9 @@ export const tatKabiAdi = (t: Tat) => `kap-${t}` as VarlikAdi;
 export const sosSiseAdi = (s: Sos) => `sos-${s}-sise` as VarlikAdi;
 export const sosUstAdi = (s: Sos) => `sos-${s}-ust` as VarlikAdi;
 export const kapAdi = (k: Kap) => k as VarlikAdi;
-export const susAdi = (s: Sus): VarlikAdi => (s === 'serpinti' ? 'serpinti-ust' : s === 'kalp' ? 'kalp-seker' : s);
-export const susRafAdi = (s: Sus): VarlikAdi => (s === 'serpinti' ? 'serpinti-kavanoz' : s === 'kalp' ? 'kalp-seker' : s);
+const SUS_ADI: Record<Sus, VarlikAdi> = { serpinti: 'serpinti-ust', kiraz: 'kiraz', gofret: 'gofret', semsiye: 'semsiye', kalp: 'kalp-seker', yildiz: 'sus-yildiz', muz: 'sus-muz', cikolataParca: 'sus-cikolata-parca' };
+export const susAdi = (s: Sus): VarlikAdi => SUS_ADI[s];
+export const susRafAdi = (s: Sus): VarlikAdi => (s === 'serpinti' ? 'serpinti-kavanoz' : SUS_ADI[s]);
 // derlemede ad denetimi (yazım hatası olmasın)
 TATLAR.forEach((t) => void VARLIK[topAdi(t) as 'top-cilek']);
 SOSLAR.forEach((s) => void VARLIK[sosUstAdi(s) as 'sos-cilek-ust']);
@@ -237,8 +261,10 @@ export const DOLAP_GOZLERI = {
   /** göz dokunma kutusunun altı (tepeden); ön sıranın kutusu buradan başlar */
   sinir: 0.608,
   /** dolabın önündeki kaplar: x ortaları (1 ya da 2 kap), dokunma eni, kabın tabanı */
-  on: [[0.5], [0.29, 0.71]],
+  // V3: ödülle açılan özel tat 7. kap (önde üçüncü)
+  on: [[0.5], [0.29, 0.71], [0.17, 0.5, 0.83]],
   onEn: 0.38,
+  onEn3: 0.32,
   onAlt: 0.995,
   /** kabın boyu (dolabın boyunun oranı; eni görselin en-boy oranından: 958 / 1024) */
   kapBoy: 0.396,
@@ -249,7 +275,7 @@ export function dolapYerleri(n: number): { sol: number; en: number; ust: number;
   const D = DOLAP_GOZLERI;
   const ust = -0.04;
   const gozde = Math.min(n, D.goz.length);
-  const onde = Math.min(n - gozde, 2);
+  const onde = Math.min(n - gozde, 3);
   const yer = (x: number, en: number, u: number, a: number, kapTaban: number) => ({
     sol: (x - en / 2) * 100,
     en: en * 100,
@@ -260,7 +286,7 @@ export function dolapYerleri(n: number): { sol: number; en: number; ust: number;
   });
   return [
     ...D.goz.slice(0, gozde).map((x) => yer(x, D.aralik, ust, D.sinir, D.gozAlt)),
-    ...(onde ? D.on[onde - 1] : []).map((x) => yer(x, D.onEn, D.sinir, 1.03, D.onAlt)),
+    ...(onde ? D.on[onde - 1] : []).map((x) => yer(x, onde === 3 ? D.onEn3 : D.onEn, D.sinir, 1.03, D.onAlt)),
   ];
 }
 
@@ -294,3 +320,43 @@ export const KULAH_MAKINESI = {
 export const SURAHI = { oran: 1024 / 947, agiz: [0.02, 0.17] as [number, number], hamur: '#FDE79F' };
 /** Pişmiş gofret (kulah-hamuru, 1024×1007): en / boy */
 export const HAMUR_DISK_ORAN = 1024 / 1007;
+
+// ---------------------------------------------------------------- V3 müşterileri: durağan resimler
+/**
+ * Durağan müşteriler (tek resim, hareket bütün gövdeye): G-OT1'in altı yeni karakteri (assets/kino-otobus/musteri,
+ * kino-otobus-musteri-kes.cjs; ölçüler olcu.json) ve Nehir abla (assets/pati/nehir-on). Resmi
+ * gelmemiş müşteri havuzdan düşer (oyun 20 müşteriyle de çalışır).
+ */
+const MUSTERI_RESIM = import.meta.glob<string>('../../assets/kino-otobus/musteri/*.webp', { eager: true, query: '?url', import: 'default' });
+const MUSTERI_OLCU = import.meta.glob<Record<string, DuraganOlcu>>('../../assets/kino-otobus/musteri/olcu.json', { eager: true, import: 'default' });
+const NEHIR = import.meta.glob<string>('../../assets/pati/nehir-on.webp', { eager: true, query: '?url', import: 'default' });
+
+/** Durağan resmin ölçüleri (px, resmin kendi pikseli): figürün tepesi / tabanı, bel (tezgâh çizgisi), yüz kutusu, ağız */
+export interface DuraganOlcu {
+  en: number;
+  boy: number;
+  tepe: number;
+  taban: number;
+  /** başın tepesi (kulaksız; Zıpzıp'ın boyu kulaksız ölçülür) */
+  bas?: number;
+  yuz: [number, number, number, number];
+  agiz: [number, number];
+  bel: number;
+}
+/** Nehir abla (assets/pati/nehir-on.webp 494×1448; ölçüler resimden) */
+const NEHIR_OLCU: DuraganOlcu = { en: 494, boy: 1448, tepe: 6, taban: 1440, yuz: [165, 195, 335, 350], agiz: [258, 322], bel: 720 };
+
+export interface DuraganResim {
+  url: string;
+  olcu: DuraganOlcu;
+}
+export function duraganResim(ad: string): DuraganResim | null {
+  if (ad === 'nehir') {
+    const u = NEHIR['../../assets/pati/nehir-on.webp'];
+    if (!u) return null;
+    return { url: u, olcu: NEHIR_OLCU };
+  }
+  const url = MUSTERI_RESIM[`../../assets/kino-otobus/musteri/${ad}.webp`];
+  const olcu = Object.values(MUSTERI_OLCU)[0]?.[ad];
+  return url && olcu ? { url, olcu } : null;
+}

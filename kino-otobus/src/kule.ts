@@ -8,7 +8,7 @@ import { mumSvg, SORU_TOPU } from './cizim';
 import { SUSLER, type Kap, type Sos, type Sus, type TatIstek } from './model';
 import { adres, gorsel, kapAdi, sosUstAdi, susAdi, topAdi, YERLESIM } from './varliklar';
 
-/** Çizilecek kule: istenen (serin ve "?" toplu) ya da yapılan */
+/** Çizilecek kule: istenen ("?" toplu) ya da yapılan */
 export interface KuleVeri {
   kap: Kap;
   toplar: (TatIstek | '?')[];
@@ -30,7 +30,7 @@ const SUS_YERI: [number, number][] = [
   [0.28, 0.2],
   [0.72, 0.2],
 ];
-const SUS_BOY: Record<Sus, number> = { serpinti: 1, kiraz: 0.34, gofret: 0.5, semsiye: 0.5, kalp: 0.3 };
+const SUS_BOY: Record<Sus, number> = { serpinti: 1, kiraz: 0.34, gofret: 0.5, semsiye: 0.5, kalp: 0.3, yildiz: 0.42, muz: 0.4, cikolataParca: 0.36 };
 
 const YT = YERLESIM.top;
 /** Kulenin ölçüleri (topun eni = 1): kabın boyu, i. topun alt kenarı, toplam boy */
@@ -44,10 +44,9 @@ export function kuleOlcu(kap: Kap, topSayisi: number, susVar = false): { kapBoy:
 
 const yuzde = (v: number) => `calc(var(--t) * ${v.toFixed(3)})`;
 
-/** Topun çizimi: tat görseli; 'serin' yarı limon yarı çilek; '?' kesik çizgili boş top */
+/** Topun çizimi: tat görseli; '?' kesik çizgili boş top */
 function topIc(t: TatIstek | '?'): string {
   if (t === '?') return SORU_TOPU;
-  if (t === 'serin') return `<span class="ko-serin">${gorsel(topAdi('limon'), 'ko-serin-a')}${gorsel(topAdi('cilek'), 'ko-serin-b')}</span>`;
   return gorsel(topAdi(t));
 }
 

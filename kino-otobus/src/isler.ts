@@ -263,10 +263,15 @@ export class Temizlik {
 }
 
 // ================================================================ 2. külah yapımı
-/** Külah butonunda iç içe külahlar (rafta kaç külah: 1-4) */
+/**
+ * Külah düğmesi: 3 yuvalı tahta raf (V3 §3). Kaç külah kaldığı resim olarak görünür (rakam yok): dolu yuvada külah, boş
+ * yuvada delik. Hiç kalmayınca düğmede silik bir kâğıt kılıf durur.
+ */
 export function kulahYigini(stok: number): string {
-  const n = Math.max(1, Math.min(4, stok));
-  return `<span class="ko-kulah-yigin" data-stok="${n}">${Array.from({ length: n }, (_, i) => `<span class="ko-kulah-yigin-k" style="--i:${i};--n:${n}">${gorsel('kulah')}</span>`).join('')}</span>`;
+  const n = Math.max(0, Math.min(3, stok));
+  const yuvalar = [0, 1, 2].map((i) => `<span class="ko-kulah-yuva${i < n ? ' ko-dolu' : ''}" style="--i:${i}">${i < n ? `<span class="ko-kulah-yigin-k">${gorsel('kulah')}</span>` : ''}</span>`).join('');
+  const kilif = n ? '' : `<span class="ko-kulah-kilif" aria-hidden="true">${gorsel('kulah')}</span>`;
+  return `<span class="ko-kulah-yigin" data-stok="${n}">${kilif}<span class="ko-kulah-raf" aria-hidden="true">${yuvalar}</span></span>`;
 }
 
 /**

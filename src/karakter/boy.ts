@@ -93,6 +93,23 @@ export const BOY = {
   maymun: 1.05,
   /** Pamuk, Mino gibi bir kedi: aynı boy */
   pamuk: 1,
+  // Kino'nun Otobüsü V3 müşterileri (ekip/senaryo/KINO-OTOBUS-V3.md §6; SERI-KITABI boy tablosu, Mino = 1). Kino'nun
+  // ailesi (Seri 2 kitleri): Ege'nin annesiyle karışmasın diye anne 'seri2-anne'.
+  lokum: 0.95,
+  'seri2-anne': 2.16,
+  baba: 2.36,
+  babaanne: 2.05,
+  dede: 2.2,
+  /** Nehir abla (Pati Dükkânı) */
+  nehir: 2.0,
+  // G-OT1 yeni yan karakterler: Bıdık (keçi), Bıdıcık (çekçekte, çekçekle), Bıdık'ın babası, Tombi (ayı yavrusu),
+  // Bulut (kuzu), Zıpzıp (tavşan, kulaksız)
+  bidik: 1.25,
+  bidicik: 0.8,
+  'bidik-baba': 2.2,
+  tombi: 1.45,
+  bulut: 1.25,
+  zipzip: 1.25,
 } as const;
 export type BoyTipi = keyof typeof BOY;
 

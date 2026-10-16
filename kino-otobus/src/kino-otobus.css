@@ -451,11 +451,11 @@
     opacity: 0;
   }
   22% {
-    transform: scale(1.32);
+    transform: scale(1.08);
     opacity: 1;
   }
   75% {
-    transform: scale(1.28);
+    transform: scale(1.05);
   }
   100% {
     transform: scale(1);
@@ -1241,12 +1241,12 @@
   white-space: nowrap;
 }
 
-/* sıradaki iş: hafifçe parlar (yerinde nefes alır gibi), el ipucu 5 sn sonra */
-.ko-kok .ko-gun .ko-sirada {
+/* sıradaki iş: 30 sn dokunulmazsa hafifçe parlar (V3 ipucu merdiveni; .ko-sirada yalnız işaret), 40 sn el */
+.ko-kok .ko-gun .ko-parla {
   z-index: 2;
 }
-.ko-kok .ko-gun button.ko-sirada::after,
-.ko-kok .ko-gun .ko-yuva.ko-sirada::after {
+.ko-kok .ko-gun button.ko-parla::after,
+.ko-kok .ko-gun .ko-yuva.ko-parla::after {
   content: '';
   position: absolute;
   inset: calc(-3 * var(--u));
@@ -1255,11 +1255,11 @@
   animation: ko-sirada 1.25s ease-in-out infinite;
   pointer-events: none;
 }
-.ko-kok .ko-gun .ko-kule.ko-sirada {
+.ko-kok .ko-gun .ko-kule.ko-parla {
   filter: drop-shadow(0 0 calc(6 * var(--u)) rgba(255, 210, 63, 1));
   animation: ko-sirada-kule 1.25s ease-in-out infinite;
 }
-.ko-kok .ko-gun .ko-ver.ko-sirada {
+.ko-kok .ko-gun .ko-ver.ko-parla {
   animation: ko-sirada-ver 1.1s ease-in-out infinite;
 }
 @keyframes ko-sirada {
@@ -2154,7 +2154,7 @@
 
 /* az hareket */
 @media (prefers-reduced-motion: reduce) {
-  .ko-kok .ko-sirada::after,
+  .ko-kok .ko-parla::after,
   .ko-kok .ko-gun-kart.ko-siradaki,
   .ko-kok .ko-logo-alt span,
   .ko-kok .ko-ampul,
@@ -2650,24 +2650,6 @@
   }
 }
 
-/* külah rafı: iç içe külahlar (1-4) */
-.ko-kok .ko-kulah-yigin {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-/* uçları altta birleşik yelpaze: kaç külah kaldığı bir bakışta görünür */
-.ko-kok .ko-kulah-yigin-k {
-  position: absolute;
-  left: 50%;
-  bottom: 2%;
-  height: calc(96% - (var(--n) - 1) * 6%);
-  aspect-ratio: 664 / 1024;
-  transform-origin: 50% 96%;
-  transform: translateX(-50%) rotate(calc((var(--i) - (var(--n) - 1) / 2) * 17deg));
-}
-
 /* iş köşesi: kumbaranın üstündeki küçük külah makinesi */
 .ko-kok .ko-is-kosesi {
   position: absolute;
@@ -2892,7 +2874,7 @@
 .ko-kok .ko-is-makine.ko-pisti .ko-is-disk.ko-sirada {
   animation:
     ko-disk-kalk 0.55s 0.15s cubic-bezier(0.3, 1.5, 0.5, 1) backwards,
-    ko-sirada-kule 1.25s 0.7s ease-in-out infinite;
+    ko-sirada-kule 1.25s 12s ease-in-out infinite;
 }
 @keyframes ko-disk-kalk {
   from {
@@ -2997,9 +2979,9 @@
   translate: 60% 0;
   pointer-events: none;
 }
+/* panelde de parlama yok (V3 §7): sıradaki parça ancak 12 sn sonra hafifçe hoplar */
 .ko-kok .ko-is-panel .ko-sirada {
-  filter: drop-shadow(0 0 calc(6 * var(--u)) rgba(255, 210, 63, 1));
-  animation: ko-sirada-kule 1.25s ease-in-out infinite;
+  animation: ko-sirada-kule 1.25s ease-in-out 12s infinite;
 }
 /* sıradaki işin genel z-index'i (2) panelde katmanları bozmasın */
 .ko-kok .ko-gun .ko-is-panel .ko-is-makine {
@@ -3137,4 +3119,820 @@
   .ko-kok .ko-sos-akis {
     animation: none !important;
   }
+}
+
+/* ================================================================ V3 (ekip/senaryo/KINO-OTOBUS-V3.md) */
+/* ödülle açılan özel tat ve süs: "yeni" kurdelesi (yazı yok: küçük yıldız) */
+.ko-kok .ko-tat.ko-ozel::after,
+.ko-kok .ko-raf-esya.ko-ozel::after {
+  content: '';
+  position: absolute;
+  right: 4%;
+  top: 4%;
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  background: #ffd23f;
+  border: calc(2 * var(--u)) solid var(--ko-k);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  pointer-events: none;
+  animation: ko-ozel-yildiz 2.4s ease-in-out infinite;
+}
+@keyframes ko-ozel-yildiz {
+  50% {
+    transform: translateY(calc(-2 * var(--u))) scale(1.06);
+  }
+}
+
+/* külah rafı: 3 yuvalı tahta raf, dolu yuvada ağzı yukarı külah, boşta delik; hiç yoksa silik kâğıt kılıf */
+.ko-kok .ko-kulah-yigin {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ko-kok .ko-kulah-raf {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 30%;
+  height: 16%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: calc(5 * var(--u));
+  background: linear-gradient(180deg, #f2c88c, #d99c55);
+  border: calc(2.5 * var(--u)) solid var(--ko-k);
+  box-shadow: 0 calc(2 * var(--u)) 0 rgba(90, 52, 35, 0.3);
+}
+.ko-kok .ko-kulah-yuva {
+  position: relative;
+  width: 24%;
+  height: 42%;
+  border-radius: 50%;
+  background: #8a5634;
+  box-shadow: inset 0 calc(2 * var(--u)) 0 rgba(0, 0, 0, 0.3);
+}
+.ko-kok .ko-kulah-yuva.ko-dolu .ko-kulah-yigin-k {
+  position: absolute;
+  left: 50%;
+  bottom: -40%;
+  height: calc(44 * var(--u));
+  aspect-ratio: 664 / 1024;
+  transform: translateX(-50%);
+}
+.ko-kok .ko-kulah-yigin-k .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-kulah-kilif {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  height: 64%;
+  aspect-ratio: 664 / 1024;
+  transform: translateX(-50%);
+  opacity: 0.3;
+  filter: grayscale(1) brightness(1.4);
+}
+.ko-kok .ko-kulah-kilif .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-kap-dugme.ko-kulah-yok {
+  filter: saturate(0.6);
+}
+.ko-kok .ko-raf-salla {
+  animation: ko-raf-salla 0.5s ease-in-out;
+}
+@keyframes ko-raf-salla {
+  25% {
+    transform: translateX(calc(-3 * var(--u)));
+  }
+  50% {
+    transform: translateX(calc(3 * var(--u)));
+  }
+  75% {
+    transform: translateX(calc(-1.5 * var(--u)));
+  }
+}
+/* külah bitince makine daha çok buhar çıkarır (dolaylı işaret; parlamaz) */
+.ko-kok .ko-is-kosesi.ko-buhar-cok::before {
+  inset: auto;
+  left: 30%;
+  top: calc(-14 * var(--u));
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 35%, rgba(255, 255, 255, 0) 70%);
+  animation: ko-makine-buhar 1.6s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes ko-makine-buhar {
+  from {
+    transform: translateY(calc(10 * var(--u))) scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(calc(-14 * var(--u))) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* jeton sırası: yuvanın önünde, tezgâh çizgisinde; sıranın tamamı tek dokunma kutusu (≥ 88 × 72) */
+.ko-kok .ko-jeton-sira {
+  position: absolute;
+  left: 50%;
+  top: calc(-50 * var(--u));
+  z-index: 5;
+  min-width: calc(92 * var(--u));
+  height: calc(72 * var(--u));
+  padding: 0 calc(6 * var(--u));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ko-kok .ko-jeton-sira[hidden] {
+  display: none;
+}
+.ko-kok .ko-sira-jeton {
+  position: relative;
+  width: calc(40 * var(--u));
+  height: calc(40 * var(--u));
+  margin: 0 calc(-7 * var(--u)) calc(10 * var(--u));
+}
+.ko-kok .ko-sira-jeton::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: calc(-4 * var(--u));
+  height: calc(7 * var(--u));
+  border-radius: 50%;
+  background: rgba(90, 52, 35, 0.25);
+  z-index: -1;
+}
+.ko-kok .ko-sira-jeton .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-jeton-sek {
+  animation: ko-jeton-sek 0.42s ease-out;
+}
+@keyframes ko-jeton-sek {
+  0% {
+    transform: translateY(calc(-14 * var(--u)));
+  }
+  45% {
+    transform: none;
+  }
+  65% {
+    transform: translateY(calc(-6 * var(--u)));
+  }
+  85% {
+    transform: none;
+  }
+}
+
+/* kumbara: içi yükselir (rakam yok), yan yüzünde üç çentik; dolunca kapak bir kez "pıt" */
+.ko-kok .ko-kumbara-dolgu {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 10%;
+  height: 48%;
+  border-radius: 38% 38% 44% 44%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ko-kok .ko-kumbara-dolgu::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--dolu, 0) * 100%);
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255, 246, 200, 0.95) 0 14%, transparent 15%) 0 0 / 34% 30%,
+    linear-gradient(180deg, rgba(255, 214, 80, 0.88), rgba(232, 168, 40, 0.9));
+  border-top: 2px solid rgba(160, 100, 20, 0.6);
+  transition: height 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+  mix-blend-mode: multiply;
+}
+.ko-kok .ko-kumbara-centik {
+  position: absolute;
+  left: 8%;
+  bottom: 10%;
+  width: 10%;
+  height: 48%;
+  pointer-events: none;
+}
+.ko-kok .ko-kumbara-centik i {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: calc(var(--c) * 100% - 1.5px);
+  height: 3px;
+  border-radius: 999px;
+  background: var(--ko-k);
+  opacity: 0.7;
+}
+.ko-kok .ko-kapak-pit {
+  animation: ko-kapak-pit 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes ko-kapak-pit {
+  40% {
+    transform: translateY(-8px) scale(1.03, 0.97);
+  }
+}
+.ko-kok .ko-cok-zipla {
+  animation: ko-cok-zipla 0.55s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes ko-cok-zipla {
+  20% {
+    transform: scale(1.06, 0.9);
+  }
+  50% {
+    transform: translateY(-10px) scale(0.95, 1.06);
+  }
+  80% {
+    transform: scale(1.03, 0.96);
+  }
+}
+.ko-kok .ko-hafif-salla {
+  animation: ko-hafif-salla 0.9s ease-in-out;
+}
+@keyframes ko-hafif-salla {
+  20%,
+  60% {
+    transform: translateX(-2px);
+  }
+  40%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+/* 5-6 "Kaç jeton oldu?": kumbaranın solunda dikey üç rakam balonu */
+.ko-kok .ko-sayi-balonlar {
+  position: absolute;
+  right: 100%;
+  bottom: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+  margin-right: calc(6 * var(--u));
+  animation: ko-balon-acil 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.ko-kok .ko-sayi-balonlar.ko-sonuyor {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ko-kok .ko-sayi-balon {
+  width: max(52px, calc(56 * var(--u)));
+  height: max(52px, calc(56 * var(--u)));
+  border-radius: 50%;
+  border: calc(3 * var(--u)) solid var(--ko-k);
+  background: #fff;
+  color: var(--ko-k);
+  font-size: calc(28 * var(--u));
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 calc(3 * var(--u)) 0 var(--ko-k);
+}
+.ko-kok .ko-gun[data-yon='dikey'] .ko-sayi-balonlar {
+  bottom: 100%;
+  right: 0;
+  flex-direction: row;
+  margin: 0 0 calc(6 * var(--u));
+}
+
+/* ipucu balonu (yazı yok): güneş + ter (serin), pembe kalp, kocaman ağız, çikolata bıyık, iki renk damla, meyve
+   sepeti, yeni şey (parıltılı); 5-6'da altta kesik çizgili boş toplar (top sayısı) */
+.ko-kok .ko-b-ipucu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  min-width: calc(var(--pen-h) * 0.3);
+}
+.ko-kok .ko-b-ipucu > :first-child {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--pen-h) * 0.3);
+  min-width: calc(var(--pen-h) * 0.3);
+}
+.ko-kok .ko-ip-ikon {
+  display: block;
+  width: calc(var(--pen-h) * 0.26);
+  height: calc(var(--pen-h) * 0.26);
+}
+.ko-kok .ko-ip-ikon svg,
+.ko-kok .ko-ip-yeni-r .ko-g,
+.ko-kok .ko-ip-sos .ko-g {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-ip-serin .ko-ip-gunes {
+  animation: ko-don 8s linear infinite;
+}
+.ko-kok .ko-ip-serin .ko-ip-ter {
+  position: absolute;
+  right: -8%;
+  top: 40%;
+  width: calc(var(--pen-h) * 0.07);
+  height: calc(var(--pen-h) * 0.1);
+  animation: ko-ter 1.6s ease-in infinite;
+}
+.ko-kok .ko-ip-serin .ko-ip-ter2 {
+  right: auto;
+  left: -6%;
+  animation-delay: -0.8s;
+}
+.ko-kok .ko-ip-kalp {
+  animation: ko-ip-kalp 1.2s ease-in-out infinite;
+}
+@keyframes ko-ip-kalp {
+  50% {
+    transform: scale(1.06);
+  }
+}
+.ko-kok .ko-ip-cikolata .ko-ip-biyik {
+  width: calc(var(--pen-h) * 0.28);
+  height: calc(var(--pen-h) * 0.16);
+}
+.ko-kok .ko-ip-sos {
+  position: absolute;
+  right: -14%;
+  top: -10%;
+  width: calc(var(--pen-h) * 0.13);
+  height: calc(var(--pen-h) * 0.13);
+}
+.ko-kok .ko-ip-iki .ko-ip-ikon {
+  width: calc(var(--pen-h) * 0.12);
+  height: calc(var(--pen-h) * 0.17);
+  margin: 0 calc(2 * var(--u));
+}
+.ko-kok .ko-ip-meyve-r {
+  width: calc(var(--pen-h) * 0.14);
+  height: calc(var(--pen-h) * 0.14);
+  object-fit: contain;
+  margin: 0 calc(-4 * var(--u));
+}
+.ko-kok .ko-ip-meyve-r:nth-child(2) {
+  transform: translateY(calc(-6 * var(--u)));
+}
+.ko-kok .ko-ip-yeni-r {
+  display: block;
+  width: calc(var(--pen-h) * 0.24);
+  height: calc(var(--pen-h) * 0.22);
+}
+.ko-kok .ko-ip-parilti {
+  position: absolute;
+  right: -6%;
+  top: -4%;
+  width: calc(14 * var(--u));
+  height: calc(14 * var(--u));
+  background: #ffd23f;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: ko-ozel-yildiz 1.2s ease-in-out infinite;
+}
+.ko-kok .ko-ip-toplar {
+  display: flex;
+  gap: calc(3 * var(--u));
+}
+.ko-kok .ko-ip-top {
+  width: calc(var(--pen-h) * 0.075);
+  height: calc(var(--pen-h) * 0.075);
+  border-radius: 50%;
+  border: calc(2.2 * var(--u)) dashed var(--ko-k);
+  background: #fff;
+}
+.ko-kok .ko-b-surpriz {
+  position: relative;
+  animation: ko-ip-kalp 1.6s ease-in-out infinite;
+}
+.ko-kok .ko-balon-soz.ko-soz-uzun {
+  animation: ko-soz 3.6s ease-out forwards;
+}
+
+/* kit (Kino'nun ailesi) ve durağan resim müşteriler: tek kutu, bütün gövde hareketi (tabandan) */
+.ko-kok .ko-kit-govde,
+.ko-kok .ko-resim-govde {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+  animation: ko-nefes 3.2s ease-in-out infinite;
+}
+@keyframes ko-nefes {
+  50% {
+    transform: scale(1.006, 1.014);
+  }
+}
+.ko-kok .ko-kit-canvas,
+.ko-kok .ko-resim-kisi {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.ko-kok .ko-yuz-isaret {
+  position: absolute;
+  pointer-events: none;
+  visibility: hidden;
+}
+/* bayıldı: iki hop (bütün gövde) */
+.ko-kok .ko-musteri.ko-bayildi .ko-m-govde {
+  animation: ko-bayildi 1.3s ease-out;
+}
+@keyframes ko-bayildi {
+  15% {
+    transform: scale(1.04, 0.92);
+  }
+  30% {
+    transform: translateY(-9%) scale(0.96, 1.06);
+  }
+  45% {
+    transform: scale(1.03, 0.95);
+  }
+  62% {
+    transform: translateY(-7%) scale(0.97, 1.04);
+  }
+  78% {
+    transform: scale(1.02, 0.97);
+  }
+}
+/* komik: titreme; ekşide büzülür, kocaman kulede gömülür */
+.ko-kok .ko-musteri.ko-komik .ko-m-govde {
+  animation: ko-titre 0.18s linear 4;
+}
+.ko-kok .ko-musteri.ko-komik[data-gag='eksi'] .ko-m-govde,
+.ko-kok .ko-musteri.ko-komik[data-gag='kahveGaga'] .ko-m-govde,
+.ko-kok .ko-musteri.ko-komik[data-gag='sakal'] .ko-m-govde {
+  animation: ko-eksi 0.9s ease-in-out;
+}
+.ko-kok .ko-musteri.ko-komik[data-gag='gomul'] .ko-m-govde,
+.ko-kok .ko-musteri.ko-komik[data-gag='bos'] .ko-m-govde {
+  animation: ko-gomul 0.9s ease-in-out;
+}
+@keyframes ko-titre {
+  25% {
+    transform: translateX(-1.5%);
+  }
+  75% {
+    transform: translateX(1.5%);
+  }
+}
+@keyframes ko-eksi {
+  20%,
+  70% {
+    transform: scale(0.93, 1.05);
+  }
+  35%,
+  55% {
+    transform: scale(0.95, 1.04) translateX(1%);
+  }
+}
+@keyframes ko-gomul {
+  35%,
+  65% {
+    transform: translateY(5%) scale(1.03, 0.95);
+  }
+}
+.ko-kok .ko-titre {
+  animation: ko-titre 0.14s linear 5;
+}
+/* Zıpzıp önce: yana zıplar, öne geçer; utanınca kızarır */
+.ko-kok .ko-musteri.ko-zipzip-once .ko-m-govde {
+  animation: ko-zipzip 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) 2;
+}
+@keyframes ko-zipzip {
+  40% {
+    transform: translateY(-10%) scale(0.95, 1.06);
+  }
+}
+.ko-kok .ko-musteri.ko-utandi .ko-resim-kisi {
+  filter: saturate(1.25) drop-shadow(0 0 6px rgba(255, 110, 150, 0.5));
+}
+.ko-kok .ko-burun-dondurma {
+  position: absolute;
+  width: calc(16 * var(--u, 1px));
+  height: calc(14 * var(--u, 1px));
+  transform: translate(-50%, -50%);
+  animation: ko-balon-acil 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.ko-kok .ko-burun-dondurma .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-tombi-kulah {
+  position: absolute;
+  z-index: 40;
+  width: 44px;
+  height: 64px;
+  padding: 4px;
+  border-radius: 16px;
+  border: 3px solid var(--ko-k);
+  background: #fff;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: ko-balon-acil 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.ko-kok .ko-tombi-kulah .ko-g,
+.ko-kok .ko-kacan-balon .ko-g,
+.ko-kok .ko-ucan-balon .ko-g,
+.ko-kok .ko-hokkabaz-jeton .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-kacan-balon {
+  position: absolute;
+  left: 4%;
+  top: 14%;
+  z-index: 6;
+  width: calc(var(--pen-h) * 0.22);
+  height: calc(var(--pen-h) * 0.24);
+  max-width: 190px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ko-kok .ko-ucan-balon {
+  width: 44px;
+  height: 48px;
+}
+.ko-kok .ko-hokkabaz-jeton {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  margin: -15px;
+  animation: ko-hokkabaz 0.75s ease-in-out 2;
+  animation-delay: calc(var(--i) * -0.25s);
+}
+@keyframes ko-hokkabaz {
+  0%,
+  100% {
+    transform: translate(-22px, 0);
+  }
+  25% {
+    transform: translate(0, -46px);
+  }
+  50% {
+    transform: translate(22px, 0);
+  }
+  75% {
+    transform: translate(0, -12px);
+  }
+}
+/* gizli sürprizler: külah zinciri dokunulur, dolabın camına kalp, kara tahta */
+.ko-kok .ko-zincir-kulah {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.ko-kok .ko-zincir-dokun {
+  animation: ko-zincir-dokun 0.5s ease-out;
+}
+@keyframes ko-zincir-dokun {
+  30% {
+    transform: translateY(calc(5 * var(--u))) scale(1.05, 0.94);
+  }
+}
+.ko-kok .ko-cam-kalp {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  z-index: 2;
+  width: calc(46 * var(--u));
+  height: calc(42 * var(--u));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.85;
+}
+.ko-kok .ko-cam-kalp svg {
+  width: 100%;
+  height: 100%;
+}
+.ko-kok .ko-cam-kalp path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: ko-cam-kalp 1.2s ease-out forwards;
+}
+@keyframes ko-cam-kalp {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.ko-kok .ko-duvar .ko-duvar-tahta {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.ko-kok .ko-sapka-zipla {
+  animation: ko-sapka-zipla 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes ko-sapka-zipla {
+  40% {
+    transform: translateY(-60px);
+  }
+}
+
+/* ---------------------------------------------------------------- gün sonu ödülü: üç kart */
+.ko-kok .ko-odul-sag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 0;
+  padding-bottom: 8px;
+}
+.ko-kok .ko-odul-kavanoz {
+  position: relative;
+  width: min(96px, 18vmin);
+  aspect-ratio: 325 / 393;
+}
+.ko-kok .ko-odul-kavanoz .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-kartlar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.ko-kok .ko-kart {
+  position: relative;
+  width: min(150px, 26vw, 40vh);
+  aspect-ratio: 150 / 190;
+  padding: 8px;
+  border-radius: 18px;
+  border: 4px solid var(--ko-k);
+  background: linear-gradient(180deg, #fffaf0, #ffe7c2);
+  box-shadow: 0 5px 0 var(--ko-k);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(30px) scale(0.6);
+}
+.ko-kok .ko-kartlar-acik .ko-kart {
+  animation: ko-kart-ac 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--i) * 0.14s) forwards;
+}
+@keyframes ko-kart-ac {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ko-kok .ko-kart-ic {
+  position: absolute;
+  inset: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ko-kok .ko-kart-resim {
+  position: relative;
+  display: block;
+  width: 86%;
+  height: 86%;
+}
+.ko-kok .ko-kart-resim > .ko-g,
+.ko-kok .ko-kart-resim > svg,
+.ko-kok .ko-kart-resim > i {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-kart-kap {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 62%;
+}
+.ko-kok .ko-kart-top {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 4%;
+  height: 40%;
+}
+.ko-kok .ko-kart-kap .ko-g,
+.ko-kok .ko-kart-top .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-kart-kule {
+  --t: min(46px, 9vh);
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+}
+.ko-kok .ko-kart.ko-onizleme {
+  border-color: #ffb400;
+  box-shadow: 0 5px 0 var(--ko-k), 0 0 0 5px #ffe45c;
+}
+.ko-kok .ko-kart.ko-onizleme .ko-kart-resim {
+  animation: ko-ip-kalp 0.9s ease-in-out infinite;
+}
+.ko-kok .ko-kart .mk-kilit {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+}
+.ko-kok .ko-ucan-kart {
+  width: 110px;
+  height: 120px;
+}
+.ko-kok .ko-ucan-kart .ko-kart-resim {
+  width: 100% !important;
+  height: 100%;
+}
+.ko-kok .ko-odul-tamam {
+  left: auto;
+  top: auto;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: 88px;
+  height: 88px;
+}
+.ko-kok .ko-odul .ko-aksam-ic {
+  grid-template-columns: 0.72fr 1fr;
+}
+@media (orientation: portrait) {
+  .ko-kok .ko-odul .ko-aksam-ic {
+    grid-template-columns: 1fr;
+    grid-template-rows: 38% 1fr;
+  }
+  .ko-kok .ko-kart {
+    width: min(112px, 29vw);
+  }
+  .ko-kok .ko-odul-sag {
+    justify-content: center;
+    padding-bottom: 100px;
+  }
+}
+
+/* sabah: bugünün özel tadı (açılan tatların kapları) */
+.ko-kok .ko-ozel-secim {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 244, 220, 0.86);
+}
+.ko-kok .ko-ozel-raf {
+  display: flex;
+  gap: 18px;
+  padding: 18px 22px 26px;
+  border-radius: 22px;
+  border-bottom: 12px solid #d99c55;
+  background: #fff8ea;
+}
+.ko-kok .ko-ozel-kap {
+  width: min(120px, 26vw, 32vh);
+  aspect-ratio: 957 / 1024;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ko-kok .ko-ozel-kap .ko-g {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ko-kok .ko-ozel-kap.ko-secili {
+  filter: drop-shadow(0 0 10px #ffd23f);
+}
+
+/* kumbara düğmesi kavanozun oranında (dikeyde geniş hücrede çentikler ve dolgu kavanozdan kopmasın) */
+.ko-kok .ko-kumbara-yer .ko-kumbara {
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 325 / 393;
 }

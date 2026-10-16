@@ -1,23 +1,13 @@
 {
-  "aciklama": "Kino'nun Otobüsü · Dondurma (ekip/senaryo/kino-otobus.md). mino = anlatıcı sesi (Mino); kino = Kino'nun kendi sesi; parca = istek okumasının parçaları (kalıplar kino-otobus/src/model.ts içinde açılır: {Kap} kap adı, {sayi}/{Sayi} sayı adı, {tat} tat adı, {sus} süs adı). balon ve arayuz ekranda görünür, seslendirilmez.",
+  "aciklama": "Kino'nun Otobüsü · Dondurma (V3: ekip/senaryo/KINO-OTOBUS-V3.md). mino = anlatıcı sesi (Mino; durum anlatır, emir vermez); kino = Kino'nun kendi sesi; musteri = Seri 2 karakterlerinin kendi sesleri (eleven_v4, content/film2/sesler.json; ONAY BEKLİYOR: üretilmedi, şimdilik balonda yazı); parca = istek okumasının parçaları (kalıplar kino-otobus/src/model.ts içinde açılır: {Kap} kap adı, {sayi}/{Sayi} sayı adı, {tat} tat adı, {sus} süs adı). balon ve arayuz ekranda görünür, seslendirilmez. [etiket] yalnız seslendirme içindir.",
   "mino": {
     "geldi": "Kino'nun Otobüsü geldi!",
     "kap_sor": "Külah mı, kâse mi?",
-    "kac_top": "Kaç top?",
-    "tam": "Tam istediği gibi!",
-    "farkli": "Biraz farklı, bak!",
     "ikisine": "İkisine aynısı!",
     "esit": "Eşit paylaştır!",
-    "sirada": "Sırada ne var?",
-    "kumbara": "Kumbarada kaç jeton?",
-    "susleyelim": "Otobüsü süsleyelim!",
     "bitti": "Bugünlük bu kadar!",
-    "dokun": "Şimdi buna dokun!",
-    "bana_ver": "Şimdi bana ver!",
-    "ayni": "Aynısını yap!",
     "oruntu": "Sırada hangi renk?",
     "bir_fazla": "Tavşanınkinden bir fazla top!",
-    "serin": "Limon ya da çilek!",
     "dogumgunu": "Bugün benim doğum günüm!",
     "iyi_ki": "İyi ki doğdun Mino!",
     "hedef": {
@@ -25,7 +15,52 @@
       "4": "Bugün dört mutlu müşteri!"
     },
     "hedef_tamam": "Hedef tamam!",
-    "kulah_az": "Külahlar azaldı!"
+    "durum": {
+      "mino": "[giggles] Pembe bir şey canım çekti…",
+      "serin": "[softly] Çok sıcaklamış gibi…",
+      "pembe": "[curious] Pembeye bakıyor…",
+      "kocaman": "[giggles] Çok acıkmış!",
+      "cikolata": "[curious] Kahverengi bir şey mi?",
+      "ikiRenk": "[happy] İki renk sever.",
+      "meyveli": "[curious] Meyveli bir şey mi?",
+      "yeni": "[excited] Yeni şeyi duymuş!",
+      "surpriz": "[whispers] Ne sever acaba?",
+      "resimli": "[happy] Bak, ne istiyor?"
+    },
+    "durum_top": {
+      "1": "[softly] Tek top yeter.",
+      "2": "[happy] İki top ister.",
+      "3": "[happy] Üç top ister."
+    },
+    "tepki": {
+      "bayildi": "[happy] Bayıldı!",
+      "mmm": "[happy] Beğendi!",
+      "komik": "[laughs] Farklıymış ama güzel!",
+      "kase": "[laughs] Kâseden de olur!"
+    },
+    "odeme": {
+      "kac": "[curious] Kaç jeton oldu?"
+    },
+    "odul": {
+      "doldu": "[excited] Kumbara doldu!",
+      "hangisi": "[curious] Hangisi olsun?",
+      "yarina": "[softly] Onlar da yarına!",
+      "ismarla": "[giggles] Kino'ya dondurma!",
+      "tat": { "visne": "Vişne!", "portakal": "Portakal!", "pamukseker": "Pamuk şeker!" },
+      "sus": { "yildiz": "Yıldız kurabiye!", "muz": "Muz dilimi!", "cikolataParca": "Çikolata parçası!" },
+      "gorunum": {
+        "flama": "Flama!",
+        "kino-sapka": "Kiraz şapka!",
+        "ampul": "Ampuller!",
+        "cati-kulah": "Çatı külahı!",
+        "korna": "Korna!",
+        "kemik-tabela": "Kemik tabela!",
+        "jant": "Yıldızlı jant!",
+        "boya-nane": "Nane yeşili!",
+        "boya-limon": "Limon sarısı!",
+        "boya-cilek": "Çilek pembesi!"
+      }
+    }
   },
   "kino": {
     "hosgeldin": "Hoş geldin!",
@@ -37,7 +72,28 @@
     "uyku": "Zzz… dondurma…",
     "hav": "Hav!",
     "piril": "Pırıl pırıl!",
-    "taze": "Taze külah!"
+    "taze": "Taze külah!",
+    "kulah_bitti": "[gasps] Külah bitti!",
+    "tat_visne": "[happy] Mmm, vişne!",
+    "tat_portakal": "[happy] Mmm, portakal!",
+    "tat_pamukseker": "[happy] Mmm, pamuk şeker!",
+    "benden": "[giggles] Benden de!",
+    "beyin": "[laughs] Beynim dondu!",
+    "yeni_dene": "[excited] Yeni tadı denesene!"
+  },
+  "musteri": {
+    "lokum": { "istek": "[giggles] Abiii, dondurma!", "bayildi": "[laughs] Abiii, bir daha!", "komik": "[gasps] Burnum dondu!" },
+    "anne": { "istek": "[happy] Meyveli bir şey?", "bayildi": "[happy] Aferin oğluma!", "komik": "[laughs] Ay, ekşiymiş!" },
+    "baba": { "istek": "[laughs] Kocamanından!", "bayildi": "[excited] İşte bu be!", "komik": "[chuckles] Gözlüğüm buğulandı!" },
+    "babaanne": { "istek": "[softly] Fıstıklı var mı?", "bayildi": "[happy] Maşallah sana!", "komik": "[laughs] Dişime yapıştı!" },
+    "dede": { "istek": "[chuckles] Eski usul olsun.", "bayildi": "[happy] Tam benim zamanımdaki!", "komik": "[laughs] Bıyığım mavi oldu!" },
+    "nehir": { "istek": "[happy] Serin bir şey lütfen!", "bayildi": "[excited] Bayıldım Kino!", "komik": "[giggles] Hı, ilginçmiş!" },
+    "bidik": { "istek": "[excited] Meee, hepsinden!", "bayildi": "Hıp! Pardon!", "komik": "[laughs] Meee, güzelmiş!" },
+    "bidicik": { "istek": "[giggles] Bıdık abiii!", "bayildi": "[giggles] Ben de hıp!", "komik": "[gasps] Meee!" },
+    "bidik-baba": { "istek": "[laughs] Meee, serin olsun!", "bayildi": "[happy] Oh, ferahladım!", "komik": "[chuckles] Sakalım boyandı!" },
+    "tombi": { "istek": "[sighs] Ben acıktım…", "bayildi": "[happy] Kocamanmış!", "komik": "[sighs] Bu kadar mı?" },
+    "bulut": { "istek": "[softly] Sen… seçer misin?", "bayildi": "[whispers] Çok güzel…", "komik": "[giggles] Hı… olur." },
+    "zipzip": { "istek": "[excited] Ben önce!", "bayildi": "[excited] Hızlı ve güzel!", "komik": "[laughs] Komikmiş!" }
   },
   "parca": {
     "kap": { "kulah": "Külahta", "kase": "Kâsede", "kupa": "Kupada" },
@@ -48,7 +104,10 @@
       "cikolata": "çikolata",
       "limon": "limon",
       "fistik": "fıstık",
-      "yabanmersini": "yaban mersini"
+      "yabanmersini": "yaban mersini",
+      "visne": "vişne",
+      "portakal": "portakal",
+      "pamukseker": "pamuk şeker"
     },
     "tat_ara": "{tat},",
     "tat_son": "{tat}!",
@@ -56,15 +115,17 @@
     "orta": "ortada {tat}!",
     "ust": "üstte {tat}!",
     "sos": { "cikolata": "Çikolata soslu!", "cilek": "Çilek soslu!", "karamel": "Karamel soslu!" },
-    "sus": { "kiraz": "kiraz", "gofret": "gofret", "semsiye": "şemsiye", "kalp": "kalp şeker" },
+    "sus": { "kiraz": "kiraz", "gofret": "gofret", "semsiye": "şemsiye", "kalp": "kalp şeker", "yildiz": "yıldız kurabiye", "muz": "muz dilimi", "cikolataParca": "çikolata parçası" },
     "sus_sayi": "{Sayi} {sus}!",
-    "serpinti": "Serpintili!",
-    "besli": ["Beş!", "On!", "On beş!", "Yirmi!"]
+    "serpinti": "Serpintili!"
   },
   "balon": {
-    "genel": ["Mmm!", "Soğuk!", "Bayıldım!"],
+    "bayildi": ["Mmm!", "Bayıldım!", "Oley!"],
+    "mmm": ["Mmm!", "Soğuk!", "Güzel!"],
+    "komik": ["Iıı!", "Hı?", "Oha!"],
     "ordek": "Vak, limon!",
-    "pamuk": "Pembe olsun!"
+    "bidik_kulah": "Kıtır kıtır!",
+    "tombi_kulah": "Külah da!"
   },
   "arayuz": {
     "baslik_ust": "Kino'nun",

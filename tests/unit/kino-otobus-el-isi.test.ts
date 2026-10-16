@@ -9,7 +9,7 @@ import {
   kepceBirak,
   kepceDolum,
   kulahAdimlari,
-  kulahAzMi,
+  kulahVarMi,
   kulahKullan,
   kulahYap,
   lekeDuserMi,
@@ -92,15 +92,16 @@ describe('Kino’nun Otobüsü: yan işler', () => {
     expect(lekeDuserMi(2, 0, true)).toBe(false);
     expect(lekeDuserMi(4, 0, false)).toBe(true);
   });
-  it('külah hiç bitmez: gün başında az (sabah hazırlığı), alındıkça azalır, en az 1; yapınca dolar', () => {
-    expect(kulahAzMi(KULAH_STOK.bas)).toBe(true);
+  it('külah BİTER (V3): raf 3 yuvalı, gün başında 2; üçüncü külah isteğinde raf boş; yapınca 3 taze külah', () => {
+    expect(KULAH_STOK).toMatchObject({ bas: 2, dolu: 3, enAz: 0 });
     let s: number = KULAH_STOK.bas;
-    for (let i = 0; i < 10; i++) s = kulahKullan(s);
-    expect(s).toBe(KULAH_STOK.enAz);
+    s = kulahKullan(s);
+    expect(kulahVarMi(s)).toBe(true);
+    s = kulahKullan(s);
+    expect(kulahVarMi(s)).toBe(false);
+    expect(kulahKullan(s)).toBe(0);
     s = kulahYap();
-    expect(s).toBe(KULAH_STOK.dolu);
-    expect(kulahAzMi(s)).toBe(false);
-    expect(kulahAzMi(kulahKullan(kulahKullan(s)))).toBe(true);
+    expect(s).toBe(3);
   });
   it('külah yapımı: 3-4 iki adım (bas, yuvarla), 5-6 bir adım fazla (önce hamur); süre yok', () => {
     expect(kulahAdimlari('kucuk')).toEqual(['bas', 'yuvarla']);
@@ -108,7 +109,7 @@ describe('Kino’nun Otobüsü: yan işler', () => {
     expect(HAMUR_DOLU_MS).toBeLessThanOrEqual(1000);
   });
   it('yan işlerin yeni sözleri kısa; Ek C görselleri listede ve haritada', () => {
-    for (const s of [K.kino.piril, K.kino.taze, K.mino.kulah_az]) expect(s.length).toBeLessThanOrEqual(20);
+    for (const s of [K.kino.piril, K.kino.taze, K.kino.kulah_bitti]) expect(s.length).toBeLessThanOrEqual(20);
     const liste = fs.readFileSync(path.resolve(__dirname, '../../ekip/gemini/IS-LISTESI-YENI.md'), 'utf8');
     const ekC = liste.slice(liste.indexOf('## Ek C'));
     const adlar = ['kara-tahta', 'kavanoz-rafi', 'lamba', 'leke-cilek', 'leke-cikolata', 'leke-vanilya', 'sunger', 'sinek', 'kulah-makinesi', 'kulah-makinesi-kapak', 'hamur-surahi', 'kulah-hamuru'];
