@@ -89,7 +89,9 @@ export function cekmece(id: string, c: CekmeceAdi, yas: Yas): string[] {
     return [sev, olur, x];
   }
   const b = hayvanBilgi(id);
-  const l = [...new Set([...s.s, ...s.o, ...s.x, ...(b.gizli && esyaBilgi(b.gizli).cekmece === c ? [b.gizli] : [])])];
+  // 5-6: ders eşyası (süt, fazla bisküvi …) ve gizli sevgi de çekmecede: önce hoş görünen seçim denenebilsin
+  const ozel = [b.ders?.esya, b.gizli].filter((e): e is string => !!e && esyaBilgi(e).cekmece === c);
+  const l = [...new Set([...s.s, ...s.o, ...s.x, ...ozel])];
   for (const e of havuz(c)) {
     if (l.length >= 6) break;
     if (!l.includes(e) && (l.length < 4 || esyaBilgi(e).bastan || ORTAK[c]?.includes(e))) l.push(e);

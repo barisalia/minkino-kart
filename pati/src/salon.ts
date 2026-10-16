@@ -763,7 +763,10 @@ export class Salon {
       const k = OYUK[yer.i];
       const ks = KESIT[yer.i];
       const [x, y] = this.ekranda(yer, k.x1 - 150 - ks.x0, k.y0 + 150 - ks.y0);
-      b.style.transform = `translate(${(x - p.left).toFixed(1)}px, ${(y - p.top).toFixed(1)}px)`;
+      // ekranın içinde kalır (dikeyde sağ oyuğun balonu kenardan taşıyordu); üst çubuğun altında
+      const bx = Math.min(x - p.left, p.width - 100);
+      const by = Math.max(y - p.top, 156);
+      b.style.transform = `translate(${bx.toFixed(1)}px, ${by.toFixed(1)}px)`;
     }
   }
 

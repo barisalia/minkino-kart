@@ -268,8 +268,17 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     if (defter.acik) defter.kapa();
     else defter.ac(oda.sahip?.id ?? null);
   });
-  const ust = h('div.pt-ust', {}, geri, gecis, h('div.pt-ust-bosluk'), kumbara.el, defterBtn, sesDugmesi());
-  el.append(serit, kenarSol, kenarSag, oda.el, nehir.el, defter.el, ust, efekt.el);
+  const sesB = sesDugmesi();
+  const ust = h('div.pt-ust', {}, geri, gecis, h('div.pt-ust-bosluk'), kumbara.el, defterBtn, sesB);
+  /** dikey telefonda dükkânın alt şeridi (PATI-V2 §4j): Nehir'in yanında büyük kumbara ve defter */
+  const alt = h('div.pt-alt');
+  el.append(serit, kenarSol, kenarSag, oda.el, nehir.el, defter.el, alt, ust, efekt.el);
+  function altSerit() {
+    const altta = el.clientHeight > el.clientWidth && !oda.acik;
+    if (altta && kumbara.el.parentElement !== alt) alt.append(kumbara.el, defterBtn);
+    else if (!altta && kumbara.el.parentElement !== ust) ust.insertBefore(defterBtn, sesB), ust.insertBefore(kumbara.el, defterBtn);
+  }
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => altSerit()).observe(el);
 
   function geriGuncelle() {
     geri.classList.toggle('pt-gizli', !app.secenekler.cikis && !oda.acik && !defter.acik);
@@ -324,6 +333,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     salon.jetonlariTopla();
     oda.ac(s, isik === 'uyutma' ? 'yatak' : undefined);
     el.classList.add('pt-odada');
+    altSerit();
     gecisGuncelle();
     // 40 sn'yi geçmiş ihtiyaç: kulp hemen bir kez kıpırdar (salonda görünmüyordu)
     const t0 = saat.acilisZamani(s.id);
@@ -334,6 +344,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     if (!oda.acik) return;
     oda.kapa();
     el.classList.remove('pt-odada');
+    altSerit();
     salon.hepsiniYenile();
     salon.yerlesimYenile();
     gecisGuncelle();

@@ -565,10 +565,11 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+/* dikey: ip üst çubuğun ortasından (tavandan) sarkar */
 .pt-kok .pt-ip.pt-ip-dikey {
   position: absolute;
-  right: 34px;
-  top: max(70px, calc(env(safe-area-inset-top) + 62px));
+  left: calc(50% - 9px);
+  top: max(10px, env(safe-area-inset-top));
   width: 18px;
   height: 44px;
   z-index: 7;
@@ -888,4 +889,47 @@
     top: 34%;
     height: 110px;
   }
+}
+
+/* ---------------------------------------------------------------- dikey: alt şerit (kumbara ve defter Nehir'in yanında) */
+.pt-kok .pt-alt {
+  position: absolute;
+  z-index: 30;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  pointer-events: none;
+}
+.pt-kok .pt-alt > * {
+  pointer-events: auto;
+}
+.pt-kok .pt-alt:empty {
+  display: none;
+}
+.pt-kok .pt-alt .pt-kumbara {
+  height: 66px;
+  margin-right: 0;
+  padding: 4px 16px 4px 6px;
+  pointer-events: none;
+}
+.pt-kok .pt-alt .pt-kumbara-kavanoz {
+  height: 58px;
+}
+.pt-kok .pt-alt .pt-kumbara-jetonlar {
+  font-size: 26px;
+}
+.pt-kok .pt-alt .pt-kumbara-jetonlar .pt-jeton.pt-buyuk {
+  font-size: 32px;
+}
+.pt-kok .pt-alt .pt-kumbara-rakam {
+  font-size: 32px;
+}
+.pt-kok .pt-alt .pt-defter-dugme {
+  width: 84px;
+  height: 84px;
+  margin-right: 0;
+  padding: 10px;
 }
