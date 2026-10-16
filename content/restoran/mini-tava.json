@@ -1,0 +1,26 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · TAVA mini oyunu sözleri (P2; ekip/senaryo/RESTORAN.md §8 M6). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). Hiçbir şey yanmaz: son durak 'çıtır'. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "yag": "Zeytinyağı!",
+      "yumurta": "Yumurta!",
+      "hamur": "Pankek hamuru!",
+      "tuz": "Tuz!",
+      "pulbiber": "Pul biber!"
+    },
+    "cizz": "[excited] Cızzz!",
+    "altin": "[happy] Altın gibi oldu!",
+    "citir": "[giggles] Kıtır kıtır!",
+    "kaciyor": "[giggles] Kaçıyor!",
+    "tavan": "[gasps] Tavana yapıştı!",
+    "sapka": "[giggles] Şapka oldu!",
+    "pof": "[laughs] Pof!",
+    "ipucu": {
+      "bos": "[curious] Tava bomboş…",
+      "yumurta": "[curious] Yumurta bütün duruyor…",
+      "karistir": "[giggles] Tava cızırdıyor!",
+      "kabarcik": "[curious] Kabarcık kabarcık oldu…",
+      "bitti": "[happy] Mis gibi koktu!"
+    }
+  }
+}

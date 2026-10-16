@@ -1,0 +1,47 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · DOĞRA mini oyunu sözleri (P2; ekip/senaryo/RESTORAN.md §8 M1). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "domates": "Domates!",
+      "salatalik": "Salatalık!",
+      "sogan": "Soğan!",
+      "biber": "Biber!",
+      "maydanoz": "Maydanoz!",
+      "havuc": "Havuç!",
+      "patates": "Patates!",
+      "limon": "Limon!",
+      "marul": "Marul!"
+    },
+    "say": {
+      "1": "Bir!",
+      "2": "İki!",
+      "3": "Üç!",
+      "4": "Dört!",
+      "5": "Beş!"
+    },
+    "slap": "[gasps] Şlap!",
+    "pure": "[giggles] Vıcık vıcık oldu!",
+    "agla": "[sobs] Gözlerim yandı!",
+    "aglamiyorum": "[sobs] Ağlamıyorum!",
+    "mendil": "[laughs] Oh, teşekkürler!",
+    "sert": "[giggles] Bu çok sert!",
+    "ritim": "[giggles] Tıkır tıkır!",
+    "ipucu": {
+      "bos": "[curious] Tahta bomboş…",
+      "kabuk": "[curious] Soğanın kabuğu kupkuru…",
+      "cekirdek": "[curious] Biberde çekirdek kaldı…",
+      "maydanoz": "[softly] Maydanoz demet demet…",
+      "bitti": "[happy] Ne güzel doğrandı!",
+      "butun": {
+        "domates": "[curious] Domates hâlâ bütün…",
+        "salatalik": "[curious] Salatalık hâlâ bütün…",
+        "sogan": "[curious] Soğan hâlâ bütün…",
+        "biber": "[curious] Biber hâlâ bütün…",
+        "havuc": "[curious] Havuç hâlâ bütün…",
+        "patates": "[curious] Patates hâlâ bütün…",
+        "limon": "[curious] Limon hâlâ bütün…",
+        "marul": "[curious] Marul hâlâ bütün…"
+      }
+    }
+  }
+}
