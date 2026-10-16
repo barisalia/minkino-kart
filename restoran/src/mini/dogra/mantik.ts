@@ -570,7 +570,7 @@ export function ortadanGecti(ax: number, ay: number, bx: number, by: number, r: 
  */
 export function itis(parcalar: Parca[], ar: number, tur = 5): Set<number> {
   const degisen = new Set<number>();
-  const yaricap = (p: Parca) => (p.gorunum === 'kirpik' ? Math.min(p.w, p.h) * 0.42 : Math.min(p.w, p.h) * 0.25 + Math.max(p.w, p.h) * 0.22);
+  const yaricap = (p: Parca) => (p.gorunum === 'kirpik' ? Math.min(p.w, p.h) * 0.42 : p.gorunum === 'yarim' || p.gorunum === 'pure' ? Math.max(p.w, p.h) * 0.4 : Math.min(p.w, p.h) * 0.3 + Math.max(p.w, p.h) * 0.2);
   const agir = (p: Parca) => (p.gorunum === 'kirpik' ? 4 : p.gorunum === 'yarim' ? 2 : p.gorunum === 'pure' ? 6 : 1);
   for (let k = 0; k < tur; k++) {
     let oynadi = false;

@@ -207,16 +207,17 @@
 }
 .mk-kok .rs-dg-mendil-yt > img {
   position: absolute;
-  right: -6px;
-  top: 30px;
-  width: 54px;
-  height: 54px;
+  z-index: 2;
+  right: -10px;
+  top: 22px;
+  width: 66px;
+  height: 66px;
   object-fit: contain;
 }
 .mk-kok .rs-dg-mendil-yt > i {
   position: absolute;
-  left: 4px;
-  top: 6px;
+  left: 6px;
+  top: 18px;
   width: 62px;
   height: 56px;
   border: 3px solid #3b2416;
