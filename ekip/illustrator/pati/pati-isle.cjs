@@ -10,7 +10,11 @@
 //    assets/pati/<hayvan>-<poz>.webp. Göz kırpma yaması: kare 1 ile kare 2'nin farkının kutusu → <hayvan>-goz-yama.webp
 //    + assets/pati/goz-yama.json (konum, ana pozun oranı olarak).
 //
-// node ekip/illustrator/pati/pati-isle.cjs [salon] [esya] [poz]   (hiçbiri verilmezse hepsi; tekrar çalıştırmak güvenli)
+// 4) v2 (Pati Dükkânı v2, PATI-V2 §11d): arka planlar, ui-jeton / ui-dolap / eşya / süs sayfaları, hayvanların H-B-T
+//    sayfaları ve ziyaretçi sayfaları. Ayrıntı aşağıda "v2" bölümünde.
+//
+// node ekip/illustrator/pati/pati-isle.cjs [salon] [esya] [poz] [v2 | v2-arka | v2-esya | v2-hayvan | v2-aile]
+//   (hiçbiri verilmezse hepsi; tekrar çalıştırmak güvenli)
 const fs = require('fs'), os = require('os'), path = require('path'), { execFileSync } = require('child_process');
 const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const yaz = require('../guvenli-yaz.cjs');
@@ -110,7 +114,7 @@ function bantlar(dolu, enAzBosluk, enAzBant) {
 }
 async function sayfaKes(hayvan, kareler, o = {}) {
   const dosya = (o.dosya ? [o.dosya] : [`${hayvan}-hareket-sayfasi.png`, `${hayvan}-hareket-sayfasi.jpg`]).map((f) => path.join(G, f)).find((f) => fs.existsSync(f));
-  if (!dosya) return console.log(`${hayvan}: poz sayfası yok (bekleniyor)`);
+  if (!dosya) return console.log(`${o.dosya || hayvan}: sayfa yok (bekleniyor)`), false;
   const { data, info } = await s(dosya).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width, H = info.height;
   const cizim = (x, y) => { const i = (y * W + x) * 3; return Math.min(data[i], data[i + 1], data[i + 2]) < 225; };
@@ -129,11 +133,12 @@ async function sayfaKes(hayvan, kareler, o = {}) {
     for (const [x0, x1] of b) kutular.push([x0, y0, x1, y1]);
   }
   if (kutular.length !== kareler.length) {
-    console.log(`${hayvan}: ${kutular.length} kare bulundu, ${kareler.length} bekleniyordu; kesilmedi`, JSON.stringify(kutular));
-    return;
+    console.log(`${o.dosya || hayvan}: ${kutular.length} kare bulundu, ${kareler.length} bekleniyordu; kesilmedi`, JSON.stringify(kutular));
+    return false;
   }
-  const girdi = path.join(ARA, `poz-${hayvan}`);
-  fs.rmSync(girdi, { recursive: true, force: true });
+  // o.girdi: birden çok sayfa aynı klasöre (aynı --esit tuvali: H, B, T sayfaları aynı ölçekte); o.yalnizKare: kesme sonra
+  const girdi = o.girdi || path.join(ARA, `poz-${hayvan}`);
+  if (!o.girdi) fs.rmSync(girdi, { recursive: true, force: true });
   fs.mkdirSync(girdi, { recursive: true });
   for (let i = 0; i < kutular.length; i++) {
     const [x0, y0, x1, y1] = kutular[i], P = 24;
@@ -151,16 +156,18 @@ async function sayfaKes(hayvan, kareler, o = {}) {
       await s(d, { raw: { width: w, height: h, channels: 3 } }).extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#ffffff' }).png().toFile(cik);
     } else await s(dosya).removeAlpha().extract({ left: l, top: t, width: Math.min(W, x1 + P) - l, height: Math.min(H, y1 + P) - t }).extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#ffffff' }).png().toFile(cik);
   }
+  if (o.yalnizKare) return true;
   // aynı ölçek, aynı taban çizgisi (balık: ortada)
   const hiza = hayvan === 'piril' ? 'orta' : 'alt';
   if (o.esya) {
     // eşya sayfası: her eşya kendi kutusuna kırpılır (ince parçalar ve balonun küçük daireleri korunsun)
     execFileSync('node', [ESYA_KES, '--girdi', girdi, '--cikti', CIKTI, '--max', '1024', '--ayar', JSON.stringify(o.ayar || {})], { stdio: 'inherit', cwd: KOK });
-    return;
+    return true;
   }
   execFileSync('node', [ESYA_KES, '--girdi', girdi, '--cikti', CIKTI, '--esit', `^${hayvan}-`, '--esit-hiza', hiza, '--max', '1100', '--ayar', JSON.stringify(o.ayar || {})], { stdio: 'inherit', cwd: KOK });
-  if (o.belden) return;
+  if (o.belden) return true;
   await gozYamasi(hayvan, kareler.includes('bos') ? 'bos' : 'yuz1', 'goz');
+  return true;
 }
 
 /**
@@ -301,8 +308,96 @@ async function nehirAgiz() {
   console.log('nehir ağız kutusu', JSON.stringify(tablo.agiz));
 }
 
+// ================================================================ v2 (ekip/senaryo/PATI-V2.md §11d)
+// Gemini sayfaları ekip/gemini/yeni/pati/v2/<dosya>.png. Gelmeyen sayfa atlanır ("bekleniyor"); gelince aynı komut
+// yeniden çalıştırılır, oyun yeni dosyayı kendiliğinden seçer (pati/src/varliklar.ts). Büyük dosya ezilmez (guvenli-yaz).
+//   node ekip/illustrator/pati/pati-isle.cjs v2            hepsi
+//   node ekip/illustrator/pati/pati-isle.cjs v2-arka       arka planlar (tam boy 2752×1536 → assets/pati/<ad>.webp)
+//   node ekip/illustrator/pati/pati-isle.cjs v2-esya       ui-jeton, ui-dolap, eşya ve süs sayfaları
+//   node ekip/illustrator/pati/pati-isle.cjs v2-hayvan     hayvanların H (hareket), B (bakım), T (tepki) sayfaları
+//   node ekip/illustrator/pati/pati-isle.cjs v2-aile       ziyaretçi sayfaları (Kino ailesi, Nehir) ve kadro-c
+const V2 = 'v2';
+const ARKA_V2 = ['vitrin-ic', 'bakim-odasi', 'dis-vitrin', 'kemirgen-rafi', 'akvaryum-duvari', 'kus-kosesi', 'surungen-kosesi', 'bahce', 'bahce-gece', 'sevme-kosesi', 'kapak'];
+/** Eşya / arayüz sayfaları: dosya → [önek, kare adları (soldan sağa, üstten alta)]; çıktı assets/pati/<önek>-<kare>.webp */
+const ESYA_V2 = {
+  'ui-jeton': ['ui', ['jeton', 'buyuk-jeton', 'jeton-yigini', 'kumbara', 'etiket', 'kalp-dolu', 'kalp-bos', 'altin-kalp', 'hediye', 'isim-tabelasi', 'defter', 'perde']],
+  'ui-dolap': ['dolap', ['mama', 'su', 'oyuncak', 'temizlik', 'yatak', 'ecza']],
+  'esya-1-yiyecek': ['esya', ['kopek-mamasi', 'kedi-mamasi', 'kemik-biskuvi', 'konserve', 'sut-kasesi', 'havuc', 'saman', 'marul', 'elma', 'cilek', 'suluk-sisesi', 'kedi-cesmesi']],
+  'esya-2-yiyecek': ['esya', ['aycekirdegi', 'kirmizi-biber', 'dari-cubugu', 'kus-tohumu', 'civciv-yemi', 'bezelye', 'ekmek', 'meyve-puresi', 'kus-sulugu', 'sig-su-kabi', 'civciv-sulugu', 'mini-havuz']],
+  'esya-3-oyuncak': ['esya', ['halat', 'yumak', 'cingirakli-top', 'frizbi', 'kemirme-cubugu', 'cark', 'tunel', 'karton-kutu', 'ayna', 'can', 'hamster-topu', 'kus-salincagi']],
+  'esya-4-temizlik': ['esya', ['yumusak-firca', 'tarak', 'islak-mendil', 'pati-havlusu', 'su-spreyi', 'kum-banyosu', 'kabuk-fircasi', 'cam-silecek', 'kus-banyo-kabi', 'su-kovasi', 'kum-saati', 'yara-bandi']],
+  // minder beyaz çizilir: oyun 4 renge kendisi boyar (çarpma karışımı; kontur koyu kalır)
+  'esya-5-yatak': ['esya', ['minder', 'sepet-yatak', 'kedi-iglosu', 'saman-yuvasi', 'talas-yuvasi', 'pelus-ayi', 'kafes-ortusu', 'muzik-kutusu', 'isi-lambasi', 'isi-lambasi-acik', 'ilik-su-torbasi', 'surup-kasigi']],
+  'esya-6-kose': ['esya', ['tirmanma-dali', 'yaprak-hamak', 'magara-tasi', 'akvaryum-kalesi', 'baloncuk-tasi', 'kum-tepsisi', 'lastik-ordek', 'kirpi-kabi', 'tasima-sepeti', 'yaprak-yigini', 'hayvan-evi', 'kutuk-tunel']],
+  'sus-1': ['sus', ['saksi', 'buyuk-bitki', 'flama', 'hali', 'saat', 'kedi-resmi', 'balon', 'isiklar', 'tabure', 'kus-evi', 'sulama-kabi', 'balik-lamba']],
+  'sus-2': ['sus', ['cit', 'cicek-kemer', 'pati-tabela', 'cesme', 'semsiye', 'bank', 'fener', 'oyuncak-rafi', 'kaktus', 'balik-mobil', 'kalp-ayna', 'yaprak-tac']],
+};
+/** İnce parçalı kareler (değnek, kalp çerçevesi, perde ipi) küçük parça diye silinmesin */
+const ESYA_V2_AYAR = { 'ui-kalp-bos': { minOran: 0.0005 }, 'ui-perde': { minOran: 0.0005 }, 'esya-dari-cubugu': { minOran: 0.0005 }, 'esya-tirmanma-dali': { minOran: 0.0005 } };
+/** Hayvan sayfalarının kare adları (PATI-V2 §8b, §11b) */
+const H_KARE = ['bos', 'goz', 'ac', 'oyun', 'yiyor', 'uyku', 'sevinc', 'ozel'];
+const B_KARE = ['susamis', 'iciyor', 'kirli', 'fircalanma', 'esneme', 'sikildi', 'hasta', 'hapsirma'];
+const T_KARE = ['begenmedi', 'iyy', 'saskin', 'islak', 'silkelen', 'dans-a', 'dans-b', 'dans-c'];
+/** Türün H kare sırası (v1 sayfaları kendi sırasıyla çizildi); renk yavrusu türünün sayfasından boyanır, sırası aynı */
+const H_OZEL = { findik: SAYFALAR.findik, tarcin: SAYFALAR.tarcin, piril: SAYFALAR.piril, pamuk: SAYFALAR.tarcin, duman: SAYFALAR.tarcin, cikolata: SAYFALAR.findik, diken: ['bos', 'goz', 'kokla', 'yuru1', 'yuru2', 'top', 'yiyor', 'bakis'] };
+/** Tarçın'ın H sayfasında "aç" yok: B sayfasının 8. karesi aç (hapşırma yerine) */
+const B_OZEL = { tarcin: [...B_KARE.slice(0, 7), 'ac'], pamuk: [...B_KARE.slice(0, 7), 'ac'], duman: [...B_KARE.slice(0, 7), 'ac'] };
+const T_OZEL = { piril: ['begenmedi', 'tukur', 'saskin', 'bulanik', 'sikildi', 'dans-a', 'dans-b', 'utangac'] };
+const HAYVANLAR_V2 = ['findik', 'tarcin', 'pofuduk', 'fistik', 'kurabiye', 'piril', 'limon', 'tospik', 'zumrut', 'cucuk', 'vakvak', 'diken', 'pamuk', 'duman', 'cikolata', 'kakao', 'boncuk'];
+/** Ziyaretçi sayfaları (2×4, boydan): <kim>-dukkan-1..8 */
+const AILE_V2 = ['kino', 'lokum', 'anne', 'babaanne', 'dede', 'baba', 'nehir'];
+
+async function arkaV2() {
+  for (const ad of ARKA_V2) {
+    const g = path.join(G, V2, `${ad}.png`);
+    if (!fs.existsSync(g)) { console.log(`${ad}: arka plan yok (bekleniyor)`); continue; }
+    const m = await s(g).metadata();
+    if (m.width < 2048) { console.log(`${ad}: ${m.width}×${m.height} küçük (2048 altı reddedilir, PATI-V2 §11a); kesilmedi`); continue; }
+    const buf = await s(g).removeAlpha().webp({ quality: 86, effort: 5 }).toBuffer();
+    if (await yaz(path.join(CIKTI, `${ad}.webp`), buf)) console.log(`${ad}.webp`, m.width, '×', m.height, Math.round(buf.length / 1024), 'KB');
+  }
+}
+
+async function esyaV2() {
+  for (const [dosya, [onek, kareler]] of Object.entries(ESYA_V2))
+    await sayfaKes(onek, kareler, { dosya: path.join(V2, `${dosya}.png`), esya: true, ayar: ESYA_V2_AYAR });
+}
+
+/** Bir hayvanın gelmiş bütün sayfaları (H v1 ya da v2, B, T) aynı klasörde kesilir: hepsi aynı ölçek ve taban çizgisinde */
+async function hayvanV2(id) {
+  const girdi = path.join(ARA, `v2-${id}`);
+  fs.rmSync(girdi, { recursive: true, force: true });
+  const sayfalar = [
+    [[path.join(V2, `${id}-hareket-sayfasi.png`), `${id}-hareket-sayfasi.png`], H_OZEL[id] || H_KARE],
+    [[path.join(V2, `${id}-bakim-sayfasi.png`)], B_OZEL[id] || B_KARE],
+    [[path.join(V2, `${id}-tepki-sayfasi.png`)], T_OZEL[id] || T_KARE],
+  ];
+  let n = 0;
+  for (const [adaylar, kareler] of sayfalar) {
+    const dosya = adaylar.find((f) => fs.existsSync(path.join(G, f)));
+    if (!dosya) continue;
+    if (await sayfaKes(id, kareler, { dosya, girdi, yalnizKare: true })) n++;
+  }
+  if (!n) return console.log(`${id}: sayfa yok (bekleniyor)`);
+  const hiza = id === 'piril' ? 'orta' : 'alt';
+  execFileSync('node', [ESYA_KES, '--girdi', girdi, '--cikti', CIKTI, '--esit', `^${id}-`, '--esit-hiza', hiza, '--max', '1100'], { stdio: 'inherit', cwd: KOK });
+  await gozYamasi(id, id === 'piril' ? 'yuz1' : 'bos', 'goz');
+}
+
+async function aileV2() {
+  const adlar = ['1', '2', '3', '4', '5', '6', '7', '8'];
+  for (const kim of AILE_V2) await sayfaKes(`${kim}-dukkan`, adlar, { dosya: path.join(V2, `${kim}-dukkan-sayfasi.png`) });
+  await sayfaKes('kadro-c', ['cucuk', 'vakvak', 'zumrut'], { dosya: path.join(V2, 'kadro-c.png'), esya: true });
+}
+
 (async () => {
   fs.mkdirSync(ARA, { recursive: true });
+  const v2 = (ad) => is.includes('v2') || is.includes(ad) || !is.length;
+  if (v2('v2-arka')) await arkaV2();
+  if (v2('v2-esya')) await esyaV2();
+  if (v2('v2-hayvan')) for (const id of HAYVANLAR_V2) await hayvanV2(id);
+  if (v2('v2-aile')) await aileV2();
+  if (is.length && is.every((a) => a.startsWith('v2'))) return;
   if (is[0] === 'goz') { for (const h of Object.keys(SAYFALAR)) await gozYamasi(h, h === 'piril' ? 'yuz1' : 'bos', 'goz'); return; }
   if (yap('salon')) await salon();
   if (yap('esya')) await esya();
