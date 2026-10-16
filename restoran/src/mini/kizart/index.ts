@@ -19,7 +19,7 @@ import { MALZEME_ADI, urunId, type ArkaIs, type Malzeme, type MiniBaglam, type M
 import { ezil, hopla, kipirda, parilti, sac, ucur } from '../dogra/efekt';
 import { rafSimge, RENK } from '../dogra/gorsel';
 import { surukle } from '../dogra/surukle';
-import { bekle, istasyonCizimi, hapsu, hisir, nota, odulEzgi, olayKaydi, resim, sureMs } from '../yika/ortak';
+import { bekle, istasyonCizimi, konumaKay, hapsu, hisir, nota, odulEzgi, olayKaydi, resim, sureMs } from '../yika/ortak';
 import { rastgele } from '../yika/mantik';
 import { avucEkle, cogunluk, kesimi, kizartmaOzeti, pismeAdi, salla, sepetPis, SEPET_EN_COK, TUZ, tuzEkle, type Parca } from './mantik';
 import './kizart.css';
@@ -41,7 +41,7 @@ export const oyun: MiniOyun = {
   istasyon: 'ocak',
   simge: () => {
     const u = resim('alet/fritoz');
-    return u ? h('img.rs-kz-simge', { src: u, alt: '', draggable: 'false' }) : h('span.rs-kz-simge-yt');
+    return u ? h('img.rs-kzr-simge', { src: u, alt: '', draggable: 'false' }) : h('span.rs-kzr-simge-yt');
   },
   baslat(b, g) {
     return kizartBaslat(b, g);
@@ -59,21 +59,21 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   const kok = h('div.rs-kizart', { 'data-yas': yas });
   const cizimVar = istasyonCizimi('ocak');
   const { olaylar, olay } = olayKaydi(kok);
-  const raf = h('div.rs-kz-raf');
+  const raf = h('div.rs-kzr-raf');
   const fritozUrl = resim('alet/fritoz');
-  const fritoz = h('div.rs-kz-fritoz', {}, fritozUrl ? h('img.rs-kz-fritoz-resim', { src: fritozUrl, alt: '', draggable: 'false' }) : h('i.rs-kz-yag'), h('i.rs-kz-kabarcik'));
-  const sepetIc = h('div.rs-kz-sepet-ic');
-  const sepetEl = h('div.rs-kz-sepet', { 'data-durum': 'havada' }, h('i.rs-kz-sap'), h('i.rs-kz-tel'), sepetIc, h('i.rs-kz-yag-perde'));
-  const kulahIc = h('div.rs-kz-kulah-ic');
-  const ketcapKat = h('div.rs-kz-ketcap-kat');
+  const fritoz = h('div.rs-kzr-fritoz', {}, fritozUrl ? h('img.rs-kzr-fritoz-resim', { src: fritozUrl, alt: '', draggable: 'false' }) : h('i.rs-kzr-yag'), h('i.rs-kzr-kabarcik'));
+  const sepetIc = h('div.rs-kzr-sepet-ic');
+  const sepetEl = h('div.rs-kzr-sepet', { 'data-durum': 'havada' }, h('i.rs-kzr-sap'), h('i.rs-kzr-tel'), sepetIc, h('i.rs-kzr-yag-perde'));
+  const kulahIc = h('div.rs-kzr-kulah-ic');
+  const ketcapKat = h('div.rs-kzr-ketcap-kat');
   const kulahUrl = resim('alet/kulah');
-  const kulah = h('div.rs-kz-kulah', {}, kulahIc, kulahUrl ? h('img.rs-kz-kulah-resim', { src: kulahUrl, alt: '', draggable: 'false' }) : h('i.rs-kz-kulah-kagit'), ketcapKat);
+  const kulah = h('div.rs-kzr-kulah', {}, kulahIc, kulahUrl ? h('img.rs-kzr-kulah-resim', { src: kulahUrl, alt: '', draggable: 'false' }) : h('i.rs-kzr-kulah-kagit'), ketcapKat);
   const tuzUrl = resim('alet/tuzluk');
-  const tuzluk = h('button.rs-kz-tuzluk', { type: 'button', 'aria-label': 'Tuzluk' }, tuzUrl ? h('img', { src: tuzUrl, alt: '', draggable: 'false' }) : h('i.rs-kz-tuzluk-yt'));
+  const tuzluk = h('button.rs-kzr-tuzluk', { type: 'button', 'aria-label': 'Tuzluk' }, tuzUrl ? h('img', { src: tuzUrl, alt: '', draggable: 'false' }) : h('i.rs-kzr-tuzluk-yt'));
   const ketUrl = resim('alet/ketcap');
-  const ketcap = h('button.rs-kz-ketcap', { type: 'button', 'aria-label': 'Ketçap' }, ketUrl ? h('img', { src: ketUrl, alt: '', draggable: 'false' }) : h('i.rs-kz-ketcap-yt'));
-  const efektKat = h('div.rs-kz-efekt');
-  const altlik = h('i.rs-kz-altlik');
+  const ketcap = h('button.rs-kzr-ketcap', { type: 'button', 'aria-label': 'Ketçap' }, ketUrl ? h('img', { src: ketUrl, alt: '', draggable: 'false' }) : h('i.rs-kzr-ketcap-yt'));
+  const efektKat = h('div.rs-kzr-efekt');
+  const altlik = h('i.rs-kzr-altlik');
   kok.append(altlik, fritoz, kulah, sepetEl, tuzluk, ketcap, raf, efektKat);
   b.kok.append(kok);
 
@@ -82,7 +82,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   const kullanilan: string[] = [];
 
   for (const m of raftakiler) {
-    const btn = h('button.rs-kz-raf-oge', { type: 'button', 'aria-label': MALZEME_ADI[m], 'data-malzeme': m }, rafSimge(m), h('i.rs-kz-raf-kesim', { 'data-kesim': kesimi(m) }));
+    const btn = h('button.rs-kzr-raf-oge', { type: 'button', 'aria-label': MALZEME_ADI[m], 'data-malzeme': m }, rafSimge(m), h('i.rs-kzr-raf-kesim', { 'data-kesim': kesimi(m) }));
     btn.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -180,12 +180,14 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     if (durum !== 'tasiniyor') sepetKonum(durum === 'yagda' ? F.cx : F.cx, durum === 'yagda' ? F.cy : F.cy - F.h * 0.2);
     kulahCiz();
   }
-  function sepetKonum(x: number, y: number) {
+  function sepetKonum(x: number, y: number, kay = false) {
     sx = x;
     sy = y;
     const w = F.w * 0.74;
     const hh = F.h * 0.7;
-    sepetEl.style.transform = `translate(${x - w / 2}px,${y - hh / 2}px)`;
+    const t = `translate(${x - w / 2}px,${y - hh / 2}px)`;
+    if (kay) konumaKay(sepetEl, t, 160);
+    else sepetEl.style.transform = t;
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => yerlestir()) : null;
   ro?.observe(kok);
@@ -197,7 +199,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     if (el) return el;
     const kesim = kesimi(x.m);
     const u = resim(`yiyecek/${x.m}-${kesim === 'serit' ? 'halka' : kesim}`);
-    el = h('i.rs-kz-parca', { 'data-malzeme': x.m, 'data-kesim': kesim }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null);
+    el = h('i.rs-kzr-parca', { 'data-malzeme': x.m, 'data-kesim': kesim }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null);
     el.style.setProperty('--renk', RENK[x.m]?.[1] ?? '#f4de9c');
     parcaElleri.set(x, el);
     return el;
@@ -233,7 +235,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     });
     ketcapKat.replaceChildren(
       ...ketcapNokta.map((p) => {
-        const d = h('i.rs-kz-ketcap-nokta');
+        const d = h('i.rs-kzr-ketcap-nokta');
         d.style.left = `${p.x}%`;
         d.style.top = `${p.y}%`;
         return d;
@@ -304,7 +306,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     durum = 'yagda';
     sepetEl.dataset.durum = 'yagda';
     kok.classList.add('rs-yagda');
-    sepetKonum(F.cx, F.cy);
+    sepetKonum(F.cx, F.cy, true);
     try {
       sepetEl.animate([{ scale: '1.08' }, { scale: '0.96 1.03', offset: 0.6 }, { scale: '1' }], { duration: sureMs(260), easing: 'ease-out' });
     } catch {
@@ -331,7 +333,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     kok.classList.remove('rs-yagda');
     cizDongu?.dur();
     cizDongu = null;
-    sepetKonum(F.cx, F.cy - F.h * 0.2);
+    sepetKonum(F.cx, F.cy - F.h * 0.2, true);
     b.ses.cal('pof', { perde: 1.5, guc: 0.4 });
     // süzülür: yağ damlaları
     sac(efektKat, sx, sy + F.h * 0.2, 'yag', '#f2c14e', 6, { yon: Math.PI / 2, yay: 0.8, guc: 0.6 });
@@ -397,20 +399,20 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     birak(x, y) {
       sepetEl.classList.remove('rs-tutuldu');
       if (durum === 'yagda') {
-        sepetKonum(F.cx, F.cy);
+        sepetKonum(F.cx, F.cy, true);
         return;
       }
       if (Math.abs(x - KL.cx) < KL.w * 0.9 && Math.abs(y - KL.cy) < KL.h * 0.75) {
         dok();
         durum = 'havada';
         sepetEl.dataset.durum = 'havada';
-        sepetKonum(F.cx, F.cy - F.h * 0.2);
+        sepetKonum(F.cx, F.cy - F.h * 0.2, true);
       } else if (Math.abs(x - F.cx) < F.w / 2 && Math.abs(y - F.cy) < F.h / 2 + 10) {
         dal();
       } else {
         durum = 'havada';
         sepetEl.dataset.durum = 'havada';
-        sepetKonum(F.cx, F.cy - F.h * 0.2);
+        sepetKonum(F.cx, F.cy - F.h * 0.2, true);
       }
       ipucuGuncelle();
     },
@@ -504,7 +506,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const kr = kok.getBoundingClientRect();
     const hx = mr.left - kr.left + mr.width * 0.5;
     const hy = mr.top - kr.top + mr.height * 0.42;
-    const bulut = h('i.rs-kz-bulut');
+    const bulut = h('i.rs-kzr-bulut');
     bulut.style.transform = `translate(${KL.cx}px,${KL.cy - KL.h * 0.5}px)`;
     efektKat.append(bulut);
     hisir(0, 0.6, 2000, 6000, 0.08);
@@ -562,7 +564,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       birak() {
         tutuluyor = false;
         el.classList.remove('rs-tutuldu');
-        el.style.transform = `translate(${ev.x - 32}px,${ev.y - (ne === 'tuz' ? 36 : 40)}px)`;
+        konumaKay(el, `translate(${ev.x - 32}px,${ev.y - (ne === 'tuz' ? 36 : 40)}px)`);
         ipucuGuncelle();
       },
       dokun() {
@@ -571,7 +573,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         ezil(el, 1.2);
         if (ne === 'tuz') tuzSerp(KL.cx + (r() - 0.5) * KL.w * 0.4, KL.cy - KL.h * 0.5);
         else ketcapKoy(KL.cx + (r() - 0.5) * KL.w * 0.5, KL.cy - KL.h * 0.3);
-        el.style.transform = `translate(${ev.x - 32}px,${ev.y - (ne === 'tuz' ? 36 : 40)}px)`;
+        konumaKay(el, `translate(${ev.x - 32}px,${ev.y - (ne === 'tuz' ? 36 : 40)}px)`);
       },
     });
   }
@@ -692,23 +694,23 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
 
 /** Tepside ve masada küçük hâli: külahta kızartma (kutusunu doldurur) */
 export function kulahGorsel(liste: { m: Malzeme; p: number }[], ketcap: { x: number; y: number }[]): HTMLElement {
-  const ic = h('div.rs-kz-kulah-ic');
+  const ic = h('div.rs-kzr-kulah-ic');
   const n = Math.min(liste.length, 12);
   liste.slice(0, 12).forEach((x, i) => {
     const kesim = kesimi(x.m);
     const u = resim(`yiyecek/${x.m}-${kesim === 'serit' ? 'halka' : kesim}`);
-    const el = h('i.rs-kz-parca', { 'data-malzeme': x.m, 'data-kesim': kesim, 'data-pisme': pismeAdi(x.p) }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null);
+    const el = h('i.rs-kzr-parca', { 'data-malzeme': x.m, 'data-kesim': kesim, 'data-pisme': pismeAdi(x.p) }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null);
     el.style.setProperty('--renk', RENK[x.m]?.[1] ?? '#f4de9c');
     const k = n > 1 ? i / (n - 1) : 0.5;
     el.style.left = `${50 + (k - 0.5) * 80}%`;
     el.style.top = `${32 + Math.abs(k - 0.5) * 30}%`;
     ic.append(el);
   });
-  const kat = h('div.rs-kz-ketcap-kat', {}, ...ketcap.map((p) => {
-    const d = h('i.rs-kz-ketcap-nokta');
+  const kat = h('div.rs-kzr-ketcap-kat', {}, ...ketcap.map((p) => {
+    const d = h('i.rs-kzr-ketcap-nokta');
     d.style.left = `${p.x}%`;
     d.style.top = `${p.y}%`;
     return d;
   }));
-  return h('div.rs-kz-urun', {}, h('div.rs-kz-kulah', {}, ic, h('i.rs-kz-kulah-kagit'), kat));
+  return h('div.rs-kzr-urun', {}, h('div.rs-kzr-kulah', {}, ic, h('i.rs-kzr-kulah-kagit'), kat));
 }

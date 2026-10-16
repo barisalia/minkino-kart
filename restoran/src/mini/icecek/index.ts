@@ -22,7 +22,7 @@ import { ezil, hopla, kipirda, leke, parilti, sac, ucur } from '../dogra/efekt';
 import { butunResim } from '../dogra/gorsel';
 import { surukle } from '../dogra/surukle';
 import { aciFarki, rastgele } from '../yika/mantik';
-import { bakanKur, bekle, hapsu, hisir, kikir, nota, odulEzgi, olayKaydi, resim, sureMs } from '../yika/ortak';
+import { bakanKur, bekle, konumaKay, hapsu, hisir, kikir, nota, odulEzgi, olayKaydi, resim, sureMs } from '../yika/ortak';
 import { BARDAK, bosBardak, bosIcerik, calkala, dok, fiskir, icecekOzeti, icecekTuru, LIMON, seviye, type Bardak, type Icecek, type Icerik } from './mantik';
 import './icecek.css';
 
@@ -175,11 +175,18 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     akis.style.display = 'none';
     sivilariCiz();
   }
-  function jugKoy(x: number, y: number) {
+  function jugKoy(x: number, y: number, kay = false) {
     jx = x;
     jy = y;
-    surahi.style.transform = `translate(${x - J.w / 2}px,${y - J.h / 2}px)`;
-    if (kapakli) kapak.style.transform = `translate(${x - J.w * 0.06 - 36}px,${y - J.h / 2 - 22}px)`;
+    const t = `translate(${x - J.w / 2}px,${y - J.h / 2}px)`;
+    const kt = `translate(${x - J.w * 0.06 - 36}px,${y - J.h / 2 - 22}px)`;
+    if (kay) {
+      konumaKay(surahi, t, 200);
+      if (kapakli) konumaKay(kapak, kt, 200);
+    } else {
+      surahi.style.transform = t;
+      if (kapakli) kapak.style.transform = kt;
+    }
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => yerlestir()) : null;
   ro?.observe(kok);
@@ -297,7 +304,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     }
     kapakli = true;
     kapak.classList.add('rs-takili');
-    jugKoy(jx, jy);
+    konumaKay(kapak, `translate(${jx - J.w * 0.06 - 36}px,${jy - J.h / 2 - 22}px)`, 220);
     b.ses.cal('tik', { perde: 1, guc: 0.8 });
     ezil(surahi, 0.7);
     olay('kapak');
@@ -306,7 +313,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   function kapakAc() {
     kapakli = false;
     kapak.classList.remove('rs-takili');
-    kapak.style.transform = `translate(${KP.x - 36}px,${KP.y - 20}px)`;
+    konumaKay(kapak, `translate(${KP.x - 36}px,${KP.y - 20}px)`, 220);
     b.ses.cal('tik', { perde: 1.3, guc: 0.6 });
     olay('kapak-ac');
   }
@@ -554,7 +561,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       jTutuluyor = false;
       surahi.classList.remove('rs-tutuldu');
       dokmeBitir();
-      jugKoy(J.cx, J.alt - J.h / 2);
+      jugKoy(J.cx, J.alt - J.h / 2, true);
       ipucuGuncelle();
     },
     dokun() {
@@ -636,6 +643,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const biyik = h('i.rs-ic-biyik');
     biyik.style.cssText = `width:${Math.max(44, mr.width * 0.58)}px;transform:translate(${mx - Math.max(44, mr.width * 0.58) / 2}px,${my}px);background:${renk}`;
     efektKat.append(biyik);
+    olay('biyik');
     ezil(biyik, 1.6);
     void b.mino.tepki('sasir', 900);
     nota(70, 0.05, 0.2, 'triangle', 0.08, -5);

@@ -325,5 +325,17 @@ export function merkez(el: Element, kap: Element): { x: number; y: number } {
   return { x: r.left - k.left + r.width / 2, y: r.top - k.top + r.height / 2 };
 }
 
+/** Konuma kayarak git (WAAPI; CSS geçişi ilk yerleşimde takılabiliyor). Sürüklerken doğrudan transform yazılır. */
+export function konumaKay(el: HTMLElement, yeni: string, ms = 180) {
+  const eski = el.style.transform;
+  el.style.transform = yeni;
+  if (!eski || eski === yeni || TEST_MODU) return;
+  try {
+    el.animate([{ transform: eski }, { transform: yeni }], { duration: ms, easing: 'cubic-bezier(.3,.7,.4,1.1)' });
+  } catch {
+    /* yok say */
+  }
+}
+
 /** Yeni Gemini aleti / efekti, yoksa null (dogra/gorsel'in `yeni`si; yol: 'alet/soyacak') */
 export const resim = (yol: string) => yeni(yol);
