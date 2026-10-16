@@ -24,6 +24,8 @@ export function sesKokuAyarla(yol: string, ...yedek: string[]) {
   yedekler = yedek.map(bolu);
 }
 let manifestYukleniyor: Promise<void> | null = null;
+/** Manifest yüklendi (ya da hiçbir klasörde bulunamadı): kayitVar'ın "yok" demesi artık kesin. */
+let manifestBitti = false;
 const tamponlar = new Map<string, Promise<AudioBuffer | null>>();
 const paketVerisi = new Map<number, Promise<ArrayBuffer>>();
 
@@ -37,8 +39,21 @@ function paket(n: number): Promise<ArrayBuffer> {
   return p;
 }
 
+/** Ses motoru açılmadan önce indirilen ham kayıtlar (motor açılınca beklemeden çözülür). */
+const hamVeri = new Map<string, Promise<ArrayBuffer>>();
+const anahtarOf = (k: Kayit) => (typeof k === 'string' ? k : `${k.p}:${k.b}`);
+
 function veri(k: Kayit): Promise<ArrayBuffer> {
-  if (typeof k === 'string') return fetch(`${kok}${k}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+  if (typeof k === 'string') {
+    let p = hamVeri.get(k);
+    if (!p) {
+      p = fetch(`${kok}${k}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+      p.catch(() => hamVeri.delete(k));
+      hamVeri.set(k, p);
+    }
+    // decodeAudioData veriyi tüketir: önbellekteki kopya bozulmasın
+    return p.then((ab) => ab.slice(0));
+  }
   return paket(k.p).then((ab) => ab.slice(k.b, k.b + k.u));
 }
 let calan: AudioBufferSourceNode | null = null;
@@ -66,11 +81,32 @@ export function kayitlariHazirla(): Promise<void> {
   })()
     .then((m: Manifest | null) => {
       manifest = m;
+      manifestBitti = true;
       // Paketli önizleme sürümü: paketleri sırayla arka planda indir
       if (m?.paketler?.length) void m.paketler.reduce<Promise<unknown>>((onceki, _, n) => onceki.then(() => paket(n)).catch(() => undefined), Promise.resolve());
     })
-    .catch(() => undefined);
+    .catch(() => {
+      manifestBitti = true;
+    });
   return manifestYukleniyor;
+}
+
+/** Manifest yüklenmesi bitti mi. */
+export const kayitlarHazirMi = () => manifestBitti;
+
+/**
+ * Manifest yüklenene kadar bekler (en çok `ms`). Açılıştaki ilk cümle manifest gelmeden söylenince kayıt "yok"
+ * sayılıp cihaz sesine düşüyordu (kalite denetimi 2026-10-16, K1): konuşma önce bunu bekler.
+ */
+export function kayitlariBekle(ms: number): Promise<void> {
+  if (manifestBitti) return Promise.resolve();
+  return new Promise<void>((coz) => {
+    const t = setTimeout(coz, ms);
+    void kayitlariHazirla().then(() => {
+      clearTimeout(t);
+      coz();
+    });
+  });
 }
 
 /** Cümle için çalınacak kayıt: karakterin kendi kaydı (hız 1) ya da anlatıcı kaydı (hız = ton). */
@@ -86,7 +122,7 @@ function tampon(metin: string, secenek: KayitSecenegi = {}): Promise<AudioBuffer
   const f = dosya(metin, secenek)?.kayit;
   const c = baglam();
   if (!f || !c) return Promise.resolve(null);
-  const anahtar = typeof f === 'string' ? f : `${f.p}:${f.b}`;
+  const anahtar = anahtarOf(f);
   let p = tamponlar.get(anahtar);
   if (!p) {
     p = veri(f)
@@ -102,7 +138,20 @@ function tampon(metin: string, secenek: KayitSecenegi = {}): Promise<AudioBuffer
 
 /** Sıradaki cümlelerin kayıtlarını önceden indirip çözer (gecikmesiz çalsın diye). */
 export function onYukle(metinler: (string | undefined | null)[], secenek: KayitSecenegi = {}) {
-  for (const m of metinler) if (m) void tampon(m, secenek);
+  // manifest henüz gelmediyse gelince indir (ekran açılır açılmaz çağrılan ön yükleme boşa gitmesin)
+  if (!manifestBitti && manifestYukleniyor) {
+    void manifestYukleniyor.then(() => onYukle(metinler, secenek));
+    return;
+  }
+  for (const m of metinler) {
+    if (!m) continue;
+    // ses motoru henüz açılmadıysa (ilk dokunuştan önce) yalnız indir; motor açılınca çözülür
+    if (baglam()) void tampon(m, secenek);
+    else {
+      const f = dosya(m, secenek)?.kayit;
+      if (f) void veri(f).catch(() => undefined);
+    }
+  }
 }
 
 /**

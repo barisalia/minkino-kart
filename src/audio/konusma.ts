@@ -1,8 +1,9 @@
 import { durum } from '../engine/ilerleme';
 import { TEST_MODU } from '../ui/dom';
 import { normal } from './cumleler';
-import { kayitCal, kayitDurdur, kayitVar, onYukle } from './kayit';
-import { muzikKis } from './motor';
+import { kayitCal, kayitDurdur, kayitlariBekle, kayitVar, onYukle } from './kayit';
+import type { KayitSecenegi } from './karakter-ses';
+import { baglam, muzikKis, sesMotorunuAc } from './motor';
 
 /**
  * Konuşma: şimdilik cihazın Türkçe sesi (Web Speech API, tr-TR).
@@ -162,14 +163,95 @@ export function tekrarSoyle(girdi: Soylenecek, secenek: KonusmaSecenegi = {}): P
   return ic;
 }
 
+/**
+ * İlk cümle yarışı (kalite denetimi 2026-10-16, K1): açılışta manifest ya da ses motoru hazır olmadan gelen cümle
+ * kaydı olduğu hâlde cihazın robot sesiyle okunuyordu. Konuşma önce manifesti, kayıt varsa motorun çalışmasını
+ * kısa bir süre bekler. Motor hiç açılmadıysa (sayfa dokunuşsuz açıldı) bir kez beklenir; sonraki cümleler beklemez.
+ */
+export const HAZIRLIK_MS = 1500;
+let motorBeklendi = false;
+
+function motorCalisiyor() {
+  return baglam()?.state === 'running';
+}
+
+async function kayitIcinHazirlan(parcalar: string[], secenek: { karakter?: string | null; ton?: number }) {
+  await kayitlariBekle(HAZIRLIK_MS);
+  if (motorCalisiyor() || !parcalar.some((p) => kayitVar(p, secenek))) return;
+  // önceki sayfadaki dokunuş bu sayfada da sesi açabilir (tarayıcı izin verirse): motor hemen kurulur
+  const c = baglam() ?? sesMotorunuAc();
+  if (!c || motorBeklendi) return;
+  await new Promise<void>((coz) => {
+    const bitti = () => {
+      clearTimeout(t);
+      c.removeEventListener?.('statechange', bak);
+      coz();
+    };
+    const bak = () => c.state === 'running' && bitti();
+    const t = setTimeout(() => {
+      // ilk dokunuş hâlâ gelmedi: bundan sonraki cümleler beklemesin (akış yavaşlamasın)
+      motorBeklendi = true;
+      bitti();
+    }, HAZIRLIK_MS);
+    c.addEventListener?.('statechange', bak);
+    bak();
+  });
+}
+
+/**
+ * İlk dokunuştan önce sessiz geçen kayıtlı cümle(ler): motor birkaç saniye içinde açılırsa (çocuk ekrana dokundu)
+ * kayıttan bir kez söylenir; bu arada oyun yeni bir şey söylerse ya da süre geçerse unutulur.
+ */
+const KACAN_MS = 6000;
+let kacan: { parcalar: string[]; secenek: KonusmaSecenegi; t: number } | null = null;
+let izlenenBaglam: AudioContext | null = null;
+function kacaniIzle() {
+  const c = baglam();
+  if (!c || c === izlenenBaglam) return;
+  izlenenBaglam = c;
+  c.addEventListener?.('statechange', () => {
+    if (c.state !== 'running' || !kacan) return;
+    // dokunuş bir düğmeye geldiyse oyunun kendi cümlesi önce başlasın (click pointerdown'dan sonra gelir)
+    setTimeout(() => {
+      const k = kacan;
+      kacan = null;
+      if (!k || konusuyor || performance.now() - k.t > KACAN_MS || !motorCalisiyor()) return;
+      void konus(k.parcalar, k.secenek);
+    }, 400);
+  });
+}
+
+/** Kaydı olan ama motor açılmadığı için sessiz geçen parça: bu sırada motor açılırsa kayıt hemen çalar. */
+function sessizKayitli(metin: string, benim: number, secenek: KayitSecenegi, basladi: () => void): Promise<boolean> {
+  return new Promise<boolean>((coz) => {
+    if (benim !== sayac) return coz(false);
+    const c = baglam();
+    let bitti = false;
+    const t = setTimeout(() => son(false), 500 + metin.length * 55);
+    function son(calindi: boolean) {
+      if (bitti) return;
+      bitti = true;
+      clearTimeout(t);
+      c?.removeEventListener?.('statechange', bak);
+      coz(calindi);
+    }
+    function bak() {
+      if (bitti || benim !== sayac || c?.state !== 'running') return;
+      clearTimeout(t);
+      c.removeEventListener?.('statechange', bak);
+      void kayitCal(metin, () => benim !== sayac, secenek, basladi).then((ok) => son(ok));
+    }
+    c?.addEventListener?.('statechange', bak);
+    bitir = () => son(false);
+  });
+}
+
 function konusIc(girdi: Soylenecek, secenek: KonusmaSecenegi): Promise<void> {
   sus();
+  kacan = null;
   const benim = sayac;
   let parcalar = (Array.isArray(girdi) ? girdi : [girdi]).map((p) => normal(p ?? '')).filter(Boolean);
-  // Birleşik cümlenin tek parça kaydı varsa onu çal (daha doğal, arada boşluk yok)
   const kayitSecenegi = { karakter: secenek.karakter, ton: secenek.ton };
-  const butun = normal(parcalar.join(' '));
-  if (parcalar.length > 1 && kayitVar(butun, kayitSecenegi)) parcalar = [butun];
   if (!parcalar.length) return Promise.resolve();
   if (TEST_MODU) return new Promise((r) => setTimeout(r, 5));
   if (!durum.i.ayarlar.konusma) return new Promise((r) => setTimeout(r, 250));
@@ -179,14 +261,33 @@ function konusIc(girdi: Soylenecek, secenek: KonusmaSecenegi): Promise<void> {
   konusuyor = true;
   return (async () => {
     try {
+      await kayitIcinHazirlan(parcalar, kayitSecenegi);
+      if (benim !== sayac) return;
+      // Birleşik cümlenin tek parça kaydı varsa onu çal (daha doğal, arada boşluk yok)
+      const butun = normal(parcalar.join(' '));
+      if (parcalar.length > 1 && kayitVar(butun, kayitSecenegi)) {
+        parcalar = [butun];
+        onYukle(parcalar, kayitSecenegi);
+      }
+      const kacanlar: string[] = [];
       for (const p of parcalar) {
         if (benim !== sayac) return;
         const basladi = () => {
           if (benim === sayac) ani = { kaynak: 'kayit', metin: p, bas: performance.now() };
         };
-        const calindi = kayitVar(p, kayitSecenegi) && (await kayitCal(p, () => benim !== sayac, kayitSecenegi, basladi));
-        if (!calindi && benim === sayac) await (secenek.cihazSesi === false && !DOSYA.test(p) ? sessizParca(p, benim) : tekParca(p, benim, secenek.ton ?? 1, secenek.kelime));
+        const kayitli = kayitVar(p, kayitSecenegi);
+        const motorAcik = motorCalisiyor();
+        const calindi = kayitli && motorAcik && (await kayitCal(p, () => benim !== sayac, kayitSecenegi, basladi));
+        if (benim !== sayac) return;
+        // kaydı olan cümle hiçbir zaman robot sese düşmez: motor açılmadıysa (ilk dokunuştan önce) sessiz geçer
+        if (!calindi && kayitli && !motorAcik) {
+          if (!(await sessizKayitli(p, benim, kayitSecenegi, basladi)) && benim === sayac) kacanlar.push(p);
+        } else if (!calindi) await (secenek.cihazSesi === false && !DOSYA.test(p) ? sessizParca(p, benim) : tekParca(p, benim, secenek.ton ?? 1, secenek.kelime));
         if (benim === sayac) ani = null;
+      }
+      if (benim === sayac && kacanlar.length) {
+        kacan = { parcalar: kacanlar, secenek, t: performance.now() };
+        kacaniIzle();
       }
       if (benim === sayac) muzikKis(false);
     } finally {
