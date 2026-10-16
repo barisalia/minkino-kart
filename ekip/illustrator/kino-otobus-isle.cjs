@@ -16,7 +16,7 @@ const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const guvenliYaz = require('./guvenli-yaz.cjs');
 const gi = process.argv.indexOf('--girdi');
 const G = gi >= 0 ? process.argv.splice(gi, 2)[1] : 'ekip/gemini/yeni/kino-otobus', O = 'assets/kino-otobus', ARA = path.join(os.tmpdir(), 'kino-otobus-kes');
-const ATLA = [];   // bilerek elle düzeltilen dosyalar buraya (betik yeniden üretmesin)
+const ATLA = ['musteri-yeni-sayfasi'];   // bilerek elle düzeltilen ya da başka betikle kesilen dosyalar (betik yeniden üretmesin); müşteri sayfası: kino-otobus-musteri-kes.cjs
 const ARKA = ['ic-arka', 'pencere-dogumgunu', 'kapak'];
 /** çıktının uzun kenarı (px): ekranda en büyük hâli × DPR 3 */
 const EN = { otobus: 1920, 'kulah-makinesi': 1400,'tezgah-on': 2800, dolap: 2000, 'ic-arka': 3072, 'pencere-dogumgunu': 2752, kapak: 2400, 'sus-flama': 1600, 'sus-ampul': 2400, 'sus-kemik-tabela': 1280, 'kino-onluk': 1280, 'kino-sapka': 1280 };

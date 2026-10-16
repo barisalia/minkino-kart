@@ -1,5 +1,5 @@
 // Gemini beyaz zeminli eşya çizimleri → şeffaf, kırpılmış WebP (genel sürüm; dedektif-esya.cjs'in yöntemi).
-// node gemini-esya.cjs --girdi <klasör> --cikti <klasör> [--desen <regex>] [--esit <regex>] [--arka <regex>] [--max 1024] [--ayar '{"ad":{"koyu":205,"sat":40,"minOran":0.02,"kes":[x0,y0,x1,y1]}}'] [ad ...]
+// node gemini-esya.cjs --girdi <klasör> --cikti <klasör> [--desen <regex>] [--esit <regex>] [--arka <regex>] [--max 1024] [--kayipsiz] [--ayar '{"ad":{"koyu":205,"sat":40,"minOran":0.02,"kes":[x0,y0,x1,y1]}}'] [ad ...]
 //  --esit  : eşleşen dosyalar (örn. ^kurabiye) aynı tuvale ortalanır, ölçek korunur (Gemini'nin ölçeği); tuval = grubun en büyük kutusu. Regex'te yakalama grupları ayrı gruplar kurar: '^(boya-kovasi)|^(bardak)|(top)$' → üç ayrı ortak tuval.
 //  --esit-hiza orta|alt : ortak tuvalde dikey hizalama (varsayılan orta; cupcake gibi aynı tabanlı aşamalar için alt: tabanlar hizalanır, yatayda ortalanır).
 //  --arka  : eşleşen dosyalar kesilmez, arka plan olarak webp'e çevrilir (uzun kenar --arka-max, varsayılan 2048).
@@ -14,6 +14,7 @@ const s = require(require.resolve('sharp', { paths: [process.cwd()] }));
 const arg = (ad, v) => { const i = process.argv.indexOf('--' + ad); return i >= 0 ? process.argv[i + 1] : v; };
 const GIRDI = arg('girdi'), CIKTI = arg('cikti'), DESEN = new RegExp(arg('desen', '.'), 'i'), ESIT = arg('esit') ? new RegExp(arg('esit'), 'i') : null, ARKA = arg('arka') ? new RegExp(arg('arka'), 'i') : null;
 const ARKA_ONEK = arg('arka-onek', 'arka-'), ESIT_HIZA = arg('esit-hiza', 'orta');
+const KAYIPSIZ = process.argv.includes('--kayipsiz');   // --kayipsiz: tek dosya çıktısı kayıpsız webp (başka betiğe ara çıktı; sonra küçültülüp yeniden kodlanacaksa)
 const MAX = +arg('max', 1024), ARKA_MAX = +arg('arka-max', 2048), AYAR = JSON.parse(arg('ayar', '{}'));
 const VARSAYILAN = { minOran: 0.01, sat: 55, koyu: 170, ek: 6 };
 async function kes(dosya, ad, o) {
@@ -108,6 +109,6 @@ async function kes(dosya, ad, o) {
 async function yaz(ad, kirp, w, h, parca, kontur) {
   const olc = MAX && Math.max(w, h) > MAX ? MAX / Math.max(w, h) : 1;
   const son = olc < 1 ? await s(kirp).resize(Math.round(w * olc), Math.round(h * olc), { kernel: 'lanczos3' }).png().toBuffer() : kirp;
-  const buf = await s(son).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); await guvenliYaz(path.join(CIKTI, ad + '.webp'), buf);
+  const buf = await s(son).webp(KAYIPSIZ ? { lossless: true, effort: 4 } : { quality: 94, alphaQuality: 100, effort: 5 }).toBuffer(); await guvenliYaz(path.join(CIKTI, ad + '.webp'), buf);
   console.log(ad + ': ' + Math.round(w * olc) + 'x' + Math.round(h * olc) + ', ' + Math.round(buf.length / 1024) + ' KB, parça ' + parca + (kontur ? '' : ', kontur yok'));
 }
