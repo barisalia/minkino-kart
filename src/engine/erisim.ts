@@ -55,6 +55,11 @@ export const ERISIM: Record<string, Erisim> = {
   'mino-giysin/pamuk': 'ucretsiz',
   'mino-giysin/kino': 'ucretsiz',
   'mino-giysin/*': 'abonelik',
+  // Tıkır Tıkır Lokanta: Gün 1 ve Gün 2 (salata, menemen, yıka, ilk alım) ücretsiz; Gün 3 ve sonrası abonelikle
+  // (ekip/senaryo/RESTORAN.md §6d; kilit P4'te gün geçişinde ve defterde sorulur)
+  'restoran/gun-1': 'ucretsiz',
+  'restoran/gun-2': 'ucretsiz',
+  'restoran/*': 'abonelik',
 };
 
 /** Tablodan bir içeriğin erişim türü (oyun ya da 'oyun/bolum') */

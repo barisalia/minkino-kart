@@ -15,6 +15,7 @@ import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri } from '../../kino-otobus/src/model';
+import { restoranCumleleri, restoranKinoCumleleri } from '../../restoran/src/model';
 import giysinJson from '../../content/giysin.json';
 import patiJson from '../../content/pati.json';
 import uykuJson from '../../content/uyku.json';
@@ -227,6 +228,10 @@ export function tumCumleler(): string[] {
   // Mino Ne Giysin? (mino-giysin/): Mino (anlatıcı), hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
   // (Ege'nin balonu seslendirilmez: Ege'nin sesi yok)
   for (const k of ['mino', 'hazir', 'kino'] as const) topla(minoGiysinJson[k]).forEach(ekle);
+  // Tıkır Tıkır Lokanta: Mino (anlatıcı), yemek adları, müşteri sözleri (kendi sesleri gelene kadar anlatıcı kaydı
+  // müşterinin tonuyla), mini oyunların sözleri (content/restoran/*.json); Kino'nunkiler anlatıcı yedeği olarak da
+  restoranCumleleri().forEach(ekle);
+  restoranKinoCumleleri().forEach(ekle);
   return [...set];
 }
 
@@ -258,6 +263,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   topla(uykuJson.kino).forEach(ekle);
   // Mino Ne Giysin?: Kino'nun cümleleri
   topla(minoGiysinJson.kino).forEach(ekle);
+  // Tıkır Tıkır Lokanta: Kino'nun cümleleri
+  restoranKinoCumleleri().forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;

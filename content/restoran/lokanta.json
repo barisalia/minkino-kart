@@ -76,13 +76,13 @@
       "gule": "[happy] Görüşürüz!"
     },
     "baba": {
-      "selam": "[laughs] Kocamanından!",
+      "selam": "[laughs] Kocaman bir tabak!",
       "bayildi": "[laughs] Kıtır kıtır!",
       "komik": "[surprised] Bu kadar mı?",
       "gule": "[happy] Eline sağlık!"
     },
     "dede": {
-      "selam": "[chuckles] Eski usul olsun.",
+      "selam": "[chuckles] Eski usul olsun evlat.",
       "bayildi": "[chuckles] Tıpkı eskisi gibi!",
       "komik": "[chuckles] Bıyığım bal oldu!",
       "gule": "[chuckles] Allaha emanet!"
@@ -94,7 +94,7 @@
       "gule": "[happy] Doydum!"
     },
     "zipzip": {
-      "selam": "[excited] Ben önce!",
+      "selam": "[excited] Önce ben oturdum!",
       "bayildi": "[excited] Havuç var!",
       "komik": "[gasps] Kulaklarım düğüm!",
       "gule": "[excited] Hop hop!"

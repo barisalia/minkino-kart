@@ -110,6 +110,12 @@ export const BOY = {
   tombi: 1.45,
   bulut: 1.25,
   zipzip: 1.25,
+  // Tıkır Tıkır Lokanta yeni karakterleri (ekip/senaryo/RESTORAN.md §11e #31; çizim R-Gün 4): Dişçi (su aygırı),
+  // Tuhaf Teyze (flamingo), Palyaço Tavşan, Kelime Yutan Tavşan
+  disci: 2.2,
+  'tuhaf-teyze': 2.1,
+  'palyaco-tavsan': 2.1,
+  'kelime-yutan-tavsan': 1.25,
 } as const;
 export type BoyTipi = keyof typeof BOY;
 
