@@ -34,17 +34,18 @@ const SAYFA_PX = 2048;
 
 // ---------------------------------------------------------------- tablo (kitap/src/okul-canli.ts ile aynı; tests/unit/kitap.test.ts denetler)
 // yer: yaklaşık konum [x, y, en, boy] (sayfanın oranı). pozlar: hareket sayfasındaki poz sayısı. parcalar: ad → kare sayısı.
+// parcaDosya: dizinin dosya adı kuraldan (sNN-<katman>-<parça>) farklıysa (grup katmanlarında listedeki ad).
 // olcme: false → farkla ölçülmez (saçılan blok, pişi, hırka, düşen Kuzu: kod tanımdaki yeri kullanır). kaynak: başka sayfanın pozu.
 const K = (id, yer, pozlar, ek = {}) => ({ id, yer, pozlar, ...ek });
 const SAYFALAR = {
   kapak: [K('kino', [0.34, 0.3, 0.32, 0.62], 4, { parcalar: { kuyruk: 4 } })],
   s01: [K('kino', [0.16, 0.3, 0.3, 0.6], 6, { parcalar: { kuyruk: 4 } }), K('lokum', [0.6, 0.36, 0.26, 0.3], 4)],
   s02: [K('baba', [0.08, 0.28, 0.34, 0.4], 4), K('lokum', [0.56, 0.52, 0.24, 0.4], 6)],
-  s03: [K('anne-kino', [0.12, 0.18, 0.46, 0.76], 4, { parcalar: { 'kuzu-kulak': 3 } }), K('mino', [0.62, 0.4, 0.22, 0.48], 4)],
+  s03: [K('anne-kino', [0.12, 0.18, 0.46, 0.76], 4, { parcalar: { 'kuzu-kulak': 3 }, parcaDosya: { 'kuzu-kulak': 's03-kuzu-kulak' } }), K('mino', [0.62, 0.4, 0.22, 0.48], 4)],
   s04: [K('zipzip', [0.04, 0.22, 0.14, 0.24], 4), K('kino', [0.4, 0.4, 0.26, 0.52], 4, { parcalar: { kuyruk: 4 } }), K('anne', [0.46, 0.1, 0.3, 0.86], 1)],
   s05: [K('anne-kino', [0.12, 0.12, 0.72, 0.84], 5)],
   s06: [K('kino', [0.34, 0.38, 0.26, 0.54], 6, { parcalar: { kuyruk: 3 } }), K('canta', [0.66, 0.18, 0.14, 0.24], 4), K('kuzu', [0.67, 0.36, 0.1, 0.1], 2, { olcme: false })],
-  s07: [K('kino-kuzu', [0.14, 0.2, 0.68, 0.74], 3, { parcalar: { kuyruk: 4 } })],
+  s07: [K('kino-kuzu', [0.14, 0.2, 0.68, 0.74], 3, { parcalar: { kuyruk: 4 }, parcaDosya: { kuyruk: 's07-kino-kuyruk' } })],
   s08: [K('kino', [0.14, 0.28, 0.3, 0.62], 4), K('bulut', [0.62, 0.42, 0.26, 0.46], 4)],
   s09: [K('cocuklar', [0.6, 0.04, 0.36, 0.3], 2), K('kule', [0.4, 0.04, 0.18, 0.82], 3), K('bloklar', [0.42, 0.08, 0.08, 0.08], 8, { olcme: false }), K('kino', [0.06, 0.34, 0.28, 0.58], 3), K('bulut', [0.66, 0.46, 0.26, 0.46], 2)],
   s10: [K('zipzip', [0.16, 0.1, 0.18, 0.32], 2), K('tombi', [0.62, 0.08, 0.24, 0.38], 4), K('mino', [0.06, 0.4, 0.22, 0.44], 2), K('kino', [0.38, 0.34, 0.24, 0.54], 3, { parcalar: { kuyruk: 4 } }), K('bulut', [0.72, 0.44, 0.22, 0.42], 2)],
@@ -54,7 +55,9 @@ const SAYFALAR = {
   s14: [K('baba', [0.02, 0.16, 0.3, 0.58], 3), K('kino', [0.28, 0.44, 0.36, 0.26], 2, { parcalar: { kulak: 3 } }), K('hirka', [0.36, 0.42, 0.18, 0.14], 1, { olcme: false }), K('lokum', [0.7, 0.32, 0.24, 0.34], 2)],
 };
 const UGUR_KARE = 4;
-module.exports = { SAYFALAR, UGUR_KARE };
+/** Parça dizisinin dosya adı (uzantısız) */
+const parcaAdi = (sayfa, k, parca) => k.parcaDosya?.[parca] ?? `${sayfa}-${k.id}-${parca}`;
+module.exports = { SAYFALAR, UGUR_KARE, parcaAdi };
 if (require.main !== module) return;
 
 const yuvarla = (v) => Math.round(v * 10000) / 10000;
@@ -229,7 +232,7 @@ async function sayfaIsle(sayfa, yerlesim, el) {
       kontrol.push({ id: k.id, kutu: kayit.kutu });
     } else if (k.olcme !== false) console.log(`  ${k.id}: yeri ölçülemedi (sNN.png + sNN-zemin.png gerekli ya da yerlesim-el.json); tanımdaki yer kullanılır`);
     for (const [parca, n] of Object.entries(k.parcalar || {})) {
-      const pf = dosya(`${sayfa}-${k.id}-${parca}`);
+      const pf = dosya(parcaAdi(sayfa, k, parca));
       if (!pf) { console.log(`  ${k.id}-${parca}: dizi yok`); continue; }
       const pk = await kareleriKes(pf, `${sayfa}-${k.id}-${parca}`, n);
       if (!pk) continue;

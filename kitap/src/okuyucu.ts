@@ -9,20 +9,11 @@
 import { efekt, konus, sus } from '../../src/audio/ses';
 import { konusmaAni } from '../../src/audio/konusma';
 import { TEST_MODU } from '../../src/ui/dom';
-import { KARAKTERLER, kelimeler, type MetinSayfasi } from './metin';
+import { KARAKTERLER, kelimeAgirliklari, type MetinSayfasi } from './metin';
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 /** Tahmin: saniyede okunan harf (cihaz sesi hızı 0.92; kayıt 0.9) */
 const HARF_SN = { cihaz: 12.5, kayit: 13.5 };
-
-/** Satırdaki kelimelerin tahmini bitiş anları (harf birimi; noktalamadan sonra kısa duraklama) */
-export function kelimeAgirliklari(metin: string): number[] {
-  let t = 0;
-  return kelimeler(metin).map((w) => {
-    t += w.k.replace(/[^\p{L}\p{N}]/gu, '').length + 1.2 + (/[.!?]$/.test(w.k) ? 5 : /[,:;]$/.test(w.k) ? 2.5 : /\.\.\.$/.test(w.k) ? 6 : 0);
-    return t;
-  });
-}
 
 export class Okuyucu {
   private tur = 0;

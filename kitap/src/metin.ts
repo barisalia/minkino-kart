@@ -40,6 +40,15 @@ export function kelimeler(m: string): { k: string; bas: number }[] {
   return c;
 }
 
+/** Satırdaki kelimelerin tahmini bitiş anları (harf birimi; noktalamadan sonra kısa duraklama) */
+export function kelimeAgirliklari(metin: string): number[] {
+  let t = 0;
+  return kelimeler(metin).map((w) => {
+    t += w.k.replace(/[^\p{L}\p{N}]/gu, '').length + 1.2 + (/[.!?]$/.test(w.k) ? 5 : /[,:;]$/.test(w.k) ? 2.5 : /\.\.\.$/.test(w.k) ? 6 : 0);
+    return t;
+  });
+}
+
 export interface MetinSecenek {
   /** Kapak: büyük başlık */
   baslik?: string;
