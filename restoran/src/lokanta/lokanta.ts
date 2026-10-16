@@ -27,6 +27,7 @@ import { istekResmi, yolHaritasi } from './istek-gorsel';
 import { Kisi } from './kisi';
 import { surukleBagla, ustunde } from './surukle';
 
+const DENEME_ZORLA = (TEST_MODU || new URLSearchParams(location.search).has('onizleme')) && new URLSearchParams(location.search).has('deneme');
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, TEST_MODU ? Math.min(ms, 30) : AZ_HAREKET ? Math.min(ms, 300) : ms));
 
@@ -34,6 +35,8 @@ const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, TEST_MODU ?
 export const MASA_RENK = ['#E8483A', '#4C8FD6', '#F2B233', '#4FA83D'];
 /** masanın önden görünen yüksekliği (u) */
 export const MASA_H = 1.05;
+/** masanın eni (u; lokanta.css .rs-masa ile aynı) */
+export const MASA_W = 2.7;
 
 const SEBZE_RAF: Malzeme[] = ['domates', 'salatalik', 'sogan', 'biber', 'maydanoz', 'marul', 'havuc', 'patates'];
 const GARNITUR: Malzeme[] = ['limon', 'maydanoz', 'ekmek', 'zeytin', 'zeytinyagi', 'bal'];
@@ -162,8 +165,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     k.el.style.zIndex = String(Math.round(k.konum.y * 10) + (k.oturdu ? 0 : 3));
   };
   let kinoMesgul = false;
+  let olcu: Olcu | null = null;
 
   const yerlestir = (o: Olcu) => {
+    olcu = o;
     yon = o.yon;
     Y = YERLESIM[yon];
     arkaKur();
@@ -182,7 +187,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     });
     if (!kinoMesgul) kino.yerKoy(Y.kino.x, Y.kino.y);
     zSira(kino);
-    minoEl.style.left = pct(yon === 'yatay' ? 56 : 50);
+    minoEl.style.left = pct(yon === 'yatay' ? 56 : 44);
     minoEl.style.top = pct(yon === 'yatay' ? 52 : 44);
     if (kapida?.hazir) {
       kapida.kisi.yerKoy(Y.bekleme.x, Y.bekleme.y);
@@ -268,12 +273,17 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     return kinoZincir;
   };
   const kinoYuru = async (x: number, y: number) => {
+    kino.el.style.zIndex = '940';
     await kino.yuru(x, y, 30);
     zSira(kino);
   };
   const kinoYerine = () => kinoYuru(Y.kino.x, Y.kino.y);
   /** masanın yanı (Kino'nun durduğu yer) */
-  const masaYani = (m: Masa): Yer => ({ x: m.yer.x + (m.yer.x > 50 ? -10 : 10), y: m.yer.y + 1 });
+  const masaYani = (m: Masa): Yer => {
+    // masanın yarı eni + Kino'nun yarısı (u), sahnenin yüzdesi olarak: Kino masanın önüne değil yanına durur
+    const dx = olcu ? ((MASA_W / 2 + 0.45) * olcu.u * 100) / olcu.sahne.w : 12;
+    return { x: m.yer.x + (m.yer.x > 50 ? -dx : dx), y: m.yer.y - 1 };
+  };
 
   // ---------------------------------------------------------------- müşteriler
   const yeniKisi = (ad: string, boy: string) => {
@@ -302,6 +312,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const eslik = p.eslik ? yeniKisi(p.eslik, MUSTERILER[p.eslik]?.boy ?? p.eslik) : null;
     kisi.yerKoy(Y.kapi.x, Y.kapi.y + 20);
     eslik?.yerKoy(Y.kapi.x, Y.kapi.y + 20);
+    kisi.el.style.zIndex = '950';
+    if (eslik) eslik.el.style.zIndex = '950';
     const k: Kapida = { plan: p, m, kisi, eslik, hazir: false, zaman: performance.now() };
     kapida = k;
     salonSes.kapi();
@@ -311,6 +323,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     kapi.classList.remove('rs-acik');
     zSira(kisi);
     if (eslik) zSira(eslik);
+    kisi.el.style.zIndex = '950';
+    if (eslik) eslik.el.style.zIndex = '950';
     if (kapandi || kapida !== k) return;
     k.hazir = true;
     k.zaman = performance.now();
@@ -370,7 +384,9 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const o: Oturan = { plan: k.plan, m: k.m, kisi: k.kisi, eslik: k.eslik, masa, durum: 'yuruyor', adisyon: null, balon: null };
     masa.oturan = o;
     ipucuGuncelle();
-    // masanın arkasına yürür
+    // masanın arkasına yürür (yolda masaların önünden geçer)
+    k.kisi.el.style.zIndex = '950';
+    if (k.eslik) k.eslik.el.style.zIndex = '950';
     await Promise.all([k.kisi.yuru(masa.yer.x - (k.eslik ? 3 : 0), masa.yer.y - 0.4, 24), k.eslik?.yuru(masa.yer.x + 5, masa.yer.y - 0.4, 24)]);
     if (kapandi) return;
     oturuYerlestir(o);
@@ -689,7 +705,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     o.durum = 'gidiyor';
     o.kisi.otur(false);
     o.eslik?.otur(false);
-    zSira(o.kisi);
+    o.kisi.el.style.zIndex = '950';
+    if (o.eslik) o.eslik.el.style.zIndex = '950';
     o.kisi.poz('selam');
     void o.kisi.oynat('hop', 400);
     await kisiSoyle(o.kisi, o.m, musteriSozu(o.m, 'gule'));
@@ -730,7 +747,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   };
   const istasyonaGir = (ist: Istasyon) => {
     if (istasyon || gunBitti) return;
-    const oyun = istasyonOyunlari(ist)[0] ?? denemeIcin(ist);
+    // e2e: &deneme=1 çekirdek akışı deneme mini oyunuyla sınar (gerçek mini oyunların kendi testleri var)
+    const oyun = (DENEME_ZORLA ? null : istasyonOyunlari(ist)[0]) ?? denemeIcin(ist);
     const arkaAnahtar = `${ist}:${oyun.ad}`;
     const arkaVar = arkaIsler.get(arkaAnahtar);
     if (arkaVar) {

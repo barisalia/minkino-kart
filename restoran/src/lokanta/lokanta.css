@@ -29,7 +29,7 @@
 [data-yon='dikey'] .rs-arka.rs-yertutucu .rs-cini { top: 12%; height: 10%; left: 9%; right: 9%; }
 [data-yon='dikey'] .rs-arka.rs-yertutucu .rs-tezgah-on { top: 33%; height: 11%; left: 9%; right: 9%; }
 [data-yon='dikey'] .rs-arka.rs-yertutucu .rs-zemin { top: 44%; }
-[data-yon='dikey'] .rs-arka.rs-yertutucu .rs-pencere-dis { left: 9%; top: 47%; width: 16%; height: 12%; }
+[data-yon='dikey'] .rs-arka.rs-yertutucu .rs-pencere-dis { display: none; }
 
 /* istasyonlar (mutfakta dokunulacak yerler): çizim varken saydam, yoksa sade yer tutucu yüzey */
 .rs-ist {
@@ -96,7 +96,7 @@ img.rs-yol-alet { width: 18px; height: 18px; box-shadow: none; }
 }
 .rs-masa-govde { position: absolute; inset: 0; }
 .rs-masa-govde::before { content: ''; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 24%; border-radius: 10px; background: #c98a50; box-shadow: inset 0 0 0 3px var(--rs-kahve); }
-.rs-masa-govde::after { content: ''; position: absolute; left: 12%; right: 12%; top: 22%; bottom: 0; background: linear-gradient(90deg, #a96b39 0 9%, transparent 9% 91%, #a96b39 91%); }
+.rs-masa-govde::after { content: ''; position: absolute; left: 6%; right: 6%; top: 20%; bottom: 0; background: linear-gradient(#b9783f 0 34%, transparent 34%), linear-gradient(90deg, #a96b39 0 8%, transparent 8% 92%, #a96b39 92%); border-radius: 0 0 6px 6px; filter: drop-shadow(0 3px 0 rgba(59, 36, 22, 0.18)); }
 .rs-masa[data-ortu='kareli'] .rs-masa-govde::before { background: repeating-conic-gradient(#e8483a 0 25%, #fff 0 50%) 0 0 / 14px 14px; height: 46%; border-radius: 8px 8px 12px 12px; }
 .rs-masa[data-ortu='cicekli'] .rs-masa-govde::before { background: radial-gradient(circle, #fff 0 22%, transparent 24%) 0 0 / 16px 16px, #7fb6e8; height: 46%; border-radius: 8px 8px 12px 12px; }
 .rs-masa[data-ortu='puantiyeli'] .rs-masa-govde::before { background: radial-gradient(circle, #fff 0 20%, transparent 22%) 0 0 / 12px 12px, #f2c14e; height: 46%; border-radius: 8px 8px 12px 12px; }

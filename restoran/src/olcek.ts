@@ -133,7 +133,7 @@ export const YERLESIM: Record<Yon, Yerlesim> = {
       mermer: { x: 11, y: 34, w: 18, h: 9 },
       servis: { x: 70, y: 18, w: 19, h: 15 },
     },
-    kino: { x: 79, y: 47 },
+    kino: { x: 60, y: 53 },
     ip: [
       { x: 12, y: 11 },
       { x: 68, y: 11 },

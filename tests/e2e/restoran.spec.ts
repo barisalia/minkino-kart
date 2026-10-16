@@ -107,7 +107,7 @@ for (const boy of TELEFON) {
     test('Gün 1 uçtan uca: 4 müşteri, üç tür istek, üç tepki kademesi, jeton kasaya, kayıt; karakterler dev değil', async ({ page }) => {
       test.setTimeout(240_000);
       const hatalar = hataTopla(page);
-      await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk');
+      await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk&deneme=1');
       // açılış: levha döner, lokanta açılır
       await page.locator('.rs-levha').click();
       await expect(page.locator('.rs-lokanta')).toBeVisible();
@@ -157,8 +157,8 @@ for (const boy of TELEFON) {
     test('gerçek hız: müşteri masaya sürüklenir, oturur, istek balonu ve adisyon; tabak masaya sürüklenir; zoom yok', async ({ page }) => {
       test.setTimeout(180_000);
       const hatalar = hataTopla(page);
-      await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk');
-      await page.goto('./restoran/?onizleme=1&ekran=lokanta');
+      await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk&deneme=1');
+      await page.goto('./restoran/?onizleme=1&ekran=lokanta&deneme=1');
       // müşteri kapıda hazır olunca boş masaya sürükle
       await expect.poll(async () => (await durum(page))?.kapida?.hazir, { timeout: 30_000 }).toBe(true);
       const kisi = page.locator('.rs-kisi[data-kisi="anne"]');
