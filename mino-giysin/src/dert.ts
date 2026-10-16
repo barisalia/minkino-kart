@@ -401,9 +401,16 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   sahne.append(...sahneKur.arka, arkadas.el, minoKap, ...sahneKur.on);
 
   // ------------------------------------------------------------ açılış: Mino sahneye kayarak girer
+  // sahne resimleri çözülmeden Mino girmesin (boş gökyüzünde Mino görünmesin); en çok 2,5 sn beklenir
+  mino.ic.style.opacity = '0';
+  const resimlerHazir = () =>
+    Promise.race([Promise.all([...sahne.querySelectorAll('img')].map((i) => (i as HTMLImageElement).decode?.().catch(() => undefined))), bekle(2500)]);
   const acilis = async () => {
     yerlesim();
     sahneKur.sifirla();
+    await resimlerHazir();
+    yerlesim();
+    mino.ic.style.opacity = '';
     const mk = kutu(mino.el, el);
     await oynat(mino.ic, [{ transform: `translateX(${-(mk.x + mk.w * 1.2)}px) translateY(0) scale(1,1)` }, { transform: `translateX(${-(mk.x + mk.w * 1.2) * 0.4}px) translateY(-14px) scale(0.96,1.04)`, offset: 0.55 }, { transform: 'translateX(0) translateY(0) scale(1.05,0.95)', offset: 0.85 }, { transform: 'none' }], 900);
     eldeYerlesim();

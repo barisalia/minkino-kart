@@ -22,6 +22,7 @@ import { ayniSayac, cikar, DERTLER, ipucuSureleri, parca, parcaAleti, partiAcik,
 import { acikDertler, dertKilitli, grup, oturum, oturumuSifirla } from './oturum';
 import { gecit, partiAlkis, tavanaAt } from './parti';
 import { gorsel, ikonResmi, onYukle, parcaKostum, parcaResmi } from './resimler';
+import { SAHNELER } from './sahneler';
 import { Sepet, SEPET_BOY } from './sepet';
 import { kinoSoyle, minoSoyle, ses } from './ses';
 
@@ -644,6 +645,8 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
     if (onceki && onceki !== d) ucur(onceki, balonlar[onceki].getBoundingClientRect());
     ucur(d, eskiR);
     ses.pit(DERTLER.indexOf(d));
+    // dert sahnesinin resimleri şimdiden (kapıdan geçince bir anda görünsün)
+    onYukle(SAHNELER[d].arka.map(gorsel));
     adim('secili');
     derdinSesi(d);
     const yz = yuzler[d]!;
