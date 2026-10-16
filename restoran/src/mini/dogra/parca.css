@@ -264,3 +264,8 @@
   background: #fff6b8;
   clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
 }
+
+/* Mino'nun konuşma balonu P2 istasyonlarında parmağı yutmasın (kesim, sürükleme balonun altından da sürer) */
+.mk-kok .rs-istasyon:is(:has(.rs-dogra), :has(.rs-tava), :has(.rs-tabakla)) .rs-mino-balon {
+  pointer-events: none;
+}

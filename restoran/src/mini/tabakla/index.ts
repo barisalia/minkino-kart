@@ -133,6 +133,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         } else eldeBirak(el);
       },
       dokun: () => {
+        eldeBirak();
         if (el.classList.contains('rs-kullanildi')) return;
         urunKoy(u, el, 0, 0.05);
       },
@@ -158,6 +159,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         } else eldeBirak(el);
       },
       dokun: () => {
+        eldeBirak();
         adSoyle(m);
         const yer = bosYer();
         susKoy(m, yer.u, yer.v, el);
@@ -166,7 +168,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   }
   const siseler: Sise[] = ['zeytinyagi', ...(g.malzemeler.includes('bal') || !g.tarif || g.tarif === 'pankek' ? (['bal'] as Sise[]) : [])];
   for (const s of siseler) {
-    const resim = alet(s === 'bal' ? 'bal' : 'yag-sise');
+    const resim = alet(s === 'bal' ? 'bal' : 'zeytinyagi');
     const el = h('button.rs-tb-raf-oge.rs-tb-sise', { type: 'button', 'aria-label': MALZEME_ADI[s], 'data-sise': s }, resim ? h('img.rs-tb-raf-resim', { src: resim, alt: '', draggable: 'false' }) : h(`i.rs-tb-yt.rs-tb-yt-${s}`));
     raf.append(el);
     rafEl.push(el);
@@ -195,6 +197,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         durumGuncelle();
       },
       dokun: () => {
+        eldeBirak();
         // dokununca şişe tabağın üstünden bir kez geçer: düz, hafif dalgalı bir çizgi
         adSoyle(s);
         ezil(el, 1.3);

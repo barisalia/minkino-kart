@@ -66,6 +66,10 @@ const SAYFALAR = {
   'istasyon-icecek': { tur: 'arka', ad: 'istasyon/icecek' },
   'istasyon-icecek-dikey': { tur: 'arka', ad: 'istasyon/icecek-dikey' },
   'nehir-lokanta-sayfasi': { tur: 'kisi', kim: 'nehir', adlar: MUSTERI_POZ },
+  // P2 (Doğra, Tava): adlar restoran/src/mini/dogra/gorsel.ts ve tava/index.ts'in aradığı adlar (§11d #26-28)
+  'sebze-patates-havuc': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['patates-butun', 'patates-soyulmus', 'patates-dilim', 'patates-cubuk', 'patates-kabuk', 'havuc-butun', 'havuc-soyulmus', 'havuc-dilim', 'havuc-rende', 'havuc-kabuk', 'havuc-kurdan'], sutun: 2 },
+  'sebze-yesillik': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['maydanoz-butun', 'maydanoz-kiyim', 'maydanoz-yaprak', 'marul-butun', 'marul-yaprak', 'marul-serit', 'ugur-bocegi', 'camur-a', 'camur-b', 'camur-c'] },
+  'yiyecek-tava': { tur: 'esya', grup: 'yiyecek', max: 1400, adlar: ['menemen-cig', 'menemen-pismis', 'menemen-az-karisik', 'menemen-cok-karisik', 'pankek-hamur', 'pankek-altin', 'pankek-citir', 'pankek-kabarcik'] },
   // ---- R-Gün 4
   'bidik-baba-lokanta-sayfasi': { tur: 'kisi', kim: 'bidik-baba', adlar: MUSTERI_POZ },
   'bidicik-lokanta-sayfasi': { tur: 'kisi', kim: 'bidicik', adlar: MUSTERI_POZ },

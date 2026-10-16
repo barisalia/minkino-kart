@@ -56,7 +56,7 @@ export function fiskeMi(dy: number, ms: number, yas: Yas): boolean {
 /** Fiske sonucu: 5-6'da çok güçlü fiske tavana yapışır */
 export function fiskeSonucu(hiz: number, yas: Yas): 'don' | 'tavan' {
   if (yas === 'kucuk') return 'don';
-  return hiz > 2.4 ? 'tavan' : 'don';
+  return hiz > 2 ? 'tavan' : 'don';
 }
 
 export interface Pankek {

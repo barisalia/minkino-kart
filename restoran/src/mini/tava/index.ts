@@ -303,7 +303,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   }
   const yumurtaRaf = rafOge('yumurta', resimYa('yumurta', 'rs-tv-yt-yumurta'), MALZEME_ADI.yumurta);
   const hamurRaf = hamurVar ? rafOge('hamur', resimYa('hamur-kasesi', 'rs-tv-yt-hamur'), 'Pankek hamuru') : null;
-  const yagRaf = rafOge('yag', resimYa('yag-sise', 'rs-tv-yt-yag'), MALZEME_ADI.zeytinyagi);
+  const yagRaf = rafOge('yag', resimYa('zeytinyagi', 'rs-tv-yt-yag'), MALZEME_ADI.zeytinyagi);
   const tuzRaf = rafOge('tuz', resimYa('tuzluk', 'rs-tv-yt-tuz'), MALZEME_ADI.tuz);
   const biberRaf = rafOge('pulbiber', resimYa('pulbiber', 'rs-tv-yt-pulbiber'), MALZEME_ADI.pulbiber);
   yerlestir();
@@ -379,6 +379,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       durumGuncelle();
     },
     dokun: () => {
+      eldeBirak();
       // dokununca şişe tavanın üstüne hoplar, biraz yağ gezdirir
       ezil(yagRaf, 1.3);
       b.ses.cal('siril', { guc: 0.3, perde: 1.4 });
@@ -411,7 +412,10 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         if (tavadaMi(x, y - 34, 1.05)) serp(tur, elde ?? el);
         eldeBirak(el);
       },
-      dokun: () => serp(tur, el),
+      dokun: () => {
+        eldeBirak();
+        serp(tur, el);
+      },
     });
   }
 
@@ -453,6 +457,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         } else eldeBirak(o.el);
       },
       dokun: () => {
+      eldeBirak();
         if (o.el.classList.contains('rs-kullanildi')) return;
         const r = o.el.getBoundingClientRect();
         const kr = kok.getBoundingClientRect();
@@ -565,6 +570,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       eldeBirak(yumurtaRaf);
     },
     dokun: () => {
+      eldeBirak();
       // 3-4 yaş yolu: yumurta tavanın kenarına zıplar (tık); bir daha dokununca çat
       if (kenardaki) {
         kenardakiVur();
@@ -638,6 +644,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         durumGuncelle();
       },
       dokun: () => {
+      eldeBirak();
         ezil(hamurRaf, 1.3);
         hamurDok(0.3);
       },
@@ -688,7 +695,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const ms = performance.now() - fiske.t;
     fiske = null;
     const yukari = yas === 'kucuk' ? Math.hypot(dx, dy) : -dy;
-    if (fiskeMi(yas === 'kucuk' ? -Math.hypot(dx, dy) : dy, ms, yas)) cevirOyna(yukari / Math.max(60, ms));
+    if (fiskeMi(yas === 'kucuk' ? -Math.hypot(dx, dy) : dy, ms, yas)) cevirOyna(yukari >= 110 ? yukari / Math.max(30, ms) : Math.min(1.9, yukari / Math.max(30, ms)));
   });
   tava.addEventListener('pointercancel', () => (fiske = null));
 
@@ -860,6 +867,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
           d.karisim = karisimEkle(d.karisim, 40, yas);
           yumurtaKaristirCiz();
         }
+        karistirYol += 40;
         if (i % 4 === 0 && (taneler.length || d.yumurta)) b.ses.cal('ciz', { guc: 0.3 });
         if (++i > tur) {
           clearInterval(z);

@@ -99,7 +99,7 @@ export function butunResim(m: Malzeme, soyuldu = false): { url: string; yol: str
 const KESIT_ADI: Partial<Record<Gorunum, string>> = {
   yarim: 'yarim',
   dilim: 'dilim',
-  yarimdilim: 'ay',
+  yarimdilim: 'yarimay',
   serit: 'serit',
   cubuk: 'cubuk',
   kup: 'kup',
@@ -151,7 +151,7 @@ export function parcaEl(m: Malzeme, p: Parca, soyuldu = false): HTMLElement {
     return el;
   }
   const ad = KESIT_ADI[p.gorunum];
-  const u = ad ? yeni(`yiyecek/${m}-${ad}`) : null;
+  const u = (ad ? yeni(`yiyecek/${m}-${ad}`) : null) ?? (ad === 'serit' ? yeni(`yiyecek/${m}-halka`) : null) ?? (m === 'ekmek' ? yeni('alet/ekmek') : null);
   if (u) {
     el.append(h('img.rs-p2-kesit', { src: u, alt: '', draggable: 'false' }));
     el.dataset.resim = '1';

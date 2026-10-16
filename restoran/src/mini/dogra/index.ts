@@ -405,7 +405,16 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       kayma.x = x;
       kayma.y = y;
       if (kayma.soyulan) {
-        soymaDene(kayma.soyulan, x, y);
+        // soğandan başlayan kaydırma başka bir sebzeyi keserse soyma değil kesimdir (kesim yutulmasın)
+        const soyulan = kayma.soyulan;
+        kesimleriBul(ax, ay, x, y, soyulan);
+        if (!kayma) break;
+        if (kayma.kesimVar) {
+          kayma.soyulan = null;
+          kok.classList.remove('rs-dg-tutuyor');
+          continue;
+        }
+        soymaDene(soyulan, x, y);
         continue;
       }
       kesimleriBul(ax, ay, x, y);
@@ -476,10 +485,11 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     return null;
   }
 
-  function kesimleriBul(ax: number, ay: number, x: number, y: number) {
+  function kesimleriBul(ax: number, ay: number, x: number, y: number, haric?: Tahtada) {
     if (!kayma) return;
     const yon = yonBul(x - kayma.x0 || x - ax, y - kayma.y0 || y - ay);
     for (const t of tahtadakiler.slice()) {
+      if (t === haric) continue;
       if (!tahtadakiler.includes(t)) continue;
       // maydanoz: kaydırmada bir kez vurulur
       if (tanim(t.d.ad).bicim === 'demet') {

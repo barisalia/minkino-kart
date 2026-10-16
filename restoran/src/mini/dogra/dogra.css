@@ -295,3 +295,7 @@
 .mk-kok .rs-istasyon:has(.rs-dogra) .rs-ist-arka.rs-ist-yertutucu::after {
   display: none;
 }
+/* bıçak dokunuşla aynı karede görünür: geçiş yok */
+.mk-kok .rs-dogra .rs-dg-bicak {
+  transition: none;
+}
