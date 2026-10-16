@@ -38,5 +38,275 @@
     "iyi_geceler": "İyi geceler, minikler!",
     "yarin": "Yarın görüşürüz!",
     "sayi": ["Bir!", "İki!"]
+  },
+  "v2": {
+    "aciklama": "Pati Dükkânı v2 (ekip/senaryo/PATI-V2.md). Paket 1: ekonomi, vitrin, isim + minder, 3 kalp, dans + jeton, kayıt. fiyat ve kazanç: [3-4, 5-6]. sevgi: ihtiyaç → s (★ sever), o (✓ olur), x (✗ sevmez, komik). ders ve gizli yalnız 5-6. nehir: yeni sözler; SESLENDİRME ONAY BEKLİYOR (PATI-V2 §14.3), bu yüzden src/audio/cumleler.ts listesine henüz EKLENMEDİ (CI kredi harcamasın); kayıt yokken cihaz sesiyle okunur.",
+    "baslangic_jeton": [4, 8],
+    "kazanc": { "olur": [1, 1], "sever": [1, 2], "ilk_sever": [1, 1], "dans": [2, 3], "ziyaret_uyan": [3, 5], "ziyaret_uymayan": [1, 2] },
+    "kalp_sayisi": 3,
+    "dans_dinlenme_sn": 30,
+    "koseler": {
+      "salon": { "fiyat": [0, 0], "yer": 3, "bastan": true },
+      "kemirgen": { "fiyat": [4, 8], "yer": 2 },
+      "akvaryum": { "fiyat": [5, 10], "yer": 2 },
+      "kus": { "fiyat": [6, 12], "yer": 2 },
+      "bahce": { "fiyat": [7, 14], "yer": 2, "kosul": "dede-ziyareti" },
+      "surungen": { "fiyat": [8, 16], "yer": 2, "kosul": "dort-hayvan" }
+    },
+    "hayvanlar": {
+      "tarcin": {
+        "ad": "Tarçın", "tur": "kedi", "kose": "salon", "fiyat": [3, 6], "vitrin": "baslangic", "huy": "nazli",
+        "sevgi": {
+          "ac": { "s": ["kedi-mamasi"], "o": ["konserve"], "x": ["kemik-biskuvi"] },
+          "susuz": { "s": ["kedi-cesmesi"], "o": ["su-kabi"], "x": ["suluk-sisesi"] },
+          "kirli": { "s": ["yumusak-firca"], "o": ["tarak"], "x": ["su-spreyi"] },
+          "sikildi": { "s": ["tuy-degnek"], "o": ["yumak"], "x": ["top"] },
+          "uykulu": { "s": ["karton-kutu"], "o": ["kedi-iglosu"], "x": ["kafes-ortusu"] },
+          "hasta": { "s": ["battaniye"], "o": ["ilik-su-torbasi"], "x": [] }
+        },
+        "ders": { "esya": "sut-kasesi", "kez": 1, "sonuc": "hasta", "soz": "sut_kedi" },
+        "gizli": "cingirakli-top"
+      },
+      "findik": {
+        "ad": "Fındık", "tur": "kopek", "kose": "salon", "fiyat": [4, 7], "vitrin": "baslangic", "huy": "coskulu",
+        "sevgi": {
+          "ac": { "s": ["kemik-biskuvi"], "o": ["kopek-mamasi"], "x": ["marul"] },
+          "susuz": { "s": ["su-kabi"], "o": [], "x": ["suluk-sisesi"] },
+          "kirli": { "s": ["pati-havlusu"], "o": ["yumusak-firca"], "x": ["su-spreyi"] },
+          "sikildi": { "s": ["top"], "o": ["halat"], "x": ["tuy-degnek"] },
+          "uykulu": { "s": ["minder", "pelus-ayi"], "o": ["sepet-yatak"], "x": ["karton-kutu"] },
+          "hasta": { "s": ["ilik-su-torbasi"], "o": ["battaniye"], "x": [] }
+        },
+        "ders": { "esya": "kemik-biskuvi", "kez": 3, "sonuc": "hasta", "soz": "fazla_biskuvi" },
+        "gizli": "havuc"
+      },
+      "pofuduk": {
+        "ad": "Pofuduk", "tur": "tavsan", "kose": "salon", "fiyat": [3, 5], "vitrin": "baslangic", "huy": "utangac",
+        "sevgi": {
+          "ac": { "s": ["saman"], "o": ["marul", "havuc"], "x": ["kopek-mamasi"] },
+          "susuz": { "s": ["suluk-sisesi"], "o": ["su-kabi"], "x": [] },
+          "kirli": { "s": ["yumusak-firca"], "o": [], "x": ["su-spreyi"] },
+          "sikildi": { "s": ["tunel"], "o": ["karton-kutu"], "x": ["top"] },
+          "uykulu": { "s": ["saman-yuvasi"], "o": ["battaniye"], "x": ["isi-lambasi"] },
+          "hasta": { "s": ["battaniye"], "o": [], "x": [] }
+        },
+        "ders": { "esya": "havuc", "kez": 3, "sonuc": "hasta", "soz": "havuc_seker" },
+        "gizli": "kemirme-cubugu"
+      },
+      "fistik": {
+        "ad": "Fıstık", "tur": "hamster", "kose": "kemirgen", "fiyat": [2, 4], "vitrin": "kose", "huy": "uykucu",
+        "sevgi": {
+          "ac": { "s": ["aycekirdegi"], "o": ["elma"], "x": ["kedi-mamasi"] },
+          "susuz": { "s": ["suluk-sisesi"], "o": [], "x": ["su-kabi"] },
+          "kirli": { "s": ["kum-banyosu"], "o": [], "x": ["su-spreyi"] },
+          "sikildi": { "s": ["cark"], "o": ["hamster-topu", "tunel"], "x": ["tuy-degnek"] },
+          "uykulu": { "s": ["talas-yuvasi"], "o": ["karton-kutu"], "x": ["muzik-kutusu"] },
+          "hasta": { "s": ["ilik-su-torbasi"], "o": [], "x": [] }
+        },
+        "gizli": "kirmizi-biber"
+      },
+      "kurabiye": {
+        "ad": "Kurabiye", "tur": "kobay", "kose": "kemirgen", "fiyat": [3, 5], "vitrin": "kose", "huy": "sosyal",
+        "sevgi": {
+          "ac": { "s": ["kirmizi-biber"], "o": ["saman", "havuc"], "x": ["aycekirdegi"] },
+          "susuz": { "s": ["suluk-sisesi"], "o": ["su-kabi"], "x": [] },
+          "kirli": { "s": ["yumusak-firca"], "o": ["tarak"], "x": ["su-spreyi"] },
+          "sikildi": { "s": ["tunel"], "o": ["karton-kutu"], "x": ["cark"] },
+          "uykulu": { "s": ["saman-yuvasi"], "o": ["battaniye"], "x": [] },
+          "hasta": { "s": ["ilik-su-torbasi"], "o": [], "x": [] }
+        },
+        "gizli": "ayna"
+      },
+      "piril": {
+        "ad": "Pırıl", "tur": "balik", "kose": "akvaryum", "fiyat": [2, 3], "vitrin": "kose", "huy": "neseli",
+        "ihtiyaclar": ["ac", "kirli", "sikildi", "uykulu"],
+        "sevgi": {
+          "ac": { "s": ["balik-yemi"], "o": [], "x": ["ekmek"] },
+          "kirli": { "s": ["cam-silecek"], "o": ["su-kovasi"], "x": [] },
+          "sikildi": { "s": ["akvaryum-kalesi"], "o": ["baloncuk-tasi"], "x": ["top"] },
+          "uykulu": { "s": ["gece-lambasi"], "o": [], "x": ["muzik-kutusu"] }
+        },
+        "ders": { "esya": "balik-yemi", "kez": 2, "sonuc": "kirli", "soz": "bir_tutam" },
+        "gizli": "ayna"
+      },
+      "limon": {
+        "ad": "Limon", "tur": "kus", "kose": "kus", "fiyat": [3, 6], "vitrin": "kose", "huy": "geveze",
+        "sevgi": {
+          "ac": { "s": ["dari-cubugu"], "o": ["kus-tohumu", "elma"], "x": ["kopek-mamasi"] },
+          "susuz": { "s": ["kus-sulugu"], "o": [], "x": ["su-kabi"] },
+          "kirli": { "s": ["su-spreyi"], "o": ["kus-banyo-kabi"], "x": ["yumusak-firca"] },
+          "sikildi": { "s": ["ayna"], "o": ["can", "kus-salincagi"], "x": ["top"] },
+          "uykulu": { "s": ["kafes-ortusu"], "o": [], "x": ["minder"] },
+          "hasta": { "s": ["isi-lambasi"], "o": [], "x": [] }
+        },
+        "gizli": "cingirakli-top"
+      },
+      "tospik": {
+        "ad": "Tospik", "tur": "kaplumbaga", "kose": "surungen", "fiyat": [4, 8], "vitrin": "kose", "huy": "sakin",
+        "sevgi": {
+          "ac": { "s": ["cilek"], "o": ["marul"], "x": ["kemik-biskuvi"] },
+          "susuz": { "s": ["sig-su-kabi"], "o": [], "x": ["suluk-sisesi"] },
+          "kirli": { "s": ["kabuk-fircasi"], "o": ["su-spreyi"], "x": [] },
+          "sikildi": { "s": ["top"], "o": ["kum-tepsisi"], "x": ["tuy-degnek"] },
+          "uykulu": { "s": ["isi-lambasi"], "o": [], "x": ["battaniye"] },
+          "hasta": { "s": ["isi-lambasi"], "o": [], "x": [] }
+        },
+        "gizli": "magara-tasi"
+      },
+      "zumrut": {
+        "ad": "Zümrüt", "tur": "gekko", "kose": "surungen", "fiyat": [4, 8], "vitrin": "kose", "huy": "tirmanici",
+        "sevgi": {
+          "ac": { "s": ["meyve-puresi"], "o": ["cilek"], "x": ["kedi-mamasi"] },
+          "susuz": { "s": ["su-spreyi"], "o": ["sig-su-kabi"], "x": [] },
+          "kirli": { "s": ["sig-su-kabi"], "o": ["islak-mendil"], "x": ["yumusak-firca"] },
+          "sikildi": { "s": ["tirmanma-dali"], "o": ["yaprak-hamak"], "x": ["top"] },
+          "uykulu": { "s": ["yaprak-hamak"], "o": ["magara-tasi"], "x": ["gece-lambasi"] },
+          "hasta": { "s": ["isi-lambasi"], "o": [], "x": [] }
+        },
+        "gizli": "ayna"
+      },
+      "cucuk": {
+        "ad": "Cücük", "tur": "civciv", "kose": "bahce", "fiyat": [2, 4], "vitrin": "kose", "huy": "merakli",
+        "sevgi": {
+          "ac": { "s": ["civciv-yemi"], "o": ["marul"], "x": ["kedi-mamasi"] },
+          "susuz": { "s": ["civciv-sulugu"], "o": [], "x": [] },
+          "kirli": { "s": ["kum-banyosu"], "o": [], "x": ["su-spreyi"] },
+          "sikildi": { "s": ["ayna"], "o": ["kum-tepsisi"], "x": ["cark"] },
+          "uykulu": { "s": ["isi-lambasi"], "o": ["battaniye"], "x": [] },
+          "hasta": { "s": ["isi-lambasi"], "o": [], "x": [] }
+        },
+        "gizli": "lastik-ordek"
+      },
+      "vakvak": {
+        "ad": "Vakvak", "tur": "ordek", "kose": "bahce", "fiyat": [3, 6], "vitrin": "kose", "huy": "sakar",
+        "sevgi": {
+          "ac": { "s": ["bezelye"], "o": ["marul"], "x": [] },
+          "susuz": { "s": ["mini-havuz"], "o": ["su-kabi"], "x": [] },
+          "kirli": { "s": ["mini-havuz"], "o": ["su-spreyi"], "x": ["kum-banyosu"] },
+          "sikildi": { "s": ["lastik-ordek"], "o": ["top"], "x": ["tuy-degnek"] },
+          "uykulu": { "s": ["battaniye"], "o": ["sepet-yatak"], "x": [] },
+          "hasta": { "s": ["isi-lambasi"], "o": [], "x": [] }
+        },
+        "ders": { "esya": "ekmek", "kez": 1, "sonuc": "hasta", "soz": "ordek_ekmek" },
+        "gizli": "halat"
+      }
+    },
+    "renkler": {
+      "pamuk": { "ad": "Pamuk", "temel": "tarcin", "fiyat": [3, 6], "vitrin": "ilk-alim", "huy": "temiz", "x_ek": { "kirli": "kum-banyosu" }, "gizli": "yumak" },
+      "duman": { "ad": "Duman", "temel": "tarcin", "fiyat": [3, 6], "vitrin": "ilk-alim", "huy": "uykucu", "gizli": "battaniye" },
+      "cikolata": { "ad": "Çikolata", "temel": "findik", "fiyat": [4, 7], "vitrin": "ilk-alim", "huy": "tembel", "x_ek": { "sikildi": "top" }, "gizli": "halat" },
+      "kakao": { "ad": "Kakao", "temel": "pofuduk", "fiyat": [3, 5], "vitrin": "ilk-alim", "huy": "cesur", "x_sil": ["sikildi"], "gizli": "top" },
+      "boncuk": { "ad": "Boncuk", "temel": "limon", "fiyat": [3, 6], "vitrin": "kose", "huy": "geveze", "gizli": "can" }
+    },
+    "cekmeceler": {
+      "mama": { "ihtiyac": "ac", "yas": ["kucuk", "buyuk"] },
+      "su": { "ihtiyac": "susuz", "yas": ["kucuk", "buyuk"] },
+      "oyuncak": { "ihtiyac": "sikildi", "yas": ["kucuk", "buyuk"] },
+      "temizlik": { "ihtiyac": "kirli", "yas": ["buyuk"] },
+      "yatak": { "ihtiyac": "uykulu", "yas": ["kucuk", "buyuk"] },
+      "ecza": { "ihtiyac": "hasta", "yas": ["buyuk"] }
+    },
+    "esyalar": {
+      "kopek-mamasi": { "cekmece": "mama", "bastan": true },
+      "kedi-mamasi": { "cekmece": "mama", "bastan": true },
+      "saman": { "cekmece": "mama", "bastan": true },
+      "kemik-biskuvi": { "cekmece": "mama", "fiyat": [1, 2] },
+      "konserve": { "cekmece": "mama", "fiyat": [1, 2] },
+      "sut-kasesi": { "cekmece": "mama", "fiyat": [1, 2] },
+      "havuc": { "cekmece": "mama", "fiyat": [1, 2] },
+      "marul": { "cekmece": "mama", "fiyat": [1, 2] },
+      "elma": { "cekmece": "mama", "fiyat": [1, 2] },
+      "cilek": { "cekmece": "mama", "fiyat": [1, 2] },
+      "aycekirdegi": { "cekmece": "mama", "fiyat": [1, 2] },
+      "kirmizi-biber": { "cekmece": "mama", "fiyat": [1, 2] },
+      "dari-cubugu": { "cekmece": "mama", "fiyat": [1, 2] },
+      "kus-tohumu": { "cekmece": "mama", "fiyat": [1, 2] },
+      "balik-yemi": { "cekmece": "mama", "fiyat": [1, 2] },
+      "civciv-yemi": { "cekmece": "mama", "fiyat": [1, 2] },
+      "bezelye": { "cekmece": "mama", "fiyat": [1, 2] },
+      "ekmek": { "cekmece": "mama", "fiyat": [1, 2] },
+      "meyve-puresi": { "cekmece": "mama", "fiyat": [1, 2] },
+      "su-kabi": { "cekmece": "su", "bastan": true },
+      "suluk-sisesi": { "cekmece": "su", "bastan": true },
+      "kedi-cesmesi": { "cekmece": "su", "fiyat": [2, 4] },
+      "kus-sulugu": { "cekmece": "su", "fiyat": [1, 2] },
+      "sig-su-kabi": { "cekmece": "su", "fiyat": [1, 2] },
+      "civciv-sulugu": { "cekmece": "su", "fiyat": [1, 2] },
+      "mini-havuz": { "cekmece": "su", "fiyat": [2, 4] },
+      "top": { "cekmece": "oyuncak", "bastan": true },
+      "tuy-degnek": { "cekmece": "oyuncak", "bastan": true },
+      "tunel": { "cekmece": "oyuncak", "bastan": true },
+      "halat": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "yumak": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "cingirakli-top": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "frizbi": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "kemirme-cubugu": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "cark": { "cekmece": "oyuncak", "fiyat": [2, 4] },
+      "hamster-topu": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "ayna": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "can": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "kus-salincagi": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "tirmanma-dali": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "yaprak-hamak": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "magara-tasi": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "akvaryum-kalesi": { "cekmece": "oyuncak", "fiyat": [2, 4] },
+      "baloncuk-tasi": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "kum-tepsisi": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "lastik-ordek": { "cekmece": "oyuncak", "fiyat": [1, 2] },
+      "yumusak-firca": { "cekmece": "temizlik", "bastan": true },
+      "pati-havlusu": { "cekmece": "temizlik", "bastan": true },
+      "su-spreyi": { "cekmece": "temizlik", "bastan": true },
+      "tarak": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "islak-mendil": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "kum-banyosu": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "kabuk-fircasi": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "cam-silecek": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "kus-banyo-kabi": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "su-kovasi": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "kum-saati": { "cekmece": "temizlik", "fiyat": [1, 2] },
+      "minder": { "cekmece": "yatak", "bastan": true },
+      "battaniye": { "cekmece": "yatak", "bastan": true },
+      "karton-kutu": { "cekmece": "yatak", "bastan": true },
+      "sepet-yatak": { "cekmece": "yatak", "fiyat": [1, 2] },
+      "kedi-iglosu": { "cekmece": "yatak", "fiyat": [2, 4] },
+      "saman-yuvasi": { "cekmece": "yatak", "fiyat": [1, 2] },
+      "talas-yuvasi": { "cekmece": "yatak", "fiyat": [1, 2] },
+      "pelus-ayi": { "cekmece": "yatak", "fiyat": [1, 2] },
+      "kafes-ortusu": { "cekmece": "yatak", "fiyat": [1, 2] },
+      "gece-lambasi": { "cekmece": "yatak", "fiyat": [1, 2] },
+      "muzik-kutusu": { "cekmece": "yatak", "fiyat": [2, 4] },
+      "isi-lambasi": { "cekmece": "yatak", "fiyat": [2, 4] },
+      "ilik-su-torbasi": { "cekmece": "ecza", "bastan": true },
+      "surup-kasigi": { "cekmece": "ecza", "fiyat": [1, 2] },
+      "yara-bandi": { "cekmece": "ecza", "fiyat": [1, 2] }
+    },
+    "adlar": ["Bal", "Badem", "Karamel", "Şeker", "Pıtır", "Minnoş", "Tombik", "Zeytin"],
+    "minderler": ["kirmizi", "mavi", "sari", "yesil"],
+    "nehir": {
+      "dukkan_senin": "Bu dükkân artık senin!",
+      "ilk_jetonlar": "İşte ilk jetonların!",
+      "hos_geldin": "Hoş geldin!",
+      "yasasin": "Yaşasın!",
+      "jeton_az": "Biraz daha jeton lazım.",
+      "kose_lazim": "Önce ona bir köşe açalım.",
+      "cok_mutlu": "Çok mutlu!",
+      "huy": {
+        "coskulu": "Fındık hiç yerinde durmaz!",
+        "nazli": "Tarçın biraz nazlı.",
+        "utangac": "Pofuduk çok utangaç.",
+        "temiz": "Pamuk tertemiz bir kedi.",
+        "uykucu": "Duman çok uykucu.",
+        "tembel": "Çikolata biraz tembel.",
+        "cesur": "Kakao çok cesur!"
+      },
+      "ders": {
+        "sut_kedi": "Süt kedinin karnını ağrıttı.",
+        "fazla_biskuvi": "Bu kadar bisküvi çok fazla.",
+        "havuc_seker": "Havuç tavşana şeker gibi.",
+        "bir_tutam": "Bir tutam yeter.",
+        "ordek_ekmek": "Ördeğe ekmek iyi gelmez."
+      },
+      "sayi": ["Bir!", "İki!", "Üç!", "Dört!", "Beş!", "Altı!", "Yedi!", "Sekiz!", "Dokuz!", "On!", "On bir!", "On iki!", "On üç!", "On dört!", "On beş!", "On altı!"]
+    }
   }
 }
