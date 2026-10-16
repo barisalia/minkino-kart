@@ -933,3 +933,7 @@
   margin-right: 0;
   padding: 10px;
 }
+/* defter açıkken alt şerit (dikey) defterin üstüne binmez */
+.pt-kok .pt-ekran:has(.pt-defter.acik) .pt-alt {
+  visibility: hidden;
+}
