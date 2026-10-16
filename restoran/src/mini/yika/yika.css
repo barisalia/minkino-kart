@@ -1,0 +1,279 @@
+/* YIKA mini oyunu: yalnız .rs-yika altında. Yer tutucular sade (düz renk + kahve kontur); Gemini 'istasyon-lavabo'
+   ve 'sebze-yesillik' (uğur böceği, çamur lekeleri) gelince resimler kendiliğinden yerine geçer. */
+.mk-kok .rs-yika {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overflow: hidden;
+  --kontur: #3b2416;
+}
+
+/* raf: üstte, çamurlu sebzeler (dokunma alanı ≥ 64 css px) */
+.mk-kok .rs-yk-raf {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  z-index: 7;
+}
+.mk-kok .rs-yk-raf-oge {
+  position: relative;
+  width: var(--s, 72px);
+  height: var(--s, 72px);
+  min-width: 64px;
+  min-height: 64px;
+  padding: 6px;
+  border: 3px solid var(--kontur);
+  border-radius: 22px;
+  background: rgba(255, 248, 232, 0.92);
+  box-shadow: 0 3px 0 rgba(59, 36, 22, 0.35);
+  cursor: pointer;
+  touch-action: none;
+}
+.mk-kok .rs-yk-raf-camur {
+  position: absolute;
+  left: 30%;
+  top: 46%;
+  width: 34%;
+  height: 26%;
+  border-radius: 48% 52% 40% 60%;
+  background: radial-gradient(circle at 70% 30%, #a0703f 0 26%, transparent 27%), #8a5a32;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* leğen (yer tutucu: açık mavi su, plastik kenar) */
+.mk-kok .rs-yk-legen {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.mk-kok .rs-yika:not([data-cizim]) .rs-yk-legen {
+  border: 4px solid var(--kontur);
+  background: radial-gradient(circle at 50% 50%, #c4ecf7 0 62%, #a6dcee 63% 76%, #7cc3df 77% 100%);
+  box-shadow: 0 6px 0 rgba(59, 36, 22, 0.22);
+}
+.mk-kok .rs-yk-su-yuzu {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 34% 30%, rgba(255, 255, 255, 0.7) 0 8%, transparent 9%), radial-gradient(ellipse at 62% 64%, rgba(255, 255, 255, 0.35) 0 6%, transparent 7%);
+  pointer-events: none;
+}
+.mk-kok .rs-yk-halka {
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  pointer-events: none;
+}
+.mk-kok .rs-yk-halka.rs-oyna {
+  animation: rs-yk-halka 0.6s ease-out;
+}
+@keyframes rs-yk-halka {
+  from { transform: scale(0.3); opacity: 1; }
+  to { transform: scale(1.5); opacity: 0; }
+}
+
+/* süzgeç (yer tutucu: metal, delikli) */
+.mk-kok .rs-yk-suzgec {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.mk-kok .rs-yika:not([data-cizim]) .rs-yk-suzgec {
+  border: 4px solid var(--kontur);
+  background: radial-gradient(circle, #6f7f86 0 1.6px, transparent 2.2px) 0 0 / 14px 14px, radial-gradient(circle at 40% 35%, #e8eef0 0 40%, #c7d2d6 70%, #aab8be 100%);
+  box-shadow: inset 0 0 0 7px #d9e2e5, inset 0 0 0 9px rgba(59, 36, 22, 0.35), 0 6px 0 rgba(59, 36, 22, 0.22);
+}
+
+/* musluk (dokununca açılır; sebze altına gelince kendiliğinden) */
+.mk-kok .rs-yk-musluk {
+  position: absolute;
+  z-index: 8;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.mk-kok .rs-yika:not([data-cizim]) .rs-yk-musluk-bas {
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  width: 56px;
+  height: 30px;
+  border-radius: 14px;
+  border: 3px solid var(--kontur);
+  background: linear-gradient(180deg, #f4f8fa, #b9c8cf);
+  box-sizing: border-box;
+}
+.mk-kok .rs-yika:not([data-cizim]) .rs-yk-musluk-agiz {
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  width: 24px;
+  height: 26px;
+  border-radius: 0 0 10px 10px;
+  border: 3px solid var(--kontur);
+  border-top: 0;
+  background: linear-gradient(90deg, #dbe5e9, #a9bac2);
+  box-sizing: border-box;
+}
+.mk-kok .rs-yk-musluk.rs-acik .rs-yk-musluk-bas {
+  background: linear-gradient(180deg, #e9f7ff, #9fd3ea);
+}
+.mk-kok .rs-yk-su {
+  position: absolute;
+  z-index: 6;
+  width: 44px;
+  border-radius: 0 0 22px 22px;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 50% 0;
+  transform: scaleY(0.2);
+  transition: opacity 0.12s, transform 0.16s ease-out;
+  background: repeating-linear-gradient(180deg, rgba(160, 220, 245, 0.85) 0 14px, rgba(205, 240, 252, 0.9) 14px 24px);
+  background-size: 100% 48px;
+  box-shadow: inset 6px 0 0 rgba(255, 255, 255, 0.5);
+}
+.mk-kok .rs-yika.rs-su-akiyor .rs-yk-su {
+  opacity: 1;
+  transform: none;
+  animation: rs-yk-akis 0.4s linear infinite;
+}
+@keyframes rs-yk-akis {
+  to { background-position: 0 48px; }
+}
+
+/* sebzeler */
+.mk-kok .rs-yk-sebzeler,
+.mk-kok .rs-yk-efekt {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mk-kok .rs-yk-sebzeler { z-index: 5; }
+.mk-kok .rs-yk-efekt { z-index: 46; }
+.mk-kok .rs-yk-sebze {
+  left: 0;
+  top: 0;
+  will-change: transform;
+  filter: drop-shadow(0 4px 0 rgba(59, 36, 22, 0.18));
+}
+.mk-kok .rs-yk-sebze[data-yer='el'] {
+  z-index: 3;
+  filter: drop-shadow(0 12px 6px rgba(59, 36, 22, 0.28));
+}
+.mk-kok .rs-yk-sebze.rs-ovuluyor {
+  filter: drop-shadow(0 2px 0 rgba(59, 36, 22, 0.2)) brightness(1.04);
+}
+.mk-kok .rs-yk-sebze.rs-islak .rs-p3-sebze-resim,
+.mk-kok .rs-yk-sebze.rs-islak .rs-p3-sebze-yt {
+  filter: saturate(1.15) brightness(1.06);
+}
+
+/* çamur lekesi (yer tutucu kahve leke; Gemini camur-a|b|c gelince resim) */
+.mk-kok .rs-yk-leke {
+  position: absolute;
+  transition: opacity 0.12s;
+}
+.mk-kok .rs-yk-leke:empty {
+  border-radius: 46% 54% 38% 62% / 52% 40% 60% 48%;
+  background: radial-gradient(circle at 70% 30%, #a2723f 0 22%, transparent 23%), radial-gradient(circle at 26% 70%, #6f4524 0 14%, transparent 15%), #85552e;
+  box-shadow: inset 0 0 0 2px rgba(59, 36, 22, 0.55);
+}
+.mk-kok .rs-yk-leke[data-sekil='b']:empty { border-radius: 60% 40% 55% 45% / 40% 60% 40% 60%; }
+.mk-kok .rs-yk-leke[data-sekil='c']:empty { border-radius: 38% 62% 50% 50% / 62% 44% 56% 38%; }
+.mk-kok .rs-yk-leke > img,
+.mk-kok .rs-yk-ugur > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* köpük katmanı: gövdenin üstünde beyaz kabarcıklar (ovuldukça artar) */
+.mk-kok .rs-yk-kopuk-kat {
+  position: absolute;
+  inset: 16%;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 30%, #fff 0 9%, rgba(59, 36, 22, 0.25) 9.5% 10.5%, transparent 11%),
+    radial-gradient(circle at 48% 22%, #fff 0 11%, rgba(59, 36, 22, 0.25) 11.5% 12.5%, transparent 13%),
+    radial-gradient(circle at 70% 40%, #fff 0 10%, rgba(59, 36, 22, 0.25) 10.5% 11.5%, transparent 12%),
+    radial-gradient(circle at 36% 58%, #fff 0 12%, rgba(59, 36, 22, 0.25) 12.5% 13.5%, transparent 14%),
+    radial-gradient(circle at 62% 70%, #fff 0 9%, rgba(59, 36, 22, 0.25) 9.5% 10.5%, transparent 11%),
+    radial-gradient(circle at 80% 64%, #fff 0 7%, rgba(59, 36, 22, 0.25) 7.5% 8.5%, transparent 9%),
+    radial-gradient(circle at 18% 72%, #fff 0 7%, rgba(59, 36, 22, 0.25) 7.5% 8.5%, transparent 9%);
+}
+
+/* uğur böceği (yer tutucu: kırmızı yuvarlak, siyah benekler) */
+.mk-kok .rs-yk-ugur {
+  position: absolute;
+  width: 26px;
+  height: 22px;
+  margin: -11px 0 0 -13px;
+  z-index: 2;
+}
+.mk-kok .rs-yk-ugur:empty {
+  border-radius: 50% 50% 46% 46%;
+  border: 2px solid var(--kontur);
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at 30% 55%, #2b1d17 0 12%, transparent 13%),
+    radial-gradient(circle at 70% 55%, #2b1d17 0 12%, transparent 13%),
+    radial-gradient(circle at 50% 80%, #2b1d17 0 10%, transparent 11%),
+    linear-gradient(90deg, transparent 47%, #2b1d17 47% 53%, transparent 53%),
+    radial-gradient(ellipse at 50% 6%, #2b1d17 0 26%, transparent 27%),
+    #e8473a;
+}
+.mk-kok .rs-yk-ugur.rs-ucuyor {
+  position: absolute;
+  margin: -11px 0 0 -13px;
+  z-index: 50;
+}
+.mk-kok .rs-yk-balon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff 0 18%, rgba(255, 255, 255, 0.35) 22% 60%, rgba(150, 210, 240, 0.6) 100%);
+  box-shadow: inset 0 0 0 1.5px rgba(59, 36, 22, 0.35);
+}
+
+/* tepside ve masada küçük hâli */
+.mk-kok .rs-yk-urun {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  background: radial-gradient(circle, #6f7f86 0 1.2px, transparent 1.8px) 0 0 / 9px 9px, radial-gradient(circle at 40% 35%, #e8eef0 0 40%, #c7d2d6 70%, #aab8be 100%);
+}
+.mk-kok .rs-yk-urun .rs-p3-sebze {
+  position: absolute;
+}
+.mk-kok .rs-yk-simge,
+.mk-kok .rs-yk-simge-yt {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.mk-kok .rs-yk-simge-yt {
+  border-radius: 50%;
+  border: 3px solid var(--kontur);
+  background: #a6dcee;
+}

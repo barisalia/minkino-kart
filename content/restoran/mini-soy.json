@@ -1,0 +1,24 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · SOY mini oyunu sözleri (P3; ekip/senaryo/RESTORAN.md §8 M3). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "patates": "Patates!",
+      "havuc": "Havuç!",
+      "salatalik": "Salatalık!",
+      "portakal": "Portakal!",
+      "elma": "Elma!"
+    },
+    "soyuldu": "[happy] Soyuldu!",
+    "ince": "[gasps] İncecik oldu!",
+    "biyik": "[giggles] Bıyığım oldu!",
+    "spiral": "[gasps] Tek parça!",
+    "tac": "[laughs] Lokum'a taç oldu!",
+    "kova": "[happy] Kova doldu!",
+    "ipucu": {
+      "bos": "[curious] Tezgâh bomboş…",
+      "kabuk": "[curious] Kabuğu hâlâ üstünde…",
+      "don": "[curious] Öbür yüzü kabuklu…",
+      "bitti": "[happy] Hepsi soyuldu!"
+    }
+  }
+}

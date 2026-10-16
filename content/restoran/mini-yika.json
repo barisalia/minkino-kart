@@ -1,0 +1,29 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · YIKA mini oyunu sözleri (P3; ekip/senaryo/RESTORAN.md §8 M2). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). 'Önce yıka, sonra doğra' söylenmez, sonuçtan öğrenilir. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "domates": "Domates!",
+      "salatalik": "Salatalık!",
+      "biber": "Biber!",
+      "havuc": "Havuç!",
+      "patates": "Patates!",
+      "marul": "Marul!",
+      "maydanoz": "Maydanoz!",
+      "limon": "Limon!",
+      "elma": "Elma!",
+      "sogan": "Soğan!"
+    },
+    "siril": "[excited] Şırıl şırıl!",
+    "temiz": "[happy] Pırıl pırıl!",
+    "ugur": "[gasps] Uğur böceği!",
+    "gidik": "[giggles] Burnum gıdıklandı!",
+    "kopuk": "[giggles] Köpük kaçtı!",
+    "ipucu": {
+      "bos": "[curious] Sebzeler çamur içinde…",
+      "camur": "[curious] Hâlâ çamur var…",
+      "kopuk": "[giggles] Köpük köpük oldu!",
+      "suzgec": "[softly] Süzgeç bomboş…",
+      "bitti": "[happy] Hepsi tertemiz oldu!"
+    }
+  }
+}

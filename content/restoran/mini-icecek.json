@@ -1,0 +1,28 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · ÇALKALA VE DOLDUR mini oyunu sözleri (P3; ekip/senaryo/RESTORAN.md §8 M12). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "yogurt": "Yoğurt!",
+      "su": "Su!",
+      "tuz": "Tuz!",
+      "limon": "Limon!",
+      "seker": "Şeker!",
+      "buz": "Buz!"
+    },
+    "fiskir": "[gasps] Fışkırdı!",
+    "biyik": "[giggles] Bıyığım beyaz oldu!",
+    "kopuk": "[happy] Köpük köpük oldu!",
+    "cekirdek": "[giggles] Çekirdek kaçtı!",
+    "tasti": "[giggles] Taştı!",
+    "cizgi": "[happy] Tam çizgisine kadar!",
+    "kalp": "[happy] Köpükten kalp!",
+    "ipucu": {
+      "bos": "[curious] Sürahi bomboş…",
+      "calkala": "[curious] Yoğurt dibe çökmüş…",
+      "limon": "[curious] Limon bütün duruyor…",
+      "pres": "[curious] Limonun suyu içinde…",
+      "bardak": "[curious] Bardak bomboş…",
+      "bitti": "[happy] Buz gibi oldu!"
+    }
+  }
+}

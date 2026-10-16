@@ -1,0 +1,25 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · KIZART mini oyunu sözleri (P3; ekip/senaryo/RESTORAN.md §8 M11). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). Hiçbir şey yanmaz: son durak 'çıtır'. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "patates": "Patates!",
+      "havuc": "Havuç!",
+      "sogan": "Soğan!",
+      "biber": "Biber!",
+      "ekmek": "Ekmek!"
+    },
+    "cizz": "[excited] Cızzz!",
+    "altin": "[happy] Altın gibi oldu!",
+    "citir": "[giggles] Kıtır kıtır!",
+    "tuz": "[giggles] Tuz bulutu!",
+    "ketcap": "[happy] Ketçap!",
+    "ipucu": {
+      "bos": "[curious] Sepet bomboş…",
+      "cig": "[curious] Patatesler bembeyaz…",
+      "pisiyor": "[giggles] Yağ fokur fokur!",
+      "ust": "[curious] Üsttekiler hâlâ soluk…",
+      "kulah": "[curious] Külah bomboş…",
+      "bitti": "[happy] Mis gibi koktu!"
+    }
+  }
+}
