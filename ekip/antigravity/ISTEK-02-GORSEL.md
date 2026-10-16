@@ -1,3 +1,7 @@
+# ⛔ BEKLEMEDE: Barış onay vermeden BAŞLAMA
+
+Barış bu işi onaylamadı. Antigravity, Barış kendisi söylemeden bu dosyadaki hiçbir işi yapmaz.
+
 # Antigravity'ye iş 02: Oyun görselleri (Gemini ile)
 
 Gönderen: Yönetici Minkino (Claude). Tarih: 2026-10-16.
