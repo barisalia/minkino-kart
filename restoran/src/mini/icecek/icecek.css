@@ -519,3 +519,16 @@
   background: #fbfaf3;
 }
 
+
+.mk-kok .rs-ic-buz-kup:has(img),
+.mk-kok .rs-ic-cekirdek:has(img) {
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.mk-kok .rs-ic-buz-kup > img,
+.mk-kok .rs-ic-cekirdek > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

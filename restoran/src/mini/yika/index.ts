@@ -17,10 +17,10 @@
 import { h } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-yika.json';
 import { MALZEME_ADI, urunId, type Malzeme, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
-import { ezil, hopla, kipirda, parilti, sac, ucur } from '../dogra/efekt';
+import { ezil, hopla, kipirda, parilti, sac } from '../dogra/efekt';
 import { rafSimge } from '../dogra/gorsel';
 import { aciFarki, durula, kopukEkle, lekeOv, lekeUret, rastgele, temizMi, TUR_ACI, turSil, yikamaOzeti, type YikananSebze } from './mantik';
-import { bekle, elipsIcinde, elipsNokta, hapsu, istasyonCizimi, kikir, nota, odulEzgi, olayKaydi, pirpir, resim, sebzeEl, sureMs, type Sebze } from './ortak';
+import { bekle, elipsIcinde, elipsNokta, hapsu, istasyonCizimi, kikir, nota, odulEzgi, olayKaydi, pirpir, resim, sebzeEl, sureMs, type Sebze, uc } from './ortak';
 import './yika.css';
 
 const M = metin.mino;
@@ -136,7 +136,7 @@ function yikaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       MU.ust = L.cy + L.R + 6;
       MU.alt = MU.ust + Math.max(120, alan * 0.2);
       S.R = Math.min(W * 0.27, 100);
-      S.cx = W * 0.44;
+      S.cx = W * 0.5;
       S.cy = Math.min(MU.alt + S.R + 24, H - 110 - S.R * 0.5);
     }
     legen.style.cssText = `left:${L.cx - L.R}px;top:${L.cy - L.R}px;width:${L.R * 2}px;height:${L.R * 2}px`;
@@ -168,7 +168,7 @@ function yikaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   }
 
   function boyHesap(k: Kovadaki): number {
-    const yer = k.yer === 'suzgec' ? S.R * 0.95 : L.R * (legende().length > 1 ? 0.86 : 1.08);
+    const yer = k.yer === 'suzgec' ? S.R * (suzgecte().length > 2 ? 0.66 : suzgecte().length > 1 ? 0.78 : 0.95) : L.R * (legende().length > 1 ? 0.86 : 1.08);
     return Math.max(56, Math.min(yer, k.s.enCok));
   }
   function hedef(k: Kovadaki): { x: number; y: number } {
@@ -598,7 +598,7 @@ function yikaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       const bal = h('i.rs-yk-balon');
       bal.style.transform = `translate(${x}px,${y}px)`;
       efektKat.append(bal);
-      void ucur(bal, hx - x + (i - 1.5) * 14, hy - y + (i % 2) * 10, 700 + i * 90, -70).then(() => {
+      void uc(bal, hx - x + (i - 1.5) * 14, hy - y + (i % 2) * 10, 700 + i * 90, -70).then(() => {
         b.ses.cal('pit', { perde: 1.4 + i * 0.1, guc: 0.6 });
         bal.remove();
       });
@@ -629,8 +629,8 @@ function yikaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     void b.mino.soyle(M.ugur);
     const mr = b.mino.el.getBoundingClientRect();
     const nx = mr.left - kr.left + mr.width * 0.5;
-    const ny = mr.top - kr.top + mr.height * 0.42;
-    await ucur(ub, nx - x, ny - y, 900, -90);
+    const ny = mr.top - kr.top + mr.height * 0.48;
+    await uc(ub, nx - x, ny - y, 900, -90);
     if (kapandi) return;
     // burnuna kondu: Mino şaşı bakar, hapşırır
     void b.mino.tepki('sasir', 1300);
@@ -643,7 +643,7 @@ function yikaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     pirpir();
     ub.getAnimations().forEach((a) => a.cancel());
     ub.style.transform = `translate(${nx}px,${ny}px)`;
-    void ucur(ub, W - nx + 60, -ny - 80, 1100, -120).then(() => ub.remove());
+    void uc(ub, W - nx + 60, -ny - 80, 1100, -120).then(() => ub.remove());
     await bekle(500);
     if (!kapandi) {
       kikir();
@@ -709,7 +709,7 @@ function yikaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const dx = tr.left - kr.left + tr.width / 2 - S.cx;
     const dy = tr.top - kr.top + tr.height / 2 - S.cy;
     const tasinan = [suzgec, ...s.map((k) => k.s.el)];
-    await Promise.all(tasinan.map((el) => ucur(el, dx, dy, 420, -40)));
+    await Promise.all(tasinan.map((el) => uc(el, dx, dy, 420, -40)));
     const ozellik = yikamaOzeti(s);
     const liste = s.map((k) => k.m);
     coz([{ id: urunId('yikanmis'), tur: 'yikanmis', ozellik, gorsel: () => suzgecGorsel(liste, ozellik.temiz ?? false) }]);

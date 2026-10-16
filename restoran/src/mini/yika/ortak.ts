@@ -325,6 +325,68 @@ export function merkez(el: Element, kap: Element): { x: number; y: number } {
   return { x: r.left - k.left + r.width / 2, y: r.top - k.top + r.height / 2 };
 }
 
+/**
+ * Kavisle uçur (döndürmeden): dogra/efekt.ts ucur() gibi, ama bireysel `translate`/`scale` özellikleriyle; böylece
+ * konumu inline `transform` ile verilmiş elemanlar da yerinden uçar (ucur transform'u ezer, köşeden başlatır).
+ */
+export function uc(el: HTMLElement, dx: number, dy: number, ms = 420, yukari = -50): Promise<void> {
+  try {
+    const a = el.animate(
+      [
+        { translate: '0 0', scale: '1 1' },
+        { translate: `${dx * 0.5}px ${dy * 0.5 + yukari}px`, scale: '0.96 1.05', offset: 0.5 },
+        { translate: `${dx}px ${dy}px`, scale: '1.04 0.95' },
+      ],
+      { duration: sureMs(ms), easing: 'cubic-bezier(.4,.1,.5,1)', fill: 'forwards' },
+    );
+    return a.finished.then(
+      () => undefined,
+      () => undefined,
+    );
+  } catch {
+    return Promise.resolve();
+  }
+}
+
+/**
+ * Sağ-sol sallama sayacı (sepet, sürahi): ham parmak konumundan. Yön dönünce, önceki yarım sallama en az `yol` px ve
+ * en az `hiz` px/ms ise bir sallama sayılır (yavaşça yer değiştirmek sallama değildir).
+ */
+export function sallamaSayaci(yol = 22, hiz = 0.2) {
+  let sonX: number | null = null;
+  let yon = 0;
+  let gidilen = 0;
+  let bas = 0;
+  return {
+    sifirla() {
+      sonX = null;
+      yon = 0;
+      gidilen = 0;
+    },
+    adim(x: number): boolean {
+      const t = performance.now();
+      if (sonX === null) {
+        sonX = x;
+        bas = t;
+        return false;
+      }
+      const dx = x - sonX;
+      sonX = x;
+      if (Math.abs(dx) < 1) return false;
+      const y = Math.sign(dx);
+      let say = false;
+      if (yon && y !== yon) {
+        say = gidilen >= yol && gidilen / Math.max(1, t - bas) >= hiz;
+        gidilen = 0;
+        bas = t;
+      }
+      yon = y;
+      gidilen += Math.abs(dx);
+      return say;
+    },
+  };
+}
+
 /** Konuma kayarak git (WAAPI; CSS geçişi ilk yerleşimde takılabiliyor). Sürüklerken doğrudan transform yazılır. */
 export function konumaKay(el: HTMLElement, yeni: string, ms = 180) {
   const eski = el.style.transform;

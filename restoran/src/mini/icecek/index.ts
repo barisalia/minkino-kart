@@ -18,11 +18,11 @@
 import { h } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-icecek.json';
 import { urunId, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
-import { ezil, hopla, kipirda, leke, parilti, sac, ucur } from '../dogra/efekt';
+import { ezil, hopla, kipirda, leke, parilti, sac } from '../dogra/efekt';
 import { butunResim } from '../dogra/gorsel';
 import { surukle } from '../dogra/surukle';
 import { aciFarki, rastgele } from '../yika/mantik';
-import { bakanKur, bekle, konumaKay, hapsu, hisir, kikir, nota, odulEzgi, olayKaydi, resim, sureMs } from '../yika/ortak';
+import { bakanKur, bekle, konumaKay, sallamaSayaci, hapsu, hisir, kikir, nota, odulEzgi, olayKaydi, resim, sureMs, uc } from '../yika/ortak';
 import { BARDAK, bosBardak, bosIcerik, calkala, dok, fiskir, icecekOzeti, icecekTuru, LIMON, seviye, type Bardak, type Icecek, type Icerik } from './mantik';
 import './icecek.css';
 
@@ -231,7 +231,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const dusen = h('i.rs-ic-dusen', { 'data-ad': ad });
     dusen.style.transform = `translate(${bx}px,${by}px)`;
     efektKat.append(dusen);
-    void ucur(dusen, ag.x - bx, ag.y - by - 6, 360, -50).then(() => {
+    void uc(dusen, ag.x - bx, ag.y - by - 6, 360, -50).then(() => {
       dusen.remove();
       if (kapandi) return;
       if (ad === 'yogurt') {
@@ -279,14 +279,14 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       b.ses.cal('tok', { perde: 1.6 });
       return;
     }
-    const kup = h('i.rs-ic-buz-kup');
+    const kup = buzKup();
     kup.style.transform = `translate(${bx}px,${by}px)`;
     efektKat.append(kup);
-    void ucur(kup, B.cx - bx, B.alt - B.h * 0.6 - by, 380, -60).then(() => {
+    void uc(kup, B.cx - bx, B.alt - B.h * 0.6 - by, 380, -60).then(() => {
       kup.remove();
       if (kapandi) return;
       bardak.buz++;
-      const k = h('i.rs-ic-buz-kup');
+      const k = buzKup();
       k.style.left = `${12 + ((bardak.buz * 29) % 50)}%`;
       bBuz.append(k);
       nota(96 + bardak.buz, 0, 0.12, 'sine', 0.1);
@@ -479,7 +479,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   });
   function cekirdekZipla(x: number, y: number) {
     cekirdekKalan--;
-    const c = h('i.rs-ic-cekirdek');
+    const c = h('i.rs-ic-cekirdek', {}, ...resimli('yiyecek/limon-cekirdek'));
     c.style.transform = `translate(${x}px,${y}px)`;
     efektKat.append(c);
     b.ses.cal('pit', { perde: 1.6 });
@@ -489,7 +489,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       return;
     }
     const hx = KY.x - 60 + r() * 120;
-    void ucur(c, hx - x, tezgahUst + 30 - y, 520, -70).then(() => {
+    void uc(c, hx - x, tezgahUst + 30 - y, 520, -70).then(() => {
       c.getAnimations().forEach((a) => a.cancel());
       c.style.transform = `translate(${hx}px,${tezgahUst + 30}px)`;
     });
@@ -500,7 +500,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     if (kapandi) return;
     kino.yuz('acik', 'gulumse');
     const n = kino.nokta('burun');
-    await ucur(c, n.x - x, n.y - y, 520, -80);
+    await uc(c, n.x - x, n.y - y, 520, -80);
     if (kapandi) return;
     c.getAnimations().forEach((a) => a.cancel());
     c.style.transform = `translate(${n.x}px,${n.y}px)`;
@@ -510,7 +510,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     if (kapandi) return;
     hapsu();
     kino.yuz('kapali', 'genis');
-    void ucur(c, 40, -120, 500, -30).then(() => c.remove());
+    void uc(c, 40, -120, 500, -30).then(() => c.remove());
     await bekle(700);
     if (kapandi) return;
     kino.yuz('mutlu', 'kahkaha');
@@ -522,8 +522,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   // ------------------------------------------------------------ sürahi: çalkala, fışkır, doldur
   let jTutuluyor = false;
   let tut = { dx: 0, dy: 0 };
-  let sonYon = 0;
-  let sallaYol = 0;
+  const sallama = sallamaSayaci(24, 0.3);
   let sonDok = 0;
   let dokZaman = 0;
   let dokusSes: { guc(g: number): void; dur(): void } | null = null;
@@ -537,20 +536,13 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       tut = { dx: x - jx, dy: y - jy };
       surahi.classList.add('rs-tutuldu');
       b.dokunsal(6);
-      sallaYol = 0;
-      sonYon = 0;
+      sallama.sifirla();
       return true;
     },
     hareket(x, y, hz) {
       jugKoy(x - tut.dx, Math.min(J.alt - J.h / 2, y - tut.dy));
       // çalkala: hızlı sağ-sol dönüşleri
-      const yon = Math.sign(hz.vx);
-      sallaYol += Math.abs(hz.vx) * 16;
-      if (yon && sonYon && yon !== sonYon && Math.abs(hz.vx) > 0.5 && sallaYol > 30) {
-        sallaYol = 0;
-        calkalandi();
-      }
-      if (yon) sonYon = yon;
+      if (sallama.adim(x)) calkalandi();
       // doldur: ağız bardağın üstündeyse
       const ag = agizNokta();
       const ustunde = Math.abs(ag.x - B.cx) < B.w * 0.55 && ag.y < B.alt - B.h + 6 && ag.y > B.alt - B.h - J.h * 1.2 && hz.v < 0.9;
@@ -637,7 +629,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     damla.style.background = renk;
     damla.style.transform = `translate(${ag.x}px,${10}px)`;
     efektKat.append(damla);
-    await ucur(damla, mx - ag.x, my - 10, 760, -10);
+    await uc(damla, mx - ag.x, my - 10, 760, -10);
     damla.remove();
     if (kapandi) return;
     const biyik = h('i.rs-ic-biyik');
@@ -791,7 +783,7 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const tr = b.tepsi.el.getBoundingClientRect();
     const kr = kok.getBoundingClientRect();
     const tasinan = [bardakEl, ...(efektKat.querySelector('.rs-ic-kalp') ? [efektKat.querySelector('.rs-ic-kalp') as HTMLElement] : [])];
-    await Promise.all(tasinan.map((el) => ucur(el, tr.left - kr.left + tr.width / 2 - B.cx, tr.top - kr.top + tr.height / 2 - (B.alt - B.h / 2), 420, -40)));
+    await Promise.all(tasinan.map((el) => uc(el, tr.left - kr.left + tr.width / 2 - B.cx, tr.top - kr.top + tr.height / 2 - (B.alt - B.h / 2), 420, -40)));
     const ozellik = icecekOzeti(bardak);
     const tur = icecekTuru(bardak.icerik);
     const kopya = { dolum: Math.min(1, bardak.dolum), tur, kopuk: bardak.kopuk, buz: bardak.buz };
@@ -823,6 +815,13 @@ function icecekBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   };
 }
 
+/** Gemini resmi varsa içine img (yoksa boş: CSS yer tutucu) */
+const resimli = (yol: string) => {
+  const u = resim(yol);
+  return u ? [h('img', { src: u, alt: '', draggable: 'false' })] : [];
+};
+const buzKup = () => h('i.rs-ic-buz-kup', {}, ...resimli('yiyecek/buz-kupu'));
+
 /** Tepside ve masada küçük hâli: bardak (dolum, köpük, buz) */
 export function bardakGorsel(b: { dolum: number; tur: Icecek; kopuk: number; buz: number }): HTMLElement {
   const sivi = h('i.rs-ic-b-sivi');
@@ -833,7 +832,7 @@ export function bardakGorsel(b: { dolum: number; tur: Icecek; kopuk: number; buz
   kopuk.style.height = `${b.kopuk * b.dolum * 18}%`;
   kopuk.style.opacity = b.kopuk > 0.05 ? '1' : '0';
   const buz = h('div.rs-ic-b-buz', {}, ...Array.from({ length: b.buz }, (_, i) => {
-    const k = h('i.rs-ic-buz-kup');
+    const k = buzKup();
     k.style.left = `${12 + (((i + 1) * 29) % 50)}%`;
     return k;
   }));

@@ -69,6 +69,8 @@ const SAYFALAR = {
   // P2 (Doğra, Tava): adlar restoran/src/mini/dogra/gorsel.ts ve tava/index.ts'in aradığı adlar (§11d #26-28)
   'sebze-patates-havuc': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['patates-butun', 'patates-soyulmus', 'patates-dilim', 'patates-cubuk', 'patates-kabuk', 'havuc-butun', 'havuc-soyulmus', 'havuc-dilim', 'havuc-rende', 'havuc-kabuk', 'havuc-kurdan'], sutun: 2 },
   'sebze-yesillik': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['maydanoz-butun', 'maydanoz-kiyim', 'maydanoz-yaprak', 'marul-butun', 'marul-yaprak', 'marul-serit', 'ugur-bocegi', 'camur-a', 'camur-b', 'camur-c'] },
+  // P3 (Çalkala ve Doldur): adlar restoran/src/mini/icecek'in aradığı adlar (§11d #29); önden, hepsi yiyecek/
+  'ayran-limonata': { tur: 'esya', grup: 'yiyecek', max: 1400, adlar: ['surahi-bos', 'surahi-yogurtlu', 'surahi-ayran', 'bardak-bos', 'bardak-ayran', 'bardak-limonata', 'limon-yarim', 'limon-sikilmis', 'limon-cekirdek', 'buz-kupu', 'kopuk-taci'] },
   'yiyecek-tava': { tur: 'esya', grup: 'yiyecek', max: 1400, adlar: ['menemen-cig', 'menemen-pismis', 'menemen-az-karisik', 'menemen-cok-karisik', 'pankek-hamur', 'pankek-altin', 'pankek-citir', 'pankek-kabarcik'] },
   // ---- R-Gün 4
   'bidik-baba-lokanta-sayfasi': { tur: 'kisi', kim: 'bidik-baba', adlar: MUSTERI_POZ },
@@ -81,6 +83,8 @@ const SAYFALAR = {
   'istasyon-kazan': { tur: 'esya', grup: 'alet', max: 1600, adlar: ['kazan', 'kazan-su', 'kazan-corba', 'kazan-sutlac', 'kazan-kepce', 'corba-kasesi', 'corba-kasesi-dolu', 'nane-kavanozu', 'mercimek-yigin', 'kabarcik'] },
   'soyacak-rende': { tur: 'esya', grup: 'alet', max: 1400, adlar: ['soyacak', 'rende', 'kasar-butun', 'kasar-yarim', 'kasar-rende', 'kabuk-kovasi', 'kabuk-kovasi-dolu'] },
   'yumurta-cirpma': { tur: 'esya', grup: 'alet', max: 1400, adlar: ['kase-yumurta', 'kase-yari', 'kase-puruzsuz', 'un-yigin', 'sut-gol', 'seker-kasik', 'cirpma-teli', 'yumurta-kabuk-parca', 'sut-sisesi', 'un-kavanozu', 'seker-kavanozu'] },
+  // P3 (Kızart): adlar restoran/src/mini/kizart'ın aradığı adlar (§11e #36); tuzluk mutfak-aletleri-1'den
+  'istasyon-fritoz': { tur: 'esya', grup: 'alet', max: 1600, adlar: ['fritoz', 'sepet-bos', 'sepet-ham', 'sepet-altin', 'kulah', 'kulah-dolu', 'ketcap', 'ketcap-nokta'] },
   'pide-sayfasi': { tur: 'esya', grup: 'yiyecek', max: 1400, adlar: ['hamur-top', 'hamur-yari', 'hamur-kayik', 'hamur-yuvarlak', 'hamur-delik', 'pide-cig', 'pide-kasarli', 'pide-yumurtali', 'sucuk-dilim', 'kasar-serpinti', 'firin-kuregi'] },
   // ---- R-Gün 5
   'istasyon-firin': { tur: 'arka', ad: 'istasyon/firin' },

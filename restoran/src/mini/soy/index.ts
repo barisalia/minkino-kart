@@ -14,10 +14,10 @@
 import { h } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-soy.json';
 import { MALZEME_ADI, urunId, type Malzeme, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
-import { ezil, hopla, kipirda, parilti, sac, ucur } from '../dogra/efekt';
+import { ezil, hopla, kipirda, parilti, sac } from '../dogra/efekt';
 import { RENK, rafSimge } from '../dogra/gorsel';
 import { aciFarki } from '../yika/mantik';
-import { bakanKur, bekle, kikir, nota, odulEzgi, olayKaydi, resim, sebzeEl, sureMs, type Sebze } from '../yika/ortak';
+import { bakanKur, bekle, kikir, nota, odulEzgi, olayKaydi, resim, sebzeEl, sureMs, type Sebze, uc } from '../yika/ortak';
 import { fircala, incelt, kaplama, ornekler, SOY, SPIRAL_ACI, SPIRAL_BANT, soyOzeti, soymaOrani, yeniSebze, yuzBitti, yuzTamam, type Nokta, type SoyDurum } from './mantik';
 import './soy.css';
 
@@ -71,7 +71,8 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   const { olaylar, olay } = olayKaydi(kok);
   const raf = h('div.rs-sy-raf');
   const tahta = h('div.rs-sy-tahta');
-  const kova = h('div.rs-sy-kova', {}, h('i.rs-sy-kova-govde'), h('div.rs-sy-yigin'), h('i.rs-sy-kova-on'));
+  const kovaUrl = resim('alet/kabuk-kovasi');
+  const kova = h('div.rs-sy-kova', { 'data-resim': kovaUrl ? '1' : '' }, kovaUrl ? h('img.rs-sy-kova-resim', { src: kovaUrl, alt: '', draggable: 'false' }) : h('i.rs-sy-kova-govde'), h('div.rs-sy-yigin'), kovaUrl ? null : h('i.rs-sy-kova-on'));
   const yigin = kova.querySelector<HTMLElement>('.rs-sy-yigin')!;
   const kase = h('div.rs-sy-kase', {}, h('i.rs-sy-kase-govde'), h('div.rs-sy-kase-ic'));
   const kaseIc = kase.querySelector<HTMLElement>('.rs-sy-kase-ic')!;
@@ -238,7 +239,7 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const dx = kr.left - kk.left + kr.width / 2 - t.x;
     const dy = kr.top - kk.top + kr.height / 2 - t.y;
     const eski = t.s.el;
-    void ucur(eski, dx, dy, 360, -40).then(() => eski.remove());
+    void uc(eski, dx, dy, 360, -40).then(() => eski.remove());
     hopla(kase, 6, 260);
     if (aktif === t) aktif = null;
   }
@@ -490,7 +491,7 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const kx = KV.x - uz / 2 + (Math.random() - 0.5) * KV.w * 0.3;
     const ky = KV.y - KV.w * 0.35;
     b.ses.cal('citir', { perde: 0.9, guc: 0.4 });
-    void ucur(el, kx - (x - uz / 2), ky - (y - 10), 520, -70).then(() => {
+    void uc(el, kx - (x - uz / 2), ky - (y - 10), 520, -70).then(() => {
       el.remove();
       yiginaEkle(t.d.m);
     });
@@ -525,7 +526,7 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     efektKat.append(biyik);
     el.remove();
     b.ses.cal('boing', { perde: 1.4 });
-    await ucur(biyik, mx - t.x, my - t.y, 640, -80);
+    await uc(biyik, mx - t.x, my - t.y, 640, -80);
     if (kapandi) return;
     biyik.getAnimations().forEach((a) => a.cancel());
     biyik.style.transform = `translate(${mx - bw / 2}px,${my}px)`;
@@ -628,7 +629,7 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       spiralBobin = null;
       const r = bb.getBoundingClientRect();
       const kr = kok.getBoundingClientRect();
-      void ucur(bb, KV.x - (r.left - kr.left + r.width / 2), KV.y - KV.w * 0.3 - (r.top - kr.top + r.height / 2), 520, -60).then(() => {
+      void uc(bb, KV.x - (r.left - kr.left + r.width / 2), KV.y - KV.w * 0.3 - (r.top - kr.top + r.height / 2), 520, -60).then(() => {
         bb.remove();
         yiginaEkle(t.d.m);
         yiginaEkle(t.d.m);
@@ -658,7 +659,7 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const tepe = lokum.nokta('tepe');
     const r = bobin.getBoundingClientRect();
     const kr = kok.getBoundingClientRect();
-    await ucur(bobin, tepe.x - (r.left - kr.left + r.width / 2), tepe.y - (r.top - kr.top + r.height / 2), 620, -90);
+    await uc(bobin, tepe.x - (r.left - kr.left + r.width / 2), tepe.y - (r.top - kr.top + r.height / 2), 620, -90);
     if (kapandi) return;
     bobin.remove();
     const tac = spiralEl();
@@ -729,7 +730,7 @@ function soyBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     await bekle(380);
     const tr = b.tepsi.el.getBoundingClientRect();
     const kr = kok.getBoundingClientRect();
-    await ucur(kase, tr.left - kr.left + tr.width / 2 - KS.x, tr.top - kr.top + tr.height / 2 - KS.y, 420, -40);
+    await uc(kase, tr.left - kr.left + tr.width / 2 - KS.x, tr.top - kr.top + tr.height / 2 - KS.y, 420, -40);
     const liste = kasede.map((k) => ({ m: k.m, oran: k.oran, kurdan: k.kurdan }));
     const ozellik = soyOzeti(liste);
     const gosterilen = kasede.map((k) => ({ m: k.m, soyuldu: k.oran >= 0.75 }));

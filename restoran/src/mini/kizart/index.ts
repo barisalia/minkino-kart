@@ -16,10 +16,10 @@
 import { h } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-kizart.json';
 import { MALZEME_ADI, urunId, type ArkaIs, type Malzeme, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
-import { ezil, hopla, kipirda, parilti, sac, ucur } from '../dogra/efekt';
+import { ezil, hopla, kipirda, parilti, sac } from '../dogra/efekt';
 import { rafSimge, RENK } from '../dogra/gorsel';
 import { surukle } from '../dogra/surukle';
-import { bekle, istasyonCizimi, konumaKay, hapsu, hisir, nota, odulEzgi, olayKaydi, resim, sureMs } from '../yika/ortak';
+import { bekle, istasyonCizimi, konumaKay, sallamaSayaci, hapsu, hisir, nota, odulEzgi, olayKaydi, resim, sureMs, uc } from '../yika/ortak';
 import { rastgele } from '../yika/mantik';
 import { avucEkle, cogunluk, kesimi, kizartmaOzeti, pismeAdi, salla, sepetPis, SEPET_EN_COK, TUZ, tuzEkle, type Parca } from './mantik';
 import './kizart.css';
@@ -340,8 +340,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     olay('kaldir');
     ipucuGuncelle();
   }
-  let sonYon = 0;
-  let sallaYol = 0;
+  const sallama = sallamaSayaci(18, 0.15);
   function sallandi() {
     salla(sepet, r);
     sepetCiz();
@@ -364,14 +363,13 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       if (odulde) return false;
       x0 = x;
       y0 = y;
-      sallaYol = 0;
-      sonYon = 0;
+      sallama.sifirla();
       // aynı karede: sepet tutulur (kalkar)
       sepetEl.classList.add('rs-tutuldu');
       b.dokunsal(6);
       return true;
     },
-    hareket(x, y, hz) {
+    hareket(x, y) {
       if (durum === 'yagda') {
         if (y - y0 < -Math.max(46, F.h * 0.28)) {
           kaldir();
@@ -381,13 +379,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
           // salla: yağın içinde sağa sola
           const dx = Math.max(-F.w * 0.1, Math.min(F.w * 0.1, x - x0));
           sepetKonum(F.cx + dx, F.cy);
-          const yon = Math.sign(hz.vx);
-          sallaYol += Math.abs(hz.vx) * 16;
-          if (yon && sonYon && yon !== sonYon && Math.abs(hz.vx) > 0.25 && sallaYol > 18) {
-            sallaYol = 0;
-            sallandi();
-          }
-          if (yon) sonYon = yon;
+          if (sallama.adim(x)) sallandi();
           return;
         }
       }
@@ -490,6 +482,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   // ------------------------------------------------------------ tuzluk ve ketçap
   const kulahUstunde = (x: number, y: number) => Math.abs(x - KL.cx) < KL.w * 0.85 && y > KL.cy - KL.h * 0.95 && y < KL.cy + KL.h * 0.2;
   let tuzYol = 0;
+  let aracSon = { x: 0, y: 0 };
   let bulutOldu = false;
   function tuzSerp(x: number, y: number) {
     tuz = tuzEkle(tuz, yas);
@@ -510,7 +503,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     bulut.style.transform = `translate(${KL.cx}px,${KL.cy - KL.h * 0.5}px)`;
     efektKat.append(bulut);
     hisir(0, 0.6, 2000, 6000, 0.08);
-    await ucur(bulut, hx - KL.cx, hy - (KL.cy - KL.h * 0.5), 900, -60);
+    await uc(bulut, hx - KL.cx, hy - (KL.cy - KL.h * 0.5), 900, -60);
     if (kapandi) return;
     bulut.classList.add('rs-dagil');
     hapsu();
@@ -542,15 +535,19 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         el.classList.add('rs-tutuldu');
         el.style.transform = `translate(${x - 32}px,${y - 86}px)`;
         tuzYol = 0;
+        aracSon = { x, y };
         return true;
       },
-      hareket(x, y, hz) {
+      hareket(x, y) {
         el.style.transform = `translate(${x - 32}px,${y - 86}px)`;
+        // gerçek yol (sağ-sol sallamada hız yumuşatması birbirini götürür)
+        const yol = Math.hypot(x - aracSon.x, y - aracSon.y);
+        aracSon = { x, y };
         const ucY = y - 60;
         if (!kulahUstunde(x, ucY)) return;
         if (ne === 'tuz') {
-          tuzYol += hz.v * 16;
-          if (tuzYol > 34) {
+          tuzYol += yol;
+          if (tuzYol > 40) {
             tuzYol = 0;
             ezil(el, 1);
             tuzSerp(x, ucY);
@@ -635,7 +632,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     await bekle(520);
     const tr = b.tepsi.el.getBoundingClientRect();
     const kr = kok.getBoundingClientRect();
-    await ucur(kulah, tr.left - kr.left + tr.width / 2 - KL.cx, tr.top - kr.top + tr.height / 2 - KL.cy, 420, -40);
+    await uc(kulah, tr.left - kr.left + tr.width / 2 - KL.cx, tr.top - kr.top + tr.height / 2 - KL.cy, 420, -40);
     const ozellik = kizartmaOzeti(kulahta, tuz, ketcapNokta.length);
     const patates = (ozellik.malzemeler.patates?.adet ?? 0) * 2 >= kulahta.length;
     const liste = kulahta.map((x) => ({ m: x.m, p: x.p }));
@@ -667,21 +664,27 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   if (onceki?.yagda) dal();
   ipucuGuncelle();
 
+  function arkaPlanda(): ArkaIs | null {
+    if (odulde || (!sepet.length && !kulahta.length)) return null;
+    const d: KizartDurum = { sepet: sepet.map((x) => ({ ...x })), kulah: kulahta.map((x) => ({ ...x })), tuz, ketcap: ketcapNokta.slice(), yagda: durum === 'yagda', t: performance.now() };
+    return {
+      durum: d,
+      isaret: () => {
+        if (!d.yagda || !d.sepet.length) return { ses: 'yok', buhar: false };
+        const kopya = d.sepet.map((x) => ({ ...x }));
+        sepetPis(kopya, (performance.now() - d.t) / 1000, yas);
+        return { ses: 'ciz', buhar: true, pisme: cogunluk(kopya) };
+      },
+    };
+  }
+  (window as unknown as { __rsKizartArka?: unknown }).__rsKizartArka = () => {
+    const a = arkaPlanda();
+    return a ? { isaret: a.isaret(), durum: a.durum } : null;
+  };
+
   return {
     bitti,
-    arkaPlanda(): ArkaIs | null {
-      if (odulde || (!sepet.length && !kulahta.length)) return null;
-      const d: KizartDurum = { sepet: sepet.map((x) => ({ ...x })), kulah: kulahta.map((x) => ({ ...x })), tuz, ketcap: ketcapNokta.slice(), yagda: durum === 'yagda', t: performance.now() };
-      return {
-        durum: d,
-        isaret: () => {
-          if (!d.yagda || !d.sepet.length) return { ses: 'yok', buhar: false };
-          const kopya = d.sepet.map((x) => ({ ...x }));
-          sepetPis(kopya, (performance.now() - d.t) / 1000, yas);
-          return { ses: 'ciz', buhar: true, pisme: cogunluk(kopya) };
-        },
-      };
-    },
+    arkaPlanda,
     kapat() {
       kapandi = true;
       ro?.disconnect();

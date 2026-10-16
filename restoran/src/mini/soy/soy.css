@@ -265,3 +265,12 @@
   border: 3px solid var(--kontur);
   background: #5fb8ae;
 }
+
+.mk-kok .rs-sy-kova-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+}
