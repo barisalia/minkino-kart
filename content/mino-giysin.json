@@ -1,0 +1,61 @@
+{
+  "aciklama": "Mino Ne Giysin? · Yardımcı Mino (ekip/senaryo/MINO-NE-GIYSIN.md §7). 'mino' = anlatıcı (Mino'nun sesi); 'kino' = Kino'nun kendi sesi; 'ege' = bebek Ege'nin balonu (Ege'nin sesi yok, seslendirilmez). 'hazir' = başka oyunlarda kaydı olan cümleler (yeniden üretilmez). 'baslik', 'yazi' ekranda yazar, seslendirilmez. KURAL: hiçbir cümle 'dokun', 'sürükle', 'ver' demez (tests/unit/mino-giysin.test.ts).",
+  "baslik": "Mino Ne Giysin?",
+  "yazi": {
+    "bitir": "Bitti"
+  },
+  "mino": {
+    "acilis": "[gasps] Herkesin başı dertte!",
+    "kime": "[curious] Önce kime gitsek?",
+    "dert": {
+      "pamuk": { "34": "[softly] Pamuk yukarıda kalmış…", "56": "[gasps] Bu ses de ne?" },
+      "kino": { "34": "[softly] Kino'nun burnu akıyor…", "56": "[gasps] Hapşu mu o?" },
+      "ege": { "34": "[softly] Ege'nin karnı acıkmış…", "56": "[curious] Kim ağlıyor?" },
+      "ada": { "34": "[sighs] Ada'nın çiçekleri solmuş…", "56": "[curious] Çiçeklere ne oldu?" }
+    },
+    "tam": {
+      "doktor": "[excited] Doktor Mino!",
+      "itfaiye": "[excited] İtfaiyeci Mino!",
+      "asci": "[excited] Aşçı Mino!",
+      "bahce": "[excited] Bahçıvan Mino!"
+    },
+    "karisik": ["[laughs] Karışık Mino!", "[giggles] Çok değişik oldum!", "[laughs] Bu da yeni moda!"],
+    "degisim": ["[giggles] Bu gitsin!", "[giggles] Hop, yenisi!"],
+    "su": "[gasps] Iyy, su!",
+    "su_tamam": "[giggles] Tamam, tamam.",
+    "bos": "[giggles] Ellerim bomboş!",
+    "olmadi": ["[giggles] Olmadı! Başka ne olur?", "[laughs] Hı-hı, bu değil!"],
+    "yorum": {
+      "saglikli": "[giggles] Ağaç çok sağlıklı!",
+      "koklar": "[gasps] Eyvah, daha yukarı!",
+      "ates": "[curious] Ateşin var mı?",
+      "oksuruk": "[giggles] Olmadı! Başka ne olur?",
+      "karin": "[giggles] Karnı konuşuyor!",
+      "mama": "[gasps] Iyy!",
+      "susamis": "[whispers] Çiçek susamış galiba…",
+      "gunes": "[sighs] Güneş çok yakıyor!"
+    },
+    "dinlen": "[softly] Biraz dinlen, bol su iç.",
+    "baska_yol": "[curious] Başka yolu var mı acaba?",
+    "ne_demek": "[happy] Ne demek!",
+    "kac_gum": "[curious] Kaç güm?",
+    "parti": "[excited] Kostüm partisi!",
+    "banyo_yok": "[gasps] Banyo yok!",
+    "yeter": "[sighs] Yeter ama!"
+  },
+  "hazir": {
+    "say": ["Bir!", "İki!", "Üç!"],
+    "yasasin": "Yaşasın!"
+  },
+  "kino": {
+    "hapsu": "Hapşu!",
+    "sicacik": "[happy] Mmm, sıcacık!",
+    "sapkan": "[laughs] Şapkan bende!",
+    "tesekkur": "[happy] Teşekkürler Mino!"
+  },
+  "ege": {
+    "mama": "Mama!",
+    "ham": "Ham!",
+    "tesekkur": "Teşekküyler!"
+  }
+}

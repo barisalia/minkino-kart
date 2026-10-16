@@ -18,6 +18,7 @@ import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri } from '../../kino-otobus/
 import giysinJson from '../../content/giysin.json';
 import patiJson from '../../content/pati.json';
 import uykuJson from '../../content/uyku.json';
+import minoGiysinJson from '../../content/mino-giysin.json';
 
 interface FilmCumleleri {
   seslendir?: boolean;
@@ -223,6 +224,9 @@ export function tumCumleler(): string[] {
   topla(patiJson.nehir).forEach(ekle);
   // Uyku Vakti (uygulama/src/uyku.ts): Mino (anlatıcı) ve hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
   for (const k of ['mino', 'hazir', 'kino'] as const) topla(uykuJson[k]).forEach(ekle);
+  // Mino Ne Giysin? (mino-giysin/): Mino (anlatıcı), hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
+  // (Ege'nin balonu seslendirilmez: Ege'nin sesi yok)
+  for (const k of ['mino', 'hazir', 'kino'] as const) topla(minoGiysinJson[k]).forEach(ekle);
   return [...set];
 }
 
@@ -252,6 +256,8 @@ export function karakterCumleleri(): Record<string, string[]> {
   kinoOtobusKinoCumleleri().forEach(ekle);
   // Uyku Vakti: Kino'nun cümleleri
   topla(uykuJson.kino).forEach(ekle);
+  // Mino Ne Giysin?: Kino'nun cümleleri
+  topla(minoGiysinJson.kino).forEach(ekle);
   // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
   for (const f of Object.values(FILMLER)) {
     if (!f.seslendir) continue;
