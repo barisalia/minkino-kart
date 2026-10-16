@@ -573,3 +573,15 @@
   border: 3px solid #3b2416;
   background: #3d3a3a;
 }
+
+/* dikey: tava sapı aşağıda (yalnız tava resmi ya da yer tutucusu döner; yiyecekler dik kalır) */
+.mk-kok .rs-tava[data-yon='dikey'] .rs-tv-tava-resim {
+  rotate: -90deg;
+}
+.mk-kok .rs-tava[data-yon='dikey'] .rs-tv-sap {
+  left: calc(var(--R) * -0.15);
+  top: calc(var(--R) * 1.0);
+  width: calc(var(--R) * 0.3);
+  height: calc(var(--R) * 1.05);
+  border-radius: 10px 10px 999px 999px;
+}

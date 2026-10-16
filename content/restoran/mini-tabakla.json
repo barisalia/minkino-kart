@@ -1,0 +1,24 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · TABAKLA mini oyunu sözleri (P2; ekip/senaryo/RESTORAN.md §8 M14). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "maydanoz": "Maydanoz!",
+      "limon": "Limon!",
+      "zeytin": "Zeytin!",
+      "ekmek": "Ekmek!",
+      "cilek": "Çilek!",
+      "muz": "Muz!",
+      "bal": "Bal!",
+      "zeytinyagi": "Zeytinyağı!"
+    },
+    "yuz": "[giggles] Tabak bana bakıyor!",
+    "bos": "[giggles] Tabak bomboş!",
+    "gorunmez": "[laughs] Görünmez yemek mi?",
+    "guzel": "[happy] Ne güzel tabak!",
+    "ipucu": {
+      "bos": "[curious] Tabak bomboş…",
+      "tepsi": "[curious] Tepside bir şey var…",
+      "hazir": "[happy] Tabak hazır gibi!"
+    }
+  }
+}

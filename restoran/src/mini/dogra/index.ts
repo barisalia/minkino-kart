@@ -153,9 +153,12 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       bw = W - 20;
       bh = Math.min(bw / 1.18, H * 0.42);
       tx = 10;
-      ty = rafAlt + 10;
-      const ks = Math.min(120, Math.max(84, (tr.top - kr.top) - (ty + bh) - 26));
-      kaseKutu.style.cssText = `left:${(W - ks) / 2 + 30}px;top:${ty + bh + 12}px;width:${ks}px;height:${ks}px`;
+      // tahta + kâse, raf ile Mino/tepsi şeridi arasında ortalanır
+      const ks = 112;
+      const altSerit = Math.max(120, H - (tr.top - kr.top) + 10);
+      const bosluk = H - rafAlt - altSerit - (bh + 14 + ks);
+      ty = rafAlt + 10 + Math.max(0, bosluk / 2);
+      kaseKutu.style.cssText = `left:${(W - ks) / 2}px;top:${ty + bh + 14}px;width:${ks}px;height:${ks}px`;
     }
     tahta.style.cssText = `left:${tx}px;top:${ty}px;width:${bw}px;height:${bh}px`;
     for (const t of tahtadakiler) for (const p of t.d.parcalar) {

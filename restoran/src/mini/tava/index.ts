@@ -160,10 +160,11 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       cy = Math.max(rafAlt + R * 1.16 + 4, H * 0.5);
       dinlenme = { x: cx + R * 1.14 + 64, y: cy + 4 };
     } else {
-      R = Math.min(W * 0.4, (H - rafAlt) * 0.26);
+      // dikeyde tavanın sapı aşağı bakar (üstten çizim döner; yiyecekler dik kalır)
+      R = Math.min(W * 0.38, (H - rafAlt) * 0.24);
       cx = W / 2;
-      cy = rafAlt + 20 + R * 1.05;
-      dinlenme = { x: cx + R * 0.55, y: cy + R + 70 };
+      cy = rafAlt + 24 + R * 1.14 + Math.max(0, (H - rafAlt - 150 - R * 3.4) / 2);
+      dinlenme = { x: cx + R * 0.95, y: cy + R * 1.3 };
     }
     tava.style.cssText = `left:${cx}px;top:${cy}px;--R:${R}px`;
     if (!spatulaTutuluyor) spatula.style.transform = `translate(${dinlenme.x}px,${dinlenme.y}px)`;

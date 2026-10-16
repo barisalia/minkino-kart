@@ -1,0 +1,255 @@
+/* TABAKLA mini oyunu: yalnız .rs-tabakla altında (restoran/src/mini/tabakla). Yer tutucular sade. */
+.mk-kok .rs-tabakla {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overflow: hidden;
+  --kontur: #3b2416;
+}
+.mk-kok .rs-tb-raf {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  z-index: 4;
+}
+.mk-kok .rs-tb-raf-oge {
+  position: relative;
+  width: var(--s, 72px);
+  height: var(--s, 72px);
+  min-width: 64px;
+  min-height: 64px;
+  padding: 6px;
+  border: 3px solid var(--kontur);
+  border-radius: 22px;
+  background: rgba(255, 248, 232, 0.94);
+  box-shadow: 0 3px 0 rgba(59, 36, 22, 0.35);
+  touch-action: none;
+  cursor: grab;
+}
+/* tepsiden gelen ürünler ayrı renkte (tepsi kenarı) */
+.mk-kok .rs-tb-raf-oge.rs-tb-urun {
+  background: #cfe9e5;
+}
+.mk-kok .rs-tb-raf-oge.rs-kullanildi,
+.mk-kok .rs-tb-raf-oge.rs-tb-bos {
+  opacity: 0.35;
+}
+.mk-kok .rs-tb-raf-oge.rs-kullanildi > * {
+  visibility: hidden;
+}
+.mk-kok .rs-tb-urun-gorsel,
+.mk-kok .rs-tb-sus-simge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mk-kok .rs-tb-sus-simge > .rs-p2-parca {
+  position: relative;
+}
+.mk-kok .rs-tb-raf-resim {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.mk-kok .rs-tb-yt {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mk-kok .rs-tb-yt::before {
+  content: '';
+  position: absolute;
+  left: 28%;
+  right: 28%;
+  top: 20%;
+  bottom: 4%;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  border-radius: 12px;
+  background: linear-gradient(transparent 0 28%, #e7c43c 28%), rgba(220, 240, 230, 0.8);
+}
+.mk-kok .rs-tb-yt-bal::before {
+  left: 18%;
+  right: 18%;
+  border-radius: 14px 14px 16px 16px;
+  background: linear-gradient(transparent 0 22%, #f2b233 22%), rgba(255, 245, 220, 0.9);
+}
+.mk-kok .rs-tb-yt::after {
+  content: '';
+  position: absolute;
+  left: 40%;
+  right: 40%;
+  top: 4%;
+  height: 18%;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  border-radius: 4px;
+  background: #6b4a2b;
+}
+
+/* tabak: üstten, büyük; yer tutucu beyaz tabak + ince turkuaz kenar */
+.mk-kok .rs-tb-tabak,
+.mk-kok .rs-tb-mini {
+  position: absolute;
+  z-index: 2;
+}
+.mk-kok .rs-tb-mini {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.mk-kok .rs-tb-tabak-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.mk-kok .rs-tb-tabak-yt {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 4px solid var(--kontur);
+  background: radial-gradient(circle at 38% 34%, rgba(255, 255, 255, 0.9) 0 12%, transparent 30%), radial-gradient(circle, #ffffff 0 66%, #eef6f5 68% 84%, #7fc6bf 85% 90%, #ffffff 91%);
+  box-shadow: 0 8px 0 rgba(59, 36, 22, 0.2);
+}
+.mk-kok .rs-tb-mini .rs-tb-tabak-yt {
+  border-width: 2px;
+  box-shadow: none;
+}
+/* parçalar tabağın iç dairesinde (yarıçap 1 = iç çap/2) */
+.mk-kok .rs-tb-parcalar,
+.mk-kok .rs-tb-mini-ic {
+  position: absolute;
+  left: 5.36%;
+  top: 5.36%;
+  width: 89.28%;
+  height: 89.28%;
+}
+.mk-kok .rs-tb-cizgi {
+  position: absolute;
+  left: 5.36%;
+  top: 5.36%;
+  width: 89.28%;
+  height: 89.28%;
+  overflow: visible;
+  pointer-events: none;
+}
+.mk-kok .rs-tb-mini-ic .rs-tb-cizgi {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mk-kok .rs-tb-cizgi polyline {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mk-kok .rs-tb-cizgi-bal {
+  stroke: rgba(242, 178, 51, 0.9);
+  stroke-width: 0.055;
+}
+.mk-kok .rs-tb-cizgi-zeytinyagi {
+  stroke: rgba(226, 196, 60, 0.55);
+  stroke-width: 0.045;
+}
+.mk-kok .rs-tb-parca {
+  position: absolute;
+  translate: -50% -50%;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+}
+.mk-kok .rs-tb-mini .rs-tb-parca {
+  pointer-events: none;
+}
+/* küçük parçalar da parmakla yakalansın: görünmez geniş tutamak */
+.mk-kok .rs-tb-tabak .rs-tb-parca::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 48px);
+  height: max(100%, 48px);
+  translate: -50% -50%;
+}
+.mk-kok .rs-tb-parca.rs-tutuluyor {
+  z-index: 10;
+  filter: drop-shadow(0 8px 4px rgba(59, 36, 22, 0.3));
+  scale: 1.08;
+}
+.mk-kok .rs-tb-ozel > * {
+  width: 100%;
+  height: 100%;
+}
+/* süs yer tutucuları */
+.mk-kok .rs-p2-parca[data-malzeme='zeytin'][data-yertutucu] > .rs-p2-ic {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.45) 0 12%, transparent 13%), #3f3530;
+}
+.mk-kok .rs-p2-parca[data-malzeme='ekmek'][data-yertutucu] > .rs-p2-ic {
+  border-radius: 34% 34% 18% 18% / 48% 48% 18% 18%;
+  border-width: 3px;
+  background: radial-gradient(ellipse at 50% 58%, var(--ic) 0 62%, var(--dis) 66%);
+}
+.mk-kok .rs-p2-parca[data-malzeme='maydanoz'][data-gorunum='kiyim'][data-yertutucu] > .rs-p2-ic {
+  border-radius: 0 70% 0 70%;
+  border: 2px solid var(--kontur);
+  background: radial-gradient(circle at 40% 40%, #8fd06e 0 22%, #4caf3f 24%);
+}
+
+/* elde tutulan */
+.mk-kok .rs-tb-elde-kat {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+.mk-kok .rs-tb-elde {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  filter: drop-shadow(0 8px 4px rgba(59, 36, 22, 0.25));
+}
+.mk-kok .rs-tb-elde > * {
+  width: 100%;
+  height: 100%;
+}
+.mk-kok .rs-tb-elde.rs-tb-akiyor::after {
+  content: '';
+  position: absolute;
+  left: 46%;
+  top: 82%;
+  width: 8%;
+  height: 40%;
+  border-radius: 999px;
+  background: rgba(242, 178, 51, 0.85);
+}
+.mk-kok .rs-tb-simge {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.mk-kok .rs-tb-simge-yt {
+  display: block;
+  width: 80%;
+  height: 80%;
+  margin: 10%;
+  border-radius: 50%;
+  border: 3px solid #3b2416;
+  background: radial-gradient(circle, #fff 0 64%, #7fc6bf 66%);
+}
