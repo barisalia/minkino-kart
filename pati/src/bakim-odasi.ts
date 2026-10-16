@@ -960,13 +960,15 @@ export class BakimOdasi {
         void hv.anlik(varsa('islak', 'saskin'), 900);
         await hv.titre(600);
         if (dur()) break;
-        const kx = MASA[0] - yon * boy * 0.2;
-        const kutu = this.koy('karton-kutu', kx, MASA[1] - boy * 0.5, boy * 0.82, true);
+        // kutu masanın üstünde, hayvanın önünde; hayvan arkasına çöker: kutunun üstünden yalnız başı (gözleri) görünür
+        const kx = MASA[0] - yon * boy * 0.15;
+        const kutu = this.koy('karton-kutu', kx, MASA[1] + 8, boy * 0.8, true);
         kutu.classList.add('pt-kutu-kacis');
         await this.indir(kutu, null);
         ses.kutu();
+        const kutuBoy = kutu.offsetHeight || boy * 0.6;
         await hv.zipla(140, 520, varsa('saskin', 'bos'), kx - hv.x);
-        void hv.batir(boy * 0.5, 280);
+        void hv.batir(Math.min(40, Math.max(0, boy * 0.68 - kutuBoy)), 280);
         await bekle(1900);
         if (dur()) break;
         void hv.anlik('goz', 500);
@@ -984,7 +986,7 @@ export class BakimOdasi {
         const [nx, ny] = this.efektNokta(hv.x + yon * boy * 0.42, hv.y - boy * 0.62);
         this.o.efekt.pof(nx, ny, 0.7, '#fff');
         // eşya kafasına yapışır, sonra kayıp düşer
-        const kafa = this.koy(e, hv.x + yon * boy * 0.08, hv.y - boy * 1.02, boy * 0.3, true);
+        const kafa = this.koy(e, hv.x + yon * boy * 0.1, hv.y - boy * 0.74, boy * 0.26, true);
         kafa.classList.add('pt-kafada');
         await hv.titre(300);
         await bekle(1300);
@@ -993,7 +995,7 @@ export class BakimOdasi {
       }
       case 'kafaya-gecer': {
         // kutu kafasına geçer, kör kör yürür
-        const kutu = this.koy(e, hv.x + yon * boy * 0.12, hv.y - boy * 1.08, boy * 0.56, true);
+        const kutu = this.koy(e, hv.x + yon * boy * 0.14, hv.y - boy * 0.46, boy * 0.6, true);
         await this.indir(kutu, kaynak);
         ses.kutu();
         void hv.anlik(varsa('saskin', 'bos'), 2600);
@@ -1035,16 +1037,20 @@ export class BakimOdasi {
       }
       case 'ortu-alti': {
         // örtünün altında kalır: örtü kıpırdar, sonra kayar, şaşkın bakar
-        const ortu = this.koy(e, hv.x, hv.y - boy * 0.92, boy * 1.0, true);
+        // örtü masada hayvanın önüne iner, hayvan altına çöker: yalnız kulak uçları görünür; örtü kıpırdar, kayar
+        const ortu = this.koy(e, hv.x, MASA[1] + 8, boy * 1.0, true);
         ortu.classList.add('pt-ortu-ustte');
         await this.indir(ortu, kaynak);
         ses.fis();
+        void hv.batir(Math.min(40, Math.max(0, boy * 0.88 - (ortu.offsetHeight || boy * 0.5))), 260);
         for (let i = 0; i < 4 && !dur(); i++) {
           ezil(ortu, 1.2, 300);
+          hv.ezil(1);
           await bekle(380);
         }
         if (dur()) break;
         void this.kaldir(ortu, true);
+        await hv.batir(0, 300);
         await hv.anlik(varsa('saskin', 'bos'), 900);
         break;
       }
