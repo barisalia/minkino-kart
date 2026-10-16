@@ -50,6 +50,11 @@ export const ERISIM: Record<string, Erisim> = {
   // Pati Dükkânı: Bölüm 1 "Dükkân Açılıyor" (Fındık, Tarçın, Pırıl) ücretsiz; Bölüm 2-3 abonelikle
   'pati/bolum-1': 'ucretsiz',
   'pati/*': 'abonelik',
+  // Mino Ne Giysin? · Yardımcı Mino: Pamuk ve Kino'nun derdi ücretsiz, Ege ve Ada abonelikle (kilitli balona dokununca
+  // kilit anı). Kostüm partisi, açık (kilitsiz) dertler çözülünce açılır: abonelik yoksa iki dertle de parti var.
+  'mino-giysin/pamuk': 'ucretsiz',
+  'mino-giysin/kino': 'ucretsiz',
+  'mino-giysin/*': 'abonelik',
 };
 
 /** Tablodan bir içeriğin erişim türü (oyun ya da 'oyun/bolum') */

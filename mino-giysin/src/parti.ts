@@ -31,7 +31,8 @@ export async function tavanaAt(katman: HTMLElement, id: ParcaId, a: Nokta, boy: 
   const el = h('img.mg-ucan', { src: parcaResmi(id), alt: '', draggable: 'false', style: `width:${boy.w}px;height:${boy.h}px` });
   katman.append(el);
   ses.firlat();
-  const hedef = { x: Math.min(W - boy.w, Math.max(boy.w, a.x + 40)), y: boy.h * 0.3 };
+  // tavanın sağ yanı: ortadaki Bitti düğmesinin ve köşedeki ses düğmesinin arasında
+  const hedef = { x: Math.min(W - boy.w / 2 - 70, W * 0.75), y: boy.h * 0.35 + 6 };
   await kavis(el, a, hedef, 520, { tepe: -30 });
   el.remove();
   const t = h('button.mg-tavanda', {

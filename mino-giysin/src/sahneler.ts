@@ -233,7 +233,17 @@ function tutHedefi(e: HTMLElement, sure: number, damla: () => void): { hedef: Om
   e.addEventListener('pointerup', birak);
   e.addEventListener('pointerleave', birak);
   return {
-    hedef: { ustunde: ilerle, fn: () => ilerle(), pay: 10 },
+    // dokunuş da sayılır: iki dokunuş bir tutuş eder (küçükler basılı tutmayı bilmeyebilir)
+    hedef: {
+      ustunde: ilerle,
+      fn: () => {
+        birikim += ms(sure) / 2 + 1;
+        damla();
+        son = 0;
+        ilerle();
+      },
+      pay: 10,
+    },
     bekle: p,
     iptal: () => {
       clearInterval(zaman);
@@ -947,7 +957,7 @@ const adaSahnesi: SahneTanim = {
             b.ipucu(() => c);
             const t = tutHedefi(c, 1000, () => damlalar(b.ucus, { x: ortasi(c, b.el).x, y: kutu(c, b.el).y - 20 }, ortasi(c, b.el), 1));
             const ekHedef: Hedef[] = b.g === '56' && !mantarSulandi ? [{ el: mantar, ...tutHedefi(mantar, 900, () => undefined).hedef, fn: () => void mantarPof(), ustunde: () => void mantarPof() }] : [];
-            b.hedefle([{ el: c, ...t.hedef }, ...ekHedef]);
+            b.hedefle([...ekHedef, { el: c, ...t.hedef }]);
             await t.bekle;
             t.iptal();
             c.classList.remove('hedef', 'solgun');

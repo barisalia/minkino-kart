@@ -83,7 +83,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     const sw = nw * s;
     const sh = nh * s;
     // dikeyde açık hava sahneleri aşağıda (üstte gök rengi dolgu sahneyle birleşir), iç mekânlar ortada
-    const y = dikey ? (tanim.dikeyAlta ? Math.max(56, hh - sh - 150) : Math.max(56, hh * 0.47 - sh / 2)) : hh - sh;
+    const y = dikey ? (tanim.dikeyAlta ? Math.max(56, hh - sh - Math.min(130, w * 0.32) * SEPET_BOY - 20) : Math.max(56, hh * 0.47 - sh / 2)) : hh - sh;
     S = { x: 0, y, w: sw, h: sh, dikey };
     sahneKaydir(false);
     sahne.style.width = `${sw}px`;
@@ -122,6 +122,13 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     if (S.dikey) sahneKaydir(true);
   };
   /** Mino'nun elindeki aletin dokunma kutusu */
+  // eldeki aletin dokunma kutusu Mino'yu izler (yürürken, tırmanırken de aletin üstünde)
+  let eldeRaf = 0;
+  const eldeIzle = () => {
+    eldeRaf = requestAnimationFrame(eldeIzle);
+    if (!el.classList.contains('suruklu')) eldeYerlesim();
+  };
+  eldeRaf = requestAnimationFrame(eldeIzle);
   const eldeYerlesim = () => {
     const id = oturum.giyili.alet;
     if (!id) {
@@ -148,6 +155,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
       return { src: parcaResmi(id), en: k.w * 1.15, boy: k.h * 1.15 };
     },
     basla: () => {
+      el.classList.add('suruklu');
       mino.mino.kostumResmi('alet')?.style.setProperty('opacity', '0');
       mino.mino.tepki('uzat', 0.8);
     },
@@ -158,6 +166,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
       mino.mino.tepki('sun', 1.2);
     },
     birak: ({ n, hayalet }) => {
+      el.classList.remove('suruklu');
       const t = hedefBul(n);
       const k = kutu(hayalet, el);
       hayalet.remove();
@@ -354,16 +363,20 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   };
   kapi.addEventListener('click', () => void (bitti ? undefined : tesekkur()));
   let kuyruk: Promise<unknown> = Promise.resolve();
+  /** Parçalar sıraya girer (dokunuş kilitlenmez); bir adım hata verirse sıra durmaz */
+  const sirada = (fn: () => Promise<void>) => {
+    kuyruk = kuyruk.then(fn).catch((e) => console.error('mino-giysin sıra', e));
+  };
   for (const a of Object.keys(sepet.dugme) as Alet[]) {
     sepet.dugme[a].addEventListener('click', () => {
-      if (alet() === a || calisiyor) {
+      if (alet() === a) {
         void hopla(sepet.resim[a], 0.5, 300);
         return;
       }
       const id = aletParcasi(a);
       const k = kutu(sepet.resim[a], el);
       sepet.resim[a].classList.add('elde');
-      kuyruk = kuyruk.then(async () => {
+      sirada(async () => {
         await mino.giy(id, { x: k.x + k.w / 2, y: k.y + k.h / 2 }, Math.max(k.w, k.h), el, ucus, (eski, cikis, boy) => {
           const ea = parcaAleti(eski);
           if (!ea) return;
@@ -412,6 +425,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     kapat: () => {
       ro.disconnect();
       clearInterval(ipucu);
+      cancelAnimationFrame(eldeRaf);
       zamanlar.forEach(clearTimeout);
       mino.kapat();
       arkadas.kapat();

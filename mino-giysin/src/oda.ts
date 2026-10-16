@@ -38,6 +38,8 @@ const DOLAP_SIRA: [number, number][] = [
   [0.424, 0.555],
   [0.579, 0.705],
 ];
+/** dolap-acik-goz.webp 1000 px: DPR 3'te en çok 333 css px */
+const DOLAP_EN_COK = 1000 / 3;
 /** Dolap düzeni: üst iki sıra şapka, alt iki sıra üst giysi (sol-sağ: doktor, itfaiye / aşçı, bahçe) */
 const DOLAP_PARCA: ParcaId[] = [...ROLLER.map((r) => `bas-${r}` as ParcaId), ...ROLLER.map((r) => `ust-${r}` as ParcaId)];
 
@@ -165,7 +167,8 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
     const alt = H - gv.alt - 6;
     if (!dikey) {
       // yatay: [dolap] [arkadaşlar] [Mino] [ayna + sepet] [kapı]
-      const d = Math.min((alt - 64) / 0.597, (W * 0.36) / 0.75, 520);
+      // dolap resmi 1000 px: DPR 3'te en çok 333 px (kaynak boyunun üstüne büyütülmez)
+      const d = Math.min((alt - 64) / 0.597, (W * 0.36) / 0.75, DOLAP_EN_COK);
       const rowsAlt = alt - 2;
       const dy = rowsAlt - 0.705 * d;
       const dx = sol - 0.2 * d;
@@ -180,7 +183,8 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
       ayna.y = Math.min(ayna.y, sepet.y - ayna.h * 0.2);
       const minoH = Math.min(0.7 * H, 300);
       const minoW = minoH / MINO_ORAN;
-      const minoX = (dolapSag + minoW * 0.55 + sepet.x) / 2 + 20;
+      // dolapla Mino arasında iki arkadaşlık yer (~100 px), Mino'nun kuyruğu sepete değmez
+      const minoX = Math.min(dolapSag + 100 + minoW / 2, sepet.x - minoW * 0.5);
       const cap = Math.min(64, (sag - sol) * 0.075);
       const bx = (dolapSag + kapi.x) / 2;
       Y = {
@@ -192,7 +196,8 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
         mino: { x: minoX, taban: alt - 4, w: minoW },
         balon: DERTLER.map((_, i) => ({ x: bx + (i - 1.5) * (cap + 12), y: gv.ust + 8 + cap / 2 })),
         balonCap: cap,
-        dusunce: { x: minoX + minoW * 0.42, y: alt - 4 - minoH * 0.98 },
+        // düşünce balonu başın sol üstünde (şapkanın ve aynanın üstüne binmez)
+        dusunce: { x: minoX - minoW * 0.62, y: Math.max(gv.ust + 40 + cap, alt - 4 - minoH * 0.9) },
         minder: [
           // ikisi dolapla Mino arasında, ikisi kapının önünde (kapı arkalarında kalır, dokunuşu tutmazlar)
           { x: dolapSag + 26, taban: zeminCizgi + 4, olcek: 0.4 },
@@ -204,7 +209,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
     } else {
       // dikey: üstte balonlar; ortada Mino (duvar önünde), solda ayna, sağda kapı; altta solda sepet, sağda dolap
       const zeminCizgi = 0.76 * H;
-      const d = Math.min(380, (sag - sol) * 0.95);
+      const d = Math.min(DOLAP_EN_COK, (sag - sol) * 0.95);
       const dx = sag - 0.76 * d;
       const rowsAlt = alt - 4;
       const dy = rowsAlt - 0.705 * d;
@@ -228,7 +233,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
         mino: { x: minoX, taban: minoTaban, w: minoW },
         balon: DERTLER.map((_, i) => ({ x: W / 2 + (i - 1.5) * (cap + 14), y: gv.ust + 70 + cap / 2 })),
         balonCap: cap,
-        dusunce: { x: minoX + minoW * 0.4, y: minoTaban - minoH * 0.98 },
+        dusunce: { x: minoX + minoW * 0.42, y: minoTaban - minoH * 1.12 },
         minder: [
           { x: sol + 30, taban: zeminCizgi - 4, olcek: 0.38 },
           { x: sag - 22, taban: zeminCizgi - 4, olcek: 0.36 },
@@ -256,6 +261,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
       b.style.cssText = `left:${n.x - cap / 2}px;top:${n.y - cap / 2}px;width:${cap}px;height:${cap}px`;
     }
     dusunce.style.cssText = `left:${Y.dusunce.x}px;top:${Y.dusunce.y}px;--cap:${Y.balonCap}px`;
+    dusunce.classList.toggle('sol', !Y.dikey);
     arkadasYerles();
     bitirDugme.style.cssText = Y.dikey ? `left:50%;top:${gv.ust + 74}px` : `left:${(Y.dolap.x + Y.dolap.w * 0.92 + Y.kapi.x) / 2}px;top:${gv.ust + 10}px`;
   };
@@ -348,6 +354,10 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
 
   // ------------------------------------------------------------ kostüm: fırlat, yakala
   let kuyruk: Promise<unknown> = Promise.resolve();
+  /** Parçalar sıraya girer (dokunuş kilitlenmez); bir adım hata verirse sıra durmaz */
+  const sirada = (fn: () => Promise<void>) => {
+    kuyruk = kuyruk.then(fn).catch((e) => console.error('mino-giysin sıra', e));
+  };
   let sonTakim: Takim = takimAdi(oturum.giyili);
   let ayniParca: { id: ParcaId | null; kez: number } = { id: null, kez: 0 };
   let tavanda: { id: ParcaId; el: HTMLElement } | null = null;
@@ -373,6 +383,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
         // arkadaşın kafasında kalır, gülüşürler, sonra arkadaş şapkayı dolaba geri atar
         const sap = h('img.mg-kafada', { src: parcaResmi(eski), alt: '', 'data-parca': eski, style: `left:${kafa.x}px;top:${kafa.y}px;width:${boy.w * 0.6}px;height:${boy.h * 0.6}px` });
         ucus.append(sap);
+        el.dataset.surpriz = 'sapka';
         a.ifade(ne === 'ege' ? 'kahkaha' : ne === 'kino' ? 'heyecan' : 'mutlu', 1800);
         void a.hopla(0.6);
         ses.kikir();
@@ -398,7 +409,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
     const g0 = gozBul(id);
     g0?.classList.add('bos');
     if (parcaAleti(id)) sepet.bosalt(parcaAleti(id));
-    kuyruk = kuyruk.then(async () => {
+    sirada(async () => {
       const eski = await mino.giy(id, k.n, k.en, el, ucus, atilanaYer);
       oturum.giyili = { ...mino.giyili };
       kapiDurum();
@@ -536,7 +547,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
   const geriAl = (id: ParcaId) => {
     const yer = parca(id).yer;
     if (oturum.giyili[yer] !== id) return;
-    kuyruk = kuyruk.then(async () => {
+    sirada(async () => {
       const k = mino.yerKutusu(id, el);
       mino.cikar(yer);
       oturum.giyili = cikar(oturum.giyili, id);
@@ -568,6 +579,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
     const k = kutu(sepet.govde, el);
     const o = h('img.mg-ordek', { src: gorsel('banyo/ordek'), alt: '', 'data-surpriz': 'ordek', style: `width:${k.w * 0.55}px;height:${k.w * 0.5}px` });
     ucus.append(o);
+    el.dataset.surpriz = 'ordek';
     ses.vak();
     const a = { x: k.x + k.w / 2, y: k.y + k.h * 0.3 };
     await kavis(o, a, { x: a.x - k.w * 0.4, y: a.y - k.h * 0.9 }, 520, { tepe: -40 });
@@ -787,11 +799,20 @@ function yaz(e: HTMLElement, k: Kutu) {
   e.style.height = `${k.h}px`;
 }
 
-/** Kostüm ölçü sayfası (?test=1&ekran=onizleme): dört tam takım Mino yan yana (kostum-yer.json'u denetlemek için) */
+/**
+ * Kostüm ölçü sayfası (?test=1&ekran=onizleme): dört tam takım Mino yan yana (kostum-yer.json'u denetlemek için).
+ * &kart=1: menü kartı için tek Mino (itfaiyeci: kask, yelek, merdiven), şeffaf zeminde (ekip/giysin/kart-mino.cjs);
+ */
 export function onizlemeEkrani(): Ekran {
+  const q = new URLSearchParams(location.search);
+  if (q.has('kart')) {
+    const m = new KostumluMino({ bas: 'bas-itfaiye', ust: 'ust-itfaiye', alet: 'alet-itfaiye' });
+    m.mino.tepki = () => undefined;
+    const el = h('div.mg-onizleme.kart', {}, h('div.mg-onizleme-hucre', {}, m.el));
+    return { el, kapat: () => m.kapat() };
+  }
   const minolar = ROLLER.map((r) => new KostumluMino({ bas: `bas-${r}`, ust: `ust-${r}`, alet: `alet-${r}` }));
   const el = h('div.mg-onizleme', {}, ...minolar.map((m) => h('div.mg-onizleme-hucre', {}, m.el)));
-  // süs katmanı da (hasır şapkanın çiçeği) bahçıvanın üstünde
   void parcaKostum;
   return { el, kapat: () => minolar.forEach((m) => m.kapat()) };
 }

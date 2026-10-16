@@ -890,10 +890,10 @@
 /* ---------- Yatay telefon (uygulamada telefon hep yatay): 4 × 2 kart ekranın boyunu doldurur, adlar iki satıra sığar ----------
    (ızgara en-boy oranına bağlı kalmaz, altta boş şerit kalmaz; çentik ve alt çubuk dışarıda) */
 @media (orientation: landscape) and (max-height: 500px) {
-  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'])) .ug-giris {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'])) .ug-giris {
     width: clamp(120px, 23vw, 260px);
   }
-  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9']) {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10']) {
     width: 100%;
     max-width: 1200px;
     height: calc(100dvh - var(--ust) - var(--alt) - 8px);
@@ -901,7 +901,7 @@
     gap: clamp(8px, 2.6dvh, 14px) clamp(8px, 1.5vw, 14px);
     padding: 6px 0 8px;
   }
-  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9']) .ug-kart-ad {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10']) .ug-kart-ad {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -916,15 +916,15 @@
 /* küçük yatay telefon (667 × 375, iPhone SE / 8): sol sütun (logo, Mino ile Kino) daralır, kenar payı ve aralıklar bir
    tık incelir: kartlar iri kalır. Çentik ve alt çubuk payı korunur (env); 844 / 932 px'lik telefonlar etkilenmez. */
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
-  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'])) {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'])) {
     gap: 10px;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
   }
-  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'])) .ug-giris {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'])) .ug-giris {
     width: clamp(100px, 18vw, 130px);
   }
-  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9']) {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10']) {
     column-gap: 8px;
   }
 }
@@ -1015,12 +1015,13 @@
 }
 /* zıplayanlar: dinozor, Kino, otobüs (tekerlekleriyle), oynat düğmesi; --zy zıplama yüksekliği (kendi boyunun %'si),
    --ez ezilme payı */
-.ug-kok .ug-kart.canlan :is(.ug-k-dinozor, .ug-k-giysin, .ug-k-otobus) > .ug-k-ic,
+.ug-kok .ug-kart.canlan :is(.ug-k-dinozor, .ug-k-giysin, .ug-k-mino-giysin, .ug-k-otobus) > .ug-k-ic,
 .ug-kok .ug-kart.canlan .ug-k-oynat {
   animation: ug-k-hop var(--cs) linear var(--cn) both;
 }
 .ug-kok .ug-k-dinozor { --zy: -10%; }
 .ug-kok .ug-k-giysin { --zy: -10%; }
+.ug-kok .ug-k-mino-giysin { --zy: -12%; }
 /* geniş otobüs daha az ezilir (yayları üstünde hafif bir sekme) */
 .ug-kok .ug-k-otobus { --zy: -12%; --ez: 0.06; }
 .ug-kok .ug-k-oynat { --zy: -24%; transform-origin: 50% 100%; }
@@ -1193,4 +1194,115 @@
     width: 50px;
     height: 50px;
   }
+}
+
+/* ---------- 10 kart (Mino Ne Giysin? menüde, Kino Ne Giysin?'in hemen yanında: oyunlar.ts → MINO_GIYSIN_MENUDE) ----------
+   İki "Ne Giysin?" kartı her ızgarada 7. ve 8. sırada yan yana: telefon dikey 2 × 5 (4. sıra), yatay telefon 5 × 2
+   (2. sıra, 2-3. sütun), 3 sütunda (tablet) 3 × 4 (3. sıra), geniş Pasta son sırada üç hücre. Hücre sayısı: 2 ve 5
+   sütunda 10, 3 sütunda 9 + 3 = 12. Boşluksuz. */
+.ug-kok .ug-izgara[data-adet='10'] {
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+@media (orientation: portrait) and (max-width: 599px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='10']) .ug-giris {
+    height: clamp(96px, 13dvh, 140px);
+  }
+  .ug-kok .ug-izgara[data-adet='10'] {
+    row-gap: 10px;
+  }
+}
+@media (min-width: 600px) and (orientation: portrait) {
+  .ug-kok .ug-izgara[data-adet='10'] {
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara[data-adet='10'] .ug-kart-yer.ug-genis {
+    grid-column: span 3;
+  }
+  .ug-kok .ug-izgara[data-adet='10'] .ug-genis .ug-kart-ad {
+    --ad: 3.1cqi;
+  }
+}
+@media (orientation: landscape) {
+  .ug-kok .ug-izgara[data-adet='10'] {
+    --oran: 1.94;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .ug-kok .ug-izgara[data-adet='10'] {
+    --oran: 1.05;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara[data-adet='10'] .ug-kart-yer.ug-genis {
+    grid-column: span 3;
+  }
+  .ug-kok .ug-izgara[data-adet='10'] .ug-genis .ug-kart-ad {
+    --ad: 3.1cqi;
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='10']) .ug-giris {
+    width: clamp(110px, 19vw, 220px);
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='10']) .ug-giris {
+    width: clamp(92px, 14vw, 110px);
+  }
+}
+
+/* Mino Ne Giysin? kartı: odada itfaiyeci Mino (ekip/giysin/kart-mino.cjs) */
+.ug-kok .ug-k-mino-giysin { left: 50%; bottom: 1%; height: min(100cqh, 110cqw); transform: translateX(-50%); }
+
+/* Set: iki "Ne Giysin?" kartı arasında, aralığın üstünden geçen hafif sarkık çamaşır ipi: uçlarında iki mandal
+   kartların kenarına tutturulmuş, ortada küçük bir çorap asılı (assets/giysin/ikon/corap). Kartın "Yeni" rozetine
+   değmesin diye ip kartın üst kenarında değil, resmin dörtte biri hizasında. */
+.ug-kok .ug-kart-yer.ug-set {
+  position: relative;
+}
+/* ip taşıyan kart komşusunun üstünde çizilsin (kartlar giriş animasyonuyla kendi katmanında) */
+.ug-kok .ug-kart-yer.ug-set:has(.ug-ip) {
+  z-index: 2;
+}
+.ug-kok .ug-ip {
+  position: absolute;
+  z-index: 4;
+  left: calc(100% - 12px);
+  width: calc(14px + 24px);
+  top: 26%;
+  height: 12px;
+  border-bottom: 2.5px solid #8a5a3a;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  pointer-events: none;
+}
+.ug-kok .ug-mandal {
+  position: absolute;
+  left: -2px;
+  top: 2px;
+  width: 6px;
+  height: 15px;
+  border-radius: 2px;
+  background: #f4c65a;
+  border: 1.5px solid #5a3617;
+}
+.ug-kok .ug-mandal.m2 {
+  left: auto;
+  right: -2px;
+}
+.ug-kok .ug-corap {
+  position: absolute;
+  left: calc(50% - 12px);
+  top: calc(100% - 2px);
+  width: 24px;
+  height: auto;
+  transform-origin: 50% 0;
+  animation: ug-corap 3.2s ease-in-out infinite;
+}
+@keyframes ug-corap {
+  50% { transform: translateY(1px) scaleY(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ug-kok .ug-corap { animation: none; }
 }

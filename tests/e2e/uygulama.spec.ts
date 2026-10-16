@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { menuOyunlari } from '../../uygulama/src/oyunlar';
+import { MINO_GIYSIN_MENUDE, menuOyunlari } from '../../uygulama/src/oyunlar';
 import { hataTopla } from './yardimci';
 
 /** web menüsündeki kart sayısı (8; Kino'nun Otobüsü bayrağı açılınca 9) */
@@ -13,6 +13,7 @@ const BEKLENEN: Record<string, string> = {
   film: './film/',
   dedektif: './dedektif/',
   giysin: './giysin/',
+  ...(MINO_GIYSIN_MENUDE ? { 'mino-giysin': './mino-giysin/' } : {}),
   pasta: './pasta/',
 };
 
@@ -206,6 +207,50 @@ test('Ana menü: yatay telefonda logo ve Mino ile Kino solda, kartlar sağda ekr
     const iz = (await page.locator('.ug-izgara').boundingBox())!;
     expect(g.x + g.width).toBeLessThanOrEqual(iz.x + 1);
     expect(iz.y + iz.height).toBeLessThanOrEqual(height + 1);
+    await ctx.close();
+  }
+});
+
+test('Ana menü: "Ne Giysin?" seti (Kino ve Mino kartı) her ızgarada yan yana, 7. ve 8. sırada, çamaşır ipiyle; ızgara boşluksuz', async ({ browser }, info) => {
+  test.skip(info.project.name !== 'iphone' || !MINO_GIYSIN_MENUDE, 'yalnız telefon projesinde, bayrak açıkken');
+  const idler = menuOyunlari(false).map((k) => k.id);
+  expect(idler.indexOf('giysin')).toBe(6);
+  expect(idler.indexOf('mino-giysin')).toBe(7);
+  for (const [width, height] of [
+    [844, 390],
+    [667, 375],
+    [390, 844],
+    [768, 1024],
+  ]) {
+    const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'tr-TR', baseURL: info.project.use.baseURL });
+    const page = await ctx.newPage();
+    const hatalar = hataTopla(page);
+    await page.goto('./?test=1');
+    await expect(page.locator('.ug-kart')).toHaveCount(MENU_ADET);
+    await page.waitForTimeout(2200);
+    const kino = (await page.locator('.ug-kart[data-oyun="giysin"]').boundingBox())!;
+    const mino = (await page.locator('.ug-kart[data-oyun="mino-giysin"]').boundingBox())!;
+    // aynı sırada, Mino hemen sağda
+    expect(Math.abs(kino.y - mino.y), `${width}x${height}`).toBeLessThan(2);
+    expect(mino.x).toBeGreaterThan(kino.x + kino.width - 1);
+    expect(mino.x - (kino.x + kino.width)).toBeLessThan(40);
+    await expect(page.locator('.ug-kart-yer[data-set="giysin"] .ug-ip')).toHaveCount(1);
+    await expect(page.locator('.ug-kart[data-oyun="mino-giysin"] img')).toHaveCount(1);
+    // boşluksuz: her sıranın ilk kartı ızgaranın solunda, son kartı sağında başlar / biter
+    const iz = (await page.locator('.ug-izgara').boundingBox())!;
+    const kutular = await page.locator('.ug-kart-yer').evaluateAll((l) => l.map((e) => e.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, r: r.right })));
+    const siralar = new Map<number, { x: number; r: number }[]>();
+    for (const k of kutular) {
+      const y = Math.round(k.y);
+      const s = [...siralar.keys()].find((t) => Math.abs(t - y) < 3) ?? y;
+      siralar.set(s, [...(siralar.get(s) ?? []), k]);
+    }
+    for (const sira of siralar.values()) {
+      expect(Math.min(...sira.map((k) => k.x)) - iz.x, `${width}x${height} sol`).toBeLessThan(28);
+      expect(iz.x + iz.width - Math.max(...sira.map((k) => k.r)), `${width}x${height} sağ`).toBeLessThan(28);
+    }
+    await page.screenshot({ path: `tests/screens/menu-ne-giysin-${width}x${height}.png` });
+    expect(hatalar).toEqual([]);
     await ctx.close();
   }
 });

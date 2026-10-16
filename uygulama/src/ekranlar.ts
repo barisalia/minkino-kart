@@ -32,7 +32,7 @@ import { derinlik, menuOyunlari, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
-  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/{kapak,park}/*.webp', '!../../assets/film/kapak/kino-lutfen.webp', '!../../assets/film/kapak/kino-lutfen-dikey.webp', '!../../assets/film/kapak/kino-kaydirak-dikey.webp', '../../assets/film/ev/arka-uzak.webp', '../../assets/dedektif/{lamba-devrik,kart-kedi-pati-izi,pamuk-b,kapak}.webp', '../../assets/giysin/{dis-kis-yatay,kart-kino}.webp', '../../assets/kino-otobus/kapak.webp'],
+  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/{kapak,park}/*.webp', '!../../assets/film/kapak/kino-lutfen.webp', '!../../assets/film/kapak/kino-lutfen-dikey.webp', '!../../assets/film/kapak/kino-kaydirak-dikey.webp', '../../assets/film/ev/arka-uzak.webp', '../../assets/dedektif/{lamba-devrik,kart-kedi-pati-izi,pamuk-b,kapak}.webp', '../../assets/giysin/{dis-kis-yatay,kart-kino,oda-yatay}.webp', '../../assets/giysin/ikon/corap.webp', '../../assets/mino-giysin/kart-mino.webp', '../../assets/kino-otobus/kapak.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
@@ -293,7 +293,10 @@ export function menuEkrani(app: Uygulama): Ekran {
       // kart zıplar, sonra krem perde iner ve ses kısılır (src/ui/gecis.ts): oyuna bir anda kopmadan geçilir
       zamanlar.push(window.setTimeout(() => sayfadanCik(() => location.assign(a.href), a.href), sure(AZ_HAREKET ? 30 : 350)));
     });
-    return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}`, { style: `--i:${i}` }, a);
+    // set (Kino ve Mino Ne Giysin?): iki kart yan yana, aralarında çamaşır ipi (iki mandal, küçük bir çorap)
+    const setSonraki = !!k.set && oyunlar[i + 1]?.set === k.set;
+    const ip = setSonraki ? [h('span.ug-ip', { 'aria-hidden': 'true' }, h('i.ug-mandal'), h('i.ug-mandal.m2'), h('img.ug-corap', { src: adres('giysin/ikon/corap'), alt: '', draggable: 'false' }))] : [];
+    return h(`li.ug-kart-yer${k.genis ? '.ug-genis' : ''}${k.set ? '.ug-set' : ''}`, { style: `--i:${i}`, ...(k.set ? { 'data-set': k.set } : {}) }, a, ...ip);
   });
   const kilitBirak = kilitleriKur(kilitKartlari);
   if (!AZ_HAREKET && !TEST_MODU) canlanPlanla();

@@ -5,7 +5,7 @@
  */
 import { h } from '../../src/ui/dom';
 import { aletParcasi, type Alet, type ParcaId } from './model';
-import { gorsel, ikonResmi, parcaKostum } from './resimler';
+import { gorsel, parcaKostum, parcaResmi } from './resimler';
 
 /** Sepetin eni = 1 birim; kutunun boyu */
 export const SEPET_BOY = 1.55;
@@ -24,8 +24,8 @@ interface Yer {
 const YERLER: Record<Alet, Yer> = {
   merdiven: { x: 0.3, y: 0.02, boy: 0.98, on: false, kutu: [0, 0, 0.5, 0.62] },
   kasik: { x: 0.7, y: 0.14, boy: 0.84, on: false, kutu: [0.5, 0, 1, 0.62] },
-  stetoskop: { x: 0.25, y: 0.62, boy: 0.56, on: true, kutu: [0, 0.62, 0.5, SEPET_BOY] },
-  sulama: { x: 0.72, y: 1.08, boy: 0.38, on: true, kutu: [0.5, 0.62, 1, SEPET_BOY] },
+  stetoskop: { x: 0.25, y: 0.62, boy: 0.56, on: true, kutu: [0, 0.62, 0.48, 1.2] },
+  sulama: { x: 0.72, y: 1.08, boy: 0.38, on: true, kutu: [0.5, 1.02, 1, SEPET_BOY] },
 };
 export const SEPET_SIRA: Alet[] = ['merdiven', 'kasik', 'stetoskop', 'sulama'];
 
@@ -46,7 +46,7 @@ export class Sepet {
       const [, , kw, kh] = parcaKostum(id).kutu;
       const en = (y.boy * kw) / kh;
       const im = h('img.mg-sepet-alet', {
-        src: ikonResmi(id),
+        src: parcaResmi(id),
         alt: '',
         draggable: 'false',
         'data-alet': a,

@@ -336,17 +336,24 @@
   background: #fff;
   border: 2.5px solid var(--mg-kontur);
 }
+/* düşünce balonunun kabarcıkları balondan Mino'nun başına doğru (sol alta) */
 .mk-kok.mg-kok .mg-dusunce .k1 {
   width: 10px;
   height: 10px;
-  left: -26px;
-  top: calc(var(--cap) * 0.95);
+  left: calc(var(--cap) * -0.75);
+  top: calc(var(--cap) * 0.78);
 }
 .mk-kok.mg-kok .mg-dusunce .k2 {
   width: 15px;
   height: 15px;
-  left: -16px;
-  top: calc(var(--cap) * 0.66);
+  left: calc(var(--cap) * -0.52);
+  top: calc(var(--cap) * 0.5);
+}
+.mk-kok.mg-kok .mg-dusunce.sol .k1 {
+  left: calc(var(--cap) * 0.72);
+}
+.mk-kok.mg-kok .mg-dusunce.sol .k2 {
+  left: calc(var(--cap) * 0.42);
 }
 .mk-kok.mg-kok .mg-dusunce .k3 {
   display: none;
@@ -897,4 +904,37 @@
 }
 .mk-kok.mg-kok .mg-oda.dikey .mg-arkadaslar .mg-ark {
   z-index: 1 !important;
+}
+
+/* menü kartı çekimi (ekip/giysin/kart-mino.cjs): şeffaf zemin, tek Mino */
+html:has(.mg-onizleme.kart),
+html:has(.mg-onizleme.kart) body,
+.mk-kok.mg-kok:has(.mg-onizleme.kart),
+.mk-kok.mg-kok .mg-onizleme.kart {
+  background: transparent !important;
+}
+.mk-kok.mg-kok:has(.mg-onizleme.kart) .zemin {
+  display: none;
+}
+.mk-kok.mg-kok .mg-onizleme.kart {
+  display: block !important;
+  padding: 140px 60px 30px !important;
+  overflow: visible;
+}
+.mk-kok.mg-kok .mg-onizleme.kart .mg-onizleme-hucre {
+  width: 420px;
+  padding-top: 120px;
+}
+.mk-kok.mg-kok .mg-onizleme.kart .mino::before {
+  display: none;
+}
+.mk-kok.mg-kok:has(.mg-onizleme.kart) :is(button, .yuvarlak) {
+  display: none !important;
+}
+.mk-kok.mg-kok .ekran.mg-onizleme.kart {
+  inset: 0;
+  width: 100%;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }

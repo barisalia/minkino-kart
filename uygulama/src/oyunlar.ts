@@ -45,6 +45,11 @@ export interface OyunKarti {
   genis?: boolean;
   /** Mağaza uygulamasında gösterilmez (yalnız web sitesindeki oyunlar için; şu an yok) */
   uygulamadaYok?: boolean;
+  /**
+   * Set: aynı setin kartları menüde yan yana, aynı sırada durur ve aralarında çamaşır ipi gerilir (uygulama.css →
+   * .ug-set). 'giysin': Kino Ne Giysin? + Mino Ne Giysin?
+   */
+  set?: string;
 }
 
 export const OYUNLAR: OyunKarti[] = [
@@ -128,6 +133,7 @@ export const OYUNLAR: OyunKarti[] = [
     // karlı tepeler ve kış giysileriyle Kino (ekip/giysin/kart.cjs)
     zemin: 'giysin/dis-kis-yatay',
     rozet: 'Yeni',
+    set: 'giysin',
     katmanlar: [{ gorsel: 'giysin/kart-kino', sinif: 'ug-k-giysin' }],
   },
   {
@@ -152,7 +158,12 @@ export const OYUNLAR: OyunKarti[] = [
  *   telefonda 5 × 2 (Pasta iki hücre), 3 sütunda (tablet) 3 × 3 (Pasta bir hücre). uygulama.css → data-adet='9'.
  */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
-  const hepsi = KINO_OTOBUS_MENUDE ? [...OYUNLAR.filter((k) => !k.genis), KINO_OTOBUS_KARTI, ...OYUNLAR.filter((k) => k.genis)] : OYUNLAR;
+  let hepsi = KINO_OTOBUS_MENUDE ? [...OYUNLAR.filter((k) => !k.genis), KINO_OTOBUS_KARTI, ...OYUNLAR.filter((k) => k.genis)] : OYUNLAR;
+  // set kartları ardışık: Mino Ne Giysin? Kino'nunkinin hemen arkasında (10 kartta 7. ve 8. sıra)
+  if (MINO_GIYSIN_MENUDE) {
+    const i = hepsi.findIndex((k) => k.set === MINO_GIYSIN_KARTI.set);
+    hepsi = [...hepsi.slice(0, i + 1), MINO_GIYSIN_KARTI, ...hepsi.slice(i + 1)];
+  }
   if (!uygulama) return hepsi;
   return hepsi.filter((k) => !k.uygulamadaYok);
 }
@@ -169,6 +180,23 @@ export const KINO_OTOBUS_MENUDE = true;
  * girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /pati/ adresinden açılır.
  */
 export const PATI_MENUDE = false;
+/**
+ * Mino Ne Giysin? · Yardımcı Mino (ekip/senaryo/MINO-NE-GIYSIN.md): Kino Ne Giysin? ile bir set. true: menüde Kino'nun
+ * kartının yanında (10 kart ızgarası, uygulama.css → data-adet='10') ve uygulama derlemesinde (vite.config.ts →
+ * UYGULAMADA_YOK). Kostüm çizimleri (G-MG1) ve Pamuk pozları (G-MG2) Gemini'den geldi; yer tutucuyla kalırsa false.
+ */
+export const MINO_GIYSIN_MENUDE = true;
+export const MINO_GIYSIN_KARTI: OyunKarti = {
+  id: 'mino-giysin',
+  ad: 'Mino Ne Giysin?',
+  adres: './mino-giysin/',
+  renk: '#FF9F43',
+  // Mino'nun odası ve itfaiyeci kasklı, merdivenli Mino (ekip/giysin/kart-mino.cjs)
+  zemin: 'giysin/oda-yatay',
+  rozet: 'Yeni',
+  set: 'giysin',
+  katmanlar: [{ gorsel: 'mino-giysin/kart-mino', sinif: 'ug-k-mino-giysin' }],
+};
 export const KINO_OTOBUS_KARTI: OyunKarti = {
   id: 'kino-otobus',
   ad: 'Kino’nun Otobüsü',
