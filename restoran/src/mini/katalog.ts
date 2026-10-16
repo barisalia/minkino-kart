@@ -15,5 +15,15 @@ export const MINI_OYUNLAR: Record<string, MiniOyun> = Object.fromEntries(
 
 export const oyunBul = (ad: string): MiniOyun | undefined => MINI_OYUNLAR[ad];
 
-/** Bir istasyonun gerçek (deneme dışı) mini oyunları */
-export const istasyonOyunlari = (ist: Istasyon): MiniOyun[] => Object.values(MINI_OYUNLAR).filter((o) => o.istasyon === ist && o.ad !== 'deneme');
+/**
+ * Aynı istasyonu paylaşan oyunlarda önce gelenler (ocak: tava, kızart, kazan; tezgâh: doğra, soy). import.meta.glob
+ * adları alfabeyle sıralar ("kizart" < "tava"); lokanta seçim düğmesi (MiniOyun.simge) gelene kadar Gün 1'in oyunu önde.
+ */
+const ONCE = ['dogra', 'tava', 'tabakla'];
+const sira = (o: MiniOyun) => (ONCE.includes(o.ad) ? ONCE.indexOf(o.ad) : ONCE.length);
+
+/** Bir istasyonun gerçek (deneme dışı) mini oyunları (Gün 1'in oyunu önce) */
+export const istasyonOyunlari = (ist: Istasyon): MiniOyun[] =>
+  Object.values(MINI_OYUNLAR)
+    .filter((o) => o.istasyon === ist && o.ad !== 'deneme')
+    .sort((a, b) => sira(a) - sira(b));
