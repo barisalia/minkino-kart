@@ -13,6 +13,38 @@
  */
 import { CEKMECELER, ESYA_IDLERI, esyaBilgi, hayvanBilgi, ihtiyacCekmecesi, IHTIYACLAR, type CekmeceAdi, type IhtiyacAdi, type Sevgi, type Yas } from './katalog';
 import type { DefterTepki, PatiKayit } from './kayit';
+import { acilabilir } from './ihtiyac';
+
+/** Hayvan Defteri'nin bir satırı: ihtiyaç, denenen eşyalar (tepkisiyle), gizli sevgi bulundu mu (5-6) */
+export interface DefterSatiri {
+  ihtiyac: IhtiyacAdi;
+  cekmece: CekmeceAdi;
+  denenen: { esya: string; tepki: DefterTepki }[];
+  /** bu ihtiyaçta en az bir ★ bulundu */
+  sever: boolean;
+  /** 5-6: gizli sevgi bu satırda ve henüz bulunmadı (defterde boş kalp) */
+  gizliBekliyor: boolean;
+}
+
+/** Defter sayfası: yaşa göre ihtiyaç satırları (3-4: aç, susuz, sıkılmış, uykulu; 5-6: hepsi) */
+export function defterSayfasi(k: PatiKayit, id: string, yas: Yas): DefterSatiri[] {
+  const b = hayvanBilgi(id);
+  const sayfa = k.defter[id] ?? {};
+  const ihtiyaclar = acilabilir(b.ihtiyaclar, { yas, temizlik: k.esyalar.includes('temizlik'), hayvanSayisi: 99 });
+  return ihtiyaclar.map((ih) => {
+    const c = ihtiyacCekmecesi(ih);
+    const denenen = Object.entries(sayfa)
+      .filter(([e]) => esyaBilgi(e).cekmece === c)
+      .map(([esya, tepki]) => ({ esya, tepki }))
+      // önce sevdikleri, sonra olurlar, sonra sevmedikleri
+      .sort((x, y) => ['sever', 'olur', 'sevmez'].indexOf(x.tepki) - ['sever', 'olur', 'sevmez'].indexOf(y.tepki));
+    const gizliBurada = yas === 'buyuk' && !!b.gizli && esyaBilgi(b.gizli).cekmece === c;
+    return { ihtiyac: ih, cekmece: c, denenen, sever: denenen.some((d) => d.tepki === 'sever'), gizliBekliyor: gizliBurada && sayfa[b.gizli!] !== 'sever' };
+  });
+}
+
+/** Uzman: sayfadaki her ihtiyacın en az bir ★'ı bulundu */
+export const uzmanMi = (k: PatiKayit, id: string, yas: Yas) => defterSayfasi(k, id, yas).every((s) => s.sever);
 
 export type Tepki = 'sever' | 'olur' | 'sevmez' | 'baska-ihtiyac' | 'ders';
 

@@ -7,8 +7,9 @@
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import type { Efekt } from '../../kino-otobus/src/efekt';
 import { BUYUK_JETON as BUYUK, doluYuvalar, etiketYuvalari, jetonParcalari } from './ekonomi';
-import type { MinderRenk, Yas } from './katalog';
-import { BUYUK_JETON, ISIM_TABELASI, JETON, KALP_BOS, KALP_DOLU, KUMBARA, MINDER_BEYAZ, MINDER_YEDEK } from './varliklar';
+import { esyaBilgi, type CekmeceAdi, type MinderRenk, type Yas } from './katalog';
+import { ses } from './sesler';
+import { BUYUK_JETON, dolapResmi, esyaResmi, ISIM_TABELASI, JETON, KALP_BOS, KALP_DOLU, KUMBARA, MINDER_BEYAZ, MINDER_YEDEK } from './varliklar';
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sakin = () => AZ || TEST_MODU;
@@ -199,4 +200,173 @@ export function minderEl(renk: MinderRenk, sinif = ''): HTMLElement {
   if (MINDER_BEYAZ)
     return h(`span.pt-minder2.pt-boyali${sinif ? `.${sinif}` : ''}`, { 'data-renk': renk, style: `--boya:${r.boya};--maske:url("${MINDER_BEYAZ}")` }, h('img', { src: MINDER_BEYAZ, alt: '', draggable: 'false' }), h('i.pt-minder-boya'));
   return h(`span.pt-minder2${sinif ? `.${sinif}` : ''}`, { 'data-renk': renk, style: `--ton:${r.ton}` }, h('img', { src: MINDER_YEDEK, alt: '', draggable: 'false' }));
+}
+
+// ---------------------------------------------------------------- eşya ve çekmece resimleri (Bakım Odası, defter)
+/**
+ * Çekmece önlerinin SADE YER TUTUCUSU (ui-dolap sayfası gelene kadar): tek renkli düz resim, koyu kahve kontur.
+ * Kâse, damla, top, fırça, yastık, bantlı kalp. Kodla süslü çizim yok.
+ */
+const K = '#3B2416';
+const PIKTO: Record<CekmeceAdi, string> = {
+  mama: `<path d="M10 30h44c-2 13-11 20-22 20S12 43 10 30z" fill="#F2A65A" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/><circle cx="22" cy="27" r="4" fill="#B5703A" stroke="${K}" stroke-width="2.5"/><circle cx="31" cy="25" r="4" fill="#B5703A" stroke="${K}" stroke-width="2.5"/><circle cx="40" cy="27" r="4" fill="#B5703A" stroke="${K}" stroke-width="2.5"/>`,
+  su: `<path d="M32 8C26 20 17 29 17 39a15 15 0 0 0 30 0c0-10-9-19-15-31z" fill="#7EC8F0" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>`,
+  oyuncak: `<circle cx="32" cy="32" r="19" fill="#F2606B" stroke="${K}" stroke-width="3.5"/><path d="M15 26c11 5 23 5 34 0" fill="none" stroke="${K}" stroke-width="3"/>`,
+  temizlik: `<rect x="12" y="28" width="40" height="13" rx="5" fill="#E9B77A" stroke="${K}" stroke-width="3.5"/><path d="M17 41v9M24 41v9M31 41v9M38 41v9M45 41v9" stroke="${K}" stroke-width="3" stroke-linecap="round"/><rect x="26" y="12" width="12" height="16" rx="4" fill="#C98A4B" stroke="${K}" stroke-width="3.5"/>`,
+  yatak: `<path d="M12 24c6-5 34-5 40 0 3 6 3 14 0 20-6 5-34 5-40 0-3-6-3-14 0-20z" fill="#B9A6E8" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>`,
+  ecza: `<path d="M32 50C19 41 12 34 12 25c0-6 5-11 11-11 4 0 7 2 9 5 2-3 5-5 9-5 6 0 11 5 11 11 0 9-7 16-20 25z" fill="#F2606B" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/><rect x="21" y="25" width="22" height="9" rx="4" fill="#FFF4DD" stroke="${K}" stroke-width="3"/>`,
+};
+const piktogram = (c: CekmeceAdi, sinif: string) => h(`span.${sinif}.pt-yer-tutucu`, { 'data-cekmece': c, html: `<svg viewBox="0 0 64 64" aria-hidden="true">${PIKTO[c]}</svg>` });
+
+/** Çekmece önünün resmi (ui-dolap; yoksa sade piktogram) */
+export function dolapEl(c: CekmeceAdi): HTMLElement {
+  const u = dolapResmi(c);
+  return u ? h('span.pt-dolap-resim', { 'data-cekmece': c }, h('img', { src: u, alt: '', draggable: 'false' })) : piktogram(c, 'pt-dolap-resim');
+}
+
+/** Eşyanın resmi (esya-<ad>; yoksa çekmecesinin sade piktogramı) */
+export function esyaEl(id: string): HTMLElement {
+  const u = esyaResmi(id);
+  if (u) return h('span.pt-esya-resim', { 'data-esya': id }, h('img', { src: u, alt: '', draggable: 'false' }));
+  const e = piktogram(esyaBilgi(id).cekmece, 'pt-esya-resim');
+  e.dataset.esya = id;
+  return e;
+}
+
+// ---------------------------------------------------------------- düşen jetonlar
+/**
+ * Hayvanın iki yanına düşen jetonlar (5-6'da beşlikler büyük). Dokununca kumbaraya uçar; 6 sn içinde toplanmazsa
+ * kendisi uçar. Kayda çağıran hemen yazar (hiçbiri kaybolmaz); kumbara göstergesi uçuş bitince artar.
+ */
+export class DusenJetonlar {
+  private dusenler = new Set<HTMLElement>();
+  private toplanan = 0;
+  constructor(
+    private katman: HTMLElement,
+    private efekt: Efekt,
+    private kumbara: Kumbara,
+    private kayitJeton: () => number,
+    private yas: () => Yas,
+    private etkilesim: () => void = () => undefined,
+  ) {}
+
+  /** katman içinde (ax, ay) noktasının iki yanına n jeton; yay: hayvanın yarı eni (jetonlar onun dışına düşer) */
+  dusur(n: number, ax: number, ay: number, yay = 70) {
+    jetonParcalari(n, this.yas()).forEach((v, i) => {
+      const j = h('button.pt-dusen-jeton', { type: 'button', 'aria-label': 'Jeton', 'data-deger': String(v) }, jetonEl(v));
+      const dx = (i % 2 ? 1 : -1) * (yay + Math.floor(i / 2) * 40) + (Math.random() * 8 - 4);
+      j.style.transform = `translate(${(ax + dx).toFixed(0)}px, ${(ay - 8).toFixed(0)}px)`;
+      this.katman.append(j);
+      this.dusenler.add(j);
+      j.addEventListener('click', () => this.topla(j, v));
+      if (!sakin())
+        j.animate(
+          [
+            { transform: `translate(${ax.toFixed(0)}px, ${(ay - 70).toFixed(0)}px) scale(.6)` },
+            { transform: `translate(${(ax + dx * 0.6).toFixed(0)}px, ${(ay - 110).toFixed(0)}px) scale(1)`, offset: 0.35 },
+            { transform: `translate(${(ax + dx).toFixed(0)}px, ${(ay - 8).toFixed(0)}px) scale(1.15, .85)`, offset: 0.75 },
+            { transform: `translate(${(ax + dx).toFixed(0)}px, ${(ay - 8).toFixed(0)}px) scale(1)` },
+          ],
+          { duration: 620, delay: i * 90, easing: 'ease-in', fill: 'backwards' },
+        );
+      ses.jeton(i);
+      window.setTimeout(() => this.topla(j, v), sure(6000));
+    });
+  }
+
+  topla(j: HTMLElement, v: number) {
+    if (!this.dusenler.has(j)) return;
+    this.dusenler.delete(j);
+    this.etkilesim();
+    const r = j.getBoundingClientRect();
+    j.remove();
+    const sira = this.toplanan++;
+    void jetonUcur(this.efekt, [r.left + r.width / 2, r.top + r.height / 2], this.kumbara.agiz(), v, 420).then(() => {
+      this.kumbara.ayarla(Math.min(this.kayitJeton(), this.kumbara.jeton + v));
+      this.kumbara.yut();
+      ses.jeton(sira);
+      if (!this.dusenler.size) {
+        this.toplanan = 0;
+        this.kumbara.ayarla(this.kayitJeton());
+      }
+    });
+  }
+
+  hepsiniTopla() {
+    for (const j of [...this.dusenler]) this.topla(j, Number(j.dataset.deger) || 1);
+  }
+
+  get sayi() {
+    return this.dusenler.size;
+  }
+}
+
+// ---------------------------------------------------------------- okşama
+/**
+ * Parmakla okşama (v1 kuralı): YAVAŞ sürtünce okşanır, HIZLI sürtünce irkilir (komik, cezasız); kısa dokunuş ayrı.
+ * Dönen: dinleyicileri kaldırır.
+ */
+export function oksamaBagla(el: HTMLElement, o: { oksa: () => void; irkil: () => void; dokun: () => void }): () => void {
+  el.style.touchAction = 'none';
+  let id: number | null = null;
+  let sx = 0;
+  let sy = 0;
+  let st = 0;
+  let yol = 0;
+  let hizli = 0;
+  let yavas = 0;
+  let tetik = 0;
+  const bas = (e: PointerEvent) => {
+    if (id !== null) return;
+    id = e.pointerId;
+    sx = e.clientX;
+    sy = e.clientY;
+    st = performance.now();
+    yol = hizli = yavas = tetik = 0;
+    try {
+      el.setPointerCapture(e.pointerId);
+    } catch {
+      /* yok say */
+    }
+  };
+  const kay = (e: PointerEvent) => {
+    if (e.pointerId !== id) return;
+    const t = performance.now();
+    const d = Math.hypot(e.clientX - sx, e.clientY - sy);
+    const v = d / Math.max(1, t - st);
+    yol += d;
+    if (d > 2) {
+      if (v > 1.8) hizli += d;
+      else yavas += d;
+    }
+    sx = e.clientX;
+    sy = e.clientY;
+    st = t;
+    if (yol - tetik > 140) {
+      tetik = yol;
+      if (hizli > yavas * 1.2) o.irkil();
+      else o.oksa();
+      hizli = yavas = 0;
+    }
+  };
+  const son = (e: PointerEvent) => {
+    if (e.pointerId !== id) return;
+    id = null;
+    if (yol < 14 && e.type === 'pointerup') o.dokun();
+  };
+  el.addEventListener('pointerdown', bas);
+  el.addEventListener('pointermove', kay);
+  el.addEventListener('pointerup', son);
+  el.addEventListener('pointercancel', son);
+  return () => {
+    el.removeEventListener('pointerdown', bas);
+    el.removeEventListener('pointermove', kay);
+    el.removeEventListener('pointerup', son);
+    el.removeEventListener('pointercancel', son);
+  };
+}
+
+/** Uçan kalp (ui-jeton kalbi gelince o; yoksa düz kalp) */
+export function ucanKalpEl(): HTMLElement {
+  return KALP_DOLU ? h('span.pt-ucan-kalp', {}, h('img', { src: KALP_DOLU, alt: '' })) : h('span.pt-ucan-kalp', { html: KALP_SVG(true) });
 }

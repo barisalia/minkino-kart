@@ -213,4 +213,41 @@ export const ses = {
     ton(NOTA(69), 0, 0.18, 'sine', 0.07);
     ton(NOTA(65), 0.16, 0.26, 'sine', 0.07);
   },
+  // ---------------------------------------------------------------- v2 · Bakım Odası
+  /** sprey: "fış fış" */
+  sprey() {
+    gurultu(0, 0.18, 7000, 5200, 0.09, 1.2);
+  },
+  /** hapşırık: "hap-şu!" */
+  hapsu() {
+    gurultu(0, 0.12, 900, 1600, 0.05, 1);
+    gurultu(0.18, 0.14, 4200, 2200, 0.14, 0.8);
+    ton(520, 0.18, 0.08, 'triangle', 0.05, 300);
+  },
+  /** karın guruldar (ders: süt, fazla bisküvi) */
+  gurul() {
+    for (let i = 0; i < 3; i++) egri([[0, 90], [0.12, 130], [0.25, 80]], i * 0.22, 'sawtooth', 0.05);
+  },
+  /** su içer: "şap şap" */
+  lap(kez = 3) {
+    for (let i = 0; i < kez; i++) gurultu(i * 0.18, 0.07, 1800, 1100, 0.07, 3);
+  },
+  /** fırça sürtüşü: yumuşak "şşş" */
+  firca() {
+    gurultu(0, 0.22, 2600, 3800, 0.05, 0.9);
+  },
+  /** karton kutu: tok "pof" */
+  kutu() {
+    ton(140, 0, 0.12, 'triangle', 0.12, 90);
+    gurultu(0, 0.1, 600, 300, 0.06, 1);
+  },
+  /** damla: "tıp" */
+  damla() {
+    ton(1400, 0, 0.09, 'sine', 0.08, 2200);
+  },
+  /** çekmece: tahta "tık" ve kayma */
+  cekmece(ac = true) {
+    ton(ac ? 300 : 260, 0, 0.06, 'triangle', 0.08, ac ? 200 : 180);
+    gurultu(0.02, 0.16, ac ? 700 : 500, ac ? 400 : 300, 0.05, 1);
+  },
 };

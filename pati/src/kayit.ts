@@ -48,11 +48,13 @@ export interface PatiKayit {
   defter: Record<string, Record<string, DefterTepki>>;
   /** ziyaretçi sahneleri: kimlik → kaç kez (paket 3) */
   ziyaretler: Record<string, number>;
-  /** günün fotoğrafları (paket 2 kapanış) */
+  /** günün fotoğrafları (paket 2 kapanış): "hayvan:poz" */
   pano: string[];
+  /** defter sayfası tamamlanan (Uzman rozeti) hayvanlar */
+  uzman: string[];
 }
 
-export const bosKayit = (): PatiKayit => ({ yas: null, acildi: false, jeton: 0, hayvanlar: [], esyalar: [], susler: [], koseler: ['salon'], defter: {}, ziyaretler: {}, pano: [] });
+export const bosKayit = (): PatiKayit => ({ yas: null, acildi: false, jeton: 0, hayvanlar: [], esyalar: [], susler: [], koseler: ['salon'], defter: {}, ziyaretler: {}, pano: [], uzman: [] });
 
 const sayi = (v: unknown, d = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
 const dizi = <T>(v: unknown, f: (x: unknown) => T | null): T[] => (Array.isArray(v) ? v.map(f).filter((x): x is T => x !== null) : []);
@@ -87,6 +89,7 @@ export function kayitCoz(ham: string | null | undefined, eski?: string | null): 
       k.jeton = Math.max(0, Math.floor(sayi(v.jeton)));
       k.hayvanlar = dizi(v.hayvanlar, hayvanCoz);
       k.esyalar = dizi(v.esyalar, (x) => (typeof x === 'string' ? x : null));
+      k.uzman = dizi(v.uzman, (x) => (typeof x === 'string' ? x : null));
       k.susler = dizi(v.susler, (x) => {
         const s = x as { ad?: unknown; nokta?: unknown } | null;
         return s && typeof s.ad === 'string' ? { ad: s.ad, nokta: String(s.nokta ?? '') } : null;

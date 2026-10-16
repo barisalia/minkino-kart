@@ -17,7 +17,7 @@
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { elSurukle, icinde, Tutulan } from '../../kino-otobus/src/dokunsal';
 import type { Efekt } from '../../kino-otobus/src/efekt';
-import { ezil, isimTabelasi, jetonEl, jetonUcur, KalpSirasi, minderEl, type Kumbara } from './arayuz';
+import { dolapEl, ezil, isimTabelasi, jetonEl, jetonUcur, KalpSirasi, minderEl, type Kumbara } from './arayuz';
 import { Dekor } from './dekor';
 import { jetonParcalari } from './ekonomi';
 import { Hayvan } from './hayvan';
@@ -26,7 +26,11 @@ import type { PatiKayit, SahipHayvan } from './kayit';
 import { dansBitti, dinleniyor, kalpEkle, type KalpKaynagi } from './mutluluk';
 import type { Nehir } from './nehir';
 import { ses } from './sesler';
-import { pozVar, SALON } from './varliklar';
+import { dolayliHareket } from './bakim-odasi';
+import { IHTIYAC_HAL } from './hayvan';
+import type { YardimAdimi } from './ihtiyac';
+import { ihtiyacCekmecesi } from './katalog';
+import { IP, IP_KUTU, pozAdresi, pozVar, SALON, type Poz } from './varliklar';
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sakin = () => AZ || TEST_MODU;
@@ -42,6 +46,8 @@ const OYUK = [
 /** Oyuğun kesiti (dikey telefonda oyuklar bu kesitlerle 2 sütun dizilir; yatayda çizimin üstünde aynı yerde) */
 const KESIT = OYUK.map((k) => ({ x0: k.x0 - 34, y0: k.y0 - 92, x1: k.x1 + 34, y1: k.y1 + 64 }));
 const ZEMIN = 1034;
+/** Mantar pano (salon-gunduz çizimi, sol duvar; sahne birimi) */
+const PANO = { x0: 382, y0: 500 };
 const BOY = 430;
 const MINDER_EN = 380;
 /** Minderin üstünde hayvan bu kadar yükselir */
@@ -78,6 +84,10 @@ export interface SalonOrtam {
   /** paket 2: hayvana dokununca Bakım Odası (yoksa okşama ve dokunuş burada) */
   hayvanSecildi?: (h: SahipHayvan) => boolean;
   etkilesim?: () => void;
+  /** lamba ipi çekildi (akşam / gece; dükkân karar verir) */
+  ipCek?: () => void;
+  /** hayvan uyuyor mu (akşam: yatağını seçen hayvan uyur) */
+  uyuyor?: (id: string) => boolean;
 }
 
 export class Salon {
@@ -94,6 +104,14 @@ export class Salon {
   private dusenler = new Set<HTMLElement>();
   private toplanan = 0;
   private sonEtkilesim = performance.now();
+  /** 3-4 resim balonları (yardım merdiveni 25 sn): hayvan → balon */
+  private balonlar = new Map<string, HTMLElement>();
+  /** lamba ipi: salon çiziminin kendi ipi (yatay) ya da sağ üstte sarkan ip (dikey) */
+  readonly ip: HTMLElement;
+  private ipOrtu: HTMLElement;
+  private ipAlan: HTMLButtonElement;
+  /** panodaki polaroidler (yatay; mantar pano çizimin üstünde) */
+  private pano: HTMLElement;
 
   constructor(private o: SalonOrtam) {
     this.dekor = new Dekor(SALON, { yatay: { x0: 690, y0: 430, x1: 2658, y1: 1150 }, dikey: { x0: 670, y0: 60, x1: 2678, y1: 1120 }, dikeyUst: (H) => Math.max(40, H * 0.06) });
@@ -128,6 +146,15 @@ export class Salon {
     this.adlar.addEventListener('click', (e) => {
       if (e.target === this.adlar) this.adlariKapat();
     });
+    // lamba ipi: çizimdeki ip duvar rengiyle örtülür, kesilmiş ip tam üstüne oturur (çekilince esner)
+    const [ix0, iy0, ix1, iy1] = IP_KUTU;
+    this.ipOrtu = h('div.pt-ip-ortu', { style: `left:${ix0 + 6}px;top:${iy0 + 6}px;width:${ix1 - ix0 - 12}px;height:${iy1 - iy0 - 12}px` });
+    this.ip = h('div.pt-ip', { style: `left:${ix0}px;top:${iy0}px;width:${ix1 - ix0}px;height:${iy1 - iy0}px` }, h('img', { src: IP, alt: '', draggable: 'false' }));
+    this.ipAlan = h('button.pt-ip-alan2', { type: 'button', 'aria-label': 'Lamba ipi' }) as HTMLButtonElement;
+    this.ipBagla();
+    this.pano = h('div.pt-pano');
+    this.dekor.katman.append(this.ipOrtu, this.ip, this.pano);
+    this.el.append(this.ipAlan);
     this.dekor.degisti = () => this.yerlesim();
     this.kur();
     requestAnimationFrame(() => this.dekor.kur());
@@ -195,6 +222,15 @@ export class Salon {
       this.el.style.setProperty('--tepsi-en', `${(kw * s).toFixed(0)}px`);
     }
     this.uiYerlesim();
+    this.ipYerlesim();
+    this.balonYerlesim();
+    // ilk kurulumda ölçüler bir kare sonra oturur (kalpler ve tabelalar üst üste kalıyordu)
+    requestAnimationFrame(() => {
+      if (this.kapandi) return;
+      this.uiYerlesim();
+      this.ipYerlesim();
+      this.balonYerlesim();
+    });
   }
   private yerBosalt(yer: Yer) {
     yer.hayvan?.kapat();
@@ -212,6 +248,7 @@ export class Salon {
     const hv = new Hayvan({ ad: s.id, boy: BOY, x, y: this.zemin(yer) });
     yer.hayvan = hv;
     yer.alan.dataset.hayvan = s.id;
+    this.halUygula(yer);
     yer.kap.insertBefore(hv.el, yer.alan);
     if (s.minder) this.minderCiz(yer, s.minder);
     yer.kalpler.ayarla(s.kalp);
@@ -645,6 +682,173 @@ export class Salon {
       window.setTimeout(() => !this.kapandi && hv.cevir(), sure(ras(900, 1700)));
     } else if (z < 0.8) void hv.anlik('goz', 600);
     else void hv.gerin();
+  }
+
+  // ---------------------------------------------------------------- ihtiyaç, yardım merdiveni, uyku
+  /** Hayvanın hâli: uyuyorsa uyku, ihtiyacı varsa onun pozu, yoksa boş */
+  private halUygula(yer: Yer) {
+    const s = yer.sahip;
+    const hv = yer.hayvan;
+    if (!s || !hv) return;
+    hv.halAyarla(this.o.uyuyor?.(s.id) ? 'uyku' : s.ihtiyac ? IHTIYAC_HAL[s.ihtiyac] : 'bos');
+  }
+
+  /** Bir hayvanın kalpleri ve hâli kayıttan yeniden (Bakım Odası'ndan dönünce, ihtiyaç açılınca) */
+  hayvanDurumu(id: string) {
+    const yer = this.yerler.find((y) => y.sahip?.id === id);
+    if (!yer?.sahip) return;
+    yer.kalpler.ayarla(yer.sahip.kalp);
+    this.halUygula(yer);
+    if (!yer.sahip.ihtiyac) this.balonGoster(id, false);
+  }
+  /** Yerleşimi yeniden ölç (panel görünür olunca) */
+  yerlesimYenile() {
+    this.dekor.kur();
+  }
+  /** Hepsi */
+  hepsiniYenile() {
+    for (const y of this.yerler) if (y.sahip) this.hayvanDurumu(y.sahip.id);
+  }
+  /** Hayvanın sesi (ihtiyacı açılınca; salon görünürken) */
+  hayvanSesi(id: string) {
+    const yer = this.yerler.find((y) => y.sahip?.id === id);
+    if (yer?.hayvan && !yer.mesgul) {
+      yer.hayvan.sesi(1);
+      yer.hayvan.ezil(1.2);
+    }
+  }
+
+  /** Yardım merdiveninin bir adımı (salon görünürken): 12 sn dolaylı hareket, 25 sn 3-4 balonu */
+  yardim(id: string, adim: YardimAdimi) {
+    const yer = this.yerler.find((y) => y.sahip?.id === id);
+    const s = yer?.sahip;
+    const hv = yer?.hayvan;
+    if (!yer || !s?.ihtiyac || !hv) return;
+    if (adim === 'dolayli' && !yer.mesgul) {
+      const k = this.o.efekt.kutu();
+      void dolayliHareket(hv, s.ihtiyac, this.o.efekt, (x, y) => {
+        const [ex, ey] = this.ekranda(yer, x, y);
+        return [ex - k.left, ey - k.top];
+      });
+    } else if (adim === 'balon') this.balonGoster(id, true);
+  }
+
+  /** 3-4 resim balonu: ihtiyacın genel resmi, oyuğun üstünde (hayvanın başının yanında) */
+  balonGoster(id: string, goster: boolean) {
+    const yer = this.yerler.find((y) => y.sahip?.id === id);
+    let b = this.balonlar.get(id);
+    const ih = yer?.sahip?.ihtiyac;
+    if (!goster || !yer || !ih) {
+      if (b) {
+        b.remove();
+        this.balonlar.delete(id);
+      }
+      return;
+    }
+    const c = ihtiyacCekmecesi(ih);
+    if (!b || b.dataset.cekmece !== c) {
+      b?.remove();
+      b = h('div.pt-balon2.acik.pt-salon-balon', { 'data-hayvan': id, 'data-cekmece': c }, h('span.pt-balon2-ic', {}, dolapEl(c)), h('i.pt-balon2-k1'), h('i.pt-balon2-k2'));
+      this.ui.append(b);
+      this.balonlar.set(id, b);
+      ezil(b.firstElementChild, 1.6, 420);
+    }
+    this.balonYerlesim();
+  }
+  private balonYerlesim() {
+    const p = this.el.getBoundingClientRect();
+    for (const [id, b] of this.balonlar) {
+      const yer = this.yerler.find((y) => y.sahip?.id === id);
+      if (!yer) continue;
+      const k = OYUK[yer.i];
+      const ks = KESIT[yer.i];
+      const [x, y] = this.ekranda(yer, k.x1 - 150 - ks.x0, k.y0 + 150 - ks.y0);
+      b.style.transform = `translate(${(x - p.left).toFixed(1)}px, ${(y - p.top).toFixed(1)}px)`;
+    }
+  }
+
+  // ---------------------------------------------------------------- lamba ipi
+  private ipBagla() {
+    let y0 = 0;
+    let cekildi = false;
+    const cek = () => {
+      if (cekildi) return;
+      cekildi = true;
+      this.etkilesim();
+      ses.cit();
+      if (!sakin()) this.ip.animate([{ transform: 'scaleY(1)' }, { transform: 'scaleY(1.35)', offset: 0.35 }, { transform: 'scaleY(0.92)', offset: 0.7 }, { transform: 'scaleY(1)' }], { duration: 520, easing: 'ease-out' });
+      this.o.ipCek?.();
+      window.setTimeout(() => (cekildi = false), sure(900));
+    };
+    this.ipAlan.addEventListener('pointerdown', (e) => {
+      y0 = e.clientY;
+      try {
+        this.ipAlan.setPointerCapture(e.pointerId);
+      } catch {
+        /* yok say */
+      }
+    });
+    this.ipAlan.addEventListener('pointermove', (e) => {
+      if (e.buttons && e.clientY - y0 > 18) cek();
+    });
+    this.ipAlan.addEventListener('click', cek);
+  }
+  /** Yatay: ip çizimdeki yerinde, dokunma alanı onun çevresinde. Dikey: ip sağ üstte sarkar */
+  private ipYerlesim() {
+    const dikey = this.el.classList.contains('pt-dikey');
+    const p = this.el.getBoundingClientRect();
+    if (!dikey) {
+      if (this.ip.parentElement !== this.dekor.katman) {
+        const [ix0, iy0, ix1, iy1] = IP_KUTU;
+        this.ip.style.cssText = `left:${ix0}px;top:${iy0}px;width:${ix1 - ix0}px;height:${iy1 - iy0}px`;
+        this.dekor.katman.append(this.ipOrtu, this.ip);
+      }
+      this.ip.classList.remove('pt-ip-dikey');
+    } else {
+      if (this.ip.parentElement !== this.el) this.el.insertBefore(this.ip, this.ui);
+      this.ipOrtu.remove();
+      this.ip.classList.add('pt-ip-dikey');
+      this.ip.style.cssText = '';
+    }
+    const r = this.ip.getBoundingClientRect();
+    if (!r.width) return;
+    const w = Math.max(56, r.width * 3);
+    const hh = Math.max(84, r.height * 1.6);
+    this.ipAlan.style.cssText = `left:${(r.left - p.left + r.width / 2 - w / 2).toFixed(0)}px;top:${(r.top - p.top).toFixed(0)}px;width:${w.toFixed(0)}px;height:${hh.toFixed(0)}px`;
+  }
+  /** İp bir kez kıpırdar (akşam: "Işığı kapatalım") */
+  ipKipirdat() {
+    if (sakin()) return;
+    this.ip.animate([{ transform: 'scaleY(1)' }, { transform: 'scaleY(1.12)', offset: 0.3 }, { transform: 'scaleY(0.96)', offset: 0.6 }, { transform: 'scaleY(1)' }], { duration: 600, easing: 'ease-in-out' });
+  }
+
+  // ---------------------------------------------------------------- pano (günün fotoğrafları)
+  /**
+   * Mantar pano (salon çiziminde, sol duvarda): son 4 polaroid küçük asılı. Yalnız yatay (dikeyde çizim görünmez).
+   * an: "hayvan:poz"
+   */
+  panoKur(pano: readonly string[]) {
+    const son = pano.slice(-4);
+    this.pano.replaceChildren(
+      ...son.map((an, i) => {
+        const [id, poz] = an.split(':');
+        return h('span.pt-pano-foto', { 'data-an': an, style: `left:${PANO.x0 + (i % 2) * 125}px;top:${PANO.y0 + Math.floor(i / 2) * 160}px;--egim:${i % 2 ? 4 : -5}deg` }, h('img', { src: pozAdresi(id, (poz || 'bos') as Poz).url, alt: '', draggable: 'false' }));
+      }),
+    );
+  }
+  /** Panonun ekrandaki ortası (uçan fotoğrafın hedefi); dikeyde null */
+  panoNoktasi(): [number, number] | null {
+    if (this.el.classList.contains('pt-dikey')) return null;
+    const [x, y] = this.dekor.ekrana(PANO.x0 + 120, PANO.y0 + 150);
+    const r = this.el.getBoundingClientRect();
+    return [r.left + x, r.top + y];
+  }
+  /** Gece: salonun gece çizimi (G7) ve oyuk kesitleri */
+  gece(var_: boolean, gece: string | null) {
+    const url = var_ && gece ? gece : SALON;
+    this.dekor.resim.src = url;
+    for (const y of this.yerler) y.kap.style.setProperty('--salon', `url("${url}")`);
+    this.el.classList.toggle('pt-gece-resimli', var_ && !!gece);
   }
 
   /** Test ve dükkân için: yerlerdeki hayvanlar */

@@ -14,7 +14,6 @@
 import gozYamaJson from '../../assets/pati/goz-yama.json';
 import gecici from '../../assets/pati/gecici-yer.json';
 import { dogalBoyu, NETLIK_DPR } from '../../src/ui/netlik';
-import type { EsyaAdi } from './ihtiyac';
 
 const DOSYALAR = import.meta.glob<string>('../../assets/pati/*.webp', { eager: true, query: '?url', import: 'default' });
 const YENIDEN = import.meta.glob<string>(['../../assets/kino-otobus/kase.webp', '../../assets/pasta/jeton-1.webp', '../../assets/pasta/kumbara-kavanoz-1.webp'], { eager: true, query: '?url', import: 'default' });
@@ -152,17 +151,27 @@ export const ETIKET = adres('ui-etiket');
 export const MINDER_BEYAZ = adres('esya-minder');
 export const MINDER_YEDEK = adres('esya-battaniye', 'gecici-minder')!;
 
-// ---------------------------------------------------------------- eşyalar (v1 bakım rafı)
-const ESYA: Record<EsyaAdi, string[]> = {
-  mama: ['esya-mama-torbasi', 'gecici-mama-torbasi'],
-  top: ['esya-top', 'gecici-top'],
-  kus: ['esya-tuy-degnek', 'gecici-kus'],
-  minder: ['esya-battaniye', 'gecici-minder'],
-  yem: ['esya-yem-kutusu'],
+// ---------------------------------------------------------------- eşyalar (v2: esya-1..6 sayfaları)
+/**
+ * v2 eşya → v1'de çizilmiş aynı eşya (v2 sayfasında yoksa ya da gelmeden): su kabı, top, tüy değnek, battaniye,
+ * gece lambası v1 G4 sayfasından; köpek maması v1'in dolu mama kabı, balık yemi v1'in yem kutusu.
+ */
+const ESYA_V1: Record<string, string[]> = {
+  'su-kabi': ['esya-su-kabi-dolu'],
+  'kopek-mamasi': ['esya-mama-kabi-dolu'],
+  'balik-yemi': ['esya-yem-kutusu'],
 };
-export function esyaAdresi(e: EsyaAdi): string {
-  return adres(...ESYA[e]) ?? (e === 'yem' ? yedekDosya('kase') : null) ?? adres('gecici-mama-torbasi')!;
+/** Eşyanın resmi (esya-<ad>.webp ya da v1 eşi); çizimi yoksa null: sade yer tutucu (arayuz.ts esyaEl) */
+export function esyaResmi(id: string): string | null {
+  return adres(`esya-${id}`, ...(ESYA_V1[id] ?? []));
 }
+/** Çekmece önü resmi (ui-dolap sayfası; yoksa null: sade yer tutucu) */
+export const dolapResmi = (c: string) => adres(`dolap-${c}`);
+/** Bakım Odası'nın kesitleri ve eşyaları için: altın kalp etiketi, hediye kutusu, defter, perde (ui-jeton sayfası) */
+export const ALTIN_KALP = adres('ui-altin-kalp');
+export const DEFTER = adres('ui-defter');
+export const HEDIYE = adres('ui-hediye');
+export const PERDE = adres('ui-perde');
 /** Boş mama kabı (G4; yoksa kap yalnız dökünce görünür) */
 export const MAMA_KABI_BOS = adres('esya-mama-kabi-bos');
 /** Düşünce balonu (G4; yoksa CSS balon) ve ay gece lambası */

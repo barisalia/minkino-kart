@@ -290,6 +290,11 @@
       "jeton_az": "Biraz daha jeton lazım.",
       "kose_lazim": "Önce ona bir köşe açalım.",
       "cok_mutlu": "Çok mutlu!",
+      "beden": { "ac": "Karnı acıkmış.", "susuz": "Dili dışarıda, hah hah...", "kirli": "Tüyleri çamur olmuş.", "sikildi": "Oyun oynamak istiyor.", "uykulu": "Gözleri kapanıyor...", "hasta": "Burnu kıpkırmızı olmuş." },
+      "sevmedi": "Hımm, bunu sevmedi galiba.",
+      "karin": "Karnı guruldadı!",
+      "uzman": "Artık onu çok iyi tanıyorsun!",
+      "hava_karariyor": "Hava kararıyor...",
       "huy": {
         "coskulu": "Fındık hiç yerinde durmaz!",
         "nazli": "Tarçın biraz nazlı.",

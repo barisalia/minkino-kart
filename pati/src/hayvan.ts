@@ -9,12 +9,19 @@
  * > .pt-dongu (hâlin döngüsü, CSS: data-hal) > .pt-nefes (CSS) > .pt-poz (ezilme) > img (+ göz yaması)
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
-import { hayvanBilgi, hayvanVar } from './katalog';
+import { hayvanBilgi, hayvanVar, type IhtiyacAdi } from './katalog';
 import { ses } from './sesler';
 import { gozYamasi, pozAdresi, pozVar, type Poz } from './varliklar';
 
-export type Hal = 'bos' | 'ac' | 'oyun' | 'usudu' | 'uyku' | 'uykulu';
-const HAL_POZ: Record<Hal, Poz> = { bos: 'bos', ac: 'ac', oyun: 'oyun', usudu: 'usudu', uyku: 'uyku', uykulu: 'uykulu' };
+/**
+ * Hâl: hayvanın sürekli pozu ve döngüsü. v2 ihtiyaçları (PATI-V2 §7a, B sayfası): aç → ac, susuz → susamis,
+ * kirli → kirli, sıkılmış → sikildi, uykulu → esneme, hasta → hasta. Pozu gelmemiş hâli kod beden hareketiyle anlatır
+ * (CSS [data-hal][data-yedek]).
+ */
+export type Hal = 'bos' | 'ac' | 'oyun' | 'usudu' | 'uyku' | 'uykulu' | 'susamis' | 'kirli' | 'sikildi' | 'esneme' | 'hasta';
+const HAL_POZ: Record<Hal, Poz> = { bos: 'bos', ac: 'ac', oyun: 'oyun', usudu: 'usudu', uyku: 'uyku', uykulu: 'uykulu', susamis: 'susamis', kirli: 'kirli', sikildi: 'sikildi', esneme: 'esneme', hasta: 'hasta' };
+/** İhtiyaç → hâl (ihtiyacı yoksa bos) */
+export const IHTIYAC_HAL: Record<IhtiyacAdi, Hal> = { ac: 'ac', susuz: 'susamis', kirli: 'kirli', sikildi: 'sikildi', uykulu: 'esneme', hasta: 'hasta' };
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ras = (a: number, b: number) => a + Math.random() * (b - a);
 const bitir = (a: Animation) => a.finished.then(
@@ -51,8 +58,8 @@ export class Hayvan {
   /** şu anki yer (ayaklar, sahne birimi) */
   x: number;
   y: number;
-  readonly evX: number;
-  readonly evY: number;
+  evX: number;
+  evY: number;
   /** 1 sağa, -1 sola bakar */
   private yon = 1;
   hal: Hal = 'bos';
@@ -386,6 +393,51 @@ export class Hayvan {
   minderde(var_: boolean, yukseklik = 46) {
     this.y = this.evY + (var_ ? -yukseklik : 0);
     this.yerlestir();
+  }
+
+  /** Boyu değiştir (Bakım Odası: ekran dönünce; netlik sınırı çağıranda) */
+  boyAyarla(boy: number) {
+    this.ayar.boy = boy;
+    this.el.style.setProperty('--boy', `${boy.toFixed(1)}px`);
+  }
+
+  /** Yerini değiştir (ev de oraya taşınır; Bakım Odası masası) */
+  yerAyarla(x: number, y: number) {
+    this.x = this.evX = x;
+    this.y = this.evY = y;
+    this.yerlestir();
+  }
+
+  /** Bütün gövde aşağı kayar ve orada kalır (kutunun arkasına saklanma); dy: sahne birimi. 0: geri çıkar */
+  async batir(dy: number, ms = 360) {
+    if (this.kapandi) return;
+    // `translate` özelliği: zıplamanın transform'uyla üst üste biner (ikisi birlikte çalışır)
+    const once = this.batik;
+    this.batikAnim?.cancel();
+    const a = this.hareketEl.animate(
+      [{ translate: `0 ${once}px` }, { translate: `0 ${Math.min(once, dy) - 40}px`, offset: dy > once ? 0.3 : 0.55 }, { translate: `0 ${dy}px` }],
+      { duration: AZ || TEST_MODU ? 1 : ms, easing: 'ease-in-out', fill: 'forwards' },
+    );
+    this.batik = dy;
+    this.batikAnim = dy ? a : null;
+    await bitir(a);
+    if (!dy) a.cancel();
+  }
+  private batik = 0;
+  private batikAnim: Animation | null = null;
+
+  /** Titreme (ıslanınca, tüyleri diken diken): hızlı yatay sarsıntı */
+  async titre(ms = 600) {
+    if (AZ || TEST_MODU) return;
+    const k: Keyframe[] = [];
+    const n = Math.round(ms / 50);
+    for (let i = 0; i <= n; i++) k.push({ transform: `translateX(${i === n ? 0 : (i % 2 ? -1 : 1) * 7}px) scale(${i % 2 ? '1.02, 0.98' : '0.98, 1.02'})` });
+    await bitir(this.hareketEl.animate(k, { duration: ms, easing: 'linear' }));
+  }
+
+  /** Pusu: kısa çömelme ve popo sallama (kedi oyunu); var=false bırakır */
+  pusu(var_: boolean) {
+    this.el.classList.toggle('pt-pusu', var_);
   }
 
   /** Eve (köşesindeki yerine) döner ve sağa bakar */
