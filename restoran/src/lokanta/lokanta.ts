@@ -22,7 +22,7 @@ import { istasyonAc, type IstasyonEkrani } from '../istasyon/istasyon';
 import defterJson from '../../../content/restoran/defter.json';
 import { KATALOG, masaSayisi as kayitliMasaSayisi, menuOnerisi, yerlesmemisleriKoy, yerlestir as yuvayaKoy, type AlimSonucu, type DefterKalemi } from '../ekonomi';
 import { kaydet, kayit } from '../kayit';
-import type { ArkaIs, Istasyon, Malzeme, MiniGirdi, Urun } from '../mini/arayuz';
+import type { ArkaIs, Istasyon, Malzeme, MiniGirdi, MiniOyun, Urun } from '../mini/arayuz';
 import { denemeIcin } from '../mini/deneme';
 import { istasyonOyunlari, oyunBul } from '../mini/katalog';
 import { gunPlani, ilkGunPlani, L, MUSTERILER, odeme, tepkiHesapla, TARIFLER, type GunPlani, type Istek, type Musteri, type PlanMusteri, type TepkiSonuc } from '../model';
@@ -164,7 +164,14 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   // istasyon düğmeleri (mutfakta)
   const istDugme: Partial<Record<Istasyon, HTMLElement>> = {};
   const ISTASYONLAR = ['lavabo', 'tezgah', 'ocak', 'mermer', 'servis'] as const;
-  const acikIstasyon = (ist: Istasyon) => ist === 'tezgah' || ist === 'ocak' || ist === 'servis' || istasyonOyunlari(ist).length > 0;
+  /**
+   * Açılma sırası (§6c, P4): istasyonda yalnız açık tariflerin mini oyunları oynanır (Gün 1: doğra, tava, tabakla);
+   * defterden alınan tarif kendi oyunlarını açar (patates: soy, kızart; pankek: kır-çırp ...). Yıka Gün 2'de açılır
+   * (Babaanne'nin pazardan çamurlu sebzesi). Bir istasyonda birden çok açık oyun varsa seçim düğmeleri çıkar.
+   */
+  const acikOyunlar = new Set<string>([...acikTarifler.flatMap((t) => TARIFLER[t]?.yol ?? []), ...(gun >= 2 ? ['yika'] : [])]);
+  const istasyonAcikOyunlari = (ist: Istasyon) => istasyonOyunlari(ist).filter((o) => acikOyunlar.has(o.ad));
+  const acikIstasyon = (ist: Istasyon) => ist === 'tezgah' || ist === 'ocak' || ist === 'servis' || istasyonAcikOyunlari(ist).length > 0;
   // mutfağa sonradan gelen aletler (içecek tezgâhı, fırın; mangal bahçede): alınış sırasıyla alet yuvalarına
   const yeniIstasyonlar = [...new Set(kayit.acilan.alet.map((a) => KATALOG.find((k) => k.alet === a && k.istasyon)?.istasyon).filter((x): x is Istasyon => !!x))];
   for (const ist of yeniIstasyonlar) {
@@ -823,10 +830,46 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     if (ist === 'servis') return GARNITUR.filter((m) => m !== 'bal' || menuMalzeme.includes('bal'));
     return menuMalzeme;
   };
+  /** İstasyonda birden çok açık oyun: istasyonun üstünde alet düğmeleri (simge), çocuk seçer; bekleyen isteğin yolundakiler önce */
+  let secimEl: HTMLElement | null = null;
+  const secimKapat = () => {
+    secimEl?.remove();
+    secimEl = null;
+  };
   const istasyonaGir = (ist: Istasyon) => {
     if (istasyon || gunBitti) return;
+    secimKapat();
     // e2e: &deneme=1 çekirdek akışı deneme mini oyunuyla sınar (gerçek mini oyunların kendi testleri var)
-    const oyun = (DENEME_ZORLA ? null : istasyonOyunlari(ist)[0]) ?? denemeIcin(ist);
+    const oyunlar = DENEME_ZORLA ? [] : istasyonAcikOyunlari(ist);
+    if (oyunlar.length > 1) {
+      const istek = bekleyenIstek();
+      const yol = istek && (istek.tur === 'resimli' || istek.tur === 'ozel') ? (TARIFLER[istek.tarif]?.yol ?? []) : [];
+      const sirali = [...oyunlar].sort((a, b) => Number(!yol.includes(a.ad)) - Number(!yol.includes(b.ad)));
+      const d = istDugme[ist]!;
+      secimEl = h(
+        'div.rs-oyun-secim',
+        { style: `left:${d.style.left};top:${d.style.top};width:${d.style.width}` },
+        ...sirali.map((o) => {
+          const b = h('button.rs-oyun-secim-dugme', { type: 'button', 'data-oyun': o.ad, 'aria-label': o.ad }, o.simge?.() ?? h('span.rs-oyun-secim-yok'));
+          if (arkaIsler.has(`${ist}:${o.ad}`)) b.classList.add('rs-pisiyor');
+          b.addEventListener('click', (e) => {
+            e.stopPropagation();
+            secimKapat();
+            oyunuAc(ist, o);
+          });
+          return b;
+        }),
+      );
+      katman.append(secimEl);
+      sesler.cal('pit');
+      return;
+    }
+    oyunuAc(ist, oyunlar[0] ?? (DENEME_ZORLA ? null : istasyonOyunlari(ist)[0]) ?? denemeIcin(ist));
+  };
+  el.addEventListener('pointerdown', (e) => {
+    if (secimEl && !(e.target as HTMLElement).closest('.rs-oyun-secim, .rs-ist')) secimKapat();
+  });
+  const oyunuAc = (ist: Istasyon, oyun: MiniOyun) => {
     const arkaAnahtar = `${ist}:${oyun.ad}`;
     const arkaVar = arkaIsler.get(arkaAnahtar);
     if (arkaVar) {
@@ -944,6 +987,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     merdiven.hedef(null);
     await kinoZincir;
     if (bahcede) kaydir(false);
+    secimKapat();
     gunSonu = gunSonuAc(el, {
       gunJeton,
       yas,
@@ -1054,6 +1098,11 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     kaydet();
     acik = true;
     basladi = performance.now();
+    // Gün 2: Babaanne'nin pazardan gönderdiği çamurlu sebzeler, lavabo (Yıka) açılır
+    if (gun === 2 && istasyonAcikOyunlari('lavabo').length) {
+      istDugme.lavabo?.classList.add('rs-hopla');
+      await minoSoyle(D.mino.yeni_alet);
+    }
     void minoSoyle(L.mino.acildi);
   };
 

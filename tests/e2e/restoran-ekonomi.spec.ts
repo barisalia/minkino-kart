@@ -187,3 +187,31 @@ test.describe('Lokanta büyüme: 5 gün', () => {
     expect(hatalar).toEqual([]);
   });
 });
+
+test.describe('Lokanta büyüme: açılma sırası ve istasyon seçimi', () => {
+  test.use({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+  test.beforeEach(({}, info) => test.skip(info.project.name !== 'iphone'));
+
+  test('Gün 1: yalnız ilk tariflerin oyunları (mermer kapalı, tezgâhta seçim yok); patates alınınca tezgâhta doğra / soy seçimi', async ({ page }) => {
+    test.setTimeout(120_000);
+    const hatalar = hataTopla(page);
+    await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk&ekran=lokanta');
+    await menuSec(page);
+    await expect(page.locator('.rs-ist[data-istasyon="mermer"]')).toBeDisabled();
+    await expect(page.locator('.rs-ist[data-istasyon="lavabo"]')).toBeDisabled();
+    await page.locator('.rs-ist[data-istasyon="tezgah"]').click();
+    await expect(page.locator('.rs-oyun-secim')).toHaveCount(0);
+    await expect(page.locator('.rs-istasyon')).toBeVisible();
+    // Gün 3, patates açık: tezgâhta iki oyun (doğra, soy), ocakta iki oyun (tava, kızart); rendele (pide) yok; lavabo açık
+    await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk&ekran=lokanta&acilan=patates&gun=3');
+    await menuSec(page);
+    await expect(page.locator('.rs-ist[data-istasyon="lavabo"]')).toBeEnabled();
+    await page.locator('.rs-ist[data-istasyon="tezgah"]').click();
+    await expect(page.locator('.rs-oyun-secim-dugme')).toHaveCount(2);
+    await expect(page.locator('.rs-oyun-secim-dugme[data-oyun="rendele"]')).toHaveCount(0);
+    await page.screenshot({ path: 'tests/screens/restoran-p4-844x390-oyun-secim.png' });
+    await page.locator('.rs-oyun-secim-dugme[data-oyun="soy"]').click();
+    await expect(page.locator('.rs-istasyon')).toBeVisible();
+    expect(hatalar).toEqual([]);
+  });
+});
