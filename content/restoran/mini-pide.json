@@ -1,0 +1,34 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · PİDE FIRINI mini oyunu sözleri (P5; ekip/senaryo/RESTORAN.md §8 M10). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). Hiçbir şey yanmaz: son durak 'çıtır'. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "kasar": "Kaşar!",
+      "sucuk": "Sucuk!",
+      "yumurta": "Yumurta!",
+      "domates": "Domates!",
+      "biber": "Biber!",
+      "un": "Un!"
+    },
+    "kayik": "[happy] Kayık gibi pide!",
+    "yuvarlak": "[happy] Yusyuvarlak!",
+    "pencere": "[giggles] Pencereli pide!",
+    "kenar": "[happy] Kıvır kıvır!",
+    "dag": "[excited] Kocaman bir dağ!",
+    "firinda": "[excited] Fırına girdi!",
+    "kabardi": "[happy] Kabarıyor!",
+    "altin": "[happy] Altın gibi oldu!",
+    "citir": "[giggles] Kıtır kıtır!",
+    "cikti": "[excited] Sıcacık!",
+    "uzadi": "[laughs] Uzadı uzadı!",
+    "kalp": "[gasps] Delik kalp olmuş!",
+    "ipucu": {
+      "top": "[curious] Hamur top gibi…",
+      "bos": "[curious] Pide bomboş…",
+      "kenar": "[curious] Kenarları dümdüz…",
+      "firin": "[curious] Fırın kıpkırmızı yanıyor…",
+      "pisiyor": "[softly] Mis gibi kokuyor…",
+      "peynir": "[curious] Peynir sıcacık…",
+      "bitti": "[happy] Afiyet olsun!"
+    }
+  }
+}

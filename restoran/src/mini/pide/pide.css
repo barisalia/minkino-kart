@@ -1,0 +1,384 @@
+/* PİDE FIRINI: yalnız .rs-pide altında. Yer tutucular SADE (düz renk + kahve kontur); Gemini 'pide-sayfasi' (§11f #43),
+   'istasyon-mermer' ve 'istasyon-firin' gelince hamur, pide, kürek, fırın resimleri gelir. Kamera kayar (büyütme yok). */
+.mk-kok .rs-pd-sahne {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+.test-modu .rs-pd-sahne { transition: none; }
+.mk-kok .rs-pide[data-faz='firin'] .rs-pd-sahne { transform: translateX(-50%); }
+.mk-kok .rs-pd-mermer,
+.mk-kok .rs-pd-firin-panel {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+.mk-kok .rs-pd-mermer[data-resim='0'] { background: linear-gradient(135deg, #f5f4f2, #e6e3df); }
+.mk-kok .rs-pd-firin-panel[data-resim='0'] { background: transparent; }
+.mk-kok .rs-pd-firin-panel > * { position: absolute; }
+/* yer tutucu taş fırın (önden): kubbe + ağız */
+.mk-kok .rs-pd-kubbe-govde {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  border-radius: 50% 50% 6% 6% / 74% 74% 6% 6%;
+  background: radial-gradient(circle at 30% 25%, #e39a72 0 8%, transparent 9%), radial-gradient(circle at 70% 40%, #e39a72 0 6%, transparent 7%), #c9744f;
+  box-shadow: 0 8px 0 rgba(59, 36, 22, 0.25);
+}
+.mk-kok .rs-pd-kubbe[hidden] { display: none; }
+.mk-kok .rs-pd-baca {
+  position: absolute;
+  left: 46%;
+  top: -14%;
+  width: 8%;
+  height: 18%;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  background: #9a5638;
+}
+.mk-kok .rs-pd-agiz {
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  border-bottom-width: 5px;
+  border-radius: 50% 50% 4px 4px / 90% 90% 4px 4px;
+  background: #3b2416;
+  overflow: hidden;
+}
+.mk-kok .rs-pd-kor {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 40%;
+  border-radius: 50% 50% 0 0;
+  background: radial-gradient(ellipse at 50% 100%, #ffb347 0 30%, #f0703a 55%, rgba(240, 112, 58, 0) 75%);
+  animation: rs-pd-kor 1.6s ease-in-out infinite alternate;
+}
+@keyframes rs-pd-kor {
+  to { opacity: 0.75; }
+}
+.mk-kok .rs-pide:not([data-faz='firin']) .rs-pd-firin-panel { visibility: hidden; }
+
+/* tezgâh evresi: raf, merdane yalnız tezgâhta */
+.mk-kok .rs-pide[data-faz='firin'] .rs-p5-raf,
+.mk-kok .rs-pide[data-faz='firin'] .rs-pd-merdane,
+.mk-kok .rs-pide[data-faz='firin'] .rs-pd-tezgah-kat,
+.mk-kok .rs-pide[data-faz='firin'] .rs-pd-un-kat,
+.mk-kok .rs-pide[data-faz='sunum'] .rs-p5-raf,
+.mk-kok .rs-pide[data-faz='sunum'] .rs-pd-merdane { visibility: hidden; }
+.mk-kok .rs-pd-un-kat,
+.mk-kok .rs-pd-tezgah-kat,
+.mk-kok .rs-pd-elde-kat {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mk-kok .rs-pd-elde-kat { z-index: 20; }
+.mk-kok .rs-pd-un {
+  position: absolute;
+  width: 70px;
+  height: 46px;
+  margin: -23px 0 0 -35px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.85) 0 30%, rgba(255, 255, 255, 0) 70%);
+}
+.mk-kok .rs-pd-tezgahta {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  border: 2px solid var(--kontur);
+  background: #ffe07a;
+}
+.mk-kok .rs-pd-tezgahta[data-m='sucuk'] { background: #b8322c; }
+.mk-kok .rs-pd-tezgahta[data-m='domates'] { background: #e8483a; }
+.mk-kok .rs-pd-tezgahta[data-m='biber'] { background: #3f9b36; }
+
+/* hamur (üstten): elips; kenar kıvrılınca kalın, kabarık kenar */
+.mk-kok .rs-pd-pide {
+  position: absolute;
+  z-index: 2;
+  touch-action: none;
+}
+.mk-kok .rs-pd-pide[hidden] { display: none; }
+.mk-kok .rs-pd-hamur {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  background: radial-gradient(ellipse at 45% 40%, #fff6e2 0 20%, #f6e3b8 70%, #ecd29c);
+  filter: brightness(calc(1 + var(--ince, 0) * 0.04));
+  box-shadow: 0 6px 0 rgba(59, 36, 22, 0.18);
+}
+.mk-kok .rs-pd-pide.rs-kivrik .rs-pd-hamur {
+  box-shadow: inset 0 0 0 7px #ecc983, inset 0 0 0 10px rgba(59, 36, 22, 0.35), 0 6px 0 rgba(59, 36, 22, 0.18);
+}
+/* pişmiş (ödülde): renk pişmeye göre */
+.mk-kok .rs-pd-pismis[data-pisme='az'] .rs-pd-hamur { background: radial-gradient(ellipse at 45% 40%, #fbe7b8 0 30%, #f0cf8a 80%); }
+.mk-kok .rs-pd-pismis[data-pisme='altin'] .rs-pd-hamur { background: radial-gradient(ellipse at 45% 40%, #f8d48a 0 30%, #e6a84e 80%); }
+.mk-kok .rs-pd-pismis[data-pisme='citir'] .rs-pd-hamur { background: radial-gradient(ellipse at 45% 40%, #eebd6a 0 30%, #c98232 80%); }
+.mk-kok .rs-pd-pismis.rs-kivrik[data-pisme='altin'] .rs-pd-hamur,
+.mk-kok .rs-pd-pismis.rs-kivrik[data-pisme='citir'] .rs-pd-hamur {
+  box-shadow: inset 0 0 0 7px #d48f3e, inset 0 0 0 10px rgba(59, 36, 22, 0.4), 0 6px 0 rgba(59, 36, 22, 0.18);
+}
+.mk-kok .rs-pd-ust {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mk-kok .rs-pd-tel {
+  position: absolute;
+  width: 12px;
+  height: 4.5px;
+  margin: -2px 0 0 -6px;
+  border-radius: 3px;
+  background: #ffe07a;
+  box-shadow: 0 0 0 1.2px rgba(59, 36, 22, 0.55);
+}
+.mk-kok .rs-pd-tel:nth-child(3n) { width: 4.5px; height: 11px; margin: -5px 0 0 -2px; }
+.mk-kok .rs-pd-pismis .rs-pd-tel {
+  width: 18px;
+  height: 12px;
+  margin: -6px 0 0 -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff4b0 0 22%, #ffd650 40%, #f2b632);
+  box-shadow: none;
+}
+.mk-kok .rs-pd-sucuk {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 2.5px solid var(--kontur);
+  background: radial-gradient(circle at 35% 40%, #f3d3c6 0 8%, transparent 10%), radial-gradient(circle at 62% 60%, #f3d3c6 0 7%, transparent 9%), #b8322c;
+}
+.mk-kok .rs-pd-sari {
+  position: absolute;
+  width: 46px;
+  height: 40px;
+  margin: -20px 0 0 -23px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #ffc23a 0 30%, #e9a21c 32% 34%, rgba(255, 252, 244, 0.97) 36% 66%, rgba(255, 252, 244, 0) 70%);
+}
+.mk-kok .rs-pd-parca.rs-p2-parca {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+}
+
+/* merdane (üstten): yatay oklava */
+.mk-kok .rs-pd-merdane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  width: 160px;
+  height: 64px;
+  margin: -32px 0 0 -80px;
+  touch-action: none;
+  cursor: grab;
+  transition: transform 0.2s ease-out;
+}
+.mk-kok .rs-pd-merdane.rs-tutuluyor { transition: none; cursor: grabbing; filter: drop-shadow(0 8px 0 rgba(59, 36, 22, 0.2)); }
+.test-modu .rs-pd-merdane { transition: none; }
+.mk-kok .rs-pd-merdane > img { width: 100%; height: 100%; object-fit: contain; }
+.mk-kok .rs-pd-merdane .rs-p5-yt[data-yt='merdane']::before {
+  left: 18%;
+  right: 18%;
+  top: 22%;
+  bottom: 22%;
+  border-radius: 12px;
+  background: linear-gradient(#f0c88e, #dca86f 70%, #c98e4e);
+}
+.mk-kok .rs-pd-merdane .rs-p5-yt[data-yt='merdane']::after {
+  display: block;
+  left: 2%;
+  right: 2%;
+  top: 38%;
+  bottom: 38%;
+  border-radius: 8px;
+  background: #b57a3d;
+  z-index: -1;
+}
+
+/* fırın küreği: tezgâhta yatay (sağdan uzanır), fırında dikey (aşağıdan uzanır). Konum = küreğin ağzı */
+.mk-kok .rs-pd-kurek {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 7;
+  width: 0;
+  height: 0;
+  touch-action: none;
+  cursor: grab;
+}
+.mk-kok .rs-pd-kurek-agiz,
+.mk-kok .rs-pd-kurek-sap {
+  position: absolute;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  background: #e2b778;
+}
+.mk-kok .rs-pd-kurek[data-yon='yatay'] .rs-pd-kurek-agiz {
+  left: -54px;
+  top: -50px;
+  width: 108px;
+  height: 100px;
+  border-radius: 22px 40% 40% 22px;
+}
+.mk-kok .rs-pd-kurek[data-yon='yatay'] .rs-pd-kurek-sap {
+  left: 48px;
+  top: -9px;
+  width: 260px;
+  height: 18px;
+  border-radius: 9px;
+  background: #c98e4e;
+}
+.mk-kok .rs-pd-kurek[data-yon='dikey'] .rs-pd-kurek-agiz {
+  left: -110px;
+  top: -10px;
+  width: 220px;
+  height: 22px;
+  border-radius: 10px;
+}
+.mk-kok .rs-pd-kurek[data-yon='dikey'] .rs-pd-kurek-sap {
+  left: -9px;
+  top: 8px;
+  width: 18px;
+  height: 320px;
+  border-radius: 9px;
+  background: #c98e4e;
+}
+/* dokunma alanı: küreğin ağzının çevresi */
+.mk-kok .rs-pd-kurek::before {
+  content: '';
+  position: absolute;
+  left: -60px;
+  top: -56px;
+  width: 120px;
+  height: 112px;
+}
+.mk-kok .rs-pd-kurek[data-yon='dikey']::before { left: -110px; top: -40px; width: 220px; height: 140px; }
+
+/* önden pide (fırında, kürekte): kenardan görünüş; kabarır, renk değişir */
+.mk-kok .rs-pd-profil {
+  position: absolute;
+  z-index: 5;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+  border-radius: 50% 50% 30% 30% / 70% 70% 30% 30%;
+  background: #f6e3b8;
+  transition: height 0.4s ease-out, top 0.4s ease-out, background-color 0.6s;
+  pointer-events: none;
+}
+.mk-kok .rs-pd-profil[hidden] { display: none; }
+.mk-kok .rs-pd-profil[data-yer='kurek'] { transition: none; }
+.mk-kok .rs-pd-profil[data-pisme='az'] { background: #f0cf8a; }
+.mk-kok .rs-pd-profil[data-pisme='altin'] { background: #e6a84e; }
+.mk-kok .rs-pd-profil[data-pisme='citir'] { background: #c98232; }
+.mk-kok .rs-pd-profil-ust {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: -6px;
+  height: calc(4px + var(--malzeme, 0) * 10px);
+  border-radius: 50% 50% 0 0;
+  background: radial-gradient(circle at 20% 60%, #b8322c 0 12%, transparent 14%), radial-gradient(circle at 55% 50%, #ffd650 0 14%, transparent 16%), radial-gradient(circle at 80% 60%, #e8483a 0 10%, transparent 12%);
+  opacity: calc(var(--malzeme, 0) * 2);
+}
+
+/* ödül: dilimler, peynir ipleri */
+.mk-kok .rs-pd-dilimler {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.mk-kok .rs-pd-dilimler[hidden] { display: none; }
+.mk-kok .rs-pd-dilim {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+}
+.mk-kok .rs-pd-dilim + .rs-pd-dilim { box-shadow: inset 2px 0 0 rgba(59, 36, 22, 0.35); }
+.mk-kok .rs-pd-dilim.rs-tutuluyor { z-index: 2; cursor: grabbing; filter: drop-shadow(0 8px 0 rgba(59, 36, 22, 0.22)); }
+.mk-kok .rs-pd-dilim > .rs-pd-pide { position: absolute; }
+.mk-kok .rs-pd-ip {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.mk-kok .rs-pd-ip svg { overflow: visible; }
+.mk-kok .rs-pd-ip path { fill: none; stroke-linecap: round; }
+.mk-kok .rs-pd-ip-dis { stroke: #b88a1e; }
+.mk-kok .rs-pd-ip-ic { stroke: #ffe07a; }
+
+/* raf: kaşar kâsesi, kenara vurulan yumurta */
+.mk-kok .rs-pd-kenar-yumurta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  touch-action: none;
+}
+/* tepsideki pide (yüzde konumlu) */
+.mk-kok .rs-pd-urun {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.mk-kok .rs-pd-urun-hamur {
+  position: relative;
+  box-sizing: border-box;
+  border: 2.5px solid var(--kontur, #3b2416);
+  border-radius: 50%;
+  background: #e6a84e;
+}
+.mk-kok .rs-pd-urun[data-pisme='cig'] .rs-pd-urun-hamur { background: #f6e3b8; }
+.mk-kok .rs-pd-urun[data-pisme='az'] .rs-pd-urun-hamur { background: #f0cf8a; }
+.mk-kok .rs-pd-urun[data-pisme='citir'] .rs-pd-urun-hamur { background: #c98232; }
+.mk-kok .rs-pd-urun-p {
+  position: absolute;
+  width: 12%;
+  height: 12%;
+  margin: -6% 0 0 -6%;
+  border-radius: 50%;
+  background: #ffd650;
+}
+.mk-kok .rs-pd-urun-p[data-m='sucuk'] { background: #b8322c; }
+.mk-kok .rs-pd-urun-p[data-m='domates'] { background: #e8483a; }
+.mk-kok .rs-pd-urun-p[data-m='biber'] { background: #3f9b36; }
+.mk-kok .rs-pd-urun-p[data-m='yumurta'] { width: 24%; height: 24%; margin: -12% 0 0 -12%; background: radial-gradient(circle, #ffc23a 0 32%, #fffaf0 36%); }
+.mk-kok .rs-pd-simge { width: 100%; height: 100%; object-fit: contain; }
+/* delikli hamur: deliğin (ve pişince kalbin) kenarına da kahve kontur (maske süzgeçten sonra uygulanır: sarmalayıcıda) */
+.mk-kok .rs-pd-hamur-sar {
+  position: absolute;
+  inset: 0;
+}
+.mk-kok .rs-pd-pide.rs-delikli .rs-pd-hamur-sar {
+  filter: drop-shadow(1.6px 0 0 #3b2416) drop-shadow(-1.6px 0 0 #3b2416) drop-shadow(0 1.6px 0 #3b2416) drop-shadow(0 -1.6px 0 #3b2416);
+}

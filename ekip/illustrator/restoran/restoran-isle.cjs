@@ -76,6 +76,12 @@ const SAYFALAR = {
   'disci-lokanta-sayfasi': { tur: 'kisi', kim: 'disci', adlar: MUSTERI_POZ },
   'tuhaf-teyze-lokanta-sayfasi': { tur: 'kisi', kim: 'tuhaf-teyze', adlar: MUSTERI_POZ },
   'kasa-defter': { tur: 'esya', grup: 'ui', max: 1400, adlar: ['kasa', 'kasa-acik', 'defter', 'defter-acik', 'kart-cerceve', 'masa-yuvasi', 'levha-kapali', 'levha-acik', 'adisyon', 'mandal-kirmizi', 'mandal-mavi', 'mandal-sari', 'mandal-yesil'] },
+  // P5 (Kır ve Çırp, Kazan, Rendele, Pide): adlar restoran/src/mini/{kir-cirp,kazan,rendele,pide} aradığı adlar (§11e #37-39, §11f #43).
+  // soyacak-rende P3 (Soy) ile ortak: soyacak ve kabuk kovası onun. Kod yiyecek/ ve alet/ klasörlerinin ikisine de bakar.
+  'istasyon-kazan': { tur: 'esya', grup: 'alet', max: 1600, adlar: ['kazan', 'kazan-su', 'kazan-corba', 'kazan-sutlac', 'kazan-kepce', 'corba-kasesi', 'corba-kasesi-dolu', 'nane-kavanozu', 'mercimek-yigin', 'kabarcik'] },
+  'soyacak-rende': { tur: 'esya', grup: 'alet', max: 1400, adlar: ['soyacak', 'rende', 'kasar-butun', 'kasar-yarim', 'kasar-rende', 'kabuk-kovasi', 'kabuk-kovasi-dolu'] },
+  'yumurta-cirpma': { tur: 'esya', grup: 'alet', max: 1400, adlar: ['kase-yumurta', 'kase-yari', 'kase-puruzsuz', 'un-yigin', 'sut-gol', 'seker-kasik', 'cirpma-teli', 'yumurta-kabuk-parca', 'sut-sisesi', 'un-kavanozu', 'seker-kavanozu'] },
+  'pide-sayfasi': { tur: 'esya', grup: 'yiyecek', max: 1400, adlar: ['hamur-top', 'hamur-yari', 'hamur-kayik', 'hamur-yuvarlak', 'hamur-delik', 'pide-cig', 'pide-kasarli', 'pide-yumurtali', 'sucuk-dilim', 'kasar-serpinti', 'firin-kuregi'] },
   // ---- R-Gün 5
   'istasyon-firin': { tur: 'arka', ad: 'istasyon/firin' },
   'istasyon-firin-dikey': { tur: 'arka', ad: 'istasyon/firin-dikey' },

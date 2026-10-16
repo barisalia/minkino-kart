@@ -46,7 +46,7 @@ interface KazanKayit {
 export const oyun: MiniOyun = {
   ad: 'kazan',
   istasyon: 'ocak',
-  simge: () => resimYa('alet/kazan', 'kazan', 'rs-kz-simge'),
+  simge: () => resimYa('alet/kazan-corba', 'kazan', 'rs-kz-simge'),
   baslat: (b, g) => kazanBaslat(b, g),
 };
 

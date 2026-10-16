@@ -26,7 +26,7 @@ export function istasyonResmi(ad: string): string | null {
 }
 
 /** Gemini kesiti: 'alet/rende', 'yiyecek/kasar-butun' ... ya da null */
-export const resim = (yol: string): string | null => yeni(yol);
+export const resim = (yol: string): string | null => yeni(yol) ?? yeni(yol.replace(/^yiyecek\//, 'alet/')) ?? yeni(yol.replace(/^alet\//, 'yiyecek/'));
 
 /** Resim varsa <img>, yoksa sade yer tutucu (ortak.css: .rs-p5-yt[data-yt=ad]) */
 export function resimYa(yol: string, yt: string, sinif = 'rs-p5-resim'): HTMLElement {
