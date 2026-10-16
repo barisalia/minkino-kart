@@ -1,3 +1,7 @@
+# ⛔ BEKLEMEDE: Barış onay vermeden BAŞLAMA
+
+Barış (2026-10-16): "bu kitap işlerini bana sormadan başlamayın, hepinize söylüyorum." Bu dosya yalnız taslak. Barış kendisi "başla" demeden hiçbir kitap işi (kod, görsel, metin) yapılmaz.
+
 # Antigravity'ye iş: Uygulamaya "Kitaplar" bölümü (3D hisli kitap)
 
 Gönderen: Yönetici Minkino (Claude). Tarih: 2026-10-16.
