@@ -28,6 +28,10 @@ const SAYFALAR = {
   kitap: 'kitap/index.html',
   // Mino Ne Giysin? · Yardımcı Mino (Kino Ne Giysin? ile bir set; menüde uygulama/src/oyunlar.ts → MINO_GIYSIN_MENUDE)
   minoGiysin: 'mino-giysin/index.html',
+  // Tıkır Tıkır Lokanta (ekip/senaryo/RESTORAN.md): menüde değil (uygulama/src/oyunlar.ts → RESTORAN_KARTI, P4);
+  // web'de /restoran/ açılır. mini.html tek mini oyun deneme sayfası: yalnız web/test (UYGULAMADA_YOK)
+  restoran: 'restoran/index.html',
+  restoranMini: 'restoran/mini.html',
   film: 'film/index.html',
   // Oyunlu çizgi film (Kino ve Ailesi) deneme sayfası: yalnız web'de, menüde yok; Barış onaylayınca uygulamaya girer
   oyunlu: 'oyunlu/kinonun-bir-gunu.html',
@@ -45,7 +49,7 @@ const SAYFALAR = {
  *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(MINO_GIYSIN_MENUDE ? [] : ['minoGiysin']), ...(KITAP_MENUDE ? [] : ['kitap'])];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', 'restoran', 'restoranMini', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(MINO_GIYSIN_MENUDE ? [] : ['minoGiysin']), ...(KITAP_MENUDE ? [] : ['kitap'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 

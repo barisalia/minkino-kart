@@ -81,7 +81,7 @@ export function telefonMu(en: number, boy: number): boolean {
  * Dedektif Mino, Çizgi Filmler, Kino Ne Giysin?, Kino'nun Otobüsü). Öbürleri (menü, Kartlar, Çiz Canlansın) iki
  * yönde de güzel durur: cihazı izler.
  */
-export const YATAY_SAYFALAR: readonly string[] = ['pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus'];
+export const YATAY_SAYFALAR: readonly string[] = ['pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus', 'restoran'];
 
 /** Sayfanın telefondaki yönü (adres yolundan: /pasta/index.html → yatay, / ve /kartlar/ → serbest) */
 export function sayfaYonu(yol: string): Yon {

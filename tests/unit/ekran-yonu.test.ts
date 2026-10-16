@@ -22,7 +22,7 @@ describe('telefon mu', () => {
 
 describe('sayfa yönü (telefonda)', () => {
   it('geniş sahneli oyunlar yatay', () => {
-    expect([...YATAY_SAYFALAR].sort()).toEqual(['dedektif', 'film', 'giysin', 'kino-otobus', 'macera', 'pasta', 'pazar']);
+    expect([...YATAY_SAYFALAR].sort()).toEqual(['dedektif', 'film', 'giysin', 'kino-otobus', 'macera', 'pasta', 'pazar', 'restoran']);
     for (const y of ['/pasta/index.html', '/pazar/', '/macera/index.html', '/dedektif/index.html', '/film/', '/giysin/index.html', '/kino-otobus/index.html']) expect(sayfaYonu(y), y).toBe('yatay');
   });
   it('menü, Kartlar, Canlan cihazı izler', () => {

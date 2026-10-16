@@ -1,0 +1,119 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · lokanta ve müşteri sözleri (P1; ekip/senaryo/RESTORAN.md). mino = anlatıcı sesi (Mino; durum anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK, birim testi denetler). kino = Kino'nun kendi sesi. musteri.<ad> = müşterinin sözleri (kendi eleven_v4 sesi gelene kadar anlatıcı kaydı müşterinin tonuyla çalar; balonda da görünür). tarif = Mino'nun yemek adları. [etiket] yalnız seslendirme içindir. Mini oyunların sözleri ayrı dosyada: content/restoran/mini-<oyun>.json (restoranCumleleri hepsini toplar).",
+  "mino": {
+    "acildi": "[excited] Lokanta açıldı!",
+    "musteri_geldi": "[happy] Bir müşteri geldi!",
+    "masa_sec": "[curious] Nereye otursun acaba?",
+    "istek": {
+      "resimli": "[happy] Bak, ne istiyor?",
+      "ipuclu": "[curious] Neyi canı çekti acaba?",
+      "surpriz": "[whispers] Ne sever acaba?"
+    },
+    "ipucu": {
+      "serin": "[softly] Çok sıcaklamış…",
+      "doyurucu": "[giggles] Çok acıkmış!",
+      "domatesli": "[curious] Kırmızı bir şey mi?",
+      "citir": "[curious] Kıtır kıtır bir şey…",
+      "tatli": "[giggles] Tatlı bir şey mi?",
+      "sebzeli": "[happy] Sebzeyi çok sever."
+    },
+    "durum": {
+      "bekliyor": "[curious] Masada biri bekliyor…",
+      "mutfak": "[softly] Mutfak bomboş…",
+      "tepsi_dolu": "[happy] Tepside bir şey var!",
+      "tabak_hazir": "[happy] Tabak hazır!",
+      "tava": "[giggles] Tava cızırdıyor!",
+      "jeton": "[curious] Masada jeton parlıyor!"
+    },
+    "tepki": {
+      "bayildi": "[happy] Bayıldı!",
+      "mmm": "[happy] Beğendi!",
+      "komik": "[laughs] Farklıymış ama güzel!",
+      "bos": "[laughs] Görünmez yemek!",
+      "kesif": "[excited] Ne sevdiğini bulduk!"
+    },
+    "say": {
+      "1": "Bir!",
+      "2": "İki!",
+      "3": "Üç!",
+      "4": "Dört!"
+    },
+    "gun_sonu": "[happy] Bugünlük bu kadar!",
+    "kasa": "[excited] Kasa doldu!",
+    "ortu_sec": "[curious] Hangi örtü olsun?",
+    "ortu_tamam": "[happy] Masalar ne güzel oldu!",
+    "yarin": "[softly] Yarın yine açarız."
+  },
+  "tarif": {
+    "salata": "Çoban salatası!",
+    "menemen": "Menemen!",
+    "ayran": "Ayran!",
+    "patates": "Patates kızartması!",
+    "corba": "Mercimek çorbası!",
+    "pankek": "Pankek!",
+    "pide": "Pide!",
+    "kofte": "Köfte!",
+    "limonata": "Limonata!"
+  },
+  "kino": {
+    "hosgeldin": "[happy] Hoş geldiniz!",
+    "yaziyorum": "[curious] Yazdım bile!",
+    "afiyet": "[happy] Afiyet olsun!",
+    "geliyor": "[excited] Geliyor geliyor!",
+    "toplarim": "[giggles] Ben toplarım!"
+  },
+  "musteri": {
+    "lokum": {
+      "selam": "[giggles] Abiii, acıktım!",
+      "bayildi": "[squeals] Çok güzeeel!",
+      "komik": "[sniffles] Gözlerim yaşardı!",
+      "gule": "[giggles] Bay bay!"
+    },
+    "anne": {
+      "selam": "[happy] Merhaba şefim!",
+      "bayildi": "[happy] Ellerine sağlık!",
+      "komik": "[laughs] Ay, tuzlu!",
+      "gule": "[happy] Görüşürüz!"
+    },
+    "baba": {
+      "selam": "[laughs] Kocamanından!",
+      "bayildi": "[laughs] Kıtır kıtır!",
+      "komik": "[surprised] Bu kadar mı?",
+      "gule": "[happy] Eline sağlık!"
+    },
+    "dede": {
+      "selam": "[chuckles] Eski usul olsun.",
+      "bayildi": "[chuckles] Tıpkı eskisi gibi!",
+      "komik": "[chuckles] Bıyığım bal oldu!",
+      "gule": "[chuckles] Allaha emanet!"
+    },
+    "tombi": {
+      "selam": "[sighs] Ben çok acıktım…",
+      "bayildi": "[happy] Mmm, ballı!",
+      "komik": "[giggles] Tabağım şapka oldu!",
+      "gule": "[happy] Doydum!"
+    },
+    "zipzip": {
+      "selam": "[excited] Ben önce!",
+      "bayildi": "[excited] Havuç var!",
+      "komik": "[gasps] Kulaklarım düğüm!",
+      "gule": "[excited] Hop hop!"
+    },
+    "bulut": {
+      "selam": "[softly] Şef… ne yaparsa.",
+      "bayildi": "[softly] Bembeyaz… çok güzel.",
+      "komik": "[softly] Hıı… farklıymış.",
+      "gule": "[softly] Teşekkürler…"
+    },
+    "bidik": {
+      "selam": "[happy] Meee! Acıktık!",
+      "bayildi": "[happy] Marul var!",
+      "komik": "[hiccups] Hıp! Pardon!",
+      "gule": "[happy] Meee, sağ ol!"
+    },
+    "bidicik": {
+      "selam": "[giggles] Ben de!",
+      "bayildi": "[giggles] Aynısından!"
+    }
+  }
+}
