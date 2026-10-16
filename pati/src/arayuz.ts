@@ -17,12 +17,13 @@ const sakin = () => AZ || TEST_MODU;
 export function ezil(el: Element | null | undefined, guc = 1, ms = 260) {
   if (!el || sakin()) return;
   const a = 0.1 * guc;
+  // scale özelliği: öğenin kendi transform'u (konumu) bozulmaz
   (el as HTMLElement).animate(
     [
-      { transform: 'scale(1, 1)' },
-      { transform: `scale(${1 + a * 0.7}, ${1 - a})`, offset: 0.3 },
-      { transform: `scale(${1 - a * 0.4}, ${1 + a * 0.8})`, offset: 0.65 },
-      { transform: 'scale(1, 1)' },
+      { scale: '1 1' },
+      { scale: `${1 + a * 0.7} ${1 - a}`, offset: 0.3 },
+      { scale: `${1 - a * 0.4} ${1 + a * 0.8}`, offset: 0.65 },
+      { scale: '1 1' },
     ],
     { duration: ms, easing: 'ease-out' },
   );
