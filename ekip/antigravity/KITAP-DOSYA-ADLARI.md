@@ -28,6 +28,7 @@ Her sayfa için **dört çeşit dosya** var. Sayfa resmi ile hareketli karakter 
 
 Kurallar:
 - **Hareket sayfası düzeni:** pozlar soldan sağa, üst sıradan alt sıraya, listedeki sırayla. 5-8 poz = 2 sıra × 4; 2-4 poz = tek sıra. Pozlar **birbirine değmez**, aralarında geniş beyaz boşluk; aynı sıradakiler aynı taban çizgisinde; gölge, zemin çizgisi, numara yok.
+- **Hep görünen parça:** bazı sayfalarda parça (kuyruk, sarkan kulak) karakterin bütün pozlarında ayrı katmandır: o zaman hareket sayfasındaki **pozların hepsi o parça olmadan** çizilir, parça dizisinin 1. karesi hep görünür (aşağıda "hep görünür" yazan diziler: s03 kuzu kulağı, s04 ve s07 kuyruk, s14 kulak).
 - **Kuyruk/kulak dizisi:** karakterin hareket sayfasında o dizinin oynayacağı pozun **"kuyruksuz" (ya da "kulaksız") hâli** de bir poz olarak bulunur (listede yazıyor). Parça o pozun **arkasına** yerleşir; parçanın kökü (gövdeye bağlandığı uç) sade, yuvarlak ve biraz uzun çizilir ki gövdenin arkasına girsin, dikiş görünmesin. Kök her karede karenin aynı yerinde: **kuyrukta karenin altında, kulakta karenin üstünde**.
 - **Kesik kenar kuralı:** karakter masanın, karyolanın arkasında belden yukarı görünüyorsa hareket sayfasında da **belden yukarı** çizilir ve alt kenarı **düz yatay** kesilir (masa/karyola kenarıyla aynı hizada). Masa/karyola zeminde kalır. Karakterin önünde (masanın üstünde, karakterle bakan arasında) eşya olmasın.
 - **Önde duran karakter:** hareketli bir karakterin önünü başka bir karakter kapatıyorsa (s04 Anne'nin bacağı), öndeki de zeminden silinir ve kendi tek pozlu sayfasıyla gelir; biz katmanları sırayla dizeriz.
@@ -112,20 +113,19 @@ Her sayfada: `sNN.png` (A), `sNN-zemin.png` (B, "Silinecek" satırı), hareket s
 - Sahne: in front of Çınar Apartment building in the morning, a big plane tree, pavement stones. Anne in the middle holding Kino's hand; Kino puffing out his chest; Mino hopping ahead with her backpack (her hand is free: she let go to hop); from Kino's backpack zipper a tiny white lamb ear hangs out.
 - Not: senaryoda Mino da Anne'nin elini tutuyor; zıplama animasyonu el ele dururken kopar, bu yüzden Mino bir adım önde, eli serbest çizilir (yönetici kararı).
 - Uğur böceği: çınarın alçak bir yaprağı. · Silinecek (B): Anne+Kino (grup), Mino.
-- `s03-anne-kino.png` (**grup**, tek sıra × 4): 1) el ele yürüyor, Kino gülümsüyor · 2) Kino göğsünü germiş, kuyruğu dimdik, burnu havada · 3) Kino kaldırım taşına takılmış, öne sendeliyor, kollar açık, Anne'nin eli hâlâ tutuyor · 4) toparlanmış, utangaç sırıtış.
+- `s03-anne-kino.png` (**grup**, tek sıra × 4; pozlarda çantadan sarkan kuzu kulağı **yok**, o ayrı dizi): 1) el ele yürüyor, Kino gülümsüyor · 2) Kino göğsünü germiş, kuyruğu dimdik, burnu havada · 3) Kino kaldırım taşına takılmış, öne sendeliyor, kollar açık, Anne'nin eli hâlâ tutuyor · 4) toparlanmış, utangaç sırıtış.
 - `s03-mino.png` (tek sıra × 4): 1) yerde, sevinçli · 2) çömelmiş, hoplamaya hazır · 3) havada, kollar yukarı, kuyruk kıvrık · 4) iniş, dizler bükük.
-- `s03-kuzu-kulak.png` (3 kare, kök üstte): fermuardan sarkan kuzu kulağı: 1) düz sarkık · 2) sağa sallanmış · 3) sola sallanmış.
+- `s03-kuzu-kulak.png` (3 kare, kök üstte, **hep görünür**): fermuardan sarkan kuzu kulağı: 1) düz sarkık · 2) sağa sallanmış · 3) sola sallanmış.
 - Kodda: Mino boştayken ara ara 2-3-4-1 hoplar (zıplama kayması + squash); Kino'ya dokununca 2 (stretch) → 3 (öne kayma) → 4 → 1; kulak, grup her kare değiştiğinde 1-2-3-1 sallanır.
 
 ### s04 · Kocaman okul
 - Sahne: kindergarten entrance hall: colorful coat hooks, children's drawings on the wall (no letters), children running in the background (Tombi among them). Ceren Öğretmen bending down, smiling. Kino hides behind Anne's leg, only one long chestnut ear and his tail stick out. Leave an empty strip along the back wall (Zıpzıp will hop across it).
 - Uğur böceği: duvardaki bir çocuk resminin köşesi. · Silinecek (B): Kino, Anne (Anne ayrı katman, Kino'nun önünde).
 - `s04-anne.png` (1 poz): Anne ayakta, tek parça, sahnedeki gibi.
-- `s04-kino.png` (tek sıra × 4): 1) tamamen saklı: yalnız kulak ve kuyruk Anne'nin bacağının yanında görünecek duruş (bütün gövdeyi çiz; Anne katmanı önünü kapatır) · 2) başını uzatmış, tek gözle bakıyor · 3) göz göze geldi: göz kocaman, kulak dik · 4) poz 1'in kuyruksuz hâli.
-- `s04-kino-kuyruk.png` (4 kare, kök altta): 1) yarı dik · 2) yatay · 3) aşağı sarkık · 4) yerde.
-- `s04-kino-kulak.png` (3 kare, kök üstte): dışarıdaki kulak: 1) sarkık · 2) hafif kalkmış · 3) yana kıpırdamış.
+- `s04-kino.png` (tek sıra × 4; **pozların hepsi kuyruksuz**): 1) tamamen saklı: yalnız kulak Anne'nin bacağının yanında görünecek duruş (bütün gövdeyi çiz; Anne katmanı önünü kapatır) · 2) başını uzatmış, tek gözle bakıyor · 3) göz göze geldi: göz kocaman, kulak dik · 4) poz 1, dışarıdaki kulak bir kez kıpırdamış (hafif kalkık).
+- `s04-kino-kuyruk.png` (4 kare, kök altta, **hep görünür**): 1) yarı dik · 2) yatay · 3) aşağı sarkık · 4) yerde.
 - `s04-zipzip.png` (tek sıra × 4): koşu-zıplama: 1) bir ayak havada · 2) havada uzanmış · 3) iniş · 4) öbür ayak havada.
-- Kodda: sayfa açılınca kuyruk yavaşça 1→4 iner; Kino'ya dokununca 2 → 3 → 1 (saklanır) + kulak 1-3-1; Zıpzıp dokununca soldan sağa kayarak 1-2-3-4 döngüsüyle geçer.
+- Kodda: sayfa açılınca kuyruk yavaşça 1→4 iner; Kino'ya (ya da Anne'ye) dokununca 2 → 3 → 1 (saklanır) → 4 → 1 (kulak kıpırdar); Zıpzıp dokununca soldan sağa kayarak 1-2-3-4 döngüsüyle geçer.
 
 ### s05 · El
 - Sahne: Anne kneels at Kino's eye level and holds one of Kino's hands between her two hands. Kino's ears hang to the floor, his eyes are big. Quiet, warm corner of the entrance hall.
@@ -145,8 +145,8 @@ Her sayfada: `sNN.png` (A), `sNN-zemin.png` (B, "Silinecek" satırı), hareket s
 ### s07 · Kuzu
 - Sahne: Kino sits on the floor holding Kuzu with both hands in front of him, nose to nose. Kuzu's stitched ear droops sideways. Kino's tail slightly lifted off the floor. Coat hooks behind.
 - Uğur böceği: Kino'nun kırmızı ayakkabısının burnu. · Silinecek (B): Kino+Kuzu (grup).
-- `s07-kino-kuzu.png` (**grup**, tek sıra × 4): 1) burun buruna · 2) Kino fısıldıyor (ağız küçük açık, gözler yarım) · 3) Kino bir parmağıyla Kuzu'nun dikişli kulağını kaldırıyor · 4) poz 1'in kuyruksuz hâli.
-- `s07-kino-kuyruk.png` (4 kare, kök altta): 1) yerde · 2) yarı kalkmış · 3) dik, sola sallanmış · 4) dik, sağa sallanmış.
+- `s07-kino-kuzu.png` (**grup**, tek sıra × 3; **pozların hepsi kuyruksuz**): 1) burun buruna · 2) Kino fısıldıyor (ağız küçük açık, gözler yarım) · 3) Kino bir parmağıyla Kuzu'nun dikişli kulağını kaldırıyor.
+- `s07-kino-kuyruk.png` (4 kare, kök altta, **hep görünür**): 1) yerde · 2) yarı kalkmış · 3) dik, sola sallanmış · 4) dik, sağa sallanmış.
 - Kodda: dokununca 2 → 3 → 1; kuyruk sayfa açılınca yavaşça 1-2-3-4-3-4.
 
 ### s08 · Blok köşesi
@@ -205,7 +205,7 @@ Her sayfada: `sNN.png` (A), `sNN-zemin.png` (B, "Silinecek" satırı), hareket s
 - Sahne: evening dinner table under a warm yellow lamp. Kino asleep with his head on the table next to his plate, a spoon in his hand, tail hanging from the chair, one ear hanging. Baba surprised and grinning widely. Lokum pretends to sleep like Kino but one eye is open. Anne across the table. At home Kino wears his green T-shirt (no smock).
 - Uğur böceği: lambanın tepesi. · Silinecek (B): Kino, Baba, Lokum.
 - `s14-kino.png` (tek sıra × 2; kesik kenar: masa hizası): 1) uyuyor, kaşık elde · 2) poz 1'in sarkan kulağı olmadan.
-- `s14-kino-kulak.png` (3 kare, kök üstte): sarkan kulak: 1) düz · 2) hafif sağa · 3) hafif sola.
+- `s14-kino-kulak.png` (3 kare, kök üstte, **hep görünür**; boşta poz 2 + bu dizi): sarkan kulak: 1) düz · 2) hafif sağa · 3) hafif sola.
 - `s14-baba.png` (tek sıra × 3; kesik kenar): 1) şaşkın gülümseme · 2) hırkasını iki eliyle tutup Kino'ya uzanıyor · 3) gülümseyerek doğrulmuş, elleri boş.
 - `s14-hirka.png` (1 poz): Kino'nun omzuna örtülmüş hırka (Baba'nın vişne kazağının yanında duracak, krem ya da hardal hırka), Kino'nun sırtına oturacak biçimde.
 - `s14-lokum.png` (tek sıra × 2; kesik kenar): 1) uyuyor numarası, iki göz kapalı · 2) bir göz açık.
