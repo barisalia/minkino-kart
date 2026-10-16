@@ -314,7 +314,14 @@
   touch-action: none;
   cursor: grab;
 }
-.mk-kok .rs-pd-dilim + .rs-pd-dilim { box-shadow: inset 2px 0 0 rgba(59, 36, 22, 0.35); }
+/* dilim çizgileri yalnız hamurun içinde (kesilmiş pide) */
+.mk-kok .rs-pd-dilimler .rs-pd-hamur::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(20% - 1.5px), rgba(59, 36, 22, 0.45) calc(20% - 1.5px) 20%);
+}
 .mk-kok .rs-pd-dilim.rs-tutuluyor { z-index: 2; cursor: grabbing; filter: drop-shadow(0 8px 0 rgba(59, 36, 22, 0.22)); }
 .mk-kok .rs-pd-dilim > .rs-pd-pide { position: absolute; }
 .mk-kok .rs-pd-ip {
