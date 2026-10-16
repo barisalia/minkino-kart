@@ -76,7 +76,9 @@ async function lekeler(dosya) {
     dolu[i] = Math.min(r, g, b) < 225 || Math.max(r, g, b) - Math.min(r, g, b) > 30 ? 1 : 0;
   }
   // şişir (yakın parçalar, ör. stetoskobun ucu, aynı lekede kalsın)
-  const R = Math.max(2, Math.round(W * 0.012));
+  // az şişir: yakın karolar (kuyruk ucu ile alttaki karonun ayağı) birleşmesin; kopuk küçük parçalar (su damlası,
+  // stetoskop ucu) aşağıda en yakın büyük lekeye katılır
+  const R = Math.max(2, Math.round(W * 0.006));
   const sis = new Uint8Array(n);
   for (let y = 0; y < H; y++)
     for (let x = 0; x < W; x++) {
@@ -111,7 +113,16 @@ async function lekeler(dosya) {
     sonuc.push({ x0: x0 / k, y0: y0 / k, x1: (x1 + 1) / k, y1: (y1 + 1) / k, alan });
   }
   const enBuyuk = Math.max(...sonuc.map((l) => l.alan));
-  return { lekeler: sonuc.filter((l) => l.alan > enBuyuk * 0.04), W: m.width, H: m.height };
+  const buyuk = sonuc.filter((l) => l.alan > enBuyuk * 0.04);
+  for (const l of sonuc) {
+    if (buyuk.includes(l)) continue;
+    const cx = (l.x0 + l.x1) / 2, cy = (l.y0 + l.y1) / 2;
+    const uz = (b) => Math.hypot(Math.max(b.x0 - cx, 0, cx - b.x1), Math.max(b.y0 - cy, 0, cy - b.y1));
+    const en = buyuk.reduce((x, y) => (uz(y) < uz(x) ? y : x));
+    if (uz(en) > m.width * 0.06) continue;
+    en.x0 = Math.min(en.x0, l.x0); en.y0 = Math.min(en.y0, l.y0); en.x1 = Math.max(en.x1, l.x1); en.y1 = Math.max(en.y1, l.y1);
+  }
+  return { lekeler: buyuk, W: m.width, H: m.height };
 }
 
 /** Lekeleri sıra × sütun düzenine koyar; olmazsa eşit ızgara */
@@ -160,28 +171,41 @@ function esyaKes(girdi, esit, ekAyar = {}) {
 async function cicekKatmani() {
   const yol = path.join(CIKTI, 'bas-bahce.webp');
   const { data, info } = await s(yol).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const W = info.width, H = info.height;
-  let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  const W = info.width, H = info.height, n = W * H;
+  // pembe taç yaprakları: kırmızı yüksek, yeşil düşük, mavi yeşilden büyük (hasırın sarısı ve kurdelenin turuncusu değil)
+  const pembe = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
+    pembe[i] = data[i * 4 + 3] > 200 && r > 205 && r - g > 70 && b >= g - 25 && b > 90 ? 1 : 0;
+  }
+  // en büyük pembe bölge (çiçek)
+  const et = new Int32Array(n).fill(-1), q = new Int32Array(n);
+  let enIyi = -1, enAlan = 0;
+  for (let i = 0, no = 0; i < n; i++) {
+    if (!pembe[i] || et[i] >= 0) continue;
+    let bs = 0, e = 0; q[e++] = i; et[i] = no;
+    while (bs < e) { const p = q[bs++], x = p % W; for (const d of [-1, 1, -W, W]) { const r = p + d; if (r < 0 || r >= n || et[r] >= 0 || !pembe[r]) continue; if ((d === -1 && x === 0) || (d === 1 && x === W - 1)) continue; et[r] = no; q[e++] = r; } }
+    if (e > enAlan) { enAlan = e; enIyi = no; }
+    no++;
+  }
+  if (enIyi < 0) return console.warn('UYARI bas-bahce: pembe çiçek bulunamadı; bas-bahce-cicek yazılmadı');
+  let x0 = W, y0 = H, x1 = 0, y1 = 0;
+  for (let i = 0; i < n; i++) if (et[i] === enIyi) { const x = i % W, y = (i / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  // çiçeğin dairesi: merkezden en uzak pembe noktanın biraz ötesi (kontur ve sarı göbek dahil)
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, yc = (Math.max(x1 - x0, y1 - y0) / 2) * 1.28 + 3;
+  const out = Buffer.alloc(n * 4);
   for (let y = 0; y < H; y++)
     for (let x = 0; x < W; x++) {
-      const i = (y * W + x) * 4;
-      const r = data[i], g = data[i + 1], b = data[i + 2];
-      if (data[i + 3] > 200 && r > 200 && b > 140 && r - g > 50) {
-        x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
-      }
-    }
-  if (x1 < 0) return console.warn('UYARI bas-bahce: pembe çiçek bulunamadı; bas-bahce-cicek yazılmadı');
-  const pay = Math.round(Math.max(x1 - x0, y1 - y0) * 0.18);
-  x0 = Math.max(0, x0 - pay); y0 = Math.max(0, y0 - pay); x1 = Math.min(W - 1, x1 + pay); y1 = Math.min(H - 1, y1 + pay);
-  const out = Buffer.alloc(W * H * 4);
-  for (let y = y0; y <= y1; y++)
-    for (let x = x0; x <= x1; x++) {
+      const dd = Math.hypot(x - cx, y - cy);
+      if (dd > yc) continue;
       const i = (y * W + x) * 4;
       data.copy(out, i, i, i + 4);
+      // kenarda yumuşak geçiş
+      if (dd > yc - 2) out[i + 3] = Math.round(out[i + 3] * (yc - dd) / 2);
     }
   const buf = await s(out, { raw: { width: W, height: H, channels: 4 } }).webp({ quality: 94, alphaQuality: 100, effort: 5 }).toBuffer();
   await guvenliYaz(path.join(CIKTI, 'bas-bahce-cicek.webp'), buf);
-  console.log(`bas-bahce-cicek: ${x1 - x0 + 1}x${y1 - y0 + 1} (tuval ${W}x${H})`);
+  console.log(`bas-bahce-cicek: çap ${Math.round(yc * 2)} px, merkez ${Math.round(cx)},${Math.round(cy)} (tuval ${W}x${H})`);
 }
 
 async function ikonlar() {
@@ -218,7 +242,12 @@ async function kostum() {
   const klasor = path.join(HAM, 'kostum');
   await karolariYaz(sayfa, KOSTUM_ADLAR, 3, 4, klasor);
   // her parça kendi sınırına kırpılır: Mino'daki yeri ve genişliği YER tablosundan (şapka alında, üst fuların altında, alet patide)
-  esyaKes(klasor, null);
+  esyaKes(klasor, null, {
+    'alet-itfaiye': { delik: true, delikMin: 150 },
+    'alet-bahce': { delik: true, delikMin: 150 },
+    'ust-asci': { minOran: 0.06 },
+    'bas-asci': { minOran: 0.06 },
+  });
   await cicekKatmani();
   await ikonlar();
   await yerleriYaz();

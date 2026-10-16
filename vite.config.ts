@@ -23,6 +23,8 @@ const SAYFALAR = {
   // Pati Dükkânı (İlk Gün dilimi): menüde değil; uygulama derlemesine PATI_MENUDE true olunca girer (uygulama/src/oyunlar.ts)
   pati: 'pati/index.html',
   giysin: 'giysin/index.html',
+  // Mino Ne Giysin? · Yardımcı Mino (Kino Ne Giysin? ile bir set; menüde uygulama/src/oyunlar.ts → MINO_GIYSIN_MENUDE)
+  minoGiysin: 'mino-giysin/index.html',
   film: 'film/index.html',
   // Oyunlu çizgi film (Kino ve Ailesi) deneme sayfası: yalnız web'de, menüde yok; Barış onaylayınca uygulamaya girer
   oyunlu: 'oyunlu/kinonun-bir-gunu.html',
