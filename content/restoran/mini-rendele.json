@@ -1,0 +1,22 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · RENDELE mini oyunu sözleri (P5; ekip/senaryo/RESTORAN.md §8 M4). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "kasar": "Kaşar!",
+      "havuc": "Havuç!",
+      "elma": "Elma!",
+      "domates": "Domates?"
+    },
+    "fis": "[laughs] Fışşş! Domates oldum!",
+    "bitti": "[happy] Hepsi rende oldu!",
+    "kar": "[excited] Kar gibi!",
+    "bos": "[giggles] Tıkır tıkır, rende boş!",
+    "az": "[happy] Azıcık, tam!",
+    "cok": "[excited] Kocaman bir dağ!",
+    "ipucu": {
+      "bos": "[curious] Rende bomboş…",
+      "surt": "[curious] Hâlâ kocaman duruyor…",
+      "bitti": "[happy] Kar gibi yığıldı!"
+    }
+  }
+}

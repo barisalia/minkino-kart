@@ -1,0 +1,292 @@
+/* P5 mini oyunlarının ortak sınıfları (.rs-p5-*; yalnız .mk-kok altında). Yer tutucular SADE: düz renk + kahve
+   kontur; Gemini kesitleri gelince <img> çizilir (bitmiş çizim değildir, mağazaya çıkmaz). */
+.mk-kok .rs-p5-oyun {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overflow: hidden;
+  --kontur: #3b2416;
+}
+.mk-kok .rs-p5-raf {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  z-index: 4;
+}
+.mk-kok .rs-p5-raf-oge {
+  position: relative;
+  width: var(--s, 72px);
+  height: var(--s, 72px);
+  min-width: 64px;
+  min-height: 64px;
+  padding: 6px;
+  border: 3px solid var(--kontur);
+  border-radius: 22px;
+  background: rgba(255, 248, 232, 0.94);
+  box-shadow: 0 3px 0 rgba(59, 36, 22, 0.35);
+  touch-action: none;
+  cursor: grab;
+  overflow: hidden;
+}
+.mk-kok .rs-p5-raf-oge.rs-p5-tutuldu { opacity: 0.4; }
+.mk-kok .rs-p5-raf-oge.rs-kullanildi { opacity: 0.35; }
+.mk-kok .rs-p5-raf-oge.rs-kullanildi > * { visibility: hidden; }
+.mk-kok .rs-p5-resim {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.mk-kok .rs-p5-elde {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 0 rgba(59, 36, 22, 0.22));
+}
+.mk-kok .rs-p5-elde > * { width: 100%; height: 100%; }
+
+/* ---------------------------------------------------------------- sade yer tutucular */
+.mk-kok .rs-p5-yt {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mk-kok .rs-p5-yt::before,
+.mk-kok .rs-p5-yt::after {
+  content: '';
+  position: absolute;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur);
+}
+.mk-kok .rs-p5-yt::after { display: none; }
+/* yumurta */
+.mk-kok .rs-p5-yt[data-yt='yumurta']::before {
+  inset: 6% 18% 4% 18%;
+  border-radius: 50% 50% 48% 48% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 36% 30%, #fff 0 10%, transparent 11%), #f6e2c0;
+}
+.mk-kok .rs-catlak .rs-p5-yt[data-yt='yumurta']::after,
+.mk-kok .rs-catlak.rs-p5-yt[data-yt='yumurta']::after {
+  display: block;
+  left: 20%;
+  right: 20%;
+  top: 44%;
+  height: 12%;
+  border: none;
+  background: linear-gradient(135deg, transparent 0 40%, var(--kontur) 40% 60%, transparent 60%) 0 0 / 22% 100% repeat-x;
+}
+/* sepet (yumurta sepeti): üç yumurta */
+.mk-kok .rs-p5-yt[data-yt='sepet']::before {
+  left: 4%;
+  right: 4%;
+  top: 40%;
+  bottom: 8%;
+  border-radius: 10px 10px 40% 40%;
+  background: repeating-linear-gradient(90deg, #c98e4e 0 14%, #b57a3d 14% 18%);
+}
+.mk-kok .rs-p5-yt[data-yt='sepet']::after {
+  display: block;
+  left: 14%;
+  right: 14%;
+  top: 8%;
+  height: 46%;
+  border: none;
+  background: radial-gradient(ellipse 22% 42% at 22% 60%, #f6e2c0 0 92%, var(--kontur) 94% 100%, transparent 101%), radial-gradient(ellipse 22% 42% at 50% 46%, #fbecd4 0 92%, var(--kontur) 94% 100%, transparent 101%), radial-gradient(ellipse 22% 42% at 78% 60%, #f1d8b0 0 92%, var(--kontur) 94% 100%, transparent 101%);
+}
+/* süt şişesi */
+.mk-kok .rs-p5-yt[data-yt='sut']::before {
+  left: 28%;
+  right: 28%;
+  top: 22%;
+  bottom: 4%;
+  border-radius: 12px 12px 10px 10px;
+  background: linear-gradient(#f3fbff 0 18%, #ffffff 18%);
+}
+.mk-kok .rs-p5-yt[data-yt='sut']::after {
+  display: block;
+  left: 38%;
+  right: 38%;
+  top: 4%;
+  height: 20%;
+  border-radius: 6px 6px 2px 2px;
+  background: #4f9fd8;
+}
+/* kavanozlar: un, şeker, mercimek, nane */
+.mk-kok .rs-p5-yt[data-yt='un']::before,
+.mk-kok .rs-p5-yt[data-yt='seker']::before,
+.mk-kok .rs-p5-yt[data-yt='mercimek']::before,
+.mk-kok .rs-p5-yt[data-yt='nane']::before {
+  left: 14%;
+  right: 14%;
+  top: 22%;
+  bottom: 4%;
+  border-radius: 14px;
+  background: rgba(225, 243, 246, 0.85);
+}
+.mk-kok .rs-p5-yt[data-yt='un']::after,
+.mk-kok .rs-p5-yt[data-yt='seker']::after,
+.mk-kok .rs-p5-yt[data-yt='mercimek']::after,
+.mk-kok .rs-p5-yt[data-yt='nane']::after {
+  display: block;
+  left: 18%;
+  right: 18%;
+  top: 44%;
+  bottom: 8%;
+  border: none;
+  border-radius: 8px 8px 10px 10px;
+  background: #fffaf0;
+}
+.mk-kok .rs-p5-yt[data-yt='seker']::after { background: radial-gradient(circle, #ffffff 0 22%, transparent 24%) 0 0 / 8px 8px, #f4f1ea; }
+.mk-kok .rs-p5-yt[data-yt='mercimek']::after { background: radial-gradient(circle, #e8642c 0 38%, transparent 40%) 0 0 / 7px 7px, #f39457; }
+.mk-kok .rs-p5-yt[data-yt='nane']::after { background: radial-gradient(circle, #3d8c3a 0 30%, transparent 32%) 0 0 / 7px 7px, #8cc46f; }
+/* tuz ve pul biber (Tava'nınkiyle aynı dil) */
+.mk-kok .rs-p5-yt[data-yt='tuz']::before,
+.mk-kok .rs-p5-yt[data-yt='pulbiber']::before {
+  left: 26%;
+  right: 26%;
+  top: 22%;
+  bottom: 6%;
+  border-radius: 10px;
+  background: #f8f8f8;
+}
+.mk-kok .rs-p5-yt[data-yt='pulbiber']::before { background: radial-gradient(circle at 30% 60%, #c8321e 0 8%, transparent 9%), radial-gradient(circle at 62% 74%, #c8321e 0 7%, transparent 8%), #f6e7da; }
+.mk-kok .rs-p5-yt[data-yt='tuz']::after,
+.mk-kok .rs-p5-yt[data-yt='pulbiber']::after {
+  display: block;
+  left: 28%;
+  right: 28%;
+  top: 6%;
+  height: 22%;
+  border-radius: 10px 10px 2px 2px;
+  background: radial-gradient(circle, var(--kontur) 0 8%, transparent 9%) 0 0 / 33% 50%, #cfd6dd;
+}
+.mk-kok .rs-p5-yt[data-yt='pulbiber']::after { background: radial-gradient(circle, var(--kontur) 0 8%, transparent 9%) 0 0 / 33% 50%, #d9473a; }
+/* yarım limon (üstten) */
+.mk-kok .rs-p5-yt[data-yt='limon']::before {
+  inset: 10%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#fbea8a 0 26deg, #fff8d2 26deg 30deg), #fbea8a;
+  box-shadow: inset 0 0 0 5px #f2cf2a;
+}
+/* kaşar kalıbı */
+.mk-kok .rs-p5-yt[data-yt='kasar']::before {
+  inset: 16% 12% 14% 12%;
+  border-radius: 10px;
+  background: radial-gradient(circle at 30% 40%, #f2c84a 0 7%, transparent 8%), radial-gradient(circle at 66% 62%, #f2c84a 0 6%, transparent 7%), #ffe07a;
+}
+/* un serpme (serpiştirme kabı) */
+.mk-kok .rs-p5-yt[data-yt='serpme']::before {
+  left: 24%;
+  right: 24%;
+  top: 26%;
+  bottom: 6%;
+  border-radius: 10px;
+  background: #fffaf0;
+}
+.mk-kok .rs-p5-yt[data-yt='serpme']::after {
+  display: block;
+  left: 24%;
+  right: 24%;
+  top: 8%;
+  height: 22%;
+  border-radius: 50% 50% 4px 4px;
+  background: radial-gradient(circle, var(--kontur) 0 9%, transparent 10%) 0 0 / 25% 50%, #d7dde3;
+}
+/* kâse (üstten; içi --ic) */
+.mk-kok .rs-p5-yt[data-yt='kase']::before {
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ic, #f4e4c4) 0 62%, #ffffff 64% 80%, #9fd3cf 82%);
+}
+/* sucuk kâsesi */
+.mk-kok .rs-p5-yt[data-yt='sucuk']::before {
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 40%, #b8322c 0 12%, transparent 13%), radial-gradient(circle at 62% 36%, #b8322c 0 12%, transparent 13%), radial-gradient(circle at 50% 64%, #b8322c 0 12%, transparent 13%), radial-gradient(circle, #f4e4c4 0 62%, #ffffff 64% 80%, #9fd3cf 82%);
+}
+
+/* ---------------------------------------------------------------- Mino'nun yüzüne konanlar */
+.mk-kok .rs-p5-mino-yuz {
+  position: absolute;
+  z-index: 47;
+  pointer-events: none;
+}
+.mk-kok .rs-p5-mino-yuz i {
+  position: absolute;
+  width: 22%;
+  height: 26%;
+  margin: -13% 0 0 -11%;
+  border-radius: 50%;
+}
+.mk-kok .rs-p5-mino-yuz[data-tur='un'] i {
+  width: 110%;
+  height: 100%;
+  margin: -50% 0 0 -55%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0 45%, rgba(255, 255, 255, 0.7) 60%, rgba(255, 255, 255, 0) 72%);
+}
+.mk-kok .rs-p5-mino-yuz[data-tur='kopuk'] i {
+  background: radial-gradient(circle at 35% 35%, #fff 0 30%, #fff5d8 60%);
+  border: 2px solid rgba(59, 36, 22, 0.5);
+}
+.mk-kok .rs-p5-mino-yuz[data-tur='domates'] i {
+  width: 14%;
+  height: 16%;
+  margin: -8% 0 0 -7%;
+  background: #e2402f;
+  border: 2px solid rgba(59, 36, 22, 0.55);
+}
+
+/* ortak kâse görseli (tepside, masada): kutusunu doldurur */
+.mk-kok .rs-p5-urun-kase {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--kontur, #3b2416);
+  box-sizing: border-box;
+  background: radial-gradient(circle, var(--ic, #f4e4c4) 0 60%, #ffffff 62% 82%, #9fd3cf 84%);
+  overflow: hidden;
+}
+/* un çuvalı ve şeker kavanozu birbirinden ayrı dursun */
+.mk-kok .rs-p5-yt[data-yt='un']::before {
+  left: 12%;
+  right: 12%;
+  top: 18%;
+  bottom: 4%;
+  border-radius: 34% 34% 22% 22% / 26% 26% 18% 18%;
+  background: radial-gradient(ellipse 40% 26% at 50% 22%, #ffffff 0 90%, transparent 94%), #ecd3a4;
+}
+.mk-kok .rs-p5-yt[data-yt='un']::after {
+  left: 30%;
+  right: 30%;
+  top: 14%;
+  bottom: auto;
+  height: 10%;
+  border-radius: 4px;
+  background: #b0402f;
+  border: 2px solid var(--kontur);
+}
+.mk-kok .rs-p5-yt[data-yt='seker']::after {
+  background: linear-gradient(90deg, transparent 0 46%, rgba(59, 36, 22, 0.35) 46% 54%, transparent 54%) 0 0 / 34% 34%, linear-gradient(transparent 0 46%, rgba(59, 36, 22, 0.35) 46% 54%, transparent 54%) 0 0 / 34% 34%, #ffffff;
+}
+.mk-kok .rs-p5-yt[data-yt='seker']::before { background: rgba(255, 228, 236, 0.9); }
+.mk-kok .rs-p5-mino-yuz[data-tur='kizar'] i {
+  width: 30%;
+  height: 22%;
+  margin: -6% 0 0 -15%;
+  background: radial-gradient(ellipse, rgba(240, 70, 60, 0.75) 0 50%, rgba(240, 70, 60, 0) 72%);
+}

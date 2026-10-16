@@ -1,0 +1,32 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · KAZAN mini oyunu sözleri (P5; ekip/senaryo/RESTORAN.md §8 M7). mino = anlatıcı sesi (Mino). Tadımda Mino durumu DOLAYLI anlatır (ipucu), emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). Hiçbir şey yanmaz. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "mercimek": "Mercimek!",
+      "tuz": "Tuz!",
+      "pulbiber": "Pul biber!",
+      "nane": "Nane!",
+      "limon": "Limon!"
+    },
+    "tat": {
+      "su": "[giggles] Su gibi!",
+      "cig": "[curious] Daha pişmemiş…",
+      "tuzlu": "[gasps] Tuzlu! Su, su!",
+      "aci": "[gasps] Acı acı acı!",
+      "eksi": "[giggles] Ekşi ekşi!",
+      "tatsiz": "[curious] Biraz tatsız…",
+      "mmm": "[happy] Mmm! Nefis!"
+    },
+    "bos": "[giggles] Kepçe bomboş!",
+    "tasti": "[giggles] Taştı! Şlurp!",
+    "hazir": "[happy] Kıvamı tuttu!",
+    "fokur": "[excited] Fokur fokur!",
+    "ipucu": {
+      "bos": "[curious] Kazanda yalnız su var…",
+      "karistir": "[curious] Hepsi ayrı ayrı duruyor…",
+      "pisiyor": "[softly] Çorba fokurduyor…",
+      "kase": "[curious] Kâse bomboş…",
+      "bitti": "[happy] Mis gibi koktu!"
+    }
+  }
+}

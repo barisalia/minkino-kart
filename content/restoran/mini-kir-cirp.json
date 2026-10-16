@@ -1,0 +1,30 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · KIR VE ÇIRP mini oyunu sözleri (P5; ekip/senaryo/RESTORAN.md §8 M5). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "yumurta": "Yumurta!",
+      "sut": "Süt!",
+      "un": "Un!",
+      "seker": "Şeker!"
+    },
+    "say": {
+      "1": "Bir!",
+      "2": "İki!",
+      "3": "Üç!",
+      "4": "Dört!"
+    },
+    "kaciyor": "[giggles] Kaçıyor!",
+    "yakaladin": "[laughs] Yakaladık!",
+    "hapsu": "[sneezes] Hapşuu!",
+    "kopuk": "[giggles] Mmm, köpük!",
+    "puruzsuz": "[happy] Pürüzsüz oldu!",
+    "ipucu": {
+      "bos": "[curious] Kâse bomboş…",
+      "catlak": "[curious] Yumurta çatladı…",
+      "kabuk": "[curious] Kâsede kabuk var…",
+      "cirp": "[curious] Sarısı bütün duruyor…",
+      "topak": "[curious] Topak topak oldu…",
+      "bitti": "[happy] Kıvamı tam oldu!"
+    }
+  }
+}

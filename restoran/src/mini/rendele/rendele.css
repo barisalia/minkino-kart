@@ -1,0 +1,153 @@
+/* RENDELE: yalnız .rs-rendele altında. Yer tutucular SADE (düz renk + kahve kontur); Gemini 'soyacak-rende' sayfası
+   (§11e #38) kesilince rende, kaşar kalıbı ve rende yığını resimleri gelir. */
+/* çerçevenin yer tutucu tahtası (tezgâh) burada da tahta: rende tahtanın üstünde */
+.mk-kok .rs-rd-rende {
+  position: absolute;
+  z-index: 1;
+  touch-action: none;
+  cursor: grab;
+}
+.mk-kok .rs-rd-rende > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.mk-kok .rs-rd-rende .rs-p5-yt[data-yt='rende']::before {
+  left: 0;
+  right: 0;
+  top: 16%;
+  bottom: 0;
+  border-radius: 14px;
+  background: radial-gradient(ellipse 34% 40% at 50% 50%, #5d666e 0 40%, transparent 46%) 0 0 / 20% 9%, linear-gradient(90deg, #b9c1c8, #dfe5ea 50%, #b9c1c8);
+  box-shadow: 0 8px 0 rgba(59, 36, 22, 0.22);
+}
+.mk-kok .rs-rd-rende .rs-p5-yt[data-yt='rende']::after {
+  display: block;
+  left: 24%;
+  right: 24%;
+  top: 0;
+  height: 20%;
+  border-radius: 14px 14px 0 0;
+  border-bottom: 0;
+  background: #e0503a;
+}
+.mk-kok .rs-rd-leke-kat,
+.mk-kok .rs-rd-yiginlar,
+.mk-kok .rs-rd-malzeme-kat,
+.mk-kok .rs-rd-elde-kat {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mk-kok .rs-rd-leke-kat { z-index: 0; }
+.mk-kok .rs-rd-yiginlar { z-index: 2; }
+.mk-kok .rs-rd-malzeme-kat { z-index: 3; }
+.mk-kok .rs-rd-elde-kat { z-index: 20; }
+.mk-kok .rs-rd-malzeme {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 5px 0 rgba(59, 36, 22, 0.25));
+}
+.mk-kok .rs-rd-malzeme.rs-tutuluyor { cursor: grabbing; }
+.mk-kok .rs-rd-m-ic {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.mk-kok .rs-rd-m-ic > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.mk-kok .rs-rd-m-resim { pointer-events: none; }
+/* kaşar kalıbı (yer tutucu): rafta da, rende üstünde de */
+.mk-kok .rs-rendele .rs-p5-yt[data-yt='kasar']::before { inset: 4%; }
+.mk-kok .rs-rd-malzeme .rs-p5-yt[data-yt='kasar']::before { inset: 0; border-radius: 12px; }
+
+/* raf: gizli domates rafın köşesinden yarısıyla bakar */
+.mk-kok .rs-rd-raf-ic {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mk-kok .rs-rd-raf-ic > * { width: 100%; height: 100%; object-fit: contain; display: block; }
+.mk-kok .rs-rd-gizli .rs-rd-raf-ic { transform: translate(22%, 36%); }
+.mk-kok .rs-rd-gizli { background: rgba(240, 226, 200, 0.94); }
+
+/* yığın: taban noktası; teller (kaşar, havuç, elma) ve domates püresi */
+.mk-kok .rs-rd-yigin {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.mk-kok .rs-rd-tel,
+.mk-kok .rs-rd-pure {
+  position: absolute;
+  left: -7px;
+  top: -3px;
+  width: 14px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--r1);
+  box-shadow: 0 0 0 1.2px rgba(59, 36, 22, 0.55);
+}
+.mk-kok .rs-rd-tel[data-yon='d'] {
+  left: -2.5px;
+  top: -6px;
+  width: 5px;
+  height: 12px;
+}
+.mk-kok .rs-rd-tel[data-m='elma'] { background: linear-gradient(90deg, var(--r1) 0 70%, var(--r2) 70%); }
+.mk-kok .rs-rd-pure {
+  left: -9px;
+  top: -6px;
+  width: 18px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ff8a78 0 18%, var(--r1) 22%);
+}
+/* tepsideki kâse */
+.mk-kok .rs-rd-urun .rs-rd-tel {
+  left: auto;
+  top: auto;
+  width: 12%;
+  height: 4.5%;
+  margin: -2.25% 0 0 -6%;
+}
+
+/* 5-6 özel istek kartı: küçük ya da büyük yığın resmi */
+.mk-kok .rs-rd-istek {
+  position: absolute;
+  z-index: 4;
+  width: 92px;
+  height: 70px;
+  border: 3px solid var(--kontur);
+  border-radius: 16px;
+  background: #fffaf0;
+  box-shadow: 0 3px 0 rgba(59, 36, 22, 0.3);
+  pointer-events: none;
+}
+.mk-kok .rs-rd-istek[hidden] { display: none; }
+.mk-kok .rs-rd-istek.rs-tuttu { box-shadow: 0 0 0 4px #9bd77a, 0 3px 0 rgba(59, 36, 22, 0.3); }
+.mk-kok .rs-rd-istek-yigin {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  width: 26px;
+  height: 14px;
+  margin-left: -13px;
+  border-radius: 50% 50% 8% 8% / 100% 100% 8% 8%;
+  background: #ffe07a;
+  border: 2.5px solid var(--kontur);
+}
+.mk-kok .rs-rd-istek[data-istek='cok'] .rs-rd-istek-yigin {
+  width: 64px;
+  height: 40px;
+  margin-left: -32px;
+}
+.mk-kok .rs-rd-simge { width: 100%; height: 100%; object-fit: contain; }
