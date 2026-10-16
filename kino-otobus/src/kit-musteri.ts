@@ -42,6 +42,18 @@ export function kitOlcu(ad: string): { kutu: [number, number]; tepe: number; tab
   return { kutu: k.boyut, tepe: k.tepe, taban: k.zemin, bel };
 }
 
+/** İki hop (ezilme-esneme): anahtar kare oranları artan sırada */
+const ikiHop = (y1: number, y2: number): Keyframe[] => [
+  { transform: 'none', offset: 0 },
+  { transform: 'scale(1.04, 0.92)', offset: 0.08 },
+  { transform: `translateY(${-y1}%) scale(0.97, 1.05)`, offset: 0.22 },
+  { transform: 'scale(1.03, 0.95)', offset: 0.4 },
+  { transform: 'none', offset: 0.5 },
+  { transform: 'scale(1.03, 0.94)', offset: 0.58 },
+  { transform: `translateY(${-y2}%) scale(0.98, 1.04)`, offset: 0.72 },
+  { transform: 'scale(1.02, 0.96)', offset: 0.9 },
+  { transform: 'none', offset: 1 },
+];
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, AZ_HAREKET ? Math.min(ms, 200) : sure(ms)));
 const KONUSMA_AGIZ = ['agiz-orta', 'agiz-az', 'agiz-genis', 'agiz-o', 'agiz-az', 'agiz-e'];
 
@@ -164,17 +176,20 @@ export class KitKisi {
       { transform: 'none' },
     ];
     let k: Keyframe[];
-    if (ad === 'sevin' || ad === 'dans') k = [...hop(7).slice(0, 4), ...hop(5).slice(1)];
+    if (ad === 'sevin' || ad === 'dans') k = ikiHop(7, 5);
     else if (ad === 'ye') k = [{ transform: 'none' }, { transform: 'scale(1.02, 0.97)' }, { transform: 'none' }, { transform: 'scale(1.02, 0.97)' }, { transform: 'none' }];
     else if (ad === 'bak') k = [{ transform: 'none' }, { transform: 'translateY(-2%) scale(0.98, 1.03)', offset: 0.4 }, { transform: 'none' }];
     else if (ad === 'yuru') k = [{ transform: 'none' }, { transform: 'translateY(-3%)' }, { transform: 'none' }, { transform: 'translateY(-3%)' }, { transform: 'none' }];
     else k = hop(3);
-    return g
-      .animate(k, { duration: Math.max(200, ms), easing: 'ease-in-out' })
-      .finished.then(
+    // hareket hiçbir koşulda akışı durdurmaz (canlandırma kurulamasa da süre kadar beklenir)
+    try {
+      return g.animate(k, { duration: Math.max(200, ms), easing: 'ease-in-out' }).finished.then(
         () => undefined,
         () => undefined,
       );
+    } catch {
+      return bekle(ms);
+    }
   }
   mutlu(ms: number) {
     this.ifade('mutlu', ms);

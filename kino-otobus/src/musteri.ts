@@ -27,6 +27,18 @@ const YUZLER = import.meta.glob<string>('../../assets/hayvanlar/{tavsan,ayi,orde
 /** meyveli ipucu: meyve sepeti (assets/meyveler) */
 const MEYVE = import.meta.glob<string>('../../assets/meyveler/{cilek,limon,portakal}.webp', { eager: true, query: '?url', import: 'default' });
 
+/** İki hop (ezilme-esneme): anahtar kare oranları artan sırada */
+const ikiHop = (y1: number, y2: number): Keyframe[] => [
+  { transform: 'none', offset: 0 },
+  { transform: 'scale(1.04, 0.92)', offset: 0.08 },
+  { transform: `translateY(${-y1}%) scale(0.97, 1.05)`, offset: 0.22 },
+  { transform: 'scale(1.03, 0.95)', offset: 0.4 },
+  { transform: 'none', offset: 0.5 },
+  { transform: 'scale(1.03, 0.94)', offset: 0.58 },
+  { transform: `translateY(${-y2}%) scale(0.98, 1.04)`, offset: 0.72 },
+  { transform: 'scale(1.02, 0.96)', offset: 0.9 },
+  { transform: 'none', offset: 1 },
+];
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, AZ_HAREKET ? Math.min(ms, 200) : sure(ms)));
 
 /** Müşterinin boy tablosundaki adı (Kino'nun annesi Ege'nin annesiyle karışmasın) */
@@ -250,7 +262,7 @@ class Kisi {
     ];
     const k: Keyframe[] =
       ad === 'sevin' || ad === 'dans'
-        ? [...hop(8).slice(0, 4), ...hop(6).slice(1)]
+        ? ikiHop(8, 6)
         : ad === 'ye'
           ? [{ transform: 'none' }, { transform: 'scale(1.03, 0.96)' }, { transform: 'none' }, { transform: 'scale(1.03, 0.96)' }, { transform: 'none' }]
           : ad === 'yuru'
@@ -258,12 +270,15 @@ class Kisi {
             : ad === 'bak'
               ? [{ transform: 'none' }, { transform: 'translateY(-2%) scale(0.98, 1.03)', offset: 0.4 }, { transform: 'none' }]
               : hop(3);
-    return this.resim.govde
-      .animate(k, { duration: Math.max(200, ms), easing: 'ease-in-out', composite: 'add' })
-      .finished.then(
+    // hareket hiçbir koşulda akışı durdurmaz (canlandırma kurulamasa da süre kadar beklenir)
+    try {
+      return this.resim.govde.animate(k, { duration: Math.max(200, ms), easing: 'ease-in-out', composite: 'add' }).finished.then(
         () => undefined,
         () => undefined,
       );
+    } catch {
+      return bekle(ms);
+    }
   }
   oynat(ad: 'var' | 'sevin' | 'dans' | 'ye' | 'bak' | 'yuru', ms: number): Promise<void> {
     if (this.karakter) return this.karakter.oynat(ad, ms);

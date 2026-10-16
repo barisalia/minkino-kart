@@ -3782,7 +3782,7 @@
 }
 .ko-kok .ko-kart {
   position: relative;
-  width: min(150px, 26vw, 40vh);
+  width: min(128px, 17vw, 36vh);
   aspect-ratio: 150 / 190;
   padding: 8px;
   border-radius: 18px;
@@ -3845,7 +3845,7 @@
   object-fit: contain;
 }
 .ko-kok .ko-kart-kule {
-  --t: min(46px, 9vh);
+  --t: min(52px, 10vh);
   position: absolute;
   left: 50%;
   bottom: 6%;
@@ -3880,7 +3880,7 @@
   height: 88px;
 }
 .ko-kok .ko-odul .ko-aksam-ic {
-  grid-template-columns: 0.72fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 @media (orientation: portrait) {
   .ko-kok .ko-odul .ko-aksam-ic {
@@ -3935,4 +3935,12 @@
   width: auto;
   max-width: 100%;
   aspect-ratio: 325 / 393;
+}
+.ko-kok .ko-kart-otobus .ko-kart-ob {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: 50%;
+  width: 120%;
+  transform: translateY(-50%);
 }

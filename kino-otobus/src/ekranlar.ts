@@ -160,7 +160,13 @@ function kartResmi(k: OdulKarti): HTMLElement {
   } else if (k.kategori === 'sus') {
     r.append(kuleCiz({ kap: 'kulah', toplar: ['vanilya'], sos: null, susler: [k.id as Sus, k.id as Sus] }, { sinif: 'ko-kart-kule' }));
   } else {
-    r.innerHTML = susResmi(OTOBUS_SUSLERI.find((s) => s.id === k.id)!);
+    const s = OTOBUS_SUSLERI.find((x) => x.id === k.id)!;
+    if (s.tur === 'sapka' || s.tur === 'korna') r.innerHTML = susResmi(s);
+    else {
+      // otobüs süsü: küçük otobüsün üstünde (boya: otobüs o renkte)
+      r.classList.add('ko-kart-otobus');
+      r.append(otobusEl({ alinan: [k.id!], boya: s.tur === 'boya' ? s.deger! : 'buz', sinif: 'ko-kart-ob' }));
+    }
   }
   return r;
 }
