@@ -217,7 +217,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     k.el.append(b);
     k.konus(true);
     try {
-      await konus(metin, kinoMu ? { karakter: 'kino', ton: 0.92, cihazSesi: false } : { ton: m?.ton ?? 1, cihazSesi: false });
+      // müşteri kendi Seri 2 sesiyle (eleven_v4 kaydı varsa), yoksa anlatıcı kaydı müşterinin tonuyla
+      await konus(metin, kinoMu ? { karakter: 'kino', ton: 0.92, cihazSesi: false } : { karakter: m?.id ?? null, ton: m?.ton ?? 1, cihazSesi: false });
       await bekle(250);
     } finally {
       k.konus(false);

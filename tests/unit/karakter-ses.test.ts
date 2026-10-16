@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { karakterCumleleri, normal, tumCumleler } from '../../src/audio/cumleler';
-import { kayitSec, manifestiAyikla, sesImzasi, uretimIsleri, type SesAyari, type SesManifest } from '../../src/audio/karakter-ses';
+import fs from 'node:fs';
+import {
+  karakterUretimleri,
+  kayitSec,
+  kimlikOzeti,
+  manifestiAyikla,
+  manifestKimligi,
+  sesImzasi,
+  uretimIsleri,
+  type Seri2Sesleri,
+  type SesAyari,
+  type SesManifest,
+} from '../../src/audio/karakter-ses';
+import film2 from '../../content/film2/sesler.json';
+import otobus from '../../content/kino-otobus.json';
+import lokanta from '../../content/restoran/lokanta.json';
 import seslendirme from '../../content/seslendirme.json';
 import banyo from '../../content/macera-banyo.json';
 
@@ -133,5 +148,60 @@ describe('oyuncu: kayıt seçimi', () => {
     expect(kayitSec(m, metin)).toEqual({ kayit: 'anlatici.mp3', hiz: 1, karakter: null });
     expect(kayitSec(m, 'Olmayan cümle', { karakter: 'kino' })).toBeNull();
     expect(kayitSec(null, metin, { karakter: 'kino' })).toBeNull();
+  });
+});
+
+describe('Seri 2 karakter sesleri (eleven_v4)', () => {
+  const seri2: Seri2Sesleri = { model: 'eleven_v4', dil: 'tr', ayarlar: { stability: 0.4 }, sesler: { anne: 'anne-gizli-kimlik', babaanne: 'babaanne-gizli', tombi: 'tombi-gizli', kino: 'seri2-kino' } };
+  const ayar: SesAyari = { ...temel, karakter_sesleri: { kino: KINO }, seri2: { karakterler: ['anne', 'babaanne', 'tombi', 'kino', 'sesi-olmayan'] } };
+
+  it('cümle listesi konuşanı belirtir: restoran müşterileri, Babaanne ve Otobüs\'ün 36 müşteri cümlesi', () => {
+    expect(kc.anne).toEqual(expect.arrayContaining(Object.values(otobus.musteri.anne).map(normal)));
+    expect(kc.anne).toEqual(expect.arrayContaining(Object.values(lokanta.musteri.anne).map(normal)));
+    const otobusToplam = Object.values(otobus.musteri).flatMap((s) => Object.values(s));
+    expect(otobusToplam.length).toBe(36);
+    for (const [ad, s] of Object.entries(otobus.musteri)) for (const c of Object.values(s)) expect(kc[ad]).toContain(normal(c));
+    expect(kc.babaanne?.length ?? 0).toBeGreaterThan(0);
+  });
+
+  it('listedeki karakterler kendi modeli ve ayarıyla, kendi klasörüne üretilir; Kino eski sesiyle kalır', () => {
+    const ku = karakterUretimleri(ayar, seri2);
+    expect(Object.keys(ku).sort()).toEqual(['anne', 'babaanne', 'kino', 'tombi']);
+    expect(ku.kino.sesId).toBe(KINO);
+    expect(ku.kino.model).toBe('eleven_v3');
+    expect(ku.anne).toMatchObject({ model: 'eleven_v4', dil: 'tr', gizli: true });
+    const isler = uretimIsleri({ ayar, sesId: ANLATICI, manifest: tamManifest(), cumleler, karakterCumleleri: kc, karakterler: ku, dosyaAdi, dosyaVar: () => true });
+    const anne = isler.filter((x) => x.karakter === 'anne');
+    expect(anne.map((x) => x.metin).sort()).toEqual([...kc.anne].sort());
+    for (const x of anne) {
+      expect(x.model).toBe('eleven_v4');
+      expect(x.ayarlar).toEqual({ stability: 0.4 });
+      expect(x.dosya.startsWith('anne/')).toBe(true);
+      // ses kimliği imzaya (manifest'e) yazılmaz
+      expect(x.imza).not.toContain('anne-gizli-kimlik');
+    }
+    // anlatıcı işleri değişmedi (tam manifest: iş yok)
+    expect(isler.filter((x) => !x.karakter)).toEqual([]);
+    expect(manifestKimligi(ku.anne)).not.toContain('anne-gizli');
+    expect(kimlikOzeti('a')).not.toBe(kimlikOzeti('b'));
+  });
+
+  it('seri2 yoksa ya da karakterin kimliği yoksa eski davranış (anlatıcı yedeği)', () => {
+    expect(Object.keys(karakterUretimleri(ayar, null))).toEqual(['kino']);
+    expect(Object.keys(karakterUretimleri({ ...temel, karakter_sesleri: { kino: KINO } }, seri2))).toEqual(['kino']);
+  });
+
+  it('gerçek ayar: seslendirme.json seri2 listesi film2/sesler.json\'da kimliği olanlar; koda kimlik yazılmamış', () => {
+    const ku = karakterUretimleri(seslendirme as SesAyari, film2 as Seri2Sesleri);
+    for (const k of ['anne', 'baba', 'lokum', 'babaanne', 'dede', 'bidik', 'tombi', 'zipzip', 'bulut', 'nehir']) expect(ku[k]?.model).toBe('eleven_v4');
+    expect(ku.kino.model).toBe(seslendirme.model);
+    const kod = ['src/audio/karakter-ses.ts', 'src/audio/cumleler.ts', 'scripts/seslendir.ts', 'restoran/src/model.ts', 'kino-otobus/src/gun.ts'].map((d) => fs.readFileSync(d, 'utf8')).join('\n');
+    for (const id of Object.values(film2.sesler)) expect(kod.includes(id)).toBe(false);
+  });
+
+  it('oyuncu: müşterinin kendi kaydı varsa normal hızda, yoksa anlatıcı kaydı tonla', () => {
+    const m: SesManifest = { ses_id: ANLATICI, dosyalar: { 'Selam!': 'a.mp3' }, karakterler: { anne: { ses_id: 'x', dosyalar: { 'Selam!': 'anne/s.mp3' } } } };
+    expect(kayitSec(m, 'Selam!', { karakter: 'anne', ton: 1.04 })).toEqual({ kayit: 'anne/s.mp3', hiz: 1, karakter: 'anne' });
+    expect(kayitSec(m, 'Selam!', { karakter: 'baba', ton: 0.86 })).toEqual({ kayit: 'a.mp3', hiz: 0.86, karakter: null });
   });
 });

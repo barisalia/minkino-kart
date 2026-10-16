@@ -14,8 +14,8 @@ import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
-import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri } from '../../kino-otobus/src/model';
-import { restoranCumleleri, restoranKinoCumleleri } from '../../restoran/src/model';
+import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri, kinoOtobusMusteriCumleleri } from '../../kino-otobus/src/model';
+import { restoranCumleleri, restoranKarakterCumleleri, restoranKinoCumleleri } from '../../restoran/src/model';
 import giysinJson from '../../content/giysin.json';
 import patiJson from '../../content/pati.json';
 import uykuJson from '../../content/uyku.json';
@@ -270,5 +270,16 @@ export function karakterCumleleri(): Record<string, string[]> {
     if (!f.seslendir) continue;
     for (const s of f.sahneler) if ('olaylar' in s) for (const o of s.olaylar) if (o.yap === 'soyle' && o.kim === 'kino' && typeof o.metin === 'string') ekle(o.metin);
   }
-  return { kino: [...kino] };
+  const sonuc: Record<string, string[]> = { kino: [...kino] };
+  // Seri 2 sesleriyle konuşanlar (content/seslendirme.json → seri2; eleven_v4): konuşanı listenin anahtarı belirtir
+  const kisiEkle = (kim: string, l: string[]) => {
+    const s = new Set(sonuc[kim] ?? []);
+    for (const t of l) if (t && normal(t)) s.add(normal(t));
+    sonuc[kim] = [...s];
+  };
+  // Tıkır Tıkır Lokanta: müşteriler (musteri.<ad>) ve Babaanne
+  for (const [kim, l] of Object.entries(restoranKarakterCumleleri())) kisiEkle(kim, l);
+  // Kino'nun Otobüsü: 36 müşteri cümlesi (ses gelene dek balonda yazı)
+  for (const [kim, l] of Object.entries(kinoOtobusMusteriCumleleri())) kisiEkle(kim, l);
+  return sonuc;
 }

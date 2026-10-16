@@ -8,12 +8,25 @@
  * Karakter sesleri: content/seslendirme.json → karakter_sesleri (ör. "kino": "<ses kimliği>"). Doluysa o karakterin
  * cümleleri (src/audio/cumleler.ts → karakterCumleleri) ayrıca public/ses/<karakter>/ altına kendi sesiyle üretilir;
  * karakter sesi değişince yalnız o karakterin kayıtları yeniden üretilir, anlatıcı kayıtlarına dokunulmaz.
+ * Seri 2 sesleri: content/seslendirme.json → seri2.karakterler (Anne, Baba, Lokum, Babaanne, müşteriler…). Kimlik,
+ * model (eleven_v4) ve ayarlar content/film2/sesler.json'dan okunur; konuşanı cümle listesi belirtir
+ * (karakterCumleleri). Ses kimliği ve anahtar loga yazılmaz (hata metninde de gizlenir).
  */
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { tumCumleler, karakterCumleleri, normal } from '../src/audio/cumleler';
-import { etkinKarakterSesleri, karakterKlasoru, manifestiAyikla, uretimIsleri, type KarakterSesleri, type SesManifest, type UretimIsi } from '../src/audio/karakter-ses';
+import {
+  karakterKlasoru,
+  karakterUretimleri,
+  manifestiAyikla,
+  manifestKimligi,
+  uretimIsleri,
+  type KarakterSesleri,
+  type Seri2Sesleri,
+  type SesManifest,
+  type UretimIsi,
+} from '../src/audio/karakter-ses';
 
 interface Uretim {
   model: string;
@@ -35,6 +48,7 @@ interface Ayar extends Uretim {
   baglam_metni: string;
   karsilastirma?: { kelimeler: string[]; secenekler: (Uretim & { kod: string; ad: string })[] };
   karakter_sesleri?: KarakterSesleri;
+  seri2?: { kaynak?: string; karakterler?: string[] };
 }
 
 const KOK = process.cwd();
@@ -74,7 +88,8 @@ async function uret(sesId: string, metin: string, hedef: string, u: Uretim = aya
       await new Promise((c) => setTimeout(c, 1500 * deneme * deneme));
       continue;
     }
-    throw new Error(`ElevenLabs ${r.status}: ${govde.slice(0, 300)}`);
+    // hata metninde ses kimliği görünmesin (CI logu)
+    throw new Error(`ElevenLabs ${r.status}: ${govde.split(sesId).join('<ses>').slice(0, 300)}`);
   }
   throw new Error('ElevenLabs: çok fazla yeniden deneme');
 }
@@ -137,11 +152,14 @@ const manifest: SesManifest = fs.existsSync(manifestYolu) ? JSON.parse(fs.readFi
 manifest.imzalar ??= {};
 manifest.ses_id = sesId;
 manifest.model = ayar.model;
-const karakterSesleri = etkinKarakterSesleri(ayar);
-for (const [k, kSes] of Object.entries(karakterSesleri)) {
+// Seri 2 sesleri (eleven_v4): kimlik ve model content/film2/sesler.json'da; manifest'e kimliğin özeti yazılır
+const seri2Yolu = path.join(KOK, ayar.seri2?.kaynak ?? 'content/film2/sesler.json');
+const seri2: Seri2Sesleri | null = ayar.seri2?.karakterler?.length && fs.existsSync(seri2Yolu) ? JSON.parse(fs.readFileSync(seri2Yolu, 'utf8')) : null;
+const karakterSesleri = karakterUretimleri(ayar, seri2);
+for (const [k, ku] of Object.entries(karakterSesleri)) {
   manifest.karakterler ??= {};
-  manifest.karakterler[k] ??= { ses_id: kSes, dosyalar: {}, imzalar: {} };
-  manifest.karakterler[k].ses_id = kSes;
+  manifest.karakterler[k] ??= { ses_id: manifestKimligi(ku), dosyalar: {}, imzalar: {} };
+  manifest.karakterler[k].ses_id = manifestKimligi(ku);
   manifest.karakterler[k].imzalar ??= {};
 }
 /** Bir işin kaydedileceği yer: anlatıcı ya da karakterin kayıtları */
@@ -178,12 +196,17 @@ const eksik = uretimIsleri({
   manifest,
   cumleler,
   karakterCumleleri: kCumleler,
+  karakterler: karakterSesleri,
   dosyaAdi,
   dosyaVar: (f) => fs.existsSync(path.join(klasor, f)),
 }).slice(0, SINIR);
 const karakter = eksik.reduce((t, c) => t + c.metin.length, 0);
 const kEksik = eksik.filter((x) => x.karakter).length;
 console.log(`${cumleler.length} cümle, ${eksik.length} eksik (${karakter} karakter)${kEksik ? `; bunların ${kEksik} tanesi karakter sesi` : ''}`);
+// kimin sesiyle kaç cümle (yalnız karakter adı; kimlik yazılmaz)
+const kimde = new Map<string, number>();
+for (const x of eksik) if (x.karakter) kimde.set(x.karakter, (kimde.get(x.karakter) ?? 0) + 1);
+if (kimde.size) console.log('Karakter sesleri:', [...kimde].map(([k, n]) => `${k} ${n}`).join(', '));
 
 let tamam = 0;
 const kaydet = () => fs.writeFileSync(manifestYolu, JSON.stringify(manifest, null, 0));
@@ -205,7 +228,9 @@ try {
     const hedef = path.join(klasor, f);
     if (harcanan + c.length > BUTCE) throw new Error(`Karakter bütçesi (${BUTCE}) doldu`);
     harcanan += c.length;
-    await uret(is.sesId, c, hedef);
+    // karakterin kendi modeli (Seri 2: eleven_v4, kendi ayarları), yoksa anlatıcınınki
+    const u: Uretim = is.model ? { model: is.model, dil: is.dil, baglam: false, ayarlar: is.ayarlar ?? ayar.ayarlar } : ayar;
+    await uret(is.sesId, c, hedef, u);
     // Aceleye gelmiş (fazla hızlı) kayıtları en çok 2 kez yeniden üret, en yavaşını tut
     const harf = [...c].filter((x) => /\p{L}/u.test(x)).length;
     if (harf >= 6) {
@@ -215,7 +240,7 @@ try {
         await bekle(ayar.bekleme_ms ?? 400);
         if (harcanan + c.length > BUTCE) break;
         harcanan += c.length;
-        await uret(is.sesId, c, hedef);
+        await uret(is.sesId, c, hedef, u);
         const h = hiz(c, hedef);
         if (h < en.h) en = { h, veri: fs.readFileSync(hedef) };
       }
@@ -238,9 +263,9 @@ try {
 }
 
 // Artık kullanılmayan kayıtları temizle (sesi boşaltılan karakterin kayıtları da: boş = anlatıcı sesi, eski davranış)
-const kullanilan = manifestiAyikla(manifest, ayar, cumleler, kCumleler);
+const kullanilan = manifestiAyikla(manifest, ayar, cumleler, kCumleler, karakterSesleri);
 for (const f of fs.readdirSync(klasor)) if (f.endsWith('.mp3') && !kullanilan.has(f)) fs.unlinkSync(path.join(klasor, f));
-for (const k of Object.keys(ayar.karakter_sesleri ?? {})) {
+for (const k of new Set([...Object.keys(ayar.karakter_sesleri ?? {}), ...Object.keys(karakterSesleri)])) {
   const alt = karakterKlasoru(k);
   if (!fs.existsSync(path.join(klasor, alt))) continue;
   for (const f of fs.readdirSync(path.join(klasor, alt))) if (f.endsWith('.mp3') && !kullanilan.has(alt + f)) fs.unlinkSync(path.join(klasor, alt, f));

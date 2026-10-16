@@ -118,6 +118,11 @@ export function kayitVar(metin: string, secenek: KayitSecenegi = {}): boolean {
   return !!dosya(metin, secenek);
 }
 
+/** Karakterin bu cümle için KENDİ kaydı var mı (anlatıcı yedeği sayılmaz; ör. Otobüs müşterileri) */
+export function karakterKaydiVar(metin: string, karakter: string): boolean {
+  return dosya(metin, { karakter })?.karakter === karakter;
+}
+
 function tampon(metin: string, secenek: KayitSecenegi = {}): Promise<AudioBuffer | null> {
   const f = dosya(metin, secenek)?.kayit;
   const c = baglam();

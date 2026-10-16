@@ -4,6 +4,11 @@
   "karakter_sesleri": {
     "kino": "eoOuf4kLj2cCEuSIJD4C"
   },
+  "seri2": {
+    "aciklama": "Seri 2 sesleriyle konuşan karakterler: kimlik, model (eleven_v4) ve ayarlar 'kaynak' dosyasından okunur (buraya kimlik yazılmaz). Konuşanı cümle listesi belirtir (src/audio/cumleler.ts → karakterCumleleri; ör. content/restoran/*.json → musteri.<ad>, babaanne; content/kino-otobus.json → musteri.<ad>). Kayıtlar public/ses/<karakter>/ altına; oyun konus(metin, { karakter }) ile kendi kaydını çalar, yoksa anlatıcı kaydı tonla.",
+    "kaynak": "content/film2/sesler.json",
+    "karakterler": ["anne", "baba", "lokum", "babaanne", "dede", "nehir", "bidik", "bidicik", "bidik-baba", "tombi", "bulut", "zipzip", "disci", "tuhaf-teyze", "palyaco-tavsan", "kelime-yutan-tavsan"]
+  },
   "model": "eleven_v3",
   "bicim": "mp3_44100_64",
   "ayarlar": {

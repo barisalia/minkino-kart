@@ -362,9 +362,27 @@ export function restoranCumleleri(): string[] {
   const c: string[] = [...sesliTopla(L as unknown as Record<string, unknown>, ['kino'])];
   for (const [yol, j] of Object.entries(DIGER_SOZLER)) {
     if (/lokanta\.json$/.test(yol)) continue;
-    c.push(...sesliTopla(j, ['kino']));
+    // babaanne ve müşteriler yalnız kendi sesiyle (yeni dosyalarda anlatıcı yedeği yok; lokanta.json'dakiler duruyor)
+    c.push(...sesliTopla(j, ['kino', 'babaanne', 'musteri']));
   }
   return [...new Set(c.map((t) => t.replace(/\s+/g, ' ').trim()).filter(Boolean))];
+}
+/**
+ * Kendi Seri 2 sesiyle (eleven_v4) konuşanların cümleleri: her content/restoran/*.json'daki "musteri.<ad>" (anahtar =
+ * konuşan) ve "babaanne" bölümü. Oyun bunları konus(metin, { karakter: ad }) ile çalar.
+ */
+export function restoranKarakterCumleleri(): Record<string, string[]> {
+  const r: Record<string, Set<string>> = {};
+  const ekle = (kim: string, v: unknown) => {
+    const s = (r[kim] ??= new Set());
+    for (const t of topla(v)) if (t.trim()) s.add(t.replace(/\s+/g, ' ').trim());
+  };
+  for (const j of Object.values(DIGER_SOZLER)) {
+    const o = j as { musteri?: Record<string, unknown>; babaanne?: unknown };
+    for (const [ad, v] of Object.entries(o.musteri ?? {})) ekle(ad, v);
+    if (o.babaanne) ekle('babaanne', o.babaanne);
+  }
+  return Object.fromEntries(Object.entries(r).map(([k, s]) => [k, [...s]]));
 }
 /** Kino'nun kendi sesiyle seslendirilecek cümleler (lokanta + mini oyunların "kino" bölümleri) */
 export function restoranKinoCumleleri(): string[] {

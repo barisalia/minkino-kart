@@ -17,6 +17,7 @@
 import K from '../../content/kino-otobus.json';
 import { efekt, KINO_SESI, konus } from '../../src/audio/ses';
 import type { Soylenecek } from '../../src/audio/konusma';
+import { karakterKaydiVar } from '../../src/audio/kayit';
 import { arkaPlanDinle } from '../../src/kabuk/yon';
 import { birlesim, yuzKutulari } from '../../src/karakter/yuz';
 import { Mino } from '../../src/mino/mino';
@@ -197,10 +198,11 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   const minolar = new Set<Mino>();
   const kino = dondurmaciKino(kayit.acilan.gorunum.includes('kino-sapka'));
   /**
-   * Sırayla söyler: 'mino' anlatıcı (Mino'nun sesi), 'kino' Kino, 'musteri' müşterinin hazır kaydı (dosya yolu).
-   * onemli değilse ve sırada söz varsa söylenmez.
+   * Sırayla söyler: 'mino' anlatıcı (Mino'nun sesi), 'kino' Kino, 'musteri' müşterinin hazır kaydı (dosya yolu) ya da
+   * karakter verilirse müşterinin kendi Seri 2 kaydı (eleven_v4; public/ses/<karakter>/). onemli değilse ve sırada söz
+   * varsa söylenmez.
    */
-  const soyle = (soz: Soylenecek, kim: 'mino' | 'kino' | 'musteri' = 'mino', onemli = true): Promise<void> => {
+  const soyle = (soz: Soylenecek, kim: 'mino' | 'kino' | 'musteri' = 'mino', onemli = true, karakter?: string): Promise<void> => {
     if (!onemli && bekleyenSoz > 0) return Promise.resolve();
     bekleyenSoz++;
     const is = sira.then(async () => {
@@ -208,7 +210,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       for (const m of minolar) m.agizSus = kim !== 'mino';
       if (kim === 'kino') kino.konus(true);
       try {
-        await konus(soz, kim === 'kino' ? KINO_SESI : {});
+        await konus(soz, kim === 'kino' ? KINO_SESI : karakter ? { karakter, cihazSesi: false } : {});
       } finally {
         for (const m of minolar) m.agizSus = false;
         if (kim === 'kino') kino.konus(false);
@@ -218,6 +220,16 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       bekleyenSoz--;
     });
     return is;
+  };
+  /**
+   * Müşterinin kendi sesi: Seri 2 kaydı (content/kino-otobus.json → musteri.<ad>, CI'da eleven_v4) varsa o; yoksa Lokum'un
+   * hazır kaydı; ikisi de yoksa çalmaz (balonda yazı kalır, robot sese düşmez).
+   */
+  const musteriSoyle = (ad: string, ne: 'istek' | 'bayildi' | 'komik', onemli = true) => {
+    const c = musteriSozu(ad, ne);
+    if (c && karakterKaydiVar(c, ad)) return void soyle(c, 'musteri', onemli, ad);
+    const hazir = ne === 'komik' ? null : lokumSesi(ad, ne);
+    if (hazir) void soyle(hazir, 'musteri', onemli);
   };
   /** aynı söz en çok bu aralıkla bir (ms) */
   const sonSoz = new Map<string, number>();
@@ -1441,8 +1453,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (m.tanim?.ses) {
       const c = musteriSozu(m.ad, 'istek');
       if (c) m.soz(etiketsiz(c), true);
-      const kayitli = lokumSesi(m.ad, 'istek');
-      if (kayitli) void soyle(kayitli, 'musteri');
+      musteriSoyle(m.ad, 'istek');
     }
     let soz: string[];
     if (sip.tur === 'resimli') {
@@ -1505,6 +1516,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
   async function zipzipOnce(s: Slot, m: Musteri): Promise<boolean> {
     m.el.classList.add('ko-zipzip-once');
     m.soz(etiketsiz(musteriSozu('zipzip', 'istek') ?? 'Ben önce!'));
+    musteriSoyle('zipzip', 'istek', false);
     m.ezEsnet();
     void m.anaKisi.oynat('sevin', 600);
     surpriz('zipzip');
@@ -1847,6 +1859,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
     if (kapandi) return;
     if (kemir) {
       m.soz(etiketsiz(musteriSozu('bidik', 'bayildi') ?? 'Hıp! Pardon!'));
+      musteriSoyle('bidik', 'bayildi', false);
       surpriz('bidik');
     }
     // tepki (V3 §2.3): bayıldı / mmm / komik; sevinç efektleri başın üstünde açılır, yüz hep açıkta
@@ -1861,8 +1874,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       efekt_.buyukKalp(...m.basUstu(efekt_, 40 * birim()));
       salla(m.el, 'ko-cok-mutlu');
       m.bayildi(2200);
-      const lk = lokumSesi(m.ad, 'bayildi');
-      if (lk) void soyle(lk, 'musteri', false);
+      if (m.tanim?.ses) musteriSoyle(m.ad, 'bayildi', false);
       if (!kemir) m.soz(etiketsiz(sozu('bayildi') ?? (m.ad === 'ordek' && verilen.some((d) => d.toplar.includes('limon')) ? K.balon.ordek : balonSoz(K.balon.bayildi))));
       void soyle(K.mino.tepki.bayildi, 'mino', false);
     } else if (tepki === 'mmm') {
@@ -1880,6 +1892,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       if (sonuc && !sonuc.ayni) m.karsilastir(sonuc.farklar);
       efekt_.yazi(hx, hy, '!');
       if (!kemir) m.soz(etiketsiz(sozu('komik') ?? balonSoz(K.balon.komik)));
+      if (!kemir && m.tanim?.ses) musteriSoyle(m.ad, 'komik', false);
       await m.komik(sevmedi ? m.tanim?.gag : undefined);
       if (kapandi) return;
       efekt_.kalpler(hx, hy, 2);
@@ -1954,6 +1967,7 @@ export function gunEkrani(app: Uygulama, p: { gun?: number } = {}): Ekran {
       ses.kitir();
       m.bayildi(1200);
       m.soz(etiketsiz(musteriSozu('tombi', 'bayildi') ?? 'Mmm!'));
+      musteriSoyle('tombi', 'bayildi', false);
       await bekle(700);
     } else {
       m.saskin(600);

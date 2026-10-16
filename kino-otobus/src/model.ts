@@ -895,7 +895,7 @@ export function kinoOtobusCumleleri(): string[] {
 /** Kino'nun kendi sesiyle seslendirilecek cümleler */
 export const kinoOtobusKinoCumleleri = (): string[] => topla(K.kino);
 /**
- * Müşterilerin kendi sesiyle seslendirilecek cümleleri (36; eleven_v4, content/film2/sesler.json). ONAY BEKLİYOR
- * (Barış): üretilmez; ses gelene dek balonda yazı + Mino'nun durum cümlesi.
+ * Müşterilerin kendi sesiyle seslendirilecek cümleleri (36): src/audio/cumleler.ts → karakterCumleleri bunları konuşanın
+ * adıyla verir, CI Seri 2 sesiyle (eleven_v4, content/seslendirme.json → seri2) üretir; kayıt gelene dek balonda yazı.
  */
 export const kinoOtobusMusteriCumleleri = (): Record<string, string[]> => Object.fromEntries(Object.entries(K.musteri).map(([ad, s]) => [ad, Object.values(s as Record<string, string>)]));
