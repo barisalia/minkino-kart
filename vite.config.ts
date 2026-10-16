@@ -2,7 +2,7 @@ import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
-import { KINO_OTOBUS_MENUDE, MINO_GIYSIN_MENUDE, PATI_MENUDE } from './uygulama/src/oyunlar';
+import { KINO_OTOBUS_MENUDE, KITAP_MENUDE, MINO_GIYSIN_MENUDE, PATI_MENUDE } from './uygulama/src/oyunlar';
 
 // Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
 // Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/), Dedektif Mino (/dedektif/) …; /uygulama/ eski menü adresi, köke yönlendirir;
@@ -23,6 +23,9 @@ const SAYFALAR = {
   // Pati Dükkânı (İlk Gün dilimi): menüde değil; uygulama derlemesine PATI_MENUDE true olunca girer (uygulama/src/oyunlar.ts)
   pati: 'pati/index.html',
   giysin: 'giysin/index.html',
+  // Kitaplar (ilk kitap "Kino Okula Başlıyor"): menüde ve uygulama derlemesinde uygulama/src/oyunlar.ts → KITAP_MENUDE
+  // bayrağına bağlı; web'de /kitap/ her zaman açılır
+  kitap: 'kitap/index.html',
   // Mino Ne Giysin? · Yardımcı Mino (Kino Ne Giysin? ile bir set; menüde uygulama/src/oyunlar.ts → MINO_GIYSIN_MENUDE)
   minoGiysin: 'mino-giysin/index.html',
   film: 'film/index.html',
@@ -42,7 +45,7 @@ const SAYFALAR = {
  *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(MINO_GIYSIN_MENUDE ? [] : ['minoGiysin'])];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(MINO_GIYSIN_MENUDE ? [] : ['minoGiysin']), ...(KITAP_MENUDE ? [] : ['kitap'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 

@@ -1,0 +1,211 @@
+{
+  "aciklama": "Kitap 1: Kino Okula Başlıyor. Metin ekip/senaryo/KITAP-MINO-KINO.md §2.5'ten birebir (değiştirilmez). kim: konuşan (anlatici, kino, anne, baba, lokum, mino, ogretmen, bulut, tombi, cocuklar, ses). not: yalnız seslendirme / resim için yönerge, sayfada basılmaz. tarif: resim gelene kadar yer tutucuda görünen kısa tarif. Seslendirme listesine (src/audio/cumleler.ts) EKLENMEDİ: seslendirme ayrı onay işi; şimdilik cihaz sesi.",
+  "id": "okul",
+  "baslik": "Kino Okula Başlıyor",
+  "kapak": {
+    "renk": "#F6C98A",
+    "tarif": "Çınar Anaokulu'nun kapısında sırt çantalı Kino el sallıyor.",
+    "satirlar": [{ "kim": "anlatici", "metin": "Bugün Kino'nun başından neler geçti, bir bakalım." }]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Ters önlük",
+      "renk": "#CFE3F2",
+      "tarif": "Sabah, çocuk odası. Kino önlüğünü ters giymiş; Lokum karyolasında uykulu.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Pazartesi sabahıydı. Bugün Kino'nun okuldaki ilk günüydü." },
+        { "kim": "anlatici", "metin": "Kino herkesten önce kalktı. Önlüğünü de kendisi giydi. Biraz ters ama." },
+        { "kim": "kino", "metin": "[excited] Ben büyüdüm artık! Okula gidiyorum!" }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Kahvaltı",
+      "renk": "#F7DDB0",
+      "tarif": "Kahvaltı masası. Baba elinde simitle uyuyor; Lokum Kino'nun çantasını sırtına geçirmiş.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Mutfakta Baba yine uyuyakalmıştı. Hem de elinde simitle." },
+        { "kim": "anne", "metin": "Çay?" },
+        { "kim": "baba", "metin": "[surprised] Çay mı? Kalktım!" },
+        { "kim": "anlatici", "metin": "Lokum da okula gitmek istedi. Ama Kino'nun çantası Lokum'dan büyüktü." },
+        { "kim": "lokum", "metin": "[giggles] Ben de okul!" },
+        { "kim": "kino", "metin": "Sen daha küçüksün, Lokum." }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Kapıda Mino",
+      "renk": "#D7ECC6",
+      "tarif": "Apartmanın önü. Anne Kino'nun elini tutuyor; Mino hoplayarak önde.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kapıda Mino bekliyordu. Mino aynı okula geçen ay başlamıştı." },
+        { "kim": "mino", "metin": "[excited] Okulda kocaman bloklar var! Bir de kum havuzu!" },
+        { "kim": "mino", "metin": "Ben ilk gün biraz korkmuştum ama." },
+        { "kim": "kino", "metin": "[happy] Ben hiç korkmam!" },
+        { "kim": "anlatici", "metin": "Kino çok emindi. Kuyruğu bile emindi." }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Kocaman okul",
+      "renk": "#F9D3C4",
+      "tarif": "Okulun girişi. Kino Anne'nin arkasına saklanmış; yalnız bir kulağı görünüyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Okul kocamandı. Ve çok gürültülüydü." },
+        { "kim": "anlatici", "metin": "Kino'nun kuyruğu yavaş yavaş aşağı indi." },
+        { "kim": "ogretmen", "metin": "[happy] Hoş geldin, Kino!" },
+        { "kim": "anlatici", "metin": "Kino, Anne'nin arkasına saklandı. Yalnız bir kulağı dışarıda kaldı." },
+        { "kim": "ogretmen", "metin": "[curious] Aa, bu uzun kulak kimin acaba?" }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "El",
+      "renk": "#F3E3C3",
+      "tarif": "Anne diz çökmüş, Kino'nun elini iki eli arasında tutuyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kino büyümüştü. Ama eli, Anne'nin elini bırakmak istemedi." },
+        { "kim": "anne", "metin": "Ben şimdi gideceğim. Ama geri geleceğim. Bak." },
+        { "kim": "anne", "not": "Kino'nun parmaklarını tek tek açarak", "metin": "Önce oyun... sonra yemek... sonra Annen gelecek." },
+        { "kim": "kino", "metin": "[whispers] Söz mü?" },
+        { "kim": "anne", "metin": "Söz." },
+        { "kim": "anlatici", "metin": "Anne de biraz üzüldü. Ama gülümsedi." }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Askı",
+      "renk": "#DCD6F2",
+      "tarif": "Askıların önünde Kino tek başına. Çantası askıda.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Anne gitti. Mino kum havuzuna koştu." },
+        { "kim": "mino", "metin": "[excited] Hadi Kino! Gelince gel!" },
+        { "kim": "anlatici", "metin": "Kino askıların önünde tek başına kaldı." },
+        { "kim": "ogretmen", "metin": "Bu senin askın, Kino. Üstünde senin resmin var." },
+        { "kim": "ogretmen", "metin": "Hazır olunca gel, olur mu?" },
+        { "kim": "anlatici", "metin": "Kino çantasını astı. Pat! Çantadan bir şey düştü." }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Kuzu",
+      "renk": "#F2E6D0",
+      "tarif": "Kino yerde, Kuzu'yu karşısında tutuyor; burun buruna.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Düşen şey, Lokum'un Kuzu'suydu!" },
+        { "kim": "kino", "metin": "[surprised] Kuzu? Sen de mi okula geldin?" },
+        { "kim": "anlatici", "metin": "Kuzu'nun kulakları da düşüktü. Tıpkı Kino'nunkiler gibi." },
+        { "kim": "kino", "metin": "[whispers] Korkma, Kuzu. Bak." },
+        { "kim": "kino", "not": "Kuzu'nun ayaklarını tek tek tutarak", "metin": "[whispers] Önce oyun, sonra yemek, sonra Annem gelecek." },
+        { "kim": "anlatici", "metin": "Kuzu biraz rahatladı. Kino da." }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Blok köşesi",
+      "renk": "#CDE8E4",
+      "tarif": "Blok köşesi. Bulut elinde mavi blokla oturuyor; Kino ona doğru geliyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Önce oyun. Kino etrafına baktı." },
+        { "kim": "anlatici", "metin": "Blok köşesinde biri oturuyordu. Elinde tek bir blok, kulakları düşük." },
+        { "kim": "bulut", "metin": "[curious] O da... kuzu mu?" },
+        { "kim": "kino", "metin": "Evet! Adı Kuzu. Sen de kuzusun!" },
+        { "kim": "bulut", "metin": "[giggles] Ben Bulut. Bugün geldim." },
+        { "kim": "kino", "metin": "Ben de! Kule yapalım mı? Ben kule ustasıyım!" }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Kule",
+      "renk": "#FBE3A6",
+      "tarif": "Kino'dan uzun bir blok kulesi. Kino ve Bulut gururla bakıyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kule büyüdü, büyüdü, büyüdü." },
+        { "kim": "anlatici", "metin": "Sonunda Kino'dan bile uzun oldu." },
+        { "kim": "kino", "metin": "[excited] Ben büyüdüm artık! Kulem de büyüdü!" },
+        { "kim": "anlatici", "metin": "Tam o sırada kule sallandı. Bir sağa. Bir sola." },
+        { "kim": "ses", "metin": "GÜM!" },
+        { "kim": "anlatici", "metin": "Bütün sınıf dönüp baktı." }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "Bir daha!",
+      "renk": "#E4D8F5",
+      "tarif": "Çocuklar halka olmuş; Kino ortada blok dağıtıyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kino bir an kıpırdamadı." },
+        { "kim": "bulut", "metin": "[laughs] GÜM!" },
+        { "kim": "anlatici", "metin": "Önce Bulut güldü. Sonra Kino. Sonra bütün sınıf." },
+        { "kim": "mino", "not": "koşarak gelir", "metin": "[excited] O kule senin miydi? Bir daha yapalım!" },
+        { "kim": "cocuklar", "metin": "Bir daha! Bir daha!" },
+        { "kim": "anlatici", "metin": "Kino artık yalnız değildi. Kule ustasıydı." }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "Sonra yemek",
+      "renk": "#FADCC0",
+      "tarif": "Küçük masalar. Kino'nun beslenme kutusu pişi dolu; Tombi yan masadan bakıyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Sonra yemek. Kino beslenme kutusunu açtı." },
+        { "kim": "anlatici", "metin": "İçinde Babaanne'nin pişileri vardı. Hem de bir sürü." },
+        { "kim": "kino", "not": "iki parmağını kaldırarak", "metin": "[excited] Önce oyun... bitti! Sonra yemek... şimdi!" },
+        { "kim": "kino", "metin": "Bulut, pişi ister misin? Mino, sen?" },
+        { "kim": "tombi", "not": "yan masadan", "metin": "[sighs] Ben acıktım..." },
+        { "kim": "anlatici", "metin": "Babaanne arkadaşlar için de koymuştu. Babaanne her şeyi bilirdi." }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Kule bitmedi!",
+      "renk": "#D3E7F5",
+      "tarif": "Kapıda Anne kollarını açmış. Kino arkası dönük, kuleye son bloğu koyuyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Önce oyun oldu. Sonra yemek. Sonra kapı açıldı." },
+        { "kim": "anne", "metin": "Kino! Eve gidiyoruz!" },
+        { "kim": "kino", "metin": "[gasps] Ama Anne! Daha kule bitmedi!" },
+        { "kim": "anlatici", "metin": "Sabah Anne'nin elini bırakmayan Kino, şimdi kuleyi bırakmıyordu." }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "Abi",
+      "renk": "#F5D9E4",
+      "tarif": "Evin girişi. Kino diz çökmüş, Lokum'un parmaklarını açıyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Evde Lokum kapıda bekliyordu." },
+        { "kim": "lokum", "metin": "Abi! Kuzu?" },
+        { "kim": "kino", "metin": "Kuzu okula bayıldı. Önce biraz korktu ama." },
+        { "kim": "lokum", "metin": "[sad] Ben de okul!" },
+        { "kim": "kino", "not": "Lokum'un parmaklarını tek tek açarak", "metin": "Önce oyun, sonra yemek, sonra Annen gelecek." },
+        { "kim": "lokum", "metin": "[giggles] Sonya Annem gelecek!" }
+      ]
+    },
+    {
+      "no": 14,
+      "ad": "Çay bile",
+      "renk": "#F8E1A0",
+      "tarif": "Akşam sofrası, sarı lamba. Kino elinde kaşıkla uyuyakalmış.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Akşam yemeğinde Baba sordu:" },
+        { "kim": "baba", "metin": "Eee, Kino? Okul nasıldı?" },
+        { "kim": "anlatici", "metin": "Ama Kino uyuyakalmıştı. Hem de elinde kaşıkla." },
+        { "kim": "anne", "metin": "[whispers] Çay?" },
+        { "kim": "anlatici", "metin": "Kino'yu çay bile uyandıramadı." },
+        { "kim": "kino", "metin": "[sleepy] Önce oyun..." },
+        { "kim": "anlatici", "metin": "Yarın da güzel bir gün olacaktı." }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Çocuğunuzla konuşmak için:",
+    "sorular": [
+      "Senin ilk günün nasıldı? (Henüz başlamadıysa: ilk günün nasıl olsun istersin?)",
+      "Kino korkunca Kuzu'ya ne söyledi? Sen de bir şeyden korkunca kendine ne söyleyebilirsin?",
+      "Kuzu gibi seninle okula gelecek bir şey olsaydı, o ne olurdu?"
+    ],
+    "not": "Küçük not: \"Önce oyun, sonra yemek, sonra Annem gelecek\" sözünü çocuğunuzun kendi gününe göre değiştirebilirsiniz (ör. \"Önce resim, sonra uyku, sonra Babam gelecek\")."
+  }
+}

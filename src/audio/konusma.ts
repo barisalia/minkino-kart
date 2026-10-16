@@ -101,6 +101,12 @@ export interface KonusmaSecenegi {
    * Türkçe sesine düşmez; parçanın süresi kadar sessiz beklenir (ekrandaki balon / yazı yine görünür).
    */
   cihazSesi?: boolean;
+  /**
+   * Cihaz sesi bir kelimeye geçince (SpeechSynthesis 'boundary'): kelimenin metindeki yeri. Metin, ses etiketleri
+   * ([giggles] …) silinmiş ve kırpılmış hâliyle sayılır. Kayıt çalarken ve olayı vermeyen cihazlarda çağrılmaz
+   * (Kitaplar: okunan kelime vurgusu, kitap/src/okuyucu.ts; olay yoksa süreyle tahmin edilir).
+   */
+  kelime?: (karakterSirasi: number) => void;
 }
 
 /** Kino'nun konuşması: kendi sesi yoksa anlatıcı sesinin kalın tonu. */
@@ -179,7 +185,7 @@ function konusIc(girdi: Soylenecek, secenek: KonusmaSecenegi): Promise<void> {
           if (benim === sayac) ani = { kaynak: 'kayit', metin: p, bas: performance.now() };
         };
         const calindi = kayitVar(p, kayitSecenegi) && (await kayitCal(p, () => benim !== sayac, kayitSecenegi, basladi));
-        if (!calindi && benim === sayac) await (secenek.cihazSesi === false && !DOSYA.test(p) ? sessizParca(p, benim) : tekParca(p, benim, secenek.ton ?? 1));
+        if (!calindi && benim === sayac) await (secenek.cihazSesi === false && !DOSYA.test(p) ? sessizParca(p, benim) : tekParca(p, benim, secenek.ton ?? 1, secenek.kelime));
         if (benim === sayac) ani = null;
       }
       if (benim === sayac) muzikKis(false);
@@ -205,7 +211,7 @@ function sessizParca(metin: string, benim: number): Promise<void> {
   });
 }
 
-function tekParca(metin: string, benim: number, ton = 1): Promise<void> {
+function tekParca(metin: string, benim: number, ton = 1, kelime?: (i: number) => void): Promise<void> {
   const ayar = durum.i.ayarlar;
   return new Promise<void>((coz) => {
     let bitti = false;
@@ -246,6 +252,10 @@ function tekParca(metin: string, benim: number, ton = 1): Promise<void> {
       clearTimeout(emniyet);
       son();
     };
+    if (kelime)
+      u.onboundary = (e) => {
+        if (benim === sayac && (!e.name || e.name === 'word')) kelime(e.charIndex);
+      };
     // ağız ritmi sesin gerçekten başladığı andan (onstart gelmeyen cihazda konuşma isteğinden) sayılır
     u.onstart = () => {
       if (benim === sayac) ani = { kaynak: 'cihaz', metin, bas: performance.now() };

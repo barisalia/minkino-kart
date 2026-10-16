@@ -164,6 +164,8 @@ export function menuOyunlari(uygulama: boolean): OyunKarti[] {
     const i = hepsi.findIndex((k) => k.set === MINO_GIYSIN_KARTI.set);
     hepsi = [...hepsi.slice(0, i + 1), MINO_GIYSIN_KARTI, ...hepsi.slice(i + 1)];
   }
+  // Kitaplar: geniş Pasta kartından önce (bayrak açılınca)
+  if (KITAP_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), KITAP_KARTI, ...hepsi.filter((k) => k.genis)];
   if (!uygulama) return hepsi;
   return hepsi.filter((k) => !k.uygulamadaYok);
 }
@@ -196,6 +198,21 @@ export const MINO_GIYSIN_KARTI: OyunKarti = {
   rozet: 'Yeni',
   set: 'giysin',
   katmanlar: [{ gorsel: 'mino-giysin/kart-mino', sinif: 'ug-k-mino-giysin' }],
+};
+/**
+ * Kitaplar (ilk kitap "Kino Okula Başlıyor", kitap/): Barış görünce true olur. false: menüde yok, sayfa uygulama
+ * derlemesine girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /kitap/ adresinden açılır.
+ * KALAN İŞ (açmadan önce): 11 kartlık menü ızgarası (uygulama.css → data-adet='11') ve kart resmi (kapak çizimi gelince
+ * zemin: kitap kapağı). Şimdilik kart düz renk.
+ */
+export const KITAP_MENUDE = false;
+export const KITAP_KARTI: OyunKarti = {
+  id: 'kitap',
+  ad: 'Kitaplar',
+  adres: './kitap/',
+  renk: '#E2683C',
+  rozet: 'Yeni',
+  katmanlar: [],
 };
 export const KINO_OTOBUS_KARTI: OyunKarti = {
   id: 'kino-otobus',
