@@ -1,4 +1,9 @@
-# ✅ ONAYLANDI (Barış, 2026-10-16: "tamam yapın ilkini")
+# ✅ ONAYLANDI · ⚠️ ANTIGRAVITY YALNIZ ÇİZİM YAPAR (Barış: "sen yap kitabı, sadece çizimi ona ver")
+
+Kod, kitap bileşeni, sayfa çevirme, uygulamaya bağlama: **Claude ekibi yapar.** Antigravity kod yazmaz; aşağıdaki "Teknik çerçeve" ve "İlk teslim" bölümlerindeki kod maddeleri ona ait DEĞİL.
+Antigravity'nin işi: karakter sayfaları (Bulut, Ceren Öğretmen), kapak, 14 sayfa resmi, canlanan anlar için çok pozlu sayfalar. Kayıt yeri: ekip/gemini/yeni/kitap-okul/ (her dosya en az 2752x1536). Her teslimi CEVAP-01.md'ye yaz.
+
+# (Barış, 2026-10-16: "tamam yapın ilkini")
 
 İlk kitap onaylandı. Örnek kitap "Mino'nun Balonu" İPTAL. Bunun yerine onaylı metin kullanılacak:
 **ekip/senaryo/KITAP-MINO-KINO.md → §2 "Kino Okula Başlıyor"** (kapak + 14 sayfa + ebeveyn sayfası).
