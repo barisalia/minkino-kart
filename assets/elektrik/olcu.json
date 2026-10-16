@@ -1,0 +1,54 @@
+{
+ "kaynak": "ekip/gemini/yeni/elektrik/esya-sayfasi.png",
+ "en": 2752,
+ "olcu": {
+  "komodin": [
+   513,
+   447
+  ],
+  "komodin-acik": [
+   513,
+   447
+  ],
+  "fener": [
+   606,
+   249
+  ],
+  "fener-acik": [
+   606,
+   249
+  ],
+  "pil": [
+   453,
+   156
+  ],
+  "saat": [
+   313,
+   356
+  ],
+  "saksi": [
+   279,
+   399
+  ],
+  "kemik": [
+   482,
+   235
+  ],
+  "sandalye": [
+   333,
+   477
+  ],
+  "lamba": [
+   205,
+   500
+  ],
+  "cadir": [
+   612,
+   458
+  ],
+  "cokuk": [
+   546,
+   249
+  ]
+ }
+}
