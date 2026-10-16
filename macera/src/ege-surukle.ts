@@ -3,7 +3,8 @@
  * parlayan bir iz çıkar), parmak ipucu (2 yanlışta ya da 12 sn'de) ve FLIP ile yer değiştirme.
  * Sürüklenen eleman dünya içindedir (kamera ölçeğine göre düzeltilir); yalnız transform ile (translate).
  */
-import { h, sure } from '../../src/ui/dom';
+import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { EL_MS, HALE_MS, hale, YANLIS_HALE_MS } from './ipucu-sira';
 
 /** Ekran kutusunun (DOMRect) pay kadar büyütülmüş hâlinde nokta var mı */
 const icinde = (r: DOMRect, x: number, y: number, pay: number) =>
@@ -154,6 +155,8 @@ export function iz(katman: HTMLElement, a: DOMRect, b: DOMRect) {
  * Döndürdüğü işlev ipucunu kaldırır.
  */
 export function parmak(katman: HTMLElement, kaynak: () => DOMRect, hedef?: () => DOMRect): () => void {
+  // ipucu sırasının 25 sn basamağı (Ipucu): el yerine hedefin üstünde yumuşak hale
+  if (parmakKipi === 'hale') return hale(katman, kaynak);
   const el = h('div.eg-parmak', {
     html: '<svg viewBox="0 0 48 56"><path d="M18 4c3 0 5 2 5 5v17l3-1c2-6 11-4 10 2l4-1c3 0 5 3 4 6l-3 14c-1 5-5 8-10 8H21c-4 0-7-2-9-5L3 34c-2-3 1-7 5-5l5 4V9c0-3 2-5 5-5z" fill="#fff" stroke="#5a3617" stroke-width="3.5" stroke-linejoin="round"/></svg>',
   });
@@ -204,13 +207,21 @@ export function parmak(katman: HTMLElement, kaynak: () => DOMRect, hedef?: () =>
   };
 }
 
+/** parmak() bu an el yerine hale çizsin mi (Ipucu'nun hale basamağı ayarlar) */
+let parmakKipi: 'el' | 'hale' = 'el';
+
 /**
- * İpucu zamanlayıcı: "12 sn'de ya da 2 yanlışta parmak ipucu". goster() ipucunu açar (kaldırma işlevi döner).
- * yanlis() her hatada çağrılır; kapat() görev bitince.
+ * İpucu zamanlayıcı (K2 ipucu sırası, ipucu-sira.ts): 25 sn'de hedefin üstünde hale, 40 sn'de parmak. Yanlışlar eli
+ * öne çekmez; iki yanlıştan sonra (en erken 12. saniyede) yalnız hale gelir. goster() ipucunu açar (kaldırma
+ * işlevi döner); yanlis() her hatada, ilerle() her doğru adımda, kapat() görev bitince.
+ * Test modunda eski kural: `ms`'de ya da 2 yanlışta parmak.
  */
 export class Ipucu {
   private zaman = 0;
+  private elZaman = 0;
   private hata = 0;
+  private bas = 0;
+  private kip: 'hale' | 'el' | null = null;
   private kaldir: (() => void) | null = null;
   constructor(
     private goster: () => () => void,
@@ -220,25 +231,50 @@ export class Ipucu {
   }
   private kur() {
     clearTimeout(this.zaman);
-    this.zaman = window.setTimeout(() => this.ac(), this.ms);
+    clearTimeout(this.elZaman);
+    this.bas = performance.now();
+    if (TEST_MODU) {
+      this.zaman = window.setTimeout(() => this.ac('el'), this.ms);
+      return;
+    }
+    this.zaman = window.setTimeout(() => this.ac('hale'), HALE_MS);
+    this.elZaman = window.setTimeout(() => this.ac('el'), EL_MS);
   }
-  private ac() {
-    if (!this.kaldir) this.kaldir = this.goster();
+  private ac(kip: 'hale' | 'el') {
+    if (this.kip === 'el' || this.kip === kip) return;
+    this.kaldir?.();
+    parmakKipi = kip;
+    try {
+      this.kaldir = this.goster();
+    } finally {
+      parmakKipi = 'el';
+    }
+    this.kip = kip;
   }
   yanlis() {
-    if (++this.hata >= 2) this.ac();
-    else this.kur();
+    if (TEST_MODU) {
+      if (++this.hata >= 2) this.ac('el');
+      else this.kur();
+      return;
+    }
+    if (++this.hata < 2 || this.kip) return;
+    const gecen = performance.now() - this.bas;
+    clearTimeout(this.zaman);
+    this.zaman = window.setTimeout(() => this.ac('hale'), Math.max(0, YANLIS_HALE_MS - gecen));
   }
   /** doğru bir adım: ipucu kalkar, sayaç yeniden başlar */
   ilerle() {
     this.kaldir?.();
     this.kaldir = null;
+    this.kip = null;
     this.hata = 0;
     this.kur();
   }
   kapat() {
     clearTimeout(this.zaman);
+    clearTimeout(this.elZaman);
     this.kaldir?.();
     this.kaldir = null;
+    this.kip = null;
   }
 }

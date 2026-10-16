@@ -293,6 +293,28 @@
   white-space: nowrap;
   box-shadow: 0 4px 0 var(--kontur-yumusak);
 }
+/* K2 ipucu sırası: 25 sn'de hedefin üstünde yumuşak hale (ipucu-sira.ts); el ancak 40 sn'de */
+.mc-kok .mc-hale {
+  position: absolute;
+  z-index: 24;
+  width: calc(var(--r, 46px) * 2);
+  height: calc(var(--r, 46px) * 2);
+  margin: calc(var(--r, 46px) * -1) 0 0 calc(var(--r, 46px) * -1);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 236, 140, 0.55) 0%, rgba(255, 214, 90, 0.28) 45%, rgba(255, 214, 90, 0) 70%);
+  box-shadow: 0 0 0 3px rgba(255, 226, 120, 0.55);
+  animation: mc-hale 2.2s ease-in-out infinite;
+}
+@keyframes mc-hale {
+  0%, 100% { transform: scale(0.85); opacity: 0.45; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-kok .mc-hale {
+    animation: none;
+  }
+}
 .mc-kok .mc-ipucu.acik {
   display: block;
   animation: mc-balon-gir 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);

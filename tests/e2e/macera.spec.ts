@@ -84,7 +84,9 @@ test("Ada'nın Doğum Günü: dokunarak baştan sona (5 yaş)", async ({ page },
     if (i === 2) await ekran(page, '108-macera-pasta', p);
   }
   // dans
-  await expect(page.locator('.mc-ipucu.acik')).toHaveText('Alkışla!', { timeout: 15000 });
+  // K2: görev yazısı ekranda gösterilmez (yalnız data-gorev); anlatıcı söyler
+  await expect(page.locator('.mc-ipucu')).toHaveAttribute('data-gorev', 'Alkışla!', { timeout: 15000 });
+  await expect(page.locator('.mc-ipucu')).not.toHaveClass(/acik/);
   for (let i = 0; i < 6; i++) {
     await dokun(page, 1);
     await page.waitForTimeout(250);

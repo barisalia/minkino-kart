@@ -26,6 +26,7 @@ import { FENER_SVG } from './elektrik-cizim';
 import SL from '../../content/macera-salincak.json';
 import { salincakKimin } from './salincak';
 import { kartSalincakSvg } from './salincak-cizim';
+import { adimBasladi } from './ipucu-sira';
 
 /** Oynanacak bölüm (açılışta seçilir; test/önizlemede ?bolum=banyo | ?bolum=ege) */
 type BolumAdi = 'dogumgunu' | 'banyo' | 'ege' | 'elektrik' | 'salincak';
@@ -228,8 +229,10 @@ export function bolumEkrani(app: Uygulama): Ekran {
       balon.classList.add('yeni');
     },
     ipucu(t) {
-      ipucu.textContent = t ?? '';
-      ipucu.classList.toggle('acik', !!t);
+      // K2: görev yazısı (çip) ekranda gösterilmez; anlatıcı durumu anlatır, çocuk dener. Yalnız adım saati
+      // (ipucu sırası: 25 sn hale, 40 sn parmak) ve testler için hangi görevde olunduğu tutulur.
+      if (t && t !== ipucu.dataset.gorev) adimBasladi();
+      ipucu.dataset.gorev = t ?? '';
     },
     dugme(etiket) {
       return new Promise<void>((coz) => {
@@ -277,9 +280,12 @@ export function bolumEkrani(app: Uygulama): Ekran {
 
   void (async () => {
     if (!kulak.acik && izinVar() && kulak.durum !== 'yok' && !TEST_MODU) {
-      ui.ipucu('Bir saniye sessiz olalım…');
+      // mikrofon ayarı (bir an): ebeveyn için durum yazısı, görev değil
+      ipucu.textContent = 'Bir saniye sessiz olalım…';
+      ipucu.classList.add('acik');
       await kulak.ac();
-      ui.ipucu(null);
+      ipucu.textContent = '';
+      ipucu.classList.remove('acik');
     }
     // Ege ve banyo sahnenin ölçüsünü kurulurken okur: ekran sayfaya eklensin (yatay ekranda sahne dar bir bant,
     // pencerenin eni değil)

@@ -6,6 +6,7 @@
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { EL_SVG } from './banyo-gorsel';
 import { AZ_HAREKET } from './banyo-karakter';
+import { adimGecen, EL_MS, HALE_MS, hale } from './ipucu-sira';
 
 const r = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -332,14 +333,28 @@ export class ParmakIpucu {
   readonly el: HTMLElement;
   private anim: Animation | null = null;
   private zaman = 0;
+  private haleKaldir: (() => void) | null = null;
   constructor() {
     this.el = h('div.bn-ipucu-el', { html: EL_SVG, 'aria-hidden': 'true' });
   }
-  /** a, b: ekran koordinatı (b: sürüklemenin bitişi) */
+  /**
+   * a, b: ekran koordinatı (b: sürüklemenin bitişi).
+   * K2 ipucu sırası (ipucu-sira.ts): adımın başında el çıkmaz. Banyo ipucuyu 12 sn'lik döngüyle ister (12, 24, 36…
+   * sn); adımın ~20. saniyesinden sonra hedefte hale, ~35. saniyesinden sonra el (25 / 40 sn'ye en yakın döngü).
+   */
   goster(tur: IpucuTuru, a: [number, number], b?: [number, number]) {
     this.gizle();
     const kap = this.el.parentElement;
     if (!kap) return;
+    if (!TEST_MODU) {
+      const gecen = adimGecen();
+      if (gecen < HALE_MS - 5000) return;
+      if (gecen < EL_MS - 5000) {
+        this.haleKaldir = hale(kap, () => new DOMRect(a[0] - 40, a[1] - 40, 80, 80));
+        this.zaman = window.setTimeout(() => this.gizle(), 5000);
+        return;
+      }
+    }
     const k = kap.getBoundingClientRect();
     const [x, y] = [a[0] - k.left, a[1] - k.top];
     this.el.style.left = `${x}px`;
@@ -409,6 +424,8 @@ export class ParmakIpucu {
     this.anim?.cancel();
     this.anim = null;
     this.el.classList.remove('acik');
+    this.haleKaldir?.();
+    this.haleKaldir = null;
   }
 }
 
