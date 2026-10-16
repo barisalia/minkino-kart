@@ -7,7 +7,7 @@ import { ANAHTAR, kayitCoz } from '../../kitap/src/kayit';
 import { KARAKTERLER, etiketsiz, kelimeAgirliklari, kelimeler } from '../../kitap/src/metin';
 import { OKUL_CANLI } from '../../kitap/src/okul-canli';
 import type { KitapIcerik, Kim } from '../../kitap/src/tipler';
-import { kitapOlcusu, NETLIK_DPR, RESIM_KAYNAK } from '../../kitap/src/yerlesim';
+import { kitapOlcusu, NETLIK_DPR, VARSAYILAN_KAYNAK } from '../../kitap/src/yerlesim';
 
 const icerik = okul as KitapIcerik;
 const KOK = resolve(__dirname, '../..');
@@ -143,10 +143,39 @@ describe('Kitap: ekran ölçüleri (telefon önce)', () => {
       expect(o.ph - o.resimH, `${w}x${h} yazı alanı`).toBeGreaterThanOrEqual(280);
     }
   });
-  it('netlik: sayfa resmi (kare 2048) hiçbir ekranda büyütülmez', () => {
-    for (const [w, h] of [[844, 390], [667, 375], [390, 844], [768, 1024], [1024, 768], [1366, 1024]]) {
+  it('netlik: sayfa resmi (1376×768 tam sayfa) hiçbir ekranda büyütülmez, kırpılmaz; resim alanı sayfaya sığar', () => {
+    const [kw, kh] = VARSAYILAN_KAYNAK;
+    for (const [w, h] of [[844, 390], [667, 375], [390, 844], [360, 780], [768, 1024], [1024, 768], [1366, 1024]]) {
       const o = kitapOlcusu(w, h);
-      expect(Math.max(o.pw, o.resimH) * NETLIK_DPR, `${w}x${h}`).toBeLessThanOrEqual(RESIM_KAYNAK);
+      expect(o.resimW * NETLIK_DPR, `${w}x${h}`).toBeLessThanOrEqual(kw);
+      expect(o.resimH * NETLIK_DPR, `${w}x${h}`).toBeLessThanOrEqual(kh);
+      expect(Math.abs(o.resimW / o.resimH - kw / kh)).toBeLessThan(0.02);
+      expect(o.resimW).toBeLessThanOrEqual(o.pw);
+      expect(o.resimH).toBeLessThanOrEqual(o.ph);
+    }
+    // telefonda resim yatayda sol sayfanın, dikeyde ekranın neredeyse tamamı
+    expect(kitapOlcusu(844, 390).resimW).toBeGreaterThanOrEqual(330);
+    expect(kitapOlcusu(390, 844).resimW).toBe(366);
+    // daha büyük çizim gelince alan büyür (yine sınırda)
+    expect(kitapOlcusu(768, 1024, [2752, 1536]).resimW).toBeGreaterThan(kitapOlcusu(768, 1024).resimW);
+  });
+  it('tam sayfa çizimlerinde dokunma bölgeleri bir ana bağlı, uğur böceği resmin içinde', () => {
+    for (let no = 0; no <= 14; no++) {
+      const t = OKUL_CANLI[no].tam!;
+      expect(t, `sayfa ${no}`).toBeTruthy();
+      expect(t.ugur[0]).toBeGreaterThan(0);
+      expect(t.ugur[0]).toBeLessThan(1);
+      expect(t.ugur[1]).toBeGreaterThan(0);
+      expect(t.ugur[1]).toBeLessThan(1);
+      const dokun = new Set(OKUL_CANLI[no].anlar.flatMap((a) => a.dokun));
+      expect(Object.keys(t.yerler).length, `sayfa ${no}`).toBeGreaterThan(0);
+      for (const [k, v] of Object.entries(t.yerler)) {
+        expect(dokun.has(k), `sayfa ${no}: ${k}`).toBe(true);
+        for (const kutu of (Array.isArray(v[0]) ? v : [v]) as number[][]) {
+          expect(kutu[0] + kutu[2], `sayfa ${no}: ${k}`).toBeLessThanOrEqual(1.001);
+          expect(kutu[1] + kutu[3], `sayfa ${no}: ${k}`).toBeLessThanOrEqual(1.001);
+        }
+      }
     }
   });
 });

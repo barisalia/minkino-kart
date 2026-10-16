@@ -21,6 +21,8 @@ export interface YerlesimSayfa {
   /** Zemin gelmeden yalnız tam sayfa geldiyse: canlanmayan tam resim */
   tam?: string;
   katmanlar?: Record<string, YerlesimKatman>;
+  /** Sayfa resminin piksel boyu [en, boy] (kitap-isle.cjs yazar) */
+  boy?: [number, number];
   /** Uğur böceğinin elle ayarlanmış yeri (resim gelince) */
   ugur?: [number, number];
 }

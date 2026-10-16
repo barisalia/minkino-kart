@@ -108,4 +108,15 @@ export interface SayfaCanli {
   /** Saklı uğur böceği (resmin oranı; [x, y] merkez); bagli: bir katmanla birlikte kayar */
   ugur: [number, number];
   ugurBagli?: string;
+  /**
+   * Yalnız tam sayfa resmi varken (zemin ve poz katmanları gelmeden): karakter kesilip oynatılmaz; dokunma bölgeleri
+   * çizimdeki yerlerde, an hafif efektle oynar (parıltı, ses, resmin ufak sekmesi). Uğur böceği çizimin içinde:
+   * ayrı katman yok, dokunma alanı çizimdeki yerinde. Ölçüler 1376×768 tam sayfa çizimlerinden (2026-10-17),
+   * resmin oranı olarak; çizim değişirse yeniden ölçülür.
+   */
+  tam?: {
+    ugur: [number, number];
+    /** An'ın dokunma anahtarı (katman id ya da 'bolge:ad') → çizimdeki kutu(lar) */
+    yerler: Record<string, Kutu | Kutu[]>;
+  };
 }

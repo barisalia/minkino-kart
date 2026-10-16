@@ -19,7 +19,7 @@ import { KARAKTERLER, MetinSayfasi, ebeveynSayfasi } from './metin';
 import { Okuyucu } from './okuyucu';
 import type { KitapIcerik, Kim, SayfaCanli } from './tipler';
 import { kitapVarliklari, sayfaAnahtari, type KitapVarliklari } from './varlik';
-import { kitapOlcusu, SON_SAYFA, type KitapOlcu } from './yerlesim';
+import { kitapOlcusu, resimEnCok, SON_SAYFA, VARSAYILAN_KAYNAK, type KitapOlcu } from './yerlesim';
 import { Yaprak } from './yaprak';
 
 export interface RafKitabi {
@@ -66,6 +66,10 @@ export class Kitaplik {
   private kitap: RafKitabi | null = null;
   private varlik: KitapVarliklari = kitapVarliklari('');
   private olcu: KitapOlcu = kitapOlcusu(innerWidth, innerHeight);
+  /** Sayfa resimlerinin kaynak boyu (yerlesim.json → kapak.boy); resim alanı bunu aşmaz */
+  private kaynak(): [number, number] {
+    return this.varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK;
+  }
   private okuyucu = new Okuyucu();
   private mod: OkumaModu = 'oku';
   private sayfa = 0;
@@ -79,6 +83,7 @@ export class Kitaplik {
   private tutulan: { el: HTMLElement; yuz: Yuz; golge: HTMLElement; modlar: HTMLElement } | null = null;
   private rafKapak: HTMLElement | null = null;
   private rafSahne: Sahne | null = null;
+  private rafKaynak: [number, number] = VARSAYILAN_KAYNAK;
 
   constructor(
     private kitaplar: RafKitabi[],
@@ -145,6 +150,7 @@ export class Kitaplik {
         kapak.addEventListener('click', () => this.tut(k, kapak));
         this.rafKapak = kapak;
         this.rafSahne = s;
+        this.rafKaynak = varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK;
         oge.append(kapak);
       } else {
         const sirt = document.createElement('button');
@@ -178,7 +184,13 @@ export class Kitaplik {
     const yatay = w > h;
     const kapakH = Math.round(yatay ? Math.min(h * 0.58, 300) : Math.min(w * 0.62, 320));
     this.raf.style.setProperty('--kapak-h', `${kapakH}px`);
-    this.rafSahne?.boyutla(kapakH * 0.86, kapakH);
+    // raftaki kapak: resim kapağın enine sığar (netlik: kaynak eni / 3'ü aşmaz)
+    const rw = Math.min(kapakH * 0.86 - 16, resimEnCok(this.rafKaynak));
+    if (this.rafSahne) {
+      const rh = this.rafSahne.resimli ? rw / this.rafSahne.oran : kapakH;
+      Object.assign(this.rafSahne.el.style, { left: `${(kapakH * 0.86 - rw) / 2}px`, top: `${(kapakH - rh) / 2 + kapakH * 0.06}px`, width: `${rw}px`, height: `${rh}px` });
+      this.rafSahne.boyutla(rw, rh);
+    }
   }
 
   // ---------------------------------------------------------------- kitabı alma (3D)
@@ -203,7 +215,7 @@ export class Kitaplik {
     this.varlik = kitapVarliklari(k.id);
     this.durum = 'tutuluyor';
     this.el.dataset.durum = 'tutuluyor';
-    this.olcu = kitapOlcusu(innerWidth, innerHeight);
+    this.olcu = kitapOlcusu(innerWidth, innerHeight, this.kaynak());
     const { pw, ph } = this.olcu;
     // tutulan kitap: ön kapak + sırt + sayfa kalınlığı (üst, alt, yan) + arka kapak
     const kutu = document.createElement('div');
@@ -270,12 +282,23 @@ export class Kitaplik {
     };
   }
 
-  private yuzBoyutla(y: Yuz, w: number, h: number, resimH = h) {
+  /**
+   * Yüzün ölçüleri. Resim alanı çizimin oranında ve netlik sınırında (kitapOlcusu): yatayda sol sayfanın ortasında
+   * levha, dikeyde sayfanın üstünde tam en; kapakta ortada (başlık üstte, söz altta). Resim büyütülmez, kırpılmaz.
+   */
+  private yuzBoyutla(y: Yuz, w: number, h: number) {
     Object.assign(y.el.style, { width: `${w}px`, height: `${h}px` });
-    // kapak: yatayda sayfanın tamamı; dikeyde (uzun sayfa) ortada kare resim, başlık üstte, söz altta
-    if (y.el.classList.contains('kt-kapak-yuz') && h > w * 1.15) resimH = w;
-    y.el.style.setProperty('--resim-h', `${resimH}px`);
-    y.sahne?.boyutla(w, resimH);
+    const { resimW, resimH } = this.olcu;
+    const kapak = y.el.classList.contains('kt-kapak-yuz');
+    const ust = y.el.classList.contains('kt-sayfa-tek') && !kapak;
+    const rw = Math.min(resimW, w);
+    const rh = Math.round((rw * resimH) / resimW);
+    y.el.style.setProperty('--resim-h', `${ust ? rh : 0}px`);
+    if (y.sahne) {
+      Object.assign(y.sahne.el.style, { left: `${(w - rw) / 2}px`, top: `${ust ? 0 : Math.round((h - rh) / 2)}px`, width: `${rw}px`, height: `${rh}px` });
+      y.sahne.el.classList.toggle('kt-levha', !ust || rw < w - 1);
+      y.sahne.boyutla(rw, rh);
+    }
     if (y.metin) {
       if (y.el.classList.contains('kt-kapak-yuz')) {
         y.metin.sigdir(Math.min(30, h * 0.075), 13);
@@ -400,14 +423,14 @@ export class Kitaplik {
   }
 
   private yuzleriOlc() {
-    const { pw, ph, resimH, yatay } = this.olcu;
+    const { pw, ph, yatay } = this.olcu;
     if (this.sol) {
       this.sol.el.style.left = '0px';
       this.yuzBoyutla(this.sol, pw, ph);
     }
     if (this.sag) {
       this.sag.el.style.left = yatay ? `${pw}px` : '0px';
-      this.yuzBoyutla(this.sag, pw, ph, yatay || this.sag.el.classList.contains('kt-kapak-yuz') ? ph : resimH);
+      this.yuzBoyutla(this.sag, pw, ph);
     }
   }
 
@@ -496,7 +519,7 @@ export class Kitaplik {
     const olcBunu = (y: Yuz | null, sol: boolean) => {
       if (!y) return;
       y.el.style.left = sol || !yatay ? '0px' : `${pw}px`;
-      this.yuzBoyutla(y, pw, ph, yatay || y.el.classList.contains('kt-kapak-yuz') ? ph : this.olcu.resimH);
+      this.yuzBoyutla(y, pw, ph);
     };
     const oluk = k.querySelector('.kt-oluk')!;
     // yer tutucu ölçümü için önce kitaba (görünmez) eklenir
@@ -807,7 +830,7 @@ export class Kitaplik {
 
   private yenidenOlcu() {
     this.rafOlcu();
-    const yeni = kitapOlcusu(innerWidth, innerHeight);
+    const yeni = kitapOlcusu(innerWidth, innerHeight, this.kaynak());
     const degisti = yeni.yatay !== this.olcu.yatay || yeni.pw !== this.olcu.pw || yeni.ph !== this.olcu.ph;
     this.olcu = yeni;
     if (!degisti) return;

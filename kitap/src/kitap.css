@@ -440,9 +440,10 @@
 }
 .kt-ugur {
   position: absolute;
-  z-index: 4;
+  z-index: 6;
   width: 10%;
-  height: 10%;
+  height: auto;
+  aspect-ratio: 1;
   margin: -5% 0 0 -5%;
   padding: 0;
   border: 0;
@@ -555,9 +556,38 @@
 .kt-kapak-yuz {
   background: var(--kapak);
 }
-.kt-kapak-yuz .kt-resim {
-  top: calc((100% - var(--resim-h, 100%)) / 2);
-  height: var(--resim-h, 100%);
+/* resim levhası (yatay sol sayfa, kapak): çizimin oranında, sayfanın ortasında, ince kahve çerçeve */
+.kt-resim.kt-levha {
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px rgba(59, 36, 22, 0.6), 0 4px 0 rgba(59, 36, 22, 0.14);
+}
+/* tam sayfa çizim: dokunma bölgeleri görünmez; parıltı yıldızları (yalnız transform/opacity) */
+.kt-tam-bolge {
+  z-index: 3;
+}
+.kt-ugur-cizili {
+  width: 9%;
+  margin: -4.5% 0 0 -4.5%;
+}
+.kt-parilti {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.kt-parilti i {
+  position: absolute;
+  width: 4.4em;
+  height: 4.4em;
+  opacity: 0;
+  background: #ffd84d;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+.kt-parilti i:nth-child(3n) {
+  background: #fff;
+}
+.kt-parilti i:nth-child(3n + 1) {
+  background: #ffe9a0;
 }
 .kt-metin.kt-kapak-metin {
   background: transparent;

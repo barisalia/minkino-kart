@@ -29,8 +29,11 @@ const ARA = path.join(os.tmpdir(), 'minkino-kitap');
 let GIRDI = arg('girdi', process.env.KITAP_GIRDI || path.join(KOK, 'ekip/gemini/yeni/kitap-okul'));
 let CIKTI = path.join(KOK, 'assets/kitap/okul');
 const ESYA_KES = path.join(__dirname, 'gemini-esya.cjs');
-/** Sayfa resminin kaynak boyu (kare): katman pozları bu çözünürlüğe göre ölçeklenir */
-const SAYFA_PX = 2048;
+/** Sayfa resminin en uzun kenarı en çok (büyütülmez; Gemini 2K: 2752x1536 ya da 2048 kare) */
+const SAYFA_EN_COK = 2752;
+/** Antigravity'nin tam sayfa teslimi (2026-10-17, 1376x768 JPG): <girdi>/antigravity-1376/kapak.jpg, sayfa-01.jpg … */
+const AG_KLASOR = 'antigravity-1376';
+const agAdi = (sayfa) => (sayfa === 'kapak' ? 'kapak' : sayfa.replace(/^s/, 'sayfa-'));
 
 // ---------------------------------------------------------------- tablo (kitap/src/okul-canli.ts ile aynı; tests/unit/kitap.test.ts denetler)
 // yer: yaklaşık konum [x, y, en, boy] (sayfanın oranı). pozlar: hareket sayfasındaki poz sayısı. parcalar: ad → kare sayısı.
@@ -184,23 +187,25 @@ function bolgeleriDagit(bolgeler, katmanlar) {
 
 async function sayfaIsle(sayfa, yerlesim, el) {
   const katmanlar = SAYFALAR[sayfa];
-  const tamF = dosya(sayfa), zeminF = dosya(`${sayfa}-zemin`);
+  const tamF = dosya(sayfa) || dosya(path.join(AG_KLASOR, agAdi(sayfa))), zeminF = dosya(`${sayfa}-zemin`);
   const y = (yerlesim.sayfalar[sayfa] = yerlesim.sayfalar[sayfa] || {});
   if (!tamF && !zeminF) { console.log(`${sayfa}: sayfa resmi yok (bekleniyor)`); return; }
   console.log(`${sayfa}:`);
   for (const [f, son] of [[zeminF, 'zemin'], [!zeminF ? tamF : null, 'tam']]) {
     if (!f) continue;
     const m = await s(f).metadata();
-    if (Math.min(m.width, m.height) < SAYFA_PX * 0.98) console.log(`  UYARI ${path.basename(f)} ${m.width}x${m.height}: kare 2048'den küçük (Gemini 2K kare isteyin)`);
-    const kenar = Math.min(m.width, m.height, SAYFA_PX);
-    // kare değilse ortadan kare kırpılır (kitap kare resim bekler)
-    const kare = Math.min(m.width, m.height);
-    const buf = await s(f).removeAlpha().extract({ left: Math.floor((m.width - kare) / 2), top: Math.floor((m.height - kare) / 2), width: kare, height: kare }).resize(kenar, kenar, { kernel: 'lanczos3' }).webp({ quality: 90, effort: 5 }).toBuffer();
-    if (await guvenliYaz(path.join(CIKTI, `${sayfa}-${son}.webp`), buf)) console.log(`  ${sayfa}-${son}.webp ${kenar}x${kenar}`);
+    if (Math.max(m.width, m.height) < 2048) console.log(`  NOT ${path.basename(f)} ${m.width}x${m.height}: küçük kaynak; kitap resim alanını bu boyun üstüne büyütmez (eni ≤ ${Math.floor(m.width / 3)} px)`);
+    // en/boy korunur, kırpılmaz, büyütülmez (netlik); yalnız çok büyükse küçültülür
+    const k = Math.min(1, SAYFA_EN_COK / Math.max(m.width, m.height));
+    const W = Math.round(m.width * k), H = Math.round(m.height * k);
+    const buf = await s(f).removeAlpha().resize(W, H, { kernel: 'lanczos3' }).webp({ quality: 92, effort: 6, smartSubsample: true }).toBuffer();
+    if (await guvenliYaz(path.join(CIKTI, `${sayfa}-${son}.webp`), buf)) console.log(`  ${sayfa}-${son}.webp ${W}x${H} (${Math.round(buf.length / 1024)} KB)`);
     y[son] = `${sayfa}-${son}.webp`;
+    y.boy = [W, H];
   }
   if (zeminF) delete y.tam;
   if (el.ugur?.[sayfa]) y.ugur = el.ugur[sayfa];
+  const [PW, PH] = y.boy || [2048, 2048];
   // katman yerleri: fark (ya da elle)
   let yerler = {};
   if (tamF && zeminF) yerler = bolgeleriDagit(await farkBolgeleri(tamF, zeminF), katmanlar.filter((k) => k.olcme !== false));
@@ -217,16 +222,16 @@ async function sayfaIsle(sayfa, yerlesim, el) {
     // ölçek: poz 1 fark bölgesinin boyuna; ölçülmeyen katman: tanımdaki enine
     const yer = yerler[k.id];
     let olcek;
-    if (k.olcme !== false && yer) olcek = (yer[3] * SAYFA_PX) / kareler[0].h;
-    else olcek = (k.yer[2] * SAYFA_PX) / Math.max(...kareler.map((q) => q.w));
+    if (k.olcme !== false && yer) olcek = (yer[3] * PH) / kareler[0].h;
+    else olcek = (k.yer[2] * PW) / Math.max(...kareler.map((q) => q.w));
     if (olcek > 1.001) console.log(`  UYARI ${k.id}: hareket sayfası küçük (×${olcek.toFixed(2)} büyütmek gerekirdi; büyütülmedi, ekranda netlik kuralı sınırında). Daha büyük çizim isteyin.`);
     const o = Math.min(1, olcek);
     for (let i = 0; i < t.cik.length; i++) kayit.pozlar.push(await webpYaz(`${sayfa}-${k.id}-${i + 1}`, t.cik[i].buf, o));
     if (k.olcme !== false && yer) {
       // poz 1'in tabanı ve ortası fark bölgesinin tabanına ve ortasına oturur
       const p1 = t.cik[0];
-      const TWs = (t.TW * olcek) / SAYFA_PX, THs = (t.TH * olcek) / SAYFA_PX;
-      const p1x = ((p1.left + p1.w / 2) * olcek) / SAYFA_PX, p1y = ((p1.top + p1.h) * olcek) / SAYFA_PX;
+      const TWs = (t.TW * olcek) / PW, THs = (t.TH * olcek) / PH;
+      const p1x = ((p1.left + p1.w / 2) * olcek) / PW, p1y = ((p1.top + p1.h) * olcek) / PH;
       const hedefX = yer[0] + yer[2] / 2, hedefY = yer[1] + yer[3];
       kayit.kutu = [hedefX - p1x, hedefY - p1y, TWs, THs].map(yuvarla);
       kontrol.push({ id: k.id, kutu: kayit.kutu });
@@ -244,7 +249,7 @@ async function sayfaIsle(sayfa, yerlesim, el) {
       const kokEl = el.kok?.[`${sayfa}/${k.id}/${parca}`];
       const kok = kokEl || (ust ? [0.5, 0.22] : [0.3, 0.66]);
       if (!kokEl) console.log(`  ${k.id}-${parca}: kök noktası tahmin (${kok}); yerlesim-el.json → kok ile düzeltin`);
-      const pw = (pt.TW * olcek) / SAYFA_PX, ph = (pt.TH * olcek) / SAYFA_PX;
+      const pw = (pt.TW * olcek) / PW, ph = (pt.TH * olcek) / PH;
       const lw = kayit.kutu ? kayit.kutu[2] : k.yer[2], lh = kayit.kutu ? kayit.kutu[3] : k.yer[3];
       const kw = pw / lw, kh = ph / lh;
       kayit.parcalar = kayit.parcalar || {};

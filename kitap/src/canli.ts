@@ -80,6 +80,14 @@ export class Sahne {
   readonly bulunan = new Set<string>();
   /** Resim (zemin) geldi mi; yoksa yer tutucu */
   readonly resimli: boolean;
+  /** Sayfa resminin eni / boyu (resim yoksa yer tutucu kare) */
+  readonly oran: number;
+  /** Yalnız tam sayfa resmi var (zemin/poz katmanı yok): anlar hafif efektle oynar */
+  readonly tamSayfa: boolean;
+  private parilti: HTMLElement | null = null;
+  private parcaciklar: HTMLElement[] = [];
+  private parcacikSira = 0;
+  private sonTamDokunus = new Map<string, number>();
   /** Okuma sürüyor mu (ipucu ve söz beklesin) */
   okumaSuruyor: () => boolean = () => false;
 
@@ -88,6 +96,8 @@ export class Sahne {
     const y = o.varlik.yerlesim.sayfalar[anahtar];
     const zemin = o.varlik.url(y?.zemin) ?? o.varlik.url(y?.tam);
     this.resimli = !!zemin;
+    this.oran = zemin && y?.boy ? y.boy[0] / y.boy[1] : 1;
+    this.tamSayfa = !!y?.tam && !y?.zemin && !!zemin;
     this.tuval = document.createElement('div');
     this.tuval.className = 'kt-tuval';
     this.el = document.createElement('div');
@@ -121,6 +131,11 @@ export class Sahne {
     for (const t of o.canli?.katmanlar ?? []) {
       if (!canliKatman) continue;
       this.katmanKur(t, y?.katmanlar);
+    }
+    if (this.tamSayfa) {
+      this.tamKur();
+      this.ugurEl = this.ugurKur(o.canli?.tam?.ugur ?? o.canli?.ugur, true);
+      return;
     }
     for (const [ad, k] of Object.entries(o.canli?.bolgeler ?? {})) {
       const b = document.createElement('div');
@@ -200,13 +215,110 @@ export class Sahne {
     this.tuval.append(dis);
   }
 
-  private ugurKur(yer?: [number, number]): HTMLElement {
+  /** Tam sayfa: çizimdeki karakterlerin üstünde görünmez dokunma bölgeleri ve parıltı katmanı */
+  private tamKur() {
+    for (const [hedef, kk] of Object.entries(this.o.canli?.tam?.yerler ?? {})) {
+      const kutular = (Array.isArray(kk[0]) ? kk : [kk]) as Kutu[];
+      for (const k of kutular) {
+        const b = document.createElement('div');
+        b.className = 'kt-bolge kt-tam-bolge';
+        b.dataset.hedef = hedef;
+        Object.assign(b.style, { left: yuzde(k[0]), top: yuzde(k[1]), width: yuzde(k[2]), height: yuzde(k[3]) });
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.tamDokun(hedef, e);
+        });
+        this.tuval.append(b);
+      }
+    }
+    const p = document.createElement('div');
+    p.className = 'kt-parilti';
+    p.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 18; i++) {
+      const s = document.createElement('i');
+      p.append(s);
+      this.parcaciklar.push(s);
+    }
+    this.tuval.append(p);
+    this.parilti = p;
+  }
+
+  /** Parıltı: noktadan saçılan küçük yıldızlar (transform/opacity) */
+  private parilda(x: number, y: number, adet = 7, buyuk = 1) {
+    if (!this.parilti) return;
+    const w = this.tuval.clientWidth || 1;
+    for (let i = 0; i < adet; i++) {
+      const s = this.parcaciklar[this.parcacikSira++ % this.parcaciklar.length];
+      const a = (i / adet) * Math.PI * 2 + Math.random() * 0.6;
+      const d = w * (0.05 + Math.random() * 0.05) * buyuk;
+      const b = (0.6 + Math.random() * 0.6) * buyuk;
+      s.getAnimations().forEach((q) => q.cancel());
+      s.style.left = `${x}px`;
+      s.style.top = `${y}px`;
+      s.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 0 },
+          { transform: `translate(calc(-50% + ${(Math.cos(a) * d * 0.45).toFixed(1)}px), calc(-50% + ${(Math.sin(a) * d * 0.45).toFixed(1)}px)) scale(${b.toFixed(2)})`, opacity: 1, offset: 0.35 },
+          { transform: `translate(calc(-50% + ${(Math.cos(a) * d).toFixed(1)}px), calc(-50% + ${(Math.sin(a) * d).toFixed(1)}px)) scale(0.1)`, opacity: 0 },
+        ],
+        { duration: 650 + Math.random() * 200, easing: 'ease-out' },
+      );
+    }
+  }
+
+  /** Tam sayfada bir ana dokunuldu: parıltı + ses (+ karakter sözü) + resmin ufak sekmesi; karakter kesilmez */
+  private tamDokun(hedef: string, e: MouseEvent) {
+    this.etkilesim();
+    const an = (this.o.canli?.anlar ?? []).find((a) => a.dokun.includes(hedef));
+    const r = this.tuval.getBoundingClientRect();
+    const sx = r.width / (this.tuval.offsetWidth || r.width || 1);
+    const x = (e.clientX - r.left) / (sx || 1);
+    const y = (e.clientY - r.top) / (sx || 1);
+    this.parilda(x, y);
+    if (!an || !this.calisiyor) return;
+    const simdi = performance.now();
+    if (simdi - (this.sonTamDokunus.get(an.id) ?? -1e9) < 450) return;
+    this.sonTamDokunus.set(an.id, simdi);
+    if (!this.bulunan.has(an.id)) {
+      this.bulunan.add(an.id);
+      this.o.bulundu?.(an.id);
+    }
+    let adimlar = an.adimlar;
+    if (an.sirali) {
+      const i = this.sira.get(an.id) ?? 0;
+      adimlar = an.sirali[i % an.sirali.length];
+      this.sira.set(an.id, i + 1);
+    }
+    const ses = adimlar.find((a) => a.efekt)?.efekt ?? (adimlar.some((a) => a.ef === 'ez') ? 'pof' : adimlar.some((a) => a.ef === 'zipla' || a.ef === 'esne') ? 'sicrama' : 'tink');
+    efekt[ses]?.();
+    const soz = adimlar.find((a) => a.soz)?.soz;
+    if (soz) this.o.soz?.(soz.kim, soz.metin);
+    this.el.dataset.oynayan = an.id;
+    this.el.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-2.2%)' }, { transform: 'translateY(0)' }, { transform: 'translateY(-0.7%)' }, { transform: 'translateY(0)' }], { duration: 420, easing: 'ease-out' });
+  }
+
+  private ugurKur(yer?: [number, number], cizili = false): HTMLElement {
     const u = document.createElement('button');
     u.type = 'button';
-    u.className = 'kt-ugur';
+    u.className = cizili ? 'kt-ugur kt-ugur-cizili' : 'kt-ugur';
     u.setAttribute('aria-label', 'Uğur böceği');
     const [x, y] = yer ?? [0.5, 0.05];
     Object.assign(u.style, { left: yuzde(x), top: yuzde(y) });
+    if (cizili) {
+      // uğur böceği çizimin içinde: yalnız dokunma alanı (görünmez), dokununca parıltı
+      u.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.etkilesim();
+        if (!this.bulunan.has('ugur')) {
+          this.bulunan.add('ugur');
+          this.o.bulundu?.('ugur');
+        }
+        efekt.tink();
+        this.parilda(u.offsetLeft + u.offsetWidth / 2, u.offsetTop + u.offsetHeight / 2, 9, 0.7);
+      });
+      this.tuval.append(u);
+      return u;
+    }
     const kareler = (this.o.varlik.yerlesim.ugur ?? []).map((a) => this.o.varlik.url(a));
     if (kareler.length && kareler.every(Boolean)) {
       for (const a of kareler) {
@@ -229,6 +341,13 @@ export class Sahne {
 
   /** Kırpma: kare resim sayfa kutusunu kaplar (kenarlardan eşit kırpılır), ortadaki güvenli alan hep görünür */
   boyutla(w: number, h: number) {
+    if (this.resimli) {
+      // çizim kırpılmaz, oranıyla sığar (resim alanı zaten çizimin oranında: kitapOlcusu)
+      const tw = Math.min(w, h * this.oran);
+      const th = tw / this.oran;
+      Object.assign(this.tuval.style, { width: `${tw}px`, height: `${th}px`, left: `${(w - tw) / 2}px`, top: `${(h - th) / 2}px`, fontSize: `${tw / 100}px` });
+      return;
+    }
     const s = Math.max(w, h);
     Object.assign(this.tuval.style, { width: `${s}px`, height: `${s}px`, left: `${(w - s) / 2}px`, top: `${(h - s) / 2}px`, fontSize: `${s / 100}px` });
   }
@@ -395,6 +514,18 @@ export class Sahne {
     }
     if (performance.now() - this.sonEtkilesim < IPUCU_MS) return;
     this.sonEtkilesim = performance.now();
+    if (this.tamSayfa) {
+      // tam sayfa: bulunmamış bir anın bölgesinde birkaç küçük parıltı (yönlendirme yok)
+      const yerler = this.o.canli?.tam?.yerler ?? {};
+      const adaylar = (this.o.canli?.anlar ?? []).filter((a) => !this.bulunan.has(a.id) && a.dokun.some((d) => d in yerler));
+      const an = adaylar[this.ipucuSayaci++ % Math.max(1, adaylar.length)];
+      const el = an ? this.tuval.querySelector<HTMLElement>(`.kt-tam-bolge[data-hedef="${an.dokun.find((d) => d in yerler)}"]`) : !this.bulunan.has('ugur') ? this.ugurEl : null;
+      if (el) {
+        el.dataset.ipucu = String(this.ipucuSayaci);
+        this.parilda(el.offsetLeft + el.offsetWidth / 2, el.offsetTop + el.offsetHeight * 0.4, 4, 0.55);
+      }
+      return;
+    }
     const anlar = (this.o.canli?.anlar ?? []).filter((a) => a.dokun.length && !this.bulunan.has(a.id));
     const sec = anlar[this.ipucuSayaci++ % Math.max(1, anlar.length)];
     if (sec) {

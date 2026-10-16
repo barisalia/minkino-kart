@@ -2,19 +2,26 @@
  * Kitabın ekrandaki ölçüleri (saf; birim testi tests/unit/kitap.test.ts).
  *
  * Telefon önce: yatayda (844×390, 667×375) açık iki sayfa (solda resim, sağda yazı), dikeyde (390×844) tek sayfa
- * (üstte resim, altta yazı). Sayfa resmi kare (Gemini 2K: 2048×2048) ve sayfa kutusunu kaplar; netlik kuralı:
- * resim kutusunun uzun kenarı × 3 (DPR) ≤ 2048 → en çok 682 px.
+ * (üstte resim, altta yazı).
+ *
+ * Netlik kuralı (src/ui/netlik.ts): resim kaynak pikselinin üstüne büyütülmez: ekrandaki en × 3 (DPR) ≤ kaynak eni.
+ * Resim kırpılmaz, oranıyla sığar. İlk teslim 1376×768: resim alanı en çok 458×256 CSS px; telefonda yatayda sol
+ * sayfaya (kenar payıyla) ve dikeyde tam ene sığar, ikisi de sınırın altında. Daha büyük çizim gelince
+ * (yerlesim.json → boy) alan kendiliğinden büyür.
  */
-export const RESIM_KAYNAK = 2048;
-export const NETLIK_DPR = 3;
-export const RESIM_EN_BUYUK = Math.floor(RESIM_KAYNAK / NETLIK_DPR);
+import { NETLIK_DPR } from '../../src/ui/netlik';
+
+/** Sayfa resminin kaynak boyu (Antigravity tam sayfa teslimi, 2026-10-17) */
+export const VARSAYILAN_KAYNAK: [number, number] = [1376, 768];
+export { NETLIK_DPR };
 
 export interface KitapOlcu {
   yatay: boolean;
   /** Bir sayfanın eni / boyu (CSS px) */
   pw: number;
   ph: number;
-  /** Dikeyde sayfanın üstündeki resim alanının boyu (yatayda = ph) */
+  /** Resim alanı (CSS px): kaynağın oranında, kaynak eni / 3'ü aşmaz */
+  resimW: number;
   resimH: number;
   /** Kitabın (açık hâlinin) ekrandaki sol üst köşesi */
   x: number;
@@ -25,23 +32,27 @@ export interface KitapOlcu {
 const YAN = 62;
 const UST = 64;
 const KENAR = 10;
+/** Yatayda resim levhasının sayfa kenarına payı */
+export const LEVHA_PAY = 12;
 
-export function kitapOlcusu(w: number, h: number): KitapOlcu {
+/** Kaynağa göre resim alanının en büyük eni (CSS px) */
+export const resimEnCok = (kaynak: [number, number] = VARSAYILAN_KAYNAK) => Math.floor(kaynak[0] / NETLIK_DPR);
+
+export function kitapOlcusu(w: number, h: number, kaynak: [number, number] = VARSAYILAN_KAYNAK): KitapOlcu {
   const yatay = w > h * 1.08;
+  const oran = kaynak[0] / kaynak[1];
+  const enCok = resimEnCok(kaynak);
   if (yatay) {
     const H = h - 2 * KENAR;
-    let pw = Math.min((w - 2 * YAN) / 2, H * 1.08, RESIM_EN_BUYUK);
-    // dar sayfa resmi yanlardan çok kırpar: en/boy ≥ 0.76 (resmin ortadaki %70'i hep görünür)
-    let ph = Math.min(H, pw / 0.76, RESIM_EN_BUYUK);
-    pw = Math.floor(pw);
-    ph = Math.floor(ph);
-    return { yatay, pw, ph, resimH: ph, x: Math.round((w - 2 * pw) / 2), y: Math.round((h - ph) / 2) };
+    const pw = Math.floor(Math.min((w - 2 * YAN) / 2, H * 1.08));
+    const ph = Math.floor(Math.min(H, pw / 0.76));
+    const resimW = Math.floor(Math.min(pw - 2 * LEVHA_PAY, enCok));
+    return { yatay, pw, ph, resimW, resimH: Math.floor(resimW / oran), x: Math.round((w - 2 * pw) / 2), y: Math.round((h - ph) / 2) };
   }
   const pw = Math.floor(Math.min(w - 2 * 12, (h - UST - 14) * 0.72));
   const ph = Math.floor(Math.min(h - UST - 14, pw * 2.2));
-  // resim alanı: en/boy 0.95..1.12 arası (kare resimden üst-alt az kırpılır), netlik sınırı içinde
-  const resimH = Math.floor(Math.min(RESIM_EN_BUYUK, Math.max(pw / 1.12, Math.min(pw / 0.95, ph * 0.5))));
-  return { yatay, pw, ph, resimH, x: Math.round((w - pw) / 2), y: UST };
+  const resimW = Math.floor(Math.min(pw, enCok));
+  return { yatay, pw, ph, resimW, resimH: Math.floor(resimW / oran), x: Math.round((w - pw) / 2), y: UST };
 }
 
 /** Sayfa sırası: 0 kapak, 1..14 sayfalar, 15 son (ebeveyn sayfası) */

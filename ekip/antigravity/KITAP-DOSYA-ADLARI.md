@@ -4,6 +4,8 @@
 > Metin: [../senaryo/KITAP-MINO-KINO.md](../senaryo/KITAP-MINO-KINO.md) §2.5. Yazı resme **basılmaz**; başlığı, metni, konuşmaları kod basar.
 > Sıra ISTEK-01'deki gibi: (1) model sayfaları + kapak → Barış onayı → (2) sayfalar ve hareket sayfaları. Her teslimi `CEVAP-01.md`'ye yaz.
 
+> **GÜNCELLEME 2026-10-17 (ilk teslimden sonra):** Tam sayfalar 16:9 (1376x768) geldi ve kitaba bağlandı (`antigravity-1376/kapak.jpg`, `sayfa-01.jpg` …; `kitap-isle.cjs` bu adları da okur). Kitap artık resmi **kırpmadan, oranıyla** gösterir; bu yüzden aşağıdaki "kare 1:1" ve "kadraj güvenli alanı" kuralları geçersiz: **sayfa resmi 16:9**, tercihen **2752x1536** (1376x768 çalışır ama resim alanı en çok 458 px enle sınırlı kalır). **`sNN-zemin.png` ve hareket sayfaları, o sayfanın tam resmiyle aynı oranda ve aynı kadrajda olmalı.** Uğur böceği tam sayfada çizili geldi; çizili kalabilir (dokunma alanı çizimdeki yerinde). Ayrı `ortak-ugur.png` gelirse kanat açma animasyonu için kullanılır, o zaman zeminde uğur olmamalı.
+
 ## 1. Kayıt yeri ve genel kurallar
 
 - Klasör: `ekip/gemini/yeni/kitap-okul/` (ana çalışma klasöründe). Ad küçük harf, Türkçe harfsiz, `.png`.

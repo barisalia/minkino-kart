@@ -73,10 +73,16 @@ test('yatay 844×390: raf, 3D kitap, kapak açılır, sürükleyerek ve köşede
   await expect(page.locator('.kt-kitap.kt-yatay .kt-sayfa-sag .kt-metin')).toContainText('Pazartesi sabahıydı.');
   // ses etiketi basılmaz
   await expect(page.locator('.kt-sayfa-sag')).not.toContainText('[excited]');
-  // canlanan an: Lokum'a dokununca poz değişir (esner)
-  await page.locator('.kt-sayfa-sol .kt-katman[data-katman="lokum"]').click();
-  await expect.poll(() => page.locator('.kt-sayfa-sol .kt-katman[data-katman="lokum"]').getAttribute('data-poz')).not.toBe('1');
-  // uğur böceği
+  // Antigravity'nin tam sayfa çizimi bağlı (yer tutucu yok); zemin/poz katmanları gelene kadar karakter kesilmez
+  await expect(page.locator('.kt-sayfa-sol img.kt-zemin')).toHaveAttribute('src', /s01-tam/);
+  await expect(page.locator('.kt-sayfa-sol .kt-yertutucu')).toHaveCount(0);
+  await expect(page.locator('.kt-sayfa-sol .kt-katman')).toHaveCount(0);
+  // canlanan an (tam sayfa): Lokum'a dokununca hafif efekt (parıltı, ses, resmin sekmesi) ve an bulunur
+  await page.locator('.kt-sayfa-sol .kt-tam-bolge[data-hedef="lokum"]').click();
+  await expect(page.locator('.kt-sayfa-sol .kt-resim')).toHaveAttribute('data-oynayan', 'esne');
+  // uğur böceği çizimin içinde: ayrı katman yok, dokunma alanı çizimdeki yerinde
+  await expect(page.locator('.kt-sayfa-sol .kt-ugur.kt-ugur-cizili')).toHaveCount(1);
+  await expect(page.locator('.kt-sayfa-sol .kt-ugur img, .kt-sayfa-sol .kt-ugur-yt')).toHaveCount(0);
   await page.locator('.kt-sayfa-sol .kt-ugur').click();
   // sürükleyerek ileri
   await surukle(page, 1);
