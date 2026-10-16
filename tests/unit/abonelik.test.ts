@@ -4,7 +4,7 @@ import { aynaDepo, aynala, geriYukle, type KaliciDepo } from '../../src/kabuk/ka
 import { ayaBol, denemeGunu } from '../../src/abonelik/satin';
 import { KAPI_BASAMAK, KAPI_HAK, kapiBeklemesi, kapiSorusu, sayiYazi } from '../../src/ui/ebeveyn-kapisi';
 import { geriKarari, menuSayfasiMi } from '../../src/kabuk/yon';
-import { KINO_OTOBUS_MENUDE, MINO_GIYSIN_MENUDE, menuOyunlari, OYUNLAR } from '../../uygulama/src/oyunlar';
+import { KINO_OTOBUS_MENUDE, MINO_GIYSIN_MENUDE, menuOyunlari, OYUNLAR, RESTORAN_MENUDE } from '../../uygulama/src/oyunlar';
 import { katalog } from '../../film/src/katalog';
 
 describe('erişim tablosu', () => {
@@ -38,12 +38,18 @@ describe('erişim tablosu', () => {
 
 describe('uygulama menüsü', () => {
   it('web ve uygulama: aynı 8 kart (Kino’nun Otobüsü açılınca 9), sıra korunur, Pasta geniş ve sonda', () => {
-    const beklenen = ['kartlar', 'pazar', 'canlan', 'macera', 'film', 'dedektif', 'giysin', ...(MINO_GIYSIN_MENUDE ? ['mino-giysin'] : []), ...(KINO_OTOBUS_MENUDE ? ['kino-otobus'] : []), 'pasta'];
+    const beklenen = ['kartlar', 'pazar', 'canlan', 'macera', 'film', 'dedektif', 'giysin', ...(MINO_GIYSIN_MENUDE ? ['mino-giysin'] : []), ...(KINO_OTOBUS_MENUDE ? ['kino-otobus'] : []), ...(RESTORAN_MENUDE ? ['restoran'] : []), 'pasta'];
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
       expect(u.map((k) => k.id)).toEqual(beklenen);
       expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['pasta']);
       const normal = u.filter((k) => !k.genis).length;
-      if (MINO_GIYSIN_MENUDE && KINO_OTOBUS_MENUDE) {
+      if (RESTORAN_MENUDE && MINO_GIYSIN_MENUDE && KINO_OTOBUS_MENUDE) {
+        // data-adet='11': 10 normal + geniş Pasta (2 hücre); telefon dikey 2 × 6, yatay telefon 6 × 2, 3 sütun 3 × 4
+        expect(normal).toBe(10);
+        expect((normal + 2) % 2).toBe(0);
+        expect((normal + 2) % 6).toBe(0);
+        expect((normal + 2) % 3).toBe(0);
+      } else if (MINO_GIYSIN_MENUDE && KINO_OTOBUS_MENUDE) {
         // data-adet='10': 9 normal + geniş Pasta; telefon dikey 2 × 5 ve yatay telefon 5 × 2 (Pasta 1 hücre);
         // 3 sütun (tablet) 3 × 4 (Pasta tam sıra, 3 hücre). Kino ve Mino Ne Giysin? yan yana (7. ve 8.)
         expect(normal).toBe(9);

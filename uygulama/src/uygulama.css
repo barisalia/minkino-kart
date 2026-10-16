@@ -890,10 +890,10 @@
 /* ---------- Yatay telefon (uygulamada telefon hep yatay): 4 × 2 kart ekranın boyunu doldurur, adlar iki satıra sığar ----------
    (ızgara en-boy oranına bağlı kalmaz, altta boş şerit kalmaz; çentik ve alt çubuk dışarıda) */
 @media (orientation: landscape) and (max-height: 500px) {
-  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'])) .ug-giris {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'], [data-adet='11'])) .ug-giris {
     width: clamp(120px, 23vw, 260px);
   }
-  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10']) {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'], [data-adet='11']) {
     width: 100%;
     max-width: 1200px;
     height: calc(100dvh - var(--ust) - var(--alt) - 8px);
@@ -901,7 +901,7 @@
     gap: clamp(8px, 2.6dvh, 14px) clamp(8px, 1.5vw, 14px);
     padding: 6px 0 8px;
   }
-  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10']) .ug-kart-ad {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'], [data-adet='11']) .ug-kart-ad {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -916,15 +916,15 @@
 /* küçük yatay telefon (667 × 375, iPhone SE / 8): sol sütun (logo, Mino ile Kino) daralır, kenar payı ve aralıklar bir
    tık incelir: kartlar iri kalır. Çentik ve alt çubuk payı korunur (env); 844 / 932 px'lik telefonlar etkilenmez. */
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
-  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'])) {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'], [data-adet='11'])) {
     gap: 10px;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
   }
-  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'])) .ug-giris {
+  .ug-kok .ug-menu:has(.ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'], [data-adet='11'])) .ug-giris {
     width: clamp(100px, 18vw, 130px);
   }
-  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10']) {
+  .ug-kok .ug-izgara:is([data-adet='8'], [data-adet='9'], [data-adet='10'], [data-adet='11']) {
     column-gap: 8px;
   }
 }
@@ -1250,6 +1250,62 @@
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
   .ug-kok .ug-menu:has(.ug-izgara[data-adet='10']) .ug-giris {
     width: clamp(92px, 14vw, 110px);
+  }
+}
+
+/* ---------- 11 kart (Tıkır Tıkır Lokanta menüde, Pasta'dan önce: oyunlar.ts → RESTORAN_MENUDE) ----------
+   10 normal + geniş Pasta (iki hücre; .ug-tek): telefon dikey 2 × 6, yatay telefon 6 × 2, 3 sütunda (tablet dikey ve
+   4:3 / 3:2 yatay) 3 × 4. Hücre sayısı her ızgarada 12, boşluksuz. */
+.ug-kok .ug-izgara[data-adet='11'] {
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+}
+@media (orientation: portrait) and (max-width: 599px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='11']) .ug-giris {
+    height: clamp(88px, 11dvh, 130px);
+  }
+  .ug-kok .ug-izgara[data-adet='11'] {
+    row-gap: 8px;
+  }
+}
+@media (min-width: 600px) and (orientation: portrait) {
+  .ug-kok .ug-izgara[data-adet='11'] {
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='11'] .ug-kart-yer.ug-genis {
+    grid-column: span 2;
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='11'] .ug-genis .ug-kart-ad {
+    --ad: 4.7cqi;
+  }
+}
+@media (orientation: landscape) {
+  .ug-kok .ug-izgara[data-adet='11'] {
+    --oran: 2.3;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .ug-kok .ug-izgara[data-adet='11'] {
+    --oran: 1.05;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='11'] .ug-kart-yer.ug-genis {
+    grid-column: span 2;
+  }
+  .ug-kok .ug-izgara.ug-tek[data-adet='11'] .ug-genis .ug-kart-ad {
+    --ad: 4.7cqi;
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='11']) .ug-giris {
+    width: clamp(100px, 16vw, 200px);
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 760px) {
+  .ug-kok .ug-menu:has(.ug-izgara[data-adet='11']) .ug-giris {
+    width: clamp(84px, 12vw, 100px);
   }
 }
 

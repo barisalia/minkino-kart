@@ -25,8 +25,10 @@ export interface RestoranKayit {
   pano: Record<string, string[]>;
   /** Babaanne'nin açılışı gösterildi mi */
   ilkOyun: boolean;
-  /** masa örtüsü (dilimin gün sonu: §13) */
+  /** masa örtüsü (defterin süs sekmesi): bütün masalara serilir */
   ortu: string | null;
+  /** dün defterden alınan tarif: bugün bir müşteri mutlaka ister, Babaanne tadına bakmaya gelir (P4) */
+  yeniTarif: string | null;
 }
 
 export const bosKayit = (): RestoranKayit => ({
@@ -35,12 +37,13 @@ export const bosKayit = (): RestoranKayit => ({
   gun: 0,
   jeton: 0,
   acilan: { tarif: [...ILK_TARIFLER], alet: [], masa: ['masa-1', 'masa-2'], sus: [], bolum: [] },
-  yerlesim: { masa: {}, sus: {} },
+  yerlesim: { masa: { '0': 'masa-1', '1': 'masa-2' }, sus: {} },
   menu: [...ILK_TARIFLER],
   gorulen: [],
   pano: {},
   ilkOyun: false,
   ortu: null,
+  yeniTarif: null,
 });
 
 const dizi = (v: unknown, yedek: string[]): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : yedek);
@@ -57,18 +60,28 @@ export function kayitCoz(ham: unknown): RestoranKayit {
   if (o.pano && typeof o.pano === 'object') for (const [k, v] of Object.entries(o.pano)) pano[k] = dizi(v, []);
   const tarif = dizi(a.tarif, b.acilan.tarif);
   for (const t of ILK_TARIFLER) if (!tarif.includes(t)) tarif.unshift(t);
+  const masa = dizi(a.masa, b.acilan.masa);
+  for (const m of ['masa-1', 'masa-2']) if (!masa.includes(m)) masa.unshift(m);
+  // göç (P1 kaydı): masa yerleşimi yoksa masalar sırayla ilk yuvalara
+  const yMasa = kayitNesne(y.masa);
+  const yerde = new Set(Object.values(yMasa));
+  for (const m of masa) if (!yerde.has(m)) {
+    const bos = (m.startsWith('bahce-') ? ['4', '5'] : ['0', '1', '2', '3']).find((i) => !yMasa[i]);
+    if (bos) yMasa[bos] = m;
+  }
   return {
     surum: 1,
     yas: o.yas === 'kucuk' || o.yas === 'buyuk' ? o.yas : null,
     gun: Math.max(0, Math.floor(Number(o.gun) || 0)),
     jeton: Math.max(0, Math.floor(Number(o.jeton) || 0)),
-    acilan: { tarif, alet: dizi(a.alet, []), masa: dizi(a.masa, b.acilan.masa), sus: dizi(a.sus, []), bolum: dizi(a.bolum, []) },
-    yerlesim: { masa: kayitNesne(y.masa), sus: kayitNesne(y.sus) },
+    acilan: { tarif, alet: dizi(a.alet, []), masa, sus: dizi(a.sus, []), bolum: dizi(a.bolum, []) },
+    yerlesim: { masa: yMasa, sus: kayitNesne(y.sus) },
     menu: dizi(o.menu, b.menu),
     gorulen: dizi(o.gorulen, []).slice(-16),
     pano,
     ilkOyun: o.ilkOyun === true,
     ortu: typeof o.ortu === 'string' ? o.ortu : null,
+    yeniTarif: typeof o.yeniTarif === 'string' && tarif.includes(o.yeniTarif) ? o.yeniTarif : null,
   };
 }
 

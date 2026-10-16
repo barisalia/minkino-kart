@@ -166,6 +166,8 @@ export function menuOyunlari(uygulama: boolean): OyunKarti[] {
   }
   // Kitaplar: geniş Pasta kartından önce (bayrak açılınca)
   if (KITAP_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), KITAP_KARTI, ...hepsi.filter((k) => k.genis)];
+  // Tıkır Tıkır Lokanta: geniş Pasta kartından önce (bayrak açılınca; 11 kart ızgarası)
+  if (RESTORAN_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), RESTORAN_KARTI, ...hepsi.filter((k) => k.genis)];
   if (!uygulama) return hepsi;
   return hepsi.filter((k) => !k.uygulamadaYok);
 }
@@ -211,6 +213,21 @@ export const KITAP_KARTI: OyunKarti = {
   ad: 'Kitaplar',
   adres: './kitap/',
   renk: '#E2683C',
+  rozet: 'Yeni',
+  katmanlar: [],
+};
+/**
+ * Tıkır Tıkır Lokanta (restoran/, ekip/senaryo/RESTORAN.md): Barış oynayıp "tamam" deyince true olur. false: menüde yok,
+ * sayfa uygulama derlemesine girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /restoran/ adresinden açılır.
+ * true olunca menü 11 kart (uygulama.css → data-adet='11': telefon dikey 2 × 6, yatay 6 × 2, tablet 3 × 4; Pasta iki
+ * hücre). Kart resmi: Gemini 'kapak' (assets/restoran/arka/kapak.webp) gelince zemin; gelene kadar düz renk.
+ */
+export const RESTORAN_MENUDE = false;
+export const RESTORAN_KARTI: OyunKarti = {
+  id: 'restoran',
+  ad: 'Tıkır Tıkır Lokanta',
+  adres: './restoran/',
+  renk: '#E8483A',
   rozet: 'Yeni',
   katmanlar: [],
 };

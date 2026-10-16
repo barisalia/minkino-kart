@@ -2,7 +2,7 @@ import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
-import { KINO_OTOBUS_MENUDE, KITAP_MENUDE, MINO_GIYSIN_MENUDE, PATI_MENUDE } from './uygulama/src/oyunlar';
+import { KINO_OTOBUS_MENUDE, KITAP_MENUDE, MINO_GIYSIN_MENUDE, PATI_MENUDE, RESTORAN_MENUDE } from './uygulama/src/oyunlar';
 
 // Ayrı uygulamalar: ana menü (/), kart oyunu (/kartlar/), Çiz Canlansın (/canlan/), Uyuyan Orman (/orman/),
 // Mino'nun Pazarı (/pazar/), Mino'nun Pasta Otobüsü (/pasta/), Dedektif Mino (/dedektif/) …; /uygulama/ eski menü adresi, köke yönlendirir;
@@ -49,7 +49,7 @@ const SAYFALAR = {
  *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', 'restoran', 'restoranMini', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(MINO_GIYSIN_MENUDE ? [] : ['minoGiysin']), ...(KITAP_MENUDE ? [] : ['kitap'])];
+const UYGULAMADA_YOK = ['sesTesti', 'orman', 'uygulama', 'gizlilik', 'sartlar', 'oyunlu', ...(RESTORAN_MENUDE ? [] : ['restoran']), 'restoranMini', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(MINO_GIYSIN_MENUDE ? [] : ['minoGiysin']), ...(KITAP_MENUDE ? [] : ['kitap'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 

@@ -87,6 +87,8 @@ const SAYFALAR = {
   'istasyon-firin-dikey': { tur: 'arka', ad: 'istasyon/firin-dikey' },
   'istasyon-mangal': { tur: 'arka', ad: 'istasyon/mangal' },
   'masalar': { tur: 'esya', grup: 'sus', max: 1600, adlar: ['masa', 'masa-kareli', 'masa-cicekli', 'masa-puantiyeli', 'masa-cocuk', 'masa-bahce', 'mama-sandalyesi'] },
+  // #47 süs sayfası (P4: lokanta/yerlesim.ts → sus/<ad>; gelene kadar projedeki onaylı eşyalar)
+  'sus-1': { tur: 'esya', grup: 'sus', max: 1200, adlar: ['perde', 'saksi', 'bitki', 'resim', 'avize', 'akvaryum', 'gramofon', 'babaanne-foto', 'saat', 'flama', 'fener', 'menu-tahtasi'] },
   'bahce-yatay': { tur: 'arka', ad: 'arka/bahce-yatay' },
   'bahce-dikey': { tur: 'arka', ad: 'arka/bahce-dikey' },
   'lokanta-dis': { tur: 'arka', ad: 'arka/lokanta-dis' },

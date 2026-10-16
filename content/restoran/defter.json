@@ -1,0 +1,46 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · P4 ekonomi ve büyüme sözleri (ekip/senaryo/RESTORAN.md §6): Babaanne'nin açılışı, menü tahtası, gün sonu, Babaanne'nin Defteri, yerleştirme, yeni tarif. mino = anlatıcı sesi (durum anlatır, emir vermez). babaanne = Babaanne'nin kendi Seri 2 sesi (eleven_v4; anlatıcı yedeği yok, kayıt gelene dek balonda yazı). kino = Kino'nun sesi. ad = Mino'nun defter kartlarına dokununca söylediği adlar.",
+  "mino": {
+    "menu": "[curious] Bugün ne pişirsek?",
+    "menu_tamam": "[excited] Menü hazır!",
+    "defter": "[happy] Babaannenin defteri!",
+    "yetmedi": "[curious] Biraz daha biriktirelim.",
+    "yer_sec": "[curious] Nereye koysak acaba?",
+    "yerlesti": "[happy] Ne güzel oldu!",
+    "kumbara": "[happy] Kumbaraya, yarına!",
+    "yeni_masa": "[excited] Yeni masa geldi!",
+    "yeni_tarif": "[excited] Yeni bir tarif!",
+    "yeni_alet": "[excited] Mutfağa yeni bir alet!",
+    "bahce": "[excited] Bahçe açıldı!",
+    "pano": "[happy] Panoda fotoğrafı var!",
+    "kilit": "[softly] Yarın için büyükler lazım."
+  },
+  "ad": {
+    "sekme": { "tarif": "Tarifler!", "masa": "Masalar!", "sus": "Süsler!", "bolum": "Bahçe!" },
+    "ortu-kareli": "Kareli örtü!",
+    "ortu-cicekli": "Çiçekli örtü!",
+    "ortu-puantiyeli": "Puantiyeli örtü!",
+    "saksi": "Çiçekli saksı!",
+    "bitki": "Yapraklı bitki!",
+    "resim": "Duvar resmi!",
+    "avize": "Avize!",
+    "akvaryum": "Akvaryum!",
+    "masa": "Yeni masa!",
+    "bahce": "Bahçe!"
+  },
+  "babaanne": {
+    "anahtar": "[happy] Lokanta artık senin kuzum!",
+    "anahtar_aldi": "[softly] Kolay gelsin, şefim.",
+    "yeni_tarif": "[curious] Yeni yemek mi var?",
+    "tadi": "[happy] Maşallah kuzum!",
+    "defter": "[happy] Defterimde neler var?",
+    "hediye": "[giggles] Benden de kuzum!",
+    "aldi": "[happy] Hayırlı olsun!",
+    "biriktir": "[softly] Biriktirmek de güzel.",
+    "gule": "[softly] Yarın görüşürüz kuzum."
+  },
+  "kino": {
+    "dener": "[excited] Ben denerim!",
+    "oturdu": "[giggles] Tam oturdu!"
+  }
+}

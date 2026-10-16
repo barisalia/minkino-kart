@@ -141,10 +141,13 @@ for (const boy of TELEFON) {
       expect(enUzun).toBeLessThanOrEqual(0.4);
       expect(enAlan).toBeLessThanOrEqual(0.25);
       await expect(page.locator('.rs-gun-sonu')).toBeVisible();
-      await page.locator('.rs-gs-ortu[data-ortu="kareli"]').click();
-      await expect(page.locator('.rs-gs-yarin')).toBeVisible();
+      // gün sonu: Babaanne'nin Defteri (P4); süs sekmesinden kareli örtü (3 jeton)
+      await expect(page.locator('.rs-defter')).toBeVisible({ timeout: 20_000 });
+      await page.locator('.rs-df-sekme[data-sekme="sus"]').click();
+      await page.locator('.rs-df-kart[data-kalem="ortu-kareli"]').click();
+      await expect(page.locator('.rs-gs-yarin')).toBeVisible({ timeout: 20_000 });
       const kayit = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-restoran-v1') ?? '{}'));
-      expect(kayit).toMatchObject({ gun: 1, jeton: 9, ortu: 'kareli' });
+      expect(kayit).toMatchObject({ gun: 1, jeton: 6, ortu: 'kareli' });
       expect(kayit.pano.anne).toEqual(['limon']);
       await page.screenshot({ path: `tests/screens/restoran-${boy.ad}-gunsonu.png` });
       // ertesi gün: lokanta yeniden açılır, örtüler serili
@@ -159,6 +162,8 @@ for (const boy of TELEFON) {
       const hatalar = hataTopla(page);
       await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk&deneme=1');
       await page.goto('./restoran/?onizleme=1&ekran=lokanta&deneme=1');
+      // ilk oyun: Babaanne anahtarı uzatır (P4)
+      await page.locator('.rs-anahtar').click({ timeout: 20_000 });
       // müşteri kapıda hazır olunca boş masaya sürükle
       await expect.poll(async () => (await durum(page))?.kapida?.hazir, { timeout: 30_000 }).toBe(true);
       const kisi = page.locator('.rs-kisi[data-kisi="anne"]');
