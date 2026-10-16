@@ -161,4 +161,56 @@ export const ses = {
   ninni() {
     [76, 72, 67].forEach((n, i) => ton(NOTA(n), i * 0.35, 0.5, 'sine', 0.07));
   },
+
+  // ---------------------------------------------------------------- v2
+  /** tavşan: burun kıpırdatma "fıs fıs" (tavşan ses çıkarmaz, koklar) */
+  burun(kez = 1) {
+    for (let i = 0; i < kez * 2; i++) gurultu(i * 0.12, 0.07, 5200, 3600, 0.05, 4);
+  },
+  /** hamster / kobay: ince "vuik" */
+  vuik(kez = 1) {
+    for (let i = 0; i < kez; i++) egri([[0, 1500], [0.06, 2300], [0.14, 1800]], i * 0.2, 'triangle', 0.05);
+  },
+  /** kuş / civciv: "cik cik" */
+  cikcik(kez = 2) {
+    for (let i = 0; i < kez; i++) egri([[0, 2600], [0.04, 3400], [0.07, 2800]], i * 0.12, 'sine', 0.06);
+  },
+  /** ördek: "vak" */
+  vak(kez = 1) {
+    for (let i = 0; i < kez; i++) {
+      egri([[0, 420], [0.08, 380], [0.18, 300]], i * 0.24, 'sawtooth', 0.05);
+      gurultu(i * 0.24, 0.16, 900, 600, 0.04, 2);
+    }
+  },
+  /** jeton: "şıng" (sira: arka arkaya toplanınca ton yükselir) */
+  jeton(sira = 0) {
+    const n = 84 + Math.min(12, sira);
+    ton(NOTA(n), 0, 0.22, 'triangle', 0.09);
+    ton(NOTA(n + 7), 0.05, 0.3, 'sine', 0.06);
+    ton(NOTA(n + 19), 0.05, 0.12, 'sine', 0.02);
+  },
+  /** kapı zili: iki çan */
+  zil() {
+    ton(NOTA(88), 0, 0.9, 'sine', 0.08);
+    ton(NOTA(84), 0.22, 1.1, 'sine', 0.08);
+    ton(NOTA(100), 0, 0.3, 'sine', 0.015);
+  },
+  /** kalp doldu: yumuşak "ding" (kaçıncı kalp: ton yükselir) */
+  kalp(sira = 0) {
+    ton(NOTA(76 + sira * 4), 0, 0.35, 'sine', 0.08);
+    ton(NOTA(88 + sira * 4), 0.04, 0.25, 'triangle', 0.025);
+  },
+  /** dans müziği: vuruş başına bir nota (sira), kısa neşeli döngü */
+  dansNota(sira: number) {
+    const M = [72, 76, 79, 76, 81, 79, 76, 84];
+    const n = M[sira % M.length];
+    ton(NOTA(n), 0, 0.22, 'triangle', 0.07);
+    ton(NOTA(n - 24), 0, 0.18, 'sine', 0.06);
+    if (sira % 2 === 0) gurultu(0, 0.05, 7000, 5000, 0.03, 2);
+  },
+  /** yetmedi: aşağı inen iki yumuşak nota (ceza değil, "hımm") */
+  hmm() {
+    ton(NOTA(69), 0, 0.18, 'sine', 0.07);
+    ton(NOTA(65), 0.16, 0.26, 'sine', 0.07);
+  },
 };

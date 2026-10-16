@@ -1,18 +1,24 @@
 /**
- * Pati Dükkânı: TEK GÖRSEL HARİTASI. Dosya adları ekip/OYUN-GELISTIRME-3GUN.md §2-3 ile aynı.
+ * Pati Dükkânı: TEK GÖRSEL HARİTASI. Dosya adları ekip/senaryo/PATI-V2.md §11 (v1: ekip/OYUN-GELISTIRME-3GUN.md §2-3).
  *
  * Gemini çizimi gelince (ekip/illustrator/pati/pati-isle.cjs keser) dosya `assets/pati/<ad>.webp` olur; kod değişmez:
  * Vite derlemede klasörü tarar, dosya varsa o kullanılır, yoksa sıradaki yedek:
- * - hayvan pozu: `<hayvan>-<poz>.webp` → aynı hâlin yakın pozu → hayvanın modeli / kadro kesimi (geçici)
- * - eşya: `esya-<ad>.webp` (G4) → salonun içinden kesilmiş aynı stildeki `gecici-<ad>.webp`
- * Kodla çizilmiş eşya yok.
+ * - hayvan pozu: `<hayvan>-<poz>.webp` → aynı hâlin yakın pozu (POZ_YEDEK) → ana poz → model / kadro kesimi (geçici;
+ *   kod beden hareketiyle anlatır: data-yedek)
+ * - eşya: `esya-<ad>.webp` → salonun içinden kesilmiş aynı stildeki `gecici-<ad>.webp`
+ * - arayüz (ui-jeton sayfası, Gün 1): gelene kadar SADE YER TUTUCU (Pasta'nın jetonu ve kavanozu, düz kalp); kodla süslü
+ *   çizim yok.
+ *
+ * NETLİK (src/ui/netlik.ts): hiçbir resim kaynak pikselinin üstüne büyütülmez; DPR 3 sayılır → css boyu ≤ doğal px / 3.
  */
 import gozYamaJson from '../../assets/pati/goz-yama.json';
 import gecici from '../../assets/pati/gecici-yer.json';
-import type { EsyaAdi, HayvanAdi } from './ihtiyac';
+import { dogalBoyu, NETLIK_DPR } from '../../src/ui/netlik';
+import type { EsyaAdi } from './ihtiyac';
 
 const DOSYALAR = import.meta.glob<string>('../../assets/pati/*.webp', { eager: true, query: '?url', import: 'default' });
-const YENIDEN = import.meta.glob<string>('../../assets/kino-otobus/kase.webp', { eager: true, query: '?url', import: 'default' });
+const YENIDEN = import.meta.glob<string>(['../../assets/kino-otobus/kase.webp', '../../assets/pasta/jeton-1.webp', '../../assets/pasta/kumbara-kavanoz-1.webp'], { eager: true, query: '?url', import: 'default' });
+const yedekDosya = (ad: string) => Object.entries(YENIDEN).find(([y]) => y.endsWith(`/${ad}.webp`))?.[1] ?? null;
 
 const tablo = new Map<string, string>();
 for (const [yol, url] of Object.entries(DOSYALAR)) {
@@ -33,12 +39,32 @@ export const varMi = (ad: string) => tablo.has(ad);
 /** Salon arka planı (gündüz; gece eşi G7 gelince salon-gece) */
 export const SALON = adres('salon-gunduz')!;
 export const SALON_GECE = adres('salon-gece');
+/** v2 arka planları (2752×1536): yavru vitrini, Bakım Odası (paket 2), dükkânın önü (Gün 2; yoksa açılış içeride) */
+export const VITRIN = adres('vitrin-ic') ?? SALON;
+export const BAKIM_ODASI = adres('bakim-odasi');
+export const DIS_VITRIN = adres('dis-vitrin');
+export const ARKA_W = 2752;
+export const ARKA_H = 1536;
+
+/** Bir resmin ekranda en çok kaç css px boy olabileceği (netlik: doğal px / DPR 3); bilinmiyorsa null */
+export function enCokCssBoy(url: string): number | null {
+  const d = dogalBoyu(url);
+  return d ? d[1] / NETLIK_DPR : null;
+}
 
 // ---------------------------------------------------------------- hayvan pozları
-/** Hayvanın hâlleri; her biri bir poz ister. Yoksa aynı satırdaki yedek pozlar, en sonda model. */
-export type Poz = 'bos' | 'ac' | 'oyun' | 'usudu' | 'yiyor' | 'uyku' | 'sevinc' | 'top' | 'atla' | 'rahat' | 'uykulu' | 'yuz2';
+/**
+ * Hayvanın pozları. H (hareket): bos, goz, ac, oyun, yiyor, uyku, sevinc, ozel (v1: top, atla, rahat, usudu, uykulu,
+ * yuz1-2). B (bakım): susamis, iciyor, kirli, fircalanma, esneme, sikildi, hasta, hapsirma. T (tepki ve dans):
+ * begenmedi, iyy, saskin, islak, silkelen, dans-a, dans-b, dans-c.
+ */
+export type Poz =
+  | 'bos' | 'goz' | 'ac' | 'oyun' | 'usudu' | 'yiyor' | 'uyku' | 'sevinc' | 'top' | 'atla' | 'rahat' | 'uykulu' | 'yuz1' | 'yuz2' | 'ozel'
+  | 'susamis' | 'iciyor' | 'kirli' | 'fircalanma' | 'esneme' | 'sikildi' | 'hasta' | 'hapsirma'
+  | 'begenmedi' | 'iyy' | 'saskin' | 'islak' | 'silkelen' | 'dans-a' | 'dans-b' | 'dans-c';
 const POZ_YEDEK: Record<Poz, Poz[]> = {
   bos: [],
+  goz: [],
   ac: [],
   oyun: [],
   usudu: [],
@@ -50,40 +76,83 @@ const POZ_YEDEK: Record<Poz, Poz[]> = {
   rahat: ['uyku'],
   // uyku pozuna düşmez: akşam "Herkes uyusun" denince hayvan uyanık sallanır, dokununca kıvrılır (yoksa dokunuş görünmez)
   uykulu: [],
+  yuz1: [],
   yuz2: [],
+  ozel: ['oyun'],
+  susamis: [],
+  iciyor: ['yiyor'],
+  kirli: [],
+  // okşanma keyfi: gözler kapalı (H sayfasının göz karesi aynı duruşta)
+  fircalanma: ['rahat', 'goz'],
+  esneme: ['uykulu'],
+  sikildi: [],
+  hasta: [],
+  hapsirma: [],
+  begenmedi: [],
+  iyy: ['begenmedi'],
+  saskin: [],
+  islak: [],
+  silkelen: [],
+  'dans-a': ['sevinc', 'atla'],
+  'dans-b': ['oyun', 'atla'],
+  'dans-c': ['ozel', 'top', 'sevinc'],
 };
-/** Poz sayfası gelmeden kullanılan tek resim (kadro kesimi / model) */
-const MODEL: Record<HayvanAdi, string[]> = {
-  findik: ['findik-model', 'kadro-a-findik'],
-  tarcin: ['tarcin-model', 'kadro-a-tarcin'],
-  piril: ['piril-model', 'kadro-b-piril'],
-};
+export const POZLAR = Object.keys(POZ_YEDEK) as Poz[];
+
+/** Poz sayfası gelmeden kullanılan tek resim (model / kadro kesimi) */
+const modelAdlari = (h: string) => [`${h}-model`, `kadro-a-${h}`, `kadro-b-${h}`, `kadro-c-${h}`];
 /** Balığın "boş" pozu yüzme karesi */
-const ANA: Record<HayvanAdi, string> = { findik: 'bos', tarcin: 'bos', piril: 'yuz1' };
+const anaPoz = (h: string) => (h === 'piril' ? 'yuz1' : 'bos');
+
+/** Hayvanın hiç resmi var mı (renk yavrusu kendi sayfası gelene kadar yok: vitrine çıkmaz) */
+export const hayvanGorseliVar = (h: string) => !!adres(`${h}-${anaPoz(h)}`, ...modelAdlari(h));
 
 /** Pozun adresi ve gerçek poz mu (false: modele düştü; kod beden hareketiyle anlatır) */
-export function pozAdresi(h: HayvanAdi, p: Poz): { url: string; gercek: boolean } {
-  const ad = p === 'bos' ? ANA[h] : p;
+export function pozAdresi(h: string, p: Poz): { url: string; gercek: boolean } {
+  const ad = p === 'bos' ? anaPoz(h) : p;
   for (const x of [ad, ...POZ_YEDEK[p]]) {
     const u = adres(`${h}-${x}`);
     if (u) return { url: u, gercek: true };
   }
-  const ana = adres(`${h}-${ANA[h]}`);
-  return { url: ana ?? adres(...MODEL[h])!, gercek: false };
+  const ana = adres(`${h}-${anaPoz(h)}`);
+  return { url: ana ?? adres(...modelAdlari(h)) ?? adres('kadro-a-findik')!, gercek: false };
 }
+/** Pozun KENDİ çizimi var mı (yedeğe düşmeden) */
+export const pozVar = (h: string, p: Poz) => varMi(`${h}-${p === 'bos' ? anaPoz(h) : p}`);
 /** Hayvanın tüm poz adresleri (önden yükleme) */
-export function hayvanAdresleri(h: HayvanAdi): string[] {
-  return [...new Set((Object.keys(POZ_YEDEK) as Poz[]).map((p) => pozAdresi(h, p).url))];
+export function hayvanAdresleri(h: string): string[] {
+  return [...new Set(POZLAR.map((p) => pozAdresi(h, p).url))];
 }
 
 /** Göz kırpma yaması: resmin adresi ve ana pozun oranı olarak kutusu (yoksa null: göz kırpma yok) */
-export function gozYamasi(h: HayvanAdi): { url: string; x: number; y: number; w: number; h: number } | null {
+export function gozYamasi(h: string): { url: string; x: number; y: number; w: number; h: number } | null {
   const k = (gozYamaJson as Record<string, { x: number; y: number; w: number; h: number }>)[h];
   const u = adres(`${h}-goz-yama`);
-  return k && u && varMi(`${h}-${ANA[h]}`) ? { url: u, ...k } : null;
+  return k && u && varMi(`${h}-${anaPoz(h)}`) ? { url: u, ...k } : null;
 }
 
-// ---------------------------------------------------------------- eşyalar
+// ---------------------------------------------------------------- arayüz (ui-jeton sayfası; gelene kadar yer tutucu)
+/** Pati jetonu (yer tutucu: Pasta'nın jetonu) */
+export const JETON = adres('ui-jeton') ?? yedekDosya('jeton-1')!;
+/** Büyük jeton (5-6; yer tutucu: aynı jeton, CSS ile iri ve turuncu kenarlı) */
+export const BUYUK_JETON = adres('ui-buyuk-jeton');
+/** Kumbara: cam pati kavanozu (yer tutucu: Pasta'nın kavanozu) */
+export const KUMBARA = adres('ui-kumbara') ?? yedekDosya('kumbara-kavanoz-1')!;
+/** Kalpler (yoksa sade düz kalp, CSS) */
+export const KALP_DOLU = adres('ui-kalp-dolu');
+export const KALP_BOS = adres('ui-kalp-bos');
+/** İsim tabelası (yoksa sade krem levha, CSS) */
+export const ISIM_TABELASI = adres('ui-isim-tabelasi');
+/** Fiyat etiketi (yoksa vitrinin kendi tahta etiket yuvası + sade levha) */
+export const ETIKET = adres('ui-etiket');
+/**
+ * Minder: esya-5-yatak sayfasının beyaz minderi gelince 4 renge çarpma karışımıyla boyanır (kontur koyu kalır).
+ * Gelene kadar v1 battaniyesi renk tonu kaydırılarak (yer tutucu).
+ */
+export const MINDER_BEYAZ = adres('esya-minder');
+export const MINDER_YEDEK = adres('esya-battaniye', 'gecici-minder')!;
+
+// ---------------------------------------------------------------- eşyalar (v1 bakım rafı)
 const ESYA: Record<EsyaAdi, string[]> = {
   mama: ['esya-mama-torbasi', 'gecici-mama-torbasi'],
   top: ['esya-top', 'gecici-top'],
@@ -92,7 +161,7 @@ const ESYA: Record<EsyaAdi, string[]> = {
   yem: ['esya-yem-kutusu'],
 };
 export function esyaAdresi(e: EsyaAdi): string {
-  return adres(...ESYA[e]) ?? (e === 'yem' ? YENIDEN['../../assets/kino-otobus/kase.webp'] : null) ?? adres('gecici-mama-torbasi')!;
+  return adres(...ESYA[e]) ?? (e === 'yem' ? yedekDosya('kase') : null) ?? adres('gecici-mama-torbasi')!;
 }
 /** Boş mama kabı (G4; yoksa kap yalnız dökünce görünür) */
 export const MAMA_KABI_BOS = adres('esya-mama-kabi-bos');

@@ -3,6 +3,7 @@ import '@fontsource/fredoka/latin-ext-600.css';
 import '@fontsource/fredoka/latin-ext-700.css';
 import '../../src/styles/ana.css';
 import './pati.css';
+import './pati-v2.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { anaMenuyeDon } from '../../src/uygulama';
 import { oyunuBaslat } from './oyun';

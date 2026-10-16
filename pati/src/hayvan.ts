@@ -9,9 +9,9 @@
  * > .pt-dongu (hâlin döngüsü, CSS: data-hal) > .pt-nefes (CSS) > .pt-poz (ezilme) > img (+ göz yaması)
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
-import type { HayvanAdi } from './ihtiyac';
+import { hayvanBilgi, hayvanVar } from './katalog';
 import { ses } from './sesler';
-import { gozYamasi, pozAdresi, type Poz } from './varliklar';
+import { gozYamasi, pozAdresi, pozVar, type Poz } from './varliklar';
 
 export type Hal = 'bos' | 'ac' | 'oyun' | 'usudu' | 'uyku' | 'uykulu';
 const HAL_POZ: Record<Hal, Poz> = { bos: 'bos', ac: 'ac', oyun: 'oyun', usudu: 'usudu', uyku: 'uyku', uykulu: 'uykulu' };
@@ -23,7 +23,8 @@ const bitir = (a: Animation) => a.finished.then(
 );
 
 export interface HayvanAyar {
-  ad: HayvanAdi;
+  /** hayvan kimliği (v1: findik, tarcin, piril; v2: katalogdaki her tür ve renk yavrusu) */
+  ad: string;
   /** boy (sahne birimi; resmin yüksekliği) */
   boy: number;
   /** ayakların ortası (sahne birimi) */
@@ -33,8 +34,12 @@ export interface HayvanAyar {
   alan?: { x0: number; x1: number; y0: number; y1: number };
 }
 
+/** Hayvanın türü (ses ve hareket için): katalogdan; v1'in üçü de katalogda */
+const turu = (id: string) => (hayvanVar(id) ? hayvanBilgi(id).tur : id === 'piril' ? 'balik' : 'kedi');
+
 export class Hayvan {
-  readonly ad: HayvanAdi;
+  readonly ad: string;
+  readonly tur: string;
   readonly el: HTMLElement;
   readonly resim: HTMLImageElement;
   private yonEl: HTMLElement;
@@ -63,6 +68,7 @@ export class Hayvan {
 
   constructor(readonly ayar: HayvanAyar) {
     this.ad = ayar.ad;
+    this.tur = turu(ayar.ad);
     this.x = this.evX = ayar.x;
     this.y = this.evY = ayar.y;
     this.resim = h('img.pt-resim', { src: pozAdresi(this.ad, 'bos').url, alt: '', draggable: 'false' }) as HTMLImageElement;
@@ -98,6 +104,13 @@ export class Hayvan {
     this.yon = y;
     this.yonEl.style.transform = y < 0 ? 'scaleX(-1)' : '';
     this.ezil(0.9);
+  }
+  /** öbür yana döner (bütün gövde aynalanır; parça döndürme değil) */
+  cevir() {
+    this.bakYon(this.yon > 0 ? -1 : 1);
+  }
+  get bakis() {
+    return this.yon;
   }
   /** bir noktaya (sahne x) doğru döner */
   bak(x: number) {
@@ -247,11 +260,108 @@ export class Hayvan {
     await this.zipla(50, 420);
   }
 
-  /** Hayvanın kendi sesi */
+  /** Hayvanın kendi sesi (türüne göre; hayvanlar konuşmaz) */
   sesi(kez = 1) {
-    if (this.ad === 'findik') ses.hav(kez);
-    else if (this.ad === 'tarcin') ses.miyav();
-    else for (let i = 0; i < kez + 1; i++) setTimeout(() => ses.blup(i), i * 140);
+    const t = this.tur;
+    if (t === 'kopek') ses.hav(kez);
+    else if (t === 'kedi') ses.miyav();
+    else if (t === 'tavsan') ses.burun(kez);
+    else if (t === 'hamster' || t === 'kobay') ses.vuik(kez);
+    else if (t === 'kus' || t === 'civciv') ses.cikcik(kez + 1);
+    else if (t === 'ordek') ses.vak(kez);
+    else if (t === 'balik') for (let i = 0; i < kez + 1; i++) setTimeout(() => ses.blup(i), i * 140);
+    else ses.hop();
+  }
+
+  /**
+   * Dans: üç dans pozu (T sayfası) ritimde döner; her vuruşta poz değişimi ezilme-esneme ve küçük zıplama.
+   * Dans sayfası gelmeden: sevinç / oyun / atlama pozları; o da yoksa bütün gövde iki yana aynalanarak sallanır.
+   */
+  async dans(vurus = 8, aralik = 380, vurusta: (i: number) => void = (i) => i % 2 === 0 && ses.hop()) {
+    if (this.kapandi) return;
+    const adaylar: Poz[] = pozVar(this.ad, 'dans-a') ? ['dans-a', 'dans-b', 'dans-c'] : (['sevinc', 'oyun', 'atla', 'top'] as Poz[]).filter((p) => pozVar(this.ad, p));
+    const pozlar: Poz[] = adaylar.length >= 2 ? adaylar : [...adaylar, 'bos'];
+    const gercek = pozlar.some((p) => pozVar(this.ad, p));
+    this.el.dataset.dans = '1';
+    const ilkYon = this.yon;
+    for (let i = 0; i < vurus && !this.kapandi; i++) {
+      const p = pozlar[i % pozlar.length];
+      this.gecici = p;
+      this.pozGoster(p);
+      // gerçek dans pozu yoksa (tek resim) her iki vuruşta bir öbür yana döner: sağa-sola sallanma
+      if (!gercek || pozlar.length < 3) {
+        if (i % 2 === 1) this.cevir();
+      }
+      vurusta(i);
+      if (!AZ && !TEST_MODU) {
+        const yuk = i % 2 ? 10 : 26;
+        this.hareketEl.animate(
+          [
+            { transform: 'translate(0, 0) scale(1, 1)' },
+            { transform: 'translate(0, 0) scale(1.07, 0.9)', offset: 0.18 },
+            { transform: `translate(0, ${-yuk}px) scale(0.96, 1.06)`, offset: 0.5 },
+            { transform: 'translate(0, 0) scale(1.06, 0.92)', offset: 0.85 },
+            { transform: 'translate(0, 0) scale(1, 1)' },
+          ],
+          { duration: aralik * 0.92, easing: 'ease-out' },
+        );
+      }
+      await new Promise((r) => setTimeout(r, sure(aralik)));
+    }
+    delete this.el.dataset.dans;
+    this.gecici = null;
+    if (this.yon !== ilkYon) this.bakYon(ilkYon);
+    if (!this.kapandi) this.pozGoster(HAL_POZ[this.hal]);
+  }
+
+  /** Okşanma keyfi: gözler kapalı, yaslanır (B sayfası; yoksa göz karesi), gövde yumuşakça yayılır */
+  async oksan(ms = 1200) {
+    if (!AZ && !TEST_MODU)
+      this.pozEl.animate(
+        [
+          { transform: 'scale(1, 1)' },
+          { transform: 'scale(1.05, 0.95)', offset: 0.3 },
+          { transform: 'scale(1.03, 0.97)', offset: 0.7 },
+          { transform: 'scale(1, 1)' },
+        ],
+        { duration: Math.min(900, ms), easing: 'ease-in-out' },
+      );
+    await this.anlik('fircalanma', ms);
+  }
+
+  /** Irkilme (hızlı sürtünce, komik): şaşkın poz, geri sıçrar */
+  async irkil() {
+    ses.hi();
+    void this.anlik(pozVar(this.ad, 'saskin') ? 'saskin' : 'bos', 700);
+    if (AZ || TEST_MODU) return;
+    await bitir(
+      this.hareketEl.animate(
+        [
+          { transform: 'translate(0, 0) scale(1, 1)' },
+          { transform: `translate(${-20 * this.yon}px, -34px) scale(0.92, 1.12)`, offset: 0.3 },
+          { transform: `translate(${-26 * this.yon}px, 0) scale(1.1, 0.88)`, offset: 0.65 },
+          { transform: 'translate(0, 0) scale(1, 1)' },
+        ],
+        { duration: 520, easing: 'ease-out' },
+      ),
+    );
+  }
+
+  /** Utangaçlık (Pofuduk): büzülüp saklanır, sonra yavaşça bakar */
+  async buzul(ms = 1400) {
+    if (AZ || TEST_MODU) return;
+    await bitir(
+      this.hareketEl.animate(
+        [
+          { transform: 'translate(0, 0) scale(1, 1)' },
+          { transform: 'translate(0, 0) scale(1.12, 0.74)', offset: 0.15 },
+          { transform: 'translate(0, 0) scale(1.1, 0.76)', offset: 0.6 },
+          { transform: 'translate(0, 0) scale(0.98, 1.04)', offset: 0.85 },
+          { transform: 'translate(0, 0) scale(1, 1)' },
+        ],
+        { duration: ms, easing: 'ease-in-out' },
+      ),
+    );
   }
 
   /** Yürüyerek bir yere gider (adım adım küçük yaylanmalar; yüzüne doğru döner). x: sahne birimi */
