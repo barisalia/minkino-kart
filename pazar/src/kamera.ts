@@ -7,6 +7,7 @@
  * yerinde kalır (çocuk her an oynayabilir, bekleme yok). Test modunda ve "hareketi azalt" tercihinde kapalı.
  */
 import { sure, TEST_MODU } from '../../src/ui/dom';
+import { netlikleSinirla, netlikSiniri } from '../../src/ui/netlik';
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** Sinema eğrisi: yavaş kalkış, yumuşak duruş */
@@ -62,6 +63,8 @@ export class Kamera {
   ) {
     this.acik = !AZ && (!TEST_MODU || !!document.body.dataset.onizleme);
     katman.style.transformOrigin = '0 0';
+    // arka plan resimlerinin doğal boyu ilk yakın çekimden önce öğrenilsin (netlik sınırı)
+    if (this.acik) setTimeout(() => this.netlik(), 0);
     if (this.acik && typeof ResizeObserver !== 'undefined') {
       // ekran dönünce / boyutu değişince son kadraj geçişsiz yeniden kurulur
       let ilk = true;
@@ -125,7 +128,8 @@ export class Kamera {
       const sr = this.sahne.getBoundingClientRect();
       const H = this.sahne.clientHeight;
       const f = o.doluluk ?? 0.8;
-      const s = Math.max(1, Math.min(o.enCok ?? 1.8, (a.width * f) / k.w, (a.height * f) / k.h));
+      // netlik sınırı: kameradaki ve derin katmanlardaki resimler kaynak pikselinin üstüne büyümez
+      const s = netlikleSinirla(Math.max(1, Math.min(o.enCok ?? 1.8, (a.width * f) / k.w, (a.height * f) / k.h)), this.netlik());
       const ax = a.left - sr.left + a.width / 2;
       const ay = a.top - sr.top + a.height * (o.dikey ?? 0.5);
       let tx = ax - s * (k.x + k.w / 2);
@@ -139,6 +143,24 @@ export class Kamera {
     };
     this.son = () => kur(0);
     kur(o.sure ?? 1100);
+  }
+
+  /**
+   * Kameranın netlik sınırı (src/ui/netlik.ts): kamera katmanı (stand, Mino, müşteri) en çok bu ölçeğe çıkabilir.
+   * Derin katmanlar (pazar resmi, gökyüzü) kamerayı sınırlamaz: kendi sınırlarına gelince daha az yaklaşırlar
+   * (derinK), gerekirse hiç yaklaşmazlar (uzak fon gibi durur).
+   */
+  private netlik(): number {
+    for (const { el } of this.derin) netlikSiniri(el);
+    return netlikSiniri(this.katman);
+  }
+
+  /** Derin katmanın bu kamera ölçeğindeki yaklaşma oranı: 1 + (s − 1)·k katmanın netlik sınırını aşmaz */
+  private derinK(el: HTMLElement, k: number, s: number): number {
+    if (s <= 1 || k <= 0) return k;
+    const l = netlikSiniri(el);
+    if (!Number.isFinite(l)) return k;
+    return l <= 1 ? 0 : Math.min(k, (l - 1) / (s - 1));
   }
 
   /** Geniş kadraja döner */
@@ -183,7 +205,9 @@ export class Kamera {
     this.katman.style.transform = s === 1 && !tx && !ty ? '' : `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${s.toFixed(4)})`;
     // derin katmanlar: aynı noktaya doğru, daha az
     const sr = this.sahne.getBoundingClientRect();
-    for (const { el, k } of this.derin) {
+    for (const { el, k: k0 } of this.derin) {
+      // netlik sınırı: katman resmi kaynak pikselinin üstüne büyümesin diye daha az yaklaşabilir
+      const k = this.derinK(el, k0, s);
       // katmanın dönüşümsüz yeri (offset): kökeni sahnenin sol üstü
       const p = (el.offsetParent ?? document.body).getBoundingClientRect();
       const ox = sr.left - (p.left + el.offsetLeft);

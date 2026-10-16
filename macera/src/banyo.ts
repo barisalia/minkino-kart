@@ -344,7 +344,8 @@ export async function banyoBolumu(kok: HTMLElement, ui: BolumArayuz): Promise<vo
    * (yakın çekimde yalnız biri).
    */
   const kam = (x: number, y: number, z: number, ms: number, tut: HTMLElement[] = [], kisiler: Kisi[] = [M, KN]) => {
-    cekim = { x, y, z, tut, kisiler };
+    // netlik sınırı önce: kadraj koruması gerçek yakınlıkla hesaplansın
+    cekim = { x, y, z: sahne.sinirla(z), tut, kisiler };
     uygulanan = kadrajHesap();
     return sahne.kamera(uygulanan.x, uygulanan.y, uygulanan.z, ms);
   };

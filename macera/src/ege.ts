@@ -508,7 +508,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
   };
   /** Kamera (kadraj korumalı) */
   const kam = (x: number, y: number, z: number, ms: number, tut: (HTMLElement | (() => Alan | null))[] = []) => {
-    cekim = { x, y, z, tut };
+    // netlik sınırı önce: kadraj koruması ve görünen alan (dataset.kamera) gerçek yakınlıkla hesaplansın
+    cekim = { x, y, z: sahne.sinirla(z), tut };
     const c = kadrajHesap();
     sahne.el.dataset.kamera = `${c.x.toFixed(1)} ${c.y.toFixed(1)} ${c.z.toFixed(2)}`;
     return sahne.kamera(c.x, c.y, c.z, ms);
@@ -531,6 +532,7 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
    * yani genişlikte ekranın tamamı kullanılır. Kadrajdakiler zaten solduğundan yarım kalan yok.
    */
   const yakinKam = (k: Alan, zMax: number, ms: number, altaYasla = false) => {
+    zMax = sahne.sinirla(zMax);
     const yan = kok.querySelector('.mc-yan-genis') ? Math.max(1, innerWidth / W()) : 1;
     const ust = dikey ? PAY.ust : 5;
     const z = Math.max(1, Math.min(zMax, (100 * yan) / (k.r - k.l + PAY.yan * 2), 100 / (k.a - k.u + ust + PAY.alt)));
@@ -3023,6 +3025,8 @@ export async function egeUyuyor(kok: HTMLElement, ui: BolumArayuz): Promise<void
     // yaklaşılır (pencere yine ekrana sığar)
     const hedefY = 50 + ust / 2;
     if ((cam.ust + ustPay) * z < hedefY - 2) z = Math.max(z, Math.min(hedefY / (cam.ust + ustPay), 80 / dx, ((100 - ust) * 0.74) / d, 3));
+    // netlik sınırı (oda resmi kaynak pikselinin üstüne büyümez); kadraj aşağıda bu yakınlıkla kurulur
+    z = sahne.sinirla(z);
     const o = (m: number, pay: number, enAz = 0) =>
       Math.max(z <= 1.001 ? 0 : -enAz / (1 - 1 / z), Math.min(100, z <= 1.001 ? 50 : (m - 50 / z - pay / 2 / z) / (1 - 1 / z)));
     const x = o(cam.x, 0);

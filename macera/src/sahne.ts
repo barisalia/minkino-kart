@@ -3,6 +3,7 @@
  * nesneler sahneye yüzde konumla (x: yatay merkez, y: alttan, w: genişlik) yerleşir.
  */
 import { h } from '../../src/ui/dom';
+import { netlikleSinirla, netlikOnYukle, netlikSiniri } from '../../src/ui/netlik';
 import { adres } from './gorsel';
 import { AZ_HAREKET } from './oyuncu';
 
@@ -31,6 +32,7 @@ export function yanDolgu(darUrl: string, genisUrl: string): HTMLElement {
  */
 export function yanDolguEkle(kok: HTMLElement, darUrl: string, genisUrl: string): HTMLElement {
   const el = yanDolgu(darUrl, genisUrl);
+  netlikOnYukle(genisUrl);
   kok.prepend(el);
   if (genisUrl) kok.style.setProperty('--resim-genis', `url("${genisUrl}")`);
   return el;
@@ -46,6 +48,8 @@ export class Sahne {
   /** dikey: dikey ekran (boy > en) için 9:16 oda çizimi (ör. parti-sahne/oda-dikey); dosya yoksa yatay çizim kırpılır */
   constructor(arka: string, dikey = '') {
     const d = dikey ? adres(dikey) : '';
+    // netlik sınırı ilk çekimde hazır olsun: oda resimlerinin doğal boyu şimdiden öğrenilir
+    netlikOnYukle(adres(arka), d);
     const stil = `--resim:url("${adres(arka)}")${d ? `;--resim-dikey:url("${d}")` : ''}`;
     this.dunya = h(`div.mc-dunya${d ? '.mc-dikey-var' : ''}`, {}, h('div.mc-oda', { style: stil }));
     this.karanlik = h('div.mc-karanlik');
@@ -65,13 +69,38 @@ export class Sahne {
     return el;
   }
 
-  /** Kamera: (x, y) odak noktası (sahnenin %'si, üstten), z yakınlık */
+  /**
+   * Kamera: (x, y) odak noktası (sahnenin %'si, üstten), z yakınlık. Yakınlık netlik sınırında durur
+   * (src/ui/netlik.ts): odanın ve dünyadaki her resmin kaynak pikselinin üstüne büyütülmez.
+   */
   async kamera(x: number, y: number, z: number, ms = 1200) {
+    z = this.sinirla(z);
     this.dunya.style.transitionDuration = `${ms}ms`;
     this.dunya.style.transformOrigin = `${x}% ${y}%`;
     this.dunya.style.transform = `scale(${z})`;
     await bekle(ms);
   }
+
+  /**
+   * Yakınlığı netlik sınırına indirir. Kadrajı kendisi hesaplayan bölümler (kadraj koruması, görünen alan) çekimi
+   * kurmadan önce bunu çağırır; aynı odakla daha az yakınlık her zaman istenen kadrajın tamamını da gösterir.
+   */
+  sinirla(z: number): number {
+    // kadraj koruması tek çekimde birkaç kez sorar: ölçü kısa süre saklanır
+    // (ekran dönünce / boyut değişince hemen yeniden ölçülür)
+    const t = performance.now();
+    const boy = `${this.dunya.offsetWidth}x${this.dunya.offsetHeight}`;
+    if (t - this.netlikZaman > 400 || boy !== this.netlikBoy) {
+      this.netlikBoy = boy;
+      this.netlikDeger = netlikSiniri(this.dunya);
+      // resim boyları henüz öğrenilmediyse (sınır yok) saklanmaz, bir dahaki soruda yeniden ölçülür
+      this.netlikZaman = Number.isFinite(this.netlikDeger) ? t : -Infinity;
+    }
+    return netlikleSinirla(z, this.netlikDeger);
+  }
+  private netlikZaman = -Infinity;
+  private netlikDeger = Infinity;
+  private netlikBoy = '';
 
   /** Kısa sarsıntı (balon patlaması, sürpriz); hareketi azalt tercihinde yok */
   titret(guc = 1) {

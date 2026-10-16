@@ -2,14 +2,16 @@
  * Pati Dükkânı: salon sahnesi ve kamerası.
  *
  * Sahne, salon resminin kendi ölçüsünde (2752×1536 "sahne birimi") kurulur; hayvanlar, köşeler, lamba ipi ve ışık
- * katmanları bu birimle yerleşir. Kamera yalnız sahnenin transform'unu değiştirir (Pazar'ın kamerasıyla aynı yol:
- * yakın çekimde köşe büyür, salon resminin büyütülmüş hâli; hayvanlar ayrı çizim olduğu için keskin kalır).
+ * katmanları bu birimle yerleşir. Kamera yalnız sahnenin transform'unu değiştirir (Pazar'ın kamerasıyla aynı yol).
+ * Yakın çekim netlik sınırında durur (src/ui/netlik.ts): salon resmi kaynak pikselinin üstüne büyütülmez (telefonda
+ * DPR 3 ile sahne ölçeği en çok 1/3). Köşelerin yakın çekim çizimi (kose-yakin-sayfasi) gelince yakınlık ona göre açılır.
  *
  * - Yatay telefon: salon ekranı doldurur (kapla), köşelerin ortası ortada.
  * - Dikey telefon: üç köşe yan yana ekranın üst kısmında (genişliğe sığar); altı salonun zemin rengiyle süren
  *   şerit (Nehir abla orada boydan durur, yakın çekimde bakım rafı).
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { netlikleSinirla, netlikSiniri } from '../../src/ui/netlik';
 import type { HayvanAdi } from './ihtiyac';
 import { adres, GECE_LAMBASI, IP, IP_KUTU, SALON, SALON_GECE } from './varliklar';
 
@@ -151,7 +153,10 @@ export class Sahne {
     const k = KOSE[h_];
     const kw = k.x1 - k.x0;
     const kh = k.y1 - k.y0 + 60;
-    const s = Math.min(((a.sag - a.sol) * 0.97) / kw, ((a.alt - a.ust) * 0.97) / kh);
+    // istenen yakınlık netlik sınırına iner (salon büyütülmüş hâliyle bulanıklaşmasın); geniş kadrajdan küçük olmaz.
+    // Düşünce balonu sayılmaz: kameranın tersine ölçeklenir (ekranda hep aynı boy), yakın çekimde zaten söner.
+    const sinir = netlikSiniri(this.sahne, (e) => !!e.closest('.pt-balon'));
+    const s = netlikleSinirla(Math.min(((a.sag - a.sol) * 0.97) / kw, ((a.alt - a.ust) * 0.97) / kh), sinir, this.genisKadraj()[0]);
     const tx = sinirla((a.sol + a.sag) / 2 - s * (k.x0 + kw / 2), W - SAHNE_W * s, 0);
     // dikeyde sahnenin altı boş şeride kalabilir (zemin rengi); yalnız üstte boşluk olmasın
     const ty = Math.min(0, (a.ust + a.alt) / 2 - s * (k.y0 - 30 + kh / 2));

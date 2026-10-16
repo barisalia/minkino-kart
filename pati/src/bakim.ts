@@ -11,6 +11,7 @@
  * Yanlış eşya ceza değil: hayvan koklar ("hı?"), eşya rafına döner. Hiçbir şey girdiyi kilitlemez.
  */
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
+import { dogalBoyu, NETLIK_DPR } from '../../src/ui/netlik';
 import { elSurukle, icinde, Tutulan } from '../../kino-otobus/src/dokunsal';
 import { Sallama } from '../../kino-otobus/src/el-isi';
 import type { Efekt } from '../../kino-otobus/src/efekt';
@@ -35,8 +36,15 @@ const sakin = () => AZ || TEST_MODU;
 
 /** Hangi hayvana hangi eşya "kendi işi" (ihtiyaç olmasa da oynanır) */
 const KENDI: Record<HayvanAdi, EsyaAdi[]> = { findik: ['mama', 'top'], tarcin: ['kus', 'minder'], piril: ['yem'] };
-/** Ekranda tutulan eşyanın boyu (px, kısa kenar ölçüsü; kök yüksekliğine göre) */
-const tutBoy = (kok: HTMLElement) => Math.max(84, Math.min(130, Math.min(kok.clientWidth, kok.clientHeight) * 0.26));
+/**
+ * Ekranda tutulan eşyanın boyu (px, kısa kenar ölçüsü; kök yüksekliğine göre). Netlik sınırı: eşya kutuya sığdırılır
+ * (uzun kenarı kutuyu doldurur), kutu resmin uzun kenarının 1/3'ünü (DPR 3) geçmez.
+ */
+const tutBoy = (kok: HTMLElement, e?: EsyaAdi) => {
+  const t = Math.max(84, Math.min(130, Math.min(kok.clientWidth, kok.clientHeight) * 0.26));
+  const d = e ? dogalBoyu(esyaAdresi(e)) : null;
+  return d ? Math.min(t, Math.max(d[0], d[1]) / NETLIK_DPR) : t;
+};
 
 export interface BakimOrtam {
   kok: HTMLElement;
@@ -69,6 +77,8 @@ export class Bakim {
 
   constructor(private o: BakimOrtam) {
     this.raf = h('div.pt-raf', { 'aria-label': 'Bakım rafı' });
+    // tutulan eşyanın netlik sınırı için resimlerin doğal boyu şimdiden (tutBoy)
+    for (const e of ['mama', 'top', 'kus', 'minder', 'yem'] as const) dogalBoyu(esyaAdresi(e));
     const f = o.hayvanlar.findik;
     // Fındık'ın kabı köşesinde durur: boş (G4) ya da gelmediyse yalnız dökünce görünür
     this.mamaKabi = h(`img.pt-mama-kabi${MAMA_KABI_BOS ? '.acik' : ''}`, { src: MAMA_KABI_BOS ?? MAMA_KABI, alt: '', draggable: 'false', style: `left:${f.evX + 230}px;top:${f.evY + 8}px` }) as HTMLImageElement;
@@ -157,7 +167,7 @@ export class Bakim {
     return {
       aktif: () => !this.kullanimda.has(e) && !!this.hayvan,
       basla: (x: number, y: number) => {
-        const boy = tutBoy(this.o.kok);
+        const boy = tutBoy(this.o.kok, e);
         tut = new Tutulan(this.o.efekt, h('img.pt-tutulan-resim', { src: esyaAdresi(e), alt: '' }), { en: boy, boy, sinif: 'pt-tutulan', tx: e === 'kus' ? KUS_TUT[0] : 0.5, ty: e === 'kus' ? KUS_TUT[1] : 0.55 });
         tut.yer(x, y);
         b.classList.add('pt-tutuldu');
@@ -186,7 +196,7 @@ export class Bakim {
         if (e === 'kus' && hy === 'tarcin') {
           const t = this.o.hayvanlar.tarcin;
           // kedinin baktığı ve atladığı yer: oyuncağın ucu (tüy)
-          const boy = tutBoy(this.o.kok);
+          const boy = tutBoy(this.o.kok, e);
           const [sx, sy] = this.o.sahne.sahneye(x + (KUS_UC[0] - KUS_TUT[0]) * boy, y + (KUS_UC[1] - KUS_TUT[1]) * boy);
           t.bak(sx);
           const simdi = performance.now();
@@ -267,8 +277,11 @@ export class Bakim {
       const [ex, ey] = this.efektNokta(...hedef);
       const bas = this.rafNokta('kus');
       const k = this.o.efekt.kutu();
-      if (bas) await this.o.efekt.ucur(kus.cloneNode() as HTMLElement, [bas[0] - k.left, bas[1] - k.top], [ex, ey], { ms: 420, kavis: -40 });
-      const boy = tutBoy(this.o.kok);
+      const boy = tutBoy(this.o.kok, e);
+      // uçan kopya tutulanla aynı boyda (boysuz kalınca kabın ölçüsüne yayılıp kaynak pikselinin üstüne büyüyordu)
+      const ucan = kus.cloneNode() as HTMLElement;
+      ucan.style.cssText = `width:${boy}px;height:${boy}px`;
+      if (bas) await this.o.efekt.ucur(ucan, [bas[0] - k.left, bas[1] - k.top], [ex, ey], { ms: 420, kavis: -40 });
       const tut = new Tutulan(this.o.efekt, kus, { en: boy, boy, sinif: 'pt-tutulan', tx: KUS_TUT[0], ty: KUS_TUT[1] });
       // tutma noktası: ucu (tüy) hedefte olacak şekilde
       const px = ex + k.left - (KUS_UC[0] - KUS_TUT[0]) * boy;
@@ -288,7 +301,7 @@ export class Bakim {
       const nokta: [number, number] = [ras(AKVARYUM.x0 + 120, AKVARYUM.x1 - 120), AKVARYUM.y0 - 120];
       // yakın çekimde akvaryumun üstü ekranın tepesine dayanır: kutu ekranın içinde sallansın (yarısı kesilmesin)
       const [ex, ey] = this.efektNokta(...nokta);
-      await this.esyaUcur(e, [ex, Math.max(ey, tutBoy(this.o.kok) * 0.6 + 6)], false);
+      await this.esyaUcur(e, [ex, Math.max(ey, tutBoy(this.o.kok, e) * 0.6 + 6)], false);
       ses.tikir(1);
       return this.yemTutam(nokta);
     }
@@ -298,7 +311,7 @@ export class Bakim {
   private async esyaUcur(e: EsyaAdi, [x, y]: [number, number], egil: boolean) {
     const bas = this.rafNokta(e);
     const k = this.o.efekt.kutu();
-    const boy = tutBoy(this.o.kok);
+    const boy = tutBoy(this.o.kok, e);
     const img = () => h('img', { src: esyaAdresi(e), alt: '', style: `width:${boy}px;height:${boy}px;object-fit:contain;display:block` });
     if (bas) await this.o.efekt.ucur(img(), [bas[0] - k.left, bas[1] - k.top], [x, y], { ms: 380, kavis: -50 });
     const kalan = img();

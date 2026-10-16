@@ -194,6 +194,8 @@ export async function elektrikKesildi(kok: HTMLElement, ui: BolumArayuz): Promis
    * kenardaki kişi yarım görünebilir).
    */
   const cek = (l: number, r: number, alt: number, ust: number, zmax = 1.6, ms = 1100, koru = true) => {
+    // netlik sınırı: oda resmi (ve dünyadaki her resim) kaynak pikselinin üstüne büyümez (src/ui/netlik.ts)
+    zmax = sahne.sinirla(zmax);
     const gw = W;
     const gh = H - GUVEN.ust - GUVEN.alt;
     const hesap = (l: number, r: number) => {

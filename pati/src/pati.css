@@ -759,7 +759,8 @@
   z-index: 45;
   left: 50%;
   top: 50%;
-  width: min(62vmin, 330px);
+  /* netlik sınırı: fotoğraf salonun 600 px'lik kesiti; DPR 3'te iç genişlik en çok 200 px (+ 24 dolgu, 6 çerçeve) */
+  width: min(62vmin, 230px);
   padding: 12px 12px 54px;
   background: #fff;
   border: 3px solid var(--pt-k);
@@ -910,6 +911,8 @@
 }
 .pt-kok .pt-nehir.pt-nehir-anlatici {
   height: 80%;
+  /* netlik sınırı: anlatıcı karesi 428×766; DPR 3 telefonda kaynak pikselinin üstüne büyümez (766 / 3) */
+  max-height: 255px;
   bottom: 0;
   left: max(0px, env(safe-area-inset-left));
 }

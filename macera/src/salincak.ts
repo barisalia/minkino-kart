@@ -653,7 +653,8 @@ export async function salincakKimin(kok: HTMLElement, ui: BolumArayuz): Promise<
     const hesap = (l: number, r: number, yakin = YAKIN) => {
       const bw = ((r - l) / 100) * Wd;
       const bh = ((ust - alt) / 100) * Hd;
-      const z = Math.max(1, Math.min(zmax * yakin, (gw * yakin) / Math.max(1, bw), gh / Math.max(1, bh)));
+      // netlik sınırı: dünyadaki resimler kaynak pikselinin üstüne büyümez (src/ui/netlik.ts)
+      const z = Math.max(1, Math.min(sahne.sinirla(zmax * yakin), (gw * yakin) / Math.max(1, bw), gh / Math.max(1, bh)));
       const cx = ((l + r) / 200) * Wd;
       // dikeyde bölge güvenli alana enden sığar, boyda yer artar: artan yer çoğunlukla üste (gök, ağaçlar) gider,
       // zemin ekranın altında az kalır (bölgenin altı güvenli alanın altına yakın)
