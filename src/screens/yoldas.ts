@@ -13,8 +13,13 @@ export interface Yoldas {
   mino: Mino;
   /** Doğru cevap / eşleşme: sırayla farklı sevinç tepkileri. `buyuk`: tur sonu gibi büyük an (dans). */
   sevin(buyuk?: boolean): void;
-  /** Yanlış cevap: doğru karta bakar ve cesaretlendirir gibi başını sallar. */
+  /** İpucu merdiveninin ilk basamağı: doğru karta bakar ve cesaretlendirir gibi başını sallar (söz yok). */
   cesaret(bakilacak?: Element | null): void;
+  /**
+   * Yanlış kart: komik tepki (doğruyu ele vermez). Yanlış karta bakar, sonra sırayla: 0 koklayıp hapşırır,
+   * 1 başı döner (sersem), 2 irkilir. Dönen sayı kartın kendi tepkisinin ne zaman başlayacağı (ms).
+   */
+  komikTepki(yanlisKart: Element, tur: number): number;
   /** Ekranda bir noktaya (x) kısa süre bakar. */
   bakNokta(x: number, ms?: number): void;
   /** Kartları dağıtan patinin ekrandaki yeri. */
@@ -106,6 +111,15 @@ export function minoYoldas(): Yoldas {
       }
       mino.tepki('evet', 1.1);
       bosta();
+    },
+    komikTepki(yanlisKart, tur) {
+      const r = yanlisKart.getBoundingClientRect();
+      bakNokta(r.left + r.width / 2, 1600);
+      const t: Tepki = az ? 'hayir' : (['hapsu', 'sersem', 'sasir'] as const)[tur % 3];
+      mino.tepki(t);
+      bosta();
+      // hapşırık anında kart savrulur; ötekilerde hemen
+      return t === 'hapsu' ? 420 : 60;
     },
     bakNokta,
     patiNoktasi() {

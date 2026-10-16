@@ -97,6 +97,7 @@ export function secmeliCiz(b: SoruBaglam) {
     elemanlar.push(el);
     izgara.append(el);
   });
+  b.ipucuHedef = () => elemanlar[dogru] ?? null;
   b.temizlik(izgaraSigdir(b.secenek, izgara, s.kartlar.length, { enBuyuk: s.kartlar.length <= 2 ? 300 : 240, oran: diziOrani(s.kartlar), grup: boyGrubu }));
   b.secenek.append(izgara);
 }

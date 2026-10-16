@@ -1,4 +1,4 @@
-import { efekt, konus } from '../audio/ses';
+import { efekt, konus, konusuyorMu } from '../audio/ses';
 import { onYukle } from '../audio/kayit';
 import { metin } from '../audio/metin';
 import { durum, kaydetDurum } from '../engine/ilerleme';
@@ -10,7 +10,8 @@ import { bekle, h, sure, TEST_MODU } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
 import { kartEl, kartResimleriniYukle } from '../ui/kart';
 import { konfetiPatlat } from '../ui/konfeti';
-import { azHareket, dagit, koy, merkez, parlat, topla, ucurKavis, yumusakSallan } from '../ui/hareket';
+import { azHareket, dagit, komikYanlis, koy, merkez, parlat, topla, ucurKavis } from '../ui/hareket';
+import { ipucuMerdiveni, type Merdiven } from '../ui/ipucu-merdiveni';
 import { albumDugmesi, yuvarlakDugme } from '../ui/ortak';
 import type { Ekran, Uygulama } from '../uygulama';
 import { eslestirCiz } from './sorular/eslestir';
@@ -27,8 +28,13 @@ export interface SoruBaglam {
   secenek: HTMLElement;
   /** Doğru cevap. `el`: ödül kartının uçacağı yer; `aciklama`: övgüden sonra söylenecek cümle. */
   dogru(el: HTMLElement | null, aciklama: string[]): void;
-  /** Yanlış cevap. `el` sallanır, `dogruEl` ışıldar. */
+  /**
+   * Yanlış cevap: `el` komik bir tepki verir ve solar; doğru kart ele verilmez (`dogruEl` yalnız bilgi).
+   * İpucu yalnız zamanla gelir (src/ui/ipucu-merdiveni.ts).
+   */
   yanlis(el: HTMLElement, dogruEl: HTMLElement | null, soldur?: boolean): void;
+  /** Doğru kart (ipucu merdiveni: Mino ona bakar, en son hafifçe parlar). Çizici kurar; hafızada yok. */
+  ipucuHedef?: () => HTMLElement | null;
   /** Ara başarı (hafızada bir çift bulundu): Mino sevinir. */
   sevin(): void;
   /** Kartların giriş (dağıtma) animasyonu bitince çözülür. */
@@ -88,7 +94,9 @@ export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDeva
   let anlik = { cozuldu: false, yanlis: false };
   let temizlikler: (() => void)[] = [];
   let kapandi = false;
-  let bosta: number | undefined;
+  let merdiven: Merdiven | null = null;
+  /** yanlış kartların komik tepkileri sırayla değişir (hapşırık, sersem, irkilme) */
+  let komikSira = Math.floor(Math.random() * 3);
 
   const album = albumDugmesi(() => {
     // geri dönülünce tur kaldığı yerden sürsün (src/uygulama.ts → donusParametresi; kartlar zaten albümde kayıtlı)
@@ -125,6 +133,7 @@ export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDeva
 
   // Dokunulan karta basılma hissi (bırakınca yaylanarak geri gelir); Mino dokunulan yere bakar
   el.addEventListener('pointerdown', (e) => {
+    merdiven?.dokunuldu();
     yoldas.bakNokta(e.clientX);
     const k = (e.target as Element).closest<HTMLElement>('.secenek, .hafiza-kart');
     if (!k || k.classList.contains('soluk')) return;
@@ -146,16 +155,9 @@ export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDeva
     balon.classList.remove('konusuyor');
   }
 
-  function bostaSayaci() {
-    clearTimeout(bosta);
-    if (TEST_MODU) return;
-    bosta = window.setTimeout(() => {
-      if (!kapandi) void soruyuSoyle();
-    }, 16000);
-  }
-  el.addEventListener('pointerdown', bostaSayaci);
-
   function temizle() {
+    merdiven?.dur();
+    merdiven = null;
     temizlikler.forEach((f) => f());
     temizlikler = [];
   }
@@ -200,21 +202,28 @@ export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDeva
       dogru: (hedefEl, aciklama) => {
         if (cozuldu || kapandi) return;
         cozuldu = true;
+        merdiven?.dur();
         buSoru.cozuldu = true;
         if (!yanlisVar) ilkDenemede++;
         void dogruAkisi(s, hedefEl, aciklama);
       },
-      yanlis: (yEl, dogruEl, soldur = true) => {
+      yanlis: (yEl, _dogruEl, soldur = true) => {
         if (cozuldu || kapandi) return;
         yanlisVar = true;
         buSoru.yanlis = true;
         yanlisSayisi++;
-        efekt.yanlis();
-        void yumusakSallan(yEl).then(() => soldur && !cozuldu && yEl.classList.add('soluk'));
-        dogruEl?.classList.add('isilti');
-        yoldas.cesaret(dogruEl);
-        const ipucu = s.ipucu && yanlisSayisi === 1 ? [s.ipucu] : [metin('tekrar_dene'), metin('ipucu_genel')];
-        void konus(ipucu);
+        merdiven?.dokunuldu();
+        // yanlış komik bir sonuç verir, doğruyu ele vermez: Mino yanlış karta bakıp hapşırır / sersemler / irkilir
+        const tur = komikSira++ % 3;
+        const gecikme = yoldas.komikTepki(yEl, tur);
+        setTimeout(() => {
+          if (kapandi) return;
+          [efekt.pof, efekt.yanlis, efekt.cevir][tur]();
+          void komikYanlis(yEl, tur).then(() => soldur && !cozuldu && yEl.classList.add('soluk'));
+        }, sure(gecikme));
+        // söz de cevabı söylemez; ikinci yanlıştan sonra (en az 10 sn geçtiyse) dolaylı ipucu cümlesi gelir
+        const ipucuVakti = !!s.ipucu && yanlisSayisi >= 2 && !!merdiven && merdiven.gecen() >= 10_000 && !merdiven.geldi('soz');
+        void konus(ipucuVakti ? s.ipucu : metin('tekrar_dene'));
       },
       sevin: () => yoldas.sevin(),
       hazir,
@@ -222,7 +231,20 @@ export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDeva
     CIZICILER[s.tip](b);
     void girisOynat(s).then(hazirOl);
     void soruyuSoyle();
-    bostaSayaci();
+    // ipucu merdiveni (kartlar dağıtılınca başlar): 12 sn Mino doğru karta bakar, 25 sn dolaylı söz, 35 sn hafif parlama
+    void hazir.then(() => {
+      if (kapandi || cozuldu || anlik !== buSoru) return;
+      const hedef = () => b.ipucuHedef?.() ?? null;
+      merdiven = ipucuMerdiveni(
+        {
+          bak: () => hedef() && yoldas.cesaret(hedef()),
+          soz: () => void (s.ipucu ? konus(s.ipucu) : soruyuSoyle()),
+          parla: () => hedef()?.classList.add('isilti-hafif'),
+          tekrar: () => void soruyuSoyle(),
+        },
+        { mesgul: konusuyorMu },
+      );
+    });
   }
 
   /** Soru girişi: balon tazelenir, gösterge kartları sahneye konur, seçenekleri Mino dağıtır. */
@@ -316,7 +338,6 @@ export function oyunEkrani(app: Uygulama, param: { tema: string; devam?: TurDeva
     el,
     kapat() {
       kapandi = true;
-      clearTimeout(bosta);
       temizle();
       yoldas.kapat();
     },

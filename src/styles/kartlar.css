@@ -61,6 +61,20 @@
   0%, 100% { opacity: 0.35; }
   50% { opacity: 1; }
 }
+/* ipucu merdiveninin son basamağı (35 sn): aynı hale ama yumuşak ve yavaş; çocuğu "buna dokun" diye itmez */
+.mk-kok .oyun .kart.isilti-hafif::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(255, 199, 44, 0.7), 0 0 22px 6px rgba(255, 199, 44, 0.35);
+  animation: mk-isilti-hale 2.4s ease-in-out infinite;
+}
+.mk-kok .oyun .kart.isilti-hafif.soluk::before,
+.mk-kok .oyun .kart.isilti-hafif.dogru-oldu::before {
+  display: none;
+}
 .mk-kok .oyun .kart.soluk {
   transition: transform 0.3s, opacity 0.3s;
 }

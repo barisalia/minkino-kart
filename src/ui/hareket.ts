@@ -306,6 +306,49 @@ export function yumusakSallan(el: HTMLElement): Promise<void> {
     .finished.then(() => undefined, () => undefined);
 }
 
+/**
+ * Yanlış kartın komik tepkisi (yoldaşın tepkisiyle aynı sırada): 0 hapşırıkla savrulur, 1 sersem gibi döner,
+ * 2 irkilip zıplar ve yere ezilerek iner. Doğruyu göstermez; yalnız "bu değilmiş" dedirtir.
+ */
+export function komikYanlis(el: HTMLElement, tur: number): Promise<void> {
+  if (TEST_MODU) return Promise.resolve();
+  if (azHareket()) return yumusakSallan(el);
+  const yon = Math.random() < 0.5 ? -1 : 1;
+  const kareler: Keyframe[][] = [
+    [
+      { transform: 'none' },
+      { transform: `translateX(${-6 * yon}px) scale(.96, 1.04)`, offset: 0.12 },
+      { transform: `translate(${26 * yon}px, -10px) rotate(${16 * yon}deg) scale(1.03, .95)`, offset: 0.3 },
+      { transform: `translate(${18 * yon}px, -4px) rotate(${-6 * yon}deg)`, offset: 0.5 },
+      { transform: `translate(${6 * yon}px, 0) rotate(${3 * yon}deg)`, offset: 0.7 },
+      { transform: 'none' },
+    ],
+    [
+      { transform: 'none' },
+      { transform: 'rotate(-14deg) scale(1.03)', offset: 0.15 },
+      { transform: 'rotate(200deg) scale(.9)', offset: 0.5 },
+      { transform: 'rotate(350deg) scale(1.02)', offset: 0.75 },
+      { transform: 'rotate(366deg)', offset: 0.88 },
+      { transform: 'rotate(360deg)' },
+    ],
+    [
+      { transform: 'none' },
+      { transform: 'scale(1.05, .9)', offset: 0.1 },
+      { transform: 'translateY(-34px) scale(.94, 1.08)', offset: 0.35 },
+      { transform: 'translateY(-38px) scale(1)', offset: 0.45 },
+      { transform: 'translateY(0) scale(1.12, .84)', offset: 0.72 },
+      { transform: 'scale(.97, 1.03)', offset: 0.86 },
+      { transform: 'none' },
+    ],
+  ];
+  return el
+    .animate(kareler[tur % 3], { duration: [700, 820, 760][tur % 3], easing: 'ease-out', composite: 'replace' })
+    .finished.then(
+      () => undefined,
+      () => undefined,
+    );
+}
+
 /** Tek bir kartı sahneye "koyar": yukarıdan hafifçe düşüp ezilerek oturur (gösterge kartları). */
 export function koy(kartlar: HTMLElement[], gecikme = 0): void {
   if (TEST_MODU || azHareket()) return;

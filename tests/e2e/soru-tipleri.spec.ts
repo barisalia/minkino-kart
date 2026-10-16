@@ -23,16 +23,33 @@ for (const [tip, yas, tema] of TIPLER) {
   });
 }
 
-test('yanlış cevap: kart sallanır, soluklaşır, doğru kart ışıldar, tekrar denenir', async ({ page }, info) => {
+test('yanlış cevap: kart komik tepki verip soluklaşır, doğru kart ele verilmez, tekrar denenir', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./kartlar/?test=1&yas=5&tema=hayvanlar&tip=BUL');
   const yanlis = page.locator('.secenek:not([data-dogru])').first();
   await yanlis.click();
   await expect(yanlis).toHaveClass(/soluk/);
-  await expect(page.locator('[data-dogru="1"]')).toHaveClass(/isilti/);
+  // K4: ilk yanlışta doğru kart parlamaz (ipucu yalnız zamanla gelir)
+  await expect(page.locator('[data-dogru="1"]')).not.toHaveClass(/isilti/);
   await expect(page.locator('.ilerleme i.tamam')).toHaveCount(0);
   await page.screenshot({ path: `tests/screens/${info.project.name}-yanlis-cevap.png` });
   await page.locator('[data-dogru="1"]').click();
+  await soruDegisti(page, 0);
+  expect(hatalar).toEqual([]);
+});
+
+test('ipucu merdiveni: 12 sn bakış, 25 sn söz, 35 sn hafif parlama (süreler 1/50)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./kartlar/?test=1&merdiven=1&yas=4&tema=hayvanlar&tip=BUL');
+  const dogru = page.locator('[data-dogru="1"]');
+  await expect(dogru).toBeVisible();
+  // iki yanlış bile parlatmaz
+  await page.locator('.secenek:not([data-dogru])').first().click();
+  await expect(dogru).not.toHaveClass(/isilti/);
+  // 35 sn / 50 = 0.7 sn sonra hafif parlama
+  await expect(dogru).toHaveClass(/isilti-hafif/, { timeout: 3000 });
+  await expect(dogru).not.toHaveClass(/(^|s)isilti(s|$)/);
+  await dogru.click();
   await soruDegisti(page, 0);
   expect(hatalar).toEqual([]);
 });
@@ -43,7 +60,7 @@ test('eşleştir: yanlış kartı hedefe sürüklemek kabul edilmez', async ({ p
   const hedef = page.locator('.gosterge-alan .kart').first();
   await suruklе(page, page.locator('.secenek:not([data-dogru])').first(), hedef);
   await expect(page.locator('.ilerleme i.tamam')).toHaveCount(0);
-  await expect(page.locator('[data-dogru="1"]')).toHaveClass(/isilti/);
+  await expect(page.locator('[data-dogru="1"]')).not.toHaveClass(/isilti/);
   await suruklе(page, page.locator('[data-dogru="1"]'), hedef);
   await soruDegisti(page, 0);
   expect(hatalar).toEqual([]);

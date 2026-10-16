@@ -141,6 +141,7 @@ export function eslestirCiz(b: SoruBaglam) {
     izgara.append(el);
   });
   b.temizlik(() => b.app.kok.querySelectorAll('.surukle-klon').forEach((k) => k.remove()));
+  b.ipucuHedef = () => elemanlar[dogru] ?? null;
 
   // Küçük çocuklar için: kısa bir süre dokunulmazsa, kartı hedefe taşıyan el animasyonu
   if (!TEST_MODU) {
