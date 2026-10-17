@@ -26,7 +26,7 @@ import type { ArkaIs, Istasyon, Malzeme, MiniGirdi, MiniOyun, Urun } from '../mi
 import { denemeIcin } from '../mini/deneme';
 import { istasyonOyunlari, oyunBul } from '../mini/katalog';
 import { gunPlani, ilkGunPlani, L, MUSTERILER, odeme, tepkiHesapla, TARIFLER, yemekTani, type GunPlani, type Istek, type Musteri, type PlanMusteri, type TepkiSonuc } from '../model';
-import { olcuIzle, YERLESIM, type Olcu, type Yer, type Yon } from '../olcek';
+import { ENAZ_BOY34, MASA34, olcuIzle, olcuIzle34, YERLESIM, YERLESIM34, type Olcu, type Olcu34, type Yer, type Yerlesim34, type Yon } from '../olcek';
 import { salonSes, sesler } from '../sesler';
 import { varlik, yeniden } from '../varliklar';
 import { anahtarTeslim, yeniTarifTadi, type BabaanneBaglam } from './babaanne';
@@ -42,10 +42,17 @@ import { menuTahtasi } from './menu-tahtasi';
 import { panoCiz, PANO_YER } from './pano';
 import { surukleBagla, ustunde } from './surukle';
 import { aletKutusu, masaYeri, sahneGenisligi, susleriCiz, yuvaSec } from './yerlesim';
+import { hudKur, HUD_SOZ, type Hud } from './hud';
+import { arka34Ciz, balonYerlestir, derinlik, grafikKur, halilariCiz, kisiOlcekle, masaYaniYeri, sahne34Acik, sandalyeYeri, yolBul, yolYuru, type YolGrafigi } from './sahne34';
+import { KAPASITE, Sira, type SiraUyesi } from './sira';
+import { defterAc } from '../defter';
+import './sahne34.css';
 
 const DENEME_ZORLA = (TEST_MODU || new URLSearchParams(location.search).has('onizleme')) && new URLSearchParams(location.search).has('deneme');
 /** test modunda Babaanne'nin anahtar töreni yalnız &babaanne=1 ile (çekirdek testleri beklemesin) */
 const ANAHTAR_TOREN = !TEST_MODU || new URLSearchParams(location.search).has('babaanne');
+/** test modunda 3/4 sıra eski testlerle uyumlu tek kişilik; &sira=1 ile tam sıra (3 + yolun başı 2) */
+const SIRA_TEST_SINIR = TEST_MODU && !new URLSearchParams(location.search).has('sira') ? 1 : null;
 const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, TEST_MODU ? Math.min(ms, 30) : AZ_HAREKET ? Math.min(ms, 300) : ms));
 
@@ -68,6 +75,8 @@ interface Masa {
   hesap: HTMLElement;
   yer: Yer;
   oturan: Oturan | null;
+  /** P8 3/4: masanın arkasındaki sandalyeler (iki kişilik) */
+  sandalye: HTMLElement[];
   /** masada bekleyen jeton */
   jeton: number;
   kirli: HTMLElement | null;
@@ -89,6 +98,8 @@ interface Kapida {
   eslik: Kisi | null;
   hazir: boolean;
   zaman: number;
+  /** P8 3/4: sıradaki yeri */
+  uye?: SiraUyesi;
 }
 
 export interface LokantaParam {
@@ -123,12 +134,16 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   const sahne = h('div.rs-sahne');
   const arka = h('div.rs-arka');
   const katman = h('div.rs-katman');
-  // bahçe (alındıysa): sahnenin sağında ikinci resim; kayarak geçilir (büyütme yok)
+  // P8: 3/4 diorama (Check Please! esini; kamera sabit, HUD panelli). Resim yoksa dik karşıdan eski sahne.
+  const S34 = sahne34Acik(varlik);
+  if (S34) el.dataset.s34 = '1';
+  // bahçe (alındıysa): eski sahnede sağda ikinci resim, kayarak geçilir; 3/4'te aynı resmin bahçeli sürümü
   const bahceVar = sahneGenisligi(kayit.acilan.bolum) > 1;
-  const bahceArka = bahceVar ? h('div.rs-bahce-arka') : null;
+  let bahceAcik = bahceVar;
+  const bahceArka = bahceVar && !S34 ? h('div.rs-bahce-arka') : null;
   sahne.append(arka, ...(bahceArka ? [bahceArka] : []), katman);
   let bahcede = false;
-  const gecis = bahceVar ? h('button.rs-bahce-gec', { type: 'button', 'aria-label': 'Bahçe' }, h('span.rs-bahce-gec-yaprak')) : null;
+  const gecis = bahceArka ? h('button.rs-bahce-gec', { type: 'button', 'aria-label': 'Bahçe' }, h('span.rs-bahce-gec-yaprak')) : null;
   const cubuk = h('div.rs-ust-cubuk');
   const geri = h('button.rs-geri', { type: 'button', 'aria-label': 'Menüye dön' });
   cubuk.append(geri);
@@ -146,10 +161,20 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
 
   let yon: Yon = 'yatay';
   let Y = YERLESIM.yatay;
+  let Y34: Yerlesim34 = YERLESIM34.yatay;
+  let grafik: YolGrafigi | null = null;
+  let hud: Hud | null = null;
+  let sira: Sira | null = null;
+  /** 3/4: masa yuvasının yeri (salon 0-3, bahçe 4-5) */
+  const masaYeri34 = (yuva: string): Yer => {
+    const i = Number(yuva);
+    return i < 4 ? Y34.masalar[i] : (Y34.bahce.masalar[i - 4] ?? Y34.bahce.masalar[0]);
+  };
   const pct = (v: number) => `${v}%`;
 
   // arka plan: lokanta çizimi (yoksa sade yer tutucu katmanlar)
   const arkaKur = () => {
+    if (S34) return arka34Ciz(arka, yon, bahceAcik, varlik);
     const u = varlik(yon === 'dikey' ? 'arka/lokanta-dikey' : 'arka/lokanta-yatay');
     arka.replaceChildren();
     arka.classList.toggle('rs-yertutucu', !u);
@@ -222,7 +247,18 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const hesap = h('button.rs-hesap', { type: 'button', 'aria-label': 'Hesap tabağı' }, h('span.rs-hesap-tabak'), h('span.rs-hesap-jetonlar'));
     const m = h('div.rs-masa', { 'data-masa': String(i), 'data-ortu': kayit.ortu ?? '', style: `--rs-masa-renk:${MASA_RENK[i]}` }, h('span.rs-masa-govde'), h('span.rs-masa-bayrak'), ust, hesap);
     m.dataset.yuva = yuva;
-    const masa: Masa = { i, yuva, el: m, ust, hesap, yer: { x: 0, y: 0 }, oturan: null, jeton: 0, kirli: null };
+    const masa: Masa = { i, yuva, el: m, ust, hesap, yer: { x: 0, y: 0 }, oturan: null, sandalye: [], jeton: 0, kirli: null };
+    if (S34) {
+      // 3/4 masa-sandalye seti (masa-sandalye-34): iki sandalye masanın ARKASINDA, oturan kameraya bakar
+      const bahceMasasi = Number(yuva) >= 4;
+      masa.sandalye = [0, 1].map(() => {
+        const u = varlik(bahceMasasi ? 'masa/bahce-sandalye' : 'masa/sandalye');
+        const s = h('div.rs-sandalye', { 'data-bahce': bahceMasasi ? '1' : undefined }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null);
+        katman.append(s);
+        return s;
+      });
+      masaResmi34(masa);
+    }
     m.addEventListener('click', (e) => {
       if ((e.target as HTMLElement).closest('.rs-hesap')) return;
       masayaDokunuldu(masa);
@@ -233,6 +269,14 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     return masa;
   };
   masaYuvalari.forEach((y, i) => masaKur(y, i));
+
+  /** 3/4 masa resmi: örtüye göre (masa-sandalye-34; bahçede demir masa) */
+  function masaResmi34(masa: Masa) {
+    const ortu = kayit.ortu ? `masa/masa-${kayit.ortu}` : null;
+    const u = Number(masa.yuva) >= 4 ? varlik('masa/bahce-masa') : ((ortu ? varlik(ortu) : null) ?? varlik('masa/masa'));
+    masa.el.querySelector('img.rs-masa-resim')?.remove();
+    if (u) masa.el.prepend(h('img.rs-masa-resim', { src: u, alt: '', draggable: 'false' }));
+  }
 
   // süsler (yerlesim.ts) ve müşteri panosu (pano.ts)
   const susKatman = h('div.rs-sus-katman');
@@ -253,41 +297,88 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   katman.append(minoEl);
 
   const zSira = (k: Kisi) => {
-    k.el.style.zIndex = String(Math.round(k.konum.y * 10) + (k.oturdu ? 0 : 3));
+    k.el.style.zIndex = S34 ? String(derinlik(k.konum.y, k.oturdu ? 'oturan' : 'ayakta')) : String(Math.round(k.konum.y * 10) + (k.oturdu ? 0 : 3));
   };
+  if (S34) {
+    kisiOlcekle(kino, ENAZ_BOY34);
+    sira = new Sira({
+      katman,
+      yer: (i) => (i < Y34.sira.length ? Y34.sira[i] : (Y34.yolBasi[i - Y34.sira.length] ?? Y34.yolBasi[Y34.yolBasi.length - 1])),
+      yuru: (k, p) => yuru(k, p.x, p.y, 22),
+      kapiCal: () => {
+        salonSes.kapi();
+        kapi.classList.remove('rs-acik');
+        void kapi.offsetWidth;
+        kapi.classList.add('rs-acik');
+        window.setTimeout(() => kapi.classList.remove('rs-acik'), TEST_MODU ? 30 : 600);
+      },
+      kapandi: () => kapandi,
+    });
+  }
+  /** Yürü: 3/4'te yol grafiğiyle (masaların, tezgâhın içinden geçmez; sola giderken ayna), eski sahnede düz */
+  async function yuru(k: Kisi, x: number, y: number, hiz: number): Promise<void> {
+    if (!S34 || !grafik) return k.yuru(x, y, hiz);
+    const once = k.el.dataset.poz ?? 'giris';
+    const kino_ = k.ad === 'kino';
+    const var2 = (a: string, b: string) => (varlik(`kisi/${k.ad}/${a}`) && varlik(`kisi/${k.ad}/${b}`) ? [a, b] : null);
+    if (!kino_) k.poz('giris');
+    await yolYuru(k, yolBul(grafik, k.konum, { x, y }), {
+      yon,
+      hiz: hiz * 0.75,
+      // Kino: mutfağa yukarı arka, aşağı ön kareleri (§11h #75); gelene kadar yan yürüyüş kareleri
+      kareler: (d) => (kino_ ? ((d === 'yukari' ? var2('arka-1', 'arka-2') : d === 'asagi' ? var2('on-1', 'on-2') : null) ?? var2('yuru-1', 'yuru-2')) : null),
+      test: TEST_MODU,
+      kapandi: () => kapandi,
+    });
+    k.poz(kino_ ? once : (k.el.dataset.poz ?? 'giris'));
+  }
   let kinoMesgul = false;
   let olcu: Olcu | null = null;
 
   const yerlestir = (o: Olcu) => {
     olcu = o;
     yon = o.yon;
-    Y = YERLESIM[yon];
+    Y = S34 ? YERLESIM34[yon] : YERLESIM[yon];
+    Y34 = YERLESIM34[yon];
+    if (S34) hud?.yerlestir(o as Olcu34);
     arkaKur();
     for (const ist of ISTASYONLAR) {
       const k = Y.istasyon[ist];
       Object.assign(istDugme[ist]!.style, { left: pct(k.x), top: pct(k.y), width: pct(k.w), height: pct(k.h) });
     }
     for (const ist of yeniIstasyonlar) {
-      const k = aletKutusu(ist, yeniIstasyonlar, yon);
+      const k = S34 ? (ist === 'mangal' ? Y34.bahce.mangal : Y34.alet[yeniIstasyonlar.filter((x) => x !== 'mangal').indexOf(ist)]) : aletKutusu(ist, yeniIstasyonlar, yon);
       if (k) Object.assign(istDugme[ist]!.style, { left: pct(k.x), top: pct(k.y), width: pct(k.w), height: pct(k.h) });
     }
-    susleriCiz(susKatman, kayit.yerlesim.sus, yon);
-    const pk = PANO_YER[yon];
+    susleriCiz(susKatman, kayit.yerlesim.sus, yon, S34 ? Y34.sus : undefined);
+    const pk = S34 ? Y34.pano : PANO_YER[yon];
     Object.assign(pano.style, { left: pct(pk.x), top: pct(pk.y), width: pct(pk.w), height: pct(pk.h) });
     Object.assign(ip.style, { left: pct(Y.ip[0].x), top: pct(Y.ip[0].y), width: pct(Y.ip[1].x - Y.ip[0].x) });
     Object.assign(kasa.style, { left: pct(Y.kasa.x), top: pct(Y.kasa.y), width: pct(Y.kasa.w), height: pct(Y.kasa.h) });
     Object.assign(pencere.style, { left: pct(Y.pencere.x), top: pct(Y.pencere.y), width: pct(Y.pencere.w), height: pct(Y.pencere.h) });
     Object.assign(kapi.style, { left: pct(Y.kapi.x), top: pct(Y.kapi.y) });
     masalar.forEach((m) => {
-      m.yer = masaYeri(m.yuva, yon);
-      Object.assign(m.el.style, { left: pct(m.yer.x), top: pct(m.yer.y), zIndex: String(Math.round(m.yer.y * 10) + 2) });
+      m.yer = S34 ? masaYeri34(m.yuva) : masaYeri(m.yuva, yon);
+      Object.assign(m.el.style, { left: pct(m.yer.x), top: pct(m.yer.y), zIndex: S34 ? String(derinlik(m.yer.y, 'masa')) : String(Math.round(m.yer.y * 10) + 2) });
+      m.sandalye.forEach((s, j) => {
+        const p = sandalyeYeri(m.yer, yon, 2, j as 0 | 1);
+        Object.assign(s.style, { left: pct(p.x), top: pct(p.y), zIndex: String(derinlik(m.yer.y, 'sandalye')) });
+      });
       if (m.oturan && m.oturan.durum !== 'yuruyor' && m.oturan.durum !== 'gidiyor') oturuYerlestir(m.oturan);
     });
+    if (S34) {
+      grafik = grafikKur(Y34, yon, masalar.map((m) => m.yer), bahceAcik);
+      halilariCiz(arka, masalar.map((m) => m.yer), yon);
+      sira?.yerlestir();
+      for (const m of masalar) if (m.oturan?.balon) balonYerlestir(m.oturan.balon, m.oturan.kisi.el, sahne, m.oturan.kisi.olcu);
+    }
     if (!kinoMesgul) kino.yerKoy(Y.kino.x, Y.kino.y);
     zSira(kino);
-    minoEl.style.left = pct(yon === 'yatay' ? 56 : 44);
-    minoEl.style.top = pct(yon === 'yatay' ? 52 : 44);
-    if (kapida?.hazir) {
+    minoEl.style.left = pct(S34 ? Y34.mino.x : yon === 'yatay' ? 56 : 44);
+    minoEl.style.top = pct(S34 ? Y34.mino.y : yon === 'yatay' ? 52 : 44);
+    if (S34) minoEl.style.zIndex = String(derinlik(Y34.mino.y));
+    const kapida = ilkKapida();
+    if (!S34 && kapida?.hazir) {
       kapida.kisi.yerKoy(Y.bekleme.x, Y.bekleme.y);
       zSira(kapida.kisi);
     }
@@ -328,7 +419,17 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
 
   // ---------------------------------------------------------------- müşteri durumu
   let siradaki = 0;
-  let kapida: Kapida | null = null;
+  /** kapıda bekleyenler: eski sahnede en çok 1 (kapının önü), 3/4'te sıra (3 + yolun başı 2) */
+  const bekleyen: Kapida[] = [];
+  const hazirMi = (k: Kapida) => (S34 ? !!k.uye?.hazir : k.hazir);
+  /** sıranın başındaki hazır kişi (ipucu, kendiliğinden oturma); eski sahnede kapıdaki */
+  const ilkKapida = (): Kapida | null => (S34 ? (bekleyen.filter(hazirMi).sort((a, b) => (a.uye?.yuva ?? 0) - (b.uye?.yuva ?? 0))[0] ?? null) : (bekleyen[0] ?? null));
+  const bekleyendenCikar = (k: Kapida) => {
+    const i = bekleyen.indexOf(k);
+    if (i >= 0) bekleyen.splice(i, 1);
+    if (k.uye) sira?.cikar(k.uye);
+  };
+  let sonGelis = -1e9;
   let sonBosalma = -1e9;
   let gunBitti = false;
   let gunJeton = 0;
@@ -347,9 +448,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const bekleyen = masalar.find((m) => m.oturan?.durum === 'bekliyor');
     const hazirTabak = pencere.querySelector<HTMLElement>('.rs-hazir');
     const jetonlu = masalar.find((m) => m.jeton > 0);
-    if (kapida?.hazir) {
+    const kapida = ilkKapida();
+    if (kapida && hazirMi(kapida) && masalar.some((m) => !m.oturan)) {
       const bos = masalar.find((m) => !m.oturan);
-      merdiven.hedef({ el: () => kapida?.kisi.el ?? null, soz: L.mino.masa_sec, hareket: 'surukle', nereye: () => bos?.el ?? null });
+      merdiven.hedef({ el: () => (kapida.kisi.el.isConnected ? kapida.kisi.el : null), soz: L.mino.masa_sec, hareket: 'surukle', nereye: () => bos?.el ?? null });
     } else if (hazirTabak && bekleyen) merdiven.hedef({ el: () => pencere.querySelector('.rs-hazir'), soz: L.mino.durum.tabak_hazir, hareket: 'surukle', nereye: () => kino.el });
     else if (bekleyen && tepsi.length) merdiven.hedef({ el: () => istDugme.servis ?? null, soz: L.mino.durum.tepsi_dolu, hareket: 'dokun' });
     else if (bekleyen) merdiven.hedef({ el: () => istDugme.tezgah ?? null, soz: L.mino.durum.bekliyor, hareket: 'dokun' });
@@ -373,14 +475,15 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     return kinoZincir;
   };
   const kinoYuru = async (x: number, y: number) => {
-    kino.el.style.zIndex = '940';
-    await kino.yuru(x, y, 30);
+    if (!S34) kino.el.style.zIndex = '940';
+    await yuru(kino, x, y, 30);
     zSira(kino);
   };
   const kinoYerine = () => kinoYuru(Y.kino.x, Y.kino.y);
   /** masanın yanı (Kino'nun durduğu yer) */
   const masaYani = (m: Masa): Yer => {
     // masanın yarı eni + Kino'nun yarısı (u), sahnenin yüzdesi olarak: Kino masanın önüne değil yanına durur
+    if (S34) return masaYaniYeri(m.yer, yon);
     const dx = olcu ? ((MASA_W / 2 + 0.45) * olcu.u * 100) / olcu.sahne.w : 12;
     return { x: m.yer.x + (m.yer.x > 50 ? -dx : dx), y: m.yer.y - 1 };
   };
@@ -388,6 +491,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   // ---------------------------------------------------------------- müşteriler
   const yeniKisi = (ad: string, boy: string) => {
     const k = new Kisi(ad, boy);
+    if (S34) kisiOlcekle(k, ENAZ_BOY34);
     katman.append(k.el);
     return k;
   };
@@ -410,12 +514,47 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const m = MUSTERILER[p.musteri];
     const kisi = yeniKisi(m.id, m.boy);
     const eslik = p.eslik ? yeniKisi(p.eslik, MUSTERILER[p.eslik]?.boy ?? p.eslik) : null;
+    if (S34 && sira) {
+      // 3/4: sıraya girer (yolun dışından yürür); kapıdan girmez
+      kisi.yerKoy(Y34.giris.x, Y34.giris.y);
+      eslik?.yerKoy(Y34.giris.x, Y34.giris.y);
+      await Promise.all([kisi.hazir, eslik?.hazir]);
+      if (kapandi) return;
+      const k: Kapida = { plan: p, m, kisi, eslik, hazir: false, zaman: performance.now() };
+      const uye = sira.ekle({ kisi, eslik });
+      k.uye = uye;
+      bekleyen.push(k);
+      surukleBagla(kisi.el, el, {
+        acik: () => bekleyen.includes(k) && hazirMi(k),
+        hayalet: () => kisiKopya(kisi),
+        basla: () => {
+          uye.zaman = performance.now() + 60_000;
+        },
+        birak: (x, y) => {
+          uye.zaman = performance.now();
+          const hedef = masalar.find((mm) => !mm.oturan && (ustunde(mm.el, x, y, 30) || mm.sandalye.some((s) => ustunde(s, x, y, 10))));
+          if (!hedef) return false;
+          void oturt(k, hedef);
+          return true;
+        },
+        dokun: () => {
+          uye.zaman = performance.now();
+          void kisi.oynat('hop', 360);
+        },
+      });
+      await uye.vardi;
+      if (kapandi || !bekleyen.includes(k)) return;
+      k.hazir = true;
+      if (hizmet === 0 && bekleyen.length === 1) void minoSoyle(L.mino.musteri_geldi);
+      ipucuGuncelle();
+      return;
+    }
     kisi.yerKoy(Y.kapi.x, Y.kapi.y + 20);
     eslik?.yerKoy(Y.kapi.x, Y.kapi.y + 20);
     kisi.el.style.zIndex = '950';
     if (eslik) eslik.el.style.zIndex = '950';
     const k: Kapida = { plan: p, m, kisi, eslik, hazir: false, zaman: performance.now() };
-    kapida = k;
+    bekleyen.push(k);
     salonSes.kapi();
     kapi.classList.add('rs-acik');
     await Promise.all([kisi.hazir, eslik?.hazir]);
@@ -425,13 +564,13 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     if (eslik) zSira(eslik);
     kisi.el.style.zIndex = '950';
     if (eslik) eslik.el.style.zIndex = '950';
-    if (kapandi || kapida !== k) return;
+    if (kapandi || !bekleyen.includes(k)) return;
     k.hazir = true;
     k.zaman = performance.now();
     void kisi.oynat('hop', 420);
     if (hizmet === 0) void minoSoyle(L.mino.musteri_geldi);
     surukleBagla(kisi.el, el, {
-      acik: () => kapida === k && k.hazir,
+      acik: () => bekleyen.includes(k) && k.hazir,
       hayalet: () => kisiKopya(kisi),
       basla: () => {
         k.zaman = performance.now() + 60_000;
@@ -449,7 +588,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   };
 
   const masayaDokunuldu = (m: Masa) => {
-    if (kapida?.hazir && !m.oturan) void oturt(kapida, m);
+    const kapida = ilkKapida();
+    if (kapida && hazirMi(kapida) && !m.oturan) void oturt(kapida, m);
     else if (m.oturan?.durum === 'bekliyor' || m.oturan?.durum === 'istiyor') void m.oturan.kisi.oynat('hop', 360);
   };
 
@@ -469,7 +609,32 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     k.yerKoy(x, masa.yer.y - 0.4);
     k.otur(true);
   };
+  /**
+   * 3/4 oturuş: müşteri masanın ARKASINDAKİ sandalyede, kameraya bakar. Ön kolları masa üstünün ortasında (kısalar
+   * yükseltilmiş sandalyede); masa üstünün ön kenarının altı kırpılır (bacaklar asla görünmez), masa önde çizilir.
+   */
+  const oturt34_ = (k: Kisi, p: Yer, masa: Masa) => {
+    const f = k.boy < ENAZ_BOY34 ? ENAZ_BOY34 / k.boy : 1;
+    const kutuH = k.boy / (k.olcu.taban - k.olcu.tepe);
+    const c = (MASA34.sandalyeGeri + MASA34.derinlik * 0.55) / f;
+    const ustOrta = MASA34.ustOrta / f;
+    const kesik = MASA34.kesik / f;
+    const belYuk = (k.olcu.taban - k.olcu.bel) * kutuH;
+    const dy = k.pozlu ? Math.max(0, ustOrta - c - 0.42 * k.boy) : kesik + 0.08 / f - c - belYuk;
+    const kirp = kesik - c - dy + (1 - k.olcu.taban) * kutuH;
+    k.el.style.setProperty('--rs-otur-dy', dy.toFixed(3));
+    k.el.style.setProperty('--rs-otur-kirp', Math.max(0, kirp).toFixed(3));
+    k.yerKoy(p.x, p.y);
+    k.otur(true);
+    k.el.style.zIndex = String(derinlik(masa.yer.y, 'oturan'));
+  };
+  const oturtKisi = (k: Kisi, x: number, masa: Masa) => (S34 ? oturt34_(k, sandalyeYeri(masa.yer, yon, 2, x > masa.yer.x ? 1 : 0), masa) : oturt_(k, x, masa));
   const oturuYerlestir = (o: Oturan) => {
+    if (S34) {
+      oturt34_(o.kisi, sandalyeYeri(o.masa.yer, yon, 2, 0), o.masa);
+      if (o.eslik) oturt34_(o.eslik, sandalyeYeri(o.masa.yer, yon, 2, 1), o.masa);
+      return;
+    }
     oturt_(o.kisi, o.masa.yer.x - (o.eslik ? 3 : 0), o.masa);
     o.kisi.el.style.zIndex = String(Math.round(o.masa.yer.y * 10) + 1);
     if (o.eslik) {
@@ -479,15 +644,21 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   };
 
   const oturt = async (k: Kapida, masa: Masa) => {
-    if (kapida !== k || masa.oturan) return;
-    kapida = null;
+    if (!bekleyen.includes(k) || masa.oturan) return;
+    bekleyendenCikar(k);
     const o: Oturan = { plan: k.plan, m: k.m, kisi: k.kisi, eslik: k.eslik, masa, durum: 'yuruyor', adisyon: null, balon: null };
     masa.oturan = o;
     ipucuGuncelle();
     // masanın arkasına yürür (yolda masaların önünden geçer)
-    k.kisi.el.style.zIndex = '950';
-    if (k.eslik) k.eslik.el.style.zIndex = '950';
-    await Promise.all([k.kisi.yuru(masa.yer.x - (k.eslik ? 3 : 0), masa.yer.y - 0.4, 24), k.eslik?.yuru(masa.yer.x + 5, masa.yer.y - 0.4, 24)]);
+    if (S34) {
+      const s0 = sandalyeYeri(masa.yer, yon, 2, 0);
+      const s1 = sandalyeYeri(masa.yer, yon, 2, 1);
+      await Promise.all([yuru(k.kisi, s0.x, s0.y, 24), k.eslik ? yuru(k.eslik, s1.x, s1.y, 24) : null]);
+    } else {
+      k.kisi.el.style.zIndex = '950';
+      if (k.eslik) k.eslik.el.style.zIndex = '950';
+      await Promise.all([k.kisi.yuru(masa.yer.x - (k.eslik ? 3 : 0), masa.yer.y - 0.4, 24), k.eslik?.yuru(masa.yer.x + 5, masa.yer.y - 0.4, 24)]);
+    }
     if (kapandi) return;
     oturuYerlestir(o);
     if (masa.kirli) void kinoIs(() => kirliTopla(masa));
@@ -499,6 +670,15 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const balon = h('div.rs-balon', { 'data-tur': k.plan.istek.tur }, istekResmi(k.plan.istek));
     o.balon = balon;
     k.kisi.el.append(balon);
+    if (S34) {
+      // §7e balon ailesi (balon-ikon-durum): çizim varsa beyaz balon resmi; yeri yüzü örtmez, sahneden taşmaz
+      const bz = varlik('balon/balon-sag');
+      if (bz) {
+        balon.dataset.resimli = '1';
+        balon.prepend(h('img.rs-balon-zemin', { src: bz, alt: '', draggable: 'false' }));
+      }
+      balonYerlestir(balon, k.kisi.el, sahne, k.kisi.olcu);
+    }
     sesler.cal('pit');
     const i = k.plan.istek;
     void minoSoyle(i.tur === 'ipuclu' ? L.mino.ipucu[i.ipucu] : i.tur === 'surpriz' ? L.mino.istek.surpriz : L.mino.istek.resimli);
@@ -657,6 +837,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     masa.kirli?.remove();
     masa.kirli = null;
     const tabak = h('div.rs-masa-tabak', { 'data-tur': u.tur, 'data-yemek': u.yemek ?? u.tur }, urunGorsel(u));
+    tabak.dataset.s34 = S34 ? '1' : '';
     masa.ust.append(tabak);
     sesler.cal('pof', { guc: 0.6 });
     ipucuGuncelle();
@@ -729,8 +910,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       salonSes.bayildi();
       void o.eslik?.oynat('sevin', 900);
       await Promise.all([k.oynat('sevin', 900), kisiSoyle(k, o.m, musteriSozu(o.m, 'bayildi'))]);
+      hud?.kalp('bayildi', k.el);
       await minoSoyle(yeniKesif ? L.mino.tepki.kesif : L.mino.tepki.bayildi);
     } else if (s.tepki === 'mmm') {
+      hud?.kalp('mmm', k.el);
       k.ifade('mutlu', 1400);
       efekt(k, 'yildiz', 2);
       salonSes.mmm();
@@ -814,11 +997,14 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     kasa.classList.remove('rs-hopla');
     void kasa.offsetWidth;
     kasa.classList.add('rs-hopla');
+    // 3/4: kasa sahnede bir eşya; jeton kasaya girince HUD'daki sandık bir kez hoplar
+    window.setTimeout(() => hud?.sandik(true), TEST_MODU ? 0 : 220);
   };
   const kasaCiz = () => {
     const y = kasa.querySelector('.rs-kasa-yigin') as HTMLElement;
     y.style.setProperty('--rs-yigin', String(Math.min(12, kayit.jeton)));
     kasa.dataset.jeton = String(kayit.jeton);
+    hud?.sandik(false);
   };
   kasaCiz();
   /** P6: bulaşık yıkanınca Babaanne'nin bahşiş jetonu lavabodan kasaya uçar */
@@ -853,7 +1039,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     void o.kisi.oynat('hop', 400);
     await kisiSoyle(o.kisi, o.m, musteriSozu(o.m, 'gule'));
     if (kapandi) return;
-    await Promise.all([o.kisi.yuru(Y.kapi.x, Y.kapi.y + 20, 26), o.eslik?.yuru(Y.kapi.x, Y.kapi.y + 20, 26)]);
+    if (S34) await Promise.all([yuru(o.kisi, Y34.giris.x, Y34.giris.y, 26), o.eslik ? yuru(o.eslik, Y34.giris.x, Y34.giris.y, 26) : null]);
+    else await Promise.all([o.kisi.yuru(Y.kapi.x, Y.kapi.y + 20, 26), o.eslik?.yuru(Y.kapi.x, Y.kapi.y + 20, 26)]);
     o.masa.oturan = null;
     sonBosalma = performance.now();
     o.kisi.kapat();
@@ -1017,21 +1204,42 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   let basladi = performance.now();
   const akis = window.setInterval(() => {
     if (kapandi || gunBitti || !acik) return;
+    const kapida = ilkKapida();
+    const simdi = performance.now();
+    if (S34) {
+      // 3/4 sıra: 3-4 yaşta sıranın başındaki 10 sn dokunulmazsa kendisi boş masaya geçer (5-6 bekler; ipucu merdiveni)
+      const sure34 = SIRA_TEST_SINIR ? 400 : yas === 'kucuk' ? (TEST_MODU ? 1500 : 10_000) : Infinity;
+      if (kapida?.uye?.hazir && simdi - kapida.uye.zaman > sure34 && !el.querySelector('.rs-hayalet')) {
+        const bos = masalar.filter((m) => !m.oturan).sort((a, b) => Math.abs(a.yer.x - kapida.kisi.konum.x) + Math.abs(a.yer.y - kapida.kisi.konum.y) - Math.abs(b.yer.x - kapida.kisi.konum.x) - Math.abs(b.yer.y - kapida.kisi.konum.y))[0];
+        if (bos) void oturt(kapida, bos);
+      }
+      // sıraya gelen: ilk müşteri hemen, sonra sıra boş ve masa varsa kısa, yoksa günün aralığıyla; sıra en çok 3 + 2
+      const bosMasa = masalar.some((m) => !m.oturan);
+      const ilk34 = siradaki === 0 && simdi - basladi > (TEST_MODU ? 100 : 1600);
+      const ara = !bekleyen.length && bosMasa ? (TEST_MODU ? 100 : 1600) : aralik();
+      const sonraki34 = siradaki > 0 && simdi - sonGelis > ara;
+      const sinir = SIRA_TEST_SINIR ?? KAPASITE;
+      if (siradaki < plan.musteriler.length && bekleyen.length < sinir && (ilk34 || sonraki34)) {
+        sonGelis = simdi;
+        void musteriGetir();
+      }
+      return;
+    }
     // kapıda bekleyen 4 sn dokunulmazsa kendisi en yakın boş masaya oturur
-    if (kapida?.hazir && performance.now() - kapida.zaman > (TEST_MODU ? 400 : 4000) && !el.querySelector('.rs-hayalet')) {
+    if (kapida?.hazir && simdi - kapida.zaman > (TEST_MODU ? 400 : 4000) && !el.querySelector('.rs-hayalet')) {
       const bos = masalar.filter((m) => !m.oturan).sort((a, b) => Math.abs(a.yer.x - Y.bekleme.x) - Math.abs(b.yer.x - Y.bekleme.x))[0];
       if (bos) void oturt(kapida, bos);
     }
-    const ilk = siradaki === 0 && performance.now() - basladi > (TEST_MODU ? 100 : 1600);
-    const sonraki = siradaki > 0 && performance.now() - sonBosalma > aralik();
-    if (!kapida && siradaki < plan.musteriler.length && masadaki() < plan.ayniAnda && masalar.some((m) => !m.oturan) && (ilk || sonraki)) {
-      sonBosalma = performance.now();
+    const ilk = siradaki === 0 && simdi - basladi > (TEST_MODU ? 100 : 1600);
+    const sonraki = siradaki > 0 && simdi - sonBosalma > aralik();
+    if (!bekleyen.length && siradaki < plan.musteriler.length && masadaki() < plan.ayniAnda && masalar.some((m) => !m.oturan) && (ilk || sonraki)) {
+      sonBosalma = simdi;
       void musteriGetir();
     }
   }, 250);
 
   const gunSonuDenetle = () => {
-    if (gunBitti || personel || siradaki < plan.musteriler.length || kapida || masalar.some((m) => m.oturan)) return;
+    if (gunBitti || personel || siradaki < plan.musteriler.length || bekleyen.length || masalar.some((m) => m.oturan)) return;
     // 5-6: personel yemeği (isteğe bağlı; "Kapalı" levhası her an kapatır). &personel=0 kapatır.
     if (yas === 'buyuk' && !personelOldu && new URLSearchParams(location.search).get('personel') !== '0') {
       personelOldu = true;
@@ -1049,7 +1257,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
         minoSoyle,
         kinoSoyle: (t) => kisiSoyle(kino, null, t, true),
         yeniKisi,
-        oturt: (k, x, m) => oturt_(k, x, m as Masa),
+        oturt: (k, x, m) => oturtKisi(k, x, m as Masa),
         zSira,
         bitti: () => {
           personel = null;
@@ -1117,12 +1325,21 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       return;
     }
     if (k.sekme === 'bolum') {
+      if (S34 && kayit.acilan.bolum.includes('bahce')) {
+        // 3/4: aynı resmin bahçeli sürümüne çapraz geçiş (içerisi piksel piksel aynı; ekran kaymaz)
+        bahceAcik = true;
+        arka34Ciz(arka, yon, true, varlik, true);
+        if (olcu) yerlestir(olcu);
+      }
       await minoSoyle(D.mino.bahce);
       return;
     }
     if (k.yer === 'ortu') {
       gunSonu?.gizle(true);
-      masalar.forEach((m) => (m.el.dataset.ortu = kayit.ortu ?? ''));
+      masalar.forEach((m) => {
+        m.el.dataset.ortu = kayit.ortu ?? '';
+        if (S34) masaResmi34(m);
+      });
       sesler.cal('pof');
       await minoSoyle(L.mino.ortu_tamam);
       await bekle(500);
@@ -1133,7 +1350,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     // masa / süs: defter kenara çekilir, çocuk boş yuvalardan birini seçer
     gunSonu?.gizle(true);
     const tur = k.sekme === 'masa' ? 'masa' : k.yer!;
-    const sec = yuvaSec(katman, sonuc.yuvalar, tur, yon);
+    const sec = yuvaSec(katman, sonuc.yuvalar, tur, yon, undefined, S34 ? (t, y) => (t === 'masa' ? masaYeri34(y) : Y34.sus[y]) : undefined);
     void minoSoyle(D.mino.yer_sec);
     const ipucu = window.setTimeout(() => sec.halkalar().forEach((e) => e.classList.add('rs-kipir')), TEST_MODU ? 50 : 12000);
     const yuva = await sec.secildi;
@@ -1153,7 +1370,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       await Promise.all([kisiSoyle(kino, null, D.kino.oturdu, true), minoSoyle(D.mino.yeni_masa)]);
       await kinoYerine();
     } else {
-      susleriCiz(susKatman, kayit.yerlesim.sus, yon);
+      susleriCiz(susKatman, kayit.yerlesim.sus, yon, S34 ? Y34.sus : undefined);
       susKatman.querySelector(`.rs-sus[data-yuva="${yuva}"]`)?.classList.add('rs-hopla');
       sesler.cal('pof');
       await minoSoyle(D.mino.yerlesti);
@@ -1165,9 +1382,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   // ---------------------------------------------------------------- sabah: anahtar, menü tahtası, Babaanne
   const babaanneBaglam = (): BabaanneBaglam => ({
     katman,
-    kapi: Y.kapi,
-    dur: { x: yon === 'yatay' ? 46 : 50, y: yon === 'yatay' ? 68 : 58 },
-    pencere: { x: Y.pencere.x - 3, y: Y.kino.y },
+    // 3/4: kapının önündeki yoldan gelir (y + 20 resmin dışı)
+    kapi: S34 ? { x: Y34.sira[0].x, y: Y34.sira[0].y + 4 } : Y.kapi,
+    dur: S34 ? Y34.babaanne : { x: yon === 'yatay' ? 46 : 50, y: yon === 'yatay' ? 68 : 58 },
+    pencere: S34 ? { x: Y34.kino.x - 4, y: Y34.kino.y } : { x: Y.pencere.x - 3, y: Y.kino.y },
     kapiEl: kapi,
     kapandi: () => kapandi,
   });
@@ -1182,6 +1400,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const mt = menuTahtasi(el, { yas, acik: acikTarifler, dunku: kayit.menu, yeni: yeniTarif, soyle: minoSoyle });
     menu = await mt.bitti;
     if (kapandi) return;
+    hud?.menuCiz();
     plan = planKur();
     kayit.menu = menu;
     if (yeniTarif) {
@@ -1217,7 +1436,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     masaYani: (m) => masaYani(m as Masa),
     kinoSoyle: (t) => kisiSoyle(kino, null, t, true),
     minoSoyle,
-    kapida: () => !!kapida,
+    kapida: () => bekleyen.length > 0,
+    fotoYer: () => (S34 ? Y34.foto : null),
     acik: () => acik && !gunBitti,
     araya: (p) => {
       if (gunBitti || personel) return false;
@@ -1232,7 +1452,43 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   el.addEventListener('rs-surpriz', (e) => surpriz?.bildir((e as CustomEvent<{ ad: string }>).detail?.ad ?? ''));
 
   // ---------------------------------------------------------------- kurulum ve kapanış
-  const olcuBirak = olcuIzle(el, sahne, yerlestir);
+  // ---------------------------------------------------------------- HUD (3/4): sağda illüstre ahşap panel
+  /** Babaanne'nin Defteri gün içinde: yalnız bakılır, alım akşam */
+  let defterAcik: ReturnType<typeof defterAc> | null = null;
+  const defterBak = () => {
+    if (defterAcik || gunBitti || istasyon) return;
+    defterAcik = defterAc(el, {
+      yas,
+      gun,
+      durum: kayit,
+      oynanabilir: tarifOynanabilir,
+      soyle: minoSoyle,
+      kok: app.kok,
+      alindi: async () => undefined,
+      kasaDegisti: () => kasaCiz(),
+      kapandi: () => {
+        defterAcik?.kapat();
+        defterAcik = null;
+      },
+      bak: true,
+      aksamSozu: HUD_SOZ.mino.aksam,
+    });
+    defterAcik.el.classList.add('rs-df-bak');
+  };
+  if (S34) {
+    hud = hudKur(el, {
+      gun,
+      jeton: () => kayit.jeton,
+      menu: () => menu,
+      minoSoyle,
+      defter: defterBak,
+      cikis: app.secenekler.cikis ? () => app.secenekler.cikis?.() : null,
+      tepsi: tepsiEl,
+      kapandi: () => kapandi,
+    });
+    kasaCiz();
+  }
+  const olcuBirak = S34 ? olcuIzle34(el, sahne, (o) => yerlestir(o)) : olcuIzle(el, sahne, yerlestir);
   void sabah();
   tepsiCiz();
 
@@ -1241,23 +1497,30 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     get plan() {
       return plan;
     },
+    /** test (P8): Kino'yu yol grafiğiyle bir noktaya yürüt (sahne yüzdesi); masa yerleri */
+    kinoYuru: (x: number, y: number) => kinoIs(() => kinoYuru(x, y)),
+    masaYerleri: () => masalar.map((m) => ({ ...m.yer, yuva: m.yuva })),
     /** test: günü hemen kapat (kalan müşteriler gelmez) → gün sonu ve defter */
     gunuBitir: () => {
       if ((!TEST_MODU && !document.body.dataset.onizleme) || gunBitti) return;
       gunBitti = true;
       siradaki = plan.musteriler.length;
-      kapida?.kisi.kapat();
-      kapida?.eslik?.kapat();
-      kapida = null;
+      for (const k of bekleyen.splice(0)) {
+        if (k.uye) sira?.cikar(k.uye);
+        k.kisi.kapat();
+        k.eslik?.kapat();
+      }
       void gunuKapat();
     },
     /** test (P6): müşterileri bitir (gelmeyenler gelmez, oturanlar gider) → gün sonu denetimi; 5-6'da personel yemeği */
     musterileriBitir: () => {
       if ((!TEST_MODU && !document.body.dataset.onizleme) || gunBitti) return;
       siradaki = plan.musteriler.length;
-      kapida?.kisi.kapat();
-      kapida?.eslik?.kapat();
-      kapida = null;
+      for (const k of bekleyen.splice(0)) {
+        if (k.uye) sira?.cikar(k.uye);
+        k.kisi.kapat();
+        k.eslik?.kapat();
+      }
       for (const m of masalar) {
         if (!m.oturan) continue;
         m.oturan.adisyon?.remove();
@@ -1273,7 +1536,12 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       masaYuvalari: masalar.map((m) => m.yuva),
       bahcede,
       siradaki,
-      kapida: kapida ? { ad: kapida.m.id, hazir: kapida.hazir } : null,
+      kapida: ilkKapida() ? { ad: ilkKapida()!.m.id, hazir: hazirMi(ilkKapida()!) } : null,
+      // P8 3/4 sahne
+      s34: S34,
+      sira: bekleyen.map((k) => ({ ad: k.m.id, hazir: hazirMi(k), yuva: k.uye?.yuva ?? 0 })),
+      kalp: hud?.kalpSayisi ?? 0,
+      bahceAcik,
       masalar: masalar.map((m) => ({ oturan: m.oturan?.m.id ?? null, durum: m.oturan?.durum ?? null, jeton: m.jeton, kirli: !!m.kirli })),
       tepsi: tepsi.map((u) => u.tur),
       hazir: pencere.querySelectorAll('.rs-hazir').length,
@@ -1312,8 +1580,13 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
         m.oturan?.kisi.kapat();
         m.oturan?.eslik?.kapat();
       }
-      kapida?.kisi.kapat();
-      kapida?.eslik?.kapat();
+      for (const k of bekleyen) {
+        k.kisi.kapat();
+        k.eslik?.kapat();
+      }
+      sira?.kapat();
+      hud?.kapat();
+      defterAcik?.kapat();
     },
   };
 }

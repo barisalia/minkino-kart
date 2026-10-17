@@ -56,6 +56,9 @@ export interface DefterSecenek {
   kasaDegisti: () => void;
   /** kumbara ya da güneş: yarın */
   kapandi: (alinan: number) => void;
+  /** P8: gün içinde HUD'dan bakma: alım yok (akşam alınır), kumbara / güneş yok, kapat düğmesi; karta dokununca ad + aksamSozu */
+  bak?: boolean;
+  aksamSozu?: string;
 }
 
 /** Kartın resmi */
@@ -110,8 +113,11 @@ export function defterAc(kap: HTMLElement, s: DefterSecenek): { el: HTMLElement;
   if (ku) kumbara.append(h('img', { src: ku, alt: '', draggable: 'false' }));
   const yarin = h('button.rs-gs-yarin.rs-df-yarin', { type: 'button', 'aria-label': 'Yarın' }, h('span.rs-gunes'));
   yarin.hidden = true;
+  const kapatD = h('button.rs-df-kapat', { type: 'button', 'aria-label': 'Kapat' });
+  kapatD.hidden = !s.bak;
+  if (s.bak) kumbara.hidden = true;
   const babaanneYer = h('div.rs-df-babaanne');
-  const el = h('div.rs-defter', {}, h('div.rs-df-perde'), kitap, babaanneYer, sekmeler, kasa, kumbara, yarin);
+  const el = h('div.rs-defter', {}, h('div.rs-df-perde'), kitap, babaanneYer, sekmeler, kasa, kumbara, yarin, kapatD);
   kap.append(el);
   salonSes.gunSonu();
 
@@ -208,6 +214,14 @@ export function defterAc(kap: HTMLElement, s: DefterSecenek): { el: HTMLElement;
   async function kartaDokun(x: DefterKalemi, kart: HTMLElement) {
     if (mesgul || kapandi) return;
     const ad = x.sekme === 'tarif' ? (L.tarif as Record<string, string>)[x.id] : x.sekme === 'masa' ? (AD.masa as string) : ((AD[x.id] as string) ?? '');
+    if (s.bak) {
+      // gün içinde yalnız bakılır: adı söylenir, alım akşam (müşteri akışı kesilmez)
+      kart.classList.remove('rs-hopla');
+      void kart.offsetWidth;
+      kart.classList.add('rs-hopla');
+      void s.soyle(ad).then(() => s.soyle(s.aksamSozu ?? D.mino.yetmedi));
+      return;
+    }
     if (!alinabilirMi(x, s.durum.jeton, s.yas)) {
       salla(kart);
       salla(kasa);
@@ -263,6 +277,11 @@ export function defterAc(kap: HTMLElement, s: DefterSecenek): { el: HTMLElement;
     await babaanneSoyle(bab, D.babaanne.biriktir);
     bitir();
   });
+  kapatD.addEventListener('click', () => {
+    if (kapandi) return;
+    sesler.cal('hop');
+    bitir();
+  });
   yarin.addEventListener('click', () => {
     if (mesgul || kapandi) return;
     sesler.cal('hop');
@@ -278,7 +297,7 @@ export function defterAc(kap: HTMLElement, s: DefterSecenek): { el: HTMLElement;
   // açılış: hediyesi gerekiyorsa Babaanne atar; en uygun sekme
   // açılış: kasa hiçbir karta yetmiyorsa Babaanne hemen bir avuç atar (alım beklemez); sonra sözler
   const k0 = kartlariAl();
-  const hediye = babaanneHediyesi(s.durum, k0, s.yas);
+  const hediye = s.bak ? 0 : babaanneHediyesi(s.durum, k0, s.yas);
   if (hediye > 0) {
     s.durum.jeton += hediye;
     s.kasaDegisti();

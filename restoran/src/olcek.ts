@@ -151,3 +151,300 @@ export const YERLESIM: Record<Yon, Yerlesim> = {
     pencere: { x: 70, y: 29, w: 19, h: 5 },
   },
 };
+
+// ================================================================= 3/4 LOKANTA SAHNESİ (P8, §7a-1, §7b, §7d, §7e)
+/**
+ * SAHNE34: Check Please! esinli, yukarıdan 3/4 açılı diorama. Kamera SABİT: büyütme yok, kaydırma yok.
+ *  - Sahne alanı = ekran − HUD (yatayda sağda %15, en az 112 css; dikeyde altta 96 css).
+ *  - Resim sahne alanına `contain` ile yerleşir (kırpılmaz); kalan ince şerit HUD'un ahşap rengiyle dolar.
+ *  - Boy birimi (Mino = 1): yatayda RESMİN yüksekliğinin %11'i, dikeyde resmin genişliğinin %13'ü. Karakterler resme
+ *    göre ölçeklenir (masa, sandalye, kapı çizimde; her cihazda aynı oranda kalsınlar).
+ *  - En uzun ayakta karakter (Baba 2,36) resim yüksekliğinin ≤ %26'sı, toplam karakter alanı ≤ %18 (e2e ölçer).
+ *  - Küçük karakterler en az ENAZ_BOY34 boyunda (Kino 0,74 → 0,95): bu ölçekte Kino'nun yüzü ~16 css px kalıyordu
+ *    (yüz ≥ 22 css kuralı, §7b). Yetişkinler değişmez.
+ * Yerler resmin yüzdesi; çizim gelince yalnız YERLESIM34 satırları ölçülüp düzeltilir.
+ */
+export const SAHNE34 = {
+  birim: { yatay: 0.11, dikey: 0.13 },
+  hud: { yatayOran: 0.15, yatayEnAz: 112, dikeyH: 96 },
+  oran: { yatay: 2752 / 1536, dikey: 1536 / 2752 },
+  sinir: { enUzun: 0.26, toplamAlan: 0.18, yuz: 22 },
+} as const;
+export const ENAZ_BOY34 = 0.95;
+
+export interface Kutu {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+export interface Olcu34 extends Olcu {
+  /** HUD paneli (kap koordinatı) */
+  hud: Kutu;
+  /** sahne alanı (ekran − HUD; resim bunun içinde contain) */
+  alan: Kutu;
+}
+
+/** Saf: 3/4 sahnenin ölçüsü */
+export function olc34(w: number, h: number): Olcu34 {
+  const yon: Yon = h > w * 1.05 ? 'dikey' : 'yatay';
+  const H = SAHNE34.hud;
+  const hw = Math.max(H.yatayEnAz, Math.round(w * H.yatayOran));
+  const hud: Kutu = yon === 'yatay' ? { x: w - hw, y: 0, w: hw, h } : { x: 0, y: h - H.dikeyH, w, h: H.dikeyH };
+  const alan: Kutu = yon === 'yatay' ? { x: 0, y: 0, w: hud.x, h } : { x: 0, y: 0, w, h: hud.y };
+  const oran = SAHNE34.oran[yon];
+  let sw = alan.w;
+  let sh = sw / oran;
+  if (sh > alan.h) {
+    sh = alan.h;
+    sw = sh * oran;
+  }
+  const sahne = { x: alan.x + (alan.w - sw) / 2, y: alan.y + (alan.h - sh) / 2, w: sw, h: sh };
+  const u = yon === 'yatay' ? sh * SAHNE34.birim.yatay : sw * SAHNE34.birim.dikey;
+  return { yon, w, h, u, sahne, hud, alan };
+}
+
+/** 1 boy birimi resmin yüzde kaçı (x, y): yalnız yöne bağlı (resim oranı sabit) */
+export function birimYuzde(yon: Yon): { x: number; y: number } {
+  const o = SAHNE34.oran[yon];
+  if (yon === 'yatay') return { x: (SAHNE34.birim.yatay * 100) / o, y: SAHNE34.birim.yatay * 100 };
+  return { x: SAHNE34.birim.dikey * 100, y: SAHNE34.birim.dikey * 100 * o };
+}
+
+/** 3/4 masa-sandalye ölçüsü (boy birimi; masa-sandalye-34 çizimi gelince ölçülür) */
+export const MASA34 = {
+  /** masanın eni ve sprite yüksekliği */
+  w: 2.5,
+  h: 1.35,
+  /** masa üstünün ortası (oturanın ön kolları) ve üst yüzün ön kenarının altı (oturan buradan aşağı görünmez) */
+  ustOrta: 1.2,
+  kesik: 0.72,
+  /** sandalye: masanın ayak çizgisinden ne kadar geride (yukarıda), eni, boyu; iki kişilikte yanlara açılır */
+  sandalyeGeri: 0.32,
+  sandalyeW: 1.0,
+  sandalyeH: 1.5,
+  ikiliAra: 0.62,
+  /** masa izdüşümü (engel): ayak çizgisinden yukarı derinlik */
+  derinlik: 0.42,
+} as const;
+
+/** Baş boyu / figür boyu: yavrular iri kafalı, yetişkinler 3,5-3,7 kafa (e2e yüz ölçüsü, §7b) */
+export const BAS_ORANI = (boy: number) => (boy < 1.6 ? 0.46 : 0.27);
+
+export interface Yerlesim34 extends Yerlesim {
+  /** sıradaki 3 bekleme noktası (0 kapıya en yakın) ve yolun başı (fazlası) */
+  sira: Yer[];
+  yolBasi: Yer[];
+  /** sahneye giriş / çıkış noktası (resmin dışı) */
+  giris: Yer;
+  /** bahçe kapısı (çit) */
+  bahceKapisi: Yer;
+  bahce: { masalar: Yer[]; mangal: Kutu };
+  /** süs yuvaları (yerlesim.ts SUS_YER anahtarları) */
+  sus: Record<string, Yer>;
+  /** mutfağa gelen aletlerin boş yerleri */
+  alet: Kutu[];
+  /** salondaki Mino ve Babaanne'nin durduğu yer */
+  mino: Yer;
+  babaanne: Yer;
+  /** müşteri panosu, Babaanne'nin fotoğrafı */
+  pano: Kutu;
+  foto: Kutu;
+  /** yürüme yolu düğümleri (koridorlar); kenarlar sahne34.ts'te görüş hattından */
+  yol: Record<string, Yer>;
+  /** sabit engeller (tezgâh, çit, çeşme): yürüyen içinden geçmez */
+  engel: Kutu[];
+}
+
+/**
+ * Yerleşim (resim yüzdesi). §11h #65 istemine göre: solda %55 içerisi (arka duvarda açık mutfak, ön solda cam kapı ve
+ * kasa, dört masa yeri), sağda %45 bahçe (çit, kapı, ahşap teras, asma, çeşme). Kapının önünde kıvrık taş yol: sıra.
+ * GEMINI ÇİZİMİ GELİNCE ÖLÇÜLÜR (şimdilik yer tutucu dioramanın yerleri; restoran/src/lokanta/sahne34.css).
+ */
+export const YERLESIM34: Record<Yon, Yerlesim34> = {
+  yatay: {
+    kapi: { x: 4.5, y: 63 },
+    bekleme: { x: 6.5, y: 76 },
+    masalar: [
+      { x: 25, y: 60 },
+      { x: 44, y: 60 },
+      { x: 25, y: 86 },
+      { x: 44, y: 86 },
+    ],
+    istasyon: {
+      lavabo: { x: 6.5, y: 15, w: 8, h: 21 },
+      tezgah: { x: 14.5, y: 15, w: 8.5, h: 21 },
+      ocak: { x: 23, y: 11, w: 9.5, h: 25 },
+      mermer: { x: 38.5, y: 15, w: 7.5, h: 21 },
+      servis: { x: 46, y: 9, w: 8, h: 27 },
+    },
+    kino: { x: 50, y: 45 },
+    ip: [
+      { x: 7, y: 4.5 },
+      { x: 45, y: 4.5 },
+    ],
+    kasa: { x: 7.5, y: 44, w: 6.5, h: 12 },
+    pencere: { x: 45, y: 29, w: 10, h: 7 },
+    sira: [
+      { x: 6.5, y: 76 },
+      { x: 10.5, y: 86 },
+      { x: 16, y: 94.5 },
+    ],
+    yolBasi: [
+      { x: 4, y: 98.5 },
+      { x: 22.5, y: 99.5 },
+    ],
+    giris: { x: -6, y: 104 },
+    bahceKapisi: { x: 57, y: 70 },
+    bahce: {
+      masalar: [
+        { x: 71, y: 62 },
+        { x: 87, y: 86 },
+      ],
+      mangal: { x: 87, y: 30, w: 9, h: 17 },
+    },
+    sus: {
+      'tavan-1': { x: 25, y: 1 },
+      'tavan-2': { x: 40, y: 1 },
+      'duvar-1': { x: 35.5, y: 4 },
+      'duvar-2': { x: 2.5, y: 9 },
+      'zemin-1': { x: 52.5, y: 54 },
+      'zemin-2': { x: 34.5, y: 98 },
+      'zemin-3': { x: 15, y: 68 },
+    },
+    alet: [
+      { x: 0.8, y: 15, w: 5.5, h: 21 },
+      { x: 32.5, y: 15, w: 6, h: 21 },
+    ],
+    mino: { x: 36, y: 41 },
+    babaanne: { x: 34, y: 72 },
+    pano: { x: 15, y: 3.5, w: 7, h: 9 },
+    foto: { x: 47.5, y: 3, w: 4.5, h: 7 },
+    yol: {
+      kapiIc: { x: 10, y: 66 },
+      solOrta: { x: 14.5, y: 73 },
+      orta: { x: 34.5, y: 73 },
+      sagOrta: { x: 52.5, y: 73 },
+      solUst: { x: 14.5, y: 46 },
+      ortaUst: { x: 34.5, y: 46 },
+      sagUst: { x: 52.5, y: 47 },
+      ortaAlt: { x: 34.5, y: 97 },
+      sagAlt: { x: 53, y: 97 },
+      bahceGiris: { x: 60, y: 73 },
+      bahceUst: { x: 62, y: 50 },
+      bahceAlt: { x: 64, y: 96 },
+      bahceSag: { x: 96, y: 72 },
+    },
+    engel: [
+      { x: 0, y: 0, w: 55, h: 40 },
+      { x: 55, y: 0, w: 1.2, h: 66 },
+      { x: 55, y: 75, w: 1.2, h: 25 },
+      { x: 62, y: 20, w: 9, h: 14 },
+    ],
+  },
+  dikey: {
+    kapi: { x: 6, y: 47 },
+    bekleme: { x: 12, y: 53.5 },
+    masalar: [
+      { x: 41, y: 37 },
+      { x: 77, y: 37 },
+      { x: 41, y: 55 },
+      { x: 77, y: 55 },
+    ],
+    istasyon: {
+      lavabo: { x: 4, y: 7, w: 15, h: 12 },
+      tezgah: { x: 19.5, y: 7, w: 15, h: 12 },
+      ocak: { x: 35, y: 4.5, w: 16, h: 14.5 },
+      mermer: { x: 57, y: 7, w: 14, h: 12 },
+      servis: { x: 72, y: 3, w: 17, h: 16 },
+    },
+    kino: { x: 82, y: 25 },
+    ip: [
+      { x: 24, y: 2 },
+      { x: 70, y: 2 },
+    ],
+    kasa: { x: 2, y: 33, w: 12, h: 6.5 },
+    pencere: { x: 72, y: 17.5, w: 17, h: 4 },
+    sira: [
+      { x: 12, y: 53.5 },
+      { x: 9, y: 60 },
+      { x: 15, y: 66 },
+    ],
+    yolBasi: [
+      { x: 6, y: 69.5 },
+      { x: 20, y: 71 },
+    ],
+    giris: { x: -14, y: 66 },
+    bahceKapisi: { x: 50, y: 73.5 },
+    bahce: {
+      masalar: [
+        { x: 34, y: 87 },
+        { x: 74, y: 93 },
+      ],
+      mangal: { x: 78, y: 75, w: 17, h: 8 },
+    },
+    sus: {
+      'tavan-1': { x: 30, y: 0.5 },
+      'tavan-2': { x: 62, y: 0.5 },
+      'duvar-1': { x: 54, y: 1.5 },
+      'duvar-2': { x: 92, y: 1.5 },
+      'zemin-1': { x: 94, y: 46 },
+      'zemin-2': { x: 59, y: 69 },
+      'zemin-3': { x: 26, y: 28 },
+    },
+    alet: [
+      { x: 51, y: 7, w: 6, h: 12 },
+      { x: 89, y: 7, w: 10, h: 12 },
+    ],
+    mino: { x: 60, y: 24 },
+    babaanne: { x: 59, y: 47 },
+    pano: { x: 20, y: 1, w: 12, h: 5 },
+    foto: { x: 90, y: 1, w: 8, h: 4 },
+    yol: {
+      kapiIc: { x: 14, y: 47 },
+      solUst: { x: 22, y: 26 },
+      ortaUst: { x: 59, y: 26 },
+      sagUst: { x: 93, y: 26 },
+      solOrta: { x: 22, y: 46 },
+      orta: { x: 59, y: 46 },
+      sagOrta: { x: 93, y: 46 },
+      solAlt: { x: 22, y: 66 },
+      ortaAlt: { x: 59, y: 66 },
+      sagAlt: { x: 93, y: 66 },
+      bahceGiris: { x: 50, y: 77 },
+      bahceSol: { x: 12, y: 80 },
+      bahceSag: { x: 94, y: 84 },
+      bahceAlt: { x: 54, y: 97 },
+    },
+    engel: [
+      { x: 0, y: 0, w: 100, h: 21 },
+      { x: 0, y: 72, w: 46, h: 1.2 },
+      { x: 55, y: 72, w: 45, h: 1.2 },
+      { x: 6, y: 86, w: 12, h: 7 },
+    ],
+  },
+};
+
+/** 3/4 sahne: kaba ölçüyü yazar (--rs-u, --rs-u0, data-yon, sahne kutusu); değişince yeniden. Bırakma fonksiyonu döner */
+export function olcuIzle34(kap: HTMLElement, sahne: HTMLElement, degisti: (o: Olcu34) => void): () => void {
+  let son = '';
+  const yaz = () => {
+    const o = olc34(kap.clientWidth, kap.clientHeight);
+    const anahtar = `${o.w}x${o.h}`;
+    if (!o.w || anahtar === son) return;
+    son = anahtar;
+    kap.dataset.yon = o.yon;
+    kap.style.setProperty('--rs-u', `${o.u.toFixed(2)}px`);
+    kap.style.setProperty('--rs-u0', `${o.u.toFixed(2)}px`);
+    Object.assign(sahne.style, { left: `${o.sahne.x}px`, top: `${o.sahne.y}px`, width: `${o.sahne.w}px`, height: `${o.sahne.h}px` });
+    degisti(o);
+  };
+  yaz();
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(yaz) : null;
+  ro?.observe(kap);
+  window.addEventListener('resize', yaz);
+  return () => {
+    ro?.disconnect();
+    window.removeEventListener('resize', yaz);
+  };
+}

@@ -157,7 +157,8 @@ export function susEl(id: string, yuva: string): HTMLElement {
 }
 
 /** Süs katmanı: kayıttaki yerleşimi çizer / günceller */
-export function susleriCiz(kap: HTMLElement, sus: Record<string, string>, yon: Yon) {
+/** yerler: 3/4 sahnede YERLESIM34.sus (verilmezse dik karşıdan SUS_YER) */
+export function susleriCiz(kap: HTMLElement, sus: Record<string, string>, yon: Yon, yerler?: Record<string, Yer>) {
   for (const e of kap.querySelectorAll<HTMLElement>('.rs-sus')) if (sus[e.dataset.yuva ?? ''] !== e.dataset.sus) e.remove();
   for (const [yuva, id] of Object.entries(sus)) {
     let e = kap.querySelector<HTMLElement>(`.rs-sus[data-yuva="${yuva}"]`);
@@ -165,7 +166,7 @@ export function susleriCiz(kap: HTMLElement, sus: Record<string, string>, yon: Y
       e = susEl(id, yuva);
       kap.append(e);
     }
-    const y = SUS_YER[yon][yuva];
+    const y = (yerler ?? SUS_YER[yon])[yuva];
     if (!y) continue;
     e.style.left = `${y.x}%`;
     e.style.top = `${y.y}%`;
@@ -187,13 +188,13 @@ export interface YuvaSecimi {
  * Boş yuvaları kesik çizgili halkayla gösterir; çocuk birine dokununca çözülür. Masa yuvası masanın kendisi kadar,
  * süs yuvası süs kadar. Halkalar yavaşça nefes alır (sürekli parlama değil); 12 sn'de bir kıpır (ipucu.ts).
  */
-export function yuvaSec(kap: HTMLElement, yuvalar: string[], tur: 'masa' | SusYeri, yon: Yon, onIzleme?: (yuva: string) => HTMLElement | null): YuvaSecimi {
+export function yuvaSec(kap: HTMLElement, yuvalar: string[], tur: 'masa' | SusYeri, yon: Yon, onIzleme?: (yuva: string) => HTMLElement | null, yerBul?: (tur: 'masa' | SusYeri, yuva: string) => Yer | undefined): YuvaSecimi {
   let coz: (y: string) => void = () => undefined;
   const secildi = new Promise<string>((r) => (coz = r));
   const els: HTMLElement[] = [];
   let bitti = false;
   for (const y of yuvalar) {
-    const yer = tur === 'masa' ? masaYeri(y, yon) : SUS_YER[yon][y];
+    const yer = yerBul ? yerBul(tur, y) : tur === 'masa' ? masaYeri(y, yon) : SUS_YER[yon][y];
     if (!yer) continue;
     const b = h('button.rs-yuva', { type: 'button', 'data-tur': tur, 'data-yuva': y, 'aria-label': 'Buraya' });
     b.style.left = `${yer.x}%`;

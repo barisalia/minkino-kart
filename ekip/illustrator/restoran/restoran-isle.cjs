@@ -103,6 +103,21 @@ const SAYFALAR = {
   'kelime-yutan-lokanta-sayfasi': { tur: 'kisi', kim: 'kelime-yutan-tavsan', adlar: MUSTERI_POZ },
   'babaanne-musteri-sayfasi': { tur: 'kisi', kim: 'babaanne-musteri', adlar: MUSTERI_POZ },
   'kapak': { tur: 'arka', ad: 'arka/kapak' },
+  // ---- R-GÜN 3/4-A (§11h #65-74, P8): 3/4 lokanta sahnesi, masa-sandalye, 3/4 süsler, HUD, balonlar.
+  // Adlar restoran/src/lokanta/{sahne34,hud,istek-gorsel}.ts'in aradığı adlar. Ad sonunda RAKAM YOK (varliklar.ts
+  // '-2', '-3' sürüm ekini okur: 'masa-34' masa'nın 34. sürümü sanılırdı).
+  'lokanta-34-yatay': { tur: 'arka', ad: 'arka/lokanta-34-yatay' },
+  'lokanta-34-yatay-bahceli': { tur: 'arka', ad: 'arka/lokanta-34-yatay-bahceli' },
+  'lokanta-34-dikey': { tur: 'arka', ad: 'arka/lokanta-34-dikey' },
+  'lokanta-34-dikey-bahceli': { tur: 'arka', ad: 'arka/lokanta-34-dikey-bahceli' },
+  'masa-sandalye-34': { tur: 'esya', grup: 'masa', max: 1400, adlar: ['masa', 'masa-kareli', 'masa-cicekli', 'masa-puantiyeli', 'sandalye', 'bahce-masa', 'bahce-sandalye', 'mama-sandalyesi', 'cocuk-masa', 'tabak', 'bardak', 'vazo'] },
+  'sus-34': { tur: 'esya', grup: 'sus', max: 1400, adlar: ['feslegen', 'sepet-bitki', 'akvaryum-dolap', 'gramofon-tabure', 'balon-demeti', 'bal-rafi', 'paravan', 'minder', 'fener-asili', 'sardunya', 'bank', 'kedi-uyur', 'kedi-gerin', 'kedi-yalan'] },
+  // HUD paneli: iki parça (dikey tabela, yatay şerit), küçültülmez (kenarı 9 dilim olarak gerilir)
+  'hud-panel': { tur: 'esya', grup: 'hud', max: 0, adlar: ['panel-dikey', 'panel-yatay'] },
+  'hud-parcalar': { tur: 'esya', grup: 'hud', max: 900, adlar: ['takvim-gunes', 'takvim-bulut', 'takvim-yagmur', 'kavanoz-bos', 'kavanoz-dolu', 'sandik-kapali', 'sandik-acik', 'defter', 'liste', 'menu-tahtasi', 'ayar', 'ses'] },
+  // balon ikonları: 12 tarif (model.ts TARIFLER sırasıyla) ve durum / ipucu (model.ts IPUCLARI) resimleri
+  'balon-ikon-yemek': { tur: 'esya', grup: 'balon', max: 700, adlar: ['yemek-salata', 'yemek-menemen', 'yemek-ayran', 'yemek-patates', 'yemek-corba', 'yemek-pankek', 'yemek-pide', 'yemek-kofte', 'yemek-limonata', 'yemek-sis', 'yemek-borek', 'yemek-sutlac'] },
+  'balon-ikon-durum': { tur: 'esya', grup: 'balon', max: 700, adlar: ['balon-sol', 'balon-sag', 'balon-kucuk', 'balon-dusunce', 'unlem', 'soru', 'kalp', 'zzz', 'hesap', 'ipucu-serin', 'ipucu-doyurucu', 'ipucu-domatesli', 'ipucu-citir', 'ipucu-tatli', 'ipucu-sebzeli', 'sef-sapka'] },
 };
 
 const kaynak = (ad) => ['.png', '.jpg', '.jpeg', '.webp'].map((u) => path.join(G, ad + u)).find((f) => fs.existsSync(f));

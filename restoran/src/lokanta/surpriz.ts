@@ -65,6 +65,8 @@ export interface SurprizBaglam {
   susKatman: HTMLElement;
   masalar: () => SurprizMasa[];
   yon: () => Yon;
+  /** P8: 3/4 sahnede Babaanne'nin fotoğrafının kutusu (yoksa dik karşıdan FOTO_YER) */
+  fotoYer?: () => { x: number; y: number; w: number; h: number } | null;
   /** u: boy birimi (css px) */
   u: () => number;
   kinoIs: (f: () => Promise<void>) => Promise<void>;
@@ -638,7 +640,7 @@ export function surprizKur(b: SurprizBaglam): Surprizler {
   // ---------------------------------------------------------------- yerleşim ve döngü
   function yerlestir() {
     const y = b.yon();
-    const f = FOTO_YER[y];
+    const f = b.fotoYer?.() ?? FOTO_YER[y];
     Object.assign(foto.style, { left: pct(f.x), top: pct(f.y), width: pct(f.w), height: pct(f.h) });
     tuzlukKur();
     suslerSus();

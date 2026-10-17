@@ -1,0 +1,110 @@
+/* HUD paneli (§7d, P8): sahnenin sağında dikey ahşap tabela, dikeyde altta şerit. Yazı / rakam yok.
+   Yer tutucu (Gemini hud-panel gelene kadar): bal rengi ahşap, oyma çerçeve, pirinç köşeler; BİTMİŞ ÇİZİM DEĞİL. */
+.rs-hud { position: absolute; z-index: 32; box-sizing: border-box; pointer-events: none; }
+.rs-hud-zemin {
+  position: absolute; inset: 0; border-radius: 18px;
+  background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0 9px, rgba(120, 66, 24, 0.07) 9px 11px),
+    linear-gradient(90deg, #e2a65e, #d3914a 45%, #c98540);
+  box-shadow: inset 0 0 0 4px #8d5426, inset 0 0 0 8px #f0c27f, inset 0 0 0 11px #a4652f, 0 4px 0 rgba(59, 36, 22, 0.3);
+}
+.rs-hud-zemin::before, .rs-hud-zemin::after {
+  content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3c4 0 18%, #e7b94a 22% 60%, #a8781e 64%);
+  box-shadow: 0 0 0 2px var(--rs-kahve);
+}
+.rs-hud-zemin::before { left: 6px; top: 6px; }
+.rs-hud-zemin::after { right: 6px; bottom: 6px; }
+.rs-hud-zemin[data-resimli] { background: none; box-shadow: none; border-radius: 0; }
+.rs-hud-zemin[data-resimli]::before, .rs-hud-zemin[data-resimli]::after { display: none; }
+.rs-hud[data-yon='yatay'] .rs-hud-zemin[data-resimli] { border: 26px solid transparent; border-image: var(--rs-hud-dikey) 18% fill / 26px stretch; }
+.rs-hud[data-yon='dikey'] .rs-hud-zemin[data-resimli] { border: 22px solid transparent; border-image: var(--rs-hud-yatay) 22% fill / 22px stretch; }
+.rs-hud-saksi { position: absolute; left: 50%; top: -6px; width: 34px; height: 22px; margin-left: -17px; border-radius: 0 0 9px 9px; background: #d86a3e; box-shadow: inset 0 0 0 2.5px var(--rs-kahve); }
+.rs-hud-saksi::before { content: ''; position: absolute; left: 2px; right: 2px; top: -12px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 25% 60%, #fff 0 4px, transparent 5px), radial-gradient(circle at 50% 35%, #fff 0 4px, transparent 5px), radial-gradient(circle at 75% 60%, #fff 0 4px, transparent 5px), #6ab04c; box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+.rs-hud-zemin[data-resimli] ~ .rs-hud-saksi { display: none; }
+.rs-hud[data-yon='dikey'] .rs-hud-saksi { display: none; }
+
+.rs-hud-ic {
+  position: absolute; inset: 18px 8px 10px; display: grid; gap: 4px; pointer-events: auto;
+  grid-template-rows: minmax(56px, 1fr) minmax(56px, 1.35fr) minmax(56px, 1.15fr) minmax(56px, 1fr) minmax(56px, 1.15fr) minmax(56px, 0.95fr);
+}
+.rs-hud-ic > [hidden] { display: none; }
+.rs-hud[data-yon='dikey'] .rs-hud-ic {
+  inset: 8px 12px; grid-template-rows: 1fr; grid-auto-flow: column; grid-template-columns: repeat(6, minmax(56px, 1fr));
+}
+.rs-hud[data-yon='dikey'] .rs-hud-dugmeler { display: none; }
+.rs-hud-parca {
+  position: relative; min-width: 56px; min-height: 56px; border: 0; padding: 0; background: none; cursor: pointer;
+  transform-origin: 50% 90%;
+}
+.rs-hud-ikili, .rs-hud-dugmeler { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.rs-hud[data-yon='dikey'] .rs-hud-ikili { display: contents; }
+.rs-hud-resim { position: absolute; inset: 4%; width: 92%; height: 92%; object-fit: contain; pointer-events: none; }
+.rs-hud-parca:active { transform: scale(0.95, 0.92); }
+
+/* takvim: yaprak (havası) + gün noktaları */
+.rs-hud-yaprak { position: absolute; left: 22%; right: 22%; top: 4%; bottom: 26%; transform-origin: 50% 0; }
+.rs-hud-yaprak:not(:has(img)) { border-radius: 6px; background: #fffaf0; box-shadow: inset 0 9px 0 #e8483a, inset 0 0 0 2.5px var(--rs-kahve), 0 2px 0 rgba(59, 36, 22, 0.25); }
+.rs-hud-yaprak > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.rs-hud-hava { position: absolute; left: 50%; top: 58%; width: 56%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; }
+.rs-hud-hava[data-hava='gunes'] { background: #ffc93c; box-shadow: 0 0 0 3px #ffe7a0, inset 0 0 0 2px var(--rs-kahve); }
+.rs-hud-hava[data-hava='bulut'] { border-radius: 40% 40% 30% 30%; background: #fff; box-shadow: inset 0 0 0 2px var(--rs-kahve), -7px 2px 0 -2px #eef4fb, 7px 2px 0 -2px #eef4fb; }
+.rs-hud-hava[data-hava='yagmur'] { width: 34%; border-radius: 50% 50% 50% 50% / 64% 64% 36% 36%; background: #8fd3ff; box-shadow: inset 0 0 0 2px #3b8fd0; }
+.rs-hud-yaprak.rs-kalk { animation: rs-yaprak 0.6s ease-in-out 1; }
+@keyframes rs-yaprak { 40% { transform: scaleY(-0.15) translateY(-12%); } 100% { transform: none; } }
+.rs-hud-noktalar { position: absolute; left: 8%; right: 8%; bottom: 6%; height: 14%; display: flex; justify-content: center; align-items: center; gap: 3px; }
+.rs-hud-noktalar i { width: 6px; height: 6px; border-radius: 50%; background: #8d5426; }
+.rs-hud-noktalar i.rs-bugun { width: 9px; height: 9px; background: #ffd449; box-shadow: 0 0 0 1.5px var(--rs-kahve); }
+
+/* kalp kavanozu: yalnız dolar */
+.rs-hud-kavanoz-cam { position: absolute; left: 20%; right: 20%; top: 6%; bottom: 4%; border-radius: 22% 22% 30% 30% / 14% 14% 24% 24%; background: linear-gradient(90deg, rgba(255, 255, 255, 0.55), rgba(220, 240, 250, 0.35) 40%, rgba(255, 255, 255, 0.6)); box-shadow: inset 0 0 0 2.5px var(--rs-kahve), inset 0 10px 0 -2px #c99a62; }
+.rs-hud-kalpler { position: absolute; left: 26%; right: 26%; bottom: 10%; height: 66%; pointer-events: none; }
+.rs-hud-kalp {
+  position: absolute; width: 30%; aspect-ratio: 1;
+}
+.rs-hud-kalp:not(:has(img)) { background: #e8483a; clip-path: path('M7 13 1 7a3.4 3.4 0 0 1 6-4 3.4 3.4 0 0 1 6 4z'); width: 14px; height: 14px; }
+.rs-hud-kalp > img { width: 100%; height: 100%; object-fit: contain; }
+.rs-hud-kavanoz[data-dolu='1'] { filter: drop-shadow(0 0 6px rgba(255, 150, 160, 0.9)); }
+.rs-hud-ucan-kalp { position: absolute; z-index: 96; width: 24px; height: 24px; pointer-events: none; }
+.rs-hud-ucan-kalp:not(:has(img)) { background: #e8483a; clip-path: path('M12 22 2 12a6 6 0 0 1 10-7 6 6 0 0 1 10 7z'); }
+.rs-hud-ucan-kalp img { width: 100%; height: 100%; }
+
+/* altın sandık: yığın yükselir */
+.rs-hud-sandik-ciz { position: absolute; left: 14%; right: 14%; top: 34%; bottom: 8%; border-radius: 10px 10px 6px 6px; background: linear-gradient(#b97a45 0 36%, #8d5426 36% 42%, #c98a50 42%); box-shadow: inset 0 0 0 2.5px var(--rs-kahve), inset 0 0 0 6px #e7b94a; }
+.rs-hud-yigin { position: absolute; left: 22%; right: 22%; bottom: 46%; height: 50%; }
+.rs-hud-yigin .rs-jeton { width: 34%; }
+.rs-hud-acik { opacity: 0; }
+.rs-hud-sandik.rs-acik .rs-hud-acik { opacity: 1; }
+.rs-hud-sandik.rs-acik .rs-hud-acik ~ *, .rs-hud-sandik.rs-acik > img:not(.rs-hud-acik) { opacity: 0; }
+
+/* defter, menü tahtası */
+.rs-hud-defter-ciz { position: absolute; left: 18%; right: 18%; top: 12%; bottom: 12%; border-radius: 6px 10px 10px 6px; background: radial-gradient(circle at 55% 50%, #f2b233 0 14%, transparent 15%), #5fb8ae; box-shadow: inset 6px 0 0 #3f8f86, inset 0 0 0 2.5px var(--rs-kahve); }
+.rs-hud-tahta-ciz { position: absolute; left: 10%; right: 10%; top: 8%; bottom: 14%; border-radius: 6px; background: #3f5a4c; box-shadow: inset 0 0 0 3px #b97a45, inset 0 0 0 5px var(--rs-kahve); }
+.rs-hud-menu-ic { position: absolute; left: 18%; right: 18%; top: 18%; bottom: 24%; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; pointer-events: none; }
+.rs-hud-yemek { position: relative; }
+.rs-hud-yemek > * { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+
+/* tepsi panelin içinde */
+.rs-hud-tepsi { position: relative; min-height: 56px; }
+.rs-hud-tepsi .rs-tepsi { position: absolute; inset: 0; right: auto; bottom: auto; width: 100%; height: 100%; min-width: 0; min-height: 0; }
+
+/* dişli ve ses */
+.rs-hud-disli-ciz { position: absolute; left: 22%; right: 22%; top: 18%; bottom: 18%; border-radius: 50%; background: radial-gradient(circle, #fff4dd 0 22%, #c98a50 24% 58%, transparent 60%), repeating-conic-gradient(#c98a50 0 12%, transparent 12% 25%); box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+.rs-hud-ses-ciz { position: absolute; left: 24%; right: 24%; top: 22%; bottom: 22%; background: var(--rs-kahve); clip-path: polygon(0 32%, 32% 32%, 70% 0, 70% 100%, 32% 68%, 0 68%); }
+.rs-hud-ses[data-kapali='1'] { opacity: 0.55; }
+
+/* Babaanne panelin üstünden bakar (kavanoz dolunca) */
+.rs-hud-babaanne { position: absolute; left: 0; right: 0; top: -2px; height: 0; z-index: 3; --rs-u: 34px; overflow: visible; pointer-events: none; transform: translateY(40px); opacity: 0; transition: transform 0.35s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.2s; }
+.rs-hud-babaanne.rs-goster { transform: translateY(0); opacity: 1; }
+.rs-hud-babaanne .rs-kisi { clip-path: inset(0 0 45% 0); }
+
+
+/* defter gün içinde (HUD'dan): kapat düğmesi */
+.mk-kok .rs-df-kapat {
+  position: absolute; z-index: 5; right: var(--rs-guvenli-sag); top: var(--rs-guvenli-ust); width: 60px; height: 60px; border: 0; border-radius: 50%;
+  background: #fff6e0; box-shadow: var(--rs-golge), inset 0 0 0 3px var(--rs-kahve); cursor: pointer;
+}
+.mk-kok .rs-df-kapat::before, .mk-kok .rs-df-kapat::after { content: ''; position: absolute; left: 28%; right: 28%; top: 50%; height: 6px; margin-top: -3px; border-radius: 3px; background: var(--rs-kahve); transform: rotate(45deg); }
+.mk-kok .rs-df-kapat::after { transform: rotate(-45deg); }
+.mk-kok .rs-df-kapat[hidden] { display: none; }
+.rs-defter.rs-df-bak { z-index: 82; background: rgba(59, 36, 22, 0.55); }

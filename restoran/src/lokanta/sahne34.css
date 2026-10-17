@@ -1,0 +1,129 @@
+/* 3/4 lokanta sahnesi (P8, §7a-1). Resim: assets/restoran/arka/lokanta-34-{yatay,dikey}{,-bahceli}.webp.
+   Gelene kadar YER TUTUCU diorama (sade düz renkler; BİTMİŞ ÇİZİM DEĞİL): yerler olcek.ts YERLESIM34 ile aynı. */
+.rs-lokanta[data-s34] { background: #c98a50; }
+.rs-lokanta[data-s34]::before {
+  /* contain sonrası kalan şerit: HUD'un ahşabı */
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 14px, rgba(110, 60, 20, 0.08) 14px 16px), linear-gradient(#d39a58, #bf8146);
+}
+[data-s34] .rs-sahne { overflow: hidden; border-radius: 10px; box-shadow: 0 0 0 3px #8d5426; }
+[data-s34] .rs-arka-resim { object-fit: fill; transition: opacity 0.6s ease; }
+[data-s34] .rs-arka-resim.rs-eski { opacity: 0; }
+.test-modu [data-s34] .rs-arka-resim { transition: none; }
+
+/* ---------------------------------------------------------------- yer tutucu diorama (yatay) */
+.rs-d34 { position: absolute; inset: 0; overflow: hidden; background: #a7d98a; }
+.rs-d34 > i { position: absolute; display: block; }
+.rs-d34-duvar { left: 0; top: 0; width: 55%; height: 34%; background: #f7e7c9; }
+.rs-d34-cini { left: 0; top: 16%; width: 55%; height: 10%; background: repeating-linear-gradient(90deg, #e9f5f2 0 2.6%, #5fb8ae 2.6% 2.8%), #e9f5f2; box-shadow: inset 0 -3px 0 #5fb8ae; }
+.rs-d34-zemin { left: 0; top: 34%; width: 55.6%; height: 66%; background: repeating-linear-gradient(180deg, #e7b77a 0 6.5%, #d9a466 6.5% 6.9%), #e7b77a; }
+.rs-d34-tezgah { left: 0; top: 27%; width: 55%; height: 12%; background: linear-gradient(#f3d8ae 0 30%, #c88c55 30% 100%); box-shadow: inset 0 0 0 3px var(--rs-kahve); border-radius: 4px; }
+.rs-d34-davlumbaz { left: 23.5%; top: 0; width: 8.5%; height: 13%; background: linear-gradient(#e0925a, #c06e38); border-radius: 0 0 40% 40% / 0 0 30% 30%; box-shadow: inset 0 0 0 2.5px var(--rs-kahve); }
+.rs-d34-ocak { left: 24%; top: 26%; width: 8%; height: 4%; border-radius: 6px; background: radial-gradient(circle at 28% 50%, #3c3330 0 26%, transparent 28%), radial-gradient(circle at 72% 50%, #3c3330 0 26%, transparent 28%), #f3e5c8; box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+.rs-d34-lavabo { left: 7.5%; top: 26.5%; width: 6%; height: 3.6%; border-radius: 40%; background: #bfe6f7; box-shadow: inset 0 0 0 2.5px var(--rs-kahve); }
+.rs-d34-tahta { left: 15.5%; top: 26.5%; width: 6.5%; height: 3.6%; border-radius: 5px; background: #f1d2a4; box-shadow: inset 0 0 0 2.5px #b97a45; }
+.rs-d34-mermer { left: 39%; top: 26%; width: 6.5%; height: 4%; border-radius: 4px; background: linear-gradient(135deg, #fbfaf8, #dcd8d2); box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+.rs-d34-pencere { left: 46.5%; top: 8%; width: 7%; height: 19%; border-radius: 8px 8px 0 0; background: #fff6e6; box-shadow: inset 0 0 0 4px #b97a45, inset 0 0 0 6px var(--rs-kahve); }
+.rs-d34-kapi { left: 1%; top: 36%; width: 6.5%; height: 27%; border-radius: 10px 10px 0 0; background: linear-gradient(90deg, #8fd0e6 0 8%, #cfeefa 8% 92%, #8fd0e6 92%); box-shadow: inset 0 0 0 4px #9a6a3e, inset 0 0 0 6px var(--rs-kahve); }
+.rs-d34-kasa { left: 7.5%; top: 47%; width: 6.5%; height: 9%; border-radius: 8px 8px 4px 4px; background: linear-gradient(#e6b450, #c98f2b); box-shadow: inset 0 0 0 2.5px var(--rs-kahve); }
+.rs-d34-yol { left: -4%; top: 70%; width: 28%; height: 34%; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #d8d0c4 0 9%, transparent 10%), radial-gradient(circle at 62% 44%, #d8d0c4 0 9%, transparent 10%), radial-gradient(circle at 40% 70%, #d8d0c4 0 9%, transparent 10%), radial-gradient(circle at 74% 82%, #d8d0c4 0 9%, transparent 10%), #b9c79a; }
+.rs-d34-hali { width: 17%; height: 11%; border-radius: 50%; background: #e98f72; box-shadow: inset 0 0 0 3px #f6c6a8; opacity: 0.7; }
+.rs-d34-gok { left: 55%; top: 0; width: 45%; height: 16%; background: linear-gradient(#bfe6f7, #e6f6ff); }
+.rs-d34-cit { left: 55%; top: 10%; width: 1.4%; height: 90%; background: repeating-linear-gradient(180deg, #fff 0 4%, #e6dccf 4% 5%); box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+.rs-d34-cit-kapi { left: 55%; top: 64%; width: 1.4%; height: 12%; background: #fff; box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+.rs-d34-guverte { left: 61%; top: 46%; width: 37%; height: 52%; border-radius: 6px; background: repeating-linear-gradient(90deg, #c9b597 0 5%, #b8a283 5% 5.4%); box-shadow: inset 0 0 0 3px #8b6a4e; filter: saturate(0.7); }
+.rs-d34-cardak { left: 61%; top: 38%; width: 37%; height: 8%; border-radius: 4px; background: repeating-linear-gradient(90deg, #a87a4e 0 2%, transparent 2% 9%); box-shadow: inset 0 -4px 0 #a87a4e; }
+.rs-d34-cesme { left: 62%; top: 20%; width: 9%; height: 14%; border-radius: 50% 50% 40% 40%; background: radial-gradient(ellipse at 50% 40%, #cfc7bb 0 36%, #a49c90 38% 60%, #cfc7bb 62%); box-shadow: inset 0 0 0 2.5px var(--rs-kahve); }
+.rs-d34-agac { width: 11%; height: 22%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #8ccf6a, #5aa548); box-shadow: inset 0 0 0 3px #3f7d33; }
+.rs-d34-kedi { left: 54.6%; top: 7%; width: 3%; height: 4%; border-radius: 50% 50% 40% 40%; background: #f2a65a; box-shadow: inset 0 0 0 2px var(--rs-kahve); }
+/* bahçeli: kapı açık, teras cilalı, asma yapraklı, çeşme akar */
+.rs-d34[data-bahce='1'] .rs-d34-cit-kapi { width: 5%; transform: skewY(-30deg); transform-origin: 0 0; background: #fff6e0; }
+.rs-d34[data-bahce='1'] .rs-d34-guverte { filter: none; background: repeating-linear-gradient(90deg, #e2b47c 0 5%, #d9a86f 5% 5.4%); }
+.rs-d34[data-bahce='1'] .rs-d34-cardak { height: 12%; background: radial-gradient(circle at 10% 50%, #6ab04c 0 9%, transparent 10%) 0 0 / 14% 100%, radial-gradient(circle at 60% 70%, #8e5aa8 0 7%, transparent 8%) 0 0 / 22% 100%, repeating-linear-gradient(90deg, #a87a4e 0 2%, transparent 2% 9%); }
+.rs-d34[data-bahce='1'] .rs-d34-cesme { background: radial-gradient(ellipse at 50% 40%, #8fd3ff 0 36%, #a49c90 38% 60%, #cfc7bb 62%); }
+
+/* dikey yer tutucu: mutfak üstte, salon ortada, bahçe altta */
+[data-yon='dikey'] .rs-d34-duvar { width: 100%; height: 22%; }
+[data-yon='dikey'] .rs-d34-cini { width: 100%; top: 10%; height: 6%; }
+[data-yon='dikey'] .rs-d34-zemin { top: 21%; width: 100%; height: 52%; }
+[data-yon='dikey'] .rs-d34-tezgah { top: 15%; width: 100%; height: 7%; }
+[data-yon='dikey'] .rs-d34-davlumbaz { left: 36%; width: 14%; height: 8%; }
+[data-yon='dikey'] .rs-d34-ocak { left: 37%; top: 15%; width: 13%; height: 2.4%; }
+[data-yon='dikey'] .rs-d34-lavabo { left: 6%; top: 15.4%; width: 11%; height: 2.2%; }
+[data-yon='dikey'] .rs-d34-tahta { left: 21%; top: 15.4%; width: 12%; height: 2.2%; }
+[data-yon='dikey'] .rs-d34-mermer { left: 58%; top: 15.2%; width: 12%; height: 2.4%; }
+[data-yon='dikey'] .rs-d34-pencere { left: 73%; top: 3%; width: 15%; height: 12%; }
+[data-yon='dikey'] .rs-d34-kapi { left: 1%; top: 38%; width: 9%; height: 10%; }
+[data-yon='dikey'] .rs-d34-kasa { left: 2%; top: 34%; width: 12%; height: 5%; }
+[data-yon='dikey'] .rs-d34-yol { left: -10%; top: 50%; width: 40%; height: 24%; }
+[data-yon='dikey'] .rs-d34-hali { width: 30%; height: 7%; }
+[data-yon='dikey'] .rs-d34-gok { display: none; }
+[data-yon='dikey'] .rs-d34-cit { left: 0; top: 72%; width: 100%; height: 1.2%; background: repeating-linear-gradient(90deg, #fff 0 4%, #e6dccf 4% 5%); }
+[data-yon='dikey'] .rs-d34-cit-kapi { left: 46%; top: 72%; width: 9%; height: 1.2%; }
+[data-yon='dikey'] .rs-d34-guverte { left: 22%; top: 79%; width: 74%; height: 19%; }
+[data-yon='dikey'] .rs-d34-cardak { left: 22%; top: 76%; width: 74%; height: 3%; }
+[data-yon='dikey'] .rs-d34-cesme { left: 6%; top: 86%; width: 12%; height: 7%; }
+[data-yon='dikey'] .rs-d34-kedi { left: 30%; top: 70.5%; width: 5%; height: 2%; }
+[data-yon='dikey'] .rs-d34-agac { width: 18%; height: 10%; }
+
+/* ---------------------------------------------------------------- masa, sandalye (3/4; masa-sandalye-34 çizimi) */
+[data-s34] .rs-masa { width: calc(var(--rs-u) * var(--rs-masa-w, 2.5)); height: calc(var(--rs-u) * var(--rs-masa-h, 1.35)); }
+[data-s34] .rs-masa > img.rs-masa-resim { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; pointer-events: none; }
+[data-s34] .rs-masa:has(> img.rs-masa-resim) .rs-masa-govde { display: none; }
+/* yer tutucu 3/4 masa: üst yüz (elips), ön yüz ve iki bacak */
+[data-s34] .rs-masa-govde::before { top: 8%; height: 46%; border-radius: 50%; background: #d39a5e; box-shadow: inset 0 0 0 3px var(--rs-kahve), inset 0 -6px 0 #b9783f; }
+[data-s34] .rs-masa-govde::after { top: 38%; left: 10%; right: 10%; bottom: 0; background: linear-gradient(#b9783f 0 26%, transparent 26%), linear-gradient(90deg, #a96b39 0 9%, transparent 9% 91%, #a96b39 91%); border-radius: 0 0 6px 6px; }
+[data-s34] .rs-masa[data-ortu='kareli'] .rs-masa-govde::before { background: repeating-conic-gradient(#e8483a 0 25%, #fff 0 50%) 0 0 / 14px 14px; height: 52%; }
+[data-s34] .rs-masa[data-ortu='cicekli'] .rs-masa-govde::before { background: radial-gradient(circle, #fff 0 22%, transparent 24%) 0 0 / 16px 16px, #7fb6e8; height: 52%; }
+[data-s34] .rs-masa[data-ortu='puantiyeli'] .rs-masa-govde::before { background: radial-gradient(circle, #fff 0 20%, transparent 22%) 0 0 / 12px 12px, #f2c14e; height: 52%; }
+[data-s34] .rs-masa-bayrak { left: 4%; top: 0; width: 9%; height: 24%; }
+[data-s34] .rs-masa-ust { left: 24%; right: 24%; top: 6%; bottom: auto; height: calc(var(--rs-u) * 0.62); }
+[data-s34] .rs-masa-tabak { width: calc(var(--rs-u) * 0.82); height: calc(var(--rs-u) * 0.82); transform: translateX(-50%) scaleY(0.62); }
+[data-s34] .rs-hesap { right: -6%; top: -18%; }
+/* tuzluk masa üstünde, solda ön kenarda (hesap sağda; oturanın yüzünü örtmez) */
+.mk-kok [data-s34] .rs-sp-tuzluk { left: 8%; top: 22%; bottom: auto; width: calc(var(--rs-u) * 0.24); height: calc(var(--rs-u) * 0.36); }
+.rs-sandalye {
+  position: absolute; pointer-events: none; transform: translate(-50%, -100%);
+  width: calc(var(--rs-u) * 1); height: calc(var(--rs-u) * 1.5);
+}
+.rs-sandalye > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.rs-sandalye:not(:has(img))::before { content: ''; position: absolute; left: 14%; right: 14%; top: 4%; height: 56%; border-radius: 10px 10px 4px 4px; background: #c98a50; box-shadow: inset 0 0 0 3px var(--rs-kahve), inset 0 0 0 7px #e2b47c; }
+.rs-sandalye:not(:has(img))::after { content: ''; position: absolute; left: 8%; right: 8%; top: 56%; bottom: 0; background: linear-gradient(#b9783f 0 22%, transparent 22%), linear-gradient(90deg, #a96b39 0 12%, transparent 12% 88%, #a96b39 88%); border-radius: 4px; }
+.rs-sandalye[data-bahce] { filter: hue-rotate(0deg) saturate(0.2) brightness(1.35); }
+
+/* ---------------------------------------------------------------- kişiler: aynalama, oturuş, sıra */
+/* sola giderken BÜTÜN resim aynalanır (scale; hop / esneme transform'u bozulmaz). Parça döndürme değil. */
+.rs-kisi[data-ayna='1'] > .rs-kisi-govde { scale: -1 1; }
+[data-s34] .rs-kisi.rs-oturuyor > .rs-kisi-govde { clip-path: inset(-50% -50% calc(var(--rs-otur-kirp, 0) * var(--rs-u)) -50%); }
+[data-s34] .rs-kino-tepsi { left: -10%; right: 10%; top: 4%; height: 56%; }
+.rs-kisi.rs-sirada { cursor: grab; }
+.rs-sira-cicek { position: absolute; left: 62%; top: 30%; width: 18%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #ffd449 0 28%, #ff8fb1 30%); box-shadow: 0 0 0 2px var(--rs-kahve); animation: rs-sira-gir 0.3s ease-out; pointer-events: none; }
+.rs-sira-ari { position: absolute; left: 40%; top: -8%; width: 22%; aspect-ratio: 1.2; pointer-events: none; animation: rs-ari 1.8s ease-in-out; }
+.rs-sira-ari:not(:has(img)) { border-radius: 50%; background: repeating-linear-gradient(90deg, #ffd449 0 30%, #3b2416 30% 45%); box-shadow: 0 -5px 0 -2px rgba(255, 255, 255, 0.9); }
+.rs-sira-ari > img { width: 100%; height: 100%; object-fit: contain; }
+@keyframes rs-ari { 0% { transform: translate(-120%, 40%); } 30% { transform: translate(40%, -30%); } 60% { transform: translate(-30%, -60%); } 100% { transform: translate(160%, -20%); opacity: 0; } }
+.rs-sira-sohbet { position: absolute; left: 58%; top: 2%; width: 26%; aspect-ratio: 1; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 2px var(--rs-kahve); pointer-events: none; animation: rs-sira-gir 0.25s ease-out; }
+.rs-sira-sohbet::after { content: ''; position: absolute; inset: 24%; background: #5fb8ae; clip-path: polygon(30% 0, 100% 0, 100% 22%, 50% 30%, 50% 80%, 30% 100%, 0 82%, 20% 60%, 30% 60%); }
+.rs-sira-sohbet[data-ne='kalp']::after { background: #e8483a; clip-path: path('M7 13 1 7a3.4 3.4 0 0 1 6-4 3.4 3.4 0 0 1 6 4z'); inset: 22%; }
+@keyframes rs-sira-gir { from { transform: scale(0.3); opacity: 0; } }
+
+/* kapı zili: sıranın başına biri gelince kapı iki kare (yer tutucu: hafif açılma), zil parıltısı */
+[data-s34] .rs-kapi { width: calc(var(--rs-u) * 1.2); height: calc(var(--rs-u) * 2.3); background: none !important; box-shadow: none !important; }
+[data-s34] .rs-kapi.rs-acik { animation: rs-kapi-ac 0.5s steps(2, jump-none) 1; }
+@keyframes rs-kapi-ac { 50% { filter: brightness(1.15); transform: translate(-50%, -100%) scaleX(0.82); } }
+[data-s34] .rs-kapi-zil { display: block; right: auto; left: 70%; top: -6%; width: 26%; opacity: 0; }
+[data-s34] .rs-kapi.rs-acik .rs-kapi-zil { opacity: 1; animation: rs-kipir 0.5s ease-in-out 1; }
+
+/* balon: kafanın üstünde, sahnenin içinde (yeri JS: balonYerlestir) */
+[data-s34] .rs-balon { width: calc(var(--rs-u) * 1.05); height: calc(var(--rs-u) * 1.05); min-width: 50px; min-height: 50px; }
+[data-s34] .rs-balon[data-resimli] { background: none; box-shadow: none; border-radius: 0; }
+[data-s34] .rs-balon[data-resimli]::after { display: none; }
+[data-s34] .rs-balon > img.rs-balon-zemin { position: absolute; inset: -8%; width: 116%; height: 116%; object-fit: contain; }
+[data-s34] .rs-balon[data-kuyruk='sol']::after { left: auto; right: 4%; }
+[data-s34] .rs-soz { font-size: 12px; }
+
+/* 3/4'te bahçe geçiş düğmesi yok (kamera sabit), üst çubuktaki ev düğmesi yatayda panelde (dişli) */
+[data-s34] .rs-bahce-gec { display: none; }
+[data-s34][data-yon='yatay'] .rs-ust-cubuk { display: none; }
+[data-s34] .rs-kasa-govde, [data-s34] .rs-kasa-yigin { display: none; }
+[data-s34] .rs-arka.rs-yertutucu ~ .rs-katman .rs-ist-gorsel { box-shadow: none; background: none !important; }

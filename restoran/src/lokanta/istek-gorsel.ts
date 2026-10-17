@@ -59,21 +59,26 @@ const IPUCU_SVG: Record<Ipucu, string> = {
 };
 const SURPRIZ_SVG = `<svg viewBox="0 0 64 64"><path d="M16 36c-6-2-6-12 2-12 0-10 12-12 14-4 4-8 16-4 14 4 8 0 8 10 2 12v12H16z" fill="#fff" stroke="#3B2416" stroke-width="3" stroke-linejoin="round"/><text x="32" y="45" text-anchor="middle" font-size="18" font-family="Fredoka, sans-serif" font-weight="700" fill="#5FB8AE">?</text></svg>`;
 
+/** P8 §7e: balon ikonlarının adresleri (Gemini balon-ikon-yemek / balon-ikon-durum; restoran-isle.cjs aynı adlarla keser) */
+export const balonYemekYolu = (tarif: string) => `balon/yemek-${tarif}`;
+export const balonIpucuYolu = (ip: Ipucu) => `balon/ipucu-${ip}`;
+
 export function ipucuResmi(ip: Ipucu): HTMLElement {
-  const u = varlik(`ui/ipucu-${ip}`);
+  const u = varlik(balonIpucuYolu(ip)) ?? varlik(`ui/ipucu-${ip}`);
   return u ? resim(u, 'rs-ipucu-resmi') : h('span.rs-ipucu-resmi', { html: IPUCU_SVG[ip], 'data-ipucu': ip });
 }
 
 export function istekResmi(i: Istek): HTMLElement {
   if (i.tur === 'resimli' || i.tur === 'ozel') {
-    const r = yemekResmi(i.tarif);
+    const b = varlik(balonYemekYolu(i.tarif));
+    const r = b ? resim(b, 'rs-yemek-resmi') : yemekResmi(i.tarif);
     if (i.tur !== 'ozel') return r;
     const d = i.ozel.deger;
     const sayi = !Array.isArray(d) && 'sayi' in d ? d.sayi : 0;
     return h('span.rs-istek-ozel', {}, r, h('span.rs-istek-nokta', {}, ...Array.from({ length: sayi }, () => h('i'))));
   }
   if (i.tur === 'ipuclu') return ipucuResmi(i.ipucu);
-  const u = varlik('ui/surpriz');
+  const u = varlik('balon/soru') ?? varlik('ui/surpriz');
   return u ? resim(u, 'rs-ipucu-resmi') : h('span.rs-ipucu-resmi', { html: SURPRIZ_SVG, 'data-ipucu': 'surpriz' });
 }
 

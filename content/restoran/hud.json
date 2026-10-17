@@ -1,0 +1,15 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · P8 HUD paneli sözleri (ekip/senaryo/RESTORAN.md §7d): paneldeki parçalar canlanınca Mino'nun söyledikleri (anlatıcı sesi; emir yok). babaanne = kalp kavanozu dolunca panelin üstünden başını uzatan Babaanne'nin kendi Seri 2 sesi.",
+  "mino": {
+    "gunes": "[happy] Bugün güneşli!",
+    "bulut": "[curious] Bugün bulutlu!",
+    "yagmur": "[curious] Bugün yağmurlu!",
+    "kavanoz": "[happy] Kalpler birikiyor!",
+    "kavanoz_doldu": "[excited] Kavanoz kalp doldu!",
+    "sandik": "[happy] Birikimimiz büyüyor!",
+    "aksam": "[softly] Akşam alırız."
+  },
+  "babaanne": {
+    "alkis": "[happy] Aferin benim şefime!"
+  }
+}
