@@ -120,7 +120,14 @@ async function sayfaKes(hayvan, kareler, o = {}) {
   const cizim = (x, y) => { const i = (y * W + x) * 3; return Math.min(data[i], data[i + 1], data[i + 2]) < 225; };
   // önce satırlar (2), sonra her satırda sütunlar (4): her karede yeniden ölçülür (Gemini ızgarası eşit değil)
   const satirDolu = Array.from({ length: H }, (_, y) => { let n = 0; for (let x = 0; x < W; x += 2) if (cizim(x, y)) n++; return n > 2; });
-  const satirlar = bantlar(satirDolu, Math.round(H * 0.02), Math.round(H * 0.12));
+  // satır sayısı: 12 kare 3 satır, 8 kare 2 satır, 3 kare 1 satır; satırlar birbirine çok yakınsa (esya-5-yatak: lamba
+  // kabloları ile peluş arasında ~24 px) daha dar boşlukla yeniden bölünür
+  const beklenenSatir = Math.max(1, Math.round(kareler.length / 4));
+  let satirlar = [];
+  for (const bosluk of [0.02, 0.012, 0.006]) {
+    satirlar = bantlar(satirDolu, Math.round(H * bosluk), Math.round(H * 0.12));
+    if (satirlar.length >= beklenenSatir) break;
+  }
   const kutular = [];
   for (const [y0, y1] of satirlar) {
     const sutunDolu = Array.from({ length: W }, (_, x) => { let n = 0; for (let y = y0; y <= y1; y += 2) if (cizim(x, y)) n++; return n > 1; });
@@ -130,7 +137,77 @@ async function sayfaKes(hayvan, kareler, o = {}) {
       b = bantlar(sutunDolu, Math.round(W * bosluk), Math.round(W * 0.05));
       if (b.length >= kareler.length / satirlar.length) break;
     }
-    for (const [x0, x1] of b) kutular.push([x0, y0, x1, y1]);
+    // Sütunları üst üste binen kareler (yatan kedinin kuyruğu komşu karenin altına uzanır) arada beyaz sütun bırakmaz:
+    // bant içinde bağlı bileşenler ayrılır; büyükler kare olur, küçükler (damla, toz) en yakın kareye gider. Her kare
+    // yalnız kendi bileşenleriyle (3 px genişletilmiş maske) kesilir. Çizimler gerçekten değiyorsa en az mürekkepli
+    // sütundan bölünür (yalnız birkaç piksellik uç kesilir).
+    const beklenen = Math.round(kareler.length / satirlar.length);
+    const maskeler = new Map();
+    while (b.length < beklenen) {
+      const en = b.reduce((m, x, i) => (x[1] - x[0] > b[m][1] - b[m][0] ? i : m), 0);
+      const [a0, a1] = b[en];
+      const eksik = beklenen - b.length + 1;
+      const bw = a1 - a0 + 1, bh = y1 - y0 + 1, n = bw * bh;
+      const et = new Int32Array(n).fill(-1), q = new Int32Array(n), bil = [];
+      for (let i = 0; i < n; i++) {
+        if (et[i] >= 0 || !cizim(a0 + (i % bw), y0 + ((i / bw) | 0))) continue;
+        let bb = 0, ee = 0; q[ee++] = i; et[i] = bil.length; let x0_ = bw, x1_ = 0, y0_ = bh, y1_ = 0;
+        while (bb < ee) {
+          const p = q[bb++], x = p % bw, y = (p / bw) | 0;
+          x0_ = Math.min(x0_, x); x1_ = Math.max(x1_, x); y0_ = Math.min(y0_, y); y1_ = Math.max(y1_, y);
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
+            const xx = x + dx, yy = y + dy;
+            if (xx < 0 || yy < 0 || xx >= bw || yy >= bh) continue;
+            const r = yy * bw + xx;
+            if (et[r] < 0 && cizim(a0 + xx, y0 + yy)) { et[r] = bil.length; q[ee++] = r; }
+          }
+        }
+        bil.push({ alan: ee, x0: x0_, x1: x1_, y0: y0_, y1: y1_ });
+      }
+      const enBuyuk = Math.max(...bil.map((c) => c.alan));
+      const ana = bil.map((c, i) => [c, i]).filter(([c]) => c.alan >= enBuyuk * 0.15).sort((p, r) => p[0].x0 - r[0].x0);
+      if (ana.length === eksik) {
+        // küçükler en yakın anaya (kutular arası uzaklık)
+        const sahip = bil.map((c, i) => {
+          const a = ana.findIndex(([, j]) => j === i);
+          if (a >= 0) return a;
+          let enI = 0, enU = Infinity;
+          ana.forEach(([k], j) => { const u = Math.max(0, k.x0 - c.x1, c.x0 - k.x1) + Math.max(0, k.y0 - c.y1, c.y0 - k.y1); if (u < enU) { enU = u; enI = j; } });
+          return enI;
+        });
+        console.log(`  üst üste binen kareler ${a0}-${a1}: ${ana.length} çizim bileşenlerle ayrıldı`);
+        const kayitlar = ana.map((_, j) => {
+          const k = bil.filter((__, i) => sahip[i] === j);
+          // maske: bu karenin bileşenleri, 3 px genişletilmiş (kenar yumuşatması kalsın)
+          const m = new Uint8Array(n);
+          for (let i = 0; i < n; i++) if (et[i] >= 0 && sahip[et[i]] === j) m[i] = 1;
+          const g = new Uint8Array(n);
+          for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
+            if (!m[y * bw + x]) continue;
+            for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < bw && yy < bh) g[yy * bw + xx] = 1; }
+          }
+          return [[a0 + Math.min(...k.map((c) => c.x0)), a0 + Math.max(...k.map((c) => c.x1))], { g, a0, y0, bw, bh }];
+        });
+        b.splice(en, 1, ...kayitlar.map((k) => k[0]));
+        for (const [kk, m] of kayitlar) maskeler.set(kk, m);
+        continue;
+      }
+      const parca = Math.round(bw / eksik);
+      let enAz = Infinity, kes = -1;
+      for (let x = a0 + Math.round(parca * 0.7); x <= Math.min(a1 - 40, a0 + Math.round(parca * 1.3)); x++) {
+        let k = 0;
+        for (let y = y0; y <= y1; y++) if (cizim(x, y)) k++;
+        if (k < enAz) { enAz = k; kes = x; }
+      }
+      if (kes < 0) break;
+      console.log(`  değen kareler ${a0}-${a1} → ${kes}. sütundan bölündü (${enAz} px mürekkep)`);
+      b.splice(en, 1, [a0, kes - 1], [kes + 1, a1]);
+    }
+    for (const x of b) {
+      const k = [x[0], y0, x[1], y1];
+      if (maskeler.has(x)) k.maske = maskeler.get(x);
+      kutular.push(k);
+    }
   }
   if (kutular.length !== kareler.length) {
     console.log(`${o.dosya || hayvan}: ${kutular.length} kare bulundu, ${kareler.length} bekleniyordu; kesilmedi`, JSON.stringify(kutular));
@@ -152,6 +229,15 @@ async function sayfaKes(hayvan, kareler, o = {}) {
         let dolu = false;
         for (let y = h - 6; y < h; y++) { const i = (y * w + x) * 3; if (Math.min(d[i], d[i + 1], d[i + 2]) < 225) dolu = true; }
         if (dolu) for (let y = h - 4; y < h; y++) { const i = (y * w + x) * 3; d[i] = 0x3b; d[i + 1] = 0x24; d[i + 2] = 0x16; }
+      }
+      await s(d, { raw: { width: w, height: h, channels: 3 } }).extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#ffffff' }).png().toFile(cik);
+    } else if (kutular[i].maske) {
+      // üst üste binen karede yalnız bu karenin çizimi (komşunun kuyruğu beyaza)
+      const M = kutular[i].maske, w = Math.min(W, x1 + P) - l, h = Math.min(H, y1 + P) - t;
+      const { data: d } = await s(dosya).removeAlpha().extract({ left: l, top: t, width: w, height: h }).raw().toBuffer({ resolveWithObject: true });
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const bx = l + x - M.a0, by = t + y - M.y0;
+        if (bx >= 0 && by >= 0 && bx < M.bw && by < M.bh && !M.g[by * M.bw + bx]) { const j = (y * w + x) * 3; d[j] = d[j + 1] = d[j + 2] = 255; }
       }
       await s(d, { raw: { width: w, height: h, channels: 3 } }).extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#ffffff' }).png().toFile(cik);
     } else await s(dosya).removeAlpha().extract({ left: l, top: t, width: Math.min(W, x1 + P) - l, height: Math.min(H, y1 + P) - t }).extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#ffffff' }).png().toFile(cik);
@@ -333,7 +419,7 @@ const ESYA_V2 = {
   'sus-2': ['sus', ['cit', 'cicek-kemer', 'pati-tabela', 'cesme', 'semsiye', 'bank', 'fener', 'oyuncak-rafi', 'kaktus', 'balik-mobil', 'kalp-ayna', 'yaprak-tac']],
 };
 /** İnce parçalı kareler (değnek, kalp çerçevesi, perde ipi) küçük parça diye silinmesin */
-const ESYA_V2_AYAR = { 'ui-kalp-bos': { minOran: 0.0005 }, 'ui-perde': { minOran: 0.0005 }, 'esya-dari-cubugu': { minOran: 0.0005 }, 'esya-tirmanma-dali': { minOran: 0.0005 } };
+const ESYA_V2_AYAR = { 'ui-altin-kalp': { minOran: 0.2 }, 'ui-kalp-bos': { minOran: 0.0005 }, 'ui-perde': { minOran: 0.0005 }, 'esya-dari-cubugu': { minOran: 0.0005 }, 'esya-tirmanma-dali': { minOran: 0.0005 } };
 /** Hayvan sayfalarının kare adları (PATI-V2 §8b, §11b) */
 const H_KARE = ['bos', 'goz', 'ac', 'oyun', 'yiyor', 'uyku', 'sevinc', 'ozel'];
 const B_KARE = ['susamis', 'iciyor', 'kirli', 'fircalanma', 'esneme', 'sikildi', 'hasta', 'hapsirma'];
