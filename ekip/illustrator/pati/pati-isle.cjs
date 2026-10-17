@@ -113,7 +113,7 @@ function bantlar(dolu, enAzBosluk, enAzBant) {
   return b;
 }
 async function sayfaKes(hayvan, kareler, o = {}) {
-  const dosya = (o.dosya ? [o.dosya] : [`${hayvan}-hareket-sayfasi.png`, `${hayvan}-hareket-sayfasi.jpg`]).map((f) => path.join(G, f)).find((f) => fs.existsSync(f));
+  const dosya = (o.dosya ? [o.dosya] : [`${hayvan}-hareket-sayfasi.png`, `${hayvan}-hareket-sayfasi.jpg`]).map((f) => (path.isAbsolute(f) ? f : path.join(G, f))).find((f) => fs.existsSync(f));
   if (!dosya) return console.log(`${o.dosya || hayvan}: sayfa yok (bekleniyor)`), false;
   const { data, info } = await s(dosya).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width, H = info.height;
@@ -429,14 +429,34 @@ const H_OZEL = { findik: SAYFALAR.findik, tarcin: SAYFALAR.tarcin, piril: SAYFAL
 /** Tarçın'ın H sayfasında "aç" yok: B sayfasının 8. karesi aç (hapşırma yerine) */
 const B_OZEL = { tarcin: [...B_KARE.slice(0, 7), 'ac'], pamuk: [...B_KARE.slice(0, 7), 'ac'], duman: [...B_KARE.slice(0, 7), 'ac'] };
 const T_OZEL = { piril: ['begenmedi', 'tukur', 'saskin', 'bulanik', 'sikildi', 'dans-a', 'dans-b', 'utangac'] };
+/**
+ * GPT Image poz sayfaları (ekip/gemini/yeni/restoran/chibi/ISTEK.md §5; 1536×1024, 8 poz): dur, otur, yürü, zıpla-sevin,
+ * ye, uyu, şaşır, dans. Göz kapalı karesi yok (göz kırpma yaması çıkmaz).
+ * piril-hareket-sayfasi-v2.png BİLEREK KESİLMEZ: Pırıl'ın v1 (Gemini) sayfası tam set + göz kırpma; v2 başka çizim (iki göz
+ * önden), yalnız bir kısmı üstüne yazılırsa set karışır ve göz yaması kayar. Değiştirilecekse bütün piril-* birlikte.
+ */
+const H_GPT = ['bos', 'rahat', 'ozel', 'sevinc', 'yiyor', 'uyku', 'saskin', 'dans-a'];
+const GPT_SAYFA = { pofuduk: H_GPT, fistik: H_GPT, kurabiye: H_GPT, limon: H_GPT, tospik: H_GPT };
 const HAYVANLAR_V2 = ['findik', 'tarcin', 'pofuduk', 'fistik', 'kurabiye', 'piril', 'limon', 'tospik', 'zumrut', 'cucuk', 'vakvak', 'diken', 'pamuk', 'duman', 'cikolata', 'kakao', 'boncuk'];
 /** Ziyaretçi sayfaları (2×4, boydan): <kim>-dukkan-1..8 */
 const AILE_V2 = ['kino', 'lokum', 'anne', 'babaanne', 'dede', 'baba', 'nehir'];
 
+/**
+ * Köşe arka planları Recraft VEKTÖR çizimi (ekip/gemini/yeni/pati/v2/recraft/<ad>.svg, 2048×1170, düz karşıdan, hayvansız):
+ * SVG olduğu gibi assets/pati/<ad>.svg olur (sonsuz net; netlik sınırı SVG'ye uygulanmaz). Aynı adlı PNG gelirse o
+ * webp'ye çevrilir ve oyun webp'yi önce seçer (varliklar.ts KOSE_ARKA). Habitatların ölçüleri pati/src/kose.ts KOSE_PLANI.
+ */
+const RECRAFT_SVG = ['kemirgen-rafi', 'akvaryum-duvari', 'kus-kosesi', 'surungen-kosesi', 'bahce'];
 async function arkaV2() {
+  for (const ad of RECRAFT_SVG) {
+    const g = path.join(G, V2, 'recraft', `${ad}.svg`);
+    if (!fs.existsSync(g)) continue;
+    fs.copyFileSync(g, path.join(CIKTI, `${ad}.svg`));
+    console.log(`${ad}.svg (Recraft vektör)`, Math.round(fs.statSync(g).size / 1024), 'KB');
+  }
   for (const ad of ARKA_V2) {
     const g = path.join(G, V2, `${ad}.png`);
-    if (!fs.existsSync(g)) { console.log(`${ad}: arka plan yok (bekleniyor)`); continue; }
+    if (!fs.existsSync(g)) { if (!RECRAFT_SVG.includes(ad)) console.log(`${ad}: arka plan yok (bekleniyor)`); continue; }
     const m = await s(g).metadata();
     if (m.width < 2048) { console.log(`${ad}: ${m.width}×${m.height} küçük (2048 altı reddedilir, PATI-V2 §11a); kesilmedi`); continue; }
     const buf = await s(g).removeAlpha().webp({ quality: 86, effort: 5 }).toBuffer();
@@ -449,19 +469,50 @@ async function esyaV2() {
     await sayfaKes(onek, kareler, { dosya: path.join(V2, `${dosya}.png`), esya: true, ayar: ESYA_V2_AYAR });
 }
 
+/**
+ * GPT Image sayfaları NANE zeminli ve her pozun altında koyu nane gölge elipsi var: kesimden önce zemin ve gölge beyaza
+ * çevrilir (zemin ölçütü: yeşil ve mavisi kırmızısından belirgin yüksek, yeşil ≥ 190, mavi ≥ 160; Limon'un yeşili ve
+ * mavi yanağı, Tospik'in kabuğu bu ölçüte girmez). Zeminle kontur arasındaki 2 px'lik yeşilimsi karışım şeridi de beyaz
+ * olur (kahve konturda kırmızı > yeşil: korunur). Beyaz zeminli sayfa olduğu gibi döner.
+ */
+async function naneBeyaz(dosya) {
+  const { data, info } = await s(dosya).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const W = info.width, H = info.height, n = W * H;
+  const nane = (i) => { const r = data[i * 3], g = data[i * 3 + 1], b = data[i * 3 + 2]; return g >= 190 && b >= 160 && g > r + 30 && b > r + 10; };
+  if (!nane(2 * W + 2)) return dosya;
+  const M = new Uint8Array(n);
+  for (let i = 0; i < n; i++) M[i] = nane(i) ? 1 : 0;
+  const cik = Buffer.from(data);
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      let beyaz = M[i] === 1;
+      if (!beyaz && data[i * 3 + 1] > data[i * 3]) {
+        for (let dy = -2; dy <= 2 && !beyaz; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && M[yy * W + xx]) { beyaz = true; break; } }
+      }
+      if (beyaz) cik[i * 3] = cik[i * 3 + 1] = cik[i * 3 + 2] = 255;
+    }
+  const yeni = path.join(ARA, `beyaz-${path.basename(dosya)}`);
+  await s(cik, { raw: { width: W, height: H, channels: 3 } }).png().toFile(yeni);
+  console.log(`  nane zemin beyazlatıldı: ${path.basename(dosya)}`);
+  return yeni;
+}
+
 /** Bir hayvanın gelmiş bütün sayfaları (H v1 ya da v2, B, T) aynı klasörde kesilir: hepsi aynı ölçek ve taban çizgisinde */
 async function hayvanV2(id) {
   const girdi = path.join(ARA, `v2-${id}`);
   fs.rmSync(girdi, { recursive: true, force: true });
+  const gpt = path.join(V2, `${id}-hareket-sayfasi.png`);
   const sayfalar = [
-    [[path.join(V2, `${id}-hareket-sayfasi.png`), `${id}-hareket-sayfasi.png`], H_OZEL[id] || H_KARE],
+    GPT_SAYFA[id] && fs.existsSync(path.join(G, gpt)) ? [[gpt], GPT_SAYFA[id]] : [[path.join(V2, `${id}-hareket-sayfasi.png`), `${id}-hareket-sayfasi.png`], H_OZEL[id] || H_KARE],
     [[path.join(V2, `${id}-bakim-sayfasi.png`)], B_OZEL[id] || B_KARE],
     [[path.join(V2, `${id}-tepki-sayfasi.png`)], T_OZEL[id] || T_KARE],
   ];
   let n = 0;
   for (const [adaylar, kareler] of sayfalar) {
-    const dosya = adaylar.find((f) => fs.existsSync(path.join(G, f)));
+    let dosya = adaylar.find((f) => fs.existsSync(path.join(G, f)));
     if (!dosya) continue;
+    dosya = await naneBeyaz(path.join(G, dosya));
     if (await sayfaKes(id, kareler, { dosya, girdi, yalnizKare: true })) n++;
   }
   if (!n) return console.log(`${id}: sayfa yok (bekleniyor)`);

@@ -66,7 +66,7 @@ const SAAT_KENDI = !TEST_MODU || q.has('kendiliginden');
 /** Bu kadar oyundan sonra Nehir "Hava kararıyor..." der (çocuk isterse devam eder) */
 const AKSAM_MS = TEST_MODU && q.has('aksam') ? Number(q.get('aksam')) : 12 * 60 * 1000;
 /** Kapalı köşenin perdesinin arkasındaki gölge ve ses */
-const KOSE_GOLGE: Partial<Record<KoseAdi, string>> = { kemirgen: 'kadro-a-fistik', akvaryum: 'kadro-b-piril', kus: 'kadro-b-limon', surungen: 'kadro-b-tospik' };
+const KOSE_GOLGE: Partial<Record<KoseAdi, string>> = { kemirgen: 'kadro-a-fistik', akvaryum: 'kadro-b-piril', kus: 'kadro-b-limon', surungen: 'kadro-b-tospik', bahce: 'kadro-b-diken' };
 
 export function dukkanEkrani(app: Uygulama): Ekran {
   let kapandi = false;
@@ -320,6 +320,8 @@ export function dukkanEkrani(app: Uygulama): Ekran {
   const acikKoseler = new Map<KoseAdi, KosePaneli>();
   const serit = h('div.pt-serit', {}, vitrin.el, salon.el);
   const KOSE_SIRA = (Object.keys(KOSELER) as KoseAdi[]).filter((k) => k !== 'salon');
+  /** şeridin şu an gösterdiği sıra */
+  let seritI = -1;
   function paneller(): Panel[] {
     const acik = KOSE_SIRA.filter((k) => koseAcik(kayit, k));
     const kapali = KOSE_SIRA.filter((k) => !koseAcik(kayit, k) && koseGorunur(kayit, k));
@@ -358,6 +360,10 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     while (serit.children.length > sira.length) serit.lastElementChild!.remove();
     for (const p of acikKoseler.values()) p.kur();
     gizliPaneller();
+    // sıra değişince (köşe alındı: açık köşeler kapalıların önüne geçer; Bahçe/Sürüngen perdesi araya girer) şerit
+    // bulunduğumuz bölümde kalsın; yoksa ekranda başka köşenin perdesi görünüyordu
+    const i = paneller().indexOf(panel);
+    if (i >= 0 && i !== seritI) seritKonum(i, 0);
   }
   function gizliPaneller() {
     for (const x of serit.children) (x as HTMLElement).toggleAttribute('data-panel-gizli', (x as HTMLElement).dataset.panel !== panel);
@@ -439,6 +445,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     serit.addEventListener('pointercancel', son);
   }
   function seritKonum(i: number, ms: number) {
+    seritI = i;
     const d = TEST_MODU ? 0 : sure(ms);
     serit.style.transition = d ? `transform ${d}ms cubic-bezier(.45,.05,.3,1)` : 'none';
     serit.style.transform = `translateX(${-i * 100}%)`;

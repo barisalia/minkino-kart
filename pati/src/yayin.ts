@@ -8,10 +8,15 @@
  *  - hayvanlar: vitrine, mağazaya, ziyaret sahnelerine yalnız bunlar çıkar.
  *      Tarçın, Fındık: hareket + bakım + tepki sayfaları (24 poz).
  *      Pofuduk: yalnız kadro resmi (poz sayfaları yok); bütün gövde hareketi (zıplama, ezilme, titreme) kabul edildi.
- *      GİZLİ: Fıstık, Kurabiye, Pırıl, Limon, Tospik (köşeleri çizilmedi), Zümrüt, Cücük, Vakvak, Pamuk, Duman,
- *      Çikolata, Kakao, Boncuk (çizimleri yok), Diken (gece misafiri; Bahçe çizilmedi).
- *  - koseler: yalnız salon. Kemirgen Rafı, Akvaryum, Kuş Köşesi, Bahçe, Sürüngen Köşesi arka planları çizilmedi
- *    (sade duvar + zemin yer tutucusu): mağazada ve dükkân şeridinde görünmez.
+ *      Pırıl: hareket sayfası (8 poz). Fıstık, Kurabiye, Limon, Tospik: GPT Image hareket sayfaları (8 poz: dur, otur,
+ *      yürü, sevinç, ye, uyu, şaşır, dans; pati-isle.cjs v2-hayvan, nane zemin beyazlatılır). Bakım/tepki sayfaları yok:
+ *      o pozlar en yakın poza düşer, kod bütün gövdeyle anlatır (Pofuduk gibi).
+ *      Yayında ★'ı çizilmemiş ihtiyaç açılmaz (katalog.ts turBilgi: Fıstık/Kurabiye/Limon aç, Limon/Tospik susuz,
+ *      Pırıl sıkılmış; ★'ları esya-2/6 sayfalarında).
+ *      Diken (gece misafiri) satılmaz: Bahçe açıksa gündüz evinin önünde durur, kapanışta tabağına gelir.
+ *      GİZLİ: Zümrüt, Cücük, Vakvak, Pamuk, Duman, Çikolata, Kakao, Boncuk (çizimleri yok).
+ *  - koseler: salon + Recraft vektör çizimli 5 köşe (Kemirgen Rafı, Akvaryum, Kuş Köşesi, Bahçe, Sürüngen Köşesi;
+ *    assets/pati/<ad>.svg). Çizimi olmayan hayvanın yuvası (Zümrüt'ün teraryumu, ikinci akvaryum …) boş habitat kalır.
  *  - esyalar: Gemini eşya sayfalarında (esya-1/3/4/5) ve v1 G4 sayfasında çizilmiş olanlar. esya-2 ve esya-6 sayfaları
  *    gelmedi: onların eşyaları (ayçekirdeği, bezelye, tırmanma dalı …) çekmecede ve mağazada görünmez.
  *  - susler: başka oyunların onaylı çizimleri (hepsi çizili).
@@ -25,8 +30,8 @@
 export const YAYIN_KAPSAMI_ACIK = true;
 
 export const YAYIN_KAPSAMI = {
-  hayvanlar: ['tarcin', 'findik', 'pofuduk'],
-  koseler: ['salon'],
+  hayvanlar: ['tarcin', 'findik', 'pofuduk', 'fistik', 'kurabiye', 'piril', 'limon', 'tospik'],
+  koseler: ['salon', 'kemirgen', 'akvaryum', 'kus', 'bahce', 'surungen'],
   esyalar: [
     // mama
     'kopek-mamasi', 'kedi-mamasi', 'saman', 'kemik-biskuvi', 'konserve', 'sut-kasesi', 'havuc', 'marul', 'elma', 'cilek', 'balik-yemi',

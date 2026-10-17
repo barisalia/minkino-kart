@@ -5,7 +5,7 @@
  */
 import P from '../../content/pati.json';
 import type { Yas } from './ihtiyac';
-import { esyaKapsamda, hayvanKapsamda, koseKapsamda, susKapsamda } from './yayin';
+import { esyaKapsamda, hayvanKapsamda, koseKapsamda, susKapsamda, YAYIN } from './yayin';
 
 export type { Yas };
 export const V2 = P.v2;
@@ -63,7 +63,9 @@ function turBilgi(id: string, t: HamTur): HayvanBilgi {
     vitrin: t.vitrin as VitrinZamani,
     huy: t.huy,
     temel: null,
-    ihtiyaclar: (t.ihtiyaclar as IhtiyacAdi[] | undefined) ?? [...IHTIYACLAR],
+    // yayında ★'ı çizilmemiş ihtiyaç açılmaz (Fıstık'ın ayçekirdeği, Limon'un kuş suluğu … esya-2/6 sayfaları gelmedi):
+    // çekmecede doğru cevap olmayan ihtiyaç çocuğu çıkmaza sokar. Tam oyunda (YAYIN kapalı) hepsi.
+    ihtiyaclar: ((t.ihtiyaclar as IhtiyacAdi[] | undefined) ?? [...IHTIYACLAR]).filter((ih) => !YAYIN || !!sevgi[ih]?.s.length),
     sevgi,
     ders: t.ders && esyaKapsamda(t.ders.esya) ? t.ders : null,
     gizli: t.gizli && esyaKapsamda(t.gizli) ? t.gizli : null,

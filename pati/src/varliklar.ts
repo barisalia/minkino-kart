@@ -209,12 +209,20 @@ export function susResmi(id: string, yol: string): string | null {
   if (yol.startsWith('pati/')) return adres(yol.slice(5));
   return SUS_DOSYA[`../../assets/${yol}.webp`] ?? null;
 }
-/** Köşe arka planları (Gemini Gün 2-4; gelene kadar sade yer tutucu: düz duvar, zemin, iki yuva) */
+/**
+ * Köşe arka planları: Recraft VEKTÖR çizimleri (assets/pati/<ad>.svg, 2048×1170; pati-isle.cjs v2-arka). Aynı adlı raster
+ * (webp) gelirse önce o. SVG sonsuz net: netlik sınırı (src/ui/netlik.ts) SVG'ye uygulanmaz. Habitat ölçüleri kose.ts.
+ */
+const KOSE_SVG = import.meta.glob<string>('../../assets/pati/*.svg', { eager: true, query: '?url', import: 'default' });
+const koseArka = (ad: string) => adres(ad) ?? Object.entries(KOSE_SVG).find(([y]) => y.endsWith(`/${ad}.svg`))?.[1] ?? null;
 export const KOSE_ARKA: Record<string, string | null> = {
-  kemirgen: adres('kemirgen-rafi'),
-  akvaryum: adres('akvaryum-duvari'),
-  kus: adres('kus-kosesi'),
-  surungen: adres('surungen-kosesi'),
-  bahce: adres('bahce'),
+  kemirgen: koseArka('kemirgen-rafi'),
+  akvaryum: koseArka('akvaryum-duvari'),
+  kus: koseArka('kus-kosesi'),
+  surungen: koseArka('surungen-kosesi'),
+  bahce: koseArka('bahce'),
 };
+/** Köşe çiziminin birimi (SVG viewBox) */
+export const KOSE_W = 2048;
+export const KOSE_H = 1170;
 export const BAHCE_GECE = adres('bahce-gece');
