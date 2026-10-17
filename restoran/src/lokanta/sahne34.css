@@ -132,3 +132,6 @@
 [data-s34] .rs-balon, [data-s34] .rs-soz, [data-s34] .rs-efekt { pointer-events: none; }
 [data-s34] .rs-pencere { pointer-events: none; }
 [data-s34] .rs-pencere > .rs-hazir { pointer-events: auto; }
+/* mandal ipindeki adisyonlar yalnız gösterir: altındaki istasyon dokunulur (küçük ekranda kartlar tezgâha sarkar) */
+[data-s34] .rs-ip { pointer-events: none; }
+[data-s34] .rs-adisyon { min-width: 44px; }

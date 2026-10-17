@@ -130,11 +130,15 @@ const SUS_GORSEL: Record<string, SusGorsel> = {
   avize: { yedek: 'kino-otobus/lamba', dogal: [497, 1024], boy: 1.25 },
 };
 
+/** Defter kalemi → 3/4 süs çizimi (sus-34 sayfası; restoran-isle.cjs adları) */
+const SUS34: Record<string, string> = { saksi: 'feslegen', bitki: 'sepet-bitki', akvaryum: 'akvaryum-dolap', gramofon: 'gramofon-tabure', avize: 'fener-asili' };
+
 /** Süsün resmi ve en çok kaç css px boyunda çizilebileceği (netlik: css × 3 ≤ doğal) */
 export function susResmi(id: string): { url: string; enCokH: number; boy: number; oran: number } | null {
   const g = SUS_GORSEL[id];
   if (!g) return null;
-  const gemini = varlik(`sus/${id}`);
+  // P8: 3/4 sahnenin süsleri (Gemini #70 sus-34, aynı açı) varsa önce onlar
+  const gemini = (SUS34[id] ? varlik(`sus/${SUS34[id]}`) : null) ?? varlik(`sus/${id}`);
   const url = gemini ?? varOlan(g.yedek);
   if (!url) return null;
   // Gemini çizimi (sus-1, 2752 genişliğinde sayfadan) yedekten büyüktür; boyu bilinmiyorsa yedeğin sınırı kalır

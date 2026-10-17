@@ -42,7 +42,7 @@ async function hedef(page: Page, sec: string, konum?: (r: DOMRect) => Nokta) {
       const r = el.getBoundingClientRect();
       const p = k === 'ust' ? { x: r.x + r.width / 2, y: r.y + r.height * 0.35 } : { x: r.x + r.width / 2, y: r.y + r.height / 2 };
       const ust = document.elementFromPoint(p.x, p.y);
-      return { ...p, acik: !!ust && (ust === el || el.contains(ust)), ust: ust ? `${ust.tagName}.${ust.className}` : '' };
+      return { ...p, acik: !!ust && (ust === el || el.contains(ust)), ust: ust ? [ust, ust.parentElement, ust.parentElement?.parentElement].filter(Boolean).map((e) => `${e!.tagName}.${e!.className}`).join(" < ") : "" };
     },
     [sec, konum ? 'ust' : 'orta'] as const,
   );

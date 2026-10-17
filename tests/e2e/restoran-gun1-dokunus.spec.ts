@@ -108,7 +108,8 @@ for (const boy of BOYLAR) {
       test.setTimeout(420_000);
       const hatalar = hataTopla(page);
       await page.goto('./restoran/?test=1&sifirla=1&yas=kucuk');
-      await page.goto('./restoran/?onizleme=1&ekran=lokanta');
+      // dik karşıdan eski sahne (yedek; 3/4 sahne: restoran-34-gun1.spec.ts)
+      await page.goto('./restoran/?onizleme=1&ekran=lokanta&eski=1');
       const ad = `${boy.width}x${boy.height}`;
       const istasyonaGir = async (ist: string, oyun: string) => {
         await dokun(page, `.rs-ist[data-istasyon="${ist}"]`, 700);

@@ -1215,19 +1215,23 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       // 3/4 sıra: 3-4 yaşta sıranın başındaki 10 sn dokunulmazsa kendisi boş masaya geçer (5-6 bekler; ipucu merdiveni)
       const sure34 = SIRA_TEST_SINIR ? 400 : yas === 'kucuk' ? (TEST_MODU ? 1500 : 10_000) : Infinity;
       if (kapida?.uye?.hazir && simdi - kapida.uye.zaman > sure34 && !el.querySelector('.rs-hayalet')) {
-        const bos = masalar.filter((m) => !m.oturan).sort((a, b) => Math.abs(a.yer.x - kapida.kisi.konum.x) + Math.abs(a.yer.y - kapida.kisi.konum.y) - Math.abs(b.yer.x - kapida.kisi.konum.x) - Math.abs(b.yer.y - kapida.kisi.konum.y))[0];
+        const p = kapida.kisi.konum;
+        const uzak = (m: Masa) => Math.abs(m.yer.x - p.x) + (SIRA_TEST_SINIR !== null ? 0 : Math.abs(m.yer.y - p.y));
+        const bos = masalar.filter((m) => !m.oturan).sort((a, b) => uzak(a) - uzak(b))[0];
         if (bos) void oturt(kapida, bos);
       }
       // sıraya gelen: ilk müşteri hemen, sonra sıra boş ve masa varsa kısa, yoksa günün aralığıyla; sıra en çok 3 + 2
       const bosMasa = masalar.some((m) => !m.oturan);
       const ilk34 = siradaki === 0 && simdi - basladi > (TEST_MODU ? 100 : 1600);
       const ara = !bekleyen.length && bosMasa ? (TEST_MODU ? 100 : 1600) : aralik();
-      const sonraki34 = siradaki > 0 && simdi - sonGelis > ara;
+      // test modunda eski sahnenin zamanlaması (biri gidince aralık kadar sonra), gerçek oyunda son gelişten
+      const sonraki34 = siradaki > 0 && (SIRA_TEST_SINIR !== null ? simdi - sonBosalma > aralik() : simdi - sonGelis > ara);
       const sinir = SIRA_TEST_SINIR ?? KAPASITE;
       // test modu (eski testlerle uyumlu): eski sahnedeki gibi aynı anda en çok plan.ayniAnda müşteri, boş masa varken
       const eskiGibi = SIRA_TEST_SINIR !== null ? masadaki() < plan.ayniAnda && bosMasa : true;
       if (siradaki < plan.musteriler.length && bekleyen.length < sinir && eskiGibi && (ilk34 || sonraki34)) {
         sonGelis = simdi;
+        if (SIRA_TEST_SINIR !== null) sonBosalma = simdi;
         void musteriGetir();
       }
       return;
