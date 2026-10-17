@@ -1123,8 +1123,9 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 
 ### 16b. Kim kimin yanında? (oturma)
 
-- **Masa artık iki kişilik:** sol ve sağ sandalye. Bugünkü kodda eşlikçi masanın sağına oturuyor (`lokanta.ts` → `oturt_`, `x + 5`). Aynı yer artık her müşteriye açık.
-- Gelen müşteriyi çocuk **boş bir masaya** ya da **birinin oturduğu masanın boş sandalyesine** sürükler. Bu tamamen çocuğun seçimi. 3-4 yaşta dokunulmazsa müşteri 10 sn sonra kendisi boş bir masaya oturur.
+- **3/4 sahnede (§7a, P8):** her masanın **arka tarafında yan yana iki sandalye** var: sol ve sağ. İkisi de kameraya bakar. Masa çizimi önde, sandalyeler arkada; müşteri ikisinin arasında çizilir (P8 `sahne34.ts` derinliği). Bugünkü kodda eşlikçi masanın sağına oturuyor (`oturt_`, `x + 5`); bu yer artık her müşteriye açık.
+- Müşteriler kapının önündeki **sırada** bekler (P8 `sira.ts`). Çocuk sıradaki **herhangi birini** boş bir masaya ya da **birinin oturduğu masanın boş sandalyesine** sürükler. Müşteri yol grafiği üstünde hoplayarak yürür ve oturur. Sürüklerken sandalyeler kesik çizgili halkayla görünür. Bu tamamen çocuğun seçimi. 3-4 yaşta dokunulmazsa sıranın başındaki 10 sn sonra kendisi boş bir masaya geçer.
+- **Sırada da anlaşırlar:** arkadaşlar sırada yan yana gelince birbirine el sallar, sohbet balonu çıkar. Bu, çocuğa "bunlar arkadaş" diye dolaylı bir ipucudur. Atışma çiftleri sırada da küçük bir şaka yapar: Bıdık öndekinin şapkasını kemirir.
 - **Arkadaş çiftleri** (`ARKADASLAR`, model.ts). Yan yana oturunca kalpler çıkar, aralarında resimli sohbet balonları (top, çiçek, nota) gidip gelir, yemekten sonra ikisi de bir **arkadaşlık bahşişi** bırakır (masa başına +1, en çok 1):
   - Lokum ve Zıpzıp (ikisi de hızlı, el çırpıp oynarlar)
   - Dede ve Babaanne (Dede çiçek uzatır)
@@ -1143,7 +1144,8 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 - **Yaşa göre:**
   - 3-4: yalnız 3 arkadaş çifti var, atışmalar daha da kısa.
   - 5-6: hepsi var. Müşteri panosunda (§4b) arkadaşlar polaroidleriyle yan yana asılır, keşfedilen her çift bir kalp ipiyle bağlanır.
-- **Ölçek:** iki kişilik masada iki oturan müşteri §7b sınırlarını aşmaz. Masa yuvaları arasındaki boşluk iki kişiye göre ölçülür; toplam karakter alanı yine %25'i geçmez.
+- **Ölçek:** iki kişilik masada iki oturan müşteri §7b sınırlarını aşmaz: chibi ölçek, toplam karakter alanı sahnenin ≤ %18'i. Masa çizimi (#69) iki kişilik ölçülür. Sohbet balonları iki başın arasında, küçük ve yüzü örtmeden durur.
+- **Görsel:** oturuşta var olan lokanta sayfaları kullanılır. Atışma anları için Kino'nun #75 kareleri (süpürme, kayma) ve efekt sayfası yeter, yeni karakter sayfası gerekmez.
 
 ### 16c. Şefin önerisi
 
@@ -1164,11 +1166,16 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
   - Lokum ayran bardağını devirir.
   - Kino tepsiyle sallanınca bir damla çorba yere düşer (§9).
   - Tavana yapışan pankek yere de bir yağ lekesi bırakır.
-- **Nerede oynanır?** Lokanta ekranında, yerinde. İstasyon değişmez, kamera kaymaz. Lekeye dokununca yanında sünger, paspas ya da süpürge-faraş belirir. Hangisi seçilirse onunla temizlenir; seçim çocukta.
+- **Nerede oynanır?** 3/4 lokanta sahnesinde, yerinde. İstasyon değişmez, kamera kaymaz, büyütme yok.
+  - Leke 3/4 açıyla yere yatık çizilmiştir (#61 `dokulenler` sayfası #65 yüklenerek aynı açıda çizilir). Zemin katmanındadır: masanın, sandalyenin ve karakterlerin **altında** kalır.
+  - Leke masanın dibindeyse masa önde kalır, temizlik aracı lekenin görünen kısmında çalışır.
+  - Dokunma kutusu en az 64 css px. Küçük leke de kolay vurulur.
+  - Lekeye dokununca yanında sünger, paspas ya da süpürge-faraş belirir. Hangisi seçilirse onunla temizlenir; seçim çocukta.
+  - **İsteğe bağlı:** Kino'yu çağır. Kino'ya, sonra lekeye dokunursan Kino süpürgesiyle gelip temizler (#75 süpürme karesi). Saklı bahşiş yine çocuğun dokunuşuyla toplanır.
   - **Silme:** sünger ya da paspası lekenin üstünde ileri geri sür. Kazı-kazan gibi temiz, parlak zemin açılır. Köpük çıkar, "gıcır" sesi gelir.
   - **Süpürme:** kırıntıları faraşa doğru süpür. Kırıntılar yuvarlanır, faraşa girince "tıkır" diye ses verir.
 - **Ödül:** Silinen her lekenin altında saklı bir **bahşiş jetonu** parlar; dokununca kasaya uçar. Zemin bir kez pırıldar. Babaanne duvardaki fotoğrafında göz kırpar.
-- **Temizlemezsen** hiçbir şey kötüleşmez. Leke orada kalır. Kino bir kez üstünden kayar ama düşmez; komik bir halay adımıyla toparlanır. Gün sonunda lekeler kendiliğinden silinir (Lokum paspasla dans ederek siler).
+- **Temizlemezsen** hiçbir şey kötüleşmez. Leke orada kalır. Kino'nun yol grafiğinde lekenin üstünden geçen yol varsa bir kez kayar ama düşmez (#75 kayma karesi); komik bir halay adımıyla toparlanır. Kino lekenin etrafından dolaşmaz; şaka bir kez olur, sonra o gün dikkatli yürür. Gün sonunda lekeler kendiliğinden silinir (Lokum paspasla dans ederek siler).
 - **Yaşa göre:** 3-4 yaşta iki sürüşte silinir. 5-6 yaşta lekenin her köşesi silinmeli; kırıntılar dağılır, tek tek toplanır.
 - **Neden ayrı bir istasyon değil?** Akış kopmasın, temizlik 5-10 sn'lik tatlı bir ara olsun.
 
@@ -1225,9 +1232,9 @@ P4, P6 ve P8'den (3/4 sahne) sonra başlar, tek kodcu. `lokanta.ts`'e başka pak
 
 - **Dosyalar:**
   - `restoran/src/model.ts`: `ARKADASLAR`, `ATISMALAR`, `SEVDIGI_SUS`, `OZEL_MISAFIR`, `oturmaSonucu(a, b)`, `masaBahsisi(...)` (masa başına en çok +1), `oneriTepkisi(musteri, tarif)`, `gunListesi(tohum, yas, acilan)`.
-  - `restoran/src/lokanta/oturma.ts` (yeni): iki sandalyeli masa, sandalyeye sürükleme, geri alma, arkadaşlık ve atışma sahneleri, sohbet balonları.
+  - `restoran/src/lokanta/oturma.ts` (yeni): iki sandalyeli 3/4 masa (P8 `sahne34.ts` derinliği), P8 `sira.ts`'dan sandalyeye sürükleme, geri alma, sıradaki ve masadaki arkadaşlık ve atışma sahneleri, sohbet balonları.
   - `restoran/src/lokanta/oneri.ts` (yeni): menü kartını müşteriye sürükleme, koklama tepkisi, karar.
-  - `restoran/src/lokanta/dokulen.ts` (yeni): lekeyi oluşturma, araç seçimi, silme maskesi (kazı-kazan), süpürme, saklı bahşiş, Kino'nun kayması.
+  - `restoran/src/lokanta/dokulen.ts` (yeni): lekeyi zemin katmanında oluşturma (3/4, eşyaların altında), araç seçimi, silme maskesi (kazı-kazan), süpürme, Kino'yu çağırma, saklı bahşiş, Kino'nun yol üstünde kayması (P8 yol grafiği).
   - `restoran/src/lokanta/liste.ts` (yeni): not kâğıdı, çıkartmalar, gün sonu sürpriz kutusu.
   - `restoran/src/lokanta/lokanta.ts`: yalnız bu dört modülü bağlama, sandalye yerleri ve `oturt_`'un genelleşmesi.
   - `restoran/src/lokanta/gun-sonu.ts`: sürpriz kutu adımı.
