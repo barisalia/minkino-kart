@@ -25,7 +25,7 @@ import { kaydet, kayit } from '../kayit';
 import type { ArkaIs, Istasyon, Malzeme, MiniGirdi, MiniOyun, Urun } from '../mini/arayuz';
 import { denemeIcin } from '../mini/deneme';
 import { istasyonOyunlari, oyunBul } from '../mini/katalog';
-import { gunPlani, ilkGunPlani, L, MUSTERILER, odeme, tepkiHesapla, TARIFLER, type GunPlani, type Istek, type Musteri, type PlanMusteri, type TepkiSonuc } from '../model';
+import { gunPlani, ilkGunPlani, L, MUSTERILER, odeme, tepkiHesapla, TARIFLER, yemekTani, type GunPlani, type Istek, type Musteri, type PlanMusteri, type TepkiSonuc } from '../model';
 import { olcuIzle, YERLESIM, type Olcu, type Yer, type Yon } from '../olcek';
 import { salonSes, sesler } from '../sesler';
 import { varlik, yeniden } from '../varliklar';
@@ -335,7 +335,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   let hizmet = 0;
   let kapandi = false;
   let tepsi: Urun[] = [];
-  const tepkiGunlugu: { musteri: string; istek: string; tepki: string; neden?: string }[] = [];
+  const tepkiGunlugu: { musteri: string; istek: string; tepki: string; neden?: string; yemek?: string }[] = [];
   let istasyon: IstasyonEkrani | null = null;
   const masadaki = () => masalar.filter((m) => m.oturan).length;
 
@@ -661,7 +661,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     sesler.cal('pof', { guc: 0.6 });
     ipucuGuncelle();
     const sonuc = tepkiHesapla(o.m, o.plan.istek, u);
-    tepkiGunlugu.push({ musteri: o.m.id, istek: o.plan.istek.tur, tepki: sonuc.tepki, neden: sonuc.neden });
+    tepkiGunlugu.push({ musteri: o.m.id, istek: o.plan.istek.tur, tepki: sonuc.tepki, neden: sonuc.neden, yemek: yemekTani(u) });
     const yeniKesif = !!(sonuc.sevdigi && !(kayit.pano[o.m.id] ?? []).includes(sonuc.sevdigi));
     await yemekYe(o, tabak, sonuc);
     if (kapandi) return;
@@ -1250,6 +1250,22 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       kapida?.eslik?.kapat();
       kapida = null;
       void gunuKapat();
+    },
+    /** test (P6): müşterileri bitir (gelmeyenler gelmez, oturanlar gider) → gün sonu denetimi; 5-6'da personel yemeği */
+    musterileriBitir: () => {
+      if ((!TEST_MODU && !document.body.dataset.onizleme) || gunBitti) return;
+      siradaki = plan.musteriler.length;
+      kapida?.kisi.kapat();
+      kapida?.eslik?.kapat();
+      kapida = null;
+      for (const m of masalar) {
+        if (!m.oturan) continue;
+        m.oturan.adisyon?.remove();
+        m.oturan.kisi.kapat();
+        m.oturan.eslik?.kapat();
+        m.oturan = null;
+      }
+      gunSonuDenetle();
     },
     durum: () => ({
       acik,

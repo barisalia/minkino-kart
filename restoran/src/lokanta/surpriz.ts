@@ -541,9 +541,18 @@ export function surprizKur(b: SurprizBaglam): Surprizler {
   const dokunusYaz = () => (sonDokunus = performance.now());
   b.el.addEventListener('pointerdown', dokunusYaz, { capture: true });
   const PATI_MS = Q.has('pati') ? 1200 : TEST_MODU ? 2500 : 8000;
+  /** Tahtada kesilmiş salatalık varsa en küçük parçası (bütün salatalık çalınmaz) */
+  function calinacakDilim(ist: HTMLElement): HTMLElement | null {
+    const p = [...ist.querySelectorAll<HTMLElement>('.rs-dg-parcalar .rs-p2-parca[data-malzeme="salatalik"]:not([data-calindi])')].filter((e) => e.getBoundingClientRect().width > 4);
+    if (p.length < 2) return null;
+    const alan = (e: HTMLElement) => {
+      const r = e.getBoundingClientRect();
+      return r.width * r.height;
+    };
+    return p.sort((a, b) => alan(a) - alan(b))[0];
+  }
   async function lokumPati(ist: HTMLElement) {
-    const adaylar = [...ist.querySelectorAll<HTMLElement>('.rs-p2-parca[data-malzeme="salatalik"]:not([data-gorunum="kirpik"]):not([data-calindi])')].filter((e) => e.getBoundingClientRect().width > 4);
-    const dilim = adaylar[Math.floor(Math.random() * adaylar.length)];
+    const dilim = calinacakDilim(ist);
     if (!dilim) return;
     patiSurerken = true;
     tetik('pati');
@@ -657,7 +666,7 @@ export function surprizKur(b: SurprizBaglam): Surprizler {
       patiIstasyon = ist;
       sonDokunus = t;
     }
-    if (ist && !patiSurerken && !ist.dataset.patiOldu && t - sonDokunus > PATI_MS && ist.querySelector('.rs-p2-parca[data-malzeme="salatalik"]:not([data-gorunum="kirpik"])')) {
+    if (ist && !patiSurerken && !ist.dataset.patiOldu && t - sonDokunus > PATI_MS && calinacakDilim(ist)) {
       ist.dataset.patiOldu = '1';
       void lokumPati(ist).catch(() => (patiSurerken = false));
     }

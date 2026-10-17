@@ -91,8 +91,9 @@ export function personelBaslat(b: PersonelBaglam): Personel {
   // "Kapalı" levhası: her an günü kapatır
   const levha = h('button.rs-pr-levha', { type: 'button', 'aria-label': 'Kapalı' }, h('i.rs-pr-levha-ip'), h('i.rs-pr-levha-tahta', {}, h('i.rs-pr-ay')));
   b.katman.append(levha);
-  const k = b.kapi();
-  Object.assign(levha.style, { left: `${k.x + 6}%`, top: `${Math.max(4, k.y - 34)}%` });
+  // levha masaların ve istasyonların arasındaki boş zeminde (yatay: salonun ortası, dikey: sağ alt masaların üstü)
+  const dikeyMi = b.kapi().y > 80;
+  Object.assign(levha.style, dikeyMi ? { left: '76%', top: '69%' } : { left: '44%', top: '54%' });
   levha.addEventListener('click', () => void bitir());
 
   const tabakKoy = (y: Yiyen, u: Urun): HTMLElement => {
