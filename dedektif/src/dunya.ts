@@ -332,7 +332,7 @@ export const DAR_YAKIN: Record<OdaId, number> = { calisma: 2, koridor: 1.25, yat
  * Odaların arka plan resminin doğal boyu (px; resim yüklenene dek). Kamera bu resmi cihazda doğal pikselinin
  * PIKSEL_SINIR (×2.2) katından fazla büyütmez: DAR_YAKIN o sınıra kadar uygulanır (daha büyük çizim gelince tamamı).
  */
-const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536, 'bahce-ip': 2286, 'bahce-yol': 2286, 'bahce-golet': 2286, 'otobus-ic': 1536, 'otobus-yani': 1536, agac: 1536, kiler: 1536 };
+const ZEMIN_BOY: Record<OdaId, number> = { calisma: 1536, koridor: 1080, yatak: 1080, mutfak: 1536, 'bahce-ip': 2286, 'bahce-yol': 2286, 'bahce-golet': 2286, 'otobus-ic': 2286, 'otobus-yani': 2286, agac: 2286, kiler: 2286 };
 
 export class Dunya {
   readonly el: HTMLElement;
