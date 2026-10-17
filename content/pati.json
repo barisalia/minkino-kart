@@ -311,7 +311,153 @@
         "bir_tutam": "Bir tutam yeter.",
         "ordek_ekmek": "Ördeğe ekmek iyi gelmez."
       },
-      "sayi": ["Bir!", "İki!", "Üç!", "Dört!", "Beş!", "Altı!", "Yedi!", "Sekiz!", "Dokuz!", "On!", "On bir!", "On iki!", "On üç!", "On dört!", "On beş!", "On altı!"]
+      "sayi": ["Bir!", "İki!", "Üç!", "Dört!", "Beş!", "Altı!", "Yedi!", "Sekiz!", "Dokuz!", "On!", "On bir!", "On iki!", "On üç!", "On dört!", "On beş!", "On altı!"],
+      "tanisma": {
+        "findik": "Fındık hiç yerinde durmaz!",
+        "tarcin": "Tarçın biraz nazlı.",
+        "pofuduk": "Pofuduk çok utangaç.",
+        "pamuk": "Pamuk tertemiz bir kedi.",
+        "duman": "Duman çok uykucu.",
+        "cikolata": "Çikolata biraz tembel.",
+        "kakao": "Kakao çok cesur!",
+        "fistik": "Fıstık gündüz uyur.",
+        "kurabiye": "Kurabiye çok konuşkan.",
+        "piril": "Pırıl her şeye şaşırır.",
+        "limon": "Limon çok geveze!",
+        "boncuk": "Boncuk şarkı söyler.",
+        "tospik": "Tospik hiç acele etmez.",
+        "zumrut": "Zümrüt tırmanmayı sever.",
+        "cucuk": "Cücük peşinden koşar.",
+        "vakvak": "Vakvak suya bayılır."
+      },
+      "kapi_caldi": "Kapı çaldı!",
+      "misafir": "Bir misafirimiz var!",
+      "artik_senin": "Artık o senin!",
+      "yeni_ev": "Yeni evine hoş geldin!",
+      "bayildi": "Buna bayıldı!",
+      "mutlu_dukkan": "Mutlu hayvan, mutlu dükkân!",
+      "defter_kalp": "Defterine bir kalp!",
+      "uzman_oldun": "Uzman oldun!",
+      "hediye": "Sana bir hediye!",
+      "yeni_esya": "Dolaba yeni bir şey geldi!",
+      "kose_acildi": {
+        "kemirgen": "Kemirgen rafı açıldı!",
+        "akvaryum": "Akvaryum açıldı!",
+        "kus": "Kuş köşesi açıldı!",
+        "bahce": "Bahçe açıldı!",
+        "surungen": "Sürüngen köşesi açıldı!"
+      },
+      "parti_zamani": "Parti zamanı!",
+      "ders2": {
+        "kedi_islak": "Kediler ıslanmayı sevmez.",
+        "kus_su": "Kuşlar suyu sever!",
+        "insan_yemegi": "Börek bize, mama onlara.",
+        "zumrut_buyuyor": "Zümrüt büyüyor!",
+        "diken_yabani": "Diken yabani, evi bahçe."
+      }
+    },
+    "temizlik_cekmecesi": { "fiyat": [3, 0] },
+    "susler": {
+      "saksi": { "resim": "elektrik/saksi", "yer": "yer", "fiyat": [1, 2] },
+      "saat": { "resim": "elektrik/saat", "yer": "duvar", "fiyat": [2, 3] },
+      "flama": { "resim": "kino-otobus/sus-flama", "yer": "duvar", "fiyat": [1, 2] },
+      "hali": { "resim": "uyku/hali", "yer": "hali", "fiyat": [2, 4] },
+      "balon": { "resim": "film/esya/balon", "yer": "duvar", "fiyat": [1, 2] },
+      "resim": { "resim": "uyku/resim", "yer": "duvar", "fiyat": [2, 3] },
+      "oyuncak-sepeti": { "resim": "uyku/oyuncak-sepeti", "yer": "yer", "fiyat": [2, 3] },
+      "tabure": { "resim": "film-seri2/esya/tabure", "yer": "yer", "fiyat": [1, 2] },
+      "muzik-kutusu": { "resim": "pati/esya-muzik-kutusu", "yer": "yer", "fiyat": [3, 6], "canli": "parti" }
+    },
+    "ziyaret": {
+      "aciklama": "Ziyaretçiler (PATI-V2 §9). sozler: konuşanın yeni sözleri (ses etiketli; Kino kendi sesiyle, Anne / Lokum / Baba / Babaanne / Dede Seri 2 sesleriyle, Mino ve çocuklar ana sesle). hazir: Seri 2'nin hazır kayıtları (assets/ses-seri2/<id>.mp3; metin yalnız bilgi). Sahne kuralları pati/src/ziyaret-sahneleri.ts. Süsler (susler): Gemini sus-1/sus-2 gelene kadar başka oyunların onaylı çizimleri; yer = salon oyuğundaki mıknatıslı nokta türü (duvar, yer, hali).",
+      "sozler": {
+        "kino": {
+          "selam": "[excited] Merhaba! Hayvan var mı?",
+          "kime": "[curious] Bunu kime verelim?",
+          "gule": "[laughs] Hoşça kal, minikler!",
+          "foto": "[excited] Herkes gülsün! Peyniiir!"
+        },
+        "anne": {
+          "lokum": "[softly] Lokum için yumuşacık biri…",
+          "yavas": "[gently] Yavaş yavaş, canım.",
+          "gul": "[laughs] O abin değil, kuzum!",
+          "tesekkur": "[warmly] Çok teşekkürler, sağ ol!",
+          "liste": "[sighs] Listemi yine unuttum!",
+          "ipucu-yuvarlak": "[thinking] Yuvarlaktı…",
+          "ipucu-ziplar": "[thinking] Zıplıyordu…",
+          "ipucu-kirmizi": "[thinking] Kırmızıydı galiba.",
+          "ipucu-yumusak": "[thinking] Yumuşaktı…",
+          "ipucu-yatilir": "[thinking] Üstüne yatılıyordu…",
+          "ipucu-uzun": "[thinking] Uzun, turuncu…",
+          "ipucu-kulakli": "[thinking] Kulaklı biri yiyor…",
+          "ipucu-fis": "[thinking] Fış fış yapıyordu…",
+          "islandim": "[gasps] Iıh! Islandım! [laughs]",
+          "olmadi": "[amused] Hımm, o değildi galiba.",
+          "buldun": "[happy] Buldun! Ne yapsak sensiz?"
+        },
+        "lokum": {
+          "yok": "[pouting] Yok!",
+          "bu": "[excited] Bu! Bu! [giggles]"
+        },
+        "baba": {
+          "esne": "[yawns] Bir dakika oturayım…",
+          "hapsu": "[sneezes] Hapşu! Ne oldu?",
+          "gidik": "[laughs] Hah hah, gıdıklıyor!",
+          "kus": "[sleepy] Bu ne güzel şarkı… [snores]",
+          "cep": "[surprised] Cebimde ne var?!",
+          "cay": "[excited] Çay mı? Kalktım!",
+          "biskuvi": "[warmly] Fırından, sıcacık bisküvi!"
+        },
+        "babaanne": {
+          "tepsi": "[warmly] Sizin için yaptım, sıcacık!",
+          "aferin": "[happy] Aferin benim kuzuma!",
+          "olmadi": "[surprised] Aaa, olmadı mı kuzum?",
+          "afiyet": "[warmly] Afiyet olsun, minikler!"
+        },
+        "dede": {
+          "istek": "[calm] Bahçeme sessiz bir arkadaş.",
+          "guzel": "[dry] Hıh. Güzel.",
+          "bak": "[dry] Bak sen şu işe…",
+          "bahce": "[thoughtful] Arkada bahçe olur bu dükkâna."
+        },
+        "mino": {
+          "selam": "[excited] Selam! Parti var mı?",
+          "dans": "Dans zamanı!",
+          "yasasin": "Yaşasın!",
+          "hihi": "Hihihi!",
+          "super": "Süpersin!"
+        },
+        "cocuk": {
+          "can": "[excited] Top oynayan biri!",
+          "ada": "[softly] Kucağımda uyusun!",
+          "elif": "[happy] Şarkı söylesin!",
+          "ege": "[softly] Ege için yavaş biri.",
+          "can_uygun": "Süper!",
+          "ada_uygun": "Bayıldım!",
+          "elif_uygun": "Tam istediğim!",
+          "ege_uygun": "Ege çok sevecek!",
+          "komik": "Çok güzel!",
+          "komik2": "Harika olmuş!",
+          "tesekkur": "Çok teşekkürler!"
+        }
+      },
+      "hazir": {
+        "s1-kino3": "Ben büyüdüm artık! Hepsini kendim yaparım.",
+        "o1-bak": "Bak, böyle!",
+        "s2-kino1": "Iı… biraz çok oldu.",
+        "o1-hapsu": "Hapşu!",
+        "o1-bir": "Bir!",
+        "o1-iki": "İki!",
+        "o1-uc": "Üç!",
+        "o1-dort": "Dört!",
+        "s2-anne1": "Bezelye kadar yeter, canım.",
+        "s2-anne2": "Kum bitene kadar fırçala.",
+        "s1-lok1": "Abi! Abi!",
+        "s1-lok2": "Abiii!",
+        "s2-lok1": "Daha!",
+        "s2-lok2": "Iii!",
+        "o1-pft": "Pft!"
+      }
     }
   }
 }

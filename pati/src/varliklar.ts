@@ -185,3 +185,28 @@ export const IP_KUTU = (gecici as Record<string, number[]>)['gecici-ip'];
 
 /** Nehir abla (anlatıcı sayfası G6 gelene kadar 3/4 model) */
 export const NEHIR = adres('nehir-anlatici-5', 'nehir-34')!;
+
+// ---------------------------------------------------------------- paket 3: süsler, köşeler
+/**
+ * Süsler: Gemini sus-1 / sus-2 sayfaları gelince `sus-<ad>.webp` (pati-isle.cjs v2-esya); gelene kadar başka oyunların
+ * ONAYLI çizimleri (content/pati.json → v2.susler.<ad>.resim). Kodla çizim yok.
+ */
+const SUS_DOSYA = import.meta.glob<string>(
+  ['../../assets/elektrik/saksi.webp', '../../assets/elektrik/saat.webp', '../../assets/kino-otobus/sus-flama.webp', '../../assets/uyku/hali.webp', '../../assets/film/esya/balon.webp', '../../assets/uyku/resim.webp', '../../assets/uyku/oyuncak-sepeti.webp', '../../assets/film-seri2/esya/tabure.webp'],
+  { eager: true, query: '?url', import: 'default' },
+);
+export function susResmi(id: string, yol: string): string | null {
+  const kendi = adres(`sus-${id}`);
+  if (kendi) return kendi;
+  if (yol.startsWith('pati/')) return adres(yol.slice(5));
+  return SUS_DOSYA[`../../assets/${yol}.webp`] ?? null;
+}
+/** Köşe arka planları (Gemini Gün 2-4; gelene kadar sade yer tutucu: düz duvar, zemin, iki yuva) */
+export const KOSE_ARKA: Record<string, string | null> = {
+  kemirgen: adres('kemirgen-rafi'),
+  akvaryum: adres('akvaryum-duvari'),
+  kus: adres('kus-kosesi'),
+  surungen: adres('surungen-kosesi'),
+  bahce: adres('bahce'),
+};
+export const BAHCE_GECE = adres('bahce-gece');

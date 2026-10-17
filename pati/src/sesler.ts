@@ -208,6 +208,29 @@ export const ses = {
     ton(NOTA(n - 24), 0, 0.18, 'sine', 0.06);
     if (sira % 2 === 0) gurultu(0, 0.05, 7000, 5000, 0.03, 2);
   },
+  /**
+   * Mino'nun partisi (paket 3): üç müzik, vuruş başına bir nota. hızlı: zıplayan arpej + çıngırak; yavaş: uzun, yumuşak
+   * vals; komik: kalın "tuba" ve kayan "boing".
+   */
+  partiNota(m: 'hizli' | 'yavas' | 'komik', sira: number) {
+    if (m === 'hizli') {
+      const M = [72, 76, 79, 84, 79, 76, 74, 79];
+      const n = M[sira % M.length];
+      ton(NOTA(n), 0, 0.14, 'square', 0.035);
+      ton(NOTA(n - 24), 0, 0.12, 'triangle', 0.07);
+      gurultu(0, 0.04, 8000, 6000, 0.035, 2);
+    } else if (m === 'yavas') {
+      const M = [67, 71, 74, 72, 69, 72, 71, 67];
+      const n = M[sira % M.length];
+      ton(NOTA(n), 0, 0.9, 'sine', 0.07);
+      if (sira % 3 === 0) ton(NOTA(n - 12), 0, 1.1, 'sine', 0.05);
+    } else {
+      const M = [48, 55, 52, 55];
+      const n = M[sira % M.length];
+      ton(NOTA(n), 0, 0.22, 'sawtooth', 0.045);
+      if (sira % 2 === 1) ton(NOTA(72), 0.1, 0.22, 'sine', 0.06, NOTA(84));
+    }
+  },
   /** yetmedi: aşağı inen iki yumuşak nota (ceza değil, "hımm") */
   hmm() {
     ton(NOTA(69), 0, 0.18, 'sine', 0.07);

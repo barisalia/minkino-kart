@@ -5,6 +5,7 @@ import '../../src/styles/ana.css';
 import './pati.css';
 import './pati-v2.css';
 import './pati-oda.css';
+import './pati-p3.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { anaMenuyeDon } from '../../src/uygulama';
 import { oyunuBaslat } from './oyun';

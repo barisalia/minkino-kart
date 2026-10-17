@@ -223,6 +223,10 @@ export function tumCumleler(): string[] {
   kinoOtobusKinoCumleleri().forEach(ekle);
   // Pati Dükkânı (İlk Gün dilimi): yalnız Nehir abla konuşur (hayvan sesleri Web Audio)
   topla(patiJson.nehir).forEach(ekle);
+  // Pati Dükkânı v2 (Barış 2026-10-17: seslendirme onaylı): Nehir abla (ana ses; sayılar, tanışma, beden dili, dersler,
+  // köşeler…), seçilebilen adlar ("Pamuk!"), Mino ve Sesli Maceralar çocuklarının ziyaret sözleri (ana ses + ton),
+  // Kino'nun sözleri anlatıcı yedeği olarak da
+  patiCumleleri().forEach(ekle);
   // Uyku Vakti (uygulama/src/uyku.ts): Mino (anlatıcı) ve hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
   for (const k of ['mino', 'hazir', 'kino'] as const) topla(uykuJson[k]).forEach(ekle);
   // Mino Ne Giysin? (mino-giysin/): Mino (anlatıcı), hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
@@ -240,6 +244,19 @@ export function tumCumleler(): string[] {
  * Bunlar tumCumleler() içinde de vardır (anlatıcı sesiyle, kalın tonla çalınan yedek kayıt);
  * karakterin ses kimliği doluysa seslendirme betiği ayrıca karakterin kendi sesiyle üretir.
  */
+/** Pati Dükkânı v2: ana sesle söylenenler (content/pati.json → v2.nehir, adlar, ziyaret.sozler.mino / cocuk / kino) */
+export function patiCumleleri(): string[] {
+  const v2 = patiJson.v2;
+  const s = v2.ziyaret.sozler;
+  const adlar = [...v2.adlar, ...Object.values(v2.hayvanlar).map((h) => h.ad), ...Object.values(v2.renkler).map((r) => r.ad)].map((a) => `${a}!`);
+  return [...topla(v2.nehir), ...adlar, ...topla(s.mino), ...topla(s.cocuk), ...topla(s.kino)];
+}
+/** Pati Dükkânı v2: kendi sesiyle konuşan ziyaretçilerin sözleri (kino: karakter_sesleri; ötekiler Seri 2) */
+export function patiKarakterCumleleri(): Record<string, string[]> {
+  const s = patiJson.v2.ziyaret.sozler;
+  return { kino: topla(s.kino), anne: topla(s.anne), lokum: topla(s.lokum), baba: topla(s.baba), babaanne: topla(s.babaanne), dede: topla(s.dede) };
+}
+
 export function karakterCumleleri(): Record<string, string[]> {
   const kino = new Set<string>();
   const ekle = (t?: string | null) => {
@@ -281,5 +298,7 @@ export function karakterCumleleri(): Record<string, string[]> {
   for (const [kim, l] of Object.entries(restoranKarakterCumleleri())) kisiEkle(kim, l);
   // Kino'nun Otobüsü: 36 müşteri cümlesi (ses gelene dek balonda yazı)
   for (const [kim, l] of Object.entries(kinoOtobusMusteriCumleleri())) kisiEkle(kim, l);
+  // Pati Dükkânı v2: ziyaretçiler (Kino kendi sesiyle; Anne, Lokum, Baba, Babaanne, Dede Seri 2 sesleriyle)
+  for (const [kim, l] of Object.entries(patiKarakterCumleleri())) kisiEkle(kim, l);
   return sonuc;
 }

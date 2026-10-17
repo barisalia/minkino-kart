@@ -18,6 +18,9 @@
  *          uyuyunca ip yeniden: gece, "İyi geceler, minikler!", günün fotoğrafı (polaroid) panoya asılır,
  *          "Yarın görüşürüz!". Dokununca (ya da kendiliğinden) sabah olur. Gün sonu sayımı yok.
  *
+ * Paket 3: ziyaretçiler (ziyaret.ts: Kino ailesi, Mino, çocuklar; Z1-Z10), mağaza (magaza.ts; perdeli köşeden de),
+ * açılan köşeler (kose.ts), süsleme (sus.ts), Mino'nun partisi (parti.ts), Uzman hediyesi (süs), gece misafiri Diken.
+ *
  * Test: ?test=1&yas=kucuk|buyuk (yaş sorulmadan), &sifirla=1 (kayıt silinir), &jeton=N (kumbara), &panel=salon,
  * &kendiliginden=1 (testte ihtiyaç saati çalışır), &hiz=N (saat N kat hızlı: merdiven 12/25/40 sn), &aksam=ms.
  * window.__pati: panel, jeton, kumbara, vitrin, salon, oda, ihtiyacAc, odaAc, ipCek, isik, defter …
@@ -42,6 +45,14 @@ import { Salon } from './salon';
 import { ses } from './sesler';
 import { BAKIM_ODASI, DIS_VITRIN, hayvanAdresleri, hayvanGorseliVar, JETON, KUMBARA, NEHIR, PERDE, pozAdresi, SALON, SALON_GECE, VITRIN, adres, type Poz } from './varliklar';
 import { Vitrin } from './vitrin';
+import { koseSesi, KosePaneli } from './kose';
+import { Magaza } from './magaza';
+import { kalpEkle } from './mutluluk';
+import { Susler } from './sus';
+import { Ziyaret } from './ziyaret';
+import { esyaBilgi, ESYA_IDLERI as ESYA_IDLERI_HEPSI, SUS_IDLERI } from './katalog';
+import type { Hayvan } from './hayvan';
+import { HEDIYE } from './varliklar';
 
 type Panel = 'vitrin' | 'salon' | `kose-${KoseAdi}`;
 type Isik = 'gun' | 'aksam' | 'uyutma' | 'gece';
@@ -71,6 +82,15 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     kayit.acildi = true;
     kaydet();
   }
+  // test: &esyalar=hepsi (bütün eşyalar ve temizlik çekmecesi alınmış), &kose=kemirgen,akvaryum (köşeler açık)
+  if (TEST_MODU && q.get('esyalar') === 'hepsi') {
+    kayit.esyalar = [...new Set([...kayit.esyalar, 'temizlik', ...ESYA_IDLERI_HEPSI.filter((e) => !esyaBilgi(e).bastan)])];
+    kaydet();
+  }
+  if (TEST_MODU && q.has('kose')) {
+    for (const k of (q.get('kose') ?? '').split(',')) if (k in KOSELER && !kayit.koseler.includes(k as KoseAdi)) kayit.koseler.push(k as KoseAdi);
+    kaydet();
+  }
 
   const el = h('div.pt-ekran.pt-v2', { 'data-panel': panel, 'data-isik': 'gun' });
   const efekt = new Efekt(el);
@@ -90,17 +110,24 @@ export function dukkanEkrani(app: Uygulama): Ekran {
   const etkilesim = () => (sonEtkilesim = performance.now());
 
   const ortak = { efekt, nehir, kumbara, kayit, kaydet, yas };
-  const salon = new Salon({
+  const salon: Salon = new Salon({
     ...ortak,
     etkilesim,
-    hayvanSecildi: (s) => {
-      if (acilisSuruyor || isik === 'gece') return false;
-      odaAc(s);
-      return true;
-    },
+    hayvanSecildi: (s) => hayvanSecildi(s),
     ipCek: () => ipCekildi(),
     uyuyor: (id) => uyuyan.has(id),
+    surukleAcik: (): boolean => ziyaret.surukleAcik,
+    birakildi: (s, x, y) => ziyaret.birakildi(s, x, y),
   });
+  /** Hayvana dokunuldu: bekleyen ziyaretçi varsa ona hoplar, yoksa Bakım Odası */
+  function hayvanSecildi(s: SahipHayvan): boolean {
+    if (acilisSuruyor || isik === 'gece') return false;
+    if (ziyaret.hayvanVer(s)) return true;
+    // ziyaret sahnesi oynarken hayvan yalnız zıplar (Bakım Odası sahneden sonra)
+    if (ziyaret.aktif && ziyaret.bekleyis === null) return false;
+    odaAc(s);
+    return true;
+  }
   const vitrin = new Vitrin({
     ...ortak,
     alindi: (s: SahipHayvan) => void yeniHayvan(s),
@@ -112,7 +139,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     simdi,
     cik: () => odaKapa(),
     degisti: (s) => {
-      salon.hayvanDurumu(s.id);
+      durumGuncelle(s.id);
       if (s === oda.sahip) oda.halGuncelle();
     },
     an,
@@ -123,8 +150,154 @@ export function dukkanEkrani(app: Uygulama): Ekran {
       if (!defter.uzmanKontrol(id)) return;
       const r = oda.el.getBoundingClientRect();
       efekt.konfeti(r.width * 0.3, r.height * 0.25, 26);
+      // Uzman rozeti: hediye kutusundan bir süs çıkar (salonun süs tepsisine)
+      void bekle(1800).then(() => susHediye());
+    },
+    esyaAl: (e, et) => magaza.cekmeceden(e, et),
+  });
+
+  // ---------------------------------------------------------------- paket 3: mağaza, süsler, ziyaretçiler
+  const magaza = new Magaza({
+    ...ortak,
+    kok: el,
+    etkilesim,
+    koseAcildi: (k) => koseAcildi(k),
+    yavruGoster: (id) => {
+      void panelGit('vitrin').then(() => vitrin.goster(id));
+    },
+    susAlindi: (id) => {
+      void panelGit('salon').then(() => susler.yeni(id));
     },
   });
+  const susler = new Susler({
+    kayit,
+    kaydet,
+    efekt,
+    etkilesim,
+    kesit: (i) => salon.kesit(i),
+    canli: () => {
+      // müzik kutusu: Mino gelir (ziyaret yoksa)
+      if (!ziyaret.aktif && isik === 'gun') void ziyaret.baslat('parti');
+    },
+  });
+  salon.el.append(susler.tepsi);
+  susler.kur();
+  /** Bir hayvanın görünen bölümdeki kutusu */
+  function hayvanKutusu(id: string): DOMRect | null {
+    const s = kayit.hayvanlar.find((x) => x.id === id);
+    if (!s) return null;
+    if (s.kose === 'salon') return panel === 'salon' ? salon.hayvanKutusu(id) : null;
+    return panel === `kose-${s.kose}` ? (acikKoseler.get(s.kose)?.hayvanKutusu(id) ?? null) : null;
+  }
+  const ziyaret: Ziyaret = new Ziyaret({
+    ekran: el,
+    efekt,
+    nehir,
+    kumbara,
+    kayit,
+    kaydet,
+    yas,
+    etkilesim,
+    uygun: () => kayit.acildi && !acilisSuruyor && isik === 'gun' && !oda.acik && !defter.acik && !magaza.acik && (panel === 'salon' || panel === 'vitrin' || panel.startsWith('kose-')),
+    hayvanKutusu,
+    gizle: (id, gizli) => {
+      const s = kayit.hayvanlar.find((x) => x.id === id);
+      if (!s) return;
+      if (s.kose === 'salon') salon.gizle(id, gizli);
+      else acikKoseler.get(s.kose)?.gizle(id, gizli);
+    },
+    kalpVer: (id) => {
+      const s = kayit.hayvanlar.find((x) => x.id === id);
+      if (!s) return;
+      if (s.kose === 'salon') salon.kalpKazan(id, 'ziyaret');
+      else if (s.kalp < 2 && kalpEkle(s, Date.now()).eklendi) {
+        kaydet();
+        acikKoseler.get(s.kose)?.hayvanDurumu(id);
+      }
+    },
+    gorunenHayvanlar: (): { id: string; hv: Hayvan }[] =>
+      kayit.hayvanlar
+        .filter((x) => x.kose === 'salon')
+        .map((x) => ({ id: x.id, hv: salon.hayvanAl(x.id) }))
+        .filter((x): x is { id: string; hv: Hayvan } => !!x.hv),
+    jetonBirak: (id, n) => salon.jetonBirak(id, n),
+    altUst: () => {
+      if (!alt.childElementCount || el.clientHeight <= el.clientWidth) return null;
+      const r = alt.getBoundingClientRect();
+      const p = el.getBoundingClientRect();
+      return r.top - p.top;
+    },
+    susHediye: () => susHediye(),
+    durum: (var_) => {
+      el.classList.toggle('pt-ziyaret-var', var_);
+      if (var_ && panel !== 'salon' && !panel.startsWith('kose-')) void panelGit('salon');
+    },
+    bitti: () => {
+      seritKur();
+      gecisGuncelle();
+    },
+  });
+
+  /** Köşe alındı: şerit o köşeye kayar, perde açılır, köşenin hayvanının sevdiği bir eşya hediye */
+  async function koseAcildi(k: KoseAdi) {
+    const kapaliPanel = koseler.get(k);
+    if (kapaliPanel) {
+      await panelGit(`kose-${k}` as Panel, 700);
+      const pr = kapaliPanel.querySelector<HTMLElement>('.pt-perde-resim, .pt-perde-yer-tutucu');
+      koseSesi(k);
+      ses.fis();
+      if (pr && !TEST_MODU) await pr.animate([{ transform: 'translateY(0) scaleY(1)' }, { transform: 'translateY(4%) scaleY(1.04)', offset: 0.2 }, { transform: 'translateY(-110%) scaleY(.35)' }], { duration: 900, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'forwards' }).finished.catch(() => undefined);
+    }
+    seritKur();
+    void panelGit(`kose-${k}` as Panel, 0);
+    gecisGuncelle();
+    efekt.konfeti((el.clientWidth || 844) / 2, (el.clientHeight || 390) * 0.3, 30);
+    await nehir.soyle((NEHIR2.kose_acildi as Record<string, string>)[k]).catch(() => undefined);
+    // hediye: köşenin hayvanlarından birinin sevdiği, henüz alınmamış bir eşya
+    const e = koseHediyesi(k);
+    if (e) {
+      kayit.esyalar.push(e);
+      kaydet();
+      await hediyeKutusu(null);
+    }
+    vitrin.yenile();
+  }
+  function koseHediyesi(k: KoseAdi): string | null {
+    for (const id of HAYVAN_IDLERI.filter((x) => hayvanBilgi(x).kose === k)) {
+      const b = hayvanBilgi(id);
+      for (const s of Object.values(b.sevgi)) for (const e of s?.s ?? []) if (!esyaBilgi(e).bastan && !kayit.esyalar.includes(e)) return e;
+    }
+    return null;
+  }
+  /** Hediye kutusu (ui-hediye) ekranın ortasında belirir, açılır (konfeti); süs verilecekse o süs tepsiye */
+  async function hediyeKutusu(sus: string | null) {
+    const kutu = h('div.pt-hediye-kutusu', { 'aria-hidden': 'true' }, HEDIYE ? h('img', { src: HEDIYE, alt: '', draggable: 'false' }) : h('span.pt-yer-tutucu'));
+    el.append(kutu);
+    void nehir.soyle(NEHIR2.hediye);
+    ses.pit();
+    if (!TEST_MODU) await kutu.animate([{ transform: 'translate(-50%, 40%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%, -54%) scale(1.08, .92)', opacity: 1, offset: 0.6 }, { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }], { duration: 520, easing: 'ease-out', fill: 'forwards' }).finished.catch(() => undefined);
+    await bekle(700);
+    ezil(kutu, 1.8, 420);
+    ses.ksilofon();
+    const r = kutu.getBoundingClientRect();
+    const k2 = efekt.kutu();
+    efekt.konfeti(r.left - k2.left + r.width / 2, r.top - k2.top + r.height / 3, 24, 110);
+    await bekle(500);
+    kutu.remove();
+    if (sus) {
+      await panelGit('salon');
+      susler.yeni(sus);
+    }
+  }
+  /** Hediye süs (Uzman rozeti, gece misafiri): henüz alınmamış ilk süs */
+  function susHediye() {
+    const id = SUS_IDLERI.find((x) => !kayit.susler.some((s) => s.ad === x) && x !== 'muzik-kutusu');
+    if (!id) return;
+    kayit.susler.push({ ad: id, nokta: '' });
+    kaydet();
+    if (oda.acik) odaKapa();
+    void hediyeKutusu(id);
+  }
 
   // ---------------------------------------------------------------- şerit: vitrin, salon, kapalı köşeler
   const koseler = new Map<KoseAdi, HTMLElement>();
@@ -135,34 +308,55 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     const b = h('button.pt-perde', { type: 'button', 'data-kose': k, 'aria-label': k }, g, perde);
     b.addEventListener('click', () => {
       etkilesim();
-      // perdenin arkasından o köşenin sesi; gölge zıplar (mağaza paket 3'te bu perdeden açılır)
-      if (k === 'akvaryum') [0, 1, 2].forEach((i) => setTimeout(() => ses.blup(i), i * 140));
-      else if (k === 'kus' || k === 'bahce') ses.cikcik(3);
-      else if (k === 'kemirgen') ses.vuik(2);
-      else ses.hop();
+      // perdenin arkasından o köşenin sesi; gölge zıplar; katalog o köşenin sayfasında açılır
+      koseSesi(k);
       ezil(perde, 1.2, 420);
       if (g) g.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-14%)', offset: 0.4 }, { transform: 'translateY(0)' }], { duration: sure(480), easing: 'ease-out' });
+      void bekle(380).then(() => magaza.ac('sus', `kose-${k}`));
     });
     return h('div.pt-panel.pt-kose-panel', { 'data-panel': `kose-${k}`, 'data-kose': k }, b);
   }
+  /** açılmış köşeler (kose.ts) */
+  const acikKoseler = new Map<KoseAdi, KosePaneli>();
   const serit = h('div.pt-serit', {}, vitrin.el, salon.el);
+  const KOSE_SIRA = (Object.keys(KOSELER) as KoseAdi[]).filter((k) => k !== 'salon');
   function paneller(): Panel[] {
-    const kapali = (Object.keys(KOSELER) as KoseAdi[]).filter((k) => k !== 'salon' && !koseAcik(kayit, k) && koseGorunur(kayit, k));
-    return ['vitrin', 'salon', ...kapali.map((k) => `kose-${k}` as Panel)];
+    const acik = KOSE_SIRA.filter((k) => koseAcik(kayit, k));
+    const kapali = KOSE_SIRA.filter((k) => !koseAcik(kayit, k) && koseGorunur(kayit, k));
+    return ['vitrin', 'salon', ...acik.map((k) => `kose-${k}` as Panel), ...kapali.map((k) => `kose-${k}` as Panel)];
   }
   function seritKur() {
-    const kapali = paneller().filter((p) => p.startsWith('kose-')).map((p) => p.slice(5) as KoseAdi);
-    for (const [k, p] of koseler)
-      if (!kapali.includes(k)) {
-        p.remove();
+    for (const k of KOSE_SIRA) {
+      const acik = koseAcik(kayit, k);
+      const gorunur = koseGorunur(kayit, k);
+      if ((acik || !gorunur) && koseler.has(k)) {
+        koseler.get(k)!.remove();
         koseler.delete(k);
       }
-    for (const k of kapali)
-      if (!koseler.has(k)) {
-        const p = kosePaneli(k);
-        koseler.set(k, p);
-        serit.append(p);
+      if (acik && !acikKoseler.has(k)) {
+        acikKoseler.set(
+          k,
+          new KosePaneli(k, {
+            kayit,
+            kaydet,
+            nehir,
+            etkilesim,
+            hayvanSecildi: (s) => hayvanSecildi(s),
+            birakildi: (s, x, y) => ziyaret.birakildi(s, x, y),
+            uyuyor: (id) => uyuyan.has(id),
+            bosYuva: (id) => void panelGit('vitrin').then(() => vitrin.goster(id)),
+          }),
+        );
       }
+      if (!acik && gorunur && !koseler.has(k)) koseler.set(k, kosePaneli(k));
+    }
+    // sıra: vitrin, salon, açık köşeler, kapalı köşeler
+    const sira: HTMLElement[] = [vitrin.el, salon.el, ...KOSE_SIRA.filter((k) => acikKoseler.has(k)).map((k) => acikKoseler.get(k)!.el), ...KOSE_SIRA.filter((k) => koseler.has(k)).map((k) => koseler.get(k)!)];
+    sira.forEach((p, i) => {
+      if (serit.children[i] !== p) serit.insertBefore(p, serit.children[i] ?? null);
+    });
+    while (serit.children.length > sira.length) serit.lastElementChild!.remove();
+    for (const p of acikKoseler.values()) p.kur();
     gizliPaneller();
   }
   function gizliPaneller() {
@@ -252,6 +446,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
 
   // ---------------------------------------------------------------- üst çubuk: geri, panel düğmesi, kumbara, defter, ses
   const geri = yuvarlakDugme(IKON.geri, 'Geri', () => {
+    if (magaza.acik) return magaza.kapa();
     if (defter.acik) return defter.kapa();
     if (oda.acik) return odaKapa();
     app.secenekler.cikis?.();
@@ -269,25 +464,32 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     else defter.ac(oda.sahip?.id ?? null);
   });
   const sesB = sesDugmesi();
-  const ust = h('div.pt-ust', {}, geri, gecis, h('div.pt-ust-bosluk'), kumbara.el, defterBtn, sesB);
+  const katalogBtn = Magaza.dugme(() => {
+    genelEfekt.secim();
+    etkilesim();
+    if (magaza.acik) magaza.kapa();
+    else magaza.ac();
+  });
+  const ust = h('div.pt-ust', {}, geri, gecis, h('div.pt-ust-bosluk'), kumbara.el, katalogBtn, defterBtn, sesB);
   /** dikey telefonda dükkânın alt şeridi (PATI-V2 §4j): Nehir'in yanında büyük kumbara ve defter */
   const alt = h('div.pt-alt');
-  el.append(serit, kenarSol, kenarSag, oda.el, nehir.el, defter.el, alt, ust, efekt.el);
+  el.append(serit, kenarSol, kenarSag, ziyaret.katman, oda.el, nehir.el, defter.el, magaza.el, alt, ust, efekt.el);
   function altSerit() {
     const altta = el.clientHeight > el.clientWidth && !oda.acik;
-    if (altta && kumbara.el.parentElement !== alt) alt.append(kumbara.el, defterBtn);
-    else if (!altta && kumbara.el.parentElement !== ust) ust.insertBefore(defterBtn, sesB), ust.insertBefore(kumbara.el, defterBtn);
+    if (altta && kumbara.el.parentElement !== alt) alt.append(kumbara.el, katalogBtn, defterBtn);
+    else if (!altta && kumbara.el.parentElement !== ust) ust.insertBefore(defterBtn, sesB), ust.insertBefore(katalogBtn, defterBtn), ust.insertBefore(kumbara.el, katalogBtn);
   }
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => altSerit()).observe(el);
 
   function geriGuncelle() {
-    geri.classList.toggle('pt-gizli', !app.secenekler.cikis && !oda.acik && !defter.acik);
+    geri.classList.toggle('pt-gizli', !app.secenekler.cikis && !oda.acik && !defter.acik && !magaza.acik);
   }
   function gecisGuncelle() {
     const sahip = kayit.hayvanlar[0];
     const goster = !!sahip && !acilisSuruyor && !oda.acik;
     gecis.classList.toggle('pt-gizli', !goster);
     defterBtn.classList.toggle('pt-gizli', !sahip || acilisSuruyor);
+    katalogBtn.classList.toggle('pt-gizli', !sahip || acilisSuruyor);
     gecis.dataset.hedef = panel === 'salon' ? 'vitrin' : 'salon';
     const r = gecis.querySelector('.pt-gecis-resim') as HTMLElement;
     if (panel !== 'salon' && sahip) {
@@ -320,16 +522,29 @@ export function dukkanEkrani(app: Uygulama): Ekran {
 
   async function yeniHayvan(s: SahipHayvan) {
     await bekle(500);
+    if (s.kose !== 'salon') {
+      seritKur();
+      await panelGit(`kose-${s.kose}` as Panel, 800);
+      await acikKoseler.get(s.kose)?.yeniGeldi(s);
+      gecisGuncelle();
+      return;
+    }
     await panelGit('salon', 800);
     await salon.yeniGeldi(s);
     seritKur();
     gecisGuncelle();
   }
 
+  /** Bir hayvanın kalpleri ve hâli (salon ya da açık köşesi) */
+  function durumGuncelle(id: string) {
+    salon.hayvanDurumu(id);
+    for (const p of acikKoseler.values()) if (p.icinde(id)) p.hayvanDurumu(id);
+  }
+
   // ---------------------------------------------------------------- Bakım Odası
   function odaAc(s: SahipHayvan) {
     etkilesim();
-    if (panel !== 'salon') void panelGit('salon', 0);
+    if (s.kose === 'salon' && panel !== 'salon') void panelGit('salon', 0);
     salon.jetonlariTopla();
     oda.ac(s, isik === 'uyutma' ? 'yatak' : undefined);
     el.classList.add('pt-odada');
@@ -347,6 +562,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     altSerit();
     salon.hepsiniYenile();
     salon.yerlesimYenile();
+    for (const p of acikKoseler.values()) p.hepsiniYenile();
     gecisGuncelle();
   }
 
@@ -362,7 +578,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     const yeni = saat.tik(t, kayit.hayvanlar, { yas: yas(), temizlik: kayit.esyalar.includes('temizlik'), hayvanSayisi: kayit.hayvanlar.length }, (id) => hayvanBilgi(id).ihtiyaclar, Date.now());
     for (const y of yeni) {
       kaydet();
-      salon.hayvanDurumu(y.id);
+      durumGuncelle(y.id);
       if (oda.sahip?.id === y.id) oda.halGuncelle();
       if (salonGorunur()) salon.hayvanSesi(y.id);
     }
@@ -376,7 +592,8 @@ export function dukkanEkrani(app: Uygulama): Ekran {
       const v = verilen.get(anahtar) ?? new Set();
       verilen.set(anahtar, v);
       const odada = oda.acik && oda.sahip === s;
-      const gorunur = odada || salonGorunur();
+      const koseGorunur_ = s.kose !== 'salon' && panel === `kose-${s.kose}` && !oda.acik && !defter.acik;
+      const gorunur = odada || (s.kose === 'salon' ? salonGorunur() : koseGorunur_);
       if (!gorunur || uyuyan.has(s.id) || isik === 'uyutma') continue;
       const gecen = t - t0;
       for (const a of yardimAdimlari(gecen, yas())) {
@@ -389,7 +606,8 @@ export function dukkanEkrani(app: Uygulama): Ekran {
       if (v.has('dolayli') && kez > (tekrar.get(anahtar) ?? 0)) {
         tekrar.set(anahtar, kez);
         if (odada) oda.yardim('dolayli');
-        else salon.yardim(s.id, 'dolayli');
+        else if (s.kose === 'salon') salon.yardim(s.id, 'dolayli');
+        else acikKoseler.get(s.kose)?.yardim(s.id);
       }
     }
     // akşam önerisi (~12 dk)
@@ -409,7 +627,8 @@ export function dukkanEkrani(app: Uygulama): Ekran {
       return;
     }
     if (odada) oda.yardim(a);
-    else salon.yardim(s.id, a);
+    else if (s.kose === 'salon') salon.yardim(s.id, a);
+    else if (a === 'dolayli') acikKoseler.get(s.kose)?.yardim(s.id);
   }
   zamanlar.push(window.setInterval(tik, 400));
 
@@ -431,7 +650,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     ses.ninni();
     for (const s of kayit.hayvanlar) {
       if (s.ihtiyac !== 'uykulu') saat.ac(s, 'uykulu', simdi());
-      salon.hayvanDurumu(s.id);
+      durumGuncelle(s.id);
     }
     kaydet();
     gecisGuncelle();
@@ -445,7 +664,7 @@ export function dukkanEkrani(app: Uygulama): Ekran {
   function uyudu(s: SahipHayvan) {
     uyuyan.add(s.id);
     odaKapa();
-    salon.hayvanDurumu(s.id);
+    durumGuncelle(s.id);
     if (hepsiUyudu()) {
       void bekle(700).then(() => {
         if (isik !== 'uyutma') return;
@@ -464,10 +683,13 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     el.dataset.isik = 'gece';
     salon.gece(true, SALON_GECE);
     salon.hepsiniYenile();
+    for (const p of acikKoseler.values()) p.hepsiniYenile();
     gecisGuncelle();
     await nehir.soyle(NV1.iyi_geceler).catch(() => undefined);
     if (kapandi) return;
     await foto();
+    if (koseAcik(kayit, 'bahce') && !kapandi) await ziyaret.geceMisafiri();
+    if (kapandi) return;
     void nehir.soyle(NV1.yarin);
     // sabah: dokununca ya da kendiliğinden
     sabahZamani = window.setTimeout(() => void sabah(), sure(9000));
@@ -492,6 +714,9 @@ export function dukkanEkrani(app: Uygulama): Ekran {
     ses.zil();
     void nehir.soyle(NV1.gunaydin);
     for (const k of Object.keys(anlar)) delete anlar[k];
+    for (const p of acikKoseler.values()) p.hepsiniYenile();
+    // gece misafirinin hediyesi
+    window.setTimeout(() => ziyaret.sabah(), sure(1500));
   }
 
   /** Günün fotoğrafı: en çok tekrarlanan an polaroid olur, panoya asılır */
@@ -671,6 +896,21 @@ export function dukkanEkrani(app: Uygulama): Ekran {
       ipCek: () => ipCekildi(),
       saat: () => simdi(),
       bosta: () => performance.now() - sonEtkilesim,
+      // paket 3
+      magaza: () => magaza.durum,
+      magazaAc: (s?: 'yavru' | 'esya' | 'sus', odak?: string) => magaza.ac(s, odak),
+      ziyaret: () => ziyaret.durum,
+      ziyaretGetir: (id: Parameters<Ziyaret['baslat']>[0]) => void ziyaret.baslat(id),
+      geceMisafiri: () => void ziyaret.geceMisafiri(),
+      partiCal: (m: 'hizli' | 'yavas' | 'komik') => void ziyaret.partiCal(m),
+      hayvanVer: (id: string) => {
+        const s = kayit.hayvanlar.find((x) => x.id === id);
+        return s ? ziyaret.hayvanVer(s) : false;
+      },
+      susler: () => susler.durum,
+      susHediye: () => susHediye(),
+      koseler: () => Object.fromEntries([...acikKoseler].map(([k, p]) => [k, p.durum])),
+      esyalar: () => [...kayit.esyalar],
     };
   }
 
@@ -684,6 +924,10 @@ export function dukkanEkrani(app: Uygulama): Ekran {
       salon.kapat();
       oda.kapat();
       defter.kapat();
+      ziyaret.kapat();
+      magaza.kapat();
+      susler.kapat();
+      for (const p of acikKoseler.values()) p.kapat();
       nehir.kapat();
       void yukle;
     },

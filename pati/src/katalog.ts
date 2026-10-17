@@ -128,3 +128,32 @@ export const NEHIR2 = P.v2.nehir;
 
 /** Hayvanın seçilebilecek adları: kendi adı + 8 ortak ad (PATI-V2 §4c) */
 export const adSecenekleri = (id: string) => [hayvanBilgi(id).ad, ...ORTAK_ADLAR.filter((a) => a !== hayvanBilgi(id).ad)];
+
+// ---------------------------------------------------------------- paket 3: süsler, ziyaret sözleri, temizlik çekmecesi
+export type SusYeri = 'duvar' | 'yer' | 'hali';
+export interface SusBilgi {
+  id: string;
+  /** resmin assets altındaki yolu (uzantısız; ör. elektrik/saksi) */
+  resim: string;
+  yer: SusYeri;
+  fiyat: [number, number];
+  /** dokununca kendi işi (müzik kutusu: parti) */
+  canli: string | null;
+}
+const SUS_TABLO = new Map<string, SusBilgi>(
+  Object.entries(P.v2.susler).map(([id, s]) => {
+    const x = s as { resim: string; yer: string; fiyat: number[]; canli?: string };
+    return [id, { id, resim: x.resim, yer: x.yer as SusYeri, fiyat: [x.fiyat[0], x.fiyat[1]], canli: x.canli ?? null }];
+  }),
+);
+export const SUS_IDLERI: readonly string[] = [...SUS_TABLO.keys()];
+export function susBilgi(id: string): SusBilgi {
+  const s = SUS_TABLO.get(id);
+  if (!s) throw new Error(`bilinmeyen süs: ${id}`);
+  return s;
+}
+/** 3-4'te temizlik çekmecesi mağazadan alınır (kayit.esyalar → 'temizlik'); 5-6'da baştan var */
+export const TEMIZLIK_CEKMECESI = 'temizlik';
+export const temizlikFiyati = (yas: Yas) => yasla(P.v2.temizlik_cekmecesi.fiyat, yas);
+/** Ziyaret sözleri (content/pati.json → v2.ziyaret) */
+export const ZIYARET = P.v2.ziyaret;

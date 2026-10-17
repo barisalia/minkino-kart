@@ -74,7 +74,7 @@ const ORTAK: Partial<Record<CekmeceAdi, string[]>> = { ecza: ['battaniye', 'isi-
 const havuz = (c: CekmeceAdi) => [...ESYA_IDLERI.filter((e) => esyaBilgi(e).cekmece === c && esyaBilgi(e).bastan), ...(ORTAK[c] ?? []), ...ESYA_IDLERI.filter((e) => esyaBilgi(e).cekmece === c && !esyaBilgi(e).bastan)];
 
 /** Bu çekmece bu yaşta var mı (temizlik ve ecza yalnız 5-6; 3-4'te temizlik mağazadan alınınca, paket 3) */
-export const cekmeceAcik = (c: CekmeceAdi, yas: Yas) => CEKMECELER[c].yas.includes(yas);
+export const cekmeceAcik = (c: CekmeceAdi, yas: Yas, temizlikAlindi = false) => CEKMECELER[c].yas.includes(yas) || (c === 'temizlik' && temizlikAlindi);
 
 /** O hayvana açılan çekmecedeki eşyalar (sıra karışık değil; arayüz karıştırır) */
 export function cekmece(id: string, c: CekmeceAdi, yas: Yas): string[] {
@@ -107,4 +107,28 @@ export function defterYaz(k: PatiKayit, id: string, esya: string, t: Tepki): boo
   const ilk = d === 'sever' && sayfa[esya] !== 'sever';
   sayfa[esya] = d;
   return ilk;
+}
+
+/** Çocuğun elindeki eşya mı: baştan olanlar (bedava) ve mağazadan alınanlar */
+export const sahipEsya = (k: Pick<PatiKayit, 'esyalar'>, e: string) => esyaBilgi(e).bastan || k.esyalar.includes(e);
+
+/**
+ * Çekmecenin SAHİPLİĞE GÖRE sırası (paket 3): önce çocuğun elindekiler (kullanılır; 3-4: 3, 5-6: 4-6), sonra o hayvanın
+ * listesinde olup henüz alınmamış en çok 1 (3-4) / 2 (5-6) eşya: çekmecede fiyat etiketiyle durur, dokununca jetonla
+ * alınır (deneme-yanılma önce elindekilerle, sonra yeni seçenek). Elindekiler yetmezse aynı çekmeceden başka eşyalar
+ * gelir: hayvanın listesinde hiç ★ ya da ✓ yoksa önce onlar, varsa önce ✗ (her çekmecede gerçek seçim kalsın).
+ */
+export function cekmeceSirali(id: string, c: CekmeceAdi, yas: Yas, sahip: (e: string) => boolean): { kullan: string[]; satilik: string[] } {
+  const ih = CEKMECELER[c].ihtiyac;
+  const taban = cekmece(id, c, yas);
+  const elde = taban.filter(sahip);
+  const hedef = yas === 'kucuk' ? 3 : Math.min(6, Math.max(4, taban.length));
+  const iyi = (e: string) => ['sever', 'olur'].includes(tepki(id, ih, e, 'kucuk'));
+  const iyiVar = elde.some(iyi);
+  const aday = havuz(c)
+    .filter((e) => sahip(e) && !elde.includes(e))
+    .sort((a, b) => (iyiVar ? Number(iyi(a)) - Number(iyi(b)) : Number(iyi(b)) - Number(iyi(a))));
+  const kullan = [...elde, ...aday].slice(0, hedef);
+  const satilik = taban.filter((e) => !sahip(e) && !kullan.includes(e)).slice(0, yas === 'kucuk' ? 1 : 2);
+  return { kullan, satilik };
 }

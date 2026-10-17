@@ -88,6 +88,10 @@ export interface SalonOrtam {
   ipCek?: () => void;
   /** hayvan uyuyor mu (akşam: yatağını seçen hayvan uyur) */
   uyuyor?: (id: string) => boolean;
+  /** paket 3: ziyaretçi bekliyor mu (hayvan oyuğun dışına sürüklenebilir) */
+  surukleAcik?: () => boolean;
+  /** paket 3: sürüklenen hayvan bu ekran noktasında bırakıldı (ziyaretçiye verildiyse true) */
+  birakildi?: (s: SahipHayvan, x: number, y: number) => boolean;
 }
 
 export class Salon {
@@ -471,8 +475,23 @@ export class Salon {
         /* yok say */
       }
     });
+    let hayalet: Tutulan | null = null;
     el.addEventListener('pointermove', (e) => {
       if (e.pointerId !== id) return;
+      // ziyaretçi bekliyorsa hayvan oyuğun dışına sürüklenebilir (parmağın altında küçük resmi)
+      if (!hayalet && yer.sahip && this.o.surukleAcik?.()) {
+        const r = el.getBoundingClientRect();
+        if (e.clientX < r.left - 24 || e.clientX > r.right + 24 || e.clientY < r.top - 24 || e.clientY > r.bottom + 24) {
+          const k = yer.hayvan?.kutu();
+          const boy = Math.min(140, k?.height ?? 110);
+          hayalet = new Tutulan(this.o.efekt, h('img', { src: pozAdresi(yer.sahip.id, 'sevinc').url, alt: '', draggable: 'false' }), { en: boy, boy, sinif: 'pt-tutulan-hayvan' });
+          yer.hayvan?.el.classList.add('pt-ziyarette');
+        }
+      }
+      if (hayalet) {
+        hayalet.yer(e.clientX, e.clientY, e.movementX || 0);
+        return;
+      }
       const t = performance.now();
       const d = Math.hypot(e.clientX - sx, e.clientY - sy);
       const dt = Math.max(1, t - st);
@@ -496,6 +515,18 @@ export class Salon {
     const son = (e: PointerEvent) => {
       if (e.pointerId !== id) return;
       id = null;
+      if (hayalet) {
+        const g = hayalet;
+        hayalet = null;
+        const s = yer.sahip;
+        if (s && e.type === 'pointerup' && this.o.birakildi?.(s, e.clientX, e.clientY)) {
+          g.kaldir();
+          return;
+        }
+        const k = yer.hayvan?.kutu();
+        void g.don_(k ? [k.left + k.width / 2, k.top + k.height / 2] : null, 260).then(() => yer.hayvan?.el.classList.remove('pt-ziyarette'));
+        return;
+      }
       if (yol < 14 && e.type === 'pointerup') this.dokun(yer);
     };
     el.addEventListener('pointerup', son);
@@ -852,6 +883,35 @@ export class Salon {
     this.dekor.resim.src = url;
     for (const y of this.yerler) y.kap.style.setProperty('--salon', `url("${url}")`);
     this.el.classList.toggle('pt-gece-resimli', var_ && !!gece);
+  }
+
+  // ---------------------------------------------------------------- paket 3: süsler ve ziyaretçiler
+  /** Oyuğun kesiti (süslerin katmanı; yatayda çizimin üstünde, dikeyde kesitlerle birlikte) */
+  kesit(i: number): HTMLElement {
+    return this.yerler[i].kap;
+  }
+  /** Bu hayvan salonda mı */
+  icinde(id: string) {
+    return this.yerler.some((y) => y.sahip?.id === id);
+  }
+  /** Hayvanın ekrandaki kutusu */
+  hayvanKutusu(id: string): DOMRect | null {
+    return this.yerler.find((y) => y.sahip?.id === id)?.hayvan?.kutu() ?? null;
+  }
+  /** Ziyarete giden hayvan oyuğunda görünmez (dönünce hoplayarak yeniden) */
+  gizle(id: string, gizli: boolean) {
+    const yer = this.yerler.find((y) => y.sahip?.id === id);
+    yer?.hayvan?.el.classList.toggle('pt-ziyarette', gizli);
+    if (!gizli && yer?.hayvan) void yer.hayvan.zipla(50, 420, 'sevinc');
+  }
+  /** Parti: hayvan müziğe göre dans eder (parti.ts) */
+  hayvanAl(id: string): Hayvan | null {
+    return this.yerler.find((y) => y.sahip?.id === id)?.hayvan ?? null;
+  }
+  /** Hayvanın ayağının dibine jeton (parti, ziyaret) */
+  jetonBirak(id: string, n: number) {
+    const yer = this.yerler.find((y) => y.sahip?.id === id);
+    if (yer?.hayvan) this.jetonDusur(yer, n);
   }
 
   /** Test ve dükkân için: yerlerdeki hayvanlar */

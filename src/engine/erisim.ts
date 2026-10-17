@@ -47,8 +47,9 @@ export const ERISIM: Record<string, Erisim> = {
   // abonelikle ('kino-otobus/susler'). Yaş ayarı kilitlenmez.
   'kino-otobus/gun-1': 'ucretsiz',
   'kino-otobus/*': 'abonelik',
-  // Pati Dükkânı: Bölüm 1 "Dükkân Açılıyor" (Fındık, Tarçın, Pırıl) ücretsiz; Bölüm 2-3 abonelikle
-  'pati/bolum-1': 'ucretsiz',
+  // Pati Dükkânı v2: başlangıç (vitrin, 3 başlangıç yavrusu, salon, eşyalar, süsler, ziyaretçiler) ücretsiz; yeni köşeler
+  // (pati/kose-kemirgen, -akvaryum, -kus, -bahce, -surungen) abonelikle: kilit yalnız katalogda köşe alırken (magaza.ts)
+  'pati/baslangic': 'ucretsiz',
   'pati/*': 'abonelik',
   // Mino Ne Giysin? · Yardımcı Mino: Pamuk ve Kino'nun derdi ücretsiz, Ege ve Ada abonelikle (kilitli balona dokununca
   // kilit anı). Kostüm partisi, açık (kilitsiz) dertler çözülünce açılır: abonelik yoksa iki dertle de parti var.

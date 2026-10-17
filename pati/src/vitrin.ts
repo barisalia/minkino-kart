@@ -243,6 +243,15 @@ export class Vitrin {
     }
   }
 
+  /** Mağazanın "Yavrular" sayfasından seçilen yavru bölmesinde kendini gösterir (tanışma; satın almaz) */
+  async goster(id: string) {
+    this.yenile();
+    const b = this.bolmeler.find((x) => x.id === id);
+    if (!b?.hayvan || b.mesgul) return;
+    await bekle(300);
+    await this.tanis(b);
+  }
+
   // ---------------------------------------------------------------- tanışma
   private bolmeDokun(b: Bolme) {
     this.etkilesim();
@@ -280,7 +289,8 @@ export class Vitrin {
     b.tanisti = performance.now();
     b.mesgul = true;
     b.el.dataset.tanisti = '1';
-    const soz = (NEHIR2.huy as Record<string, string>)[bilgi.huy];
+    // önce hayvanın kendi cümlesi (Fıstık ile Duman'ın huyu ikisi de "uykucu"), yoksa huyun cümlesi
+    const soz = (NEHIR2.tanisma as Record<string, string>)[b.id!] ?? (NEHIR2.huy as Record<string, string>)[bilgi.huy];
     if (ilk && soz) void this.o.nehir.soyle(soz);
     try {
       switch (bilgi.huy) {

@@ -83,12 +83,14 @@ for (const ekran of [
 
     test('hayvana dokun → oda; ✗ komik ve cezasız; ★ kalp, jeton, altın kalp; üç kalp → dans', async ({ page }) => {
       const hatalar = hataTopla(page);
-      await ac(page, kayit('kucuk', [hayvan('tarcin', 'Tarçın', 0, 'ac', 1), hayvan('findik', 'Fındık', 1, 'susuz')]));
+      // bütün eşyalar alınmış (çekmecenin sahipliğe göre sırası pati-p3.spec.ts'te)
+      await ac(page, kayit('kucuk', [hayvan('tarcin', 'Tarçın', 0, 'ac', 1), hayvan('findik', 'Fındık', 1, 'susuz')]), '&esyalar=hepsi');
       await page.locator('.pt-yer[data-yer="0"]').click();
       await expect.poll(async () => (await oda(page)).acik).toBe(true);
       let o = await oda(page);
       expect(o.hayvan).toBe('tarcin');
-      expect(o.cekmeceler).toEqual(['mama', 'su', 'oyuncak', 'yatak']);
+      // 3-4: 4 çekmece; temizlik çekmecesi mağazadan alınmış (esyalar=hepsi)
+      expect(o.cekmeceler).toEqual(['mama', 'su', 'oyuncak', 'temizlik', 'yatak']);
       // öbür hayvan da bir şey istiyor: sol üstte yüzü (çağrı penceresi)
       expect(o.cagri).toBe('findik');
       await page.screenshot({ path: `tests/screens/pati2-${ekran.ad}-oda.png` });
@@ -212,7 +214,7 @@ for (const ekran of [
 
     test('5-6: balon yok; ders: süt kediyi sonra hasta eder', async ({ page }) => {
       const hatalar = hataTopla(page);
-      await ac(page, kayit('buyuk', [hayvan('tarcin', 'Tarçın', 0, 'ac'), hayvan('findik', 'Fındık', 1, null)]), '&hiz=20');
+      await ac(page, kayit('buyuk', [hayvan('tarcin', 'Tarçın', 0, 'ac'), hayvan('findik', 'Fındık', 1, null)]), '&hiz=20&esyalar=hepsi');
       await page.waitForTimeout(2000);
       await expect(page.locator('.pt-salon-balon')).toHaveCount(0);
       await page.locator('.pt-yer[data-yer="0"]').click();
@@ -225,12 +227,16 @@ for (const ekran of [
 
     test('defter resimli dolar; perdeli köşe; akşam herkes kendi yatağıyla uyur, gece, polaroid panoda', async ({ page }) => {
       const hatalar = hataTopla(page);
-      await ac(page, kayit('kucuk', [hayvan('tarcin', 'Tarçın', 0, null), hayvan('findik', 'Fındık', 1, null)]));
+      await ac(page, kayit('kucuk', [hayvan('tarcin', 'Tarçın', 0, null), hayvan('findik', 'Fındık', 1, null)]), '&esyalar=hepsi');
       // kaydırma: sağ kenar → kapalı köşe (perde), sonra parmakla geri
       await page.locator('.pt-kenar[data-yon="1"]').click();
       await expect.poll(() => P(page, 'panel')).toBe('kose-kemirgen');
       await page.locator('.pt-perde[data-kose="kemirgen"]').click();
       await page.screenshot({ path: `tests/screens/pati2-${ekran.ad}-perde.png` });
+      // paket 3: perde kataloğu o köşenin sayfasında açar; geri ile kapanır
+      await expect.poll(async () => ((await P(page, 'magaza')) as { acik: boolean; sekme: string }).sekme).toBe('sus');
+      await page.locator('.pt-ust button[aria-label="Geri"]').click();
+      await expect.poll(async () => ((await P(page, 'magaza')) as { acik: boolean }).acik).toBe(false);
       const y = ekran.h * 0.85;
       await page.mouse.move(ekran.w * 0.2, y);
       await page.mouse.down();
@@ -258,7 +264,8 @@ for (const ekran of [
 
       // defter: iki satırda eşyalar ve işaretleri
       await page.locator('.pt-defter-dugme').click();
-      await expect(page.locator('.pt-defter.acik .pt-defter-satir')).toHaveCount(4);
+      // 3-4: aç, susuz, sıkılmış, uykulu + kirli (temizlik çekmecesi alınmış: esyalar=hepsi)
+      await expect(page.locator('.pt-defter.acik .pt-defter-satir')).toHaveCount(5);
       await page.locator('.pt-defter-sekme[data-hayvan="tarcin"]').click();
       await expect(page.locator('.pt-defter-satir[data-ihtiyac="uykulu"] .pt-defter-esya')).toHaveCount(2);
       await expect(page.locator('.pt-defter-esya[data-esya="karton-kutu"][data-tepki="sever"] .pt-isaret')).toHaveCount(1);

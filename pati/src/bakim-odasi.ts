@@ -27,18 +27,18 @@ import { elSurukle, icinde, Tutulan } from '../../kino-otobus/src/dokunsal';
 import type { Efekt } from '../../kino-otobus/src/efekt';
 import { Sallama } from '../../kino-otobus/src/el-isi';
 import { dogalBoyu, NETLIK_DPR } from '../../src/ui/netlik';
-import { DusenJetonlar, dolapEl, esyaEl, ezil, KalpSirasi, oksamaBagla, ucanKalpEl, type Kumbara } from './arayuz';
+import { DusenJetonlar, dolapEl, esyaEl, Etiket, ezil, KalpSirasi, oksamaBagla, ucanKalpEl, type Kumbara } from './arayuz';
 import { anAdi, IS_GEREK, ISTE_POZ, komik, kullanim, SURTUS_YOL, tutarakMi, type Gag, type Kullanim } from './bakim';
 import { Dekor, ENCOK_OLCEK } from './dekor';
 import { kazanc } from './ekonomi';
 import { Hayvan, IHTIYAC_HAL } from './hayvan';
 import type { IhtiyacSaati, YardimAdimi } from './ihtiyac';
-import { CEKMECELER, esyaBilgi, hayvanBilgi, KALP_SAYISI, NEHIR2, type CekmeceAdi, type IhtiyacAdi, type Yas } from './katalog';
+import { CEKMECELER, esyaBilgi, hayvanBilgi, KALP_SAYISI, NEHIR2, yasla, type CekmeceAdi, type IhtiyacAdi, type Yas } from './katalog';
 import type { PatiKayit, SahipHayvan } from './kayit';
 import { dansBitti, kalpEkle } from './mutluluk';
 import type { Nehir } from './nehir';
 import { ses } from './sesler';
-import { cekmece as cekmeceIci, cekmeceAcik, defterYaz, tepki, type Tepki } from './tercih';
+import { cekmeceAcik, cekmeceSirali, defterYaz, sahipEsya, tepki, type Tepki } from './tercih';
 import { ALTIN_KALP, BAKIM_ODASI, enCokCssBoy, esyaResmi, pozAdresi, pozVar, SALON, type Poz } from './varliklar';
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -87,6 +87,8 @@ export interface OdaOrtam {
   uyudu?: (s: SahipHayvan) => void;
   aksam: () => boolean;
   etkilesim: () => void;
+  /** çekmecedeki alınmamış eşya (fiyat etiketli): jetonla alır (magaza.ts); dönen: alındı mı */
+  esyaAl?: (e: string, et: Etiket) => Promise<boolean>;
   /** bir ★ ilk kez bulundu (defter: Uzman denetimi) */
   kesif?: (id: string) => void;
 }
@@ -241,7 +243,7 @@ export class BakimOdasi {
   }
 
   private cekmeceVar(c: CekmeceAdi) {
-    return cekmeceAcik(c, this.o.yas());
+    return cekmeceAcik(c, this.o.yas(), this.o.kayit.esyalar.includes('temizlik'));
   }
 
   /** Hayvanın hâli ihtiyacına göre (ihtiyacı yoksa boş) */
@@ -346,13 +348,14 @@ export class BakimOdasi {
     );
     for (const f of this.esyaBirak) f();
     this.esyaBirak = [];
-    const esyalar = cekmeceIci(s.id, c, this.o.yas());
+    // sahipliğe göre: önce çocuğun elindekiler, sonra fiyat etiketli en çok 1-2 yeni eşya (dokununca jetonla alınır)
+    const { kullan: esyalar, satilik } = cekmeceSirali(s.id, c, this.o.yas(), (e) => sahipEsya(this.o.kayit, e));
     // sıra her açılışta karışık (hiçbir yer "doğru yer" olmasın)
     for (let i = esyalar.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [esyalar[i], esyalar[j]] = [esyalar[j], esyalar[i]];
     }
-    this.izgara.dataset.adet = String(esyalar.length);
+    this.izgara.dataset.adet = String(esyalar.length + satilik.length);
     this.izgara.replaceChildren(
       ...esyalar.map((e, i) => {
         const b = h('button.pt-esya', { type: 'button', 'data-esya': e, 'aria-label': e, style: `--i:${i}` }, esyaEl(e)) as HTMLButtonElement;
@@ -365,6 +368,7 @@ export class BakimOdasi {
         this.esyaBirak.push(elSurukle(b, this.surukle(e, b)));
         return b;
       }),
+      ...satilik.map((e, i) => this.satilikDugme(e, c, esyalar.length + i)),
     );
     this.tepsi.classList.add('acik');
     this.uiYerlesim();
@@ -374,6 +378,34 @@ export class BakimOdasi {
         (x as HTMLElement).animate([{ transform: 'translateY(30px) scale(.7, 1.2)', opacity: 0 }, { transform: 'translateY(-10px) scale(1.08, .92)', opacity: 1, offset: 0.65 }, { transform: 'none', opacity: 1 }], { duration: 380, delay: 60 + 70 * i, easing: 'ease-out', fill: 'backwards' }),
       );
     }
+  }
+
+  /**
+   * Henüz alınmamış eşya: altında fiyat etiketi. Dokununca jetonlar etikete uçar; yeterse eşya çekmeceye girer ve hemen
+   * denenebilir. Yetmezse boş daireler, "Biraz daha jeton lazım." (silik değil, kilit yok).
+   */
+  private satilikDugme(e: string, c: CekmeceAdi, i: number): HTMLButtonElement {
+    const et = new Etiket(yasla(esyaBilgi(e).fiyat, this.o.yas()), this.o.yas());
+    const b = h('button.pt-esya.pt-satilik', { type: 'button', 'data-esya': e, 'data-satilik': '1', 'aria-label': e, style: `--i:${i}` }, esyaEl(e), et.el) as HTMLButtonElement;
+    netlikSinirla(b);
+    let suruyor = false;
+    b.addEventListener('click', async () => {
+      if (suruyor || !this.o.esyaAl) return;
+      this.etkilesim();
+      suruyor = true;
+      ezil(b, 1.2, 300);
+      try {
+        const alindi = await this.o.esyaAl(e, et);
+        if (alindi && this.acikCekmece === c && this.sahip) {
+          this.cekmeceAc(c);
+          const yeni = this.esyaDugmesi(e);
+          if (yeni) ezil(yeni, 1.8, 480);
+        }
+      } finally {
+        suruyor = false;
+      }
+    });
+    return b;
   }
 
   cekmeceKapa(sessiz = false) {
