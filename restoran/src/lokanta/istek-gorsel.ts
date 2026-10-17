@@ -5,6 +5,10 @@
  */
 import { h } from '../../../src/ui/dom';
 import { kaseGorsel } from '../mini/deneme';
+import { izgaraGorsel } from '../mini/mangal';
+import { borekTabakGorsel } from '../mini/sar';
+import { sisTabakGorsel } from '../mini/sis';
+import { sutlacGorsel } from '../mini/sutlac';
 import type { Malzeme, YemekOzelligi } from '../mini/arayuz';
 import type { Ipucu, Istek } from '../model';
 import { TARIFLER } from '../model';
@@ -25,9 +29,18 @@ const ORNEK: Record<string, Partial<Record<Malzeme, number>>> = {
   limonata: { limon: 3 },
 };
 
+/** P6 tarifleri: mini oyunun kendi tabak görünüşü (yer tutucu; Gemini `yiyecek/<tarif>` gelince o) */
+const P6_RESIM: Record<string, () => HTMLElement> = {
+  kofte: () => izgaraGorsel([0, 1, 2].map(() => ({ tur: 'kofte' as const, bicim: { sekil: 'yassi' as const, boy: 1, benek: [] }, pisme: 'altin', iz: 1 }))),
+  sis: () => sisTabakGorsel([{ meyveler: ['cilek', 'muz', 'kavun', 'uzum'], bal: 1 }, { meyveler: ['uzum', 'cilek', 'muz', 'kavun'], bal: 0 }]),
+  borek: () => borekTabakGorsel([0, 1, 2].map(() => ({ peynir: 1, maydanoz: 1, rulo: 1, yapisti: true, fiskirdi: false, p: 2.4, yagda: false }))),
+  sutlac: () => sutlacGorsel([0, 1].map(() => ({ dolum: 0.85, tasti: false, p: 2.2, tarcin: 2 }))),
+};
+
 export function yemekResmi(tarif: string): HTMLElement {
   const u = varlik(`yiyecek/${tarif}`);
   if (u) return resim(u, 'rs-yemek-resmi');
+  if (P6_RESIM[tarif]) return h('span.rs-yemek-resmi.rs-p6-resim', { 'data-tarif': tarif }, P6_RESIM[tarif]());
   const oz: YemekOzelligi = { malzemeler: {}, pisme: TARIFLER[tarif]?.sicak ? 'altin' : undefined };
   for (const [m, n] of Object.entries(ORNEK[tarif] ?? {})) oz.malzemeler[m as Malzeme] = { adet: n! };
   const el = kaseGorsel(oz, TARIFLER[tarif]?.sicak ? 'tava' : 'tabak');
@@ -65,7 +78,7 @@ export function istekResmi(i: Istek): HTMLElement {
 }
 
 /** Yol haritası: tarifin mini oyunlarının alet resimleri (yazısız; çizim yoksa küçük renkli nokta) */
-const YOL_RENK: Record<string, string> = { dogra: '#4FA83D', tava: '#3C3330', tabakla: '#5FB8AE', yika: '#8FD3FF', soy: '#E9C77B', kizart: '#F0B84A', icecek: '#FFF6E0', kazan: '#F2902F', 'kir-cirp': '#FFD449', rendele: '#C9C9C9', pide: '#D9A15B', yogur: '#B5654A', mangal: '#C9473F' };
+const YOL_RENK: Record<string, string> = { dogra: '#4FA83D', tava: '#3C3330', tabakla: '#5FB8AE', yika: '#8FD3FF', soy: '#E9C77B', kizart: '#F0B84A', icecek: '#FFF6E0', kazan: '#F2902F', 'kir-cirp': '#FFD449', rendele: '#C9C9C9', pide: '#D9A15B', yogur: '#B5654A', mangal: '#C9473F', sis: '#E5404F', sar: '#F3E0BB', sutlac: '#FBEFCF' };
 export function yolHaritasi(tarif: string): HTMLElement {
   const t = TARIFLER[tarif];
   return h(

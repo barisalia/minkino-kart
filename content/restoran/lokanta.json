@@ -53,7 +53,10 @@
     "pankek": "Pankek!",
     "pide": "Pide!",
     "kofte": "Köfte!",
-    "limonata": "Limonata!"
+    "limonata": "Limonata!",
+    "sis": "Meyve şiş!",
+    "borek": "Sigara böreği!",
+    "sutlac": "Sütlaç!"
   },
   "kino": {
     "hosgeldin": "[happy] Hoş geldiniz!",
@@ -114,6 +117,12 @@
     "bidicik": {
       "selam": "[giggles] Ben de!",
       "bayildi": "[giggles] Aynısından!"
+    },
+    "nehir": {
+      "selam": "[happy] Fındık da geldi!",
+      "bayildi": "[happy] Tam sevdiğim gibi!",
+      "komik": "[softly] Köpeklere soğan olmaz!",
+      "gule": "[happy] Hoşça kalın!"
     }
   }
 }

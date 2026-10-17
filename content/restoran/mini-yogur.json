@@ -1,0 +1,37 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · YOĞUR VE YUVARLA mini oyunu sözleri (P6; ekip/senaryo/RESTORAN.md §8 M8). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "sogan": "Soğan!",
+      "maydanoz": "Maydanoz!",
+      "biber": "Biber!",
+      "tuz": "Tuz!",
+      "pulbiber": "Pul biber!"
+    },
+    "vicik": "[giggles] Vıcık vıcık!",
+    "hazir": "[happy] Harç karıştı!",
+    "kocaman": "[gasps] Kocaman!",
+    "minik": "[giggles] Minicik!",
+    "top": "[happy] Yuvarlak yuvarlak!",
+    "krep": "[laughs] İncecik krep!",
+    "maske": "[giggles] Maske oldum!",
+    "ayni": "[excited] Hepsi aynı boy!",
+    "dogal": "[happy] Köfteler hazır!",
+    "doldu": "[curious] Tahta dopdolu…",
+    "harc_bitti": "[giggles] Harç bitti!",
+    "say": {
+      "1": "Bir!",
+      "2": "İki!",
+      "3": "Üç!",
+      "4": "Dört!",
+      "5": "Beş!",
+      "6": "Altı!"
+    },
+    "ipucu": {
+      "karismadi": "[curious] Harç daha karışmadı…",
+      "harc_hazir": "[curious] Harç köfte bekliyor…",
+      "putur": "[curious] Bu topak pütür pütür…",
+      "bitti": "[happy] Mis gibi köfteler!"
+    }
+  }
+}

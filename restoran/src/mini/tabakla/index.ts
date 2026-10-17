@@ -405,7 +405,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       const w = tava.pankek ? 0.75 + 0.45 * tava.pankek.boy : 1.05;
       yeniler.push(parcaYap({ m: 'yemek', g: 'ozel', u: merkez.u * 0.5, v: merkez.v * 0.5, w, h: w, kaynak: u.id, ozel: () => tavaGorsel(tava, false) }));
       b.ses.cal('pof');
-    } else if (u.tur === 'dogranmis' || Object.keys(u.ozellik.malzemeler).length) {
+    } else if (!u.butun && (u.tur === 'dogranmis' || Object.keys(u.ozellik.malzemeler).length)) {
       // kâsedeki parçalar tabağa dökülür (dokununca ortaya, sürükleyince bırakılan yere)
       let i = 0;
       const toplam = Object.values(u.ozellik.malzemeler).reduce((t, d) => t + Math.min(d!.adet, 7), 0);

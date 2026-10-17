@@ -1,0 +1,29 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · MANGAL mini oyunu sözleri (P6; ekip/senaryo/RESTORAN.md §8 M9). mino = anlatıcı sesi (Mino), kino = Kino'nun sesi. Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). Hiçbir şey yanmaz. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "kofte": "Köfte!",
+      "biber": "Biber!",
+      "domates": "Domates!"
+    },
+    "ciz": "[excited] Cızzz!",
+    "cevrildi": "[happy] Izgara izi!",
+    "capraz": "[excited] Çapraz çapraz!",
+    "alev": "[gasps] Közler canlandı!",
+    "duman": "[gasps] Duman duman!",
+    "citir": "[giggles] Kıtır kıtır oldu!",
+    "hazir": "[happy] Mis gibi köfte!",
+    "kozlendi": "[happy] Közlendi!",
+    "bos": "[curious] Mangal köfte bekliyor…",
+    "ipucu": {
+      "bos": "[curious] Izgara bomboş…",
+      "alti": "[curious] Altı kızardı galiba…",
+      "pisiyor": "[softly] Köfteler cızırdıyor…",
+      "bitti": "[happy] Köfteler hazır!"
+    }
+  },
+  "kino": {
+    "oksur": "[coughs] Öhö öhö!",
+    "isli": "[laughs] Yüzüm kapkara!"
+  }
+}

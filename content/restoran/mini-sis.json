@@ -1,0 +1,23 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · MEYVE ŞİŞ mini oyunu sözleri (P6, v1.1; ekip/senaryo/RESTORAN.md §8 M13). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "cilek": "Çilek!",
+      "muz": "Muz!",
+      "kavun": "Kavun!",
+      "uzum": "Üzüm!",
+      "bal": "Bal!"
+    },
+    "tik": "[happy] Tık! Geçti!",
+    "firladi": "[giggles] Hap! Yakaladım!",
+    "sirayla": "[excited] Sırayla, sırayla!",
+    "oruntu": "[excited] Örüntü tamam!",
+    "dolu": "[happy] Şişler dopdolu!",
+    "ipucu": {
+      "bos": "[curious] Şişler bomboş…",
+      "eksik": "[curious] Şişte yer var…",
+      "oruntu": "[curious] Sırada hangisi var?",
+      "bitti": "[happy] Rengarenk şişler!"
+    }
+  }
+}

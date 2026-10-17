@@ -1,0 +1,86 @@
+/* MEYVE ŞİŞ (.rs-sis; yalnız .mk-kok altında). Sade yer tutucu çizimler: düz renk + kalın kahve kontur.
+   Gemini meyve / şiş kesitleri gelince resimle değişir (BİTMİŞ ÇİZİM DEĞİL). */
+.mk-kok .rs-sis { --kontur: #3b2416; }
+.mk-kok .rs-ss-tahta {
+  position: absolute;
+  z-index: 1;
+  border: 3px solid var(--kontur);
+  border-radius: 26px;
+  background: repeating-linear-gradient(90deg, rgba(140, 86, 42, 0.1) 0 2px, transparent 2px 26px), radial-gradient(ellipse at 30% 25%, rgba(255, 240, 215, 0.55), transparent 55%), linear-gradient(#ecbd80, #d99f61);
+  box-shadow: 0 6px 0 rgba(59, 36, 22, 0.22), inset 0 0 0 7px rgba(255, 255, 255, 0.14);
+}
+.mk-kok .rs-ss-sisler, .mk-kok .rs-ss-efekt, .mk-kok .rs-ss-elde-kat { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.mk-kok .rs-ss-elde-kat { z-index: 30; }
+.mk-kok .rs-ss-efekt { z-index: 50; }
+.mk-kok .rs-ss-sis { position: absolute; }
+.mk-kok .rs-ss-cubuk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 10px;
+  margin-top: -5px;
+  border: 2.5px solid var(--kontur);
+  border-radius: 6px 0 0 6px;
+  background: linear-gradient(#f5deb0, #d9b47a);
+  clip-path: polygon(0 0, 94% 0, 100% 50%, 94% 100%, 0 100%);
+}
+.mk-kok .rs-ss-sis .rs-ss-cubuk::before { content: ''; position: absolute; left: -2px; top: -7px; width: 18px; height: 20px; border: 2.5px solid var(--kontur); border-radius: 6px; background: #b97b44; }
+.mk-kok .rs-ss-sis.rs-parladi { filter: drop-shadow(0 0 6px rgba(255, 228, 120, 0.95)); }
+.mk-kok .rs-ss-bal { position: absolute; left: 6%; right: 8%; top: 30%; height: 18%; opacity: 0; z-index: 3; pointer-events: none; border-bottom: 6px solid rgba(242, 178, 51, 0.85); border-radius: 0 0 50% 50% / 0 0 100% 100%; filter: drop-shadow(0 1px 0 rgba(160, 100, 20, 0.6)); transition: opacity 0.3s; }
+.mk-kok .rs-ss-sis.rs-ballandi .rs-ss-bal { opacity: 1; }
+
+/* meyveler (üstten) */
+.mk-kok .rs-ss-meyve {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 52px;
+  height: 52px;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  border: 3px solid var(--kontur, #3b2416);
+  pointer-events: none;
+}
+.mk-kok .rs-ss-meyve b { position: absolute; }
+.mk-kok .rs-ss-meyve[data-meyve='cilek'] {
+  border-radius: 50% 50% 48% 48% / 38% 38% 62% 62%;
+  background: radial-gradient(circle, #ffe27a 0 1.4px, transparent 2px) 0 0 / 8px 8px, radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.6) 0 10%, transparent 26%), radial-gradient(circle at 50% 56%, #f0505e, #d8323f 70%);
+}
+.mk-kok .rs-ss-meyve[data-meyve='cilek'] b { left: 22%; right: 22%; top: -14%; height: 30%; background: #4fa83d; clip-path: polygon(50% 100%, 0 30%, 25% 40%, 30% 0, 50% 30%, 70% 0, 75% 40%, 100% 30%); }
+.mk-kok .rs-ss-meyve[data-meyve='muz'] { border-radius: 50%; background: radial-gradient(circle, #c7a84a 0 4%, transparent 5%), radial-gradient(circle at 50% 50%, #fff3c4 0 32%, #f7e3a0 33% 64%, #f2d77c 66%); }
+.mk-kok .rs-ss-meyve[data-meyve='muz'] b { inset: 30%; border-radius: 50%; background: radial-gradient(circle, #a88a3a 0 1.3px, transparent 1.8px) 0 0 / 6px 6px; opacity: 0.6; }
+.mk-kok .rs-ss-meyve[data-meyve='kavun'] { border-radius: 22%; background: linear-gradient(90deg, #6fa83a 0 18%, #d9e48a 18% 26%, #f7c06a 26%), #f7c06a; }
+.mk-kok .rs-ss-meyve[data-meyve='kavun'] b { left: 34%; top: 20%; width: 30%; height: 20%; border-radius: 50%; background: rgba(255, 255, 255, 0.5); }
+.mk-kok .rs-ss-meyve[data-meyve='uzum'] { width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.75) 0 12%, transparent 28%), radial-gradient(circle at 50% 55%, #b8e07a, #7cb83f 72%); }
+.mk-kok .rs-ss-ucan { transform: none; top: auto; }
+
+/* raf kâseleri ve bal */
+.mk-kok .rs-ss-kase { position: relative; display: block; width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--kontur); box-sizing: border-box; background: radial-gradient(circle, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 72%, #fbfdff 73%); pointer-events: none; }
+.mk-kok .rs-ss-kase .rs-ss-meyve { width: 34%; height: 34%; border-width: 2px; }
+.mk-kok .rs-ss-elde-meyve { width: 70px; height: 70px; margin: -35px 0 0 -35px; }
+.mk-kok .rs-ss-elde-meyve .rs-ss-meyve { left: 50%; width: 60px; height: 60px; }
+.mk-kok .rs-ss-bal-kavanoz { position: relative; display: block; width: 100%; height: 100%; pointer-events: none; }
+.mk-kok .rs-ss-bal-kavanoz::before { content: ''; position: absolute; left: 20%; right: 20%; top: 24%; bottom: 6%; border: 3px solid var(--kontur); border-radius: 12px 12px 14px 14px; background: radial-gradient(ellipse 30% 20% at 35% 35%, rgba(255, 255, 255, 0.7), transparent 70%), linear-gradient(#ffd56a, #f2a52a); }
+.mk-kok .rs-ss-bal-kavanoz::after { content: ''; position: absolute; left: 24%; right: 24%; top: 10%; height: 18%; border: 3px solid var(--kontur); border-radius: 6px; background: repeating-linear-gradient(90deg, #e8483a 0 6px, #fff 6px 12px); }
+.mk-kok .rs-ss-elde-bal { width: 80px; height: 80px; margin: -40px 0 0 -40px; }
+
+/* örüntü kartı (5-6) */
+.mk-kok .rs-ss-oruntu { position: absolute; z-index: 8; display: flex; gap: 4px; padding: 8px 10px; border: 3px solid var(--kontur); border-radius: 16px; background: #fffaf0; box-shadow: 0 4px 0 rgba(59, 36, 22, 0.2); }
+.mk-kok .rs-ss-oruntu .rs-ss-meyve { position: relative; left: auto; top: auto; transform: none; width: 30px; height: 30px; border-width: 2px; }
+.mk-kok .rs-ss-soru { position: relative; width: 30px; height: 30px; border-radius: 50%; border: 2.5px dashed var(--kontur); }
+.mk-kok .rs-ss-soru b { position: absolute; left: 34%; top: 18%; width: 30%; height: 38%; border: 3px solid var(--kontur); border-left: 0; border-radius: 0 50% 50% 0; }
+
+/* tabak ve tepsi / masa görünüşü */
+.mk-kok .rs-ss-tabak { position: absolute; border: 3px solid var(--kontur); border-radius: 50%; background: radial-gradient(ellipse, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%); box-shadow: 0 6px 0 rgba(59, 36, 22, 0.2); }
+.mk-kok .rs-ss-sis-gorsel { position: absolute; inset: 30% 4%; display: block; }
+.mk-kok .rs-ss-sis-gorsel .rs-ss-cubuk { height: 14%; min-height: 3px; margin-top: 0; translate: 0 -50%; border-width: 1.5px; }
+.mk-kok .rs-ss-sis-gorsel .rs-ss-cubuk::before { display: none; }
+.mk-kok .rs-ss-sis-gorsel .rs-ss-meyve { width: auto; height: 80%; aspect-ratio: 1; border-width: 1.5px; }
+.mk-kok .rs-ss-sis-gorsel .rs-ss-meyve[data-meyve='cilek'] b { display: none; }
+.mk-kok .rs-ss-tabak-gorsel { position: absolute; inset: 0; border: 2px solid var(--kontur, #3b2416); border-radius: 50%; background: radial-gradient(ellipse, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%); }
+.mk-kok .rs-ss-tabak-gorsel .rs-ss-sis-gorsel { inset: auto; }
+.mk-kok .rs-ss-simge { position: relative; display: block; width: 100%; height: 100%; }
+/* çerçevenin yer tutucu tahtası şişin tahtasıyla çakışmasın (Doğra'daki gibi) */
+.mk-kok .rs-istasyon:has(.rs-sis) .rs-ist-arka.rs-ist-yertutucu::after { display: none; }
+.mk-kok .rs-ss-oruntu[hidden] { display: none; }

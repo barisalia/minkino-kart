@@ -59,6 +59,13 @@ export const MALZEME_ADI = {
   kofte: 'Köfte',
   sucuk: 'Sucuk',
   portakal: 'Portakal',
+  // P6 (v1.1 tarifleri: meyve şiş, sigara böreği, sütlaç)
+  kavun: 'Kavun',
+  uzum: 'Üzüm',
+  peynir: 'Peynir',
+  yufka: 'Yufka',
+  pirinc: 'Pirinç',
+  tarcin: 'Tarçın',
 } as const;
 export type Malzeme = keyof typeof MALZEME_ADI;
 
@@ -127,6 +134,8 @@ export interface Urun {
   servis?: boolean;
   /** Tabakla gibi birleştiren oyunlar: tepsiden kullandığı ürünlerin id'leri (lokanta onları tepsiden kaldırır) */
   kullanilan?: string[];
+  /** Tabakla'da parçalara ayrılmaz, tabağa tek öbek olarak (gorsel()) konur: ızgara köfte, şiş, börek (P6) */
+  butun?: boolean;
   /** tepside ve masada gösterilecek küçük hâli. Kaynak pikselinin üstüne büyütülmez; kutusunu doldurur (100%×100%). */
   gorsel: () => HTMLElement;
 }
@@ -149,6 +158,8 @@ export interface MiniGirdi {
   ozelIstek?: OzelIstek;
   /** önceki ziyarette ArkaIs.durum olarak bırakılan (tava ocakta pişmeye devam etti); yoksa baştan */
   devam?: unknown;
+  /** Bulaşık (P6): lavabodaki kirli tabaklar, her biri o tabakta yenen ürünün türü ('tabak', 'corba' ...) */
+  kirliTabaklar?: string[];
   /** ilk oyunun ilk iki müşterisi: ipucu merdiveni biraz erken (§4c) */
   ilkOyun?: boolean;
   test?: boolean;
@@ -249,7 +260,7 @@ export interface ArkaIs {
   /** mini oyunun kaldığı yer (opak; dönüşte MiniGirdi.devam olarak geri gelir). Zaman `performance.now()` ile tutulur. */
   durum: unknown;
   /** lokanta ekranında saniyede bir sorulur: hangi ses, buhar var mı, ne kadar pişti */
-  isaret(): { ses: 'ciz' | 'fokur' | 'yok'; buhar: boolean; pisme?: Pisme };
+  isaret(): { ses: 'ciz' | 'fokur' | 'yok'; buhar: boolean; pisme?: Pisme; surpriz?: string };
 }
 
 export interface MiniOturum {

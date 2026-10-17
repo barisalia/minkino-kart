@@ -50,6 +50,10 @@ export const KATALOG: readonly DefterKalemi[] = [
   { id: 'limonata', sekme: 'tarif', fiyat: FIYAT.tarif, gun: 4, alet: 'icecek', istasyon: 'icecek' },
   { id: 'pide', sekme: 'tarif', fiyat: FIYAT.buyukAlet, gun: 4, alet: 'firin', istasyon: 'firin' },
   { id: 'kofte', sekme: 'tarif', fiyat: FIYAT.buyukAlet, gun: 5, alet: 'mangal', istasyon: 'mangal' },
+  // v1.1 (P6): kendi mini oyunlarıyla, var olan istasyonlarda (şiş tezgâhta, sar mermerde, sütlaç ocakta)
+  { id: 'sis', sekme: 'tarif', fiyat: FIYAT.tarif, gun: 6 },
+  { id: 'borek', sekme: 'tarif', fiyat: FIYAT.tarif, gun: 6 },
+  { id: 'sutlac', sekme: 'tarif', fiyat: FIYAT.tarif, gun: 6 },
   // masa
   { id: 'masa-3', sekme: 'masa', fiyat: FIYAT.masa, gun: 1 },
   { id: 'masa-4', sekme: 'masa', fiyat: FIYAT.masa, gun: 3 },
@@ -62,6 +66,8 @@ export const KATALOG: readonly DefterKalemi[] = [
   { id: 'avize', sekme: 'sus', fiyat: FIYAT.sus, gun: 4, yer: 'tavan' },
   { id: 'bitki', sekme: 'sus', fiyat: FIYAT.sus, gun: 4, yer: 'zemin' },
   { id: 'akvaryum', sekme: 'sus', fiyat: FIYAT.sus, gun: 6, yer: 'zemin' },
+  // P6: gramofon (§6c Gün 4; dokununca müzik, oturanlar sallanır: lokanta/surpriz.ts)
+  { id: 'gramofon', sekme: 'sus', fiyat: FIYAT.sus, gun: 4, yer: 'zemin' },
   // bölüm
   { id: 'bahce', sekme: 'bolum', fiyat: FIYAT.bahce, gun: 5 },
 ];

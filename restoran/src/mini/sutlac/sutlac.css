@@ -1,0 +1,126 @@
+/* SÜTLAÇ (.rs-sutlac; yalnız .mk-kok altında). Sade yer tutucu çizimler: düz renk + kalın kahve kontur.
+   Gemini tencere / kâse / fırın kesitleri gelince resimle değişir (BİTMİŞ ÇİZİM DEĞİL). */
+.mk-kok .rs-sutlac { --kontur: #3b2416; }
+
+/* tencere (üstten) */
+.mk-kok .rs-sl-tencere { position: absolute; z-index: 1; filter: drop-shadow(0 7px 0 rgba(59, 36, 22, 0.2)); }
+.mk-kok .rs-sl-tencere-dis { position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--kontur); background: radial-gradient(circle, transparent 0 82%, #9aa3ad 83% 88%, #c9d0d7 89%); }
+.mk-kok .rs-sl-kulp { position: absolute; top: 40%; width: 16%; height: 20%; border: 3px solid var(--kontur); border-radius: 10px; background: #6b7079; z-index: -1; }
+.mk-kok .rs-sl-kulp.rs-sol { left: -10%; }
+.mk-kok .rs-sl-kulp.rs-sag { right: -10%; }
+.mk-kok .rs-sl-ic {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, #e6ebef, #c5ccd3);
+  box-shadow: inset 0 0 0 3px var(--kontur);
+  --sut: 0;
+  --kivam: 0;
+  --kalan: 1;
+}
+.mk-kok .rs-sl-ic::before,
+.mk-kok .rs-sl-ic::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% * (0.55 + 0.45 * var(--kalan)));
+  height: calc(100% * (0.55 + 0.45 * var(--kalan)));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+}
+.mk-kok .rs-sl-ic::before { opacity: var(--sut); background: radial-gradient(ellipse 30% 16% at 38% 34%, rgba(255, 255, 255, 0.85), transparent 70%), radial-gradient(circle, #ffffff, #f3f1ea); }
+.mk-kok .rs-sl-ic::after { opacity: calc(var(--kivam) * var(--sut)); background: radial-gradient(ellipse 30% 16% at 38% 34%, rgba(255, 255, 255, 0.7), transparent 70%), radial-gradient(circle, #fbefcf, #f2dca6); }
+.mk-kok .rs-sl-taneler {
+  position: absolute;
+  inset: 18%;
+  z-index: 1;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(ellipse 3px 2px, #ffffff 0 2px, transparent 3px) 0 0 / 14px 11px, radial-gradient(ellipse 3px 2px, #fffbea 0 2px, transparent 3px) 7px 5px / 14px 11px;
+  filter: drop-shadow(0 0 1px rgba(59, 36, 22, 0.5));
+  transition: opacity 0.3s;
+}
+.mk-kok .rs-sl-ic:not([data-pirinc='0']):not([data-pirinc='']) .rs-sl-taneler { opacity: calc(1 - var(--kivam) * 0.8); }
+.mk-kok .rs-sl-kabarcik { position: absolute; inset: 30%; z-index: 2; border-radius: 50%; opacity: calc(var(--sut) * 0.6); background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 3px, transparent 4px) 0 0 / 30px 26px; animation: rs-sl-kab 1.6s ease-in-out infinite alternate; }
+@keyframes rs-sl-kab { to { transform: translate(6%, -4%) scale(0.92); } }
+
+/* kepçe */
+.mk-kok .rs-sl-kepce { position: absolute; left: 0; top: 0; z-index: 25; width: 64px; height: 64px; margin: -32px 0 0 -32px; touch-action: none; cursor: grab; filter: drop-shadow(0 5px 0 rgba(59, 36, 22, 0.25)); }
+.mk-kok .rs-sl-kepce:not(.rs-tutuluyor) { transition: transform 0.15s ease-out; }
+.mk-kok .rs-sl-kepce-bas { position: absolute; inset: 8%; border-radius: 50%; border: 3px solid var(--kontur); background: radial-gradient(circle, #e9eef2 0 60%, #aab4be); }
+.mk-kok .rs-sl-kepce-ic { position: absolute; inset: 22%; border-radius: 50%; background: #fbefcf; opacity: 0; }
+.mk-kok .rs-sl-kepce.rs-dolu .rs-sl-kepce-ic { opacity: 1; }
+.mk-kok .rs-sl-kepce-sap { position: absolute; left: 70%; top: 60%; width: 90%; height: 16%; border: 3px solid var(--kontur); border-radius: 8px; background: linear-gradient(#c9d0d7, #8d949e); }
+
+/* tepsi ve kâseler */
+.mk-kok .rs-sl-tepsi { position: absolute; z-index: 3; display: flex; align-items: center; justify-content: space-around; padding: 0 4%; box-sizing: border-box; border: 3px solid var(--kontur); border-radius: 18px; background: linear-gradient(#e2b47c, #c98e4e); box-shadow: 0 5px 0 rgba(59, 36, 22, 0.2); transition: filter 0.3s; }
+.mk-kok .rs-sl-tepsi.rs-firinda { filter: saturate(1.1) brightness(0.96); box-shadow: none; }
+.mk-kok .rs-sl-tepsi .rs-sl-kase { position: relative; width: 28%; aspect-ratio: 1; max-height: 92%; flex: none; }
+.mk-kok .rs-sl-kase { display: block; box-sizing: border-box; border-radius: 50%; border: 3px solid var(--kontur); background: radial-gradient(circle, #ffffff 0 62%, #dfe9f1 64% 70%, #4c8fd6 71% 76%, #fbfdff 77%); cursor: pointer; touch-action: none; --dolum: 0; --kizar: 0; --tarcin: 0; }
+.mk-kok .rs-sl-kase-ic { position: absolute; inset: 14%; border-radius: 50%; pointer-events: none; }
+.mk-kok .rs-sl-sutlac {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% * (0.2 + 0.8 * var(--dolum)));
+  height: calc(100% * (0.2 + 0.8 * var(--dolum)));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: min(1, calc(var(--dolum) * 6));
+  background:
+    radial-gradient(ellipse 30% 20% at 38% 36%, rgba(255, 255, 255, 0.7), transparent 70%),
+    radial-gradient(circle at 46% 44%, rgba(176, 96, 30, calc(var(--kizar) * 0.9)) 0 12%, transparent 30%),
+    radial-gradient(circle at 62% 60%, rgba(176, 96, 30, calc(var(--kizar) * 0.8)) 0 14%, transparent 32%),
+    radial-gradient(circle, rgba(200, 130, 50, calc(var(--kizar) * 0.45)), transparent 80%),
+    radial-gradient(circle, #fff5dc, #f6e3b4);
+  transition: width 0.1s, height 0.1s;
+}
+.mk-kok .rs-sl-cizgi { position: absolute; inset: 7.5%; border-radius: 50%; border: 2px dashed rgba(59, 36, 22, 0.35); }
+.mk-kok .rs-sutlac[data-yas='kucuk'] .rs-sl-cizgi { opacity: 0; }
+.mk-kok .rs-sl-tarcin { position: absolute; inset: 18%; border-radius: 50%; opacity: var(--tarcin); background: radial-gradient(circle, #8a4a2a 0 1.6px, transparent 2.2px) 0 0 / 7px 7px, radial-gradient(circle, #a8622f 0 1.3px, transparent 1.8px) 3px 4px / 7px 7px; }
+.mk-kok .rs-sl-kase[data-tasti='1'] { box-shadow: 0 0 0 5px #f6e3b4, 0 0 0 7px rgba(59, 36, 22, 0.3); }
+
+/* fırın (önden) */
+.mk-kok .rs-sl-firin { position: absolute; z-index: 2; cursor: pointer; touch-action: none; filter: drop-shadow(0 6px 0 rgba(59, 36, 22, 0.2)); }
+.mk-kok .rs-sl-firin-govde { position: absolute; inset: 0; border: 3px solid var(--kontur); border-radius: 18px 18px 12px 12px; background: linear-gradient(#f07a5a, #d8553a); }
+.mk-kok .rs-sl-firin-cam { position: absolute; left: 10%; right: 10%; top: 22%; height: 52%; border: 3px solid var(--kontur); border-radius: 10px; background: linear-gradient(#3a2f2c, #2a2220); overflow: hidden; }
+.mk-kok .rs-sl-firin-isik { position: absolute; inset: 0; opacity: 0.25; background: radial-gradient(ellipse at 50% 100%, rgba(255, 170, 60, 0.95), transparent 70%); transition: opacity 0.4s; }
+.mk-kok .rs-sl-firin.rs-dolu .rs-sl-firin-isik { opacity: 0.55; animation: rs-sl-isik 0.8s ease-in-out infinite alternate; }
+.mk-kok .rs-sl-firin.rs-dolu .rs-sl-firin-cam { background: rgba(58, 47, 44, 0.35); }
+@keyframes rs-sl-isik { to { opacity: 0.75; } }
+.mk-kok .rs-sl-firin-dugme { position: absolute; left: 14%; top: 7%; width: 12%; aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--kontur); background: #ffd449; }
+.mk-kok .rs-sl-tepsi.rs-firinda .rs-sl-kase { border-width: 2px; }
+
+/* raf simgeleri */
+.mk-kok .rs-sl-yt { position: relative; display: block; width: 100%; height: 100%; pointer-events: none; }
+.mk-kok .rs-sl-yt::before, .mk-kok .rs-sl-yt::after { content: ''; position: absolute; box-sizing: border-box; }
+.mk-kok .rs-sl-yt[data-yt='sut']::before { left: 28%; right: 28%; top: 22%; bottom: 4%; border: 3px solid var(--kontur); border-radius: 12px 12px 10px 10px; background: linear-gradient(#f3fbff 0 18%, #ffffff 18%); }
+.mk-kok .rs-sl-yt[data-yt='sut']::after { left: 38%; right: 38%; top: 6%; height: 20%; border: 3px solid var(--kontur); border-radius: 4px; background: #4c8fd6; }
+.mk-kok .rs-sl-yt[data-yt='pirinc']::before,
+.mk-kok .rs-sl-yt[data-yt='seker']::before,
+.mk-kok .rs-sl-yt[data-yt='tarcin']::before { left: 20%; right: 20%; top: 26%; bottom: 6%; border: 3px solid var(--kontur); border-radius: 12px; }
+.mk-kok .rs-sl-yt[data-yt='pirinc']::before { background: radial-gradient(ellipse 3px 2px, #fff 0 2px, transparent 3px) 0 0 / 9px 7px, #f6f1e2; }
+.mk-kok .rs-sl-yt[data-yt='seker']::before { background: radial-gradient(circle, #fff 0 1.5px, transparent 2px) 0 0 / 6px 6px, #eef4f8; }
+.mk-kok .rs-sl-yt[data-yt='tarcin']::before { background: radial-gradient(circle, #8a4a2a 0 1.6px, transparent 2.2px) 0 0 / 6px 6px, #c98a50; }
+.mk-kok .rs-sl-yt[data-yt='pirinc']::after,
+.mk-kok .rs-sl-yt[data-yt='seker']::after,
+.mk-kok .rs-sl-yt[data-yt='tarcin']::after { left: 24%; right: 24%; top: 10%; height: 20%; border: 3px solid var(--kontur); border-radius: 6px; background: #e8483a; }
+.mk-kok .rs-sl-yt[data-yt='tarcin']::after { background: #8a4a2a; }
+.mk-kok .rs-sl-elde { width: 76px; height: 76px; margin: -38px 0 0 -38px; }
+
+/* tepsi / masa görünüşü */
+.mk-kok .rs-sl-tepsi-gorsel { position: absolute; inset: 14% 2%; border: 2px solid var(--kontur, #3b2416); border-radius: 14px; background: linear-gradient(#e2b47c, #c98e4e); }
+.mk-kok .rs-sl-tepsi-gorsel .rs-sl-kase { border-width: 1.5px; }
+.mk-kok .rs-sl-simge { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
+.mk-kok .rs-sl-simge .rs-sl-kase { position: relative; width: 70%; aspect-ratio: 1; }
+/* ocak yer tutucusu: çerçevenin sabit gözleri yerine kendi tezgâhımız ve tencerenin altında tek göz */
+.mk-kok .rs-ist-arka.rs-ist-yertutucu ~ .rs-ist-alan .rs-sutlac {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px) 0 0 / 52px 52px,
+    linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px) 0 0 / 52px 52px,
+    linear-gradient(#f6e8cf, #efdcbc);
+}
+.mk-kok .rs-sl-tencere::before { content: ""; position: absolute; inset: -5%; border-radius: 50%; background: radial-gradient(circle, transparent 0 86%, #4a4240 87% 100%); box-shadow: 0 0 0 2px #3b2416; z-index: -2; }

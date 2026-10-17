@@ -1,0 +1,25 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · SAR (sigara böreği) mini oyunu sözleri (P6, v1.1; ekip/senaryo/RESTORAN.md §8 M16). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "peynir": "Peynir!",
+      "maydanoz": "Maydanoz!",
+      "su": "Su!"
+    },
+    "rulo": "[happy] Rulo rulo!",
+    "yapisti": "[happy] Yapıştı!",
+    "fiskirdi": "[giggles] Peynir fışkırdı!",
+    "ciz": "[excited] Cızzz!",
+    "altin": "[happy] Altın gibi!",
+    "citir": "[giggles] Kıtır kıtır!",
+    "hazir": "[happy] Börekler hazır!",
+    "ipucu": {
+      "peynir": "[curious] Yufka bomboş…",
+      "rulo": "[curious] Yufka dümdüz duruyor…",
+      "su": "[curious] Ucu açık kaldı…",
+      "yag": "[curious] Yağ cızırdamayı bekliyor…",
+      "pisiyor": "[softly] Börekler kızarıyor…",
+      "bitti": "[happy] Mis gibi börekler!"
+    }
+  }
+}

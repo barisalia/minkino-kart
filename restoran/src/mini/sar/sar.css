@@ -1,0 +1,104 @@
+/* SAR · sigara böreği (.rs-sar; yalnız .mk-kok altında). Sade yer tutucu çizimler: düz renk + kalın kahve kontur.
+   Gemini yufka / börek / tava kesitleri gelince resimle değişir (BİTMİŞ ÇİZİM DEĞİL). */
+.mk-kok .rs-sar { --kontur: #3b2416; }
+.mk-kok .rs-sr-mermer {
+  position: absolute;
+  z-index: 1;
+  border: 3px solid var(--kontur);
+  border-radius: 22px;
+  background:
+    linear-gradient(115deg, transparent 0 30%, rgba(160, 160, 170, 0.18) 31% 32%, transparent 33% 60%, rgba(160, 160, 170, 0.14) 61% 62%, transparent 63%),
+    linear-gradient(160deg, #fbfbfa, #e3e1de);
+  box-shadow: 0 6px 0 rgba(59, 36, 22, 0.2);
+}
+.mk-kok .rs-sr-yufka-kat, .mk-kok .rs-sr-rulolar, .mk-kok .rs-sr-efekt, .mk-kok .rs-sr-elde-kat { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.mk-kok .rs-sr-elde-kat { z-index: 30; }
+.mk-kok .rs-sr-efekt { z-index: 40; }
+.mk-kok .rs-sr-yufka { position: absolute; pointer-events: auto; touch-action: none; cursor: grab; --rulo: 0; }
+/* yufka üçgeni: rulo ilerledikçe alttan sarılır (kalan: tepedeki benzer üçgen) */
+.mk-kok .rs-sr-ucgen {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(100% * (1 - var(--rulo) * 0.8));
+  height: calc(100% * (1 - var(--rulo) * 0.8));
+  transform: translateX(-50%);
+  transition: width 0.18s, height 0.18s;
+}
+.mk-kok .rs-sr-ucgen::before, .mk-kok .rs-sr-ucgen::after { content: ''; position: absolute; inset: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.mk-kok .rs-sr-ucgen::before { background: var(--kontur); }
+.mk-kok .rs-sr-ucgen::after { inset: 4px 5px 3px; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: radial-gradient(ellipse at 50% 70%, #fff6e2, #f3e0bb 80%); }
+.mk-kok .rs-sr-peynir {
+  position: absolute;
+  z-index: 2;
+  bottom: 7%;
+  left: calc(50% - 40% * var(--peynir, 0));
+  width: calc(80% * var(--peynir, 0));
+  height: 7%;
+  border-radius: 10px;
+  background: radial-gradient(circle, #ffffff 0 3px, transparent 3.5px) 0 0 / 11px 10px, radial-gradient(circle, #f4efe2 0 3px, transparent 3.5px) 5px 4px / 11px 10px;
+  filter: drop-shadow(0 0 1px rgba(59, 36, 22, 0.6));
+  opacity: calc(1 - var(--rulo) * 6);
+  transition: width 0.12s, left 0.12s;
+}
+.mk-kok .rs-sr-peynir[data-cok='1'] { height: 11%; bottom: 5%; }
+.mk-kok .rs-sr-peynir:not([data-maydanoz='0']) { background-image: radial-gradient(circle, #3c9a3a 0 2px, transparent 2.5px), radial-gradient(circle, #ffffff 0 3px, transparent 3.5px), radial-gradient(circle, #f4efe2 0 3px, transparent 3.5px); background-size: 17px 12px, 11px 10px, 11px 10px; background-position: 3px 2px, 0 0, 5px 4px; }
+.mk-kok .rs-sr-uc { display: none; }
+.mk-kok .rs-sr-yufka .rs-sr-sarilan {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: calc(100% * (1 - var(--rulo) * 0.8));
+  width: max(56%, calc(100% * (1 - var(--rulo) * 0.8)));
+  height: calc(12% + 7% * var(--rulo));
+  transform: translate(-50%, -60%);
+  transition: top 0.18s, width 0.18s, height 0.18s;
+}
+.mk-kok .rs-sr-yufka[data-yapisti='1'] .rs-sr-sarilan { filter: drop-shadow(0 0 5px rgba(255, 236, 150, 0.95)); }
+
+/* rulo (üstten): yumuşak silindir, uçlarda sarılı kat */
+.mk-kok .rs-sr-rulo {
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+  border: 3px solid var(--kontur, #3b2416);
+  border-radius: 40% / 50%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 16%, rgba(180, 130, 70, 0.22) 16% 17%),
+    radial-gradient(ellipse at 50% 30%, #fff7e6, #f2deb6 75%);
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+}
+.mk-kok .rs-sr-rulo[data-pisme='az'] { background: repeating-linear-gradient(90deg, transparent 0 16%, rgba(170, 110, 50, 0.25) 16% 17%), radial-gradient(ellipse at 50% 30%, #fbe7b6, #ecc77c 75%); }
+.mk-kok .rs-sr-rulo[data-pisme='altin'] { background: repeating-linear-gradient(90deg, transparent 0 16%, rgba(150, 90, 30, 0.28) 16% 17%), radial-gradient(ellipse at 50% 30%, #f8d27e, #e2a446 75%); }
+.mk-kok .rs-sr-rulo[data-pisme='citir'] { background: repeating-linear-gradient(90deg, transparent 0 16%, rgba(120, 70, 20, 0.3) 16% 17%), radial-gradient(ellipse at 50% 30%, #e9b860, #c9852f 75%); }
+.mk-kok .rs-sr-rulo b { position: absolute; top: 18%; bottom: 18%; width: 18%; border-radius: 50%; background: #fffdf6; box-shadow: 0 0 0 2px rgba(59, 36, 22, 0.5); opacity: 0; }
+.mk-kok .rs-sr-rulo b.rs-sol { left: -12%; }
+.mk-kok .rs-sr-rulo b.rs-sag { right: -12%; }
+.mk-kok .rs-sr-rulo[data-fiskirdi='1'] b { opacity: 1; }
+.mk-kok .rs-sr-rulo.rs-tutuluyor { z-index: 3; filter: drop-shadow(0 10px 0 rgba(59, 36, 22, 0.25)); }
+
+/* tava (kızgın yağ) ve tabak */
+.mk-kok .rs-sr-tava { position: absolute; z-index: 2; filter: drop-shadow(0 6px 0 rgba(59, 36, 22, 0.22)); }
+.mk-kok .rs-sr-tava-govde { position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--kontur); background: radial-gradient(circle, transparent 0 80%, #4a4240 81%), #3c3330; }
+.mk-kok .rs-sr-yag { position: absolute; inset: 11%; border-radius: 50%; background: radial-gradient(circle at 40% 36%, #fff3b8 0 10%, #f7d774 40%, #e8b84a 80%); box-shadow: inset 0 0 0 2px rgba(59, 36, 22, 0.4); }
+.mk-kok .rs-sr-tava.rs-cizirdiyor .rs-sr-yag { animation: rs-sr-yag 0.35s ease-in-out infinite alternate; }
+@keyframes rs-sr-yag { to { filter: brightness(1.08) saturate(1.1); } }
+.mk-kok .rs-sr-tava-sap { position: absolute; left: 92%; top: 44%; width: 46%; height: 12%; border: 3px solid var(--kontur); border-radius: 10px; background: linear-gradient(#5a4a43, #3c3330); }
+.mk-kok .rs-sr-tabak { position: absolute; z-index: 2; border: 3px solid var(--kontur); border-radius: 50%; background: radial-gradient(ellipse, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%); box-shadow: 0 5px 0 rgba(59, 36, 22, 0.18); }
+
+/* raf kâseleri */
+.mk-kok .rs-sr-kase { position: relative; display: block; width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--kontur); box-sizing: border-box; background: radial-gradient(circle, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 72%, #fbfdff 73%); pointer-events: none; }
+.mk-kok .rs-sr-kase b { position: absolute; inset: 22%; border-radius: 50%; }
+.mk-kok .rs-sr-kase[data-tur='peynir'] b { background: radial-gradient(circle, #ffffff 0 3px, transparent 3.5px) 0 0 / 9px 9px, #f4efe2; box-shadow: 0 0 0 2px rgba(59, 36, 22, 0.35); }
+.mk-kok .rs-sr-kase[data-tur='maydanoz'] b { background: radial-gradient(circle, #58b24a 0 3px, transparent 3.5px) 0 0 / 8px 8px, #2f8a2e; box-shadow: 0 0 0 2px rgba(59, 36, 22, 0.35); }
+.mk-kok .rs-sr-kase[data-tur='su'] b { background: radial-gradient(ellipse 30% 14% at 40% 34%, rgba(255, 255, 255, 0.8), transparent 70%), #8fd3ff; box-shadow: 0 0 0 2px rgba(59, 36, 22, 0.35); }
+.mk-kok .rs-sr-elde { width: 76px; height: 76px; margin: -38px 0 0 -38px; }
+
+/* tepsi / masa görünüşü */
+.mk-kok .rs-sr-tabak-gorsel { position: absolute; inset: 0; border: 2px solid var(--kontur, #3b2416); border-radius: 50%; background: radial-gradient(ellipse, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%); }
+.mk-kok .rs-sr-tabak-gorsel .rs-sr-rulo { border-width: 1.5px; pointer-events: none; }
+.mk-kok .rs-sr-yaprak { position: absolute; right: 16%; top: 14%; width: 16%; height: 12%; border-radius: 50% 0; background: #4fa83d; box-shadow: 0 0 0 1.5px #3b2416; }
+.mk-kok .rs-sr-simge { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
+.mk-kok .rs-sr-simge .rs-sr-rulo { position: relative; width: 80%; height: 32%; }

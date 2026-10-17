@@ -1,0 +1,324 @@
+/* MANGAL (.rs-mangal; yalnız .mk-kok altında). Sade yer tutucu çizimler: düz renk + yumuşak gölge + kalın kahve
+   kontur. Gemini istasyon-mangal / köfte / közleme kesitleri gelince resimle değişir (BİTMİŞ ÇİZİM DEĞİL). */
+.mk-kok .rs-mangal { --kontur: #3b2416; }
+/* bahçe zemini: yalnız istasyon çizimi gelmediyse (yer tutucu) */
+.mk-kok .rs-ist-arka.rs-ist-yertutucu ~ .rs-ist-alan .rs-mangal {
+  background:
+    radial-gradient(circle at 8% 88%, #ffd449 0 5px, #fff 6px 8px, transparent 9px),
+    radial-gradient(circle at 93% 12%, #ff8fb1 0 5px, #fff 6px 8px, transparent 9px),
+    radial-gradient(circle at 70% 94%, #ffd449 0 4px, #fff 5px 7px, transparent 8px),
+    radial-gradient(ellipse 3px 8px, rgba(60, 130, 50, 0.22) 0 2px, transparent 3px) 0 0 / 22px 18px,
+    radial-gradient(ellipse 3px 8px, rgba(60, 130, 50, 0.16) 0 2px, transparent 3px) 11px 9px / 22px 18px,
+    linear-gradient(#d5edb9, #bfe19f);
+}
+
+/* ------------------------------------------------------------ mangal (üstten) */
+.mk-kok .rs-mg-mangal { position: absolute; z-index: 1; --ates: 0.35; filter: drop-shadow(0 8px 0 rgba(59, 36, 22, 0.22)); }
+.mk-kok .rs-mg-kasa {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--kontur);
+  border-radius: 20px;
+  background: linear-gradient(#737983, #50555d);
+  box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.18), inset 0 -6px 0 rgba(0, 0, 0, 0.18);
+}
+.mk-kok .rs-mg-komur {
+  position: absolute;
+  inset: 7% 4.5%;
+  border: 3px solid var(--kontur);
+  border-radius: 12px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 7% 11% at 12% 30%, #4a4240 0 80%, transparent 90%),
+    radial-gradient(ellipse 8% 12% at 30% 66%, #3d3634 0 80%, transparent 90%),
+    radial-gradient(ellipse 7% 10% at 48% 34%, #4a4240 0 80%, transparent 90%),
+    radial-gradient(ellipse 8% 12% at 66% 70%, #433b39 0 80%, transparent 90%),
+    radial-gradient(ellipse 7% 11% at 84% 36%, #4a4240 0 80%, transparent 90%),
+    radial-gradient(ellipse 6% 9% at 22% 84%, #3d3634 0 80%, transparent 90%),
+    radial-gradient(ellipse 6% 9% at 76% 18%, #3d3634 0 80%, transparent 90%),
+    #2b2524;
+}
+/* közün parıltısı: ateşle artar */
+.mk-kok .rs-mg-komur::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: calc(0.35 + var(--ates) * 0.65);
+  transition: opacity 0.25s;
+  background:
+    radial-gradient(ellipse 9% 7% at 14% 32%, #ffcf5a 0 30%, #ff7a1f 70%, transparent 100%),
+    radial-gradient(ellipse 10% 7% at 31% 68%, #ffb13b 0 30%, #ff6a1f 70%, transparent 100%),
+    radial-gradient(ellipse 8% 6% at 50% 36%, #ffcf5a 0 30%, #ff7a1f 70%, transparent 100%),
+    radial-gradient(ellipse 10% 7% at 67% 72%, #ffb13b 0 30%, #ff6a1f 70%, transparent 100%),
+    radial-gradient(ellipse 9% 7% at 85% 38%, #ffcf5a 0 30%, #ff7a1f 70%, transparent 100%),
+    radial-gradient(ellipse at 50% 55%, rgba(255, 110, 30, 0.55), transparent 70%);
+}
+.mk-kok .rs-mg-alevler { position: absolute; inset: 7% 4.5%; overflow: hidden; border-radius: 12px; pointer-events: none; }
+.mk-kok .rs-mg-alev {
+  position: absolute;
+  left: calc(5% + var(--i) * 10.4%);
+  bottom: 6%;
+  width: 8%;
+  height: calc(16% + var(--ates) * 34%);
+  border-radius: 50% 50% 46% 46% / 70% 70% 30% 30%;
+  background: radial-gradient(ellipse at 50% 82%, #fff4b8 0 16%, #ffc23f 38%, #ff7a1f 66%, transparent 70%);
+  opacity: calc(0.25 + var(--ates) * 0.75);
+  transform-origin: 50% 100%;
+  animation: rs-mg-alev 0.62s ease-in-out calc(var(--i) * -0.13s) infinite alternate;
+  transition: height 0.25s, opacity 0.25s;
+}
+.mk-kok .rs-mg-alev:nth-child(odd) { bottom: 44%; height: calc(10% + var(--ates) * 24%); }
+@keyframes rs-mg-alev { from { transform: scale(0.85, 0.82); } to { transform: scale(1.05, 1.12); } }
+.mk-kok .rs-mg-izgara {
+  position: absolute;
+  inset: 5% 3%;
+  border: 4px solid #9aa2ac;
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px var(--kontur), inset 0 0 0 2px var(--kontur);
+  background: repeating-linear-gradient(180deg, transparent 0 calc(11% - 7px), var(--kontur) calc(11% - 7px) calc(11% - 5px), #dfe3e8 calc(11% - 5px) calc(11% - 3px), #9aa2ac calc(11% - 3px) calc(11% - 1px), var(--kontur) calc(11% - 1px) 11%);
+}
+
+/* ------------------------------------------------------------ ızgaradakiler */
+.mk-kok .rs-mg-parcalar, .mk-kok .rs-mg-efekt, .mk-kok .rs-mg-elde-kat { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.mk-kok .rs-mg-efekt { z-index: 48; }
+.mk-kok .rs-mg-elde-kat { z-index: 30; }
+.mk-kok .rs-mg-parca {
+  position: absolute;
+  min-width: 64px;
+  min-height: 64px;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: pointer;
+  --halka: transparent;
+  filter: drop-shadow(0 4px 0 rgba(30, 18, 10, 0.35));
+}
+.mk-kok .rs-mg-parca > .rs-yg-kofte, .mk-kok .rs-mg-parca > .rs-mg-sebze { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mk-kok .rs-mg-parca::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--halka), 0 0 10px 2px var(--halka);
+  pointer-events: none;
+  transition: box-shadow 0.4s;
+}
+.mk-kok .rs-mg-parca.rs-tutuluyor { z-index: 5; filter: drop-shadow(0 12px 0 rgba(30, 18, 10, 0.3)); }
+/* ızgara izleri (yalnız transform yok: düz şeritler) */
+.mk-kok .rs-mg-iz {
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  background: repeating-linear-gradient(180deg, transparent 0 15%, rgba(58, 26, 10, calc(var(--iz-koyu, 0.6) * 0.85)) 15% 19%);
+}
+.mk-kok .rs-mg-iz[data-yon='1'] { background: repeating-linear-gradient(90deg, transparent 0 15%, rgba(58, 26, 10, calc(var(--iz-koyu, 0.6) * 0.85)) 15% 19%); }
+.mk-kok [data-iz='1'][data-izyon='0'] > .rs-mg-iz[data-yon='0'],
+.mk-kok [data-iz='1'][data-izyon='1'] > .rs-mg-iz[data-yon='1'],
+.mk-kok [data-iz='2'] > .rs-mg-iz { opacity: 1; }
+.mk-kok .rs-mg-parca[data-tur='biber'] > .rs-mg-iz, .mk-kok .rs-mg-parca[data-tur='domates'] > .rs-mg-iz { inset: 26% 20%; }
+
+/* közlenecek sebzeler (üstten): kabarınca kara benekler (yanık değil) */
+.mk-kok .rs-mg-sebze { position: relative; display: block; width: 100%; height: 100%; pointer-events: none; --kabarma: 0; }
+.mk-kok .rs-mg-sebze::before, .mk-kok .rs-mg-sebze::after { content: ''; position: absolute; box-sizing: border-box; }
+.mk-kok .rs-mg-sebze[data-tur='biber']::before {
+  left: 30%;
+  right: 30%;
+  top: 8%;
+  bottom: 6%;
+  border: 3px solid var(--kontur, #3b2416);
+  border-radius: 46% 46% 50% 50% / 26% 26% 74% 74%;
+  background:
+    radial-gradient(ellipse 22% 14% at 36% 26%, rgba(255, 255, 255, 0.6) 0 60%, transparent 100%),
+    linear-gradient(90deg, #2f8a2e, #4fb043 45%, #3b9a36);
+}
+.mk-kok .rs-mg-sebze[data-tur='biber']::after {
+  left: 44%;
+  right: 44%;
+  top: 0;
+  height: 14%;
+  border: 2px solid var(--kontur, #3b2416);
+  border-radius: 4px;
+  background: #6b8f2a;
+}
+.mk-kok .rs-mg-sebze[data-tur='domates']::before {
+  inset: 10%;
+  border: 3px solid var(--kontur, #3b2416);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.65) 0 9%, transparent 22%),
+    radial-gradient(circle at 50% 55%, #f05a48, #d8392b 70%, #b82a1f);
+}
+.mk-kok .rs-mg-sebze[data-tur='domates']::after {
+  left: 38%;
+  right: 38%;
+  top: 6%;
+  height: 22%;
+  background: #3f9b36;
+  clip-path: polygon(50% 0, 62% 38%, 100% 44%, 66% 62%, 74% 100%, 50% 74%, 26% 100%, 34% 62%, 0 44%, 38% 38%);
+}
+/* kabarma: koyu benekler (ızgarada) */
+.mk-kok .rs-mg-parca > .rs-mg-sebze { overflow: visible; }
+.mk-kok .rs-mg-parca[data-tur='biber'] > .rs-mg-sebze,
+.mk-kok .rs-mg-parca[data-tur='domates'] > .rs-mg-sebze {
+  background:
+    radial-gradient(ellipse 9% 6% at 45% 40%, rgba(40, 24, 14, calc(var(--kabarma) * 0.8)) 0 70%, transparent 100%),
+    radial-gradient(ellipse 8% 5% at 55% 62%, rgba(40, 24, 14, calc(var(--kabarma) * 0.75)) 0 70%, transparent 100%),
+    radial-gradient(ellipse 7% 5% at 40% 74%, rgba(40, 24, 14, calc(var(--kabarma) * 0.7)) 0 70%, transparent 100%);
+}
+.mk-kok .rs-mg-parca > .rs-mg-sebze::before { z-index: -1; }
+
+/* ------------------------------------------------------------ maşa ve yelpaze */
+.mk-kok .rs-mg-masa {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  width: 64px;
+  height: 120px;
+  margin: -14px 0 0 -32px;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 5px 0 rgba(30, 18, 10, 0.3));
+  transition: transform 0.12s ease-out;
+}
+.mk-kok .rs-mg-masa.rs-tutuyor { transition: none; }
+.mk-kok .rs-mg-masa-kol {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 13px;
+  border: 3px solid var(--kontur);
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(90deg, #eef1f4, #a9b2bb);
+  transition: left 0.1s, right 0.1s;
+}
+.mk-kok .rs-mg-masa-kol.rs-sol { left: 14px; border-bottom-right-radius: 10px; }
+.mk-kok .rs-mg-masa-kol.rs-sag { right: 14px; border-bottom-left-radius: 10px; }
+.mk-kok .rs-mg-masa.rs-tutuyor .rs-mg-masa-kol.rs-sol { left: 22px; }
+.mk-kok .rs-mg-masa.rs-tutuyor .rs-mg-masa-kol.rs-sag { right: 22px; }
+.mk-kok .rs-mg-masa::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -6px;
+  height: 30px;
+  border: 3px solid var(--kontur);
+  border-radius: 6px 6px 12px 12px;
+  background: linear-gradient(#c98a50, #9a6a3e);
+}
+.mk-kok .rs-mg-yelpaze {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 26;
+  width: 104px;
+  height: 116px;
+  margin: -58px 0 0 -52px;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 5px 0 rgba(30, 18, 10, 0.3));
+  transition: transform 0.12s ease-out;
+}
+.mk-kok .rs-mg-yelpaze.rs-tutuyor { transition: transform 0.06s linear; }
+.mk-kok .rs-mg-yelpaze-yaprak {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 0;
+  height: 70%;
+  border: 3px solid var(--kontur);
+  border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
+  background:
+    repeating-linear-gradient(45deg, rgba(150, 100, 40, 0.28) 0 4px, transparent 4px 9px),
+    repeating-linear-gradient(-45deg, rgba(150, 100, 40, 0.22) 0 4px, transparent 4px 9px),
+    radial-gradient(circle at 50% 70%, #f6dc9a, #e3bd66);
+  transition: transform 0.08s;
+}
+.mk-kok .rs-mg-yelpaze[data-yon='sol'] .rs-mg-yelpaze-yaprak { transform: translateX(-5px) scale(0.94, 1); }
+.mk-kok .rs-mg-yelpaze[data-yon='sag'] .rs-mg-yelpaze-yaprak { transform: translateX(5px) scale(0.94, 1); }
+.mk-kok .rs-mg-yelpaze-sap {
+  position: absolute;
+  left: 42%;
+  right: 42%;
+  top: 60%;
+  bottom: 0;
+  border: 3px solid var(--kontur);
+  border-radius: 6px;
+  background: linear-gradient(90deg, #c98a50, #9a6a3e);
+}
+
+/* ------------------------------------------------------------ duman, is, kalpler, tabak */
+.mk-kok .rs-mg-bulut { position: absolute; pointer-events: none; }
+.mk-kok .rs-mg-bulut i {
+  position: absolute;
+  width: 46%;
+  height: 62%;
+  border-radius: 50%;
+  border: 3px solid #6f6a66;
+  background: radial-gradient(circle at 36% 32%, #f4f3f2, #c9c6c3 70%);
+  left: calc(4% + var(--i) * 8%);
+  top: calc(20% + (var(--i) - 3) * (var(--i) - 3) * 3%);
+}
+.mk-kok .rs-mg-bulut i:nth-child(even) { top: 2%; width: 40%; height: 56%; }
+.mk-kok .rs-mg-is { position: absolute; width: 92px; height: 84px; pointer-events: none; z-index: 41; }
+.mk-kok .rs-mg-is i {
+  position: absolute;
+  width: 22%;
+  height: 18%;
+  border-radius: 50%;
+  background: rgba(46, 36, 30, 0.78);
+  left: calc(8% + var(--i) * 14%);
+  top: calc(18% + ((var(--i) * 37) % 50) * 1%);
+}
+.mk-kok .rs-mg-kino-balon {
+  position: absolute;
+  z-index: 42;
+  padding: 6px 12px;
+  border: 3px solid var(--kontur);
+  border-radius: 16px;
+  background: #fff;
+  font: 600 16px/1.2 Fredoka, system-ui, sans-serif;
+  color: var(--kontur);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.mk-kok .rs-mg-kalp {
+  position: absolute;
+  width: 58px;
+  height: 52px;
+  pointer-events: none;
+  background: radial-gradient(circle at 40% 35%, #ffffff, #e7e3df);
+  clip-path: path('M29 50 6 27A13 13 0 0 1 29 9a13 13 0 0 1 23 18z');
+  filter: drop-shadow(0 0 2px #8a837e);
+}
+.mk-kok .rs-mg-tabak {
+  position: absolute;
+  border: 3px solid var(--kontur);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%);
+  box-shadow: 0 6px 0 rgba(59, 36, 22, 0.2);
+}
+.mk-kok .rs-mg-elde-sini { width: 86px; height: 86px; margin: -43px 0 0 -43px; }
+.mk-kok .rs-mg-tabak-gorsel {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--kontur, #3b2416);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #ffffff 0 58%, #dfe9f1 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%);
+}
+.mk-kok .rs-mg-tabak-parca { position: absolute; aspect-ratio: 1; translate: 0 -50%; }
+.mk-kok .rs-mg-tabak-parca > .rs-yg-kofte, .mk-kok .rs-mg-tabak-parca > .rs-mg-sebze { position: absolute; inset: 0; width: 100%; height: 100%; border-width: 2px; }
+.mk-kok .rs-mg-tabak-parca[data-iz='0'] > .rs-mg-iz { display: none; }
+.mk-kok .rs-mg-tabak-parca > .rs-mg-iz { opacity: 1; --iz-koyu: 0.7; }
+.mk-kok .rs-mg-simge { position: relative; display: block; width: 100%; height: 100%; }
+.mk-kok .rs-mg-simge-izgara {
+  position: absolute;
+  inset: 14% 8%;
+  border: 3px solid #3b2416;
+  border-radius: 10px;
+  background: repeating-linear-gradient(180deg, #2b2524 0 5px, #dfe3e8 5px 8px), #2b2524;
+  box-shadow: inset 0 0 12px rgba(255, 120, 30, 0.8);
+}

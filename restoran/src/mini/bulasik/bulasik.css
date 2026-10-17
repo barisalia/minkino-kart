@@ -1,0 +1,215 @@
+/* BULAŞIK (.rs-bulasik; yalnız .mk-kok altında). Sade yer tutucu çizimler: düz renk + yumuşak gölge + kalın kahve
+   kontur. Gemini istasyon-lavabo / tabak / sünger kesitleri gelince resimle değişir (BİTMİŞ ÇİZİM DEĞİL). */
+.mk-kok .rs-bulasik { --kontur: #3b2416; }
+.mk-kok .rs-ist-arka.rs-ist-yertutucu ~ .rs-ist-alan .rs-bulasik {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px) 0 0 / 46px 46px,
+    linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px) 0 0 / 46px 46px,
+    linear-gradient(#cfeaf3, #b9dfec);
+}
+
+/* ------------------------------------------------------------ leğen (çelik lavabo, üstten) ve musluk */
+.mk-kok .rs-bl-legen { position: absolute; z-index: 1; filter: drop-shadow(0 7px 0 rgba(59, 36, 22, 0.18)); }
+.mk-kok .rs-bl-legen-ic {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--kontur);
+  border-radius: 34px;
+  background: linear-gradient(135deg, #f1f4f7, #c8d1d9 60%, #aeb9c3);
+  box-shadow: inset 0 0 0 10px #e3e9ee, inset 0 0 0 13px var(--kontur);
+}
+.mk-kok .rs-bl-su {
+  position: absolute;
+  inset: 16px;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse 30% 8% at 30% 30%, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 22% 6% at 70% 70%, rgba(255, 255, 255, 0.4), transparent 70%),
+    linear-gradient(#bfe6f7, #8ccbe8);
+  opacity: 0.92;
+}
+.mk-kok .rs-bl-su-kopuk {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  height: 22%;
+  border-radius: 0 0 24px 24px;
+  background:
+    radial-gradient(circle, #fff 0 46%, transparent 50%) 0 60% / 34px 30px repeat-x,
+    radial-gradient(circle, #f4fbff 0 46%, transparent 50%) 14px 100% / 30px 26px repeat-x;
+  opacity: 0.9;
+}
+.mk-kok .rs-bl-musluk { position: absolute; z-index: 8; width: 92px; height: 70px; cursor: pointer; touch-action: none; }
+.mk-kok .rs-bl-musluk-boru { position: absolute; left: 36px; top: 0; width: 20px; height: 54px; border: 3px solid var(--kontur); border-radius: 8px 8px 12px 12px; background: linear-gradient(90deg, #f4f7fa, #a9b4be); }
+.mk-kok .rs-bl-musluk-agiz { position: absolute; left: 30px; top: 42px; width: 32px; height: 22px; border: 3px solid var(--kontur); border-radius: 50%; background: radial-gradient(circle, #5b6670 0 30%, #c9d1d8 34%); }
+.mk-kok .rs-bl-musluk-kol { position: absolute; top: 4px; width: 26px; height: 26px; border: 3px solid var(--kontur); border-radius: 50%; background: radial-gradient(circle at 40% 35%, #ffffff, #b9c3cc); }
+.mk-kok .rs-bl-musluk-kol.rs-sol { left: 2px; background: radial-gradient(circle at 40% 35%, #ffd2cc, #e8483a); }
+.mk-kok .rs-bl-musluk-kol.rs-sag { right: 2px; background: radial-gradient(circle at 40% 35%, #cfe6ff, #4c8fd6); }
+.mk-kok .rs-bl-musluk.rs-acik .rs-bl-musluk-kol { transform: scale(0.9); }
+.mk-kok .rs-bl-akis {
+  position: absolute;
+  z-index: 7;
+  width: 36px;
+  border-radius: 14px;
+  background: repeating-linear-gradient(180deg, rgba(160, 220, 245, 0.85) 0 10px, rgba(220, 245, 255, 0.95) 10px 18px);
+  background-size: 100% 36px;
+  animation: rs-bl-akis 0.25s linear infinite;
+  pointer-events: none;
+}
+@keyframes rs-bl-akis { to { background-position: 0 36px; } }
+
+/* ------------------------------------------------------------ tabak (üstten) */
+.mk-kok .rs-bl-tabak-kat, .mk-kok .rs-bl-balonlar, .mk-kok .rs-bl-efekt { position: absolute; inset: 0; pointer-events: none; }
+.mk-kok .rs-bl-tabak-kat { z-index: 5; }
+.mk-kok .rs-bl-balonlar { z-index: 20; }
+.mk-kok .rs-bl-efekt { z-index: 30; }
+.mk-kok .rs-bl-tabak { position: absolute; pointer-events: auto; touch-action: none; cursor: grab; }
+.mk-kok .rs-bl-tabak.rs-tutuluyor { z-index: 3; filter: drop-shadow(0 12px 0 rgba(59, 36, 22, 0.25)); }
+.mk-kok .rs-bl-tabak-zemin {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--kontur);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0 58%, #e3ecf2 60% 66%, #4c8fd6 67% 71%, #fbfdff 72% 92%, #e6eef4 93%);
+  box-shadow: 0 5px 0 rgba(59, 36, 22, 0.16);
+}
+.mk-kok .rs-bl-lekeler, .mk-kok .rs-bl-kopukler { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; }
+.mk-kok .rs-bl-leke {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 62% 38% 55% 45% / 40% 58% 42% 60%;
+  background:
+    radial-gradient(ellipse at 34% 34%, rgba(255, 255, 255, 0.3) 0 10%, transparent 28%),
+    radial-gradient(ellipse at 50% 50%, var(--renk) 0 52%, transparent 74%);
+  opacity: 0.9;
+  transition: opacity 0.12s linear;
+}
+.mk-kok .rs-bl-leke b {
+  position: absolute;
+  width: 26%;
+  height: 22%;
+  border-radius: 50%;
+  background: var(--renk);
+  box-shadow: 0 0 0 1.5px rgba(59, 36, 22, 0.22);
+}
+.mk-kok .rs-bl-leke[data-gizli='1'] { box-shadow: none; }
+.mk-kok .rs-bl-kopuk {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffffff 0 22%, rgba(240, 250, 255, 0.95) 40%, rgba(200, 230, 245, 0.85) 80%);
+  box-shadow: 0 0 0 1.5px rgba(120, 170, 200, 0.6);
+}
+.mk-kok .rs-bl-deterjan-damla { position: absolute; width: 14%; height: 12%; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d9ffcf, #5fc24a); box-shadow: 0 0 0 2px rgba(59, 36, 22, 0.4); }
+.mk-kok .rs-bl-tabak-parilti { position: absolute; inset: 0; border-radius: 50%; opacity: 0; background: radial-gradient(ellipse 30% 14% at 34% 26%, rgba(255, 255, 255, 0.95), transparent 70%); transition: opacity 0.3s; }
+.mk-kok .rs-bl-tabak[data-durum='temiz'] .rs-bl-tabak-parilti { opacity: 1; }
+
+/* ------------------------------------------------------------ yığın ve raf */
+.mk-kok .rs-bl-yigin { position: absolute; z-index: 2; pointer-events: none; }
+.mk-kok .rs-bl-yigin-tabak {
+  position: absolute;
+  left: calc(var(--i) * 2.5%);
+  top: calc(var(--i) * -4%);
+  width: 92%;
+  height: 92%;
+  border: 3px solid var(--kontur);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0 58%, #e3ecf2 60% 66%, #4c8fd6 67% 71%, #fbfdff 72%);
+  box-shadow: 0 4px 0 rgba(59, 36, 22, 0.18);
+}
+.mk-kok .rs-bl-yigin-tabak b { position: absolute; transform: translate(-50%, -50%); border-radius: 46% 54% 50% 50%; box-shadow: 0 0 0 1.5px rgba(59, 36, 22, 0.25); }
+.mk-kok .rs-bl-raf { position: absolute; z-index: 3; pointer-events: none; }
+.mk-kok .rs-bl-raf-taban { position: absolute; left: 0; right: 0; bottom: 0; height: 18%; border: 3px solid var(--kontur); border-radius: 10px; background: linear-gradient(#e9c387, #c98e4e); }
+.mk-kok .rs-bl-raf-cubuk { position: absolute; bottom: 10%; left: calc(4% + var(--i) * 14.5%); width: 8px; height: 82%; border: 2.5px solid var(--kontur); border-radius: 5px; background: linear-gradient(90deg, #f4e1bf, #c98e4e); }
+.mk-kok .rs-bl-raftaki {
+  position: absolute;
+  z-index: 2;
+  border: 3px solid var(--kontur);
+  border-radius: 50%;
+  background: linear-gradient(90deg, #dfe9f1 0 18%, #ffffff 30% 70%, #4c8fd6 80% 86%, #eef4f8 88%);
+}
+.mk-kok .rs-bl-raftaki.rs-parla { box-shadow: 0 0 0 3px #fff6c9, 0 0 14px 4px rgba(255, 236, 140, 0.9); }
+.mk-kok .rs-bl-jeton {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--kontur);
+  background: radial-gradient(circle at 36% 30%, #fff6c9 0 14%, #ffd449 40%, #e5a82a 80%);
+  box-shadow: inset 0 0 0 4px #f2902f;
+}
+
+/* ------------------------------------------------------------ sünger, deterjan */
+.mk-kok .rs-bl-sunger {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  width: 92px;
+  height: 66px;
+  margin: -33px 0 0 -46px;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 5px 0 rgba(59, 36, 22, 0.25));
+}
+.mk-kok .rs-bl-sunger:not(.rs-tutuluyor) { transition: transform 0.15s ease-out; }
+.mk-kok .rs-bl-sunger-sari { position: absolute; inset: 22% 0 0 0; border: 3px solid var(--kontur); border-radius: 16px; background: radial-gradient(circle, rgba(200, 150, 20, 0.35) 0 2px, transparent 2.5px) 0 0 / 9px 8px, #ffd54d; }
+.mk-kok .rs-bl-sunger-yesil { position: absolute; inset: 0 0 64% 0; border: 3px solid var(--kontur); border-radius: 12px 12px 6px 6px; background: #4fa83d; }
+.mk-kok .rs-bl-sunger.rs-tutuluyor .rs-bl-sunger-sari { transform: scale(1.04, 0.92); }
+.mk-kok .rs-bl-deterjan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 24;
+  width: 64px;
+  height: 100px;
+  margin: -50px 0 0 -32px;
+  touch-action: none;
+  cursor: pointer;
+  filter: drop-shadow(0 5px 0 rgba(59, 36, 22, 0.25));
+}
+.mk-kok .rs-bl-deterjan-sise { position: absolute; left: 8%; right: 8%; top: 22%; bottom: 0; border: 3px solid var(--kontur); border-radius: 16px 16px 12px 12px; background: radial-gradient(ellipse 30% 20% at 35% 30%, rgba(255, 255, 255, 0.7), transparent 70%), linear-gradient(#8de07a, #4fa83d); }
+.mk-kok .rs-bl-deterjan-kapak { position: absolute; left: 30%; right: 30%; top: 2%; height: 24%; border: 3px solid var(--kontur); border-radius: 8px 8px 4px 4px; background: #e8483a; }
+
+/* ------------------------------------------------------------ köpük balonları, dağ, Lokum */
+.mk-kok .rs-bl-balon {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+}
+.mk-kok .rs-bl-balon::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--s, 40px);
+  height: var(--s, 40px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2.5px solid rgba(110, 160, 200, 0.85);
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.95) 0 9%, transparent 16%),
+    radial-gradient(circle at 70% 76%, rgba(255, 200, 240, 0.45) 0 14%, transparent 30%),
+    radial-gradient(circle, rgba(220, 245, 255, 0.25), rgba(170, 220, 255, 0.45) 80%);
+}
+.mk-kok .rs-bl-balon.rs-buyuk::before { border-width: 3px; }
+.mk-kok .rs-bl-balon.rs-burun { pointer-events: none; }
+.mk-kok .rs-bl-balon.rs-burun::before { width: 100%; height: 100%; }
+.mk-kok .rs-bl-lokum { position: absolute; z-index: 2; pointer-events: none; }
+.mk-kok .rs-bl-dag { position: absolute; pointer-events: none; }
+.mk-kok .rs-bl-dag i {
+  position: absolute;
+  border-radius: 50%;
+  border: 2.5px solid rgba(110, 160, 200, 0.7);
+  background: radial-gradient(circle at 34% 30%, #ffffff 0 30%, #eef8fe 60%, #d3ecf8);
+}
+.mk-kok .rs-bl-simge { position: relative; display: block; width: 100%; height: 100%; }
+.mk-kok .rs-bl-simge-tabak { position: absolute; inset: 12% 16% 18% 10%; border: 3px solid #3b2416; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 56%, #4c8fd6 58% 64%, #fbfdff 66%); }
+.mk-kok .rs-bl-simge-sunger { position: absolute; right: 6%; bottom: 8%; width: 40%; height: 28%; border: 3px solid #3b2416; border-radius: 8px; background: linear-gradient(#4fa83d 0 30%, #ffd54d 30%); }
+.mk-kok .rs-bl-raf-gorsel { position: absolute; inset: 0; border-radius: 12px; background: linear-gradient(transparent 76%, #c98e4e 76%); }
+.mk-kok .rs-bl-raf-gorsel i { position: absolute; bottom: 18%; width: 12%; height: 66%; border: 2px solid #3b2416; border-radius: 50%; background: linear-gradient(90deg, #dfe9f1, #ffffff 40%, #4c8fd6 80%); }

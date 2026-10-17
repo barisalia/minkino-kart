@@ -1,0 +1,25 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · SÜTLAÇ mini oyunu sözleri (P6, v1.1; ekip/senaryo/RESTORAN.md §8 M17). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). Hiçbir şey yanmaz. [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "ad": {
+      "sut": "Süt!",
+      "pirinc": "Pirinç!",
+      "seker": "Şeker!",
+      "tarcin": "Tarçın!"
+    },
+    "koyulasti": "[happy] Koyulaştı!",
+    "tasti": "[giggles] Taştı! Şlurp!",
+    "firin": "[excited] Fırına!",
+    "altin": "[happy] Üstü kızardı!",
+    "hazir": "[happy] Sütlaç hazır!",
+    "bulut": "[giggles] Bulut buna bayılır!",
+    "ipucu": {
+      "bos": "[curious] Tencere bomboş…",
+      "karistir": "[curious] Pirinçler dibe çöktü…",
+      "kase": "[curious] Kâseler bomboş…",
+      "firin": "[curious] Fırın sıcacık bekliyor…",
+      "tarcin": "[curious] Üstü bembeyaz…",
+      "bitti": "[happy] Mis gibi sütlaç!"
+    }
+  }
+}

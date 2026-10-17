@@ -33,6 +33,10 @@ export const TARIFLER: Record<string, Tarif> = {
   pide: { id: 'pide', yol: ['rendele', 'dogra', 'pide'], malzemeler: ['kasar', 'sucuk', 'domates', 'biber', 'yumurta'], ipucu: ['doyurucu', 'citir'], sicak: true },
   kofte: { id: 'kofte', yol: ['yogur', 'mangal', 'tabakla'], malzemeler: ['kofte', 'sogan', 'maydanoz', 'ekmek', 'biber'], ipucu: ['doyurucu', 'citir'], sicak: true },
   limonata: { id: 'limonata', yol: ['icecek'], malzemeler: ['limon', 'seker'], ipucu: ['serin', 'tatli'], sicak: false },
+  // v1.1 (P6): meyve şiş, sigara böreği, sütlaç
+  sis: { id: 'sis', yol: ['sis'], malzemeler: ['cilek', 'muz', 'kavun', 'uzum', 'bal'], ipucu: ['tatli', 'serin'], sicak: false },
+  borek: { id: 'borek', yol: ['sar'], malzemeler: ['yufka', 'peynir', 'maydanoz'], ipucu: ['citir', 'doyurucu'], sicak: true },
+  sutlac: { id: 'sutlac', yol: ['sutlac'], malzemeler: ['sut', 'pirinc', 'seker', 'tarcin'], ipucu: ['tatli', 'serin'], sicak: false },
 };
 /** Gün 1'de açık tarifler */
 export const ILK_TARIFLER = ['salata', 'menemen'];
@@ -121,6 +125,8 @@ export const MUSTERILER: Record<string, Musteri> = {
   bidik: { id: 'bidik', boy: 'bidik', ton: 1.12, sever: [{ m: 'marul' }, { m: 'salatalik' }], sevmez: [], gag: 'pecete', gun: 1, eslik: 'bidicik' },
   bidicik: { id: 'bidicik', boy: 'bidicik', ton: 1.25, sever: [], sevmez: [], gag: 'dudak', gun: 1, eslikci: true },
   'bidik-baba': { id: 'bidik-baba', boy: 'bidik-baba', ton: 0.85, sever: [{ t: 'ayran' }, { m: 'kasar' }], sevmez: [{ k: 'aci' }], gag: 'sakal', gun: 2 },
+  // P6 gizli sürpriz §9.11: yalnız pencereden Fındık'a dokununca gelir (planda yok); yanında Fındık yerde kendi kabından
+  nehir: { id: 'nehir', boy: 'nehir', ton: 1.05, sever: [{ t: 'limonata' }, { m: 'limon' }, { m: 'havuc' }], sevmez: [{ m: 'sogan' }], gag: 'omuz', gun: 99 },
 };
 
 /** Zevk koşulunu yemekte ara */

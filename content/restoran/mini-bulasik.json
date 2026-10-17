@@ -1,0 +1,19 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · BULAŞIK mini oyunu sözleri (P6; ekip/senaryo/RESTORAN.md §8 M15). mino = anlatıcı sesi (Mino). Mino durumu anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "geldi": "[giggles] Bir yığın tabak!",
+    "kopuk": "[happy] Köpük köpük!",
+    "hala": "[curious] Hâlâ lekeli…",
+    "piril": "[happy] Pırıl pırıl!",
+    "dag": "[gasps] Köpük dağı!",
+    "hapsu": "[giggles] Hapşu!",
+    "bitti": "[excited] Hepsi tertemiz!",
+    "bahsis": "[happy] Babaanneden bahşiş!",
+    "ipucu": {
+      "kirli": "[curious] Tabak hâlâ lekeli…",
+      "kopuklu": "[curious] Tabak köpük içinde…",
+      "temiz": "[happy] Tabak pırıl pırıl…",
+      "bitti": "[happy] Raf doldu!"
+    }
+  }
+}
