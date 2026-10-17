@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { OKUL_CANLI } from '../../kitap/src/okul-canli';
 import { hataTopla } from './yardimci';
 
 /**
@@ -98,7 +99,7 @@ test('yatay 844×390: raf, 3D kitap, kapak açılır, sürükleyerek ve köşede
   for (const o of await metinOlc(page)) expect(o.sigar && o.px >= 17, JSON.stringify(o)).toBe(true);
   // ses etiketi basılmaz
   await expect(page.locator('.kt-kitap')).not.toContainText('[excited]');
-  // Antigravity'nin tam sayfa çizimi bağlı (yer tutucu yok); zemin/poz katmanları gelene kadar karakter kesilmez
+  // Gemini'nin tam sayfa çizimi bağlı (2752×1536, yer tutucu yok); karakter kesilmez
   await expect(page.locator('.kt-sayfa-sol img.kt-zemin')).toHaveAttribute('src', /s01-tam/);
   await expect(page.locator('.kt-sayfa-sol .kt-yertutucu')).toHaveCount(0);
   await expect(page.locator('.kt-sayfa-sol .kt-katman')).toHaveCount(0);
@@ -166,7 +167,7 @@ test('dikey 390×844: tek sayfa (üstte resim, altta yazı), sürükleyerek çev
   expect(m.y).toBeGreaterThanOrEqual(r.y + r.height - 1);
   const px = await page.locator('.kt-sayfa-tek .kt-metin').evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
   expect(px).toBeGreaterThanOrEqual(20);
-  // resim sayfanın üstünde kenardan kenara (1376 çizim telefonda büyütülmeden yeter)
+  // resim sayfanın üstünde kenardan kenara (2752 çizim telefonda büyütülmeden fazlasıyla yeter)
   const sayfaKutu = (await page.locator('.kt-kitap > .kt-sayfa-tek').boundingBox())!;
   expect(Math.abs(r.width - sayfaKutu.width)).toBeLessThanOrEqual(1);
   await surukle(page, 1);
@@ -239,6 +240,52 @@ test('Bana oku: kapak ve sayfa satır satır okunur, kelime vurgulanır, otomati
   // mod düğmesi: "Kendim bakayım"a geçince okuma durur
   await page.locator('.kt-mod').click();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-kitap-v1')!).mod)).toBe('bak');
+  expect(hatalar).toEqual([]);
+});
+
+test('her sayfada (kapak + 14) uğur böceği ve canlanan anlar çizimdeki yerinde: parmağın değdiği nokta bölgeye düşer, an bulunur', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  for (const [w, h] of [[844, 390], [390, 844]] as const) {
+    await boyut(page, w, h);
+    await page.goto('kitap/?test=1');
+    await page.evaluate(() => localStorage.removeItem('minkino-kitap-v1'));
+    await page.reload();
+    await kitabiAc(page, 'bak');
+    await expect.poll(() => sayfa(page)).toBe(1);
+    await page.evaluate(() => (window as unknown as { __kitap: K }).__kitap.cevir(-1));
+    for (let no = 0; no <= 14; no++) {
+      await expect.poll(() => sayfa(page)).toBe(no);
+      await expect.poll(() => page.evaluate(() => (window as unknown as { __kitap: { cevriliyor: () => boolean } }).__kitap.cevriliyor())).toBe(false);
+      const tam = OKUL_CANLI[no].tam!;
+      // ekrandaki dokunma alanları: her birinin ortasında en üstteki öğe kendisi (yazı, köşe düğmesi, başka bölge örtmüyor)
+      const hedefler = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('.kt-kitap > .kt-sayfa .kt-tam-bolge, .kt-kitap > .kt-sayfa .kt-ugur')].map((e) => {
+          const k = e.getBoundingClientRect();
+          const r = e.parentElement!.getBoundingClientRect();
+          const x = k.x + k.width / 2;
+          const y = k.y + k.height / 2;
+          const ust = document.elementFromPoint(x, y);
+          return { ad: e.classList.contains('kt-ugur') ? 'ugur' : e.dataset.hedef!, x, y, gx: (x - r.x) / r.width, gy: (y - r.y) / r.height, isabet: !!ust && (ust === e || e.contains(ust)) };
+        }),
+      );
+      const kutuSayisi = Object.values(tam.yerler).reduce((n, v) => n + (Array.isArray(v[0]) ? v.length : 1), 0);
+      expect(hedefler.length, `${w}x${h} sayfa ${no}`).toBe(kutuSayisi + 1);
+      for (const t of hedefler) {
+        expect(t.isabet, `${w}x${h} sayfa ${no}: ${t.ad} örtülü`).toBe(true);
+        if (t.ad === 'ugur') {
+          // uğur böceğinin dokunma noktası çizimdeki yerinde (resmin oranı; birim testi pikselden denetler)
+          expect(Math.abs(t.gx - tam.ugur[0]), `${w}x${h} sayfa ${no}: uğur x`).toBeLessThan(0.01);
+          expect(Math.abs(t.gy - tam.ugur[1]), `${w}x${h} sayfa ${no}: uğur y`).toBeLessThan(0.01);
+        }
+        await page.touchscreen.tap(t.x, t.y);
+      }
+      const anahtar = no ? `s${String(no).padStart(2, '0')}` : 'kapak';
+      const beklenen = ['ugur', ...Object.keys(tam.yerler).map((hd) => OKUL_CANLI[no].anlar.find((a) => a.dokun.includes(hd))!.id)];
+      const bulunan = await page.evaluate((a) => JSON.parse(localStorage.getItem('minkino-kitap-v1')!).kitaplar.okul.bulunan[a] as string[], anahtar);
+      expect(bulunan, `${w}x${h} sayfa ${no}`).toEqual(expect.arrayContaining(beklenen));
+      if (no < 14) await ileri(page);
+    }
+  }
   expect(hatalar).toEqual([]);
 });
 

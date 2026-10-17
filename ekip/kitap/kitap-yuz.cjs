@@ -9,14 +9,14 @@ const sharp = require('sharp');
 const path = require('node:path');
 
 const TABLO = [
-  ['okul', 'kino', 's02', 925, 292, 98],
-  ['okul', 'anne', 's02', 1130, 210, 100],
-  ['okul', 'baba', 's02', 368, 236, 112],
-  ['okul', 'lokum', 's02', 1138, 548, 88],
-  ['okul', 'mino', 's03', 258, 388, 104],
-  ['okul', 'ogretmen', 's04', 852, 262, 100],
-  ['okul', 'bulut', 's09', 1140, 405, 100],
-  ['okul', 'tombi', 's10', 1160, 472, 90],
+  ['okul', 'kino', 's02', 923, 324, 98],
+  ['okul', 'anne', 's02', 1141, 201, 100],
+  ['okul', 'baba', 's02', 390, 252, 112],
+  ['okul', 'lokum', 's02', 1146, 556, 88],
+  ['okul', 'mino', 's03', 310, 396, 100],
+  ['okul', 'ogretmen', 's04', 930, 235, 105],
+  ['okul', 'bulut', 's09', 252, 418, 100],
+  ['okul', 'tombi', 's10', 222, 452, 100],
 ];
 const BOY = 144;
 

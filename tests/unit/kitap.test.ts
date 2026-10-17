@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 import kuzuKulak from '../../content/kitap-kuzu-kulak.json';
 import okul from '../../content/kitap-okul.json';
@@ -212,6 +213,25 @@ describe('Kitap: ekran ölçüleri (telefon önce)', () => {
           expect(kutu[1] + kutu[3], `sayfa ${no}: ${k}`).toBeLessThanOrEqual(1.001);
         }
       }
+    }
+  });
+  it('uğur böceği çizimdeki yerinde: dokunma noktasının hemen çevresinde uğur kırmızısı var (Gemini 2752 sayfaları, aynalılar dahil)', { timeout: 60_000 }, async () => {
+    const yerlesim = JSON.parse(readFileSync(resolve(KOK, 'assets/kitap/okul/yerlesim.json'), 'utf8')) as { sayfalar: Record<string, { tam: string; boy: [number, number] }> };
+    for (let no = 0; no <= 14; no++) {
+      const ad = no ? `s${String(no).padStart(2, '0')}` : 'kapak';
+      const { tam, boy } = yerlesim.sayfalar[ad];
+      expect(boy, ad).toEqual([2752, 1536]);
+      const [ux, uy] = OKUL_CANLI[no].tam!.ugur;
+      // böceğin gövdesi ~90 px; nokta onun üstünde olmalı: ±42 px pencerede kırmızı (kırmızı ayakkabıyla karışmasın diye dar)
+      const r = 42;
+      const { data } = await sharp(resolve(KOK, 'assets/kitap/okul', tam))
+        .extract({ left: Math.round(ux * boy[0]) - r, top: Math.round(uy * boy[1]) - r, width: 2 * r, height: 2 * r })
+        .removeAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      let kirmizi = 0;
+      for (let i = 0; i < data.length; i += 3) if (data[i] > 170 && data[i + 1] < 90 && data[i + 2] < 90) kirmizi++;
+      expect(kirmizi, `${ad}: uğur noktası (${ux}, ${uy}) böceğin üstünde değil`).toBeGreaterThan(150);
     }
   });
 });

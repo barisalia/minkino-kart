@@ -39,6 +39,13 @@ const AG_KLASOR = 'antigravity-1376';
  * Çıktı uzun kenar SAYFA_EN_COK (2752): telefonda da tablette de resim kenardan kenara net.
  */
 const UP_KLASOR = 'recraft-up';
+/**
+ * Gemini'nin yeniden çizdiği tam sayfalar (2026-10-17, 2752x1536 PNG, yazısız; Kino aile modelinde): <girdi>/2k/kapak.png,
+ * sayfa-01.png … Varsa recraft-up ve antigravity-1376'nın ÖNÜNDE gelir. Kompozisyon eskisinden farklı (01, 05-13 aynalı):
+ * uğur ve dokunma yerleri kitap/src/okul-canli.ts → tam bu çizimlere göre ölçüldü; yüzler ekip/kitap/kitap-yuz.cjs.
+ * Netlik: 2752 px kaynak resim alanını 917 CSS px'e kadar taşır (×3 DPR); telefon ve tablet sayfası bunun altında.
+ */
+const GEMINI_KLASOR = '2k';
 const agAdi = (sayfa) => (sayfa === 'kapak' ? 'kapak' : sayfa.replace(/^s/, 'sayfa-'));
 
 // ---------------------------------------------------------------- tablo (kitap/src/okul-canli.ts ile aynı; tests/unit/kitap.test.ts denetler)
@@ -193,7 +200,7 @@ function bolgeleriDagit(bolgeler, katmanlar) {
 
 async function sayfaIsle(sayfa, yerlesim, el) {
   const katmanlar = SAYFALAR[sayfa];
-  const tamF = dosya(sayfa) || dosya(path.join(UP_KLASOR, agAdi(sayfa))) || dosya(path.join(AG_KLASOR, agAdi(sayfa))), zeminF = dosya(`${sayfa}-zemin`);
+  const tamF = dosya(sayfa) || dosya(path.join(GEMINI_KLASOR, agAdi(sayfa))) || dosya(path.join(UP_KLASOR, agAdi(sayfa))) || dosya(path.join(AG_KLASOR, agAdi(sayfa))), zeminF = dosya(`${sayfa}-zemin`);
   const y = (yerlesim.sayfalar[sayfa] = yerlesim.sayfalar[sayfa] || {});
   if (!tamF && !zeminF) { console.log(`${sayfa}: sayfa resmi yok (bekleniyor)`); return; }
   console.log(`${sayfa}:`);
