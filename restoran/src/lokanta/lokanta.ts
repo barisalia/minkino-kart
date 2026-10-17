@@ -43,7 +43,7 @@ import { panoCiz, PANO_YER } from './pano';
 import { surukleBagla, ustunde } from './surukle';
 import { aletKutusu, masaYeri, sahneGenisligi, susleriCiz, yuvaSec } from './yerlesim';
 import { hudKur, HUD_SOZ, type Hud } from './hud';
-import { arka34Ciz, balonYerlestir, derinlik, grafikKur, halilariCiz, kisiOlcekle, masaYaniYeri, sahne34Acik, sandalyeYeri, yolBul, yolYuru, type YolGrafigi } from './sahne34';
+import { arka34Ciz, aynala, balonYerlestir, derinlik, grafikKur, halilariCiz, kisiOlcekle, masaYaniYeri, sahne34Acik, sandalyeYeri, yolBul, yolYuru, type YolGrafigi } from './sahne34';
 import { KAPASITE, Sira, type SiraUyesi } from './sira';
 import { defterAc } from '../defter';
 import './sahne34.css';
@@ -1296,6 +1296,17 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     kaydet();
     merdiven.hedef(null);
     await kinoZincir;
+    // 3/4 (§7e): gün sonunda Kino kapıya yürür, kapıdaki levhayı çevirir (kino-34-yuru 'levha' karesi)
+    if (S34 && varlik('kisi/kino/levha') && !kapandi) {
+      await kinoYuru(Y34.yol.kapiIc?.x ?? Y.kapi.x + 4, Y34.yol.kapiIc?.y ?? Y.kapi.y);
+      aynala(kino, true);
+      kino.poz('levha');
+      salonSes.kapi();
+      await kino.oynat('hop', 420);
+      await bekle(700);
+      aynala(kino, false);
+      kino.poz('giris');
+    }
     if (bahcede) kaydir(false);
     secimKapat();
     gunSonu = gunSonuAc(el, {

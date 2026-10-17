@@ -191,3 +191,14 @@ describe('balon ikonları (§7e): 12 yemek ve 6 ipucu, menü ve isteklerle eşle
     for (const s of ['masa-sandalye-34', 'sus-34', 'hud-panel', 'hud-parcalar', 'balon-ikon-yemek', 'balon-ikon-durum']) for (const a of adlar(s)) expect(a, s).not.toMatch(/-\d+$/);
   });
 });
+
+describe('varlık tablosu: rakamla biten kare adları (Kino on-1, sira-2) tam adlarıyla bulunur', () => {
+  it('surumTablosu', async () => {
+    const { surumTablosu } = await import('../../restoran/src/varliklar');
+    const t = surumTablosu({ 'assets/restoran/kisi/kino/on-1.webp': 'a', 'assets/restoran/kisi/kino/on-2.webp': 'b', 'assets/restoran/sus/masa.webp': 'm', 'assets/restoran/sus/masa-2.webp': 'm2' });
+    expect(t.get('kisi/kino/on-1')).toBe('a');
+    expect(t.get('kisi/kino/on-2')).toBe('b');
+    // sürüm eki: en yüksek sürüm
+    expect(t.get('sus/masa')).toBe('m2');
+  });
+});

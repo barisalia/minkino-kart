@@ -6,9 +6,14 @@
  */
 const DOSYALAR = import.meta.glob<string>('../../assets/restoran/**/*.{webp,png}', { eager: true, query: '?url', import: 'default' });
 
-/** Göreli yol (grup/ad, uzantısız) → en yüksek sürümün adresi ("ad-3" > "ad-2" > "ad"; webp, png'den önce) */
+/**
+ * Göreli yol (grup/ad, uzantısız) → en yüksek sürümün adresi ("ad-3" > "ad-2" > "ad"; webp, png'den önce).
+ * Adı rakamla biten kareler (kisi/kino/yuru-1, on-2, sira-3) TAM adlarıyla da bulunur (P8: eskiden yalnız 'yuru'
+ * sürümü sanılıyordu, Kino'nun adım kareleri hiç bulunmuyordu).
+ */
 export function surumTablosu(dosyalar: Record<string, string>): Map<string, string> {
   const en = new Map<string, { n: number; url: string }>();
+  const tam = new Map<string, { n: number; url: string }>();
   for (const [yol, url] of Object.entries(dosyalar)) {
     const m = /assets\/restoran\/(.+?)(?:-(\d+))?\.(webp|png)$/.exec(yol.replace(/\\/g, '/'));
     if (!m) continue;
@@ -16,8 +21,14 @@ export function surumTablosu(dosyalar: Record<string, string>): Map<string, stri
     const n = (m[2] ? Number(m[2]) : 0) * 2 + (m[3] === 'webp' ? 1 : 0);
     const eski = en.get(ad);
     if (!eski || n > eski.n) en.set(ad, { n, url });
+    if (m[2]) {
+      const t = `${ad}-${m[2]}`;
+      const nt = m[3] === 'webp' ? 1 : 0;
+      const e2 = tam.get(t);
+      if (!e2 || nt > e2.n) tam.set(t, { n: nt, url });
+    }
   }
-  return new Map([...en].map(([ad, v]) => [ad, v.url]));
+  return new Map([...[...tam].map(([ad, v]) => [ad, v.url] as const), ...[...en].map(([ad, v]) => [ad, v.url] as const)]);
 }
 const TABLO = surumTablosu(DOSYALAR);
 

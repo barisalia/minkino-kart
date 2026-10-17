@@ -152,6 +152,16 @@ for (const boy of BOYLAR) {
           const h = await hedef(page, `.rs-masa[data-masa="${i}"] .rs-hesap.rs-dolu`);
           if (h) expect(h.acik, `masa ${i} hesap tabağı örtülü: üstte ${h.ust}`).toBe(true);
         }
+        // 3/4: sıra dolu olduğundan oyun hiç boş kalmayabilir; dolu hesap tabağı önce alınır
+        const dolu0 = d.masalar.findIndex((x) => x.jeton > 0);
+        if (dolu0 >= 0) {
+          const once = d.gunJeton;
+          await dokun(page, `.rs-masa[data-masa="${dolu0}"] .rs-hesap.rs-dolu`, 600);
+          hesapDokunus++;
+          await expect.poll(async () => (await D(page))!.gunJeton, { timeout: 20_000 }).toBeGreaterThan(once);
+          await page.waitForTimeout(800);
+          continue;
+        }
         if (d.kapida?.hazir) {
           const bos = d.masalar.findIndex((m) => !m.oturan && !m.kirli);
           if (bos >= 0) {

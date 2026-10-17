@@ -207,7 +207,7 @@ for (const boy of BOYLAR) {
 
     test('bahçe alındıysa bahçeli resim, bahçe masaları bahçede, müşteri oturur', async ({ page }) => {
       const hatalar = hataTopla(page);
-      await ac(page, '&acilan=bahce&tohum=4&musteriler=dede,bulut,anne,baba,lokum,tombi');
+      await ac(page, '&sira=1&acilan=bahce&tohum=4&musteriler=dede,bulut,anne,baba,lokum,tombi');
       const d = await durum(page);
       expect(d.bahceAcik).toBe(true);
       await expect(page.locator('.rs-arka')).toHaveAttribute('data-bahce', '1');

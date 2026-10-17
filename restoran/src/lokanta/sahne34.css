@@ -127,3 +127,8 @@
 [data-s34][data-yon='yatay'] .rs-ust-cubuk { display: none; }
 [data-s34] .rs-kasa-govde, [data-s34] .rs-kasa-yigin { display: none; }
 [data-s34] .rs-arka.rs-yertutucu ~ .rs-katman .rs-ist-gorsel { box-shadow: none; background: none !important; }
+
+/* balon ve söz dokunuşu kapmaz (altındaki istasyon / masa dokunulur) */
+[data-s34] .rs-balon, [data-s34] .rs-soz, [data-s34] .rs-efekt { pointer-events: none; }
+[data-s34] .rs-pencere { pointer-events: none; }
+[data-s34] .rs-pencere > .rs-hazir { pointer-events: auto; }

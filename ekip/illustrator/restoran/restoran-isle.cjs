@@ -117,6 +117,12 @@ const SAYFALAR = {
   'hud-parcalar': { tur: 'esya', grup: 'hud', max: 900, adlar: ['takvim-gunes', 'takvim-bulut', 'takvim-yagmur', 'kavanoz-bos', 'kavanoz-dolu', 'sandik-kapali', 'sandik-acik', 'defter', 'liste', 'menu-tahtasi', 'ayar', 'ses'] },
   // balon ikonları: 12 tarif (model.ts TARIFLER sırasıyla) ve durum / ipucu (model.ts IPUCLARI) resimleri
   'balon-ikon-yemek': { tur: 'esya', grup: 'balon', max: 700, adlar: ['yemek-salata', 'yemek-menemen', 'yemek-ayran', 'yemek-patates', 'yemek-corba', 'yemek-pankek', 'yemek-pide', 'yemek-kofte', 'yemek-limonata', 'yemek-sis', 'yemek-borek', 'yemek-sutlac'] },
+  // ---- R-GÜN 3/4-B (§11h #75): Kino'nun 3/4 sahne kareleri (önden / arkadan yürüyüş, arkası dönük koyuş, levha, süpürme, kayma)
+  'kino-34-yuru': { tur: 'kisi', kim: 'kino', izgara: [4, 2], adlar: ['on-1', 'on-2', 'arka-1', 'arka-2', 'arka-koy', 'levha', 'supur', 'kay'] },
+  // #76 sıra sayfası A. Anne'nin 1. satırı yanlışlıkla gözü kapalı çizildi: kullanılmaz (sira-1-hatali), sira-1 yerine duruş
+  'sira-sayfasi-a': { tur: 'sira', izgara: [6, 3], kimler: ['lokum', 'anne', 'baba', 'dede', 'babaanne', 'tombi'], adlar: ['sira-1', 'sira-2', 'sira-3'], adlarOzel: { anne: ['sira-hatali', 'sira-2', 'sira-3'] } },
+  'sira-sayfasi-b': { tur: 'sira', izgara: [6, 3], kimler: ['zipzip', 'bulut', 'bidik', 'bidicik', 'bidik-baba', 'nehir'], adlar: ['sira-1', 'sira-2', 'sira-3'] },
+  'sira-sayfasi-c': { tur: 'sira', izgara: [4, 3], kimler: ['disci', 'tuhaf-teyze', 'palyaco-tavsan', 'kelime-yutan-tavsan'], adlar: ['sira-1', 'sira-2', 'sira-3'] },
   'balon-ikon-durum': { tur: 'esya', grup: 'balon', max: 700, adlar: ['balon-sol', 'balon-sag', 'balon-kucuk', 'balon-dusunce', 'unlem', 'soru', 'kalp', 'zzz', 'hesap', 'ipucu-serin', 'ipucu-doyurucu', 'ipucu-domatesli', 'ipucu-citir', 'ipucu-tatli', 'ipucu-sebzeli', 'sef-sapka'] },
 };
 
@@ -188,6 +194,40 @@ function nesneler(zemin, W, H, R, enAzAlan) {
   const tutulan = new Set();
   const sonuc = kutular.map((k, id) => ({ ...k, id })).filter((k) => k.alan >= enAzAlan).map((k) => (tutulan.add(k.id), Object.assign(k.k, { id: k.id, et, K, w, tutulan })));
   return sonuc;
+}
+
+/**
+ * Izgara kesimi [sütun, satır]: karelerin içindeki eşya / kol (tepsi) komşu kareye değiyorsa bağlantılı bileşen ayıramaz;
+ * her kare kendi sınırına kırpılmış kutu olur (soldan sağa, üstten alta). Gemini kareleri eşit dizdiğinde kullanılır.
+ */
+function izgaraKutulari(zemin, W, H, [sutun, satir]) {
+  const kutular = [];
+  const et = new Int32Array(1).fill(-1);
+  // satırlar eşit aralıklı olmayabilir (uzun karakterin ayağı alt kareye taşar): sütun şeridinde dikey izdüşümle
+  // boşluklarla ayrılmış koşular bulunur; tam 'satir' koşu çıkarsa onlar kullanılır
+  const sutunKosulari = (cx0, cx1) => {
+    const kos = [];
+    let bas = -1, bos = 0;
+    for (let y = 0; y < H; y++) {
+      let n = 0;
+      for (let x = cx0 + 2; x < cx1 - 2; x += 2) if (!zemin[y * W + x]) n++;
+      if (n > 2) { if (bas < 0) bas = y; bos = 0; }
+      else if (bas >= 0 && ++bos > 10) { kos.push([bas, y - bos]); bas = -1; }
+    }
+    if (bas >= 0) kos.push([bas, H - 1]);
+    return kos.filter(([a, b]) => b - a > H * 0.08);
+  };
+  const koslar = Array.from({ length: sutun }, (_, c) => sutunKosulari(Math.round((c * W) / sutun), Math.round(((c + 1) * W) / sutun)));
+  for (let r = 0; r < satir; r++)
+    for (let c = 0; c < sutun; c++) {
+      const kos = koslar[c].length === satir ? koslar[c][r] : null;
+      const cx0 = Math.round((c * W) / sutun), cx1 = Math.round(((c + 1) * W) / sutun), cy0 = kos ? Math.max(0, kos[0] - 3) : Math.round((r * H) / satir), cy1 = kos ? Math.min(H, kos[1] + 4) : Math.round(((r + 1) * H) / satir);
+      let x0 = cx1, y0 = cy1, x1 = cx0, y1 = cy0;
+      for (let y = cy0 + 2; y < cy1 - 2; y++) for (let x = cx0 + 2; x < cx1 - 2; x++) if (!zemin[y * W + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 <= x0) continue;
+      kutular.push(Object.assign([x0, y0, x1 + 1, y1 + 1], { id: kutular.length, et, K: W + H, w: 1, tutulan: new Set() }));
+    }
+  return kutular;
 }
 
 /**
@@ -286,7 +326,9 @@ async function sayfa(ad, o) {
   // yakın parçalar birleşsin: nesne sayfasında %1,2, poz sayfasında %2 (kollar, kuyruk, balon)
   const R = Math.round(Math.max(W, H) * (o.tur === 'kisi' ? 0.02 : o.birlestir || 0.012));
   const enAz = W * H * (o.tur === 'kisi' ? 0.004 : 0.0004);
-  let kutular = sirala(nesneler(zemin, W, H, R, enAz), W, o.sutun || 1);
+  let kutular = o.izgara ? izgaraKutulari(zemin, W, H, o.izgara) : sirala(nesneler(zemin, W, H, R, enAz), W, o.sutun || 1);
+  // sıra sayfası: her SÜTUN bir karakter (sutunSec), satırlar pozlar
+  if (o.izgara && o.sutunSec != null) kutular = kutular.filter((_, i) => i % o.izgara[0] === o.sutunSec);
   if (kutular.length !== o.adlar.length) {
     const t = tutanBul(zemin, W, H, R, enAz, o.sutun || 1, o.adlar.length);
     if (t) {
@@ -334,7 +376,9 @@ async function sayfa(ad, o) {
 
 /** Kişi pozlarının ortak tuvalinde figürün tepe / taban çizgisi (alfa > 60) → <kim>/olcu.json */
 async function olcuYaz(klasor, o) {
-  const olcu = {};
+  // aynı kişinin başka sayfadan gelen pozları korunur (ör. Kino: garson sayfası + kino-34-yuru)
+  const eski = path.join(klasor, 'olcu.json');
+  const olcu = fs.existsSync(eski) ? JSON.parse(fs.readFileSync(eski, 'utf8')) : {};
   for (const p of o.adlar) {
     const f = path.join(klasor, p + '.webp');
     if (!fs.existsSync(f)) continue;
@@ -374,7 +418,10 @@ async function boyTablosu() {
     if (!kaynak(ad)) { bekleyen++; if (istenen.length) console.log(`${ad}: sayfa yok (bekleniyor)`); continue; }
     try {
       if (o.tur === 'arka') await arka(ad, o);
-      else await sayfa(ad, o);
+      else if (o.tur === 'sira') {
+        // §11h #76-78: sütun = karakter, satır = poz (sira-1 bekler, sira-2 gözü kapalı, sira-3 koklar / el kaldırır)
+        for (const [c, kim] of o.kimler.entries()) await sayfa(ad, { tur: 'kisi', kim, izgara: o.izgara, sutunSec: c, adlar: o.adlarOzel?.[kim] ?? o.adlar });
+      } else await sayfa(ad, o);
       yapilan++;
     } catch (e) {
       console.log(`${ad}: HATA ${e.message}`);
