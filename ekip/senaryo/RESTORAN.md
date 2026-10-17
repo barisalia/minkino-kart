@@ -922,3 +922,157 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 3. **Seslendirme:** ~145 kısa cümle (~3.200 karakter) eleven_v4 ile (Ekim'de v4 ücretsiz). 3 ElevenLabs efekti (~180 kredi).
 4. **Yeni 4 karakter:** Dişçi, Tuhaf Teyze, Palyaço Tavşan, Kelime Yutan Tavşan'ın çizilmesi (seslerin zaten var).
 5. **Başlama izni:** "Tamam" gelince R-Gün 1 çizimleri ve P1 + P2 aynı gün başlar; dilim yaklaşık 1 günde Barış'a gelir.
+
+---
+
+## 16. Check Please! esinli eklemeler (2026-10-17)
+
+> Barış'ın paylaştığı örnek: [Check Please!](https://store.steampowered.com/app/5011450/Check_Please/). Fantastik bir han ve restoran işletmesi, sevimli çizgi film tarzı. Oyun 2026 sonunda çıkacak; kurallar mağaza sayfasındaki tanıtımdan okundu.
+> Bu bölüm §1-§15'in **üstüne eklenir**, hiçbirini değiştirmez. Çocuğa stres veren hiçbir şey alınmadı: süre yok, sabır sayacı yok, ceza yok, yanlışın sonucu komik.
+
+### 16a. Karşılaştırma: ne alıyoruz, ne almıyoruz
+
+| Check Please! | Orada nasıl | Bizdeki durum | Karar |
+|---|---|---|---|
+| Uyumlu müşterileri yan yana oturtmak | Yanlış ırkları aynı masaya koyarsan kavga çıkar | Masada bir müşteri (+ Bıdıcık gibi eşlikçi) oturuyor | **ALIYORUZ** → 16b "Kim kimin yanında?" Kavga yok, komik atışma var. |
+| Yemek önermek | Kötü öneri sorun çıkarır | Sürpriz istekte çocuk kendisi seçiyor | **ALIYORUZ** → 16c "Şefin önerisi". Risk yok: müşterinin yüzü önceden ipucu verir, öneri her an değiştirilebilir. |
+| Dökülenleri temizlemek, bahşiş toplamak | Pislik itibar düşürür | Bulaşık var (M15), dökülen yok | **ALIYORUZ** → 16d "Pırıl pırıl" mini oyunu. Dökülen hiçbir şeyi bozmaz; altından bahşiş çıkar. |
+| Dekor müşteriyi sabırlı ve cömert yapar | Sabır ve bahşiş çarpanı | Süs alınıyor, dokununca canlanıyor (§9) | **ALIYORUZ, sabırsız** → 16e "Sevdiği köşe": süs müşteriye mutluluk anı ve bahşiş verir, bazı süsler özel misafir getirir. |
+| Günlük görevler, özel görevler | Nadir ödül, yeni bölge | Yok | **ALIYORUZ** → 16f "Babaanne'nin listesi": resimli, yazısız, 2-3 kolay iş, sürpriz kutu. |
+| Sıcak yemek daha çok bahşiş | Hız ödüllü | Pişen yemek beklemez, soğumaz | **ALMIYORUZ:** gizli bir süre baskısıdır. Yerine: tavadan tabağa hemen gelen yemek buhar tüter ve müşteri "Ooo, sıcacık!" der (yalnız görüntü ve ses, para farkı yok). |
+| Sabır, acele, müşteri dalgası | Bekletirsen müşteri kızar | Müşteri hiç gitmez | **ALMIYORUZ.** §3c değişmez. |
+| Koşma, taşıma becerisinin gelişmesi | Seviye atlayan oyuncu | Yok | **ALMIYORUZ:** sayı ve seviye sistemi küçüklere bir şey katmaz (Barış'ın "şirinlik önce" kuralı). |
+
+### 16b. Kim kimin yanında? (oturma)
+
+- **Masa artık iki kişilik:** sol ve sağ sandalye. Bugünkü kodda eşlikçi masanın sağına oturuyor (`lokanta.ts` → `oturt_`, `x + 5`). Aynı yer artık her müşteriye açık.
+- Gelen müşteriyi çocuk **boş bir masaya** ya da **birinin oturduğu masanın boş sandalyesine** sürükler. Bu tamamen çocuğun seçimi. 3-4 yaşta dokunulmazsa müşteri 10 sn sonra kendisi boş bir masaya oturur.
+- **Arkadaş çiftleri** (`ARKADASLAR`, model.ts). Yan yana oturunca kalpler çıkar, aralarında resimli sohbet balonları (top, çiçek, nota) gidip gelir, yemekten sonra ikisi de bir **arkadaşlık bahşişi** bırakır (masa başına +1, en çok 1):
+  - Lokum ve Zıpzıp (ikisi de hızlı, el çırpıp oynarlar)
+  - Dede ve Babaanne (Dede çiçek uzatır)
+  - Tombi ve Bulut (Tombi utangaç Bulut'u güldürür)
+  - Anne ve Nehir abla (çay sohbeti)
+  - Baba ve Bıdık'ın babası (bıyık-sakal karşılaştırması, kahkaha)
+  - Tuhaf Teyze ve Palyaço Tavşan (birbirinin şapkasını takar)
+- **Komik atışma çiftleri.** Kavga yok, kimse kızmaz; 2-3 sn'lik şaka oynar, sonra ikisi de güler ve yemeğe devam eder. Ceza yok, jeton aynı. Yalnız arkadaşlık bahşişi gelmez.
+  - Bıdık ve herkes: Bıdık yanındakinin peçetesini yer, yanındaki şaşkın bakar.
+  - Baba ve Lokum: Baba masada uyuklar, horlar; Lokum burnunu gıdıklar, Baba hapşırır.
+  - Zıpzıp ve Bulut: Zıpzıp çok hızlı konuşur, Bulut yününün içine saklanır, yalnız gözleri görünür.
+  - Pati'nin Tarçın'ı (kedi) ve Fındık (köpek), Nehir'in yanında: masanın etrafında birbirini kovalar, Nehir ikisini kucağına alır.
+  - Dişçi ve Tombi: Dişçi Tombi'nin ballı pankekine bakıp "[gasps] Şeker!" der, Tombi tabağını saklar.
+- **Dolaylı ipucu:** Masaya geçmek için bekleyen müşteri ara sıra arkadaşına bakar ve el sallar (12 sn sonra; §4c merdiveni). Parlama ya da ok yok.
+- **Geri alma serbest:** Oturan müşteri yemek gelmeden önce başka bir sandalyeye sürüklenebilir.
+- **Yaşa göre:**
+  - 3-4: yalnız 3 arkadaş çifti var, atışmalar daha da kısa.
+  - 5-6: hepsi var. Müşteri panosunda (§4b) arkadaşlar polaroidleriyle yan yana asılır, keşfedilen her çift bir kalp ipiyle bağlanır.
+- **Ölçek:** iki kişilik masada iki oturan müşteri §7b sınırlarını aşmaz. Masa yuvaları arasındaki boşluk iki kişiye göre ölçülür; toplam karakter alanı yine %25'i geçmez.
+
+### 16c. Şefin önerisi
+
+- **"Ne yesem?" isteği** sürprizin yerine geçer (3-4 yaşta sürprizlerin yarısı, 5-6 yaşta hepsi). Balonda şef şapkası ve soru işareti var.
+- Çocuk menü tahtasındaki bir **tarif kartını müşteriye sürükler**. Müşteri kartı koklar ve yüzüyle **hemen** tepki verir:
+  - Sevdiği varsa gözleri parlar, yanakları kalp olur.
+  - Sevmediği varsa burnunu kırıştırır ama omuz silker: "[giggles] Olur, deneyelim!"
+- Çocuk karar verene kadar başka kart da önerebilir. Her önerinin bir tepkisi var, hiçbiri bir şey kaybettirmez. Müşterinin yüzünü okumak oyunun kendisidir.
+- Çocuk bir karta karar verince (ikinci kez bırakınca ya da müşteri 3 sn kartı tutunca) adisyon o yemekle asılır.
+- **Ödül:** Önerilen yemek müşterinin sevdiği ise ve o şekilde pişerse, yemekten sonra masada bir "şefin yıldızı" çıkartması belirir ve +1 bahşiş gelir (§4b'deki bayıldı bahşişinin yerine geçer, üstüne eklenmez; sayma kısa kalır).
+- **Kötü öneri** de yenir. Müşteri §4b'deki komik tepkiyi verir ve güler: "[laughs] Önerin ilginçti!" Ceza yok.
+- **Eğitici yanı:** Çocuk karşısındakinin yüzünü okur ve ona göre seçer. Bu, Barış'ın "herkesin zevki farklı" dersinin bir adım ilerisi.
+
+### 16d. Pırıl pırıl (dökülen temizliği, M18)
+
+- **Ne zaman dökülür?** Yalnız komik anlardan sonra ve en çok iki müşteride bir:
+  - Bıdık ve Tombi yerken kırıntı saçar.
+  - Lokum ayran bardağını devirir.
+  - Kino tepsiyle sallanınca bir damla çorba yere düşer (§9).
+  - Tavana yapışan pankek yere de bir yağ lekesi bırakır.
+- **Nerede oynanır?** Lokanta ekranında, yerinde. İstasyon değişmez, kamera kaymaz. Lekeye dokununca yanında sünger, paspas ya da süpürge-faraş belirir. Hangisi seçilirse onunla temizlenir; seçim çocukta.
+  - **Silme:** sünger ya da paspası lekenin üstünde ileri geri sür. Kazı-kazan gibi temiz, parlak zemin açılır. Köpük çıkar, "gıcır" sesi gelir.
+  - **Süpürme:** kırıntıları faraşa doğru süpür. Kırıntılar yuvarlanır, faraşa girince "tıkır" diye ses verir.
+- **Ödül:** Silinen her lekenin altında saklı bir **bahşiş jetonu** parlar; dokununca kasaya uçar. Zemin bir kez pırıldar. Babaanne duvardaki fotoğrafında göz kırpar.
+- **Temizlemezsen** hiçbir şey kötüleşmez. Leke orada kalır. Kino bir kez üstünden kayar ama düşmez; komik bir halay adımıyla toparlanır. Gün sonunda lekeler kendiliğinden silinir (Lokum paspasla dans ederek siler).
+- **Yaşa göre:** 3-4 yaşta iki sürüşte silinir. 5-6 yaşta lekenin her köşesi silinmeli; kırıntılar dağılır, tek tek toplanır.
+- **Neden ayrı bir istasyon değil?** Akış kopmasın, temizlik 5-10 sn'lik tatlı bir ara olsun.
+
+### 16e. Sevdiği köşe (dekorun müşteriye etkisi, sabırsız)
+
+- Her müşterinin bir **sevdiği köşesi** var (`SEVDIGI_SUS`, model.ts). Bu bir süs ya da yerdir:
+  - Dede: pencere kenarı ve fesleğen saksısı
+  - Lokum: akvaryum
+  - Anne: çiçek ve dantel perde
+  - Baba: gramofon
+  - Tombi: bal kavanozlu raf
+  - Bulut: sessiz köşe ve perde
+  - Zıpzıp: balon süsü
+- O süsün yanındaki masaya oturan müşteri bir **mutluluk anı** yaşar. Dede fesleğeni koklar ve göz kırpar; Lokum yüzünü akvaryumun camına yapıştırır, balık onu öper. Yemekten sonra masada +1 bahşiş belirir. Bu, arkadaşlık bahşişiyle birlikte de olsa masa başına en çok +1'dir.
+- Böylece **dekor, oturma ve kazanç birbirine bağlanır.** Bunu gören 5-6 yaşındaki çocuk "Dede gelince pencereye oturtayım" diye düşünür.
+- **Özel misafirler süsle gelir** (koleksiyon hissi, Toca'nın sürprizi gibi):
+  - Gramofon alınınca Tuhaf Teyze gelmeye başlar.
+  - Balon süsü alınınca Palyaço Tavşan.
+  - Akvaryum alınınca Nehir abla ve hayvanı.
+  - Bahçe alınınca Bıdık'ın babası haftada bir mangal ister.
+- Defterde (§6b) bu süslerin kartında küçük bir müşteri yüzü görünür: "Bunu alırsan o gelir."
+- **Almadığımız:** sabır çarpanı. Bizde sabır zaten sonsuz; dekor yalnız sevinç ve az bir bahşiş ekler.
+
+### 16f. Babaanne'nin listesi (basit günlük görevler)
+
+- Buzdolabında mıknatısla tutturulmuş küçük bir not kâğıdı var. Üstünde 2 (3-4) ya da 3 (5-6) **resimli iş** yazılı (yazı yok). Her gün yeniden karılır:
+  - bir müşteriyi bayılt (kalp)
+  - bir menemen pişir (menemen resmi)
+  - iki arkadaşı yan yana oturt (iki yüz ve kalp)
+  - bir lekeyi temizle (sünger)
+  - birine yemek öner (şef şapkası)
+  - bir yüzlü tabak yap (gülen tabak)
+  - soğan doğra (soğan ve gözyaşı)
+- **İşler yalnız oyunda zaten olan şeylerden seçilir** ve her biri doğal oynanışta çoğu zaman kendiliğinden olur. Liste bir yol gösterici değil, bir küçük kutlama listesidir.
+- Bir iş olunca not kâğıdında o resmin üstüne parlak bir **çıkartma** "pıt" diye yapışır ve Mino bir kez sevinir.
+- **Gün sonunda** kaç iş tamamlandıysa Babaanne o kadar küçük **sürpriz kutu** verir. Kutu açılınca içinden ücretsiz bir süs, bir masa örtüsü ya da bir tarifin indirimi (fiyattan 2 jeton eksik) çıkar. İş tamamlanmazsa hiçbir şey eksilmez: liste ertesi gün yenisiyle değişir.
+- **Notun yeri:** lokanta ekranında mutfağın sol köşesinde, en az 64 css px. Dokununca büyük açılır ve Mino resimleri sırayla söyler.
+
+### 16g. Gemini ekleri (R-GÜN 7, 4 sayfa)
+
+| # | Dosya | İstem özeti (bloklar §11a) |
+|---|---|---|
+| 61 | `dokulenler.png` | ESYA, üstten: ayran gölü, çorba lekesi, yağ lekesi, ketçap damlaları, kırıntı kümesi, tek tek kırıntılar (6 şekil), devrilmiş bardak, ıslak sünger, ip paspas, süpürge ve faraş, köpük kümesi, parlak temiz zemin pırıltısı + S-PREMIUM |
+| 62 | `liste-kutu.png` | ESYA: buzdolabı not kâğıdı (boş, mıknatıslı), 7 küçük çıkartma (kalp, menemen, iki yüz, sünger, şef şapkası, gülen tabak, soğan), sürpriz kutu kapalı (kurdeleli), aynı kutu açık, şefin yıldızı çıkartması, arkadaşlık kalbi + S-PREMIUM |
+| 63 | `sohbet-balonlari.png` | ESYA: yazısız 8 küçük sohbet balonu içinde resim (top, çiçek, nota, güneş, kek, yıldız, kalp, gülen yüz), 4 atışma resmi (peçete, Zzz, hızlı konuşma çizgileri, kaçan kedi izi) + S-PREMIUM |
+| 64 | `sus-2.png` | ESYA, önden: balon demeti süsü, bal kavanozlu raf, sessiz köşe paravanı, pencere kenarı minderi, fesleğen saksısı (büyük) + S-PREMIUM |
+
+- Yeni poz gerekmez: arkadaşlık ve atışma anları var olan lokanta karelerinden kurulur (bayıldı, şaşkın, ekşi, el sallama) ve efekt sayfası (§11c #20) kullanılır.
+- **Tek istisna:** Baba'nın uyuklaması lokanta sayfasının Tile 4'ü (gözler kapalı) ile Zzz efektinden yapılır.
+
+### 16h. Kodcu paketi P7 · Check Please! ekleri (~3,5 sa)
+
+P4 ve P6'dan sonra başlar, tek kodcu. `lokanta.ts`'e başka paket aynı anda dokunmaz.
+
+- **Dosyalar:**
+  - `restoran/src/model.ts`: `ARKADASLAR`, `ATISMALAR`, `SEVDIGI_SUS`, `OZEL_MISAFIR`, `oturmaSonucu(a, b)`, `masaBahsisi(...)` (masa başına en çok +1), `oneriTepkisi(musteri, tarif)`, `gunListesi(tohum, yas, acilan)`.
+  - `restoran/src/lokanta/oturma.ts` (yeni): iki sandalyeli masa, sandalyeye sürükleme, geri alma, arkadaşlık ve atışma sahneleri, sohbet balonları.
+  - `restoran/src/lokanta/oneri.ts` (yeni): menü kartını müşteriye sürükleme, koklama tepkisi, karar.
+  - `restoran/src/lokanta/dokulen.ts` (yeni): lekeyi oluşturma, araç seçimi, silme maskesi (kazı-kazan), süpürme, saklı bahşiş, Kino'nun kayması.
+  - `restoran/src/lokanta/liste.ts` (yeni): not kâğıdı, çıkartmalar, gün sonu sürpriz kutusu.
+  - `restoran/src/lokanta/lokanta.ts`: yalnız bu dört modülü bağlama, sandalye yerleri ve `oturt_`'un genelleşmesi.
+  - `restoran/src/lokanta/gun-sonu.ts`: sürpriz kutu adımı.
+  - `restoran/src/ekonomi.ts`: kutu ödülleri ve indirim; `KATALOG` süs kartlarında `getirir` alanı.
+  - `restoran/src/kayit.ts`: `liste`, `arkadasPano` alanları ve göçü.
+  - `content/restoran/check.json` (yeni sözler).
+  - `tests/unit/restoran-check.test.ts` (yeni).
+  - `tests/e2e/restoran-check.spec.ts` (yeni).
+- **Bitti ölçütü:**
+  1. Her müşteri boş masaya da, dolu masanın boş sandalyesine de oturtulabilir. Oturan müşteri yemek gelmeden önce yer değiştirebilir. 3-4 yaşta 10 sn sonra kendisi oturur. Hiçbir an kilitlenmez.
+  2. Altı arkadaş çiftinin ve beş atışmanın her biri e2e'de bir kez oynar. Atışmada jeton aynıdır; masa bahşişi hiçbir durumda +1'i geçmez (birim testi).
+  3. "Ne yesem?" isteğinde en az 3 kart önerilebilir, her birine anında yüz tepkisi gelir. Kötü öneri de yenir ve ödenir.
+  4. Dökülen en çok iki müşteride bir çıkar. Hem silme hem süpürme çalışır. Saklı bahşiş kasaya girer. Temizlenmeyen leke gün sonunda kendiliğinden kaybolur. Kino kayar ama düşmez.
+  5. Sevdiği köşe anı bir kez tetiklenir. Gramofon alınınca ertesi gün Tuhaf Teyze gelir (birim testi: `gunPlani`).
+  6. Liste her gün 2/3 iş verir, işler oynanışta tamamlanabilir (birim testi: her iş açık tariflerle yapılabilir). Çıkartma ve sürpriz kutu çalışır. Tamamlanmayan iş hiçbir şey eksiltmez.
+  7. Yasak kelime testi yeni sözleri de kapsar. `buyutulen()` temiz. Toplam karakter alanı ≤ %25. Ekran görüntüleri 844×390, 932×430, 667×375 ve 390×844 (DPR 3) çekilir ve gerçek hızda izlenir. `ORTAK_NOTLAR.md`'ye satır eklenir.
+- **Ses:** ~30 yeni kısa cümle (arkadaşlık sözleri, "Olur, deneyelim!", "Önerin ilginçti!", "Ooo, sıcacık!", liste resimlerinin adları). §15'teki seslendirme onayına eklenir.
+
+### 16i. Sert denetim
+
+- **Karmaşıklaşıyor mu?** Beş ekin hepsi oyunda zaten olan anlara bağlanıyor: oturtma, sürpriz istek, komik tepki, süs, gün sonu. Yeni bir ekran ya da sayaç yok. Barış "fazla" derse her biri tek başına kapatılabilir (`CHECK_EKLERI` bayrakları). Önerilen çıkarma sırası: liste, sevdiği köşe, temizlik, öneri, oturma.
+- **Stres var mı?** Yok. Oturma yanlışı komik bir şaka, öneri yanlışı bir gülüş, leke kendiliğinden kaybolur, liste eksik kalınca bir şey olmaz.
+- **Çocuğu düşündürüyor mu?** Evet, bu bölümün asıl kazancı bu. "Kim kimi sever, kim nerede mutlu, ona ne önersem?" sorularıyla çocuk yemeğin ötesinde **insanları** okumaya başlıyor.
+- **Barış'a sorulacak:**
+  1. Beş ekin hepsi mi yoksa bir kısmı mı?
+  2. P7, P6'dan sonra mı yoksa dilimden hemen sonra mı yapılsın?
