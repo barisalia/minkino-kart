@@ -354,7 +354,7 @@ interface RestoranKayit {
      - Ön solda kapının önünde taş yol: **sıra yeri** (3 bekleme noktası).
    - **Bahçe kapalıyken bile güzel görünür:** çimen uzamış, çit kapısı kapalı, çeşme kuru, asmanın yaprakları az.
    - **Bahçe alınınca** arka plan, aynı resmin "bahçeli" sürümüyle değişir (Gemini "Edit this exact image": ahşap teras, yapraklı ve üzümlü asma, fenerler, akan çeşme). Yalnız bahçe değişir, içerisi piksel piksel aynıdır. Ekran kaymaz, her şey tek bakışta görünür.
-   - **Masalar ayrı çizimdir** (3/4 masa-sandalye seti) ve boş yuvalara konur. **Bütün sandalyeler masanın arka tarafındadır:** oturan müşteri kameraya bakar. Böylece var olan önden oturuş pozları (lokanta sayfaları) doğrudan kullanılır.
+   - **Masalar ayrı çizimdir** (3/4 masa-sandalye seti) ve boş yuvalara konur. **Sandalyeler masanın sol ve sağ yanındadır, müşteriler karşılıklı oturur** (§11i chibi turu, 2026-10-17). Oturuş pozları 3/4 sağa dönük çizilir, sağdaki müşteri aynalanır.
    - **Derinlik:** her şey ayak noktasının y değerine göre sıralanır. Önündeki masanın arkasındaki müşterinin bacakları masa sprite'ının arkasında kalır.
 2. **İstasyon ekranları (mini oyunlar), çoğu üstten (kuş bakışı tezgâh).** Neden üstten:
    - Yiyecek büyük ve net görünür, kesim ve soyma üstten en okunaklı hâlinde.
@@ -918,7 +918,7 @@ export interface MiniOturum {
 - Bütün istasyonlar ve yiyecekler.
 - `lokanta-dis` (açılış).
 - `kasa-defter`.
-- **Bugüne kadar çizilen 8 müşteri lokanta sayfası** (Anne, Baba, Dede, Lokum, Tombi, Bıdık, Bulut, Zıpzıp): Kare 1 yürüme (sola aynalanır), kare 2 el sallama, kare 3-8 oturuş. Önden oturuş pozları bu sahneye uyar, çünkü sandalyeler masanın arkasında ve müşteri kameraya bakar.
+- ~~Bugüne kadar çizilen 8 müşteri lokanta sayfası 3/4 sahnede kullanılır~~ **(geri alındı, 2026-10-17: Barış yeni poz istedi → §11i chibi turu). Önden sayfalar yalnız kimlik referansıdır.**
 
 **Eksik olan tek poz sırada ayakta beklemek.** Bunun için sıra sayfaları var (#76-78). Sayfa başına 6 karakter × 3 poz, küçük ölçek: kare yüksekliği ~512 px, karakter ~380 px. Sahnede en çok 100 css × 3 = 300 px gösterilir. ✔
 
@@ -933,7 +933,7 @@ export interface MiniOturum {
 | 66 | `lokanta-34-yatay-bahceli.png` | stil, #65 | "Edit this exact image. Change ONLY the garden on the right: the gate is open and decorated with a flower garland, the wooden deck is clean and polished, the pergola is full of green vine leaves and purple grape bunches, a string of round paper lanterns hangs across it (flat colors, no glow), the fountain flows with clear water, more flowers in the beds. Keep the two empty deck spots empty. Keep the whole inside of the restaurant, the path, the cat and every other pixel identical." + S-PREMIUM |
 | 67 | `lokanta-34-dikey.png` (9:16, 1536×2752) | stil, #65 | "The same restaurant and garden re-composed for a tall vertical 9:16 phone screen, NOT a crop: the open kitchen along the top, the dining floor with FOUR EMPTY TABLE SPOTS (soft round rugs only) in the middle in two columns, the glass door and the curved stone path for three waiting guests at the middle left, the closed garden (picket fence, closed gate, dry fountain, bare pergola, sleeping cat on the fence, two empty deck spots) across the bottom. Same style, same colors, same objects." + S-34 + "Tall 9:16, maximum resolution 1536x2752." + S-PREMIUM |
 | 68 | `lokanta-34-dikey-bahceli.png` | stil, #67 | #66'nın düzenleme istemi aynen ("garden on the right" yerine "garden at the bottom") |
-| 69 | `masa-sandalye-34.png` | stil, #65 | OBJECT SHEET (ESYA bloğu) + "all drawn in exactly the same high three-quarter angle and scale as the second image. Row 1: a small square wooden table for two, empty top; the same table with a red-and-white checked cloth; with a blue flowered cloth; with a yellow polka-dot cloth. Row 2: a wooden chair seen from the front with its backrest behind the seat (seat empty); a white iron garden table for two; a white iron garden chair seen from the front; a wooden high chair for a toddler. Row 3: a low child's table with two tiny round stools; an empty white plate with a teal rim; a glass of water; a small vase with daisies (table centerpiece)." + S-34 + S-PREMIUM |
+| 69 | `masa-sandalye-34.png` | stil, #65 | OBJECT SHEET (ESYA bloğu) + "all drawn in exactly the same high three-quarter angle and scale as the second image. Row 1: a small square wooden table for two, empty top; the same table with a red-and-white checked cloth; with a blue flowered cloth; with a yellow polka-dot cloth. Row 2: a wooden chair seen from the side in three-quarter view, facing right (seat empty; mirrored in code for the other side); a white iron garden table for two; a white iron garden chair seen from the side in three-quarter view, facing right; a wooden high chair for a toddler. Row 3: a low child's table with two tiny round stools; an empty white plate with a teal rim; a glass of water; a small vase with daisies (table centerpiece)." + S-34 + S-PREMIUM |
 | 70 | `sus-34.png` | stil, #65 | ESYA + "all in exactly the same high three-quarter angle and scale as the second image. Row 1: a big potted basil plant; a tall leafy plant in a woven basket; a small aquarium with two orange fish on a wooden cabinet; a gramophone with a big brass horn on a stool. Row 2: a bunch of five pastel balloons tied to a little weight; a shelf with three honey jars; a folding wooden screen with flowers (quiet corner); a window-seat cushion, striped. Row 3: a hanging round paper lantern; a flower box with red geraniums; a wooden garden bench; a ginger cat in three poses side by side: curled asleep, stretching, sitting and licking a paw." + S-34 + S-PREMIUM |
 | 71 | `hud-panel.png` | stil | "GAME UI PANEL ILLUSTRATION for a preschool restaurant game, two separate pieces on a plain flat light mint-green background (#DFF5E8): LEFT: a tall vertical wooden signboard panel (about one sixth of the image width and the full height) in warm honey-colored polished wood with a carved rounded frame, small brass corner caps, a tiny flower pot with daisies on its top edge, the inside of the board plain and empty. RIGHT: the same panel style as a long horizontal strip (for upright phones), empty inside. Like a cozy illustrated object from a picture book, not a flat game button." + "Wide 16:9, maximum resolution 2752x1536." + S-PREMIUM |
 | 72 | `hud-parcalar.png` | stil, #71 | ESYA + "matching the wooden panel in the second image. Row 1: a small tear-off wall calendar with a sunny sun picture on its page (no numbers); the same calendar with a cloud picture; the same with a rain-drop picture; a small round glass jar with a cork, empty. Row 2: the same jar filled with pink and red hearts; a small wooden treasure chest, closed, with brass bands; the same chest open and overflowing with golden coins that have a raised spoon emblem; a fabric-covered recipe book with a flower on the cover, closed. Row 3: a small note paper held by a strawberry magnet, empty; a tiny chalk menu board on an easel, empty; a round wooden gear button; a round wooden button with a little speaker shape." + S-PREMIUM |
@@ -955,6 +955,132 @@ export interface MiniOturum {
 - Yazı, rakam, logo var mı? Varsa reddedilir.
 
 **Chibi notu:** Barış ilk ekranda "karakterler daha chibi olsun" derse aynı LOKANTA-KARELER kalıbı başına şu eklenerek ikinci tur çizilir: "drawn in a chibi version of the same design: head about 45% of the total height, short body". Kino ailesinin yüz ve kıyafet tasarımı değişmez. Bu ~14 sayfalık ek tur Barış'ın kararıdır.
+> **KARAR (2026-10-17, Barış):** "Hâlâ aynı görselleri ısıtıp ısıtıp koyuyorsun, başka karakter mi yok, figürün pozunu ona göre ayarla, restoranı iyi yap."
+> - Önden lokanta sayfaları (§11c) ve sıra sayfaları (#76-78) bu sahnede artık **kullanılmaz**. Yerine §11i chibi turu gelir.
+> - §7b'deki "yeniden çizmeyelim" önerisi geri alındı. #75 `kino-34-yuru` da chibi Kino sayfasıyla (#C1) değişir.
+
+### 11i. CHIBI TUR · 3/4 lokantanın bütün müşterileri (2026-10-17) · EN ÖNCELİKLİ
+
+**Hedef:** 37 farklı müşteri, hepsi aynı chibi ölçekte ve lokantanın 3/4 açısına uygun pozlarla. Kaynaklar:
+- Kino ailesi
+- Otobüs'ün yeni karakterleri ve eski hayvanları
+- Pati'nin hayvanları ve Nehir abla
+- Sesli Maceralar çocukları, Ege ve annesi
+- Dedektif'in hayvanları
+- Sesi olan 4 yeni karakter
+
+Ayrıca Kino (garson) ve Babaanne. **26 sayfa:** 14'ü tek karakter × 8 poz, 12'si iki karakter × 4 poz.
+
+**Açı:** Müşteriler masada **yan yana değil, karşılıklı** oturur. Sandalyeler masanın sol ve sağ kenarındadır, müşteriler birbirine döner.
+- Bütün oturuş pozları **3/4 sağa dönük** çizilir. Masanın sağındaki müşteri aynalanır (`scaleX(-1)`).
+- Yüz yine kameraya yarı dönük ve okunur. Sahne yukarıdan ~35° bakar, karakterler de hafif yukarıdan görünür.
+- §16b'deki "iki sandalye masanın arkasında" düzeni bu yüzden **"masanın iki yanında, karşılıklı"** olur. Arkadaş sohbeti de böyle daha doğal görünür.
+
+**Ölçek (chibi boy tablosu; sayfada ve kodda aynı):**
+
+| Grup | Göreli boy |
+|---|---|
+| yetişkin (Anne, Baba, Babaanne, Dede, Nehir, Ege'nin annesi, Bıdık'ın babası, yeni 4'ün yetişkinleri) | 1,35 |
+| çocuk ve yavru (Kino, Ada, Can, Elif, Deniz, Zeynep, Bıdık, Tombi, Bulut, Zıpzıp, Otobüs hayvanları, Pamuk, Sincap, Baykuş, Ördek) | 1,0 |
+| İnek | 1,2 |
+| Lokum, Bıdıcık | 0,75 |
+| Ege (bebek) | 0,6 |
+| Pati hayvanları (dört ayak üstünde), ördek yavrusu | 0,55 |
+
+- Sayfada en uzun karakter karenin ~%75'i olur.
+- Kare ~688×768, yani chibi yetişkin ~576 px. Sahnede en çok ~100 css (DPR3'te 300 px) gösterilir. ✔ Netlik payı bol.
+- Chibi oranı: baş toplam boyun ~%45'i. Yetişkinler de chibi olur ama çocuklardan bir baş uzun kalır (§ insan karakter boyu kuralı).
+
+**Kayıt ve kesim:**
+- Kayıt: `ekip/gemini/yeni/restoran/chibi/<dosya>.png`.
+- Kesim: `restoran-isle.cjs` → `assets/restoran/kisi/<ad>/<poz>.webp` + `olcu.json`.
+- **Poz adları:**
+  - Tek karakter × 8 sayfası: kare 1 `bekle`, 2 `arka`, 3 `selam`, 4 `otur`, 5 `ye`, 6 `bayil`, 7 `sasir`, 8 `gag`.
+  - İki karakter × 4 sayfası (her satır bir karakter): `bekle`, `otur`, `ye`, `bayil`.
+- Kod eksik pozu en yakınıyla doldurur. `arka` yoksa `bekle` aynalanır; `sasir` ve `gag` yoksa `otur` + efekt + ezilme kullanılır.
+
+**Referanslar (her sayfada sırayla yüklenir, en çok 4 görsel):**
+1. `ekip/stil/onayli-stil-oda.png` (stil)
+2. `ekip/gemini/yeni/restoran/lokanta-34-yatay.png` (açı)
+3. Karakterin modeli (aşağıdaki tablo)
+4. Varsa karakterin önden lokanta sayfası (kimlik)
+
+**Hazırlanan referanslar** (`ekip/gemini/yeni/restoran/ref/`, bu turda çizim değil, var olan resimlerin PNG'ye çevrilmiş hâli):
+- `ayi`, `inek`, `maymun`, `tavsan`, `kus`, `ordek`, `kopek` (Karabaş), `pamuk`, `ege`, `anne-ege-annesi`: iskelet SVG'lerinden.
+- `pati-findik`, `pati-tarcin`, `pati-pofuduk`, `nehir`, `dedektif-pamuk`, `sincap-findik`, `baykus`, `ordek-anne`, `ordek-yavru`: webp'den.
+- **Not:** Otobüs hayvanlarının referansları eski parlak Recraft çizimleridir. İstem "kimliği koru, stili referans 1'e çevir" der.
+
+**C-SAYFA** (her sayfanın başına, aynen):
+> CHIBI ANIMATION SHEET for a cozy restaurant game seen from a high three-quarter angle, exactly like the attached restaurant scene (second image): the camera looks down at about 35 degrees, so every character is seen slightly from above. Draw the character(s) from the attached character reference as a CHIBI version of the exact same design: same face, same species, same colors and markings, same clothes and accessories, but chibi proportions: the head about 45% of the total height, a short round body, short limbs, big friendly eyes. Two rows by four columns, eight tiles, generous even space between tiles, nothing touching, no tile borders. Every pose at exactly the same size scale (the tallest standing pose fills about 75% of a tile height; seated poses keep the same scale, so they are shorter), each on its own invisible baseline. Plain flat light mint-green background (#DFF5E8) everywhere. No chairs, no tables, no plates, no food, no props unless named.
+
+**C-8** (tek karakter sayfası kareleri, aynen; Tile 8 karaktere özel):
+> Tile 1: standing in three-quarter view facing front-right, calm happy smile, arms relaxed (waiting in line; also used for walking with a small hop). Tile 2: walking away from the viewer in three-quarter BACK view toward the upper left, one foot lifted, the back of the head and clothes clearly visible. Tile 3: waving hello with one hand, three-quarter view facing front-right, big smile. Tile 4: sitting on an invisible chair in three-quarter view facing right, both forearms resting forward at table height, happy, face turned a little toward the viewer (MAIN seated pose). Tile 5: sitting exactly the same way, eating: a fork at the open mouth, cheeks full, chewing happily (fork only). Tile 6: sitting exactly the same way, blissful: eyes closed, both hands on the cheeks, tiny happy wiggle. Tile 7: sitting exactly the same way, very surprised: eyes huge and round, mouth a small "o", hands up. Tile 8: sitting exactly the same way, <GAG>.
+
+**C-4** (iki karakter sayfası, aynen):
+> Row 1 is CHARACTER A, row 2 is CHARACTER B, both at their correct relative size. In each row: Tile 1: standing in three-quarter view facing front-right, calm happy (waiting / walking with a small hop). Tile 2: sitting on an invisible chair in three-quarter view facing right, forearms (or paws, or wings) resting forward at table height, happy, face turned a little toward the viewer. Tile 3: sitting exactly the same way, eating happily, a fork at the mouth (animals: muzzle or beak toward the right, chewing, cheeks full; fork only). Tile 4: sitting exactly the same way, blissful, eyes closed, hands (paws, wings) on the cheeks.
+
+**S-PREMIUM** (§11a) her istemin sonuna eklenir.
+
+#### Gün C-1 (10 sayfa): Gün 1-2 müşterileri + personel
+| # | Dosya | Model (ref 3-4) | Karakter ve Tile 8 |
+|---|---|---|---|
+| C1 | `kino-garson-chibi.png` | aile-model, `kino-garson-sayfasi.png` | "Kino, the small beagle-like puppy boy in the green t-shirt, navy scarf, red sneakers and a short white waiter apron." **Kareler C-8 yerine:** "Tile 1: walking toward the viewer (three-quarter front-right), holding an empty round tray up flat on one hand. Tile 2: walking away, three-quarter back view toward the upper left, tray up on one hand. Tile 3: bending forward, placing the tray down at table height. Tile 4: holding a small notepad and pencil, writing, tongue out. Tile 5: sweeping with a small broom. Tile 6: slipping comically, one leg up, arms windmilling (does not fall). Tile 7: sneaking a single French fry, guilty sideways look. Tile 8: balancing a tall stack of dirty plates, cheeky grin." |
+| C2 | `anne-chibi.png` | aile-model, `anne-lokanta-sayfasi.png` | "Anne Defne, the mother dog." Tile 8: "gulping a big glass of water in one go, eyes wide (it was too salty)" |
+| C3 | `baba-chibi.png` | aile-model, `baba-lokanta-sayfasi.png` | "Baba Murat, the big father dog with glasses." Tile 8: "holding a fork up and looking sadly down at the table (empty plate), comic 'that's all?' face" |
+| C4 | `lokum-chibi.png` | aile-model, `lokum-lokanta-sayfasi.png` | "Lokum, the toddler puppy girl in the pink dress." Tile 8: "crying comically from onion, two streams of cartoon tears, still smiling" |
+| C5 | `dede-chibi.png` | aile-model, `dede-lokanta-sayfasi.png` | "Dede Hasan, the grandfather dog with the flat cap and moustache." Tile 8: "frowning with bushy eyebrows down, moustache twitching, but secretly sneaking another bite" |
+| C6 | `babaanne-chibi.png` | aile-model, `babaanne-lokanta-sayfasi.png` | "Babaanne Nazlı, the grandmother dog with glasses and a cream apron with a teal flower." **Kareler:** Tile 1-2 C-8 gibi; "Tile 3: holding out a big old brass key with both hands. Tile 4: tasting from a wooden spoon, eyes closed, 'mmm'." Tile 5-7 C-8'in 4, 5, 6. kareleri; "Tile 8: sitting, sneezing, glasses slipping down her nose." |
+| C7 | `tombi-chibi.png` | `tombi.webp`, `tombi-lokanta-sayfasi.png` | "Tombi, the chubby honey-brown bear cub with red shorts." Tile 8: "wearing an empty round plate on his head like a hat, cheeky grin (plate allowed)" |
+| C8 | `zipzip-chibi.png` | G-OT1, `zipzip-lokanta-sayfasi.png` | "Zipzip, the energetic sandy-beige bunny girl with very long ears and a pink t-shirt with a star." Tile 8: "sour face, her two long ears tied in a knot above her head" |
+| C9 | `bulut-chibi.png` | G-OT1, `bulut-lokanta-sayfasi.png` | "Bulut, the shy lamb with a charcoal-black face and puffy white wool, small blue scarf." Tile 8: "shy, hiding the face in the wool, only the eyes peeking out" |
+| C10 | `bidik-bidicik-chibi.png` | G-OT1, `bidik-lokanta-sayfasi.png` | C-4. "CHARACTER A: Bidik, the little grey goat kid with sky-blue overalls (one strap fallen). CHARACTER B: Bidicik, his chubby baby sister goat with a yellow ribbon and lemon overalls (relative size 0.75; she sits on a booster, booster not drawn)." **Only for Bidik, tile 4 instead:** "happily munching a paper napkin, a corner sticking out of his mouth". Bıdık'ın ayrı bayılma pozu yok; bayılması 2. kare + kalp efekti + ezilmeyle oynar. |
+
+#### Gün C-2 (10 sayfa): çocuklar, Nehir ve Pati, büyük hayvanlar
+| # | Dosya | Model | Karakter ve Tile 8 |
+|---|---|---|---|
+| C11 | `ada-chibi.png` | `netlik/dg-ada-pozlar-a.png` | "Ada, the 5-year-old girl from the reference." Tile 8: "sour lemon face, lips puckered, eyes squeezed" |
+| C12 | `can-chibi.png` | `netlik/dg-can-pozlar-a.png` | "Can, the 5-year-old boy from the reference." Tile 8: "giggling with crumbs on the cheeks, holding the tummy" |
+| C13 | `elif-chibi.png` | `netlik/dg-elif-pozlar-a.png` | "Elif, the 5-year-old girl from the reference." Tile 8: "sticking the tongue out 'bleh', eyes squinting, then smiling" |
+| C14 | `deniz-zeynep-chibi.png` | `netlik/dg-deniz-pozlar-a.png`, `netlik/dg-zeynep-pozlar-a.png` | C-4. "CHARACTER A: Deniz; CHARACTER B: Zeynep, the two friends from the references (each relative size 1.0)." |
+| C15 | `nehir-chibi.png` | `ref/nehir.png` | "Nehir abla, the young woman pet-shop keeper with long brown wavy hair in a top bun with a pencil, cream shirt, green apron with a paw, mustard trousers." Tile 8: "gently holding up one hand in a kind 'no' toward the floor, smiling (for a pet)" |
+| C16 | `pati-findik-tarcin-chibi.png` | `ref/pati-findik.png`, `ref/pati-tarcin.png` | **Pati sayfası (sandalyeye oturmazlar, yerde):** "CHARACTER A: Findik, the cream puppy with caramel ears and patches. CHARACTER B: Tarcin, the orange striped kitten with a white chest. Both real pets on four legs, relative size 0.55, chibi-cute. In each row: Tile 1: walking on four legs in three-quarter view facing front-right. Tile 2: sitting on the floor looking up hopefully, tail wagging. Tile 3: eating happily with the head down (no bowl drawn). Tile 4: overjoyed jump with all paws off the ground." |
+| C17 | `bidik-baba-chibi.png` | `bidik-baba.webp` | "Bidik's father, a friendly adult grey goat with a long chin beard, two short curved horns, a green knitted vest over a white shirt." Tile 8: "beard sticking out spiky in shock" |
+| C18 | `ege-annesi-chibi.png` | `ref/ege.png`, `ref/anne-ege-annesi.png` | C-4 ama **Ege'nin satırı:** "CHARACTER A: Ege, the baby boy in a light-blue onesie (relative size 0.6): Tile 1: sitting in an invisible high chair, happy, hands at tray height. Tile 2: eating messily, food smeared around the mouth, a spoon in his fist. Tile 3: clapping with delight. Tile 4: pouting, turning the head away." "CHARACTER B: Ege's mother, the young woman with curly hair in a top bun, lilac sweater, grey trousers and fluffy slippers (relative size 1.35)" + C-4 kareleri. Referans stili eski: kimliği koru, stili referans 1'e çevir. |
+| C19 | `ayi-inek-chibi.png` | `ref/ayi.png`, `ref/inek.png` | C-4. "CHARACTER A: the brown bear cub (relative 1.0). CHARACTER B: the black-and-white cow with a pink muzzle (relative 1.2). Keep their identity but redraw them in the style of the first image (not the glossy style of the old references)." |
+| C20 | `maymun-tavsan-chibi.png` | `ref/maymun.png`, `ref/tavsan.png` | C-4. "CHARACTER A: the orange monkey with a curly tail. CHARACTER B: the white bunny with pink inner ears (both 1.0)." + stil cümlesi (C19 gibi) |
+
+#### Gün C-3 (6 sayfa): Dedektif ve Otobüs hayvanları, yeni 4 karakter
+| # | Dosya | Model | Karakter |
+|---|---|---|---|
+| C21 | `kus-baykus-chibi.png` | `ref/kus.png`, `ref/baykus.png` | C-4. "CHARACTER A: the blue bird with an orange beak (1.0). CHARACTER B: the round brown owl from the detective story, sleepy half-closed eyes (1.0)." + stil cümlesi |
+| C22 | `ordek-yavru-chibi.png` | `ref/ordek-anne.png`, `ref/ordek-yavru.png` | C-4. "CHARACTER A: the white mother duck with an orange bill and a red-white striped scarf (1.0). CHARACTER B: one fluffy yellow duckling (0.55; in the game two or three copies sit together)." |
+| C23 | `pofuduk-sincap-chibi.png` | `ref/pati-pofuduk.png`, `ref/sincap-findik.png` | "CHARACTER A: Pofuduk, the lilac-white bunny pet (0.55): Pati sayfası kareleri (C16 gibi). CHARACTER B: the orange squirrel with a big curly tail and a green neckerchief from the detective story (1.0): C-4 kareleri." |
+| C24 | `pamuk-karabas-chibi.png` | `ref/dedektif-pamuk.png`, `ref/kopek.png` | C-4. "CHARACTER A: Pamuk, the white kitten with blue eyes and a pink bow (1.0). CHARACTER B: Karabas, the brown-and-white puppy dog (1.0)." + stil cümlesi |
+| C25 | `disci-teyze-chibi.png` | stil, lokanta | **İlk kez tasarlanıyor**, C-4: "CHARACTER A: Disci, a cheerful adult hippo dentist in a white coat, a tiny round mirror on a headband, a huge white-teeth smile (1.35). CHARACTER B: Tuhaf Teyze, a quirky adult flamingo lady with a big flowery hat, round glasses, mismatched striped socks (1.35)." Bu sayfa iki karakterin model kartıdır (§11e #31-33 yerine geçer). |
+| C26 | `palyaco-kelime-chibi.png` | stil, lokanta, C25 | C-4: "CHARACTER A: Palyaco Tavsan, an adult rabbit clown with a red round nose, a yellow-and-blue striped shirt, big shoes, friendly (no scary make-up) (1.35). CHARACTER B: Kelime Yutan Tavsan, a small grey bunny boy with puffed round cheeks as if his mouth is always full, a green cap (1.0)." (#51-52 yerine) |
+
+**Sayı:** 26 sayfa. Müşteriler: Anne, Baba, Lokum, Dede, Babaanne, Tombi, Zıpzıp, Bulut, Bıdık, Bıdıcık, Ada, Can, Elif, Deniz, Zeynep, Nehir, Fındık (köpek), Tarçın, Bıdık'ın babası, Ege, Ege'nin annesi, Ayı, İnek, Maymun, Tavşan, Kuş, Baykuş, Ördek anne, ördek yavrusu, Pofuduk, Sincap, Pamuk, Karabaş, Dişçi, Tuhaf Teyze, Palyaço Tavşan, Kelime Yutan Tavşan. Bunlar **37 müşteri** ve Kino ile Babaanne.
+- İki Fındık var: Pati'nin köpeği ve Dedektif'in sincabı. Oyunda sincabın adı "Sincap" olur, karışmaz.
+
+**Gece bölüşümü (Gemini + Antigravity):**
+- Gemini: C1-C10, sonra C21-C26.
+- Antigravity: C11-C20.
+- İkisi de aynı C-SAYFA ve C-8 / C-4 metnini **aynen** kullanır. Her sayfanın ilk karesi gelince yönetici bir kez yan yana bakar: ölçek ve açı tutuyor mu?
+
+**Kontrol (her sayfa):**
+1. Lokanta-34 resminin üstüne bir oturuş karesi ve bir ayakta kare konup ekran görüntüsü alınır. Açı ve ölçek oturuyor mu?
+2. Chibi oranı bütün sayfalarda aynı mı? Yan yana 3 sayfa montajıyla bakılır.
+3. Kimlik korunmuş mu (renk, aksesuar)?
+4. Yazı yok, zemin düz nane yeşili mi?
+5. "Premium bir çocuk kitabında olur mu?"
+- Kayan tek kare: yeni sohbette "Edit this exact image: redraw ONLY tile N as …".
+
+**Kod etkisi (P8'e eklenir):**
+- `MUSTERILER` 37'ye çıkar. Yeni girenlerin zevk ve gag satırları §5c kalıbıyla yazılır; yeni sözü olmayanlar için Mino durumu anlatır.
+- `kisi.ts` sayfa türüne göre poz adlarını okur.
+- Oturma düzeni: masanın iki yanında karşılıklı oturulur, sağdaki aynalanır.
+- Pati hayvanları masanın dibinde yerde durur.
+- Ege mama sandalyesinde oturur (#69'daki mama sandalyesi).
 
 ---
 
@@ -1123,7 +1249,7 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 
 ### 16b. Kim kimin yanında? (oturma)
 
-- **3/4 sahnede (§7a, P8):** her masanın **arka tarafında yan yana iki sandalye** var: sol ve sağ. İkisi de kameraya bakar. Masa çizimi önde, sandalyeler arkada; müşteri ikisinin arasında çizilir (P8 `sahne34.ts` derinliği). Bugünkü kodda eşlikçi masanın sağına oturuyor (`oturt_`, `x + 5`); bu yer artık her müşteriye açık.
+- **3/4 sahnede (§7a, P8, §11i):** her masanın **iki yanında karşılıklı iki sandalye** var: sol ve sağ. Müşteriler birbirine döner (chibi oturuş pozu 3/4, sağdaki aynalanır). Masa çizimi önde, sandalyeler arkada; müşteri ikisinin arasında çizilir (P8 `sahne34.ts` derinliği). Bugünkü kodda eşlikçi masanın sağına oturuyor (`oturt_`, `x + 5`); bu yer artık her müşteriye açık.
 - Müşteriler kapının önündeki **sırada** bekler (P8 `sira.ts`). Çocuk sıradaki **herhangi birini** boş bir masaya ya da **birinin oturduğu masanın boş sandalyesine** sürükler. Müşteri yol grafiği üstünde hoplayarak yürür ve oturur. Sürüklerken sandalyeler kesik çizgili halkayla görünür. Bu tamamen çocuğun seçimi. 3-4 yaşta dokunulmazsa sıranın başındaki 10 sn sonra kendisi boş bir masaya geçer.
 - **Sırada da anlaşırlar:** arkadaşlar sırada yan yana gelince birbirine el sallar, sohbet balonu çıkar. Bu, çocuğa "bunlar arkadaş" diye dolaylı bir ipucudur. Atışma çiftleri sırada da küçük bir şaka yapar: Bıdık öndekinin şapkasını kemirir.
 - **Arkadaş çiftleri** (`ARKADASLAR`, model.ts). Yan yana oturunca kalpler çıkar, aralarında resimli sohbet balonları (top, çiçek, nota) gidip gelir, yemekten sonra ikisi de bir **arkadaşlık bahşişi** bırakır (masa başına +1, en çok 1):
