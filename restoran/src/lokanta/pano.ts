@@ -14,7 +14,8 @@ import { Kisi } from './kisi';
 
 /** Pano kutusu (sahne yüzdesi) */
 export const PANO_YER: Record<Yon, { x: number; y: number; w: number; h: number }> = {
-  yatay: { x: 75, y: 9.5, w: 12, h: 14 },
+  // yatay: servis penceresinin üstündeki boş duvar (lokanta-yatay çizimi; eskiden saksı rafını örtüyordu)
+  yatay: { x: 85.5, y: 9.5, w: 12, h: 13 },
   dikey: { x: 71, y: 1.5, w: 19, h: 8.5 },
 };
 

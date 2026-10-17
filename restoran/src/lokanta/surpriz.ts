@@ -362,7 +362,8 @@ export function surprizKur(b: SurprizBaglam): Surprizler {
     window.setTimeout(() => kalp.remove(), TEST_MODU ? 60 : 1200);
   });
   const FOTO_YER: Record<Yon, { x: number; y: number; w: number; h: number }> = {
-    yatay: { x: 89.5, y: 11, w: 7, h: 13 },
+    // yatay: Gemini lokanta-yatay çizimindeki boş çerçevenin iç açıklığı (x 59,7-65,9, y 15,6-26,4; olcek.ts)
+    yatay: { x: 59.7, y: 15.6, w: 6.2, h: 10.8 },
     dikey: { x: 74, y: 10.5, w: 12.5, h: 6.8 },
   };
 

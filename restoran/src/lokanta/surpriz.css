@@ -36,10 +36,12 @@
 .mk-kok .rs-sp-bardak { width: calc(var(--rs-u) * 0.22); height: calc(var(--rs-u) * 0.38); border-radius: 4px 4px 8px 8px; background: linear-gradient(90deg, #dff3fb, #ffffff 40%, #bfe6f7); box-shadow: inset 0 0 0 2.5px var(--sp-kontur); }
 
 /* ------------------------------------------------------------ tuzluk (masada) */
+/* tuzluk masanın SOL yarısında (bayrağın sağı, tabağın solu): sağdaki hesap tabağını ve dokunma alanını hiçbir boyda
+   örtmez (hesap: right 0, en az 64 px; tuzluk: %20-31 + dokunma payı 8 px). Eskiden right 9% hesabın ortasındaydı. */
 .mk-kok .rs-sp-tuzluk {
   position: absolute;
   z-index: 4;
-  right: 9%;
+  left: 20%;
   bottom: 74%;
   width: calc(var(--rs-u) * 0.3);
   height: calc(var(--rs-u) * 0.46);
@@ -50,7 +52,7 @@
   touch-action: none;
   transform-origin: 50% 100%;
 }
-.mk-kok .rs-sp-tuzluk::before { content: ''; position: absolute; inset: -12px -14px -6px; }
+.mk-kok .rs-sp-tuzluk::before { content: ''; position: absolute; inset: -12px -8px -6px; }
 .mk-kok .rs-sp-tuzluk-govde { position: absolute; left: 0; right: 0; top: 30%; bottom: 0; border-radius: 6px 6px 5px 5px; background: linear-gradient(90deg, #ffffff, #e8eef2); box-shadow: inset 0 0 0 2.5px var(--sp-kontur); }
 .mk-kok .rs-sp-tuzluk-kapak { position: absolute; left: 6%; right: 6%; top: 0; height: 36%; border-radius: 8px 8px 3px 3px; background: radial-gradient(circle, var(--sp-kontur) 0 1.2px, transparent 1.6px) 50% 45% / 6px 5px, linear-gradient(#d6dde3, #aab6c0); box-shadow: inset 0 0 0 2.5px var(--sp-kontur); }
 .mk-kok .rs-sp-tuzluk.rs-salla { animation: rs-sp-salla 0.22s ease-out; }
@@ -87,6 +89,11 @@
 .mk-kok .rs-sp-foto-ic { position: absolute; inset: 12%; border-radius: 3px; overflow: hidden; display: grid; place-items: end center; background: radial-gradient(ellipse at 50% 30%, #fff8e6, #f2dcb4); box-shadow: inset 0 0 0 2px var(--sp-kontur); }
 .mk-kok .rs-sp-foto-ic .rs-p6-kafa { width: 104%; height: auto; margin-bottom: -6%; }
 .mk-kok .rs-sp-foto::before { content: ''; position: absolute; left: 50%; top: -14%; width: 30%; height: 18%; transform: translateX(-50%); border: 2px solid var(--sp-kontur); border-bottom: 0; border-radius: 50% 50% 0 0; }
+/* Gemini lokanta çizimi varken fotoğraf çizimdeki boş çerçevenin içinde (surpriz.ts FOTO_YER yatay): kendi tahta
+   çerçevesi ve askısı çizilmez, yalnız fotoğraf */
+.rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-sp-foto-cerceve { background: none; box-shadow: none; border-radius: 0; }
+.rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-sp-foto-ic { inset: 0; border-radius: 0; box-shadow: none; }
+.rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-sp-foto::before { display: none; }
 .mk-kok .rs-sp-foto.rs-kirp { animation: rs-sp-kirp 0.42s ease-out; }
 @keyframes rs-sp-kirp { 40% { transform: scale(1.06, 0.95); } }
 .mk-kok .rs-sp-foto-kalp { position: absolute; right: -14%; top: -10%; width: 40%; aspect-ratio: 1; background: #e8483a; clip-path: path('M10 18 2 10a4.5 4.5 0 0 1 8-5 4.5 4.5 0 0 1 8 5z'); transform-origin: 0 0; scale: 1.2; animation: rs-sp-uc 1.1s ease-out both; }
