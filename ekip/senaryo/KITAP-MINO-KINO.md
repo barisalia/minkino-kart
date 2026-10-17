@@ -303,3 +303,252 @@ Küçük not: "Önce oyun, sonra yemek, sonra Annem gelecek" sözünü çocuğun
 ### 2.7 Üretim notu (başlamaz, yalnız liste)
 
 Barış onaylarsa gerekecekler: Çınar Anaokulu girişi, askı sırası, blok köşesi, yemek masası; Kino'nun okul önlüğü ve sırt çantası; Öğretmen ve Bulut model sayfaları; ev setleri (çocuk odası, mutfak, apartman önü, antre, akşam sofrası) Seri 2'den. Her sayfa için çok pozlu Gemini sayfası (Barış'ın onayladığı yöntem). **Hiçbiri Barış "başla" demeden yapılmaz.**
+
+---
+
+## 3. İkinci kitap: Kuzu'nun Kulağı
+
+### 3.1 Künye
+
+- **Konu:** Lokum öğle uykusundayken Kino, yerde duran Kuzu'yu kulesine "bekçi" yapar. Kule sallanır, Kino düşen Kuzu'yu havada yakalar, ama yalnız kulağını: cırt! Kino Kuzu'yu minderin altına, kulağı cebine saklar. Lokum her yerde Kuzu'yu arar; Kino minderi göğsüne bastırıp "yardım eder". Kino kulağı kendi başına bantla yapıştırmaya çalışır; üçüncü denemede kulak Kino'nun kendi alnına yapışır. Babaanne gelir, Kino söyler. Babaanne kendi çocukluk saklamacasını anlatır, birlikte aşağı inip dikerler. En zor an Lokum'a söylemektir. Lokum dikişli kulağa bayılır.
+- **Yapı:** Caillou "Fixing Mr. Bones": kırmak → saklamak → kendi başına onarmaya çalışmak ve beceremeyiş → büyüğe söylemek → birlikte onarmak → sahibine söylemek. Görev verme Big Brother Caillou'dan. Bant denemesi Caillou's Teddy Shirt'teki üç deneme kalıbından. Lokum'un arama sayfasındaki düz anlatıcı cümleleri Peppa "Mr Dinosaur is Lost"tan küçük bir tat.
+- **İstek:** Kulesinin tepesine bir bekçi koymak. ("Ben büyüdüm artık! Kulem de bekçili!")
+- **Gerçek zorluk:** Bir şeyi kırınca söylemek. Hele ki o şey kardeşinin en sevdiği şeyse.
+- **Duygu:** suçluluk ve korku (s.4-6). Bedende: düşen kulaklar, minderi bırakmamak, karnına "bir taş oturması". Ağlama yok; Lokum'un dudağı titrer, o kadar.
+- **Büyüğün desteği:** Babaanne kızmaz, kendi çocukluk anısını anlatır (Caillou'nun "büyüğün anısı" aracı), bir cümle verir, bir görev verir (Kuzu'yu tut). Dikişi kendisi yapar ama Kino'suz yapmaz.
+- **Kino'nun kendi çözümü:** Önce kendisi onarmayı dener (olmaz, komik). Sonra Babaanne'ye kendisi söyler. Lokum'a da kendisi söyler; Babaanne yalnızca merdivenin dibinden bakar.
+- **Ters dönüş:** Lokum dikişli kulağa kızmaz, bayılır. Sonra evdeki "bozuk" her şeyi Babaanne'ye taşır; uyuyan Baba dahil.
+- **Düğme:** Lokum, uyuyan Baba'yı elinden çekip Babaanne'ye getirir: "Kıyıldı! Söyledim!" Babaanne: "O kırık değil, uykulu. Çay?" Baba: "Çay mı? Kalktım!"
+- **Uzunluk:** 13 sayfa + kapak + ebeveyn sayfası. Sesli okuma yaklaşık 3,5 dakika.
+- **Konuşan karakterler:** Kino, Lokum, Babaanne; tek sözle Baba ve Dede. Mino bu kitapta yok (kitap ailenin içinde geçer).
+- **Seri sürekliliği:** Seri kitabı Kuzu'nun bir kulağının dikişli olduğunu ve nedeninin bir bölümde anlaşılacağını söylüyor; bu kitap o nedendir. İlk kitapta görünen "biraz eğri, dikişli kulak" buradan gelir. Okuma sırası serbest.
+- **Yeni bilgi (Barış onaylarsa):** Kuzu'yu Babaanne örmüştür, Lokum doğduğu gün. Bu, Babaanne'nin onu en iyi dikecek kişi olmasını doğal kılar.
+
+### 3.2 Başa çıkma cümlesi
+
+> **"Kırıldı mı? Hemen söyle. Birlikte onarırız böyle."**
+
+- Kafiye: söyle / böyle. Üç kısa parça; ilk kitaptaki gibi üç parmakla sayılabilir.
+- Çocuğun zor anı kırmak değil, **söylemek**. Söz tam o an için.
+- **Geçtiği yerler:** s.9 Babaanne söyler → s.11 Kino, Lokum'a söylemeden önce kendine fısıldar → s.13 Lokum bebek diliyle yarısını tekrarlar ("Kıyıldı! Söyledim!"; rol dönüşümü ve düğme).
+- Anlatıcı sözü hiç söylemez; yalnız karakterler söyler.
+
+### 3.3 Seri sabitleri
+- Açılış: "Bugün Kino'nun başından neler geçti, bir bakalım."
+- Kapanış: "Yarın da güzel bir gün olacaktı."
+- Saklı nesne: her sayfada küçük kırmızı **uğur böceği**.
+- Baba'nın uykusu ve "Çay mı? Kalktım!" (s.5 kurulur, s.13'te ödenir). "Ben büyüdüm artık!" ve hemen ardından ters giden bir şey (s.3). Babaanne'nin "Sizin için yaptım, sıcacık!" (s.8). Dede'nin "Bak sen şu işe." (s.10).
+- Ses etiketleri yalnız [SESLER.md](../film/seri-2/SESLER.md) listesinden; her replikte en çok bir etiket. Lokum bebek söyleyişiyle (R yerine Y).
+- Canlanan anlar, ilk kitabın üretim biçimine uygun: her sayfada zemin + karakterin poz sayfası (parça döndürme yok).
+
+---
+
+### 3.4 Sayfa sayfa metin
+
+#### Kapak
+- **Başlık:** Kuzu'nun Kulağı
+- **Anlatıcı:** "Bugün Kino'nun başından neler geçti, bir bakalım."
+- **Resim:** Çocuk odasının kapısında Kino, bir şeyi sırtının arkasında saklıyor; yüzünde suçlu suçlu bir gülümseme, gözleri yana kaymış. Önünde Lokum, kollarını açmış, bir şey arıyor. Kino'nun sırtının arkasından krem örgü bir kuzunun ayağı görünüyor.
+- **Canlanan:** Kino göz ucuyla Lokum'a bakar, gülümser; kuyruğu bir kalkar bir iner.
+- **Saklı nesne:** Kapı pervazında.
+
+---
+
+#### Sayfa 1 · Kuzu her yere gider
+- **Anlatıcı:** "Cumartesiydi. Lokum'un dünyada en sevdiği şey Kuzu'ydu."
+- **Anlatıcı:** "Kuzu'yu Babaanne örmüştü. Lokum doğduğu gün."
+- **Anlatıcı:** "Kuzu kahvaltıya gelirdi. Banyoya gelirdi. Uykuya da gelirdi."
+- **Lokum:** "[happy] Kuzu benim!"
+- **Resim:** Kahvaltı masası. Lokum mama sandalyesinde; Kuzu yanında, kendi küçük sandalyesinde oturuyor, önünde minicik bir tabak. Lokum Kuzu'ya bir parça ekmek uzatıyor. Kino masanın öbür ucunda gülüyor. Anne çay dolduruyor.
+- **Canlanan:**
+  1. Lokum Kuzu'ya ekmek yedirmeye çalışır; Kuzu'nun burnuna reçel bulaşır (Lokum'un eliyle).
+  2. Dokununca Lokum Kuzu'ya sımsıkı sarılır, gözlerini kapatır.
+  3. Kino kıkırdar. `[giggles]`
+- **Saklı nesne:** Reçel kavanozunun kapağında.
+
+#### Sayfa 2 · Bir dakikacık
+- **Anlatıcı:** "Öğleden sonra Lokum uyudu. Kuzu yere düşmüştü."
+- **Anlatıcı:** "Kino'nun kulesi bitmişti. Ama tepesinde bir bekçi yoktu."
+- **Anlatıcı:** "Yerdeki Kuzu, tam bekçi boyundaydı."
+- **Kino:** "[whispers] Bir dakikacık, Kuzu. Kimse fark etmez."
+- **Resim:** Çocuk odası, öğle sonrası, perdeden süzülen sarı ışık. Lokum parmaklıklı karyolasında popo havada uyuyor. Karyolanın dibinde Kuzu. Odanın ortasında Kino'nun renkli tahta bloklardan kulesi. Kino parmak ucunda Kuzu'ya doğru yürüyor.
+- **Canlanan:**
+  1. Kino parmak ucunda iki adım atar, kuyruğu dimdik ve titrek.
+  2. Dokununca Lokum uykusunda ağzını şapırdatır; Kino donar, sonra yine yürür.
+- **Saklı nesne:** Karyolanın parmaklığında.
+
+#### Sayfa 3 · Bekçi
+- **Anlatıcı:** "Kino, Kuzu'yu kulenin en tepesine koydu."
+- **Kino:** "[excited] Ben büyüdüm artık! Kulem de bekçili!"
+- **Anlatıcı:** "Kule sallandı. Kuzu sallandı."
+- **Anlatıcı:** "Kino zıpladı ve Kuzu'yu havada yakaladı. Ama yalnızca kulağından."
+- **Ses:** "CIRT!"
+- **Resim:** Kule devriliyor, bloklar havada. Kino havada, kolları uzanmış, Kuzu'nun kulağını tutmuş. Kuzu aşağı düşüyor, kulağı Kino'nun elinde ayrılmak üzere.
+- **Canlanan:**
+  1. Dokununca kule bir sağa, bir sola sallanır.
+  2. Kino zıplar, Kuzu'yu yakalar: CIRT.
+  3. Bloklar yere saçılır, yumuşak bir tıkırtıyla.
+- **Saklı nesne:** Havada uçan bir bloğun üstünde.
+
+#### Sayfa 4 · Minderin altı
+- **Anlatıcı:** "Kuzu yerdeydi. Kulağı Kino'nun elindeydi."
+- **Anlatıcı:** "Kino'nun kendi kulakları da yere kadar düştü."
+- **Lokum** *(karyoladan)*: "[sleepy] Kuzuuu?"
+- **Anlatıcı:** "Kino, Kuzu'yu minderin altına sakladı. Kulağı da cebine."
+- **Resim:** Kino yerdeki kocaman minderin üstüne telaşla oturmuş, minderin altından Kuzu'nun bir ayağı görünüyor. Kino'nun cebinden krem bir kulak ucu sarkıyor. Arkada Lokum karyolada doğrulmuş, gözlerini ovuşturuyor.
+- **Canlanan:**
+  1. Kino'nun kulakları düşer, kuyruğu yere iner.
+  2. Dokununca Kino minderin üstüne hop diye oturur, cebinden sarkan kulağı içeri bastırır.
+  3. Lokum esner. `[yawns]`
+- **Saklı nesne:** Minderin püskülünde.
+
+#### Sayfa 5 · Arama
+- **Lokum:** "[curious] Kuzu? Kuzu neyde?"
+- **Anlatıcı:** "Kuzu karyolada değildi."
+- **Anlatıcı:** "Kuzu ayakkabılıkta da değildi."
+- **Anlatıcı:** "Kuzu, uyuyan Baba'nın kolunun altında da değildi."
+- **Baba** *(uykusunda)*: "[sleepy] Hı hı..."
+- **Anlatıcı:** "Kino da aradı. Ama minderi hiç bırakmadı."
+- **Resim:** Salon. Baba kanepede ağzı açık uyuyor. Lokum, Baba'nın kocaman kolunu iki eliyle kaldırmış, altına bakıyor. Kino arkada, minderi göğsüne bastırmış, masum masum tavana bakıyor. Minderin bir köşesinden Kuzu'nun ayağı sarkıyor.
+- **Canlanan:**
+  1. Lokum Baba'nın kolunu kaldırır; Baba horlar, bıyık lekesi kıpırdar.
+  2. Dokununca Kino ıslık çalmaya çalışır; ses çıkmaz, yalnızca yanakları şişer.
+  3. Minderden sarkan Kuzu ayağı bir an görünür, Kino hemen minderi çevirir.
+- **Saklı nesne:** Baba'nın terliğinin üstünde.
+
+#### Sayfa 6 · Taş
+- **Anlatıcı:** "Lokum kilimin ortasına oturdu."
+- **Lokum:** "[sad] Kuzu yok..."
+- **Anlatıcı:** "Lokum'un dudağı titredi. Kino'nun karnına bir taş oturdu."
+- **Anlatıcı:** "Hem de kocaman bir taş."
+- **Resim:** Salonun ortasında, kocaman kilimin üstünde minicik Lokum; bir kulağı (kestane olan) aşağı düşmüş. Kapının eşiğinde Kino, minderi sımsıkı tutuyor; kuyruğu yerde. İkisinin arası boş ve geniş.
+- **Canlanan:**
+  1. Lokum'un dudağı titrer, kestane kulağı iner.
+  2. Dokununca Kino minderi daha sıkı tutar, kulakları yere düşer.
+- **Saklı nesne:** Kilimin köşesindeki desende, çok sessiz.
+
+#### Sayfa 7 · Bant
+- **Anlatıcı:** "Kino odasına koştu. Kuzu'yu kendisi düzeltecekti."
+- **Anlatıcı:** "İlk bant tutmadı. Kulak düştü."
+- **Anlatıcı:** "İkinci bant Kino'nun patisine yapıştı."
+- **Anlatıcı:** "Üçüncü bantla kulak yapıştı. Ama Kino'nun alnına."
+- **Kino:** "[sighs] Olmuyor."
+- **Resim:** Kino yerde oturuyor, her yeri bant parçası. Kuzu kucağında, bir kulağı yok. Kopan krem kulak Kino'nun alnına yapışmış; Kino'nun iki uzun kestane kulağının ortasında üçüncü bir kulak gibi duruyor.
+- **Canlanan (üç dokunuş, üç deneme):**
+  1. Kino kulağı Kuzu'ya bantlar; kulak yavaşça düşer.
+  2. Kino patisini silkeler; bant patiden patiye geçer.
+  3. Kino bandı alnına bastırır; kulak orada kalır, Kino gözlerini yukarı çevirip ona bakar.
+- **Saklı nesne:** Bant makarasının üstünde.
+
+#### Sayfa 8 · Üç kulak
+- **Babaanne** *(kapıda, elinde tepsi)*: "[happy] Sizin için yaptım, sıcacık!"
+- **Anlatıcı:** "Babaanne pişileri bıraktı. Kino'ya baktı."
+- **Babaanne:** "[curious] Kino... Senin üç kulağın mı vardı?"
+- **Kino:** "[sad] Kuzu'nun kulağı koptu. Ben kopardım."
+- **Anlatıcı:** "Kino bunu söyleyince, karnındaki taş biraz küçüldü."
+- **Resim:** Kapıda Babaanne: lavanta hırka, tepede gümüş tüy topuzu, ip askılı yuvarlak gözlük burnunun ucunda; elinde dumanı tüten pişi tabağı. Kino yerde, alnında kuzu kulağı, her yanında bant.
+- **Canlanan:**
+  1. Babaanne gözlüğünü burnunun üstüne iter, kaşlarını kaldırır.
+  2. Dokununca Kino alnındaki kulağı çekip çıkarır, bant "cırt" eder, Kino yüzünü buruşturur.
+  3. Kino başını eğer; kuyruğu yavaşça yerden kalkar.
+- **Saklı nesne:** Pişi tabağının kenarında.
+
+#### Sayfa 9 · Babaanne de saklamış
+- **Anlatıcı:** "Babaanne, Kino'nun yanına oturdu."
+- **Babaanne:** "Ben küçükken babamın gözlüğünü kırmıştım. Şekerliğe saklamıştım."
+- **Babaanne:** "[laughs] Babam çayına gözlük koydu!"
+- **Anlatıcı:** "Kino güldü. Hem de taşa rağmen."
+- **Babaanne:** "Kırıldı mı? Hemen söyle. Birlikte onarırız böyle." **← başa çıkma cümlesi (1)**
+- **Babaanne:** "Kuzu'yu ben ördüm. Ben dikerim. Sen de tutarsın."
+- **Resim:** Kino'nun yatağının kenarında Babaanne ve Kino yan yana. Babaanne bir elini havada sallıyor, anlatıyor. Kino kocaman gülüyor, kuyruğu yatağın kenarından sarkıyor. Arkada, minderin altından Kuzu'nun ayağı.
+- **Canlanan:**
+  1. Babaanne çayına gözlük düşen babasını taklit eder: kaşığı ağzına götürür, şaşırır.
+  2. Dokununca Kino güler, yatağın üstünde zıplar.
+  3. Kino minderi kaldırır, Kuzu'yu çıkarır.
+- **Saklı nesne:** Babaanne'nin gözlük ipinde.
+
+#### Sayfa 10 · İlmek ilmek
+- **Anlatıcı:** "Aşağı kata indiler. Babaanne'nin dikiş sepeti sedirin üstündeydi."
+- **Anlatıcı:** "Babaanne dikti. Kino tuttu."
+- **Kino:** "[whispers] Korkma Kuzu. Babaanne acıtmaz."
+- **Anlatıcı:** "Bir ilmek. İki ilmek. Üç ilmek."
+- **Dede** *(gazetesinin üstünden)*: "[curious] Bak sen şu işe. Kuzu ameliyatta."
+- **Anlatıcı:** "Kuzu'nun kulağı yerine oturdu. Biraz eğri. Ama yerindeydi."
+- **Resim:** Babaannenin evi: sedir, düz renkli dikiş sepeti, krem iplik yumağı. Babaanne gözlüğünü takmış, iğneyi tutuyor. Kino Kuzu'yu iki eliyle sımsıkı ve dikkatle tutuyor, dili dışarıda. Arkada Dede koltuğunda, gazetesini indirmiş, gür beyaz kaşlarını kaldırmış bakıyor.
+- **Canlanan:**
+  1. Babaanne'nin iğnesi gider gelir; her dokunuşta bir ilmek: bir, iki, üç.
+  2. Kino ilmekleri parmağıyla sayar.
+  3. Dede gazetesini indirir, bir kaşı havada.
+- **Saklı nesne:** İplik yumağının üstünde.
+
+#### Sayfa 11 · En zoru
+- **Anlatıcı:** "Lokum merdivende oturuyordu. Hâlâ bekliyordu."
+- **Anlatıcı:** "Kino, Kuzu'yu arkasına sakladı. Sonra derin bir nefes aldı."
+- **Kino:** "[whispers] Kırıldı mı? Hemen söyle..." **← başa çıkma cümlesi (2)**
+- **Kino:** "Lokum... Kuzu'yu ben aldım. Kulağı koptu. Diktik."
+- **Anlatıcı:** "Lokum, Kuzu'ya uzun uzun baktı."
+- **Resim:** Apartman merdiveni, Kino'ların kapısının önü. Lokum en üst basamakta oturuyor. Kino iki basamak aşağıda, Kuzu sırtının arkasında; kulakları düşük ama başı dik. Merdivenin dibinde Babaanne, tırabzana yaslanmış, sessizce bakıyor.
+- **Canlanan:**
+  1. Kino derin nefes alır, göğsü kabarır.
+  2. Dokununca Kino Kuzu'yu arkasından çıkarıp Lokum'a uzatır.
+  3. Lokum'un gözleri kocaman olur.
+- **Saklı nesne:** Tırabzanın topuzunda.
+
+#### Sayfa 12 · Dikiş!
+- **Lokum** *(dikişe dokunarak)*: "[giggles] Kuzu... dikiş!"
+- **Lokum:** "Kuzu güzel! Lokum da dikiş!"
+- **Anlatıcı:** "Lokum, Kuzu'nun yeni kulağına bayıldı. Kendi kulağına da dikiş istedi."
+- **Lokum:** "Abi, sağol!"
+- **Anlatıcı:** "Kino'nun karnındaki taş, tamamen kayboldu."
+- **Resim:** Merdivenin başında Lokum, Kuzu'yu yüzüne bastırmış; dikişli kulak öne çıkıyor. Lokum öbür eliyle kendi kestane kulağını gösteriyor. Kino gülüyor, kuyruğu dimdik ve sallanıyor.
+- **Canlanan:**
+  1. Lokum Kuzu'ya sarılır, sağa sola sallanır.
+  2. Dokununca Lokum kendi kulağını tutup Kino'ya uzatır: "Dikiş!"
+  3. Kino'nun kuyruğu pervane gibi döner.
+- **Saklı nesne:** Kuzu'nun yeni dikişinin hemen yanında (bu sayfada bilerek görünür; ödül gibi).
+
+#### Sayfa 13 · Bunu da dik!
+- **Anlatıcı:** "O günden sonra Lokum, bozuk ne bulursa Babaanne'ye götürdü."
+- **Anlatıcı:** "Kino'nun tekerleği çıkan arabasını. Dede'nin kasketini. Bir de Baba'yı."
+- **Lokum** *(uyuyan Baba'yı elinden çekerek)*: "[excited] Babaanne! Kıyıldı! Söyledim!" **← başa çıkma cümlesi (3)**
+- **Babaanne:** "[laughs] O kırık değil, kuzum. Uykulu. Çay?"
+- **Baba:** "[surprised] Çay mı? Kalktım!"
+- **Anlatıcı:** "Yarın da güzel bir gün olacaktı."
+- **Resim:** Babaannenin bahçesi, limon ağacının altı. Babaanne sandalyede, dizinde dikiş sepeti. Önünde bir yığın "bozuk" şey: tekerleği çıkmış araba, Dede'nin kasketi. Lokum, uyku sersemi Baba'yı küçücük eliyle çekiştirerek getiriyor; Baba yarı uykulu, terlikleriyle sürünüyor. Kino ve Dede gülüyor. Kuzu, Lokum'un koltuğunun altında, dikişli kulağıyla.
+- **Canlanan:**
+  1. Lokum Baba'yı çeker; Baba bir adım atar, esner. `[yawns]`
+  2. Dokununca Babaanne çay bardağını kaldırır; Baba'nın gözleri fal taşı gibi açılır.
+  3. Kino ve Dede aynı anda gülerken aynı anda kaşlarını kaldırır (Dede'nin kaşları gür, Kino'nunki küçük).
+- **Saklı nesne:** Limon ağacının bir yaprağında.
+
+---
+
+#### Ebeveyn sayfası (kitabın sonunda, okunmaz)
+
+Çocuğunuzla konuşmak için:
+1. Senin de hiç bir şeyin kırıldı mı? O zaman ne yaptın?
+2. Kino Kuzu'yu neden sakladı sence? Babaanne'ye söyleyince karnındaki taşa ne oldu?
+3. Evde birlikte onarabileceğimiz bir şey var mı?
+
+Küçük not: Çocuğunuz bir şeyi kırdığını kendisi söylediğinde, onarmaya geçmeden önce söylediği için teşekkür etmek, bir dahaki sefere de söylemesini kolaylaştırır.
+
+---
+
+### 3.5 Editör denetimi (sert)
+
+| Soru | Sonuç | Yapılan değişiklik |
+|---|---|---|
+| Her sayfa bir öncekinden daha ilginç mi? | s.1 yalnız kurulum; tehlikesi durağan olmak. | Üçlü yineleme ("kahvaltıya, banyoya, uykuya") ve reçelli Kuzu ile hareket verildi. s.1'in işi Kuzu'nun değerini göstermek; s.6'daki taş bu sayfa yüzünden ağır gelir. s.2-3'te gerilim tırmanır (sinsi yürüyüş → bekçi → CIRT), s.4-5'te saklamaca komikleşir. |
+| Duygu gerçek ama kısa mı? | Duygu s.4 (kulaklar düşer), s.6 (taş) ve s.8'de (itiraf). Arka arkaya iki hüzünlü sayfa yok; aralarında s.5 (minderle arama, ıslık) ve s.7 (bant) komik. | İlk tasarımda Lokum, kulağın koptuğunu görüp ağlıyordu (seri kitabındaki eski satır böyleydi). Değiştirildi: Lokum uykuda, Kino saklayabiliyor, Lokum hiç ağlamıyor; yalnız dudağı titriyor. |
+| Dram var mı? | Yok. Kimse kızmıyor, kimse ağlamıyor. Babaanne'nin tepkisi bir şaka ("üç kulağın mı vardı?"). | — |
+| Kino kötü görünüyor mu? | Kuzu'yu Lokum'un kucağından almak kötü görünürdü. | İlk tasarımda Kino, uyuyan Lokum'un kollarından Kuzu'yu alıyordu. Değiştirildi: Kuzu yere düşmüş; Kino onu "bir dakikacık" ödünç alıyor. Kulağı da Kuzu'yu kurtarmaya çalışırken koparıyor. Okur Kino'ya kızmaz, onunla birlikte telaşlanır. |
+| Komik an var mı? | Reçelli Kuzu (1), sinsi yürüyüş (2), "yalnızca kulağından" (3), minderi bırakmayan Kino ve ıslık (5), alnına yapışan üçüncü kulak (7), "üç kulağın mı vardı?" (8), çaya düşen gözlük (9), "Kuzu ameliyatta" (10), Baba'nın getirilmesi (13). | s.6 ve s.11 bilerek gülmecesiz. |
+| Çözümü Kino kendisi mi buluyor? | Kendi onarma denemesi Kino'nun; Babaanne'ye söyleyen Kino; Lokum'a söyleyen de Kino. Babaanne dikişi yapar ama Kino'ya görev verir ve Lokum'a söylerken araya girmez. | İlk tasarımda başa çıkma cümlesi yalnız Babaanne'nin ağzındaydı. Kitabın en zor anına (s.11, Lokum'a söylemek) taşındı: Kino onu kendine fısıldıyor. |
+| Yüksek sesle okununca akıyor mu? | Anlatıcı cümleleri 3-10 kelime; çocuk cümleleri 1-6 kelime. Üçlemeler: "Kahvaltıya gelirdi. Banyoya gelirdi. Uykuya da gelirdi."; "Bir ilmek. İki ilmek. Üç ilmek."; s.5'teki "değildi" dizisi. | Babaanne'nin anısı üç cümleden ikiye indirildi; ortadaki "babam üç gün aradı" cümlesi düştü, şaka tek vuruşta kaldı. |
+| Seri sabitleri doğal mı? | "Ben büyüdüm artık!" yine hemen ardından bir aksilik getirir (ilk kitapla aynı kalıp; seri şakası). Baba s.5'te uyur, s.13'te "çay"la kalkar. Babaanne ve Dede'nin imza sözleri birer kez. | Mino bu kitapta yok; ev içi bir hikâyede araya sokulmadı. |
+| Canlanan anlar duyguyu mu anlatıyor? | Her sayfanın ilk canlanması duygu ya da olayın kendisi (kulak düşer, taş sayfasında minder sıkılır, itirafta baş eğilir). | Bütün canlanmalar karakter pozu ya da basit nesne hareketi; ilk kitabın üretim biçimine (zemin + poz sayfası) uyar. |
+| Başka kaynaklara fazla benziyor mu? | Kopya yok. Bant denemesi Caillou's Teddy Shirt'teki "üç kez dener, olmaz" kalıbından; içerik farklı (tişört değil kulak, sonunda kulak Kino'nun alnına yapışır). Düz "değildi" cümleleri Peppa'nın bir anlatım tekniği; olay örgüsü değil. Fixing Mr. Bones'un iskeleti açıkça esas alındı (yöneticinin isteği). | — |
+
+**Açık sorular (Barış'a):**
+1. "Kuzu'yu Babaanne ördü, Lokum doğduğu gün" bilgisi seriye eklensin mi?
+2. Bu kitap ilk kitaptan önce mi gösterilsin? (Kuzu'nun dikişi burada olur; ilk kitapta dikiş zaten var. Sıra serbest bırakılabilir.)
