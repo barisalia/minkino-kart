@@ -424,7 +424,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       }
       b.ses.cal('pof', { guc: 0.6 });
     } else {
-      yeniler.push(parcaYap({ m: 'yemek', g: 'ozel', u: merkez.u, v: merkez.v, w: 0.9, h: 0.9, kaynak: u.id, ozel: () => u.gorsel() }));
+      yeniler.push(parcaYap({ m: 'yemek', g: 'ozel', u: merkez.u, v: merkez.v, w: u.butun ? 1.3 : 0.9, h: u.butun ? 1.3 : 0.9, kaynak: u.id, ozel: () => (u.yemekGorsel ?? u.gorsel)() }));
       b.ses.cal('pof');
     }
     b.dokunsal(TITRESIM.kesim);

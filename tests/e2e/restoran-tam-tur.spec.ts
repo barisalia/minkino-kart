@@ -568,3 +568,45 @@ test.describe('P6 · 5-6 (dikey 390×844): pankek şapka, portakal tacı, person
     expect(hatalar).toEqual([]);
   });
 });
+
+test.describe('P6 · son netlik denetimi (dört telefon boyu, DPR 3)', () => {
+  test.use({ deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+  test.beforeEach(({}, info) => test.skip(info.project.name !== 'iphone', 'telefon boyu ayrı'));
+  for (const vp of [
+    { w: 844, h: 390 },
+    { w: 932, h: 430 },
+    { w: 667, h: 375 },
+    { w: 390, h: 844 },
+  ]) {
+    test(`${vp.w}x${vp.h}: bütün mini oyunlar ve büyümüş lokanta (süsler, bahçe, Nehir) kaynak pikselinin üstüne büyütülmez`, async ({ page }) => {
+      test.setTimeout(240_000);
+      await page.setViewportSize({ width: vp.w, height: vp.h });
+      const hatalar = hataTopla(page);
+      await page.goto('./restoran/mini.html?test=1&oyun=deneme');
+      const oyunlar = await page.evaluate(() => (window as unknown as { __rsMini: { oyunlar: string[] } }).__rsMini.oyunlar);
+      expect(oyunlar.length).toBeGreaterThanOrEqual(18);
+      const sorun: string[] = [];
+      for (const o of oyunlar) {
+        for (const yas of ['kucuk', 'buyuk']) {
+          await page.goto(`./restoran/mini.html?test=1&oyun=${o}&yas=${yas}`);
+          await expect(page.locator('.rs-istasyon')).toBeVisible();
+          await page.waitForTimeout(250);
+          const b = await buyutulen(page);
+          if (b.length) sorun.push(`${o}/${yas}: ${JSON.stringify(b)}`);
+        }
+      }
+      await page.goto('./restoran/?test=1&sifirla=1&yas=buyuk&ekran=lokanta&gun=7&acilan=bahce,kofte,sis,borek,sutlac,masa-3,masa-4,gramofon,akvaryum,resim,avize,saksi,ortu-cicekli&jeton=40&findik=1');
+      await menuSec(page);
+      await page.waitForTimeout(1500);
+      const b = await buyutulen(page);
+      if (b.length) sorun.push(`lokanta: ${JSON.stringify(b)}`);
+      await page.screenshot({ path: `tests/screens/restoran-netlik-${vp.w}x${vp.h}.png` });
+      await page.locator('.rs-bahce-gec').click();
+      await page.waitForTimeout(800);
+      const bb = await buyutulen(page);
+      if (bb.length) sorun.push(`bahce: ${JSON.stringify(bb)}`);
+      expect(sorun).toEqual([]);
+      expect(hatalar).toEqual([]);
+    });
+  }
+});

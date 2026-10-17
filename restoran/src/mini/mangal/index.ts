@@ -62,15 +62,15 @@ interface MangalKayit {
 }
 
 /** Izgara köftesi (tepside, masada): tabakta köfteler (+ közlenmiş sebze) — kutusunu doldurur */
-export function izgaraGorsel(parcalar: { tur: MangalTur; bicim: KofteBicim | null; pisme: string; iz: number }[]): HTMLElement {
-  const el = h('span.rs-mg-tabak-gorsel');
+export function izgaraGorsel(parcalar: { tur: MangalTur; bicim: KofteBicim | null; pisme: string; iz: number }[], tabaksiz = false): HTMLElement {
+  const el = h(tabaksiz ? 'span.rs-mg-tabak-gorsel.rs-mg-tabaksiz' : 'span.rs-mg-tabak-gorsel');
   const n = Math.max(1, parcalar.length);
   const sutun = Math.min(3, n);
   const satir = Math.ceil(n / sutun);
   parcalar.forEach((pa, i) => {
     const c = i % sutun;
     const r = Math.floor(i / sutun);
-    const w = Math.min(36, 74 / sutun);
+    const w = tabaksiz ? Math.min(48, 96 / sutun) : Math.min(36, 74 / sutun);
     const e = pa.tur === 'kofte' && pa.bicim ? kofteEl(pa.bicim.sekil === 'putur' ? 'yassi' : pa.bicim.sekil, pa.bicim.benek, pa.pisme) : h('i.rs-mg-sebze', { 'data-tur': pa.tur, style: `--kabarma:${pa.pisme === 'cig' ? 0 : pa.pisme === 'az' ? 0.4 : 0.85}` });
     const kap = h('span.rs-mg-tabak-parca', { 'data-iz': String(pa.iz) }, e, h('i.rs-mg-iz', { 'data-yon': '0' }));
     kap.style.cssText = `width:${w}%;left:${(100 / (sutun + 1)) * (c + 1) - w / 2}%;top:${(100 / (satir + 1)) * (r + 1)}%`;
@@ -783,6 +783,7 @@ function mangalBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       butun: true,
       kullanilan: kullanilan.slice(),
       gorsel: () => izgaraGorsel(snap),
+      yemekGorsel: () => izgaraGorsel(snap, true),
     } as Urun;
   }
 

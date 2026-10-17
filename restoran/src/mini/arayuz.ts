@@ -139,6 +139,8 @@ export interface Urun {
   kullanilan?: string[];
   /** Tabakla'da parçalara ayrılmaz, tabağa tek öbek olarak (gorsel()) konur: ızgara köfte, şiş, börek (P6) */
   butun?: boolean;
+  /** Tabakla'da tabağa konan hâli (kendi tabağı / kâsesi olmadan; yoksa gorsel) */
+  yemekGorsel?: () => HTMLElement;
   /** tepside ve masada gösterilecek küçük hâli. Kaynak pikselinin üstüne büyütülmez; kutusunu doldurur (100%×100%). */
   gorsel: () => HTMLElement;
 }
