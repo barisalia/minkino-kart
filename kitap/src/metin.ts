@@ -1,7 +1,8 @@
 /**
- * Sayfanın yazı alanı: senaryonun metni, büyük ve sıcak yazıyla (uygulamanın yazı tipi Fredoka). Konuşma satırları
- * karakter rengiyle ayrışır; ses etiketleri ([giggles] …) basılmaz. "Bana oku"da okunan kelime vurgulanır.
- * Yazı boyu sayfa kutusuna sığan en büyük boydur (14-30 px).
+ * Sayfanın yazı alanı: senaryonun metni, büyük ve sıcak kitap yazısıyla (Fraunces, yumuşak; kitap/yazi/ içinde
+ * paketli, internet istemez). Anlatının ilk harfi süslü baş harf; konuşma satırları karakter rengiyle ve konuşanın
+ * küçük yüzüyle (madalyon) ayrışır; ses etiketleri ([giggles] …) basılmaz. "Bana oku"da okunan kelimenin altı
+ * yumuşak bir kalemle çizilir. Yazı boyu sayfa kutusuna sığan en büyük boydur.
  */
 import type { Kim, Satir } from './tipler';
 
@@ -54,18 +55,30 @@ export function kelimeAgirliklari(metin: string): number[] {
 export interface MetinSecenek {
   /** Kapak: büyük başlık */
   baslik?: string;
-  /** Alt köşedeki sayfa numarası */
+  /** Alt ortadaki sayfa numarası */
   no?: number;
   /** Satıra dokununca (o satır okunur) */
   satirTik?: (i: number) => void;
+  /** Konuşanın küçük yüzü (madalyon): kitabın kendi çiziminden kırpılmış resim; yoksa adının baş harfi */
+  yuz?: (kim: Kim) => string | null;
 }
 
+/**
+ * Bir sayfanın metni. Yatayda iki parçaya bölünebilir: baştaki satırlar sol sayfada resmin altına (solEl), kalanı
+ * sağ sayfaya (el). Bölme ve yazı boyu sigdir()'de: iki kutuya da sığan en büyük boy; resmin altında yer varsa ilk
+ * satır oraya gelir (sayfada boş krem kalmasın). Okuma ve vurgu bölünmeden bağımsız (satırlar aynı öğeler).
+ */
 export class MetinSayfasi {
   readonly el: HTMLElement;
+  /** Sol sayfada resmin altındaki parça (yalnız yatayda kitaba eklenir) */
+  readonly solEl: HTMLElement;
   private ic: HTMLElement;
+  private solIc: HTMLElement;
   private satirEl: HTMLElement[] = [];
   private kelimeEl: HTMLElement[][] = [];
   private bas: number[][] = [];
+  /** Sol parçadaki satır sayısı */
+  solda = 0;
 
   constructor(
     readonly satirlar: Satir[],
@@ -76,6 +89,11 @@ export class MetinSayfasi {
     this.ic = document.createElement('div');
     this.ic.className = 'kt-metin-ic';
     this.el.append(this.ic);
+    this.solEl = document.createElement('div');
+    this.solEl.className = 'kt-metin kt-metin-sol';
+    this.solIc = document.createElement('div');
+    this.solIc.className = 'kt-metin-ic';
+    this.solEl.append(this.solIc);
     if (o.baslik) {
       const b = document.createElement('h1');
       b.className = 'kt-baslik';
@@ -88,10 +106,26 @@ export class MetinSayfasi {
       p.className = `kt-satir kt-${s.kim}`;
       p.style.setProperty('--renk', bilgi.renk);
       p.dataset.kim = s.kim;
+      // sayfanın ilk satırı anlatıcıysa süslü baş harf
+      if (i === 0 && s.kim === 'anlatici' && !o.baslik) p.classList.add('kt-ilk');
       if (bilgi.ad && s.kim !== 'anlatici') {
+        p.classList.add('kt-konusma');
         const ad = document.createElement('span');
         ad.className = 'kt-kim';
-        ad.textContent = bilgi.ad;
+        ad.setAttribute('role', 'img');
+        ad.setAttribute('aria-label', bilgi.ad);
+        const url = o.yuz?.(s.kim);
+        if (url) {
+          const r = document.createElement('img');
+          r.alt = '';
+          r.draggable = false;
+          r.decoding = 'async';
+          r.src = url;
+          ad.append(r);
+        } else {
+          ad.classList.add('kt-kim-harf');
+          ad.textContent = bilgi.ad.charAt(0);
+        }
         p.append(ad);
       }
       const govde = document.createElement('span');
@@ -125,24 +159,64 @@ export class MetinSayfasi {
     }
   }
 
-  /** Kutuya sığan en büyük yazı boyu (px) */
+  /** Baştaki k satırı sol parçaya, kalanı sağa koyar (sıra korunur) */
+  private bol(k: number) {
+    this.solda = k;
+    this.satirEl.forEach((p, i) => (i < k ? this.solIc : this.ic).append(p));
+    this.solEl.classList.toggle('kt-bos', k === 0);
+  }
+
+  private sigiyor(kutu: HTMLElement, ic: HTMLElement) {
+    const cs = getComputedStyle(kutu);
+    const bos = kutu.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    return ic.scrollHeight <= bos - 1 && ic.scrollWidth <= ic.clientWidth + 1;
+  }
+
+  /**
+   * Kutuya sığan en büyük yazı boyu (px). Sol parça kitaba eklenmiş ve yeri varsa iki kutu birlikte: önce resmin
+   * altına sığdığı kadar satır, kalanı sağa; ilk satır sola ancak çok küçük boyda sığıyorsa hepsi sağda.
+   */
   sigdir(enBuyuk = 30, enKucuk = 14) {
-    let a = enKucuk;
-    let b = enBuyuk;
-    const cs = getComputedStyle(this.el);
-    const sigar = (px: number) => {
+    const iki = this.solEl.isConnected && this.solEl.clientHeight > 0;
+    const yaz = (px: number) => {
       this.el.style.setProperty('--yazi', `${px}px`);
-      const bos = this.el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-      return this.ic.scrollHeight <= bos - 1 && this.ic.scrollWidth <= this.ic.clientWidth + 1;
+      this.solEl.style.setProperty('--yazi', `${px}px`);
     };
-    if (sigar(b)) return b;
-    while (b - a > 0.5) {
-      const m = (a + b) / 2;
-      if (sigar(m)) a = m;
-      else b = m;
-    }
-    sigar(a);
-    return a;
+    /** px boyunda sığar mı; enAz: sola en az bu kadar satır */
+    const sigar = (px: number, enAz: number) => {
+      yaz(px);
+      this.bol(0);
+      if (!iki) return this.sigiyor(this.el, this.ic);
+      let k = 0;
+      while (k < this.satirEl.length) {
+        this.bol(k + 1);
+        if (!this.sigiyor(this.solEl, this.solIc)) {
+          this.bol(k);
+          break;
+        }
+        k++;
+      }
+      return k >= enAz && this.sigiyor(this.el, this.ic);
+    };
+    const ara = (enAz: number) => {
+      if (sigar(enBuyuk, enAz)) return enBuyuk;
+      if (!sigar(enKucuk, enAz)) return 0;
+      let a = enKucuk;
+      let b = enBuyuk;
+      while (b - a > 0.5) {
+        const m = (a + b) / 2;
+        if (sigar(m, enAz)) a = m;
+        else b = m;
+      }
+      return a;
+    };
+    // resmin altında yer varsa ilk satır oraya (boy en çok 2 px küçülür); yoksa hepsi sağda
+    const birli = iki ? ara(1) : 0;
+    const serbest = ara(0) || enKucuk;
+    const solaBir = birli > 0 && birli >= serbest - 2;
+    const px = solaBir ? birli : serbest;
+    sigar(px, solaBir ? 1 : 0);
+    return px;
   }
 
   /** Okunan satır ve kelime (satır -1: vurgu yok) */

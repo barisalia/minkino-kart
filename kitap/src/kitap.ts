@@ -4,7 +4,9 @@
  * - Kitaplık: rafta düz kapaklar (hazır kitaplar); öbür fikirler "yakında" sırtları.
  * - Kitabı alma: kapağa dokununca kitap öne gelir; sırt, sayfa kalınlığı, gölge ve hafif eğilme belirir. Okuma modu
  *   seçilir ("Bana oku" / "Kendim bakayım"), kitap düzleşir ve kapak açılır.
- * - Okuma: yatayda açık iki sayfa (solda resim, sağda yazı), dikeyde tek sayfa. Sayfa parmakla sürüklenerek kıvrılır
+ * - Okuma (tasarım: ekip/kitap/TASARIM-ONERILERI.md, öneri C): yatayda açık iki sayfa; sol sayfanın üstünde resim
+ *   kenardan kenara (çerçevesiz), yazı resmin altından başlar, sağ sayfada sürer. Dikeyde tek sayfa (üstte resim, altta
+ *   yazı). Kapak, raf ve tutulan kitap aynı dille: üstte çizim, altta kitabın renginde başlık. Sayfa parmakla sürüklenerek kıvrılır
  *   ve çevrilir (yaprak.ts) ya da köşesine dokunarak. "Bana oku"da sayfa okunur, otomatik çevrilmez.
  * - Kaldığı yer, mod ve bulunan sürprizler cihazda (kayit.ts).
  */
@@ -31,6 +33,14 @@ export interface RafKitabi {
   canli?: Record<number, SayfaCanli>;
 }
 
+/** Dik kapağın altındaki seri adı */
+function seriAdi(): HTMLElement {
+  const s = document.createElement('div');
+  s.className = 'kt-seri';
+  s.textContent = 'Mino ile Kino';
+  return s;
+}
+
 const sure = (ms: number) => (TEST_MODU ? Math.min(ms, 40) : ms);
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const kare = () => new Promise<void>((r) => requestAnimationFrame(() => r()));
@@ -53,7 +63,10 @@ function dugme(sinif: string, ikon: string, etiket: string, tik: () => void): HT
 interface Yuz {
   el: HTMLElement;
   sahne?: Sahne;
+  /** Sayfanın metni (okuma bundan); yatayda sağ sayfanın yüzünde */
   metin?: MetinSayfasi;
+  /** Yatayda sol sayfa: aynı metnin resim altındaki parçası (solEl) bu yüzde durur */
+  metinSol?: MetinSayfasi;
 }
 
 export class Kitaplik {
@@ -154,7 +167,7 @@ export class Kitaplik {
         const ad = document.createElement('div');
         ad.className = 'kt-kapak-baslik';
         ad.textContent = k.baslik;
-        kapak.append(s.el, ad);
+        kapak.append(s.el, ad, seriAdi());
         kapak.addEventListener('click', () => this.tut(k, kapak));
         this.rafKapaklar.set(k.id, { kapak, sahne: s, kaynak: varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK });
         oge.append(kapak);
@@ -163,6 +176,7 @@ export class Kitaplik {
         sirt.type = 'button';
         sirt.className = 'kt-sirt-kitap';
         sirt.style.setProperty('--sirt', k.renk);
+        sirt.style.setProperty('--uz', String(k.baslik.length));
         sirt.setAttribute('aria-label', `${k.baslik} (yakında)`);
         const ad = document.createElement('span');
         ad.className = 'kt-sirt-ad';
@@ -183,18 +197,31 @@ export class Kitaplik {
     this.rafOlcu();
   }
 
-  /** Raf ölçüleri: kapak boyu ekrana göre; sırtlar kapağın %80-98'i */
+  /**
+   * Raf ölçüleri: kapak açık kitabın sayfa oranında (tutulunca aynı kitap öne gelir); sırtlar kapağın %80-98'i.
+   * Kapakta çizim üstte kenardan kenara (netlik: kaynak eni / 3'ü aşmaz), altında kitabın renginde başlık.
+   */
   private rafOlcu() {
     const w = innerWidth;
     const h = innerHeight;
     const yatay = w > h;
-    const kapakH = Math.round(yatay ? Math.min(h * 0.58, 300) : Math.min(w * 0.62, 320));
+    const o = kitapOlcusu(w, h);
+    const oran = o.pw / o.ph;
+    const kapakH = Math.round(yatay ? Math.min(h * 0.42, 240) : Math.min(w * 0.5, 260));
+    const kapakW = Math.round(kapakH * oran);
     this.raf.style.setProperty('--kapak-h', `${kapakH}px`);
-    // raftaki kapaklar: resim kapağın enine sığar (netlik: kaynak eni / 3'ü aşmaz)
+    this.raf.style.setProperty('--kapak-w', `${kapakW}px`);
     for (const { sahne, kaynak } of this.rafKapaklar.values()) {
-      const rw = Math.min(kapakH * 0.86 - 16, resimEnCok(kaynak));
-      const rh = rw / sahne.oran;
-      Object.assign(sahne.el.style, { left: `${(kapakH * 0.86 - rw) / 2}px`, top: `${(kapakH - rh) / 2 + kapakH * 0.06}px`, width: `${rw}px`, height: `${rh}px` });
+      const rw = Math.min(kapakW, resimEnCok(kaynak));
+      const rh = Math.round(rw / sahne.oran);
+      const pay = (kapakW - rw) / 2;
+      // yatık kapak: resim üstte, başlık altta; dik kapak: başlık üstte, resim ortanın biraz üstünde
+      const ust = yatay ? pay : Math.round((kapakH - rh) * 0.46);
+      Object.assign(sahne.el.style, { left: `${pay}px`, top: `${ust}px`, width: `${rw}px`, height: `${rh}px` });
+      const kap = sahne.el.parentElement;
+      kap?.classList.toggle('kt-dik', !yatay);
+      kap?.style.setProperty('--baslik-ust', yatay ? `${rh + 2 * pay}px` : '0px');
+      kap?.style.setProperty('--baslik-alt', yatay ? '0px' : `${kapakH - ust}px`);
       sahne.boyutla(rw, rh);
     }
   }
@@ -209,7 +236,9 @@ export class Kitaplik {
     const sahne = new Sahne({ no: 0, renk: ic.kapak.renk, tarif: ic.kapak.tarif, etiket: 'Kapak', canli: k.canli?.[0], varlik, soz: (kim, m) => this.soz(kim, m), bulundu: (id) => this.bulundu(0, id) });
     const metin = new MetinSayfasi(ic.kapak.satirlar, { baslik: ic.baslik, satirTik: (i) => this.satirOku(i, 0) });
     metin.el.classList.add('kt-kapak-metin');
-    el.append(sahne.el, metin.el);
+    // dikey kapakta başlık resmin üstünde, kapak sözü altında (solEl); yatayda ikisi de resmin altında
+    metin.solEl.classList.add('kt-kapak-metin', 'kt-kapak-alt');
+    el.append(sahne.el, metin.el, metin.solEl, seriAdi());
     if (canli) sahne.okumaSuruyor = () => this.okuyucu.aktif;
     return { el, sahne, metin };
   }
@@ -230,7 +259,6 @@ export class Kitaplik {
     Object.assign(kutu.style, { width: `${pw}px`, height: `${ph}px` });
     const yuz = this.kapakYuzu(k, this.varlik, true);
     yuz.el.classList.add('kt-t-on');
-    this.yuzBoyutla(yuz, pw, ph);
     const parca = (s: string) => {
       const d = document.createElement('div');
       d.className = s;
@@ -256,6 +284,8 @@ export class Kitaplik {
     };
     modlar.append(modDugme('oku', IKON.hoparlor, 'Bana oku'), modDugme('bak', IKON.goz, 'Kendim bakayım'));
     this.sahneEl.replaceChildren(golge, kutu, modlar);
+    // yazı kitap sahnedeyken ölçülür (sığdırma için yüzün gerçek boyu gerekir)
+    this.yuzBoyutla(yuz, pw, ph);
     this.tutulan = { el: kutu, yuz, golge, modlar };
     yuz.sahne?.baslat();
     // FLIP: raftaki kapağın yerinden öne
@@ -289,26 +319,39 @@ export class Kitaplik {
   }
 
   /**
-   * Yüzün ölçüleri. Resim alanı çizimin oranında ve netlik sınırında (kitapOlcusu): yatayda sol sayfanın ortasında
-   * levha, dikeyde sayfanın üstünde tam en; kapakta ortada (başlık üstte, söz altta). Resim büyütülmez, kırpılmaz.
+   * Yüzün ölçüleri. Resim çizimin oranında ve netlik sınırında (kitapOlcusu), sayfanın üstünde kenardan kenara
+   * (sayfa çizimden genişse eşit payla ortada). Yazı resmin altından başlar: yatayda sol sayfada resmin altına sığan
+   * satırlar, kalanı sağ sayfada (MetinSayfasi.sigdir böler); dikeyde hepsi resmin altında. Kapakta resmin altında
+   * başlık. Resim büyütülmez, kırpılmaz.
    */
   private yuzBoyutla(y: Yuz, w: number, h: number) {
     Object.assign(y.el.style, { width: `${w}px`, height: `${h}px` });
     const { resimW, resimH } = this.olcu;
     const kapak = y.el.classList.contains('kt-kapak-yuz');
-    const ust = y.el.classList.contains('kt-sayfa-tek') && !kapak;
     const rw = Math.min(resimW, w);
     const rh = Math.round((rw * resimH) / resimW);
-    y.el.style.setProperty('--resim-h', `${ust ? rh : 0}px`);
+    const pay = Math.max(0, Math.round((w - rw) / 2));
+    y.el.style.setProperty('--resim-h', `${y.sahne ? rh + 2 * pay : 0}px`);
+    // dikey kapak (uzun): resim ortanın biraz üstünde, başlık üstünde, kapak sözü altında
+    const dikKapak = kapak && h > w * 1.2;
+    y.el.classList.toggle('kt-dik', dikKapak);
+    const ust = dikKapak ? Math.round((h - rh) * 0.46) : pay;
+    if (kapak && y.metin) {
+      Object.assign(y.metin.el.style, dikKapak ? { top: '0px', bottom: 'auto', height: `${ust}px` } : { top: '', bottom: '', height: '' });
+      Object.assign(y.metin.solEl.style, dikKapak ? { top: `${ust + rh}px`, height: `${h - ust - rh}px` } : { top: '', height: '' });
+      y.metin.solEl.classList.toggle('kt-yok', !dikKapak);
+    }
     if (y.sahne) {
-      Object.assign(y.sahne.el.style, { left: `${(w - rw) / 2}px`, top: `${ust ? 0 : Math.round((h - rh) / 2)}px`, width: `${rw}px`, height: `${rh}px` });
-      y.sahne.el.classList.toggle('kt-levha', !ust || rw < w - 1);
+      Object.assign(y.sahne.el.style, { left: `${pay}px`, top: `${ust}px`, width: `${rw}px`, height: `${rh}px` });
+      y.sahne.el.classList.toggle('kt-pay', pay > 0);
       y.sahne.boyutla(rw, rh);
     }
+    // yatay sol sayfa: metnin resim altındaki parçası (en az iki satırlık yer yoksa gizli)
+    if (y.metinSol) y.metinSol.solEl.classList.toggle('kt-yok', h - rh - 2 * pay < 64);
     if (y.metin) {
-      if (y.el.classList.contains('kt-kapak-yuz')) {
-        y.metin.sigdir(Math.min(30, h * 0.075), 13);
-      } else y.metin.sigdir(TEST_MODU ? 30 : 32, 14);
+      if (kapak) y.metin.sigdir(dikKapak ? Math.min(34, w * 0.1) : Math.min(30, h * 0.085), 11);
+      // en büyük boy sayfa enine göre (telefonda 23-25 px, tablette 30-34 px)
+      else y.metin.sigdir(this.olcu.yatay ? Math.max(23, Math.min(30, w * 0.058)) : Math.max(25, Math.min(34, w * 0.046)), 13);
     }
     const eb = y.el.querySelector<HTMLElement>('.kt-ebeveyn');
     if (eb) {
@@ -406,8 +449,8 @@ export class Kitaplik {
     this.sayfa = sayfa;
     const { yatay } = this.olcu;
     if (yatay) {
-      this.sol = this.yuzYap(sayfa, 'sol');
       this.sag = this.yuzYap(sayfa, 'sag');
+      this.sol = this.yuzYap(sayfa, 'sol', this.sag.metin);
     } else {
       this.sol = null;
       this.sag = this.yuzYap(sayfa, 'tek');
@@ -441,7 +484,7 @@ export class Kitaplik {
   }
 
   /** Sayfa yüzü: yatayda sol = resim, sağ = yazı; dikeyde tek = resim + yazı. 0 = kapak, son = ebeveyn + son */
-  private yuzYap(sayfa: number, yer: 'sol' | 'sag' | 'tek'): Yuz {
+  private yuzYap(sayfa: number, yer: 'sol' | 'sag' | 'tek', ortak?: MetinSayfasi): Yuz {
     const ic = this.kitap!.icerik!;
     const el = document.createElement('div');
     el.className = `kt-sayfa kt-sayfa-${yer}`;
@@ -466,11 +509,22 @@ export class Kitaplik {
       y.sahne = new Sahne({ no: sayfa, renk: s.renk, tarif: s.tarif, canli: this.kitap!.canli?.[sayfa], varlik: this.varlik, soz: (kim, m) => this.soz(kim, m), bulundu: (id) => this.bulundu(sayfa, id) });
       el.append(y.sahne.el);
     }
+    if (yer === 'sol' && ortak) {
+      // aynı sayfanın metni: resmin altına sığan satırlar burada durur (bölme sağ yüz ölçülürken)
+      y.metinSol = ortak;
+      el.append(ortak.solEl);
+    }
     if (yer !== 'sol') {
-      y.metin = new MetinSayfasi(s.satirlar, { no: sayfa, satirTik: (i) => this.satirOku(i, sayfa) });
+      y.metin = new MetinSayfasi(s.satirlar, { no: sayfa, satirTik: (i) => this.satirOku(i, sayfa), yuz: (kim) => this.yuzResmi(kim) });
       el.append(y.metin.el);
     }
     return y;
+  }
+
+  /** Konuşanın küçük yüzü: kitabın kendi çiziminden; yoksa (çizimi gelmemiş kitap) aynı karakterin ilk kitaptaki yüzü */
+  private yuzResmi(kim: Kim): string | null {
+    const ad = `yuz-${kim}.webp`;
+    return this.varlik.url(ad) ?? kitapVarliklari('okul').url(ad);
   }
 
   private sonSayfasi(): HTMLElement {
@@ -519,8 +573,8 @@ export class Kitaplik {
     const eskiSag = this.sag;
     eskiSol?.sahne?.durdur();
     eskiSag?.sahne?.durdur();
-    const yeniSol = yatay ? this.yuzYap(hedef, 'sol') : null;
     const yeniSag = this.yuzYap(hedef, yatay ? 'sag' : 'tek');
+    const yeniSol = yatay ? this.yuzYap(hedef, 'sol', yeniSag.metin) : null;
     // ölç (kopyalar doğru boyda olsun)
     const olcBunu = (y: Yuz | null, sol: boolean) => {
       if (!y) return;

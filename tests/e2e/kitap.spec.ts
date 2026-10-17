@@ -36,6 +36,18 @@ const enBuyukOlcek = (page: Page) =>
     return en;
   });
 
+/** Açık kitaptaki metin kutuları (sağ sayfa + sol sayfada resmin altındaki parça): sığıyor mu, yazı boyu */
+const metinOlc = (page: Page) =>
+  page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>('.kt-kitap > .kt-sayfa .kt-metin:not(.kt-ebeveyn)')]
+      .filter((e) => getComputedStyle(e).visibility !== 'hidden' && e.clientHeight > 0)
+      .map((e) => {
+        const cs = getComputedStyle(e);
+        const bos = e.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+        return { sigar: e.querySelector('.kt-metin-ic')!.scrollHeight <= bos + 1, px: parseFloat(cs.fontSize) };
+      }),
+  );
+
 async function kitabiAc(page: Page, mod: 'oku' | 'bak', kitap = 'okul') {
   await page.locator(`.kt-raf-kapak[data-kitap="${kitap}"]`).click();
   await expect(page.locator('.kt-tutulan')).toBeVisible();
@@ -69,11 +81,23 @@ test('yatay 844×390: raf, 3D kitap, kapak açılır, sürükleyerek ve köşede
   await expect(page.locator('.kt-sirt-kitap')).toHaveCount(8);
   await kitabiAc(page, 'bak');
   await expect.poll(() => sayfa(page)).toBe(1);
-  // açık iki sayfa: solda resim, sağda yazı
+  // açık iki sayfa: sol sayfanın üstünde resim kenardan kenara; yazı resmin altından başlar, sağ sayfada sürer
   await expect(page.locator('.kt-kitap.kt-yatay .kt-sayfa-sol .kt-resim')).toBeVisible();
-  await expect(page.locator('.kt-kitap.kt-yatay .kt-sayfa-sag .kt-metin')).toContainText('Pazartesi sabahıydı.');
+  await expect(page.locator('.kt-kitap.kt-yatay .kt-sayfa-sol .kt-metin-sol')).toContainText('Pazartesi sabahıydı.');
+  await expect(page.locator('.kt-kitap.kt-yatay .kt-sayfa-sag .kt-metin')).toContainText('Ben büyüdüm artık! Okula gidiyorum!');
+  const sol = (await page.locator('.kt-kitap > .kt-sayfa-sol').boundingBox())!;
+  const res = (await page.locator('.kt-kitap > .kt-sayfa-sol .kt-resim').boundingBox())!;
+  expect(Math.abs(res.width - sol.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(res.y - sol.y)).toBeLessThanOrEqual(1);
+  const solYazi = (await page.locator('.kt-kitap > .kt-sayfa-sol .kt-metin-sol').boundingBox())!;
+  expect(solYazi.y).toBeGreaterThanOrEqual(res.y + res.height - 1);
+  // kitap yazısı (Fraunces, yerel paket) yüklü; ilk harf süslü; konuşanın küçük yüzü kitabın çiziminden
+  expect(await page.evaluate(() => document.fonts.check('500 20px "Kitap Yazi"', 'şğıİ'))).toBe(true);
+  await expect(page.locator('.kt-kitap .kt-satir.kt-ilk')).toHaveCount(1);
+  await expect(page.locator('.kt-kitap .kt-satir.kt-kino .kt-kim img')).toHaveAttribute('src', /yuz-kino/);
+  for (const o of await metinOlc(page)) expect(o.sigar && o.px >= 17, JSON.stringify(o)).toBe(true);
   // ses etiketi basılmaz
-  await expect(page.locator('.kt-sayfa-sag')).not.toContainText('[excited]');
+  await expect(page.locator('.kt-kitap')).not.toContainText('[excited]');
   // Antigravity'nin tam sayfa çizimi bağlı (yer tutucu yok); zemin/poz katmanları gelene kadar karakter kesilmez
   await expect(page.locator('.kt-sayfa-sol img.kt-zemin')).toHaveAttribute('src', /s01-tam/);
   await expect(page.locator('.kt-sayfa-sol .kt-yertutucu')).toHaveCount(0);
@@ -88,9 +112,9 @@ test('yatay 844×390: raf, 3D kitap, kapak açılır, sürükleyerek ve köşede
   // sürükleyerek ileri
   await surukle(page, 1);
   await expect.poll(() => sayfa(page)).toBe(2);
-  await expect(page.locator('.kt-sayfa-sag .kt-metin')).toContainText('Mutfakta Baba yine uyuyakalmıştı.');
+  await expect(page.locator('.kt-kitap')).toContainText('Mutfakta Baba yine uyuyakalmıştı.');
   // konuşma satırı karakter renginde
-  const babaRenk = await page.locator('.kt-sayfa-sag .kt-satir.kt-baba').first().evaluate((e) => getComputedStyle(e).color);
+  const babaRenk = await page.locator('.kt-kitap .kt-satir.kt-baba').first().evaluate((e) => getComputedStyle(e).color);
   expect(babaRenk).toBe('rgb(156, 31, 54)');
   // az ve yavaş sürükleyip bırakınca yaprak geri döner (hızlı fiske ise çevirir)
   const b = (await page.locator('.kt-kitap').boundingBox())!;
@@ -141,7 +165,10 @@ test('dikey 390×844: tek sayfa (üstte resim, altta yazı), sürükleyerek çev
   const m = (await page.locator('.kt-sayfa-tek .kt-metin').boundingBox())!;
   expect(m.y).toBeGreaterThanOrEqual(r.y + r.height - 1);
   const px = await page.locator('.kt-sayfa-tek .kt-metin').evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
-  expect(px).toBeGreaterThanOrEqual(18);
+  expect(px).toBeGreaterThanOrEqual(20);
+  // resim sayfanın üstünde kenardan kenara (1376 çizim telefonda büyütülmeden yeter)
+  const sayfaKutu = (await page.locator('.kt-kitap > .kt-sayfa-tek').boundingBox())!;
+  expect(Math.abs(r.width - sayfaKutu.width)).toBeLessThanOrEqual(1);
   await surukle(page, 1);
   await expect.poll(() => sayfa(page)).toBe(2);
   await surukle(page, -1);
@@ -159,13 +186,12 @@ test('yatay 667×375: her sayfanın yazısı sığar ve okunaklı; sonda ebeveyn
   await kitabiAc(page, 'bak');
   for (let s = 1; s <= 14; s++) {
     await expect.poll(() => sayfa(page)).toBe(s);
-    const olc = await page.locator('.kt-kitap > .kt-sayfa-sag .kt-metin').evaluate((e) => {
-      const cs = getComputedStyle(e);
-      const bos = e.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-      return { sigar: e.firstElementChild!.scrollHeight <= bos + 1, px: parseFloat(cs.fontSize) };
-    });
-    expect(olc.sigar, `sayfa ${s}`).toBe(true);
-    expect(olc.px, `sayfa ${s}`).toBeGreaterThanOrEqual(16);
+    const olc = await metinOlc(page);
+    expect(olc.length, `sayfa ${s}`).toBeGreaterThan(0);
+    for (const o of olc) {
+      expect(o.sigar, `sayfa ${s}`).toBe(true);
+      expect(o.px, `sayfa ${s}`).toBeGreaterThanOrEqual(16);
+    }
     await ileri(page);
   }
   await expect.poll(() => sayfa(page)).toBe(15);
@@ -200,7 +226,7 @@ test('Bana oku: kapak ve sayfa satır satır okunur, kelime vurgulanır, otomati
   await page.waitForTimeout(800);
   expect(await sayfa(page)).toBe(1);
   // satıra dokununca o satır yeniden okunur
-  await page.locator('.kt-sayfa-sag .kt-satir').nth(2).click();
+  await page.locator('.kt-kitap .kt-satir').nth(2).click();
   await expect.poll(async () => (await okunan(page)).filter((o) => o === 's01:2').length).toBe(2);
   // son sayfaya kadar git: ebeveyn sayfası okunmaz
   for (let s = 1; s < 15; s++) {
@@ -243,23 +269,22 @@ test("ikinci kitap \"Kuzu'nun Kulağı\": metniyle açılır, resimsiz sayfalar 
   await expect(page.locator('.kt-raf-kapak[data-kitap="kuzu-kulak"] .kt-kapak-baslik')).toHaveText("Kuzu'nun Kulağı");
   await kitabiAc(page, 'bak', 'kuzu-kulak');
   await expect.poll(() => sayfa(page)).toBe(1);
-  await expect(page.locator('.kt-sayfa-sag .kt-metin')).toContainText('Cumartesiydi.');
-  await expect(page.locator('.kt-sayfa-sag')).not.toContainText('[happy]');
+  await expect(page.locator('.kt-kitap')).toContainText('Cumartesiydi.');
+  await expect(page.locator('.kt-kitap')).not.toContainText('[happy]');
   await expect(page.locator('.kt-sayfa-sol .kt-yertutucu')).toHaveCount(1);
   // en küçük yatay telefonda (667×375) her sayfanın yazısı sığar ve okunaklı
   for (let s = 1; s < 13; s++) {
     await expect.poll(() => sayfa(page)).toBe(s);
-    const olc = await page.locator('.kt-kitap > .kt-sayfa-sag .kt-metin').evaluate((e) => {
-      const cs = getComputedStyle(e);
-      const bos = e.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-      return { sigar: e.firstElementChild!.scrollHeight <= bos + 1, px: parseFloat(cs.fontSize) };
-    });
-    expect(olc.sigar, `sayfa ${s}`).toBe(true);
-    expect(olc.px, `sayfa ${s}`).toBeGreaterThanOrEqual(16);
+    const olc = await metinOlc(page);
+    expect(olc.length, `sayfa ${s}`).toBeGreaterThan(0);
+    for (const o of olc) {
+      expect(o.sigar, `sayfa ${s}`).toBe(true);
+      expect(o.px, `sayfa ${s}`).toBeGreaterThanOrEqual(16);
+    }
     await ileri(page);
     await expect.poll(() => sayfa(page)).toBe(s + 1);
   }
-  await expect(page.locator('.kt-sayfa-sag .kt-metin')).toContainText('Babaanne');
+  await expect(page.locator('.kt-kitap')).toContainText('Babaanne');
   await ileri(page);
   await expect.poll(() => sayfa(page)).toBe(14);
   await expect(page.locator('.kt-ebeveyn')).toContainText('Evde birlikte onarabileceğimiz bir şey var mı?');

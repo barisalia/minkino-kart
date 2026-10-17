@@ -33,6 +33,12 @@ const ESYA_KES = path.join(__dirname, 'gemini-esya.cjs');
 const SAYFA_EN_COK = 2752;
 /** Antigravity'nin tam sayfa teslimi (2026-10-17, 1376x768 JPG): <girdi>/antigravity-1376/kapak.jpg, sayfa-01.jpg … */
 const AG_KLASOR = 'antigravity-1376';
+/**
+ * Aynı tam sayfaların Recraft crisp_upscale ile netleştirilmiş hâli (2026-10-17, 4096x2286 webp, temiz kontur): varsa önce
+ * bu kullanılır (<girdi>/recraft-up/kapak.webp, sayfa-01.webp …). Oran 1376x768 ile aynı: uğur ve dokunma yerleri değişmez.
+ * Çıktı uzun kenar SAYFA_EN_COK (2752): telefonda da tablette de resim kenardan kenara net.
+ */
+const UP_KLASOR = 'recraft-up';
 const agAdi = (sayfa) => (sayfa === 'kapak' ? 'kapak' : sayfa.replace(/^s/, 'sayfa-'));
 
 // ---------------------------------------------------------------- tablo (kitap/src/okul-canli.ts ile aynı; tests/unit/kitap.test.ts denetler)
@@ -187,7 +193,7 @@ function bolgeleriDagit(bolgeler, katmanlar) {
 
 async function sayfaIsle(sayfa, yerlesim, el) {
   const katmanlar = SAYFALAR[sayfa];
-  const tamF = dosya(sayfa) || dosya(path.join(AG_KLASOR, agAdi(sayfa))), zeminF = dosya(`${sayfa}-zemin`);
+  const tamF = dosya(sayfa) || dosya(path.join(UP_KLASOR, agAdi(sayfa))) || dosya(path.join(AG_KLASOR, agAdi(sayfa))), zeminF = dosya(`${sayfa}-zemin`);
   const y = (yerlesim.sayfalar[sayfa] = yerlesim.sayfalar[sayfa] || {});
   if (!tamF && !zeminF) { console.log(`${sayfa}: sayfa resmi yok (bekleniyor)`); return; }
   console.log(`${sayfa}:`);

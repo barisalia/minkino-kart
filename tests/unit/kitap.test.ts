@@ -8,7 +8,7 @@ import { ANAHTAR, kayitCoz } from '../../kitap/src/kayit';
 import { KARAKTERLER, etiketsiz, kelimeAgirliklari, kelimeler } from '../../kitap/src/metin';
 import { OKUL_CANLI } from '../../kitap/src/okul-canli';
 import type { KitapIcerik, Kim } from '../../kitap/src/tipler';
-import { kitapOlcusu, NETLIK_DPR, VARSAYILAN_KAYNAK } from '../../kitap/src/yerlesim';
+import { kitapOlcusu, NETLIK_DPR, UST, VARSAYILAN_KAYNAK } from '../../kitap/src/yerlesim';
 
 const icerik = okul as KitapIcerik;
 const KOK = resolve(__dirname, '../..');
@@ -151,15 +151,18 @@ describe('Kitap: canlanan anlar ve çizim listesi', () => {
 });
 
 describe('Kitap: ekran ölçüleri (telefon önce)', () => {
-  it('yatay telefonda iki sayfa, dikeyde tek sayfa; ekrana sığar', () => {
-    for (const [w, h] of [[844, 390], [667, 375], [932, 430], [1024, 768]]) {
+  it('yatay telefonda iki sayfa, dikeyde tek sayfa; ekrana sığar, düğmeler kitabın üstünde', () => {
+    for (const [w, h] of [[844, 390], [667, 375], [932, 430], [800, 360], [1024, 768]]) {
       const o = kitapOlcusu(w, h);
       expect(o.yatay).toBe(true);
-      expect(o.x).toBeGreaterThanOrEqual(56);
-      expect(o.x + 2 * o.pw).toBeLessThanOrEqual(w - 56);
-      expect(o.y + o.ph).toBeLessThanOrEqual(h);
-      // dar sayfada resmin ortadaki %70'i görünür
-      expect(o.pw / o.ph).toBeGreaterThanOrEqual(0.75);
+      expect(o.x).toBeGreaterThanOrEqual(16);
+      expect(o.x + 2 * o.pw).toBeLessThanOrEqual(w - 16);
+      // üstteki düğme şeridi (geri, okuma modu) kitabın üstünde kalır; cilt 6 px taşar
+      expect(o.y - 6).toBeGreaterThanOrEqual(UST - 6);
+      expect(o.y + o.ph + 7).toBeLessThanOrEqual(h);
+      // gerçek yatık kitap oranı; resmin altında yazıya yer kalır
+      expect(o.pw / o.ph).toBeGreaterThanOrEqual(1.05);
+      expect(o.ph - o.resimH - 2 * o.resimPay, `${w}x${h} resim altı`).toBeGreaterThanOrEqual(64);
     }
     for (const [w, h] of [[390, 844], [360, 780], [768, 1024]]) {
       const o = kitapOlcusu(w, h);
@@ -179,9 +182,16 @@ describe('Kitap: ekran ölçüleri (telefon önce)', () => {
       expect(o.resimW).toBeLessThanOrEqual(o.pw);
       expect(o.resimH).toBeLessThanOrEqual(o.ph);
     }
-    // telefonda resim yatayda sol sayfanın, dikeyde ekranın neredeyse tamamı
-    expect(kitapOlcusu(844, 390).resimW).toBeGreaterThanOrEqual(330);
-    expect(kitapOlcusu(390, 844).resimW).toBe(366);
+    // telefonda resim sayfayı kenardan kenara doldurur (pay 0), 1376 çizimle de
+    for (const [w, h] of [[844, 390], [667, 375], [932, 430], [800, 360], [390, 844], [360, 780]]) {
+      const o = kitapOlcusu(w, h);
+      expect(o.resimW, `${w}x${h}`).toBe(o.pw);
+      expect(o.resimPay).toBe(0);
+    }
+    expect(kitapOlcusu(844, 390).resimW).toBeGreaterThanOrEqual(390);
+    // tablette 1376 çizim 458'de durur (eşit payla ortada); 2752 gelince kenardan kenara
+    expect(kitapOlcusu(1024, 768).resimPay).toBeGreaterThan(0);
+    expect(kitapOlcusu(1024, 768, [2752, 1536]).resimPay).toBe(0);
     // daha büyük çizim gelince alan büyür (yine sınırda)
     expect(kitapOlcusu(768, 1024, [2752, 1536]).resimW).toBeGreaterThan(kitapOlcusu(768, 1024).resimW);
   });
