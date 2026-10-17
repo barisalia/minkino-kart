@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import kuzuKulak from '../../content/kitap-kuzu-kulak.json';
 import okul from '../../content/kitap-okul.json';
 import { ANAHTAR, kayitCoz } from '../../kitap/src/kayit';
 import { KARAKTERLER, etiketsiz, kelimeAgirliklari, kelimeler } from '../../kitap/src/metin';
@@ -12,10 +13,11 @@ import { kitapOlcusu, NETLIK_DPR, VARSAYILAN_KAYNAK } from '../../kitap/src/yerl
 const icerik = okul as KitapIcerik;
 const KOK = resolve(__dirname, '../..');
 
-/** Senaryodaki (§2.5) bir sayfanın konuşma satırları: [kim, metin] */
-function senaryoSatirlari(): Map<string, [string, string][]> {
+/** Senaryodaki (§2.5: 1. kitap, §3.4: 2. kitap) bir sayfanın konuşma satırları: [kim, metin] */
+function senaryoSatirlari(bas = '### 2.5'): Map<string, [string, string][]> {
   const md = readFileSync(resolve(KOK, 'ekip/senaryo/KITAP-MINO-KINO.md'), 'utf8');
-  const bolum = md.slice(md.indexOf('### 2.5'), md.indexOf('#### Ebeveyn sayfası'));
+  const i = md.indexOf(bas);
+  const bolum = md.slice(i, md.indexOf('#### Ebeveyn sayfası', i));
   const sayfalar = new Map<string, [string, string][]>();
   let anahtar = '';
   for (const satir of bolum.split(/\r?\n/)) {
@@ -31,7 +33,7 @@ function senaryoSatirlari(): Map<string, [string, string][]> {
   return sayfalar;
 }
 
-const AD: Record<string, Kim> = { Anlatıcı: 'anlatici', Kino: 'kino', Anne: 'anne', Baba: 'baba', Lokum: 'lokum', Mino: 'mino', Öğretmen: 'ogretmen', Bulut: 'bulut', Tombi: 'tombi', Çocuklar: 'cocuklar', Ses: 'ses' };
+const AD: Record<string, Kim> = { Anlatıcı: 'anlatici', Kino: 'kino', Anne: 'anne', Baba: 'baba', Lokum: 'lokum', Mino: 'mino', Öğretmen: 'ogretmen', Bulut: 'bulut', Tombi: 'tombi', Çocuklar: 'cocuklar', Babaanne: 'babaanne', Dede: 'dede', Ses: 'ses' };
 
 describe('Kitap: Kino Okula Başlıyor metni', () => {
   const senaryo = senaryoSatirlari();
@@ -64,6 +66,30 @@ describe('Kitap: Kino Okula Başlıyor metni', () => {
     };
     const zemin = lum('#FFF8EA');
     for (const [kim, k] of Object.entries(KARAKTERLER)) expect((zemin + 0.05) / (lum(k.renk) + 0.05), kim).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+describe("Kitap 2: Kuzu'nun Kulağı metni", () => {
+  const ikinci = kuzuKulak as KitapIcerik;
+  const senaryo = senaryoSatirlari('### 3.4');
+  it('her sayfanın metni senaryoyla birebir (kim ve söz, sırası dahil); kapak + 13 sayfa', () => {
+    expect(senaryo.size).toBe(14);
+    expect(ikinci.baslik).toBe("Kuzu'nun Kulağı");
+    expect(senaryo.get('kapak')!.map(([k, m]) => [AD[k], m])).toEqual(ikinci.kapak.satirlar.map((s) => [s.kim, s.metin]));
+    for (const s of ikinci.sayfalar) {
+      const bek = senaryo.get(`s${s.no}`)!;
+      expect(bek.length, `sayfa ${s.no}`).toBeGreaterThan(0);
+      expect(bek.map(([k, m]) => [AD[k], m]), `sayfa ${s.no}`).toEqual(s.satirlar.map((x) => [x.kim, x.metin]));
+    }
+    expect(ikinci.sayfalar.map((s) => s.no)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+  });
+  it('ebeveyn sayfası senaryodaki sorular', () => {
+    const md = readFileSync(resolve(KOK, 'ekip/senaryo/KITAP-MINO-KINO.md'), 'utf8');
+    for (const q of ikinci.ebeveyn.sorular) expect(md).toContain(q);
+    expect(md).toContain(ikinci.ebeveyn.not.replace('Küçük not: ', ''));
+  });
+  it('konuşan her karakterin adı ve rengi var', () => {
+    for (const s of [ikinci.kapak, ...ikinci.sayfalar]) for (const x of s.satirlar) expect(KARAKTERLER[x.kim], x.kim).toBeTruthy();
   });
 });
 

@@ -1,0 +1,190 @@
+{
+  "aciklama": "Kitap 2: Kuzu'nun Kulağı. Metin ekip/senaryo/KITAP-MINO-KINO.md §3.4'ten birebir (değiştirilmez). kim: konuşan (anlatici, kino, lokum, babaanne, baba, dede, ses). not: yalnız seslendirme / resim için yönerge, sayfada basılmaz. tarif: resim gelene kadar yer tutucuda görünen kısa tarif. Çizimler ekip/antigravity/ISTEK-05-KITAP2.md ile gelir (ekip/gemini/yeni/kitap-kuzu/); gelene kadar her sayfa sade yer tutucu. Canlanan anlar (kuzu-canli.ts) çizimler gelince yazılır. Seslendirme listesine (src/audio/cumleler.ts) EKLENMEDİ: seslendirme ayrı onay işi; şimdilik cihaz sesi.",
+  "id": "kuzu-kulak",
+  "baslik": "Kuzu'nun Kulağı",
+  "kapak": {
+    "renk": "#CFE0EE",
+    "tarif": "Çocuk odasının kapısında Kino arkasında bir şey saklıyor; Lokum kollarını açmış, arıyor.",
+    "satirlar": [{ "kim": "anlatici", "metin": "Bugün Kino'nun başından neler geçti, bir bakalım." }]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Kuzu her yere gider",
+      "renk": "#F7DDB0",
+      "tarif": "Kahvaltı masası. Lokum mama sandalyesinde, Kuzu yanında kendi sandalyesinde; Lokum Kuzu'ya ekmek uzatıyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Cumartesiydi. Lokum'un dünyada en sevdiği şey Kuzu'ydu." },
+        { "kim": "anlatici", "metin": "Kuzu'yu Babaanne örmüştü. Lokum doğduğu gün." },
+        { "kim": "anlatici", "metin": "Kuzu kahvaltıya gelirdi. Banyoya gelirdi. Uykuya da gelirdi." },
+        { "kim": "lokum", "metin": "[happy] Kuzu benim!" }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Bir dakikacık",
+      "renk": "#F6E7B8",
+      "tarif": "Öğle sonrası, çocuk odası. Lokum karyolasında uyuyor; Kino parmak ucunda yerdeki Kuzu'ya yürüyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Öğleden sonra Lokum uyudu. Kuzu yere düşmüştü." },
+        { "kim": "anlatici", "metin": "Kino'nun kulesi bitmişti. Ama tepesinde bir bekçi yoktu." },
+        { "kim": "anlatici", "metin": "Yerdeki Kuzu, tam bekçi boyundaydı." },
+        { "kim": "kino", "metin": "[whispers] Bir dakikacık, Kuzu. Kimse fark etmez." }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Bekçi",
+      "renk": "#D7ECC6",
+      "tarif": "Kule devriliyor, bloklar havada. Kino zıplamış, Kuzu'yu kulağından yakalamış.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kino, Kuzu'yu kulenin en tepesine koydu." },
+        { "kim": "kino", "metin": "[excited] Ben büyüdüm artık! Kulem de bekçili!" },
+        { "kim": "anlatici", "metin": "Kule sallandı. Kuzu sallandı." },
+        { "kim": "anlatici", "metin": "Kino zıpladı ve Kuzu'yu havada yakaladı. Ama yalnızca kulağından." },
+        { "kim": "ses", "metin": "CIRT!" }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Minderin altı",
+      "renk": "#F9D3C4",
+      "tarif": "Kino kocaman minderin üstüne oturmuş; cebinden krem bir kulak ucu sarkıyor. Lokum karyolada gözlerini ovuşturuyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kuzu yerdeydi. Kulağı Kino'nun elindeydi." },
+        { "kim": "anlatici", "metin": "Kino'nun kendi kulakları da yere kadar düştü." },
+        { "kim": "lokum", "not": "karyoladan", "metin": "[sleepy] Kuzuuu?" },
+        { "kim": "anlatici", "metin": "Kino, Kuzu'yu minderin altına sakladı. Kulağı da cebine." }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Arama",
+      "renk": "#E6DDF2",
+      "tarif": "Salon. Baba kanepede uyuyor; Lokum Baba'nın kolunu kaldırıp altına bakıyor. Kino minderi göğsüne bastırmış.",
+      "satirlar": [
+        { "kim": "lokum", "metin": "[curious] Kuzu? Kuzu neyde?" },
+        { "kim": "anlatici", "metin": "Kuzu karyolada değildi." },
+        { "kim": "anlatici", "metin": "Kuzu ayakkabılıkta da değildi." },
+        { "kim": "anlatici", "metin": "Kuzu, uyuyan Baba'nın kolunun altında da değildi." },
+        { "kim": "baba", "not": "uykusunda", "metin": "[sleepy] Hı hı..." },
+        { "kim": "anlatici", "metin": "Kino da aradı. Ama minderi hiç bırakmadı." }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Taş",
+      "renk": "#DCE6EE",
+      "tarif": "Kocaman kilimin ortasında minicik Lokum. Kapının eşiğinde Kino minderi sımsıkı tutuyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Lokum kilimin ortasına oturdu." },
+        { "kim": "lokum", "metin": "[sad] Kuzu yok..." },
+        { "kim": "anlatici", "metin": "Lokum'un dudağı titredi. Kino'nun karnına bir taş oturdu." },
+        { "kim": "anlatici", "metin": "Hem de kocaman bir taş." }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Bant",
+      "renk": "#F3E3C3",
+      "tarif": "Kino yerde, her yanı bant parçası. Kopan kulak Kino'nun alnına yapışmış: üç kulaklı Kino.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Kino odasına koştu. Kuzu'yu kendisi düzeltecekti." },
+        { "kim": "anlatici", "metin": "İlk bant tutmadı. Kulak düştü." },
+        { "kim": "anlatici", "metin": "İkinci bant Kino'nun patisine yapıştı." },
+        { "kim": "anlatici", "metin": "Üçüncü bantla kulak yapıştı. Ama Kino'nun alnına." },
+        { "kim": "kino", "metin": "[sighs] Olmuyor." }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Üç kulak",
+      "renk": "#F8E1A0",
+      "tarif": "Kapıda pişi tabağıyla Babaanne. Kino yerde, alnında kuzu kulağı.",
+      "satirlar": [
+        { "kim": "babaanne", "not": "kapıda, elinde tepsi", "metin": "[happy] Sizin için yaptım, sıcacık!" },
+        { "kim": "anlatici", "metin": "Babaanne pişileri bıraktı. Kino'ya baktı." },
+        { "kim": "babaanne", "metin": "[curious] Kino... Senin üç kulağın mı vardı?" },
+        { "kim": "kino", "metin": "[sad] Kuzu'nun kulağı koptu. Ben kopardım." },
+        { "kim": "anlatici", "metin": "Kino bunu söyleyince, karnındaki taş biraz küçüldü." }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Babaanne de saklamış",
+      "renk": "#E2EBD3",
+      "tarif": "Yatağın kenarında Babaanne ve Kino yan yana. Babaanne anlatıyor, Kino kocaman gülüyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Babaanne, Kino'nun yanına oturdu." },
+        { "kim": "babaanne", "metin": "Ben küçükken babamın gözlüğünü kırmıştım. Şekerliğe saklamıştım." },
+        { "kim": "babaanne", "metin": "[laughs] Babam çayına gözlük koydu!" },
+        { "kim": "anlatici", "metin": "Kino güldü. Hem de taşa rağmen." },
+        { "kim": "babaanne", "metin": "Kırıldı mı? Hemen söyle. Birlikte onarırız böyle." },
+        { "kim": "babaanne", "metin": "Kuzu'yu ben ördüm. Ben dikerim. Sen de tutarsın." }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "İlmek ilmek",
+      "renk": "#EADCF0",
+      "tarif": "Babaannenin evi, sedir. Babaanne Kuzu'nun kulağını dikiyor, Kino Kuzu'yu tutuyor; Dede gazetesinin üstünden bakıyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Aşağı kata indiler. Babaanne'nin dikiş sepeti sedirin üstündeydi." },
+        { "kim": "anlatici", "metin": "Babaanne dikti. Kino tuttu." },
+        { "kim": "kino", "metin": "[whispers] Korkma Kuzu. Babaanne acıtmaz." },
+        { "kim": "anlatici", "metin": "Bir ilmek. İki ilmek. Üç ilmek." },
+        { "kim": "dede", "not": "gazetesinin üstünden", "metin": "[curious] Bak sen şu işe. Kuzu ameliyatta." },
+        { "kim": "anlatici", "metin": "Kuzu'nun kulağı yerine oturdu. Biraz eğri. Ama yerindeydi." }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "En zoru",
+      "renk": "#D9E4F0",
+      "tarif": "Apartman merdiveni. Lokum en üst basamakta; Kino iki basamak aşağıda, Kuzu sırtının arkasında.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "Lokum merdivende oturuyordu. Hâlâ bekliyordu." },
+        { "kim": "anlatici", "metin": "Kino, Kuzu'yu arkasına sakladı. Sonra derin bir nefes aldı." },
+        { "kim": "kino", "metin": "[whispers] Kırıldı mı? Hemen söyle..." },
+        { "kim": "kino", "metin": "Lokum... Kuzu'yu ben aldım. Kulağı koptu. Diktik." },
+        { "kim": "anlatici", "metin": "Lokum, Kuzu'ya uzun uzun baktı." }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Dikiş!",
+      "renk": "#FBD9E3",
+      "tarif": "Merdivenin başında Lokum, dikişli kulaklı Kuzu'yu yüzüne bastırmış. Kino gülüyor.",
+      "satirlar": [
+        { "kim": "lokum", "not": "dikişe dokunarak", "metin": "[giggles] Kuzu... dikiş!" },
+        { "kim": "lokum", "metin": "Kuzu güzel! Lokum da dikiş!" },
+        { "kim": "anlatici", "metin": "Lokum, Kuzu'nun yeni kulağına bayıldı. Kendi kulağına da dikiş istedi." },
+        { "kim": "lokum", "metin": "Abi, sağol!" },
+        { "kim": "anlatici", "metin": "Kino'nun karnındaki taş, tamamen kayboldu." }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "Bunu da dik!",
+      "renk": "#E4F0C8",
+      "tarif": "Babaannenin bahçesi, limon ağacının altı. Lokum uykulu Baba'yı elinden çekip Babaanne'ye getiriyor.",
+      "satirlar": [
+        { "kim": "anlatici", "metin": "O günden sonra Lokum, bozuk ne bulursa Babaanne'ye götürdü." },
+        { "kim": "anlatici", "metin": "Kino'nun tekerleği çıkan arabasını. Dede'nin kasketini. Bir de Baba'yı." },
+        { "kim": "lokum", "not": "uyuyan Baba'yı elinden çekerek", "metin": "[excited] Babaanne! Kıyıldı! Söyledim!" },
+        { "kim": "babaanne", "metin": "[laughs] O kırık değil, kuzum. Uykulu. Çay?" },
+        { "kim": "baba", "metin": "[surprised] Çay mı? Kalktım!" },
+        { "kim": "anlatici", "metin": "Yarın da güzel bir gün olacaktı." }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Çocuğunuzla konuşmak için:",
+    "sorular": [
+      "Senin de hiç bir şeyin kırıldı mı? O zaman ne yaptın?",
+      "Kino Kuzu'yu neden sakladı sence? Babaanne'ye söyleyince karnındaki taşa ne oldu?",
+      "Evde birlikte onarabileceğimiz bir şey var mı?"
+    ],
+    "not": "Küçük not: Çocuğunuz bir şeyi kırdığını kendisi söylediğinde, onarmaya geçmeden önce söylediği için teşekkür etmek, bir dahaki sefere de söylemesini kolaylaştırır."
+  }
+}

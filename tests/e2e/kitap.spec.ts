@@ -2,7 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
 
 /**
- * Kitaplar (/kitap/): ilk kitap "Kino Okula Başlıyor". Menüde değil (KITAP_MENUDE = false).
+ * Kitaplar (/kitap/): ilk kitap "Kino Okula Başlıyor", ikinci kitap "Kuzu'nun Kulağı" (metin hazır, çizimler gelene kadar
+ * yer tutucu). Menüde değil (KITAP_MENUDE = false).
  * Telefon önce: 844×390 ve 667×375 (yatay, açık iki sayfa), 390×844 (dikey, tek sayfa), DPR 3.
  *  (1) raf → kapağa dokun → kitap öne gelir (3D) → "Kendim bakayım" → kapak açılır → sürükleyerek ve köşeden çevirme
  *  (2) canlanan an (dokununca poz değişir), uğur böceği bulunur, kayıt cihazda; yeniden açınca kaldığı yerden
@@ -35,8 +36,8 @@ const enBuyukOlcek = (page: Page) =>
     return en;
   });
 
-async function kitabiAc(page: Page, mod: 'oku' | 'bak') {
-  await page.locator('.kt-raf-kapak').click();
+async function kitabiAc(page: Page, mod: 'oku' | 'bak', kitap = 'okul') {
+  await page.locator(`.kt-raf-kapak[data-kitap="${kitap}"]`).click();
   await expect(page.locator('.kt-tutulan')).toBeVisible();
   await expect(page.locator('.kt-mod-sec[data-mod="oku"]')).toBeVisible();
   await expect(page.locator('.kt-tutulan .kt-t-sirt')).toHaveCount(1);
@@ -63,9 +64,9 @@ test('yatay 844×390: raf, 3D kitap, kapak açılır, sürükleyerek ve köşede
   await page.goto('kitap/?test=1');
   await page.evaluate(() => localStorage.removeItem('minkino-kitap-v1'));
   await page.reload();
-  // raf: bir kitap + 9 "yakında" sırtı
-  await expect(page.locator('.kt-raf-kapak')).toHaveCount(1);
-  await expect(page.locator('.kt-sirt-kitap')).toHaveCount(9);
+  // raf: iki kitap + 8 "yakında" sırtı
+  await expect(page.locator('.kt-raf-kapak')).toHaveCount(2);
+  await expect(page.locator('.kt-sirt-kitap')).toHaveCount(8);
   await kitabiAc(page, 'bak');
   await expect.poll(() => sayfa(page)).toBe(1);
   // açık iki sayfa: solda resim, sağda yazı
@@ -230,6 +231,46 @@ test('ipucu: 20 sn hiçbir şey yapılmazsa bulunmamış bir şey çok hafif kı
   await expect.poll(() => page.locator('.kt-sayfa-sol [data-ipucu]').count()).toBeGreaterThan(0);
   // ekranda yazılı ya da sesli yönlendirme yok
   await expect(page.locator('.kt-kok')).not.toContainText('dokun');
+  expect(hatalar).toEqual([]);
+});
+
+test("ikinci kitap \"Kuzu'nun Kulağı\": metniyle açılır, resimsiz sayfalar yer tutucu, 13 sayfa + son", async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await boyut(page, 667, 375);
+  await page.goto('kitap/?test=1');
+  await page.evaluate(() => localStorage.removeItem('minkino-kitap-v1'));
+  await page.reload();
+  await expect(page.locator('.kt-raf-kapak[data-kitap="kuzu-kulak"] .kt-kapak-baslik')).toHaveText("Kuzu'nun Kulağı");
+  await kitabiAc(page, 'bak', 'kuzu-kulak');
+  await expect.poll(() => sayfa(page)).toBe(1);
+  await expect(page.locator('.kt-sayfa-sag .kt-metin')).toContainText('Cumartesiydi.');
+  await expect(page.locator('.kt-sayfa-sag')).not.toContainText('[happy]');
+  await expect(page.locator('.kt-sayfa-sol .kt-yertutucu')).toHaveCount(1);
+  // en küçük yatay telefonda (667×375) her sayfanın yazısı sığar ve okunaklı
+  for (let s = 1; s < 13; s++) {
+    await expect.poll(() => sayfa(page)).toBe(s);
+    const olc = await page.locator('.kt-kitap > .kt-sayfa-sag .kt-metin').evaluate((e) => {
+      const cs = getComputedStyle(e);
+      const bos = e.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      return { sigar: e.firstElementChild!.scrollHeight <= bos + 1, px: parseFloat(cs.fontSize) };
+    });
+    expect(olc.sigar, `sayfa ${s}`).toBe(true);
+    expect(olc.px, `sayfa ${s}`).toBeGreaterThanOrEqual(16);
+    await ileri(page);
+    await expect.poll(() => sayfa(page)).toBe(s + 1);
+  }
+  await expect(page.locator('.kt-sayfa-sag .kt-metin')).toContainText('Babaanne');
+  await ileri(page);
+  await expect.poll(() => sayfa(page)).toBe(14);
+  await expect(page.locator('.kt-ebeveyn')).toContainText('Evde birlikte onarabileceğimiz bir şey var mı?');
+  await expect(page.locator('.kt-son-yazi')).toHaveText('Son');
+  // son sayfadan ileri yok
+  await ileri(page);
+  await page.waitForTimeout(300);
+  expect(await sayfa(page)).toBe(14);
+  // dikeyde de açılır (tek sayfa)
+  await boyut(page, 390, 844);
+  await expect.poll(() => sayfa(page)).toBe(14);
   expect(hatalar).toEqual([]);
 });
 

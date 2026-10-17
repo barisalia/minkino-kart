@@ -26,6 +26,8 @@ export const KARAKTERLER: Record<Kim, KarakterBilgi> = {
   bulut: { ad: 'Bulut', renk: '#2C5A94', ton: 1.12 },
   tombi: { ad: 'Tombi', renk: '#7A4A1C', ton: 0.8 },
   cocuklar: { ad: 'Çocuklar', renk: '#B42A2A', ton: 1.2 },
+  babaanne: { ad: 'Babaanne', renk: '#7A3F8F', ton: 0.98 },
+  dede: { ad: 'Dede', renk: '#4A5A6A', ton: 0.74 },
   ses: { ad: '', renk: '#C2410C', ton: 1 },
 };
 

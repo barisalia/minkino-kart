@@ -7,7 +7,7 @@
  */
 
 /** Konuşan: anlatıcı, karakterler ya da ses yazısı ("GÜM!") */
-export type Kim = 'anlatici' | 'kino' | 'anne' | 'baba' | 'lokum' | 'mino' | 'ogretmen' | 'bulut' | 'tombi' | 'cocuklar' | 'ses';
+export type Kim = 'anlatici' | 'kino' | 'anne' | 'baba' | 'lokum' | 'mino' | 'ogretmen' | 'bulut' | 'tombi' | 'cocuklar' | 'babaanne' | 'dede' | 'ses';
 
 export interface Satir {
   kim: Kim;

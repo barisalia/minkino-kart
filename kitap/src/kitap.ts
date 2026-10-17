@@ -1,7 +1,7 @@
 /**
  * Kitaplar bölümü: kitaplık → kitabı alma (3D) → okuma.
  *
- * - Kitaplık: rafta düz kapaklar; şimdilik bir kitap, diğer 9 fikir "yakında" sırtları.
+ * - Kitaplık: rafta düz kapaklar (hazır kitaplar); öbür fikirler "yakında" sırtları.
  * - Kitabı alma: kapağa dokununca kitap öne gelir; sırt, sayfa kalınlığı, gölge ve hafif eğilme belirir. Okuma modu
  *   seçilir ("Bana oku" / "Kendim bakayım"), kitap düzleşir ve kapak açılır.
  * - Okuma: yatayda açık iki sayfa (solda resim, sağda yazı), dikeyde tek sayfa. Sayfa parmakla sürüklenerek kıvrılır
@@ -64,6 +64,10 @@ export class Kitaplik {
   private modBtn: HTMLButtonElement;
   private durum: 'raf' | 'tutuluyor' | 'acik' = 'raf';
   private kitap: RafKitabi | null = null;
+  /** Son sayfa (ebeveyn sayfası + Son): 0 kapak, 1..n sayfalar, n + 1 son; kitaba göre (1. kitap 15, 2. kitap 14) */
+  private get son() {
+    return (this.kitap?.icerik?.sayfalar.length ?? SON_SAYFA - 1) + 1;
+  }
   private varlik: KitapVarliklari = kitapVarliklari('');
   private olcu: KitapOlcu = kitapOlcusu(innerWidth, innerHeight);
   /** Sayfa resimlerinin kaynak boyu (yerlesim.json → kapak.boy); resim alanı bunu aşmaz */
@@ -81,9 +85,12 @@ export class Kitaplik {
   private cevriliyor = false;
   private suruklendi = false;
   private tutulan: { el: HTMLElement; yuz: Yuz; golge: HTMLElement; modlar: HTMLElement } | null = null;
-  private rafKapak: HTMLElement | null = null;
-  private rafSahne: Sahne | null = null;
-  private rafKaynak: [number, number] = VARSAYILAN_KAYNAK;
+  /** Raftaki hazır kitapların kapakları: kitap id → kapak düğmesi, kapak sahnesi, resim kaynağının boyu */
+  private rafKapaklar = new Map<string, { kapak: HTMLElement; sahne: Sahne; kaynak: [number, number] }>();
+  /** Tutulan / açılan kitabın raftaki kapağı (geri uçuş, rafa dönüş) */
+  private get rafKapak(): HTMLElement | null {
+    return (this.kitap && this.rafKapaklar.get(this.kitap.id)?.kapak) || null;
+  }
 
   constructor(
     private kitaplar: RafKitabi[],
@@ -129,6 +136,7 @@ export class Kitaplik {
 
   private rafKur() {
     this.raf.replaceChildren();
+    this.rafKapaklar.clear();
     const raflar = document.createElement('div');
     raflar.className = 'kt-raflar';
     for (const k of this.kitaplar) {
@@ -148,9 +156,7 @@ export class Kitaplik {
         ad.textContent = k.baslik;
         kapak.append(s.el, ad);
         kapak.addEventListener('click', () => this.tut(k, kapak));
-        this.rafKapak = kapak;
-        this.rafSahne = s;
-        this.rafKaynak = varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK;
+        this.rafKapaklar.set(k.id, { kapak, sahne: s, kaynak: varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK });
         oge.append(kapak);
       } else {
         const sirt = document.createElement('button');
@@ -184,12 +190,12 @@ export class Kitaplik {
     const yatay = w > h;
     const kapakH = Math.round(yatay ? Math.min(h * 0.58, 300) : Math.min(w * 0.62, 320));
     this.raf.style.setProperty('--kapak-h', `${kapakH}px`);
-    // raftaki kapak: resim kapağın enine sığar (netlik: kaynak eni / 3'ü aşmaz)
-    const rw = Math.min(kapakH * 0.86 - 16, resimEnCok(this.rafKaynak));
-    if (this.rafSahne) {
-      const rh = this.rafSahne.resimli ? rw / this.rafSahne.oran : kapakH;
-      Object.assign(this.rafSahne.el.style, { left: `${(kapakH * 0.86 - rw) / 2}px`, top: `${(kapakH - rh) / 2 + kapakH * 0.06}px`, width: `${rw}px`, height: `${rh}px` });
-      this.rafSahne.boyutla(rw, rh);
+    // raftaki kapaklar: resim kapağın enine sığar (netlik: kaynak eni / 3'ü aşmaz)
+    for (const { sahne, kaynak } of this.rafKapaklar.values()) {
+      const rw = Math.min(kapakH * 0.86 - 16, resimEnCok(kaynak));
+      const rh = rw / sahne.oran;
+      Object.assign(sahne.el.style, { left: `${(kapakH * 0.86 - rw) / 2}px`, top: `${(kapakH - rh) / 2 + kapakH * 0.06}px`, width: `${rw}px`, height: `${rh}px` });
+      sahne.boyutla(rw, rh);
     }
   }
 
@@ -330,7 +336,7 @@ export class Kitaplik {
     t.golge.style.opacity = '0';
     await bekle(sure(640));
     const ilk = ilerleme(this.kitap.id).sayfa;
-    const hedef = ilk >= 1 && ilk < SON_SAYFA ? ilk : 1;
+    const hedef = ilk >= 1 && ilk < this.son ? ilk : 1;
     // açık kitaba geç: önce kapalı (sayfa 0), sonra kapak açılır
     t.yuz.sahne?.durdur();
     this.durum = 'acik';
@@ -411,7 +417,7 @@ export class Kitaplik {
     this.yuzleriOlc();
     k.dataset.sayfa = String(sayfa);
     k.classList.toggle('kt-kapali', sayfa === 0);
-    k.classList.toggle('kt-sonda', sayfa === SON_SAYFA);
+    k.classList.toggle('kt-sonda', sayfa === this.son);
     this.kalinlikGoster();
     for (const y of [this.sol, this.sag]) {
       if (y?.sahne) {
@@ -434,7 +440,7 @@ export class Kitaplik {
     }
   }
 
-  /** Sayfa yüzü: yatayda sol = resim, sağ = yazı; dikeyde tek = resim + yazı. 0 = kapak, 15 = ebeveyn + son */
+  /** Sayfa yüzü: yatayda sol = resim, sağ = yazı; dikeyde tek = resim + yazı. 0 = kapak, son = ebeveyn + son */
   private yuzYap(sayfa: number, yer: 'sol' | 'sag' | 'tek'): Yuz {
     const ic = this.kitap!.icerik!;
     const el = document.createElement('div');
@@ -448,7 +454,7 @@ export class Kitaplik {
       y.el.classList.add(`kt-sayfa-${yer}`);
       return y;
     }
-    if (sayfa === SON_SAYFA) {
+    if (sayfa === this.son) {
       if (yer === 'sol' || yer === 'tek') el.append(ebeveynSayfasi(ic.ebeveyn));
       if (yer === 'sag' || yer === 'tek') el.append(this.sonSayfasi());
       el.classList.add('kt-son');
@@ -477,7 +483,7 @@ export class Kitaplik {
     const ugur = document.createElement('div');
     ugur.className = 'kt-ugurlar';
     const bulunan = ilerleme(this.kitap!.id).bulunan;
-    for (let i = 0; i < SON_SAYFA; i++) {
+    for (let i = 0; i < this.son; i++) {
       const n = document.createElement('span');
       n.className = (bulunan[sayfaAnahtari(i)] ?? []).includes('ugur') ? 'kt-ug-nokta kt-dolu' : 'kt-ug-nokta';
       ugur.append(n);
@@ -493,7 +499,7 @@ export class Kitaplik {
 
   private kalinlikGoster() {
     const k = this.kitapEl!;
-    const oran = this.sayfa / SON_SAYFA;
+    const oran = this.sayfa / this.son;
     k.style.setProperty('--sol-kalin', `${(this.sayfa === 0 ? 0 : 2 + 7 * oran).toFixed(1)}px`);
     k.style.setProperty('--sag-kalin', `${(2 + 7 * (1 - oran)).toFixed(1)}px`);
   }
@@ -501,7 +507,7 @@ export class Kitaplik {
   // ---------------------------------------------------------------- sayfa çevirme
 
   private izinli(yon: 1 | -1) {
-    return yon === 1 ? this.sayfa < SON_SAYFA : this.sayfa > (this.olcu.yatay ? 0 : 0);
+    return yon === 1 ? this.sayfa < this.son : this.sayfa > (this.olcu.yatay ? 0 : 0);
   }
 
   /** Çevirme için yaprak kurar: alttaki sayfalar hedefe geçer, yaprak eski sayfanın kopyasını taşır */
@@ -572,7 +578,7 @@ export class Kitaplik {
         this.sayfa = hedef;
         k.dataset.sayfa = String(hedef);
         k.classList.toggle('kt-kapali', hedef === 0);
-        k.classList.toggle('kt-sonda', hedef === SON_SAYFA);
+        k.classList.toggle('kt-sonda', hedef === this.son);
         this.kalinlikGoster();
         for (const y of [this.sol, this.sag]) {
           if (y?.sahne) {
@@ -636,7 +642,7 @@ export class Kitaplik {
 
   private async sayfayiOku() {
     const m = this.sag?.metin;
-    if (!m || this.sayfa === 0 || this.sayfa === SON_SAYFA) return;
+    if (!m || this.sayfa === 0 || this.sayfa === this.son) return;
     const benimSayfa = this.sayfa;
     await bekle(sure(450));
     if (this.sayfa !== benimSayfa || this.cevriliyor || this.mod !== 'oku') return;
@@ -766,7 +772,7 @@ export class Kitaplik {
   private kaydet() {
     if (!this.kitap) return;
     const i = ilerleme(this.kitap.id);
-    if (this.sayfa === SON_SAYFA) {
+    if (this.sayfa === this.son) {
       if (i.sayfa !== 0) i.bitti++;
       i.sayfa = 0;
     } else if (this.sayfa > 0) i.sayfa = this.sayfa;

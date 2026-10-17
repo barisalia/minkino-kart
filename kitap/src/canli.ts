@@ -13,6 +13,7 @@
 import { efekt } from '../../src/audio/ses';
 import type { Adim, CanliAn, Efekt, KatmanTanim, Kim, Kutu, SayfaCanli } from './tipler';
 import { sayfaAnahtari, type KitapVarliklari, type YerlesimKatman } from './varlik';
+import { VARSAYILAN_KAYNAK } from './yerlesim';
 
 /** Boşta bu kadar kalınca bulunmamış bir şey çok hafif kıpırdar (Barış: "şuna dokun" yok, ipucu geç ve dolaylı) */
 export const IPUCU_MS = 20_000;
@@ -96,7 +97,8 @@ export class Sahne {
     const y = o.varlik.yerlesim.sayfalar[anahtar];
     const zemin = o.varlik.url(y?.zemin) ?? o.varlik.url(y?.tam);
     this.resimli = !!zemin;
-    this.oran = zemin && y?.boy ? y.boy[0] / y.boy[1] : 1;
+    // resim yokken yer tutucu, gelecek çizimin oranında (16:9)
+    this.oran = zemin ? (y?.boy ? y.boy[0] / y.boy[1] : 1) : VARSAYILAN_KAYNAK[0] / VARSAYILAN_KAYNAK[1];
     this.tamSayfa = !!y?.tam && !y?.zemin && !!zemin;
     this.tuval = document.createElement('div');
     this.tuval.className = 'kt-tuval';
@@ -339,7 +341,7 @@ export class Sahne {
     return u;
   }
 
-  /** Kırpma: kare resim sayfa kutusunu kaplar (kenarlardan eşit kırpılır), ortadaki güvenli alan hep görünür */
+  /** Tuval boyu: çizim oranıyla sığar (kırpılmaz); resim yoksa yer tutucu alanı kaplar */
   boyutla(w: number, h: number) {
     if (this.resimli) {
       // çizim kırpılmaz, oranıyla sığar (resim alanı zaten çizimin oranında: kitapOlcusu)
@@ -348,8 +350,8 @@ export class Sahne {
       Object.assign(this.tuval.style, { width: `${tw}px`, height: `${th}px`, left: `${(w - tw) / 2}px`, top: `${(h - th) / 2}px`, fontSize: `${tw / 100}px` });
       return;
     }
-    const s = Math.max(w, h);
-    Object.assign(this.tuval.style, { width: `${s}px`, height: `${s}px`, left: `${(w - s) / 2}px`, top: `${(h - s) / 2}px`, fontSize: `${s / 100}px` });
+    // yer tutucu: resim alanını kırpmadan kaplar (numara ve tarif hep görünür)
+    Object.assign(this.tuval.style, { width: `${w}px`, height: `${h}px`, left: '0px', top: '0px', fontSize: `${Math.min(w, h * this.oran) / 100}px` });
   }
 
   baslat() {
