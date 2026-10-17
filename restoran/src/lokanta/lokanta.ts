@@ -30,6 +30,10 @@ import { olcuIzle, YERLESIM, type Olcu, type Yer, type Yon } from '../olcek';
 import { salonSes, sesler } from '../sesler';
 import { varlik, yeniden } from '../varliklar';
 import { anahtarTeslim, yeniTarifTadi, type BabaanneBaglam } from './babaanne';
+import { bulasikYiginiKur } from './bulasik-yigin';
+import { personelBaslat, type Personel } from './personel';
+import { patatesVar, surprizKur, type Surprizler } from './surpriz';
+import surprizJson from '../../../content/restoran/surpriz.json';
 import { gunSonuAc, type GunSonu } from './gun-sonu';
 import { merdivenKur } from './ipucu';
 import { istekResmi, yolHaritasi } from './istek-gorsel';
@@ -164,13 +168,26 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   // istasyon düğmeleri (mutfakta)
   const istDugme: Partial<Record<Istasyon, HTMLElement>> = {};
   const ISTASYONLAR = ['lavabo', 'tezgah', 'ocak', 'mermer', 'servis'] as const;
+  // P6: gizli sürprizler (surpriz.ts), personel yemeği (personel.ts; 5-6)
+  let surpriz: Surprizler | null = null;
+  let personel: Personel | null = null;
+  let personelOldu = false;
+  // P6: Kino'nun topladığı kirli tabaklar lavaboda birikir; varsa lavabo (Bulaşık) açılır
+  const yigin = bulasikYiginiKur({
+    el,
+    lavabo: () => istDugme.lavabo,
+    degisti: () => {
+      const d = istDugme.lavabo as HTMLButtonElement | undefined;
+      if (d) d.disabled = !acikIstasyon('lavabo');
+    },
+  });
   /**
    * Açılma sırası (§6c, P4): istasyonda yalnız açık tariflerin mini oyunları oynanır (Gün 1: doğra, tava, tabakla);
    * defterden alınan tarif kendi oyunlarını açar (patates: soy, kızart; pankek: kır-çırp ...). Yıka Gün 2'de açılır
    * (Babaanne'nin pazardan çamurlu sebzesi). Bir istasyonda birden çok açık oyun varsa seçim düğmeleri çıkar.
    */
   const acikOyunlar = new Set<string>([...acikTarifler.flatMap((t) => TARIFLER[t]?.yol ?? []), ...(gun >= 2 ? ['yika'] : [])]);
-  const istasyonAcikOyunlari = (ist: Istasyon) => istasyonOyunlari(ist).filter((o) => acikOyunlar.has(o.ad));
+  const istasyonAcikOyunlari = (ist: Istasyon) => istasyonOyunlari(ist).filter((o) => acikOyunlar.has(o.ad) || (o.ad === 'bulasik' && yigin.adet() > 0));
   const acikIstasyon = (ist: Istasyon) => ist === 'tezgah' || ist === 'ocak' || ist === 'servis' || istasyonAcikOyunlari(ist).length > 0;
   // mutfağa sonradan gelen aletler (içecek tezgâhı, fırın; mangal bahçede): alınış sırasıyla alet yuvalarına
   const yeniIstasyonlar = [...new Set(kayit.acilan.alet.map((a) => KATALOG.find((k) => k.alet === a && k.istasyon)?.istasyon).filter((x): x is Istasyon => !!x))];
@@ -192,7 +209,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   const kapi = h('div.rs-kapi', {}, h('span.rs-kapi-zil'));
   katman.append(ip, kasa, pencere, kapi);
   kapi.addEventListener('click', () => {
-    // gizli sürpriz §9.3: zil çalar, kimse yok, Kino omuz silker
+    // gizli sürpriz §9.3: zil çalar, kimse yok, oturanlar kapıya bakar, Kino omuz silker (surpriz.ts)
+    if (surpriz?.kapiZili()) return;
     salonSes.kapi();
     void kino.oynat('bak', 500);
   });
@@ -273,6 +291,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       kapida.kisi.yerKoy(Y.bekleme.x, Y.bekleme.y);
       zSira(kapida.kisi);
     }
+    surpriz?.yerlestir();
   };
 
   // ---------------------------------------------------------------- konuşma
@@ -547,6 +566,11 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const kaldir = surukleBagla(t, el, {
       acik: () => t.isConnected && !t.classList.contains('rs-gidiyor'),
       birak: (x, y) => {
+        if (personel?.birak(u, x, y)) {
+          kaldir();
+          t.remove();
+          return true;
+        }
         if (ustunde(kino.el, x, y, 30)) {
           kaldir();
           void kinoyaVer(u, t);
@@ -565,6 +589,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       },
       dokun: () => {
         kaldir();
+        if (personel?.ver(u, t)) return;
         void kinoyaVer(u, t);
       },
     });
@@ -590,6 +615,11 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       kino.poz('tepsi');
       void kisiSoyle(kino, null, hizmet === 0 ? L.kino.geliyor : undefined, true);
       const yan = masaYani(uyan);
+      // gizli sürpriz §9.7: tabakta patates varsa yolun yarısında bir tane alabilir
+      if (patatesVar(u) && surpriz) {
+        await kinoYuru((kino.konum.x + yan.x) / 2, (kino.konum.y + yan.y) / 2);
+        await surpriz.patates(u);
+      }
       await kinoYuru(yan.x, yan.y);
       kino.el.classList.remove('rs-tasiyor');
       kinoTepsi.replaceChildren();
@@ -623,9 +653,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
         a.remove();
       }
     }
+    if (masa.kirli) yigin.ekle(masa.kirli.dataset.yemek ?? 'tabak');
     masa.kirli?.remove();
     masa.kirli = null;
-    const tabak = h('div.rs-masa-tabak', { 'data-tur': u.tur }, urunGorsel(u));
+    const tabak = h('div.rs-masa-tabak', { 'data-tur': u.tur, 'data-yemek': u.yemek ?? u.tur }, urunGorsel(u));
     masa.ust.append(tabak);
     sesler.cal('pof', { guc: 0.6 });
     ipucuGuncelle();
@@ -642,6 +673,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     jetonCiz(masa, bahsis);
     tabak.classList.add('rs-kirli');
     masa.kirli = tabak;
+    // P6: çocuk kirli tabağı kendisi de lavaboya götürebilir (Bulaşık yığını)
+    yigin.kirliBagla(tabak, u.yemek ?? u.tur, () => {
+      if (masa.kirli === tabak) masa.kirli = null;
+    });
     hizmet++;
     if (sonuc.tepki === 'bayildi' && sonuc.sevdigi) {
       const p = (kayit.pano[o.m.id] ??= []);
@@ -785,6 +820,27 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     kasa.dataset.jeton = String(kayit.jeton);
   };
   kasaCiz();
+  /** P6: bulaşık yıkanınca Babaanne'nin bahşiş jetonu lavabodan kasaya uçar */
+  const bahsisVer = (n: number) => {
+    yigin.yikandi(n);
+    if (!n) return;
+    kayit.jeton += 1;
+    gunJeton += 1;
+    kaydet();
+    const lav = istDugme.lavabo;
+    const r = lav?.getBoundingClientRect();
+    const kr = el.getBoundingClientRect();
+    if (r && r.width) {
+      const ju = jetonResmi();
+      const j = h('span.rs-jeton.rs-bahsis.rs-bahsis-ucan', { style: `position:absolute;left:${r.left - kr.left + r.width / 2 - 15}px;top:${r.top - kr.top}px;width:30px;height:30px;z-index:960` }, ju ? h('img', { src: ju, alt: '', draggable: 'false' }) : null);
+      el.append(j);
+      void jetonUcur(j).then(() => {
+        salonSes.jeton(0);
+        kasaCiz();
+      });
+    } else kasaCiz();
+    void minoSoyle(surprizJson.mino.bahsis);
+  };
 
   const musteriGit = async (o: Oturan) => {
     o.durum = 'gidiyor';
@@ -812,6 +868,9 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     const yan = masaYani(masa);
     await kinoYuru(yan.x, yan.y);
     kino.poz('tabaklar');
+    if (!masa.kirli) return void (await kinoYerine());
+    // kirli tabak lavabodaki yığına (Bulaşık, isteğe bağlı)
+    yigin.ekle(masa.kirli.dataset.yemek ?? 'tabak');
     masa.kirli?.remove();
     masa.kirli = null;
     sesler.cal('tik');
@@ -887,14 +946,19 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       devam: arkaVar?.is.durum,
       ilkOyun: kayit.gun === 0 && hizmet < 2,
       test: TEST_MODU,
+      kirliTabaklar: oyun.ad === 'bulasik' ? yigin.turler() : undefined,
     };
     merdiven.hedef(null);
     sesler.cal('hop');
     istasyon = istasyonAc(el, {
       oyun,
       girdi,
-      tepsiyeAlindi: (urunler) => {
+      tepsiyeAlindi: (gelen) => {
         istasyon = null;
+        // Bulaşık: yemek değil; yığından düşer, Babaanne'nin bahşişi kasaya
+        const bulasik = gelen.filter((u) => u.tur === 'bulasik') as (Urun & { temiz?: number })[];
+        const urunler = gelen.filter((u) => u.tur !== 'bulasik');
+        for (const bu of bulasik) bahsisVer(bu.temiz ?? 0);
         const kullanilan = new Set(urunler.flatMap((u) => u.kullanilan ?? []));
         tepsi = tepsi.filter((u) => !kullanilan.has(u.id));
         for (const u of urunler) {
@@ -934,6 +998,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     for (const [, a] of arkaIsler) {
       try {
         const i = a.is.isaret();
+        if (i.surpriz) surpriz?.bildir(i.surpriz);
         const d = istDugme[a.ist];
         d?.classList.toggle('rs-buharli', i.buhar);
         if (d) d.dataset.pisme = i.pisme ?? '';
@@ -963,7 +1028,34 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   }, 250);
 
   const gunSonuDenetle = () => {
-    if (gunBitti || siradaki < plan.musteriler.length || kapida || masalar.some((m) => m.oturan)) return;
+    if (gunBitti || personel || siradaki < plan.musteriler.length || kapida || masalar.some((m) => m.oturan)) return;
+    // 5-6: personel yemeği (isteğe bağlı; "Kapalı" levhası her an kapatır). &personel=0 kapatır.
+    if (yas === 'buyuk' && !personelOldu && new URLSearchParams(location.search).get('personel') !== '0') {
+      personelOldu = true;
+      personel = personelBaslat({
+        el,
+        katman,
+        kino,
+        minoEl,
+        mino,
+        masalar: () => masalar,
+        kapi: () => Y.kapi,
+        kinoIs,
+        kinoYerine,
+        kinoYuru,
+        minoSoyle,
+        kinoSoyle: (t) => kisiSoyle(kino, null, t, true),
+        yeniKisi,
+        oturt: (k, x, m) => oturt_(k, x, m as Masa),
+        zSira,
+        bitti: () => {
+          personel = null;
+          gunSonuDenetle();
+        },
+        kapandi: () => kapandi,
+      });
+      return;
+    }
     gunBitti = true;
     window.setTimeout(() => void gunuKapat(), TEST_MODU ? 50 : 900);
   };
@@ -1106,6 +1198,36 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     void minoSoyle(L.mino.acildi);
   };
 
+  // ---------------------------------------------------------------- gizli sürprizler (P6, surpriz.ts)
+  surpriz = surprizKur({
+    el,
+    katman,
+    kapi,
+    kino,
+    susKatman,
+    masalar: () => masalar,
+    yon: () => yon,
+    u: () => olcu?.u ?? 64,
+    kinoIs,
+    kinoYuru,
+    kinoYerine,
+    masaYani: (m) => masaYani(m as Masa),
+    kinoSoyle: (t) => kisiSoyle(kino, null, t, true),
+    minoSoyle,
+    kapida: () => !!kapida,
+    acik: () => acik && !gunBitti,
+    araya: (p) => {
+      if (gunBitti || personel) return false;
+      plan.musteriler.splice(siradaki, 0, p);
+      return true;
+    },
+    menu: () => menu,
+    istasyon: () => istasyon?.el ?? null,
+    kapandi: () => kapandi,
+  });
+  // mini oyunların gizli sürpriz haberleri (Mangal dumanı: Kino'nun yüzü is)
+  el.addEventListener('rs-surpriz', (e) => surpriz?.bildir((e as CustomEvent<{ ad: string }>).detail?.ad ?? ''));
+
   // ---------------------------------------------------------------- kurulum ve kapanış
   const olcuBirak = olcuIzle(el, sahne, yerlestir);
   void sabah();
@@ -1145,6 +1267,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       ipucu: merdiven.gelen.slice(),
       tepkiler: tepkiGunlugu.slice(),
       bekleyen: masalar.map((m) => (m.oturan?.durum === 'bekliyor' ? m.oturan.m.id : null)).find(Boolean) ?? null,
+      surprizler: surpriz?.gunluk.slice() ?? [],
+      yigin: yigin.adet(),
+      personel: personel?.durum() ?? null,
+      personelOldu,
     }),
   };
 
@@ -1158,6 +1284,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       olcuBirak();
       istasyon?.kapat();
       gunSonu?.kapat();
+      surpriz?.kapat();
+      personel?.kapat();
       for (const [, a] of arkaIsler) a.dongu?.dur();
       mino.kapat();
       kino.kapat();

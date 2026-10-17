@@ -43,6 +43,10 @@ const KITLER: Record<string, { j: KitJson; klasor: string }> = {
   kino: { j: kinoJson as unknown as KitJson, klasor: 'kino-yeni' },
 };
 const OLCU = olcuJson as Record<string, { en: number; boy: number; tepe: number; taban: number; bel: number }>;
+/** Lokanta için ayrıca çizilmemiş, başka oyunun durağan resmi (P6: Nehir abla, Pati Dükkânı'ndan) */
+const YEDEK_RESIM: Record<string, { yol: string; en: number; boy: number; tepe: number; taban: number; bel: number }> = {
+  nehir: { yol: 'pati/nehir-on', en: 494, boy: 1448, tepe: 8, taban: 1440, bel: 900 },
+};
 /** Gemini poz sayfalarının ölçüsü (ekip/illustrator/restoran/restoran-isle.cjs yazar): poz → tuval ve figür tepe / taban */
 const POZ_OLCU = import.meta.glob<Record<string, { en: number; boy: number; tepe: number; taban: number }>>('../../../assets/restoran/kisi/*/olcu.json', { eager: true, import: 'default' });
 
@@ -71,7 +75,7 @@ export function kisiOlcu(ad: string): KisiOlcu {
     const kalca = k.j.parcalar.kalca?.kutu;
     return { oran: W / H, tepe: kitTepe(k.j) / H, taban: k.j.zemin / H, bel: kalca ? kalca[1] / H : 0.62 };
   }
-  const o = OLCU[ad];
+  const o = OLCU[ad] ?? YEDEK_RESIM[ad];
   if (o) return { oran: o.en / o.boy, tepe: o.tepe / o.boy, taban: o.taban / o.boy, bel: o.bel / o.boy };
   return { oran: 0.7, tepe: 0.04, taban: 0.98, bel: 0.62 };
 }
@@ -144,7 +148,7 @@ export class Kisi {
       }
       this.raf = requestAnimationFrame(this.kare);
     } else {
-      const u = yeniden(`kino-otobus/musteri/${ad}`);
+      const u = yeniden(`kino-otobus/musteri/${ad}`) ?? (YEDEK_RESIM[ad] ? yeniden(YEDEK_RESIM[ad].yol) : null);
       this.img = h('img.rs-kisi-resim', { src: u ?? '', alt: '', draggable: 'false' }) as HTMLImageElement;
       if (!u) this.el.classList.add('rs-kisi-yok');
       this.govde.append(this.img);

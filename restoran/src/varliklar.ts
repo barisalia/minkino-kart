@@ -28,7 +28,7 @@ export const varlikYollari = () => [...TABLO.keys()];
 
 /** Başka oyunların var olan görselleri (yeniden kullanım; yeni çizim gelene kadar ya da kalıcı) */
 const YENIDEN = import.meta.glob<string>(
-  ['../../assets/kino-otobus/musteri/*.webp', '../../assets/pasta/jeton-1.webp', '../../assets/kino-otobus/kara-tahta.webp'],
+  ['../../assets/kino-otobus/musteri/*.webp', '../../assets/pasta/jeton-1.webp', '../../assets/kino-otobus/kara-tahta.webp', '../../assets/pati/nehir-on.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 export const yeniden = (yol: string): string | null => YENIDEN[`../../assets/${yol}.webp`] ?? null;

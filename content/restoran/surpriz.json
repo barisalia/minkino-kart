@@ -1,0 +1,27 @@
+{
+  "aciklama": "Tıkır Tıkır Lokanta · gizli sürprizler (§9), bulaşık yığını ve personel yemeği sözleri (P6). mino = anlatıcı sesi (Mino), kino = Kino'nun sesi. Hiçbir sürpriz ipucuyla gösterilmez; Mino emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK (birim testi denetler). [etiket] yalnız seslendirme içindir.",
+  "mino": {
+    "nehir": "[happy] Nehir abla geliyor!",
+    "isli": "[giggles] Kino'nun yüzü is oldu!",
+    "personel": "[happy] Personel yemeği!",
+    "personel_bitti": "[happy] Karnımız tok!",
+    "bahsis": "[happy] Babaanneden bahşiş!",
+    "bulasik": "[giggles] Lavaboda tabak birikti!",
+    "tepki": {
+      "bayildi": "[happy] Bayıldım!",
+      "mmm": "[happy] Mmm! Nefis!",
+      "komik": "[gasps] Acı acı acı!"
+    }
+  },
+  "kino": {
+    "kimse": "[curious] Kimse yok!",
+    "tada": "[excited] Ta-da!",
+    "sapka": "[laughs] Şapkam nasıl?",
+    "pardon": "[giggles] Pardon, tadına baktım!",
+    "hapsu": "[laughs] Hapşu!",
+    "personel": "[happy] Afiyet olsun bize!",
+    "bayildi": "[happy] Şef, çok güzel!",
+    "mmm": "[happy] Mmm, güzel!",
+    "komik": "[laughs] Köpeklere soğan olmaz!"
+  }
+}

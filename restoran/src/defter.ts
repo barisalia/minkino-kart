@@ -30,6 +30,7 @@ import { babaanneSoyle } from './lokanta/babaanne';
 import { yemekResmi } from './lokanta/istek-gorsel';
 import { Kisi } from './lokanta/kisi';
 import { kumbaraResmi, susResmi } from './lokanta/yerlesim';
+import { gramofonCizim } from './lokanta/surpriz';
 import type { Yas } from './mini/arayuz';
 import { ILK_TARIFLER, L } from './model';
 import { salonSes, sesler } from './sesler';
@@ -73,7 +74,7 @@ function kalemResmi(k: DefterKalemi): HTMLElement {
   }
   if (k.yer === 'ortu') return h('span.rs-df-resim', {}, h('span.rs-ortu-ornek.rs-df-ortu', { 'data-ortu': k.id.replace(/^ortu-/, '') }));
   const r = susResmi(k.id);
-  return h('span.rs-df-resim', {}, r ? h('img', { src: r.url, alt: '', draggable: 'false', style: `max-height:${r.enCokH.toFixed(0)}px` }) : h('span.rs-sus-yok'));
+  return h('span.rs-df-resim', {}, r ? h('img', { src: r.url, alt: '', draggable: 'false', style: `max-height:${r.enCokH.toFixed(0)}px` }) : k.id === 'gramofon' ? gramofonCizim() : h('span.rs-sus-yok'));
 }
 
 const jetonUrl = () => varlik('efekt/jeton') ?? yeniden('pasta/jeton-1');

@@ -1122,12 +1122,16 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       if (!yemekVar() || odulde) return null;
       d.t = performance.now();
       const durum: TavaDurum = JSON.parse(JSON.stringify(d));
+      // P6 gizli sürpriz §9.6: tavana yapışan pankek düşerken çocuk lokantadaysa Kino'nun başına şapka olur
+      let sapka = !!durum.pankek?.tavanda;
       return {
         durum,
         isaret: () => {
           const sn = (performance.now() - durum.t) / 1000;
           const p = durum.pankek && !Object.keys(durum.malzemeler).length && !durum.yumurta ? Math.min(3.6, durum.pankek.yuz[durum.pankek.alt] + sn * HIZ.pankek) : pis(durum.p, sn, HIZ.sebze);
-          return { ses: 'ciz', buhar: p >= 1, pisme: pismeAdi(p) };
+          const dustu = sapka && sn >= (TEST_MODU ? 0.2 : 3);
+          if (dustu) sapka = false;
+          return { ses: 'ciz', buhar: p >= 1, pisme: pismeAdi(p), ...(dustu ? { surpriz: 'kino-sapka' } : {}) };
         },
       };
     },
