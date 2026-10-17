@@ -83,7 +83,7 @@ export interface Adim {
   birlikte?: boolean;
   /** Ses efekti (src/audio/efekt.ts) */
   efekt?: 'pof' | 'sicrama' | 'tink' | 'dokunma' | 'vicik' | 'cevir' | 'dagit' | 'ucus';
-  /** Kısa söz (cihaz sesi; seslendirme listesine eklenmez) */
+  /** Kısa söz (kitabın kaydıyla: scripts/kitap-seslendir.ts bunları da seslendirir; kayıt yoksa sessiz) */
   soz?: { kim: Kim; metin: string };
 }
 

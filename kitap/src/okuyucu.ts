@@ -1,19 +1,18 @@
 /**
- * "Bana oku": sayfanın satırları sırayla, anlatıcı ve karakter sesiyle okunur; okunan kelime vurgulanır.
- * Sayfa bitince otomatik çevirme YOK (çocuk kendisi çevirir).
+ * "Bana oku": sayfanın satırları sırayla, anlatıcı ve karakterlerin kendi ElevenLabs kayıtlarıyla okunur; okunan
+ * kelime kaydın zaman damgalarıyla vurgulanır (kitap/src/kitap-ses.ts). Sayfa bitince otomatik çevirme YOK (çocuk
+ * kendisi çevirir).
  *
- * Ses: ortak konuşma sistemi (src/audio/konusma.ts): kayıt varsa kayıt, yoksa cihazın Türkçe sesi (ses etiketleri
- * orada silinir). Kitabın cümleleri seslendirme listesine EKLENMEDİ (ayrı onay işi), bu yüzden şimdilik cihaz sesi.
- * Kelime vurgusu: cihaz sesi 'boundary' olayı verirse ona göre; vermezse (kayıt, bazı cihazlar) süreyle tahmin.
+ * Robot ses yok: kaydı olmayan satır cihazın sesine düşmez, sessiz geçer (yazı görünür, kelimeler aynı ritimde
+ * vurgulanır).
  */
-import { efekt, konus, sus } from '../../src/audio/ses';
-import { konusmaAni } from '../../src/audio/konusma';
+import { efekt, sus } from '../../src/audio/ses';
+import { muzikKis } from '../../src/audio/motor';
 import { TEST_MODU } from '../../src/ui/dom';
-import { KARAKTERLER, kelimeAgirliklari, type MetinSayfasi } from './metin';
+import { kitapOnYukle, satirSoyle } from './kitap-ses';
+import type { MetinSayfasi } from './metin';
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-/** Tahmin: saniyede okunan harf (cihaz sesi hızı 0.92; kayıt 0.9) */
-const HARF_SN = { cihaz: 12.5, kayit: 13.5 };
 
 export class Okuyucu {
   private tur = 0;
@@ -21,11 +20,20 @@ export class Okuyucu {
   aktif = false;
   /** Test / izleme: okunan [sayfa anahtarı, satır] sırası */
   readonly gecmis: string[] = [];
+  /** İzleme: satır kayıttan mı çalındı, sessiz mi geçti ('sayfa:satır' → kaynak) */
+  readonly kaynak: Record<string, 'kayit' | 'sessiz'> = {};
+
+  /** Sayfanın kayıtlarını önceden indir (sayfa açılınca) */
+  hazirla(m: MetinSayfasi) {
+    kitapOnYukle(m.satirlar);
+  }
 
   /** Sayfayı baştan (ya da `bas` satırından) sonuna kadar okur; dur() ya da yeni okuma keser */
   async sayfaOku(m: MetinSayfasi, anahtar: string, bas = 0): Promise<boolean> {
     const benim = ++this.tur;
     this.aktif = true;
+    kitapOnYukle(m.satirlar.slice(bas));
+    muzikKis(true);
     try {
       for (let i = bas; i < m.satirlar.length; i++) {
         if (benim !== this.tur) return false;
@@ -38,6 +46,7 @@ export class Okuyucu {
       if (benim === this.tur) {
         this.aktif = false;
         m.vurgula(-1);
+        muzikKis(false);
       }
     }
   }
@@ -46,12 +55,15 @@ export class Okuyucu {
   async tekSatir(m: MetinSayfasi, anahtar: string, i: number) {
     const benim = ++this.tur;
     this.aktif = true;
+    sus();
+    muzikKis(true);
     try {
       await this.satir(m, anahtar, i, benim);
     } finally {
       if (benim === this.tur) {
         this.aktif = false;
         m.vurgula(-1);
+        muzikKis(false);
       }
     }
   }
@@ -60,6 +72,7 @@ export class Okuyucu {
     this.tur++;
     this.aktif = false;
     sus();
+    muzikKis(false);
   }
 
   private async satir(m: MetinSayfasi, anahtar: string, i: number, benim: number) {
@@ -72,47 +85,20 @@ export class Okuyucu {
       await bekle(TEST_MODU ? 5 : 700);
       return;
     }
-    const k = KARAKTERLER[s.kim];
-    const agirlik = kelimeAgirliklari(s.metin);
-    const toplam = agirlik.at(-1) ?? 1;
-    let sinirVar = false;
-    let son = 0;
-    let rafId = 0;
-    const izle = () => {
-      if (benim !== this.tur) return;
-      const ani = konusmaAni();
-      if (ani && !sinirVar) {
-        const gecen = ((performance.now() - ani.bas) / 1000) * HARF_SN[ani.kaynak];
-        let j = agirlik.findIndex((a) => a > gecen);
-        if (j < 0) j = agirlik.length - 1;
-        if (j !== son && gecen < toplam + 8) {
-          son = j;
-          m.vurgula(i, j);
-        }
+    const iptal = () => benim !== this.tur;
+    const kaynak = await satirSoyle(s.kim, s.metin, {
+      iptal,
+      kelime: (j) => {
+        if (!iptal()) m.vurgula(i, j);
+      },
+    });
+    this.kaynak[`${anahtar}:${i}`] = kaynak;
+    if (TEST_MODU) {
+      // test: kelimeler sırayla (vurgunun her kelimeyi gezdiği denetlenir)
+      for (let j = 0; j < m.kelimeSayisi(i) && benim === this.tur; j++) {
+        m.vurgula(i, j);
+        await bekle(4);
       }
-      rafId = requestAnimationFrame(izle);
-    };
-    rafId = requestAnimationFrame(izle);
-    try {
-      await konus(s.metin, {
-        karakter: k.karakter,
-        ton: k.ton,
-        kelime: (ci) => {
-          if (benim !== this.tur) return;
-          sinirVar = true;
-          son = m.kelimeBul(i, ci);
-          m.vurgula(i, son);
-        },
-      });
-      if (TEST_MODU) {
-        // test: kelimeler sırayla (vurgunun her kelimeyi gezdiği denetlenir)
-        for (let j = 0; j < m.kelimeSayisi(i) && benim === this.tur; j++) {
-          m.vurgula(i, j);
-          await bekle(4);
-        }
-      }
-    } finally {
-      cancelAnimationFrame(rafId);
     }
   }
 }

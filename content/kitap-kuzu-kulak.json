@@ -1,5 +1,5 @@
 {
-  "aciklama": "Kitap 2: Kuzu'nun Kulağı. Metin ekip/senaryo/KITAP-MINO-KINO.md §3.4'ten birebir (değiştirilmez). kim: konuşan (anlatici, kino, lokum, babaanne, baba, dede, ses). not: yalnız seslendirme / resim için yönerge, sayfada basılmaz. tarif: resim gelene kadar yer tutucuda görünen kısa tarif. Çizimler ekip/antigravity/ISTEK-05-KITAP2.md ile gelir (ekip/gemini/yeni/kitap-kuzu/); gelene kadar her sayfa sade yer tutucu. Canlanan anlar (kuzu-canli.ts) çizimler gelince yazılır. Seslendirme listesine (src/audio/cumleler.ts) EKLENMEDİ: seslendirme ayrı onay işi; şimdilik cihaz sesi.",
+  "aciklama": "Kitap 2: Kuzu'nun Kulağı. Metin ekip/senaryo/KITAP-MINO-KINO.md §3.4'ten birebir (değiştirilmez). kim: konuşan (anlatici, kino, lokum, babaanne, baba, dede, ses). not: yalnız seslendirme / resim için yönerge, sayfada basılmaz. tarif: resim gelene kadar yer tutucuda görünen kısa tarif. Çizimler ekip/antigravity/ISTEK-05-KITAP2.md ile gelir (ekip/gemini/yeni/kitap-kuzu/); gelene kadar her sayfa sade yer tutucu. Canlanan anlar (kuzu-canli.ts) çizimler gelince yazılır. Seslendirme: content/kitap-ses.json (her satır konuşanın kendi ElevenLabs sesiyle, scripts/kitap-seslendir.ts); kayıt yoksa sessiz, cihaz sesi yok.",
   "id": "kuzu-kulak",
   "baslik": "Kuzu'nun Kulağı",
   "kapak": {

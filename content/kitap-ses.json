@@ -1,0 +1,25 @@
+{
+  "aciklama": "Kitapların 'Bana oku' seslendirmesi (scripts/kitap-seslendir.ts → public/ses/kitap/). Her satır konuşanın kendi ElevenLabs sesiyle, eleven_v4 ile ve zaman damgalı (with-timestamps) üretilir; okunan kelime bu zamanlarla vurgulanır. kimler: kitaptaki konuşan → content/film2/sesler.json'daki ses adı (kimlik oraya yazılır, buraya değil) + o sesin ayar farkları. Anlatıcı: Seri 2'nin masal anlatan anlatıcı sesi (Mino'nun sesinden ayrı), yavaş ve net. Öğretmen için ayrı ses yok: Nehir abla (sıcak genç kadın). Çocuklar: Zıpzıp. Kayıt yoksa kitap cihaz sesine DÜŞMEZ, sessiz kalır.",
+  "kaynak": "content/film2/sesler.json",
+  "model": "eleven_v4",
+  "bicim": "mp3_44100_128",
+  "dil": "tr",
+  "ayarlar": { "stability": 0.4, "similarity_boost": 0.75, "style": 0.25, "use_speaker_boost": true },
+  "kimler": {
+    "anlatici": { "ses": "anlatici", "ayarlar": { "stability": 0.5, "style": 0.2, "speed": 0.9 } },
+    "kino": { "ses": "kino" },
+    "anne": { "ses": "anne" },
+    "baba": { "ses": "baba" },
+    "lokum": { "ses": "lokum" },
+    "babaanne": { "ses": "babaanne" },
+    "dede": { "ses": "dede" },
+    "mino": { "ses": "mino" },
+    "bulut": { "ses": "bulut" },
+    "tombi": { "ses": "tombi" },
+    "ogretmen": { "ses": "nehir" },
+    "cocuklar": { "ses": "zipzip" }
+  },
+  "es_zaman": 2,
+  "bekleme_ms": 300,
+  "butce_karakter": 30000
+}

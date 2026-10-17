@@ -10,7 +10,7 @@ export interface KarakterBilgi {
   ad: string;
   /** Krem sayfa üstünde okunaklı (kontrast ≥ 4.5) */
   renk: string;
-  /** Cihaz sesinin tonu (kayıt yokken) */
+  /** Eski cihaz sesi tonu (kitap artık cihaz sesi kullanmaz; kayıtlar kitap/src/kitap-ses.ts) */
   ton: number;
   /** Ses kaydı karakter adı (content/seslendirme.json → karakter_sesleri) */
   karakter?: string;
@@ -32,10 +32,10 @@ export const KARAKTERLER: Record<Kim, KarakterBilgi> = {
   ses: { ad: '', renk: '#C2410C', ton: 1 },
 };
 
-/** Cihaz sesinin okuyacağı / sayfaya basılan metin: ses etiketleri silinmiş (src/audio/konusma.ts ile aynı kural) */
+/** Sayfaya basılan metin: ses etiketleri silinmiş (src/audio/konusma.ts ile aynı kural) */
 export const etiketsiz = (m: string) => m.replace(/\[[^\]]*\]\s*/g, '').trim();
 
-/** Kelimeler ve etiketsiz metindeki başlangıç yerleri (cihaz sesinin 'boundary' sırasıyla eşleşir) */
+/** Kelimeler ve etiketsiz metindeki başlangıç yerleri (kaydın kelime anlarıyla aynı sıra, kitap/src/ses-mantik.ts) */
 export function kelimeler(m: string): { k: string; bas: number }[] {
   const t = etiketsiz(m);
   const c: { k: string; bas: number }[] = [];

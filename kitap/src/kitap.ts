@@ -11,13 +11,13 @@
  * - Kaldığı yer, mod ve bulunan sürprizler cihazda (kayit.ts).
  */
 import { efekt, sesiAc, sus } from '../../src/audio/ses';
-import { konus } from '../../src/audio/ses';
 import { geriDinle } from '../../src/kabuk/yon';
 import { TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { Sahne } from './canli';
 import { ilerleme, kayitOku, kayitYaz, type OkumaModu } from './kayit';
-import { KARAKTERLER, MetinSayfasi, ebeveynSayfasi } from './metin';
+import { MetinSayfasi, ebeveynSayfasi } from './metin';
+import { satirSoyle } from './kitap-ses';
 import { Okuyucu } from './okuyucu';
 import type { KitapIcerik, Kim, SayfaCanli } from './tipler';
 import { kitapVarliklari, sayfaAnahtari, type KitapVarliklari } from './varlik';
@@ -88,6 +88,8 @@ export class Kitaplik {
     return this.varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK;
   }
   private okuyucu = new Okuyucu();
+  /** Canlanan anın sözü: yenisi gelince eskisi biter */
+  private sozTur = 0;
   private mod: OkumaModu = 'oku';
   private sayfa = 0;
   // açık kitap
@@ -139,6 +141,7 @@ export class Kitaplik {
       cevriliyor: () => this.cevriliyor,
       okunan: () => this.okuyucu.gecmis.slice(),
       okuyor: () => this.okuyucu.aktif,
+      kaynak: () => ({ ...this.okuyucu.kaynak }),
       sahne: () => (this.sol?.sahne ?? this.sag?.sahne)?.durum() ?? null,
       olcu: () => this.olcu,
       cevir: (yon: 1 | -1) => this.cevir(yon),
@@ -698,6 +701,7 @@ export class Kitaplik {
     const m = this.sag?.metin;
     if (!m || this.sayfa === 0 || this.sayfa === this.son) return;
     const benimSayfa = this.sayfa;
+    this.okuyucu.hazirla(m);
     await bekle(sure(450));
     if (this.sayfa !== benimSayfa || this.cevriliyor || this.mod !== 'oku') return;
     await this.okuyucu.sayfaOku(m, sayfaAnahtari(this.sayfa));
@@ -807,11 +811,11 @@ export class Kitaplik {
     this.modBtn.dataset.mod = this.mod;
   }
 
-  /** Karakter sözü (canlanan an): okuma sürerken söylenmez (anlatıcıyı kesmesin) */
+  /** Karakter sözü (canlanan an): okuma sürerken söylenmez (anlatıcıyı kesmesin); kaydı yoksa sessiz (robot ses yok) */
   private soz(kim: Kim, metin: string) {
     if (this.okuyucu.aktif) return;
-    const k = KARAKTERLER[kim];
-    void konus(metin, { karakter: k.karakter, ton: k.ton });
+    const tur = ++this.sozTur;
+    void satirSoyle(kim, metin, { iptal: () => tur !== this.sozTur || this.okuyucu.aktif });
   }
 
   private bulundu(sayfa: number, id: string) {

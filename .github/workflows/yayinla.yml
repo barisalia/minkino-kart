@@ -52,6 +52,14 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: npx vite-node scripts/seslendir.ts -- ${{ inputs.ses_duzelt && '--duzelt' || '' }}
 
+      - name: Kitap seslendirmesi (ElevenLabs eleven_v4, zaman damgalı)
+        if: ${{ !inputs.ses_karsilastir }}
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: npx vite-node scripts/kitap-seslendir.ts
+
       - name: Eksik ses efektlerini üret (ElevenLabs Sound Effects)
         if: ${{ !inputs.ses_karsilastir }}
         continue-on-error: true

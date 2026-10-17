@@ -163,13 +163,18 @@ export function onYukle(metinler: (string | undefined | null)[], secenek: KayitS
  * Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer).
  * secenek.karakter: önce karakterin kendi kaydı (normal hızda); yoksa anlatıcı kaydı secenek.ton hızında.
  */
-export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}, basladi?: () => void): Promise<boolean> {
+export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}, basladi?: (bas: number) => void): Promise<boolean> {
   const c = baglam();
   const cikis = konusmaCikisi();
   if (!c || !cikis || c.state !== 'running') return false;
   const hiz = dosya(metin, secenek)?.hiz ?? 1;
   const t = await tampon(metin, secenek);
   if (!t || iptalMi()) return !!t;
+  return tamponCal(c, cikis, t, hiz, basladi);
+}
+
+/** Çözülmüş kaydı konuşma çıkışından çalar (kayitDurdur / sus ile yumuşakça kesilir); bitince true. */
+function tamponCal(c: AudioContext, cikis: GainNode, t: AudioBuffer, hiz: number, basladi?: (bas: number) => void): Promise<boolean> {
   return new Promise((coz) => {
     const src = c.createBufferSource();
     src.buffer = t;
@@ -187,9 +192,61 @@ export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: K
       guc.disconnect();
       coz(true);
     };
+    const bas = c.currentTime;
     src.start();
-    basladi?.();
+    basladi?.(bas);
   });
+}
+
+// ---------------------------------------------------------------- manifest dışı kayıt dosyaları
+
+/** Ayrı manifestli kayıtlar (ör. kitap satırları, public/ses/kitap/): yol klasörüyle tam; çözülmüş hâli önbellekte */
+const dosyaVerisi = new Map<string, Promise<ArrayBuffer>>();
+const dosyaTamponlari = new Map<string, Promise<AudioBuffer | null>>();
+function dosyaVeri(yol: string): Promise<ArrayBuffer> {
+  let p = dosyaVerisi.get(yol);
+  if (!p) {
+    p = fetch(yol).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))));
+    p.catch(() => dosyaVerisi.delete(yol));
+    dosyaVerisi.set(yol, p);
+  }
+  return p.then((ab) => ab.slice(0));
+}
+function dosyaTamponu(yol: string): Promise<AudioBuffer | null> {
+  const c = baglam();
+  if (!c) return Promise.resolve(null);
+  let p = dosyaTamponlari.get(yol);
+  if (!p) {
+    p = dosyaVeri(yol)
+      .then((ab) => c.decodeAudioData(ab))
+      .catch(() => {
+        dosyaTamponlari.delete(yol);
+        return null;
+      });
+    dosyaTamponlari.set(yol, p);
+  }
+  return p;
+}
+
+/** Sıradaki kayıt dosyalarını önceden indirir (motor açıksa çözer de) */
+export function dosyaOnYukle(yollar: string[]) {
+  for (const y of yollar) {
+    if (baglam()) void dosyaTamponu(y);
+    else void dosyaVeri(y).catch(() => undefined);
+  }
+}
+
+/**
+ * Bir kayıt dosyasını çalar; bitince true. Motor açık değilse ya da dosya gelmezse false (kitap bu durumda cihaz
+ * sesine düşmez, sessiz geçer). basladi: çalmanın başladığı an (AudioContext saati, sn).
+ */
+export async function dosyaCal(yol: string, iptalMi: () => boolean, basladi?: (bas: number) => void): Promise<boolean> {
+  const c = baglam();
+  const cikis = konusmaCikisi();
+  if (!c || !cikis || c.state !== 'running') return false;
+  const t = await dosyaTamponu(yol);
+  if (!t || iptalMi()) return !!t;
+  return tamponCal(c, cikis, t, 1, basladi);
 }
 
 export function kayitDurdur() {

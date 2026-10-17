@@ -1,5 +1,5 @@
 {
-  "aciklama": "Kitap 1: Kino Okula Başlıyor. Metin ekip/senaryo/KITAP-MINO-KINO.md §2.5'ten birebir (değiştirilmez). kim: konuşan (anlatici, kino, anne, baba, lokum, mino, ogretmen, bulut, tombi, cocuklar, ses). not: yalnız seslendirme / resim için yönerge, sayfada basılmaz. tarif: resim gelene kadar yer tutucuda görünen kısa tarif. Seslendirme listesine (src/audio/cumleler.ts) EKLENMEDİ: seslendirme ayrı onay işi; şimdilik cihaz sesi.",
+  "aciklama": "Kitap 1: Kino Okula Başlıyor. Metin ekip/senaryo/KITAP-MINO-KINO.md §2.5'ten birebir (değiştirilmez). kim: konuşan (anlatici, kino, anne, baba, lokum, mino, ogretmen, bulut, tombi, cocuklar, ses). not: yalnız seslendirme / resim için yönerge, sayfada basılmaz. tarif: resim gelene kadar yer tutucuda görünen kısa tarif. Seslendirme: content/kitap-ses.json (her satır konuşanın kendi ElevenLabs sesiyle, scripts/kitap-seslendir.ts); kayıt yoksa sessiz, cihaz sesi yok.",
   "id": "okul",
   "baslik": "Kino Okula Başlıyor",
   "kapak": {

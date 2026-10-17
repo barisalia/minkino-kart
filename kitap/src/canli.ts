@@ -43,7 +43,7 @@ export interface SahneSecenek {
   etiket?: string;
   canli?: SayfaCanli;
   varlik: KitapVarliklari;
-  /** Karakter sözü (cihaz sesi): okuma sürerken söylenmez; söylendiyse true */
+  /** Karakter sözü (kitabın kaydıyla; kayıt yoksa sessiz): okuma sürerken söylenmez; söylendiyse true */
   soz?: (kim: Kim, metin: string) => void;
   /** Bir an ya da uğur böceği ilk kez bulundu */
   bulundu?: (id: string) => void;
