@@ -9,7 +9,7 @@ import { Karakter } from '../../src/karakter/karakter';
 import { h, TEST_MODU } from '../../src/ui/dom';
 import G from '../../content/mino-giysin.json';
 import { bekle, dikil, hopla, kavis, ms, oynat, salla, type Nokta } from './anim';
-import type { Arkadas } from './arkadas';
+import { Arkadas } from './arkadas';
 import type { Hedef } from './dert';
 import { kutu } from './dokunma';
 import type { KostumluMino } from './kostumlu-mino';
@@ -35,6 +35,10 @@ export interface SahneBaglam {
   elde: () => HTMLElement;
   eldeKutusu: () => { x: number; y: number; w: number; h: number } | null;
   sus: (a: Alet) => boolean;
+  /** kostüm etkisi 'ek' mi (yanlış / karışık kostüm + doğru alet): çözüm sürerken komik ek an (§4a) */
+  ek: (a: Alet) => boolean;
+  /** ek an oynadı (test ve kayıt için: el.dataset.ek) */
+  ekOldu: (ad: string) => void;
   sonra: (n: number, fn: () => void) => void;
 }
 
@@ -58,6 +62,12 @@ export interface SahneTanim {
   dolgu: [string, string];
   /** dikeyde sahne ekranın altına yakın (gökyüzü dolgusu üstte doğal durur) */
   dikeyAlta?: boolean;
+  /** dikeyde sahnenin üstündeki boşluğa (aynalanıp) konan çizim; yoksa sahnenin en uzak katmanı (arka[0]) */
+  dikeyUst?: string;
+  /** dikeyde duvara perdeli pencere (iç mekân, boş duvar) */
+  dikeyPencere?: boolean;
+  /** dikeyde sahne kaynak boyunda en büyük ve üstten başlar (üstü dolu iç mekân: mutfak) */
+  dikeyDolu?: boolean;
   odak: number;
   mino: { x: number; taban: number; h: number };
   arkadas: { x: number; taban: number; olcek: number };
@@ -94,12 +104,83 @@ const ortasi = (e: Element, kap: HTMLElement): Nokta => {
 };
 
 /** Kalp halkası ("güm"), su damlası, buhar, pof: kod efektleri (yalnız transform / opacity) */
-function efekt(kap: HTMLElement, sinif: string, n: Nokta, sure: number, stil = ''): HTMLElement {
+export function efekt(kap: HTMLElement, sinif: string, n: Nokta, sure: number, stil = ''): HTMLElement {
   const e = h(`i.mg-efekt.${sinif}`, { style: `left:${n.x}px;top:${n.y}px;${stil}` });
   kap.append(e);
   window.setTimeout(() => e.remove(), ms(sure));
   return e;
 }
+
+/** Tam başarı konfetisi (kod efekti): küçük renkli yuvarlak ve şeritler yay çizip düşer; döndürme yok */
+export function konfeti(kap: HTMLElement, n: Nokta, yaricap: number, adet = 26) {
+  const RENK = ['#ffd23f', '#ff6b8b', '#5ec8f2', '#7ed957', '#ff9f43', '#b98cf5'];
+  for (let i = 0; i < adet; i++) {
+    const e = h(`i.mg-konfeti${i % 3 === 0 ? '.serit' : ''}`, { style: `left:${n.x}px;top:${n.y}px;background:${RENK[i % RENK.length]}` });
+    kap.append(e);
+    const aci = -Math.PI * (0.1 + (0.8 * i) / (adet - 1)) + (Math.random() - 0.5) * 0.3;
+    const r = yaricap * (0.7 + Math.random() * 0.6);
+    const x = Math.cos(aci) * r;
+    const y = Math.sin(aci) * r;
+    void oynat(
+      e,
+      [
+        { transform: 'translate(-50%, -50%) scale(0.4)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${x.toFixed(1)}px), calc(-50% + ${y.toFixed(1)}px)) scale(1)`, opacity: 1, offset: 0.45 },
+        { transform: `translate(calc(-50% + ${(x * 1.2).toFixed(1)}px), calc(-50% + ${(y + r * 0.9).toFixed(1)}px)) scale(0.9, 1.1)`, opacity: 0 },
+      ],
+      1300 + Math.random() * 400,
+      { easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' },
+    ).then(() => e.remove());
+  }
+}
+
+/** Öğenin şimdiki translate'i (animasyon dahil) */
+function suankiKayma(e: HTMLElement): [number, number] {
+  const t = getComputedStyle(e).translate;
+  if (!t || t === 'none') return [0, 0];
+  const [x, y = '0'] = t.split(' ');
+  return [parseFloat(x) || 0, parseFloat(y) || 0];
+}
+/** Öğeyi şimdiki yerinden (dx, dy) kadar kaydırır (translate; kalıcı); ara noktayla yay çizebilir (tepe < 0 yukarı) */
+function kaydir(e: HTMLElement, dx: number, dy: number, sure: number, tepe = 0, easing?: string): Promise<void> {
+  const [x0, y0] = suankiKayma(e);
+  const kare: Keyframe[] = [{ translate: `${x0}px ${y0}px` }];
+  if (tepe) kare.push({ translate: `${x0 + dx / 2}px ${y0 + dy / 2 + tepe}px`, offset: 0.5 });
+  kare.push({ translate: `${x0 + dx}px ${y0 + dy}px` });
+  return oynat(e, kare, sure, { fill: 'forwards', ...(easing ? { easing } : {}) });
+}
+
+/**
+ * Şapka Mino'nun başından çıkıp uçuş katmanında ayrı bir resim olur (tutacak kavis() ile taşınır, içindeki resim ayrıca
+ * ezilip esneyebilir). Şapka yoksa null. geri() şapkayı başına uçurup yeniden giydirir.
+ */
+function sapkaAyir(b: SahneBaglam): { tut: HTMLElement; resim: HTMLElement; k: { x: number; y: number; w: number; h: number }; geri: (n: Nokta) => Promise<void> } | null {
+  const id = oturum.giyili.bas;
+  if (!id) return null;
+  const k = b.mino.yerKutusu(id, b.el);
+  b.mino.cikar('bas');
+  const resim = h('img.mg-sapka-resim', { src: parcaResmi(id), alt: '', draggable: 'false' });
+  const tut = h('div.mg-sapka-tut', { style: `width:${k.w}px;height:${k.h}px;transform:translate(${k.x}px, ${k.y}px) translate(-50%, -50%)` }, resim);
+  b.ucus.append(tut);
+  return {
+    tut,
+    resim,
+    k,
+    geri: async (n: Nokta) => {
+      const hedef = b.mino.yerKutusu(id, b.el);
+      await kavis(tut, n, { x: hedef.x, y: hedef.y }, 460, { tepe: -50 });
+      tut.remove();
+      b.mino.giydir({ ...b.mino.giyili, bas: id });
+      ses.hop();
+    },
+  };
+}
+
+/** Mino'nun burnu (yüzün ortası), kabın koordinatında: çizimin burun noktası */
+const burun = (b: SahneBaglam): Nokta => b.mino.nokta(1024, 900, b.el);
+
+/** Mino'nun başının tepesi (şapka yeri; şapka olmasa da) */
+const basUstu = (b: SahneBaglam): { x: number; y: number; w: number; h: number } => b.mino.yerKutusu('bas-itfaiye', b.el);
 function damlalar(kap: HTMLElement, a: Nokta, b: Nokta, adet = 6) {
   for (let i = 0; i < adet; i++) {
     const dm = h('i.mg-damla', {});
@@ -388,6 +469,16 @@ const pamukSahnesi: SahneTanim = {
               await tirman(i);
             });
           } else for (let i = 0; i < 3; i++) await tirman(i);
+          if (b.ek(al)) {
+            // kostüm itfaiyeci değil (§4a): şapka dala takılır, Pamuk şapkanın içine atlar, şapkayla yere süzülür;
+            // şapka yoksa Pamuk Mino'nun kafasına atlar
+            await pamukSapkaya(b, dx);
+            merdiven.classList.remove('acik');
+            b.mino.mino.kostumResmi('alet')?.style.removeProperty('opacity');
+            a.poz('yala', 'mutlu');
+            await minoYerine(b);
+            return true;
+          }
           // Pamuk Mino'nun kollarına atlar, ikisi aşağı iner
           a.poz('atla', 'mutlu');
           const mk = ortasi(b.mino.el, b.el);
@@ -422,7 +513,27 @@ const pamukSahnesi: SahneTanim = {
         await bekle(900);
         a.poz('kay', 'mutlu');
         const yuk = yukarida ? b.px(0, 0.1).y : 0;
-        await oynat(a.el, [{ translate: `0 -${yuk}px` }, { translate: `${b.px(0.05, 0).x}px ${b.px(0, 0.88 - 0.45).y}px` }], 900, { fill: 'forwards', easing: 'cubic-bezier(.5,0,.8,.6)' });
+        const son = `${b.px(0.05, 0).x}px ${b.px(0, 0.88 - 0.45).y}px`;
+        if (b.ek(al)) {
+          // kostüm aşçı değil (§4a): Pamuk kayıp mamaya değil Mino'nun kafasına iner (şapka varsa yassılır), sonra mamaya
+          b.ekOldu('pamuk:kasik');
+          const bu = basUstu(b);
+          const f = Arkadas.figur('pamuk');
+          const ak = kutu(a.el, b.el);
+          const sapka = b.mino.mino.kostumResmi('bas');
+          await kaydir(a.el, bu.x - (ak.x + ak.w / 2), bu.y + bu.h * 0.15 - (ak.y + ak.h * f.taban), 900, 0, 'cubic-bezier(.5,0,.8,.6)');
+          a.poz('bekle', 'mutlu');
+          ses.miyav();
+          b.mino.el.style.transformOrigin = '50% 100%';
+          void oynat(b.mino.el, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.1,0.88)', offset: 0.35 }, { transform: 'scale(0.97,1.03)', offset: 0.7 }, { transform: 'scale(1,1)' }], 520);
+          if (sapka) void oynat(sapka, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.25,0.55)', offset: 0.3 }, { transform: 'scale(1.2,0.6)', offset: 0.8 }, { transform: 'scale(1,1)' }], 1500);
+          void b.mino.mino.ifade('sersem', 1400);
+          await minoSoyle(M.kostum_ek.mama_asagida);
+          a.poz('atla', 'mutlu');
+          const [x0, y0] = suankiKayma(a.el);
+          const [x1, y1] = son.split(' ').map((v) => parseFloat(v));
+          await kaydir(a.el, x1 - x0, y1 - y0, 560, -50);
+        } else await oynat(a.el, [{ translate: `0 -${yuk}px` }, { translate: son }], 900, { fill: 'forwards', easing: 'cubic-bezier(.5,0,.8,.6)' });
         void a.hopla(0.8);
         a.poz('yala', 'mutlu');
         a.ifade('mutlu', 1600);
@@ -441,11 +552,80 @@ const pamukSahnesi: SahneTanim = {
   },
 };
 
+/**
+ * D1 merdiven, kostüm itfaiyeci değil (§4a): Mino merdivenin tepesinde. Şapka dala takılır, Pamuk şapkanın içine atlar
+ * ve şapkayla birlikte yere süzülür ("Şapkam sepet oldu!"); Mino iner, Pamuk şapkadan zıplar, şapka sahibine döner.
+ * Şapka yoksa Pamuk Mino'nun kafasına atlar ("Kafam minder oldu!"), sonra yere. Poz değişimi + öteleme + ezilme.
+ */
+async function pamukSapkaya(b: SahneBaglam, dxMino: number) {
+  const a = b.arkadas;
+  const f = Arkadas.figur('pamuk');
+  const ak = kutu(a.el, b.el);
+  const taban = (): Nokta => {
+    const k = kutu(a.el, b.el);
+    return { x: k.x + k.w / 2, y: k.y + k.h * f.taban };
+  };
+  const yerY = kutu(b.sahne, b.el).y + b.px(0, 0.92).y;
+  const s = sapkaAyir(b);
+  b.ekOldu(s ? 'pamuk:merdiven:sapka' : 'pamuk:merdiven:kafa');
+  b.mino.el.style.transformOrigin = '50% 100%';
+  if (s) {
+    // şapka dala takılır: Pamuk'un solunda (Mino'dan uzakta), dalın hizasında sallanır
+    const p0 = taban();
+    const dal = { x: p0.x - ak.w * 0.2, y: p0.y - s.k.h * 0.1 };
+    b.mino.mino.tepki('sasir', 0.8);
+    ses.firlat();
+    await kavis(s.tut, { x: s.k.x, y: s.k.y }, dal, 440, { tepe: -40 });
+    ses.hop();
+    await salla(s.resim, 520);
+    // Pamuk şapkanın içine atlar (şapka önde: yalnız başı ve kulakları görünür)
+    a.poz('atla', 'mutlu');
+    ses.miyav();
+    const p1 = taban();
+    await kaydir(a.el, dal.x - p1.x, dal.y + s.k.h * 0.46 - p1.y, 440, -46);
+    a.poz('bekle', 'mutlu');
+    await oynat(s.resim, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,0.86)', offset: 0.4 }, { transform: 'scale(1,1)' }], 300);
+    // şapka sepet olur: ikisi birlikte yere süzülür (hafif sallanarak)
+    const hedef = { x: dal.x, y: yerY - s.k.h * 0.42 };
+    void kaydir(a.el, 0, hedef.y - dal.y, 760, 0, 'cubic-bezier(.4,0,.6,1)');
+    await kavis(s.tut, dal, hedef, 760, { tepe: 0 });
+    ses.hop();
+    b.mino.pof(b.ucus, { x: hedef.x, y: yerY }, s.k.w * 0.8);
+    void oynat(s.resim, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.16,0.82)', offset: 0.35 }, { transform: 'scale(0.97,1.03)', offset: 0.7 }, { transform: 'scale(1,1)' }], 420);
+    void b.mino.mino.ifade('saskin', 1200);
+    await minoSoyle(M.kostum_ek.sepet_sapka);
+    await minoGit(b, dxMino, 0, 700);
+    // Pamuk şapkadan zıplayıp çıkar; şapka sahibine döner
+    a.poz('atla', 'mutlu');
+    const p2 = taban();
+    await kaydir(a.el, ak.w * 0.28, yerY - p2.y, 460, -60);
+    a.poz('yala', 'mutlu');
+    await s.geri(hedef);
+    return;
+  }
+  // şapka yok: Pamuk Mino'nun kafasına atlar
+  const bu = basUstu(b);
+  a.poz('atla', 'mutlu');
+  ses.miyav();
+  const p1 = taban();
+  await kaydir(a.el, bu.x - p1.x, bu.y + bu.h * 0.15 - p1.y, 480, -50);
+  a.poz('bekle', 'mutlu');
+  void oynat(b.mino.el, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.1,0.88)', offset: 0.35 }, { transform: 'scale(0.97,1.03)', offset: 0.7 }, { transform: 'scale(1,1)' }], 520);
+  void b.mino.mino.ifade('sersem', 1400);
+  await minoSoyle(M.kostum_ek.kafam_minder);
+  // Pamuk kafadan yere atlar, Mino iner
+  a.poz('atla', 'mutlu');
+  const p2 = taban();
+  await kaydir(a.el, -ak.w * 0.3, yerY - p2.y, 560, -60);
+  a.poz('yala', 'mutlu');
+  await minoGit(b, dxMino, 0, 700);
+}
+
 /** Aleti elden bir noktaya uçurur (merdiveni ağaca, kabı yere …) */
 async function parcaUcur2(b: SahneBaglam, id: 'alet-itfaiye' | 'alet-asci' | 'alet-bahce' | 'alet-doktor', a: Nokta, son: Nokta) {
   const k = b.eldeKutusu();
   if (!k) return;
-  const e = h('img.mg-ucan', { src: parcaResmi(id), alt: '', style: `width:${k.w}px;height:${k.h}px` });
+  const e = h('img.mg-ucan', { src: parcaResmi(id), alt: '', style: `width:${k.w}px;height:${k.h}px;transform:translate(${a.x}px, ${a.y}px) translate(-50%, -50%)` });
   b.ucus.append(e);
   await kavis(e, a, son, 320, { tepe: -40 });
   e.remove();
@@ -457,6 +637,7 @@ const kinoSahnesi: SahneTanim = {
   arka: ['giysin/oda-yatay'],
   dogal: [2752, 1537],
   dolgu: ['#fedec2', '#f2bc78'],
+  dikeyPencere: true,
   odak: 0.47,
   mino: { x: 0.33, taban: 0.94, h: 0.5 },
   arkadas: { x: 0.6, taban: 0.92, olcek: 1 },
@@ -564,6 +745,29 @@ const kinoSahnesi: SahneTanim = {
               await bekle(560);
             }
           };
+          if (b.ek(al)) {
+            // kostüm doktor değil (§4a): şapka gözlerinin üstüne kayar ("Göremiyorum!"); şapka yoksa Kino gıdıklanır
+            const s = sapkaAyir(b);
+            b.ekOldu(s ? 'kino:stetoskop:sapka' : 'kino:stetoskop:gidik');
+            if (s) {
+              const goz = { x: s.k.x, y: s.k.y + s.k.h * 0.62 };
+              ses.hop();
+              await kavis(s.tut, { x: s.k.x, y: s.k.y }, goz, 300, { tepe: -14 });
+              void oynat(s.resim, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.08,0.9)', offset: 0.5 }, { transform: 'scale(1,1)' }], 260);
+              void b.mino.mino.ifade('sersem', 1600);
+              b.mino.mino.tepki('kararsiz', 1.2);
+              await minoSoyle(M.kostum_ek.goremiyorum);
+              b.mino.el.style.transformOrigin = '50% 100%';
+              await hopla(b.mino.el, 0.5, 360);
+              await s.geri(goz);
+            } else {
+              a.ifade('heyecan', 1400);
+              ses.kikir();
+              void a.titre(700);
+              await oynat(a.ic, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.06,0.94)', offset: 0.25 }, { transform: 'scale(0.97,1.04)', offset: 0.5 }, { transform: 'scale(1.04,0.96)', offset: 0.75 }, { transform: 'scale(1,1)' }], 700);
+              await minoSoyle(M.kostum_ek.gidik);
+            }
+          }
           await atis();
           if (kez > 1) {
             // 5-6: "Kaç güm?" üç rakam balonu
@@ -615,6 +819,21 @@ const kinoSahnesi: SahneTanim = {
           if (kez > 1) say(i);
           ses.hop();
           await bekle(500);
+          if (i === 0 && b.ek(al)) {
+            // kostüm aşçı değil (§4a): Kino ıhlamuru "üfff" diye üfler, buhar Mino'nun yüzüne; şapka havalanıp geri konar
+            b.ekOldu('kino:kasik');
+            await oynat(a.ic, [{ transform: 'scale(1,1)' }, { transform: 'scale(0.95,1.06)', offset: 0.4 }, { transform: 'scale(1.06,0.95)', offset: 0.7 }, { transform: 'scale(1,1)' }], 420);
+            ses.bufPof();
+            efekt(b.ucus, 'mg-hapsu-puf', burun(b), 700, '--b:1.4');
+            const s = sapkaAyir(b);
+            b.mino.mino.tepki('sasir', 1);
+            if (s) {
+              const ust = { x: s.k.x, y: s.k.y - s.k.h * 0.9 };
+              await kavis(s.tut, { x: s.k.x, y: s.k.y }, ust, 280, { tepe: -10 });
+              void minoSoyle(M.kostum_ek.sicak);
+              await s.geri(ust);
+            } else await minoSoyle(M.kostum_ek.sicak);
+          }
         });
         a.ifade('heyecan', 1800);
         await kinoSoyle(G.kino.sicacik);
@@ -638,6 +857,7 @@ const egeSahnesi: SahneTanim = {
   arka: ['film/mutfak/arka-uzak', 'film/mutfak/arka-orta'],
   dogal: [2752, 1536],
   dolgu: ['#c49460', '#e2a364'],
+  dikeyDolu: true,
   odak: 0.42,
   mino: { x: 0.28, taban: 0.96, h: 0.46 },
   arkadas: { x: 0.53, taban: 0.69, olcek: 0.78 },
@@ -780,6 +1000,18 @@ const egeSahnesi: SahneTanim = {
           tencere.classList.add('kaynar');
           ses.dikil(2);
           await bekle(400);
+          if (b.ek(al)) {
+            // kostüm aşçı değil (§4a): tencere "fokur" der, bir damla Mino'nun burnuna sıçrar
+            b.ekOldu('ege:kasik');
+            const n = burun(b);
+            ses.pit(3);
+            damlalar(b.ucus, ortasi(tencere, b.el), n, 3);
+            await bekle(420);
+            efekt(b.ucus, 'mg-leke', n, 1600);
+            b.mino.mino.tepki('sasir', 1);
+            void b.mino.mino.ifade('goz-kirp', 900);
+            await minoSoyle(M.kostum_ek.burnuma);
+          }
           await sirayla(b, [agiz], kez, async (i) => {
             const sp = h('img.mg-ucan', { src: parcaResmi('alet-asci'), alt: '', style: `width:${b.px(0, 0.05).y}px;height:${b.px(0, 0.18).y}px` });
             b.ucus.append(sp);
@@ -810,6 +1042,15 @@ const egeSahnesi: SahneTanim = {
         void susYap(b, al);
         const dx = b.px(0.66 - 0.28, 0).x;
         await minoGit(b, dx, -b.px(0, 0.2).y, 700);
+        if (b.ek(al)) {
+          // kostüm itfaiyeci değil (§4a): kasksız Mino merdivenin tepesinde sağa sola sallanır
+          b.ekOldu('ege:merdiven');
+          b.mino.mino.tepki('zorlan', 1.4);
+          void minoSoyle(M.kostum_ek.sallaniyorum);
+          const kap = b.mino.el;
+          await oynat(kap, [{ translate: '0 0' }, { translate: '-9px 2px', offset: 0.2 }, { translate: '8px 0', offset: 0.45 }, { translate: '-6px 2px', offset: 0.7 }, { translate: '4px 0', offset: 0.85 }, { translate: '0 0' }], 1300);
+          ses.tik(2);
+        }
         await sirayla(b, [kavanoz], 1, async () => {
           void hopla(kavanoz, 0.5, 300);
           ses.pit(2);
@@ -964,10 +1205,36 @@ const adaSahnesi: SahneTanim = {
             ses.dikil(i);
             if (kez > 2) say(i);
             await dikil(c, 700);
+            if (i === 0 && b.ek(al)) {
+              // kostüm bahçıvan değil (§4a): hasır şapka yok, sudan bir damla da Mino'nun başına düşer (Mino sudan hoşlanmaz)
+              b.ekOldu('ada:sulama');
+              const bu = basUstu(b);
+              ses.su();
+              damlalar(b.ucus, { x: bu.x + bu.w * 0.6, y: bu.y - bu.h * 1.2 }, { x: bu.x, y: bu.y }, 3);
+              await bekle(380);
+              void b.mino.mino.hal('islak');
+              b.mino.mino.tepki('sasir', 1);
+              await minoSoyle(M.su);
+              b.sonra(1400, () => void b.mino.mino.hal(null));
+            }
           }
         } else {
           // kaşıkla kovadan her çiçeğe bir kaşık; Mino her seferinde dili dışarıda koşar
           await sirayla(b, hedefler, hedefler.length, async (i, c) => {
+            if (i === 0 && b.ek(al)) {
+              // kostüm aşçı değil (§4a): Mino ıslak çimde kayar, kaşıktaki su yüzüne sıçrar
+              b.ekOldu('ada:kasik');
+              const mk = kutu(b.mino.el, b.el);
+              b.mino.el.style.transformOrigin = '50% 100%';
+              void minoGit(b, b.px(0.06, 0).x, 0, 360);
+              await bekle(220);
+              b.mino.pof(b.ucus, { x: mk.x + mk.w / 2 + b.px(0.06, 0).x, y: mk.y + mk.h * 0.95 }, mk.w * 0.5);
+              ses.boing();
+              await oynat(b.mino.el, [{ transform: 'scale(1,1)' }, { transform: 'translateY(4px) scale(1.16,0.8)', offset: 0.3 }, { transform: 'translateY(-10px) scale(0.94,1.08)', offset: 0.6 }, { transform: 'scale(1,1)' }], 560);
+              damlalar(b.ucus, eldeNokta(b), burun(b), 3);
+              b.mino.mino.tepki('sersem', 1.2);
+              await minoSoyle(M.kostum_ek.kaydim);
+            }
             void b.mino.mino.ifade('odak', 1200);
             const sp = h('img.mg-ucan', { src: parcaResmi('alet-asci'), alt: '', style: `width:${b.px(0, 0.05).y}px;height:${b.px(0, 0.18).y}px` });
             b.ucus.append(sp);

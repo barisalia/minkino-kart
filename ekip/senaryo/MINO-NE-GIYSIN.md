@@ -105,7 +105,7 @@ Kollar dönmez. Alet tutulurken `poz()` ve `otur()` kullanılmaz; hareket `ifade
   2. **Islak şaka (Mino sudan hoşlanmaz):** Sulama kabı Mino'ya ilk kez fırlatılınca kabın ağzından bir damla Mino'nun burnuna sıçrar. Mino irkilir ("[gasps] Iyy, su!") ve kabı bir an tutup geri fırlatmaya kalkar. Sonra vazgeçer, güler: "[giggles] Tamam, tamam." Kap elinde kalır. Bu tepki her oturumda yalnız bir kez olur.
 - **Tam takım:**
   - Üç parçası aynı rolden olursa Mino aynaya döner ve rolünü söyler, örnek "[excited] İtfaiyeci Mino!". Aynada küçük parıltı çıkar. Dert sahnesinde o rolün çözümüne küçük bir süs eklenir (§4, "tam takım" sütunu).
-  - Karışık takım da serbesttir. Mino aynaya bakıp güler: "[laughs] Karışık Mino!" (3 değişik kayıt). Karışık takımda da her çözüm çalışır; çözümü yalnız **alet** belirler.
+  - Karışık takım da serbesttir. Mino aynaya bakıp güler: "[laughs] Karışık Mino!" (3 değişik kayıt). Karışık takımda da her çözüm çalışır. Çözüm mü başarısızlık mı, onu **alet** belirler; **kostüm** ise sonucun nasıl geçtiğini belirler (§4a "Kostüm etkisi").
 - **Seçenek sayısı:** Her adımda 4 şapka, 4 üst ve 4 alet vardır. Dert sırası 4 balondur. Her dertte 4 alet denenebilir. En az 3 seçenek kuralı her yerde tutar.
 
 ---
@@ -154,6 +154,60 @@ Komik başarısızlıkların çoğu **dolaylı ipucu** taşır: arkadaşın bak�
 - Parmak ipucu en son, 45 sn'de gelir.
 
 **İkinci çözüm (yalnız 5-6):** Dert çözülünce Mino göz kırpar: "[curious] Başka yolu var mı acaba?" Arkadaş dertli hâline döner (geri sar), çocuk isterse dener. İstemezse kapıya dokunarak geçer. 3-4'te bu soru yoktur; yıldız yine dolar.
+
+---
+
+## 4a. Kostüm etkisi (kalite denetimi K7, 2026-10-17)
+
+Kostüm artık sonucu etkiler. Ceza yoktur, her sonuç eğlencelidir. Amaç, çocuğun "itfaiyeci olursam daha iyi kurtarıyorum" diye fark etmesidir.
+
+**Kostümün rolü:** Şapka ve üst giysi aynı rolden ise kostüm o roldür. Yalnız şapka, yalnız üst, hiç kostüm ya da karışık şapka-üst "karışık" sayılır. Aleti sonuç tablosu ayrıca değerlendirir.
+
+**Derde uygun roller** (§4'teki çözüm aletlerinden):
+
+| Dert | Uygun kostüm |
+|---|---|
+| D1 Pamuk ağaçta | itfaiyeci (merdiven), aşçı (kaşık) |
+| D2 Kino hapşırıyor | doktor (stetoskop), aşçı (kaşık) |
+| D3 Ege acıktı | aşçı (kaşık), itfaiyeci (merdiven) |
+| D4 Ada'nın çiçekleri | bahçıvan (sulama kabı), aşçı (kaşık) |
+
+**Üç durum:**
+
+| Kostüm + alet | Ne olur |
+|---|---|
+| Aletin rolünden kostüm + çözüm aleti (itfaiyeci + merdiven) | **Tam başarı.** Rol süsü (§4 son sütun), konfeti, alkış, Mino rolünü söyler ("[excited] İtfaiyeci Mino!", var olan kayıt). Yıldız rozeti büyük ve altın. Dolaptaki yıldız **parlar** ve parlak kalır (kayıt: `tam`). |
+| Başka rol, karışık ya da kostümsüz + çözüm aleti | **Yine başarı**, yıldız dolar (parlamaz). Çözümün ortasında komik bir **ek an** olur (aşağıdaki tablo). |
+| Derde uygun kostüm + yanlış alet | §4'teki komik başarısızlık, sonra **kostüme özel şaka**. Kostüm kendi işini yapmaya kalkar, olmaz. Sonra sepetteki kendi aleti iki kez zıplar, Mino o yana bakar. |
+| Uygun olmayan / karışık kostüm + yanlış alet | Yalnız §4'teki komik başarısızlık. |
+
+**Ek anlar (yanlış ya da karışık kostüm + doğru alet):**
+
+| Dert · alet | Ek an | Mino |
+|---|---|---|
+| D1 · merdiven (şapka var) | Merdivenin tepesinde şapka dala takılır, sallanır. Pamuk şapkanın içine atlar, yalnız başı görünür. Şapka Pamuk'la birlikte yere süzülür, "pof". Mino iner, Pamuk şapkadan zıplar, şapka Mino'nun başına uçar. | "[giggles] Şapkam sepet oldu!" |
+| D1 · merdiven (şapka yok) | Pamuk Mino'nun kafasına atlar. Mino ezilir, sersemler. Pamuk yere atlar, Mino iner. | "[giggles] Kafam minder oldu!" |
+| D1 · kaşık | Pamuk kayıp mamaya değil Mino'nun kafasına iner. Şapka varsa yassılır. Pamuk sonra mamaya atlar. | "[laughs] Mama aşağıda, Pamuk!" |
+| D2 · stetoskop (şapka var) | Şapka Mino'nun gözlerinin üstüne kayar. Mino zıplar, şapka yerine sıçrar, sonra dinler. | "[giggles] Göremiyorum!" |
+| D2 · stetoskop (şapka yok) | Kino gıdıklanır, kıkırdar, titrer. | "[giggles] Gıdıklanıyor musun?" |
+| D2 · kaşık | İlk kaşıktan sonra Kino "üfff" der, buhar Mino'nun yüzüne gelir. Şapka havalanıp geri konar. | "[gasps] Çok sıcakmış!" |
+| D3 · kaşık | Tencere kaynayınca bir damla Mino'nun burnuna sıçrar (küçük turuncu leke). | "[gasps] Burnuma sıçradı!" |
+| D3 · merdiven | Kasksız Mino merdivenin tepesinde sağa sola sallanır. | "[giggles] Sallanıyorum!" |
+| D4 · sulama kabı | İlk çiçekten sonra bir damla Mino'nun başına düşer. Mino ıslanır (sudan hoşlanmaz). | "[gasps] Iyy, su!" (var olan kayıt) |
+| D4 · kaşık | İlk taşımada Mino ıslak çimde kayar, ezilip esner, kaşıktaki su yüzüne sıçrar. | "[giggles] Hop, kaydım!" |
+
+**Kostüm şakaları (derde uygun kostüm + yanlış alet):**
+
+| Kostüm | Şaka | Mino | Sepette zıplayan |
+|---|---|---|---|
+| Doktor | Alın aynası güneşi Mino'nun gözüne yansıtır, parıltı; Mino gözlerini kırpıştırır. | "[giggles] Ayna gözümü aldı!" | stetoskop |
+| İtfaiyeci | Kask kendiliğinden öter ("vuu vuu", kırmızı-mavi ışık); Mino irkilip zıplar. | "[giggles] Kaskım heyecanlandı!" | merdiven |
+| Aşçı | Karın guruldar, aşçı şapkası kabarıp "pöf" diye söner. | "[giggles] Şapkam acıktı!" | kaşık |
+| Bahçıvan | Hasır şapkadaki çiçek boynunu büker. | "[sighs] Şapkamın çiçeği soldu!" | sulama kabı |
+
+Kurallar: parça döndürme yok, poz değişimi ve ezilme-esneme; büyütme yok. Söz kısa, "dokun" demez. Yeni sözler `content/mino-giysin.json` → `mino.kostum_ek`, `mino.kostum_saka` (CI seslendirir). Kod: `model.ts` → `kostumEtkisi`, `dert.ts` (tam sevinç, şaka), `sahneler.ts` (ek anlar).
+
+**Dikey ekran (390 × 844):** Odada duvarın boş üst yarısında, balonlarla Mino arasında perdeli pencere durur, camda mahallenin yaz manzarası görünür (var olan `giysin/pencere`, `pencere-yaz-*`, `perde-sol/sag`). Dert sahnelerinde üst boşluk doldurulur: parkta sahnenin gök katmanı (aynalı, bulutlu), Kino'nun odasında duvar ve aynı perdeli pencere, mutfak sahnesi üstten başlar. Hepsi kaynak boyunda, büyütme yok.
 
 ---
 

@@ -194,6 +194,8 @@ for (const boy of BOYLAR) {
       const hatalar = hataTopla(page);
       await page.goto(`${ADRES}&yas=4`);
       await ekranBekle(page, 'oda');
+      // açılış bitsin (balonlar sırayla açılır; ilk sayfada soğuk başlangıç uzun sürebilir)
+      await expect.poll(() => page.locator('.mg-oda').getAttribute('data-adim'), { timeout: 15000 }).toBe('balon');
       await expect(page.locator('.mg-yardim')).toHaveCount(4);
       await expect(page.locator('.mg-goz')).toHaveCount(8);
       await expect(page.locator('.mg-sepet-dugme')).toHaveCount(4);
@@ -269,6 +271,98 @@ for (const boy of BOYLAR) {
         expect(hatalar).toEqual([]);
       });
     }
+
+    test('kostüm etkisi: uygun kostüm tam başarı, yanlış kostüm ek an, uygun kostüm + yanlış alet şaka', async ({ page }) => {
+      const hatalar = hataTopla(page);
+      const anlar = () => page.evaluate(() => (window as unknown as { __mg: { oturum: { kostumAnlari: string[] } } }).__mg.oturum.kostumAnlari);
+      // uygun kostüm + doğru alet: itfaiyeci + merdiven → tam başarı, dolapta parlak yıldız; aynı derdin öbür çözümü (kaşık) normal yıldız
+      await page.goto(`${ADRES}&ekran=dert&dert=pamuk&alet=merdiven&yas=3&giy=bas-itfaiye,ust-itfaiye`);
+      await ekranBekle(page, 'dert');
+      await dene(page);
+      await expect(page.locator('.mg-dert')).toHaveAttribute('data-kostum', 'tam');
+      await cozumHareketi(page, 'pamuk', 'merdiven', 3);
+      await ekranBekle(page, 'oda');
+      expect(await anlar()).toContain('tam:pamuk:merdiven');
+      await expect(page.locator('.mg-yildiz.dolu.tam[data-yildiz="pamuk:merdiven"]')).toHaveCount(1);
+      // yanlış / karışık kostüm + doğru alet: yine çözülür, arada komik ek an (8 çözümün her biri; şapkalı ve şapkasız)
+      const EK: [string, string, string, string][] = [
+        ['pamuk', 'merdiven', 'bas-asci,ust-itfaiye', 'pamuk:merdiven:sapka'],
+        ['pamuk', 'merdiven', '', 'pamuk:merdiven:kafa'],
+        ['pamuk', 'kasik', 'bas-doktor', 'pamuk:kasik'],
+        ['kino', 'stetoskop', 'bas-bahce,ust-doktor', 'kino:stetoskop:sapka'],
+        ['kino', 'stetoskop', '', 'kino:stetoskop:gidik'],
+        ['kino', 'kasik', 'bas-itfaiye', 'kino:kasik'],
+        ['ege', 'kasik', 'ust-asci', 'ege:kasik'],
+        ['ege', 'merdiven', 'bas-asci,ust-asci', 'ege:merdiven'],
+        ['ada', 'sulama', '', 'ada:sulama'],
+        ['ada', 'kasik', 'bas-bahce,ust-bahce', 'ada:kasik'],
+      ];
+      for (const [dert, alet, giy, ad] of EK) {
+        await page.goto(`${ADRES}&ekran=dert&dert=${dert}&alet=${alet}&yas=3&giy=${giy}`);
+        await ekranBekle(page, 'dert');
+        await dene(page);
+        await expect.poll(() => page.evaluate(() => document.querySelector<HTMLElement>('.mg-dert:not(.cikiyor)')?.dataset.kostum ?? 'oda'), { message: ad }).toMatch(/^(ek|oda)$/);
+        await cozumHareketi(page, dert, alet, 3);
+        await ekranBekle(page, 'oda');
+        expect(await anlar(), ad).toContain(ad);
+        await expect(page.locator(`.mg-yildiz.dolu[data-yildiz="${dert}:${alet}"]`)).toHaveCount(1);
+        await expect(page.locator(`.mg-yildiz.tam[data-yildiz="${dert}:${alet}"]`)).toHaveCount(0);
+      }
+      // derde uygun kostüm + yanlış alet: kostüme özel şaka, sepette kostümün kendi aleti zıplar
+      const SAKA: [string, string, string, string][] = [
+        ['pamuk', 'sulama', 'bas-itfaiye,ust-itfaiye', 'itfaiye'],
+        ['kino', 'merdiven', 'bas-doktor,ust-doktor', 'doktor'],
+        ['ege', 'stetoskop', 'bas-asci,ust-asci', 'asci'],
+        ['ada', 'stetoskop', 'bas-bahce,ust-bahce', 'bahce'],
+      ];
+      for (const [dert, alet, giy, rol] of SAKA) {
+        await page.goto(`${ADRES}&ekran=dert&dert=${dert}&alet=${alet}&yas=3&giy=${giy}`);
+        await ekranBekle(page, 'dert');
+        await dene(page);
+        await expect(page.locator('.mg-dert')).toHaveAttribute('data-kostum', 'saka');
+        await expect.poll(() => adim(page), { timeout: 15000 }).toBe('denendi');
+        await expect(page.locator('.mg-dert.sepet-acik')).toHaveCount(1);
+        expect(await anlar()).toContain(`saka:${rol}`);
+      }
+      // uygun olmayan kostüm + yanlış alet: yalnız tablodaki komik başarısızlık
+      await page.goto(`${ADRES}&ekran=dert&dert=pamuk&alet=sulama&yas=3&giy=bas-doktor,ust-doktor`);
+      await ekranBekle(page, 'dert');
+      await dene(page);
+      await expect(page.locator('.mg-dert')).toHaveAttribute('data-kostum', 'yok');
+      await expect.poll(() => adim(page), { timeout: 15000 }).toBe('denendi');
+      expect(await anlar()).toEqual([]);
+      expect(hatalar).toEqual([]);
+    });
+
+    test('dikey: üst boşluk dolu (oda penceresi, sahne üstü)', async ({ page }) => {
+      test.skip(boy.ad !== 'dikey');
+      const hatalar = hataTopla(page);
+      await page.goto(`${ADRES}&yas=4`);
+      await ekranBekle(page, 'oda');
+      await page.waitForTimeout(400);
+      // pencere balonlarla Mino arasında, ikisine de binmez
+      await expect.poll(async () => (await page.locator('.mg-oda .mg-pencere').boundingBox())?.height ?? 0).toBeGreaterThan(150);
+      const p = (await page.locator('.mg-oda .mg-pencere').boundingBox())!;
+      const b = (await page.locator('.mg-yardim').first().boundingBox())!;
+      expect(p.height).toBeGreaterThan(150);
+      expect(p.y).toBeGreaterThanOrEqual(b.y + b.height);
+      expect(await zoomlar(page)).toEqual([]);
+      for (const dert of Object.keys(SONUC)) {
+        await page.goto(`${ADRES}&ekran=dert&dert=${dert}&alet=kasik&yas=4`);
+        await ekranBekle(page, 'dert');
+        await expect.poll(() => adim(page)).toBe('hazir');
+        // sahnenin üstünde düz dolgu kalmaz: ya sahne üstten başlar ya da üstte gök / duvar resmi var
+        const ust = await page.evaluate(() => {
+          const d = document.querySelector<HTMLElement>('.mg-dert:not(.cikiyor)')!;
+          const s = d.querySelector<HTMLElement>('.mg-sahne')!.getBoundingClientRect();
+          const g = d.querySelector<HTMLElement>('.mg-gok')!.getBoundingClientRect();
+          return { sahneUst: s.top, gokAlt: g.height ? g.bottom : 0 };
+        });
+        expect(ust.sahneUst <= 8 || ust.gokAlt >= ust.sahneUst, dert).toBe(true);
+        expect(await zoomlar(page), dert).toEqual([]);
+      }
+      expect(hatalar).toEqual([]);
+    });
 
     test('dert sahnesi: zoom yok, ipucu ilk parlaması geç', async ({ page }) => {
       const hatalar = hataTopla(page);

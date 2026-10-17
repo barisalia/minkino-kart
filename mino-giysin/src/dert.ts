@@ -21,10 +21,11 @@ import { Arkadas } from './arkadas';
 import { icinde, kutu, surukle } from './dokunma';
 import { KostumluMino, MINO_ORAN, MINO_TABAN, parcaUcur } from './kostumlu-mino';
 import { kaydet, kayit } from './kayit';
-import { aletParcasi, aletRolu, cozumAletleri, digerCozum, ipucuSureleri, parcaAleti, sonuc, susVar, tekrarSayisi, yildizEkle, type Alet, type Dert, type ParcaId } from './model';
+import { ALET_ADI, aletParcasi, aletRolu, cozumAletleri, digerCozum, ipucuSureleri, kostumEtkisi, kostumRolu, parcaAleti, sonuc, susVar, tamYildizEkle, tekrarSayisi, yildizEkle, type Alet, type Dert, type KostumEtkisi, type ParcaId } from './model';
 import { grup, oturum } from './oturum';
 import { gorsel, onYukle, parcaKostum, parcaResmi } from './resimler';
-import { SAHNELER, type SahneBaglam } from './sahneler';
+import { pencereEl, pencereOlcu } from './pencere';
+import { efekt, konfeti, SAHNELER, type SahneBaglam } from './sahneler';
 import { Sepet, SEPET_BOY } from './sepet';
 import { minoSoyle, ses } from './ses';
 
@@ -53,6 +54,11 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   const el = h('div.mg-dert', { 'data-dert': d, 'data-adim': 'giris' });
   el.style.background = `linear-gradient(${tanim.dolgu[0]} 0 50%, ${tanim.dolgu[1]} 50% 100%)`;
   const sahne = h('div.mg-sahne', {}, ...tanim.arka.map((a, i) => h(`img.mg-katman.k${i}`, { src: gorsel(a), alt: '', draggable: 'false' })));
+  // dikeyde sahnenin üstündeki boşluk: sahnenin uzak katmanı (gök ve bulutlar / duvar kâğıdı) aynalanıp üstte durur;
+  // kaynak boyunda (DPR 3'te 1:1), sahnenin üst kenarı ona yumuşakça karışır. Yakınlaşma yok.
+  const gok = h('img.mg-gok', { src: gorsel(tanim.dikeyUst ?? tanim.arka[0]), alt: '', draggable: 'false', 'aria-hidden': 'true' }) as HTMLImageElement;
+  // iç mekânda (Kino'nun odası) duvarın boş üst yarısına perdeli pencere
+  const pencere = tanim.dikeyPencere ? pencereEl() : null;
   const ucus = h('div.mg-ucus', { 'aria-hidden': 'true' });
   const parmak = h('div.mg-parmak', { 'aria-hidden': 'true', html: IKON.el });
   const mino = new KostumluMino(oturum.giyili);
@@ -63,7 +69,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   const kapi = h('button.mg-cikis', { type: 'button', 'aria-label': 'Kapı' }, h('img', { src: gorsel('giysin/kapi-cerceve'), alt: '', draggable: 'false' }), h('img.mg-cikis-kanat', { src: gorsel('giysin/kapi-kanat'), alt: '', draggable: 'false' }));
   const yildizRozet = h('div.mg-yildiz-rozet', { 'aria-hidden': 'true', html: IKON.yildiz });
   const ust = h('div.mg-ust', {}, yuvarlakDugme(IKON.geri, 'Odaya dön', () => odayaDon(false), 'mg-geri'), sesDugmesi());
-  el.append(sahne, sepet.el, kapi, eldeHit, yildizRozet, ust, ucus, parmak);
+  el.append(gok, ...(pencere ? [pencere] : []), sahne, sepet.el, kapi, eldeHit, yildizRozet, ust, ucus, parmak);
 
   // ------------------------------------------------------------ yerleşim
   let S = { x: 0, y: 0, w: 0, h: 0, dikey: false };
@@ -79,17 +85,31 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     const dikey = hh > w * 1.1;
     const kapla = Math.max(w / nw, hh / nh);
     // DPR 3'te kaynak boyunun üstüne çıkmaz; dikeyde sahne ekranın ~%56'sı (daha çoğu görünsün)
-    const s = Math.min(kapla, 1 / 3, dikey ? (0.5 * hh) / nh : Infinity);
+    // dikeyDolu (mutfak): dikeyde kaynak boyunda en büyük, üstten başlar (üstte boşluk kalmaz; alt zemin rengi)
+    const s = Math.min(kapla, 1 / 3, dikey && !tanim.dikeyDolu ? (0.5 * hh) / nh : Infinity);
     const sw = nw * s;
     const sh = nh * s;
     // dikeyde açık hava sahneleri aşağıda (üstte gök rengi dolgu sahneyle birleşir), iç mekânlar ortada
-    const y = dikey ? (tanim.dikeyAlta ? Math.max(56, hh - sh - Math.min(130, w * 0.32) * SEPET_BOY - 20) : Math.max(56, hh * 0.47 - sh / 2)) : hh - sh;
+    const y = dikey ? (tanim.dikeyDolu ? 0 : tanim.dikeyAlta ? Math.max(56, hh - sh - Math.min(130, w * 0.32) * SEPET_BOY - 20) : Math.max(56, hh * 0.47 - sh / 2)) : hh - sh;
     S = { x: 0, y, w: sw, h: sh, dikey };
     sahneKaydir(false);
     sahne.style.width = `${sw}px`;
     sahne.style.height = `${sh}px`;
     sahne.style.top = `${y}px`;
     el.classList.toggle('dikey', dikey);
+    const gokVar = dikey && y > 8;
+    el.classList.toggle('gok-var', gokVar);
+    if (gokVar) {
+      const gw = nw / 3;
+      const gh = nh / 3;
+      gok.style.cssText = `left:${w / 2 - gw / 2}px;top:0;width:${gw}px;height:${Math.min(gh, y + sh * 0.3)}px`;
+    } else gok.style.cssText = 'display:none';
+    if (pencere) {
+      // pencere duvarda: üst çubuğun altından, sahnede başların biraz üstüne kadar (sahnenin önünde değil, arkasında)
+      const k = gokVar ? pencereOlcu(w / 2, 64, y + sh * Math.min(tanim.mino.taban - tanim.mino.h * 1.02, tanim.arkadas.taban - 0.62), w * 0.5) : null;
+      pencere.style.display = k ? '' : 'none';
+      if (k) pencere.style.cssText = `left:${k.x}px;top:${k.y}px;width:${k.w}px;height:${k.h}px`;
+    }
     // Mino ve arkadaş sahne kesirleriyle
     const mh = tanim.mino.h * sh;
     const mw = mh / MINO_ORAN;
@@ -233,6 +253,8 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   let bulunan: Alet[] = [];
   let calisiyor = false;
   let bitti = false;
+  /** son denemenin kostüm etkisi (model.ts → kostumEtkisi; senaryo §4a) */
+  let etki: KostumEtkisi = 'yok';
 
   /** Sahne bağlamı: sahneler.ts her dert için bunu kullanır */
   const bag: SahneBaglam & { yerlesim: (sw: number, sh: number, mw: number) => void; hatirlat: () => void } = {
@@ -256,6 +278,11 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     elde: () => eldeHit,
     eldeKutusu: () => (oturum.giyili.alet ? mino.yerKutusu(oturum.giyili.alet, el) : null),
     sus: (a) => susVar(oturum.giyili, d, a),
+    ek: (a) => etki === 'ek' && kostumEtkisi(oturum.giyili, d, a) === 'ek',
+    ekOldu: (ad) => {
+      el.dataset.ek = ad;
+      oturum.kostumAnlari.push(ad);
+    },
     yerlesim: () => undefined,
     hatirlat: () => undefined,
     sonra,
@@ -269,15 +296,21 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     calisiyor = true;
     parmak.classList.remove('acik');
     const s = sonuc(d, a);
+    etki = kostumEtkisi(oturum.giyili, d, a);
+    el.dataset.kostum = etki;
+    delete el.dataset.ek;
+    delete el.dataset.saka;
     if (s.tur === 'komik') {
       adim('gag');
       el.dataset.son = `komik:${a}`;
       hedefler = [];
       await sahneKur.komik(a);
-      adim('denendi');
       oturum.olmadiSira++;
       await minoSoyle(M.olmadi[oturum.olmadiSira % M.olmadi.length]);
       sepetAc();
+      // derde uygun kostüm + yanlış alet: kostüme özel şaka; kostüm kendi aletini "arar" (sepette o alet zıplar)
+      if (etki === 'saka') await kostumSakasi();
+      adim('denendi');
       calisiyor = false;
       // sepetteki çözüm aletlerinden biri ipucu olur
       const cz = cozumAletleri(d).filter((x) => x !== a);
@@ -295,6 +328,61 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     await cozuldu(a);
   };
 
+  /**
+   * Kostüm şakası (§4a, derde uygun kostüm + yanlış alet): kostüm kendi işini yapmaya kalkar, olmaz; sonra sepetteki
+   * kendi aleti iki kez zıplar, Mino o yana bakar. Kask kendiliğinden öter, aşçı şapkası acıkıp söner, doktor aynası
+   * Mino'nun gözünü alır, hasır şapkanın çiçeği boynunu büker. Ses ve görüntü aynı anda; söz kısa.
+   */
+  const kostumSakasi = async () => {
+    const r = kostumRolu(oturum.giyili);
+    const bas = oturum.giyili.bas;
+    if (!r || !bas) return;
+    el.dataset.saka = r;
+    oturum.kostumAnlari.push(`saka:${r}`);
+    const k = mino.yerKutusu(bas, el);
+    const sapka = mino.mino.kostumResmi('bas');
+    if (r === 'itfaiye') {
+      // kask kendiliğinden öter: "vuu vuu", Mino irkilip zıplar
+      efekt(ucus, 'mg-siren', { x: k.x, y: k.y - k.h * 0.2 }, 1400);
+      for (let i = 0; i < 3; i++) window.setTimeout(() => ses.dikil(i * 2), ms(i * 300));
+      mino.mino.tepki('sasir', 1);
+      await hopla(mino.ic, 0.9, 480);
+    } else if (r === 'asci') {
+      // karın guruldar, aşçı şapkası kabarıp "pöf" diye söner
+      ses.gurul();
+      void mino.mino.ifade('saskin', 1400);
+      await oynat(sapka, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,1.16)', offset: 0.35 }, { transform: 'scale(1.18,0.7)', offset: 0.7 }, { transform: 'scale(0.96,1.04)', offset: 0.85 }, { transform: 'scale(1,1)' }], 900);
+      ses.pof();
+    } else if (r === 'doktor') {
+      // alın aynası güneşi Mino'nun gözüne yansıtır: parıltı, Mino gözlerini kırpıştırır
+      efekt(ucus, 'mg-parilti', { x: k.x + k.w * 0.1, y: k.y + k.h * 0.6 }, 900);
+      ses.parilti();
+      mino.mino.ifade('goz-kirp', 900);
+      await oynat(mino.ic, [{ transform: 'scale(1,1)' }, { transform: 'translateY(2px) scale(1.04,0.95)', offset: 0.3 }, { transform: 'scale(1,1)' }], 500);
+    } else {
+      // hasır şapkanın çiçeği boynunu büker (ayrı katman: taban pivotlu ezilme, döndürme yok)
+      const c = mino.yerKutusu('bas-bahce-cicek', el);
+      const cicek = h('img.mg-sus-cicek', { src: parcaKostum('bas-bahce-cicek').src, alt: '', style: `left:${c.x - c.w / 2}px;top:${c.y - c.h / 2}px;width:${c.w}px;height:${c.h}px` });
+      ucus.append(cicek);
+      ses.boing();
+      void mino.mino.ifade('uzgun', 1600);
+      await oynat(cicek, [{ transform: 'scale(1,1)' }, { transform: 'scale(1.08,0.55)', offset: 0.6 }, { transform: 'scale(1.06,0.6)' }], 700, { fill: 'forwards' });
+      window.setTimeout(() => cicek.remove(), ms(1600));
+    }
+    await minoSoyle(M.kostum_saka[r]);
+    // kostümün kendi aleti sepette zıplar (eldeyse zıplamaz)
+    const kendi = ALET_ADI[r] as Alet;
+    if (alet() === kendi) return;
+    const sk = kutu(sepet.resim[kendi], el);
+    const mk = kutu(mino.el, el);
+    mino.mino.bak(sk.x > mk.x + mk.w / 2 ? 1 : -1);
+    for (let i = 0; i < 2; i++) {
+      ses.pit(i + 1);
+      await hopla(sepet.resim[kendi], 0.8, 380);
+    }
+    mino.mino.bak(0);
+  };
+
   const cozuldu = async (a: Alet) => {
     adim('cozuldu');
     hedefler = [];
@@ -304,10 +392,27 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     if (!bulunan.includes(a)) bulunan.push(a);
     el.dataset.bulunan = bulunan.join(',');
     // yıldız: ekranın üstünde parlayıp küçülür (dolabın kapağındaki yıldız odada dolu görünür)
+    const tam = etki === 'tam' && kostumEtkisi(oturum.giyili, d, a) === 'tam';
     yildizRozet.classList.remove('acik');
+    yildizRozet.classList.toggle('tam', tam);
     void yildizRozet.offsetWidth;
     yildizRozet.classList.add('acik');
     if (yeni) ses.yildiz();
+    if (tam) {
+      // uygun kostüm + doğru alet: en büyük sevinç; yıldız parlak (dolapta da parlar), Mino rolünü söyler
+      el.dataset.tam = `${d}:${a}`;
+      oturum.kostumAnlari.push(`tam:${d}:${a}`);
+      tamYildizEkle(kayit, d, a);
+      kaydet();
+      const mk = kutu(mino.el, el);
+      konfeti(ucus, { x: mk.x + mk.w / 2, y: mk.y + mk.h * 0.3 }, Math.max(130, mk.w * 1.6));
+      window.setTimeout(() => ses.yildiz(), ms(260));
+      ses.alkis(8);
+      mino.mino.tepki('sevinc', 1.4);
+      void hopla(mino.ic, 1, 560);
+      void arkadas.hopla(0.8);
+      await minoSoyle(M.tam[aletRolu(a)]);
+    }
     await bekle(1200);
     const diger = digerCozum(d, a);
     if (g === '56' && diger && !bulunan.includes(diger)) {

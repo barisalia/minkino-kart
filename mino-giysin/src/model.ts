@@ -2,7 +2,10 @@
  * Mino Ne Giysin? · Yardımcı Mino: saf oyun mantığı (DOM yok; tests/unit/mino-giysin.test.ts).
  * Senaryo: ekip/senaryo/MINO-NE-GIYSIN.md (§3 kostüm, §4 dert × alet tablosu, §5 yaş farkı).
  *
- * 4 rol × 3 yer = 12 kostüm parçası. Dertte sonucu yalnız ALET belirler; her dertte 2 çözüm, 2 komik başarısızlık.
+ * 4 rol × 3 yer = 12 kostüm parçası. Çözüm mü komik başarısızlık mı, onu ALET belirler (her dertte 2 çözüm, 2 komik
+ * başarısızlık); KOSTÜM sonucun nasıl geçtiğini belirler (kostumEtkisi, senaryo §4a "Kostüm etkisi"): uygun kostüm + doğru
+ * alet = tam başarı (en büyük sevinç, parlak yıldız); yanlış / karışık kostüm + doğru alet = yine başarı, arada komik bir
+ * ek an; derde uygun kostüm + yanlış alet = komik başarısızlığa kostüme özel bir şaka eklenir. Ceza yok.
  */
 
 export const ROLLER = ['doktor', 'itfaiye', 'asci', 'bahce'] as const;
@@ -137,12 +140,37 @@ export const tamRol = (giyili: Giyili): Rol | null => {
 };
 
 /**
- * Tam takım süsü (§4 son sütun) bu çözümde çıkar mı: takım tam ve rolü bu çözümün aletinin rolüyse.
- * (Komik başarısızlıkta süs yok.)
+ * Kostümün rolü: şapka ve üst giysi aynı rolden ise o rol (aleti sonuç tablosu ayrıca değerlendirir).
+ * Yalnız şapka, yalnız üst, hiç kostüm ya da karışık şapka-üst: null ("karışık" kostüm).
  */
+export function kostumRolu(giyili: Giyili): Rol | null {
+  const b = giyili.bas;
+  const u = giyili.ust;
+  if (!b || !u) return null;
+  const r = parca(b).rol;
+  return parca(u).rol === r ? r : null;
+}
+
+/** Derde uygun roller: derdin çözüm aletlerinin rolleri (Pamuk: itfaiyeci, aşçı; Kino: doktor, aşçı; Ege: aşçı, itfaiyeci; Ada: bahçıvan, aşçı) */
+export const uygunRoller = (d: Dert): Rol[] => cozumAletleri(d).map(aletRolu);
+
+/**
+ * Kostüm etkisi (senaryo §4a):
+ * - 'tam': çözüm aleti + kostüm o aletin rolünden (itfaiyeci + merdiven) → en büyük sevinç, parlak yıldız, rol süsü
+ * - 'ek': çözüm aleti + kostüm başka rolden, karışık ya da yok → yine çözülür, arada komik bir ek an
+ * - 'saka': komik başarısızlık + kostüm derde uygun bir rolden → kostüme özel şaka (kostüm kendi aletini "arar")
+ * - 'yok': komik başarısızlık + uygun olmayan / karışık kostüm → yalnız tablodaki komik başarısızlık
+ */
+export type KostumEtkisi = 'tam' | 'ek' | 'saka' | 'yok';
+export function kostumEtkisi(giyili: Giyili, d: Dert, a: Alet): KostumEtkisi {
+  const r = kostumRolu(giyili);
+  if (SONUC[d][a].tur === 'cozum') return r === aletRolu(a) ? 'tam' : 'ek';
+  return r && uygunRoller(d).includes(r) ? 'saka' : 'yok';
+}
+
+/** Tam başarı süsü (§4 son sütun) bu çözümde çıkar mı: kostüm (şapka + üst) bu çözümün aletinin rolünden */
 export function susVar(giyili: Giyili, d: Dert, a: Alet): boolean {
-  const r = tamRol(giyili);
-  return !!r && r === aletRolu(a) && SONUC[d][a].tur === 'cozum';
+  return kostumEtkisi(giyili, d, a) === 'tam';
 }
 
 // ---------------------------------------------------------------- çözüm yıldızları
@@ -150,9 +178,23 @@ export function susVar(giyili: Giyili, d: Dert, a: Alet): boolean {
 export type YildizAnahtar = `${Dert}:${Alet}`;
 export const yildizAnahtar = (d: Dert, a: Alet): YildizAnahtar => `${d}:${a}`;
 
-/** Dolabın kapağındaki 8 yıldız (4 dert × 2 çözüm), sırası sabit; dolu olanlar kayıttan */
-export function yildizlar(kayit: { yildiz: string[] }): { dert: Dert; alet: Alet; dolu: boolean }[] {
-  return DERTLER.flatMap((dert) => cozumAletleri(dert).map((alet) => ({ dert, alet, dolu: kayit.yildiz.includes(yildizAnahtar(dert, alet)) })));
+/** Dolabın kapağındaki 8 yıldız (4 dert × 2 çözüm), sırası sabit; dolu olanlar kayıttan; tam = uygun kostümle bulundu (parlar) */
+export function yildizlar(kayit: { yildiz: string[]; tam?: string[] }): { dert: Dert; alet: Alet; dolu: boolean; tam: boolean }[] {
+  return DERTLER.flatMap((dert) =>
+    cozumAletleri(dert).map((alet) => {
+      const k = yildizAnahtar(dert, alet);
+      return { dert, alet, dolu: kayit.yildiz.includes(k), tam: !!kayit.tam?.includes(k) };
+    }),
+  );
+}
+
+/** Uygun kostümle bulunan çözüm: yıldızı parlak olur (yalnız çözümler; tekrar eklenmez). Yeniyse true. */
+export function tamYildizEkle(kayit: { tam: string[] }, d: Dert, a: Alet): boolean {
+  if (SONUC[d][a].tur !== 'cozum') return false;
+  const k = yildizAnahtar(d, a);
+  if (kayit.tam.includes(k)) return false;
+  kayit.tam.push(k);
+  return true;
 }
 
 /** Yıldızı kayda ekler (yalnız çözümler; tekrar eklenmez). Yeni yıldızsa true. */

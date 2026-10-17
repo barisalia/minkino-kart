@@ -12,7 +12,7 @@ import type { ParcaId } from './model';
 const MG = import.meta.glob<string>('../../assets/mino-giysin/**/*.{webp,svg}', { eager: true, query: '?url', import: 'default' });
 const ORTAK = import.meta.glob<string>(
   [
-    '../../assets/giysin/{oda-yatay,oda-dikey,dolap-acik-goz,esya-sepet,ayna,kapi-cerceve,kapi-kanat}.webp',
+    '../../assets/giysin/{oda-yatay,oda-dikey,dolap-acik-goz,esya-sepet,ayna,kapi-cerceve,kapi-kanat,pencere,perde-sol,perde-sag,pencere-yaz-arka,pencere-yaz-orta,pencere-yaz-on}.webp',
     '../../assets/giysin/ikon/corap.webp',
     '../../assets/film/park/{arka-uzak,arka-orta,arka-on}.webp',
     '../../assets/film/mutfak/{arka-uzak,arka-orta}.webp',

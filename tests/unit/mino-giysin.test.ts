@@ -11,13 +11,17 @@ import {
   hizliUc,
   ipucuSureleri,
   karistirmaTamam,
+  kostumEtkisi,
+  kostumRolu,
   PARCALAR,
   partiAcik,
   ROLLER,
   sapkaNereye,
   SONUC,
   susVar,
+  tamYildizEkle,
   takimAdi,
+  uygunRoller,
   tekrarSayisi,
   yasGrubu,
   yerDegistir,
@@ -88,6 +92,30 @@ describe('Mino Ne Giysin? · kostüm', () => {
     expect(susVar(itf, 'kino', 'merdiven')).toBe(false);
     expect(susVar({ ...itf, ust: 'ust-asci' }, 'pamuk', 'merdiven')).toBe(false);
   });
+  it('kostüm etkisi (§4a): uygun kostüm + doğru alet tam, yanlış kostüm ek an, uygun kostüm + yanlış alet şaka', () => {
+    expect(kostumRolu({ bas: 'bas-itfaiye', ust: 'ust-itfaiye' })).toBe('itfaiye');
+    expect(kostumRolu({ bas: 'bas-itfaiye' })).toBeNull();
+    expect(kostumRolu({ bas: 'bas-itfaiye', ust: 'ust-asci' })).toBeNull();
+    expect(uygunRoller('pamuk').sort()).toEqual(['asci', 'itfaiye']);
+    expect(uygunRoller('kino').sort()).toEqual(['asci', 'doktor']);
+    expect(uygunRoller('ada').sort()).toEqual(['asci', 'bahce']);
+    const itf = { bas: 'bas-itfaiye', ust: 'ust-itfaiye' } as const;
+    expect(kostumEtkisi(itf, 'pamuk', 'merdiven')).toBe('tam');
+    expect(kostumEtkisi(itf, 'pamuk', 'kasik')).toBe('ek');
+    expect(kostumEtkisi({ bas: 'bas-asci' }, 'pamuk', 'merdiven')).toBe('ek');
+    expect(kostumEtkisi({}, 'ege', 'merdiven')).toBe('ek');
+    expect(kostumEtkisi(itf, 'pamuk', 'sulama')).toBe('saka');
+    expect(kostumEtkisi(itf, 'kino', 'sulama')).toBe('yok');
+    expect(kostumEtkisi({ bas: 'bas-doktor', ust: 'ust-asci' }, 'kino', 'merdiven')).toBe('yok');
+    // her dertte her rolün kostümüyle 4 aletin sonucu: çözümler tam/ek, başarısızlıklar şaka/yok; şaka yalnız uygun rolde
+    for (const d of DERTLER)
+      for (const r of ROLLER)
+        for (const a of ALETLER) {
+          const e = kostumEtkisi({ bas: `bas-${r}`, ust: `ust-${r}` }, d, a);
+          if (SONUC[d][a].tur === 'cozum') expect(['tam', 'ek']).toContain(e);
+          else expect(e).toBe(uygunRoller(d).includes(r) ? 'saka' : 'yok');
+        }
+  });
   it('uçan şapka %25: arkadaş varsa kafasına, yoksa dolaba', () => {
     expect(sapkaNereye([], 0.1)).toBe('dolap');
     expect(sapkaNereye(['kino'], 0.1)).toBe('kino');
@@ -114,6 +142,13 @@ describe('Mino Ne Giysin? · yıldızlar ve oturum', () => {
     expect(yildizEkle(k, 'pamuk', 'merdiven')).toBe(true);
     expect(yildizEkle(k, 'pamuk', 'merdiven')).toBe(false);
     expect(yildizlar(k).filter((y) => y.dolu)).toHaveLength(1);
+  });
+  it('uygun kostümle bulunan çözümün yıldızı parlar', () => {
+    const k = { yildiz: ['pamuk:merdiven'], tam: [] as string[] };
+    expect(tamYildizEkle(k, 'pamuk', 'sulama')).toBe(false);
+    expect(tamYildizEkle(k, 'pamuk', 'merdiven')).toBe(true);
+    expect(tamYildizEkle(k, 'pamuk', 'merdiven')).toBe(false);
+    expect(yildizlar(k).filter((y) => y.tam).map((y) => `${y.dert}:${y.alet}`)).toEqual(['pamuk:merdiven']);
   });
   it('parti açık dertler çözülünce açılır', () => {
     expect(partiAcik(['pamuk', 'kino'], ['pamuk', 'kino'])).toBe(true);

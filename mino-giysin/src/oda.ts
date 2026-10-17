@@ -22,6 +22,7 @@ import { ayniSayac, cikar, DERTLER, ipucuSureleri, parca, parcaAleti, partiAcik,
 import { acikDertler, dertKilitli, grup, oturum, oturumuSifirla } from './oturum';
 import { gecit, partiAlkis, tavanaAt } from './parti';
 import { gorsel, ikonResmi, onYukle, parcaKostum, parcaResmi } from './resimler';
+import { pencereEl, pencereOlcu } from './pencere';
 import { SAHNELER } from './sahneler';
 import { Sepet, SEPET_BOY } from './sepet';
 import { kinoSoyle, minoSoyle, ses } from './ses';
@@ -79,6 +80,9 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
   // ------------------------------------------------------------ öğeler
   const el = h('div.mg-oda', { 'data-adim': 'acilis' });
   const zemin = h('img.mg-zemin', { alt: '', draggable: 'false' }) as HTMLImageElement;
+  // dikeyde duvarın boş üst yarısı: perdeli pencere, camda mahallenin yaz manzarası (Kino'nun odasındaki çizimler;
+  // gök ve tepeler, çit ve çalılar, ağaç). Yalnız gösterir, dokunuşu tutmaz; kaynak boyunun üstüne çizilmez.
+  const pencere = pencereEl();
   const ucus = h('div.mg-ucus', { 'aria-hidden': 'true' });
   const parmak = h('div.mg-parmak', { 'aria-hidden': 'true', html: IKON.el });
 
@@ -92,7 +96,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
   const yildizCiz = (yeni?: string) => {
     yildizKap.replaceChildren(
       ...yildizlar(kayit).map((y) =>
-        h(`span.mg-yildiz${y.dolu ? '.dolu' : ''}${yeni === `${y.dert}:${y.alet}` ? '.yeni' : ''}`, { 'data-yildiz': `${y.dert}:${y.alet}`, html: IKON.yildiz }, ...(y.dolu ? [h('img', { src: ikonResmi(`alet-${ROLLER.find((r) => parcaAleti(`alet-${r}`) === y.alet)!}` as ParcaId), alt: '' })] : [])),
+        h(`span.mg-yildiz${y.dolu ? '.dolu' : ''}${y.dolu && y.tam ? '.tam' : ''}${yeni === `${y.dert}:${y.alet}` ? '.yeni' : ''}`, { 'data-yildiz': `${y.dert}:${y.alet}`, html: IKON.yildiz }, ...(y.dolu ? [h('img', { src: ikonResmi(`alet-${ROLLER.find((r) => parcaAleti(`alet-${r}`) === y.alet)!}` as ParcaId), alt: '' })] : [])),
       ),
     );
   };
@@ -142,7 +146,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
   const bitirDugme = h('button.mg-bitir', { type: 'button' }, h('span', { html: IKON.tac }), G.yazi.bitir);
   const ust = h('div.mg-ust', {}, yuvarlakDugme(IKON.geri, 'Geri', () => app.secenekler.cikis?.(), 'mg-geri'), sesDugmesi());
 
-  el.append(zemin, dolap, ayna, kapi, arkKap, sepet.el, minoKap, dusunce, ...Object.values(balonlar), bitirDugme, ust, ucus, parmak);
+  el.append(zemin, pencere, dolap, ayna, kapi, arkKap, sepet.el, minoKap, dusunce, ...Object.values(balonlar), bitirDugme, ust, ucus, parmak);
 
   // ------------------------------------------------------------ yerleşim (px)
   let Y = {
@@ -163,6 +167,7 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
     const gv = guvenli(el);
     const dikey = H > W * 1.1;
     zemin.src = gorsel(dikey ? 'giysin/oda-dikey' : 'giysin/oda-yatay');
+    let pencereK: Kutu | null = null;
     const sol = gv.sol + 6;
     const sag = W - gv.sag - 6;
     const alt = H - gv.alt - 6;
@@ -225,6 +230,8 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
       const kapi: Kutu = { x: sag - kapiW * 0.8, y: zeminCizgi - kapiW * 2, w: kapiW, h: kapiW * 2 };
       const ayna: Kutu = { x: sol + 6, y: minoTaban - minoH * 0.95, w: 52, h: 104 };
       const cap = Math.min(66, (sag - sol) * 0.18);
+      // perdeli pencere: balonların altından Mino'nun kulaklarının arkasına kadar
+      pencereK = pencereOlcu(W / 2, gv.ust + 70 + cap + 12, minoTaban - minoH * MINO_TABAN + minoH * 0.05, (sag - sol) * 0.5);
       Y = {
         dikey,
         dolap: { x: dx, y: dy, w: d, h: d },
@@ -244,6 +251,8 @@ export function odaEkrani(app: Uygulama, param?: { gelen?: Dert }): Ekran {
       };
     }
     el.classList.toggle('dikey', Y.dikey);
+    pencere.style.display = pencereK ? '' : 'none';
+    if (pencereK) yaz(pencere, pencereK);
     yaz(dolap, Y.dolap);
     gozler.forEach((b, i) => {
       const [x0, x1] = DOLAP_SUTUN[i % 2];

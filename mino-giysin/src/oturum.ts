@@ -18,9 +18,11 @@ export interface Oturum {
   olmadiSira: number;
   /** kapıya ilk kez alet olmadan dokunuldu mu (şaka bir kez söylenir, sonra kısa tepki) */
   parti: boolean;
+  /** bu oturumda oynayan kostüm ek anları ve şakaları ('pamuk:merdiven:sapka', 'saka:itfaiye' …; §4a) */
+  kostumAnlari: string[];
 }
 
-export const oturum: Oturum = { giyili: {}, secili: null, cozulen: [], suSakasi: false, karisikSira: 0, degisimSira: 0, olmadiSira: 0, parti: false };
+export const oturum: Oturum = { giyili: {}, secili: null, cozulen: [], suSakasi: false, karisikSira: 0, degisimSira: 0, olmadiSira: 0, parti: false, kostumAnlari: [] };
 
 export function oturumuSifirla() {
   oturum.secili = null;

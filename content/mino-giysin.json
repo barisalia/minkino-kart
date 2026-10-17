@@ -41,7 +41,24 @@
     "kac_gum": "[curious] Kaç güm?",
     "parti": "[excited] Kostüm partisi!",
     "banyo_yok": "[gasps] Banyo yok!",
-    "yeter": "[sighs] Yeter ama!"
+    "yeter": "[sighs] Yeter ama!",
+    "kostum_ek": {
+      "sepet_sapka": "[giggles] Şapkam sepet oldu!",
+      "kafam_minder": "[giggles] Kafam minder oldu!",
+      "mama_asagida": "[laughs] Mama aşağıda, Pamuk!",
+      "goremiyorum": "[giggles] Göremiyorum!",
+      "gidik": "[giggles] Gıdıklanıyor musun?",
+      "sicak": "[gasps] Çok sıcakmış!",
+      "burnuma": "[gasps] Burnuma sıçradı!",
+      "sallaniyorum": "[giggles] Sallanıyorum!",
+      "kaydim": "[giggles] Hop, kaydım!"
+    },
+    "kostum_saka": {
+      "doktor": "[giggles] Ayna gözümü aldı!",
+      "itfaiye": "[giggles] Kaskım heyecanlandı!",
+      "asci": "[giggles] Şapkam acıktı!",
+      "bahce": "[sighs] Şapkamın çiçeği soldu!"
+    }
   },
   "hazir": {
     "say": ["Bir!", "İki!", "Üç!"],

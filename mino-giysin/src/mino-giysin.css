@@ -938,3 +938,130 @@ html:has(.mg-onizleme.kart) body,
   box-shadow: none !important;
   border-radius: 0 !important;
 }
+
+/* ---------------------------------------------------------------- kostüm etkisi (senaryo §4a) */
+/* uygun kostüm + doğru alet: parlak yıldız (rozet ve dolaptaki yıldız), konfeti */
+.mk-kok.mg-kok .mg-yildiz-rozet.tam {
+  width: 120px;
+  height: 120px;
+  margin-left: -60px;
+  color: #ffc21a;
+  filter: drop-shadow(0 0 10px rgba(255, 240, 160, 0.95)) drop-shadow(0 3px 0 #a86a12);
+}
+.mk-kok.mg-kok .mg-yildiz.tam {
+  color: #ffc21a;
+  filter: drop-shadow(0 0 4px rgba(255, 244, 170, 0.95));
+  animation: mg-yildiz-tam 2.4s ease-in-out infinite;
+}
+@keyframes mg-yildiz-tam {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(255, 244, 170, 0.8)); }
+  50% { filter: drop-shadow(0 0 7px rgba(255, 250, 200, 1)); }
+}
+.mk-kok.mg-kok .mg-konfeti {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--mg-kontur);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.mk-kok.mg-kok .mg-konfeti.serit {
+  width: 9px;
+  height: 20px;
+  border-radius: 4px;
+}
+/* başından ayrılan şapka (dala takılır, gözüne kayar, havalanır) */
+.mk-kok.mg-kok .mg-sapka-tut {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.mk-kok.mg-kok .mg-sapka-resim {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+}
+/* burna sıçrayan çorba damlası */
+.mk-kok.mg-kok .mg-leke {
+  width: 16px;
+  height: 12px;
+  margin: -6px 0 0 -8px;
+  border-radius: 50% 45% 55% 50%;
+  background: #e08a3c;
+  border: 1.5px solid var(--mg-kontur);
+  animation: mg-leke 1.6s ease-in forwards;
+}
+@keyframes mg-leke {
+  0% { transform: scale(0.3); opacity: 1; }
+  15% { transform: scale(1.15, 0.9); }
+  25% { transform: scale(1); }
+  80% { opacity: 1; }
+  100% { transform: translateY(6px) scale(0.9, 1.1); opacity: 0; }
+}
+
+/* dikey oda: duvarın üst yarısında perdeli pencere (camda yaz manzarası: gök, tepeler, çit, ağaç) */
+.mk-kok.mg-kok .mg-pencere {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+.mk-kok.mg-kok .mg-pencere .mg-cam {
+  position: absolute;
+  left: 20.5%;
+  right: 20.5%;
+  top: 13%;
+  bottom: 19.5%;
+  border-radius: 50% 50% 2% 2% / 32% 32% 2% 2%;
+  overflow: hidden;
+  background: #bcdcf6;
+}
+.mk-kok.mg-kok .mg-pencere .mg-manzara {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% 70%;
+}
+.mk-kok.mg-kok .mg-pencere-cerceve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* bağlı perdeler: çubuk pencerenin üstünde, kumaş çerçevenin kenarını örter (perde-sol/sag 455 × 927) */
+.mk-kok.mg-kok .mg-pencere .mg-perde {
+  position: absolute;
+  top: -3%;
+  width: 58%;
+  height: 92%;
+  object-fit: contain;
+  object-position: 50% 0;
+}
+.mk-kok.mg-kok .mg-pencere .mg-perde.sol {
+  left: -30%;
+}
+.mk-kok.mg-kok .mg-pencere .mg-perde.sag {
+  right: -30%;
+}
+
+/* dikey dert sahnesi: üstteki boşlukta sahnenin uzak katmanı (aynalı; gök ve bulutlar ya da duvar), sahnenin üst kenarı
+   ona yumuşakça karışır */
+.mk-kok.mg-kok .mg-gok {
+  position: absolute;
+  z-index: 0;
+  object-fit: cover;
+  object-position: 50% 0;
+  transform: scaleX(-1);
+  pointer-events: none;
+}
+.mk-kok.mg-kok .mg-dert.gok-var .mg-katman.k0 {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 10%);
+}
