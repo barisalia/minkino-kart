@@ -251,6 +251,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     if (S34) {
       // 3/4 masa-sandalye seti (masa-sandalye-34): iki sandalye masanın ARKASINDA, oturan kameraya bakar
       const bahceMasasi = Number(yuva) >= 4;
+      m.style.setProperty('--rs-masa-w', String(masaW(masa)));
       masa.sandalye = [0, 1].map(() => {
         const u = varlik(bahceMasasi ? 'masa/bahce-sandalye' : 'masa/sandalye');
         const s = h('div.rs-sandalye', { 'data-bahce': bahceMasasi ? '1' : undefined }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null);
@@ -270,6 +271,10 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   };
   masaYuvalari.forEach((y, i) => masaKur(y, i));
 
+  /** 3/4 masa eni (boy birimi): bahçede dar demir masa */
+  function masaW(m: Masa) {
+    return Number(m.yuva) >= 4 ? MASA34.bahceW : MASA34.w;
+  }
   /** 3/4 masa resmi: örtüye göre (masa-sandalye-34; bahçede demir masa) */
   function masaResmi34(masa: Masa) {
     const ortu = kayit.ortu ? `masa/masa-${kayit.ortu}` : null;
@@ -367,7 +372,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       if (m.oturan && m.oturan.durum !== 'yuruyor' && m.oturan.durum !== 'gidiyor') oturuYerlestir(m.oturan);
     });
     if (S34) {
-      grafik = grafikKur(Y34, yon, masalar.map((m) => m.yer), bahceAcik);
+      grafik = grafikKur(Y34, yon, masalar.map((m) => ({ ...m.yer, w: masaW(m) })), bahceAcik);
       halilariCiz(arka, masalar.map((m) => m.yer), yon);
       sira?.yerlestir();
       for (const m of masalar) if (m.oturan?.balon) balonYerlestir(m.oturan.balon, m.oturan.kisi.el, sahne, m.oturan.kisi.olcu);
@@ -483,7 +488,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   /** masanın yanı (Kino'nun durduğu yer) */
   const masaYani = (m: Masa): Yer => {
     // masanın yarı eni + Kino'nun yarısı (u), sahnenin yüzdesi olarak: Kino masanın önüne değil yanına durur
-    if (S34) return masaYaniYeri(m.yer, yon);
+    if (S34) return masaYaniYeri({ ...m.yer, w: masaW(m) }, yon, grafik?.engel);
     const dx = olcu ? ((MASA_W / 2 + 0.45) * olcu.u * 100) / olcu.sahne.w : 12;
     return { x: m.yer.x + (m.yer.x > 50 ? -dx : dx), y: m.yer.y - 1 };
   };
@@ -1219,7 +1224,9 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       const ara = !bekleyen.length && bosMasa ? (TEST_MODU ? 100 : 1600) : aralik();
       const sonraki34 = siradaki > 0 && simdi - sonGelis > ara;
       const sinir = SIRA_TEST_SINIR ?? KAPASITE;
-      if (siradaki < plan.musteriler.length && bekleyen.length < sinir && (ilk34 || sonraki34)) {
+      // test modu (eski testlerle uyumlu): eski sahnedeki gibi aynı anda en çok plan.ayniAnda müşteri, boş masa varken
+      const eskiGibi = SIRA_TEST_SINIR !== null ? masadaki() < plan.ayniAnda && bosMasa : true;
+      if (siradaki < plan.musteriler.length && bekleyen.length < sinir && eskiGibi && (ilk34 || sonraki34)) {
         sonGelis = simdi;
         void musteriGetir();
       }

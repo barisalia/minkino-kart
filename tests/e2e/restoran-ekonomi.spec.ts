@@ -172,12 +172,15 @@ test.describe('Lokanta büyüme: 5 gün', () => {
     // Gün 5: bahçe masaları ve kayma
     await menuSec(page);
     expect((await gunK(page))!.masaYuvalari).toEqual(expect.arrayContaining(['4', '5']));
-    await page.locator('.rs-bahce-gec').click();
-    await expect.poll(async () => (await gunK(page))?.bahcede).toBe(true);
+    // 3/4 sahnede bahçe aynı resmin bahçeli sürümü (kaydırma yok); eski sahnede kayarak geçilir
+    const s34 = (await page.locator('.rs-lokanta[data-s34]').count()) > 0;
+    if (s34) expect((await gunK(page) as unknown as { bahceAcik: boolean }).bahceAcik).toBe(true);
+    else await page.locator('.rs-bahce-gec').click();
+    if (!s34) await expect.poll(async () => (await gunK(page))?.bahcede).toBe(true);
     await page.waitForTimeout(300);
     expect(await buyutulen(page)).toEqual([]);
     await page.screenshot({ path: 'tests/screens/restoran-p4-844x390-bahce.png' });
-    await page.locator('.rs-bahce-gec').click();
+    if (!s34) await page.locator('.rs-bahce-gec').click();
     await defterdenAl(page, 'sus');
     const k = await kayit(page);
     expect(k.gun).toBe(5);

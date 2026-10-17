@@ -63,9 +63,9 @@ export function mesafe(a: Yer, b: Yer, yon: Yon = 'yatay'): number {
 // ---------------------------------------------------------------- masa geometrisi
 
 /** Masanın zemindeki izdüşümü (engel): ayak çizgisinden yukarı MASA34.derinlik, en MASA34.w (yüzde) */
-export function masaEngeli(m: Yer, yon: Yon): Kutu {
+export function masaEngeli(m: Yer & { w?: number }, yon: Yon): Kutu {
   const b = birimYuzde(yon);
-  const w = MASA34.w * b.x * 0.9;
+  const w = (m.w ?? MASA34.w) * b.x * 0.9;
   const d = MASA34.derinlik * b.y;
   return { x: m.x - w / 2, y: m.y - d, w, h: d };
 }
@@ -75,14 +75,20 @@ export function sandalyeYeri(m: Yer, yon: Yon, kac: 1 | 2 = 1, sira: 0 | 1 = 0):
   const dx = kac === 2 ? (sira ? 1 : -1) * MASA34.ikiliAra * 0.5 * b.x * 1.6 : 0;
   return { x: m.x + dx, y: m.y - MASA34.sandalyeGeri * b.y - MASA34.derinlik * b.y * 0.55 };
 }
-/** Kino'nun masanın yanında durduğu yer (masanın yanı, aynı derinlik) */
-export function masaYaniYeri(m: Yer, yon: Yon): Yer {
+/**
+ * Kino'nun masada durduğu yer: masanın yanı (aynı derinlik; önce salonun ortasına bakan yan, sonra öbür yan), olmazsa
+ * masanın önü (Kino önde çizilir). Dikeyde ve dar bahçe masalarında önü. engel verilirse engelin içine düşen aday atlanır.
+ */
+export function masaYaniYeri(m: Yer & { w?: number }, yon: Yon, engel: Kutu[] = []): Yer {
   const b = birimYuzde(yon);
+  const mw = m.w ?? MASA34.w;
   const ic = m.x > (yon === 'yatay' ? 34 : 58) ? -1 : 1;
-  // dikeyde masalar ekranın üçte biri kadar geniş: Kino yanına değil, ön köşesine durur (önünde çizilir)
-  if (yon === 'dikey') return { x: m.x + ic * (MASA34.w / 2) * 0.62 * b.x, y: m.y + 0.35 * b.y };
-  const dx = (MASA34.w / 2 + 0.55) * b.x;
-  return { x: m.x + ic * dx, y: m.y - MASA34.derinlik * b.y * 0.5 };
+  const on = { x: m.x + ic * (mw / 2) * 0.62 * b.x, y: m.y + 0.35 * b.y };
+  if (yon === 'dikey' || mw < MASA34.w) return on;
+  const dx = (mw / 2 + 0.55) * b.x;
+  const y = m.y - MASA34.derinlik * b.y * 0.5;
+  const adaylar = [{ x: m.x + ic * dx, y }, { x: m.x - ic * dx, y }, on];
+  return adaylar.find((p) => p.x > 1 && p.x < 99 && !engel.some((k) => kutudaMi(p, k))) ?? on;
 }
 
 // ---------------------------------------------------------------- yol grafiği
@@ -103,14 +109,14 @@ export function gorur(a: Yer, b: Yer, engel: Kutu[]): boolean {
  * Grafiği kurar: YERLESIM34.yol + kapı, sıra, yolun başı, servis (Kino), bahçe kapısı. Engeller: sabit engeller +
  * masa izdüşümleri (salon masaları; bahçe açıksa bahçe masaları ve çitin kapısı açık).
  */
-export function grafikKur(Y: Yerlesim34, yon: Yon, masalar: Yer[], bahce: boolean): YolGrafigi {
+export function grafikKur(Y: Yerlesim34, yon: Yon, masalar: (Yer & { w?: number })[], bahce: boolean): YolGrafigi {
   const dugum: Record<string, Yer> = { ...Y.yol, kino: Y.kino, kapi: Y.bekleme };
   Y.sira.forEach((s, i) => (dugum[`sira${i}`] = s));
   Y.yolBasi.forEach((s, i) => (dugum[`yolBasi${i}`] = s));
   dugum.giris = Y.giris;
   if (!bahce) for (const k of Object.keys(dugum)) if (k.startsWith('bahce')) delete dugum[k];
   // bahçe kapalıyken çit kapısı da kapalı (engel)
-  const engel = [...Y.engel, ...(bahce ? [] : [{ x: Y.bahceKapisi.x - 1.2, y: Y.bahceKapisi.y - 6, w: 2.4, h: 12 }]), ...masalar.map((m) => masaEngeli(m, yon))];
+  const engel = [...Y.engel, ...(bahce ? [] : [yon === 'yatay' ? { x: Y.bahceKapisi.x - 1.2, y: Y.bahceKapisi.y - 9, w: 2.4, h: 15 } : { x: Y.bahceKapisi.x - 6, y: Y.bahceKapisi.y - 1.5, w: 12, h: 3 }]), ...masalar.map((m) => masaEngeli(m, yon))];
   const kenar = new Map<string, Set<string>>();
   const adlar = Object.keys(dugum);
   for (const a of adlar) kenar.set(a, new Set());

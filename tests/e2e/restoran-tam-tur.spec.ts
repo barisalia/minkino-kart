@@ -15,6 +15,8 @@ interface Durum {
   acik: boolean;
   menu: string[];
   bahcede: boolean;
+  /** P8 3/4 sahne: bahçe aynı resimde, kaydırma yok */
+  s34?: boolean;
   bekleyen: string | null;
   hazir: number;
   istasyon: boolean;
@@ -95,7 +97,7 @@ async function gunAc(page: Page, s: { tarif: string; acilan: string; musteri?: s
 async function gir(page: Page, ist: string, oyun: string) {
   const d = (await D(page))!;
   const bahceIst = ist === 'mangal';
-  if (bahceIst !== d.bahcede) {
+  if (!d.s34 && bahceIst !== d.bahcede) {
     await page.locator('.rs-bahce-gec').click();
     await page.waitForTimeout(500);
   }
@@ -114,7 +116,7 @@ async function tepsi(page: Page) {
 }
 /** Hazır tabak Kino'ya: masaya taşır, müşteri yer, tepki */
 async function servis(page: Page, musteri = 'bulut') {
-  if ((await D(page))!.bahcede) {
+  if (!(await D(page))!.s34 && (await D(page))!.bahcede) {
     await page.locator('.rs-bahce-gec').click();
     await page.waitForTimeout(500);
   }
@@ -471,7 +473,7 @@ test.describe('P6 · gizli sürprizler ve lavabo (yatay 844×390, 3-4)', () => {
     await surprizVar(page, 'isli');
     await page.locator('.rs-ist-geri').click();
     await expect.poll(async () => (await D(page))?.istasyon).toBe(false);
-    if ((await D(page))!.bahcede) await page.locator('.rs-bahce-gec').click();
+    if (!(await D(page))!.s34 && (await D(page))!.bahcede) await page.locator('.rs-bahce-gec').click();
     await page.waitForTimeout(500);
     await expect(page.locator('.rs-kino .rs-sp-is')).toHaveCount(1);
     await page.screenshot({ path: 'tests/screens/restoran-surpriz-isli-kino.png' });
@@ -601,7 +603,8 @@ test.describe('P6 · son netlik denetimi (dört telefon boyu, DPR 3)', () => {
       const b = await buyutulen(page);
       if (b.length) sorun.push(`lokanta: ${JSON.stringify(b)}`);
       await page.screenshot({ path: `tests/screens/restoran-netlik-${vp.w}x${vp.h}.png` });
-      await page.locator('.rs-bahce-gec').click();
+      // 3/4 sahnede bahçe aynı resimde (kaydırma yok)
+      if (!(await page.locator('.rs-lokanta[data-s34]').count())) await page.locator('.rs-bahce-gec').click();
       await page.waitForTimeout(800);
       const bb = await buyutulen(page);
       if (bb.length) sorun.push(`bahce: ${JSON.stringify(bb)}`);

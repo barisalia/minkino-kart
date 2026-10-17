@@ -85,6 +85,8 @@ for (const boy of BOYLAR) {
       else expect(o.sahne.y + o.sahne.h).toBeLessThanOrEqual(o.hud.y + 0.5);
       expect(o.enUzun).toBeLessThanOrEqual(0.265);
       expect(o.toplam).toBeLessThanOrEqual(0.18);
+      // yüz ≥ 22 css (667×375'te resim HUD yüzünden küçülür: orada ≥ 17; ORTAK_NOTLAR)
+      expect(o.enKucukYuz).toBeGreaterThanOrEqual(boy.width === 667 ? 17 : 21.5);
       for (const d of o.dugmeler) {
         expect(d.w, d.ad).toBeGreaterThanOrEqual(55.5);
         expect(d.h, d.ad).toBeGreaterThanOrEqual(55.5);

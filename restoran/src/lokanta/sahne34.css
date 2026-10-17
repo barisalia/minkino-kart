@@ -67,12 +67,12 @@
 [data-yon='dikey'] .rs-d34-agac { width: 18%; height: 10%; }
 
 /* ---------------------------------------------------------------- masa, sandalye (3/4; masa-sandalye-34 çizimi) */
-[data-s34] .rs-masa { width: calc(var(--rs-u) * var(--rs-masa-w, 2.5)); height: calc(var(--rs-u) * var(--rs-masa-h, 1.35)); }
+[data-s34] .rs-masa { width: calc(var(--rs-u) * var(--rs-masa-w, 2.5)); height: calc(var(--rs-u) * var(--rs-masa-h, 1.15)); }
 [data-s34] .rs-masa > img.rs-masa-resim { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; pointer-events: none; }
 [data-s34] .rs-masa:has(> img.rs-masa-resim) .rs-masa-govde { display: none; }
 /* yer tutucu 3/4 masa: üst yüz (elips), ön yüz ve iki bacak */
-[data-s34] .rs-masa-govde::before { top: 8%; height: 46%; border-radius: 50%; background: #d39a5e; box-shadow: inset 0 0 0 3px var(--rs-kahve), inset 0 -6px 0 #b9783f; }
-[data-s34] .rs-masa-govde::after { top: 38%; left: 10%; right: 10%; bottom: 0; background: linear-gradient(#b9783f 0 26%, transparent 26%), linear-gradient(90deg, #a96b39 0 9%, transparent 9% 91%, #a96b39 91%); border-radius: 0 0 6px 6px; }
+[data-s34] .rs-masa-govde::before { top: 4%; height: 40%; border-radius: 50%; background: #d39a5e; box-shadow: inset 0 0 0 3px var(--rs-kahve), inset 0 -6px 0 #b9783f; }
+[data-s34] .rs-masa-govde::after { top: 34%; left: 10%; right: 10%; bottom: 0; background: linear-gradient(#b9783f 0 26%, transparent 26%), linear-gradient(90deg, #a96b39 0 9%, transparent 9% 91%, #a96b39 91%); border-radius: 0 0 6px 6px; }
 [data-s34] .rs-masa[data-ortu='kareli'] .rs-masa-govde::before { background: repeating-conic-gradient(#e8483a 0 25%, #fff 0 50%) 0 0 / 14px 14px; height: 52%; }
 [data-s34] .rs-masa[data-ortu='cicekli'] .rs-masa-govde::before { background: radial-gradient(circle, #fff 0 22%, transparent 24%) 0 0 / 16px 16px, #7fb6e8; height: 52%; }
 [data-s34] .rs-masa[data-ortu='puantiyeli'] .rs-masa-govde::before { background: radial-gradient(circle, #fff 0 20%, transparent 22%) 0 0 / 12px 12px, #f2c14e; height: 52%; }

@@ -70,7 +70,7 @@ describe('YERLESIM34 tablo sınırları', () => {
       }
     });
     it(`${yon}: masalar birbirine ve engellere binmez; sandalye ve masa yanı açıkta`, () => {
-      const hepsi = [...Y.masalar, ...Y.bahce.masalar];
+      const hepsi = [...Y.masalar, ...Y.bahce.masalar.map((m) => ({ ...m, w: MASA34.bahceW }))];
       const eng = hepsi.map((m) => masaEngeli(m, yon));
       for (let i = 0; i < eng.length; i++)
         for (let j = i + 1; j < eng.length; j++) {
@@ -81,7 +81,7 @@ describe('YERLESIM34 tablo sınırları', () => {
         }
       const sabit = Y.engel;
       for (const m of hepsi) {
-        for (const p of [sandalyeYeri(m, yon, 2, 0), sandalyeYeri(m, yon, 2, 1), masaYaniYeri(m, yon)]) {
+        for (const p of [sandalyeYeri(m, yon, 2, 0), sandalyeYeri(m, yon, 2, 1), masaYaniYeri(m, yon, [...sabit, ...eng])]) {
           for (const k of [...sabit, ...eng]) expect(kutudaMi(p, k), `${JSON.stringify(p)} engelde`).toBe(false);
         }
       }
@@ -94,14 +94,14 @@ describe('yol grafiği: her hedefe yol var, hiçbir adım engelden geçmez', () 
     for (const bahce of [false, true]) {
       it(`${yon}${bahce ? ' bahçeli' : ''}`, () => {
         const Y = YERLESIM34[yon];
-        const masalar = bahce ? [...Y.masalar, ...Y.bahce.masalar] : Y.masalar;
+        const masalar = bahce ? [...Y.masalar, ...Y.bahce.masalar.map((m) => ({ ...m, w: MASA34.bahceW }))] : Y.masalar;
         const g = grafikKur(Y, yon, masalar, bahce);
         const hedefler: Yer[] = [
           Y.kino,
           ...Y.sira,
           ...Y.yolBasi,
           Y.giris,
-          ...masalar.flatMap((m) => [sandalyeYeri(m, yon, 2, 0), sandalyeYeri(m, yon, 2, 1), masaYaniYeri(m, yon)]),
+          ...masalar.flatMap((m) => [sandalyeYeri(m, yon, 2, 0), sandalyeYeri(m, yon, 2, 1), masaYaniYeri(m, yon, g.engel)]),
         ];
         const baslar: Yer[] = [Y.giris, Y.kino, ...Y.sira];
         for (const a of baslar)
@@ -120,9 +120,9 @@ describe('yol grafiği: her hedefe yol var, hiçbir adım engelden geçmez', () 
   it('bahçe kapalıyken bahçeye yol yok (kapı kapalı), açıkken var', () => {
     const Y = YERLESIM34.yatay;
     const kapali = grafikKur(Y, 'yatay', Y.masalar, false);
-    expect(gorur(Y.yol.sagOrta, Y.yol.bahceGiris, kapali.engel)).toBe(false);
-    const acik = grafikKur(Y, 'yatay', [...Y.masalar, ...Y.bahce.masalar], true);
-    expect(gorur(Y.yol.sagOrta, Y.yol.bahceGiris, acik.engel)).toBe(true);
+    expect(gorur(Y.yol.sagUst, Y.yol.bahceGiris, kapali.engel)).toBe(false);
+    const acik = grafikKur(Y, 'yatay', [...Y.masalar, ...Y.bahce.masalar.map((m) => ({ ...m, w: MASA34.bahceW }))], true);
+    expect(gorur(Y.yol.sagUst, Y.yol.bahceGiris, acik.engel)).toBe(true);
   });
 });
 

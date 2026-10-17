@@ -160,7 +160,7 @@ export const YERLESIM: Record<Yon, Yerlesim> = {
  *  - Boy birimi (Mino = 1): yatayda RESMİN yüksekliğinin %11'i, dikeyde resmin genişliğinin %13'ü. Karakterler resme
  *    göre ölçeklenir (masa, sandalye, kapı çizimde; her cihazda aynı oranda kalsınlar).
  *  - En uzun ayakta karakter (Baba 2,36) resim yüksekliğinin ≤ %26'sı, toplam karakter alanı ≤ %18 (e2e ölçer).
- *  - Küçük karakterler en az ENAZ_BOY34 boyunda (Kino 0,74 → 0,95): bu ölçekte Kino'nun yüzü ~16 css px kalıyordu
+ *  - Küçük karakterler en az ENAZ_BOY34 boyunda (Kino 0,74 / Lokum 0,95 → 1,1): bu ölçekte Kino'nun yüzü ~16 css px kalıyordu
  *    (yüz ≥ 22 css kuralı, §7b). Yetişkinler değişmez.
  * Yerler resmin yüzdesi; çizim gelince yalnız YERLESIM34 satırları ölçülüp düzeltilir.
  */
@@ -170,7 +170,7 @@ export const SAHNE34 = {
   oran: { yatay: 2752 / 1536, dikey: 1536 / 2752 },
   sinir: { enUzun: 0.26, toplamAlan: 0.18, yuz: 22 },
 } as const;
-export const ENAZ_BOY34 = 0.95;
+export const ENAZ_BOY34 = 1.1;
 
 export interface Kutu {
   x: number;
@@ -215,10 +215,13 @@ export function birimYuzde(yon: Yon): { x: number; y: number } {
 export const MASA34 = {
   /** masanın eni ve sprite yüksekliği */
   w: 2.5,
-  h: 1.35,
-  /** masa üstünün ortası (oturanın ön kolları) ve üst yüzün ön kenarının altı (oturan buradan aşağı görünmez) */
-  ustOrta: 1.2,
-  kesik: 0.72,
+  /** bahçe masası (beyaz demir, iki kişilik ama dar: terasın iki yeri yan yana) */
+  bahceW: 1.75,
+  h: 1.15,
+  /** oturanın ön kolları: masa üstünün ARKA kenarının hemen üstü (gövdesi masanın üstünden görünür; kısalar yükseltilmiş
+   *  sandalyede) ve üst yüzün ön kenarının altı (oturan buradan aşağı kırpılır, bacaklar asla görünmez) */
+  ustOrta: 1.1,
+  kesik: 0.6,
   /** sandalye: masanın ayak çizgisinden ne kadar geride (yukarıda), eni, boyu; iki kişilikte yanlara açılır */
   sandalyeGeri: 0.32,
   sandalyeW: 1.0,
@@ -262,84 +265,101 @@ export interface Yerlesim34 extends Yerlesim {
  * GEMINI ÇİZİMİ GELİNCE ÖLÇÜLÜR (şimdilik yer tutucu dioramanın yerleri; restoran/src/lokanta/sahne34.css).
  */
 export const YERLESIM34: Record<Yon, Yerlesim34> = {
+  // Gemini #65 lokanta-34-yatay (2026-10-17) üstünde ölçüldü: yüzer diorama (çevresi krem), arka duvarda mutfak
+  // (lavabo x 13,4-22,6, kesme tezgâhı 22,6-33, ocak 33-41,5 + bakır davlumbaz, mermer 41,5-54,3; tezgâh önü y 46,5),
+  // servis penceresi x 55,3-65 / y 17-35 (zil 62/31), iki mandal ipi (x 22,5-33,5 ve 41-54,5; y 8,5), ön solda cam kapı
+  // (açık kanat x 10,5-17 / y 54-86; eşik 13,5/85), pirinç kasa kutunun üstünde (x 19,9-29,1 / y 68,6-88,5), taş yol
+  // kapıdan sol alt köşeye (11,6/84,6 → 0/100), dört halı (masa yeri) merkez 24,7/58,2 · 54/58,2 · 35,9/78,7 · 54/78,7;
+  // zeminin ön kenarı y 88,5. Bahçe x 66-99: solda çalı + çit (y 54'ten aşağı), arkada ahşap teras x 67,5-89 / y 39,6-56,3
+  // (iki boş yer 74/46,5 ve 82,8/47), çardak, çeşme x 77-86,5 / y 61,5-74, sol altta çiçekler, ön çitte kapı x 77,6-85.
   yatay: {
-    kapi: { x: 4.5, y: 63 },
-    bekleme: { x: 6.5, y: 76 },
+    kapi: { x: 13.5, y: 85 },
+    bekleme: { x: 11.8, y: 87.5 },
     masalar: [
-      { x: 25, y: 60 },
-      { x: 44, y: 60 },
-      { x: 25, y: 86 },
-      { x: 44, y: 86 },
+      { x: 24.7, y: 59.8 },
+      { x: 54, y: 59.8 },
+      { x: 36.5, y: 80.5 },
+      { x: 54, y: 80.5 },
     ],
     istasyon: {
-      lavabo: { x: 6.5, y: 15, w: 8, h: 21 },
-      tezgah: { x: 14.5, y: 15, w: 8.5, h: 21 },
-      ocak: { x: 23, y: 11, w: 9.5, h: 25 },
-      mermer: { x: 38.5, y: 15, w: 7.5, h: 21 },
-      servis: { x: 46, y: 9, w: 8, h: 27 },
+      lavabo: { x: 13.3, y: 29, w: 9.3, h: 17.5 },
+      tezgah: { x: 22.6, y: 29, w: 10.4, h: 17.5 },
+      ocak: { x: 33, y: 27, w: 8.5, h: 19.5 },
+      mermer: { x: 41.5, y: 31, w: 12.8, h: 15.5 },
+      servis: { x: 55.3, y: 17, w: 10, h: 17 },
     },
-    kino: { x: 50, y: 45 },
+    kino: { x: 64.5, y: 50 },
     ip: [
-      { x: 7, y: 4.5 },
-      { x: 45, y: 4.5 },
+      { x: 22.5, y: 8.5 },
+      { x: 54.5, y: 8.5 },
     ],
-    kasa: { x: 7.5, y: 44, w: 6.5, h: 12 },
-    pencere: { x: 45, y: 29, w: 10, h: 7 },
+    kasa: { x: 19.9, y: 68.6, w: 9.2, h: 19.9 },
+    pencere: { x: 55.5, y: 27, w: 9.5, h: 7 },
     sira: [
-      { x: 6.5, y: 76 },
-      { x: 10.5, y: 86 },
-      { x: 16, y: 94.5 },
+      { x: 11.8, y: 87.5 },
+      { x: 8.4, y: 92.8 },
+      { x: 4.8, y: 97.5 },
     ],
     yolBasi: [
-      { x: 4, y: 98.5 },
+      { x: 16.5, y: 98.5 },
       { x: 22.5, y: 99.5 },
     ],
-    giris: { x: -6, y: 104 },
-    bahceKapisi: { x: 57, y: 70 },
+    giris: { x: -5, y: 104 },
+    bahceKapisi: { x: 67, y: 47 },
     bahce: {
       masalar: [
-        { x: 71, y: 62 },
-        { x: 87, y: 86 },
+        { x: 73.2, y: 49.3 },
+        { x: 84.3, y: 49.3 },
       ],
-      mangal: { x: 87, y: 30, w: 9, h: 17 },
+      mangal: { x: 68.5, y: 55.5, w: 7.5, h: 12 },
     },
     sus: {
-      'tavan-1': { x: 25, y: 1 },
-      'tavan-2': { x: 40, y: 1 },
-      'duvar-1': { x: 35.5, y: 4 },
-      'duvar-2': { x: 2.5, y: 9 },
-      'zemin-1': { x: 52.5, y: 54 },
-      'zemin-2': { x: 34.5, y: 98 },
-      'zemin-3': { x: 15, y: 68 },
+      'tavan-1': { x: 40, y: 1.5 },
+      'tavan-2': { x: 58, y: 1.5 },
+      'duvar-1': { x: 48, y: 13.5 },
+      'duvar-2': { x: 17, y: 3 },
+      'zemin-1': { x: 63.5, y: 87 },
+      'zemin-2': { x: 15.5, y: 52.5 },
+      'zemin-3': { x: 45.5, y: 88 },
     },
     alet: [
-      { x: 0.8, y: 15, w: 5.5, h: 21 },
-      { x: 32.5, y: 15, w: 6, h: 21 },
+      { x: 55.5, y: 33.5, w: 4.8, h: 12 },
+      { x: 12.5, y: 40, w: 5.5, h: 12 },
     ],
-    mino: { x: 36, y: 41 },
-    babaanne: { x: 34, y: 72 },
-    pano: { x: 15, y: 3.5, w: 7, h: 9 },
-    foto: { x: 47.5, y: 3, w: 4.5, h: 7 },
+    mino: { x: 47, y: 46 },
+    babaanne: { x: 45, y: 70 },
+    pano: { x: 6.5, y: 9, w: 5.5, h: 10 },
+    foto: { x: 49, y: 13.5, w: 4, h: 7 },
     yol: {
-      kapiIc: { x: 10, y: 66 },
-      solOrta: { x: 14.5, y: 73 },
-      orta: { x: 34.5, y: 73 },
-      sagOrta: { x: 52.5, y: 73 },
-      solUst: { x: 14.5, y: 46 },
-      ortaUst: { x: 34.5, y: 46 },
-      sagUst: { x: 52.5, y: 47 },
-      ortaAlt: { x: 34.5, y: 97 },
-      sagAlt: { x: 53, y: 97 },
-      bahceGiris: { x: 60, y: 73 },
-      bahceUst: { x: 62, y: 50 },
-      bahceAlt: { x: 64, y: 96 },
-      bahceSag: { x: 96, y: 72 },
+      kapiIc: { x: 18, y: 84 },
+      solOrta: { x: 18.5, y: 67 },
+      orta: { x: 45, y: 67 },
+      sagOrta: { x: 63.5, y: 67 },
+      solUst: { x: 16, y: 50 },
+      ortaUst: { x: 39.5, y: 50 },
+      sagUst: { x: 63.5, y: 50 },
+      ortaAlt: { x: 45, y: 86 },
+      sagAlt: { x: 63.5, y: 86 },
+      bahceGiris: { x: 67, y: 47 },
+      bahceArka: { x: 67.5, y: 41.5 },
+      bahceUst: { x: 72, y: 58 },
+      bahceAlt: { x: 76, y: 76 },
+      bahceSag: { x: 88, y: 60 },
     },
     engel: [
-      { x: 0, y: 0, w: 55, h: 40 },
-      { x: 55, y: 0, w: 1.2, h: 66 },
-      { x: 55, y: 75, w: 1.2, h: 25 },
-      { x: 62, y: 20, w: 9, h: 14 },
+      // mutfak (arka duvar ve tezgâh), sol duvar (pencereler), açık kapı kanadı, kasa kutusu
+      { x: 0, y: 0, w: 66, h: 46 },
+      { x: 0, y: 40, w: 9.5, h: 48 },
+      { x: 10.5, y: 55, w: 6, h: 28 },
+      { x: 20, y: 76, w: 9, h: 12.5 },
+      // bahçe: çit (arkası ve solu; terasa geçit y 41-53), çeşme, çiçekler, ağaç gövdeleri, çiçek kutusu, ön çit
+      { x: 66, y: 0, w: 34, h: 39 },
+      { x: 65.5, y: 53, w: 3, h: 37 },
+      { x: 77.5, y: 62.5, w: 8.5, h: 11 },
+      { x: 66.5, y: 69, w: 8.5, h: 11 },
+      { x: 89.5, y: 45, w: 5.5, h: 10.5 },
+      { x: 92.5, y: 70, w: 3, h: 12 },
+      { x: 66, y: 79, w: 34, h: 3 },
     ],
   },
   dikey: {
