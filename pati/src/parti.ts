@@ -13,7 +13,8 @@ import { ses } from './sesler';
 import { adres, pozAdresi, pozVar } from './varliklar';
 import { dansTepkisi, MUZIK, type Muzik } from './ziyaret-sahneleri';
 
-const ORDEK = import.meta.glob<string>('../../assets/hayvanlar/ordek.webp', { eager: true, query: '?url', import: 'default' })['../../assets/hayvanlar/ordek.webp'];
+/** Komik müzik düğmesi: Banyo'nun lastik ördeği (onaylı çizim; eski Recraft ördek resmi yerine) */
+const ORDEK = import.meta.glob<string>('../../assets/banyo/ordek.webp', { eager: true, query: '?url', import: 'default' })['../../assets/banyo/ordek.webp'];
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, sure(ms)));
 
 export interface PartiOrtam {

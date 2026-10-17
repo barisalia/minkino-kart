@@ -38,7 +38,7 @@ import {
 import { jetonlaOde, type OdemeOrtam } from './odeme';
 import { ses } from './sesler';
 import { cekmeceAcik } from './tercih';
-import { adres, ETIKET, hayvanGorseliVar, PERDE, pozAdresi, susResmi } from './varliklar';
+import { adres, dolapEtiketi, dolapResmi, ETIKET, hayvanGorseliVar, PERDE, pozAdresi, susResmi } from './varliklar';
 
 const bekle = (ms: number) => new Promise<void>((r) => setTimeout(r, sure(ms)));
 export type Sekme = 'yavru' | 'esya' | 'sus';
@@ -84,7 +84,7 @@ export class Magaza {
       });
       return b;
     };
-    this.sekmeler = h('div.pt-mg-sekmeler', {}, sekmeDugme('yavru', pozAdresi('findik', 'bos').url), sekmeDugme('esya', adres('esya-top', 'esya-tuy-degnek')), sekmeDugme('sus', PERDE ?? susResmi('saksi', 'elektrik/saksi')));
+    this.sekmeler = h('div.pt-mg-sekmeler', {}, sekmeDugme('yavru', pozAdresi('findik', 'bos').url), sekmeDugme('esya', adres('esya-top', 'esya-tuy-degnek')), sekmeDugme('sus', Object.keys(KOSELER).length > 1 ? (PERDE ?? susResmi('saksi', 'elektrik/saksi')) : susResmi('saksi', 'elektrik/saksi')));
     this.alt = h('div.pt-mg-alt');
     this.izgara = h('div.pt-mg-izgara');
     this.kart = h('div.pt-mg-kart', {}, this.sekmeler, this.alt, this.izgara);
@@ -111,6 +111,10 @@ export class Magaza {
   }
 
   private goster(s: Sekme, odak?: string) {
+    // bütün yavrular alındıysa (yayın kapsamında 3 yavru) Yavrular sekmesi boş kalmaz: gizlenir
+    const yavruYok = !this.yavrular().length;
+    this.sekmeler.querySelector<HTMLElement>('[data-sekme="yavru"]')!.style.display = yavruYok ? 'none' : '';
+    if (s === 'yavru' && yavruYok) s = 'esya';
     this.sekme = s;
     this.el.dataset.sekme = s;
     for (const b of this.sekmeler.children) b.classList.toggle('secili', (b as HTMLElement).dataset.sekme === s);
@@ -196,7 +200,8 @@ export class Magaza {
       // 3-4: önce çekmecenin kendisi
       const f = temizlikFiyati(yas);
       kartlar.push(
-        this.kalem('cekmece-temizlik', null, f, dolapEl('temizlik'), (kart, et) =>
+        // resmi: çekmece önü (ui-dolap) ya da temizlik çekmecesinin etiketi (fırça); boş yer tutucu kart yok
+        this.kalem('cekmece-temizlik', dolapResmi('temizlik') ?? dolapEtiketi('temizlik'), f, null, (kart, et) =>
           void this.ode(kart, et!, f, () => {
             if (k.jeton < f) return false;
             k.jeton -= f;

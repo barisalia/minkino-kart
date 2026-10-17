@@ -9,7 +9,7 @@ import type { Efekt } from '../../kino-otobus/src/efekt';
 import { BUYUK_JETON as BUYUK, doluYuvalar, etiketYuvalari, jetonParcalari } from './ekonomi';
 import { esyaBilgi, type CekmeceAdi, type MinderRenk, type Yas } from './katalog';
 import { ses } from './sesler';
-import { BUYUK_JETON, dolapResmi, esyaResmi, ISIM_TABELASI, JETON, KALP_BOS, KALP_DOLU, KUMBARA, MINDER_BEYAZ, MINDER_YEDEK } from './varliklar';
+import { BUYUK_JETON, dolapEtiketi, dolapResmi, esyaResmi, ISIM_TABELASI, JETON, KALP_BOS, KALP_DOLU, KUMBARA, MINDER_BEYAZ, MINDER_YEDEK } from './varliklar';
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sakin = () => AZ || TEST_MODU;
@@ -218,10 +218,16 @@ const PIKTO: Record<CekmeceAdi, string> = {
 };
 const piktogram = (c: CekmeceAdi, sinif: string) => h(`span.${sinif}.pt-yer-tutucu`, { 'data-cekmece': c, html: `<svg viewBox="0 0 64 64" aria-hidden="true">${PIKTO[c]}</svg>` });
 
-/** Çekmece önünün resmi (ui-dolap; yoksa sade piktogram) */
+/**
+ * Çekmece önünün resmi: ui-dolap sayfası gelince çekmece önünün tamamı; gelene kadar o çekmecenin onaylı eşya çizimi
+ * etiket gibi (kâse, su kabı, top, fırça, minder, yara bandı; varliklar.ts → dolapEtiketi); o da yoksa sade piktogram.
+ */
 export function dolapEl(c: CekmeceAdi): HTMLElement {
   const u = dolapResmi(c);
-  return u ? h('span.pt-dolap-resim', { 'data-cekmece': c }, h('img', { src: u, alt: '', draggable: 'false' })) : piktogram(c, 'pt-dolap-resim');
+  if (u) return h('span.pt-dolap-resim', { 'data-cekmece': c }, h('img', { src: u, alt: '', draggable: 'false' }));
+  const e = dolapEtiketi(c);
+  if (e) return h('span.pt-dolap-resim.pt-dolap-etiket', { 'data-cekmece': c }, h('img', { src: e, alt: '', draggable: 'false' }));
+  return piktogram(c, 'pt-dolap-resim');
 }
 
 /** Eşyanın resmi (esya-<ad>; yoksa çekmecesinin sade piktogramı) */

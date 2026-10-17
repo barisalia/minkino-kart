@@ -118,6 +118,13 @@
   width: 100%;
   height: 100%;
 }
+.pt-kok .pt-mg-cekmece .pt-dolap-resim img,
+.pt-kok .pt-mg-resim .pt-dolap-resim img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .pt-kok .pt-mg-izgara {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));

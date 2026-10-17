@@ -4,9 +4,11 @@ import { hataTopla } from './yardimci';
 /**
  * Pati Dükkânı v2 · paket 3 (ekip/senaryo/PATI-V2.md §9, §4f, §4g, §12): ziyaretçiler, mağaza, köşeler, süsleme, parti.
  * Yalnız /pati/ (menüde yok: PATI_MENUDE false). Telefon önce: 844×390 (yatay) ve 390×844 (dikey), DPR 3.
+ * TAM OYUN (&tam=1): köşeler, Diken ve Elif yayın kapsamında gizli (pati/src/yayin.ts); burada bütün içerik sınanır.
+ * Yayın kapsamının kendisi: tests/e2e/pati-yayin.spec.ts.
  *  (1) ziyaretçi: uygun ve uymayan hayvan; ikisi de bir sahne ve jeton verir (3-4: 3 / 1); hayvan dokunarak da
  *      sürüklenerek de verilir; 3-4'te resimli balon, 5-6'da yok
- *  (2) Kino'nun ikramları (sürükle, dokun + dokun), Anne'nin listesi (yanlış komik, doğru buldun), Baba çayla uyanır,
+ *  (2) Kino'nun ikramları (sürükle, dokun + dokun), Anne'nin listesi (yanlış komik, doğru buldun), Baba kediyle uyanır (çay yok),
  *      Dede'nin kasketi, Babaanne'nin tepsisi, Mino'nun partisi (3 müzik, her hayvan başka tepki), dükkân fotoğrafı,
  *      gece misafiri Diken
  *  (3) mağaza: köşe al → perde açılır → hediye eşya → vitrine o köşenin yavrusu → alınca köşesine gider
@@ -32,7 +34,7 @@ async function ac(page: Page, k: unknown, ek = '') {
     }
   }, JSON.stringify(k));
   // ziyaretçiler testte kendiliğinden gelmez (&ziyaret çok uzun); test getirir
-  await page.goto(`/pati/?test=1&yas=${(k as { yas: string }).yas}&ziyaret=999999999${ek}`);
+  await page.goto(`/pati/?test=1&yas=${(k as { yas: string }).yas}&ziyaret=999999999&tam=1${ek}`);
   await expect.poll(() => P<string>(page, 'panel'), { timeout: 15000 }).toBe('salon');
 }
 /** Ziyaretçiyi getirir, hayvan beklenene kadar */
@@ -121,7 +123,7 @@ for (const ekran of [
       expect(hatalar).toEqual([]);
     });
 
-    test("Kino'nun ikramları, Anne'nin listesi, Baba çayla, Dede'nin kasketi, Babaanne'nin tepsisi", async ({ page }) => {
+    test("Kino'nun ikramları, Anne'nin listesi, Baba uyanır, Dede'nin kasketi, Babaanne'nin tepsisi", async ({ page }) => {
       const hatalar = hataTopla(page);
       await ac(page, kayit('kucuk', UC(), 0, { ziyaretler: {} }));
       // Z1 Kino: üç ikram; sürükleyerek ve "dokun + dokun"
@@ -158,7 +160,7 @@ for (const ekran of [
       await bitsin(page);
       expect(await P<number>(page, 'jeton')).toBe(6);
 
-      // Z5 Babaanne: tepsiden iki şey verilince gider, çay rafta kalır
+      // Z5 Babaanne: tepsiden iki şey verilince gider
       await getir(page, 'babaanne', 'ikram');
       expect((await zy(page)).tepsi.sort()).toEqual(['bezelye', 'elma', 'havuc']);
       await page.locator('[data-ikram="havuc"]').click();
@@ -169,10 +171,11 @@ for (const ekran of [
       await bitsin(page);
       expect(await P<number>(page, 'jeton')).toBe(9);
 
-      // Z4 Baba uyuyakaldı: Babaanne'nin çayı rafta → çay ile uyanır, bisküvi hediye
+      // Z4 Baba uyuyakaldı: çay bardağının çizimi yok, çay rafta kalmaz (eskiden oyuncak küp resmi çıkıyordu);
+      // kedi hapşırtır, Baba uyanır, bisküvi hediye
       await getir(page, 'baba');
-      expect((await zy(page)).tepsi).toEqual(['cay']);
-      await page.locator('[data-ikram="cay"]').click();
+      expect((await zy(page)).tepsi).toEqual([]);
+      await dokun(page, '.pt-yer[data-yer="0"]');
       await bitsin(page);
       expect(await P<string[]>(page, 'esyalar')).toContain('kemik-biskuvi');
       expect(await P<number>(page, 'jeton')).toBe(12);

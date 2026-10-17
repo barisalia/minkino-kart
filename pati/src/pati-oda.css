@@ -72,6 +72,17 @@
   height: 100%;
   object-fit: contain;
 }
+/* ui-dolap gelene kadar: eşya çizimi etiket gibi, kulpun solunda (kulp çizimde ortada) */
+.pt-kok .pt-cekmece-on {
+  position: relative;
+}
+.pt-kok .pt-cekmece-on .pt-dolap-resim.pt-dolap-etiket {
+  position: absolute;
+  left: 5%;
+  top: 10%;
+  width: 36%;
+  height: 80%;
+}
 .pt-kok .pt-cekmece-on .pt-dolap-resim.pt-yer-tutucu {
   width: 120px;
   height: 120px;

@@ -17,10 +17,11 @@
  *  Z9 foto      Dükkân fotoğrafı (5 hayvandan sonra bir kez): en çok 4 hayvan fotoğrafa.
  *  Z10 diken    Gece misafiri Diken (Bahçe açıksa, kapanışta): tabağa ne konacak.
  */
-import { hayvanBilgi, type Yas } from './katalog';
+import { HAYVAN_IDLERI, hayvanBilgi, type Yas } from './katalog';
 import { kazanc } from './ekonomi';
 import type { PatiKayit } from './kayit';
 import { tepki } from './tercih';
+import { esyaKapsamda, hayvanKapsamda, insanYemegiKapsamda } from './yayin';
 
 export type ZiyaretId = 'kino' | 'lokum' | 'liste' | 'baba' | 'babaanne' | 'dede' | 'parti' | 'can' | 'ada' | 'elif' | 'ege' | 'foto' | 'diken';
 /** Sahnede kim var (ziyaretci.ts çizer) */
@@ -46,13 +47,21 @@ export const SAHNELER: Record<ZiyaretId, Sahne> = {
   can: { id: 'can', kisiler: ['can'], bekleyis: 'hayvan', balon: 'esya-top' },
   ada: { id: 'ada', kisiler: ['ada'], bekleyis: 'hayvan', balon: 'esya-minder' },
   elif: { id: 'elif', kisiler: ['elif'], bekleyis: 'hayvan', balon: 'esya-muzik-kutusu' },
-  ege: { id: 'ege', kisiler: ['ege-anne'], bekleyis: 'hayvan', balon: 'kadro-b-tospik' },
+  // Ege'nin annesi "yavaş" bir hayvan ister: balonda kaplumbağa; yayında kaplumbağa yoksa (yayin.ts) uygun olan tavşan
+  ege: { id: 'ege', kisiler: ['ege-anne'], bekleyis: 'hayvan', balon: hayvanKapsamda('tospik') ? 'kadro-b-tospik' : 'kadro-a-pofuduk' },
   foto: { id: 'foto', kisiler: ['kino', 'anne', 'lokum', 'baba', 'babaanne', 'dede'], bekleyis: 'foto', balon: null },
   diken: { id: 'diken', kisiler: ['diken'], bekleyis: 'tabak', balon: null },
 };
 
 /** Ziyaretlerin sırası: ilk Kino; sonra en az gelen önce (son 3 ziyaret tekrar etmez) */
-const DONGU: ZiyaretId[] = ['lokum', 'can', 'dede', 'baba', 'ada', 'babaanne', 'liste', 'elif', 'ege', 'kino'];
+const DONGU_HEPSI: ZiyaretId[] = ['lokum', 'can', 'dede', 'baba', 'ada', 'babaanne', 'liste', 'elif', 'ege', 'kino'];
+/**
+ * Hayvan isteyen ziyaretçi yalnız dükkânda ona UYGUN bir yavru varsa gelir (yayın kapsamında kuş yok: Elif gelmez).
+ * Uymayan hayvan da sahne verir ama çocuk doğruyu hiç bulamazsa ziyaret eksik kalır.
+ */
+const dongu = (): ZiyaretId[] => DONGU_HEPSI.filter((z) => SAHNELER[z].bekleyis !== 'hayvan' || HAYVAN_IDLERI.some((id) => hayvanSonucu(z, id).uygun));
+/** Dükkân fotoğrafı kaç hayvandan sonra (5; dükkânda daha az tür varsa hepsi alınınca) */
+export const FOTO_HAYVAN = Math.min(5, HAYVAN_IDLERI.length);
 /** Parti: müzik kutusu süsü konduysa ya da toplam 5 danstan sonra */
 export const partiHazir = (k: PatiKayit) => k.susler.some((s) => s.ad === 'muzik-kutusu' && !!s.nokta) || k.hayvanlar.reduce((t, h) => t + h.dans, 0) >= 5;
 
@@ -64,8 +73,9 @@ export function siradakiZiyaret(k: PatiKayit, son: readonly ZiyaretId[] = []): Z
   if (k.hayvanlar.length < 2) return null;
   const sayi = (id: ZiyaretId) => k.ziyaretler[id] ?? 0;
   if (!sayi('kino')) return 'kino';
-  if (k.hayvanlar.length >= 5 && !sayi('foto')) return 'foto';
+  if (k.hayvanlar.length >= FOTO_HAYVAN && !sayi('foto')) return 'foto';
   const yakin = son.slice(-3);
+  const DONGU = dongu();
   if (partiHazir(k) && !yakin.includes('parti') && sayi('parti') <= Math.min(...DONGU.map(sayi))) return 'parti';
   const aday = DONGU.filter((z) => !yakin.includes(z));
   aday.sort((a, b) => sayi(a) - sayi(b) || DONGU.indexOf(a) - DONGU.indexOf(b));
@@ -131,7 +141,11 @@ export const ziyaretJetonu = (uygun: boolean, yas: Yas) => kazanc(uygun ? 'ziyar
 /** Kino'nun tezgâhtaki üç ikramı */
 export const KINO_IKRAM = ['kemik-biskuvi', 'havuc', 'balik-yemi'] as const;
 /** Babaanne'nin tepsisi (3-4 yalnız sağlıklı yiyecek; 5-6 pişi ve börek de) */
-export const babaanneTepsisi = (yas: Yas): string[] => (yas === 'buyuk' ? ['havuc', 'elma', 'bezelye', 'pisi', 'borek'] : ['havuc', 'elma', 'bezelye']);
+export function babaanneTepsisi(yas: Yas): string[] {
+  const l = yas === 'buyuk' ? ['havuc', 'elma', 'bezelye', 'pisi', 'borek'] : ['havuc', 'elma', 'bezelye'];
+  // yayın kapsamı (yayin.ts): bezelyenin çizimi yok → çilek; pişinin çizimi yok → tepside yok
+  return l.map((e) => (e === 'bezelye' && !esyaKapsamda(e) ? 'cilek' : e)).filter((e) => (INSAN_YEMEGI.includes(e) ? insanYemegiKapsamda(e) : esyaKapsamda(e)));
+}
 /** İnsan yemeği (eşya değil; çizimi gelene kadar sade yer tutucu) */
 export const INSAN_YEMEGI = ['pisi', 'borek'];
 

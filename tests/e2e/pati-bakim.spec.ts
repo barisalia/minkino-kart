@@ -227,7 +227,8 @@ for (const ekran of [
 
     test('defter resimli dolar; perdeli köşe; akşam herkes kendi yatağıyla uyur, gece, polaroid panoda', async ({ page }) => {
       const hatalar = hataTopla(page);
-      await ac(page, kayit('kucuk', [hayvan('tarcin', 'Tarçın', 0, null), hayvan('findik', 'Fındık', 1, null)]), '&esyalar=hepsi');
+      await ac(page, kayit('kucuk', [hayvan('tarcin', 'Tarçın', 0, null), hayvan('findik', 'Fındık', 1, null)]), '&esyalar=hepsi&tam=1');
+      // tam oyun (&tam=1): yayın kapsamında köşe perdesi yok (pati/src/yayin.ts)
       // kaydırma: sağ kenar → kapalı köşe (perde), sonra parmakla geri
       await page.locator('.pt-kenar[data-yon="1"]').click();
       await expect.poll(() => P(page, 'panel')).toBe('kose-kemirgen');

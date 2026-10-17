@@ -5,6 +5,7 @@
  */
 import P from '../../content/pati.json';
 import type { Yas } from './ihtiyac';
+import { esyaKapsamda, hayvanKapsamda, koseKapsamda, susKapsamda } from './yayin';
 
 export type { Yas };
 export const V2 = P.v2;
@@ -45,8 +46,14 @@ export const CEKMECELER = P.v2.cekmeceler as Record<CekmeceAdi, { ihtiyac: Ihtiy
 type HamTur = (typeof P.v2.hayvanlar)[keyof typeof P.v2.hayvanlar] & { ihtiyaclar?: string[]; ders?: HayvanBilgi['ders'] };
 type HamRenk = { ad: string; temel: string; fiyat: number[]; vitrin: string; huy: string; gizli: string; x_ek?: Record<string, string>; x_sil?: string[] };
 
+/** Yayın kapsamı (yayin.ts): sevgi listelerinde yalnız çizimi olan eşyalar kalır */
+function kapsamliSevgi(s: Partial<Record<IhtiyacAdi, Sevgi>>): Partial<Record<IhtiyacAdi, Sevgi>> {
+  const l = (x: string[]) => x.filter(esyaKapsamda);
+  return Object.fromEntries(Object.entries(s).map(([ih, v]) => [ih, { s: l(v.s), o: l(v.o), x: l(v.x) }]));
+}
+
 function turBilgi(id: string, t: HamTur): HayvanBilgi {
-  const sevgi = t.sevgi as Partial<Record<IhtiyacAdi, Sevgi>>;
+  const sevgi = kapsamliSevgi(t.sevgi as Partial<Record<IhtiyacAdi, Sevgi>>);
   return {
     id,
     ad: t.ad,
@@ -58,8 +65,8 @@ function turBilgi(id: string, t: HamTur): HayvanBilgi {
     temel: null,
     ihtiyaclar: (t.ihtiyaclar as IhtiyacAdi[] | undefined) ?? [...IHTIYACLAR],
     sevgi,
-    ders: t.ders ?? null,
-    gizli: t.gizli ?? null,
+    ders: t.ders && esyaKapsamda(t.ders.esya) ? t.ders : null,
+    gizli: t.gizli && esyaKapsamda(t.gizli) ? t.gizli : null,
   };
 }
 
@@ -86,8 +93,8 @@ const TABLO = new Map<string, HayvanBilgi>();
 for (const [id, t] of Object.entries(P.v2.hayvanlar)) TABLO.set(id, turBilgi(id, t as HamTur));
 for (const [id, r] of Object.entries(P.v2.renkler)) TABLO.set(id, renkBilgi(id, r as HamRenk, TABLO.get((r as HamRenk).temel)!));
 
-/** Bütün satılık hayvanlar (türler, sonra renkler; vitrin sırası buna göre) */
-export const HAYVAN_IDLERI: readonly string[] = [...TABLO.keys()];
+/** Satılık hayvanlar (türler, sonra renkler; vitrin sırası buna göre). Yayında yalnız kapsamdakiler (yayin.ts) */
+export const HAYVAN_IDLERI: readonly string[] = [...TABLO.keys()].filter(hayvanKapsamda);
 export function hayvanBilgi(id: string): HayvanBilgi {
   const b = TABLO.get(id);
   if (!b) throw new Error(`bilinmeyen hayvan: ${id}`);
@@ -110,7 +117,8 @@ const ESYALAR = new Map<string, EsyaBilgi>(
     return [id, { id, cekmece: x.cekmece as CekmeceAdi, bastan: !!x.bastan, fiyat: x.fiyat ? [x.fiyat[0], x.fiyat[1]] : [0, 0] }];
   }),
 );
-export const ESYA_IDLERI: readonly string[] = [...ESYALAR.keys()];
+/** Eşyalar (yayında yalnız çizimi olanlar: yayin.ts; esyaBilgi gizlenenleri de tanır) */
+export const ESYA_IDLERI: readonly string[] = [...ESYALAR.keys()].filter(esyaKapsamda);
 export function esyaBilgi(id: string): EsyaBilgi {
   const e = ESYALAR.get(id);
   if (!e) throw new Error(`bilinmeyen eşya: ${id}`);
@@ -120,7 +128,8 @@ export const esyaVar = (id: string) => ESYALAR.has(id);
 
 export const ihtiyacCekmecesi = (ih: IhtiyacAdi) => (Object.keys(CEKMECELER) as CekmeceAdi[]).find((c) => CEKMECELER[c].ihtiyac === ih)!;
 
-export const KOSELER = P.v2.koseler as Record<KoseAdi, { fiyat: number[]; yer: number; bastan?: boolean; kosul?: string }>;
+/** Köşeler (yayında yalnız arka planı çizilmiş olanlar: yayin.ts) */
+export const KOSELER = Object.fromEntries(Object.entries(P.v2.koseler).filter(([k]) => koseKapsamda(k))) as Record<KoseAdi, { fiyat: number[]; yer: number; bastan?: boolean; kosul?: string }>;
 export const ORTAK_ADLAR: readonly string[] = P.v2.adlar;
 export const MINDERLER = P.v2.minderler as MinderRenk[];
 export const KALP_SAYISI: number = P.v2.kalp_sayisi;
@@ -146,7 +155,7 @@ const SUS_TABLO = new Map<string, SusBilgi>(
     return [id, { id, resim: x.resim, yer: x.yer as SusYeri, fiyat: [x.fiyat[0], x.fiyat[1]], canli: x.canli ?? null }];
   }),
 );
-export const SUS_IDLERI: readonly string[] = [...SUS_TABLO.keys()];
+export const SUS_IDLERI: readonly string[] = [...SUS_TABLO.keys()].filter(susKapsamda);
 export function susBilgi(id: string): SusBilgi {
   const s = SUS_TABLO.get(id);
   if (!s) throw new Error(`bilinmeyen süs: ${id}`);

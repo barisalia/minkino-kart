@@ -21,7 +21,7 @@ import { elSurukle, icinde, Tutulan } from '../../kino-otobus/src/dokunsal';
 import type { Efekt } from '../../kino-otobus/src/efekt';
 import { esyaEl, ezil, jetonUcur, type Kumbara } from './arayuz';
 import { Hayvan } from './hayvan';
-import { esyaVar, NEHIR2, ZIYARET, type Yas } from './katalog';
+import { esyaVar, KOSELER, NEHIR2, ZIYARET, type Yas } from './katalog';
 import type { PatiKayit, SahipHayvan } from './kayit';
 import type { Nehir } from './nehir';
 import { Parti } from './parti';
@@ -62,7 +62,13 @@ const SERI2 = import.meta.glob<string>('../../assets/ses-seri2/*.mp3', { eager: 
 /** Hazır Seri 2 kaydı (yoksa null) */
 const hazirSes = (id: string) => SERI2[`../../assets/ses-seri2/${id}.mp3`] ?? null;
 const BANK = import.meta.glob<string>('../../assets/film/esya/bank.webp', { eager: true, query: '?url', import: 'default' })['../../assets/film/esya/bank.webp'];
-const CAY = import.meta.glob<string>('../../assets/uyku/kupler.webp', { eager: true, query: '?url', import: 'default' })['../../assets/uyku/kupler.webp'];
+/**
+ * Babaanne'nin çayı (Baba'yı uyandırır): çay bardağının çizimi yok. Eskiden assets/uyku/kupler kullanılıyordu ama o
+ * resim oyuncak küpler (çay değil); çizim gelene kadar çay rafta kalmaz (sahne çaysız da tam).
+ */
+const CAY: string | null = null;
+/** Börek: Babaanne kitinin börek tabağı (tepsi parçası, onaylı çizim). Pişinin çizimi yok: yayında tepside yok */
+const BOREK = import.meta.glob<string>('../../assets/karakter/babaanne/tepsi.webp', { eager: true, query: '?url', import: 'default' })['../../assets/karakter/babaanne/tepsi.webp'];
 
 /** Konuşanın sesi: Kino kendi sesi, Kino ailesi Seri 2 sesleri (kendi kaydı yoksa anlatıcı kaydı tonla), Mino ve çocuklar ana ses */
 const SES: Record<Kisi, KonusmaSecenegi> = {
@@ -650,7 +656,8 @@ export class Ziyaret {
       await this.soyle(ana, 'biskuvi');
       this.hediyeEsya('kemik-biskuvi');
     } else if (z === 'dede') {
-      if (!(this.o.kayit.ziyaretler.dede ?? 0)) await this.soyle(ana, 'bahce');
+      // "Arkada bahçe olur…" yalnız Bahçe dükkânda alınabiliyorsa (yayın kapsamında yok: yayin.ts)
+      if (!(this.o.kayit.ziyaretler.dede ?? 0) && KOSELER.bahce) await this.soyle(ana, 'bahce');
       else ana.z.ifade('mutlu', 800);
     } else if (['can', 'ada', 'elif', 'ege'].includes(z)) await this.soyle(ana, 'tesekkur');
     await this.gonder(s, hv);
@@ -660,7 +667,11 @@ export class Ziyaret {
   private ikramTepsisi(ikramlar: readonly string[]) {
     this.tepsi.replaceChildren();
     for (const e of ikramlar) {
-      const icerik = esyaVar(e) ? esyaEl(e) : h('span.pt-zy-yemek.pt-yer-tutucu', { 'data-yemek': e });
+      const icerik = esyaVar(e)
+        ? esyaEl(e)
+        : e === 'borek' && BOREK
+          ? h('img', { src: BOREK, alt: '', draggable: 'false', 'data-yemek': e })
+          : h('span.pt-zy-yemek.pt-yer-tutucu', { 'data-yemek': e });
       const b = h('button.pt-zy-ikram', { type: 'button', 'data-ikram': e, 'aria-label': e }, icerik) as HTMLButtonElement;
       b.addEventListener('click', () => {
         this.o.etkilesim();
@@ -818,7 +829,7 @@ export class Ziyaret {
 
   // ---------------------------------------------------------------- Z4: çay
   private cayTepsisi() {
-    if (!(this.o.kayit.ziyaretler.cay ?? 0)) return;
+    if (!(this.o.kayit.ziyaretler.cay ?? 0) || !CAY) return;
     this.tepsi.replaceChildren();
     const b = h('button.pt-zy-ikram.pt-zy-cay', { type: 'button', 'data-ikram': 'cay', 'aria-label': 'Çay' }, CAY ? h('img', { src: CAY, alt: '', draggable: 'false' }) : h('span.pt-yer-tutucu'));
     const ver = () => {

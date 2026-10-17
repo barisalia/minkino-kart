@@ -34,7 +34,8 @@ export function defterSayfasi(k: PatiKayit, id: string, yas: Yas): DefterSatiri[
   return ihtiyaclar.map((ih) => {
     const c = ihtiyacCekmecesi(ih);
     const denenen = Object.entries(sayfa)
-      .filter(([e]) => esyaBilgi(e).cekmece === c)
+      // yayında gizlenen eşya (yayin.ts) defterde görünmez
+      .filter(([e]) => ESYA_IDLERI.includes(e) && esyaBilgi(e).cekmece === c)
       .map(([esya, tepki]) => ({ esya, tepki }))
       // önce sevdikleri, sonra olurlar, sonra sevmedikleri
       .sort((x, y) => ['sever', 'olur', 'sevmez'].indexOf(x.tepki) - ['sever', 'olur', 'sevmez'].indexOf(y.tepki));
@@ -71,7 +72,7 @@ export function tepki(id: string, ih: IhtiyacAdi, esya: string, yas: Yas, gecmis
 /** Başka çekmecenin eşyası olup bu çekmecede de duranlar (§7b: ecza çekmecesinde battaniye ortak) */
 const ORTAK: Partial<Record<CekmeceAdi, string[]>> = { ecza: ['battaniye', 'isi-lambasi'] };
 /** Çekmecenin havuzu: önce baştan olanlar, sonra ortaklar, sonra mağazanınkiler */
-const havuz = (c: CekmeceAdi) => [...ESYA_IDLERI.filter((e) => esyaBilgi(e).cekmece === c && esyaBilgi(e).bastan), ...(ORTAK[c] ?? []), ...ESYA_IDLERI.filter((e) => esyaBilgi(e).cekmece === c && !esyaBilgi(e).bastan)];
+const havuz = (c: CekmeceAdi) => [...ESYA_IDLERI.filter((e) => esyaBilgi(e).cekmece === c && esyaBilgi(e).bastan), ...(ORTAK[c] ?? []).filter((e) => ESYA_IDLERI.includes(e)), ...ESYA_IDLERI.filter((e) => esyaBilgi(e).cekmece === c && !esyaBilgi(e).bastan)];
 
 /** Bu çekmece bu yaşta var mı (temizlik ve ecza yalnız 5-6; 3-4'te temizlik mağazadan alınınca, paket 3) */
 export const cekmeceAcik = (c: CekmeceAdi, yas: Yas, temizlikAlindi = false) => CEKMECELER[c].yas.includes(yas) || (c === 'temizlik' && temizlikAlindi);

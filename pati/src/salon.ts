@@ -368,6 +368,7 @@ export class Salon {
     return this.secilenYer ?? null;
   }
   private secilenYer: Yer | null = null;
+  private tepsiZamani = 0;
   /** Tepsi: minderi olmayan hayvan varsa (ya da bir minderin üstüne dokunulunca) görünür */
   private tepsiGuncelle(yeni = false) {
     const goster = this.yerler.some((y) => y.sahip && !y.sahip.minder) || !!this.secilenYer;
@@ -542,6 +543,13 @@ export class Salon {
     if (s.minder) {
       this.secilenYer = yer;
       this.tepsiGuncelle(true);
+      // seçilmezse tepsi kendiliğinden kapanır (ziyaret ve gece boyunca açık kalmasın)
+      clearTimeout(this.tepsiZamani);
+      this.tepsiZamani = window.setTimeout(() => {
+        if (this.secilenYer !== yer) return;
+        this.secilenYer = null;
+        this.tepsiGuncelle();
+      }, TEST_MODU ? 3000 : 8000);
     }
     if (yer.mesgul) return;
     yer.hayvan.sesi(1);
@@ -924,6 +932,7 @@ export class Salon {
 
   kapat() {
     this.kapandi = true;
+    clearTimeout(this.tepsiZamani);
     for (const z of this.zamanlar) clearInterval(z);
     for (const f of this.birak) f();
     for (const y of this.yerler) y.hayvan?.kapat();

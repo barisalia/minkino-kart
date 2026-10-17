@@ -7,6 +7,7 @@
  */
 import type { Yas } from './ihtiyac';
 import type { IhtiyacAdi, KoseAdi, MinderRenk } from './katalog';
+import { hayvanKapsamda, koseKapsamda } from './yayin';
 
 const ANAHTAR = 'minkino-pati-v2';
 const ESKI = 'minkino-pati-v1';
@@ -87,7 +88,8 @@ export function kayitCoz(ham: string | null | undefined, eski?: string | null): 
       k.yas = yasCoz(v.yas);
       k.acildi = !!v.acildi;
       k.jeton = Math.max(0, Math.floor(sayi(v.jeton)));
-      k.hayvanlar = dizi(v.hayvanlar, hayvanCoz);
+      // yayın kapsamı (yayin.ts): gizlenen hayvan ve köşe yüklenmez (deneme cihazlarındaki eski kayıtlar)
+      k.hayvanlar = dizi(v.hayvanlar, hayvanCoz).filter((x) => hayvanKapsamda(x.id) && koseKapsamda(x.kose));
       k.esyalar = dizi(v.esyalar, (x) => (typeof x === 'string' ? x : null));
       k.uzman = dizi(v.uzman, (x) => (typeof x === 'string' ? x : null));
       k.susler = dizi(v.susler, (x) => {
@@ -95,7 +97,7 @@ export function kayitCoz(ham: string | null | undefined, eski?: string | null): 
         return s && typeof s.ad === 'string' ? { ad: s.ad, nokta: String(s.nokta ?? '') } : null;
       });
       const kos = dizi(v.koseler, (x) => (typeof x === 'string' ? (x as KoseAdi) : null));
-      k.koseler = kos.includes('salon') ? kos : ['salon', ...kos];
+      k.koseler = (kos.includes('salon') ? kos : (['salon', ...kos] as KoseAdi[])).filter(koseKapsamda);
       k.defter = nesne(v.defter);
       k.ziyaretler = nesne(v.ziyaretler);
       k.pano = dizi(v.pano, (x) => (typeof x === 'string' ? x : null));

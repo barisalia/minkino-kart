@@ -165,8 +165,16 @@ const ESYA_V1: Record<string, string[]> = {
 export function esyaResmi(id: string): string | null {
   return adres(`esya-${id}`, ...(ESYA_V1[id] ?? []));
 }
-/** Çekmece önü resmi (ui-dolap sayfası; yoksa null: sade yer tutucu) */
+/** Çekmece önü resmi (ui-dolap sayfası; yoksa null: etiket ya da sade yer tutucu) */
 export const dolapResmi = (c: string) => adres(`dolap-${c}`);
+/**
+ * ui-dolap gelene kadar çekmece önündeki ETİKET: o çekmecenin onaylı eşya çizimi (PATI-V2 §11d ui-dolap'ın resimlerine en
+ * yakın olanlar: boş mama kâsesi, su kabı, kırmızı top, fırça, yastık yerine ay gece lambası, bantlı kalp yerine yara
+ * bandı). Yardım balonu da bu resmi gösterir: hayvanın sevmediği bir eşya "cevap" gibi durmasın diye dolu mama kabı ve
+ * minder değil (tavşan köpek mamasını ve minderi sevmez).
+ */
+const DOLAP_ETIKET: Record<string, string> = { mama: 'esya-mama-kabi-bos', su: 'esya-su-kabi-dolu', oyuncak: 'esya-top', temizlik: 'esya-yumusak-firca', yatak: 'esya-gece-lambasi', ecza: 'esya-yara-bandi' };
+export const dolapEtiketi = (c: string) => (DOLAP_ETIKET[c] ? adres(DOLAP_ETIKET[c]) : null);
 /** Bakım Odası'nın kesitleri ve eşyaları için: altın kalp etiketi, hediye kutusu, defter, perde (ui-jeton sayfası) */
 export const ALTIN_KALP = adres('ui-altin-kalp');
 export const DEFTER = adres('ui-defter');
