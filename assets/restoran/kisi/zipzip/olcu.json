@@ -1,0 +1,50 @@
+{
+ "giris": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 51,
+  "taban": 765
+ },
+ "selam": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 49,
+  "taban": 765
+ },
+ "otur": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 7,
+  "taban": 764
+ },
+ "otur-kirp": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 7,
+  "taban": 764
+ },
+ "ye": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 41,
+  "taban": 764
+ },
+ "bayildi": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 87,
+  "taban": 765
+ },
+ "sasir": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 88,
+  "taban": 764
+ },
+ "kulak": {
+  "en": 414,
+  "boy": 772,
+  "tepe": 104,
+  "taban": 765
+ }
+}

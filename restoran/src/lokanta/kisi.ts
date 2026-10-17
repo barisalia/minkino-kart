@@ -87,6 +87,16 @@ export function kisiBoyu(ad: string, boyAnahtari?: string): number {
 }
 
 const KONUSMA_AGIZ = ['agiz-orta', 'agiz-az', 'agiz-genis', 'agiz-o', 'agiz-az', 'agiz-e'];
+/** 8. karesi ekşi yüz değil komik gag pozu olan müşteriler (R-Gün 2 sayfaları; model.ts gag): 'eksi' istenince bu */
+const GAG_POZ: Record<string, string> = { tombi: 'sapka', bidik: 'pecete', zipzip: 'kulak' };
+/** Pozlu kişide ifade → geçici poz (yalnız sakin duruşlardayken; eylem pozu (tat, bayildi, sasir...) bozulmaz) */
+const IFADE_POZ: Record<Exclude<Ifade, null>, (oturuyor: boolean) => string | null> = {
+  saskin: () => 'sasir',
+  eksi: () => 'eksi',
+  mutlu: (o) => (o ? 'otur-kirp' : 'selam'),
+  keyif: (o) => (o ? 'otur-kirp' : null),
+};
+const SAKIN_POZ = new Set(['otur', 'giris', 'selam', 'ye', 'mutlu', 'konus']);
 export type Ifade = 'mutlu' | 'saskin' | 'keyif' | 'eksi' | null;
 export type Hareket = 'hop' | 'sevin' | 'ye' | 'yuru' | 'bak' | 'titre' | 'kokla';
 
@@ -116,6 +126,11 @@ export class Kisi {
   private x = 0;
   private y = 0;
   private oturuyor = false;
+  /** pozlu: asıl duruş (poz()) ve üstüne binen geçici ifade pozu */
+  private temel = 'giris';
+  private gecici: string | null = null;
+  private geciciZaman = 0;
+  private kirpZamanlayici = 0;
 
   constructor(
     readonly ad: string,
@@ -133,6 +148,13 @@ export class Kisi {
       this.img = h('img.rs-kisi-resim', { src: pozResim, alt: '', draggable: 'false' }) as HTMLImageElement;
       this.govde.append(this.img);
       this.hazir = this.img.decode().catch(() => undefined);
+      // bütün poz kareleri önceden yüklenir: poz değişiminde boş kare / gecikme olmasın
+      const olcu = POZ_OLCU[`../../../assets/restoran/kisi/${ad}/olcu.json`];
+      for (const p of Object.keys(olcu ?? {})) {
+        const u = varlik(`kisi/${ad}/${p}`);
+        if (u) new Image().src = u;
+      }
+      this.kirpPlanla();
     } else if (KITLER[ad]) {
       const k = KITLER[ad];
       this.kukla = new Kukla(k.j, (d) => PARCALAR[`../../../assets/karakter/${k.klasor}/${d}`]);
@@ -290,19 +312,68 @@ export class Kisi {
     return this.oturuyor;
   }
 
+  /** Poz karesinin adresi: kendi adı, 'eksi' yerine gag pozu; yoksa null */
+  private pozUrl(ad: string): string | null {
+    // Kino'nun garson sayfasında 'giris' yok: boştaki duruşu tepsiyle
+    if (this.ad === 'kino' && ad === 'giris') ad = 'tepsi';
+    return varlik(`kisi/${this.ad}/${ad}`) ?? (ad === 'eksi' && GAG_POZ[this.ad] ? varlik(`kisi/${this.ad}/${GAG_POZ[this.ad]}`) : null);
+  }
+
+  /** Kareyi değiştirir; ezilme-esneme ile (göz kırpma hariç) */
+  private goster(u: string | null, esnet = true) {
+    if (!u || !this.img) return;
+    if (this.img.src === new URL(u, document.baseURI).href) return;
+    this.img.src = u;
+    if (!esnet || sakin()) return;
+    try {
+      this.img.animate([{ transform: 'scale(1.06, 0.93)' }, { transform: 'scale(0.98, 1.03)', offset: 0.55 }, { transform: 'none' }], { duration: 220, easing: 'ease-out' });
+    } catch {
+      /* yok say */
+    }
+  }
+
   /** Gemini poz karesi varsa ona geçer (yoksa hiçbir şey: kukla/resim aynı kalır) */
   poz(ad: string) {
     this.el.dataset.poz = ad;
     if (!this.pozlu || !this.img) return;
-    // Kino'nun garson sayfasında 'giris' yok: boştaki duruşu tepsiyle
-    if (this.ad === 'kino' && ad === 'giris') ad = 'tepsi';
-    const u = varlik(`kisi/${this.ad}/${ad}`) ?? (this.oturuyor ? varlik(`kisi/${this.ad}/otur`) : varlik(`kisi/${this.ad}/giris`));
-    if (u && this.img.src !== u) this.img.src = u;
+    this.temel = ad;
+    this.gecici = null;
+    clearTimeout(this.geciciZaman);
+    this.goster(this.pozUrl(ad) ?? (this.oturuyor ? this.pozUrl('otur') : this.pozUrl('giris')));
   }
 
   ifade(ad: Ifade, ms = 1200) {
     this.ifadeAd = ad;
     this.ifadeBitis = performance.now() + (sakin() ? 60 : ms);
+    // pozlu kişi: yüz ifadesi yerine geçici poz (şaşkın, ekşi / gag, keyifle göz kapalı), sonra asıl duruşa döner
+    if (!this.pozlu || !this.img || !ad || !SAKIN_POZ.has(this.temel)) return;
+    const p = IFADE_POZ[ad](this.oturuyor);
+    const u = p ? this.pozUrl(p) : null;
+    if (!u) return;
+    this.gecici = p;
+    this.goster(u);
+    clearTimeout(this.geciciZaman);
+    this.geciciZaman = window.setTimeout(() => {
+      if (this.kapandi || !this.gecici) return;
+      this.gecici = null;
+      this.goster(this.pozUrl(this.temel) ?? this.pozUrl(this.oturuyor ? 'otur' : 'giris'));
+    }, sakin() ? 60 : ms);
+  }
+
+  /** Masada otururken ara sıra göz kırpar (otur → otur-kirp → otur, esnemesiz) */
+  private kirpPlanla() {
+    if (this.kapandi || sakin()) return;
+    this.kirpZamanlayici = window.setTimeout(() => {
+      if (this.kapandi) return;
+      const kirp = this.pozUrl('otur-kirp');
+      if (kirp && this.temel === 'otur' && !this.gecici && !this.konusuyor) {
+        this.goster(kirp, false);
+        window.setTimeout(() => {
+          if (!this.kapandi && this.temel === 'otur' && !this.gecici) this.goster(this.pozUrl('otur'), false);
+        }, 170);
+      }
+      this.kirpPlanla();
+    }, 2600 + Math.random() * 2600);
   }
 
   /** Bütün gövde hareketi (ezilme-esneme; döndürme yok) */
@@ -354,6 +425,8 @@ export class Kisi {
 
   kapat() {
     this.kapandi = true;
+    clearTimeout(this.kirpZamanlayici);
+    clearTimeout(this.geciciZaman);
     cancelAnimationFrame(this.raf);
     this.ro?.disconnect();
     this.el.remove();

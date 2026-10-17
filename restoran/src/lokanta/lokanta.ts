@@ -16,6 +16,7 @@
 import { erisimVarMi } from '../../../src/abonelik/kilit';
 import { konus } from '../../../src/audio/ses';
 import { Mino } from '../../../src/mino/mino';
+import { salonMinoPozla } from './salon-mino';
 import { h, sure, TEST_MODU } from '../../../src/ui/dom';
 import type { Ekran, Uygulama } from '../../../src/uygulama';
 import { istasyonAc, type IstasyonEkrani } from '../istasyon/istasyon';
@@ -300,6 +301,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
   const salonBalon = h('div.rs-salon-balon');
   minoEl.append(mino.el, salonBalon);
   katman.append(minoEl);
+  // Gemini mutfak pozları geldiyse tezgâhtaki Mino resimle canlanır (salon-mino.ts)
+  const salonMinoBirak = salonMinoPozla(minoEl, mino);
 
   const zSira = (k: Kisi) => {
     k.el.style.zIndex = S34 ? String(derinlik(k.konum.y, k.oturdu ? 'oturan' : 'ayakta')) : String(Math.round(k.konum.y * 10) + (k.oturdu ? 0 : 3));
@@ -897,8 +900,11 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     }
   };
 
+  /** tepki efektinin Gemini efekt-sayfasi resmi (yoksa CSS şekli): gag adı → efekt */
+  const EFEKT_RESIM: Record<string, string> = { kalp: 'kalp', yildiz: 'yildiz', agla: 'gozyasi', su: 'ter', kulak: 'kulak-duman', hapsir: 'toz', kas: 'ter', 'bos-tabak': 'duman', sapka: 'parilti', pecete: 'toz', utangac: 'kalp-pembe', dudak: 'kalp-pembe', sakal: 'toz', omuz: 'ter' };
   const efekt = (k: Kisi, tur: string, adet = 3) => {
-    const e = h('div.rs-efekt', { 'data-efekt': tur }, ...Array.from({ length: adet }, (_, i) => h('i', { style: `--i:${i}` })));
+    const u = EFEKT_RESIM[tur] ? varlik(`efekt/${EFEKT_RESIM[tur]}`) : null;
+    const e = h('div.rs-efekt', { 'data-efekt': tur, 'data-resim': u ? '1' : null }, ...Array.from({ length: adet }, (_, i) => h('i', { style: `--i:${i}` }, u ? h('img', { src: u, alt: '', draggable: 'false' }) : null)));
     k.el.append(e);
     window.setTimeout(() => e.remove(), TEST_MODU ? 50 : 1900);
   };
@@ -1040,6 +1046,9 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
     o.eslik?.otur(false);
     o.kisi.el.style.zIndex = '950';
     if (o.eslik) o.eslik.el.style.zIndex = '950';
+    // giden müşteri dokunuş almaz: veda ederken masadaki dolu hesap tabağını örtmesin (sürüklenen yalnız kapıdaki)
+    o.kisi.el.classList.add('rs-gidiyor');
+    o.eslik?.el.classList.add('rs-gidiyor');
     o.kisi.poz('selam');
     void o.kisi.oynat('hop', 400);
     await kisiSoyle(o.kisi, o.m, musteriSozu(o.m, 'gule'));
@@ -1596,6 +1605,7 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       surpriz?.kapat();
       personel?.kapat();
       for (const [, a] of arkaIsler) a.dongu?.dur();
+      salonMinoBirak();
       mino.kapat();
       kino.kapat();
       for (const m of masalar) {

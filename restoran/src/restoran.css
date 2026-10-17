@@ -312,3 +312,5 @@
   font-size: 34px;
   box-shadow: var(--rs-golge);
 }
+/* resimli Mino: ağlarken gözyaşı çizimin kendisinde (kisi/mino/agla); kod gözyaşı yalnız çizimsiz Mino'da */
+.rs-mino-kose[data-resim] .rs-gozyasi { display: none; }

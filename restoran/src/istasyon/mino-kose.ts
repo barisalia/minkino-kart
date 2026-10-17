@@ -3,6 +3,8 @@
  * R-Gün 2'de `mino-mutfak-sayfasi` (8 poz: mutlu, göz kapalı, ağlar, tadar, ekşi, hapşırır, sevinir, aşağıdan bakar)
  * gelince `assets/restoran/kisi/mino/<poz>.webp` kullanılır; o gelene kadar ortak kod çizimi Mino (src/mino/mino.ts,
  * vektör: her ölçekte net) + şef şapkası yok. Gözyaşı ve damla efektleri kodla (efekt sayfası gelince resim).
+ * Pozlarla canlanma (R-Gün 2 geldi): poz değişiminde ezilme-esneme, boşta ara sıra göz kırpar (mutlu → kirp),
+ * konuşurken hafif sallanır; ağlarken gözyaşı çizimin kendisinde (kod gözyaşı gizli).
  */
 import { konus } from '../../../src/audio/ses';
 import { Mino, type Tepki } from '../../../src/mino/mino';
@@ -44,6 +46,12 @@ export function minoKoseKur(kap: HTMLElement): MinoKoseEl {
   if (resimVar) {
     resim = h('img.rs-mino-resim', { src: varlik('kisi/mino/mutlu')!, alt: '', draggable: 'false' }) as HTMLImageElement;
     kutu.append(resim);
+    kutu.dataset.resim = '1';
+    // bütün pozlar önceden yüklenir (değişimde boş kare olmasın)
+    for (const p of ['kirp', 'agla', 'tat', 'eksi', 'hapsir', 'sevin', 'bak']) {
+      const u = varlik(`kisi/mino/${p}`);
+      if (u) new Image().src = u;
+    }
   } else {
     mino = new Mino();
     kutu.append(mino.el);
@@ -54,11 +62,37 @@ export function minoKoseKur(kap: HTMLElement): MinoKoseEl {
 
   let bitis = 0;
   let zaman = 0;
-  const pozKoy = (ad: string) => {
+  const pozKoy = (ad: string, esnet = true) => {
+    const onceki = kutu.dataset.poz;
     kutu.dataset.poz = ad;
     const u = varlik(`kisi/mino/${ad}`) ?? varlik('kisi/mino/mutlu');
-    if (resim && u) resim.src = u;
+    if (!resim || !u) return;
+    resim.src = u;
+    if (esnet && onceki !== ad && !TEST_MODU) {
+      try {
+        resim.animate([{ transform: 'scale(1.07, 0.92)' }, { transform: 'scale(0.97, 1.04)', offset: 0.55 }, { transform: 'none' }], { duration: 240, easing: 'ease-out' });
+      } catch {
+        /* yok say */
+      }
+    }
   };
+  // boşta göz kırpma: yalnız 'mutlu' duruşta, konuşmuyorken
+  let kirpZaman = 0;
+  let kapali = false;
+  const kirpPlanla = () => {
+    if (!resim || TEST_MODU || kapali) return;
+    kirpZaman = window.setTimeout(() => {
+      if (kapali) return;
+      if (kutu.dataset.poz === 'mutlu' && varlik('kisi/mino/kirp')) {
+        pozKoy('kirp', false);
+        window.setTimeout(() => {
+          if (!kapali && kutu.dataset.poz === 'kirp') pozKoy('mutlu', false);
+        }, 170);
+      }
+      kirpPlanla();
+    }, 2400 + Math.random() * 2600);
+  };
+  kirpPlanla();
   const dur = () => {
     clearTimeout(zaman);
     kutu.classList.remove('agliyor');
@@ -100,14 +134,26 @@ export function minoKoseKur(kap: HTMLElement): MinoKoseEl {
       balon.textContent = metin.replace(/\[[^\]]*\]\s*/g, '');
       kutu.classList.add('konusuyor');
       mino?.agizOyna(true);
+      // resimli Mino konuşurken hafifçe sallanır (ağız çizimde yok; gövdeyle konuşur)
+      let sallan: Animation | null = null;
+      if (resim && !TEST_MODU) {
+        try {
+          sallan = resim.animate([{ transform: 'none' }, { transform: 'translateY(-2.5%) scale(0.985, 1.02)' }, { transform: 'none' }], { duration: 420, iterations: Infinity, easing: 'ease-in-out' });
+        } catch {
+          sallan = null;
+        }
+      }
       try {
         await konus(metin, { cihazSesi: false });
       } finally {
+        sallan?.cancel();
         mino?.agizOyna(false);
         kutu.classList.remove('konusuyor');
       }
     },
     kapat() {
+      kapali = true;
+      clearTimeout(kirpZaman);
       clearTimeout(zaman);
       mino?.kapat();
     },

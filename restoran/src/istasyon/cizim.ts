@@ -29,11 +29,11 @@ export interface CizimDaire {
 export const CIZIM_YER = {
   /** istasyon-tezgah: kesme tahtasının üst yüzü (x 713-2038, y 328-1274; alt kalınlık 1315'e iner) */
   tahta: { u0: 713 / 2752, v0: 328 / 1536, u1: 2038 / 2752, v1: 1274 / 1536 } satisfies CizimKutu,
-  /** istasyon-ocak: sol ve sağ ocak gözünün döküm ızgarası (merkez, dış yarıçap) */
-  ocakSol: { u: 936 / 2752, v: 718 / 1536, r: 350 / 2752 } satisfies CizimDaire,
-  ocakSag: { u: 1814 / 2752, v: 718 / 1536, r: 345 / 2752 } satisfies CizimDaire,
-  /** istasyon-servis: ortadaki boş tabağın dış konturu (iç halka r≈381 px) ve soldaki tahta tepsi */
-  tabak: { u: 1376 / 2752, v: 814 / 1536, r: 552 / 2752 } satisfies CizimDaire,
+  /** istasyon-ocak (R-Gün 2 yenilenmiş çizim): sol ve sağ ocak gözünün döküm ızgarası (merkez, dış yarıçap) */
+  ocakSol: { u: 939 / 2752, v: 722 / 1536, r: 350 / 2752 } satisfies CizimDaire,
+  ocakSag: { u: 1813 / 2752, v: 722 / 1536, r: 348 / 2752 } satisfies CizimDaire,
+  /** istasyon-servis (R-Gün 2 yenilenmiş çizim): ortadaki boş tabağın dış konturu (iç halka r≈385 px) ve soldaki tahta tepsi */
+  tabak: { u: 1391 / 2752, v: 816 / 1536, r: 556 / 2752 } satisfies CizimDaire,
   servisTepsi: { u0: 100 / 2752, v0: 450 / 1536, u1: 560 / 2752, v1: 1144 / 1536 } satisfies CizimKutu,
 };
 

@@ -602,3 +602,10 @@
 .mk-kok .rs-tv-tava:not([data-resim='1']) > .rs-tv-tava-resim {
   display: none;
 }
+
+/* Gemini sahanda yumurta (alet/yumurta-tavada, tavası ayıklanmış 228 px): netlik sınırı (en çok 76 css px) için daha küçük */
+.mk-kok .rs-tv-yumurta:has(> img) {
+  width: 34%;
+  height: 34%;
+  margin: -17% 0 0 -17%;
+}

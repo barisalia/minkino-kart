@@ -43,11 +43,11 @@ const SAYFALAR = {
   'istasyon-ocak': { tur: 'arka', ad: 'istasyon/ocak' },
   // servis tezgâhının ortasındaki boş tabak ayrıca kesilir: Tabakla'nın ve masaya giden yemeğin tabağı (alet/tabak);
   // daire [cx, cy, r] bu çizimde ölçüldü (dış kontur r≈552 px); istasyondaki tabakla birebir aynı
-  'istasyon-servis': { tur: 'arka', ad: 'istasyon/servis', daire: { 'alet/tabak': [1376, 814, 556] } },
+  'istasyon-servis': { tur: 'arka', ad: 'istasyon/servis', daire: { 'alet/tabak': [1391, 816, 560] } },
   'sebze-domates': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['domates-butun', 'domates-yarim', 'domates-dilim', 'domates-yarimay', 'domates-kup', 'domates-pure', 'domates-damla-1', 'domates-damla-2', 'domates-damla-3'] },
   'sebze-salatalik': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['salatalik-butun', 'salatalik-kesit', 'salatalik-dilim', 'salatalik-kup', 'salatalik-kabuk', 'salatalik-boyuna'], don: { 'salatalik-boyuna': -90 } },
   'sebze-sogan-biber': { tur: 'esya', grup: 'yiyecek', max: 0, adlar: ['sogan-butun', 'sogan-soyulmus', 'sogan-dilim', 'sogan-kup', 'sogan-kabuk-1', 'sogan-kabuk-2', 'sogan-kabuk-3', 'biber-butun', 'biber-yarim', 'biber-halka', 'biber-cekirdek'], sutun: 2 },
-  'mutfak-aletleri-1': { tur: 'esya', grup: 'alet', max: 1400, adlar: ['bicak', 'spatula', 'tava', 'kepce', 'zeytinyagi', 'tuzluk', 'pulbiber', 'limon-yarim', 'yumurta', 'yumurta-catlak', 'yumurta-kabuk', 'yumurta-tavada', 'tepsi', 'hesap-tabagi', 'kase', 'ekmek'] },
+  'mutfak-aletleri-1': { tur: 'esya', grup: 'alet', max: 1400, adlar: ['bicak', 'spatula', 'tava', 'kepce', 'zeytinyagi', 'tuzluk', 'pulbiber', 'limon-yarim', 'yumurta', 'yumurta-catlak', 'yumurta-kabuk', 'yumurta-tavada', 'tepsi', 'hesap-tabagi', 'kase', 'ekmek'], sahanda: ['yumurta-tavada'] },
   'babaanne-lokanta-sayfasi': { tur: 'kisi', kim: 'babaanne', adlar: ['konus', 'anahtar', 'tat', 'alkis', 'gul', 'sasir', 'fikir', 'gule'] },
   'kino-garson-sayfasi': { tur: 'kisi', kim: 'kino', adlar: ['tepsi', 'yuru-1', 'yuru-2', 'koy', 'yaz', 'sallan', 'patates', 'tabaklar'] },
   // ---- R-Gün 2
@@ -56,11 +56,13 @@ const SAYFALAR = {
   'anne-lokanta-sayfasi': { tur: 'kisi', kim: 'anne', adlar: MUSTERI_POZ },
   'baba-lokanta-sayfasi': { tur: 'kisi', kim: 'baba', adlar: MUSTERI_POZ },
   'dede-lokanta-sayfasi': { tur: 'kisi', kim: 'dede', adlar: MUSTERI_POZ },
-  'tombi-lokanta-sayfasi': { tur: 'kisi', kim: 'tombi', adlar: MUSTERI_POZ },
-  'bidik-lokanta-sayfasi': { tur: 'kisi', kim: 'bidik', adlar: MUSTERI_POZ },
-  'zipzip-lokanta-sayfasi': { tur: 'kisi', kim: 'zipzip', adlar: MUSTERI_POZ },
+  // 8. kare bu üçünde ekşi yüz değil, komik gag pozu (model.ts gag adıyla): Tombi tabak şapka, Bıdık peçete çiğner,
+  // Zıpzıp'ın kulakları düğümlü. kisi.ts 'eksi' isteğinde bunu kullanır (komik tepki).
+  'tombi-lokanta-sayfasi': { tur: 'kisi', kim: 'tombi', adlar: [...MUSTERI_POZ.slice(0, 7), 'sapka'] },
+  'bidik-lokanta-sayfasi': { tur: 'kisi', kim: 'bidik', adlar: [...MUSTERI_POZ.slice(0, 7), 'pecete'] },
+  'zipzip-lokanta-sayfasi': { tur: 'kisi', kim: 'zipzip', adlar: [...MUSTERI_POZ.slice(0, 7), 'kulak'] },
   'bulut-lokanta-sayfasi': { tur: 'kisi', kim: 'bulut', adlar: MUSTERI_POZ },
-  'efekt-sayfasi': { tur: 'esya', grup: 'efekt', max: 600, adlar: ['buhar', 'duman', 'kulak-duman', 'gozyasi', 'gozyasi-akis', 'ter', 'kalp', 'kalp-pembe', 'yildiz', 'parilti', 'balon', 'kopuk', 'alev', 'damla-kirmizi', 'damla-yesil', 'yag', 'toz', 'zil-parilti', 'jeton', 'jeton-bahsis'] },
+  'efekt-sayfasi': { tur: 'esya', grup: 'efekt', max: 600, adlar: ['buhar', 'duman', 'kulak-duman', 'gozyasi', 'gozyasi-akis', 'ter', 'kalp', 'kalp-pembe', 'yildiz', 'parilti', 'balon', 'kopuk', 'alev', 'damla-kirmizi', 'damla-yesil', 'yag', 'toz', 'zil-parilti', 'jeton', 'jeton-bahsis'], konturuz: ['parilti', 'zil-parilti'] },
   // ---- R-Gün 3
   'lokanta-dikey': { tur: 'arka', ad: 'arka/lokanta-dikey' },
   'istasyon-lavabo': { tur: 'arka', ad: 'istasyon/lavabo' },
@@ -164,7 +166,9 @@ function beyazla(data, W, H, z, esik = 30) {
   const zemin = new Uint8Array(W * H);
   for (let i = 0; i < W * H; i++) {
     const r = data[i * 3], g = data[i * 3 + 1], b = data[i * 3 + 2];
-    if (Math.hypot(r - z[0], g - z[1], b - z[2]) < esik) { zemin[i] = 1; data[i * 3] = data[i * 3 + 1] = data[i * 3 + 2] = 255; }
+    // renk tonu da zemininki olmalı: nane zemine yakın gri bulut / açık mavi damla dolgusu zemin sayılmaz (benekleniyordu)
+    const ton = Math.abs(g - r - (z[1] - z[0])) <= 12 && Math.abs(g - b - (z[1] - z[2])) <= 10;
+    if (ton && Math.hypot(r - z[0], g - z[1], b - z[2]) < esik) { zemin[i] = 1; data[i * 3] = data[i * 3 + 1] = data[i * 3 + 2] = 255; }
   }
   return zemin;
 }
@@ -193,6 +197,16 @@ function nesneler(zemin, W, H, R, enAzAlan) {
   // her kutu etiket ızgarasını da taşır (et: hücre → nesne; kesimde komşunun pikselleri ayıklanır)
   const tutulan = new Set();
   const sonuc = kutular.map((k, id) => ({ ...k, id })).filter((k) => k.alan >= enAzAlan).map((k) => (tutulan.add(k.id), Object.assign(k.k, { id: k.id, et, K, w, tutulan })));
+  // küçük kırıntı (tohum, damlacık; enAzAlan altı) en yakın nesneye katılır: kutusu büyür, kesimde yarım kalmaz
+  const bosluk = (a, b) => Math.hypot(Math.max(0, a[0] - b[2], b[0] - a[2]), Math.max(0, a[1] - b[3], b[1] - a[3]));
+  kutular.forEach((k, id) => {
+    if (k.alan >= enAzAlan || !k.alan || !sonuc.length) return;
+    let en = sonuc[0], eb = Infinity;
+    for (const s2 of sonuc) { const b = bosluk(k.k, s2); if (b < eb) { eb = b; en = s2; } }
+    if (eb > R * 3) return;
+    for (let i = 0; i < et.length; i++) if (et[i] === id) et[i] = en.id;
+    en[0] = Math.min(en[0], k.k[0]); en[1] = Math.min(en[1], k.k[1]); en[2] = Math.max(en[2], k.k[2]); en[3] = Math.max(en[3], k.k[3]);
+  });
   return sonuc;
 }
 
@@ -343,8 +357,16 @@ async function sayfa(ad, o) {
   const girdi = path.join(ARA, ad);
   fs.rmSync(girdi, { recursive: true, force: true });
   fs.mkdirSync(girdi, { recursive: true });
+  const cikti = o.tur === 'kisi' ? path.join(CIKTI, 'kisi', o.kim) : path.join(CIKTI, o.grup);
+  fs.mkdirSync(cikti, { recursive: true });
+  // konturuz (beyaz parıltı, açık ışık halkası): beyaz zeminde ayrılamaz; özgün nane zeminden alfa çıkarılır
+  const ozgun = o.konturuz?.length ? (await s(f).removeAlpha().raw().toBuffer({ resolveWithObject: true })).data : null;
   for (let i = 0; i < kutular.length; i++) {
     const kt = kutular[i], [x0, y0, x1, y1] = kt, P = 16;
+    if (ozgun && o.konturuz.includes(o.adlar[i])) {
+      await konturuzKes(ozgun, W, z, kt, path.join(cikti, `${o.adlar[i]}.webp`), o.max || 600);
+      continue;
+    }
     const l = Math.max(0, x0 - P), t = Math.max(0, y0 - P), w = Math.min(W, x1 + P) - l, h = Math.min(H, y1 + P) - t;
     // kutu + pay kırpılır; kutuya düşen BAŞKA nesnenin pikselleri (etiket ızgarası) beyazlanır: sıkı dizilmiş
     // sayfada (damlalar, kabuklar, üst üste satırlar) komşu parça kesime girmez
@@ -357,8 +379,6 @@ async function sayfa(ad, o) {
     }
     await s(parca, { raw: { width: w, height: h, channels: 3 } }).extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#ffffff' }).png().toFile(path.join(girdi, `${o.adlar[i]}.png`));
   }
-  const cikti = o.tur === 'kisi' ? path.join(CIKTI, 'kisi', o.kim) : path.join(CIKTI, o.grup);
-  fs.mkdirSync(cikti, { recursive: true });
   const ek = o.tur === 'kisi' ? ['--esit', '.', '--esit-hiza', 'alt', '--max', '1400'] : ['--max', String(o.max ?? 1024)];
   execFileSync('node', [ESYA_KES, '--girdi', girdi, '--cikti', cikti, ...ek, '--ayar', JSON.stringify(o.ayar || {})], { stdio: 'inherit', cwd: KOK });
   // yanlış yönde çizilmiş parça döndürülür (ör. boyuna yarım salatalık dik çizilmiş; bütün salatalık gibi yatar)
@@ -369,9 +389,87 @@ async function sayfa(ad, o) {
     fs.writeFileSync(f, b);
     console.log(`${p}: ${derece}° döndürüldü`);
   }
+  // tavadaki yumurta: Gemini yumurtayı küçük bir tavayla çizdi; Tava oyununda tavanın İÇİNE konur → yalnız yumurta
+  for (const p of o.sahanda || []) {
+    const f = path.join(cikti, p + '.webp');
+    if (fs.existsSync(f)) await sahandaAyikla(f);
+  }
   // kişi sayfası: ölçü (tepe, taban, bel) oyunun boy hesabı için (restoran/src/lokanta/kisi.ts okur)
   if (o.tur === 'kisi') await olcuYaz(cikti, o);
   return true;
+}
+
+/**
+ * Tavalı yumurta resminden yalnız yumurta: sarının ortasından yukarı çıkıp beyaza (krem) varılır, beyaz bölge koyu
+ * kontura kadar doldurulur, içindeki delikler (sarı) eklenir, dış kontur için 6 px şişirilir; geri kalan (tava) saydam.
+ */
+async function sahandaAyikla(f) {
+  const { data, info } = await s(fs.readFileSync(f)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const W = info.width, H = info.height, n = W * H;
+  const px = (i) => [data[i * 4], data[i * 4 + 1], data[i * 4 + 2], data[i * 4 + 3]];
+  let sx = 0, sy = 0, sn = 0;
+  for (let i = 0; i < n; i++) { const [r, g, b, a] = px(i); if (a > 200 && r > 215 && g > 140 && g < 215 && b < 130) { sx += i % W; sy += (i / W) | 0; sn++; } }
+  const ad = path.basename(f, '.webp');
+  if (!sn) return console.log(ad + ': sarı bulunamadı, ayıklanmadı');
+  const cx = Math.round(sx / sn), cy = Math.round(sy / sn);
+  const krem = (i) => { const [r, g, b, a] = px(i); return a > 200 && Math.min(r, g, b) > 200 && r - b < 60; };
+  let tohum = -1, karanlik = false;
+  for (let y = cy; y > 0; y--) { const i = y * W + cx, [r, g, b] = px(i); if (r + g + b < 330) karanlik = true; else if (karanlik && krem(i)) { tohum = i; break; } }
+  if (tohum < 0) return console.log(ad + ': beyaz bulunamadı, ayıklanmadı');
+  const acik = (i) => { const [r, g, b, a] = px(i); return a > 120 && r + g + b >= 330; };
+  const beyaz = new Uint8Array(n), q = new Int32Array(n);
+  let bas = 0, son = 0;
+  beyaz[tohum] = 1; q[son++] = tohum;
+  while (bas < son) { const p = q[bas++], x = p % W; for (const d of [-1, 1, -W, W]) { const r = p + d; if (r < 0 || r >= n || beyaz[r] || !acik(r)) continue; if ((d === -1 && x === 0) || (d === 1 && x === W - 1)) continue; beyaz[r] = 1; q[son++] = r; } }
+  // delikleri doldur: beyazın dışından (kenardan) akan bölge dışındaki her şey yumurta
+  const dis = new Uint8Array(n);
+  bas = 0; son = 0;
+  for (let i = 0; i < n; i++) { const x = i % W, y = (i / W) | 0; if ((x === 0 || y === 0 || x === W - 1 || y === H - 1) && !beyaz[i]) { dis[i] = 1; q[son++] = i; } }
+  while (bas < son) { const p = q[bas++], x = p % W; for (const d of [-1, 1, -W, W]) { const r = p + d; if (r < 0 || r >= n || dis[r] || beyaz[r]) continue; if ((d === -1 && x === 0) || (d === 1 && x === W - 1)) continue; dis[r] = 1; q[son++] = r; } }
+  const R = 6, maske = new Uint8Array(n);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (dis[y * W + x]) continue;
+    for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) { if (dx * dx + dy * dy > R * R) continue; const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) maske[yy * W + xx] = 1; }
+  }
+  let mx = W, my = H, Mx = 0, My = 0;
+  for (let i = 0; i < n; i++) { if (!maske[i]) { data[i * 4 + 3] = 0; continue; } const x = i % W, y = (i / W) | 0; mx = Math.min(mx, x); my = Math.min(my, y); Mx = Math.max(Mx, x); My = Math.max(My, y); }
+  const buf = await s(data, { raw: { width: W, height: H, channels: 4 } }).extract({ left: mx, top: my, width: Mx - mx + 1, height: My - my + 1 }).webp({ quality: 94, alphaQuality: 100 }).toBuffer();
+  fs.writeFileSync(f, buf);
+  console.log(ad + ': tava ayıklandı, yalnız yumurta ' + (Mx - mx + 1) + 'x' + (My - my + 1));
+}
+
+/**
+ * Konturu olmayan açık renkli nesne (beyaz parıltı, krem ışık halkası): zemin rengi z'den uzaklık alfa olur, renk
+ * zeminden ayrıştırılır (c = a·F + (1-a)·z → F). F: kutuda zeminden en uzak renk. Komşu nesnenin hücreleri saydam.
+ */
+async function konturuzKes(data, W, z, kt, yol, max) {
+  const P = 12, [x0, y0, x1, y1] = kt;
+  const l = Math.max(0, x0 - P), t = Math.max(0, y0 - P), w = x1 + P - l, h = y1 + P - t;
+  const uzak = (r, g, b) => Math.hypot(r - z[0], g - z[1], b - z[2]);
+  let F = [255, 255, 255], fd = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const k = ((t + y) * W + l + x) * 3, d = uzak(data[k], data[k + 1], data[k + 2]);
+    if (d > fd) { fd = d; F = [data[k], data[k + 1], data[k + 2]]; }
+  }
+  const out = Buffer.alloc(w * h * 4);
+  let mx = w, my = h, Mx = 0, My = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const X = l + x, Y = t + y, k = (Y * W + X) * 3, j = (y * w + x) * 4;
+    const e = kt.et[((Y / kt.K) | 0) * kt.w + ((X / kt.K) | 0)];
+    if (e >= 0 && e !== kt.id && kt.tutulan.has(e)) continue;
+    let a = uzak(data[k], data[k + 1], data[k + 2]) / Math.max(1, fd);
+    a = Math.max(0, Math.min(1, (a - 0.08) / 0.84)); // zemin gürültüsü ve kenar
+    if (a <= 0.02) continue;
+    for (let c = 0; c < 3; c++) out[j + c] = Math.max(0, Math.min(255, Math.round(z[c] + (data[k + c] - z[c]) / a)));
+    out[j + 3] = Math.round(a * 255);
+    mx = Math.min(mx, x); my = Math.min(my, y); Mx = Math.max(Mx, x); My = Math.max(My, y);
+  }
+  let img = s(out, { raw: { width: w, height: h, channels: 4 } }).extract({ left: Math.max(0, mx - 4), top: Math.max(0, my - 4), width: Math.min(w, Mx + 5) - Math.max(0, mx - 4), height: Math.min(h, My + 5) - Math.max(0, my - 4) });
+  const buf0 = await img.png().toBuffer();
+  const m = await s(buf0).metadata();
+  const k = Math.min(1, max / Math.max(m.width, m.height));
+  const buf = await s(buf0).resize(Math.round(m.width * k), Math.round(m.height * k)).webp({ quality: 94, alphaQuality: 100 }).toBuffer();
+  if (await yaz(yol, buf)) console.log(`${path.basename(yol, '.webp')}: konturuz ${Math.round(m.width * k)}x${Math.round(m.height * k)} (zeminden alfa)`);
 }
 
 /** Kişi pozlarının ortak tuvalinde figürün tepe / taban çizgisi (alfa > 60) → <kim>/olcu.json */

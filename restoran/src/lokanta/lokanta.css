@@ -249,3 +249,12 @@ img.rs-yol-alet { width: 18px; height: 18px; box-shadow: none; }
 .rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-ip { border-top-color: transparent; }
 .rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-kasa-govde { background: none; box-shadow: none; }
 .rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-kapi-zil { display: none; } /* zil çizimde, kapının üstünde */
+/* tepki efektleri Gemini efekt sayfasından (lokanta.ts EFEKT_RESIM): resim varsa CSS şekli yok */
+.rs-efekt[data-resim] i { background: none !important; clip-path: none !important; box-shadow: none !important; border-radius: 0 !important; width: 24px; height: 24px; }
+.rs-efekt[data-resim] i > img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* tezgâhtaki Mino: Gemini mutfak pozları (salon-mino.ts); oturunca (personel yemeği) kod çizimi */
+.rs-salon-mino-resim { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: none; }
+.rs-salon-mino[data-resim] > .rs-salon-mino-resim { display: block; }
+.rs-salon-mino[data-resim] > .mino { display: none; }
+/* giden müşteri (veda, kapıya yürüyüş) dokunuş almaz: hesap tabağını örtmez (lokanta.ts musteriGit) */
+.rs-lokanta .rs-kisi.rs-gidiyor:not(.rs-kino):not(.rs-oturuyor) { pointer-events: none; cursor: default; }
