@@ -1218,7 +1218,7 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 
 | # | Dosya | İstem özeti (bloklar §11a) |
 |---|---|---|
-| 61 | `dokulenler.png` | ESYA, üstten: ayran gölü, çorba lekesi, yağ lekesi, ketçap damlaları, kırıntı kümesi, tek tek kırıntılar (6 şekil), devrilmiş bardak, ıslak sünger, ip paspas, süpürge ve faraş, köpük kümesi, parlak temiz zemin pırıltısı + S-PREMIUM |
+| 61 | `dokulenler.png` | stil, #65 yüklenir. ESYA, **#65 ile aynı 3/4 açıda yere yatık** (araçlar ayakta): ayran gölü, çorba lekesi, yağ lekesi, ketçap damlaları, kırıntı kümesi, tek tek kırıntılar (6 şekil), devrilmiş bardak, ıslak sünger, ip paspas, süpürge ve faraş, köpük kümesi, parlak temiz zemin pırıltısı + S-34 + S-PREMIUM |
 | 62 | `liste-kutu.png` | ESYA: buzdolabı not kâğıdı (boş, mıknatıslı), 7 küçük çıkartma (kalp, menemen, iki yüz, sünger, şef şapkası, gülen tabak, soğan), sürpriz kutu kapalı (kurdeleli), aynı kutu açık, şefin yıldızı çıkartması, arkadaşlık kalbi + S-PREMIUM |
 | 63 | `sohbet-balonlari.png` | ESYA: yazısız 8 küçük sohbet balonu içinde resim (top, çiçek, nota, güneş, kek, yıldız, kalp, gülen yüz), 4 atışma resmi (peçete, Zzz, hızlı konuşma çizgileri, kaçan kedi izi) + S-PREMIUM |
 | 64 | `sus-2.png` | ESYA, önden: balon demeti süsü, bal kavanozlu raf, sessiz köşe paravanı, pencere kenarı minderi, fesleğen saksısı (büyük) + S-PREMIUM |
@@ -1244,10 +1244,10 @@ P4, P6 ve P8'den (3/4 sahne) sonra başlar, tek kodcu. `lokanta.ts`'e başka pak
   - `tests/unit/restoran-check.test.ts` (yeni).
   - `tests/e2e/restoran-check.spec.ts` (yeni).
 - **Bitti ölçütü:**
-  1. Her müşteri boş masaya da, dolu masanın boş sandalyesine de oturtulabilir. Oturan müşteri yemek gelmeden önce yer değiştirebilir. 3-4 yaşta 10 sn sonra kendisi oturur. Hiçbir an kilitlenmez.
+  1. Sıradaki her müşteri (P8 `sira.ts`) boş masaya da, dolu masanın boş sandalyesine de oturtulabilir; iki kişilik masada derinlik doğrudur (masa önde, iki müşteri arkada). Oturan müşteri yemek gelmeden önce yer değiştirebilir. 3-4 yaşta 10 sn sonra kendisi oturur. Hiçbir an kilitlenmez.
   2. Altı arkadaş çiftinin ve beş atışmanın her biri e2e'de bir kez oynar. Atışmada jeton aynıdır; masa bahşişi hiçbir durumda +1'i geçmez (birim testi).
   3. "Ne yesem?" isteğinde en az 3 kart önerilebilir, her birine anında yüz tepkisi gelir. Kötü öneri de yenir ve ödenir.
-  4. Dökülen en çok iki müşteride bir çıkar. Hem silme hem süpürme çalışır. Saklı bahşiş kasaya girer. Temizlenmeyen leke gün sonunda kendiliğinden kaybolur. Kino kayar ama düşmez.
+  4. Dökülen en çok iki müşteride bir çıkar ve 3/4 zeminde, eşyaların altında çizilir (e2e: `elementFromPoint`). Hem silme hem süpürme çalışır. Saklı bahşiş kasaya girer. Temizlenmeyen leke gün sonunda kendiliğinden kaybolur. Kino kayar ama düşmez.
   5. Sevdiği köşe anı bir kez tetiklenir. Gramofon alınınca ertesi gün Tuhaf Teyze gelir (birim testi: `gunPlani`).
   6. Liste her gün 2/3 iş verir, işler oynanışta tamamlanabilir (birim testi: her iş açık tariflerle yapılabilir). Çıkartma ve sürpriz kutu çalışır. Tamamlanmayan iş hiçbir şey eksiltmez.
   7. Yasak kelime testi yeni sözleri de kapsar. `buyutulen()` temiz. Toplam karakter alanı ≤ %25. Ekran görüntüleri 844×390, 932×430, 667×375 ve 390×844 (DPR 3) çekilir ve gerçek hızda izlenir. `ORTAK_NOTLAR.md`'ye satır eklenir.
