@@ -3,7 +3,7 @@
  * Tarifler, müşteriler (sever / sevmez / ses), günün planı (tohumla), istek kabulü, tepki kademesi (bayıldı / mmm /
  * komik; ceza yok), ödeme, söz toplama (restoranCumleleri).
  */
-import type { Malzeme, OzelIstek, Urun, Yas, YemekOzelligi } from './mini/arayuz';
+import { yemekTemizligi, type Malzeme, type OzelIstek, type Urun, type Yas, type YemekOzelligi } from './mini/arayuz';
 
 // ---------------------------------------------------------------- tarifler
 
@@ -87,10 +87,10 @@ export function ipucunaUyar(ipucu: Ipucu, yemek: string, o: YemekOzelligi): bool
 
 // ---------------------------------------------------------------- müşteriler
 
-/** Zevk koşulu: yemekte bu var mı */
+/** Zevk koşulu: yemekte bu var mı (temiz: sebzeler Yıka'dan yıkanmış geldi; malzeme zinciri, arayuz.ts) */
 export type Zevk =
   | { m: Malzeme }
-  | { k: 'kocaman' | 'az' | 'citir' | 'tuzlu' | 'tuzAz' | 'yuz' | 'duzgun' | 'tatli' | 'aci' | 'beyaz' | 'eksi' | 'sicak' | 'tuhaf' }
+  | { k: 'kocaman' | 'az' | 'citir' | 'tuzlu' | 'tuzAz' | 'yuz' | 'duzgun' | 'tatli' | 'aci' | 'beyaz' | 'eksi' | 'sicak' | 'tuhaf' | 'temiz' }
   | { t: string };
 
 export interface Musteri {
@@ -118,7 +118,7 @@ export const MUSTERILER: Record<string, Musteri> = {
   anne: { id: 'anne', boy: 'seri2-anne', ton: 1.04, sever: [{ m: 'limon' }, { m: 'maydanoz' }, { k: 'duzgun' }], sevmez: [{ k: 'tuzlu' }], gag: 'su', gun: 1, aile: true },
   baba: { id: 'baba', boy: 'baba', ton: 0.86, sever: [{ k: 'kocaman' }, { k: 'citir' }, { t: 'kofte' }], sevmez: [{ k: 'az' }], gag: 'bos-tabak', gun: 1, aile: true },
   dede: { id: 'dede', boy: 'dede', ton: 0.84, sever: [{ m: 'sogan' }, { m: 'maydanoz' }, { t: 'ayran' }], sevmez: [{ k: 'tatli' }, { k: 'yuz' }], gag: 'kas', gun: 1, aile: true },
-  babaanne: { id: 'babaanne', boy: 'babaanne', ton: 0.95, sever: [{ t: 'corba' }, { k: 'tuzAz' }], sevmez: [{ k: 'aci' }], gag: 'hapsir', gun: 2, aile: true },
+  babaanne: { id: 'babaanne', boy: 'babaanne', ton: 0.95, sever: [{ t: 'corba' }, { k: 'tuzAz' }, { k: 'temiz' }], sevmez: [{ k: 'aci' }], gag: 'hapsir', gun: 2, aile: true },
   tombi: { id: 'tombi', boy: 'tombi', ton: 0.9, sever: [{ k: 'kocaman' }, { m: 'bal' }, { t: 'pankek' }], sevmez: [{ k: 'az' }], gag: 'sapka', gun: 1 },
   zipzip: { id: 'zipzip', boy: 'zipzip', ton: 1.18, sever: [{ m: 'havuc' }, { m: 'salatalik' }], sevmez: [{ m: 'sogan' }], gag: 'kulak', gun: 1 },
   bulut: { id: 'bulut', boy: 'bulut', ton: 1.1, sever: [{ k: 'beyaz' }, { t: 'ayran' }], sevmez: [], gag: 'utangac', gun: 1 },
@@ -160,6 +160,8 @@ export function zevkVar(z: Zevk, yemek: string, o: YemekOzelligi): boolean {
       return !!o.sicak;
     case 'tuhaf':
       return (var_(o, 'muz') || var_(o, 'bal')) && SEBZE.some((m) => var_(o, m));
+    case 'temiz':
+      return yemekTemizligi(o) === true;
   }
 }
 
@@ -198,13 +200,16 @@ export interface TepkiSonuc {
   tepki: Tepki;
   /** bayıldıysa hangi sevdiği bulundu (pano: §4b keşif ödülü) */
   sevdigi?: string;
-  /** komikse neden: sevmediği bir şey, istek tutmadı ya da boş tabak */
-  neden?: 'sevmez' | 'istek' | 'bos';
+  /** komikse neden: sevmediği bir şey, yıkanmamış sebze (toprak tadı; ceza değil, şaka), istek tutmadı ya da boş tabak */
+  neden?: 'sevmez' | 'toprak' | 'istek' | 'bos';
 }
 
 const zevkAdi = (z: Zevk) => ('m' in z ? z.m : 't' in z ? z.t : z.k);
 
-/** Tepki kademesi (§4b): istek tuttu + sevdiği var → bayıldı; tuttu → mmm; tutmadı ya da sevmediği var → komik */
+/**
+ * Tepki kademesi (§4b): istek tuttu + sevdiği var → bayıldı; tuttu → mmm; tutmadı, sevmediği var ya da lavabo açıkken
+ * yıkanmamış sebze var ("Hmm, biraz toprak tadı var!") → komik. Komik ceza değildir: yer, öder, güler.
+ */
 export function tepkiHesapla(m: Musteri, istek: Istek, u: Pick<Urun, 'yemek' | 'ozellik'>): TepkiSonuc {
   const yemek = yemekTani(u);
   const o = u.ozellik;
@@ -212,6 +217,8 @@ export function tepkiHesapla(m: Musteri, istek: Istek, u: Pick<Urun, 'yemek' | '
   const sevmez = m.sevmez.find((z) => zevkVar(z, yemek, o));
   if (sevmez) return { tepki: 'komik', neden: 'sevmez' };
   if (!istekKabul(istek, yemek, o)) return { tepki: 'komik', neden: 'istek' };
+  // istek tuttu ama yıkanmamış sebze var: şaka (Kino tabağı yine isteğe uyan masaya götürür)
+  if (yemekTemizligi(o) === false) return { tepki: 'komik', neden: 'toprak' };
   const sever = m.sever.find((z) => zevkVar(z, yemek, o));
   if (sever) return { tepki: 'bayildi', sevdigi: zevkAdi(sever) };
   return { tepki: 'mmm' };

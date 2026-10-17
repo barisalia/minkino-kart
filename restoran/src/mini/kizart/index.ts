@@ -15,7 +15,7 @@
  */
 import { h } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-kizart.json';
-import { MALZEME_ADI, urunId, type ArkaIs, type Malzeme, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
+import { durumTopla, MALZEME_ADI, sebzeHali, urunId, urunlerdekiHal, type ArkaIs, type Malzeme, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
 import { ezil, hopla, kipirda, parilti, sac } from '../dogra/efekt';
 import { rafSimge, RENK } from '../dogra/gorsel';
 import { surukle } from '../dogra/surukle';
@@ -80,6 +80,8 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   // tepsiden gelen patates (Soy, Doğra) önce kullanılır
   const tepsidenPatates = g.tepsi.filter((u) => (u.ozellik.malzemeler.patates?.adet ?? 0) > 0);
   const kullanilan: string[] = [];
+  /** zincir: tepsi bitince raftan alınan patates (lavabo açıkken yıkanmamış sayılır) */
+  let raftanPatates = false;
 
   for (const m of raftakiler) {
     const btn = h('button.rs-kzr-raf-oge', { type: 'button', 'aria-label': MALZEME_ADI[m], 'data-malzeme': m }, rafSimge(m), h('i.rs-kzr-raf-kesim', { 'data-kesim': kesimi(m) }));
@@ -257,7 +259,7 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     if (m === 'patates' && tepsidenPatates.length) {
       const u = tepsidenPatates.shift()!;
       kullanilan.push(u.id);
-    }
+    } else if (m === 'patates') raftanPatates = true;
     const yeni = avucEkle(sepet, m, yas);
     sepetCiz();
     // raftan sepete bir avuç uçar (aynı karede)
@@ -634,6 +636,13 @@ function kizartBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const kr = kok.getBoundingClientRect();
     await uc(kulah, tr.left - kr.left + tr.width / 2 - KL.cx, tr.top - kr.top + tr.height / 2 - KL.cy, 420, -40);
     const ozellik = kizartmaOzeti(kulahta, tuz, ketcapNokta.length);
+    // zincir: tepsiden gelen patatesin hâli (Soy, Doğra: soyuldu, temiz); raftan gelen lavabo açıkken topraklı
+    const pt = ozellik.malzemeler.patates;
+    if (pt) {
+      const hal = durumTopla({ adet: 0, ...urunlerdekiHal(g.tepsi.filter((u) => kullanilan.includes(u.id)), 'patates') }, { adet: 0, ...(raftanPatates ? sebzeHali('patates', [], g.yikama) : {}) });
+      if (hal.temiz !== undefined) pt.temiz = hal.temiz;
+      if (hal.soyuldu !== undefined) pt.soyuldu = hal.soyuldu;
+    }
     const patates = (ozellik.malzemeler.patates?.adet ?? 0) * 2 >= kulahta.length;
     const liste = kulahta.map((x) => ({ m: x.m, p: x.p }));
     const noktalar = ketcapNokta.slice();

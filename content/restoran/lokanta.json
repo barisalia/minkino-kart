@@ -1,5 +1,5 @@
 {
-  "aciklama": "Tıkır Tıkır Lokanta · lokanta ve müşteri sözleri (P1; ekip/senaryo/RESTORAN.md). mino = anlatıcı sesi (Mino; durum anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK, birim testi denetler). kino = Kino'nun kendi sesi. musteri.<ad> = müşterinin sözleri (kendi eleven_v4 sesi gelene kadar anlatıcı kaydı müşterinin tonuyla çalar; balonda da görünür). tarif = Mino'nun yemek adları. [etiket] yalnız seslendirme içindir. Mini oyunların sözleri ayrı dosyada: content/restoran/mini-<oyun>.json (restoranCumleleri hepsini toplar).",
+  "aciklama": "Tıkır Tıkır Lokanta · lokanta ve müşteri sözleri (P1; ekip/senaryo/RESTORAN.md). mino = anlatıcı sesi (Mino; durum anlatır, emir vermez: 'dokun', 'tıkla', 'bas', 'sürükle', 'şimdi şunu' YASAK, birim testi denetler). kino = Kino'nun kendi sesi. musteri.<ad> = müşterinin sözleri (kendi eleven_v4 sesi gelene kadar anlatıcı kaydı müşterinin tonuyla çalar; balonda da görünür). tarif = Mino'nun yemek adları. [etiket] yalnız seslendirme içindir. Mini oyunların sözleri ayrı dosyada: content/restoran/mini-<oyun>.json (restoranCumleleri hepsini toplar). musteri_tepki = her müşterinin söyleyebildiği ortak sözler (toprak: lavabo açıkken yıkanmamış sebze; ceza değil, komik tepki).",
   "mino": {
     "acildi": "[excited] Lokanta açıldı!",
     "musteri_geldi": "[happy] Bir müşteri geldi!",
@@ -64,6 +64,9 @@
     "afiyet": "[happy] Afiyet olsun!",
     "geliyor": "[excited] Geliyor geliyor!",
     "toplarim": "[giggles] Ben toplarım!"
+  },
+  "musteri_tepki": {
+    "toprak": "[giggles] Hmm, biraz toprak tadı var!"
   },
   "musteri": {
     "lokum": {

@@ -2,6 +2,7 @@
  * Tek mini oyun deneme sayfası (yalnız web/test; uygulamaya girmez): /restoran/mini.html?oyun=dogra&yas=kucuk&tarif=salata
  * Lokantasız açılır: istasyon çerçevesi + mini oyun. Tepsiye alınınca ürün gösterilir, "yeniden" ile baştan.
  * &malzemeler=domates,salatalik (raf), &tepsi=dogranmis (Tabakla için örnek tepsi), &test=1.
+ * Malzeme zinciri: &tepsi=yikanmis (iki yıkanmış domates), soyulmus (soyulmuş patates + havuç), &yikama=1 (lavabo açık).
  */
 import '@fontsource/fredoka/latin-ext-500.css';
 import '@fontsource/fredoka/latin-ext-600.css';
@@ -30,9 +31,14 @@ const oyun = oyunBul(ad) ?? denemeIcin('tezgah');
 const yas = q.get('yas') === 'buyuk' ? 'buyuk' : 'kucuk';
 const tarif = q.get('tarif') ?? undefined;
 const malzemeler = ((q.get('malzemeler')?.split(',') ?? TARIFLER[tarif ?? 'salata']?.malzemeler ?? ['domates', 'salatalik', 'sogan', 'biber', 'maydanoz']) as Malzeme[]).filter((m) => m in MALZEME_ADI);
+/** zincir denemesi: Yıka / Soy ürünlerinin örneği (bütün sebze, hâli belli) */
+const HAZIRLIK: Record<string, Urun['ozellik']> = {
+  yikanmis: { malzemeler: { domates: { adet: 2, temiz: true } }, temiz: true, sicak: false },
+  soyulmus: { malzemeler: { patates: { adet: 1, soyuldu: true }, havuc: { adet: 1, soyuldu: true } }, sicak: false },
+};
 const ornekTepsi = (): Urun[] =>
   (q.get('tepsi') ?? (oyun.istasyon === 'servis' ? 'dogranmis' : '')).split(',').filter(Boolean).map((tur) => {
-    const ozellik = { malzemeler: { domates: { adet: 3, kesim: 'dilim' as const }, salatalik: { adet: 4, kesim: 'dilim' as const } } };
+    const ozellik = HAZIRLIK[tur] ? JSON.parse(JSON.stringify(HAZIRLIK[tur])) : { malzemeler: { domates: { adet: 3, kesim: 'dilim' as const }, salatalik: { adet: 4, kesim: 'dilim' as const } } };
     return { id: urunId(tur), tur, ozellik, gorsel: () => kaseGorsel(ozellik, 'kase') };
   });
 
@@ -42,7 +48,7 @@ function ac() {
   kok.append(ekran);
   istasyonAc(ekran, {
     oyun,
-    girdi: { yas, tarif, malzemeler, tepsi: ornekTepsi(), test: TEST_MODU },
+    girdi: { yas, tarif, malzemeler, tepsi: ornekTepsi(), yikama: q.has('yikama'), test: TEST_MODU },
     tepsiyeAlindi: (u) => sonuc(u),
     geriDonuldu: () => sonuc([]),
   });

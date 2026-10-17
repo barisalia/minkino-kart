@@ -62,6 +62,8 @@ interface TParca {
   elle?: boolean;
   /** özel (tava yemeği, bilinmeyen ürün): eleman üretici */
   ozel?: () => HTMLElement;
+  /** zincir: soyulmuş gelen (Soy → Doğra) kesitte kabuk halkası yok */
+  s?: boolean;
 }
 
 export const oyun: MiniOyun = {
@@ -280,7 +282,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
 
   // ------------------------------------------------------------ parçalar
   function parcaYap(p: Omit<TParca, 'el' | 'id'>): TParca {
-    const el = p.ozel ? h('div.rs-tb-ozel', {}, p.ozel()) : parcaEl(p.m as Malzeme, { id: 0, gorunum: p.g as Gorunum, x: 0, y: 0, w: 0, h: 0 });
+    const el = p.ozel ? h('div.rs-tb-ozel', {}, p.ozel()) : parcaEl(p.m as Malzeme, { id: 0, gorunum: p.g as Gorunum, x: 0, y: 0, w: 0, h: 0 }, !!p.s);
     el.classList.add('rs-tb-parca');
     const t: TParca = { ...p, id: sira++, el };
     parcaKoy(t);
@@ -417,7 +419,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
           const a = i * 2.39996 + Math.random() * 0.3;
           const r = 0.5 * Math.sqrt((i + 0.5) / Math.max(1, toplam));
           const yer = miknatis(merkez.u + Math.cos(a) * r, merkez.v + Math.sin(a) * r)!;
-          yeniler.push(parcaYap({ m: m as Malzeme, g: gor, u: yer.u, v: yer.v, w, h: hh, kaynak: u.id }));
+          yeniler.push(parcaYap({ m: m as Malzeme, g: gor, u: yer.u, v: yer.v, w, h: hh, kaynak: u.id, s: !!d!.soyuldu }));
         }
       }
       b.ses.cal('pof', { guc: 0.6 });
@@ -567,7 +569,7 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       parilti(kok, cx, cy - R * 0.3, 1, 10);
       parilti(kok, cx + R * 0.35, cy - R * 0.45, 5, R * 0.3);
       await bekle(520);
-      const snap = parcalar.map((p) => ({ m: p.m, g: p.g, u: p.u, v: p.v, w: p.w, h: p.h, ozel: p.ozel }));
+      const snap = parcalar.map((p) => ({ m: p.m, g: p.g, u: p.u, v: p.v, w: p.w, h: p.h, ozel: p.ozel, s: p.s }));
       const cz = cizgiler.map((c) => ({ sise: c.sise, noktalar: c.noktalar.slice() }));
       const urun: Urun = {
         id: urunId('tabak'),
@@ -611,7 +613,7 @@ function susSimge(m: Malzeme): HTMLElement {
 }
 
 /** Tabağın küçük hâli (tepside, masada, "günün tabağı"): parçalar yüzde konumlu; kutusunu doldurur */
-export function tabakGorsel(ps: { m: Malzeme | 'yemek'; g: Gorunum | 'ozel'; u: number; v: number; w: number; h: number; ozel?: () => HTMLElement }[], cz: { sise: Sise; noktalar: [number, number][] }[]): HTMLElement {
+export function tabakGorsel(ps: { m: Malzeme | 'yemek'; g: Gorunum | 'ozel'; u: number; v: number; w: number; h: number; ozel?: () => HTMLElement; s?: boolean }[], cz: { sise: Sise; noktalar: [number, number][] }[]): HTMLElement {
   const el = h('div.rs-tb-mini');
   const tabakResim = alet('tabak');
   el.append(tabakResim ? h('img.rs-tb-tabak-resim', { src: tabakResim, alt: '', draggable: 'false' }) : h('i.rs-tb-tabak-yt'));
@@ -629,7 +631,7 @@ export function tabakGorsel(ps: { m: Malzeme | 'yemek'; g: Gorunum | 'ozel'; u: 
     ic.append(s);
   }
   for (const p of ps) {
-    const pe = p.ozel ? h('div.rs-tb-ozel', {}, p.ozel()) : parcaEl(p.m as Malzeme, { id: 0, gorunum: p.g as Gorunum, x: 0, y: 0, w: 0, h: 0 });
+    const pe = p.ozel ? h('div.rs-tb-ozel', {}, p.ozel()) : parcaEl(p.m as Malzeme, { id: 0, gorunum: p.g as Gorunum, x: 0, y: 0, w: 0, h: 0 }, !!p.s);
     pe.classList.add('rs-tb-parca');
     pe.style.left = `${50 + p.u * 50}%`;
     pe.style.top = `${50 + p.v * 50}%`;

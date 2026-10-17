@@ -125,33 +125,47 @@ export const RENK: Partial<Record<Malzeme, [string, string, string]>> = {
   yumurta: ['#FFF8EC', '#FFFFFF', '#FFC83A'],
 };
 const renk = (m: Malzeme) => RENK[m] ?? ['#B9B9B9', '#E6E6E6', '#F4F4F4'];
+/** Soyulmuş sebzenin kesit kenarı (kabuk yok: dış halka iç rengin bir ton koyusu; Soy'dan gelen patates, havuç...) */
+const SOYULMUS_DIS: Partial<Record<Malzeme, string>> = { patates: '#EBCB78', havuc: '#F48A2E', salatalik: '#A8D27A' };
 
 /**
  * Bir parçanın elemanı (Doğra tahtası, Tabakla tabağı, kâse): `px` tahta eni (css px). Konum ve boy dışarıda verilir
  * (konumla()). Kirpik: bütün resmin penceresi (overflow hidden). Öbürleri: Gemini kesiti ya da sade yer tutucu.
+ * Zincir (arayuz.ts Hal): soyuldu = kesitte kabuk halkası yok; temiz true = yıkanmış (parlak), false = lavabo açık
+ * ama yıkanmamış (bütün kısımda küçük toprak lekesi); undefined = sorulmaz, eskisi gibi.
  */
-export function parcaEl(m: Malzeme, p: Parca, soyuldu = false): HTMLElement {
+export function parcaEl(m: Malzeme, p: Parca, soyuldu = false, temiz?: boolean): HTMLElement {
   const el = h('div.rs-p2-parca', { 'data-malzeme': m, 'data-gorunum': p.gorunum, 'aria-hidden': 'true' });
   const [dis, ic, cek] = renk(m);
   el.style.setProperty('--dis', dis);
   el.style.setProperty('--ic', ic);
   el.style.setProperty('--cek', cek);
   if (p.taraf) el.dataset.taraf = p.taraf;
-  if (soyuldu) el.dataset.soyuldu = '1';
+  if (soyuldu) {
+    el.dataset.soyuldu = '1';
+    const sd = SOYULMUS_DIS[m];
+    if (sd) el.style.setProperty('--dis', sd);
+  }
+  if (temiz === true) el.dataset.temiz = '1';
+  if (temiz === false) el.dataset.toprak = '1';
   if (p.gorunum === 'kirpik') {
     const b = butunResim(m, soyuldu);
     if (b) {
       const img = h('img.rs-p2-butun', { src: b.url, alt: '', draggable: 'false' }) as HTMLImageElement;
       el.append(img);
       el.dataset.resim = '1';
+      // soyulmuş resmi gelmediyse eski bütün resim açık tonla (Soy'daki yer tutucuyla aynı)
+      if (soyuldu && !b.yol.endsWith('-soyulmus')) el.dataset.soyulmusYt = '1';
     } else {
       el.dataset.yertutucu = '1';
       el.append(h('i.rs-p2-butun.rs-p2-butun-yt'));
     }
+    if (temiz === false) el.append(h('i.rs-p2-toprak'));
+    if (temiz === true) el.append(h('i.rs-p2-parlak'));
     return el;
   }
   const ad = KESIT_ADI[p.gorunum];
-  const u = (ad ? yeni(`yiyecek/${m}-${ad}`) : null) ?? (ad === 'serit' ? yeni(`yiyecek/${m}-halka`) : null) ?? (m === 'ekmek' ? yeni('alet/ekmek') : null);
+  const u = (soyuldu && ad ? yeni(`yiyecek/${m}-soyulmus-${ad}`) : null) ?? (ad ? yeni(`yiyecek/${m}-${ad}`) : null) ?? (ad === 'serit' ? yeni(`yiyecek/${m}-halka`) : null) ?? (m === 'ekmek' ? yeni('alet/ekmek') : null);
   if (u) {
     el.append(h('img.rs-p2-kesit', { src: u, alt: '', draggable: 'false' }));
     el.dataset.resim = '1';
@@ -170,7 +184,7 @@ export function konumla(el: HTMLElement, m: Malzeme, p: Parca, bw: number, bh: n
   el.style.left = `${p.x * bw}px`;
   el.style.top = `${p.y * bh}px`;
   if (p.gorunum === 'kirpik') {
-    const b = butunResim(m);
+    const b = butunResim(m, !!el.dataset.soyuldu);
     const r = p.r ?? [0, 1, 0, 1];
     // bütünün görünen eni (css) — netlik sınırıyla
     let W = butunEn * bw;
@@ -209,8 +223,8 @@ export function konumla(el: HTMLElement, m: Malzeme, p: Parca, bw: number, bh: n
 }
 
 /** Kirpik parçanın ekrandaki gerçek boyu (vuruş alanı için): konumla ile aynı hesap, px */
-export function kirpikBoy(m: Malzeme, p: Parca, bw: number, butunEn: number, butunOran: number): [number, number] {
-  const b = butunResim(m);
+export function kirpikBoy(m: Malzeme, p: Parca, bw: number, butunEn: number, butunOran: number, soyuldu = false): [number, number] {
+  const b = butunResim(m, soyuldu);
   let W = butunEn * bw;
   if (b) {
     const k = b.kutu;
@@ -245,7 +259,7 @@ export const efektResmi = (ad: string) => yeni(`efekt/${ad}`);
  * Kâse görünümü (Doğra'nın çıktısı; tepside ve tabakta): içinde malzemelerin küçük parçaları. Kutusunu doldurur
  * (100% × 100%), yalnız yüzde konumlu: her boyda aynı görünür.
  */
-export function kaseEl(icerik: { m: Malzeme; g: Gorunum; n: number }[]): HTMLElement {
+export function kaseEl(icerik: { m: Malzeme; g: Gorunum; n: number; s?: boolean }[]): HTMLElement {
   const kase = h('div.rs-p2-kase');
   const kaseResim = yeni('alet/kase');
   if (kaseResim) kase.append(h('img.rs-p2-kase-resim', { src: kaseResim, alt: '', draggable: 'false' }));
@@ -253,13 +267,13 @@ export function kaseEl(icerik: { m: Malzeme; g: Gorunum; n: number }[]): HTMLEle
   kase.append(ic);
   let i = 0;
   const toplam = Math.max(1, icerik.reduce((t, x) => t + Math.min(x.n, 6), 0));
-  for (const { m, g, n } of icerik) {
+  for (const { m, g, n, s } of icerik) {
     for (let k = 0; k < Math.min(n, 6); k++, i++) {
       // altın açı sarmalı: dolu ve düzgün yayılır
       const a = i * 2.39996;
       const r = 30 * Math.sqrt((i + 0.5) / toplam);
       const p: Parca = { id: 0, gorunum: g === 'kirpik' ? 'kup' : g, x: 0, y: 0, w: 0, h: 0 };
-      const el = parcaEl(m, p);
+      const el = parcaEl(m, p, s);
       el.classList.add('rs-p2-kase-parca');
       el.style.left = `${50 + Math.cos(a) * r}%`;
       el.style.top = `${50 + Math.sin(a) * r}%`;

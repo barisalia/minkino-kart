@@ -269,3 +269,87 @@
 .mk-kok .rs-istasyon:is(:has(.rs-dogra), :has(.rs-tava), :has(.rs-tabakla)) .rs-mino-balon {
   pointer-events: none;
 }
+
+/*
+ * Malzeme zinciri (arayuz.ts Hal): Soy'dan soyulmuş gelen bütün kısım (soyulmuş resmi gelene kadar açık ton; havuç
+ * turuncu kalır, yaprağı solmaz), Yıka'dan yıkanmış gelen (biraz canlı + iki su damlası), lavabo açıkken yıkanmamış
+ * gelen (küçük toprak lekesi, gövdenin ortasında).
+ */
+.mk-kok .rs-p2-parca[data-soyulmus-yt] > img.rs-p2-butun {
+  filter: sepia(0.4) saturate(0.6) brightness(1.32);
+}
+.mk-kok .rs-p2-parca[data-soyulmus-yt][data-malzeme='havuc'] > img.rs-p2-butun {
+  filter: saturate(1.15) brightness(1.07);
+}
+.mk-kok .rs-p2-parca[data-temiz] > img.rs-p2-butun {
+  filter: saturate(1.1) brightness(1.05);
+}
+.mk-kok .rs-p2-parca[data-temiz][data-soyulmus-yt] > img.rs-p2-butun {
+  filter: sepia(0.38) saturate(0.66) brightness(1.36);
+}
+.mk-kok .rs-p2-parca[data-temiz][data-soyulmus-yt][data-malzeme='havuc'] > img.rs-p2-butun {
+  filter: saturate(1.18) brightness(1.09);
+}
+.mk-kok .rs-p2-parlak,
+.mk-kok .rs-p2-toprak {
+  position: absolute;
+  pointer-events: none;
+}
+.mk-kok .rs-p2-parlak {
+  inset: 0;
+}
+.mk-kok .rs-p2-parlak::before,
+.mk-kok .rs-p2-parlak::after {
+  content: '';
+  position: absolute;
+  width: 7%;
+  height: 10%;
+  min-width: 6px;
+  min-height: 8px;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 38% 34%, #ffffff 0 22%, rgba(214, 240, 255, 0.95) 26% 60%, rgba(150, 205, 235, 0.9) 64%);
+  box-shadow: 0 0 0 1px rgba(59, 36, 22, 0.35);
+}
+.mk-kok .rs-p2-parlak::before {
+  left: 38%;
+  top: 52%;
+}
+.mk-kok .rs-p2-parlak::after {
+  left: 55%;
+  top: 63%;
+  width: 5%;
+  height: 7%;
+  min-width: 5px;
+  min-height: 6px;
+}
+.mk-kok .rs-p2-toprak {
+  left: 44%;
+  top: 50%;
+  width: 22%;
+  height: 15%;
+  min-width: 12px;
+  min-height: 8px;
+  border-radius: 58% 42% 60% 40% / 52% 62% 38% 48%;
+  background: radial-gradient(circle at 68% 30%, rgba(255, 236, 205, 0.35) 0 12%, transparent 14%), radial-gradient(ellipse at 42% 58%, #6c4424 0 46%, #8b5b34 48%);
+  box-shadow: 0 0 0 1.5px rgba(59, 36, 22, 0.55);
+}
+/* iki minik toprak kırıntısı, lekenin hemen yanında (gövdeden taşmaz) */
+.mk-kok .rs-p2-toprak::before,
+.mk-kok .rs-p2-toprak::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: #74492a;
+}
+.mk-kok .rs-p2-toprak::before {
+  left: -16%;
+  top: 58%;
+  width: 16%;
+  height: 24%;
+}
+.mk-kok .rs-p2-toprak::after {
+  right: -12%;
+  top: -14%;
+  width: 13%;
+  height: 20%;
+}

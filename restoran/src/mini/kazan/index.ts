@@ -18,7 +18,7 @@
 import { konusuyorMu } from '../../../../src/audio/ses';
 import { h, TEST_MODU } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-kazan.json';
-import { MALZEME_ADI, urunId, type ArkaIs, type Kesim, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun, type YemekOzelligi } from '../arayuz';
+import { MALZEME_ADI, urunId, urunlerdekiHal, type ArkaIs, type Kesim, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun, type YemekOzelligi } from '../arayuz';
 import { ezil, kipirda, parilti, sac, TITRESIM, ucur } from '../dogra/efekt';
 import { parcaEl } from '../dogra/gorsel';
 import type { Gorunum } from '../dogra/mantik';
@@ -620,7 +620,9 @@ function kazanBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     if (!icerikVar(d)) return null;
     const malzemeler: YemekOzelligi['malzemeler'] = {};
     if (d.mercimek) malzemeler.mercimek = { adet: d.mercimek };
-    for (const [m, n] of Object.entries(d.malzemeler)) if (n) malzemeler[m as Malzeme] = { adet: n, kesim: kesimler[m as Malzeme] };
+    // zincir: kâselerin hâli (yıkandı, soyuldu) çorbaya geçer
+    const kullanilanlar = g.tepsi.filter((u) => kullanilan.includes(u.id));
+    for (const [m, n] of Object.entries(d.malzemeler)) if (n) malzemeler[m as Malzeme] = { adet: n, kesim: kesimler[m as Malzeme], ...urunlerdekiHal(kullanilanlar, m as Malzeme) };
     if (d.eksi) malzemeler.limon = { adet: d.eksi };
     const ozellik: YemekOzelligi = {
       malzemeler,

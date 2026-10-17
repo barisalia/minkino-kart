@@ -17,7 +17,7 @@
 import { konusuyorMu } from '../../../../src/audio/ses';
 import { h, TEST_MODU } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-tava.json';
-import { MALZEME_ADI, urunId, type ArkaIs, type Kesim, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Pisme, type Urun, type YemekOzelligi } from '../arayuz';
+import { durumTopla, MALZEME_ADI, urunId, type ArkaIs, type Kesim, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Pisme, type Urun, type YemekOzelligi } from '../arayuz';
 import { ezil, hopla, kipirda, parilti, sac, tak, TITRESIM, ucur } from '../dogra/efekt';
 import { alet, parcaEl, yeni } from '../dogra/gorsel';
 import type { Gorunum } from '../dogra/mantik';
@@ -184,13 +184,13 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     v: number;
   }
   const taneler: Tane[] = [];
-  function taneEkle(m: Malzeme, kesim: Kesim, n: number, kaynak?: { x: number; y: number }) {
+  function taneEkle(m: Malzeme, kesim: Kesim, n: number, kaynak?: { x: number; y: number }, soyuldu = false) {
     const gor = GOR[kesim] ?? 'kup';
     for (let i = 0; i < n; i++) {
       const k = taneler.length;
       const a = k * 2.39996 + Math.random() * 0.4;
       const r = 0.68 * Math.sqrt((k % 18) / 18 + 0.03) + Math.random() * 0.06;
-      const el = parcaEl(m, { id: 0, gorunum: gor, x: 0, y: 0, w: 0, h: 0 });
+      const el = parcaEl(m, { id: 0, gorunum: gor, x: 0, y: 0, w: 0, h: 0 }, soyuldu);
       el.classList.add('rs-tv-tane');
       el.dataset.boy = gor;
       icerik.append(el);
@@ -217,7 +217,7 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     t.el.style.top = `${50 + t.v * 50}%`;
   }
   // geri dönüşte tavadakiler yeniden çizilir
-  for (const [m, md] of Object.entries(d.malzemeler)) taneEkle(m as Malzeme, md!.kesim ?? 'kup', Math.min(md!.adet, 8));
+  for (const [m, md] of Object.entries(d.malzemeler)) taneEkle(m as Malzeme, md!.kesim ?? 'kup', Math.min(md!.adet, 8), undefined, !!md!.soyuldu);
 
   // ------------------------------------------------------------ yumurta (tavada)
   const yumurtalar: HTMLElement[] = [];
@@ -425,9 +425,9 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const oge = rafOgeleri.find((o) => o.kase === k);
     oge?.el.classList.add('rs-kullanildi');
     for (const [m, md] of Object.entries(k.ozellik.malzemeler)) {
-      const e = d.malzemeler[m as Malzeme];
-      d.malzemeler[m as Malzeme] = e ? { ...e, adet: e.adet + md!.adet } : { ...md! };
-      taneEkle(m as Malzeme, md!.kesim ?? 'kup', Math.min(md!.adet, 6), kaynak);
+      // zincir: temiz / soyuldu birleşir (durumTopla)
+      d.malzemeler[m as Malzeme] = durumTopla(d.malzemeler[m as Malzeme], md!);
+      taneEkle(m as Malzeme, md!.kesim ?? 'kup', Math.min(md!.adet, 6), kaynak, !!md!.soyuldu);
     }
     if (k.ozellik.tuz) d.tuz += k.ozellik.tuz;
     // cızzz!
@@ -1153,7 +1153,7 @@ function kaseGorseli(oz: YemekOzelligi): HTMLElement {
   let i = 0;
   for (const [m, md] of Object.entries(oz.malzemeler)) {
     for (let k = 0; k < Math.min(md!.adet, 4); k++, i++) {
-      const p = parcaEl(m as Malzeme, { id: 0, gorunum: GOR[md!.kesim ?? 'kup'] === 'kirpik' ? 'kup' : GOR[md!.kesim ?? 'kup'], x: 0, y: 0, w: 0, h: 0 });
+      const p = parcaEl(m as Malzeme, { id: 0, gorunum: GOR[md!.kesim ?? 'kup'] === 'kirpik' ? 'kup' : GOR[md!.kesim ?? 'kup'], x: 0, y: 0, w: 0, h: 0 }, !!md!.soyuldu);
       p.classList.add('rs-p2-kase-parca');
       const a = i * 2.39996;
       const r = 26 * Math.sqrt((i + 0.5) / 8);

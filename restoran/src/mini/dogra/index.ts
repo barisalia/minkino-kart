@@ -13,7 +13,7 @@
 import { konusuyorMu } from '../../../../src/audio/ses';
 import { h, TEST_MODU } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-dogra.json';
-import { MALZEME_ADI, urunId, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
+import { durumTopla, hazirlikStogu, MALZEME_ADI, urunId, yemekTemizligi, type Hal, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
 import { ezil, hickir, hopla, kipirda, leke, mirilti, parilti, ritimTing, sac, sumkur, tikirTikir, TITRESIM, ucur } from './efekt';
 import { alet, eski, kaseEl, kirpikBoy, konumla, parcaEl, rafSimge, RENK } from './gorsel';
 import { bittiMi, dilimSayisi, itis, kes, kesimOzeti, kiy, ortadanGecti, sebzeKoy, seriPerde, seriSay, silkele, soy, tanim, yonBul, type Gorunum, type Parca, type SebzeDurum } from './mantik';
@@ -37,6 +37,8 @@ interface Tahtada {
   els: Map<number, HTMLElement>;
   bittiDendi: boolean;
   sayilan: number;
+  /** zincir: Yıka / Soy'dan gelen hâli (tepsideki hazırlık ürünü), lavabo açıkken yıkanmamışsa temiz: false */
+  hal: Hal;
 }
 
 interface KaseKaydi {
@@ -44,6 +46,8 @@ interface KaseKaydi {
   ozet: MalzemeDurumu;
   g: Gorunum;
   n: number;
+  /** soyulmuş (kesitte kabuk halkası yok) */
+  s?: boolean;
 }
 
 export const oyun: MiniOyun = {
@@ -63,6 +67,8 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   const raftakiler = (g.malzemeler.filter((m) => KESILIR.includes(m)) as Malzeme[]).slice(0, yas === 'kucuk' ? 5 : 8);
   if (!raftakiler.length) raftakiler.push('domates', 'salatalik', 'sogan');
   const kapasite = yas === 'kucuk' ? 2 : 3;
+  // zincir: tepsideki Yıka süzgeci / Soy kâsesi; raftan alınan sebze önce onlardan gelir (yıkanmış, soyulmuş)
+  const stok = hazirlikStogu(g.tepsi, g.yikama);
   const olaylar: string[] = [];
   let odulde = false;
   const olay = (ad: string) => {
@@ -190,9 +196,20 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
           ];
 
   // ------------------------------------------------------------ çizim
-  const soyulduMu = (t: Tahtada) => t.d.ad === 'sogan' && t.d.kabuk === 0;
+  // soğan tahtada soyulur; patates, havuç, salatalık Soy'dan soyulmuş gelir
+  const soyulduMu = (t: Tahtada) => (t.d.ad === 'sogan' ? t.d.kabuk === 0 : !!t.hal.soyuldu);
+  // toprak kabukla gider (soğan tahtada soyulunca leke de kalkar)
+  const temizMi = (t: Tahtada) => (t.hal.temiz === false && soyulduMu(t) ? true : t.hal.temiz);
+  /** kâseye giden hâl: temiz (sorulduysa) ve soyuldu (Soy'dan geldiyse) */
+  const halOzeti = (t: Tahtada): Hal => {
+    const r: Hal = {};
+    const tz = temizMi(t);
+    if (tz !== undefined) r.temiz = tz;
+    if (t.d.ad !== 'sogan' && t.hal.soyuldu !== undefined) r.soyuldu = t.hal.soyuldu;
+    return r;
+  };
   function parcaCiz(t: Tahtada, p: Parca): HTMLElement {
-    const el = parcaEl(t.d.ad, p, soyulduMu(t));
+    const el = parcaEl(t.d.ad, p, soyulduMu(t), temizMi(t));
     el.dataset.sebze = String(t.d.id);
     el.dataset.parca = String(p.id);
     if (p.cekirdek) cekirdekCiz(el, p.cekirdek);
@@ -228,7 +245,7 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const tt = parseFloat(tahta.style.top) || 0;
     let w = p.w * bw;
     let hh = p.h * bw;
-    if (p.gorunum === 'kirpik') [w, hh] = kirpikBoy(t.d.ad, p, bw, tanim(t.d.ad).en, tanim(t.d.ad).oran);
+    if (p.gorunum === 'kirpik') [w, hh] = kirpikBoy(t.d.ad, p, bw, tanim(t.d.ad).en, tanim(t.d.ad).oran, soyulduMu(t));
     // küçük parçalar da parmakla yakalansın (en az 34 px)
     return { x: tl + p.x * bw, y: tt + p.y * bh, w: Math.max(w, 34), h: Math.max(hh, 34) };
   }
@@ -256,7 +273,7 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     }
     const [x, y] = yuvalar()[yuva];
     const d = sebzeKoy(m, x, y, yas);
-    const t: Tahtada = { d, yuva, els: new Map(), bittiDendi: false, sayilan: 0 };
+    const t: Tahtada = { d, yuva, els: new Map(), bittiDendi: false, sayilan: 0, hal: stok.al(m) };
     tahtadakiler.push(t);
     const el = parcaCiz(t, d.parcalar[0]);
     // raftan kavisle uç (döndürmeden), ezilerek kon
@@ -274,7 +291,15 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         ],
         { duration: TEST_MODU ? 40 : 420, easing: 'cubic-bezier(.35,.1,.45,1)' },
       ).finished.then(
-        () => b.ses.cal('pof', { guc: 0.5 }),
+        () => {
+          b.ses.cal('pof', { guc: 0.5 });
+          // yıkanmış sebze konunca bir kez parlar
+          if (temizMi(t) && el.isConnected) {
+            b.ses.cal('ting', { guc: 0.35, perde: 1.2 });
+            const r = parcaRect(t, t.d.parcalar[0]);
+            parilti(kok, r.x, r.y, 4, 30);
+          }
+        },
         () => undefined,
       );
     } catch {
@@ -289,9 +314,9 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     const i = tahtadakiler.indexOf(t);
     if (i < 0) return;
     tahtadakiler.splice(i, 1);
-    const ozet = kesimOzeti(t.d, yas);
+    const ozet = { ...kesimOzeti(t.d, yas), ...halOzeti(t) };
     const baskin = baskinGorunum(t.d);
-    kase.push({ m: t.d.ad, ozet, g: baskin, n: Math.max(1, Math.min(6, t.d.parcalar.length)) });
+    kase.push({ m: t.d.ad, ozet, g: baskin, n: Math.max(1, Math.min(6, t.d.parcalar.length)), s: soyulduMu(t) });
     const kr = kaseKutu.getBoundingClientRect();
     let k = 0;
     for (const [, el] of t.els) {
@@ -315,7 +340,7 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     tamamDenetle();
   }
   function kaseCiz() {
-    kaseKutu.replaceChildren(kaseEl(kase.map((x) => ({ m: x.m, g: x.g, n: x.n }))));
+    kaseKutu.replaceChildren(kaseEl(kase.map((x) => ({ m: x.m, g: x.g, n: x.n, s: x.s }))));
     kaseKutu.dataset.dolu = String(kase.length);
   }
   kaseCiz();
@@ -945,14 +970,19 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
         // aynı malzeme birden çok kez: en çok işlenmiş kesim, adet toplanır; püre baskın
         const once = KESIM_SIRA.indexOf(e.kesim ?? 'butun');
         const yeni = KESIM_SIRA.indexOf(k.ozet.kesim ?? 'butun');
-        malzemeler[k.m] = { adet: e.adet + k.ozet.adet, kesim: yeni > once ? k.ozet.kesim : e.kesim };
+        // zincir: bir tanesi topraklıysa hepsi (durumTopla)
+        malzemeler[k.m] = { ...durumTopla(e, k.ozet), kesim: yeni > once ? k.ozet.kesim : e.kesim };
       }
     }
     const tane = kase.length;
     const porsiyon = tane <= 1 ? 'az' : tane >= (yas === 'kucuk' ? 4 : 5) ? 'kocaman' : 'normal';
-    const icerik = kase.map((x) => ({ m: x.m, g: x.g, n: x.n }));
+    const icerik = kase.map((x) => ({ m: x.m, g: x.g, n: x.n, s: x.s }));
     const ozellik = { malzemeler, porsiyon, sicak: false } as Urun['ozellik'];
-    return { id: urunId('dogranmis'), tur: 'dogranmis', yemek: g.tarif, ozellik, gorsel: () => kaseEl(icerik) };
+    const temiz = yemekTemizligi(ozellik);
+    if (temiz !== undefined) ozellik.temiz = temiz;
+    // kullanılan Yıka / Soy ürünleri tepsiden kalkar; artan sebzeleri tepsiye geri döner (artanlar)
+    const kullanilan = stok.kullanilan();
+    return { id: urunId('dogranmis'), tur: 'dogranmis', yemek: g.tarif, ozellik, gorsel: () => kaseEl(icerik), ...(kullanilan.length ? { kullanilan } : {}) };
   }
 
   let coz: (u: Urun[]) => void = () => undefined;
@@ -986,7 +1016,7 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
     // kâse tepsiye kayar
     const tr = b.tepsi.el.getBoundingClientRect();
     await ucur(kaseKutu, tr.left + tr.width / 2 - (kr.left + kr.width / 2), tr.top + tr.height / 2 - (kr.top + kr.height / 2), 360, -30);
-    coz(u ? [u] : []);
+    coz(u ? [u, ...stok.artanlar()] : []);
   }
 
   /** Bir sebzenin parçalarını yuvasının çevresinde yay biçiminde dizer (üst üste binen kartlar gibi) */
@@ -1024,7 +1054,7 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   // e2e ve önizleme: durum özeti
   function ozetDurum() {
     return {
-      tahta: tahtadakiler.map((t) => ({ ad: t.d.ad, parca: t.d.parcalar.length, kesim: t.d.kesim, kabuk: t.d.kabuk, bitti: bittiMi(t.d, yas), ozet: kesimOzeti(t.d, yas) })),
+      tahta: tahtadakiler.map((t) => ({ ad: t.d.ad, parca: t.d.parcalar.length, kesim: t.d.kesim, kabuk: t.d.kabuk, bitti: bittiMi(t.d, yas), ozet: kesimOzeti(t.d, yas), temiz: temizMi(t), soyuldu: soyulduMu(t) })),
       kase: kase.map((k) => ({ m: k.m, ...k.ozet })),
       agliyor,
     };

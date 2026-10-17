@@ -750,7 +750,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       await bekle(900);
       k.ifade('keyif', 1200);
       void o.eslik?.oynat('hop', 500);
-      await kisiSoyle(k, o.m, s.neden === 'sevmez' ? musteriSozu(o.m, 'komik') : undefined);
+      // yıkanmamış sebze: ceza değil, şaka ("Hmm, biraz toprak tadı var!")
+      await kisiSoyle(k, o.m, s.neden === 'sevmez' ? musteriSozu(o.m, 'komik') : s.neden === 'toprak' ? L.musteri_tepki.toprak : undefined);
       if (s.neden === 'bos') await minoSoyle(L.mino.tepki.bos);
       else if (ilkKomik || s.neden === 'istek') await minoSoyle(L.mino.tepki.komik);
       ilkKomik = false;
@@ -945,6 +946,8 @@ export function lokantaEkrani(app: Uygulama, param: LokantaParam = {}): Ekran {
       ozelIstek: istek?.tur === 'ozel' ? istek.ozel : undefined,
       devam: arkaVar?.is.durum,
       ilkOyun: kayit.gun === 0 && hizmet < 2,
+      // zincir: lavabo açıksa (Gün 2'den) yıkanmamış sebze topraklı sayılır
+      yikama: acikOyunlar.has('yika'),
       test: TEST_MODU,
       kirliTabaklar: oyun.ad === 'bulasik' ? yigin.turler() : undefined,
     };

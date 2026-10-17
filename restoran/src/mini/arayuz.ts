@@ -106,7 +106,10 @@ export interface YemekOzelligi {
   sus?: number;
   porsiyon?: 'az' | 'normal' | 'kocaman';
   sicak?: boolean;
-  /** yıkandı mı (M2); undefined = yıkama istasyonu açılmamış, sorulmaz */
+  /**
+   * yıkandı mı (M2); undefined = yıkama istasyonu açılmamış, sorulmaz. Malzeme düzeyindeki `temiz` daha ayrıntılı;
+   * müşteri ikisine birden bakar (yemekTemizligi): bir malzeme bile topraklıysa yemek topraklıdır.
+   */
   temiz?: boolean;
   /** karışma oranı 0-1 (yumurta, hamur) */
   karisim?: number;
@@ -162,6 +165,11 @@ export interface MiniGirdi {
   kirliTabaklar?: string[];
   /** ilk oyunun ilk iki müşterisi: ipucu merdiveni biraz erken (§4c) */
   ilkOyun?: boolean;
+  /**
+   * Lavabo (Yıka) açık mı (Gün 2'den; Babaanne'nin çamurlu pazar sebzeleri). true ise yıkanmamış sebze `temiz: false`
+   * sayılır (Doğra'da küçük toprak lekesi, müşteride komik "toprak tadı"); undefined / false: temizlik sorulmaz.
+   */
+  yikama?: boolean;
   test?: boolean;
 }
 
@@ -281,4 +289,132 @@ export interface MiniOyun {
   /** lokantadaki istasyonda birden çok oyun varsa seçim düğmesinin resmi (alet). Yoksa istasyon resmi. */
   simge?: () => HTMLElement;
   baslat(b: MiniBaglam, g: MiniGirdi): MiniOturum;
+}
+
+// ---------------------------------------------------------------- malzeme zinciri (Yıka → Soy → Doğra → Tava / Kazan / Kızart → Tabakla → müşteri)
+
+/** Lavabo açıkken yıkanmamışsa topraklı sayılan malzemeler (Yıka'nın yıkayabildikleri) */
+export const YIKANIR: readonly Malzeme[] = ['domates', 'salatalik', 'biber', 'marul', 'havuc', 'patates', 'maydanoz', 'limon', 'elma', 'sogan'];
+
+/** Bir malzemenin zincirdeki hâli: yıkandı mı, soyuldu mu (undefined = sorulmadı) */
+export type Hal = Pick<MalzemeDurumu, 'temiz' | 'soyuldu'>;
+
+/** İki "bilinmiyor / evet / hayır" birleşir: biri hayırsa hayır, biri evetse evet, yoksa bilinmiyor */
+const ikili = (a?: boolean, b?: boolean) => (a === false || b === false ? false : a || b ? true : undefined);
+
+/**
+ * Aynı malzemenin iki kısmı bir yemekte birleşir (kâse + kâse, tava, tabak): adet toplanır; bir kısım topraklıysa
+ * ya da soyulmamışsa bütünü öyle; kesim öncekinden kalır (çağıran isterse değiştirir). Bilinmeyen alan yazılmaz.
+ */
+export function durumTopla(a: MalzemeDurumu | undefined, b: MalzemeDurumu): MalzemeDurumu {
+  if (!a) return { ...b };
+  const r: MalzemeDurumu = { ...a, adet: a.adet + b.adet };
+  const temiz = ikili(a.temiz, b.temiz);
+  const soyuldu = ikili(a.soyuldu, b.soyuldu);
+  if (temiz === undefined) delete r.temiz;
+  else r.temiz = temiz;
+  if (soyuldu === undefined) delete r.soyuldu;
+  else r.soyuldu = soyuldu;
+  if (a.rende || b.rende) r.rende = true;
+  if (!r.kesim && b.kesim) r.kesim = b.kesim;
+  return r;
+}
+
+/**
+ * TEK bir sebzenin hâli, geçtiği istasyonlardan (Yıka süzgeci, Soy kâsesi): soyulduysa toprak kabuğuyla gitti
+ * (temiz); hiç yıkanmadıysa ve lavabo açıksa topraklı; lavabo kapalıysa sorulmaz.
+ */
+export function sebzeHali(m: Malzeme, kaynaklar: Hal[], yikama?: boolean): Hal {
+  const soyuldu = kaynaklar.some((k) => k.soyuldu) ? true : kaynaklar.some((k) => k.soyuldu === false) ? false : undefined;
+  let temiz = kaynaklar.some((k) => k.temiz) ? true : kaynaklar.some((k) => k.temiz === false) ? false : undefined;
+  if (temiz === undefined && yikama && YIKANIR.includes(m)) temiz = false;
+  if (soyuldu && temiz === false) temiz = true;
+  const h: Hal = {};
+  if (temiz !== undefined) h.temiz = temiz;
+  if (soyuldu !== undefined) h.soyuldu = soyuldu;
+  return h;
+}
+
+/** Yemeğin temizliği: bir malzeme bile topraklıysa false, yıkanmış malzeme varsa true, hiç sorulmadıysa undefined */
+export function yemekTemizligi(o: YemekOzelligi): boolean | undefined {
+  let t = o.temiz;
+  for (const d of Object.values(o.malzemeler)) if (d && d.adet > 0) t = ikili(t, d.temiz);
+  return t;
+}
+
+/** Tepside bütün hâlde hazırlanmış sebze mi (Yıka süzgeci, Soy kâsesi): kesilmemiş, pişmemiş, hâli belli */
+export function hazirlikMi(u: Urun): boolean {
+  const d = Object.values(u.ozellik.malzemeler).filter((x): x is MalzemeDurumu => !!x && x.adet > 0);
+  return !u.servis && !u.ozellik.pisme && d.length > 0 && d.every((x) => !x.kesim || x.kesim === 'butun') && d.some((x) => x.temiz !== undefined || x.soyuldu !== undefined);
+}
+
+/** Birden çok üründen bir malzemenin toplu hâli (Kazan, Kızart: kullandığı tepsi ürünleri) */
+export function urunlerdekiHal(urunler: Urun[], m: Malzeme): Hal {
+  let r: MalzemeDurumu | undefined;
+  for (const u of urunler) {
+    const d = u.ozellik.malzemeler[m];
+    if (d && d.adet > 0) r = durumTopla(r, d);
+  }
+  const h: Hal = {};
+  if (r?.temiz !== undefined) h.temiz = r.temiz;
+  if (r?.soyuldu !== undefined) h.soyuldu = r.soyuldu;
+  return h;
+}
+
+/**
+ * Tepsideki hazırlık ürünlerinden (Yıka, Soy) sebze sebze alım: Doğra raftan bir sebze aldıkça o malzemenin bir
+ * tanesi her hazırlık üründen düşülür (yıkanıp soyulan patates iki üründe de bir tane). Ödülde: kullanılan ürünlerin
+ * id'leri (lokanta tepsiden kaldırır) ve artanlar (aynı tür, kalan malzemeyle; resminde alınan sebzeler gizlenir).
+ */
+export function hazirlikStogu(tepsi: Urun[], yikama?: boolean) {
+  const stok = tepsi.filter(hazirlikMi).map((u) => ({
+    u,
+    kalan: Object.fromEntries(Object.entries(u.ozellik.malzemeler).map(([m, d]) => [m, d?.adet ?? 0])) as Partial<Record<Malzeme, number>>,
+    alinan: {} as Partial<Record<Malzeme, number>>,
+  }));
+  return {
+    /** raftan bir sebze alındı: hâli (varsa hazırlık ürünlerinden birer tane düşer) */
+    al(m: Malzeme): Hal {
+      const kaynaklar: Hal[] = [];
+      for (const s of stok) {
+        if ((s.kalan[m] ?? 0) <= 0) continue;
+        s.kalan[m]!--;
+        s.alinan[m] = (s.alinan[m] ?? 0) + 1;
+        const d = s.u.ozellik.malzemeler[m]!;
+        kaynaklar.push({ temiz: d.temiz, soyuldu: d.soyuldu });
+      }
+      return sebzeHali(m, kaynaklar, yikama);
+    },
+    /** en az bir sebzesi alınan hazırlık ürünleri */
+    kullanilan: () => stok.filter((s) => Object.keys(s.alinan).length).map((s) => s.u.id),
+    artanlar(): Urun[] {
+      return stok
+        .filter((s) => Object.keys(s.alinan).length && Object.values(s.kalan).some((n) => (n ?? 0) > 0))
+        .map((s) => {
+          const kaynak = s.u;
+          const malzemeler: Partial<Record<Malzeme, MalzemeDurumu>> = {};
+          for (const [m, n] of Object.entries(s.kalan)) if (n && n > 0) malzemeler[m as Malzeme] = { ...kaynak.ozellik.malzemeler[m as Malzeme]!, adet: n };
+          const ozellik: YemekOzelligi = { ...kaynak.ozellik, malzemeler };
+          if (kaynak.ozellik.temiz !== undefined) ozellik.temiz = Object.values(malzemeler).every((d) => d!.temiz !== false);
+          const alinan = { ...s.alinan };
+          return {
+            ...kaynak,
+            id: urunId(kaynak.tur),
+            ozellik,
+            gorsel: () => {
+              const el = kaynak.gorsel();
+              const say = { ...alinan };
+              for (const c of Array.from(el.querySelectorAll<HTMLElement>('[data-malzeme]'))) {
+                const m = c.dataset.malzeme as Malzeme;
+                if ((say[m] ?? 0) > 0) {
+                  say[m]!--;
+                  c.remove();
+                }
+              }
+              return el;
+            },
+          };
+        });
+    },
+  };
 }

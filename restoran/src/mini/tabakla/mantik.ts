@@ -4,7 +4,7 @@
  * Tabak koordinatı: merkez (0, 0), kenar yarıçapı 1 (u sağa, v aşağı). Parça boyları da yarıçap cinsinden.
  * Akıllı tanıma: yüz var mı (iki yuvarlak göz + altında bir yay ya da ağız sırası), süs sayısı, porsiyon.
  */
-import type { Malzeme, MalzemeDurumu, Pisme, YemekOzelligi } from '../arayuz';
+import { durumTopla, yemekTemizligi, type Malzeme, type MalzemeDurumu, type Pisme, type YemekOzelligi } from '../arayuz';
 
 export type Bicim = 'yuvarlak' | 'uzun' | 'diger';
 
@@ -124,10 +124,8 @@ export function tabakOzelligi(o: TabakOzeti): YemekOzelligi {
   let tatli = 0;
   let karisim: number | undefined;
   for (const u of o.urunler) {
-    for (const [m, d] of Object.entries(u.malzemeler)) {
-      const e = malzemeler[m as Malzeme];
-      malzemeler[m as Malzeme] = e ? { ...e, adet: e.adet + d!.adet } : { ...d! };
-    }
+    // zincir: temiz / soyuldu birleşir (bir kısım topraklıysa tabak topraklı)
+    for (const [m, d] of Object.entries(u.malzemeler)) malzemeler[m as Malzeme] = durumTopla(malzemeler[m as Malzeme], d!);
     pisme = pisme ?? u.pisme;
     sicak = sicak || !!u.sicak;
     tuz += u.tuz ?? 0;
@@ -163,6 +161,8 @@ export function tabakOzelligi(o: TabakOzeti): YemekOzelligi {
   if (eksi) oz.eksi = Math.min(3, Math.round(eksi));
   if (tatli) oz.tatli = Math.min(3, Math.round(tatli));
   if (karisim !== undefined) oz.karisim = karisim;
+  const temiz = yemekTemizligi({ malzemeler, temiz: o.urunler.reduce<boolean | undefined>((t, u) => (u.temiz === false || t === false ? false : t || u.temiz), undefined) });
+  if (temiz !== undefined) oz.temiz = temiz;
   return oz;
 }
 
