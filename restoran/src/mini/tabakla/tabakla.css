@@ -253,3 +253,18 @@
   border: 3px solid #3b2416;
   background: radial-gradient(circle, #fff 0 64%, #7fc6bf 66%);
 }
+
+/* istasyon-servis çizimi varken tabak çizimdedir (cizim.ts): Tabakla'nın kendi tabağı görünmez, yalnız parçalar */
+.mk-kok .rs-tabakla[data-tabak-resmi] .rs-tb-tabak > .rs-tb-tabak-resim,
+.mk-kok .rs-tabakla[data-tabak-resmi] .rs-tb-tabak > .rs-tb-tabak-yt {
+  display: none;
+}
+
+/* tabaktaki iri parça (Doğra'da kesilmeden kalan, görünüm 'kirpik'): bütün resim parçanın kutusuna sığar; konumla()
+   burada çağrılmadığı için resim doğal boyunda kalıp kırpılıyordu (netlik 3x) */
+.mk-kok .rs-tb-parca[data-gorunum='kirpik'] > img.rs-p2-butun {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

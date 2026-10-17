@@ -153,13 +153,16 @@
   height: 0;
   z-index: 2;
 }
+/* Gemini tava (alet/tava, 654×374): gövde dairesi merkez (187, 186,5), yarıçap 180 px; sap sağda. Gövde 1,14 R olsun:
+   ölçek 1,14 R / 180 → tuval 4,142 R × 2,368 R, gövde merkezi tavanın (0, 0) noktasında */
 .mk-kok .rs-tv-tava-resim {
   position: absolute;
-  left: calc(var(--R) * -1.55);
-  top: calc(var(--R) * -1.2);
-  width: calc(var(--R) * 2.75);
-  height: calc(var(--R) * 2.4);
-  object-fit: contain;
+  left: calc(var(--R) * -1.184);
+  top: calc(var(--R) * -1.181);
+  width: calc(var(--R) * 4.142);
+  height: calc(var(--R) * 2.368);
+  object-fit: fill;
+  transform-origin: 28.6% 49.9%;
 }
 .mk-kok .rs-tv-govde {
   position: absolute;
@@ -423,9 +426,16 @@
   transition: none;
   z-index: 20;
 }
+/* Gemini spatulası (alet/spatula, 559×174) yatay çizildi (ağız solda): 90° dönerek kutuya dik oturur, ağız üstte
+   (tutma noktası, margin-top -24px) */
 .mk-kok .rs-tv-spatula > img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120px;
+  height: 37px;
+  translate: -50% -50%;
+  rotate: 90deg;
   object-fit: contain;
 }
 .mk-kok .rs-tv-spatula-yt {
@@ -576,7 +586,7 @@
 
 /* dikey: tava sapı aşağıda (yalnız tava resmi ya da yer tutucusu döner; yiyecekler dik kalır) */
 .mk-kok .rs-tava[data-yon='dikey'] .rs-tv-tava-resim {
-  rotate: -90deg;
+  rotate: 90deg; /* Gemini tavasının sapı sağda: +90° aşağı bakar; gövde merkezinde döner (transform-origin) */
 }
 .mk-kok .rs-tava[data-yon='dikey'] .rs-tv-sap {
   left: calc(var(--R) * -0.15);
@@ -584,4 +594,11 @@
   width: calc(var(--R) * 0.3);
   height: calc(var(--R) * 1.05);
   border-radius: 10px 10px 999px 999px;
+}
+
+/* Gemini tavası netlik sınırını aşacaksa (çizim küçük) sade tava; sığıyorsa resim (index.ts data-resim) */
+.mk-kok .rs-tv-tava[data-resim='1'] > .rs-tv-sap,
+.mk-kok .rs-tv-tava[data-resim='1'] > .rs-tv-govde,
+.mk-kok .rs-tv-tava:not([data-resim='1']) > .rs-tv-tava-resim {
+  display: none;
 }

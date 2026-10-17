@@ -59,8 +59,9 @@ export const SUS_YER: Record<Yon, Record<string, Yer>> = {
     'tavan-2': { x: 48, y: 9.5 },
     'duvar-1': { x: 64, y: 20 },
     'duvar-2': { x: 93, y: 11 },
-    'zemin-1': { x: 95, y: 82 },
-    'zemin-2': { x: 69, y: 63 },
+    // lokanta-yatay çizimi (2026-10-17): masa 2 x 86,6'daki zemin lekesine geçti; saksılar masaların arasına
+    'zemin-1': { x: 74.6, y: 78 },
+    'zemin-2': { x: 50, y: 97 },
     'zemin-3': { x: 3.5, y: 97 },
   },
   dikey: {
@@ -74,11 +75,15 @@ export const SUS_YER: Record<Yon, Record<string, Yer>> = {
   },
 };
 
-/** Mutfaktaki alet yuvaları (yeni istasyon düğmeleri; olcek.ts YERLESIM.istasyon kutularıyla aynı biçim) */
+/**
+ * Mutfaktaki alet yuvaları (yeni istasyon düğmeleri; olcek.ts YERLESIM.istasyon kutularıyla aynı biçim).
+ * Yatay: Gemini lokanta-yatay çiziminde istenen iki boş duvar boşluğu (ocakla mermer arası, en sağ) YOK (ocak ile
+ * mermer bitişik, sağda kasa duvara dayalı). Alınan aletler sol duvara, pencerenin altına (zeminde) dizilir.
+ */
 export const ALET_YER: Record<Yon, Kutu[]> = {
   yatay: [
-    { x: 52.5, y: 30, w: 7, h: 22 },
-    { x: 88, y: 47, w: 9, h: 14 },
+    { x: 16.5, y: 50, w: 9.5, h: 18 },
+    { x: 27, y: 50, w: 9.5, h: 18 },
   ],
   dikey: [
     { x: 30, y: 34, w: 19, h: 9 },

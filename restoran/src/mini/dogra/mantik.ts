@@ -68,6 +68,8 @@ export interface SebzeTanim {
   sert?: boolean;
   /** kuru kabuk sayısı [3-4, 5-6] */
   kabuk?: [number, number];
+  /** uzun sebze ikiye boyuna kesilir: yarımlar üst üste yatar (Gemini sivri biberi) */
+  yarimYatay?: boolean;
   /** biber: yarımlarda çekirdek */
   cekirdek?: boolean;
   /** kirpik şerit bu inceliğe (pencere oranı) inince dilime devrilir [3-4, 5-6] */
@@ -83,11 +85,16 @@ export interface SebzeTanim {
   ince: 'dilim' | 'serit';
 }
 
+/**
+ * en ve oran Gemini R-Gün 1 sebze çizimlerine göre (assets/restoran/olcu.json, bütün resim en×boy): salatalık 2069×508
+ * (uzun, yatay), domates 969×916, soğan 486×565, sivri biber 1106×353. Bütün resim bu oranda çizilir (kirpik
+ * pencere), oran tutmazsa resim ezilir. Gelmeyen sebzelerde (havuç, patates, maydanoz, limon, marul) eski Recraft oranı.
+ */
 export const SEBZE: Partial<Record<Malzeme, SebzeTanim>> = {
-  salatalik: { bicim: 'uzun', en: 0.44, oran: 0.84, eksen: 'x', dilimEsik: [0.2, 0.13], pureEsik: [22, 30], dilimBoy: 0.085, kupBoy: 0.04, ince: 'dilim' },
-  domates: { bicim: 'ikiye', en: 0.28, oran: 1.02, eksen: 'x', dilimEsik: [0.5, 0.5], pureEsik: [9, 13], yarimDilim: [2, 3], dilimBoy: 0.1, kupBoy: 0.045, ince: 'dilim' },
-  sogan: { bicim: 'ikiye', en: 0.25, oran: 1.05, eksen: 'x', kabuk: [1, 3], dilimEsik: [0.5, 0.5], yarimDilim: [2, 3], dilimBoy: 0.095, kupBoy: 0.04, ince: 'dilim' },
-  biber: { bicim: 'ikiye', en: 0.28, oran: 1.0, eksen: 'x', cekirdek: true, dilimEsik: [0.5, 0.5], yarimDilim: [2, 4], dilimBoy: 0.11, kupBoy: 0.035, ince: 'serit' },
+  salatalik: { bicim: 'uzun', en: 0.5, oran: 0.2455, eksen: 'x', dilimEsik: [0.2, 0.13], pureEsik: [22, 30], dilimBoy: 0.085, kupBoy: 0.04, ince: 'dilim' },
+  domates: { bicim: 'ikiye', en: 0.28, oran: 0.945, eksen: 'x', dilimEsik: [0.5, 0.5], pureEsik: [9, 13], yarimDilim: [2, 3], dilimBoy: 0.1, kupBoy: 0.045, ince: 'dilim' },
+  sogan: { bicim: 'ikiye', en: 0.25, oran: 1.163, eksen: 'x', kabuk: [1, 3], dilimEsik: [0.5, 0.5], yarimDilim: [2, 3], dilimBoy: 0.095, kupBoy: 0.04, ince: 'dilim' },
+  biber: { bicim: 'ikiye', en: 0.46, oran: 0.319, eksen: 'x', yarimYatay: true, cekirdek: true, dilimEsik: [0.5, 0.5], yarimDilim: [2, 4], dilimBoy: 0.11, kupBoy: 0.035, ince: 'serit' },
   maydanoz: { bicim: 'demet', en: 0.3, oran: 0.9, eksen: 'x', dilimEsik: [1, 1], dilimBoy: 0.11, kupBoy: 0.05, ince: 'dilim' },
   havuc: { bicim: 'uzun', en: 0.2, oran: 1.45, eksen: 'y', sert: true, dilimEsik: [0.26, 0.15], dilimBoy: 0.065, kupBoy: 0.035, ince: 'dilim' },
   patates: { bicim: 'uzun', en: 0.3, oran: 0.82, eksen: 'x', sert: true, dilimEsik: [0.3, 0.2], dilimBoy: 0.11, kupBoy: 0.04, ince: 'dilim' },
@@ -288,7 +295,7 @@ export function kes(d: SebzeDurum, parcaId: number, yon: Yon, kx: number, ky: nu
     case 'kirpik': {
       if (t.bicim === 'ikiye' && pay(p, 'x') > 0.9 && pay(p, 'y') > 0.9) {
         // bütün → iki yarım (kesik yüzü birbirine bakar)
-        const dik = yon === 'dik' || yas === 'kucuk';
+        const dik = (yon === 'dik' || yas === 'kucuk') && !t.yarimYatay;
         const boy = t.en * 0.8;
         const a: Parca = { id: yeniId(), gorunum: 'yarim', x: dik ? p.x - t.en * 0.33 : p.x, y: dik ? p.y : p.y - t.en * 0.3, w: dik ? boy * 0.62 : boy, h: dik ? boy : boy * 0.62, taraf: dik ? 'sag' : 'alt', kalan: 1 };
         const b: Parca = { id: yeniId(), gorunum: 'yarim', x: dik ? p.x + t.en * 0.33 : p.x, y: dik ? p.y : p.y + t.en * 0.3, w: a.w, h: a.h, taraf: dik ? 'sol' : 'ust', kalan: 1 };

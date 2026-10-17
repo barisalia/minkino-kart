@@ -12,7 +12,7 @@
 import { h } from '../../../../src/ui/dom';
 import { NETLIK_DPR } from '../../../../src/ui/netlik';
 import type { Malzeme } from '../arayuz';
-import type { Gorunum, Parca } from './mantik';
+import { tanim, type Gorunum, type Parca } from './mantik';
 import './parca.css';
 
 const YENI = import.meta.glob<string>('../../../../assets/restoran/{yiyecek,alet,efekt}/*.{webp,png}', { eager: true, query: '?url', import: 'default' });
@@ -70,10 +70,23 @@ export const yeni = (yol: string): string | null => YENI_T.get(yol) ?? null;
 /** Var olan eski resim ('meyveler/domates') */
 export const eski = (yol: string): string | null => ESKI_T.get(yol) ?? null;
 
+/** Kesilen Gemini resimlerinin doğal boyu (restoran-isle.cjs yazar: assets/restoran/olcu.json, 'yiyecek/x' → [en, boy]) */
+const OLCU: Record<string, [number, number]> =
+  Object.values(import.meta.glob<Record<string, [number, number]>>('../../../../assets/restoran/olcu.json', { eager: true, import: 'default' }))[0] ?? {};
+
+/** Tablodaki boy; '-2', '-3' sürümü varsa (yeni() onu çizer) en yüksek sürümünki */
+function olcuBul(yol: string): [number, number] | null {
+  let en: [number, number] | null = OLCU[yol] ?? null;
+  for (let n = 2; n < 10; n++) if (OLCU[`${yol}-${n}`]) en = OLCU[`${yol}-${n}`];
+  return en;
+}
+
 /** Bir resmin doğal boyu: bilinen tablo, yoksa yüklenince ölçülen (o ana kadar varsayılan 1024) */
 const olculen = new Map<string, [number, number]>();
 export function dogal(yol: string, url: string): [number, number] {
   if (BOY[yol]) return BOY[yol];
+  const o0 = olcuBul(yol);
+  if (o0) return o0;
   const o = olculen.get(url);
   if (o) return o;
   const i = new Image();
@@ -87,12 +100,30 @@ export const enCokCss = (yol: string, url: string) => dogal(yol, url)[0] / NETLI
 /** Bütün sebzenin resmi: önce yeni Gemini kesiti, yoksa eski meyve-sebze resmi, o da yoksa null (yer tutucu) */
 export function butunResim(m: Malzeme, soyuldu = false): { url: string; yol: string; kutu: [number, number, number, number] } | null {
   const s = soyuldu ? yeni(`yiyecek/${m}-soyulmus`) : null;
-  if (s) return { url: s, yol: `yiyecek/${m}-soyulmus`, kutu: [0, 1, 0, 1] };
+  if (s) return { url: s, yol: `yiyecek/${m}-soyulmus`, kutu: sigdir(m, `yiyecek/${m}-soyulmus`) };
   const y = yeni(`yiyecek/${m}-butun`);
-  if (y) return { url: y, yol: `yiyecek/${m}-butun`, kutu: [0, 1, 0, 1] };
+  if (y) return { url: y, yol: `yiyecek/${m}-butun`, kutu: sigdir(m, `yiyecek/${m}-butun`) };
   const e = eski(`meyveler/${m}`);
   if (e) return { url: e, yol: `meyveler/${m}`, kutu: KUTU[`meyveler/${m}`] ?? [0, 1, 0, 1] };
   return null;
+}
+
+/**
+ * Gemini resminin oranı sebzenin tanım oranından farklıysa (soyulmuş soğan 450×458, bütünü 486×565) resim kutuya
+ * ezilmeden sığar: görünen kutu [x0, x1, y0, y1] 1'den taşar (resim ortalanır, kenarda saydam pay kalır).
+ */
+function sigdir(m: Malzeme, yol: string): [number, number, number, number] {
+  const b = olcuBul(yol);
+  if (!b) return [0, 1, 0, 1];
+  const ro = b[1] / b[0];
+  const to = tanim(m).oran;
+  if (Math.abs(ro / to - 1) < 0.02) return [0, 1, 0, 1];
+  if (to > ro) {
+    const k = to / ro;
+    return [0, 1, (1 - k) / 2, (1 + k) / 2];
+  }
+  const k = ro / to;
+  return [(1 - k) / 2, (1 + k) / 2, 0, 1];
 }
 
 /** Görünüm → Gemini kesit adı (sebze sayfasındaki kare) */

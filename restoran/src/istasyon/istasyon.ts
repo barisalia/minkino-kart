@@ -12,6 +12,7 @@ import { merdivenKur } from '../lokanta/ipucu';
 import type { ArkaIs, Istasyon, MiniBaglam, MiniGirdi, MiniOturum, MiniOyun, TepsiDugmesi, Urun } from '../mini/arayuz';
 import { sesler } from '../sesler';
 import { varlik } from '../varliklar';
+import { ODAK_Y } from './cizim';
 import { minoKoseKur } from './mino-kose';
 
 /** Önden çizilen istasyonlar (dikeyde döndürülmez, ayrı dikey çizim) */
@@ -62,6 +63,8 @@ export function istasyonAc(kap: HTMLElement, s: IstasyonSecenek): IstasyonEkrani
     arka.classList.toggle('rs-ist-donuk', dikey && !onden && !!u);
     arka.classList.toggle('rs-ist-yertutucu', !u);
     arka.style.backgroundImage = u ? `url("${u}")` : '';
+    // çizimin dikey odağı (cizim.ts): mini oyun tahtası / tavası / tabağı çizimdeki yerine oturur
+    arka.style.backgroundPosition = u ? `50% ${(ODAK_Y[ist] ?? 0.5) * 100}%` : '';
     if (u) netlikOnYukle(u);
   };
   arkaKur();

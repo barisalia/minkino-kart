@@ -19,7 +19,9 @@ import { h, TEST_MODU } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-tava.json';
 import { durumTopla, MALZEME_ADI, urunId, type ArkaIs, type Kesim, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Pisme, type Urun, type YemekOzelligi } from '../arayuz';
 import { ezil, hopla, kipirda, parilti, sac, tak, TITRESIM, ucur } from '../dogra/efekt';
-import { alet, parcaEl, yeni } from '../dogra/gorsel';
+import { CIZIM_YER, cizimVarsa } from '../../istasyon/cizim';
+import { NETLIK_DPR } from '../../../../src/ui/netlik';
+import { alet, dogal, parcaEl, yeni } from '../dogra/gorsel';
 import type { Gorunum } from '../dogra/mantik';
 import { surukle } from '../dogra/surukle';
 import {
@@ -122,8 +124,9 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
   const pankekEl = h('div.rs-tv-pankek', { hidden: true }, h('i.rs-tv-pankek-yuz'), h('span.rs-tv-kabarcik', {}, h('i'), h('i'), h('i'), h('i'), h('i')));
   const kabukKat = h('div.rs-tv-kabuk-kat');
   tavaIc.append(yagEl, icerik, resimKat, yumurtaKat, pankekEl, kabukKat);
+  // Gemini tavası yalnız netlik sınırında çizilir (tuval eni 4,142 R × 3 ≤ doğal en); büyükse sade tava (yer tutucu)
+  tava.append(h('i.rs-tv-sap'), h('i.rs-tv-govde'));
   if (tavaResim) tava.append(h('img.rs-tv-tava-resim', { src: tavaResim, alt: '', draggable: 'false' }));
-  else tava.append(h('i.rs-tv-sap'), h('i.rs-tv-govde'));
   tava.append(tavaIc);
   const spatulaUrl = alet('spatula');
   const spatula = h('div.rs-tv-spatula', { role: 'button', 'aria-label': 'Spatula' }, spatulaUrl ? h('img', { src: spatulaUrl, alt: '', draggable: 'false' }) : h('i.rs-tv-spatula-yt'));
@@ -166,7 +169,18 @@ function tavaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       cy = rafAlt + 24 + R * 1.14 + Math.max(0, (H - rafAlt - 150 - R * 3.4) / 2);
       dinlenme = { x: cx + R * 0.95, y: cy + R * 1.3 };
     }
+    // istasyon-ocak çizimi geldiyse tava sol ocak gözünün üstündedir (dikeyde üstteki göz; cizim.ts): tava gövdesi
+    // (1,14 R) ızgaranın dış halkasını tam örter
+    const cizim = cizimVarsa('ocak', W, H);
+    if (cizim) {
+      const m = cizim.nokta(CIZIM_YER.ocakSol.u, CIZIM_YER.ocakSol.v);
+      R = (cizim.boy(CIZIM_YER.ocakSol.r) * 1.02) / 1.14;
+      cx = m.x;
+      cy = m.y;
+      dinlenme = yatay ? { x: cx + R * 1.95, y: cy + R * 0.62 } : { x: cx + R * 1.05, y: cy + R * 1.35 };
+    }
     tava.style.cssText = `left:${cx}px;top:${cy}px;--R:${R}px`;
+    tava.dataset.resim = tavaResim && 4.142 * R * NETLIK_DPR <= dogal('alet/tava', tavaResim)[0] * 1.02 ? '1' : '0';
     if (!spatulaTutuluyor) spatula.style.transform = `translate(${dinlenme.x}px,${dinlenme.y}px)`;
     yerlesimSonra();
   }

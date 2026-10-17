@@ -68,8 +68,12 @@ export function olcuIzle(kap: HTMLElement, sahne: HTMLElement, degisti: (o: Olcu
 
 /**
  * Lokanta yerleşimi (sahne yüzdesi). Arka plan çizimi gelince yalnız buradaki satırlar düzeltilir.
- * Yatay: arkada açık mutfak (soldan sağa lavabo, tezgâh, ocak, [boş], mermer, servis penceresi + kasa), önde masalar.
- * Dikey: mutfak üstte, masalar altta iki sütun.
+ * Yatay: arkada açık mutfak (soldan sağa lavabo, tezgâh, ocak, mermer, servis penceresi + zil + kasa), önde masalar.
+ * Yatay sayılar Gemini 'arka/lokanta-yatay' çizimine ölçüldü (2026-10-17): kapı x 2-13 / y 18-67,5; pencere x 15,6-37,8;
+ * tezgâh önü y 57-71 (zemin 71'den); lavabo x 39-48, kesme tahtası 47,3-57,2, ocak 57,5-68,5 (davlumbaz y 31,5-36,5),
+ * mermer 69-85,5, zil 86,3-88,8, kasa 90-97,5 / y 44,5-56, servis penceresi x 86-95,5 / y 24,5-48; mandal ipi
+ * x 40,5-84 / y 34-37; dört masa yeri (açık zemin lekesi) merkez x 13,4 / 37,6 / 62,8 / 86,6, y 79-93.
+ * Dikey: mutfak üstte, masalar altta iki sütun (lokanta-dikey çizimi gelince ölçülür).
  */
 export interface Yer {
   x: number;
@@ -94,28 +98,33 @@ export interface Yerlesim {
 
 export const YERLESIM: Record<Yon, Yerlesim> = {
   yatay: {
-    kapi: { x: 6, y: 64 },
-    bekleme: { x: 13, y: 84 },
+    kapi: { x: 7.5, y: 67.5 },
+    bekleme: { x: 8, y: 76 },
+    // masaların ön kenarı çizimdeki zemin lekelerinin üstünde (alt kenar 93 telefonda kırpılır: görünen alt ~%91)
     masalar: [
-      { x: 33, y: 86 },
-      { x: 58, y: 86 },
-      { x: 80, y: 88 },
-      { x: 22, y: 70 },
+      { x: 37.6, y: 87.5 },
+      { x: 62.8, y: 87.5 },
+      { x: 86.6, y: 87.5 },
+      { x: 13.4, y: 87.5 },
     ],
+    // istasyon düğmeleri çizimdeki eşyayı ve tezgâh önünü kaplar (saydam; dokunma alanı). Ocak ve mermer y 48'den
+    // başlar: üstlerine mandal ipindeki adisyonlar (y 35,5-51) sarkar, dokunuşu kapmasınlar
     istasyon: {
-      lavabo: { x: 12, y: 33, w: 11, h: 19 },
-      tezgah: { x: 24, y: 33, w: 14, h: 19 },
-      ocak: { x: 39, y: 33, w: 13, h: 19 },
-      mermer: { x: 60, y: 33, w: 11, h: 19 },
-      servis: { x: 74, y: 25, w: 13, h: 27 },
+      lavabo: { x: 39, y: 42, w: 8.4, h: 29 },
+      tezgah: { x: 47.4, y: 45, w: 9.9, h: 26 },
+      ocak: { x: 57.4, y: 48, w: 11.2, h: 23 },
+      mermer: { x: 68.8, y: 48, w: 16.6, h: 23 },
+      servis: { x: 85.5, y: 24, w: 10, h: 28 },
     },
-    kino: { x: 81, y: 70 },
+    kino: { x: 90, y: 74 },
+    // adisyonlar çizimdeki mandal ipinin sağ yarısına asılır (sol yarıda salondaki Mino durur: x 56)
     ip: [
-      { x: 14, y: 16 },
-      { x: 72, y: 16 },
+      { x: 59.5, y: 35.5 },
+      { x: 84, y: 35.5 },
     ],
-    kasa: { x: 88, y: 31, w: 8, h: 14 },
-    pencere: { x: 74, y: 44, w: 13, h: 8 },
+    kasa: { x: 90, y: 44, w: 7.5, h: 12.5 },
+    // hazır tabaklar mermerin sağ ucunda ve pencere eşiğinde (kasa eşiğin sağını kapatır)
+    pencere: { x: 78, y: 44, w: 12, h: 9.5 },
   },
   dikey: {
     kapi: { x: 14, y: 90 },

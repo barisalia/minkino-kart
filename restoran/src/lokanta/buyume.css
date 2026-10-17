@@ -27,9 +27,9 @@
 .rs-lokanta[data-bahce='1'] .rs-bahce-gec { right: auto; left: var(--rs-guvenli-sol); background: #fff4dd; }
 .rs-lokanta[data-bahce='1'] .rs-bahce-gec-yaprak { border-radius: 14px 14px 4px 4px; background: #b97a45; inset: 24% 28%; }
 
-/* yeni istasyonlar (alet yuvaları): çizim gelene kadar sade */
-.rs-arka.rs-yertutucu ~ .rs-katman .rs-ist[data-istasyon='icecek'] .rs-ist-gorsel { background: radial-gradient(ellipse at 50% 38%, #f6fbff 0 22%, #bfe6f7 23% 30%, transparent 31%), linear-gradient(#e9f5f2 0 60%, #d9a066 60%); }
-.rs-arka.rs-yertutucu ~ .rs-katman .rs-ist[data-istasyon='firin'] .rs-ist-gorsel { background: radial-gradient(ellipse at 50% 70%, #f2902f 0 22%, #3c3330 23% 30%, transparent 31%), radial-gradient(ellipse at 50% 100%, #d9c2a5 0 70%, transparent 71%); }
+/* yeni istasyonlar (alet yuvaları): kendi çizimleri gelene kadar sade (lokanta çizimi varken de görünür; çizimde yerleri boş) */
+.rs-katman .rs-ist[data-istasyon='icecek'] .rs-ist-gorsel { background: radial-gradient(ellipse at 50% 38%, #f6fbff 0 22%, #bfe6f7 23% 30%, transparent 31%), linear-gradient(#e9f5f2 0 60%, #d9a066 60%); box-shadow: inset 0 0 0 3px var(--rs-kahve); }
+.rs-katman .rs-ist[data-istasyon='firin'] .rs-ist-gorsel { background: radial-gradient(ellipse at 50% 70%, #f2902f 0 22%, #3c3330 23% 30%, transparent 31%), radial-gradient(ellipse at 50% 100%, #d9c2a5 0 70%, transparent 71%); box-shadow: inset 0 0 0 3px var(--rs-kahve); }
 .rs-ist[data-istasyon='mangal'] .rs-ist-gorsel { background: repeating-linear-gradient(90deg, #3c3330 0 8%, transparent 8% 14%), radial-gradient(ellipse at 50% 60%, #f2902f 0 38%, #5a4a43 40%); border-radius: 12px; box-shadow: inset 0 0 0 3px var(--rs-kahve); }
 
 /* ---------------------------------------------------------------- süsler ve yuvalar */

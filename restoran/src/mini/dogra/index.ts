@@ -15,6 +15,7 @@ import { h, TEST_MODU } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-dogra.json';
 import { durumTopla, hazirlikStogu, MALZEME_ADI, urunId, yemekTemizligi, type Hal, type Malzeme, type MalzemeDurumu, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
 import { ezil, hickir, hopla, kipirda, leke, mirilti, parilti, ritimTing, sac, sumkur, tikirTikir, TITRESIM, ucur } from './efekt';
+import { CIZIM_YER, cizimVarsa } from '../../istasyon/cizim';
 import { alet, eski, kaseEl, kirpikBoy, konumla, parcaEl, rafSimge, RENK } from './gorsel';
 import { bittiMi, dilimSayisi, itis, kes, kesimOzeti, kiy, ortadanGecti, sebzeKoy, seriPerde, seriSay, silkele, soy, tanim, yonBul, type Gorunum, type Parca, type SebzeDurum } from './mantik';
 import './dogra.css';
@@ -166,6 +167,24 @@ function dograBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       ty = rafAlt + 10 + Math.max(0, bosluk / 2);
       kaseKutu.style.cssText = `left:${(W - ks) / 2}px;top:${ty + bh + 14}px;width:${ks}px;height:${ks}px`;
     }
+    // istasyon-tezgah çizimi geldiyse tahta çizimdeki kesme tahtasıdır (cizim.ts): bizimki saydam, üstüne oturur
+    const cizim = cizimVarsa('tezgah', W, H);
+    if (cizim) {
+      const k = cizim.kutu(CIZIM_YER.tahta);
+      [tx, ty, bw, bh] = [k.x, k.y, k.w, k.h];
+      kok.dataset.tahtaResmi = '1';
+      if (yatay) {
+        // kâse çizimdeki bıçak altlığının (sağ üst) altında, tepsi düğmesinin üstünde
+        const altlik = cizim.nokta(0.82, 0.425).y;
+        const ks = Math.max(80, Math.min(120, W - (tx + bw) - 24, tr.top - kr.top - altlik - 22));
+        kaseKutu.style.cssText = `left:${tx + bw + (W - tx - bw - ks) / 2}px;top:${Math.max(altlik + 6, Math.min(ty + bh * 0.5 - ks / 2, tr.top - kr.top - ks - 14))}px;width:${ks}px;height:${ks}px`;
+      } else {
+        // dikey: kâse tahtanın altında, Mino ile tepsi arasında; dönük çizimde bıçak altlığı sağ altta kalır
+        const ks = Math.max(80, Math.min(112, H - (ty + bh) - 24));
+        const altlikSol = Math.min(cizim.nokta(0.77, 0.31).x, cizim.nokta(0.88, 0.42).x);
+        kaseKutu.style.cssText = `left:${Math.max(10, Math.min((W - ks) / 2, altlikSol - ks - 12))}px;top:${ty + bh + Math.max(8, (H - ty - bh - ks) * 0.25)}px;width:${ks}px;height:${ks}px`;
+      }
+    } else delete kok.dataset.tahtaResmi;
     tahta.style.cssText = `left:${tx}px;top:${ty}px;width:${bw}px;height:${bh}px`;
     for (const t of tahtadakiler) for (const p of t.d.parcalar) {
       const el = t.els.get(p.id);

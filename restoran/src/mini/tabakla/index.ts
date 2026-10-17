@@ -17,6 +17,7 @@ import { h, TEST_MODU } from '../../../../src/ui/dom';
 import metin from '../../../../content/restoran/mini-tabakla.json';
 import { MALZEME_ADI, urunId, type Kesim, type Malzeme, type MiniBaglam, type MiniGirdi, type MiniOturum, type MiniOyun, type Urun } from '../arayuz';
 import { ezil, hopla, kipirda, parilti, TITRESIM, ucur } from '../dogra/efekt';
+import { CIZIM_YER, cizimVarsa } from '../../istasyon/cizim';
 import { alet, parcaEl, rafSimge } from '../dogra/gorsel';
 import type { Gorunum } from '../dogra/mantik';
 import { surukle } from '../dogra/surukle';
@@ -248,6 +249,28 @@ function tabaklaBaslat(b: MiniBaglam, g: MiniGirdi): MiniOturum {
       cx = W / 2;
       cy = rafAlt + 16 + R * 1.05;
     }
+    // istasyon-servis çizimi geldiyse tabak çizimdeki tabaktır (cizim.ts; dış kontur = 1,12 R): bizimki saydam.
+    // Yatayda tabak raf şeridine taştığı için raf, çizimdeki tahta tepsinin üstüne (sol) dizilir: üç sütun.
+    const cizim = cizimVarsa('servis', W, H);
+    if (cizim) {
+      const m = cizim.nokta(CIZIM_YER.tabak.u, CIZIM_YER.tabak.v);
+      R = cizim.boy(CIZIM_YER.tabak.r) / 1.12;
+      cx = m.x;
+      cy = m.y;
+      kok.dataset.tabakResmi = '1';
+      if (yatay) {
+        const sol = 10;
+        const sag = cx - R * 1.12 - 8;
+        const ust = 74;
+        const mr = b.mino.el.getBoundingClientRect();
+        const kr = kok.getBoundingClientRect();
+        const alt = (mr.height ? mr.top - kr.top : H - 120) - 6;
+        const sut = Math.min(3, n);
+        const sat = Math.ceil(n / sut);
+        const s2 = Math.max(64, Math.min(76, (sag - sol) / sut - 8, (alt - ust) / sat - 8));
+        raf.style.cssText = `left:${sol}px;top:${ust}px;width:${sut * (s2 + 8)}px;--s:${s2}px`;
+      }
+    } else delete kok.dataset.tabakResmi;
     tabak.style.cssText = `left:${cx - R * 1.12}px;top:${cy - R * 1.12}px;width:${R * 2.24}px;height:${R * 2.24}px`;
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => yerlestir()) : null;

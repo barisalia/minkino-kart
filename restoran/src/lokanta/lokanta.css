@@ -243,3 +243,9 @@ img.rs-yol-alet { width: 18px; height: 18px; box-shadow: none; }
 .rs-yas-kutu { position: relative; z-index: 4; display: flex; gap: 24px; }
 .rs-yas { width: 120px; height: 120px; border: 0; border-radius: 26px; background: #fff6e0; box-shadow: var(--rs-golge), inset 0 0 0 4px var(--rs-kahve); font-size: 34px; font-weight: 700; color: var(--rs-kahve); cursor: pointer; }
 .rs-yas[data-yas='buyuk'] { background: #e9f5f2; }
+
+/* Gemini lokanta çizimi varken (arka yer tutucu değil): mandal ipi ve kasa çizimde; bizimkiler yalnız yer tutar.
+   Adisyonlar çizimdeki ipe, jeton yığını çizimdeki kasanın üstüne oturur (olcek.ts YERLESIM yatay). */
+.rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-ip { border-top-color: transparent; }
+.rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-kasa-govde { background: none; box-shadow: none; }
+.rs-arka:not(.rs-yertutucu) ~ .rs-katman .rs-kapi-zil { display: none; } /* zil çizimde, kapının üstünde */

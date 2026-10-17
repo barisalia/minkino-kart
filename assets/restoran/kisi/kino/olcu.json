@@ -1,0 +1,50 @@
+{
+ "tepsi": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 17,
+  "taban": 644
+ },
+ "yuru-1": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 18,
+  "taban": 644
+ },
+ "yuru-2": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 13,
+  "taban": 644
+ },
+ "koy": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 42,
+  "taban": 644
+ },
+ "yaz": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 16,
+  "taban": 644
+ },
+ "sallan": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 6,
+  "taban": 644
+ },
+ "patates": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 14,
+  "taban": 644
+ },
+ "tabaklar": {
+  "en": 644,
+  "boy": 651,
+  "tepe": 14,
+  "taban": 644
+ }
+}
