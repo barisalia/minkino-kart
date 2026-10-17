@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#9FDCF5" />
+    <meta name="description" content="Kino'nun Otobüsü — resimdeki dondurmanın aynısını yap!" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Kino'nun Otobüsü" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <title>Kino'nun Otobüsü</title>
+    <style>/* geçiş perdesi: oyun çizilene kadar beyaz değil menünün kremi; ilk ekran gelince açılır (src/ui/gecis.ts) */ html, body { background: #fff4dd; } #gecis-perde { position: fixed; inset: 0; z-index: 9999; background: #fff4dd; pointer-events: none; animation: gecis-emniyet 0.3s 4s forwards; } @keyframes gecis-emniyet { to { opacity: 0; visibility: hidden; } }</style>
+    <script type="module" crossorigin src="../assets/kinoOtobus-CX926PQZ.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/dom--E-XgeAB.js">
+    <link rel="modulepreload" crossorigin href="../assets/preload-helper-Ct5FWWRu.js">
+    <link rel="modulepreload" crossorigin href="../assets/ses-CkMrNkXc.js">
+    <link rel="modulepreload" crossorigin href="../assets/mino-BFSdn4Xz.js">
+    <link rel="modulepreload" crossorigin href="../assets/karakter-BqqlRlmp.js">
+    <link rel="modulepreload" crossorigin href="../assets/gecis-m-u5BpZk.js">
+    <link rel="modulepreload" crossorigin href="../assets/uygulama-CsRO5b5p.js">
+    <link rel="modulepreload" crossorigin href="../assets/erisim-B19xFi6v.js">
+    <link rel="modulepreload" crossorigin href="../assets/hareket-Bv7d8_n_.js">
+    <link rel="modulepreload" crossorigin href="../assets/ortak-DGtEqB9P.js">
+    <link rel="modulepreload" crossorigin href="../assets/ebeveyn-kapisi-CSBgDb8e.js">
+    <link rel="modulepreload" crossorigin href="../assets/logo-C33JbEyZ.js">
+    <link rel="modulepreload" crossorigin href="../assets/ekran-qcQWSptH.js">
+    <link rel="modulepreload" crossorigin href="../assets/kilit-Ct6LTrnm.js">
+    <link rel="modulepreload" crossorigin href="../assets/yukle-CRt2M-0b.js">
+    <link rel="modulepreload" crossorigin href="../assets/arka-uzak-CQrj16U_.js">
+    <link rel="modulepreload" crossorigin href="../assets/surukle-BDmYZmUN.js">
+    <link rel="modulepreload" crossorigin href="../assets/dokunsal-vlXsFr2b.js">
+    <link rel="modulepreload" crossorigin href="../assets/kapak-D2MVYDV_.js">
+    <link rel="modulepreload" crossorigin href="../assets/zipzip-DYMaRi90.js">
+    <link rel="modulepreload" crossorigin href="../assets/kase-BxTuDcpZ.js">
+    <link rel="modulepreload" crossorigin href="../assets/olcu-DX9LqKZi.js">
+    <link rel="modulepreload" crossorigin href="../assets/balon-D9pm8D4u.js">
+    <link rel="modulepreload" crossorigin href="../assets/kume-sag-Ct5hN2L-.js">
+    <link rel="modulepreload" crossorigin href="../assets/arka-on-Bss3arir.js">
+    <link rel="modulepreload" crossorigin href="../assets/arka-uzak-gUcIUA2w.js">
+    <link rel="modulepreload" crossorigin href="../assets/kume-sol-jPuMyZMZ.js">
+    <link rel="modulepreload" crossorigin href="../assets/flama-BvMmrI54.js">
+    <link rel="modulepreload" crossorigin href="../assets/jeton-1-CUkZZy-i.js">
+    <link rel="modulepreload" crossorigin href="../assets/kumbara-kavanoz-1-CZM04MXK.js">
+    <link rel="modulepreload" crossorigin href="../assets/susler-muz-BskOM9OB.js">
+    <link rel="modulepreload" crossorigin href="../assets/nehir-on-ZAgzMm5T.js">
+    <link rel="modulepreload" crossorigin href="../assets/anne-DEF-KWEJ.js">
+    <link rel="modulepreload" crossorigin href="../assets/dede-CcFxKDWY.js">
+    <link rel="modulepreload" crossorigin href="../assets/lokum-Cy_UePdX.js">
+    <link rel="modulepreload" crossorigin href="../assets/babaanne-Dh8GOTQR.js">
+    <link rel="modulepreload" crossorigin href="../assets/tavsan-B26DqL7c.js">
+    <link rel="modulepreload" crossorigin href="../assets/kus-D8Rvf4ZH.js">
+    <link rel="modulepreload" crossorigin href="../assets/cilek-B8Vp1XO3.js">
+    <link rel="modulepreload" crossorigin href="../assets/portakal-BhOgHF69.js">
+    <link rel="modulepreload" crossorigin href="../assets/boy-BWTfcmOb.js">
+    <link rel="modulepreload" crossorigin href="../assets/netlik-BZbmW7QB.js">
+    <link rel="modulepreload" crossorigin href="../assets/s2-lok2-BdmY6Jfr.js">
+    <link rel="stylesheet" crossorigin href="../assets/ana-D6iEyRMi.css">
+    <link rel="stylesheet" crossorigin href="../assets/dom-BEqh179a.css">
+    <link rel="stylesheet" crossorigin href="../assets/mino-BfZWYSS6.css">
+    <link rel="stylesheet" crossorigin href="../assets/karakter-D_fv1bib.css">
+    <link rel="stylesheet" crossorigin href="../assets/ekran-BOSP4rFE.css">
+    <link rel="stylesheet" crossorigin href="../assets/kinoOtobus-Cth-L-68.css">
+    <link rel="stylesheet" crossorigin href="../assets/latin-ext-700-CPgaGfRI.css">
+  </head>
+  <body>
+    <div id="gecis-perde" aria-hidden="true"></div>
+    <div id="kino-otobus"></div>
+  </body>
+</html>
