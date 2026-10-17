@@ -258,3 +258,6 @@ img.rs-yol-alet { width: 18px; height: 18px; box-shadow: none; }
 .rs-salon-mino[data-resim] > .mino { display: none; }
 /* giden müşteri (veda, kapıya yürüyüş) dokunuş almaz: hesap tabağını örtmez (lokanta.ts musteriGit) */
 .rs-lokanta .rs-kisi.rs-gidiyor:not(.rs-kino):not(.rs-oturuyor) { pointer-events: none; cursor: default; }
+/* hazır tabak kutusu: boş alanı dokunuşu geçirir (3/4 sahnede servis düğmesinin üstüne düşüyor); tabaklar dokunulur */
+.rs-pencere { pointer-events: none; }
+.rs-pencere > * { pointer-events: auto; }

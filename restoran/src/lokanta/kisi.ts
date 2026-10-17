@@ -148,12 +148,17 @@ export class Kisi {
       this.img = h('img.rs-kisi-resim', { src: pozResim, alt: '', draggable: 'false' }) as HTMLImageElement;
       this.govde.append(this.img);
       this.hazir = this.img.decode().catch(() => undefined);
-      // bütün poz kareleri önceden yüklenir: poz değişiminde boş kare / gecikme olmasın
+      // bütün poz kareleri önceden yüklenir (poz değişiminde boş kare olmasın); ilk kare çözüldükten SONRA, boşta
       const olcu = POZ_OLCU[`../../../assets/restoran/kisi/${ad}/olcu.json`];
-      for (const p of Object.keys(olcu ?? {})) {
-        const u = varlik(`kisi/${ad}/${p}`);
-        if (u) new Image().src = u;
-      }
+      void this.hazir.then(() =>
+        window.setTimeout(() => {
+          if (this.kapandi) return;
+          for (const p of Object.keys(olcu ?? {})) {
+            const u = varlik(`kisi/${ad}/${p}`);
+            if (u) new Image().src = u;
+          }
+        }, 600),
+      );
       this.kirpPlanla();
     } else if (KITLER[ad]) {
       const k = KITLER[ad];
