@@ -284,7 +284,7 @@ Kalın, kumaş kaplı bir tarif defteri. Sayfalarında büyük resimli kartlar. 
 | **Tarif** (alet ile gelir) | yeni yemek + yeni istasyon ya da alet = **yeni mini oyun** | Alet mutfaktaki boş yuvasına uçar, Kino dener; tarif kartı menü tahtasının altına eklenir. |
 | **Masa** | 3., 4. masa, çocuk masası (alçak, minik sandalyeli), bahçe masaları | Çocuk boş yuvalardan **hangisine** koyacağını seçer (pencere kenarı, akvaryum yanı...). Masa = daha çok müşteri = daha çok kazanç. |
 | **Süs** | masa örtüleri (kareli kırmızı, mavi çiçekli, sarı puantiyeli), perde, saksılar, duvar resmi, avize, akvaryum, gramofon, tabela rengi | Duvar ve masa yuvalarına sürüklenir. Bazıları dokununca canlanır (§9). |
-| **Bölüm** | **Bahçe (teras)**: 2 masa + mangal yuvası, asma ve fener. Büyük hedef, biriktirerek alınır. | Lokanta ekranı sağa doğru açılır, kamera kayarak bahçeye geçer (kaydırma, büyütme değil). |
+| **Bölüm** | **Bahçe (teras)**: 2 masa + mangal yuvası, asma ve fener. Büyük hedef, biriktirerek alınır. | Bahçe kapısı açılır, arka plan aynı resmin bahçeli sürümüne geçer (§7a, 3/4 sahne; kaydırma ve büyütme yok). |
 
 **Fiyatlar** (pati'deki gibi her değer `[3-4, 5-6]` çifti):
 | Şey | Fiyat |
@@ -336,8 +336,26 @@ interface RestoranKayit {
 
 ## 7. Sahne, kadraj ve görünüm (Barış: "zoom out al, karakterler dev olmasın")
 
+> **GÜNCELLEME (2026-10-17, Barış):** Barış, Check Please!'in ekran görüntüsünü gönderdi: "bu tarz bir restoran oyunu yapabilirdin görsel olarak, biraz estetik düşün, bunun çocuk versiyonu gibi bir şey yap."
+> Lokanta ana ekranı artık **yukarıdan 3/4 açıyla görünen, geniş, dekorlu, sıcak bir diorama** (§7a-1, §7b, §7d, §7e).
+> - İçeride açık mutfak, dışarıda asmalı bahçe.
+> - Sağda illüstrasyon gibi çizilmiş bir HUD paneli.
+> - Karakterler küçük.
+>
+> Değişmeyenler: bizim stil (kalın koyu kahve kontur, sıcak pastel, premium parlak 2D) ve çocuk kuralları (süre yok, ceza yok). Check Please!'ten yerleşim fikri alınıyor, çizim ve tasarım kopyalanmıyor.
+> İstasyon ekranları (mini oyunlar) aynen kalıyor. Eski dik karşıdan `lokanta-yatay` yalnız açılıştaki dış cepheye kadar yedek olarak duruyor.
+
 ### 7a. İki tür ekran
-1. **Lokanta (ana ekran), dik karşıdan.** Onaylı sahne stili: duvar ekrana paralel, kalın kahve kontur. **Tek resimde hem salon hem açık mutfak:** önde masalar ve kapı, arkada mutfak tezgâhı, ocak, lavabo, servis penceresi, adisyon ipi, kasa. Bütün lokanta tek bakışta görünür. Kamera yok, büyütme yok. Bahçe açılınca ekran sağa kayar (yan yana ikinci resim).
+1. **Lokanta (ana ekran): yukarıdan 3/4 açılı diorama.**
+   - **Kamera:** çatısı ve ön duvarı kaldırılmış bir oyuncak ev gibi, yaklaşık 45° yukarıdan önden bakar. Eşyaların ön yüzleri okunur, sert perspektif yok.
+   - **Babaanne'nin Lokantası tek resimdir.**
+     - Solda (%55) içerisi: sıcak ahşap zemin, krem duvar ve turkuaz çini bandı. Arka duvar boyunca açık mutfak: lavabo, doğrama tezgâhı, ocak ve davlumbaz, mermer tezgâh, zilli servis penceresi. Kapının yanında pirinç kasa (kasa sahnede bir eşyadır), bakır tencereler, adisyon ipi.
+     - Sağda (%45) dışarısı: asmalı bahçe ya da teras. Taş yol, çiçek tarhları, küçük taş çeşme, iki ağaç, çitin üstünde uyuyan bir kedi.
+     - Ön solda kapının önünde taş yol: **sıra yeri** (3 bekleme noktası).
+   - **Bahçe kapalıyken bile güzel görünür:** çimen uzamış, çit kapısı kapalı, çeşme kuru, asmanın yaprakları az.
+   - **Bahçe alınınca** arka plan, aynı resmin "bahçeli" sürümüyle değişir (Gemini "Edit this exact image": ahşap teras, yapraklı ve üzümlü asma, fenerler, akan çeşme). Yalnız bahçe değişir, içerisi piksel piksel aynıdır. Ekran kaymaz, her şey tek bakışta görünür.
+   - **Masalar ayrı çizimdir** (3/4 masa-sandalye seti) ve boş yuvalara konur. **Bütün sandalyeler masanın arka tarafındadır:** oturan müşteri kameraya bakar. Böylece var olan önden oturuş pozları (lokanta sayfaları) doğrudan kullanılır.
+   - **Derinlik:** her şey ayak noktasının y değerine göre sıralanır. Önündeki masanın arkasındaki müşterinin bacakları masa sprite'ının arkasında kalır.
 2. **İstasyon ekranları (mini oyunlar), çoğu üstten (kuş bakışı tezgâh).** Neden üstten:
    - Yiyecek büyük ve net görünür, kesim ve soyma üstten en okunaklı hâlinde.
    - **Yöne bağlı değil:** üstten çizim dikeyde 90° döndürülerek kullanılır. Her istasyon için ayrı dikey çizim gerekmez; Gemini yükü yarıya iner.
@@ -345,8 +363,25 @@ interface RestoranKayit {
    - Yalnız fırın ve içecek tezgâhı **önden** çizilir (dolum seviyesi ve fırın ağzı yandan okunur); bunların dikey çizimi ayrı yapılır.
 
 ### 7b. Ölçek ve netlik (sayılar kodda tek yerde: `restoran/src/olcek.ts`)
-- **Yatay 844×390, lokanta:** 1 boy birimi (Mino = 1) = ekran yüksekliğinin **%17'si** (~66 css px). Ayaktaki en uzun karakter (Baba, 2,36) ~156 css px = ekranın %40'ı. Oturan müşterinin masa üstünde görünen kısmı ~70-95 css px. **Bütün karakterler toplam ekran alanının %25'ini geçmez.** Mekân ferah görünür: kapı, 4 masa yuvası, açık mutfak, pencere aynı anda görünür.
-- **Dikey 390×844 (web), lokanta:** ayrı dikey lokanta çizimi; mutfak üstte, masalar altta iki sütun. 1 birim = ekran genişliğinin %16'sı (~62 css px).
+- **Yatay 844×390, lokanta (3/4 sahne):**
+  - Ekranın sağında **HUD paneli** var: genişliğin %15'i, en az 112 css px (§7d). Sahne alanı kalan ~717×390'dır, yani ~16:9. 2752×1536'lık resim bu alana neredeyse kırpılmadan sığar.
+  - **Kamera sabittir:** büyütme yok, kaydırma yok, lokantanın tamamı her an görünür. Resim sahne alanına `contain` ile yerleşir; kalan ince şerit HUD'un ahşap rengiyle dolar.
+  - **Karakterler küçük (Barış: "chibi ölçek"):** 1 boy birimi (Mino = 1) = sahne yüksekliğinin **%11'i** (~43 css px).
+    - Ayaktaki en uzun karakter (Baba, 2,36) ~100 css px, yani sahne yüksekliğinin %26'sı.
+    - Oturan müşterinin masa üstünde görünen kısmı ~45-60 css px.
+    - Yüz en az ~22 css px: ifade okunur.
+  - **Bütün karakterler toplam sahne alanının %18'ini geçmez.**
+- **Dikey 390×844 (web), lokanta:**
+  - Ayrı dikey 3/4 çizim (`lokanta-34-dikey`): mutfak üstte, salon ortada, bahçe altta, sıra solda kapının önünde.
+  - HUD altta yatay bir şerittir (96 css px).
+  - 1 birim = sahne genişliğinin %13'ü (~51 css px).
+- **Chibi mi, yeniden çizim mi?** Önerim: karakterler **yeniden chibi çizilmesin.**
+  - Kino ailesi ve hayvan müşteriler zaten iri kafalı yavrular. Yetişkinler (3,5-3,7 kafa) bu küçük ölçekte sevimli okunur. Bugüne kadar çizilen 8 müşteri lokanta sayfası ve Babaanne, Kino, Mino sayfaları boşa gitmez.
+  - Barış ilk ekran görüntüsünde "daha chibi" derse, aynı LOKANTA-KARELER kalıbıyla "chibi lokanta sayfası" ikinci tur olarak çizilir (§11h notu).
+- **Netlik (3/4 sahne):**
+  - Arka plan: 2752 px, 717 css'e düşünce 2151 cihaz pikseli. ✔
+  - 932×430'da: 806 css → 2418. ✔
+  - Karakterler: 100 css × 3 = 300 ≤ 540. ✔ Kaynak bol, küçültülerek çizilir.
 - **İstasyonda karakter:** Mino köşede, ekran yüksekliğinin en çok %30'u. Yıldız yiyecektir.
 - **Netlik kuralı (`src/ui/netlik.ts`, `NETLIK_DPR = 3`):** hiçbir resim kaynak pikselinin üstünde çizilmez. Hesap:
   - Lokanta sayfası karesi ~688×768, karakter karenin %70'i = ~540 px boy. 156 css × 3 = 468 ≤ 540. ✔
@@ -361,6 +396,48 @@ interface RestoranKayit {
 - Yürüme: Pati'nin `yuru()` gibi poz + yer değiştirme + hop.
 - Gag efektleri (duman, gözyaşı, kalp, ter damlası, buhar, yıldız, köpük, minik alev) tek bir Gemini efekt sayfasından kesilir, kodla uçar.
 - Yiyecek fiziği kodla: düşme, sekme, yuvarlanma, damla, köpük (Pazar'ın `fizik.ts` `Dunya`'sı ve `gorsel.ts`'i kullanılır).
+- **3/4 sahnede yürüme:**
+  - Karakterler sahne içindeki yol noktaları üstünde hoplayarak yürür: kapı, sıra, masa, servis penceresi, kasa.
+  - Sağa giderken yürüyüş karesi, sola giderken aynı karenin aynası (`scaleX(-1)`) kullanılır. Aynalama bir parça döndürme değildir, bütün resim çevrilir.
+  - Yalnız Kino'nun önden ve arkadan yürüme kareleri var: mutfağa doğru yukarı yürürken sırtı görünür (§11h `kino-34-yuru`).
+
+### 7d. HUD paneli (illüstrasyon gibi, sahnenin sağında)
+Barış'ın gördüğü örnekte sağda dikey, illüstre bir panel vardı. Bizim panelimizde **yazı ve rakam yok**, her şey resim. Panel bal rengi ahşap bir tabeladır: oyma çerçeve, pirinç köşeler, tepesinde küçük bir çiçek saksısı. Yukarıdan aşağı:
+
+| Parça | Ne gösterir | Dokununca |
+|---|---|---|
+| **Gün takvimi** | Yaprak takvim. Sayfasında günün resmi var (güneş, bulut, yağmur damlası; hava yalnız süs). Altında bugüne kadar oynanan günler minik noktalar hâlinde. | Takvimin yaprağı kalkar, Mino "[happy] Bugün güneşli!" der. |
+| **Kalp kavanozu** (mutluluk göstergesi) | Bugün mutlu giden her müşteri kavanoza bir kalp atar ("mmm" 1, "bayıldı" 2). **Asla boşalmaz, asla düşmez.** Dolunca Babaanne panelin üstünden başını uzatıp alkışlar. | Kalpler zıplar. |
+| **Altın sandık** | Birikim: kasadaki jetonların toplamı. Sandığın içindeki yığın yükselir (rakam yok). Hesaptan gelen jetonlar sahnedeki kasaya girer; kasa "çın" der, sandık bir kez hoplar. | Sandık açılıp kapanır, jetonlar şıngırdar. |
+| **Babaanne'nin Defteri** | Mağaza (§6b). Yalnız gün sonunda değil, gün içinde de bakılabilir. Alım gün sonunda yapılır, böylece müşteri akışı kesilmez. | Defter açılır. |
+| **Babaanne'nin listesi** | Bugünün resimli işleri (§16f). Kazanılan çıkartmalar küçük görünür. | Liste büyür, Mino resimleri söyler. |
+| **Menü tahtası (küçük)** | Bugünün yemekleri (küçük resimler). | Mino adlarını söyler. |
+| **Ayarlar** (ahşap dişli) ve **ses** | Ebeveyn kapısının arkasında (var olan kalıp). | — |
+
+- Dokunma alanları ≥ 56 css px, panel yatayda en az 112 css px genişliğindedir. Dikeyde altta yatay şerit olur: takvim, kavanoz, sandık, defter, liste.
+- Panel bir oyun yüzeyidir, menü değildir. Her parçası dokununca canlanır (gizli sürpriz dili).
+
+### 7e. Sıra, kapı ve sipariş balonları
+- **Sıra:**
+  - Gelen müşteri kapıdan girmez, kapının önündeki taş yolda **sıraya girer** (en çok 3 kişi; sonrakiler yolun başında belirir).
+  - Sıradakiler **beklerken sıkılmaz:** kelebeğe bakar, çiçeği koklar, kediyi sever, birbirleriyle konuşur. Sabır sayacı yok.
+  - Çocuk sıradaki herhangi birini (ilkini olmak zorunda değil) bir masaya ya da sandalyeye sürükler. Müşteri yürüyerek gider ve oturur.
+  - 3-4 yaşta dokunulmazsa 10 sn sonra sıranın başındaki kendisi boş masaya geçer (§16b).
+- **Kapı:** cam kapı, zilli. Müşteri yaklaşınca zil çalar, kapı açılıp kapanır (iki kare). Gün sonunda Kino kapıdaki levhayı çevirir.
+- **Balonlar:**
+  - Hepsi aynı ailedendir: beyaz, yuvarlak, kalın kahve konturlu, kuyruklu. İçinde tek bir resim var.
+
+  | Balon | Ne zaman | İçinde |
+  |---|---|---|
+  | **"!"** | sıradaki müşteri yeni geldi ya da tabağı hazır | ünlem |
+  | **Yemek** | resimli istek | tabakta yemek ikonu (12 tarif) |
+  | **İpucu** | ipuçlu istek | 6 ipucu ikonu (§4a) |
+  | **"?"** | "Ne yesem?" (§16c) | soru işareti ve şef şapkası |
+  | **Kalp** | bayıldı | — |
+  | **Zzz** | Baba uyuklar | — |
+  | **Hesap** | yemek bitti | hesap tabağı |
+
+  - Balon müşterinin başının üstünde ve sahne içindedir. HUD'un üstüne taşmaz, yüzü örtmez (`src/karakter/yuz.ts` `yuzKutulari`).
 
 ---
 
@@ -825,6 +902,60 @@ export interface MiniOturum {
 
 **Toplam ~60 sayfa ≈ 6 Gemini günü.** Var olan ve yeniden çizilmeyenler: Pati hayvan pozları, Bıdık/Tombi/Bıdık'ın babası durağan resimleri (yalnız referans), G-OT1 kadrosu.
 
+### 11h. 3/4 LOKANTA YÖNÜ (2026-10-17, Barış) · sıradaki ilk Gemini günü, öncelikli
+
+**Bu sayfalar şunların yerine geçer:**
+| Eski | Yeni | Not |
+|---|---|---|
+| #1 `lokanta-yatay` | #65-66 | Çizildi ve kodda bağlı. 3/4 resim gelene kadar yedek kalır. |
+| #21 `lokanta-dikey` | #67-68 | |
+| #46 `masalar` | #69 | |
+| #48-49 `bahce-yatay/dikey` | #66, #68 | bahçeli sürüm |
+| §16g #64 `sus-2` | #70 | |
+
+**Aynen geçerli olanlar:**
+- `sus-1`: arka duvar eşyaları. Arka duvar 3/4 sahnede de ekrana paraleldir.
+- Bütün istasyonlar ve yiyecekler.
+- `lokanta-dis` (açılış).
+- `kasa-defter`.
+- **Bugüne kadar çizilen 8 müşteri lokanta sayfası** (Anne, Baba, Dede, Lokum, Tombi, Bıdık, Bulut, Zıpzıp): Kare 1 yürüme (sola aynalanır), kare 2 el sallama, kare 3-8 oturuş. Önden oturuş pozları bu sahneye uyar, çünkü sandalyeler masanın arkasında ve müşteri kameraya bakar.
+
+**Eksik olan tek poz sırada ayakta beklemek.** Bunun için sıra sayfaları var (#76-78). Sayfa başına 6 karakter × 3 poz, küçük ölçek: kare yüksekliği ~512 px, karakter ~380 px. Sahnede en çok 100 css × 3 = 300 px gösterilir. ✔
+
+**S-34** (3/4 sahneler ve 3/4 eşyalar; S-PREMIUM'dan önce, aynen):
+> High three-quarter view from above and in front: the camera looks down at about 45 degrees, like a cozy dollhouse diorama with the roof and the front wall removed. One gentle consistent angle, no fisheye, no strong vanishing-point distortion, every object shows its front face clearly. Warm, inviting, richly decorated but uncluttered, generous open floor. No people, no characters, no animals unless named. No text, no letters, no numbers, no words on signs. Edge to edge, no white border.
+
+**Yükleme:** her sayfada önce `ekip/stil/onayli-stil-oda.png`. 3/4 eşya sayfalarında ikinci olarak #65 yüklenir (açı ve ölçek aynı olsun diye).
+
+| # | Dosya | Yükle | İstem (İngilizce) |
+|---|---|---|---|
+| 65 | `lokanta-34-yatay.png` (16:9, 2752×1536) | stil | "Babaanne's small, warm Turkish neighborhood restaurant and its garden in ONE wide scene. LEFT 55%: the inside: honey wooden floor, cream walls with a teal tile band, along the back wall an open kitchen (sink with a tap, wooden chopping counter, two-burner stove under a copper hood, white marble pastry counter, a serving hatch with a small brass bell), copper pots, herb pots, a string of tiny empty clothespins above the counter, a vintage brass cash register on a little counter by the glass entrance door at the front left. FOUR EMPTY TABLE SPOTS on the floor, each only a soft round rug, no tables, no chairs. Two empty wall gaps in the kitchen. In front of the door, a short curved stone path with room for three waiting guests. RIGHT 45%: the garden, still CLOSED but pretty: a low white picket fence with a small closed gate, an empty weathered wooden deck with some tall grass, a bare grape-vine pergola frame with only a few leaves, a small dry stone fountain, flower beds, two round trees, a sleeping ginger cat on top of the fence. Two empty spots on the deck." + S-34 + "Wide 16:9, maximum resolution 2752x1536." + S-PREMIUM |
+| 66 | `lokanta-34-yatay-bahceli.png` | stil, #65 | "Edit this exact image. Change ONLY the garden on the right: the gate is open and decorated with a flower garland, the wooden deck is clean and polished, the pergola is full of green vine leaves and purple grape bunches, a string of round paper lanterns hangs across it (flat colors, no glow), the fountain flows with clear water, more flowers in the beds. Keep the two empty deck spots empty. Keep the whole inside of the restaurant, the path, the cat and every other pixel identical." + S-PREMIUM |
+| 67 | `lokanta-34-dikey.png` (9:16, 1536×2752) | stil, #65 | "The same restaurant and garden re-composed for a tall vertical 9:16 phone screen, NOT a crop: the open kitchen along the top, the dining floor with FOUR EMPTY TABLE SPOTS (soft round rugs only) in the middle in two columns, the glass door and the curved stone path for three waiting guests at the middle left, the closed garden (picket fence, closed gate, dry fountain, bare pergola, sleeping cat on the fence, two empty deck spots) across the bottom. Same style, same colors, same objects." + S-34 + "Tall 9:16, maximum resolution 1536x2752." + S-PREMIUM |
+| 68 | `lokanta-34-dikey-bahceli.png` | stil, #67 | #66'nın düzenleme istemi aynen ("garden on the right" yerine "garden at the bottom") |
+| 69 | `masa-sandalye-34.png` | stil, #65 | OBJECT SHEET (ESYA bloğu) + "all drawn in exactly the same high three-quarter angle and scale as the second image. Row 1: a small square wooden table for two, empty top; the same table with a red-and-white checked cloth; with a blue flowered cloth; with a yellow polka-dot cloth. Row 2: a wooden chair seen from the front with its backrest behind the seat (seat empty); a white iron garden table for two; a white iron garden chair seen from the front; a wooden high chair for a toddler. Row 3: a low child's table with two tiny round stools; an empty white plate with a teal rim; a glass of water; a small vase with daisies (table centerpiece)." + S-34 + S-PREMIUM |
+| 70 | `sus-34.png` | stil, #65 | ESYA + "all in exactly the same high three-quarter angle and scale as the second image. Row 1: a big potted basil plant; a tall leafy plant in a woven basket; a small aquarium with two orange fish on a wooden cabinet; a gramophone with a big brass horn on a stool. Row 2: a bunch of five pastel balloons tied to a little weight; a shelf with three honey jars; a folding wooden screen with flowers (quiet corner); a window-seat cushion, striped. Row 3: a hanging round paper lantern; a flower box with red geraniums; a wooden garden bench; a ginger cat in three poses side by side: curled asleep, stretching, sitting and licking a paw." + S-34 + S-PREMIUM |
+| 71 | `hud-panel.png` | stil | "GAME UI PANEL ILLUSTRATION for a preschool restaurant game, two separate pieces on a plain flat light mint-green background (#DFF5E8): LEFT: a tall vertical wooden signboard panel (about one sixth of the image width and the full height) in warm honey-colored polished wood with a carved rounded frame, small brass corner caps, a tiny flower pot with daisies on its top edge, the inside of the board plain and empty. RIGHT: the same panel style as a long horizontal strip (for upright phones), empty inside. Like a cozy illustrated object from a picture book, not a flat game button." + "Wide 16:9, maximum resolution 2752x1536." + S-PREMIUM |
+| 72 | `hud-parcalar.png` | stil, #71 | ESYA + "matching the wooden panel in the second image. Row 1: a small tear-off wall calendar with a sunny sun picture on its page (no numbers); the same calendar with a cloud picture; the same with a rain-drop picture; a small round glass jar with a cork, empty. Row 2: the same jar filled with pink and red hearts; a small wooden treasure chest, closed, with brass bands; the same chest open and overflowing with golden coins that have a raised spoon emblem; a fabric-covered recipe book with a flower on the cover, closed. Row 3: a small note paper held by a strawberry magnet, empty; a tiny chalk menu board on an easel, empty; a round wooden gear button; a round wooden button with a little speaker shape." + S-PREMIUM |
+| 73 | `balon-ikon-yemek.png` | stil | ESYA + "TWELVE small plated-dish icons for speech bubbles, each a tiny but detailed illustration on a small white plate or in its own cup, 3 rows x 4: a shepherd's salad (diced tomato, cucumber, onion, parsley); menemen in a small copper pan; a glass of frothy ayran; a paper cone of French fries; a bowl of orange lentil soup with a lemon wedge; a stack of pancakes with honey; a boat-shaped Turkish pide with melted cheese; meatballs with bread and a grilled pepper; a glass of lemonade with ice; a fruit skewer (strawberry, banana, melon); three rolled cigar-shaped cheese pastries; a bowl of rice pudding with cinnamon." + S-PREMIUM |
+| 74 | `balon-ikon-durum.png` | stil | ESYA + "Row 1: a white rounded speech bubble with a thick dark-brown outline and a short tail at the bottom left, empty; the same with the tail at the bottom right; a smaller empty speech bubble; a cloud-shaped thought bubble with two little dots, empty. Row 2: a chunky illustrated exclamation mark shape in orange; a chunky illustrated question mark shape in teal with a tiny chef hat on top; a red heart; three curly sleep swirls (no letters). Row 3: a small round wooden bill dish with two golden coins; a sun with one sweat drop; a big open happy mouth; a single red tomato drop. Row 4: crunchy-lines around a golden cracker; a small cute bee; a carrot; a small white chef hat." + S-PREMIUM |
+| 75 | `kino-34-yuru.png` | stil, `kino-garson-sayfasi.png` | SAYFA + "Of exactly this same character: Kino with his white waiter apron, as in the second image. Tile 1: walking toward the viewer, left foot forward, holding an empty round tray up on one hand. Tile 2: same, right foot forward. Tile 3: walking away from the viewer, back view, tray up on one hand, left foot forward. Tile 4: same back view, right foot forward. Tile 5: standing in back view at a counter height, both hands up placing something. Tile 6: side view facing right, flipping a small door sign with one hand (sign not drawn). Tile 7: sweeping with a small broom, cheerful. Tile 8: slipping comically, one leg up, arms windmilling, eyes wide (does not fall)." + S-PREMIUM |
+| 76 | `sira-sayfasi-a.png` | stil, aile-model, `tombi.webp` | "QUEUE POSE SHEET. Three rows by six columns, eighteen tiles. Each COLUMN is one character, each ROW one pose; every character at the correct relative height (Baba tallest) on the same baseline per row, the tallest filling about 75% of a tile, front view facing the viewer, standing, plain flat light mint-green background (#DFF5E8), nothing touching, no borders. Columns: 1) Lokum, the toddler puppy girl in the pink dress; 2) Anne Defne; 3) Baba Murat with glasses; 4) Dede Hasan with the flat cap; 5) Babaanne Nazlı with glasses; 6) Tombi the chubby bear cub in red shorts. Row 1: standing calmly, waiting, gentle smile, hands relaxed. Row 2: exactly the same as row 1, only the eyes gently closed. Row 3: standing, looking up and to the side with curious happy eyes, one hand raised a little as if smelling a flower (no flower drawn)." + S-PREMIUM |
+| 77 | `sira-sayfasi-b.png` | stil, G-OT1, `bidik.webp`, `bidik-baba.webp`, `nehir-on.webp` | #76 kalıbı; sütunlar: Zıpzıp, Bulut, Bıdık, Bıdıcık (küçük bir el arabasında oturur), Bıdık'ın babası, Nehir abla |
+| 78 | `sira-sayfasi-c.png` | stil, #31 | #76 kalıbı, 4 sütun: Dişçi, Tuhaf Teyze, Palyaço Tavşan, Kelime Yutan Tavşan (yeni lokanta sayfaları çizilince) |
+
+**Gün planı:**
+- **R-GÜN 3/4-A:** #65-74 (10 sayfa). Sahne, masa, süs, HUD ve balonlar bir günde biter; P8 bunlarla başlar.
+- **R-GÜN 3/4-B:** #75-77, ardından eski R-Gün 3'ün kalan maddeleri (#22-30, #21 hariç).
+- #78, R-Gün 4'te #31 kadro sayfasından sonra çizilir.
+
+**Kontrol (her 3/4 sayfa):**
+- `onayli-stil-oda.png` ile yan yana konur. Stilimiz mi, Check Please!'in kopyası mı? Kopya görünürse reddedilir.
+- Açı #65 ile aynı mı? Masa ve süs, #65'in boş yuvasına konup ekran görüntüsüyle denenir.
+- Yazı, rakam, logo var mı? Varsa reddedilir.
+
+**Chibi notu:** Barış ilk ekranda "karakterler daha chibi olsun" derse aynı LOKANTA-KARELER kalıbı başına şu eklenerek ikinci tur çizilir: "drawn in a chibi version of the same design: head about 45% of the total height, short body". Kino ailesinin yüz ve kıyafet tasarımı değişmez. Bu ~14 sayfalık ek tur Barış'ın kararıdır.
+
 ---
 
 ## 12. Aşamalar ve kodcu iş paketleri
@@ -872,7 +1003,54 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 - **İş:** §8 M8, M9, M15; §9 bütün gizli sürprizler; personel yemeği (5-6); bütün tariflerin uçtan uca akışı; ses kayıtları geldiyse bağlanması; son netlik denetimi.
 - **Bitti:** 12 tarifin her biri uçtan uca en az bir kez e2e'de pişirilip servis edilir; 12 sürprizin her biri bir kez tetiklenir; konsol hatası yok; `buyutulen()` temiz; ekran görüntüleri gerçek hızda izlendi.
 
-**Toplam ~19,5 kodcu-saati, paralel çalışınca ~10-11 saat duvar saati.** Yönetici her paket sonunda kendisi oynar ve sert denetler; Barış'a ancak ondan sonra gider.
+### P8 · 3/4 sahne, sıra ve kapı, HUD (2026-10-17, ~4 sa) · P7'den ÖNCE
+- **Ne zaman:** Gemini R-GÜN 3/4-A sayfaları (#65-74) kesilince başlar. Tek kodcu. `lokanta.ts`'e başka paket aynı anda dokunmaz.
+- **Kesim:** `ekip/illustrator/restoran/restoran-isle.cjs` SAYFALAR listesine #65-#78 eklenir. Çıktılar:
+  - `assets/restoran/arka/lokanta-34-{yatay,dikey}{,-bahceli}.webp`
+  - `masa/`, `sus/`, `hud/`, `balon/`, `kisi/<ad>/sira-*.webp`
+  - `kisi/kino/{on-1,on-2,arka-1,arka-2,arka-koy,levha,supur,kay}.webp`
+  - Büyük dosya ezilmez (`guvenli-yaz.cjs`).
+- **Dosyalar:**
+  - `restoran/src/olcek.ts`:
+    - `SAHNE34`: sahne alanı = ekran − HUD (yatayda sağda %15, en az 112 css; dikeyde altta 96 css).
+    - `contain` yerleşimi ve kalan şeridin dolgusu.
+    - Boy birimi: yatayda sahne yüksekliğinin %11'i, dikeyde sahne genişliğinin %13'ü.
+    - Yeni 3/4 `YERLESIM` tablosu: masa yuvaları, sıra noktaları, kapı, kasa, servis penceresi, istasyon dokunma kutuları, alet yuvaları, bahçe yuvaları. Hepsi sahne yüzdesiyle.
+    - Eski `YERLESIM` ve dik karşıdan resim `?eski=1` ile yedek olarak kalır.
+  - `restoran/src/lokanta/sahne34.ts` (yeni):
+    - **Derinlik sıralaması:** her nesnenin `zemin.y` değerine göre `z-index`, her yer değişiminde güncellenir.
+    - Masa iki katmandır: sandalye (arkada), müşteri, masa (önde).
+    - **Yürüme yolu:** yol noktaları grafiği (kapı, sıra, masalar, servis, kasa, bahçe kapısı) ve en kısa yol. Pati `yuru()` kalıbıyla hop. Sola giderken `scaleX(-1)`. Kino yukarı yürürken arka karesi, aşağı yürürken ön karesi.
+  - `restoran/src/lokanta/sira.ts` (yeni):
+    - En çok 3 kişilik sıra ve fazlası için yolun başı.
+    - Bekleme oyalanmaları: koklama, kelebek, kedi.
+    - Sıradan masaya ya da sandalyeye sürükleme (§16b ile uyumlu; P7 bu modülü kullanır).
+    - 3-4 yaşta 10 sn sonra kendiliğinden oturma.
+    - Kapı zili ve iki kareli kapı.
+  - `restoran/src/lokanta/hud.ts` + `hud.css` (yeni): §7d'deki parçalar.
+    - Takvim (gün noktaları), kalp kavanozu (yalnız dolar), altın sandık (birikim), defter, liste (P7 gelene kadar gizli), küçük menü tahtası, ayarlar ve ses (var olan ebeveyn kapısı).
+    - Yatayda sağda dikey, dikeyde altta yatay.
+  - `restoran/src/lokanta/istek-gorsel.ts`: §7e balon ailesi (`balon-ikon-*`), yüz kutularından kaçınma (`yuzKutulari`).
+  - `restoran/src/lokanta/yerlesim.ts`: 3/4 masa ve süs yuvaları. Bahçe alınınca arka plan `-bahceli` sürümüne geçer (kısa çapraz geçiş). Kaydırmalı ikinci resim kalkar.
+  - `restoran/src/lokanta/lokanta.ts`: yalnız yeni modülleri bağlama. Kasa artık sahnede bir eşya; jeton uçuşu kasaya, ardından HUD sandığına bir hop.
+  - `restoran/src/lokanta/kisi.ts`: sıra kareleri (`sira-1/2/3`), aynalama, küçük ölçek.
+  - `restoran/src/varliklar.ts`: yeni adlar ve yedek zinciri. 3/4 resim yoksa dik karşıdan sahneye düşer, oyun yine çalışır.
+  - Testler: `tests/unit/restoran-sahne34.test.ts` (yol grafiği, derinlik, yerleşim tablosu sınırları) ve `tests/e2e/restoran-34.spec.ts`.
+- **Bitti ölçütü:**
+  1. 844×390, 932×430, 667×375 ve 390×844'te (DPR 3) lokantanın tamamı (mutfak, 4 masa, kapı, sıra, bahçe) ve HUD kaydırmasız görünür. Kamera sabittir, büyütme yoktur. `buyutulen()` temizdir.
+  2. Ayaktaki en uzun karakter sahne yüksekliğinin %26'sını, toplam karakter alanı sahnenin %18'ini geçmez (e2e ölçer). Her yüz ≥ 22 css px.
+  3. Derinlik doğrudur: masanın arkasında oturan müşterinin bacakları görünmez; önden geçen Kino arkadaki masanın önünde çizilir (e2e: `elementFromPoint` denetimi, 6 nokta).
+  4. Sıra: 5 müşteri gelince 3'ü sırada, 2'si yolun başında bekler. Herhangi biri sürüklenip oturtulabilir. Kimse sıradan gitmez. Hiçbir an kilitlenmez.
+  5. Yürüme: Kino mutfağa yukarı yürürken arka karesi, aşağı inerken ön karesi görünür. Sola giden müşteri aynalanır. Takılma ya da duvardan geçme yoktur (yol grafiği testi).
+  6. HUD: her parça ≥ 56 css px. Kalp kavanozu yalnız dolar (birim testi: komik tepki kalp düşürmez). Sandık birikimi kayıttaki `jeton`la aynıdır. Defter gün içinde açılır ama alım gün sonunda olur.
+  7. Balonlar yüzü örtmez, HUD'a taşmaz. 12 yemek ikonu ve 6 ipucu ikonu menü ve isteklerle eşleşir (birim testi).
+  8. Bahçe alınınca arka plan bahçeli sürüme geçer, bahçe masaları ve mangal yuvası aynı yerde çalışır. Kayıt göçü eski yerleşimi bozmaz.
+  9. Gün 1 uçtan uca gerçek dokunuşla oynanır, ekran görüntüleri gerçek hızda kare kare izlenir, `ORTAK_NOTLAR.md`'ye satır eklenir.
+- **Yönetici denetimi:** Barış'a gitmeden önce Check Please! ekran görüntüsü ile bizim 844×390 ekran görüntüsü yan yana konur. Sorulacaklar: aynı sıcaklıkta mı, bizim stilde mi, kopya mı? Kopya görünürse renk ve yerleşim değiştirilir.
+
+**Sıra güncellemesi (2026-10-17):** P8 → P7. P7 (§16h) iki kişilik masaları P8'in 3/4 masa ve sıra modülü üstüne kurar.
+
+**Toplam ~19,5 kodcu-saati (P1-P6), + P8 ~4 sa, + P7 ~3,5 sa.** Yönetici her paket sonunda kendisi oynar ve sert denetler; Barış'a ancak ondan sonra gider.
 
 ---
 
@@ -1043,7 +1221,7 @@ Dalga 1: 2 kodcu. Dalga 2: 3 kodcu. Dalga 3: 1-2 kodcu.
 
 ### 16h. Kodcu paketi P7 · Check Please! ekleri (~3,5 sa)
 
-P4 ve P6'dan sonra başlar, tek kodcu. `lokanta.ts`'e başka paket aynı anda dokunmaz.
+P4, P6 ve P8'den (3/4 sahne) sonra başlar, tek kodcu. `lokanta.ts`'e başka paket aynı anda dokunmaz.
 
 - **Dosyalar:**
   - `restoran/src/model.ts`: `ARKADASLAR`, `ATISMALAR`, `SEVDIGI_SUS`, `OZEL_MISAFIR`, `oturmaSonucu(a, b)`, `masaBahsisi(...)` (masa başına en çok +1), `oneriTepkisi(musteri, tarif)`, `gunListesi(tohum, yas, acilan)`.
