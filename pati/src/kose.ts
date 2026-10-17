@@ -124,7 +124,10 @@ export class KosePaneli {
       yer.el.querySelector('.pt-kose-golge2')?.remove();
       if (!s) {
         // boş yuva: köşenin henüz alınmamış yavrusunun gölgesi (dolaylı: "burası birini bekliyor")
-        const aday = HAYVAN_IDLERI.find((id) => hayvanBilgi(id).kose === this.kose && hayvanGorseliVar(id) && !this.o.kayit.hayvanlar.some((x) => x.id === id));
+        // her boş yuvada başka bir yavru (Fıstık ve Kurabiye)
+        const adaylar = HAYVAN_IDLERI.filter((id) => hayvanBilgi(id).kose === this.kose && hayvanGorseliVar(id) && !this.o.kayit.hayvanlar.some((x) => x.id === id));
+        const sira = this.yerler.filter((x) => x.i < yer.i && !this.o.kayit.hayvanlar.some((h_) => h_.kose === this.kose && h_.yer === x.i)).length;
+        const aday = adaylar[sira % Math.max(1, adaylar.length)];
         if (aday) {
           const g = h('button.pt-kose-golge2', { type: 'button', 'data-golge': aday, 'aria-label': aday }, h('img', { src: pozAdresi(aday, 'bos').url, alt: '', draggable: 'false' }));
           g.addEventListener('click', () => {

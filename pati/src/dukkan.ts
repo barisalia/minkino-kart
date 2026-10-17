@@ -123,8 +123,8 @@ export function dukkanEkrani(app: Uygulama): Ekran {
   function hayvanSecildi(s: SahipHayvan): boolean {
     if (acilisSuruyor || isik === 'gece') return false;
     if (ziyaret.hayvanVer(s)) return true;
-    // ziyaret sahnesi oynarken hayvan yalnız zıplar (Bakım Odası sahneden sonra)
-    if (ziyaret.aktif && ziyaret.bekleyis === null) return false;
+    // ziyaret sürerken hayvan yalnız zıplar (Bakım Odası ziyaretten sonra; ziyaretçi öne çıkar)
+    if (ziyaret.aktif) return false;
     odaAc(s);
     return true;
   }

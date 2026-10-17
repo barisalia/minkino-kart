@@ -206,8 +206,14 @@ export class Ziyaret {
   private tepsiYerlesim() {
     const { x, y, k, dikey } = this.yer();
     const W = this.o.ekran.clientWidth || 844;
-    if (!dikey) this.tepsi.style.cssText = `left:${(x + k * 0.55).toFixed(0)}px;top:${(y - 84).toFixed(0)}px;max-width:${(W - x - k * 0.55 - 12).toFixed(0)}px`;
-    else this.tepsi.style.cssText = `left:12px;top:${(y - 100).toFixed(0)}px;max-width:${(x - k * 0.45 - 20).toFixed(0)}px`;
+    // yatay: ziyaretçinin sağında, tabandan yukarı (müzik kutusu gibi uzun tepsi ekrandan taşmaz)
+    if (!dikey) this.tepsi.style.cssText = `left:${(x + k * 0.55).toFixed(0)}px;bottom:${((this.o.ekran.clientHeight || 390) - y + 4).toFixed(0)}px;max-width:${(W - x - k * 0.55 - 12).toFixed(0)}px`;
+    else {
+      // dikey: ziyaretçinin solunda, alt şeridin üstünden yukarı doğru (2 sütun)
+      const H = this.o.ekran.clientHeight || 844;
+      this.tepsi.style.cssText = `left:12px;bottom:${(H - y + 6).toFixed(0)}px;max-width:${Math.max(150, x - k * 0.45 - 20).toFixed(0)}px`;
+    }
+    this.tepsi.classList.toggle('pt-dikey', dikey);
   }
 
   // ---------------------------------------------------------------- konuşma

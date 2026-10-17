@@ -248,6 +248,8 @@ export class Vitrin {
     this.yenile();
     const b = this.bolmeler.find((x) => x.id === id);
     if (!b?.hayvan || b.mesgul) return;
+    this.secili = b.i;
+    this.el.dataset.secili = String(b.i);
     await bekle(300);
     await this.tanis(b);
   }
