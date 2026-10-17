@@ -207,7 +207,7 @@ Kostüm artık sonucu etkiler. Ceza yoktur, her sonuç eğlencelidir. Amaç, ço
 
 Kurallar: parça döndürme yok, poz değişimi ve ezilme-esneme; büyütme yok. Söz kısa, "dokun" demez. Yeni sözler `content/mino-giysin.json` → `mino.kostum_ek`, `mino.kostum_saka` (CI seslendirir). Kod: `model.ts` → `kostumEtkisi`, `dert.ts` (tam sevinç, şaka), `sahneler.ts` (ek anlar).
 
-**Dikey ekran (390 × 844):** Odada duvarın boş üst yarısında, balonlarla Mino arasında perdeli pencere durur, camda mahallenin yaz manzarası görünür (var olan `giysin/pencere`, `pencere-yaz-*`, `perde-sol/sag`). Dert sahnelerinde üst boşluk doldurulur: parkta sahnenin gök katmanı (aynalı, bulutlu), Kino'nun odasında duvar ve aynı perdeli pencere, mutfak sahnesi üstten başlar. Hepsi kaynak boyunda, büyütme yok.
+**Dikey ekran (390 × 844):** Odada duvarın boş üst yarısında, balonlarla Mino arasında perdeli pencere durur, camda mahallenin yaz manzarası görünür (var olan `giysin/pencere`, `pencere-yaz-*`, `perde-sol/sag`). Dert sahnelerinde üst boşluk doldurulur: parkta sahnenin gök katmanı (aynalı, bulutlu), Kino'nun odasında duvar ve aynı perdeli pencere. Mutfak sahnesi üstten başlar; altındaki boşlukta evin dikey odasının ahşap zemini ve halısı durur (`film/ev/oda-dikey`, sahnenin alt kenarı ona karışır). Ada sahnesi dikeyde biraz küçüktür (ekranın %43'ü), Mino ile Ada birlikte sığar. Yatayda sahne Mino'nun ayağının altındaki boş zemin kadar aşağı kayar; sulama şakasında Pamuk en çok ekranın üst kenarına kadar tırmanır. Hepsi kaynak boyunda, büyütme yok.
 
 ---
 

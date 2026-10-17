@@ -56,6 +56,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   const sahne = h('div.mg-sahne', {}, ...tanim.arka.map((a, i) => h(`img.mg-katman.k${i}`, { src: gorsel(a), alt: '', draggable: 'false' })));
   // dikeyde sahnenin üstündeki boşluk: sahnenin uzak katmanı (gök ve bulutlar / duvar kâğıdı) aynalanıp üstte durur;
   // kaynak boyunda (DPR 3'te 1:1), sahnenin üst kenarı ona yumuşakça karışır. Yakınlaşma yok.
+  const zeminAlt = tanim.dikeyAlt ? (h('img.mg-zemin-alt', { src: gorsel(tanim.dikeyAlt.ad), alt: '', draggable: 'false', 'aria-hidden': 'true' }) as HTMLImageElement) : null;
   const gok = h('img.mg-gok', { src: gorsel(tanim.dikeyUst ?? tanim.arka[0]), alt: '', draggable: 'false', 'aria-hidden': 'true' }) as HTMLImageElement;
   // iç mekânda (Kino'nun odası) duvarın boş üst yarısına perdeli pencere
   const pencere = tanim.dikeyPencere ? pencereEl() : null;
@@ -69,7 +70,7 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
   const kapi = h('button.mg-cikis', { type: 'button', 'aria-label': 'Kapı' }, h('img', { src: gorsel('giysin/kapi-cerceve'), alt: '', draggable: 'false' }), h('img.mg-cikis-kanat', { src: gorsel('giysin/kapi-kanat'), alt: '', draggable: 'false' }));
   const yildizRozet = h('div.mg-yildiz-rozet', { 'aria-hidden': 'true', html: IKON.yildiz });
   const ust = h('div.mg-ust', {}, yuvarlakDugme(IKON.geri, 'Odaya dön', () => odayaDon(false), 'mg-geri'), sesDugmesi());
-  el.append(gok, ...(pencere ? [pencere] : []), sahne, sepet.el, kapi, eldeHit, yildizRozet, ust, ucus, parmak);
+  el.append(gok, ...(zeminAlt ? [zeminAlt] : []), ...(pencere ? [pencere] : []), sahne, sepet.el, kapi, eldeHit, yildizRozet, ust, ucus, parmak);
 
   // ------------------------------------------------------------ yerleşim
   let S = { x: 0, y: 0, w: 0, h: 0, dikey: false };
@@ -86,11 +87,14 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
     const kapla = Math.max(w / nw, hh / nh);
     // DPR 3'te kaynak boyunun üstüne çıkmaz; dikeyde sahne ekranın ~%56'sı (daha çoğu görünsün)
     // dikeyDolu (mutfak): dikeyde kaynak boyunda en büyük, üstten başlar (üstte boşluk kalmaz; alt zemin rengi)
-    const s = Math.min(kapla, 1 / 3, dikey && !tanim.dikeyDolu ? (0.5 * hh) / nh : Infinity);
+    const s = Math.min(kapla, 1 / 3, dikey ? ((tanim.dikeyBoy ?? (tanim.dikeyDolu ? Infinity : 0.5)) * hh) / nh : Infinity);
     const sw = nw * s;
     const sh = nh * s;
     // dikeyde açık hava sahneleri aşağıda (üstte gök rengi dolgu sahneyle birleşir), iç mekânlar ortada
-    const y = dikey ? (tanim.dikeyDolu ? 0 : tanim.dikeyAlta ? Math.max(56, hh - sh - Math.min(130, w * 0.32) * SEPET_BOY - 20) : Math.max(56, hh * 0.47 - sh / 2)) : hh - sh;
+    // yatayda sahne alttan hizalı ve üstü kırpılır; Mino'nun ayağının altında boş kalan zemin kadar aşağı kayar (üstte
+    // daha çok gök görünür, ağaçtaki Pamuk ekranın üstüne yapışmaz)
+    const yatayY = Math.min(0, hh - sh + Math.max(0, hh - 6 - (hh - sh + tanim.mino.taban * sh)));
+    const y = dikey ? (tanim.dikeyDolu ? 0 : tanim.dikeyAlta ? Math.max(56, hh - sh - Math.min(130, w * 0.32) * SEPET_BOY - 20) : Math.max(56, hh * 0.47 - sh / 2)) : yatayY;
     S = { x: 0, y, w: sw, h: sh, dikey };
     sahneKaydir(false);
     sahne.style.width = `${sw}px`;
@@ -104,6 +108,14 @@ export function dertEkrani(app: Uygulama, param: { dert: Dert }): Ekran {
       const gh = nh / 3;
       gok.style.cssText = `left:${w / 2 - gw / 2}px;top:0;width:${gw}px;height:${Math.min(gh, y + sh * 0.3)}px`;
     } else gok.style.cssText = 'display:none';
+    if (zeminAlt && tanim.dikeyAlt) {
+      // sahnenin altındaki boşluk: zemin çizimi alttan hizalı, kaynak boyunda; üst kenarı sahnenin altına girer
+      const bos = hh - (y + sh);
+      const [zw, zh] = tanim.dikeyAlt.dogal;
+      const altVar = dikey && bos > 8;
+      el.classList.toggle('alt-var', altVar);
+      zeminAlt.style.cssText = altVar ? `left:${w / 2 - zw / 6}px;top:${hh - Math.min(zh / 3, bos + sh * 0.14)}px;width:${zw / 3}px;height:${Math.min(zh / 3, bos + sh * 0.14)}px` : 'display:none';
+    }
     if (pencere) {
       // pencere duvarda: üst çubuğun altından, sahnede başların biraz üstüne kadar (sahnenin önünde değil, arkasında)
       const k = gokVar ? pencereOlcu(w / 2, 64, y + sh * Math.min(tanim.mino.taban - tanim.mino.h * 1.02, tanim.arkadas.taban - 0.62), w * 0.5) : null;

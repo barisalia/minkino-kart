@@ -68,6 +68,10 @@ export interface SahneTanim {
   dikeyPencere?: boolean;
   /** dikeyde sahne kaynak boyunda en büyük ve üstten başlar (üstü dolu iç mekân: mutfak) */
   dikeyDolu?: boolean;
+  /** dikeyde sahnenin altındaki boşluğa konan zemin çizimi (alttan hizalı, kaynak boyunda): ad ve doğal boyu */
+  dikeyAlt?: { ad: string; dogal: [number, number] };
+  /** dikeyde sahnenin ekran boyuna oranı (varsayılan 0.5); geniş arayı (Mino ↔ Ada) sığdırmak için küçültülür */
+  dikeyBoy?: number;
   odak: number;
   mino: { x: number; taban: number; h: number };
   arkadas: { x: number; taban: number; olcek: number };
@@ -368,6 +372,8 @@ const pamukSahnesi: SahneTanim = {
     const kusKap = Y.ekle(h('div.mg-kus', {}, kus.el), 0.105, 0.6, 0.13, 1);
     const a = b.arkadas;
     let yukarida = false;
+    /** sulama şakasında Pamuk'un tırmandığı yükseklik (px): ekranın üstünden taşmaz (yatayda sahnenin üstü kırpık) */
+    let yukMiktar = 0;
     let kusCikti = false;
     const hazirla = () => a.poz('bekle', 'uzgun');
     kusKap.addEventListener('click', () => {
@@ -412,7 +418,11 @@ const pamukSahnesi: SahneTanim = {
           await bekle(450);
           a.poz('islak', 'uzgun');
           await a.titre(600);
-          const sh = b.px(0, 0.1).y;
+          // bir dal daha yukarı: en çok sahnenin %10'u, ama Pamuk'un başı ekranın içinde kalır (en az %3 tırmanır)
+          const ak = kutu(a.el, b.el);
+          const basUst = ak.y + ak.h * Arkadas.figur('pamuk').tepe;
+          const sh = Math.max(b.px(0, 0.03).y, Math.min(b.px(0, 0.1).y, basUst - 8));
+          yukMiktar = sh;
           a.el.style.translate = `0 -${sh}px`;
           yukarida = true;
           await oynat(a.el, [{ translate: '0 0' }, { translate: `0 -${sh * 0.6}px`, offset: 0.4 }, { translate: `0 -${sh}px` }], 600);
@@ -444,7 +454,7 @@ const pamukSahnesi: SahneTanim = {
           await minoYerine(b);
           a.poz('bekle', 'uzgun');
         }
-        if (yukarida) a.el.style.translate = `0 -${b.px(0, 0.1).y}px`;
+        if (yukarida) a.el.style.translate = `0 -${yukMiktar}px`;
       },
       cozum: async (al, kez) => {
         if (al === 'merdiven') {
@@ -512,7 +522,7 @@ const pamukSahnesi: SahneTanim = {
         void a.oynat('kokla', 1600);
         await bekle(900);
         a.poz('kay', 'mutlu');
-        const yuk = yukarida ? b.px(0, 0.1).y : 0;
+        const yuk = yukarida ? yukMiktar : 0;
         const son = `${b.px(0.05, 0).x}px ${b.px(0, 0.88 - 0.45).y}px`;
         if (b.ek(al)) {
           // kostüm aşçı değil (§4a): Pamuk kayıp mamaya değil Mino'nun kafasına iner (şapka varsa yassılır), sonra mamaya
@@ -858,7 +868,11 @@ const egeSahnesi: SahneTanim = {
   dogal: [2752, 1536],
   dolgu: ['#c49460', '#e2a364'],
   dikeyDolu: true,
-  odak: 0.42,
+  // Mino (0.28) ile Ege (0.53) dikeyde birlikte sığsın
+  dikeyBoy: 0.55,
+  // alttaki boş zemine evin dikey odasının ahşap zemini ve halısı (film/ev/oda-dikey'in alt kısmı)
+  dikeyAlt: { ad: 'film/ev/oda-dikey', dogal: [1536, 2752] },
+  odak: 0.4,
   mino: { x: 0.28, taban: 0.96, h: 0.46 },
   arkadas: { x: 0.53, taban: 0.69, olcek: 0.78 },
   kur: (b) => {
@@ -894,7 +908,7 @@ const egeSahnesi: SahneTanim = {
         dongu();
       },
       basla: () => {
-        b.odakla(0.42);
+        b.odakla(0.4);
         b.hedefle([
           { el: govde, fn: () => kur.onDene() },
           { el: tencere, fn: () => kur.onDene() },
@@ -1059,14 +1073,15 @@ const egeSahnesi: SahneTanim = {
           await kavis(kur2, ortasi(kavanoz, b.el), ortasi(agiz, b.el), 700, { tepe: -60 });
           kur2.remove();
         }, 24);
-        b.odakla(0.42);
         a.ifade('am', 800);
         a.balon(G.ege.ham, 900);
         await bekle(800);
         a.ifade('kikir', 1200);
         merdiven.classList.remove('acik');
         b.mino.mino.kostumResmi('alet')?.style.removeProperty('opacity');
+        // önce Mino merdivenden iner, sonra sahne yerine kayar (Mino kenarda yarım kalmasın)
         await minoYerine(b, 600);
+        b.odakla(0.4);
         return true;
       },
       tesekkur: async () => {
@@ -1100,6 +1115,8 @@ const adaSahnesi: SahneTanim = {
   dogal: [4096, 2286],
   dolgu: ['#4faff0', '#9ac93e'],
   dikeyAlta: true,
+  // dikeyde Mino (0.30) ile Ada (0.71) birlikte sığsın: sahne biraz küçük, üstü gökyüzü
+  dikeyBoy: 0.43,
   odak: 0.51,
   mino: { x: 0.3, taban: 0.95, h: 0.42 },
   arkadas: { x: 0.71, taban: 0.95, olcek: 0.92 },

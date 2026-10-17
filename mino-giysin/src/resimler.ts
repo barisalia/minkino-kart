@@ -16,6 +16,7 @@ const ORTAK = import.meta.glob<string>(
     '../../assets/giysin/ikon/corap.webp',
     '../../assets/film/park/{arka-uzak,arka-orta,arka-on}.webp',
     '../../assets/film/mutfak/{arka-uzak,arka-orta}.webp',
+    '../../assets/film/ev/oda-dikey.webp',
     '../../assets/film/esya/{mama-sandalyesi,cicek,mantar,kova}.webp',
     '../../assets/pasta/{kavanoz-cikolata-1,kurabiye-yuvarlak-altin}.webp',
     '../../assets/pati/esya-mama-kabi-dolu.webp',

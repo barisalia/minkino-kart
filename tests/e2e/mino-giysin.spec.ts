@@ -359,8 +359,50 @@ for (const boy of BOYLAR) {
           return { sahneUst: s.top, gokAlt: g.height ? g.bottom : 0 };
         });
         expect(ust.sahneUst <= 8 || ust.gokAlt >= ust.sahneUst, dert).toBe(true);
+        if (dert === 'ege') {
+          // mutfak üstten başlar; altındaki boşlukta zemin çizimi (alt kenara kadar, sahnenin altına girer)
+          const alt = await page.evaluate(() => {
+            const d = document.querySelector<HTMLElement>('.mg-dert:not(.cikiyor)')!;
+            const s = d.querySelector<HTMLElement>('.mg-sahne')!.getBoundingClientRect();
+            const z = d.querySelector<HTMLElement>('.mg-zemin-alt')!.getBoundingClientRect();
+            return { sahneAlt: s.bottom, zUst: z.top, zAlt: z.bottom, zSol: z.left, zSag: z.right, H: innerHeight, W: innerWidth };
+          });
+          expect(alt.zUst).toBeLessThanOrEqual(alt.sahneAlt);
+          expect(alt.zAlt).toBeGreaterThanOrEqual(alt.H - 1);
+          expect(alt.zSol <= 0 && alt.zSag >= alt.W).toBe(true);
+        }
         expect(await zoomlar(page), dert).toEqual([]);
       }
+      expect(hatalar).toEqual([]);
+    });
+
+    test('karakterler ekranda: Mino ve arkadaş sahnede kesilmez, ağaçtaki Pamuk ekranın üstünden taşmaz', async ({ page }) => {
+      const hatalar = hataTopla(page);
+      const kutular = () =>
+        page.evaluate(() => {
+          const d = document.querySelector('.mg-dert:not(.cikiyor)')!;
+          const r = (e: Element) => e.getBoundingClientRect();
+          return { W: innerWidth, mino: r(d.querySelector('.mg-mino .mino-svg')!).toJSON(), ark: r(d.querySelector('.mg-sahne .mg-ark')!).toJSON() };
+        });
+      for (const dert of Object.keys(SONUC)) {
+        await page.goto(`${ADRES}&ekran=dert&dert=${dert}&alet=kasik&yas=6`);
+        await ekranBekle(page, 'dert');
+        await expect.poll(() => adim(page)).toBe('hazir');
+        const k = await kutular();
+        // çizim kutularının kenarında boşluk var (kuyruk, kulak payı): kutunun en çok %12'si dışarıda kalabilir
+        expect(k.mino.left, `${dert} Mino sol`).toBeGreaterThan(-k.mino.width * 0.12);
+        expect(k.mino.right, `${dert} Mino sağ`).toBeLessThan(k.W + k.mino.width * 0.12);
+        expect(k.ark.left, `${dert} arkadaş sol`).toBeGreaterThan(-k.ark.width * 0.2);
+        expect(k.ark.right, `${dert} arkadaş sağ`).toBeLessThan(k.W + k.ark.width * 0.2);
+        expect(k.ark.top, `${dert} arkadaş üst`).toBeGreaterThan(-k.ark.height * 0.12);
+      }
+      // sulama şakası: Pamuk bir dal yukarı tırmanır ama başı ekranın içinde kalır
+      await page.goto(`${ADRES}&ekran=dert&dert=pamuk&alet=sulama&yas=4`);
+      await ekranBekle(page, 'dert');
+      await dene(page);
+      await expect.poll(() => adim(page), { timeout: 15000 }).toBe('denendi');
+      const k = await kutular();
+      expect(k.ark.top).toBeGreaterThan(-k.ark.height * 0.12);
       expect(hatalar).toEqual([]);
     });
 

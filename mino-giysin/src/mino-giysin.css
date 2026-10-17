@@ -1065,3 +1065,16 @@ html:has(.mg-onizleme.kart) body,
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 10%);
 }
+
+/* dikey mutfak: sahnenin altındaki zemin (ahşap zemin ve halı), sahnenin alt kenarı ona yumuşakça karışır */
+.mk-kok.mg-kok .mg-zemin-alt {
+  position: absolute;
+  z-index: 0;
+  object-fit: cover;
+  object-position: 50% 100%;
+  pointer-events: none;
+}
+.mk-kok.mg-kok .mg-dert.alt-var .mg-katman.k0 {
+  -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 86%, transparent 99%);
+}
