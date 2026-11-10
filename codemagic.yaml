@@ -12,8 +12,7 @@ workflows:
     integrations:
       app_store_connect: Minkino App Store Connect
     environment:
-      groups:
-        - revenuecat
+      # RevenueCat kurulunca geri eklenecek (grup "revenuecat": REVENUECAT_IOS_KEY); şimdilik anahtarsız, her şey açık
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.minkino.app
