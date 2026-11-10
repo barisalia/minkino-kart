@@ -502,3 +502,5 @@ Kullanıcı: Bilgisayar sıfırlandı; yerel eski çizimler güncel değil. Kara
 - 2026-11-10 (Claude): Etkinlik kapakları yeni stil (noktalı defter zemin, altta bantlı etiket; scripts/uygulama/etkinlik-kapaklari.mjs). Oyun kapaklarında logolar büyütüldü (scripts/uygulama/oyun-kapaklari.mjs, Astra katmanlarından). Kino Okula Başlıyor raftan ve menüden kalktı (gizli: true; çizimleri öbür kitapların yedeği, dosyalar duruyor). Menü genişlik sınırı kalktı.
 
 - 2026-11-10 (Claude): Adlar: Hadi Hazırlanalım -> Okula Hazırlanalım, Kartlar -> Bil Bakalım. Bil Bakalım ve Sesli Maceralar kapakları yenilendi (düz gerçek kartlar; kulaklık ve notalar).
+
+- 2026-11-11 (Claude): App Store 1.0 incelemeye gönderildi (Waiting for Review). Eğitim, 4+, Made for Kids değil, ücretsiz, 175 ülke. Gizlilik: yalnız YouTube oynatıcısı için Device ID ve Product Interaction (kişiye bağlı değil, takip yok). İçerik hakları: üçüncü taraf içerik yok (Barış). Ekran görüntüleri ekip/uygulama/appstore-ekran, metin ekip/uygulama/APP-STORE-METIN.md.
