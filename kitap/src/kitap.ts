@@ -31,6 +31,8 @@ export interface RafKitabi {
   /** Hazır kitap (yoksa "yakında" sırtı) */
   icerik?: KitapIcerik;
   canli?: Record<number, SayfaCanli>;
+  /** Rafta ve menüde gösterilmez (Barış 2026-11-10: Kino Okula Başlıyor kaldırıldı); çizimleri öbür kitapların yedeği */
+  gizli?: boolean;
 }
 
 /** Dik kapağın altındaki seri adı */
@@ -156,6 +158,7 @@ export class Kitaplik {
     const raflar = document.createElement('div');
     raflar.className = 'kt-raflar';
     for (const k of this.kitaplar) {
+      if (k.gizli) continue;
       const oge = document.createElement('div');
       oge.className = 'kt-raf-oge';
       if (k.icerik) {

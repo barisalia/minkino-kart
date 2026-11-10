@@ -115,7 +115,7 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
       for (const v of VIDEOLAR) kart(v.baslik, `./izle/?video=${encodeURIComponent(v.id)}`, v.kapak, `izle/${v.id}`);
     } else if (secili.id === 'kitap') {
       for (const kitap of KITAPLAR) {
-        if (!kitap.icerik) continue;
+        if (!kitap.icerik || kitap.gizli) continue;
         const kapak = kitapKapaklari[`../../assets/kitap/${kitap.id}/kapak.webp`] || resim(`kitap/${kitap.id}/kapak-tam`);
         kart(kitap.baslik, `./kitap/?kitap=${encodeURIComponent(kitap.id)}&sayfa=1`, kapak);
       }

@@ -21,7 +21,7 @@ export const KITAPLAR: RafKitabi[] = [
   { id: 'alisveris', baslik: alisveris.baslik, renk: '#407C70', icerik: alisveris as KitapIcerik },
   { id: 'kurabiye', baslik: kurabiye.baslik, renk: '#B56836', icerik: kurabiye as KitapIcerik },
   { id: 'doktor', baslik: doktor.baslik, renk: '#58B9A5', icerik: doktor as KitapIcerik },
-  { id: 'okul', baslik: 'Kino Okula Başlıyor', renk: '#E2683C', icerik: okul as KitapIcerik, canli: OKUL_CANLI },
+  { id: 'okul', baslik: 'Kino Okula Başlıyor', renk: '#E2683C', icerik: okul as KitapIcerik, canli: OKUL_CANLI, gizli: true },
   // Barış 2026-11-09 yayın: çizimleri gelene kadar "yakında" (metni content/kitap-kuzu-kulak.json; yer tutucu yayına çıkmaz)
   { id: 'kuzu-kulak', baslik: "Kuzu'nun Kulağı", renk: '#7FB3D5' },
   { id: 'dizim', baslik: 'Dizim Kanadı', renk: '#F2A541' },
