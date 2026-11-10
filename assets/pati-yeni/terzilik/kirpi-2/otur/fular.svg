@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="19 20.16 61 35.52" width="61" height="35.52"><view id="poz" viewBox="0 0 100 96" preserveAspectRatio="none"/><defs><clipPath id="fit"><path d="M28 21 Q48 10 69 21 Q79 32 80 51 Q78 65 72 72 Q66 69 61 73 Q52 79 42 75 Q33 69 28 74 Q14 61 20 42 Q21 31 28 21 Z"/></clipPath><clipPath id="cut"><path d="M19.5 17.8 Q49.25 36 79 17.8
+        L78 38 Q52.25 52.8 49.25 56.8
+        Q45.25 54.8 20.5 39 Z"/></clipPath></defs><g transform="scale(1 0.96)" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#fit)"><path d="M19.5 17.8 Q49.25 36 79 17.8
+        L78 38 Q52.25 52.8 49.25 56.8
+        Q45.25 54.8 20.5 39 Z" fill="#db8363" stroke="#151515" stroke-width="1.45"/><g clip-path="url(#cut)"><path d="M16 31 Q49.25 36 83 30 v5 Q49.25 41 16 36Z" fill="#fff3ce" stroke="none" stroke-width="1"/><path d="M21 40 Q49.25 57.8 78 40" fill="none" stroke="#fff3ce" stroke-width="1.4"/><g transform="translate(49 43) scale(0.83 0.87) translate(-12 -12)" stroke="#151515" stroke-width="1.35"><path d="M3 19 Q1 4 21 3 Q22 19 8 20Z" fill="#498d68"/><path d="M5 21 Q13 11 17 8" fill="none"/></g></g></g></svg>

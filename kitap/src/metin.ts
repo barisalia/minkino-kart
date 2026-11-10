@@ -17,7 +17,7 @@ export interface KarakterBilgi {
 }
 
 export const KARAKTERLER: Record<Kim, KarakterBilgi> = {
-  anlatici: { ad: '', renk: '#3B2416', ton: 1 },
+  anlatici: { ad: '', renk: '#171717', ton: 1 },
   kino: { ad: 'Kino', renk: '#2F7A1F', ton: 0.92, karakter: 'kino' },
   anne: { ad: 'Anne', renk: '#8A5A00', ton: 1.02 },
   baba: { ad: 'Baba', renk: '#9C1F36', ton: 0.78 },
@@ -56,7 +56,7 @@ export interface MetinSecenek {
   /** Kapak: büyük başlık */
   baslik?: string;
   /** Alt ortadaki sayfa numarası */
-  no?: number;
+  no?: number | string;
   /** Satıra dokununca (o satır okunur) */
   satirTik?: (i: number) => void;
   /** Konuşanın küçük yüzü (madalyon): kitabın kendi çiziminden kırpılmış resim; yoksa adının baş harfi */
@@ -76,6 +76,7 @@ export class MetinSayfasi {
   private solIc: HTMLElement;
   private satirEl: HTMLElement[] = [];
   private kelimeEl: HTMLElement[][] = [];
+  private devam?: { satir: number; parca: HTMLElement; govde: HTMLElement; kuyruk: HTMLElement };
   private bas: number[][] = [];
   /** Sol parçadaki satır sayısı */
   solda = 0;
@@ -161,9 +162,48 @@ export class MetinSayfasi {
 
   /** Baştaki k satırı sol parçaya, kalanı sağa koyar (sıra korunur) */
   private bol(k: number) {
+    if (this.devam) {
+      const { satir, parca, govde, kuyruk } = this.devam;
+      govde.append(...Array.from(kuyruk.childNodes));
+      this.satirEl[satir].classList.remove('kt-bolunmus');
+      parca.remove();
+      this.devam = undefined;
+    }
     this.solda = k;
     this.satirEl.forEach((p, i) => (i < k ? this.solIc : this.ic).append(p));
     this.solEl.classList.toggle('kt-bos', k === 0);
+  }
+
+  private satiriBol(satir: number, ilkSagKelime?: number) {
+    const kelimeler = this.kelimeEl[satir];
+    if (kelimeler.length < 2) return false;
+    const p = this.satirEl[satir];
+    const govde = p.querySelector<HTMLElement>('.kt-soz')!;
+    const parca = p.cloneNode(false) as HTMLElement;
+    const kuyruk = govde.cloneNode(false) as HTMLElement;
+    parca.classList.remove('kt-ilk');
+    parca.classList.add('kt-devam');
+    p.classList.add('kt-bolunmus');
+    parca.append(kuyruk);
+    parca.addEventListener('click', (e) => {
+      e.stopPropagation();
+      p.click();
+    });
+    this.ic.prepend(parca);
+    this.devam = { satir, parca, govde, kuyruk };
+    if (ilkSagKelime !== undefined) {
+      const aralik = document.createRange();
+      aralik.setStartBefore(kelimeler[ilkSagKelime].previousSibling!);
+      aralik.setEnd(govde, govde.childNodes.length);
+      kuyruk.append(aralik.extractContents());
+      return true;
+    }
+    for (let j = kelimeler.length - 1; j > 0; j--) {
+      const kelime = kelimeler[j];
+      kuyruk.prepend(kelime.previousSibling!, kelime);
+      if (this.sigiyor(this.solEl, this.solIc)) return true;
+    }
+    return false;
   }
 
   private sigiyor(kutu: HTMLElement, ic: HTMLElement) {
@@ -172,12 +212,42 @@ export class MetinSayfasi {
     return ic.scrollHeight <= bos - 1 && ic.scrollWidth <= ic.clientWidth + 1;
   }
 
+  /** Resmin altındaki kısa sütun ile sağ sayfayı kullanılabilir alanlarına göre doldur. */
+  private dengele(cumleSinirinda: boolean) {
+    const alan = (el: HTMLElement) => {
+      const stil = getComputedStyle(el);
+      return (el.clientWidth - parseFloat(stil.paddingLeft) - parseFloat(stil.paddingRight))
+        * (el.clientHeight - parseFloat(stil.paddingTop) - parseFloat(stil.paddingBottom));
+    };
+    const solAlan = alan(this.solEl);
+    const hedef = solAlan / (solAlan + alan(this.el));
+    const agirlik = this.kelimeEl.flat().reduce((n, k) => n + k.textContent!.length + 1, 0);
+    const kesimler: { satir: number; kelime: number; puan: number }[] = [];
+    let once = 0;
+    this.kelimeEl.forEach((satir, i) => satir.forEach((k, j) => {
+      if (once > 0) {
+        const cumleSonu = j > 0 && /[.!?…][”’»)]?$/.test(satir[j - 1].textContent!);
+        const ceza = j === 0 ? 0 : this.satirlar[i].kim !== 'anlatici' ? 0.7 : cumleSonu ? 0.04 : 0.22;
+        if (!cumleSinirinda || j === 0 || (cumleSonu && this.satirlar[i].kim === 'anlatici')) {
+          kesimler.push({ satir: i, kelime: j, puan: Math.abs(once / agirlik - hedef) + ceza });
+        }
+      }
+      once += k.textContent!.length + 1;
+    }));
+    for (const { satir, kelime } of kesimler.sort((a, b) => a.puan - b.puan)) {
+      this.bol(kelime ? satir + 1 : satir);
+      if (kelime) this.satiriBol(satir, kelime);
+      if (this.sigiyor(this.solEl, this.solIc) && this.sigiyor(this.el, this.ic)) return true;
+    }
+    return false;
+  }
+
   /**
    * Kutuya sığan en büyük yazı boyu (px). Sol parça kitaba eklenmiş ve yeri varsa iki kutu birlikte: önce resmin
    * altına sığdığı kadar satır, kalanı sağa; ilk satır sola ancak çok küçük boyda sığıyorsa hepsi sağda.
    */
   sigdir(enBuyuk = 30, enKucuk = 14) {
-    const iki = this.solEl.isConnected && this.solEl.clientHeight > 0;
+    const iki = this.solEl.isConnected && this.solEl.clientHeight > 0 && !this.solEl.classList.contains('kt-yok');
     const yaz = (px: number) => {
       this.el.style.setProperty('--yazi', `${px}px`);
       this.solEl.style.setProperty('--yazi', `${px}px`);
@@ -191,12 +261,13 @@ export class MetinSayfasi {
       while (k < this.satirEl.length) {
         this.bol(k + 1);
         if (!this.sigiyor(this.solEl, this.solIc)) {
+          if (!this.solEl.classList.contains('kt-kapak-metin') && this.satiriBol(k)) break;
           this.bol(k);
           break;
         }
         k++;
       }
-      return k >= enAz && this.sigiyor(this.el, this.ic);
+      return this.solda >= enAz && this.sigiyor(this.el, this.ic);
     };
     const ara = (enAz: number) => {
       if (sigar(enBuyuk, enAz)) return enBuyuk;
@@ -215,12 +286,22 @@ export class MetinSayfasi {
     const serbest = ara(0) || enKucuk;
     const solaBir = birli > 0 && birli >= serbest - 2;
     const px = solaBir ? birli : serbest;
+    if (iki && !this.solEl.classList.contains('kt-kapak-metin')) {
+      // Birkaç puan küçültmek kısa bir konuşmayı ya da cümleyi tek sayfada tutabilir.
+      for (let boy = px; boy >= Math.max(enKucuk, px * 0.87); boy -= 1) {
+        yaz(boy);
+        if (this.dengele(true)) return boy;
+      }
+      yaz(px);
+      if (this.dengele(false)) return px;
+    }
     sigar(px, solaBir ? 1 : 0);
     return px;
   }
 
   /** Okunan satır ve kelime (satır -1: vurgu yok) */
   vurgula(satir: number, kelime = -1) {
+    this.devam?.parca.classList.toggle('kt-okunan', this.devam.satir === satir);
     this.satirEl.forEach((p, i) => p.classList.toggle('kt-okunan', i === satir));
     this.kelimeEl.forEach((ks, i) => ks.forEach((k, j) => k.classList.toggle('kt-simdi', i === satir && j === kelime)));
   }

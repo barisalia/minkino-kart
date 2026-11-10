@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     namespace = "com.minkino.app"
+    // install-time ses paketi (android/sesler): 200 MB temel paket sınırı
+    assetPacks = [":sesler"]
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.minkino.app"

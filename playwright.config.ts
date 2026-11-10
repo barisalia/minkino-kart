@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 
 // Bulut geliştirme ortamında önceden kurulu Chromium'u kullan
 const yerelChromium = '/opt/pw-browsers/chromium';
-const launchOptions = existsSync(yerelChromium) ? { executablePath: yerelChromium } : {};
+const launchOptions = existsSync(yerelChromium) ? { executablePath: yerelChromium } : process.platform === 'win32' ? { channel: 'msedge' } : {};
 
 export default defineConfig({
   testDir: 'tests/e2e',

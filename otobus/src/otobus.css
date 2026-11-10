@@ -1,0 +1,122 @@
+/* Kino ile Mino'nun Otobüsü: aşama seçimi (otobus/src/main.ts). Bütün kurallar .ob-kok altında. */
+.ob-kok {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: #9fdcf5 var(--park) center bottom / cover no-repeat;
+  font-family: 'Fredoka', system-ui, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ob-kok .ob-ust {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(16px, env(safe-area-inset-left));
+  z-index: 2;
+}
+
+.ob-kok .ob-izgara {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 48px);
+  width: 100%;
+  height: 100%;
+  /* geri düğmesinin altına girmesin */
+  padding-top: clamp(28px, 9vh, 56px);
+}
+
+.ob-kok .ob-kart {
+  --en: min(38vw, 54vh * 4 / 3, 460px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.6vh, 14px);
+  width: var(--en);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+.ob-kok .ob-kart:active { transform: scale(0.96); }
+
+.ob-kok .ob-cerceve {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: clamp(18px, 3.4vh, 30px);
+  border: clamp(4px, 0.9vh, 7px) solid #3b2a20;
+  background: var(--renk);
+  box-shadow: 0 clamp(5px, 1.2vh, 9px) 0 #3b2a20;
+  overflow: hidden;
+}
+
+.ob-kok .ob-resim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pasta: kapak çizimi yok; oyunun kendi kod çizimi otobüs, park zemininde */
+.ob-kok .ob-pasta {
+  display: block;
+  background: #ffe1ee var(--park) center bottom / cover no-repeat;
+}
+.ob-kok .ob-otobus {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: 84%;
+  aspect-ratio: 640 / 420;
+  transform: translateX(-50%);
+}
+.ob-kok .ob-otobus svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* aşama numarası: sol üstte yuvarlak rozet */
+.ob-kok .ob-no {
+  position: absolute;
+  top: clamp(6px, 1.6vh, 12px);
+  left: clamp(6px, 1.6vh, 12px);
+  display: grid;
+  place-items: center;
+  width: clamp(34px, 9vh, 58px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: clamp(3px, 0.7vh, 5px) solid #3b2a20;
+  background: #fff;
+  color: #3b2a20;
+  font-weight: 700;
+  font-size: clamp(18px, 5vh, 32px);
+  line-height: 1;
+}
+
+.ob-kok .ob-ad {
+  padding: 0.12em 0.9em 0.18em;
+  border-radius: 999px;
+  border: clamp(3px, 0.7vh, 5px) solid #3b2a20;
+  background: #fff;
+  color: #3b2a20;
+  font-weight: 700;
+  font-size: clamp(18px, 5.2vh, 34px);
+  line-height: 1.1;
+}
+
+/* kilit rozeti (src/abonelik/abonelik.css → .mk-kilit) çerçevenin sağ üstünde */
+.ob-kok .ob-cerceve > .mk-kilit { position: absolute; top: 8px; right: 8px; }
+
+/* dikey ekran: kartlar alt alta */
+@media (orientation: portrait) {
+  .ob-kok .ob-izgara { flex-direction: column; }
+  .ob-kok .ob-kart { --en: min(78vw, 30vh * 4 / 3, 460px); }
+}

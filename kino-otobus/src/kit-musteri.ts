@@ -7,7 +7,7 @@
  * Çizim canvas'a, ekrandaki boy × DPR (kitin kendi pikselini aşmaz: netlik). Yüz kutuları (src/karakter/yuz.ts) için
  * görünmez .m-goz / .m-agiz işaretleri kitin göz ve ağız yuvalarının yerinde durur.
  */
-import { Kukla, type KuklaIskelet } from '../../film/src/kukla';
+import { Kukla, type KuklaIskelet } from '../../src/karakter/kukla';
 import anneJson from '../../assets/karakter/anne/anne.json';
 import babaJson from '../../assets/karakter/baba/baba.json';
 import lokumJson from '../../assets/karakter/lokum/lokum.json';

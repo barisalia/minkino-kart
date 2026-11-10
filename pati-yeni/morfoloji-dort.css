@@ -1,0 +1,108 @@
+/* Custom neck pivots and sprite proportions for the hand-drawn anatomy of each pet. */
+.kukla:is([data-model^="kedi-"], [data-model^="tavsan-"], [data-model^="kus-"], [data-model^="ordek-"]) .beden {
+  left: var(--govde-x); bottom: 4%; width: var(--govde-w); height: var(--govde-h);
+}
+.kukla:is([data-model^="kedi-"], [data-model^="tavsan-"], [data-model^="kus-"], [data-model^="ordek-"]) .yuz {
+  left: var(--bas-x); bottom: var(--bas-alt); width: var(--bas-w); height: var(--bas-h);
+}
+
+.kukla[data-model="kedi-2"] {
+  --govde-x: 24.72%; --govde-w: 55.56%; --govde-h: 48.02%;
+  --bas-x: 19.72%; --bas-alt: 41.88%; --bas-w: 57.79%; --bas-h: 49.12%;
+  --agiz-x: 0.67; --agiz-y: 0.76;
+}
+.kukla[data-model="kedi-3"] {
+  --govde-x: 30.37%; --govde-w: 55.70%; --govde-h: 39.91%;
+  --bas-x: 13.94%; --bas-alt: 32.42%; --bas-w: 61.82%; --bas-h: 58.58%;
+  --agiz-x: 0.65; --agiz-y: 0.8;
+}
+.kukla[data-model="kedi-4"] {
+  --govde-x: 24.01%; --govde-w: 59.74%; --govde-h: 59.46%;
+  --bas-x: 16.24%; --bas-alt: 38.23%; --bas-w: 59.74%; --bas-h: 52.77%;
+  --agiz-x: 0.67; --agiz-y: 0.8;
+}
+.kukla[data-model="kedi-5"] {
+  --govde-x: 12.22%; --govde-w: 58.58%; --govde-h: 47.42%;
+  --bas-x: 26.86%; --bas-alt: 39.22%; --bas-w: 60.92%; --bas-h: 51.78%;
+  --agiz-x: 0.68; --agiz-y: 0.79;
+}
+.kukla[data-model="kedi-6"] {
+  --govde-x: 25.75%; --govde-w: 54.80%; --govde-h: 51.93%;
+  --bas-x: 19.45%; --bas-alt: 39.87%; --bas-w: 55.35%; --bas-h: 51.13%;
+  --agiz-x: 0.7; --agiz-y: 0.79;
+}
+.kukla[data-model="tavsan-2"] {
+  --govde-x: 23.32%; --govde-w: 61.11%; --govde-h: 48.16%;
+  --bas-x: 15.57%; --bas-alt: 39.14%; --bas-w: 62.95%; --bas-h: 51.86%;
+  --agiz-x: 0.69; --agiz-y: 0.62;
+}
+.kukla[data-model="tavsan-3"] {
+  --govde-x: 23.71%; --govde-w: 50.04%; --govde-h: 41.48%;
+  --bas-x: 35.26%; --bas-alt: 40.91%; --bas-w: 41.03%; --bas-h: 50.09%;
+  --agiz-x: 0.72; --agiz-y: 0.83;
+}
+.kukla[data-model="tavsan-4"] {
+  --govde-x: 18.40%; --govde-w: 51.63%; --govde-h: 40.43%;
+  --bas-x: 27.39%; --bas-alt: 34.22%; --bas-w: 54.21%; --bas-h: 56.78%;
+  --agiz-x: 0.66; --agiz-y: 0.71;
+}
+.kukla[data-model="tavsan-5"] {
+  --govde-x: 18.92%; --govde-w: 56.65%; --govde-h: 45.16%;
+  --bas-x: 22.16%; --bas-alt: 38.67%; --bas-w: 58.92%; --bas-h: 52.33%;
+  --agiz-x: 0.72; --agiz-y: 0.74;
+}
+.kukla[data-model="tavsan-6"] {
+  --govde-x: 25.89%; --govde-w: 48.22%; --govde-h: 44.20%;
+  --bas-x: 27.11%; --bas-alt: 44.55%; --bas-w: 41.47%; --bas-h: 46.45%;
+  --agiz-x: 0.79; --agiz-y: 0.82;
+}
+.kukla[data-model="kus-2"] {
+  --govde-x: 17.69%; --govde-w: 71.36%; --govde-h: 43.16%;
+  --bas-x: 10.95%; --bas-alt: 41.60%; --bas-w: 54.23%; --bas-h: 49.40%;
+  --agiz-x: 0.7; --agiz-y: 0.74;
+}
+.kukla[data-model="kus-3"] {
+  --govde-x: 22.44%; --govde-w: 55.67%; --govde-h: 41.62%;
+  --bas-x: 21.89%; --bas-alt: 39.30%; --bas-w: 48.99%; --bas-h: 51.70%;
+  --agiz-x: 0.73; --agiz-y: 0.74;
+}
+.kukla[data-model="kus-4"] {
+  --govde-x: 20.40%; --govde-w: 63.69%; --govde-h: 41.40%;
+  --bas-x: 15.91%; --bas-alt: 40.19%; --bas-w: 43.31%; --bas-h: 50.81%;
+  --agiz-x: 0.73; --agiz-y: 0.81;
+}
+.kukla[data-model="kus-5"] {
+  --govde-x: 19.14%; --govde-w: 63.82%; --govde-h: 45.89%;
+  --bas-x: 17.04%; --bas-alt: 44.35%; --bas-w: 54.89%; --bas-h: 46.65%;
+  --agiz-x: 0.68; --agiz-y: 0.77;
+}
+.kukla[data-model="kus-6"] {
+  --govde-x: 19.19%; --govde-w: 61.62%; --govde-h: 47.69%;
+  --bas-x: 19.51%; --bas-alt: 47.11%; --bas-w: 46.83%; --bas-h: 43.89%;
+  --agiz-x: 0.75; --agiz-y: 0.74;
+}
+.kukla[data-model="ordek-2"] {
+  --govde-x: 17.34%; --govde-w: 51.70%; --govde-h: 44.56%;
+  --bas-x: 32.51%; --bas-alt: 43.00%; --bas-w: 50.15%; --bas-h: 48.00%;
+  --agiz-x: 0.64; --agiz-y: 0.84;
+}
+.kukla[data-model="ordek-3"] {
+  --govde-x: 21.33%; --govde-w: 50.73%; --govde-h: 42.88%;
+  --bas-x: 25.91%; --bas-alt: 41.25%; --bas-w: 52.76%; --bas-h: 49.75%;
+  --agiz-x: 0.72; --agiz-y: 0.75;
+}
+.kukla[data-model="ordek-4"] {
+  --govde-x: 20.57%; --govde-w: 51.63%; --govde-h: 42.66%;
+  --bas-x: 33.99%; --bas-alt: 40.65%; --bas-w: 45.44%; --bas-h: 50.35%;
+  --agiz-x: 0.68; --agiz-y: 0.82;
+}
+.kukla[data-model="ordek-5"] {
+  --govde-x: 13.17%; --govde-w: 59.23%; --govde-h: 44.00%;
+  --bas-x: 29.38%; --bas-alt: 42.44%; --bas-w: 57.45%; --bas-h: 48.56%;
+  --agiz-x: 0.73; --agiz-y: 0.78;
+}
+.kukla[data-model="ordek-6"] {
+  --govde-x: 13.92%; --govde-w: 55.49%; --govde-h: 45.42%;
+  --bas-x: 26.71%; --bas-alt: 43.36%; --bas-w: 59.37%; --bas-h: 47.64%;
+  --agiz-x: 0.6; --agiz-y: 0.78;
+}

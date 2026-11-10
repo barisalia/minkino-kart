@@ -24,5 +24,9 @@ if (kok) {
     const k = new Kitaplik(KITAPLAR, anaMenuyeDon);
     kok.replaceChildren(k.el);
     sayfaAcildi(k.el);
+    const sorgu = new URLSearchParams(location.search);
+    const kitap = sorgu.get('kitap');
+    const sayfa = Number(sorgu.get('sayfa') ?? 1);
+    if (kitap) void k.baglantidanAc(kitap, Number.isInteger(sayfa) ? sayfa : 1);
   });
 }

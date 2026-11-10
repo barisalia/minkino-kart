@@ -1,0 +1,63 @@
+.serbest-bakim .buyuk *{animation-play-state:paused!important}
+.serbest-bakim :is(.elde,.ok){visibility:hidden}
+.dokunus{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;isolation:isolate}
+.dok-yuzey{position:absolute;inset:0;pointer-events:auto;touch-action:none;user-select:none;cursor:crosshair}
+.dok-yuzey:focus-visible{outline:3px dashed #62917e;outline-offset:-7px}
+.dok-izler{position:absolute;inset:0;pointer-events:none}
+.dok-gerec{position:absolute;width:clamp(45px,10vh,92px);height:clamp(45px,10vh,92px);object-fit:contain;pointer-events:none;opacity:0;transform:translate(-13%,-75%) rotate(8deg);transform-origin:20% 78%;transition:rotate .16s ease}
+.dok-gerec[style]{opacity:1}.dok-gerec.temas{rotate:-14deg}
+.dokunus[data-phase=durula] .dok-gerec.temas{rotate:-42deg}
+.dok-gosterge{position:absolute;top:clamp(52px,18%,105px);left:max(3%,env(safe-area-inset-left));padding:.45em .8em .58em;border:2px solid #8a735c;border-radius:18px;background:#fff3d8;color:#594435;display:grid;justify-items:center;gap:.12em;font:600 clamp(12px,2.75vh,20px)/1.15 Fredoka,sans-serif}
+.dok-yildiz{display:flex;gap:.18em;font-size:1.6em;line-height:1;color:#dbd1b3}.dok-yildiz i{font-style:normal;-webkit-text-stroke:1px #887458}.dok-yildiz .dolu{color:#ffbc48;-webkit-text-stroke-color:#966a33}
+.dok-ilerleme{height:6px;width:100%;border:0;border-radius:4px;overflow:hidden;background:#e2d4b6;accent-color:#69aa85}.dok-ilerleme::-webkit-progress-bar{background:#e2d4b6;border-radius:4px}.dok-ilerleme::-webkit-progress-value{background:#69aa85;border-radius:4px}
+.dok-ses{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.dok-dugmeler{position:absolute;bottom:6%;right:max(3%,env(safe-area-inset-right));display:flex;gap:.65em;align-items:center}
+.cerceve .dok-dugmeler button{pointer-events:auto;min-height:42px;padding:.32em .85em;border:2px solid #685747;border-radius:18px;color:#48392d;background:#ffdfa0;box-shadow:0 3px #a78664;font:600 clamp(15px,3.4vh,25px)/1.2 Fredoka,sans-serif}
+.cerceve .dok-dugmeler .dok-durula{background:#a6dfd7}.dok-dugmeler button[hidden]{display:none}.dok-dugmeler button:disabled{opacity:.48;cursor:default}
+.dok-kopuk,.dok-parilti{position:absolute;pointer-events:none;translate:-50% -50%}
+.dok-kopuk{width:clamp(7px,1.9vh,14px);height:clamp(7px,1.9vh,14px);border-radius:50%;border:1px solid #8abbb8;background:#f3ffff;opacity:.92}
+.dok-parilti{font-size:clamp(11px,2.6vh,21px);line-height:1;color:#fff1b1;text-shadow:0 1px #8f744c;font-style:normal}
+@media(max-width:650px){.dok-dugmeler{flex-direction:column;align-items:end;gap:6px}.dok-gosterge{padding:.35em .6em}.cerceve .dok-dugmeler button{min-height:36px}}
+@media(prefers-reduced-motion:reduce){.dok-gerec{transition:none}.dok-parilti{display:none}}
+.dokunus[data-phase=firca] .dok-gerec {
+  translate: -76% -34%;
+  transform: none;
+  transform-origin: 76% 34%;
+}
+.dokunus[data-phase=firca] .dok-gerec.temas { rotate: var(--firca-egim,0deg); }
+.taraniyor .buyuk .kafa.normal { visibility: hidden; }
+.taraniyor .buyuk .kafa.uykulu { visibility: visible; }
+.dok-yildiz .dolu { animation: yildiz-al .22s ease-out; }
+@keyframes yildiz-al { 50% { transform: scale(1.22); } }
+.dok-gosterge {
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: .48em;
+}
+.dok-gosterge .dok-isaret {
+  width: clamp(29px,6.2dvh,62px);
+  height: clamp(29px,6.2dvh,62px);
+  object-fit: contain;
+  grid-row: span 2;
+}
+.dok-gosterge .dok-ilerleme { grid-column: 2; }
+.cerceve .dok-dugmeler button {
+  display: grid;
+  place-items: center;
+  padding: .12em;
+  width: clamp(48px,9dvh,86px);
+  height: clamp(48px,9dvh,86px);
+  border-radius: 50%;
+  background: #c7e4bf;
+  border-color: #658365;
+  box-shadow: 0 3px #93a582;
+}
+.cerceve .dok-dugmeler button[hidden] { display: none; }
+.dok-durula img { width: 77%; height: 77%; object-fit: contain; }
+.dok-bitir i {
+  width: 46%;
+  height: 25%;
+  border: solid #436c50;
+  border-width: 0 0 .22em .22em;
+  transform: translateY(-16%) rotate(-45deg);
+}

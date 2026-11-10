@@ -5,7 +5,6 @@
 import metinler from '../../content/metinler.json';
 import minoJson from '../../content/mino.json';
 import canlanJson from '../../content/canlan.json';
-import ormanJson from '../../content/orman.json';
 import maceraJson from '../../content/macera.json';
 import maceraBanyoJson from '../../content/macera-banyo.json';
 import maceraEgeJson from '../../content/macera-ege.json';
@@ -15,17 +14,9 @@ import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
 import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
 import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri, kinoOtobusMusteriCumleleri } from '../../kino-otobus/src/model';
-import { restoranCumleleri, restoranKarakterCumleleri, restoranKinoCumleleri } from '../../restoran/src/model';
 import giysinJson from '../../content/giysin.json';
-import patiJson from '../../content/pati.json';
 import uykuJson from '../../content/uyku.json';
-import minoGiysinJson from '../../content/mino-giysin.json';
 
-interface FilmCumleleri {
-  seslendir?: boolean;
-  sahneler: ({ ogut: string } | { olaylar: { yap: string; kim?: string; metin?: unknown }[] })[];
-}
-const FILMLER = import.meta.glob<FilmCumleleri>('../../content/film/*.json', { eager: true, import: 'default' });
 import { kart, KARTLAR, refCoz, TEMALAR, tumIcerikDosyalari } from '../engine/katalog';
 import type { KartGirdi, Soru } from '../engine/types';
 import { buyukHarfBas, sayiAdi } from './metin';
@@ -169,12 +160,6 @@ export function tumCumleler(): string[] {
     if (k === 'resimler') for (const ad of Object.values(v as Record<string, string>)) ekle(`${ad}!`);
     else topla(v).forEach(ekle);
   }
-  // Uyuyan Orman konuşmaları (bölge adları ekranda yazar, okunmaz)
-  for (const [k, v] of Object.entries(ormanJson as Record<string, unknown>)) {
-    if (k === 'aciklama') continue;
-    if (k === 'bolgeler') for (const b of Object.values(v as Record<string, { giris: string }>)) ekle(b.giris);
-    else topla(v).forEach(ekle);
-  }
   // Sesli Maceralar (başlık, şarkı sözü ve tepki balonları okunmaz)
   for (const [k, v] of Object.entries(maceraJson as Record<string, unknown>)) {
     if (['aciklama', 'baslik', 'bolumler', 'sarki', 'tepki'].includes(k)) continue;
@@ -200,14 +185,6 @@ export function tumCumleler(): string[] {
     if (['aciklama', 'baslik', 'kart', 'balon', 'ipucu', 'sarki'].includes(k)) continue;
     topla(v).forEach(ekle);
   }
-  // Çizgi filmler (content/film/*.json): yalnız "seslendir": true olanlar (animatikte Barış onayı beklenir)
-  for (const f of Object.values(FILMLER)) {
-    if (!f.seslendir) continue;
-    for (const s of f.sahneler) {
-      if ('ogut' in s) ekle(s.ogut);
-      else for (const o of s.olaylar) if (o.yap === 'soyle' && typeof o.metin === 'string') ekle(o.metin);
-    }
-  }
   // Mino'nun Pazarı konuşmaları (kalıplar ürün/sayı/renk ile açılmış hâlde)
   pazarCumleleri().forEach(ekle);
   // Mino ile Kino'nun Pasta Otobüsü: Mino, müşteriler, sipariş parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
@@ -221,21 +198,8 @@ export function tumCumleler(): string[] {
   // Kino'nun Otobüsü: Mino (anlatıcı) ve istek parçaları; Kino'nun cümleleri anlatıcı yedeği olarak da
   kinoOtobusCumleleri().forEach(ekle);
   kinoOtobusKinoCumleleri().forEach(ekle);
-  // Pati Dükkânı (İlk Gün dilimi): yalnız Nehir abla konuşur (hayvan sesleri Web Audio)
-  topla(patiJson.nehir).forEach(ekle);
-  // Pati Dükkânı v2 (Barış 2026-10-17: seslendirme onaylı): Nehir abla (ana ses; sayılar, tanışma, beden dili, dersler,
-  // köşeler…), seçilebilen adlar ("Pamuk!"), Mino ve Sesli Maceralar çocuklarının ziyaret sözleri (ana ses + ton),
-  // Kino'nun sözleri anlatıcı yedeği olarak da
-  patiCumleleri().forEach(ekle);
   // Uyku Vakti (uygulama/src/uyku.ts): Mino (anlatıcı) ve hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
   for (const k of ['mino', 'hazir', 'kino'] as const) topla(uykuJson[k]).forEach(ekle);
-  // Mino Ne Giysin? (mino-giysin/): Mino (anlatıcı), hazır kayıtlar; Kino'nun cümleleri anlatıcı yedeği olarak da
-  // (Ege'nin balonu seslendirilmez: Ege'nin sesi yok)
-  for (const k of ['mino', 'hazir', 'kino'] as const) topla(minoGiysinJson[k]).forEach(ekle);
-  // Tıkır Tıkır Lokanta: Mino (anlatıcı), yemek adları, müşteri sözleri (kendi sesleri gelene kadar anlatıcı kaydı
-  // müşterinin tonuyla), mini oyunların sözleri (content/restoran/*.json); Kino'nunkiler anlatıcı yedeği olarak da
-  restoranCumleleri().forEach(ekle);
-  restoranKinoCumleleri().forEach(ekle);
   return [...set];
 }
 
@@ -244,19 +208,6 @@ export function tumCumleler(): string[] {
  * Bunlar tumCumleler() içinde de vardır (anlatıcı sesiyle, kalın tonla çalınan yedek kayıt);
  * karakterin ses kimliği doluysa seslendirme betiği ayrıca karakterin kendi sesiyle üretir.
  */
-/** Pati Dükkânı v2: ana sesle söylenenler (content/pati.json → v2.nehir, adlar, ziyaret.sozler.mino / cocuk / kino) */
-export function patiCumleleri(): string[] {
-  const v2 = patiJson.v2;
-  const s = v2.ziyaret.sozler;
-  const adlar = [...v2.adlar, ...Object.values(v2.hayvanlar).map((h) => h.ad), ...Object.values(v2.renkler).map((r) => r.ad)].map((a) => `${a}!`);
-  return [...topla(v2.nehir), ...adlar, ...topla(s.mino), ...topla(s.cocuk), ...topla(s.kino)];
-}
-/** Pati Dükkânı v2: kendi sesiyle konuşan ziyaretçilerin sözleri (kino: karakter_sesleri; ötekiler Seri 2) */
-export function patiKarakterCumleleri(): Record<string, string[]> {
-  const s = patiJson.v2.ziyaret.sozler;
-  return { kino: topla(s.kino), anne: topla(s.anne), lokum: topla(s.lokum), baba: topla(s.baba), babaanne: topla(s.babaanne), dede: topla(s.dede) };
-}
-
 export function karakterCumleleri(): Record<string, string[]> {
   const kino = new Set<string>();
   const ekle = (t?: string | null) => {
@@ -278,15 +229,6 @@ export function karakterCumleleri(): Record<string, string[]> {
   kinoOtobusKinoCumleleri().forEach(ekle);
   // Uyku Vakti: Kino'nun cümleleri
   topla(uykuJson.kino).forEach(ekle);
-  // Mino Ne Giysin?: Kino'nun cümleleri
-  topla(minoGiysinJson.kino).forEach(ekle);
-  // Tıkır Tıkır Lokanta: Kino'nun cümleleri
-  restoranKinoCumleleri().forEach(ekle);
-  // Çizgi filmler: Kino'nun söylediği cümleler (yalnız seslendirilen filmler)
-  for (const f of Object.values(FILMLER)) {
-    if (!f.seslendir) continue;
-    for (const s of f.sahneler) if ('olaylar' in s) for (const o of s.olaylar) if (o.yap === 'soyle' && o.kim === 'kino' && typeof o.metin === 'string') ekle(o.metin);
-  }
   const sonuc: Record<string, string[]> = { kino: [...kino] };
   // Seri 2 sesleriyle konuşanlar (content/seslendirme.json → seri2; eleven_v4): konuşanı listenin anahtarı belirtir
   const kisiEkle = (kim: string, l: string[]) => {
@@ -294,11 +236,7 @@ export function karakterCumleleri(): Record<string, string[]> {
     for (const t of l) if (t && normal(t)) s.add(normal(t));
     sonuc[kim] = [...s];
   };
-  // Tıkır Tıkır Lokanta: müşteriler (musteri.<ad>) ve Babaanne
-  for (const [kim, l] of Object.entries(restoranKarakterCumleleri())) kisiEkle(kim, l);
   // Kino'nun Otobüsü: 36 müşteri cümlesi (ses gelene dek balonda yazı)
   for (const [kim, l] of Object.entries(kinoOtobusMusteriCumleleri())) kisiEkle(kim, l);
-  // Pati Dükkânı v2: ziyaretçiler (Kino kendi sesiyle; Anne, Lokum, Baba, Babaanne, Dede Seri 2 sesleriyle)
-  for (const [kim, l] of Object.entries(patiKarakterCumleleri())) kisiEkle(kim, l);
   return sonuc;
 }

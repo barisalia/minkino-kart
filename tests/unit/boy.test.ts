@@ -1,11 +1,5 @@
-/** Karakter boy tablosu (src/karakter/boy.ts) ve filmlerin ona uyması */
+/** Karakter boy tablosu (src/karakter/boy.ts) */
 import { describe, expect, it } from 'vitest';
-import elma from '../../content/film/kino-elma-kulesi.json';
-import kaydirak from '../../content/film/kino-kaydirak.json';
-import lutfen from '../../content/film/kino-lutfen.json';
-import oyuncak from '../../content/film/kino-oyuncak.json';
-import karpuz from '../../content/film/mino-karpuz.json';
-import sepet from '../../content/film/mino-sepet.json';
 import { altPayi, BOY, boyGenislik, boyOrani, boyTipi, CIZIM, COCUKLAR, gorunenBoy, minoBoyu, yanOlcek } from '../../src/karakter/boy';
 
 const ISKELETLER = Object.keys(import.meta.glob('../../assets/karakter-iskelet/*.json', { eager: true, import: 'default' })).map((k) => k.replace(/^.*\/([^/]+)\.json$/, '$1'));
@@ -57,22 +51,3 @@ describe('boy tablosu', () => {
   });
 });
 
-interface Oy { tip: string; w: number; yan?: boolean }
-describe('filmler boy tablosuna uyar', () => {
-  for (const f of [karpuz, elma, kaydirak, sepet, lutfen, oyuncak]) {
-    it(`${f.baslik}: insanların genişliği tablodan (Mino'nun o sahnedeki kutusuna göre)`, () => {
-      for (const s of f.sahneler) {
-        if (!('oyuncular' in s)) continue;
-        const oy = s.oyuncular as unknown as Record<string, Oy>;
-        const minoW = oy.mino?.w;
-        for (const [id, o] of Object.entries(oy)) {
-          const t = boyTipi(o.tip);
-          if (t !== 'cocuk' && t !== 'anne' && t !== 'bebek') continue;
-          expect(minoW, `${s.ad}/${id}: sahnede Mino yok`).toBeTruthy();
-          const ad = o.yan ? `${o.tip}-profil` : o.tip;
-          expect(o.w, `${s.ad}/${id}`).toBeCloseTo(boyGenislik(ad, minoW), 1);
-        }
-      }
-    });
-  }
-});

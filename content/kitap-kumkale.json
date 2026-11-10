@@ -1,0 +1,350 @@
+{
+  "id": "kumkale",
+  "baslik": "Kino Kumdan Kale Yapıyor",
+  "kapak": {
+    "renk": "#90D9D7",
+    "tarif": "Kino, Mino ve Lokum dört kuleli kalelerinin yanında.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino Kumdan Kale Yapıyor."
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Kaptansız kayık",
+      "renk": "#90D9D7",
+      "tarif": "Deniz kenarı. Babası çizgili plaj şemsiyesini kuma sabitleyip açarken, Kino plaj çantasından çıkardığı kırmızı kovası ve sarı küreğinin yanında küçük mavi yelkenli kayığını kumun üstünde itmeye çalışıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babası şemsiyeyi açarken Kino mavi kayığını kuma indirdi. Bir itti, bir daha itti. Kayığın burnu kuma gömüldü. Arkasından Lokum’un sesi geldi."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Ben kaptan olabilir miyim abi?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Olursun! Ben sana kalesi olan bir liman yapacağım. İlk kayığı da sen yüzdüreceksin."
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Dört beyaz kabuk",
+      "renk": "#90D9D7",
+      "tarif": "Şemsiyenin gölgesinde Kino elleriyle kumu düzleştiriyor. Küçük kardeşi Lokum bir elinde küçük yeşil kum kalıbı, öbür avucunda beyaz deniz kabuklarıyla abisinin yanına oturuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Lokum bir avucunda yeşil kalıbını, öbüründe dört kabuğu getirdi. Üçü avucuna sığmıştı. Dördüncüsünü düşmesin diye çenesiyle tutuyordu."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kaptanın getirdikleri!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Her kuleye bir kabuk. Böylece kayığın denizden dönünce limanı tanır."
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Kumun üstündeki çizgi",
+      "renk": "#90D9D7",
+      "tarif": "Kino limanın çevresini kuma çiziyor. Lokum kabuğunu uzatıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino küreğinin ucuyla kuma kocaman bir halka çizdi. Lokum bir kabuğu denizden halkaya doğru sürdü. Kabuğunun arkasında ince bir çizgi kaldı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kayık buradan girsin mi?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Önce kuleler, kaptan!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino kuleye yer açarken Lokum’un çizgisini diziyle sildi. Lokum kabuğu alıp yanına koydu."
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Koşan Kova, Dökülen Su!",
+      "renk": "#90D9D7",
+      "tarif": "Kino deniz kıyısından kırmızı kovayla koşarak gelirken kova sağa sola sallanıyor; içindeki sular yol boyunca şıpır şıpır Kino’nun ayaklarına ve kuma dökülüyor. Lokum gülerek abisini gösteriyor.",
+      "satirlar": [
+        {
+          "kim": "baba",
+          "metin": "Kule yapmak için kumu biraz ıslatalım."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino kovayı kıyıda doldurdu. Dönerken koşunca su ayaklarına sıçradı. Şıp, şıp, şılap! Şemsiyeye vardığında kovada bir yudum su kalmıştı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi ayaklarını yıkadı!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Kovam benden hızlı koştu! Bir de kuru kumla deneyeyim."
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Dağılan Kuru Kum",
+      "renk": "#90D9D7",
+      "tarif": "Kino kırmızı kovayı ters çevirip tek eliyle yukarı kaldırmış; ama kuru sarı kumlar kule olmak yerine iki yana un gibi dağılıp alçak bir tepecik olmuş. Kino şaşkınlıkla elindeki boş kovaya bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino kovayı kuru kumla doldurdu, ters çevirdi ve kaldırdı. Fısss! Kum iki yana yayıldı. Bir daha denedi. Bu kez de karşısında yassı bir tepecik vardı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, benim kovam kule yapmıyor!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kovanın içine baktı. Dibi de sağlamdı. Peki kule nereye gitmişti?"
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Islak Kum ve \"Tık-Tık\" Sırrı",
+      "renk": "#90D9D7",
+      "tarif": "Babası kumun üstüne su döküp ıslatmış. Kino ters çevirdiği kırmızı kovanın dibine sarı küreğiyle \"tık-tık\" vuruyor; yanında ilk sağlam kum kulesi dimdik duruyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babası biraz su getirip kumu ıslattı. Kino nemli kumu kovaya doldurdu, avucuyla sıkıca bastırdı."
+        },
+        {
+          "kim": "baba",
+          "metin": "Şimdi ters çevir. Dibine küreğinle iki kere vur. Sonra iki elinle dümdüz yukarı kaldır."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Tık, tık! Kino kovayı kaldırınca altında bir kule duruyordu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, bak! Bu sefer ayakta kaldı!"
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Dört Kule, Dört Beyaz Bayrak",
+      "renk": "#90D9D7",
+      "tarif": "Dört köşesinde dört sağlam kule olan kumdan kale tamamlanmış. Lokum ortadaki küçük kapı kulesinin önüne oturmuş, dört büyük kulenin tepesine birer beyaz deniz kabuğu koyuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino üç kule daha yaptı. Dört kulenin arasını nemli kumdan duvarlarla birleştirdi. Lokum yeşil kalıbıyla ön duvara küçük bir kapı yaptı. Sonra her kuleye bir kabuk kondurdu."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Bak abi, şapka taktım!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Uzaktan da dört beyaz bayrak gibi görünüyorlar!"
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Kaptan neyi bekliyor?",
+      "renk": "#90D9D7",
+      "tarif": "Kino kuru kumdaki kaleyi ve küçük yelkenliyi gösteriyor.",
+      "satirlar": [
+        {
+          "kim": "kino",
+          "metin": "İşte limanın hazır, kaptan!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum kayığını kapının önüne bıraktı. Yelken rüzgârda titredi ama kayık olduğu yerde kaldı. Lokum bir kaleye, bir denize baktı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi, kuleler geldi de deniz ne zaman gelecek?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino ilk kez kaleye Lokum’un oturduğu yerden baktı. Dört güzel kulesi vardı. Ama limanında bir damla su yoktu."
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "İki kürek",
+      "renk": "#90D9D7",
+      "tarif": "Kino ve Mino kalenin çevresinde bir hendek kazıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Mino mavi küreğiyle yanlarına geldi. Kino ona kuru kumdaki kayığı gösterdi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Lokum’a liman sözü verdim. Bir ucundan tutar mısın?"
+        },
+        {
+          "kim": "mino",
+          "metin": "Ben soldan kazayım, sen sağdan. Ortada buluşuruz!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "İki kürek kalenin çevresini dolaştı. Uçları birbirine değince çıkan ses, iki arkadaşın da hoşuna gitti. Tık!"
+        }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "Gelmeyen su",
+      "renk": "#90D9D7",
+      "tarif": "Dalga kuru hendeğe ulaşmadan aradaki kum sırtında duruyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino ile Mino küreklerini bırakıp bekledi. Küçük bir dalga kıyıya geldi, durdu, geri çekildi. Açtıkları hendek hâlâ kuruydu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bir tur daha mı kazsak?"
+        },
+        {
+          "kim": "mino",
+          "metin": "Aynı yeri iki kere dolaşınca denize yaklaşmış olur muyuz?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum çoktan suyun durduğu yere çömelmişti. İlk kuleden bir kabuk ödünç aldı."
+        }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "Kabuğun peşinden",
+      "renk": "#90D9D7",
+      "tarif": "Lokum kabuğuyla kıyıdaki nemli kuma ince bir çizgi çekiyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Lokum kabuğu ıslak kumun üstünde kendine doğru çekti. Açtığı minicik izin peşinden bir parmak su yürüdü. Kino da çömeldi."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Bak abi. Su buraya kadar beni takip etti."
+        },
+        {
+          "kim": "kino",
+          "metin": "Sabah da bana bu yolu gösteriyordun! Ben üstüne oturdum. Bir daha çizer misin?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bu kez Kino küreğini dizlerine yatırdı. Lokum’un çizgisini sonuna kadar izledi."
+        }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Limanın ağzı",
+      "renk": "#90D9D7",
+      "tarif": "Kino ve Mino, Lokum’un işaretlediği girişteki son kum parçasını kaldırıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Çizginin bir ucu denize, öbür ucu hendeğe dayanıyordu. Arada yalnızca bir küreklik kum vardı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Kaptan, girişin yeri burası mı?"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Tam orası!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Mino yolun iki yanını açtı. Kino ortadaki son kumu kaldırdı. Yeni dalga kıyıya uzanınca su, açılan aralıktan usulca içeri girdi. Lokum kabuğunu kulesine geri koydu."
+        }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "İlk sefer",
+      "renk": "#90D9D7",
+      "tarif": "Lokum mavi kayığı suya bırakıyor. Kino yanında ilk seferi izliyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino kayığı alıp suya uzandı. Sonra durdu. Kayığı sapasağlam, iki eliyle Lokum’a verdi."
+        },
+        {
+          "kim": "kino",
+          "metin": "İlk seferi kim yapacaktı, hatırladın mı?"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kaptan Lokum!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum kıçına küçücük bir dokunuş yaptı. Mavi kayık, beyaz kabuklu kulelerin önünden süzüldü. Dar girişten geçerken kimsenin onu kaldırması gerekmedi."
+        }
+      ]
+    },
+    {
+      "no": 14,
+      "ad": "Kovaya sığan liman",
+      "renk": "#90D9D7",
+      "tarif": "Akşamüstü güneş alçalırken plajdan ayrılıyorlar. Kino bir elinde içinde mavi kayığı ve deniz kabukları olan kırmızı kovasını tutuyor, öbür elindeki sarı küreğiyle kovaya hafifçe vurarak babasına gülümsüyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Akşam kovaya dört kabuk, bir kürek ve bir kayık sığdı. Kale kumsalda kaldı. Babası şemsiyeyi kapatırken Kino’ya döndü."
+        },
+        {
+          "kim": "baba",
+          "metin": "Yarın yine bir liman yapsanız, nereden başlarsınız?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Önce kaptana girişin nerede olacağını sorarım."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Ben de sana kule için iki kere vurmayı hatırlatırım!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum kovaya vurdu. Tık! Kino küreğiyle karşılık verdi. Tık!"
+        }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Kino ile Mino hendek kazınca su neden hemen gelmedi?",
+      "Lokum, kabuğuyla neyi gösterdi?",
+      "Kino en sonunda Lokum’a verdiği hangi sözü tuttu?"
+    ],
+    "not": "Bir avuç kuru kumla bir avuç nemli kumu iki küçük kaba bastırın. Kapları ters çevirince çıkan şekillere birlikte bakın."
+  },
+  "arkaKapak": "Dört kule hazır. Dört beyaz bayrak yerinde. Öyleyse Kaptan Lokum’un kayığı neden hâlâ kumda?"
+}

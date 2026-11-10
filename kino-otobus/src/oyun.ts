@@ -9,6 +9,7 @@
  * ?onizleme=1 (gerçek hız): kaydı değiştirmez, kilidi atlatmaz; yalnız açılışa ya da sırası gelmiş açık güne gider.
  */
 import { kilitli } from '../../src/engine/erisim';
+import { menuYasModu } from '../../src/engine/menu-yas';
 import { TEST_MODU } from '../../src/ui/dom';
 import { ekranKaydet, Uygulama, type BaslatSecenekleri } from '../../src/uygulama';
 import { acilisEkrani, odulEkrani } from './ekranlar';
@@ -26,6 +27,11 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
   const app = new Uygulama(kok, secenekler);
   kok.classList.add('ko-kok');
   const q = new URLSearchParams(location.search);
+  const ortakYas = menuYasModu();
+  if (ortakYas !== null && kayit.yas !== ortakYas) {
+    kayit.yas = ortakYas;
+    kaydet();
+  }
   const kisayol = q.has('test') || q.has('onizleme');
   let ekran = 'acilis';
   let param: unknown;

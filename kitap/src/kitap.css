@@ -645,6 +645,10 @@
   line-height: 1.3;
 }
 /* yatay sağ sayfa: üstte küçük süs */
+.kt-yatay .kt-sayfa-sag > .kt-metin:not(.kt-kapak-metin):not(.kt-ebeveyn) {
+  justify-content: flex-start;
+  padding-top: max(10%, 26px);
+}
 .kt-yatay .kt-sayfa-sag > .kt-metin:not(.kt-kapak-metin)::before {
   content: '';
   position: absolute;
@@ -667,6 +671,9 @@
 .kt-metin-sol.kt-bos,
 .kt-metin-sol.kt-yok {
   visibility: hidden;
+}
+.kt-tam-en > .kt-metin-sol {
+  justify-content: flex-start;
 }
 .kt-sayfa-tek .kt-metin {
   top: var(--resim-h);
@@ -730,6 +737,13 @@
 }
 .kt-konusma .kt-soz::after {
   content: '”';
+}
+.kt-konusma.kt-bolunmus .kt-soz::after,
+.kt-konusma.kt-devam .kt-soz::before {
+  content: none;
+}
+.kt-konusma.kt-devam {
+  padding-left: 0;
 }
 .kt-ses {
   text-align: center;
@@ -1064,3 +1078,8 @@
     transform: translate(-50%, 0);
   }
 }
+.kt-arka-kapak { background: #ffebc5; padding: 4%; gap: 2%; }
+.kt-arka-kapak img { width: 100%; max-height: 54%; object-fit: contain; }
+.kt-arka-kapak p { margin: 0; max-width: 34ch; text-align: center; font-size: clamp(14px, 2vw, 29px); }
+.kt-sayfa-tek.kt-son .kt-arka-kapak { flex: 0 1 42%; min-height: 0; }
+.kt-sayfa-tek.kt-son .kt-arka-kapak img { min-height: 0; max-height: 48%; }

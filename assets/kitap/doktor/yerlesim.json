@@ -1,0 +1,102 @@
+{
+  "sayfalar": {
+    "kapak": {
+      "tam": "kapak.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s01": {
+      "tam": "boy-cizgisi.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s02": {
+      "tam": "s04.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s03": {
+      "tam": "klinik-mino.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s04": {
+      "tam": "klinik-uc-adim.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s05": {
+      "tam": "s06-final.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s06": {
+      "tam": "klinik-boy-temiz.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s07": {
+      "tam": "klinik-kuzu.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s08": {
+      "tam": "s07.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s09": {
+      "tam": "klinik-agiz-temiz.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s10": {
+      "tam": "klinik-karin.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s11": {
+      "tam": "klinik-yildiz.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s12": {
+      "tam": "s10.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    },
+    "s13": {
+      "tam": "klinik-ev-final.webp",
+      "boy": [
+        2048,
+        1152
+      ]
+    }
+  }
+}

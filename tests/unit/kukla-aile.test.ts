@@ -2,7 +2,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { Kukla, type KuklaIskelet } from '../../film/src/kukla';
+import { Kukla, type KuklaIskelet } from '../../src/karakter/kukla';
 import boy from '../../assets/karakter/aile-boy.json';
 import kino from '../../assets/karakter/kino-yeni/kino-yeni.json';
 import anne from '../../assets/karakter/anne/anne.json';

@@ -31,6 +31,7 @@ export interface KitapIcerik {
   id: string;
   baslik: string;
   kapak: { renk: string; tarif: string; satirlar: Satir[] };
+  arkaKapak?: string;
   sayfalar: KitapSayfasi[];
   ebeveyn: { baslik: string; sorular: string[]; not: string };
 }

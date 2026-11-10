@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" style="--tuy:#f0c78b;--kulak:#9d684b;--acik:#fff7e6;--cizgi:#302936"><style>.uyku-goz,.benekli{display:none}</style><defs><clipPath id="yuz"><path d="M22 87C20 29 62 12 120 12s100 17 98 75c24 24 17 61-9 78-44 28-134 28-178 0C5 148-2 111 22 87Z"/></clipPath></defs>
+  <path d="M22 87C20 29 62 12 120 12s100 17 98 75c24 24 17 61-9 78-44 28-134 28-178 0C5 148-2 111 22 87Z" fill="var(--tuy)" stroke="var(--cizgi)" stroke-width="6"/>
+  <g clip-path="url(#yuz)" class="desen"><path class="alacali" d="M110 8h31c-8 35-12 56-7 76 9 31 41 36 48 66H70c5-27 34-45 39-70 4-22 1-48 1-72Z" fill="var(--acik)"/><g class="benekli" fill="var(--kulak)"><ellipse cx="53" cy="49" rx="22" ry="17" transform="rotate(-20 53 49)"/><ellipse cx="176" cy="73" rx="35" ry="39"/><ellipse cx="222" cy="140" rx="13" ry="18"/></g></g>
+  <path d="M66 118c10-13 30-16 54-7 24-9 44-6 54 7 19 30-15 52-54 52s-73-22-54-52Z" fill="var(--acik)"/>
+  <g class="gozler"><ellipse cx="75" cy="89" rx="17" ry="23" fill="var(--cizgi)"/><ellipse cx="165" cy="89" rx="17" ry="23" fill="var(--cizgi)"/><ellipse cx="70" cy="81" rx="5" ry="7" fill="#fffef9"/><ellipse cx="160" cy="81" rx="5" ry="7" fill="#fffef9"/></g>
+  <g class="uyku-goz" fill="none" stroke="var(--cizgi)" stroke-width="5" stroke-linecap="round"><path d="M59 91q16 11 32 0M149 91q16 11 32 0"/></g>
+  <path d="M104 119q16-10 32 0c4 11-11 17-16 17s-20-6-16-17Z" fill="var(--cizgi)"/>
+  <path d="M120 135v7m-22-1q10 16 22 1 12 15 22-1" fill="none" stroke="var(--cizgi)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M58 58q10-7 20-4M162 54q10-3 20 4" stroke="var(--cizgi)" stroke-width="4" stroke-linecap="round" fill="none"/></svg>

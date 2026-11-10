@@ -22,11 +22,12 @@ describe('telefon mu', () => {
 
 describe('sayfa yönü (telefonda)', () => {
   it('geniş sahneli oyunlar yatay', () => {
-    expect([...YATAY_SAYFALAR].sort()).toEqual(['dedektif', 'film', 'giysin', 'kino-otobus', 'macera', 'pasta', 'pazar', 'restoran']);
+    expect([...YATAY_SAYFALAR].sort()).toEqual(['dedektif', 'film', 'giysin', 'hazirlik', 'izle', 'kino-ile-sen-sec', 'kino-otobus', 'macera', 'otobus', 'pasta', 'pati', 'pazar', 'restoran']);
     for (const y of ['/pasta/index.html', '/pazar/', '/macera/index.html', '/dedektif/index.html', '/film/', '/giysin/index.html', '/kino-otobus/index.html']) expect(sayfaYonu(y), y).toBe('yatay');
   });
-  it('menü, Kartlar, Canlan cihazı izler', () => {
-    for (const y of ['/', '/index.html', '/kartlar/index.html', '/canlan/index.html', '/gizlilik/']) expect(sayfaYonu(y), y).toBe('serbest');
+  it('yeni ana menü yatay; Kartlar ve Canlan cihazı izler', () => {
+    for (const y of ['/', '/index.html']) expect(sayfaYonu(y), y).toBe('yatay');
+    for (const y of ['/kartlar/index.html', '/canlan/index.html', '/gizlilik/']) expect(sayfaYonu(y), y).toBe('serbest');
   });
 });
 
@@ -82,12 +83,12 @@ function sahte(o: { en: number; boy: number; tip?: string; bozuk?: boolean }) {
 }
 
 describe('yön yöneticisi', () => {
-  it('telefon: yatay oyun açılınca yatay kilit (dikeyde düz yatay), menüde bırakır', async () => {
+  it('telefon: yatay oyun açılınca yatay kilit (dikeyde düz yatay), menüde yatay kalır', async () => {
     const s = sahte({ en: 390, boy: 844 });
     await s.y.sayfaAcildi('/pasta/index.html');
     await s.y.sayfaAcildi('/index.html');
     await s.y.sayfaAcildi('/kartlar/index.html');
-    expect(s.cagri).toEqual(['kilit:landscape', 'birak', 'birak']);
+    expect(s.cagri).toEqual(['kilit:landscape', 'kilit:landscape', 'birak']);
   });
   it('telefon ters yatayda tutuluyorsa o yön istenir (ekran baş aşağı dönmez)', async () => {
     const s = sahte({ en: 844, boy: 390, tip: 'landscape-secondary' });
@@ -133,7 +134,7 @@ describe('yön yöneticisi', () => {
     await s.y.gitmedenOnce('/dedektif/index.html');
     await s.y.gitmedenOnce('/index.html');
     expect(Date.now() - t0).toBeLessThan(100);
-    expect(s.cagri).toEqual(['kilit:landscape-primary', 'birak']);
+    expect(s.cagri).toEqual(['kilit:landscape-primary', 'kilit:landscape-primary']);
   });
   it('eklenti yoksa (hata) sessizce geçer', async () => {
     const s = sahte({ en: 844, boy: 390, bozuk: true });
@@ -169,3 +170,4 @@ describe('yerel yön ayarları', () => {
     expect(sahne).toMatch(/maske == \.landscapeLeft \|\| maske == \.landscapeRight[\s\S]*return \.landscape/);
   });
 });
+

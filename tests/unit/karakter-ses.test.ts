@@ -15,7 +15,6 @@ import {
 } from '../../src/audio/karakter-ses';
 import film2 from '../../content/film2/sesler.json';
 import otobus from '../../content/kino-otobus.json';
-import lokanta from '../../content/restoran/lokanta.json';
 import seslendirme from '../../content/seslendirme.json';
 import banyo from '../../content/macera-banyo.json';
 
@@ -155,13 +154,11 @@ describe('Seri 2 karakter sesleri (eleven_v4)', () => {
   const seri2: Seri2Sesleri = { model: 'eleven_v4', dil: 'tr', ayarlar: { stability: 0.4 }, sesler: { anne: 'anne-gizli-kimlik', babaanne: 'babaanne-gizli', tombi: 'tombi-gizli', kino: 'seri2-kino' } };
   const ayar: SesAyari = { ...temel, karakter_sesleri: { kino: KINO }, seri2: { karakterler: ['anne', 'babaanne', 'tombi', 'kino', 'sesi-olmayan'] } };
 
-  it('cümle listesi konuşanı belirtir: restoran müşterileri, Babaanne ve Otobüs\'ün 36 müşteri cümlesi', () => {
+  it('cümle listesi konuşanı belirtir: Otobüs\'ün 36 müşteri cümlesi', () => {
     expect(kc.anne).toEqual(expect.arrayContaining(Object.values(otobus.musteri.anne).map(normal)));
-    expect(kc.anne).toEqual(expect.arrayContaining(Object.values(lokanta.musteri.anne).map(normal)));
     const otobusToplam = Object.values(otobus.musteri).flatMap((s) => Object.values(s));
     expect(otobusToplam.length).toBe(36);
     for (const [ad, s] of Object.entries(otobus.musteri)) for (const c of Object.values(s)) expect(kc[ad]).toContain(normal(c));
-    expect(kc.babaanne?.length ?? 0).toBeGreaterThan(0);
   });
 
   it('listedeki karakterler kendi modeli ve ayarıyla, kendi klasörüne üretilir; Kino eski sesiyle kalır', () => {
@@ -195,7 +192,7 @@ describe('Seri 2 karakter sesleri (eleven_v4)', () => {
     const ku = karakterUretimleri(seslendirme as SesAyari, film2 as Seri2Sesleri);
     for (const k of ['anne', 'baba', 'lokum', 'babaanne', 'dede', 'bidik', 'tombi', 'zipzip', 'bulut', 'nehir']) expect(ku[k]?.model).toBe('eleven_v4');
     expect(ku.kino.model).toBe(seslendirme.model);
-    const kod = ['src/audio/karakter-ses.ts', 'src/audio/cumleler.ts', 'scripts/seslendir.ts', 'restoran/src/model.ts', 'kino-otobus/src/gun.ts'].map((d) => fs.readFileSync(d, 'utf8')).join('\n');
+    const kod = ['src/audio/karakter-ses.ts', 'src/audio/cumleler.ts', 'scripts/seslendir.ts', 'kino-otobus/src/gun.ts'].map((d) => fs.readFileSync(d, 'utf8')).join('\n');
     for (const id of Object.values(film2.sesler)) expect(kod.includes(id)).toBe(false);
   });
 

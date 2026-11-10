@@ -1,0 +1,40 @@
+.et-masa.pano-atolye{display:grid;grid-template:minmax(0,1fr) auto/minmax(0,1fr);gap:1%;padding:7% 5% 4%;place-content:stretch;background-size:100% 100%;background-position:center}
+.pano-calisma{min-height:0;min-width:0;position:relative;container-type:size;display:grid;place-items:center}
+.pano-kagit{position:relative;width:min(97cqw,143cqh);aspect-ratio:3/2;background:#fffaf0;box-shadow:0 3px #8aab95;border:1px solid #55584e;border-radius:3px}
+.pano-tuval,.pano-kilavuz{position:absolute;inset:0;width:100%;height:100%;border-radius:2px}
+.pano-tuval{touch-action:none;cursor:crosshair}
+.pano-kilavuz{display:none;pointer-events:none}
+.pano-atolye[data-rehber=true] .pano-kilavuz{display:block}
+.pano-araclar,.pano-son{align-self:center;background:#fff0cc;border:1.5px solid #463a30;border-radius:18px;box-shadow:0 3px #c79054}
+.pano-araclar{padding:2px 3% 4px}
+.pano-araclar>div,.pano-son{display:flex;align-items:center;justify-content:center;gap:clamp(2px,1.2vmin,10px)}
+.pano-araclar button,.pano-son button{display:grid;place-items:center;position:relative;width:clamp(42px,8vmin,60px);height:clamp(42px,8vmin,60px);border:2px solid transparent;border-radius:14px;padding:4px;background:transparent;color:#41403b}
+.pano-araclar button[aria-pressed=true]{background:#ffe0a0;border-color:#765639}
+.pano-araclar button:disabled{opacity:.3}
+.pano-araclar svg{width:75%;height:75%}
+.pano-araclar button.pano-renk{width:clamp(36px,7.5vmin,56px);padding:5px}
+.pano-renk i{width:100%;aspect-ratio:1;border:1.5px solid #332e31;border-radius:48% 55% 45% 49%}
+.pano-teslim{margin-left:auto}
+.pano-son{justify-self:center;padding:3px 12px;min-height:48px}
+.pano-panel{display:grid;justify-content:center;gap:5px}
+.pano-inceleme{display:flex;justify-content:center;gap:8px}
+.pano-inceleme span{background:#ebf5df;border:1px solid #a2b7a5;border-radius:10px;width:clamp(30px,6vmin,44px);aspect-ratio:1;color:#33303b;opacity:.6}
+.pano-inceleme .bak{background:#ffe2a0;border:2px dashed #865830;opacity:1}
+.pano-inceleme .tam{opacity:1}
+.pano-atolye:is([data-durum=kazandi],[data-durum=diger]){padding:12% 11% 9%}
+.pano-atolye:is([data-durum=kazandi],[data-durum=diger]) .pano-kagit{transform:rotate(-2deg);width:min(90cqw,127cqh)}
+.pano-raptiye{position:absolute;top:-7px;left:49%;height:15px;width:15px;border:1.5px solid #422c27;background:#fa815c;border-radius:50%;box-shadow:0 2px #9b6244}
+.pano-atolye:not([data-durum=cizim]) canvas{cursor:default}
+@media(prefers-reduced-motion:no-preference){.pano-atolye[data-durum=kazandi] .pano-kagit{transform-origin:50% 0;animation:pano-as .45s ease-out}@keyframes pano-as{0%{transform:translateY(12%) rotate(3deg);opacity:.2}65%{transform:rotate(-4deg)}100%{transform:rotate(-2deg)}}}
+/* 2026-11-10 (Claude) kalıcı sınıf panosu: asılan resimler birikir (en çok 6), dokununca büyür */
+.pano-atolye[data-duvar=true]{padding:11% 9% 8%}
+.pano-duvar{display:grid;grid-template-columns:repeat(var(--s),auto);place-content:center;place-items:center;gap:3cqh 2cqw;width:100%;height:100%}
+.pano-duvar .pano-asili{position:relative;width:min(calc(96cqw / var(--s) - 2cqw),calc((96cqh / var(--r) - 3cqh) * 1.5));aspect-ratio:3/2;padding:0;border:1px solid #55584e;border-radius:3px;background:#fffaf0;box-shadow:0 3px #8aab95;transform:rotate(-2deg)}
+.pano-duvar .pano-asili:nth-child(2n){transform:rotate(1.6deg)}
+.pano-duvar .pano-asili:nth-child(3n){transform:rotate(-.8deg)}
+.pano-duvar .pano-asili.tek{transform:rotate(-1deg)}
+.pano-asili img{width:100%;height:100%;display:block;border-radius:2px;pointer-events:none}
+.pano-asili .pano-raptiye{top:-6px;left:calc(50% - 7px);pointer-events:none}
+.pano-alet button[data-pano=pano]{position:relative}
+.pano-sayi{position:absolute;right:-2px;top:-2px;min-width:20px;height:20px;padding:0 4px;border-radius:10px;background:#f46350;color:#fff;font:700 13px/20px system-ui,sans-serif;border:1.5px solid #463a30}
+@media(prefers-reduced-motion:no-preference){.pano-asili.yeni{transform-origin:50% 0;animation:pano-as .55s ease-out}}

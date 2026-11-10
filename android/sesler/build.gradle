@@ -1,0 +1,11 @@
+// Seslendirmeler (public/ses, ~70 MB) Play'de kurulumla birlikte inen ayrı paket: temel paketin 200 MB sınırına sayılmaz.
+// CI (android.yml) release AAB'den önce app/src/main/assets/public/ses klasörünü buraya taşır; içerik aynı yolda
+// (public/ses/...) AssetManager'dan okunur, Capacitor için fark yok. Debug APK sesleri kendi içinde taşır.
+apply plugin: 'com.android.asset-pack'
+
+assetPack {
+    packName = "sesler"
+    dynamicDelivery {
+        deliveryType = "install-time"
+    }
+}

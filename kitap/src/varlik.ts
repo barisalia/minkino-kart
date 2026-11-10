@@ -32,8 +32,8 @@ export interface Yerlesim {
   ugur?: string[];
 }
 
-const okulDosyalar = import.meta.glob('../../assets/kitap/okul/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const okulYerlesim = import.meta.glob('../../assets/kitap/okul/yerlesim.json', { eager: true, import: 'default' }) as Record<string, Yerlesim>;
+const dosyalar = import.meta.glob('../../assets/kitap/*/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const yerlesimler = import.meta.glob('../../assets/kitap/*/yerlesim.json', { eager: true, import: 'default' }) as Record<string, Yerlesim>;
 
 function dosyaHaritasi(g: Record<string, string>): Map<string, string> {
   const m = new Map<string, string>();
@@ -50,9 +50,9 @@ export interface KitapVarliklari {
 const BOS: Yerlesim = { sayfalar: {} };
 
 export function kitapVarliklari(id: string): KitapVarliklari {
-  if (id !== 'okul') return { yerlesim: BOS, url: () => null };
-  const harita = dosyaHaritasi(okulDosyalar);
-  const yerlesim = Object.values(okulYerlesim)[0] ?? BOS;
+  const klasor = '../../assets/kitap/' + id + '/';
+  const yerlesim = yerlesimler[klasor + 'yerlesim.json'] ?? BOS;
+  const harita = dosyaHaritasi(Object.fromEntries(Object.entries(dosyalar).filter(([yol]) => yol.startsWith(klasor))));
   return { yerlesim, url: (ad) => (ad ? harita.get(ad) ?? null : null) };
 }
 

@@ -1,0 +1,123 @@
+/* The animals share one floor. Their illustration keeps the care-room rig. */
+.cerceve.sayfa-menu,.cerceve.sayfa-dostlar {background:#ffe8a8 url('../assets/pati-yeni/ortam/sergi-odasi.webp') center 85% / cover no-repeat;isolation:isolate}
+.cerceve.sayfa-menu>header,.cerceve.sayfa-dostlar>header {position:absolute;inset:0 0 auto;z-index:3;display:flex;align-items:center;gap:clamp(6px,1.2vw,18px);padding:max(2dvh,env(safe-area-inset-top)) max(2vw,env(safe-area-inset-right)) 0 max(2vw,env(safe-area-inset-left));min-height:0;background:transparent;border:none;pointer-events:none}
+.cerceve.sayfa-menu>header h1,.cerceve.sayfa-dostlar>header h1 {position:absolute;left:50%;translate:-50% 0;border:2px solid #775641;border-radius:24px;background:#fff3d5;color:#503829;font:600 clamp(18px,3.9dvh,39px)/1.1 Fredoka,sans-serif;padding:.15em 1em;box-shadow:0 3px #c5956a;letter-spacing:0}
+.sergi-sahne {position:absolute;inset:0;pointer-events:none}
+.sergi-sira {position:absolute;left:max(19%,env(safe-area-inset-left));right:max(5%,env(safe-area-inset-right));bottom:7.5%;height:65%;display:flex;align-items:stretch;justify-content:center;gap:clamp(4px,1.7vw,32px)}
+.sergi-yeri {position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;justify-items:center;flex:1;min-width:0;max-width:56dvh;pointer-events:auto}
+.cerceve .hayvana-git {border:0;box-shadow:none;background:none;position:relative;isolation:isolate;width:100%;height:100%;min-height:0;padding:0;display:grid;place-items:end center}
+.hayvana-git::before {content:'';position:absolute;z-index:-1;left:20%;right:20%;bottom:1%;height:6%;background:#585f9b80;border-radius:50%}
+.sergi-hayvan {position:relative;display:block;width:100%;height:100%;min-height:0;container-type:size}
+.sergi-hayvan>.kopek,.sergi-hayvan>.kukla {position:absolute;inset:0;width:100%;height:100%;max-height:none;aspect-ratio:auto}
+.sergi-hayvan .kukla-ic {height:min(100cqw,100cqh);width:min(100cqw,100cqh);align-self:end}
+.sergi-hayvan .rig {width:min(100cqw,100cqh);height:min(100cqw,100cqh);top:auto;bottom:0}
+.hayvana-git .sergi-hayvan {height:95%;transform-origin:50% 95%;transition:transform .16s}
+@media(hover:hover){.hayvana-git:hover .sergi-hayvan{transform:translateY(-2%) rotate(-1deg)}}
+.fanus::before {content:'';position:absolute;left:0;right:0;bottom:2%;height:68%;background:url('../assets/pati-yeni/arayuz/akvaryum.svg') center bottom / 96% 100% no-repeat}
+.fanus .kukla.tur-balik {top:36%;height:50%}
+.fanus .kukla.tur-balik .butun-balik {width:min(63cqw,112cqh)}
+.cerceve .sergi-isim {position:relative;display:flex;align-items:center;justify-content:center;gap:.32em;max-width:100%;min-height:36px;padding:.15em .7em;border:2px solid #956f4d;border-radius:22px;background:#fff3d6;color:#4f3c2f;box-shadow:0 2px #c19062;font-size:clamp(13px,3dvh,27px);line-height:1}
+.sergi-isim b {font-weight:600}
+.kart-bilgi {font-style:normal;font-size:.86em;color:#886d4e}
+.gun-tamam {display:inline-grid;place-items:center;border-radius:50%;width:1.2em;height:1.2em;background:#c4e4b9;color:#416c50;font-style:normal}
+.cerceve .sergi-alt {position:absolute;inset:auto 0 0;display:flex;justify-content:space-between;align-items:end;border:none;background:none;box-shadow:none;min-height:0;padding:0 max(3vw,env(safe-area-inset-right)) max(2.5dvh,env(safe-area-inset-bottom)) max(3vw,env(safe-area-inset-left));pointer-events:none}
+.sergi-alt button,.sergi-sayfa {pointer-events:auto}
+.sergi-araclar,.sergi-sayfa,.kart-kararlar {display:flex;align-items:center;gap:clamp(6px,1vw,14px)}
+.sergi-sahne:has(.sergi-yeri:nth-child(3)) + .sergi-alt .sergi-araclar {flex-direction:column}
+.sergi-sira:has(.sergi-yeri:nth-child(3)) {left:max(21%,env(safe-area-inset-left));right:max(13%,env(safe-area-inset-right))}
+.sergi-isim .para-miktar {font-size:.8em}
+.sergi-sira:has(.sergi-yeri:only-child) {left:8%;right:8%}
+/* Resize the empty centre while keeping the trophy and porthole at their drawn proportions. */
+@media(orientation:landscape) {
+  .cerceve.sayfa-menu,.cerceve.sayfa-dostlar {background:#ffe8a8}
+  .cerceve.sayfa-menu::before,.cerceve.sayfa-dostlar::before {
+    content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+    border:solid transparent;border-width:0 47.98dvh 0 39.09dvh;
+    border-image: url('../assets/pati-yeni/ortam/sergi-odasi.webp') 0 27% 0 22% fill stretch;
+  }
+}
+.cerceve .sergi-dugme {display:grid;place-items:center;padding:.5dvh 1vw;width:clamp(62px,10.5vw,137px);height:clamp(46px,12dvh,105px);min-height:0;background:#b3dec1;border:2px solid #785f46;border-radius:clamp(14px,3dvh,30px);box-shadow:0 3px #ae8259}
+.sergi-dugme img {width:100%;height:100%;min-height:0;object-fit:contain}
+.cerceve .sergi-dugme.dukkan {background:#ffb798}
+.cerceve .sergi-dugme.gece {width:clamp(49px,8.2vw,114px);background:#d6c9eb}
+.sergi-dugme.gece img {height:85%;width:85%}
+.sergi-sayfa {position:absolute;bottom:76dvh;left:50%;translate:-50% 0;padding:2px 5px;border:1.5px solid #ac825a;border-radius:22px;background:#fff1d1;color:#584331;white-space:nowrap}
+.cerceve .sergi-sayfa button {width:44px;min-height:40px;padding:0;border:0;background:transparent;box-shadow:none;font-size:25px}
+.cerceve .bos-sergi {pointer-events:auto;align-self:end;display:grid;justify-items:center;padding:1em 2em;background:#fff1d8;color:#513e32;border-radius:22px}
+.bos-sergi img {height:14dvh;width:18dvh}
+.cesit-vitrini {position:absolute;inset:17% max(4vw,env(safe-area-inset-right)) 5% max(4vw,env(safe-area-inset-left));display:grid;grid-template-rows:auto minmax(0,1fr);gap:2.5dvh}
+.tur-seridi {display:flex;align-items:center;gap:clamp(4px,1vw,15px);justify-content:safe center;background:#ffe8bf;border:2px solid #a78157;border-radius:22px;padding:4px 8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.cerceve .tur-sec {flex:0 0 clamp(44px,6.2vw,93px);height:clamp(41px,10dvh,88px);min-height:0;padding:0;border:2px solid transparent;border-radius:14px;background:none;box-shadow:none}
+.cerceve .tur-sec[aria-pressed=true] {background:#c3e4c5;border-color:#6c9179}
+.tur-sec .fanus::before,.cesit-sec .fanus::before,.sergi-karti .fanus::before {display:none}
+.tur-sec .fanus .kukla,.cesit-sec .fanus .kukla,.sergi-karti .fanus .kukla {inset:0;height:100%}
+.cesit-sirasi {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(7px,2.8vw,48px);justify-self:center;width:min(95%,135dvh);min-height:0}
+.cerceve .cesit-sec {display:grid;grid-template-rows:minmax(0,1fr) auto auto;justify-items:center;gap:1dvh;min-height:0;padding:2dvh 1vw;border:2px solid #a6815a;border-radius:22px;background:#fff2dc;box-shadow:0 4px #bb9168;font-size:clamp(15px,4dvh,32px);color:#503b2d}
+.cerceve .cesit-sec.seviye-1 {background:#e9f1dd;border-color:#8a9c77}
+.cerceve .cesit-sec.seviye-2 {background:#f1e5ee;border-color:#ab8c9f}
+.sergi-fiyat {background:#ffdf93;border:1.5px solid #b4894f;border-radius:18px;font-size:.8em;min-width:3em;line-height:1.05;padding:.1em .5em}
+.sergi-fiyat .para-miktar img,.kart-getiri .para-miktar img {width:1.3em;height:1.3em}
+.cerceve .onay-perdesi {z-index:20;background:#362b246b}
+.sergi-karti {position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(3px,1.1dvh,12px);width:min(88%,max(310px,58dvh));max-height:92%;padding:2.4dvh 2vw 3dvh;border:2.5px solid #7f6148;border-radius:26px;background:#fff3db;box-shadow:0 5px #a58767;color:#513b2c;text-align:center}
+.sergi-karti>.sergi-hayvan {height:clamp(65px,27dvh,240px);width:72%}
+.sergi-karti h2,.sergi-karti p {margin:0}
+.sergi-karti h2 {font-size:clamp(19px,4.8dvh,39px)}
+.sergi-karti p,.gelir-listesi {font-size:clamp(13px,3dvh,21px)}
+.kart-getiri {display:flex;gap:.4em;align-items:center}
+.cerceve .karar {display:inline-flex;align-items:center;justify-content:center;gap:.5em;background:#b7dec0;color:#354c3a;border:2px solid #668268;border-radius:18px;min-height:42px;padding:.25em .9em;font-size:clamp(15px,3.3dvh,25px)}
+.cerceve .karar.sat {background:#ffdfb0;color:#6e5030;border-color:#a47e52}
+.cerceve .karar:disabled {opacity:.5;cursor:default}
+.gece-ay {width:clamp(44px,10dvh,80px);height:clamp(44px,10dvh,80px);object-fit:contain}
+.gelir-listesi {list-style:none;margin:0;padding:.3em .55em;max-height:30dvh;overflow:auto;width:100%;background:#fae9c9;border-radius:12px}
+.gelir-listesi li {display:flex;align-items:center;justify-content:space-between;padding:.15em .4em}
+.sabah::before {content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:#4b4670;animation:sergi-sabah .75s ease-out forwards}
+@keyframes sergi-sabah {from{opacity:.5}to{opacity:0}}
+@media (orientation:portrait){.sergi-sira{height:42%;bottom:24%;flex-wrap:wrap}.sergi-yeri{height:100%;max-width:95%}.sergi-sira:has(.sergi-yeri:nth-child(3)){height:58%}.sergi-sira:has(.sergi-yeri:nth-child(3)) .sergi-yeri{flex:0 0 45%;height:48%}.cesit-sirasi{width:100%;gap:4px}.cerceve .cesit-sec{padding:6px 2px;font-size:15px}}
+@media(prefers-reduced-motion:reduce){.sabah::before{display:none}}
+.cerceve .su-gecidi,.cerceve .balik-magazasi {
+  display:inline-flex;align-items:center;justify-content:center;gap:.4em;
+  padding:.25em .65em .25em .35em;border:2px solid #427078;border-radius:24px;
+  color:#234f59;background:#c9f1e8;box-shadow:0 3px #77a69c;
+  font:600 clamp(15px,3.5dvh,26px)/1.1 Fredoka,sans-serif;pointer-events:auto;
+}
+.cerceve .su-gecidi {position:absolute;z-index:2;right:max(6%,env(safe-area-inset-right));top:45%;min-height:42px}
+.su-gecidi .simge,.balik-magazasi .simge {width:1.65em;height:1.65em}
+.cerceve.sayfa-akvaryum,.cerceve.sayfa-baliklar {background:#ace8e6 url('../assets/pati-yeni/ortam/golet-cel.webp') center / 100% 100% no-repeat}
+.cerceve.sayfa-akvaryum>header,.cerceve.sayfa-baliklar>header {
+  display:flex;align-items:center;gap:clamp(6px,1.2vw,18px);position:absolute;inset:0 0 auto;
+  z-index:3;min-height:0;border:0;background:transparent;pointer-events:none;
+  padding:max(2dvh,env(safe-area-inset-top)) max(2vw,env(safe-area-inset-right)) 0 max(2vw,env(safe-area-inset-left));
+}
+.cerceve.sayfa-akvaryum>header h1,.cerceve.sayfa-baliklar>header h1 {
+  position:absolute;left:50%;translate:-50% 0;margin:0;padding:.15em 1em;border:2px solid #427078;
+  border-radius:24px;color:#234f59;background:#def7e9;box-shadow:0 3px #82ada4;
+  font:600 clamp(18px,3.9dvh,39px)/1.1 Fredoka,sans-serif;letter-spacing:0;
+}
+.su-sahnesi .sergi-sira.suda {left:6%;right:6%;bottom:19%;height:54%;gap:2vw}
+.su-sahnesi .sergi-yeri {max-width:53dvh}
+.su-sahnesi .hayvana-git::before {content:none}
+.su-sahnesi .sergi-isim {color:#305562;background:#edf7e4;border-color:#568286;box-shadow:0 2px #80a397}
+.sergi-hayvan.yuzucu .kukla {align-items:center;justify-content:center}
+.sergi-hayvan.yuzucu .butun-balik {width:min(86cqw,136cqh);height:auto;object-fit:contain}
+.su-sahnesi .yuzucu {animation:sergide-yuz 4.5s ease-in-out infinite alternate}
+.su-sahnesi .sergi-yeri:nth-child(even) .yuzucu {animation-delay:-2.3s}
+@keyframes sergide-yuz {from{transform:translate(-2%,2%) rotate(-1deg)}to{transform:translate(2%,-3%) rotate(1deg)}}
+.cerceve .su-alt {justify-content:center}
+.su-alt .balik-magazasi {background:#fff0c9;border-color:#947150;box-shadow:0 3px #b69865}
+.su-alt.ilk-balik {bottom:33%}
+.su-alt .balik-magazasi b,.su-gecidi b {font-weight:600;white-space:nowrap}
+.cesit-vitrini {grid-template-rows:auto minmax(0,1fr) auto;gap:1.35dvh}
+.cesit-sirasi {grid-template-columns:repeat(var(--vitrin-kart,3),minmax(0,1fr));width:min(96%,calc(var(--vitrin-kart,3) * 43dvh))}
+.cerceve .cesit-sirasi:has(>:nth-child(4)) {gap:clamp(4px,1vw,20px);align-self:center;height:min(100%,49dvh)}
+.cesit-gezinme {position:static;justify-self:center;translate:none;padding:0 5px;gap:4px}
+.cesit-gezinme span {font-size:clamp(13px,3.2dvh,21px)}
+.su-vitrini .tur-seridi {justify-self:center;max-width:100%;background:#c8eee4;border-color:#779a89}
+.su-vitrini .tur-sec {display:flex;flex:0 1 auto;width:auto;gap:.4em;align-items:center;justify-content:center;padding:4px 12px;color:#31576a;font-size:clamp(13px,3.1dvh,23px);white-space:nowrap}
+.su-vitrini .tur-sec .sergi-hayvan {width:clamp(32px,7dvh,65px);height:100%}
+.su-vitrini .cesit-sec {background:#eef7e4;border-color:#719896;box-shadow:0 3px #79aaa3}
+.cesit-sec b {line-height:1.12;text-align:center}
+@media (orientation:portrait){
+  .cerceve .su-gecidi {right:3%;top:27%}
+  .su-sahnesi .sergi-sira.suda:has(.sergi-yeri:nth-child(3)){height:55%}
+}
+@media(prefers-reduced-motion:reduce){.su-sahnesi .yuzucu{animation:none}}

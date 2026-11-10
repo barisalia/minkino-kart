@@ -6,7 +6,7 @@ import { normal, tumCumleler, karakterCumleleri } from '../../src/audio/cumleler
 import { erisimTuru, kilitliMi } from '../../src/engine/erisim';
 import { BOY } from '../../src/karakter/boy';
 import { sayfaYonu } from '../../src/kabuk/yon';
-import { menuOyunlari, KINO_OTOBUS_KARTI, KINO_OTOBUS_MENUDE } from '../../uygulama/src/oyunlar';
+import { menuOyunlari, OYUNLAR } from '../../uygulama/src/oyunlar';
 import { gorulduYaz, gunBitti, kayitCoz } from '../../kino-otobus/src/kayit';
 import {
   acikGun,
@@ -354,15 +354,18 @@ describe('Kino’nun Otobüsü V3: sözler, erişim, görseller, boylar', () => 
     expect(kilitliMi('kino-otobus/odul', ac)).toBe(true);
     expect(erisimTuru('kino-otobus')).toBe('ucretsiz');
   });
-  it('telefonda yatay; menü kartı bayrakla açılır (Pasta’dan önce), zemini Gemini kapağı', () => {
+  it('telefonda yatay; ayrı menü kartı yok, Otobüs oyununun 1. aşaması (otobus/), kartın zemini Gemini kapağı', () => {
     expect(sayfaYonu('/kino-otobus/index.html')).toBe('yatay');
+    expect(sayfaYonu('/otobus/index.html')).toBe('yatay');
     for (const u of [false, true]) {
       const idler = menuOyunlari(u).map((k) => k.id);
-      expect(idler.includes('kino-otobus')).toBe(KINO_OTOBUS_MENUDE);
-      expect(idler.at(-1)).toBe('pasta');
+      expect(idler.includes('kino-otobus')).toBe(false);
+      expect(idler.includes('pasta')).toBe(false);
+      expect(idler.at(-1)).toBe('otobus');
     }
-    expect(KINO_OTOBUS_KARTI.adres).toBe('./kino-otobus/');
-    expect(KINO_OTOBUS_KARTI.zemin).toBe('kino-otobus/kapak');
+    const kart = OYUNLAR.find((k) => k.id === 'otobus')!;
+    expect(kart.adres).toBe('./otobus/');
+    expect(kart.zemin).toBe('kino-otobus/kapak');
     expect(fs.existsSync(path.resolve(__dirname, '../../assets/kino-otobus/kapak.webp'))).toBe(true);
   });
   it('görsel haritası: A, D, Ek C ve V3 (yeni tatlar, süsler, kaçan balon); yeni tatların boyalı görselleri ve 6 müşteri kesimi var', () => {

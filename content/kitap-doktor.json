@@ -1,0 +1,333 @@
+{
+  "id": "doktor",
+  "baslik": "Kino Doktora Gidiyor",
+  "kapak": {
+    "renk": "#F5DBAF",
+    "tarif": "Kino, boynunda oyuncak doktor kulaklığıyla yatağının üzerinde.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino doktora gidiyor."
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Boy çizgisi",
+      "renk": "#F6DAB2",
+      "tarif": "Kino kapının yanındaki boy çizgisine yetişmek için parmak uçlarına kalkmış. Annesi gülümseyerek ona bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "O sabah Kino’nun doktor kontrolü vardı. Evden çıkarken kapının yanındaki boy çizgisini gördü. Topuklarını kaldırdı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne, bak! Çizgiyi geçtim!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Annesi eğilip kırmızı ayakkabılarına baktı."
+        },
+        {
+          "kim": "anne",
+          "metin": "Sen mi uzadın, yoksa ayakkabıların mı?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino gülüp topuklarını yere bastı. Çizgi şimdi tam neresine geliyordu? Bunu doktora soracaktı. Annesinin elini tuttu, yola çıktılar."
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Beyaz kapı",
+      "renk": "#F6DAB2",
+      "tarif": "Kino muayene odasının kapısında annesinin eteğinin arkasından bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Beyaz kapı açılınca Kino bir adım attı. Sonra bir adım geri geldi. Muayene masası ona pek yüksek görünmüştü."
+        },
+        {
+          "kim": "kino",
+          "metin": "[whispers] Anne… Boyum evde de uzuyor. Burada ölçmek şart mı?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Doktor Teyze kapıyı açık tuttu. Kino, annesinin eteğinin arkasından içeri baktı."
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Mino’nun yıldızı",
+      "renk": "#F6DAB2",
+      "tarif": "Mino bekleme yerinde kolundaki yıldızı Kino’ya gösteriyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kapının yanında turuncu bir kuyruk kıpırdadı. Mino, kontrolünü bitirmişti. Kolunu çevirince küçük bir yıldız göründü."
+        },
+        {
+          "kim": "mino",
+          "metin": "Ben de kapıda bekledim, biliyor musun? Sonra doktora ne yapacağını sordum. Bana gösterdi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Önce gösteriyor mu gerçekten?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Mino başını salladı. Kino’nun aklına bir soru daha geldi."
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Annenin üç adımı",
+      "renk": "#F6DAB2",
+      "tarif": "Anne, Kino’ya kalp, açık ağız ve yıldız resmi olan bir kart gösteriyor.",
+      "satirlar": [
+        {
+          "kim": "kino",
+          "metin": "Peki kalbimi dinledikten sonra ne olacak?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Annesi yanına çömeldi. Küçük bir kartı Kino’ya çevirdi. Üstünde bir kalp, açık bir ağız ve sarı bir yıldız vardı."
+        },
+        {
+          "kim": "anne",
+          "metin": "Önce kalbini dinleyecek. Sonra ağzına ve karnına bakacak. En son da yıldızını seçeceksin. Ben yanındayım."
+        },
+        {
+          "kim": "kino",
+          "metin": "Söz mü?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Söz."
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Cepte kim var?",
+      "renk": "#F6DAB2",
+      "tarif": "Kino montunun cebinden çıkan oyuncak Kuzu’yu kucağına alıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino masanın kenarına oturdu. Montunu katlarken cebinden beyaz bir kulak sarktı. Bir çekti… Lokum’un Kuzu’su! Kırmızı kurdelesi bile üstündeydi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Sen de mi kontrole geldin? Gel, kucağıma otur. Buradan daha iyi görürsün."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino ona yer açarken masanın ne kadar yüksek olduğunu unuttu."
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Bulut’un boyu",
+      "renk": "#F6DAB2",
+      "tarif": "Bulut boy ölçerin önünde duruyor. Kino ve Kuzu ölçümün nasıl yapıldığını izliyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Duvarın dibinde arkadaşı Bulut duruyordu. Topuklarını yere bastı. Doktor Teyze ölçerin küçük tahtasını yavaşça indirip başının üstünde durdurdu."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Kino, yünüm de boyuma sayılıyor mu acaba?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino, Kuzu’nun kabarık başını avucuyla düzeltti."
+        },
+        {
+          "kim": "kino",
+          "metin": "O zaman bizim Kuzu azıcık kısaldı!"
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Önce Kuzu",
+      "renk": "#F6DAB2",
+      "tarif": "Doktor Teyze stetoskobunun ucunu önce oyuncak Kuzu’nun göğsüne değdiriyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Doktor Teyze kulaklığını taktı. Ucundaki yuvarlak parçayı Kino’ya gösterdi. Kino, parmağının ucuyla dokundu. Biraz serindi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Önce Kuzu’yu dinleyebilir misiniz?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Doktor Teyze yuvarlak ucu Kuzu’nun göğsüne koydu. Kino da onunla birlikte sessizce bekledi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Kuzu hazır. Şimdi sıra bende."
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "İçerideki davul",
+      "renk": "#F6DAB2",
+      "tarif": "Kino stetoskopla kendi kalp atışını duyuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Doktor Teyze bu kez Kino’nun kalbini dinledi. Sonra kulaklığı onun kulaklarına yerleştirip yuvarlak ucu göğsünde tuttu. Kino’nun gözleri büyüdü."
+        },
+        {
+          "kim": "kino",
+          "metin": "Güm güm! Anne, içimde küçük bir davul var!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bir süre hiç konuşmadı. Bir daha duymak istiyordu. Güm güm. Güm güm."
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Kocaman bir aaa",
+      "renk": "#F6DAB2",
+      "tarif": "Doktor Teyze küçük ışığını tutarken Kino ağzını açıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Doktor Teyze küçük ışığını önce kendi avucuna tuttu. Kino ışığın yuvarlak izini görünce ağzını açtı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Aaaa!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Doktor Teyze diline ve boğazına baktı. Işık söndüğünde Kino’nun sesi hâlâ sürüyordu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Aa… Bitti mi? Ben daha söyleyecektim!"
+        }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "Kıpır kıpır bir karın",
+      "renk": "#F6DAB2",
+      "tarif": "Kino’nun karnı nazikçe muayene edilirken Kino ve Bulut gülüyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Sıra karnına gelince doktor önce ellerini birbirine sürtüp ısıttı. Kino tişörtünü biraz yukarı çekti. Doktorun eli karnına hafifçe değince burnu kıpırdadı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bekleyin! Tam orası gıdıklanıyor!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Doktor elini çekip bekledi. Kino kahkahasını bitirince başıyla işaret etti."
+        },
+        {
+          "kim": "kino",
+          "metin": "Tamam, şimdi bakabilirsiniz."
+        }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "İki küçük yıldız",
+      "renk": "#F6DAB2",
+      "tarif": "Kino, kendi yıldızının eşini Kuzu’nun kırmızı kurdelesinin altına yapıştırıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kontrol bitmişti. Kino kendine sarı bir yıldız seçti. Doktor Teyze kutuyu kapatacakken Kino, Kuzu’nun boş göğsünü gösterdi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Ama ilk hasta oydu!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Doktor kutuyu yeniden uzattı. Kino ikinci yıldızı kırmızı kurdelenin altına bastırdı. Bu yıldız Kuzu’yla birlikte Lokum’a gidecekti."
+        }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Bir kalp daha",
+      "renk": "#F6DAB2",
+      "tarif": "Kino kapıda annesinin kalbini dinliyor.",
+      "satirlar": [
+        {
+          "kim": "anne",
+          "metin": "Hadi Kino, evimize gidiyoruz!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino bu kez kapıdan çıkarken durdu. Oyuncak kulaklığını çıkardı. Annesi eğilince yuvarlak ucunu hırkasına dayadı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Seninkini de dinleyeyim. Belki aynı şarkıyı çalıyorlardır."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Annesi gülümsedi. Kino başını onun göğsüne yaslayıp bir de öyle dinledi."
+        }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "Söz, yanındayım",
+      "renk": "#F6DAB2",
+      "tarif": "Lokum yıldızlı Kuzu’ya sarılıyor. Kino kardeşinin yanına diz çöküp ona sarılıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Evde Lokum, Kuzu’yu görünce iki kolunu birden açtı. Önce kırmızı kurdelesini, sonra yıldızını okşadı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kuzu korktu mu?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Başta biraz. Ben onun yanında kaldım. İstersen sana da göstereyim."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum, Kuzu’yu bağrına bastı. Kino da yanına diz çöküp ikisini birden kucakladı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Önce tık tık. Sonra aaa. Sonra kocaman bir sarılma!"
+        }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Kino’yu ne rahatlattı?",
+    "sorular": [
+      "Kino kapıda beklerken neyi bilmek istedi?",
+      "Doktor küçük ışığı önce nereye tuttu?",
+      "Sen Kuzu’ya sırada ne olduğunu nasıl anlatırdın?"
+    ],
+    "not": "Bir oyuncak seçip sırayla doktor ve hasta olabilirsiniz."
+  }
+}

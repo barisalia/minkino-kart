@@ -1,0 +1,16 @@
+:is(.sergi-yeri,.mini-adim)[data-aile=kopek] .adim-tuy{--maske:url('../assets/pati-yeni/adim/kopek-0-tuy.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kopek] .adim-kulak{--maske:url('../assets/pati-yeni/adim/kopek-0-kulak.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kopek] .adim-acik{--maske:url('../assets/pati-yeni/adim/kopek-0-acik.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kopek] .adim-cizgi{--maske:url('../assets/pati-yeni/adim/kopek-0-cizgi.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kopek] .adim-tuy{--maske:url('../assets/pati-yeni/adim/kopek-1-tuy.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kopek] .adim-kulak{--maske:url('../assets/pati-yeni/adim/kopek-1-kulak.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kopek] .adim-acik{--maske:url('../assets/pati-yeni/adim/kopek-1-acik.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kopek] .adim-cizgi{--maske:url('../assets/pati-yeni/adim/kopek-1-cizgi.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kedi] .adim-tuy{--maske:url('../assets/pati-yeni/adim/kedi-0-tuy.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kedi] .adim-kulak{--maske:url('../assets/pati-yeni/adim/kedi-0-kulak.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kedi] .adim-acik{--maske:url('../assets/pati-yeni/adim/kedi-0-acik.png')}
+:is(.sergi-yeri,.mini-adim)[data-aile=kedi] .adim-cizgi{--maske:url('../assets/pati-yeni/adim/kedi-0-cizgi.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kedi] .adim-tuy{--maske:url('../assets/pati-yeni/adim/kedi-1-tuy.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kedi] .adim-kulak{--maske:url('../assets/pati-yeni/adim/kedi-1-kulak.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kedi] .adim-acik{--maske:url('../assets/pati-yeni/adim/kedi-1-acik.png')}
+:is(.sergi-yeri,.mini-adim).ters-adim[data-aile=kedi] .adim-cizgi{--maske:url('../assets/pati-yeni/adim/kedi-1-cizgi.png')}

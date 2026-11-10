@@ -1,0 +1,89 @@
+.giyim-kalibi{position:absolute;pointer-events:none;mask-position:center;mask-size:100% 100%;mask-repeat:no-repeat}
+.govde>.giyim-kalibi{inset:0;z-index:1}
+.rig>.kafa-grup{z-index:2}
+.giyim-kumasi{position:absolute;translate:-50% 0}
+.giyim-kumasi>img.giyili{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.donanim-kart{position:relative}
+.pati-isigi{position:absolute;inset:0;pointer-events:none;z-index:3;--motif:url('../assets/pati-yeni/isik/gunes.webp');--light:#ffe498;--cycle:6.8s}
+.pati-isigi i{position:absolute;left:13%;top:30%;width:16%;aspect-ratio:1;background:var(--motif) center/contain no-repeat;transform-origin:center;opacity:.9}
+.pati-isigi i:nth-child(2){left:74%;top:49%;width:11%;animation-delay:-2.4s}
+.pati-isigi i:nth-child(3){left:26%;top:69%;width:8%;animation-delay:-4.2s}
+.isik-kivilcim i{width:8%}.isik-kivilcim i~i,.isik-isildayan i:nth-child(3){display:none}
+.isik-koru{--motif:url('../assets/pati-yeni/isik/yaprak.webp');--light:#c3ef9b;--cycle:6s}
+.isik-ay{--motif:url('../assets/pati-yeni/isik/ay.webp');--light:#c5beff;--cycle:7s}
+.isik-yildiz{--motif:url('../assets/pati-yeni/isik/takimyildiz.webp');--light:#bfcfff}
+:is(.isik-gunes,.isik-yildiz,.isik-ay,.isik-koru)::before{content:'';position:absolute;inset:18% 7% 6%;border-radius:50%;box-shadow:0 0 1em var(--light),inset 0 0 1em var(--light);opacity:.48}
+.giyim-kumasi .pati-isigi::before{display:none}
+.giyim-kumasi .pati-isigi i{top:48%;width:19%}
+.donanim-kart>.pati-isigi{inset:12% 8% 25%}
+:is(.portre,.tur-sec,.cizili-uyku) .pati-isigi{display:none}
+@media(prefers-reduced-motion:no-preference){
+ .pati-isigi i{animation:pati-parilti var(--cycle) ease-in-out infinite}
+ .pati-isigi::before{animation:pati-hale 4.6s ease-in-out infinite alternate}
+ .isik-koru i{animation-name:pati-yaprak}
+ .isik-ay i,.isik-yildiz i{animation-name:pati-yorunge}
+ :is(.cesit-sec,.donanim-portre,.hareket-bosta,.sergi-yeri:not(.adimli) .sergi-hayvan:not(.hareket-uyu)) :is([data-isik="koru"],[data-isik="ay"],[data-isik="gunes"])>:is(.rig,.kukla-ic,.butun-balik){animation:pati-selam 8s ease-in-out infinite;transform-origin:50% 83%}
+ .tur-balik{--selam:7deg;--zipla:-4%}
+ :is(.tur-kus,.tur-ordek,.tur-tavsan,.tur-civciv){--selam:-4deg;--zipla:-6%}
+ :is(.tur-geko,.tur-kaplumbaga){--selam:3deg;--zipla:-1%}
+ @keyframes pati-selam{0%,53%,77%,100%{rotate:0deg;translate:0 0}62%{rotate:var(--selam,-3deg);translate:0 var(--zipla,-2%)}69%{rotate:1deg}}
+ @keyframes pati-hale{to{opacity:.12;scale:.93}}
+ @keyframes pati-parilti{0%,65%,100%{opacity:.12;scale:.48}18%{opacity:1;scale:1.09}40%{opacity:.8;scale:.86;translate:0 -18%}}
+ @keyframes pati-yaprak{0%,100%{opacity:.1;translate:0 22%;rotate:-14deg}28%{opacity:1}72%{translate:22% -32%;rotate:15deg;opacity:.7}}
+ @keyframes pati-yorunge{0%,100%{translate:0 8%;opacity:.24}40%{translate:22% -26%;opacity:1}75%{translate:-8% -18%;opacity:.7}}
+}
+
+.giyimin-onu{position:absolute;inset:0;background-size:100% 100%;background-repeat:no-repeat;filter:var(--post,none);pointer-events:none}
+.cerceve .kisisel-dolap .donanim{inset:16% 5% 6%;grid-template-columns:minmax(0,36%) minmax(0,1fr)}
+.kisisel-dolap .donanim .donanim-raf{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;grid-auto-rows:calc((100% - 12px)/2)}
+.kisisel-dolap .donanim .donanim-kart>.arac{width:88%;height:95%;min-height:0;object-fit:contain;align-self:center;justify-self:center}
+/* Shine at the edge of the display, with the garment itself in solid cel colours. */
+.donanim-kart>.pati-isigi{inset:4% 1% 25%}
+.donanim-kart>.pati-isigi::before,.giyim-kumasi .pati-isigi i~i{display:none}
+.donanim-kart>.pati-isigi i:first-child{left:3%;top:5%}
+.donanim-kart>.pati-isigi i:nth-child(2){left:85%;top:67%}
+.donanim-kart>.pati-isigi i:nth-child(3){display:none}
+.giyim-kumasi .pati-isigi i{left:84%;top:56%;width:10%}
+.donanim .donanim-hedef .prova-karar{position:static;grid-area:2/1;justify-self:center;display:grid;place-items:center;min-width:70px;min-height:42px;padding:3px 12px;background:#bce7bd;border:2px solid #397449;border-radius:24px;box-shadow:0 3px #548762;font-weight:700}
+.donanim .donanim-hedef .prova-karar:disabled{background:#eee4d4;border-color:#aaa091;box-shadow:none}
+.donanim .donanim-kart[data-act=prova][aria-pressed=true]{background:#fff1be;border-color:#b67b24}
+.donanim .donanim-kart[data-giyili=true] .donanim-fiyat{background:#b6e3b8}
+.adim-giysisi{display:none;position:absolute;pointer-events:none}
+.govde>.adim-giysisi{inset:0;z-index:1}
+.adimli .adim-giysisi{display:block}
+.adimli :is(.tur-kedi,.kopek) .giyim-kalibi{visibility:hidden}
+.adim-giysisi>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.adim-giysisi>img+img,.ters-adim .adim-giysisi>img:first-child{display:none}
+.ters-adim .adim-giysisi>img+img{display:block}
+.alan .adimli .giyim-kalibi[style*="--eklem-y"]{clip-path:inset(0 0 calc(100% - var(--eklem-y)) 0)}
+.alan .giysi-kesiti{position:absolute;background-size:100% 100%;background-repeat:no-repeat;pointer-events:none}
+
+.sapka-yeri{position:absolute;pointer-events:none;z-index:5}
+.sapka-yeri .bas-sapkasi{position:absolute;width:72%;height:auto;max-width:none;bottom:79%;transform:translateX(-50%) rotate(-6deg);transform-origin:50% 85%}
+
+.kopek .sapka-yeri .bas-sapkasi{position:absolute}
+.tur-balik:has(.balik-taci)>.butun-balik{grid-area:1 / 1}
+.tur-balik>.balik-taci{pointer-events:none;z-index:2}
+.alan .yoneldi[data-aile=kirpi] .sapka-yeri.yuz{visibility:visible}
+
+.kukla.tur-balik:has(.balik-taci){display:grid;place-items:center;grid-template:100% / 100%}
+
+.portre:has(.portre-ihtiyac){overflow:visible}
+.portre-ihtiyac{position:absolute;right:-5%;bottom:-5%;width:44%;aspect-ratio:1;background:#fff6dc;border:1.5px solid #382b21;border-radius:50%;display:grid;place-items:center;pointer-events:none;z-index:3}
+.portre .portre-ihtiyac .arac{position:static;width:84%;height:84%;object-fit:contain}
+.bahce-kartlari{position:absolute;left:3%;right:32%;bottom:4%;display:flex;justify-content:space-around;align-items:end}
+.cerceve .bahce-karti{position:relative;width:clamp(48px,18cqh,105px);aspect-ratio:1;min-height:0;padding:4px;border:0;box-shadow:none;background:transparent;pointer-events:auto;touch-action:none;cursor:grab}
+.bahce-karti span,.bahce-karti img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.bahce-karti .ortu{position:absolute;inset:0;opacity:0;transition:opacity .18s}
+.bahce-karti.kapali .ortu{opacity:1}.bahce-karti.kapali .icerik{visibility:hidden}
+.bahce-karti.tasiniyor{z-index:4;cursor:grabbing}.bahce-karti.yanlis{opacity:.48}.bahce-karti.buldu{filter:drop-shadow(0 0 4px #78ae56)}
+.hasat-sepeti{position:absolute;bottom:1%;right:4%;width:clamp(80px,27cqh,160px);height:40%;display:grid;align-items:end}
+.hasat-sepeti>img{width:100%;height:78%;object-fit:contain}.hasat-sepeti.yakin{outline:3px dashed #458651;border-radius:35%}
+.siparis{position:absolute;top:-12%;right:10%;width:48%;aspect-ratio:1;background:#fff3d9;border:2px solid #62472e;border-radius:50%;display:grid;place-items:center}
+.siparis img{width:80%;height:80%;object-fit:contain}.siparis [hidden]{display:none}
+[data-oyun=izbul] .hasat-sepeti>img{visibility:hidden}[data-oyun=izbul] .siparis{width:65%;top:28%}
+.cerceve .oda-dekor{position:absolute;z-index:3;bottom:24%;width:clamp(62px,19dvh,145px);height:auto;aspect-ratio:128/92;translate:-50% 0;min-height:0;padding:0;background:none;border:0;box-shadow:none;touch-action:none;cursor:grab;transform-origin:50% 88%}
+.oda-dekor .arac{width:100%;height:100%;pointer-events:none}
+.dekor-kopuk{position:absolute;left:35%;top:38%;width:8%;aspect-ratio:1;border-radius:50%;background:#cbf2ed;border:1px solid #659b9c;opacity:0}
+.cerceve .bakim-sahne .oda-dekor{bottom:1%}
+.cerceve .bakim-sahne:not(.hareket-uyu) .oda-yuvasi.yatak{bottom:0}

@@ -78,6 +78,9 @@ jobs:
           # keystore yalnız bu çalıştırmanın geçici klasörüne açılır, iş bitince silinir
           export MINKINO_KEYSTORE_DOSYA="$RUNNER_TEMP/minkino-yukleme.jks"
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$MINKINO_KEYSTORE_DOSYA"
+          # sesler temel paketten install-time ses paketine (android/sesler): Play'in 200 MB temel paket sınırı
+          rm -rf sesler/src/main/assets && mkdir -p sesler/src/main/assets/public
+          mv app/src/main/assets/public/ses sesler/src/main/assets/public/ses
           ./gradlew --no-daemon bundleRelease -PsurumKodu=$SURUM_KODU -PsurumAdi=$SURUM_ADI
           rm -f "$MINKINO_KEYSTORE_DOSYA"
 

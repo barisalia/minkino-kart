@@ -13,7 +13,6 @@ const SAYFALAR: [string, string][] = [
   ['pasta', './pasta/'],
   ['dedektif', './dedektif/'],
   ['giysin', './giysin/'],
-  ['mino-giysin', './mino-giysin/'],
   ['kino-otobus', './kino-otobus/'],
   ['canlan', './canlan/'],
   ['film', './film/'],

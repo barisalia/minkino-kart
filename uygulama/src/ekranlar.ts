@@ -32,7 +32,7 @@ import { derinlik, menuOyunlari, type OyunKarti } from './oyunlar';
 
 // Yalnız kartların kullandığı klasörler (bütün assets/ pakete adres olarak girmesin)
 const CIZIMLER = import.meta.glob<string>(
-  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/{kapak,park}/*.webp', '!../../assets/film/kapak/kino-lutfen.webp', '!../../assets/film/kapak/kino-lutfen-dikey.webp', '!../../assets/film/kapak/kino-kaydirak-dikey.webp', '../../assets/film/ev/arka-uzak.webp', '../../assets/dedektif/{lamba-devrik,kart-kedi-pati-izi,pamuk-b,kapak}.webp', '../../assets/giysin/{dis-kis-yatay,kart-kino,oda-yatay}.webp', '../../assets/giysin/ikon/corap.webp', '../../assets/mino-giysin/kart-mino.webp', '../../assets/kino-otobus/kapak.webp'],
+  ['../../assets/{hayvanlar,tasitlar,meyveler,pazar,sahne,canlan,parti,parti-sahne,orman-esya}/*.webp', '../../assets/film/park/*.webp', '!../../assets/film/kapak/kino-lutfen.webp', '!../../assets/film/kapak/kino-lutfen-dikey.webp', '!../../assets/film/kapak/kino-kaydirak-dikey.webp', '../../assets/film/ev/arka-uzak.webp', '../../assets/dedektif/{lamba-devrik,kart-kedi-pati-izi,pamuk-b,kapak}.webp', '../../assets/giysin/{dis-kis-yatay,kart-kino,oda-yatay}.webp', '../../assets/giysin/ikon/corap.webp', '../../assets/kino-otobus/kapak.webp', '../../assets/pati-yeni/kapak.webp', '../../assets/kino-ile-sen-sec/kapak.webp', '../../assets/hazirlik/kapak.webp'],
   { eager: true, query: '?url', import: 'default' },
 );
 const adres = (yol: string) => CIZIMLER[`../../assets/${yol}.webp`] ?? '';
@@ -48,7 +48,7 @@ function logo(): HTMLElement {
 }
 
 /** Kartın resmi: oyunun kendi çizimlerinden küçük bir sahne; katmanlar parallax için derinlik (--d) alır */
-function kartResmi(k: OyunKarti): HTMLElement {
+export function kartResmi(k: OyunKarti): HTMLElement {
   const zemin = k.zemin ? adres(k.zemin) : '';
   const kap = h('span.ug-kart-resim', { style: zemin ? `--zemin:url("${zemin}")` : undefined });
   const n = k.katmanlar.length;
@@ -489,3 +489,4 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
   );
   return { el };
 }
+

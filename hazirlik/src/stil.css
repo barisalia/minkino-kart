@@ -1,0 +1,45 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f6d9ac}body{display:grid;place-items:center;font-family:system-ui;user-select:none;-webkit-user-select:none}#oyun{width:min(100vw,210dvh);height:min(100dvh,78vw);position:relative;isolation:isolate;overflow:hidden;background:#f7d5a5;touch-action:none}#fon,#sahne,#kontrol{position:absolute;inset:0}#fon{background-size:cover;background-position:center}#sahne{isolation:isolate}#kontrol{pointer-events:none;display:flex;align-items:flex-start;justify-content:space-between;padding:max(10px,env(safe-area-inset-top)) max(15px,env(safe-area-inset-right)) 0 max(15px,env(safe-area-inset-left))}button{cursor:pointer;font:inherit;padding:0;color:inherit;border:0;background:transparent;touch-action:none}button:focus-visible{outline:4px solid #145db2;outline-offset:3px;border-radius:16%}
+#kontrol button,.disk{pointer-events:auto;border:2px solid #211d24;display:grid;place-items:center;border-radius:50%;box-shadow:0 3px 0 #6b4d43;background:#fff0ca}#kontrol button{width:clamp(44px,6vmin,62px);height:clamp(44px,6vmin,62px)}#kontrol svg{width:65%;height:65%}.piece{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;touch-action:none}.piece>img,.ucan>img,.box>img,.infruit>img{width:100%;height:100%;object-fit:contain;pointer-events:none}.piece>svg{pointer-events:none}.ucan{position:fixed;z-index:10;pointer-events:none;display:grid;place-items:center}.elde{opacity:.2}.hedef{filter:drop-shadow(0 0 3px #fff5a9)}.round .disk{width:min(100%,11vmin);aspect-ratio:1;background:#329d82;box-shadow:0 4px 0 #245f56}.disk svg{width:66%;height:66%}.round:active .disk{translate:0 2px}.secim-isareti{width:32%;aspect-ratio:1;border-radius:50%;background:#66ad87;border:2px solid #222;align-self:start;display:grid;place-items:center}.secim-isareti svg{width:80%}
+.stack{position:relative;display:block;width:100%;height:100%;pointer-events:none}.kat{position:absolute;object-fit:contain;inset:auto;width:85%;height:85%;left:7.5%;bottom:calc(0% + var(--i)*4.7%);transform:rotate(-3deg)}.kat-domates{transform:rotate(8deg);width:78%;left:11%}.kat-marul{width:94%;left:3%;transform:rotate(6deg)}.kat-peynir{transform:rotate(-10deg)}.kat-ekmek:last-child:not(:first-child){transform:translate(2%,-1%) rotate(4deg);width:81%;left:9.5%}.bosluk{width:48%;height:33%;border:2px dashed #98c3ac;border-radius:50%}.bekle{opacity:.51}.box{width:100%;max-height:100%;aspect-ratio:1.56;position:relative;display:block;object-fit:contain}.box>img{position:absolute;inset:0}.inbread,.infruit{position:absolute;width:48%;height:65%;left:10%;top:19%}.infruit{left:69%;top:27%;width:20%;height:47%}.masa{background:#efb56f;border-top:3px solid #271f22;overflow:hidden}.kumas{position:absolute;inset:0 3% 3%;background-color:#fff1d1;background-image:repeating-linear-gradient(0deg,transparent 0 8%,#edbcb0 8% 12%,transparent 12% 17%),repeating-linear-gradient(90deg,transparent 0 7%,#edbcb0 7% 9%,transparent 9% 14%);border-inline:2px solid #493c37;border-bottom:3px solid #493c37;border-radius:0 0 3% 3%}.lokma .stack{mask-image:radial-gradient(circle at 76% 17%,transparent 0 10%,black 11%);transform:rotate(6deg)}.asili img{animation:as 650ms ease-out;transform-origin:50% 5%}.ipucu>img,.ipucu>.stack{animation:bekle 2.8s ease-in-out infinite}.karakter img{animation:nefes 3.6s ease-in-out infinite;transform-origin:50% 99%}.tok img{animation:as 500ms ease-out}.round{min-width:44px;min-height:44px}
+@keyframes bekle{0%,65%,100%{translate:0 0}78%{translate:0 -3%}89%{translate:0 0}}
+@keyframes nefes{0%,100%{scale:1 1}52%{scale:1.003 .994}}
+@keyframes as{0%{rotate:4deg}40%{rotate:-2deg}75%{rotate:1deg}100%{rotate:0deg}}
+.su-istasyonu{width:100%;height:100%;display:grid;place-items:center;touch-action:none}
+.musluk-kolu{transform-box:fill-box;transform-origin:40% 95%;transition:transform .15s ease}
+.akiyor .musluk-kolu{transform:rotate(12deg)}
+.sirt-cantasi{position:relative;display:block;height:100%;max-width:100%;aspect-ratio:.84}
+.sirt-cantasi>img{width:100%;height:100%;object-fit:contain;position:relative}
+.cep-sise{position:absolute;right:-4%;top:45%;width:24%;height:33%;rotate:8deg}
+.pasif{pointer-events:none}
+.portre-alani{container-type:size}
+.elde:is([data-action="meyve-isir"],[data-action="bir-yudum"],[data-action="ye"]){opacity:0}
+.sofra-portresi{position:relative;display:block;width:min(100cqw,calc(100cqh * var(--oran)));aspect-ratio:var(--oran)}
+.sofra-portresi img{display:block;width:100%;height:100%;object-fit:contain}
+.sofra-portresi [data-id="agiz"]{position:absolute;width:3%;height:3%;transform:translate(-50%,-50%)}
+.inbread>svg,.infruit>svg{display:block;width:100%;height:100%}
+.piece:has(>.box){container-type:size}
+.piece>.box{width:min(100cqw,calc(100cqh * 1.5496));aspect-ratio:640 / 413}
+.piece[aria-hidden="true"]{pointer-events:none}
+.kapandi .sirt-cantasi{animation:oturdu .4s ease-out}
+@keyframes oturdu{0%{transform:translateY(-3%)}60%{transform:translateY(1%)}100%{transform:none}}
+.serme-yeri{width:91%;height:70%;border:2px dashed #c99e70;border-radius:18%;transform:skew(-8deg)}
+.matara-dolu{container-type:size}
+.dolum-cerceve{position:relative;width:min(100cqw,156.63cqh);aspect-ratio:520/332}
+.dolum-cerceve>svg{display:block}
+.dolum-cerceve>svg>g:last-child{visibility:hidden}
+.matara-kapagi{position:absolute;left:66.5%;top:70%;width:13%;height:20%;min-width:36px;min-height:36px;display:grid;place-items:center}
+.matara-kapagi>svg{width:82%;height:74%;animation:bekle 2s ease-in-out infinite}
+.sise-agzi{position:absolute;left:49%;top:39%;width:14%;height:19%;border-radius:45%}
+@media(max-aspect-ratio:1/1){#oyun{width:100vw;height:100dvh;max-height:175vw}#fon{background-position:center}#fon[data-name=kapak]{background-size:auto 100%;background-position:39% center}.round .disk{width:15vmin}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.piece,.ucan{grid-template:minmax(0,1fr) / minmax(0,1fr)}.piece>img,.ucan>img{min-width:0;min-height:0}.kumas{background:#fff2d4}.kumas::before,.kumas::after{content:"";position:absolute;inset-block:0;width:4%;border-inline:2px solid #dc9d8b;background:#f5c9b2}.kumas::before{left:4%}.kumas::after{right:4%}.kat{bottom:calc(var(--i)*6%);height:81%}.kat-ekmek:last-child:not(:first-child){transform:translate(-1%,-2%) rotate(5deg);width:76%;left:12%}.lokma .stack{mask-image:radial-gradient(circle at 70% 12%,transparent 0 13%,black 14%)}
+
+/* Resimli oyuncakların kendi silueti aynı zamanda düğmenin yüzeyidir. */
+.oyuncak-dugme{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+#kontrol button:has(.oyuncak-dugme),.round .disk:has(.oyuncak-dugme),.ders-sonu button:has(.oyuncak-dugme),.ders-giris .defter-ac.et-zil,.ders-giris .zil-ileri:has(.oyuncak-dugme),.et-masa .et-ileri:has(.oyuncak-dugme){background:transparent;border:0;box-shadow:none}
+#kontrol button:has(.oyuncak-dugme){width:clamp(46px,8vmin,70px);height:clamp(46px,8vmin,70px);padding:3px}
+#kontrol button:active .oyuncak-dugme,.round:active .oyuncak-dugme,.et-masa button:active .oyuncak-dugme,.ders-sonu button:active .oyuncak-dugme{transform:translateY(2px) scale(.95)}
+.et-masa .et-son{align-items:center;gap:clamp(12px,3vw,35px)}
+.et-masa .et-son .et-ileri,.et-masa .et-onay .et-ileri{width:clamp(50px,12vmin,102px);height:clamp(46px,10vmin,80px);max-height:100%;padding:2px}
+.et-masa .et-son .oyuncak-dugme,.et-masa .et-onay .oyuncak-dugme{object-fit:contain;width:100%;height:100%}
+.ders-giris .et-zil .kucuk-kitap .oyuncak-dugme,.ders-giris .zil-ileri .oyuncak-dugme{width:95%;height:95%}

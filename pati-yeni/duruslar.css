@@ -1,0 +1,43 @@
+/* Pet states follow the joint that owns them, including its alpha silhouette. */
+.kirli-tuy {--camur:url('../assets/pati-yeni/nesneler/kuru-camur.webp')}
+.camur-katmani {pointer-events:none;object-position:-10000px -10000px;mask:var(--sil) center / 100% 100% no-repeat}
+.kirli-tuy .govde .boya:not(.cizgi)::after,.kirli-tuy .kafa .boya:not(.cizgi)::after,.kirli-tuy .kulak .boya.tuy::after {content:'';position:absolute;inset:0}
+.kirli-tuy .govde .boya::after,.camur-katmani.beden,.camur-katmani.butun-balik {background:var(--camur) 24% 66% / 47% auto no-repeat,var(--camur) 84% 88% / 34% auto no-repeat}
+.kirli-tuy .kafa .boya::after,.camur-katmani.yuz {background:var(--camur) 5% 75% / 26% auto no-repeat,var(--camur) 72% 19% / 19% auto no-repeat}
+.kirli-tuy .kulak.sol .boya::after {background:var(--camur) 35% 75% / 74% auto no-repeat}
+.kirli-tuy .tur-balik>img {grid-area:1/1}
+.karni-gurulduyor :is(.kafa-grup,.yuz){transform-origin:50% 84%;animation:ac-bak 3.8s ease-in-out infinite}
+.karni-gurulduyor :is(.govde,.beden,.butun-balik){transform-origin:50% 92%;animation:ac-karin 3.8s ease-in-out infinite}
+@keyframes ac-bak{0%,100%{transform:translateY(3%) rotate(-4deg)}28%,62%{transform:translateY(10%) rotate(7deg)}45%{transform:translateY(12%) rotate(8deg)}}
+@keyframes ac-karin{0%,30%,68%,100%{transform:scale(1,1)}38%,52%{transform:scale(.87,.94) skewX(-2deg)}44%,58%{transform:scale(.97,1.02) skewX(2deg)}}
+.karni-gurulduyor :is(.rig,.kukla-ic)::after{content:'';position:absolute;pointer-events:none;top:72%;left:20%;width:5%;height:9%;border-left:2px solid #4a332a;border-radius:65%;outline:0;box-shadow:-4px 1px 0 -2px #4a332a;animation:karin-sesi 3.8s ease-in-out infinite}
+@keyframes karin-sesi{0%,26%,66%,100%{opacity:0;transform:scale(.6)}38%,54%{opacity:1;transform:scale(1.3) rotate(-12deg)}46%{opacity:.4}}
+.susadi:not(.hareket-uyu) :is(.kafa-grup,.kukla-ic){transform-origin:50% 85%;animation-name:susuz-soluk;animation-duration:2.6s;animation-iteration-count:infinite}
+@keyframes susuz-soluk{0%,70%,100%{scale:1;translate:0 1%}20%,49%{scale:1.015 .966;translate:0 3%}34%,60%{scale:.99 1}}
+.karni-gurulduyor.susadi .kafa-grup{animation-name:ac-bak;animation-duration:3.8s}
+.cerceve .uyku-alt{position:absolute;bottom:3%;right:3%;background:none;border:0;padding:0;z-index:5}
+.uyku-alt button{height:clamp(44px,12dvh,80px);aspect-ratio:1;padding:6px;background:#e2d5f2;border-radius:24%}.uyku-alt img{width:100%;height:100%;object-fit:contain}
+.cerceve .sergi-araclar .sergi-dugme:has(b){display:grid;grid-template-rows:minmax(0,1fr) auto;gap:1px;padding:3px 6px 4px;font:600 clamp(12px,2.7dvh,20px)/1 Fredoka,sans-serif;color:#302832;overflow:visible}
+.cerceve .sergi-araclar .yeni-dost{background:#b7e5c9;border-color:#394e44;box-shadow:0 3px #638e76}
+.cerceve .sergi-araclar .dukkan{border-color:#614335;background:#ffcf9d}
+.cerceve .portreler{padding:3px 5px;gap:5px;background:#fff0d7;border:2px solid #664e40;border-radius:24px;box-shadow:0 3px #af805b}
+.cerceve .portreler .portre{border:1.5px solid #99765a;border-radius:35%;background:#ffe6bb;box-shadow:none}
+.cerceve .portreler .portre[aria-pressed=true]{background:#bce5ca;border:2px solid #385644}
+.cerceve .portre.ekle{background:#d7eddb}.portre.ekle i{position:absolute;right:0;bottom:0;background:#fff9e5;border:1px solid #394e44;border-radius:50%;width:1em;font:700 clamp(13px,3dvh,21px)/1 Fredoka,sans-serif;color:#34503e}
+@media(prefers-reduced-motion:reduce){.karni-gurulduyor :is(.kafa-grup,.yuz){animation:none;transform:translateY(7%) rotate(6deg)}.karni-gurulduyor :is(.govde,.beden,.butun-balik),.susadi :is(.kafa-grup,.kukla-ic),.karni-gurulduyor :is(.rig,.kukla-ic)::after{animation:none}}
+.cerceve .sergi-araclar .sergi-dugme:has(b){flex:none;width:clamp(82px,12.8vw,154px);height:clamp(46px,11.7dvh,100px);grid-template:1fr / minmax(0,.95fr) auto;gap:3px;align-items:center;padding:4px 6px}
+.sergi-araclar .sergi-dugme b{white-space:nowrap}
+.cerceve .portre>.kopek{top:4%;left:-19%;width:138%;height:135%}
+.kirli-tuy .govde .boya::after,.camur-katmani.beden,.camur-katmani.butun-balik{background-size:52% 32%,36% 22%}
+.kirli-tuy .kafa .boya::after,.camur-katmani.yuz{background-size:28% 15%,20% 10%}
+.kirli-tuy .kulak.sol .boya::after{background-size:76% 23%}
+.bakim-onayi{display:grid;place-items:center;position:absolute;right:9%;top:15%;width:clamp(35px,9dvh,72px);aspect-ratio:1;border-radius:50%;background:#24764c;border:2px solid #17372a;color:white;font:700 clamp(24px,7dvh,52px)/1 Fredoka,sans-serif;pointer-events:none;animation:onay-gel .28s ease-out}
+@keyframes onay-gel{from{scale:.65;opacity:0}75%{scale:1.08}}
+.hasta-pati :is(.kukla,.kopek){filter:saturate(.68)}
+.hasta-pati:not(.hareket-uyu) :is(.kukla-ic,.rig,.butun-balik){transform-origin:50% 94%;animation:pati-urunme 3s ease-in-out infinite}
+@keyframes pati-urunme{0%,55%,100%{rotate:-4deg}60%,70%,80%{rotate:-5deg;translate:-1% 1%}65%,75%,85%{rotate:-3deg;translate:1% 0}}
+.hareket-uyu .hasta-pati :is(.kukla-ic,.rig,.butun-balik){animation:none}
+.cerceve .goz.tedavi{position:relative;background:#e0f1dc}
+.goz.tedavi .para-miktar{position:absolute;right:1%;bottom:1%;padding:1px 3px;font-size:clamp(12px,3dvh,20px);background:#fff5cf;border-radius:10px}
+.goz.tedavi .para-miktar img{width:1em;height:1em}
+@media(prefers-reduced-motion:reduce){.bakim-onayi,.hasta-pati:not(.hareket-uyu) :is(.kukla-ic,.rig,.butun-balik){animation:none}.hasta-pati :is(.kukla-ic,.rig){rotate:-4deg}}

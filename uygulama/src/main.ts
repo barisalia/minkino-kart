@@ -7,13 +7,14 @@ import './uygulama.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
 import { geriDinle } from '../../src/kabuk/yon';
 import { ekranKaydet, Uygulama } from '../../src/uygulama';
-import { ayarlarEkrani, menuEkrani } from './ekranlar';
+import { ayarlarEkrani } from './ekranlar';
+import { yatayMenuEkrani } from './yatay-menu';
 import { uykuAcilisi, uykuEkrani, uykuOdadaMi } from './uyku';
 
 // Ana menü sitenin kökünde (/); seslendirme kayıtları kökteki ses/ klasöründe, diğer uygulamalarla ortak
 sesKokuAyarla('./ses/');
 
-ekranKaydet('menu', menuEkrani);
+ekranKaydet('menu', yatayMenuEkrani);
 ekranKaydet('ayarlar', ayarlarEkrani);
 // Uyku Vakti (uyku.ts; bayrak UYKU_ACIK, deneme ?uyku=1&saat=21)
 ekranKaydet('uyku', uykuEkrani);

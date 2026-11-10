@@ -1,0 +1,86 @@
+/* Pet market */
+.sayfa-magaza:has(.pati-market){background:#fff1d4 url('../assets/pati-yeni/ortam/dost-evi.webp') center/100% 100% no-repeat}
+.sayfa-magaza:has(.pati-market) header{position:absolute;z-index:4;inset:0 0 auto;background:transparent;border:0;min-height:0;gap:9px;padding:clamp(5px,2vh,16px) max(2vw,env(safe-area-inset-left))}
+.sayfa-magaza:has(.pati-market) header h1{position:absolute;left:50%;translate:-50% 0;color:#4a362b;background:#fff2d4;border:2px solid #88694e;border-radius:24px;padding:.1em .85em;font-size:clamp(19px,4.5vh,34px);line-height:1.1}
+.pati-market{position:relative;flex:1;min-height:0}
+.market-ust{position:absolute;inset:15% 6% auto;display:flex;justify-content:center;align-items:center;gap:8px}
+.cerceve .raf-filtre{background:#fff2d6;border:1.6px solid #967a58;border-radius:22px;padding:.35em .7em;font-size:clamp(12px,2.5vh,17px);min-height:30px}
+.urun-rafi{position:absolute;inset:29% 8% 17%;display:flex;align-items:stretch;justify-content:center;gap:clamp(7px,1.6vw,22px)}
+.urun-kart{width:23%;display:grid;grid-template-rows:minmax(0,1fr) auto auto auto;place-items:center;padding:2vh .8vw 1.4vh;background:#fff6df;border:2px solid #9c7954;border-radius:clamp(14px,3vh,24px);box-shadow:0 3px #bf925f;color:#503a2c}
+.urun-cizim{height:100%;width:90%;min-height:0}.urun-cizim .arac{width:100%;height:100%;object-fit:contain}
+.urun-kart strong{font-size:clamp(15px,3.3vh,25px);font-weight:600;line-height:1.05;text-align:center}.urun-kart small{font-size:clamp(11px,2.5vh,17px);padding:2px 0;white-space:nowrap}
+.cerceve .urun-kart button,.cerceve .cantaya-don{display:flex;align-items:center;justify-content:center;gap:.3em;min-height:32px;border:2px solid #698466;box-shadow:0 2px #9db88b;background:#c6e9b8;border-radius:24px;font-size:clamp(14px,3vh,21px);padding:.1em .7em}
+.urun-kart button:disabled{background:#eee3cb;color:#816d57;box-shadow:none;cursor:default}
+.cerceve .market-alt{position:absolute;inset:auto 5% 2%;background:none;border:0;box-shadow:none;min-height:0;padding:0;justify-content:center}
+.market-alt .cantaya-don{position:absolute;right:0}
+.takili-papyon{position:absolute;z-index:2;left:50%;top:61%;translate:-50% -50%;width:17%;height:13%;object-fit:contain;pointer-events:none}.turu-kedi,.turu-tavsan{left:49%;top:62%}
+.frizbi-kontrol{position:absolute;bottom:2%;left:50%;translate:-50% 0;background:#fff2d6;border:2px solid #9a7657;border-radius:18px;display:flex;align-items:center;gap:8px;padding:4px 9px;z-index:3;white-space:nowrap;font-size:clamp(12px,2.5vh,18px);color:#513c2f}
+.atis-seridi{position:relative;width:clamp(70px,15vw,170px);height:15px;border-radius:10px;background:#e4caaa;border:1.5px solid #937759}.atis-seridi i{position:absolute;top:0;bottom:0;width:40%;background:#87c789;border-radius:8px}.atis-seridi em{position:absolute;inset:-4px auto -4px 0;width:4px;background:#583b32;border-radius:4px}
+.frizbi-kontrol button{min-height:31px;padding:.14em .6em;background:#ffd29d;border-color:#8c6c50}
+.ucan-frizbi{position:absolute;left:18%;bottom:19%;width:clamp(55px,10vw,110px);height:18%;object-fit:contain;pointer-events:none;z-index:2}
+
+.pati-market .urun-rafi{inset:29% 5% 4%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:minmax(82px,25dvh);align-content:start;gap:8px;padding:4px 7px 10px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.cerceve .urun-rafi .urun-kart{width:100%;min-width:0;height:100%;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;justify-items:center;padding:5px;background:#fff4df;border:2px solid #907459;border-radius:16px}
+.urun-kart>.arac{width:90%;height:100%;object-fit:contain}.urun-kart .para-miktar img{width:1em;height:1em}.pati-market>.cantaya-don{position:absolute;top:16%;left:4%}
+@media(max-width:600px){.pati-market .urun-rafi{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (orientation:landscape) and (min-width:601px){.pati-market .urun-rafi{grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:max(48px,calc((100% - 16px)/3))}}
+@media (max-width:600px){.pati-market .urun-rafi{grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:max(48px,calc((100% - 24px)/4))}}
+.urun-kart{position:relative}
+.rafta-istek,.rafta-stok{position:absolute;top:3px;pointer-events:none}
+.rafta-istek{left:4px;width:clamp(15px,3.8dvh,28px);aspect-ratio:1}.rafta-istek .arac{width:100%;height:100%;object-fit:contain}
+.rafta-stok{right:4px;padding:1px 4px;border:1px solid #618e78;border-radius:9px;background:#d8f0db;color:#284a3e;font:600 clamp(10px,2.4dvh,15px)/1 Fredoka,sans-serif}
+.cantaya-eklendi{animation:urun-alindi .45s ease-out}
+@keyframes urun-alindi{30%{border-color:#397855;background:#d4ecd5}}
+@media(prefers-reduced-motion:reduce){.cantaya-eklendi{animation:none}}
+.pati-market .cesit-vitrini{inset:28% 4% 2%;gap:1dvh}
+.pati-market .tur-seridi{padding:1px 5px}.pati-market .tur-sec{height:clamp(32px,8dvh,68px);min-height:32px}
+.pati-market .market-ust{z-index:3}
+.donanim{position:absolute;inset:28% 4% 3%;display:grid;grid-template-rows:25% minmax(0,1fr);gap:2%}
+.donanim-hedef,.donanim-raf{display:flex;justify-content:center;align-items:center;gap:2%}
+.donanim-hedef button{padding:2px 12px}.donanim-portre{height:100%;aspect-ratio:1;container-type:size}
+.donanim-portre>.kopek{width:100%;height:100%}.donanim-hedef b{background:#fff2da;border-radius:12px;padding:.12em .6em}
+.cerceve .donanim-kart{width:min(26%,30dvh);height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto auto auto;gap:2px;justify-items:center;background:#fff3de;border-radius:18px;padding:5px;font-size:clamp(13px,3.1dvh,24px)}
+.donanim-kart>.arac{width:95%;height:100%;object-fit:contain}.donanim-kart small{font-size:.8em;color:#36594d}.donanim-kart:disabled{color:#564d43}
+.cerceve .haftalik-sofra{background:#ffddb2}.haftalik-sofra small{position:absolute;right:0;bottom:0;color:#357454;background:#fff6d3;border-radius:50%;padding:0 .2em}.haftalik-sofra:disabled{opacity:.55}
+.sofra-sevinci:after{content:'';position:absolute;pointer-events:none;right:11%;top:24%;height:20%;width:24%;background:url('../assets/pati-yeni/ortam/kalp.webp') center/contain no-repeat;animation:sofra-kalp 1.45s both}
+@keyframes sofra-kalp{0%{scale:.2;opacity:0}25%,60%{scale:1;opacity:1}100%{translate:0 -80%;opacity:0}}
+.oda-yuvasi{position:absolute;bottom:14%;left:4%;width:24%;height:31%;pointer-events:none}.oda-yuvasi .arac{width:100%;height:100%;object-fit:contain}
+.rig>.giyili,.kukla-ic>.giyili{position:absolute;pointer-events:none;z-index:2;left:48%;translate:-50% 0;top:59%;width:32%;height:14%;object-fit:fill}
+.rig>.giyili-yelek,.kukla-ic>.giyili-yelek{width:35%;height:22%}
+:is(.tur-geko,.tur-kaplumbaga) .giyili{left:46%;top:64%}
+.pati-market .market-ust .mekan-sec{flex-wrap:nowrap;gap:4px;padding:2px 5px}
+.cerceve .pati-market .mekan-sec button{width:clamp(47px,13dvh,86px);height:clamp(32px,9dvh,62px);min-height:0;display:grid;place-items:center;padding:2px 6px;border-radius:14px}
+.pati-market .mekan-sec img{display:block;width:100%;height:100%;min-height:0;object-fit:contain}
+.cesit-sec{position:relative}
+.cesit-sec .derece{position:absolute;top:5px;left:6px;display:grid;place-items:center;width:clamp(19px,5.5dvh,33px);aspect-ratio:1;border:2px solid #705336;border-radius:50%;background:#fff8dd;color:#4c3825;font-weight:700;font-size:clamp(13px,3.3dvh,23px);line-height:1;z-index:1}
+.cerceve .market-ust .mekan-sec{border-radius:18px;background:#fff7de;gap:5px}
+.cerceve .market-ust .mekan-sec button{border:1.5px solid #8a7060;box-shadow:0 2px #907559;background:#ffe2bd}
+.cerceve .market-ust .mekan-sec button:nth-child(2){background:#c8ebd5}
+.cerceve .market-ust .mekan-sec button:nth-child(3){background:#ffdcdf}
+.cerceve .market-ust .mekan-sec button:nth-child(4){background:#ded9fb}
+.cerceve .market-ust .mekan-sec [aria-pressed=true]{border:2px solid #304f43;box-shadow:inset 0 -3px #658978}
+@media(prefers-reduced-motion:no-preference){
+ .cerceve :is(.goz,.buyuk-dugme,.sergi-dugme,.mekan-sec button,.cesit-sec,.tur-sec,.urun-kart,.donanim-kart):enabled{transition:scale 110ms ease-out}
+ .cerceve :is(.goz,.buyuk-dugme,.sergi-dugme,.mekan-sec button,.cesit-sec,.tur-sec,.urun-kart,.donanim-kart):enabled:active{scale:.93 .90}
+ .mekan-sec [aria-pressed=true] img{animation:sekme-sicra .32s ease-out}
+ .bakim-rafi .raf-ici{animation:raf-acilis .20s ease-out}
+ @keyframes sekme-sicra{0%{transform:scale(.87)}55%{transform:translateY(-2px) rotate(-5deg) scale(1.08)}100%{transform:none}}
+ @keyframes raf-acilis{from{transform:translateY(7px);opacity:.8}to{transform:none;opacity:1}}
+}
+@media(prefers-reduced-motion:reduce){.cerceve button:enabled:active{outline:2px solid #624d3b;outline-offset:-3px}.sofra-sevinci:after{animation:none}}
+.cerceve .bakim-sahne .yatak{position:absolute;left:4%;bottom:18%;width:23%;height:26%;padding:0;border:0;background:none;box-shadow:none;opacity:1;pointer-events:auto}
+.cerceve .bakim-sahne.ortam-bahce .yatak,.cerceve .bakim-sahne.ortam-golet .yatak{left:73%}
+.yatak .arac{width:100%;height:100%;object-fit:contain}
+.cerceve .yatak.hedef-yatak{outline:3px dashed #337652;outline-offset:2px;border-radius:38%}
+.cerceve .bakim-sahne.hareket-uyu .yatak{left:32%;bottom:13%;width:36%;height:31%;pointer-events:none}
+.cerceve .bakim-sahne.hareket-uyu .buyuk{left:50%;bottom:23%;width:min(32%,43dvh);height:41%;transform-origin:50% 90%}
+.bakim-sahne.hareket-uyu .platform{visibility:hidden}
+.sevgi-kalbi{position:absolute;z-index:4;right:10%;top:16%;width:14%;object-fit:contain;pointer-events:none}
+@media(prefers-reduced-motion:no-preference){
+ .sevgi-kalbi{animation:oksama-kalp .72s ease-out both}
+ @keyframes oksama-kalp{0%{scale:.4;opacity:.1}24%{scale:1.13;opacity:1}75%{scale:1}100%{translate:6px -16px;opacity:0}}
+ .hareket-uyu .buyuk{animation:yatak-yerles .48s ease-out}
+ @keyframes yatak-yerles{0%{transform:translateY(-10%) rotate(-4deg)}70%{transform:scale(1.03,.95)}}
+}
+.yatak-kenari{position:absolute;left:32%;bottom:13%;width:36%;height:31%;clip-path:inset(68% 0 0);z-index:2;pointer-events:none}
+.yatak-kenari img{width:100%;height:100%;object-fit:contain}

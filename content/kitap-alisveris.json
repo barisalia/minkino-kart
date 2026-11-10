@@ -1,0 +1,253 @@
+{
+  "id": "alisveris",
+  "baslik": "Kino Babasıyla Markette",
+  "kapak": {
+    "renk": "#E9CF91",
+    "tarif": "Kino resimli listesini babasına gösteriyor. Küçük arabası marketin kapısında.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino Babasıyla Markette."
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Üç küçük resim",
+      "renk": "#F0DFC3",
+      "tarif": "Annesi elma, süt ve ekmek çizdiği listeyi Kino’ya uzatıyor. Babası bez çantaları hazırlıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kahvaltıdan sonra babası ekmek sepetini kaldırdı. Dibinde birkaç kırıntı kalmıştı. Annesi de buzdolabında sütle elmanın yerini boş buldu."
+        },
+        {
+          "kim": "baba",
+          "metin": "Ben markete gidiyorum. Benimle kim gelir?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Ben! Ama ne alacağımızı nasıl hatırlayacağım?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Annesi bir kâğıda kırmızı bir elma çizdi. Altına bir kutu süt, en alta da bir ekmek. Kino parmağını üç resmin üstünde gezdirip kâğıdı cebine koydu."
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Bayraklı araba",
+      "renk": "#F0DFC3",
+      "tarif": "Kino kendine uygun küçük arabanın kolunu tutuyor. Lokum büyük arabanın çocuk koltuğunda.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kapılar açılınca Kino iki sıra araba gördü. Büyüklerin kolları neredeyse omzuna geliyordu. Yanlarındaki küçük arabanınsa turuncu bir bayrağı vardı. Kino kolunu tuttu. Tam boyuna göreydi!"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Düt düüt! Lokum da geliyor!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum babasının arabasındaki koltuğa kurulmuştu. Kino cebine hafifçe vurdu. Liste oradaydı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Elmaları ben bulacağım. Peşimden gelin!"
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Üç portakal yolda",
+      "renk": "#F0DFC3",
+      "tarif": "Küçük araba alçak sepete dokunmuş. Üç portakal yere yuvarlanırken Kino duruyor, babası eğiliyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino arabasını hızlandırdı. Turuncu bayrak köşeyi döndü, ama arabanın önü alçak bir sepete dokundu. Tık! Üç portakal üç ayrı yöne yuvarlandı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Baba, bak! Toplar kaçtı!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "İlkini babası yakaladı. Kino ikincisini raftan, üçüncüsünü de küçük arabasının altından aldı. Portakalları sepete geri koydular."
+        },
+        {
+          "kim": "baba",
+          "metin": "Gel, şu köşeyi bu sefer yan yana yürüyerek dönelim."
+        },
+        {
+          "kim": "kino",
+          "metin": "Böyle daha kolay duruyor!"
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Beşinci elma",
+      "renk": "#F0DFC3",
+      "tarif": "Beş kırmızı elmanın poşeti terazide. Kino elma resimli düğmeye uzanıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino listeyi açtı. İlk resmin tıpkısı karşı raftaydı. Babası poşetin ağzını açtı, Kino kırmızı elmaları birer birer içine bıraktı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bir anneme, bir babama, bir Lokum’a, bir Mino’ya… Beşincisi de bana!"
+        },
+        {
+          "kim": "baba",
+          "metin": "Şimdi tartalım. Sence hangi düğmeye basacağız?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino terazideki elma resmini bulup bastı. Vızz, tık! Makinenin kenarından küçük, beyaz bir etiket çıktı."
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Beni bırakmıyor",
+      "renk": "#F0DFC3",
+      "tarif": "Beyaz etiket Kino’nun parmağına kıvrılmış. Kino kalkık patisine şaşkınlıkla bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino etiketi çekti. Tam poşete götürürken bir köşesi kıvrılıp parmağına yapıştı. Öbür eliyle köşeyi kaldırdı. Bu kez de başparmağı etikete takıldı. Elini sallayınca etiket de onunla sallandı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, poşet burada, etiket burada. İkisini bir türlü buluşturamıyorum!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Babası elini uzattı. Kino bu sefer parmaklarını kıpırdatmadan bekledi."
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "İki ucundan",
+      "renk": "#F0DFC3",
+      "tarif": "Kino iki ucundan tuttuğu barkod etiketini elma poşetinin ortasına düz biçimde yapıştırıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babası kıvrılan kâğıdı yavaşça çıkardı. Poşet hâlâ terazideydi. Kino elma düğmesine bir daha bastı."
+        },
+        {
+          "kim": "baba",
+          "metin": "Bir köşesini bu elinle tut. Öbür köşesini de öteki elinle. Şimdi poşete yaklaştır."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino iki ucunu tuttu. Önce ortası poşete değdi. Sonra iki kenarını sıvazladı. Ellerini kaldırınca etiket olduğu yerde kaldı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, bak! Bu kez parmağım benimle geldi, etiket gelmedi!"
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Raftaki süt",
+      "renk": "#F0DFC3",
+      "tarif": "Babası Kino’yu kaldırıyor. Kino süt kutusuna uzanırken küçük arabada etiketli elma poşeti var.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino listedeki ikinci resmi buldu. Süt kutuları bir üst raftaydı. Ayaklarının ucuna yükseldi ama parmakları rafa ancak değdi."
+        },
+        {
+          "kim": "baba",
+          "metin": "Kucağıma gelmek ister misin?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Babası onu kaldırınca Kino bir kutuyu iki eliyle aldı. Sütü elmaların yanına koydular. Fırın köşesinde de bir ekmeği kâğıt torbaya yerleştirdiler. Lokum burnunu torbaya yaklaştırdı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Mmm! Sıcak ekmek!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Elma, süt, ekmek. Üçü de tamam!"
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "O bip sesi",
+      "renk": "#F0DFC3",
+      "tarif": "Kino elma poşetinin etiketini kasa camına çeviriyor. Sütle ekmek bandın öbür ucunda.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino önce sütü, sonra ekmeği, en son elmaları siyah banda dizdi. Ellerini çekince üçü de kasaya doğru yola çıktı. Kasiyer abla sütle ekmeği okuttu. Elmaları Kino’ya bıraktı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Benim yapıştırdığım etiketle mi?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kasiyer abla küçük camı gösterdi. Kino poşeti iki eliyle kaldırıp etiketi cama çevirdi. Bip!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Duydun mu baba? O ses benim elmalardan geldi!"
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Kimin elması?",
+      "renk": "#F0DFC3",
+      "tarif": "Evde Kino, Mino ve Lokum yıkanmış kırmızı elmaları paylaşıyor. Küçük mavi bez çanta sandalyede.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Eve dönerken elmalar Kino’nun mavi bez çantasındaydı. Kapıda annesiyle Mino onları karşıladı. Kino listeyi annesine uzattı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Üçüne de bakabilirsin anne. Hepsi burada!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Elmaları birlikte yıkadılar. Kino ikisini anne babası için kâsede bıraktı. Sonra Mino’ya ve Lokum’a birer elma uzattı."
+        },
+        {
+          "kim": "mino",
+          "metin": "Beni de mi saydın?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Tabii! Seninki dördüncüydü."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino beşinci elmadan bir ısırık aldı. Mutfakta bu kez bip sesi yerine kocaman bir kütür sesi duyuldu."
+        }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Kino okumadan listesine nasıl baktı?",
+      "Etiketi nasıl tutunca poşete yapıştırabildi?",
+      "Sen markete gidecek olsan listene hangi üç resmi çizerdin?"
+    ],
+    "not": "Birlikte üç eşyanın resmini çizip evde resimli listenizle alışveriş oyunu oynayabilirsiniz."
+  }
+}

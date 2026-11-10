@@ -1,0 +1,346 @@
+{
+  "id": "ustkat",
+  "baslik": "Üst Kata Kim Geldi?",
+  "kapak": {
+    "renk": "#A3D7CD",
+    "tarif": "Çocuklar Bulut’un oyuncak kutusunu açıyor.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Üst Kata Kim Geldi?"
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Sokaktaki Büyük Kamyon",
+      "tarif": "Sabah Çınar Apartmanı’nın önünde duran büyük mavi nakliye kamyonu. İki görevli kamyonun arkasından kahverengi karton kolileri apartman kapısına taşıyor. Kino, Mino ve Lokum birinci kat balkonundan merakla aşağı bakıyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Cumartesi sabahı Çınar Apartmanı’nın önüne mavi bir kamyon yanaştı. Arka kapakları açılınca Kino balkona koştu. Kamyonun içi kahverengi kutularla doluydu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne, bak! Bizim eve kutular geliyor!"
+        },
+        {
+          "kim": "anne",
+          "metin": "Üçüncü kata yeni komşularımız taşınıyor. Eşyalarını getirmişler."
+        },
+        {
+          "kim": "kino",
+          "metin": "Koca bir ev kutuların içine nasıl sığar ki?"
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Merdivendeki Yabancı Sesler",
+      "tarif": "Apartman merdiveni. Kino ve karşı komşusu Mino daire kapısını aralamış, üst kattan gelen ayak seslerini ve yankılanan konuşmaları dinliyor. Lokum da bacaklarının arasından başını uzatmış.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Öğlene kadar merdivenlerden pat-pat ayak sesleri geldi. Üst katın kapısı her açıldığında içeriden boş oda yankısı duyuluyordu."
+        },
+        {
+          "kim": "mino",
+          "metin": "Ben merdivenden çıkarken gördüm! Bizim boyumuzda, beyaz yünlü bir çocuk da var. Ama hiç konuşmadı, hemen kapının arkasına geçti."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kutu çocuk!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Neden saklandı acaba? Bizim apartmanı sevmedi mi?"
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Hoş Geldin Tabağı",
+      "tarif": "Mutfak. Anne Defne ve Babaanne Nazlı çiçek desenli porselen bir tabağa ılık elmalı dilimler diziyor. Kino taburesine çıkmış tabağa bakıyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Mutfak tarçın kokuyordu. Babaanne Nazlı ile annesi, çiçekli tabağa ılık elmalı kek dilimlerini diziyordu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Babaanne, bize misafir mi gelecek?"
+        },
+        {
+          "kim": "babaanne",
+          "metin": "Bugün misafir biziz. Düşünsene, insan taşındığı gün çatalının bile hangi kutuda olduğunu unutabilir. Hiç değilse keki hazır olsun."
+        },
+        {
+          "kim": "kino",
+          "metin": "Tabağı ben taşıyabilir miyim? İki elimle tutarım."
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Yankılanan Boş Salon",
+      "tarif": "Üçüncü katın kapısı açılmış. Yeni komşuları Pınar Teyze onları gülümseyerek karşılıyor. Arkadaki salonda henüz halı serilmemiş; her yerde birbirinin aynısı kapalı kahverengi koliler duruyor. Köşedeki bir kolinin üstünde Bulut tek başına oturuyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Üçüncü katta zili çaldılar. Pınar Teyze kapıyı açınca Kino çiçekli tabağı iki eliyle uzattı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Hoş geldiniz! Tabağınız kolide kalmıştır diye size kek getirdik."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Pınar Teyze gülümseyip onları içeri buyur etti. Salonda henüz halı da perde de yoktu. Kino’nun adımları yankılandı. Bir kutunun üstünde beyaz yünlü bir çocuk oturuyordu."
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Birbirine Benzeyen Kutular",
+      "tarif": "Kino ve Mino, Bulut’un yanına yaklaşmış. Bulut’un elinde tek bir mavi oyuncak araba var ama etrafındaki bütün kahverengi kolilerin üstünde yalnızca yetişkin el yazısıyla siyah yazılar yazıyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino ile Mino yavaşça Bulut’un yanına yürüdüler. Bulut elindeki küçük mavi arabayı göğsüne bastırmıştı; kulakları düşüktü."
+        },
+        {
+          "kim": "kino",
+          "metin": "Merhaba, ben Kino. Alt katta oturuyorum. Bahçede arabalarımızı sürelim mi?"
+        },
+        {
+          "kim": "bulut",
+          "metin": "Benim öbür arabalarım ve tahta garajım kayboldu. Hepsi bu kahverengi kutuların içinde ama bütün kutular birbirinin aynısı!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino etrafına baktı. Gerçekten de odadaki yirmi kutunun yirmisi de aynı renkti."
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Okunmayan Yazılar",
+      "tarif": "Mino bir kolinin üstündeki siyah el yazısını parmağıyla gösteriyor. Bulut ve Kino yazıya eğilip bakıyorlar ama ikisi de harfleri okuyamadığı için şaşkın duruyorlar.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "mino",
+          "metin": "Bak Bulut! Baban kutuların üstüne bir şeyler yazmış."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Babam okuyunca kolay. Ama ben daha okuyamıyorum ki."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino da başını yana eğip harflere baktı. O da oyuncaklarla yastıkların kutusunu ayıramamıştı."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Eski odamda garajım hep yatağımın yanındaydı. Burada nereye baksam kutu."
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Kino’nun Fikri",
+      "tarif": "Kino parmağını kaldırıp heyecanla Bulut’a ve Mino’ya bir şey anlatıyor. Lokum da en alttaki küçük bir kolinin kenarına tutunmuş.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino anaokulundaki askısını düşündü. Adını okuyamıyordu ama üstündeki küçük güneşi nerede görse tanırdı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bulut, oyuncak kutusuna araba çizsek? Üstünü görünce içini bilirsin!"
+        },
+        {
+          "kim": "bulut",
+          "metin": "Olur ama benim boyalarım da bir kutuda. Hangisinde, bilmiyorum."
+        },
+        {
+          "kim": "kino",
+          "metin": "Benimkiler alt katta. Sen araban için bir renk seç. Hemen geliyorum!"
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Kutu Kutuyu Açıyor",
+      "tarif": "Kino kendi odasından getirdiği renkli pastel boya kutusunu yere açmış. Pınar Teyze ilk kolinin bandını açıp içine bakarken Kino elinde kırmızı boyayla bekliyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino boya kutusuyla geri geldi. Kapağını açıp Bulut’un önüne koydu. Pınar Teyze de dizlerinin üstüne oturdu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Siz yazıyı okur musunuz? Resmini biz yapacağız."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Pınar Teyze ilk kutunun üstündeki yazıyı parmağıyla izledi. Bulut’un oyuncakları!"
+        },
+        {
+          "kim": "bulut",
+          "metin": "Demek garajım burada! Kırmızıyı bana verir misin?"
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Kahverengi Kutudaki Kırmızı Araba",
+      "tarif": "Kino ve Bulut yan yana diz çökmüş, birinci kolinin dış yüzeyine kocaman bir kırmızı araba ve sarı bir top çiziyorlar.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Bulut kırmızı bir araba çizdi. Kino, yanına sarı bir top kondurdu. Pınar Teyze sıradaki kutuyu okudu. Bu kez yastıklarla battaniyelerin sırasıydı."
+        },
+        {
+          "kim": "mino",
+          "metin": "Bunu bana bırakın! Bir yastık, yanına da uykusu gelmiş bir ay…"
+        },
+        {
+          "kim": "bulut",
+          "metin": "Gözlerim kapalıyken bile yatağımı bulacağım neredeyse!"
+        }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "Lokum’un Terlik Kutusu",
+      "tarif": "Lokum kapının yanındaki alçak bir kolinin önüne oturmuş, mor boyayla kolinin üstüne iki tane küçük yuvarlak terlik şekli çiziyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Pınar Teyze kapının yanındaki kutuyu gösterdi. Terliklerle ayakkabılar oradaydı. Kutu öyle alçaktı ki Lokum oturduğu yerden önüne yetişiyordu."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Teylik kutusu! Ben çizeceğim!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Mor boyayı kavradı. İki terlik çizdi. Birinin burnu yukarı bakıyordu, ötekininki aşağı."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Benim terliklerin biri yukarı kata, biri aşağı kata gidiyor!"
+        }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "Kutular Ev Oluyor",
+      "tarif": "Salonun ortasında artık üstü araba, yastık, kitap, tabak ve terlik resimleriyle bezeli neşeli koliler duruyor. Bulut araba resimli koliden tahta garajını çıkarmış, Kino ve Mino’yla halının üstüne kuruyor.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Bir süre sonra her kutunun tanıdık bir yüzü vardı. Birinde tabakla kaşık, birinde kitap, kapının yanında da Lokum’un ters terlikleri. Bulut doğruca kırmızı arabaya gitti."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Garajımı kendim buldum!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Tahta garajı yere koydu. Mavi arabası rampadan inerken üçü birden kornaya bastı. Düt düt! Bu kez yankıyı duyunca Bulut da güldü."
+        }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Elmalı Kek Molası",
+      "tarif": "Balkon kapısının önünde yere serilen örtünün üstünde Anne Defne, Pınar Teyze ve dört çocuk Babaanne’nin çiçekli tabağındaki elmalı kekleri yiyorlar.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kutuların resimleri bitince hepsi pencerenin önüne oturdu. Babaanne’nin gönderdiği çiçekli tabaktaki elmalı kekleri paylaştılar."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Bu kek çok güzelmiş. Sizin apartmanda her gün böyle kek mi yeniyor?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Her gün değil ama Babaannem alt katta oturuyor. Merdivenden inince kokusundan hemen anlarsın!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bulut ilk kez yeni evinin penceresinden aşağıdaki çınar ağacına gülümseyerek baktı."
+        }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "Kapı Çalınıyor",
+      "tarif": "Ertesi gün Kino’ların daire kapısı. Karşıda Bulut ve annesi Pınar Teyze duruyor; Bulut iki eliyle Babaanne’nin çiçekli tabağını tutuyor, tabağın içi parlak kırmızı eriklerle dolu.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Ertesi gün Kino’ların kapısı çaldı. Bulut ile annesi gelmişti. Bulut iki eliyle dünkü çiçekli tabağı tutuyordu. Bu kez tabakta kırmızı erikler vardı."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Annem süzgeci arıyordu. Tabak resmini görünce mutfak kutusunu ona ben gösterdim. Erikleri beraber yıkadık!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne! Tabağımızı getirmişler ama eriklerini içinde unutmuşlar!"
+        }
+      ]
+    },
+    {
+      "no": 14,
+      "ad": "Boş Gitmez, Boş Dönmez",
+      "tarif": "Apartman bahçesinde çınar ağacının altı. Kino, Mino, Bulut ve Lokum bankta yan yana oturmuş kırmızı eriklerini yerken yukarıdaki üçüncü katın perdeleri takılmış penceresine bakıyorlar.",
+      "renk": "#A3D7CD",
+      "satirlar": [
+        {
+          "kim": "anne",
+          "metin": "Unutmadılar Kino. Bizim mahallede komşu tabağı boş gitmez, boş da dönmez."
+        },
+        {
+          "kim": "kino",
+          "metin": "Öyleyse erikler bitince biz de size bir şey getiririz!"
+        },
+        {
+          "kim": "bulut",
+          "metin": "Bu sefer sizi merdivende ben beklerim!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bahçede eriklerini yerken Kino üçüncü kata baktı. Dün o pencereyi bir kamyon dolusu kutudan tanıyordu. Bugün sarı perdenin arkasında kimin yaşadığını biliyordu. Elini kaldırıp Bulut’a bir erik daha uzattı."
+        }
+      ]
+    }
+  ],
+  "arkaKapak": "Üçüncü kata yirmi kahverengi kutu taşındı. Koca bir ev bu kutulara nasıl sığar? Peki Bulut içlerinden kendi evini nasıl bulacak?",
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Bulut hangi kutunun kendisine ait olduğunu neden anlayamıyordu?",
+      "Sen oyuncak kutunun üzerine hangi resmi çizerdin?",
+      "Çiçekli tabak geri geldiğinde içinde ne vardı?"
+    ],
+    "not": "Bir çekmecenin içine birlikte bakın. İçindekileri anlatan küçük bir resim çizip çekmeceye asın."
+  }
+}

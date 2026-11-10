@@ -9,7 +9,7 @@ import { h, svg, TEST_MODU } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { kulak } from '../../orman/src/kulak';
+import { kulak } from './kulak';
 import { dogumGunu, dokunma, type BolumArayuz } from './dogumgunu';
 import { adres, resim } from './gorsel';
 import BN from '../../content/macera-banyo.json';

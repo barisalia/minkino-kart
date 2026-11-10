@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="379" height="328" viewBox="0 0 379 328">
+  <!-- Registered to govde-cizgi.png. The sleeve edges meet the foreleg lines
+       at x=90 and x=294. The haunches and the lower legs stay uncovered. -->
+  <path id="beden" d="M119 4 Q183 41 258 4 C285 41 309 84 320 132 Q312 147 300 163 Q277 172 253 161 L250 181 Q193 201 132 181 L129 161 Q104 171 81 162 Q72 147 59 132 C68 85 91 40 119 4 Z" fill="#ccdaca" stroke="#191717" stroke-width="4.5" stroke-linejoin="round"/>
+  <path id="dikis" d="M129 161 Q124 151 123 140 M253 161 Q258 150 257 139" fill="none" stroke="#191717" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

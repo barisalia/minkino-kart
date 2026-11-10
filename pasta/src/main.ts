@@ -7,12 +7,12 @@ import '../../src/karakter/karakter.css';
 import './pasta.css';
 import './pasta-sade.css';
 import { sesKokuAyarla } from '../../src/audio/kayit';
-import { anaMenuyeDon } from '../../src/uygulama';
+import { sayfayaDon } from '../../src/uygulama';
 import { oyunuBaslat } from './oyun';
 
 // Seslendirme kayıtları diğer uygulamalarla ortak (site kökündeki ses/ klasörü)
 sesKokuAyarla('../ses/', './ses/');
 
 const kok = document.getElementById('mino-pasta');
-// geri düğmesi ana menüye (site kökü) döner
-if (kok) oyunuBaslat(kok, { cikis: anaMenuyeDon });
+// geri düğmesi aşama seçimine döner (Kino ile Mino'nun Otobüsü: otobus/)
+if (kok) oyunuBaslat(kok, { cikis: () => sayfayaDon('../otobus/') });

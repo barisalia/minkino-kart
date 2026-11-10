@@ -1,0 +1,60 @@
+.ders-sahnesi{position:absolute;inset:0;display:grid;overflow:hidden;background:#efd1a0;container-type:size}
+.ders-dekor{min-height:0;min-width:0;display:grid;align-items:end;overflow:hidden;background:#fff0ce}
+.ders-oda{position:relative;width:100%;height:100%;background-size:100% 100%;isolation:isolate}
+.ders-poz,.kare,.sira,.sira svg{display:block;width:100%;height:100%}
+.ders-poz{position:relative}.kare{position:absolute;inset:0;object-fit:contain;object-position:center bottom;visibility:hidden}
+.k0{visibility:visible}.ders-ceren{position:absolute;right:18%;bottom:30%;width:21%;height:60%}
+.ogrenci{position:absolute;width:29%;height:51%}.ogrenci .ders-poz{position:absolute;width:78%;height:77%;left:11%;bottom:23%}
+.sira{position:absolute;left:0;bottom:0;height:31%}.sira svg{overflow:visible}
+.sira-mino{left:3%;bottom:12%}.sira-zipzip{right:1%;bottom:6%;height:46%}.sira-kino{left:33%;bottom:0;width:33%;height:57%}
+.tahta-cizimi{position:absolute;left:34%;top:19%;width:16%;height:27%}
+.tebesir{stroke-dasharray:1;animation:tebesir-ciz 3s ease-out both}.tebesir.ikinci{animation-delay:1s}
+@keyframes tebesir-ciz{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.ders-poz .kare{animation-duration:6.2s;animation-iteration-count:infinite;animation-timing-function:step-end;animation-delay:var(--gec,0s)}
+.k0{animation-name:poz-ilk}.k1{animation-name:poz-ara}.k2{animation-name:poz-son}
+@keyframes poz-ara{0%,100%{visibility:hidden}34%,77%{visibility:visible}48%,91%{visibility:hidden}}@keyframes poz-son{0%,100%{visibility:hidden}48%{visibility:visible}77%{visibility:hidden}}
+@keyframes poz-ilk{0%,91%,100%{visibility:visible}34%{visibility:hidden}}
+.sira-mino{--gec:-2.3s}.sira-zipzip{--gec:-4.2s}.ders-ceren{--gec:-1.5s}
+.defter-ac,.ders-sonu button{display:grid;place-items:center;border:2px solid #222024;border-radius:24%;background:#ffe7a4;box-shadow:0 4px #936644}
+.defter-ac{position:absolute;right:3%;bottom:4%;width:clamp(68px,10%,145px);aspect-ratio:1.35}
+.defter-ac svg,.ders-sonu svg{width:82%;height:82%}
+.ders-calisma{grid-template-columns:49% 51%}.ders-calisma .ders-dekor{align-items:center;background:#f7dcaa}
+.ders-calisma .ders-oda{height:auto;aspect-ratio:1.24}
+.ders-masa{min-height:0;padding:clamp(8px,2vmin,22px);display:flex;align-items:center;justify-content:center;flex-direction:column;background:#9acac0;border-left:3px solid #352f2d}
+.ders-defter{position:relative;width:100%;height:76%;max-width:110vmin;display:grid;place-items:center;padding:1% 2% 1% 8%;border:2px solid #322b28;border-radius:4% 8% 8% 4%;background:#fffae9;box-shadow:3px 4px #f3dbad,4px 6px #382f2d,7px 9px #518e82}
+.ders-kagit{display:block;width:100%;height:100%;overflow:hidden;touch-action:none;cursor:crosshair}
+.ders-cilt{position:absolute;left:5%;height:100%;border-right:1.5px solid #dfceb0}
+.ders-cilt:before{content:"";position:absolute;top:16%;left:-7px;width:9px;height:9px;border-radius:50%;background:#a58668;box-shadow:0 14cqh #a58668,0 28cqh #a58668,0 42cqh #a58668}
+.boyalar,.ders-sonu{display:flex;align-items:end;justify-content:center;gap:clamp(6px,1.2vw,20px);margin-top:10px;height:17%;width:100%}
+.boyalar button,.ders-sonu button{min-width:42px;height:100%;max-height:75px;aspect-ratio:.84}.boyalar svg{height:92%;width:100%}.pastel[aria-pressed=true]{border-bottom:3px solid #285d56}.ders-sonu button{aspect-ratio:1.35;margin-inline:5px;max-height:56px}
+@media (max-aspect-ratio:1/1){
+.ders-giris{grid-template-rows:49% 51%;background:#9acac0}.ders-giris .ders-dekor{width:100%;height:100%;border-bottom:3px solid #352f2d}.ders-giris .defter-ac{position:relative;inset:auto;place-self:center;width:70%;height:76%;border-radius:14%;background:#ffe6a8}.ders-giris .defter-ac svg{width:86%;height:86%}
+.ders-calisma{grid-template-columns:1fr;grid-template-rows:40% 60%}
+.ders-calisma .ders-oda{height:100%;aspect-ratio:auto}.ders-masa{border-left:0;border-top:3px solid #352f2d;padding:10px 15px 6px}
+.ders-defter{height:77%}.ders-cilt:before{box-shadow:0 8cqh #a58668,0 16cqh #a58668,0 24cqh #a58668}
+}
+@media(prefers-reduced-motion:reduce){.kare{visibility:hidden}.k0{visibility:visible}.tebesir{stroke-dashoffset:0}}
+.sinif-arkadaslari{position:absolute;inset:0;pointer-events:none}
+.sinif-arkadaslari .ogrenci{height:32%;width:19%;bottom:30%}
+.sinif-arkadaslari .arka-mino{left:0;--gec:-1s}
+.sinif-arkadaslari .arka-zipzip{right:2%;--gec:-4s}
+.sinif-arkadaslari.sofrada .ogrenci{bottom:42%;height:32%;width:22%}
+.sinif-arkadaslari.sofrada .arka-mino{left:53%}
+.sinif-arkadaslari.sofrada .arka-zipzip{right:1%}
+@media(max-aspect-ratio:1/1){.sinif-arkadaslari .ogrenci{width:20%;height:22%}.sinif-arkadaslari.sofrada .ogrenci{height:23%;bottom:40%}.sinif-arkadaslari.sofrada .arka-mino{left:55%}}
+.ders-oda{background-image:var(--dekor-genis);background-position:center}
+.ders-calisma .ders-oda{background-image:var(--dekor-kare);background-size:cover}
+@media(max-aspect-ratio:1/1){
+  #oyun:has(.ders-sahnesi){max-height:none}
+  .ders-giris .ders-oda,.ders-calisma .ders-oda{background-image:var(--dekor-kare);background-size:100% 100%}
+}
+.ders-giris{grid-template-columns:minmax(0,1fr)}
+.defter-ac>span{width:100%;height:100%;display:grid;place-items:center}
+.defter-ac .masa-kitabi{display:none}
+.ders-calisma .tahta-cizimi{top:11%;height:25%}
+@media(max-aspect-ratio:1/1){
+  .ders-giris .tahta-cizimi,.ders-calisma .tahta-cizimi{top:17%;height:22%}
+  .ders-giris .defter-ac{width:100%;height:100%;border:0;border-radius:0;box-shadow:none;background:#9acac0}
+  .defter-ac .kucuk-kitap{display:none}.defter-ac .masa-kitabi{display:grid}
+  .ders-giris .defter-ac svg{height:94%;width:94%;max-height:90vw}
+}

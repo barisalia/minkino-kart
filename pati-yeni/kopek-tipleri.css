@@ -1,0 +1,26 @@
+/* Breed proportions are shared by the three expressions and both ear choices.
+   These change the joint positions, so all existing idle, wash and meal poses
+   use the same morphology without extra animation frames. */
+.kopek.kopek-bulut{--bas-x:24%;--bas-y:13%;--bas-w:52%;--bas-h:49%;--beden-x:24%;--beden-y:49%;--beden-w:52%;--beden-h:44%;--dik-x:17%;--dik-y:4%;--dik-w:24%;--dik-h:30%;--sarkik-x:13%;--sarkik-y:26%;--sarkik-w:21%;--sarkik-h:26%;--kuyruk-x:62%;--kuyruk-y:54%;--kuyruk-w:26%;--kuyruk-h:34%}
+.kopek.kopek-tarcin{--bas-x:25%;--bas-y:19%;--bas-w:50%;--bas-h:47%;--beden-x:29%;--beden-y:53%;--beden-w:43%;--beden-h:40%;--dik-x:20%;--dik-y:8%;--dik-w:18%;--dik-h:32%;--sarkik-x:17%;--sarkik-y:27%;--sarkik-w:17%;--sarkik-h:29%;--kuyruk-x:62%;--kuyruk-y:55%;--kuyruk-w:29%;--kuyruk-h:25%}
+.kopek.kopek-zeytin{--bas-x:19%;--bas-y:26%;--bas-w:50%;--bas-h:46%;--beden-x:20%;--beden-y:55%;--beden-w:61%;--beden-h:38%;--dik-x:16%;--dik-r:28%;--dik-y:17%;--dik-w:18%;--dik-h:25%;--sarkik-x:11%;--sarkik-r:23%;--sarkik-y:33%;--sarkik-w:21%;--sarkik-h:38%;--kuyruk-x:68%;--kuyruk-y:59%;--kuyruk-w:23%;--kuyruk-h:22%}
+.kopek.kopek-pamuk{--bas-x:21%;--bas-y:11%;--bas-w:59%;--bas-h:54%;--beden-x:25%;--beden-y:55%;--beden-w:53%;--beden-h:38%;--dik-x:19%;--dik-y:5%;--dik-w:18%;--dik-h:19%;--sarkik-x:15%;--sarkik-y:31%;--sarkik-w:17%;--sarkik-h:20%;--kuyruk-x:65%;--kuyruk-y:59%;--kuyruk-w:22%;--kuyruk-h:24%}
+.kopek.kopek-golge{--bas-x:27%;--bas-y:10%;--bas-w:44%;--bas-h:42%;--beden-x:31%;--beden-y:44%;--beden-w:43%;--beden-h:49%;--dik-x:24%;--dik-y:4%;--dik-w:15%;--dik-h:23%;--sarkik-x:22%;--sarkik-y:19%;--sarkik-w:13%;--sarkik-h:25%;--kuyruk-x:63%;--kuyruk-y:58%;--kuyruk-w:22%;--kuyruk-h:28%}
+.kopek[data-model] .kafa{left:var(--bas-x,23%);top:var(--bas-y,11%);width:var(--bas-w,54%);height:var(--bas-h,56%)}
+.kopek[data-model] .govde{left:var(--beden-x,26%);top:var(--beden-y,49%);width:var(--beden-w,48%);height:var(--beden-h,43%)}
+.kopek[data-model] .kuyruk{left:var(--kuyruk-x,62%);top:var(--kuyruk-y,55%);width:var(--kuyruk-w,25%);height:var(--kuyruk-h,29%)}
+.kopek[data-model] .kulak.sarkik{top:var(--sarkik-y,24%);width:var(--sarkik-w,21%);height:var(--sarkik-h,33%)}
+.kopek[data-model] .kulak.sarkik.sol{left:var(--sarkik-x,12%)}.kopek[data-model] .kulak.sarkik.sag{right:var(--sarkik-r,var(--sarkik-x,12%))}
+.kopek[data-model] .kulak.dik{top:var(--dik-y,7%);width:var(--dik-w,22%);height:var(--dik-h,24%)}
+.kopek[data-model] .kulak.dik.sol{left:var(--dik-x,20%)}.kopek[data-model] .kulak.dik.sag{right:var(--dik-r,var(--dik-x,20%))}
+.kopek-zeytin .kulak.sarkik.sol,.kopek-pamuk .kulak.sarkik{z-index:0}
+.kopek.kopek-pamuk{--sarkik-x:18%;--sarkik-y:32%}
+.kopek-zeytin~.takili-papyon{left:46%;top:71%}
+.kopek-pamuk~.takili-papyon{top:65%}
+.kopek-golge~.takili-papyon{left:49%;top:52%;width:13%}
+.kopek-tarcin~.takili-papyon{top:66%}
+
+.kopek-zeytin { --agiz-x: .39; --agiz-y: .81; }
+.kopek-pamuk { --agiz-x: .42; --agiz-y: .76; }
+.kopek-golge { --agiz-x: .39; --agiz-y: .80; }
+.kopek-zeytin{--agiz-x:.39;--agiz-y:.81}.kopek-pamuk{--agiz-x:.42;--agiz-y:.76}.kopek-golge{--agiz-x:.39;--agiz-y:.80}

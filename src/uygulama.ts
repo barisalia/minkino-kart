@@ -29,8 +29,14 @@ export interface BaslatSecenekleri {
  * Menüden gelindiyse geçmişte geri gidilir; değilse sayfa menüyle değiştirilir. Eskiden her dönüş geçmişe yeni bir
  * menü ekliyordu (menü → oyun → menü …): Android'in geri tuşu menüde uygulamadan çıkmak yerine oyuna geri giriyordu.
  */
-export const anaMenuyeDon = () => {
-  const menu = new URL('../', location.href);
+export const anaMenuyeDon = () => sayfayaDon('../');
+
+/**
+ * Aynı dönüş, başka bir sayfaya (ör. otobüs aşamasından aşama seçimine: sayfayaDon('../otobus/')). Oradan gelindiyse
+ * geçmişte geri gidilir, değilse sayfa onunla değiştirilir.
+ */
+export const sayfayaDon = (yol: string) => {
+  const menu = new URL(yol, location.href);
   // krem perde iner, ses kısılır, sonra menüye geçilir (bir anda kopma / beyaz parlama yok)
   sayfadanCik(() => {
     if (menudenGelindi(menu)) history.back();

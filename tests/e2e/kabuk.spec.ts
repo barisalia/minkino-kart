@@ -7,7 +7,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { menuOyunlari } from '../../uygulama/src/oyunlar';
 import { hataTopla } from './yardimci';
 
-/** menüdeki kartlar (8; Kino'nun Otobüsü bayrağı açılınca 9, Pasta hep sonda) */
+/** İçerik kartları kategorilere ayrılır; ana ekranda dört kategori bulunur. */
 const MENU = menuOyunlari(true).map((k) => k.id);
 
 const BOYUTLAR: [number, number, string][] = [
@@ -38,42 +38,40 @@ async function kapiyiGec(page: Page) {
   await expect(page.locator('.ebeveyn-kapisi')).toHaveCount(0);
 }
 
-test('Kabuk: menü 6 ekran boyunda 8 (Kino’nun Otobüsü ile 9) iri kart, ızgarada boşluk yok, adlar kesilmiyor', async ({ page }) => {
+test('Kabuk: dört kategori ve içerik panelleri 6 ekran boyunda kullanılabilir', async ({ page }) => {
   const hatalar = hataTopla(page);
+  const oyunlar = MENU.filter(id => !['hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(id));
   for (const [en, boy, ad] of BOYUTLAR) {
     await page.setViewportSize({ width: en, height: boy });
     await page.goto('./?test=1&uygulama=android');
-    const kartlar = page.locator('.ug-kart');
-    await expect(kartlar).toHaveCount(MENU.length);
-    // sıra korunur, Pasta geniş ve sonda
-    expect(await kartlar.evaluateAll((l) => l.map((k) => k.getAttribute('data-oyun')))).toEqual(MENU);
-    await page.waitForTimeout(1100);
-    const kutular = await kartlar.evaluateAll((l) => l.map((k) => k.getBoundingClientRect().toJSON() as DOMRect));
+    if (await page.locator('.ym-panel').count()) await page.getByRole('button', { name: 'Ana menü', exact: true }).click();
+    const kategoriler = page.locator('.ym-ana .ym-kategori');
+    await expect(kategoriler).toHaveCount(4);
+    const kutular = await kategoriler.evaluateAll(l => l.map(k => k.getBoundingClientRect().toJSON() as DOMRect));
     for (const k of kutular) {
-      expect(k.left, `${ad} sol`).toBeGreaterThanOrEqual(-1);
-      expect(k.top, `${ad} üst`).toBeGreaterThanOrEqual(-1);
-      expect(k.right, `${ad} sağ`).toBeLessThanOrEqual(en + 1);
-      expect(k.bottom, `${ad} alt`).toBeLessThanOrEqual(boy + 1);
-      expect(Math.min(k.width, k.height), `${ad} kart boyu`).toBeGreaterThan(boy < 450 ? 95 : 130);
+      expect(k.left, ad).toBeGreaterThanOrEqual(-1);
+      expect(k.top, ad).toBeGreaterThanOrEqual(-1);
+      expect(k.right, ad).toBeLessThanOrEqual(en + 1);
+      expect(k.bottom, ad).toBeLessThanOrEqual(boy + 1);
+      expect(Math.min(k.width, k.height), ad).toBeGreaterThan(80);
     }
-    // kartlar üst üste binmez
-    for (let i = 0; i < kutular.length; i++)
-      for (let j = i + 1; j < kutular.length; j++) {
-        const a = kutular[i];
-        const b = kutular[j];
-        const ust = Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2;
-        expect(ust, `${ad}: ${i} ile ${j} üst üste`).toBe(false);
-      }
-    // boşluk yok: son sıradaki geniş kart ızgaranın sağ kenarına kadar gelir
-    const sag = Math.max(...kutular.map((k) => k.right));
-    expect(Math.abs(kutular[kutular.length - 1].right - sag), `${ad} son sıra dolu`).toBeLessThan(3);
-    // adlar sığıyor (… ile kesilmiyor)
-    const kesik = await page.locator('.ug-kart-ad').evaluateAll((l) => l.filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent));
-    expect(kesik, ad).toEqual([]);
-    // kilit rozeti yumuşak (yalnız abonelikli oyunlarda)
-    for (const id of ['pazar', 'canlan', 'pasta', 'dedektif']) await expect(page.locator(`.ug-kart[data-oyun="${id}"] .mk-kilit`)).toBeVisible();
-    await expect(page.locator('.ug-kart[data-oyun="kartlar"] .mk-kilit')).toHaveCount(0);
-    await page.screenshot({ path: `tests/screens/${ad}.png` });
+    for (let i = 0; i < kutular.length; i++) for (let j = i + 1; j < kutular.length; j++) {
+      const a = kutular[i], b = kutular[j];
+      expect(Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2, ad).toBe(false);
+    }
+    await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
+    await expect(page.locator('.ym-icerik')).toHaveCount(oyunlar.length);
+    expect(await page.locator('.ym-icerik').evaluateAll(l => l.map(k => k.getAttribute('data-oyun')))).toEqual(oyunlar);
+    for (const id of ['pazar', 'dedektif']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).toHaveAttribute('data-kilitli', '');
+    for (const id of ['giysin', 'otobus']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).not.toHaveAttribute('data-kilitli');
+    await page.getByRole('button', { name: 'Etkinlikler', exact: true }).click();
+    await expect(page.locator('.ym-icerik[data-oyun="canlan"]')).toHaveAttribute('data-kilitli', '');
+    await expect(page.locator('.ym-icerik[data-oyun="kartlar"]')).not.toHaveAttribute('data-kilitli');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), ad).toBeLessThanOrEqual(1);
+    const panel = (await page.locator('.ym-panel').boundingBox())!;
+    expect(panel.x + panel.width, ad).toBeLessThanOrEqual(en + 1);
+    expect(panel.y + panel.height, ad).toBeLessThanOrEqual(boy + 1);
+    expect(await page.locator('.ym-baslik').evaluateAll(l => l.filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent)), ad).toEqual([]);
   }
   expect(hatalar).toEqual([]);
 });
@@ -82,7 +80,8 @@ test('Kabuk: ebeveyn kapısı iki basamak, yanlışta yumuşak sallanma, 3 yanl�
   const hatalar = hataTopla(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./?test=1&uygulama=android');
-  await page.locator('.ug-kart[data-oyun="pazar"]').click();
+  await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
+  await page.locator('.ym-icerik[data-oyun="pazar"]').click();
   await buyuklerIcin(page);
   const kapi = page.locator('.ebeveyn-kapisi');
   await expect(kapi).toBeVisible();
@@ -119,7 +118,8 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
   const hatalar = hataTopla(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./?test=1&uygulama=ios');
-  await page.locator('.ug-kart[data-oyun="pasta"]').click();
+  await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
+  await page.locator('.ym-icerik[data-oyun="pazar"]').click();
   await buyuklerIcin(page);
   await kapiyiGec(page);
   const ab = page.locator('.ab-perde');
@@ -162,9 +162,9 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
 test('Kabuk: anahtar yokken kilit yok, abonelik ekranı "Yakında" ve yedek fiyat', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1&uygulama=android&anahtar=yok');
-  await expect(page.locator('.ug-kart')).toHaveCount(MENU.length);
+  await expect(page.locator('.ym-ana .ym-kategori')).toHaveCount(4);
   await expect(page.locator('.mk-kilit')).toHaveCount(0);
-  await page.locator('.ug-kapi').click();
+  await page.getByRole('button', { name: 'Ebeveyn ayarları' }).click();
   await kapiyiGec(page);
   await expect(page.locator('.ug-ayarlar')).toBeVisible();
   // Ebeveyn Köşesi: abonelik, geri yükleme, gizlilik, koşullar, bize yazın

@@ -6,7 +6,7 @@
  * mikrofon dinlemez.
  */
 import { baglam, efektCikisi } from '../../src/audio/motor';
-import { kulak } from '../../orman/src/kulak';
+import { kulak } from './kulak';
 import { sarkiSesiAyarla, type SarkiJson } from '../../src/audio/sarki-kayit';
 
 function hazir(pan = 0): [AudioContext, AudioNode] | null {

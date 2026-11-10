@@ -1,0 +1,93 @@
+.alan{position:absolute;inset:0;background-size:100% 100%;background-repeat:no-repeat;isolation:isolate}
+.alan-ev{background-image:url('../assets/pati-yeni/ortam/alan-ev.webp')}
+.alan-bahce{background-image:url('../assets/pati-yeni/ortam/alan-bahce.webp')}
+.alan-teraryum,.ortam-teraryum{background:#efc58c url('../assets/pati-yeni/ortam/alan-teraryum.webp') center/100% 100%}
+.alan-golet{background-image:url('../assets/pati-yeni/ortam/alan-golet.webp')}
+.alan-surusu{position:absolute;inset:26% 3% 15%;display:grid;grid-template-columns:repeat(var(--sutun),minmax(0,1fr));align-items:end;justify-items:center}
+.alan-surusu.iki-sira{grid-template-rows:46% 54%}
+.alan-surusu .sergi-yeri{height:100%;width:100%;max-width:46dvh;min-height:0;grid-template-rows:minmax(0,1fr) auto}
+.alan-surusu.iki-sira .sergi-yeri:nth-child(-n+5){width:90%}
+.alan-surusu .sergi-isim{min-height:22px;font-size:clamp(11px,2.6dvh,18px);padding:1px 6px;max-width:100%;white-space:nowrap}
+.alan-surusu.iki-sira .sergi-isim :is(.kart-bilgi,.para-miktar,.gun-tamam){display:none}
+.alan .hayvana-git:before{left:29%;right:29%;bottom:0;height:5%;background:#51463639}
+.alan-golet .hayvana-git:before{display:none}
+.alan-golet:before,.alan-golet:after{content:'';position:absolute;left:3%;bottom:12%;width:8px;aspect-ratio:1;border:1px solid #e7fcff;border-radius:50%;box-shadow:6px -16px 0 -2px #c4edef;pointer-events:none;animation:pati-kabarcik 6s linear infinite}
+.alan-golet:after{left:94%;animation-delay:-3s}
+@keyframes pati-kabarcik{0%{opacity:0}20%{opacity:.9}100%{translate:8px -46dvh;opacity:0}}
+.cerceve .alan-alt .sergi-sayfa{position:static;translate:none;pointer-events:auto;margin:auto}
+.kukla .kukla-ic>img:not(.camur-katmani),.kukla>.butun-balik:not(.camur-katmani),.portre>img{filter:var(--post,none)}
+.cerceve .cesit-sec[data-metal=Bronz]{background:#f6dec9;border-color:#9e6443}
+.cerceve .cesit-sec[data-metal=Gümüş]{background:#e3ebed;border-color:#788ca3}
+.cerceve .cesit-sec[data-metal=Altın]{background:#ffebaf;border-color:#b17a30}
+.vitrin-alt{justify-self:center;display:flex;align-items:center;gap:8px}
+.cerceve .nadir-gecit{background:#ffe09b;color:#774c24;min-width:44px;min-height:40px;padding:2px 9px;font-size:22px}
+@media(prefers-reduced-motion:reduce){.alan .hayvana-git .sergi-hayvan,.alan-golet:before,.alan-golet:after{animation:none!important}}
+@media(orientation:portrait){.alan-surusu{inset:25% 1% 15%}.alan-surusu .sergi-isim{font-size:10px;white-space:normal}.oda-sec{top:16%}}
+.alan-surusu{inset:22% 7% 14%;display:block;pointer-events:none}
+.alan-surusu .sergi-yeri,.alan-surusu.iki-sira .sergi-yeri:nth-child(-n+5){position:absolute;width:var(--iz-genislik);max-width:none;height:50%;bottom:auto;display:block;transform:translate(-50%,-100%) scale(var(--derinlik));transform-origin:50% 100%;pointer-events:none}
+.alan-surusu .hayvana-git{pointer-events:auto;touch-action:manipulation;width:100%;height:100%}
+.alan-surusu .sergi-yeri .sergi-isim{pointer-events:auto;position:absolute;right:0;bottom:0;font:700 17px/1 sans-serif;min-width:25px;min-height:24px;padding:0 3px;border-width:1px;background:#fff7dfdd}
+.sergi-isim i{font-style:normal}
+.alan .hayvana-git .sergi-hayvan{animation:none;transform:none;scale:var(--yon,1) 1;transition:none}
+.cerceve .harita-ok{position:absolute;z-index:3;top:46%;width:clamp(44px,9dvh,66px);aspect-ratio:1;padding:0;display:grid;place-items:center;border:2px solid #4f4036;border-radius:50%;background:#fff4d9;box-shadow:0 3px #a38463;pointer-events:auto}
+.harita-ok.sol{left:max(1%,env(safe-area-inset-left))}.harita-ok.sag{right:max(1%,env(safe-area-inset-right))}
+.harita-ok i{width:28%;aspect-ratio:1;border:solid #4d403a;border-width:0 4px 4px 0;rotate:-45deg;margin-right:10%}
+.harita-ok.sol i{rotate:135deg;margin-left:16%}
+.alan-alt .sergi-araclar .sergi-dugme{position:relative;flex:none;width:clamp(48px,14dvh,90px);height:clamp(44px,12dvh,84px);padding:3px}
+.alan-alt .toplu-yika{background:#c5ecef}.toplu-yika .para-miktar{position:absolute;bottom:-2px;right:-4px;background:#fff0b4;border:1px solid #80603a;padding:1px 3px;border-radius:12px;font-size:clamp(11px,2.8dvh,17px)}.toplu-yika .para-miktar img{width:1.1em;height:1.1em}
+.toplu-yika:disabled{filter:saturate(.45);opacity:.75}
+.toplu-yika.tamamlandi:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;border-radius:inherit;color:white;background:#38875a;font-size:1.6rem;animation:kopuk-sil 1.4s both}
+.yeni-yikandi:after{content:'';pointer-events:none;position:absolute;inset:28% 5% 5%;background:url('../assets/pati-yeni/atolye/kopuk.webp') 15% 50%/36% auto no-repeat,url('../assets/pati-yeni/atolye/kopuk.webp') 76% 63%/42% auto no-repeat;animation:kopuk-sil 1.4s both}
+@keyframes kopuk-sil{0%{opacity:0;translate:0 8%}22%,65%{opacity:1}100%{opacity:0;translate:0 -13%}}
+.govde>.adim-cizimi{inset:0}
+.adim-cizimi{display:none;position:absolute;pointer-events:none}
+.adimli .govde>.boya,.adimli[data-aile=kedi] .kukla-ic>img.beden{visibility:hidden}
+.adimli .adim-cizimi{display:block;filter:var(--post,none)}
+.kukla .adim-cizimi{position:absolute}
+.alan .adim-cizimi i{display:block;position:absolute;inset:0;background:var(--tuy);mask:var(--maske) center/100% 100% no-repeat}
+.alan .adim-cizimi .adim-kulak{background:var(--kulak)}.alan .adim-cizimi .adim-acik{background:var(--acik)}.alan .adim-cizimi .adim-cizgi{background:#271e20}
+.alan .sergi-yeri{align-self:auto;bottom:auto}
+.alan .sergi-yeri .sergi-isim{right:8%;bottom:2%}
+/* The head leads while the feet still hold their original floor position. */
+.alan .yoneldi :is(.kafa-grup,.yuz){transform-origin:50% 86%;translate:5% -1%;rotate:var(--egim,0deg);transition:translate .18s ease-out,rotate .18s ease-out}
+.alan .yoneldi .kafa-grup .kafa{translate:6% 0}
+.alan .yoneldi .kafa-grup .kulak.sag{transform:scaleX(.8);z-index:0}
+.alan .yoneldi:is([data-aile=kaplumbaga],[data-aile=geko]) .yuz{scale:-1 1;translate:-5% 0}
+.alan .adimli[data-aile=kopek] .kuyruk{left:15%;transform-origin:50% 75%;scale:-1 1;animation:pati-kuyruk-adim .42s ease-in-out infinite alternate}
+@keyframes pati-kuyruk-adim{to{rotate:8deg}}
+.alan .adimli .hayvana-git .sergi-hayvan{animation:var(--adim-ritmi) var(--adim-suresi) ease-in-out infinite}
+[data-hareket=yuru]{--adim-ritmi:yuru;--adim-suresi:.37s}
+[data-hareket=sessiz-adim]{--adim-ritmi:kedi-adimi;--adim-suresi:.46s}
+[data-hareket=minik-adim]{--adim-ritmi:minik-adim;--adim-suresi:.24s}
+[data-hareket=sicra]{--adim-ritmi:tavsan-sicra;--adim-suresi:.61s}
+[data-hareket=sek]{--adim-ritmi:kus-sek;--adim-suresi:.45s}
+[data-hareket=pitirda]{--adim-ritmi:civciv-adimi;--adim-suresi:.30s}
+[data-hareket=paytak]{--adim-ritmi:ordek-adimi;--adim-suresi:.50s}
+[data-hareket=agir-adim]{--adim-ritmi:kabuk-adimi;--adim-suresi:1.08s}
+[data-hareket=surun]{--adim-ritmi:geko-surun;--adim-suresi:.55s}
+[data-hareket=yuz]{--adim-ritmi:balik-yuz;--adim-suresi:1s}
+[data-hareket=suzul]{--adim-ritmi:beta-suzul;--adim-suresi:1.75s}
+@keyframes yuru{50%{translate:0 -3%;rotate:1deg}}
+@keyframes kedi-adimi{50%{translate:0 -1.4%;rotate:-1deg}}
+@keyframes minik-adim{25%{rotate:-2deg}75%{rotate:2deg;translate:0 -2%}}
+@keyframes tavsan-sicra{12%,88%{transform:scale(1.05,.94)}46%{translate:0 -15%;transform:scale(.97,1.04)}}
+@keyframes kus-sek{16%,85%{translate:0 0}50%{translate:0 -9%;rotate:-3deg}}
+@keyframes civciv-adimi{25%{rotate:-3deg;translate:0 -2%}75%{rotate:3deg}}
+@keyframes ordek-adimi{25%{rotate:-5deg;translate:0 -1%}75%{rotate:5deg;translate:0 -1%}}
+@keyframes kabuk-adimi{35%{rotate:-1.5deg}75%{rotate:1deg;transform:scaleX(1.02)}}
+@keyframes geko-surun{25%{transform:skewX(4deg) scaleX(1.04)}75%{transform:skewX(-3deg) scaleX(.98)}}
+@keyframes balik-yuz{25%{translate:0 2%;rotate:2deg}75%{translate:0 -2%;rotate:-2deg}}
+@keyframes beta-suzul{50%{translate:0 -4%;rotate:2deg}}
+@media(prefers-reduced-motion:reduce){.alan .adimli .hayvana-git .sergi-hayvan{animation:none}}
+.alan .yan-bas{visibility:hidden}
+.alan .yoneldi .yan-bas{visibility:visible}
+.alan .yoneldi .kafa.normal,.alan .yoneldi[data-aile=kirpi] .yuz:not(.yan-bas){visibility:hidden}
+.alan .yoneldi .yan-bas .cizgi{background:var(--resim) center/100% 100% no-repeat}
+.alan .ayak-kesit,.alan .kuyruk-kesit{visibility:hidden}
+.alan .adimli .ayak-kesit{visibility:visible;clip-path:inset(calc(var(--eklem-y) - 2%) var(--sag) 0 var(--sol));transform-origin:var(--kok) var(--eklem-y);animation:pati-ayak-bas var(--adim-suresi) linear infinite;animation-delay:calc(var(--adim-suresi)*var(--gecikme))}
+.alan .adimli img.beden[style*="--eklem-y"]:not(.ayak-kesit){clip-path:inset(0 0 calc(100% - var(--eklem-y)) 0)}
+@keyframes pati-ayak-bas{0%,100%{transform:rotate(-8deg)}30%{transform:rotate(8deg) scaleY(.99)}65%{transform:rotate(7deg) scaleY(.90)}}
+.alan .tur-balik>img{grid-area:1/1}
+.alan .adimli .tur-balik>.butun-balik:not(.kuyruk-kesit){clip-path:inset(0 33% 0 0)}
+.alan .adimli .tur-balik>.kuyruk-kesit{visibility:visible;clip-path:inset(0 0 0 66%);transform-origin:66% 52%;animation:pati-yuzgec var(--adim-suresi) ease-in-out infinite}
+@keyframes pati-yuzgec{25%{transform:scaleX(.85) skewY(3deg)}75%{transform:scaleX(1) skewY(-3deg)}}

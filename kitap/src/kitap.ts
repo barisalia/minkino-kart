@@ -331,7 +331,10 @@ export class Kitaplik {
     Object.assign(y.el.style, { width: `${w}px`, height: `${h}px` });
     const { resimW, resimH } = this.olcu;
     const kapak = y.el.classList.contains('kt-kapak-yuz');
-    const rw = Math.min(resimW, w);
+    const resimSayfasi = this.varlik.yerlesim.sayfalar[y.sahne?.el.dataset.sayfa ?? ''];
+    const kenaraKadar = !kapak && !!resimSayfasi?.tam && !this.kitap?.canli;
+    const rw = kenaraKadar ? w : Math.min(resimW, w);
+    y.el.classList.toggle('kt-tam-en', kenaraKadar);
     const rh = Math.round((rw * resimH) / resimW);
     const pay = Math.max(0, Math.round((w - rw) / 2));
     y.el.style.setProperty('--resim-h', `${y.sahne ? rh + 2 * pay : 0}px`);
@@ -354,7 +357,7 @@ export class Kitaplik {
     if (y.metin) {
       if (kapak) y.metin.sigdir(dikKapak ? Math.min(34, w * 0.1) : Math.min(30, h * 0.085), 11);
       // en büyük boy sayfa enine göre (telefonda 23-25 px, tablette 30-34 px)
-      else y.metin.sigdir(this.olcu.yatay ? Math.max(23, Math.min(30, w * 0.058)) : Math.max(25, Math.min(34, w * 0.046)), 13);
+      else y.metin.sigdir(this.olcu.yatay ? Math.max(23, Math.min(54, w * 0.058)) : Math.max(25, Math.min(34, w * 0.046)), 13);
     }
     const eb = y.el.querySelector<HTMLElement>('.kt-ebeveyn');
     if (eb) {
@@ -369,7 +372,15 @@ export class Kitaplik {
 
   // ---------------------------------------------------------------- açma
 
-  private async ac(mod: OkumaModu) {
+  async baglantidanAc(id: string, sayfa: number) {
+    const kitap = this.kitaplar.find((k) => k.id === id && k.icerik);
+    const kapak = this.rafKapaklar.get(id)?.kapak;
+    if (!kitap?.icerik || !kapak || this.durum !== 'raf') return;
+    this.tut(kitap, kapak);
+    await this.ac('bak', Math.min(kitap.icerik.sayfalar.length, Math.max(1, sayfa)));
+  }
+
+  private async ac(mod: OkumaModu, baslangic?: number) {
     if (this.durum !== 'tutuluyor' || !this.tutulan || !this.kitap?.icerik) return;
     this.modDegistir(mod, false);
     const t = this.tutulan;
@@ -381,7 +392,7 @@ export class Kitaplik {
     t.el.style.transform = `translate3d(${kx}px, ${y}px, 0) scale(1)`;
     t.golge.style.opacity = '0';
     await bekle(sure(640));
-    const ilk = ilerleme(this.kitap.id).sayfa;
+    const ilk = baslangic ?? ilerleme(this.kitap.id).sayfa;
     const hedef = ilk >= 1 && ilk < this.son ? ilk : 1;
     // açık kitaba geç: önce kapalı (sayfa 0), sonra kapak açılır
     t.yuz.sahne?.durdur();
@@ -518,7 +529,8 @@ export class Kitaplik {
       el.append(ortak.solEl);
     }
     if (yer !== 'sol') {
-      y.metin = new MetinSayfasi(s.satirlar, { no: sayfa, satirTik: (i) => this.satirOku(i, sayfa), yuz: (kim) => this.yuzResmi(kim) });
+      const no = ic.arkaKapak ? `${2 * sayfa - 1}–${2 * sayfa}` : sayfa;
+      y.metin = new MetinSayfasi(s.satirlar, { no, satirTik: (i) => this.satirOku(i, sayfa), yuz: (kim) => this.yuzResmi(kim) });
       el.append(y.metin.el);
     }
     return y;
@@ -550,7 +562,19 @@ export class Kitaplik {
     const bastan = dugme('kt-bastan', IKON.tekrar, 'Baştan oku', () => void this.bastan());
     const rafa = dugme('kt-rafa', IKON.izgara, 'Kitaplığa dön', () => this.rafaDon());
     dugmeler.append(bastan, rafa);
-    el.append(son, ugur, dugmeler);
+    const arka = this.kitap?.icerik?.arkaKapak;
+    const resim = arka && this.varlik.url('arka.webp');
+    if (arka && resim) {
+      el.classList.add('kt-arka-kapak');
+      const cizim = new Image();
+      cizim.src = resim;
+      cizim.alt = 'Arka kapak';
+      const yazi = document.createElement('p');
+      yazi.textContent = arka;
+      el.append(cizim, yazi, dugmeler);
+    } else {
+      el.append(son, ugur, dugmeler);
+    }
     return el;
   }
 

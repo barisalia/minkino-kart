@@ -17,7 +17,10 @@ export type Erisim = 'ucretsiz' | 'abonelik';
 export const ERISIM: Record<string, Erisim> = {
   // Kartlar: bütünüyle ücretsiz
   kartlar: 'ucretsiz',
-  // Çizgi Filmler: yalnız "Mino'nun Karpuzu" ücretsiz
+  // Video çizgi filmler (izle/, src/video/videolar.ts; Barış 2026-11-10: menüde yalnız Bisiklet): Bisiklet ücretsiz
+  'izle/kino-bisiklet': 'ucretsiz',
+  'izle/*': 'abonelik',
+  // Çizgi Filmler (eski canlı filmler, film/; 2026-11-10'dan beri menüde ve uygulama paketinde yok): yalnız "Mino'nun Karpuzu" ücretsiz
   'film/mino-karpuz': 'ucretsiz',
   'film/*': 'abonelik',
   // Kino ve Ailesi (Seri 2, Çizgi Filmler içinde yeni dizi; ÖNERİ, menüde değil: film/src/film2/katalog.ts → SERI2_MENUDE):
@@ -51,11 +54,9 @@ export const ERISIM: Record<string, Erisim> = {
   // (pati/kose-kemirgen, -akvaryum, -kus, -bahce, -surungen) abonelikle: kilit yalnız katalogda köşe alırken (magaza.ts)
   'pati/baslangic': 'ucretsiz',
   'pati/*': 'abonelik',
-  // Mino Ne Giysin? · Yardımcı Mino: Pamuk ve Kino'nun derdi ücretsiz, Ege ve Ada abonelikle (kilitli balona dokununca
-  // kilit anı). Kostüm partisi, açık (kilitsiz) dertler çözülünce açılır: abonelik yoksa iki dertle de parti var.
-  'mino-giysin/pamuk': 'ucretsiz',
-  'mino-giysin/kino': 'ucretsiz',
-  'mino-giysin/*': 'abonelik',
+  // Otobüs (otobus/): tek menü kartı, içinde iki aşama. Kart açık (Dondurma'nın Gün 1'i ücretsiz); her aşama kendi
+  // kuralıyla: Dondurma = 'kino-otobus/…', Pasta = 'pasta' (abonelikle)
+  'otobus/dondurma': 'ucretsiz',
   // Tıkır Tıkır Lokanta: Gün 1 ve Gün 2 (salata, menemen, yıka, ilk alım) ücretsiz; Gün 3 ve sonrası abonelikle
   // (ekip/senaryo/RESTORAN.md §6d; kilit P4'te gün geçişinde ve defterde sorulur)
   'restoran/gun-1': 'ucretsiz',

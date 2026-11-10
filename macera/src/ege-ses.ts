@@ -7,7 +7,7 @@
  */
 import { baglam, efektCikisi, muzikCikisi } from '../../src/audio/motor';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
-import { kulak } from '../../orman/src/kulak';
+import { kulak } from './kulak';
 
 function hazir(cikis: 'efekt' | 'muzik' = 'efekt'): [AudioContext, AudioNode] | null {
   const c = baglam();

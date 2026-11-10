@@ -1,0 +1,362 @@
+{
+  "id": "ucurtma",
+  "baslik": "Kino Uçurtma Uçuruyor",
+  "kapak": {
+    "renk": "#7fcad1",
+    "tarif": "Kino ile Lokum tepede uçurtma uçuruyor.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino Uçurtma Uçuruyor"
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Sallanan Yapraklar",
+      "renk": "#75BDB0",
+      "tarif": "Salon penceresi. Dışarıdaki büyük çınar ağacının yaprakları rüzgârla bir yana eğilmiş. Babası dolabın üstünden kırmızı-sarı elmas biçimli uçurtmayı indirirken, Kino beyaz ip makarasını iki eliyle tutuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Sabah pencerenin önündeki çınar ağacının dalları bir sağa, bir sola sallanıyordu. Kino camdan dışarı bakınca babası dolabın üstündeki kırmızı sarı uçurtmayı indirdi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, yapraklar hızlandı! Bugün uçurtmamız bulutlara kadar çıkar mı?"
+        },
+        {
+          "kim": "baba",
+          "metin": "Tam uçurtma havası. Makarayı sen taşı bakalım."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino beyaz makarayı iki eliyle kavradı. İpi parmağıyla yokladı; sıkı ve uzundu."
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Lokum’un Mavi Atkısı",
+      "renk": "#75BDB0",
+      "tarif": "Antrede ayakkabı giyiyorlar. Lokum bir koluna iki tur doladığı uzun, parlak mavi bir hediye kurdelesini Kino’nun uçurtmasına doğru uzatıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kapının önünde ayakkabılarını giyerken Lokum içeriden uzun, mavi bir kurdele getirdi. Yerde sürünmesin diye bir ucunu koluna iki kere dolamıştı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi, uçurtmaya atkı takalım mı? Yukarıda üşümesin."
+        },
+        {
+          "kim": "kino",
+          "metin": "Uçurtmalar üşümez ki Lokum! Hem bunu bağlarsak ağır gelir, uçamaz."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino kapıya yöneldi. Lokum mavi kurdelesini çözüp özenle avucunun içine topladı ve tulumunun cebine soktu."
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Tepedeki Buluşma",
+      "renk": "#75BDB0",
+      "tarif": "Geniş, çimenlik Çınar Tepesi. Mino ve üst kat komşuları kuzu Bulut çimenlerin üstünde Kino’ları karşılıyor. Kino uçurtmayı yere yatırmış, ipini açıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Çınar Tepesi’ne çıktıklarında Mino ile Bulut onları bekliyordu. Tepede rüzgâr aşağıdakinden daha serindi."
+        },
+        {
+          "kim": "mino",
+          "metin": "Hadi Kino! En yükseğe çıktığında ipini bana da gösterir misin?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Gösteririm! Ben şimdi koşunca hemen havalanacak."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino uçurtmayı çimenin üstüne bıraktı. Babasının yanına gelmesini beklemeden makarayı tutup yokuş aşağı koşmaya başladı."
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Çimende Gezen Uçurtma",
+      "renk": "#75BDB0",
+      "tarif": "Kino rüzgârla aynı yönde hızla koşuyor ama arkasındaki kırmızı uçurtma havalanmak yerine çimenlerin üstünde yatay biçimde kayarak sürükleniyor. Lokum gülerek uçurtmayı gösteriyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino rüzgârı arkasına alıp bütün hızıyla koştu. O koştu, kırmızı uçurtma da arkasından çimenlerin üstünde kaydı. Hışır, hışır!"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi uçurtmayı gezdiriyor!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino durup arkasına baktı. Kendisi nefes nefeseydi ama uçurtması yerden bir karış bile kalkmamıştı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, ben koşuyorum ama uçurtmam yerde yürüyor!"
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Rüzgâr Hangi Yanağında?",
+      "renk": "#75BDB0",
+      "tarif": "Baba, tepede Kino’nun yanında diz çöküyor. Kino gözlerini kapatıp esintiyi yüzünde hissediyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babası gülümseyerek Kino’nun yanına geldi. Onu omuzlarından tutup olduğu yerde ters çevirdi."
+        },
+        {
+          "kim": "baba",
+          "metin": "Az önce rüzgârla aynı yöne koştun. Şimdi dur ve dinle bakalım, rüzgâr nereye değiyor?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Serin bir esinti Kino’nun uzun kulaklarını geriye doğru havalandırdı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Burnuma ve iki yanağıma değiyor!"
+        },
+        {
+          "kim": "baba",
+          "metin": "Şimdi bana dön. Rüzgâr senin arkandan bana doğru essin. Ben uçurtmayı kaldırınca ip gerilecek. Elindeki makarada hissedersin."
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "İpin Ucundaki Tık-Tık",
+      "renk": "#75BDB0",
+      "tarif": "Baba ellerini açmış. Beyaz kâğıt kuyruklu uçurtma yükselirken Kino makarayı tutuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babası rüzgârın estiği yönde biraz uzaklaştı. Uçurtmayı iki eliyle kaldırdı. Kino ip gerilince başıyla işaret verdi. Babası ellerini açtı. Kırmızı sarı uçurtma beyaz kuyruğunu peşinden sürükleyerek yükseldi."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Bakın! Ağaçların boyunu geçti!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "İp gerildikçe Kino’nun elindeki makara hafifçe çekiliyordu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, ipi elimde tık-tık ediyor! Yukarıda canlı gibi duruyor!"
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Böğürtlen Çalısının Dalı",
+      "renk": "#75BDB0",
+      "tarif": "Rüzgâr sertleşmiş; uçurtma biraz alçalırken altındaki ince kağıt kuyruk tepenin kenarındaki böğürtlen çalısının dalına takılıp kopuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Mino ile Bulut uçurtmanın gölgesini kovalarken tepeden ani bir rüzgâr esti. Kırmızı uçurtma bir an yana süzülüp böğürtlen çalısının üstünden geçti. Cırt! Uçurtmanın altındaki kağıt kuyruk çalının dalına takılıp koptu."
+        },
+        {
+          "kim": "mino",
+          "metin": "Kino, kuyruğu çalıda kaldı!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Olsun! Kanatları sağlam, yine uçar."
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Başı Dönen Uçurtma",
+      "renk": "#75BDB0",
+      "tarif": "Kuyruksuz kalan kırmızı uçurtma havada düz duramıyor; gökyüzünde fırıl fırıl dönerek daireler çiziyor ve çimenlerin üstüne yan yatıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kuyruksuz kalan uçurtma yeniden yükseldi. Ama bu kez gökyüzünde düz duramadı. Önce sağa yattı, sonra fırıl fırıl iki daire çizip çimenlerin üstüne indi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, uçurtmamın başı döndü! Neden yukarı bakmıyor?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Babası çalıda kalan kağıt parçasını gösterdi."
+        },
+        {
+          "kim": "baba",
+          "metin": "Uçurtmayı havada dengede tutan şey kuyruğuydu Kino. Arkasında hafif bir ağırlık olmayınca hangi tarafa duracağını şaşırıyor."
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Ağır Gelen Dal",
+      "renk": "#75BDB0",
+      "tarif": "Çimenlerin üstünde Kino, Mino ve Bulut uçurtmanın alt halkasının başına toplanmış. Mino yerde bulduğu kuru bir ağaç dalını uçurtmanın ucuna tutuyor; Bulut da bir tutam çimen uzatıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Çocuklar uçurtmanın başına çömeldi. Mino yerden bulduğu kuru bir dalı uçurtmanın altındaki halkaya geçirdi."
+        },
+        {
+          "kim": "mino",
+          "metin": "Bu dal çalıya takılsa da kopmaz!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino ipi çekti. Ama kuru dal öyle ağırdı ki uçurtmanın burnu bile yerden kalkmadı."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Bu kuyruk uçurtmadan daha ağır oldu!"
+        }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "Uçuşan Çimenler",
+      "renk": "#75BDB0",
+      "tarif": "Kino uçurtmanın alt ipine uzun çimen sapları sıkıştırmış ama rüzgâr esince çimenler uçuşup yere dökülüyor. Kino şaşkınlıkla boş kalan halkaya bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Bu kez Kino yerden uzun çimenler topladı. İpin ucuna sıkıştırdı. Ama uçurtmayı kaldırır kaldırmaz rüzgâr esti ve çimenler tek tek uçup dağıldı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Dal çok ağır geliyor, çimen de hemen düşüyor. Bize hem uzun hem de uçacak kadar hafif bir şey lazım."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino etrafına bakındı. Tepede çimenden ve taştan başka bir şey görünmüyordu."
+        }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "Cebinden Çıkan Rüzgâr",
+      "renk": "#75BDB0",
+      "tarif": "Lokum tulumunun cebinden sabahki uzun mavi kurdeleyi çıkarmış, elini havaya kaldırmış. Mavi kurdele rüzgârda yumuşak bir dalga gibi havada süzülüyor. Kino, Mino ve Bulut kurdeleye bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Tam o sırada Lokum elini cebine attı. Sabah evden çıkarken getirdiği mavi kurdeleyi çıkardı. Ucunu havaya kaldırınca kurdele rüzgârda su gibi dalgalandı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Bak abi. Benim atkım tek başına bile uçuyor!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino rüzgârda tüy gibi yüzen mavi şeride baktı. Sabah ağır gelir diye istemediği kurdele, şimdi tam aradıkları boydaydı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Lokum! Sabah bana bunu vermiştin, ben almamıştım. Uçurtmamıza senin atkını kuyruk yapalım mı?"
+        }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Mavi Kuyruğun Düğümü",
+      "renk": "#75BDB0",
+      "tarif": "Kino ile Lokum çimenlerde uçurtmanın yanındalar. Mavi kurdele uçurtmanın alt ucuna bağlanmış.",
+      "satirlar": [
+        {
+          "kim": "lokum",
+          "metin": "Üşümesin diye mi?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Başı dönmesin diye!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum mavi kurdeleyi iki eliyle abisine uzattı. Kino kurdelenin ucunu uçurtmanın altındaki halkadan geçirdi, babası da sağlam bir ilmek attı. Mavi kurdele çimenlerin üstünde upuzun uzandı."
+        },
+        {
+          "kim": "bulut",
+          "metin": "Bu sefer uçurtmayı ben tutayım, Kino. İp gerilince bana seslen!"
+        }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "Makaranın İki Ucu",
+      "renk": "#75BDB0",
+      "tarif": "Kino ile Lokum aynı makarayı tutuyor. Yukarıda kırmızı sarı uçurtmanın uzun mavi kuyruğu dalgalanıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Bulut uçurtmayı başının üstüne kaldırdı. Kino ipteki çekişi hissedince seslendi. Bulut ellerini açtı. Uçurtma yükseldi, mavi kuyruğu ardından dalgalandı. Bu kez hiç takla atmadı. Kino yanında gökyüzüne bakan Lokum’a sokuldu. Makarada küçücük bir patiye daha yer vardı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Senin atkın olmasa uçamazdı. Bir ucundan da sen tut!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "İp rüzgârda gerildikçe Lokum’un küçük elleri hafifçe titredi."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi, uçurtma bana tık-tık yapıyor!"
+        }
+      ]
+    },
+    {
+      "no": 14,
+      "ad": "Başı Dönmeyen Uçurtma",
+      "renk": "#75BDB0",
+      "tarif": "Akşamüstü Çınar Apartmanı’nın giriş kapısı. Babası, Kino, Mino, Bulut ve Lokum eve dönüyor. Kino’nun kucağındaki uçurtmanın altından mavi kurdele hâlâ bağlı duruyor; Lokum kurdelenin ucunu tutuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Akşamüstü eve dönerken Kino ipi makaraya sardı ama mavi kurdeleyi uçurtmanın ucundan çözmedi. Apartman kapısından girerken babası gülümsedi."
+        },
+        {
+          "kim": "baba",
+          "metin": "Demek uçurtmalar da atkı takarmış, öyle mi Kino?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Üşüdüğü için değil baba. Başı dönmesin diye!"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Hiç dönmedi!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino merdivenleri çıkarken mavi kurdelenin ucuna dokundu. Bugün uçurtmayı gökyüzüne çıkaran rüzgârdı; ama orada dümdüz tutan Lokum’un kurdelesiydi."
+        }
+      ]
+    }
+  ],
+  "arkaKapak": "Kino’nun uçurtması çimende geziyor, havada takla atıyor. Lokum’un cebindeyse sabah kimsenin istemediği mavi bir kurdele var. Acaba rüzgâr onu sevecek mi?",
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Kino ip gerildiğinde elinde ne hissetti?",
+      "Kuyruğu kopunca uçurtmanın uçuşu nasıl değişti?",
+      "Kino sabah istemediği kurdeleye tepede bakınca ne fark etti?"
+    ],
+    "not": "Dışarıda birlikte durun. İnce bir kâğıt şeridi havaya tutup rüzgârın onu hangi yana taşıdığını izleyin."
+  }
+}

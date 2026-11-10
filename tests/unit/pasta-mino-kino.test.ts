@@ -8,16 +8,12 @@ import P from '../../content/pasta.json';
 import { karakterCumleleri, normal, tumCumleler } from '../../src/audio/cumleler';
 import { bosluk } from '../../pasta/src/kino-is';
 import { pastaKinoCumleleri, sayim } from '../../pasta/src/model';
-import { OYUNLAR } from '../../uygulama/src/oyunlar';
 
 const AD = "Mino ile Kino'nun Pasta Otobüsü";
 
 describe('Mino ile Kino: ad', () => {
-  it('oyunun başlığı, menü kartı, sayfa başlığı ve mağaza metni yeni ad', () => {
+  it('oyunun başlığı, sayfa başlığı ve mağaza metni yeni ad (menü kartı artık Otobüs: 2. aşama)', () => {
     expect(`${P.arayuz.baslik_ust} ${P.arayuz.baslik_alt}`).toBe(AD);
-    // menü kartı: kısa ad altta ("Pasta Otobüsü"), baş kısmı resmin üstünde tabela; erişilebilir ad tam ad
-    const kart = OYUNLAR.find((o) => o.id === 'pasta')!;
-    expect(`${kart.ust} ${kart.ad}`).toBe(AD);
     expect(readFileSync('pasta/index.html', 'utf8')).toContain(`<title>${AD}</title>`);
     const magaza = readFileSync('ekip/uygulama/MAGAZA-METINLERI.md', 'utf8');
     expect(magaza).toContain(`**${AD}:**`);

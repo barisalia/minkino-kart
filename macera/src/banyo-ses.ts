@@ -7,7 +7,7 @@
  * Müzik yalnız mikrofonun dinlemediği anlarda çalar (sesli görevlerde durdurulur).
  */
 import { baglam, efektCikisi, muzikCikisi } from '../../src/audio/motor';
-import { kulak } from '../../orman/src/kulak';
+import { kulak } from './kulak';
 
 function hazir(cikisSec: 'efekt' | 'muzik' = 'efekt'): [AudioContext, AudioNode] | null {
   const c = baglam();

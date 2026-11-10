@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import kaynak from '../../ekip/mino/mino-final.svg?raw';
-import oyuncu from '../../film/src/oyuncu.ts?raw';
 import { durusPozu, ISARET_ACI, kolCoz, KOL_EN_COK, KOL_YUKARI_EN_COK, KOL_YUKARI_ESIK, MINO_POZ_ALAN, pozKolu } from '../../src/mino/mino-poz';
 import { MINO_POZ_SVG } from '../../src/mino/mino-poz-svg';
 import { MINO_SVG } from '../../src/mino/mino-svg';
@@ -38,12 +37,8 @@ describe('Mino pozları: kol açısı', () => {
 });
 
 describe('Mino pozları: film duruşu (Kino ile aynı adlar)', () => {
-  it('alanlar Kino’nun duruş alanlarını içerir', () => {
-    const kino = oyuncu.match(/const KARAKTER_ALAN = \[([^\]]+)\]/)![1];
-    for (const k of ['otur', 'yukSol', 'yukSag', 'dusun', 'bakan']) {
-      expect(MINO_POZ_ALAN).toContain(k);
-      expect(kino).toContain(`'${k}'`);
-    }
+  it('duruş alanları', () => {
+    for (const k of ['otur', 'yukSol', 'yukSag', 'dusun', 'bakan']) expect(MINO_POZ_ALAN).toContain(k);
   });
 
   it('yalnız verilen alanlar döner; öncelik sarılma > düşünme > bakış', () => {

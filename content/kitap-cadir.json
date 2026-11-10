@@ -1,0 +1,249 @@
+{
+  "id": "cadir",
+  "baslik": "Kino Salonda Çadır Kuruyor",
+  "kapak": {
+    "renk": "#C4DEEE",
+    "tarif": "Kino, Mino ve Lokum mavi çarşafın altından bakıyor.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino Salonda Çadır Kuruyor."
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Hazır Çanta, Yağmurlu Cam",
+      "renk": "#C4DEEE",
+      "tarif": "Kino sırtında küçük çantasıyla pencerenin önünde duruyor; dışarıda yağmur başlamış. Babası dolaptan açık mavi büyük bir çarşafla küçük bir mandal sepeti çıkarıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino sabah erkenden küçük sırt çantasını hazırlamıştı. İçine el fenerini ve dilimlenmiş elmalarını bile koymuştu. Mino’yla parkta çadır oyunu oynayacaklardı. Ama tam kapıya yöneldiğinde cama iri yağmur damlaları vurmaya başladı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, yağmur başladı! Şimdi çadırımızı nereye kuracağız?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Babası dolaptan açık mavi, kocaman bir çarşafla küçük bir mandal sepeti çıkardı."
+        },
+        {
+          "kim": "baba",
+          "metin": "Park ıslaksa, biz de çadırımızı salona kurarız."
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Dört Sandalye, Bir Sarı Minder",
+      "renk": "#C4DEEE",
+      "tarif": "Babası ile Kino salonda dört ahşap sandalyeyi sırt sırta diziyor. Lokum yerde yuvarlak sarı bir minderi iki eliyle çekerek getiriyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babasıyla Kino yemek masasının dört sandalyesini halının ortasına taşıdılar. Sandalyeleri sırtları birbirine bakacak biçimde karşılıklı dizdiler. Lokum da koltuğun kenarındaki yuvarlak sarı minderi kucaklayıp halıda sürükledi."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Lokum da kamp! Minder geldi!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino sarı minderi sandalyelerin tam ortasına yerleştirdi. Sonra mavi çarşafı kucağına aldı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Çarşafı ben örteceğim baba. Tek başıma atabilirim!"
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Mavi Bulut Kimin Başında?",
+      "renk": "#C4DEEE",
+      "tarif": "Kino çarşafı yukarı savurmuş ama mavi çarşaf sandalyeler yerine Kino’nun kendi başının ve Lokum’un üstüne inmiş. Kino’nun yalnız burnu ve bir kulağı dışarıda, Lokum gülüyor.",
+      "satirlar": [
+        {
+          "kim": "baba",
+          "metin": "Bir ucunu sen tut, Kino. Öbür ucunu da ben alayım."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Ama Kino kollarını çoktan havaya savurmuştu. Mavi çarşaf balon gibi şişti, yükseldi… Sonra sandalyelerin yerine doğruca Kino’nun başının üstüne indi!"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi kayboldu! Abi çadır oldu!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino çarşafın altından burnunu çıkardı. Başının üstündeki mavi kumaşa bakınca o da gülmeye başladı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Çarşaf beni çadır sandı galiba!"
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Bir Ucunu Çekince",
+      "renk": "#C4DEEE",
+      "tarif": "Çarşaf dört sandalyenin üstünde; Kino bir köşeyi düzeltirken karşı sandalyedeki köşe kayıp aşağı düşüyor. Kino şaşkınlıkla kayan uca bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Bu kez iki ucunu babası, iki ucunu Kino tuttu. Mavi çarşafı dört sandalyenin üstüne birlikte serdiler. Kino çadırın tavanı düz dursun diye sağ köşeyi aşağıya çekti. Şırr! Karşı sandalyedeki köşe kayıp yere düştü. Koşup onu kaldırdı; bu sefer de arkadaki köşe kaydı!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, bu çarşaf yerinde durmuyor! Bir ucunu tutuyorum, öteki ucu kaçıyor."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino iki elini sandalyenin sırtına dayayıp bekledi. Bıraksa çarşaf yine kayacaktı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Dört köşeyi birden nasıl tutacağım?"
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Küçük Tahta Timsahlar",
+      "renk": "#C4DEEE",
+      "tarif": "Babası bir mandalı iki parmağıyla sıkıp ağzını açmayı gösteriyor. Kino sandalyenin üst çubuğuna çarşafı mandalla tutturuyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Babası sepetten tahta bir mandal aldı. İki ucunu başparmağıyla işaret parmağının arasında sıktı. Mandalın ucu küçük bir timsah ağzı gibi açıldı."
+        },
+        {
+          "kim": "baba",
+          "metin": "Köşeleri senin yerine bunlar tutacak. Önce sıkarak ağzını aç, sonra çarşafla sandalyeyi birlikte kıstır."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino mandalı iki parmağıyla sıktı. Açılan ucunu çarşafın köşesine geçirdi ve parmaklarını bıraktı. Tık! Mandal kumaşı sandalyenin çubuğuna sımsıkı tutturdu. İkinci köşe… Üçüncü köşe… Dördüncü köşe! Kino çarşafı hafifçe çekti. Hiçbir yerinden kaymadı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bak baba! Dördü de tuttu, artık kaçamıyor!"
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Beşinci Mandalın İşi",
+      "renk": "#C4DEEE",
+      "tarif": "Mino elinde resimli kitabıyla çadırın önüne gelmiş. Çadırın ön örtüsü aşağı sarktığı için içerisi loş; Lokum halıdaki kırmızı mandalı abisine uzatıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Tam o sırada kapı çaldı. Karşı komşuları Mino, kucağında en sevdiği resimli kitapla gelmişti. Üçü birden emekleyerek çadırın içine, Lokum’un sarı minderinin üstüne oturdular. Ama öndeki çarşaf aşağı sarkınca içerisi karanlık kaldı. Kitaptaki resimler seçilmiyordu."
+        },
+        {
+          "kim": "mino",
+          "metin": "Perdeyi elimle tutsam sayfayı çeviremiyorum."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi, bak! Kırmızı tık-tık kaldı!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum sepette kalan kırmızı mandalı uzattı. Kino çadırın ön örtüsünü yana katladı ve kırmızı mandalla sandalyenin kenarına tutturdu. Tık! Çadırın artık gerçek bir kapısı vardı."
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Çadırın İçinde Kamp",
+      "renk": "#C4DEEE",
+      "tarif": "Açık çadır kapısından içerisi görünüyor: Kino sabah hazırladığı sırt çantasından çıkardığı el fenerini tavana tutmuş, Mino kitabı açmış, Lokum sarı minderde elma dilimi yiyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kapı açılınca içeriye tatlı bir ışık doldu. Kino sabah parka gitmek için hazırladığı sırt çantasının fermuarını açtı. Önce el fenerini çıkarıp mavi tavana tuttu. Sonra küçük kutusundaki elma dilimlerini Mino ve Lokum’la paylaştı."
+        },
+        {
+          "kim": "mino",
+          "metin": "Kino, bu çadır hiç bozulmuyor! Üstümüze düşmez, değil mi?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Düşmez! Köşelerde dört mandal var. Kapıyı da kırmızı mandal tutuyor."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Mavi çarşafın altında elma yerken, dışarıdaki yağmurun sesi bile kulağa oyun gibi geliyordu."
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Beş Mandal Sepete",
+      "renk": "#C4DEEE",
+      "tarif": "Pencereden güneş açmış. Kino sandalyelerdeki mandalları tek tek sıkıp sepete bırakıyor; babası çarşafı katlamak için bekliyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kitabın son sayfasına geldiklerinde pencereden içeriye parlak bir güneş ışığı vurdu. Yağmur dinmişti. Annesi koridordan seslendi:"
+        },
+        {
+          "kim": "anne",
+          "metin": "Güneş çıktı! Bahçeye inmeden önce çadırı toplamaya kim yardım eder?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Ben! Mandalları nasıl taktıysam öyle çıkarabilirim."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino önce kapıdaki kırmızı mandalı sıktı, perdeyi bıraktı. Sonra dört köşedeki tahta mandalları birer birer açıp sepete koydu. Çarşafı da babasıyla karşılıklı ikişer ucundan tutup düzgünce katladılar."
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Cebimdeki Kırmızı Mandal",
+      "renk": "#C4DEEE",
+      "tarif": "Apartman kapısından güneşli bahçeye çıkıyorlar. Kino cebinden başı görünen kırmızı mandalı babasına gösteriyor, Mino ve Lokum yanında gülüyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Ayakkabılarını giyerken Kino sepetteki kırmızı mandalı alıp şortunun cebine koydu. Babası bunu görünce gülümsedi."
+        },
+        {
+          "kim": "baba",
+          "metin": "Bahçede çarşaf yok ki Kino. O mandalı ne yapacaksın?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Dursun baba. Belki bahçede de bir şeyin ucu kaçar, kırmızı mandalım tutar!"
+        },
+        {
+          "kim": "lokum",
+          "metin": "Tık-tık tutar!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kapıyı açıp güneşli bahçeye çıktılar. Kino elini cebindeki kırmızı mandala değdirdi; bugün kaçan her şeyi nasıl tutacağını öğrenmişti."
+        }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Kino çarşafı ilk kez tek başına örtmeye çalıştığında ne oldu?",
+      "Çarşafın köşeleri kaymasın diye ne kullandılar?",
+      "Kırmızı mandal çadırın neresinde işe yaradı?"
+    ],
+    "not": "Birlikte iki sandalye ve bir örtüyle küçük bir okuma köşesi kurabilirsiniz."
+  }
+}

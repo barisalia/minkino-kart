@@ -53,9 +53,11 @@ export interface OyunKarti {
 }
 
 export const OYUNLAR: OyunKarti[] = [
+  { id: 'kino-ile-sen-sec', ad: 'Kino’yla Sen Seç', adres: './kino-ile-sen-sec/', renk: '#FFCE56', zemin: 'kino-ile-sen-sec/kapak', katmanlar: [] },
+  { id: 'hazirlik', ad: 'Hadi Hazırlanalım', adres: './hazirlik/', renk: '#70BDAF', zemin: 'hazirlik/kapak', katmanlar: [] },
   {
     id: 'kartlar',
-    ad: 'Kartlar',
+    ad: 'Hafıza Kartları',
     adres: './kartlar/',
     renk: '#FFC72C',
     rozet: 'Hafıza',
@@ -107,15 +109,6 @@ export const OYUNLAR: OyunKarti[] = [
     ],
   },
   {
-    id: 'film',
-    ad: 'Çizgi Filmler',
-    adres: './film/',
-    renk: '#3E9DF2',
-    // en yeni filmin kapağı (filmin kendi karesi: assets/film/kapak); yeni film gelince bu ad değişir
-    zemin: 'film/kapak/kino-oyuncak',
-    katmanlar: [{ ikon: 'oyna', sinif: 'ug-k-oynat' }],
-  },
-  {
     id: 'dedektif',
     ad: 'Dedektif Mino',
     adres: './dedektif/',
@@ -133,111 +126,48 @@ export const OYUNLAR: OyunKarti[] = [
     // karlı tepeler ve kış giysileriyle Kino (ekip/giysin/kart.cjs)
     zemin: 'giysin/dis-kis-yatay',
     rozet: 'Yeni',
-    set: 'giysin',
     katmanlar: [{ gorsel: 'giysin/kart-kino', sinif: 'ug-k-giysin' }],
   },
   {
-    id: 'pasta',
-    // tam ad: "Mino ile Kino'nun Pasta Otobüsü" (ekip/senaryo/mino-kino-pasta.md)
-    ust: "Mino ile Kino'nun",
-    ad: 'Pasta Otobüsü',
-    adres: './pasta/',
-    renk: '#FF6FA8',
-    // parkta pembe pasta otobüsü (otobüs oyunun kendi kod çizimi: pasta/src/cizim.ts)
-    zemin: 'film/park/arka-uzak',
-    rozet: 'Yeni',
+    id: 'otobus',
+    ad: 'Lezzet Otobüsü',
+    adres: './otobus/',
+    renk: '#5FB4DC',
+    zemin: 'kino-otobus/kapak',
+    rozet: '2 aşama',
     genis: true,
-    katmanlar: [{ kod: 'otobus', sinif: 'ug-k-otobus' }],
+    katmanlar: [],
   },
 ];
 
-/**
- * Menüde görünen kartlar (web ve uygulamada aynı kartlar; geniş Pasta hep sonda).
- * - 8 kart: telefon dikeyde 2 × 4 ve yatay telefonda 4 × 2 (Pasta bir hücre), 3 sütunda (tablet) 3 × 3 (Pasta iki hücre).
- * - 9 kart (Kino'nun Otobüsü açılınca, Pasta'dan önce): telefon dikeyde 2 × 5 (Pasta son sırada iki hücre), yatay
- *   telefonda 5 × 2 (Pasta iki hücre), 3 sütunda (tablet) 3 × 3 (Pasta bir hücre). uygulama.css → data-adet='9'.
- */
+/** Menüde görünen kartlar (web ve uygulamada aynı kartlar; geniş Otobüs kartı hep sonda). */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
-  let hepsi = KINO_OTOBUS_MENUDE ? [...OYUNLAR.filter((k) => !k.genis), KINO_OTOBUS_KARTI, ...OYUNLAR.filter((k) => k.genis)] : OYUNLAR;
-  // set kartları ardışık: Mino Ne Giysin? Kino'nunkinin hemen arkasında (10 kartta 7. ve 8. sıra)
-  if (MINO_GIYSIN_MENUDE) {
-    const i = hepsi.findIndex((k) => k.set === MINO_GIYSIN_KARTI.set);
-    hepsi = [...hepsi.slice(0, i + 1), MINO_GIYSIN_KARTI, ...hepsi.slice(i + 1)];
-  }
+  let hepsi = OYUNLAR;
   // Kitaplar: geniş Pasta kartından önce (bayrak açılınca)
   if (KITAP_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), KITAP_KARTI, ...hepsi.filter((k) => k.genis)];
-  // Tıkır Tıkır Lokanta: geniş Pasta kartından önce (bayrak açılınca; 11 kart ızgarası)
-  if (RESTORAN_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), RESTORAN_KARTI, ...hepsi.filter((k) => k.genis)];
+  if (PATI_MENUDE) hepsi = [{ id: 'pati', ad: 'Minik Dostlarım', adres: './pati/', renk: '#83D6BF', zemin: 'pati-yeni/kapak', katmanlar: [] }, ...hepsi];
   if (!uygulama) return hepsi;
   return hepsi.filter((k) => !k.uygulamadaYok);
 }
 
 /**
- * Kino'nun Otobüsü (dondurma): Gün 1-3'ün bütün çizimleri Gemini'den (bölüm A ve D; varliklar.ts → yerTutucular() boş).
- * true: menüde görünür (kartın zemini kapak görseli, assets/kino-otobus/kapak.webp), menü 9 kart ızgarasına geçer
- * (uygulama.css → data-adet='9'; testler bayrağa göre 8 ya da 9 kart bekler) ve sayfa uygulama derlemesine girer
- * (vite.config.ts → UYGULAMADA_YOK bu bayrağa bağlı).
+ * Kino'nun Otobüsü (dondurma): artık ayrı menü kartı yok, Otobüs oyununun 1. aşaması (otobus/). true: sayfası uygulama
+ * derlemesine girer (vite.config.ts → UYGULAMADA_YOK bu bayrağa bağlı).
  */
 export const KINO_OTOBUS_MENUDE = true;
-/**
- * Pati Dükkânı ("İlk Gün" dilimi): Barış görüp "tamam" deyince true olur. false: menüde yok, sayfa uygulama derlemesine
- * girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /pati/ adresinden açılır.
- */
-export const PATI_MENUDE = false;
-/**
- * Mino Ne Giysin? · Yardımcı Mino (ekip/senaryo/MINO-NE-GIYSIN.md): Kino Ne Giysin? ile bir set. true: menüde Kino'nun
- * kartının yanında (10 kart ızgarası, uygulama.css → data-adet='10') ve uygulama derlemesinde (vite.config.ts →
- * UYGULAMADA_YOK). Kostüm çizimleri (G-MG1) ve Pamuk pozları (G-MG2) Gemini'den geldi; yer tutucuyla kalırsa false.
- */
-export const MINO_GIYSIN_MENUDE = true;
-export const MINO_GIYSIN_KARTI: OyunKarti = {
-  id: 'mino-giysin',
-  ad: 'Mino Ne Giysin?',
-  adres: './mino-giysin/',
-  renk: '#FF9F43',
-  // Mino'nun odası ve itfaiyeci kasklı, merdivenli Mino (ekip/giysin/kart-mino.cjs)
-  zemin: 'giysin/oda-yatay',
-  rozet: 'Yeni',
-  set: 'giysin',
-  katmanlar: [{ gorsel: 'mino-giysin/kart-mino', sinif: 'ug-k-mino-giysin' }],
-};
+export const PATI_MENUDE = true;
 /**
  * Kitaplar (ilk kitap "Kino Okula Başlıyor", kitap/): Barış görünce true olur. false: menüde yok, sayfa uygulama
  * derlemesine girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /kitap/ adresinden açılır.
  * KALAN İŞ (açmadan önce): 11 kartlık menü ızgarası (uygulama.css → data-adet='11') ve kart resmi (kapak çizimi gelince
  * zemin: kitap kapağı). Şimdilik kart düz renk.
  */
-export const KITAP_MENUDE = false;
+export const KITAP_MENUDE = true;
 export const KITAP_KARTI: OyunKarti = {
   id: 'kitap',
   ad: 'Kitaplar',
   adres: './kitap/',
   renk: '#E2683C',
-  rozet: 'Yeni',
-  katmanlar: [],
-};
-/**
- * Tıkır Tıkır Lokanta (restoran/, ekip/senaryo/RESTORAN.md): Barış oynayıp "tamam" deyince true olur. false: menüde yok,
- * sayfa uygulama derlemesine girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /restoran/ adresinden açılır.
- * true olunca menü 11 kart (uygulama.css → data-adet='11': telefon dikey 2 × 6, yatay 6 × 2, tablet 3 × 4; Pasta iki
- * hücre). Kart resmi: Gemini 'kapak' (assets/restoran/arka/kapak.webp) gelince zemin; gelene kadar düz renk.
- */
-export const RESTORAN_MENUDE = false;
-export const RESTORAN_KARTI: OyunKarti = {
-  id: 'restoran',
-  ad: 'Tıkır Tıkır Lokanta',
-  adres: './restoran/',
-  renk: '#E8483A',
-  rozet: 'Yeni',
-  katmanlar: [],
-};
-export const KINO_OTOBUS_KARTI: OyunKarti = {
-  id: 'kino-otobus',
-  ad: 'Kino’nun Otobüsü',
-  adres: './kino-otobus/',
-  renk: '#5FB4DC',
-  // Gemini kapağı: Kino otobüsün penceresinden üç toplu dondurma uzatıyor, önde tavşan (metinsiz)
-  zemin: 'kino-otobus/kapak',
   rozet: 'Yeni',
   katmanlar: [],
 };

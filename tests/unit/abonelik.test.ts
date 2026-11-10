@@ -4,8 +4,8 @@ import { aynaDepo, aynala, geriYukle, type KaliciDepo } from '../../src/kabuk/ka
 import { ayaBol, denemeGunu } from '../../src/abonelik/satin';
 import { KAPI_BASAMAK, KAPI_HAK, kapiBeklemesi, kapiSorusu, sayiYazi } from '../../src/ui/ebeveyn-kapisi';
 import { geriKarari, menuSayfasiMi } from '../../src/kabuk/yon';
-import { KINO_OTOBUS_MENUDE, MINO_GIYSIN_MENUDE, menuOyunlari, OYUNLAR, RESTORAN_MENUDE } from '../../uygulama/src/oyunlar';
-import { katalog } from '../../film/src/katalog';
+import { KITAP_MENUDE, menuOyunlari, OYUNLAR, PATI_MENUDE } from '../../uygulama/src/oyunlar';
+import { VIDEOLAR } from '../../src/video/videolar';
 
 describe('erişim tablosu', () => {
   const ac = { etkin: true, premium: false };
@@ -28,8 +28,9 @@ describe('erişim tablosu', () => {
       expect(kilitliMi(id, { etkin: true, premium: true })).toBe(false);
     }
   });
-  it('ücretsiz film gerçekten katalogda var', () => {
-    expect(katalog().map((f) => f.ad)).toContain('mino-karpuz');
+  it('ücretsiz çizgi film (Bisiklet) gerçekten listede var', () => {
+    expect(VIDEOLAR.map((v) => v.id)).toContain('kino-bisiklet');
+    expect(kilitliMi('izle/kino-bisiklet', { etkin: true, premium: false })).toBe(false);
   });
   it('menüdeki her oyun tabloda', () => {
     for (const k of OYUNLAR) expect(['ucretsiz', 'abonelik']).toContain(erisimTuru(k.id));
@@ -37,42 +38,19 @@ describe('erişim tablosu', () => {
 });
 
 describe('uygulama menüsü', () => {
-  it('web ve uygulama: aynı 8 kart (Kino’nun Otobüsü açılınca 9), sıra korunur, Pasta geniş ve sonda', () => {
-    const beklenen = ['kartlar', 'pazar', 'canlan', 'macera', 'film', 'dedektif', 'giysin', ...(MINO_GIYSIN_MENUDE ? ['mino-giysin'] : []), ...(KINO_OTOBUS_MENUDE ? ['kino-otobus'] : []), ...(RESTORAN_MENUDE ? ['restoran'] : []), 'pasta'];
+  it('web ve uygulama: aynı kartlar, sıra korunur; iki otobüs tek kart (Otobüs, geniş, sonda), Mino Ne Giysin? yok', () => {
+    const beklenen = [...(PATI_MENUDE ? ['pati'] : []), 'kino-ile-sen-sec', 'hazirlik', 'kartlar', 'pazar', 'canlan', 'macera', 'dedektif', 'giysin', ...(KITAP_MENUDE ? ['kitap'] : []), 'otobus'];
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
       expect(u.map((k) => k.id)).toEqual(beklenen);
-      expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['pasta']);
-      const normal = u.filter((k) => !k.genis).length;
-      if (RESTORAN_MENUDE && MINO_GIYSIN_MENUDE && KINO_OTOBUS_MENUDE) {
-        // data-adet='11': 10 normal + geniş Pasta (2 hücre); telefon dikey 2 × 6, yatay telefon 6 × 2, 3 sütun 3 × 4
-        expect(normal).toBe(10);
-        expect((normal + 2) % 2).toBe(0);
-        expect((normal + 2) % 6).toBe(0);
-        expect((normal + 2) % 3).toBe(0);
-      } else if (MINO_GIYSIN_MENUDE && KINO_OTOBUS_MENUDE) {
-        // data-adet='10': 9 normal + geniş Pasta; telefon dikey 2 × 5 ve yatay telefon 5 × 2 (Pasta 1 hücre);
-        // 3 sütun (tablet) 3 × 4 (Pasta tam sıra, 3 hücre). Kino ve Mino Ne Giysin? yan yana (7. ve 8.)
-        expect(normal).toBe(9);
-        expect((normal + 1) % 2).toBe(0);
-        expect((normal + 1) % 5).toBe(0);
-        expect((normal + 3) % 3).toBe(0);
-        expect(u.findIndex((k) => k.id === 'mino-giysin')).toBe(u.findIndex((k) => k.id === 'giysin') + 1);
-      } else if (!KINO_OTOBUS_MENUDE) {
-        // ızgara boşluksuz (uygulama.css → data-adet='8'): 7 normal + geniş Pasta
-        // telefon dikey 2 sütun 2 × 4 ve yatay telefon 4 sütun 4 × 2 (Pasta 1 hücre); 3 sütun (Pasta 2 hücre) 3 × 3
-        expect(normal).toBe(7);
-        expect((normal + 1) % 2).toBe(0);
-        expect((normal + 1) % 4).toBe(0);
-        expect((normal + 2) % 3).toBe(0);
-      } else {
-        // data-adet='9': 8 normal + geniş Pasta; telefon dikey 2 × 5 ve yatay telefon 5 × 2 (Pasta 2 hücre);
-        // 3 sütun (tablet) 3 × 3 (Pasta 1 hücre)
-        expect(normal).toBe(8);
-        expect((normal + 2) % 2).toBe(0);
-        expect((normal + 2) % 5).toBe(0);
-        expect((normal + 1) % 3).toBe(0);
-      }
+      expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['otobus']);
+      for (const yok of ['okul', 'mino-giysin', 'kino-otobus', 'pasta', 'film', 'restoran', 'orman']) expect(u.some((k) => k.id === yok), yok).toBe(false);
     }
+  });
+  it('Otobüs kartı açık (Dondurma Gün 1 ücretsiz), Pasta aşaması abonelikle', () => {
+    const ac = { etkin: true, premium: false };
+    expect(kilitliMi('otobus', ac)).toBe(false);
+    expect(kilitliMi('kino-otobus', ac)).toBe(false);
+    expect(kilitliMi('pasta', ac)).toBe(true);
   });
 });
 
@@ -188,3 +166,4 @@ describe('kalıcı kayıt aynası (Preferences)', () => {
     expect(await aynala([...yerel.keys()], y, p)).toBe(0);
   });
 });
+

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Minkino Kartlar — okul öncesi eğitici kart oyunu",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --config vite.onizleme.config.ts",
     "build": "tsc && vite build",
     "build:app": "tsc && vite build --mode uygulama",
     "cap:sync": "npm run build:app && cap sync",
@@ -11,8 +11,7 @@
     "preview": "vite preview --host",
     "test": "vitest run",
     "e2e": "playwright test",
-    "gorsel": "node scripts/gorsel-indir.mjs",
-    "film:mp4": "vite build && node scripts/film/mp4.mjs"
+    "gorsel": "node scripts/gorsel-indir.mjs"
   },
   "repository": {
     "type": "git",

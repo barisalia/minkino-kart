@@ -6,7 +6,7 @@
  * Karanlığın sesleri (saat, damla, gıcırtı) sahnedeki yerine göre soldan / sağdan gelir (pan: −1 … 1).
  */
 import { baglam, efektCikisi, muzikCikisi } from '../../src/audio/motor';
-import { kulak } from '../../orman/src/kulak';
+import { kulak } from './kulak';
 import type { KampKayit } from './elektrik-mantik';
 import { sarkiSesiAyarla } from '../../src/audio/sarki-kayit';
 

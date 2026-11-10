@@ -1,0 +1,241 @@
+{
+  "id": "kurabiye",
+  "baslik": "Kino Kurabiye Yapıyor",
+  "kapak": {
+    "renk": "#f6dd99",
+    "tarif": "Kino yıldız kurabiyesini, Lokum da kendi yaptığı yuvarlak kurabiyeyi gösteriyor.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino Kurabiye Yapıyor."
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Pencereye vuran yağmur",
+      "renk": "#efe3ba",
+      "tarif": "Kino başını yağmurlu pencereden mutfak kapısına çeviriyor. Annesi karıştırma kâsesini çıkarıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino, camdaki iki yağmur damlasını yarıştırıyordu. Biri aşağıya indi. Öteki yerinden kıpırdamadı. Derken mutfaktan bir tıkırtı geldi. Annesi en büyük kâseyi çıkarmıştı. Yanında da yıldız biçiminde bir kalıp vardı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne, kurabiye mi yapıyorsun? Ben de yapabilir miyim?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Gel, baş aşçım. Önce ellerimizi yıkayalım."
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "İki küçük aşçı",
+      "renk": "#efe3ba",
+      "tarif": "Annesi, taburesine çıkan Kino’nun önlüğünü bağlıyor. Lokum’un önünde küçük bir kâse ve bardak var.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino ellerini kurulayıp taburesini tezgâha çekti. Annesi sarı önlüğün bağlarını belinde düğümledi. Lokum da mama sandalyesinden iki elini uzattı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Ben de! Lokum da aşçı!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Annesi onun önüne küçük bir kâseyle mavi bardağını koydu. Kino önlüğünü düzeltti."
+        },
+        {
+          "kim": "kino",
+          "metin": "Unu ben koyayım anne. Tek başıma yapabilirim!"
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Burnunun ucunda",
+      "renk": "#efe3ba",
+      "tarif": "Kino’nun bardağından kâseye dökülen un burnuna sıçrıyor. Lokum gülüyor.",
+      "satirlar": [
+        {
+          "kim": "anne",
+          "metin": "Bardağı kâseye yaklaştır, Kino. Sonra yavaşça dök."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino bardağı çoktan kaldırmıştı. Bir çevirişte bütün un kâseye boşaldı. Puf! Havaya kalkan unun bir tutamı burnunun ucuna kondu."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi! Burnuna kar yağdı!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino gözlerini kırpıştırdı. Annesinin tuttuğu çelik kâseye eğilince beyaz burnunu o da gördü. Gülüp burnunu sildi."
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Merdaneyi bırakmayan hamur",
+      "renk": "#efe3ba",
+      "tarif": "Kino merdaneyi kaldırınca hamurun bir ucu onunla birlikte yükseliyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi malzemeleri karıştırıp hamuru paylaştırdı. Kino kendi parçasına merdaneyle bastırdı. Merdaneyi kaldırdı. Hamur da kalktı. Hamuru çekince bu kez başparmağına yapıştı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne, bu beni bırakmıyor! Böyle nasıl yıldız yapacağım?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Merdaneyi tezgâha bıraktı. Az önce unu tek başına dökmek isteyen Kino, bu kez annesine yer açtı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bana bir kere gösterir misin?"
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Bir tutam un",
+      "renk": "#efe3ba",
+      "tarif": "Kino, hafifçe unlanmış merdaneyi tek parça hamurun üstünde yuvarlıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi parmaklarının arasına bir tutam un aldı. Birazını Kino’nun ellerine, birazını da merdaneye serpti."
+        },
+        {
+          "kim": "anne",
+          "metin": "Şimdi hafifçe it. Sonra kendine doğru çek."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino merdaneyi ileri sürdü, geri çekti. Bir daha ileri, bir daha geri… Hamur her seferinde biraz daha yayıldı. Kino merdaneyi usulca kaldırdı. Hamur tezgâhta kaldı!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Bak anne! Bu sefer beni bıraktı!"
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "Lokum’un kalıbı",
+      "renk": "#efe3ba",
+      "tarif": "Kino yıldız kalıbını kullanıyor. Lokum mavi bardağını kaldırınca yuvarlak kurabiyesi görünüyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino sarı kalıbı bastırdı. Kaldırınca hamurda küçük bir yıldız kaldı. Yanına bir kalp, bir çam ağacı, bir yıldız daha sığdırdı. Lokum’un kalıbı yoktu. O da bardağını ters çevirip kendi hamuruna bastırdı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Abi, bak! Top yaptım!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bir yanı biraz yassı, tombul bir yuvarlaktı. Kino tepsinin önünde ona yer açtı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Seninki burada dursun. Fırının camından da görürüz."
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Fırının küçük penceresi",
+      "renk": "#efe3ba",
+      "tarif": "Kino ile Mino kapalı fırının camından kurabiyeleri izliyor. Babası kapıdan bakıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi tepsiyi fırına sürdü. Kino taburesine oturup çenesini avuçlarına dayadı. Babasıyla Mino mutfağa geldiklerinde hâlâ aynı yere bakıyordu."
+        },
+        {
+          "kim": "kino",
+          "metin": "[whispers] Mino, şu yıldızı görüyor musun? Az önce böyle tombul değildi."
+        },
+        {
+          "kim": "mino",
+          "metin": "Öndeki de kabarmış! O yuvarlağı sen mi yaptın?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Onu Lokum yaptı. Hem de bardakla!"
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Son kalıp",
+      "renk": "#efe3ba",
+      "tarif": "Babası tezgâhı siliyor. Kino sarı yıldız kalıbını köpüklü suya bırakıyor.",
+      "satirlar": [
+        {
+          "kim": "baba",
+          "metin": "Kino, ben tezgâhı silsem kalıpları kim yıkar?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Ben! Yıldızın köşelerinde hamur kalmış."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Babası ıslak bezle unu topladı. Kino kalıpları köpüklü suya daldırdı. Kalp tamam. Çam ağacı tamam. Yıldızın son köşesini de yıkadı. Tam o sırada fırının saati çaldı. Tıng!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Duydun mu baba? Tam da işimiz bitti!"
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "İlk ısırık",
+      "renk": "#efe3ba",
+      "tarif": "Lokum yuvarlak kurabiyesini, Mino kalbi tutuyor. Kino kendi yıldızından ilk ısırığı alıyor.",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi tepsiyi eldivenle çıkarıp kurabiyeleri soğumaya bıraktı. Tezgâhın öbür ucundan üç küçük ağız birden üfledi. Nihayet kurabiyeler ılıdı. Kino önce bir yanı yassı yuvarlağı buldu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bu senin, Lokum. Kalp de Mino’nun. Anne, baba, büyük yıldızı paylaşır mısınız?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kendine kalan yıldızın bir ucunu ısırdı. Kıtır! Lokum da yuvarlağından bir ısırık aldı. Sonra bardağını abisine doğru itti."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Bir daha yapalım mı?"
+        },
+        {
+          "kim": "kino",
+          "metin": "Yapalım. Sen bardağını getir, ben yıldızımı!"
+        }
+      ]
+    }
+  ],
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Kino merdaneyi ilk kaldırdığında ne oldu?",
+      "Lokum, kendi kurabiyesini hangi eşyayla şekillendirdi?",
+      "Senin yaptığın kurabiyeyi tabakta nasıl tanırdın?"
+    ],
+    "not": "Birlikte oyun hamurunu açıp evdeki küçük kalıplarla değişik izler çıkarabilirsiniz."
+  }
+}

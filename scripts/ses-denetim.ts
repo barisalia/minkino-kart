@@ -5,7 +5,7 @@
  *   npx vite-node scripts/ses-denetim.ts -- --sert  # uygulamadaki oyunlarda eksik varsa çıkış kodu 1
  *
  * Bir cümle için anlatıcı kaydı (public/ses/manifest.json → dosyalar) ya da bir karakter kaydı varsa cihaz sesine
- * düşmez. Uyuyan Orman uygulamada yok: onun cümleleri ayrıca gösterilir (yayını engellemez).
+ * düşmez.
  * Kayıtlar CI'da (yayinla.yml → scripts/seslendir.ts) üretilir; bu betik kredi harcamaz, yalnız sayar.
  */
 import fs from 'node:fs';
@@ -18,8 +18,8 @@ const klasor = path.join(KOK, 'public/ses');
 const manifest: SesManifest = JSON.parse(fs.readFileSync(path.join(klasor, 'manifest.json'), 'utf8'));
 const var_ = (f: string | undefined) => !!f && fs.existsSync(path.join(klasor, f));
 
-/** Yalnız web sitesindeki oyunların içerik metni (uygulamada yok) */
-const yalnizWeb = ['content/orman.json'].map((d) => fs.readFileSync(path.join(KOK, d), 'utf8')).join('\n');
+/** Yalnız web sitesindeki oyunların içerik metni (uygulamada yok). 2026-11-10: Uyuyan Orman silindi; şu an böyle oyun yok. */
+const yalnizWeb: string = [].join('\n');
 
 const kCumleler = karakterCumleleri();
 const karakterKaydi = (c: string) =>
