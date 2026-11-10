@@ -1,7 +1,7 @@
 /**
  * RevenueCat ile satın alma (yalnız uygulama derlemesinde, src/abonelik/satin.ts → dinamik import).
  * - Kullanıcı kimliği RevenueCat'in anonim kimliğidir (hesap, ad, e-posta yok).
- * - Yetki: REVENUECAT.yetki ('premium'); ürünler minkino_aylik / minkino_yillik.
+ * - Yetki: REVENUECAT.yetki ('minkino_premium'); ürünler minkino_aylik / minkino_yillik.
  * - Fiyat ve deneme süresi mağazadan gelir (yerel para birimiyle).
  */
 import {

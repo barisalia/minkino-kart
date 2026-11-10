@@ -10,7 +10,7 @@ export const REVENUECAT = {
   iosAnahtar: typeof __REVENUECAT_IOS_KEY__ === 'string' ? __REVENUECAT_IOS_KEY__ : '',
   androidAnahtar: typeof __REVENUECAT_ANDROID_KEY__ === 'string' ? __REVENUECAT_ANDROID_KEY__ : '',
   /** RevenueCat'teki yetki (entitlement) adı */
-  yetki: 'premium',
+  yetki: 'minkino_premium',
   /** Mağaza ürün kimlikleri (App Store Connect ve Play Console'da aynı adla açılır) */
   urunler: { aylik: 'minkino_aylik', yillik: 'minkino_yillik' },
 } as const;
