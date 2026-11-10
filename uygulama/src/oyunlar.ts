@@ -54,10 +54,10 @@ export interface OyunKarti {
 
 export const OYUNLAR: OyunKarti[] = [
   { id: 'kino-ile-sen-sec', ad: 'Kino’yla Sen Seç', adres: './kino-ile-sen-sec/', renk: '#FFCE56', zemin: 'kino-ile-sen-sec/kapak', katmanlar: [] },
-  { id: 'hazirlik', ad: 'Hadi Hazırlanalım', adres: './hazirlik/', renk: '#70BDAF', zemin: 'hazirlik/kapak', katmanlar: [] },
+  { id: 'hazirlik', ad: 'Okula Hazırlanalım', adres: './hazirlik/', renk: '#70BDAF', zemin: 'hazirlik/kapak', katmanlar: [] },
   {
     id: 'kartlar',
-    ad: 'Hafıza Kartları',
+    ad: 'Bil Bakalım',
     adres: './kartlar/',
     renk: '#FFC72C',
     rozet: 'Hafıza',

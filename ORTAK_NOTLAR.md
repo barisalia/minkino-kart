@@ -500,3 +500,5 @@ Kullanıcı: Bilgisayar sıfırlandı; yerel eski çizimler güncel değil. Kara
 - 2026-11-10 (Claude): Paket 361 MB olmuştu. Kino yla Sen Seç çizimleri pakete kayıplı webp girer (kino-ile-sen-sec/paket.ts, 159 MB -> 25 MB, piksel boyutu aynı). Android release AAB de sesler install-time paket android/sesler (android.yml taşır); temel paket ~165 MB. Pastalı yaş ekranı Barış beğenmedi, geri alındı.
 
 - 2026-11-10 (Claude): Etkinlik kapakları yeni stil (noktalı defter zemin, altta bantlı etiket; scripts/uygulama/etkinlik-kapaklari.mjs). Oyun kapaklarında logolar büyütüldü (scripts/uygulama/oyun-kapaklari.mjs, Astra katmanlarından). Kino Okula Başlıyor raftan ve menüden kalktı (gizli: true; çizimleri öbür kitapların yedeği, dosyalar duruyor). Menü genişlik sınırı kalktı.
+
+- 2026-11-10 (Claude): Adlar: Hadi Hazırlanalım -> Okula Hazırlanalım, Kartlar -> Bil Bakalım. Bil Bakalım ve Sesli Maceralar kapakları yenilendi (düz gerçek kartlar; kulaklık ve notalar).

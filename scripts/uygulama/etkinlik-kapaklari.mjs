@@ -9,7 +9,7 @@ const yt = (f) => 'data:font/woff2;base64,' + fs.readFileSync(`${K}/node_modules
 const kart = (ic, stil) => `<div class="kart" style="${stil}">${ic}</div>`;
 const resim = (p) => `<img src="${a(p)}">`;
 const kapaklar = {
-  hazirlik: { bg:'#BFE8DA', nokta:'#8FCDB8', bant:'#FFB84D', yazi:'#173F37', ad:'Hadi Hazırlanalım',
+  hazirlik: { bg:'#BFE8DA', nokta:'#8FCDB8', bant:'#FFB84D', yazi:'#173F37', ad:'Okula Hazırlanalım',
     ic:`<img src="${a('hazirlik/canta.webp')}" style="left:250px;top:150px;width:330px;transform:rotate(-6deg)">
         <img src="${a('hazirlik/bento-kapali.webp')}" style="left:780px;top:330px;width:300px;transform:rotate(7deg)">
         <img src="${a('hazirlik/yesil.webp')}" style="left:470px;top:20px;height:560px">` },
@@ -19,16 +19,30 @@ const kapaklar = {
         <img src="${a('hazirlik/etkinlik/kalemlik-0.webp')}" style="left:830px;top:300px;width:260px;transform:rotate(24deg)">
         <img src="${a('canlan/yildiz.webp')}" style="left:190px;top:60px;width:130px;transform:rotate(-14deg)">
         <img src="${a('canlan/gunes.webp')}" style="left:940px;top:40px;width:180px">` },
-  kartlar: { bg:'#FFE08A', nokta:'#F2BE4D', bant:'#8a5cd6', yazi:'#4A2A08', ad:'Hafıza Kartları',
-    ic:kart(resim('hayvanlar/kedi.webp'),'left:230px;top:110px;transform:rotate(-14deg)')+
-       kart(resim('hayvanlar/kedi.webp'),'left:800px;top:110px;transform:rotate(13deg)')+
-       `<img src="${a('kartlar/kart-arka.webp')}" style="left:500px;top:60px;height:440px;border-radius:26px;box-shadow:0 10px 0 rgba(0,0,0,.2);transform:rotate(-2deg)">`+
-       `<img src="${a('canlan/yildiz.webp')}" style="left:1050px;top:40px;width:120px;transform:rotate(12deg)"><img src="${a('canlan/yildiz.webp')}" style="left:120px;top:60px;width:90px;transform:rotate(-12deg)">` },
+  // Bil Bakalım (kartlar/): kartla soru sorulur. Düz, gerçek oyun kartları (elma, araba, ördek) ve soru balonu.
+  kartlar: { bg:'#FFE08A', nokta:'#F2BE4D', bant:'#8a5cd6', yazi:'#4A2A08', ad:'Bil Bakalım',
+    ic:kart(resim('tasitlar/araba.webp'),'left:215px;top:120px;transform:rotate(-12deg)')+
+       kart(resim('hayvanlar/ordek.webp'),'left:815px;top:120px;transform:rotate(12deg)')+
+       kart(resim('meyveler/elma.webp'),'left:500px;top:50px;width:280px;height:370px')+
+       `<svg style="position:absolute;left:1010px;top:20px;width:210px" viewBox="0 0 200 200"><path d="M100 14c48 0 86 32 86 74s-38 74-86 74c-10 0-20-1-29-4l-38 26 8-42C24 128 14 109 14 88c0-42 38-74 86-74Z" fill="#fff" stroke="#2b2420" stroke-width="9" stroke-linejoin="round"/><path d="M76 70c0-34 50-34 50-4 0 22-26 20-26 42" fill="none" stroke="#8a5cd6" stroke-width="16" stroke-linecap="round"/><circle cx="100" cy="134" r="10" fill="#8a5cd6"/></svg>
+        <img src="${a('canlan/yildiz.webp')}" style="left:90px;top:40px;width:110px;transform:rotate(-12deg)">` },
+  // Sesli Maceralar: dinlenen hikâyeler. Ortada büyük kulaklık ve ses dalgaları; parti (ilk bölüm) yanlarda.
   macera: { bg:'#FFD0E2', nokta:'#F5A3C4', bant:'#4e9ee0', yazi:'#5A1736', ad:'Sesli Maceralar',
-    ic:`<img src="${a('canlan/balon.webp')}" style="left:210px;top:30px;height:380px;transform:rotate(-10deg)">
-        <img src="${a('canlan/balon.webp')}" style="left:900px;top:20px;height:340px;transform:rotate(9deg);filter:hue-rotate(100deg)">
-        <img src="${a('parti/hediye.webp')}" style="left:760px;top:250px;width:270px">
-        <img src="${a('parti/pasta.webp')}" style="left:400px;top:70px;width:460px">` },
+    ic:`<img src="${a('canlan/balon.webp')}" style="left:120px;top:60px;height:330px;transform:rotate(-10deg)">
+        <img src="${a('parti/hediye.webp')}" style="left:960px;top:270px;width:230px">
+        <img src="${a('parti/pasta.webp')}" style="left:455px;top:150px;width:370px">
+        <svg style="position:absolute;left:330px;top:10px;width:620px;filter:drop-shadow(0 8px 0 rgba(0,0,0,.16))" viewBox="0 0 620 520" fill="none" stroke="#2b2420" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M130 330V250C130 140 210 60 310 60s180 80 180 190v80" stroke-width="56"/>
+          <path d="M130 330V250C130 140 210 60 310 60s180 80 180 190v80" stroke="#4e9ee0" stroke-width="38"/>
+          <rect x="70" y="270" width="110" height="190" rx="46" fill="#ff7eb6" stroke-width="9"/>
+          <rect x="440" y="270" width="110" height="190" rx="46" fill="#ff7eb6" stroke-width="9"/>
+          <rect x="96" y="300" width="40" height="130" rx="20" fill="#ffc2dc" stroke="none"/>
+          <rect x="466" y="300" width="40" height="130" rx="20" fill="#ffc2dc" stroke="none"/>
+          <g stroke="#2b2420" stroke-width="20"><path d="M34 310q-26 55 0 110"/><path d="M586 310q26 55 0 110"/></g>
+          <g stroke="#ffb627" stroke-width="10"><path d="M34 310q-26 55 0 110"/><path d="M586 310q26 55 0 110"/></g>
+        </svg>
+        <svg style="position:absolute;left:970px;top:40px;width:200px" viewBox="0 0 200 200"><g fill="#8a5cd6" stroke="#2b2420" stroke-width="8" stroke-linejoin="round"><path d="M70 150V40l90-20v110"/><ellipse cx="48" cy="152" rx="26" ry="20"/><ellipse cx="138" cy="132" rx="26" ry="20"/></g></svg>
+        <svg style="position:absolute;left:215px;top:330px;width:120px;transform:rotate(-14deg)" viewBox="0 0 120 200"><g fill="#4e9ee0" stroke="#2b2420" stroke-width="8" stroke-linejoin="round"><path d="M62 150V24c8 28 44 30 44 62"/><ellipse cx="40" cy="152" rx="26" ry="20"/></g></svg>` },
 };
 const tarayici = await chromium.launch({ channel: 'msedge' });
 const sayfa = await tarayici.newPage({ viewport:{width:1280,height:720} });
