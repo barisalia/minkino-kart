@@ -1,0 +1,26 @@
+.hk-oyun { box-sizing:border-box; width:min(100%,54rem); margin:auto; padding:clamp(.55rem,2vw,1.4rem); text-align:center; color:#233e42; background:#faf4df; border:2px solid #355451; border-radius:1.2rem; }
+.hk-bas,.hk-araclar { display:flex; align-items:center; justify-content:center; gap:.65rem; flex-wrap:wrap; }
+.hk-bas h2 { margin:0; font-size:clamp(1.2rem,2.7vw,1.85rem); line-height:1.2; }
+.hk-sayac { font-size:.95rem; color:#48665c; font-variant-numeric:tabular-nums; }
+.hk-durum { min-height:1.4em; margin:.5rem 0; font-size:clamp(.95rem,2vw,1.15rem); }
+.hk-oyun button { border:1.5px solid #456358; border-radius:.75rem; padding:.4rem .8rem; min-height:2.8rem; background:#e4efdf; font:inherit; color:inherit; cursor:pointer; }
+.hk-oyun button:focus-visible { outline:3px solid #124d85; outline-offset:2px; }
+.hk-oyun [hidden] { display:none; }
+.hk-dinle { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; }
+.hk-dinle svg { width:1.2rem; height:1.2rem; }
+.hk-oyun .hk-dinle[data-okuyor] { background:#cae9db; }
+.hk-oyun .hk-ipucu { background:#fffaf0; }
+.hk-heceler { font-weight:750; font-size:1.3rem; letter-spacing:.03em; }
+.hk-resimler { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(.2rem,1.3vw,.85rem); margin:.7rem 0; }
+.hk-resimler .hk-resim { position:relative; min-width:0; min-height:0; padding:clamp(.2rem,.8vw,.6rem); background:#fffdf7; }
+.hk-resim img { display:block; width:100%; height:clamp(5rem,20vh,12rem); object-fit:contain; }
+.hk-resim span:empty { display:none; }
+.hk-resim:disabled { opacity:1; color:#244e3c; cursor:default; }
+.hk-resimler .hk-bulundu { border-color:#337651; background:#edf6e6; }
+.hk-bulundu span { display:block; font-weight:750; }
+.hk-bulundu img { animation:hk-selam .36s ease-out; }
+.hk-ileri { font-weight:750; }
+@keyframes hk-selam { 50% {transform:translateY(-3px)} }
+@media(max-width:550px) { .hk-oyun { padding:.6rem .35rem; } .hk-araclar { gap:.3rem; } .hk-oyun button { padding:.3rem .45rem; } }
+@media(max-height:460px) and (orientation:landscape) { .hk-oyun {padding:.3rem .6rem;} .hk-resim img {height:18vh;} .hk-resimler,.hk-durum {margin:.15rem 0;} }
+@media(prefers-reduced-motion:reduce) { .hk-bulundu img {animation:none;} }

@@ -17,6 +17,13 @@ const MELODI = [
 const BAS = [48, 48, 45, 45, 41, 41, 43, 43];
 
 let calisiyor = false;
+let bekliyor=false;
+let fonKanal:GainNode|undefined;
+export function fonuBeklet(bekle:boolean){
+  if(bekliyor===bekle)return;
+  bekliyor=bekle;
+  const c=baglam();if(c&&fonKanal)fonKanal.gain.setTargetAtTime(bekle?0:1,c.currentTime,.035);
+}
 let sonraki = 0;
 let adim = 0;
 let zamanlayici: number | undefined;
@@ -38,7 +45,7 @@ function nota(c: AudioContext, cikis: AudioNode, frek: number, t: number, sure: 
 
 function planla() {
   const c = baglam();
-  const cikis = muzikCikisi();
+  const cikis = fonKanal;
   if (!c || !cikis || !calisiyor) return;
   while (sonraki < c.currentTime + 0.3) {
     const m = MELODI[adim % MELODI.length];
@@ -60,6 +67,8 @@ export function muzikBaslat() {
   const c = baglam();
   const cikis = muzikCikisi();
   if (!c || !cikis || calisiyor) return;
+  if(!fonKanal||fonKanal.context!==c){fonKanal=c.createGain();fonKanal.connect(cikis)}
+  fonKanal.gain.value=bekliyor?0:1;
   calisiyor = true;
   sonraki = c.currentTime + 0.1;
   cikis.gain.cancelScheduledValues(c.currentTime);

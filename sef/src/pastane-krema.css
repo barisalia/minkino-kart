@@ -1,0 +1,15 @@
+.kek-dokum{width:min(100%,95cqh);height:100%;position:relative;isolation:isolate}
+.kek-dolum-kalibi{position:relative;display:block;width:100%;aspect-ratio:1.43;isolation:isolate}
+.kek-dolum-kalibi .kek-kagit{width:100%;height:100%;object-fit:fill;position:absolute;inset:0}
+.kek-dolum-kalibi .kek-hamuru{position:absolute;left:calc(50% - (44% * var(--miktar)));top:calc(36% - 30% * var(--miktar));width:calc(88% * var(--miktar));height:calc(8% + 31% * var(--miktar));background:#f7cd74;border:1px solid #b0813a;border-radius:50%;opacity:min(1,calc(var(--miktar)*10))}
+.kek-dokum>.kek-dolum-kalibi{position:absolute;left:46%;bottom:2%;width:48%}
+.kek-kase{position:absolute;left:13%;top:0;width:43%;aspect-ratio:1.51;border:0;background:none;padding:0;transform:rotate(var(--aci));transform-origin:54% 70%;touch-action:none;z-index:2}
+.kek-kase img{width:100%;height:100%;object-fit:fill;pointer-events:none}.kek-agiz{position:absolute;left:98.2%;top:31.8%;width:1px;height:1px}
+.kek-akis{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.kek-akis path{fill:#f7cd74;stroke:#a47b3d;stroke-width:.27;stroke-linejoin:round}
+.kek-el{position:absolute;left:1%;bottom:-6%;width:24%;aspect-ratio:1;background:var(--sef-kumanda-fonu, #fff2cf);border:1.5px solid #83593c;border-radius:50%;display:grid;place-items:center;padding:4%;color:#4a3935}
+.kek-el svg{width:100%;height:100%}.ta-firin-yemek>.kek-dolum-kalibi{position:absolute;left:31%;top:2%;width:38%;height:auto}.ta-firin-yemek>.kek-dolum-kalibi[hidden]{display:none}
+.tart-krema-yay{position:relative;width:min(100%,78cqh);aspect-ratio:360/226;border:0;padding:0;background:transparent;touch-action:none}
+.tart-kuru,.tart-krem-izi{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.tart-spatula{position:absolute;width:36%;height:auto;transform:translate(-17%,-80%);pointer-events:none}
+.tart-krem-hedef{position:absolute;border:2px dashed #89683f;border-radius:50%;width:7%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.tart-krema-yay[data-tamam=true] .tart-krem-hedef{display:none}

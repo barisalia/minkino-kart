@@ -1,0 +1,466 @@
+[
+  {
+    "id": "01",
+    "upper": "A",
+    "lower": "a",
+    "name": "a",
+    "example": "Armut",
+    "second": "arı",
+    "word": "at",
+    "units": [
+      "a",
+      "t"
+    ],
+    "target": "a",
+    "big": "İki eğik çizgiyi tepede birleştir, ortadan bir köprü çiz.",
+    "small": "Bir yuvarlak çiz ve sağına kısa bir çizgi indir."
+  },
+  {
+    "id": "02",
+    "upper": "B",
+    "lower": "b",
+    "name": "be",
+    "example": "Balık",
+    "second": "balon",
+    "word": "bal",
+    "units": [
+      "b",
+      "al"
+    ],
+    "target": "balık",
+    "big": "Dik çizgiye sağdan iki karın ekle.",
+    "small": "Uzun bir çizgi indir. Çizginin ortasına dön. Sağ yanına yuvarlak bir karın çiz."
+  },
+  {
+    "id": "03",
+    "upper": "C",
+    "lower": "c",
+    "name": "ce",
+    "example": "Ceviz",
+    "second": "ceylan",
+    "word": "cam",
+    "units": [
+      "c",
+      "am"
+    ],
+    "target": "ceviz",
+    "big": "Sağı açık bir yay çiz.",
+    "small": "Aynı yayı daha küçük çiz."
+  },
+  {
+    "id": "04",
+    "upper": "Ç",
+    "lower": "ç",
+    "name": "çe",
+    "example": "Çilek",
+    "second": "çanta",
+    "word": "çay",
+    "units": [
+      "ç",
+      "ay"
+    ],
+    "target": "çilek",
+    "big": "Sağı açık yayın altına küçük bir çengel koy.",
+    "small": "Sağı açık bir yay çiz. Altına küçük bir çengel ekle."
+  },
+  {
+    "id": "05",
+    "upper": "D",
+    "lower": "d",
+    "name": "de",
+    "example": "Davul",
+    "second": "dut",
+    "word": "dal",
+    "units": [
+      "d",
+      "al"
+    ],
+    "target": "davul",
+    "big": "Dik çizgiye sağdan büyük bir yay ekle.",
+    "small": "Önce yuvarlağı çiz, sağındaki uzun çizgiyi indir."
+  },
+  {
+    "id": "06",
+    "upper": "E",
+    "lower": "e",
+    "name": "e",
+    "example": "Elma",
+    "second": "eşek",
+    "word": "el",
+    "units": [
+      "e",
+      "l"
+    ],
+    "target": "e",
+    "big": "Dik çizgiye üstten, ortadan ve alttan üç kol ekle.",
+    "small": "Ortadan sağa git, dön ve küçük yayı tamamla."
+  },
+  {
+    "id": "07",
+    "upper": "F",
+    "lower": "f",
+    "name": "fe",
+    "example": "Fil",
+    "second": "fener",
+    "word": "fil",
+    "units": [
+      "f",
+      "il"
+    ],
+    "target": "fil",
+    "big": "Dik çizgiye üstten ve ortadan iki kol ekle.",
+    "small": "Tepeden kıvrıl, aşağı in ve ortasına çizgi çek."
+  },
+  {
+    "id": "08",
+    "upper": "G",
+    "lower": "g",
+    "name": "ge",
+    "example": "Gemi",
+    "second": "geyik",
+    "word": "göl",
+    "units": [
+      "g",
+      "öl"
+    ],
+    "target": "gemi",
+    "big": "Büyük bir yay çiz, sağda içeri dönen kısa kolu ekle.",
+    "small": "Bir yuvarlak çiz, sağdan aşağı in ve kuyruğu sola kıvır."
+  },
+  {
+    "id": "09",
+    "upper": "Ğ",
+    "lower": "ğ",
+    "name": "yumuşak ge",
+    "example": "Dağ",
+    "second": "ağaç",
+    "word": "dağ",
+    "units": [
+      "da",
+      "ğ"
+    ],
+    "target": "dağ",
+    "big": "Sağa açık bir yay çizip içe doğru kısa bir kol ekle. Tepesine küçük bir yay çiz.",
+    "small": "Yuvarlaktan aşağı bir kuyruk indir. Üstüne küçük bir yay çiz."
+  },
+  {
+    "id": "10",
+    "upper": "H",
+    "lower": "h",
+    "name": "he",
+    "example": "Havuç",
+    "second": "horoz",
+    "word": "havuç",
+    "units": [
+      "ha",
+      "vuç"
+    ],
+    "target": "havuç",
+    "big": "İki dik çizgiyi ortada birleştir.",
+    "small": "Uzun bir çizgi indir. Çizginin ortasına dön. Sağa doğru bir köprü çizip aşağı in."
+  },
+  {
+    "id": "11",
+    "upper": "I",
+    "lower": "ı",
+    "name": "ı",
+    "example": "Ispanak",
+    "second": "ışık",
+    "word": "ılık",
+    "units": [
+      "ı",
+      "lık"
+    ],
+    "target": "ı",
+    "big": "Yukarıdan aşağı düz bir çizgi çek.",
+    "small": "Aşağı kısa bir çizgi çek. Üstü boş kalsın."
+  },
+  {
+    "id": "12",
+    "upper": "İ",
+    "lower": "i",
+    "name": "i",
+    "example": "İnek",
+    "second": "incir",
+    "word": "ip",
+    "units": [
+      "i",
+      "p"
+    ],
+    "target": "i",
+    "big": "Dik çizgiyi çek, tepesine nokta koy.",
+    "small": "Kısa çizginin üstüne bir nokta koy."
+  },
+  {
+    "id": "13",
+    "upper": "J",
+    "lower": "j",
+    "name": "je",
+    "example": "Jeton",
+    "second": "jöle",
+    "word": "jet",
+    "units": [
+      "j",
+      "et"
+    ],
+    "target": "jeton",
+    "big": "Dik çizgiyi aşağı indir, ucunu sola kıvır.",
+    "small": "Satırın altına inip sola kıvrıl, üste nokta koy."
+  },
+  {
+    "id": "14",
+    "upper": "K",
+    "lower": "k",
+    "name": "ke",
+    "example": "Kedi",
+    "second": "kapı",
+    "word": "kış",
+    "units": [
+      "k",
+      "ış"
+    ],
+    "target": "kedi",
+    "big": "Dik çizgiye ortada buluşan iki eğik kol ekle.",
+    "small": "Uzun çizginin yanına küçük eğik kollar çiz."
+  },
+  {
+    "id": "15",
+    "upper": "L",
+    "lower": "l",
+    "name": "le",
+    "example": "Limon",
+    "second": "lale",
+    "word": "lale",
+    "units": [
+      "la",
+      "le"
+    ],
+    "target": "limon",
+    "big": "Aşağı in, sonra sağa dön.",
+    "small": "Yukarıdan aşağı uzun bir çizgi çek."
+  },
+  {
+    "id": "16",
+    "upper": "M",
+    "lower": "m",
+    "name": "me",
+    "example": "Muz",
+    "second": "masa",
+    "word": "masa",
+    "units": [
+      "ma",
+      "sa"
+    ],
+    "target": "muz",
+    "big": "Yukarı çık, ortada bir vadi çiz ve sağdan aşağı in.",
+    "small": "Dik çizginin yanına iki küçük köprü yap."
+  },
+  {
+    "id": "17",
+    "upper": "N",
+    "lower": "n",
+    "name": "ne",
+    "example": "Nar",
+    "second": "nane",
+    "word": "nar",
+    "units": [
+      "n",
+      "ar"
+    ],
+    "target": "nar",
+    "big": "Sol alttan yukarı çık. Çapraz çizerek sağ alta in. Oradan yukarı çık.",
+    "small": "Kısa çizginin yanına bir köprü yap."
+  },
+  {
+    "id": "18",
+    "upper": "O",
+    "lower": "o",
+    "name": "o",
+    "example": "Otobüs",
+    "second": "olta",
+    "word": "ok",
+    "units": [
+      "o",
+      "k"
+    ],
+    "target": "o",
+    "big": "Dönüp başladığın yerde büyük bir halka kapat.",
+    "small": "Aynı halkayı daha küçük çiz."
+  },
+  {
+    "id": "19",
+    "upper": "Ö",
+    "lower": "ö",
+    "name": "ö",
+    "example": "Ördek",
+    "second": "önlük",
+    "word": "ördek",
+    "units": [
+      "ör",
+      "dek"
+    ],
+    "target": "ö",
+    "big": "Büyük halkanın üstüne iki nokta koy.",
+    "small": "Küçük halkanın üstüne iki nokta koy."
+  },
+  {
+    "id": "20",
+    "upper": "P",
+    "lower": "p",
+    "name": "pe",
+    "example": "Panda",
+    "second": "pasta",
+    "word": "pil",
+    "units": [
+      "p",
+      "il"
+    ],
+    "target": "panda",
+    "big": "Dik çizginin üst yarısına yuvarlak bir karın ekle.",
+    "small": "Çizgiyi satırın altına indir ve üstte sağına bir yuvarlak çiz."
+  },
+  {
+    "id": "21",
+    "upper": "R",
+    "lower": "r",
+    "name": "re",
+    "example": "Raket",
+    "second": "radyo",
+    "word": "renk",
+    "units": [
+      "r",
+      "enk"
+    ],
+    "target": "raket",
+    "big": "Sol alttan yukarı çık. Sağa doğru yuvarlak bir karın çiz. Karnın altından sağ alta eğik bir çizgi çek.",
+    "small": "Kısa bir dik çizgi indir. Çizginin ortasına dön. Sağ üste doğru küçük bir yay çiz."
+  },
+  {
+    "id": "22",
+    "upper": "S",
+    "lower": "s",
+    "name": "se",
+    "example": "Saat",
+    "second": "simit",
+    "word": "su",
+    "units": [
+      "s",
+      "u"
+    ],
+    "target": "saat",
+    "big": "Önce sola kıvrıl, sonra sağa dönüp alt kıvrımı yap.",
+    "small": "Aynı iki kıvrımı daha küçük çiz."
+  },
+  {
+    "id": "23",
+    "upper": "Ş",
+    "lower": "ş",
+    "name": "şe",
+    "example": "Şemsiye",
+    "second": "şapka",
+    "word": "şal",
+    "units": [
+      "ş",
+      "al"
+    ],
+    "target": "şemsiye",
+    "big": "İki kıvrım çiz. Alta küçük bir çengel ekle.",
+    "small": "İki küçük kıvrım çiz, altına çengel koy."
+  },
+  {
+    "id": "24",
+    "upper": "T",
+    "lower": "t",
+    "name": "te",
+    "example": "Tren",
+    "second": "tavşan",
+    "word": "at",
+    "units": [
+      "a",
+      "t"
+    ],
+    "target": "tren",
+    "big": "Üstte yatay çizgi çiz, ortasından aşağı in.",
+    "small": "Aşağı inip ucunu kıvır, kısa yatay çizgiyi ekle."
+  },
+  {
+    "id": "25",
+    "upper": "U",
+    "lower": "u",
+    "name": "u",
+    "example": "Uçak",
+    "second": "uçurtma",
+    "word": "un",
+    "units": [
+      "u",
+      "n"
+    ],
+    "target": "u",
+    "big": "Aşağı in, altta kıvrıl, yeniden yukarı çık.",
+    "small": "Alttan kıvrılıp yukarı çık, sağa kısa çizgi indir."
+  },
+  {
+    "id": "26",
+    "upper": "Ü",
+    "lower": "ü",
+    "name": "ü",
+    "example": "Üzüm",
+    "second": "ütü",
+    "word": "üç",
+    "units": [
+      "ü",
+      "ç"
+    ],
+    "target": "ü",
+    "big": "Büyük u çiz, üstüne iki nokta koy.",
+    "small": "Küçük u çiz, üstüne iki nokta koy."
+  },
+  {
+    "id": "27",
+    "upper": "V",
+    "lower": "v",
+    "name": "ve",
+    "example": "Vazo",
+    "second": "vapur",
+    "word": "vazo",
+    "units": [
+      "va",
+      "zo"
+    ],
+    "target": "vazo",
+    "big": "Eğik çizgiyle aşağı in, sonra eğik çizgiyle yukarı çık.",
+    "small": "Aynı iki çizgiyi daha kısa çiz."
+  },
+  {
+    "id": "28",
+    "upper": "Y",
+    "lower": "y",
+    "name": "ye",
+    "example": "Yelkenli",
+    "second": "yaprak",
+    "word": "yaz",
+    "units": [
+      "y",
+      "az"
+    ],
+    "target": "yelkenli",
+    "big": "Sol üstten ortaya in, sağ üste çık. Kalemini ortaya getir, aşağıya düz bir çizgi çek.",
+    "small": "İki eğik çizgi çiz, sağdakini satırın altına uzat."
+  },
+  {
+    "id": "29",
+    "upper": "Z",
+    "lower": "z",
+    "name": "ze",
+    "example": "Zürafa",
+    "second": "zeytin",
+    "word": "zil",
+    "units": [
+      "z",
+      "il"
+    ],
+    "target": "zürafa",
+    "big": "Sağa git, çapraz in ve altta sağa git.",
+    "small": "Aynı yolu küçük çizgilerle izle."
+  }
+]

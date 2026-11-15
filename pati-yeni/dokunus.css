@@ -6,6 +6,7 @@
 .dok-izler{position:absolute;inset:0;pointer-events:none}
 .dok-gerec{position:absolute;width:clamp(45px,10vh,92px);height:clamp(45px,10vh,92px);object-fit:contain;pointer-events:none;opacity:0;transform:translate(-13%,-75%) rotate(8deg);transform-origin:20% 78%;transition:rotate .16s ease}
 .dok-gerec[style]{opacity:1}.dok-gerec.temas{rotate:-14deg}
+.dokunus[data-input=touch] .dok-gerec:not(.temas){opacity:0}
 .dokunus[data-phase=durula] .dok-gerec.temas{rotate:-42deg}
 .dok-gosterge{position:absolute;top:clamp(52px,18%,105px);left:max(3%,env(safe-area-inset-left));padding:.45em .8em .58em;border:2px solid #8a735c;border-radius:18px;background:#fff3d8;color:#594435;display:grid;justify-items:center;gap:.12em;font:600 clamp(12px,2.75vh,20px)/1.15 Fredoka,sans-serif}
 .dok-yildiz{display:flex;gap:.18em;font-size:1.6em;line-height:1;color:#dbd1b3}.dok-yildiz i{font-style:normal;-webkit-text-stroke:1px #887458}.dok-yildiz .dolu{color:#ffbc48;-webkit-text-stroke-color:#966a33}

@@ -4,7 +4,7 @@
  *
  * - Kayıtlar: `minkino-*` localStorage kayıtları @capacitor/preferences'a yansır; silinmişse geri yüklenir.
  * - Arka plan (@capacitor/app appStateChange): ses, müzik, konuşma ve mikrofon durur; geri gelince ses devam eder.
- * - Ekran yönü (@capacitor/screen-orientation): telefonda geniş sahneli oyunlar yatay, öbür sayfalar serbest; tablet
+ * - Ekran yönü (@capacitor/screen-orientation): telefonda menü ve oyunlar yatay, öbür sayfalar serbest; tablet
  *   serbest, film oynarken yatay (src/kabuk/yon.ts, src/kabuk/yon-yonetici.ts).
  * - Android geri tuşu (@capacitor/app backButton): pencere kapanır / oyundan ana menüye / ana menüden çıkış.
  */
@@ -20,10 +20,8 @@ if (Capacitor.isNativePlatform()) kabuguKur();
 
 function kabuguKur() {
   // ---------------------------------------------------------------- ekran yönü (önce: sayfa ilk çizilmeden)
-  // Telefonda geniş sahneli oyunlar (src/kabuk/yon.ts → YATAY_SAYFALAR) yatay kilitli, menü / Kartlar / Canlan
-  // cihazı izler; tablet her yerde serbest, film oynarken yatay. Sayfalar arası geçişte gidilecek sayfanın yönü krem
-  // perde inerken ayarlanır (src/ui/gecis.ts → sayfadanCik): yatay oyun dikey açılıp sonra dönmez; menüye dönünce kilit
-  // kalkar. Katlanan telefon açılınca tablet sayılır (her seferinde ekrana yeniden bakılır).
+  // Telefonda menü ve oyunlar yataydır. Geçiş perdesi inerken hedef yön ayarlanır.
+  // Kısa kenar her geçişte yeniden ölçülür; açılan katlanabilir cihaz tablet sayılabilir.
   const gorunum = matchMedia('(orientation: landscape)');
   const yon = yonYoneticisi({
     eklenti: ScreenOrientation as unknown as YonEklentisi,

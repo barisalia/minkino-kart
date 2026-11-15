@@ -1,8 +1,9 @@
+import { bosSergi,sergiyiOku,type SergiDefteri } from './sergi-defteri';
 import { izleriOku, type Iz } from './defter';
 import { bosPano,panoyuOku,type PanoKaydi } from './pano-resmi';
 
 interface Etkinlik {
-  set:string; tur:'say'|'sekil'|'sira'|'buyume'|'ritim'|'defter'|'pano'|'album'; adlar:string[];
+  set:string; tur:'say'|'sekil'|'sira'|'buyume'|'ritim'|'defter'|'pano'|'album'|'yazi'; adlar:string[];
   adet?:number; dizi?:number[]; bosluklar?:number[];
 }
 export const etkinlikler:Etkinlik[]=[
@@ -21,12 +22,14 @@ export const etkinlikler:Etkinlik[]=[
   {set:'resim',tur:'defter',adlar:[]},
   {set:'album',tur:'album',adlar:[]},
   {set:'pano',tur:'pano',adlar:[]},
+  {set:'yazi',tur:'yazi',adlar:[]},
 ];
+export const yaziBaslangici=etkinlikler.findIndex(e=>e.tur==='yazi');
 export const atolyeBaslangici=etkinlikler.findIndex(e=>e.set==='tohum');
 export const defterBaslangici=etkinlikler.findIndex(e=>e.tur==='defter');
 export const panoBaslangici=etkinlikler.findIndex(e=>e.tur==='pano');
-export interface DersDefteri { tur:number; secim:number|null; isaret:number[]; sira:number; ikinciRitim:boolean; onay:boolean; izler:Iz[]; saydiklarim:number[]; harf:Iz[]; resim:Iz[]; pano:PanoKaydi }
-export const bosDers=():DersDefteri=>({tur:0,secim:null,isaret:[],sira:0,ikinciRitim:false,onay:false,izler:[],saydiklarim:[],harf:[],resim:[],pano:bosPano()});
+export interface DersDefteri { sergi:SergiDefteri; arada:boolean; tur:number; secim:number|null; isaret:number[]; sira:number; ikinciRitim:boolean; onay:boolean; izler:Iz[]; saydiklarim:number[]; harf:Iz[]; resim:Iz[]; pano:PanoKaydi }
+export const bosDers=():DersDefteri=>({sergi:bosSergi(),arada:false,tur:0,secim:null,isaret:[],sira:0,ikinciRitim:false,onay:false,izler:[],saydiklarim:[],harf:[],resim:[],pano:bosPano()});
 export function cevapSirasi(tur:Etkinlik,d:DersDefteri){
   const dizi=tur.dizi!;
   if(tur.bosluklar)return tur.bosluklar.map(i=>dizi[i%dizi.length]);
@@ -36,10 +39,13 @@ export function cevapSirasi(tur:Etkinlik,d:DersDefteri){
 export function dersiOku(a?:Partial<DersDefteri>|null):DersDefteri {
   const d=bosDers();
   if(!a || !Number.isInteger(a.tur) || a.tur!<0 || a.tur!>etkinlikler.length)return d;
-  d.tur=a.tur!;d.izler=izleriOku(a.izler).filter(i=>i.asama==='ucgen'||i.asama==='kare');
+  d.tur=a.tur===15 && Array.isArray((a as {baski?:unknown}).baski)?3:a.tur!;d.izler=izleriOku(a.izler).filter(i=>i.asama==='ucgen'||i.asama==='kare');
   if(Array.isArray(a.saydiklarim))d.saydiklarim=a.saydiklarim.slice(0,3).filter(i=>Number.isInteger(i)&&i>=0&&i<6);
   d.harf=izleriOku(a.harf).filter(i=>i.asama==='harf');
   d.resim=izleriOku(a.resim).filter(i=>i.asama==='resim');
+  d.sergi=sergiyiOku(a.sergi);
+  if(d.tur===yaziBaslangici&&!a.sergi)d.tur=etkinlikler.findIndex(e=>e.tur==='album');
+  d.arada=a.arada===true&&a.tur===panoBaslangici;
   d.pano=panoyuOku(a.pano);
   if(d.tur>defterBaslangici&&d.tur<panoBaslangici&&!d.harf.length)d.tur=defterBaslangici;
   const tur=etkinlikler[d.tur];if(!tur)return d;
@@ -56,5 +62,5 @@ export function dersiOku(a?:Partial<DersDefteri>|null):DersDefteri {
 export function sonra(d:DersDefteri){
   const saydiklarim=d.saydiklarim.slice();
   if(etkinlikler[d.tur]?.tur==='say' && d.secim!==null)saydiklarim[Math.floor(d.tur/3)]=d.secim;
-  Object.assign(d,bosDers(),{tur:d.tur+1,izler:d.izler,saydiklarim,harf:d.harf,resim:d.resim,pano:d.pano});
+  Object.assign(d,bosDers(),{tur:d.tur+1,sergi:d.sergi,izler:d.izler,saydiklarim,harf:d.harf,resim:d.resim,pano:d.pano});
 }

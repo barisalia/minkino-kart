@@ -68,7 +68,7 @@
 .ym-ekran .ym-ses .ikon { display: grid; width: 60%; height: 60%; }
 .ym-ekran .ym-ses svg, .ym-ekran .ym-yas .ikon svg, .ym-ekran .ym-yas-yildiz svg { width: 100%; height: 100%; }
 .ym-ekran .ym-yas .ikon { display: grid; width: 26px; height: 26px; }
-.ym-ekran .ym-yas-yildiz .ikon { display: grid; width: clamp(22px, 9vh, 42px); height: clamp(22px, 9vh, 42px); filter: drop-shadow(0 2px 0 var(--ym-kontur)); }
+.ym-ekran .ym-yas-yildiz .ikon { display: grid; width: clamp(14px, min(19cqw, 5vh), 38px); height: clamp(14px, min(19cqw, 5vh), 38px); filter: drop-shadow(0 2px 0 var(--ym-kontur)); }
 
 /* İç sayfa: soldaki bölmeler ve içerik kartları daha büyük görseller */
 .ym-ekran .ym-yan { width: clamp(92px, 14vw, 150px); }
@@ -85,18 +85,18 @@
 .ym-ekran .ym-yas { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px 4px 10px; font-size: clamp(18px, 4.5vh, 24px); font-weight: 700; line-height: 1; height: 42px; }
 .ym-ekran .ym-yas svg { width: 26px; height: 26px; }
 
-/* Yaş seçimi katmanı: menüyle aynı mavi zemin, dört büyük kart */
+/* Yaş seçimi katmanı: menüyle aynı mavi zemin, beş büyük kart */
 .ym-ekran .ym-yas-katman { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; gap: clamp(8px, 2vh, 16px); padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: #56b7ee; animation: ym-yas-gel 0.25s ease-out; }
 @keyframes ym-yas-gel { from { opacity: 0; transform: scale(0.97); } }
 .ym-ekran .ym-yas-ust { display: flex; justify-content: space-between; flex: 0 0 auto; }
 .ym-ekran .ym-yas-ust .ym-yuvarlak:only-child { margin: 0 auto 0 0; }
-.ym-ekran .ym-yas-kartlar { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 2.4vw, 28px); padding-bottom: 6px; }
-.ym-ekran .ym-yas-kart { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(4px, 2vh, 16px); min-height: 0; padding: 8px; background: var(--renk); border: 4px solid var(--ym-kontur); border-radius: clamp(20px, 5vh, 34px); box-shadow: 0 clamp(5px, 1.4vh, 9px) 0 var(--ym-kontur); color: #fff; cursor: pointer; transition: transform 0.12s ease; }
+.ym-ekran .ym-yas-kartlar { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(12px, 2.4vw, 28px); padding-bottom: 6px; }
+.ym-ekran .ym-yas-kart { container-type: inline-size; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(4px, 2vh, 16px); min-height: 0; padding: 8px; background: var(--renk); border: 4px solid var(--ym-kontur); border-radius: clamp(20px, 5vh, 34px); box-shadow: 0 clamp(5px, 1.4vh, 9px) 0 var(--ym-kontur); color: #fff; cursor: pointer; transition: transform 0.12s ease; }
 .ym-ekran .ym-yas-kart:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ym-kontur); }
 .ym-ekran .ym-yas-kart[aria-pressed='true'] { outline: 5px solid #fff; outline-offset: 4px; }
-.ym-ekran .ym-yas-rakam { display: grid; place-items: center; width: min(78%, 30vh); aspect-ratio: 1; border: 4px solid var(--ym-kontur); border-radius: 50%; background: #fffefa; color: var(--ym-kontur); font-size: clamp(48px, 20vh, 120px); font-weight: 700; line-height: 1; }
+.ym-ekran .ym-yas-rakam { display: grid; place-items: center; width: min(78%, 30vh); aspect-ratio: 1; border: 4px solid var(--ym-kontur); border-radius: 50%; background: #fffefa; color: var(--ym-kontur); font-size: clamp(24px, min(45cqw, 14vh), 105px); font-weight: 700; line-height: 1; }
 .ym-ekran .ym-yas-yildiz { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; max-width: 92%; }
-.ym-ekran .ym-yas-yildiz svg { width: clamp(22px, 9vh, 42px); height: clamp(22px, 9vh, 42px); color: #ffd23f; filter: drop-shadow(0 2px 0 var(--ym-kontur)); }
+.ym-ekran .ym-yas-yildiz svg { width: clamp(14px, min(19cqw, 5vh), 38px); height: clamp(14px, min(19cqw, 5vh), 38px); color: #ffd23f; filter: drop-shadow(0 2px 0 var(--ym-kontur)); }
 
 @media (max-height: 450px) {
   .ym-ekran .ym-ana { width: 100%; gap: 12px 16px; padding: 0 0 6px; }

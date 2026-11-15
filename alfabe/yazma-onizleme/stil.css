@@ -1,0 +1,33 @@
+@import '@fontsource/fredoka/latin-500.css';
+@import '@fontsource/fredoka/latin-ext-500.css';
+*{box-sizing:border-box}
+:root{font-family:Fredoka,"Trebuchet MS",sans-serif;color:#163f39;background:#ffcf9c}
+body{margin:0}
+main{width:min(100%,1340px);margin:auto;min-height:100svh;display:flex;flex-direction:column}
+header{padding:clamp(10px,2vh,22px) 3%;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:clamp(21px,3.8vh,40px);margin:0;font-weight:500}
+header button,header a{display:grid;place-items:center;min-width:42px;width:clamp(42px,4vw,60px);aspect-ratio:1;border-radius:50%;background:#fffae8;border:2px solid #282b20;color:#16594e;padding:9px}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+header svg{width:100%;height:100%}
+.zemin{display:grid;grid-template-columns:1fr 1fr;gap:2.8%;padding:0 4%;flex:1;align-items:end}
+.ders{min-width:0;position:relative;padding-top:min(18vh,125px)}
+#ceren{position:absolute;inset:0 auto auto 1%;width:48%;height:calc(min(18vh,125px) + 3px);overflow:hidden}
+#ceren img{position:absolute;left:50%;top:0;transform:translateX(-50%);width:auto;height:108%}
+.kart{position:relative;display:block;overflow:hidden;background:#fffae9;border:2.5px solid #292722;border-radius:clamp(16px,3vw,35px);height:clamp(170px,53vh,600px)}
+.kart>div,.kart svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.kart svg{overflow:hidden;touch-action:none;user-select:none}
+.iz,.murekkep,.ornek-kalem,.ornek-yol{fill:none;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.iz,.ornek-yol{stroke:#c7e5ce}
+.murekkep,.ornek-kalem{stroke:#04695e}
+.baslangic,.kalemucu{fill:#f07755}.kalemucu{opacity:.58}.kilavuz{display:none}
+footer{min-height:84px;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px}
+footer p{margin:0;font-size:clamp(16px,2vw,26px)}
+#oynat{padding:9px 20px;border:2px solid #153e38;background:#17695b;color:white;border-radius:24px;font-size:clamp(16px,2vw,23px)}
+[hidden]{display:none!important}
+button:focus-visible,a:focus-visible{outline:3px solid #e96c4e;outline-offset:3px}
+@media(max-aspect-ratio:1/1){
+main{min-height:100svh}header{margin-bottom:auto}.zemin{flex:0;gap:2%;padding:0 2%}footer{margin-bottom:auto}.ders{padding-top:100px}#ceren{width:77%;height:102px}.kart{height:clamp(212px,62vw,390px)}footer{flex-direction:column;gap:5px;min-height:104px}
+}
+@media(orientation:landscape) and (max-height:470px){
+header{padding:4px 2%}.ders{padding-top:55px}#ceren{height:58px}.kart{height:clamp(128px,56svh,250px)}footer{min-height:41px;padding:3px}#oynat{font-size:15px;padding:5px 12px}
+}

@@ -31,8 +31,11 @@ function damlaFilmOnizleme(): Plugin {
 // /gizlilik/ ve /sartlar/ mağazaların istediği sade sayfalar.
 const SAYFALAR = {
   menu: 'index.html',
+  sef: 'sef/index.html',
   secimliFilm: 'kino-ile-sen-sec/index.html',
   hazirlik: 'hazirlik/index.html',
+  matematik: 'matematik/index.html',
+  alfabe: 'alfabe/index.html',
   kartlar: 'kartlar/index.html',
   canlan: 'canlan/index.html',
   sesTesti: 'ses-testi/index.html',
@@ -81,8 +84,9 @@ function uygulamaKabugu(): Plugin {
       handler: (html) =>
         html.replace(/<head>/i, '<head>\n    <style>html,body{background:#FFF4DD}</style>\n    <script type="module" src="/src/kabuk/yerel.ts"></script>'),
     },
-    closeBundle() {
-      for (const d of UYGULAMADA_YOK_DOSYA) rmSync(resolve(__dirname, 'dist', d), { recursive: true, force: true });
+    writeBundle({ dir }) {
+      if (!dir) return;
+      for (const d of UYGULAMADA_YOK_DOSYA) rmSync(resolve(dir, d), { recursive: true, force: true });
     },
   };
 }

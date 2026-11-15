@@ -1,0 +1,50 @@
+.pastane-sunum{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.pastane-porsiyonu{display:block;position:relative;width:70%;height:94%;isolation:isolate;pointer-events:none}
+.pastane-porsiyonu>img{position:absolute;object-fit:contain;pointer-events:none}
+.pastane-porsiyonu>.pastane-porsiyon-tabagi{width:100%;height:38%;left:0;bottom:0}
+.pastane-porsiyonu>.tatli-yiyecek{width:70%;height:79%;left:15%;bottom:16%}
+.pastane-porsiyonu[data-tur=kurabiye]>.tatli-yiyecek{width:42%;left:29%;height:36%;bottom:10%;transform:scaleY(.78) rotate(-5deg)}
+.pastane-porsiyonu[data-tur=meyveli-tart]>.tatli-yiyecek{height:68%;bottom:17%}
+.pastane-tabaklari{display:grid;gap:1cqh;position:absolute;left:100%;top:50%;transform:translateY(-50%)}
+.pastane-tabaklari button{min-width:42px;width:9cqh;height:max(32px,8cqh);border:2px solid #704954;border-radius:1.7cqh;background:var(--sef-kumanda-fonu, #fff7eb);padding:4px}
+.pastane-tabaklari img{width:100%;height:100%;object-fit:contain}
+.pastane-tabaklari [aria-pressed=true]{border-color:#285946;background:#bae6c6;box-shadow:0 .5cqh #4e8167}
+.tepsi-yuva>.pastane-porsiyonu{width:95%;height:98%}
+.pastane-porsiyonu[data-fazla=true] .tabaktaki-tatli{filter:brightness(.79) saturate(.88)}
+.tatli-yiyecek{position:absolute;display:grid;place-items:center;container-type:size}
+.tatli-katlari{position:relative;display:block;width:min(100%,calc(100cqh * var(--oran)));aspect-ratio:var(--oran)}
+.tatli-katlari>.tabaktaki-tatli{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.tatli-katlari>.tatli-susu{position:absolute;width:var(--sus-en);height:auto;aspect-ratio:1;object-fit:contain;left:var(--sus-x);top:var(--sus-y);transform:translate(-50%,-50%) rotate(var(--sus-aci));clip-path:inset(0 0 var(--sus-gomulu) 0)}
+.tatli-susleme-rafi{display:flex;align-items:center;gap:clamp(2px,1cqh,6px);padding:clamp(3px,1.2cqh,9px);border:2px solid #412e30;border-radius:3cqh;background:var(--sef-kumanda-fonu, #fff3d6);box-shadow:0 .65cqh #987453;pointer-events:auto}
+.tatli-sus-gozleri{display:flex;align-items:center;gap:clamp(2px,.8cqh,6px)}
+.tatli-sus-dugmesi,.tatli-sus-yon{display:grid;place-items:center;position:relative;width:clamp(36px,11cqh,66px);height:clamp(36px,11cqh,66px);padding:.65cqh;border:1.5px solid #aa8066;background:var(--sef-kumanda-fonu, #fffaf0);border-radius:2cqh;touch-action:none}
+.tatli-sus-dugmesi img{width:100%;height:100%;min-height:0;min-width:0}
+.tatli-sus-dugmesi[aria-pressed=true]{background:#b8e6cd;border-color:#377353;box-shadow:inset 0 0 0 1px #377353}
+.tatli-sus-yon{width:clamp(32px,8.2cqh,52px);background:#ffe8a1;border-color:#674c3a}
+.tatli-sus-yon .ikon{width:55%;height:55%}
+.tatli-sus-yon:disabled{opacity:.35}
+.tatli-sus-yon[hidden]{display:none}
+.tatli-sus-elde{position:fixed;z-index:9999;width:clamp(34px,10vh,85px);height:clamp(34px,10vh,85px);object-fit:contain;transform:translate(-50%,-50%);pointer-events:none}
+.sus-istek-rozeti,.tepsi-istek>.sus-istek-rozeti{position:relative;flex:none;display:grid;place-items:center;width:clamp(34px,10cqh,75px);height:clamp(34px,10cqh,75px);margin:0 .5cqw 0 1cqw;border-left:2px dashed #b38358;padding-left:1.4cqw}
+.sus-istek-rozeti img{width:100%;height:100%;object-fit:contain}
+.sus-istek-rozeti b{position:absolute;right:-1cqh;bottom:-1cqh;border:1px solid #744a27;background:#ffe18f;border-radius:2cqh;padding:.1cqh .8cqh;color:#603b26;font-weight:800;font-size:clamp(10px,2.5cqh,17px);line-height:1.2;font-family:inherit}
+.sus-istek-rozeti[data-uydu=true] b{background:#ace9b8}
+.tatli-sus-dugmesi[data-istenen=true]:not([aria-pressed=true]){border-color:#a16426;background:#ffebb4}
+
+.tepsi-tadim-parcalar>.pastane-porsiyonu,.tepsi-tadim-tabak>.pastane-porsiyonu{width:100%;height:100%}
+
+.tatli-sus-ucusta{position:absolute;z-index:6;display:block;pointer-events:none;object-fit:contain}
+
+.sutlac-porsiyonu>.tatli-yiyecek{left:3%;width:94%;height:94%;bottom:3%}
+.sutlac-porsiyonu .tatli-katlari{--oran:1.45749}
+.sutlac-porsiyonu .tatli-katlari>.sl-kase{display:block;width:100%;height:100%}
+.tepsi-sahnesi[data-salon] .restoran-siparis>.sl-kase.tepsi-gida {width:52%;height:auto;aspect-ratio:720/494}
+.tepsi-yuva[data-parca=sutlac][data-tukendi=true] .tatli-yiyecek{visibility:visible}
+
+/* Plate artwork shares a centre line with the other servings, even in a tall tray slot. */
+:is(.tepsi-yuva,.sirali-tabak,.sirali-yer,.sirali-istek,.araba-tabak)>.pastane-porsiyonu:not(.sutlac-porsiyonu){container-type:size}
+:is(.tepsi-yuva,.sirali-tabak,.sirali-yer,.sirali-istek,.araba-tabak)>.pastane-porsiyonu:not(.sutlac-porsiyonu)>.pastane-porsiyon-tabagi{height:62%;top:27%;bottom:auto}
+:is(.tepsi-yuva,.sirali-tabak,.sirali-yer,.sirali-istek,.araba-tabak)>.pastane-porsiyonu:is([data-tur="minik-kek"],[data-tur=dondurma],[data-tur="meyveli-tart"])>.tatli-yiyecek{bottom:30%;height:66%}
+:is(.tepsi-yuva,.sirali-tabak,.sirali-yer,.sirali-istek,.araba-tabak)>.pastane-porsiyonu[data-kurabiye-tepsi=true]>.tatli-yiyecek{width:min(82%,124cqh);height:60%;left:50%;bottom:20%;translate:-50% 0}
+:is(.tepsi-yuva,.sirali-tabak,.sirali-yer,.sirali-istek,.araba-tabak)>.pastane-porsiyonu[data-tur=kurabiye]>.pastane-porsiyon-tabagi{height:80%;top:12%}
+:is(.tepsi-yuva,.sirali-tabak,.sirali-yer,.sirali-istek,.araba-tabak)>.pastane-porsiyonu[data-tur=kurabiye]:not([data-kurabiye-tepsi=true])>.tatli-yiyecek{left:27%;width:46%;height:50%;bottom:24%;transform:rotate(-5deg)}

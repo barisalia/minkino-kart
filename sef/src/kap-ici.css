@@ -1,0 +1,63 @@
+.oyun-alani:has(.sef-kap[data-yemek="corba"])::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  mask: url("../../assets/sef/efekt/tencere-sivi-maske.png") center / 100% 100% no-repeat;
+  transition: background-color .6s ease;
+}
+.oyun-alani:has(.sef-kap[data-yemek="corba"][data-tur="1"])::before {background-color:#edab42}
+.oyun-alani:has(.sef-kap[data-yemek="corba"][data-tur="2"])::before {background-color:#f58635}
+.oyun-alani:has(.sef-kap[data-yemek="corba"][data-tur="3"])::before {background-color:var(--corba-renk,#ef642c)}
+.sef-kap-parcasi {
+  position:absolute; height:auto; max-height:60%; translate:-50% -50%;
+  object-fit:contain; transform:scaleY(.86);
+}
+.sef-kap[data-yemek="corba"][data-tur="1"] .sef-kap-parcasi:not([data-malzeme="havuc"]) {scale:.85;opacity:.8}
+.sef-kap[data-yemek="corba"][data-tur="2"] .sef-kap-parcasi:not([data-malzeme="havuc"]) {scale:.66;opacity:.53}
+.sef-kap[data-yemek="corba"][data-tur="3"] .sef-kap-parcasi {scale:.82;opacity:1}
+.oyun-alani[data-kaptan-alinan="1"]:has(.sef-kap[data-yemek="corba"])::before {
+  background: radial-gradient(ellipse 25% 18% at 49.4% 58%,var(--corba-renk,#ef642c) 97.5%,#b64b27 98.1%,#f7e6be 99%);
+}
+.oyun-alani[data-kaptan-alinan="2"]:has(.sef-kap[data-yemek="corba"])::before {background:var(--sef-kumanda-fonu, #f7e6be)}
+[data-kaptan-alinan="1"] .sef-kap[data-yemek="corba"] .sef-kap-parcasi:nth-last-child(even),
+[data-kaptan-alinan="2"] .sef-kap[data-yemek="corba"] .sef-kap-parcasi {visibility:hidden}
+[data-kaptan-alinan="1"] .sef-kap[data-yemek="corba"] .sef-kap-parcasi {translate:-50% 0%}
+@media(prefers-reduced-motion:reduce){.oyun-alani::before{transition:none!important}}
+.salata-porsiyonu { position:relative; display:grid; place-items:center; width:100%; height:100%; container-type:size; }
+.salata-kase-govdesi { display:block; position:relative; width:min(100cqw,137.5465cqh); aspect-ratio:740/538; }
+.salata-kase-taban,.salata-kase-on { position:absolute; inset:0; width:100%; height:100%; }
+.salata-kase-on { z-index:30; pointer-events:none; }
+.salata-kucuk-ic { position:absolute; inset:1% 3% 33%; pointer-events:none; isolation:isolate;  }
+.salata-lokmasi { position:absolute; height:auto; max-height:none; transform:none; translate:-50% -50%; }
+.sef-kap[data-yemek="salata"] { inset:-9% 0 0; clip-path:ellipse(49% 51% at 50% 49%); isolation:isolate; }
+[data-kaptan-alinan="1"] .sef-kap[data-yemek="salata"] [data-masa="1"],
+[data-kaptan-alinan="2"] .sef-kap[data-yemek="salata"] .salata-lokmasi { visibility:hidden; }
+.corba-porsiyonu {display:grid;place-items:center;width:100%;height:100%;container-type:size}
+.corba-kase-govdesi{display:block;position:relative;width:min(100cqw,133.57cqh);aspect-ratio:740/554}
+.corba-kase-taban,.corba-kase-on{position:absolute;inset:0;width:100%;height:100%}
+.corba-kase-on{clip-path:polygon(0 32%,5% 45%,14% 55%,25% 62%,39% 66%,50% 67.4%,61% 66%,75% 62%,86% 55%,95% 45%,100% 32%,100% 100%,0 100%)}
+.corba-yuzeyi{position:absolute;left:4.8%;top:9%;width:90.4%;height:55%;overflow:hidden;border-radius:50%;border:1px solid #6b3526}
+.corba-porsiyonu[data-doluluk="1"] .corba-yuzeyi{left:11%;top:25%;width:78%;height:39%}
+.corba-lokmasi{position:absolute;width:20%;height:33%;object-fit:contain;translate:-50% -45%}
+.kepce-corba{display:grid;place-items:center;border-radius:50%;border:1px solid #693729;overflow:hidden}
+.kepce-corba img{width:40%;height:90%;object-fit:contain}
+[data-alet="salata"] .masa-lokmalari{aspect-ratio:1.4}
+.masa-lokmalari img{position:absolute;left:0;top:16%;width:77%;height:80%;object-fit:contain;rotate:-14deg}
+.masa-lokmalari img:nth-child(2){left:28%;top:13%;width:65%;rotate:17deg}
+.masa-lokmalari img:nth-child(3){left:19%;top:32%;width:61%;rotate:4deg}
+.fis-kivam{display:block;width:8.5cqh;height:100%}
+.fis .corba-lokmasi{width:20%;height:33%}
+.sebze-tadim .tadim-kasesi .corba-lokmasi{width:20%;height:33%}
+.sebze-tadim .tadim-kasesi .corba-kase-taban,.sebze-tadim .tadim-kasesi .corba-kase-on{width:100%;height:100%}
+.tadim-kasesi{display:inline-block;width:8cqh;height:6cqh}
+.corba-blender{position:absolute;left:78%;top:21%;width:9%;height:35%;border:.36cqh solid #654231;border-radius:4cqh;background:var(--sef-kumanda-fonu, #fff4cf);box-shadow:0 .55cqh #a77955;display:grid;place-items:center;touch-action:none;z-index:3}
+.corba-blender img{position:absolute;inset:5% 7%;width:86%;height:90%;object-fit:contain;rotate:7deg}
+.corba-blender[aria-pressed="true"]{background:#c4f3da;border-color:#396549}
+.corba-blender.surukleniyor img{opacity:.18}
+.blender-elde{position:absolute;width:auto;translate:-50% -91%;rotate:-6deg;transform-origin:50% 90%;pointer-events:none;z-index:7}
+.blender-noktalari{position:absolute;inset:0;pointer-events:none;z-index:4}
+.blender-noktasi{position:absolute;width:max(38px,14%);height:max(36px,24%);translate:-50% -50%;border-radius:50%;opacity:0;pointer-events:none;touch-action:none}
+.ezme-secili .blender-noktasi,.ezme-yakin .blender-noktasi{opacity:1;border:.38cqh dashed #623d24;background:#ffdf8735}
+.ezme-secili .blender-noktasi{pointer-events:auto}
+.ezme-secili .porsiyon-kaynak{visibility:hidden}
+.blender-halka{position:absolute;width:19%;height:15%;border:.5cqh solid #ffe9a9;border-radius:50%;pointer-events:none;translate:-50% -50%;animation:corba-dalga .42s ease-out both}
+@keyframes corba-dalga{from{scale:.45;opacity:1}to{scale:1.7;opacity:0}}
+@media(prefers-reduced-motion:reduce){.blender-halka{animation:none}}

@@ -1,5 +1,7 @@
 # Devir teslim: bulut yönetici (Yönetici 2) → yerel yönetici
 
+13 Kasım 2026 · [Ortak karakter animasyonu ve sheet kuralı](kalite/minkino-gorsel-rehberi/OKU.md). Tek ImageGen çağrısında çok yakın 1–2, orta 4–6, uzak 8–10 poz. Sahneleri ve fonları ayrı tek görsel üretin. Önce ortak arşivi kontrol edin.
+
 **Tarih:** 2026-09-26. Bulut oturumu kapanıyor; bundan sonra bütün işi yerel ekip yürütür.
 
 Önce bu dosyayı, sonra şunları okuyun:

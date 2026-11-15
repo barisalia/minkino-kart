@@ -1,0 +1,58 @@
+/* The kitchen palette belongs to the button itself. Nested food drawings keep their own fills. */
+button { --sef-kumanda-fonu: #a6e3f5; }
+:where(button *) { --sef-kumanda-fonu: initial; }
+button:has(> .sef-simge-geriAl, > .sef-simge-tekrar, > .sef-simge-geri) { --sef-kumanda-fonu: #c7bbfa; }
+button:has(> .sef-simge-onay, > .sef-simge-servis) { --sef-kumanda-fonu: #9be5bb; }
+button:has(> .sef-simge-ates) { --sef-kumanda-fonu: #ffb194; }
+button:has(> .sef-simge-album), .tatli-giris { --sef-kumanda-fonu: #ffc0db; }
+#sef .dugme > .sef-simge:only-child { width:70%; height:70%; }
+#sef .tarif-raf-oku { background:#b0ddfa; box-shadow:0 2px #546788; }
+#sef .tarif-raf-oku .ikon { width:24px; height:24px; }
+#sef .sef-tepsi-kapisi { background:#83d9d2; box-shadow:0 .65cqh #417d80; }
+#sef .kapi-gun { background:#b4eafb; }
+#sef .kapi-tabela { background:#8de2b8; }
+#sef .siparis-karti .kart-yildiz { background:#e4fff6; padding:.4cqh; border:0; border-radius:35%; }
+#sef .sef-yildizlar { background:#4a3c67; border:0; border-radius:1.4cqh; padding:.5cqh .8cqh; gap:.3cqh; pointer-events:none; }
+.sef-yildizlar i[data-dolu=false], .pz-bos-yildiz { --sef-yildiz:#8d86a5; }
+.sef-yildizlar i[data-dolu=false] path, .pz-bos-yildiz path { stroke:#655c76; }
+@media(prefers-reduced-motion:no-preference) {
+  .sef-yildizlar i[data-dolu=true] { animation:sef-puan-belir .28s backwards; }
+  .sef-yildizlar i:nth-child(2) { animation-delay:.12s; }
+  .sef-yildizlar i:nth-child(3) { animation-delay:.24s; }
+}
+@keyframes sef-puan-belir { from {scale:.65; opacity:.4} to {scale:1; opacity:1} }
+#sef .om-malzeme { background:#a9ddf6; border:2px solid #33304a; }
+#sef .om-malzeme[aria-pressed=true] { background:#89e4b4; }
+#sef .om-alan .om-basla { background:#ffae8c; }
+#sef .om-alan .om-geri-al { background:#c6b9fb; }
+#sef .om-alan button:disabled:not(.om-katla) { opacity:.65; }
+.sus-istek-rozeti b>.sef-simge { width:1em; height:1em; }
+#sef { background:#499aab; }
+#sef .siparisler[data-raf="2"] { grid-template:repeat(3,minmax(0,1fr)) / repeat(3,minmax(0,1fr)); gap:1.7cqh 1.6cqw; }
+#sef .siparisler[data-raf="2"] .raf-gorseli img { width:100%; height:100%; margin:0; object-fit:contain; }
+#sef .siparis-karti[data-tezgah] { --kart-fon:#b9dff7; --kart-etiket:#91cce9; background:var(--kart-fon); }
+#sef .siparis-karti[data-tezgah]:nth-child(3n+2) { --kart-fon:#b2e7cf; --kart-etiket:#8cd5b5; }
+#sef .siparis-karti[data-tezgah]:nth-child(3n) { --kart-fon:#d8cbf7; --kart-etiket:#bfaee8; }
+#sef .siparis-karti[data-tezgah] .kart-ad { background:var(--kart-etiket); }
+#sef .sef-restoran-kapisi {bottom:9.5%}
+.dekor-magaza-ac img{width:100%;height:100%;object-fit:contain}
+.salon-susu{position:absolute;pointer-events:none;object-fit:contain}
+.salon-cicek{left:32%;top:58%;width:7%;height:13%;z-index:4}
+.salon-saat{right:4%;top:17%;width:9%;height:14%}
+.salon-bayrak{left:30%;top:5%;width:38%;height:12%}
+.dekor-magaza-ac,.dekor-geri{width:max(44px,9cqh);height:max(44px,9cqh);padding:.6cqh;background:#acdfef;border-radius:30%;border:2px solid #303040}
+.dekor-magazasi{width:min(76vw,112dvh);border:2px solid #303040;border-radius:18px;background:#b6eee4;color:#302b37;padding:2%;overflow:auto}
+.dekor-magazasi::backdrop{background:#28213499}
+.dekor-bakiye,.dekor-urun span{display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.dekor-bakiye{float:right}.dekor-bakiye .ikon,.dekor-urun span .ikon{width:24px;height:24px}
+.dekor-raf{display:grid;grid-template-columns:repeat(3,1fr);gap:3%;margin-top:2%}
+.dekor-urun{display:grid;justify-items:center;align-items:center;gap:5px;padding:7%;background:#b9dff7;border:2px solid #343044;border-radius:16px}
+.dekor-urun:nth-child(2){background:#ffd28d}.dekor-urun:nth-child(3){background:#d2bff3}
+.dekor-urun>img{width:100%;height:clamp(45px,17dvh,170px);object-fit:contain}
+.dekor-urun:disabled span{opacity:.75}
+.tatli-vitrin-ust:has(.dekor-magaza-ac){grid-template-columns:1fr auto 1fr auto;gap:1.2cqh}
+.salon-saat{left:3%;right:auto;top:17%}
+.salon-susu.salon-bayrak{top:11%}
+.sef-simge>img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.sef-yildizlar i[data-dolu=false] .sef-simge img,.sef-simge-yildiz.pz-bos-yildiz img{filter:grayscale(1);opacity:.42}
+#sef .siparis-karti .yemek-fotografi{padding:3%}

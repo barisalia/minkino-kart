@@ -1,0 +1,31 @@
+.arabali-servis{position:absolute;inset:0;isolation:isolate;overflow:hidden;container-type:size;touch-action:none;background:#fae1be url('../../assets/sef/arabali-servis/salon.webp') center/100% 100%}
+.araba-geri,.araba-ver,.tepsi-araba-sec{position:absolute;display:flex;justify-content:center;align-items:center;background:var(--sef-kumanda-fonu, #fff2cd);border:2px solid #352b2c;border-radius:24%;box-shadow:0 .6cqh #99745b;color:#3c3032}.araba-geri{left:2%;top:3%;width:max(44px,10cqh);aspect-ratio:1;border-radius:50%}.araba-geri svg{width:65%;height:65%}
+.araba-fis{position:absolute;top:2%;left:50%;translate:-50% 0;height:13%;aspect-ratio:1.1;background:var(--sef-kumanda-fonu, #fff5dc);border:2px solid #3a302d;border-radius:20%;box-shadow:0 .7cqh #b08562}.araba-fis img{width:100%;height:100%;object-fit:contain}
+.araba-masasi{position:absolute;top:15%;width:27%;height:44%;translate:-50% 0;display:grid;place-items:center;background:transparent;border:0;padding:0;--misafir-x:50%;--misafir-oturak-y:68%;--durak-boy:62%}
+.araba-masasi[data-yakin=true]:after{content:"";position:absolute;bottom:-18%;width:14%;height:5%;background:#74b786;border:1.5px solid #324936;border-radius:100%}
+.yemek-arabasi{position:absolute;bottom:11%;width:26%;height:29%;transform:translateX(-50%);touch-action:none}.yemek-arabasi>img,.araba-tepsisi>img{width:100%;height:100%;object-fit:fill;pointer-events:none}
+.araba-tepsisi{position:absolute;right:13%;bottom:9%;width:29%;height:13%;touch-action:none;z-index:3}
+.araba-tepsisi::before{content:"";position:absolute;inset:-60% 0 0}
+.araba-porsiyonlar{position:absolute;left:12%;width:80%;bottom:47%;height:112%;display:flex;align-items:end;justify-content:center;gap:2%;pointer-events:none}
+.araba-yuku{position:absolute;inset:0;display:block;pointer-events:none;transform-origin:top left}.araba-yuku>img{width:100%;height:100%;display:block}
+.yemek-arabasi>.araba-yuku{inset:auto auto 61% 13%;width:82%;height:30%}
+.araba-masasi[data-yakin=true][data-hedef=false]:after{background:#f7c677;border-color:#875a33}
+.araba-tabak{display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center;min-height:0;min-width:0;flex:1;height:100%}.araba-tabak>*{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}.araba-tabak .tost-yigin,.araba-tabak .manti-sunum{aspect-ratio:1;width:auto;height:100%}
+.araba-ver{bottom:4%;translate:-50% 0;width:max(60px,13cqh);height:max(44px,8cqh);background:#c0efbb;z-index:5}.araba-ver .ikon{display:grid;place-items:center;width:52%;height:76%}.araba-ver .ikon+.ikon{width:25%}.araba-ver svg{width:100%;height:100%}.araba-ver[hidden]{display:none}
+.tepsi-araba-sec{left:3%;bottom:3%;width:max(52px,12cqh);height:max(44px,10cqh);padding:1cqh;background:#c6edcf}.tepsi-araba-sec img{width:100%;height:100%;object-fit:contain}
+@media(prefers-reduced-motion:no-preference){.yemek-arabasi:not([data-suruluyor]){transition:left .28s ease-out}.araba-ver{animation:araba-buyut .22s ease-out}@keyframes araba-buyut{from{scale:.86}to{scale:1}}}
+
+.araba-hatirlatma{position:absolute;left:100%;top:10%;display:flex;align-items:center;width:110%;height:80%;background:var(--sef-kumanda-fonu, #fff3c9);border:2px solid #4d3b31;border-radius:35%;pointer-events:none}.araba-hatirlatma img{width:58%;height:90%;object-fit:contain}.araba-hatirlatma svg{width:35%;height:70%}.araba-hatirlatma[data-sag=false] svg{rotate:180deg}
+.araba-elle-tepsi{position:absolute;z-index:8;pointer-events:none;width:19%;height:7.5%;transform:translate(-50%,-35%)}.araba-elle-tepsi>img{width:100%;height:100%}.araba-elle-tepsi>.araba-porsiyonlar{height:140%}.tepsi-kalkti>.araba-porsiyonlar{visibility:hidden}.araba-ver{touch-action:none}
+
+.araba-tabak>.simit-halkasi{width:86%;height:86%;object-fit:contain}.araba-tabak>.sm-bardak{width:auto;height:88%}
+.araba-masasi>.durak-koltugu{position:absolute;left:7%;top:43%;width:86%;height:42%;object-fit:fill}
+.araba-masasi>.durak-masasi{position:absolute;left:0;top:68%;width:100%;height:41%;object-fit:fill}
+.araba-masasi[data-tepsi-hedefi]::before{content:"";position:absolute;z-index:1;left:33%;top:75%;width:34%;height:8%;border-radius:50%;background:var(--sef-kumanda-fonu, #fff8dc);border:1px solid #735541;pointer-events:none}
+.araba-masasi[data-tepsi-hedefi]::after{visibility:hidden}
+.araba-masasi .restoran-oyuncu-bedeni{height:var(--durak-boy)}
+.araba-masasi[data-masa=corba]{--durak-boy:52%}
+.araba-masasi:is([data-masa=pizza],[data-masa=anne],[data-masa=baba],[data-masa=babaanne]){--durak-boy:78%}
+.araba-masasi:focus-visible,.araba-tepsisi:focus-visible{outline:3px solid #286758;outline-offset:2px}
+
+.araba-bir-puan{position:absolute;right:8%;top:22%;display:flex;align-items:center;gap:.5cqh;padding:.6cqh 1.4cqh;background:var(--sef-kumanda-fonu, #fff4d5);border:2px solid #493333;border-radius:2cqh;font-size:clamp(16px,4cqh,28px)}.araba-bir-puan .ikon{width:1em;height:1em;color:#b46b15}

@@ -1,0 +1,62 @@
+.yz-atolye{width:100%;color:#25483b;min-width:0}
+.yz-atolye h1{margin:0 0 .3em;font-size:clamp(22px,3.8vw,40px)}
+.yz-masalar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(6px,1.7vw,20px)}
+.yz-masalar section{min-width:0}
+.yz-masalar h2{margin:0 0 4px;font-size:clamp(14px,2vw,22px);font-weight:500}
+.yz-kagit{height:clamp(132px,43svh,410px);position:relative;overflow:hidden;border:2px solid #352e20;border-radius:clamp(12px,2vw,24px);background:#fff9e9}
+.yz-kagit>div,.yz-kagit svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.yz-kagit svg{touch-action:none;user-select:none}
+.yz-kagit .iz,.yz-kagit .murekkep,.yz-kagit .ornek-kalem,.yz-kagit .ornek-yol{fill:none;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.yz-kagit .iz,.yz-kagit .ornek-yol{stroke:#c2e1cb}
+.yz-kagit .iz.siradaki-iz{stroke:#94c6b0}
+.yz-kagit .murekkep,.yz-kagit .ornek-kalem{stroke:#04695e}
+.yz-iz .murekkep{stroke:var(--yazim,#087466)}
+.yz-palet{display:flex;gap:2px;justify-content:center;margin:2px 0 -36px 51%;position:relative;z-index:1;width:max-content}
+.yz-palet button{display:grid;place-items:center;background:transparent;border:none;width:44px;height:44px;padding:0;border-radius:50%}
+.yz-palet span{display:grid;place-items:center;width:25px;height:25px;border:1.5px solid #252c27;border-radius:50%;background:var(--kalem-rengi);color:white;font:700 16px system-ui}
+.yz-palet [aria-pressed=true] span{outline:2px solid var(--kalem-rengi);outline-offset:2px}
+.yz-palet [aria-pressed=true] span::after{content:'✓'}
+.yz-atolye .yz-kontrol{width:49%;align-items:flex-start;flex-direction:column-reverse;gap:4px}
+@media(max-width:550px){.yz-atolye .yz-kontrol{width:100%}.yz-palet{margin:0 0 0 auto}.yz-palet button{width:44px;height:44px}}
+.yz-kagit .baslangic,.yz-kagit .kalemucu{fill:#f07755}.yz-kagit .kalemucu{opacity:.58}.yz-kagit .kilavuz{display:none}
+.yz-kagit .baslangic{stroke:#fff9e9;stroke-width:1.4;filter:drop-shadow(0 0 3px #f0775580)}
+.yz-masalar[data-sira=ceren] .kalemucu{opacity:0}
+.yz-masalar[data-sira=ceren] section:first-child .yz-kagit,
+.yz-masalar[data-sira=sen] section:last-child .yz-kagit{border-color:#087466;box-shadow:inset 0 0 0 1px #087466}
+.yz-maskot{display:inline-flex;align-items:center;gap:8px;background:#fff9e9;border:2px solid #2b2620;border-radius:18px;padding:4px 12px;margin-left:auto;box-shadow:0 3px 0 #b8986c;transition:transform .2s cubic-bezier(.22,.8,.32,1)}
+.yz-maskot img{width:clamp(34px,6svh,54px);height:clamp(34px,6svh,54px);object-fit:contain}
+.yz-maskot.yz-ikili .yz-yavru{width:clamp(22px,4svh,36px);height:clamp(22px,4svh,36px);margin-left:-4px;align-self:flex-end}
+.yz-maskot b{font-size:clamp(18px,2.5vw,28px);color:#1f4b3f;line-height:1}
+.yz-maskot-zipla{animation:yz-maskot-hop .34s cubic-bezier(.22,.82,.32,1)}
+.yz-maskot-tamam{background:#ffdf82;transform:scale(1.06)}
+@keyframes yz-maskot-hop{50%{transform:translateY(-7px) scale(1.08) rotate(-3deg)}}
+.yz-kontrol{display:flex;gap:12px;align-items:center;margin-top:12px}
+.yz-kontrol p{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.yz-yine{font:inherit;white-space:nowrap;cursor:pointer;color:white;background:#1b695c;border:2px solid #224c40;border-radius:24px;padding:8px 14px}
+@media(max-width:550px){.yz-kontrol{align-items:flex-start;flex-direction:column-reverse;gap:6px}.yz-kagit{height:clamp(134px,43vw,224px)}}
+@media(orientation:landscape) and (max-height:470px){.yz-kontrol{margin-top:5px}.yz-kagit{height:36svh}.yz-atolye h1{font-size:19px;margin:0}.yz-yine{padding:4px 10px}}
+.yz-yine{width:44px;height:44px;display:grid;place-items:center;padding:8px}.yz-yine svg{width:100%;height:100%}
+.yz-oyuncu{position:absolute;left:55%;top:63%;width:min(28%,32cqh);height:29%;pointer-events:none;display:grid;place-items:center;animation-duration:1.5s;animation-fill-mode:both;animation-timing-function:ease-in-out}
+.yz-oyuncu img{object-fit:contain;width:100%;height:100%;display:block;transform-origin:50% 92%}
+.yz-oyuncu.yz-yuz{left:34%;top:45%;width:25%;height:25%}
+.yz-yuz{animation-name:yz-yuz}.yz-seyir{animation-name:yz-seyir}.yz-sur{animation-name:yz-sur}.yz-uc{animation-name:yz-uc}.yz-suzul{animation-name:yz-suzul}.yz-dus{animation-name:yz-dus}.yz-yuvarlan{animation-name:yz-yuvarlan}.yz-sallan,.yz-selam{animation-name:yz-sallan;transform-origin:50% 95%}.yz-filiz{animation-name:yz-filiz;transform-origin:50% 95%}.yz-kon{animation-name:yz-kon}.yz-davul{animation-name:yz-davul;transform-origin:50% 95%}.yz-raket{animation-name:yz-raket;transform-origin:30% 92%}
+@keyframes yz-yuz{0%{opacity:0;transform:translate(90%,-55%) rotate(-8deg)}14%{opacity:1}37%{transform:translate(64%,-30%) rotate(-16deg)}68%{transform:translate(45%,23%) rotate(-9deg)}100%{transform:translate(9%,48%) rotate(6deg)}}
+@keyframes yz-seyir{0%{opacity:0;transform:translate(-110%,8%)}20%{opacity:1}40%{transform:translate(-70%,-3%) rotate(-3deg)}75%{transform:translate(-22%,5%) rotate(2deg)}100%{transform:translate(0,0)}}
+@keyframes yz-sur{0%{opacity:0;transform:translateX(-150%)}15%{opacity:1}100%{transform:translateX(0)}}
+@keyframes yz-uc{0%{opacity:0;transform:translate(-140%,30%) rotate(-9deg)}16%{opacity:1}100%{transform:translate(10%,-48%) rotate(-8deg)}}
+@keyframes yz-suzul{0%{opacity:0;transform:translate(-30%,-115%) rotate(-12deg)}16%{opacity:1}38%,46%{transform:translate(12%,-70%) rotate(8deg)}72%{transform:translate(-10%,-24%) rotate(-6deg)}100%{transform:none}}
+@keyframes yz-dus{0%{opacity:0;transform:translateY(-100%)}15%{opacity:1}55%{transform:translateY(0) rotate(5deg)}70%{transform:translateY(-9%) rotate(-3deg)}100%{transform:none}}
+@keyframes yz-yuvarlan{0%{opacity:0;transform:translateX(-85%) rotate(-65deg)}16%{opacity:1}75%{transform:translateX(2%) rotate(4deg)}100%{transform:none}}
+@keyframes yz-sallan{0%{opacity:0;transform:rotate(-4deg)}20%{opacity:1}44%{transform:rotate(5deg)}75%{transform:rotate(-3deg)}100%{transform:none}}
+@keyframes yz-filiz{0%{opacity:0;transform:scale(.72) translateY(20%)}22%{opacity:1}100%{transform:none}}
+@keyframes yz-kon{0%{opacity:0;transform:translate(0,-34%)}15%{opacity:1}72%{transform:translateY(1%)}100%{transform:none}}
+@keyframes yz-davul{0%,24%,60%,100%{transform:translateY(0)}34%,70%{transform:translateY(4%)}}
+@keyframes yz-raket{0%,100%{transform:rotate(0)}34%{transform:rotate(-16deg)}56%{transform:rotate(13deg)}}
+.yz-etki{position:absolute;display:block;pointer-events:none}.yz-davul .yz-etki{right:2%;top:0;color:#256759;font:bold clamp(16px,4vh,38px) system-ui;animation:yz-nota .65s ease-out .18s 2 both}
+@keyframes yz-nota{0%{opacity:0;transform:translateY(20%)}25%{opacity:1}100%{opacity:0;transform:translateY(-85%)}}
+.yz-raket .yz-etki,.yz-dogus .yz-etki{aspect-ratio:1;width:18%;border:1.5px solid #292a22;background:#efc342;border-radius:50%}.yz-raket .yz-etki{top:0;left:40%;animation:yz-top 1.45s ease-out both}
+@keyframes yz-top{0%{transform:translate(-220%,10%)}45%{transform:translate(0,105%)}100%{transform:translate(230%,-150%)}}
+.yz-dogus,.yz-saat{isolation:isolate}.yz-dogus .yz-etki{z-index:-1;left:48%;top:3%;width:26%;animation:yz-gunes 1.4s ease-out both}
+@keyframes yz-gunes{from{transform:translateY(95%)}to{transform:translateY(-60%)}}
+.yz-saat{animation:yz-sallan .75s ease-in-out 2;transform-origin:50% 78%}
+@media(prefers-reduced-motion:reduce){.yz-oyuncu,.yz-oyuncu .yz-etki{animation:none}}

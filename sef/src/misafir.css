@@ -1,0 +1,6 @@
+.fis > img.isteyen-misafir, .pizza-fis > img.isteyen-misafir {
+  position:absolute; right:calc(100% + .6cqh); top:50%; translate:0 -50%;
+  width:9.5cqh; height:9.5cqh; padding:.4cqh .45cqh 0;
+  border:.35cqh solid #352b31; border-radius:50%; object-fit:contain;
+  background:var(--sef-kumanda-fonu, #fff4cf); pointer-events:none;
+}

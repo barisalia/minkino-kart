@@ -1,0 +1,88 @@
+/* The biscuit and its drawn icing share the same box on the bench, tray and plate. */
+.kb-tane{display:block;position:relative;aspect-ratio:1;pointer-events:none;min-width:0;min-height:0}
+.kb-tane>.kb-biskuvi,.ta-firin-yemek .kb-tane>.kb-biskuvi,.tatli-raf-istasyon .kb-tane>.kb-biskuvi{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.kb-desen,.kb-desen svg{position:absolute;display:block;inset:0;width:100%;height:100%;pointer-events:none}
+.kb-desen{mask-size:100% 100%;mask-repeat:no-repeat}
+.kb-dizi{container-type:size;display:block;position:relative;width:100%;height:100%}
+.kb-dizi[hidden]{display:none}
+.kb-dizi>.kb-tane{position:absolute;width:min(36cqw,78cqh);height:auto;aspect-ratio:1;bottom:1%}
+.kb-dizi>.kb-tane:nth-child(1){left:31%;bottom:22%}
+.kb-dizi>.kb-tane:nth-child(2){left:2%}
+.kb-dizi>.kb-tane:nth-child(3){right:2%}
+.ta-firin-yemek>.kb-dizi{position:absolute;left:14%;width:72%;height:70%;top:4%}
+.ta-firin-istasyonu[data-evre=fazla] .kb-tane,.pastane-porsiyonu[data-fazla=true] .kb-biskuvi{filter:brightness(.71) saturate(.85)}
+.pastane-porsiyonu[data-kurabiye-tepsi=true]>.tatli-yiyecek{width:76%;left:12%;height:32%;bottom:9%;transform:none}
+.pastane-porsiyonu[data-kurabiye-tepsi=true] .tatli-susu{width:22%;top:33%}
+.tatli-raf-istasyon>.kb-dizi{position:absolute;right:0;bottom:5%;width:76%;height:68%}
+.tatli-tezgahi[data-tatli=kurabiye]{background-image:url('../../assets/sef/kurabiye/tezgah.webp')}
+.kb-hamur{position:relative;width:min(85cqh,100%);height:auto;aspect-ratio:1.85;margin:auto}
+.kb-hamur-resmi{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.kb-bas,.kb-kesik{position:absolute;translate:-50% -50%;width:var(--kb-kesit-eni);height:auto;aspect-ratio:1;padding:0;border:0;background:transparent}
+.kb-bas{touch-action:none;border-radius:30%}
+.kb-bas img{width:100%;height:100%;object-fit:contain}
+.kb-secimler{display:flex;flex-direction:column;position:absolute;left:0;top:50%;translate:0 -50%;gap:1.4cqh}
+.kb-sec,.kb-torba,.kb-geri{display:grid;place-items:center;position:relative;border:2px solid #472f30;border-radius:2.6cqh;background:var(--sef-kumanda-fonu, #fff5dd);box-shadow:0 .65cqh #b98b64;padding:1cqh;touch-action:manipulation}
+.kb-sec{width:clamp(42px,12cqh,86px);height:clamp(42px,12cqh,86px)}
+.kb-sec .kb-tane{width:100%;height:100%}
+.kb-sec[aria-pressed=true],.kb-torba[aria-pressed=true]{background:#b5e5c9;border-color:#3e634e;box-shadow:0 .65cqh #679878}
+.kb-editor{display:block;position:relative;aspect-ratio:1;width:min(43cqh,55%);padding:0;background:none;border:0;touch-action:none;cursor:crosshair}
+.kb-editor>.kb-tane{width:100%;height:100%}
+.kb-geri{position:absolute;right:0;bottom:3%;width:clamp(40px,10cqh,66px);aspect-ratio:1;border-radius:50%;padding:1.8cqh}
+.kb-geri .ikon{width:100%;height:100%}.kb-geri:disabled{opacity:.45}
+.kb-torbalar{display:flex;gap:1.5cqh}
+.kb-torba{width:clamp(48px,16cqh,100px);height:clamp(44px,14cqh,86px)}
+.kb-torba img{width:100%;height:100%;object-fit:contain}
+.kb-torba:active,.kb-sec:active,.kb-geri:active{translate:0 .5cqh}
+.kb-fis{display:inline-grid;flex:0 0 auto;place-items:center;height:85%;width:clamp(32px,8cqh,64px);border-left:2px dashed #ba976f;padding-left:1cqh}.kb-fis img{display:block;object-fit:contain;width:100%;height:100%}
+.kb-tane[hidden],.tatli-katlari>.tatli-susu[hidden]{display:none}
+.restoran-lokma.kb-lokma{width:10cqh;height:10cqh}
+.restoran-lokma.kb-lokma>.kb-tane{position:absolute;left:-50%;top:-50%;width:100%;height:100%}
+.restoran-lokma.kb-lokma .kb-biskuvi{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.restoran-lokma.kb-lokma .tatli-susu{position:absolute;left:30%;top:32%;width:40%;height:40%;object-fit:contain}
+.kb-lokma[data-fazla=true] .kb-biskuvi{filter:brightness(.71) saturate(.85)}
+.kb-lokma.lokma-alindi .kb-tane{mask-image:radial-gradient(circle at 50% 0%,transparent 19%,black 20%)}
+.ani-tepsisi>.ani-porsiyon[data-parca=kurabiye]:only-child{width:62%}
+.ani-porsiyon>.pastane-porsiyonu[data-kurabiye-tepsi=true]>.pastane-porsiyon-tabagi{height:72%;bottom:8%}
+.ani-porsiyon>.pastane-porsiyonu[data-kurabiye-tepsi=true]>.tatli-yiyecek{height:55%;bottom:24%}
+.tatli-tezgahi[data-tatli=kurabiye]:is([data-adim="0"],[data-adim="1"],[data-adim="2"],[data-adim="4"]){background-image:url('../../assets/sef/kurabiye/susleme-masasi.webp');background-size:100% 100%}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="4"] .kb-secimler{left:-19.5%;gap:.6cqh}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="4"] .kb-sec{background:transparent;border:2px solid transparent;box-shadow:none;padding:.7cqh}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="4"] .kb-sec[aria-pressed=true]{background:#fff3cca8;border-color:#326f5b}
+.kb-elde-torba{position:absolute;width:46%;height:46%;transform:translate(-3%,-95%);pointer-events:none}
+.kb-elde-torba[hidden]{display:none}
+.kb-elde-torba img{width:100%;height:100%;object-fit:fill}
+.ta-fis>.kb-dizi{width:14cqw;height:100%}
+.restoran-siparis>.kb-siparis,.tepsi-fis-porsiyon>.kb-siparis,.tepsi-fis-lokmasi>.kb-siparis{width:100%;height:100%;max-width:20cqh}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="2"] .ta-calisma{left:6%;right:6%;top:28%;height:46%}
+.kb-kesim{width:100%;height:100%;display:grid;grid-template-columns:minmax(0,var(--kb-hamur-orani)) minmax(0,1fr);align-items:center;gap:3.5%}
+.kb-kesim>.kb-hamur{width:100%;aspect-ratio:1.85;margin:0}
+.kb-bos-tepsi{position:relative;width:100%;aspect-ratio:1.6;align-self:center;justify-self:center;border-radius:10%;transition:scale .15s}
+.kb-bos-tepsi.yaklas .kb-metal{filter:drop-shadow(0 2px 2px #805a41)}
+.kb-metal{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.kb-yuva{position:absolute;width:var(--kb-tepsi-parcasi);aspect-ratio:1;translate:-50% -50%}
+.kb-yuva[data-yer="0"]{left:30%;top:38%}.kb-yuva[data-yer="1"]{left:68%;top:38%}.kb-yuva[data-yer="2"]{left:50%;top:68%}
+.kb-yuva>.kb-tane,.kb-aktar>.kb-tane{width:100%;height:100%}
+.kb-aktar{display:block;touch-action:none;cursor:grab;border:0}
+.kb-aktar.kb-elde>.kb-tane{visibility:hidden}
+.kb-kesim .kb-biskuvi{filter:drop-shadow(0 .7px 0 #292522) drop-shadow(.5px 0 0 #292522) drop-shadow(-.45px -.3px 0 #292522)}
+.kb-eldeki-parca{position:absolute;z-index:5;translate:-50% -50%;pointer-events:none}
+.kb-hamur-resmi[hidden]{display:none}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="2"]{background-image:url('../../assets/sef/kurabiye/tezgah.webp')}
+.tatli-tezgahi[data-tatli=kurabiye] .ta-firin-yemek>.ta-firin-tepsi{left:0;top:28%;width:100%;height:62%;object-fit:fill}
+.tatli-tezgahi[data-tatli=kurabiye] .ta-firin-yemek>.kb-dizi{top:7%;height:68%;width:76%;left:12%}
+.tatli-tezgahi[data-tatli=kurabiye] .ta-firin-istasyonu[data-evre]:not(.ta-cikti) .ta-firin-yemek{top:37%}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] .ta-calisma{inset:0;height:100%}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] .ta-firin-istasyonu{width:100%;height:100%;border:0;border-radius:0}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] :is(.ta-geri,.ta-fis,.ta-iz,.ta-rehber-sesi){z-index:2}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] .ta-pisme-saati{left:38%;top:24%;width:24%;height:3%}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] .ta-firin-kumanda{right:11%;bottom:8%;width:max(46px,12cqh);background:var(--sef-kumanda-fonu, #ffebb1)}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] .ta-firin-istasyonu[data-evre=hazir] .ta-firin-kumanda{background:#a8e6ad}
+.tatli-tezgahi[data-tatli=kurabiye][data-adim="3"] .ta-firin-istasyonu[data-evre=fazla] .ta-firin-kumanda{background:#ffb09a}
+.kb-bas{z-index:2;cursor:grab}
+.kb-bas[data-engel]{filter:drop-shadow(0 1px 0 #ad3e34) drop-shadow(1px 0 0 #ad3e34);background:#ffbca980;box-shadow:inset 0 0 0 2px #a44939}
+.kb-bas[data-engel=kenar]{border:2px dashed #a44939;box-shadow:none}
+.kb-cakisti{outline:2px dashed #9e403c;border-radius:45%}
+
+.tepsi-istek>.kb-fis{flex:0 0 auto;width:clamp(32px,8cqh,64px);height:65%}
+/* The biscuit cluster keeps its own wide frame inside the square order icon. */
+.tepsi-istek .kb-siparis,.restoran-siparis .kb-siparis,.tepsi-fis-porsiyon>.kb-siparis{height:auto;aspect-ratio:1.85;width:94%;max-height:88%;align-self:center}

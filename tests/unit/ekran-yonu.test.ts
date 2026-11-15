@@ -1,13 +1,13 @@
 /**
- * Ekran yönü (uygulama): telefonda (kısa kenar < 600 dp) geniş sahneli oyunlar yatay kilitli (iki yatay yön), menü /
- * Kartlar / Çiz Canlansın cihazı izler; tablet her yerde serbest, yalnız film oynarken yatay.
+ * Telefonda menü ve oyunlar iki yatay yönde oynanır. Tablet serbest döner; film oynarken yataydır.
  * Kilit çalışma anında (src/kabuk/yon-yonetici.ts → @capacitor/screen-orientation); yerel taraf yatay kilidi iki yönlü
  * yapar (Android MainActivity, iOS MinkinoBridgeViewController), uygulamanın tamamını zorlamaz.
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { sayfaYonu, TELEFON_KISA_KENAR, telefonMu, YATAY_SAYFALAR, yonKarari } from '../../src/kabuk/yon';
+import { sayfaYonu, TELEFON_KISA_KENAR, telefonMu, yonKarari } from '../../src/kabuk/yon';
+import { OYUNLAR } from '../../uygulama/src/oyunlar';
 import { yonYoneticisi, type YonEklentisi } from '../../src/kabuk/yon-yonetici';
 
 const oku = (yol: string) => readFileSync(resolve(__dirname, '../..', yol), 'utf8');
@@ -22,12 +22,12 @@ describe('telefon mu', () => {
 
 describe('sayfa yönü (telefonda)', () => {
   it('geniş sahneli oyunlar yatay', () => {
-    expect([...YATAY_SAYFALAR].sort()).toEqual(['dedektif', 'film', 'giysin', 'hazirlik', 'izle', 'kino-ile-sen-sec', 'kino-otobus', 'macera', 'otobus', 'pasta', 'pati', 'pazar', 'restoran']);
+    for (const oyun of OYUNLAR) expect(sayfaYonu(new URL(oyun.adres, 'https://localhost').pathname), oyun.ad).toBe('yatay');
     for (const y of ['/pasta/index.html', '/pazar/', '/macera/index.html', '/dedektif/index.html', '/film/', '/giysin/index.html', '/kino-otobus/index.html']) expect(sayfaYonu(y), y).toBe('yatay');
   });
-  it('yeni ana menü yatay; Kartlar ve Canlan cihazı izler', () => {
+  it('ana menü yatay; gizlilik sayfası cihazı izler', () => {
     for (const y of ['/', '/index.html']) expect(sayfaYonu(y), y).toBe('yatay');
-    for (const y of ['/kartlar/index.html', '/canlan/index.html', '/gizlilik/']) expect(sayfaYonu(y), y).toBe('serbest');
+    expect(sayfaYonu('/gizlilik/')).toBe('serbest');
   });
 });
 
@@ -88,7 +88,8 @@ describe('yön yöneticisi', () => {
     await s.y.sayfaAcildi('/pasta/index.html');
     await s.y.sayfaAcildi('/index.html');
     await s.y.sayfaAcildi('/kartlar/index.html');
-    expect(s.cagri).toEqual(['kilit:landscape', 'kilit:landscape', 'birak']);
+    await s.y.sayfaAcildi('/gizlilik/');
+    expect(s.cagri).toEqual(['kilit:landscape', 'kilit:landscape', 'kilit:landscape', 'birak']);
   });
   it('telefon ters yatayda tutuluyorsa o yön istenir (ekran baş aşağı dönmez)', async () => {
     const s = sahte({ en: 844, boy: 390, tip: 'landscape-secondary' });

@@ -3,6 +3,7 @@ import { cizmeyiBagla, kagittakiIzler, ip, balon, boyalar } from './defter';
 import { simge } from './cizim';
 import type { Sabah } from './model';
 import { dersSorusu, dersTahtasi, ekranFonu, etkinligiAc, ogretmenSanati } from './sinif-etkinligi';
+import { yaziBaslangici } from './ders-programi';
 import { efekt } from '../../src/audio/ses';
 const assets=import.meta.glob<string>('../../assets/hazirlik/ders/*.webp',{eager:true,query:'?url',import:'default'});
 const resim=(k:string)=>assets['../../assets/hazirlik/ders/'+k+'.webp'];
@@ -12,9 +13,9 @@ const defterIkon=svg('80 58','<path d="M8 11Q24 5 40 13Q55 5 72 10l4 37q-17-2-35
 const masa=svg('220 94','<g stroke-width="2.3"><path d="M21 36h14l-2 53H20zm165 0h13l2 53h-13Z" fill="#aa7953"/><path d="M13 34h194v21q0 5-6 5H20q-5 0-5-5Z" fill="#db9f63"/><path d="M29 6q2-3 6-3h150q4 0 7 4l21 24q4 7-4 8H12q-8 0-4-7Z" fill="#ffd191"/><path d="m72 13 24-1q7 0 13 3 8-4 15-3h19l8 15q-23-2-39 2-16-4-42-1Z" fill="#fff5db" stroke-width="1.3"/><path d="m109 16 3 13" stroke-width="1.2"/></g>');
 const poz=(k:string)=>'<span class="ders-poz">'+[0,1,2].map(i=>'<img draggable="false" alt="" class="kare k'+i+'" src="'+resim(k+'-'+i)+'">').join('')+'</span>';
 const ogrenci=(k:string,yer:string)=>'<div class="ogrenci '+yer+'">'+poz(k)+'<span class="sira">'+masa+'</span></div>';
-export function okulArkadaslari(alan:HTMLElement,askida:boolean) {
+export function okulArkadaslari(alan:HTMLElement) {
   const grup=document.createElement('div');
-  grup.className='sinif-arkadaslari '+(askida?'askida':'sofrada');
+  grup.className='sinif-arkadaslari sofrada';
   grup.setAttribute('aria-hidden','true');
   grup.innerHTML=ogrenci('mino','arka-mino')+ogrenci('zipzip','arka-zipzip');
   alan.append(grup);
@@ -25,9 +26,10 @@ const kalem=(r:string)=>svg('40 58','<g stroke-width="2.1"><path d="M12 17 20 3l
 const silgi=svg('44 50','<path d="m7 29 16-20q3-3 6 0l9 8q3 3 0 6L23 42h-6L7 34q-2-2 0-5Z" fill="#edac9e" stroke-width="2.3"/><path d="m7 29 7-8 16 13-7 8h-6L7 34q-2-2 0-5Z" fill="#fff0cb" stroke-width="2"/>');
 const masaDefteri=svg('360 290','<g stroke-width="2.1"><path d="m32 62 116-20q16-2 30 4 11-11 27-13l96-12 27 181-114 20q-11 3-16 8-14-3-30 0L49 246Z" fill="#419f94"/><path d="m36 56 110-18q21-3 33 5 13-12 27-14l91-12 24 178-109 20q-10 1-16 8-15-3-29 1L51 238Z" fill="#f2dcb2"/><path d="M34 49q99-25 121-21 13 1 23 9 16-14 34-17l84-12 21 179-101 17q-16 3-23 10-13-6-28-3L48 229Z" fill="#fff7de"/><path d="m178 37 15 177" stroke="#bd9877"/><path d="m212 214 13-2 2 18-7-3-5 5Z" fill="#dc7166"/><path d="M85 105c-2-18 9-32 24-32s26 12 25 27q-2 20-21 31-23-6-28-26Z" fill="#ef948b" stroke="#a9554f"/><path d="m113 131-3 6 7-1Z" fill="#e88c83" stroke="#a9554f"/><path d="M114 136q8 14 3 25-3 10 6 20" stroke="#a9554f"/><g transform="rotate(34 272 176)"><path d="M265 116q7-5 14 0v88l-7 18-7-18Z" fill="#f3ac48"/><path d="M265 126h14v67h-14Z" fill="#fbc65c"/><path d="m265 204 7 18 7-18Z" fill="#e9c79b"/><path d="m270 217 2 5 2-5Z" fill="#4b4141"/></g></g>');
 const dugme=(id:string,isim:string,ikon:string,cls='')=>'<button type="button" class="'+cls+'" data-ders="'+id+'" aria-label="'+isim+'">'+ikon+'</button>';
-interface Isler { sesiDurdur:()=>void; ilerle:(s:Sabah['sahne'])=>void; ses:(id:string,son?:()=>void)=>void; kaydet:()=>void; bastan:()=>void; dokun:()=>void }
+interface Isler { okulaDon?:()=>void; sesiDurdur:()=>void; ilerle:(s:Sabah['sahne'])=>void; ses:(id:string,son?:()=>void)=>void; kaydet:()=>void; bastan:()=>void; dokun:()=>void }
 export function dersGoster(alan:HTMLElement,s:Sabah,is:Isler) {
   const zil=s.sahne==='ders-zili',atolye=s.sahne==='etkinlik';
+  const yaziDaveti=zil&&s.ders.tur===yaziBaslangici;
   const giris=s.sahne==='ders'||zil, bitti=s.sahne==='resim', cizgi=s.sahne==='cizgi';
   const bolum=document.createElement('div');
   bolum.className='ders-sahnesi '+(giris?'ders-giris':'ders-calisma')+(bitti?' ders-bitti':'');
@@ -53,7 +55,9 @@ export function dersGoster(alan:HTMLElement,s:Sabah,is:Isler) {
   const boyalik='<div class="boyalar">'+secenekler+dugme('sil','Son çizgiyi sil',silgi,'ders-silgi')+'</div>';
   const defter='<div class="ders-masa"><div class="ders-defter"><i class="ders-cilt" aria-hidden="true"></i>'+sayfa+'</div>'+
     (bitti?'<div class="ders-sonu">'+dugme('tekrar','Yeni bir balon çiz',defterIkon)+dugme('derse-devam','Ceren ile saymaya başla',simge('ileri'))+'</div>':boyalik)+'</div>';
-  bolum.innerHTML=sinif+(giris?dugme('ac',zil?'Ceren ile derse başla':'Kino’nun defterini aç','<span class="kucuk-kitap">'+(zil?simge('ileri'):defterIkon)+'</span><span class="masa-kitabi">'+(zil?dersTahtasi(s.ders)+'<i class="zil-ileri">'+simge('ileri')+'</i>':masaDefteri)+'</span>','defter-ac'+(zil?' et-zil':'')):defter);
+  const davet=yaziDaveti?'<span class="sergi-davet-kitabi"><img class="sergi-acik-kitap" src="'+ekranFonu('sergi-davet-defteri')+'" alt="">'+dersTahtasi(s.ders)+'<i class="sergi-davet-oku">'+simge('ileri')+'</i></span>':
+    '<span class="kucuk-kitap">'+(zil?simge('ileri'):defterIkon)+'</span><span class="masa-kitabi">'+(zil?dersTahtasi(s.ders)+'<i class="zil-ileri">'+simge('ileri')+'</i>':masaDefteri)+'</span>';
+  bolum.innerHTML=sinif+(giris?dugme('ac',zil?'Ceren ile derse başla':'Kino’nun defterini aç',davet,'defter-ac'+(zil?' et-zil':'')+(yaziDaveti?' sergi-davet':'')):defter);
   alan.append(bolum);
   function secimiGoster(){bolum.querySelectorAll<HTMLButtonElement>('.pastel').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===s.boya)))}
   secimiGoster();

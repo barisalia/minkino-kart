@@ -15,12 +15,21 @@ const TABLO = [
   ['okul', 'lokum', 's02', 1146, 556, 88],
   ['okul', 'mino', 's03', 310, 396, 100],
   ['okul', 'ogretmen', 's04', 930, 235, 105],
-  ['okul', 'bulut', 's09', 252, 418, 100],
   ['okul', 'tombi', 's10', 222, 452, 100],
 ];
 const BOY = 144;
 
 (async () => {
+  const bulut = path.resolve(__dirname, '../kalite/minkino-gorsel-rehberi/pozlar/bulut/on.png');
+  const kitaplar = { dizim: 180, doktor: 168, okul: 144, ucurtma: 180, ustkat: 180 };
+  for (const [kitap, boy] of Object.entries(kitaplar)) {
+    const maske = Buffer.from(`<svg width="${boy}" height="${boy}"><circle cx="${boy/2}" cy="${boy/2}" r="${boy/2}"/></svg>`);
+    const portre = await sharp(bulut).extract({ left: 53, top: 0, width: 911, height: 911 })
+      .resize(boy, boy).flatten({ background: '#ccede2' }).png().toBuffer();
+    await sharp(portre).ensureAlpha().composite([{ input: maske, blend: 'dest-in' }])
+      .webp({ lossless: true }).toFile(path.resolve(__dirname, '../../assets/kitap', kitap, 'yuz-bulut.webp'));
+  }
+  if (process.argv.includes('--bulut')) return;
   for (const [kitap, kim, sayfa, x, y, r] of TABLO) {
     const klasor = path.join(__dirname, '..', '..', 'assets', 'kitap', kitap);
     const kaynak = path.join(klasor, `${sayfa}-tam.webp`);

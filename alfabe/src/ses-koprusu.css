@@ -1,0 +1,28 @@
+.sk{position:relative;isolation:isolate;width:100%;height:100%;min-height:0;background:#c8ebc8;color:#233d33;--ses-murekkebi:#0b5c52;--ses-kagidi:#c3f0cc}
+.sk [hidden]{display:none}
+.sk-dekor{position:absolute;inset:0;isolation:isolate;background:#a5dce7 url('../../assets/alfabe/macera/kopru-dere.webp') center/100% 100% no-repeat;overflow:hidden}
+.sk-kaynak{position:absolute;top:4%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;border:2px solid #383b30;border-radius:21px;background:#fff9df;color:#294c40;padding:4px 12px;min-height:44px;font:600 clamp(20px,3vw,38px)/1 Fredoka,sans-serif}
+.sk-kaynak img{width:clamp(35px,6vw,68px);height:clamp(35px,8vh,70px);object-fit:contain}.sk-kaynak svg{width:21px;height:21px}
+.sk-kaynak b,.sk-tahta b,.sk-bekleyen b{background:var(--ses-kagidi);color:var(--ses-murekkebi);border-radius:.24em;padding:0 .1em;font-weight:600}
+.sk-acik{position:absolute;display:flex;left:26.6%;width:44.5%;top:62.2%;height:4%}
+.sk-acik>div{position:relative;width:50%;height:100%}.sk-acik img{display:block;width:100%;height:100%;pointer-events:none}
+.sk-bekleyen{border:2px dashed #675232;background:#fff6cba8;border-radius:3px}.sk-bekleyen b{position:absolute;right:0;bottom:110%;display:grid;min-width:1.55em;height:1.55em;place-items:center;border:2px solid #285048;border-radius:35%;font-size:clamp(20px,3.2vmin,34px);line-height:1}
+.sk-takildi{animation:sk-yerles .32s ease-out}
+.sk-arac{position:absolute;left:11%;bottom:37.6%;transform:translateX(-50%);width:15%;min-width:55px;min-height:44px;aspect-ratio:420/250;border:0;background:transparent;padding:0;z-index:1;transition:left .72s ease-in-out}
+.sk-arac img{width:100%;height:100%;object-fit:contain;display:block}
+.sk-arac:enabled img{animation:sk-korna-bekle 2.5s ease-in-out infinite;transform-origin:50% 94%}
+.sk-arac:focus-visible{outline-offset:2px;border-radius:12px}
+.sk-zarf{opacity:0;position:absolute;width:5%;height:auto;left:82%;top:42%;pointer-events:none}
+.sk-teslim .sk-zarf{animation:sk-posta .75s .76s ease both}
+.sk-secimler{position:absolute;bottom:2%;left:0;right:0;display:flex;align-items:end;justify-content:center;gap:clamp(8px,1.8vw,22px);pointer-events:none}
+.sk-secimler:empty{display:none}
+.sk-tahta{pointer-events:auto;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;justify-items:center;align-items:center;width:clamp(72px,12vw,140px);height:clamp(65px,20svh,145px);background:#fff8e8;border:2px solid #40382c;border-bottom:4px solid #98683a;border-radius:15px;color:#283c31;padding:4px;touch-action:none;user-select:none}
+.sk-tahta img{height:100%;width:90%;min-height:0;object-fit:contain}.sk-tahta span{font-size:clamp(16px,2.15vw,25px);line-height:1.15;font-weight:600}
+.sk-tahta:focus-visible,.sk-dinle:focus-visible,.sk-kaynak:focus-visible{outline-offset:1px}
+.sk-dinle{position:absolute;left:2%;bottom:3%;z-index:1}
+.sk-tasi{width:65px;height:65px;object-fit:contain;pointer-events:none;position:fixed;transform:translate(-50%,-50%);z-index:30}
+@keyframes sk-yerles{from{transform:translateY(-25px) rotate(-5deg)}to{transform:none}}
+@keyframes sk-posta{0%{opacity:1;transform:translate(-90%,72%) rotate(-14deg)}65%{opacity:1;transform:translate(72%,-40%) rotate(6deg)}100%{opacity:0;transform:translate(100%,14%) scale(.35)}}
+@keyframes sk-korna-bekle{0%,65%,100%{transform:none}75%{transform:translateY(-3px) rotate(-2deg)}85%{transform:rotate(1.5deg)}}
+@media(orientation:portrait){.sk{display:flex;flex-direction:column;justify-content:center;align-items:center}.sk-dekor{position:relative;inset:auto;width:100%;aspect-ratio:16/10}.sk-secimler{position:relative;inset:auto;min-height:100px;margin:14px 0 0}.sk-secimler:empty{display:flex}.sk-kaynak{padding:3px 8px;gap:5px}.sk-kaynak svg{width:17px}.sk-tahta{width:80px;height:87px}}
+@media(prefers-reduced-motion:reduce){.sk-arac{transition:none}.sk-arac:enabled img,.sk-takildi,.sk-teslim .sk-zarf{animation:none}.sk-teslim .sk-zarf{opacity:1}}

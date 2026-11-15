@@ -1,6 +1,6 @@
 /**
  * Uygulama kabuğuna istekler (olayla; web sitesinde dinleyen yoktur, hiçbir şey olmaz):
- * - Ekran yönü: telefonda geniş sahneli oyunlar yatay kilitli, öbür sayfalar cihazı izler; tablet her yerde serbest,
+ * - Ekran yönü: telefonda oyunlar yatay kilitli, öbür sayfalar cihazı izler; tablet her yerde serbest,
  *   yalnız film oynarken yatay (src/kabuk/yerel.ts → src/kabuk/yon-yonetici.ts → @capacitor/screen-orientation).
  * - Arka plan: uygulama arka plana geçince / geri gelince duyurulur (oyunlar isterse duraklar).
  */
@@ -76,14 +76,10 @@ export function telefonMu(en: number, boy: number): boolean {
   return Math.min(en, boy) < TELEFON_KISA_KENAR;
 }
 
-/**
- * Telefonda yatay kilitli sayfalar: geniş, sahneli oyunlar (Pasta Otobüsü, Mino'nun Pazarı, Sesli Maceralar,
- * Dedektif Mino, Çizgi Filmler, Kino Ne Giysin?, Kino'nun Otobüsü). Öbürleri (menü, Kartlar, Çiz Canlansın) iki
- * yönde de güzel durur: cihazı izler.
- */
-export const YATAY_SAYFALAR: readonly string[] = ['kino-ile-sen-sec', 'hazirlik', 'pati', 'izle', 'otobus', 'pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus', 'restoran'];
+/** Telefon oyunları ve yatay oynatıcılar. */
+export const YATAY_SAYFALAR: readonly string[] = ['matematik', 'alfabe', 'kartlar', 'canlan', 'kino-ile-sen-sec', 'hazirlik', 'pati', 'pati-yeni', 'sef', 'izle', 'otobus', 'pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus', 'restoran'];
 
-/** Sayfanın telefondaki yönü (adres yolundan: /pasta/index.html → yatay, / ve /kartlar/ → serbest) */
+/** Adres yolundan telefon yönünü seçer. */
 export function sayfaYonu(yol: string): Yon {
   if (menuSayfasiMi(yol)) return 'yatay';
   const klasor = yol.replace(/^\/+/, '').split('/')[0];

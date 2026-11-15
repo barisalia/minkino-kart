@@ -20,7 +20,7 @@ function readMask(url){
 }
 
 async function animalParts(pet){
- const images=[...pet.querySelectorAll('.kukla img')];
+ const images=[...pet.querySelectorAll('.kukla-ic > img.beden:not(.camur-katmani),.kukla-ic > img.yuz:not(.camur-katmani)')];
  if(images.length){
   return Promise.all(images.map(async image=>({el:image,mask:await readMask(image.currentSrc||image.src)})));
  }
@@ -93,7 +93,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  const washing=type==='yikama'||type==='yika';
  let phase=washing?'sabun':'firca';
  const rubbed=new Set(),rinsed=new Set();
- let parts,map,pointerId,previous,cursor,keyboardDown=false,closed=false;
+ let parts,map,pointerId,previous,cursor,keyboardDown=false,closed=false,complete=false;
  const pet=scene.querySelector('.buyuk');
  const face=pet.querySelector('.yuz'),normalFace=face?.src;
  let relaxTimer,lastMark=-Infinity;
@@ -112,8 +112,8 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  const marks=layer.querySelector('.dok-izler'),label=layer.querySelector('.dok-yon'),voice=layer.querySelector('.dok-ses');
  const meter=layer.querySelector('progress'),rinse=layer.querySelector('.dok-durula'),end=layer.querySelector('.dok-bitir');
  const controls=layer.querySelector('.dok-dugmeler');
- if(actionsHost)actionsHost.append(controls);
  const badge=layer.querySelector('.dok-isaret');
+ if(actionsHost)actionsHost.append(layer.querySelector('.dok-gosterge'),controls);
  function equip(name){
   tool.src=asset(name);
   badge.src=tool.src;
@@ -137,8 +137,12 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
    onProgress?.(score.progress);
   }
   label.textContent=instructions[phase];
-  meter.value=score.progress;
+  // Rinsing removes the lather the child actually applied. Earnings still
+  // reflect the fraction of the whole coat that was both washed and rinsed.
+  meter.value=phase==='durula'?Math.round(100*rinsed.size/Math.max(1,rubbed.size)):score.progress;
   meter.setAttribute('aria-label',instructions[phase]);
+  end.dataset.kazanildi=String(points>0);
+  end.setAttribute('aria-label',points>0?'Bitir':'Bakıma geri dön');
   layer.dataset.phase=phase;
   const wasDisabled=rinse.disabled;
   rinse.hidden=phase!=='sabun';
@@ -156,6 +160,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  }
  function layout(){
   if(!parts||closed)return;
+  const oldMap=map;
   const head=washing?pet.querySelector('.yuz,.kafa.normal'):null;
   map=hitMap(parts,head?.getBoundingClientRect());
   const live=new Set(map.cells.map(cell=>cell.id));
@@ -167,7 +172,16 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
    else{bubble.remove();foam.delete(id);}
   }
   const at=map.cells[Math.floor(map.cells.length*.7)];
-  if(at&&!cursor)moveTo(at);
+  if(at){
+   if(cursor&&oldMap?.width&&oldMap?.height){
+    const u=Math.max(0,Math.min(1,(cursor.x-oldMap.left)/oldMap.width));
+    const v=Math.max(0,Math.min(1,(cursor.y-oldMap.top)/oldMap.height));
+    moveTo({x:map.left+u*map.width,y:map.top+v*map.height});
+    // A resize is not a brush stroke. Start the next segment at the next
+    // actual touch sample, rather than joining two viewport coordinate spaces.
+    previous=undefined;
+   }else moveTo(at);
+  }
   update();
  }
  function effect(cell){
@@ -222,7 +236,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
    spark.animate([{opacity:1,transform:'scale(.7)'},{opacity:0,transform:'translateY(-12px) scale(.35)'}],{duration:340}).finished.then(()=>spark.remove()).catch(()=>spark.remove());
   }
   update();
-  if((phase==='durula'&&rinsed.size===rubbed.size)||(phase==='firca'&&rubbed.size===map.cells.length))finish();
+  complete=(phase==='durula'&&rinsed.size===rubbed.size)||(phase==='firca'&&rubbed.size===map.cells.length);
  }
  function relax(){
   scene.classList.remove('taraniyor');
@@ -231,6 +245,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  function start(event){
   if(pointerId!==undefined||!event.isPrimary||event.button!==0||!map)return;
   pointerId=event.pointerId;
+  layer.dataset.input=event.pointerType;
   previous={x:event.clientX,y:event.clientY};
   moveTo(previous);
   surface.focus({preventScroll:true});
@@ -239,7 +254,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  function track(event){
   if(!map||closed)return;
   if(pointerId===undefined){
-   if(event.pointerType==='mouse')moveTo({x:event.clientX,y:event.clientY});
+   if(event.pointerType==='mouse'){layer.dataset.input='mouse';moveTo({x:event.clientX,y:event.clientY});}
    return;
   }
   if(event.pointerId!==pointerId)return;
@@ -248,6 +263,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
    if(closed)return;
    const next={x:sample.clientX,y:sample.clientY};
    moveTo(next);
+   if(!previous){previous=next;continue;}
    if(Math.hypot(next.x-previous.x,next.y-previous.y)<2)continue;
    sweep(previous,next);
    previous=next;
@@ -256,9 +272,11 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  function release(event){
   if(event.pointerId!==pointerId)return;
   pointerId=undefined;previous=undefined;tool.classList.remove('temas');
+  if(complete)finish();
  }
  function keyboard(event){
   if(!map||!cursor)return;
+  layer.dataset.input='keyboard';
   if(event.code==='Space'){
    event.preventDefault();keyboardDown=true;tool.classList.add('temas');return;
   }
@@ -280,7 +298,7 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
   if(closed)return;
   closed=true;
   clearTimeout(relaxTimer);relax();
-  controller.abort();resize.disconnect();controls.remove();layer.remove();
+  controller.abort();resize.disconnect();meter.closest('.dok-gosterge')?.remove();controls.remove();layer.remove();
   scene.classList.remove('serbest-bakim');
   signal?.removeEventListener('abort',cleanup);
  }
@@ -294,14 +312,27 @@ export function baglaDokunus({scene,type,asset,relaxedFace,actionsHost,onProgres
  surface.addEventListener('pointermove',track,options);
  for(const event of ['pointerup','pointercancel','lostpointercapture'])surface.addEventListener(event,release,options);
  surface.addEventListener('keydown',keyboard,options);
- surface.addEventListener('keyup',event=>{if(event.code==='Space')keyRelease();},options);
+ surface.addEventListener('keyup',event=>{if(event.code==='Space'){keyRelease();if(complete)finish();}},options);
  surface.addEventListener('blur',keyRelease,options);
- rinse.addEventListener('click',()=>{
+ function startRinse(){
   if(phase!=='sabun'||rinse.disabled)return;
   phase='durula';equip('el-dusu');
   voice.textContent='Köpükleri suyla durula.';
   update();surface.focus({preventScroll:true});
+ }
+ // A tap immediately following a long touch stroke can lose its compatibility
+ // click. Rinsing only changes phase once, so both input paths are safe.
+ let rinseTouch;
+ rinse.addEventListener('pointerdown',event=>{
+  if(event.isPrimary&&event.pointerType==='touch')rinseTouch=event.pointerId;
  },options);
+ rinse.addEventListener('pointerup',event=>{
+  if(event.pointerId!==rinseTouch)return;
+  rinseTouch=undefined;
+  if(rinse.contains(document.elementFromPoint(event.clientX,event.clientY)))startRinse();
+ },options);
+ rinse.addEventListener('pointercancel',()=>{rinseTouch=undefined;},options);
+ rinse.addEventListener('click',startRinse,options);
  end.addEventListener('click',finish,options);
  signal?.addEventListener('abort',cleanup,{once:true});
  equip(washing?'sunger':'firca');

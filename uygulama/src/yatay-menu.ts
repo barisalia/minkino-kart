@@ -8,8 +8,7 @@ import { sayfaAdresi } from '../../src/kabuk/sayfa';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { geriDinle } from '../../src/kabuk/yon';
 import { kilitleriKur, erisimVarMi } from '../../src/abonelik/kilit';
-import { menuYasiOku, menuYasiniSec } from '../../src/engine/menu-yas';
-import { YASLAR, type Yas } from '../../src/engine/types';
+import { MENU_YASLARI, type MenuYasi, menuYasiOku, menuYasiniSec } from '../../src/engine/menu-yas';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { menuOyunlari } from './oyunlar';
 import { KITAPLAR } from '../../kitap/src/kitaplar';
@@ -21,6 +20,7 @@ import etkinlikSimge from '../../assets/uygulama/kategoriler/etkinlik-ikon.webp'
 import kitapSimge from '../../assets/uygulama/kategoriler/kitap-ikon.webp';
 import oyunSimge from '../../assets/uygulama/kategoriler/oyun-ikon.webp';
 import filmSimge from '../../assets/uygulama/kategoriler/film-ikon.webp';
+import alfabeKapagi from '../../assets/alfabe/kapak.webp';
 
 const bolumler = [
   { id: 'etkinlik', ad: 'Etkinlikler', renk: '#9560e5', simge: etkinlikSimge },
@@ -34,10 +34,10 @@ const oyunKapaklari = import.meta.glob<string>('../../assets/uygulama/oyun-kapak
 const kitapKapaklari = import.meta.glob<string>('../../assets/kitap/*/kapak.webp', { eager: true, query: '?url', import: 'default' });
 const resim = (ad: string) => resimler[`../../assets/${ad}.webp`] ?? '';
 /** Yaş kartlarının renkleri (kategori renkleriyle aynı aile) */
-const YAS_RENK: Record<Yas, string> = { 3: '#9560e5', 4: '#f45e53', 5: '#ffb627', 6: '#3cbe92' };
+const YAS_RENK: Record<MenuYasi, string> = { 2: '#337fa5', 3: '#9560e5', 4: '#f45e53', 5: '#ffb627', 6: '#3cbe92' };
 
 /**
- * Yaş seçimi: tam ekran, menüyle aynı stilde dört büyük kart. Yazı okunmaz: kocaman rakam ve o kadar yıldız
+ * Yaş seçimi: tam ekran, menüyle aynı stilde beş büyük kart. Yazı okunmaz: kocaman rakam ve o kadar yıldız
  * (çocuk sayar); açılınca "Kaç yaşındasın?" söylenir, seçince "<yaş> yaş! Harika!" (ikisinin de kaydı var).
  * İlk açılışta (yaş hiç seçilmemişse) kendiliğinden, sonra üstteki yaş düğmesiyle açılır.
  */
@@ -45,23 +45,22 @@ function yasSor(kok: HTMLElement, secildi: () => void, kapatilabilir: boolean) {
   const secili = menuYasiOku();
   const katman = h('div.ym-yas-katman', { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Kaç yaşındasın?' });
   const kapat = () => katman.remove();
-  const kartlar = YASLAR.map((y) =>
+  const kartlar = MENU_YASLARI.map((y) =>
     h(
       'button.ym-yas-kart',
       {
         type: 'button',
-        'aria-label': `${y} yaş`,
+        'aria-label': y === 6 ? '6 yaş ve üzeri' : `${y} yaş`,
         'aria-pressed': secili === y ? 'true' : 'false',
         style: `--renk:${YAS_RENK[y]}`,
         onclick: () => {
           menuYasiniSec(y);
-          void konus(`${y} yaş! Harika!`);
+          void konus(y === 2 ? 'Harika!' : `${y} yaş! Harika!`);
           kapat();
           secildi();
         },
       },
-      h('span.ym-yas-rakam', {}, String(y)),
-      h('span.ym-yas-yildiz', { 'aria-hidden': 'true' }, ...Array.from({ length: y }, () => svg(IKON.yildiz))),
+      h('span.ym-yas-rakam', {}, y === 6 ? '6+' : String(y)),
     ),
   );
   const ust = h(
@@ -95,7 +94,7 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
     const geri = h('button.ym-yuvarlak', { type: 'button', 'aria-label': 'Ana menü', onclick: () => { bolum = undefined; kur(); } }, svg(IKON.geri));
     const seciliYas = menuYasiOku();
     // yaş düğmesi: yıldız ve rakam (yazı yok); dokununca büyük yaş seçimi
-    const yas = h('button.ym-yas', { type: 'button', 'aria-label': 'Yaş aralığını seç' }, svg(IKON.yildiz), h('span', {}, seciliYas === null ? '?' : String(seciliYas)));
+    const yas = h('button.ym-yas', { type: 'button', 'aria-label': 'Yaş aralığını seç' }, svg(IKON.yildiz), h('span', {}, seciliYas === null ? '?' : seciliYas === 6 ? '6+' : String(seciliYas)));
     yas.addEventListener('click', () => yasSor(el, kur, true));
     const ayar = h('button.ym-yuvarlak', { type: 'button', 'aria-label': 'Ebeveyn ayarları', onclick: async () => { if (await ebeveynKapisiAc(el)) app.git('ayarlar'); } }, svg(IKON.ebeveyn));
     const ust = h('header.ym-ust', {}, ...(bolum ? [geri] : []), minkinoLogo('kenarli'), h('h1', {}, bolum?.ad ?? ''), yas, ayar);
@@ -120,8 +119,9 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
         kart(kitap.baslik, `./kitap/?kitap=${encodeURIComponent(kitap.id)}&sayfa=1`, kapak);
       }
     } else {
-      menuOyunlari(!!uygulamaPlatformu()).filter(k => secili.id === 'etkinlik' ? ['hazirlik', 'canlan', 'kartlar', 'macera'].includes(k.id) : !['hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(k.id)).forEach(k => {
-        const kapak = oyunKapaklari[`../../assets/uygulama/oyun-kapaklari/${k.id}.webp`];
+      const etkinlikler = ['matematik', 'alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera'];
+      menuOyunlari(!!uygulamaPlatformu()).filter(k => secili.id === 'etkinlik' ? etkinlikler.includes(k.id) : ![...etkinlikler, 'film', 'kitap'].includes(k.id)).forEach(k => {
+        const kapak = k.id === 'alfabe' ? alfabeKapagi : oyunKapaklari[`../../assets/uygulama/oyun-kapaklari/${k.id}.webp`];
         const ad = k.ust ? `${k.ust} ${k.ad}` : k.ad;
         kart(ad, k.adres, kapak, k.id, kapak ? undefined : kartResmi(k));
       });

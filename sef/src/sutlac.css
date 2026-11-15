@@ -1,0 +1,56 @@
+.tatli-tezgahi.sl-tezgah { position:absolute; inset:0; overflow:hidden; background:#ffe8cb url('../../assets/sef/sutlac/tezgah.webp') center/cover; container-type:size; }
+.sl-calisma { position:absolute; inset:0; }
+.sl-tezgah button { touch-action:none; cursor:pointer; }
+.sl-tezgah :is(.sl-surahi,.sl-pirinc,.sl-karistir,.sl-hedef-kase,.sl-kepce,.sl-elek,.sl-sun) { position:absolute; inset:auto; background:transparent; border:0; box-shadow:none; padding:0; height:auto; }
+.sl-tezgah img { pointer-events:none; user-select:none; }
+.sl-kase,.sl-tencere { display:inline-block; position:relative; width:100%; aspect-ratio:720/494; vertical-align:middle; }
+.sl-kase .sl-kase-dis,.sl-tencere .sl-tencere-dis { width:100%; height:100%; object-fit:fill; display:block; }
+.sl-ic { display:block; position:absolute; left:50%; transform:translateX(-50%); }
+.sl-ic .sl-sutlac-yuzeyi { width:100%; height:100%; object-fit:fill; display:block; }
+.sl-ic .sl-desen { position:absolute; inset:21% auto auto 31.5%; width:37%; height:57%; object-fit:contain; }
+.sl-tencere .sl-dolu-tencere { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; }
+.sl-tencere .sl-islak-pirinc { position:absolute; left:40%; top:35%; width:20%; height:20%; object-fit:contain; }
+.sl-tezgah :is(.sl-geri,.sl-dinle,.sl-ileri,.sl-duzelt) { position:absolute; inset:auto; width:clamp(44px,9cqh,64px); height:clamp(44px,9cqh,64px); padding:8px; border-radius:50%; background:var(--sef-kumanda-fonu, #fff5dc); border:2px solid #36293a; color:#36293a; z-index:6; box-shadow:0 3px #9d785a; }
+.sl-tezgah .sl-geri {left:2%;top:3%} .sl-tezgah .sl-dinle {right:2%;top:3%}
+.sl-tezgah .sl-ileri {right:3%;bottom:4%;background:#a9e7a0} .sl-tezgah .sl-ileri:disabled {opacity:.45}
+.sl-tezgah .sl-duzelt {left:3%;bottom:4%} .sl-fis {position:absolute;display:flex;align-items:center;gap:4px;left:50%;top:2%;transform:translateX(-50%);border:2px solid #36293a;border-radius:18px;background:var(--sef-kumanda-fonu, #fff8e7);padding:2px 9px;}
+.sl-fis .sl-kase {width:clamp(45px,10cqh,70px)} .sl-desen-fisi {display:inline-flex;width:2.3em;aspect-ratio:1;align-items:center;justify-content:center;} .sl-desen-fisi img {width:80%;height:80%;object-fit:contain;}
+.sl-adimlar {position:absolute;left:3%;bottom:4%;display:flex;gap:4px;pointer-events:none} .sl-adimlar i {width:10px;height:10px;border-radius:50%;background:var(--sef-kumanda-fonu, #fff5de);border:1px solid #5e453b;} .sl-adimlar [data-bitti=true]{background:#4bb583;} .sl-tezgah[data-adim="4"] .sl-adimlar {display:none}
+.sl-ana-tencere {position:absolute;width:min(43%,66cqh);left:50%;top:54%;transform:translate(-50%,-42%);}
+.sl-tezgah .sl-surahi {left:13%;top:34%;width:min(17%,28cqh);z-index:3;} .sl-tezgah .sl-pirinc {right:10%;top:48%;width:min(18%,28cqh);z-index:3;}
+.sl-surahi img,.sl-pirinc img,.sl-kepce>img:first-child,.sl-elek img,.sl-kalip-sec img {display:block;width:100%;height:100%;object-fit:contain;}
+.sl-tezgah :is(.sl-surahi,.sl-pirinc):disabled {opacity:.55;}
+.sl-sut-akimi {position:absolute;left:49%;top:44%;height:14%;width:1.1%;background:var(--sef-kumanda-fonu, #fff9e5);border-radius:1em;pointer-events:none;} .sl-sut-akimi[hidden]{display:none}
+.sl-tezgah .sl-karistir {width:min(55%,76cqh);left:50%;top:48%;transform:translate(-50%,-45%);}
+.sl-karistir .sl-karistirma-kasigi {position:absolute;left:55%;top:34%;width:37%;height:47%;object-fit:contain;transform:translate(-18%,-67%) rotate(-12deg);}
+.sl-donus {position:absolute;left:34%;top:19%;width:16%;color:#715847;opacity:.72;pointer-events:none;}
+.sl-kivamlar,.sl-kalip-rafi {position:absolute;left:50%;bottom:3%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:4px 9px;background:var(--sef-kumanda-fonu, #fff5df);border:2px solid #46333a;border-radius:22px;}
+.sl-kivamlar span {position:relative;display:block;width:clamp(32px,9cqh,68px);aspect-ratio:1.4;border:2px solid transparent;border-radius:14px;} .sl-kivamlar [data-secili=true]{border-color:#12906b;background:#ccf5d8;}
+.sl-kivamlar img {width:100%;height:100%;object-fit:contain;} .sl-kivamlar i{position:absolute;color:#bb6b15;right:-3px;top:-7px;width:16px;}
+.sl-kepce-pot {position:absolute;width:min(39%,67cqh);left:14%;top:31%;}
+.sl-tezgah .sl-hedef-kase {width:min(30%,48cqh);right:11%;top:48%;}
+.sl-tezgah .sl-kepce {width:min(21%,34cqh);left:35%;top:28%;z-index:3;} .sl-kepce .sl-kepce-yuku {position:absolute;left:7%;bottom:12%;width:36%;height:23%;object-fit:fill;} .sl-kepce:not([data-dolu=true]) .sl-kepce-yuku {visibility:hidden}
+.sl-kalip-alani {position:absolute;width:min(49%,68cqh);left:50%;top:48%;transform:translate(-50%,-45%);}
+.sl-kalip-ust {position:absolute;inset:auto;left:50%;transform:translateX(-49%);width:89%;height:45%;object-fit:fill;pointer-events:none;}
+.sl-tezgah .sl-elek {width:40%;left:74%;top:-16%;z-index:2;}
+.sl-kalip-rafi .sl-kalip-sec {position:relative;inset:auto;width:clamp(52px,13cqh,92px);height:clamp(44px,10cqh,74px);padding:3px;border:2px solid transparent;background:var(--sef-kumanda-fonu, #fff4dd);border-radius:14px;}
+.sl-kalip-sec[aria-pressed=true]{border-color:#13795b;background:#c5ecd0;}
+.sl-tezgah .sl-sun {width:min(40%,62cqh);left:50%;top:47%;transform:translate(-50%,-42%);}
+.sl-sun i {display:flex;margin:4% auto 0;align-items:center;justify-content:center;width:35%;border-radius:24px;border:2px solid #355246;background:#abebaf;color:#244d3c;padding:1%;} .sl-sun i svg {width:40%;height:28px;}
+.sl-ic[data-lokma="1"] {mask-image:radial-gradient(ellipse 27% 72% at 12% 58%,transparent 96%,#000 100%);}
+.sl-ic[data-lokma="2"] {mask-image:radial-gradient(ellipse 64% 91% at 10% 55%,transparent 96%,#000 100%);}
+.sl-ic[data-lokma="3"] {visibility:hidden}
+.restoran-lokma .sl-kasik-lokmasi {position:absolute;left:-5%;top:5%;width:32%;height:30%;border-radius:50%;overflow:hidden;border:1px solid #665143;background:var(--sef-kumanda-fonu, #fff3ce);}
+.sl-kasik-lokmasi>.sl-ic {top:-52%;left:-18%;width:255%;height:196%;transform:none;}
+.sl-kasik-lokmasi[data-lokma="1"]>.sl-ic {left:-75%;} .sl-kasik-lokmasi[data-lokma="2"]>.sl-ic {left:-136%;}
+.lokma-alindi .sl-kasik-lokmasi {visibility:hidden}
+
+.sl-tencere {aspect-ratio:720/497;line-height:0}
+.sl-tencere-ici {position:absolute;left:15.7%;top:5.6%;width:67.2%;height:59.2%;overflow:hidden;border-radius:50%;pointer-events:none}
+.sl-tencere-sivisi {position:absolute;left:50%;height:102%;translate:-50% 0;display:block;overflow:hidden;border-radius:50%}
+.sl-sade-sut {background:var(--sef-kumanda-fonu, #fffdf1);border-top:1px solid #665d49}
+.sl-tencere-sivisi .sl-karisim-yuzeyi {width:100%;height:100%;object-fit:fill}
+.sl-tezgah .sl-surahi-agzi {position:absolute;left:1.5%;top:19%;width:0;height:0}
+.sl-tezgah .sl-sut-akimi {width:clamp(4px,1.8cqh,12px);translate:-50% 0;background:var(--sef-kumanda-fonu, #fffdf1);border:1px solid #a29a81;border-width:0 1px;border-radius:0 0 80% 75%;z-index:2}
+.sl-tezgah .sl-portatif-ocak {position:absolute;width:min(49%,66cqh);height:28%;object-fit:fill;left:50%;top:48%;translate:-50% 0;pointer-events:none}
+.sl-tezgah .sl-karistir {top:39%;width:min(49%,66cqh);z-index:1}

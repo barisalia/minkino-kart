@@ -1,0 +1,28 @@
+.meyve-mutfagi{position:absolute;inset:14% 12% 9%;display:grid;grid-template-rows:minmax(0,1fr) 23%;place-items:center;gap:2%;touch-action:none;user-select:none}
+.meyve-mutfagi button,.meyve-mutfagi svg[role=button]{touch-action:none;cursor:pointer}
+.meyve-mutfagi svg,.meyve-mutfagi img{display:block;width:100%;height:100%;object-fit:contain}
+.meyve-mutfagi[data-asama=sec]{grid-template:1fr / repeat(2,minmax(0,1fr));align-items:end;inset:22% 17% 18%;gap:8%}
+.meyve-tarif{position:relative;width:100%;height:100%}
+.meyve-tarif>img{position:absolute;top:2%;left:9%;width:82%;height:77%;object-position:bottom}
+.meyve-tarif>svg{position:absolute;bottom:0;width:100%;height:38%}
+.meyve-calisma{position:relative;width:100%;height:100%;min-height:0}
+.meyve-calisma>svg{overflow:visible}
+.meyve-raf{display:flex;position:relative;align-items:stretch;justify-content:center;gap:2%;min-height:0;width:92%;height:100%}
+.meyve-rafta{position:relative;width:clamp(44px,18%,96px);height:100%;padding:1.5%;border-bottom:3px solid transparent}
+.meyve-rafta[aria-pressed=true]{border-color:#477b69;background:#ffefc3;border-radius:35%}
+.meyve-rafta:disabled>img{position:absolute;bottom:0;right:2%;width:25%;height:30%}
+.meyve-kucuk-tabak,.meyve-mutfagi[data-asama=diz] .meyve-raf{background:#ffefd0;border:1.6px solid #282324;box-shadow:0 4px #c89767;border-radius:18px 18px 32px 32px;padding:0 3%;box-sizing:border-box}
+.meyve-kucuk-tabak span{width:15%;height:100%;min-width:0}
+.meyve-mutfagi[data-temiz="1"] .meyve-yikama-izleri path:first-child,.meyve-mutfagi[data-temiz="2"] .meyve-yikama-izleri path:not(:last-child){opacity:0}
+.meyve-kes-rehber{stroke:#fff8cf;stroke-width:3;stroke-dasharray:3 7;pointer-events:none}
+.meyve-kes-izi{stroke:#fff9d4;stroke-width:3;opacity:0;pointer-events:none}.meyve-etkin .meyve-kes-izi{opacity:1}
+.meyve-etkin .meyve-kes-rehber{opacity:0}
+.meyve-tutuldu{opacity:.4}.meyve-tasinan{position:fixed;width:78px;height:76px;z-index:9;transform:translate(-50%,-55%);pointer-events:none}
+.meyve-birak{outline:2px dashed #478b7f;outline-offset:2px;border-radius:24px}
+.meyve-geri-al,.meyve-yeni{width:clamp(40px,8vmin,70px);height:clamp(40px,8vmin,70px)}
+.meyve-geri-al{position:absolute;right:0;bottom:0}.meyve-musteri,.meyve-servis{width:100%;height:100%}
+.meyve-ikram{position:absolute;bottom:-10%;left:21%;width:58%;height:36%;pointer-events:none}
+.meyve-mutfagi[data-asama=karistir] .meyve-kasik{pointer-events:none}
+@media(max-aspect-ratio:1/1){.meyve-mutfagi{inset:23% 3% 15%;grid-template-rows:minmax(0,1fr) 23%}.meyve-mutfagi[data-asama=sec]{inset:23% 4% 28%;gap:3%}.meyve-raf{width:96%}.meyve-tarif>svg{height:36%}.meyve-tarif>img{top:4%;height:72%}}
+@media(prefers-reduced-motion:no-preference){.meyve-su path{stroke-dasharray:9 4;animation:meyve-akis .64s linear infinite}.meyve-calisma [data-yarim]{animation:meyve-acil .32s ease-out}.meyve-ikram{animation:meyve-acil .3s ease-out}@keyframes meyve-akis{to{stroke-dashoffset:-26}}@keyframes meyve-acil{from{opacity:.3}to{opacity:1}}}
+@media(prefers-reduced-motion:no-preference){.meyve-eksik-kesim .meyve-kes-rehber{animation:meyve-kes-yolunu-goster .85s ease-out 2}@keyframes meyve-kes-yolunu-goster{0%{stroke-dashoffset:22;opacity:.35}60%{opacity:1}100%{stroke-dashoffset:0;opacity:1}}}

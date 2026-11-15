@@ -1,0 +1,54 @@
+import {test,expect} from '@playwright/test';
+
+test('Fesleğen sosunun parmak izi aynı tabağın defterinde ve tepsisinde korunur',async({page,context})=>{
+  await page.setViewportSize({width:740,height:360});
+  await page.goto('./sef/?test=1');
+  await page.evaluate(()=>{
+    const s={tarifId:'salata',alinan:['salatalik','marul','domates'],eskiHazir:[],kesimler:{salatalik:4,marul:4,domates:4},aktarilan:['salatalik','marul','domates'],karistirma:3,servisEdildi:false};
+    localStorage.setItem('minkino-sef-v1',JSON.stringify({secili:'salata',ekran:'servis',sessiz:true,siparisler:{salata:s},tabaklar:{salata:2},porsiyonlar:{salata:{adet:2}},tepsiler:{secili:'bahce-tabagi',oynanan:'salata',ekran:'kapali',masalar:{'bahce-tabagi':{tabaklar:{},adim:{}}}}}));
+  });
+  await page.reload();
+  await expect(page.locator('[data-istek=feslegen]')).toBeVisible();
+  await page.locator('[data-sus=feslegen]').tap();
+  const yuz=await page.locator('.sunum .salata-kucuk-ic').boundingBox();if(!yuz)throw Error('Salata yüzeyi görünmüyor');
+  const cdp=await context.newCDPSession(page);
+  const noktalar=[[.24,.52],[.31,.39],[.40,.51],[.50,.39],[.59,.53],[.68,.40],[.75,.50]];
+  for(const [i,[x,y]] of noktalar.entries())await cdp.send('Input.dispatchTouchEvent',{type:i?'touchMove':'touchStart',touchPoints:[{x:yuz.x+x*yuz.width,y:yuz.y+y*yuz.height}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();
+  await expect(page.locator('[data-zil]')).toBeVisible();
+  const iz=await page.locator('.sunum [data-sos=feslegen] path').first().getAttribute('d');
+  expect((iz?.match(/Q/g)??[]).length).toBeGreaterThan(3);
+  const yuzey=page.locator('.sunum .salata-kucuk-ic');
+  const izler=yuzey.locator('[data-sos=feslegen]');
+  const yer={x:yuz.width*.48,y:yuz.height*.68};
+  await yuzey.tap({position:yer});
+  await expect(izler).toHaveCount(2);
+  // Wait for the spoon to finish before touching another control.
+  await expect(page.locator('[data-zil]')).toBeEnabled();
+  await page.getByRole('button',{name:'Son sos izini geri al'}).tap();
+  await expect(izler).toHaveCount(1);
+  await expect(izler.locator('path').first()).toHaveAttribute('d',iz!);
+  await yuzey.tap({position:yer});
+  await expect(page.locator('[data-zil]')).toBeEnabled();
+  const ikinci=await izler.last().locator('path').first().getAttribute('d');
+  expect(ikinci).not.toBe(iz);
+  await page.reload();
+  await expect(izler).toHaveCount(2);
+  await expect(izler.last().locator('path').first()).toHaveAttribute('d',ikinci!);
+  await expect(page.locator('.sunum [data-sos=feslegen] path').first()).toHaveAttribute('d',iz!);
+  await page.locator('[data-zil]').tap();
+  await page.getByRole('button',{name:'Bahçe Salatası siparişi ile tabağı karşılaştır'}).tap();
+  const fis=page.getByRole('dialog');
+  await expect(fis.locator('[data-puan="3"]')).toBeVisible();
+  if(process.env.SEF_SALATA_KARE)await page.screenshot({path:process.env.SEF_SALATA_KARE});
+  const kayit=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!));
+  const tabak=kayit.gecmis.at(-1);
+  expect(tabak.sus.oncekiIzler[0].length).toBeGreaterThan(4);
+  expect(kayit.tepsiler.masalar['bahce-tabagi'].tabaklar.salata.sus).toEqual(tabak.sus);
+  await fis.getByRole('button',{name:'Tepsiye dön'}).tap();
+  await expect(page.locator('.tepsi-yuva [data-sos=feslegen] path').first()).toHaveAttribute('d',iz!);
+  await page.locator('.tepsi-ust').getByRole('button',{name:'Geri'}).tap();
+  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
+  await expect(page.locator('.defter-tabagi [data-sos=feslegen] path').first()).toHaveAttribute('d',iz!);
+  await expect(page.locator('.defter-tabagi [data-sos=feslegen]')).toHaveCount(2);
+});

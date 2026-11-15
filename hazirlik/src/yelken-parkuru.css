@@ -1,0 +1,13 @@
+.yelken-parkuru{position:absolute;inset:0;isolation:isolate;touch-action:none;background:url('../../assets/hazirlik/kres/regatta.webp') center/100% 100%}
+.yelken-parkuru button{position:absolute;translate:-50% -50%;min-width:42px;min-height:44px;touch-action:none}
+.yelken-parkuru img,.katli-kayik-damga img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
+.yelken-parkuru [data-parkur^=duba]{width:13%;height:23%}
+.yelken-parkuru [data-parkur^=duba] i{position:absolute;left:36%;top:48%;width:29%;height:29%;pointer-events:none}
+.yelken-parkuru [data-parkur=liman]{width:10%;height:18%}
+.yelken-parkuru [data-parkur=kayik]{width:19%;height:19%;z-index:1}
+.yelken-parkuru [data-parkur=kayik] i,.katli-kayik-damga{position:absolute;left:46%;top:58%;width:13%;height:20%;pointer-events:none}
+.yelken-parkuru [data-parkur=sira]{width:30%;height:13%;display:flex;align-items:center;justify-content:center;gap:6%;padding:0 2%;background:#fff2cb;border:2px solid #332d28;border-radius:1.2rem}
+.yelken-parkuru [data-parkur=sira] i{width:25%;height:62%}.yelken-parkuru .sonra{opacity:.38}.yelken-parkuru .simdi{scale:1.18}.yelken-parkuru .gecildi{opacity:.64}
+.yelken-parkuru [data-parkur=yeniden],.yelken-parkuru [data-parkur=bitir]{width:10%;height:12%}
+.yelken-parkuru [hidden]{display:none!important}
+@media(max-aspect-ratio:1/1){.yelken-parkuru{background-image:url('../../assets/hazirlik/kres/regatta-dik.webp')}.yelken-parkuru [data-parkur^=duba]{width:20%;height:14%}.yelken-parkuru [data-parkur=kayik]{width:27%;height:12%}.yelken-parkuru [data-parkur=sira]{width:43%;height:9%}.yelken-parkuru [data-parkur=liman]{width:16%;height:11%}}

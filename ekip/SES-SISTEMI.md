@@ -4,6 +4,10 @@
 
 ---
 
+## Ortak fon müzikleri
+
+Kullanıcının eklediği fon müzikleri proje kökündeki [music klasöründe](../music/) bulunur. Sahnenin havasına uyan parçaları ara sıra kullanabilirsiniz. Konuşmalı sahnelerde müzik sesini diyaloğun altında tutun.
+
 ## 1. Kural (en önemlisi)
 
 **Oyun yalnız çocuğun gerçekten yaptığı şeye tepki verir.** Konuşma, TV, müzik, "çıt" gibi kısa sesler ve ortam uğultusu **hiçbir görevi ilerletmez.**

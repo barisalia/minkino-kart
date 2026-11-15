@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffd0a6">
+  <title>Ceren ile A sesi · Minkino</title>
+  <link rel="icon" href="../../favicon.svg">
+</head>
+<body>
+  <main id="sahne" data-durum="hazir">
+    <nav aria-label="Ders araçları">
+      <a class="ikon" id="geri" href="../../" aria-label="Ana menüye dön"></a>
+      <button class="ikon" id="tekrar" aria-label="Ceren’i yeniden dinle" type="button"></button>
+    </nav>
+    <div id="ceren" role="img" aria-label="Ceren Öğretmen"></div>
+    <section class="ders" aria-label="A sesini söyleme">
+      <div class="kart">
+        <svg class="harfler" role="img" aria-label="Büyük A ve küçük a" viewBox="0 0 400 215">
+          <defs>
+            <path id="buyuk" d="M30 173 L91 36 Q96 24 102 36 L163 173 M58 117 H138" fill="none" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
+            <clipPath id="dolgu"><rect id="su" x="10" y="185" width="175" height="0"/></clipPath>
+          </defs>
+          <use href="#buyuk" stroke="#96cbbb"/>
+          <use href="#buyuk" stroke="#00594f" clip-path="url(#dolgu)"/>
+          <g fill="none" stroke="#f66b56" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M321 99 C309 65 251 78 239 120 C224 170 271 193 301 156 Q312 143 318 122"/>
+            <path d="M324 86 L313 154 Q307 184 340 164"/>
+          </g>
+        </svg>
+      </div>
+      <div class="denetim">
+        <p role="status" id="durum"></p>
+        <div class="eylemler">
+          <button id="basla" type="button">Ceren’i dinle</button>
+          <button id="yardim" type="button" hidden>Dokunarak tamamla</button>
+          <a class="yazmaya-gec" href="../yazma-onizleme/index.html">A’yı yazalım ›</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="./ders.ts"></script>
+</body>
+</html>

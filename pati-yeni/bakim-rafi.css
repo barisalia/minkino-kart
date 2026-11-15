@@ -159,6 +159,20 @@
   transform: translateY(-18%) rotate(45deg);
 }
 .raf-kulp i { font-size: clamp(14px, 2.1dvh, 32px); }
+.cerceve .raf-kulp {touch-action:none}
+.cerceve .raf-kapali .raf-kulp:focus-visible {outline:3px solid #284f65;outline-offset:-4px}
+.cerceve .raf-kapali {
+  position:absolute;z-index:3;inset:auto 0 max(0px,env(safe-area-inset-bottom));
+  display:flex;justify-content:center;pointer-events:none;
+}
+.cerceve .raf-kapali .raf-kulp {
+  display:grid;place-items:center;width:clamp(78px,14vw,152px);height:44px;
+  padding:0;pointer-events:auto;background:#f2c38f;border:2px solid #835c42;
+  border-radius:20px 20px 0 0;box-shadow:inset 0 4px #ffe1b2;
+}
+.raf-kapali .raf-kulp i { width:36%;height:16px;border:0;background:none }
+.raf-kapali .raf-kulp i::before {transform:rotate(225deg)}
+.sayfa-bakim:has(.raf-kapali) .bakim-sahne {margin-bottom:max(46px,env(safe-area-inset-bottom))}
 .cerceve .bakim-rafi.yemek-rafi { background: #f4d5a2; }
 .cerceve .kisa-raf { max-width: min(90%, calc(var(--goz) * 21dvh + 7vw)); }
 .yemek-rafi .raf-ici { grid-template-columns: minmax(44px,.46fr) repeat(calc(var(--goz) - 1), minmax(0,1fr)); }

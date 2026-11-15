@@ -61,7 +61,7 @@ const art=(name)=>`<img class="arac" src="${asset(name)}" alt="">`;
 const btn=(act,label,extra='')=>`<button type="button" data-act="${act}" ${extra}>${label}</button>`;
 const coin=n=>`<span class="para-miktar"><img alt="jeton" src="${asset('para')}"><b>${n}</b></span>`;
 const ownedIn=home=>durum().sahipler.filter(id=>cesitler[id].ortam===home);
-let bagPage=0,fromBag=false,rewardMessage='',rewardCoins=null,noteTimer;
+let bagPage=0,bagReturn=null,rewardMessage='',rewardCoins=null,noteTimer;
 function rewardContents(){
  if(rewardCoins===null)return rewardMessage;
  return `<span class="odul-jeton" aria-hidden="true">${coin('+'+rewardCoins)}</span><span class="ses-etiketi">${rewardMessage}</span>`;
@@ -116,7 +116,7 @@ function feedFish(outcome){
  if(favorite)app.querySelector('.bakim-sahne').classList.add('mutlu-balik');
  feeding=setTimeout(()=>tepki(outcome!=='unsuitable'),duration);
 }
-function go(page){vitrin.dialog=null;rewardMessage='';rewardCoins=null;bagPage=0;armed='';pantryOpen=false;chosen='';state.page=page;state.pose='bosta';state.action='';render();}
+function go(page,pantryPage){vitrin.dialog=null;rewardMessage='';rewardCoins=null;bagPage=pantryPage??0;armed='';pantryOpen=pantryPage!==undefined;chosen='';state.page=page;state.pose='bosta';state.action='';render();}
 function enter(id){
  if(!sahipMi(id)){go('menu');return;}
  const model=cesitler[id];
@@ -147,20 +147,31 @@ function tepki(mutlu){
  const pet=app.querySelector('.buyuk');
  if(!pet)return;
  pet.classList.add('banyo-tepki',mutlu?'sevindi':'cekindi');
- pet.setAttribute('aria-label',mutlu?'Sevindi':'Geri çekildi');
  if(mutlu)efekt.dogru();else efekt.yanlis();
- feeding=setTimeout(()=>{state.pose='bosta';render();},1000);
+ // Finish only the reaction. Rebuilding the drawer here drops focus and can
+ // interrupt a new touch on a care tool just as the pet settles down.
+ feeding=setTimeout(()=>{
+  if(!pet.isConnected)return;
+  const calm=pet.querySelector('.yuz,.butun-balik');
+  if(calm&&!pet.classList.contains('oksaniyor'))calm.src=part(state.id,calm.classList.contains('butun-balik')?'tam-normal':'normal');
+  state.pose='bosta';
+  const scene=pet.closest('.bakim-sahne');
+  scene.classList.remove('hareket-sevin');scene.classList.add('hareket-bosta');
+  pet.classList.remove('banyo-tepki','sevindi','cekindi');
+  pet.querySelector('.bakim-onayi')?.remove();
+ },1000);
 }
-async function recordCare(id,action,stars=3,coverage){
+async function recordCare(id,action,stars=3,coverage,signal){
  const room=state.page;
  const result=await bakimOdulu(id,action,stars,coverage);
- if(state.id!==id||state.page!==room)return;
+ if(signal?.aborted||state.id!==id||state.page!==room)return;
  // A different tool may already be in use while the storage lock is waiting.
  if(state.action&&state.action!==action)return;
  const tamam=result.ok&&result.bakimPuani>0;
  if(room==='banyo'){
   enter(id);
   tepki(tamam);
+  focusOn('[data-act=banyo]');
   if(tamam){
    const mark=document.createElement('span');
    mark.className='bakim-onayi';mark.setAttribute('role','status');
@@ -182,11 +193,20 @@ function toolIcon(pet,key){
  if(key==='uyku'&&aileler[pet].ortam==='golet')return `<img class="arac" src="${moon}" alt="">`;
  return art(toolArt[key]);
 }
+function pantryPages(inventory){
+ const ids=Object.keys(names).filter(id=>inventory[id]>0);
+ const wanted=wish();
+ ids.sort((a,b)=>Number(b===wanted)-Number(a===wanted));
+ return {ids,pages:Math.max(1,Math.ceil(ids.length/4))};
+}
+function pageForFood(food,fallback,inventory){
+ const {ids,pages}=pantryPages(inventory);
+ const index=ids.indexOf(food);
+ return index<0?Math.min(fallback,pages-1):Math.floor(index*pages/ids.length);
+}
 function pantrySlots(){
  const inventory=durum().canta;
- const ids=Object.keys(names).filter(id=>inventory[id]>0);
- ids.sort((a,b)=>Number(b===wish())-Number(a===wish()));
- const pages=Math.max(1,Math.ceil(ids.length/4));
+ const {ids,pages}=pantryPages(inventory);
  bagPage=Math.min(bagPage,pages-1);
  // Divide evenly so a fifth portion does not get stranded on a page of its own.
  const portions=ids.slice(Math.ceil(bagPage*ids.length/pages),Math.ceil((bagPage+1)*ids.length/pages));
@@ -213,9 +233,13 @@ function tray(pet){
   }).join('')+(state.page==='bakim'&&banyoyaGirer(pet)?btn('banyo',symbol('banyo'),'class="goz" aria-label="Banyoya git"'):''),
   columns:tools.length+Number(state.page==='bakim'&&banyoyaGirer(pet))
  };
- const handle=state.page==='bakim'?'':btn('drawer','<i aria-hidden="true"></i>','class="raf-kulp" aria-label="Çekmeceyi kapat" aria-expanded="true"');
  const busy=state.action==='mama'||state.action==='su';
- return `<footer class="bakim-rafi ${pantryOpen?'yemek-rafi':''} ${slots.compact?'kisa-raf':''} ${slots.columns>5?'dolu-raf':''}" style="--goz:${slots.columns}" aria-label="${pantryOpen?'Yemek çantası':'Bakım araçları'}">${handle}<fieldset class="raf-ici" ${busy?'disabled':''}>${slots.contents}</fieldset></footer>`;
+ const handle=btn('drawer','<i aria-hidden="true"></i>',`class="raf-kulp" aria-label="Çekmeceyi kapat" aria-expanded="true" aria-controls="bakim-araclari" ${busy?'disabled':''}`);
+ return `<footer class="bakim-rafi ${pantryOpen?'yemek-rafi':''} ${slots.compact?'kisa-raf':''} ${slots.columns>5?'dolu-raf':''}" style="--goz:${slots.columns}" aria-label="${pantryOpen?'Yemek çantası':'Bakım araçları'}">${handle}<fieldset id="bakim-araclari" class="raf-ici" ${busy?'disabled':''}>${slots.contents}</fieldset></footer>`;
+}
+function kapaliRaf(){
+ const label=state.action==='oyun'?'Oyunu bitir ve bakım araçlarını aç':'Bakım araçlarını aç';
+ return `<footer class="raf-kapali">${btn('drawer','<i aria-hidden="true"></i>',`class="raf-kulp" aria-label="${label}" aria-expanded="false" aria-controls="bakim-araclari"`)}<span id="bakim-araclari" hidden></span></footer>`;
 }
 function asleep(id){return durum().hayvanlar[id]?.bakimlar.includes('uyku');}
 async function yatir(){
@@ -257,18 +281,18 @@ function care(){
 
  const arrows=ownedIn(home).length>1&&!action?btn('prev','‹','class="ok onceki" aria-label="Önceki hayvan"')+btn('next','›','class="ok sonraki" aria-label="Sonraki hayvan"'):'';
  const interactive=['firca','sampuan'].includes(action);
- return `<section class="bakim-sahne ortam-${home} hareket-${pose} ${interactive?'etkilesimli':''}">${dekor}${yuva}${resting&&['sepet-yatak','kus-yatagi','cicek','kayik'].includes(bed)?`<div aria-hidden="true" class="yatak-kenari">${art(bed)}</div>`:''}<div class="platform ${state.mat}" ${fish?'hidden':''}>${rug}</div><div class="buyuk${coatState(state.id)}" style="--post:${postFiltresi(cesitler[state.id])}">${cizili||animal(state.id,face)}${badge}${target}</div>${wishBubble}${night}${arrows}${oynuyor?oyunTahtasi(toy()):''}</section>${resting?geceDugmeleri():interactive?'':tray(pet)}`;
+ return `<section class="bakim-sahne ortam-${home} hareket-${pose} ${interactive?'etkilesimli':''}">${dekor}${yuva}${resting&&['sepet-yatak','kus-yatagi','cicek','kayik'].includes(bed)?`<div aria-hidden="true" class="yatak-kenari">${art(bed)}</div>`:''}<div class="platform ${state.mat}" ${fish?'hidden':''}>${rug}</div><div class="buyuk${coatState(state.id)}" style="--post:${postFiltresi(cesitler[state.id])}">${cizili||animal(state.id,face)}${badge}${target}</div>${wishBubble}${night}${arrows}${oynuyor?oyunTahtasi(toy()):''}</section>${resting?geceDugmeleri():interactive?'':drawer?tray(pet):kapaliRaf()}`;
 }
 function bath(){
  const action=state.action;
  const active=action==='sampuan'||action==='firca';
  const face=state.pose==='sevin'?'sevin':'normal';
  const shelf=active?'<footer class="banyo-islem-rafi" aria-label="Bakım araçları"></footer>'
-  :state.drawer?tray(state.pet):`<footer class="banyo-kapali">${btn('drawer',art('firca'),'aria-label="Bakım araçlarını aç" aria-expanded="false"')}</footer>`;
+  :state.drawer?tray(state.pet):kapaliRaf();
  return `<section class="bakim-sahne banyo-sahne hareket-${state.pose}"><div class="buyuk${coatState(state.id)}">${animal(state.id,face)}</div></section>${shelf}`;
 }
 function gallery(){return dostVitrini(views());}
-function shop(){return market({art,symbol,btn,coin,fromBag,vitrinHTML:gallery,animal,istenen:fromBag?wish():null});}
+function shop(){return market({art,symbol,btn,coin,fromBag:!!bagReturn,vitrinHTML:gallery,animal,istenen:bagReturn?wish():null});}
 function editor(){
  const dog=kopekler[state.dog];
  const select=(key,options)=>`<select data-field="${key}">${options.map(([id,text])=>`<option value="${id}" ${dog[key]===id?'selected':''}>${text}</option>`).join('')}</select>`;
@@ -298,7 +322,7 @@ function render(){
  const title=page==='bakim'?cesitler[state.id].ad:labels[page];
  const wallet=['bakim','banyo'].includes(page)?'':`<div class="cuzdan" aria-label="${walletLabel()}">${coin(durum().para)}</div>`;
  app.innerHTML=`${renkTablolari}<article class="cerceve sayfa-${page}"><header>${['bakim','menu','akvaryum','banyo'].includes(page)?btn('vakit','','class="vakit" aria-label="Oyun saati"'):''}${page!=='menu'?btn('back','‹','class="geri" aria-label="Geri"'):btn('exit','‹','class="geri" aria-label="Oyunlara dön"')}${page==='menu'?`<h1 class="gun-etiketi">${durum().gun}. gün</h1>`:`<h1>${title}</h1>`}${wallet}${document.fullscreenEnabled?btn('fullscreen','⛶','class="tam-ekran" aria-label="Tam ekranı aç veya kapat"'): ''}${page==='bakim'&&state.action!=='uyku'&&state.pet==='kopek'?btn('gorunum',`<img src="${palette}" alt="">`,'class="gorunum-dugme" aria-label="Görünüm"'):''}</header>${({menu, bakim:care,banyo:bath, dostlar:gallery, akvaryum:()=>akvaryum(views()), baliklar:()=>dostVitrini(views(),true), magaza:shop, gorunum:editor})[page]()}${vitrin.dialog?showDialog(views()):''}<div class="pati-haber" role="status" ${rewardMessage?'':'hidden'}>${rewardContents()}</div></article>`;
- for(const img of app.querySelectorAll('.kirli-tuy .kukla img')){
+ for(const img of app.querySelectorAll('.kirli-tuy .kukla :is(img.beden,img.yuz,img.butun-balik)')){
   const mark=img.cloneNode(false);
   mark.classList.add('camur-katmani');mark.setAttribute('aria-hidden','true');
   mark.style.setProperty('--sil','url("'+img.src+'")');img.after(mark);
@@ -339,7 +363,7 @@ function render(){
  if(page==='banyo'&&['firca','sampuan'].includes(action)){
   session=new AbortController();
   const scene=app.querySelector('.bakim-sahne'),signal=session.signal;
-  const finish=(stars,coverage)=>{if(!signal.aborted)void recordCare(ownedId,action,stars,coverage);};
+  const finish=(stars,coverage)=>{if(!signal.aborted)void recordCare(ownedId,action,stars,coverage,signal);};
   baglaDokunus({onProgress:percent=>void bakimOdulu(ownedId,action,0,percent),scene,type:action==='sampuan'?'yikama':'firca',asset,signal,
    actionsHost:app.querySelector('.banyo-islem-rafi'),relaxedFace:id==='kopek'?undefined:part(ownedId,'uyku'),onFinish:score=>finish(score.stars,score.phase==='sabun'?0:score.progress)});
  }
@@ -349,10 +373,23 @@ window.addEventListener('storage',event=>{
  if(event.key!=='pati-yeni-ilerleme-v1')return;
  const data=durum();
  if((['bakim','banyo','gorunum'].includes(state.page))&&!data.hayvanlar[state.id]){go('menu');return;}
- let lastDay;
- try{lastDay=JSON.parse(event.oldValue)?.gun??1;}catch{lastDay=1;}
- if(lastDay!==data.gun){go('menu');return;}
+ let before;
+ try{before=JSON.parse(event.oldValue);}catch{}
+ if((before?.gun??1)!==data.gun){go('menu');return;}
  if(['bakim','banyo','gorunum'].includes(state.page)&&asleep(state.id)){render();return;}
+ if(state.page==='bakim'&&pantryOpen&&Object.keys(names).some(id=>(before?.canta?.[id]||0)!==(data.canta[id]||0))){
+  const oldFocus=document.activeElement?.closest('button')?.dataset;
+  if(armed==='mama'&&!data.canta[chosen]){armed='';chosen='';}
+  if(armed==='mama'){
+   bagPage=pageForFood(chosen,bagPage,data.canta);
+  }
+  render();
+  if(oldFocus?.act){
+   const selector=oldFocus.food?`[data-food="${oldFocus.food}"]`:`[data-act="${oldFocus.act}"]`;
+   focusOn(app.querySelector(selector)?selector:'[data-act=food],[data-act=erzak]');
+  }
+  return;
+ }
  if(state.page==='bakim'||state.page==='banyo')return;
  if(vitrin.dialog?.tip==='satis'&&!data.hayvanlar[vitrin.dialog.id])vitrin.dialog=null;
  if(['menu','magaza','dostlar','akvaryum','baliklar'].includes(state.page))render();
@@ -365,21 +402,26 @@ async function give(key,origin){
  armed='';pantryOpen=false;
  state.action=key;state.pose='bosta';render();
  const controller=new AbortController();session=controller;
+ let result;
+ try{result=key==='mama'?await ogunTamamla(ownedId,food,preferred):await bakimOdulu(ownedId,key,3);}
+ catch(error){
+  if(!controller.signal.aborted){state.action='';render();throw error;}
+  return;
+ }
+ if(controller.signal.aborted)return;
+ if(!result.ok){
+  state.action='';render();if(result.neden==='stok')announce('Çantada porsiyon kalmadı');return;
+ }
+ if(key==='mama'&&food===preferred)nextWish();
+ if(state.home==='golet'){feedFish(outcome);return;}
  try{
-  const result=key==='mama'?await ogunTamamla(ownedId,food,preferred):await bakimOdulu(ownedId,key,3);
-  if(controller.signal.aborted)return;
-  if(!result.ok){
-   state.action='';render();announce('Çantada porsiyon kalmadı');return;
-  }
-  if(result.ok&&key==='mama'&&food===preferred)nextWish();
-  if(state.home==='golet'){feedFish(outcome);return;}
   await meal({scene:app.querySelector('.bakim-sahne'),pet:id,key,food,outcome,favorite:outcome==='favorite',url:asset,part:carePart,origin,signal:controller.signal});
-  if(!controller.signal.aborted)tepki(!result.hasta);
  }catch(error){if(!controller.signal.aborted)throw error;}
+ finally{if(!controller.signal.aborted)tepki(!result.hasta);}
 }
 let returnPage='menu';
 function openShop(page){
- vitrin.nadir=false;returnPage=state.page;fromBag=pantryOpen;raf.kisisel=page==='dolap';raf.tab=raf.kisisel?'donanim':'yiyecek';raf.sayfa=0;
+ vitrin.nadir=false;returnPage=state.page;bagReturn=pantryOpen?{page:bagPage,food:null}:null;raf.kisisel=page==='dolap';raf.tab=raf.kisisel?'donanim':'yiyecek';raf.sayfa=0;
  if(page==='dostlar'||page==='baliklar'){
   vitrin.cesitSayfa=0;
   const water=page==='baliklar';
@@ -402,15 +444,22 @@ function closeDialog(){
 function back(){
  if(state.page==='bakim'&&!vitrin.dialog&&asleep(state.id)){go(state.home==='golet'?'akvaryum':'menu');return;}
  if(state.page==='banyo'){
-  if(state.action){state.action='';state.pose='bosta';render();}
-  else{state.drawer=false;go('bakim');focusOn('[data-act=banyo]');}
+  if(state.action){const tool=state.action;state.action='';state.pose='bosta';render();focusOn(`[data-act=use][data-key="${tool}"]`);}
+  else{state.drawer=true;go('bakim');focusOn('[data-act=banyo]');}
   return;
  }
  if(vitrin.dialog){closeDialog();return;}
- if(state.page==='magaza'&&fromBag){go('bakim');state.drawer=true;pantryOpen=true;render();return;}
+ if(state.page==='magaza'&&bagReturn){
+  const {page,food}=bagReturn;
+  const inventory=durum().canta;
+  bagReturn=null;state.drawer=true;
+  go('bakim',pageForFood(food,page,inventory));
+  focusOn(inventory[food]?`[data-food="${food}"]`:'[data-act=erzak]');
+  return;
+ }
  if(state.page==='bakim'&&armed){armed='';render();focusOn(pantryOpen?`[data-food="${chosen}"]`:'[data-key=su]');return;}
  if(state.page==='bakim'&&['mama','su'].includes(state.action)){state.action='';state.pose='bosta';state.drawer=false;render();focusOn('[data-act=drawer]');return;}
- if(state.page==='bakim'&&state.action){state.action='';state.pose='bosta';armed='';render();return;}
+ if(state.page==='bakim'&&state.action){state.action='';state.pose='bosta';armed='';state.drawer=true;render();focusOn('[data-key=oyun]');return;}
  if(state.page==='bakim'&&pantryOpen){pantryOpen=false;render();focusOn('[data-key=mama]');return;}
 
  if(['magaza','dostlar','baliklar'].includes(state.page)){go(returnPage);return;}
@@ -471,6 +520,28 @@ app.addEventListener('pointerup',release);
 app.addEventListener('pointercancel',event=>{if(drag?.id===event.pointerId)cancelDrag();});
 app.addEventListener('lostpointercapture',event=>{if(drag?.id===event.pointerId)cancelDrag();});
 window.addEventListener('blur',cancelDrag);
+// A tap toggles the drawer. A vertical pull only moves it in the direction drawn.
+app.addEventListener('pointerdown',event=>{
+ const handle=event.target.closest('.raf-kulp');
+ if(!handle||handle.disabled||!event.isPrimary||event.button!==0)return;
+ const {pointerId,clientX,clientY}=event;
+ handle.setPointerCapture(pointerId);
+ const finish=up=>{
+  if(up.pointerId!==pointerId)return;
+  handle.removeEventListener('pointerup',finish);
+  handle.removeEventListener('lostpointercapture',finish);
+  if(up.type!=='pointerup')return;
+  const dx=up.clientX-clientX,dy=up.clientY-clientY;
+  if(Math.hypot(dx,dy)<18)return;
+  const suppress=click=>click.stopImmediatePropagation();
+  const open=handle.getAttribute('aria-expanded')==='true';
+  if(Math.abs(dy)>Math.abs(dx)&&(open?dy>18:dy< -18))handle.click();
+  handle.addEventListener('click',suppress,{once:true,capture:true});
+  setTimeout(()=>handle.removeEventListener('click',suppress,true),0);
+ };
+ handle.addEventListener('pointerup',finish);
+ handle.addEventListener('lostpointercapture',finish);
+});
 app.addEventListener('click',async event=>{
  const b=event.target.closest('[data-act]');if(!b)return;
  const key=b.dataset.key;
@@ -575,22 +646,30 @@ app.addEventListener('click',async event=>{
    break;
  }
  case 'bakima-don':enter(sahipMi(state.id)?state.id:durum().sahipler[0]);break;
- case 'banyo':if(banyoyaGirer(state.pet)){state.drawer=true;go('banyo');}break;
+ case 'banyo':if(banyoyaGirer(state.pet)){state.drawer=true;go('banyo');if(event.detail===0)focusOn('[data-key=firca]');}break;
  
  case 'pet':enter(key);break;
  case 'back':back();break;
  case 'magaza':case 'dostlar':case 'baliklar':openShop(b.dataset.act);break;
  case 'erzak':openShop('magaza');break;
  case 'don-sofra':back();break;
- case 'canta-ileri':{const size=Object.keys(names).filter(id=>durum().canta[id]>0).length;bagPage=(bagPage+1)%Math.ceil(size/4);render();break;}
+ case 'canta-ileri':{
+  const {pages}=pantryPages(durum().canta);
+  bagPage=(bagPage+1)%pages;
+  armed='';chosen='';render();
+  if(event.detail===0)focusOn('[data-act=food],[data-act=erzak]');
+  break;
+ }
  case 'raf-tab':raf.prova=null;raf.tab=key;raf.sayfa=0;render();break;
   case 'urun-al':{
-  const shelfOffset=app.querySelector('.urun-rafi').scrollTop;
+  const shelfOffset=b.closest('.urun-rafi').scrollTop,tab=raf.tab,origin=bagReturn;
   b.disabled=true;const result=await urunAl(key,Number(b.dataset.fiyat));
-  if(state.page==='magaza'){render();app.querySelector('.urun-rafi').scrollTop=shelfOffset;
+  if(result.ok&&origin&&origin===bagReturn&&tab==='yiyecek')origin.food=key;
+  if(state.page==='magaza'&&raf.tab===tab&&origin===bagReturn){render();app.querySelector('.urun-rafi').scrollTop=shelfOffset;
    const kart=app.querySelector(`[data-act="urun-al"][data-key="${key}"]`);
    if(result.ok && kart){kart.classList.add('cantaya-eklendi');if(event.detail===0&&!kart.disabled)kart.focus({preventScroll:true});}
    else if(result.neden==='yetersiz')announce('Jeton yetmiyor');}
+  else if(state.page==='magaza')render();
   break;
  }
  case 'bowl':state.drawer=true;pantryOpen=true;render();app.querySelector('[data-act=food],[data-act=erzak]')?.focus({preventScroll:true});break;
@@ -609,14 +688,14 @@ app.addEventListener('click',async event=>{
    const id=state.id;
    b.disabled=true;
    const result=await tedaviEt(id,b.dataset.satin==='true',Number(b.dataset.fiyat));
-   if(state.id===id && state.page==='bakim'){state.drawer=false;tepki(result.ok);}
+   if(state.id===id && state.page==='bakim'){state.drawer=true;tepki(result.ok);}
    break;
  }
  case 'yatir':await yatir();break;
  case 'use':
    if(key==='temizlik'){await recordCare(state.id,key);break;}
    if(key==='kurdele'){const tak=!durum().hayvanlar[state.id].kurdele;await kurdeleTak(state.id,tak);render();announce(tak?'Papyon takıldı':'Papyon çıkarıldı');break;}
-   if(key==='oyun'){state.drawer=true;pantryOpen=false;armed='';state.action=state.action===key?'':key;state.pose='bosta';render();break;}
+   if(key==='oyun'){state.drawer=false;pantryOpen=false;armed='';state.action=key;state.pose='bosta';render();if(event.detail===0)focusOn('.elde-oyuncak');break;}
    if(key==='mama'){armed='';pantryOpen=true;state.action='';state.pose='bosta';render();app.querySelector('[data-act=food],[data-act=erzak]')?.focus({preventScroll:true});break;}
    if(key==='su'){
     armed=armed===key?'':key;state.action='';state.pose='bosta';render();
@@ -625,6 +704,7 @@ app.addEventListener('click',async event=>{
    }
    if(key==='uyku'){await yatir();break;}
    armed='';state.action=key;state.pose='bosta';render();
+   if(event.detail===0&&state.page==='banyo')focusOn('.dok-yuzey');
    break;
  default:go(b.dataset.act);
  }

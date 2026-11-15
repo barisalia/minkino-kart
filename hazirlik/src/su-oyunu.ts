@@ -35,7 +35,7 @@ export function suIstasyonu(alan: HTMLElement, oyun: SuOyunu) {
   function ciz(an: number) {
     kare = 0;
     if (!dugme.isConnected) return;
-    const ms = Math.min(48, an - sonAn);
+    const ms = Math.max(0,Math.min(180, an - sonAn));
     sonAn = an;
     const hiz = hareketAz ? 1 : ms / 240;
     egim = acik ? Math.min(1, egim + hiz) : Math.max(0, egim - hiz);
@@ -73,14 +73,14 @@ export function suIstasyonu(alan: HTMLElement, oyun: SuOyunu) {
   dugme.addEventListener('pointerdown', e => {
     if (parmak !== null || e.button !== 0 || tamam) return;
     parmak = e.pointerId;
-    baslangic = performance.now();
+    baslangic = e.timeStamp;
     dugme.setPointerCapture(parmak);
     ac();
   });
   dugme.addEventListener('pointerup', e => {
     if (e.pointerId !== parmak) return;
     parmak = null;
-    if (performance.now() - baslangic > 230) kes();
+    if (e.timeStamp - baslangic > 420) kes();
   });
   dugme.addEventListener('pointercancel', () => { parmak = null; kes() });
   dugme.addEventListener('click', e => { if (e.detail === 0) ac() });

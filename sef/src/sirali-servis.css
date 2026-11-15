@@ -1,0 +1,26 @@
+.sirali-servis{position:absolute;inset:0;z-index:5;pointer-events:none;container-type:size;}
+.sirali-servis button{pointer-events:auto;touch-action:none;}
+.sirali-istek,.sirali-tabak,.sirali-yer {display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center;}
+.sirali-istek{position:absolute;left:69%;top:15%;width:14%;height:20%;padding:1cqh 1cqw;border:.45cqh solid #382b31;background:var(--sef-kumanda-fonu, #fffae9);border-radius:3cqh;}
+.sirali-istek::after{content:'';position:absolute;left:-1.15cqh;bottom:18%;width:1.8cqh;height:1.8cqh;rotate:45deg;background:var(--sef-kumanda-fonu, #fffae9);border-left:.45cqh solid #382b31;border-bottom:.45cqh solid #382b31;}
+.sirali-servis .sirali-yer{position:absolute;left:53%;top:62%;width:22%;height:23%;border-radius:50%;border:.45cqh solid #4b5151;background:#e2f2ed;box-shadow:inset 0 0 0 1cqh #fffdf1;}
+.sirali-servis .sirali-yer>i.sirali-porselen{width:76%;height:65%;border-radius:50%;border:1px solid #96bdb1;background:#f5fffa;}
+.sirali-tepsi{position:absolute;left:5%;bottom:6%;width:42%;height:34%;display:flex;align-items:center;justify-content:space-evenly;background:#eec18c;border:.5cqh solid #493831;box-shadow:inset 0 0 0 .75cqh #f8d9a5;border-radius:4cqh;}
+.tepsi-sahnesi[data-birlikte=false] .sirali-yer{left:calc(var(--sofra-misafiri-x) - 11%)}
+.tepsi-sahnesi[data-birlikte=false] .sirali-tepsi{left:2%}
+.sirali-tabak{position:relative;width:46%;height:90%;background:none;border:0;padding:0;}
+.sirali-tabak[data-elde]{z-index:2;}
+.sirali-servis .sirali-yer[data-birak=hazir]{outline:2px dashed #507d73;outline-offset:2px}
+.sirali-servis .sirali-yer[data-birak=burada]{outline:3px solid #376952;outline-offset:2px;background:#c4e9d6}
+.sirali-servis .sirali-yer[data-birak=burada]>.sirali-porselen{background:#e2f8eb}
+.sirali-tepsi>[hidden]{display:none!important;}
+.sirali-servis .sirali-geri{position:absolute;top:3%;left:2%;width:10cqh;height:10cqh;min-height:38px;min-width:38px;border-radius:50%;background:var(--sef-kumanda-fonu, #fff7da);border:2px solid #382b31;padding:1.5cqh;}
+.sirali-servis :is(.sirali-tabak,.sirali-istek,.sirali-yer)>:not(svg,.sirali-porselen){position:relative;display:block;width:90%;height:90%;object-fit:contain;}
+.sirali-servis .sirali-yer:has(>.pastane-porsiyonu){background:transparent;border-color:transparent;box-shadow:none;}
+.sirali-istek{container-type:size}
+.sirali-servis .sirali-istek>img{min-width:0;min-height:0}
+.sirali-servis .sirali-istek>:is(.tart-tam-gorsel,.sl-kase,.mk-kek,.kb-siparis){width:min(94cqw,calc(90cqh * var(--yemek-orani)));height:auto;aspect-ratio:var(--yemek-orani)}
+.sirali-istek>.tart-tam-gorsel{--yemek-orani:1.5}
+.sirali-istek>.sl-kase{--yemek-orani:1.457}
+.sirali-istek>.mk-kek{--yemek-orani:.98}
+.sirali-istek>.kb-siparis{--yemek-orani:1.85}

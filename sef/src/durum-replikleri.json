@@ -1,0 +1,10 @@
+{
+  "diz": "Fişe bak. Bir iç malzeme seç ve lavaşın üzerinde istediğin yere ser. Üç dilime de iç koyabilirsin.",
+  "sar": "Lavaşın sana yakın kenarını tut. Parmağını yukarı sürükleyerek dürümü sar.",
+  "kes": "Bıçağı işaretli yerden aşağı doğru yürüt. İki kesik, üç dilim!",
+  "sun": "Üç dilimin de içi görünüyor. Tabağını masaya götür.",
+  "durum-tam": "Her dilimde iç var! Dürümümü tam istediğim gibi sarmışsın.",
+  "durum-eksik": "İstediğim malzemelerden biri eksik. Fişime bir daha bakalım mı?",
+  "durum-fazla": "Dürümümde istemediğim bir malzeme var. Fişimde hangileri vardı?",
+  "durum-dagilim": "Bak, bu dilim boş kalmış. İçleri lavaşın iki ucuna doğru da serebiliriz."
+}

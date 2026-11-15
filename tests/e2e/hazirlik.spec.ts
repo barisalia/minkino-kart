@@ -1,6 +1,6 @@
-import {expect,test} from '@playwright/test';
+import {expect,test,type Page} from '@playwright/test';
 test('Sabah boyunca kıyafet, sandviç sırası ve meyve korunur',async({page})=>{
- test.setTimeout(60_000);
+ test.setTimeout(120_000);
  await page.goto('./hazirlik/');
  const kayit=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-hazirlik-sabah-v1')!));
  const dokun=async(id:string)=>{
@@ -32,8 +32,10 @@ test('Sabah boyunca kıyafet, sandviç sırası ve meyve korunur',async({page})=
  const orta=kapak!.x+kapak!.width/2, ust=kapak!.y+kapak!.height*.2;
  await page.mouse.move(orta,ust);await page.mouse.down();
  await page.mouse.move(orta,ust+kapak!.height*.4,{steps:6});await page.mouse.up();
+ await page.locator('[data-kres="kapi-zili"]').tap();
  await expect(page.locator('[data-id=sari]')).toBeVisible();
- await dokun('as');await dokun('beslenme');await dokun('pecete-ser');
+ await expect(page.locator('.sinif-arkadaslari')).toHaveCount(0);
+ await dokun('as');await expect(page.locator('.sinif-arkadaslari')).toHaveCount(0);await dokun('beslenme');await dokun('pecete-ser');
  await dokun('ac');await dokun('meyve-servis');await dokun('servis');
  await page.getByRole('button',{name:'Mataradan bardağa su doldur'}).click();
  await dokun('ye');
@@ -43,11 +45,47 @@ test('Sabah boyunca kıyafet, sandviç sırası ve meyve korunur',async({page})=
  await expect(page.locator('[data-id=sandvic-gozu] svg')).toBeVisible();
  await dokun('okul-kutusu-kapat');
  await expect.poll(()=>page.locator('[data-action=kutuyu-kaldir] img').evaluate(e=>(e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+ await expect(page.locator('.sinif-arkadaslari')).toHaveCount(0);
  await dokun('kutuyu-kaldir');
+ await expect(page.locator('.sinif-arkadaslari')).toHaveCount(0);
  expect(await kayit()).toMatchObject({meyve:'armut',ic:['peynir','marul'],sahne:'son'});
- await dokun('derse-gir');await expect(page.locator('.sira-kino img').first()).toHaveAttribute('src',/kino-sari/);
- await page.getByRole('button',{name:'Kino’nun defterini aç'}).click();
- await expect(page.locator('.ders-kagit')).toBeVisible();
+ // Okul günü: meyve paylaş, tohumu büyüt, bando, kolye; her adım kayda geçer.
+ const kose=async(id:string)=>{await page.locator('[data-kres="'+id+'"]').tap()};
+ await dokun('derse-gir');expect((await kayit()).sahne).toBe('anasinifi');
+ await kose('mino');
+ await expect(page.locator('[data-kres=istek-mino] img')).toHaveCount(2);
+ for(let i=0;i<2;i++){await kose('sepet-0');await kose('tabak-mino')}
+ await kose('arkadas-mino');
+ for(let i=0;i<3;i++){await kose('sepet-2');await kose('tabak-zipzip')}
+ await kose('arkadas-zipzip');expect((await kayit()).pay).toEqual([2,3]);
+ await kose('sinifa');await kose('saksi');await kose('tohum');await kose('sula');await page.reload();
+ await kose('pencere');await kose('saga');await kose('muzik');
+ await expect(page.locator('[data-action^="cal-"]')).toHaveCount(0);
+ await dokun('cal-1');expect((await kayit()).calinan).toBe(0);
+ for(const tur of [[0,1],[0,3,1],[2,0,3,1]])for(const c of tur)await dokun('cal-'+c);
+ expect((await kayit()).calinan).toBe(3);
+ await expect(page.locator('[data-action^="cal-"]')).toHaveCount(6);await dokun('cal-5');
+ await dokun('oyun-odasina');await kose('kolye');
+ for(const i of [0,1,2,0,1,2])await dokun('diz-'+i);
+ await dokun('ver-zipzip');await dokun('oyun-odasina');
+ await expect(page.locator('.kres-boyun img')).toHaveCount(6);
+ await kose('sola');await kose('pano');await expect(page.locator('.pano-kagit canvas')).toBeVisible();
+ await page.getByRole('button',{name:'Sınıf köşelerine dön'}).tap();
+ await kose('zil');
+ // Resimden sonra toplanma ve veda.
+ await expect(page.locator('#sahne')).toHaveAttribute('data-sahne','toplan');
+ await page.reload();
+ const kutular:Record<string,string>={marakas:'muzik',davul:'muzik',kabuk:'atolye',boncuk:'atolye',
+   suluk:'dogadan',tohum:'dogadan',bardak:'yemek',pecete:'yemek',kare:'oyuncak',ucgen:'oyuncak'};
+ const plan=(await kayit()).kres.duzenPlani as string[];
+ expect(plan.length).toBeGreaterThanOrEqual(4);
+ for(const esya of plan){await kose('duzen-'+esya);await kose('kutu-'+kutular[esya])}
+ await expect(page.locator('.kres-duzen-dolgu i')).toHaveCount(plan.length);
+ await kose('vedaya');
+ await kose('yolda-kino');await expect(page.locator('[data-kres=eve-gir]')).toHaveClass(/zil-hazir/);await kose('eve-gir');
+ await kose('ev-aski');await kose('hatirla-kolye');expect((await kayit()).kres.anlatilan).toBe('kolye');await kose('ev-hatira');
+ await kose('yeni-gun');
+ expect(await kayit()).toMatchObject({sahne:'oda',pay:[0,0],kolye:[],toplanan:[]});
 });
 
 test('Elma ile önce meyve yenebilir, tekrar açınca aynı lokmadan sürer',async({page})=>{
@@ -172,6 +210,11 @@ test('Sınıf dersinde sayma, şekil çizme ve örüntü aynı defterde tamamlan
       for(const i of dizi)await tus('nesne-'+i).tap();
     }
     await expect(tus('ileri')).toBeVisible();await tus('ileri').tap();
+    if(tur===2)await sergiKartlari(page,0,1);
+    if(tur===3){
+      await page.locator('[data-pano=goster]').tap();await page.locator('[data-pano=gec]').tap();await page.locator('[data-pano=defter]').tap();
+    }
+    if(tur===5)await sergiKartlari(page,1,2);
   }
   await expect(masa).toHaveAttribute('data-tur','tohum');
   await tus('nesne-2').tap();expect((await durum()).sira).toBe(0);
@@ -187,13 +230,24 @@ test('Sınıf dersinde sayma, şekil çizme ve örüntü aynı defterde tamamlan
   await expect(tus('ileri')).toHaveCount(0);await expect(tus('nesne-1')).toBeDisabled();
   await tus('ornek').tap();await tus('nesne-1').tap();await tus('nesne-0').tap();await page.reload();
   expect((await durum()).ikinciRitim).toBe(true);expect((await durum()).sira).toBe(2);
-  await tus('nesne-0').tap();await tus('nesne-3').tap();await tus('ileri').tap();
+  await tus('nesne-0').tap();await tus('nesne-3').tap();
+  await expect(page.locator('.bando-calgi')).toHaveCount(6);
+  for(let i=0;i<6;i++)await tus('cal-'+i).tap();
+  const marakas=(await tus('cal-1').boundingBox())!;
+  const x=marakas.x+marakas.width/2,y=marakas.y+marakas.height/2;
+  await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+21,y,{steps:6});await page.mouse.move(x-18,y,{steps:8});await page.mouse.up();
+  await expect(masa).toHaveAttribute('data-tur','ritim');
+  await page.reload();await expect(tus('cal-2')).toBeEnabled();
+  await tus('ileri').tap();
+  await sergiKartlari(page,2,3);await page.locator('[data-sergi=devam]').tap();
   await expect(masa).toHaveAttribute('data-tur','harf');
   await ciz([[91,214],[91,66],[180,162],[269,66],[269,214]]);await tus('kart-bitti').tap();
   await expect(masa).toHaveAttribute('data-tur','resim');
   await ciz([[133,100],[140,80],[158,79],[168,102],[133,100]]);await tus('kart-bitti').tap();
   await expect(masa).toHaveAttribute('data-tur','defter');
   await expect(page.locator('.et-son .oyuncak-dugme')).toHaveCount(4);
+  await tus('sergiye').tap();await expect(masa).toHaveAttribute('data-asama','sergi');
+  await page.locator('[data-sergi=devam]').tap();await expect(masa).toHaveAttribute('data-tur','defter');
   await tus('dinle').tap();await expect(masa).toHaveAttribute('data-tur','defter');
   await expect(page.locator('.kart-hatira path')).toHaveCount(2);await tus('yaprak').tap();
   await expect(page.locator('.ev-kagidi .murekkep path')).toHaveCount(4);
@@ -201,6 +255,7 @@ test('Sınıf dersinde sayma, şekil çizme ve örüntü aynı defterde tamamlan
   expect((await durum()).saydiklarim).toEqual([0,3,0]);
   await page.reload();await expect(masa).toHaveAttribute('data-tur','defter');
   await tus('senlige').tap();await expect(masa).toHaveAttribute('data-tur','pano');
+  await expect(masa).toHaveAttribute('data-durum','diger');await page.locator('[data-pano=yenile]').tap();
   await page.locator('[data-pano=goster]').tap();await page.locator('[data-pano=gec]').tap();
   await page.locator('[data-pano=defter]').tap();await tus('senlige').tap();
   await expect(masa).toHaveAttribute('data-durum','diger');await page.locator('[data-pano=defter]').tap();
@@ -266,10 +321,8 @@ test('Panoya yalnız iki farklı boyalı ve ipli balon asılır; masadaki çizim
   const asili=page.locator('.pano-asili');
   await expect(masa).toHaveAttribute('data-duvar','true');await expect(asili).toHaveCount(1);
   await page.reload();await expect(masa).toHaveAttribute('data-durum','kazandi');await expect(asili).toHaveCount(1);
-  await t('yenile').tap();await expect(masa).toHaveAttribute('data-durum','cizim');await expect(t('pano')).toContainText('1');
-  await t('pano').tap();await expect(asili).toHaveCount(1);
   await asili.first().tap();await expect(page.locator('.pano-asili.tek')).toHaveCount(1);
-  await t('ciz').tap();await expect(tuval).toBeVisible();
+  await t('yenile').tap();await expect(t('pano')).toHaveCount(0);await expect(tuval).toBeVisible();
 });
 
 test('Önceki sürümde biten balon defterinden sınıf dersine geçilir',async({page})=>{
@@ -283,4 +336,220 @@ test('Önceki sürümde biten balon defterinden sınıf dersine geçilir',async(
   await expect(page.locator('.sira-kino .kare').first()).toHaveAttribute('src',/kino-sari/);
   const kayit=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-hazirlik-ders-v1')!));
   expect(kayit.izler[0].noktalar).toEqual([[183,145],[177,243]]);
+});
+
+test('Öğretmen resim konusunu verir ve tamamlanınca yeni bir örnek asar',async({page})=>{
+  test.setTimeout(90_000);
+  await page.goto('./hazirlik/?ders=pano');
+  await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  const tus=(id:string)=>page.locator('[data-pano="'+id+'"]');
+  const masa=page.locator('.pano-atolye'),tuval=page.locator('.pano-tuval');
+  await expect(page.locator('[data-pano^=konu-]')).toHaveCount(0);
+  async function ciz(x:number,y:number,renk:number){
+    await tus('kalem').tap();
+    const r=(await tuval.boundingBox())!;
+    for(let i=0;i<=30;i++){
+      const a=2*Math.PI*i/30;
+      await page.mouse.move(r.x+(x+40*Math.cos(a))*r.width/600,r.y+(y+40*Math.sin(a))*r.height/400);
+      if(!i)await page.mouse.down();
+    }
+    await page.mouse.up();await tus('renk-'+renk).tap();await tus('kova').tap();
+    await page.mouse.click(r.x+x*r.width/600,r.y+y*r.height/400);
+  }
+  // Önceki sürümden trafik ışığı ödevini sürdüren çocuğun kaydı.
+  await page.evaluate(()=>{const k='minkino-hazirlik-pano-v1',s=JSON.parse(localStorage.getItem(k)!);s.ders.pano.konu='isik';localStorage.setItem(k,JSON.stringify(s))});
+  await page.reload();await expect(page.locator('.pano-ornek img').first()).toHaveAttribute('alt','Trafik ışığı örneği');
+  await ciz(300,90,2);await ciz(300,195,1);await ciz(300,300,0);
+  await tus('goster').tap();await expect(masa).toHaveAttribute('data-durum','inceleme');await tus('onar').tap();
+  for(const [y,renk] of [[90,0],[300,2]]){
+    await tus('renk-'+renk).tap();await tus('kova').tap();
+    const r=(await tuval.boundingBox())!;await page.mouse.click(r.x+r.width/2,r.y+y*r.height/400);
+  }
+  await tus('goster').tap();await expect(masa).toHaveAttribute('data-durum','kazandi');
+  await tus('yenile').tap();
+  await expect(page.locator('.pano-ornek img').first()).toHaveAttribute('alt','Balon şenliği örneği');
+});
+test('Müzik dersinin ardından öğretmen çizim ödevi verir ve üçgen dersine dönülür',async({page})=>{
+  await page.goto('./hazirlik/?ders=sinif');
+  await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await page.evaluate(()=>{
+    const k='minkino-hazirlik-etkinlik-v1',s=JSON.parse(localStorage.getItem(k)!);
+    Object.assign(s.ders,{tur:3,secim:0,isaret:[0,1,2],onay:true});localStorage.setItem(k,JSON.stringify(s));
+  });
+  await page.reload();await page.locator('[data-et=ileri]').tap();
+  await expect(page.locator('.pano-ornek img')).toBeVisible();
+  await expect(page.locator('[data-pano^=konu-]')).toHaveCount(0);
+  await page.reload();await page.locator('[data-pano=goster]').tap();await page.locator('[data-pano=gec]').tap();
+  await page.locator('[data-pano=defter]').tap();await expect(page.locator('.et-masa')).toHaveAttribute('data-tur','ucgen');
+});
+
+test('Telefonda öğretmenin çizimini izler ve fırçayla kapalı şeklin içini boyar',async({page})=>{
+  await page.setViewportSize({width:390,height:844});await page.goto('./hazirlik/?ders=pano');
+  await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  const t=(id:string)=>page.locator('[data-pano="'+id+'"]');
+  const c=page.locator('.pano-kagit canvas').first(),r=(await c.boundingBox())!;
+  const hareket=(x:number,y:number)=>page.mouse.move(r.x+x*r.width/600,r.y+y*r.height/400);
+  for(let i=0;i<=40;i++){const a=2*Math.PI*i/40;await hareket(250+65*Math.cos(a),180+65*Math.sin(a));if(!i)await page.mouse.down()}await page.mouse.up();
+  await page.getByRole('button',{name:'Ceren çizerek göstersin'}).tap();
+  await expect(page.getByRole('dialog')).toBeVisible();await t('ornek-tekrar').tap();await t('ornek-kapat').tap();
+  await t('renk-3').tap();await hareket(250,180);await page.mouse.down();await hareket(410,180);await page.mouse.up();
+  const renk=(x:number)=>c.evaluate((el:HTMLCanvasElement,x)=>Array.from(el.getContext('2d')!.getImageData(x,180,1,1).data),x);
+  expect(await renk(270)).toEqual([78,158,224,255]);expect(await renk(370)).toEqual([255,250,240,255]);
+  await page.reload();expect(await renk(370)).toEqual([255,250,240,255]);expect(await renk(270)).toEqual([78,158,224,255]);
+});
+
+async function sergiCiz(page:Page,bas=0,son=1,ters=false){
+  const sayfa=page.locator('.sergi-kagit');
+  const noktalar=await sayfa.locator('.sergi-rehber').evaluate((p:SVGPathElement,ayar)=>{
+    const len=p.getTotalLength(),ctm=p.getScreenCTM()!;
+    return Array.from({length:55},(_,i)=>{
+      const oran=ayar.bas+(ayar.son-ayar.bas)*(ayar.ters?1-i/54:i/54);
+      const n=p.getPointAtLength(len*oran).matrixTransform(ctm);return [n.x,n.y];
+    });
+  },{bas,son,ters});
+  await page.mouse.move(noktalar[0][0],noktalar[0][1]);await page.mouse.down();
+  for(const [x,y] of noktalar.slice(1))await page.mouse.move(x,y);
+  await page.mouse.up();
+}
+async function sergiKartlari(page:Page,bas=0,son=3){
+  const t=(id:string)=>page.locator('[data-sergi="'+id+'"]');
+  for(let i=bas;i<son;i++){
+    const dogru=i===1?1:0;
+    expect(await page.locator('.sergi-nesne-karti>img').evaluateAll(imgs=>imgs.every(img=>{
+      const r=img.getBoundingClientRect(),k=img.parentElement!.getBoundingClientRect();
+      return r.top>=k.top&&r.bottom<=k.bottom&&r.left>=k.left&&r.right<=k.right;
+    }))).toBe(true);
+    await t('dinle-'+dogru).tap();await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','ses');
+    await t('ses-'+(1-dogru)).tap();await expect(page.locator('.sergi-duyulan')).toHaveText(['E','L','D'][i]);
+    await t('ses-'+dogru).tap();
+    for(let h=0;h<[2,4,1][i];h++)await sergiCiz(page);
+    await t('tepsi-'+[2,1,2][i]).tap();
+    await expect(page.locator('.sergi-tabak img:nth-child(2)')).toHaveCount([1,1,2][i]);
+    await expect(t('kalem')).toHaveCount(0);
+    if(i===0){
+      await t('geri-koy').tap();
+      await expect(page.locator('.sergi-tabak img:nth-child(2)')).toHaveCount(0);
+      await expect(t('tepsi-2').locator('.sergi-tepsi-ic img')).toHaveCount(2);
+    }
+    await t('tepsi-'+(i+1)).tap();
+    for(let j=0;j<=i;j++){
+      const hedef=i-j;
+      await expect(t('kalem')).toHaveCount(0);
+      if(j===0)await t('pay-0').dragTo(page.locator('[data-tabak="'+hedef+'"]'));
+      else await t('pay-0').tap();
+      if(j===0&&i>0){
+        await page.reload();
+        await expect(page.locator('[data-tabak="'+hedef+'"] img')).toHaveCount(2);
+        await t('pay-0').dragTo(page.locator('[data-tabak="'+hedef+'"]'));
+        await expect(page.locator('.sergi-pay')).toHaveCount(i);
+      }
+    }
+    await expect(page.locator('.sergi-tabak img:nth-child(2)')).toHaveCount(i+1);
+    await t('kalem').tap();await sergiCiz(page);
+    await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','yerlestir');
+    await t('masa-'+((i+1)%3)).tap();await expect(page.locator('.sergi-kart-el')).toBeVisible();
+    if(i===0)await t('etiket').dragTo(t('masa-'+i));
+    else await t('masa-'+i).tap();
+    await expect(t('oku-'+i).locator('.sergi-iz').first()).toBeVisible();
+    await t('sonraki').tap();
+  }
+}
+test('Sergide çocuk sayar, altı işareti yazar ve el yazısı doğru rafa gider',async({page})=>{
+  test.setTimeout(90_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('./hazirlik/?ders=yazi');await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await sergiKartlari(page);
+  await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','sergi');
+  await page.reload();await expect(page.locator('.sergi-raf-sirasi.etiketli')).toHaveCount(3);
+  await page.locator('[data-sergi=oku-2]').tap();await page.locator('[data-sergi=devam]').tap();
+  await expect(page.locator('.et-masa')).toHaveAttribute('data-tur','harf');
+});
+test('Yazıda ters hareket ödevi bitirmez ve yarım çizgi yeniden açılır',async({page})=>{
+  await page.goto('./hazirlik/?ders=yazi');await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await page.locator('[data-sergi=ses-0]').tap();
+  await sergiCiz(page,0,1,true);await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','harf');
+  await sergiCiz(page,0,.45);
+  const p=page.locator('.sergi-iz.simdi'),once=await p.getAttribute('d');expect(once!.length).toBeGreaterThan(12);
+  await page.reload();await expect(p).toHaveAttribute('d',once!);
+  await sergiCiz(page,.45,1);await sergiCiz(page);await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','say');
+});
+test('A sorusu sesli açılır, çocuk meyveyi dinler ve parmağıyla etikete taşır',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('./hazirlik/?ders=yazi');
+  const soru=page.waitForRequest(r=>r.url().includes('yazi_armut_ses'));
+  await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await soru;await expect(page.locator('#sahne')).toHaveAttribute('data-ses-oynuyor','evet');
+  for(const n of ['0','1'])await page.waitForFunction(
+    i=>document.querySelector<HTMLElement>('#sahne')?.dataset.duyulan===i,n,{timeout:14_000});
+  await expect(page.locator('.sergi-resim-yeri img')).toHaveCount(0);
+  const armut=page.getByRole('button',{name:'Armut seç',exact:true});
+  await page.getByRole('button',{name:'Armut sözcüğünü dinle'}).tap();
+  await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','ses');
+  const kaynak=(await armut.boundingBox())!,hedef=(await page.locator('.sergi-ses-hedef').boundingBox())!;
+  const bas={x:kaynak.x+kaynak.width/2,y:kaynak.y+kaynak.height/2};
+  const cdp=await page.context().newCDPSession(page);
+  const tasi=async(x:number,y:number)=>{
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[bas]});
+    for(const t of [.25,.5,.75,1])await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:bas.x+(x-bas.x)*t,y:bas.y+(y-bas.y)*t}]});
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  };
+  try{
+    await tasi(bas.x+25,bas.y-20);await expect(armut).toBeVisible();
+    await tasi(hedef.x+hedef.width/2,hedef.y+hedef.height/2);
+  }finally{await cdp.detach()}
+  await expect(page.locator('.sergi-kagit')).toHaveAttribute('aria-label','A yazma kâğıdı');
+  await page.reload();await expect(page.locator('.sergi-kagit')).toHaveAttribute('aria-label','A yazma kâğıdı');
+});
+test('Çocuk A harfini hafif eğri ve parmağını kaldırarak yazabilir',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.setViewportSize({width:320,height:568});
+  await page.goto('./hazirlik/?ders=yazi');await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await page.getByRole('button',{name:'Armut seç',exact:true}).tap();
+  await expect(page.locator('.sergi-yon-oku')).toBeVisible();
+  await serbestParmak(page,[[67,182],[73,157],[89,141],[95,110]]);
+  await serbestParmak(page,[[95,110],[107,75],[121,50],[135,92],[147,116],[166,153],[174,182]]);
+  await expect(page.locator('.sergi-rehber')).toHaveAttribute('d','M89 127 H151');
+  await serbestParmak(page,[[88,124],[106,130],[119,128],[135,124],[152,129]]);
+  await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','say');
+});
+test('Eski sergide asılan lale ve çocuğun kendi limon kartı korunur',async({page})=>{
+  await page.goto('./hazirlik/?ders=yazi');await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await page.evaluate(()=>{
+    const key='minkino-hazirlik-yazi-v1',s=JSON.parse(localStorage.getItem(key)!);
+    const iz=[[[80,53],[80,175],[150,175]]];
+    s.ders.sergi={kart:3,donus:null,sayilan:[],kalem:false,asili:false,sesBulundu:false,izler:{L:iz},limon:{asama:'bitti',yardim:false,izler:{'2':[],L:iz}}};
+    localStorage.setItem(key,JSON.stringify(s));
+  });
+  await page.reload();
+  await expect(page.getByRole('button',{name:'Lale rafı'}).locator('[aria-label="Yazdığın L"] path')).toHaveAttribute('d','M80 53 L80 175 L150 175');
+  await expect(page.getByRole('button',{name:'Limon kartını oku'}).locator('[aria-label="Kendi yazdığın L"] path')).toHaveCount(1);
+});
+async function serbestParmak(page:Page,noktalar:number[][]){
+  const px=await page.locator('.sergi-kagit').evaluate((el,pts)=>pts.map(([x,y])=>{
+    const p=new DOMPoint(x,y).matrixTransform((el as SVGSVGElement).getScreenCTM()!);return {x:p.x,y:p.y};
+  }),noktalar);
+  const kalem=await page.context().newCDPSession(page);
+  try{
+    for(const [i,p] of px.entries())await kalem.send('Input.dispatchTouchEvent',{type:i?'touchMove':'touchStart',touchPoints:[{...p,id:1}]});
+    await kalem.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  }finally{await kalem.detach()}
+}
+test('Mino için boş kâğıda iki ve A yazar, eksik köprüyü tamamlayıp kendi kartını saklar',async({page})=>{
+  test.setTimeout(90_000);
+  await page.goto('./hazirlik/?ders=yazi');await page.getByRole('button',{name:'Ceren ile derse başla'}).tap();
+  await sergiKartlari(page);
+  const t=(id:string)=>page.locator('[data-sergi="'+id+'"]');await t('istek').tap();
+  await expect(page.locator('.sergi-rehber')).toHaveCount(0);
+  await serbestParmak(page,[[44,76],[54,92],[70,106],[92,125],[110,148]]);
+  await t('teslim').tap();await expect(page.locator('.sergi-kagit')).toHaveAttribute('aria-label','Armut kartına 2 yaz');
+  await t('sil').tap();await expect(t('teslim')).toBeDisabled();
+  await t('iz').tap();await expect(page.locator('.sergi-rehber')).toBeVisible();
+  await t('iz').tap();
+  await serbestParmak(page,[[58,87],[61,74],[73,65],[88,64],[99,68],[105,79],[104,90],[96,100],[87,110],[74,121],[61,135],[54,144],[69,145],[87,144],[107,144]]);
+  await page.reload();await t('teslim').tap();await expect(page.locator('.sergi-kagit')).toHaveAttribute('aria-label','Armut kartına A yaz');
+  await serbestParmak(page,[[60,160],[80,109],[101,58],[120,108],[143,160]]);
+  await t('teslim').tap();await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','serbest');
+  await serbestParmak(page,[[78,117],[95,117],[111,118],[127,117]]);await t('teslim').tap();
+  await expect(page.locator('.et-masa')).toHaveAttribute('data-asama','sergi');await page.reload();
+  await expect(t('istek').locator('.sergi-etiket path')).toHaveCount(3);
 });

@@ -7,6 +7,7 @@ import kurabiye from '../../content/kitap-kurabiye.json';
 import alisveris from '../../content/kitap-alisveris.json';
 import ustkat from '../../content/kitap-ustkat.json';
 import ucurtma from '../../content/kitap-ucurtma.json';
+import dizim from '../../content/kitap-dizim.json';
 import kumkale from '../../content/kitap-kumkale.json';
 import cadir from '../../content/kitap-cadir.json';
 import type { RafKitabi } from './kitap';
@@ -14,6 +15,7 @@ import { OKUL_CANLI } from './okul-canli';
 import type { KitapIcerik } from './tipler';
 
 export const KITAPLAR: RafKitabi[] = [
+  { id: 'dizim', baslik: dizim.baslik, renk: '#478F86', icerik: dizim as KitapIcerik },
   { id: 'ucurtma', baslik: ucurtma.baslik, renk: '#398B98', icerik: ucurtma as KitapIcerik },
   { id: 'ustkat', baslik: ustkat.baslik, renk: '#46877D', icerik: ustkat as KitapIcerik },
   { id: 'kumkale', baslik: kumkale.baslik, renk: '#368D99', icerik: kumkale as KitapIcerik },
@@ -24,7 +26,6 @@ export const KITAPLAR: RafKitabi[] = [
   { id: 'okul', baslik: 'Kino Okula Başlıyor', renk: '#E2683C', icerik: okul as KitapIcerik, canli: OKUL_CANLI, gizli: true },
   // Barış 2026-11-09 yayın: çizimleri gelene kadar "yakında" (metni content/kitap-kuzu-kulak.json; yer tutucu yayına çıkmaz)
   { id: 'kuzu-kulak', baslik: "Kuzu'nun Kulağı", renk: '#7FB3D5' },
-  { id: 'dizim', baslik: 'Dizim Kanadı', renk: '#F2A541' },
   { id: 'hasta', baslik: 'Kino Hasta', renk: '#9B8BD6' },
   { id: 'havuz', baslik: 'Mino Havuza Girmiyor', renk: '#4FB9A8' },
   { id: 'karanlik', baslik: 'Karanlıkta Kim Var?', renk: '#4C5C8A' },

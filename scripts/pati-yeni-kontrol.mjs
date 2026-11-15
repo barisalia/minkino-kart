@@ -70,7 +70,7 @@ async function brush() {
   await enterBath('firca');
   const surface = page.locator('.dok-yuzey');
   await surface.click();
-  await page.getByRole('button', {name: 'Bitir', exact: true}).click();
+  await page.getByRole('button', {name: 'Bakıma geri dön', exact: true}).click();
   await page.locator('.banyo-tepki.cekindi').waitFor();
   await score('firca', 0);
   await enterBath('firca');

@@ -6,14 +6,16 @@
 .sayfa-banyo .banyo-sahne{flex:1;isolation:isolate;background:#e6ead8 url('../assets/pati-yeni/ortam/banyo-cel.webp') center/100% 100% no-repeat}
 .banyo-sahne .buyuk{height:77%;width:min(63%,68dvh);bottom:3%}
 .banyo-sahne .buyuk:before{content:'';position:absolute;left:26%;bottom:2%;width:48%;height:5%;border-radius:50%;background:#ce9474;z-index:-1}
-.cerceve .banyo-islem-rafi,.cerceve .banyo-kapali{flex:none;min-height:clamp(56px,16vh,105px);padding:5px max(12px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:#f7c38d;border-top:2px solid #956641;box-shadow:inset 0 3px #ffdfaa}
-.cerceve .banyo-kapali button{padding:4px 12px;min-height:38px;background:#fff2d2}.banyo-kapali img{width:42px;height:35px;object-fit:contain}
+.cerceve .banyo-islem-rafi{display:flex;align-items:center;justify-content:center;gap:clamp(10px,2vw,28px);padding:4px clamp(10px,2vw,28px);background:#f2c38f;border:2px solid #835c42;border-radius:clamp(14px,3.6dvh,48px);box-shadow:inset 0 3px #ffe1b2,0 3px #a87851}
 .banyo-islem-rafi .dok-dugmeler{position:static;display:flex;align-items:center;flex-direction:row;justify-content:center;gap:18px}
-.cerceve .banyo-islem-rafi .dok-dugmeler button{min-height:40px;min-width:53px;border-radius:16px;background:#fff5d8}
+.cerceve .banyo-islem-rafi .dok-dugmeler button{min-height:44px;min-width:53px;border-radius:16px;background:#fff5d8;touch-action:manipulation}
+.banyo-islem-rafi .dok-dugmeler button>*{pointer-events:none}
 .cerceve .banyo-islem-rafi .dok-dugmeler .dok-durula{background:#c7e8e1}
-.banyo-sahne .dok-gosterge{grid-template-columns:1fr;grid-template-rows:auto auto;gap:4px;left:3%;min-width:54px;background:#fff6df}
-.banyo-sahne .dok-gosterge .dok-isaret{grid-row:auto}
-.banyo-sahne .dok-ilerleme{grid-column:auto}
+.banyo-islem-rafi .dok-gosterge{position:relative;inset:auto;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 6px;gap:3px;padding:2px 0;width:clamp(44px,9dvh,92px);border:0;background:none}
+.banyo-islem-rafi .dok-gosterge .dok-isaret{grid-row:1;height:clamp(28px,7dvh,62px);width:auto}
+.banyo-islem-rafi .dok-ilerleme{grid-row:2;grid-column:1;background:#fff0cd}
+.banyo-islem-rafi .dok-bitir[data-kazanildi=false] i{width:27%;height:27%;border-color:#795a45;transform:translateX(16%) rotate(45deg)}
+.cerceve .banyo-islem-rafi .dok-bitir[data-kazanildi=true]{background:#c0e7bc;border-color:#476d50}
 .banyo-sahne .dokunus[data-phase=sabun] .dok-gerec{transform:translate(-50%,-50%);rotate:0deg}
 .banyo-sahne .dokunus[data-phase=durula] .dok-gerec{transform:translate(-12%,-108%);rotate:0deg}
 .dok-puskurtu{position:absolute;pointer-events:none;width:clamp(18px,5dvh,37px);height:clamp(18px,5dvh,37px);transform:translate(-3%,-92%);z-index:1}
@@ -36,4 +38,4 @@
 /* Use one room and floor line for tool choice, dragging, and rinsing. */
 .cerceve.sayfa-banyo{background:#ffe1be url('../assets/pati-yeni/ortam/banyo-cel.webp') center/100% 100% no-repeat}
 .sayfa-banyo .banyo-sahne,.sayfa-banyo:has(.bakim-rafi) .banyo-sahne{position:absolute;inset:0 0 calc(var(--raf-yukseklik) + var(--raf-alt) + 6px);margin:0;background:none}
-.cerceve .banyo-islem-rafi,.cerceve .banyo-kapali{position:absolute;bottom:0;left:0;right:0;height:calc(var(--raf-yukseklik) + var(--raf-alt));min-height:0}
+.cerceve .banyo-islem-rafi{position:absolute;bottom:var(--raf-alt);left:50%;translate:-50% 0;width:max-content;height:var(--raf-yukseklik);min-height:54px}

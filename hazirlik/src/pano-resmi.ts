@@ -2,15 +2,23 @@ export const en=600, boy=400;
 export const palet=['#f46350','#ffc643','#39aa7d','#4e9ee0','#a478d2'];
 export type Nokta=[number,number];
 export type Arac='kalem'|'firca'|'kova';
-export interface Hamle { arac:Arac; renk:number; noktalar:Nokta[] }
+export interface Hamle { sinirli?:boolean; arac:Arac; renk:number; noktalar:Nokta[] }
 export type Eksik='sekil'|'eksik_boya'|'ayni'|'ip';
 export interface PanoKaydi {
+  konu:Konu; taslaklar:Partial<Record<Konu,Hamle[]>>;
   hamleler:Hamle[]; arac:Arac; renk:number; rehber:boolean;
   durum:'cizim'|'inceleme'|'kazandi'|'diger'; eksik:Eksik;
 }
-export const bosPano=():PanoKaydi=>({hamleler:[],arac:'kalem',renk:0,rehber:false,durum:'cizim',eksik:'sekil'});
+export const konular=['balon','tirtil','isik'] as const;
+export type Konu=typeof konular[number];
+export const bosPano=():PanoKaydi=>({konu:'balon',taslaklar:{},hamleler:[],arac:'kalem',renk:0,rehber:false,durum:'cizim',eksik:'sekil'});
 export function panoyuOku(a?:Partial<PanoKaydi>):PanoKaydi{
   const d=bosPano();if(!a)return d;
+  if(a.konu&&konular.includes(a.konu))d.konu=a.konu;
+  for(const konu of konular){
+    const h=a.taslaklar?.[konu];
+    if(konu!==d.konu&&Array.isArray(h))d.taslaklar[konu]=panoyuOku({hamleler:h}).hamleler;
+  }
   const arac=(v:unknown)=>v==='kalem'||v==='firca'||v==='kova';
   const renk=(v:unknown)=>typeof v==='number'&&Number.isInteger(v)&&!!palet[v];
   if(arac(a.arac))d.arac=a.arac;
@@ -70,35 +78,66 @@ function bolgeleriBul(cizgi:Uint8ClampedArray){
   }
   return {etiket,bolgeler};
 }
-export function resimAtolyesi(canvas:HTMLCanvasElement){
+export function resimAtolyesi(canvas:HTMLCanvasElement,kalip?:{ciz:(ctx:CanvasRenderingContext2D)=>void;kapali:()=>boolean}){
   canvas.width=en;canvas.height=boy;
   const gorunen=canvas.getContext('2d')!,murekkep=katman(),boya=katman();
   let harita:ReturnType<typeof bolgeleriBul>|undefined;
   const alanlar=()=>harita??=bolgeleriBul(murekkep.getImageData(0,0,en,boy).data);
+  const maskeler=new WeakMap<Bolge,Path2D>();
+  function fircala(ctx:CanvasRenderingContext2D,h:Hamle){
+    if(!h.sinirli){cizgi(ctx,h);return}
+    const {etiket,bolgeler}=alanlar(),[x,y]=h.noktalar[0],id=etiket[y*en+x],b=bolgeler[id-1];
+    if(!b||b.dis){if(!kalip?.kapali())cizgi(ctx,h);return}
+    let maske=maskeler.get(b);
+    if(!maske){
+      maske=new Path2D();
+      for(let sy=b.ust;sy<=b.alt;sy++){
+        let sx=b.sol;
+        while(sx<=b.sag){
+          if(etiket[sy*en+sx]!==id){sx++;continue}
+          const bas=sx;
+          while(sx<=b.sag&&etiket[sy*en+sx]===id)sx++;
+          maske.rect(bas,sy,sx-bas,1);
+        }
+      }
+      maskeler.set(b,maske);
+    }
+    ctx.save();ctx.clip(maske);cizgi(ctx,h);ctx.restore();
+  }
   function goster(taslak?:Hamle){
     gorunen.fillStyle='#fffaf0';gorunen.fillRect(0,0,en,boy);
     gorunen.drawImage(boya.canvas,0,0);
-    if(taslak?.arac==='firca')cizgi(gorunen,taslak);
+    if(taslak?.arac==='firca')fircala(gorunen,taslak);
     gorunen.drawImage(murekkep.canvas,0,0);
     if(taslak?.arac==='kalem')cizgi(gorunen,taslak);
   }
   function uygula(h:Hamle){
+    if(h.arac==='firca'&&h.sinirli&&kalip?.kapali()){
+      const [x,y]=h.noktalar[0],{etiket,bolgeler}=alanlar(),b=bolgeler[etiket[y*en+x]-1];
+      if(!b||b.dis)return false;
+    }
     if(h.arac!=='kova'){
-      cizgi(h.arac==='kalem'?murekkep:boya,h);
+      if(h.arac==='kalem')cizgi(murekkep,h);else fircala(boya,h);
       if(h.arac==='kalem')harita=undefined;
       return true;
     }
     const {etiket,bolgeler}=alanlar(),[x,y]=h.noktalar[0],b=bolgeler[etiket[y*en+x]-1];
     if(!b||b.dis)return false;
     const im=boya.getImageData(0,0,en,boy),renk=rgb[h.renk];
-    for(const p of b.alan){const i=p*4;im.data[i]=renk[0];im.data[i+1]=renk[1];im.data[i+2]=renk[2];im.data[i+3]=255}
+    let degisti=false;
+    for(const p of b.alan){
+      const i=p*4;if(im.data[i]===renk[0]&&im.data[i+1]===renk[1]&&im.data[i+2]===renk[2]&&im.data[i+3]===255)continue;
+      degisti=true;im.data[i]=renk[0];im.data[i+1]=renk[1];im.data[i+2]=renk[2];im.data[i+3]=255;
+    }
+    if(!degisti)return null;
     boya.putImageData(im,0,0);return true;
   }
   function yukle(hamleler:Hamle[]){
     murekkep.clearRect(0,0,en,boy);boya.clearRect(0,0,en,boy);harita=undefined;
+    kalip?.ciz(murekkep);
     hamleler.forEach(uygula);goster();
   }
-  function degerlendir():Eksik|null {
+  function degerlendir(konu:Konu='balon'):Eksik|null {
     const {bolgeler,etiket}=alanlar(),renkler=boya.getImageData(0,0,en,boy).data;
     const balonlar=bolgeler.filter(b=>{
       const w=b.sag-b.sol+1,h=b.alt-b.ust+1;
@@ -158,6 +197,24 @@ export function resimAtolyesi(canvas:HTMLCanvasElement){
       const h=alt-ust,w=sag-sol;if(h<25||w/h<.38||w/h>2.35)continue;
       const alan=Int32Array.from(grup.filter(n=>Math.floor(n/en)>=ust&&Math.floor(n/en)<=alt));
       if(alan.length>w*h*.58)adaylar.push({renk:renk-1,b:{sol,sag,ust,alt,alan,dis:false}});
+    }
+    if(konu!=='balon'){
+      const yatay=konu==='tirtil';
+      const daireler=adaylar.filter(({b,renk})=>renk>=0&&(b.sag-b.sol)/(b.alt-b.ust)>.55&&(b.sag-b.sol)/(b.alt-b.ust)<1.8).map(({b,renk})=>({
+        renk, merkez:yatay?(b.sol+b.sag)/2:(b.ust+b.alt)/2,
+        yan:yatay?(b.ust+b.alt)/2:(b.sol+b.sag)/2,
+        cap:yatay?b.sag-b.sol:b.alt-b.ust
+      })).sort((a,b)=>a.merkez-b.merkez);
+      const komsu=(a:typeof daireler[number],b:typeof daireler[number])=>{
+        const cap=(a.cap+b.cap)/2, ara=b.merkez-a.merkez;
+        return ara>cap*.6&&ara<cap*2.2&&Math.abs(a.yan-b.yan)<cap*.72;
+      };
+      for(const orta of daireler){
+        if(!yatay&&orta.renk!==1)continue;
+        if(daireler.some(a=>(yatay||a.renk===0)&&komsu(a,orta))&&
+           daireler.some(b=>(yatay||b.renk===2)&&komsu(orta,b)))return null;
+      }
+      return 'sekil';
     }
     if(adaylar.length<2)return 'sekil';
     const boyali=adaylar.filter(v=>v.renk>=0);

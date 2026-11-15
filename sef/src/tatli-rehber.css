@@ -1,0 +1,9 @@
+.ta-rehber-sesi {
+  position:absolute;top:4%;left:calc(2.6% + max(44px,9cqh) + 1.2cqw);z-index:2;
+  display:grid;place-items:center;width:max(44px,9cqh);aspect-ratio:1;padding:1.8cqh;
+  color:#49343a;border:2px solid #412e30;border-radius:50%;background:var(--sef-kumanda-fonu, #fff3d8);box-shadow:0 .65cqh #987453;
+}
+.ta-rehber-sesi[hidden]{display:none}
+.ta-rehber-sesi>.ikon {width:100%;height:100%}
+.ta-rehber-sesi:disabled {background:#c6e8d0;box-shadow:none}
+.ta-rehber-sesi:active {translate:0 .5cqh}

@@ -79,9 +79,15 @@ placement = {
     "kino": (.504,.542,.145), "lokum": (.504,.536,.14),
     "mino": (.507,.607,.16), "zipzip": (.496,.622,.155),
     "anne": (.502,.545,.143), "dede": (.50,.618,.105),
-    "baba": (.501,.592,.15), "bulut": (.503,.596,.13),
+    "baba": (.501,.592,.15),
     "kino-uzgun": (.5,.548,.13), "mino-fisilti": (.51,.607,.13),
 }
+if not only or only == "konusma-bulut":
+    archive = ROOT.parents[1] / "ortak-poz-arsivi/karakter-hareketleri/bulut-konusma"
+    items = [(f"bulut-ses{n}", Image.open(archive / f"poz-{frame}.webp").convert("RGBA"))
+             for n, frame in enumerate((1, 3, 0))]
+    sheet("konusma-bulut", items)
+
 for who, (cx, cy, fraction) in placement.items():
     if only and only!="konusma-"+who:
         continue

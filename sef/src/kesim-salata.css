@@ -1,0 +1,36 @@
+.salata-kesimi .kesim-kontrast {
+  fill:none;
+  stroke:#343527;
+  stroke-opacity:.78;
+  stroke-width:7;
+  stroke-linecap:round;
+}
+.salata-kesimi .kesim-hedef line {
+  stroke:#fffae4;
+  stroke-width:4;
+  stroke-dasharray:11 10;
+}
+.salata-kesimi .kesim-hedef .kesim-akis {
+  fill:#ffdb63;
+  stroke:#463625;
+  stroke-width:2;
+}
+.salata-kesimi.kesim-dokunus:not(.kesiyor) .kesim-hedef {
+  visibility:visible;
+  opacity:.65;
+}
+.salata-kesimi.kesim-dokunus .kesim-akis {visibility:hidden;}
+.kesim-boylari{position:absolute;right:4%;bottom:3%;display:flex;gap:1cqh;z-index:4}
+.kesim-boylari .kesim-boyu{position:relative;display:flex;justify-content:center;align-items:center;gap:1px;width:clamp(44px,8cqw,79px);height:clamp(44px,12cqh,70px);border:2px solid #42332c;border-radius:26%;background:var(--sef-kumanda-fonu, #fff5dd);box-shadow:0 2px #96734f}
+.kesim-boyu img{width:55%;height:65%;object-fit:contain}
+.kesim-boyu[data-boy="4"] img{width:36%}.kesim-boyu[data-boy="6"] img{width:24%}
+.kesim-boylari [aria-pressed="true"]{background:#c5e9c5;border-color:#344b35}
+.kesim-boylari [aria-pressed="true"]:after{content:'';position:absolute;bottom:4px;width:22%;height:3px;border-radius:3px;background:#397652}
+.kesim-boylari button:disabled{opacity:.48}
+.kesim-geri-al{position:absolute;right:7%;top:23%;display:grid;place-items:center;min-width:44px;min-height:44px;width:8cqh;height:8cqh;border:2px solid #493c32;background:var(--sef-kumanda-fonu, #fff3d8);border-radius:50%;box-shadow:0 2px #977553;z-index:3}
+.kesim-geri-al .ikon{width:55%;height:55%}
+.kesim-alani[data-yarim] .kesim-hedef{visibility:hidden}
+.kesim-devam{pointer-events:none;fill:none;stroke-linecap:round}
+.kesim-devam-alt{stroke:#435443;stroke-width:7}
+.kesim-devam-ust{stroke:#ffebb0;stroke-width:3.5;stroke-dasharray:10 9}
+.kesim-devam circle{fill:#ffdd77;stroke:#433e2e;stroke-width:2.5}

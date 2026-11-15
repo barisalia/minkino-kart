@@ -1,0 +1,45 @@
+.dr-tezgah{position:absolute;inset:0;isolation:isolate;overflow:hidden;container-type:size;touch-action:none}
+.dr-fon,.dr-is{position:absolute;inset:0;width:100%;height:100%}.dr-fon{object-fit:fill}
+.dr-tezgah button{border:0;margin:0;font:inherit;touch-action:none;background:transparent;cursor:pointer;color:#382838}
+.dr-tezgah button:focus-visible{outline:3px solid #123a91;outline-offset:2px}.dr-tezgah button:disabled{opacity:.35}
+.dr-tezgah .dr-geri,.dr-tezgah .dr-dinle,.dr-tezgah .dr-ileri,.dr-tezgah .dr-geri-al{position:absolute;width:max(44px,7cqh);height:max(44px,7cqh);border-radius:50%;display:grid;place-items:center;background:var(--sef-kumanda-fonu, #fff6d7);border:2px solid #4c3934;box-shadow:0 2px #916c54}
+.dr-geri{left:2%;top:3%}.dr-dinle{right:2%;top:3%}.dr-tezgah .dr-ileri{right:9%;bottom:9%;background:#bae9af}.dr-geri-al{left:9%;bottom:9%}.dr-tezgah .ikon{width:54%;height:54%}
+.dr-tezgah .dr-fis{position:absolute;top:2%;left:50%;translate:-50%;height:max(42px,11cqh);padding:3px 13px;display:flex;align-items:center;gap:5px;border:2px solid #483638;border-radius:14px;background:var(--sef-kumanda-fonu, #fff7db);box-shadow:0 3px #bd956b}.dr-fis img{width:clamp(24px,6.5cqh,50px);height:90%;object-fit:contain}
+.dr-tezgah .dr-lavas,.dr-tezgah .dr-sarma{position:absolute;top:16%;left:50%;translate:-50%;height:57%;aspect-ratio:1;padding:0;isolation:isolate}
+.dr-hamur,.dr-acik{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
+.dr-dizili,.dr-kesit-ici{position:absolute;translate:-50% -50%;width:22%;height:auto;max-height:23%;object-fit:contain;pointer-events:none}
+.dr-dizili[data-tur=marul]{width:27%}.dr-dizili[data-tur=zeytin]{width:15%}
+.dr-raf{position:absolute;bottom:7%;left:21%;right:21%;height:20%;display:flex;justify-content:center;align-items:center;gap:2.5%}
+.dr-tezgah .dr-raf-gozu{position:relative;width:min(17%,13cqh);height:80%;min-height:44px;padding:4%;border-radius:40% 40% 46% 46%;border:2px solid #45372e;background:var(--sef-kumanda-fonu, #fff1ce);box-shadow:inset 0 -4px #e5ba83,0 2px #bc8851}
+.dr-raf-gozu img{position:absolute;inset:13%;width:74%;height:72%;object-fit:contain}.dr-tezgah .dr-raf-gozu[aria-pressed=true]{background:#ccf1c7;box-shadow:inset 0 -4px #81b591,0 0 0 3px #378461}
+.dr-elde{position:fixed;z-index:99;width:clamp(40px,7vw,100px);height:48px;object-fit:contain;pointer-events:none;translate:-50% -50%}
+.dr-imlec{position:absolute;width:10%;aspect-ratio:1;border:2px dashed #773b28;border-radius:50%;translate:-50% -50%;left:50%;top:50%;display:none}.dr-lavas:focus-visible .dr-imlec{display:block}
+.dr-tezgah .dr-sarma{height:66%;top:19%;width:auto}
+.dr-acik{position:absolute;inset:0;clip-path:inset(0 0 calc(var(--sar,0)*82%) 0)}
+.dr-kenar{position:absolute;left:50%;translate:-50% -50%;width:calc(49% + var(--sar,0)*33%);height:calc(8% + var(--sar,0)*15%);top:calc(91% - var(--sar,0)*71%);pointer-events:none}
+.dr-sarma-izi{position:absolute;left:50%;bottom:-5%;translate:-50%;width:max(30px,7cqh);height:max(30px,7cqh);color:#208957;display:grid;place-items:center}.dr-sarma-izi .ikon{rotate:180deg}
+.dr-tezgah .dr-kes{position:absolute;left:22%;right:22%;top:25%;height:54%;padding:0}.dr-yatay-rulo{position:absolute;left:0;top:30%;width:100%;height:43%;object-fit:fill}
+.dr-kesim-cizgisi,.dr-kesildi{position:absolute;top:22%;height:58%;border-left:3px dashed #126b66;pointer-events:none}.dr-kesildi{top:31%;height:40%;border-left:2px solid #6f4425}
+.dr-bicak{position:absolute;top:28%;translate:-35% -65%;width:21%;height:35%;object-fit:contain;pointer-events:none}.dr-kes[data-kesiliyor=true] .dr-kesim-cizgisi{border-color:#399b57}
+.dr-tabak{position:relative;display:inline-block;aspect-ratio:1.97;width:100%;isolation:isolate;vertical-align:middle}.dr-porselen{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.dr-kesit{position:relative;display:inline-block;aspect-ratio:1;isolation:isolate}.dr-kesit-ici{max-height:40%}
+.dr-tabak>.dr-kesit{position:absolute;width:25%;top:30%;left:11%;rotate:-9deg}.dr-tabak>.dr-kesit:nth-child(3){left:38%;top:13%;rotate:3deg}.dr-tabak>.dr-kesit:nth-child(4){left:63%;top:32%;rotate:10deg}
+.dr-tezgah .dr-sun{position:absolute;left:24%;right:24%;top:25%;height:55%;display:grid;place-items:center}.dr-sun>.dr-tabak{width:90%;max-height:100%}.dr-sun>.ikon{position:absolute;bottom:-7%;right:0;width:max(44px,9cqh);height:max(44px,9cqh);border-radius:50%;border:2px solid #477345;background:#b8e4b1;padding:8px}
+.raf-gorseli>.dr-tabak{width:95%;height:auto;max-height:95%}
+.dr-kesit[hidden]{display:none!important}
+.restoran-lokma .dr-catal-lokmasi{position:absolute;left:-12%;top:-13%;width:46%;aspect-ratio:1}
+.restoran-lokma .dr-catal-lokmasi>.dr-hamur{inset:0;object-fit:contain}
+.lokma-alindi .dr-catal-lokmasi{visibility:hidden}
+.tepsi-yuva>.dr-tabak,.tepsi-fis-tabak>.dr-tabak,.tepsi-sahnesi .dr-tabak{max-width:100%;max-height:100%;object-fit:contain}
+.tepsi-tadim-parcalar>.dr-tabak{width:min(18cqw,24cqh);height:auto}
+.dr-kesit-yuvasi{position:absolute;left:11%;top:35%;width:54%;height:51%;overflow:hidden;border-radius:50%}
+.dr-kesit-kati{position:absolute;width:86%;height:38%;translate:-50% -50%;display:block}
+.dr-kesit-kati>img,.restoran-lokma .dr-kesit-kati>img{width:100%;height:100%;inset:0;object-fit:fill}
+.dr-kesit-kati[data-tur=marul]{height:45%;width:92%}.dr-kesit-kati[data-tur=peynir]{width:88%;height:25%}
+.dr-kesit-kati[data-tur=zeytin]{width:64%;height:35%}
+.dr-dizili[data-tur=peynir]{width:28%;max-height:23%}.dr-raf-gozu .dr-ic[data-tur=peynir]{inset:19% 12%;height:59%;width:76%}
+/* Give a single wrap order one compact bubble and the full usable image area. */
+.tepsi-istek:has(>.tepsi-fis-lokmasi:only-child .dr-tabak){width:clamp(90px,19cqw,235px);height:18%;padding:.65cqh 1cqw;background:#d9f4ed}
+.tepsi-istek:has(>.tepsi-fis-lokmasi:only-child .dr-tabak)::before{background:#d9f4ed}
+.tepsi-istek>.tepsi-fis-lokmasi:only-child:has(.dr-tabak){display:grid;place-items:center;width:100%;height:100%;padding:0;background:transparent;border:0}
+.tepsi-fis-lokmasi:only-child>.dr-tabak{width:min(100%,26cqh);height:auto}

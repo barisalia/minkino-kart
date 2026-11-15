@@ -1,0 +1,48 @@
+.vitrin-pul-defteri,.servis-pulu,.pul-ok,.pul-sekme{
+  display:inline-grid;place-items:center;border:2px solid #48343a;border-radius:35%;
+  color:#46323c;background:var(--sef-kumanda-fonu, #ffedb6);box-shadow:0 2px #957052;cursor:pointer
+}
+.vitrin-pul-defteri{
+  position:absolute;left:calc(4% + max(40px,9.7cqh) + 1.5cqw);top:5%;
+  height:max(40px,9.7cqh);aspect-ratio:1;padding:1.6cqh;background:#c8ead8
+}
+.servis-pulu{
+  position:absolute;left:calc(50% + max(53px,12cqh));top:14%;height:max(40px,10cqh);
+  aspect-ratio:1;transform:rotate(6deg);border-radius:22%;padding:.7cqh;background:var(--sef-kumanda-fonu, #fff6dc)
+}
+.servis-pulu img,.pul-sekme img,.pul-yeri img{display:block;min-width:0;min-height:0;width:100%;height:100%;object-fit:contain}
+.restoran-ilk-tadim .servis-pulu{visibility:hidden}
+.pastane-pul-defteri{
+  box-sizing:border-box;color:#42323a;background:var(--sef-kumanda-fonu, #fff7de);border:2px solid #473c41;
+  border-bottom:6px solid #8f6262;border-radius:4.2cqh;margin:auto;padding:2cqh 3cqh;
+  width:min(90cqw,143cqh);height:88cqh;max-width:95vw;max-height:93dvh
+}
+.pastane-pul-defteri[open]{display:grid;grid-template-rows:max(44px,11cqh) minmax(0,1fr) max(44px,9cqh);gap:1.5cqh}
+.pastane-pul-defteri::backdrop{background:#39263577}
+.pul-ust,.pul-sayfalama,.pul-sekmeleri{display:flex;align-items:center;justify-content:space-between;gap:1.3cqh}
+.pul-sayac{font-size:clamp(13px,3.6cqh,26px);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pul-sekmeleri{justify-content:center}
+.pul-ok,.pul-sekme{height:max(44px,9cqh);aspect-ratio:1;padding:1.4cqh}
+.pul-sekme{grid-template:minmax(0,1fr)/minmax(0,1fr);background:var(--sef-kumanda-fonu, #fff9ef);padding:.8cqh}
+.pul-sekme[aria-pressed=true]{background:#bce8ce;box-shadow:0 3px #597863}
+.pul-ok:disabled{opacity:.36}
+.pul-ok .ikon,.vitrin-pul-defteri .ikon,.pul-yeri .ikon{width:100%;height:100%}
+.pul-ok svg,.vitrin-pul-defteri svg,.pul-yeri svg{width:100%;height:100%;display:block}
+.pul-sayfa{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1.6cqh}
+.pul-yeri{display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);min-width:0;min-height:0;place-items:center;background:var(--sef-kumanda-fonu, #fffdf2);border:2px solid #bc987e;border-radius:3cqh;padding:1.4cqh}
+.pul-yeri:disabled{border:2px dashed #ccafa2;background:var(--sef-kumanda-fonu, #f5e7d5);opacity:1}
+.pul-yeri[data-yeni=true]{background:#e4f5d8;border-color:#628160}
+.pul-yeri .ikon{width:25%;max-height:33%;color:#c3a88f}
+.pul-sayfalama[hidden]{display:none}
+.pul-sayfa-noktasi{display:flex;gap:1.2cqh}
+.pul-sayfa-noktasi[role=img]{align-items:center}
+.pul-sayfa-noktasi>img,.pul-sayfa-noktasi>.ikon{width:5.8cqh;height:5.8cqh;object-fit:contain}
+.pul-sayfa-noktasi>.ikon:nth-child(even){width:2.8cqh;height:2.8cqh}
+.pul-sayfa-noktasi svg{width:100%;height:100%}
+.pul-sayfa-noktasi i{width:1.6cqh;height:1.6cqh;border-radius:100%;background:#dfc9b4}
+.pul-sayfa-noktasi i[data-secili=true]{background:#917476}
+.pul-yakin{grid-area:1/1/-1/-1;width:100%;height:100%;object-fit:contain;padding:1.4cqh;box-sizing:border-box}
+@media(prefers-reduced-motion:no-preference){
+  .tepsi-yeni-servis:not(.restoran-ilk-tadim) .servis-pulu{animation:pul-damgala .45s ease-out both}
+  @keyframes pul-damgala{0%{transform:translateY(-3cqh) rotate(-9deg) scale(1.12);opacity:0}72%{transform:rotate(4deg) scale(.94)}100%{transform:rotate(6deg)}}
+}

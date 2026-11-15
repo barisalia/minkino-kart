@@ -1,7 +1,9 @@
+import kulak from '../../assets/hazirlik/kres/sahne-kulak.svg';
 const svg=(view:string,body:string)=>'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+view+'" width="100%" height="100%" aria-hidden="true" fill="none" stroke="#19191b" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
 const dugmeler=import.meta.glob<string>('../../assets/hazirlik/dugmeler/*.webp',{eager:true,query:'?url',import:'default'});
-const oyuncaklar:Record<string,string>={ev:'ev',ses:'dinle',sessiz:'sessiz',yenile:'tekrar',ileri:'ileri'};
+const oyuncaklar:Record<string,string>={ev:'ev',ses:'dinle',sessiz:'sessiz',yenile:'tekrar',ileri:'ileri',tamam:'tamam','sahne-kapisi':'sahne-kapisi','oda-sag':'oda-sag','oda-sol':'oda-sol'};
 export function simge(id:string){
+  if(id==='kulak')return '<span class="sahne-dinle"><img src="'+kulak+'" alt="" draggable="false"></span>';
   const dosya=dugmeler['../../assets/hazirlik/dugmeler/'+oyuncaklar[id]+'.webp'];
   if(dosya)return '<img class="oyuncak-dugme" src="'+dosya+'" draggable="false" alt="">';
   return svg('40 40','<path d="m8 21 8 8 16-19" stroke="#fff8db" stroke-width="7" fill="none"/>');

@@ -1,0 +1,27 @@
+.ka-album,.ka-son{width:min(100% - 24px,1050px);margin:0 auto 18px;text-align:center}
+.ka-album h1,.ka-son h1{font-weight:600;font-size:clamp(24px,4vw,44px);line-height:1.12;margin:.12em 0 .28em;color:#204b42;letter-spacing:-.02em}
+.ka-kitap{position:relative;width:min(100%,950px,119svh);aspect-ratio:1.72;margin:auto;background:url('../../assets/alfabe/harf-albumu.webp') center/100% 100% no-repeat}
+.ka-sayfalar{position:absolute;inset:8% 8% 12% 7%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr);column-gap:10%;align-items:center;justify-items:center}
+.ka-kart,.ka-cikartma{position:relative;display:grid;grid-template-rows:22% minmax(0,1fr) 17%;height:95%;width:90%;align-items:center;justify-items:center;border:0;padding:3% 4%;background:transparent;color:#24382f}
+.ka-kart img,.ka-cikartma img{max-width:100%;width:100%;height:100%;object-fit:contain;min-height:0}
+.ka-yazi{width:100%;height:100%;min-width:0;min-height:0;display:block}
+.ka-kart span,.ka-cikartma span{font-weight:600;font-size:clamp(17px,3.4vw,39px)}
+.ka-kart:active img{transform:scale(.96)}
+.ka-buldu{background:#e3efcf;border-radius:20px;animation:ka-otur .33s ease-out}
+.ka-bos{width:76%;height:78%;border:2px dashed #b6b79b;border-radius:14px}
+.ka-ilk h2{font-weight:600;font-size:clamp(17px,2.5vw,36px)}
+.ka-ilk .at-basla{font-size:clamp(13px,2vw,20px);padding:6px 10px}
+.ka-kumanda{display:flex;gap:10px;align-items:center;justify-content:center;margin:8px 0}
+.ka-kumanda button[hidden]{display:none}
+.ka-kumanda :disabled{opacity:.38;cursor:default}
+.ka-kumanda .at-geri{width:44px;padding:8px}.ka-sonra svg{transform:rotate(180deg)}
+.ka-mesaj{margin:.2em;font-size:clamp(16px,2vw,24px);min-height:1.4em}
+.ka-son .ka-cikartma{justify-self:center;background:#fff6d9;border:2px solid #302f28;border-radius:8%;height:94%;width:86%;box-shadow:3px 4px 0 #ddb978;transform:rotate(-3deg)}
+.ka-yer{min-height:70%;width:90%;border:2px dashed #60896d;border-radius:16px;background:transparent;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;padding:.4em;color:#305a48;font-size:clamp(15px,2.5vw,26px);font-weight:600}
+.ka-yer svg{width:clamp(22px,4.7vw,50px);height:auto}.ka-yer[disabled]{border-color:transparent;color:#3d6754;cursor:default}
+.ka-son .ka-sayfalar.yapisti .ka-cikartma{transform:rotate(0);box-shadow:none;background:transparent;border-color:transparent}
+.ka-kart:focus-visible,.ka-cikartma:focus-visible{outline-offset:0}
+@keyframes ka-otur{0%{transform:scale(1.045) rotate(-1deg)}100%{transform:scale(1)}}
+@media(orientation:landscape) and (max-height:530px){.ka-kitap{width:min(100%,98svh)}.ka-kumanda{margin:.15em}.ka-mesaj{font-size:15px}.ka-album h1,.ka-son h1{font-size:24px}.ka-kart span,.ka-cikartma span{font-size:18px}}
+@media(max-width:580px) and (orientation:portrait){.ka-kitap{aspect-ratio:1.47}.ka-album,.ka-son{margin-top:clamp(20px,8vh,70px)}.ka-ilk h2{margin:.2em 0}.ka-kumanda{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.ka-buldu{animation:none}}

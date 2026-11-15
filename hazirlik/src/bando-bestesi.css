@@ -1,0 +1,30 @@
+.beste-masa{position:absolute;z-index:5;inset:14% 8% 7%;display:grid;grid-template-rows:18% minmax(0,1fr) 18%;gap:3%;padding:2% 3%;background:#ffebc7;border:2px solid #2c2424;border-radius:4% / 7%;box-shadow:0 5px #ce9760;isolation:isolate}
+.beste-masa button{min-width:0;min-height:0;position:relative;display:grid;place-items:center;padding:2px;touch-action:manipulation}
+.beste-masa img,.beste-masa svg{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.beste-serit,.beste-sazlar,.beste-arac{display:grid;min-height:0;gap:1.5%}
+.beste-serit{grid-template-columns:repeat(8,minmax(0,1fr));padding:4px;background:#e9c28d;border-radius:12px}
+.beste-serit button{border:1px solid #977b5e;border-radius:20%;background:#fff6dc}.beste-serit button:disabled{opacity:1}
+.beste-serit i{width:12%;aspect-ratio:1;border-radius:50%;background:#bca880}
+.beste-serit [aria-pressed=true],.beste-serit .sirada{background:#ffe189;outline:3px solid #35897e;outline-offset:-2px}
+.beste-sazlar{grid-template-columns:repeat(6,minmax(0,1fr));align-items:stretch}
+.beste-sazlar button{border-bottom:5px solid var(--saz);padding:10% 4%;border-radius:13%}
+.beste-sazlar .calani,.beste-sazlar button:active{background:var(--saz)}
+.beste-arac{grid-template-columns:repeat(6,minmax(0,1fr));justify-items:center}.beste-arac button{width:100%;max-width:80px;background:#fff6da;border:1.5px solid #8d7154;border-radius:22%;padding:4%}.beste-arac button:last-child{border:0;background:none}
+.beste-arac button:disabled{opacity:.35}.beste-arac span{position:absolute;right:5%;bottom:7%;display:flex;gap:2px}.beste-arac i{width:5px;height:5px;border-radius:100%;background:#d8c8ad}.beste-arac .dolu{background:#326c67}
+@media(max-aspect-ratio:1/1){.beste-masa{inset:17% 3% 9%;padding:4% 3%;grid-template-rows:21% minmax(0,1fr) 12%}.beste-serit{grid-template-columns:repeat(4,minmax(0,1fr))}.beste-sazlar{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}.beste-arac button{padding:1%}}
+
+.piece:has(>.beste-defteri){pointer-events:auto}.beste-defteri,.beste-defteri svg{display:block;width:100%;height:100%}
+.bando-alt{display:flex;justify-content:space-between;width:100%;height:100%;min-height:0}.bando-alt .beste-defteri,.bando-alt .et-ileri{position:relative;inset:auto;width:18%;height:100%}
+.et-masa .beste-masa{inset:0;padding:2%;width:100%;height:100%}.et-masa .beste-masa button img{position:static;inset:auto;width:100%;height:100%}
+.beste-masa .beste-serit button img,.beste-masa .beste-sazlar button img,.et-masa .beste-masa .beste-serit button img,.et-masa .beste-masa .beste-sazlar button img{position:absolute;inset:7%;width:86%;height:86%;object-fit:contain}
+.beste-masa .beste-serit button,.beste-masa .beste-arac button{grid-template:minmax(0,1fr) / minmax(0,1fr)}
+
+.beste-arac{grid-template-columns:repeat(7,minmax(0,1fr))}
+.beste-arac button[aria-pressed=true]{background:#aff0d6;border-color:#236456}
+@media(max-aspect-ratio:1/1){.beste-arac{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr)}}
+
+@media(max-aspect-ratio:1/1){.beste-masa{grid-template-rows:20% minmax(0,1fr) 25%}}
+
+.beste-arac{grid-template-columns:repeat(9,minmax(0,1fr))}
+.beste-sazlar .plak-vurusu{background:var(--saz)}
+@media(max-aspect-ratio:1/1){.beste-arac{grid-template-columns:repeat(5,minmax(0,1fr))}}

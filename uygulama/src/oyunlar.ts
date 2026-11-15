@@ -53,6 +53,9 @@ export interface OyunKarti {
 }
 
 export const OYUNLAR: OyunKarti[] = [
+  { id: 'matematik', ad: 'Matematik Atölyesi', adres: './matematik/', renk: '#f9bc76', katmanlar: [] },
+  { id: 'alfabe', ad: 'Ceren ile Harf Atölyesi', adres: './alfabe/', renk: '#f7c785', katmanlar: [] },
+  { id: 'sef', ad: 'Minik Şef', adres: './sef/', renk: '#6CC9AE', katmanlar: [] },
   { id: 'kino-ile-sen-sec', ad: 'Kino’yla Sen Seç', adres: './kino-ile-sen-sec/', renk: '#FFCE56', zemin: 'kino-ile-sen-sec/kapak', katmanlar: [] },
   { id: 'hazirlik', ad: 'Okula Hazırlanalım', adres: './hazirlik/', renk: '#70BDAF', zemin: 'hazirlik/kapak', katmanlar: [] },
   {

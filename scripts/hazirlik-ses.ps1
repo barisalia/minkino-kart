@@ -5,6 +5,30 @@ $ErrorActionPreference = 'Stop'
 $kok = Split-Path -Parent $PSScriptRoot
 $oyuncular = Get-Content -Raw -Encoding utf8 (Join-Path $kok 'content/film2/sesler.json') | ConvertFrom-Json
 $sozler = [ordered]@{
+
+
+
+  kres_golet_kopru = 'Köprü inmiş! Mavi ucunu kaldır da kayık geçsin.'
+  kres_yelken_kur = 'Tahta parçalarla bir yelkenli yapalım. Parçayı al, teknedeki yerine koy.'
+  kres_yelken_yuz = 'Rüzgâr çıktı! Tekneni suya indirip ördeklerin yanına gidelim.'
+  kres_masal_liman = 'Sabah iskelede küçük bir mektup vardı. Sarı yelkenli onu karşı kıyıya götürecekti. Mektubu bulup tekneye alır mısın?'
+  kres_masal_kopru = 'Yelkenli suyun üstünde süzüldü. Ama alçak köprünün altından direği geçmiyordu. Çarkı bulup köprüyü açalım.'
+  kres_masal_sec = 'Köprü açıldı! Öykünün sonunu sen seç. Mektup deniz fenerine mi gitsin, yoksa kıyıdaki kitapçıya mı?'
+  kres_masal_fener = 'Fenerci mektubu iskelede açtı. İçinden kocaman bir güneş resmi çıktı. Güneş batınca resmi penceresine asacaktı.'
+  kres_masal_koy = 'Kitapçı mektubu okudu. Karşı kıyıdaki çocuklar bir masal istiyordu! En sevdiği kitapları seçip iskeleye getirdi.'
+  kres_masal_bul = 'Resmin içinde aradığın eşya var. Parmağınla bulup dokunabilirsin.'
+  kres_kolye_ayna = 'İpin bir yanını sen tasarla. Öbür yanı aynadaki gibi olsun. Ortaya en yakın kabuktan başla.'
+  kres_kolye_hatirla = 'İki ucu ortadan dışarıya doğru karşılaştır. Sıradaki boşluğun karşısında hangi kabuk var?'
+  kres_bando_ustune = 'Senin besten dönüp duracak. Şimdi üstüne istediğin çalgıyla eşlik edebilirsin.'
+  kres_yelken_parkur = 'Şamandıranın üstündeki resme bak. Kayığını aynı resmin olduğu şamandıraya kadar yüzdür. Üçünü bulunca bayrağa gideceğiz.'
+  kres_yelken_bayrak = 'Üç çanı da çaldın! Şimdi damalı bayrağın yanına yanaşalım.'
+  kres_yelken_liman = 'Rüzgârı yakaladın kaptan! Kayığın kıyıya ulaştı. İstersen yeni bir rota deneyebilirsin.'
+  kres_yelken_isaret = 'Bu şamandıra başka. Yukarıdaki resme bir daha bakalım.'
+  kres_kagit_damga = 'Kayığın hangi işareti taşısın? Birini seç, sonra rüzgârlı koya açılalım.'
+
+
+
+
   basla = '[happy] Hadi hazırlanalım! Bugün hangisini giysem?'
   mutfak = '[curious] Sandviçimin içine ne koyalım?'
   kutu = '[happy] Sandviçim hazır! Yanına bir de meyve seçelim.'
@@ -90,6 +114,89 @@ $sozler = [ordered]@{
   mino_resim = 'Bahçende ne var, çok merak ediyorum!'
   zip_resim = 'Ben bahçeme kocaman bir güneş çizerdim!'
   defter_kapanis = 'Kartın hazır! Solda yazdığın harf, sağda çizdiğin bahçe var. Şimdi yeşil oka dokun. Sınıf panosu için resim yapacağız.'
+  pano_alan = 'Çizgiyi başladığın yerde kapat. Kovayı seçip yuvarlağın içine dokun.'
+  pano_tirtil = 'Haydi, minik bir tırtıl çizelim! Yan yana üç yuvarlak çiz. Üçünün de içini istediğin renge boya. Sonra dilersen yüzünü ve ayaklarını ekle.'
+  pano_isik = 'Bir trafik ışığı çizelim! Üst üste üç yuvarlak çiz. Üsttekini kırmızıya, ortadakini sarıya, alttakini yeşile boya.'
+  pano_tirtil_bak = 'Tırtılın gövdesine bakalım. Birbirine yakın, yan yana üç boyalı yuvarlak arıyorum. İstersen noktalı çizgileri aç.'
+  pano_isik_bak = 'Işıkları yukarıdan aşağı kontrol edelim. Kırmızı, sarı, yeşil. Her ışığın içini boyadın mı?'
+  pano_resim_as = 'Yönergeyi takip etmişsin Kino! Resmini sınıf panomuza asıyorum.'
+  pano_resim_diger = "Bugün Mino’nun resmini asalım. Senin resmin masanda. İstersen biraz daha çizebilirsin."
+  yazi_armut_ses = 'Bu harfin sesi a. Birlikte söyleyelim: aaa. Şimdi dinle. Armut. Elma. Hangisinin başında a duyuyorsun? O meyveyi A rafına koy.'
+  yazi_armut_fark = 'Elma. Başında e duydum. A arıyoruz. Diğer meyvenin adını söyleyelim: armut.'
+  yazi_a = 'Aaa, armut! Etiketine büyük A yazalım. Yeşil noktadan tepeye çık, öbür yandan aşağı in.'
+  yazi_a_orta = 'Şimdi iki çizginin arasına bir köprü yap. Yeşil noktadan sağa doğru çiz.'
+  yazi_e_ust = 'Uzun çizgin hazır. En üstünden sağa doğru bir çizgi çek.'
+  yazi_e_orta = 'Ortadaki noktayı bul. Oradan sağa daha kısa bir çizgi çek.'
+  yazi_e_alt = 'Bir çizgi kaldı. En alttaki yeşil noktadan sağa doğru çiz.'
+  yazi_armut_say = 'Her tabağa bir armut koyalım. Tepsilere bak. Hangisinde tam yetecek kadar armut var?'
+  yazi_armut_toplam = 'Bir tabak, bir armut. Tam geldi! Kalemi al, kaç armut koyduğunu kartına yaz.'
+  yazi_armut_oku = 'Bir armut. Armut, a sesiyle başlıyor.'
+  mino_yazi_armut = 'A, armut! Kartını görünce burada kaç armut olduğunu da anladım. Bir!'
+  yazi_az = 'Bak, boş bir tabak kaldı. Diğer tepsiyi deneyelim mi?'
+  yazi_fazla = 'Tabaklar doldu ama tepside bir tane daha var. Diğer tepsiyi deneyelim mi?'
+  yazi_lale_toplam = 'Bir! Sepette bir lale var. Kalemine dokun, kartına kaç tane olduğunu yazalım.'
+  yazi_elma_toplam = 'Her tabağın bir elması oldu. Bir, iki! Kalemi alıp kaç elma olduğunu yazalım.'
+  yazi_marakas_toplam = 'Her yuvaya bir marakas koyduk. Bir, iki, üç! Kalemi alıp sayısını yazalım.'
+  mino_yazi = 'Ben en son söylediğim sayıyı hatırlıyorum. Kartıma o sayıyı yazacağım.'
+  zip_yazi = 'Ben yeşil noktadan başlıyorum. Parmağımı kaldırırsam yine oradan devam ediyorum!'
+  mino_yazi_lale = 'Laleyi buldum! Kartında bir yazıyor. Tam burada bir tane lale var.'
+  zip_yazi_elma = 'Bir, iki! Elmaların kartını hemen tanıdım. Elma derken e sesini de duydum!'
+  mino_yazi_marakas = 'Marakas masası burada! Kartındaki üçü okuyabiliyorum. Bir, iki, üç!'
+  yazi_raflar = 'Kartın hazır! Kartındaki resme bak. Aynı şeylerin durduğu rafa taşı. İstersen o rafa dokunabilirsin.'
+  yazi_armut_raf = 'Bu rafta armut var. Kartındaki resimle aynı mı? Bir de diğer raflara bak.'
+  yazi_elma_raf = 'Bu rafta elmalar var. Elindeki resimle aynı mı? Kartına bakıp yine deneyelim.'
+  yazi_marakas_raf = 'Bu müzik rafında marakaslar var. Kartındaki resimle aynı mı? Diğer raflara da bak.'
+  yazi_lale_raf = 'Burada bir lale var. Kartındaki resimle aynı mı? Diğer raflara da bak.'
+  yazi_raf_ipucu = 'Elindeki kartta hangi resim var? Raftaki nesnelere bir daha bak.'
+  yazi_lale_ses = 'Lale. Başını dinle: la, le. Şimdi diğerlerini dinle. Limon. Davul. Hangisi lale gibi başlıyor?'
+  yazi_elma_ses = 'Bu harfin sesi e. Sen de söyle: eee. Şimdi dinle. Limon. Elma. Hangisi e sesiyle başlıyor? Onu bu rafa koy.'
+  yazi_marakas_ses = 'Bu harf M. Dudaklarını kapatıp benimle mmm der misin? Şimdi dinle. Marakas. Davul. Hangisi mmm diye başlıyor? Onu müzik rafına koy.'
+  yazi_lale_fark = 'Davul, da. Lale, la. Bir de limonu dinle: li, mon. Başında lale gibi l duyuyor musun?'
+  yazi_elma_fark = 'Limon. Başında l duyuyorum. Aradığımız ses e. Öteki meyvenin adını dinleyelim: elma.'
+  yazi_marakas_fark = 'Davul. Da, vul. Biz mmm sesini arıyoruz. Bir de marakas demeyi dene.'
+  yazi_ad_armut = 'Armut.'
+  yazi_ad_elma = 'Elma.'
+  yazi_ad_limon = 'Limon.'
+  yazi_ad_marakas = 'Marakas.'
+  yazi_ad_davul = 'Davul.'
+  mino_sergi_armut = 'Kino, ben de sergiye armut getirdim! Bana bir kart yazar mısın? Armutlarıma dokun, kaç tane getirdiğime bak.'
+  yazi_armut_karti_iki = 'Mino kaç armut getirmiş? Kartına sayısını parmağınla yaz. Bitirince yeşil oka dokun.'
+  yazi_armut_karti_a = 'Şimdi armut derken başında duyduğun sesi hatırla. Onun harfini de kartına sen yaz. İstersen küçük kalemden yardım al.'
+  yazi_armut_karti_ipucu = 'Büyük A için iki yol tepede buluşuyor. Ortadaki kısa çizgi de bu iki yolu birbirine bağlıyor.'
+  yazi_a_kopru = 'İki eğik çizgi tepede buluştu! Ortasına küçük bir köprü daha çizer misin?'
+  mino_armut_tesekkur = 'A, armut! Kartımda iki yazıyor. Getirdiğim iki armudu da anlattın. Teşekkür ederim Kino!'
+  mino_ses_oyunu = 'Ben meyvenin ya da çalgının adını dinliyorum. İlk sesi duyunca tahtadaki harfi hatırlıyorum.'
+  zip_ses_oyunu = 'Küçük kulağa dokundum, adını bir daha duydum! Sen de dinlemek ister misin?'
+  mino_tepsi = 'Ben her boş yere bir tane koyduğumu hayal ediyorum. Sonuncuyu koyunca tepside hiç kalacak mı?'
+  zip_tepsi = 'Şu boş yerlere bak! Ben parmağımla bir yer, bir eşya diye eşliyorum.'
+  mino_raf = 'Kartımda ne çiziliyse onun durduğu rafı arıyorum.'
+  zip_raf = 'Bu kartı gören arkadaşımız hem adını hem sayısını öğrenir!'
+  mino_kalem = 'Ben zorlanınca kalemimi kaldırıyorum. Sonra kaldığım yerden devam edebiliyorum.'
+  zip_kalem = 'Öğretmenimize dokunursan sana yine anlatır!'
+  yazi_armut_karti_oku = 'İki armut. Bu karttaki ikiyi ve A harfini sen yazdın.'
+  mino_sergi_limon = 'Ben de iki limon getirdim! Bunlar için de bir kart yazabilir misin? İstersen limonlarıma dokun.'
+  yazi_limon_iki = 'Bir, iki limon. Kartın ilk yerine kaç limon olduğunu sen yaz. Noktalara ihtiyacın olursa küçük kaleme dokun.'
+  yazi_limon_le = 'Limon. Adının başında l sesi var. Büyük L için aşağı in, sonra sağa dön. Bitince yeşil oka dokun.'
+  yazi_limon_iki_ipucu = 'İkinin tepesinde bir kıvrım var. Sonra sola doğru aşağı iner, en altta sağa döner. İstersen kaleme dokunup izi aç.'
+  yazi_limon_le_ipucu = 'Le harfinde iki yol var. Uzun bir çizgi aşağı iner. Kısa çizgi en altta sağa döner.'
+  mino_sergi_tesekkur = 'İki limonumun da bir kartı oldu! Bunu sen yazdın. Teşekkür ederim!'
+  yazi_limon_oku = 'İki limon. Sayısını da, limonun ilk harfini de sen yazdın.'
+  yazi_silgi = 'Bir çizgiyi değiştirmek istersen silgiye dokun. Kartını bitirince yeşil oku kullan.'
+  yazi_lale_say = 'Sınıfımızda bir sergi açalım! Bu masada kaç lale var? Saymak için her çiçeğe bir kez dokun.'
+  yazi_elma_say = 'Şimdi her tabağa bir elma koyalım. Tabakları gözünle say. Hangi tepside tam yetecek kadar elma var?'
+  yazi_marakas_say = 'Müzik rafındaki ceplere bak. Her cebe bir marakas koyalım. Hangi tepsi tam yeter?'
+  yazi_az_cep = 'Bir cep hâlâ boş. Öteki tepsideki marakasları deneyelim mi?'
+  yazi_bir = 'Bir tane. Kartına bir yazalım. Yeşil noktadan biraz yukarı çık, sonra dümdüz aşağı in.'
+  yazi_iki = 'İki elma. İkiyi yazalım. Tepede bir yay çiz, eğik yoldan aşağı in, sonra sağa kay.'
+  yazi_uc = 'Üç marakas. Üç yazalım. Önce küçük bir kıvrım, sonra altında bir kıvrım daha.'
+  yazi_le = 'Lale. Lale derken dilinin ucunu hissediyor musun? İlk harfi le. Yukarıdan aşağı in, sonra sağa dön.'
+  yazi_e = 'Eee, elma! Büyük E ile etiketine başlayalım. Yeşil noktadan dümdüz aşağı in.'
+  yazi_me = 'Marakas. Dudaklarını kapat, mmm, marakas! İlk harfi me. Yukarı çık, ortaya in, tekrar yukarı çık ve aşağı in.'
+  yazi_devam = 'Yeşil noktayı bul. Kaldığın yerden kısa kısa devam edebilirsin.'
+  yazi_sergi = 'Sergimiz açıldı! Kartlarını sen yazdın. Bir karta dokunursan birlikte okuyabiliriz.'
+  yazi_lale_oku = 'Bir lale. Lale, le harfiyle başlıyor.'
+  yazi_elma_oku = 'İki elma. Elma, e harfiyle başlıyor.'
+  yazi_marakas_oku = 'Üç marakas. Marakas, me harfiyle başlıyor.'
   pano_basla = 'Çocuklar, herkes balon şenliği için bir resim çizsin! İki balon çizin. İçlerini farklı renklere boyayın. İkisine de birer ip çizin. Bunları yapanın resmini sınıf panosuna asacağım. Hazır olunca yeşil oka dokunun.'
   pano_ciz = 'Kalemle iki balon çiz. Çizgiyi başladığın yerde birleştir. İplerini de ekle.'
   pano_boya = 'Bir renk seç. Fırçayı gezdirerek boya. İstersen kovayla balonun içine dokunup doldurabilirsin.'
@@ -110,6 +217,305 @@ $sozler = [ordered]@{
   dogru_iki = 'Evet, iki tane!'
   dogru_uc = 'Evet, üç tane!'
   dogru_dort = 'Evet, dört tane!'
+  okul_paylas = 'Arkadaşların acıkmış. Bak, Mino iki armut istiyor. Tabağına koyar mısın?'
+  okul_paylas_zip = 'Şimdi de Zıpzıp. O üç çilek istiyor.'
+  okul_ek = 'Bu tohum çok susamış. Sulama kabını al, toprağı sula.'
+  okul_ek_cam = 'Ayçiçeğimiz açtı! Onu pencerenin önüne koyalım, güneşi görsün.'
+  okul_muzik = 'Müzik zamanı! Önce Mino çalacak. İyi dinle, sonra aynısını sen çal.'
+  okul_muzik_serbest = 'Harika çaldın! Şimdi bando senin, istediğin gibi çal.'
+  okul_kolye = 'Deniz kabuklarından bir kolye yapalım. Kabukları ipe diz.'
+  okul_kolye_ver = 'Ne güzel oldu! Kolyeni hangi arkadaşına hediye etmek istersin?'
+  okul_toplan = 'Toplanma zamanı! Her şeyi kendi yerine koyalım.'
+  okul_veda = 'Bugün çok güzel bir gün geçirdik. Yarın görüşürüz!'
+  kres_sinif = 'Hoş geldin Kino! Gel, çemberimize katıl. Bugün hangi köşede oynamak istersin?'
+  kres_oyun = 'Burası oyun odamız. Tahta parçalarla araba yapabilir, su masasında bir kayık yüzdürebilirsin.'
+  kres_blok = 'Oyuncak ustası olur musun? Tahta parçaları al, kenarları uyan yuvalara yerleştir.'
+  kres_araba = 'Şimdi kendi arabamızı yapalım. Önce gövdeyi al. Camı nereye, tekerlekleri nereye takalım?'
+  kres_teker = 'Bu parça dönebiliyor. Yuvarlak bir yer bulalım.'
+  kres_daire = 'Parmağın bu parçanın çevresinde dönebiliyor. Köşesi olmayan yuvayı deneyelim.'
+  kres_kare = 'Bak, dört köşesi var. Dört kenarı aynı uzunlukta bir yer arıyoruz.'
+  kres_ucgen = 'Bir, iki, üç köşe! Tahtada üç köşeli bir yer var mı?'
+  kres_sur = 'İki tekerleği de taktın. Arabana dokun. Bakalım nereye kadar gidecek!'
+  kres_boya = 'Bir renk yapalım. İki boyayı kâseye sık. Sonra parmağınla karıştır.'
+  kres_karistir = 'Parmağınla kâsenin içinde dön. Bakalım boyamız ne renk olacak?'
+  kres_yesil = 'Sarıyla maviyi karıştırdın. Yeşil oldu! Yaprağına sürmek ister misin?'
+  kres_turuncu = 'Kırmızıyla sarıyı karıştırdın. Turuncu oldu! Çiçeğini boyayabilirsin.'
+  kres_mor = 'Maviyle kırmızıyı karıştırdın. Mor oldu! Kelebeğin kanadını boyayabilirsin.'
+  kres_havuz = 'Taş, yaprak ve tahta küp burada. Birini suya bırak. Nerede duracak, bakalım.'
+  kres_batti = 'Taş dibe indi! Şimdi bir de yaprağı deneyelim mi?'
+  kres_yuzdu = 'Bak, suyun üstünde kaldı. Parmağınla dokun, biraz yüzsün.'
+  kres_gemi = 'Bir kâğıt kayık katlayalım. Yuvarlak uçtan tut, öteki noktaya kadar katla.'
+  kres_gemi_yuz = 'Kendi kayığını yaptın! Suya bırakalım. Sonra ona küçük bir dalga gönder.'
+  kres_fidan = 'Bu bizim pencere bahçemiz. Toprağa bir tohum bırak. Biraz su verelim.'
+  kres_fidan_yarin = 'Toprak suyu içti. Saksımız burada kalacak. Yarın gelip ne değiştiğine bakalım.'
+  kres_filiz = 'Günaydın küçük filiz! Dün suladığın tohumdan iki yaprak çıkmış.'
+  kres_zil = 'Zili çalmak ister misin? Eşyalarımızı toplayıp eve hazırlanalım.'
+  kres_harf = 'Mino için bir resim sergisi açıyoruz. İlk etiketi birlikte hazırlayalım.'
+  kres_beslen = 'Çantan askıda. Karnın acıkınca masaya beslenme kutunu getirebilirsin.'
+  kres_araba_rafa = 'Arabamız hazır. Oyun odasındaki rafa park edelim.'
+  kres_araba_renk = 'Bu senin oyuncak araban! İstersen gövdesine bir renk seç. Sonra parçalarını takalım.'
+
+
+
+
+
+
+
+
+
+
+  kres_golet_yavru = 'Bak, üç yavru gölette dağılmış. Kayığını birinin yanına yüzdür. Seni nasıl takip ediyor, bak!'
+  kres_golet_yuva = 'Üçü de peşinde! Şimdi yavaşça anne ördeğin yanına gidelim.'
+  kres_golet_bitti = 'Vak vak! Hepsi yuvasında. Kendi katladığın kayıkla onlara yol gösterdin!'
+
+
+  kres_araba_yol = 'Garaj derenin karşısında. Arabana dokun ya da onu yolda parmağınla sür.'
+  kres_kopru_yukari = 'Köprü havada! Bak, sarı bir kol var. Onu aşağı indirince yol birleşir.'
+  kres_kopru_hazir = 'Köprü iki kıyıya da değdi. Artık arabana dokunup karşıya geçebilirsin.'
+  kres_araba_garaj = 'İşte garajın! İstersen bir tur daha sür. Yeşil tike dokunursan arabanı rafa koyarız.'
+  kres_resim_defteri = 'Bu senin boyama defterin. Sayfanı ve rengini seç. Fırçayla boyayabilir, kovayla bir bölümü doldurabilirsin. Boş sayfada da istediğini çizebilirsin.'
+  kres_resim_ic = 'Fırçanı boyamak istediğin yerin içinde başlat.'
+  kres_cicekci = 'Çiçekçimiz açıldı! Arkadaşına dokun, siparişini dinle. Vazodan çiçek alıp buketine koy. Hazır olunca kurdeleyi bağla.'
+  mino_buket_2 = 'Bana iki çiçekten bir buket hazırlar mısın? Renklerini sen seç!'
+  zip_buket_3 = 'Ben üç çiçek istiyorum! Hangi çiçekleri koyacaksın acaba?'
+  mino_buket_4 = 'Dört çiçek alabilir miyim? Anneme götüreceğim!'
+  zip_buket_5 = 'Beş çiçekli bir buket yapalım mı? Bugün kalabalık bir vazom var!'
+  kres_buket_eksik = 'Birlikte bakalım. Bukette biraz daha çiçeğe yer var. Arkadaşına dokunup kaç tane istediğini dinleyebilirsin.'
+  kres_buket_fazla = 'Biraz fazla çiçek koyduk. Geri almak istediğin çiçeğe dokun.'
+  kres_buket_kart = 'Buket tamam! Kaç çiçek koydun? Buketin için o sayının kartını seç.'
+  kres_buket_yeniden = 'Çiçekleri tek tek sayalım. Son söylediğimiz sayı, hepsinin sayısı.'
+  kres_buket_ver = 'Kurdeleyi bağladık. Şimdi buketini arkadaşına ver!'
+  mino_buket_son = 'Bunu benim için mi yaptın? Çok teşekkür ederim!'
+  zip_buket_son = 'Yaşasın, benim buketim! Bunları hemen suya koyacağım!'
+  say_5 = 'Beş.'
+  say_6 = 'Altı.'
+  kino_gunum_cicekci = 'Bugün çiçekçi oldum anne. Arkadaşlarım kaç çiçek istediyse sayıp bir buket yaptım!'
+  kres_sergi = 'Bunu sen yaptın! Sınıf panomuzda dursun.'
+  kino_kres_kapi = '[happy] İşte okulum! Zili ben çalabilir miyim?'
+  kres_once_oyna = 'Bu, eve dönüş zilimiz. İki ayrı köşede oynayınca zili çalabilirsin.'
+  kres_tas_dip = 'Taş leğenin dibinde duruyor.'
+  kres_sofra_hazir = 'Bugün meyveleri biz dağıtalım. Arkadaşına dokun, ne istediğini dinle. Meyveyi tabağına koy. Hazır olduğunda arkadaşına seslen.'
+  kres_mutfak_sec = 'Bugün meyve mutfağı senin! Mino için salata mı, Zıpzıp için meyve şişi mi hazırlayalım?'
+  kres_gosteri_giris = "Yıl sonu gösterimize hoş geldiniz! Perdeyi açalım. Önce Mino'nun davulunu, sonra Bulut'un çanlarını dinleyelim."
+  kres_gosteri_mino = "Davuluyla Mino geliyor! Bak, bir güçlü vuruş, iki küçük vuruş."
+  kres_gosteri_bulut = "Şimdi sahne Bulut'un. Dinle, iki çanı birbirine cevap veriyor!"
+  kres_mino_solo_puan = "Mino'ya dört puan! Alkışlar Mino için!"
+  kres_bulut_solo_puan = "Bulut'a altı puan! Çanların sesi hâlâ kulağımda."
+  kres_gosteri_kupa_yedi = "Yedi puan! Yarışmayı Kino ile Zıpzıp kazandı! İşte kupanız!"
+  kres_gosteri_kupa_sekiz = "Sekiz puan! Kino ile Zıpzıp, kupa sizin!"
+  kres_gosteri_kupa_dokuz = "Dokuz puan! Yarışmayı siz kazandınız! Alkışlar Kino ile Zıpzıp için!"
+  zip_siir_sec = "[playful] Sıra bizde Kino! Şiir mi okuyalım, dans mı edelim?"
+  zip_siir_prova = "[warmly] Şiirimize ritim tutalım. Ben çalarken dinle. Sonra aynı resme sen dokun. Birazdan resimler saklanacak!"
+  kino_siir_1 = "[curious] Cebimde bir tohum vardı,"
+  kino_siir_2 = "Ne çıtırtı, ne de ses."
+  zip_siir_3 = "[warmly] Kara toprak yorgan oldu,"
+  zip_siir_4 = "Rüzgâr verdi bir nefes."
+  kino_siir_5 = "[curious] Yağmur çaldı kapısını,"
+  kino_siir_6 = "[playful] Tıp tıp, tıp tıp! Kim o, kim?"
+  zip_siir_7 = "[delighted] İki yaprak çıktı, güldü:"
+  zip_siir_8 = "[warmly] Cebindeki tohum benim!"
+  anne_eve_siir = "[warmly] Tohumun şiirini bir de bana okur musun?"
+  kino_eve_siir = "[happy] Ben yağmur oldum anne. Zıpzıp da küçücük bir tohum!"
+  kres_siir_yildiz = "Her doğru ritimde bir yıldız topladın. Burada hepsini görebilirsin."
+  zip_gosteri_sec = "[excited] Sıra bizde Kino! Birlikte şarkı mı söyleyelim, dans mı edelim? Sen seç!"
+  kres_gosteri_isik = "[warmly] Sıra Kino ile Zıpzıp’ta. Sahne karanlık. Arkadaşlarımızı görebilmek için hangisini kullanalım?"
+  kres_gosteri_karanlik = "Zil çaldı. Sesi duyduk ama sahne hâlâ karanlık. Işığı bulalım."
+  kres_gosteri_mikrofon = "Arka sıradaki arkadaşımız sesimizi duyamadı. Şarkımızı ona hangi eşyayla duyurabiliriz?"
+  kres_gosteri_mikrofon_ipucu = "Kurdele dalgalandı. Ama Mino sesimizi hâlâ duyamıyor. Mikrofonu deneyelim."
+  kres_gosteri_davul = "Zıpzıp diğer yana bakıyor. Dansa ne zaman başlayacağımızı ona bir sesle haber verelim. Hangisi ses çıkarır?"
+  kres_gosteri_davul_ipucu = "Kurdeleyi salladın. Zıpzıp bakmadığı için işareti kaçırdı. Davulu çalalım."
+  kres_gosteri_nota = "Şarkıya sen de katıl. Güneş ya da ay aşağı inince onunla aynı resme dokun. Önce birlikte deneyelim."
+  kres_gosteri_dans = "Dansımızı sen yönet. Patiler aşağı inince alkışa, ayakkabı inince adıma dokun. Önce birlikte deneyelim."
+  kres_gosteri_tekrar = "Bir kez daha gösteriyorum. Aynı resme dokunabilirsin."
+  kres_gosteri_mola_prova = "Biraz durduk. Birlikte tekrar denemek istersen dönen oku seç. Hazırsan yeşil okla müziğe dönelim."
+  kres_gosteri_baslat = "Yedi yıldız toplarsanız kupa sizin! Hazırsanız yeşil oka dokunun."
+  kres_gosteri_nakarat_mikrofon = "Bak, Mino kulağını uzatıyor. Şarkımızı o da duysun. Hangisini açarsak sesimiz ona ulaşır?"
+  kres_gosteri_nakarat_davul = "Sırada dansın ikinci bölümü var. Zıpzıp başka yöne bakıyor. Başlama işaretini duyması için hangisini çalalım?"
+  kres_gosteri_nakarat_baslat = "Tamam, herkes hazır! Yeşil oka dokun. Kaldığımız yerden birlikte devam edelim!"
+  kres_gosteri_dansi_izle = "Zıpzıp’ı izle. Alkış yapınca sen de alkışa dokun. Yana adım atarsa ayakkabıya dokun. Şimdi sıra sende!"
+  kres_gosteri_dort_dans = "Zıpzıp’ı izle. Hareketini görünce aşağıda aynı pozu bul, dokun. Kino da hemen ona katılsın!"
+  zip_sahne_dansini_kur = "[playful] Şimdi sen göster! Alttan bir hareket seç. Bir tane daha ister misin? Yeşil oka basınca senin dansını birlikte yapalım!"
+  kres_gosteri_dort_sarki = "Dört sesle bir şarkı çalacağız. Yukarıdan gelen şekli izle. Aşağıda eşine dokununca kendi sesini duyacaksın."
+  kino_sahne_acilis = "[playful] [rhythmically] Perde açıldı, sahne bizim!"
+  kino_sahne_cevap = "[happy] [rhythmically] Ben bir ses, sen bir ses!"
+  kino_sahne_nakarat = "[excited] [rhythmically] Pati pati, yan yanayız!"
+  kino_sahne_final = "[warmly] [rhythmically] El ele, selam sana!"
+  kino_sarki_dize_1 = "[sings brightly] Perde açılır, gün doğar."
+  kino_sarki_dize_2 = "[sings playfully] Minik patim tempo tutar."
+  kino_sarki_dize_3 = "[sings softly] Ay uyandı, yıldız güldü."
+  kino_sarki_dize_4 = "[sings brightly] Küçük zilim çın çın öttü."
+  kino_sarki_dize_5 = "[sings joyfully] Pati pati, sen ve ben!"
+  kino_sarki_dize_6 = "[sings brightly] Ritmi yakala, dön, dön, dön!"
+  kino_sarki_dize_7 = "[sings joyfully] Pati pati, el ele!"
+  kino_sarki_dize_8 = "[sings warmly] Selam size, hep birlikte!"
+  zip_sahne_ritme_gir = "[playful] Kino şarkıyı söylesin, ritmini sen çal! Bak, güneş tuşuna dokun."
+  kres_sahne_on_yildiz = "Şarkıya ve dansa katıldığın her işaret bir yıldız!"
+  kino_sahne_la = "[sings softly] Laaa. [short pause] Laaa."
+  zip_sahne_la = "[sings playfully] Laaa. [short pause] Laaa."
+  zip_sahne_ses_provasi = "[playful] Önce beni dinle. Sonra aynı resme dokun, Kino bana şarkıyla cevap versin!"
+  kres_gosteri_puan_0 = "Bu kez puan gelmedi. Sahnede birlikteydiniz. İsterseniz provayı yeniden yapabilirsiniz."
+  kres_gosteri_puan_1 = "Bir puan aldınız! Birlikte sahneye çıktınız."
+  kres_gosteri_puan_2 = "İki puan aldınız! Gösterinizi izlemek güzeldi."
+  kres_gosteri_puan_3 = "Üç puan aldınız! Sahneye birlikte çıktınız."
+  kres_gosteri_puan_4 = "Dört puan aldınız! Bu alkış ikiniz için."
+  kres_gosteri_puan_5 = "Beş puan aldınız! İkiniz de gösteriye renk kattınız."
+  kres_gosteri_puan_6 = "Altı puan aldınız! Birlikte çok güzel bir gösteri yaptınız."
+  kres_gosteri_puan_7 = "Yedi puan aldınız! Alkışlar Kino ile Zıpzıp için."
+  kres_gosteri_puan_8 = "Sekiz puan aldınız! Birlikte çok güzel bir gösteri yaptınız."
+  kres_gosteri_puan_9 = "Dokuz puan aldınız! Alkışlar ikiniz için!"
+  kres_gosteri_puan_10 = "On üzerinden on! Yıl sonu gösterisinin kupası sizin!"
+  kres_gosteri_kazandi = "On puan! Bu yılın sahne yıldızı Kino ve Zıpzıp! Kupanızı birlikte alın."
+  kres_gosteri_onceki_kupa = "Bu, bugün kazandığınız kupa. Bir daha sahneye çıktınız diye kaybolmadı. Eve götürebilirsiniz!"
+  kres_gosteri_yildizlar = "[warmly] İlk iki yıldız, sahnede seçtiğiniz eşyalar için. Diğer sekizi müzikteki işaretler için. Yıldız sıralarına dokun, birlikte bakalım."
+  kres_gosteri_iki_secim = "İki sahne işini de ilk denemede çözdünüz!"
+  kres_gosteri_bir_secim = "Sahne işlerinden birini ilk denemede çözdünüz. Öbüründe bir şey deneyip değiştirdiniz."
+  kres_gosteri_sifir_secim = "Sahnede önce bir şey denediniz, sonra işe yarayan eşyaları buldunuz."
+  kres_gosteri_ritim_tam = "Sekiz işaretin her birine müzikle birlikte katıldın!"
+  kres_gosteri_ritim_var = "Parlayan yıldızlar, müzikte ilk denemede yakaladığın işaretler."
+  kres_gosteri_ritim_yok = "Bu kez müziği dinledin. İstersen bir dahaki sefere işaretlere sen de katılabilirsin."
+  kres_gosteri_bitirdi = "Gösteriniz bitti! Bu alkış birlikte sahneye çıkan Kino ve Zıpzıp için."
+  anne_eve_karsila = "[warmly] Hoş geldin Kino! Gel bakalım. Önce çantanı askıya asalım."
+  anne_eve_kapida = "[warmly] Geldim, Kino!"
+  anne_eve_kupa = "[happy] Bu kupa sizin mi? Gösteriyi kazanmışsınız! Gel, yıldızını birlikte panoya asalım."
+  anne_eve_kupa_sarki = "[warmly] Şarkınız kupayı kazanmış! En sevdiğin yeri bana da söyler misin?"
+  anne_eve_kupa_dans = "[happy] Dansınızla kupayı kazanmışsınız! Hangi adımı birlikte yaptınız?"
+  anne_eve_sarki = "[warmly] Bugün Zıpzıp’la düet yapmışsınız. Şarkınızdan bir parça bana da söyler misin?"
+  anne_eve_dans = "[warmly] Demek birlikte dans ettiniz! En sevdiğin hareketi bana da gösterir misin?"
+  anne_eve_onceki_kupa_sarki = "[warmly] Bugün kazandığın kupa da geldi! Onu rafa koyalım. Son gösterinizde söylediğin şarkıyı merak ettim."
+  anne_eve_onceki_kupa_dans = "[warmly] Bugün kazandığın kupa da geldi! Onu rafa koyalım. Son gösterinizde nasıl dans ettiniz? Bana da gösterir misin?"
+  anne_eve_anlat = "[curious] Bugün okulda en çok neyi sevdin? Hangisini anlatmak istersen onu seç."
+  kino_eve_kupa = "[happy] Anne! Zıpzıp’la birbirimizi dinledik. Son işareti de birlikte yaptık!"
+  kino_eve_kupa_sarki = "[happy] Ben başladım anne, sonra Zıpzıp bana cevap verdi. Sanki şarkıyla konuştuk!"
+  kino_eve_kupa_dans = "[happy] Bak anne, önce alkış! Sonra Zıpzıp’la yan yana adım attık."
+  kino_eve_sarki = "[happy] Güneş gelince bir nota, ay gelince öbür nota! Birlikte söyledik anne."
+  kino_eve_dans = "[excited] Bir alkış, bir adım! Bak, en sevdiğim yer burası anne!"
+  anne_eve_son = "[warmly] Anlattıklarını dinlemek çok güzeldi. Gel, günümüzden bir hatıra burada kalsın."
+  anne_eve_pano = "[warmly] Bu hatıra senin! Onu alıp duvardaki panoya asalım mı?"
+  kino_eve_yol = "[happy] İşte bizim sokak! Yeşil kapımız orada. Benimle kapıya kadar yürür müsün?"
+  kino_eve_zil = "[curious] Geldik! Kapıya dokun, zili çalalım."
+  kino_eve_merhaba = "[happy] Anne, ben geldim! Çantamı da getirdim."
+  kino_eve_seceyim = "[curious] Bir düşüneyim anne. Bugünden sana hangisini anlatsam?"
+  anne_eve_sarilalim = "[warmly] İşte, hatıran panomuzda. İstersen gel, bir de sarılalım."
+  anne_eve_sarilma = "[warmly] Canım Kino… Gününü benimle paylaşmana çok sevindim."
+  anne_eve_bana_dans = "[curious] Alkış mı, yana adım mı? En sevdiğin hareketi göster, ben de sana eşlik edeyim."
+  anne_eve_kendi_dans = "[curious] Bu dansı sen mi hazırladın? Resimlerine dokun da bana göster!"
+  anne_eve_dans_tebrik = "[happy] Aa, bu senin dansın! Bir daha yapalım mı?"
+  anne_eve_bana_nota = "[curious] Bana birini söyler misin? Güneşin sesini de ayın sesini de merak ediyorum."
+  anne_eve_yanki_gunes = "[warmly] Benim sesim biraz daha kalın! İkimizin sesi de yukarı çıktı."
+  anne_eve_yanki_ay = "[warmly] Benim sesim biraz daha kalın! İkimizin sesi de usulca aşağı indi."
+  kino_eve_adim = "[happy] Bak anne! Bir yana adım… ve yine yan yanayız!"
+  kino_eve_alkis = "[happy] Eller hazır anne… şap şap! İşte bizim alkışımız!"
+  kino_eve_ay = "[warmly] Duydun mu anne? Ayın sesi yüksekten başladı, sonra usulca aşağı indi."
+  kino_eve_gunes = "[happy] Bu, güneşin sesi anne. Aşağıdan başladı, yukarı çıktı!"
+  kres_kesif_mutfak = "Mutfakta Mino ile Zıpzıp seni bekliyor. Meyveden ne hazırlasak?"
+  kres_kesif_perde = "Soldaki kapının ardında gösteri başlıyor. Perdeyi sen açabilirsin!"
+  kres_mutfak_yika = 'Meyveni seç. Suyun altında parmağınla ovalayıp yıka.'
+  kres_mutfak_kes = 'Parmağını tahtada meyvenin bir yanından öbür yanına kaydır. Bakalım içinden ne çıkacak!'
+  kres_mutfak_tepsi = 'İki parçayı da küçük tabağa taşı. Sonra sıradaki meyveye geçelim.'
+  kres_mutfak_salata = 'Meyve parçalarını kâsene koy. Hangi renkler yan yana gelsin?'
+  kres_mutfak_sis = 'Şişinin renk sırasını sen seç. Bir meyve parçasını al, çubuğun üstüne bırak.'
+  kres_mutfak_karistir = 'Şimdi kaşığı kâsenin içinde döndür. Meyveler birbirine karışsın.'
+  kres_mutfak_sun = 'Hazır! Yaptığın meyve tabağını arkadaşına götür.'
+  mino_mutfak_son = '[happy] Mis gibi kokuyor! Senin yaptığın meyve salatasını çok sevdim.'
+  zip_mutfak_son = '[excited] Vay! Bu renkli meyve şişini benim için mi yaptın? Teşekkür ederim!'
+  kino_gunum_meyve_mutfagi = 'Meyveleri yıkadım, kestim. Sonra arkadaşıma kendi yaptığım meyve tabağını götürdüm!'
+  kres_sofra_farkli = 'Tabakta farklı bir meyve de var. Geri almak istediğin meyveye dokunabilirsin.'
+  kres_sofra_fazla = 'Biraz fazla olmuş. Bir meyveyi tabağından geri alabilir misin?'
+  kres_sofra_eksik = 'Tabağa bir daha bakalım. Arkadaşının istediği kadar var mı?'
+  mino_servis_0 = '[curious] İki armut alabilir miyim? İki tane.'
+  zip_servis_0 = '[excited] Ben çilek isterim! Üç tane lütfen!'
+  mino_servis_1 = '[happy] Bugün üç elma isterim. Tabağıma koyar mısın?'
+  zip_servis_1 = '[curious] Benim için bir armut var mı? Bir tane yeter!'
+  mino_servis_2 = '[happy] İki portakal alabilir miyim?'
+  zip_servis_2 = '[excited] Bugün elma günü! Bana dört elma verir misin?'
+  mino_sofra_tesekkur = '[happy] Tam istediğim gibi. Teşekkür ederim!'
+  zip_sofra_tesekkur = '[happy] Yaşasın! Teşekkür ederim Kino!'
+  kres_lavabo = 'Patilere biraz toprak bulaşmış. Musluğu açalım.'
+  kres_islat = 'Şimdi patilerine dokun. Onları suyun altında ıslatalım.'
+  kres_sabun = 'Suyu kapattık. Biraz sabun alalım. Pompasına basabilirsin.'
+  kres_ovala = 'İki patiyi birbirine sürtelim. Parmağını patilerin üzerinde bir sağa, bir sola gezdir.'
+  kres_ac_durula = 'Köpürdüler! Musluğu yeniden açalım.'
+  kres_durula = 'Patileri suyun altına getir. Bütün köpükler aksın.'
+  kres_kuru = 'Su kapandı. Patiler hâlâ ıslak. Havluyla kurulayalım.'
+  kres_once_islat = 'Önce patilerimizi ıslatalım. Sonra sabun alacağız.'
+  kres_havlu_bekle = 'Havlu burada bekleyebilir. Önce patileri yıkayalım.'
+  kino_kres_temiz = '[happy] Oh, tertemiz oldular!'
+  kres_tomurcuk = 'Yaprakların ortasına bak. Bir tomurcuk büyüyor. İçinden ne çıkacak acaba?'
+  kres_cicek = 'Aaa, çiçeğimiz açmış! Biraz su verelim. Pencerenin önünde kalsın.'
+  kres_gun_basla = 'Oyun odasının rafında dünden kalan oyuncakların var. Arkadaşların da burada.'
+  kres_kagit_ac = 'İki köşeyi karşılıklı çek. Bak, ortası açılıyor!'
+  kres_su_it = 'Parmağınla suya küçük bir dalga ver. Kayığını nasıl taşıyor, bak!'
+  kres_firca_sur = 'Şimdi parmağın fırça olsun. Kâğıttaki şeklin üzerinde gezdir. İstediğin gibi boyayınca panoya asabilirsin.'
+  kres_oyku_ac = "Bu kitapta Zıpzıp’ın arabasına bir şey oluyor. Resme dokunup dinleyebilirsin."
+  kres_oyku_0 = "Zıpzıp arabasını sürerken bir takırtı duymuş. Ön tekerlek çıkıp halıya doğru yuvarlanmış."
+  kres_oyku_1 = "Mino tekerleği bulmuş. Zıpzıp arabayı tutarken Mino tekerleği yerine takmış."
+  kres_oyku_2 = "İki tekerlek de dönmüş! Zıpzıp arabayı itmiş. Araba, Mino’nun yaptığı küçük garaja kadar gitmiş."
+  kres_oyku_diz = "Şimdi bu öyküyü sen anlat. Önce ne olmuştu? Resimleri olay sırasına göre dokunarak yan yana diz."
+  kres_oyku_ipucu_0 = "Oyunun başında Zıpzıp bir ses duymuştu. Arabasından hangi parça çıkmıştı?"
+  kres_oyku_ipucu_1 = "Tekerlek çıkınca Zıpzıp’a kim yardım etmişti?"
+  kres_oyku_ipucu_2 = "Tekerlek yerine takılınca araba nereye gitmişti?"
+  kres_cember_ac = "Günaydın çocuklar. Elimdeki güneş taşı kimdeyse o konuşur. Taşı hangi arkadaşına vermek istersin?"
+  kres_cember_tas = "Güneş taşını al. Henüz konuşmamış bir arkadaşının kucağına bırak."
+  kres_cember_bekle = "Bir arkadaşımız daha bize bir şey anlatacak. Taşı ona uzatalım."
+  kres_cember_kino = "İkisini de dinledik. Şimdi taşı Kino’ya verelim. Sıra onda."
+  mino_cember_boya = "Ben bugün mor boya yapmak istiyorum. Kırmızıyla maviyi karıştırsam nasıl bir mor olur acaba?"
+  zip_cember_su = "Ben su masasına gitmek istiyorum! Küçük kayığımı suya koyup dalga yapacağım."
+  mino_cember_oyku = "Rafta bir kitap gördüm. Kapağında bir araba var. Acaba içinde neler oluyor?"
+  zip_cember_araba = "Ben tekerlekleri kendim takacağım! Sonra arabamı tahta garaja süreceğim."
+  kino_cember_sec = "Sıra bende! Bugün hangi köşede oynayalım? Hadi birlikte seçelim."
+  kres_duzen = "Sınıfı yarına hazırlayalım. Bugün kullandığımız eşyalara bak. Her birini, nerede kullanıyorsak oraya kaldıralım."
+  kres_duzen_bitti = "Hepsi yerinde. Sabah geldiğimizde aradığımızı hemen bulacağız. Hadi arkadaşlarımıza iyi akşamlar diyelim."
+  kres_duzen_ipucu = "Bunu nerede kullanmıştık? Kutuların önündeki küçük resimlere bak."
+  kres_kutu_yemek = "Buraya sofrada kullandığımız eşyalar gelecek."
+  kres_kutu_atolye = "Sanat masasında kullandığımız malzemeler bu kutuya geliyor."
+  kres_kutu_oyuncak = "Bu sepet halıda oynadığımız oyuncakların yeri."
+  kres_kutu_dogadan = "Bahçede ve su deneyinde kullandıklarımız burada duruyor."
+  kres_kutu_muzik = "Müzik köşesindeki çalgılar bu kutuda duruyor."
+  kres_kutu_kitap = "Öykü kitaplarımızı bu rafa dizebiliriz."
+  anne_okul_sor = "Hoş geldin Kino! Bugün okulda en çok neyi anlatmak istersin? Birlikte bakalım."
+  anne_okul_dinledim = "Bunu bana anlatmana çok sevindim. Başka ne yaptın bugün?"
+  kino_gunum_boyahane = "Anne, iki boyayı karıştırdım. Sonra kendi boyamla resim yaptım!"
+  kino_gunum_blok = "Arabamın tekerleklerini ben taktım anne. Sonra onu garajına sürdüm."
+  kino_gunum_su_masasi = "Suya bir taş bıraktım anne. Taş aşağıya gitti. Bazı şeyler de suyun üstünde kaldı!"
+  kino_gunum_kagit = "Bir kâğıdın köşelerini katladım. Açınca ne oldu bil bakalım? Küçücük bir kayık!"
+  kino_gunum_bahce = "Penceremizin önünde bir saksı var anne. Bugün ona su verdim."
+  kino_gunum_paylas = "Mino’yla Zıpzıp’ın ne istediğini dinledim. Meyveleri ikisinin de tabağına ben koydum!"
+  kino_gunum_muzik = "Mino bir ritim çaldı. Ben önce kulak verdim, sonra aynısını çaldım!"
+  kino_gunum_beste = "Anne, bandoda kendi müziğimi yaptım! Hangi çalgı ne zaman çalacak, ben seçtim."
+  kino_gunum_serbest_resim = "Anne, bugün canımın istediği bir resmi çizdim. Şimdi sınıfımızın panosunda asılı!"
+  kres_boya_kose = "İki boya seçip karıştıralım. İstersen boş kâğıda dokunup kendi resmini de yapabilirsin."
+  kres_kesif_boya = "Boya kaplarına dokun. Birlikte renk karıştıralım."
+  kres_kesif_meyve = "Meyve tabağına dokun. Mino'ya ikram edelim."
+  kres_kesif_blok = "Şekilleri yuvalarına koyalım mı? Tahta oyuncağa dokun."
+  kres_kesif_su = "Suya ne bırakalım? Leğene dokun."
+  kres_kesif_muzik = "Davula dokun. Mino'yla müzik yapalım."
+  kres_kesif_oyku = "Rafımızda bir hikâye var. Kitaba dokun."
+  kres_kesif_saksi = "Saksımıza bakalım mı? Pencerenin önündeki saksıya dokun."
+  kres_kesif_kagit = "Kâğıda dokun. Bir kayık katlayalım."
+  kres_kesif_kolye = "Kabuklara dokun. Arkadaşına bir kolye dizelim."
+  kres_kesif_pano = "Resim yapmak ister misin? Panoya dokun."
+  kres_kesif_hali = "Halıya dokun. Birlikte çembere oturalım."
+  kres_kesif_tahta = "Tahtaya dokun. Seninle harfleri yazalım."
+  kres_kesif_lavabo = "Sabuna dokun. Patilerimizi yıkayalım."
+  kres_kesif_beslenme = "Beslenme kutuna dokun. İçinde ne var, bakalım."
+  kres_kesif_zil = "Günü bitirmek istersen zili çalabilirsin."
+  kres_kesif_araba = "Yaptığın araba rafta. Ona dokunup sürebilirsin."
+  kres_bando_kose = "Mino'nun ritmini dinleyip birlikte çalalım. Kendi müziğini yapmak istersen nota defterine dokun."
+  kino_gunum_kolye = "Kabukları tek tek ipe dizdim anne. Kolyemi arkadaşıma hediye ettim."
+  kino_gunum_pano = "Ceren Öğretmen resim çizmemizi istedi. Boyaları kullanmak çok hoşuma gitti!"
+  kino_gunum_harf = "Bugün sınıftaki sergiye etiket hazırladık. Üzerine harf de yazdım, sayı da!"
+  kino_gunum_beslenme = "Sabah yaptığım sandviçi okula götürdüm anne. Beslenme zamanı kutumu kendim açtım!"
+  kino_gunum_lavabo = "Patilerime toprak bulaşmıştı. Biraz sabun, biraz su… Bak, şimdi tertemizler!"
+  kino_gunum_oyku = "Zıpzıp’ın arabasının tekerleği çıkmış anne. Kitaptaki resimlerden sonra ne olduğunu ben anlattım!"
+  kino_gunum_cember = "Halıda çember olduk. Güneş taşı kimdeyse o konuştu. Arkadaşlarımı dinledim. Sonra da ben seçtim!"
+  kres_kendi_resmin = "Bu kâğıt senin. İstediğini çiz! Kalemle bir şekli kapatırsan kovayla içini boyayabilirsin. Resmin hazır olunca yeşil tike dokun."
+  kres_resim_dolu = "Kâğıdına çok şey çizdin. İstersen resmini panoya asalım, sonra yeni bir kâğıt açalım."
+  mino_beste_yap = "Hadi kendi müziğimizi yapalım! Çalgılara istediğin sırayla dokun. Sonra oynat düğmesine bas, bandon senin müziğini çalsın!"
+  mino_beste_degistir = "Sekiz vuruşumuz da doldu. Değiştirmek istediğin vuruşa dokun, sonra başka bir çalgı seç."
+  kres_tahmin = "Suya bırakmadan önce düşünelim. Sence suyun üstünde mi kalacak, dibine mi gidecek? Küçük leğenlerden birini göster."
+  kres_tahmin_birak = "Ne düşündüğünü işaretledin. Şimdi o nesneyi suya bırakıp izleyelim."
+  kres_gozlem_dip = "Taşın nereye gittiğini gördün mü? Suyun dibinde duruyor."
+  kres_gozlem_ust = "Bak, suyun üstünde duruyor. Suya küçük bir dalga gönderince ne yapıyor?"
   ciz_yeniden = 'Bir kenar daha var. Noktaları takip ederek kaldığın yerden devam edebilirsin.'
 }
 if (!$env:ELEVENLABS_API_KEY) { throw 'ELEVENLABS_API_KEY gerekli.' }
@@ -118,10 +524,13 @@ $gecici = New-TemporaryFile
 try {
   $kitapSes = Get-Content -Raw -Encoding utf8 (Join-Path $kok 'content/kitap-ses.json') | ConvertFrom-Json
   $kayitlar = @{}
+  $soruNesneleri = @{yazi_armut_ses=@('Armut','Elma'); yazi_elma_ses=@('Limon','Elma'); yazi_marakas_ses=@('Marakas','Davul')}
+  $zamanlar = @{}
   $secili = if ($Replik) { $Replik } else { $sozler.Keys }
   foreach ($ad in $secili) {
     if (!$sozler.Contains($ad)) { throw "Bilinmeyen replik: $ad" }
-    $rol = if ($ad -like 'mino_*') { 'mino' }
+    $rol = if ($ad -like 'anne_*') { 'anne' }
+      elseif ($ad -like 'mino_*') { 'mino' }
       elseif ($ad -like 'zip_*') { 'zipzip' }
       elseif ($ad -like 'kino_*' -or $ad -in @('basla','mutfak','kutu','matara','canta','aski','sofra','son','topla','balon')) { 'kino' }
       else { $kitapSes.kimler.ogretmen.ses }
@@ -136,11 +545,27 @@ try {
     $veri = [Convert]::FromBase64String($yanit.audio_base64)
     if ($veri.Length -lt 5000 -or !$yanit.alignment.character_end_times_seconds) { throw "$ad kaydı eksik." }
     $kayitlar[$ad] = $veri
+    if ($soruNesneleri.ContainsKey($ad)) {
+      $hiza = $yanit.alignment
+      $okunan = $hiza.characters -join ''
+      $zamanlar[$ad] = @(foreach ($nesne in $soruNesneleri[$ad]) {
+        $i = $okunan.IndexOf($nesne, [StringComparison]::OrdinalIgnoreCase)
+        if ($i -lt 0) { throw "$ad içinde $nesne sesinin zamanı bulunamadı." }
+        [ordered]@{ bas=$hiza.character_start_times_seconds[$i]; son=$hiza.character_end_times_seconds[$i+$nesne.Length-1] }
+      })
+    }
+    if ($ad -like 'kino_sarki_dize_*') {
+      $zamanlar[$ad] = $yanit.alignment
+    }
     Write-Output "$ad hazır"
   }
   foreach ($ad in $secili) {
     [IO.File]::WriteAllBytes($gecici.FullName, $kayitlar[$ad])
     [IO.File]::Copy($gecici.FullName, (Join-Path $hedef "$ad.mp3"), $true)
+    if ($zamanlar.ContainsKey($ad)) {
+      $json = ConvertTo-Json -InputObject $zamanlar[$ad] -Compress
+      [IO.File]::WriteAllText((Join-Path $hedef "$ad.json"), $json, [Text.UTF8Encoding]::new($false))
+    }
   }
 } finally {
   Remove-Item -LiteralPath $gecici.FullName

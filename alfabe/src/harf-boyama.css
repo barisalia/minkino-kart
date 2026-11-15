@@ -1,0 +1,19 @@
+.boy{--boy-oran:0;box-sizing:border-box;width:100%;height:100%;min-height:0;display:grid;grid-template-columns:.7fr minmax(0,1fr);align-items:center;gap:clamp(6px,2vw,24px);padding:clamp(8px,2.6vmin,24px);background:#ffdab9;overflow:hidden;position:relative;isolation:isolate}
+.boy::before{content:'';position:absolute;left:0;right:0;bottom:0;height:15%;background:#afd3c0;border-top:2px solid #344a3e;z-index:-1}
+.boy-ogretmen{position:relative;align-self:stretch;overflow:hidden;margin-bottom:calc(-1 * clamp(8px,2.6vmin,24px))}
+.boy .boy-ceren{position:absolute;inset:auto 0 0;width:100%;height:100%}.boy .boy-ceren img{object-position:center bottom}
+.boy-kagit{position:relative;display:grid;align-items:center;justify-items:center;grid-template-rows:minmax(0,1fr) 15px;gap:4px;width:100%;height:100%;min-height:0;padding:clamp(9px,1.3vmin,18px) clamp(5px,1.1vw,18px) 7px;border:2px solid #39483c;border-radius:clamp(13px,2vmin,25px);background:#fff7e7}
+.boy-harf{display:block;width:min(100%,550px);height:100%;min-height:0;touch-action:none;user-select:none;cursor:crosshair;-webkit-tap-highlight-color:transparent}
+.boy-dinle{position:absolute;top:6px;right:6px;z-index:1;width:44px;min-height:44px}.boy-harf:focus{outline:none}.boy-harf:focus-visible{outline:2px dashed #317d70;outline-offset:-4px;border-radius:12px}.boy-konum{visibility:hidden}.boy-harf:focus-visible .boy-konum{visibility:visible}
+.boy-dolum{width:min(48%,210px);height:8px;overflow:hidden;background:#e4e3d1;border:1px solid #7c927e;border-radius:8px}.boy-dolum i{height:100%;width:100%;display:block;transform-origin:left;transform:scaleX(var(--boy-oran));background:var(--boy-renk);transition:transform .1s linear}.boy-tamam .boy-ic{stroke:var(--boy-renk)}.boy-tamam .boy-konum{display:none}
+@media(orientation:portrait){.boy{grid-template-columns:1fr;grid-template-rows:minmax(64px,.24fr) minmax(0,1fr);gap:0;padding:5px 8px 8px}.boy-ogretmen{width:60%;height:100%;justify-self:center;align-self:end;margin:0}.boy .boy-ceren{height:115%;bottom:-10%}}
+@media(orientation:landscape) and (max-height:490px){.boy{grid-template-columns:minmax(0,.58fr) minmax(0,1fr);padding:4px 10px}.boy-kagit{padding-top:3px}.boy-ogretmen{margin-bottom:-4px}}
+@media(prefers-reduced-motion:reduce){.boy-dolum i{transition:none}}
+.boy-isaret .boy-konum{visibility:visible;stroke:#9a5621;stroke-width:1.4;animation:boy-nokta 1.5s ease-in-out infinite}
+@keyframes boy-nokta{50%{stroke-width:2;opacity:.65}}
+@media(prefers-reduced-motion:reduce){.boy-isaret .boy-konum{animation:none}}
+@media(orientation:landscape){
+ .boy::before{z-index:1;pointer-events:none}
+ .boy-kagit{z-index:2}
+}
+

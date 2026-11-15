@@ -1,0 +1,33 @@
+.ustalik-dekor{position:absolute;display:block;object-fit:contain;pointer-events:none;user-select:none}
+.ustalik-vazo{left:5.5%;width:9.5%;height:21%;bottom:42.6%;object-position:center bottom}
+.tepsi-tabla .ustalik-pecete{width:19%;height:29%;left:13%;bottom:13%;object-fit:fill}
+.tepsi-tabla[data-porsiyon="1"] .ustalik-pecete{left:32%}
+.tepsi-tabla[data-porsiyon="2"] .ustalik-pecete{left:17.5%}
+.tepsi-sahnesi:has(.restoran-siparis) .ustalik-vazo{left:3.5%;width:7.5%;height:17.8%}
+.tepsi-yerler>.tepsi-yuva{position:relative}
+.tatli-dukkan .ustalik-rozet{left:61%;top:18%;width:6.4%;height:14%;transform:rotate(6deg)}
+.restoran-gun-makbuzu:has(.ustalik-rafi){top:9%;min-height:82%;padding:2.8cqh 2.2cqw;gap:1.9cqh}
+.restoran-gun-makbuzu:has(.ustalik-rafi) .restoran-gun-sayilar{padding:1.5cqh 0 .5cqh}
+.ustalik-rafi{display:flex;justify-content:center;gap:1cqh;width:100%}
+.ustalik-parcasi{
+  position:relative;display:grid;grid-template:1fr/1fr;place-items:center;
+  width:min(28%,12cqh);height:max(42px,12cqh);padding:1.1cqh;
+  background:var(--sef-kumanda-fonu, #fffaf0);border:.4cqh solid #7c544c;border-radius:2.1cqh;color:#514341;
+  box-shadow:0 .5cqh #b38469;
+}
+.ustalik-parcasi img{width:100%;height:100%;min-width:0;min-height:0;object-fit:contain}
+.ustalik-parcasi[aria-pressed=true]{background:#ddf3d3;border-color:#4b7963}
+.ustalik-parcasi:disabled{background:#f2e7d9;box-shadow:none;opacity:1}
+.ustalik-parcasi:disabled img{opacity:.52}
+.ustalik-parcasi i{position:absolute;right:-.6cqh;top:-.6cqh;display:grid;place-items:center;width:3.6cqh;height:3.6cqh;padding:.3cqh;background:var(--sef-kumanda-fonu, #ffe9b4);border:1px solid #6b5547;border-radius:100vmax}
+.ustalik-parcasi[aria-pressed=true] i{background:#b5e2b7}
+.ustalik-parcasi i[hidden]{display:none}
+.ustalik-parcasi i>.ikon{width:100%;height:100%}
+.ustalik-ilerleme{position:absolute;bottom:.2cqh;left:50%;transform:translateX(-50%);display:flex;gap:.35cqh;align-items:center;background:var(--sef-kumanda-fonu, #fff6df);border-radius:2cqh;padding:.25cqh .6cqh}
+.ustalik-ilerleme>.ikon{width:2.3cqh;height:2.3cqh}
+.ustalik-ilerleme b{width:1.3cqh;height:1.3cqh;border-radius:50%;border:1px solid #ab947e}
+.ustalik-ilerleme b[data-dolu=true]{background:#70a471}
+@media(prefers-reduced-motion:no-preference){
+  .ustalik-parcasi[aria-pressed=true] img{animation:ustalik-yerles .3s ease-out both}
+  @keyframes ustalik-yerles{from{transform:translateY(-10%) rotate(-6deg)}to{transform:none}}
+}

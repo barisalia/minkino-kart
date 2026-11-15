@@ -1,0 +1,114 @@
+.hk{width:min(100%,960px);margin:auto;padding:clamp(10px,1.8vw,24px);color:#243d38;box-sizing:border-box}
+.hk [hidden]{display:none!important}
+.hk-ust{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hk h1,.hk h2{margin:0;font-weight:800}
+.hk h1{font-size:clamp(20px,3.2vw,38px);letter-spacing:-.035em}
+.hk-modlar{display:inline-flex;gap:4px;border:1px solid #b6a78a;background:#f5ecda;padding:3px;border-radius:16px}
+.hk-modlar button{padding:6px 13px;border-radius:12px;border:0;font:inherit;font-weight:700;font-size:clamp(13px,1.65vw,18px);background:transparent;color:#49574c;cursor:pointer}
+.hk-modlar button[aria-pressed=true]{background:#265c50;color:#fff8e6}
+.hk-masa{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(6px,4vw,54px);align-items:center;margin:5px auto;width:min(100%,790px)}
+.hk-sol{min-width:0;width:100%;display:grid;place-items:center}
+.hk-kartlar{width:100%;max-width:360px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(6px,1.2vw,14px);justify-items:center}
+.hk-kartlar[data-adet="6"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hk-kartlar[data-adet="3"]>.hk-kart:last-child{grid-column:span 2;width:calc((100% - clamp(6px,1.2vw,14px))/2)}
+.hk-kart{display:grid;place-items:center;position:relative;width:100%;aspect-ratio:1.22;padding:8%;border:2px solid #4d5146;border-radius:17px;background:#fffaf0;box-shadow:0 3px 0 #a49a7c;touch-action:none;user-select:none;cursor:grab;color:#205557}
+.hk-kart:focus-visible,.hk button:focus-visible{outline:3px solid #166f68;outline-offset:2px}
+.hk-kart img{display:block;width:100%;height:100%;min-height:0;object-fit:contain;pointer-events:none}
+.hk-harf{display:grid;place-items:center;font:700 clamp(28px,5vw,62px)/1 system-ui,sans-serif;pointer-events:none;color:#235952}
+.hk-tutuldu{opacity:.38}
+.hk-kart.hk-alindi{visibility:hidden}
+.hk-ipucu{background:#fff0bc;border-color:#82612b}
+.hk-istasyon{width:min(100%,330px);justify-self:center;align-self:center;position:relative;min-width:0}
+.hk-kutu{position:relative;background:none;border:0;padding:0;display:block;width:100%;aspect-ratio:1;cursor:pointer}
+.hk-kutu .hk-poz{display:none;pointer-events:none;width:100%;height:100%;position:absolute;inset:0;object-fit:contain}
+.hk-kutu[data-poz=ac] [data-ad=ac],.hk-kutu[data-poz=bekle] [data-ad=bekle],.hk-kutu[data-poz=tok] [data-ad=tok],.hk-kutu[data-poz=eksi] [data-ad=eksi]{display:block}
+.hk-etiket{position:absolute;left:30%;top:58%;width:40%;height:16%;display:flex;justify-content:center;align-items:center;gap:.12em;color:#443628;font:750 clamp(15px,3vw,36px)/1 system-ui,sans-serif;pointer-events:none}
+.hk-etiket .yenmis{opacity:.42;text-decoration:line-through}
+.hk-gozler{position:absolute;inset:0;pointer-events:none}
+.hk-gozler i{border-radius:50%;position:absolute;top:25.1%;left:37.7%;width:6.6%;height:9.15%;background:#201a19;transform:translate(var(--x,0%),var(--y,0%));transition:transform .08s linear}
+.hk-gozler i+i{left:56.7%}
+.hk-gozler i:after{content:"";position:absolute;left:19%;top:15%;width:29%;height:24%;background:#fff;border-radius:50%}
+.hk-kutu[data-poz=tok] .hk-gozler,.hk-kutu[data-poz=eksi] .hk-gozler{display:none}
+.hk-lokmalar{display:flex;align-items:center;justify-content:center;gap:7px}
+.hk-lokmalar span{width:12px;height:12px;box-sizing:border-box;border:1.5px solid #798d77;border-radius:100%;background:#fffcf0}
+.hk-lokmalar .tam{background:#488467;border-color:#355c42}.hk-lokmalar .simdi{border:3px solid #498168}
+.hk-ders{width:100%}
+.hk-ders h2{font-size:clamp(16px,2.3vw,27px);line-height:1.12}
+.hk-ders p{margin:8px 0 12px;font-size:clamp(12px,1.6vw,17px)}
+.hk-unluler{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.hk-unluler button{height:clamp(38px,5vw,62px);border:1.5px solid #355d52;border-radius:12px;background:#e2f0d9;color:#234c3c;font:700 clamp(16px,2vw,26px)/1 system-ui;cursor:pointer;white-space:nowrap;padding:0 3px}
+.hk-unluler button.duyuldu{background:#ffda80;border-color:#5d4f34}
+.hk-alt{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;min-height:42px}
+.hk-durum{margin:0;text-align:center;font-size:clamp(15px,2vw,22px);font-weight:650;line-height:1.23}
+.hk-devam{min-height:42px;cursor:pointer;padding:7px 18px;font:inherit;font-weight:750;color:#fffaf0;border:1.5px solid #204c40;background:#2d6956;border-radius:17px}
+.hk-tasinan,.hk-ucan{position:fixed;object-fit:contain;pointer-events:none;z-index:96;transform:translate(-50%,-50%);width:clamp(54px,12vmin,92px);height:clamp(54px,12vmin,92px)}
+.hk-konfeti{position:absolute;top:29%;left:50%;pointer-events:none}
+.hk-konfeti i{position:absolute;width:6px;height:10px;border-radius:2px;transform-origin:50% 115px;animation:hk-konfeti .64s ease-out both}
+@keyframes hk-konfeti{0%{opacity:0;transform:rotate(var(--aci)) translateY(0) scale(.45)}22%{opacity:1}100%{opacity:0;transform:rotate(var(--aci)) translateY(-65px) scale(1)}}
+@media(orientation:landscape) and (max-height:550px){.hk{padding:4px 3%;max-width:850px}.hk-masa{width:min(100%,650px);margin:0 auto}.hk-istasyon{max-width:45svh}.hk-kartlar{max-width:53svh}.hk-kart{aspect-ratio:1.5}.hk-modlar button{padding:4px 10px}.hk-alt{min-height:30px}.hk-devam{min-height:33px}.hk-ust .at-ses{width:38px;height:38px}}
+@media(max-width:600px) and (orientation:portrait){.hk{padding:10px}.hk-masa{margin:18px auto;gap:6px}.hk-kart{aspect-ratio:1.04;border-radius:10px}.hk-kartlar[data-adet="6"]{grid-template-columns:repeat(2,minmax(0,1fr))}.hk-modlar{margin-top:4px}.hk-unluler{grid-template-columns:repeat(2,minmax(0,1fr))}.hk-lokmalar span{width:9px;height:9px}}
+@media(prefers-reduced-motion:reduce){.hk-gozler i{transition:none}.hk-konfeti{display:none}}
+.hk-ornek{display:flex;align-items:center;gap:9px;margin-top:9px;font-size:clamp(14px,1.65vw,21px);color:#294d43}
+.hk-ornek img{width:clamp(32px,5vw,53px);height:clamp(32px,5vw,53px);object-fit:contain}
+.hk-tekrar{display:inline-flex;align-items:center;min-height:38px;padding:4px 12px;border:1.5px solid #658173;border-radius:14px;background:#fff9ec;color:#294d43;font:inherit;font-size:clamp(13px,1.4vw,16px);font-weight:650;cursor:pointer}
+@media(orientation:portrait) and (max-width:600px) and (min-height:630px){
+ .hk{align-self:stretch;display:flex;flex-direction:column;padding:clamp(12px,4vw,24px)}
+ .hk-modlar{align-self:flex-start;margin-top:9px}
+ .hk-masa{flex:1;display:flex;flex-direction:column-reverse;justify-content:center;gap:clamp(9px,1.7svh,17px);width:100%;margin:8px 0}
+ .hk-istasyon{width:min(65vw,25svh);max-height:none}
+ .hk-sol,.hk-kartlar{width:100%}
+ .hk-kartlar{max-width:min(100%,40svh);grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hk-kartlar[data-adet="3"],.hk-kartlar[data-adet="6"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .hk .hk-kartlar[data-adet="3"]>.hk-kart:last-child{grid-column:auto;width:100%}
+ .hk .hk-kart{aspect-ratio:1.45}
+ .hk-ders{max-width:350px}.hk-unluler{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .hk-alt{flex-direction:column;gap:6px;justify-content:center}
+ .hk[data-asama=son] .hk-sol{display:none}
+}
+.hk-modlar{gap:8px;padding:4px;background:#fff9eb;border:2px solid #334f47;border-radius:22px}
+.hk-modlar button{width:clamp(54px,8vw,80px);height:48px;display:grid;place-items:center;padding:4px;border-radius:16px}
+.hk-modlar button img{width:100%;height:38px;object-fit:contain}
+.hk-modlar b{font-size:27px}
+.hk-etiket img{height:100%;width:100%;object-fit:contain}
+.hk-devam svg,.hk-tekrar svg{width:30px;height:30px;display:block}
+.hk-alt .hk-durum{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.hk-alt{justify-content:flex-end}
+.hk-modlar button[aria-pressed=true]{outline:2px solid #23574d;outline-offset:2px}
+.hk-kart.hk-ipucu{outline:4px solid #d9902c;outline-offset:2px}
+.hk-bitmis-tabak{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:14px;background:#fff8dc;border:2px solid #354c43;border-radius:24px;box-shadow:0 5px 0 #cea979}
+.hk-bitmis-tabak button{display:grid;place-items:center;width:clamp(44px,7vw,80px);height:clamp(44px,7vw,80px);padding:4px;border:0;border-radius:12px;background:#ffedbc;color:#235952;cursor:pointer}
+.hk-bitmis-tabak img{width:100%;height:100%;object-fit:contain}
+.hk-bitmis-tabak .hk-harf{font-size:clamp(24px,4vw,44px)}
+.hk[data-asama=son] .hk-sol{display:grid}
+.hk .hk-kart.hk-alindi{visibility:visible;background:#e6f1d9;border-style:dashed;box-shadow:none;opacity:.7}
+.hk .hk-kart.hk-alindi>*{opacity:.28}
+.hk .hk-kart.hk-alindi::after{content:'✓';position:absolute;right:7%;bottom:6%;width:1.35em;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;background:#286750;color:white;font:bold clamp(16px,2vw,24px)/1 system-ui}
+.hk-kart{overflow:hidden}
+.hk-sol:has(.hk-kartlar:not([hidden])){box-sizing:border-box;padding:clamp(8px,1vw,16px);border:2px solid #456357;border-radius:24px;background:#b4dbc4;box-shadow:inset 0 -5px 0 #91bfa6,0 4px 0 #c59d79}
+.hk-yol-ornek{position:fixed;z-index:97;width:clamp(40px,8vmin,72px);height:clamp(40px,8vmin,72px);object-fit:contain;pointer-events:none;background:#fff8e7;border-radius:16px;border:2px solid #416c58;padding:4px;box-sizing:border-box}
+.hk-etiket .yenmis{color:#35614e;opacity:.5}
+.hk-kart:not(:disabled):active{background:#ffefc1}
+@media(orientation:landscape) and (max-height:550px){.hk-sol:has(.hk-kartlar:not([hidden])){padding:5px 8px;border-radius:16px}}
+@media (orientation:landscape) and (max-height:450px){
+  .at-sahne-3 .hk{height:100%;min-height:0;display:grid;grid-template-columns:1fr auto auto;grid-template-rows:46px minmax(0,1fr) auto;align-items:center;gap:2px 12px;margin:auto;padding:4px 12px}
+  .hk-ust{display:contents}
+  .hk-ust h1{grid-row:1;grid-column:1;font-size:clamp(17px,3vw,24px)}
+  .hk-modlar{grid-row:1;grid-column:2;justify-self:end;padding:1px 3px;margin:0}
+  .hk-modlar button{height:36px;width:50px}
+  .hk-modlar img{max-height:29px}
+  .hk-ust .hk-dinle{grid-row:1;grid-column:3}
+  .hk-masa{grid-row:2;grid-column:1/-1;height:100%;min-height:0;max-width:630px;gap:12px}
+  .hk-istasyon{max-width:min(35svh,180px)}
+  .hk-kartlar{max-width:48svh;gap:4px}
+  .hk-kart{aspect-ratio:1.65;padding:4%}
+  .hk-alt{grid-column:1/-1;grid-row:3;min-height:0;margin:0}
+  .hk-alt .hk-devam,.hk-alt .hk-tekrar{min-height:32px;padding:2px 12px}
+  .hk-alt svg{width:24px;height:24px}
+  .hk-ders .hk-unluler button{height:32px}
+  .hk-bitmis-tabak{gap:4px;padding:6px}
+  .hk-bitmis-tabak button{width:40px;height:40px}
+}
+@media (orientation:landscape) and (max-height:450px){
+  .hk-kartlar[data-adet="6"]{max-width:min(100%,70svh)}
+  .hk-kartlar .hk-kart{min-width:44px;min-height:44px}
+}

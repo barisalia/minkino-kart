@@ -1,0 +1,15 @@
+.mp-havan-istasyonu{position:absolute;inset:0}
+.mp-havan-kabi{position:absolute;width:40%;aspect-ratio:1.43;left:19%;bottom:13%}
+.mp-havan,.mp-havan-dokunus{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.mp-havan-dokunus{touch-action:none;background:none;border:0;cursor:grab;z-index:2}
+.mp-havan-yaprak{position:absolute;width:20%;height:15%;transform:translate(-50%,-50%) rotate(-10deg);display:grid;place-items:center}
+.mp-havan-yaprak:nth-of-type(2){rotate:9deg}.mp-havan-yaprak img{width:100%;height:100%;object-fit:contain}
+.mp-havan-yaprak[data-ezildi=true] img{object-fit:fill}
+.mp-havan-tokmagi{position:absolute;width:23%;height:64%;object-fit:fill;translate:-17% -90%;transform:rotate(13deg);transform-origin:17% 90%;z-index:3}
+.mp-havan-aktar{position:absolute;left:72%;top:53%;width:15%;height:25%;padding:1cqh;display:flex;align-items:center;justify-content:center;border-radius:3cqh;border:.45cqh solid #453732;background:var(--sef-kumanda-fonu, #fff4d6);box-shadow:0 .9cqh #a27d64}
+.mp-havan-aktar img{width:68%;height:80%;object-fit:contain}.mp-havan-aktar .ikon{width:21%}
+.mp-havan-aktar[data-hazir=true]{background:#c9edce}.mp-havan-aktar:disabled{opacity:.48}
+.mp-tabak-iri-yaprak{position:absolute;width:12%!important;height:auto;transform:translate(-50%,-50%);pointer-events:none}
+.mp-havan-tokmagi{background:transparent;border:0;padding:0;touch-action:none;cursor:grab}
+.mp-havan-tokmagi img{width:100%;height:100%;object-fit:fill}
+.mp-havan-tokmagi:active{cursor:grabbing}.mp-havan-tokmagi:disabled{opacity:1}

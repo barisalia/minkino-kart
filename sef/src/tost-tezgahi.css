@@ -1,0 +1,83 @@
+.tost-tezgahi{position:absolute;inset:0;container-type:size;isolation:isolate;overflow:hidden;touch-action:none;user-select:none;background:#a2e8c3 url('../../assets/sef/sahneler/tahta.webp') center/cover}
+.tost-tezgahi button{font:inherit;color:#37272c;cursor:pointer;touch-action:none}
+.tost-tezgahi button:focus-visible{outline:3px solid #366bb5;outline-offset:3px}
+.tost-tezgahi img,.tost-yigin img{pointer-events:none;user-select:none;-webkit-user-drag:none;object-fit:contain}
+.tost-tezgahi button:disabled{opacity:.46;cursor:default}
+.tost-geri,.tost-tus,.tost-el,.tost-fis,.tost-raf{border:2px solid #50332e;background:var(--sef-kumanda-fonu, #fff4df);box-shadow:0 .6cqh #927452}
+.tost-geri,.tost-tus{position:relative;width:max(42px,11cqh);height:max(42px,11cqh);border-radius:50%;padding:2cqh;display:grid;place-items:center}
+.tost-geri{position:absolute;left:2%;top:4%;z-index:2}
+.tost-tezgahi .ikon{display:grid;place-items:center;width:100%;height:100%;pointer-events:none}
+.tost-tezgahi .ikon svg{width:100%;height:100%}
+.tost-fis{position:absolute;left:50%;top:3%;height:16%;display:flex;align-items:center;gap:1cqh;transform:translateX(-50%);padding:1cqh 1.3cqw;border-radius:3cqh}
+.tost-fis>span{position:relative;display:grid;place-items:center;height:100%;aspect-ratio:1}.tost-fis img{height:85%;width:85%}
+.tost-fis [data-tamam=true]::after{content:'✓';position:absolute;bottom:0;right:0;background:#b9e7bb;color:#386d4b;border-radius:50%;font:800 clamp(10px,3cqh,17px)/1.15 system-ui;padding:0 .3cqh}
+.tost-kivam-istegi{border-left:2px dashed #b89362;padding-left:.5cqw}
+.tost-calisma{position:absolute;left:18%;right:18%;top:22%;bottom:21%;display:grid;place-items:center}
+.tost-yigin{display:block;position:relative;aspect-ratio:1.46;width:min(100%,72cqh);isolation:isolate;pointer-events:none}
+.tost-yigin>img{position:absolute;object-fit:contain;pointer-events:none}.tost-yigin>.tost-alt,.tost-yigin>.tost-ust{left:7%;width:86%;height:auto;bottom:6%}
+.tost-kat{width:var(--en);height:auto;left:var(--x);top:var(--y);transform:translate(-50%,-50%) scaleY(var(--yassilik,1));transform-origin:center}
+.tost-ekmegi-ac,.tost-acik-ekmek{height:100%;width:min(84%,78cqh);background:transparent;border:0;display:grid;place-items:center;position:relative;padding:0}
+.tost-ekmegi-ac .tost-yigin,.tost-acik-ekmek .tost-yigin{width:100%}
+.tost-el{position:absolute;bottom:7%;right:0;border-radius:50%;width:max(32px,10cqh);aspect-ratio:1;padding:2cqh;background:#bee5bd}
+.tost-acik-ekmek[data-bekliyor=true] .tost-alt{filter:drop-shadow(0 3px #edaf57)}
+.tost-raf{position:absolute;bottom:4%;left:4%;width:65%;height:16%;padding:.9cqh 1cqw;display:flex;align-items:center;justify-content:space-evenly;gap:.5cqw;border-radius:3cqh}.tost-raf:empty{display:none}
+.tost-mal{height:100%;min-width:0;flex:1;border:1.5px solid #967658;background:var(--sef-kumanda-fonu, #fff9e7);border-radius:2cqh;padding:1cqh;position:relative}
+.tost-mal img{width:100%;height:100%}.tost-mal[aria-pressed=true]{background:#a8e2b8;border-color:#33573f}
+.tost-alt-kumanda{position:absolute;bottom:4%;height:16%;right:4%;left:4%;display:flex;align-items:center;justify-content:center;gap:2cqw;pointer-events:none}
+.tost-alt-kumanda button{pointer-events:auto}.tost-tezgahi[data-evre=diz] .tost-alt-kumanda{left:72%;right:2%;gap:1cqw}
+.tost-tus:last-child{background:#a5e1b4}.tost-tus img{width:100%;height:100%;object-fit:contain}
+.tost-pres{height:100%;width:fit-content;aspect-ratio:761/900;position:relative;margin:0 auto}.tost-pres>img{position:absolute;width:100%;height:auto;bottom:0;left:0}.tost-pres .tost-preste{position:absolute;width:63%;height:auto;bottom:11%;left:18%}.tost-pres[data-kapali=false] .tost-pres-kapali,.tost-pres[data-kapali=true] .tost-pres-acik,.tost-pres[data-kapali=true] .tost-preste{visibility:hidden}
+.tost-tezgahi[data-evre=pres] .tost-calisma{top:20%;bottom:21%}
+.tost-ibre{position:relative;display:flex;align-items:center;width:min(47cqw,80cqh);height:92%;padding:0 1cqw;border-radius:3cqh;background:var(--sef-kumanda-fonu, #fff8e5);border:2px solid #613e31}
+.tost-ibre span{width:25%;height:80%;display:grid;place-items:center;border-radius:1.5cqh}
+.tost-ibre span[data-istek=true]{background:#b0e4bf}.tost-ibre img{height:75%;width:70%}
+.tost-ibre-cubuk{position:absolute;top:-1.6cqh;left:clamp(3%,var(--isi),97%);width:2.7cqh;height:2.7cqh;background:#3e5064;clip-path:polygon(0 0,100% 0,50% 100%)}
+.tost-elde{position:absolute;width:min(15cqw,20cqh);height:min(15cqw,20cqh);z-index:4;transform:translate(-50%,-50%);pointer-events:none}
+.tepsi-yuva>.tost-yigin,.tepsi-yan-tadim .tost-yigin{width:94%;max-height:97%}
+.tepsi-fis-porsiyon>.tost-yigin,.tepsi-fis-lokmasi>.tost-yigin,.tepsi-istek>span>.tost-yigin{width:100%;height:100%;max-width:100%}
+.restoran-siparis>.tost-yigin{height:100%;width:auto;max-width:70%}
+.restoran-tost-lokmasi>.tost-yigin{position:absolute;width:100%;left:-50%;top:-5%}
+@media(prefers-reduced-motion:no-preference){
+.tost-ekmegi-ac[data-oyna=ac] .tost-ust{transition:transform .26s ease-in,opacity .26s;transform:translate(24%,-35%) rotate(17deg);opacity:.1}
+.tost-kapama .tost-ust{animation:tost-kapat .32s ease-out}
+.tost-yerlesti{animation:tost-kon .2s ease-out}
+@keyframes tost-kapat{from{translate:19% -35%;rotate:12deg;opacity:.45}to{translate:0 0;rotate:0;opacity:1}}
+@keyframes tost-kon{from{translate:0 -12%;opacity:.4}to{translate:0 0;opacity:1}}
+}
+
+.tost-yigin img.tost-kat{width:var(--en);height:auto;max-height:none}
+.tost-yigin img.tost-alt,.tost-yigin img.tost-ust{width:86%;height:auto;max-height:none}
+.restoran-siparis .tost-fis-icerik{display:flex;justify-content:center;align-items:center;height:45%;max-width:43%}
+.restoran-siparis .tost-fis-icerik img{height:100%;width:auto;max-width:34%;object-fit:contain}
+.tepsi-yuva[data-parca=tost][data-tasiniyor=true]>.tost-yigin,
+.restoran-tost-lokmasi[data-lokma-adedi="2"].lokma-alindi>.tost-yigin{visibility:hidden}
+.restoran-tost-lokmasi[data-lokma-adedi="0"].lokma-alindi>.tost-yigin,
+.tost-yigin.tost-isirildi{clip-path:polygon(0 0,100% 0,100% 31%,84% 34%,79% 39%,80% 44%,75% 47%,77% 54%,82% 57%,83% 61%,100% 65%,100% 100%,0 100%)}
+.tepsi-yuva[data-lokma-adedi="2"]>.tost-isirildi,
+.restoran-tost-lokmasi[data-lokma-adedi="1"].lokma-alindi>.tost-yigin,
+.restoran-tost-lokmasi[data-lokma-adedi="2"]>.tost-yigin{clip-path:polygon(0 0,80% 0,73% 14%,58% 17%,57% 30%,44% 32%,47% 44%,35% 49%,38% 62%,22% 68%,25% 78%,11% 85%,10% 100%,0 100%)}
+
+.tost-tezgahi .tost-dinle{left:auto;right:2%}.tost-dinle[hidden]{display:none}
+
+.tost-kat.tost-tasiniyor{z-index:2;filter:drop-shadow(0 2px #ad8049)}
+
+.tost-iade{position:absolute;left:-17%;bottom:8%;width:max(44px,12cqh);height:max(44px,12cqh);border:2px dashed #846444;border-radius:23%;background:var(--sef-kumanda-fonu, #fff1c9);visibility:hidden;display:grid;place-items:center;color:#664831;pointer-events:none}
+.tost-iade[data-elde=true]{visibility:visible}.tost-iade[data-uzerinde=true]{border-style:solid;background:#f1d59e}
+.tost-iade .ikon:first-child{width:67%;height:67%}.tost-iade .ikon+.ikon{position:absolute;right:-6%;top:-10%;width:42%;height:42%;border-radius:50%;background:var(--sef-kumanda-fonu, #fff4cd)}
+/* A next action pairs the object with its gesture, side by side at touch size. */
+.tost-alt-kumanda .tost-ana-hareket{
+  flex:none;display:grid;grid-template-columns:1.35fr 1fr;align-items:center;gap:4%;
+  width:clamp(96px,19cqw,184px);height:clamp(52px,15cqh,90px);
+  padding:4px 8px;border-radius:22px;background:#9de4b7;box-shadow:0 3px #438565
+}
+.tost-ana-hareket>img,.tost-ana-hareket>.ikon{min-width:0;width:100%;height:100%;object-fit:contain}
+.tost-ana-hareket>.ikon{height:76%}
+.tost-tezgahi[data-evre=diz] .tost-raf{width:56%;left:2%}
+.tost-tezgahi[data-evre=diz] .tost-alt-kumanda{left:60%;right:2%;justify-content:flex-end;gap:2cqw}
+.tost-ana-hareket:enabled::after{content:'';pointer-events:none;position:absolute;inset:-4px;border:2px solid #237853;border-radius:inherit}
+@media(prefers-reduced-motion:no-preference){
+  .tost-ana-hareket:enabled::after{animation:tost-hazir-halkasi 1.8s ease-out infinite}
+  @keyframes tost-hazir-halkasi{0%,20%{scale:1;opacity:.8}90%,100%{scale:1.08;opacity:0}}
+}
+.tost-ana-hareket>.ikon,.tost-ana-hareket>img{min-height:0}
+.tost-ana-hareket{grid-template-rows:minmax(0,1fr)}

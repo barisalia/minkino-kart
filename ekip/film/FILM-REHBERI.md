@@ -1,5 +1,7 @@
 # Minkino Çizgi Filmler: animasyon ekibi rehberi
 
+**Bulut · 14 Kasım 2026.** Bulut için her yeni çizime [ortak ön modelden](../kalite/minkino-gorsel-rehberi/pozlar/bulut/on.png) başlayın. Kayısı tüyü, küçük koyu boynuzları, uzun kulakları, lila üstü ve turkuaz şortu koruyun. Önden bakışta iki göz bebeğini kendi göz akının merkezine hizalayın. Yana bakışta ikisini de aynı hedefe yöneltin. Önceki sahneden alınan yüzü yeni bir çizime kaynak yapmayın.
+
 **Ne yapıyoruz:** Uygulamanın içinde oynayan, **90-120 saniyelik** (Barış 2026-10-04: "bir tık uzun, daha anlamlı"; önce ortak 10 sn açılış, film/src/acilis.ts), 3-6 yaş için **eğitici kısa çizgi filmler**. Kahraman Mino ve arkadaşları. Her film tek bir şey öğretir (paylaşmak, renkler, sayılar, el yıkamak…). Hikâye sade; süs sürprizler yok. **Final sorusu yok**; film anlatıcının kısa bir öğüdüyle biter ("Paylaşmak güzeldir."). (Barış, 2026-09-26)
 
 **Ekip yöneticisi:** yerel yönetici (bu klasördeki yönetici oturumu). Herkes ona bağlı çalışır, işini ona teslim eder. Ürün sahibi Barış; kararları o verir.

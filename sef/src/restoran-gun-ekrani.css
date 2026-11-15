@@ -1,0 +1,17 @@
+.restoran-gun-sonu{position:absolute;inset:0;z-index:15;container-type:size;color:#252440;background:#afbdfb url('../../assets/sef/salon/restoran-aksami.webp') center/cover no-repeat}
+.aksam-kazanci{position:absolute;inset:16% 4% 20% 54%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.5cqh}
+.aksam-kazanci h2{margin:0;font-size:clamp(18px,5.4cqh,49px);line-height:1.15}
+.aksam-jetonu{display:flex;align-items:center;gap:1.6cqh;font-size:clamp(36px,12cqh,98px);line-height:1}
+.aksam-jetonu .tatli-jeton{width:1em;height:1em}
+.restoran-yeni-sabah{display:flex;align-items:center;justify-content:center;gap:2cqh;min-height:48px;margin-top:2cqh;padding:1.3cqh 3cqw;border:2px solid #292943;border-radius:2.8cqh;background:#a6efd4;box-shadow:0 4px #40415c;color:#24283a;font:inherit;font-size:clamp(17px,4.8cqh,40px);font-weight:700}
+.restoran-yeni-sabah .ikon{width:1.25em;height:1.25em}
+.restoran-yeni-sabah:active{translate:0 2px;box-shadow:0 2px #40415c}
+.restoran-gun-rozeti {
+  display:inline-flex;align-items:center;gap:.8cqh;background:var(--sef-kumanda-fonu, #fff2cd);color:#463b32;
+  border:.3cqh solid #49372c;border-radius:100vmax;padding:.65cqh 1cqh;
+  font-size:clamp(10px,3.4cqh,24px);line-height:1;pointer-events:none
+}
+.restoran-gun-rozeti>.ikon {width:1em;height:1em;color:#975d22}
+.gun-masalar {display:flex;gap:.55cqh;margin-left:.2cqh}
+.gun-masalar i {height:1.45cqh;aspect-ratio:1;border:1px solid #927a5b;background:var(--sef-kumanda-fonu, #f6e5c4);border-radius:50%}
+.gun-masalar i[data-dolu="evet"] {background:#518d62;border-color:#426e4d}

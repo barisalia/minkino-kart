@@ -2,7 +2,7 @@
  * Uygulama kabuğunun ekran yönü yöneticisi (yalnız uygulamada; src/kabuk/yerel.ts kurar). Eklenti ve ekran bilgisi
  * dışarıdan verilir: birim testinde sahteleriyle denenir (tests/unit/ekran-yonu.test.ts).
  *
- * - Sayfa açılınca (ve önbellekten dönünce) o sayfanın yönü: telefonda geniş sahneli oyunlar yatay kilitli, öbürleri
+ * - Sayfa açılınca (ve önbellekten dönünce) o sayfanın yönü: telefonda menü ve oyunlar yatay kilitli, öbürleri
  *   serbest; tablette her sayfa serbest.
  * - Sayfa içi istek (film oynatıcısı): yalnız tablette etkili (telefonda film sayfası zaten yatay).
  * - Başka sayfaya geçmeden önce: gidilecek sayfanın yönü krem perde inerken ayarlanır; telefon yatay kilitlenecekse

@@ -43,3 +43,9 @@
 .et-masa .et-son .et-ileri,.et-masa .et-onay .et-ileri{width:clamp(50px,12vmin,102px);height:clamp(46px,10vmin,80px);max-height:100%;padding:2px}
 .et-masa .et-son .oyuncak-dugme,.et-masa .et-onay .oyuncak-dugme{object-fit:contain;width:100%;height:100%}
 .ders-giris .et-zil .kucuk-kitap .oyuncak-dugme,.ders-giris .zil-ileri .oyuncak-dugme{width:95%;height:95%}
+.aski-alani{container-type:size;pointer-events:none}
+.aski-tahtasi{position:relative;width:min(100cqw,246.15cqh);aspect-ratio:320/130}
+.aski-tahtasi>svg{width:100%;height:100%;display:block}
+.aski-tahtasi button{pointer-events:auto}
+.aski-cantasi .sirt-cantasi{width:100%;height:100%;aspect-ratio:auto}
+.aski-cantasi .sirt-cantasi>img{object-position:top center}

@@ -1,0 +1,47 @@
+.mk-kek{display:block;position:relative;width:100%;height:100%;isolation:isolate;pointer-events:none}
+.mk-kek>.mk-taban{position:absolute;left:0;top:29%;width:100%;height:71%;object-fit:fill}
+.mk-kek>.mk-dekor{display:block;position:absolute;translate:-50% -75%;height:auto;aspect-ratio:auto;object-fit:contain;pointer-events:none}
+.mk-kek>.mk-dekor.mk-meyve{width:21%;translate:-50% -80%}
+.mk-tezgah{position:relative;display:grid;place-items:center;width:100%;height:100%}
+.mk-tezgah>.mk-stand{position:absolute;left:50%;bottom:0;translate:-50% 0;width:66%;height:28%;object-fit:fill;pointer-events:none}
+.mk-tezgah>.mk-kek{width:auto;height:84%;aspect-ratio:.98;align-self:start}
+.mk-hedef{position:absolute;z-index:2;translate:-50% -60%;width:27%;height:24%;min-height:32px;pointer-events:auto;touch-action:none;border:1.5px dashed #946740;border-radius:50%;background:#fff4d544}
+.mk-hedef[data-dolu=true]{background:transparent;border-color:transparent}
+.mk-elde{position:absolute;display:block;pointer-events:none;z-index:3;width:43%;height:40%;translate:-3% -118%}
+.mk-elde[hidden]{display:none}.mk-elde>img{width:100%;height:100%;object-fit:fill}
+.mk-kaynaklar{display:flex;gap:1.5cqh}
+.mk-kaynak,.mk-sil{display:grid;place-items:center;border:2px solid #412e30;background:var(--sef-kumanda-fonu, #fff5e3);border-radius:2.5cqh;box-shadow:0 .7cqh #ab8060;touch-action:none;padding:1.2cqh}
+.mk-kaynak{height:clamp(44px,14cqh,86px);width:clamp(48px,16cqh,100px)}
+.mk-kaynak img{width:100%;height:100%;object-fit:contain}
+.mk-kaynak[aria-pressed=true]{background:#bce9d3;border-color:#385d4f}
+.mk-sil{position:absolute;right:0;bottom:2%;width:clamp(40px,10cqh,72px);aspect-ratio:1;border-radius:50%;padding:1.8cqh}
+.mk-sil .ikon{width:100%;height:100%}
+.mk-fis{display:inline-flex;align-items:center;justify-content:center;gap:1%;height:70%;width:19cqh}
+.mk-fis>img{width:31%;height:75%;object-fit:contain}
+.mk-tasinan{position:fixed;width:clamp(30px,7vh,56px);height:auto;translate:-50% -50%;pointer-events:none;z-index:5000}
+.tatli-tezgahi[data-tatli=minik-kek]:is([data-adim="3"],[data-adim="4"]){background:#ffe0b1 url('../../assets/sef/kurabiye/tezgah.webp') center/cover}
+.tatli-tezgahi[data-tatli=minik-kek] .ta-fis>.mk-kek{width:11cqh;height:12cqh}
+.tatli-raf-istasyon>.mk-kek{position:absolute;width:65%;height:87%;right:0;bottom:0}
+.tatli-raf-istasyon .mk-kek>.mk-taban{position:absolute;left:0;top:29%;width:100%;height:71%}
+.tatli-raf-istasyon .mk-kek>.mk-meyve{width:21%;height:auto;bottom:auto;right:auto}
+.pastane-porsiyonu[data-kek-porsiyon=true] .tatli-susu{width:21%;left:51%;top:59%}
+.pastane-porsiyonu[data-fazla=true] .mk-taban{filter:brightness(.72)}
+.restoran-lokma.mk-lokma>.mk-kek{position:absolute;left:-50%;top:-50%;width:100%;height:100%}
+.restoran-lokma.mk-lokma .mk-taban{left:0;top:29%;width:100%;height:71%}
+.restoran-lokma.mk-lokma .mk-dekor{height:auto;object-position:center}
+.restoran-lokma.mk-lokma .mk-meyve{width:21%;height:auto}
+.restoran-lokma.mk-lokma .tatli-susu{left:41%;top:51%;width:21%;height:auto}
+.pastane-porsiyonu[data-kek-porsiyon] .tatli-katlari,.mk-lokma{
+  --mk-sol:polygon(0 0,38% 0,38% 42%,36% 48%,40% 53%,37% 61%,35% 100%,0 100%);
+  --mk-orta:polygon(38% 0,69% 0,69% 45%,65% 52%,68% 62%,65% 100%,35% 100%,37% 61%,40% 53%,36% 48%,38% 42%);
+  --mk-sag:polygon(69% 0,100% 0,100% 100%,65% 100%,68% 62%,65% 52%,69% 45%)
+}
+.pastane-porsiyonu[data-isirik="1"] .tatli-katlari{clip-path:polygon(38% 0,100% 0,100% 100%,35% 100%,37% 61%,40% 53%,36% 48%,38% 42%)}
+.pastane-porsiyonu[data-isirik="2"] .tatli-katlari,.mk-lokma[data-lokma="2"] .mk-kek{clip-path:var(--mk-sag)}
+.pastane-porsiyonu[data-isirik="3"] .tatli-katlari,.mk-lokma.lokma-alindi .mk-kek{visibility:hidden}
+.restoran-lokma.mk-lokma>.restoran-kasik{left:-17%;top:-25%;width:100%;height:100%}
+.mk-lokma[data-lokma="0"] .mk-kek{clip-path:var(--mk-sol);translate:29% 0}
+.mk-lokma[data-lokma="1"] .mk-kek{clip-path:var(--mk-orta)}
+.mk-lokma[data-lokma="2"] .mk-kek{translate:-29% 0}
+.mk-lokma[data-fazla=true] .mk-taban{filter:brightness(.72)}
+.ta-fis>.mk-fis{border-left:2px dashed #bd956d;padding-left:1cqh}

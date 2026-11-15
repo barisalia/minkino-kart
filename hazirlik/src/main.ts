@@ -1,24 +1,32 @@
 import './stil.css';
+import evSesi from './ev-konusma-ritmi.json';
+import {fonuBeklet} from '../../src/audio/muzik';
+import {etkinlikler,panoBaslangici} from './ders-programi';
 import { dersSorusu } from './sinif-etkinligi';
 import { malzeme } from './malzemeler';
 import { efekt, sesiAc, sessizeAlDegistir, tumSesKapaliMi } from '../../src/audio/ses';
 import { durum } from '../../src/engine/ilerleme';
 import { muzikKis } from '../../src/audio/motor';
 import { anaMenuyeDon } from '../../src/uygulama';
-import { geriDinle } from '../../src/kabuk/yon';
-import { oku, sakla, yeni, icler, dersKisayolu, type Sabah } from './model';
+import { arkaPlanDinle,geriDinle } from '../../src/kabuk/yon';
+import { oku, sakla, yeni, ertesiSabah, icler, dersKisayolu, type Sabah } from './model';
 import { dersFonu, dersGoster, okulArkadaslari } from './ders';
 import { simge, ray, tahta, tepsi, tabak, askilik, katliPecete, acikPecete } from './cizim';
 import { mataraResmi, kapakResmi, servisTakimi, dolumTezgahi, suBardagi } from './su-cizim';
 import { kalanSandvic, isirilanMeyve } from './artanlar';
 import { suIstasyonu } from './su-oyunu';
+import {kresAc,kresMi,kresYonergesi,odaYolu} from './kres';
+import {tamamla} from './kres-kaydi';
+import { okulGunu, okulFonu, okulSozu, bandoyuSustur } from './okul-gunu';
 
 const files=import.meta.glob<string>('../../assets/hazirlik/*.webp',{eager:true,query:'?url',import:'default'});
 const voices=import.meta.glob<string>('../../assets/hazirlik/ses/*.mp3',{eager:true,query:'?url',import:'default'});
+const sozcukZamanlari=import.meta.glob<{bas:number;son:number}[]>('../../assets/hazirlik/ses/yazi_*_ses.json',{eager:true,import:'default'});
 const url=(n:string)=>malzeme(n)??files['../../assets/hazirlik/'+n+'.webp'];
 const img=(n:string)=>'<img draggable="false" alt="" src="'+url(n)+'">';
 const stage=document.querySelector<HTMLElement>('#sahne')!, bg=document.querySelector<HTMLElement>('#fon')!, nav=document.querySelector<HTMLElement>('#kontrol')!;
 let s=oku(), voice:HTMLAudioElement|undefined, locked=false, hintTimer=0;
+let odaKesfiniKapat:(()=>void)|undefined;
 let suyuDurdur: (()=>void) | undefined;
 let hareketSonu = 0;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,8 +34,21 @@ const short=matchMedia('(max-aspect-ratio: 1/1)');
 type Pos=[number,number,number,number];
 type Action={key:string; name:string; to?:string; landing?:string; run:()=>void};
 const actions=new Map<string,Action>();
+// Dokunarak odayı değiştirince mobil tarayıcı eski parmağın click olayını
+// yeni odadaki aynı koordinata gönderebilir. Yalnız basıldığı düğme çalışsın.
+let basilanDugme:Element|null=null;
+stage.addEventListener('pointerdown',e=>{basilanDugme=(e.target as Element).closest('button')},true);
+stage.addEventListener('click',e=>{
+  if(e.detail<=0)return;
+  const b=(e.target as Element).closest('button');
+  if(b?.closest('.kres')&&b!==basilanDugme){e.preventDefault();e.stopImmediatePropagation()}
+},true);
+let evDudakKaresi=0;
 function stopVoice() {
+  cancelAnimationFrame(evDudakKaresi);evDudakKaresi=0;delete stage.dataset.evAgiz;
   delete stage.dataset.sesOynuyor;
+  delete stage.dataset.konusan;
+  delete stage.dataset.duyulan;
   if (!voice) return;
   voice.pause();
   voice = undefined;
@@ -41,12 +62,50 @@ function speak(id: string, sonra?:()=>void) {
   voice = clip;
   clip.volume = durum.i.ayarlar.seviye;
   const finish = () => { if (voice === clip) stopVoice() };
-  clip.addEventListener('playing', () => { if (voice === clip) {stage.dataset.sesOynuyor="evet";muzikKis(true)} }, { once: true });
+  const agiz=(evSesi.sesler as Record<string,string>)[id];
+  if(agiz&&!reduced.matches&&s.sahne==='veda'){
+    // Ses dosyasındaki gerçek durakları izle. Zamanlayıcıyla ikinci bir
+    // oynatım başlatma: kayıt donarsa çizim de aynı anda bekler.
+    let son='';
+    const izle=()=>{if(voice!==clip||document.hidden)return;
+      const poz=agiz[Math.floor(clip.currentTime*1000/evSesi.adimMs)]??'0';
+      if(son!==poz){stage.dataset.evAgiz=poz;son=poz}
+      evDudakKaresi=requestAnimationFrame(izle);
+    };
+    clip.addEventListener('playing',izle,{once:true});
+  }
+  const zaman=sozcukZamanlari['../../assets/hazirlik/ses/'+id+'.json'];
+  if(zaman){
+    const izle=()=>{
+      if(voice!==clip)return;
+      const t=clip.currentTime,i=zaman.findIndex(({bas,son})=>t>=bas&&t<son+.12);
+      stage.dataset.duyulan=i>=0?String(i):t<zaman[0].bas?'harf':t>zaman[zaman.length-1].son?'raf':'';
+    };
+    clip.addEventListener('timeupdate',izle);clip.addEventListener('playing',izle,{once:true});
+  }else if(id.startsWith('yazi_ad_')){
+    clip.addEventListener('playing',()=>{if(voice===clip)stage.dataset.duyulan=id.slice(8)},{once:true});
+  }
+  clip.addEventListener('playing', () => { if (voice === clip) {stage.dataset.sesOynuyor="evet";stage.dataset.konusan=id.startsWith('anne_')?'anne':id.startsWith('mino_')?'mino':id.startsWith('zip_')?'zipzip':id.startsWith('kino_')?'kino':'ceren';muzikKis(true)} }, { once: true });
   clip.addEventListener('ended', () => { if(voice===clip){stopVoice();sonra?.()} }, { once:true });
   clip.addEventListener('error', finish, { once: true });
   void clip.play().catch(finish);
 }
-function enter(n:Sabah['sahne']){s.sahne=n;const line:Record<string,string>={oda:'basla',mutfak:'mutfak',kutu:'kutu',matara:'matara',canta:'canta',aski:'aski',sofra:'sofra',tat:'son',topla:'topla',ders:'ders',cizgi:'cizgi',yuvarlak:'yuvarlak',resim:'balon',etkinlik:dersSorusu(s)};if(line[n])speak(line[n],n==="resim"?()=>{if(s.sahne==="resim")speak("balondan_sonra")}:undefined);}
+const gezilenOdalar=new Set<string>();
+function enter(n:Sabah['sahne']){
+  const once=s.sahne;
+  if(once==='muzik'&&n!=='muzik')bandoyuSustur();
+  s.sahne=n;
+  stopVoice();
+  if(n==='oda')gezilenOdalar.clear();
+  if(n==='anasinifi'||n==='oyun-odasi'){
+    if(gezilenOdalar.has(n)){efekt.sayfa();return}
+    gezilenOdalar.add(n);
+  }
+  const line:Record<string,string>={oda:'basla',mutfak:'mutfak',kutu:'kutu',matara:'matara',canta:'canta',aski:'aski',sofra:'sofra',tat:'son',topla:'topla',ders:'ders',cizgi:'cizgi',yuvarlak:'yuvarlak',resim:'balon',etkinlik:dersSorusu(s),...okulSozu};
+  if(n==='anasinifi'&&once==='paylas'&&s.kres.biten.length===2){speak('kres_zil');return}
+  if(kresMi(n)){speak(kresYonergesi(s));return}
+  if(line[n])speak(line[n],n==='resim'?()=>{if(s.sahne==='resim')speak('balondan_sonra')}:undefined);
+}
 function piece(id:string,art:string,pos:Pos,portrait?:Pos,action?:Action,cls=''){
  const el=document.createElement(action?'button':'div'); const [x,y,w,h]=short.matches&&portrait?portrait:pos;
  el.className='piece '+cls;el.dataset.id=id;Object.assign(el.style,{left:x+'%',top:y+'%',width:w+'%',height:h+'%'});el.innerHTML=art;
@@ -70,7 +129,7 @@ function bento(food:boolean,fruit:boolean){
     '<span class="inbread" data-id="sandvic-gozu">'+(food?stack(true):'')+'</span>'+
     '<span class="infruit" data-id="meyve-gozu">'+(fruit&&s.meyve?img(s.meyve):'')+'</span></span>';
 }
-const backgrounds:Record<Sabah['sahne'],string>={basla:'kapak',oda:'oda',mutfak:'mutfak',kutu:'mutfak',matara:'mutfak',canta:'mutfak',aski:'sinif',sofra:'sinif',tat:'sinif',topla:'sinif','kutuyu-kaldir':'sinif',son:'sinif',ders:'derslik',cizgi:'derslik',yuvarlak:'derslik',resim:'derslik',etkinlik:'derslik','ders-zili':'derslik'};
+const backgrounds:Record<Sabah['sahne'],string>={basla:'kapak',oda:'oda',mutfak:'mutfak',kutu:'mutfak',matara:'mutfak',canta:'mutfak',aski:'sinif',sofra:'sinif',tat:'sinif',topla:'sinif','kutuyu-kaldir':'sinif',son:'sinif',ders:'derslik',cizgi:'derslik',yuvarlak:'derslik',resim:'derslik',etkinlik:'derslik','ders-zili':'derslik',paylas:'kres','meyve-mutfagi':'kres',gosteri:'kres','ev-yolu':'kres',cicekci:'kres',lavabo:'kres',oyku:'kres',cember:'kres',ek:'okul',muzik:'okul',kolye:'okul',toplan:'kres',veda:'kres','okul-kapisi':'kres',golet:'kres','yelken-parkuru':'kres',anasinifi:'kres','oyun-odasi':'kres',blok:'kres',boyahane:'kres','kendi-resmim':'kres','su-masasi':'kres',kagit:'kres',bahce:'kres'};
 const current=(id:string)=>stage.querySelector<HTMLElement>('[data-id="'+id+'"]');
 function suAlani(evde: boolean, pos: Pos, dik: Pos) {
   const alan = piece('su-alani','',pos,dik);
@@ -143,30 +202,53 @@ function kalanlariGoster() {
     !s.yudumAldi?action('bir-yudum','Kino’ya bir yudum su ver',()=>tadinaBak('bardak'),portre.dataset.id,'agiz'):undefined);
   birakmaHareketi();
 }
+function askiDonanimi(){
+  const yuva=piece('askilik','<div class="aski-tahtasi">'+askilik+'</div>',[71,30,39,27],[71,33,53,19]);
+  yuva.removeAttribute('aria-hidden');
+  yuva.classList.add('aski-alani');
+  const tahta=yuva.firstElementChild!;
+  return {
+    hedef(){tahta.append(piece('yildiz','',[27,78,40,70]))},
+    canta(acik:boolean,su:number){
+      const boy=acik?155:146;
+      tahta.append(piece('asili-canta',cantaResmi(acik,true,su),[27,77+boy/2,54,boy],undefined,undefined,'aski-cantasi'));
+    },
+    kutu(al:Action){tahta.append(item('bento-kapali',[27,145,32,45],undefined,al,'ipucu'))},
+  };
+}
 function kutuyuAskiyaKaldir() {
   const bitti=s.sahne==='son';
   item(kino(),[25,60,33,69],[25,63,42,52],undefined,'karakter');
-  piece('askilik',askilik,[71,30,39,27],[71,33,53,19]);
-  piece('asili-canta',cantaResmi(!bitti,true,.55),[63,56,20,39],[60,52,31,30],undefined,bitti?'kapandi':'');
+  const aski=askiDonanimi();
+  aski.canta(!bitti,.55);
   if(bitti){
-    nextIcon(action('derse-gir','Kino ile derse katıl',()=>enter('ders')),'ileri');
+    nextIcon(action('derse-gir','Kino ile sınıfa geç',()=>{tamamla(s.kres,'beslenme');enter('anasinifi')}),'ileri');
     return;
   }
   item('bento-kapali',[41,80,24,24],[36,82,40,23],
     action('kutuyu-kaldir','Kutuyu yıldızlı çantaya geri koy',()=>{efekt.yapis();enter('son')},'asili-canta'));
 }
+function stopHint(){clearTimeout(hintTimer)}
+function sinifaDon(){stopVoice();enter(odaYolu(s.sahne));sakla(s);render()}
+function koseDon(){const b=document.createElement('button');b.className='koseye-don';b.type='button';b.setAttribute('aria-label','Sınıf köşelerine dön');b.innerHTML=simge('ileri');b.onclick=sinifaDon;stage.append(b)}
 function render(){
+ fonuBeklet(s.sahne==='muzik'||s.sahne==='gosteri'||(s.sahne==='etkinlik'&&etkinlikler[s.ders.tur]?.tur==='ritim'));
+ odaKesfiniKapat?.();odaKesfiniKapat=undefined;
  suyuDurdur?.();
  suyuDurdur=undefined;
  clearTimeout(hareketSonu);
- actions.clear();stage.replaceChildren();stage.dataset.sahne=s.sahne;const name=backgrounds[s.sahne];if(bg.dataset.name!==name){bg.dataset.name=name;bg.style.backgroundImage='url("'+(name==='derslik'?dersFonu:url(name))+'")';if(!reduced.matches)stage.parentElement!.animate([{opacity:.75},{opacity:1}],{duration:320})}
+ actions.clear();stage.replaceChildren();stage.dataset.sahne=s.sahne;const name=backgrounds[s.sahne];if(name==='kres'){stopHint();bg.dataset.name=name;bg.style.backgroundImage='none';odaKesfiniKapat=kresAc(stage,s,{yeniGun:()=>{s=ertesiSabah(s);enter('oda');sakla(s);render()},gir:n=>{enter(n);sakla(s);render()},soyle:speak,sus:stopVoice,kaydet:()=>sakla(s)});return}if(bg.dataset.name!==name){bg.dataset.name=name;bg.style.backgroundImage='url("'+(name==='derslik'?dersFonu:name==='okul'?okulFonu:url(name))+'")';if(!reduced.matches)stage.parentElement!.animate([{opacity:.75},{opacity:1}],{duration:320})}
  if(name==='derslik'){
    clearTimeout(hintTimer);
-   dersGoster(stage,s,{ilerle:n=>{efekt.sayfa();enter(n);sakla(s);render()},ses:speak,sesiDurdur:stopVoice,kaydet:()=>sakla(s),dokun:sesiAc,
+   dersGoster(stage,s,{ilerle:n=>{efekt.sayfa();enter(n);sakla(s);render()},ses:speak,sesiDurdur:stopVoice,kaydet:()=>sakla(s),dokun:sesiAc,okulaDon:dersKisayolu?undefined:()=>{tamamla(s.kres,s.ders.tur===panoBaslangici?'pano':'harf');sinifaDon()},
      bastan:()=>{if(dersKisayolu){location.assign(location.pathname);return} s=yeni();enter('oda');sakla(s);render()}});
+   if(!dersKisayolu)koseDon();
    return;
  }
- if(name==='sinif')okulArkadaslari(stage,['aski','kutuyu-kaldir','son'].includes(s.sahne));
+ if(name==='okul')okulGunu({s,kaydet:()=>sakla(s),parca:(id,art,pos,dik,eylem,cls)=>piece(id,art,pos,dik,eylem as Action|undefined,cls),eylem:action,
+   ileri:(e,ikon)=>nextIcon(e as Action,ikon),gir:enter,soyle:speak,kino:img(s.renk||'yesil'),bastan:()=>{s=ertesiSabah(s);enter('oda')},yenile:()=>{sakla(s);render()}});
+ if(name==='okul'&&['ek','muzik','kolye','toplan'].includes(s.sahne))koseDon();
+ if(s.sahne==='sofra'||s.sahne==='tat'||s.sahne==='topla')okulArkadaslari(stage);
  if(s.sahne==='basla'){nextIcon(action('basla','Sabaha başla',()=>enter('oda')),'ileri')}
  if(s.sahne==='oda'){
   piece('ray',ray,[73,57,49,68],[71,55,56,55]);
@@ -223,15 +305,15 @@ function render(){
   if(!s.mataraCepte)piece('matara',mataraResmi('cantaya-giren'),[44,71,12,36],[25,55,20,26],
     action('cebe','Mataranı çantanın yan cebine koy',()=>{s.mataraCepte=true;efekt.secim()},'canta-acik','cep-hedef'));
   piece('cep-hedef','',[80,71,8,21],[84,62,12,15],undefined,'pasif');
-  if(s.cantaKapali)hareketSonu=window.setTimeout(()=>{enter('aski');sakla(s);render()},650);
+  if(s.cantaKapali)hareketSonu=window.setTimeout(()=>{enter('okul-kapisi');sakla(s);render()},650);
  }
  if(s.sahne==='aski'){
   item(kino(),[24,59,32,71],[24,62,41,52],undefined,'karakter');
-  piece('askilik',askilik,[71,30,39,27],[71,33,53,19]);
-  piece('yildiz','',[63,37,18,26],[60,38,23,21]); 
+  const aski=askiDonanimi();
+  aski.hedef(); 
   if(!s.asili)piece('canta',cantaResmi(false,true),[43,78,22,38],[42,80,32,28],action('as','Çantayı yıldızlı askıya as',()=>{s.asili=true;efekt.yapis()},'yildiz'));
-  else {piece('canta-acik',cantaResmi(true,true),[63,56,20,39],[60,52,31,30],undefined,'asili');
-   item('bento-kapali',[63,53,13,13],[60,51,20,12],action('beslenme','Çantadan beslenme kutunu al',()=>enter('sofra')),'ipucu');}
+  else {nextIcon(action('sinifa-gir','Sınıfa git',()=>enter('anasinifi')),'ileri');aski.canta(true,1);
+   aski.kutu(action('beslenme','Çantadan beslenme kutunu al',()=>enter('sofra')));}
  }
  if(s.sahne==='tat'||s.sahne==='topla') kalanlariGoster();
  if(s.sahne==='kutuyu-kaldir'||s.sahne==='son') kutuyuAskiyaKaldir();
@@ -289,10 +371,35 @@ stage.addEventListener('pointerup',e=>{const q=grab;if(!q||q.id!==e.pointerId)re
 stage.addEventListener('pointercancel',endGrab);stage.addEventListener('lostpointercapture',e=>{if(grab?.id===e.pointerId)endGrab()});
 stage.addEventListener('click',e=>{if(e.detail!==0||locked)return;const el=(e.target as Element).closest<HTMLElement>('button[data-action]');if(!el)return;sesiAc();deliver(el,actions.get(el.dataset.action!)!)});
 short.addEventListener('change',()=>{endGrab();if(!locked)render()});
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){endGrab();stopVoice();suyuDurdur?.()}
-  else if(!locked) render();
-});
+let belgeGizli=document.hidden,kabukGizli=false,oyunBekliyor=false;
+function gorunurluk(){
+  const gizli=belgeGizli||kabukGizli;if(gizli===oyunBekliyor)return;oyunBekliyor=gizli;
+  if(gizli){endGrab();stopVoice();suyuDurdur?.();bandoyuSustur();window.dispatchEvent(new Event('hazirlik-mola'))}
+  else if(!locked)render();
+}
+document.addEventListener('visibilitychange',()=>{belgeGizli=document.hidden;gorunurluk()});
+arkaPlanDinle(arkada=>{kabukGizli=arkada;gorunurluk()});
 window.addEventListener('pagehide',()=>{suyuDurdur?.();stopVoice()});
-geriDinle(()=>{stopVoice();anaMenuyeDon();return true});
-render();for(const u of Object.values(files)){const i=new Image();i.src=u}
+function yerelGiris(){
+  if(document.querySelector('.kres-yerel-menu'))return;
+  stopVoice();const menu=document.createElement('dialog');menu.className='kres-yerel-menu';
+  menu.setAttribute('aria-label','Oyuna ara verildi');let ayriliyor=false;
+  window.dispatchEvent(new Event('hazirlik-mola'));
+  for(const [ad,ikon,yer] of [['Kaldığın yere dön','ileri',''],['Ana sınıfına gir','ev','kres'],['Sabah hazırlığına git','yenile','sabah']]){
+    const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',ad);b.innerHTML=yer==='kres'?img('sinif'):yer==='sabah'?img('oda'):simge(ikon);
+    b.onclick=()=>{ayriliyor=!!yer;menu.close();if(!yer)return;const hedef=new URL(location.href);hedef.search=yer==='kres'?'?ders=kres':'';location.assign(hedef.href)};
+    menu.append(b);
+  }
+  menu.addEventListener('close',()=>{menu.remove();if(!ayriliyor)window.dispatchEvent(new Event('hazirlik-moladan-don'))},{once:true});document.body.append(menu);menu.showModal();
+}
+window.addEventListener('anaokulu-yerel-menu',yerelGiris);
+geriDinle(()=>{
+  const diyalog=[...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].at(-1);
+  if(diyalog){
+    const geri=new Event('cancel',{cancelable:true});
+    if(diyalog.dispatchEvent(geri)&&diyalog.open)diyalog.close();
+    return true;
+  }
+  stopVoice();anaMenuyeDon();return true;
+});
+render();

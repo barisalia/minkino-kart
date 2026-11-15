@@ -1,0 +1,80 @@
+.musteri-giris,.tepsi-ust h2,.tepsi-yeni{display:flex;align-items:center;justify-content:center;gap:.8cqw;border:.35cqh solid #342a32;border-radius:5cqh;background:var(--sef-kumanda-fonu, #fff7de);box-shadow:0 .6cqh #846044}
+.musteri-giris{height:100%;padding:0 1.55cqw;font-size:clamp(13px,3.7cqh,30px);background:var(--sef-kumanda-fonu, #fff2bf)}
+.musteri-giris img,.tepsi-yeni img{height:85%;width:6.5cqh;object-fit:contain}.musteri-giris .ikon,.tepsi-yeni .ikon{width:2.8cqh;height:2.8cqh}
+.tepsi-sahnesi{position:absolute;inset:0;z-index:12;container-type:size;isolation:isolate;background:#ffe4b6 url('../../assets/sef/tepsi/bistro.webp') center/100% 100% no-repeat}
+.tepsi-ust{position:absolute;inset:2.7% 1.8% auto;display:flex;align-items:center;justify-content:space-between;z-index:5;pointer-events:none}.tepsi-ust button{pointer-events:auto}
+.tepsi-ust h2{font-size:clamp(14px,4.2cqh,33px);margin:0;padding:1cqh 2cqw}
+.tepsi-fisler{position:absolute;inset:17% 5% 7%;display:grid;grid-template:repeat(2,minmax(0,1fr))/repeat(3,minmax(0,1fr));gap:3.8cqh 2.2cqw}
+.fis-sayfalari{position:absolute;inset:16% 4% 15%;display:flex;overflow:auto hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x}
+.fis-sayfalari>.tepsi-fisler{position:relative;inset:auto;box-sizing:border-box;flex:0 0 100%;padding:1cqh .8cqw 1.5cqh;scroll-snap-align:start;scroll-snap-stop:always;touch-action:pan-x}
+.fis-sayfalari .tepsi-fis{touch-action:pan-x}
+.fis-gezinti{position:absolute;bottom:1%;height:13%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2cqw}
+.fis-gezinti .dugme{width:max(40px,9cqh);height:max(40px,9cqh)}.fis-gezinti button:disabled{opacity:.48}
+.fis-gezinti .dugme{min-width:44px;min-height:44px}
+.fis-noktalar{display:flex;align-items:center;gap:1cqh;padding:1.4cqh;border:1px solid #684333;border-radius:4cqh;background:var(--sef-kumanda-fonu, #fff0d4)}.fis-noktalar i{width:1.7cqh;height:1.7cqh;border-radius:50%;background:#cfb698}.fis-noktalar i[data-secili]{background:#477d62}
+.tepsi-sahnesi.piknikte-servis{background:#c9efca url('../../assets/sef/piknik/bahce.webp') center/cover no-repeat}.piknikte-servis .tepsi-altlik{object-fit:fill}
+.tepsi-fis{min-width:0;position:relative;display:grid;align-items:center;justify-items:center;grid-template-rows:44% 56%;background:var(--sef-kumanda-fonu, #fff8e6);border:.42cqh solid #382d32;border-radius:2.8cqh;box-shadow:0 .9cqh #805942;overflow:hidden}
+.tepsi-fis:active,.tepsi-yuva:active:not(:disabled){transform:translateY(.5cqh)}
+.tepsi-portre{display:flex;align-items:flex-end;justify-content:center;background:var(--vurgusu);width:100%;height:100%;border-bottom:.25cqh solid #533f39;overflow:hidden}
+.tepsi-portre .misafir{width:90%;height:99%;object-fit:contain}.tepsi-fis-yemekler{display:flex;align-items:center;justify-content:center;width:95%;height:94%;gap:.5cqw}
+.tepsi-fis-porsiyon{position:relative;display:grid;place-items:center;min-width:0;width:39%;height:100%}
+.tepsi-fis-porsiyon:nth-last-child(3),.tepsi-fis-porsiyon:nth-last-child(3)~span{width:31%}
+.tepsi-fis-porsiyon>img{width:100%;height:88%;object-fit:contain}
+.tepsi-fis-porsiyon[data-porsiyon=icecek]>img{height:66%}
+.tepsi-fis-porsiyon>.yemek-cizimi,.tepsi-fis-porsiyon>.pastane-porsiyonu,.tepsi-fis-porsiyon>.tost-yigin{width:100%;height:94%}
+.tepsi-fis-porsiyon>.pz-pizza{position:relative;inset:auto;width:auto;max-width:100%;height:90%;aspect-ratio:1}
+.tepsi-fis-porsiyon>i{position:absolute;right:0;bottom:3%;display:grid;place-items:center;width:clamp(15px,3.9cqh,28px);aspect-ratio:1;border:1.5px solid #473934;border-radius:50%;background:#b4ebbc;color:#224a38}
+.tepsi-fis-porsiyon[data-durum=tezgahta]>i{background:#ffdc94;color:#59401f}
+.tepsi-fis-porsiyon i .ikon{width:73%;height:73%}
+.tepsi-damga,.tepsi-istek i,.tepsi-yuva>i{position:absolute;display:grid;place-items:center;background:#acf0b6;border:.26cqh solid #354438;border-radius:100%;width:4.8cqh;height:4.8cqh;padding:1cqh}.tepsi-damga{right:3%;top:4%}
+.tepsi-alici{position:absolute;left:13%;bottom:43%;width:31%;height:40%}.tepsi-alici img{width:100%;height:100%}
+.tepsi-istek{position:absolute;bottom:55%;left:45%;width:39%;height:20%;display:flex;gap:.5cqw;justify-content:center;align-items:center;background:var(--sef-kumanda-fonu, #fffae8);border:.36cqh solid #423337;border-radius:3.2cqh}
+.tepsi-istek:before{content:'';position:absolute;left:-1cqw;width:1.6cqw;height:1.6cqw;background:var(--sef-kumanda-fonu, #fffae8);border-left:.36cqh solid #423337;border-bottom:.36cqh solid #423337;transform:rotate(45deg)}
+.tepsi-istek>span{height:86%;width:28%;position:relative}.tepsi-istek>.tepsi-fis-lokmasi>img,.tepsi-istek>span>img:only-child{width:100%;height:100%;object-fit:contain}.tepsi-istek i{right:0;bottom:0;width:3.4cqh;height:3.4cqh;padding:.65cqh}
+.tepsi-istek>.mk-fis{width:22%;height:54%;gap:2%;padding-left:1%;border-left:2px dashed #bd956d}
+.tepsi-istek>.tart-fis-rozet{width:auto;max-width:28%;height:64%}
+.tepsi-istek>.sl-desen-fisi{width:14%;height:60%}
+.tepsi-fis-lokmasi>.tart-tam-gorsel{width:94%;height:auto;aspect-ratio:1.5}
+.tepsi-tabla{position:absolute;inset:55% 6% 3%}.tepsi-altlik{width:100%;height:100%;object-fit:fill}
+.tepsi-yerler{position:absolute;inset:13% 10%;display:flex;align-items:center;justify-content:space-evenly;gap:1.5cqw}
+.tepsi-yuva{height:100%;width:32%;position:relative;display:grid;place-items:center;border-radius:3.5cqh;border:.35cqh dashed #226c5f;background:#d6f8db}
+.tepsi-yuva[data-hazir=true]{background:none;border-color:transparent;cursor:default}.tepsi-yuva>img,.tepsi-yuva>.yemek-cizimi,.tepsi-yuva>.pizza-tabak-resmi{position:relative;display:block;width:92%;height:92%;object-fit:contain}.tepsi-yuva>.yemek-cizimi>img:first-child{width:100%;height:100%}
+.tepsi-yuva{grid-template:minmax(0,1fr)/minmax(0,1fr);min-width:0;min-height:0}
+.tepsi-yuva>.simit-halkasi{width:84%;height:82%;object-fit:contain}
+.tepsi-yuva[data-parca=icecek]>.tepsi-gida{width:68%;height:66%}
+.tepsi-yuva>i{right:1%;bottom:0}.tepsi-yuva[data-hazir=false]>i{background:var(--sef-kumanda-fonu, #fff4bd)}.tepsi-yuva[data-hazir=true]>i{width:4cqh;height:4cqh}
+.tepsi-servis,.tepsi-yeni{position:absolute;right:2%;top:38%;width:12%;height:13%;background:var(--sef-kumanda-fonu, #fff2bb);border:.34cqh solid #3c3134;border-radius:3cqh;box-shadow:0 .6cqh #947050}.tepsi-servis img{height:92%;width:96%}
+.tepsi-istasyon{position:absolute;inset:0}.tepsi-istasyon~.tepsi-ust h2{font-size:3.2cqh}
+.tepsi-yuva>.pz-pizza{position:relative;inset:auto;width:auto;height:92%;max-width:96%;aspect-ratio:1}
+.pz-menu-tabagi{display:grid;place-items:center;position:relative;width:100%;height:100%;container-type:size}
+.pz-menu-tabagi>.pz-pizza{position:relative;inset:auto;width:min(96cqw,96cqh);height:min(96cqw,96cqh)}
+.pz-menu-tabagi .pz-taban{width:100%;height:100%}
+.pz-menu-tabagi .pz-parca{width:var(--pz-boy,16%);height:var(--pz-boy,16%)}
+.tepsi-yuva>.yemek-cizimi{width:auto;height:89%;max-width:96%}
+.tepsi-yuva>.sef-yildizlar{position:absolute;bottom:-5%;left:50%;translate:-50% 0;white-space:nowrap}
+.tepsi-yuva>.sef-yildizlar i{width:3.6cqh;height:3.6cqh}
+.tepsi-ust h2>.ikon,.tepsi-rekor>.ikon{width:4.4cqh;height:4.4cqh;color:#ffd556}
+.tepsi-rekor{position:absolute;top:4%;right:3%;display:flex;align-items:center;gap:.45cqh;padding:.25cqh .8cqh;background:var(--sef-kumanda-fonu, #fff3c4);border:.24cqh solid #503c33;border-radius:3cqh;font-size:2.7cqh}
+.tepsi-rekor>.ikon{width:2.8cqh;height:2.8cqh}
+.tepsi-eksik img{opacity:.35}.tepsi-eksik>i{background:#ffd1ae}
+.tepsi-erken{padding:1.6cqh;gap:1.4cqw;border:.4cqh solid #413134;border-radius:3cqh;background:var(--sef-kumanda-fonu, #fff8df);color:#392e32}
+.tepsi-erken[open]{display:flex}.tepsi-erken::backdrop{background:#372d414f}
+.tepsi-erken button{display:flex;align-items:center;justify-content:space-evenly;gap:.8cqw;width:20cqw;height:13cqh;border:.3cqh solid #4b3a35;border-radius:2.4cqh;background:#c7efd2}
+.tepsi-erken button:last-child{background:var(--sef-kumanda-fonu, #ffe3ae)}.tepsi-erken img{width:60%;height:90%}.tepsi-erken .ikon{width:4cqh;height:4cqh}
+
+.tepsi-yuva>img.tepsi-servis-buhari{position:absolute;top:5%;left:46%;width:13%;height:25%;pointer-events:none;opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .tepsi-servis-buhari{animation:tepsi-buharlan 1050ms 400ms 2}
+  @keyframes tepsi-buharlan{0%{opacity:0;translate:0 18%}32%{opacity:.88}100%{opacity:0;translate:16% -62%}}
+  .tepsi-yeni-porsiyon>:first-child{animation:tabak-konuyor 530ms cubic-bezier(.22,.72,.3,1) both;transform-origin:center bottom}
+  .tepsi-yeni-porsiyon>i{animation:pul-oturuyor 270ms 340ms both}
+  .tepsi-yeni-servis .tepsi-tabla{animation:tepsi-uzat 760ms ease-in-out both;transform-origin:50% 5%}
+  .tepsi-yeni-servis .tepsi-alici .sef-yildizlar i[data-dolu=true]{animation:pul-oturuyor 330ms 450ms both}
+  .tepsi-yeni-servis .tepsi-alici .sef-yildizlar i:nth-child(2){animation-delay:610ms}
+  .tepsi-yeni-servis .tepsi-alici .sef-yildizlar i:nth-child(3){animation-delay:770ms}
+  .tepsi-servis:active img{transform:translateY(5%)}
+  @keyframes tabak-konuyor{0%{opacity:0;translate:0 -24%;rotate:-4deg}65%{opacity:1;translate:0 2%;rotate:1deg}100%{opacity:1;translate:0;rotate:0deg}}
+  @keyframes pul-oturuyor{0%{opacity:0;scale:.65}72%{opacity:1;scale:1.12}100%{opacity:1;scale:1}}
+  @keyframes tepsi-uzat{0%,100%{transform:none}46%,58%{transform:translateY(-9%) scale(.95)}}
+}
+

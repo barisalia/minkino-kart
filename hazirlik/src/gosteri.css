@@ -1,0 +1,450 @@
+.gosteri-oyunu{position:absolute;inset:0;isolation:isolate;touch-action:manipulation;user-select:none}
+.gosteri-oyunu button{touch-action:manipulation}
+.gosteri-oyunu button:focus-visible{outline:3px solid #356b73;outline-offset:3px}
+.gosteri-ses-balonu{position:absolute;z-index:1;top:28%;width:clamp(42px,7.5vmin,74px);aspect-ratio:1.16;box-sizing:border-box;display:grid;place-items:center;background:#fff7dd;border:1.6px solid #241b1c;border-radius:45% 48% 43% 43%;pointer-events:none}
+.gosteri-ses-balonu[hidden]{display:none}
+.gosteri-ses-balonu:after{content:"";position:absolute;bottom:-7%;width:15%;height:19%;background:inherit;border-right:1.6px solid #241b1c;border-bottom:1.6px solid #241b1c;transform:skewY(28deg)}
+.gosteri-ses-balonu[data-kim=zip]{left:57%}
+.gosteri-ses-balonu[data-kim=zip]:after{right:13%}
+.gosteri-ses-balonu[data-kim=kino]{right:57%;background:#fff2bc}
+.gosteri-ses-balonu[data-kim=kino]:after{left:13%;transform:scaleX(-1) skewY(28deg)}
+.gosteri-oyunu .gosteri-ses-balonu img{height:82%;width:82%}
+.gosteri-nota-dinle{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:clamp(46px,9vmin,72px);aspect-ratio:1;border:1.6px solid #28201d;border-radius:50%;background:#b4e5d7;box-shadow:0 3px #51998b;padding:5px}
+.gosteri-nota-dinle small{position:absolute;width:47%;height:47%;right:-11%;bottom:-6%;pointer-events:none}
+.gosteri-nota-dinle:disabled{visibility:hidden}
+@media(max-aspect-ratio:1/1){
+  .gosteri-ses-balonu{top:35%;width:clamp(42px,12vw,74px)}
+  .gosteri-ses-balonu[data-kim=zip]{left:62%}.gosteri-ses-balonu[data-kim=kino]{right:62%}
+  .gosteri-nota-dinle{top:25%}
+}
+.gosteri-oyunu svg,.gosteri-oyunu img,.ev-gosteri-rozeti svg{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.gosteri-solo,.gosteri-ikili{position:absolute;inset:18% 15% 25%;display:flex;align-items:end;justify-content:center;gap:8%}
+.gosteri-perde-arkasi{translate:-39cqw 0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.gosteri-perde-arkasi{visibility:hidden}}
+.gosteri-oyuncu{position:relative;display:block;height:100%;width:39%;min-height:0;pointer-events:none}
+.gosteri-oyuncu img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;visibility:hidden}
+.gosteri-oyuncu img:first-child{visibility:visible}
+.gosteri-oyunu[data-sahne=bulut] .gosteri-solo .gosteri-oyuncu{height:88%}
+.gosteri-kapali{position:absolute;inset:0 0 14%;display:flex}
+.gosteri-kapali i{width:50%;background:#e87a77;border:2px solid #723f45;border-radius:0 0 7% 4%}
+.gosteri-kapali i:after{content:"";display:block;width:56%;height:100%;margin:auto;border-left:3px solid #cb5d63;border-right:3px solid #cb5d63;border-radius:0 0 10% 6%}
+.gosteri-ip,.gosteri-baslat,.gosteri-alkis button{position:absolute;width:clamp(62px,12vmin,120px);height:clamp(62px,12vmin,120px);background:#fff0cd;border:2px solid #31262d;border-radius:46%;padding:7px}
+.gosteri-ip{left:50%;top:50%;transform:translate(-50%,-50%)}.gosteri-baslat{left:50%;bottom:20%;transform:translateX(-50%);z-index:2}
+.gosteri-alkis button{right:15%;bottom:12%}
+.gosteri-kartlar,.gosteri-pedler{position:absolute;bottom:7%;left:25%;width:50%;height:17%;display:flex;justify-content:center;align-items:stretch;gap:16%}
+.gosteri-kart,.gosteri-ped{display:grid;place-items:center;height:100%;width:min(42%,17vmin);border-radius:25%;border:2px solid #2c2228;background:#ffedbd;box-shadow:0 4px #b77b52;padding:3px}
+.gosteri-kart:active,.gosteri-ped:active{translate:0 2px;box-shadow:none}
+.gosteri-oyunu[data-sahne=isik]:before{content:"";position:absolute;inset:0;background:#17263a;opacity:.45;pointer-events:none;z-index:1}
+.gosteri-oyunu[data-sahne=isik] .gosteri-kartlar{z-index:2}
+.gosteri-pedler{height:14%;width:44%;left:28%;gap:24%;bottom:5%}
+.gosteri-ped{width:38%;border-radius:40% 40% 27% 27%;background:#ffdf91}
+.gosteri-ped:last-child{background:#c9d7ec}
+.gosteri-ray{--inis:0;position:absolute;bottom:20%;left:28%;width:44%;height:26%;pointer-events:none}
+.gosteri-dusen{position:absolute;top:calc(var(--inis)*72%);width:28%;height:46%;display:grid;place-items:center;filter:drop-shadow(0 2px 0 #ffedc2)}
+.gosteri-dusen.iz-0{left:6%}.gosteri-dusen.iz-1{right:6%}
+.gosteri-ray.prova{--inis:.75}.gosteri-ray.gosteri-yardim .gosteri-dusen{background:#fff3c7;border-radius:50%;outline:2px solid #406b67}
+.gosteri-oyunu:is([data-sahne=prova],[data-sahne=final]) .gosteri-ikili{inset:14% 13% 39%;gap:25%}
+.gosteri-sayac{position:absolute;top:10%;left:36%;width:28%;display:flex;justify-content:center;gap:4px}
+.gosteri-sayac i{width:9%;aspect-ratio:1;border-radius:50%;background:#ece2bd;border:1.5px solid #283e43}.gosteri-sayac .alindi{background:#ffcd4c}.gosteri-sayac .gecti{background:#80b8ad}
+.gosteri-odul{position:absolute;top:13%;left:41%;width:18%;height:25%;text-align:center;color:#fff6cb;display:flex;align-items:center;flex-direction:column}
+.gosteri-odul>b{font:700 clamp(16px,4vmin,32px)/1.2 system-ui;background:#285762;border-radius:12px;padding:2px 8px;white-space:nowrap}
+.gosteri-odul svg{min-height:0}
+@media(max-aspect-ratio:1/1){.gosteri-ikili,.gosteri-solo{inset:30% 4% 32%;gap:3%}.gosteri-oyuncu{width:47%}.gosteri-kartlar{left:15%;width:70%;bottom:15%;height:13%}.gosteri-oyunu:is([data-sahne=prova],[data-sahne=final]) .gosteri-ikili{inset:23% 1% 42%;gap:2%}.gosteri-pedler,.gosteri-ray{left:12%;width:76%}.gosteri-pedler{bottom:12%;height:10%}.gosteri-ray{bottom:23%;height:17%}.gosteri-baslat{bottom:28%}.gosteri-odul{top:20%;left:36%;width:28%;height:14%}.gosteri-alkis button{bottom:15%}}
+.ev-oyuncu .gosteri-oyuncu,.ev-hatira,.ev-hatira>svg,.ev-hatira>img,.ev-hatira>span{display:block;width:100%;height:100%;object-fit:contain}
+.ev-pano-yer{opacity:.48}
+.kres-sahne:has(.meyve-mutfagi:not([data-asama=sec])) [data-kres=cicekci]{display:none}
+.gosteri-kapali i{transition:transform .8s cubic-bezier(.35,.02,.42,1)}
+.gosteri-oyunu[data-gecis=evet] .gosteri-kapali i:first-child{transform:translateX(-94%)}
+.gosteri-oyunu[data-gecis=evet] .gosteri-kapali i:last-child{transform:translateX(94%)}
+.gosteri-oyunu[data-gecis=evet] .gosteri-ip{visibility:hidden}
+.gosteri-oyunu[data-sahne=isik]:before{transition:opacity .7s}
+.gosteri-oyunu[data-gecis=evet][data-sahne=isik]:before{opacity:0}
+.gosteri-ramp-isiklari{position:absolute;inset:0;pointer-events:none}
+.gosteri-ramp-isiklari>i{position:absolute;left:17.05%;bottom:11.66%;width:2.65%;height:3.05%;transform:translateX(-50%);overflow:visible}
+.gosteri-ramp-isiklari>i:nth-child(2){left:50%;bottom:10.8%}
+.gosteri-ramp-isiklari>i:nth-child(3){left:82.95%}
+.gosteri-ramp-isiklari b{display:block;width:100%;height:100%;border-radius:50% 50% 8% 8% / 85% 85% 15% 15%;background:#fff3af}
+.gosteri-ramp-isiklari>i:before{content:"";position:absolute;bottom:130%;left:-215%;width:530%;height:80%;background:#ffedb2;opacity:.15;border-radius:50%}
+.gosteri-oyunu[data-sahne=isik]:not([data-gecis=evet]) .gosteri-ramp-isiklari{z-index:1}
+.gosteri-oyunu[data-sahne=isik]:not([data-gecis=evet]) .gosteri-ramp-isiklari b{background:#9b968c}
+.gosteri-oyunu[data-sahne=isik]:not([data-gecis=evet]) .gosteri-ramp-isiklari>i:before{opacity:0}
+.gosteri-kanat-zili{position:absolute;right:5%;top:25%;width:5.9%;height:9%;pointer-events:none;z-index:1}
+.gosteri-kanat-zili:before{content:"";position:absolute;height:58%;width:2px;background:#433738;left:50%;bottom:80%}
+.gosteri-kanat-zili svg{transform-origin:50% 17%}
+@media(max-aspect-ratio:1/1){.gosteri-ramp-isiklari>i{left:13.7%;bottom:25.02%;width:4.7%;height:2.05%}.gosteri-ramp-isiklari>i:nth-child(2){bottom:24.66%}.gosteri-ramp-isiklari>i:nth-child(3){left:86.3%}.gosteri-kanat-zili{right:4%;top:22%;width:9%;height:7%}}
+.gosteri-esya-tepkisi,.gosteri-seyirci,.gosteri-dokunus{position:absolute;pointer-events:none;left:44%;top:23%;width:12%;height:14%}
+.gosteri-seyirci{left:75%;top:62%;width:9%;height:9%}
+.gosteri-dokunus{top:60%;height:9%;width:8%}.gosteri-dokunus.iz-0{left:32%}.gosteri-dokunus.iz-1{left:60%}
+@media(prefers-reduced-motion:no-preference){.gosteri-seyirci,.gosteri-dokunus{animation:gosteri-yuksel .6s ease-out both}
+@keyframes gosteri-yuksel{from{translate:0 30%;opacity:.8}70%{opacity:1}to{translate:0 -40%;opacity:0}}}
+@media(prefers-reduced-motion:reduce){.gosteri-kapali i{transition:none}}
+.gosteri-oyunu:is([data-sahne=prova],[data-sahne=final]) .gosteri-ikili{inset:19% 13% 29%;gap:25%}
+@media(max-aspect-ratio:1/1){.gosteri-oyunu:is([data-sahne=prova],[data-sahne=final]) .gosteri-ikili{inset:32% 1% 34%;gap:2%}}
+.ev-album-fotosu{display:grid;place-items:center;width:95%;height:93%;border:1.4px solid #35292a;background:#fff1cd;border-radius:8%;rotate:-5deg}
+.ev-album-fotosu svg{width:90%;height:88%}
+.gosteri-sayac[hidden]{display:none}
+.gosteri-oyunu[data-kapanis=birlikte] :is(.gosteri-pedler,.gosteri-ray,.gosteri-nota-yollari,.gosteri-sayac){opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:no-preference){.gosteri-oyunu[data-kapanis=birlikte] :is(.gosteri-pedler,.gosteri-nota-yollari,.gosteri-sayac){transition:opacity .32s ease-out}}
+.gosteri-oyunu[data-dal=dans] .gosteri-ikili{touch-action:none}
+.gosteri-oyunu[data-dal=dans] .gosteri-ray{bottom:39%;left:45%;width:10%;height:16%;z-index:1}
+.gosteri-oyunu[data-dal=dans] .gosteri-dusen{top:0;left:0;right:auto;width:100%;height:100%;border-radius:48% 45% 45% 18%;background:#fff4cf;border:2px solid #302527;box-sizing:border-box;padding:8%;filter:none}
+.gosteri-oyunu[data-dal=dans][data-sira=sen] .gosteri-dusen{background:#e5f5da}
+.gosteri-oyunu[data-dal=dans] .gosteri-ped:first-child{background:#f4bd7c;border-radius:49% 49% 34% 34%}
+.gosteri-oyunu[data-dal=dans] .gosteri-ped:last-child{background:#a3d5ca;border-radius:49% 49% 34% 34%}
+@media(max-aspect-ratio:1/1){.gosteri-oyunu[data-dal=dans] .gosteri-ray{top:21%;left:39%;width:22%;height:10%}}
+.gosteri-kapali i{background:#df456a;border-color:#45273d;border-width:1.6px;border-radius:0 0 8% 5%}
+.gosteri-kapali i:after{width:69%;border-color:#a33254;border-width:0 2px;border-style:solid;box-shadow:inset 9px 0 #ec627c,inset -9px 0 #d13f62}
+.gosteri-ip{touch-action:none;width:clamp(57px,12vmin,96px);height:clamp(57px,12vmin,96px);top:49%;border-radius:48% 48% 45% 45%;background:#ffdc80;box-shadow:0 3px 0 #8f5739}
+.gosteri-ip:before{content:"";position:absolute;width:5%;height:45vmin;bottom:100%;left:47%;background:#f2c16a;border-left:1.2px solid #3d2b30;border-right:1.2px solid #3d2b30}
+@media(prefers-reduced-motion:no-preference){
+.gosteri-zil-tepki{animation:sahne-zili .48s ease-in-out 2}
+@keyframes sahne-zili{0%,100%{rotate:0deg}25%{rotate:14deg}75%{rotate:-13deg}}
+}
+.gosteri-kapali{inset:0}
+.gosteri-kapali i{width:50%;height:100%;background-image:var(--perde-genis);background-size:200% 100%;background-repeat:no-repeat;background-position:left top;border:0;border-radius:0}
+.gosteri-kapali i:last-child{background-position:right top}
+.gosteri-kapali i:after{display:none}
+.gosteri-oyunu[data-gecis=evet] .gosteri-kapali i:first-child{transform:translateX(-101%)}
+.gosteri-oyunu[data-gecis=evet] .gosteri-kapali i:last-child{transform:translateX(101%)}
+@media(max-aspect-ratio:1/1){.gosteri-kapali i{background-image:var(--perde-dik)}}
+.gosteri-kapali i{clip-path:inset(7% 0 15%);transform-origin:left center;transition:scale .82s cubic-bezier(.35,.01,.37,1)}
+.gosteri-kapali i:last-child{transform-origin:right center}
+.gosteri-oyunu[data-gecis=evet] .gosteri-kapali i:nth-child(n){transform:none;scale:.015 1}
+@media(max-aspect-ratio:1/1){.gosteri-kapali i{clip-path:inset(4% 0 25%)}}
+@media(prefers-reduced-motion:reduce){.gosteri-kapali i{transition:none}}
+.ev-hatira.ev-ani-fotografi{display:grid;place-items:center;box-sizing:border-box;position:relative;width:91%;height:88%;padding:8% 10% 13%;background:#fff6d7;border:1.5px solid #32292b;border-radius:5% 6% 4% 5%;rotate:-3deg}
+.ev-hatira.ev-ani-fotografi:after{content:"";position:absolute;background:#dd7864;width:10%;aspect-ratio:1;border:1px solid #402a29;border-radius:50%;top:2%;left:46%}
+.ev-hatira.ev-ani-fotografi>svg,.ev-hatira.ev-ani-fotografi>img{max-width:100%;max-height:100%}
+.ev-oyuncu:not(.ev-yuruyen){container-type:size}
+.ev-oyuncu[data-kres=anne] .gosteri-oyuncu{height:min(100cqh,170cqw);align-self:end}
+.ev-oyuncu[data-kres=anne] .ev-eslik{display:none}
+.ev-oyuncu[data-kres=anne].eslik-ediyor .ev-sohbet{display:none}
+.ev-oyuncu[data-kres=anne].eslik-ediyor .ev-eslik{display:block}
+.ev-oyuncu[data-kres=eve-kino] .gosteri-oyuncu{height:min(100cqh,125cqw);align-self:end}
+.ev-son-pano{display:grid;place-items:center;width:100%;height:100%;background:#e9ac6d;border:2px solid #392a24;box-sizing:border-box;border-radius:8%;box-shadow:inset 0 0 0 3px #f6c685}
+.ev-son-pano .ev-ani-fotografi{width:61%;height:69%;font-style:normal}
+.kres-parca.ev-son-ani{min-width:44px;min-height:44px;z-index:2}
+.ev-zil-noktasi{min-width:44px;min-height:44px}
+.ev-zil-sesi{position:relative;display:block;width:78%;height:55%;pointer-events:none}
+.ev-zil-sesi>i{position:absolute;display:block;left:58%;top:12%;width:19%;height:70%;border-right:2.2px solid #403029;border-radius:50%;opacity:0}
+.ev-zil-sesi>i+i{left:70%;top:3%;height:91%;width:23%}
+@media(prefers-reduced-motion:no-preference){
+.ev-zil-sesi>i{animation:ev-zili-davet 3s ease-in-out 2}
+.ev-zil-sesi.caldi>i{animation:ev-zili-davet .65s ease-in-out 1}
+@keyframes ev-zili-davet{0%,60%,100%{opacity:0}22%,44%{opacity:.95}}}
+@media(prefers-reduced-motion:reduce){.ev-zil-sesi.caldi>i{opacity:.9}}
+.gosteri-puan-dizisi{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:65%;max-width:84px;margin-top:3px;padding:4px 6px 5px;border-radius:10px;background:#245762;pointer-events:none}
+.gosteri-puan-dizisi i{aspect-ratio:1;clip-path:polygon(50% 0,62% 32%,98% 37%,73% 61%,79% 98%,50% 82%,20% 98%,25% 62%,1% 37%,36% 33%);background:#66908e}
+.gosteri-puan-dizisi i.dolu{background:#ffcf63}
+.gosteri-ekran-okuyucu{position:absolute;overflow:hidden;width:1px;height:1px;padding:0;border:0;clip-path:inset(50%);white-space:nowrap}
+.gosteri-nota-yollari{position:absolute;pointer-events:none;left:28%;width:44%;bottom:12%;height:27%}
+.gosteri-nota-yollari i{position:absolute;bottom:0;left:19%;height:100%;width:1.8px;background:#fae1a4;border-radius:2px}
+.gosteri-nota-yollari i+i{left:81%}
+.gosteri-oyunu[data-dal=sarki] .gosteri-ped{border-radius:45% 45% 28% 28%;padding:2px 10%;background:#ffdc83;box-shadow:0 4px #b57542}
+.gosteri-oyunu[data-dal=sarki] .gosteri-ped+.gosteri-ped{background:#cbdcf3;box-shadow:0 4px #64839c}
+.gosteri-oyunu[data-dal=sarki] .gosteri-dusen{filter:none}
+.gosteri-oyunu[data-dal=sarki] .gosteri-ray.gosteri-yardim .gosteri-dusen{background:transparent;outline:none}
+.gosteri-oyunu:not([data-program=dort])[data-vur="0"] .gosteri-ped:first-child,.gosteri-oyunu:not([data-program=dort])[data-vur="1"] .gosteri-ped:last-child{translate:0 3px;box-shadow:none}
+.gosteri-oyunu:not([data-program=dort])[data-tutulan="0"] .gosteri-ped:first-child,.gosteri-oyunu:not([data-program=dort])[data-tutulan="1"] .gosteri-ped:last-child{translate:0 2px}
+.gosteri-yildiz-buyut{position:absolute;top:13%;left:59%;width:clamp(44px,6vmin,62px);height:clamp(44px,6vmin,62px);padding:3px;background:#fff0c7;border:1.5px solid #2c2529;border-radius:48%}
+.gosteri-onceki-kupa{position:absolute;bottom:16%;right:8%;width:clamp(45px,8vmin,75px);aspect-ratio:1;padding:5px;border:1.5px solid #33252c;background:#ffe8b5;border-radius:38%}
+@media(max-aspect-ratio:1/1){.gosteri-onceki-kupa{bottom:29%;right:4%}}
+.gosteri-yildiz-penceresi{width:min(83vw,570px);max-height:87dvh;border:2px solid #302226;border-radius:22px;background:#fff0cf;padding:clamp(10px,2.3vmin,21px)}
+.gosteri-yildiz-penceresi::backdrop{background:#24283eb0}
+.gosteri-yildiz-sirasi{display:flex;align-items:center;width:100%;margin:3px 0 10px;padding:4px 6px;border-radius:15px;border:1.5px solid #463932;background:#f7cf93;min-height:52px}
+.gosteri-yildiz-sirasi+.gosteri-yildiz-sirasi{background:#ade3d2}
+.gosteri-yildiz-sirasi>i{display:block;width:clamp(42px,11vmin,70px);height:clamp(42px,11vmin,70px);margin-right:5%}
+.gosteri-yildiz-sirasi>span{display:grid;grid-template-columns:repeat(4,1fr);width:65%;gap:1px}
+.gosteri-yildiz-sirasi>span>i{display:block;height:clamp(26px,6vmin,43px)}
+.gosteri-yildiz-sirasi .bos svg path{fill:transparent;stroke:#625d59;stroke-width:3}
+.gosteri-yildiz-kapat{display:block;margin-left:auto;width:clamp(46px,10vmin,65px);height:clamp(46px,10vmin,65px)}
+@media(max-aspect-ratio:1/1){.gosteri-yildiz-buyut{left:66%;top:23%}}
+.gosteri-oyunu:not([data-program=dort])[data-yaklasti="0"] .gosteri-nota-yollari i:first-child,.gosteri-oyunu:not([data-program=dort])[data-yaklasti="1"] .gosteri-nota-yollari i:last-child{width:3px;background:#fff0bc}
+@media(max-aspect-ratio:1/1){.gosteri-nota-yollari{left:12%;width:76%;bottom:17%;height:20%}}
+.gosteri-oyunu[data-sahne=isik][data-gecis=evet]:before{opacity:0}
+@media(prefers-reduced-motion:no-preference){.gosteri-oyunu[data-sahne=isik]:before{transition:opacity .42s ease-out}}
+.ev-ani-salonu{position:fixed;box-sizing:border-box;inset:0;width:min(88vw,132vh);max-width:94vw;max-height:92dvh;padding:clamp(5px,1.2vmin,12px);border:2px solid #272025;border-radius:2.5vmin;background:#ffefc7;overflow:hidden}
+.ev-ani-salonu::backdrop{background:#2b2339ad}
+.ev-ani-perdesi{position:relative;overflow:hidden;aspect-ratio:16/9;border:1.5px solid #282128;border-radius:1.6vmin}
+.ev-ani-perdesi picture,.ev-ani-perdesi picture img{display:block;width:100%;height:100%;object-fit:fill}
+.ev-ani-perdesi .gosteri-ikili{inset:16% 14% 25%;gap:10%}
+.ev-ani-iz{position:absolute;bottom:8%;left:46%;width:8%;height:12%;pointer-events:none}
+.ev-ani-iz svg,.ev-ani-kumanda img{display:block;width:100%;height:100%;object-fit:contain}
+.ev-ani-kumanda{display:flex;justify-content:space-between;align-items:center;padding:5px 3px 0}
+.ev-ani-kumanda button{width:clamp(46px,8vmin,68px);height:clamp(46px,8vmin,68px);padding:1px;border:0;background:transparent;border-radius:35%;touch-action:manipulation}
+.ev-ani-kumanda button:focus-visible{outline:3px solid #376278}
+.ev-ani-kumanda button:disabled{visibility:hidden}
+.ev-dans-seridi{box-sizing:border-box;position:relative;display:inline-flex;width:100%;height:100%;align-items:center;justify-content:center;gap:2%;padding:3% 5%;background:#ffe8b6;border:1.5px solid #28201f;border-radius:12px;box-shadow:0 3px #c58856}
+.ev-dans-seridi i{position:relative;display:block;flex:1;min-width:0;height:100%;border-radius:6px}
+.ev-dans-seridi i.sirada{background:#a4e3cd;outline:2px solid #28655c}
+.ev-dans-seridi i img,.ev-dans-seridi b img,.ev-dans-seridi b svg{display:block;width:100%;height:100%;object-fit:contain}
+.ev-dans-seridi b{position:absolute;right:-5%;bottom:-10%;width:26%;max-width:42px;height:45%;pointer-events:none}
+.ev-ani-kumanda .ev-album-dansi{width:auto;min-width:72px;max-width:52%;height:clamp(45px,8vmin,66px);flex:0 1 auto}
+.ev-album-dansi .ev-dans-seridi{padding:3px 8px}
+.ev-album-dansi .ev-dans-seridi i{width:clamp(24px,5vmin,45px)}
+.ev-kupa-rafi{position:relative;display:block;width:100%;height:100%}
+.ev-kupa-rafi>span{position:absolute;inset:0 14% 17%;display:flex;align-items:end;justify-content:center}
+.ev-kupa-rafi>span>img{min-width:0;min-height:0;object-position:center bottom}
+.ev-kupa-rafi svg{display:block;width:100%;height:100%}
+.ev-kupa-rafi>i{position:absolute;bottom:11%;left:4%;width:92%;height:9%;border:1.4px solid #241b20;background:#da9963;border-radius:3px}
+.ev-kupa-rafi>i:after{content:"";position:absolute;left:21%;top:100%;height:100%;width:54%;background:#af754c;clip-path:polygon(0 0,100% 0,85% 100%,15% 100%)}
+#sahne[data-ev-agiz] .ev-sohbet img{visibility:hidden}
+#sahne[data-ev-agiz="0"] .ev-sohbet img:nth-child(1),#sahne[data-ev-agiz="1"] .ev-sohbet img:nth-child(2),#sahne[data-ev-agiz="2"] .ev-sohbet img:nth-child(3),#sahne[data-ev-agiz="3"] .ev-sohbet img:nth-child(4),#sahne[data-ev-agiz="4"] .ev-sohbet img:nth-child(5),#sahne[data-ev-agiz="5"] .ev-sohbet img:nth-child(6){visibility:visible}
+/* Konuşmayan karakterin ağzına ötekinin sesini verme. */
+#sahne:not([data-konusan=anne]) [data-kres=anne] .ev-sohbet img:not(:first-child){visibility:hidden}
+#sahne:not([data-konusan=anne]) [data-kres=anne] .ev-sohbet img:first-child{visibility:visible}
+[data-kres=eve-kino]>.ev-kino-ses{display:none}
+#sahne[data-konusan=kino][data-ev-agiz] [data-kres=eve-kino]>.ev-kino-eylem{display:none}
+#sahne[data-konusan=kino][data-ev-agiz] [data-kres=eve-kino]>.ev-kino-ses{display:block}
+@media(max-aspect-ratio:1/1){.ev-ani-salonu{width:min(83vw,54vh)}.ev-ani-perdesi{aspect-ratio:9/15}.ev-ani-perdesi .gosteri-ikili{inset:30% 4% 30%;gap:5%}.ev-ani-iz{left:41%;width:18%;height:9%;bottom:14%}}
+.gosteri-oyunu[data-sahne=sec] .gosteri-kartlar{left:14%;width:72%;bottom:5%;height:23%;gap:4%}
+.gosteri-oyunu[data-sahne=sec] .gosteri-kart{width:auto;aspect-ratio:3/2;max-width:47%;padding:0;overflow:hidden;border:1.5px solid #201b1a;border-radius:9% / 13.5%;box-shadow:0 3px #a96f48}
+.gosteri-oyunu[data-sahne=sec] .gosteri-kart img{width:100%;height:100%;display:block;object-fit:contain}
+.ev-hatira .ev-sahne-fotografi,.ev-album-fotosu .ev-sahne-fotografi{display:block;position:relative;width:100%;height:100%;overflow:hidden;border-radius:3%}
+.ev-sahne-fotografi img:nth-child(n){position:absolute;display:block;object-fit:contain;width:45%;height:77%;bottom:8%;left:4%}
+.ev-sahne-fotografi img:nth-child(3){left:auto;right:4%}
+.ev-sahne-fotografi img:first-child{inset:0;width:100%;height:100%;object-fit:cover}
+.ev-aile-albumu{width:min(88vw,740px);max-height:90dvh;overflow:auto;padding:clamp(10px,3vmin,24px);border:2px solid #292527;border-radius:16px;background:#ffe7b9;box-shadow:inset 0 -5px #d5a77b}
+.ev-aile-albumu::backdrop{background:#262a34a6}
+.ev-beslenme-hatirasi{position:relative;display:block;width:100%;height:100%;border-radius:12%;background:#fff0d3}
+.ev-beslenme-hatirasi>i{position:absolute;left:1%;top:8%;width:66%;height:85%}
+.ev-beslenme-hatirasi>i+i{left:60%;top:34%;width:38%;height:54%}
+.ev-beslenme-hatirasi svg{display:block;width:100%;height:100%}
+.ev-sofra-hatirasi{display:grid;grid-template-columns:1fr 1fr;place-items:center;width:100%;height:100%}
+.ev-sofra-hatirasi>i{position:relative;width:100%;height:69%;display:block}
+.ev-sofra-hatirasi>i>img{position:absolute;inset:13% 0 0;width:100%;height:87%;object-fit:contain}
+.ev-sofra-hatirasi b{position:absolute;transform:translate(-50%,-50%);width:33%;height:44%}
+.ev-sofra-hatirasi b img{display:block;width:100%;height:100%;object-fit:contain}
+:is(.kres-ani-resmi,.ev-ani-fotografi)>.sergi-etiket{width:96%;height:auto;box-sizing:border-box}
+:is(.kres-ani-resmi,.ev-ani-fotografi)>.sergi-etiket>:is(img,svg){width:30%;height:auto;max-height:100%;object-fit:contain}
+.ev-acilan-kapi{position:absolute;inset:0;pointer-events:none;clip-path:inset(18% 12.9% 35.1% 70.1%)}
+.ev-acilan-kapi img{display:block;width:100%;height:100%;object-fit:fill}
+.ev-acilan-kapi img+img,.ev-acilan-kapi[hidden],.kres-parca.ev-esikte[hidden]{display:none}
+.kres-parca.ev-esikte{pointer-events:none;z-index:0}
+.ev-esikte .gosteri-oyuncu{width:100%;height:100%}
+.ev-yuruyen{z-index:2}
+.ev-yol-kapi.zil-hazir{z-index:3}
+.ev-yuruyen .gosteri-oyuncu{grid-area:1/1}
+.ev-yuruyen .gosteri-oyuncu img{left:50%;right:auto;width:auto;height:100%;max-width:none;transform:translateX(-50%)}
+.ev-yuruyen .ev-yol-uzan,.ev-yuruyen.kapida .ev-yol-yurume{display:none}
+.ev-yuruyen .ev-yol-don{display:none}
+.ev-yuruyen.kapida .ev-yol-uzan{display:block}
+.kres-sahne[data-esik=acik] .ev-yuruyen .ev-yol-don{display:block}
+.kres-sahne[data-esik=acik] .ev-yuruyen .ev-yol-uzan{display:none}
+.ev-cocuk-zili{z-index:1}.ev-cocuk-zili.basildi svg{scale:.92}
+.ev-zil-noktasi{z-index:3}
+.kres-sahne[data-esik=acik] .ev-zil-sesi{visibility:hidden}
+@media(max-aspect-ratio:1/1){.ev-acilan-kapi{clip-path:inset(35.8% 12.4% 37.1% 59.7%)}.ev-acilan-kapi img{display:none}.ev-acilan-kapi img+img{display:block}}
+.gosteri-yeniden-prova{position:absolute;bottom:20%;left:calc(50% - clamp(111px,24vmin,180px));width:clamp(52px,10vmin,82px);aspect-ratio:1;background:#ffe2a8;border:1.6px solid #272625;border-radius:42%;padding:5px;box-shadow:0 3px #b57b47}
+.gosteri-yeniden-prova>i{display:block;width:78%;height:78%;margin:auto}
+.gosteri-yeniden-prova>small{position:absolute;width:42%;height:42%;right:-5%;bottom:-5%}
+@media(max-aspect-ratio:1/1){.gosteri-yeniden-prova{bottom:28%}}
+.kres-parca.ev-album-kitabi,.kres-parca[data-kres=ev-kupa-rafi]{z-index:2;min-width:44px;min-height:44px}
+.ev-album-sayfalari{display:flex;gap:3%;justify-content:center;align-items:center}
+.ev-album-sayfasi{position:relative;display:grid;place-items:center;width:31%;aspect-ratio:1.18;border-radius:6%;background:#fff3d2;border:1px solid #312825;padding:3% 2% 6%;box-shadow:0 3px #d8b28c}
+.ev-album-sayfasi .ev-album-fotosu{width:100%;height:100%;rotate:none;border:0}
+.ev-album-sayfasi>span{position:absolute;width:22%;height:22%;bottom:1%;right:2%}
+.ev-album-sayfasi>span img,.ev-album-sayfasi>span svg,.ev-album-kapa img,.ev-album-kapa svg{display:block;width:100%;height:100%;object-fit:contain}
+.ev-album-kapa{display:block;margin:10px 0 0 auto;width:clamp(46px,9vmin,66px);height:clamp(46px,9vmin,66px)}
+@media(max-aspect-ratio:1/1){.ev-album-sayfalari{flex-direction:column;gap:8px}.ev-album-sayfasi{width:min(85%,25vh);aspect-ratio:1.7;padding:2% 2% 5%}}
+@media(min-aspect-ratio:1/1){.gosteri-oyunu[data-sahne=sec] .gosteri-ikili{bottom:30%}}
+@media(min-aspect-ratio:1/1) and (max-height:450px){.kres-cift-dekor [data-kres=dinle]{left:max(11%,90px);top:14%;width:44px;height:44px}}
+@media(max-aspect-ratio:1/1){.gosteri-oyunu[data-sahne=sec] .gosteri-kartlar{left:5%;width:90%;height:auto;bottom:16%;gap:5%}.gosteri-oyunu[data-sahne=sec] .gosteri-kart{width:45%;height:auto}}
+/* İki kostüm, mikrofon ve kurdele farklı genişlikte kırpılmıştır. Oyuncunun
+   boyunu kostüm değil sahne belirler; bütün çizimler aynı tabana yerleşir. */
+.gosteri-oyunu .gosteri-ikili{container-type:size}
+.gosteri-oyunu[data-sahne=selam] .gosteri-ikili{bottom:25%}
+@media(max-aspect-ratio:1/1){.gosteri-oyunu[data-sahne=selam] .gosteri-ikili{bottom:34%}}
+.gosteri-oyunu .gosteri-ikili>.gosteri-oyuncu{height:min(100cqh,39cqw);overflow:visible}
+.gosteri-oyunu .gosteri-ikili>.gosteri-oyuncu img{width:auto;height:100%;max-width:none;left:50%;right:auto;transform:translateX(-50%)}
+.gosteri-oyunu:is([data-sahne=final],[data-sahne=prova]) .gosteri-ikili>.gosteri-oyuncu{height:min(100cqh,32cqw)}
+@media(max-aspect-ratio:1/1){.gosteri-oyunu .gosteri-ikili>.gosteri-oyuncu,.gosteri-oyunu:is([data-sahne=final],[data-sahne=prova]) .gosteri-ikili>.gosteri-oyuncu{height:min(100cqh,53cqw)}}
+
+.gosteri-esya-resmi{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.gosteri-kart:has(>.gosteri-esya-resmi){padding:clamp(4px,1vmin,11px);min-height:0;min-width:0;grid-template: minmax(0,1fr) / minmax(0,1fr)}
+@media(max-aspect-ratio:1/1){
+  .gosteri-oyunu[data-sahne=arac] .gosteri-kartlar{align-items:center;gap:8%}
+  .gosteri-oyunu[data-sahne=arac] .gosteri-kart{width:36%;height:auto;aspect-ratio:1.13}
+}
+
+/* Boyalı oyuncak düğmeleri. İki seçenek aynı vurguya sahip. */
+.gosteri-oyunu:not([data-sahne=sec]) .gosteri-kart,
+.gosteri-oyunu .gosteri-ped,.gosteri-oyunu .gosteri-alkis button,
+.kres :is(.kres-anlati,.ev-aile-secimi)>.kres-ani-resmi{
+  --boya:#87e1ce;--kenar:#39aba4;--isik:#c8f6de;
+  position:relative;isolation:isolate;box-sizing:border-box;
+  background:var(--boya);border:clamp(1.3px,.21vmin,2.4px) solid #211c24;
+  border-radius:34% 30% 31% 29% / 39% 37% 33% 34%;
+  box-shadow:inset 0 clamp(-6px,-.7vmin,-3px) var(--kenar), inset 0 clamp(2px,.42vmin,4px) var(--isik);
+  display:grid;place-items:center;grid-template:minmax(0,1fr)/minmax(0,1fr);
+}
+.gosteri-oyunu .gosteri-alkis button{position:absolute}
+.gosteri-oyunu:not([data-sahne=sec]) .gosteri-kart:nth-child(even),
+.gosteri-oyunu .gosteri-ped:nth-child(even),
+.kres .ev-aile-secimi[data-kres=ev-goster-1]>.kres-ani-resmi,
+.kres .kres-anlati:nth-of-type(even)>.kres-ani-resmi{
+  --boya:#ffad89;--kenar:#e87e72;--isik:#ffdbac;
+}
+.kres :is(.kres-anlati,.ev-aile-secimi)>.kres-ani-resmi{
+  width:min(100%,15vmin);height:auto;max-height:100%;aspect-ratio:1.18;
+}
+.gosteri-oyunu:not([data-sahne=sec]) .gosteri-kart>.gosteri-esya-resmi,
+.gosteri-oyunu .gosteri-ped>.gosteri-esya-resmi,
+.kres :is(.kres-anlati,.ev-aile-secimi) .kres-ani-resmi>.gosteri-esya-resmi{
+  width:82%;height:80%;align-self:center;justify-self:center;
+}
+.gosteri-oyunu .gosteri-kanat-zili img{transform-origin:50% 17%}
+.gosteri-odul>.gosteri-esya-resmi{min-height:0}
+.ev-kupa-rafi img,.ev-ani-iz img{width:100%;height:100%;object-fit:contain}
+.sahne-dinle{box-sizing:border-box;display:grid;place-items:center;height:92%;width:auto;max-width:100%;
+  aspect-ratio:1;border:1.7px solid #211c24;border-radius:50%;background:#ffda75;
+  box-shadow:inset 0 -3px #edab49,inset 0 2px #fff1af}
+.sahne-dinle img{display:block;width:76%;height:74%;object-fit:contain}
+.kres :is(.ev-aile-secimi,.kres-anlati):active>.kres-ani-resmi,.kres-ok:active .sahne-dinle{translate:0 2px}
+.kres .kres-anlati>.ev-anlat-fotografi{
+  width:100%;height:auto;aspect-ratio:1.52;max-height:100%;
+  border-radius:12% / 18%;padding:4% 4% 8%;rotate:-3deg;
+}
+.ev-anlat-fotografi>.ev-sahne-fotografi{display:block;position:relative;width:100%;height:100%;overflow:hidden;border-radius:8%}
+
+/* Four stable picture keys share their exact centres with the falling notes. */
+.gosteri-oyunu[data-program=dort]{--klavye:60%;--sol:20%}
+.gosteri-oyunu[data-program=dort] :is(.gosteri-pedler,.gosteri-nota-yollari),
+.gosteri-oyunu[data-program=dort][data-dal=sarki] .gosteri-ray{
+  left:var(--sol);width:var(--klavye);display:grid;grid-template-columns:repeat(var(--ped-adedi,4),minmax(0,1fr));gap:0
+}
+.gosteri-oyunu[data-program=dort] .gosteri-ped:nth-child(n){
+  touch-action:manipulation;justify-self:center;width:89%;height:100%;padding:3px;
+  min-height:44px;border-radius:26% 28% 22% 24% / 34% 32% 25% 28%;background:var(--boya);
+  box-shadow:inset 0 -4px var(--kenar),inset 0 2px var(--isik)
+}
+.gosteri-oyunu[data-kurdele=evet]{--ped-adedi:5}
+.gosteri-oyunu[data-kurdele=evet] .gosteri-ped:nth-child(5){--boya:#ffbfad;--kenar:#da8b7e;--isik:#ffddce}
+.gosteri-oyunu[data-vur="4"] .gosteri-ped:nth-child(5){translate:0 2px}
+.gosteri-oyunu[data-program=dort] .gosteri-ped:nth-child(3){--boya:#ffdc80;--kenar:#e5ac55;--isik:#fff0ac}
+.gosteri-oyunu[data-program=dort] .gosteri-ped:nth-child(4){--boya:#cfc4f3;--kenar:#a495d3;--isik:#e8dffd}
+.gosteri-oyunu[data-program=dort] .gosteri-ped>img{width:88%;height:89%;align-self:center}
+.gosteri-oyunu[data-program=dort] .gosteri-nota-yollari i:nth-child(n){position:static;justify-self:center;width:2px}
+.gosteri-oyunu[data-program=dort][data-dal=sarki] .gosteri-dusen{left:calc(var(--el)*25% + 4%);right:auto;width:17%}
+.gosteri-oyunu[data-program=dort][data-dal=dans][data-sahne=final] .gosteri-ray:not(.gosteri-yardim){opacity:0}
+.gosteri-oyunu[data-program=dort] .gosteri-dokunus{left:46%;width:8%;height:9%;top:56%}
+.gosteri-oyunu[data-program=dort][data-dal=dans] .gosteri-dokunus{display:none}
+.gosteri-oyunu[data-program=dort] .gosteri-ped:active{translate:0 2px}
+@media(max-aspect-ratio:1/1){.gosteri-oyunu[data-program=dort]{--klavye:92%;--sol:4%}}
+
+.gosteri-oyunu[data-program=dort] .gosteri-dusen{grid-template:minmax(0,1fr)/minmax(0,1fr)}
+.gosteri-oyunu[data-program=dort] .gosteri-dusen img{min-height:0;min-width:0}
+.gosteri-oyunu[data-program=dort][data-dal=sarki] .gosteri-dusen{
+  top:calc(var(--inis)*65%);height:35%;width:13%;left:calc(var(--el)*25% + 6%)
+}
+
+.gosteri-oyunu[data-program=dort] .gosteri-kucuk-poz{
+  display:none;grid-area:1/1;position:relative;width:88%;height:89%;pointer-events:none
+}
+.gosteri-kucuk-poz img{position:absolute;inset:0;visibility:hidden}
+.gosteri-oyunu[data-program=dort] .hareket-ipucu>.gosteri-kucuk-poz{display:block}
+.gosteri-oyunu[data-program=dort] .hareket-ipucu>img{visibility:hidden;grid-area:1/1}
+.gosteri-oyunu[data-program=dort][data-dal=dans] .gosteri-ray{opacity:0}
+.gosteri-oyunu[data-program=dort] .gosteri-sayac{gap:clamp(2px,.45vmin,6px);align-items:center}
+.gosteri-oyunu[data-program=dort] .gosteri-sayac i{
+  display:grid;place-items:center;border:0;background:none;width:10%;opacity:.48
+}
+.gosteri-oyunu[data-program=dort] .gosteri-sayac i:nth-child(5){margin-left:5%}
+.gosteri-oyunu[data-program=dort] .gosteri-sayac i:not(.alindi) img{filter:grayscale(1)}
+.gosteri-oyunu[data-program=dort] .gosteri-sayac i.gecti{opacity:.23}
+.gosteri-oyunu[data-program=dort] .gosteri-sayac i.alindi{opacity:1}
+@media(prefers-reduced-motion:no-preference){
+  .gosteri-oyunu[data-program=dort] .gosteri-sayac .alindi img{animation:gosteri-yildiz-otur .38s ease-out both}
+  @keyframes gosteri-yildiz-otur{0%{scale:.72;rotate:-12deg}55%{scale:1.15}100%{scale:1;rotate:0deg}}
+}
+
+.gosteri-oyunu[data-program=dort][data-dal=sarki]{--tus-ustu:19%}
+.gosteri-oyunu[data-program=dort][data-dal=sarki]:is([data-sahne=prova],[data-sahne=final]) .gosteri-ikili{bottom:31%}
+.gosteri-oyunu[data-program=dort][data-dal=sarki] :is(.gosteri-ray,.gosteri-nota-yollari){bottom:var(--tus-ustu);height:11.5%}
+.gosteri-oyunu[data-program=dort][data-dal=sarki] .gosteri-dusen{height:51%;top:calc(var(--inis)*49%)}
+.gosteri-oyunu[data-program=dort][data-dal=sarki] .gosteri-dokunus{
+  top:auto;bottom:var(--tus-ustu);width:calc(var(--klavye)*.14);height:8%;
+  left:calc(var(--sol) + var(--klavye)*(.055 + var(--el)*.25))
+}
+@media(max-aspect-ratio:1/1){
+  .gosteri-oyunu[data-program=dort][data-dal=sarki]{--tus-ustu:22%}
+  .gosteri-oyunu[data-program=dort][data-dal=sarki]:is([data-sahne=prova],[data-sahne=final]) .gosteri-ikili{bottom:35%}
+  .gosteri-oyunu[data-program=dort][data-dal=sarki] :is(.gosteri-ray,.gosteri-nota-yollari){height:12%}
+}
+.gosteri-oyunu[data-program=dort][data-vur="0"] .gosteri-ped:nth-child(1),
+.gosteri-oyunu[data-program=dort][data-tutulan="0"] .gosteri-ped:nth-child(1){translate:0 2px;box-shadow:inset 0 -1px var(--kenar),inset 0 2px var(--isik)}
+.gosteri-oyunu[data-program=dort][data-vur="1"] .gosteri-ped:nth-child(2),
+.gosteri-oyunu[data-program=dort][data-tutulan="1"] .gosteri-ped:nth-child(2){translate:0 2px;box-shadow:inset 0 -1px var(--kenar),inset 0 2px var(--isik)}
+.gosteri-oyunu[data-program=dort][data-vur="2"] .gosteri-ped:nth-child(3),
+.gosteri-oyunu[data-program=dort][data-tutulan="2"] .gosteri-ped:nth-child(3){translate:0 2px;box-shadow:inset 0 -1px var(--kenar),inset 0 2px var(--isik)}
+.gosteri-oyunu[data-program=dort][data-vur="3"] .gosteri-ped:nth-child(4),
+.gosteri-oyunu[data-program=dort][data-tutulan="3"] .gosteri-ped:nth-child(4){translate:0 2px;box-shadow:inset 0 -1px var(--kenar),inset 0 2px var(--isik)}
+
+.gosteri-oyunu .dans-sonuc-secimleri{left:24%;width:52%;gap:5%}
+.gosteri-oyunu .dans-sonuc-secimleri button{width:28%}
+.gosteri-oyunu .dans-defteri-ac img{width:93%;height:91%}
+.gosteri-oyunu[data-sahne=dans-defteri] .gosteri-ikili{inset:24% 12% 28%;gap:19%}
+.dans-defteri{
+  position:absolute;left:50%;top:9%;transform:translateX(-50%);
+  height:clamp(54px,14%,104px);max-width:70%;box-sizing:border-box;
+  display:flex;align-items:center;gap:clamp(3px,.65vmin,8px);padding:5px 8px;
+  background:#ffdf9d;border:1.6px solid #251e21;border-radius:16px 20px 18px 15px;
+  box-shadow:inset 0 -3px #dca769,inset 0 2px #ffefbd
+}
+.dans-defteri button{border:1.4px solid #372729;min-width:44px;height:100%;aspect-ratio:.95;
+  padding:2px;border-radius:19% 22% 18% 20%;background:#fff6d2;position:relative}
+.dans-defteri .dans-yuvasi:empty{background:#e6bf82;border-color:#bd9259}
+.dans-defteri .dans-yuvasi.siradaki{background:#fff1bd;border:2px dashed #92603f}
+.dans-defteri .dans-yuvasi.sahnede{background:#b3e5bc;box-shadow:inset 0 -4px #78b98f}
+.dans-defteri .dans-yuvasi:not(:empty):not(:disabled):active{translate:0 2px}
+.dans-defteri .dans-oynat,.gosteri-oyunu .dans-bitti{background:transparent;box-shadow:none;border:0;padding:0}
+.dans-defteri .dans-oynat:disabled{opacity:.45}
+.dans-bitti{position:absolute;right:4%;bottom:4%;width:clamp(44px,9vmin,77px);aspect-ratio:1}
+@media(max-aspect-ratio:1/1){
+  .gosteri-oyunu .dans-sonuc-secimleri{left:12%;width:76%}
+  .gosteri-oyunu[data-sahne=dans-defteri] .gosteri-ikili{inset:33% 2% 34%;gap:5%}
+  .dans-defteri{top:21%;height:clamp(56px,9%,85px);max-width:96%}
+  .dans-bitti{bottom:2%;right:5%}
+}
+
+.gosteri-solo-puan{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:.45em;padding:.17em .48em .2em;color:#302226;background:#fff0bf;border:2px solid #39272b;border-radius:1em;font:bold clamp(24px,5vmin,48px)/1 system-ui}
+.gosteri-solo-puan .gosteri-puan-dizisi{width:clamp(64px,12vmin,110px);max-width:none;margin:0;box-sizing:border-box}
+
+/* Şiirde ilk dört ritim görünür. Kalanlarda örneği Zıpzıp verir. */
+.gosteri-oyunu[data-ezber=sende] .gosteri-dusen{visibility:hidden}
+.gosteri-oyunu[data-ezber=sende] .gosteri-ray::after{content:"";position:absolute;bottom:0;left:41%;width:18%;height:12%;border-radius:50%;background:#fff0b4;border:1.5px solid #342c2e}
+.gosteri-odul-kadrosu{position:absolute;left:50%;bottom:22%;width:min(94%,103vh);aspect-ratio:1000/465;transform:translateX(-50%);pointer-events:none}
+.gosteri-odul-kadrosu>span{position:absolute;bottom:0;display:block}
+.gosteri-odul-kadrosu .toren-ceren{left:53%;width:38.25%;height:90%}
+.gosteri-odul-kadrosu .toren-kino{left:43.1%;width:25.76%;height:70%}
+.gosteri-odul-kadrosu .toren-zip{left:19%;width:22%;height:66%}
+.gosteri-odul-kadrosu .gosteri-oyuncu{width:100%;height:100%}
+.gosteri-odul-kadrosu .toren-kino img{position:absolute;inset:0;object-fit:contain;object-position:center bottom}
+.toren-kino img:nth-child(2),[data-teslim=evet] .toren-kino img:first-child{visibility:hidden}
+[data-teslim=evet] .toren-kino img:nth-child(2){visibility:visible}
+.gosteri-konfeti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.gosteri-konfeti i{position:absolute;display:block;width:clamp(4px,.8vmin,10px);height:clamp(7px,1.4vmin,16px);border-radius:2px}
+@media(max-aspect-ratio:1/1){.gosteri-odul-kadrosu{width:100%;bottom:32%}}
+.gosteri-davetliler,.gosteri-tek-giris{justify-content:space-evenly;gap:0}
+.gosteri-davetliler .gosteri-oyuncu,.gosteri-tek-giris .gosteri-oyuncu{width:45%;height:96%}
+.gosteri-tek-giris::after{content:"";width:45%}
+.gosteri-oyunu[data-sahne=bulut] .gosteri-davetliler .davulcu{height:96%}
+.gosteri-davetliler .canci{height:88%}
+
+.gosteri-kapali{cursor:pointer}
+@media(prefers-reduced-motion:no-preference){
+  .gosteri-kapali i{transition:scale 1.42s cubic-bezier(.48,.02,.24,1)}
+}
+.siir-tuslari>button:nth-child(1){--zemin:#fd917e;--taban:#c85e54;--yanik:#ffe6cb}
+.siir-tuslari>button:nth-child(2){--zemin:#8ec5ff;--taban:#437dbc;--yanik:#d5f5ff}
+.siir-tuslari>button:nth-child(3){--zemin:#80d5af;--taban:#43896b;--yanik:#d3ffe0}
+.siir-tuslari>button:nth-child(4){--zemin:#cb9deb;--taban:#9063ac;--yanik:#ffe0ff}
+.gosteri-oyunu[data-program=dort] .siir-tuslari .gosteri-ped:nth-child(n){
+  border:2px solid #392c32;border-radius:30% 30% 24% 24%;padding:3% 5%;
+  background:var(--zemin);box-shadow:0 4px var(--taban);position:relative
+}
+.gosteri-oyunu[data-program=dort] .siir-tuslari .gosteri-ped.sira-sende{
+  background:var(--yanik);box-shadow:inset 0 0 0 3px #fff8e8,0 0 0 4px var(--zemin),0 0 15px 4px var(--yanik)
+}
+.siir-tuslari .gosteri-ped img{object-fit:contain}
+.gosteri-ray[hidden],.gosteri-baslat[hidden]{display:none}

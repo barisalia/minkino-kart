@@ -1,0 +1,30 @@
+.tatli-tezgahi[data-tatli=dondurma]:is([data-adim="0"],[data-adim="1"],[data-adim="2"]) .ta-calisma{left:6%;right:6%;top:26%;height:57%}
+.dk-tatlar{display:flex;align-items:center;justify-content:center;gap:3%;width:100%;height:100%;padding-top:8%}
+.dk-kap-sec,.dk-yuzey,.dk-kulah,.dk-tut{position:relative;display:block;margin:0;padding:0;border:0;background:transparent;touch-action:none}
+.dk-kap-sec{width:31%;aspect-ratio:2.15}
+.dk-kap-sec>img,.dk-kap>img,.dk-kulah>img:first-child{display:block;width:100%;height:100%;object-fit:fill}
+.dk-kap-sec:active{transform:translateY(3px)}
+.dk-istasyon{position:relative;width:100%;height:100%;isolation:isolate}
+.dk-kap{position:absolute;left:5%;top:23%;width:46%;aspect-ratio:2.18}
+.dk-yuzey{position:absolute;left:4%;top:9%;width:92%;height:47%;border-radius:18%}
+.dk-kulah{position:absolute;right:11%;bottom:22%;height:68%;aspect-ratio:.62}
+.dk-kulah:before{position:absolute;content:"";left:-25%;right:-25%;top:-18%;height:50%}
+.dk-hedef{display:none;position:absolute;pointer-events:none;left:3%;right:3%;top:-5%;height:14%;border:2px dashed #37775d;border-radius:50%}
+.dk-istasyon[data-dolu=true] .dk-hedef{display:block}
+.dk-istasyon[data-yakin=true] .dk-hedef{background:#c1efc2;border-style:solid;scale:1.14}
+.dk-tut{position:absolute;left:21%;top:39%;width:30%;height:33%;translate:-17% -62%;z-index:2;pointer-events:none}
+.dk-istasyon[data-dolu=true] .dk-tut{pointer-events:auto}
+.dk-istasyon[data-dolu=true] .dk-tut:not([style*="left"]){left:29%;top:25%}
+.dk-alet{position:absolute;inset:0;display:block;transform:rotate(-12deg);transform-origin:17% 62%}
+.dk-alet>.dk-kepce{position:absolute;left:0;top:56%;width:100%;height:auto}
+.dk-alet>.dk-top{position:absolute;left:0%;bottom:37%;width:34%;height:auto;transform:scale(var(--dolum,0));transform-origin:50% 100%}
+.dk-oturan{position:absolute;left:-6%;bottom:89%;width:112%;height:auto;pointer-events:none}
+.dk-istasyon[data-yerlesti=true] .dk-hedef,.dk-istasyon[data-yerlesti=true] .dk-top{display:none}
+.dk-degistir{position:absolute;left:4%;top:0;display:flex;align-items:center;justify-content:center;gap:4%;width:17%;min-height:38px;padding:1.3cqh 1.7cqh;background:var(--sef-kumanda-fonu, #fff5df);border:1.5px solid #573c34;border-radius:2.7cqh;box-shadow:0 .6cqh #b89069}
+.dk-degistir>img{width:28%;height:auto}
+.pastane-porsiyonu[data-tur=dondurma][data-isirik="1"] .tatli-katlari{mask-image:radial-gradient(ellipse 27% 17% at 25% 4%,transparent 97%,black 100%)}
+.pastane-porsiyonu[data-tur=dondurma][data-isirik="2"] .tatli-katlari{clip-path:polygon(0 32%,16% 35%,26% 33%,40% 36%,54% 33%,69% 35%,83% 32%,100% 34%,100% 100%,0 100%)}
+.pastane-porsiyonu[data-tur=dondurma][data-isirik="3"] .tatli-katlari{visibility:hidden}
+
+.tatli-tezgahi[data-tatli=dondurma]{background-image:url('../../assets/sef/dondurma-tezgahi/tezgah.webp')}
+.dk-siyrik{position:absolute;inset:0;width:100%;height:100%;border-radius:18%;pointer-events:none}

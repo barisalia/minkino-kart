@@ -1,0 +1,21 @@
+.piknik-paket{position:absolute;inset:0;isolation:isolate;container-type:size;background:#abd76a url('../../assets/sef/piknik/bahce.webp') center/cover no-repeat;overflow:hidden}
+.piknik-ortu{position:absolute;bottom:1%;left:20%;width:76%;height:54%;object-fit:fill}
+.piknik-ust{position:absolute;top:2%;left:2%;right:2%;display:flex;align-items:center;justify-content:space-between}
+.piknik-ust .dugme{position:static;width:max(44px,10cqh);height:max(44px,10cqh)}
+.piknik-ilerleme{display:flex;gap:1.2cqh;background:var(--sef-kumanda-fonu, #fff6d7);padding:1.8cqh;border-radius:4cqh;border:2px solid #382f31}
+.piknik-ilerleme i{width:2.2cqh;aspect-ratio:1;border-radius:50%;border:1px solid #574435}
+.piknik-ilerleme i[data-dolu=true]{background:#57a873}
+.piknik-sepet{position:absolute;left:31%;top:38%;width:56%;height:46%;padding:0;background:none;border:0;touch-action:manipulation}
+.piknik-sepet>img{position:absolute;width:100%;height:100%;inset:0;object-fit:fill}
+.piknik-cepler{position:absolute;inset:3% 9% 35%;display:flex;align-items:center;justify-content:center;gap:1%}
+.piknik-cep{display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center;min-width:0;flex:1;height:100%}
+.piknik-cep:last-child{flex:.65}
+.piknik-esya>img,.piknik-cep>img,.piknik-elde>img{width:100%;height:100%;object-fit:contain}
+.piknik-esya>.yemek-cizimi,.piknik-cep>.yemek-cizimi,.piknik-elde>.yemek-cizimi{width:100%;height:auto}
+.piknik-raf{position:absolute;top:20%;left:3%;bottom:9%;width:20%;display:flex;flex-direction:column;gap:1cqh}
+.piknik-esya{flex:1;min-height:0;position:relative;display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center;padding:1cqh 2cqw;background:var(--sef-kumanda-fonu, #fff4d3);border:2px solid #4b3a35;border-radius:3cqh;box-shadow:0 .6cqh #87774a;touch-action:none}
+.piknik-esya:disabled{visibility:hidden}
+.piknik-yolla{position:absolute;right:3%;bottom:5%;display:flex;align-items:center;justify-content:center;gap:.3cqw;padding:1.4cqh;border:2px solid #364438;background:#b9edaf;border-radius:4cqh;min-height:44px;min-width:60px}
+.piknik-yolla[hidden]{display:none}.piknik-yolla .ikon{width:6cqh;height:6cqh}
+.piknik-elde{position:absolute;width:12%;height:18%;translate:-50% -50%;pointer-events:none;display:grid;place-items:center}
+.piknik-yakin{outline:3px dashed #498453;outline-offset:3px;border-radius:45%}

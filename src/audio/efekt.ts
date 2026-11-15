@@ -1,3 +1,4 @@
+import {calgiSesi} from './bando';
 import { baglam, efektCikisi } from './motor';
 
 /** Web Audio ile sentezlenen ses efektleri (dosya gerekmez). */
@@ -67,17 +68,14 @@ function hisirti(bas: number, sure: number, f1: number, f2: number, ses = 0.25, 
 const NOTA = (n: number) => 440 * Math.pow(2, (n - 69) / 12);
 
 export const efekt = {
-  sinifCalgisi(calgı:number) {
-    if(calgı===0){
-      ton(170,0,.22,'sine',.38,60);
-      hisirti(0,.055,820,350,.12);
-    }else if(calgı===1){
-      hisirti(0,.12,2400,5100,.29);
-      hisirti(.13,.10,4800,2400,.22);
-    }else if(calgı===3){
-      can(880,0,.24,.55);
+  trenDudugu(){
+    for(const [bas,sure] of [[0,.19],[.24,.35]]){
+      ton(659,bas,sure,'sine',.13,698);
+      ton(830,bas+.01,sure*.97,'sine',.07,880);
+      hisirti(bas,.055,2400,1500,.045,1);
     }
   },
+  sinifCalgisi:calgiSesi,
   karinGurultusu() {
     ton(134, 0, .32, 'triangle', .10, 76);
     hisirti(.04, .28, 340, 150, .09, .8);

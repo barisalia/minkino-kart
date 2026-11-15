@@ -1,0 +1,13 @@
+.vitrin-secimi{position:absolute;inset:0;width:min(78%,680px);max-width:92%;padding:2cqh 3cqw 3cqh;border:2px solid #3e302b;border-radius:5cqh;background:var(--sef-kumanda-fonu, #fff2d8);box-shadow:0 1cqh #a8784d;color:#44322f}
+.vitrin-secimi::backdrop{background:#34263870}
+.vitrin-geri,.vitrin-ok{width:clamp(44px,9cqh,60px);height:clamp(44px,9cqh,60px);border:2px solid #53413c;border-radius:50%;background:var(--sef-kumanda-fonu, #fffaf0);display:grid;place-items:center}
+.vitrin-geri{position:absolute;left:3%;top:6%}
+.vitrin-geri .ikon,.vitrin-ok .ikon{width:46%;height:46%}
+.vitrin-istegi{height:17cqh;min-height:44px;width:35%;position:relative;margin:0 auto 2cqh;display:grid;place-items:center;background:var(--sef-kumanda-fonu, #fffaf0);border:2px solid #785340;border-radius:3cqh}
+.vitrin-istegi>.pastane-porsiyonu,.vitrin-istegi>.tepsi-gida{max-width:96%;width:85%;height:96%;object-fit:contain}
+.vitrin-rafi{display:flex;align-items:stretch;justify-content:center;gap:2%;padding:.8cqh 1% 2cqh;border-bottom:1.5cqh solid #d49759;border-radius:2cqh}
+.vitrin-tabagi{position:relative;width:32%;height:24cqh;display:grid;place-items:center;border:2px solid #765747;border-radius:3cqh;background:#e2f3e5}
+.vitrin-tabagi:nth-child(2){background:var(--sef-kumanda-fonu, #fce0db)}.vitrin-tabagi:nth-child(3){background:#e6e2f6}
+.vitrin-tabagi .pastane-porsiyonu{width:95%;height:95%}
+.vitrin-tabagi:active{translate:0 .5cqh}
+.vitrin-gez{display:flex;gap:1cqw;justify-content:center}.vitrin-gez:not(:empty){padding-top:1.6cqh}.vitrin-ok:disabled{opacity:.45}

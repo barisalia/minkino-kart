@@ -1,0 +1,29 @@
+.oyuncak-yolu{position:absolute;inset:16% 2% 8%;display:grid;place-items:center;container-type:size}
+.yol-kadraj{position:relative;width:min(100cqw,240cqh);overflow:hidden}
+.yol-tabla{position:relative;touch-action:none}
+.yol-manzara,.yol-tabla button svg,.yol-park svg,.yol-tekrar img{display:block;width:100%;height:100%;pointer-events:none}
+.yol-manzara{position:absolute;inset:0}
+.yol-arabasi,.yol-kolu,.yol-park,.yol-tekrar{position:absolute;display:block;padding:0;border:0;background:none;touch-action:none}
+.yol-arabasi{aspect-ratio:190 / 108;cursor:grab}
+.yol-arabasi:active{cursor:grabbing}
+.yol-kolu{width:9%;aspect-ratio:70/76;min-width:44px;transform:translateX(-12%);cursor:pointer}
+.yol-kolu:disabled{opacity:1;cursor:default}
+.yol-kanat{transform-origin:0 0;transform:rotate(var(--yol-kopru-acisi,-57deg))}
+.yol-mandali{transform-origin:23px 45px;transform:rotate(var(--yol-kol-acisi,0deg))}
+.kopru-indi .yol-kanat{transform:rotate(0)}
+.kopru-indi .yol-mandali{transform:rotate(58deg)}
+.yol-tekrar,.yol-park{width:clamp(45px,9cqw,80px);aspect-ratio:1;bottom:-2%;z-index:2}
+.yol-tekrar{left:72%}.yol-park{right:1%}
+.oyuncak-yolu button[hidden]{display:none}
+.kres-araba-boyasi svg{max-width:100%;max-height:100%;overflow:visible}
+@media(max-aspect-ratio:1/1){
+  .oyuncak-yolu{inset:22% 1.5% 19%}
+  .yol-kadraj{width:min(100cqw,108.75cqh)}
+  .yol-tekrar,.yol-park{width:clamp(48px,13cqw,80px);bottom:-4%}
+}
+@media(prefers-reduced-motion:no-preference){
+  .yol-kanat,.yol-mandali{transition:transform .45s cubic-bezier(.4,0,.52,1)}
+  .kol-bekliyor .yol-mandali{animation:oyuncak-mandal 3s ease-in-out infinite}
+  .kol-elde .yol-mandali,.kol-elde .yol-kanat{animation:none;transition:none}
+  @keyframes oyuncak-mandal{0%,28%,100%{transform:rotate(0)}12%{transform:rotate(10deg)}}
+}

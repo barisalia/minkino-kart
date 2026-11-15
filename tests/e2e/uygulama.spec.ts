@@ -3,7 +3,7 @@ import { menuOyunlari } from '../../uygulama/src/oyunlar';
 import { hataTopla } from './yardimci';
 
 const KATEGORILER = ['Etkinlikler', 'Kitaplar', 'Oyunlar', 'Çizgi Filmler'];
-const oyunlar = menuOyunlari(false).filter(k => !['hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(k.id));
+const oyunlar = menuOyunlari(false).filter(k => !['alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(k.id));
 
 test('Ana menü: dört kategori ve gerçek içerik kartları', async ({ page }) => {
   const hatalar = hataTopla(page);
@@ -16,7 +16,8 @@ test('Ana menü: dört kategori ve gerçek içerik kartları', async ({ page }) 
   await expect(page.locator('.ym-icerik[data-oyun="otobus"]')).toHaveCount(1);
   await expect(page.locator('.ym-icerik[data-oyun="pasta"], .ym-icerik[data-oyun="mino-giysin"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Etkinlikler', exact: true }).click();
-  await expect(page.locator('.ym-icerik')).toHaveCount(4);
+  await expect(page.locator('.ym-icerik')).toHaveCount(5);
+  await expect(page.locator('.ym-icerik[data-oyun="alfabe"]')).toBeVisible();
   await expect(page.locator('.ym-icerik[data-oyun="hazirlik"]')).toBeVisible();
   await expect(page.locator('.ym-icerik[data-oyun="kartlar"]')).toBeVisible();
   await expect(page.locator('.ym-icerik[data-oyun="canlan"]')).toBeVisible();
@@ -24,11 +25,26 @@ test('Ana menü: dört kategori ve gerçek içerik kartları', async ({ page }) 
   expect(hatalar).toEqual([]);
 });
 
+test('Minik Şef: oyun kapağından siparişlere girilir ve aynı kategoriye dönülür', async ({ page }) => {
+  await page.goto('./?test=1&yassor=1');
+  await page.getByRole('button', { name: '5 yaş', exact: true }).click();
+  await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
+  const kart = page.getByRole('button', { name: 'Minik Şef', exact: true });
+  await expect.poll(() => kart.locator('img').evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await kart.click();
+  await expect(page).toHaveTitle('Minik Şef');
+  await expect(page.getByRole('button', { name: 'Sebze çorbası siparişi', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Bahçe salatası siparişi', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Oyun menüsüne dön', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Oyunlar', exact: true })).toBeVisible();
+  await expect(kart).toBeVisible();
+});
+
 test('Kartlar: menü yaşıyla açılır; oyunda yaş değiştirilince menü de güncellenir', async ({ page }) => {
   const hatalar = hataTopla(page);
   await page.goto('./?test=1');
   await page.getByRole('button', { name: 'Yaş aralığını seç' }).click();
-  await expect(page.getByRole('dialog', { name: 'Kaç yaşındasın?' }).locator('.ym-yas-kart')).toHaveCount(4);
+  await expect(page.getByRole('dialog', { name: 'Kaç yaşındasın?' }).locator('.ym-yas-kart')).toHaveCount(5);
   await page.getByRole('button', { name: '5 yaş', exact: true }).click();
   await page.getByRole('button', { name: 'Etkinlikler', exact: true }).click();
   await page.locator('.ym-icerik[data-oyun="kartlar"]').click();

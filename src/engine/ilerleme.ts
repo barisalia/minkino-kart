@@ -13,6 +13,8 @@ export interface Ayarlar {
 export interface Ilerleme {
   surum: 1;
   yas: Yas | null;
+  /** İki yaş seçilince kart oyunu en küçük soru havuzunu kullanır. */
+  ikiYas?: boolean;
   /** Kazanılan albüm kartlarının id'leri */
   album: string[];
   /** `${yas}-${tema}` → o temada alınan en iyi yıldız */
@@ -25,7 +27,7 @@ export interface Ilerleme {
   ayarlar: Ayarlar;
 }
 
-const ANAHTAR = 'minkino-kartlar-v1';
+export const ILERLEME_ANAHTARI = 'minkino-kartlar-v1';
 
 export function varsayilan(): Ilerleme {
   return {
@@ -58,7 +60,7 @@ function depo(): Depo | null {
 export function yukle(d: Depo | null = depo()): Ilerleme {
   const v = varsayilan();
   try {
-    const ham = d?.getItem(ANAHTAR);
+    const ham = d?.getItem(ILERLEME_ANAHTARI);
     if (!ham) return v;
     const o = JSON.parse(ham) as Partial<Ilerleme>;
     return {
@@ -77,7 +79,7 @@ export function yukle(d: Depo | null = depo()): Ilerleme {
 
 export function kaydet(i: Ilerleme, d: Depo | null = depo()): void {
   try {
-    d?.setItem(ANAHTAR, JSON.stringify(i));
+    d?.setItem(ILERLEME_ANAHTARI, JSON.stringify(i));
   } catch {
     /* gizli sekme vb. — ilerleme bu oturumla sınırlı kalır */
   }
@@ -85,7 +87,7 @@ export function kaydet(i: Ilerleme, d: Depo | null = depo()): void {
 
 export function sifirla(d: Depo | null = depo()): Ilerleme {
   try {
-    d?.removeItem(ANAHTAR);
+    d?.removeItem(ILERLEME_ANAHTARI);
   } catch {
     /* yok say */
   }

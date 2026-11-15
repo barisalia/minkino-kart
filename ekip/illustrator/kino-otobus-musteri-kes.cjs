@@ -19,9 +19,9 @@ const SAYFA = 'ekip/gemini/yeni/kino-otobus/musteri-yeni-sayfasi.png', O = 'asse
 const ARA = path.join(os.tmpdir(), 'kino-otobus-musteri-kes'), GIR = path.join(ARA, 'girdi'), KES = path.join(ARA, 'kes');
 const SUTUN = [0, 917, 1834, 2752], SATIR = [0, 790, 1536];
 /** sayfadaki yer: [satır, sütun] */
-const YER = { bidik: [0, 0], bidicik: [0, 1], 'bidik-baba': [0, 2], tombi: [1, 0], bulut: [1, 1], zipzip: [1, 2] };
+const YER = { bidik: [0, 0], bidicik: [0, 1], 'bidik-baba': [0, 2], tombi: [1, 0], zipzip: [1, 2] };
 /** hedef boy (birim): tepe → ayak (Bidicik araba dahil; Zipzip kulaksız) */
-const BOY = { bidik: 1.25, bidicik: 0.8, 'bidik-baba': 2.2, tombi: 1.45, bulut: 1.25, zipzip: 1.25 };
+const BOY = { bidik: 1.25, bidicik: 0.8, 'bidik-baba': 2.2, tombi: 1.45, zipzip: 1.25 };
 const ESAS = 'bidik-baba';
 /**
  * Elle ölçülen noktalar (SAYFA koordinatı, 2752x1536): yuz [x0,y0,x1,y1] gözler+ağız, agiz [x,y], bel y,
@@ -32,7 +32,6 @@ const NOKTA = {
   bidicik: { yuz: [1140, 425, 1280, 503], agiz: [1208, 489], bel: 633 },         // bel: arabanın ön üst kenarı
   'bidik-baba': { yuz: [2060, 208, 2218, 342], agiz: [2141, 326], bel: 588 },    // bel: yeleğin alt kenarı
   tombi: { yuz: [490, 962, 692, 1062], agiz: [597, 1051], bel: 1272 },           // bel: şortun üst kenarı
-  bulut: { yuz: [1295, 1042, 1472, 1138], agiz: [1388, 1124], bel: 1312 },       // bel: yün gövdenin ortası (eller)
   zipzip: { yuz: [2062, 1108, 2245, 1200], agiz: [2157, 1184], bel: 1372, basBant: [2140, 2172] },   // bel: tişörtün alt kenarı
 };
 const ALFA = 60, KENAR = 0.02;
@@ -65,7 +64,9 @@ const ALFA = 60, KENAR = 0.02;
   if (ppu < ilkPpu) console.log(`UYARI: ${ESAS} kendi boyunda kalamadı (büyütme gerekirdi); ortak ppu ${ilkPpu.toFixed(1)} → ${ppu.toFixed(1)}`);
   console.log('ortak ppu (px/birim):', ppu.toFixed(2));
   // 5) kırp, küçült, boşluk ekle, yaz; olcu.json
-  const sonuc = {};
+  // Bulut'un yüz ve bel noktaları ortak ön modelden dışa aktarıldı.
+  const { bulut } = JSON.parse(fs.readFileSync(path.join(O, 'olcu.json'), 'utf8'));
+  const sonuc = { bulut };
   for (const ad of Object.keys(YER)) {
     const m = olc[ad], [bx0, by0, bx1, by1] = m.kutu, w = bx1 - bx0 + 1, h = by1 - by0 + 1;
     const k = Math.min(1, (ppu * BOY[ad]) / m.boyPx), nw = Math.max(1, Math.round(w * k)), nh = Math.max(1, Math.round(h * k));

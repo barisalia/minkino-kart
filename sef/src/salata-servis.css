@@ -1,0 +1,26 @@
+.salata-sos-katmani{position:absolute;inset:0;width:100%;height:100%;z-index:25;pointer-events:none;}
+.salata-dok-noktasi{position:absolute;height:45%;width:38%;pointer-events:none;z-index:30}
+.salata-dok-aleti{position:absolute;width:100%;height:75%;bottom:134%;left:-32%;object-fit:contain;transform-origin:32% 83%}
+.salata-dok-akimi{position:absolute;left:0;bottom:97%;height:40%;width:4%;background:#ffdf52;border:1px solid #76602b;border-radius:80%;transform-origin:50% 0;animation:salata-akim .7s both}
+.salata-dok-akimi[data-sos=yogurt]{background:var(--sef-kumanda-fonu, #fff8dd);width:7%;border-color:#705d4b}
+@keyframes salata-akim{0%,20%,100%{transform:scaleY(0)}45%,76%{transform:scaleY(1)}}
+.sef-yildizlar{display:inline-flex;align-items:center;gap:.45cqh;padding:.5cqh 1.1cqh;background:var(--sef-kumanda-fonu, #fff7df);border:.3cqh solid #473433;border-radius:6cqh;line-height:1}
+.sef-yildizlar>i{width:4.7cqh;height:4.7cqh;color:#e4dccb}.sef-yildizlar>i[data-dolu=true]{color:#ffc83f}
+.servis-misafiri>.sef-yildizlar{position:absolute;top:2%;right:1%}
+.tepsi-alici>.sef-yildizlar{position:absolute;right:0;top:0}
+.mp-oyun .sef-yildizlar{position:absolute;top:23%;left:50%;translate:-50% 0}
+.mv-oyun>.sef-yildizlar{position:absolute;top:22%;left:50%;translate:-50% 0}
+.defter-tabagi>.sef-yildizlar{position:absolute;bottom:1%;left:50%;translate:-50% 0;padding:.2cqh .6cqh}
+.defter-tabagi>.sef-yildizlar i{width:2.8cqh;height:2.8cqh}
+@media(prefers-reduced-motion:reduce){.salata-dok-akimi{animation:none}}
+.salata-dok-akimi[data-sos=feslegen]{background:#609b35;width:6%;border-color:#34532c}
+.salata-sos-geri{width:max(44px,8cqh);aspect-ratio:1;display:grid;place-items:center;border:2px solid #4a3931;border-radius:50%;background:var(--sef-kumanda-fonu, #fff3d7);color:#463c38;box-shadow:0 2px #af8767}
+.salata-sos-geri svg{width:58%;height:58%;transform:scaleX(-1)}
+.sebze-tadim .tadim-son-dokunus{display:grid;place-items:center;width:clamp(22px,7cqh,44px);height:100%}
+.sebze-tadim .tadim-son-dokunus>img{width:100%;height:100%;object-fit:contain}
+.dilim-boy-ornegi{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;width:100%;height:100%;align-content:center;gap:1px}
+.dilim-boy-ornegi[data-boy]>img{position:static;width:46%;height:42%;max-width:100%;object-fit:contain}
+.dilim-boy-ornegi[data-boy="2"]>img{width:88%;height:78%}.dilim-boy-ornegi[data-boy="4"]>img{width:60%;height:45%}
+.sebze-tadim .dilim-boy-ornegi{width:clamp(28px,7cqh,44px);height:100%}
+
+.ust .istasyondan-tepsiye{position:absolute;left:calc(clamp(40px,8.9cqh,67px) + max(7px,1cqw));background:#cbeddf}

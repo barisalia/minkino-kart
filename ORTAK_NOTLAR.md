@@ -1,5 +1,7 @@
 # ORTAK NOTLAR — Minkino Kartlar
 
+**ÖNEMLİ · Çizgi film, kitap ve görsel üretim ekibi:** Barış’ın eski bölüm düzeltmelerini ve güncel kararlarını işe başlamadan [Kullanıcı Kuralları](KULLANICI-KURALLARI.md) dosyasından okuyun.
+
 Bu dosya oturumlar arası ortak defterdir. **Kural:** baştan yazılmaz; her oturum sadece en alta tarihli satırlar ekler.
 
 - Canlı test linki (telefonda aç): https://barisalia.github.io/minkino-kart/
@@ -504,3 +506,10 @@ Kullanıcı: Bilgisayar sıfırlandı; yerel eski çizimler güncel değil. Kara
 - 2026-11-10 (Claude): Adlar: Hadi Hazırlanalım -> Okula Hazırlanalım, Kartlar -> Bil Bakalım. Bil Bakalım ve Sesli Maceralar kapakları yenilendi (düz gerçek kartlar; kulaklık ve notalar).
 
 - 2026-11-11 (Claude): App Store 1.0 incelemeye gönderildi (Waiting for Review). Eğitim, 4+, Made for Kids değil, ücretsiz, 175 ülke. Gizlilik: yalnız YouTube oynatıcısı için Device ID ve Product Interaction (kişiye bağlı değil, takip yok). İçerik hakları: üçüncü taraf içerik yok (Barış). Ekran görüntüleri ekip/uygulama/appstore-ekran, metin ekip/uygulama/APP-STORE-METIN.md.
+
+- 2026-11-12 (Claude): Kino'yla Sen Seç 2. bölüm senaryosu yazıldı: ekip/senaryo/KINO-FIRTINA-GELIYOR-V2.md (ilk taslak KINO-FIRTINA-ZAMANA-KARSI-DETROIT.md duruyor). 16 sahne, 4 büyük + 3 erken son, 34 yol; taşınan durumlar: Kuzu, ekmek, Mino, Kaptan Lokum. Yeni çizim 7 sayfa / 39 çizim; karanlık, yağmur ve fener ışığı kodla. Çizim, ses ve kod henüz başlamadı; ses üretimi için Barış onayı gerekir.
+- 2026-11-12 (Claude): Fırtına senaryosu 2.1 oldu: evde "hazırlık" kararı eklendi (fener, minder, Kuzu'yu kurut), masanın altından fenere geçiş eklendi; 108 yol. Çizim listesi 5 sayfa / 30 çizime indi, son kareleri hazır parçalardan kurulacak.
+- 2026-11-13 (Claude): Okula Hazırlanalım devralındı. Beslenmeden sonra artık soru kartları yok; yeni okul günü hazirlik/src/okul-gunu.ts: meyve paylaş (sayarak) -> tohumu sula/güneş ver, büyüt, cama koy -> bando -> kabuk kolyesi diz, arkadaşa hediye et -> pano resmi -> sınıfı topla -> veda. Hepsi sabah sahneleriyle aynı sürükle-bırak düzeninde, eldeki çizimlerle. Eski say/şekil/sıra, harf ve sergi durakları ana akıştan çıktı (kod ve ?ders= kısayolları duruyor). Yeni öğretmen cümleleri scripts/hazirlik-ses.ps1 içinde okul_* (9 adet), HENÜZ ÜRETİLMEDİ, Barış onayı bekliyor. e2e hazirlik 32/32; birim testlerde ana menü kart testleri (uygulama.test.ts) önceden de kırıktı.
+- 2026-11-13 (Claude): Okula Hazırlanalım Barış kararıyla Astra ya geri devredildi; durum ve eksikler CLAUDE-ASTRA-MESAJLAR.md 19:50 notunda. Müzik sahnesi ritim oyununa çevrildi ama doğrulanmadı.
+- 2026-11-14 (Claude): Harf Atölyesi (alfabe/) için geliştirme planı yazıldı: ekip/senaryo/HARF-ATOLYESI-GELISTIRME.md. 7 tur, her turun bitiş ölçüsü ve Astra çizim listesi var. Koda dokunulmadı; işi Codex yapacak.
+- 2026-11-14 (Claude, masaüstü): Harf Atölyesi oynanıp kontrol edildi; Codex için 6 maddelik doğrulanmış iş listesi CLAUDE-ASTRA-MESAJLAR.md 20:40 notunda. Koda dokunulmadı.

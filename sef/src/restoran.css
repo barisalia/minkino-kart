@@ -1,0 +1,23 @@
+.restoran-girisleri{display:flex;align-items:center;gap:1cqw;height:100%}
+.restoran-girisleri .fis-arsivi{width:clamp(42px,9cqh,72px);padding:.5cqh;background:var(--sef-kumanda-fonu, #fff8e7)}
+.restoran-girisleri .restoran-giris{background:#bfeaca}
+.restoran-konusan{position:absolute;left:12%;bottom:43%;width:34%;height:48%;display:grid;place-items:center}
+.restoran-konusan img{height:100%;width:100%}
+.restoran-ilk-tadim :is(.tepsi-ust h2,.sef-yildizlar,.tepsi-yeni,.servis-jetonu){visibility:hidden}
+.restoran-konusan>.ikon{position:absolute;bottom:1%;right:9%;width:clamp(29px,7cqh,46px);height:auto;aspect-ratio:1;background:var(--sef-kumanda-fonu, #fff7da);border:2px solid #463536;border-radius:50%;padding:5px}
+.restoran-siparis{position:absolute;left:48%;top:25%;width:43%;height:26%;border:2px solid #473633;background:var(--sef-kumanda-fonu, #fffae9);border-radius:4cqh;display:flex;align-items:center;justify-content:center;padding:1.4cqh 2cqw;gap:.8cqw;box-shadow:0 .7cqh #8a6551}
+.restoran-siparis>.tepsi-gida{width:28%;height:86%;object-fit:contain}
+.restoran-siparis:before{content:'';position:absolute;left:-1.35cqw;top:56%;width:2.5cqw;height:2.5cqw;background:var(--sef-kumanda-fonu, #fffae9);border-left:2px solid #473633;border-bottom:2px solid #473633;transform:rotate(45deg)}
+.restoran-siparis>i{position:absolute;right:4%;bottom:-2.7cqh;display:grid;place-items:center;width:clamp(30px,7cqh,54px);aspect-ratio:1;background:#a9e6b7;border:2px solid #3c473a;border-radius:50%;padding:1.3cqh}
+@media(prefers-reduced-motion:no-preference){
+  .restoran-siparis.fis-dokun>i{animation:fis-dokun .76s ease-in-out 1}
+  @keyframes fis-dokun{0%,100%{scale:1}45%{scale:1.24;box-shadow:0 0 0 4px #f8ffda}}
+}
+@media(prefers-reduced-motion:no-preference){.restoran-siparis{animation:fis-aciliyor .35s ease-out both;transform-origin:left center}@keyframes fis-aciliyor{from{opacity:0;scale:.94}to{opacity:1;scale:1}}}
+
+.restoran-siparis.restoran-ikili-fis{display:grid;grid-template: minmax(0,1fr) minmax(0,.60fr)/minmax(0,1fr) minmax(0,1fr);height:35%;padding:1.2cqh 1.2cqw;gap:.6cqh 1cqw;justify-items:center}
+.restoran-ikili-fis>.tost-yigin{grid-area:1/1;max-width:100%;height:auto;max-height:100%;width:min(100%,19cqh)}
+.restoran-ikili-fis>.sm-bardak{grid-area:1/2;height:95%;width:auto;max-width:95%}
+.restoran-ikili-fis>.sm-fis-dilimler{grid-area:2/2;height:100%;padding:0;border:0}
+.restoran-ikili-fis>.tost-fis-icerik{grid-area:2/1;width:100%;height:90%;max-width:100%}
+.restoran-ikili-fis .sm-kivam-isareti,.restoran-ikili-fis .sm-buz-isareti{width:6cqh;height:6cqh}

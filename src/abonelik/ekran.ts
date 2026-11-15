@@ -40,7 +40,8 @@ export const YENILEME_METNI_EN = {
 
 /** Premium'la açılanlar (Kartlar zaten ücretsiz; bkz. src/engine/erisim.ts): ikon + renk + metin */
 const ACILANLAR: { ikon: keyof typeof IKON; renk: string; yazi: string }[] = [
-  { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Tüm Sesli Maceralar' },
+  { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Okul öncesi eğitim: Harf Atölyesi, Matematik Atölyesi, Okula Hazırlanalım' },
+  { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Bütün etkinlikler ve Sesli Maceralar' },
   { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Bütün çizgi filmler' },
   { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: "Pazar, Mino ile Kino'nun Pasta Otobüsü, Kino'nun Otobüsü, Çiz Canlansın" },
   { ikon: 'goz', renk: 'var(--kirmizi)', yazi: 'Dedektif Mino ve Kino Ne Giysin? mevsimleri' },
@@ -54,7 +55,9 @@ const PLAN_AD: Record<PlanId, string> = { aylik: 'Aylık', yillik: 'Yıllık' };
  * Mağaza yokken (anahtar yok, web) ya da mağazaya ulaşılamazken gösterilen fiyat (Barış'ın fiyatları, Türkiye).
  * Satın alma her zaman mağazanın kendi fiyatıyla olur; bu yalnız bilgi.
  */
-export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '99 TL', yillik: '499 TL' };
+export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '199 TL', yillik: '899 TL' };
+/** Lansman öncesi liste fiyatı: plan kartında üstü çizili gösterilir (Barış 2026-11-15) */
+export const NORMAL_FIYAT: Record<PlanId, string> = { aylik: '499 TL', yillik: '2499 TL' };
 const YEDEK_DENEME_GUN = 7;
 
 /**
@@ -113,8 +116,9 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       const b = h(
         `button.ab-plan.ab-plan-${id}`,
         { type: 'button', role: 'radio', 'aria-checked': String(id === secili), 'data-plan': id },
-        ...(id === 'yillik' ? [h('span.ab-avantaj', {}, 'En avantajlı')] : []),
+        ...(id === 'yillik' ? [h('span.ab-avantaj', {}, 'Lansmana özel')] : []),
         h('span.ab-plan-ad', {}, PLAN_AD[id]),
+        h('s.ab-eski', {}, NORMAL_FIYAT[id]),
         h('span.ab-fiyat', {}, h('b', {}, '…'), h('small', {}, ` / ${DONEM[id]}`)),
         h('span.ab-aybasi'),
       );
@@ -301,7 +305,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
             : h('div.ab-ikili', {}, minoKap, kinoKap),
           h('div.ab-baslik-yer', {},
             h('h1.ab-baslik', {}, minkinoLogo('sade', 'ab-logo'), h('span.ab-premium', {}, svg(IKON.tac, 'ab-tac'), ' Premium')),
-            h('p.ab-alt', {}, 'Bütün oyunlar, maceralar ve filmler.'),
+            h('p.ab-alt', {}, 'Oynayarak öğrenen çocuklar için bütün etkinlikler, oyunlar ve filmler.'),
           ),
         ),
         // planlar ve büyük düğme (yatayda sağda)

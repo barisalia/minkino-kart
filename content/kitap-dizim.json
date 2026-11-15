@@ -1,0 +1,370 @@
+{
+  "id": "dizim",
+  "baslik": "Kino’nun Dizi Kanadı: Yara Bandının Sırrı",
+  "kapak": {
+    "renk": "#73B9AF",
+    "tarif": "Kino, kendisinin ve oyuncak Kuzu’nun dizindeki mavi yıldızlı bantları gösteriyor.",
+    "satirlar": [
+      {
+        "kim": "anlatici",
+        "metin": "Kino’nun Dizi Kanadı: Yara Bandının Sırrı"
+      }
+    ]
+  },
+  "sayfalar": [
+    {
+      "no": 1,
+      "ad": "Açık kalan cırt cırt",
+      "tarif": "Anne kapının önünde Kino’nun ayakkabısını gösteriyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Bahçe kapısının öbür yanında Mino ile Bulut yarış çizgisi çiziyordu. Kino da ilk kez yeni kırmızı ayakkabılarıyla yarışacaktı. Bir ayağını çoktan kapıdan dışarı atmıştı."
+        },
+        {
+          "kim": "anne",
+          "metin": "Kino, sağ ayakkabının cırt cırtı açık kalmış. Dur da kapatalım."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bir dakika anne! Mino çizgiye benden önce varacak!"
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "ad": "Bir yarışçı daha",
+      "tarif": "Lokum, oyuncak kuzusunu kapıda abisine uzatıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Tam o sırada Lokum kapının aralığından başını uzattı. Bir kulağından sıkı sıkı tuttuğu oyuncak Kuzu’yu abisine doğru kaldırdı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kuzu da koşsun! Vııın!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Olur. Sen de onu kapıdan seyret!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino, Kuzu’yu koltuğunun altına yerleştirdi. Oyuncağın kırmızı kurdelesi çenesine değiyordu. Bahçe yoluna çıktıklarında açık kayış hâlâ şıp şıp sallanıyordu."
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "ad": "Tak, sonra pıt!",
+      "tarif": "Kino bahçe yolunda dengesini kaybediyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "mino",
+          "metin": "Şu ağaca kadar! Hazır mısın Kino?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Mino öne fırladı. Kino, Kuzu’yu kolunun altında biraz daha sıkıştırıp ardından koştu. Tam arkadaşına yetişecekti ki sağ ayakkabısı ayağından yarım çıktı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bir dakika, ayakka…"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Tak! Kino sendeleyip sol dizinin üstüne düştü. Arkadan da küçücük bir pıt sesi geldi. Kuzu yanına yuvarlanmıştı."
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "ad": "Kırmızı nokta",
+      "tarif": "Kino yerde oturmuş, sol dizine bakıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Kino oturduğu yerden dizine baktı. Sol dizinde bezelyeden de küçük kırmızı bir damla vardı. Elinin tersiyle gözlerini sildi. Damla hâlâ oradaydı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne! Ya içimdeki bütün kan buradan çıkarsa?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Gel, birlikte bakalım. Küçük bir sıyrık bu. Yanındayım."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino annesinin elini tuttu. Mino da yarış çizgisinden geri dönmüştü."
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "ad": "Bankta biraz yer",
+      "tarif": "Anne ve Kino bankta beyaz ilk yardım çantasını açıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi ellerini yıkayıp beyaz çantayı getirdi. Bankta Kino’nun yanına oturdu. Temiz gazlı bezi küçük sıyrığın üzerine koyup hafifçe bastırdı. Kino annesinin omzuna sokuldu."
+        },
+        {
+          "kim": "mino",
+          "metin": "Ben de geçen gün dizimi sıyırdım. Yıkarken annemin elini tuttum."
+        },
+        {
+          "kim": "kino",
+          "metin": "Su mu? Anne, bekle! Önce bandı taksak?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino bacağını kendine çekti. Annesi su şişesini açmadan banka bıraktı."
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "ad": "İlk kimin sırası?",
+      "tarif": "Anne bankta Kino’nun göz hizasında konuşuyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anne",
+          "metin": "Kanama durunca temiz suyla tozu akıtacağız. Sonra temiz gazlı bezle hafifçe kurular, üstünü bir bantla örteriz."
+        },
+        {
+          "kim": "kino",
+          "metin": "Su değince sızlar mı?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Biraz sızlayabilir. Ne zaman hazır olduğunu bana söyleyebilirsin."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino hemen cevap vermedi. Bankın kenarına vuran kırmızı ayakkabısının sesi kesildi. O sırada çimenlerden tanıdık bir kırmızı kurdele göründü."
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "ad": "Kuzu’nun tozlu dizi",
+      "tarif": "Bulut bulduğu oyuncak kuzuyu Kino’ya getiriyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "bulut",
+          "metin": "Kino, bir yarışçımız eksikti! Bak, çimenlerin arasında kimi buldum."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bulut, oyuncak Kuzu’yu uzattı. Kırmızı kurdelesi yerindeydi. Ama krem rengi bacağında başparmak kadar gri bir leke vardı. Kino oyuncağı burnuna kadar yaklaştırdı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Kuzu’nun da dizi toz olmuş. Anne, önce onunla deneyebilir miyiz?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Olur. Kuzu için ayrı bir bez getirelim."
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "ad": "Önce Kuzu",
+      "tarif": "Kino küçük bir bezle Kuzu’nun bacağını siliyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi Kino’nun parmağına bir damla su damlattı. Ilıktı. Sonra yalnız Kuzu için ayırdıkları bezi ıslattı. Kino bir eliyle oyuncağı kucağında tuttu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Hazır mısın Kuzu? Pıt, pıt, pıt!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Bezi kaldırınca gri leke küçülmüştü. Bir kere daha sildi. Bu kez Kuzu’nun krem rengi bacağı göründü. Kino kirli bezi kenara bıraktı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne, şimdi benim dizime de bakabiliriz."
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "ad": "Küçük tamirciler",
+      "tarif": "Kino ile annesi bankta duran kanamayı konuşuyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi gazlı bezi kaldırdı. Kino dizinde yeni bir damla aradı. Bekledi, bir daha baktı. Kanama durmuştu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Anne, orayı içeriden kim kapattı?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Kanında minicik kan pulcukları var. Sıyrılan yerde toplanıp kanamanın durmasına yardım ediyorlar."
+        },
+        {
+          "kim": "kino",
+          "metin": "Kuzu, duydun mu? Küçük tamircilerim varmış!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino bu adı sevdi. Sol bacağını usulca annesine doğru uzattı."
+        }
+      ]
+    },
+    {
+      "no": 10,
+      "ad": "Birlikte yıkayalım",
+      "tarif": "Anne küçük sıyrığı temiz suyla duruluyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi ellerini yeniden yıkadı. Kino’nun sol dizinin altına küçük bir leğen koydu. Şişeyi eğmeden önce göz göze geldiler. Kino başıyla işaret verdi."
+        },
+        {
+          "kim": "kino",
+          "metin": "Hazırım anne. Yavaş döker misin?"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Temiz su incecik aktı. Bir an dizinin ucu sızladı, sonra su serin geldi. Toz leğene aktı. Annesi yeni bir gazlı bezle hafifçe dokunarak kuruladı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bitti mi? Ben daha Kuzu’nun patisini bırakmadım bile!"
+        }
+      ]
+    },
+    {
+      "no": 11,
+      "ad": "İki mavi yıldız",
+      "tarif": "Kino kendi dizindeki bantla Kuzu’nun bandını karşılaştırıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Annesi ortasında mavi bir yıldız olan yara bandını Kino’nun sol dizine yapıştırdı. İkinci bandı Kino aldı. Onu da Kuzu’nun temiz bacağına taktı."
+        },
+        {
+          "kim": "kino",
+          "metin": "Bak anne, şimdi takım olduk! Peki bandın altında ne oluyor?"
+        },
+        {
+          "kim": "anne",
+          "metin": "Derin iyileşiyor. Küçük bir kabuk oluşursa onu yerinde bırak. Altındaki deri iyileşince kabuk kendiliğinden düşer."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino iki mavi yıldızı yan yana getirdi. Kuzu’nunki biraz daha küçüktü."
+        }
+      ]
+    },
+    {
+      "no": 12,
+      "ad": "Cırt diye kapanınca",
+      "tarif": "Kino bankta sağ ayakkabısının kayışını kapatıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Mino ağacın yanında hâlâ bekliyordu. Kino banktan inecekken sağ ayakkabısındaki kayış gözüne takıldı. Bu kez durdu. Kayışı çekip bastırdı. Cırt! Öbürünü de kontrol etti."
+        },
+        {
+          "kim": "kino",
+          "metin": "Mino! Bu sefer yarışın kuralını ben buldum. Ağaca kadar en yavaş kim yürüyebilir?"
+        },
+        {
+          "kim": "mino",
+          "metin": "O zaman seni yakalamam çok uzun sürecek!"
+        },
+        {
+          "kim": "anlatici",
+          "metin": "İkisi de minicik birer adım attı. Bulut bitiş çizgisinde onları beklerken gülüyordu."
+        }
+      ]
+    },
+    {
+      "no": 13,
+      "ad": "Lokum’un ufağı",
+      "tarif": "Lokum halıda oturuyor. Kino Kuzu’yu kardeşine uzatıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Akşamüstü Lokum halının kenarına takılıp oturuverdi. Dizini tuttu. Derisi sağlamdı ama gözleri dolmuştu. Kino yanına oturup annesine seslendi."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Uf oldu!"
+        },
+        {
+          "kim": "kino",
+          "metin": "Gel, birlikte bakalım. Ben korkunca annem yanımda oturmuştu. İstersen Kuzu’yu tut."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Lokum oyuncağın bacağındaki yıldızı parmağıyla yokladı. Sonra abisinin elini bulup avucuna aldı."
+        },
+        {
+          "kim": "lokum",
+          "metin": "Kuzu da otursun. Sen de."
+        }
+      ]
+    },
+    {
+      "no": 14,
+      "ad": "Kino uyurken",
+      "tarif": "Kino yatağında Kuzu’ya sarılıp babasına gününü anlatıyor.",
+      "renk": "#73B9AF",
+      "satirlar": [
+        {
+          "kim": "anlatici",
+          "metin": "Gece babası iyi geceler demeye geldiğinde Kino yorganını çenesine kadar çekmişti. Kuzu’nun bir kulağı yastığın kenarından sarkıyordu."
+        },
+        {
+          "kim": "kino",
+          "metin": "Baba, bugün küçük tamircilerimi öğrendim. Ben uyuyunca onlar da uyur mu?"
+        },
+        {
+          "kim": "baba",
+          "metin": "Sen uyurken de vücudun dizini iyileştirmeye devam eder."
+        },
+        {
+          "kim": "anlatici",
+          "metin": "Kino gözlerini kapadı. Bir an sonra yorganın altından kısık bir ses duyuldu."
+        },
+        {
+          "kim": "kino",
+          "metin": "İyi geceler Kuzu. İyi geceler, küçük tamirciler."
+        }
+      ]
+    }
+  ],
+  "arkaKapak": "Bir yarış, bir tak ve küçücük bir pıt! Kino ile oyuncak Kuzu kendilerini aynı anda yerde buluyor. Peki iki yarışçının da dizine nasıl birer mavi yıldız konuyor?",
+  "ebeveyn": {
+    "baslik": "Birlikte hatırlayalım",
+    "sorular": [
+      "Kino dizini göstermekten çekindiğinde annesi onu nasıl dinledi?",
+      "Kuzu’nun bacağını temizledikten sonra Kino ne yapmaya hazırdı?",
+      "Lokum düşünce Kino, annesinden öğrendiği hangi şeyi yaptı?"
+    ],
+    "not": "Bir oyuncağı yanınıza oturtun. Çocuğunuz oyuncağa önce nasıl hissettiğini sorsun. Bir sıyrığı temiz suyla durulamayı, temiz gazlı bezle hafifçe kurulamayı ve bantla örtmeyi oyuncakta canlandırın."
+  }
+}

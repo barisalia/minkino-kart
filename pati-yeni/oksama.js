@@ -6,7 +6,7 @@ export function oksamaBagla(scene, pet, part, onLove, heartUrl) {
   const fish = face.classList.contains('butun-balik');
   const dog = pet === 'kopek';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const normal = face.src;
+  const normal = dog ? null : part(pet,fish?'tam-normal':'normal');
   let press, timer, lean;
   body.classList.add('oksanabilir');
   body.tabIndex = 0;
@@ -58,7 +58,7 @@ export function oksamaBagla(scene, pet, part, onLove, heartUrl) {
     if (Math.hypot(dx,dy)>22) press.drag = true;
     if (press.drag) {
       body.style.transform = `translate(${dx}px,${dy}px) scale(.88)`;
-      bed.classList.toggle('hedef-yatak',atBed(event));
+      bed.classList.toggle('hedef-yatak',!bed.disabled&&atBed(event));
     }
   });
   body.addEventListener('pointerup', event => {

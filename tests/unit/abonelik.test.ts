@@ -39,7 +39,7 @@ describe('erişim tablosu', () => {
 
 describe('uygulama menüsü', () => {
   it('web ve uygulama: aynı kartlar, sıra korunur; iki otobüs tek kart (Otobüs, geniş, sonda), Mino Ne Giysin? yok', () => {
-    const beklenen = [...(PATI_MENUDE ? ['pati'] : []), 'kino-ile-sen-sec', 'hazirlik', 'kartlar', 'pazar', 'canlan', 'macera', 'dedektif', 'giysin', ...(KITAP_MENUDE ? ['kitap'] : []), 'otobus'];
+    const beklenen = [...(PATI_MENUDE ? ['pati'] : []), 'sef', 'kino-ile-sen-sec', 'hazirlik', 'kartlar', 'pazar', 'canlan', 'macera', 'dedektif', 'giysin', ...(KITAP_MENUDE ? ['kitap'] : []), 'otobus'];
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
       expect(u.map((k) => k.id)).toEqual(beklenen);
       expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['otobus']);

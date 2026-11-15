@@ -226,7 +226,7 @@ test('Uygulama, anahtar yok: kilit yok, abonelik ekranı "yakında" (çökmez)',
   await expect(ab.locator('.ab-basla')).toHaveText('Yakında');
   await expect(ab.locator('.ab-basla')).toBeDisabled();
   // mağaza yokken yedek fiyat (bilgi), deneme yazısı
-  await expect(ab.locator('.ab-fiyat b').first()).toHaveText('99 TL');
+  await expect(ab.locator('.ab-fiyat b').first()).toHaveText('199 TL');
   await page.waitForTimeout(300);
   await page.screenshot({ path: ekran('uygulama-abonelik-yakinda', info.project.name) });
   expect(hatalar).toEqual([]);

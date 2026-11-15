@@ -1,0 +1,52 @@
+.simit-atolye{position:absolute;inset:0;container-type:size;isolation:isolate;overflow:hidden;background:#a4e8c3 url('../../assets/sef/sahneler/tahta.webp') center/cover;touch-action:none;user-select:none}
+.simit-atolye button{cursor:pointer;touch-action:none}.simit-atolye button:focus-visible{outline:4px solid #305c88;outline-offset:2px}
+.simit-atolye [hidden]{display:none}.simit-atolye img,.simit-halkasi{object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.simit-tus,.simit-fis,.simit-kap,.simit-yonler,.simit-saat{background:var(--sef-kumanda-fonu, #fff4db);border:2px solid #563b32;box-shadow:0 .65cqh #997552}
+.simit-tus{width:max(42px,11cqh);height:max(42px,11cqh);padding:2.2cqh;border-radius:50%;display:grid;place-items:center;color:#49343c}
+.simit-geri{position:absolute;left:2%;top:4%;z-index:2}.simit-fis{position:absolute;top:3%;left:50%;transform:translateX(-50%);height:15%;display:flex;padding:1.7cqh 2cqh;gap:2cqh;border-radius:3cqh}
+.simit-fis img{height:100%;width:auto}.simit-fis img+img{border-left:2px dashed #bfa47e;padding-left:1.6cqh}
+.simit-alan{position:absolute;inset:19% 13% 23%;display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center}
+.simit-sekillendir{position:relative;width:min(100%,100cqh);aspect-ratio:680/430;max-height:100%}
+.simit-hamur,.simit-halka-hamuru{display:block;width:100%;height:100%}
+.simit-yuvarla,.simit-ucu,.simit-hedef{position:absolute;transform:translate(-50%,-50%);border:none;background:none}
+.simit-yuvarla{left:50%;top:54%;height:32%;border-radius:50%}
+.simit-ucu,.simit-hedef{display:grid;place-items:center;width:max(42px,9cqh);height:max(42px,9cqh);border-radius:50%;padding:1.5cqh;}
+.simit-hedef{border:2px dashed #5a905d;color:#406d44;opacity:.75}.simit-ucu{border:2px solid #66533b;background:var(--sef-kumanda-fonu, #fff3ce);color:#614263}
+.simit-ucu[data-bagli=true]{opacity:.15;pointer-events:none}
+.simit-alt{position:absolute;left:4%;right:4%;bottom:4%;height:15%;display:flex;gap:2cqw;justify-content:center;align-items:center}
+.simit-tus svg,.simit-ucu svg,.simit-hedef svg{width:100%;height:100%}
+.simit-alt .simit-tus:last-child{background:#afe1b6}.simit-tus:disabled{opacity:.45}
+.simit-yonler{border-radius:3cqh;height:90%;padding:1.3cqh 2cqh;display:flex;gap:1.5cqh;align-items:center;color:#5d473b}.simit-yonler svg{height:70%;width:auto}
+.simit-buyuk,.simit-halka-hamuru{width:min(76%,62cqh);height:94%}.simit-halka-hamuru{width:min(100%,100cqh)}
+.simit-kap{padding:.9cqh 1.1cqw;border-radius:2.5cqh;height:100%;aspect-ratio:1.35}.simit-kap img{width:100%;height:100%}.simit-kap[aria-pressed=true]{background:#b8e3bb}
+.simit-atolye[data-evre=firin]{background-image:url('../../assets/sef/firin/firin.webp')}
+.simit-atolye[data-evre=firin] .simit-alan{inset:0}.simit-firinda{position:absolute;left:41%;top:40%;width:18%;height:21%;transform:scaleY(.54)}
+.simit-saat{height:90%;width:min(46%,68cqh);padding:.8cqh 1.8cqw;display:flex;align-items:center;justify-content:space-around;position:relative;border-radius:2.7cqh}
+.simit-saat img{height:86%;width:28%}.simit-saat img[data-renk=altin]{background:#b2e1b5;border-radius:1cqh}
+.simit-saat b{position:absolute;top:-1.3cqh;left:clamp(3%,var(--isi),97%);width:2.5cqh;height:2.4cqh;background:#4a3c42;clip-path:polygon(0 0,100% 0,50% 100%)}
+.simit-halkasi[data-renk=acik]{filter:saturate(.65) brightness(1.24)}.simit-halkasi[data-renk=koyu]{filter:brightness(.70) saturate(.77)}
+.restoran-lokma[data-tur=simit]>.simit-halkasi{width:100%;height:auto;left:-50%;top:-35%}
+.restoran-lokma[data-tur=simit][data-lokma-adedi="0"].lokma-alindi>.simit-halkasi,.simit-isirildi{clip-path:polygon(0 0,70% 0,68% 12%,74% 17%,76% 22%,83% 24%,88% 20%,100% 22%,100% 100%,0 100%)}
+@media(prefers-reduced-motion:reduce){.simit-atolye *{animation:none!important}}
+
+.simit-geri.simit-dinle{left:auto;right:2%}
+
+.simit-batir{width:min(100%,100cqh);height:100%;min-height:0;border:none;background:transparent;padding:0;display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);place-items:center;touch-action:none;z-index:1}
+.simit-batir>.simit-buyuk{width:auto;height:92%;max-width:90%}
+.simit-batir>.simit-halka-hamuru{width:100%;height:100%}
+.simit-kap[data-ustunde]{background:#fae192;outline:2px solid #80603c}
+.simit-atolye[data-evre=kapla] .simit-alt{z-index:2}
+
+.simit-halkasi[data-ters=true]{scale:-1 1}
+.simit-batir{position:relative}
+.simit-yarim-onizleme{position:relative;height:89%;width:auto;max-width:90%;aspect-ratio:1}
+.simit-yarim-onizleme>img{position:absolute;inset:0;width:100%;height:100%}
+.simit-yarim-onizleme>img+img{clip-path:inset(0 50% 0 0)}
+.simit-yari-eli{position:absolute;top:45%;width:max(24px,6cqh);height:max(24px,6cqh);border:1px solid #674a34;background:var(--sef-kumanda-fonu, #fff2c5);border-radius:50%;padding:.8cqh;color:#48372d;pointer-events:none}
+.simit-batir[data-yari=sol] .simit-yari-eli{left:26%}.simit-batir[data-yari=sag] .simit-yari-eli{right:26%}
+.simit-yari-eli svg{width:100%;height:100%}
+
+.simit-kap:disabled{opacity:.45;cursor:default}
+.simit-fis>.simit-fis-sesi{display:grid;place-items:center;width:44px;min-width:44px;height:44px;padding:9px;border:1.5px solid #493932;border-radius:50%;background:var(--sef-kumanda-fonu, #fff0bd)}.simit-fis>.simit-fis-sesi[hidden]{display:none}.simit-fis-sesi .ikon,.simit-fis-sesi svg{width:100%;height:100%}
+.tepsi-sahnesi .restoran-lokma[data-tur=simit]{width:clamp(30px,9cqh,59px);height:clamp(23px,8cqh,52px)}.tepsi-sahnesi .restoran-lokma[data-tur=simit]>.simit-halkasi{left:-67%;top:-5%;width:100%;height:100%}
+.tepsi-sahnesi .restoran-lokma[data-tur=simit][data-lokma-adedi='2']>.simit-halkasi{left:-33%;top:-7%}

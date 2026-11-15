@@ -1,0 +1,44 @@
+{
+  "corba": [
+    "Buzdolabından domates, havuç ve patatesi al.",
+    "Sebzeleri tahtada doğra.",
+    "Sebzeleri tencerede karıştır.",
+    "Çorbayı kepçeyle kâseye doldur."
+  ],
+  "salata": [
+    "Domatesi, marulu ve salatalığı al.",
+    "Sebzeleri lokmalık kes.",
+    "Kâsenin içinde harmanla.",
+    "Salatayı maşayla tabağa al."
+  ],
+  "pizza": [
+    "Hamuru merdaneyle aç.",
+    "Sosu yay ve malzemeleri diz.",
+    "Tepsiyi fırına sür.",
+    "Pizzayı servis tabağına kaydır."
+  ],
+  "makarna": [
+    "Hamurun rengini seç.",
+    "Ortadan sıkıştırıp fiyonk yap.",
+    "Fiyonkları haşla ve süz.",
+    "Sosunu seç ve tabağı tamamla."
+  ],
+  "krep": [
+    "Unu, sütü ve yumurtayı kâsede çırp.",
+    "Hamuru tavaya dök. Tavayı eğip hamuru yay.",
+    "Spatulayla krebi çevir.",
+    "Meyveyi yerleştir ve krebi katla."
+  ],
+  "mucver": [
+    "Kabağı rendele.",
+    "Rendelenmiş sebzeleri yumurtayla karıştır.",
+    "Kaşıkla tepsiye paylaştır.",
+    "Fırından çıkar ve servis et."
+  ],
+  "sis": [
+    "Şiş için malzemeleri seç.",
+    "Parçaları şişe sırayla geçir.",
+    "Şişleri ızgarada döndür.",
+    "Sosu ekle ve servis et."
+  ]
+}

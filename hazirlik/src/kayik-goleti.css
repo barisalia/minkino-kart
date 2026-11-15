@@ -1,0 +1,33 @@
+.kayik-goleti{position:absolute;inset:0;background:url('../../assets/hazirlik/kres/oyuncak-ordek-havuz.webp') center/100% 100%;touch-action:none;overflow:hidden;isolation:isolate;container-type:size}
+.kayik-goleti button{position:absolute;transform:translate(-50%,-50%);touch-action:none;display:grid;place-items:center;min-height:48px;min-width:48px}
+.kayik-goleti button[hidden]{display:none}
+.kayik-goleti img,.kayik-goleti button>svg{object-fit:contain;width:100%;height:100%;display:block;pointer-events:none}
+.kayik-goleti [data-golet=yuva]{width:14%;height:18%;z-index:1}
+.kayik-goleti [data-golet^=yavru]{width:8%;height:13%}
+.kayik-goleti [data-golet^=yavru] img{transform:scaleX(var(--yon,1))}
+.kayik-goleti .takipte{pointer-events:none}
+.kayik-goleti [data-golet=kayik]{width:19%;height:20%;z-index:2;cursor:grab}
+.kayik-goleti [data-golet=kayik]:active{cursor:grabbing}
+.kayik-goleti [data-golet=tekrar],.kayik-goleti [data-golet=bitir]{height:13%;width:10%;top:89%;left:75%}
+.kayik-goleti [data-golet=bitir]{left:90%}
+.golet-halka{position:absolute;pointer-events:none;translate:-50% -50%;border:2px solid #c1f6e9;border-radius:50%;width:3.5%;aspect-ratio:1.9;animation:golet-dalga 850ms ease-out forwards}
+@keyframes golet-dalga{from{scale:.8;opacity:.7}to{scale:2.3;opacity:0}}
+@media(max-aspect-ratio:1/1){
+ .kayik-goleti{background-image:url('../../assets/hazirlik/kres/oyuncak-ordek-havuz-dik.webp')}
+ .kayik-goleti [data-golet=yuva]{width:26%;height:13%}
+ .kayik-goleti [data-golet^=yavru]{width:14%;height:8%}
+ .kayik-goleti [data-golet=kayik]{width:29%;height:13%}
+ .kayik-goleti [data-golet=tekrar],.kayik-goleti [data-golet=bitir]{width:16%;height:9%;top:90%}
+}
+
+.golet-iskele{position:absolute;left:0;top:31%;width:17%;height:12%;pointer-events:none}
+.golet-iskele>img:first-child{position:absolute;bottom:0;height:40%}
+.golet-iskele>img+img{position:absolute;bottom:19%;left:23%;width:35%;height:95%}
+.kayik-goleti [data-golet=kopru]{left:25%;top:40%;width:25%;height:11%;z-index:3}
+.kayik-goleti [data-golet=kopru] img{transform-origin:5% 50%;transition:transform .48s ease;object-position:center}
+.kayik-goleti [data-golet=kopru].acildi{z-index:0;pointer-events:none}
+.kayik-goleti [data-golet=kopru].acildi img{transform:rotate(-65deg)}
+@media(prefers-reduced-motion:reduce){.kayik-goleti [data-golet=kopru] img{transition:none}}
+
+.kayik-goleti [data-golet=ruzgar]{width:9%;height:16%}
+@media(max-aspect-ratio:1/1){.kayik-goleti [data-golet=ruzgar]{width:17%;height:10%}}

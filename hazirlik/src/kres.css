@@ -1,0 +1,178 @@
+.kres{position:absolute;inset:0;background:#ffe0af;display:grid;place-items:center;overflow:hidden;container-type:size}
+.kres-sahne{position:relative;width:min(100cqw,177.78cqh);aspect-ratio:16/9;isolation:isolate;overflow:hidden;background-size:100% 100%;background-repeat:no-repeat;touch-action:none}
+.kres-parca{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);transform:translate(-50%,-50%);display:grid;place-items:center;min-width:0;min-height:0;grid-template:minmax(0,1fr)/minmax(0,1fr);user-select:none;touch-action:none}
+.kres-parca>img,.kres-parca>svg,.kres-poz,.kres-tepsi,.kres-poz img,.kres-parca .oyuncak-dugme{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.kres-poz{position:relative}.kres-poz img{position:absolute;inset:0;visibility:hidden}.kres-poz img:first-child{visibility:visible}
+.kres-tepsi{position:relative}.kres-tepsi img{position:absolute;object-fit:contain}.kres-tepsi img:first-child{inset:48% 0 0;width:100%;height:53%}.kres-tepsi img:nth-child(2){left:25%;bottom:23%;height:71%;width:37%}.kres-tepsi img:last-child{right:21%;bottom:21%;height:46%;width:28%}
+.kres-tam-kisi{position:relative;display:block;height:100%;max-width:100%;aspect-ratio:.74}.kres-tam-kisi>img{width:100%;height:100%;object-fit:contain}
+.kres-boyun{position:absolute;left:32%;top:42%;width:37%;height:6%;display:flex;align-items:start;pointer-events:none}.kres-boyun img{width:16.67%;height:85%;object-fit:contain}.kres-boyun img:nth-child(2),.kres-boyun img:nth-child(5){translate:0 20%}.kres-boyun img:nth-child(3),.kres-boyun img:nth-child(4){translate:0 40%}
+.kres-pano{display:flex;justify-content:center;align-items:center;width:100%;height:100%;gap:2%}.kres-pano i,.kres-kart{background:#fff9df;border:1.5px solid #392e27;border-radius:4%;box-shadow:1px 2px #b89368;display:grid;place-items:center}
+.kres-pano i{min-width:0;flex:1;height:69%;rotate:-3deg}.kres-pano i:nth-child(2){rotate:4deg}.kres-pano img,.kres-pano svg,.kres-kart svg{width:95%;height:90%;object-fit:contain}.kres-kart{width:100%;height:100%;rotate:3deg}
+.kres-kabuklar{display:flex;height:100%;width:100%;align-items:end}.kres-kabuklar img{width:33%;height:80%;object-fit:contain}
+.kres-ok{z-index:3;min-width:42px;min-height:40px}.kres-geri img{scale:-1 1}.kres button:focus-visible{outline:3px solid #256784;outline-offset:1px}
+.koseye-don{position:absolute;z-index:3;left:1.8%;bottom:2%;width:clamp(44px,8vmin,72px);height:clamp(44px,8vmin,72px);display:grid;place-items:center}
+.koseye-don img{width:100%;height:100%;object-fit:contain;scale:-1 1}
+.kres-elde{z-index:5;pointer-events:none}.kres-tasinir{cursor:grab}.kres-tasinir.kres-elde{cursor:grabbing}.kres-yuva,.kres-parca[role=img]{pointer-events:none}
+.kres button.kres-yuva{pointer-events:auto}
+.kres-tahta-yuzu .kres-yuva>img{object-fit:fill}
+.kres-ahsap{container-type:size}.kres-tahta-yuzu{position:relative;width:min(100cqw,256.41cqh);aspect-ratio:1000/390;display:block;pointer-events:none}
+.kres-kagit-yuzu>img{width:100%;height:100%;object-fit:contain}.kres-tahta-yuzu>img,.kres-tahta-yuzu>svg{width:100%;height:100%;display:block}
+.kres-secili:after{content:"";position:absolute;inset:3%;border:2px dashed #246754;border-radius:18%;pointer-events:none}
+.oto-iz path,.oto-iz ellipse,.oto-iz rect{fill:#c39762;stroke:#755a3c}
+.kres-kasik{position:absolute;left:50%;top:-22%;width:30%;height:97%;transform:rotate(var(--aci,0deg));transform-origin:44% 86%;pointer-events:none}.kres-kasik svg,.kres-karistir-izi{height:100%;width:100%}
+.kres-kase>svg.kres-karistir-izi{position:absolute;bottom:5%;width:42%;height:25%;pointer-events:none}
+@media(prefers-reduced-motion:no-preference){
+  .kres-poz img:nth-child(2){animation:kres-goz 7s steps(1,end) infinite;animation-delay:-1.5s}
+  .kres-karakter:nth-child(odd) .kres-poz img:nth-child(2){animation-delay:-4s}
+  @keyframes kres-goz{0%,71%,100%{visibility:hidden}68%{visibility:visible}}
+  .kres-yuzer>svg{animation:kres-su 3.5s ease-in-out infinite}
+  @keyframes kres-su{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -4%;rotate:2deg}}
+}
+@media(max-aspect-ratio:1/1){
+  .kres-is .kres-sahne{width:100%;height:100%;aspect-ratio:auto}
+  .kres-is .kres-parca{left:var(--dx);top:var(--dy);width:var(--dw);height:var(--dh)}
+  .kres-oda{background:#93d6ca}.kres-oda .kres-sahne{width:100%;height:min(84cqh,100cqw);aspect-ratio:auto}
+}
+
+.kres-araba-yuzu{display:block;position:relative;width:min(100cqw,175.93cqh);aspect-ratio:190/108;pointer-events:none}.kres-araba-yuzu>svg{width:100%;height:100%}
+
+.kres-istek{z-index:1}.kres-istek.teslim .okul-balon{background:#dbefd2}.kres-istek .okul-balon{position:relative;padding:3% 9%;border-width:1.8px}
+.kres-istek .okul-balon:after{content:"";position:absolute;bottom:-14%;left:25%;width:14%;height:25%;background:inherit;clip-path:polygon(0 0,100% 0,0 100%)}
+.kres-sofrada img{object-position:bottom}.kres-servis-sepet{position:relative;width:100%;height:100%;pointer-events:none}
+.kres-servis-sepet img{position:absolute;height:72%;width:52%;object-fit:contain;left:0;bottom:15%;rotate:-9deg}
+.kres-servis-sepet img:nth-child(2){left:41%;rotate:12deg}.kres-servis-sepet img:nth-child(3){left:23%;bottom:11%;rotate:0deg}
+.kres-servis-sepet svg{position:absolute;bottom:0;left:0;width:100%;height:40%}
+
+.kres-patiler{isolation:isolate}.kres-patiler>span{position:absolute;inset:0;pointer-events:none}
+.kres-patiler .kres-camur svg{width:100%;height:100%}
+.kres-kopukler i{position:absolute;border-radius:50%;width:var(--cr);aspect-ratio:1;top:var(--cy);left:var(--cx);border:1px solid #376668;background:#e9faf7}
+.kres-kopukler i:after{content:"";position:absolute;width:25%;height:16%;background:white;border-radius:50%;left:20%;top:13%}
+.kres-islak svg{position:absolute;left:28%;top:27%;width:5%;height:12%}.kres-islak svg+svg{left:65%;top:34%}
+
+.kres-iki-oda .kres-sahne{background-image:var(--oda-yatay)}
+@media(max-aspect-ratio:1/1){
+  .kres-iki-oda{background:#fbdbb3}
+  .kres-iki-oda .kres-sahne{background-image:var(--oda-dik);width:100%;height:100%}
+  .kres-iki-oda .kres-parca{left:var(--dx);top:var(--dy);width:var(--dw);height:var(--dh)}
+}
+.kres-istek .okul-balon i{min-height:0;grid-template:minmax(0,1fr)/minmax(0,1fr)}
+.kres-istek .okul-balon img{max-height:100%;min-height:0}
+
+.kres-parca[hidden]{display:none}.kres-ince-kenar *{fill:none!important}.kres-cizilebilir[role=button]{pointer-events:auto;cursor:crosshair}
+
+.kres-kitap,.kres-bos-sayfa{width:100%;max-height:100%;aspect-ratio:16/9;display:grid;padding:2% 2% 3.5%;background:#fdf4d8;border:1.6px solid #252128;border-radius:3% 8% 8% 3%;box-shadow:0 2px #62ae9e,0 3.5px #2c3833;overflow:hidden}
+.kres-kitap img{width:100%;height:100%;object-fit:contain;min-height:0;min-width:0}
+.kres-bos-sayfa{background:#f2dba9;box-shadow:none;border:2px dashed #976f54}
+.kres-kitap-buyuk{z-index:1}.kres-kitap-buyuk .kres-kitap{padding:1% 1% 2%}
+
+.kres-deney,.kres-katlama{container-type:size}
+.kres-leğen-yuzu,.kres-kagit-yuzu{width:min(100cqw,193.10cqh);aspect-ratio:280/145;position:relative;display:block}
+.kres-kagit-yuzu{width:min(100cqw,146.55cqh);aspect-ratio:170/116}
+.kres-leğen-yuzu>svg,.kres-kagit-yuzu>svg{width:100%;height:100%;display:block}
+.kres-leğen-yuzu>button,.kres-kagit-yuzu>button{pointer-events:auto}
+.kres-kat-izi{position:absolute;inset:0;pointer-events:none}
+.kres-su-halkasi{position:absolute;width:19%;height:7%;top:41%;translate:-50% -50%;border:1.5px solid #e4fafa;border-radius:50%;pointer-events:none}
+
+.kres-sahne[data-secili^="sepet-"] .kres-tabak-meyvesi{pointer-events:none}
+
+.kres-yerel-menu{border:2px solid #252026;background:#fff1ce;border-radius:22px;padding:16px;max-width:min(92vw,690px)}
+.kres-yerel-menu[open]{display:flex;align-items:center;gap:12px}.kres-yerel-menu::backdrop{background:#39263366}
+.kres-yerel-menu button{display:grid;place-items:center;width:33%;min-height:52px}.kres-yerel-menu img{display:block;width:100%;border-radius:9px}.kres-yerel-menu button:first-child{width:16%}
+
+.kres-davet{display:block;position:relative;width:100%;height:100%;pointer-events:none}
+.kres-davet img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;visibility:hidden;pointer-events:none}
+.kres-davet img:first-child{visibility:visible}
+
+.kres-yuruyor{display:block;width:100%;height:100%;pointer-events:none}.kres-yuruyor img{width:100%;height:100%;object-fit:contain}.kres-yuruyor img[hidden]{display:none}
+@media(max-aspect-ratio:1/1){#oyun:has(.kres){max-height:none}}
+
+.kres-cift-dekor .kres-sahne{background-image:var(--oda-yatay)}
+@media(max-aspect-ratio:1/1){
+  .kres-cift-dekor .kres-sahne{width:100%;height:100%;aspect-ratio:auto;background-image:var(--oda-dik)}
+  .kres-cift-dekor .kres-parca{left:var(--dx);top:var(--dy);width:var(--dw);height:var(--dh)}
+}
+
+.kres-tahmin[aria-pressed=true]::after{content:"";position:absolute;inset:5%;border-radius:19%;border:2px dashed #3e7663;pointer-events:none}
+
+.kres-oturan{position:relative;width:100%;height:100%;display:block;pointer-events:none}
+.kres-oturan img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;visibility:hidden}
+.kres-oturan img:first-child{visibility:visible}
+.kres-dusunce,.kres-kose-tepsisi{width:100%;height:100%;display:grid;place-items:center;background:#fff3cf;border:1.8px solid #312d2a;border-radius:34%}
+.kres-dusunce{border-radius:45%;position:relative}
+.kres-dusunce:after{content:"";position:absolute;bottom:-10%;left:37%;width:12%;aspect-ratio:1;border-radius:50%;background:#fff3cf;border:1.3px solid #312d2a}
+.kres-dusunce svg,.kres-kose-tepsisi svg{width:76%;height:72%}
+.kres-dusunce .kres-kitap,.kres-kose-tepsisi .kres-kitap{width:77%}
+.kres-pano:has(i:nth-child(4)){display:grid;grid-template:1fr 1fr / 1fr 1fr;gap:1%}
+.kres-pano:has(i:nth-child(4)) i{height:100%}
+@media(prefers-reduced-motion:no-preference){
+  #sahne[data-konusan=mino] [data-kres=oturan-mino] img,#sahne[data-konusan=zipzip] [data-kres=oturan-zipzip] img,#sahne[data-konusan=kino] [data-kres=oturan-kino] img{animation:kres-cember-agiz 1.25s steps(1,end) infinite;animation-delay:var(--faz)}
+  .kres-oturan img:nth-child(1){--faz:0s}.kres-oturan img:nth-child(2){--faz:-.94s}.kres-oturan img:nth-child(3){--faz:-.63s}.kres-oturan img:nth-child(4){--faz:-.32s}
+  @keyframes kres-cember-agiz{0%,24.99%{visibility:visible}25%,100%{visibility:hidden}}
+}
+
+.kres-duzen-kasa{width:100%;height:100%;position:relative;display:grid;place-items:center;container-type:size}
+.kres-duzen-kasa>svg{width:100%;height:100%}
+.kres-duzen-etiket{position:absolute;left:40%;bottom:14%;width:22%;height:30%;background:#fff5d8;border-radius:20%;border:1px solid #463c31;display:grid;place-items:center}
+.kres-duzen-etiket>*{max-width:84%;width:84%;height:84%;object-fit:contain}
+.kres-duzen-dolgu{position:absolute;left:14%;right:14%;bottom:57%;height:44%;display:flex;align-items:end;justify-content:center;pointer-events:none}
+.kres-duzen-dolgu i{display:block;width:44%;height:100%;rotate:-7deg}.kres-duzen-dolgu i+i{rotate:9deg}
+.kres-duzen-dolgu i>*{width:100%;height:100%;object-fit:contain}
+
+.kres-tahta-dersi{width:100%;height:100%;display:flex;justify-content:center;align-items:center;gap:1%}
+.kres-tahta-dersi>*{width:47%;height:83%;object-fit:contain}
+.kres[data-alan=cember] [data-kres=soz-tasi]{min-width:44px;min-height:44px}
+.kres[data-alan=anasinifi] [data-kres=hali]{z-index:1}
+
+.kres-veda-anne,.kres-veda-anne img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.kres-ani-resmi{background:#fff7dc;width:100%;height:100%;border:1.7px solid #322b28;border-radius:15% 13% 16% 12%;display:grid;place-items:center;box-shadow:0 2px #e7be85}
+.kres-ani-resmi>svg,.kres-ani-resmi>img,.kres-ani-resmi>span{width:80%;height:79%;object-fit:contain}
+.kres-anlati[aria-pressed=true] .kres-ani-resmi{background:#ffdf8b;rotate:-3deg}
+
+.kres-iki-oda :is([data-kres="kagit"],[data-kres="kolye"],[data-kres="muzik"],[data-kres="oyku"],[data-kres="raftaki-araba"],[data-kres="saksi"],[data-kres="pano"],[data-kres="tahta-harf"]){z-index:1}
+@media(prefers-reduced-motion:no-preference){
+ .kres-iki-oda .kres-kaptaki-firca{transform-box:fill-box;transform-origin:15% 92%;animation:kres-firca-salin 8s 1s ease-in-out infinite}
+ @keyframes kres-firca-salin{0%,19%,100%{transform:rotate(0)}6%{transform:rotate(-12deg)}12%{transform:rotate(4deg)}}
+ .kres-iki-oda .kres-su-kipirtisi{animation:kres-su-kipirda 7s 1.5s ease-in-out infinite}
+ @keyframes kres-su-kipirda{0%,42%,100%{transform:translateX(0)}20%{transform:translateX(7px)}}
+}
+.kres [data-kres=saga] svg,.kres [data-kres=sola] svg{width:100%;height:100%}
+.kres-kesif-patisi{position:absolute;z-index:2;pointer-events:none;width:clamp(32px,5.2vmin,48px);aspect-ratio:60/66;transform:translate(-20%,-21%)}
+.kres-kesif-patisi svg{display:block;width:100%;height:100%;overflow:visible}
+.kres-kesif-patisi[hidden]{display:none}
+@media(prefers-reduced-motion:no-preference){
+ .kres-kesif-patisi .kesif-el{animation:kres-isaret-dokun 1.45s ease-in-out 2}
+ .kres-kesif-patisi .kesif-temas{animation:kres-isaret-temas 1.45s ease-in-out 2}
+ @keyframes kres-isaret-dokun{0%,80%,100%{transform:translate(4px,5px)}38%,50%{transform:translate(0,0)}}
+ @keyframes kres-isaret-temas{0%,30%,76%,100%{opacity:0}40%,54%{opacity:1}}
+}
+.kres-iki-oda button.kres-karakter{container-type:size;pointer-events:none}
+.kres-iki-oda button.kres-karakter::before{content:"";position:absolute;width:min(100cqw,var(--kisi-en,88cqh));height:min(100cqh,var(--kisi-boy,113cqw));pointer-events:auto;border-radius:40% 40% 24% 24%}
+.kres-iki-oda [data-kres=ceren]{--kisi-en:56cqh;--kisi-boy:172cqw}
+.kres-iki-oda [data-kres^=kino-]{--kisi-en:70cqh;--kisi-boy:144cqw}
+.kres-iki-oda button:is([data-kres=zil],[data-kres=lavabo],[data-kres=beslenme],[data-kres=kolye],[data-kres=kagit],[data-kres=oyku],[data-kres=hali])::before{content:"";position:absolute;width:max(100%,44px);height:max(100%,44px);border-radius:20%}
+
+.kres-geri[data-kres=sola] img{scale:1}
+
+.tekne-tezgahi{container-type:size;pointer-events:none}
+.tekne-plan{display:block;position:relative;width:min(100cqw,115cqh);aspect-ratio:1.15}
+.tekne-plan .kres-yuva img{object-fit:fill}
+.tekne-plan .tekne-bos img{opacity:.34;filter:grayscale(.78)}
+.tekne-plan .kres-yuva:focus-visible{outline-offset:4px}
+
+.liman-sayfasi{container-type:size}
+.liman-resim{display:block;position:relative;width:min(100cqw,150cqh);aspect-ratio:1.5;border:3px solid #fff1c7;border-radius:5px;box-shadow:0 3px #805338;overflow:hidden}
+.liman-resim img{display:block;width:100%;height:100%;object-fit:fill}
+.liman-bul{border-radius:50%}
+
+.kres-leğen-yuzu{width:min(100cqw,230cqh);aspect-ratio:2.3}
+.kres-leğen-yuzu>img{width:100%;height:100%;display:block}
+.deney-defteri{width:min(91vw,740px,112vh);aspect-ratio:1.57;background:transparent;border:0;padding:0;overflow:visible}
+.deney-defteri::backdrop{background:#24202c88}
+.deney-defteri>img{width:100%;height:100%;display:block}
+.deney-kaydi{position:absolute;top:14%;width:38%;height:68%;display:flex;align-items:center;flex-direction:column;gap:5%}
+.deney-kaydi>img{width:40%;height:46%;object-fit:contain}
+.deney-pullar{display:flex;justify-content:center;align-items:center;width:100%;height:44%}
+.deney-pullar button{width:33%;min-height:44px;height:78%}.deney-defteri button img{object-fit:contain;width:100%;height:100%}
+.deney-kapat{position:absolute;bottom:-4%;right:1%;width:13%;height:19%;min-height:44px}
+
+.liman-etkilesim{container-type:size;pointer-events:none}.liman-etkilesim .liman-resim{border-color:transparent;box-shadow:none;overflow:visible}.liman-etkilesim .liman-bul{pointer-events:auto}

@@ -1,0 +1,41 @@
+@import '@fontsource/fredoka/latin-500.css';
+@import '@fontsource/fredoka/latin-ext-500.css';
+:root{font-family:Fredoka,"Trebuchet MS",sans-serif;color:#154e49;background:#ffd0a6}
+*{box-sizing:border-box}
+body{margin:0}
+button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:4px solid #006b81;outline-offset:4px}
+[hidden]{display:none!important}
+#sahne{position:relative;min-height:410px;height:100svh;width:100%;isolation:isolate;overflow:hidden;background:#ffd0a6}
+#sahne::before{content:"";position:absolute;inset:auto 0 0;height:8%;background:#aacfc0;border-top:3px solid #252d22}
+nav{position:absolute;z-index:3;inset:max(14px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) auto max(18px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.ikon{display:grid;place-items:center;width:clamp(44px,4.5vw,64px);aspect-ratio:1;border:2.5px solid #242b23;border-radius:50%;background:#fff8e8;color:#15594e;padding:9px;pointer-events:auto}
+.ikon svg{width:100%;height:100%}
+#ceren{position:absolute;bottom:0;left:-2%;width:48%;height:88%;pointer-events:none}
+#ceren img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
+.ders{position:absolute;left:46%;right:7%;top:18%;bottom:9%;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:clamp(10px,2vh,25px)}
+.kart{background:#fff8e9;border:clamp(2px,.26vw,4px) solid #242922;border-radius:clamp(22px,3vw,50px);display:grid;place-items:center;padding:3% 4%;flex:1;min-height:0}
+.harfler{width:100%;height:100%;max-height:56vh}
+.denetim{text-align:center;min-height:78px;display:grid;align-content:start;justify-items:center;gap:8px}
+#durum{margin:0;min-height:1.3em;font-size:clamp(18px,2vw,32px);line-height:1.25}
+.eylemler{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.yazmaya-gec{display:none;align-items:center;border-radius:100px;border:2px solid #22554b;background:#fff8e9;color:#194e45;padding:.5em 1.1em;text-decoration:none;font-weight:600}
+#sahne[data-durum="tamam"] .yazmaya-gec{display:inline-flex}
+.eylemler button{border:2px solid #22554b;border-radius:100px;background:#166657;padding:.52em 1.15em;font-size:clamp(16px,1.4vw,22px);color:#fff9e7}
+.eylemler #yardim{color:#194e45;background:#fff8e9}
+@media (orientation:portrait){
+ #sahne{min-height:540px}#ceren{width:62%;height:46%;left:0}
+ .ders{inset:12% 6% auto;height:54%;justify-content:start;gap:12px}
+ .kart{flex:none;height:70%}.denetim{justify-self:center}
+}
+@media (orientation:landscape) and (max-height:460px){
+ #sahne{min-height:280px}.ders{top:16%;bottom:1%;right:8%;gap:6px}
+ .denetim{min-height:57px;gap:3px}#durum{font-size:17px}.eylemler button{padding:.35em .85em}
+}
+
+/* Yarım gövdenin alt kesiti sahnenin alt kenarının dışında kalır. */
+#ceren{bottom:-10%;height:98%}
+@media (orientation:portrait){#ceren{bottom:-6%;height:52%}}
+
+

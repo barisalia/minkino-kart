@@ -1,0 +1,78 @@
+.tatli-dukkan {
+  --cizgi: #392b33;
+  position:absolute; inset:0; z-index:14; isolation:isolate; container-type:size;
+  color:var(--cizgi); background:#ffead0 url('../../assets/sef/tatli/pastane-ic.webp') center/cover; overflow:hidden;
+}
+.tatli-vitrin-ust {
+  position:absolute; inset:5% 4% auto; height:12%;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+}
+.tatli-vitrin-ust h2 {font-size:clamp(15px,4.8cqh,38px); margin:0; line-height:1; padding:1.3cqh 2.4cqh; border:1.6px solid var(--cizgi); border-radius:4cqh; background:var(--sef-kumanda-fonu, #fff9e8)}
+.tatli-geri,.tatli-cuzdan,.tatli-vitrin-rozet,.tatli-raf-isaret {
+  display:inline-flex; align-items:center; justify-content:center; line-height:1;
+  border:max(1.5px,.37cqh) solid var(--cizgi); background:var(--sef-kumanda-fonu, #fff9e8); border-radius:100vmax;
+}
+.tatli-geri {justify-self:start; color:inherit; width:max(40px,9.7cqh); aspect-ratio:1; padding:2.4cqh; box-shadow:0 .7cqh #ac7956}
+.tatli-geri .ikon,.tatli-raf-isaret .ikon,.tatli-vitrin-rozet>.ikon {width:100%; height:100%}
+.tatli-cuzdan {justify-self:end; gap:1.1cqh; padding:.8cqh 1.6cqh .8cqh .8cqh; font-size:clamp(15px,4.9cqh,38px); font-weight:800}
+.tatli-jeton {
+  display:inline-grid; place-items:center; flex:none; box-sizing:border-box;
+  width:1.1em; height:1.1em; border:.08em solid #6f4625; border-radius:50%;
+  background:#ffc74f; color:#ffec98; box-shadow:inset 0 -.11em #efa034;
+}
+.tatli-jeton .ikon {display:block; width:77%; height:77%}
+.tatli-jeton svg,.tatli-dukkan .ikon svg {width:100%; height:100%; display:block}
+.tatli-raf {
+  position:absolute; inset:34% 3% 7%; display:grid; grid-template-rows:minmax(0,1fr); grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:1.1cqw;
+}
+.tatli-vitrin-karti {
+  position:relative; min-width:0; min-height:0; padding:0; border:0; color:inherit;
+  background:none; font:inherit; opacity:1; cursor:default; border-radius:2cqh;
+}
+.tatli-vitrin-karti:enabled {cursor:pointer}
+.tatli-vitrin-karti strong {
+  position:absolute; left:50%; transform:translateX(-50%); top:67%; display:grid; place-items:center; text-align:center;
+  width:max-content; max-width:98%; padding:.55cqh 1.1cqh; border:1px solid #68533f;border-radius:2.5cqh;background:var(--sef-kumanda-fonu, #fff7dc);
+  line-height:1.04; font-size:clamp(10px,3.55cqh,29px); text-wrap:balance;
+}
+.tatli-vitrin-cizim {position:absolute; left:3%; right:3%; top:0; height:53%}
+.tatli-raf-istasyon {display:block; position:absolute; inset:0}
+.tatli-raf-istasyon img {position:absolute; object-fit:contain}
+.tatli-raf-istasyon>img:last-child {width:58%; height:95%; right:0; bottom:4%; z-index:1}
+.tatli-raf-arac {left:2%; bottom:1%; width:51%; height:70%}
+[data-kademe="1"] .tatli-raf-arac {width:55%; height:74%; bottom:-3%;transform:rotate(-7deg)}
+[data-kademe="2"] .tatli-raf-arac {width:55%; height:72%}
+.tatli-raf-isaret,.tatli-raf-adet {
+  position:absolute; left:10%; top:44%; z-index:2; height:6cqh; min-width:6cqh; padding:1.2cqh;
+  background:var(--sef-kumanda-fonu, #fff9e8); box-sizing:border-box;
+}
+.tatli-raf-adet {display:grid;place-items:center;left:auto;right:6%;top:38%;height:auto;border:1.5px solid var(--cizgi);border-radius:10cqh;padding:.5cqh 1.2cqh;font-size:clamp(11px,3.2cqh,23px);line-height:1.1}
+.tatli-vitrin-karti[data-durum=acik] .tatli-raf-isaret {display:none}
+.tatli-vitrin-karti[data-durum=sirada] .tatli-raf-isaret {background:#ffdc87}
+.tatli-vitrin-karti .tatli-vitrin-rozet {position:absolute; top:80%; left:50%;translate:-50% 0}
+.tatli-dukkan[data-pastane=kapali] .tatli-raf {left:3%;right:3%}
+.tatli-vitrin-karti[data-kademe="4"] .tatli-raf-istasyon>img:last-child {width:94%;height:84%;right:1%;bottom:2%}
+.tatli-vitrin-karti[data-kademe="4"] .tatli-raf-arac {width:40%;height:42%;bottom:-10%;left:3%;z-index:2;transform:rotate(-18deg)}
+.tatli-dukkan[data-pastane=kapali] .tatli-vitrin-karti strong {font-size:clamp(11px,3.4cqh,27px)}
+.tatli-dukkan[data-pastane=kapali] .tatli-raf-istasyon>img:first-child {display:none}
+.tatli-dukkan[data-pastane=kapali] .tatli-raf-istasyon>img:last-child {right:10%;width:80%}
+.tatli-vitrin-rozet {gap:1cqh; font-size:clamp(14px,4.7cqh,36px); font-weight:800; padding:.6cqh 1.4cqh}
+.tatli-vitrin-rozet>.ikon {height:4.7cqh; width:4.7cqh}
+.tatli-vitrin-karti:enabled .tatli-vitrin-rozet {background:#abdfb5; box-shadow:0 .65cqh #798e68}
+.tatli-raf-atolye {width:100%; height:100%; position:relative}
+.tatli-raf-atolye img {position:absolute; object-fit:contain}
+.tatli-vitrin-kase {inset:33% 8% 0; width:84%; height:65%}
+.tatli-vitrin-cirpici {inset:2% 12% auto auto; width:55%; height:66%; transform:rotate(22deg)}
+.tatli-birikim {position:absolute; bottom:0; left:26%; width:48%; height:1.1cqh; border:none; border-radius:1cqh; overflow:hidden; appearance:none; background:#d9bf90}
+.tatli-birikim::-webkit-progress-bar {background:#d9bf90}
+.tatli-birikim::-webkit-progress-value {background:#518963}
+.tatli-birikim::-moz-progress-bar {background:#518963}
+.tatli-dukkan button:focus-visible {outline:3px solid #006d89; outline-offset:3px}
+@media(prefers-reduced-motion:no-preference) {
+  .tatli-vitrin-karti:enabled:active,.tatli-geri:active {transform:translateY(.65cqh)}
+  .tatli-vitrin-karti[data-durum=acik] .tatli-raf-isaret {animation:raf-acildi .3s ease-out}
+  @keyframes raf-acildi {from {scale:.68} to {scale:1}}
+}
+
+.tatli-vitrin-karti[data-kademe="5"] .tatli-raf-istasyon>.sl-kase {position:absolute;width:77%;right:0;bottom:4%}
+.tatli-vitrin-karti[data-kademe="5"] .tatli-raf-arac {width:46%;height:54%;left:-1%;bottom:32%}

@@ -3,6 +3,7 @@ const s = (ic: string, vb = '0 0 48 48') =>
   `<svg viewBox="${vb}" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>`;
 
 export const IKON = {
+  mikrofon: s('<rect x="18" y="5" width="12" height="24" rx="6"/><path d="M11 21v3a13 13 0 0 0 26 0v-3M24 37v6m-7 0h14"/>'),
   oyna: `<svg viewBox="0 0 48 48"><path d="M17 11.5c0-2.3 2.5-3.7 4.5-2.5l17 10.5c1.9 1.2 1.9 3.9 0 5.1l-17 10.5c-2 1.2-4.5-.2-4.5-2.5z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>`,
   ev: s('<path d="M8 22 24 9l16 13"/><path d="M13 19v18a2 2 0 0 0 2 2h6V29h6v10h6a2 2 0 0 0 2-2V19"/>'),
   hoparlor: s('<path d="M8 19v10h7l10 8V11l-10 8z" fill="currentColor"/><path d="M31 18a8 8 0 0 1 0 12"/><path d="M36 13a15 15 0 0 1 0 22"/>'),

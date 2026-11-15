@@ -14,7 +14,10 @@
 .pano-araclar svg{width:75%;height:75%}
 .pano-araclar button.pano-renk{width:clamp(36px,7.5vmin,56px);padding:5px}
 .pano-renk i{width:100%;aspect-ratio:1;border:1.5px solid #332e31;border-radius:48% 55% 45% 49%}
-.pano-teslim{margin-left:auto}
+.pano-araclar{display:grid;grid-template-columns:minmax(0,1fr) clamp(62px,19cqw,110px);align-items:center;column-gap:2%;padding-inline:2%}
+.pano-araclar>div{grid-column:1;gap:clamp(1px,1cqw,8px)}
+.pano-araclar .pano-teslim{grid-column:2;grid-row:1/3;justify-self:center;width:100%;height:auto;aspect-ratio:1.32;border:0;padding:0}
+@media(prefers-reduced-motion:no-preference){.pano-teslim img{animation:pano-ok-selam 820ms ease-in-out 2}@keyframes pano-ok-selam{45%{transform:translateX(4%) scale(1.06)}}.pano-araclar .pano-teslim:active img{animation:none;transform:translateY(2px) scale(.92)}}
 .pano-son{justify-self:center;padding:3px 12px;min-height:48px}
 .pano-panel{display:grid;justify-content:center;gap:5px}
 .pano-inceleme{display:flex;justify-content:center;gap:8px}
@@ -38,3 +41,12 @@
 .pano-alet button[data-pano=pano]{position:relative}
 .pano-sayi{position:absolute;right:-2px;top:-2px;min-width:20px;height:20px;padding:0 4px;border-radius:10px;background:#f46350;color:#fff;font:700 13px/20px system-ui,sans-serif;border:1.5px solid #463a30}
 @media(prefers-reduced-motion:no-preference){.pano-asili.yeni{transform-origin:50% 0;animation:pano-as .55s ease-out}}
+.et-tahta:has(.pano-ornek){container-type:size}
+.et-tahta .pano-ornek{box-sizing:border-box;width:min(97cqw,174cqh);height:auto;aspect-ratio:16/9;flex:none;margin:0;position:relative;background:#fffaf0;border:1px solid #342e2b;box-shadow:2px 3px #244b45;border-radius:3px}
+.pano-ornek:before,.pano-ornek:after{content:"";position:absolute;top:-2%;left:4%;width:12%;height:9%;transform:rotate(-12deg);background:#ffd471;border:1px solid #514737}
+.pano-ornek:after{left:auto;right:4%;transform:rotate(12deg)}
+.pano-ornek-ac{position:absolute;inset:0;width:100%;height:100%;pointer-events:auto;cursor:zoom-in;background:transparent;border:0}
+.pano-gosterim{position:absolute;inset:0;z-index:3;background:#547d71;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:3%;padding:5%;border:3px solid #303729}
+.pano-gosterim .pano-tuval{cursor:default}
+.pano-gosterim .pano-ornek-kalem{position:absolute;width:14%;height:auto;transform:translate(-8%,-60%) rotate(-35deg);transform-origin:10% 60%;pointer-events:none}
+.pano-gosterim .pano-ornek-kalem[hidden]{display:none}

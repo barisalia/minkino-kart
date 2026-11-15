@@ -60,7 +60,8 @@ export async function meal({scene,pet,key,food,favorite=false,outcome=favorite?'
   const bowl=prop('bos-kase',mouth.x,mouth.y+dip+size*.15,size*1.25);
   const water=document.createElement('i');water.className='su-yuzeyi';bowl.append(water);
   const jug=prop('surahi',0,0,size*.96);
-  await Promise.all([jug,bowl].map(object=>object.firstElementChild.decode()));
+  try{await Promise.all([jug,bowl].map(object=>object.firstElementChild.decode()));}
+  catch{return;}
   signal.throwIfAborted();
   const rim=bowl.getBoundingClientRect(),pitcher=jug.getBoundingClientRect();
   const surface=rim.top-rect.top+rim.height*.22;

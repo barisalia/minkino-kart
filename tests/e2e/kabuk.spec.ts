@@ -40,7 +40,7 @@ async function kapiyiGec(page: Page) {
 
 test('Kabuk: dört kategori ve içerik panelleri 6 ekran boyunda kullanılabilir', async ({ page }) => {
   const hatalar = hataTopla(page);
-  const oyunlar = MENU.filter(id => !['hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(id));
+  const oyunlar = MENU.filter(id => !['alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(id));
   for (const [en, boy, ad] of BOYUTLAR) {
     await page.setViewportSize({ width: en, height: boy });
     await page.goto('./?test=1&uygulama=android');
@@ -176,8 +176,8 @@ test('Kabuk: anahtar yokken kilit yok, abonelik ekranı "Yakında" ve yedek fiya
   await expect(ab).toHaveAttribute('data-durum', 'yakinda');
   await expect(ab.locator('.ab-basla')).toHaveText('Yakında');
   await expect(ab.locator('.ab-basla')).toBeDisabled();
-  await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('99 TL');
-  await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('499 TL');
+  await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('199 TL');
+  await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('899 TL');
   await expect(ab.locator('.ab-deneme')).toHaveText('7 gün ücretsiz deneme');
   await expect(ab.locator('.ab-durum')).toContainText('bütün oyunlar açık');
   await page.waitForTimeout(500);

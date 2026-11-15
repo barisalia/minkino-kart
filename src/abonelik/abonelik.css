@@ -794,3 +794,5 @@
   .mk-kok .kl-baslik { margin: 2px 0 10px; font-size: 1.15rem; }
   .mk-kok .kl-buyuk { margin-top: 6px; }
 }
+
+.mk-kok .ab-eski { color: #a8907a; font-size: .82em; font-weight: 700; text-decoration-thickness: 2px; }

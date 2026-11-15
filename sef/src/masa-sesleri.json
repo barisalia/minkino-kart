@@ -1,0 +1,266 @@
+{
+  "Afiyet olsun!": {
+    "id": "masa-tesekkur",
+    "replik": "Tam istediğim gibi! Ellerine sağlık şef."
+  },
+  "Bu tabak üç puan getirdi.": {
+    "id": "masa-uc-puan",
+    "replik": "Tabağımı çok beğendim. Üç yıldız da senin!"
+  },
+  "Fişteki bir yemek tepside eksik.": {
+    "id": "masa-eksik",
+    "replik": "Bir tabağım daha vardı. Mutfakta kalmış olabilir mi?"
+  },
+  "Tavuk yanmış. Bir dahaki sefere kızarınca tabağa al.": {
+    "id": "masa-tavuk-yanik",
+    "replik": "Tavuğumun kenarı yanmış. Bir dahakinde biraz daha erken alalım mı?"
+  },
+  "Tavuk biraz fazla kızarmış.": {
+    "id": "masa-tavuk-koyu",
+    "replik": "Benim tavuğum biraz fazla kızarmış."
+  },
+  "Makarnanın kıvamına bir daha bakalım.": {
+    "id": "masa-makarna-kivam",
+    "replik": "Makarnamın kıvamına birlikte bakalım mı?"
+  },
+  "Müşteri makarnasında başka bir sos istemişti.": {
+    "id": "masa-makarna-sos",
+    "replik": "Makarnam için başka bir sos istemiştim. Fişimdeki kâseye bakalım mı?"
+  },
+  "Fişteki sebzelerden biri tabağımda yok. İkisine birlikte bakalım.": {
+    "id": "masa-sebze-eksik",
+    "replik": "Sebzelerimden biri eksik. Fişimde hangileri var, birlikte bakalım mı?"
+  },
+  "Salata hazır. Müşteri başka bir sos istemişti.": {
+    "id": "masa-salata-sos",
+    "replik": "Salatam için başka bir sos istemiştim. Fişimdekiyle karşılaştıralım mı?"
+  },
+  "Şişin malzemelerine ve sosuna bir daha bakalım.": {
+    "id": "masa-sis",
+    "replik": "Şişimdeki sebzelerin sırasına bir de sosuna bakalım mı?"
+  },
+  "Krebin iki yüzünün de rengini kontrol edelim.": {
+    "id": "masa-krep",
+    "replik": "Krebimin iki yüzüne de bakalım mı? İkisi de altın renginde olsun istemiştim."
+  },
+  "Müşteri mücverin yanında başka bir şey istemişti.": {
+    "id": "masa-mucver-eslik",
+    "replik": "Mücverimin yanında başka bir şey istemiştim. Fişimde görebilirsin."
+  },
+  "Müşteri çorbasında başka bir süs istemişti.": {
+    "id": "masa-corba-sus",
+    "replik": "Çorbamın üstüne başka bir süs istemiştim."
+  },
+  "Müşteri dolu bir bardak istemişti.": {
+    "id": "masa-icecek-doluluk",
+    "replik": "Biraz daha içecek koyabilir misin? Bardağım dolsun istiyorum."
+  },
+  "Bardağın içindeki meyve suyu fiştekinden farklı.": {
+    "id": "masa-icecek-fark",
+    "replik": "Bu başka bir meyvenin suyu olmuş. Benim fişimde hangi meyve var?"
+  },
+  "Bardaktaki renk siparişteki renkten farklı.": {
+    "id": "masa-smoothie-renk",
+    "replik": "Bu güzel bir renk! Ama ben fişimdeki renkten istemiştim."
+  },
+  "Bardağı çizgiye kadar doldurabilirsin.": {
+    "id": "masa-smoothie-cizgi",
+    "replik": "Bardağıma biraz daha koyar mısın? Şu çizgiye kadar."
+  },
+  "Bu bardak için buz istemişti.": {
+    "id": "masa-buz-eksik",
+    "replik": "Benim içeceğim buzlu olacaktı. Biraz buz ekleyebilir misin?"
+  },
+  "Müşteri içeceğini buzsuz istemişti.": {
+    "id": "masa-buz-fazla",
+    "replik": "Ben içeceğimi buzsuz istemiştim."
+  },
+  "Müşteri pizzasında başka malzemeler istemişti.": {
+    "id": "masa-pizza-ic",
+    "replik": "Pizzamın üstüne başka malzemeler istemiştim. Fişimdekilere bakar mısın?"
+  },
+  "Pizza biraz erken çıkmış.": {
+    "id": "masa-pizza-erken",
+    "replik": "Dilimimin hamuru biraz yumuşak kalmış. Biraz daha pişsin isterdim."
+  },
+  "Pizza fazla kızarmış.": {
+    "id": "masa-pizza-fazla",
+    "replik": "Pizzamın kenarı biraz fazla kızarmış."
+  },
+  "Pizzanın kenarları yanmış.": {
+    "id": "masa-pizza-yanik",
+    "replik": "Pizzamın kenarları yanmış. Bir dahakini biraz daha erken alalım mı?"
+  },
+  "Pizzanın pişme derecesine bir daha bakalım.": {
+    "id": "masa-pizza-pisme",
+    "replik": "Pizzamın kenarlarına bakalım mı? Altın renginde olsun istemiştim."
+  },
+  "Müşteri simidinde başka bir kaplama istemişti.": {
+    "id": "masa-simit-kaplama",
+    "replik": "Simidimin üstü biraz farklı. Fişimdekine bakar mısın?"
+  },
+  "Simidin rengini sipariştekiyle karşılaştıralım.": {
+    "id": "masa-simit-renk",
+    "replik": "Simidimin rengini fişimdekiyle karşılaştıralım mı?"
+  },
+  "Simidin dışına ve kızarma rengine bakalım.": {
+    "id": "masa-simit",
+    "replik": "Simidimin üstüne ve rengine birlikte bakalım mı?"
+  },
+  "Tostun rengini siparişteki ekmekle karşılaştıralım.": {
+    "id": "masa-tost-renk",
+    "replik": "Ekmeğimin rengini fişimdekiyle karşılaştıralım mı?"
+  },
+  "Tostun içindeki malzemelerle sipariştekilere birlikte bakalım.": {
+    "id": "masa-tost-ic",
+    "replik": "Tostumun içinde ne var? Fişimdeki malzemelerle karşılaştıralım mı?"
+  },
+  "Tostun içindekilere ve kızarma rengine bakalım.": {
+    "id": "masa-tost",
+    "replik": "Tostumun içine bir de ekmeğinin rengine bakalım mı?"
+  },
+  "Kurabiyenin şekline bir daha bakalım.": {
+    "id": "masa-kurabiye",
+    "replik": "Benim kurabiyemin şekli fişimde. Birlikte bakalım mı?"
+  },
+  "Dondurmanın tadına bir daha bakalım.": {
+    "id": "masa-dondurma",
+    "replik": "Ben başka bir dondurma istemiştim. Fişimdekine bakar mısın?"
+  },
+  "Kekin süsüne bir daha bakalım.": {
+    "id": "masa-kek",
+    "replik": "Kekimin üstündeki süsleri birlikte sayalım mı?"
+  },
+  "Tartın meyvelerine bir daha bakalım.": {
+    "id": "masa-tart",
+    "replik": "Tartımın üstündeki meyveler fişimdekilerden biraz farklı."
+  },
+  "Tatlı biraz fazla kızarmış. Yeşil ışık yanınca fırından çıkarabilirsin.": {
+    "id": "masa-tatli-koyu",
+    "replik": "Tatlım biraz fazla kızarmış. Bir dahakini ışık yeşilken alalım mı?"
+  },
+  "Kumpirinin içindekileri siparişle karşılaştıralım.": {
+    "id": "masa-kumpir",
+    "replik": "Kumpirimin içine ne koymuştuk? Fişimdeki resimlere bakalım mı?"
+  },
+  "Müşteri limonlu salata istiyor.": {
+    "id": "masa-salata-limon",
+    "replik": "Salatama biraz limon sıkar mısın?"
+  },
+  "Müşteri yoğurt soslu salata istiyor.": {
+    "id": "masa-salata-yogurt",
+    "replik": "Salatamın üstüne yoğurt sosu alabilir miyim?"
+  },
+  "Müşteri fesleğen soslu salata istiyor.": {
+    "id": "masa-salata-feslegen",
+    "replik": "Salatamda fesleğen sosunu çok severim."
+  },
+  "Mantının içi fiştekinden farklı. İç malzemeyi yeniden seçebilirsin.": {
+    "id": "masa-manti-ic-farki",
+    "replik": "Mantımın içinde başka bir malzeme var. Benim fişime bakar mısın?"
+  },
+  "Fişteki sosla tabağındaki sos farklı. Kaşığa hangi sosu alacaksın?": {
+    "id": "masa-manti-sos-farki",
+    "replik": "Mantımın üstüne başka bir sos istemiştim."
+  },
+  "Bazı mantılar sossuz kalmış. Her birine bir kaşık sos koyalım.": {
+    "id": "masa-manti-sos-eksik",
+    "replik": "Bir mantım sossuz kalmış. Ona da bir kaşık koyabilir misin?"
+  },
+  "Mantıları biraz erken süzdün. Yeşil çizgiye gelince süzgeci kaldır.": {
+    "id": "masa-manti-erken",
+    "replik": "Mantım biraz sert kalmış. Biraz daha pişebilir."
+  },
+  "Mantılar suda uzun kalmış. Bir dahaki sefer yeşil çizgide süz.": {
+    "id": "masa-manti-fazla",
+    "replik": "Mantım biraz fazla yumuşak olmuş. Bir dahakinde daha erken süzelim mi?"
+  },
+  "Mantının içi, sosu ve pişme süresine bakalım.": {
+    "id": "masa-manti-yorum",
+    "replik": "Mantımın içini, sosunu ve kıvamını birlikte kontrol edelim mi?"
+  },
+  "Bugünkü sipariş domates soslu. Kırmızı kâseyi tabağa dök.": {
+    "id": "masa-makarna-istek-domates",
+    "replik": "Makarnamın üstüne domates sosu istiyorum."
+  },
+  "Bugünkü sipariş fesleğen soslu. Yeşil kâseyi tabağa dök.": {
+    "id": "masa-makarna-istek-feslegen",
+    "replik": "Makarnamın üstünde fesleğen sosunu çok severim."
+  },
+  "Bugünkü sipariş tereyağlı. Tereyağını tabağa koy.": {
+    "id": "masa-makarna-istek-tereyagi",
+    "replik": "Makarnama biraz tereyağı koyar mısın?"
+  },
+  "Pizzanın iki yarısındaki malzemelerin yerlerine bir daha bakalım.": {
+    "id": "masa-pizza-paylas-tadim",
+    "replik": "Pizzamın iki yarısındaki malzemelerin yeri farklı. Fişimdekilere bakalım mı?"
+  },
+  "Salatalıkları küçük küçük doğrar mısın? Minik lokmaları seviyorum.": {
+    "id": "salata-kucuk",
+    "replik": "Salatalıkları küçük küçük doğrar mısın? Minik lokmaları seviyorum."
+  },
+  "Salatalık dilimlerim iri olsun. Çıtır çıtır yemek istiyorum.": {
+    "id": "salata-iri",
+    "replik": "Salatalık dilimlerim iri olsun. Çıtır çıtır yemek istiyorum."
+  },
+  "Salatalığım biraz iri kalmış. Bir dahakine daha küçük doğrayalım mı?": {
+    "id": "salata-kucuk-tadim",
+    "replik": "Salatalığım biraz iri kalmış. Bir dahakine daha küçük doğrayalım mı?"
+  },
+  "Salatalığımı iri dilimler hâlinde istemiştim. Bu sefer küçük olmuş.": {
+    "id": "salata-iri-tadim",
+    "replik": "Salatalığımı iri dilimler hâlinde istemiştim. Bu sefer küçük olmuş."
+  },
+  "Yalnızca patatesi ezebilir misin? Havucumla domatesim tane tane kalsın.": {
+    "id": "corba-patates",
+    "replik": "Yalnızca patatesi ezebilir misin? Havucumla domatesim tane tane kalsın."
+  },
+  "Ben yalnızca patatesi ezilmiş istemiştim. Havuçla domatesi kâsemde görmek istiyorum.": {
+    "id": "corba-patates-tadim",
+    "replik": "Ben yalnızca patatesi ezilmiş istemiştim. Havuçla domatesi kâsemde görmek istiyorum."
+  },
+  "Bahçe salatası. Marul, Salatalık, Domates.": {
+    "id": "masa-salata-fis",
+    "replik": "Salatamda marul, salatalık ve domates olsun."
+  },
+  "Sebze çorbası. Domates, Havuç, Patates.": {
+    "id": "masa-corba-fis",
+    "replik": "Çorbamda domates, havuç ve patates istiyorum."
+  },
+  "Bu kez çorbamın üstüne bir havuç dilimi koyar mısın?": {
+    "id": "masa-havuclu-salata",
+    "replik": "Salatamın üstüne bir havuç dilimi koyar mısın?"
+  },
+  "Çorbamın üzerinde bir dilim domates olsun, olur mu?": {
+    "id": "masa-domatesli-salata",
+    "replik": "Salatamın üstüne bir domates dilimi koyar mısın?"
+  },
+  "Sebzelerin hepsi ezilmiş. Ben taneli çorba istemiştim.": {
+    "id": "corba-taneli-tadim",
+    "replik": "Sebzelerin hepsi ezilmiş. Ben taneli çorba istemiştim."
+  },
+  "Çorbamda parçalar kalmış. Ben pürüzsüz çorba istemiştim.": {
+    "id": "corba-puruzsuz-tadim",
+    "replik": "Çorbamda parçalar kalmış. Ben pürüzsüz çorba istemiştim."
+  },
+  "Sebzelerin taneleri kâsemde kalsın, olur mu?": {
+    "id": "corba-taneli-istek",
+    "replik": "Sebzelerin taneleri kâsemde kalsın, olur mu?"
+  },
+  "Çorbam pürüzsüz olsun. Sebzeleri ezebilir misin?": {
+    "id": "corba-puruzsuz-istek",
+    "replik": "Çorbam pürüzsüz olsun. Sebzeleri ezebilir misin?"
+  },
+  "Mmm! Fesleğeni güzelce ezmişsin. Sos makarnanın üstüne yayılmış!": {
+    "id": "pesto-ezildi",
+    "replik": "Mmm! Fesleğeni güzelce ezmişsin. Sos makarnanın üstüne yayılmış!"
+  },
+  "Fesleğenin tadını aldım! Bir dahaki sefere yaprakları biraz daha ezelim mi?": {
+    "id": "pesto-iri",
+    "replik": "Fesleğenin tadını aldım! Bir dahaki sefere yaprakları biraz daha ezelim mi?"
+  },
+  "Sosta iri yapraklar kalmış. Havanda kalan yaprakları da ezebilirsin.": {
+    "id": "pesto-iri",
+    "replik": "Fesleğenin tadını aldım! Bir dahaki sefere yaprakları biraz daha ezelim mi?"
+  }
+}

@@ -1,6 +1,7 @@
+import { durum } from '../engine/ilerleme';
 import { efekt, konus } from '../audio/ses';
 import { metin } from '../audio/metin';
-import { durum, kaydetDurum } from '../engine/ilerleme';
+import { menuYasiniSec } from '../engine/menu-yas';
 import { YASLAR, type Yas } from '../engine/types';
 import { bekle, h, sure } from '../ui/dom';
 import { IKON } from '../ui/ikonlar';
@@ -28,8 +29,7 @@ export function yasEkrani(app: Uygulama, param?: { sonra?: string; sonraParam?: 
       kilit = true;
       efekt.dogru();
       kart.classList.add('secildi');
-      durum.i.yas = y;
-      kaydetDurum();
+      menuYasiniSec(y);
       await Promise.all([konus(metin('yas_secildi', { yas: y })), bekle(sure(900))]);
       if (kapandi) return;
       app.git(param?.sonra ?? 'temalar', param?.sonraParam);

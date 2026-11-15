@@ -1,0 +1,46 @@
+.alf-ceren{display:inline-block;position:relative;aspect-ratio:1;pointer-events:none}
+.alf-ceren>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
+.alf-ceren>img[hidden],.alf-soyle button[hidden]{display:none!important}
+.alf-soyle{position:relative;isolation:isolate;width:100%;height:100%;min-height:280px;overflow:hidden;background:#ffd0a6}
+.alf-soyle:before{content:"";position:absolute;inset:auto 0 0;height:7%;background:#aacfc0;border-top:2px solid #242922}
+.alf-soyle-hoca{position:absolute;left:-2%;bottom:-10%;width:48%;height:104%}
+.alf-soyle-ders{position:absolute;left:46%;right:6%;top:10%;bottom:4%;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:clamp(6px,1vh,14px)}
+.alf-soyle-kart{background:#fff8e9;border:clamp(2px,.25vw,4px) solid #242922;border-radius:clamp(18px,2.5vw,46px);display:grid;place-items:center;padding:2% 5%;flex:1;min-height:0}
+.alf-soyle-kart svg{display:block;width:100%;height:100%;max-height:54vh}
+.alf-soyle-kart{grid-template-columns:minmax(0,1fr) minmax(56px,28%);column-gap:3%;align-items:center}
+.alf-resim-cebi{position:relative;isolation:isolate;overflow:hidden;width:100%;aspect-ratio:.78;align-self:end;margin-bottom:7%;padding:0;border:0;background:transparent;border-bottom:2px solid #333d33;border-radius:18px 18px 14px 14px;pointer-events:none}
+.alf-ses-halka{position:absolute;inset:8% 8% 24%;border-radius:50%;background:radial-gradient(circle,#fff3b8 0%,#ffd87555 68%,transparent 72%);opacity:calc(var(--ses-oran,0) * .95);transform:scale(calc(.75 + var(--ses-oran,0) * .45));pointer-events:none;transition:transform .14s ease,opacity .14s ease}
+.alf-ses-nesnesi{position:absolute;bottom:23%;left:7%;width:86%;height:72%;object-fit:contain;transform:translateY(var(--ses-nesne-y,68%)) scale(calc(.88 + var(--ses-oran,0) * .18));transition:transform .16s cubic-bezier(.22,.8,.32,1);pointer-events:none}
+.alf-cep-on{position:absolute;inset:73% 0 0;border:2px solid #333d33;border-bottom:0;border-radius:8px 8px 0 0;background:#aed5bc;display:grid;place-items:center;pointer-events:none}
+.alf-cep-harf{font-size:clamp(13px,1.8vw,20px);color:#1f4b3f;line-height:1}
+.alf-soyle[data-durum=dogru] .alf-cep-on{background:#ffd76e}
+.alf-soyle[data-durum=dogru] .alf-ses-nesnesi{animation:alf-nesne-zipla .45s cubic-bezier(.22,.82,.32,1) both}
+@keyframes alf-nesne-zipla{0%{transform:translateY(10%) scale(.85)}55%{transform:translateY(-14%) scale(1.12) rotate(-4deg)}100%{transform:translateY(-8%) scale(1.04) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.alf-ses-nesnesi,.alf-ses-halka{transition:none;animation:none}}
+.alf-soyle-alt{text-align:center;min-height:54px;display:grid;align-content:center;justify-items:center;gap:5px}
+.alf-soyle-durum{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.alf-soyle[data-durum=dinliyor] .alf-soyle-durum,.alf-soyle[data-durum=yardim] .alf-soyle-durum{position:static;clip-path:none;width:auto;height:auto;max-width:100%;margin:0;border-radius:12px;padding:4px 10px;background:#fff5dc;color:#224b3c;font-size:clamp(14px,2.2vmin,20px);line-height:1.15}
+.alf-soyle-sira{display:flex;align-items:center;justify-content:center;gap:.5em;min-height:36px}
+.alf-mik-isaret{display:none;border-radius:50%;background:#176557;color:#fff8e9;width:38px;height:38px;padding:6px;box-sizing:border-box;flex:none}
+.alf-soyle[data-durum=dinliyor] .alf-mik-isaret{display:block;animation:alf-mik-nefes 1.4s ease-in-out infinite}
+@keyframes alf-mik-nefes{50%{box-shadow:0 0 0 6px #17655736;transform:scale(1.08)}}
+@media(prefers-reduced-motion:reduce){.alf-soyle[data-durum=dinliyor] .alf-mik-isaret{animation:none}}
+.alf-soyle-dugmeler{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.alf-soyle-dugmeler button{display:grid;place-items:center;width:48px;height:48px;border:2px solid #22554b;border-radius:50%;background:#166657;color:#fff9e7;padding:10px;cursor:pointer}
+.alf-soyle-dugmeler button svg{width:100%;height:100%}
+.alf-soyle-dugmeler .alf-yardim{color:#194e45;background:#ffd36e}
+.alf-yine{position:absolute;top:2%;right:1%;display:grid;place-items:center;width:44px;aspect-ratio:1;border:2px solid #242922;border-radius:50%;background:#fff8e9;color:#15594e;padding:8px;cursor:pointer}
+.alf-yine svg{width:100%;height:100%}
+@media(orientation:portrait){
+ .alf-soyle{min-height:480px}
+ .alf-soyle-hoca{width:66%;height:48%;bottom:-6%;left:0}
+ .alf-soyle-ders{inset:9% 6% auto;height:54%;gap:8px}
+ .alf-soyle-kart{flex:none;height:68%}
+}
+@media(orientation:landscape) and (max-height:470px){
+ .alf-soyle{min-height:200px}.alf-soyle-ders{inset:5% 10% 0 46%}
+ .alf-soyle-alt{min-height:48px}.alf-soyle-dugmeler button{font-size:14px;padding:.22em .65em}
+}
+
+.alf-soyle-dugmeler .alf-yardim{display:inline-flex;align-items:center;justify-content:center;gap:.35em;width:auto;height:auto;min-height:44px;max-width:100%;padding:.42em .68em;border-radius:14px;font-size:clamp(14px,2.3vmin,19px);line-height:1.1}
+.alf-soyle-dugmeler .alf-yardim svg{width:1.1em;height:1.1em;flex:none}

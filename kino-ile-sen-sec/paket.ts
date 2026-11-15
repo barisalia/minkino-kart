@@ -29,6 +29,18 @@ export function secimliFilmPaketi(): Plugin {
         if (ad.endsWith('.webp')) await sharp(giris).webp({ quality: 88, alphaQuality: 100, effort: 4 }).toFile(cikis);
         else await cp(giris, cikis);
       }
+      const firtina = resolve(kaynak, '../kino-firtina-geliyor');
+      const firtinaHedef = resolve(dir!, 'kino-ile-sen-sec/firtina');
+      await mkdir(firtinaHedef, { recursive: true });
+      for (const ad of ['Oyna.htm', 'oyun.css', 'oyun.js', 'masa.js', 'masa-kareleri.js', 'reji.js', 'sahne.js', 'hikaye.js', 'dallar.js',
+        'agiz.js', 'resimler.js', 'nunito-tr-black.woff2', 'Nunito-OFL.txt', 'ses']) {
+        await cp(resolve(firtina, ad), resolve(firtinaHedef, ad), { recursive: true });
+      }
+      await mkdir(resolve(firtinaHedef, 'medya'), { recursive: true });
+      for (const ad of await readdir(resolve(firtina, 'medya'))) {
+        // İlk bölümdeki gibi: aynı piksel boyutunda kayıplı webp (609 MB -> çok daha küçük).
+        if (ad.endsWith('.webp')) await sharp(resolve(firtina, 'medya', ad)).webp({ quality: 88, alphaQuality: 100, effort: 4 }).toFile(resolve(firtinaHedef, 'medya', ad));
+      }
     },
   };
 }

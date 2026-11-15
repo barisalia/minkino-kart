@@ -1,0 +1,51 @@
+.ps-sahnesi,.ps-masa,.ps-fon { position:absolute; inset:0; width:100%; height:100%; }
+.ps-sahnesi { isolation:isolate; overflow:hidden; touch-action:none; container-type:size; background:#ffdcaa; -webkit-user-select:none; user-select:none; }
+.ps-fon { object-fit:fill; z-index:-1; }
+.ps-sahnesi img { pointer-events:none; user-select:none; -webkit-user-drag:none; }
+.ps-sahnesi button { cursor:pointer; touch-action:none; background:transparent; color:#664625; }
+.ps-portakal,.ps-surahi,.ps-bardak,.ps-sikacak,.ps-son,.ps-kase,.ps-gosterge,.ps-dokulen { position:absolute; translate:-50% -50%; }
+.ps-sikacak { left:39%; top:62%; width:min(36cqw,60cqh); height:62cqh; }
+.ps-alet { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; }
+.ps-portakal { left:74%; top:57%; width:min(22cqw,35cqh); height:35cqh; }
+.ps-portakal img,.ps-surahi img,.ps-bardak img,.ps-cevir img { width:100%;height:100%;object-fit:contain; }
+.ps-portakal,.ps-surahi,.ps-bardak,.ps-cevir { border:0; padding:0; border-radius:30%; }
+.ps-portakal.ps-elde,.ps-surahi.ps-elde { z-index:7; }
+.ps-secili { outline:.55cqh solid #439177;outline-offset:1cqh; }
+.ps-dene { position:absolute; left:27%; top:5%; width:30%; height:26%; min-height:44px; border-radius:45%; display:grid; place-items:center; }
+.ps-dene .ikon,.ps-donme-oku { display:grid; place-items:center; border:.4cqh solid #665139; background:var(--sef-kumanda-fonu, #fff1c8); color:#78512a; border-radius:50%; width:max(39px,8cqh); height:max(39px,8cqh); padding:1.4cqh; }
+.ps-secili-hedef,.ps-yakin { outline:.6cqh dashed #419b88; outline-offset:.5cqh; }
+.ps-cevir { position:absolute; left:14%; top:-4%; width:54%; height:35%; min-height:44px; transform-origin:50% 84%; }
+.ps-donme-oku { position:absolute; right:-14%; bottom:-15%; }
+.ps-sikiyor img { animation:psSik .35s ease; }
+@keyframes psSik { 43% {transform:translateY(8%) rotate(-12deg);} 76% {transform:translateY(3%) rotate(7deg);} }
+.ps-kase { left:75%; top:61%; width:min(23cqw,34cqh); height:32cqh; object-fit:contain; }
+.ps-gosterge { display:flex;gap:1.3cqh;left:75%;top:83%; }
+.ps-gosterge i { display:block;width:2.5cqh;height:2.5cqh;border-radius:50%;border:.3cqh solid #765235;background:var(--sef-kumanda-fonu, #fff1ca); }
+.ps-gosterge .ps-dolu { background:#ffa629; }
+.ps-surahi { left:34%;top:61%;width:24%;height:38%; }
+.ps-bardak { left:65%;top:66%;width:min(14.5cqw,26.5cqh);height:auto;aspect-ratio:662/700;min-width:44px;min-height:44px; }
+.ps-bardak .ps-dokulen { left:42%;bottom:91%;translate:0 0;width:110%;height:auto;aspect-ratio:700/687;object-fit:contain;pointer-events:none; }
+.ps-son { left:65%;top:66%;height:28%;width:15%;object-fit:contain; animation:psServis .34s ease; }
+@keyframes psServis { from {transform:translateY(5%);} }
+@media(prefers-reduced-motion:reduce){.ps-sahnesi *{animation-duration:.01s!important;transition-duration:.01s!important;}}
+.ps-dene { left:8%;top:0;width:70%;height:43%; }
+.ps-cevir { left:13%; top:-3%; width:61%; height:45%; }
+.ps-cevir { top:-7%;height:49%; }
+.ps-sahnesi .ps-yarim-sun {position:absolute;right:4%;bottom:7%;display:flex;align-items:center;justify-content:center;width:15%;height:15%;border:.4cqh solid #534037;border-radius:2.4cqh;background:var(--sef-kumanda-fonu, #fff4c9);box-shadow:0 .5cqh #916346}
+.ps-yarim-sun img{height:85%;width:50%}.ps-yarim-sun .ikon{width:4cqh;height:4cqh}
+.ps-meyve-rafi {position:absolute;left:52%;top:78%;width:42%;height:17%;display:flex;justify-content:center;gap:1.2cqw}
+.ps-sahnesi .ps-meyve-sec {width:28%;min-height:38px;display:grid;place-items:center;border:.35cqh solid #4e4236;border-radius:2cqh;background:var(--sef-kumanda-fonu, #fff2cf);box-shadow:0 .45cqh #a97d59;padding:.5cqh}
+.ps-meyve-sec img{width:85%;height:100%;min-height:0;object-fit:contain}
+.ps-sahnesi .ps-meyve-sec[aria-pressed=true]{background:#bbe4a8;border-color:#386045}
+.ps-sahnesi .ps-istek-fisi {position:absolute;left:50%;top:2.7%;transform:translateX(-50%);height:max(38px,11%);display:flex;align-items:center;gap:1cqh;padding:.65cqh 1.7cqh;background:var(--sef-kumanda-fonu, #fff4d6);border:.3cqh solid #514136;border-radius:1.8cqh}
+.tepsi-sahnesi:has(.ps-sahnesi) .tepsi-ust h2 {visibility:hidden;}
+.ps-istek-fisi img{width:7cqh;height:100%;object-fit:contain}.ps-istek-fisi .ikon{width:2.9cqh;height:2.9cqh}
+
+.sikma-servis-bardagi{position:relative;display:inline-block;aspect-ratio:480/437;isolation:isolate}
+.tepsi-yuva[data-parca=icecek]>.sikma-servis-bardagi{width:auto;height:61%;max-width:74%;margin-top:2%}
+.sikma-servis-bardagi>.sikma-cam-resmi{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.sikma-cam-haznesi{position:absolute;inset:7.5% 2.4% 5%;background:#def4f1;clip-path:polygon(0 0,100% 0,86.8% 97%,82% 99%,68% 100%,28% 100%,14% 98%)}
+.sikma-suyu{position:absolute;bottom:0;left:0;width:100%;height:var(--doluluk);background:var(--meyve-rengi);border-radius:50% 50% 0 0 / 6% 6% 0 0}
+.sikma-servis-bardagi>.sikma-cam-meyvesi{position:absolute;width:33%;height:30%;right:-4%;top:-5%;object-fit:contain;rotate:15deg}
+.restoran-lokma>.sikma-servis-bardagi{position:absolute;height:72%;width:auto;transform-origin:center bottom}
+@media(prefers-reduced-motion:no-preference){.sikma-suyu{transition:height .22s ease-out}}

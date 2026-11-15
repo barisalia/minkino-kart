@@ -1,0 +1,27 @@
+.oz-resim{position:absolute;inset:11% 12% 12% 16%;display:grid;grid-template-columns:minmax(0,1fr) 13%;grid-template-rows:minmax(0,1fr) 14%;gap:3%;place-items:center}
+.oz-cerceve{width:100%;height:100%;display:grid;place-items:center;container-type:size}
+.oz-cerceve canvas{display:block;width:min(100cqw,150cqh);height:auto;aspect-ratio:3/2;outline:2px solid #302a28;border-radius:3px;box-shadow:0 4px #dfbb84;background:#fffaf0;touch-action:none;cursor:crosshair}
+.oz-arac,.oz-palet{display:flex;align-items:center;justify-content:center;gap:5%;height:100%;width:100%}
+.oz-arac{flex-direction:column;gap:2%;background:#f7d396;border:1.5px solid #3b3028;border-radius:25px;padding:5%}
+.oz-arac button,.oz-palet button{display:grid;place-items:center;position:relative;min-height:0;min-width:0;width:100%;height:18%;padding:2px;border-radius:18%}
+.oz-arac button[aria-pressed=true]{background:#fff4c8;outline:2px solid #397d72}.oz-arac img,.oz-arac svg{width:100%;height:100%;object-fit:contain}
+.oz-arac button img,.oz-arac button svg{position:absolute;inset:8%;width:84%;height:84%}
+.oz-arac button:disabled{opacity:.35}.oz-palet{grid-column:1;background:#ffebca;border:1.5px solid #43352a;border-radius:22px;width:min(100%,370px);padding:2px}
+.oz-palet button{width:16%;height:100%}.oz-palet i{height:80%;max-height:42px;aspect-ratio:1;background:var(--boya);border:1.6px solid #28252a;border-radius:50% 45% 48% 40%}.oz-palet [aria-pressed=true] i{outline:2px solid #342b2a;outline-offset:2px}
+@media(max-aspect-ratio:1/1){.oz-resim{inset:23% 4% 19%;grid-template:18% minmax(0,1fr) 14% / 1fr;gap:3%}.oz-cerceve{grid-row:2}.oz-arac{grid-row:1;flex-direction:row;padding:1% 2%;max-width:430px}.oz-arac button{height:100%;width:18%}.oz-palet{grid-row:3}}
+.oz-resim{grid-template-rows:16% minmax(0,1fr) 13%;inset:8% 12% 10% 14%;gap:2%}
+.oz-resim .oz-cerceve{grid-column:1;grid-row:2}
+.oz-resim .oz-arac{grid-column:2;grid-row:2;box-sizing:border-box}
+.oz-resim .oz-palet{grid-column:1;grid-row:3}
+.oz-resim .oz-arac button{height:14.8%}
+.oz-yine svg{transform:scaleX(-1)}
+.oz-sayfalar{grid-column:1;grid-row:1;display:flex;align-items:stretch;justify-content:center;gap:5%;height:100%;width:min(85%,360px)}
+.oz-sayfalar button{background:#fff9e7;border:1.6px solid #302928;border-radius:4px 10px 5px 4px;display:grid;place-items:center;min-width:0;width:24%;box-shadow:0 2px #cf9e6c}
+.oz-sayfalar button[aria-pressed=true]{border-bottom:4px solid #437f72;background:#fff2cc}
+.oz-sayfalar svg,.oz-sayfalar canvas{width:100%;height:100%;object-fit:contain;min-height:0;pointer-events:none}
+@media(max-aspect-ratio:1/1){
+  .oz-resim{inset:18% 3.5% 15%;grid-template:15% minmax(0,1fr) 13% 12% / 1fr;gap:2%}
+  .oz-resim .oz-arac{grid-column:1;grid-row:3;flex-direction:row}
+  .oz-resim .oz-arac button{height:100%;width:15%}
+  .oz-resim .oz-palet{grid-row:4}
+}

@@ -1,0 +1,22 @@
+.sebze-lavabosu{position:absolute;inset:0;z-index:15;isolation:isolate;container-type:size;background:#a2e2cd url('../../assets/sef/yikama/lavabo.webp') center/100% 100% no-repeat;touch-action:none;user-select:none}
+.sebze-lavabosu [hidden]{display:none!important}
+.lavabo-geri,.lavabo-cevir,.lavabo-onay,.lavaboya-git{border-radius:50%;border:2px solid #4b3431;box-shadow:0 .65cqh #a48163;display:grid;place-items:center;background:var(--sef-kumanda-fonu, #fff3d8);color:#493330;width:max(42px,10cqh);height:max(42px,10cqh);padding:1.9cqh}
+.lavaboya-git{position:absolute;right:5%;top:22%;z-index:3;background:#c5f0ec;touch-action:manipulation}
+.lavaboya-git[data-temiz=true]:after{content:'✓';position:absolute;right:-8%;bottom:-7%;color:#31754c;background:#bbebbd;border-radius:50%;padding:.35cqh}
+.lavabo-geri{position:absolute;left:2.5%;top:4%}.lavabo-cevir,.lavabo-onay{position:absolute;right:5%;bottom:7%}.lavabo-onay{background:#b9e8b2}
+.lavabo-musluk{position:absolute;left:67%;top:25%;width:max(48px,7.5cqw);height:max(48px,13cqh);transform:translate(-50%,-50%);border:0;background:transparent;display:grid;place-items:end;padding:0}
+.lavabo-musluk .yikama-damla{margin:0 -.8cqw -1.7cqh;background:#8edff0;width:3.8cqh;box-shadow:0 0 0 1.4px #213d4b}.lavabo-musluk[aria-pressed=true] .yikama-damla{background:#28b7e4}
+.yikama-damla{display:block;width:60%;aspect-ratio:1;border:1.5px solid #264756;border-radius:65% 30% 65% 65%;transform:rotate(-42deg);background:#67c9e6}
+.lavabo-su{display:none;position:absolute;left:43.6%;width:3.45%;top:25.5%;height:48%;background:#b9f5fc;border-radius:0 0 40% 40%;overflow:hidden}.sebze-lavabosu[data-su=true] .lavabo-su{display:block}
+.lavabo-su i{position:absolute;left:18%;width:15%;height:19%;background:var(--sef-kumanda-fonu, #fff9ef);border-radius:80%;animation:lavabo-ak .72s linear infinite}.lavabo-su i:nth-child(2){left:65%;animation-delay:-.28s}.lavabo-su i:nth-child(3){left:46%;animation-delay:-.49s}
+@keyframes lavabo-ak{from{top:-20%}to{top:110%}}
+.lavabo-sebze{position:absolute;left:45.5%;top:64%;transform:translate(-50%,-50%) rotate(var(--donus,0deg));width:min(32cqw,48cqh);height:min(32cqw,48cqh);cursor:grab;touch-action:none}
+.lavabo-sebze>img{width:100%;height:100%;object-fit:contain;pointer-events:none}.lavabo-lekeler{position:absolute;inset:0}
+.lavabo-leke{position:absolute;width:29%;height:23%;transform:translate(-50%,-50%);border:none;padding:0;background:transparent;display:grid;place-items:center;touch-action:none}
+.lavabo-leke img{position:absolute;object-fit:contain;width:68%;height:68%;pointer-events:none}
+.lavabo-geri svg,.lavabo-onay svg,.lavabo-cevir svg{width:100%;height:100%}
+@media(prefers-reduced-motion:reduce){.lavabo-su i{animation:none}.lavabo-su i:nth-child(2){top:40%}}
+
+.tabak-malzeme[data-temiz=true]:not(:has(.kucuk-onay))::after,.lavabo-taze{display:grid;place-items:center;background:#a8e7d1;border:1px solid #416c61;border-radius:50%}
+.tabak-malzeme[data-temiz=true]:not(:has(.kucuk-onay))::after{content:'✓';position:absolute;right:2%;top:4%;width:3.5cqh;height:3.5cqh;color:#32634e;font:700 2.9cqh/1 system-ui}
+.lavabo-taze{position:absolute;right:10%;top:15%;display:flex;width:7cqh;height:7cqh;padding:1cqh}.lavabo-taze .yikama-damla{width:56%}.lavabo-taze svg{width:60%}

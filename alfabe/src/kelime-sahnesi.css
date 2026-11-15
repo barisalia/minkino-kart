@@ -1,0 +1,97 @@
+.ks-tiyatro,.sa-oyun[data-yer="sahne"]>.ks-tiyatro{--ink:#293a34;--mint:#d6efdc;--paper:#fffbeb;position:relative;width:100%;height:100%;min-height:0;margin:0;color:var(--ink);font-family:inherit}
+.sa-oyun[data-yer="sahne"]:has(>.ks-tiyatro){display:block;overflow:hidden}
+.ks-tiyatro [hidden]{display:none!important}
+.ks-pencere{position:relative;width:100%;height:100%;min-height:0;isolation:isolate;overflow:hidden;background:#283b4f}
+.ks-cizim{position:absolute;left:0;top:50%;width:100%;height:max(100%,min(56.28vw,68svh));transform:translateY(-50%)}
+.ks-dinle,.ks-sec{border:2px solid var(--ink);font:inherit;color:var(--ink);touch-action:manipulation}
+.ks-dinle{position:absolute;right:clamp(8px,2vw,20px);top:clamp(7px,1.6vh,14px);z-index:5;width:46px;height:44px;display:grid;place-items:center;background:var(--mint);border-radius:15px}
+.ks-dinle svg{width:25px;height:25px}
+.ks-dinle:disabled{opacity:.65}
+.ks-noktalar{position:absolute;left:clamp(8px,2vw,20px);top:clamp(9px,1.9vh,17px);z-index:4;display:flex;align-items:center;gap:5px;background:var(--paper);padding:7px 10px;border:2px solid var(--ink);border-radius:99px}
+.ks-noktalar i{width:9px;height:9px;border:1.5px solid #30493e;border-radius:50%;background:#fffbeb}
+.ks-noktalar .ks-dolu{background:#43836a}
+.ks-alt{position:absolute;left:clamp(7px,1.8vw,21px);right:clamp(7px,1.8vw,21px);bottom:clamp(5px,1.65vh,18px);z-index:5;display:flex;align-items:end;justify-content:space-between;gap:8px;pointer-events:none}
+.ks-kelime,.ks-sec>span{display:flex;align-items:center;font-weight:600;line-height:1;letter-spacing:.055em}
+.ks-kelime{padding:.14em .31em .2em;font-size:clamp(27px,3.6vw,49px);border:2px solid var(--ink);border-radius:14px;background:var(--paper)}
+.ks-kelime strong,.ks-sec strong{color:#ac402b;font-weight:600}
+.ks-secimler{display:flex;gap:clamp(5px,1vw,12px);pointer-events:auto}
+.ks-sec{display:flex;align-items:center;justify-content:center;gap:clamp(4px,1vw,9px);min-width:clamp(80px,12vw,157px);min-height:44px;padding:3px 9px;border-radius:14px;background:var(--paper);box-shadow:0 3px 0 #aa7d47}
+.ks-sec img{width:clamp(25px,4.5vw,53px);height:clamp(34px,4.8vw,58px);object-fit:contain}
+.ks-sec>span{font-size:clamp(18px,2.6vw,30px)}
+.ks-sec:hover,.ks-sec:focus-visible{background:#e1f2d9}
+.ks-sec:active{transform:translateY(2px)}
+.ks-kesfet{position:absolute;z-index:4;border:0;background:transparent;touch-action:manipulation;cursor:pointer;min-width:44px;min-height:44px}
+.ks-kesfet:focus-visible{outline:3px dashed #fff5d7;outline-offset:-4px;border-radius:22%}
+.ks-kesfet:disabled{pointer-events:none;cursor:default}
+[data-sahne="salon"] .ks-kesfet{inset:11% 0 18%}
+[data-sahne="kulis"] .ks-kesfet{left:48%;top:38%;width:37%;height:36%}
+[data-sahne="bahce"] .ks-kesfet{left:68%;top:23%;width:23%;height:38%}
+.ks-kus{position:absolute;left:74.5%;top:31.5%;width:13%;height:23.8%;transform:scaleX(-1);z-index:2;pointer-events:none}
+.ks-kanat{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;opacity:0}
+.ks-kanat-3{opacity:1}
+.ks-kesfedildi .ks-kanat-3,.ks-hareket-tas .ks-kanat-3{animation:ks-kus-durgun .53s steps(1,end) 1}
+.ks-kesfedildi .ks-kanat-0,.ks-hareket-tas .ks-kanat-0{animation:ks-kus-ust .53s steps(1,end) 1}
+.ks-kesfedildi .ks-kanat-1,.ks-hareket-tas .ks-kanat-1{animation:ks-kus-orta .53s steps(1,end) 1}
+.ks-kesfedildi .ks-kanat-2,.ks-hareket-tas .ks-kanat-2{animation:ks-kus-alt .53s steps(1,end) 1}
+.ks-hareket-tas .ks-kanat{animation-delay:1.65s}
+.ks-kesfedildi .ks-fener{animation:ks-tik .32s alternate}
+[data-sahne="salon"] .ks-kesfedildi .ks-fon{animation:ks-kapi-tik .25s}
+@keyframes ks-kapi-tik{22%,62%{transform:translateX(.15%)}44%,84%{transform:translateX(-.15%)}}
+@keyframes ks-tik{18%,70%{transform:rotate(23deg)}42%{transform:rotate(20deg)}}
+@keyframes ks-kus-durgun{0%,80%{opacity:1}20%{opacity:0}}
+@keyframes ks-kus-ust{0%,40%{opacity:0}20%{opacity:1}}
+@keyframes ks-kus-orta{0%,60%{opacity:0}40%{opacity:1}}
+@keyframes ks-kus-alt{0%,80%{opacity:0}60%{opacity:1}}
+.ks-fon,.ks-kapi{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.ks-kapi{clip-path:inset(0 50% 0 50%);transition:clip-path .68s cubic-bezier(.25,.72,.29,1) .75s}
+.ks-hareket-zil .ks-kapi{clip-path:inset(0 0 0 0)}
+.ks-nesne{position:absolute;padding:0;border:0;background:transparent;display:grid;align-items:center;justify-items:center;touch-action:manipulation;z-index:3;line-height:0;transform-origin:50% 35%}
+
+.ks-nesne img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+
+
+.ks-zil{height:40%;width:20%;left:40%;top:37%;transform-origin:50% 10%}
+[data-sahne="kulis"] .ks-zil{left:35%;top:26%}
+.ks-pil{height:26%;width:10%;left:28%;top:43%}
+.ks-tas{width:19%;height:25%;left:30%;top:27%;transform-origin:80% 30%}
+.ks-kaya{width:13%;height:14%;left:35%;top:25%}
+.ks-fener{position:absolute;width:30%;left:51%;top:47%;transform:rotate(21deg);transform-origin:50% 50%;z-index:2;pointer-events:none}
+[data-sahne="kulis"] .ks-pil{left:85%;top:62.3%;width:4.2%;height:19%;transform:rotate(-69deg)}
+.ks-isin,.ks-yildiz{position:absolute;pointer-events:none;opacity:0}
+.ks-isin{inset:0;background:#fff0a7;clip-path:polygon(52.5% 47%,53.1% 55.8%,13% 29.5%,15% 0,26% 0);transform-origin:52% 50%}
+.ks-yildiz{left:20.9%;top:7.1%;width:10.2%;height:16.8%;background:#ffcf4a;clip-path:polygon(50% 0,66% 32%,99% 40%,75% 63%,81% 98%,49% 80%,17% 98%,23% 62%,0 39%,34% 32%)}
+.ks-su{position:absolute;left:48.32%;top:49.4%;width:34.1%;height:8.8%;border-radius:50%;background:#58d9e1;transform:scale(0);transition:transform .76s ease-in .76s;pointer-events:none}
+.ks-akis{position:absolute;opacity:0;left:53.8%;top:34.4%;width:6%;height:21%;background:#61dfeb;clip-path:polygon(0 0,25% 0,51% 36%,73% 69%,100% 100%,76% 100%,50% 76%,30% 41%);pointer-events:none}
+.ks-hareket-zil .ks-zil{animation:ks-cinlat 1.15s ease-in-out both}
+[data-sahne="salon"] .ks-hareket-pil .ks-pil{animation:ks-yuvarla 1.22s cubic-bezier(.25,.67,.46,1) both}
+[data-sahne="kulis"] .ks-hareket-pil .ks-pil{z-index:1;animation:ks-tak .88s cubic-bezier(.37,.05,.66,.93) both}
+.ks-hareket-pil .ks-isin{animation:ks-isik .21s .83s both}
+.ks-hareket-pil .ks-yildiz{animation:ks-isik .23s .88s both}
+.ks-hareket-kaya .ks-kaya{animation:ks-dus .97s cubic-bezier(.27,.05,.54,.98) both}
+.ks-hareket-tas .ks-tas{animation:ks-bosalt 1.9s ease-in-out both}
+.ks-hareket-tas .ks-akis{animation:ks-ak .91s .59s both}
+.ks-hareket-tas .ks-su{transform:scale(1)}
+@keyframes ks-cinlat{0%,100%{transform:rotate(0)}16%,46%,72%{transform:rotate(19deg)}31%,59%,83%{transform:rotate(-16deg)}94%{transform:rotate(4deg)}}
+@keyframes ks-yuvarla{0%{left:26%;top:47%;transform:rotate(-8deg)}45%{left:42%;top:62%;transform:rotate(75deg)}69%{left:53%;top:61%;transform:rotate(105deg)}100%{left:63%;top:64%;transform:rotate(89deg)}}
+@keyframes ks-tak{0%{transform:translate(0,0) rotate(-69deg);opacity:1}74%{opacity:1}100%{transform:translate(-385%,-55%) rotate(-69deg);opacity:0}}
+@keyframes ks-isik{from{opacity:0}to{opacity:.82}}
+@keyframes ks-dus{0%{left:35%;top:25%;transform:rotate(-20deg)}43%{left:49%;top:19%;transform:rotate(4deg)}72%{left:58%;top:41%;transform:rotate(18deg)}84%{left:59%;top:39%;transform:rotate(13deg)}100%{left:60%;top:41%;transform:rotate(10deg)}}
+@keyframes ks-bosalt{0%{left:30%;top:27%;transform:rotate(0)}28%{left:37%;top:20%;transform:rotate(7deg)}50%,74%{left:37%;top:21%;transform:rotate(53deg)}100%{left:30%;top:26%;transform:rotate(0);opacity:0}}
+@keyframes ks-ak{0%{opacity:0;transform:scaleY(.15);transform-origin:top}28%,73%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:translateY(8%) scaleY(.85)}}
+@media (orientation:portrait){
+ .ks-pencere{background:#ffefcc}
+ .ks-cizim{top:50%;height:auto;aspect-ratio:1.32}
+ .sa-oyun[data-yer="sahne"]:has(>.ks-tiyatro){height:min(72svh,135vw);min-height:0}
+ .ks-pencere::before,.ks-pencere::after{content:"";position:absolute;left:0;width:100%;height:1.6%;background:#e5a54a}
+ .ks-pencere::before{top:calc(50% - 37.88vw - 1.6%)}
+ .ks-pencere::after{top:calc(50% + 37.88vw)}
+ .ks-alt{bottom:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+ .ks-kelime{font-size:clamp(27px,8vw,40px)}
+ .ks-sec{min-width:clamp(72px,23vw,134px)}
+}
+@media(orientation:landscape) and (max-height:490px){
+ .ks-cizim{height:100%}
+ .ks-alt{bottom:6px}.ks-dinle{top:5px;right:6px}.ks-noktalar{top:7px;left:8px}
+ .ks-sec{min-height:44px}.ks-sec img{height:35px;max-width:39px}
+}
+@media(prefers-reduced-motion:reduce){.ks-kapi,.ks-su{transition-duration:.01s}.ks-pencere .ks-nesne,.ks-pencere .ks-akis{animation-duration:.25s}.ks-kesfedildi .ks-fon,.ks-kesfedildi .ks-fener{animation:none}}

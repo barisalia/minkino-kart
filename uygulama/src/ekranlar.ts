@@ -13,6 +13,7 @@ import { incelemeAcikMi, kilitli, premiumAyarla, premiumMu } from '../../src/eng
 import { ABONELIK_YONETIM, GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../../src/kabuk/ayar';
 import { uygulamaPlatformu } from '../../src/kabuk/ortam';
 import { sayfaAdresi } from '../../src/kabuk/sayfa';
+import {anaokuluGunlugu} from './okul-gunlugu';
 import { ebeveynKapisiAc } from '../../src/ui/ebeveyn-kapisi';
 import { efekt, konus } from '../../src/audio/ses';
 import uykuJson from '../../content/uyku.json';
@@ -475,6 +476,7 @@ export function ayarlarEkrani(app: Uygulama): Ekran {
           'div.ug-ayarlar-bilgi',
           {},
           ...(uygulamada ? [h('h2', {}, 'Abonelik'), aboneDurum, aboneDugme, h('div.ug-baglantilar', {}, geriYukleDugme, ...(yonet ? [yonet] : []))] : []),
+          ...anaokuluGunlugu(),
           ...uykuBolumu(app),
           h('h2', {}, 'Gizlilik ve güvenlik'),
           h('p', {}, 'Reklam yok. Kişisel veri toplanmaz; ilerleme yalnızca bu cihazda saklanır. Mikrofon sesi anlık işlenir, kaydedilmez.'),
