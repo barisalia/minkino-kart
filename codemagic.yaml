@@ -12,7 +12,8 @@ workflows:
     integrations:
       app_store_connect: Minkino App Store Connect
     environment:
-      # RevenueCat kurulunca geri eklenecek (grup "revenuecat": REVENUECAT_IOS_KEY); şimdilik anahtarsız, her şey açık
+      groups:
+        - revenuecat
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.minkino.app
@@ -22,6 +23,9 @@ workflows:
       node: 22
       xcode: latest
     scripts:
+      - name: RevenueCat iOS anahtarını kontrol et
+        script: |
+          node -e 'const key = (process.env.REVENUECAT_IOS_KEY || "").trim(); if (!key.startsWith("appl_") || key.length <= 5) { console.error("REVENUECAT_IOS_KEY eksik veya iOS public SDK anahtari degil. Codemagic revenuecat grubunu kontrol edin."); process.exit(1); }'
       - name: Paketler
         script: npm ci
       - name: Seslendirme denetimi (cihaz sesine düşecek cümleler)
