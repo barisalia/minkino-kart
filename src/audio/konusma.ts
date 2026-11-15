@@ -1,7 +1,7 @@
 import { durum } from '../engine/ilerleme';
 import { TEST_MODU } from '../ui/dom';
 import { normal } from './cumleler';
-import { elemanYedegi, kayitCal, kayitDurdur, kayitlariBekle, kayitVar, onYukle } from './kayit';
+import { kaydiElemanlaCal, kayitCal, kayitDurdur, kayitlariBekle, kayitVar, onYukle } from './kayit';
 import type { KayitSecenegi } from './karakter-ses';
 import { baglam, muzikKis, sesMotorunuAc } from './motor';
 
@@ -172,8 +172,7 @@ export const HAZIRLIK_MS = 1500;
 let motorBeklendi = false;
 
 function motorCalisiyor() {
-  // iOS uygulamasında motor çalışmıyorsa kayıtlar <audio> yedeğiyle çalar (kayit.ts → elemanYedegi)
-  return baglam()?.state === 'running' || elemanYedegi();
+  return baglam()?.state === 'running' || kaydiElemanlaCal();
 }
 
 async function kayitIcinHazirlan(parcalar: string[], secenek: { karakter?: string | null; ton?: number }) {

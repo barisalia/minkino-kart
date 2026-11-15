@@ -144,6 +144,8 @@ function tampon(metin: string, secenek: KayitSecenegi = {}): Promise<AudioBuffer
 
 /** Sıradaki cümlelerin kayıtlarını önceden indirip çözer (gecikmesiz çalsın diye). */
 export function onYukle(metinler: (string | undefined | null)[], secenek: KayitSecenegi = {}) {
+  // iOS kayıtları doğrudan uygulama paketinden okur; aynı MP3'ü Web Audio için ayrıca çözme.
+  if (kaydiElemanlaCal()) return;
   // manifest henüz gelmediyse gelince indir (ekran açılır açılmaz çağrılan ön yükleme boşa gitmesin)
   if (!manifestBitti && manifestYukleniyor) {
     void manifestYukleniyor.then(() => onYukle(metinler, secenek));
@@ -160,17 +162,12 @@ export function onYukle(metinler: (string | undefined | null)[], secenek: KayitS
   }
 }
 
-/**
- * Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer).
- * secenek.karakter: önce karakterin kendi kaydı (normal hızda); yoksa anlatıcı kaydı secenek.ton hızında.
- */
-/**
- * iOS uygulaması (capacitor://): iPad'de Web Audio motoru 'running' olmuyor ve kayıtlar hiç çalmıyordu (derleme 3,
- * 2026-11-15); aynı cihazda düz <audio> öğesi çalıyor. Motor çalışmıyorken kayıt bu yedek yoldan çalar.
- */
-export const elemanYedegi = (): boolean => typeof location !== 'undefined' && location.protocol === 'capacitor:' && baglam()?.state !== 'running';
+/** iOS uygulamasında konuşma, oyun efektlerinin AudioContext durumundan bağımsız çalar. */
+export const kaydiElemanlaCal = (): boolean => typeof location !== 'undefined' && location.protocol === 'capacitor:';
+type KayitBasladi = (bas: number, gecenSaniye: () => number) => void;
 let calanEleman: HTMLAudioElement | null = null;
-function elemanCal(yol: string, hiz: number, iptalMi: () => boolean, basladi?: (bas: number) => void): Promise<boolean> {
+function elemanCal(yol: string, hiz: number, iptalMi: () => boolean, basladi?: KayitBasladi): Promise<boolean> {
+  if (iptalMi()) return Promise.resolve(true);
   return new Promise((coz) => {
     const a = new Audio(yol);
     let bitti = false;
@@ -180,37 +177,52 @@ function elemanCal(yol: string, hiz: number, iptalMi: () => boolean, basladi?: (
       clearInterval(bak);
       if (calanEleman === a) calanEleman = null;
       if (calanBitti === tamam) calanBitti = null;
+      a.onended = a.onerror = null;
       a.pause();
       coz(ok);
     };
     const tamam = () => son(true);
     const bak = setInterval(() => iptalMi() && son(true), 120);
     a.volume = Math.max(0, Math.min(1, durum.i.ayarlar.seviye));
+    a.muted = durum.i.ayarlar.seviye === 0;
     a.playbackRate = hiz;
     a.onended = tamam;
     a.onerror = () => son(false);
     calanEleman = a;
     calanBitti = tamam;
-    a.play().then(() => basladi?.(baglam()?.currentTime ?? 0), () => son(false));
+    a.play().then(() => {
+      if (!bitti && !iptalMi()) basladi?.(baglam()?.currentTime ?? 0, () => a.currentTime);
+    }, () => son(false));
   });
 }
 
-export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}, basladi?: (bas: number) => void): Promise<boolean> {
+async function kayitElemani(kayit: Kayit, hiz: number, iptalMi: () => boolean, basladi?: KayitBasladi): Promise<boolean> {
+  if (typeof kayit === 'string') return elemanCal(kok + kayit, hiz, iptalMi, basladi);
+  const veriParcasi = await veri(kayit);
+  if (iptalMi()) return true;
+  const yol = URL.createObjectURL(new Blob([veriParcasi], { type: 'audio/mpeg' }));
+  try {
+    return await elemanCal(yol, hiz, iptalMi, basladi);
+  } finally {
+    URL.revokeObjectURL(yol);
+  }
+}
+
+export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}, basladi?: KayitBasladi): Promise<boolean> {
+  const d = dosya(metin, secenek);
+  if (!d) return false;
+  if (kaydiElemanlaCal() && await kayitElemani(d.kayit, d.hiz, iptalMi, basladi).catch(() => false)) return true;
+  if (iptalMi()) return true;
   const c = baglam();
   const cikis = konusmaCikisi();
-  if (elemanYedegi()) {
-    const d = dosya(metin, secenek);
-    if (d && typeof d.kayit === 'string') return elemanCal(`${kok}${d.kayit}`, d.hiz ?? 1, iptalMi, basladi);
-  }
   if (!c || !cikis || c.state !== 'running') return false;
-  const hiz = dosya(metin, secenek)?.hiz ?? 1;
   const t = await tampon(metin, secenek);
   if (!t || iptalMi()) return !!t;
-  return tamponCal(c, cikis, t, hiz, basladi);
+  return tamponCal(c, cikis, t, d.hiz, basladi);
 }
 
 /** Çözülmüş kaydı konuşma çıkışından çalar (kayitDurdur / sus ile yumuşakça kesilir); bitince true. */
-function tamponCal(c: AudioContext, cikis: GainNode, t: AudioBuffer, hiz: number, basladi?: (bas: number) => void): Promise<boolean> {
+function tamponCal(c: AudioContext, cikis: GainNode, t: AudioBuffer, hiz: number, basladi?: KayitBasladi): Promise<boolean> {
   return new Promise((coz) => {
     const src = c.createBufferSource();
     src.buffer = t;
@@ -230,7 +242,7 @@ function tamponCal(c: AudioContext, cikis: GainNode, t: AudioBuffer, hiz: number
     };
     const bas = c.currentTime;
     src.start();
-    basladi?.(bas);
+    basladi?.(bas, () => (c.currentTime - bas) * hiz);
   });
 }
 
@@ -266,6 +278,7 @@ function dosyaTamponu(yol: string): Promise<AudioBuffer | null> {
 
 /** Sıradaki kayıt dosyalarını önceden indirir (motor açıksa çözer de) */
 export function dosyaOnYukle(yollar: string[]) {
+  if (kaydiElemanlaCal()) return;
   for (const y of yollar) {
     if (baglam()) void dosyaTamponu(y);
     else void dosyaVeri(y).catch(() => undefined);
@@ -276,10 +289,11 @@ export function dosyaOnYukle(yollar: string[]) {
  * Bir kayıt dosyasını çalar; bitince true. Motor açık değilse ya da dosya gelmezse false (kitap bu durumda cihaz
  * sesine düşmez, sessiz geçer). basladi: çalmanın başladığı an (AudioContext saati, sn).
  */
-export async function dosyaCal(yol: string, iptalMi: () => boolean, basladi?: (bas: number) => void): Promise<boolean> {
+export async function dosyaCal(yol: string, iptalMi: () => boolean, basladi?: KayitBasladi): Promise<boolean> {
+  if (kaydiElemanlaCal() && await elemanCal(yol, 1, iptalMi, basladi).catch(() => false)) return true;
+  if (iptalMi()) return true;
   const c = baglam();
   const cikis = konusmaCikisi();
-  if (elemanYedegi()) return elemanCal(yol, 1, iptalMi, basladi);
   if (!c || !cikis || c.state !== 'running') return false;
   const t = await dosyaTamponu(yol);
   if (!t || iptalMi()) return !!t;

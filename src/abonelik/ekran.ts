@@ -57,7 +57,9 @@ const PLAN_AD: Record<PlanId, string> = { aylik: 'Aylık', yillik: 'Yıllık' };
  */
 export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '199 TL', yillik: '899 TL' };
 /** Lansman öncesi liste fiyatı: plan kartında üstü çizili gösterilir (Barış 2026-11-15) */
-export const NORMAL_FIYAT: Record<PlanId, string> = { aylik: '499 TL', yillik: '2499 TL' };
+export const NORMAL_FIYAT: Record<PlanId, string> = { aylik: '499 TL', yillik: '6.000 TL' };
+/** Lansman indirimi (liste fiyatına göre): yıllık 6.000 → 899 ≈ %85, aylık 499 → 199 ≈ %60 */
+export const LANSMAN_INDIRIM: Record<PlanId, string> = { aylik: '%60 indirim', yillik: '%85 indirim' };
 const YEDEK_DENEME_GUN = 7;
 
 /**
@@ -116,7 +118,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       const b = h(
         `button.ab-plan.ab-plan-${id}`,
         { type: 'button', role: 'radio', 'aria-checked': String(id === secili), 'data-plan': id },
-        ...(id === 'yillik' ? [h('span.ab-avantaj', {}, 'Lansmana özel')] : []),
+        h('span.ab-avantaj', {}, LANSMAN_INDIRIM[id]),
         h('span.ab-plan-ad', {}, PLAN_AD[id]),
         h('s.ab-eski', {}, NORMAL_FIYAT[id]),
         h('span.ab-fiyat', {}, h('b', {}, '…'), h('small', {}, ` / ${DONEM[id]}`)),
@@ -269,6 +271,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       'div.ab-kart-ic',
       {},
       planKutu,
+      h('p.ab-lansman', {}, 'Lansmana özel fiyat. Normal fiyatı yıllık 6.000 TL.'),
       deneme,
       basla,
       sonraYazi,

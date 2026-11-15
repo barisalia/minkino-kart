@@ -74,7 +74,7 @@ export function sesMotorunuAc(): AudioContext | null {
       seviyeleriUygula();
     }
     // iOS'ta durum 'interrupted' de olabilir (arama, başka ses, oturum değişimi)
-    if (ctx.state !== 'running') void ctx.resume();
+    if (ctx.state !== 'running') void ctx.resume().catch(() => undefined);
     sessizModuAs();
   } catch {
     ctx = null;
@@ -142,8 +142,8 @@ if (typeof document !== 'undefined')
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) sessizDongu?.pause();
     if (!ctx) return;
-    if (document.hidden) void ctx.suspend();
-    else void ctx.resume();
+    if (document.hidden) void ctx.suspend().catch(() => undefined);
+    else void ctx.resume().catch(() => undefined);
   });
 
 /**
