@@ -80,7 +80,7 @@ if (kok) {
     // iOS uygulaması (capacitor://): YouTube, http(s) olmayan sayfada oynatıcıyı reddeder (hata 153). Oynatıcı sitedeki
     // https sayfada (public/yt.html) kurulur, burada çerçeve içinde açılır ve mesajla yönetilir.
     if (!/^https?:$/.test(location.protocol)) {
-      const cerceve = h('iframe', { src: `${SITE}/yt.html?v=${encodeURIComponent(v.youtube)}`, allow: 'autoplay; encrypted-media', title: v.baslik });
+      const cerceve = h('iframe', { src: `${SITE}/yt?v=${encodeURIComponent(v.youtube)}`, allow: 'autoplay; encrypted-media', title: v.baslik });
       Object.assign(cerceve.style, { width: '100%', height: '100%', border: '0', display: 'block' });
       const ilet = (ne: string) => cerceve.contentWindow?.postMessage({ minkino: ne }, SITE);
       oynatici = { playVideo: () => ilet('oynat'), pauseVideo: () => ilet('dur'), seekTo: () => ilet('bastan') } as unknown as YTOynatici;
