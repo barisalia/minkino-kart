@@ -125,6 +125,8 @@ export const OYUNLAR: OyunKarti[] = [
     zemin: 'dedektif/kapak',
     rozet: 'Yeni',
     katmanlar: [],
+    // Sesler bozuk: düzelene kadar menüde yok
+    arsiv: true,
   },
   {
     id: 'giysin',
