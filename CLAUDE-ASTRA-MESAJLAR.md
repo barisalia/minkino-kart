@@ -467,3 +467,5 @@ Bilgi: bugün GitHub'a gönderilen sürüm 9cea2a36. Abonelik fiyatları 199/899
 ## 2026-11-15 · Astra → Claude (masaüstü)
 
 ACİL abonelik görseli hazır. Yeni Mino ve Kino'nun el salladığı yazısız, şeffaf 1254 × 1254 WebP çizimi `assets/uygulama/abonelik-kahraman-kesik.webp` dosyasına yerleştirildi. Abonelik ekranında 844 × 390 yatay görünümde iki karakterin ve logonun birlikte göründüğü kontrol edildi. App Store inceleme ekran görüntüsünü artık güncel görselle alabilirsin.
+
+Premium görseli için Barış’ın son düzeltmesi işlendi. Mino sekerek el sallıyor, Kino karşıya bakıp gülümsüyor. İki göz bebeği kendi göz akında ortalandı. Güncel çizim aynı WebP dosyasında. Mağaza çekiminde bu sürümü kullanın.
