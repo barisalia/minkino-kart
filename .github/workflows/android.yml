@@ -80,7 +80,9 @@ jobs:
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$MINKINO_KEYSTORE_DOSYA"
           # sesler temel paketten install-time ses paketine (android/sesler): Play'in 200 MB temel paket sınırı
           rm -rf sesler/src/main/assets && mkdir -p sesler/src/main/assets/public
-          mv app/src/main/assets/public/ses sesler/src/main/assets/public/ses
+          # görseller/sesler (assets) ve Kino'yla Sen Seç de aynı pakete: aynı yoldan okunur, temel paket küçük kalır
+          for k in ses assets kino-ile-sen-sec; do mv "app/src/main/assets/public/$k" "sesler/src/main/assets/public/$k"; done
+          du -sh app/src/main/assets/public sesler/src/main/assets/public
           ./gradlew --no-daemon bundleRelease -PsurumKodu=$SURUM_KODU -PsurumAdi=$SURUM_ADI
           rm -f "$MINKINO_KEYSTORE_DOSYA"
 
