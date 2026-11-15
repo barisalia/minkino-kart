@@ -21,3 +21,24 @@ it.each(dersler)('$upper kutusunda iki ayrı lokmanın her birinde tek doğru re
     }
   }
 });
+
+import { resimTabaklari } from '../../alfabe/src/obur-tabaklari';
+import { existsSync } from 'node:fs';
+
+it.each(['2-3','4','5+'] as const)('%s yaşta Obur her soruda yeni bir resmi ister',yas=>{
+  for(const ders of dersler){
+    const sorular=resimTabaklari(ders,yas,()=>.42);
+    expect(sorular.length).toBe(yas==='2-3'?4:5);
+    const dogrular=sorular.map(s=>s.kartlar.find(k=>k.id===s.hedefler[0])!);
+    expect(new Set(dogrular.map(k=>k.ad)).size).toBe(sorular.length);
+    for(const s of sorular){
+      const dogru=s.kartlar.find(k=>k.id===s.hedefler[0])!;
+      if(s.etiket){
+        const h=s.etiket.toLocaleLowerCase('tr');
+        expect(s.kartlar.filter(k=>h==='ğ'?k.ad.toLocaleLowerCase('tr').includes(h):k.ad.toLocaleLowerCase('tr').startsWith(h))).toEqual([dogru]);
+      }
+      for(const id of [...s.sesler,...s.kartlar.map(k=>k.ses)])expect(existsSync('assets/alfabe/ses/'+id+'.mp3'),id).toBe(true);
+    }
+    if(ders.upper==='D'&&yas!=='2-3')expect(dogrular.map(k=>k.ad).sort()).toEqual(['Davul','Dağ','Deve','Domates','Dondurma'].sort());
+  }
+});

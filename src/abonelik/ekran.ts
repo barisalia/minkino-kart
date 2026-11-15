@@ -40,12 +40,10 @@ export const YENILEME_METNI_EN = {
 
 /** Premium'la açılanlar (Kartlar zaten ücretsiz; bkz. src/engine/erisim.ts): ikon + renk + metin */
 const ACILANLAR: { ikon: keyof typeof IKON; renk: string; yazi: string }[] = [
-  { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Okul öncesi eğitim: Harf Atölyesi, Matematik Atölyesi, Okula Hazırlanalım' },
-  { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Bütün etkinlikler ve Sesli Maceralar' },
-  { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Bütün çizgi filmler' },
-  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: "Minik Şef, Mino'nun Pazarı, Kino'yla Sen Seç, Çiz Canlansın" },
-  { ikon: 'goz', renk: 'var(--kirmizi)', yazi: 'Dedektif Mino ve Kino Ne Giysin? mevsimleri' },
-  { ikon: 'sihir', renk: 'var(--mor)', yazi: 'Yeni bölümler geldikçe' },
+  { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Eğitici etkinlikler: harfler, sayılar, okula hazırlık' },
+  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: 'Eğitici oyunların hepsi' },
+  { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Eğitici çizgi filmler ve sesli kitaplar' },
+  { ikon: 'sihir', renk: 'var(--mor)', yazi: 'Sürekli güncellenir: yeni oyunlar ve etkinlikler' },
   { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Reklam yok, güvenli' },
 ];
 
@@ -260,7 +258,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       sevin();
       const tamam = h('button.dugme.ab-tamam', { type: 'button' }, svg(IKON.oyna), 'Oynamaya başla');
       tamam.addEventListener('click', () => kapat());
-      kartIc.replaceChildren(h('div.ab-basari', { role: 'status' }, svg(IKON.tac, 'ab-tac'), h('h2', {}, 'Teşekkürler!'), h('p', {}, 'Bütün oyunlar, maceralar ve filmler açıldı.'), tamam));
+      kartIc.replaceChildren(h('div.ab-basari', { role: 'status' }, svg(IKON.tac, 'ab-tac'), h('h2', {}, 'Teşekkürler!'), h('p', {}, 'Bütün eğitici etkinlikler, oyunlar ve çizgi filmler açıldı.'), tamam));
     };
 
     // ---------------------------------------------------------------- ekran
@@ -271,7 +269,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       'div.ab-kart-ic',
       {},
       planKutu,
-      h('p.ab-lansman', {}, 'Lansmana özel fiyat. Normal fiyatı yıllık 6.000 TL.'),
+      h('p.ab-lansman', {}, 'Lansmana özel kampanyalı fiyatı kaçırma! Normal fiyatı yıllık 6.000 TL.'),
       deneme,
       basla,
       sonraYazi,
@@ -308,7 +306,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
             : h('div.ab-ikili', {}, minoKap, kinoKap),
           h('div.ab-baslik-yer', {},
             h('h1.ab-baslik', {}, minkinoLogo('sade', 'ab-logo'), h('span.ab-premium', {}, svg(IKON.tac, 'ab-tac'), ' Premium')),
-            h('p.ab-alt', {}, 'Oynayarak öğrenen çocuklar için bütün etkinlikler, oyunlar ve filmler.'),
+            h('p.ab-alt', {}, 'Oynayarak öğrenen çocuklar için eğitici etkinlikler, oyunlar ve çizgi filmler.'),
           ),
         ),
         // planlar ve büyük düğme (yatayda sağda)

@@ -117,6 +117,62 @@ describe('ilk cümle: kayıt varken robot ses yok (K1)', () => {
     expect(speak).not.toHaveBeenCalled();
   });
 
+  it.each(['running', 'suspended'] as const)('iPad: motor %s iken ilk kayıt doğrudan çalar ve durdurulabilir', async (state) => {
+    vi.stubGlobal('location', { protocol: 'capacitor:', search: '' });
+    motor.state = state;
+    const pause = vi.fn();
+    const play = vi.fn().mockResolvedValue(undefined);
+    const audio = vi.fn(function () { return { play, pause }; });
+    vi.stubGlobal('Audio', audio);
+    const { konus, sus } = await yukle();
+    const okuma = konus(KAYITLI);
+    await vi.advanceTimersByTimeAsync(manifestGecikme + 5);
+    expect(audio).toHaveBeenCalledWith('./ses/a.mp3');
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(motor.calinan).toHaveLength(0);
+    sus();
+    await okuma;
+    expect(pause).toHaveBeenCalled();
+    expect(speak).not.toHaveBeenCalled();
+  });
+
+  it('iPad: doğrudan oynatma reddedilirse aynı kaydı açık motorda çalar', async () => {
+    vi.stubGlobal('location', { protocol: 'capacitor:', search: '' });
+    const play = vi.fn().mockRejectedValue(new Error('Oynatma reddedildi'));
+    vi.stubGlobal('Audio', vi.fn(function () { return { play, pause: vi.fn() }; }));
+    const { konus } = await yukle();
+    const okuma = konus(KAYITLI);
+    await vi.advanceTimersByTimeAsync(manifestGecikme + 500);
+    await okuma;
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(motor.calinan).toHaveLength(1);
+    expect(speak).not.toHaveBeenCalled();
+  });
+
+  it('iPad: kitap vurgusu durmuş motordan bağımsız olarak kaydı izler', async () => {
+    vi.stubGlobal('location', { protocol: 'capacitor:', search: '' });
+    motor.state = 'suspended';
+    const ses = { currentTime: 0, onended: null as (() => void) | null, play: vi.fn().mockResolvedValue(undefined), pause: vi.fn() };
+    vi.stubGlobal('Audio', vi.fn(function () { return ses; }));
+    vi.stubGlobal('requestAnimationFrame', (cb: () => void) => setTimeout(cb, 16));
+    vi.stubGlobal('cancelAnimationFrame', clearTimeout);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({
+      satirlar: { 'anlatici|Merhaba Mino': { d: 'anlatici/merhaba.mp3', k: [0, 400], s: 900 } },
+    }) }));
+    await yukle();
+    const { satirSoyle } = await import('../../kitap/src/kitap-ses');
+    const kelime = vi.fn();
+    const okuma = satirSoyle('anlatici', 'Merhaba Mino', { iptal: () => false, kelime });
+    await vi.advanceTimersByTimeAsync(32);
+    expect(ses.play).toHaveBeenCalledTimes(1);
+    expect(kelime).toHaveBeenLastCalledWith(0);
+    ses.currentTime = 0.5;
+    await vi.advanceTimersByTimeAsync(32);
+    expect(kelime).toHaveBeenLastCalledWith(1);
+    ses.onended?.();
+    await expect(okuma).resolves.toBe('kayit');
+  });
+
   it('ses motoru biraz sonra açılırsa (ilk dokunuş) beklenir, kayıt çalar', async () => {
     manifestGecikme = 10;
     motor.state = 'suspended';
