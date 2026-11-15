@@ -53,11 +53,11 @@ const PLAN_AD: Record<PlanId, string> = { aylik: 'Aylık', yillik: 'Yıllık' };
  * Mağaza yokken (anahtar yok, web) ya da mağazaya ulaşılamazken gösterilen fiyat (Barış'ın fiyatları, Türkiye).
  * Satın alma her zaman mağazanın kendi fiyatıyla olur; bu yalnız bilgi.
  */
-export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '199 TL', yillik: '899 TL' };
+export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '239,99 TL', yillik: '1.799,99 TL' };
 /** Lansman öncesi liste fiyatı: plan kartında üstü çizili gösterilir (Barış 2026-11-15) */
-export const NORMAL_FIYAT: Record<PlanId, string> = { aylik: '499 TL', yillik: '6.000 TL' };
-/** Lansman indirimi (liste fiyatına göre): yıllık 6.000 → 899 ≈ %85, aylık 499 → 199 ≈ %60 */
-export const LANSMAN_INDIRIM: Record<PlanId, string> = { aylik: '%60 indirim', yillik: '%85 indirim' };
+export const NORMAL_FIYAT: Record<PlanId, string> = { aylik: '799,99 TL', yillik: '5.999,99 TL' };
+/** Lansman indirimi (Barış 2026-11-16: ikisinde %70): yıllık 5.999,99 → 1.799,99, aylık 799,99 → 239,99 */
+export const LANSMAN_INDIRIM: Record<PlanId, string> = { aylik: '%70 indirim', yillik: '%70 indirim' };
 const YEDEK_DENEME_GUN = 7;
 
 /**
@@ -152,6 +152,8 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
         const fiyat = v?.fiyat ?? YEDEK_FIYAT[id];
         b.querySelector('.ab-fiyat b')!.textContent = !v && el.dataset.durum === 'yukleniyor' ? '…' : fiyat;
         b.querySelector('.ab-aybasi')!.textContent = v?.ayBasi ? `ayda ${v.ayBasi}` : '';
+        // mağazada lansman teklifi varsa üstü çizili fiyat mağazanın asıl fiyatı
+        b.querySelector('.ab-eski')!.textContent = v?.normal ?? NORMAL_FIYAT[id];
         b.setAttribute('aria-label', `${PLAN_AD[id]}: ${fiyat} / ${DONEM[id]}`);
       }
       if (!p) {
@@ -166,7 +168,9 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       deneme.textContent = gun ? `${gun} gün ücretsiz dene` : '';
       deneme.hidden = !gun;
       basla.textContent = gun ? 'Ücretsiz denemeyi başlat' : 'Abone ol';
-      sonraYazi.textContent = `${gun ? 'Deneme bitince ' : ''}${p.fiyat} / ${DONEM[p.id]}. İstediğin zaman iptal edebilirsin.`;
+      sonraYazi.textContent = p.normal
+        ? `Lansman fiyatı ${p.fiyat} ilk ${DONEM[p.id]} için; sonra ${p.normal} / ${DONEM[p.id]}. İstediğin zaman iptal edebilirsin.`
+        : `${gun ? 'Deneme bitince ' : ''}${p.fiyat} / ${DONEM[p.id]}. İstediğin zaman iptal edebilirsin.`;
     };
 
     /** Mağaza yok (anahtar yok, web): yer tutucu fiyatlar ve "Yakında" */
@@ -269,7 +273,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       'div.ab-kart-ic',
       {},
       planKutu,
-      h('p.ab-lansman', {}, 'Lansmana özel kampanyalı fiyatı kaçırma! Normal fiyatı yıllık 6.000 TL.'),
+      h('p.ab-lansman', {}, 'Lansmana özel kampanyalı fiyatı kaçırma! Normal fiyatı yıllık 5.999,99 TL.'),
       deneme,
       basla,
       sonraYazi,

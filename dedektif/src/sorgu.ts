@@ -538,12 +538,15 @@ async function ordek(o: SorguSecenek, k: HTMLElement, sahnecik: HTMLElement) {
 
 /** Yastık: karttaki uykucu kedi horlar (z harfleri yükselir): "Uyuyan kedi zıplamaz!" */
 async function yastik(o: SorguSecenek, k: HTMLElement) {
-  const z = h('div.dd-zzz', { 'aria-hidden': 'true' }, h('span', {}, 'z'), h('span', {}, 'z'), h('span', {}, 'Z'));
-  k.append(z);
+  const img = k.querySelector<HTMLImageElement>('.dd-kart-ic img');
+  const onceki = img?.src;
+  const uyuyan = resim('tepki-kedi-uyku');
+  if (img && uyuyan) img.src = uyuyan;
   ses.horla();
-  const nefes = AZ_HAREKET ? null : k.querySelector('.dd-kart-ic')?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06, 0.96)' }, { transform: 'scale(1)' }], { duration: sure(1100), iterations: 3, easing: 'ease-in-out' });
   o.oy.minoTepki('hayir');
-  await o.oy.soyle(M.uyuyan);
-  nefes?.cancel();
-  z.remove();
+  try {
+    await o.oy.soyle(M.uyuyan);
+  } finally {
+    if (img && onceki) img.src = onceki;
+  }
 }

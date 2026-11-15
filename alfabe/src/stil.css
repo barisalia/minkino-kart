@@ -1,9 +1,7 @@
-@import '@fontsource/fredoka/500.css';
-@import '@fontsource/fredoka/600.css';
 
 @font-face{font-family:"Atolye Nunito";src:url("../../assets/alfabe/yazi/Nunito.ttf") format("truetype");font-weight:200 1000;font-style:normal;font-display:swap}
 .at-hece-oyun-alani,.hm-menu{font-family:"Atolye Nunito",sans-serif}
-:root{font-family:Fredoka,"Trebuchet MS",system-ui,sans-serif;color:#203e35;background:#fff6e6;font-synthesis:none;--murekkep:#292c24;--yesil:#176858}
+:root{font-family:"Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:#203e35;background:#fff6e6;font-synthesis:none;--murekkep:#292c24;--yesil:#176858}
 *{box-sizing:border-box}
 body{margin:0;min-width:270px}
 button,a{font:inherit;-webkit-tap-highlight-color:transparent}

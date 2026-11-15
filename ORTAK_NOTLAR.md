@@ -513,3 +513,13 @@ Kullanıcı: Bilgisayar sıfırlandı; yerel eski çizimler güncel değil. Kara
 - 2026-11-13 (Claude): Okula Hazırlanalım Barış kararıyla Astra ya geri devredildi; durum ve eksikler CLAUDE-ASTRA-MESAJLAR.md 19:50 notunda. Müzik sahnesi ritim oyununa çevrildi ama doğrulanmadı.
 - 2026-11-14 (Claude): Harf Atölyesi (alfabe/) için geliştirme planı yazıldı: ekip/senaryo/HARF-ATOLYESI-GELISTIRME.md. 7 tur, her turun bitiş ölçüsü ve Astra çizim listesi var. Koda dokunulmadı; işi Codex yapacak.
 - 2026-11-14 (Claude, masaüstü): Harf Atölyesi oynanıp kontrol edildi; Codex için 6 maddelik doğrulanmış iş listesi CLAUDE-ASTRA-MESAJLAR.md 20:40 notunda. Koda dokunulmadı.
+- 2026-11-15 (Claude, masaüstü): iPad testi (derleme 3): eski oyunların sesi (Web Audio) gelmiyor/robot ses; yeni oyunlar (new Audio) sesli. Olası neden cihazın sessiz modu (Web Audio ambient). Düzeltme src/audio/motor.ts (sessiz döngülü <audio> + her dokunuşta resume), CİHAZDA DOĞRULANMADI, yerelde commit, gönderilmedi. Çizgi film YouTube hata 153 düzeltmesi public/yt.html + izle/src/main.ts (gönderildi, sitede yt.html yayını bekleniyor). Barış: yeni derlemeyi o söylemeden başlatma.
+
+- 2026-11-15 (Claude, çizgi filmci): Yeni Kino ve Ailesi senaryosu yazıldı: ekip/senaryo/KINO-BIR-IKI-UC-GUM.md ("Bir, İki, Üç… Güm!"). Kino kule yapar, Lokum ile Mila yıkar; Kino yıkmayı oyuna çevirir. 7 sahne, ~5 dk, tek mekân (salon). ONAY BEKLİYOR: Barış senaryoyu okuyacak; çizime ve sese başlanmadı.
+
+- 2026-11-16 KESİN ABONELİK FİYATI (Barış; eski 99/199/899 geçersiz): aylık **249,99 TL** (üstü çizili 499, %50 indirim), yıllık **1.999,99 TL** (üstü çizili 6.000, %67 indirim). Kod: src/abonelik/ekran.ts (YEDEK_FIYAT, NORMAL_FIYAT, LANSMAN_INDIRIM). Abonelikli her oyun önce 3 kez ücretsiz açılır (src/engine/erisim.ts DENEME_HAKKI). Mağazada asıl fiyat yüksek girilip indirim Introductory Offer ile verilirse ekran teklif fiyatını büyük, asıl fiyatı üstü çizili gösterir (revenuecat.ts). Apple: bir abonelikte tek giriş teklifi olur (14 gün ücretsiz deneme ile ücretli lansman teklifi birlikte olmaz).
+- 2026-11-16 düzeltme: aylık üstü çizili fiyat 750 TL (499 değil); aylık ve yıllık aynı %67 indirim rozeti.
+- 2026-11-16 SON FİYAT (öncekiler geçersiz): aylık **239,99 TL** (üstü çizili 800), yıllık **1.799,99 TL** (üstü çizili 6.000); ikisi de %70 indirim.
+- 2026-11-16 düzeltme: üstü çizili fiyatlar 799,99 TL (aylık) ve 5.999,99 TL (yıllık); %70 indirimle 239,99 / 1.799,99.
+- 2026-11-16 SON: fiyatlar ,90 biter: aylık 239,90 (üstü çizili 799,90), yıllık 1.799,90 (üstü çizili 5.999,90).
+- 2026-11-16 SON (Apple listesi): ,99 biter: aylık 239,99 (üstü çizili 799,99), yıllık 1.799,99 (üstü çizili 5.999,99). ,90 iptal.

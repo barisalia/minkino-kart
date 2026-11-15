@@ -20,7 +20,6 @@ import etkinlikSimge from '../../assets/uygulama/kategoriler/etkinlik-ikon.webp'
 import kitapSimge from '../../assets/uygulama/kategoriler/kitap-ikon.webp';
 import oyunSimge from '../../assets/uygulama/kategoriler/oyun-ikon.webp';
 import filmSimge from '../../assets/uygulama/kategoriler/film-ikon.webp';
-import alfabeKapagi from '../../assets/alfabe/kapak.webp';
 
 const bolumler = [
   { id: 'etkinlik', ad: 'Etkinlikler', renk: '#9560e5', simge: etkinlikSimge },
@@ -116,12 +115,12 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
       for (const kitap of KITAPLAR) {
         if (!kitap.icerik || kitap.gizli) continue;
         const kapak = kitapKapaklari[`../../assets/kitap/${kitap.id}/kapak.webp`] || resim(`kitap/${kitap.id}/kapak-tam`);
-        kart(kitap.baslik, `./kitap/?kitap=${encodeURIComponent(kitap.id)}&sayfa=1`, kapak);
+        kart(kitap.baslik, `./kitap/?kitap=${encodeURIComponent(kitap.id)}&sayfa=1`, kapak, `kitap/${kitap.id}`);
       }
     } else {
-      const etkinlikler = ['matematik', 'alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera'];
+      const etkinlikler = ['matematik', 'alfabe', 'ingilizce', 'hazirlik', 'canlan', 'kartlar', 'macera'];
       yasaGore(menuOyunlari(!!uygulamaPlatformu()), menuYasiOku()).filter(k => secili.id === 'etkinlik' ? etkinlikler.includes(k.id) : ![...etkinlikler, 'film', 'kitap'].includes(k.id)).forEach(k => {
-        const kapak = k.id === 'alfabe' ? alfabeKapagi : oyunKapaklari[`../../assets/uygulama/oyun-kapaklari/${k.id}.webp`];
+        const kapak = oyunKapaklari[`../../assets/uygulama/oyun-kapaklari/${k.id}.webp`];
         const ad = k.ust ? `${k.ust} ${k.ad}` : k.ad;
         kart(ad, k.adres, kapak, k.id, kapak ? undefined : kartResmi(k));
       });

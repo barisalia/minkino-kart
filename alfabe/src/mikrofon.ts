@@ -25,13 +25,26 @@ export function mikrofonHazirla(){
   function bitir(s:Sonuc){
     const sonuc=oturum?.sonuc;kapat();sonuc?.(s);
   }
-  function degerlendir(){
+  function degerlendir(sonDeneme=true){
     if(!oturum || !baglam || !ornekler || !kareler.length){bitir('yeniden');return;}
     const boy=parcalar[0].length, ms=boy*1000/baglam.sampleRate;
     if(!konustu || kareler.length*ms-sonEtkin<260 || !konusmaVar(kareler,ms,taban)){bitir('yeniden');return;}
-    const pcm=new Float32Array(parcalar.length*boy);
-    parcalar.forEach((p,i)=>pcm.set(p,i*boy));
-    bitir(hedefDuyuldu(ozellikler(pcm,baglam.sampleRate),oturum.id,ornekler)?'dogru':'yeniden');
+    const esik=Math.max(.0009,taban*2.7);
+    const sesliKare=(k:typeof kareler[number])=>k.rms>esik&&(k.sesli||k.surtunme);
+    const ilk=kareler.findIndex(sesliKare);
+    let son=kareler.length-1;
+    while(son>ilk&&!sesliKare(kareler[son]))son--;
+    if(ilk>=0){
+      // Beklerken alınan oda sesini kelimenin başı veya sonu gibi eşleştirme.
+      const kesit=parcalar.slice(Math.max(0,ilk-3),son+4);
+      const pcm=new Float32Array(kesit.length*boy);
+      kesit.forEach((p,i)=>pcm.set(p,i*boy));
+      if(hedefDuyuldu(ozellikler(pcm,baglam.sampleRate),oturum.id,ornekler)){bitir('dogru');return;}
+    }
+    if(sonDeneme){bitir('yeniden');return;}
+    // Dinleme süresi içindeki ikinci söyleyişi önceki denemeyle birleştirme.
+    konustu=false;sonEtkin=0;parcalar.length=0;kareler.length=0;
+    oturum.seviye(0);
   }
   function dinlemeyiAc(){
     if(!oturum || !hazir || kapali)return;
@@ -80,7 +93,7 @@ export function mikrofonHazirla(){
           // Öğretmenin son sesi ve sürücünün sırada beklettiği tamponlar cevaba girmez.
           alinanMs+=ms;
           odaSessizMs=k.rms<esik?odaSessizMs+ms:0;
-          if(alinanMs>=320 && odaSessizMs>=150){
+          if(alinanMs>=190 && odaSessizMs>=150){
             cevapAcik=true;
             clearTimeout(zaman);
             zaman=window.setTimeout(degerlendir,7600);
@@ -93,7 +106,7 @@ export function mikrofonHazirla(){
         const hareket=k.rms>esik && (k.sesli||k.surtunme);
         oturum.seviye(hareket?Math.min(100,17+22*Math.log2(k.rms/esik)):0);
         if(hareket){sonEtkin=an;konustu=true;}
-        if(konustu && an-sonEtkin>520 && konusmaVar(kareler,boy*1000/ctx.sampleRate,taban))degerlendir();
+        if(konustu && an-sonEtkin>520 && konusmaVar(kareler,boy*1000/ctx.sampleRate,taban))degerlendir(false);
       };
     }catch{hata=true;if(oturum)bitir('erisim');else{akim?.getTracks().forEach(t=>t.stop());}}
   }

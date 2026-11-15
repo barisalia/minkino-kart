@@ -89,15 +89,15 @@ export interface KartTanim {
   renk: string;
 }
 export const KARTLAR: Record<KartId, KartTanim> = {
-  zurafa: { id: 'zurafa', resim: 'zurafa', tepki: 'zurafa', renk: '#f6c343' },
-  ordek: { id: 'ordek', resim: 'ordek', tepki: 'ordek', renk: '#ff9f43' },
-  kedi: { id: 'kedi', resim: 'kart-kedi-gri', renk: '#b9b3c6' },
+  zurafa: { id: 'zurafa', resim: 'kart-zurafa-ayagi', tepki: 'zurafa', renk: '#f6c343' },
+  ordek: { id: 'ordek', resim: 'kart-ordek-ayagi', tepki: 'ordek', renk: '#ff9f43' },
+  kedi: { id: 'kedi', resim: 'kart-kedi-patisi', renk: '#b9b3c6' },
   'kedi-turuncu': { id: 'kedi-turuncu', resim: 'kart-kedi-turuncu', tepki: 'turuncu', renk: '#f39a3d' },
   'kedi-siyah': { id: 'kedi-siyah', resim: 'kart-kedi-siyah', tepki: 'siyah', renk: '#3b3340' },
   'kedi-beyaz': { id: 'kedi-beyaz', resim: 'kart-kedi-beyaz', renk: '#fbf7f2' },
-  'kedi-sut': { id: 'kedi-sut', resim: 'kart-kedi-sut', tepki: 'sut', renk: '#7fb4e6' },
-  'kedi-uyku': { id: 'kedi-uyku', resim: 'kart-kedi-uyku', tepki: 'yastik', renk: '#e2b7ef' },
-  'kedi-kelebek': { id: 'kedi-kelebek', resim: 'kart-kedi-kelebek', renk: '#ffd23f' },
+  'kedi-sut': { id: 'kedi-sut', resim: 'kart-sut-kasesi', tepki: 'sut', renk: '#7fb4e6' },
+  'kedi-uyku': { id: 'kedi-uyku', resim: 'kart-yastik', tepki: 'yastik', renk: '#e2b7ef' },
+  'kedi-kelebek': { id: 'kedi-kelebek', resim: 'kart-kelebek', renk: '#ffd23f' },
 };
 
 // ---------------------------------------------------------------- halkalar
@@ -144,7 +144,7 @@ export const HALKALAR: Halka[] = [
     kartlar: ['zurafa', 'ordek', 'kedi'],
     dogru: 'kedi',
     demekKi: M.demek_kedi,
-    demekResim: 'kart-kedi-gri',
+    demekResim: 'kart-kedi-patisi',
   },
   {
     id: 'tuy',
@@ -173,7 +173,7 @@ export const HALKALAR: Halka[] = [
     kartlar: ['kedi-sut', 'kedi-uyku', 'kedi-kelebek'],
     dogru: 'kedi-kelebek',
     demekKi: M.demek_kelebek,
-    demekResim: 'kart-kedi-kelebek',
+    demekResim: 'roman-3',
   },
   {
     id: 'nerede',
@@ -182,7 +182,7 @@ export const HALKALAR: Halka[] = [
     soru: M.iki_yol,
     kartlar: [],
     demekKi: M.kuyruk,
-    demekResim: 'pamuk-b',
+    demekResim: 'kart-kedi-beyaz',
   },
 ];
 export const halka = (id: HalkaId) => HALKALAR.find((h) => h.id === id)!;

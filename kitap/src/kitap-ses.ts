@@ -5,7 +5,7 @@
  * Robot ses YOK: kaydı olmayan (ya da ses motoru açılmamış, konuşma kapalı) satır cihazın sesine düşmez; satırın
  * süresi kadar sessiz beklenir, yazı görünür ve kelimeler aynı ritimde vurgulanır.
  */
-import { dosyaCal, dosyaOnYukle } from '../../src/audio/kayit';
+import { dosyaCal, dosyaOnYukle, kaydiElemanlaCal } from '../../src/audio/kayit';
 import { sus } from '../../src/audio/konusma';
 import { baglam } from '../../src/audio/motor';
 import { durum } from '../../src/engine/ilerleme';
@@ -53,8 +53,6 @@ export function kitapOnYukle(satirlar: { kim: Kim; metin: string }[]) {
   });
 }
 
-const motorAcik = () => baglam()?.state === 'running';
-
 /** Motor kapalıysa (ilk dokunuştan önce) kısa süre açılmasını bekler */
 function motoruBekle(ms: number): Promise<void> {
   const c = baglam();
@@ -90,20 +88,17 @@ export async function satirSoyle(kim: Kim, metin: string, o: SoylemeSecenegi): P
   if (o.iptal()) return 'sessiz';
   const k = kitapKaydi(kim, metin);
   if (k && durum.i.ayarlar.konusma) {
-    if (!motorAcik()) await motoruBekle(1500);
+    if (!kaydiElemanlaCal()) await motoruBekle(1500);
     if (o.iptal()) return 'sessiz';
-    let bas: number | null = null;
+    let gecenSaniye: () => number;
     let son = -1;
     let raf = 0;
     const izle = () => {
-      const c = baglam();
-      if (o.iptal() || !c) return;
-      if (bas !== null) {
-        const j = simdikiKelime(k.k, (c.currentTime - bas) * 1000);
-        if (j !== son) {
-          son = j;
-          o.kelime?.(j);
-        }
+      if (o.iptal()) return;
+      const j = simdikiKelime(k.k, gecenSaniye() * 1000);
+      if (j !== son) {
+        son = j;
+        o.kelime?.(j);
       }
       raf = requestAnimationFrame(izle);
     };
@@ -111,8 +106,8 @@ export async function satirSoyle(kim: Kim, metin: string, o: SoylemeSecenegi): P
       const calindi = await dosyaCal(
         kok + k.d,
         o.iptal,
-        (b) => {
-          bas = b;
+        (_bas, saat) => {
+          gecenSaniye = saat;
           raf = requestAnimationFrame(izle);
         },
       );

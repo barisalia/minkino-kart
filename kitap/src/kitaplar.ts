@@ -15,15 +15,15 @@ import { OKUL_CANLI } from './okul-canli';
 import type { KitapIcerik } from './tipler';
 
 export const KITAPLAR: RafKitabi[] = [
-  { id: 'dizim', baslik: dizim.baslik, renk: '#478F86', icerik: dizim as KitapIcerik },
-  { id: 'ucurtma', baslik: ucurtma.baslik, renk: '#398B98', icerik: ucurtma as KitapIcerik },
-  { id: 'ustkat', baslik: ustkat.baslik, renk: '#46877D', icerik: ustkat as KitapIcerik },
-  { id: 'kumkale', baslik: kumkale.baslik, renk: '#368D99', icerik: kumkale as KitapIcerik },
-  { id: 'cadir', baslik: cadir.baslik, renk: '#4F83A4', icerik: cadir as KitapIcerik },
-  { id: 'alisveris', baslik: alisveris.baslik, renk: '#407C70', icerik: alisveris as KitapIcerik },
+  { id: 'okul', baslik: okul.baslik, renk: '#E2683C', icerik: okul as KitapIcerik, canli: OKUL_CANLI },
   { id: 'kurabiye', baslik: kurabiye.baslik, renk: '#B56836', icerik: kurabiye as KitapIcerik },
+  { id: 'alisveris', baslik: alisveris.baslik, renk: '#407C70', icerik: alisveris as KitapIcerik },
+  { id: 'ustkat', baslik: ustkat.baslik, renk: '#46877D', icerik: ustkat as KitapIcerik },
+  { id: 'cadir', baslik: cadir.baslik, renk: '#4F83A4', icerik: cadir as KitapIcerik },
+  { id: 'kumkale', baslik: kumkale.baslik, renk: '#368D99', icerik: kumkale as KitapIcerik },
+  { id: 'ucurtma', baslik: ucurtma.baslik, renk: '#398B98', icerik: ucurtma as KitapIcerik },
   { id: 'doktor', baslik: doktor.baslik, renk: '#58B9A5', icerik: doktor as KitapIcerik },
-  { id: 'okul', baslik: 'Kino Okula Başlıyor', renk: '#E2683C', icerik: okul as KitapIcerik, canli: OKUL_CANLI, gizli: true },
+  { id: 'dizim', baslik: dizim.baslik, renk: '#478F86', icerik: dizim as KitapIcerik },
   // Barış 2026-11-09 yayın: çizimleri gelene kadar "yakında" (metni content/kitap-kuzu-kulak.json; yer tutucu yayına çıkmaz)
   { id: 'kuzu-kulak', baslik: "Kuzu'nun Kulağı", renk: '#7FB3D5' },
   { id: 'hasta', baslik: 'Kino Hasta', renk: '#9B8BD6' },

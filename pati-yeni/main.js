@@ -28,6 +28,7 @@ import {sesMotorunuAc} from '../src/audio/motor';
 import {names,pantry,foodUrl,foodOutcome} from './yiyecek.js';
 import {meal} from './ogun.js';
 import {geriDinle} from '../src/kabuk/yon';
+import {erisimVarMi} from '../src/abonelik/kilit';
 import {kopek} from './parcalar.js';
 import {kopekler} from './kopekler.js';
 import palette from '../assets/uygulama/kategoriler/etkinlik.svg?url';
@@ -615,6 +616,8 @@ app.addEventListener('click',async event=>{
   break;
  }
  case 'uyu':{
+   // ilk 3 gün ücretsiz; sonraki gün premium (src/engine/erisim.ts → pati/gun-N)
+   if(!erisimVarMi(`pati/gun-${Number(b.dataset.gun)+1}`,app))break;
    b.disabled=true;
    const result=await gunuBitir(Number(b.dataset.gun));
    go('menu');

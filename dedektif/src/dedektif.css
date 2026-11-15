@@ -1825,18 +1825,18 @@
   .dd-kok .dd-acilis-mino {
     grid-row: 1;
     grid-column: 1;
-    width: min(28vw, 50vh);
-    justify-self: center;
+    width: min(16.5vw, 36vh);
+    justify-self: start;
     align-self: end;
     margin: 0;
   }
   .dd-kok .dd-acilis-kino {
     grid-row: 1;
     grid-column: 1;
-    width: min(22vw, 38vh);
+    width: min(25vw, 55vh);
     justify-self: end;
     align-self: end;
-    margin: 0 -2vw -4vh 0;
+    margin: 0 0 max(-1.95vw, -4.3vh);
   }
   .dd-kok .dd-klasor {
     grid-row: 1;
@@ -1963,3 +1963,17 @@
     animation: none !important;
   }
 }
+.dd-kok :is(.dd-acilis-mino,.dd-mino-yer) .mino-svg{opacity:0}
+.dd-kok :is(.dd-acilis-mino,.dd-mino-yer) .mino::after,
+.dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .kr-karakter::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:center bottom/contain no-repeat url('../../assets/dedektif-oyuncular/mino-dur.webp')
+}
+.dd-kok .dd-mino-yer .mino.dedektif-sapka::after{background-image:url('../../assets/dedektif-oyuncular/mino-sapka.webp')}
+.dd-kok .dd-acilis-mino .mino::after,.dd-kok .dd-mino-yer .mino.dedektif-buyutec::after{background-image:url('../../assets/dedektif-oyuncular/mino-mercek.webp')}
+.dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .kr-karakter::after{inset:9.5% 0 7.8%;background-image:url('../../assets/dedektif-oyuncular/kino-dur.webp')}
+.dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .kr-karakter > :is(.kr-tek,.kr-iskelet){opacity:0}
+.dd-kok .dd-kino-yer .kr-karakter[data-poz=otur]::after{top:30%;background-image:url('../../assets/dedektif-oyuncular/kino-otur.webp')}
+.dd-adim{pointer-events:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
+.dd-kino-yer .dd-adim{top:9.5%;height:82.7%}
+.dd-kok .dd-adimli > :is(.mino,.kr-karakter){visibility:hidden}

@@ -12,7 +12,7 @@ import {dilimIstegi,salatalikOrnegi,sebzeReplik} from './sebze-tercihi';
 import {aktifMenu,bosMasa,menuBul} from './tepsi-fisleri';
 import { salonSaatiniIlerlet } from './salon-saati';
 import {kapidanSalon} from './restoran-salonu';
-import {kilitAc,tatliKademeler} from './tatli-ekonomi';
+import {kilitAc} from './tatli-ekonomi';
 import {tatliDukkan,jetonSimge} from './tatli-dukkan';
 import {tatliResmi} from './tatli-gorsel';
 import {tatliHazirla,type TatliId} from './tatli-atolyesi';
@@ -56,8 +56,7 @@ import { mutfakRehberi } from './rehber';
 import { porsiyonTezgahi } from './porsiyon';
 import replikler from './replikler.json';
 import { kapak, adlar, yeniTarifler, yeniTarifMi, fotografAc, fotografMi, fotografGecerli, type AtolyeAyar, type YeniTarif, type Yemek } from './yemekler';
-import { albumuAc } from './tabak-albumu';
-import { tarifKitabi, tezgahlar, type KitapTezgahi } from './tarif-kitabi';
+import { tezgahlar, type TarifTezgahi } from './tarif-tezgahlari';
 import './style.css';
 import './siparisler.css';
 import './kumandalar.css';
@@ -151,11 +150,10 @@ function istasyonCumlesi(id: string) {
     ocak: 'Sebzeleri tencereye götür.', kase: 'Sebzeleri salata kâsesine götür.', servis: 'Yemeğin hazır. Servis edelim.',
     tamam: 'Afiyet olsun!' } as Record<string,string>)[id];
 }
-let kitapAcik = false;
 let tarifRafi=0;
 let acilanAtolye: YeniTarif | undefined;
 let seciliSebze: MalzemeId | undefined;
-let bekliyor = false, albumAcik = false;
+let bekliyor = false;
 let seciliSus: SusId | undefined;
 let blenderSecili=false;
 import { tabakGeldi } from './tepsi-hareket';
@@ -163,7 +161,7 @@ let masaTemizle:(()=>void)|undefined;
 const t=defter.tepsiler;
 const ayrilmaSesleri=import.meta.glob<string>('../../assets/sef/salon/*-ayril.mp3',{eager:true,query:'?url',import:'default'});
 const sabirSaati=window.setInterval(()=>{
-  if(document.hidden||t.gun.kapandi||t.pastane.acik||albumAcik||
+  if(document.hidden||t.gun.kapandi||t.pastane.acik||
     (t.ekran==='kapali'&&!t.oynanan))return;
   const salon=salonSaatiniIlerlet(t);
   for(const id of salon.ayrildi)yeniMasaTezgahi(id);
@@ -218,8 +216,6 @@ function git(hedef: Ekran, anlat = true) {
   seciliSebze = undefined;
   seciliSus = undefined;
   blenderSecili=false;
-  albumAcik = false;
-  kitapAcik = false;
   if(hedef==='siparis'&&t.oynanan){delete t.oynanan;t.ekran='masa';anlat=false;}
   defter.ekran = hedef;
   kaydet(defter);
@@ -237,8 +233,6 @@ function geri() {
   if(t.pastane.tezgah){delete t.pastane.tezgah;kaydet(defter);ciz();return;}
   if(t.pastane.acik){t.pastane.acik=false;kaydet(defter);ciz();return;}
   if(t.ekran!=='kapali'){sus();masaGeri(t);kaydet(defter);ciz();return;}
-  if (kitapAcik) { kitapAcik = false; sus(); ciz(); return; }
-  if (albumAcik) { albumAcik = false; ciz(); return; }
   if (defter.ekran === 'siparis') { anaMenuyeDon(); return; }
   git(defter.ekran === 'mutfak' || sip().servisEdildi ? 'siparis' : 'mutfak');
 }
@@ -346,11 +340,11 @@ function ustCiz() {
 }
 
 const siparisKapaklari=import.meta.glob<string>('../../assets/sef/ikon-atolyesi/tarif/*.webp',{eager:true,query:'?url&no-inline',import:'default'});
-function siparisKapagi(id:Yemek|KitapTezgahi|'kitap'){
+function siparisKapagi(id:Yemek|TarifTezgahi){
   return h('img.yemek-fotografi',{alt:'',src:siparisKapaklari['../../assets/sef/ikon-atolyesi/tarif/'+id+'.webp'],draggable:false});
 }
-function tarifTezgahiniAc(tarif:KitapTezgahi,id:string){
-  kitapAcik=false;sus();
+function tarifTezgahiniAc(tarif:TarifTezgahi,id:string){
+  sus();
   const masa=t.masalar[id];if(!masa||masa.sunuldu)t.masalar[id]=bosMasa();
   t.ekran='masa';t.secili=id;t.oynanan=tarif;t.restoranda=false;kaydet(defter);ciz();
 }
@@ -447,11 +441,9 @@ function siparisler() {
       kartlar.append(b);
     }
   }
-  const kitap=dugme('Resimli tarif kitabı','siparis-karti kitap',siparisKapagi('kitap'),h('span.kart-ad',{},'Tarif Kitabım'));
-  tikla(kitap,()=>{kitapAcik=true;ciz();});
   if(tarifRafi===1){
     kartlar.dataset.raf='2';
-    for(const tarif of Object.keys(tezgahlar) as KitapTezgahi[]){
+    for(const tarif of Object.keys(tezgahlar) as TarifTezgahi[]){
       const tezgah=tezgahlar[tarif];
       const kart=dugme(tezgah.ad+' tezgâhını aç','siparis-karti',
         h('span.raf-gorseli',{},siparisKapagi(tarif)),h('span.kart-ad',{},tezgah.ad));
@@ -459,17 +451,12 @@ function siparisler() {
       tikla(kart,()=>tarifTezgahiniAc(tarif,tezgah.menu));kartlar.append(kart);
     }
   }
-  if(tarifRafi===0)kartlar.append(kitap);
   const rafGez=dugme(tarifRafi?'Önceki tarif rafı':'Sonraki tarif rafı','tarif-raf-oku',
     h('span.raf-noktalari',{'aria-hidden':true},h('i'),h('i')),ikon(tarifRafi?'geri':'ileri'));
   rafGez.dataset.raf=String(tarifRafi+1);
   tikla(rafGez,()=>{tarifRafi=1-tarifRafi;ciz();sahne.querySelector<HTMLButtonElement>('.tarif-raf-oku')?.focus({preventScroll:true});});
   sahne.append(rafGez);
   sahne.append(kapi,kartlar);
-  if (defter.gecmis.length||t.anilar.length) {
-    const album = eylem('Hazırladığım tabaklar', 'album', () => { albumAcik = true; ciz(); }, 'album-ac');
-    sahne.append(album);
-  }
 }
 function yemekResmi(id:Yemek) {
   if(yeniTarifMi(id)) return kapak(id);
@@ -912,9 +899,6 @@ function servisGorseli(servis:ServisKaydi){
     }else cizim=servis.tarifId==='pizza'?pizzaTabakResmi(servis.ust,servis.kivam,servis.sosCesidi,servis.kesim):hazirTabak(servis.tarifId,servis.sus,servis[servis.tarifId]);
     return cizim;
 }
-function tabakDefteri() {
-  albumuAc(sahne,{gecmis:defter.gecmis,anilar:t.anilar,pano:{secili:t.spesiyal,sec:ani=>{t.spesiyal=structuredClone(ani);kaydet(defter);}},cizim:servisGorseli,soyle,kapat:()=>{albumAcik=false;ciz();}});
-}
 function servis() {
   const s = sip();
   const ozel = defter.ozelIstekler[s.tarifId];
@@ -1142,22 +1126,6 @@ function ciz() {
     case 'kase': kaseVeyaOcak(); break;
     case 'servis': servis(); break;
   }
-  if (id === 'siparis' && kitapAcik) tarifKitabi(sahne,{
-    tatliSeviye:t.tatliSeviye,sesli:()=>!defter.sessiz,
-    sonKalip:t.pastane.taslaklar.kurabiye?.sekil??[...t.anilar].reverse().find(a=>a.masa.tabaklar.kurabiye)?.masa.kurabiyeSekli??t.pastane.vitrin.kurabiye?.at(-1)?.sekil,
-    tezgahAc:tarifTezgahiniAc,
-    pastaneyeGit:(tarif,sekil)=>{
-      kitapAcik=false;
-      if(t.tatliSeviye>=tatliKademeler.findIndex(k=>k.simge===tarif)){
-        t.pastane.tezgah=tarif;
-        if(tarif==='kurabiye'&&sekil&&!t.pastane.taslaklar.kurabiye)t.pastane.taslaklar.kurabiye={surum:2,adim:0,yanlis:0,sekil};
-      }
-      pastaneAc();
-    },
-    yemekResmi,soyle,kapat:()=>{kitapAcik=false;sus();ciz();},
-    oyna:yemek=>{kitapAcik=false;tarifRafi=0;sus();ciz();sahne.querySelector<HTMLButtonElement>('[data-tarif="'+yemek+'"]')?.click();},
-  });
-  if (id === 'siparis' && albumAcik) tabakDefteri();
   const kalan = pismeKalani();
   if (kalan && id !== 'siparis') {
     pismeSaati = window.setTimeout(() => {

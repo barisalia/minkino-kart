@@ -105,9 +105,8 @@ describe('Kino Ne Giysin? metinler', () => {
     const kino = new Set(karakterCumleleri().kino);
     for (const t of Object.values(G.kino)) expect(kino.has(t), t).toBe(true);
   });
-  it('erişim: ilk mevsim (kış) ücretsiz, diğerleri abonelikle; menü kartı açık', () => {
-    expect(erisimTuru('giysin/kis')).toBe('ucretsiz');
-    for (const m of ['ilkbahar', 'yaz', 'sonbahar']) expect(erisimTuru(`giysin/${m}`)).toBe('abonelik');
-    expect(erisimTuru('giysin')).toBe('ucretsiz');
+  it('erişim (Barış 2026-11-16): eski oyun, bütünüyle premium', () => {
+    for (const m of ['kis', 'ilkbahar', 'yaz', 'sonbahar']) expect(erisimTuru(`giysin/${m}`)).toBe('abonelik');
+    expect(erisimTuru('giysin')).toBe('abonelik');
   });
 });

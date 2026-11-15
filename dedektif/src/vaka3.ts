@@ -135,7 +135,7 @@ class Vaka3 {
     this.ara = h('div.dd-ara');
     this.seritYer = h('div.dd-dosya.dd-v3-dosya-yer', { 'data-goz': '5' });
     const geri = yuvarlakDugme(IKON.geri, 'Geri', () => this.app.git('acilis'), 'kucuk dd-geri');
-    const tekrar = yuvarlakDugme(IKON.tekrar, 'Tekrar dinle', () => this.oy.tekrar(), 'kucuk dd-tekrar');
+    const tekrar = yuvarlakDugme(IKON.tekrar, 'Son ipucunu tekrar göster', () => this.oy.tekrar(), 'kucuk dd-tekrar');
     const sesD = sesDugmesi();
     sesD.classList.add('kucuk');
     this.el = h('div.dd-vaka.dd-vaka3', { 'data-adim': 'yukleniyor', 'data-vaka': 'vaka3' }, this.dunya.el, this.oy.el, this.ara, h('div.dd-ust', {}, geri, this.seritYer, h('div.dd-ust-sag', {}, tekrar, sesD)));

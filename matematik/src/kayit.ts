@@ -38,6 +38,7 @@ export type Tur = {
   tekne?: boolean;
   siparis?: boolean;
   kuleTamam?: boolean;
+  misketiGecti?: boolean;
   gezginBulunan?: number[];
   cizim?: { satir: number; nokta: number };
   tekrar?: number;
@@ -63,6 +64,9 @@ function oku(k: Kose): Tur {
         : tur.gezginBulunan ?? tangramlar?.gezgin?.bulunan;
       return {
         ...tur,
+        // Eski köprü turlarında pozitif değerler tahta uzunluğuydu; ölçü taşı sıfırdır.
+        secimler: k === 'olcu' && [0, 1, 4, 5].includes(turNumarasi(k, v.adim)) && v.secimler.some((n: number) => n > 0)
+          ? [] : v.secimler,
         gezginBulunan: k === 'sekil' && Array.isArray(bulunan)
           ? [...new Set<number>(bulunan.filter((i: number) => Number.isInteger(i) && i >= 0 && i <= 6))]
           : undefined,

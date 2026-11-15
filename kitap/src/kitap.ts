@@ -10,6 +10,7 @@
  *   ve çevrilir (yaprak.ts) ya da köşesine dokunarak. "Bana oku"da sayfa okunur, otomatik çevrilmez.
  * - Kaldığı yer, mod ve bulunan sürprizler cihazda (kayit.ts).
  */
+import { erisimVarMi, kilitGoster } from '../../src/abonelik/kilit';
 import { efekt, sesiAc, sus } from '../../src/audio/ses';
 import { geriDinle } from '../../src/kabuk/yon';
 import { TEST_MODU } from '../../src/ui/dom';
@@ -174,7 +175,9 @@ export class Kitaplik {
         ad.className = 'kt-kapak-baslik';
         ad.textContent = k.baslik;
         kapak.append(s.el, ad, seriAdi());
-        kapak.addEventListener('click', () => this.tut(k, kapak));
+        // 3 kitap ücretsiz (okul, doktor, kurabiye), diğerleri premium (src/engine/erisim.ts → kitap/<id>)
+        kapak.addEventListener('click', () => { if (erisimVarMi('kitap/' + k.id, this.el)) this.tut(k, kapak); });
+        kilitGoster(kapak, 'kitap/' + k.id);
         this.rafKapaklar.set(k.id, { kapak, sahne: s, kaynak: varlik.yerlesim.sayfalar.kapak?.boy ?? VARSAYILAN_KAYNAK });
         oge.append(kapak);
       } else {
@@ -379,6 +382,7 @@ export class Kitaplik {
     const kitap = this.kitaplar.find((k) => k.id === id && k.icerik);
     const kapak = this.rafKapaklar.get(id)?.kapak;
     if (!kitap?.icerik || !kapak || this.durum !== 'raf') return;
+    if (!erisimVarMi('kitap/' + id, this.el)) return;
     this.tut(kitap, kapak);
     await this.ac('bak', Math.min(kitap.icerik.sayfalar.length, Math.max(1, sayfa)));
   }

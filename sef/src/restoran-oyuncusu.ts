@@ -1,4 +1,4 @@
-import {karakterAdlari,type RestoranKarakteri} from './restoran-karakterleri';
+import {arkadasAgizlari,karakterAdlari,type RestoranKarakteri} from './restoran-karakterleri';
 import {h} from '../../src/ui/dom';
 import './restoran-oyuncusu.css';
 
@@ -32,6 +32,18 @@ function kaynak(kim:RestoranKarakteri,eylem:'yuru'|'otur'|'tat'|'yudum'|'cigne',
 }
 
 export function restoranOyuncusu(kim:RestoranKarakteri,mod:'gelis'|'otur'|'cikis',bitir?:()=>void,kapida=false){
+  function arkadasYuzunuYerlestir(oyuncu:HTMLElement,id:keyof typeof arkadasAgizlari){
+    const beden=oyuncu.querySelector<HTMLElement>('.restoran-oyuncu-bedeni')!;
+    const [x,y]=arkadasAgizlari[id];
+    for(const hedef of [oyuncu,beden]){
+      hedef.dataset.agizX=String(x);
+      hedef.dataset.agizY=String(y);
+    }
+    beden.style.setProperty('--bas-sol',(x-.23)*100+'%');
+    beden.style.setProperty('--bas-ust',(y-.29)*100+'%');
+    beden.style.setProperty('--bas-en','46%');
+    beden.style.setProperty('--bas-boy','37%');
+  }
   if(kim==='tavsan'||kim==='seftali'||kim==='bulut'){
     const son=kim==='seftali'?7:5;
     const pozlar=Array.from({length:son+1},(_,i)=>arkadasPozu(kim,i));
@@ -39,6 +51,7 @@ export function restoranOyuncusu(kim:RestoranKarakteri,mod:'gelis'|'otur'|'cikis
     const oyuncu=h('div.restoran-oyuncusu.salon-oyun-arkadasi',{
       role:'img','aria-label':karakterAdlari[kim],'data-karakter':kim,'data-poz':mod==='gelis'?'yerles':'otur'
     },h('span.restoran-oyuncu-bedeni',{},resim));
+    arkadasYuzunuYerlestir(oyuncu,kim);
     if(mod!=='otur'){
       const bitis=()=>{
         oyuncu.dataset.poz='otur';oyuncu.hidden=mod==='cikis';
@@ -63,7 +76,8 @@ export function restoranOyuncusu(kim:RestoranKarakteri,mod:'gelis'|'otur'|'cikis
     const resim=new URL('../../assets/hazirlik/kres/cember-zipzip-0.webp',import.meta.url);
     const oyuncu=h('div.restoran-oyuncusu.salon-yeni-konuk',{role:'img','aria-label':karakterAdlari[kim],'data-karakter':kim,'data-poz':'otur'},
       h('span.restoran-oyuncu-bedeni',{},h('img',{src:resim.href,alt:'',draggable:false})));
-    if(mod!=='otur')queueMicrotask(()=>bitir?.());
+    arkadasYuzunuYerlestir(oyuncu,kim);
+    if(mod!=='otur')queueMicrotask(()=>{oyuncu.hidden=mod==='cikis';bitir?.();});
     return oyuncu;
   }
   const olcu=olculer[kim];

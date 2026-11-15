@@ -10,14 +10,15 @@ import { VIDEOLAR } from '../../src/video/videolar';
 describe('erişim tablosu', () => {
   const ac = { etkin: true, premium: false };
   it('Barış\'ın varsayılanı: Kartlar, Mino\'nun Karpuzu ve Elektrikler Kesildi! ücretsiz, gerisi abonelikle', () => {
-    expect(kilitliMi('kartlar', ac)).toBe(false);
-    expect(kilitliMi('film/mino-karpuz', ac)).toBe(false);
-    expect(kilitliMi('macera/elektrik', ac)).toBe(false);
-    for (const id of ['pazar', 'canlan', 'pasta', 'dedektif', 'film/kino-oyuncak', 'macera/dogumgunu', 'macera/ege', 'macera/banyo', 'macera/salincak'])
+    // Barış 2026-11-16: eski oyunlar bütünüyle premium; ana oyun ve etkinliklerde başı ücretsiz
+    for (const id of ['kartlar', 'pazar', 'canlan', 'macera', 'giysin', 'otobus', 'pasta', 'dedektif', 'macera/elektrik', 'giysin/kis'])
+      expect(kilitliMi(id, ac), id).toBe(true);
+    for (const id of ['pati', 'pati/gun-3', 'sef', 'restoran/gun-3', 'kino-ile-sen-sec/bir-gun', 'alfabe/harf-04', 'alfabe/hece-trambolin', 'matematik/sayi', 'hazirlik/gun-2', 'kitap/okul', 'kitap/doktor', 'kitap/kurabiye', 'film/mino-karpuz'])
+      expect(kilitliMi(id, ac), id).toBe(false);
+    for (const id of ['pati/gun-4', 'restoran/gun-4', 'kino-ile-sen-sec/firtina', 'alfabe/harf-05', 'alfabe/hece-pano', 'matematik/sekil', 'hazirlik/gun-3', 'kitap/cadir'])
       expect(kilitliMi(id, ac), id).toBe(true);
   });
-  it('bölümlü oyunların menü kartı açık (içinde ücretsiz bölüm var); bilinmeyen içerik abonelikle', () => {
-    expect(erisimTuru('macera')).toBe('ucretsiz');
+  it('bilinmeyen içerik abonelikle', () => {
     expect(erisimTuru('film')).toBe('ucretsiz');
     expect(erisimTuru('film/yeni-bir-film')).toBe('abonelik');
     expect(erisimTuru('yeni-oyun')).toBe('abonelik');
@@ -46,10 +47,9 @@ describe('uygulama menüsü', () => {
       for (const yok of ['okul', 'mino-giysin', 'kino-otobus', 'pasta', 'film', 'restoran', 'orman']) expect(u.some((k) => k.id === yok), yok).toBe(false);
     }
   });
-  it('Otobüs kartı açık (Dondurma Gün 1 ücretsiz), Pasta aşaması abonelikle', () => {
+  it('Otobüs (eski oyun) bütünüyle premium', () => {
     const ac = { etkin: true, premium: false };
-    expect(kilitliMi('otobus', ac)).toBe(false);
-    expect(kilitliMi('kino-otobus', ac)).toBe(false);
+    expect(kilitliMi('otobus', ac)).toBe(true);
     expect(kilitliMi('pasta', ac)).toBe(true);
   });
 });

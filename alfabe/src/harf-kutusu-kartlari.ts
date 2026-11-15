@@ -10,9 +10,9 @@ function dersKarti(ders: Ders): KutuKarti {
   return { id: ders.id, ad: ders.example, gorsel: resim(ders.id), ses: ders.id + '-label' };
 }
 
-const kartlar = dersler.map(dersKarti);
+export const kartlar = dersler.map(dersKarti);
 const kelimeler = ['at', 'bal', 'masa', 'pil', 'su', 'zil'];
-const baskaOrnekler: KutuKarti[] = kelimeler.map(k => ({
+export const baskaOrnekler: KutuKarti[] = kelimeler.map(k => ({
   id: k, ad: k[0].toLocaleUpperCase('tr') + k.slice(1), gorsel: kelimeResmi(k)!, ses: 'kutu-ad-' + k
 }));
 

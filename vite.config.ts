@@ -36,6 +36,8 @@ const SAYFALAR = {
   hazirlik: 'hazirlik/index.html',
   matematik: 'matematik/index.html',
   alfabe: 'alfabe/index.html',
+  // İlk İngilizcem (Barış 2026-11-16): etkinliklerde, bütünüyle premium; içerik gelişiyor
+  ingilizce: 'ingilizce/index.html',
   kartlar: 'kartlar/index.html',
   canlan: 'canlan/index.html',
   sesTesti: 'ses-testi/index.html',

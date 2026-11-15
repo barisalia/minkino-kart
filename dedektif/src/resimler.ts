@@ -40,6 +40,19 @@ export function surumTablosu(dosyalar: Record<string, string>): Map<string, stri
   return new Map([...en].map(([ad, v]) => [ad, v.url]));
 }
 
+const yeniCizimler = import.meta.glob<string>(
+  '../../assets/dedektif-yeni/{roman-*,ipucu-*,kart-*,tepki-*,lamba-*,kalemlik-devrik,buyutec,sosis,kelebek}.webp',
+  { eager: true, query: '?url', import: 'default' },
+);
+const yeniAdlar: Record<string, string> = {
+  kalemlik: 'kalemlik-devrik',
+  'kart-kedi-pati-izi': 'ipucu-kedi-pati',
+  'ipucu-kedi-pati-hali': 'ipucu-kedi-pati',
+  'ipucu-sari-kanat-tozu': 'ipucu-kanat-tozu',
+  'kart-sari-kelebek': 'kelebek',
+  zurafa: 'tepki-zurafa',
+  ordek: 'tepki-ordek',
+};
 const TABLO = surumTablosu(DEDEKTIF);
 const TABLO2 = surumTablosu(DEDEKTIF2);
 const baska = (yol: string) => BASKA[`../../assets/${yol}.webp`] ?? null;
@@ -115,6 +128,8 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
  */
 export function resim(ad: string, tablo: Map<string, string> = TABLO): string | null {
   if (ad.startsWith('v3/')) return resim3(ad.slice(3));
+  const yeni = yeniCizimler[`../../assets/dedektif-yeni/${yeniAdlar[ad] ?? ad}.webp`];
+  if (tablo === TABLO && yeni) return yeni;
   const y = YUVA[ad];
   for (const a of y?.adaylar ?? [ad]) {
     const u = v2(a) ?? tablo.get(a);

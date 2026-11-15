@@ -61,7 +61,12 @@ describe('inceleme kodu: erişim', () => {
     expect(e.premiumMu()).toBe(false);
     expect(e.kilitli('pazar')).toBe(true);
     expect(e.kilitli('macera/ege')).toBe(true);
-    expect(e.kilitli('kartlar')).toBe(false);
+    expect(e.kilitli('kartlar')).toBe(true);
+    expect(e.kilitli('sef')).toBe(false);
+    expect(e.kilitli('alfabe/harf-01')).toBe(false);
+    expect(e.kilitli('alfabe/harf-05')).toBe(true);
+    expect(e.kilitli('kitap/doktor')).toBe(false);
+    expect(e.kilitli('kitap/cadir')).toBe(true);
 
     e.incelemeAc();
     expect(depo.get(e.INCELEME_ANAHTARI)).toBe('1');

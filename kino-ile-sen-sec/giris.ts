@@ -1,5 +1,7 @@
 import { sayfaAdresi } from '../src/kabuk/sayfa';
 import { arkaPlanDinle, geriDinle } from '../src/kabuk/yon';
+import { erisimVarMi, kilitleriKur } from '../src/abonelik/kilit';
+import { kilitli } from '../src/engine/erisim';
 
 const eski = import.meta.env.DEV ? '../ekip/film/kino-okul-ui-fikirleri/' : './film/';
 const yeni = import.meta.env.DEV ? '../ekip/film/kino-firtina-geliyor/' : './firtina/';
@@ -16,7 +18,8 @@ const kartlar = document.querySelectorAll<HTMLAnchorElement>('a[data-bolum]');
 let oynanan: Bolum | null = null;
 function goster() {
   const kod = new URL(location.href).searchParams.get('bolum');
-  const ad = kod === 'bir-gun' || kod === 'firtina' ? kod : null;
+  // kilitli bölüm adresle de açılmaz (Fırtına premium: src/engine/erisim.ts)
+  const ad = (kod === 'bir-gun' || kod === 'firtina') && !kilitli('kino-ile-sen-sec/' + kod) ? kod : null;
   // The shared Vite index can reload when another team edits an unrelated HTML page.
   // A static preview shell keeps that event out of the active film.
   if (import.meta.env.DEV && liste && ad) {
@@ -62,8 +65,9 @@ function oyunlaraDon() {
 for (const kart of kartlar) {
   const ad = kart.dataset.bolum as Bolum;
   kart.querySelector('img')!.src = bolumler[ad].afis;
-  kart.onclick = ev => { ev.preventDefault(); sec(ad); };
+  kart.onclick = ev => { ev.preventDefault(); if (erisimVarMi('kino-ile-sen-sec/' + ad, document.body)) sec(ad); };
 }
+kilitleriKur([...kartlar].map(k => [k, 'kino-ile-sen-sec/' + k.dataset.bolum] as [HTMLElement, string]));
 const menuGeri = document.querySelector<HTMLButtonElement>('#geri');
 if (menuGeri) menuGeri.onclick = oyunlaraDon;
 window.addEventListener('popstate', goster);

@@ -442,6 +442,18 @@ button:focus-visible {
 .sepet img {
   width: 20%;
 }
+.sofra .tabak {
+  padding: 0 1%;
+  gap: 2%;
+  flex-wrap: nowrap;
+}
+.sofra .tabak > img {
+  width: 44%;
+  height: 72%;
+  object-fit: contain;
+}
+.sofra .tabak > img:only-child { width: 60%; }
+.sofra .tabak:has(> img:nth-child(3)) > img { width: 30%; }
 .tezgah .tabak {
   height: 82%;
   padding: 2%;
@@ -1020,7 +1032,37 @@ button:focus-visible {
 .olcu-hedefi {
   background: #ffffff2b;
 }
-.say-kumesi img.sayildi {
+.say-kumesi .say-meyvesi {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 13%;
+  height: 40%;
+  border: 0;
+  border-radius: 30%;
+  padding: 2px;
+  background: transparent;
+}
+.say-meyvesi img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.say-meyvesi[data-sira]::after {
+  content: attr(data-sira);
+  position: absolute;
+  right: -4%;
+  bottom: -3%;
+  padding: 0 .24em;
+  min-width: 1.22em;
+  border: 1px solid #302522;
+  border-radius: 50%;
+  color: #37251e;
+  background: #fff2bc;
+  font-size: clamp(13px,1.8cqw,28px);
+}
+@media (max-aspect-ratio: 1/1) {
+  .pano.say-kumesi > .say-meyvesi { width: 95%; height: 92%; }
+  .pano.say-kumesi:has(> .say-meyvesi:only-child) { display: flex; }
+  .pano.say-kumesi > .say-meyvesi:only-child { width: 28%; height: 52%; }
+}
+.say-kumesi .sayildi {
   background-color: #d6f3c6;
   border-radius: 30%;
   outline: 1px solid #28392b;
@@ -1188,6 +1230,9 @@ button:focus-visible {
 .kule-meydani :is(.kule-kutu,.raf-kutusu,.kule-hedef) {position:absolute;translate:none;margin:0;padding:0;min-height:0;line-height:1;display:grid;place-items:center;}
 .kule-meydani :is(.kule-kutu,.raf-kutusu) {border:0;background:none;filter:drop-shadow(0 2px 0 #a9763770)}
 .kule-meydani .raf-kutusu {cursor:grab}
+.kutu-baskisi {position:absolute;inset:12% 10% 14%;display:flex;align-items:center;justify-content:space-evenly;pointer-events:none}
+.kutu-noktalari {display:grid;grid-template-columns:repeat(5,.16em);gap:.06em;align-content:center}
+.kutu-noktalari i {width:.16em;height:.16em;background:currentColor;border-radius:50%}
 .kule-meydani .raf-kutusu.elde {z-index:8;cursor:grabbing;filter:drop-shadow(2px 7px 2px #83502366)}
 .kule-meydani .raf-kutusu::after {content:'';position:absolute;inset:-5px 0}
 .kule-meydani .kule-hedef {background:#fff0bb44;border:2px dashed #aa713c88;color:#8b5927;z-index:1}
@@ -1195,18 +1240,8 @@ button:focus-visible {
 .kule-meydani .devrildi {animation:none;z-index:3;pointer-events:none}
 .kule-meydani .kule-tekrar {position:absolute;right:6%;bottom:6%;width:clamp(48px,8%,90px);padding:.6%}
 .kule-meydani .kule-parla b {text-shadow:0 1px 2px white}
-#sahne.dere-sahnesi,#sahne.liman-sahnesi{background-size:100% 100%}
-.pano.dere-koprusu{inset:55% 29% auto 26%;height:8%;display:flex;align-content:stretch;justify-content:flex-start;align-items:stretch;gap:0;flex-wrap:nowrap;
-  background:repeating-linear-gradient(90deg,#fff2bd60 0 2px,transparent 2px calc(100% / var(--birim)));border-block:2px dashed #fff3be}
-.dosenmis-tahta,.stok-tahta,.elma-arabasi,.yelken-tut{border:0;background:transparent;padding:0;position:relative;touch-action:none}
-.dosenmis-tahta img,.stok-tahta img{width:100%;height:100%;pointer-events:none}
-.tezgah.tahta-deposu{inset:71% 29% 7% 26%;display:flex;align-items:flex-start;justify-content:space-around;gap:3%;flex-wrap:wrap}
-.stok-tahta{height:44%;min-height:30px;flex-shrink:0}
-.stok-tahta span{position:absolute;inset:0;display:grid;place-content:center;letter-spacing:.15em;color:#80461f;font-size:clamp(10px,1.5cqw,20px);pointer-events:none}
-.elma-arabasi{position:absolute;left:7%;top:43%;width:18%;height:16%;filter:drop-shadow(0 2px #84592f60)}
-.elma-arabasi img:first-child{width:100%;height:100%;object-fit:fill}
-.elma-arabasi img+img{position:absolute;left:38%;bottom:39%;width:26%;height:43%;object-fit:contain}
-.dereyi-gec{left:79%;transition:left .85s ease-in-out}
+#sahne.liman-sahnesi{background-size:100% 100%}
+.yelken-tut{border:0;background:transparent;padding:0;touch-action:none}
 .pano.tekne-denizi{inset:23% 5% 30%;display:block}
 .kurulan-tekne{position:absolute;left:16%;bottom:15%;width:33%;height:85%}
 .kurulan-tekne span{position:absolute;opacity:.24;pointer-events:none}
@@ -1235,12 +1270,10 @@ button:focus-visible {
  .kurulan-tekne{width:41%;height:60%}
  .golge-perdesi{inset:20% 22% 56%}
  #sahne:has(.golge-perdesi) .isiklar{inset:45% 7% 37%}
- .elma-arabasi{height:9%;top:50%}
 }
-@media(prefers-reduced-motion:reduce){.dereyi-gec,.kurulan-tekne.limana-git,.teslim-edildi{transition:none}}
+@media(prefers-reduced-motion:reduce){.kurulan-tekne.limana-git,.teslim-edildi{transition:none}}
 #sahne:has(.golge-perdesi) .isiklar {display:none}
 #sahne:has(.golge-perdesi) .fener-sira {top:53%;pointer-events:none}
-.tahta-deposu::before {content:'';position:absolute;inset:-7% -7%;border:2px solid #463521;border-radius:12px;background:#e3c189;box-shadow:0 4px #977042}
 
 /* Her vitrin oyunda açacağı masanın kendi dekorunu ve çalışan oyuncağını taşır. */
 #sahne[data-ekran=menu]{background-size:cover;background-position:center}
@@ -1344,3 +1377,67 @@ button:focus-visible {
 @media(prefers-reduced-motion:no-preference){.eksik-ay img{animation:ayi-tak 5.6s ease-in-out infinite}@keyframes ayi-tak{0%,34%,100%{opacity:0;translate:24% 44%}50%,85%{opacity:1;translate:0 0}94%{opacity:0;translate:0 0}}}
 .golge-perdesi img{filter:none}
 .fener-anlatici{position:absolute;width:14%;right:18%;bottom:48%;pointer-events:none}
+
+#sahne[data-ekran='menu'] {
+  width: min(100vw, 177.78dvh);
+  height: auto;
+  aspect-ratio: 16/9;
+  background-size: 100% 100%;
+}
+.dolap-raflari {
+  position: absolute;
+  inset: 15% 24% 10% 24%;
+  display: grid;
+  grid-template: 1fr 1fr / 1fr 1fr;
+}
+.dolap-raflari .kose {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100%;
+  border-radius: 8%;
+  -webkit-tap-highlight-color: transparent;
+}
+.dolap-raflari .kose:focus-visible {
+  outline: 3px dashed #fff2bf;
+  outline-offset: -4px;
+}
+.dolap-raflari .iz {
+  left: 12%;
+  width: 28%;
+  bottom: 0;
+}
+.dolap-raflari .kazanilan { right: 2%; bottom: 22%; }
+
+/* Ana ekran: dört net kart (Barış 2026-11-16: dolap resmi yerine; dokunulacak yer belli olsun) */
+#sahne[data-ekran='menu'] { background: #6ec3f4; }
+.kart-menu { inset: 15% 9% 7%; gap: 7% 4%; }
+.kart-menu .oyuncak-vitrini { display: grid; grid-template-rows: minmax(0, 1fr) auto; place-items: center; background: #fffaf0; padding: 3% 4% 0; }
+.kart-menu .oyuncak-vitrini img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.kart-menu .oyuncak-vitrini b { width: 108%; margin-top: 2%; padding: 2.5% 0; background: var(--kenar); color: #2b201b; text-align: center; font: 900 clamp(13px, 2.3cqw, 40px)/1.1 ui-rounded, system-ui, sans-serif; }
+.kart-menu .kart-yildiz { position: absolute; top: -5%; right: -2.5%; width: 12%; aspect-ratio: 1; display: grid; place-items: center; background: #ffd23f; border: clamp(2px, .22cqw, 4px) solid #28201b; border-radius: 50%; color: #fff; -webkit-text-stroke: 1px #28201b; font-size: clamp(14px, 2.4cqw, 40px); line-height: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .kart-menu .kose { animation: kart-nefes 3.2s ease-in-out infinite; }
+  .kart-menu .k1 { animation-delay: -.8s } .kart-menu .k2 { animation-delay: -1.6s } .kart-menu .k3 { animation-delay: -2.4s }
+  @keyframes kart-nefes { 0%, 100% { scale: 1 } 50% { scale: 1.025 } }
+}
+
+/* Oyuncak seçme: Astra'nın tezgâhı (Barış 2026-11-16). Oyuncaklar en çok %23 genişlik, %44 yükseklik; altlık altı %81 */
+#sahne[data-ekran='menu'] { background-color: #f6e6bd; background-size: cover; background-position: center; }
+.atolye-tezgahi { position: absolute; inset: 0; pointer-events: none; }
+.tezgah-oyuncak { position: absolute; top: auto; right: auto; bottom: 19%; width: 23%; height: 44%; translate: -50% 0; padding: 0; border: 0; background: none; pointer-events: auto; cursor: pointer; transform-origin: 50% 100%; -webkit-tap-highlight-color: transparent; }
+.tezgah-oyuncak.k0 { left: 13.5%; } .tezgah-oyuncak.k1 { left: 38%; } .tezgah-oyuncak.k2 { left: 62.5%; } .tezgah-oyuncak.k3 { left: 87%; }
+.tezgah-oyuncak img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; pointer-events: none; filter: drop-shadow(0 .5cqw .3cqw rgba(60, 35, 10, .25)); }
+.tezgah-oyuncak .oyuncak-adi { position: absolute; left: 50%; top: 103%; translate: -50% 0; white-space: nowrap; padding: .35em .9em; background: #fffaf0; border: clamp(2px, .2cqw, 4px) solid #2b201b; border-radius: 99px; color: #2b201b; font: 900 clamp(12px, 1.7cqw, 32px)/1 ui-rounded, system-ui, sans-serif; pointer-events: none; }
+.tezgah-oyuncak .iz { left: 30%; width: 40%; height: 4%; bottom: -2%; }
+.tezgah-oyuncak .kart-yildiz { position: absolute; top: 2%; right: 4%; width: 16%; aspect-ratio: 1; display: grid; place-items: center; background: #ffd23f; border: clamp(2px, .22cqw, 4px) solid #28201b; border-radius: 50%; color: #fff; font-size: clamp(14px, 2.2cqw, 40px); line-height: 1; }
+.tezgah-oyuncak .mk-kilit { top: 4%; right: 8%; }
+.tezgah-oyuncak:focus-visible { outline: none; }
+.tezgah-oyuncak:focus-visible img { filter: drop-shadow(0 0 .6cqw #fff) drop-shadow(0 0 .3cqw #2b6cff); }
+.tezgah-oyuncak:active { scale: .96; }
+@media (prefers-reduced-motion: no-preference) {
+  .tezgah-oyuncak { animation: oyuncak-nefes 3.4s ease-in-out infinite; }
+  .tezgah-oyuncak.k1 { animation-delay: -.85s } .tezgah-oyuncak.k2 { animation-delay: -1.7s } .tezgah-oyuncak.k3 { animation-delay: -2.55s }
+  @keyframes oyuncak-nefes { 0%, 100% { scale: 1 } 50% { scale: 1.03 } }
+  @media (hover: hover) { .tezgah-oyuncak:hover { scale: 1.06; animation-play-state: paused; } }
+}

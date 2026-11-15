@@ -15,12 +15,10 @@ import type { Ekran, Uygulama } from '../../src/uygulama';
 import { h } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
-import { konus } from '../../src/audio/ses';
 import { oynat } from './efekt';
 import { kayit } from './kayit';
-import { M } from './mantik';
-import { M2, ROMAN2, V2 } from './mantik2';
-import { M3, ROMAN3, V3, vaka3Gorunur } from './mantik3';
+import { ROMAN2, V2 } from './mantik2';
+import { ROMAN3, V3, vaka3Gorunur } from './mantik3';
 import { hazirla3 } from './resimler3';
 import { filmKatmani, resim } from './resimler';
 import { kareleriGetir, romanKur, sirayla } from './roman';
@@ -111,7 +109,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
         oynat(d, 'dd-kilit-salla');
         oynat(once[k.id === 'vaka3' ? 'vaka2' : 'vaka1'], 'dd-hatirla');
         mino.tepki('hayir');
-        void konus(k.id === 'vaka3' ? M3.kilitli : M2.kilitli);
+
         return;
       }
       // erişim: Dedektif abonelikle (src/engine/erisim.ts → dedektif/<vaka>); kilitliyse kilit anı açılır, vaka açılmaz
@@ -137,7 +135,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   // açılışta Mino selam verir (ses ilk dokunuştan sonra açılır; açılmadıysa sessiz geçer)
   const z = window.setTimeout(() => {
     mino.tepki('selam');
-    void konus(M.selam);
+
   }, 600);
   return {
     el,
@@ -205,7 +203,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
       }
       else {
         oynat(k, 'dd-kilit-salla');
-        void konus(M2.kilitli);
+
       }
     });
     kartlar.push(k);
@@ -231,7 +229,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
         }
         else {
           oynat(k, 'dd-kilit-salla');
-          void konus(M3.kilitli);
+
         }
       });
       kartlar.push(k);
@@ -272,8 +270,8 @@ export function dosyaEkrani(app: Uygulama): Ekran {
     r.alt.append(kapat);
     r.alt.classList.add('acik');
     void kareleriGetir(r, [], (i) => ses.kare(i)).then(() => {
-      const dur = sirayla(r, vaka === 'vaka1' ? 5200 : 4200);
-      void konus(vaka === 'vaka1' ? M.hikaye : vaka === 'vaka2' ? M2.hikaye : M3.hikaye).then(dur);
+      sirayla(r, vaka === 'vaka1' ? 5200 : 4200);
+
     });
   }
   return { el, kapat: () => kapatilacak.forEach((f) => f()) };

@@ -1,3 +1,5 @@
+import { erisimVarMi, kilitGoster } from '../../src/abonelik/kilit';
+import { kilitli } from '../../src/engine/erisim';
 import { sayiKulesi, boncuklariCal, boncukSesiniKes } from './sayi-oyuncaklari';
 import { durum as uygulamaDurumu, yukle } from '../../src/engine/ilerleme';
 import { MENU_YASLARI, menuYasiOku, menuYasiniSec } from '../../src/engine/menu-yas';
@@ -9,6 +11,7 @@ import { konus, sus, sesiAc } from '../../src/audio/ses';
 import { geriDinle, arkaPlanDinle } from '../../src/kabuk/yon';
 import { anaMenuyeDon } from '../../src/uygulama';
 import { rakamAtolyesi } from './rakam';
+import { misketParkuru } from './misket';
 import './stil.css';
 import { gezginOyna } from './tangram';
 import './tangram.css';
@@ -17,10 +20,11 @@ const dikTelefon = matchMedia('(orientation: portrait) and (width < 600px)');
 const kaynak = import.meta.glob<string>(
   [
     '../../assets/matematik/*.webp',
+    '!../../assets/matematik/{dere,misket-kutu,misket-cark}.webp',
     '../../assets/hazirlik/kres/{tekne-govde,tekne-direk,tekne-yelken}.webp',
     '../../assets/sef/{piknik/sepet,arabali-servis/araba}.webp',
     '../../assets/canlan/{kelebek,balik,tavsan,ev}.webp',
-    '../../assets/hazirlik/dugmeler/{ev,beste-oynat,oda-sol,dinle,tamam,tekrar,ileri}.webp',
+    '../../assets/hazirlik/dugmeler/{ev,beste-oynat,oda-sol,oda-sag,dinle,tamam,tekrar,ileri}.webp',
     '../../assets/canlan/ev.webp',
     '../../assets/hazirlik/etkinlik/tohum-*.webp',
     '../../assets/hazirlik/kres/siir-tusu-*.webp',
@@ -102,7 +106,7 @@ function alan(cls: string, ic = '') {
   return e;
 }
 let sahneyiKapat: (() => void) | undefined;
-function temiz(s: string, bg: string, sesiKoru = false) {
+function temiz(s: string, bg: string | null, sesiKoru = false) {
   sahneyiKapat?.(); sahneyiKapat = undefined;
   clearTimeout(yardimSaati);
   delete kok.dataset.bitti;
@@ -112,10 +116,10 @@ function temiz(s: string, bg: string, sesiKoru = false) {
   if (!sesiKoru) susArtik();
   kilit = false;
   sahne = s;
-  kok.classList.remove('liman-sahnesi','dere-sahnesi');
+  kok.classList.remove('liman-sahnesi');
   kok.replaceChildren();
   kok.dataset.ekran = s;
-  kok.style.backgroundImage = 'url("' + url('matematik/' + bg) + '")';
+  kok.style.backgroundImage = bg ? 'url("' + url('matematik/' + bg) + '")' : 'none';
 }
 function nav() {
   if (sahne !== 'menu' || location.protocol !== 'file:')
@@ -134,9 +138,11 @@ function nav() {
     'nav ses',
   );
 }
+let parkurBaglantisi = new URLSearchParams(location.search).get('oyun') === 'misket';
 function menu() {
   boncukSesiniKes();
-  temiz('menu', 'atolye-duvari');
+  // Astra 2026-11-16: oyuncak seçme sahnesi (boş tezgâh + dört oyuncak, assets/matematik/atolye-*)
+  temiz('menu', 'atolye-tezgah');
   nav();
   metin = 'Bir oyuncak seç. Birlikte oynayalım.';
   if (location.protocol === 'file:' || menuYasiOku() === null) {
@@ -156,33 +162,35 @@ function menu() {
     if (menuYasiOku() === null) { yasSec(); return; }
     buton(kok, 'Yaşı değiştir', menuYasiOku() === 6 ? '6+' : String(menuYasiOku()), yasSec, 'nav ev');
   }
-  const raf = alan('oyuncak-rafi');
-  const kutular = [1, 2, 3].map(sayi => '<span class="minik-kutu">' + img('matematik/kule-kutusu') + '<b>' + sayi + '</b></span>').join('');
-  const tekne = ['govde', 'direk', 'yelken'].map(ad => '<span class="tekne-' + ad + ' takildi">' + img('hazirlik/kres/tekne-' + ad) + '</span>').join('');
-  const oyuncaklar = [
-    '<span class="vitrin-kule">' + kutular + '</span>',
-    '<span class="kurulan-tekne vitrin-tekne">' + tekne + '</span>',
-    '<span class="vitrin-kopru">' + img('matematik/kule-kutusu').repeat(3) + '</span><span class="vitrin-araba">' + img('sef/arabali-servis/araba') + img(meyve[0]) + '</span>',
-    '<span class="kukla-kusu vitrin-kus"></span><span class="vitrin-dizisi">' +
-      [0, 1, 0, 1].map((v, i) => '<i' + (i === 3 ? ' class="eksik-ay"' : '') + '>' + img(lamba[v]) + '</i>').join('') + '</span>',
-  ];
-  const dekorlar = ['kule-masasi', 'liman', 'dere', 'tiyatro'];
+  if (parkurBaglantisi) {
+    parkurBaglantisi = false;
+    if (parkurYasiUygun() && !kilitli('matematik/olcu')) {
+      k = 'olcu';
+      misketiAc();
+      return;
+    }
+  }
+  // Ana ekran: tezgâhta dört oyuncak (Astra yerleşimi: merkezler %13,5 / %38 / %62,5 / %87, altlık altı %81)
+  const raf = alan('atolye-tezgahi');
   koseler.forEach((id, i) => {
-    const t = durum[id];
-    const b = buton(
-      raf,
-      adlar[id],
-      '<span class="oyuncak-vitrini" aria-hidden="true">' + oyuncaklar[i] + '</span>',
+    const tur = durum[id];
+    const dugme = buton(raf, adlar[id],
+      img('matematik/atolye-' + id) + '<b class="oyuncak-adi">' + adlar[id] + '</b>',
       () => {
+        // Sayı masası ücretsiz; diğer köşeler premium (src/engine/erisim.ts → matematik/<köşe>)
+        if (!erisimVarMi('matematik/' + id, document.body)) return;
         k = id;
-        if (t.adim === son) sifirla(k);
+        if (tur.adim === son) sifirla(k);
         oyna(true);
-      },
-      'kose k' + i,
-    );
-    (b.firstElementChild as HTMLElement).style.backgroundImage = 'url("' + url('matematik/' + dekorlar[i]) + '")';
-    if (t.hatira) b.innerHTML += '<span class="kazanilan">' + img('matematik/hatira-' + id) + '</span>';
-    if (t.adim) b.innerHTML += '<span class="iz" style="--d:' + (100 * t.adim) / son + '%"></span>';
+      }, 'kose tezgah-oyuncak k' + i);
+    kilitGoster(dugme, 'matematik/' + id);
+    if (tur.adim > 0) {
+      const iz = document.createElement('span');
+      iz.className = 'iz';
+      iz.style.setProperty('--d', (100 * tur.adim / son) + '%');
+      dugme.append(iz);
+    }
+    if (tur.hatira) dugme.insertAdjacentHTML('beforeend', '<span class="kart-yildiz" aria-hidden="true">★</span>');
   });
 }
 function hareketIpucu(kaynak: Element, hedef: Element) {
@@ -407,7 +415,36 @@ function gezginiAc() {
     bitir: () => { delete t.gezginBulunan; tamam(); },
   });
 }
+function parkurYasiUygun() {
+  return (menuYasiOku() ?? 0) >= 5;
+}
+function misketiAc() {
+  if (!parkurYasiUygun()) { menu(); return; }
+  temiz('misket', null);
+  nav();
+  const oyun = misketParkuru({
+    kok,
+    ileri: img('hazirlik/dugmeler/oda-sag'),
+    anlat: i => soyle(sozler[i]), sustur: susArtik,
+    devam: basardi => {
+      const t = durum.olcu;
+      sahneyiKapat?.();
+      sahneyiKapat = undefined;
+      if (t.adim === son) { hatirayiGoster(); return; }
+      t.misketiGecti = true;
+      kaydet('olcu');
+      if (basardi && t.adim === 0 && !t.secimler.length) tamam();
+      else oyna(true);
+    },
+  });
+  sahneyiKapat = oyun.kapat;
+  ipucunuTekrarla = oyun.tekrarAnlat;
+}
 function oyna(sesli = false) {
+  if (k === 'olcu' && parkurYasiUygun() && durum.olcu.adim === 0 && !durum.olcu.misketiGecti && !durum.olcu.secimler.length) {
+    misketiAc();
+    return;
+  }
   if (k === 'sekil' && durum.sekil.adim === son - 1) {
     gezginiAc();
     return;
@@ -425,6 +462,7 @@ function oyna(sesli = false) {
   const pano = alan('pano'),
     masa = alan('tezgah');
   const bar = alan('ilerleme');
+  if (k === 'olcu' && parkurYasiUygun()) buton(kok, 'Misket Şelalesi parkurunu aç', img('matematik/misket-zili'), misketiAc, 'mk-giris');
   bar.setAttribute('role', 'progressbar');
   bar.setAttribute('aria-label', adlar[k]);
   bar.setAttribute('aria-valuemin', '0');
@@ -1251,11 +1289,22 @@ function oyna(sesli = false) {
           ? 'Fazla boncukları geri kaydır. Her meyve için bir boncuk kalsın.'
           : 'Her meyve için bir boncuğu sola kaydır. Bitince onayla.';
     pano.classList.add('say-kumesi');
-    pano.innerHTML = resimler(meyveTuru, hedefSayi);
-    // Çocuk ayırdığı her boncuğun hangi meyveyi karşıladığını görebilir.
-    Array.from(pano.children)
-      .slice(0, say)
-      .forEach((el) => el.classList.add('sayildi'));
+    const sayilanlar = new Set<HTMLButtonElement>();
+    for (let i = 0; i < hedefSayi; i++) {
+      const meyveDugmesi = buton(pano, (i + 1) + '. meyveyi say', img(meyveTuru), () => {
+        if (kilit) return;
+        if (sayilanlar.size === hedefSayi) {
+          sayilanlar.forEach(el => el.removeAttribute('data-sira'));
+          sayilanlar.clear();
+        }
+        if (!sayilanlar.has(meyveDugmesi)) {
+          sayilanlar.add(meyveDugmesi);
+          meyveDugmesi.dataset.sira = String(sayilanlar.size);
+        }
+        adediOku(Number(meyveDugmesi.dataset.sira));
+      }, 'say-meyvesi');
+      if (i < say) meyveDugmesi.classList.add('sayildi');
+    }
     masa.classList.add('abakus');
     // Her telde beş boncuk var. İtilen boncuk yanındakileri de birlikte taşır.
     const teller: HTMLDivElement[] = [];
@@ -1336,7 +1385,7 @@ function oyna(sesli = false) {
         if (kilit) return;
         if (say === hedefSayi) {
           adediOku(say);
-          pano.innerHTML = '<strong>' + say + '</strong>' + pano.innerHTML;
+          pano.insertAdjacentHTML('afterbegin', '<strong>' + say + '</strong>');
           if (onceSaySonraPaylas) {
             t.boncukHazir = true;
             t.secimler = [];
@@ -1346,6 +1395,10 @@ function oyna(sesli = false) {
             timer = window.setTimeout(() => oyna(true), 1000);
           } else tamam();
         } else {
+          const eksik = pano.querySelector('.say-meyvesi:not(.sayildi)');
+          const fazla = masa.querySelectorAll('.boncuk[aria-label="Bir boncuk geri al"]');
+          const hedef = say < hedefSayi ? eksik : fazla[hedefSayi];
+          if (hedef) ipucuHedefi(hedef);
           ipucu(ok);
           soyle(
             say < hedefSayi
@@ -1381,85 +1434,47 @@ function oyna(sesli = false) {
     secenekler(parcalar, seq[ind], seq.length - sabit);
   } else if (k === 'olcu') {
     const uzun = minik ? 3 : [2, 3, 2, 4, 3, 4, 5, 4, 4, 5, 4, 6, 5, 6, 7, 8][n];
-    metin =
-      asama === 2
-            ? 'Kurdeleyi baştan sona eşit taşlarla ölç.'
-            : 'İki kurdeleyi uç uca ölç. Boşluk bırakmadan taşlarını diz.';
-    if (asama < 2) {
-      const hedefUzunluk = (minik ? 3 : dortYas ? 4 : 5) + (t.adim % 3);
-      const dizilen = t.secimler.reduce((a,b)=>a+b,0);
-      metin=sozler[dizilen===hedefUzunluk ? 69 : 67];
-      kok.style.backgroundImage='url("'+url('matematik/dere')+'")';
-      kok.classList.add('dere-sahnesi');
-      pano.classList.add('dere-koprusu');
-      pano.style.setProperty('--birim',String(hedefUzunluk));
-      t.secimler.forEach((uzunluk,i)=>{
-        const b=buton(pano,uzunluk+' birimlik tahtayı geri al',img('matematik/ahsap-kutu'),()=>{
-          if(kilit)return;
-          t.secimler.splice(i);kaydet(k);yenile();
-        },'dosenmis-tahta');
-        b.style.width=(100*uzunluk/hedefUzunluk)+'%';
-      });
-      const araba=buton(kok,'Elma arabasını karşıya geçir',img('sef/arabali-servis/araba')+img(meyve[0]),()=>{
-        if(kilit)return;
-        if(dizilen!==hedefUzunluk){soyle(sozler[67]);ipucuHedefi(pano);return;}
-        araba.classList.add('dereyi-gec');tamam();
-      },'elma-arabasi');
-      masa.classList.add('tahta-deposu');
-      for(const uzunluk of (minik ? [1,2] : [1,2,3])){
-        const stok = uzunluk === 1 ? 1 : 2;
-        if (t.secimler.filter(v=>v===uzunluk).length >= stok) continue;
-        const dose=()=>{
-          if(kilit)return;
-          if(uzunluk+dizilen>hedefUzunluk){ipucu(b,sozler[68]);return;}
-          const bas = parcaninKonumu(b);
-          sec(uzunluk);oyna(uzunluk+dizilen===hedefUzunluk);
-          yerineOtur(bas, kok.querySelector('.dosenmis-tahta:last-child img'));
-        };
-        const b=buton(masa,uzunluk+' birimlik tahta',img('matematik/ahsap-kutu')+'<span>'+ '●'.repeat(uzunluk)+'</span>',dose,'stok-tahta');
-        b.style.width=(100*uzunluk/hedefUzunluk)+'%';
-        surukle(b,()=>pano.getBoundingClientRect(),dose);
-      }
-    } else {
-      pano.classList.add('cetvel');
-      const top = document.createElement('span');
-      top.className = 'kopru-topu';
-      top.innerHTML = img(sekil[2]);
-      pano.style.setProperty('--n', String(uzun));
-      pano.style.setProperty('--ek', (Math.floor(uzun / 2) * 100) / uzun + '%');
-      pano.innerHTML =
-        '<div class="serit ' +
-        (asama === 3 ? 'cift' : '') +
-        '"></div><div class="taslar">' +
-        Array.from(
-          { length: uzun },
-          (_, i) =>
-            '<i class="' +
-            (i < t.secimler.length ? 'var' : '') +
-            '">' +
-            (i < t.secimler.length ? img(sekil[0]) : '') +
-            '</i>',
-        ).join('') +
-        '</div>';
-      const yap = () => {
-        if (kilit) return;
-        sec(0);
-        if (t.secimler.length === uzun) {
-          const sonTas = pano.querySelector('.taslar i:not(.var)');
-          if (sonTas) {
-            sonTas.classList.add('var');
-            sonTas.innerHTML = img(sekil[0]);
-          }
-          pano.classList.add('kopru-tamam');
-          tamam(sozler[45]);
-        } else yenile();
-      };
-      const b = buton(masa, 'Bir ölçü taşı yerleştir', img(sekil[0]), yap, 'parca');
-      pano.querySelector('.taslar')!.append(top);
-      const siradaki = pano.querySelector<HTMLElement>('.taslar i:not(.var)')!;
-      siradaki.classList.add('olcu-hedefi');
-      surukle(b, () => siradaki.getBoundingClientRect(), yap);
-    }
+    metin = asama === 3
+      ? 'İki kurdeleyi uç uca ölç. Boşluk bırakmadan taşlarını diz.'
+      : 'Kurdeleyi baştan sona eşit taşlarla ölç.';
+    pano.classList.add('cetvel');
+    const top = document.createElement('span');
+    top.className = 'kopru-topu';
+    top.innerHTML = img(sekil[2]);
+    pano.style.setProperty('--n', String(uzun));
+    pano.style.setProperty('--ek', (Math.floor(uzun / 2) * 100) / uzun + '%');
+    pano.innerHTML =
+      '<div class="serit ' +
+      (asama === 3 ? 'cift' : '') +
+      '"></div><div class="taslar">' +
+      Array.from(
+        { length: uzun },
+        (_, i) =>
+          '<i class="' +
+          (i < t.secimler.length ? 'var' : '') +
+          '">' +
+          (i < t.secimler.length ? img(sekil[0]) : '') +
+          '</i>',
+      ).join('') +
+      '</div>';
+    const yap = () => {
+      if (kilit) return;
+      sec(0);
+      if (t.secimler.length === uzun) {
+        const sonTas = pano.querySelector('.taslar i:not(.var)');
+        if (sonTas) {
+          sonTas.classList.add('var');
+          sonTas.innerHTML = img(sekil[0]);
+        }
+        pano.classList.add('kopru-tamam');
+        tamam(sozler[45]);
+      } else yenile();
+    };
+    const b = buton(masa, 'Bir ölçü taşı yerleştir', img(sekil[0]), yap, 'parca');
+    pano.querySelector('.taslar')!.append(top);
+    const siradaki = pano.querySelector<HTMLElement>('.taslar i:not(.var)')!;
+    siradaki.classList.add('olcu-hedefi');
+    surukle(b, () => siradaki.getBoundingClientRect(), yap);
   } else {
     const adet = minik ? (t.adim < 4 ? 1 : 2) : dortYas ? Math.min(3, 2 + asama) : 2 + asama,
       seq = Array.from(
@@ -1601,11 +1616,14 @@ function duraklamayiGuncelle() {
   duraklatildi = bekle;
   if (bekle) {
     oturum++;
-    if (sahne === 'tangram') { sahneyiKapat?.(); sahneyiKapat=undefined; }
+    if (sahne === 'tangram' || sahne === 'misket') { sahneyiKapat?.(); sahneyiKapat=undefined; }
     boncukSesiniKes();
     clearTimeout(timer);
     clearTimeout(yardimSaati);
     susArtik();
+  } else if (sahne === 'misket') {
+    if (kok.dataset.bitti) oyna(true);
+    else misketiAc();
   } else if (sahne === 'tangram') {
     if (durum.sekil.adim === son) hatirayiGoster();
     else gezginiAc();

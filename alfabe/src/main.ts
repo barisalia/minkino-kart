@@ -1,3 +1,4 @@
+import { erisimVarMi, kilitGoster } from '../../src/abonelik/kilit';
 import { harfKutusuKur } from './harf-kutusu';
 import { hayvanOyunuKur } from './harf-hayvan';
 import { hecePanoKur } from './hece-pano';
@@ -121,6 +122,8 @@ function rafGoster() {
   alan.querySelector<HTMLButtonElement>('.at-hece-dinle')!.onclick = () => cerenKonus('hece-kart-tanitim');
   alan.querySelector<HTMLButtonElement>('.at-album-ac')!.onclick = () => albumGoster();
   alan.querySelectorAll<HTMLButtonElement>('.at-harf').forEach(b => b.onclick = () => dersAc(b.dataset.id!));
+  // ilk 4 harf ücretsiz, diğerleri premium (src/engine/erisim.ts → alfabe/harf-NN): kilit rozeti
+  alan.querySelectorAll<HTMLButtonElement>('.at-harf').forEach(b => kilitGoster(b, 'alfabe/harf-' + b.dataset.id));
   if(dosyada){
     const sec=document.createElement('select');
     sec.className='at-yas-sec';sec.setAttribute('aria-label','Yaş grubu');
@@ -147,6 +150,7 @@ function rafGoster() {
   }
 }
 function dersAc(id: string) {
+  if (!erisimVarMi('alfabe/harf-' + id, document.body)) return;
   ders = dersler.find(h => h.id === id)!;
   kayit.son = id;
   if (kayit.bekleyen.includes(id)) { sonucGoster(); return; }
@@ -199,9 +203,11 @@ function heceGoster() {
   alan.querySelector<HTMLButtonElement>('.at-geri')!.onclick=rafGoster;
   alan.querySelector<HTMLButtonElement>('[data-dal=trambolin]')!.onclick=()=>heceDali('trambolin');
   alan.querySelector<HTMLButtonElement>('[data-dal=pano]')!.onclick=()=>heceDali('pano');
+  kilitGoster(alan.querySelector<HTMLButtonElement>('[data-dal=pano]')!, 'alfabe/hece-pano');
   odak();
 }
 function heceDali(dal:'pano'|'trambolin'){
+  if(!erisimVarMi('alfabe/hece-'+dal,document.body))return;
   temizle();ekran=dal;isaretle();
   alan.innerHTML=ust(dal==='pano'?'Manyetik Hece Bulmacası':'Hece Trambolini','')+'<section class="at-hece-oyun-alani"></section>';
   const don=kucukGrup?rafGoster:heceGoster;

@@ -38,7 +38,7 @@ export function icecekUyumu(istenen:Meyve,secilen:Meyve,doluluk:2|3):Yildiz {
 }
 interface Menu { tatliFisi?:Pick<Masa,'kekFisi'|'tartIstegi'|'sutlacIstegi'>; id:string; misafir:SiparisMisafiri; parcalar:readonly Parca[]; cumle:string; renk:string; icecekIstegi?:Meyve; smoothie?:MeyveCifti; bardakIstegi?:BardakIstegi; pizzaFisi?:PizzaFisi }
 export const menuler:readonly Menu[]=[
-  {id:'seftali-makarna',misafir:'seftali',parcalar:['makarna'],cumle:'Şeftali Patisi fiyonk makarna istiyor.',renk:'#ffdcc1'},
+  {id:'seftali-makarna',misafir:'seftali',parcalar:['makarna'],cumle:'Mila fiyonk makarna istiyor.',renk:'#ffdcc1'},
   {id:'tavsan-salata',misafir:'tavsan',parcalar:['salata'],cumle:'Kino’nun tavşan arkadaşı bahçe salatası istiyor.',renk:'#c9ead8'},
   {id:'zipzip-makarna',misafir:'zipzip',parcalar:['makarna'],cumle:'Zıpzıp fiyonk makarna istiyor.',renk:'#abe4d2'},
   {id:'bulut-krep',misafir:'bulut',parcalar:['krep'],cumle:'Bulut meyveli krep istiyor.',renk:'#e4d3ff'},

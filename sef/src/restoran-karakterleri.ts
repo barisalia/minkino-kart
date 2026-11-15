@@ -11,7 +11,7 @@ export type RestoranKarakteri = typeof restoranKarakterleri[SiparisMisafiri];
 export const karakterAdlari: Record<RestoranKarakteri, string> = {
   lokum: 'Lokum', mino: 'Mino', dede: 'Dede Hasan', kino: 'Kino',
   anne: 'Anne', baba: 'Baba Murat', babaanne: 'Babaanne Nazlı',
-  seftali: 'Şeftali Patisi', tavsan: 'Tavşan', zipzip: 'Zıpzıp', bulut: 'Bulut',
+  seftali: 'Mila', tavsan: 'Tavşan', zipzip: 'Zıpzıp', bulut: 'Bulut',
 };
 
 export function misafirAdi(misafir: SiparisMisafiri) {
@@ -19,7 +19,7 @@ export function misafirAdi(misafir: SiparisMisafiri) {
 }
 
 export const arkadasAgizlari = {
-  bulut: [.52, .38], seftali: [.41, .57], tavsan: [.61, .51], zipzip: [.55, .45],
+  bulut: [.52, .38], seftali: [.32, .58], tavsan: [.61, .51], zipzip: [.55, .45],
 } as const;
 export function salonArkadasi(kim:RestoranKarakteri):kim is keyof typeof arkadasAgizlari {
   return Object.hasOwn(arkadasAgizlari,kim);

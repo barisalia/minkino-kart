@@ -86,6 +86,7 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   // kartlar: önce yanlış (zürafa: kendini anlatır, soluklaşır), sonra doğru
   await adimBekle(page, /^kart$/);
   await expect(page.locator('.dd-kart')).toHaveCount(3);
+  await expect(page.locator('.dd-kart[data-kart="kedi"] img').first()).toHaveAttribute('src', /dedektif-yeni\/kart-kedi-patisi\.webp/);
   await expect(page.locator('.dd-delil .dd-delil-foto')).toBeVisible();
   await page.waitForTimeout(200);
   await page.screenshot({ path: `tests/screens/dedektif-halka${ad === 'iphone' ? '' : '-' + ad}.png` });
@@ -150,6 +151,7 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   // Ödül: 4 kareli çizgi roman, "Çözüldü!" mührü, kayıt
   await adimBekle(page, /^bitti$/, 40_000);
   await expect(page.locator('.dd-kare.geldi')).toHaveCount(4);
+  await expect(page.locator('.dd-kare.geldi img[src*="dedektif-yeni/roman-"]')).toHaveCount(4);
   await expect(page.locator('.dd-roman .dd-muhur.bas')).toBeVisible();
   await page.waitForTimeout(500);
   await page.screenshot({ path: `tests/screens/dedektif-cizgi-roman${ad === 'iphone' ? '' : '-' + ad}.png` });

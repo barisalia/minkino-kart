@@ -74,10 +74,13 @@ export async function revenueCatSaglayici(p: Platform, anahtar: string): Promise
       for (const id of ['aylik', 'yillik'] as const) {
         const u = paketler[id]?.product;
         if (!u) continue;
+        // ücretli giriş teklifi (lansman indirimi, App Store "Introductory Offer"): teklif fiyatı gösterilir, asıl fiyat üstü çizili
+        const ip = u.introPrice && u.introPrice.price > 0 ? u.introPrice : null;
         sonuc.push({
           id,
-          fiyat: u.priceString,
-          ayBasi: id === 'yillik' ? (u.pricePerMonthString ?? ayaBol(u.price, u.currencyCode)) : null,
+          fiyat: ip ? ip.priceString : u.priceString,
+          ...(ip ? { normal: u.priceString } : {}),
+          ayBasi: id === 'yillik' ? (ip ? ayaBol(ip.price, u.currencyCode) : (u.pricePerMonthString ?? ayaBol(u.price, u.currencyCode))) : null,
           denemeGun: gosterilecekDeneme(deneme(u), ios, hak[u.identifier]),
         });
       }

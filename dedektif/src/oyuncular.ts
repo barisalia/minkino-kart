@@ -1,3 +1,4 @@
+import { adimOynat } from './adim';
 /**
  * Dedektif Mino'nun oyuncuları (ekranın önünde duran sunucular): Mino (dedektif şapkalı, src/mino), Kino (iskelet) ve
  * Pamuk (iskelet: assets/karakter-iskelet/pamuk). Boylar tek tablodan (src/karakter/boy.ts): Kino Mino'nun 0.74'ü,
@@ -6,12 +7,12 @@
  * Konuşma sırayla: Mino = anlatıcı sesi; Kino = kendi sesi (dudak senkronu); kart hayvanları ve Pamuk anlatıcının
  * tonlu sesi. Söz, konuşanın başının üstünde kısa bir balonda yazar.
  */
-import { KINO_SESI, konus } from '../../src/audio/ses';
+import { KINO_SESI } from '../../src/audio/ses';
 import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
 import { altPayi, boyGenislik, CIZIM } from '../../src/karakter/boy';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
 import { Mino, minoDedektifYukle, type Tepki } from '../../src/mino/mino';
-import { MINO_DONGU_YOLU, MINO_KUTU_GENISLIK, YuruyenMino } from '../../src/mino/mino-profil';
+import { YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
 import { BalonNobeti, tekTekrar } from './konusma-sira';
@@ -162,7 +163,6 @@ export class Oyuncular {
     const is = this.sira.then(async () => {
       if (this.kapali) return;
       const metin = (Array.isArray(soz) ? soz : [soz]).filter(Boolean).join(' ');
-      const secenek: KonusmaSecenegi = ton ? { ...SES[kim], ton } : SES[kim];
       this.son = { soz, kim, ton };
       const bs = balonSahibi(kim);
       const b = bs ? this.balonlar[bs] : null;
@@ -187,7 +187,7 @@ export class Oyuncular {
       if (bs === 'pamuk') this.pamuk?.konus(true);
       this.mino.agizSus = kim !== 'mino';
       try {
-        await konus(soz, secenek);
+        await new Promise<void>(tamam => window.setTimeout(tamam, sure(Math.max(1000, metin.length * 63))));
         if (TEST_MODU) await new Promise((r) => setTimeout(r, 10));
       } finally {
         this.mino.agizSus = false;
@@ -275,6 +275,7 @@ export class Oyuncular {
   /** Kino'nun duruşu (Kino iskeletinin katmanları): düşünür, kalk, işaret, otur */
   kinoPoz(p: KinoPoz) {
     const k = this.kino;
+    k.el.dataset.poz = p ?? 'dur';
     const var_ = (id: string) => !!k.parcaG(id);
     const dusun = p === 'dusun' && var_('goz-dusun');
     for (const id of ['goz-dusun', 'agiz-dusun', 'kol-sag-dusun']) k.ek(id, dusun);
@@ -341,15 +342,18 @@ export class Oyuncular {
     const yarida = surenler.some((x) => x.playState === 'running');
     const simdi = yarida ? getComputedStyle(hareket).transform : 'none';
     surenler.forEach((x) => x.cancel());
+    const yuru = kim !== 'pamuk' && Math.abs(dx-x0) > 3;
+    const dur = yuru ? adimOynat(kim==='kino'?this.kino.el.parentElement!:this.yuruyen.el, kim, dx<x0, sure(ms)) : undefined;
     const a = hareket.animate(
       [
         { transform: yarida && simdi !== 'none' ? simdi : `translate(${x0}px, ${y0}px)` },
-        { transform: `translate(${(x0 + dx) / 2}px, ${Math.min(y0, dy) - (AZ_HAREKET ? 0 : yay)}px) rotate(${yon * 3}deg)`, offset: 0.5 },
+        { transform: `translate(${(x0 + dx) / 2}px, ${(yuru ? (y0+dy)/2 : Math.min(y0,dy) - (AZ_HAREKET ? 0 : yay))}px) rotate(${yuru ? 0 : yon * 3}deg)`, offset: 0.5 },
         { transform: `translate(${dx}px, ${dy}px)` },
       ],
       { duration: sure(AZ_HAREKET ? 200 : ms), easing: 'cubic-bezier(.45,.1,.4,1)', fill: 'forwards' },
     );
     await a.finished.catch(() => undefined);
+    dur?.();
   }
   /**
    * Mino yandan yürüyerek gelir: ekranda dx px uzaktan (eksi: soldan) yerine; adımlar yola göre (pati kaymaz).
@@ -357,18 +361,12 @@ export class Oyuncular {
    */
   async minoYuruyerekGel(dx: number, ms = 1600) {
     const el = this.minoHareket;
-    const genis = this.minoYer.offsetWidth || 1;
-    const sn = sure(ms) / 1000;
-    const dongu = (Math.abs(dx) / genis) * (MINO_KUTU_GENISLIK / MINO_DONGU_YOLU);
-    this.yuruyen.el.classList.toggle('sola', dx > 0);
-    const yandan = !AZ_HAREKET && this.yuruyen.yuru(Math.min(4.5, Math.max(1.2, dongu / Math.max(0.1, sn))));
-    if (!yandan) return this.kaydir('mino', 0, 0, ms, 30);
+    const dur = adimOynat(this.yuruyen.el, 'mino', dx > 0, sure(ms));
     this.konumlar.set(this.minoYer, [0, 0]);
     el.getAnimations().forEach((x) => x.cancel());
     const a = el.animate([{ transform: `translate(${dx}px, 0)` }, { transform: 'translate(0, 0)' }], { duration: sure(ms), easing: 'linear', fill: 'forwards' });
     await a.finished.catch(() => undefined);
-    this.yuruyen.dur();
-    this.yuruyen.el.classList.remove('sola');
+    dur();
   }
 
   /** Yerinde zıplama (esneyip basılır) */

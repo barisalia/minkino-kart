@@ -86,7 +86,12 @@ export function sayiKulesi({ kok, img, anlat, say, sonra, dinle }: Sahne, bitir:
   let secili = 0, kilit = false, tutulan = -1;
   const sinir = (v:number, a:number,b:number) => Math.max(a,Math.min(v,b));
   const boya = ['#ac3c30','#196e71','#42579c','#993f69','#427443'];
-  const icerik = (n:number) => img('matematik/kule-kutusu') + '<b style="color:'+boya[(n-1)%5]+'">'+n+'</b>';
+  function icerik(n: number) {
+    const noktalar = '<i></i>'.repeat(n);
+    return img('matematik/kule-kutusu') + '<span class="kutu-baskisi" style="color:' +
+      boya[(n - 1) % boya.length] + '"><b>' + n + '</b><span class="kutu-noktalari" aria-hidden="true">' +
+      noktalar + '</span></span>';
+  }
   function kur() {
     saha.replaceChildren();
     secili = 0; tutulan = -1;
@@ -157,7 +162,8 @@ export function sayiKulesi({ kok, img, anlat, say, sonra, dinle }: Sahne, bitir:
       }
     }
     hedef.onclick=()=>{if(secili===sonraki) yerlestir(secili,destekX,ust); else say(sonraki);};
-    for(let n=sonraki;n<=10;n++){
+    const gorunenKutu = minik ? 3 : dortYas ? 5 : 10;
+    for(let n=sonraki;n<=Math.min(10, sonraki + gorunenKutu - 1);n++){
       const yer=t.yerler[n-1], b=dugme(saha,n+' numaralı kutu','raf-kutusu',icerik(n));
       koy(b,yer.x,yer.y*h); b.style.rotate=yer.aci+'deg'; b.dataset.kutu=String(n);
       let px=0,py=0, tasindi=false;

@@ -1,4 +1,5 @@
-import {misafirAdi,type SiparisMisafiri} from './restoran-karakterleri';
+import { erisimVarMi } from '../../src/abonelik/kilit';
+import {misafirAdi,restoranKarakterleri,salonArkadasi,type SiparisMisafiri} from './restoran-karakterleri';
 import {icinde,jest,type Nokta} from './hareket';
 import {dekorResmi} from './dekor-magazasi';
 import {bitisAdi,bitisIstegi,bitisResmi,bitisTadimi,corbaBitisiMi} from './corba-bitisi';
@@ -432,6 +433,8 @@ export function masayiCiz(alan:HTMLElement,a:Ayar):()=>void{
     }
     sahne.append(gunSonuEkrani(t.gun.no,t.gun.kazanc,()=>{
       if(!t.gun.kapandi)return;
+      // ilk 3 gün ücretsiz; sonraki gün premium (src/engine/erisim.ts → restoran/gun-N)
+      if(!erisimVarMi(`restoran/gun-${t.gun.no+1}`,sahne))return;
       const oneri=t.gun.oneri;
       for(const id of t.salonKoltuklari??[]){
         if(id){a.yeniMasaTezgahi(id);delete t.masalar[id];}
@@ -800,6 +803,11 @@ export function masayiCiz(alan:HTMLElement,a:Ayar):()=>void{
     }
     const yorumSahibi=aile&&[salonReplikleri['anne-bardak-tam'],salonReplikleri['anne-bardak-az'],salonReplikleri['anne-bardak-renk']].includes(s)?'anne':menu.misafir;
     if(s==='Fişteki bir yemek tepside eksik.'&&!misafirKaydiVar(yorumSahibi,s)){a.soyle(s);return;}
+    if(salonArkadasi(restoranKarakterleri[yorumSahibi])&&!misafirKaydiVar(yorumSahibi,s)){
+      if(puan===3)servisTepkisiniCal(yorumSahibi,'begendi');
+      else void restoranSiparisiniSoyle(yorumSahibi,sesliMenuId??menu.id);
+      return;
+    }
     void misafirCumlesi(yorumSahibi,s,sahne.querySelector('dialog[open]')?'istek':'tesekkur');
   };
   const sofradaki=masa.teslimAlan??menu.misafir;

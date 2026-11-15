@@ -549,10 +549,11 @@
 
 /* ---------------------------------------------------------------- kilit rozeti (kilitli kart / bölüm) */
 /* düşük öncelik (:where): kendi konumu olan kartları (ör. position:absolute ile konumlanan bölüm kartları) bozmaz */
-.mk-kok :where(button[data-kilitli]) {
+:where(button[data-kilitli]) {
   position: relative;
 }
-.mk-kok .mk-kilit {
+.mk-kilit {
+  /* her oyunda (yalnız .mk-kok içinde değil) aynı küçük rozet */
   position: absolute;
   z-index: 3;
   top: 8px;
@@ -564,17 +565,19 @@
   border-radius: 50%;
   /* yumuşak, korkutmayan rozet: krem zemin, altın renkli küçük kilit, hafif eğik (hazine sandığı gibi) */
   background: radial-gradient(circle at 35% 28%, #ffffff 0%, #fff6dc 55%, #ffe8a8 100%);
-  border: 3px solid color-mix(in srgb, var(--kontur) 80%, #fff);
-  box-shadow: 0 3px 0 var(--kontur-yumusak), 0 4px 10px rgba(90, 54, 23, 0.12);
+  border: 3px solid color-mix(in srgb, var(--kontur, #5a3617) 80%, #fff);
+  box-shadow: 0 3px 0 var(--kontur-yumusak, rgba(90, 54, 23, 0.35)), 0 4px 10px rgba(90, 54, 23, 0.12);
   rotate: -8deg;
   pointer-events: none;
 }
-.mk-kok .mk-kilit .ikon {
+.mk-kilit .ikon {
   font-size: 20px;
 }
-.mk-kok .mk-kilit .ikon svg {
+.mk-kilit svg {
+  width: 20px;
+  height: 20px;
   color: #f2b53a;
-  stroke: color-mix(in srgb, var(--kontur) 85%, #fff);
+  stroke: color-mix(in srgb, var(--kontur, #5a3617) 85%, #fff);
 }
 
 /* ---------------------------------------------------------------- inceleme kodu (src/abonelik/inceleme.ts) */

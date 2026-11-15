@@ -7,8 +7,7 @@
  *
  * yer: yer tutucunun konumu (resmin oranı). Resim gelince kitap-isle.cjs'in ölçtüğü yer (yerlesim.json) geçer.
  * tam: yalnız tam sayfa çizimi varken dokunma bölgeleri ve çizimdeki uğur böceği (merkezi); ölçüler çizimlerden elle
- * (sayfa resminin oranı). 2026-10-17: Gemini'nin yeniden çizdiği 2752×1536 sayfalara göre yeniden ölçüldü (01, 05-14
- * eskisinin aynası; karakterler yer değiştirdi). s04 Zıpzıp ve s11 Tombi çizimde yok: o anlar tam sayfada oynamaz.
+ * (sayfa resminin oranı). Bölgeler güncel okul çizimlerinde görülüp ölçülen nesneleri izler.
  */
 import type { Adim, KatmanTanim, Kutu, SayfaCanli } from './tipler';
 
@@ -31,7 +30,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'kuyruk', dokun: [], bosta: 6500, adimlar: pervane('kino', 4) },
     ],
     ugur: [0.71, 0.2],
-    tam: { ugur: [0.602, 0.057], yerler: { kino: [0.37, 0.33, 0.27, 0.63] } },
+    tam: { ugur: [0.17, 0.79], yerler: { kino: [0.44, 0.19, 0.34, 0.77] } },
   },
   // s01: kuyruk pervane; düğmeleri ararken kendi etrafında döner; Lokum esner. Uğur: pencere pervazı.
   1: {
@@ -46,7 +45,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'esne', dokun: ['lokum'], adimlar: [{ k: 'lokum', poz: 2, ms: 300 }, { k: 'lokum', poz: 3, ef: 'esne', ms: 900 }, { k: 'lokum', poz: 4, ms: 600 }, { k: 'lokum', poz: 1, ms: 10 }] },
     ],
     ugur: [0.83, 0.22],
-    tam: { ugur: [0.333, 0.227], yerler: { kino: [0.64, 0.15, 0.24, 0.8], lokum: [0.06, 0.28, 0.22, 0.5] } },
+    tam: { ugur: [0.22, 0.67], yerler: { kino: [0.56, 0.04, 0.37, 0.89], lokum: [0.06, 0.23, 0.29, 0.54] } },
   },
   // s02: Baba horlar, "Çay?" deyince sıçrar; Lokum çantayla popo üstü oturur; gizli: çantaya dokununca "Şşş!".
   2: {
@@ -62,7 +61,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'sir', dokun: ['bolge:canta'], adimlar: [{ k: 'lokum', poz: 5, ms: 800 }, { k: 'lokum', poz: 6, soz: { kim: 'lokum', metin: '[whispers] Şşş!' }, ms: 1300 }, { k: 'lokum', poz: 1, ms: 10 }] },
     ],
     ugur: [0.45, 0.5],
-    tam: { ugur: [0.523, 0.525], yerler: { baba: [0.1, 0.17, 0.25, 0.7], lokum: [0.8, 0.62, 0.1, 0.32], 'bolge:canta': [0.69, 0.66, 0.11, 0.26] } },
+    tam: { ugur: [0.52, 0.58], yerler: { baba: [0.05, 0.04, 0.31, 0.9], lokum: [0.6, 0.38, 0.23, 0.56], 'bolge:canta': [0.84, 0.37, 0.13, 0.53] } },
   },
   // s03: Mino hoplar; Kino göğsünü gerer, sendeler; çantadan sarkan kulak sallanır.
   3: {
@@ -85,7 +84,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'kulak', dokun: [], bosta: 4300, adimlar: [{ k: 'anne-kino', parca: ['kuzu-kulak', 2], ms: 200 }, { k: 'anne-kino', parca: ['kuzu-kulak', 3], ms: 200 }, { k: 'anne-kino', parca: ['kuzu-kulak', 1], ms: 10 }] },
     ],
     ugur: [0.85, 0.12],
-    tam: { ugur: [0.089, 0.104], yerler: { mino: [0.1, 0.36, 0.22, 0.57], 'anne-kino': [0.65, 0.36, 0.22, 0.57] } },
+    tam: { ugur: [0.06, 0.93], yerler: { mino: [0.05, 0.24, 0.28, 0.66], 'anne-kino': [0.36, 0.04, 0.53, 0.93] } },
   },
   // s04: kuyruk yavaşça iner; Kino tek gözle bakar, saklanır, kulak kıpırdar; Zıpzıp zıplayarak geçer.
   4: {
@@ -109,7 +108,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.2, 0.16],
-    tam: { ugur: [0.554, 0.109], yerler: { kino: [0.32, 0.53, 0.16, 0.41], anne: [0.2, 0.05, 0.12, 0.88] } },
+    tam: { ugur: [0.11, 0.77], yerler: { kino: [0.225, 0.48, 0.097, 0.22], anne: [0.32, 0.02, 0.17, 0.94] } },
   },
   // s05: her dokunuşta bir parmak (bir, iki, üç); sonra Anne burnuna dokunur, kulaklar bir an kalkar.
   5: {
@@ -123,7 +122,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.3, 0.64],
-    tam: { ugur: [0.288, 0.652], yerler: { 'anne-kino': [[0.54, 0.3, 0.2, 0.65], [0.44, 0.47, 0.1, 0.2], [0.27, 0.08, 0.23, 0.37]] } },
+    tam: { ugur: [0.9, 0.75], yerler: { 'anne-kino': [0.12, 0.02, 0.68, 0.94] } },
   },
   // s06: ayağıyla daire çizer; askıdaki resme bakar; çanta sallanır, içinden Kuzu "pat" diye düşer.
   6: {
@@ -154,7 +153,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.14, 0.14],
-    tam: { ugur: [0.313, 0.269], yerler: { kino: [0.39, 0.3, 0.17, 0.64], canta: [0.575, 0.32, 0.165, 0.46], 'bolge:resim': [0.46, 0.05, 0.075, 0.14] } },
+    tam: { ugur: [0.56, 0.69], yerler: { kino: [0.18, 0.04, 0.37, 0.93], canta: [0.72, 0.25, 0.16, 0.34] } },
   },
   // s07: Kino Kuzu'ya fısıldar, dikişli kulağını kaldırır; kuyruğu yavaşça kalkar.
   7: {
@@ -164,7 +163,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'fisilda', dokun: ['kino-kuzu'], adimlar: [{ k: 'kino-kuzu', poz: 2, soz: { kim: 'kino', metin: '[whispers] Korkma, Kuzu. Bak.' }, ms: 1100 }, { k: 'kino-kuzu', poz: 3, ef: 'kipir', ms: 1000 }, { k: 'kino-kuzu', poz: 1, ms: 10 }] },
     ],
     ugur: [0.31, 0.9],
-    tam: { ugur: [0.558, 0.826], yerler: { 'kino-kuzu': [0.37, 0.08, 0.51, 0.85] } },
+    tam: { ugur: [0.86, 0.61], yerler: { 'kino-kuzu': [0.19, 0.02, 0.62, 0.97] } },
   },
   // s08: Bulut'un kulakları bir an kalkar; Kino ilk bloğu uzatır; Bulut utanarak gülümser, yünü kabarır.
   8: {
@@ -178,7 +177,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.5, 0.82],
-    tam: { ugur: [0.473, 0.652], yerler: { kino: [0.59, 0.17, 0.23, 0.66], bulut: [0.2, 0.25, 0.24, 0.59] } },
+    tam: { ugur: [0.09, 0.9], yerler: { kino: [0.05, 0.06, 0.48, 0.87], bulut: [0.55, 0.05, 0.39, 0.86] } },
   },
   // s09: kule bir sağa bir sola sallanır, devrilir (GÜM); Kino'nun kulakları dikilir; bloklar saçılır; sınıf döner.
   9: {
@@ -219,7 +218,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.49, 0.42],
-    tam: { ugur: [0.393, 0.331], yerler: { kule: [[0.32, 0.07, 0.395, 0.85], [0.715, 0.13, 0.21, 0.79], [0.06, 0.37, 0.25, 0.57]] } },
+    tam: { ugur: [0.92, 0.16], yerler: { kule: [[0.42, 0.03, 0.16, 0.88], [0.1, 0.23, 0.27, 0.7], [0.59, 0.2, 0.28, 0.73]] } },
   },
   // s10: çocuklar "Bir daha!" diye zıplar; Kino'nun kuyruğu pervane; Tombi bloğu ısırmaya kalkar, geri bırakır.
   10: {
@@ -252,7 +251,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'tombi', dokun: ['tombi'], adimlar: [{ k: 'tombi', poz: 2, ms: 700 }, { k: 'tombi', poz: 3, ms: 800 }, { k: 'tombi', poz: 4, ef: 'ez', ms: 800 }, { k: 'tombi', poz: 1, ms: 10 }] },
     ],
     ugur: [0.52, 0.08],
-    tam: { ugur: [0.41, 0.769], yerler: { mino: [0.22, 0.21, 0.18, 0.49], bulut: [0.74, 0.23, 0.2, 0.61], kino: [0.42, 0.22, 0.2, 0.54], tombi: [0.05, 0.42, 0.17, 0.46] } },
+    tam: { ugur: [0.13, 0.92], yerler: { mino: [0.05, 0.16, 0.27, 0.7], kino: [0.34, 0.14, 0.3, 0.7], bulut: [0.65, 0.14, 0.28, 0.7] } },
   },
   // s11: Kino iki parmağını kaldırır, kuyruğu sallanır; pişiler tek tek arkadaşların eline geçer; Tombi tek lokmada.
   11: {
@@ -279,7 +278,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.46, 0.82],
-    tam: { ugur: [0.508, 0.406], yerler: { kino: [[0.69, 0.18, 0.18, 0.7], [0.615, 0.33, 0.075, 0.09]], 'bolge:kutu': [0.48, 0.42, 0.21, 0.25] } },
+    tam: { ugur: [0.16, 0.89], yerler: { kino: [0.25, 0.01, 0.38, 0.7], 'bolge:kutu': [0.26, 0.7, 0.38, 0.25] } },
   },
   // s12: Anne el sallar, Kino dönmez; Kino son bloğu koyar (kule yıkılmaz), döner ve kulakları uçuşarak Anne'ye koşar.
   12: {
@@ -307,7 +306,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.67, 0.06],
-    tam: { ugur: [0.242, 0.369], yerler: { anne: [0.64, 0.2, 0.28, 0.67], kino: [[0.33, 0.36, 0.21, 0.53], [0.21, 0.39, 0.065, 0.53]] } },
+    tam: { ugur: [0.93, 0.85], yerler: { anne: [0.04, 0.05, 0.35, 0.78], kino: [0.56, 0.34, 0.31, 0.57] } },
   },
   // s13: Lokum Kuzu'ya sarılır; her dokunuşta Kino bir parmağını açar; Lokum her parmakta kıkırdar.
   13: {
@@ -326,7 +325,7 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       },
     ],
     ugur: [0.86, 0.72],
-    tam: { ugur: [0.865, 0.53], yerler: { 'kino-lokum': [0.29, 0.18, 0.46, 0.74] } },
+    tam: { ugur: [0.13, 0.61], yerler: { 'kino-lokum': [0.1, 0.03, 0.78, 0.93] } },
   },
   // s14: Kino'nun burnu nefesle kıpırdar, sarkık kulağı sallanır; Baba hırka örter; Lokum bir gözünü açıp kapar.
   14: {
@@ -343,6 +342,6 @@ export const OKUL_CANLI: Record<number, SayfaCanli> = {
       { id: 'goz', dokun: ['lokum'], adimlar: [{ k: 'lokum', poz: 2, ms: 550 }, { k: 'lokum', poz: 1, ms: 300 }, { k: 'lokum', poz: 2, ms: 450 }, { k: 'lokum', poz: 1, ms: 10 }] },
     ],
     ugur: [0.5, 0.05],
-    tam: { ugur: [0.448, 0.131], yerler: { kino: [0.44, 0.46, 0.19, 0.49], baba: [0.66, 0.25, 0.25, 0.7], lokum: [0.285, 0.5, 0.12, 0.42] } },
+    tam: { ugur: [0.88, 0.18], yerler: { kino: [0.5, 0.38, 0.38, 0.44], baba: [0.11, 0.02, 0.39, 0.78] } },
   },
 };

@@ -112,7 +112,7 @@ class Vaka {
     this.dunya = new Dunya((w, hh) => this.guvenli(w, hh));
     this.ara = h('div.dd-ara');
     const geri = yuvarlakDugme(IKON.geri, 'Geri', () => this.app.git('acilis'), 'kucuk dd-geri');
-    const tekrar = yuvarlakDugme(IKON.tekrar, 'Tekrar dinle', () => this.oy.tekrar(), 'kucuk dd-tekrar');
+    const tekrar = yuvarlakDugme(IKON.tekrar, 'Son ipucunu tekrar göster', () => this.oy.tekrar(), 'kucuk dd-tekrar');
     const sesD = sesDugmesi();
     sesD.classList.add('kucuk');
     this.el = h(

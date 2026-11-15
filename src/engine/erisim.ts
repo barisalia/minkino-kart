@@ -15,8 +15,49 @@ import { kilitlerEtkin } from '../kabuk/ortam';
 export type Erisim = 'ucretsiz' | 'abonelik';
 
 export const ERISIM: Record<string, Erisim> = {
-  // Kartlar: bütünüyle ücretsiz
-  kartlar: 'ucretsiz',
+  // ---- Barış 2026-11-16: yeni düzen. Eski oyunlar bütünüyle premium; ana oyun ve etkinliklerde başı ücretsiz.
+  // Eski oyunlar (tanıtımda yok, deneme yok): Bil Bakalım, Pazar, Çiz Canlansın, Sesli Maceralar, Giysin, Otobüs
+  kartlar: 'abonelik',
+  macera: 'abonelik',
+  giysin: 'abonelik',
+  otobus: 'abonelik',
+  // Minik Dostlarım (pati-yeni): ilk 3 gün ücretsiz, 4. günden sonrası premium (pati-yeni/main.js 'uyu')
+  pati: 'ucretsiz',
+  'pati/gun-1': 'ucretsiz',
+  'pati/gun-2': 'ucretsiz',
+  'pati/gun-3': 'ucretsiz',
+  // Minik Şef: en güzel oyun, bol ücretsiz: ilk 3 gün (restoran/gun-N, aşağıda), sonrası premium
+  sef: 'ucretsiz',
+  'restoran/gun-3': 'ucretsiz',
+  // Kino'yla Sen Seç: 1. bölüm (Kino'nun Bir Günü) ücretsiz, Fırtına Geliyor premium
+  'kino-ile-sen-sec': 'ucretsiz',
+  'kino-ile-sen-sec/bir-gun': 'ucretsiz',
+  'kino-ile-sen-sec/*': 'abonelik',
+  // Harf Atölyesi: A, B, C, Ç ücretsiz; hece oyunlarından Trambolin ücretsiz, Manyetik Pano premium
+  alfabe: 'ucretsiz',
+  'alfabe/harf-01': 'ucretsiz',
+  'alfabe/harf-02': 'ucretsiz',
+  'alfabe/harf-03': 'ucretsiz',
+  'alfabe/harf-04': 'ucretsiz',
+  'alfabe/hece-trambolin': 'ucretsiz',
+  'alfabe/*': 'abonelik',
+  // Matematik Atölyesi: Sayı masası ücretsiz; Şekil, Ölçü, Fener premium
+  matematik: 'ucretsiz',
+  'matematik/sayi': 'ucretsiz',
+  'matematik/*': 'abonelik',
+  // Okula Hazırlanalım: ilk 2 okul günü ücretsiz, sonrası premium
+  hazirlik: 'ucretsiz',
+  'hazirlik/gun-1': 'ucretsiz',
+  'hazirlik/gun-2': 'ucretsiz',
+  'hazirlik/*': 'abonelik',
+  // İlk İngilizcem: bütünüyle premium (içerik gelişiyor)
+  ingilizce: 'abonelik',
+  // Kitaplar: Okula Başlıyor, Doktora Gidiyor, Kurabiye Yapıyor ücretsiz; diğerleri premium
+  kitap: 'ucretsiz',
+  'kitap/okul': 'ucretsiz',
+  'kitap/doktor': 'ucretsiz',
+  'kitap/kurabiye': 'ucretsiz',
+  'kitap/*': 'abonelik',
   // Video çizgi filmler (izle/, src/video/videolar.ts; Barış 2026-11-10: menüde yalnız Bisiklet): Bisiklet ücretsiz
   'izle/kino-bisiklet': 'ucretsiz',
   'izle/*': 'abonelik',
@@ -26,8 +67,7 @@ export const ERISIM: Record<string, Erisim> = {
   // Kino ve Ailesi (Seri 2, Çizgi Filmler içinde yeni dizi; ÖNERİ, menüde değil: film/src/film2/katalog.ts → SERI2_MENUDE):
   // Bölüm 1 ücretsiz, gerisi 'film/*' ile abonelikle
   'film/seri2-bolum-01': 'ucretsiz',
-  // Sesli Maceralar: yalnız "Elektrikler Kesildi!" ücretsiz
-  'macera/elektrik': 'ucretsiz',
+  // Sesli Maceralar: bütünüyle premium (yukarıda)
   'macera/*': 'abonelik',
   // Bütünüyle abonelikle
   pazar: 'abonelik',
@@ -43,20 +83,16 @@ export const ERISIM: Record<string, Erisim> = {
   'dedektif/vaka2': 'abonelik',
   'dedektif/vaka3': 'abonelik',
   'dedektif/*': 'abonelik',
-  // Kino Ne Giysin?: ilk mevsim (Kış · Kardan adam) ücretsiz, diğer mevsimler abonelikle
-  'giysin/kis': 'ucretsiz',
+  // Kino Ne Giysin?: bütünüyle premium (yukarıda)
   'giysin/*': 'abonelik',
   // Kino'nun Otobüsü: Gün 1 (Mino'lu öğretici, akşam sayımı, ilk iki otobüs süsü) ücretsiz; Gün 2-3 ve kalan süsler
   // abonelikle ('kino-otobus/susler'). Yaş ayarı kilitlenmez.
-  'kino-otobus/gun-1': 'ucretsiz',
   'kino-otobus/*': 'abonelik',
   // Pati Dükkânı v2: başlangıç (vitrin, 3 başlangıç yavrusu, salon, eşyalar, süsler, ziyaretçiler) ücretsiz; yeni köşeler
   // (pati/kose-kemirgen, -akvaryum, -kus, -bahce, -surungen) abonelikle: kilit yalnız katalogda köşe alırken (magaza.ts)
-  'pati/baslangic': 'ucretsiz',
   'pati/*': 'abonelik',
   // Otobüs (otobus/): tek menü kartı, içinde iki aşama. Kart açık (Dondurma'nın Gün 1'i ücretsiz); her aşama kendi
   // kuralıyla: Dondurma = 'kino-otobus/…', Pasta = 'pasta' (abonelikle)
-  'otobus/dondurma': 'ucretsiz',
   // Tıkır Tıkır Lokanta: Gün 1 ve Gün 2 (salata, menemen, yıka, ilk alım) ücretsiz; Gün 3 ve sonrası abonelikle
   // (ekip/senaryo/RESTORAN.md §6d; kilit P4'te gün geçişinde ve defterde sorulur)
   'restoran/gun-1': 'ucretsiz',
@@ -161,5 +197,5 @@ export function erisimDinle(fn: () => void): () => void {
   return () => window.removeEventListener(ERISIM_OLAYI, fn);
 }
 
-/** Bu içerik şu an kilitli mi (uygulamada, abonelik ya da inceleme kilidi yokken, tablo "abonelik" diyorsa) */
+/** Bu içerik şu an kilitli mi */
 export const kilitli = (id: string): boolean => kilitliMi(id, { etkin: kilitlerEtkin(), premium: premiumMu() });

@@ -62,3 +62,14 @@
 @keyframes hy-selam{0%{opacity:0;transform:translateY(12px) scale(.6)}25%{opacity:1;transform:translateY(0) scale(1.1)}75%{opacity:1}100%{opacity:0;transform:translateY(-18px)}}
 .hy .hy-sahne-harf.hy-kalici{opacity:1}
 @media(prefers-reduced-motion:reduce){.hy-selam{animation:none}}
+
+.hy .hy-ornek,.hy .hy-arac button,.hy .hy-devam{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:46px;min-width:48px;border:2px solid #294338;border-radius:16px;padding:3px 9px;box-shadow:0 2px #294338}
+.hy .hy-ornek img,.hy .hy-tani img,.hy .hy-devam img{height:42px;width:51px;object-fit:contain}
+.hy .hy-arac svg,.hy .hy-devam svg{width:27px;height:27px}.hy .hy-ornek{background:#ffe6a5}
+.hy .hy-arac .hy-tani{min-width:90px}.hy .hy-devam{background:#aee7cb}.hy .hy-ornek-iz{stroke:#158472;stroke-width:4.1}
+.hy .hy-oyuncular>img{height:82%;max-width:92%;object-fit:contain}
+.hy [hidden]{display:none!important}
+.hy .hy-bulusma{grid-template-columns:minmax(0,1fr);width:min(100%,760px);margin-inline:auto}
+.hy-bulusma .hy-man{min-height:0;aspect-ratio:1.65;max-height:52svh}
+@media(orientation:portrait){.hy-bulusma .hy-man{aspect-ratio:1.15}}
+@media(max-height:540px){.hy .hy-arac button,.hy .hy-ornek,.hy .hy-devam{min-height:44px;padding:2px 7px}.hy .hy-arac img,.hy .hy-ornek img,.hy .hy-devam img{height:36px}}

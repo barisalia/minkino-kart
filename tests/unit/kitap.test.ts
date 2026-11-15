@@ -215,12 +215,14 @@ describe('Kitap: ekran ölçüleri (telefon önce)', () => {
       }
     }
   });
-  it('uğur böceği çizimdeki yerinde: dokunma noktasının hemen çevresinde uğur kırmızısı var (Gemini 2752 sayfaları, aynalılar dahil)', { timeout: 60_000 }, async () => {
+  it('her okul çiziminin kayıtlı boyutu doğru ve dokunma noktasında kırmızı uğur böceği var', { timeout: 60_000 }, async () => {
     const yerlesim = JSON.parse(readFileSync(resolve(KOK, 'assets/kitap/okul/yerlesim.json'), 'utf8')) as { sayfalar: Record<string, { tam: string; boy: [number, number] }> };
     for (let no = 0; no <= 14; no++) {
       const ad = no ? `s${String(no).padStart(2, '0')}` : 'kapak';
       const { tam, boy } = yerlesim.sayfalar[ad];
-      expect(boy, ad).toEqual([2752, 1536]);
+      const kaynak = await sharp(resolve(KOK, 'assets/kitap/okul', tam)).metadata();
+      expect(boy, ad).toEqual([kaynak.width, kaynak.height]);
+      expect(boy[0], ad).toBeGreaterThanOrEqual(1600);
       const [ux, uy] = OKUL_CANLI[no].tam!.ugur;
       // böceğin gövdesi ~90 px; nokta onun üstünde olmalı: ±42 px pencerede kırmızı (kırmızı ayakkabıyla karışmasın diye dar)
       const r = 42;

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import K from '../../content/kino-otobus.json';
 import { normal, tumCumleler, karakterCumleleri } from '../../src/audio/cumleler';
-import { erisimTuru, kilitliMi } from '../../src/engine/erisim';
+import { kilitliMi } from '../../src/engine/erisim';
 import { BOY } from '../../src/karakter/boy';
 import { sayfaYonu } from '../../src/kabuk/yon';
 import { menuOyunlari, OYUNLAR } from '../../uygulama/src/oyunlar';
@@ -347,12 +347,11 @@ describe('Kino’nun Otobüsü V3: sözler, erişim, görseller, boylar', () => 
       expect(etiketsiz(c).split(/\s+/).length, c).toBeLessThanOrEqual(8);
     }
   });
-  it('erişim: Gün 1 ücretsiz, Gün 2-3 ve ödüller (ilkinden sonra) abonelikle; menü kartı ücretsiz görünür', () => {
+  it('erişim (Barış 2026-11-16): eski oyun, Otobüs kartı ve bütün günler premium', () => {
     const ac = { etkin: true, premium: false };
-    expect(kilitliMi('kino-otobus/gun-1', ac)).toBe(false);
-    expect(kilitliMi('kino-otobus/gun-2', ac)).toBe(true);
+    expect(kilitliMi('otobus', ac)).toBe(true);
+    expect(kilitliMi('kino-otobus/gun-1', ac)).toBe(true);
     expect(kilitliMi('kino-otobus/odul', ac)).toBe(true);
-    expect(erisimTuru('kino-otobus')).toBe('ucretsiz');
   });
   it('telefonda yatay; ayrı menü kartı yok, Otobüs oyununun 1. aşaması (otobus/), kartın zemini Gemini kapağı', () => {
     expect(sayfaYonu('/kino-otobus/index.html')).toBe('yatay');

@@ -12,7 +12,7 @@ export function sefOnizlemeVarliklari():Plugin {
     apply:'serve',enforce:'post',
     configResolved(config){kok=resolve(config.root);taban=config.base;},
     transform(code,id){
-      if(!id.replaceAll('\\','/').includes('/sef/src/')||!code.includes('__vite_glob_'))return;
+      if(!['/sef/src/','/dedektif/src/'].some(yol=>id.replaceAll('\\','/').includes(yol))||!code.includes('__vite_glob_'))return;
       const desen=/import\s*\{\s*default\s+as\s+(__vite_glob_\d+_\d+)\s*\}\s*from\s*"([^"]+\.(?:webp|png|mp3)\?url)"\s*;/g;
       const sonuc=code.replace(desen,(tam:string,ad:string,spec:string)=>{
         const yol=spec.slice(0,-4);

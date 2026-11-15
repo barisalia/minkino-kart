@@ -113,17 +113,14 @@ for (const [k, id] of alanlar.entries())
           for (const i of [[a], [a, b], [a, b], [a, a, b]][asama]) await tik(p, '.parca', i);
         }
       } else if (k === 2) {
+        if (n === 0) await p.getByLabel('Diğer ölçü oyunlarına geç').click();
         if ([2, 7, 11, 14].includes(n)) {
           for (let j = 0; j < [2, 3, 5, 6][asama]; j++) await tik(p, '.parca');
           await tik(p, '.onay');
         } else if ([3, 6, 9, 15].includes(n)) {
           if (n >= 9) for (const i of [1, 2, 0]) await tik(p, '.sutun', i);
           await tik(p, '.sutun', ((asama % 2 ? 0 : 2) - tur - asama + 12) % 3);
-        } else if (asama < 2) {
-          for(const uzun of [[2,3],[3,3],[2,2,3]][n%3]) await p.getByLabel(uzun+' birimlik tahta',{exact:true}).click();
-          await tik(p,'.elma-arabasi');
-        }
-        else {
+        } else {
           const count = await p.locator('.taslar i').count();
           for (let j = 0; j < count; j++) await tik(p, '.parca');
         }

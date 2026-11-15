@@ -3,17 +3,15 @@ import { dersKaydiniOku, dersKaydiniYaz } from './ders-kaydi';
 import { cerenSustur } from './konusma-dersi';
 import { oyunSesi } from './oyun-sesi';
 import { IKON } from '../../src/ui/ikonlar';
-import { harfOrnegi, unluKaydi, harfTabaklari, ogrenilecekUnluler, resimTabaklari, unluler, type Ders, type Lokma } from './obur-tabaklari';
-import { resim } from './resimler';
+import { resimTabaklari, type Ders, type Lokma } from './obur-tabaklari';
 import './harf-kutusu.css';
 
 const pozlar=import.meta.glob<string>('../../assets/alfabe/obur/*.webp',{eager:true,query:'?url',import:'default'});
 type Ses=(id:string,bitince?:()=>void)=>void;
-type Mod='resim'|'harf';
 type Nokta={x:number;y:number};
-type Asama='oyun'|'ders'|'son';
+type Asama='oyun'|'son';
 export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>void) {
-  const kayitAnahtari='minkino-obur-tabak-v1-'+ders.id;
+  const kayitAnahtari='minkino-obur-resim-v2-'+ders.id;
   let onceki;
   try{onceki=JSON.parse(dersKaydiniOku(kayitAnahtari)||'null');}catch{/* Eski kayıt okunamazsa yeni tabak açılır. */}
   const tohum=Number.isInteger(onceki?.tohum)?onceki.tohum:Math.floor(Math.random()*4294967296);
@@ -22,51 +20,31 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     durumSayisi=(Math.imul(1664525,durumSayisi)+1013904223)>>>0;
     return durumSayisi/4294967296;
   }
-  const tabaklar={resim:resimTabaklari(ders,yasGrubu,rastgele),harf:harfTabaklari(ders,yasGrubu,rastgele)};
-  const calisma={resim:{sira:0,yenen:new Set<string>()},harf:{sira:0,yenen:new Set<string>()}};
-  const biten=new Set<Mod>();
+  const tabaklar=resimTabaklari(ders,yasGrubu,rastgele);
+  const calisma={sira:0,yenen:new Set<string>()};
   const sakin=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let mod:Mod='resim', asama:Asama='oyun', dersGoruldu=false, kapali=false, kilit=false, yanlis=0, nesil=0;
+  let asama:Asama='oyun', kapali=false, kilit=false, yanlis=0, nesil=0;
   let zaman=0, bekleyen=0, sesSirasi=0, beklemeDenetimi:(()=>void)|undefined;
   let surukleme:{b:HTMLButtonElement;id:number;bas:Nokta;hareket:boolean}|undefined;
-  try{
-
-    if(onceki){
-      for(const m of ['resim','harf'] as const){
-        if(onceki[m]?.bitti===true)biten.add(m);
-        if(Number.isInteger(onceki[m]?.sira)&&onceki[m].sira>=0&&onceki[m].sira<tabaklar[m].length)calisma[m].sira=onceki[m].sira;
-        const tabak=tabaklar[m][calisma[m].sira];
-        if(Array.isArray(onceki[m]?.yenen)){
-          for(const id of tabak.hedefler)if(onceki[m].yenen.includes(id))calisma[m].yenen.add(id);
-          if(calisma[m].yenen.size===tabak.hedefler.length){
-            if(calisma[m].sira===tabaklar[m].length-1)biten.add(m);
-            else calisma[m].sira++;
-            calisma[m].yenen.clear();
-          }
-        }
-      }
-      mod=onceki.mod==='harf'?'harf':'resim';
-      dersGoruldu=onceki.dersGoruldu===true;
-      asama=biten.has(mod)?'son':mod==='harf'&&!dersGoruldu?'ders':'oyun';
-    }
-  }catch{/* Eski bir kayıt açılamazsa ilk tabaktan başla. */}
+  if(Number.isInteger(onceki?.sira)&&onceki.sira>=0&&onceki.sira<=tabaklar.length){
+    calisma.sira=Math.min(onceki.sira,tabaklar.length-1);
+    if(onceki.sira===tabaklar.length)asama='son';
+  }
   function sakla(){
-    dersKaydiniYaz(kayitAnahtari,JSON.stringify({tohum,mod,dersGoruldu,resim:{yenen:[...calisma.resim.yenen],sira:calisma.resim.sira,bitti:biten.has('resim')},harf:{yenen:[...calisma.harf.yenen],sira:calisma.harf.sira,bitti:biten.has('harf')}}));
+    const ilerleme=asama==='son'?tabaklar.length:calisma.sira+(calisma.yenen.size?1:0);
+    dersKaydiniYaz(kayitAnahtari,JSON.stringify({tohum,sira:ilerleme}));
   }
   let hayalet:HTMLElement|undefined, ucus:Animation|undefined;
   alan.innerHTML='<section class="hk"><header class="hk-ust"><h1>Obur Harf Canavarı</h1><button type="button" class="at-ses hk-dinle" aria-label="Yönergeyi dinle">'+IKON.hoparlor+'</button></header>'+
-    '<nav class="hk-modlar" aria-label="Canavarın oyunları"><button type="button" data-mod="resim" aria-label="Resim yedir"><img src="'+resim(ders.id)+'" alt=""></button><button type="button" data-mod="harf" aria-label="Harf yedir"><b aria-hidden="true">Aa</b></button></nav>'+
     '<div class="hk-masa"><div class="hk-sol"><div class="hk-ders" hidden></div><div class="hk-kartlar" role="group" aria-label="Obur’un tabağı"></div></div>'+
     '<div class="hk-istasyon"><button class="hk-kutu" type="button" aria-label="Obur’un istediğini dinle" data-poz="bekle">'+
     Object.entries(pozlar).map(([yol,src])=>'<img class="hk-poz" data-ad="'+yol.split('/').pop()!.split('.')[0]+'" alt="" draggable="false" src="'+src+'">').join('')+
     '<span class="hk-gozler" aria-hidden="true"><i></i><i></i></span><span class="hk-etiket"></span></button><div class="hk-lokmalar" aria-label="Bu oyundaki ilerleme"></div></div></div>'+
-    '<div class="hk-alt"><p class="hk-durum" role="status"></p><button type="button" class="hk-tekrar" hidden aria-label="Ünlüleri dinle">'+IKON.hoparlor+'</button><button type="button" class="hk-devam" hidden></button></div></section>';
+    '<div class="hk-alt"><p class="hk-durum" role="status"></p><button type="button" class="hk-devam" hidden></button></div></section>';
   const kok=alan.querySelector<HTMLElement>('.hk')!, kartlar=kok.querySelector<HTMLElement>('.hk-kartlar')!, anlatim=kok.querySelector<HTMLElement>('.hk-ders')!;
   const obur=kok.querySelector<HTMLButtonElement>('.hk-kutu')!, etiket=kok.querySelector<HTMLElement>('.hk-etiket')!, sayac=kok.querySelector<HTMLElement>('.hk-lokmalar')!;
   const durum=kok.querySelector<HTMLElement>('.hk-durum')!, devam=kok.querySelector<HTMLButtonElement>('.hk-devam')!, dinle=kok.querySelector<HTMLButtonElement>('.hk-dinle')!;
-  const tekrar=kok.querySelector<HTMLButtonElement>('.hk-tekrar')!;
-  const butonlar=[...kok.querySelectorAll<HTMLButtonElement>('[data-mod]')];
-  const mevcut=()=>tabaklar[mod][calisma[mod].sira];
+  const mevcut=()=>tabaklar[calisma.sira];
   const simdi=(n:number)=>!kapali && n===nesil;
   function konus(ids:string[],bitince?:()=>void) {
     const token=++sesSirasi;cerenSustur();
@@ -81,9 +59,9 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     obur.style.setProperty('--y',String(dy/uzunluk*20)+'%');
   }
   function ilerleme() {
-    sayac.replaceChildren(...tabaklar[mod].map((_,i)=>{
+    sayac.replaceChildren(...tabaklar.map((_,i)=>{
       const a=document.createElement('span');
-      a.className=biten.has(mod)||i<calisma[mod].sira?'tam':i===calisma[mod].sira?'simdi':'';
+      a.className=asama==='son'||i<calisma.sira?'tam':i===calisma.sira?'simdi':'';
       a.setAttribute('aria-label',(i+1)+'. tabak');return a;
     }));
   }
@@ -93,38 +71,12 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
   }
   function etiketle() {
     const t=mevcut();
-    if(asama!=='oyun'){etiket.textContent=asama==='ders'?'Aa':'♥';return;}
-    etiket.replaceChildren();
-    if(mod==='resim' && yasGrubu==='2-3' && calisma.resim.sira===0){
-      const kart=t.kartlar.find(k=>k.id===t.hedefler[0])!;
-      etiket.append(gosterKart(kart));return;
-    }
-    if(!t.siraIle && t.etiket!=='Ünlü'){etiket.textContent=t.etiket;return;}
-    for(const id of t.hedefler){const h=document.createElement('span');h.textContent=id.toLocaleUpperCase('tr');
-      if(calisma[mod].yenen.has(id))h.className='yenmis';etiket.append(h);}
-  }
-  function dersIcerigi(){
-    const harfler=ogrenilecekUnluler(ders,yasGrubu);
-    anlatim.innerHTML='<div class="hk-unluler"></div><div class="hk-ornek"><img alt=""><b></b></div>';
-    const grup=anlatim.querySelector<HTMLElement>('.hk-unluler')!;
-    function ornekGoster(h:string){
-      const d=harfOrnegi(h);
-      anlatim.querySelector<HTMLImageElement>('.hk-ornek img')!.src=resim(d.id);
-      anlatim.querySelector<HTMLElement>('.hk-ornek b')!.textContent=h;
-      etiket.textContent=h;
-    }
-    ornekGoster(harfler[0]);
-    for(const h of harfler){
-      const b=document.createElement('button');b.type='button';b.textContent=h+' '+h.toLocaleLowerCase('tr');b.onclick=()=>{
-        grup.querySelector('.duyuldu')?.classList.remove('duyuldu');b.classList.add('duyuldu');ornekGoster(h);konus([unluKaydi(h)]);
-      };grup.append(b);
-    }
+    if(asama==='son'){etiket.textContent='♥';return;}
+    if(t.etiket){etiket.textContent=t.etiket;return;}
+    etiket.replaceChildren(gosterKart(t.kartlar.find(k=>k.id===t.hedefler[0])!));
   }
   function tarif(){
-    if(kilit)return;
-    if(asama==='ders')konus(['obur-derse','obur-dinle']);
-    else if(asama==='son')konus([mod==='resim'?'obur-nesne-son':'obur-son']);
-    else konus(mevcut().sesler);
+    if(!kilit)konus(asama==='son'?['obur-tur-tamam']:mevcut().sesler);
   }
   function birak(){
     const eski=surukleme;surukleme=undefined;
@@ -139,19 +91,14 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
   }
   function ciz(){
     temizle();const t=mevcut();yanlis=0;sakla();
-    kok.dataset.lokma=String(calisma[mod].sira+1);kok.dataset.asama=asama;kok.dataset.mod=mod;
-    butonlar.forEach(b=>{b.disabled=false;b.setAttribute('aria-pressed',String(b.dataset.mod===mod));});
-    kartlar.replaceChildren();kartlar.hidden=asama!=='oyun';anlatim.hidden=asama!=='ders';devam.hidden=asama==='oyun';
-    tekrar.hidden=mod!=='harf'||asama!=='oyun';tekrar.disabled=false;
+    kok.dataset.lokma=String(calisma.sira+1);kok.dataset.asama=asama;kok.dataset.mod='resim';
+    kartlar.replaceChildren();kartlar.hidden=asama!=='oyun';anlatim.hidden=true;devam.hidden=asama==='oyun';
     yuz(asama==='son'?'tok':'bekle');etiketle();ilerleme();
-    if(asama==='ders'){
-      dersIcerigi();durum.textContent='';ileriDugmesi('Harfleri yedir');tarif();return;
-    }
     if(asama==='son'){
       anlatim.hidden=false;
       const tepsi=document.createElement('div');tepsi.className='hk-bitmis-tabak';tepsi.setAttribute('aria-label','Obur’a verdiğin lokmalar');
       const gorulen=new Set<string>();
-      for(const tur of tabaklar[mod])for(const id of tur.hedefler){
+      for(const tur of tabaklar)for(const id of tur.hedefler){
         if(gorulen.has(id))continue;
         gorulen.add(id);
         const k=tur.kartlar.find(k=>k.id===id)!;
@@ -159,19 +106,16 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
         lokma.append(gosterKart(k));lokma.onclick=()=>konus([k.ses]);tepsi.append(lokma);
       }
       anlatim.replaceChildren(tepsi);
-      durum.textContent=mod==='resim'?'Resim tabağını bitirdin!':'Ünlüleri buldun!';
+      durum.textContent='Resim tabağını bitirdin!';
       ileriDugmesi('Derse devam et');tarif();return;
     }
     kartlar.dataset.adet=String(t.kartlar.length);
     for(const k of t.kartlar){
       const b=document.createElement('button');b.type='button';b.className='hk-kart';b.dataset.kart=k.id;b.setAttribute('aria-label',k.ad);
-      b.append(gosterKart(k));if(calisma[mod].yenen.has(k.id)){b.classList.add('hk-alindi');b.disabled=true;}
+      b.append(gosterKart(k));if(calisma.yenen.has(k.id)){b.classList.add('hk-alindi');b.disabled=true;}
       kartlar.append(b);kartKur(b,k);
     }
     durum.textContent=t.soru;tarif();
-  }
-  function modAc(yeni:Mod){
-    mod=yeni;asama=biten.has(mod)?'son':mod==='harf'&&!dersGoruldu?'ders':'oyun';ciz();
   }
   let ornekHareket:Animation|undefined;
   function yoluGoster(kart:HTMLButtonElement){
@@ -197,10 +141,10 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
   }
   function ver(b:HTMLButtonElement,k:Lokma,bas?:Nokta){
     if(kilit||asama!=='oyun'||b.disabled||kapali)return;
-    const t=mevcut(),yenmis=calisma[mod].yenen;
+    const t=mevcut(),yenmis=calisma.yenen;
     const beklenen=t.hedefler.find(h=>!yenmis.has(h))!;
     const dogru=t.siraIle?k.id===beklenen:t.hedefler.includes(k.id);
-    kilit=true;tekrar.disabled=true;butonlar.forEach(btn=>btn.disabled=true);sesSirasi++;cerenSustur();birak();const tok=++nesil;
+    kilit=true;sesSirasi++;cerenSustur();birak();const tok=++nesil;
     const r=b.getBoundingClientRect(), yuzAlan=obur.getBoundingClientRect(), orta={x:r.left+r.width*.5,y:r.top+r.height*.5};
     const agiz={x:yuzAlan.left+yuzAlan.width*.5,y:yuzAlan.top+yuzAlan.height*.46};
     const ilk=bas??orta, imge=gosterKart(k);imge.classList.add('hk-ucan');
@@ -216,27 +160,20 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
       function sesBitti(){geriBildirimBitti=true;if(hareketBitti)kartiBitir();}
       if(dogru){
         yenmis.add(k.id);sakla();b.classList.add('hk-alindi');b.disabled=true;etiketle();kutla();
-        durum.textContent=mod==='resim'?k.ad+'!':k.ad+' bir ünlü.';
+        durum.textContent=k.ad+'!';
         konus([k.ses],sesBitti);
       }else{
-        yanlis++;const buyuk=k.ad.toLocaleUpperCase('tr');
-        if(mod==='resim'){
-          durum.textContent=ders.lower==='ğ'?k.ad+' sözcüğünde ğ yok. '+t.soru:k.ad+', '+buyuk[0]+' ile başlıyor. '+t.soru;
-          konus([k.ses, ...(yanlis===1?['obur-bir-daha']:[]), ...t.sesler],sesBitti);
-        }else{
-          const sirasi=unluler.includes(buyuk);
-          durum.textContent=sirasi?'Önce '+beklenen.toLocaleUpperCase('tr')+' harfini ver.':k.ad+' bir ünsüz. '+t.soru;
-          konus(sirasi?[t.siraIle?'obur-sira':'obur-esle',unluKaydi(beklenen)]:['obur-unsuz'],sesBitti);
-        }
+        yanlis++;durum.textContent=k.ad+'. '+t.soru;
+        konus([k.ses,...(yanlis===1?['obur-bir-daha']:[]),...t.sesler],sesBitti);
         if(yanlis>=(yasGrubu==='2-3'?1:2)) [...kartlar.children].find(el=>(el as HTMLElement).dataset.kart===beklenen)?.classList.add('hk-ipucu');
       }
       function kartiBitir(){
         if(!simdi(tok)||kartBitti)return;
         kartBitti=true;beklemeDenetimi=undefined;
-        clearTimeout(bekleyen);ucus?.cancel();imge.remove();kok.querySelector('.hk-konfeti')?.remove();b.classList.remove('hk-tutuldu');kilit=false;tekrar.disabled=false;butonlar.forEach(btn=>btn.disabled=false);goz();
+        clearTimeout(bekleyen);ucus?.cancel();imge.remove();kok.querySelector('.hk-konfeti')?.remove();b.classList.remove('hk-tutuldu');kilit=false;goz();
         if(dogru&&yenmis.size===t.hedefler.length){
-          if(calisma[mod].sira+1===tabaklar[mod].length){biten.add(mod);asama='son';ciz();}
-          else{calisma[mod].sira++;yenmis.clear();ciz();}
+          if(calisma.sira+1===tabaklar.length){asama='son';ciz();}
+          else{calisma.sira++;yenmis.clear();ciz();}
         }else{
           yuz('bekle');
           const ipucu=kartlar.querySelector<HTMLButtonElement>('.hk-ipucu');
@@ -290,13 +227,9 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
   }
   document.addEventListener('visibilitychange',gorunurlukDegisti);
   window.addEventListener('resize',yonDegisti);
-  butonlar.forEach(b=>b.onclick=()=>{if(b.dataset.mod!==mod)modAc(b.dataset.mod as Mod);});
   obur.onclick=dinle.onclick=tarif;
-  tekrar.onclick=()=>{if(!kilit&&mod==='harf'){asama='ders';ciz();}};
   devam.onclick=()=>{
-    if(asama==='ders'){dersGoruldu=true;asama='oyun';ciz();}
-    else if(asama==='son'){temizle();dersKaydiniYaz(kayitAnahtari,null);sonraki();}
-
+    if(asama==='son'){temizle();dersKaydiniYaz(kayitAnahtari,null);sonraki();}
   };
   ciz();
   return ()=>{kapali=true;temizle();document.removeEventListener('visibilitychange',gorunurlukDegisti);window.removeEventListener('resize',yonDegisti);kok.remove();};

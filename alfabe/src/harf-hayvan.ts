@@ -5,6 +5,9 @@ import { kucukGrup, tamDers } from './yas-grubu';
 import { dersKaydiniOku, dersKaydiniYaz } from './ders-kaydi';
 import { cerenSustur } from './konusma-dersi';
 import { oyunSesi } from './oyun-sesi';
+import kalemResmi from '../../assets/alfabe/hayvan-kalem.webp';
+import dagResmi from '../../assets/alfabe/09.webp';
+import oburResmi from '../../assets/alfabe/obur/bekle.webp';
 import { IKON } from '../../src/ui/ikonlar';
 import './harf-hayvan.css';
 
@@ -32,14 +35,14 @@ export function hayvanOyunuKur(alan:HTMLElement,oku:Oku,ders?:{harf:string;ilerl
   let ucus:Animation|undefined;
   const kareler=import.meta.glob<string>('../../assets/alfabe/hayvan-cagirma/hareket/*.webp',{eager:true,query:'?url',import:'default'});
   async function selam(img:HTMLImageElement,h:string){
-    const ad=({A:'aslan',O:'orangutan',F:'fil'} as Record<string,string>)[h];
+    const ad=({A:'aslan',O:'orangutan',F:'fil',D:'deve'} as Record<string,string>)[h];
     if(!ad||azHareket())return;
     const urls=[0,1,2,3].map(i=>kareler['../../assets/alfabe/hayvan-cagirma/hareket/'+ad+'-'+i+'.webp']);
     if(urls.some(u=>!u))return;
     const no=++hareketNo;clearTimeout(kareZamani);
     try{await Promise.all(urls.map(u=>{const f=new Image();f.src=u;return f.decode();}));}catch{return;}
-    const siralar=ad==='aslan'?[0,1,2,1,2,3]:ad==='fil'?[0,1,2,3,0]:[0,1,2,3];
-    const sureler=ad==='aslan'?[240,130,390,130,390,220]:ad==='fil'?[145,115,190,115,150]:[130,115,135,145];
+    const siralar=ad==='aslan'?[0,1,2,1,2,3]:ad==='fil'?[0,1,2,3,0]:ad==='deve'?[0,1,2,3,0]:[0,1,2,3];
+    const sureler=ad==='aslan'?[240,130,390,130,390,220]:ad==='fil'?[145,115,190,115,150]:ad==='deve'?[200,180,340,200,120]:[130,115,135,145];
     function oyna(i:number){
       if(kapali||hareketNo!==no||!img.isConnected)return;
       if(i===siralar.length){img.src=aileResmi(h,true);return;}
@@ -53,9 +56,9 @@ export function hayvanOyunuKur(alan:HTMLElement,oku:Oku,ders?:{harf:string;ilerl
   function seslendir(id:string){sonSes=id;oku(id);}
   alan.innerHTML='<div class="hy-acilis"><div class="hy-kapak-yazi"><h1>Hayvan<br><em>Çağırma</em></h1><p>Büyük harfle hayvanı, küçük harfle yavrusunu çağır.</p><button class="hy-basla" type="button">'+IKON.oyna+' Yazmaya başla</button></div></div>'+
     '<div class="hy-oyun" hidden><section class="hy-sahne"><div class="hy-man"><div class="hy-mekan"></div><div class="hy-oyuncular"></div><div class="hy-dalga" aria-hidden="true"></div><span class="hy-sahne-harf" aria-hidden="true"></span></div><div class="hy-alt"><div class="hy-baslik-satir"><h2 class="hy-sahne-ad"></h2><button type="button" class="hy-dinle" aria-label="Ceren’i tekrar dinle">'+IKON.hoparlor+'</button></div><p class="hy-yazi" aria-live="polite"></p><div class="hy-sec"></div></div></section>'+
-    '<section class="hy-kagit"><div class="hy-bas"><h2>Çizim defterim</h2><button type="button" class="hy-ornek"></button></div>'+
+    '<section class="hy-kagit"><div class="hy-bas"><h2>Çizim defterim</h2><button type="button" class="hy-ornek" aria-label="Yazılışını izle">'+resim(kalemResmi)+'</button></div>'+
     '<svg class="hy-defter" viewBox="0 0 120 136" aria-label="Harf yazma alanı"><g fill="none"><path d="M4 20H116 M4 100H116" stroke="#86afac" stroke-width=".8"/><path d="M4 48H116" stroke="#a5bdb1" stroke-width=".7" stroke-dasharray="2 2"/></g><g class="hy-kilavuz" fill="none" stroke="#cadacb" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"></g><g class="hy-murekkep" fill="none" stroke="#215d52" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></g><circle class="hy-kalem" r="2.6" fill="#e88a44" stroke="#303f34" stroke-width=".75" visibility="hidden"/></svg>'+
-    '<div class="hy-arac"><button type="button" class="hy-geri">Geri al</button><button type="button" class="hy-sil">Sil</button><button type="button" class="hy-tani">Hayvanı çağır</button></div></section></div>';
+    '<div class="hy-arac"><button type="button" class="hy-geri" aria-label="Geri al">'+IKON.geriAl+'</button><button type="button" class="hy-sil" aria-label="Sil">'+IKON.silgi+'</button><button type="button" class="hy-tani" aria-label="Hayvanı çağır"></button></div></section></div>';
   const acilis=bul<HTMLElement>('.hy-acilis'),oyun=bul<HTMLElement>('.hy-oyun');
   acilis.style.backgroundImage='url("'+sahneResmi('kapak')+'")';
   const defter=bul<SVGSVGElement>('.hy-defter'),murekkep=bul<SVGGElement>('.hy-murekkep'),kilavuz=bul<SVGGElement>('.hy-kilavuz'),kalem=bul<SVGCircleElement>('.hy-kalem');
@@ -64,19 +67,29 @@ export function hayvanOyunuKur(alan:HTMLElement,oku:Oku,ders?:{harf:string;ilerl
   const ad=bul<HTMLElement>('.hy-sahne-ad');
   const yol=(d:string)=>{const p=document.createElementNS(svgNS,'path');p.setAttribute('d',d);return p;};
   function guncelle(){geri.disabled=sil.disabled=tanit.disabled=!izler.length||etkin!==null;}
-  function kalemiDurdur(){cancelAnimationFrame(kalemHareketi);kalem.setAttribute('visibility','hidden');}
+  function kalemiDurdur(){cancelAnimationFrame(kalemHareketi);kalem.setAttribute('visibility','hidden');kilavuz.querySelectorAll('.hy-ornek-iz').forEach(el=>el.remove());}
   function rehber(oynat=false){
     kalemiDurdur();
     kilavuz.replaceChildren(...(ipucu?kalemYollari(hedef).map(yol):[]));
-    ornek.textContent=ipucu?'Yazılışını izle':'İpucu göster';
+    ornek.setAttribute('aria-label',ipucu?'Yazılışını izle':'İpucu göster');
+    const buyuk=buyut(hedef);
+    const hayvan=buyuk==='Ğ'?dagResmi:aileResmi(buyuk,hedef!==buyuk);
+    tanit.innerHTML=IKON.oyna+resim(hayvan);
+    tanit.setAttribute('aria-label',buyuk==='Ğ'?'Dağı göster':(aileler[buyuk]?.[hedef===buyuk?0:1]??'Hayvan')+' çağır');
     if(!oynat||azHareket())return;
     const yollar=[...kilavuz.querySelectorAll('path')],ilk=performance.now();
     const sureler=yollar.map(p=>Math.max(280,p.getTotalLength()*11)+160);
+    const boyali=yollar.map(p=>{
+      const iz=p.cloneNode() as SVGPathElement;
+      iz.classList.add('hy-ornek-iz');iz.style.strokeDasharray=String(p.getTotalLength());
+      iz.style.strokeDashoffset=String(p.getTotalLength());kilavuz.append(iz);return iz;
+    });
     function kare(t:number){
       let zaman=t-ilk,i=0;
       while(i<sureler.length&&zaman>=sureler[i])zaman-=sureler[i++];
       if(i===yollar.length){kalemiDurdur();return;}
       const p=yollar[i],uzun=p.getTotalLength(),nokta=p.getPointAtLength(uzun*Math.min(1,zaman/(sureler[i]-160)));
+      boyali.forEach((iz,j)=>{iz.style.strokeDashoffset=String(j<i?0:j>i?yollar[j].getTotalLength():uzun*(1-Math.min(1,zaman/(sureler[i]-160))));});
       kalem.setAttribute('visibility',zaman<sureler[i]-125?'visible':'hidden');
       kalem.setAttribute('cx',String(nokta.x));kalem.setAttribute('cy',String(nokta.y));
       kalemHareketi=requestAnimationFrame(kare);
@@ -104,11 +117,11 @@ export function hayvanOyunuKur(alan:HTMLElement,oku:Oku,ders?:{harf:string;ilerl
     if(el.dataset.mekan!==mekan){el.dataset.mekan=mekan;el.style.backgroundImage='url("'+sahneResmi(mekan)+'")';}
   }
   const devam=document.createElement('button');
-  devam.type='button';devam.className='hy-devam';devam.hidden=true;devam.textContent='Derse devam et';
+  devam.type='button';devam.className='hy-devam';devam.hidden=true;devam.setAttribute('aria-label','Derse devam et');devam.innerHTML=resim(oburResmi)+IKON.oyna;
   if(ders){bul('.hy-alt').append(devam);devam.onclick=ders.ilerle;}
   function yazmayaBasla(){
     acilis.hidden=true;oyun.hidden=false;
-    temizle();rehber();fon(hedef);
+    temizle();rehber(!!ders);fon(hedef);
     ad.textContent='Bir harf yaz';
     mesaj.textContent=kucukGrup?hedef+' harfinin üzerinden geç.':tamDers?'İstediğin harfi defterine yaz.':'Büyük '+hedef+' yazarak başlayabilirsin.';
     if(ders){
@@ -131,13 +144,18 @@ export function hayvanOyunuKur(alan:HTMLElement,oku:Oku,ders?:{harf:string;ilerl
     ucus=kopya.animate([{transform:transform(dx,dy,1.35),opacity:1},{transform:transform(dx*.42,dy*.55-35,.9),offset:.5,opacity:1},{transform:transform(0,0,.4),opacity:0}],{duration:500,easing:'ease-in-out'});
     void ucus.finished.catch(()=>{}).then(()=>kopya.remove());
   }
+  function defteriKapat(){
+    kalemiDurdur();
+    bul<HTMLElement>('.hy-kagit').hidden=true;
+    oyun.classList.add('hy-bulusma');
+  }
   function cagir(h:string){
     const buyuk=buyut(h),yavru=buyuk!==h;
     if(ders&&buyuk==='Ğ'){
-      temizle();ad.textContent='Dağ';mesaj.textContent='Dağ kelimesinin sonunda ğ var!';
+      temizle();oyuncular.innerHTML=resim(dagResmi);ad.textContent='Dağ';mesaj.textContent='Dağ kelimesinin sonunda ğ var!';
       bul<HTMLElement>('.hy-sahne-harf').textContent='dağ';
       bul('.hy-sahne-harf').classList.add('hy-kalici');
-      devam.hidden=false;oyunSesi('birles');seslendir('yazalim-dag');return;
+      defteriKapat();devam.hidden=false;oyunSesi('birles');seslendir('yazalim-dag');return;
     }
     if(buyuk==='Ğ'){mesaj.textContent='Ğ sözcük başında bulunmaz. Başka bir harf deneyelim.';seslendir('yazalim-yumusak');return;}
     if(!aileler[buyuk])return;
@@ -163,7 +181,9 @@ export function hayvanOyunuKur(alan:HTMLElement,oku:Oku,ders?:{harf:string;ilerl
     mesaj.textContent=tam?'Şimdi '+hedef+' harfini veya istediğin başka bir harfi yaz.':yavru?'Şimdi büyük '+hedef+' yazıp ailesini çağır.':'Şimdi küçük '+hedef+' yazıp yavrusunu çağır.';
     const kayit='yazalim-'+kod+'-'+(yavru?'kucuk':'buyuk');
     if(!ders){seslendir(kayit);return;}
-    hedef=tam?ders.harf:kucult(buyuk);ipucu=true;rehber();
+    hedef=tam?ders.harf:kucult(buyuk);ipucu=true;rehber(!tam);
+    tanit.hidden=false;
+    if(tam)defteriKapat();
     devam.hidden=!(tam||kucukGrup);
     ad.textContent=tam?'Aileyi sen buluşturdun!':etiket+' sana geldi!';
     mesaj.textContent=tam?'İkisi de burada. İstersen adlarını tekrar dinle.':'Şimdi '+hedef+' yazıp yavrusunu çağırabilirsin.';

@@ -20,6 +20,8 @@ export interface Plan {
   ayBasi: string | null;
   /** Ücretsiz deneme süresi (gün); yoksa null */
   denemeGun: number | null;
+  /** İndirimli giriş teklifi (lansman) varsa mağazanın asıl fiyatı: fiyat teklif fiyatıdır, bu üstü çizili gösterilir */
+  normal?: string;
 }
 
 export type SatinSonuc = 'tamam' | 'iptal' | 'hata';
