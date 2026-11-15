@@ -114,7 +114,7 @@ describe('abonelik planları', () => {
     expect(denemeGunu('DAY', 0)).toBeNull();
   });
   it('yıllık fiyatın aylığı', () => {
-    expect(ayaBol(499, 'TRY')).toMatch(/41,58/);
+    expect(ayaBol(499, 'TRY')).toMatch(/74,92/);
     expect(ayaBol(0, 'TRY')).toBeNull();
   });
 });

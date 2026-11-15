@@ -79,13 +79,13 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await expect(ab.getByRole('heading', { name: 'Minkino Premium' })).toBeVisible();
   await expect(ab.locator('.ab-baslik img.mk-logo')).toBeVisible();
   await expect(ab.locator('.ab-not')).toHaveText('Bu ekran büyükler içindir.');
-  await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('₺99,00');
-  await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('₺499,00');
+  await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('₺199,00');
+  await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('₺899,00');
   await expect(ab.locator('.ab-plan-yillik .ab-avantaj')).toHaveText('En avantajlı');
   await expect(ab.locator('.ab-plan-yillik')).toHaveAttribute('aria-checked', 'true');
   await expect(ab.locator('.ab-deneme')).toHaveText('7 gün ücretsiz dene');
   await expect(ab.locator('.ab-basla')).toHaveText('Ücretsiz denemeyi başlat');
-  await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺499,00 / yıl');
+  await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺899,00 / yıl');
   await expect(ab.getByRole('button', { name: 'Satın alımları geri yükle' })).toBeEnabled();
   // Android: Google Play'in otomatik yenileme metni; gizlilik ve koşullar web sitesinde
   await expect(ab.locator('.ab-yasal').first()).toContainText('Google Play');
@@ -97,7 +97,7 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
 
   // aylık plan seçilir, (sahte) satın alma
   await ab.locator('.ab-plan-aylik').click();
-  await expect(ab.locator('.ab-sonra')).toContainText('₺99,00 / ay');
+  await expect(ab.locator('.ab-sonra')).toContainText('₺199,00 / ay');
   await ab.locator('.ab-basla').click();
   await expect(ab.locator('.ab-basari')).toBeVisible();
   await expect(ab.locator('.ab-basari h2')).toHaveText('Teşekkürler!');
@@ -202,7 +202,7 @@ test('Uygulama: vazgeçilen satın alma, geri yükleme, mağazaya ulaşılamıyo
   await expect(page.locator('.ab-perde')).toHaveAttribute('data-durum', 'hazir');
   await expect(page.locator('.ab-deneme')).toBeHidden();
   await expect(page.locator('.ab-basla')).toHaveText('Abone ol');
-  await expect(page.locator('.ab-sonra')).toHaveText('₺499,00 / yıl. İstediğin zaman iptal edebilirsin.');
+  await expect(page.locator('.ab-sonra')).toHaveText('₺899,00 / yıl. İstediğin zaman iptal edebilirsin.');
 
   // önceden abone (mağaza "premium" diyor): hiç kilit yok
   await page.goto('./?test=1&uygulama=ios&premium=1');

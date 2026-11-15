@@ -130,12 +130,12 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
   await expect(ab.locator('.ab-liste li')).toHaveCount(6);
   await expect(ab.locator('.ab-liste .ab-tik')).toHaveCount(6);
   // dönem başına fiyat (mağazadan), deneme yazısı
-  await expect(ab.locator('.ab-plan-aylik')).toContainText('₺99,00');
+  await expect(ab.locator('.ab-plan-aylik')).toContainText('₺199,00');
   await expect(ab.locator('.ab-plan-aylik')).toContainText('/ ay');
-  await expect(ab.locator('.ab-plan-yillik')).toContainText('₺499,00');
+  await expect(ab.locator('.ab-plan-yillik')).toContainText('₺899,00');
   await expect(ab.locator('.ab-plan-yillik')).toContainText('/ yıl');
   await expect(ab.locator('.ab-deneme')).toHaveText('7 gün ücretsiz dene');
-  await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺499,00 / yıl');
+  await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺899,00 / yıl');
   // otomatik yenileme metni TR + EN (iOS), geri yükleme, gizlilik, koşullar, iletişim, kapat
   await expect(ab.locator('.ab-yasal').first()).toContainText('otomatik olarak yenilenir');
   await expect(ab.locator('.ab-yasal-en')).toContainText('automatically renews');

@@ -29,8 +29,8 @@ export function sahteSaglayici(): Saglayici {
       // &deneme=yok: bu kullanıcının deneme hakkı yok (iOS'ta denemeyi daha önce kullanmış Apple Kimliği)
       const denemeGun = q.get('deneme') === 'yok' ? null : 7;
       return [
-        { id: 'aylik', fiyat: '₺99,00', ayBasi: null, denemeGun },
-        { id: 'yillik', fiyat: '₺499,00', ayBasi: '₺41,58', denemeGun },
+        { id: 'aylik', fiyat: '₺199,00', ayBasi: null, denemeGun },
+        { id: 'yillik', fiyat: '₺899,00', ayBasi: '₺74,92', denemeGun },
       ];
     },
     async satinAl(id: PlanId) {
