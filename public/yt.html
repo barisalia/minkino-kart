@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Minkino</title>
+<style>html,body,#o{margin:0;width:100%;height:100%;background:#000;overflow:hidden}iframe{display:block;width:100%;height:100%;border:0}</style>
+</head>
+<body>
+<div id="o"></div>
+<script>
+// iOS uygulamasinin adresi capacitor://localhost oldugu icin YouTube oynaticiyi reddeder (hata 153).
+// Oynatici bu https sayfada kurulur; uygulama (izle/) bu sayfayi cerceve icinde acar ve mesajla yonetir.
+(function () {
+  var v = new URLSearchParams(location.search).get('v') || '';
+  if (!/^[\w-]{6,20}$/.test(v)) return;
+  var soyle = function (ne) { try { parent.postMessage({ minkino: ne }, '*'); } catch (e) {} };
+  var p;
+  window.onYouTubeIframeAPIReady = function () {
+    p = new YT.Player('o', {
+      host: 'https://www.youtube-nocookie.com', videoId: v, width: '100%', height: '100%',
+      playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, iv_load_policy: 3, fs: 0, disablekb: 1, cc_load_policy: 0, origin: location.origin },
+      events: {
+        onReady: function () { soyle('hazir'); p.playVideo(); },
+        onStateChange: function (e) { if (e.data === YT.PlayerState.ENDED) soyle('bitti'); },
+        onError: function () { soyle('hata'); }
+      }
+    });
+  };
+  window.addEventListener('message', function (e) {
+    var m = e.data && e.data.minkino;
+    if (!p || !p.playVideo) return;
+    if (m === 'bastan') { p.seekTo(0, true); p.playVideo(); }
+    else if (m === 'oynat') p.playVideo();
+    else if (m === 'dur') p.pauseVideo();
+  });
+  var b = document.createElement('script');
+  b.src = 'https://www.youtube.com/iframe_api';
+  b.onerror = function () { soyle('hata'); };
+  document.head.appendChild(b);
+})();
+</script>
+</body>
+</html>

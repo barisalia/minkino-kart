@@ -14,6 +14,7 @@ import { sayfaAcildi } from '../../src/ui/gecis';
 import { IKON } from '../../src/ui/ikonlar';
 import { yuvarlakDugme } from '../../src/ui/ortak';
 import { anaMenuyeDon } from '../../src/uygulama';
+import { SITE } from '../../src/kabuk/ayar';
 import { videoBul, VIDEOLAR } from '../../src/video/videolar';
 
 interface YTOynatici {
@@ -76,6 +77,24 @@ if (kok) {
       return;
     }
     if (!navigator.onLine) return cevrimdisi();
+    // iOS uygulaması (capacitor://): YouTube, http(s) olmayan sayfada oynatıcıyı reddeder (hata 153). Oynatıcı sitedeki
+    // https sayfada (public/yt.html) kurulur, burada çerçeve içinde açılır ve mesajla yönetilir.
+    if (!/^https?:$/.test(location.protocol)) {
+      const cerceve = h('iframe', { src: `${SITE}/yt.html?v=${encodeURIComponent(v.youtube)}`, allow: 'autoplay; encrypted-media', title: v.baslik });
+      Object.assign(cerceve.style, { width: '100%', height: '100%', border: '0', display: 'block' });
+      const ilet = (ne: string) => cerceve.contentWindow?.postMessage({ minkino: ne }, SITE);
+      oynatici = { playVideo: () => ilet('oynat'), pauseVideo: () => ilet('dur'), seekTo: () => ilet('bastan') } as unknown as YTOynatici;
+      window.addEventListener('message', (e) => {
+        if (e.origin !== SITE) return;
+        const m = (e.data as { minkino?: string } | null)?.minkino;
+        if (m === 'bitti') kapakGoster(true);
+        else if (m === 'hata') cevrimdisi();
+      });
+      cerceve.addEventListener('error', () => cevrimdisi());
+      sahne.append(cerceve);
+      kapakGoster(false);
+      return;
+    }
     oynat.disabled = true;
     try {
       const YT = await apiYukle();
