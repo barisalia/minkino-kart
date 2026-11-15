@@ -5,6 +5,7 @@
  */
 import { kayitSec, type KayitSecenegi, type SesManifest } from './karakter-ses';
 import { baglam, konusmaCikisi } from './motor';
+import { durum } from '../engine/ilerleme';
 
 /** Kayıt: ayrı dosya adı ya da paket içindeki bayt aralığı (paket = art arda eklenmiş mp3'ler). */
 type Kayit = string | { p: number; b: number; u: number };
@@ -163,9 +164,44 @@ export function onYukle(metinler: (string | undefined | null)[], secenek: KayitS
  * Kaydı çalar; bittiğinde true. Kayıt yoksa/çalınamazsa false (çağıran cihaz sesine düşer).
  * secenek.karakter: önce karakterin kendi kaydı (normal hızda); yoksa anlatıcı kaydı secenek.ton hızında.
  */
+/**
+ * iOS uygulaması (capacitor://): iPad'de Web Audio motoru 'running' olmuyor ve kayıtlar hiç çalmıyordu (derleme 3,
+ * 2026-11-15); aynı cihazda düz <audio> öğesi çalıyor. Motor çalışmıyorken kayıt bu yedek yoldan çalar.
+ */
+export const elemanYedegi = (): boolean => typeof location !== 'undefined' && location.protocol === 'capacitor:' && baglam()?.state !== 'running';
+let calanEleman: HTMLAudioElement | null = null;
+function elemanCal(yol: string, hiz: number, iptalMi: () => boolean, basladi?: (bas: number) => void): Promise<boolean> {
+  return new Promise((coz) => {
+    const a = new Audio(yol);
+    let bitti = false;
+    const son = (ok: boolean) => {
+      if (bitti) return;
+      bitti = true;
+      clearInterval(bak);
+      if (calanEleman === a) calanEleman = null;
+      if (calanBitti === tamam) calanBitti = null;
+      a.pause();
+      coz(ok);
+    };
+    const tamam = () => son(true);
+    const bak = setInterval(() => iptalMi() && son(true), 120);
+    a.volume = Math.max(0, Math.min(1, durum.i.ayarlar.seviye));
+    a.playbackRate = hiz;
+    a.onended = tamam;
+    a.onerror = () => son(false);
+    calanEleman = a;
+    calanBitti = tamam;
+    a.play().then(() => basladi?.(baglam()?.currentTime ?? 0), () => son(false));
+  });
+}
+
 export async function kayitCal(metin: string, iptalMi: () => boolean, secenek: KayitSecenegi = {}, basladi?: (bas: number) => void): Promise<boolean> {
   const c = baglam();
   const cikis = konusmaCikisi();
+  if (elemanYedegi()) {
+    const d = dosya(metin, secenek);
+    if (d && typeof d.kayit === 'string') return elemanCal(`${kok}${d.kayit}`, d.hiz ?? 1, iptalMi, basladi);
+  }
   if (!c || !cikis || c.state !== 'running') return false;
   const hiz = dosya(metin, secenek)?.hiz ?? 1;
   const t = await tampon(metin, secenek);
@@ -243,6 +279,7 @@ export function dosyaOnYukle(yollar: string[]) {
 export async function dosyaCal(yol: string, iptalMi: () => boolean, basladi?: (bas: number) => void): Promise<boolean> {
   const c = baglam();
   const cikis = konusmaCikisi();
+  if (elemanYedegi()) return elemanCal(yol, 1, iptalMi, basladi);
   if (!c || !cikis || c.state !== 'running') return false;
   const t = await dosyaTamponu(yol);
   if (!t || iptalMi()) return !!t;
@@ -250,6 +287,8 @@ export async function dosyaCal(yol: string, iptalMi: () => boolean, basladi?: (b
 }
 
 export function kayitDurdur() {
+  calanEleman?.pause();
+  calanEleman = null;
   try {
     const c = baglam();
     if (calan && calanGuc && c) {
