@@ -73,7 +73,9 @@ export function sesMotorunuAc(): AudioContext | null {
       konusmaKanal.connect(konusmaAnaliz);
       seviyeleriUygula();
     }
-    if (ctx.state === 'suspended') void ctx.resume();
+    // iOS'ta durum 'interrupted' de olabilir (arama, başka ses, oturum değişimi)
+    if (ctx.state !== 'running') void ctx.resume();
+    sessizModuAs();
   } catch {
     ctx = null;
   }
@@ -138,7 +140,52 @@ export function muzikKis(kis: boolean) {
 
 if (typeof document !== 'undefined')
   document.addEventListener('visibilitychange', () => {
+    if (document.hidden) sessizDongu?.pause();
     if (!ctx) return;
     if (document.hidden) void ctx.suspend();
     else void ctx.resume();
   });
+
+/**
+ * iPhone / iPad: Web Audio "ortam sesi" sayılır ve cihaz SESSİZ moddayken hiç duyulmaz (zil kapalı tabletlerde eski
+ * oyunların sesi bu yüzden gelmiyordu; `new Audio()` ile çalan oyunların sesi geliyordu). Bir <audio> öğesi çalarken
+ * oturum "oynatma"ya geçer ve Web Audio da sessiz modda duyulur: ilk dokunuşta sessiz, döngülü bir kayıt başlatılır.
+ */
+const IOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+let sessizDongu: HTMLAudioElement | null = null;
+function sessizKayit(): string {
+  const n = 4000;
+  const b = new Uint8Array(44 + n);
+  const v = new DataView(b.buffer);
+  const yaz = (o: number, t: string) => { for (let i = 0; i < t.length; i++) b[o + i] = t.charCodeAt(i); };
+  yaz(0, 'RIFF'); v.setUint32(4, 36 + n, true); yaz(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); yaz(36, 'data'); v.setUint32(40, n, true);
+  b.fill(128, 44);
+  let ikili = '';
+  for (const x of b) ikili += String.fromCharCode(x);
+  return 'data:audio/wav;base64,' + btoa(ikili);
+}
+function sessizModuAs() {
+  if (!IOS || typeof document === 'undefined' || document.hidden) return;
+  try {
+    if (!sessizDongu) {
+      sessizDongu = new Audio(sessizKayit());
+      sessizDongu.loop = true;
+      sessizDongu.preload = 'auto';
+      sessizDongu.setAttribute('x-webkit-airplay', 'deny');
+      sessizDongu.setAttribute('playsinline', '');
+    }
+    if (sessizDongu.paused) void sessizDongu.play().catch(() => undefined);
+  } catch {
+    /* ses öğesi kurulamadıysa oyun eskisi gibi sürer */
+  }
+}
+/** Her dokunuşta: motor durduysa uyandır, sessiz döngü durduysa yeniden başlat (iOS yalnız dokunuş içinde izin verir). */
+function uyandir() {
+  if (!ctx) return;
+  if (ctx.state !== 'running') void ctx.resume().catch(() => undefined);
+  sessizModuAs();
+}
+if (typeof document !== 'undefined') {
+  for (const olay of ['touchend', 'pointerup', 'click', 'keydown']) document.addEventListener(olay, uyandir, { capture: true, passive: true });
+}
