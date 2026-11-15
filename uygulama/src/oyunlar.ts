@@ -45,6 +45,8 @@ export interface OyunKarti {
   genis?: boolean;
   /** Mağaza uygulamasında gösterilmez (yalnız web sitesindeki oyunlar için; şu an yok) */
   uygulamadaYok?: boolean;
+  /** Menüde yalnız bu yaşa kadar görünür (yaş seçilmediyse görünür). Barış 2026-11-15: Pazar 2-3 yaş, Kino Ne Giysin 2-4 yaş */
+  enCokYas?: number;
   /** Arşivde: menüde (web ve uygulama) görünmez; oyunun dosyaları ve adresi durur (Barış 2026-11-15: Lezzet Otobüsü) */
   arsiv?: boolean;
   /**
@@ -74,6 +76,7 @@ export const OYUNLAR: OyunKarti[] = [
   },
   {
     id: 'pazar',
+    enCokYas: 3,
     ad: 'Mino’nun Pazarı',
     adres: './pazar/',
     renk: '#F0413F',
@@ -125,6 +128,7 @@ export const OYUNLAR: OyunKarti[] = [
   },
   {
     id: 'giysin',
+    enCokYas: 4,
     ad: 'Kino Ne Giysin?',
     adres: './giysin/',
     renk: '#5BB8F0',
@@ -145,6 +149,9 @@ export const OYUNLAR: OyunKarti[] = [
     katmanlar: [],
   },
 ];
+
+/** Seçili yaşa göre menüde görünen kartlar (yaş seçilmediyse hepsi) */
+export const yasaGore = (kartlar: OyunKarti[], yas: number | null): OyunKarti[] => kartlar.filter((k) => yas === null || !k.enCokYas || yas <= k.enCokYas);
 
 /** Menüde görünen kartlar (web ve uygulamada aynı kartlar; geniş Otobüs kartı hep sonda). */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {

@@ -10,7 +10,7 @@ import { geriDinle } from '../../src/kabuk/yon';
 import { kilitleriKur, erisimVarMi } from '../../src/abonelik/kilit';
 import { MENU_YASLARI, type MenuYasi, menuYasiOku, menuYasiniSec } from '../../src/engine/menu-yas';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { menuOyunlari } from './oyunlar';
+import { menuOyunlari, yasaGore } from './oyunlar';
 import { KITAPLAR } from '../../kitap/src/kitaplar';
 import { kartResmi } from './ekranlar';
 import { VIDEOLAR } from '../../src/video/videolar';
@@ -120,7 +120,7 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
       }
     } else {
       const etkinlikler = ['matematik', 'alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera'];
-      menuOyunlari(!!uygulamaPlatformu()).filter(k => secili.id === 'etkinlik' ? etkinlikler.includes(k.id) : ![...etkinlikler, 'film', 'kitap'].includes(k.id)).forEach(k => {
+      yasaGore(menuOyunlari(!!uygulamaPlatformu()), menuYasiOku()).filter(k => secili.id === 'etkinlik' ? etkinlikler.includes(k.id) : ![...etkinlikler, 'film', 'kitap'].includes(k.id)).forEach(k => {
         const kapak = k.id === 'alfabe' ? alfabeKapagi : oyunKapaklari[`../../assets/uygulama/oyun-kapaklari/${k.id}.webp`];
         const ad = k.ust ? `${k.ust} ${k.ad}` : k.ad;
         kart(ad, k.adres, kapak, k.id, kapak ? undefined : kartResmi(k));
