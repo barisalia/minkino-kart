@@ -43,7 +43,7 @@ const ACILANLAR: { ikon: keyof typeof IKON; renk: string; yazi: string }[] = [
   { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Okul öncesi eğitim: Harf Atölyesi, Matematik Atölyesi, Okula Hazırlanalım' },
   { ikon: 'muzik', renk: 'var(--pembe)', yazi: 'Bütün etkinlikler ve Sesli Maceralar' },
   { ikon: 'oyna', renk: 'var(--mavi)', yazi: 'Bütün çizgi filmler' },
-  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: "Pazar, Mino ile Kino'nun Pasta Otobüsü, Kino'nun Otobüsü, Çiz Canlansın" },
+  { ikon: 'yildiz', renk: 'var(--turuncu)', yazi: "Minik Şef, Mino'nun Pazarı, Kino'yla Sen Seç, Çiz Canlansın" },
   { ikon: 'goz', renk: 'var(--kirmizi)', yazi: 'Dedektif Mino ve Kino Ne Giysin? mevsimleri' },
   { ikon: 'sihir', renk: 'var(--mor)', yazi: 'Yeni bölümler geldikçe' },
   { ikon: 'onay', renk: 'var(--yesil)', yazi: 'Reklam yok, güvenli' },

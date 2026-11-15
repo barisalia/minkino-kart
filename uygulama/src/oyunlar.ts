@@ -45,6 +45,8 @@ export interface OyunKarti {
   genis?: boolean;
   /** Mağaza uygulamasında gösterilmez (yalnız web sitesindeki oyunlar için; şu an yok) */
   uygulamadaYok?: boolean;
+  /** Arşivde: menüde (web ve uygulama) görünmez; oyunun dosyaları ve adresi durur (Barış 2026-11-15: Lezzet Otobüsü) */
+  arsiv?: boolean;
   /**
    * Set: aynı setin kartları menüde yan yana, aynı sırada durur ve aralarında çamaşır ipi gerilir (uygulama.css →
    * .ug-set). 'giysin': Kino Ne Giysin? + Mino Ne Giysin?
@@ -139,13 +141,14 @@ export const OYUNLAR: OyunKarti[] = [
     zemin: 'kino-otobus/kapak',
     rozet: '2 aşama',
     genis: true,
+    arsiv: true,
     katmanlar: [],
   },
 ];
 
 /** Menüde görünen kartlar (web ve uygulamada aynı kartlar; geniş Otobüs kartı hep sonda). */
 export function menuOyunlari(uygulama: boolean): OyunKarti[] {
-  let hepsi = OYUNLAR;
+  let hepsi = OYUNLAR.filter((k) => !k.arsiv);
   // Kitaplar: geniş Pasta kartından önce (bayrak açılınca)
   if (KITAP_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), KITAP_KARTI, ...hepsi.filter((k) => k.genis)];
   if (PATI_MENUDE) hepsi = [{ id: 'pati', ad: 'Minik Dostlarım', adres: './pati/', renk: '#83D6BF', zemin: 'pati-yeni/kapak', katmanlar: [] }, ...hepsi];

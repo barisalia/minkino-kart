@@ -13,7 +13,7 @@ test('Ana menü: dört kategori ve gerçek içerik kartları', async ({ page }) 
   await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
   await expect(page.locator('.ym-icerik')).toHaveCount(oyunlar.length);
   expect(await page.locator('.ym-icerik').evaluateAll(l => l.map(k => k.getAttribute('data-oyun')))).toEqual(oyunlar.map(k => k.id));
-  await expect(page.locator('.ym-icerik[data-oyun="otobus"]')).toHaveCount(1);
+  await expect(page.locator('.ym-icerik[data-oyun="otobus"]')).toHaveCount(0);
   await expect(page.locator('.ym-icerik[data-oyun="pasta"], .ym-icerik[data-oyun="mino-giysin"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Etkinlikler', exact: true }).click();
   await expect(page.locator('.ym-icerik')).toHaveCount(5);
@@ -80,7 +80,8 @@ for (const yas of [3, 4, 5, 6]) {
 }
 
 for (const [yas, mod] of [[3, 'kucuk'], [6, 'buyuk']] as const) {
-  test(`Otobüs: ${yas} yaş, Dondurma aşamasında ${mod} modunu açar`, async ({ page }) => {
+  // Lezzet Otobüsü arşivde (menüde yok): oyun dönerse bu test yeniden açılır
+  test.skip(`Otobüs: ${yas} yaş, Dondurma aşamasında ${mod} modunu açar`, async ({ page }) => {
     const hatalar = hataTopla(page);
     await page.goto('./?test=1');
     await page.getByRole('button', { name: 'Yaş aralığını seç' }).click();

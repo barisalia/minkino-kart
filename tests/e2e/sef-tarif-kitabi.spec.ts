@@ -1,41 +1,22 @@
 import { test, expect } from '@playwright/test';
-import type { Yemek } from '../../sef/src/yemekler';
-import { readFileSync } from 'node:fs';
 
-const adimlar=JSON.parse(readFileSync(new URL('../../sef/src/tarif-adimlari.json',import.meta.url),'utf8')) as Record<Yemek,string[]>;
-
-test('Yedi tarifin resimli sayfaları açılır ve son sayfadan seçilen mutfağa girilir',async({page})=>{
-  await page.setViewportSize({width:740,height:360});
-  const hatalar:string[]=[];
-  page.on('pageerror',e=>hatalar.push(e.message));
-  for(const id of Object.keys(adimlar) as Yemek[]){
-    await page.goto('./sef/?test=1');
-    const kart=page.getByRole('button',{name:'Resimli tarif kitabı'});
-    await kart.click();
-    const dialog=page.getByRole('dialog',{name:'Resimli tarifler'});
-    await dialog.locator('[data-kitap-yemek="'+id+'"]').focus();
-    await page.keyboard.press('Enter');
-    for(let i=0;i<adimlar[id].length;i++){
-      const resim=dialog.getByRole('img',{name:adimlar[id][i]});
-      await expect(resim).toBeVisible();
-      await resim.evaluate(async el=>{await (el as HTMLImageElement).decode();});
-      await expect(dialog.locator('.kitap-noktalar')).toHaveAccessibleName((i+1)+' / 4');
-      const sonraki=dialog.getByRole('button',{name:i===3?'Bu yemeği hazırla':'Sonraki adım'});
-      await expect(sonraki).toBeFocused();
-      await page.keyboard.press('Enter');
-    }
-    await expect(dialog).toHaveCount(0);
-    if(id==='corba'||id==='salata'){
-      await expect(page.locator('.mutfak-sahnesi')).toHaveAttribute('data-ekran','mutfak');
-      await page.getByRole('button',{name:'Geri',exact:true}).click();
-    }else if(id==='pizza'){
-      await expect(page.locator('.firin-oyunu')).toBeVisible();
-      await page.getByRole('button',{name:'Siparişlere dön',exact:true}).click();
-    }else{
-      await expect.poll(()=>page.evaluate(()=>localStorage.getItem('minkino-sef-acik-atolye'))).toBe(id);
-      await page.keyboard.press('Escape');
-    }
-    await expect(kart).toBeVisible();
+test('Eski oyun kaydıyla da iki rafta yalnızca oynanabilir yemekler açılır', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.addInitScript(() => {
+  localStorage.setItem('minkino-sef-v1', JSON.stringify({
+    sessiz: true, gecmis: [{ tarifId: 'salata', puan: 3, sus: {id:'limon',x:0.5,y:0.5} }],
+  }));
+  });
+  await page.goto('./sef/', {waitUntil:'domcontentloaded'});
+  for (const raf of [1, 2]) {
+    const yemekler = page.locator('.siparisler button');
+    await expect(yemekler.first()).toBeVisible();
+    await expect(page.locator('.siparisler button:not([data-tarif]):not([data-tezgah])')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /tarif kitabı|hazırladığım tabaklar/i })).toHaveCount(0);
+    if (raf === 1) await page.getByRole('button', { name: 'Sonraki tarif rafı' }).click();
   }
-  expect(hatalar).toEqual([]);
+  await page.locator('[data-tezgah="omlet"]').click();
+  await expect(page.locator('.siparisler')).toHaveCount(0);
+  await expect(page.locator('.sef-tarif-kitabi')).toHaveCount(0);
 });
+
