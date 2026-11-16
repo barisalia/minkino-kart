@@ -58,7 +58,7 @@ export const YEDEK_FIYAT: Record<PlanId, string> = { aylik: '239,99 TL', yillik:
 export const NORMAL_FIYAT: Record<PlanId, string> = { aylik: '799,99 TL', yillik: '5.999,99 TL' };
 /** Lansman indirimi (Barış 2026-11-16: ikisinde %70): yıllık 5.999,99 → 1.799,99, aylık 799,99 → 239,99 */
 export const LANSMAN_INDIRIM: Record<PlanId, string> = { aylik: '%70 indirim', yillik: '%70 indirim' };
-const YEDEK_DENEME_GUN = 7;
+const YEDEK_DENEME_GUN = 14;
 
 /**
  * Kahraman görseli: assets/uygulama/abonelik-kahraman-kesik.webp (Mino ve Kino el sallar, yıldız ve konfeti; zemini

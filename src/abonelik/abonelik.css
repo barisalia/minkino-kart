@@ -755,23 +755,26 @@
 .mk-kok .kl-tamam {
   min-width: min(100%, 220px);
 }
-/* büyükler için: küçük, sade, yazılı (çocuğu çekmeyen) */
+/* büyükler için: açıkça görünen ikinci düğme (Barış 2026-11-16: "çok saklamışsın"); Tamam'dan sade, ama gizli değil */
 .mk-kok .kl-buyuk {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin: 14px auto 0;
-  min-height: 44px;
-  padding: 0 10px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  opacity: 0.75;
+  gap: 8px;
+  margin: 12px auto 0;
+  min-width: min(100%, 220px);
+  min-height: 52px;
+  padding: 0 18px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--kontur, #3b2a1e);
+  background: #fff;
+  border: 3px solid color-mix(in srgb, var(--kontur, #3b2a1e) 70%, #fff);
+  border-radius: 999px;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--kontur, #3b2a1e) 40%, #fff);
+  cursor: pointer;
 }
-.mk-kok .kl-buyuk > span:not(.ikon) {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
+.mk-kok .kl-buyuk:active { translate: 0 2px; box-shadow: 0 1px 0 color-mix(in srgb, var(--kontur, #3b2a1e) 40%, #fff); }
 .mk-kok .kl-buyuk .ikon {
   font-size: 20px;
   color: var(--mavi);
@@ -801,3 +804,7 @@
 .mk-kok .ab-eski { color: #a8907a; font-size: .82em; font-weight: 700; text-decoration-thickness: 2px; }
 
 .mk-kok .ab-lansman { margin: 6px 0 0; text-align: center; font-weight: 800; color: #c0392b; font-size: .95em; }
+
+/* oyun sayfası .mk-kok değilken kilit anı için geçici katman (src/abonelik/kilit.ts) */
+.mk-kok.mk-kilit-katmani { z-index: 2147483000; background: transparent; pointer-events: none; }
+.mk-kok.mk-kilit-katmani > * { pointer-events: auto; }

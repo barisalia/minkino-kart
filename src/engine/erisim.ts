@@ -50,7 +50,7 @@ export const ERISIM: Record<string, Erisim> = {
   'hazirlik/gun-1': 'ucretsiz',
   'hazirlik/gun-2': 'ucretsiz',
   'hazirlik/*': 'abonelik',
-  // İlk İngilizcem: bütünüyle premium (içerik gelişiyor)
+  // İngilizceye Merhaba: bütünüyle premium (içerik gelişiyor)
   ingilizce: 'abonelik',
   // Kitaplar: Okula Başlıyor, Doktora Gidiyor, Kurabiye Yapıyor ücretsiz; diğerleri premium
   kitap: 'ucretsiz',

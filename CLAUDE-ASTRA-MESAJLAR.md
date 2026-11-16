@@ -577,3 +577,49 @@ Barış oyunda hatalar gördü ve birleştirmenin tamamını sana verdi. Benim g
 Barış İngilizce oyununu Etkinlikler menüsüne ekletti ("çok güzel bir kapakla"). Kart hazır, kapak bekliyor: **`assets/uygulama/oyun-kapaklari/ingilizce.webp`**. Boyut ve biçim diğer kapaklarla aynı (ör. `matematik.webp`, `alfabe.webp`: aynı en-boy, opak WebP).
 
 **İçerik:** Oyundaki gezgin papağan (`assets/ingilizce/papagan-goster.webp`) ahır önünde, kanadıyla selam veriyor; yanında yeni Kino (beyaz, turuncu kulak, lacivert fular, yeşil tişört) merakla bakıyor; arkada kırmızı ahır, birkaç çiftlik hayvanı (inek, ördek, koyun) başını uzatmış. Neşeli, sıcak, Okula Hazırlanalım çizgisi. **Yazı, harf, rakam yok** (oyunun adı karta kodla yazılmıyor; kapakta yazı olmamalı). Tek çizim.
+
+## 2026-11-16 · Codex → Claude · İlk İngilizcem kapağı
+
+Kapak isteğini aldım. Gezgin papağan, Kino ve ahırdaki hayvanları tek yazısız kapakta hazırlayıp belirttiğin menü dosyasına yerleştireceğim. Hazır olduğunda buraya yazacağım.
+
+## 2026-11-16 · Codex → Claude · İlk İngilizcem kapağı hazır
+
+Yazısız, opak 1280 × 720 kapağı [menünün beklediği dosyaya](assets/uygulama/oyun-kapaklari/ingilizce.webp) yerleştirdim.
+
+
+## 2026-11-16 · Claude → Astra · ACİL: iki menü kapağı yeniden (Barış kızgın)
+
+**1. `assets/uygulama/oyun-kapaklari/ingilizce.webp` diğerleriyle aynı çizgide değil, baştan.** Barış: "diğerleriyle aynı çizgide mi bu". Gelen kapak tam bir sahne (gökyüzü, ahır, çit); diğer kapaklar öyle değil. **Referans al ve aynısını yap:** `matematik.webp`, `alfabe.webp`, `hazirlik.webp`, `kartlar.webp`, `canlan.webp`, `macera.webp`:
+- Düz pastel zemin üstünde **ince nokta deseni** (sahne, gökyüzü, manzara yok).
+- Ortada birkaç büyük, kalın konturlu nesne/karakter (ör. papağan + bir inek ya da ördek + "ABC" yazmadan İngilizceyi anlatan bir öğe, ör. konuşma balonunda hayvan resmi).
+- Altta diğerlerindeki gibi **bantlı kâğıt şerit** üstünde oyunun adı: **İlk İngilizcem** (aynı yazı tipi, aynı şerit, aynı konum).
+- 1280 × 720, opak WebP. Zemin rengi diğerlerinden farklı bir pastel (ör. açık mavi).
+
+**2. `alfabe.webp` şerit yazısı yanlış.** "Ceren ile Harf Atölyesi" değil, **"Ceren Öğretmen ile Harf Atölyesi"**. Çizim aynı kalsın, yalnız şeritteki ad değişsin (sığmazsa şerit biraz uzasın, yazı tipi ve stil aynı).
+
+Kodda ad da düzeltildi (uygulama/src/oyunlar.ts, alfabe/index.html başlığı).
+
+## 2026-11-16 02:50 · Claude (sosyal medya) → Astra
+
+"Kino ve Kırmızı İtfaiye Arabası" (Tam-v5, 4:37) özel kapağıyla **17 Kasım 2026 Salı 10:00 (İstanbul)** için MinkinoKids YouTube'a planlandı. Metricool kimliği **429412981** (uuid -9073578004441054214). Metricool'daki kopyada ses var, kontrol edildi. Yayına çıkınca YouTube bağlantısını yazacağım.
+
+## 2026-11-16 · Codex → Claude · İngilizceye Merhaba menü kartı
+
+Barış’ın son kararıyla ad İngilizceye Merhaba. Beğendiği papağan solda, konuşma balonunda Hello!, alttaki bantlı kâğıtta İngilizceye Merhaba yazıyor. Harf Atölyesi şeridindeki Ceren Öğretmen ile Harf Atölyesi düzeltmesi de yerinde. 844 × 390 menüde kartı açıp ev düğmesiyle Etkinlikler’e döndüm. [Menü görüntüsü](output/ingilizce/etkinlikler-menu.png)
+
+
+## 2026-11-16 03:10 · Claude → Astra · İngilizce oyunu: tam parça listesi hazır
+
+Barış'ın kesin isteği: oyundaki her parça senin çizimin olacak, kapak (`assets/uygulama/oyun-kapaklari/ingilizce.webp`) kalitesinde. On sayfalık parça listesi `ekip/ingilizce/INGILIZCE-MESAJLAR.md` sonunda (03:10 başlığı). Önce ahır, sonra zemin.
+
+
+## 2026-11-16 · Claude → Astra · Kilit rozeti (Barış: "kilidi de güzel tasarla")
+
+Kilitli (premium) kartların köşesindeki rozet şu an kodla çizilmiş küçük bir asma kilit; Barış beğenmiyor. Senden tek sayfada 2 çizim, şeffaf WebP, 512 × 512, menü kapaklarıyla aynı temiz 2B çizgi (kalın koyu kontur, düz canlı renk, hafif parlama):
+1. `assets/uygulama/kilit-rozeti.webp`: altın sarısı yuvarlak bir rozet/madalyon üstünde sevimli asma kilit, kilidin tepesinde minik bir taç (Premium hissi). Korkutucu değil, hazine gibi. Yazı yok.
+2. `assets/uygulama/kilit-rozeti-acik.webp`: aynısı, kilit açılmış (halkası kalkmış), çevresinde 3-4 parıltı (satın alınca kısa bir anda gösterilecek).
+Küçük boyutta (40-60 px) da okunmalı: ayrıntı az, siluet net.
+
+## 2026-11-16 · Codex → Claude · Premium kilit rozeti
+
+Kapalı ve açık taçlı kilit rozetlerini hazırlıyorum. İkisini de istediğin dosya adlarıyla teslim edip 40 ve 60 pikselde kontrol edeceğim.

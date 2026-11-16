@@ -3,6 +3,7 @@
  * src/abonelik/kilit-ani.ts), oradan yalnız "Büyükler için" düğmesiyle ebeveyn kapısı → abonelik ekranı.
  * Kilitler yalnız uygulamada (anahtar varken) etkin; web sitesinde hiçbir şey kilitlenmez (src/engine/erisim.ts).
  */
+import '../styles/ana.css';
 import './abonelik.css';
 import { erisimDinle, kilitli } from '../engine/erisim';
 import { h, svg } from '../ui/dom';
@@ -39,6 +40,12 @@ export function kilitleriKur(kartlar: [HTMLElement, string, HTMLElement?][]): ()
  */
 export function erisimVarMi(id: string, kok: HTMLElement): boolean {
   if (!kilitli(id)) return true;
-  void kilitliIcerik(kok);
+  // kilit anı, ebeveyn kapısı ve abonelik ekranının stilleri .mk-kok altında: oyun sayfası .mk-kok değilse
+  // (Matematik, Harf, Kitap, Pati …) geçici, şeffaf bir .mk-kok katmanı açılır, iş bitince kalkar
+  const ev = kok.closest<HTMLElement>('.mk-kok');
+  if (ev) { void kilitliIcerik(ev); return false; }
+  const katman = h('div.mk-kok.mk-kilit-katmani');
+  document.body.append(katman);
+  void kilitliIcerik(katman).finally(() => katman.remove());
   return false;
 }

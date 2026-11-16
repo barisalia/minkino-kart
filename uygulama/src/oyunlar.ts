@@ -58,9 +58,9 @@ export interface OyunKarti {
 
 export const OYUNLAR: OyunKarti[] = [
   { id: 'matematik', ad: 'Matematik Atölyesi', adres: './matematik/', renk: '#f9bc76', katmanlar: [] },
-  { id: 'alfabe', ad: 'Ceren ile Harf Atölyesi', adres: './alfabe/', renk: '#f7c785', katmanlar: [] },
-  // İlk İngilizcem: bütünüyle premium (src/engine/erisim.ts); kapak Astra'dan gelince assets/uygulama/oyun-kapaklari/ingilizce.webp
-  { id: 'ingilizce', ad: 'İlk İngilizcem', adres: './ingilizce/', renk: '#78cce3', rozet: 'Yeni', katmanlar: [] },
+  { id: 'alfabe', ad: 'Ceren Öğretmen ile Harf Atölyesi', adres: './alfabe/', renk: '#f7c785', katmanlar: [] },
+  // İngilizceye Merhaba: bütünüyle premium (src/engine/erisim.ts)
+  { id: 'ingilizce', ad: 'İngilizceye Merhaba', adres: './ingilizce/', renk: '#78cce3', rozet: 'Yeni', katmanlar: [] },
   { id: 'sef', ad: 'Minik Şef', adres: './sef/', renk: '#6CC9AE', katmanlar: [] },
   { id: 'kino-ile-sen-sec', ad: 'Kino’yla Sen Seç', adres: './kino-ile-sen-sec/', renk: '#FFCE56', zemin: 'kino-ile-sen-sec/kapak', katmanlar: [] },
   { id: 'hazirlik', ad: 'Okula Hazırlanalım', adres: './hazirlik/', renk: '#70BDAF', zemin: 'hazirlik/kapak', katmanlar: [] },

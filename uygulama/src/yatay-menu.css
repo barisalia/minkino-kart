@@ -35,7 +35,9 @@
 .ym-ekran .ym-icerik img, .ym-ekran .ym-yedek { width: 100%; aspect-ratio: 1.6; object-fit: cover; border: 2px solid var(--ym-kontur); border-radius: 13px; background: white; }
 .ym-ekran .ym-yedek { display: grid; place-items: center; font-size: 55px; }
 .ym-ekran .ym-baslik { padding: 7px 0 2px; color: white; font-size: clamp(12px, 1.8vw, 21px); text-shadow: 1px 1px 0 #493747; }
-.ym-ekran .ym-kilit { position: absolute; left: 10px; top: 10px; pointer-events: none; }
+.ym-ekran .ym-kilit { position: absolute; right: 7%; top: 9%; z-index: 3; pointer-events: none; }
+/* rozet kartın içinde, sağ üstte (dışarı taşıp yan karta binmesin) */
+.ym-ekran .ym-kilit .mk-kilit { position: static; }
 .ym-ekran .ym-icerik .ug-kart-resim { position: relative; flex: none; width: 100%; aspect-ratio: 1.6; border: 2px solid var(--ym-kontur); border-radius: 13px; --r: var(--renk); }
 .ym-ekran .ym-icerik .ug-kart-resim::after { display: none; }
 .ym-ekran .ym-icerik .ug-kart-resim img { aspect-ratio: auto; border: 0; border-radius: 0; background: transparent; object-fit: contain; }

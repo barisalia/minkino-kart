@@ -83,7 +83,7 @@ test('Uygulama: kilitli oyun → ebeveyn kapısı → abonelik ekranı → (saht
   await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('₺899,00');
   await expect(ab.locator('.ab-plan-yillik .ab-avantaj')).toHaveText('En avantajlı');
   await expect(ab.locator('.ab-plan-yillik')).toHaveAttribute('aria-checked', 'true');
-  await expect(ab.locator('.ab-deneme')).toHaveText('7 gün ücretsiz dene');
+  await expect(ab.locator('.ab-deneme')).toHaveText('14 gün ücretsiz dene');
   await expect(ab.locator('.ab-basla')).toHaveText('Ücretsiz denemeyi başlat');
   await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺899,00 / yıl');
   await expect(ab.getByRole('button', { name: 'Satın alımları geri yükle' })).toBeEnabled();

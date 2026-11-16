@@ -21,13 +21,14 @@ export function sayiYazi(n: number): string {
 
 /** Soru: iki basamaklı (11-39) + tek basamaklı (3-9); cevap 14-48 */
 export function kapiSorusu(rnd: () => number = Math.random): { a: number; b: number; yazi: string } {
-  const a = 11 + Math.floor(rnd() * 29);
-  const b = 3 + Math.floor(rnd() * 7);
+  // Barış 2026-11-16: kolay olsun (büyük için bir bakışta; okuma bilmeyen çocuk için yine yazılı): 10-19 + 1-5
+  const a = 10 + Math.floor(rnd() * 10);
+  const b = 1 + Math.floor(rnd() * 5);
   const yazi = `${sayiYazi(a)} artı ${sayiYazi(b)} kaç eder?`;
   return { a, b, yazi: yazi.charAt(0).toLocaleUpperCase('tr') + yazi.slice(1) };
 }
 
-/** Cevap her zaman iki basamaklı (14-48): en çok iki rakam yazılır */
+/** Cevap her zaman iki basamaklı (11-24): en çok iki rakam yazılır */
 export const KAPI_BASAMAK = 2;
 /** Üst üste bu kadar yanlıştan sonra kapı bir süre dinlenir (rastgele tuşa basan çocuk deneye deneye geçemesin) */
 export const KAPI_HAK = 3;

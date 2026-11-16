@@ -65,14 +65,14 @@ describe('ebeveyn kapısı', () => {
   it('iki basamaklı + tek basamaklı, soru yazıyla (rakam yok)', () => {
     for (let i = 0; i < 200; i++) {
       const s = kapiSorusu();
-      expect(s.a).toBeGreaterThanOrEqual(11);
-      expect(s.a).toBeLessThanOrEqual(39);
-      expect(s.b).toBeGreaterThanOrEqual(3);
-      expect(s.b).toBeLessThanOrEqual(9);
+      expect(s.a).toBeGreaterThanOrEqual(10);
+      expect(s.a).toBeLessThanOrEqual(19);
+      expect(s.b).toBeGreaterThanOrEqual(1);
+      expect(s.b).toBeLessThanOrEqual(5);
       expect(s.yazi).not.toMatch(/\d/);
       expect(s.yazi).toMatch(/ artı .* kaç eder\?$/);
     }
-    expect(kapiSorusu(() => 0).yazi).toBe('On bir artı üç kaç eder?');
+    expect(kapiSorusu(() => 0).yazi).toBe('On artı bir kaç eder?');
   });
   it('cevap hep iki basamaklı (iki kutucuk yeter)', () => {
     for (let i = 0; i < 200; i++) {

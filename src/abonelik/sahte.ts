@@ -27,7 +27,7 @@ export function sahteSaglayici(): Saglayici {
       if (q.get('magaza') === 'yok') throw new Error('mağaza yok (sahte)');
       // mağazanın döndüreceği biçimde (yerel fiyat metni); değerler Barış'ın fiyatları
       // &deneme=yok: bu kullanıcının deneme hakkı yok (iOS'ta denemeyi daha önce kullanmış Apple Kimliği)
-      const denemeGun = q.get('deneme') === 'yok' ? null : 7;
+      const denemeGun = q.get('deneme') === 'yok' ? null : 14;
       return [
         { id: 'aylik', fiyat: '₺239,99', ayBasi: null, denemeGun },
         { id: 'yillik', fiyat: '₺1.799,99', ayBasi: '₺150,00', denemeGun },
