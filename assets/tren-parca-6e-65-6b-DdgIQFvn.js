@@ -1,0 +1,1 @@
+const e=""+new URL("tren-parca-6e-65-6b-CjHpBC36.mp3",import.meta.url).href;export{e as default};

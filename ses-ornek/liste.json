@@ -1,0 +1,190 @@
+{
+ "sesler": [
+  {
+   "kod": "A",
+   "ad": "Multilingual v2 + Türkçe bağlam",
+   "dosyalar": [
+    {
+     "metin": "Aferin!",
+     "dosya": "A/01.mp3"
+    },
+    {
+     "metin": "Süpersin!",
+     "dosya": "A/02.mp3"
+    },
+    {
+     "metin": "Muhteşem!",
+     "dosya": "A/03.mp3"
+    },
+    {
+     "metin": "Bravo!",
+     "dosya": "A/04.mp3"
+    },
+    {
+     "metin": "Limon!",
+     "dosya": "A/05.mp3"
+    },
+    {
+     "metin": "Muz!",
+     "dosya": "A/06.mp3"
+    },
+    {
+     "metin": "Top!",
+     "dosya": "A/07.mp3"
+    },
+    {
+     "metin": "Pizza!",
+     "dosya": "A/08.mp3"
+    },
+    {
+     "metin": "Balon!",
+     "dosya": "A/09.mp3"
+    },
+    {
+     "metin": "Tren!",
+     "dosya": "A/10.mp3"
+    },
+    {
+     "metin": "Roket!",
+     "dosya": "A/11.mp3"
+    },
+    {
+     "metin": "Penguen!",
+     "dosya": "A/12.mp3"
+    },
+    {
+     "metin": "Harika! Limon! Ekşi mi ekşi!",
+     "dosya": "A/13.mp3"
+    },
+    {
+     "metin": "Kedi hangisi? Kediyi bulur musun?",
+     "dosya": "A/14.mp3"
+    }
+   ]
+  },
+  {
+   "kod": "B",
+   "ad": "Eleven v3 + dil: Türkçe",
+   "dosyalar": [
+    {
+     "metin": "Aferin!",
+     "dosya": "B/01.mp3"
+    },
+    {
+     "metin": "Süpersin!",
+     "dosya": "B/02.mp3"
+    },
+    {
+     "metin": "Muhteşem!",
+     "dosya": "B/03.mp3"
+    },
+    {
+     "metin": "Bravo!",
+     "dosya": "B/04.mp3"
+    },
+    {
+     "metin": "Limon!",
+     "dosya": "B/05.mp3"
+    },
+    {
+     "metin": "Muz!",
+     "dosya": "B/06.mp3"
+    },
+    {
+     "metin": "Top!",
+     "dosya": "B/07.mp3"
+    },
+    {
+     "metin": "Pizza!",
+     "dosya": "B/08.mp3"
+    },
+    {
+     "metin": "Balon!",
+     "dosya": "B/09.mp3"
+    },
+    {
+     "metin": "Tren!",
+     "dosya": "B/10.mp3"
+    },
+    {
+     "metin": "Roket!",
+     "dosya": "B/11.mp3"
+    },
+    {
+     "metin": "Penguen!",
+     "dosya": "B/12.mp3"
+    },
+    {
+     "metin": "Harika! Limon! Ekşi mi ekşi!",
+     "dosya": "B/13.mp3"
+    },
+    {
+     "metin": "Kedi hangisi? Kediyi bulur musun?",
+     "dosya": "B/14.mp3"
+    }
+   ]
+  },
+  {
+   "kod": "C",
+   "ad": "Flash v2.5 + dil: Türkçe",
+   "dosyalar": [
+    {
+     "metin": "Aferin!",
+     "dosya": "C/01.mp3"
+    },
+    {
+     "metin": "Süpersin!",
+     "dosya": "C/02.mp3"
+    },
+    {
+     "metin": "Muhteşem!",
+     "dosya": "C/03.mp3"
+    },
+    {
+     "metin": "Bravo!",
+     "dosya": "C/04.mp3"
+    },
+    {
+     "metin": "Limon!",
+     "dosya": "C/05.mp3"
+    },
+    {
+     "metin": "Muz!",
+     "dosya": "C/06.mp3"
+    },
+    {
+     "metin": "Top!",
+     "dosya": "C/07.mp3"
+    },
+    {
+     "metin": "Pizza!",
+     "dosya": "C/08.mp3"
+    },
+    {
+     "metin": "Balon!",
+     "dosya": "C/09.mp3"
+    },
+    {
+     "metin": "Tren!",
+     "dosya": "C/10.mp3"
+    },
+    {
+     "metin": "Roket!",
+     "dosya": "C/11.mp3"
+    },
+    {
+     "metin": "Penguen!",
+     "dosya": "C/12.mp3"
+    },
+    {
+     "metin": "Harika! Limon! Ekşi mi ekşi!",
+     "dosya": "C/13.mp3"
+    },
+    {
+     "metin": "Kedi hangisi? Kediyi bulur musun?",
+     "dosya": "C/14.mp3"
+    }
+   ]
+  }
+ ]
+}

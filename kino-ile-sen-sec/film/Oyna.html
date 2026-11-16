@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="tr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#142f33"><title>Kino’nun Bir Günü · Minkino</title>
+<link rel="icon" href="data:,"><link rel="preload" href="nunito-tr-black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="bir-gun/oyun.css?v=kapanis-8"></head>
+<body><main id="oyun" aria-label="Kino’nun Bir Günü">
+ <div class="sahne" id="ekran">
+  <canvas id="film" aria-hidden="true"></canvas><canvas id="lokum" aria-hidden="true"></canvas>
+  <section id="kapak" aria-labelledby="baslik"><img src="bir-gun/medya/kapak.webp" alt="Kino bahçe kapısında. Yanında kırmızı tahta tren, ileride park var.">
+   <div class="kapak-yazi"><h1 id="baslik"><span>Kino’nun</span> <span>Bir</span> <span>Günü</span></h1>
+    <button id="basla"><span>Başla</span><i aria-hidden="true"></i></button><button class="link" id="temiz" hidden>Baştan oyna</button>
+   </div>
+  </section>
+  <button id="oyunlara-don" type="button" aria-label="Oyunlara dön" title="Oyunlara dön" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5l-7 7 7 7"/></svg></button>
+  <nav id="arac" aria-label="Oynatma" hidden><button id="yol" hidden>Seçimlerim</button><button id="ses" aria-pressed="true">Ses açık</button><button id="dur">Duraklat</button><button id="atla">Karara geç</button><button id="yeniden" hidden>Baştan oyna</button></nav>
+  <div id="hareket" hidden>
+   <button id="temas" type="button" aria-label="Harekete katıl"></button>
+   <button id="hareket-dugme" type="button"><span id="hareket-ad"></span><span id="hareket-yon" aria-hidden="true"></span></button>
+  </div>
+  <section id="altyazi" hidden><span id="konusan"></span><p id="cumle"></p></section>
+  <section id="karar" aria-labelledby="soru" hidden><h2 id="soru" tabindex="-1"></h2><div id="secenekler"></div></section>
+
+  <p id="bekle" role="status" hidden>Sahne hazırlanıyor…</p>
+ </div>
+ <section id="son" class="sr" aria-labelledby="son-anlatim" hidden>
+  <p id="son-anlatim" tabindex="-1"></p>
+ </section>
+ <dialog id="harita"><header><h2>Seçimlerim</h2><button id="kapat" autofocus>Kapat</button></header><div class="harita-kaydir" tabindex="0" aria-label="Dallanan hikâye haritası"><div id="balonlar"></div></div><ol id="yollar"></ol><p id="varis"></p></dialog>
+ <p id="okuyucu" class="sr" aria-live="polite"></p>
+</main>
+<script src="bir-gun/hikaye.js?v=kapanis-8"></script><script src="bir-gun/zaman.js"></script><script src="bir-gun/cizimler.js?v=kapanis-8"></script><script src="bir-gun/oyunculuk.js?v=kapanis-8"></script><script src="bir-gun/sahne.js?v=kapanis-8"></script><script src="bir-gun/oyun.js?v=kapanis-8"></script>
+</body></html>
+
