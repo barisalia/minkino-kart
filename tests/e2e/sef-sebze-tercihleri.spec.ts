@@ -1,5 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {siparisBaslat,tabakTadimi,type MalzemeId} from '../../sef/src/tarif';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test.setTimeout(100_000);
 
@@ -42,20 +44,26 @@ test('Lokum için yalnızca patatesi ez, iki kepçeyi kâseye koy ve gerçek par
   await expect(page.locator('.sunum .corba-lokmasi')).toHaveCount(2);
   for(const id of ['domates','havuc'])await expect(page.locator('.sunum .corba-lokmasi[data-malzeme='+id+']')).toBeVisible();
   await page.locator('[data-sus=domates]').tap();await page.locator('.sunum').tap();await page.locator('[data-zil]').tap();
-  await expect(page.locator('.servis-misafiri [data-puan="3"]')).toBeVisible();
+  // Zilden sonra çorba Lokum'un tepsisine konur; puan tepsideki karşılaştırmada (eski özet ekranı yok).
+  await expect(page.locator('.tepsi-yuva[data-parca=corba]')).toHaveAttribute('data-hazir','true');
+  await page.getByRole('button',{name:'Sebze Çorbası siparişi ile tabağı karşılaştır'}).tap();
+  await expect(page.getByRole('dialog').locator('.sef-yildizlar')).toHaveAttribute('data-puan','3');
 });
 test('Dede küçük lokma isterken iri kesilen salata iki puan alır ve çizimler karşılaştırılabilir',async({page})=>{
   await tezgah(page,'salata');
   await expect(page.locator('.fis [data-boy="6"]')).toBeVisible();
   const istek=await page.locator('[data-istek]').getAttribute('data-istek');expect(istek).toBeTruthy();
   await page.locator('[data-sus='+istek+']').tap();await page.locator('.sunum').tap();
+  await page.locator('[data-zil]').tap();
+  // Zilden sonra salata Dede'nin tepsisine konur; karşılaştırma tepside, Dede yorumunu pencere açılınca kendi sesiyle söyler.
   const ses=page.waitForResponse(r=>r.url().includes('/dede-salata-kucuk-tadim.mp3')&&!r.url().includes('?import')&&r.ok());
-  await page.locator('[data-zil]').tap();await ses;
-  await expect(page.locator('.servis-misafiri [data-puan="2"]')).toBeVisible();
-  await expect(page.locator('.sebze-tadim [data-boy="6"]')).toBeVisible();
-  await expect(page.locator('.sebze-tadim [data-boy="2"]')).toBeVisible();
+  await page.getByRole('button',{name:'Bahçe Salatası siparişi ile tabağı karşılaştır'}).tap();await ses;
+  const karsilastir=page.getByRole('dialog');
+  await expect(karsilastir.locator('.sef-yildizlar')).toHaveAttribute('data-puan','2');
+  await expect(karsilastir.locator('[data-boy="6"]')).toBeVisible();
+  await expect(karsilastir.locator('[data-boy="2"]')).toBeVisible();
   await page.screenshot({path:'output/sef/dede-salata-dilimleri.png'});
-  await page.locator('[data-git=siparis]').tap();
+  await karsilastir.getByRole('button',{name:'Tepsiye dön'}).tap();
   await expect(page.locator('.tepsi-yuva .salata-kucuk-ic')).toBeVisible();
 });
 

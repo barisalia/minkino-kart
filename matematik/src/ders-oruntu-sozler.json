@@ -1,0 +1,20 @@
+{
+  "giris": "Bugün örüntü öğreneceğiz. Örüntü, tekrar eden bir sıra!",
+  "devam": "Tekrar hoş geldin! Örüntülerle devam edelim.",
+  "renk_ab": "Kırmızı, mavi, kırmızı, mavi. Bayraklar sırayla geliyor.",
+  "renk_abc": "Kırmızı, mavi, sarı. Sonra yine kırmızı!",
+  "renk_sor": "Sırada hangi bayrak var? Ona dokun.",
+  "sekil_ab": "Daire, kare, daire, kare.",
+  "sekil_aab": "Daire, daire, kare. Daire, daire, kare.",
+  "sekil_sor": "Sırada hangi taş var? Ona dokun.",
+  "ses_dinle": "Şimdi kulağınla iyi dinle!",
+  "ses_sor": "Sırada hangi ses var? Ona dokun.",
+  "dogru_1": "Evet, doğru!",
+  "dogru_2": "Aferin sana!",
+  "dogru_3": "Harika, buldun!",
+  "ipucu": "Baştan bir daha bak. Hangisi tekrar ediyor?",
+  "kendi_basla": "Şimdi sen bir örüntü kur! İki bayrak seç.",
+  "kendi_bitti": "Ne güzel bir örüntü kurdun! Bak, tekrar ediyor!",
+  "bitis": "Bugün örüntüleri öğrendin! Renkler, şekiller ve sesler sırayla tekrar ediyor.",
+  "hatira": "Bu bayrak dizisi senin hatıran!"
+}

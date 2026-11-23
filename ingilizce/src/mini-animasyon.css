@@ -1,0 +1,38 @@
+/* Mini animasyon (22 Kasım 2026; mini-animasyon.ts). Önek: ing-ma-. Dört poz üst üste, yalnız biri görünür. */
+.ing-ma{position:relative;display:block;width:100%;height:100%;padding:0;margin:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+span.ing-ma{cursor:default}
+.ing-ma-govde{position:absolute;inset:0;transform-origin:50% 100%}
+.ing-ma-govde>img,.ing-ma-govde>.ing-ma-yer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;visibility:hidden;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.ing-ma[data-poz="0"] .ing-ma-govde>[data-n="0"],
+.ing-ma[data-poz="1"] .ing-ma-govde>[data-n="1"],
+.ing-ma[data-poz="2"] .ing-ma-govde>[data-n="2"],
+.ing-ma[data-poz="3"] .ing-ma-govde>[data-n="3"]{visibility:visible}
+/* yer tutucu (yalnız taslak kipinde): pozun numarası */
+.ing-ma-yer{display:flex;align-items:center;justify-content:center;box-sizing:border-box;border:var(--cizgi,2px) dashed #7a9a94;border-radius:12%;background:#fffdf4;color:#3d6b63;font:800 clamp(10px,2.2cqmin,18px)/1.1 system-ui,sans-serif;text-align:center}
+
+/* geçiş yayları: taban çizgisinden (ayaklar yerinde kalır) */
+.ing-ma-yay-esne{animation:ing-ma-esne .46s cubic-bezier(.3,1.3,.6,1)}
+.ing-ma-yay-sek{animation:ing-ma-sek .42s cubic-bezier(.3,1.2,.6,1)}
+.ing-ma-yay-yaylan{animation:ing-ma-yaylan .5s cubic-bezier(.3,1.6,.6,1)}
+.ing-ma-yay-titre{animation:ing-ma-titre .5s linear}
+.ing-ma-yay-egil{animation:ing-ma-egil .55s cubic-bezier(.3,1.3,.6,1)}
+@keyframes ing-ma-esne{0%{transform:scale(1,1)}35%{transform:scale(1.07,.93)}70%{transform:scale(.97,1.04)}100%{transform:none}}
+@keyframes ing-ma-sek{0%{transform:none}30%{transform:translateY(-5%) scale(.98,1.03)}62%{transform:translateY(0) scale(1.05,.95)}100%{transform:none}}
+@keyframes ing-ma-yaylan{0%{transform:scale(.93)}60%{transform:scale(1.03)}100%{transform:none}}
+@keyframes ing-ma-titre{0%,100%{transform:none}12%{transform:translateX(-1.4%) rotate(-.6deg)}25%{transform:translateX(1.4%) rotate(.6deg)}38%{transform:translateX(-1.2%)}50%{transform:translateX(1.2%)}63%{transform:translateX(-.8%)}76%{transform:translateX(.8%)}88%{transform:translateX(-.3%)}}
+@keyframes ing-ma-egil{0%{transform:none}45%{transform:rotate(-3.5deg)}75%{transform:rotate(1deg)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.ing-ma-govde{animation:none!important}}
+
+/* ders sonu kutlaması: tahtanın sağ üst köşesinde, dokununca bir tur daha */
+.ing-sonuc .ing-ma-kutlama{position:absolute;right:0;top:0;width:calc(19*var(--u));height:calc(19*var(--u));z-index:3}
+@media (max-height:600px){.ing-sonuc .ing-ma-kutlama{width:calc(14*var(--u));height:calc(14*var(--u))}}
+/* kelime resminin yerinde (tanışma kapağı, Kelimelerim kartı) resimle aynı kutu */
+.ing-resim>.ing-ma{position:absolute;inset:0;width:100%;height:100%}
+
+/* doğru cevap ödülü: sağ üstte, ses düğmesinin altında (cevap kartlarını örtmez) bir tur oynar, sonra kaybolur; dokunuşları engellemez */
+.ing-ma-odul-kutu{position:absolute;right:calc(2*var(--u));top:calc(11.5*var(--u));width:calc(15*var(--u));height:calc(15*var(--u));z-index:20;pointer-events:none;transform-origin:50% 100%;animation:ing-ma-odul-gel .34s cubic-bezier(.3,1.4,.6,1) both}
+.ing-ma-odul-kutu.ing-ma-gidiyor{animation:ing-ma-odul-git .3s ease-in forwards}
+.ing-ma-odul-kutu>.ing-ma{width:100%;height:100%}
+@media (max-height:600px){.ing-ma-odul-kutu{width:calc(12*var(--u));height:calc(12*var(--u))}}
+@keyframes ing-ma-odul-gel{0%{opacity:0;transform:translateY(18%) scale(.6)}100%{opacity:1;transform:none}}
+@keyframes ing-ma-odul-git{0%{opacity:1;transform:none}100%{opacity:0;transform:translateY(12%) scale(.8)}}

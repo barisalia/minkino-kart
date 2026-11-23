@@ -8,7 +8,7 @@
  */
 import D from '../../content/dedektif.json';
 import { erisimVarMi } from '../../src/abonelik/kilit';
-import { efekt } from '../../src/audio/ses';
+import { efekt, konus } from '../../src/audio/ses';
 import { Karakter } from '../../src/karakter/karakter';
 import { Mino } from '../../src/mino/mino';
 import type { Ekran, Uygulama } from '../../src/uygulama';
@@ -16,20 +16,27 @@ import { h } from '../../src/ui/dom';
 import { IKON } from '../../src/ui/ikonlar';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import { oynat } from './efekt';
+import { SES } from './oyuncular';
 import { kayit } from './kayit';
-import { ROMAN2, V2 } from './mantik2';
-import { ROMAN3, V3, vaka3Gorunur } from './mantik3';
+import { M } from './mantik';
+import { M2, ROMAN2, V2 } from './mantik2';
+import { M3, ROMAN3, V3, vaka3Gorunur } from './mantik3';
 import { hazirla3 } from './resimler3';
 import { filmKatmani, resim } from './resimler';
 import { kareleriGetir, romanKur, sirayla } from './roman';
 import { ses } from './sesler';
 
-const oda = () =>
-  h(
+/** Açılış odası: yeni çizgi (assets/dedektif-yeni/acilis-oda.webp, Astra) gelince o; yoksa eski film/ev katmanları */
+const oda = (pano?: HTMLElement) => {
+  const yeni = resim('acilis-oda');
+  // yeni oda: resim 16:9 kutuda ekranı kaplar; panonun yeri resme göre (kartlar panonun üstünde durur)
+  if (yeni) return h('div.dd-acilis-oda.dd-yeni-oda', {}, h('div.dd-oda-kutu', {}, h('img', { src: yeni, alt: '', draggable: 'false', 'aria-hidden': 'true' }), pano ?? null));
+  return h(
     'div.dd-acilis-oda',
     { 'aria-hidden': 'true' },
     ...(['arka-uzak', 'arka-orta', 'arka-on'] as const).map((ad) => h('img', { src: filmKatmani('ev', ad), alt: '', draggable: 'false' })),
   );
+};
 
 function sesKucuk() {
   const s = sesDugmesi();
@@ -60,7 +67,7 @@ interface DosyaKapak {
   sus: string;
 }
 const KAPAKLAR: DosyaKapak[] = [
-  { id: 'vaka1', no: '1', ad: D.vaka.replace(/^Vaka 1:\s*/, ''), foto: 'lamba-devrik', sus: 'kart-kedi-pati-izi' },
+  { id: 'vaka1', no: '1', ad: D.vaka.replace(/^Vaka 1:\s*/, ''), foto: resim('vaka1-kapak') ? 'vaka1-kapak' : 'lamba-devrik', sus: 'kart-kedi-pati-izi' },
   { id: 'vaka2', no: '2', ad: V2.vaka.replace(/^Vaka 2:\s*/, ''), foto: 'v2/roman-1', sus: 'v2/iplik-kirmizi' },
   { id: 'vaka3', no: '3', ad: V3.vaka.replace(/^Vaka 3:\s*/, ''), foto: 'v3/kapak', sus: 'v3/palamut' },
 ];
@@ -109,7 +116,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
         oynat(d, 'dd-kilit-salla');
         oynat(once[k.id === 'vaka3' ? 'vaka2' : 'vaka1'], 'dd-hatirla');
         mino.tepki('hayir');
-
+        void konus(k.id === 'vaka3' ? M3.kilitli : M2.kilitli, SES.mino);
         return;
       }
       // erişim: Dedektif abonelikle (src/engine/erisim.ts → dedektif/<vaka>); kilitliyse kilit anı açılır, vaka açılmaz
@@ -120,13 +127,16 @@ export function acilisEkrani(app: Uygulama): Ekran {
     once[k.id] = d;
     return d;
   });
+  const dosyaKap = h(`div.dd-dosyalar${dosyalar.length > 2 ? '.dd-uc' : ''}`, {}, ...dosyalar);
+  // yeni çizgide dosyalar odadaki panonun üstünde
+  const panoda = !!resim('acilis-oda');
   const el = h(
-    'div.dd-acilis',
+    `div.dd-acilis${panoda ? '.dd-panolu' : ''}`,
     {},
-    oda(),
+    oda(panoda ? h('div.dd-pano', {}, dosyaKap) : undefined),
     h('div.dd-acilis-los'),
     h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.baslik)), h('div.dd-ust-sag', {}, dosyaD, sesKucuk())),
-    h('div.dd-acilis-sahne', {}, h('div.dd-acilis-mino', {}, mino.el), h('div.dd-acilis-kino', {}, kino.el), h(`div.dd-dosyalar${dosyalar.length > 2 ? '.dd-uc' : ''}`, {}, ...dosyalar)),
+    h('div.dd-acilis-sahne', {}, h('div.dd-acilis-mino', {}, mino.el), h('div.dd-acilis-kino', {}, kino.el), panoda ? null : dosyaKap),
   );
   mino.el.addEventListener('pointerdown', () => {
     mino.tepki('gidik');
@@ -135,7 +145,7 @@ export function acilisEkrani(app: Uygulama): Ekran {
   // açılışta Mino selam verir (ses ilk dokunuştan sonra açılır; açılmadıysa sessiz geçer)
   const z = window.setTimeout(() => {
     mino.tepki('selam');
-
+    void konus(M.selam, SES.mino);
   }, 600);
   return {
     el,
@@ -203,7 +213,7 @@ export function dosyaEkrani(app: Uygulama): Ekran {
       }
       else {
         oynat(k, 'dd-kilit-salla');
-
+        void konus(M2.kilitli, SES.mino);
       }
     });
     kartlar.push(k);
@@ -229,14 +239,24 @@ export function dosyaEkrani(app: Uygulama): Ekran {
         }
         else {
           oynat(k, 'dd-kilit-salla');
-
+          void konus(M3.kilitli, SES.mino);
         }
       });
       kartlar.push(k);
     }
   }
   kartlar.push(h('div.dd-vaka-kart.dd-yakinda', { 'aria-label': D.yazi.yakinda }, h('span.dd-vk-kapak', {}, h('b', {}, '?')), h('span.dd-vk-ad', {}, vaka3Gorunur() ? 'Vaka 4' : 'Vaka 3'), h('span.dd-vk-yakinda', {}, D.yazi.yakinda)));
-  const el = h('div.dd-dosya-ekran', {}, oda(), h('div.dd-acilis-los'), h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.yazi.dosya)), h('div.dd-ust-sag', {}, sesKucuk())), h('div.dd-vaka-izgara', {}, ...kartlar));
+  const izgara = h('div.dd-vaka-izgara', {}, ...kartlar);
+  // yeni çizgide kartlar odadaki panonun üstünde (açılış ekranı gibi)
+  const panoda = !!resim('acilis-oda');
+  const el = h(
+    `div.dd-dosya-ekran${panoda ? '.dd-panolu' : ''}`,
+    {},
+    oda(panoda ? h('div.dd-pano', {}, izgara) : undefined),
+    h('div.dd-acilis-los'),
+    h('div.dd-ust', {}, geri, h('h1.dd-baslik', {}, h('span', {}, D.yazi.dosya)), h('div.dd-ust-sag', {}, sesKucuk())),
+    panoda ? null : izgara,
+  );
 
   /**
    * Vaka 3'ün romanı: kareler Gemini çizimi (assets/dedektif3/roman-1..4); vakanın tuval bileşimleri (hazirla3) ilk açılışta biraz sürer. Hazır olmadan
@@ -270,8 +290,8 @@ export function dosyaEkrani(app: Uygulama): Ekran {
     r.alt.append(kapat);
     r.alt.classList.add('acik');
     void kareleriGetir(r, [], (i) => ses.kare(i)).then(() => {
-      sirayla(r, vaka === 'vaka1' ? 5200 : 4200);
-
+      const dur = sirayla(r, vaka === 'vaka1' ? 5200 : 4200);
+      void konus(vaka === 'vaka1' ? M.hikaye : vaka === 'vaka2' ? M2.hikaye : M3.hikaye, SES.mino).then(dur);
     });
   }
   return { el, kapat: () => kapatilacak.forEach((f) => f()) };

@@ -13,6 +13,10 @@ import {
   type Parca,
 } from '../../matematik/src/misket-geometri';
 
+// Tezgâhtaki oyuncaklar sürekli "nefes alır" (yalnız hareket azaltılmamışken); Playwright kımıldayan öğeye tıklamaz.
+// Oyun, hareket azaltılınca nefesi durdurur (stil.css · prefers-reduced-motion): testler bu ayarla koşar.
+test.use({ reducedMotion: 'reduce' });
+
 test('Her ray iki yönde aynı pimlere oturur; iki kısa rayın sonu uzun rayın sonudur', () => {
   const plan: Parca[] = [];
   for (let kat = 0; kat < KAT; kat++) {
@@ -88,11 +92,13 @@ test('Misket açıklıkta yakalanır; çocuk tam ölçülü rayı takar, üç ka
   await p.reload();
   await p.getByLabel('Ölçü tezgâhı', { exact: true }).click();
   await expect(yuva).toHaveCount(0);
-  await p.getByLabel('Mavi misketi al', { exact: true }).click();
-  await p.getByLabel('Kırmızı kolu çek ve misketi gönder').click();
+  await p.getByLabel('Mavi topu al', { exact: true }).click();
+  await p.getByLabel('Kırmızı kolu çek ve topu gönder').click();
   await expect(s).toHaveAttribute('data-asama', 'caldi', { timeout: 30000 });
+  // Zil çaldı: ölçü oyunlarına geçiş oku çocuğu çağırır.
+  await expect(p.locator('.mk-devam')).toHaveClass(/mk-devam-cagir/);
   await expect(s).toHaveAttribute('data-asama', 'kur');
-  await p.getByLabel('Mavi misketi al', { exact: true }).click();
+  await p.getByLabel('Mavi topu al', { exact: true }).click();
   await expect(s).toHaveAttribute('data-asama', 'yuklu');
   await p.getByLabel('Diğer ölçü oyunlarına geç').click();
   await expect
@@ -123,14 +129,14 @@ test('Serbest parkur hazır düzeni korur; parça iki yönde takılır, sökül�
   await p.getByLabel('Kendi parkurunu kur').click();
   await p.reload();
   await expect(parca).toBeVisible();
-  await p.getByLabel('Mavi misketi al').click();
-  await p.getByLabel('Kırmızı kolu çek ve misketi gönder').click();
-  await p.getByLabel('Atölyeye dön').click();
+  await p.getByLabel('Mavi topu al').click();
+  await p.getByLabel('Kırmızı kolu çek ve topu gönder').click();
+  await p.getByLabel('Oyuncaklara dön').click();
   await expect(p.locator('.kose')).toHaveCount(4);
 });
 
 for (const yas of [2, 3, 4]) {
-  test(`${yas} yaşta doğrudan bağlantı menüye açılır ve yarım tahta köprü kaydı ölçü turuna geçer`, async ({page}) => {
+  test(`${yas} yaşta doğrudan bağlantı menüye açılır; parkur yok, eski yarım ölçü kaydı ilk ölçü turuna baştan geçer`, async ({page}) => {
     await page.addInitScript(y => {
       const grup = y === 4 ? 'dort' : 'minik';
       localStorage.setItem('minkino-matematik-1-' + grup + '-olcu', JSON.stringify({adim:0, yer:0, secimler:[1,2]}));
@@ -140,7 +146,7 @@ for (const yas of [2, 3, 4]) {
     await page.reload();
     await expect(page.locator('.kose')).toHaveCount(4);
     await page.getByLabel('Ölçü tezgâhı', {exact:true}).click();
-    await expect(page.locator('.mk-makine,.mk-giris,.dere-koprusu')).toHaveCount(0);
+    await expect(page.locator('.mk-makine,.mk-giris')).toHaveCount(0);
     await expect(page.locator('.taslar .var')).toHaveCount(0);
     await page.getByLabel('Bir ölçü taşı yerleştir').click();
     await expect(page.locator('.taslar .var')).toHaveCount(1);

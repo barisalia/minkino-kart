@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Baba vitrindeki yaban mersinli keki pizzadan sonra alır ve tek defa öder',async({page})=>{
   await page.setViewportSize({width:568,height:320});
@@ -20,8 +22,11 @@ test('Baba vitrindeki yaban mersinli keki pizzadan sonra alır ve tek defa öder
   await expect(siparis.locator('.mk-fis')).toHaveAttribute('aria-label',/kakao.*yaban/i);
   await siparis.tap();
   await page.getByRole('button',{name:/vitrinden tepsiye al/i}).tap();
-  await expect(page.locator('.tepsi-yuva[data-hazir=true]')).toHaveCount(2);
-  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  // Tepsi tamamlanınca masa sahnesi açılır: pizza ve kek müşteriye sunulacak tepside.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await expect(sunum.locator('.pz-pizza')).toBeVisible();
+  await expect(sunum.locator('.pastane-porsiyonu')).toBeVisible();
+  await sunum.tap();
   const salon=page.locator('.sirali-servis');
 
   await salon.locator('[data-yemek=pizza]').tap();

@@ -11,7 +11,7 @@ import '../styles/mino.css';
 import '../karakter/karakter.css';
 import './abonelik.css';
 import { efekt } from '../audio/ses';
-import { premiumAyarla, premiumMu } from '../engine/erisim';
+import { erisimDinle, premiumAyarla, premiumMu } from '../engine/erisim';
 import { Karakter } from '../karakter/karakter';
 import { Mino } from '../mino/mino';
 import { GIZLILIK_ADRESI, ILETISIM_EPOSTA, SARTLAR_ADRESI } from '../kabuk/ayar';
@@ -22,7 +22,7 @@ import { IKON } from '../ui/ikonlar';
 import { minkinoLogo } from '../ui/logo';
 import { yuvarlakDugme } from '../ui/ortak';
 import { kilitAniAc } from './kilit-ani';
-import { saglayici, type Plan, type PlanId } from './satin';
+import { PLAY_KOD_ADRESI, saglayici, type Plan, type PlanId } from './satin';
 
 /** Mağazaların zorunlu otomatik yenileme metinleri (MAGAZA-METINLERI.md §7) */
 export const YENILEME_METNI = {
@@ -139,6 +139,12 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
     const durumYazi = h('p.ab-durum', { role: 'status', 'aria-live': 'polite' });
     const geriYukle = h('button.ab-geri-yukle', { type: 'button' }, 'Satın alımları geri yükle');
     const tekrarDene = h('button.ince-dugme.ab-tekrar', { type: 'button', hidden: true }, 'Tekrar dene');
+    // hediye kodu (ebeveyn kapısının arkasında): iOS'ta Apple'ın kod penceresi, Android'de Google Play'in kod sayfası.
+    // Kod kullanılınca abonelik mağazadan gelir; ekran açıksa kendiliğinden "Teşekkürler" olur.
+    const kodDugme: HTMLElement =
+      platform === 'android'
+        ? h('a.ab-geri-yukle.ab-kod', { href: PLAY_KOD_ADRESI, target: '_blank', rel: 'noopener noreferrer' }, 'Hediye kodu kullan')
+        : h('button.ab-geri-yukle.ab-kod', { type: 'button' }, 'Hediye kodu kullan');
 
     const planGoster = () => {
       const p = planlar.find((x) => x.id === secili) ?? null;
@@ -180,6 +186,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       basla.textContent = 'Yakında';
       basla.setAttribute('disabled', '');
       geriYukle.setAttribute('disabled', '');
+      kodDugme.hidden = true;
       sonraYazi.textContent = '';
       durumYazi.textContent = 'Abonelik çok yakında burada olacak. Şimdilik bütün oyunlar açık!';
     };
@@ -255,8 +262,32 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       }),
     );
 
+    if (kodDugme instanceof HTMLButtonElement)
+      kodDugme.addEventListener('click', () =>
+        void isle(async () => {
+          const s = await saglayici();
+          if (!s?.kodKullan) return void (durumYazi.textContent = 'Mağazaya şu an ulaşılamıyor. Lütfen tekrar deneyin.');
+          const r = await s.kodKullan();
+          durumYazi.textContent = r === 'acildi' ? 'Kodu girdiğinizde Premium kendiliğinden açılır.' : 'Kod penceresi açılamadı. Lütfen tekrar deneyin.';
+        }),
+      );
+    else kodDugme.addEventListener('click', () => (durumYazi.textContent = 'Kodu Google Play’de girip uygulamaya dönün; Premium kendiliğinden açılır.'));
+    // mağazadan abonelik gelince (kod, başka cihazdaki satın alma) ekran açıksa teşekkür; uygulamaya dönünce durum sorulur
+    const erisimBirak = erisimDinle(() => {
+      if (premiumMu() && !kapandi) basari();
+    });
+    const geriDonunce = () => {
+      if (document.visibilityState !== 'visible' || kapandi || el.dataset.durum === 'basari') return;
+      void saglayici()
+        .then((s) => s?.durumSor())
+        .then((v) => v && premiumAyarla(true))
+        .catch(() => undefined);
+    };
+    document.addEventListener('visibilitychange', geriDonunce);
+
     // ---------------------------------------------------------------- başarı
     const basari = () => {
+      if (el.dataset.durum === 'basari') return;
       el.dataset.durum = 'basari';
       efekt.dogru();
       sevin();
@@ -280,6 +311,7 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       durumYazi,
       tekrarDene,
       geriYukle,
+      kodDugme,
       h('ul.ab-liste', {}, ...ACILANLAR.map((m) => h('li', { style: `--r:${m.renk}` }, svg(IKON[m.ikon], `ab-tik ab-tik-${m.ikon}`), m.yazi))),
       h('p.ab-yasal', {}, YENILEME_METNI[platform]),
       h('p.ab-yasal.ab-yasal-en', { lang: 'en' }, YENILEME_METNI_EN[platform]),
@@ -327,6 +359,8 @@ export function abonelikEkrani(kok: HTMLElement): Promise<boolean> {
       if (kapandi) return;
       kapandi = true;
       document.removeEventListener('keydown', klavye);
+      document.removeEventListener('visibilitychange', geriDonunce);
+      erisimBirak();
       zamanlar.forEach(clearTimeout);
       el.classList.add('cikiyor');
       window.setTimeout(() => {

@@ -38,7 +38,8 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
       durum.i.yas = y as Yas;
       kaydetDurum();
     }
-    (window as unknown as { __pazar: unknown }).__pazar = { app, kayit };
+    // soz: oyunun söylediği cümleler sırayla (e2e aynı yönergenin kaç kez söylendiğini sayar; ekranlar.ts → sozKaydet)
+    (window as unknown as { __pazar: unknown }).__pazar = { app, kayit, soz: [] as string[] };
   }
   const ekran = kisayol ? q.get('ekran') : null;
   app.git(ekran ?? 'acilis');

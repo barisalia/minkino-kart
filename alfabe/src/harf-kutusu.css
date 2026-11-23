@@ -71,6 +71,8 @@
 .hk-modlar b{font-size:27px}
 .hk-etiket img{height:100%;width:100%;object-fit:contain}
 .hk-devam svg,.hk-tekrar svg{width:30px;height:30px;display:block}
+.hk-devam:not([hidden]){display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.hk-devam img{width:44px;height:32px;object-fit:contain}
 .hk-alt .hk-durum{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .hk-alt{justify-content:flex-end}
 .hk-modlar button[aria-pressed=true]{outline:2px solid #23574d;outline-offset:2px}
@@ -112,3 +114,6 @@
   .hk-kartlar[data-adet="6"]{max-width:min(100%,70svh)}
   .hk-kartlar .hk-kart{min-width:44px;min-height:44px}
 }
+/* Tur bitip çocuk beklerse "devam" düğmesi hafifçe sallanır. */
+@keyframes hk-durt{0%,100%{transform:none}20%{transform:translateY(-5px) rotate(-3deg)}45%{transform:translateY(0) rotate(3deg)}70%{transform:translateY(-2px) rotate(-1.5deg)}}
+.hk .hk-durt{animation:hk-durt .7s ease-in-out 2}

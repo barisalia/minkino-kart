@@ -1,4 +1,6 @@
 import {expect,test,type Page} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 test.use({hasTouch:true,isMobile:true,viewport:{width:740,height:360}});
 test.beforeEach(async({page})=>{
   await page.routeWebSocket(url=>url.hostname==='localhost',s=>s.connectToServer().onMessage(m=>{if(typeof m==='string'&&m.includes('full-reload'))return;s.send(m);}));

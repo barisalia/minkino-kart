@@ -2,7 +2,7 @@
 .kumpir-tezgahi [hidden]{display:none!important}.kumpir-tezgahi button{cursor:pointer;touch-action:none}
 .kumpir-tezgahi img,.kumpir-sunumu img{object-fit:contain;pointer-events:none;-webkit-user-drag:none}
 .kp-geri,.kp-fis,.kp-tus,.kp-malzeme,.kp-ac-el{border:2px solid #503531;box-shadow:0 .6cqh #95724e;background:var(--sef-kumanda-fonu, #fff3dd);color:#4b3332}
-.kp-geri,.kp-tus,.kp-ac-el{width:max(42px,11cqh);height:max(42px,11cqh);border-radius:50%;padding:2cqh;display:grid;place-items:center}
+.kp-geri,.kp-tus,.kp-ac-el{width:max(44px,11cqh);height:max(44px,11cqh);border-radius:50%;padding:2cqh;display:grid;place-items:center}
 .kp-geri svg,.kp-tus svg,.kp-ac-el svg{height:100%;width:100%}.kp-geri{position:absolute;left:2%;top:4%}.kp-dinle{left:auto;right:2%}
 .kp-fis{position:absolute;left:50%;top:3%;transform:translateX(-50%);border-radius:3cqh;display:flex;gap:2cqh;height:15%;padding:1.3cqh 2cqh}.kp-fis img{height:100%;max-width:11cqw}
 .kp-tahta{position:absolute;left:12%;right:12%;top:23%;bottom:22%;display:grid;place-items:center}

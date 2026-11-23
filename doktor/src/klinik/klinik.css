@@ -1,0 +1,46 @@
+/* Minik Doktor · bekleme odası (Doktor-K1). Görüntünün kendisi Astra'nın çizimleri; burada yalnız yerleşim ve CSS etkileri
+   (sıradakinin ışık halkası, kapının açılışı, panonun parlaması, geçiş perdesi, kutlama konfetisi). */
+#doktor[data-oyun="klinik"] { position: fixed; inset: 0; overflow: hidden; overflow: clip; background: #fbe3c8; touch-action: none; user-select: none; -webkit-user-select: none; }
+@media (orientation: portrait) and (max-width: 600px) { #doktor[data-oyun="klinik"] { visibility: hidden; } }
+/* bekleme odasından açılan vakada "yeniden oyna" yok: vaka bitince oyun bekleme odasına döner */
+#doktor[data-klinik="vaka"] .vk-tekrar { display: none !important; }
+
+.kl-oda > .kl-pano, .kl-oda > .kl-etki, .kl-oda > .kl-konfeti { pointer-events: none; }
+.kl-etki, .kl-konfeti { z-index: 3000; }
+.kl-pano { z-index: 5; }
+.kl-kapi { z-index: 4; opacity: 0; pointer-events: none; transition: opacity .18s ease-out; }
+.kl-kapi.kl-acik { opacity: 1; }
+.kl-kino { z-index: 620; pointer-events: none; transform-origin: 50% 100%; }
+
+.kl-hasta { left: 0; top: 0; transform-origin: 50% 100%; pointer-events: none; will-change: transform; }
+.kl-hasta-resmi { position: absolute; inset: 0; transform-origin: 50% 100%; }
+.kl-hasta-dugme { z-index: 2500; border-radius: 40%; }
+/* sıradaki hastanın yumuşak ışık halkası (ayaklarının altında ve arkasında) */
+.kl-halka { position: absolute; left: 6%; right: 6%; bottom: -4%; height: 34%; border-radius: 50%; opacity: 0; transform-origin: 50% 70%;
+  background: radial-gradient(closest-side, rgba(255, 246, 196, .95), rgba(255, 222, 120, .55) 62%, rgba(255, 222, 120, 0)); transition: opacity .3s ease-out; }
+.kl-hasta.kl-sirada .kl-halka { opacity: 1; animation: kl-halka 1.6s ease-in-out infinite; }
+.kl-hasta.kl-sirada .kl-hasta-resmi { filter: drop-shadow(0 0 14px rgba(255, 236, 150, .9)); }
+@keyframes kl-halka { 0%, 100% { scale: 1; } 50% { scale: 1.12; } }
+
+.kl-cikartma { opacity: 0; transform-origin: 50% 50%; }
+.kl-cikartma.kl-asili { opacity: 1; }
+.kl-pano.kl-dolu .kl-cikartma.kl-asili { animation: kl-parla .7s ease-in-out 4 alternate; }
+@keyframes kl-parla { from { filter: drop-shadow(0 0 0 rgba(255, 236, 150, 0)); } to { filter: drop-shadow(0 0 22px rgba(255, 236, 150, 1)); } }
+.kl-ucan { z-index: 3001; will-change: transform; }
+
+/* geçiş perdesi: kapıdan geçince sıcak bir ışıkla kararır, vaka ya da oda onun altından açılır */
+.kl-perde { position: absolute; inset: 0; z-index: 40; pointer-events: none; opacity: 0; transition: opacity .3s ease-in-out;
+  background: radial-gradient(circle at 50% 45%, #fff8ee, #fbe3c8 70%); }
+.kl-perde.kl-kapali { opacity: 1; pointer-events: auto; }
+
+.kl-konfet { position: absolute; left: 0; top: 0; width: 22px; height: 34px; border-radius: 6px; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-hasta.kl-sirada .kl-halka { animation: none; }
+  .kl-pano.kl-dolu .kl-cikartma.kl-asili { animation: none; }
+}
+
+/* kapıdan geçiş: oda vakanın üstünde kalır (kamera kapıya dalar, sonra söner); açık kapıdan taşan sıcak ışık */
+.kl-sahne.kl-ortu { z-index: 60; pointer-events: none; }
+.kl-kapi-isigi { z-index: 2400; opacity: 0; pointer-events: none; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 252, 240, 1), rgba(255, 246, 222, 1) 38%, rgba(255, 236, 200, .9) 62%, rgba(255, 232, 190, 0)); }

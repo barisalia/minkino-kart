@@ -1,0 +1,78 @@
+[
+  {
+    "kelime": "rain",
+    "karakter": "Kino",
+    "kaynak": "semsiye.png",
+    "yon": "önden",
+    "sira": [
+      "semsiye-0.webp",
+      "semsiye-1.webp",
+      "semsiye-2.webp",
+      "semsiye-3.webp"
+    ],
+    "pozlar": [
+      "başlangıç",
+      "hazırlık",
+      "sürpriz",
+      "tepki"
+    ],
+    "sure_ms": [
+      700,
+      650,
+      420,
+      730
+    ],
+    "tuval": [
+      1000,
+      1000
+    ],
+    "ayak_merkezi": [
+      500,
+      940
+    ],
+    "kaynak_olcekleri": [
+      1.21,
+      1.36,
+      1.36,
+      1.36
+    ]
+  },
+  {
+    "kelime": "apple",
+    "karakter": "Mino",
+    "kaynak": "elma.png",
+    "yon": "önden",
+    "sira": [
+      "elma-0.webp",
+      "elma-1.webp",
+      "elma-2.webp",
+      "elma-3.webp"
+    ],
+    "pozlar": [
+      "başlangıç",
+      "hazırlık",
+      "sürpriz",
+      "tepki"
+    ],
+    "sure_ms": [
+      700,
+      650,
+      420,
+      730
+    ],
+    "tuval": [
+      1000,
+      1000
+    ],
+    "ayak_merkezi": [
+      500,
+      940
+    ],
+    "kaynak_olcekleri": [
+      1.22,
+      1.22,
+      1.22,
+      1.22
+    ]
+  }
+]

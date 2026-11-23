@@ -1,0 +1,74 @@
+[
+  {
+    "name": "fox",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "wolf",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "deer",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "squirrel",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "hedgehog",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "raccoon",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  }
+]

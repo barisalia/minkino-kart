@@ -1,5 +1,5 @@
 
-import { heceler, parcaSesi, panoAdi, panoResmi } from './pano-sozcukleri';
+import { adSesi, heceler, parcaSesi, panoAdi, panoResmi } from './pano-sozcukleri';
 
 import { cerenSustur } from './konusma-dersi';
 import { oyunSesi } from './oyun-sesi';
@@ -53,7 +53,7 @@ export function heceKulakKur(alan: HTMLElement, kartlar: string[], oku: Oku, bit
     yurut(0);
   }
   function dinlet(yonerge?: string) {
-    const sesler = cevap ? ['pano-ad-'+cevap] : tur === 1 ? [parcaSesi(hece)] : heceler[sozcuk].map(parcaSesi);
+    const sesler = cevap ? [adSesi(cevap)] : tur === 1 ? [parcaSesi(hece)] : heceler[sozcuk].map(parcaSesi);
     sirayla(yonerge ? [yonerge, ...sesler] : sesler);
   }
   function goster() {
@@ -83,7 +83,7 @@ export function heceKulakKur(alan: HTMLElement, kartlar: string[], oku: Oku, bit
         kartYeri.querySelectorAll('button').forEach(b => { b.disabled = true; });
         dugme.classList.add('hk-bulundu'); dugme.querySelector('span')!.textContent = ad(id);
         durum.textContent = tur === 1 ? ad(id) + ' sözcüğünde “' + hece + '” var.' : heceler[id].join(' · ') + ' → ' + ad(id);
-        sirayla(tur === 1 ? [parcaSesi(hece), 'pano-ad-'+id] : [...heceler[id].map(parcaSesi), 'pano-ad-'+id]);
+        sirayla(tur === 1 ? [parcaSesi(hece), adSesi(id)] : [...heceler[id].map(parcaSesi), adSesi(id)]);
         ileri.hidden = false;
         ileri.textContent = tur === 1 ? 'Heceleri birleştir' : 'Tamam';
         ileri.focus({preventScroll:true});

@@ -1,0 +1,137 @@
+/* Masal 2.0 · tam ekran sahne (masal2.ts). Önek: ing-m2-.
+   Sahne 1600 × 1200 piksellik bir tuvaldir; .ing-m2-kamera onu ekranı kaplayacak ölçüde büyütüp kaydırır (JS). Sahnenin
+   içindeki her ölçü tuval pikselidir: kamerayla birlikte büyür. Çerçeve yok; anlatıcı, cümle bandı ve düğmeler üstte durur. */
+.ing-m2{position:absolute;inset:0;overflow:hidden;background:#cfe7f3}
+/* masal sürerken dersin üst şeridi dokunuşu sahneye geçirir; yalnız düğmeleri dokunuş alır */
+.ing-ust.ing-ust-gecirgen{pointer-events:none}
+.ing-ust.ing-ust-gecirgen :is(button,a,[role="button"]){pointer-events:auto}
+.ing-m2-cerceve{position:absolute;inset:0;overflow:hidden;background:#dff0f7;touch-action:manipulation}
+.ing-m2-kamera{position:absolute;left:0;top:0;width:1600px;height:1200px;transform-origin:0 0;will-change:transform}
+.ing-m2-kipir,.ing-m2-sahne{position:absolute;inset:0}
+
+/* ---- açılır kitap (UI-2 B): masa > kitap > sayfa; dünya 2000 × 1500 piksel (masal2.ts KITAP, SAYFA) */
+.ing-m2-kitapli .ing-m2-cerceve{background:#e8cfa6}
+.ing-m2-kitapli .ing-m2-kamera{width:2000px;height:1500px}
+.ing-m2-kitap{position:absolute;pointer-events:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 34px 26px #5a3a1a40)}
+.ing-m2-sayfa{position:absolute;transform-origin:0 0}
+/* sahne sayfadan kalkar: alt kenarı sayfaya yapışık, üstü öne doğru açılır (yaylanarak) */
+.ing-m2-kitapli .ing-m2-sahne{perspective:2600px;perspective-origin:50% 100%}
+.ing-m2-kitapli .ing-m2-resim.ing-m2-cevir{transform-origin:50% 100%;animation:ing-m2-kalk .9s cubic-bezier(.25,1.45,.45,1) both}
+.ing-m2-kitapli .ing-m2-yat{transform-origin:50% 100%;animation:ing-m2-yat .45s ease-in forwards}
+.ing-m2-kalkar{transform-origin:50% 100%;animation:ing-m2-kalk .85s cubic-bezier(.25,1.45,.45,1) both}
+@keyframes ing-m2-kalk{0%{transform:rotateX(86deg);opacity:0}30%{opacity:1}100%{transform:none}}
+@keyframes ing-m2-yat{to{transform:rotateX(88deg);opacity:0}}
+.ing-m2-katman-ic{position:absolute;inset:0;display:block}
+/* sayfa çevirme: sağ sayfa sırttan sola döner */
+.ing-m2-yaprak{position:absolute;z-index:60;pointer-events:none;background:#f9f2d6;border:5px solid #3b2a1e;border-left:0;border-radius:0 34px 34px 0;transform-origin:0 50%;backface-visibility:visible;box-shadow:-20px 0 40px #0002 inset;animation:ing-m2-yaprak .75s cubic-bezier(.4,.1,.3,1) forwards}
+@keyframes ing-m2-yaprak{0%{transform:perspective(2400px) rotateY(0)}100%{transform:perspective(2400px) rotateY(-178deg);opacity:.6}}
+/* kıvrık köşe (ileri): sağ sayfanın sağ alt köşesi; çekilince kıvrım büyür */
+.ing-m2-kitapli .ing-m2-ileri{position:absolute;left:1545px;top:1060px;width:200px;height:200px;padding:0!important;margin:0;border:0!important;background:none!important;border-radius:0!important;z-index:50;cursor:grab;touch-action:none;animation:ing-m2-kose 1.4s ease-in-out infinite}
+.ing-m2-kose-kagit{position:absolute;inset:0;translate:calc(var(--cek,0) * -60px) calc(var(--cek,0) * -60px);scale:calc(1 + var(--cek,0) * .8);transform-origin:100% 100%;background:linear-gradient(135deg,transparent 0 49%,#3b2a1e 49% 51%,#f3e3b6 51% 100%);border-radius:0 0 26px 0;filter:drop-shadow(-8px -8px 10px #0003)}
+@keyframes ing-m2-kose{50%{scale:1.12}}
+/* Polly kitabın sol üst kenarında oturur (dünya pikseli) */
+.ing-m2-kitapli .ing-m2-anlatici{left:120px;top:60px;bottom:auto;width:300px;height:300px;aspect-ratio:auto;animation:ing-m2-suzul-px 3.4s ease-in-out infinite;filter:drop-shadow(0 12px 10px #0003);z-index:55}
+@keyframes ing-m2-suzul-px{50%{translate:0 -10px}}
+.ing-m2-resim{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.ing-m2-yer-tutucu{display:grid;place-items:center;background:#e8f3f9;border:6px dashed #9bb8c9;border-radius:40px;font-weight:900;font-size:64px;color:#0006}
+/* sayfa geçişi: yeni fon erir (kamera aynı anda kayar); dokunuşla gelen çizim hızlı erir */
+.ing-m2-cevir{animation:ing-m2-eri .75s ease-out}
+@keyframes ing-m2-eri{from{opacity:0}}
+.ing-m2-gecis{animation:ing-m2-gecis .4s ease-out}
+@keyframes ing-m2-gecis{from{opacity:0;scale:1.03}}
+
+/* katmanlar: ayrı çizilmiş karakter ve eşya; küçük canlılık */
+.ing-m2-katman{position:absolute;display:block;transition:translate .4s cubic-bezier(.3,1.3,.6,1);z-index:5}
+.ing-m2-katman-resim{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.ing-m2-nefes{transform-origin:50% 100%;animation:ing-m2-nefes 3.2s ease-in-out infinite;animation-delay:var(--gecikme,0ms)}
+@keyframes ing-m2-nefes{50%{scale:1 1.02}}
+.ing-m2-sallan{transform-origin:50% 100%;animation:ing-m2-sallan 3.6s ease-in-out infinite;animation-delay:var(--gecikme,0ms)}
+@keyframes ing-m2-sallan{25%{rotate:-1.6deg}75%{rotate:1.6deg}}
+.ing-m2-goz{opacity:0}
+.ing-m2-goz.ing-m2-kapali{opacity:1}
+/* sürüklenen katman ve hedefi */
+.ing-m2-tasinir{cursor:grab;touch-action:none;filter:drop-shadow(0 0 18px #fff) drop-shadow(0 0 8px #ffd34d);z-index:45}
+.ing-m2-tutuldu{cursor:grabbing;scale:1.08;transition:none;z-index:50}
+.ing-m2-hedef{position:absolute;border:8px dashed #fffc;border-radius:60px;background:#ffffff26;z-index:4;pointer-events:none;animation:ing-m2-hedef 1.3s ease-in-out infinite}
+@keyframes ing-m2-hedef{50%{scale:1.05;background:#ffffff44}}
+
+/* dokunulacak yerler: saydam düğme; parlama yalnız cümle bitince */
+.ing-m2-yer{position:absolute;padding:0;margin:0;border:0;background:none;cursor:pointer;border-radius:28%;-webkit-tap-highlight-color:transparent}
+.ing-m2-yer:focus-visible{outline:10px solid var(--sari);outline-offset:4px}
+.ing-m2-isik{position:absolute;inset:6%;border-radius:inherit;opacity:0;transition:opacity .4s;background:radial-gradient(closest-side,#fff8 0,#fff3 60%,transparent 100%);box-shadow:0 0 0 6px #fff9}
+.ing-m2-parlak .ing-m2-isik{opacity:.5}
+.ing-m2-parlak .ing-m2-ana .ing-m2-isik,.ing-m2-secim .ing-m2-isik{opacity:1;animation:ing-m2-nabiz 1.3s ease-in-out infinite}
+@keyframes ing-m2-nabiz{50%{scale:1.07;box-shadow:0 0 0 12px #fffc}}
+/* seçimde yalnız seçenekler parlar (kendiliğinden canlanan yer seçenek değildir) */
+.ing-m2-secim .ing-m2-oto .ing-m2-isik,.ing-m2-parlak .ing-m2-oto:not(.ing-m2-ana) .ing-m2-isik{opacity:0;animation:none}
+
+/* canlanma: sahne dokunulan noktaya doğru seker, rüzgârda sallanır, suya sıçrar */
+.ing-m2-kipir.ing-m2-sek{animation:ing-m2-sek .65s cubic-bezier(.3,1.4,.6,1)}
+@keyframes ing-m2-sek{35%{scale:1.05}70%{scale:.99}}
+.ing-m2-kipir.ing-m2-ruzgar{animation:ing-m2-ruzgar 1s ease-in-out}
+@keyframes ing-m2-ruzgar{20%{rotate:-1.2deg;translate:-1% 0}45%{rotate:1deg;translate:1.2% 0}70%{rotate:-.6deg;translate:-.5% 0}}
+.ing-m2-kipir.ing-m2-sicra{animation:ing-m2-sicra .7s ease-out}
+@keyframes ing-m2-sicra{25%{translate:0 1.2%}55%{translate:0 -.8%}}
+.ing-m2-halka{position:absolute;left:var(--x);top:var(--y);width:480px;height:160px;translate:-50% -50%;border-radius:50%;border:8px solid #fffd;opacity:0;pointer-events:none;animation:ing-m2-halka 1.1s ease-out forwards;z-index:30}
+@keyframes ing-m2-halka{0%{opacity:1;scale:.15}100%{opacity:0;scale:1.5}}
+
+/* sözcük: dokunulan şeyin üstünde kısa bir an parlar, harfleri sırayla yanar */
+/* 22 Kasım (yönetici): nesnenin hemen üstünde, küçük ve oklu; nesneyi ya da iki karakterin arasını örtmez. Alt kenarı
+   nesnenin üst kenarına 16 px uzaklıkta, ok aşağıyı (nesneyi) gösterir; .ing-m2-altta: nesnenin altında, ok yukarı */
+.ing-m2-sozcuk{position:absolute;translate:-50% -100%;transform-origin:50% 100%;z-index:40;pointer-events:none;white-space:nowrap;font-weight:900;font-size:66px;line-height:1;letter-spacing:1px;color:#fff;background:#e8534a;padding:10px 30px 14px;border-radius:60px;border:6px solid #23303a;box-shadow:0 8px 0 #0003;animation:ing-m2-sozcuk 2s ease-out forwards}
+.ing-m2-sozcuk::after{content:"";position:absolute;left:50%;top:100%;translate:-50% -3px;border:18px solid transparent;border-top:22px solid #23303a;border-bottom:0}
+.ing-m2-sozcuk::before{content:"";position:absolute;left:50%;top:100%;translate:-50% -9px;border:12px solid transparent;border-top:15px solid #e8534a;border-bottom:0;z-index:1}
+.ing-m2-sozcuk.ing-m2-altta{translate:-50% 0;transform-origin:50% 0}
+.ing-m2-sozcuk.ing-m2-altta::after{top:auto;bottom:100%;translate:-50% 3px;border-top:0;border-bottom:22px solid #23303a}
+.ing-m2-sozcuk.ing-m2-altta::before{top:auto;bottom:100%;translate:-50% 9px;border-top:0;border-bottom:15px solid #e8534a}
+.ing-m2-sozcuk span{display:inline-block;animation:ing-m2-harf .3s ease-out both}
+@keyframes ing-m2-sozcuk{0%{opacity:0;scale:.4}12%{opacity:1;scale:1.08}20%{scale:1}82%{opacity:1}100%{opacity:0;scale:.92}}
+@keyframes ing-m2-harf{from{opacity:.2;translate:0 18px}}
+.ing-m2-sozcuk.ing-m2-kalici{animation:ing-m2-sozcuk-gel .45s ease-out both,ing-m2-sozcuk-nabiz 1.4s ease-in-out .5s infinite}
+@keyframes ing-m2-sozcuk-gel{0%{opacity:0;scale:.4}70%{opacity:1;scale:1.08}100%{scale:1}}
+@keyframes ing-m2-sozcuk-nabiz{50%{scale:1.06}}
+
+/* anlatıcı: sol altta küçük Ceren (girişte) / Polly; dokununca cümleyi yeniden okur; hafifçe süzülür */
+.ing-m2-anlatici{position:absolute;left:calc(1*var(--u));bottom:calc(1*var(--u));width:calc(13*var(--u));aspect-ratio:1;padding:0!important;margin:0;background:none!important;border:0!important;z-index:30;filter:drop-shadow(0 calc(.5*var(--u)) calc(.6*var(--u)) #0003);animation:ing-m2-suzul 3.4s ease-in-out infinite}
+.ing-m2-anlatici .ing-kisi{width:100%;height:100%}
+.ing-m2-anlatici .ing-kisi[hidden]{display:none}
+@keyframes ing-m2-suzul{50%{translate:0 calc(-.5*var(--u))}}
+.ing-m2-bant{position:absolute;left:50%;bottom:calc(1.4*var(--u));translate:-50% 0;width:max-content;max-width:calc(100% - 32*var(--u));z-index:25;pointer-events:none}
+.ing-m2 .ing-kur-bant{flex-wrap:wrap;justify-content:center;font-size:calc(3.6*var(--u));padding:calc(.6*var(--u)) calc(2.2*var(--u));background:#fffaf0eb;box-shadow:0 calc(.5*var(--u)) calc(1.2*var(--u)) #0002}
+/* söyle: mikrofon yuvası ortada, cümle bandının üstünde */
+.ing-m2-soz{position:absolute;left:50%;translate:-50% 0;bottom:calc(9*var(--u));z-index:35;display:none}
+.ing-m2-soz.ing-m2-soz-acik{display:flex}
+.ing-m2-soz[hidden]{display:none!important}
+/* yakala: kaçan hedef parlar; kaçarken kısa bir çalkantı, düşerken küçülüp kaybolur */
+.ing-m2-katman.ing-m2-yakalanir{cursor:pointer;touch-action:manipulation;z-index:45;filter:drop-shadow(0 0 16px #fff) drop-shadow(0 0 6px #ffd34d)}
+.ing-m2-katman.ing-m2-kacti .ing-m2-katman-ic{animation:ing-m2-kacti .5s ease-out}
+@keyframes ing-m2-kacti{25%{rotate:-14deg;scale:1.1}60%{rotate:10deg}}
+.ing-m2-katman.ing-m2-dusuyor{transition:translate .42s cubic-bezier(.5,0,.8,.4),scale .42s ease-in,opacity .42s ease-in;scale:.35;opacity:.2}
+/* Yes / No: iki büyük, yuvarlak köşeli düğme (yeşil ✓ Yes, kırmızı ✗ No), cümle bandının üstünde ortada */
+.ing-m2-evethayir{position:absolute;left:50%;bottom:calc(9.5*var(--u));translate:-50% 0;z-index:36;display:flex;gap:calc(3*var(--u))}
+.ing-m2-evethayir[hidden]{display:none!important}
+.ing-m2-evethayir button{display:flex;align-items:center;gap:calc(1*var(--u));min-width:calc(18*var(--u));min-height:max(64px,calc(9*var(--u)));padding:calc(.8*var(--u)) calc(2.6*var(--u))!important;border-radius:calc(4*var(--u))!important;border:var(--cizgi) solid var(--murekkep)!important;font-weight:900;font-size:calc(4.2*var(--u));color:#fff;box-shadow:0 calc(.7*var(--u)) 0 #0003;animation:ing-m2-eh-gel .4s cubic-bezier(.3,1.5,.5,1) both}
+.ing-m2-evethayir .ing-m2-evet{background:#3fae5a!important}
+.ing-m2-evethayir .ing-m2-hayir{background:#e8534a!important;animation-delay:.08s}
+.ing-m2-eh-isaret{font-size:calc(4.8*var(--u));line-height:1}
+.ing-m2-evethayir .ing-m2-eh-dogru{scale:1.12;filter:drop-shadow(0 0 14px #fff)}
+@keyframes ing-m2-eh-gel{from{scale:.3;opacity:0}}
+@container ing-ekran (min-aspect-ratio: 17/10){.ing-m2-evethayir{bottom:calc(7.5*var(--u))}.ing-m2-evethayir button{font-size:calc(3.4*var(--u));min-width:calc(14*var(--u))}}
+@media (prefers-reduced-motion:reduce){.ing-m2-katman.ing-m2-kacti .ing-m2-katman-ic,.ing-m2-evethayir button{animation:none}}
+.ing-m2-ileri{position:absolute;right:calc(1*var(--u));bottom:calc(1*var(--u));z-index:40;display:grid;place-items:center;width:calc(9*var(--u));height:calc(9*var(--u));padding:0!important;border-radius:50%!important;background:var(--sari)!important;border:var(--cizgi) solid var(--murekkep)!important;font-size:calc(4*var(--u));animation:ing-nabiz 1.3s ease-in-out infinite}
+.ing-m2-ileri img{width:100%;height:100%;object-fit:contain}
+.ing-m2-ileri[hidden]{display:none}
+.ing-m2-sayac{position:absolute;left:50%;top:calc(6.4*var(--u));translate:-50% 0;z-index:20;padding:calc(.3*var(--u)) calc(.9*var(--u));border-radius:999px;background:#fffaf0b3}
+.ing-m2-sayac:empty{display:none}
+
+/* geniş telefon: sahne zaten ekranı kaplar (kamera üstten alttan kırpar); bant ve anlatıcı küçülür */
+@container ing-ekran (min-aspect-ratio: 17/10){
+  .ing-m2 .ing-kur-bant{font-size:calc(2.8*var(--u))}
+  .ing-m2-anlatici{width:calc(10*var(--u))}
+  .ing-m2-bant{max-width:calc(100% - 26*var(--u))}
+  .ing-m2-ileri{width:calc(7.4*var(--u));height:calc(7.4*var(--u))}
+  .ing-m2-soz{right:calc(9.5*var(--u))}
+}
+@media (prefers-reduced-motion:reduce){
+  .ing-m2-cevir,.ing-m2-gecis,.ing-m2-kipir.ing-m2-sek,.ing-m2-kipir.ing-m2-ruzgar,.ing-m2-kipir.ing-m2-sicra,.ing-m2-halka,.ing-m2-parlak .ing-m2-ana .ing-m2-isik,.ing-m2-secim .ing-m2-isik,.ing-m2-nefes,.ing-m2-sallan,.ing-m2-anlatici,.ing-m2-hedef{animation:none}
+}

@@ -1,5 +1,15 @@
 # Ana Kurallar
 
+**Boş iş yapmayın · 16 Kasım 2026.** Elit, premium düzeyde ve Minkino stilinde olmayacak bir işe hiç başlamayın. Yarım, kalitesiz ya da stilden çıkan işler çöpe gidiyor ve zaman kaybettiriyor. Bir işe başlamadan önce sonucun menü kapakları ve en iyi oyunlarımız düzeyine çıkıp çıkamayacağını düşünün. Çıkmayacaksa başlamayın; önce eksik olanı (çizim, ses, plan) tamamlayın ya da Barış’a sorun.
+
+**Gereksiz olan çöpe · 19 Kasım 2026.** Barış: "Gereksiz şeyleri kaldır. Sadece elit işler. Öyle çer çöpü kullanmaya gerek yok, at çöpe." Çocuğun ulaşamadığı kod ve bölümler, hiçbir yerin kullanmadığı çizim, ses ve veriler, silinmiş özelliklerin testleri kaldırılır; yarım kalmış bir özelliği "belki lazım olur" diye saklamayın. Çocuğun gördüğü bir bölümü ya da kullanılan bir çizimi kaldırmadan önce Barış'a sorulur. İlk örnek: Minik Şef'in hiçbir yerden açılmayan gün sonu kutlama pastası kaldırıldı.
+
+**Karakter tepkilerinin sesi · 16 Kasım 2026.** Karakter sesli güldüğünde, kıkırdadığında veya iç çektiğinde bu tepkiyi kendi onaylı sesiyle üretin. Gülüşü yüzün ve bedenin harekete başladığı kareye yerleştirin. Son filmde müzik ve efektlerle birlikte dinleyip tepkinin duyulduğunu, sonraki repliğin de anlaşılır kaldığını kontrol edin.
+
+**Tüm üretimlerde premium kalite ve teslim sorumluluğu · 15 Kasım 2026.** Türkiye’nin en üst fiyat düzeyindeki çizgi filmlerini, oyunlarını ve etkinlik kitaplarını üretiyoruz. Her ürünümüz, her oyunumuz, her çizgimiz ve ürettiğimiz her parça bu düzeye yakışmalı. İşi üstlenen kişi en küçük ayrıntıya kadar özen göstermekten ve kusurları gidermekten sorumludur. Her işe uzun ve dikkatli bir çalışma süresi ayırın. İlk çalışan sürümü on dakikada teslim etmeyin. Çizimi kullanılacağı boyutta inceleyin, oyunu çocuğun izleyeceği yolları deneyerek oynayın, kitabı sayfa sayfa okuyun, ses ve animasyonu sahnenin içinde kontrol edin. Aksayan yerleri düzeltin ve düzeltilen kısmı ürünün bütünü içinde yeniden deneyin. İşi ancak bu inceleme ve düzeltmeler tamamlandığında teslim edin.
+
+**ElevenLabs’ta replik uzunluğu · 16 Kasım 2026.** Farklı replikleri veya sözcük listesini toplu okutmayın. İngilizce oyununda her sözcüğü, yavaş okunuşunu ve her karakter repliğini kendi isteğinde üretin. Uzun paragraflar ses kalitesini düşürdüğü için metni ses üretiminden önce doğal duraklardan bölün. Her parçayı ayrı bir ElevenLabs isteğiyle seslendirin. Bir parça en fazla üç kısa cümle içerebilir. Tek cümlelik bir replik tek başına kaydedilebilir. Bu kural oyun, çizgi film, kitap ve etkinliklerdeki tüm karakter ve anlatıcı sesleri için geçerlidir.
+
 **Telefonda bütün Minkino oyunları yatay oynanır · 15 Kasım 2026.** Oyun menüsünü, sahneleri ve dokunma hedeflerini yatay telefon için tasarla. Teslimden önce oyunu yatay telefon boyutunda oyna ve telefon önizlemesini bu yönde göster.
 
 **Barış’ın 13 Kasım 2026 tarihli talimatı. Bu projede her yeni sohbetin başında, ilk yanıtı vermeden önce bu bölümü okuyun.** Görsel kurallar çizgi filmlerde, oyunlarda, kitaplarda, kapaklarda ve diğer bütün görsel üretimlerde geçerlidir.
@@ -7,13 +17,17 @@
 1. **En önemli kural temiz 2D çizimdir.** Çocuklar için canlı, parlak renkler, ince siyah konturlar ve elle çizilmiş hissi veren vektörel yüzeyler kullanın. Aynı çizgi dili karakterden arka plandaki en küçük eşyaya kadar bütün kareye ait olmalı.
 2. **Her renk alanının sınırı okunmalı.** Örneğin denizin gövdesi tek bir mavi tonunda olabilir. Bir gölge gerekiyorsa onu kenarı belirgin, düz bir renk alanı olarak çizin. Halının üzerine serpiştirilmiş ince siyah izler, rastgele benekler ve bulanık gölge geçişleri yüzeyi kirletir. Ayrıntıyı temiz çizmek için yeniden deneyin. Hâlâ uymuyorsa ayrıntıyı kaldırın. **Dokusu kirli, yapay zekâ hissi veren veya Minkino’nun stilinden çıkan bir görseli teslim etmeyin.**
 3. **Görüntü ve ses tutarlı olmalı.** Kino, Mino ve diğer karakterlerin tanımlanmış görünüşlerini ve seslerini koruyun. Aynı kadrajda hareket ederken baş ölçüsü ve eşyanın karaktere göre boyu sabit kalmalı. Oturunca gövde doğal olarak alçalır. Pati yere veya bir eşyaya değdiğinde temas noktası kaymamalı.
-4. **Bir karakterin bir hareketini tek ImageGen çağrısında bir sheet’e çizin.** Poz sayısını son kadraja göre seçin. Çok yakın ayrıntıda 1–2, yakın çekimde 2 veya 4, orta çekimde 4–6, uzak çekimde 8–10 ardışık poz kullanın. Başlangıç, ağırlık aktarımı, temas ve bitiş okunmalı. Dekoru ve diğer karakterleri ayrı tutun. Fon, tam sahne, kapak, kart ve diğer bağımsız görselleri kendi tam çözünürlüklü çağrılarında üretin.
+4. **Bir karakterin bir hareketini tek ImageGen çağrısında bir sheet’e çizin.** Poz sayısını son kadraja göre seçin. Kamera karaktere yaklaşacaksa yakın planı ayrıca tam çözünürlükte çizin. Altılı sheet hücresini büyüterek yakın plan yapmayın. Yakın ve çok yakın çekimde çağrı başına yalnızca 1–2, orta çekimde 4–6, uzak çekimde 8–10 ardışık poz kullanın. Başlangıç, ağırlık aktarımı, temas ve bitiş okunmalı. Dekoru ve diğer karakterleri ayrı tutun. Fon, tam sahne, kapak, kart ve diğer bağımsız görselleri kendi tam çözünürlüklü çağrılarında üretin.
 5. **Aktif hareketi duruma göre saniyede 6–12 pozla oynatın.** Bu sayı hareketin sürdüğü süre için geçerlidir. Sakin bir planda pozu tutun ve duyguyu anlatan küçük bir hareketi yeri geldiğinde oynatın. Su hafifçe dalgalanabilir, Kino dinlerken gözünü kırpabilir, gerildiğinde patisini sıkıp gevşetebilir. Jestler arasında doğal duraklar bırakın.
 6. **İyi hareketleri tekrar kullanın.** Üretimden önce ortak arşivde karakter, kıyafet, açı ve eyleme bakın. Yeni bir yürüyüş, konuşma, göz kırpma veya başka bir hareket hazırladığınızda kaynak sheet’i, poz sırasını, yönü, temas noktasını, ölçeği ve zamanlamayı birlikte kaydedin. Son sahneyi gösterileceği boyutta ve normal hızda izleyin. Sıçrama, kayma veya kopuk temas görürseniz düzeltip yeniden oynatın.
 
 **Bulut’un göz ve model tutarlılığı · 14 Kasım 2026.** Bulut için her yeni çizime [ortak ön modelden](ekip/kalite/minkino-gorsel-rehberi/pozlar/bulut/on.png) başlayın. Kayısı tüyü, küçük koyu boynuzları, uzun kulakları, lila üstü ve turkuaz şortu koruyun. Önden bakışta iki göz bebeğini kendi göz akının merkezine hizalayın. Yana bakışta ikisini de aynı hedefe yöneltin. Önceki sahneden alınan yüzü yeni bir çizime kaynak yapmayın.
 
-**Lokum’un yeni arkadaşı Şeftali Patisi · 14 Kasım 2026.** Karakteri çizerken kullanıcının son mesajında seçtiği [oturan ön modeli](ekip/film/seftali-patisi/model/on.png) esas alın. Lokum yaşındaki yavru kedinin önden bakıldığında soldaki kulağında lila leke, sağdaki kulağının önünde kalp detaylı nane yeşili çıtçıt vardır. Kulak içleri canlı pembe, patiler krem, gözler kestane rengidir. İki küçük süt dişini ve şeftali işlemeli sarı tulumu koruyun. Karakterin sahnedeki sağ ve sol tarafı açı değiştikçe doğal olarak görünür; pozu aynalayıp tokayı karşı tarafa taşımayın. Sesi ElevenLabs’taki Bıdık Bebek’tir.
+**Mila ve Lokum’un kadrajı · 16 Kasım 2026.** Mila’nın onaylı çizimi [canlı şeftali tonlu üç çeyrek oturuştur](ekip/film/kino-bir-iki-uc-gum/cizim/Mila-Tek-Poz-Onizleme.png). Siyah göz bebeklerini, beyaz göz ışığını, krem ağız çevresini, lila kulak lekesini, nane yeşili tokayı ve sarı tulumu bütün açılarda koruyun. Mila ve Lokum sahnenin odağındayken ikisinin bakışı, patileri ve oynadıkları nesne izleme boyutunda rahatça seçilmeli. Onları ön plana yerleştirip kamerayı çocukların oyununa yaklaştırın. Ayakların halıyla temasını ve birbirlerine göre boylarını koruyun. Mila’nın sesi Bıdık Bebek’tir.
+
+## İngilizce oyunu
+
+**İngilizce oyununda eksik çizimler · 16 Kasım 2026.** Ortası saydam kalmış, yarım çizilmiş veya neyi anlattığı belirsiz varlığı oyundan çıkarın. Meyve ve renk eşlemelerinde kırmızı elma ve yeşil armut kullanın.
 
 ## Minik Şef arayüzü
 
@@ -21,11 +35,30 @@ Tarif, malzeme ve işlem ikonlarını ayrı ayrı ImageGen ile üret. Küçük o
 
 ## Önceki kararlar ve bölüm notları
 
+**Harf Atölyesi, kısa ders ve Obur · 19 Kasım 2026.** Barış kısa ders düzeninin kalmasına karar verdi. Bu karar 16 Kasım'daki "Obur her harf dersinin son oyunudur" maddesinin yerini alır. Kararın nedeni Barış'ın 18 Kasım'da söylediği "çok sıkıcı ve tekrarcı, gereksiz şeyleri azalt" düzeltmesidir. Bir derste aynı iş iki kez olmaz.
+- 2–3 yaş: harfi boya · bul. Bul adımı tek numaralı harflerde Resimde Bul, çift numaralı harflerde Obur'dur. Obur bu derste üç tabak sorar.
+- 4 yaş: keşfet · dinle ve söyle · yaz ve hayvanı çağır · Resimde Bul.
+- 5+ yaş: keşfet · dinle ve söyle · büyük harf · mıknatıslar · küçük harf · Resimde Bul.
+- 4 ve 5+ yaş derslerinde Obur yoktur, çünkü Keşfet aynı iki sözcüğü kullanır ve "bul" sorusu yinelenirdi.
+- Obur'da istenen doğru resimler o dersin harfiyle başlar. Ğ dersinde adı içinde ğ bulunan resimler kullanılır. Başka harfli resimler yalnızca yanlış seçenek olabilir.
+
+**Matematik ve etkinlik kapakları · 15 Kasım 2026.** Abaküsü gerçek bir oyuncak olarak çiz. Çerçevesine veya boncuklarına göz, ağız ya da yüz ekleme. Etkinlik kapaklarında oyuna özel pastel zemin üzerinde aynı küçük ve düzenli ton sür ton noktaları kullan. Noktalar yalnızca arka planda kalır. Etkinlik adları kapak resminin içinde iki ucundan renkli bantla tutturulmuş beyaz kâğıt etikette yer alır.
+
+**Matematik, Ceren'in sayı dersi · 19 Kasım 2026.** Barış'ın kararı: 2–3 yaşta Ceren dersi 1–5'te biter ve hatıra orada verilir. Akış: yaz 1 · birlikte 2 · koy 3 · yaz 4 · birlikte 5 (yaklaşık 2 dk). 4 ve 5+ yaşta ders 1–10 olarak kalır.
+
 **Meyve seçimi · 15 Kasım 2026.** Yeni çizimlerde ve etkinliklerde çilek kullanmayın. Matematik Atölyesi’ndeki mevcut çileğin yüzeyini sadeleştirin. Kırmızı renk alanı düz ve dokusuz olsun, birkaç küçük çekirdek izi yeterli.
 
 **Harf atölyesi · 14 Kasım 2026.** Sesli tekrarda Ceren ile çocuğun yüz yüze olduğu [birinci düzen](ekip/etkinlik/alfabe/ui-secimi/02-soyle-yuz-yuze.png) seçildi. Çocuk söylerken karttaki büyük harf [ikinci tasarımdaki gibi](ekip/etkinlik/alfabe/ui-secimi/02-soyle-harf-doluyor.png) alttan yukarı dolar. Ceren’in konuşma animasyonu ses kaydını izler; dinlerken ağzı kapalıdır. Yazma için [yan yana iki alanlı birinci düzen](ekip/etkinlik/alfabe/ui-secimi/03-yaz-beraber.png) seçildi. Ceren solda kalem yolunu gösterir, çocuk sağda aynı harfi çizer. Harf kutusunda [birinci düzen](ekip/etkinlik/alfabe/ui-secimi/04-kutu-masa.png) kullanılır. Üç resim solda, harfi taşıyan kırmızı kutu sağdadır. Kullanıcının son kararıyla bu etkinliğin kalan arayüzlerini ekip kendi seçip uygular.
 
 **Harf dersleri ve Hece Oyunu · 14 Kasım 2026.** Önce her harfin kendi dersini zenginleştir. Ayrı “Ses oyunları” bölümünü ve ders sonundaki ses oyunlarını kaldır. “Hece Oyunu” harflerin altında, adı büyük yazılan ayrı bir girişten açılır. Hece çalışmasını da Ceren’in sınıfında, Minkino’nun sade ve temiz 2D çizimleriyle hazırla. Gece çalışmasında Hece Oyunu’nun altına yalnız bir yeni oyun eklenebilir. Geri kalan geliştirmeler mevcut derslere ve oyunlara yapılır. Çocuğun dokunduğu her hece Türkçe sözcükte duyulduğu gibi okunur. “Limon”un ikinci hecesi “mon”dur.
+
+**Harf dersleri okuldaki ses grubu sırasıyla · 20 Kasım 2026.** Barış'ın kararı: "Geçsin." Harf Atölyesi'nde dersler A–Z yerine 1. sınıfta okutulan beş ses grubunun sırasıyla gelir: **A, N, E, T, İ, L · O, K, U, R, I, M · Ü, S, Ö, Y, D, Z · Ç, B, G, C, Ş · P, H, V, Ğ, F, J.** Gerekçe: alfabetik sırada ilk harflerle cümle kurulamıyor; bu sırada altıncı harfte "Anne nane al.", on ikinci harfte "Kino lokum al." okunur ve veliye "okuldaki sırayla" denebilir. Derslerin kimlikleri ve çocuğun kayıtlı ilerlemesi değişmez; değişen rafın dizilişi ve "sıradaki harf"tir. **Ücretsiz dört harf A, N, E, T'dir** (Barış, 20 Kasım 2026: "Evet, A N E T"; önceden A, B, C, Ç). Bu dört harfle "anne, at, et, nane, tane" okunur; ücretsiz kullanıcı "Ceren'le oku"yu da dener. Kaynak notu: liste danışmanın (Antigravity) incelemesi ve ilkokuma.com/harf-gruplari ile uyuşuyor; MEB'in resmî sayfasından ayrıca teyit edilecek.
+
+**Hece Evleri'nde ücretsiz evler N, T, L, K · 20 Kasım 2026.** Barış'ın kararı: "Evet, değişsin." Hece Evleri'nin ev sırası okul sırasına geçti (n, t, l, k, r, m, …); ücretsiz dört ev sıranın ilk dördüdür: **N, T, L, K** (önceden L, K, N, M). Bu cihazda M evine başlamış ya da bitirmiş çocukta M açık kalır.
+
+**Öncelik içerik hacmi · 20 Kasım 2026.** Barış: "İçerik üretmeye devam et, içeriği doldur. Yıllık 2000 liraya ürün satıyoruz; insanlar bir şey bekliyor. Çocuk sıfırdan İngilizce öğrenmeyi bekliyor. İş yap, görsel üret; bazı şeyleri abartmayın." Üç uygulamada (İngilizce, Türkçe, Matematik) iş sırası: yeni ders, yeni kelime, yeni cümle, yeni oyun ve bunların Astra çizimleri. İnce ayar ve ufak pürüz içerikten sonra gelir; oyunu bozmayan pürüz not edilir, iş durmaz. Kalite kapısı aynı kalır: kusurlu çizim oyuna girmez. Barış'a uzun durum yazısı yazılmaz; biten içerik görüntüyle gösterilir.
+
+**Harf Atölyesi rafında "Ceren'le oku" · 20 Kasım 2026.** Barış'ın kararı: "Eklensin." Cümle okuma bölümü rafa, Hece Oyunu ve Hece Evleri'nin yanına yeni bir giriş olarak eklenir. 14 Kasım'daki "Hece Oyunu'nun altına yalnız bir yeni oyun" notu o gecenin çalışması içindi; bu girişi engellemez. Cümleler yalnız çocuğun bitirdiği harflerden kurulur ve onaylı Minkino kadrosuyla yazılır (yeni insan karakter yok).
 
 **Hece oyunlarının seslendirmesi · 15 Kasım 2026.** Her sözcüğü, heceyi ve yönergeyi Ceren’in sesiyle ayrı bir ElevenLabs isteğinde üret. Bir toplu okumayı parçalara bölme. “Raket”, “ra” ve “ket” üç ayrı kayıttır. Yönergede adı geçen düğmenin resmi ekrandakiyle aynı olmalıdır.
 
@@ -132,3 +165,13 @@ Harfle Hayvan Çağır etkinliğinde çocuk harfi eliyle yazar. Büyük harf o h
 Obur Harf Canavarı, eski kutunun yerini alır. Çocuğun sürüklediği karta bakar, doğru kartı yer ve yanlış kartı geri verir. Nesne ve harf yedirme görevleri yaşa göre zorlaşır. Ünlüleri istemeden önce öğretin. Aynı yeme repliğini sürekli tekrar etmeyin.
 
 Hece Trambolini’nde her hece ayrı bir sıçrayış ve ayrı bir Türkçe ses kaydıyla eşleşir. Manyetik Hece Bulmacası’nda aynı anda üç resim ve ortak bir karışık hece havuzu vardır. Dört yaş için iki heceli, 5+ yaş için iki ve üç heceli sözcükleri kullanın.
+
+## İngilizce uygulamasında katmanlar · 16 Kasım 2026
+
+Barış, seçtiği İngilizce oyun taslaklarının yapımına geçilmesini istedi. Her karakteri ayrı ve yüksek kalitede hazırla. Dekoru, nesneleri, yazıyı ve her düğmeyi sahneye ayrı yerleştir. Karakterin tezgâh arkasında durması, kapının açılması ve düğmenin basılması kendi katmanlarında gerçekleşsin. Uygun arayüz parçalarını kodla çiz; resimli varlıkları Minkino’nun temiz, düz renkli 2D çizgisinde ayrı ayrı üret.
+
+## Beğenilen iç mekân paleti · 17 Kasım 2026
+
+Barış, [Pamuk’un masa lambasına atladığı karenin](assets/dedektif-yeni/roman-2.webp) renk paletini özellikle beğendi. Benzer iç mekânlar için renk referansı: geniş yüzeylerde lila duvar, açık mavi lambri ve şeftali zemin; perdelerde daha koyu mavi, kapı ve mobilyalarda sıcak bal sarısı. Turkuaz abajur ve pembe fiyonk küçük, canlı vurgular olarak öne çıkıyor.
+
+Paylaşılan kareden alınan örnek tonlar (20 Kasım 2026): duvar `#D4B5F0`, lambri `#AFD2EE`, zemin `#FDAD86`, perde `#648AE5`, kapı `#FEA81B`, abajur `#02B4C4`, fiyonk `#FC5DA3`. Halı menekşe moru `#9491ED`, pencereden görünen gökyüzü `#53CFFD`, güneş limon sarısı `#FEE629`.

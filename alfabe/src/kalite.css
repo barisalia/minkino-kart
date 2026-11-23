@@ -1,0 +1,236 @@
+/* Türkçe · kalite katmanı (KALITE-DENETIM-22 ve yönetici 23 Kasım: "aynı derinliği öbür adımlara taşı").
+   Bütün Türkçe sayfalarında (cila.ts yükler). Ölçülen bulgular telefon yatayda (844 × 390): küçük dokunma hedefleri,
+   boşta hareketsiz ekran, küçük oyun alanı. Yalnız CSS; akış değişmez. */
+
+/* 1 · Boşta canlı: Ceren her ekranda hafifçe nefes alır (ayrı scale/translate özellikleri: konuşma ve sıçrama
+   dönüşümleriyle çakışmaz). Keşfet kendi ritmini kullanır (harfi-kesfet.css → hf-nefes). */
+@keyframes alf-nefes { 0%, 100% { scale: 1; translate: 0 0; } 50% { scale: 1.012; translate: 0 -.6%; } }
+.alf-ceren { animation: alf-nefes 4.2s ease-in-out infinite; transform-origin: 50% 100%; }
+/* Adımların ana resimleri boşta yavaşça süzülür (Ses Kutusu'nun nesnesi, Resimde Bul'un resmi, Obur'un kartları). */
+@keyframes alf-suzul { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1.2%; } }
+@keyframes alf-sahne-nefes { 0%, 100% { scale: 1; } 50% { scale: 1.008; } }
+.alf-ses-nesnesi, .hk-kart img, .yz-resim img { animation: alf-suzul 3.6s ease-in-out infinite; }
+/* Resimde Bul'un resmi boşta canlı: üstünden yumuşak bir ışık geçer (dokunma çokgenleri yerinden oynamaz; ölçek nefesi
+   çokgenleri de kaydırıyordu, parmak kayan hedefe dokunuyordu). */
+.rb-art::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; background: linear-gradient(105deg, transparent 38%, rgba(255, 250, 225, .22) 50%, transparent 62%) no-repeat; background-size: 250% 100%; animation: alf-isik-gecer 7s ease-in-out infinite; }
+@keyframes alf-isik-gecer { 0%, 55% { background-position: 130% 0; } 100% { background-position: -30% 0; } }
+/* Dokunulan taşlar boşta yer değiştirmez (dokunma hedefi sabit kalsın): yalnız sıcak bir parıltı nabzı. */
+@keyframes alf-tas-nabiz { 0%, 100% { box-shadow: 0 3px 0 #475e52, 0 0 0 0 rgba(255, 214, 110, 0); } 50% { box-shadow: 0 3px 0 #475e52, 0 0 0 6px rgba(255, 214, 110, .55); } }
+.mik-ders .mik-tas:not(:disabled):not(.mik-alindi) { animation: alf-tas-nabiz 2.6s ease-in-out infinite; }
+.mik-ders .mik-tas:nth-child(2n) { animation-delay: -1.1s; }
+.mik-ders .mik-tas:nth-child(3n) { animation-delay: -2.2s; }
+
+/* Yazma: başlangıç noktası nabız gibi atar ("buradan başla"), harfin yolu yavaşça akar; Hayvan çağır'da hayvanlar süzülür. */
+@keyframes alf-nabiz { 0%, 100% { scale: 1; opacity: 1; } 50% { scale: 1.45; opacity: .75; } }
+@keyframes alf-akis { to { stroke-dashoffset: -11.1; } }
+.yz-iz .baslangic { transform-box: fill-box; transform-origin: center; animation: alf-nabiz 1.4s ease-in-out infinite; }
+/* sıradaki vuruş: yol boyunca akan noktalar (kalın, yuvarlak uçlu çizgide nokta dizisi) */
+.yz-kagit .iz.siradaki-iz { stroke-dasharray: .1 11; animation: alf-akis .9s linear infinite; }
+.hy-aktor img { animation: alf-suzul 3.4s ease-in-out infinite; }
+.hy-aktor:nth-child(2n) img { animation-delay: -1.6s; }
+
+/* 2 · Dokunma hedefleri en az 64 px. Küçük yuvarlak ve başlık düğmeleri: çizim aynı, görünmez genişletme (::after).
+   :where() sıfır özgüllüktedir: düğmenin kendi konum kuralı (absolute vb.) varsa o geçerli kalır. */
+:where(.at-geri, .at-ses, .hf-ses, .rb-listen, .yz-yine, .hy-ornek, .hy-tani, .hy-dinle, .alf-yine, .hk-dinle, .boy-dinle, .ka-sonra, .ka-sozluk-ac, .at-album-ac) { position: relative; }
+:where(.at-geri, .at-ses, .hf-ses, .rb-listen, .yz-yine, .hy-ornek, .hy-tani, .hy-dinle, .alf-yine, .hk-dinle, .boy-dinle, .ka-sonra, .ka-sozluk-ac, .at-album-ac)::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: max(100%, 64px); height: max(100%, 64px); translate: -50% -50%; border-radius: 18px;
+}
+/* Yazma: kalem renkleri gerçekten 64 px (boya noktası aynı boyda), "devam" düğmeleri en az 64 px yüksek. */
+body .yz-palet button { width: 64px; height: 64px; }
+body .yz-palet { margin-bottom: -56px; gap: 0; }
+/* "bir daha göster": kendi boyu (gerçek büyütme telefonda kontrol satırını ekrandan taşırıyordu); 64 px dokunma alanı
+   görünmez genişletmeyle, yanındaki durum yazısı dokunuşu kesmesin. */
+body .yz-kontrol .yz-soz { pointer-events: none; }
+body .rb-next, body .hy-devam, body .hy-tani, body .hy-ornek, body .at-devam { min-height: 64px; }
+body .hy-dinle, body .alf-yine { min-width: 64px; min-height: 64px; }
+body .hy .hy-arac button, body .hy .hy-ornek, body .hy .hy-devam, body .hy .hy-tani { min-height: 64px; min-width: 64px; }
+
+@media (orientation: landscape) and (max-height: 450px) {
+  /* Geri düğmeleri ("Harflere dön", raftaki "Dersler/Etkinlikler"): 64 × 64 yuvarlak köşe düğmesi. Yazı ekran okuyucuya
+     kalır (görünmez); başlık şeridi 64 px, sahne onun altından başlar (düğme sahnenin üstüne binmez). */
+  body .at-ust { min-height: 64px; padding-block: 0; }
+  body .at-ust .at-geri { width: 64px; height: 64px; min-height: 64px; padding: 0; border-radius: 50%; justify-content: center; gap: 0; }
+  body .at-ust .at-geri svg { width: 28px; height: 28px; }
+  body .at-ust .at-geri span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  body .at-ust .at-geri::after { content: none; }
+  body .at-sahne { height: calc(100svh - 68px); }
+  body .at-raf .at-karsila { height: 68px; }
+  body .at-raf .at-portre { width: 68px; }
+  /* Mıknatıslar: telefonda taşlar 43 px'e iniyordu (vmin); levha, taşlar ve örnek resim büyür, oyun ekranın çoğunu tutar. */
+  /* İki sütun: solda iri resim ve sözcük (dinleme düğmesi), sağda üstte levha, altta taşlar. */
+  body .at-sahne-4 .mik-ders:not(.mik-olta) { height: 100%; box-sizing: border-box; padding: 6px 8px; grid-template-columns: minmax(0, .8fr) minmax(0, 1.45fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); align-items: center; justify-items: stretch; align-content: stretch; gap: 10px 14px; }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-ornek { grid-column: 1; grid-row: 1 / 3; height: 100%; min-height: 0; }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-sozcuk { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 1.9rem; font-weight: 800; background: #fff8e9; border: 2px solid var(--mik-ink); border-radius: 22px; box-shadow: 0 4px 0 rgba(38, 59, 55, .2); }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-ipucu-resim { width: auto; height: 62%; max-width: 92%; aspect-ratio: 1; }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-levha { grid-column: 2; grid-row: 1; width: 100%; min-height: 0; height: 100%; gap: 10px; padding: 10px; }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-tepsi { grid-column: 2; grid-row: 2; gap: 14px; height: 100%; align-items: center; }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-bitir { grid-column: 2; grid-row: 2; }
+  body .at-sahne-4 .mik-ders :is(.mik-yuva, .mik-tas), body .mik-hayalet { min-width: 76px; height: 84px; font-size: 2.8rem; }
+  body .at-sahne-4 .mik-ders .mik-odul { width: 104px; height: 104px; }
+  /* Obur: canavar ve kartlar telefonda ekranı doldurur (masa %20 kadardı). */
+  body .at-sahne-3 .hk-masa { max-width: none; width: 100%; gap: 18px; }
+  body .at-sahne-3 .hk-istasyon { max-width: min(62svh, 280px); }
+  body .at-sahne-3 .hk-kartlar { max-width: min(78svh, 380px); gap: 8px; }
+  /* Hece Oyunu menüsü: kartlar bütün yüksekliği kaplar. */
+  body .hm-menu { width: 96%; min-height: calc(100svh - 64px); align-content: stretch; gap: 12px; }
+  body .hm-menu > button { height: 100%; }
+  body .hm-menu > button img { width: 100%; height: 100%; object-fit: contain; }
+  /* Raf: tahtadaki Ceren hoparlörü (tahta taşanı kırptığı için gerçek boyu) 64 px. */
+  body .at-raf .at-karsila .at-tanitim { width: 64px; height: 64px; min-height: 64px; }
+  /* Ceren'le oku ısınması (Oku ve bul): resimler telefonda büyür (ekranın %37'si kadardı). */
+  body .co-sahne[data-evre=okubul] .co-okubul-resim { width: min(30.5cqw, 70cqh); padding: 1cqh; }
+  body .co-sahne[data-evre=okubul] .co-okubul-resimler[data-adet="2"] .co-okubul-resim { width: min(42cqw, 70cqh); }
+  body .co-sahne[data-evre=okubul] .co-okubul-resimler { gap: 1.6cqw; }
+  body .co-sahne[data-evre=okubul] .co-okubul { gap: 2cqh; align-self: stretch; align-content: space-evenly; }
+  body .co-sahne[data-evre=okubul] .co-okubul-soz { padding: .6cqh 2.4cqw; font-size: max(26px, min(12cqh, 8cqw)); }
+  /* Albüm: resimli sözlük düğmeleri en az 64 px yüksek. */
+  body .ka-sozluk-ac { min-height: 64px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .alf-ceren, .alf-ses-nesnesi, .hk-kart img, .yz-resim img, .rb-art::after, .mik-ders .mik-tas, .yz-iz .baslangic, .yz-kagit .iz.siradaki-iz, .hy-aktor img { animation: none; }
+}
+
+/* Paket Harf-A2 · çizilmiş arayüz (a2-kareler.ts → <html class="a2-…"> ve --a2-* değişkenleri; kareler yoksa hiçbiri geçerli
+   değil). Parçalar 9 dilimli: köşeler 64 px'lik kenar payında, orta düz, uzayınca bozulmaz (Astra brief'i, Paket Harf-A2 · A). */
+html.a2-miknatis body .mik-tas { border-style: solid; border-color: transparent; border-image: var(--a2-mik-tas) 64 fill / 18px stretch; background: none; box-shadow: none; }
+html.a2-miknatis body .mik-tas.mik-ipucu { border-image-source: var(--a2-mik-tas-ipucu); }
+html.a2-miknatis body .mik-tas.mik-alindi { border-image-source: var(--a2-mik-tas-alindi); }
+html.a2-miknatis body .mik-yuva { border-style: solid; border-color: transparent; border-image: var(--a2-mik-yuva) 64 fill / 18px stretch; background: none; box-shadow: none; }
+html.a2-miknatis body .mik-yuva.mik-sirada { border-image-source: var(--a2-mik-yuva-sirada); }
+html.a2-miknatis body .mik-yuva.mik-dolu { border-image-source: var(--a2-mik-yuva-dolu); }
+html.a2-miknatis body .mik-levha { border-style: solid; border-color: transparent; border-image: var(--a2-mik-levha) 64 fill / 24px stretch; background: none; box-shadow: none; }
+html.a2-miknatis body .mik-tepsi { border-style: solid; border-color: transparent; border-image: var(--a2-mik-tepsi) 64 fill / 24px stretch; background: none; box-shadow: none; }
+html.a2-okubul body .co-okubul-resim { border-style: solid; border-color: transparent; border-image: var(--a2-okubul-kart) 64 fill / 20px stretch; background: none; box-shadow: none; }
+html.a2-okubul body .co-okubul-resim.co-okubul-dogru { border-image-source: var(--a2-okubul-kart-dogru); }
+html.a2-okubul body .co-okubul-resim.co-okubul-yanlis { border-image-source: var(--a2-okubul-kart-yanlis); }
+html.a2-okubul body .co-okubul-resim.co-okubul-soluk { border-image-source: var(--a2-okubul-kart-soluk); }
+/* Hece Evleri: kapının açılış kareleri gelince 3B dönüş yerine çizilmiş kareler oynar (hece-evleri.ts → .he-kareli). */
+body .he-ev.he-kareli .he-kapi, body .he-ev.he-kareli.acik .he-kapi { transform: none; transition: none; }
+
+/* Telefon yatay · Yazma baştan (yönetici 23 Kasım: oyun alanı en az %60, Ceren köşede): kâğıt sahnenin bütün yüksekliğini alır,
+   "bir daha göster" ve kalem renkleri sağda 64 px'lik dikey sütunda, Ceren kâğıdın sağ üst köşesinde küçük (dokunuşu kâğıda bırakır). */
+@media (orientation: landscape) and (max-height: 450px) {
+  body .at-sahne:has(.yz-atolye) { padding: 4px 10px; min-height: 0; height: calc(100svh - 68px); box-sizing: border-box; }
+  body .at-sahne .yz-atolye { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 64px; grid-template-rows: 64px auto minmax(0, 1fr); column-gap: 8px; height: 100%; }
+  body .at-sahne .yz-masalar { grid-column: 1; grid-row: 1 / 4; min-height: 0; height: 100%; grid-template-rows: minmax(0, 1fr); }
+  body .at-sahne .yz-masalar section { position: relative; min-height: 0; }
+  body .at-sahne .yz-masalar h2 { position: absolute; top: 6px; left: 14px; z-index: 1; margin: 0; font-size: 15px; opacity: .75; pointer-events: none; }
+  body .at-sahne .yz-masalar .yz-kagit { height: calc(100svh - 68px - 8px); }
+  body .at-sahne .yz-atolye .yz-kontrol { grid-column: 2; grid-row: 1; width: 64px; margin: 0; flex-direction: column; }
+  body .at-sahne .yz-yine { width: 64px; height: 64px; padding: 0; border-radius: 50%; display: grid; place-items: center; }
+  body .at-sahne .yz-palet { grid-column: 2; grid-row: 2; flex-direction: column; margin: 0; width: 64px; }
+  body .at-sahne .yz-ogretmen { display: flex; position: absolute; top: 4px; right: 76px; height: 84px; z-index: 2; pointer-events: none; }
+  body .at-sahne .yz-ogretmen .yz-maskot, body .at-sahne .yz-ogretmen h1 { display: none; }
+  body .at-sahne .yz-ogretmen .alf-ceren { pointer-events: none; }
+}
+
+/* Telefon yatay · Hece Oyunu → Manyetik Hece Bulmacası (%48'di, taşlar 44 px): pano sahnenin bütün yüksekliğini alır,
+   resimler büyür, taşlar ve yuvalar 64 px. */
+@media (orientation: landscape) and (max-height: 450px) {
+  body .at-hece-oyun-alani:has(> .hp-pano) { margin: 0 auto; }
+  body .hp-pano { min-height: calc(100svh - 72px); box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; padding: .4rem .9rem .45rem; }
+  body .hp-pano .hp-durum { min-height: 0; margin: 0; font-size: .85rem; }
+  body .hp-pano .hp-resim { height: clamp(3.6rem, 22svh, 7rem); }
+  body .hp-pano .hp-yuva { height: 64px; min-width: 64px; }
+  body .hp-pano .hp-miknatislar { margin-top: .25rem; padding: .25rem .4rem .3rem; }
+  body .hp-pano .hp-miknatislar .hp-tas { min-height: 64px; min-width: 64px; font-size: 1.5rem; }
+  body .hp-pano .hp-yonerge .hp-dinle { width: 64px; height: 64px; }
+  body .hp-pano .hp-yardim { min-height: 64px; }
+}
+
+/* Telefon yatay · ölçüm turu 2 (23 Kasım 03:45; hedef her adımda en az %60, taşma yok). */
+@media (orientation: landscape) and (max-height: 450px) {
+  /* Mıknatıslar: levha ve tepsi görünür birer pano (A2'nin çizilmiş parçaları gelince onlar giydirir). */
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-levha { background: #eaf3ef; border: 2px solid #9cbcae; border-radius: 22px; box-sizing: border-box; }
+  body .at-sahne-4 .mik-ders:not(.mik-olta) .mik-tepsi { background: #f4e3c2; border: 2px solid #c9a46e; border-radius: 22px; box-shadow: inset 0 -5px 0 #e2c592; box-sizing: border-box; }
+  /* Obur: kartlar panonun bütün yüksekliğini alır, Obur büyür. */
+  body .at-sahne-3 .hk-masa { grid-template-columns: minmax(0, 1.45fr) minmax(0, .75fr); gap: 14px; align-items: stretch; }
+  body .at-sahne-3 .hk-sol { height: 100%; place-items: stretch; box-sizing: border-box; padding: 8px; }
+  body .at-sahne-3 .hk-masa { height: calc(100svh - 156px); }
+  /* Oyun sürerken alt sıra boştur: masa başlık satırının hemen altından ekranın dibine uzanır (son aşamada eski yükseklik). */
+  body .at-sahne-3 .hk:not([data-asama=son]) { grid-template-rows: 46px minmax(0, 1fr) 0; row-gap: 0; }
+  body .at-sahne-3 .hk:not([data-asama=son]) .hk-masa { height: calc(100svh - 126px); }
+  body .at-sahne-3 .hk:not([data-asama=son]) .hk-kartlar { height: calc(100svh - 142px); }
+  body .at-sahne-3 .hk:not([data-asama=son]) .hk-istasyon { max-width: min(calc(100svh - 130px), 290px); }
+  body .at-sahne-3 .hk-kartlar { max-width: none; height: calc(100svh - 172px); grid-auto-rows: minmax(0, 1fr); align-content: stretch; gap: 10px; }
+  body .at-sahne-3 .hk-kart { aspect-ratio: auto; height: auto; min-height: 0; align-self: stretch; }
+  body .at-sahne-3 .hk-istasyon { max-width: min(calc(100svh - 162px), 300px); }
+  /* Oku ve bul: solda sözcük ve Ceren, sağda resimler bütün yükseklikte. */
+  body .co-sahne[data-evre=okubul] .co-okubul { grid-template-columns: 150px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); align-self: stretch; align-items: start; justify-items: stretch; gap: 0 10px; height: 100%; margin: 0; }
+  body .co-sahne[data-evre=okubul] .co-okubul-soz { grid-column: 1; grid-row: 1; justify-self: center; margin-top: 2cqh; }
+  body .co-sahne[data-evre=okubul] .co-okubul-resimler { grid-column: 2; grid-row: 1; height: 100%; align-items: stretch; gap: 10px; }
+  body .co-sahne[data-evre=okubul] .co-okubul-resimler .co-okubul-resim, body .co-sahne[data-evre=okubul] .co-okubul-resimler[data-adet="2"] .co-okubul-resim { flex: 1 1 0; width: auto; height: auto; aspect-ratio: auto; min-width: 0; }
+  /* Mutlak konumlu ızgara çocuğu kendi ızgara alanına göre konumlanır: Ceren 1. sütuna, bütün satırlara alınır. */
+  body .co-sahne[data-evre=okubul] > .co-ceren { grid-column: 1; grid-row: 1 / -1; position: absolute; left: 14px; bottom: 10px; top: auto; right: auto; width: 130px; height: 130px; z-index: 2; }
+  /* Hece Evleri: başlık 64 px olunca ev sahnesi alttan taşıyordu. */
+  body .he-ders { height: calc(100svh - 72px); }
+  /* Hece Köprüsü: sahne alttan taşıyordu; kıyıdaki hece taşları (55×37) görünmez kenarla 64 px'e genişler. */
+  body .at-hece-oyun-alani { height: calc(100svh - 72px); min-height: 0; }
+  body .hk-tas:not(.hk-suda)::after { content: ''; position: absolute; inset: -12px -6px; }
+  /* Raf: harf ızgarası ilk ekrana sığar (üç sıra 64 px). */
+  body .at-raf .at-harfler { gap: 3px; margin-top: 2px; }
+  body .at-raf .at-grup { gap: 3px; padding: 3px; }
+  /* Raf: "Harf albümümü aç" 44 px'ti; yeşil şeritte hoparlörün yanında 64 × 64. "Harfler" başlık satırı kalkar, harfler yukarı çıkar. */
+  body .at-raf { position: relative; }
+  body .at-raf .at-album-sira { height: 0; margin: 0 0 6px; }
+  body .at-raf .at-album-sira h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  body .at-raf .at-album-ac { position: absolute; z-index: 2; top: 2px; right: 76px; width: 64px; height: 64px; min-height: 64px; padding: 0; background: #fff6de; border: 2px solid var(--murekkep); border-radius: 50%; }
+  body .at-raf .at-album-ac img { width: 46px; }
+  body .at-raf .at-karsila-metin { right: 148px; }
+  /* Hece Evleri harf seçimi: harfler 38 px'ti; 64 px, dokuzlu üç sıra, evlerin altında. */
+  body .he-giris .he-sahne { --tas-s: 64px; --masa: 204px; --ceren: 136px; --ev: min(calc((100cqw - var(--ceren) - 9 * var(--ara)) / 8), calc((100cqh - var(--masa) - var(--etk) - var(--ara)) / 1.25)); }
+  body .he-giris .he-tepsi { grid-template-columns: repeat(9, 64px); grid-auto-rows: 64px; gap: 4px; height: auto; bottom: 4px; align-content: end; }
+  /* Seçimde sekiz ev tek sırada (iki sırada 42 px'e iniyordu): her ev en az 64 px, dokunulunca o evden başlanır. */
+  body .he-giris .he-evler { grid-template-columns: repeat(8, var(--ev)); }
+  /* Ders: taşınan harf 64 px, masa ona göre; evler bütün genişlikteki kitaplıkta aralıklı (iki raf), Ceren büyük. */
+  body .he-ders:not(.he-giris) .he-sahne { --tas: 64px; --masa: 76px; --ceren: 190px; --etk: 10px; --raf: 12px; --ara: 7px; }
+  body .he-ders:not(.he-giris) .he-evler { left: calc(var(--ceren) + var(--ara)); right: var(--ara); justify-content: space-evenly; padding: 0 6px 2px; background: #f6dfb8; border: 2px solid #8a6136; border-bottom: 0; border-radius: 16px 16px 0 0; box-shadow: inset 0 0 0 5px #e7c08a; }
+  /* Manyetik Hece Bulmacası: 64 px taşlarla pano alttan taşıyordu; resimler biraz kısalır. */
+  body .hp-pano .hp-resim { height: clamp(3.2rem, 15svh, 5.6rem); }
+  body .hp-pano { min-height: 0; height: calc(100svh - 70px); }
+}
+
+/* Telefon yatay · ölçüm turu 3 (23 Kasım sabahı): kalan oyunlar %60, bütün hedefler 64 px. */
+@media (orientation: landscape) and (max-height: 450px) {
+  /* Manyetik Hece Bulmacası: yönerge (Ceren göstersin, sayaç, dinle) sağda dikey sütun; resimler ve taşlar bütün yükseklikte. */
+  body .hp-pano:not(:has(.hp-son:not([hidden]))) { display: grid; grid-template-columns: minmax(0, 1fr) 84px; grid-template-rows: auto minmax(0, 1fr) auto; column-gap: 10px; justify-content: stretch; }
+  body .hp-pano:not(:has(.hp-son:not([hidden]))) > .hp-yonerge { grid-column: 2; grid-row: 1 / 4; display: flex !important; flex-direction: column; align-items: center; justify-content: space-between; gap: 6px; }
+  body .hp-pano:not(:has(.hp-son:not([hidden]))) > .hp-durum { grid-column: 1; grid-row: 1; }
+  body .hp-pano:not(:has(.hp-son:not([hidden]))) > .hp-nesneler { grid-column: 1; grid-row: 2; min-height: 0; align-self: stretch; align-items: stretch; }
+  body .hp-pano:not(:has(.hp-son:not([hidden]))) > .hp-raf { grid-column: 1; grid-row: 3; }
+  body .hp-pano .hp-yonerge .hp-baslik { text-align: center; flex: none; }
+  body .hp-pano .hp-yonerge .hp-baslik h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  body .hp-pano .hp-yonerge .hp-yardim { flex-direction: column; width: 84px; min-height: 96px; padding: 4px; gap: 2px; font-size: 12px !important; line-height: 1.1; }
+  body .hp-pano .hp-yonerge .hp-yardim .hp-ogretmen { width: 54px; }
+  body .hp-pano .hp-resim { height: auto; min-height: 64px; flex: 1 1 auto; }
+  body .hp-pano .hp-nesne { display: flex; flex-direction: column; min-height: 0; }
+  /* Hece Köprüsü taşları ve Posta pulları: görünmez kenarla en az 64 × 64. */
+  body .hk-tas:not(.hk-suda)::after { inset: -15px -7px; }
+  body .pk-pul::after { content: ''; position: absolute; inset: -6px -10px; }
+  /* Hece Trambolini: yaylar alçak (37 px); dokunma alanı yukarı ve aşağı uzar. */
+  /* Taban yükselir (bütün sahne aynı değişkene bağlı): yayın 64 px'lik alanı sahanın alt kenarında kesilmez. */
+  body .tr-saha { --taban: 24px; }
+  body .tr-yay::after { content: ''; position: absolute; inset: -14px 0; }
+  body .tr-alt { pointer-events: none; }
+  body .tr-alt button { pointer-events: auto; }
+  /* Hece oyunlarındaki "Ceren'i yeniden dinle" (44 px) gerçek boyda 64. */
+  body .he-dinle, body .ho-dinle { width: 64px; height: 64px; min-height: 64px; }
+  body .he-dinle svg, body .ho-dinle svg { width: 30px; height: 30px; }
+}
+
+/* Hece oyunlarının bitiş yazısı ve kartları yaylanarak gelir (oyun sonu kutlaması, cila.ts → bitisKutla). */
+body .hk-son > p, body .pk-son > p { animation: alf-son-gel .55s cubic-bezier(.3, 1.6, .5, 1) both; }
+body .pk-son-kartlar > img { animation: alf-son-gel .5s cubic-bezier(.3, 1.6, .5, 1) both; }
+body .pk-son-kartlar > img:nth-child(2) { animation-delay: .12s; }
+body .pk-son-kartlar > img:nth-child(3) { animation-delay: .24s; }
+body .hk-son .at-basla, body .pk-son .at-basla { animation: alf-son-gel .5s .35s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes alf-son-gel { from { opacity: 0; transform: scale(.6) translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { body .hk-son > p, body .pk-son > p, body .pk-son-kartlar > img, body .hk-son .at-basla, body .pk-son .at-basla { animation: none; } }
+/* Hece Trambolini: birleşen sözcük yaylanarak gelir. */
+body .ho-tam > strong { display: inline-block; animation: alf-son-gel .5s cubic-bezier(.3, 1.6, .5, 1) both; }
+@media (prefers-reduced-motion: reduce) { body .ho-tam > strong { animation: none; } }
+
+/* Adımdan adıma geçiş (main.ts → .at-gecis): yeni sahne yana kayarak ve hafifçe büyüyerek gelir. */
+body .at-sahne.at-gecis { animation: alf-adim-gel .42s cubic-bezier(.25, .9, .35, 1) both; }
+@keyframes alf-adim-gel { from { opacity: 0; transform: translateX(7%) scale(.97); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { body .at-sahne.at-gecis { animation: none; } }

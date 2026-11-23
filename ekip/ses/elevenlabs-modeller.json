@@ -1,0 +1,57 @@
+[
+  {
+    "model_id": "eleven_v4",
+    "name": "Eleven v4",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_v4_turbo",
+    "name": "Eleven v4 Turbo",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_v3",
+    "name": "Eleven v3",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_v3_conversational",
+    "name": "Eleven v3 Conversational",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_multilingual_v2",
+    "name": "Eleven Multilingual v2",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_flash_v2_5",
+    "name": "Eleven Flash v2.5",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_turbo_v2_5",
+    "name": "Eleven Turbo v2.5",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_turbo_v2",
+    "name": "Eleven Turbo v2",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_flash_v2",
+    "name": "Eleven Flash v2",
+    "can_do_text_to_speech": true
+  },
+  {
+    "model_id": "eleven_english_sts_v2",
+    "name": "Eleven English v2",
+    "can_do_text_to_speech": false
+  },
+  {
+    "model_id": "eleven_multilingual_sts_v2",
+    "name": "Eleven Multilingual v2",
+    "can_do_text_to_speech": false
+  }
+]

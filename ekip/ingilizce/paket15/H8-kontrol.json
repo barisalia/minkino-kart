@@ -1,0 +1,89 @@
+[
+  {
+    "name": "snail",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "worm",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "caterpillar",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "dragonfly",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "grasshopper",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": [
+      [
+        504,
+        395,
+        37,
+        72,
+        545
+      ],
+      [
+        564,
+        411,
+        38,
+        67,
+        967
+      ]
+    ]
+  },
+  {
+    "name": "beetle",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  }
+]

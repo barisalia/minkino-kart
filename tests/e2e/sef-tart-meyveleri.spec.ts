@@ -1,4 +1,6 @@
 import {expect,test,type Locator} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 function dizilim(kap:Locator){
   return kap.locator('.tart-dilimi').evaluateAll(els=>els.map(el=>{
@@ -67,20 +69,14 @@ for(const vitrin of [false,true])test('Tart meyveleri '+(vitrin?'vitrinden gelen
     expect(await dizilim(page.locator('.vitrinden-sun'))).toEqual(ilk);
     await page.getByRole('button',{name:'Meyveli Tart vitrinden tepsiye al'}).tap();
   }
-  await page.reload();expect(await dizilim(page.locator('.tepsi-yuva'))).toEqual(ilk);
-  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  // Tepsi tamamlanınca masa sahnesi açılır: meyveler müşteriye sunulacak tepside aynı yerlerde.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await page.reload();expect(await dizilim(sunum)).toEqual(ilk);
+  if(process.env.SEF_TART_KARE)await page.screenshot({path:process.env.SEF_TART_KARE+'/tart-masa-'+(vitrin?'dogru':'farkli')+'.png'});
+  await sunum.tap();
   await expect(page.getByRole('button',{name:new RegExp((vitrin?24:16)+' jeton kazanıldı')})).toBeVisible();
+  // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; sofranın kaydı meyvelerin yerini tutar.
   await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.anilar.at(-1)?.masa.tartDilimleri)).toEqual(ilk);
-  await page.evaluate(()=>{
-    const d=JSON.parse(localStorage.getItem('minkino-sef-v1')!);d.tepsiler.ekran='kapali';d.tepsiler.restoranda=false;
-    localStorage.setItem('minkino-sef-v1',JSON.stringify(d));
-  });
-  await page.reload();await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  await expect(page.locator('.ani-karti')).toHaveCount(1);
-  expect(await dizilim(page.locator('.ani-karti'))).toEqual(ilk);
-  if(process.env.SEF_TART_KARE){
-    await page.locator('.ani-karti').tap();await page.screenshot({path:process.env.SEF_TART_KARE+'/tart-album-'+(vitrin?'dogru':'farkli')+'.png'});
-  }
 });
 
 for(const yak of [false,true])test('Tartın kenarı ve fırından '+(yak?'geç':'zamanında')+' çıkarılması krema aşamasına taşınır',async({page},testInfo)=>{
@@ -133,7 +129,8 @@ for(const yak of [false,true])test('Tartın kenarı ve fırından '+(yak?'geç':
   await expect(page.locator('.pastane-porsiyonu .tabaktaki-tatli')).toHaveAttribute('src',new RegExp(baz));
   await page.getByRole('button',{name:'Tatlıyı tepsiye koy'}).tap();
   await page.reload();
-  await expect(page.locator('.tepsi-yuva .tabaktaki-tatli')).toHaveAttribute('src',new RegExp(baz));
+  // Tepsi tamamlanınca masa sahnesi açılır; tartın tabanı müşteriye sunulacak tepside aynı kalır.
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.tabaktaki-tatli')).toHaveAttribute('src',new RegExp(baz));
   const tabak=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.masalar['meyveli-tart']);
   expect(tabak.tatliPuani).toBe(yak?2:3);
   expect(tabak.tartDilimleri.map((d:{meyve:string})=>d.meyve)).toEqual(['muz','muz','yaban','yaban','yaban']);

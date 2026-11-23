@@ -1,7 +1,11 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 for(const [width,height] of [[568,320],[844,390]]){
-  test(width+' pikselde ikinci raftaki dokuz tezgâhın kendi kapağı görünür',async({page})=>{
+  // İkinci raf kartları ilk sürümden (15 Kasım) beri birinci raftaki gibi sade tarif simgelerini kullanıyor (ikon-atolyesi/tarif);
+  // assets/sef/tezgah-kapaklari/ çizimleri hiçbir yerde kullanılmıyor.
+  test(width+' pikselde ikinci raftaki dokuz tezgâhın kendi simgesi görünür',async({page})=>{
     await page.setViewportSize({width,height});
     await page.routeWebSocket(url=>url.port==='5173',()=>{});
     await page.goto('./sef/?test=1');
@@ -15,7 +19,8 @@ for(const [width,height] of [[568,320],[844,390]]){
       const img=kart.locator('.raf-gorseli img');
       await img.evaluate(el=>(el as HTMLImageElement).decode());
       const kaynak=await img.evaluate(el=>(el as HTMLImageElement).currentSrc);
-      expect(kaynak).toContain('/tezgah-kapaklari/'+id);
+      expect(kaynak).toContain('/ikon-atolyesi/tarif/'+id+'.webp');
+      expect(await img.evaluate(el=>(el as HTMLImageElement).naturalWidth)).toBeGreaterThan(100);
       await expect(kart).toBeInViewport({ratio:1});
     }
     await page.getByRole('button',{name:'Önceki tarif rafı'}).tap();

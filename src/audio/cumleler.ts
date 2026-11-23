@@ -12,7 +12,7 @@ import maceraElektrikJson from '../../content/macera-elektrik.json';
 import maceraSalincakJson from '../../content/macera-salincak.json';
 import { pazarCumleleri } from '../../pazar/src/istek';
 import { pastaCumleleri, pastaKinoCumleleri } from '../../pasta/src/model';
-import { dedektifCumleleri, dedektifKinoCumleleri } from '../../dedektif/src/mantik';
+import { dedektifCumleleri, dedektifKinoCumleleri, dedektifMinoCumleleri } from '../../dedektif/src/mantik';
 import { kinoOtobusCumleleri, kinoOtobusKinoCumleleri, kinoOtobusMusteriCumleleri } from '../../kino-otobus/src/model';
 import giysinJson from '../../content/giysin.json';
 import uykuJson from '../../content/uyku.json';
@@ -238,5 +238,7 @@ export function karakterCumleleri(): Record<string, string[]> {
   };
   // Kino'nun Otobüsü: 36 müşteri cümlesi (ses gelene dek balonda yazı)
   for (const [kim, l] of Object.entries(kinoOtobusMusteriCumleleri())) kisiEkle(kim, l);
+  // Dedektif Mino: Vaka 1'de Mino kendi sesiyle
+  kisiEkle('mino', dedektifMinoCumleleri());
   return sonuc;
 }

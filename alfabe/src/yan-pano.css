@@ -1,0 +1,33 @@
+/* Sabit oranlı sahnenin iki yanındaki panolar (yan-pano.ts). Kap sahneden en az %15 geniş olunca görünür. */
+.yp-kap { grid-auto-flow: column; justify-content: center; column-gap: 8px; }
+.yp-yan { display: none; }
+@container (min-aspect-ratio: 205 / 100) {
+  .yp-yan {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    width: calc((100cqw - 100cqh * 1.7768) / 2 - 8px); height: 100cqh; box-sizing: border-box; padding: 8px;
+    background: #fff8e8; border: 2px solid #33483c; border-radius: 18px; box-shadow: inset 0 -5px 0 #f0dfbd;
+  }
+  .yp-sol { justify-content: flex-end; padding-bottom: 0; overflow: hidden; }
+  .yp-sol .yp-ceren { width: 100%; height: auto; aspect-ratio: 1; flex: none; }
+  .yp-dinle {
+    width: min(100%, 104px); aspect-ratio: 1; height: auto; min-height: 64px; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 2px;
+    background: #1b695c; color: #fff; border: 2px solid #224c40; box-shadow: 0 5px 0 #0f3f36; font: 700 14px/1 system-ui, sans-serif; cursor: pointer;
+  }
+  .yp-dinle svg { width: 38%; height: auto; }
+  .yp-dinle:active { transform: translateY(3px); box-shadow: 0 2px 0 #0f3f36; }
+  .yp-dinle:disabled { opacity: .55; }
+  .yp-kap .hk-sahne > .hk-dinle, .yp-kap .pk-sahne > .pk-dinle { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .yp-dinle:active { transform: none; } }
+/* Taş tepsisi (Hece Köprüsü): sol pano kıyı olur, taşlar alt alta iri; Ceren sağda dinle düğmesinin üstünde. */
+@container (min-aspect-ratio: 205 / 100) {
+  .yp-tepsili .yp-sol { justify-content: stretch; padding: 6px; background: #d9efc4; box-shadow: inset 0 -5px 0 #b9dc9d; }
+  .yp-tepsili .yp-sag { justify-content: space-between; padding-top: 0; }
+  .yp-tepsili .yp-sag .yp-ceren { width: 100%; height: auto; aspect-ratio: 1; flex: none; }
+  .yp-tepsi { position: relative; width: 100%; height: 100%; }
+  .yp-tepsi > .hk-tas { width: 92%; max-height: 23%; }
+  .yp-tepsi > .hk-tas span { font-size: 26px; }
+  /* Tepsiden suya uçan taş sahnenin kenarında kesilmesin. */
+  .yp-tepsili .hk-sahne { overflow: visible; }
+  .yp-tepsili .hk-fon { border-radius: inherit; }
+}

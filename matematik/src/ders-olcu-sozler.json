@@ -1,0 +1,22 @@
+{
+  "giris": "Bugün karşılaştıracağız! Büyük mü, küçük mü? Uzun mu, kısa mı?",
+  "devam": "Tekrar hoş geldin! Karşılaştırmaya devam edelim.",
+  "tanit_buyuk": "Bu ayıcık büyük. Kocaman!",
+  "tanit_kucuk": "Bu ayıcık küçük. Minicik!",
+  "soru_kucuk_sapka": "Küçük şapkaya dokun.",
+  "soru_buyuk_kupa": "Büyük kupaya dokun.",
+  "tanit_uzunkisa": "İki kalem aynı yerden başlıyor. Bu kalem uzun, bu kalem kısa.",
+  "soru_uzun_atki": "Uzun atkıya dokun.",
+  "soru_kisa_tren": "Kısa trene dokun.",
+  "tanit_cokaz": "Bu kavanozda çok düğme var. Bunda az düğme var.",
+  "soru_az_kavanoz": "Az düğme olan kavanoza dokun.",
+  "tanit_agirhafif": "Karpuz ağır, zor kalkar. Tüy hafif, uçup gider.",
+  "soru_hafif": "Hangisi hafif? Ona dokun.",
+  "dogru_1": "Evet, doğru!",
+  "dogru_2": "Aferin, buldun!",
+  "dogru_3": "Harika!",
+  "ipucu": "İkisine de iyi bak. Bir daha dene.",
+  "bitis_3": "Bugün büyük ile küçüğü, uzun ile kısayı, çok ile azı öğrendin!",
+  "bitis_4": "Bugün büyük ile küçüğü, uzun ile kısayı, çok ile azı, ağır ile hafifi öğrendin!",
+  "hatira": "Bu mezura senin hatıran. Artık her şeyi ölçebilirsin!"
+}

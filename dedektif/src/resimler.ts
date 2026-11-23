@@ -40,11 +40,25 @@ export function surumTablosu(dosyalar: Record<string, string>): Map<string, stri
   return new Map([...en].map(([ad, v]) => [ad, v.url]));
 }
 
-const yeniCizimler = import.meta.glob<string>(
-  '../../assets/dedektif-yeni/{roman-*,ipucu-*,kart-*,tepki-*,lamba-*,kalemlik-devrik,buyutec,sosis,kelebek}.webp',
-  { eager: true, query: '?url', import: 'default' },
-);
+/**
+ * Yeni çizgi (Astra, 2026-11-16; ekip/senaryo/DEDEKTIF-YENIDEN.md): Vaka 1'in odaları, Mino / Kino / Pamuk pozları,
+ * eşyalar, ipuçları, kartlar ve çizgi roman. Varsa eskisinin yerine bu kullanılır (aynı ad ya da yeniAdlar eşi).
+ */
+const yeniCizimler = import.meta.glob<string>('../../assets/dedektif-yeni/*.webp', { eager: true, query: '?url', import: 'default' });
+/** Yeni çizgide karşılığı olmayan eski katmanlar: eski çizim yeni odanın üstüne binmesin */
+const YENIDE_YOK = new Set(['masa', 'yatak-on']);
 const yeniAdlar: Record<string, string> = {
+  // poz ekleri ve karakterlerin duruşları (poz.ts): 'poz-<ad>' → <ad>
+  ...Object.fromEntries(
+    Object.keys(yeniCizimler)
+      .map((y) => /\/((?:mino|kino|pamuk)-[^/]+)\.webp$/.exec(y)?.[1])
+      .filter((a): a is string => !!a)
+      .map((a) => [`poz-${a}`, a]),
+  ),
+  'pamuk-b': 'pamuk-onden',
+  // çalışma odası tek resim (eski: film/ev katmanları), mutfak (eski: film/mutfak)
+  'oda-calisma': 'calisma-odasi',
+  'oda-mutfak': 'mutfak-ucu',
   kalemlik: 'kalemlik-devrik',
   'kart-kedi-pati-izi': 'ipucu-kedi-pati',
   'ipucu-kedi-pati-hali': 'ipucu-kedi-pati',
@@ -55,9 +69,25 @@ const yeniAdlar: Record<string, string> = {
 };
 const TABLO = surumTablosu(DEDEKTIF);
 const TABLO2 = surumTablosu(DEDEKTIF2);
+/**
+ * Vaka 2 yeni çizgi (Astra, 2026-11-17; assets/dedektif-yeni/v2, eskisiyle aynı ad ve ölçü): varsa eskisinin yerine.
+ * Geri gönderilen çizimler düzelene dek assets/dedektif-yeni/_geri/ altında bekler (burada aranmaz: eskisi kullanılır).
+ */
+const TABLO2_YENI = surumTablosu(import.meta.glob<string>('../../assets/dedektif-yeni/v2/*.webp', { eager: true, query: '?url', import: 'default' }));
 const baska = (yol: string) => BASKA[`../../assets/${yol}.webp`] ?? null;
-/** Vaka 2 çizimi: 'v2/mandal' → assets/dedektif2/mandal.webp */
-const v2 = (a: string) => (a.startsWith('v2/') ? (TABLO2.get(a.slice(3)) ?? null) : undefined);
+/**
+ * Vaka 2 çizimi: 'v2/mandal' → assets/dedektif-yeni/v2/mandal.webp, yoksa assets/dedektif2/mandal.webp. Bölümün yeni
+ * yatay zemini varsa eski çizgideki dikey eşi kullanılmaz (dikey ekranda da yeni yatay zemin: iki çizgi karışmaz).
+ */
+const v2 = (a: string) => {
+  if (!a.startsWith('v2/')) return undefined;
+  const ad = a.slice(3);
+  const yeni = TABLO2_YENI.get(ad);
+  if (yeni) return yeni;
+  const dikey = /^(.+)-dikey$/.exec(ad);
+  if (dikey && TABLO2_YENI.has(dikey[1])) return null;
+  return TABLO2.get(ad) ?? null;
+};
 
 /**
  * Yuvalar: ad → [assets/dedektif adayları, depodaki yedek (assets/ altında yol), zorunlu mu].
@@ -70,7 +100,8 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   // yatağın önü (Pamuk arkasında saklanır): yatak-odasi resminden yatağın kendi çizgisiyle kesilmiş saydam katman
   'yatak-on': { adaylar: ['yatak-on'], zorunlu: false },
   // eşyalar
-  masa: { adaylar: ['masa', 'calisma-masasi'], zorunlu: true },
+  // yeni çizgide masa çalışma odasının resminde (ayrı masa yok: YENIDE_YOK)
+  masa: { adaylar: ['masa', 'calisma-masasi'], zorunlu: false },
   kalemlik: { adaylar: ['kalemlik-devrik', 'kalemlik'], zorunlu: false },
   'lamba-dik': { adaylar: ['lamba-dik'], zorunlu: true },
   'lamba-devrik': { adaylar: ['lamba-devrik'], zorunlu: true },
@@ -109,6 +140,20 @@ export const YUVA: Record<string, { adaylar: string[]; yedek?: string; zorunlu: 
   'poz-pamuk-surunme': { adaylar: ['poz-pamuk-surunme'], zorunlu: false },
   'poz-pamuk-ozur': { adaylar: ['poz-pamuk-ozur'], zorunlu: false },
   'poz-pamuk-el-salla': { adaylar: ['poz-pamuk-el-salla'], zorunlu: false },
+  // yeni çizgi pozları (assets/dedektif-yeni; resim() yeniAdlar ile bulur)
+  'poz-mino-dedektif': { adaylar: ['mino-dedektif'], zorunlu: false },
+  'poz-mino-saskin': { adaylar: ['mino-saskin'], zorunlu: false },
+  'poz-mino-fisilti': { adaylar: ['mino-fisilti'], zorunlu: false },
+  'poz-mino-dusunuyor': { adaylar: ['mino-dusunuyor'], zorunlu: false },
+  'poz-mino-el-salla': { adaylar: ['mino-el-salla'], zorunlu: false },
+  'poz-kino-merakli': { adaylar: ['kino-merakli'], zorunlu: false },
+  'poz-kino-tahmin': { adaylar: ['kino-tahmin'], zorunlu: false },
+  'poz-kino-koklama': { adaylar: ['kino-koklama'], zorunlu: false },
+  // sola dönük eşleri: çizildiyse (Astra) Kino solundaki şeye dönük (oyuncular.ts → kinoYonlu); ön yüklenmez
+  'poz-kino-tahmin-sol': { adaylar: ['kino-tahmin-sol'], zorunlu: false },
+  'poz-kino-koklama-sol': { adaylar: ['kino-koklama-sol'], zorunlu: false },
+  'poz-kino-sevinc': { adaylar: ['kino-sevinc'], zorunlu: false },
+  'poz-pamuk-onden': { adaylar: ['pamuk-onden'], zorunlu: false },
   // çizgi roman kareleri (Gemini, aynı stil, 4:3); yoksa sahne çizimlerinden kurulur
   'roman-1': { adaylar: ['roman-1'], zorunlu: false },
   'roman-2': { adaylar: ['roman-2'], zorunlu: false },
@@ -130,6 +175,7 @@ export function resim(ad: string, tablo: Map<string, string> = TABLO): string | 
   if (ad.startsWith('v3/')) return resim3(ad.slice(3));
   const yeni = yeniCizimler[`../../assets/dedektif-yeni/${yeniAdlar[ad] ?? ad}.webp`];
   if (tablo === TABLO && yeni) return yeni;
+  if (tablo === TABLO && YENIDE_YOK.has(ad) && yeniOdalar) return null;
   const y = YUVA[ad];
   for (const a of y?.adaylar ?? [ad]) {
     const u = v2(a) ?? tablo.get(a);
@@ -138,8 +184,11 @@ export function resim(ad: string, tablo: Map<string, string> = TABLO): string | 
   return y?.yedek ? baska(y.yedek) : null;
 }
 
+/** Yeni çizgi odaları var mı (Vaka 1 yerleşimi bunlara göre: mantik.ts) */
+export const yeniOdalar = !!yeniCizimler['../../assets/dedektif-yeni/calisma-odasi.webp'];
+
 /** Vaka 2'nin bütün çizim adları (birim testi: her kullanılan ad bir dosya) */
-export const VAKA2_RESIMLERI = [...TABLO2.keys()];
+export const VAKA2_RESIMLERI = [...new Set([...TABLO2.keys(), ...TABLO2_YENI.keys()])];
 
 /** Çalışma odası ve mutfak katmanları (film arka planları) */
 export const filmKatmani = (oda: 'ev' | 'mutfak', ad: 'arka-uzak' | 'arka-orta' | 'arka-on' | 'oda-dikey') => baska(`film/${oda}/${ad}`) ?? '';

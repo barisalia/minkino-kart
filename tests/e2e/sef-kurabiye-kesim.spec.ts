@@ -1,5 +1,7 @@
 import {expect,test} from '@playwright/test';
 import sharp from 'sharp';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 for(const width of [844,568])test('Yıldız hamurdan kalkar ve aynı boyda tepsiye oturur '+width,async({page},testInfo)=>{
   await page.setViewportSize({width,height:width===844?390:320});

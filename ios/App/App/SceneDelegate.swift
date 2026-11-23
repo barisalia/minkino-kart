@@ -28,6 +28,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 /// Eklentinin 'landscape' kilidi tek yon birakir (landscapeRight ya da landscapeLeft): yatay kilit iki yonlu olsun,
 /// cocuk telefonu hangi yana cevirirse ekran duz dursun (dikey yok). Kilit sirasinda telefonun o anki yatay yonu istenir.
 class MinkinoBridgeViewController: CAPBridgeViewController {
+    /// Uygulamanın kendi eklentileri (npm paketi değil): söz tanıma, yalnız cihazda (SozTanima.swift)
+    override func capacitorDidLoad() {
+        bridge?.registerPluginInstance(SozTanimaPlugin())
+    }
+
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         let maske = super.supportedInterfaceOrientations
         if maske == .landscapeLeft || maske == .landscapeRight {

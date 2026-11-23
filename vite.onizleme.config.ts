@@ -12,7 +12,9 @@ export default defineConfig((env) => mergeConfig(minkinoConfig(env), {
     strictPort: true,
     watch: {
       // Üretim çıktıları HTTP üzerinden sunulabilir; uygulamanın sıcak yenileme listesine alınmaz.
-      ignored: ['**/android/**', '**/ios/**', '**/dist/**', '**/ekip/**', '**/output/**', '**/tests/screens/**', '**/test-results/**', '**/playwright-report/**'],
+      // '*.indiriliyor': ses üretimi sırasında yarım yazılan dosyalar (Windows'ta izleyiciyi EBUSY ile düşürüyordu)
+      // 'dist-*': başka adla alınan derlemeler (dist-dedektif-yeni …) binlerce dosya yazıp sunucuyu dakikalarca meşgul ediyordu
+      ignored: ['**/*.indiriliyor', '**/android/**', '**/ios/**', '**/dist/**', '**/dist-*/**','**/ekip/**', '**/output/**', '**/tests/screens/**', '**/test-results/**', '**/playwright-report/**'],
     },
   },
 }));

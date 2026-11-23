@@ -15,12 +15,16 @@ export type Rnd = () => number;
 export type Ana = 'kırmızı' | 'sarı' | 'mavi';
 export type SuRengi = Ana | 'turuncu' | 'yeşil' | 'mor' | 'kahverengi';
 
-/** Bir turda kaç müşteri meyve suyu içer */
-export const MS_MUSTERI = 4;
+/**
+ * Bir turda kaç müşteri meyve suyu içer (Barış'ın ölçüsü, 19 Kasım 2026: oyunlar 3–4 soru, aynı iş bir turda iki kez
+ * olmaz): 2–3 yaş 3, 4 yaş 4 (altı renkten dördü), 5–6 yaş 3: üç ara rengin (turuncu, yeşil, mor) her biri bir kez.
+ * Dördüncü müşteri bir karışımı ve açıklamasını yinelemek zorunda kalıyordu; müşteri başına ~25 sn sürüyor.
+ */
+export const msMusteriSayisi = (yas: Yas) => (yas === 4 ? 4 : 3);
 /** Blender'a en çok kaç meyve sığar */
 export const KAPASITE = 3;
 
-/** Meyve → suyunun rengi. yabanmersini kodla çizilir (assets/meyveler'de yok), ötekiler mevcut görseller. */
+/** Meyve → suyunun rengi. Yaban mersini pazar setinde (assets/pazar/yabanmersini), ötekiler meyve setinde. */
 export const MEYVE_RENGI: Record<string, SuRengi> = {
   cilek: 'kırmızı',
   kiraz: 'kırmızı',
@@ -117,22 +121,29 @@ const TEK_RENKLER: SuRengi[] = ['kırmızı', 'sarı', 'turuncu', 'mor', 'yeşil
 const ARA_RENKLER: SuRengi[] = ['turuncu', 'yeşil', 'mor'];
 
 /**
- * sira: kaçıncı müşteri. onceki: bir önceki müşterinin istediği renk (aynısı art arda gelmesin).
+ * sira: kaçıncı müşteri. onceki: bu turda daha önce istenen renk(ler); istenmemiş renkler önce gelir (5-6 yaşta
+ * üç ara rengin üçü de istenmeden biri yinelenmez), hiçbiri art arda gelmez.
  * 3 yaş: 3 farklı renkte meyve, biri istenen. 4 yaş: 4 farklı renk.
  * 5 yaş: ara renk; tezgâhta her ana renkten birer meyve (ara renkli meyve yok: karıştırmak şart).
  * 6 yaş: ara renk; tezgâhta ana renkler + fazladan bir ana renk + istenenden başka bir ara renkli çeldirici
  * (onu katan kahverengi yapar).
  */
-export function msIstekUret(yas: Yas, _sira: number, rnd: Rnd = Math.random, onceki?: SuRengi): MsIstek {
+export function msIstekUret(yas: Yas, _sira: number, rnd: Rnd = Math.random, onceki?: SuRengi | readonly SuRengi[]): MsIstek {
+  const eski: readonly SuRengi[] = onceki === undefined ? [] : typeof onceki === 'string' ? [onceki] : onceki;
+  /** bu turda istenmemiş renkler; hepsi istendiyse bir öncekinden başka her renk */
+  const taze = (havuz: SuRengi[]) => {
+    const k = havuz.filter((r) => !eski.includes(r));
+    return k.length ? k : havuz.filter((r) => r !== eski[eski.length - 1]);
+  };
   if (yas <= 4) {
-    const havuz = TEK_RENKLER.filter((r) => r !== onceki);
+    const havuz = taze(TEK_RENKLER);
     const hedef = sec(havuz, rnd);
     const digerler = karistir(TEK_RENKLER.filter((r) => r !== hedef), rnd).slice(0, yas === 3 ? 2 : 3);
     const tezgah = karistir([hedef, ...digerler].map((r) => sec(renktekiler(r), rnd)), rnd);
     const s = istekCumlesi(hedef);
     return { hedef, tezgah, karisik: false, soz: [s], yazi: s };
   }
-  const hedef = sec(ARA_RENKLER.filter((r) => r !== onceki), rnd);
+  const hedef = sec(taze(ARA_RENKLER), rnd);
   const anaMeyve = (a: Ana, haric: string[] = []) => sec(renktekiler(a).filter((m) => !haric.includes(m)), rnd);
   const tezgah = ANA_SIRA.map((a) => anaMeyve(a));
   if (yas >= 6) {

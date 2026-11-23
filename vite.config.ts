@@ -2,8 +2,11 @@ import { readFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { ingilizceDosyalari } from './ingilizce/vite-dosyalar';
 import { secimliFilmPaketi } from './kino-ile-sen-sec/paket';
-import { KINO_OTOBUS_MENUDE, KITAP_MENUDE, PATI_MENUDE } from './uygulama/src/oyunlar';
+import { INGILIZCE_MENUDE, KINO_OTOBUS_MENUDE, KITAP_MENUDE, OYUNLAR, PATI_MENUDE } from './uygulama/src/oyunlar';
+import { DENEY_MENUDE } from './deney/src/bayrak';
+import { DOKTOR_MENUDE } from './doktor/src/bayrak';
 
 // Bu bağımsız film oynatıcısı çevrimdışı paketteki HTML'i kullanır. Başka
 // sayfalardaki geliştirme yenilemeleri devam eden filmi yeniden açmamalı.
@@ -36,8 +39,12 @@ const SAYFALAR = {
   hazirlik: 'hazirlik/index.html',
   matematik: 'matematik/index.html',
   alfabe: 'alfabe/index.html',
-  // İlk İngilizcem (Barış 2026-11-16): etkinliklerde, bütünüyle premium; içerik gelişiyor
+  // Ceren Öğretmen ile İngilizceye Merhaba: menüde ve uygulama derlemesinde oyunlar.ts → INGILIZCE_MENUDE bayrağına bağlı
   ingilizce: 'ingilizce/index.html',
+  // Ceren Öğretmen ile Deney Atölyesi: uygulama derlemesine deney/src/bayrak.ts → DENEY_MENUDE true olunca girer
+  deney: 'deney/index.html',
+  // Minik Doktor · Minkino Kliniği (1.2 örneği): uygulama derlemesine doktor/src/bayrak.ts → DOKTOR_MENUDE true olunca girer
+  doktor: 'doktor/index.html',
   kartlar: 'kartlar/index.html',
   canlan: 'canlan/index.html',
   sesTesti: 'ses-testi/index.html',
@@ -73,7 +80,15 @@ const SAYFALAR = {
  *   Bayrak true olunca sayfa kendiliğinden geri girer (tek satır: oyunlar.ts).
  * - Her sayfanın başına uygulama kabuğu (src/kabuk/yerel.ts) eklenir: kayıtlar, arka plan, ekran yönü.
  */
-const UYGULAMADA_YOK = ['sesTesti', 'uygulama', 'gizlilik', 'sartlar', ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(KITAP_MENUDE ? [] : ['kitap'])];
+/**
+ * Menüde olmayan oyun uygulama paketine girmez (Barış, 23 Kasım 2026: "Menüde olmayan şeyleri niye tutuyorsun, kaldır").
+ * Arşivdeki kartların (uygulama/src/oyunlar.ts → arsiv: true) sayfaları: Dedektif Mino; Lezzet Otobüsü ve onun iki
+ * aşaması (Kino'nun Otobüsü, Pasta), ki onlara yalnız Otobüs sayfasından gidilir. Kartın `arsiv` işareti kalkınca sayfa
+ * kendiliğinden pakete geri girer. Web derlemesinde bu sayfalar durur.
+ */
+const ARSIV_SAYFALARI: Record<string, string[]> = { dedektif: ['dedektif'], otobus: ['otobus', 'kinoOtobus', 'pasta'] };
+const ARSIVDEKILER = OYUNLAR.filter((k) => k.arsiv).flatMap((k) => ARSIV_SAYFALARI[k.id] ?? []);
+const UYGULAMADA_YOK = ['sesTesti', 'uygulama', 'gizlilik', 'sartlar', ...ARSIVDEKILER, ...(KINO_OTOBUS_MENUDE ? [] : ['kinoOtobus']), ...(PATI_MENUDE ? [] : ['pati']), ...(KITAP_MENUDE ? [] : ['kitap']), ...(INGILIZCE_MENUDE ? [] : ['ingilizce']), ...(DENEY_MENUDE ? [] : ['deney']), ...(DOKTOR_MENUDE ? [] : ['doktor'])];
 /** public/ altından uygulamaya girmeyenler (ses karşılaştırma örnekleri) */
 const UYGULAMADA_YOK_DOSYA = ['ses-ornek', 'ses-deneme.html'];
 
@@ -130,17 +145,19 @@ export default defineConfig(({ mode }) => {
   const input = Object.fromEntries(
     Object.entries(SAYFALAR)
       .filter(([ad]) => !uygulama || !UYGULAMADA_YOK.includes(ad))
+      // hızlı deneme derlemesi: YALNIZ_SAYFA=dedektif,uygulama (yalnız bu sayfalar, ayrı klasöre: YALNIZ_DIZIN)
+      .filter(([ad]) => !process.env.YALNIZ_SAYFA || process.env.YALNIZ_SAYFA.split(',').includes(ad))
       .map(([ad, yol]) => [ad, resolve(__dirname, yol)]),
   );
   return {
     base: './',
-    plugins: [secimliFilmPaketi(), damlaFilmOnizleme(), anaStilOnce(), ...(uygulama ? [uygulamaKabugu()] : [])],
+    plugins: [secimliFilmPaketi(), damlaFilmOnizleme(), anaStilOnce(), ingilizceDosyalari(), ...(uygulama ? [uygulamaKabugu()] : [])],
     define: {
       __REVENUECAT_IOS_KEY__: JSON.stringify(env.REVENUECAT_IOS_KEY ?? ''),
       __REVENUECAT_ANDROID_KEY__: JSON.stringify(env.REVENUECAT_ANDROID_KEY ?? ''),
     },
     build: {
-      outDir: 'dist',
+      outDir: process.env.YALNIZ_DIZIN || 'dist',
       assetsInlineLimit: 2048,
       target: 'es2020',
       rollupOptions: { input },

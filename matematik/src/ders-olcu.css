@@ -1,0 +1,48 @@
+/* Ceren Öğretmen dersi 3 · Karşılaştır ve ölç (ders-olcu.ts). Dünya, Ceren, şekil sırası ve hatıra kuralları
+   ceren-ders.css ve ders-sekiller.css'ten. Bütün yerler dünyanın oranıyla; dokunulan her şey y %8–%84 arasında. */
+
+.cd-ceren[data-poz='buyuk'] > .cd-poz[data-poz='buyuk'],
+.cd-ceren[data-poz='kucuk'] > .cd-poz[data-poz='kucuk'],
+.cd-ceren[data-poz='tart'] > .cd-poz[data-poz='tart'] { display: block; }
+.cd-ceren[data-poz='buyuk'] > .cd-iskelet[data-poz='buyuk'],
+.cd-ceren[data-poz='kucuk'] > .cd-iskelet[data-poz='kucuk'],
+.cd-ceren[data-poz='tart'] > .cd-iskelet[data-poz='tart'] { display: grid; }
+.do-dunya .cd-ceren { z-index: 4; }
+
+.do-alan { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.do-alan > * { pointer-events: auto; }
+
+/* Çiftler halının üstünde. Yan yana: aynı tabana oturur (Astra tuvali: taban y 580/600). Üst üste: yatay nesnelerin
+   sol uçları aynı çizgide (uzunluk adil karşılaştırılır). */
+.do-nesne { position: absolute; transition: opacity .3s, scale .3s, filter .3s; }
+.do-alan[data-dizilis='yan-yana'] .do-nesne { top: 42%; height: 42%; aspect-ratio: 1; translate: -50% 0; }
+.do-alan[data-dizilis='yan-yana'] .do-nesne[data-yer='0'] { left: 51%; }
+.do-alan[data-dizilis='yan-yana'] .do-nesne[data-yer='1'] { left: 76%; }
+.do-alan[data-dizilis='yan-yana'] .do-nesne[data-nesne^='kavanoz'],
+.do-alan[data-dizilis='yan-yana'] .do-nesne[data-nesne='karpuz'],
+.do-alan[data-dizilis='yan-yana'] .do-nesne[data-nesne='tuy'] { aspect-ratio: 500 / 600; }
+.do-alan[data-dizilis='ust-uste'] .do-nesne { left: 41%; width: 40%; aspect-ratio: 3; }
+.do-alan[data-dizilis='ust-uste'] .do-nesne[data-yer='0'] { top: 36%; }
+.do-alan[data-dizilis='ust-uste'] .do-nesne[data-yer='1'] { top: 60%; }
+.do-nesne > img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 .5cqw 0 #00000026); }
+.do-nesne.one { scale: 1.06; }
+.do-nesne.one > img { filter: drop-shadow(0 0 1.2cqw #fff3a8) drop-shadow(0 .5cqw 0 #00000026); }
+.do-nesne.dogru { scale: 1.1; }
+.do-nesne.dogru > img { filter: drop-shadow(0 0 1.4cqw #fff3a8) drop-shadow(0 .5cqw 0 #00000026); }
+.do-nesne.soluk { opacity: .45; filter: saturate(.5); }
+@media (prefers-reduced-motion: no-preference) {
+  .do-nesne.ipucu { animation: ds-ipucu 1.1s ease-in-out infinite; }
+}
+
+/* Test kipi: çizimi gelmemiş nesne, Astra tuvalindeki gerçek boyuyla adı yazılı kutu (büyük/küçük, uzun/kısa görünsün). */
+.do-nesne > .cd-iskelet {
+  position: absolute; display: grid; place-items: center; text-align: center; background: #fff8e6; border: 2px dashed #b88a4a;
+  border-radius: 10px; font: 700 max(11px, 1.5cqw)/1.15 system-ui; color: #5a3d1e;
+  left: 5%; right: 5%; bottom: 3%; top: 5%;
+}
+.do-nesne[data-nesne$='-kucuk'] > .cd-iskelet { left: 30%; right: 30%; top: 55%; }
+.do-alan[data-dizilis='ust-uste'] .do-nesne > .cd-iskelet { left: 4%; right: 4%; top: 25%; bottom: 25%; }
+.do-alan[data-dizilis='ust-uste'] .do-nesne[data-nesne$='-kisa'] > .cd-iskelet { right: 51%; }
+.do-nesne[data-nesne='tuy'] > .cd-iskelet { left: 25%; right: 25%; top: 30%; bottom: 40%; }
+
+.do-hatira { left: 60%; }

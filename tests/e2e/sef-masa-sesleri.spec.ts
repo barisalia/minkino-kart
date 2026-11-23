@@ -2,6 +2,8 @@ import {expect,test} from '@playwright/test';
 import {existsSync,readFileSync,statSync} from 'node:fs';
 import {join} from 'node:path';
 import {restoranKarakterleri,type SiparisMisafiri} from '../../sef/src/restoran-karakterleri';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const klasor=join(process.cwd(),'sef','src');
 const json=(ad:string):Record<string,string>=>JSON.parse(readFileSync(join(klasor,ad+'.json'),'utf8'));

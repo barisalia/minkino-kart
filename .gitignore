@@ -23,3 +23,33 @@ ekip/giysin/ham/
 ekip/giysin/parca/
 ekip/mino-giysin/ham/
 dist-mg
+dist-dedektif/
+dist-baris
+
+# Ekip filmlerinin büyük ham dosyaları (uygulamaya girmez; GitHub 100 MB sınırı)
+ekip/film/**/*.mp4
+ekip/film/**/*.zip
+ekip/film/**/*.wav
+# Sürüm sırasında bekletilen Deney-A1 çizimleri (sürümden sonra assets/ altına döner)
+ekip/deney/a1-bekleyen/
+# Test ve önizleme çıktıları, yerel derlemeler, film çalışma kareleri
+output/
+dist-*/
+test-results/
+ekip/film/
+# Uygulamaya girmeyen iş dosyaları (repo herkese açık)
+minkino yayınevi/
+minkino sosyal medya/
+kino-park/medya/
+# Ekip klasöründeki yeni görsel ve video çalışma dosyaları (uygulamaya assets/ üzerinden girer)
+ekip/**/*.png
+ekip/**/*.jpg
+ekip/**/*.jpeg
+ekip/**/*.webp
+ekip/**/*.webm
+ekip/**/*.mp4
+ekip/**/*.mp3
+ekip/**/*.wav
+ekip/**/*.zip
+ekip/**/*.pdf
+ekip/**/*.gif

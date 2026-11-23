@@ -1,0 +1,82 @@
+[
+  {
+    "name": "lizard",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "chameleon",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "meerkat",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "llama",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "ox",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "moose",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": [
+      [
+        218,
+        203,
+        28,
+        3,
+        29
+      ]
+    ]
+  }
+]

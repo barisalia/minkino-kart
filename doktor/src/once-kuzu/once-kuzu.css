@@ -1,0 +1,21 @@
+/* "Önce Kuzu" kanıt sahnesi. Sahne 1600 × 900 birim (dk-sahne); kamera odayı büyütür, yakın plan üstüne gelir.
+   Buradaki hiçbir kural bir şey çizmez: çizimler assets/doktor/zipzip-diz/ içinden gelir. */
+.ok-kamera { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform, filter; }
+.ok-fon { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ok-katman { position: absolute; }
+.ok-isaret { position: absolute; width: 0; height: 0; pointer-events: none; }
+#doktor .ok-hedef { position: absolute; border-radius: 50%; }
+.ok-yakin { position: absolute; inset: 0; pointer-events: none; }
+.ok-yakin-ic { position: absolute; inset: 0; transform-origin: 0 0; }
+#doktor .ok-dinlenme { border-radius: 0; pointer-events: auto; }
+.ok-dinlenme img { width: 100%; height: 100%; filter: drop-shadow(0 8px 6px rgba(40, 30, 60, 0.25)); }
+.ok-hedef.dk-kalkti img { opacity: 0; }
+.ok-esya img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 3px rgba(60, 40, 30, 0.22)); }
+/* dizdeki yara bandı: konunca hafif kalkık ve eğik durur, sürttükçe yerine oturur (esnetme yok) */
+.dz-bant { position: absolute; pointer-events: auto; --kabar: 1; rotate: calc(-6deg - var(--kabar) * 5deg); translate: 0 calc(var(--kabar) * -10px);
+  filter: drop-shadow(0 calc(var(--kabar) * 16px) calc(3px + var(--kabar) * 8px) rgba(70, 35, 20, calc(0.15 + var(--kabar) * 0.2))); }
+.dz-bant img { width: 100%; height: 100%; object-fit: contain; }
+.ok-bindirme { position: absolute; pointer-events: none; translate: -50% -50%; }
+.dk-gecis { position: fixed; inset: 0; z-index: 50; background: #2b2140; opacity: 0; pointer-events: none; }
+.ok-ust { position: absolute; inset: 0; pointer-events: none; }
+.ok-ust > * { pointer-events: auto; }

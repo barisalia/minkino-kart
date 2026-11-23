@@ -1,0 +1,74 @@
+[
+  {
+    "name": "bat",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "beaver",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "skunk",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "otter",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "rhino",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "camel",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  }
+]

@@ -1,0 +1,356 @@
+/* Ceren Öğretmen ile Sayılar 1–10. Sahne 16:9 bir dünyadır ve ekran genişliğini tam kaplar; bütün öğeler dünyanın oranıyla
+   konur, böylece sınıf, masa ve nesneler her ekranda birbirine oturur.
+   - 16:9'dan geniş ekranda (telefon) dünya üstten biraz, alttan daha çok kırpılır (--odak .18).
+   - 16:9'dan dar ekranda (iPad 4:3) hiçbir şey kırpılmaz: sahne alta oturur, üstte duvar aynı renkle sürer, rakam sırası
+     o duvar şeridine yerleşir (--odak 1).
+   Sahne kaydırılamaz (overflow: clip): dokunuşta tarayıcı kutuyu kendiliğinden kaydırmasın. */
+#sahne[data-ekran='ceren'] {
+  --w: 100vw;
+  --odak: 0.18;
+  --h: 100vh;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  aspect-ratio: auto;
+  overflow: hidden;
+  overflow: clip;
+  background: #fdecd5;
+}
+@supports (height: 1dvh) {
+  #sahne[data-ekran='ceren'] { --h: 100dvh; }
+}
+@media (max-aspect-ratio: 16/9) {
+  #sahne[data-ekran='ceren'] { --odak: 1; }
+}
+.cd-dunya {
+  position: absolute;
+  left: 0;
+  top: calc((var(--h) - var(--w) * 0.5625) * var(--odak));
+  width: var(--w);
+  height: calc(var(--w) * 0.5625);
+  container-type: size;
+  overflow: hidden;
+  overflow: clip;
+}
+/* Dikey tablet: sahne ~1,56 kat büyür ve alta oturur. Soldan pencerenin bir kısmı kırpılır; tahtadan "sen koy" nesnesine
+   kadar (dünyada x %21–%85) her şey görünür kalır. Dünya ekrandan uzun olmaz (kareye yakın dikey ekranda tavanı aşmaz). */
+@media (orientation: portrait) {
+  #sahne[data-ekran='ceren'] {
+    --w: min(calc(100vw / 0.64), calc(var(--h) / 0.5625));
+    --odak: 1;
+  }
+  .cd-dunya { left: calc(50vw - var(--w) * 0.53); }
+}
+.cd-dunya img { -webkit-user-drag: none; user-select: none; }
+.cd-dunya button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cd-sinif {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cd-tahta {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+.cd-tahta-rakam {
+  position: absolute;
+  left: 50%;
+  top: 5%;
+  height: 90%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+}
+.cd-rakam-resim {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Ceren: masanın arkasında durur, alt kenarı masanın altında kalır. */
+.cd-ceren {
+  position: absolute;
+  z-index: 2;
+  aspect-ratio: 1;
+  cursor: pointer;
+}
+.cd-ceren > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  display: none;
+}
+.cd-ceren[data-poz='konus'] > .cd-agiz.acik,
+.cd-ceren[data-poz='goster'] > .cd-poz[data-poz='goster'],
+.cd-ceren[data-poz='parmak-say'] > .cd-poz[data-poz='parmak-say'],
+.cd-ceren[data-poz='alkis'] > .cd-poz[data-poz='alkis'],
+.cd-ceren[data-poz='sen-dene'] > .cd-poz[data-poz='sen-dene'] {
+  display: block;
+}
+.cd-ceren > .cd-iskelet { display: none; }
+.cd-ceren[data-poz='goster'] > .cd-iskelet[data-poz='goster'],
+.cd-ceren[data-poz='parmak-say'] > .cd-iskelet[data-poz='parmak-say'],
+.cd-ceren[data-poz='alkis'] > .cd-iskelet[data-poz='alkis'],
+.cd-ceren[data-poz='sen-dene'] > .cd-iskelet[data-poz='sen-dene'] {
+  display: grid;
+}
+
+.cd-masa {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+}
+span.cd-masa { height: var(--masa-h); }
+
+.cd-nesneler {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.cd-nesne,
+.cd-kaynak {
+  position: absolute;
+  height: var(--nesne-h);
+  aspect-ratio: 1;
+  translate: -50% -100%;
+  transform-origin: 50% 100%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.cd-nesne:disabled { cursor: default; }
+.cd-nesne img,
+.cd-kaynak img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+}
+.cd-sayi {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  /* Nesnenin tabanına oturur: ön sıradaki nesne arka sıranın etiketini örtmez. */
+  translate: -50% -58%;
+  min-width: 1.9em;
+  padding: 0.12em 0.42em 0.08em;
+  border: 0.14em solid #34241d;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #34241d;
+  font: 800 3.4cqh/1 system-ui, sans-serif;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 0.12em 0 rgba(52, 36, 29, 0.22);
+}
+.cd-kaynak {
+  z-index: 5;
+}
+.cd-kaynak[hidden] { display: none; }
+.cd-kaynak:disabled { cursor: default; }
+.cd-kayan {
+  position: fixed;
+  z-index: 50;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 6px rgba(52, 36, 29, 0.22));
+}
+
+/* Yazma: rakam bloğu masaya iner, büyür; Ceren'in parmağı yolu gösterir. */
+.cd-yazi {
+  position: absolute;
+  z-index: 6;
+  aspect-ratio: 1;
+}
+.cd-yazi[hidden] { display: none; }
+.cd-yazi-blok {
+  position: absolute;
+  inset: 0;
+}
+.cd-yazi-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  overflow: visible;
+}
+.cd-m-alt,
+.cd-m-ust,
+.cd-ornek-iz {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cd-m-alt { stroke: #34241d; stroke-width: 66; }
+.cd-m-ust { stroke: #fffdf6; stroke-width: 46; }
+.cd-ornek-iz {
+  stroke: #fffdf6;
+  stroke-width: 30;
+  opacity: 0.7;
+  transition: opacity 0.6s;
+}
+.cd-ornek-iz.soner { opacity: 0; }
+.cd-parmak {
+  fill: #fff6e8;
+  stroke: #34241d;
+  stroke-width: 8;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.cd-parmak.gorunur { opacity: 0.96; }
+.cd-uc-kontur { fill: #34241d; }
+.cd-uc-halka { fill: #fffdf6; }
+.cd-uc-ic { fill: #3fb45f; }
+.cd-uc-nabiz {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cd-nabiz 1.4s ease-in-out infinite;
+}
+.yaziyor .cd-uc-nabiz { animation: none; }
+@keyframes cd-nabiz {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.16); }
+}
+
+.cd-hatira {
+  position: absolute;
+  z-index: 5;
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+.cd-hatira[hidden] { display: none; }
+.cd-hatira img {
+  height: 100%;
+  width: auto;
+  display: block;
+}
+
+/* Üstte on rakam: biten tam renk, şimdiki büyük, sonrakiler soluk. */
+.cd-sira {
+  position: absolute;
+  z-index: 4;
+  /* Telefonda duvarın üst kenarında; iPad'de sahnenin üstündeki duvar şeridinin ortasında. */
+  top: max(8px, 1.6vh, calc((var(--h) - var(--w) * 0.5625) * var(--odak) / 2 - var(--r) / 2));
+  /* Ceren'in başının üstünde (dünyada x ≈ %44,5): solda tahta, sağda bayraklar kalır. */
+  left: 44.5%;
+  translate: -50% 0;
+  display: flex;
+  gap: clamp(3px, 0.45vw, 6px);
+  --r: clamp(34px, min(4.6vw, 6.6vh), 68px);
+}
+@media (orientation: portrait) {
+  /* Dikeyde duvar şeridi geniş: rakam sırası ortada ve daha büyük. */
+  .cd-sira { left: 50%; --r: clamp(34px, 7vw, 68px); }
+}
+.cd-sira-rakam {
+  width: var(--r);
+  height: var(--r);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s;
+}
+.cd-sira-resim {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.cd-sira-rakam.sonra .cd-sira-resim { opacity: 0.42; filter: saturate(0.55); }
+.cd-sira-rakam.simdi { transform: scale(1.18); z-index: 1; }
+.cd-sira-rakam.bitti::after {
+  content: '';
+  position: absolute;
+  right: -2%;
+  bottom: -2%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid #34241d;
+  background: #3fb45f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/80% no-repeat;
+}
+
+/* Yalnız test modunda (?test=1&ceren=1): Astra'nın çizimi gelmeden akışı denemek için. Çocuğa hiç görünmez. */
+.cd-iskelet {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 3px dashed #8a6a4a;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #5a4030;
+  font: 700 clamp(10px, 1.3vw, 18px) system-ui, sans-serif;
+  text-align: center;
+  overflow: hidden;
+}
+.cd-iskelet b { font-size: 2.6em; line-height: 1; }
+.cd-sinif.cd-iskelet { background: #f6e3c5; border-radius: 0; align-items: start; padding-top: 2%; }
+.cd-masa.cd-iskelet { background: rgba(214, 160, 96, 0.78); border-radius: 18px 18px 0 0; }
+.cd-tahta:empty { outline: 3px dashed rgba(90, 64, 48, 0.25); outline-offset: -3px; }
+.cd-rakam-resim.cd-iskelet,
+.cd-sira-resim.cd-iskelet { width: 100%; height: 100%; background: #ffe7a3; }
+.cd-sira-resim.cd-iskelet b { font-size: 1.6em; }
+.cd-sira-resim.cd-iskelet { font-size: 10px; border-width: 2px; border-radius: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-uc-nabiz { animation: none; }
+  .cd-sira-rakam { transition: none; }
+}
+
+/* ----- Kalite denetimi (23 Kasım gecesi; Matematik denetim betiği, iPad ve telefon yatay) ----- */
+/* Dokunma hedefi en az 64 px (KALITE-KURALLARI 8): dersin bütün düğmeleri görünmez bir halkayla en az 64 × 64 dokunulur
+   (sayılan armutlar, abaküs boncukları, şekil kartları…). Düğme 64'ten büyükse halka sıfırdır. Halka her zaman düğmenin
+   kendisine bağlıdır (contain: layout düğmeyi kapsayıcı yapar; düğmenin kendi yerleşimi değişmez). */
+.cd-dunya button, .cd-sira-rakam, .ds-sira-sekil { contain: layout; }
+.cd-dunya button::before, .cd-sira-rakam::before, .ds-sira-sekil::before {
+  content: '';
+  position: absolute;
+  inset: min(0px, calc((100% - 64px) / 2));
+  /* Başka bir halka kuralıyla (ör. tahterevallinin küpleri) birleşip kaymasın: yalnız inset geçerli. */
+  width: auto;
+  height: auto;
+  translate: none;
+}
+/* iPad ve geniş ekranda on rakamlık sıra 56 px, aralık 8 px: 64 px'lik dokunma halkaları komşusuna binmez. */
+.cd-sira { --r: clamp(56px, min(5vw, 7vh), 68px); gap: 8px; }
+/* Telefonda on rakamlık sıra iri: her rakam 52 px, aralık 12 px (dokunma halkaları birbirine binmez); dünya biraz aşağı
+   iner, sıra Ceren'in boynuzlarının üstünde kalır. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .cd-sira { --r: 52px; gap: 12px; top: 4px; }
+  #sahne[data-ekran='ceren']:has(.cd-sira) { --odak: 0.05; }
+  /* Sayılan nesneler telefonda %25 iri (tabanı yerinde; komşuyla aralık korunur). */
+  .cd-nesne, .cd-kaynak { scale: 1.25; }
+}
+/* Ceren boşta nefes alır (KALITE-KURALLARI 7: donuk "çıkartma" karakter olmaz); göz katmanları yalnız konuşma karesinde. */
+.cd-ceren > .cd-poz.gorunur { display: block; }
+.cd-ceren > .cd-goz { display: none; pointer-events: none; }
+.cd-ceren[data-poz='konus'] > .cd-goz.acik { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .cd-ceren.cd-canli { animation: cd-nefes 2.8s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+}
+@keyframes cd-nefes { from { scale: 1; } to { scale: 1.012 1.022; } }

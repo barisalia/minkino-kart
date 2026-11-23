@@ -34,7 +34,15 @@ export interface Saglayici {
   geriYukle(): Promise<boolean>;
   /** Mağazadan güncel durumu sorar (çevrimdışıysa hata atar; son bilinen durum geçerli kalır) */
   durumSor(): Promise<boolean>;
+  /**
+   * Yalnız iOS: Apple'ın hediye/teklif kodu penceresini açar. Kod kullanılınca abonelik mağazadan gelir
+   * (müşteri bilgisi dinleyicisi premiumAyarla'yı çağırır). Android'de kod Google Play'in kendi sayfasında girilir.
+   */
+  kodKullan?(): Promise<'acildi' | 'hata'>;
 }
+
+/** Google Play'de hediye/promosyon kodu sayfası (kod girildikten sonra abonelik hesaba gelir) */
+export const PLAY_KOD_ADRESI = 'https://play.google.com/redeem';
 
 let hazir: Promise<Saglayici | null> | null = null;
 

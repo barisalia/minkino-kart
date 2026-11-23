@@ -1,0 +1,164 @@
+[
+  {
+    "name": "telefon",
+    "turns": [
+      {
+        "target": "masa-alt",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          },
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/mino-masa-altinda.webp",
+            "loaded": true
+          }
+        ]
+      },
+      {
+        "target": "yatak-ust",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          }
+        ]
+      },
+      {
+        "target": "kutu-ic",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          },
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/mino-kutuda.webp",
+            "loaded": true
+          }
+        ]
+      },
+      {
+        "target": "masa-ust",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "tablet",
+    "turns": [
+      {
+        "target": "kutu-ic",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          },
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/mino-kutuda.webp",
+            "loaded": true
+          }
+        ]
+      },
+      {
+        "target": "yatak-ust",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          }
+        ]
+      },
+      {
+        "target": "masa-alt",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          },
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/mino-masa-altinda.webp",
+            "loaded": true
+          }
+        ]
+      },
+      {
+        "target": "masa-ust",
+        "hits": {
+          "kutu-ic": "kutu-ic",
+          "masa-ust": "masa-ust",
+          "masa-alt": "masa-alt",
+          "yatak-ust": "yatak-ust",
+          "sandalye-ust": "sandalye-ust",
+          "sandalye-yan": "sandalye-yan"
+        },
+        "art": [
+          {
+            "src": "/assets/ingilizce/oyun/saklambac/oda.webp",
+            "loaded": true
+          }
+        ]
+      }
+    ]
+  }
+]

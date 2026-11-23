@@ -1,4 +1,4 @@
-/** Mino'nun Pazarı ekranları: açılış, pazar (5 müşteri), şenlik */
+/** Mino'nun Pazarı ekranları: açılış, pazar (2–3 yaşta 3, büyüklerde 4 müşteri), şenlik */
 import P from '../../content/pazar.json';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
 import { efekt, konus, konusuyorMu } from '../../src/audio/ses';
@@ -17,7 +17,7 @@ import { adres, boing, flamaYerlestir, parilti, resim, tozKalkar } from './gorse
 import { MinoCanli } from './mino-canli';
 import { odulSesi } from './meyvesuyu-ses';
 import { kaydet, kayit } from './ilerleme';
-import { agirlik, urunRengi, denetle, istekUret, MUSTERI_SAYISI, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
+import { agirlik, urunRengi, denetle, istekUret, musteriSayisi, PARA, paraMi, urunAdi, uygunMu, type Istek, type Tur } from './istek';
 import { Musteri, musteriHazirla } from './musteri';
 import { pazarSarkisi, type PazarSarkisi } from './sarki';
 import { Terazi } from './terazi';
@@ -29,14 +29,25 @@ import { KANTAR_IKON } from './tart-kantar';
 const A = P.arayuz;
 const RENK_KODU = P.renk_kodu as Record<string, string>;
 const yas = (): Yas => durum.i.yas ?? 4;
-const rastgele = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
 export const bosluk = () => h('div', { style: 'width:72px' });
 
-/** Tasarımcının görseli geldiyse arka plan olarak (yoksa CSS yer tutucu); yatay telefon için geniş hâli de (yol-genis) */
-export function gorselStil(yol: string): string | undefined {
-  const url = adres(yol);
-  const genis = adres(`${yol}-genis`);
-  return url ? `--resim:url("${url}")${genis ? `;--resim-genis:url("${genis}")` : ''}` : undefined;
+/**
+ * Sırayla değişen söz (teşekkür, "bu değil", kompost): rastgele bir yerden başlar, sonra sırayla döner. Aynı söz üst
+ * üste gelmez, bir turda hiçbiri ikiden çok söylenmez (eskiden rastgeleydi: "Tam istediğim!" beş müşteride beş kez).
+ */
+export function sirali<T>(liste: readonly T[]): () => T {
+  let i = Math.floor(Math.random() * liste.length);
+  return () => liste[i++ % liste.length];
+}
+
+/** Test / gösterim (?test, ?onizleme): söylenen her cümle sırayla window.__pazar.soz'a yazılır (e2e yönerge sayar) */
+export function sozKaydet(soz: readonly string[]) {
+  (globalThis as { __pazar?: { soz?: string[] } }).__pazar?.soz?.push(...soz);
+}
+
+/** Pazar resmi arka plan olarak; yatay telefon için geniş hâli de (yol-genis) */
+export function gorselStil(yol: string): string {
+  return `--resim:url("${adres(yol)}");--resim-genis:url("${adres(`${yol}-genis`)}")`;
 }
 
 /**
@@ -184,11 +195,10 @@ export function oyunKamerasi(el: HTMLElement, sahne: HTMLElement, kamera: HTMLEl
 }
 /**
  * Ön tezgâh: ürünlerin durduğu büyük ahşap masa (pazar/on-tezgah.webp çizimi: arka kenarında yuvarlak tahta,
- * üstten bakılan tahtalar). Çizim kenarları bozulmadan esner (border-image). Görsel yoksa CSS ahşap.
+ * üstten bakılan tahtalar). Çizim kenarları bozulmadan esner (border-image).
  */
 export function onTezgah(...cocuklar: HTMLElement[]): HTMLElement {
-  const url = adres('pazar/on-tezgah');
-  return h(`div.pz-tezgah${url ? '.pz-gorselli' : ''}`, { style: url ? `--tz:url("${url}")` : undefined }, url ? h('i.pz-tezgah-resim', { 'aria-hidden': 'true' }) : null, ...cocuklar);
+  return h('div.pz-tezgah.pz-gorselli', { style: `--tz:url("${adres('pazar/on-tezgah')}")` }, h('i.pz-tezgah-resim', { 'aria-hidden': 'true' }), ...cocuklar);
 }
 
 /** yatay.css ile aynı koşul: alçak yatay ekran (telefon yan) */
@@ -207,10 +217,9 @@ export function oran(e: Element, kap: Element, oy = 0.5): [number, number] {
   return [(a.left + a.width / 2 - b.left) / (b.width || 1), (a.top + a.height * oy - b.top) / (b.height || 1)];
 }
 
-/** Bozuk para: görsel varsa üstüne rakam yazılır, yoksa CSS ile yuvarlak para */
+/** Bozuk para: çizimin üstüne rakamı yazılır */
 function paraEl(id: keyof typeof PARA): HTMLElement {
-  const url = adres(`pazar/${id}`);
-  return h(`div.pz-para.pz-${id}${url ? '.pz-gorselli' : ''}`, { role: 'img', 'aria-label': A.lira.replace('{sayi}', String(PARA[id])) }, url ? h('img', { src: url, alt: '', draggable: 'false' }) : null, h('b', {}, String(PARA[id])));
+  return h('div.pz-para', { role: 'img', 'aria-label': A.lira.replace('{sayi}', String(PARA[id])) }, h('img', { src: adres(`pazar/${id}`), alt: '', draggable: 'false' }), h('b', {}, String(PARA[id])));
 }
 
 function urunResmi(id: string): HTMLElement {
@@ -225,12 +234,11 @@ function logo(): HTMLElement {
 /**
  * Pazar standı (tasarımcının pazar/tezgah.webp çizimi: tente, direkler, tahta). Üç katman:
  * arkada bütün stand, ortada içindekiler (Mino, standın içinde), önde tente ve tahta (Mino tahtanın arkasında kalır).
- * "ustunde" tahtanın üstüne konanlar (sepet, meyveler) en öndedir. Görsel yoksa CSS yer tutucu.
+ * "ustunde" tahtanın üstüne konanlar (sepet, meyveler) en öndedir.
  */
 export function stand(icinde: HTMLElement[], ustunde: HTMLElement[] = []): HTMLElement {
   const url = adres('pazar/tezgah');
-  const katman = (sinif: string) =>
-    url ? h(`img.pz-stand-katman.${sinif}`, { src: url, alt: '', draggable: 'false' }) : h(`div.pz-stand-katman.pz-stand-yedek.${sinif}`);
+  const katman = (sinif: string) => h(`img.pz-stand-katman.${sinif}`, { src: url, alt: '', draggable: 'false' });
   return h('div.pz-stand', {}, katman('pz-stand-arka'), ...icinde, katman('pz-stand-tente'), katman('pz-stand-tahta'), ...ustunde);
 }
 
@@ -365,9 +373,11 @@ function istekGorseli(ist: Istek): HTMLElement {
 
 export function pazarEkrani(app: Uygulama): Ekran {
   const y = yas();
+  /** bu turda kaç müşteri (2–3 yaş 3, büyükler 4) */
+  const N = musteriSayisi(y);
   // gösterim / test: &musteriler=ordek,tavsan,… ile müşteriler seçilebilir
   const secili = TEST_MODU || document.body.dataset.onizleme ? (new URLSearchParams(location.search).get('musteriler') ?? '').split(',').filter((x) => P.musteriler.includes(x)) : [];
-  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, MUSTERI_SAYISI);
+  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, N);
   musteriler.forEach((ad) => {
     resimSesiHazirla(ad);
     musteriHazirla(ad);
@@ -377,17 +387,20 @@ export function pazarEkrani(app: Uygulama): Ekran {
   let sonSoz: string[] = [P.basla];
   // açılış şarkısı çalarken (el.dataset.sarki) cümle şarkının üstüne söylenmez
   const balon = h('div.baslik-balon.pz-baslik', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => el.dataset.sarki !== 'caliyor' && void konus(sonSoz), 'kucuk'), yazi);
-  const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: MUSTERI_SAYISI }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
+  const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: N }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
   const musteriKap = h('div.pz-musteri-kap');
   const mino = new Mino();
   mino.el.addEventListener('pointerdown', () => mino.tepki('gidik'));
   const urunler = h('div.pz-urunler');
+  const tesekkurSoz = sirali(P.dogru);
+  const yanlisSoz = sirali(P.yanlis);
+  /** bu turda önceki müşterilerin istekleri (ürün, renk, sayı yinelenmesin) */
+  const gecmis: Istek[] = [];
   let aktif = false;
   // Mino tezgâhta boş durmaz; sürüklenen ürünü gözleriyle izler
   const minoCanli = new MinoCanli(mino, { urunVar: () => urunler.children.length > 0, musteriVar: () => aktif });
-  const sepetUrl = adres('pazar/sepet');
   const sepetIc = h('div.pz-sepet-ic');
-  const sepet = h(`div.pz-sepet${sepetUrl ? '.pz-gorselli' : ''}`, { role: 'region', 'aria-label': 'Sepet' }, sepetUrl ? h('img.pz-sepet-resim', { src: sepetUrl, alt: '', draggable: 'false' }) : null, sepetIc);
+  const sepet = h('div.pz-sepet.pz-gorselli', { role: 'region', 'aria-label': 'Sepet' }, h('img.pz-sepet-resim', { src: adres('pazar/sepet'), alt: '', draggable: 'false' }), sepetIc);
   const verYazi = h('span', {}, A.ver);
   const ver = h('button.dugme.pz-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
   // Mino standın içinde tahtanın arkasında, sepet tahtanın üstünde; müşteri standın önünde
@@ -456,6 +469,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
   };
   const soyle = (soz: string | string[]) => {
     sonSoz = [soz].flat();
+    sozKaydet(sonSoz);
     return konus(sonSoz);
   };
 
@@ -487,9 +501,27 @@ export function pazarEkrani(app: Uygulama): Ekran {
     for (const e of urunler.querySelectorAll<HTMLElement>('.pz-urun')) e.classList.toggle('pz-parla-hafif', dogru.has(e));
   }
 
+  /** Düğmeyle biten istekte (sayma, iki ürün, toplama, para) sepet tamam: çocuk yalnız "Ver"e basmayı bekliyor */
+  const verBekliyor = () => aktif && ist.dugmeli && denetle(ist, sepettekiler()) === 'tamam';
+  /** Tezgâhtaki ürünlerin ipucu parlaması söner */
+  const parlamaSondur = () => urunler.querySelectorAll('.pz-parla, .pz-parla-hafif').forEach((e) => e.classList.remove('pz-parla', 'pz-parla-hafif'));
+  /** Sepet değişti: tamamsa kalan ürünler parlamaz (fazlasını istemesin), değilse "Ver" nabız gibi atmaz */
+  function verIpucuGuncelle() {
+    if (verBekliyor()) parlamaSondur();
+    else ver.classList.remove('pz-ver-hazir');
+  }
+  /** Sepet tamamken ipucu "Ver"i gösterir: düğme nabız gibi atar, "Oldu! Ver'e bas!" (paradaki "Tamam"da söz yok) */
+  function verGoster(soz: boolean) {
+    parlamaSondur();
+    ver.classList.add('pz-ver-hazir');
+    if (soz && ist.tur !== 'ode') void soyle(P.tart.hazir);
+  }
+
   /**
    * İpucu merdiveni (src/ui/ipucu-merdiveni.ts): yanlış ürün cevabı ele vermez. 12 sn Mino doğru ürüne bakar,
    * 25 sn müşteri isteğini yeniden söyler (hiç dokunulmadıysa "Sepete sürükle!"), 35 sn doğru ürünler hafifçe parlar.
+   * Sepet tamamsa (çocuk sayıp bekliyor) basamaklar "Ver"i gösterir: eskiden Mino tezgâhta kalan aynı ürüne bakıyor,
+   * istek yineleniyor, kalan ürünler parlıyordu; doğru sayan çocuk fazlasını koymaya itiliyordu.
    */
   let merdiven: Merdiven | null = null;
   let dokundu = false;
@@ -499,12 +531,14 @@ export function pazarEkrani(app: Uygulama): Ekran {
     merdiven = ipucuMerdiveni(
       {
         bak: () => {
+          if (verBekliyor()) return void minoCanli.bakin(oran(ver, sahne)[0] < 0.5 ? -0.8 : 0.8, 2200);
           const d = ipucuAnlamli() ? dogruUrunler()[0] : null;
           if (d) minoCanli.bakin(oran(d, sahne)[0] < 0.5 ? -0.8 : 0.8, 2200);
         },
-        soz: () => void soyle(dokundu ? ist.soz : [...ist.soz, P.surukle]),
-        parla: parlat,
-        tekrar: () => void soyle(ist.soz),
+        soz: () => (verBekliyor() ? verGoster(true) : void soyle(dokundu ? ist.soz : [...ist.soz, P.surukle])),
+        // fazla konduysa kalan ürünler parlamaz (daha da koymaya itmesin)
+        parla: () => (verBekliyor() ? verGoster(false) : denetle(ist, sepettekiler()) !== 'fazla' && parlat()),
+        tekrar: () => (verBekliyor() ? verGoster(true) : void soyle(ist.soz)),
       },
       { mesgul: konusuyorMu },
     );
@@ -536,7 +570,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     void mino.poz('dusun');
     clearTimeout(dusunZaman);
     dusunZaman = window.setTimeout(() => void mino.poz(null), sure(1300));
-    const soz = ist.tur === 'ayir' ? (ist.grup === 'meyve' ? P.meyve_degil : P.sebze_degil) : rastgele(P.yanlis);
+    const soz = ist.tur === 'ayir' ? (ist.grup === 'meyve' ? P.meyve_degil : P.sebze_degil) : yanlisSoz();
     // ilk yanlışta parlama yok; ikinci yanlıştan sonra (en az 10 sn geçtiyse) müşteri isteğini yeniden söyler (dolaylı)
     if (hata >= 2 && merdiven && merdiven.gecen() >= 10_000 && !merdiven.geldi('soz')) void soyle([soz, ...ist.soz]);
     else void soyle(soz);
@@ -600,7 +634,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     if (!ist.dugmeli) {
       if (denetle(ist, sepettekiler()) === 'tamam') bitir();
       else efekt.nota(sepettekiler().length);
-    }
+    } else verIpucuGuncelle();
   }
 
   function urunEl(id: string, i: number): HTMLElement {
@@ -646,6 +680,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       tasi(e, yuva);
       sepetGuncelle();
       teraziGuncelle();
+      verIpucuGuncelle();
       // terazi: fazlayı geri alınca kefeler denkleşirse tur da biter (yoksa kefe parlar ama müşteri hep bekler)
       if (ist.tur === 'terazi' && denetle(ist, sepettekiler()) === 'tamam') {
         efekt.nota(8);
@@ -674,8 +709,11 @@ export function pazarEkrani(app: Uygulama): Ekran {
   });
 
 
-  const tur = async (i: number) => {
-    ist = istekUret(y, i, Math.random, i === 0 && zorla ? zorla : undefined);
+  /** i. müşteri. sesOncesi: bu söz bitmeden müşterinin sesi çıkmaz, isteğini söylemez (ilk müşteri "Müşteriler geliyor!" sırasında yürür) */
+  const tur = async (i: number, sesOncesi?: Promise<void>) => {
+    ist = istekUret(y, i, Math.random, i === 0 && zorla ? zorla : undefined, gecmis);
+    gecmis.push(ist);
+    ver.classList.remove('pz-ver-hazir');
     fazlaDendi = false;
     // terazi yalnız terazili müşteride kurulur; sepet o sırada kenara çekilir
     terazi?.kapat();
@@ -701,7 +739,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
       );
     }
     // gün ilerler: ilk müşteri sabah, sonuncusu akşamüstü
-    canli.gun(i / (MUSTERI_SAYISI - 1));
+    canli.gun(i / (N - 1));
     hata = 0;
     verHata = 0;
     merdiven?.dur();
@@ -727,7 +765,9 @@ export function pazarEkrani(app: Uygulama): Ekran {
     const m = mu.el;
     musteri = mu;
     musteriKap.replaceChildren(m);
-    void resimSesi(ad);
+    void (sesOncesi ?? Promise.resolve()).then(() => {
+      if (!kapandi) void resimSesi(ad);
+    });
     // Mino müşteriyi karşılar; kamera gelen müşteriyle Mino'yu birlikte alır
     setTimeout(() => minoCanli.karsila(), sure(450));
     kamera.classList.add('pz-yakin');
@@ -735,6 +775,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     const ikili = () => Kamera.birlesik(musteriKutusu(kam, musteriKap, true), kam.kutu(mino.el, { alt: -0.35 }));
     kam.odakla(ikili, { doluluk: 0.95, enCok: 1.3, sure: 1500 });
     await mu.gel();
+    if (sesOncesi) await sesOncesi;
     if (kapandi) return;
     mu.bekle(true);
 
@@ -784,7 +825,7 @@ export function pazarEkrani(app: Uygulama): Ekran {
     void odulAni(app.kok, m, yildizlar.children[i] as HTMLElement | undefined, i, mino);
     kayit.yildiz++;
     kaydet();
-    const tesekkur = rastgele(P.dogru);
+    const tesekkur = tesekkurSoz();
     yazi.textContent = tesekkur;
     // ürün müşteriye ulaşınca: alır, ısırır (kırıntılar), kendi sevinç dansını yapar, sonra kendi yürüyüşüyle gider
     const yenen = ist.tur === 'ode' ? undefined : sepettekiler()[0];
@@ -817,12 +858,13 @@ export function pazarEkrani(app: Uygulama): Ekran {
     sarki = pazarSarkisi({ tezgah, yazi, ekran: el, mino });
     await sarki.bitti;
     if (kapandi) return;
-    await soyle(P.basla);
-    for (let i = 0; i < MUSTERI_SAYISI && !kapandi; i++) await tur(i);
+    // "Müşteriler geliyor!" söylenirken ilk müşteri yürümeye başlar (çocuk boş beklemez; sesi söz bitince çıkar)
+    const giris = soyle(P.basla);
+    for (let i = 0; i < N && !kapandi; i++) await tur(i, i === 0 ? giris : undefined);
     if (kapandi) return;
     kayit.senlik++;
     kaydet();
-    app.git('senlik', { musteriler });
+    app.git('senlik', { musteriler, yildiz: N });
   })();
 
   return {
@@ -968,11 +1010,11 @@ export function odulAni(kok: HTMLElement, kaynak: HTMLElement, hedef: HTMLElemen
     });
 }
 
-// ---------------------------------------------------------------- Şenlik (5 müşteri mutlu)
+// ---------------------------------------------------------------- Şenlik (bütün müşteriler mutlu)
 export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?: 'pazar' | 'meyvesuyu' | 'tart'; yildiz?: number }): Ekran {
   // hangi oyundan gelindi: "Bir daha" onu açar, yanındaki düğme öteki oyunu (pazar ↔ meyve suyu / tart)
   const kaynak = p?.kaynak ?? 'pazar';
-  const ms = p?.musteriler?.length ? p.musteriler : P.musteriler.slice(0, MUSTERI_SAYISI);
+  const ms = p?.musteriler?.length ? p.musteriler : P.musteriler.slice(0, musteriSayisi(yas()));
   ms.forEach(resimSesiHazirla);
   const sahne = h('div.pz-senlik-sahne');
   // müşteriler iskeletleriyle canlı: sırayla kendi danslarını yapar, dokununca sevinip zıplar
@@ -1032,7 +1074,7 @@ export function senlikEkrani(app: Uygulama, p?: { musteriler?: string[]; kaynak?
     canli.ufuk,
     gok,
     h('div.ust-cubuk', {}, bosluk(), h('div.orta', {}, h('div.baslik-balon', {}, h('span', {}, P.senlik))), sesDugmesi()),
-    h('div.pz-yildizlar.pz-hepsi', {}, ...Array.from({ length: p?.yildiz ?? MUSTERI_SAYISI }, () => h('i.pz-yildiz.dolu', {}, svg(IKON.yildiz)))),
+    h('div.pz-yildizlar.pz-hepsi', {}, ...Array.from({ length: p?.yildiz ?? ms.length }, () => h('i.pz-yildiz.dolu', {}, svg(IKON.yildiz)))),
     sahne,
     h('div.pz-senlik-alt', {}, birDaha, obur, cik),
   );

@@ -1,0 +1,29 @@
+/* Harf rafı ses gruplarıyla (Barış'ın kararı, 20 Kasım; alfabe/src/harf-sirasi.ts): A N E T İ L · O K U R I M ·
+   Ü S Ö Y D Z · Ç B G C Ş · P H V Ğ F J. Her grup kendi renginde yumuşak bir pano; gruplar bir bakışta seçilir.
+   Yatayda beş pano yan yana (her biri iki sütun, üç satır: raf eski 10 × 3 alanına sığar); dikeyde her grup tek satır. */
+.at-harfler.at-gruplu{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(6px,1vw,14px)}
+.at-grup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:clamp(5px,.7vw,10px);padding:clamp(5px,.7vw,9px);
+  border-radius:clamp(14px,1.6vw,22px);background:color-mix(in srgb,var(--grup) 24%,#fffaf0);border:1.5px solid color-mix(in srgb,var(--grup) 70%,#3a3226)}
+.at-grup .at-harf{background:var(--grup)}
+/* Dikey ekran (telefon, dikey iPad): her ses grubu tek satır, altı sütun. */
+@media(orientation:portrait){
+  .at-harfler.at-gruplu{grid-template-columns:1fr;gap:clamp(6px,1.4vw,12px)}
+  .at-grup{grid-template-columns:repeat(6,minmax(0,1fr))}
+}
+/* Yatay tablette (1024×768 … 1280×800) raf kaydırmadan sığar: pano boşlukları ve harf boyu ekran yüksekliğine bağlanır. */
+@media(orientation:landscape) and (min-height:551px) and (max-height:980px){
+  .at-harfler.at-gruplu{gap:clamp(6px,.9vw,12px)}
+  .at-grup{padding:clamp(4px,.6svh,7px);gap:clamp(4px,.75svh,8px)}
+  .at-raf .at-grup .at-harf{font-size:clamp(24px,5.1svh,48px)}
+}
+/* Kilit rozeti rafın dar harf kutularında harfi örtmesin: kutunun içinde, sağ üst köşede küçük rozet.
+   Eski sırayla bitirilip şimdi kilitli bir harfte (ör. B) onay işareti sol üste geçer. */
+.at-harfler .at-harf .mk-kilit{top:3px;right:3px;width:clamp(20px,1.9vw,27px);height:clamp(20px,1.9vw,27px);border-width:2px;box-shadow:0 2px 0 var(--kontur-yumusak,rgba(90,54,23,.35))}
+.at-harfler .at-harf .mk-kilit svg{width:62%;height:62%}
+.at-harfler .at-harf[data-kilitli] .at-biten{right:auto;left:3px}
+/* Dar dikey telefonda kutular kısa: rozet kutunun köşesine taşar, harfe binmez. */
+@media(orientation:portrait) and (max-width:580px){
+  .at-harfler .at-harf .mk-kilit{top:-6px;right:-5px;width:18px;height:18px;border-width:1.5px}
+  .at-harfler .at-harf .at-biten{top:-6px;right:-5px}
+  .at-harfler .at-harf[data-kilitli] .at-biten{left:-5px}
+}

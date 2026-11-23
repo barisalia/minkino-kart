@@ -95,13 +95,22 @@
 }
 
 /* ---------------------------------------------------------------- kitaplık: duvar ve ahşap raf (düz renkler) */
+/* Raflar ekrana sığmazsa (yatay telefon: 3 raf ~1000 px, ekran ~400 px) dikey kaydırılır. Ortalama "margin: auto" ile:
+   yer varken ortada, taşınca üstten başlar. Önceden "align-items: center" taşan rafları yukarıdan kesiyordu ve kök
+   "overflow: hidden" olduğu için ilk raftaki kitaplara hiç ulaşılamıyordu (17 Kasım). Kitaplar dokunarak alınır,
+   sürükleme yok: dikey kaydırma çakışmaz. */
 .kt-raf-ekran {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 64px 16px 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: 64px 16px 28px;
   background: #f3e6cf;
   transition: opacity 0.3s;
 }
@@ -121,6 +130,7 @@
   justify-content: center;
   row-gap: 30px;
   max-width: min(96vw, 980px);
+  margin: auto;
 }
 /* her kitap kendi raf parçasında durur; parçalar yan yana tek raf gibi görünür */
 .kt-raf-oge {

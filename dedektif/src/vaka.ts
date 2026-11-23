@@ -52,7 +52,7 @@ import {
 } from './mantik';
 import { Oyuncular } from './oyuncular';
 import { pozlariYukle, PozYuvasi } from './poz';
-import { resim } from './resimler';
+import { resim, yeniOdalar } from './resimler';
 import { kareleriGetir, romanKur, sirayla } from './roman';
 import { Fon, muzikCal, ses } from './sesler';
 import { sorgu } from './sorgu';
@@ -124,7 +124,7 @@ class Vaka {
       h('div.dd-ust', {}, geri, this.serit.el, h('div.dd-ust-sag', {}, tekrar, sesD)),
     );
     this.efekt = new Efekt(this.el);
-    this.el.append(this.efekt.el, this.oy.balonKatman);
+    this.el.append(this.efekt.el);
     // çalışma odası: bütün halkaların ipuçlarıyla
     this.calisma = calismaOdasi(HALKALAR.flatMap((hk) => hk.ipuclari));
     this.dunya.kur(this.calisma, 'genel');
@@ -253,7 +253,10 @@ class Vaka {
     void oy.mino.ifade('saskin', 1800);
     oy.minoTepki('sasir');
     if (this.calisma.e.lambaDevrik) pop(this.calisma.e.lambaDevrik, 1.08);
+    // yeni çizgi (Astra): şaşkın Mino
+    void oy.minoPoz.goster('mino-saskin');
     await oy.soyle(M.lambam);
+    void oy.minoPoz.birak();
     if (this.kapali) return;
     // şapka düşer, büyüteç kalkar: "Bu bir vaka!"
     void dunya.git('giris', 800);
@@ -540,6 +543,10 @@ class Vaka {
     await oy.git('kino', fx, fy, 900, 50);
     if (this.kapali) return;
     oy.kinoOynat('kokla', 1800);
+    // yeni çizgi: burnu yerde koklayan Kino
+    // ipucuna dönük koklar (ipucu Kino'nun solundaysa sola dönük çizim, varsa)
+    void oy.kinoPozu.goster(oy.kinoYonlu('kino-koklama', tx + k.left));
+    this.zamanlar.push(window.setTimeout(() => void oy.kinoPozu.birak(), sure(1800)));
     ses.kokla();
     const koku = h('i.dd-koku', { style: `left:${tx}px;top:${ty}px` });
     this.efekt.el.append(koku);
@@ -563,7 +570,7 @@ class Vaka {
       const mw = oy.minoYer.getBoundingClientRect().width;
       oy.kinoIfade('saskin', 2200);
       await oy.git('kino', mx + mw * 0.95, my, 1100, 16);
-      oy.kinoPoz('isaret');
+      { const r = oy.minoYer.getBoundingClientRect(); oy.kinoPoz('isaret', r.left + r.width / 2); }
       await oy.soyle(K.sen_misin, 'kino');
       oy.kinoPoz(null);
       void oy.mino.ifade('saskin', 1400);
@@ -926,7 +933,8 @@ class Vaka {
     };
     kuyruk.classList.add('acik');
     await dunya.git(this.ortala(() => YATAK.saklan.x + 0.02, [0.08, 0.5, 0.6, 1]), 900);
-    oy.yerlesim('kenar');
+    // yeni yatak odasında (Astra) kuyruk ve izler ortada: yatayda Mino ile Kino yerinde tam görünür, yalnız dikeyde kenara çekilir
+    oy.yerlesim(yeniOdalar ? 'iki' : 'kenar', 'kenar');
     // kuyruğa Mino fısıldarken de dokunulabilir
     const dokunuldu = new Promise<void>((coz) => {
       let dur: (() => void) | null = null;
@@ -952,7 +960,10 @@ class Vaka {
     });
     this.adim('kuyruk');
     oy.mino.poz('isaret-sol');
+    // yeni çizgi (Astra): "Şşş…" diyen Mino
+    void oy.minoPoz.goster('mino-fisilti');
     await Promise.race([oy.soyle(M.kuyruk), dokunuldu]);
+    void oy.minoPoz.birak();
     oy.mino.poz(null);
     await dokunuldu;
     if (this.kapali) return;
@@ -1055,6 +1066,7 @@ class Vaka {
     const kel = this.calisma.e.kelebek;
     dunya.darYakin = 1.3;
     await dunya.git(this.ortala(() => 0.5, 'pencere'), 900);
+    await oy.pamukKenaraCek(this.calisma.e.lambaDik, 600);
     kel?.classList.add('dd-ucusuyor');
     oy.minoTepki('selam', 1.8);
     oy.kinoPoz('kalk');
@@ -1073,6 +1085,7 @@ class Vaka {
     oy.kinoPoz(null);
     dunya.darYakin = 1.4;
     await dunya.git(this.ortala(() => CALISMA.masaUst.x - 0.04, 'final'), 900);
+    await oy.pamukKenaraCek(this.calisma.e.lambaDik, 600);
     await oy.soyle(D.pamuk.dikkat, 'pamuk');
     oy.kinoPoz('kalk');
     oy.kinoIfade('heyecan', 2200);
@@ -1083,7 +1096,10 @@ class Vaka {
     this.temizle(muzikCal('film-kutlama', 0.5));
     const r = this.el.getBoundingClientRect();
     if (!AZ_HAREKET) konfetiPatlat(this.el, r.width / 2, r.height * 0.3, 90);
+    // yeni çizgi (Astra): sevinçten zıplayan Kino
+    void oy.kinoPozu.goster('kino-sevinc');
     await oy.soyle(K.cozuldu, 'kino');
+    void oy.kinoPozu.birak();
     oy.kinoPoz(null);
     if (this.kapali) return;
     // vaka çözüldü: Mino gözlerini kapayıp derin bir oh çeker (rahat pozu; şapkası başında), sonra çizgi roman

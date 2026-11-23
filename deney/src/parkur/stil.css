@@ -1,0 +1,194 @@
+/* Deneyler · Zincirleme Top Parkuru. Sahne 16:9; bütün yerleşim fon pikseliyle (main.ts → yuzde). */
+html, body { margin: 0; width: 100%; height: 100%; height: 100dvh; overflow: hidden; background: #f1d6a8; overscroll-behavior: none; }
+body { position: relative; }
+/* Dünya (fon + parçalar): main.ts → kamera ölçekler (width, height) ve kaydırır (translate). */
+#sahne {
+  position: absolute; left: 0; top: 0; background-size: 100% 100%;
+  isolation: isolate; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; will-change: translate;
+}
+.pk-oge { position: absolute; pointer-events: none; }
+.pk-oge img { display: block; width: 100%; height: 100%; object-fit: fill; -webkit-user-drag: none; }
+
+/* Karakterler masanın arkasında: patileri, elleri masanın arka kenarında (y 470). */
+.pk-kino, .pk-ceren { z-index: 1; }
+.pk-poz { display: none; }
+.pk-poz.acik { display: block; }
+
+.pk-kol-taban { z-index: 3; }
+.pk-kol-sap { z-index: 4; transform-origin: 50% 95%; }
+.pk-kol-sap.pk-anim { transition: transform .32s cubic-bezier(.4, 1.6, .5, 1); }
+#sahne.pk-kol-hazir .pk-kol-sap img { animation: pk-davet 1.2s ease-in-out infinite; transform-origin: 50% 95%; }
+.pk-kol-tutamak { position: absolute; z-index: 12; padding: 0; border: 0; background: none; min-width: 64px; min-height: 64px; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; }
+
+/* Boş yuvalar: altın kesikli çerçeve net görünür, hafifçe nabız gibi atar; açılışta bir kez parlar; parça oturunca kaybolur. */
+.pk-yuva { z-index: 2; opacity: .9; filter: drop-shadow(0 0 3px #ffcf3a) drop-shadow(0 0 7px rgb(255 196 40 / .8)); }
+.pk-yuva.nabiz { animation: pk-nabiz 1.2s ease-in-out infinite; }
+.pk-yuva.vurgu { animation: pk-vurgu .6s ease-in-out 3; }
+.pk-yuva.dolu { display: none; }
+
+.pk-parca { z-index: 5; scale: var(--olcek, 1); transform-origin: 50% 50%; }
+.pk-parca.pk-surukle { pointer-events: auto; cursor: grab; touch-action: none; }
+/* Tepsideki parçanın dokunma alanı: bölmenin tamamı (main.ts → --hw, --hh). */
+.pk-parca.pk-surukle::before { content: ''; position: absolute; left: 50%; top: 50%; width: var(--hw, 100%); height: var(--hh, 100%); translate: -50% -50%; }
+.pk-parca.pk-tutulan { z-index: 20; cursor: grabbing; }
+.pk-parca.pk-anim { transition: left .38s cubic-bezier(.3, 1.35, .5, 1), top .38s cubic-bezier(.3, 1.35, .5, 1), scale .38s ease-out; }
+.pk-parca.pk-oturdu img { animation: pk-otur .4s ease-out; }
+/* Açılışta tepsideki parça zıplar: "beni al". */
+.pk-parca.zipla img { animation: pk-zipla .42s ease-in-out 3; }
+.pk-kivilcim { z-index: 9; }
+.pk-trambolin img { transform-origin: 50% 100%; }
+
+.pk-domino { z-index: 6; transform-origin: 94% 98.6%; }
+.pk-zil { z-index: 6; }
+.pk-zil.gizli { visibility: hidden; }
+.pk-zil-calar { display: none; }
+.pk-zil-calar.acik { display: block; visibility: visible; }
+.pk-konfeti { z-index: 9; opacity: 0; }
+.pk-konfeti.patla { animation: pk-konfeti 1.2s ease-out forwards; }
+.pk-top { z-index: 7; will-change: transform; }
+/* Huninin içindeki top camın arkasında görünür. */
+.pk-top.huni-icinde { z-index: 4; }
+
+/* Düğmeler ekrana sabit (dünyayla kaymaz), alt köşelerde: üstte top, kule ve karakterlerin başı var; altta çekmece ve masa. */
+.pk-nav {
+  position: fixed; z-index: 14; bottom: max(10px, 2.2vh, env(safe-area-inset-bottom)); width: clamp(64px, 9vh, 92px); aspect-ratio: 1;
+  padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.pk-nav img { width: 100%; height: 100%; display: block; }
+.pk-ev { left: max(12px, 2vw, env(safe-area-inset-left)); }
+.pk-dinle { right: max(12px, 2vw, env(safe-area-inset-right)); }
+
+@keyframes pk-nabiz { 0%, 100% { opacity: .8; scale: .975; } 50% { opacity: 1; scale: 1.035; } }
+@keyframes pk-vurgu { 0%, 100% { scale: 1; filter: drop-shadow(0 0 3px #ffcf3a) drop-shadow(0 0 7px rgb(255 196 40 / .8)); } 50% { scale: 1.08; filter: drop-shadow(0 0 8px #ffe066) drop-shadow(0 0 18px rgb(255 200 40)); } }
+@keyframes pk-zipla { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-22%); } 70% { transform: translateY(2%); } }
+@keyframes pk-otur { 0% { transform: scale(1.08); } 60% { transform: scale(.97); } 100% { transform: scale(1); } }
+@keyframes pk-davet { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes pk-konfeti { 0% { opacity: 0; scale: .3; translate: 0 40px; } 20% { opacity: 1; } 100% { opacity: 0; scale: 1.25; translate: 0 -50px; } }
+@media (prefers-reduced-motion: reduce) { .pk-yuva.nabiz, .pk-yuva.vurgu, .pk-parca.zipla img, #sahne.pk-kol-hazir .pk-kol-sap img { animation: none; } }
+
+/* Çizimsiz denetim görünümü (yalnız test kipi). */
+.pk-denetim { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+.pk-cizimsiz { background: #f7ecd6; }
+.pk-cizimsiz .pk-oge[data-ad] { outline: 2px dashed rgb(80 55 30 / .35); }
+.pk-cizimsiz .pk-oge[data-ad]::after { content: attr(data-ad); position: absolute; left: 4px; top: 2px; font: 600 11px system-ui; color: #6b4a2b; }
+
+/* Dikey telefon: parkur yatay oynanır (eski Deney ekranıyla aynı uyarı). */
+.telefonu-cevir { display: none; }
+@media (orientation: portrait) and (width < 600px) {
+  #sahne, .pk-nav { display: none; }
+  .telefonu-cevir { display: grid; position: fixed; inset: 0; margin: auto; place-items: center; width: 125px; height: 72px; border: 4px solid #302522; border-radius: 16px; background: #ffda7d; box-shadow: inset 0 0 0 5px #fff6d7; color: #146c74; font-size: 50px; line-height: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .telefonu-cevir { animation: telefonu-yatir 3s ease-in-out infinite; }
+    @keyframes telefonu-yatir { 0%, 15% { rotate: -90deg; } 50%, 95% { rotate: 0deg; } 100% { rotate: -90deg; } }
+  }
+}
+
+/* Zevk katmanı (22 Kasım gecesi): kol geri tepmesi, trambolin esnemesi, huni titremesi, zil parlaması, karakter tepkisi.
+   Yalnız transform ve filtre: 60 fps. */
+.pk-kol-sap.geri-tep { animation: pk-geri-tep .55s ease-out; }
+@keyframes pk-geri-tep { 0% { transform: rotate(-55deg); } 35% { transform: rotate(9deg); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(2deg); } 100% { transform: rotate(0deg); } }
+.pk-trambolin.esne img { animation: pk-esne .46s ease-out; }
+@keyframes pk-esne { 0% { transform: scale(1, 1); } 7% { transform: scale(1.08, .72); } 30% { transform: scale(.96, 1.1); } 55% { transform: scale(1.02, .97); } 100% { transform: scale(1, 1); } }
+.pk-huni.titre img { animation: pk-titre .62s ease-in-out; transform-origin: 50% 88%; }
+@keyframes pk-titre { 0%, 100% { rotate: 0deg; } 20% { rotate: 2.5deg; } 45% { rotate: -2deg; } 70% { rotate: 1.4deg; } }
+.pk-zil-calar.parla img { animation: pk-parla .5s ease-out; }
+@keyframes pk-parla { 0% { filter: brightness(1.35) drop-shadow(0 0 14px #ffe27a); } 100% { filter: none; } }
+.pk-kino.tepki, .pk-ceren.tepki { animation: pk-tepki .28s ease-out; transform-origin: 50% 100%; }
+@keyframes pk-tepki { 40% { scale: 1.035; } }
+@media (prefers-reduced-motion: reduce) {
+  .pk-kol-sap.geri-tep, .pk-trambolin.esne img, .pk-huni.titre img, .pk-kino.tepki, .pk-ceren.tepki { animation: none; }
+}
+
+/* ----- Deney-A1 (23 Kasım gecesi): altı bölüm, yaylanan çekmece, mıknatıs yuva, iri kol, harita, kare dizileri -----
+   Hepsi transform, opaklık ve filtre (60 fps). Kare dizisinde yalnız bir resim görünür (cizimler.ts → Kareler). */
+.pk-kareler > img { display: none; }
+.pk-kareler > img.acik { display: block; }
+.pk-gizli { visibility: hidden; }
+.pk-fon-yari { z-index: 0; }
+/* Tutulan parça büyür ve gölge alır; yuva yaklaşan parçayı çekerken parlar ve atar. */
+.pk-parca.pk-tutulan > img { scale: 1.12; filter: drop-shadow(0 14px 10px rgb(0 0 0 / .28)); transition: scale .15s ease-out; }
+.pk-yuva.cekiyor { animation: pk-cekim .45s ease-in-out infinite; filter: drop-shadow(0 0 10px #ffe066) drop-shadow(0 0 22px rgb(255 200 40)); }
+@keyframes pk-cekim { 50% { scale: 1.07; } }
+/* Çekmece: ekranın altında; açılırken aşağıdan yaylanır (aşar, geri oturur), koşuda iner. */
+.pk-cekmece {
+  position: fixed; left: 50%; bottom: 0; z-index: 13; width: min(100vw, 1180px); height: clamp(120px, 27vh, 236px);
+  translate: -50% 108%; transition: translate .55s cubic-bezier(.3, 1.5, .45, 1); pointer-events: none;
+}
+.pk-cekmece.acik { translate: -50% 0; pointer-events: auto; }
+.pk-cekmece-ic { position: absolute; inset: 0 0 30% 0; display: flex; justify-content: center; align-items: center; gap: 1.5%; padding: 0 9%; background: center / 100% 100% no-repeat; }
+.pk-cekmece-on { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: center / 100% 100% no-repeat; }
+/* Çekmecenin çizimi gelmeden: yalnız test kipinde kesikli yer tutucu (uygulamada parçalar boş zeminde durur, kodla çizim yok). */
+.pk-test .pk-cekmece-ic:not([style*='url']) { outline: 2px dashed rgb(80 55 30 / .4); background-color: rgb(247 236 214 / .9); }
+.pk-bolme {
+  position: relative; flex: 0 1 auto; height: 94%; aspect-ratio: 250 / 200; min-width: 64px; min-height: 64px; padding: 0; border: 0;
+  background: center / 100% 100% no-repeat; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent;
+}
+.pk-bolme-resim { position: absolute; inset: 9% 7%; }
+.pk-bolme-resim > img { object-fit: contain; }
+.pk-bolme.bos .pk-bolme-resim { visibility: hidden; }
+/* Kol: basılınca göçer; hazırken topuz çağırır. Sıradaki düğmesi ortada. */
+.pk-ileri { left: 50%; translate: -50% 0; }
+.pk-ileri[hidden] { display: none; }
+.pk-yay-ayar { position: absolute; z-index: 12; padding: 0; border: 0; background: none; cursor: pointer; min-width: 64px; min-height: 64px; -webkit-tap-highlight-color: transparent; }
+.pk-yay-ayar .pk-poz { position: absolute; }
+/* Mekanizmaların görüntüleri. */
+.pk-kaykay, .pk-top { will-change: transform; }
+.pk-su-akis, .pk-su-tasma, .pk-su-sicrama, .pk-hava-kacti, .pk-balon-sis { z-index: 6; opacity: 0; transition: opacity .2s ease-out; }
+.pk-su-akis.acik, .pk-su-tasma.acik, .pk-su-sicrama.acik, .pk-hava-kacti.acik, .pk-balon-sis.acik { opacity: 1; }
+.pk-balon-sis { z-index: 7; transform-origin: 50% 70%; }
+.pk-parca.sisiyor { visibility: hidden; }
+.pk-efekt { z-index: 10; }
+.pk-final { z-index: 6; }
+.pk-final.gizli { visibility: hidden; }
+/* Harita: duraklar (dokunulur), kilit, yıldız, yürüyen Kino. */
+.pk-durak { position: absolute; z-index: 5; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; -webkit-tap-highlight-color: transparent; }
+.pk-durak > .pk-poz { position: absolute; inset: 0; }
+.pk-durak.kilitli > .pk-poz { filter: grayscale(.75) brightness(.9); }
+.pk-durak-kilit { position: absolute; left: 50%; top: 54%; width: 40%; height: 50%; translate: -50% -50%; }
+.pk-durak-yildiz { position: absolute; right: -4%; top: -6%; width: 38%; height: 38%; }
+.pk-harita-kino { z-index: 8; }
+.pk-harita-kino.sola > img { scale: -1 1; }
+body[data-ekran='harita'] .pk-dinle { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .pk-bolme.bas, .pk-kol-sap.bas, .pk-yay-ayar.bas, .pk-durak.bas { animation: pk-bas .24s ease-out; }
+  .pk-bolme.zipla .pk-bolme-resim > img { animation: pk-zipla .42s ease-in-out 3; }
+  .pk-bolme.yaylan .pk-bolme-resim > img { animation: pk-otur .4s ease-out; }
+  .pk-parca.pk-oturdu > img { animation: pk-otur .4s ease-out; }
+  .pk-parca.gerildi > img { animation: pk-otur .36s ease-out; }
+  .pk-parca.esne > img { animation: pk-esne .46s ease-out; transform-origin: 50% 100%; }
+  .pk-parca.titre > img { animation: pk-titre .62s ease-in-out; transform-origin: 50% 88%; }
+  .pk-ileri:not([hidden]) { animation: pk-ileri 1.4s ease-in-out infinite; }
+  .pk-efekt.patla { animation: pk-konfeti .52s ease-out forwards; opacity: 0; }
+  .pk-top.ezil > img { animation: pk-ez .26s ease-out; }
+  .pk-hava-kacti.acik { animation: pk-konfeti .9s ease-out forwards; }
+  .pk-durak.sirada { animation: pk-durak-nabiz 1.3s ease-in-out infinite; filter: drop-shadow(0 0 12px #ffe066); }
+  .pk-durak.salla { animation: pk-salla .5s ease-out; }
+  .pk-durak.yeni .pk-durak-kilit { animation: pk-kilit-dus .8s ease-in forwards; }
+  .pk-durak.yeni { animation: pk-otur .5s ease-out .5s; }
+  .pk-final.parla > img, .pk-final.parla > img.acik { animation: pk-parla .5s ease-out; }
+}
+@keyframes pk-bas { 35% { scale: .92 .9; } 70% { scale: 1.04; } }
+@keyframes pk-ileri { 50% { scale: 1.08; } }
+@keyframes pk-ez { 30% { transform: scale(1.18, .8); } 65% { transform: scale(.94, 1.06); } }
+@keyframes pk-durak-nabiz { 50% { scale: 1.07; } }
+@keyframes pk-salla { 20% { rotate: -8deg; } 45% { rotate: 7deg; } 70% { rotate: -3deg; } }
+@keyframes pk-kilit-dus { to { translate: -50% 200%; rotate: 40deg; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pk-cekmece { transition-duration: .01s; } }
+
+/* Deney-A1 katmanları: mıknatıs halkası, huni rüzgârı, hız çizgisi, ezilen top, ışık huzmesi, kaykayın duruş ve düşüş kareleri. */
+.pk-cekim-halka, .pk-huni-ruzgar, .pk-hiz-cizgisi, .pk-isik { opacity: 0; transition: opacity .18s ease-out; }
+.pk-cekim-halka.acik, .pk-huni-ruzgar.acik, .pk-hiz-cizgisi.acik, .pk-isik.acik { opacity: 1; }
+.pk-cekim-halka { z-index: 3; }
+.pk-huni-ruzgar { z-index: 6; }
+.pk-hiz-cizgisi { z-index: 6; transform-origin: 100% 50%; }
+.pk-isik { z-index: 5; }
+.pk-top-ez { position: absolute; inset: 0; opacity: 0; }
+.pk-top-ez.acik { opacity: 1; }
+.pk-top:has(.pk-top-ez.acik) > img:not(.pk-top-ez img) { visibility: hidden; }
+.pk-balon-ez { z-index: 7; }
+.pk-kaykay[data-kaykay='dur'] > img, .pk-kaykay[data-kaykay='dus'] > img { visibility: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .pk-cekim-halka.acik { animation: pk-don 1.2s linear infinite; }
+  .pk-isik.acik { animation: pk-don 6s linear infinite; }
+}
+@keyframes pk-don { to { rotate: 360deg; } }

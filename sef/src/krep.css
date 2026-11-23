@@ -137,7 +137,7 @@
 .kr-dolgu-islemleri{display:flex;position:absolute;left:39%;bottom:3%;translate:-50% 0;gap:1.6cqh}
 .kr-dolgu-dugme{display:grid;place-items:center;height:max(44px,9cqh);width:max(48px,12cqh);background:var(--sef-kumanda-fonu, #fff3d8);border:2px solid #795b40;border-radius:2.8cqh;box-shadow:0 2px #af8d68}
 .kr-dolgu-dugme:disabled{opacity:.46;box-shadow:none}
-.kr-dilim-sec{position:absolute;width:max(40px,21%);height:max(40px,21%);translate:-50% -50%;border-radius:50%;border:2px solid transparent;background:transparent}
+.kr-dilim-sec{position:absolute;width:max(44px,21%);height:max(44px,21%);translate:-50% -50%;border-radius:50%;border:2px solid transparent;background:transparent}
 .kr-dilim-sec[aria-pressed=true]{border:2px dashed #865b30;background:#fff8cf44}
 .kr-dilim-sec:focus-visible{outline:3px solid #177f91;outline-offset:1px}
 .kr-dolgu-dugme>.ikon{width:55%;height:65%}

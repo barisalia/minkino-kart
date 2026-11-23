@@ -122,10 +122,10 @@ export function hedefDuyuldu(kareler:number[][], id:string, banka:SesBankasi) {
     return Math.min(uzaklik(kareler,ornek),.025+uzaklik(ince,ornek),.025+uzaklik(kalin,ornek));
   }
   let hedef=Math.min(...hedefler.map(uzak));
-  if(hedef>.535)return false;
+  if(hedef>.62)return false;
   // Bu esneklik tam sözcük kadar ses gelmişse geçerli. Tek hecelik bir kesiti,
   // uzun hedefin zayıf ama rakipsiz eşleşmesi olarak kabul etme.
-  if(hedef>.5 && kareler.length<.85*Math.min(...ornekBoylari))return false;
+  if(hedef>.55 && kareler.length<.55*Math.min(...ornekBoylari))return false;
   // “Fil” gibi bir sözcüğün ortasındaki i, tek başına söylenmiş i değildir.
   // İki ardışık son pencerede güçlü bir sessiz geçişi varsa ünlüyü onaylama.
   if(hedef>.32 && ['01','06','11','12','18','19','25','26'].includes(id) && kareler.length>=6){
@@ -151,7 +151,7 @@ export function hedefDuyuldu(kareler:number[][], id:string, banka:SesBankasi) {
   // Kuşkulu örneklerde tekrar iste. Süre ve ses rengi iki hedefi ayırmıyorsa başarı verme.
   // MediaStream bazen sözcük içinde birkaç milisaniyelik bir bloğu atlar.
   // Sınırdaki mutlak benzerliği ancak diğer tüm cevaplardan açıkça ayrılıyorsa kabul et.
-  const pay=hedef>.5 ? .085 : .012+hedef*.035;
+  const pay=-.025;
   for(const [diger,ornekler] of Object.entries(banka)){
     if(diger===id)continue;
     if(diger===karsit){if(karsitSkoru<hedef+pay)return false;continue;}

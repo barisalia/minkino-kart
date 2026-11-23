@@ -1,0 +1,19 @@
+/* Minik Doktor · "Lokum'un Guruldayan Karnı". Ortak kurallar vaka.css ve vaka-kit/iskelet.css içinde; buradakiler bu vakaya özgü (gr-…). */
+#doktor[data-oyun="karin"] { position: fixed; inset: 0; overflow: hidden; background: #fbc4a6; touch-action: none; user-select: none; -webkit-user-select: none; }
+#doktor[data-oyun="karin"]:not([data-asama="giris"]):not([data-asama="canta"]):not([data-asama="son"]) { background: #dccbfb; }
+.gr-isik { pointer-events: none; opacity: .001; transition: opacity .25s linear; }
+.gr-gurultu, .gr-yer, .gr-girdap, .gr-papatya { pointer-events: none; }
+.gr-yok { opacity: .001; }
+.gr-yer { animation: gr-yer .52s steps(1) infinite; }
+@keyframes gr-yer { 0%, 49% { scale: 1; } 50%, 100% { scale: 1.08; } }
+.gr-rontgen { pointer-events: none; clip-path: inset(50% 50% 50% 50%); }
+.gr-rontgen[hidden] { display: none; }
+.gr-dilim.gr-bulundu { filter: drop-shadow(0 0 14px rgba(255, 196, 90, .95)); }
+.gr-fincan > .vk-tam, .gr-torba > .vk-tam { position: absolute; inset: 0; }
+.gr-fincan.vk-kalkti > .vk-tam { opacity: .001; }
+.gr-girdap[hidden], .gr-buhar-dugmesi[hidden], .gr-torba[hidden] { display: none; }
+.gr-buhar-dugmesi { border-radius: 40%; }
+.gr-fincan.vk-sirada, .gr-buhar-dugmesi.vk-sirada, .gr-torba.vk-sirada { animation: vk-sirada 1s ease-in-out infinite; }
+.vk-tutulan[data-alet="eller"] { filter: drop-shadow(0 0 calc(var(--sicak, 0) * 34px) rgba(255, 168, 80, calc(var(--sicak, 0) * .9))); }
+@media (prefers-reduced-motion: reduce) { .gr-yer { animation: none; } .gr-fincan.vk-sirada, .gr-buhar-dugmesi.vk-sirada, .gr-torba.vk-sirada { animation: none; } }
+@media (orientation: portrait) and (width < 600px) { #doktor[data-oyun="karin"] { visibility: hidden; } }

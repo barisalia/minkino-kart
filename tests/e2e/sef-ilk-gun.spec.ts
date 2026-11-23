@@ -1,4 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const dugme=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 const kasa=(p:Page)=>p.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler);

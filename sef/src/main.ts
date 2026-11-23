@@ -47,7 +47,7 @@ import {
 import { defteriAc, kaydet, susSecenekleri, yeniOzelIstek, tezgahSec,tezgahSiparisi,sebzeTaslaginiSil, type Susleme, type SusId, type Ekran } from './kayit';
 import { ikon, resim, kaynak, dugme, type Simge } from './gorsel';
 import { hareket, jest, merkez, icinde, malzemeTasi, zaman, type Nokta } from './hareket';
-import { misafirResmi, misafirKonus, misafirCumlesi,misafirOzelKonus, sefKonus } from './misafir';
+import { misafirResmi, misafirKonus, misafirCumlesi,misafirOzelKonus, sefKonus, restoranSiparisiniSoyle } from './misafir';
 import { pizzaAc, pizzaDevamEdiyor, pizzaDurumu, pizzaResmi, pizzaTabakResmi, pizzaTaslaginiSil } from './firin';
 import { kapIci,salataKasesi,corbaKasesi,corbaRengi,corbaKivamOrnegi } from './kap-ici';
 import {blenderTezgahi} from './corba-blender';
@@ -197,7 +197,8 @@ function pastaneAc(){
 }
 function tepsiKaydet(servis:ServisKaydi){
   if(!t.oynanan){
-    t.secili='raf-'+servis.tarifId;
+    const pizzaMusterisi=servis.tarifId==='pizza'&&(servis.misafir==='salata'||servis.misafir==='corba')?servis.misafir:undefined;
+    t.secili='raf-'+servis.tarifId+(pizzaMusterisi?'-'+pizzaMusterisi:'');
     t.masalar[t.secili]=bosMasa();
     t.oynanan=servis.tarifId;t.restoranda=false;
     delete t.yanMasadan;delete t.servisSalonu;
@@ -347,6 +348,10 @@ function tarifTezgahiniAc(tarif:TarifTezgahi,id:string){
   sus();
   const masa=t.masalar[id];if(!masa||masa.sunuldu)t.masalar[id]=bosMasa();
   t.ekran='masa';t.secili=id;t.oynanan=tarif;t.restoranda=false;kaydet(defter);ciz();
+  // Raftan açılan tezgâh sessiz başlıyordu: müşteri siparişini kendi kaydıyla bir kez söyler (birinci raftaki kartlar gibi).
+  // Tavuk tavası açılışta kendi yönergesini söylüyor; sipariş onu kesmesin.
+  const menu=menuBul(id);
+  if(menu&&tarif!=='tavuk'&&!defter.sessiz)void restoranSiparisiniSoyle(menu.misafir,id);
 }
 function siparisler() {
   const fon=h('div.tarif-dukkan-fonu',{'aria-hidden':'true'},

@@ -3,7 +3,8 @@ import { hedefDuyuldu, konusmaVar, ozellikler, sesPenceresi } from './ses-esleme
 type Sonuc = 'dogru'|'yeniden'|'erisim';
 /** İzin ve ses bağlamını çocuğun ilk dokunuşunda aç. Öğretmenin örneği sırasında
  * yalnız oda seviyesini ölç; çocuk sırası gelene kadar ses örneklerini saklama. */
-export function mikrofonHazirla(){
+export function mikrofonHazirla(tekrarDenemesi=false){
+  let soylemeyeCalisti=tekrarDenemesi;
   let kapali=false, istek=false, hazir=false, hata=false, zaman=0;
   let baglam:AudioContext|undefined, akim:MediaStream|undefined;
   let ornekler:ReturnType<typeof import('./mikrofon-ornekleri').sesOrnekleriniAl>|undefined;
@@ -28,8 +29,10 @@ export function mikrofonHazirla(){
   function degerlendir(sonDeneme=true){
     if(!oturum || !baglam || !ornekler || !kareler.length){bitir('yeniden');return;}
     const boy=parcalar[0].length, ms=boy*1000/baglam.sampleRate;
-    if(!konustu || kareler.length*ms-sonEtkin<260 || !konusmaVar(kareler,ms,taban)){bitir('yeniden');return;}
-    const esik=Math.max(.0009,taban*2.7);
+    if(!konustu || (!sonDeneme && kareler.length*ms-sonEtkin<220) || !konusmaVar(kareler,ms,taban)){bitir('yeniden');return;}
+    if(soylemeyeCalisti){bitir('dogru');return;}
+    soylemeyeCalisti=true;
+    const esik=Math.max(.00035,taban*1.8);
     const sesliKare=(k:typeof kareler[number])=>k.rms>esik&&(k.sesli||k.surtunme);
     const ilk=kareler.findIndex(sesliKare);
     let son=kareler.length-1;
@@ -88,12 +91,12 @@ export function mikrofonHazirla(){
           return;
         }
         const ms=boy*1000/ctx.sampleRate;
-        const esik=Math.max(.0009,taban*2.7);
+        const esik=Math.max(.00035,taban*1.8);
         if(!cevapAcik){
           // Öğretmenin son sesi ve sürücünün sırada beklettiği tamponlar cevaba girmez.
           alinanMs+=ms;
           odaSessizMs=k.rms<esik?odaSessizMs+ms:0;
-          if(alinanMs>=190 && odaSessizMs>=150){
+          if(alinanMs>=190 && (odaSessizMs>=150 || alinanMs>=650)){
             cevapAcik=true;
             clearTimeout(zaman);
             zaman=window.setTimeout(degerlendir,7600);
@@ -106,7 +109,7 @@ export function mikrofonHazirla(){
         const hareket=k.rms>esik && (k.sesli||k.surtunme);
         oturum.seviye(hareket?Math.min(100,17+22*Math.log2(k.rms/esik)):0);
         if(hareket){sonEtkin=an;konustu=true;}
-        if(konustu && an-sonEtkin>520 && konusmaVar(kareler,boy*1000/ctx.sampleRate,taban))degerlendir(false);
+        if(konustu && an-sonEtkin>=220 && konusmaVar(kareler,boy*1000/ctx.sampleRate,taban))degerlendir(false);
       };
     }catch{hata=true;if(oturum)bitir('erisim');else{akim?.getTracks().forEach(t=>t.stop());}}
   }

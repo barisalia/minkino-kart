@@ -1,9 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { menuOyunlari } from '../../uygulama/src/oyunlar';
+import { menuOyunlari, yasaGore } from '../../uygulama/src/oyunlar';
 import { hataTopla } from './yardimci';
 
 const KATEGORILER = ['Etkinlikler', 'Kitaplar', 'Oyunlar', 'Çizgi Filmler'];
-const oyunlar = menuOyunlari(false).filter(k => !['alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(k.id));
+// yatay-menu.ts → etkinlikler: bu kartlar Etkinlikler panelinde, geri kalan oyunlar Oyunlar panelinde
+const ETKINLIKLER = ['matematik', 'alfabe', 'ingilizce', 'hazirlik', 'canlan', 'kartlar', 'macera'];
+const oyunlar = menuOyunlari(false).filter(k => ![...ETKINLIKLER, 'film', 'kitap'].includes(k.id));
+const etkinlikler = menuOyunlari(false).filter(k => ETKINLIKLER.includes(k.id));
 
 test('Ana menü: dört kategori ve gerçek içerik kartları', async ({ page }) => {
   const hatalar = hataTopla(page);
@@ -16,7 +19,8 @@ test('Ana menü: dört kategori ve gerçek içerik kartları', async ({ page }) 
   await expect(page.locator('.ym-icerik[data-oyun="otobus"]')).toHaveCount(0);
   await expect(page.locator('.ym-icerik[data-oyun="pasta"], .ym-icerik[data-oyun="mino-giysin"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Etkinlikler', exact: true }).click();
-  await expect(page.locator('.ym-icerik')).toHaveCount(5);
+  await expect(page.locator('.ym-icerik')).toHaveCount(etkinlikler.length);
+  await expect(page.locator('.ym-icerik[data-oyun="matematik"]')).toBeVisible();
   await expect(page.locator('.ym-icerik[data-oyun="alfabe"]')).toBeVisible();
   await expect(page.locator('.ym-icerik[data-oyun="hazirlik"]')).toBeVisible();
   await expect(page.locator('.ym-icerik[data-oyun="kartlar"]')).toBeVisible();
@@ -64,11 +68,20 @@ test('Kartlar: menü yaşıyla açılır; oyunda yaş değiştirilince menü de 
   expect(hatalar).toEqual([]);
 });
 
+// Mino'nun Pazarı menüde yalnız küçük yaşlarda görünür (15 Kasım 2026: kart enCokYas 3); büyük yaşlarda kart yok
+const PAZAR = menuOyunlari(false).find(k => k.id === 'pazar')!;
 for (const yas of [3, 4, 5, 6]) {
-  test(`Yaş ${yas}: menü seçimi Pazar'da gerçek oyun ayarıdır`, async ({ page }) => {
+  const gorunur = yasaGore([PAZAR], yas).length > 0;
+  test(`Yaş ${yas}: ${gorunur ? "menü seçimi Pazar'da gerçek oyun ayarıdır" : 'Pazar kartı menüde yok'}`, async ({ page }) => {
     await page.goto('./?test=1');
     await page.getByRole('button', { name: 'Yaş aralığını seç' }).click();
-    await page.getByRole('button', { name: `${yas} yaş`, exact: true }).click();
+    await page.getByRole('button', { name: yas === 6 ? '6 yaş ve üzeri' : `${yas} yaş`, exact: true }).click();
+    if (!gorunur) {
+      await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
+      await expect(page.locator('.ym-icerik').first()).toBeVisible();
+      await expect(page.locator('.ym-icerik[data-oyun="pazar"]')).toHaveCount(0);
+      return;
+    }
     await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
     await page.locator('.ym-icerik[data-oyun="pazar"]').click();
     await page.waitForURL(/\/pazar\/$/);
@@ -109,11 +122,12 @@ test('Eski yaş etiketinden geçiş albümü ve yıldızları korur', async ({ p
     localStorage.setItem('minkino-kartlar-v1', JSON.stringify({ album: ['elma'], toplamYildiz: 7, yas: null }));
   });
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Yaş aralığını seç' })).toHaveText('6');
+  // 6 yaş düğmede "6+" yazılır (6 yaş ve üzeri)
+  await expect(page.getByRole('button', { name: 'Yaş aralığını seç' })).toHaveText('6+');
   const kayit = await page.evaluate(() => JSON.parse(localStorage.getItem('minkino-kartlar-v1')!));
   expect(kayit).toMatchObject({ yas: 6, album: ['elma'], toplamYildiz: 7 });
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Yaş aralığını seç' })).toHaveText('6');
+  await expect(page.getByRole('button', { name: 'Yaş aralığını seç' })).toHaveText('6+');
 });
 
 test('Ebeveyn kapısı: iptal ayarları açmaz, doğru cevap açar', async ({ page }) => {

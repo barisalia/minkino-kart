@@ -1,0 +1,33 @@
+/* Lokum'un Hece Köprüsü (alfabe/src/hece-koprusu.ts). Sahne fonun oranında (1672 × 941); her şey fona göre yüzdeyle yerleşir. */
+.hk-kopru{width:100%;height:100%;display:grid;place-items:center;container-type:size}
+/* Köprüde çerçeveyi sahne taşır: oyun alanı yalnız yer ayırır, sahne ona sığan en büyük boyda. */
+.at-hece-oyun-alani:has(>.hk-kopru){border-color:transparent;background:none}
+.hk-sahne{position:relative;aspect-ratio:1672/941;width:min(100cqw,calc(100cqh * 1.7768));overflow:hidden;border:2px solid #33483c;border-radius:clamp(12px,1.6vw,22px);background:#e8f4ec;container-type:inline-size}
+.hk-fon{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+/* Kıyıdaki ve sudaki hece taşları: taş çizimi, üstünde hece. */
+.hk-tas{position:absolute;width:9.4%;aspect-ratio:3/2;transform:translate(-50%,-50%);padding:0;border:0;background:none;cursor:pointer;z-index:3;transition:filter .2s}
+.hk-tas img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.hk-tas span{position:relative;display:grid;place-items:center;height:100%;font-weight:700;font-size:3.1cqi;line-height:1;color:#2a3a2c;padding-bottom:6%}
+.hk-tas.hk-suda{width:11.4%;z-index:2;cursor:default}
+.hk-tas.hk-suda span{font-size:3.9cqi}
+.hk-tas.hk-kenarda{opacity:.45}
+.hk-tas:focus-visible{outline:3px solid #14695b;outline-offset:2px;border-radius:30%}
+.hk-yuva{position:absolute;width:11.4%;aspect-ratio:3/2;transform:translate(-50%,-50%);pointer-events:none;z-index:1;object-fit:contain}
+.hk-yuva.hk-dolu{visibility:hidden}
+.hk-halka{position:absolute;width:14%;aspect-ratio:2/1;transform:translate(-50%,-50%);pointer-events:none;z-index:1;object-fit:contain}
+/* Lokum: ayak noktası alt ortada (sprite 500 × 600, ayak y 570). */
+.hk-lokum{position:absolute;width:13%;aspect-ratio:5/6;transform:translate(-50%,-95%);pointer-events:none;z-index:4;object-fit:contain}
+/* Karşı kıyıdaki sehpa ve resim (sehpa 360 × 420, resim yeri x 60…300, y 40…280). */
+.hk-sehpa{position:absolute;width:18%;aspect-ratio:360/420;transform:translate(-50%,-100%);z-index:2}
+.hk-sehpa>img:first-child{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.hk-resim{position:absolute;left:16.7%;top:9.5%;width:66.7%;height:57.1%;object-fit:contain;opacity:.35;filter:grayscale(.5);transition:opacity .3s,filter .3s,transform .4s cubic-bezier(.3,1.6,.5,1)}
+.hk-resim.hk-acildi{opacity:1;filter:none;transform:scale(1.08)}
+.hk-dinle{position:absolute;right:1.6%;top:2.6%;z-index:5}
+.hk-durum{position:absolute;left:0;right:0;top:2.4%;margin:0;text-align:center;font-weight:600;font-size:max(15px,2.2cqi);color:#24453a;z-index:3;pointer-events:none}
+.hk-son{position:absolute;inset:0;z-index:6;display:grid;place-content:center;justify-items:center;gap:14px;background:rgba(255,248,232,.82);text-align:center}
+.hk-son p{margin:0;font-weight:700;font-size:max(20px,3.2cqi);color:#204b42}
+.hk-son div{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+/* Hece Oyunu menüsü durak sayısına göre: üç durak yan yana (hangi üçü olursa olsun). */
+.hm-menu:has(>:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(orientation:portrait){.hm-menu:has(>:nth-child(3):last-child){grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.hk-resim{transition:none}}

@@ -3,7 +3,7 @@
  * kaydı olduğu hâlde cihazın robot sesiyle okunuyordu (Pasta, Dedektif, Banyo, Elektrik). Kayıt varsa her zaman
  * kayıt çalar; motor hiç açılmazsa cümle sessiz geçer, robot sese hiç düşmez.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const KAYITLI = 'Yeni bir vaka var!';
 const KAYITSIZ = 'Bu cümlenin kaydı yok.';
@@ -75,7 +75,14 @@ async function yukle() {
   return k;
 }
 
-describe('ilk cümle: kayıt varken robot ses yok (K1)', () => {
+// Yük altında (başka testler / derleme aynı anda) ilk `import('konusma')` dönüşümü 5 sn'yi aşıyordu; zaman aşımına
+// düşen test arka planda sürüp sonraki testin sahte Audio'sunu çağırıyor, zincirleme "play 3 kez" hataları çıkıyordu.
+// Modüller bir kez önceden ısıtılır (dönüşüm önbelleğe girer, resetModules önbelleği silmez) ve süre geniş tutulur.
+describe('ilk cümle: kayıt varken robot ses yok (K1)', { timeout: 20000 }, () => {
+  beforeAll(async () => {
+    await import('../../src/audio/konusma');
+    await import('../../src/engine/ilerleme');
+  }, 60000);
   const speak = vi.fn((u: { onend?: () => void }) => setTimeout(() => u.onend?.(), 300));
   let manifestGecikme = 800;
   beforeEach(() => {

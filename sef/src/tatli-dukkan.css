@@ -12,7 +12,7 @@
   display:inline-flex; align-items:center; justify-content:center; line-height:1;
   border:max(1.5px,.37cqh) solid var(--cizgi); background:var(--sef-kumanda-fonu, #fff9e8); border-radius:100vmax;
 }
-.tatli-geri {justify-self:start; color:inherit; width:max(40px,9.7cqh); aspect-ratio:1; padding:2.4cqh; box-shadow:0 .7cqh #ac7956}
+.tatli-geri {justify-self:start; color:inherit; width:max(44px,9.7cqh); aspect-ratio:1; padding:2.4cqh; box-shadow:0 .7cqh #ac7956}
 .tatli-geri .ikon,.tatli-raf-isaret .ikon,.tatli-vitrin-rozet>.ikon {width:100%; height:100%}
 .tatli-cuzdan {justify-self:end; gap:1.1cqh; padding:.8cqh 1.6cqh .8cqh .8cqh; font-size:clamp(15px,4.9cqh,38px); font-weight:800}
 .tatli-jeton {

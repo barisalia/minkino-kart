@@ -6,7 +6,7 @@ import gunes from '../../assets/film/esya/gunes.webp';
 import yogurt from '../../assets/sef/mucver/yogurt.webp';
 import havlu from '../../assets/banyo/havlu-mavi.webp';
 import izgara from '../../assets/alfabe/kutu/izgara.webp';
-import ip from '../../assets/dedektif2/ip-mavi.webp';
+import ip from '../../assets/alfabe/kelime/ip.webp';
 import jole from '../../assets/alfabe/kutu/jole.webp';
 import kapi from '../../assets/dedektif3/kart-kapi.webp';
 import lamba from '../../assets/elektrik/lamba.webp';

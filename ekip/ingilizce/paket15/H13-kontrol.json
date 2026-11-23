@@ -1,0 +1,82 @@
+[
+  {
+    "name": "lamb",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "puppy",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "kitten",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "chick",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "pony",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "bull",
+    "size": [
+      800,
+      800
+    ],
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "holesForReview": [
+      [
+        339,
+        301,
+        15,
+        8,
+        55
+      ]
+    ]
+  }
+]

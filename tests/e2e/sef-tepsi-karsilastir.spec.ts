@@ -1,6 +1,8 @@
 import {expect,test} from '@playwright/test';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const hazirlik=(tarifId:string,sebzeler:string[])=>({
   tarifId,alinan:sebzeler,aktarilan:sebzeler,kesimler:Object.fromEntries(sebzeler.map(s=>[s,4])),

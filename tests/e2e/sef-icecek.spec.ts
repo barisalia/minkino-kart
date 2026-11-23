@@ -1,4 +1,6 @@
 import {expect,test,type Page,type Locator} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 const durum=(p:Page,id:string)=>p.evaluate(k=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.masalar[k],id);
 async function merkez(el:Locator){
   const r=await el.boundingBox();if(!r)throw Error('Dokunulacak araç görünmüyor.');
@@ -24,9 +26,8 @@ for(const senaryo of [
 ]){
   test('İçecek fişi, gerçek bardak ve kayıt '+senaryo.menu,async({page})=>{
     await page.setViewportSize({width:844,height:390});
-    await page.goto('./sef/?test=1');
-    await page.getByRole('button',{name:'Müşteri masası',exact:true}).tap();
-    await page.locator('[data-menu="'+senaryo.menu+'"]').tap();
+    // "Müşteri masası" fiş arşivi panoda yok (15 Kasım ilk sürümde de); müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+    await page.goto('./sef/?test=1&giris=tepsiler&siparis='+senaryo.menu);
     await page.locator('[data-parca="icecek"]').tap();
     const sahne=page.locator('.ps-sahnesi');
     await expect(sahne.locator('.ps-istek-fisi')).toHaveAttribute('data-istenen',senaryo.istenen);
@@ -45,7 +46,7 @@ for(const senaryo of [
     await expect(page.locator('.ps-bardak img')).toHaveAttribute('src',new RegExp(senaryo.secilen+'-yarim-bardak'));
     if(senaryo.miktar===3)await kaydir(page,page.locator('.ps-surahi'),page.locator('.ps-bardak'));
     else await page.locator('.ps-yarim-sun').tap();
-    const bardak=page.locator('[data-parca="icecek"] img');
+    const bardak=page.locator('[data-parca="icecek"] img.tepsi-gida'); // hazır yuvada yanında onay simgesi de var
     await expect(bardak).toHaveAttribute('src',new RegExp(senaryo.secilen+'-'+(senaryo.miktar===3?'dolu':'yarim-bardak')));
     await page.reload();
     expect(await durum(page,senaryo.menu)).toMatchObject({icecekMeyvesi:senaryo.secilen,icecekMiktari:senaryo.miktar,icecekPuani:senaryo.puan});

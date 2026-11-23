@@ -3,6 +3,13 @@ import type dersler from './harfler.json';
 import { oyunSesi } from './oyun-sesi';
 import { cerenSustur } from './konusma-dersi';
 import { kelimeResmi } from './kelime-resmi';
+import { bosBekleyici } from './bos-bekle';
+import { gunlukYanlis } from './gunluk';
+import { An, canlanmaCizimi, canlanmaKareleri, isikSac, kabaGore } from './canlanma';
+import { oltaAcik, oltaCizimi } from './h14-cizimler';
+import { resmiCanlandir } from './kesfet-canlanma';
+import { bitisKutla, cerenSevinsin } from './cila';
+import { sozcukKareleri } from './a1-kareler';
 import './miknatis.css';
 
 type Ders = typeof dersler[number];
@@ -24,6 +31,11 @@ function karistir(parcalar: string[]) {
   return sonuc;
 }
 
+function oltaAnlatildi() {
+  try { if (sessionStorage.getItem('minkino-olta-anlatildi')) return true; sessionStorage.setItem('minkino-olta-anlatildi', '1'); } catch { /* depolama kapalı */ }
+  return false;
+}
+
 export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next: () => void, sonDugme='Albüm kartımı gör'): () => void {
   const sakin = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const heceli = (ders.word.match(/[aeıioöuü]/g) ?? []).length > 1;
@@ -36,6 +48,11 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
     return (heceli && parca.length === 1 ? 'mik-hece-' : 'mik-parca-') + kod;
   }
   const ekran = nesne('section', 'mik-ders');
+  // Paket Harf-H14 (h14-cizimler.ts): çizimler gelince Mıknatıslı Olta. Parçalar gölette yüzen balıkların üstündedir;
+  // doğru balığa dokununca olta iner, balığı tutar, parça yerine uçar. Ders, sesler ve kayıt aynı; yalnız görünüş ve an.
+  const olta = oltaAcik();
+  if (olta) ekran.classList.add('mik-olta');
+  const resimOge = (sinif: string, src: string) => { const r = nesne('img', sinif) as HTMLImageElement; r.src = src; r.alt = ''; r.draggable = false; r.setAttribute('aria-hidden', 'true'); return r; };
   const baslik = nesne('h1', 'mik-baslik', 'Mıknatısları birleştir');
   const ornek = nesne('div', 'mik-ornek');
   const tekrar = nesne('button', 'mik-sozcuk', ders.word);
@@ -72,12 +89,15 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
   if (cizim) odul.innerHTML = '<img src="' + cizim + '" alt="" draggable="false">';
   levha.append(...yuvalar, odul, kelime);
   const tepsi = nesne('div', 'mik-tepsi');
+  const oltaResmi = olta ? resimOge('mik-olta-resmi', oltaCizimi('olta')) : undefined;
+  if (olta) tepsi.append(resimOge('mik-gol-resmi', oltaCizimi('gol')));
   const durum = nesne('p', 'mik-yon');
   durum.setAttribute('role', 'status');
   const bitir = nesne('button', 'mik-bitir', sonDugme);
   bitir.type = 'button';
   bitir.hidden = true;
   ekran.append(baslik, ornek, levha, tepsi, durum, bitir);
+  if (oltaResmi) ekran.append(oltaResmi);
   container.replaceChildren(ekran);
 
   let sira = 0;
@@ -86,6 +106,65 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
   let gecildi = false;
   const ucuslar = new Set<HTMLElement>();
   const hareketler = new Set<Animation>();
+  const an = new An();
+  // Kenetlenme anı (H7): parça yerine oturunca, bir önceki parçayla birleştiği yerde mıknatıs kıvılcımı çakar.
+  // Astra'nın kıvılcım kareleri (miknatis/kivilcim-0…2) gelene kadar küçük ışıklar saçılır.
+  function kenetlen(yuva: HTMLElement, i: number) {
+    if (sakin || kapali) return;
+    const r = kabaGore(levha, yuva);
+    isikSac(an, levha, i ? r.x - 2 : r.cx, r.cy, { adet: 5, uzaklik: r.h * .62, boy: r.h * .34, renk: '#ffd257',
+      kareler: canlanmaKareleri('miknatis/kivilcim', 3), sure: 480 });
+    an.hareket(yuva, [{ transform: 'scale(1)' }, { transform: 'scale(1.1,.92)', offset: .35 }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
+  }
+  // Birleşme anı (H7): sözcük tamamlanınca harflerin etrafında ışık halkası açılır, ışıklar saçılır.
+  function birlesmeHalkasi() {
+    if (sakin || kapali) return;
+    const r = kabaGore(levha, kelime), w = Math.max(r.w * 1.7, r.h * 3.2), h = w / 2;
+    const cizim = canlanmaCizimi('miknatis/birlesme-halkasi');
+    const halkalar = cizim ? [0] : [0, 150];
+    for (const gecikme of halkalar) {
+      const halka = an.ekle(levha, document.createElement(cizim ? 'img' : 'i'));
+      halka.className = 'mik-halka' + (cizim ? ' mik-halka-astra' : '');
+      halka.setAttribute('aria-hidden', 'true');
+      if (halka instanceof HTMLImageElement) { halka.src = cizim!; halka.alt = ''; halka.draggable = false; }
+      Object.assign(halka.style, { left: r.cx - w / 2 + 'px', top: r.cy - h / 2 + 'px', width: w + 'px', height: h + 'px' });
+      an.hareket(halka, [{ transform: 'scale(.45)', opacity: 0 }, { transform: 'scale(.95)', opacity: 1, offset: .3 },
+        { transform: 'scale(1.04)', opacity: 1, offset: cizim ? .7 : .45 }, { transform: 'scale(1.18)', opacity: 0 }],
+        { duration: cizim ? 1100 : 820, delay: gecikme, easing: 'ease-out', fill: 'forwards' }).finished.then(() => an.kaldir(halka), () => {});
+    }
+    isikSac(an, levha, r.cx, r.cy, { adet: 9, uzaklik: r.w * .78, boy: r.h * .36, renk: '#ffd257' });
+    an.sonra(170, () => oyunSesi('parilti'));
+  }
+  /** Olta balığın üstüne iner. Tutarsa balık oltayla kalkar; tutmazsa (yanlış balık) balık silkinip suya kaçar. */
+  function oltaIndir(balik: HTMLElement, tutar: boolean) {
+    if (!oltaResmi || kapali) return;
+    const e = ekran.getBoundingClientRect(), b = balik.getBoundingClientRect(), o = oltaResmi.getBoundingClientRect();
+    // olta resmi 400 × 700; mıknatıs ucunun ortası (200, 640)
+    const x = b.left + b.width * .42 - e.left - o.width * .5, y = b.top + b.height * .2 - e.top - o.height * (640 / 700);
+    oltaResmi.getAnimations().forEach(a => a.cancel());
+    oltaResmi.style.left = x + 'px';
+    if (sakin) return;
+    const ust = -o.height;
+    const h = oltaResmi.animate([
+      { transform: 'translateY(' + ust + 'px)', opacity: 0 },
+      { transform: 'translateY(' + y + 'px)', opacity: 1, offset: .38 },
+      { transform: 'translateY(' + y + 'px)', opacity: 1, offset: .5 },
+      { transform: 'translateY(' + (tutar ? ust * .35 : y - 30) + 'px)', opacity: tutar ? 1 : .9, offset: .8 },
+      { transform: 'translateY(' + ust + 'px)', opacity: 0 }
+    ], { duration: tutar ? 900 : 760, easing: 'ease-in-out' });
+    hareketler.add(h);
+    void h.finished.then(() => hareketler.delete(h), () => hareketler.delete(h));
+    if (tutar) balik.classList.add('mik-tutuldu');
+  }
+  /** Sözcük kurulunca gölde su sıçrar (iki kare) ve resim sudan çıkar. */
+  function suSicrat() {
+    if (!olta || sakin || kapali) return;
+    const s = an.ekle(tepsi, resimOge('mik-sicrama', oltaCizimi('sicrama-0'))) as HTMLImageElement;
+    an.sonra(140, () => { s.src = oltaCizimi('sicrama-1'); });
+    an.sonra(520, () => an.kaldir(s));
+    // sözcüğün resmi sudan yükselir ve gölün üstünde kalır (levhadaki küçük ödül resmi yerine)
+    if (cizim) { const r = an.ekle(tepsi, resimOge('mik-gol-odul', cizim)); r.getBoundingClientRect(); r.classList.add('mik-cikti'); }
+  }
   let zaman = 0;
   let hayalet: HTMLElement | undefined;
   let aktifParmak: number | undefined;
@@ -96,6 +175,14 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
   window.addEventListener('resize',vazgec,iptal);
   document.addEventListener('pointerdown',e=>{if(!e.isPrimary)vazgec();},{...iptal,capture:true});
   const serbest = () => !kapali && sira < parcalar.length;
+  // Çocuk bir süre hiçbir parçaya dokunmazsa Ceren sıradakini yeniden söyler; ikincisinde doğru taş ışır.
+  const bos = bosBekleyici(kacinci => {
+    if (!serbest() || aktifParmak !== undefined) return;
+    if (kacinci === 2) for (const tas of dugmeler) tas.classList.toggle('mik-ipucu', !tas.disabled && tas.dataset.parca === parcalar[sira]);
+    sesiKes();
+    play(sira ? parcaSesi(parcalar[sira]) : 'mik-hedef-' + ders.id, bosKur);
+  });
+  const bosKur = () => { if (serbest() && aktifParmak === undefined) bos.kur(); };
   const bekleyenSesler:{ses:string;yuva:HTMLElement}[]=[];
   let sesSirasi=0, parcaOkunuyor=false;
   function sesiKes(){
@@ -125,6 +212,7 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
       }
       parcaOkunuyor=false;
       if(sira===parcalar.length)tamamla();
+      else bosKur();
     }
     siradaki();
   }
@@ -147,6 +235,11 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
   function tamamla() {
     if (kapali) return;
     levha.classList.add('mik-birlesik');
+    // Sözcük birleşince resmi canlanır: Keşfet'in hareket kareleri (Paket Harf-A1/A1-ek) varsa onlarla, yoksa sözcüğün hareketiyle.
+    resmiCanlandir(ekran.querySelector('.mik-ipucu-resim'), ders.word, true, sozcukKareleri(ders.id));
+    // Ceren sevinir (cila mıknatıs sesinde Ceren'i atlar: her taşta değil, sözcük bitince), levhada kutlama.
+    cerenSevinsin();
+    if (!sakin) window.setTimeout(() => { if (!kapali) bitisKutla(levha); }, 520);
     durum.textContent = '';
     zaman = window.setTimeout(() => {
       kelime.hidden = false;
@@ -170,6 +263,8 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
       odul.hidden = !cizim;
       ornek.style.visibility = 'hidden';
       oyunSesi('birles');
+      birlesmeHalkasi();
+      suSicrat();
       // Söylenen sözcük, panoda artık tek bir sözcük olarak duruyor.
       zaman = window.setTimeout(() => {
         for (const yuva of yuvalar) yuva.hidden = true;
@@ -182,7 +277,7 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
     }, sakin ? 80 : 180);
   }
 
-  function tasi(dugme: HTMLButtonElement, hedef: HTMLElement, bas?: {x:number; y:number}) {
+  function tasi(dugme: HTMLButtonElement, hedef: HTMLElement, bas?: {x:number; y:number}, gecikme = 0) {
     const b = dugme.getBoundingClientRect(), h = hedef.getBoundingClientRect();
     const x = bas ? bas.x - b.width / 2 : b.left;
     const y = bas ? bas.y - b.height / 2 : b.top;
@@ -198,7 +293,7 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
       {transform:'translate(0,0) rotate(0)'},
       {transform:'translate(' + dx*.6 + 'px,' + (dy*.6-8) + 'px) rotate(-3deg)',offset:.62},
       {transform:'translate(' + dx + 'px,' + dy + 'px) rotate(0)'}
-    ], {duration:bas ? 120 : 220,easing:'cubic-bezier(.25,.8,.3,1)',fill:'forwards'});
+    ], {duration:bas ? 120 : 220,delay:gecikme,easing:'cubic-bezier(.25,.8,.3,1)',fill:'both'});
     hareketler.add(hareket);
     void hareket.finished.then(() => {
       if (!kapali) hedef.classList.remove('mik-geliyor');
@@ -208,9 +303,10 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
 
   function yerlestir(dugme: HTMLButtonElement, yuva?: Element | null, bas?: {x:number; y:number}) {
     if (!serbest() || dugme.disabled) return;
+    bos.dur();
     const beklenen = parcalar[sira];
     if (dugme.dataset.parca !== beklenen) {
-      yanlisSayisi++;
+      yanlisSayisi++;gunlukYanlis(ders.id);
       if(yanlisSayisi===2){
         for(const tas of dugmeler)tas.classList.toggle('mik-ipucu',!tas.disabled && tas.dataset.parca===beklenen);
       }
@@ -227,23 +323,30 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
         hareketler.add(itme);
         void itme.finished.then(() => hareketler.delete(itme), () => hareketler.delete(itme));
       }
+      oltaIndir(dugme, false);
       oyunSesi('geri');
       sesiKes();
-      play(parcaSesi(beklenen));
+      play(parcaSesi(beklenen), bosKur);
       return;
     }
     if (yuva !== undefined && yuva !== yuvalar[sira]) {
       durum.textContent = 'Parçayı ışıklı yere götür.';
       oyunSesi('geri');
       sesiKes();
-      play('mik-yer');
+      play('mik-yer', bosKur);
       return;
     }
     yanlisSayisi=0;
+    bos.sifirla();
     for(const tas of dugmeler)tas.classList.remove('mik-ipucu');
     const dolan = yuvalar[sira];
     dolan.style.setProperty('--mik-renk', dugme.style.getPropertyValue('--mik-renk'));
-    tasi(dugme, dolan, bas);
+    // olta kipinde (dokunuşla) olta önce balığı tutar, parça sonra uçar
+    const oltayla = olta && !bas && !sakin;
+    if (oltayla) oltaIndir(dugme, true);
+    tasi(dugme, dolan, bas, oltayla ? 380 : 0);
+    const yerlesen = sira;
+    an.sonra(sakin ? 0 : bas ? 120 : oltayla ? 600 : 220, () => kenetlen(dolan, yerlesen));
     dolan.classList.add('mik-dolu');
     dolan.classList.remove('mik-bak');
     dugme.disabled = true;
@@ -266,6 +369,12 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
     dugme.type = 'button';
     dugme.dataset.parca = parca;
     dugme.style.setProperty('--mik-renk', ['#ffc971','#a7dccc','#f1aaa2','#bcd9f0'][i % 4]);
+    if (olta) {
+      const harf = nesne('span', 'mik-balik-harf', parca);
+      dugme.replaceChildren(resimOge('mik-balik', oltaCizimi((['balik-0', 'balik-1', 'balik-2'] as const)[i % 3])), harf);
+      dugme.style.setProperty('--yuz-gecikme', (-i * 1.3).toFixed(1) + 's');
+      dugme.style.setProperty('--yuz-yon', i % 2 ? '-1' : '1');
+    }
     dugme.setAttribute('aria-label', parca + (heceli ? ' hecesini' : ' harfini') + ' yerleştir');
     let bas: {x: number, y: number} | undefined;
     let suruklendi = false;
@@ -273,6 +382,7 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
       if(!e.isPrimary){suruklendi=true;return;}
       if (!serbest() || aktifParmak !== undefined || e.button !== 0) return;
       aktifParmak = e.pointerId;
+      bos.dur();
       tutusuBirak=()=>{suruklendi=true;sonlandir();};
       bas = {x: e.clientX, y: e.clientY};
       suruklendi = false;
@@ -299,6 +409,7 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
       hayalet?.remove();
       hayalet = undefined;
       if(id!==undefined&&dugme.hasPointerCapture(id))dugme.releasePointerCapture(id);
+      bosKur();
     }
     dugme.addEventListener('pointerup', e => {
       if (e.pointerId !== aktifParmak || !bas) return;
@@ -322,8 +433,9 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
   const ustTekrar = container.closest('main')?.querySelector<HTMLButtonElement>('[data-is="tekrar"]');
   function dinlet() {
     if (kapali || sira === parcalar.length) return;
+    bos.dur();
     sesiKes();
-    play(sira ? parcaSesi(parcalar[sira]) : 'mik-hedef-' + ders.id);
+    play(sira ? parcaSesi(parcalar[sira]) : 'mik-hedef-' + ders.id, bosKur);
   }
   tekrar.addEventListener('click', dinlet, iptal);
   ustTekrar?.addEventListener('click', dinlet, iptal);
@@ -342,13 +454,17 @@ export function miknatisKur(container: HTMLElement, ders: Ders, play: Oku, next:
   } catch {}
   yuvayiGoster();
   if (sira===parcalar.length) { tekrar.disabled=true; tamamla(); }
+  // Olta ilk kez açıldığında (oturumda bir kez) Ceren oyunu tek cümleyle anlatır, sonra sözcüğü söyler.
+  else if (olta && !oltaAnlatildi()) play('olta-yonerge', dinlet);
   else dinlet();
   return () => {
     kapali = true;
+    bos.kapat();
     durdurucu.abort();
     clearTimeout(zaman);
     hayalet?.remove();
     for (const h of hareketler) h.cancel();
+    an.durdur();
     for (const tas of ucuslar) tas.remove();
     if (ustTekrar) ustTekrar.disabled = false;
   };

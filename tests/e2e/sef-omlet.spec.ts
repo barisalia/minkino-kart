@@ -1,5 +1,7 @@
 import {expect,test} from '@playwright/test';
 import {omletKivami,omletPuani,omletiOku,type Omlet} from '../../sef/src/omlet-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 for(const anne of [false,true]){
   test((anne?'Anne':'Kino')+' omlet siparişini alır, çocuk pişirir ve jetonu kazanır',async({page},info)=>{
@@ -55,8 +57,11 @@ for(const anne of [false,true]){
     await expect(sahne).toHaveAttribute('data-kivam',anne?'koyu':'altin',{timeout:15000});
     await sahne.locator('.om-katla').tap();
     await sahne.getByRole('button',{name:'Omleti servis tabağına al'}).tap();
-    const fiş=page.getByRole('button',{name:'Omlet siparişi ile tabağı karşılaştır'});
+    // Tepsi tamamlanınca masa sahnesi açılır; karşılaştırma ve "tekrar pişir" servisten sonra masada.
     const duy=page.waitForResponse(r=>r.url().includes('/salon/'+kim+'-omlet-'+(anne?'gec':'tam')+'.mp3')&&r.ok());
+    await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+    await expect(page.getByRole('button',{name:new RegExp('^'+(anne?2:3)+' jeton kazanıldı')})).toBeVisible();
+    const fiş=page.getByRole('button',{name:'Omlet siparişi ile tabağı karşılaştır'});
     await fiş.tap();await duy;
     const panel=page.getByRole('dialog');
     await expect(panel.locator('.sef-yildizlar')).toHaveAttribute('data-puan',anne?'2':'3');
@@ -70,11 +75,13 @@ for(const anne of [false,true]){
       await expect(sahne.locator('.om-tava-ici .om-ic')).toHaveCount(2);
       await sahne.locator('.om-katla').tap();
       await sahne.getByRole('button',{name:'Omleti servis tabağına al'}).tap();
+      await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+      // Düzeltilen omlet üç yıldız alır; aradaki fark (1 jeton) ödenir.
+      await expect(page.getByRole('button',{name:/^1 jeton kazanıldı/})).toBeVisible();
       await fiş.tap();await expect(panel.locator('.sef-yildizlar')).toHaveAttribute('data-puan','3');
     }
     await panel.getByRole('button',{name:'Tepsiye dön'}).tap();
-    await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
-    await expect(page.getByRole('button',{name:'3 jeton kazanıldı'})).toBeVisible();
+    expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.jeton)).toBe(3);
   });
 }
 

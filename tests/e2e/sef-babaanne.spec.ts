@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('İki kez ısırılan simit tepsiden kaldırılır, geri bırakılır ve son lokmada biter',async({page})=>{
   await page.setViewportSize({width:844,height:390});

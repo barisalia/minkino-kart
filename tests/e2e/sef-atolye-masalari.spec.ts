@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Serbest hamur, Mino ve Dede Hasan ayrı kalır ve açık masa yeniden yüklenir',async({page})=>{
   await page.routeWebSocket(url=>url.searchParams.has('token'),()=>{});
@@ -8,7 +10,9 @@ test('Serbest hamur, Mino ve Dede Hasan ayrı kalır ve açık masa yeniden yük
   const geri=()=>page.getByRole('button',{name:'Geri',exact:true}).click();
   const asama=(ad:string)=>expect(oyun).toHaveAttribute('data-asama',ad);
   const hamur=(ad:string)=>oyun.getByRole('button',{name:ad+' hamur seç'}).click();
-  const musteri=(id:string)=>page.locator('[data-menu="'+id+'"]').click();
+  // "Müşteri masası" fiş arşivi panoda yok (15 Kasım ilk sürümde de); belirli müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+  const musteri=(id:string)=>page.goto('./sef/?test=1&giris=tepsiler&siparis='+id);
+  const tepsideki=(ad:string)=>expect(page.getByRole('button',{name:ad,exact:true})).toBeVisible();
   const tabagaGit=()=>page.locator('[data-parca=makarna]').click();
   await page.locator('[data-tarif=makarna]').click();
   await hamur('Pancarlı');
@@ -16,7 +20,6 @@ test('Serbest hamur, Mino ve Dede Hasan ayrı kalır ve açık masa yeniden yük
   await expect(oyun.locator('[data-mp-kes="1"]')).toBeVisible();
   await geri();
 
-  await page.getByRole('button',{name:'Müşteri masası',exact:true}).click();
   await musteri('fiyonk-tavuk');
   await tabagaGit();
   await asama('renk');
@@ -26,10 +29,9 @@ test('Serbest hamur, Mino ve Dede Hasan ayrı kalır ve açık masa yeniden yük
   await oyun.locator('[data-mp-kes="1"]').press('Enter');
   await asama('sekil');
   await geri();
-  await geri();
-  await expect(page.locator('[data-menu=fiyonk-tavuk] [data-porsiyon=makarna]')).toHaveAttribute('data-durum','tezgahta');
-  await expect(page.locator('[data-menu=fiyonk-sis] [data-porsiyon=makarna]')).toHaveAttribute('data-durum','bekliyor');
+  await tepsideki('Fiyonk Makarna hazırlamaya devam et');
   await musteri('fiyonk-sis');
+  await tepsideki('Fiyonk Makarna hazırla');
   await tabagaGit();
   await asama('renk');
   await hamur('Pancarlı');
@@ -37,11 +39,10 @@ test('Serbest hamur, Mino ve Dede Hasan ayrı kalır ve açık masa yeniden yük
   await asama('kes');
   await expect(oyun.locator('[data-mp-kes="0"]')).toBeVisible();
   await geri();
-  await geri();
+  await tepsideki('Fiyonk Makarna hazırlamaya devam et');
   await musteri('fiyonk-tavuk');
   await tabagaGit();
   await asama('sekil');
-  await geri();
   await geri();
   await geri();
   await page.locator('[data-tarif=makarna]').click();
@@ -80,14 +81,13 @@ for(const ornek of [
     localStorage.setItem('minkino-sef-v1',JSON.stringify({sessiz:true}));
   },ornek);
   await page.reload();
-  await page.getByRole('button',{name:'Müşteri masası',exact:true}).click();
-  await page.locator('[data-menu='+ornek.menu+']').click();
+  // "Müşteri masası" fiş arşivi panoda yok; müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+  await page.goto('./sef/?test=1&giris=tepsiler&siparis='+ornek.menu);
   await page.locator('[data-parca='+ornek.id+']').click();
   await expect(page.locator(ornek.sahne)).toHaveAttribute(ornek.alan,ornek.ilk);
   await page.reload();
   await expect(page.locator(ornek.sahne)).toHaveAttribute(ornek.alan,ornek.ilk);
   await page.keyboard.press('Escape');
-  await page.locator('.tepsi-ust').getByRole('button',{name:'Geri'}).click();
   await page.locator('.tepsi-ust').getByRole('button',{name:'Geri'}).click();
   await page.locator('[data-tarif='+ornek.id+']').click();
   await expect(page.locator(ornek.sahne)).toHaveAttribute(ornek.alan,ornek.serbest);
@@ -110,7 +110,8 @@ test('Erken sunulan tepsinin yeni siparişi temiz hamurla başlar ve diğer masa
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
   await page.getByRole('button',{name:'Eksik tepsiyi şimdi sun'}).click();
   await page.getByRole('button',{name:'Başka bir müşteri seç'}).click();
-  await page.locator('[data-menu=fiyonk-tavuk]').click();
+  // Fiş arşivi panoda yok; aynı sipariş yeniden geldiğinde masası ?giris=tepsiler&siparis= ile açılır (sunulmuş masa temizlenir).
+  await page.goto('./sef/?test=1&giris=tepsiler&siparis=fiyonk-tavuk');
   await page.locator('[data-parca=makarna]').click();
   await expect(page.locator('.mp-oyun')).toHaveAttribute('data-asama','renk');
   const [bu,diger]=await page.evaluate(()=>['fiyonk-tavuk','fiyonk-sis'].map(id=>JSON.parse(localStorage.getItem('minkino-sef-makarna-v1-masa-'+id)!)));

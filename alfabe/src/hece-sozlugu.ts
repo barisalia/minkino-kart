@@ -7,6 +7,10 @@ export const heceler: Record<string, string[]> = {
   '28':['yel','ken','li'], '29':['zü','ra','fa'],
 };
 
+import { havuzHeceSesleri } from './sozcuk-havuzu';
+
+// Hecenin Ceren kaydı: sözcük havuzunun listesinde (ekip/alfabe/sozcuk-havuzu.json) adı geçen hece oradaki `ses`
+// alanıyla çalar (açık hecelerin çoğu Hece Evleri'nin ev-* kayıtları); öbürleri pano-hece-<hece>.
 export function parcaSesi(hece:string){
-  return 'pano-hece-'+hece;
+  return havuzHeceSesleri[hece]??'pano-hece-'+hece;
 }

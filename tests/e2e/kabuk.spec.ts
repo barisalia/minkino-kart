@@ -5,10 +5,11 @@
  */
 import { expect, test, type Page } from '@playwright/test';
 import { menuOyunlari } from '../../uygulama/src/oyunlar';
+import { bolumKartlari, deneyliKartlar, doktorluKartlar } from '../../uygulama/src/menu-bolumleri';
+import { DENEY_MENUDE } from '../../deney/src/bayrak';
+import { DOKTOR_MENUDE } from '../../doktor/src/bayrak';
 import { hataTopla } from './yardimci';
 
-/** İçerik kartları kategorilere ayrılır; ana ekranda dört kategori bulunur. */
-const MENU = menuOyunlari(true).map((k) => k.id);
 
 const BOYUTLAR: [number, number, string][] = [
   [844, 390, 'kabuk-menu-844x390'],
@@ -40,7 +41,9 @@ async function kapiyiGec(page: Page) {
 
 test('Kabuk: dört kategori ve içerik panelleri 6 ekran boyunda kullanılabilir', async ({ page }) => {
   const hatalar = hataTopla(page);
-  const oyunlar = MENU.filter(id => !['alfabe', 'hazirlik', 'canlan', 'kartlar', 'macera', 'film', 'kitap'].includes(id));
+  // Etkinlikler paneli (yatay-menu.ts → etkinlikler); geri kalan oyunlar Oyunlar panelinde
+  // menüdeki gibi: Deneyler ve Minik Doktor kartları bayraklarıyla eklenir (uygulama/src/menu-bolumleri.ts)
+  const oyunlar = bolumKartlari('oyun', doktorluKartlar(deneyliKartlar(menuOyunlari(true), DENEY_MENUDE), DOKTOR_MENUDE), false).map(k => k.id);
   for (const [en, boy, ad] of BOYUTLAR) {
     await page.setViewportSize({ width: en, height: boy });
     await page.goto('./?test=1&uygulama=android');
@@ -62,11 +65,12 @@ test('Kabuk: dört kategori ve içerik panelleri 6 ekran boyunda kullanılabilir
     await page.getByRole('button', { name: 'Oyunlar', exact: true }).click();
     await expect(page.locator('.ym-icerik')).toHaveCount(oyunlar.length);
     expect(await page.locator('.ym-icerik').evaluateAll(l => l.map(k => k.getAttribute('data-oyun')))).toEqual(oyunlar);
-    for (const id of ['pazar', 'dedektif']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).toHaveAttribute('data-kilitli', '');
-    for (const id of ['giysin', 'otobus']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).not.toHaveAttribute('data-kilitli');
+    // kilit düzeni (Barış 16 Kasım): eski oyunlar bütünüyle premium; Pati, Şef ve Sen Seç'in ilk bölümleri ücretsiz (kartta kilit yok)
+    for (const id of ['pazar', 'giysin']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).toHaveAttribute('data-kilitli', '');
+    for (const id of ['pati', 'sef', 'kino-ile-sen-sec']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).not.toHaveAttribute('data-kilitli');
     await page.getByRole('button', { name: 'Etkinlikler', exact: true }).click();
-    await expect(page.locator('.ym-icerik[data-oyun="canlan"]')).toHaveAttribute('data-kilitli', '');
-    await expect(page.locator('.ym-icerik[data-oyun="kartlar"]')).not.toHaveAttribute('data-kilitli');
+    for (const id of ['canlan', 'kartlar', 'macera']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).toHaveAttribute('data-kilitli', '');
+    for (const id of ['matematik', 'alfabe', 'hazirlik']) await expect(page.locator(`.ym-icerik[data-oyun="${id}"]`)).not.toHaveAttribute('data-kilitli');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), ad).toBeLessThanOrEqual(1);
     const panel = (await page.locator('.ym-panel').boundingBox())!;
     expect(panel.x + panel.width, ad).toBeLessThanOrEqual(en + 1);
@@ -127,19 +131,21 @@ test('Kabuk: abonelik ekranında mağazaların istediği her şey var', async ({
   // Mino, Kino, başlık, ikonlu fayda listesi
   // Mino ve Kino: Gemini kahraman görseli varsa o, yoksa canlı karakterler
   await expect(ab.locator('.ab-kahraman img, .ab-mino .mino svg').first()).toBeVisible();
-  await expect(ab.locator('.ab-liste li')).toHaveCount(6);
-  await expect(ab.locator('.ab-liste .ab-tik')).toHaveCount(6);
+  await expect(ab.locator('.ab-liste li')).toHaveCount(5);
+  await expect(ab.locator('.ab-liste .ab-tik')).toHaveCount(5);
   // dönem başına fiyat (mağazadan), deneme yazısı
-  await expect(ab.locator('.ab-plan-aylik')).toContainText('₺199,00');
+  await expect(ab.locator('.ab-plan-aylik')).toContainText('₺239,99');
   await expect(ab.locator('.ab-plan-aylik')).toContainText('/ ay');
-  await expect(ab.locator('.ab-plan-yillik')).toContainText('₺899,00');
+  await expect(ab.locator('.ab-plan-yillik')).toContainText('₺1.799,99');
   await expect(ab.locator('.ab-plan-yillik')).toContainText('/ yıl');
   await expect(ab.locator('.ab-deneme')).toHaveText('14 gün ücretsiz dene');
-  await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺899,00 / yıl');
+  await expect(ab.locator('.ab-sonra')).toContainText('Deneme bitince ₺1.799,99 / yıl');
   // otomatik yenileme metni TR + EN (iOS), geri yükleme, gizlilik, koşullar, iletişim, kapat
   await expect(ab.locator('.ab-yasal').first()).toContainText('otomatik olarak yenilenir');
   await expect(ab.locator('.ab-yasal-en')).toContainText('automatically renews');
   await expect(ab.getByRole('button', { name: 'Satın alımları geri yükle' })).toBeEnabled();
+  // hediye kodu (iOS: Apple'ın kod penceresi)
+  await expect(ab.getByRole('button', { name: 'Hediye kodu kullan' })).toBeVisible();
   await expect(ab.getByRole('link', { name: /Gizlilik politikası/ })).toHaveAttribute('href', /\/gizlilik\/$/);
   await expect(ab.getByRole('link', { name: /Kullanım koşulları/ })).toHaveAttribute('href', /\/sartlar\/$/);
   await expect(ab.locator('.ab-iletisim a')).toHaveAttribute('href', 'mailto:minkinokids@gmail.com');
@@ -176,8 +182,10 @@ test('Kabuk: anahtar yokken kilit yok, abonelik ekranı "Yakında" ve yedek fiya
   await expect(ab).toHaveAttribute('data-durum', 'yakinda');
   await expect(ab.locator('.ab-basla')).toHaveText('Yakında');
   await expect(ab.locator('.ab-basla')).toBeDisabled();
-  await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('199 TL');
-  await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('899 TL');
+  await expect(ab.locator('.ab-plan-aylik .ab-fiyat')).toContainText('239,99 TL');
+  await expect(ab.locator('.ab-plan-yillik .ab-fiyat')).toContainText('1.799,99 TL');
+  // mağaza yokken hediye kodu da yok
+  await expect(ab.locator('.ab-kod')).toBeHidden();
   await expect(ab.locator('.ab-deneme')).toHaveText('14 gün ücretsiz deneme');
   await expect(ab.locator('.ab-durum')).toContainText('bütün oyunlar açık');
   await page.waitForTimeout(500);

@@ -1,0 +1,54 @@
+/* Ceren Öğretmen dersi 5 · Sayılar 11–20 (ders-onluk.ts). Dünya, Ceren, sıra ve hatıra kuralları ceren-ders.css ve
+   ders-sekiller.css'ten. Astra'nın fonu (boncuk-masasi): masa yüzeyi x 160…1760, y 300…900 boş. Onluk çubuğu 160 × 900
+   (on boncuk), birlik 160 × 90 (aynı ölçekte tek boncuk); abaküs çerçevesi 1200 × 800 (teller y 300 ve 560, x 150…1050),
+   boncuk 80 × 80. Dokunulan her şey dünyada y %8–%84 arasında. */
+
+.cd-ceren[data-poz='on-parmak'] > .cd-poz[data-poz='on-parmak'] { display: block; }
+.cd-ceren[data-poz='on-parmak'] > .cd-iskelet[data-poz='on-parmak'] { display: grid; }
+.dk-dunya .cd-ceren { z-index: 4; }
+.dk-alan { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.dk-alan button { pointer-events: auto; }
+
+/* Onluk ve birlik sütunları: aynı tabanda (y %82), soldan sağa onluk, onluk, birlikler. Bir boncuk dünyada %5,6 yüksek. */
+.dk-sutun { position: absolute; bottom: 18%; height: 56%; aspect-ratio: 160 / 900; translate: -50% 0; }
+.dk-sutun[data-yer='0'] { left: 41%; }
+.dk-sutun[data-yer='1'] { left: 46.5%; }
+.dk-sutun[data-yer='2'] { left: 53%; }
+.dk-onluk > img, .dk-onluk > .cd-iskelet { width: 100%; height: 100%; object-fit: contain; display: block; }
+.dk-onluk > .cd-iskelet { display: grid; place-items: center; background: #e9b26a; border: 2px solid #5a3d1e; border-radius: 30px; writing-mode: vertical-rl; font: 700 max(10px, 1.2cqw)/1 system-ui; color: #3a2614; }
+/* Dizilen boncuklar ve birlikler alttan üste, onluktaki boncuklarla aynı aralıkta. */
+.dk-birlik { position: absolute; left: 0; right: 0; bottom: calc(var(--k) * 10%); height: 10%; }
+.dk-birlik > img, .dk-tek > img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.dk-tek { display: grid; place-items: center; }
+.dk-tek > .cd-iskelet { width: 100%; height: auto; max-height: 100%; aspect-ratio: 160 / 90; }
+.dk-dizilen { border: .25cqw dashed #b88a4a; border-radius: 1.2cqw; }
+
+/* Masadaki tek boncuklar: daha yakında, iri (dokunması kolay); dokununca sütuna uçar. */
+.dk-tekler { position: absolute; left: 60%; top: 46%; width: 34%; height: 34%; display: grid; grid-template-columns: repeat(5, 1fr); align-content: center; gap: 6% 2%; }
+.dk-tekler[data-adet='5'] { top: 56%; height: 16%; }
+/* Telefonda da en az 44 px parmak hedefi; boncuk resmi düğmenin içine sığar (sütuna taşmaz). */
+.dk-tek { width: 100%; height: max(44px, 4.2cqw); padding: 0; border: 0; background: none; transition: opacity .25s, scale .25s; }
+.dk-tek.gitti { opacity: 0; scale: .5; pointer-events: none; }
+.dk-birlik > .cd-iskelet { display: block; width: 100%; height: 100%; }
+.dk-birlik > .cd-iskelet, .dk-tek > .cd-iskelet { background: #6bb3e8; border: 2px solid #22405a; border-radius: 50% / 45%; }
+
+/* Rakam blokları: masanın sağ üstünde, iki basamak yan yana. */
+.dk-rakamlar { position: absolute; left: 74%; top: 26%; height: 17%; display: flex; gap: 1%; translate: -50% 0; }
+.dk-rakam { height: 100%; aspect-ratio: 1; object-fit: contain; display: block; }
+span.dk-rakam { display: grid; place-items: center; background: #fff3c4; border: 2px solid #5a3d1e; border-radius: 16%; font: 900 2.6cqw/1 ui-rounded, 'Nunito', system-ui, sans-serif; }
+
+/* Abaküs: çerçeve masanın sağında; teller birer düğme (sol gruba dokun: geri al; sağa dokun: it). */
+.dk-abakus { position: absolute; left: 46%; top: 27%; width: 42%; aspect-ratio: 1200 / 800; }
+.dk-abakus-cerceve { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+span.dk-abakus-cerceve { display: grid; place-items: start center; padding-top: 2%; background: #f0c58a; border: 3px solid #5a3d1e; border-radius: 4%; font: 700 1.3cqw/1 system-ui; }
+.dk-tel { position: absolute; left: 12.5%; width: 75%; height: 16%; translate: 0 -50%; padding: 0; border: 0; background: none; }
+.dk-tel[data-tel='ust'] { top: 37.5%; }
+.dk-tel[data-tel='alt'] { top: 70%; }
+.dk-abakus > span.dk-abakus-cerceve ~ .dk-tel::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; background: #6d6d6d; }
+.dk-boncuk { position: absolute; top: 50%; width: 8.889%; aspect-ratio: 1; translate: -50% -50%; left: calc((140 + 80 * var(--i)) / 900 * 100%); transition: left .22s cubic-bezier(.3, .8, .3, 1); }
+.dk-boncuk.solda { left: calc((40 + 80 * var(--i)) / 900 * 100%); }
+.dk-boncuk-resim { width: 100%; height: 100%; object-fit: contain; display: block; }
+.dk-tel[data-tel='ust'] span.dk-boncuk-resim { display: block; background: #f27a6b; border: 2px solid #5a1d14; border-radius: 50%; }
+.dk-tel[data-tel='alt'] span.dk-boncuk-resim { display: block; background: #6bb3e8; border: 2px solid #22405a; border-radius: 50%; }
+
+.dk-hatira { left: 63%; }

@@ -4,6 +4,7 @@
  * &deneme=yok (deneme hakkı yok), &kurulum=hata (sağlayıcı kurulamaz), &premium=1 (açılışta abone).
  * Çağrılar window.__sahteSatin.cagrilar'a yazılır (e2e denetler).
  */
+import { premiumAyarla } from '../engine/erisim';
 import type { PlanId, Saglayici } from './satin';
 
 export function sahteSaglayici(): Saglayici {
@@ -56,6 +57,17 @@ export function sahteSaglayici(): Saglayici {
       kayit.cagrilar.push('durumSor');
       await bekle(20);
       return kayit.premium;
+    },
+    // &kod=tamam: kod penceresinde geçerli kod girilmiş gibi abonelik gelir (gerçekte mağaza dinleyicisi yapar)
+    async kodKullan() {
+      kayit.cagrilar.push('kodKullan');
+      await bekle();
+      if (q.get('kod') === 'hata') return 'hata' as const;
+      if (q.get('kod') === 'tamam') {
+        kayit.premium = true;
+        window.setTimeout(() => premiumAyarla(true), 200);
+      }
+      return 'acildi' as const;
     },
   };
 }

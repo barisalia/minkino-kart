@@ -1,0 +1,67 @@
+/* Ceren Öğretmen dersi 2 · Şekiller (ders-sekiller.ts). Dünya ve Ceren'in kuralları ceren-ders.css'ten (16:9 dünya,
+   telefonda üstten az alttan çok kırpılır; iPad'de alta oturur). Bütün yerler dünyanın oranıyla; dokunulan her şey
+   dünyada y %8–%82 arasında kalır (telefonda alt kırpılan şerit). */
+
+/* Bu dersin Ceren pozları (Astra M3) ve Sayılar dersindekiler. */
+.cd-ceren[data-poz='havada-ciz'] > .cd-poz[data-poz='havada-ciz'],
+.cd-ceren[data-poz='buyutec'] > .cd-poz[data-poz='buyutec'],
+.cd-ceren[data-poz='dusun'] > .cd-poz[data-poz='dusun'] { display: block; }
+.cd-ceren[data-poz='havada-ciz'] > .cd-iskelet[data-poz='havada-ciz'],
+.cd-ceren[data-poz='buyutec'] > .cd-iskelet[data-poz='buyutec'],
+.cd-ceren[data-poz='dusun'] > .cd-iskelet[data-poz='dusun'] { display: grid; }
+/* Ceren önde, alt kenarı ekranın altında (masa yok, yarım boy). */
+.ds-dunya .cd-ceren { z-index: 4; }
+
+.ds-alan { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.ds-alan > * { pointer-events: auto; }
+
+/* Şekil: duvarın ortasında büyük; "bul"da küçülüp Ceren'in başının üstüne çekilir, odayı nesnelere bırakır. */
+.ds-sekil {
+  position: absolute; left: 58%; top: 12%; height: 56%; aspect-ratio: 1; translate: -50% 0;
+  transition: top .45s cubic-bezier(.3, .8, .3, 1), left .45s cubic-bezier(.3, .8, .3, 1), height .45s cubic-bezier(.3, .8, .3, 1);
+}
+.ds-sekil.kucuk { left: 21%; top: 9%; height: 27%; }
+/* Telefonda sıra düğmeleri 64 px (kalite denetimi 23 Kasım): büyük şekil biraz aşağıda, çizimin başladığı tepe noktası sıranın altında kalmasın. */
+@media (orientation: landscape) and (max-height: 500px) { .ds-sekil:not(.kucuk) { top: 18%; height: 54%; } }
+.ds-sekil > img, .ds-sekil > .cd-iskelet { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.ds-sekil > .ds-iz { pointer-events: none; }
+.ds-sekil > .ds-cizim { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+.ds-sekil.cizildi > .ds-iz { opacity: 0; transition: opacity .3s; }
+.ds-sekil > .cd-iskelet { display: grid; place-items: center; background: rgba(255, 255, 255, .6); border-radius: 12%; font: 800 3cqw/1 system-ui; }
+
+/* Sınıftaki nesneler doğal yerlerinde: duvarda (pencere, saat), yerde (top, tabela), masada (kitap, pizza).
+   Masalı fon (Astra, sinif-sekiller-2: masanın üstü y 640, x 1180…1560) gelene dek masa nesneleri yerde durur. */
+.ds-nesne { position: absolute; aspect-ratio: 1; translate: -50% 0; transition: opacity .3s, scale .3s; }
+.ds-nesne[data-yer='duvar'] { left: 57%; top: 17%; height: 27%; }
+.ds-nesne[data-yer='yer'] { left: 45%; top: 57%; height: 27%; }
+.ds-nesne[data-yer='masa'] { left: 72%; top: 57%; height: 27%; }
+.ds-dunya[data-masa='1'] .ds-nesne[data-yer='masa'] { left: 71%; top: 40.3%; height: 19%; }
+.ds-nesne > img, .ds-nesne > .cd-iskelet { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 .5cqw 0 #00000026); }
+.ds-nesne > .cd-iskelet { display: grid; place-items: center; background: rgba(255, 255, 255, .7); border-radius: 12%; font: 700 1.6cqw/1 system-ui; }
+.ds-nesne.gitti { opacity: 0; scale: .7; pointer-events: none; }
+.ds-nesne.dogru { scale: 1.12; }
+.ds-nesne.dogru > img { filter: drop-shadow(0 0 1.4cqw #fff3a8) drop-shadow(0 .5cqw 0 #00000026); }
+@media (prefers-reduced-motion: no-preference) {
+  .ds-nesne.ipucu { animation: ds-ipucu 1.1s ease-in-out infinite; }
+}
+@keyframes ds-ipucu { 0%, 100% { scale: 1; } 50% { scale: 1.08; } }
+
+.ds-hatira { position: absolute; left: 60%; top: 14%; height: 52%; aspect-ratio: 1; translate: -50% 0; }
+.ds-hatira > img, .ds-hatira > .cd-iskelet { width: 100%; height: 100%; object-fit: contain; }
+
+/* Üstteki şekil sırası (Sayılar dersinin rakam sırası gibi): öğrenilen parlak, şimdiki büyük, sonrakiler soluk. */
+.ds-sira {
+  position: absolute; left: 50%; translate: -50% 0; z-index: 4;
+  /* Telefonda duvarın üst kenarında (ekrandan taşmaz); iPad'de sahnenin üstündeki duvar şeridinin ortasında. */
+  top: max(8px, 1.6vh, calc((var(--h) - var(--w) * 0.5625) * var(--odak) / 2 - max(64px, calc(var(--w) * 0.05)) / 2));
+  display: flex; gap: calc(var(--w) * 0.012);
+}
+.ds-sira-sekil {
+  /* Kalite denetimi 23 Kasım: en az 64 px (telefonda 44 idi). */
+  width: max(64px, calc(var(--w) * 0.05)); aspect-ratio: 1; padding: 0; border: 0; background: transparent; position: relative;
+  opacity: .38; filter: saturate(.4); transition: opacity .3s, scale .3s, filter .3s;
+}
+.ds-sira-sekil.bitti { opacity: 1; filter: none; }
+.ds-sira-sekil.simdi { opacity: 1; filter: none; scale: 1.18; }
+.ds-sira-resim { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ds-sira-sekil > .cd-iskelet { display: grid; place-items: center; width: 100%; height: 100%; background: #fff; border-radius: 30%; font: 700 10px/1 system-ui; }

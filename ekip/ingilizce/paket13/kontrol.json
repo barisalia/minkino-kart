@@ -1,0 +1,98 @@
+[
+  {
+    "cover": "ciftlik",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "renkler",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "sayilar",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "yiyecekler",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "oyuncaklar",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "ailem",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "yuzum",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "kiyafetler",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "odam",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "tasitlar",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "hareketler",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  },
+  {
+    "cover": "vahsi",
+    "size": [
+      600,
+      800
+    ],
+    "coreTransparentPixels": 0
+  }
+]

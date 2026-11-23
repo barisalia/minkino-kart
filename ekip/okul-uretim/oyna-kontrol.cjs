@@ -1,0 +1,20 @@
+const {chromium}=require('playwright'),path=require('path'),fs=require('fs');
+const dir=__dirname,base=process.env.OKUL_TEST_URL||'http://127.0.0.1:5196';
+(async()=>{const br=await chromium.launch({channel:'chrome',headless:true,args:['--autoplay-policy=no-user-gesture-required']});try{
+ const page=await br.newPage({viewport:{width:1000,height:560}}),errors=[],bad=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)bad.push(r.status()+' '+r.url())});
+ await page.goto(base+'/okul/');await page.waitForSelector('[data-act="toy:0"]');await page.evaluate(()=>document.fonts.ready);
+ const el=id=>page.locator('#scene [data-act="'+id+'"]').first(),tap=async id=>{await el(id).click({timeout:3600})},awaitAward=()=>page.locator('#scene.award').waitFor({timeout:4000});
+ const shot=async id=>{await page.waitForTimeout(110);await page.screenshot({path:path.join(dir,'oyun-'+id+'.png')})};
+ async function drag(a,b){const x=await el(a).boundingBox(),y=await el(b).boundingBox();if(!x||!y)throw Error('missing drag '+a+' '+b);await page.mouse.move(x.x+x.width*.5,x.y+x.height*.5);await page.mouse.down();await page.mouse.move(y.x+y.width*.5,y.y+y.height*.5,{steps:12});await page.mouse.up();await page.waitForTimeout(380)}
+ async function give(item,target){await tap('item:'+item);await tap('to:'+target)}
+ await shot('sinif');await tap('levels');await tap('age:1');await tap('toy:0');await tap('bell');await tap('find');await tap('to:seat');for(const n of ['tuvalet','kumsaati','kalemtiras','elma']){await give(n,'child');if(n==='kalemtiras'){await tap('turn');await tap('turn')}}await tap('radio');await tap('radio');await tap('child:mino');await awaitAward();console.log('Yoklama, dört ihtiyaç ve don-buz tamam.');
+ await tap('nexttoy');await shot('canta');await drag('item:top','to:bag');await page.waitForTimeout(820);await give('top','bag');await page.waitForTimeout(820);if(!await page.locator('.helper').count())throw Error('Kuzu ipucu eksik');await drag('item:ari','to:bag');await page.waitForTimeout(820);await give('araba','bag');await page.waitForTimeout(820);await tap('beat');await tap('to:frog');await tap('beat');await tap('beat');await tap('beat');await tap('to:frog');await awaitAward();console.log('Çanta sürükleme, iki deneme ipucu ve hece tamam.');
+ await tap('nexttoy');await shot('bento');await give('peynir','pisi');for(const f of ['peynir','peynir','pisi','salatalik'])await give(f,f);await tap('lid');await awaitAward();
+ await tap('nexttoy');await tap('lever');await page.waitForTimeout(1750);for(let i=0;i<5;i++)await tap('dot:'+i);await tap('lever');await awaitAward();
+ await tap('nexttoy');await give('elma','wagon');await drag('item:muz','to:wagon');await awaitAward();
+ await tap('nexttoy');await el('item:bulut').waitFor({timeout:5500});await tap('item:bulut');await tap('place:2');await page.mouse.move(170,230);await tap('place:0');await awaitAward();
+ await tap('nexttoy');await tap('add:2');await tap('add:2');await tap('remove');await tap('balance');await tap('item:corap');await tap('item:sari');await tap('item:kirmizi');await tap('mix');await tap('mix');await tap('mix');await awaitAward();await tap('album');await tap('photo');await page.waitForSelector('.saved');await shot('album');await page.reload();await tap('album');await page.waitForSelector('.saved');const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-okul-sinif-v1')));if(!saved.rounds[1].every(x=>x===1))throw Error('Kaydedilen çıkartmalar hatalı');
+ await tap('back');await tap('levels');await tap('age:0');await tap('album');if(await page.locator('.earned').count()!==0)throw Error('Seviyeler karıştı');await tap('back');await page.setViewportSize({width:390,height:844});await page.locator('[data-mirror="toy:1"]').click();if(!await page.locator('[data-mirror="to:bag"]').isVisible())throw Error('Dikey ekran');
+ if(errors.length||bad.length)throw Error(JSON.stringify({errors,bad}));console.log('7 oyun, albüm, mezuniyet fotoğrafı, yeniden açma, bağımsız düzey ve dikey ekran doğrulandı.');
+ }finally{await br.close()}})().catch(e=>{console.error(e);process.exitCode=1})

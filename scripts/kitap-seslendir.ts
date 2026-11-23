@@ -15,6 +15,7 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
+import { hesapSesi } from './ses-hesabi';
 import path from 'node:path';
 import { kimlikOzeti } from '../src/audio/karakter-ses';
 import { KITAPLAR } from '../kitap/src/kitaplar';
@@ -118,7 +119,7 @@ async function uret(is: Is, sesId: string, ayarlar: Record<string, number | bool
     ...(is.sonra ? { next_text: is.sonra } : {}),
   };
   for (let deneme = 1; deneme <= 5; deneme++) {
-    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${sesId}/with-timestamps?output_format=${ayar.bicim}`, {
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${hesapSesi(sesId)}/with-timestamps?output_format=${ayar.bicim}`, {
       method: 'POST',
       headers: { 'xi-api-key': ANAHTAR!, 'Content-Type': 'application/json' },
       body: JSON.stringify(govde),

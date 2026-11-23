@@ -771,7 +771,7 @@ export function pizzaAc(kok: HTMLElement, ayar: FirinSecenekleri) {
         if(gecti)return;
         p.servis=numaraAyir(p.servis);
         ses(toplam===3?efekt.dogru:efekt.secim); p.asama='son';
-        ayar.teslim?.({tarifId:'pizza',no:p.servis,...(p.kesim?.kesikler.length===2?{kesim:{kesikler:[...p.kesim.kesikler]}}:{}),fis:p.fis,sosCesidi:p.sosCesidi??'domates',ust:p.ust.map(parca=>({...parca})),pisirme:puan,kivam,istekPuani:uyum,puan:toplam});
+        ayar.teslim?.({tarifId:'pizza',no:p.servis,misafir:p.misafir,...(p.kesim?.kesikler.length===2?{kesim:{kesikler:[...p.kesim.kesikler]}}:{}),fis:p.fis,sosCesidi:p.sosCesidi??'domates',ust:p.ust.map(parca=>({...parca})),pisirme:puan,kivam,istekPuani:uyum,puan:toplam});
         kapat();
       };
       if(navigator.locks)void navigator.locks.request(ANAHTAR+'-numara',kaydet);

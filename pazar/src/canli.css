@@ -449,25 +449,6 @@
   45% { transform: translate(-22cqw, -18cqh) scale(0.8); animation-timing-function: ease-in; }
   100% { transform: translate(-46cqw, -6cqh) scale(0.3); opacity: 0; }
 }
-/* kazanılan yıldız: sahneden uçup üstteki yerine oturur */
-.pz-kok .pz-ucan-yildiz {
-  position: fixed;
-  z-index: 70;
-  width: clamp(40px, 11vw, 64px);
-  aspect-ratio: 1;
-  margin: calc(clamp(40px, 11vw, 64px) / -2);
-  color: var(--sari);
-  pointer-events: none;
-  filter: drop-shadow(0 3px 0 var(--kontur));
-}
-.pz-kok .pz-ucan-yildiz .ikon {
-  width: 100%;
-  height: 100%;
-}
-.pz-kok .pz-ucan-yildiz svg * {
-  fill: currentColor;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .pz-kok .pz-bulut,
   .pz-kok .pz-flama,

@@ -5,7 +5,7 @@
  * meyvede sesli sayar; tartmada ibre kadranın yeşil bölgesine girince "Ver" parlar, geçerse çocuk bir tane çıkarır.
  * Bazı müşterilerde yığında bir çürük domates (lekeler, sinek): komposta atılınca kompost sevinir; verilirse
  * müşteri "ııh" yapıp geri verir (ceza yok). "Ver": meyveler müşteriye uçar, müşteri sevinir, paralar sepete,
- * yıldız. 5 müşteri, sonra şenlik.
+ * yıldız. 2–3 yaşta 3, büyüklerde 4 müşteri, sonra şenlik.
  */
 import P from '../../content/pazar.json';
 import { resimSesi, resimSesiHazirla } from '../../canlan/src/ses';
@@ -19,7 +19,7 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { canliSahne } from './canli';
-import { gorselStil, musteriKutusu, odulAni, onTezgah, oran, oyunKamerasi, stand } from './ekranlar';
+import { gorselStil, musteriKutusu, odulAni, onTezgah, oran, oyunKamerasi, sirali, sozKaydet, stand } from './ekranlar';
 import { adres, boing, flamaYerlestir, parilti, resim } from './gorsel';
 import { Kamera } from './kamera';
 import { kaydet, kayit } from './ilerleme';
@@ -27,7 +27,7 @@ import { brrSesi } from './meyvesuyu-ses';
 import { MinoCanli } from './mino-canli';
 import { Musteri, musteriHazirla } from './musteri';
 import { geriGonder, surukle } from './surukle';
-import { hazirMi, LEGEN_KAPASITE, yiginSatirlari, TART_MUSTERI, tartDenetle, tartIstekUret, turMeyveleri, type KasaMeyve, type TartIstek, type TartMeyve } from './tart';
+import { hazirMi, LEGEN_KAPASITE, yiginSatirlari, tartDenetle, tartIstekUret, tartMusteriSayisi, turMeyveleri, type KasaMeyve, type TartIstek, type TartMeyve } from './tart';
 import { Kantar, meyveCizimi } from './tart-kantar';
 import { kompostSesi, paraSesi } from './tart-ses';
 
@@ -35,7 +35,6 @@ const A = P.arayuz;
 const T = P.tart;
 const K = '#5a3617';
 const yas = (): Yas => durum.i.yas ?? 4;
-const rastgele = <X>(a: X[]): X => a[Math.floor(Math.random() * a.length)];
 const onizleme = () => TEST_MODU || !!document.body.dataset.onizleme;
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -62,28 +61,13 @@ function istekGorseli(ist: TartIstek): HTMLElement {
   return h('div.pz-istek.tb-istek', {}, img(), kiloIkon(yarim ? A.kg_yarim : A.kg_bir, yarim));
 }
 
-/** Kompost kutusu (yer tutucu çizim; Gemini çizimi gelince resim olur): yeşil kutu, yaprak, gülen yüz, kapak */
-const KOMPOST_GOVDE = `<svg viewBox="0 0 120 120" aria-hidden="true">
-  <defs><linearGradient id="tb-kg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4fb042"/><stop offset=".5" stop-color="#78d05c"/><stop offset="1" stop-color="#3f9a36"/></linearGradient></defs>
-  <path d="M16 34h88l-9 76q-1 6-7 6H32q-6 0-7-6z" fill="url(#tb-kg)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M26 44l6 62" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".35"/>
-  <g class="tb-k-yuz"><ellipse class="tb-k-goz" cx="46" cy="62" rx="6" ry="7.5" fill="${K}"/><ellipse class="tb-k-goz" cx="74" cy="62" rx="6" ry="7.5" fill="${K}"/>
-  <circle cx="48" cy="59" r="2.2" fill="#fff"/><circle cx="76" cy="59" r="2.2" fill="#fff"/>
-  <path class="tb-k-agiz" d="M50 76q10 9 20 0" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
-  <ellipse cx="36" cy="74" rx="6" ry="3.5" fill="#ff8fa3" opacity=".7"/><ellipse cx="84" cy="74" rx="6" ry="3.5" fill="#ff8fa3" opacity=".7"/></g>
-  <path d="M60 92c-8-2-11 8-6 12 6 0 10-6 6-12z" fill="#c6ff9e" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>
-</svg>`;
-const KOMPOST_KAPAK = `<svg viewBox="0 0 120 40" aria-hidden="true">
-  <path d="M8 30q0-12 14-14h76q14 2 14 14z" fill="#3a8f33" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
-  <rect x="48" y="6" width="24" height="12" rx="6" fill="#3a8f33" stroke="${K}" stroke-width="5"/>
-  <path d="M24 22h40" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".35"/>
-</svg>`;
-
 export function tartEkrani(app: Uygulama): Ekran {
   const y = yas();
+  /** bu turda kaç müşteri (2–3 yaş 3, büyükler 4) */
+  const N = tartMusteriSayisi(y);
   const q = new URLSearchParams(location.search);
   const secili = onizleme() ? (q.get('musteriler') ?? '').split(',').filter((x) => P.musteriler.includes(x)) : [];
-  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, TART_MUSTERI);
+  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, N);
   musteriler.forEach((ad) => {
     resimSesiHazirla(ad);
     musteriHazirla(ad);
@@ -91,12 +75,14 @@ export function tartEkrani(app: Uygulama): Ekran {
   // gösterim / test: &meyve=domates&curuk=1 ile ilk müşteri
   const zorlaMeyve = onizleme() ? (q.get('meyve') as TartMeyve | null) : null;
   const zorlaCuruk = onizleme() && q.has('curuk') ? q.get('curuk') === '1' : undefined;
-  const meyveler = turMeyveleri();
+  const meyveler = turMeyveleri(Math.random, N, zorlaMeyve ?? undefined);
 
   const yazi = h('span', {}, T.giris);
   let sonSoz: string[] = [T.giris];
   const balon = h('div.baslik-balon.pz-baslik', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(sonSoz), 'kucuk'), yazi);
-  const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: TART_MUSTERI }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
+  const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: N }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
+  const tesekkurSoz = sirali(T.dogru);
+  const kompostSoz = sirali(T.kompost);
   const musteriKap = h('div.pz-musteri-kap');
   const mino = new Mino();
   mino.el.addEventListener('pointerdown', () => mino.tepki('gidik'));
@@ -104,19 +90,15 @@ export function tartEkrani(app: Uygulama): Ekran {
   const minoCanli = new MinoCanli(mino, { urunVar: () => true, musteriVar: () => aktif });
 
   // Mino'nun sepeti: paralar buraya düşer
-  const sepetUrl = adres('pazar/sepet');
   const sepetIc = h('div.pz-sepet-ic.tb-kasa-para');
-  const sepet = h(`div.pz-sepet${sepetUrl ? '.pz-gorselli' : ''}`, { role: 'img', 'aria-label': 'Sepet' }, sepetUrl ? h('img.pz-sepet-resim', { src: sepetUrl, alt: '', draggable: 'false' }) : null, sepetIc);
+  const sepet = h('div.pz-sepet.pz-gorselli', { role: 'img', 'aria-label': 'Sepet' }, h('img.pz-sepet-resim', { src: adres('pazar/sepet'), alt: '', draggable: 'false' }), sepetIc);
 
   const kantar = new Kantar();
   const kasa = h('div.tb-kasa', { role: 'region', 'aria-label': 'Meyveler' });
-  // kompost kutusu: Gemini çizimi (gövde + kapak) geldiyse o, yoksa kodla yer tutucu
-  const kompostUrl = adres('pazar/kompost');
-  const kapakUrl = adres('pazar/kompost-kapak');
-  const resimli = !!(kompostUrl && kapakUrl);
-  const kapak = resimli ? h('i.tb-k-kapak', {}, h('img', { src: kapakUrl, alt: '', draggable: 'false' })) : h('i.tb-k-kapak', { html: KOMPOST_KAPAK });
-  const govde = resimli ? h('div.tb-k-govde', {}, h('img', { src: kompostUrl, alt: '', draggable: 'false' })) : h('div.tb-k-govde', { html: KOMPOST_GOVDE });
-  const kompost = h(`div.tb-kompost${resimli ? '.tb-resimli' : ''}`, { role: 'region', 'aria-label': A.kompost }, h('i.tb-k-golge'), govde, kapak);
+  // kompost kutusu (Gemini çizimi): gövde ve menteşeden açılan kapak
+  const kapak = h('i.tb-k-kapak', {}, h('img', { src: adres('pazar/kompost-kapak'), alt: '', draggable: 'false' }));
+  const govde = h('div.tb-k-govde', {}, h('img', { src: adres('pazar/kompost'), alt: '', draggable: 'false' }));
+  const kompost = h('div.tb-kompost', { role: 'region', 'aria-label': A.kompost }, h('i.tb-k-golge'), govde, kapak);
   const verYazi = h('span', {}, A.ver);
   const ver = h('button.dugme.pz-ver.tb-ver', { type: 'button', hidden: true }, svg(IKON.onay), verYazi);
 
@@ -146,7 +128,13 @@ export function tartEkrani(app: Uygulama): Ekran {
   let musteri: Musteri | null = null;
   let sonHareket = performance.now();
   let ipucu = false;
+  /**
+   * "Oldu! Ver'e bas!" bir turda bir kez (ilk hazır olan müşteride); sonrakilerde Ver nabız gibi atar, Mino "evet"
+   * der, unutan çocuğa boşta hatırlatma söyler (eskiden her müşteride: beş kez)
+   */
   let hazirDendi = false;
+  /** bu müşteride istenen olduğu an görüldü (Mino'nun "evet"i, tartmada çan) */
+  let hazirOldu = false;
   let fazlaDendi = false;
   let curukDendi = false;
   let verHata = 0;
@@ -158,6 +146,7 @@ export function tartEkrani(app: Uygulama): Ekran {
 
   const soyle = (soz: string | string[]) => {
     sonSoz = [soz].flat();
+    sozKaydet(sonSoz);
     return konus(sonSoz);
   };
   const salla = (e: HTMLElement, sinif: string) => {
@@ -206,10 +195,11 @@ export function tartEkrani(app: Uygulama): Ekran {
         if (onizleme()) el.dataset.sayilar = [el.dataset.sayilar, n].filter(Boolean).join(',');
         const soz = [T.sayilar[n - 1] ?? String(n)];
         efekt.nota(Math.min(10, n + 2));
-        if (hazir && !hazirDendi) {
-          hazirDendi = true;
-          soz.push(T.hazir);
+        if (hazir && !hazirOldu) {
+          hazirOldu = true;
           mino.tepki('evet');
+          if (!hazirDendi) soz.push(T.hazir);
+          hazirDendi = true;
         } else if (n > (ist.adet ?? 0) && !fazlaDendi) {
           fazlaDendi = true;
           soz.push(P.fazla, T.cikar);
@@ -225,11 +215,12 @@ export function tartEkrani(app: Uygulama): Ekran {
         kantar.el.classList.remove('tb-yesil-parla');
         void kantar.el.offsetWidth;
         kantar.el.classList.add('tb-yesil-parla');
-        if (!hazirDendi) {
-          hazirDendi = true;
+        if (!hazirOldu) {
+          hazirOldu = true;
           efekt.yildiz(1);
           mino.tepki('evet');
-          void soyle(T.hazir);
+          if (!hazirDendi) void soyle(T.hazir);
+          hazirDendi = true;
         }
       } else if (kantar.agirlik > b && !fazlaDendi) {
         fazlaDendi = true;
@@ -342,7 +333,7 @@ export function tartEkrani(app: Uygulama): Ekran {
     const [x, yy] = oran(kompost, app.kok, 0.2);
     parilti(app.kok, x, yy, 8);
     mino.tepki('sevinc');
-    void soyle(rastgele(T.kompost));
+    void soyle(kompostSoz());
     verGuncelle();
   }
 
@@ -636,15 +627,16 @@ export function tartEkrani(app: Uygulama): Ekran {
     if (verHata >= 2 && r === 'az') for (const [km, { e, yuva }] of yuvalar) if (!km.curuk && !yuva.classList.contains('tb-bos')) e.classList.add('pz-parla');
   });
 
-  const tur = async (i: number) => {
-    ist = tartIstekUret(y, i, Math.random, i === 0 && zorlaMeyve ? zorlaMeyve : meyveler[i], i === 0 ? zorlaCuruk : undefined);
+  /** i. müşteri. sesOncesi: bu söz bitmeden müşterinin sesi çıkmaz, isteğini söylemez (ilk müşteri girişte yürür) */
+  const tur = async (i: number, sesOncesi?: Promise<void>) => {
+    ist = tartIstekUret(y, i, Math.random, i === 0 && zorlaMeyve ? zorlaMeyve : meyveler[i], i === 0 ? zorlaCuruk : undefined, i > 0 ? ist : undefined);
     ipucu = false;
-    hazirDendi = false;
+    hazirOldu = false;
     fazlaDendi = false;
     curukDendi = false;
     verHata = 0;
     mesgul = false;
-    canli.gun(i / (TART_MUSTERI - 1));
+    canli.gun(i / (N - 1));
     kantar.ayarla(ist);
     kantar.etkin(true);
     kasaDiz();
@@ -661,12 +653,15 @@ export function tartEkrani(app: Uygulama): Ekran {
     const m = mu.el;
     musteri = mu;
     musteriKap.replaceChildren(m);
-    void resimSesi(ad);
+    void (sesOncesi ?? Promise.resolve()).then(() => {
+      if (!kapandi) void resimSesi(ad);
+    });
     setTimeout(() => minoCanli.karsila(), sure(450));
     kamera.classList.add('pz-yakin');
     sahne.classList.add('pz-yakin');
     kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, true), kam.kutu(mino.el, { alt: -0.35 })), { doluluk: 0.95, enCok: 1.3, sure: 1500 });
     await mu.gel();
+    if (sesOncesi) await sesOncesi;
     if (kapandi) return;
     mu.bekle(true);
 
@@ -708,7 +703,7 @@ export function tartEkrani(app: Uygulama): Ekran {
     void odulAni(app.kok, m, yildizlar.children[i] as HTMLElement | undefined, i, mino);
     kayit.yildiz++;
     kaydet();
-    const tesekkur = rastgele(T.dogru);
+    const tesekkur = tesekkurSoz();
     yazi.textContent = tesekkur;
     await Promise.all([
       soyle(tesekkur),
@@ -733,12 +728,13 @@ export function tartEkrani(app: Uygulama): Ekran {
   void (async () => {
     await bekle(sure(300));
     if (kapandi) return;
-    await soyle(T.giris);
-    for (let i = 0; i < TART_MUSTERI && !kapandi; i++) await tur(i);
+    // "Tart bakalım!" söylenirken ilk müşteri yürümeye başlar (çocuk boş beklemez)
+    const giris = soyle(T.giris);
+    for (let i = 0; i < N && !kapandi; i++) await tur(i, i === 0 ? giris : undefined);
     if (kapandi) return;
     kayit.senlik++;
     kaydet();
-    app.git('senlik', { musteriler, kaynak: 'tart', yildiz: TART_MUSTERI });
+    app.git('senlik', { musteriler, kaynak: 'tart', yildiz: N });
   })();
 
   return {

@@ -25,3 +25,8 @@
 @media(orientation:landscape) and (max-height:530px){.ka-kitap{width:min(100%,98svh)}.ka-kumanda{margin:.15em}.ka-mesaj{font-size:15px}.ka-album h1,.ka-son h1{font-size:24px}.ka-kart span,.ka-cikartma span{font-size:18px}}
 @media(max-width:580px) and (orientation:portrait){.ka-kitap{aspect-ratio:1.47}.ka-album,.ka-son{margin-top:clamp(20px,8vh,70px)}.ka-ilk h2{margin:.2em 0}.ka-kumanda{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.ka-buldu{animation:none}}
+/* Kart yapışınca sol sayfa boş kalmasın (18 Kasım): harf büyük ve yumuşakça belirir, "Albümümde!" altında durur */
+.ka-yer[disabled] strong{font-size:clamp(34px,min(8vw,13vh),104px);font-weight:500;white-space:nowrap;line-height:1;color:#0f6d5f;letter-spacing:.04em;animation:ka-harf-gel .45s cubic-bezier(.2,.9,.3,1.25) both}
+.ka-yer[disabled] span{animation:ka-harf-gel .45s .12s ease-out both}
+@keyframes ka-harf-gel{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.ka-yer[disabled] strong,.ka-yer[disabled] span{animation:none}}

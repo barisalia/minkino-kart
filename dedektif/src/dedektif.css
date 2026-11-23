@@ -559,7 +559,7 @@
 }
 /* Pamuk'un pozları krem çizildi, iskeleti soğuk beyaz: renk süzgeci (vaka.ts → #dd-pamuk-serin) kırmızıyı biraz kısıp
    maviyi açar; krem beyaza döner, pembe kurdele ve mavi göz yerinde kalır */
-.dd-kok .dd-poz[data-poz^='pamuk'] .dd-poz-resim {
+.dd-kok:not([data-yeni]) .dd-poz[data-poz^='pamuk'] .dd-poz-resim {
   filter: url(#dd-pamuk-serin);
 }
 @keyframes dd-poz-nefes {
@@ -606,53 +606,6 @@
   70% { transform: translate(0, 30px) rotate(4deg) scale(1.05, 0.92); }
   100% { transform: none; }
 }
-
-/* konuşma balonları: her şeyin üstünde ayrı katman; konuşanın başının üstüne konur (oyuncular.ts → balonKonumla) */
-.dd-kok .dd-balonlar {
-  position: absolute;
-  inset: 0;
-  z-index: 9;
-  pointer-events: none;
-}
-.dd-kok .dd-balon {
-  --kay: 0px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: max-content;
-  max-width: min(60vw, 340px);
-  padding: 0.38em 0.8em;
-  background: #fff;
-  border: 3px solid var(--kontur);
-  border-radius: 18px;
-  box-shadow: 0 4px 0 rgba(90, 54, 23, 0.3);
-  /* en küçük telefonda da okunur (667×375: 16 px) */
-  font-size: clamp(16px, 1.6vmin + 10px, 23px);
-  line-height: 1.2;
-  text-align: center;
-  color: var(--kontur);
-  opacity: 0;
-  transform: translate(calc(-50% + var(--kay)), calc(-100% + 10px)) scale(0.6);
-  transform-origin: calc(50% - var(--kay)) 100%;
-  transition: opacity 0.18s, transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
-}
-.dd-kok .dd-balon.acik {
-  opacity: 1;
-  transform: translate(calc(-50% + var(--kay)), -100%) scale(1);
-}
-.dd-kok .dd-balon::after {
-  content: '';
-  position: absolute;
-  left: calc(50% - var(--kay));
-  bottom: -11px;
-  width: 16px;
-  height: 16px;
-  background: #fff;
-  border-right: 3px solid var(--kontur);
-  border-bottom: 3px solid var(--kontur);
-  transform: translateX(-50%) rotate(45deg);
-}
-
 
 /* ---------------------------------------------------------------- pati izleri */
 .dd-kok .dd-izler {
@@ -1635,7 +1588,7 @@
   position: absolute;
   inset: 0;
 }
-.dd-kok .dd-acilis-oda img {
+.dd-kok .dd-acilis-oda > img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1971,9 +1924,46 @@
 }
 .dd-kok .dd-mino-yer .mino.dedektif-sapka::after{background-image:url('../../assets/dedektif-oyuncular/mino-sapka.webp')}
 .dd-kok .dd-acilis-mino .mino::after,.dd-kok .dd-mino-yer .mino.dedektif-buyutec::after{background-image:url('../../assets/dedektif-oyuncular/mino-mercek.webp')}
-.dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .kr-karakter::after{inset:9.5% 0 7.8%;background-image:url('../../assets/dedektif-oyuncular/kino-dur.webp')}
+.dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .kr-karakter::after{inset:9.5% 0 7.8%;background-image:var(--dd-kino-dur,url('../../assets/dedektif-oyuncular/kino-dur.webp'))}
 .dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .kr-karakter > :is(.kr-tek,.kr-iskelet){opacity:0}
-.dd-kok .dd-kino-yer .kr-karakter[data-poz=otur]::after{top:30%;background-image:url('../../assets/dedektif-oyuncular/kino-otur.webp')}
+.dd-kok .dd-kino-yer .kr-karakter[data-poz=otur]::after{top:30%;background-image:var(--dd-kino-otur,url('../../assets/dedektif-oyuncular/kino-otur.webp'))}
+/* konuşan ağız (cizgi-agiz.ts): Astra'nın ağız karesi tek parça çizimin tam üstünde, aynı kutuda */
+.dd-kok :is(.dd-acilis-mino,.dd-mino-yer,.dd-acilis-kino,.dd-kino-yer) .dd-agiz-kat{position:absolute;inset:0;z-index:1;pointer-events:none;background:center bottom/contain no-repeat}
+.dd-kok :is(.dd-acilis-kino,.dd-kino-yer) .dd-agiz-kat{inset:9.5% 0 7.8%}
+.dd-kok .dd-kino-yer .kr-karakter[data-poz=otur] .dd-agiz-kat{top:30%}
 .dd-adim{pointer-events:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
 .dd-kino-yer .dd-adim{top:9.5%;height:82.7%}
 .dd-kok .dd-adimli > :is(.mino,.kr-karakter){visibility:hidden}
+
+/* yeni çizgi: yatağın altından sallanan beyaz kuyruk ucu (assets/dedektif-yeni/pamuk-kuyruk-ucu.webp) */
+.dd-kok .dd-kuyruk-ucu {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  height: 100%;
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  transition: opacity 0.4s;
+  animation: dd-kuyruk-salla 1.1s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.dd-kok .dd-kuyruk.acik .dd-kuyruk-ucu {
+  opacity: 1;
+}
+.dd-kok .dd-kuyruk.cekildi .dd-kuyruk-ucu {
+  opacity: 0;
+}
+@keyframes dd-kuyruk-salla {
+  from {
+    transform: rotate(-14deg);
+  }
+  to {
+    transform: rotate(14deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dd-kok .dd-kuyruk-ucu {
+    animation: none;
+  }
+}

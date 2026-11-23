@@ -1,0 +1,73 @@
+/* Ceren Öğretmen dersi 6 · Toplama ve çıkarma (ders-toplama.ts). Dünya, Ceren, sıra ve hatıra kuralları ceren-ders.css ve
+   ders-sekiller.css'ten. Astra'nın fonu (durak): yol şeridi y 560…900 (dünyada %52–%83), solda tabela ve bank, üstte gökyüzü.
+   Otobüs 1400 × 600: beş eşit pencere tek sırada, her biri ~200 × 200, alt kenarları y = 300 (otobüsün %16,7–%50'si).
+   Dokunulan her şey dünyada y %8–%84 (telefonda alt kırpılan şerit) ve x %34–%85 arasında (Ceren x %0–%34; dikey iPad'de
+   dünya soldan ve sağdan kırpılır, x %21–%85 görünür). */
+
+.cd-ceren[data-poz='el-salla'] > .cd-poz[data-poz='el-salla'],
+.cd-ceren[data-poz='bir-fazla'] > .cd-poz[data-poz='bir-fazla'] { display: block; }
+.cd-ceren[data-poz='el-salla'] > .cd-iskelet[data-poz='el-salla'],
+.cd-ceren[data-poz='bir-fazla'] > .cd-iskelet[data-poz='bir-fazla'] { display: grid; }
+.dt-dunya .cd-ceren { z-index: 5; }
+
+/* Yol: otobüsler buraya gelir (gelirken ve giderken bütün yol kayar). */
+.dt-yol { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.dt-otobus { position: absolute; aspect-ratio: 1400 / 600; pointer-events: auto; }
+.dt-yol[data-adet='1'] .dt-otobus { left: 33%; width: 52%; top: 37%; }
+/* Onluk: iki otobüs yan yana, küçülerek. */
+.dt-yol[data-adet='2'] .dt-otobus { width: 24.5%; top: 52%; }
+.dt-yol[data-adet='2'] .dt-otobus[data-o='0'] { left: 35.5%; }
+.dt-yol[data-adet='2'] .dt-otobus[data-o='1'] { left: 60.5%; }
+.dt-govde { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; pointer-events: none;
+  filter: drop-shadow(0 .5cqw .3cqw rgba(40, 30, 20, .25)); }
+
+/* Pencere: yolcu camın arkasında, belden yukarısı görünür. Merkezler otobüsün %22, %36, %50, %64, %78'i. */
+.dt-pencere { position: absolute; top: 16.7%; height: 33.3%; width: 14.3%; translate: -50% 0; overflow: hidden; z-index: 1; border-radius: 8%; }
+.dt-pencere[data-i='0'] { left: 22%; } .dt-pencere[data-i='1'] { left: 36%; } .dt-pencere[data-i='2'] { left: 50%; }
+.dt-pencere[data-i='3'] { left: 64%; } .dt-pencere[data-i='4'] { left: 78%; }
+.dt-pencere > .dt-yolcu-resim { position: absolute; left: 0; top: 8%; width: 100%; height: auto; aspect-ratio: 200 / 220; object-fit: contain; }
+.dt-pencere[role='button'] { cursor: pointer; }
+.dt-pencere.sayiliyor { box-shadow: inset 0 0 0 .45cqw #ffd23f, 0 0 1.4cqw #fff3a8; background: #fff6c8aa; z-index: 3; }
+.dt-pencere.parla > * { filter: drop-shadow(0 0 .8cqw #fff3a8); }
+
+/* Test kipi: otobüs çizimi gelmeden gövde kesik çizgili kutu, pencereler görünür. */
+.dt-govde.cd-iskelet { display: grid; place-items: end center; padding-bottom: 6%; background: transparent; border: 2px dashed #5a3d1e;
+  border-radius: 10% / 22%; font: 700 max(10px, 1.3cqw)/1 system-ui; color: #3a2614; }
+.dt-otobus.iskelet { background: #ffcf6488; border-radius: 10% / 22%; }
+.dt-otobus.iskelet .dt-pencere { background: #dff1ff; outline: 2px solid #5a3d1e; }
+.dt-yolcu-resim.cd-iskelet { display: grid; place-items: center; border-radius: 40% 40% 12% 12%; border: 2px solid #5a3d1e; background: #f6d6a8;
+  font: 700 max(9px, 1.1cqw)/1.1 system-ui; color: #3a2614; }
+[data-yolcu='yolcu-kedi'] > .cd-iskelet { background: #f4b98f; }
+[data-yolcu='yolcu-kopek'] > .cd-iskelet { background: #d9b48a; }
+[data-yolcu='yolcu-penguen'] > .cd-iskelet { background: #b7c8de; }
+[data-yolcu='yolcu-koala'] > .cd-iskelet { background: #c9c9c9; }
+
+/* Durakta bekleyenler: Ceren'in (dünyada x %0–%34) sağında, otobüsün önünde kaldırımda. Sol kenar x ≥ %37 (Ceren'den ayrı). */
+.dt-durak { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.dt-bekleyen { position: absolute; top: 62%; height: 22%; aspect-ratio: 200 / 220; translate: -50% 0; padding: 0; border: 0; background: none;
+  pointer-events: auto; cursor: pointer; }
+.dt-durak[data-adet='1'] .dt-bekleyen { left: 43%; }
+.dt-durak[data-adet='2'] .dt-bekleyen[data-i='0'] { left: 43%; }
+.dt-durak[data-adet='2'] .dt-bekleyen[data-i='1'] { left: 54%; }
+.dt-bekleyen > img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 .4cqw 0 #00000026); }
+.dt-bekleyen > .cd-iskelet { width: 100%; height: 100%; }
+/* Onlukta bekleyenler yalnız izler (çocuk önce tahmin eder): küçük, iki otobüsün altında, kaldırımda. */
+.dt-yol[data-adet='2'] ~ .dt-durak .dt-bekleyen { top: 68%; height: 15%; }
+
+/* Rakam blokları gökyüzünde, otobüsün üstünde (yatay telefonda üstteki sıra kareleri dünyanın %0–%13'ünü kaplar). */
+.dt-sayilar { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+.dt-sayi { position: absolute; top: 14.5%; height: 21%; aspect-ratio: 1; translate: -50% 0; padding: 0; border: 0; background: none;
+  pointer-events: auto; cursor: pointer; transition: opacity .25s, scale .25s; }
+.dt-sayi[data-i='0'] { left: 47%; } .dt-sayi[data-i='1'] { left: 60.5%; } .dt-sayi[data-i='2'] { left: 74%; }
+.dt-sayi > img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 .4cqw 0 #00000026); }
+.dt-sayi > .cd-iskelet { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 22%; border: 3px solid #5a3d1e; background: #fff1bd;
+  font: 900 4cqw/1 ui-rounded, system-ui, sans-serif; color: #2b201b; }
+.dt-sayi.soluk { opacity: .35; scale: .9; }
+.dt-sayi.dogru > * { filter: drop-shadow(0 0 1.2cqw #fff3a8) drop-shadow(0 .4cqw 0 #00000026); }
+@media (prefers-reduced-motion: no-preference) {
+  .dt-sayi.ipucu { animation: ds-ipucu 1.1s ease-in-out infinite; }
+}
+
+.dt-hatira { position: absolute; left: 62%; top: 22%; height: 40%; aspect-ratio: 5 / 3; translate: -50% 0; z-index: 4; }
+.dt-hatira > img, .dt-hatira > .cd-iskelet { width: 100%; height: 100%; object-fit: contain; }
+.dt-hatira > .cd-iskelet { display: grid; place-items: center; background: #fff8e6; border: 2px dashed #b88a4a; border-radius: 12px; font: 700 1.6cqw/1 system-ui; }

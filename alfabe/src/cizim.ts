@@ -2,6 +2,7 @@ import { dersKaydiniOku, dersKaydiniYaz } from './ders-kaydi';
 import { kalemYollari } from './yollar';
 import { gecerliIz, parmakYolu, type ParmakIzi } from './kartlar';
 import { oyunSesi } from './oyun-sesi';
+import { pariltiIzi } from './cila';
 
 export function izSur(alan: HTMLElement, harf: string, bitti: (iz:ParmakIzi) => void, vurusBitti?: (sira:number, toplam:number) => void, yazmayaBasladi?: () => void) {
   const yollar = kalemYollari(harf);
@@ -112,9 +113,13 @@ export function izSur(alan: HTMLElement, harf: string, bitti: (iz:ParmakIzi) => 
     if (kapali || e.button!==0 || parmak !== null || sira >= izler.length) return;
     const yer = konum(e), bas = izler[sira].getPointAtLength(mesafe);
     if (Math.hypot(yer.x - bas.x, yer.y - bas.y) >= 11) {
+      // Başlangıç noktasının dışı: ceza rengi yok; parmağın değdiği yerden noktaya pırıltı izi uzanır, nokta nabız gibi
+      // büyüyüp "buradan başla" der (kalite kuralı 9).
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
         baslangic.getAnimations().forEach(a => a.cancel());
-        baslangic.animate([{strokeWidth:1.4},{stroke:'#bc4539',strokeWidth:4.4},{strokeWidth:1.4}],{duration:650});
+        baslangic.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.9)', offset: .35 }, { transform: 'scale(.9)', offset: .7 }, { transform: 'scale(1)' }], { duration: 650, easing: 'ease-out' });
+        const n = baslangic.getBoundingClientRect();
+        if (n.width) pariltiIzi(e.clientX, e.clientY, n.left + n.width / 2, n.top + n.height / 2, 6);
       }
       return;
     }

@@ -14,6 +14,7 @@
  */
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
+import { hesapSesi } from './ses-hesabi';
 import path from 'node:path';
 import { tumCumleler, karakterCumleleri, normal } from '../src/audio/cumleler';
 import {
@@ -73,7 +74,7 @@ async function uret(sesId: string, metin: string, hedef: string, u: Uretim = aya
     ...(u.baglam ? { previous_text: ayar.baglam_metni } : {}),
   };
   for (let deneme = 1; deneme <= 5; deneme++) {
-    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${sesId}?output_format=${ayar.bicim}`, {
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${hesapSesi(sesId)}?output_format=${ayar.bicim}`, {
       method: 'POST',
       headers: { 'xi-api-key': ANAHTAR!, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
       body: JSON.stringify(govdeVerisi),

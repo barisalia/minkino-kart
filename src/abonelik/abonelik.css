@@ -808,3 +808,15 @@
 /* oyun sayfası .mk-kok değilken kilit anı için geçici katman (src/abonelik/kilit.ts) */
 .mk-kok.mk-kilit-katmani { z-index: 2147483000; background: transparent; pointer-events: none; }
 .mk-kok.mk-kilit-katmani > * { pointer-events: auto; }
+
+/* Hediye kodu (iOS'ta düğme, Android'de Google Play bağlantısı): geri yükleme ile aynı ince görünüm */
+.mk-kok .ab-kod {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  color: inherit;
+}
+.mk-kok .ab-kod[hidden] {
+  display: none;
+}

@@ -11,6 +11,8 @@ type Sahne = {
   say: (n: number) => void;
   sonra: (ms: number, yap: () => void) => void;
   dinle: (yap: () => void) => void;
+  /** Şu an okunan söz bitince (ses kapalıysa hemen) çağırır. */
+  sozBitince: (yap: () => void) => void;
 };
 const grup = () => minik ? 'minik' : dortYas ? 'dort' : 'buyuk';
 function oku<T>(ad: string, ilk: T): T {
@@ -66,7 +68,7 @@ function kutulariDagit(): MasaNoktasi[] {
   }));
 }
 
-export function sayiKulesi({ kok, img, anlat, say, sonra, dinle }: Sahne, bitir: () => void, tekrar: number) {
+export function sayiKulesi({ kok, img, anlat, say, sonra, dinle, sozBitince }: Sahne, bitir: () => void, tekrar: number) {
   const eski = oku<number[]>('kule', []);
   const ilk = (): MasaKaydi => ({ yerler: kutulariDagit(), katlar: [], taban: .88 });
   const anahtar = tekrar ? 'kule-masa-' + tekrar : 'kule-masa';
@@ -117,6 +119,12 @@ export function sayiKulesi({ kok, img, anlat, say, sonra, dinle }: Sahne, bitir:
       el.className='kule-kutu'; el.innerHTML=icerik(i+1);
       koy(el,x,t.taban*h-i*boy); saha.append(el); katlar.push(el);
     });
+    // Telefon kamerası kulenin üstündeki iki üç katlık boşluğu da oyun yeri sayar (sıradaki kutular oraya konur; telefon-kamera.ts).
+    const kuleYeri=document.createElement('i');
+    kuleYeri.className='tk-alan';
+    const kuleUst=Math.max(h*.04,sy(ust)-eh*3.5);
+    Object.assign(kuleYeri.style,{left:sx(destekX)-ew*.75+'px',width:ew*1.5+'px',top:kuleUst+'px',height:Math.max(eh,sy(t.taban*h)-kuleUst)+'px'});
+    saha.append(kuleYeri);
     if (sonraki === 11) return;
     const hedef=dugme(saha,'Kutuyu buraya bırak','kule-hedef',sonraki===1 || minik ? String(sonraki) : '');
     koy(hedef,destekX,ust);
@@ -155,10 +163,12 @@ export function sayiKulesi({ kok, img, anlat, say, sonra, dinle }: Sahne, bitir:
       sakla(); kur(); calgiSesi(4,notalar[n-1],.8);
       if(n<10) say(n);
       else {
-        anlat(sozler[64]); let i=0;
-        const cal=()=>{if(i===10){sonra(1300,bitir);return;}
+        // "Dinle, kulen şarkı söylüyor." biter, sonra kule şarkısını çalar; söz yarıda kesilmez, şarkı sözün altında kalmaz.
+        kilit=true; anlat(sozler[64]); let i=0;
+        const cal=()=>{if(i===10){sonra(900,bitir);return;}
           saha.querySelectorAll('.kule-kutu')[i]?.classList.add('kule-parla');
-          calgiSesi(3,notalar[i++],.65); sonra(170,cal);}; cal();
+          calgiSesi(3,notalar[i++],.65); sonra(170,cal);};
+        sozBitince(()=>sonra(250,cal));
       }
     }
     hedef.onclick=()=>{if(secili===sonraki) yerlestir(secili,destekX,ust); else say(sonraki);};

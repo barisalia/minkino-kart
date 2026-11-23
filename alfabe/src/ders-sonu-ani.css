@@ -1,0 +1,8 @@
+/* Ders sonu: albüme yapıştırma anı (alfabe/src/ders-sonu-ani.ts) */
+.ka-parlama{position:absolute;z-index:3;pointer-events:none;overflow:hidden;border-radius:8%}
+.ka-parlama b{position:absolute;top:-25%;bottom:-25%;left:-45%;width:38%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.85) 45%,rgba(255,250,220,.9) 55%,rgba(255,255,255,0))}
+/* Yalnız rafın harf sayacı (Hece Evleri’nin anahtar sayacı kendi düzenini korur). */
+.at-ilerleme>span:not(.he-sayac){display:inline-block;transition:color .3s}
+.at-ilerleme .ka-sayac-artti{color:#b86b0b;font-weight:700}
+@media(prefers-reduced-motion:reduce){.ka-parlama{display:none}}
+.ka-kitap>.cn-hale{z-index:0}

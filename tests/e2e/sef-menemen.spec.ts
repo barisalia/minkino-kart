@@ -1,5 +1,7 @@
 import {expect,test,type Locator,type Page} from '@playwright/test';
 import {menemenOku,menemenPuani,yeniMenemen} from '../../sef/src/menemen-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 async function parmak(page:Page,hedef:Locator,noktalar:number[][]){
   const r=(await hedef.boundingBox())!;
@@ -50,8 +52,12 @@ test('Menemen tahtadan tepsiye parmakla hazırlanır; ortadaki kesik, sipariş v
   await page.getByRole('button',{name:'Ocağı kapat'}).tap();
   if(process.env.SEF_MENEMEN_KARE)await page.screenshot({path:process.env.SEF_MENEMEN_KARE+'-servis-'+info.project.name+'.png'});
   await page.getByRole('button',{name:'Menemeni tepsiye koy'}).tap();
-  await expect(page.locator('.tepsi-yuva[data-parca=menemen] .mn-tane')).toHaveCount(3);
-  const hata=await page.locator('img').evaluateAll(resimler=>resimler.filter(r=>r.isConnected&&r.complete&&!r.naturalWidth).map(r=>r.src));
+  // Son tabak konunca masa sahnesi açılır: menemen, müşteriye sunulacak tepside aynı kıvamda ve üç kaşığın biberleriyle durur.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await expect(sunum.locator('.mn-sahan')).toHaveAttribute('data-kivam','tam');
+  await expect(sunum.locator('.mn-sahan .mn-tane')).toHaveCount(3);
+  // Masa ekranında mutfak arka planı (img.dekor) kaynaksız ve gizli; yalnız görünen çizimler denetlenir.
+  const hata=await page.locator('img:visible').evaluateAll(resimler=>resimler.filter(r=>r.isConnected&&r.complete&&!r.naturalWidth).map(r=>r.src));
   expect(hata).toEqual([]);
   await page.reload();
   const masa=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.masalar['biberli-menemen']);

@@ -105,10 +105,14 @@ export function menuAcik(m:Menu,seviye:number){
   return !tatli||tatliKademeler.findIndex(k=>k.simge===tatli)<=seviye;
 }
 // Shelf recipes have their own tickets so a practice dish cannot overwrite a waiting table.
-const rafMusterileri:Record<Yemek,Menu['misafir']>={corba:'corba',salata:'salata',pizza:'pizza',makarna:'zipzip',krep:'bulut',mucver:'anne',sis:'baba'};
+// Masadaki müşteri, siparişi kendi sesiyle veren müşteridir: krep fişi Mino'nun, mücver fişi Lokum'un, şiş fişi Dede Hasan'ın
+// sesinde kayıtlı (musteri-sesi/mino-krep-*, lokum-mucver-*, dede-sis-*). Önceden tabak Bulut'a, Anne'ye ve Baba'ya gidiyordu.
+const rafMusterileri:Record<Yemek,Menu['misafir']>={corba:'corba',salata:'salata',pizza:'pizza',makarna:'zipzip',krep:'salata',mucver:'corba',sis:'pizza'};
 export const rafMenuleri=Object.entries(rafMusterileri).map(([id,misafir]):Menu=>({
   id:'raf-'+id,misafir,parcalar:[id as Yemek],cumle:'',renk:'#a8e5e0'
 }));
+// Serbest pizzayı sırayla Dede, Mino ve Lokum ister (kendi seslerinde 12 fiş); pizza siparişi verenin masasına gider.
+for(const misafir of ['salata','corba'] as const)rafMenuleri.push({id:'raf-pizza-'+misafir,misafir,parcalar:['pizza'],cumle:'',renk:'#a8e5e0'});
 export const menuBul=(id:string)=>menuler.find(m=>m.id===id)??rafMenuleri.find(m=>m.id===id);
 export const yanMi=(id:Parca):id is 'tavuk'|'icecek'=>id==='tavuk'||id==='icecek';
 export type Yan = 'tavuk'|'icecek';

@@ -140,7 +140,7 @@ class Vaka3 {
     sesD.classList.add('kucuk');
     this.el = h('div.dd-vaka.dd-vaka3', { 'data-adim': 'yukleniyor', 'data-vaka': 'vaka3' }, this.dunya.el, this.oy.el, this.ara, h('div.dd-ust', {}, geri, this.seritYer, h('div.dd-ust-sag', {}, tekrar, sesD)));
     this.efekt = new Efekt(this.el);
-    this.el.append(this.efekt.el, this.oy.balonKatman);
+    this.el.append(this.efekt.el);
     this.ortak = { kok: this.el, efekt: this.efekt, oy: this.oy, rnd: this.rnd, kapandi: () => this.kapali, bekle: this.bekle, adim: (a) => this.adim(a) };
     this.el.classList.add('dd-yukleniyor');
     this.oy.mino.el.addEventListener('pointerdown', () => {

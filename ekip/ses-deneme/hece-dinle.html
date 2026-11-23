@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hece Dinleme</title>
+<style>
+  :root { --zemin:#fff8e9; --yazi:#292c24; --kart:#fff; --cizgi:#e3d9c3; --yesil:#176858; --sari:#ffd75e; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --zemin:#1d1f1a; --yazi:#f3efe4; --kart:#2a2c26; --cizgi:#44473d; --yesil:#5fc2a9; --sari:#e5bd3c; } }
+  :root[data-theme="dark"] { --zemin:#1d1f1a; --yazi:#f3efe4; --kart:#2a2c26; --cizgi:#44473d; --yesil:#5fc2a9; --sari:#e5bd3c; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--zemin); color:var(--yazi); font:16px/1.4 system-ui, sans-serif; padding:24px 16px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  p { margin:0 0 20px; opacity:.8; }
+  .satir { display:grid; grid-template-columns:72px 1fr 1fr; gap:12px; align-items:center; background:var(--kart); border:1px solid var(--cizgi); border-radius:14px; padding:12px; margin-bottom:10px; max-width:560px; }
+  .hece { font-size:34px; font-weight:800; text-align:center; }
+  button { font:inherit; font-weight:700; padding:14px 8px; border-radius:12px; border:2px solid var(--cizgi); background:transparent; color:var(--yazi); cursor:pointer; }
+  button.yeni { border-color:var(--yesil); }
+  button:active { background:var(--sari); color:#292c24; }
+</style>
+</head>
+<body>
+  <h1>Hece Evleri · 5 hece</h1>
+  <p>Her hecede Eski ve Yeni'ye dokunup dinle. Yeni olanlar Ceren'in yeni hesaptaki sesi.</p>
+  <div id="liste"></div>
+  <script>
+    const heceler = [['sı', 'ev-s-ii'], ['zö', 'ev-z-oo'], ['cu', 'ev-c-u'], ['je', 'ev-j-e'], ['yü', 'ev-y-uu']];
+    const liste = document.getElementById('liste');
+    let calan;
+    const cal = (dosya) => { try { calan?.pause(); } catch {} calan = new Audio(dosya); calan.play(); };
+    for (const [hece, id] of heceler) {
+      const satir = document.createElement('div');
+      satir.className = 'satir';
+      satir.innerHTML = `<div class="hece">${hece}</div><button>▶ Eski</button><button class="yeni">▶ Yeni</button>`;
+      const [eski, yeni] = satir.querySelectorAll('button');
+      eski.onclick = () => cal(`hece/${id}-ESKI.mp3`);
+      yeni.onclick = () => cal(`hece/${id}-YENI.mp3`);
+      liste.append(satir);
+    }
+  </script>
+</body>
+</html>

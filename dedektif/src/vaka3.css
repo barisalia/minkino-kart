@@ -569,3 +569,84 @@
     animation: none !important;
   }
 }
+
+/* ---------------------------------------------------------------- yeni açılış (assets/dedektif-yeni/acilis-oda.webp)
+   Oda resmi 16:9 kutuda ekranı kaplar (üstten hizalı); vaka dosyaları duvardaki panonun içinde yan yana.
+   Pano resimde: x 0.145–0.855, y 0.12–0.68 (iç yüzey x 0.157–0.843, y 0.15–0.655). */
+/* oda ekranın eni kadar: iPad'de (4:3) yanlar kesilmez (şapka, büyüteç görünür), altta kalan boşluk zeminin rengi;
+   telefonda (16:9'dan geniş) yalnız alttaki düz zemin kesilir */
+.dd-kok .dd-yeni-oda {
+  background: #fdaf7a;
+}
+.dd-kok .dd-yeni-oda .dd-oda-kutu {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.dd-kok .dd-yeni-oda .dd-oda-kutu > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.dd-kok .dd-panolu .dd-acilis-los {
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(40, 22, 12, 0.22));
+  pointer-events: none;
+}
+.dd-kok .dd-pano {
+  position: absolute;
+  left: 15.7%;
+  width: 68.6%;
+  top: 15%;
+  height: 50.5%;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+.dd-kok .dd-pano .dd-dosyalar,
+.dd-kok .dd-pano .dd-dosyalar.dd-uc {
+  grid-row: 1;
+  grid-column: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+  width: 100%;
+  height: 100%;
+  padding-top: 2%;
+}
+.dd-kok .dd-pano .dd-dosyalar .dd-klasor {
+  width: 34%;
+}
+.dd-kok .dd-pano .dd-dosyalar.dd-uc .dd-klasor {
+  width: 26%;
+}
+.dd-kok .dd-panolu .dd-acilis-sahne {
+  grid-template-columns: 1fr;
+  pointer-events: none;
+}
+.dd-kok .dd-panolu .dd-acilis-sahne > * {
+  pointer-events: auto;
+}
+/* Vaka Dosyam: kartlar panonun içinde yan yana */
+.dd-kok .dd-pano .dd-vaka-izgara {
+  position: static;
+  inset: auto;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 3% 3% 2%;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+  gap: 3%;
+  align-content: center;
+  align-items: center;
+}
+.dd-kok .dd-pano .dd-vaka-kart {
+  width: 100%;
+  max-height: 100%;
+}

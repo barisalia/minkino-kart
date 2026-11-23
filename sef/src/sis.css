@@ -61,9 +61,10 @@
 .sk-sebze > img, .sk-sos-kabi > img, .sk-tabak-sec > img { position: absolute; inset: 9% 8%; height: 82%; width: 84%; }
 .sk-mangal-hedef { position: absolute; left: 21%; top: 34%; width: 60%; height: 41%; border-radius: 5cqh; }
 .sk-mangal-hedef.sk-yakin { outline: .65cqh dashed #bce6a6; }
-.sk-al-ver { position: absolute; left: 22%; bottom: -.5%; width: 55%; height: 26%; }
+/* Döndürülmüş şiş, tahtayla birlikte ekranın altından 4–8 px taşıyordu: ikisi de biraz yukarıda. */
+.sk-al-ver { position: absolute; left: 22%; bottom: 1.5%; width: 55%; height: 26%; }
 .sk-mangal-sis { position: absolute; left: 23%; width: 54%; height: 23%; transform: rotate(-4deg); }
-.sk-mangal-sis[data-ateste="false"] { bottom: 2%; }
+.sk-mangal-sis[data-ateste="false"] { bottom: 4%; }
 .sk-mangal-sis[data-ateste="true"] { top: 44%; }
 .sk-cevir-ok { position: absolute; right: 5%; bottom: -7%; padding: .9cqh; width: 7.8cqh; height: 7.8cqh; animation: sk-hafif 1.6s ease-in-out infinite; }
 .sk-kadran { position: absolute; top: 21%; right: 15%; height: 12%; width: 9%; }

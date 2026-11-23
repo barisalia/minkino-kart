@@ -14,7 +14,7 @@ import {
   type Parca,
   type Tip,
 } from './misket-geometri';
-import { konum, modSimgesi, parkurCiz, rayKullan, yol, stokYerleri, rafY } from './misket-cizim';
+import { KAYMA, konum, modSimgesi, parkurCiz, rayKullan, yol, stokYerleri, rafY } from './misket-cizim';
 import { misketiYuvarla, type Yer } from './misket-hareket';
 import { oyunSesi } from '../../alfabe/src/oyun-sesi';
 import { sesiAc } from '../../src/audio/ses';
@@ -56,7 +56,7 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
   }
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 1120 630');
-  svg.setAttribute('aria-label', 'Misket Şelalesi, üç katlı ray atölyesi');
+  svg.setAttribute('aria-label', 'Top Şelalesi, üç katlı ray');
   svg.classList.add('mk-makine');
   svg.innerHTML = parkurCiz();
   kok.append(svg);
@@ -146,7 +146,7 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
         { duration: 1700, iterations: 2, easing: 'ease-in-out' },
       );
       anim.onfinish = () => rehber.replaceChildren();
-    }, 6500);
+    }, 3500);
   }
   function durum(a: Asama) {
     asama = a;
@@ -207,7 +207,7 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
         const n = raylar[p.tip].birim;
         return `<g transform="${konum(p)}" role="button" tabindex="0" class="mk-ray mk-kumanda" data-ray="${anahtarYer(p)}" aria-label="${p.kat + 1}. sıradaki ${p.goz + 1}. rayı çıkar">
         ${rayKullan(p.tip)}${p.tip === 'vadi' ? '<path class="mk-titresim" d="M51 53l-4 5m18 -1 -1 6m26 -8 3 5" fill="none" stroke="#bb7651" stroke-width="3" stroke-linecap="round"/>' : ''}
-        <path d="M0 4l${n * BIRIM} ${n * DUSUS}" stroke="transparent" stroke-width="52"/></g>`;
+        <path d="M0 4l${n * BIRIM} ${n * DUSUS}" stroke="transparent" stroke-width="104"/></g>`;
       })
       .join('');
     let yuvalar = '';
@@ -224,7 +224,7 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
         yuvalar += `<g class="mk-yuva mk-kumanda${sec ? ' mk-hedef' : ''}${uygun ? ' mk-uygun' : ''}" role="button" tabindex="0" data-yuva="${anahtarYer(yer)}" aria-label="${kat + 1}. sıra ${goz + 1}. boş bağlantı">
         <path class="mk-yuva-alt" d="${d}"/><path class="mk-yuva-iz" d="${d}"/>
         <circle cx="${a.x}" cy="${a.y}" r="4.4"/><circle cx="${b.x}" cy="${b.y}" r="4.4"/>
-        <path d="${d}" stroke="transparent" stroke-width="58" fill="none"/></g>`;
+        <path d="${d}" stroke="transparent" stroke-width="104" fill="none"/></g>`;
       }
     hedefler.innerHTML = yuvalar;
     svg.dataset.mod = mod;
@@ -257,7 +257,7 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
     durum('yuklu');
     ciz();
     oyunSesi('kutu');
-    topuKoy({ x: giris[0].x, y: giris[0].y - 10 });
+    topuKoy({ x: giris[0].x, y: giris[0].y - 10 - KAYMA });
     anlat(92);
   }
   function tekrarAnlat() {
@@ -298,7 +298,9 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
         basarilar[mod] = true;
         kaydet();
         svg.classList.add('mk-zil-cal');
-        duyuru.textContent = 'Misket zili çaldı.';
+        duyuru.textContent = 'Top zili çaldı.';
+        // Zil çaldı: ölçü oyunlarına geçiş oku hafifçe çağırır (çocuk isterse parkurda kalır).
+        gec.classList.add('mk-devam-cagir');
       }
       geriBildirim = window.setTimeout(
         () => {
@@ -407,6 +409,13 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
     const el = kumanda(e),
       tip = el?.dataset.tip as Tip | undefined;
     const nesne = tip ?? (el?.dataset.is === 'top' ? 'top' : el?.dataset.is === 'gonder' ? 'kol' : null);
+    if (!el && (asama === 'kur' || asama === 'yuklu')) {
+      // Boş yere dokunuş (KALITE-KURALLARI 5): raftaki top hopalar, küçük "damla".
+      svg.classList.remove('mk-bos-dokunus');
+      void svg.getBoundingClientRect();
+      svg.classList.add('mk-bos-dokunus');
+      oyunSesi('damla');
+    }
     if (!nesne || (nesne === 'top' && asama === 'yuklu')) return;
     if (asama === 'caldi') geriDon();
     sesiAc();
@@ -472,6 +481,12 @@ export function misketParkuru({ kok, ileri, anlat, sustur, devam }: Sahne) {
   svg.onclick = (e) => {
     const el = kumanda(e);
     if (el && performance.now() > tikEngeli) bas(el);
+    // Ray seçiliyken yuvanın yanına dokunuş da olur: en yakın boş yuva (yan yana boş yuvalar eşdeğer; telefonda 64 px'lik
+    // çizgi bir birimlik yuvadan geniş). Kalite denetimi 23 Kasım.
+    else if (!el && secili && asama === 'kur' && performance.now() > tikEngeli) {
+      const yer = yakindaki(yerel(e.clientX, e.clientY), secili);
+      if (yer) tak(yer, secili);
+    }
   };
   svg.onkeydown = (e) => {
     if (e.key !== ' ' && e.key !== 'Enter') return;

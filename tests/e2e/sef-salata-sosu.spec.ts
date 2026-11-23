@@ -1,6 +1,8 @@
 import {test,expect} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
-test('Fesleğen sosunun parmak izi aynı tabağın defterinde ve tepsisinde korunur',async({page,context})=>{
+test('Fesleğen sosunun parmak izi aynı tabağın defter kaydında ve tepsisinde korunur',async({page,context})=>{
   await page.setViewportSize({width:740,height:360});
   await page.goto('./sef/?test=1');
   await page.evaluate(()=>{
@@ -47,8 +49,6 @@ test('Fesleğen sosunun parmak izi aynı tabağın defterinde ve tepsisinde koru
   expect(kayit.tepsiler.masalar['bahce-tabagi'].tabaklar.salata.sus).toEqual(tabak.sus);
   await fis.getByRole('button',{name:'Tepsiye dön'}).tap();
   await expect(page.locator('.tepsi-yuva [data-sos=feslegen] path').first()).toHaveAttribute('d',iz!);
-  await page.locator('.tepsi-ust').getByRole('button',{name:'Geri'}).tap();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  await expect(page.locator('.defter-tabagi [data-sos=feslegen] path').first()).toHaveAttribute('d',iz!);
-  await expect(page.locator('.defter-tabagi [data-sos=feslegen]')).toHaveCount(2);
+  // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; iz, defter kaydında (yukarıda) ve tepside aynı kalır.
+  await expect(page.locator('.tepsi-yuva [data-sos=feslegen]')).toHaveCount(2);
 });

@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Eski oyun kaydıyla da iki rafta yalnızca oynanabilir yemekler açılır', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });

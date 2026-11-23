@@ -1,0 +1,48 @@
+/* Söyle, Canlansın (22 Kasım 2026; canlandir.ts). Önek: ing-sc-. Sahne 1600 × 1000 tuval, katmanlar üst üste. */
+.ing-sc .ing-masa{justify-content:center}
+.ing-sc-duzen{display:flex;align-items:center;justify-content:center;gap:calc(1.6*var(--u));width:100%;height:100%;min-height:0}
+.ing-sc-sahne{position:relative;flex:1 1 0;min-width:0;max-height:100%;aspect-ratio:16/10;border-radius:calc(3*var(--u));border:var(--cizgi) solid var(--murekkep);overflow:hidden;background:#fff}
+.ing-sc-yan{flex:none;width:calc(22*var(--u));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(1*var(--u))}
+.ing-sc-yan .ing-bant-yeri{min-height:calc(7*var(--u))}
+.ing-sc-yan .ing-sc-altlik{min-height:calc(10*var(--u))}
+.ing-sc-kart:empty{display:none}
+.ing-sc-renk-karti{width:calc(13*var(--u));height:calc(13*var(--u));border-radius:18%;background:#fffdf4;border:var(--cizgi) solid var(--murekkep);animation:ing-sc-kart .45s cubic-bezier(.3,1.4,.6,1)}
+@keyframes ing-sc-kart{0%{scale:.5;opacity:0}100%{scale:1;opacity:1}}
+
+.ing-sc-katman{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.ing-sc-fon{z-index:0}
+.ing-sc-parca{z-index:2}
+/* kardan adamın parçası ve bahçenin rengi söylenince gelir; taşıtlar baştan durur */
+.ing-sc-sahne:not([data-canlanma="yola"]) .ing-sc-parca{opacity:0;transition:opacity .35s}
+.ing-sc-sahne:not([data-canlanma="yola"]) .ing-sc-parca.ing-sc-geldi{opacity:1}
+.ing-sc-sahne[data-canlanma="boyan"] .ing-sc-parca.ing-sc-geldi{transition:opacity .9s ease-out}
+
+/* taslak yer tutucuları */
+.ing-sc-yer{position:absolute;box-sizing:border-box;display:grid;place-items:center;border:max(1px,calc(.25*var(--u))) dashed #6f8f88;border-radius:calc(1*var(--u));background:rgb(255 255 255 / .6);color:#2f5d55;font:800 calc(1.5*var(--u))/1.1 system-ui,sans-serif;text-align:center;overflow:hidden}
+.ing-sc-sahne:not([data-canlanma="yola"]) .ing-sc-yer.ing-sc-parca{opacity:.3}
+.ing-sc-sahne:not([data-canlanma="yola"]) .ing-sc-yer.ing-sc-parca.ing-sc-geldi{opacity:1;background:#ffe9a8}
+
+/* parlayan yer: söylenecek olan */
+.ing-sc-isik{position:absolute;z-index:3;box-sizing:border-box;border-radius:50%;pointer-events:none;box-shadow:0 0 0 calc(.5*var(--u)) #ffd34d,0 0 calc(3*var(--u)) calc(1*var(--u)) rgb(255 211 77 / .75);animation:ing-sc-isik 1.2s ease-in-out infinite}
+@keyframes ing-sc-isik{0%,100%{opacity:.55;scale:.96}50%{opacity:1;scale:1.05}}
+
+/* canlanma hareketleri (transform-origin canlandir.ts'te) */
+.ing-sc-canli[data-hareket="sek"]{animation:ing-sc-sek .7s cubic-bezier(.3,1.2,.6,1)}
+.ing-sc-canli[data-hareket="salla"]{animation:ing-sc-salla .9s ease-in-out}
+.ing-sc-canli[data-hareket="parla"]{animation:ing-sc-parla 1.1s ease-in-out}
+.ing-sc-canli[data-hareket="sur"]{animation:ing-sc-sur 1.6s cubic-bezier(.45,0,.4,1)}
+.ing-sc-canli[data-hareket="uc"]{animation:ing-sc-uc 1.8s ease-in-out}
+.ing-sc-canli[data-hareket="firla"]{animation:ing-sc-firla 1.8s cubic-bezier(.5,0,.4,1)}
+.ing-sc-canli[data-hareket="dalga"]{animation:ing-sc-dalga 1.4s ease-in-out}
+@keyframes ing-sc-sek{0%{transform:translateY(-3%) scale(.9)}45%{transform:translateY(0) scale(1.06,.94)}70%{transform:translateY(-1%) scale(.98,1.03)}100%{transform:none}}
+@keyframes ing-sc-salla{0%,100%{transform:none}20%{transform:rotate(-5deg)}45%{transform:rotate(4deg)}70%{transform:rotate(-2deg)}}
+@keyframes ing-sc-parla{0%,100%{filter:none}35%{filter:brightness(1.25) drop-shadow(0 0 1.2vmin #ffe27a)}70%{filter:brightness(1.1) drop-shadow(0 0 .8vmin #ffe27a)}}
+/* taşıt yola çıkar, sahneden biraz uzaklaşıp geri gelir */
+@keyframes ing-sc-sur{0%{transform:none}12%{transform:translateX(-1%)}50%{transform:translateX(9%)}52%{transform:translateX(9%)}100%{transform:none}}
+@keyframes ing-sc-uc{0%,100%{transform:none}50%{transform:translate(8%,-4%) rotate(-6deg)}}
+@keyframes ing-sc-firla{0%{transform:none}10%{transform:translateY(1%)}55%{transform:translateY(-22%)}100%{transform:none}}
+@keyframes ing-sc-dalga{0%,100%{transform:none}25%{transform:rotate(-4deg) translateY(-1%)}60%{transform:rotate(3deg)}}
+.ing-sc-tamam{animation:ing-sc-tamam .8s cubic-bezier(.3,1.3,.6,1)}
+@keyframes ing-sc-tamam{0%{scale:1}40%{scale:1.02}100%{scale:1}}
+@media (prefers-reduced-motion:reduce){.ing-sc-canli,.ing-sc-isik,.ing-sc-tamam,.ing-sc-renk-karti{animation:none!important}}
+@media (max-height:600px){.ing-sc-yan{width:calc(19*var(--u))}.ing-sc-renk-karti{width:calc(10*var(--u));height:calc(10*var(--u))}}

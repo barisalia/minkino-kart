@@ -35,7 +35,7 @@ import {
 } from './mantik';
 import { BAHCE_DIKEY, type BahceId } from './mantik2';
 import { SAHNE3_DIKEY, type Sahne3 } from './mantik3';
-import { filmKatmani, resim } from './resimler';
+import { filmKatmani, resim, yeniOdalar } from './resimler';
 
 export const AZ_HAREKET = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const px = (v: number) => `${v.toFixed(1)}px`;
@@ -97,10 +97,14 @@ export function katman(sinif: string, derinlik: number, ...cocuk: (HTMLElement |
 
 /** Çalışma odası dikey mi kurulmalı: dikey ekranda (boy > en) ve 9:16 çizim varsa tek resimli dikey oda; yoksa yatay */
 function calismaDikeyOlmali(): boolean {
+  // yeni çizgide dikey oda çizimi yok: her yönde aynı 16:9 oda (kamera kırpar)
+  if (yeniOdalar) return false;
   return !!filmKatmani('ev', 'oda-dikey') && typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
 }
 /** Çalışma odasının katman zemini (dikeyde yalnız uzak katmanda tek resim) */
 function calismaZemin(ad: 'arka-uzak' | 'arka-orta' | 'arka-on', dikey: boolean): HTMLElement | null {
+  // yeni çizgi: tek resim (assets/dedektif-yeni/calisma-odasi.webp) uzak katmanda; orta ve ön katmanda zemin yok
+  if (yeniOdalar) return ad === 'arka-uzak' ? h('img.dd-zemin', { src: resim('oda-calisma') ?? '', alt: '', draggable: 'false' }) : null;
   if (dikey) return ad === 'arka-uzak' ? h('img.dd-zemin', { src: filmKatmani('ev', 'oda-dikey'), alt: '', draggable: 'false' }) : null;
   return h('img.dd-zemin', { src: filmKatmani('ev', ad), alt: '', draggable: 'false' });
 }
@@ -279,6 +283,8 @@ export function yatakOdasi(pamuk: HTMLElement, kuyruk: HTMLElement): Oda {
   const alt = h('div.dd-yatak-alti', { style: `left:${px(a.x0 * W)};top:${px(a.y0 * ODA_H)};width:${px((a.x1 - a.x0) * W)};height:${px((a.y1 - a.y0) * ODA_H)}` });
   const k = YATAK.kuyruk;
   kuyruk.style.cssText = `left:${px(k.x * W)};top:${px(k.y * ODA_H)};height:${px(k.h * ODA_H)}`;
+  const kuyrukUcu = yeniOdalar ? resim('pamuk-kuyruk-ucu') : null;
+  if (kuyrukUcu) kuyruk.append(h('img.dd-kuyruk-ucu', { src: kuyrukUcu, alt: '', draggable: 'false' }));
   const s = YATAK.saklan;
   pamuk.style.left = px(s.x * W);
   pamuk.style.top = px(s.y * ODA_H);
@@ -306,12 +312,20 @@ export function mutfak(): Oda {
   const e: Record<string, HTMLElement> = {};
   const izler = h('div.dd-izler.dd-izler-mutfak', {}, ...izlerEl(MUTFAK_IZLERI, 'ipucu-kopek-pati', W, 'mutfak'));
   e.izler = izler;
-  const sosis = esya('sosis', { x: 0.17, y: 0.885, h: 0.06, don: -12 }, 'dd-sosis', W);
+  const sosis = esya('sosis', yeniOdalar ? { x: 0.74, y: 0.885, h: 0.06, don: -12 } : { x: 0.17, y: 0.885, h: 0.06, don: -12 }, 'dd-sosis', W);
   if (sosis) e.sosis = sosis;
   const el = h(
     'div.dd-dunya',
     { 'data-oda': 'mutfak', style: `width:${px(W)};height:${px(ODA_H)}` },
-    katman('dd-k-tek', 0, h('img.dd-zemin', { src: filmKatmani('mutfak', 'arka-uzak'), alt: '', draggable: 'false' }), h('img.dd-zemin', { src: filmKatmani('mutfak', 'arka-orta'), alt: '', draggable: 'false' }), izler, sosis).el,
+    katman(
+      'dd-k-tek',
+      0,
+      ...(yeniOdalar
+        ? [h('img.dd-zemin', { src: resim('oda-mutfak') ?? '', alt: '', draggable: 'false' })]
+        : [h('img.dd-zemin', { src: filmKatmani('mutfak', 'arka-uzak'), alt: '', draggable: 'false' }), h('img.dd-zemin', { src: filmKatmani('mutfak', 'arka-orta'), alt: '', draggable: 'false' })]),
+      izler,
+      sosis,
+    ).el,
   );
   return { id: 'mutfak', el, W, katmanlar: [], e };
 }

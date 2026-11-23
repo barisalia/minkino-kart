@@ -1,0 +1,49 @@
+/* Resimli Sözlük (alfabe/src/resimli-sozluk.ts): albümün kitabı; sol sayfada harf ve üç kart, sağ sayfada üç kart. */
+.sz{position:relative;width:min(100% - 24px,1050px);margin:0 auto 12px;text-align:center}
+.sz-ust{display:flex;align-items:center;justify-content:center;gap:12px;margin:.12em 0 .28em}
+.sz-ust h1{margin:0;font-weight:600;font-size:clamp(22px,3.6vw,40px);line-height:1.12;color:#204b42;letter-spacing:-.02em}
+.sz-dinle{width:44px;min-height:44px}
+.sz-kitap{position:relative;width:min(100%,950px,112svh);aspect-ratio:1.72;margin:auto;background:url('../../assets/alfabe/harf-albumu.webp') center/100% 100% no-repeat}
+.sz-sayfalar{position:absolute;inset:8% 8% 12% 7%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:10%}
+.sz-sayfa{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:6%;min-height:0}
+/* Harf kutusu: büyük harf, harfin renginde. Kapalı sayfada soluk, kilitli. */
+.sz-harf{position:relative;display:grid;place-items:center;border-radius:14px;background:#fff8e6;border:2px solid color-mix(in srgb,var(--harf) 55%,#fff)}
+.sz-sayfa{container-type:inline-size}
+.sz-harf span{font-weight:600;font-size:clamp(26px,30cqi,88px);color:var(--harf);line-height:1;letter-spacing:.02em}
+.sz[data-durum=kapali] .sz-harf{filter:grayscale(.7);opacity:.6}
+.sz-kilit{position:absolute;right:6%;bottom:6%;width:clamp(18px,14cqi,34px);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;background:#33483c;color:#fff;opacity:.9}
+.sz-kilit svg{width:62%;height:62%}
+.sz-bos{border:2px dashed #c9c2a6;border-radius:12px;background:rgba(255,255,255,.25)}
+/* Sözcük kartı: resim ve altında yazı. */
+.sz-kart{display:grid;grid-template-rows:minmax(0,1fr) auto;gap:3%;min-width:0;min-height:0;padding:5% 4% 4%;border:2px solid transparent;border-radius:14px;background:transparent;cursor:pointer;color:#24382f;transition:background .2s}
+.sz-kart:focus-visible{outline:3px solid #14695b;outline-offset:2px}
+.sz-resim{position:relative;min-height:0}
+.sz-resim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+/* Yazı kartın genişliğine sığar; iki sözcüklü adlar (Uğur böceği) iki satıra iner, sözcük kendi içinde bölünmez. */
+.sz-yazi{font-weight:600;font-size:clamp(9px,calc(9.5cqi * var(--k,1)),30px);letter-spacing:-.01em;line-height:1.1;white-space:normal;overflow:hidden}
+/* Hâlâ sığmayan sözcük hece sınırından ikinci satıra iner (sözcük ortasından değil). */
+.sz-soz{display:inline-flex;flex-wrap:wrap;justify-content:center;white-space:nowrap;max-width:100%}
+/* 4 ve 5+: heceler arası küçük nokta; yanan hece harfin renginde, hafifçe büyür. */
+.sz-heceli .sz-hece+.sz-hece::before{content:'·';margin:0 .02em;color:#9aa596;font-weight:400}
+.sz-hece{display:inline-block;transition:color .15s,transform .15s}
+.sz-hece.sz-yanik{color:var(--harf);transform:translateY(-6%) scale(1.12)}
+.sz-ilk{font-weight:700}
+/* Dokununca harf harfin renginde parlar. */
+.sz-parla .sz-ilk{animation:sz-parla 1.2s ease-out}
+@keyframes sz-parla{0%{color:inherit;text-shadow:none}25%{color:var(--harf);text-shadow:0 0 .35em color-mix(in srgb,var(--harf) 60%,#fff)}100%{color:var(--harf);text-shadow:none}}
+.sz-ilk{color:var(--harf)}
+.sz-bulundu{background:#e3efcf;border-color:#7fb06a}
+.sz[data-evre=bul] .sz-kart{background:rgba(255,255,255,.35)}
+.sz-kumanda{display:flex;gap:12px;align-items:center;justify-content:center;margin:8px 0}
+.sz-kumanda .at-geri{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 12px}
+.sz-sonra svg{transform:rotate(180deg)}
+.sz-sira{font-size:clamp(14px,1.8vw,20px);color:#4b6658;min-width:4.5em}
+@media(orientation:landscape) and (max-height:530px){.sz-kitap{width:min(100%,92svh)}.sz-ust{margin:0}.sz-ust h1{font-size:22px}.sz-kumanda{margin:4px 0}}
+@media(orientation:portrait){.sz-kitap{aspect-ratio:1.47}}
+@media(prefers-reduced-motion:reduce){.sz-parla .sz-ilk{animation:none}.sz-hece{transition:none}}
+/* Albümdeki kartın "Sözlük" düğmesi. */
+.ka-sozluk-ac{position:absolute;top:9.5%;z-index:2;display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:4px 10px;border:2px solid #33483c;border-radius:999px;background:#fff8e6;color:#204b42;font-weight:600;font-size:clamp(12px,1.4vw,16px);cursor:pointer;box-shadow:0 2px 0 rgba(51,72,60,.25)}
+.ka-sozluk-ac svg{width:18px;height:18px}
+.ka-sozluk-ac.ka-sol{right:56.5%}.ka-sozluk-ac.ka-sag{right:9.5%}
+/* Telefonda düğme yalnız simge: kartın harflerini örtmesin. */
+@media(orientation:landscape) and (max-height:530px){.ka-sozluk-ac{top:7%;min-height:34px;width:34px;padding:0;justify-content:center}.ka-sozluk-ac span{display:none}.ka-sozluk-ac.ka-sol{right:55.5%}.ka-sozluk-ac.ka-sag{right:8.5%}}

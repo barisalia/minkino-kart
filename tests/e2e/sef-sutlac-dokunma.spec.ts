@@ -1,4 +1,6 @@
 import {expect,test,type Locator,type Page} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 type Nokta={x:number;y:number};
 async function konum(el:Locator,x=.5,y=.5):Promise<Nokta>{

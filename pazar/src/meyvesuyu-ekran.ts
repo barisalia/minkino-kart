@@ -17,15 +17,15 @@ import { konfetiPatlat } from '../../src/ui/konfeti';
 import { MERDIVEN } from '../../src/ui/ipucu-merdiveni';
 import { sesDugmesi, yuvarlakDugme } from '../../src/ui/ortak';
 import type { Ekran, Uygulama } from '../../src/uygulama';
-import { AZ, Bardak, Blender, YABANMERSINI } from './blender';
+import { AZ, Bardak, Blender } from './blender';
 import { canliSahne } from './canli';
-import { gorselStil, musteriKutusu, odulAni, onTezgah, oran, oyunKamerasi, stand } from './ekranlar';
+import { gorselStil, musteriKutusu, odulAni, onTezgah, oran, oyunKamerasi, sirali, sozKaydet, stand } from './ekranlar';
 import { Kamera } from './kamera';
-import { adres, boing, flamaYerlestir, parilti, resim } from './gorsel';
+import { boing, flamaYerlestir, parilti, resim } from './gorsel';
 import { kaydet, kayit } from './ilerleme';
 import { urunAdi } from './istek';
 import { brrSesi, icmeSesi } from './meyvesuyu-ses';
-import { dogruSecim, karisim, karisimCumlesi, KAPASITE, MEYVE_RENGI, MS_MUSTERI, msIstekUret, SU_KODU, tarif, type MsIstek, type SuRengi } from './meyvesuyu';
+import { dogruSecim, karisim, karisimCumlesi, KAPASITE, MEYVE_RENGI, msIstekUret, msMusteriSayisi, SU_KODU, tarif, type MsIstek, type SuRengi } from './meyvesuyu';
 import { MinoCanli } from './mino-canli';
 import { Musteri, musteriHazirla } from './musteri';
 import { geriGonder, surukle, tasi } from './surukle';
@@ -33,13 +33,11 @@ import { geriGonder, surukle, tasi } from './surukle';
 const A = P.arayuz;
 const M = P.meyvesuyu;
 const yas = (): Yas => durum.i.yas ?? 4;
-const rastgele = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
 const onizleme = () => TEST_MODU || !!document.body.dataset.onizleme;
 
-/** Meyvenin resmi: mevcut görseller; yaban mersini pazar setinden (yoksa kodla çizim) */
+/** Meyvenin resmi: meyve seti; yaban mersini pazar setinden (assets/pazar/yabanmersini) */
 function meyveResmi(id: string): HTMLElement {
-  if (id === 'yabanmersini') return adres('pazar/yabanmersini') ? resim('pazar/yabanmersini', '', A.yabanmersini) : h('div.pz-resim.ms-mersin', { role: 'img', 'aria-label': A.yabanmersini, html: YABANMERSINI });
-  return resim(`meyveler/${id}`, '', urunAdi(id));
+  return id === 'yabanmersini' ? resim('pazar/yabanmersini', '', A.yabanmersini) : resim(`meyveler/${id}`, '', urunAdi(id));
 }
 const meyveAdi = (id: string) => (id === 'yabanmersini' ? A.yabanmersini : urunAdi(id));
 
@@ -61,9 +59,11 @@ function istekGorseli(ist: MsIstek, formul: boolean): HTMLElement {
 
 export function meyveSuyuEkrani(app: Uygulama): Ekran {
   const y = yas();
+  /** bu turda kaç müşteri (4 yaş 4, ötekiler 3: meyvesuyu.ts → msMusteriSayisi) */
+  const N = msMusteriSayisi(y);
   const q = new URLSearchParams(location.search);
   const secili = onizleme() ? (q.get('musteriler') ?? '').split(',').filter((x) => P.musteriler.includes(x)) : [];
-  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, MS_MUSTERI);
+  const musteriler = [...secili, ...karistir(P.musteriler.filter((x) => !secili.includes(x)))].slice(0, N);
   musteriler.forEach((ad) => {
     resimSesiHazirla(ad);
     musteriHazirla(ad);
@@ -72,7 +72,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   const yazi = h('span', {}, M.giris);
   let sonSoz: string[] = [M.giris];
   const balon = h('div.baslik-balon.pz-baslik', {}, yuvarlakDugme(IKON.hoparlor, 'Tekrar dinle', () => void konus(sonSoz), 'kucuk'), yazi);
-  const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: MS_MUSTERI }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
+  const yildizlar = h('div.pz-yildizlar', { 'aria-label': 'Yıldızlar' }, ...Array.from({ length: N }, () => h('i.pz-yildiz', {}, svg(IKON.yildiz))));
   const musteriKap = h('div.pz-musteri-kap');
   const mino = new Mino();
   mino.el.addEventListener('pointerdown', () => mino.tepki('gidik'));
@@ -107,10 +107,18 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   const blenderKutu = () => kam.kutu(blender.el, { ust: 0.08, alt: 0.04, sol: 0.55, sag: 0.08 });
 
   let ist: MsIstek = msIstekUret(y, 0);
+  /** bu turda istenen renkler (yinelenmesin) */
+  const istenenler: SuRengi[] = [];
+  const tesekkurSoz = sirali(M.dogru);
+  const yanlisSoz = sirali(M.yanlis);
   let kapandi = false;
   let hata = 0;
   let ipucu = false;
   let dolduDendi = false;
+  /**
+   * "Şimdi düğmeye bas!" bir turda bir kez (ilk müşteride); sonraki müşterilerde Karıştır düğmesi meyveyle birlikte
+   * belirir, unutan çocuğa boşta hatırlatma söyler (eskiden her müşteride: dört kez)
+   */
   let basDendi = false;
   let sonHareket = performance.now();
   let sonBirakma = 0;
@@ -120,6 +128,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   const sokuler: (() => void)[] = [];
   const soyle = (soz: string | string[]) => {
     sonSoz = [soz].flat();
+    sozKaydet(sonSoz);
     return konus(sonSoz);
   };
 
@@ -272,14 +281,15 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     uc.el.remove();
   }
 
-  const tur = async (i: number) => {
-    ist = msIstekUret(y, i, Math.random, i > 0 ? ist.hedef : undefined);
+  /** i. müşteri. sesOncesi: bu söz bitmeden müşterinin sesi çıkmaz, isteğini söylemez (ilk müşteri girişte yürür) */
+  const tur = async (i: number, sesOncesi?: Promise<void>) => {
+    ist = msIstekUret(y, i, Math.random, istenenler);
+    istenenler.push(ist.hedef);
     hata = 0;
     ipucu = false;
     parladi = false;
     dolduDendi = false;
-    basDendi = false;
-    canli.gun(i / (MS_MUSTERI - 1));
+    canli.gun(i / (N - 1));
     blender.bosalt();
     blender.yeniBardak();
     tezgahDiz();
@@ -293,13 +303,16 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     const m = mu.el;
     musteri = mu;
     musteriKap.replaceChildren(m);
-    void resimSesi(ad);
+    void (sesOncesi ?? Promise.resolve()).then(() => {
+      if (!kapandi) void resimSesi(ad);
+    });
     setTimeout(() => minoCanli.karsila(), sure(450));
     kamera.classList.add('pz-yakin');
     sahne.classList.add('pz-yakin');
     // gelen müşteri ile Mino birlikte; varınca istek yakın çekimi (müşteri ve bardaklı balonu)
     kam.odakla(() => Kamera.birlesik(musteriKutusu(kam, musteriKap, true), kam.kutu(mino.el, { alt: -0.35 })), { doluluk: 0.95, enCok: 1.3, sure: 1500 });
     await mu.gel();
+    if (sesOncesi) await sesOncesi;
     if (kapandi) return;
     mu.bekle(true);
     yazi.textContent = ist.yazi;
@@ -366,7 +379,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       m.classList.add('pz-burus');
       brrSesi();
       mino.tepki('sasir');
-      const soz = [sonuc === 'kahverengi' ? M.kahverengi : rastgele(M.yanlis), M.tekrar];
+      const soz = [sonuc === 'kahverengi' ? M.kahverengi : yanlisSoz(), M.tekrar];
       await Promise.all([mu.burus(), soyle(soz)]);
       m.classList.remove('pz-burus');
       if (kapandi) return;
@@ -376,7 +389,6 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
       blender.bosalt();
       blender.yeniBardak();
       tezgahDiz();
-      basDendi = false;
       // ipucu: 5-6 yaşta karışım formülü balonda; iki hatadan sonra (6 yaşta üç) doğru meyveler parlar
       if (ist.karisik) balonYenile(true);
       if (hata >= (y >= 6 ? 3 : 2)) {
@@ -397,7 +409,7 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
     void odulAni(app.kok, m, yildizlar.children[i] as HTMLElement | undefined, i, mino);
     kayit.yildiz++;
     kaydet();
-    const tesekkur = rastgele(M.dogru);
+    const tesekkur = tesekkurSoz();
     yazi.textContent = tesekkur;
     const aciklama = ist.karisik ? karisimCumlesi(ist.hedef) : undefined;
     await Promise.all([soyle(aciklama ? [tesekkur, aciklama] : tesekkur), mu.dans()]);
@@ -413,12 +425,13 @@ export function meyveSuyuEkrani(app: Uygulama): Ekran {
   void (async () => {
     await bekle(sure(300));
     if (kapandi) return;
-    await soyle(M.giris);
-    for (let i = 0; i < MS_MUSTERI && !kapandi; i++) await tur(i);
+    // "Meyve suyu köşesi!" söylenirken ilk müşteri yürümeye başlar (çocuk boş beklemez)
+    const giris = soyle(M.giris);
+    for (let i = 0; i < N && !kapandi; i++) await tur(i, i === 0 ? giris : undefined);
     if (kapandi) return;
     kayit.senlik++;
     kaydet();
-    app.git('senlik', { musteriler, kaynak: 'meyvesuyu', yildiz: MS_MUSTERI });
+    app.git('senlik', { musteriler, kaynak: 'meyvesuyu', yildiz: N });
   })();
 
   return {

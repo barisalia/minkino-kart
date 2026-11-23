@@ -1,0 +1,36 @@
+/* Minik Doktor · "Mino'nun Kurabiyeli Dişleri". Ortak sahne kuralları vaka.css içinde (vk-…); buradakiler bu vakaya özgü. */
+#doktor[data-oyun="dis"] { position: fixed; inset: 0; overflow: hidden; background: #fbc4a6; touch-action: none; user-select: none; -webkit-user-select: none; }
+#doktor[data-oyun="dis"][data-asama="fener"], #doktor[data-oyun="dis"][data-asama="macun"], #doktor[data-oyun="dis"][data-asama="firca"],
+#doktor[data-oyun="dis"][data-asama="bardak"], #doktor[data-oyun="dis"][data-asama="calkala"] { background: #dccbfb; }
+
+/* masa şeridinde yatık duran macun tüpleri (ağzı sağda) */
+.ds-yatik { rotate: -90deg; }
+
+/* baş pozları ve dişler tam sahne katmanlarıdır */
+.ds-bas > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ds-disler { opacity: .001; }
+.ds-disler.ds-gorunur { opacity: 1; }
+
+/* fenerin ışığı: yalnız fener eldeyken */
+.ds-isik { left: 0; top: 0; opacity: .001; pointer-events: none; will-change: transform; }
+.ds-isik.ds-yaniyor { opacity: 1; }
+
+/* su: bardak ağızdayken akar (döküm süresince), ağız kapanınca kesilir */
+.ds-su { opacity: .001; pointer-events: none; transform-origin: 50% 0; }
+.ds-su.ds-akiyor { opacity: 1; animation: ds-ak .16s ease-out, ds-dalga .22s .16s ease-in-out infinite alternate; }
+@keyframes ds-ak { from { transform: scaleY(.15); } to { transform: scaleY(1); } }
+@keyframes ds-dalga { from { transform: scaleX(.92); } to { transform: scaleX(1.06); } }
+
+/* fırça havlunun üstünde */
+.ds-firca-yeri > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ds-firca-yeri.ds-kalkti > * { opacity: .001; }
+.ds-firca-yeri.vk-sirada { animation: vk-sirada 1s ease-in-out infinite; }
+.ds-macun-seridi { position: absolute; }
+.ds-macun-seridi > img { object-fit: fill; }
+
+/* şeritteki macun tüpleri */
+.ds-tup img { object-fit: contain; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-firca-yeri.vk-sirada { animation: none; }
+}

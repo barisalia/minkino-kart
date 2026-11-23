@@ -1,5 +1,5 @@
 import { resim } from './resimler';
-import dersler from './harfler.json';
+import { panoAdi, panoResmi } from './pano-sozcukleri';
 import { kucukGrup } from './yas-grubu';
 import './trambolin.css';
 
@@ -11,7 +11,7 @@ export function trambolinKur(kok:HTMLElement, kelime:string, parcalar:string[], 
   sec:(i:number)=>void, bitir:()=>void){
   const adet=Math.max(3,parcalar.length);
   kok.innerHTML='<div class="tr-saha"><span class="tr-cikis" aria-hidden="true"></span><span class="tr-golge" aria-hidden="true"></span>'+
-    '<div class="tr-yolcu"><img class="tr-nesne" alt="'+dersler.find(d=>d.id===kelime)!.example+'" src="'+resim(kelime)+'"></div></div>'+
+    '<div class="tr-yolcu"><img class="tr-nesne" alt="'+panoAdi(kelime)+'" src="'+panoResmi(kelime)+'"></div></div>'+
     '<div class="tr-alt"><span role="status">Her hecede sıradaki tramboline dokun.</span><button type="button" class="tr-ileri" hidden aria-label="Devam et"><svg viewBox="0 0 48 36" aria-hidden="true"><path d="M5 11h18V4q0-3 3-1l16 12q4 3 0 6L26 33q-3 2-3-1v-7H5q-2 0-2-2V13q0-2 2-2Z" fill="#fff4ce" stroke="#203a33" stroke-width="2.4" stroke-linejoin="round"/></svg></button></div>';
   const saha=kok.querySelector<HTMLElement>('.tr-saha')!;
   const yolcu=saha.querySelector<HTMLElement>('.tr-yolcu')!;

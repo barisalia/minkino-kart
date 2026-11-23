@@ -52,7 +52,6 @@ import {tostTezgahi} from './tost-tezgahi';
 import {ekmekYolu,tostMalzemeResmi,tostOrnegi,tostResmi} from './tost-gorseli';
 import {tostKalitesi,tostFisi,tostFisleri,tostMalzemeAdi,tostKivamAdi} from './tost-tarifi';
 import {piknigeHazirla,piknikIsareti} from './piknik';
-import {kutlamaMasasi} from './kutlama';
 
 import { h } from '../../src/ui/dom';
 import { ikon, dugme, resim } from './gorsel';
@@ -427,21 +426,16 @@ export function masayiCiz(alan:HTMLElement,a:Ayar):()=>void{
   const birlikte=aile||menu?.id==='paylasilan-pizza';
   if(aile)sahne.dataset.aile='true';
   if(ziyaret&&t.gun.kapandi&&t.ekran==='masa'){
-    if(t.gun.kutlamada&&t.gun.kutlama){
-      sahne.append(kutlamaMasasi(t.gun.kutlama,a.yaz,()=>{t.gun.kutlamada=false;guncelle();},a.sesli));
-      return ()=>{};
-    }
     sahne.append(gunSonuEkrani(t.gun.no,t.gun.kazanc,()=>{
       if(!t.gun.kapandi)return;
       // ilk 3 gün ücretsiz; sonraki gün premium (src/engine/erisim.ts → restoran/gun-N)
       if(!erisimVarMi(`restoran/gun-${t.gun.no+1}`,sahne))return;
-      const oneri=t.gun.oneri;
       for(const id of t.salonKoltuklari??[]){
         if(id){a.yeniMasaTezgahi(id);delete t.masalar[id];}
       }
       t.salonKoltuklari=Array(6).fill(null);
       t.salonBekleme={};t.salonGelisSn=0;
-      t.gun=yeniGun(t.gun.no+1);restoranAc(t,true,a.yeniMasaTezgahi,oneri);guncelle();
+      t.gun=yeniGun(t.gun.no+1);restoranAc(t,true,a.yeniMasaTezgahi);guncelle();
     }));
     return ()=>{};
   }
@@ -670,7 +664,8 @@ export function masayiCiz(alan:HTMLElement,a:Ayar):()=>void{
       const renk=simitRengi(simit.isi);
       return salonReplikleri[renk==='altin'?'babaanne-simit-tam':renk==='acik'?'babaanne-simit-acik':'babaanne-simit-koyu'];
     }
-    if(menu.misafir==='baba'){
+    // Baba'nın kayıtlı yorumları yalnız pizza menüleri için; başka tabakta "Pizzam gelmedi" demesin.
+    if(menu.misafir==='baba'&&menu.parcalar.includes('pizza')){
       const pizza=masa.tabaklar.pizza;
       if(!pizza||pizza===true||pizza.tarifId!=='pizza'||!menu.pizzaFisi)return salonReplikleri['baba-eksik'];
       return babaPizzaYorumu(pizza.ust,menu.pizzaFisi,pizza.kivam??'tam');
@@ -1385,7 +1380,6 @@ export function masaGeri(t:Tepsiler){
   if(t.masalar[t.secili]?.siraliMasada){delete t.masalar[t.secili].siraliMasada;return;}
   if(t.masalar[t.secili]?.aileMasada){delete t.masalar[t.secili].aileMasada;return;}
   if(t.masalar[t.secili]?.arabada){t.masalar[t.secili].arabada=false;return;}
-  if(t.gun.kutlamada){t.gun.kutlamada=false;return;}
   if(t.masalar[t.secili]?.piknikte){t.masalar[t.secili].piknikte=false;return;}
   if(t.ekran==='fisler'&&t.servisSalonu){delete t.servisSalonu;return;}
   if(t.ekran==='fisler'&&t.yanMasadan&&t.restoran){delete t.yanMasadan;t.secili=t.restoran.menuId??aktifMenu(t).id;t.restoranda=true;t.ekran='masa';return;}

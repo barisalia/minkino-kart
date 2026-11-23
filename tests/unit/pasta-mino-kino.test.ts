@@ -19,7 +19,8 @@ describe('Mino ile Kino: ad', () => {
     expect(magaza).toContain(`**${AD}:**`);
     expect(magaza).toContain("**Mino & Kino's Bakery Bus:**");
     expect(magaza).not.toMatch(/Mino'nun Pasta Otobüsü|\*\*Mino's Bakery Bus/);
-    expect(readFileSync('src/abonelik/ekran.ts', 'utf8')).toContain(AD);
+    // abonelik ekranı 15 Kasım 2026'dan beri oyun adı saymaz (kısa, genel fayda listesi): eski ad da geçmemeli
+    expect(readFileSync('src/abonelik/ekran.ts', 'utf8')).not.toMatch(/Mino'nun Pasta Otobüsü/);
   });
 });
 

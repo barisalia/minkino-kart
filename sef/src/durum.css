@@ -4,7 +4,7 @@
 .dr-tezgah button:focus-visible{outline:3px solid #123a91;outline-offset:2px}.dr-tezgah button:disabled{opacity:.35}
 .dr-tezgah .dr-geri,.dr-tezgah .dr-dinle,.dr-tezgah .dr-ileri,.dr-tezgah .dr-geri-al{position:absolute;width:max(44px,7cqh);height:max(44px,7cqh);border-radius:50%;display:grid;place-items:center;background:var(--sef-kumanda-fonu, #fff6d7);border:2px solid #4c3934;box-shadow:0 2px #916c54}
 .dr-geri{left:2%;top:3%}.dr-dinle{right:2%;top:3%}.dr-tezgah .dr-ileri{right:9%;bottom:9%;background:#bae9af}.dr-geri-al{left:9%;bottom:9%}.dr-tezgah .ikon{width:54%;height:54%}
-.dr-tezgah .dr-fis{position:absolute;top:2%;left:50%;translate:-50%;height:max(42px,11cqh);padding:3px 13px;display:flex;align-items:center;gap:5px;border:2px solid #483638;border-radius:14px;background:var(--sef-kumanda-fonu, #fff7db);box-shadow:0 3px #bd956b}.dr-fis img{width:clamp(24px,6.5cqh,50px);height:90%;object-fit:contain}
+.dr-tezgah .dr-fis{position:absolute;top:2%;left:50%;translate:-50%;height:max(44px,11cqh);padding:3px 13px;display:flex;align-items:center;gap:5px;border:2px solid #483638;border-radius:14px;background:var(--sef-kumanda-fonu, #fff7db);box-shadow:0 3px #bd956b}.dr-fis img{width:clamp(24px,6.5cqh,50px);height:90%;object-fit:contain}
 .dr-tezgah .dr-lavas,.dr-tezgah .dr-sarma{position:absolute;top:16%;left:50%;translate:-50%;height:57%;aspect-ratio:1;padding:0;isolation:isolate}
 .dr-hamur,.dr-acik{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
 .dr-dizili,.dr-kesit-ici{position:absolute;translate:-50% -50%;width:22%;height:auto;max-height:23%;object-fit:contain;pointer-events:none}

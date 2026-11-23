@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path'),sharp=require('sharp')
+const base=path.resolve(__dirname,'../..'),out=__dirname,assets={}
+function embed(id,file){const data=fs.readFileSync(path.join(base,file));const ext=path.extname(file).slice(1);assets[id]='data:'+(ext==='woff2'?'font/woff2':'image/'+ext)+';base64,'+data.toString('base64')}
+for(const n of ['kapak','sinif','bahce','sinif-karti','canta-karti','bento-karti','boru-karti','tren-karti','saklan-karti','bahce-karti','mezun-karti','kino','mino','zipzip','ceren','bulut','tombi','kuzu','canta','kutu','kurbaga','kazan','tren','radyo','zil','vinc','kep','kamera','resim','fasulye','kupa','bayrak','top','can','fener','kino-dans']){if(fs.existsSync(path.join(base,'assets/okul',n+'.webp')))embed(n,'assets/okul/'+n+'.webp')}
+for(const [n,f] of Object.entries({logo:'uygulama/logo-minkino-asil',ari:'hayvanlar/ari',araba:'tasitlar/araba',elma:'meyveler/elma'}))embed(n,'assets/'+f+'.webp')
+for(const n of ['ari','top','elma','araba'])embed(n,'assets/okul/'+n+'.webp');embed('fener','assets/elektrik/fener.webp');embed('can','assets/okul/zil.webp');for(const k of [500,600,700])for(const s of ['latin','latin-ext'])embed('f'+k+s,'node_modules/@fontsource/fredoka/files/fredoka-'+s+'-'+k+'-normal.woff2')
+const css=fs.readFileSync(path.join(out,'ekran.css'),'utf8')
+const ui=fs.readFileSync(path.join(out,'ekran.js'),'utf8')
+function fonts(){return [500,600,700].map(k=>"@font-face{font-family:Oyun;src:url("+assets['f'+k+'latin']+");font-weight:"+k+"}@font-face{font-family:Oyun;src:url("+assets['f'+k+'latin-ext']+");font-weight:"+k+";unicode-range:U+0100-024F,U+1E00-1EFF}").join('')}
+fs.writeFileSync(path.join(out,'prova.html'),'<!doctype html><html lang="tr"><meta charset="utf-8"><title>Çınar Anaokulu · Tasarım provası</title><style>'+fonts()+css+'</style><main id="screen"></main><script>const art='+JSON.stringify(assets)+';\n'+ui+'\nconst code=location.hash.slice(1)||"1A";document.getElementById("screen").innerHTML=pages[code]();</script></html>')

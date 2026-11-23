@@ -3,8 +3,8 @@
   color:#46323c;background:var(--sef-kumanda-fonu, #ffedb6);box-shadow:0 2px #957052;cursor:pointer
 }
 .vitrin-pul-defteri{
-  position:absolute;left:calc(4% + max(40px,9.7cqh) + 1.5cqw);top:5%;
-  height:max(40px,9.7cqh);aspect-ratio:1;padding:1.6cqh;background:#c8ead8
+  position:absolute;left:calc(4% + max(44px,9.7cqh) + 1.5cqw);top:5%;
+  height:max(44px,9.7cqh);aspect-ratio:1;padding:1.6cqh;background:#c8ead8
 }
 .servis-pulu{
   position:absolute;left:calc(50% + max(53px,12cqh));top:14%;height:max(40px,10cqh);

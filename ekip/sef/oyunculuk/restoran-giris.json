@@ -1,0 +1,28 @@
+{
+  "sahne": "Restoranın açık kapısında karşılama",
+  "fon": "assets/sef/tepsi/gelis/giris.webp",
+  "yerTemasi": "Kadraj yüksekliğinin yüzde 78'i, kapı eşiği",
+  "oyuncular": {
+    "Lokum": {
+      "kaynak": "ekip/film/ortak-poz-arsivi/karakter-hareketleri/lokum-bardakla-yatay-yuruyus-v2/",
+      "kare": ["00", "01", "02", "03", "04", "05", "06", "07"],
+      "sureMs": [135, 135, 150, 145, 130, 125, 140, 260],
+      "boyYuzde": 30,
+      "yon": "Sağa yürüyüş, bardak iki patide"
+    },
+    "Mino": {
+      "kaynak": "ekip/film/ortak-poz-arsivi/karakter-hareketleri/firtina-oyunculuk/mino-yerles/",
+      "kare": ["01", "02", "03", "04"],
+      "sureMs": [350, 260, 450, 320],
+      "boyYuzde": 36,
+      "yon": "Eşikte ayakta, sola dönük selam"
+    },
+    "Dede Hasan": {
+      "kaynak": "ekip/film/kino-kirmizi-kapinin-arkasi/resim/",
+      "kare": ["dede-kon", "dede-kon-kirp", "dede-kon", "dede-kon-ses", "dede-kon"],
+      "sureMs": [390, 105, 260, 310, 330],
+      "boyYuzde": 46,
+      "yon": "Eşikte ayakta, sağa dönük selam"
+    }
+  }
+}

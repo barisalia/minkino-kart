@@ -1,0 +1,73 @@
+{
+  "covers": [
+    {
+      "name": "ailem.webp",
+      "sourceStripe": 639,
+      "stripe": 630
+    },
+    {
+      "name": "ciftlik.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    },
+    {
+      "name": "hareketler.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    },
+    {
+      "name": "kiyafetler.webp",
+      "sourceStripe": 637,
+      "stripe": 630
+    },
+    {
+      "name": "odam.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    },
+    {
+      "name": "oyuncaklar.webp",
+      "sourceStripe": 651,
+      "stripe": 630
+    },
+    {
+      "name": "renkler.webp",
+      "sourceStripe": 620,
+      "stripe": 630
+    },
+    {
+      "name": "sayilar.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    },
+    {
+      "name": "tasitlar.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    },
+    {
+      "name": "vahsi.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    },
+    {
+      "name": "yiyecekler.webp",
+      "sourceStripe": 624,
+      "stripe": 630
+    },
+    {
+      "name": "yuzum.webp",
+      "sourceStripe": 635,
+      "stripe": 630
+    }
+  ],
+  "shelves": [
+    520,
+    900,
+    1280
+  ],
+  "shelfInnerX": [
+    140,
+    1860
+  ]
+}

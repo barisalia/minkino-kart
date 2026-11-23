@@ -2,6 +2,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
 import type { Defter } from '../../sef/src/kayit';
 import { TARIFLER, KESIM_HEDEFI, KARISTIRMA_HEDEFI, type TarifId } from '../../sef/src/tarif';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 type Nokta = { x: number; y: number };
 
@@ -44,10 +46,11 @@ async function defter(page: Page): Promise<Defter> {
 async function resimleriDogrula(page: Page) {
   const resimler = page.locator('#sef img:visible');
   await expect(resimler.first()).toBeVisible();
+  // Yüklü makinede resimler 5 sn'yi aşabiliyor; kayıp resim yine 10 sn içinde yakalanır.
   await expect.poll(() => resimler.evaluateAll(liste => liste.every(e => {
     const resim = e as HTMLImageElement;
     return resim.complete && resim.naturalWidth > 0;
-  }))).toBe(true);
+  })), { timeout: 10_000 }).toBe(true);
 }
 
 async function ekranda(page: Page, ad: string) {
@@ -184,18 +187,17 @@ for (const id of ['corba', 'salata'] as const) {
     await sunumuTamamla(page, id);
     await expect.poll(async () => (await defter(page)).tabaklar[id]).toBe(1);
     await page.reload();
-    await ekranda(page, 'servis');
-    await expect(page.locator('[data-sun] '+(id==='salata'?'.salata-sos-katmani':'.yemek-susu'))).toBeVisible();
-    expect((await defter(page)).tabaklar[id]).toBe(1);
-    await page.locator('[data-git="siparis"]').tap();
+    // Servis zilinden sonra atölye kapanır; tabak rafın müşterisinin masasına gider, süs ya da sos tepside aynen durur.
     await ekranda(page, 'siparis');
-    await page.getByRole('button', { name: 'Hazırladığım tabaklar' }).tap();
-    await expect(page.locator('.defter-tabagi '+(id==='salata'?'.salata-sos-katmani':'.yemek-susu'))).toBeVisible();
+    const sunum = page.getByRole('button', { name: 'Tepsiyi müşteriye sun' });
+    await expect(sunum.locator(id==='salata'?'.salata-sos-katmani':'.yemek-susu')).toBeVisible();
+    expect((await defter(page)).tabaklar[id]).toBe(1);
+    // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; tabak defter kaydında (gecmis) bir kez durur.
     const son = await defter(page);
     expect(son.gecmis).toHaveLength(1);
     expect(son.gecmis[0]).toMatchObject({tarifId:id,sus:son.susler[id]});
     if(id==='salata'){
-      await expect(page.locator('.defter-tabagi .sef-kap-parcasi')).toHaveCount(15);
+      await expect(sunum.locator('.sef-kap-parcasi')).toHaveCount(15);
       expect(son.gecmis[0]).toMatchObject({salata:{kesitler:son.siparisler.salata?.kesitler}});
     }
     expect(hatalar).toEqual([]);
@@ -245,13 +247,13 @@ test('serbest çorbanın sepeti ve masanın pürüzsüz çorbası birbirinden ba
   await page.goto('./sef/?test=1');
   await page.locator('button[data-tarif=corba]').tap();await istasyonAc(page,'dolap');
   await page.locator('[data-sebze=havuc]').tap();await geri(page);await geri(page);
-  await page.getByRole('button',{name:'Müşteri masası',exact:true}).tap();
-  await page.locator('[data-menu=corba-sofrasi]').tap();await page.locator('[data-parca=corba]').tap();
+  // "Müşteri masası" fiş arşivi panoda yok (15 Kasım ilk sürümde de); müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+  await page.goto('./sef/?test=1&giris=tepsiler&siparis=corba-sofrasi');await page.locator('[data-parca=corba]').tap();
   await expect(page.locator('.fis-kivam')).toHaveAttribute('data-istenen-kivam','puruzsuz');
   await istasyonAc(page,'dolap');await expect(page.locator('.sepette-sebze')).toHaveCount(0);
   await page.locator('[data-sebze=patates]').tap();await page.reload();
+  // Dolap → mutfak → masa → pano: fiş arşivi kalktığı için panoya üç Geri ile dönülür.
   await geri(page);await geri(page);
-  await page.getByRole('button',{name:'Geri',exact:true}).tap();
   await page.getByRole('button',{name:'Geri',exact:true}).tap();
   await page.locator('button[data-tarif=corba]').tap();
   await expect(page.locator('.fis-kivam')).toHaveAttribute('data-istenen-kivam','taneli');
@@ -285,11 +287,17 @@ test('fişteki salatalık yerine havuç seçilirse kesimler, maşa, tabak ve mü
   await page.locator('[data-porsiyon-birak]').tap();await page.locator('[data-porsiyon-al]').tap();
   await page.locator('[data-porsiyon-birak]').tap();await page.locator('[data-git=servis]').tap();
   await page.locator('[data-sus=limon]').tap();await page.locator('[data-sun]').tap();await page.locator('[data-zil]').tap();
-  await expect(page.locator('.servis-misafiri [data-puan="2"]')).toBeVisible();
-  await expect(page.locator('.sunum [data-malzeme=havuc]')).toHaveCount(5);
-  await expect(page.locator('.sunum [data-malzeme=salatalik]')).toHaveCount(0);
-  await expect(page.locator('.sebze-tadim [aria-label="İstenen"] img')).toHaveAttribute('src',/salatalik/);
-  await expect(page.locator('.sebze-tadim [aria-label="Sunulan"] img')).toHaveAttribute('src',/havuc/);
+  // Servis zilinden sonra salata rafın müşterisine (Mino) gider; karşılaştırma servisten sonra masada.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await expect(sunum.locator('[data-malzeme=havuc]')).toHaveCount(5);
+  await expect(sunum.locator('[data-malzeme=salatalik]')).toHaveCount(0);
+  await sunum.tap();
+  await page.getByRole('button',{name:'Bahçe Salatası siparişi ile tabağı karşılaştır'}).tap();
+  const karsilastir=page.getByRole('dialog');
+  await expect(karsilastir.locator('.sef-yildizlar')).toHaveAttribute('data-puan','2');
+  await expect(karsilastir.getByLabel('Müşterinin isteği').getByRole('img',{name:'Salatalık'})).toBeVisible();
+  await expect(karsilastir.getByLabel('Hazırladığın tabak').getByRole('img',{name:'Havuç'})).toBeVisible();
+  await expect(karsilastir.getByLabel('Hazırladığın tabak').getByRole('img',{name:'Salatalık'})).toHaveCount(0);
 });
 
 for(const ezme of ['tam','kismi'] as const){
@@ -322,8 +330,11 @@ for(const ezme of ['tam','kismi'] as const){
     await expect(kase.locator('.corba-lokmasi')).toHaveCount(ezme==='tam'?0:2);
     await page.locator('[data-git=servis]').tap();await page.locator('[data-sus=domates]').tap();
     await page.locator('[data-sun]').tap();await page.locator('[data-zil]').tap();await page.reload();
-    await expect(page.locator('.servis-misafiri .sef-yildizlar')).toHaveAttribute('data-puan',ezme==='tam'?'3':'2');
-    await expect(page.locator('.sunum .corba-lokmasi')).toHaveCount(ezme==='tam'?0:2);
+    // Servis zilinden sonra çorba rafın müşterisine gider: kâsedeki lokmalar tepside aynen durur, puan servisten sonra masada.
+    const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+    await expect(sunum.locator('.corba-lokmasi')).toHaveCount(ezme==='tam'?0:2);
+    await sunum.tap();
+    await expect(page.locator('.tepsi-sahnesi>.sef-yildizlar')).toHaveAttribute('data-puan',ezme==='tam'?'3':'2');
     expect((await defter(page)).gecmis.at(-1)).toMatchObject({corba:{istenenKivam:'puruzsuz',ezilen:ezme==='tam'?['havuc','patates','domates']:['havuc']}});
   });
 }

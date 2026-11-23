@@ -11,6 +11,9 @@ import { kilitleriKur, erisimVarMi } from '../../src/abonelik/kilit';
 import { MENU_YASLARI, type MenuYasi, menuYasiOku, menuYasiniSec } from '../../src/engine/menu-yas';
 import type { Ekran, Uygulama } from '../../src/uygulama';
 import { menuOyunlari, yasaGore } from './oyunlar';
+import { DERSLER_MENUDE, bolumKartlari, bolumSirasi, deneyliKartlar, dersBolumuAcik, doktorluKartlar, type BolumId } from './menu-bolumleri';
+import { DENEY_MENUDE } from '../../deney/src/bayrak';
+import { DOKTOR_MENUDE } from '../../doktor/src/bayrak';
 import { KITAPLAR } from '../../kitap/src/kitaplar';
 import { kartResmi } from './ekranlar';
 import { VIDEOLAR } from '../../src/video/videolar';
@@ -21,14 +24,32 @@ import kitapSimge from '../../assets/uygulama/kategoriler/kitap-ikon.webp';
 import oyunSimge from '../../assets/uygulama/kategoriler/oyun-ikon.webp';
 import filmSimge from '../../assets/uygulama/kategoriler/film-ikon.webp';
 
-const bolumler = [
-  { id: 'etkinlik', ad: 'Etkinlikler', renk: '#9560e5', simge: etkinlikSimge },
-  { id: 'kitap', ad: 'Kitaplar', renk: '#f45e53', simge: kitapSimge },
-  { id: 'oyun', ad: 'Oyunlar', renk: '#ffd044', simge: oyunSimge },
-  { id: 'film', ad: 'Çizgi Filmler', renk: '#3cbe92', simge: filmSimge },
-] as const;
-type Bolum = typeof bolumler[number];
-const resimler = import.meta.glob<string>('../../assets/{kitap/okul,canlan,pazar,dedektif,giysin,kino-otobus,hayvanlar,sahne}/*.webp', { eager: true, query: '?url', import: 'default' });
+// Dersler simgesi (Astra, S6-1): dosya yoksa glob boş döner. Gerçek uygulamada simge yoksa bölüm hiç görünmez;
+// yer tutucu yalnız test kipinde (?test=1&dersler=1).
+const dersSimgeleri = import.meta.glob<string>('../../assets/uygulama/kategoriler/ders-ikon.webp', { eager: true, query: '?url', import: 'default' });
+const dersSimge = Object.values(dersSimgeleri)[0];
+const DERS_YER_TUTUCU = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72" rx="16" fill="#ffe2c4" stroke="#ff8a2a" stroke-width="5" stroke-dasharray="10 7"/></svg>');
+// Deneyler kartı: gerçek uygulamada DENEY_MENUDE (deney/src/bayrak.ts); test kipinde ?deney=1 açar (gösterim ve test için).
+const deneyAcik = DENEY_MENUDE || (TEST_MODU && typeof location !== 'undefined' && new URLSearchParams(location.search).get('deney') === '1');
+// Minik Doktor kartı: DOKTOR_MENUDE (doktor/src/bayrak.ts); test kipinde ?doktor=0 kapatır, ?doktor=1 açar.
+const doktorIstek = TEST_MODU && typeof location !== 'undefined' ? new URLSearchParams(location.search).get('doktor') : null;
+const doktorAcik = doktorIstek === null ? DOKTOR_MENUDE : doktorIstek === '1';
+const dersler = dersBolumuAcik({ bayrak: DERSLER_MENUDE, simgeVar: !!dersSimge, testModu: TEST_MODU, istek: typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('dersler') });
+interface Bolum { id: BolumId; ad: string; renk: string; simge: string }
+// Dersler rengi turuncu (simgedeki çantanın rengi; mor Etkinlikler'de, kırmızı/sarı/yeşil öbür üçte)
+const TUM_BOLUMLER: Record<BolumId, Bolum> = {
+  ders: { id: 'ders', ad: 'Dersler', renk: '#ff8a2a', simge: dersSimge ?? DERS_YER_TUTUCU },
+  etkinlik: { id: 'etkinlik', ad: 'Etkinlikler', renk: '#9560e5', simge: etkinlikSimge },
+  kitap: { id: 'kitap', ad: 'Kitaplar', renk: '#f45e53', simge: kitapSimge },
+  oyun: { id: 'oyun', ad: 'Oyunlar', renk: '#ffd044', simge: oyunSimge },
+  film: { id: 'film', ad: 'Çizgi Filmler', renk: '#3cbe92', simge: filmSimge },
+};
+const bolumler: Bolum[] = bolumSirasi(dersler).map((id) => TUM_BOLUMLER[id]);
+/** Beş bölüm: ana ekranda ve yan şeritte ayrı diziliş (dört bölümde sınıf yok, eski görünüş birebir) */
+const besli = bolumler.length === 5 ? '.ym-bes' : '';
+// yalnız kitap kapağının yedeği için (aşağıda resim(`kitap/<id>/kapak-tam`)): öbür klasörler bu menüde kullanılmıyordu,
+// arşivdeki oyunların (Dedektif, Otobüs) çizimlerini boşuna pakete çekiyordu (23 Kasım 2026)
+const resimler = import.meta.glob<string>('../../assets/kitap/okul/*.webp', { eager: true, query: '?url', import: 'default' });
 const oyunKapaklari = import.meta.glob<string>('../../assets/uygulama/oyun-kapaklari/*.webp', { eager: true, query: '?url', import: 'default' });
 const kitapKapaklari = import.meta.glob<string>('../../assets/kitap/*/kapak.webp', { eager: true, query: '?url', import: 'default' });
 const resim = (ad: string) => resimler[`../../assets/${ad}.webp`] ?? '';
@@ -76,6 +97,13 @@ function yasSor(kok: HTMLElement, secildi: () => void, kapatilabilir: boolean) {
 
 export function yatayMenuEkrani(app: Uygulama): Ekran {
   const el = h('div.ym-ekran');
+  // Boş yere dokunuş karşılıksız kalmaz (kalite denetimi 22 Kasım, kural 5): parmağın altında küçük bir parıltı.
+  el.addEventListener('pointerdown', (e) => {
+    if (!e.isPrimary || (e.target as Element).closest?.('button, a, input, select, [role="button"]')) return;
+    const p = h('span.ym-pirilti', { 'aria-hidden': 'true', style: `left:${e.clientX}px;top:${e.clientY}px` }, h('i', {}, '★'), h('i', {}, '★'), h('i', {}, '✦'));
+    document.body.append(p);
+    setTimeout(() => p.remove(), 700);
+  });
   const kayitliYas = menuYasiOku();
   if (kayitliYas !== null) menuYasiniSec(kayitliYas);
   let bolum: Bolum | undefined = bolumler.find(b => b.id === sessionStorage.getItem('minkino-menu-bolum'));
@@ -98,7 +126,7 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
     const ayar = h('button.ym-yuvarlak', { type: 'button', 'aria-label': 'Ebeveyn ayarları', onclick: async () => { if (await ebeveynKapisiAc(el)) app.git('ayarlar'); } }, svg(IKON.ebeveyn));
     const ust = h('header.ym-ust', {}, ...(bolum ? [geri] : []), minkinoLogo('kenarli'), h('h1', {}, bolum?.ad ?? ''), yas, ayar);
     el.replaceChildren(ust);
-    if (!bolum) { el.append(h('div.ym-ana', {}, ...bolumler.map(b => kategori(b)))); return; }
+    if (!bolum) { el.append(h(`div.ym-ana${besli}`, {}, ...bolumler.map(b => kategori(b)))); return; }
     const secili = bolum;
     const panel = h('div.ym-panel', { 'aria-label': secili.ad });
     const kilitler: [HTMLElement, string, HTMLElement][] = [];
@@ -118,14 +146,14 @@ export function yatayMenuEkrani(app: Uygulama): Ekran {
         kart(kitap.baslik, `./kitap/?kitap=${encodeURIComponent(kitap.id)}&sayfa=1`, kapak, `kitap/${kitap.id}`);
       }
     } else {
-      const etkinlikler = ['matematik', 'alfabe', 'ingilizce', 'hazirlik', 'canlan', 'kartlar', 'macera'];
-      yasaGore(menuOyunlari(!!uygulamaPlatformu()), menuYasiOku()).filter(k => secili.id === 'etkinlik' ? etkinlikler.includes(k.id) : ![...etkinlikler, 'film', 'kitap'].includes(k.id)).forEach(k => {
+      // Dersler / Etkinlikler / Oyunlar: menu-bolumleri.ts (bayrak kapalıyken bugünkü ayrım)
+      bolumKartlari(secili.id, yasaGore(doktorluKartlar(deneyliKartlar(menuOyunlari(!!uygulamaPlatformu()), deneyAcik), doktorAcik), menuYasiOku()), dersler).forEach(k => {
         const kapak = oyunKapaklari[`../../assets/uygulama/oyun-kapaklari/${k.id}.webp`];
         const ad = k.ust ? `${k.ust} ${k.ad}` : k.ad;
         kart(ad, k.adres, kapak, k.id, kapak ? undefined : kartResmi(k));
       });
     }
-    el.append(h('div.ym-govde', {}, h('nav.ym-yan', { 'aria-label': 'Kategoriler' }, ...bolumler.map(b => kategori(b, true))), panel));
+    el.append(h('div.ym-govde', {}, h(`nav.ym-yan${besli}`, { 'aria-label': 'Kategoriler' }, ...bolumler.map(b => kategori(b, true))), panel));
     birak = kilitleriKur(kilitler);
   };
   kur();

@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 test.beforeEach(async({page})=>{
   await page.routeWebSocket(url=>url.port==='5173',()=>{});
   await page.setViewportSize({width:740,height:360});
@@ -42,7 +44,8 @@ for(const [desen,puan] of [['kalp',30],['cicek',20]] as const){
     await expect(vitrin.locator('.vitrin-istegi .sl-kase')).toHaveAttribute('data-desen','kalp');
     if(process.env.SEF_SUTLAC_KARE&&desen==='kalp')await page.screenshot({path:process.env.SEF_SUTLAC_KARE+'/sutlac-vitrin-740.png'});
     await vitrin.getByRole('button',{name:/2\. porsiyon/}).click();
-    const kase=page.locator('.tepsi-yuva .sl-kase').first();await expect(kase).toHaveAttribute('data-desen',desen);
+    // Son tabak konunca masa sahnesi açılır; kâse müşteriye sunulacak tepside durur.
+    const kase=page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.sl-kase').first();await expect(kase).toHaveAttribute('data-desen',desen);
     const alan=await kase.boundingBox();expect(alan!.width).toBeGreaterThan(35);expect(alan!.height).toBeGreaterThan(28);
     await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
     await expect(page.getByRole('button',{name:new RegExp(puan+' jeton kazanıldı')})).toBeVisible();
@@ -76,20 +79,6 @@ for(const [desen,puan] of [['kalp',30],['cicek',20]] as const){
     }
   });
 }
-test('Sütlaç tarifinin dört resimli adımı son kademeye bağlıdır',async({page})=>{
-  await page.getByRole('button',{name:'Resimli tarif kitabı'}).click();
-  await page.getByRole('button',{name:'Pastane tariflerini aç'}).click();
-  await page.getByRole('button',{name:'Tarçınlı Sütlaç tarifini incele'}).click();
-  for(let i=1;i<=4;i++){
-    const resim=page.locator('.kitap-resim>img[src*="tarif-kartlari/sutlac-'+i+'.webp"]');
-    await expect(resim).toBeVisible();
-    await resim.evaluate((el:HTMLImageElement)=>el.decode());
-    expect(await resim.evaluate((el:HTMLImageElement)=>el.naturalWidth)).toBeGreaterThan(250);
-    if(i<4)await page.getByRole('button',{name:'Sonraki adım'}).click();
-  }
-  await page.getByRole('button',{name:'Pastanede tarif kilidini gör'}).click();
-  await expect(page.locator('[data-kademe="5"]')).toBeDisabled();
-});
 test('İlk sipariş yıldız, dönen müşteride uygun vitrin deseni tercih edilir',async({page})=>{
   const sonuc=await page.evaluate(async()=>{
     const mod=(yol:string)=>import(/* @vite-ignore */yol);

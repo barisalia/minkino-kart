@@ -1,5 +1,7 @@
 import {expect,test,type Page,type Locator} from '@playwright/test';
 import {simitFisleri,simitPuani,simitOku,yeniSimit,type SimitFisi} from '../../sef/src/simit-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const defter=(page:Page)=>page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler);
 async function merkez(el:Locator){const r=(await el.boundingBox())!;return {x:r.x+r.width/2,y:r.y+r.height/2};}
@@ -53,8 +55,10 @@ for(const fis of ['susamli-simit','hashasli-simit'] as const){
     await expect(page.getByRole('meter')).toHaveAttribute('aria-valuetext','Altın renginde');
     await page.getByRole('button',{name:'Simidi fırından çıkar'}).click();
     await page.getByRole('button',{name:'Simidi tepsiye koy'}).click();
-    await expect(page.locator('.tepsi-yuva .simit-halkasi')).toHaveAttribute('data-kaplama',sec);
-    await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
+    // Tepsi tamamlanınca masa sahnesi açılır; seçilen kaplama müşteriye sunulacak tepside.
+    const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+    await expect(sunum.locator('.simit-halkasi')).toHaveAttribute('data-kaplama',sec);
+    await sunum.click();
     await expect(page.locator('.restoran-lokma .simit-halkasi')).toHaveAttribute('data-kaplama',sec);
     await expect(page.locator('.tepsi-yuva .simit-isirildi')).toBeVisible();
     await page.reload();const t=await defter(page);

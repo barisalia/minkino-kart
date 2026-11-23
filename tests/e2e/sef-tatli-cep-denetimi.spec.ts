@@ -1,4 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 const tarifler=['kurabiye','dondurma','minik-kek','meyveli-tart','sutlac'] as const;
 type Tarif=typeof tarifler[number];
 const kase={desen:'cicek',toz:.81,kivam:'ipeksi',doluluk:.75};
@@ -93,12 +95,17 @@ test('Beş pastane tezgâhı küçük yatay dokunmatik ekranda açılır, geri d
     await expect(kart).toHaveAccessibleName(/rafta 1 tane/);await yuklendi(page);
   }
 });
-test('Albümün gerçek sütlaç kâsesi, sunumdan sonra üç kaşığa ve tekrar açılan fotoğrafa denk gelir',async({page},info)=>{
+// Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; kâsenin çizimi masada, sofra fotoğrafı kayıtta (tepsiler.anilar) denetlenir.
+test('Gerçek sütlaç kâsesi masada üç kaşığa denk gelir, sofra kaydı aynı kâseyi tutar',async({page},info)=>{
   test.setTimeout(90000);
   const masa={sunuldu:true,tabaklar:{sutlac:true},sutlacIstegi:'cicek',sutlacServisi:kase,tatliPuani:3,tatliTabagi:'beyaz',tadilan:{}};
   await kaydet(page,{tatliSeviye:5,ekran:'masa',secili:'sutlac',restoranda:true,restoran:{sira:8,menuId:'sutlac',evre:'mutfak',sayildi:true},
     masalar:{sutlac:masa},anilar:[{gun:2,sira:8,menuId:'sutlac',masa}],gun:{no:2,ziyaret:1,kazanc:30,kapandi:false}});
   const yuva=page.locator('.tepsi-yuva[data-parca="sutlac"]');
+  const kaseGorseli=yuva.locator('.sl-kase');
+  await expect(kaseGorseli).toHaveAttribute('data-desen','cicek');await yuklendi(page);
+  const r=await kaseGorseli.boundingBox();expect(r!.width).toBeGreaterThan(25);expect(r!.width/r!.height).toBeCloseTo(720/494,1);
+  if(process.env.SEF_TATLI_KALITE)await page.screenshot({path:process.env.SEF_TATLI_KALITE+'/sutlac-masa-'+info.project.name+'.png'});
   for(let i=1;i<=3;i++){
     await yuva.tap();await expect(yuva).toHaveAttribute('data-lokma-adedi',String(i),{timeout:11000});
     if(i===1){await page.reload();await expect(yuva.locator('.sl-ic')).toHaveAttribute('data-lokma','1');}
@@ -107,13 +114,8 @@ test('Albümün gerçek sütlaç kâsesi, sunumdan sonra üç kaşığa ve tekra
   await expect(yuva.locator('.sl-kase-dis')).toBeVisible();
   await expect(yuva.locator('.sl-ic')).toBeHidden();
   await kaydet(page,{ekran:'kapali',restoranda:false});
-  await page.getByRole('button',{name:'Hazırladığım tabaklar',exact:true}).tap();
-  await page.getByRole('button',{name:/Mino, 2. gün, sofra fotoğrafı/}).tap();
-  const kaseGorseli=page.locator('.ani-buyuk .sl-kase');
-  await expect(kaseGorseli).toHaveAttribute('data-desen','cicek');
-  await expect(kaseGorseli.locator('.sl-ic')).toBeVisible();await yuklendi(page);
-  const r=await kaseGorseli.boundingBox();expect(r!.width).toBeGreaterThan(25);expect(r!.width/r!.height).toBeCloseTo(720/494,1);
-  if(process.env.SEF_TATLI_KALITE)await page.screenshot({path:process.env.SEF_TATLI_KALITE+'/sutlac-album-'+info.project.name+'.png'});
+  const ani=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.anilar.find((a:{menuId:string})=>a.menuId==='sutlac'));
+  expect(ani).toMatchObject({gun:2,sira:8,masa:{sutlacServisi:{desen:'cicek'}}});
 });
 test('Sütlaçta üst üste kalıp seçimleri eski tarçını temizler, yarıda kesilen iki dokunuş aynı kâseyi korur',async({page},info)=>{
   const sutlac={adim:3,pirinc:true,sut:1,isi:.64,karistirma:.78,doluluk:.75,toz:0};

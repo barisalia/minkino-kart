@@ -1,0 +1,33 @@
+/* Deneyler · Mucit Panosu (Paket Deney-Y2). Temel kurallar Top Parkuru'yla ortak (../parkur/stil.css). */
+.pn-kino, .pn-ceren { z-index: 1; }
+.pn-depo, .pn-pil, .pn-pervane-govde { z-index: 3; }
+.pn-cark, .pn-ampul { z-index: 3; }
+.pn-parca { z-index: 4; }
+.pn-parca.takili { pointer-events: auto; cursor: pointer; transition: rotate .18s ease-out; }
+.pn-parca.pn-tepside { z-index: 6; cursor: grab; touch-action: none; }
+/* Tepsideki parçanın dokunma alanı bölmenin tamamı (telefonda da 64 px'ten büyük). */
+.pn-parca.pn-tepside::before { content: ''; position: absolute; left: 50%; top: 50%; width: 260%; height: 150%; translate: -50% -50%; }
+.pn-yuva { z-index: 2; }
+.pn-vana { z-index: 5; transition: rotate .45s cubic-bezier(.3, 1.4, .5, 1); }
+.pn-vana.acik { rotate: 90deg; }
+.pn-salter { z-index: 5; }
+.pn-kanat { z-index: 5; }
+.pn-cark.doner img, .pn-kanat.doner img { animation: pn-don 1.1s linear infinite; }
+.pn-kanat.doner img { animation-duration: .45s; }
+.pn-fiskirma { z-index: 7; display: none; transform-origin: 0 50%; }
+.pn-fiskirma.acik { display: block; animation: pn-fiskir .35s ease-out; }
+.pn-ampul.yanik img { filter: drop-shadow(0 0 18px rgb(255 220 90 / .9)); }
+.pn-tutamak { position: absolute; z-index: 12; padding: 0; border: 0; background: none; min-width: 64px; min-height: 64px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+@keyframes pn-don { to { rotate: 360deg; } }
+@keyframes pn-fiskir { from { scale: .3; opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .pn-cark.doner img, .pn-kanat.doner img { animation-duration: 3s; } }
+/* Teslim cilası (22 Kasım gecesi): oturma "tık"ı, tutulan parça üstte, açılışta zıplama, yanlışta tepsiye kayma, tekrar düğmesi. */
+.pn-parca.pk-tutulan { z-index: 20; cursor: grabbing; }
+.pn-parca.pk-tutulan img { scale: 1.08; filter: drop-shadow(0 6px 6px rgb(0 0 0 / .22)); }
+.pn-parca.pk-oturdu img { animation: pk-otur .4s ease-out; }
+.pn-parca.zipla img { animation: pk-zipla .42s ease-in-out 3; }
+.pn-parca.pn-geri { transition: left .32s cubic-bezier(.3, 1.35, .5, 1), top .32s cubic-bezier(.3, 1.35, .5, 1), width .32s, height .32s; }
+.pn-tekrar { left: 50%; right: auto; translate: -50% 0; animation: pn-tekrar-nabiz 1.4s ease-in-out infinite; }
+.pn-tekrar[hidden] { display: none; }
+@keyframes pn-tekrar-nabiz { 0%, 100% { scale: 1; } 50% { scale: 1.08; } }
+@media (prefers-reduced-motion: reduce) { .pn-parca.zipla img, .pn-tekrar { animation: none; } }

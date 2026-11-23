@@ -31,6 +31,8 @@ export const aileler:Record<string,Aile>={
 };
 const dosyalar=import.meta.glob<string>('../../assets/alfabe/hayvan-cagirma/*.webp',{eager:true,query:'?url',import:'default'});
 export function sahneResmi(ad:string){return dosyalar['../../assets/alfabe/hayvan-cagirma/'+ad+'.webp'];}
+/** Hayvan adından hareket karesi adı: küçük harf, Türkçe harfler sadeleşir, boşluk tire ("Nil timsahı" → "nil-timsahi"). */
+export const hareketAdi=(ad:string)=>ad.toLocaleLowerCase('tr').replace(/[çğıöşü]/g,(c)=>({ç:'c',ğ:'g',ı:'i',ö:'o',ş:'s',ü:'u'} as Record<string,string>)[c]).replace(/\s+/g,'-');
 export function aileResmi(h:string,yavru:boolean){
   const kok=({A:'aslan',O:'orangutan',F:'fil'} as Record<string,string>)[h]??String(h.codePointAt(0));
   return sahneResmi(kok+(yavru?'-yavru':''));

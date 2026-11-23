@@ -1,9 +1,12 @@
-import { kucukGrup, tamDers } from './yas-grubu';
+import { kucukGrup } from './yas-grubu';
 import { dersKaydiniOku, dersKaydiniYaz } from './ders-kaydi';
 import { kalemYollari } from './yollar';
 import { kalemNo, murekkepler } from './kartlar';
 import { cerenSustur, cerenYuzu } from './konusma-dersi';
 import { oyunSesi } from './oyun-sesi';
+import { bosBekleyici } from './bos-bekle';
+import { An, azHareket, canlanmaCizimi, canlanmaKareleri, isikSac, kabaGore } from './canlanma';
+import { harfYuzuAcik, harfYuzuCizimi } from './h14-cizimler';
 import { IKON } from '../../src/ui/ikonlar';
 import './harf-boyama.css';
 
@@ -114,10 +117,118 @@ export function harfBoyamaKur(alan:HTMLElement, ders:{upper:string}, oku:(id:str
     onceki=undefined;iz=undefined;komutlar='';
   }
   let bitisZamani=0;
+  // Damlalar boyanın renginden ayrı, parlak üç renk: harfin üstüne düşünce görünür.
+  const DAMLA_RENKLERI=['#f2736b','#f6d04d','#5bb5e0'];
+  const an=new An();
+  // Bitiş anı (H7): üç boya damlası harfin üstüne düşüp yayılır, harf sevinçle zıplar, üstünde bir gökkuşağı açılır.
+  // Astra'nın çizimleri (boyama/boya-damlasi-0…2, gokkusagi-yayi) gelene kadar damlalar boyanın kendi rengiyle,
+  // gökkuşağı yıldızlardan bir yay olarak yaşanır. Süresini döndürür (az hareket ayarında 0).
+  function bitisAni():number{
+    if(azHareket())return 0;
+    const kagit=ana.querySelector<HTMLElement>('.boy-kagit')!, r=kabaGore(kagit,svg.querySelector('.boy-ic')!);
+    const kareler=canlanmaKareleri('boyama/boya-damlasi',3);
+    const yerler=[[.3,.3],[.55,.55],[.74,.78]].map(([x,y])=>({x:r.x+r.w*x,y:r.y+r.h*y}));
+    for(const [i,yer] of yerler.entries())an.sonra(i*180,()=>{
+      const boy=kareler.length?Math.max(54,r.w*.3):Math.max(22,r.w*.12);
+      const damla=an.ekle(kagit,document.createElement(kareler.length?'img':'i'));
+      damla.className=kareler.length?'cn-kare boy-damla-astra':'boy-damla';damla.style.setProperty('--damla',DAMLA_RENKLERI[i]);damla.setAttribute('aria-hidden','true');
+      if(damla instanceof HTMLImageElement){damla.src=kareler[0];damla.alt='';damla.draggable=false;}
+      Object.assign(damla.style,{left:yer.x-boy/2+'px',top:yer.y-boy/2+'px',width:boy+'px',height:boy+'px'});
+      const dus=-Math.min(r.h*.55,yer.y+boy);
+      an.hareket(damla,[{transform:'translateY('+dus+'px) scale(.8,1.15)',opacity:0},{transform:'translateY('+dus*.7+'px) scale(.8,1.15)',opacity:1,offset:.2},
+        {transform:'translateY(0) scale(.9,1.1)',opacity:1}],{duration:300,easing:'cubic-bezier(.5,0,.9,.6)',fill:'forwards'}).finished.then(()=>{
+        oyunSesi('damla');
+        if(damla instanceof HTMLImageElement){
+          // Çarpma ve yayılma kareleri; sonra boya kağıda karışıp söner.
+          damla.src=kareler[1];an.sonra(110,()=>{damla.src=kareler[2];});
+          an.hareket(damla,[{transform:'scale(1)',opacity:1},{transform:'scale(1.08)',opacity:1,offset:.6},{transform:'scale(1.12)',opacity:0}],
+            {duration:620,easing:'ease-out',fill:'forwards'}).finished.then(()=>an.kaldir(damla),()=>{});
+          return;
+        }
+        an.hareket(damla,[{transform:'scale(.9,1.1)',opacity:1},{transform:'scale(2.1,.45)',opacity:.85,offset:.45},{transform:'scale(2.6,.3)',opacity:0}],
+          {duration:320,easing:'ease-out',fill:'forwards'}).finished.then(()=>an.kaldir(damla),()=>{});
+        for(let n=0;n<6;n++){
+          const sicra=an.ekle(kagit,document.createElement('i'));sicra.className='boy-damla boy-sicrama';sicra.style.setProperty('--damla',DAMLA_RENKLERI[i]);sicra.setAttribute('aria-hidden','true');
+          const b=boy*(.32+(n%3)*.1),aci=Math.PI*(1.05+n*.18),u=boy*(1.3+(n%2)*.6);
+          Object.assign(sicra.style,{left:yer.x-b/2+'px',top:yer.y-b/2+'px',width:b+'px',height:b+'px'});
+          an.hareket(sicra,[{transform:'translate(0,0) scale(.6)',opacity:1},{transform:'translate('+Math.cos(aci)*u+'px,'+(Math.sin(aci)*u*.8)+'px) scale(1)',opacity:1,offset:.55},
+            {transform:'translate('+Math.cos(aci)*u*1.15+'px,'+(Math.sin(aci)*u*.8+boy*.6)+'px) scale(.5)',opacity:0}],{duration:420,easing:'ease-out',fill:'forwards'})
+            .finished.then(()=>an.kaldir(sicra),()=>{});
+        }
+      },()=>{});
+    });
+    // Damlalar düşünce harf zıplar, üstünde gökkuşağı açılır.
+    an.sonra(880,()=>{
+      an.hareket(svg,[{transform:'none'},{transform:'translateY(-3%) scale(1.05)',offset:.4},{transform:'translateY(.6%) scale(.99,1.01)',offset:.75},{transform:'none'}],
+        {duration:460,easing:'ease-out'});
+      oyunSesi('parilti');
+      const cizim=canlanmaCizimi('boyama/gokkusagi-yayi');
+      if(cizim){
+        const w=Math.min(r.w*1.25,kagit.clientWidth-16),h=w*3/8,img=an.ekle(kagit,document.createElement('img'));
+        img.className='boy-gokkusagi';img.src=cizim;img.alt='';img.draggable=false;
+        Object.assign(img.style,{left:r.cx-w/2+'px',top:Math.max(4,r.y-h*.62)+'px',width:w+'px',height:h+'px'});
+        an.hareket(img,[{clipPath:'inset(0 100% 0 0)',opacity:.4},{clipPath:'inset(0 0 0 0)',opacity:1}],{duration:620,easing:'ease-out',fill:'forwards'});
+        return;
+      }
+      const renkler=['#f2736b','#f7a34b','#f6d04d','#7cc970','#5bb5e0','#8f7be0','#e07bbf'];
+      const boy=Math.max(20,r.w*.11),merkez={x:r.cx,y:r.y+r.h*.2},yayX=Math.min(r.w*.7,kagit.clientWidth*.46),yayY=Math.max(boy,Math.min(yayX*.75,merkez.y-boy/2-6));
+      renkler.forEach((renk,n)=>{
+        const aci=Math.PI*(1.06+n*.88/(renkler.length-1));
+        const x=merkez.x+Math.cos(aci)*yayX,y=merkez.y+Math.sin(aci)*yayY;
+        an.sonra(n*65,()=>isikSac(an,kagit,x,y,{adet:2,uzaklik:boy*.7,boy:boy*.55,renk,sure:900}));
+        an.sonra(n*65,()=>{
+          const yildiz=an.ekle(kagit,document.createElement('i'));yildiz.className='cn-isik boy-yay-yildizi';yildiz.setAttribute('aria-hidden','true');
+          yildiz.innerHTML=IKON.yildiz;yildiz.style.color=renk;
+          Object.assign(yildiz.style,{left:x-boy/2+'px',top:y-boy/2+'px',width:boy+'px',height:boy+'px'});
+          an.hareket(yildiz,[{transform:'scale(.2) rotate(-40deg)',opacity:0},{transform:'scale(1.2) rotate(8deg)',opacity:1,offset:.25},
+            {transform:'scale(1) rotate(0)',opacity:1,offset:.8},{transform:'scale(.9)',opacity:0}],{duration:1150,easing:'ease-out',fill:'forwards'})
+            .finished.then(()=>an.kaldir(yildiz),()=>{});
+        });
+      });
+    });
+    return 1750;
+  }
+  // Fırça (H7): Astra'nın fırçası gelince boyarken parmağı izler; ucu (tuvalde x 90, y 410) parmağın altında durur.
+  const fircaSrc=canlanmaCizimi('boyama/firca');
+  let fircaEl:HTMLImageElement|undefined;
+  function fircayiTasi(e:PointerEvent){
+    if(!fircaSrc||bittiMi||azHareket()||parmak!==e.pointerId)return;
+    const kagit=ana.querySelector<HTMLElement>('.boy-kagit')!,k=kagit.getBoundingClientRect();
+    if(!fircaEl){fircaEl=an.ekle(kagit,document.createElement('img'));fircaEl.className='boy-firca';fircaEl.src=fircaSrc;fircaEl.alt='';fircaEl.draggable=false;}
+    const boy=Math.max(64,Math.min(kagit.clientHeight*.3,150));
+    fircaEl.classList.remove('boy-firca-gitti');
+    Object.assign(fircaEl.style,{width:boy+'px',height:boy+'px',left:e.clientX-k.left-boy*90/500+'px',top:e.clientY-k.top-boy*410/500+'px'});
+  }
+  const fircayiSakla=()=>fircaEl?.classList.add('boy-firca-gitti');
   function ilerle(){if(!kapali&&!gecildi&&bittiMi){gecildi=true;dersKaydiniYaz(anahtar,null);bitti();}}
-  function tamamla(){
-    bittiMi=true;birak();ana.classList.add('boy-tamam');tekrar.disabled=true;
-    degisiklik=true;sakla();goster(100);oyunSesi('birles');if(tamDers)oku('boya-tamam',ilerle);else bitisZamani=window.setTimeout(ilerle,650);
+  // Paket Harf-H15 · Harf uyanır (2–3 yaş): boyanan harfin yüzü açılır (gözler, gülümseme), göz kırpar; Ceren "Harfin
+  // uyandı!" der. Çocuk harfe dokununca harf zıplar, ağzını açıp güler. Birkaç saniye sonra ders kendiliğinden ilerler.
+  // Yüz çizimleri gelmeden (h14-cizimler.ts) ya da az hareket ayarında hiç olmaz.
+  function harfiUyandir(){
+    if(kapali)return;
+    const kagit=ana.querySelector<HTMLElement>('.boy-kagit')!, r=kabaGore(kagit,svg.querySelector('.boy-ic')!);
+    const gozW=Math.min(r.w*1.1,r.h*.6), agizW=gozW*.46;
+    const yuz=(ad:Parameters<typeof harfYuzuCizimi>[0],sinif:string,w:number,h:number,y:number)=>{
+      const img=an.ekle(kagit,document.createElement('img'));img.className='boy-yuz '+sinif;img.src=harfYuzuCizimi(ad);img.alt='';img.draggable=false;img.setAttribute('aria-hidden','true');
+      Object.assign(img.style,{left:r.cx-w/2+'px',top:y-h/2+'px',width:w+'px',height:h+'px'});return img;
+    };
+    const goz=yuz('goz-acik','boy-goz',gozW,gozW*2/3,r.y+r.h*.32), agiz=yuz('agiz-gulen','boy-agiz',agizW,agizW*.75,r.y+r.h*.52);
+    ana.classList.add('boy-uyandi');
+    const kirp=()=>{if(kapali)return;goz.src=harfYuzuCizimi('goz-kirpik');an.sonra(150,()=>{goz.src=harfYuzuCizimi('goz-acik');an.sonra(2300,kirp);});};
+    an.sonra(900,kirp);
+    kagit.addEventListener('pointerdown',()=>{
+      if(kapali||gecildi)return;
+      agiz.src=harfYuzuCizimi('agiz-acik');an.sonra(420,()=>{agiz.src=harfYuzuCizimi('agiz-gulen');});
+      oyunSesi('parilti');
+      for(const el of [svg,goz,agiz])an.hareket(el,[{transform:'none'},{transform:'translateY(-6%) scale(1.06)',offset:.4},{transform:'none'}],{duration:420,easing:'ease-out'});
+    });
+    oku('boya-uyandi',()=>{bitisZamani=window.setTimeout(ilerle,2600);});
+  }
+  function tamamla(geriYukleme=false){
+    bittiMi=true;bos.kapat();ana.classList.remove('boy-hatirlat');birak();ana.classList.add('boy-tamam');tekrar.disabled=true;
+    fircayiSakla();degisiklik=true;sakla();goster(100);oyunSesi('birles');
+    const uyan=!geriYukleme&&harfYuzuAcik()&&!azHareket();
+    bitisZamani=window.setTimeout(uyan?harfiUyandir:ilerle,Math.max(650,geriYukleme?0:bitisAni()));
   }
   function sur(a:Nokta,b:Nokta){
     const nokta=(p:Nokta)=>p.x.toFixed(1)+' '+p.y.toFixed(1);
@@ -157,6 +268,7 @@ export function harfBoyamaKur(alan:HTMLElement, ders:{upper:string}, oku:(id:str
       }
     }
     e.preventDefault();svg.focus({preventScroll:true});parmak=e.pointerId;svg.setPointerCapture(e.pointerId);
+    bos.sifirla();ana.classList.remove('boy-hatirlat');
     onceki=p;sur(p,p);
   };
   function hareket(e:PointerEvent){
@@ -164,14 +276,16 @@ export function harfBoyamaKur(alan:HTMLElement, ders:{upper:string}, oku:(id:str
     const konum=konumAl(e);if(konum){sur(onceki,konum);if(!bittiMi)onceki=konum;}
   }
   svg.onpointermove=hareket;
-  svg.onpointerup=e=>{if(parmak===e.pointerId){hareket(e);birak();sakla();}};
+  svg.addEventListener('pointerdown',fircayiTasi);svg.addEventListener('pointermove',fircayiTasi);
+  svg.addEventListener('pointerup',fircayiSakla);svg.addEventListener('pointercancel',fircayiSakla);
+  svg.onpointerup=e=>{if(parmak===e.pointerId){hareket(e);birak();sakla();if(!bittiMi)bos.kur();}};
   svg.onpointercancel=svg.onlostpointercapture=e=>{if(parmak===e.pointerId){birak();sakla();}};
   svg.onkeydown=e=>{
     if(!['Enter',' '].includes(e.key))return;
     e.preventDefault();
     if(kapali||bittiMi||parmak!==null||e.repeat)return;
     const hedef=gruplar.find(g=>g.islenen<g.noktalar.length)?.noktalar.find(n=>!n.boyali);
-    if(hedef){sur(hedef,hedef);birak();sakla();}
+    if(hedef){bos.sifirla();sur(hedef,hedef);birak();sakla();if(!bittiMi)bos.kur();}
   };
   function gorunurluk(){if(document.hidden)sakla();else if(bittiMi)ilerle();}
   function ekranDegisti(){if(parmak!==null){birak();sakla();}}
@@ -180,14 +294,26 @@ export function harfBoyamaKur(alan:HTMLElement, ders:{upper:string}, oku:(id:str
   window.addEventListener('resize',ekranDegisti);
   document.addEventListener('visibilitychange',gorunurluk);
   window.addEventListener('pagehide',sakla);
-  tekrar.onclick=()=>{if(!bittiMi){sonIpucu=-1;if(ana.classList.contains('boy-isaret'))isaretIpucu(true);else oku('boya-basla');}};
+  // Çocuk boyamaya başlamaz ya da yarıda bırakırsa Ceren yönergeyi yineler, sıradaki yer halkayla belirir.
+  const bos=bosBekleyici(()=>{
+    if(bittiMi||kapali||parmak!==null)return;
+    ana.classList.remove('boy-hatirlat');void ana.offsetWidth;ana.classList.add('boy-hatirlat');
+    yonerge();
+  });
+  function yonerge(){
+    if(bittiMi)return;
+    bos.dur();sonIpucu=-1;
+    if(ana.classList.contains('boy-isaret')){isaretIpucu(true);bos.kur();}
+    else oku('boya-basla',()=>{if(!bittiMi&&!kapali&&parmak===null)bos.kur();});
+  }
+  tekrar.onclick=yonerge;
   if(kayit&&kayit.alan.length===toplam){
     let i=0;
     for(const g of gruplar)for(const n of g.noktalar)if(kayit.alan[i++]==='1'){n.boyali=true;g.islenen++;boyanan++;}
     for(const d of kayit.izler){const p=document.createElementNS(svgNs,'path');p.setAttribute('d',d);murekkep.append(p);}
   }
   goster(Math.floor(boyanan*100/toplam));baslangicKaydi=false;
-  if(kayit?.tamam&&kayit.alan.length===toplam)tamamla();else tekrar.click();
-  return ()=>{clearTimeout(bitisZamani);sakla();kapali=true;birak();cerenSustur();yon.removeEventListener('change',ekranDegisti);window.removeEventListener('resize',ekranDegisti);document.removeEventListener('visibilitychange',gorunurluk);window.removeEventListener('pagehide',sakla);ana.remove();};
+  if(kayit?.tamam&&kayit.alan.length===toplam)tamamla(true);else tekrar.click();
+  return ()=>{clearTimeout(bitisZamani);an.durdur();bos.kapat();sakla();kapali=true;birak();cerenSustur();yon.removeEventListener('change',ekranDegisti);window.removeEventListener('resize',ekranDegisti);document.removeEventListener('visibilitychange',gorunurluk);window.removeEventListener('pagehide',sakla);ana.remove();};
 }
 

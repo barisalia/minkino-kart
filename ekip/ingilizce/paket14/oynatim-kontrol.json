@@ -1,0 +1,153 @@
+{
+  "mode": "Isolated actual song component and CSS, test mode, no audio; completion callback held for visual inspection. Not full lesson or audio approval.",
+  "devices": [
+    {
+      "name": "telefon",
+      "width": 874,
+      "height": 402,
+      "errors": [],
+      "samples": [
+        {
+          "t": 2437.89999999851,
+          "pose": "sarki-0"
+        },
+        {
+          "t": 2858.7999999970198,
+          "pose": "sarki-1"
+        },
+        {
+          "t": 3279.6999999955297,
+          "pose": "sarki-2"
+        },
+        {
+          "t": 3700.39999999851,
+          "pose": "sarki-3"
+        },
+        {
+          "t": 4117.29999999702,
+          "pose": "sarki-0"
+        },
+        {
+          "t": 4538,
+          "pose": "sarki-1"
+        },
+        {
+          "t": 4958.79999999702,
+          "pose": "sarki-2"
+        },
+        {
+          "t": 5378.10000000149,
+          "pose": "sarki-3"
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/ingilizce/kisi/polly-sarki-3.webp",
+          "complete": true,
+          "natural": [
+            540,
+            500
+          ]
+        },
+        {
+          "src": "/assets/ingilizce/kelime/cow.webp",
+          "complete": true,
+          "natural": [
+            1000,
+            788
+          ]
+        },
+        {
+          "src": "/assets/ingilizce/kelime/duck.webp",
+          "complete": true,
+          "natural": [
+            724,
+            1000
+          ]
+        },
+        {
+          "src": "/assets/ingilizce/kelime/sheep.webp",
+          "complete": true,
+          "natural": [
+            1000,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "width": 1366,
+      "height": 1024,
+      "errors": [],
+      "samples": [
+        {
+          "t": 1681.7000000029802,
+          "pose": "sarki-0"
+        },
+        {
+          "t": 2098.60000000149,
+          "pose": "sarki-1"
+        },
+        {
+          "t": 2518.8000000044703,
+          "pose": "sarki-2"
+        },
+        {
+          "t": 2939.8000000044703,
+          "pose": "sarki-3"
+        },
+        {
+          "t": 3360.60000000149,
+          "pose": "sarki-0"
+        },
+        {
+          "t": 3781.4000000059605,
+          "pose": "sarki-1"
+        },
+        {
+          "t": 4202,
+          "pose": "sarki-2"
+        },
+        {
+          "t": 4619,
+          "pose": "sarki-3"
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/ingilizce/kisi/polly-sarki-3.webp",
+          "complete": true,
+          "natural": [
+            540,
+            500
+          ]
+        },
+        {
+          "src": "/assets/ingilizce/kelime/cow.webp",
+          "complete": true,
+          "natural": [
+            1000,
+            788
+          ]
+        },
+        {
+          "src": "/assets/ingilizce/kelime/duck.webp",
+          "complete": true,
+          "natural": [
+            724,
+            1000
+          ]
+        },
+        {
+          "src": "/assets/ingilizce/kelime/sheep.webp",
+          "complete": true,
+          "natural": [
+            1000,
+            910
+          ]
+        }
+      ]
+    }
+  ]
+}

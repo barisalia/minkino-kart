@@ -1,5 +1,7 @@
 import { expect, test, type Page, type Locator } from '@playwright/test';
 import sharp from 'sharp';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 async function merkez(el: Locator) {
   await expect(el).toBeVisible();
@@ -74,17 +76,17 @@ test('Krep, tavadan meyveli tabağa parmakla hazırlanıp deftere bir kez girer'
   await adim('servis');await expect(bul('[data-krep-tabak]')).toHaveAttribute('data-krep-tabak','karisik');
   const sunum=await bul('.kr-karisik-tabak').screenshot({scale:'css'});
   await tasi('[data-krep-tabak]','[data-krep-zil]');
-  await expect(page.getByRole('button',{name:'Bulut masasına götür'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Mino masasına götür'})).toBeVisible();
   await page.reload();expect((await durum()).servis).toBe(1);
-  await page.getByRole('button',{name:'Bulut masasına götür'}).tap();
+  await page.getByRole('button',{name:'Mino masasına götür'}).tap();
   await expect(bul('.servis-jetonu')).toBeVisible();
-  await page.getByRole('button',{name:'Geri',exact:true}).tap();
-  await expect(bul('[data-tarif=krep] .kart-yildiz')).toBeVisible();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  await expect(bul('.defter-tabagi')).toHaveCount(1);
-  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1))).toMatchObject({tarifId:'krep',resim:expect.stringMatching(/^data:image\/webp;base64,/)});
-  await expect.poll(()=>bul('.defter-fotograf').evaluate((n:HTMLImageElement)=>n.complete&&n.naturalWidth>0)).toBe(true);
-  const kaynak=await bul('.defter-fotograf').getAttribute('src');
+  // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı. Çocuğun tabağı deftere bir kez girer ve fotoğrafı masada, Mino'nun önündeki tabakta görünür.
+  const gecmis=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis);
+  expect(gecmis.filter((k:{tarifId:string})=>k.tarifId==='krep')).toHaveLength(1);
+  expect(gecmis.at(-1)).toMatchObject({tarifId:'krep',resim:expect.stringMatching(/^data:image\/webp;base64,/)});
+  const foto=bul('.defter-fotograf').first();
+  await expect.poll(()=>foto.evaluate((n:HTMLImageElement)=>n.complete&&n.naturalWidth>0)).toBe(true);
+  const kaynak=await foto.getAttribute('src');
   expect(kaynak).toMatch(/^data:image\/webp;base64,/);
   const album=Buffer.from(kaynak!.split(',')[1],'base64');
   const baski=await sharp(album).resize(96,96).ensureAlpha().raw().toBuffer();
@@ -97,6 +99,8 @@ test('Krep, tavadan meyveli tabağa parmakla hazırlanıp deftere bir kez girer'
   }
   expect(ornek).toBeGreaterThan(4000);
   expect(hataToplami/(ornek*3)).toBeLessThan(8);
+  await page.getByRole('button',{name:'Geri',exact:true}).tap();
+  await expect(bul('[data-tarif=krep] .kart-yildiz')).toBeVisible();
   expect(hata).toEqual([]);
 });
 
@@ -141,7 +145,7 @@ test('Krep klavyeyle dokunmadan hazırlanır ve ikinci sipariş yeni bir seçiml
   await onay('[data-krep-kat="0"]');await onay('[data-krep-kat="1"]');
   await expect(b('[data-krep-tabak]')).toHaveAttribute('data-krep-tabak','muzlu');
   await onay('[data-krep-zil]');
-  await page.getByRole('button',{name:'Bulut masasına götür'}).press('Enter');
+  await page.getByRole('button',{name:'Mino masasına götür'}).press('Enter');
   await expect(b('.servis-jetonu')).toBeVisible();
   await page.getByRole('button',{name:'Geri',exact:true}).press('Enter');
   await onay('[data-tarif=krep]');
@@ -203,7 +207,7 @@ test('Yanık, fazla ve ideal pişirme yıldızı ve tabak fotoğrafı serviste k
     if(await page.locator('.krep-oyunu').count())await page.locator('.kr-geri').click();
     await page.evaluate(({k,d})=>{localStorage.setItem(k,JSON.stringify(d));localStorage.setItem('minkino-sef-acik-atolye','krep');},{k,d:{...ilk,adim:'servis',aktif:true,ilkYuz,sonYuz,ikinci:true,meyve:'muz',parcalar:[{x:32,y:40,meyve:'cilek'},{x:45,y:63,meyve:'cilek'},{x:62,y:53,meyve:'muz'}]}});
     await page.reload();await page.locator('[data-krep-zil]').tap();
-    await page.getByRole('button',{name:'Bulut masasına götür'}).tap();
+    await page.getByRole('button',{name:'Mino masasına götür'}).tap();
     await expect(page.locator('.servis-jetonu')).toHaveAccessibleName(new RegExp('^'+puan+' jeton'));
     const servis=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
     expect(servis.resim).toMatch(/^data:image\/webp;base64,/);expect(servis.puan).toBe(puan);expect(servis.pisirmePuani).toBe(puan);
@@ -243,7 +247,7 @@ for(const duzelt of [false,true])test('Krep fişinde iki çilek ve bir muz '+(du
   await onay.tap();
   await page.getByRole('button',{name:'Açık meyveli krebi tabağa al'}).tap();
   await page.locator('[data-krep-zil]').tap();
-  await page.getByRole('button',{name:'Bulut masasına götür'}).tap();
+  await page.getByRole('button',{name:'Mino masasına götür'}).tap();
   await expect(page.locator('.servis-jetonu')).toHaveAccessibleName(new RegExp((duzelt?'3':'2')+' jeton'));
   const k=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
   expect(k.istekPuani).toBe(duzelt?3:2);expect(k.pisirmePuani).toBe(3);

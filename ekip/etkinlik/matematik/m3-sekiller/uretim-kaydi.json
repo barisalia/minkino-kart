@@ -1,0 +1,225 @@
+{
+  "package": "M3",
+  "tool": "builtin ImageGen",
+  "status": "19 assets delivered; integration not tested",
+  "records": [
+    {
+      "name": "saat",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-9431d70c-519a-4977-94df-374b239931d2.png"
+    },
+    {
+      "name": "top",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-d69598c0-e819-46be-86b3-065d3d4a2e7b.png"
+    },
+    {
+      "name": "pencere",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-c8057a74-42c3-4fe0-a7f0-f0fd26ae862b.png"
+    },
+    {
+      "name": "sinif-sekiller",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-66d3b805-28ce-4141-96fc-6931a50621d0.png"
+    },
+    {
+      "name": "kitap",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-2331e142-8bde-4ebf-95d5-73cb884659d7.png"
+    },
+    {
+      "name": "tabela",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-51bf6a60-6d27-41f7-8201-fa6bf1b928bb.png"
+    },
+    {
+      "name": "pizza-dilimi",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-49240b5f-e30d-485d-b27f-88b2dc04ba29.png"
+    },
+    {
+      "name": "hatira-sekil-kutusu",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-91e9176b-f16f-4709-bfe4-549edfa71bdc.png"
+    },
+    {
+      "name": "kare",
+      "w": 400,
+      "h": 400,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-9bff4305-3d42-48b3-a029-63cf7b689093.png"
+    },
+    {
+      "name": "ucgen",
+      "w": 400,
+      "h": 346,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-a4f53be3-97f5-4c91-973c-a16c1d576f12.png"
+    },
+    {
+      "name": "ceren-havada-ciz",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-620e5a3f-8672-40a8-a8b2-ee73b3fa98dd.png"
+    },
+    {
+      "name": "ceren-buyutec",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-44710e86-3acc-45c4-8c44-af6003cd913c.png"
+    },
+    {
+      "name": "ceren-dusun",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-3297f2c4-5b2b-4219-84ac-ebe7492ab888.png"
+    },
+    {
+      "name": "iz-kare",
+      "w": 480,
+      "h": 480,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-5b377777-fe73-4778-938e-71510a146060.png"
+    },
+    {
+      "name": "iz-ucgen",
+      "w": 480,
+      "h": 416,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-752b7ea4-ecfb-4c4e-aa66-aaa0f370ad7c.png"
+    },
+    {
+      "name": "iz-daire",
+      "w": 480,
+      "h": 480,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-90e808e4-c9a8-41c2-9c0f-c3f738d25aaa.png"
+    },
+    {
+      "name": "iz-dikdortgen",
+      "w": 552,
+      "h": 336,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-4f8ed50f-063f-438d-b247-f695532f5c01.png"
+    },
+    {
+      "name": "daire",
+      "w": 400,
+      "h": 400,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-1ea2854d-7847-4448-a216-46aad2dc3d45.png"
+    },
+    {
+      "name": "dikdortgen",
+      "w": 460,
+      "h": 280,
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-da19005c-2b57-459b-a058-ee27bd7f998e.png"
+    }
+  ],
+  "prompts": {
+    "initial": [
+      {
+        "name": "sinif-sekiller",
+        "prompt": "Premium Minkino preschool game art. Immaculate flat vector-like 2D, thin crisp BLACK outlines, bright warm child-friendly palette, flat solid fills, at most ONE hard-edged flat shadow. Absolutely no grain, texture, gradients, photorealism, glossy rendered surfaces, faces on objects, labels, letters or text. Single standalone asset, full resolution, no sheet, no collage. Create a 1920x1080 landscape classroom background, another wall of the classroom in supplied style reference: cream walls, turquoise curtains at the extreme left, golden wood trims, coral floor. Keep the entire central rectangle x380..1540 y160..760 absolutely empty uniform solid pale cream wall; all decorations outside this reserved area. A few charming geometric wooden classroom decorations at extreme edges only. Simple flat floor strip y820..1080. No teacher, no children, no loose game objects, no board in the center. Wide level front view."
+      },
+      {
+        "name": "saat",
+        "prompt": "Premium Minkino preschool game art. Immaculate flat vector-like 2D, thin crisp BLACK outlines, bright warm child-friendly palette, flat solid fills, at most ONE hard-edged flat shadow. Absolutely no grain, texture, gradients, photorealism, glossy rendered surfaces, faces on objects, labels, letters or text. Single standalone asset, full resolution, no sheet, no collage. A single lovely round classroom wall clock, exact circular silhouette seen straight from front. Coral round rim, cream dial, small simple ticks with no numbers, two teal clock hands and central dot. Centered on transparent canvas, even generous padding. Clock shape unmistakeably a circle."
+      },
+      {
+        "name": "top",
+        "prompt": "Premium Minkino preschool game art. Immaculate flat vector-like 2D, thin crisp BLACK outlines, bright warm child-friendly palette, flat solid fills, at most ONE hard-edged flat shadow. Absolutely no grain, texture, gradients, photorealism, glossy rendered surfaces, faces on objects, labels, letters or text. Single standalone asset, full resolution, no sheet, no collage. A single round children's toy ball, orthographic straight front view, perfect circular silhouette, cheerful blue and yellow broad curved color panels. Flat clean areas, no soft shading. Centered isolated on transparent background, even generous padding."
+      },
+      {
+        "name": "pencere",
+        "prompt": "Premium Minkino preschool game art. Immaculate flat vector-like 2D, thin crisp BLACK outlines, bright warm child-friendly palette, flat solid fills, at most ONE hard-edged flat shadow. Absolutely no grain, texture, gradients, photorealism, glossy rendered surfaces, faces on objects, labels, letters or text. Single standalone asset, full resolution, no sheet, no collage. A single SQUARE classroom window frame, strict front view with equal width and height outer silhouette, golden wood frame with thin black outlines, cross mullion makes precisely four identical blue square panes. No sill overhang, no curtains, no scenery. Centered isolated transparent background, even generous padding."
+      }
+    ],
+    "objects": [
+      [
+        "kitap",
+        "Single independent preschool educational game asset. Perfectly clean flat 2D vector-like illustration. Each bounded region ONE uniform RGB color. Thin precise BLACK outlines, luminous cheerful palette. Absolutely NO grain, paper, mottling, gradient, shading falloff, gloss, 3D rendering, face, writing or lettering. Transparent background. Even 10% margin. One closed upright book, strictly front-on elevation, rectangular cover twice as tall as wide. Blue cover, thin gold border and small red bookmark just below. No perspective or tilted spine. Its outer silhouette should read as a RECTANGLE."
+      ],
+      [
+        "tabela",
+        "Single independent preschool educational game asset. Perfectly clean flat 2D vector-like illustration. Each bounded region ONE uniform RGB color. Thin precise BLACK outlines, luminous cheerful palette. Absolutely NO grain, paper, mottling, gradient, shading falloff, gloss, 3D rendering, face, writing or lettering. Transparent background. Even 10% margin. One upright equilateral triangular road-sign plate: red border, empty flat white interior, one thin black outer contour. No pole, no stand, no other symbol. Crisp triangle silhouette."
+      ],
+      [
+        "pizza-dilimi",
+        "Single independent preschool educational game asset. Perfectly clean flat 2D vector-like illustration. Each bounded region ONE uniform RGB color. Thin precise BLACK outlines, luminous cheerful palette. Absolutely NO grain, paper, mottling, gradient, shading falloff, gloss, 3D rendering, face, writing or lettering. Transparent background. Even 10% margin. One triangular slice of pizza seen directly from above, pointed end facing down. Flat warm cream cheese triangle, thin flat golden curved crust along the top edge, three deliberate simple red circular tomato slices. No speckles, no grain, no highlights or gradients. Simple recognizable triangle."
+      ],
+      [
+        "hatira-sekil-kutusu",
+        "Single independent preschool educational game asset. Perfectly clean flat 2D vector-like illustration. Each bounded region ONE uniform RGB color. Thin precise BLACK outlines, luminous cheerful palette. Absolutely NO grain, paper, mottling, gradient, shading falloff, gloss, 3D rendering, face, writing or lettering. Transparent background. Even 10% margin. A beautiful small golden wooden shape sorting toy box in mild three-quarter front view. Its lid has exactly three crisp openings: square, triangle and circle. Beside it lie matching blue square, yellow triangle and red circle blocks, separated and uncluttered. Clean wooden solid color, no wood grain. Refined toy illustration."
+      ]
+    ],
+    "shapes": [
+      [
+        "kare",
+        "A perfect blue SQUARE wooden puzzle block. Precisely equal sides, right angles, front-on orthographic flat view, NO perspective, small corner radius only. Entire square centered, occupies 80% canvas width and height. One uniform vivid blue fill and thin black boundary. No thickness extrusion."
+      ],
+      [
+        "ucgen",
+        "A perfect yellow equilateral TRIANGLE wooden puzzle block, apex at top, straight horizontal base. Front-on orthographic flat view, NO perspective. Centered, width 80% of canvas, height 69.3% of canvas. One uniform golden yellow fill with thin black outline."
+      ],
+      [
+        "daire",
+        "A perfect red CIRCLE wooden puzzle block, front-on orthographic flat view, NO perspective. Circle centered, diameter 80% canvas width. One uniform coral red fill, thin black outline."
+      ],
+      [
+        "dikdortgen",
+        "A green horizontal RECTANGLE wooden puzzle block, front-on orthographic flat view, NO perspective. Width exactly 460 to height 280 proportion. Centered, occupies 92% canvas width and 56% canvas height. One uniform green fill, thin black outline, tiny corner radius."
+      ]
+    ],
+    "traces": [
+      [
+        "iz-kare",
+        "a perfect square, outer bounds x60..540 y60..540, starting dot at upper left"
+      ],
+      [
+        "iz-ucgen",
+        "a perfect equilateral triangle with apex (300,92), lower left (60,508), lower right (540,508), starting dot on top apex"
+      ],
+      [
+        "iz-daire",
+        "a perfect circle centered (300,300) radius240, starting dot at (300,60)"
+      ],
+      [
+        "iz-dikdortgen",
+        "a horizontal rectangle bounds x24..576 y132..468, starting dot upper left"
+      ]
+    ],
+    "ceren": [
+      [
+        "ceren-havada-ciz",
+        "She raises one hand with index finger extended to trace a shape in the air at upper right. Other hand relaxed. No actual line, shape or symbol in air."
+      ],
+      [
+        "ceren-buyutec",
+        "She holds a small golden magnifying glass beside her face, looking calmly toward the right as if searching the classroom. Glass is beside eye, not overlapping or distorting face. Lens clear transparent."
+      ],
+      [
+        "ceren-dusun",
+        "She rests one index fingertip gently against her chin in a thoughtful smiling question pose. Other arm relaxed."
+      ]
+    ]
+  },
+  "normalization": {
+    "shapeCanvas": 500,
+    "traceCanvas": 600,
+    "square": [
+      0.1,
+      0.1,
+      0.8,
+      0.8
+    ],
+    "triangle": [
+      0.1,
+      0.154,
+      0.8,
+      0.692
+    ],
+    "circle": [
+      0.1,
+      0.1,
+      0.8,
+      0.8
+    ],
+    "rectangle": [
+      0.04,
+      0.22,
+      0.92,
+      0.56
+    ]
+  },
+  "checks": [
+    "Individual images visually inspected",
+    "Transparent cutouts checked on cream/dark backgrounds",
+    "Phone layout 844x390 composite",
+    "Tablet layout 1024x576 composite"
+  ],
+  "notChecked": [
+    "Actual game integration, touch targets and tracing behavior",
+    "Full animation; delivered Ceren images are separate gestures, not a motion sequence"
+  ]
+}

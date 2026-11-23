@@ -1,5 +1,7 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
 import { hataTopla } from './yardimci';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 type Nokta = { x: number; y: number };
 const alan = (p: Page) => p.locator('.firin-oyunu');
@@ -15,10 +17,17 @@ async function pizzaKaydi(p:Page){
   await expect(alan(p)).toHaveCount(0);
   return p.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
 }
-async function dedeyeSun(p:Page){
-  await p.getByRole('button',{name:'Dede Hasan masasına götür'}).tap();
+// Serbest pizzayı sırayla Dede, Mino ve Lokum ister; pizza isteyenin masasına gider (19 Kasım 2026).
+// Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; servis edilen pizza masada, yenilemeden sonra da (masada adımı) denetlenir.
+const masadakiPizza=(p:Page)=>p.locator('.tepsi-yuva[data-parca=pizza]');
+async function masayaSun(p:Page,kim:string,masada?:()=>Promise<void>){
+  await p.getByRole('button',{name:kim+' masasına götür'}).tap();
   await expect(p.locator('.servis-jetonu')).toBeVisible();
+  if(masada){await p.reload();await masada();}
   await p.getByRole('button',{name:'Geri',exact:true}).first().tap();
+}
+async function dedeyeSun(p:Page,masada?:()=>Promise<void>){
+  await masayaSun(p,'Dede Hasan',masada);
 }
 async function nokta(el: Locator, x = .5, y = .5): Promise<Nokta> {
   const kutu = await el.boundingBox();
@@ -105,19 +114,16 @@ test('Mini Pizza hamuru, sosu ve çocuğun seçtiği yerler fırından masaya ta
   const son=await pizzaKaydi(page);
   expect(son).toMatchObject({no:1,kivam:'tam',pisirme:3,ust:parcalar});
   const sonKoordinatlar=son.ust;
-  await dedeyeSun(page);
+  await dedeyeSun(page,async()=>{
+    await expect(masadakiPizza(page)).toHaveCount(1);
+    const masadakiYerler = await masadakiPizza(page).locator('.pz-parca').evaluateAll(parcalar => parcalar.map(r => {
+      const el = r as HTMLElement;
+      return { cesit: el.dataset.cesit, x: parseFloat(el.style.left), y: parseFloat(el.style.top) };
+    }));
+    expect(masadakiYerler).toEqual(sonKoordinatlar);
+  });
   await expect(kart(page)).toBeVisible();
   expect((await durum(page)).aktif).toBe(false);
-  await page.reload();
-  await page.getByRole('button', {name:'Hazırladığım tabaklar',exact:true}).tap();
-  const defterPizzasi = page.getByRole('dialog').getByRole('button', {name:'Mini Pizza', exact:true});
-  await expect(defterPizzasi).toHaveCount(1);
-  const defterYerleri = await defterPizzasi.locator('.pz-parca').evaluateAll(parcalar => parcalar.map(r => {
-    const el = r as HTMLElement;
-    return { cesit: el.dataset.cesit, x: parseFloat(el.style.left), y: parseFloat(el.style.top) };
-  }));
-  expect(defterYerleri).toEqual(sonKoordinatlar);
-  await page.getByRole('button', {name:'Tabak defterini kapat',exact:true}).tap();
   await kart(page).tap();
   await bekle(page,'hamur');
   expect((await durum(page)).tur).toBe(1);
@@ -193,11 +199,10 @@ test('pizza erken geri döner, görünmeyen fırında süre ilerlemez, yanık k�
   await page.getByRole('button',{name:'Pizzayı servis tabağına koy'}).tap();
   expect(await pizzaKaydi(page)).toMatchObject({pisirme:1,kivam:'yanik'});
   expect((await durum(page)).ust).toEqual(ust);
-  await dedeyeSun(page);
-  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  const tabak=page.getByRole('dialog').getByRole('button',{name:'Mini Pizza',exact:true});
-  await expect(tabak.locator('.pz-pizza')).toHaveAttribute('data-kivam','yanik');
-  await expect(tabak.locator('.pz-parca')).toHaveCount(3);
+  await dedeyeSun(page,async()=>{
+    await expect(masadakiPizza(page).locator('.pz-pizza')).toHaveAttribute('data-kivam','yanik');
+    await expect(masadakiPizza(page).locator('.pz-parca')).toHaveCount(3);
+  });
 });
 
 test('çocuk fişten farklı tek malzemeyi kendi seçip servis edebilir',async({page})=>{
@@ -221,12 +226,10 @@ test('çocuk fişten farklı tek malzemeyi kendi seçip servis edebilir',async({
   await page.getByRole('button',{name:'Tepsiyi şimdi al'}).tap();
   await page.getByRole('button',{name:'Pizzayı servis tabağına koy'}).tap();
   expect(await pizzaKaydi(page)).toMatchObject({istekPuani:1,pisirme:2,puan:1});
-  await dedeyeSun(page);
-  await page.reload();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  const sunulan=page.getByRole('dialog').getByRole('button',{name:'Mini Pizza',exact:true});
-  await expect(sunulan.locator('.pz-parca')).toHaveCount(1);
-  await expect(sunulan.locator('.pz-parca')).toHaveAttribute('data-cesit','domates');
+  await dedeyeSun(page,async()=>{
+    await expect(masadakiPizza(page).locator('.pz-parca')).toHaveCount(1);
+    await expect(masadakiPizza(page).locator('.pz-parca')).toHaveAttribute('data-cesit','domates');
+  });
 });
 
 for(const fazladan of [false,true]){
@@ -307,12 +310,10 @@ for(const ters of [false,true]){
     await page.getByRole('button',{name:'Pizzayı servis tabağına koy'}).tap();
     expect(await pizzaKaydi(page)).toMatchObject({istekPuani:ters?1:3,puan:ters?2:3});
     await page.screenshot({path:info.outputPath('paylasim-servis.png')});
-    await dedeyeSun(page);
-    await page.reload();
-    await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-    const album=page.getByRole('dialog').getByRole('button',{name:'Mini Pizza',exact:true});
-    await expect(album.locator('.pz-parca')).toHaveCount(2);
-    expect(await album.locator('[data-cesit=mantar]').evaluate(e=>parseFloat((e as HTMLElement).style.left)>50)).toBe(ters);
+    await masayaSun(page,'Mino',async()=>{
+      await expect(masadakiPizza(page).locator('.pz-parca')).toHaveCount(2);
+      expect(await masadakiPizza(page).locator('[data-cesit=mantar]').evaluate(e=>parseFloat((e as HTMLElement).style.left)>50)).toBe(ters);
+    });
   });
 }
 
@@ -383,10 +384,9 @@ test('ileri fişte istenen ve konan dilim sayıları karşılaştırılır, serb
   const tabak=await pizzaKaydi(page);
   expect(tabak).toMatchObject({istekPuani:2,puan:2});
   expect(tabak.ust.filter((d:{cesit:string})=>d.cesit==='mantar')).toHaveLength(3);
-  await dedeyeSun(page);
-  await page.reload();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  await expect(page.getByRole('dialog').getByRole('button',{name:'Mini Pizza'}).locator('[data-cesit=mantar]')).toHaveCount(3);
+  await dedeyeSun(page,async()=>{
+    await expect(masadakiPizza(page).locator('[data-cesit=mantar]')).toHaveCount(3);
+  });
 });
 
 for(const dogru of [false,true]){

@@ -14,6 +14,7 @@ import {
   tartCumleleri,
   tartDenetle,
   tartIstekUret,
+  tartMusteriSayisi,
   TART_MEYVELER,
   turMeyveleri,
   toplam,
@@ -95,16 +96,53 @@ describe('Tart Bakalım: istekler', () => {
     }
   });
 
-  it('turda 5 müşteri: ikinci ve dördüncüde domates ve bir çürük; ötekiler elma / portakal / patates', () => {
-    const m = turMeyveleri(tohum(3));
-    expect(m).toHaveLength(5);
-    expect(m[1]).toBe('domates');
-    expect(m[3]).toBe('domates');
-    expect(new Set([m[0], m[2], m[4]])).toEqual(new Set(['elma', 'portakal', 'patates']));
-    for (let i = 0; i < 5; i++) {
-      const ist = tartIstekUret(4, i, tohum(i), m[i]);
-      expect(ist.kasa.filter((k) => k.curuk)).toHaveLength(curukluMu(i) ? 1 : 0);
+  it('turda 2–3 yaşta 3, büyüklerde 4 müşteri: yalnız ikincide domates ve bir çürük; meyve yinelenmez', () => {
+    expect(tartMusteriSayisi(3)).toBe(3);
+    for (const y of [4, 5, 6] as const) expect(tartMusteriSayisi(y)).toBe(4);
+    for (const n of [3, 4]) {
+      for (let t = 0; t < 30; t++) {
+        const m = turMeyveleri(tohum(t), n);
+        expect(m).toHaveLength(n);
+        expect(m[1]).toBe('domates');
+        expect(new Set(m).size).toBe(n);
+        for (const x of m) if (x !== 'domates') expect(['elma', 'portakal', 'patates']).toContain(x);
+        for (let i = 0; i < n; i++) {
+          const ist = tartIstekUret(4, i, tohum(i), m[i]);
+          expect(ist.kasa.filter((k) => k.curuk)).toHaveLength(i === 1 ? 1 : 0);
+          expect(curukluMu(i)).toBe(i === 1);
+        }
+      }
     }
+  });
+
+  it('çürüklü müşteri hep domates ister (çürük çizimi yalnız domatesin var: assets/pazar/domates-curuk)', () => {
+    const gorseller = import.meta.glob('../../assets/pazar/*-curuk.webp');
+    expect(Object.keys(gorseller)).toEqual(['../../assets/pazar/domates-curuk.webp']);
+    for (const y of YASLAR) for (const m of TART_MEYVELER) {
+      const ist = tartIstekUret(y, 0, tohum(y), m, true);
+      expect(ist.meyve).toBe('domates');
+      expect(ist.kasa.filter((k) => k.curuk).map((k) => k.meyve)).toEqual(['domates']);
+    }
+  });
+
+  it('bir turda aynı istek en çok iki kez: tartmada yarım / bir kilo sırayla, saymada sayı art arda yinelenmez', () => {
+    for (const y of YASLAR) {
+      for (let t = 0; t < 60; t++) {
+        const m = turMeyveleri(tohum(t), tartMusteriSayisi(y));
+        const tur: TartIstek[] = [];
+        for (let i = 0; i < m.length; i++) tur.push(tartIstekUret(y, i, tohum(t * 7 + i), m[i], undefined, tur[i - 1]));
+        const sozler = tur.flatMap((x) => x.soz);
+        for (const s of new Set(sozler)) expect(sozler.filter((x) => x === s).length, s).toBeLessThanOrEqual(1);
+        if (y >= 5) {
+          const kilo = tur.filter((x) => x.miktar === 'kilo').length;
+          expect(kilo).toBe(2);
+          tur.forEach((x, i) => i > 0 && expect(x.miktar).not.toBe(tur[i - 1].miktar));
+        } else tur.forEach((x, i) => i > 0 && expect(x.adet).not.toBe(tur[i - 1].adet));
+      }
+    }
+    // 5 yaşta ilk müşteri yarım kilo (kolay başlangıç), 6 yaşta bir kilo
+    expect(tartIstekUret(5, 0).miktar).toBe('yarim');
+    expect(tartIstekUret(6, 0).miktar).toBe('kilo');
   });
 });
 

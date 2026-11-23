@@ -1,0 +1,141 @@
+/* Hece Evleri: Ceren'in masasında sekiz sesli harf evi (üstte rafta a e ı i, altta masada o ö u ü). */
+.he-alan{display:block}
+
+/* ---------- Giriş: dersle aynı sahne, masada 20 harf taşı ---------- */
+.he-giris .he-sahne{--tas-s:clamp(38px,8.6cqh,64px);--masa:calc(var(--tas-s) * 2 + var(--ara) * 3)}
+.he-tepsi{position:absolute;z-index:3;left:calc(var(--ceren) + var(--ara));right:var(--ara);bottom:0;height:var(--masa);display:grid;grid-template-columns:repeat(10,var(--tas-s));grid-auto-rows:var(--tas-s);gap:var(--ara);align-content:center;justify-content:center}
+.he-tas{position:relative;display:grid;place-items:center;padding:0;font-weight:700;line-height:1;font-size:calc(var(--tas-s) * .62);color:#263c32;background:#ffe39c;border:clamp(1.5px,.2vw,2.5px) solid #4c4e38;border-bottom-width:clamp(3px,.4vw,5px);border-radius:22%;cursor:pointer;touch-action:manipulation;transition:opacity .25s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.he-tas>span{margin-top:-6%}
+.he-tas:active{transform:translateY(2px)}
+.he-tas.oneri{animation:he-oneri 2.2s ease-in-out infinite}
+@keyframes he-oneri{0%,58%,100%{transform:none}68%{transform:translateY(-16%)}78%{transform:none}86%{transform:translateY(-6%)}}
+.he-giris.secildi .he-tas:not(.secilen){opacity:.3}
+.he-giris .he-tas.secilen{animation:none;transform:translateY(-22%) scale(1.15)}
+.he-giris .he-dinle{top:var(--ara);bottom:auto}
+.he-giris .he-ev{cursor:pointer}
+.he-tas.bitti{background:#cdebd8}
+.he-tas .he-rozet{right:-22%;top:auto;bottom:-20%;width:66%;filter:drop-shadow(0 1px 0 #4c4e3855)}
+.he-rozet{position:absolute;right:3px;top:2px;width:clamp(17px,2vw,27px);aspect-ratio:1;display:grid;place-items:center}
+.he-rozet-resim{width:100%;height:100%;object-fit:contain}
+.he-sayac{display:inline-flex;align-items:center;gap:.3em;font-variant-numeric:tabular-nums}
+.he-sayac-resim{width:1.35em;height:1.35em;object-fit:contain;flex:none}
+
+/* ---------- Ev (sahnede ve ana ekran kartında aynı) ---------- */
+.he-ev{position:relative;display:flex;flex-direction:column;align-items:center;width:var(--ev);padding:0;margin:0;border:0;background:none;color:inherit;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.he-cerceve{position:relative;display:block;width:var(--ev);aspect-ratio:640/800}
+.he-govde,.he-kapi{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none}
+.he-kapi{z-index:1;transform-origin:var(--kx) 60%;transition:transform .46s cubic-bezier(.3,.8,.3,1)}
+.he-ev.acik .he-kapi{transform:perspective(calc(var(--ev) * 4)) rotateY(-80deg)}
+.he-ic{position:absolute;z-index:2;left:var(--kx);top:var(--ky);width:var(--kw);height:var(--kh);display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+.he-ic b,.he-hece b,.he-harf{display:grid;place-items:center;font-weight:700;line-height:1;color:#263c32;border:clamp(1.5px,.2vw,2.5px) solid #4c4e38;border-bottom-width:clamp(3px,.4vw,5px)}
+.he-ic b{flex:none;width:clamp(24px,calc(var(--ev) * .36),82px);aspect-ratio:1;margin-bottom:4%;font-size:calc(min(var(--ev) * .36,82px) * .7);background:#f9beac;border-radius:22%;transform:scale(0);transition:transform .22s cubic-bezier(.3,1.5,.5,1)}
+.he-ev.acik .he-ic b{transform:none;transition-delay:.2s}
+.he-levha{position:absolute;z-index:3;left:calc(var(--lx) - var(--lw) / 2);width:var(--lw);top:var(--ly);transform:translateY(-52%);text-align:center;font-weight:800;font-size:calc(var(--ev) * .21);line-height:1;color:#22382f;pointer-events:none}
+.he-hece{position:absolute;z-index:4;left:50%;top:0;display:flex;transform:translate(-50%,-62%) scale(.35);opacity:0;visibility:hidden;transition:transform .26s cubic-bezier(.3,1.5,.5,1),opacity .2s,visibility 0s .26s;pointer-events:none}
+.he-hece b{height:calc(var(--ev) * .31);min-width:calc(var(--ev) * .25);padding:0 .14em;font-size:calc(var(--ev) * .23);background:#ffe39c;border-radius:9px 0 0 9px}
+.he-hece b+b{background:#f9beac;border-left-width:0;border-radius:0 9px 9px 0}
+.he-ev.okundu .he-hece{transform:translate(-50%,-62%);opacity:1;visibility:visible;transition:transform .26s cubic-bezier(.3,1.5,.5,1),opacity .2s}
+.he-ev.el-ele .he-ic b{animation:he-zipla .42s cubic-bezier(.3,.8,.3,1)}
+.he-ev.soyluyor .he-hece{animation:he-hece-zipla .42s cubic-bezier(.3,.8,.3,1)}
+.he-ev.salla .he-cerceve{animation:he-salla 1.5s ease-in-out infinite;transform-origin:50% 100%}
+.he-ev.hedef .he-cerceve{transform:translateY(-3%)}
+@keyframes he-zipla{45%{transform:translateY(-22%) scale(1.08)}}
+@keyframes he-hece-zipla{45%{transform:translate(-50%,-80%) scale(1.18)}}
+@keyframes he-salla{0%,55%,100%{transform:none}63%{transform:rotate(-4deg)}72%{transform:rotate(4deg)}81%{transform:rotate(-3deg)}90%{transform:rotate(2deg)}}
+
+/* ---------- Ders sahnesi ---------- */
+.he-ders{position:relative;container-type:size;width:min(1176px,calc(100% - 40px));height:min(940px,calc(100svh - 96px));min-height:300px;margin:0 auto 18px;overflow:hidden;border:2px solid var(--murekkep);border-radius:clamp(16px,2vw,30px);background:#ffd0a6;-webkit-user-select:none;user-select:none}
+.he-sahne{position:absolute;inset:0;
+  --masa:clamp(52px,16cqh,130px);
+  --ceren:clamp(112px,24cqw,320px);
+  --ara:clamp(6px,1.5cqw,22px);
+  --etk:clamp(16px,5.4cqh,44px);
+  --raf:clamp(16px,5.4cqh,42px);
+  --ev:min(calc((100cqw - var(--ceren) - 5 * var(--ara)) / 4),calc((100cqh - var(--masa) - 2 * var(--etk) - var(--raf) - var(--ara)) * .4));
+  --tas:clamp(46px,12cqh,84px)}
+.he-masa{position:absolute;inset:auto 0 0;height:var(--masa);background:#aacfc0;border-top:2px solid #242922;z-index:1}
+.he-ceren{position:absolute;z-index:0;left:-1%;bottom:calc(var(--masa) * .55);width:var(--ceren);aspect-ratio:1}
+.he-ceren .alf-ceren{width:100%;height:100%}
+.he-evler{position:absolute;z-index:2;left:calc(var(--ceren) + var(--ara));right:var(--ara);bottom:calc(var(--masa) - 1px);display:grid;grid-template-columns:repeat(4,var(--ev));grid-template-rows:auto auto auto;justify-content:center;column-gap:var(--ara)}
+.he-evler>.he-ev{padding-top:var(--etk);cursor:pointer}
+.he-evler>.he-ev .he-hece{top:var(--etk)}
+.he-raf{grid-column:1/-1;grid-row:2;align-self:start;width:calc(100% + var(--ara) * 2);max-width:none;height:auto;margin-left:calc(var(--ara) * -1);transform:translateY(calc(var(--raf-ust,18%) * -1));pointer-events:none}
+.he-raf.he-iskelet{height:var(--raf);transform:none}
+.he-yuva{position:absolute;z-index:0;left:calc(var(--ceren) + var(--ara));bottom:calc((var(--masa) - var(--tas)) / 2);width:var(--tas);height:var(--tas);pointer-events:none}
+.he-harf{position:absolute;z-index:5;left:0;top:0;width:var(--tas);height:var(--tas);padding:0;font-size:calc(var(--tas) * .66);background:#ffe39c;border-radius:22%;cursor:grab;touch-action:none;transform-origin:50% 50%;box-shadow:0 2px 0 #4c4e3826}
+.he-harf.tutuldu{cursor:grabbing;box-shadow:0 8px 12px #3a2a1a30}
+.he-harf[hidden]{display:none}
+.he-dinle{position:absolute;z-index:7;right:var(--ara);bottom:calc(var(--masa) / 2 - 22px)}
+.he-ders[data-asama=goster] .he-dinle,.he-ders[data-asama=tekerleme] .he-dinle{opacity:.45}
+.he-ders[data-asama=hatira] .he-dinle{display:none}
+.he-durum{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ---------- Anahtarlık (duvarda, Ceren'in üstünde) ---------- */
+.he-anahtarlik{position:absolute;z-index:1;left:clamp(6px,1.4cqw,20px);top:clamp(6px,2cqh,20px);width:min(calc(var(--ceren) * 1.05),calc((100cqh - var(--masa) * .55 - var(--ceren) - 24px) * .9));aspect-ratio:900/1000;pointer-events:none}
+/* Yatay ekranda anahtarlık rafın ve ilk evin başladığı yerden önce biter (evler Ceren sütunundan sonra ortalanır;
+   1024×768 ve 1366×1024 iPad'de raf anahtarlığın köşesine, A evi kenarına biniyordu). Dikeyde evler altta kalır. */
+@media(orientation:landscape){.he-anahtarlik{width:min(calc(var(--ceren) * 1.05),calc((100cqh - var(--masa) * .55 - var(--ceren) - 24px) * .9),calc(var(--ceren) + (100cqw - var(--ceren) - 5 * var(--ara) - 4 * var(--ev)) / 2 - clamp(6px,1.4cqw,20px) - 6px))}}
+.he-anahtarlik>img{display:block;width:100%;height:100%;object-fit:contain}
+.he-asili{position:absolute;width:16%;aspect-ratio:1;transform:translate(calc(var(--hx) * -1),calc(var(--hy) * -1));transform-origin:var(--hx) var(--hy)}
+.he-asili img{width:100%;height:100%;object-fit:contain}
+.he-asili.yeni{animation:he-asil .9s cubic-bezier(.3,1.3,.5,1) both}
+@keyframes he-asil{0%{scale:2.6;opacity:0}60%{scale:.9;opacity:1;rotate:12deg}80%{rotate:-6deg}100%{scale:1;rotate:0deg}}
+.he-ders:not(.he-giris){animation:he-belir .32s ease-out}
+@keyframes he-belir{from{opacity:.55}}
+
+/* ---------- Hatıra: anahtar ---------- */
+.he-anahtar{position:absolute;z-index:6;left:calc(var(--ceren) * .5);bottom:calc(var(--masa) * .08);width:calc(var(--ceren) * .66);aspect-ratio:1;padding:0;border:0;background:none;cursor:pointer;animation:he-anahtar-gel .9s cubic-bezier(.25,.9,.3,1.15) both}
+.he-anahtar-resim{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.he-etiket{position:absolute;transform:translate(-50%,-50%);width:var(--ew);text-align:center;font-weight:800;font-size:calc(var(--ceren) * .13);line-height:1;color:#22382f;pointer-events:none}
+@keyframes he-anahtar-gel{0%{transform:translateY(-130%) rotate(-28deg);opacity:0}55%{transform:translateY(4%) rotate(6deg);opacity:1}75%{transform:translateY(-6%) rotate(-3deg)}100%{transform:none}}
+.he-son{position:absolute;z-index:7;right:var(--ara);bottom:calc(var(--masa) / 2 - 24px);display:flex;gap:clamp(6px,1.2cqw,14px);flex-wrap:wrap;justify-content:flex-end}
+.he-son[hidden]{display:none}
+
+/* ---------- Telefon (yatay) ---------- */
+@container (max-height:440px){
+  .he-sahne{--masa:clamp(46px,15cqh,58px);--ceren:clamp(96px,19cqw,170px);--ara:clamp(5px,1cqw,10px);--etk:clamp(14px,5cqh,22px);--raf:17px;--tas:46px}
+  .he-hece b{border-radius:6px 0 0 6px}.he-hece b+b{border-radius:0 6px 6px 0}
+  .he-son .at-sec,.he-son .at-basla{min-height:40px;padding:4px 11px;font-size:15px}
+}
+@media(orientation:landscape) and (max-height:550px){.he-ders{height:calc(100svh - 56px);min-height:240px;margin-bottom:4px}}
+@media(max-width:580px){.he-ders{width:calc(100% - 16px)}}
+@media(prefers-reduced-motion:reduce){
+  .he-tas.oneri,.he-asili.yeni,.he-ders{animation:none}
+  .he-kapi,.he-ic b,.he-hece{transition:none}
+  .he-ev.el-ele .he-ic b,.he-ev.soyluyor .he-hece,.he-ev.salla .he-cerceve,.he-anahtar{animation:none}
+}
+
+/* ---------- Ana ekran kartı ---------- */
+.at-evler-karti{margin-top:0}
+/* Geniş ekranda iki oyun kartı yan yana: iPad'de ana ekran kaydırmadan sığar. */
+@media(min-width:900px){
+  .at-raf:has(.at-evler-karti){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(14px,1.8vw,24px)}
+  .at-raf:has(.at-evler-karti)>*{grid-column:1/-1;margin-inline:0}
+  .at-raf:has(.at-evler-karti)>.at-hece-karti{grid-column:auto;margin-top:clamp(18px,3vh,30px)}
+  .at-raf:has(.at-evler-karti) .at-oyun-karti{height:100%;gap:clamp(10px,1.2vw,18px);padding:clamp(10px,1.2vw,16px) clamp(58px,5.4vw,72px) clamp(10px,1.2vw,16px) clamp(12px,1.3vw,18px)}
+  .at-raf:has(.at-evler-karti) .at-hece-ornek{display:flex;flex-direction:column;gap:2px;padding:4px 8px 7px}
+  .at-raf:has(.at-evler-karti) .at-hece-ornek img{width:clamp(48px,4.8vw,66px);height:clamp(44px,4.4vw,60px)}
+  .at-raf:has(.at-evler-karti) .at-hece-ornek b{font-size:clamp(16px,1.7vw,23px)}
+  .at-raf:has(.at-evler-karti) .at-evler-ornek .he-kart-evi{--ev:clamp(40px,4vw,54px)}
+  .at-raf:has(.at-evler-karti) .at-hece-yazi strong{font-size:clamp(25px,2.7vw,38px)}
+  .at-raf:has(.at-evler-karti) .at-hece-yazi small{font-size:clamp(14px,1.45vw,19px)}
+  .at-raf:has(.at-evler-karti) .at-hece-oyna{width:clamp(40px,4vw,54px)}
+  .at-raf:has(.at-evler-karti) .at-hece-dinle{right:clamp(8px,1vw,14px)}
+}
+.at-evler-ornek .he-kart-evi{--ev:clamp(42px,5vw,66px);flex:none}
+@media(max-width:580px){.at-evler-ornek .he-kart-evi{--ev:38px}}
+
+/* Çizimler gelmeden yalnız test modunda görünen iskelet (çocuğa gösterilmez). */
+.he-iskelet{display:block;border:2px dashed #b0577a;border-radius:6px;background:#fff4f699}
+.he-govde.he-iskelet::after,.he-raf.he-iskelet::after{content:attr(data-ad);position:absolute;left:4px;top:3px;font:600 10px/1 system-ui;color:#8a3b5a}
+.he-kapi.he-iskelet{inset:auto;left:var(--kx);top:var(--ky);width:var(--kw);height:var(--kh);transform-origin:0 50%;background:#e9b86f;border-style:solid;border-color:#7b5a2b}
+.he-anahtar-resim.he-iskelet,.he-sayac-resim.he-iskelet,.he-rozet-resim.he-iskelet{border-radius:50%}
+/* Kilitli harf taşı (20 Kasım): harf soluk ama okunur; kilit rozeti raftaki gibi sağ üst köşede küçük, harfe değmez. */
+.he-tas[data-kilitli]>span:not(.mk-kilit){opacity:.5}
+.he-tas .mk-kilit{top:max(-10px,calc(var(--tas-s) * -.2));right:max(-10px,calc(var(--tas-s) * -.2));width:calc(var(--tas-s) * .36);height:calc(var(--tas-s) * .36);min-width:15px;min-height:15px;border-width:2px;box-shadow:0 2px 0 var(--kontur-yumusak,rgba(90,54,23,.35))}
+.he-tas .mk-kilit{margin:0;font-size:0;line-height:0}
+.he-tas .mk-kilit>span{display:grid;place-items:center;width:100%;height:100%}
+.he-tas .mk-kilit svg{display:block;width:62%;height:62%}
+/* Anahtar sayacı: simge ile sayı arasında boşluk, ikisi aynı hizada. */
+.at-ilerleme .he-sayac{display:inline-flex;align-items:center;gap:.4em;line-height:1}
+.he-sayac-resim{display:block}

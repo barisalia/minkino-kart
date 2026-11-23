@@ -85,7 +85,7 @@ export function porsiyonKoy(ust:readonly PizzaParcasi[],cesit:Cesit,merkez:{x:nu
   return yeni;
 }
 export type PizzaKivami = 'erken'|'tam'|'fazla'|'yanik';
-export interface PizzaTabagi { kesim?:PizzaKesimi; tarifId: 'pizza'; no: number; ust: PizzaParcasi[]; fis?:PizzaFisi; sosCesidi?:PizzaSosu; pisirme?:1|2|3; kivam?:PizzaKivami; istekPuani?:1|2|3; puan?:1|2|3 }
+export interface PizzaTabagi { kesim?:PizzaKesimi; tarifId: 'pizza'; no: number; misafir?:PizzaMisafiri; ust: PizzaParcasi[]; fis?:PizzaFisi; sosCesidi?:PizzaSosu; pisirme?:1|2|3; kivam?:PizzaKivami; istekPuani?:1|2|3; puan?:1|2|3 }
 /** Fişin servis edilmiş örneği: yarılar ve adetler çocuğun tabağıyla aynı ölçekte. */
 export function fisOrnegi(fis:PizzaFisi):PizzaParcasi[] {
   if(fis.yarilar)return TARAFLAR.flatMap(t=>{

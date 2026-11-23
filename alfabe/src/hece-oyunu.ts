@@ -1,19 +1,27 @@
 import { kucukGrup, tamDers } from './yas-grubu';
 import { dersKaydiniOku, dersKaydiniYaz } from './ders-kaydi';
-import dersler from './harfler.json';
 import { cerenSustur, cerenYuzu } from './konusma-dersi';
-import { resim } from './resimler';
 import { IKON } from '../../src/ui/ikonlar';
-import { heceler, parcaSesi } from './hece-sozlugu';
+import { adSesi as sozcukSesi, heceler, panoAdi, panoResmi, parcaSesi } from './pano-sozcukleri';
 import { trambolinKur } from './trambolin';
+import { bosBekleyici } from './bos-bekle';
+import { oyunSesi } from './oyun-sesi';
 
+import { bitisKutla, cerenSevinsin, parilti } from './cila';
 import './hece-oyunu.css';
 
-const sozcukler = dersler.filter(d => heceler[d.id]);
+// Sözcükler Pano'nun listesinden (ders örnekleri, sözcük havuzu, Obur ve Harf Kutusu kartları; 21 Kasım). Her turda en az
+// görülenler gelir, önceki turun sözcükleri gelmez (yeniRota).
+const buyukBas = (s: string) => s[0].toLocaleUpperCase('tr') + s.slice(1);
+const sozcukler = Object.keys(heceler).filter(id => heceler[id].length >= 2 && heceler[id].length <= 3 && panoResmi(id)).map(id => ({ id, example: buyukBas(panoAdi(id)) }));
 const sec = <T>(dizi: T[]) => dizi[Math.floor(Math.random()*dizi.length)];
 type Asama = 'alkis' | 'sirala' | 'birles' | 'sonuc';
 type Oku = (id: string, sonra?: () => void, oynarken?:(saniye:number)=>void) => void;
 const ilerlemeAnahtari='minkino-bagimsiz-hece-v1';
+// Bir sözcükte tek iş (18 Kasım 2026, Barış: "aşırı tekrar sıkar"): ya trambolinde zıplayıp heceleri sayar
+// ya da hece taşlarını sıraya dizer; aynı sözcüğü iki kez kurmaz. Tur sırası: zıpla · diz · zıpla.
+// 2–3 yaş okumadığı için yalnız zıplar.
+const gorev=(tur:number):'zipla'|'diz'=>!kucukGrup&&tur%2===1?'diz':'zipla';
 const gorulenAnahtari='minkino-hece-gorulen-sozcukler-v1';
 
 type SozcukTekrarlari={kez:Record<string,number>;son:string[]};
@@ -21,7 +29,7 @@ function sozcukTekrarlariniOku():SozcukTekrarlari{
   const kayit:SozcukTekrarlari={kez:{},son:[]};
   try{
     const ham=dersKaydiniOku(gorulenAnahtari);
-    if(!ham || ham.length>600)return kayit;
+    if(!ham || ham.length>12000)return kayit;
     const veri=JSON.parse(ham);
     for(const {id} of sozcukler){
       const sayi=veri?.kez?.[id];
@@ -99,13 +107,23 @@ export function heceOyunuKur(alan: HTMLElement, oku: Oku, bitir: () => void): ()
   let bekleme=0;
   const ders=()=>rota[tur];
   const heceListesi=()=>heceler[ders().id];
-  const adSesi=()=>'pano-ad-'+ders().id;
+  const adSesi=()=>sozcukSesi(ders().id);
 
   function kaydet(){
     dersKaydiniYaz(ilerlemeAnahtari,JSON.stringify({rota:rota.map(d=>d.id),tur,asama,sira,taslar:tasAdlari}));
   }
+  // Ceren susup oyun dokunuşa açıldığında süre başlar; çocuk bir şey yapmazsa Ceren o aşamanın
+  // yönergesini yineler (en fazla iki kez üst üste). Sonuçta ayrıca ileri düğmesi hafifçe sallanır.
+  const bos=bosBekleyici(()=>{
+    if(kapali||mesgul)return;
+    if(asama==='sonuc'&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      ileri.classList.remove('ho-durt');void ileri.offsetWidth;ileri.classList.add('ho-durt');
+    }
+    dinlet();
+  });
   function kilitle(deger:boolean){
     mesgul=deger;
+    if(deger)bos.dur();else bos.kur();
     dinle.disabled=deger;
     for(const dugme of ana.querySelectorAll<HTMLButtonElement>('.tr-yay,.tr-ileri,.ho-tas,.ho-ileri,.tr-son-hece')){
       if(dugme.classList.contains('tr-yay')&&!deger){
@@ -165,7 +183,7 @@ export function heceOyunuKur(alan: HTMLElement, oku: Oku, bitir: () => void): ()
     if(mesgul||kapali||asama!=='alkis')return;
     if(i!==sira||i>=heceListesi().length){
       const fazla=sira===heceListesi().length;
-      parkur.yanlis(i,fazla);
+      oyunSesi('geri');parkur.yanlis(i,fazla);
       okuSira([fazla?'zipla-fazla-iki':'zipla-sira']);return;
     }
     const h=heceListesi()[i];
@@ -175,8 +193,8 @@ export function heceOyunuKur(alan: HTMLElement, oku: Oku, bitir: () => void): ()
       parkur.zipla(i);durum.textContent=h;
     },()=>parkur.inince(()=>{
       if(kapali)return;
-      sira=i+1;kaydet();
-      if(sira===heceListesi().length)okuSira(['zipla-oka-dokun']);
+      sira=i+1;kaydet();bos.sifirla();
+      if(sira===heceListesi().length&&tur===0)okuSira(['zipla-oka-dokun']);
       else kilitle(false);
     }));
   }
@@ -191,7 +209,7 @@ export function heceOyunuKur(alan: HTMLElement, oku: Oku, bitir: () => void): ()
     if(adlar.slice(0,hece.length).join('')===hece.join(''))adlar.reverse();
     return adlar;
   }
-  function tasAsamasi(){
+  function tasAsamasi(yeniSozcuk=false){
     goster('sirala');
     taslar.replaceChildren(...tasAdlari.map(h=>{
       const b=document.createElement('button');
@@ -208,18 +226,22 @@ export function heceOyunuKur(alan: HTMLElement, oku: Oku, bitir: () => void): ()
         okuSira([parcaSesi(h)],()=>{
           b.dataset.alindi='evet';yer.textContent=h;isaret(yer);
         },()=>{
-          sira++;
+          sira++;bos.sifirla();
           if(sira===heceListesi().length)sonuc();
           else {kaydet();kilitle(false);}
         });
       };
       return b;
     }));
-    kaydet();okuSira(['hece-diz',parcaSesi(heceListesi()[sira])]);
+    // Dizme sözcüğü taşlarla başlar: Ceren önce sözcüğü, sonra sıradaki heceyi söyler.
+    const ids=[...(yeniSozcuk?[adSesi()]:[]),'hece-diz',parcaSesi(heceListesi()[sira])];
+    kaydet();okuSira(ids,i=>{if(i===ids.length-1)isaret(yuvalar.children[sira]);});
   }
   function sonuc(){
     sira=heceListesi().length;goster('sonuc');kaydet();
     const tam=document.createElement('strong');tam.textContent=ders().example.toLocaleLowerCase('tr');yuvalar.replaceChildren(tam);
+    // Heceler birleşip sözcük olunca: sözcük yaylanarak gelir, pırıltı saçar, Ceren sevinir; son sözcükte bütün kutlama.
+    requestAnimationFrame(()=>{if(kapali||!tam.isConnected)return;parilti(tam,10);cerenSevinsin();if(tur+1===rota.length)window.setTimeout(()=>{if(!kapali)bitisKutla(yuvalar.closest('.ho')??yuvalar);},450);});
     sonucSesleri.replaceChildren(...heceListesi().map(h=>{
       const b=document.createElement('button');b.type='button';b.className='tr-son-hece';b.textContent=h;b.setAttribute('aria-label',h+' hecesini dinle');
       b.onclick=()=>{if(!mesgul)okuSira([parcaSesi(h)],()=>isaret(b));};return b;
@@ -227,30 +249,30 @@ export function heceOyunuKur(alan: HTMLElement, oku: Oku, bitir: () => void): ()
     ileri.setAttribute('aria-label',tur+1===rota.length?'Oyunlara dön':'Sonraki sözcük');
     durum.textContent=ders().example;
     const ids=[adSesi()];
-    if(tur+1<rota.length)ids.push('hece-devam');
-    else if(rota.length===3)ids.push('hece-bitti');
+    if(tur===0&&tur+1<rota.length)ids.push('hece-devam');
+    else if(tur+1===rota.length&&rota.length===3)ids.push('hece-bitti');
     okuSira(ids,i=>{if(i===0)isaret(tam);});
   }
   function turuKur(k?:TurKaydi){
-    parkur?.kapat();
+    parkur?.kapat();bos.sifirla();
     sira=k?.sira??0;tasAdlari=k?.taslar??[];taslar.replaceChildren();sonucSesleri.replaceChildren();
     ana.dataset.kelime=ders().id;ana.dataset.tur=String(tur+1);
-    nesne.src=resim(ders().id);nesne.alt=ders().example;
+    nesne.src=panoResmi(ders().id);nesne.alt=ders().example;
     ilerleme.innerHTML=rota.map((_,i)=>'<i class="'+(i<=tur?'ho-dolu':'')+'"></i>').join('');
     ilerleme.setAttribute('aria-label',(tur+1)+' / '+rota.length);
     if(k?.asama==='sonuc'||k?.asama==='birles'||(k?.asama==='sirala'&&sira===heceListesi().length)){sonuc();return;}
     if(k?.asama==='sirala'){if(!tasAdlari.length)tasAdlari=karisikTaslar();tasAsamasi();return;}
+    if(gorev(tur)==='diz'){sira=0;if(!tasAdlari.length)tasAdlari=karisikTaslar();tasAsamasi(true);return;}
     goster('alkis');
     parkur=trambolinKur(park,ders().id,heceListesi(),sira,!tamDers,atla,()=>{
       if(mesgul||kapali||sira!==heceListesi().length)return;
-      if(kucukGrup){sonuc();return;}
-      sira=0;tasAdlari=karisikTaslar();tasAsamasi();
+      sonuc();
     });
     kaydet();
     okuSira(sira===heceListesi().length?['zipla-oka-dokun']:tur===0&&!sira?[adSesi(),'zipla-giris']:[adSesi()]);
   }
   function kapat(){
-    kapali=true;sesNo++;clearTimeout(bekleme);cerenSustur();parkur?.kapat();ana.remove();
+    kapali=true;bos.kapat();sesNo++;clearTimeout(bekleme);cerenSustur();parkur?.kapat();ana.remove();
   }
   dinle.onclick=dinlet;
   ileri.onclick=()=>{

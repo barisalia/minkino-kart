@@ -1,5 +1,7 @@
 import {expect,test,type Locator,type Page} from '@playwright/test';
 import {durumOku,durumPuani,dilimIcleri,durumYorumu} from '../../sef/src/durum-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Dürüm diliminin içi iki gerçek kesim noktasını ve enine yerleşimi korur',()=>{
  const t=durumOku({evre:'sun',sarma:1,kesimler:[28,71],katlar:[{tur:'domates',x:26,y:50},{tur:'peynir',x:30,y:52},{tur:'marul',x:77,y:50}]})!;
@@ -45,7 +47,8 @@ test('Çocuk dürümünü serer, sarar, iki kez keser; dilimlerin içi masaya te
  for(const [i,tur] of ['marul','domates','peynir'].entries())await expect(sun.locator('[data-dilim="'+i+'"] .dr-kesit-kati[data-tur="'+tur+'"]')).toBeVisible();
  if(process.env.SEF_DURUM_KARE)await page.screenshot({path:process.env.SEF_DURUM_KARE+'-'+info.project.name+'-sun.png'});
  await sun.tap();
- await expect(page.locator('.araba-yuku .dr-kesit')).toHaveCount(3);
+ // Tepsi tamamlanınca masa sahnesi açılır: üç dilim müşteriye sunulacak tepside, içleriyle.
+ await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.dr-kesit')).toHaveCount(3);
  await expect(page.locator('.tepsi-servis')).toHaveCount(0);
  await page.getByRole('button',{name:'Mino masasına götür'}).tap();
  await expect(page.locator('.servis-jetonu')).toHaveAccessibleName(/3 jeton/);
@@ -70,6 +73,8 @@ test('Dede zeytinli dürümü ister; yanlış içleri tadar, fikrini kendi sesiy
  const tabak=page.getByRole('button',{name:'Rulo Dürüm tattır'});await expect(tabak).toBeVisible();
  await page.getByRole('button',{name:'Müşteriyi dinle'}).tap();await expect.poll(()=>sesler.some(u=>u.endsWith('dede-durum-fazla.mp3'))).toBe(true);
  await expect(tabak.locator('.dr-kesit[hidden]')).toHaveCount(1);
+ // İlk lokma kendiliğinden yenir; lokma sürerken gelen dokunuş bilerek yok sayılır, bitmesini bekle.
+ await expect(page.locator('.restoran-lokma')).toHaveCount(0,{timeout:11000});
  await tabak.tap();
  await expect(tabak.locator('.dr-kesit[hidden]')).toHaveCount(2);
 });

@@ -23,3 +23,15 @@
 .tg-aranan img {width:100%;height:100%;object-fit:contain}
 .tg-sayac i {width:1.8cqw;aspect-ratio:1;border-radius:50%;border:1.5px solid #765f46;background:#fff8e3}
 .tg-sayac .tg-dolu {background:#73cbac;border-color:#254e44}
+
+/* Kalite denetimi (23 Kasım): Ay'daki gezgin boşta da canlı. Aranan şekil panelde hafifçe sallanıp büyür (çocuk neyi aradığını
+   unutmaz); açık parçaların yüzü sırayla çok hafif nefes alır (düğmenin kutusu yerinde, dokunma alanı oynamaz). */
+@media (prefers-reduced-motion: no-preference) {
+  #sahne[data-ekran='tangram'] .tg-aranan img { animation: tg-aranan 1.9s ease-in-out infinite; }
+  #sahne[data-ekran='tangram'] .tg-parca:not(:disabled) > .tg-yuz { animation: tur-nefes 2.6s ease-in-out infinite alternate; transform-origin: 50% 60%; }
+  #sahne[data-ekran='tangram'] .tg-parca:nth-child(2n) > .tg-yuz { animation-delay: -1.3s; }
+  #sahne[data-ekran='tangram'] .tg-parca:nth-child(3n) > .tg-yuz { animation-delay: -.7s; }
+  #sahne[data-ekran='tangram'] .tg-sayac .tg-dolu:not(:has(+ .tg-dolu)) { animation: tg-dolu .5s cubic-bezier(.3, 1.8, .5, 1) both; }
+}
+@keyframes tg-aranan { 0%, 100% { scale: 1; rotate: -3deg; } 50% { scale: 1.08; rotate: 3deg; } }
+@keyframes tg-dolu { from { scale: 0; } to { scale: 1; } }

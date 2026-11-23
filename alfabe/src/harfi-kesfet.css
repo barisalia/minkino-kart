@@ -30,3 +30,56 @@
 @media(orientation:portrait){.hf-kesif .hf-kart:nth-child(2) .hf-hucre,.hf-kesif[data-adim=bul] .hf-kart:nth-child(2) .hf-hucre{min-width:clamp(32px,11vw,44px)}}
 
 .hf-yardim .hf-kart:nth-child(2) button[data-hedef=evet]{box-shadow:inset 0 0 0 3px #276852;background-color:#e4f2d9}
+/* Bulma anı (H7): büyüteç, harf yıldızı, rozete uçan harf (harfi-kesfet.ts → bulunduAni) */
+.hf-kesif{position:relative}
+.hf-mercek{position:absolute;z-index:5;pointer-events:none;border-radius:50%;display:grid;place-items:center;box-sizing:border-box;border:clamp(4px,.7vmin,7px) solid #3d5a4c;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.95) 0 12%,rgba(236,250,242,.9) 13% 60%,rgba(206,236,222,.86));box-shadow:0 6px 14px rgba(40,60,45,.25),inset 0 0 0 3px rgba(255,255,255,.7)}
+.hf-mercek-astra{border:0;background:rgba(240,252,246,.82);box-shadow:none}
+.hf-mercek-cizim{position:absolute;pointer-events:none;object-fit:contain;max-width:none}
+.hf-mercek-harf{position:relative;z-index:1;font-weight:700;line-height:1;color:#075749}
+.hf-yildizli{position:relative;isolation:isolate}
+.hf-kesif .hf-yildizli.hf-bulundu{background:transparent;box-shadow:none}
+.hf-yildiz{position:absolute;z-index:-1;left:50%;top:50%;width:190%;height:auto;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;object-fit:contain}
+.hf-ucan-harf{position:absolute;z-index:6;pointer-events:none;font-weight:800;line-height:1;color:#075749;-webkit-text-stroke:.06em #fff7e6;paint-order:stroke fill;filter:drop-shadow(0 3px 3px rgba(30,60,45,.3))}
+.hf-harf.hf-rozet-parla{background:#fbe7a6;border-color:#8a6420;box-shadow:0 0 0 4px rgba(247,199,80,.35);transition:background .3s,box-shadow .3s}
+
+/* ---------- Kalite denetimi 22 Kasım gecesi (ekip/KALITE-KURALLARI.md 7, 8) ----------
+   Dokunulan sözcüğün harfleri 64 px: yükseklik 64, genişlik 64'e kadar (uzun sözcükte kartın içine sığacak kadar daralır). */
+.hf-kesif .hf-kart:nth-child(2) .hf-yazi { width: 100%; }
+.hf-kesif .hf-kart:nth-child(2) .hf-sozcuk { width: 100%; }
+.hf-kesif .hf-kart:nth-child(2) .hf-hucre, .hf-kesif[data-adim=bul] .hf-kart:nth-child(2) .hf-hucre { flex: 0 1 64px; min-width: 0; min-height: 64px; }
+@media (orientation: portrait) { .hf-kesif .hf-kart:nth-child(2) .hf-hucre, .hf-kesif[data-adim=bul] .hf-kart:nth-child(2) .hf-hucre { min-width: 0; } }
+/* Boşta da canlı: resimler yavaşça süzülür (iki kart farklı ritimde), Ceren hafifçe nefes alır. Ayrı translate/scale
+   özellikleri kullanılır: canlanma anlarının transform hareketleriyle çakışmaz. */
+@keyframes hf-suzul { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -3.5%; rotate: -1.2deg; } }
+@keyframes hf-nefes { 0%, 100% { scale: 1; translate: 0 0; } 50% { scale: 1.012; translate: 0 -.6%; } }
+.hf-kesif .hf-resim img { animation: hf-suzul 3.6s ease-in-out infinite; }
+.hf-kesif .hf-kart:nth-child(2) .hf-resim img { animation-duration: 4.2s; animation-delay: -1.7s; }
+.hf-kesif .hf-hoca .alf-ceren { animation: hf-nefes 4s ease-in-out infinite; transform-origin: 50% 100%; }
+@media (prefers-reduced-motion: reduce) { .hf-kesif .hf-resim img, .hf-kesif .hf-hoca .alf-ceren { animation: none; } }
+/* Harf tuşları tok bir düğme gibi (yönetici, 23 Kasım): krem tuş, kalın alt kenar ve gölge; basınca tuş 4 px içeri çöker,
+   alt kenar incelir. Bulunan harf yeşil tuşa döner. Hedef sözcüğün harfleri (ikinci kart) için. */
+.hf-kesif .hf-kart:nth-child(2) button.hf-hucre,
+.hf-kesif[data-adim=bul] .hf-kart:nth-child(2) button.hf-hucre {
+  margin: 0 2px; background: #fffaf0; border: 2px solid #4f6b5e; border-bottom-width: 7px; border-radius: 14px;
+  box-shadow: 0 4px 0 rgba(40, 60, 50, .14); transition: transform .07s ease-out, border-bottom-width .07s ease-out, box-shadow .07s ease-out, background-color .2s;
+}
+.hf-kesif[data-adim=bul] .hf-kart:nth-child(2) button.hf-hucre:not(:disabled) { cursor: pointer; }
+.hf-kesif[data-adim=bul] .hf-kart:nth-child(2) button.hf-hucre:not(:disabled):active { transform: translateY(5px); border-bottom-width: 2px; box-shadow: 0 0 0 rgba(40, 60, 50, 0); }
+.hf-kesif .hf-kart:nth-child(2) button.hf-hucre.hf-bulundu { background: #c1e8cc; border-color: #2f7a5c; color: #075749; box-shadow: 0 4px 0 rgba(47, 122, 92, .25); }
+.hf-yardim .hf-kart:nth-child(2) button.hf-hucre[data-hedef=evet] { background-color: #e4f2d9; border-color: #276852; }
+/* Astra'nın harf tuşları (Paket Harf-A1, 192 px, kenarlardan 48 px sabit dokuz parça): gelince düz CSS tuşunun yerine. */
+.hf-kesif.hf-tuslu .hf-kart:nth-child(2) button.hf-hucre {
+  background: none; box-shadow: none; border-style: solid; border-color: transparent; border-width: 12px 12px 16px; border-radius: 0;
+  border-image: var(--tus) 48 fill / 12px 12px 16px stretch;
+}
+.hf-kesif.hf-tuslu[data-adim=bul] .hf-kart:nth-child(2) button.hf-hucre:not(:disabled):active { border-image-source: var(--tus-basili); border-width: 12px; transform: translateY(4px); }
+.hf-kesif.hf-tuslu .hf-kart:nth-child(2) button.hf-hucre.hf-bulundu { border-image-source: var(--tus-bulundu); background: none; box-shadow: none; }
+.hf-kesif.hf-tuslu.hf-yardim .hf-kart:nth-child(2) button.hf-hucre[data-hedef=evet] { border-image-source: var(--tus-ipucu); background: none; box-shadow: none; }
+/* İpucu anı: doğru harf halkayla nabız gibi atar, hafifçe zıplar (2,6 sn). */
+@keyframes hf-ipucu-halka { 0% { box-shadow: 0 0 0 0 rgba(255, 196, 61, .85), 0 4px 0 rgba(40, 60, 50, .14); } 70% { box-shadow: 0 0 0 16px rgba(255, 196, 61, 0), 0 4px 0 rgba(40, 60, 50, .14); } 100% { box-shadow: 0 0 0 0 rgba(255, 196, 61, 0), 0 4px 0 rgba(40, 60, 50, .14); } }
+@keyframes hf-ipucu-zipla { 0%, 100% { translate: 0 0; } 40% { translate: 0 -8px; } 60% { translate: 0 0; } 75% { translate: 0 -3px; } }
+.hf-kesif .hf-kart:nth-child(2) button.hf-hucre.hf-ipucu-ani { animation: hf-ipucu-halka .86s ease-out 3, hf-ipucu-zipla .86s ease-in-out 3; background-color: #fff1c4; border-color: #b8860b; }
+/* Yanlış harf: "pof" — tuş bir an griye döner, ezilip yaylanır. */
+@keyframes hf-pof { 0% { scale: 1 1; filter: grayscale(0); } 25% { scale: 1.12 .82; filter: grayscale(1) brightness(1.08); } 55% { scale: .94 1.08; } 80% { scale: 1.03 .97; } 100% { scale: 1 1; filter: grayscale(0); } }
+.hf-kesif .hf-kart:nth-child(2) button.hf-hucre.hf-pof { animation: hf-pof .6s ease-out; }
+@media (prefers-reduced-motion: reduce) { .hf-kesif button.hf-hucre.hf-ipucu-ani, .hf-kesif button.hf-hucre.hf-pof { animation: none; } }

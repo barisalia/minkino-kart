@@ -8,7 +8,7 @@
 .mucver-oyunu [hidden] { display:none!important; }
 .mucver-oyunu button { touch-action:none; }
 .mv-ust { z-index:8; }
-.mv-fis {position:absolute;left:50%;translate:-50% 0;height:100%;min-height:40px;display:flex;align-items:center;gap:1cqw;
+.mv-fis {position:absolute;left:50%;translate:-50% 0;height:100%;min-height:44px;display:flex;align-items:center;gap:1cqw;
   padding:.45cqh 1.4cqw;background:var(--sef-kumanda-fonu, #fff8e5);border:.36cqh solid #392d32;border-radius:1.7cqh;box-shadow:0 .5cqh #937155;}
 .mv-fis img {height:100%;width:8cqh;object-fit:contain;}
 .mv-fis i {height:72%;border-left:.3cqh dashed #b19d81;}

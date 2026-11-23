@@ -1,0 +1,1395 @@
+{
+ "aciklama": "paket: Harf-H8 (20 Kasım) E, İ, U, Ü harflerini 5 resimli sözcüğe çıkaran 7 sözcük; yoksa H6. kullanim: sözcüğün girdiği yerler (pano, ders, cumle); yoksa hepsi. Tek heceli jip, kuş, mum hece birleştirme oyunlarına (Pano, Hece Kulağı) girmez, harf dersinde ve Ceren'le oku'da kullanılır (yönetici, 20 Kasım). Harf Atölyesi sözcük havuzu (YOL-HARITASI madde 6, Astra H6). Her harfe iki yeni resimli sözcük (Ü'de bir). resim: Astra H6 dosya adı (assets/alfabe/kelime/, 800 × 800). heceler Türkçe yazımla, okunuşla aynı. ses: Ceren'in kaydı (assets/alfabe/ses/<ses>.mp3); açık heceler için Hece Evleri'nin ev-* kaydı, öbürleri pano-hece-<hece>. enKucukYas: 2-3 kısa ve tanıdık, 4 üç heceye kadar, 5+ uzun ya da az tanıdık. kayit: yeni = 20 Kasım'da üretildi (Ceren klonu, Scribe v1/v2 ile doğrulandı), vardı = önceden assets/alfabe/ses/ içinde. jip sözcüğünün kaydı, doğrulanan \"jip\" hecesiyle aynıdır (tek başına okutunca Scribe \"zip\" yazıyordu). ğ ile başlayan heceler (ğaç, ğan, ğur, ği) okunduğu gibi \"aç, an, ur, i\" söylenir. Koda bağlama Harf oturumunda.",
+ "sozcukler": [
+  {
+   "sozcuk": "arı",
+   "harf": "A",
+   "resim": "assets/alfabe/kelime/ari.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-ari",
+   "heceler": [
+    {
+     "hece": "a",
+     "ses": "pano-hece-a",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "rı",
+     "ses": "ev-r-ii",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ayva",
+   "harf": "A",
+   "resim": "assets/alfabe/kelime/ayva.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-ayva",
+   "heceler": [
+    {
+     "hece": "ay",
+     "ses": "pano-hece-ay",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "va",
+     "ses": "pano-hece-va",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "balon",
+   "harf": "B",
+   "resim": "assets/alfabe/kelime/balon.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-balon",
+   "heceler": [
+    {
+     "hece": "ba",
+     "ses": "pano-hece-ba",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "lon",
+     "ses": "pano-hece-lon",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "bardak",
+   "harf": "B",
+   "resim": "assets/alfabe/kelime/bardak.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-bardak",
+   "heceler": [
+    {
+     "hece": "bar",
+     "ses": "pano-hece-bar",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "dak",
+     "ses": "pano-hece-dak",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ceket",
+   "harf": "C",
+   "resim": "assets/alfabe/kelime/ceket.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-ceket",
+   "heceler": [
+    {
+     "hece": "ce",
+     "ses": "pano-hece-ce",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ket",
+     "ses": "pano-hece-ket",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "cüzdan",
+   "harf": "C",
+   "resim": "assets/alfabe/kelime/cuzdan.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-cuzdan",
+   "heceler": [
+    {
+     "hece": "cüz",
+     "ses": "pano-hece-cüz",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "dan",
+     "ses": "pano-hece-dan",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "çiçek",
+   "harf": "Ç",
+   "resim": "assets/alfabe/kelime/cicek.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-cicek",
+   "heceler": [
+    {
+     "hece": "çi",
+     "ses": "pano-hece-çi",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "çek",
+     "ses": "pano-hece-çek",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "çorap",
+   "harf": "Ç",
+   "resim": "assets/alfabe/kelime/corap.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-corap",
+   "heceler": [
+    {
+     "hece": "ço",
+     "ses": "ev-cc-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "rap",
+     "ses": "pano-hece-rap",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "dinozor",
+   "harf": "D",
+   "resim": "assets/alfabe/kelime/dinozor.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-dinozor",
+   "heceler": [
+    {
+     "hece": "di",
+     "ses": "pano-hece-di",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "no",
+     "ses": "ev-n-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "zor",
+     "ses": "pano-hece-zor",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "düdük",
+   "harf": "D",
+   "resim": "assets/alfabe/kelime/duduk.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-duduk",
+   "heceler": [
+    {
+     "hece": "dü",
+     "ses": "ev-d-uu",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "dük",
+     "ses": "pano-hece-dük",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ekmek",
+   "harf": "E",
+   "resim": "assets/alfabe/kelime/ekmek.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-ekmek",
+   "heceler": [
+    {
+     "hece": "ek",
+     "ses": "pano-hece-ek",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "mek",
+     "ses": "pano-hece-mek",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "eldiven",
+   "harf": "E",
+   "resim": "assets/alfabe/kelime/eldiven.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-eldiven",
+   "heceler": [
+    {
+     "hece": "el",
+     "ses": "pano-hece-el",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "di",
+     "ses": "pano-hece-di",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ven",
+     "ses": "pano-hece-ven",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "fare",
+   "harf": "F",
+   "resim": "assets/alfabe/kelime/fare.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-fare",
+   "heceler": [
+    {
+     "hece": "fa",
+     "ses": "pano-hece-fa",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "re",
+     "ses": "ev-r-e",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "fırça",
+   "harf": "F",
+   "resim": "assets/alfabe/kelime/firca.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-firca",
+   "heceler": [
+    {
+     "hece": "fır",
+     "ses": "pano-hece-fır",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ça",
+     "ses": "ev-cc-a",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "gözlük",
+   "harf": "G",
+   "resim": "assets/alfabe/kelime/gozluk.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-gozluk",
+   "heceler": [
+    {
+     "hece": "göz",
+     "ses": "pano-hece-göz",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "lük",
+     "ses": "pano-hece-lük",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "gitar",
+   "harf": "G",
+   "resim": "assets/alfabe/kelime/gitar.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-gitar",
+   "heceler": [
+    {
+     "hece": "gi",
+     "ses": "ev-g-i",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "tar",
+     "ses": "pano-hece-tar",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ağaç",
+   "harf": "Ğ",
+   "resim": "assets/alfabe/kelime/agac.webp",
+   "enKucukYas": "2-3",
+   "ses": "kutu-ad-agac",
+   "heceler": [
+    {
+     "hece": "a",
+     "ses": "pano-hece-a",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ğaç",
+     "ses": "pano-hece-ğaç",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "vardı"
+  },
+  {
+   "sozcuk": "yağmur",
+   "harf": "Ğ",
+   "resim": "assets/alfabe/kelime/yagmur.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-yagmur",
+   "heceler": [
+    {
+     "hece": "yağ",
+     "ses": "pano-hece-yağ",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "mur",
+     "ses": "pano-hece-mur",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "horoz",
+   "harf": "H",
+   "resim": "assets/alfabe/kelime/horoz.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-horoz",
+   "heceler": [
+    {
+     "hece": "ho",
+     "ses": "ev-h-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "roz",
+     "ses": "pano-hece-roz",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "hamak",
+   "harf": "H",
+   "resim": "assets/alfabe/kelime/hamak.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-hamak",
+   "heceler": [
+    {
+     "hece": "ha",
+     "ses": "pano-hece-ha",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "mak",
+     "ses": "pano-hece-mak",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ırmak",
+   "harf": "I",
+   "resim": "assets/alfabe/kelime/irmak.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-irmak",
+   "heceler": [
+    {
+     "hece": "ır",
+     "ses": "pano-hece-ır",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "mak",
+     "ses": "pano-hece-mak",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ıstakoz",
+   "harf": "I",
+   "resim": "assets/alfabe/kelime/istakoz.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-istakoz",
+   "heceler": [
+    {
+     "hece": "ıs",
+     "ses": "pano-hece-ıs",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ta",
+     "ses": "pano-hece-ta",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "koz",
+     "ses": "pano-hece-koz",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "inci",
+   "harf": "İ",
+   "resim": "assets/alfabe/kelime/inci.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-inci",
+   "heceler": [
+    {
+     "hece": "in",
+     "ses": "pano-hece-in",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ci",
+     "ses": "ev-c-i",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "incir",
+   "harf": "İ",
+   "resim": "assets/alfabe/kelime/incir.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-incir",
+   "heceler": [
+    {
+     "hece": "in",
+     "ses": "pano-hece-in",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "cir",
+     "ses": "pano-hece-cir",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "jip",
+   "kullanim": [
+    "ders",
+    "cumle"
+   ],
+   "harf": "J",
+   "resim": "assets/alfabe/kelime/jip.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-jip",
+   "heceler": [
+    {
+     "hece": "jip",
+     "ses": "pano-hece-jip",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "jaguar",
+   "harf": "J",
+   "resim": "assets/alfabe/kelime/jaguar.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-jaguar",
+   "heceler": [
+    {
+     "hece": "ja",
+     "ses": "ev-j-a",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "gu",
+     "ses": "ev-g-u",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ar",
+     "ses": "pano-hece-ar",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "kalem",
+   "harf": "K",
+   "resim": "assets/alfabe/kelime/kalem.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-kalem",
+   "heceler": [
+    {
+     "hece": "ka",
+     "ses": "ev-k-a",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "lem",
+     "ses": "pano-hece-lem",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "kuş",
+   "kullanim": [
+    "ders",
+    "cumle"
+   ],
+   "harf": "K",
+   "resim": "assets/alfabe/kelime/kus.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-kus",
+   "heceler": [
+    {
+     "hece": "kuş",
+     "ses": "pano-hece-kuş",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "leylek",
+   "harf": "L",
+   "resim": "assets/alfabe/kelime/leylek.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-leylek",
+   "heceler": [
+    {
+     "hece": "ley",
+     "ses": "pano-hece-ley",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "lek",
+     "ses": "pano-hece-lek",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "lolipop",
+   "harf": "L",
+   "resim": "assets/alfabe/kelime/lolipop.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-lolipop",
+   "heceler": [
+    {
+     "hece": "lo",
+     "ses": "ev-l-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "li",
+     "ses": "pano-hece-li",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "pop",
+     "ses": "pano-hece-pop",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "maymun",
+   "harf": "M",
+   "resim": "assets/alfabe/kelime/maymun.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-maymun",
+   "heceler": [
+    {
+     "hece": "may",
+     "ses": "pano-hece-may",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "mun",
+     "ses": "pano-hece-mun",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "mum",
+   "kullanim": [
+    "ders",
+    "cumle"
+   ],
+   "harf": "M",
+   "resim": "assets/alfabe/kelime/mum.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-mum",
+   "heceler": [
+    {
+     "hece": "mum",
+     "ses": "pano-hece-mum",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "nota",
+   "harf": "N",
+   "resim": "assets/alfabe/kelime/nota.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-nota",
+   "heceler": [
+    {
+     "hece": "no",
+     "ses": "ev-n-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ta",
+     "ses": "pano-hece-ta",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "nilüfer",
+   "harf": "N",
+   "resim": "assets/alfabe/kelime/nilufer.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-nilufer",
+   "heceler": [
+    {
+     "hece": "ni",
+     "ses": "ev-n-i",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "lü",
+     "ses": "ev-l-uu",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "fer",
+     "ses": "pano-hece-fer",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "okul",
+   "harf": "O",
+   "resim": "assets/alfabe/kelime/okul.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-okul",
+   "heceler": [
+    {
+     "hece": "o",
+     "ses": "pano-hece-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "kul",
+     "ses": "pano-hece-kul",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "orkide",
+   "harf": "O",
+   "resim": "assets/alfabe/kelime/orkide.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-orkide",
+   "heceler": [
+    {
+     "hece": "or",
+     "ses": "pano-hece-or",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ki",
+     "ses": "pano-hece-ki",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "de",
+     "ses": "pano-hece-de",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "örümcek",
+   "harf": "Ö",
+   "resim": "assets/alfabe/kelime/orumcek.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-orumcek",
+   "heceler": [
+    {
+     "hece": "ö",
+     "ses": "pano-hece-ö",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "rüm",
+     "ses": "pano-hece-rüm",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "cek",
+     "ses": "pano-hece-cek",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ödül",
+   "harf": "Ö",
+   "resim": "assets/alfabe/kelime/odul.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-odul",
+   "heceler": [
+    {
+     "hece": "ö",
+     "ses": "pano-hece-ö",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "dül",
+     "ses": "pano-hece-dül",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "pasta",
+   "harf": "P",
+   "resim": "assets/alfabe/kelime/pasta.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-pasta",
+   "heceler": [
+    {
+     "hece": "pas",
+     "ses": "pano-hece-pas",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ta",
+     "ses": "pano-hece-ta",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "papağan",
+   "harf": "P",
+   "resim": "assets/alfabe/kelime/papagan.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-papagan",
+   "heceler": [
+    {
+     "hece": "pa",
+     "ses": "pano-hece-pa",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "pa",
+     "ses": "pano-hece-pa",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ğan",
+     "ses": "pano-hece-ğan",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "robot",
+   "harf": "R",
+   "resim": "assets/alfabe/kelime/robot.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-robot",
+   "heceler": [
+    {
+     "hece": "ro",
+     "ses": "ev-r-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "bot",
+     "ses": "pano-hece-bot",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "roket",
+   "harf": "R",
+   "resim": "assets/alfabe/kelime/roket.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-roket",
+   "heceler": [
+    {
+     "hece": "ro",
+     "ses": "ev-r-o",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ket",
+     "ses": "pano-hece-ket",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "simit",
+   "harf": "S",
+   "resim": "assets/alfabe/kelime/simit.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-simit",
+   "heceler": [
+    {
+     "hece": "si",
+     "ses": "pano-hece-si",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "mit",
+     "ses": "pano-hece-mit",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "salyangoz",
+   "harf": "S",
+   "resim": "assets/alfabe/kelime/salyangoz.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-salyangoz",
+   "heceler": [
+    {
+     "hece": "sal",
+     "ses": "pano-hece-sal",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "yan",
+     "ses": "pano-hece-yan",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "goz",
+     "ses": "pano-hece-goz",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "şeker",
+   "harf": "Ş",
+   "resim": "assets/alfabe/kelime/seker.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-seker",
+   "heceler": [
+    {
+     "hece": "şe",
+     "ses": "ev-ss-e",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ker",
+     "ses": "pano-hece-ker",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "şişe",
+   "harf": "Ş",
+   "resim": "assets/alfabe/kelime/sise.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-sise",
+   "heceler": [
+    {
+     "hece": "şi",
+     "ses": "ev-ss-i",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "şe",
+     "ses": "ev-ss-e",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "tavşan",
+   "harf": "T",
+   "resim": "assets/alfabe/kelime/tavsan.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-tavsan",
+   "heceler": [
+    {
+     "hece": "tav",
+     "ses": "pano-hece-tav",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "şan",
+     "ses": "pano-hece-şan",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "tencere",
+   "harf": "T",
+   "resim": "assets/alfabe/kelime/tencere.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-tencere",
+   "heceler": [
+    {
+     "hece": "ten",
+     "ses": "pano-hece-ten",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ce",
+     "ses": "pano-hece-ce",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "re",
+     "ses": "ev-r-e",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "uğur böceği",
+   "harf": "U",
+   "resim": "assets/alfabe/kelime/ugur-bocegi.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-ugur-bocegi",
+   "heceler": [
+    {
+     "hece": "u",
+     "ses": "pano-hece-u",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ğur",
+     "ses": "pano-hece-ğur",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "bö",
+     "ses": "ev-b-oo",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ce",
+     "ses": "pano-hece-ce",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ği",
+     "ses": "pano-hece-ği",
+     "kayit": "yeni"
+    }
+   ],
+   "yazim": "u-ğur bö-ce-ği",
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ukulele",
+   "harf": "U",
+   "resim": "assets/alfabe/kelime/ukulele.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-ukulele",
+   "heceler": [
+    {
+     "hece": "u",
+     "ses": "pano-hece-u",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ku",
+     "ses": "ev-k-u",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "le",
+     "ses": "pano-hece-le",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "le",
+     "ses": "pano-hece-le",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "ütü",
+   "harf": "Ü",
+   "resim": "assets/alfabe/kelime/utu.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-utu",
+   "heceler": [
+    {
+     "hece": "ü",
+     "ses": "pano-hece-ü",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "tü",
+     "ses": "ev-t-uu",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "valiz",
+   "harf": "V",
+   "resim": "assets/alfabe/kelime/valiz.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-valiz",
+   "heceler": [
+    {
+     "hece": "va",
+     "ses": "pano-hece-va",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "liz",
+     "ses": "pano-hece-liz",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "vişne",
+   "harf": "V",
+   "resim": "assets/alfabe/kelime/visne.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-visne",
+   "heceler": [
+    {
+     "hece": "viş",
+     "ses": "pano-hece-viş",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ne",
+     "ses": "ev-n-e",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "yumurta",
+   "harf": "Y",
+   "resim": "assets/alfabe/kelime/yumurta.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-yumurta",
+   "heceler": [
+    {
+     "hece": "yu",
+     "ses": "ev-y-u",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "mur",
+     "ses": "pano-hece-mur",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ta",
+     "ses": "pano-hece-ta",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "yıldız",
+   "harf": "Y",
+   "resim": "assets/alfabe/kelime/yildiz.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-yildiz",
+   "heceler": [
+    {
+     "hece": "yıl",
+     "ses": "pano-hece-yıl",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "dız",
+     "ses": "pano-hece-dız",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "zebra",
+   "harf": "Z",
+   "resim": "assets/alfabe/kelime/zebra.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-zebra",
+   "heceler": [
+    {
+     "hece": "zeb",
+     "ses": "pano-hece-zeb",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ra",
+     "ses": "pano-hece-ra",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "zeytin",
+   "harf": "Z",
+   "resim": "assets/alfabe/kelime/zeytin.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-zeytin",
+   "heceler": [
+    {
+     "hece": "zey",
+     "ses": "pano-hece-zey",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "tin",
+     "ses": "pano-hece-tin",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni"
+  },
+  {
+   "sozcuk": "erik",
+   "harf": "E",
+   "resim": "assets/alfabe/kelime/erik.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-erik",
+   "heceler": [
+    {
+     "hece": "e",
+     "ses": "pano-hece-e",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "rik",
+     "ses": "pano-hece-rik",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  },
+  {
+   "sozcuk": "etek",
+   "harf": "E",
+   "resim": "assets/alfabe/kelime/etek.webp",
+   "enKucukYas": "2-3",
+   "ses": "pano-ad-etek",
+   "heceler": [
+    {
+     "hece": "e",
+     "ses": "pano-hece-e",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "tek",
+     "ses": "pano-hece-tek",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  },
+  {
+   "sozcuk": "iplik",
+   "harf": "İ",
+   "resim": "assets/alfabe/kelime/iplik.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-iplik",
+   "heceler": [
+    {
+     "hece": "ip",
+     "ses": "pano-hece-ip",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "lik",
+     "ses": "pano-hece-lik",
+     "kayit": "yeni"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  },
+  {
+   "sozcuk": "iskele",
+   "harf": "İ",
+   "resim": "assets/alfabe/kelime/iskele.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-iskele",
+   "heceler": [
+    {
+     "hece": "is",
+     "ses": "pano-hece-is",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ke",
+     "ses": "pano-hece-ke",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "le",
+     "ses": "pano-hece-le",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  },
+  {
+   "sozcuk": "uskumru",
+   "harf": "U",
+   "resim": "assets/alfabe/kelime/uskumru.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-uskumru",
+   "heceler": [
+    {
+     "hece": "us",
+     "ses": "pano-hece-us",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "kum",
+     "ses": "pano-hece-kum",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ru",
+     "ses": "ev-r-u",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  },
+  {
+   "sozcuk": "uydu",
+   "harf": "U",
+   "resim": "assets/alfabe/kelime/uydu.webp",
+   "enKucukYas": "4",
+   "ses": "pano-ad-uydu",
+   "heceler": [
+    {
+     "hece": "uy",
+     "ses": "pano-hece-uy",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "du",
+     "ses": "ev-d-u",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  },
+  {
+   "sozcuk": "üniforma",
+   "harf": "Ü",
+   "resim": "assets/alfabe/kelime/uniforma.webp",
+   "enKucukYas": "5+",
+   "ses": "pano-ad-uniforma",
+   "heceler": [
+    {
+     "hece": "ü",
+     "ses": "pano-hece-ü",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "ni",
+     "ses": "ev-n-i",
+     "kayit": "vardı"
+    },
+    {
+     "hece": "for",
+     "ses": "pano-hece-for",
+     "kayit": "yeni"
+    },
+    {
+     "hece": "ma",
+     "ses": "pano-hece-ma",
+     "kayit": "vardı"
+    }
+   ],
+   "kayit": "yeni",
+   "paket": "Harf-H8"
+  }
+ ]
+}

@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Sıkacakta parmağı kaldırmadan birkaç tur atılır, hazne dolar ve doğru bardak hazırlanır', async ({page}) => {
   await page.setViewportSize({width:844,height:390});
-  await page.goto('./sef/?test=1');
-  await page.getByRole('button',{name:'Müşteri masası',exact:true}).tap();
-  await page.locator('[data-menu="corba-sofrasi"]').tap();
+  // "Müşteri masası" fiş arşivi panoda yok (15 Kasım ilk sürümde de); müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+  await page.goto('./sef/?test=1&giris=tepsiler&siparis=corba-sofrasi');
   await page.locator('[data-parca="icecek"]').tap();
   await page.locator('[data-meyve="limon"].ps-meyve-sec').tap();
   await page.locator('.ps-ham').tap();

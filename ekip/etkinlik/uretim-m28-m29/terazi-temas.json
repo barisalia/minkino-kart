@@ -1,0 +1,153 @@
+{
+  "terazi-direk": [
+    {
+      "point": [
+        150,
+        40
+      ],
+      "center": [
+        211,
+        174,
+        3,
+        253
+      ],
+      "neighborhoodInk": 169
+    },
+    {
+      "point": [
+        150,
+        514
+      ],
+      "center": [
+        54,
+        42,
+        24,
+        169
+      ],
+      "neighborhoodInk": 91
+    }
+  ],
+  "terazi-cubuk-2": [
+    {
+      "point": [
+        450,
+        40
+      ],
+      "center": [
+        0,
+        0,
+        0,
+        253
+      ],
+      "neighborhoodInk": 169
+    },
+    {
+      "point": [
+        40,
+        40
+      ],
+      "center": [
+        187,
+        153,
+        68,
+        15
+      ],
+      "neighborhoodInk": 104
+    },
+    {
+      "point": [
+        860,
+        40
+      ],
+      "center": [
+        182,
+        157,
+        72,
+        21
+      ],
+      "neighborhoodInk": 107
+    }
+  ],
+  "terazi-cubuk-3": [
+    {
+      "point": [
+        450,
+        40
+      ],
+      "center": [
+        1,
+        0,
+        0,
+        253
+      ],
+      "neighborhoodInk": 169
+    },
+    {
+      "point": [
+        40,
+        40
+      ],
+      "center": [
+        85,
+        85,
+        0,
+        0
+      ],
+      "neighborhoodInk": 77
+    },
+    {
+      "point": [
+        860,
+        40
+      ],
+      "center": [
+        85,
+        0,
+        0,
+        0
+      ],
+      "neighborhoodInk": 78
+    },
+    {
+      "point": [
+        450,
+        70
+      ],
+      "center": [
+        255,
+        0,
+        0,
+        1
+      ],
+      "neighborhoodInk": 115
+    }
+  ],
+  "askili-tabak": [
+    {
+      "point": [
+        130,
+        6
+      ],
+      "center": [
+        57,
+        56,
+        55,
+        254
+      ],
+      "neighborhoodInk": 67
+    },
+    {
+      "point": [
+        130,
+        207
+      ],
+      "center": [
+        251,
+        253,
+        248,
+        255
+      ],
+      "neighborhoodInk": 169
+    }
+  ]
+}

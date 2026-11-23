@@ -1,0 +1,210 @@
+[
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\dress.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "e9cefbff6b63dd54f6295d5d260292176aea9ddea5e3264e5ebed44c80836d82"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\hat.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "dde625e6a42f4f99b470e06925f02f71c8c62bcf78294bbf3c1bcee0fbabd21b"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\jacket.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "31337aec7ae1402dde821ef4fd43155b504d036ced2225eed9671eb0cef2d754"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\kino-0.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "d76e7325f24efe4bdc8a689854f99fcb64849a91d005561cbd88405eb830a647"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\kino-1.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "3c856fdad15b5afd0f57c975a0f7c0d73582b0858fedc664487c648484099667"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\pants.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "27ffa389a0a706968495f38c2a240531257978df24c12a99c95b6e43d1b5b35e"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\scarf.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "ab0a214ba6a1e98dc14f41407f811ad0f27d8626f2d22eef2bf77c83fa8ddb0e"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\shoes.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "46beb5fc545ec915d933da91a2d457652a572cf133ca139e33ef22355ebee41d"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\socks.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "0ce7a4e59ae1e58daebc2c590dfd4c70a4e472883c7e8021679609d3d3b25d29"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\giydir\\t-shirt.webp",
+    "size": [
+      1000,
+      1400
+    ],
+    "sha256": "def584a6e6aa31eb67b772c00ea0e41893c28c6ae74a433e2ba03d703570249d"
+  },
+  {
+    "path": "assets\\ingilizce\\sahne\\giyinme.webp",
+    "size": [
+      2000,
+      1250
+    ],
+    "sha256": "c75f9e2d1bcd0182b46aa1b8a99df3e310859257ff80eab50b0c1c6d6138f483"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\foto-cerceve.webp",
+    "size": [
+      1100,
+      1300
+    ],
+    "sha256": "3669cc1b64179a727de2179a162f6c86637d9f4f8951408496b625dac2a7a59e"
+  },
+  {
+    "path": "assets\\ingilizce\\sahne\\kitaplik.webp",
+    "size": [
+      2000,
+      1400
+    ],
+    "sha256": "be37948b7ea6ceb62a570ca29754dbc6654cdb3c5e6bb87090ee4f4dda774cee"
+  },
+  {
+    "path": "assets\\ingilizce\\oyun\\acik-kitap.webp",
+    "size": [
+      1600,
+      1100
+    ],
+    "sha256": "2d529cb079d537fc3c5adcbfad95286bb7e3c2909fe0ac1134ea08fe6a731bd8"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\ailem.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "3cf3415ecccd41dac15011f77d824920ef2c4444ab449a3f5fe5efa2f309113c"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\ciftlik.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "1d89171648d4a5f7468240d5c0916eabc71991d5c358f94aa31029705dccd4b6"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\hareketler.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "f8a4d069e2534878f346f70d2d3235ab0bb553074deca70667b428b89a27f6ef"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\kiyafetler.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "ad1781fed5dc525904a394a5a9e3878df5991155bc163241d838079e850dfc81"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\odam.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "e0ad1a9e750f4dfac92f60b633f1683cf583770a0753fe1653fecd7d2f9f0072"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\oyuncaklar.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "cbf3f26c4ed93c666e7d6dcac5e22a88d6bd204f7d25ab6bbc221609d4a83dce"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\renkler.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "07f53b041413d901d6baed1aee6213a725891358969cc4c0a7b092113d491bab"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\sayilar.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "49b8b850f3337e29dac086fdac788eb28f48229ce46a86c26c92ebc23fd4b0b1"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\tasitlar.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "1545119266f1e53cf5d8f09c8f94e3191eb62cc42bef21ab9e8da0aceccd1365"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\vahsi.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "31a20e99243544cb0306344be7a195c06896affc15b4a2580d9d9ae459f5e0ee"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\yiyecekler.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "a6a1e32ec23b46ff88dde4c322ba811736114469544865ff00a430b07ab59598"
+  },
+  {
+    "path": "assets\\ingilizce\\kitap\\yuzum.webp",
+    "size": [
+      600,
+      800
+    ],
+    "sha256": "0458d725a2461846467e9709d5566b922846f0ded2d2e1f13b77df2c020377ff"
+  }
+]

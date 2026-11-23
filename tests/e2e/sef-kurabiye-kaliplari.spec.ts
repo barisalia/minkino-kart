@@ -1,4 +1,6 @@
 import { expect,test } from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 for(const sekil of ['kalp','yuvarlak'] as const)test(sekil+' kalıbı fırından müşteri albümüne kadar korunur',async({page})=>{
   test.setTimeout(120000);
@@ -46,21 +48,15 @@ for(const sekil of ['kalp','yuvarlak'] as const)test(sekil+' kalıbı fırından
     await page.reload();await page.getByRole('button',{name:'Mutfağa dön'}).click();
     await page.getByRole('button',{name:'Yuvarlak Kurabiye vitrinden tepsiye al'}).click();
   }
-  await page.reload();await expect(page.locator('.tepsi-yuva .pastane-porsiyonu')).toHaveAttribute('data-sekil',sekil);
-  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
+  // Tepsi tamamlanınca masa sahnesi açılır: kalıbın şekli ve krema çizgileri müşteriye sunulacak tepside korunur.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await page.reload();await expect(sunum.locator('.pastane-porsiyonu')).toHaveAttribute('data-sekil',sekil);
+  await expect(sunum.locator('.pastane-porsiyonu .kb-desen polyline')).toHaveCount(3);
+  if(process.env.SEF_KALIP_KARE)await page.screenshot({path:process.env.SEF_KALIP_KARE+'/'+sekil+'-masa.png'});
+  await sunum.click();
   await expect(page.getByRole('button',{name:new RegExp((sekil==='kalp'?4:6)+' jeton kazanıldı')})).toBeVisible();
+  // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; sofranın kaydı kalıbın şeklini tutar.
   await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.anilar.at(-1)?.masa.kurabiyeSekli)).toBe(sekil);
-  await page.evaluate(()=>{
-    const k=JSON.parse(localStorage.getItem('minkino-sef-v1')!);k.tepsiler.ekran='kapali';k.tepsiler.restoranda=false;
-    localStorage.setItem('minkino-sef-v1',JSON.stringify(k));
-  });
-  await page.reload();await page.getByRole('button',{name:'Hazırladığım tabaklar'}).click();
-  await expect(page.locator('.ani-karti .kb-desen polyline')).toHaveCount(3);
-  await expect(page.locator('.ani-karti .pastane-porsiyonu')).toHaveAttribute('data-sekil',sekil);
-  if(process.env.SEF_KALIP_KARE){
-    await page.locator('.ani-karti').first().click();
-    await page.screenshot({path:process.env.SEF_KALIP_KARE+'/'+sekil+'-sofrasi.png'});
-  }
 });
 
 test('Krema değişikliği puana yansır ve müşteri çizilen kurabiyeleri tek tek yer',async({page})=>{
@@ -87,6 +83,9 @@ test('Krema değişikliği puana yansır ve müşteri çizilen kurabiyeleri tek 
   await page.getByRole('button',{name:'Kurabiyeleri tabağa diz'}).tap();
   await page.getByRole('button',{name:'Tatlıyı tepsiye koy'}).tap();
   await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.masalar.kurabiye.tatliPuani)).toBe(2);
+  // Karşılaştırma ve düzeltme servisten sonra masada: ilk servis iki yıldız, dört jeton.
+  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  await expect(page.getByRole('button',{name:/^4 jeton kazanıldı/})).toBeVisible();
   await page.getByRole('button',{name:'Yıldız Kurabiye siparişi ile tabağı karşılaştır'}).tap();
   await page.getByRole('button',{name:'Kurabiyelerin kremasını değiştir'}).tap();
   await page.getByRole('button',{name:'Çilek kreması'}).tap();
@@ -97,7 +96,8 @@ test('Krema değişikliği puana yansır ve müşteri çizilen kurabiyeleri tek 
   await page.getByRole('button',{name:'Kurabiyeleri tabağa diz'}).tap();
   await page.getByRole('button',{name:'Tatlıyı tepsiye koy'}).tap();
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
-  await expect(page.getByRole('button',{name:/6 jeton kazanıldı/})).toBeVisible();
+  // Düzeltilen tabak üç yıldız alır; aradaki fark (2 jeton) ödenir, toplam 16.
+  await expect(page.getByRole('button',{name:/^2 jeton kazanıldı/})).toBeVisible();
   const tabak=page.getByRole('button',{name:'Yıldız Kurabiye tattır'});
   // The customer takes the first cookie automatically at service.
   await expect(tabak.locator('.kb-tane:not([hidden])')).toHaveCount(2);

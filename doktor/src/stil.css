@@ -1,0 +1,126 @@
+/* Minik Doktor · muayene odası. Sahne 1600×900 birim, ekranı kaplar; tepsi, seçim ve el katmanı ekran pikselinde. */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #e9dcf2; }
+#doktor {
+  position: fixed; inset: 0; overflow: hidden; background: #e9dcf2;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#doktor img { display: block; pointer-events: none; -webkit-user-drag: none; }
+#doktor button { font: inherit; color: inherit; border: 0; background: none; padding: 0; margin: 0; cursor: pointer; touch-action: none; }
+#doktor button:focus-visible { outline: 4px solid #2f6fd6; outline-offset: 3px; border-radius: 16px; }
+#doktor [hidden] { display: none !important; }
+#doktor img.dk-ayna { transform: scaleX(-1); }
+#doktor img.dk-ters { transform: rotate(180deg); }
+
+.dk-sahne { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; }
+.dk-kamera { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+.dk-fon { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Kino ve Zıpzıp: alt orta noktasından yerleşir */
+.dk-kino, .dk-zipzip { position: absolute; }
+.dk-kino-ic, .dk-zipzip-ic { position: absolute; inset: 0; transform-origin: 50% 100%; }
+.dk-kino img, .dk-zipzip .dk-poz { width: 100%; height: 100%; }
+.dk-zipzip-ic { animation: dk-nefes 2.8s ease-in-out infinite; }
+.dk-kino-ic { animation: dk-nefes 3.2s ease-in-out infinite; }
+@keyframes dk-nefes { 0%, 100% { scale: 1 1; } 50% { scale: 1.006 1.014; } }
+.dk-konusan > .dk-zipzip-ic, .dk-konusan > .dk-kino-ic { animation: dk-konus 0.34s ease-in-out infinite alternate; }
+@keyframes dk-konus { from { scale: 1 1; } to { scale: 1.012 1.028; } }
+.dk-titrek > .dk-zipzip-ic { animation: dk-titre 2.6s linear infinite; }
+@keyframes dk-titre {
+  0%, 70%, 100% { translate: 0 0; }
+  72% { translate: -2px 0; } 74% { translate: 2px 0; } 76% { translate: -2px 0; } 78% { translate: 2px 0; } 80% { translate: -1px 0; } 82% { translate: 0 0; }
+}
+.dk-el-salla > .dk-kino-ic { animation: dk-salla-el 0.9s ease-in-out infinite; }
+@keyframes dk-salla-el { 0%, 100% { rotate: 0deg; } 50% { rotate: -1.6deg; } }
+.dk-alkis > .dk-kino-ic { animation: dk-alkis 0.7s ease-in-out infinite; }
+@keyframes dk-alkis { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+
+.dk-kucuk-bant, .dk-kucuk-yildiz { position: absolute; height: auto; }
+.dk-kucuk-yildiz { transform: translate(-50%, -50%); }
+.dk-diz-hedef {
+  position: absolute; width: 150px; height: 150px; transform: translate(-50%, -50%); border-radius: 50%;
+}
+.dk-diz-hedef:disabled { pointer-events: none; }
+.dk-diz-hedef.dk-isaret::after {
+  content: ''; position: absolute; inset: 18%; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.9);
+  animation: dk-halka 0.9s ease-out 2;
+}
+@keyframes dk-halka { from { transform: scale(0.5); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
+
+/* Yakın plan: aynı tuvaldeki diz katmanları (2048×1152 → 1600×900) */
+.dk-yakin { position: absolute; inset: 0; pointer-events: none; }
+.dk-yakin-ic { position: absolute; inset: 0; transform-origin: 0 0; }
+.dk-katman { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dk-yaprak { opacity: 0; }
+.dk-yaprak.dk-gorundu { opacity: 1; }
+.dk-bant-yeri { position: absolute; width: 0; height: 0; }
+.dk-bant {
+  position: absolute; left: 0; top: 0; translate: -50% -50%; pointer-events: auto;
+  --kabar: 1;
+  transform: perspective(900px) rotate(-6deg) rotateX(calc(var(--kabar) * 24deg)) scale(calc(1 + var(--kabar) * 0.07));
+  filter: drop-shadow(0 calc(var(--kabar) * 18px) calc(3px + var(--kabar) * 8px) rgba(70, 35, 20, calc(0.15 + var(--kabar) * 0.2)));
+}
+.dk-bant img { width: 100%; height: auto; }
+.dk-bant.dk-yapisti { animation: dk-yapis 0.35s ease-out; }
+@keyframes dk-yapis { 0% { scale: 1; } 40% { scale: 1.06 0.94; } 100% { scale: 1; } }
+
+/* Kalp atışı: ekranın kenarında belli belirsiz pembe nabız */
+.dk-nabiz {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  box-shadow: inset 0 0 calc(var(--hucre) * 0.9) calc(var(--hucre) * 0.15) rgba(255, 110, 150, 0.9);
+}
+
+/* Alet tepsisi: tepsi çizimi dokuz parçalı çerçeve olarak (köşeleri bozulmaz), sağ kenarda */
+.dk-tepsi {
+  position: absolute; right: calc(env(safe-area-inset-right, 0px) + 1.2vw); top: 50%; translate: 0 -50%;
+  display: grid; grid-template-columns: var(--hucre); gap: calc(var(--hucre) * 0.08);
+  border-style: solid; border-width: calc(var(--hucre) * 0.34); border-color: transparent;
+  padding: calc(var(--hucre) * 0.02);
+}
+.dk-tepsi[data-sutun='2'] { grid-template-columns: var(--hucre) var(--hucre); }
+.dk-alet { width: var(--hucre); height: var(--hucre); display: block; position: relative; }
+.dk-alet img { position: absolute; inset: 4%; width: 92%; height: 92%; object-fit: contain; filter: drop-shadow(0 3px 2px rgba(40, 60, 90, 0.25)); }
+.dk-alet.dk-kalkti img, .dk-secenek.dk-kalkti img { opacity: 0; }
+.dk-salla { animation: dk-salla 0.62s ease-in-out 3; }
+@keyframes dk-salla { 0%, 100% { rotate: 0deg; scale: 1; } 25% { rotate: -9deg; scale: 1.08; } 75% { rotate: 9deg; scale: 1.08; } }
+
+/* Seçim (bantlar, yıldızlar): tepsinin solunda dikey sıra */
+.dk-secim {
+  position: absolute; top: 50%; translate: 0 -50%;
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--hucre) * 0.12);
+}
+.dk-secenek { min-width: 64px; min-height: 64px; display: grid; place-items: center; }
+.dk-secenek img { height: auto; filter: drop-shadow(0 4px 3px rgba(60, 40, 30, 0.25)); }
+.dk-secenek-yildiz { width: var(--hucre); height: var(--hucre); }
+.dk-secenek-yildiz img { width: 80%; }
+
+/* Elde tutulan alet */
+.dk-el { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
+.dk-tutulan { position: absolute; left: 0; top: 0; will-change: transform; }
+.dk-tutulan-ic { position: absolute; inset: 0; filter: drop-shadow(0 10px 8px rgba(40, 30, 60, 0.28)); }
+.dk-tutulan-ic > img { width: 100%; height: 100%; }
+.dk-mercek { position: absolute; border-radius: 50%; overflow: hidden; background: #eaf6fb; }
+.dk-mercek-ic { position: absolute; }
+.dk-mercek-ic img { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Sağlık karnesi ve damga izi (izin biçimi yıldız çıkartmasının çiziminden: maske) */
+.dk-karne { position: absolute; transform: translate(-50%, -50%) rotate(-2deg); filter: drop-shadow(0 14px 12px rgba(50, 30, 60, 0.3)); }
+.dk-karne > img { width: 100%; height: 100%; }
+.dk-iz {
+  position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%) rotate(-12deg); opacity: 0.88;
+  background: #d8435e; -webkit-mask: var(--iz) center / contain no-repeat; mask: var(--iz) center / contain no-repeat;
+}
+
+.dk-geri, .dk-tekrar {
+  position: absolute; z-index: 30; width: 64px; height: 64px; border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.92) !important; color: #4a3a6b !important; display: grid; place-items: center;
+  box-shadow: 0 4px 0 rgba(74, 58, 107, 0.25);
+}
+.dk-geri { left: calc(env(safe-area-inset-left, 0px) + 14px); top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.dk-geri svg, .dk-tekrar svg { width: 34px; height: 34px; }
+.dk-tekrar { width: 80px; height: 80px; right: calc(env(safe-area-inset-right, 0px) + 14px); top: calc(env(safe-area-inset-top, 0px) + 12px); background: #ffd24a !important; color: #5a3b00 !important; }
+.dk-tekrar svg { width: 46px; height: 46px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dk-zipzip-ic, .dk-kino-ic, .dk-salla { animation: none !important; }
+}

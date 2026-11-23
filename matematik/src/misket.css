@@ -152,12 +152,27 @@ body:has(#sahne[data-ekran='misket']) {
   right: max(55px, 8%);
   top: 2%;
   padding: 3px;
-  width: max(36px, 4.6%);
+  /* Kalite kuralı 8: telefonda da en az 64 px (23 Kasım denetimi; 44 idi). */
+  width: max(64px, 6%);
   aspect-ratio: 1;
   background: #fff1cb;
   border: 1.8px solid #493335;
   border-radius: 32%;
   z-index: 4;
+}
+/* Zil çaldıktan sonra ölçü oyunlarına geçiş oku belirginleşir. */
+.mk-devam.mk-devam-cagir {
+  outline: 3px solid #f2b32a;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mk-devam.mk-devam-cagir {
+    animation: mk-devam-cagir 1.1s ease-in-out 3;
+  }
+}
+@keyframes mk-devam-cagir {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); }
 }
 .mk-okuyucu {
   position: absolute;
@@ -240,5 +255,30 @@ body:has(#sahne[data-ekran='misket']) {
     78% {
       transform: rotate(8deg);
     }
+  }
+}
+
+/* Matematik denetimi (23 Kasım): ray kurarken raftaki top boşta hafifçe nefes alır; boş yere dokununca hopalar. */
+@media (prefers-reduced-motion: no-preference) {
+  .mk-makine[data-asama='kur'] .mk-stok-top > use {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: mk-top-bekle 2.4s ease-in-out infinite;
+  }
+  .mk-makine.mk-bos-dokunus[data-asama='kur'] .mk-stok-top > use {
+    animation: mk-top-hop 0.36s ease-out;
+  }
+  .mk-makine.mk-bos-dokunus[data-asama='yuklu'] .mk-top-donus > use {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: mk-top-hop 0.36s ease-out;
+  }
+  @keyframes mk-top-bekle {
+    0%, 100% { transform: none; }
+    50% { transform: translateY(-3px) scale(1.02, 0.98); }
+  }
+  @keyframes mk-top-hop {
+    0%, 100% { transform: none; }
+    40% { transform: translateY(-12px) scale(0.96, 1.05); }
   }
 }

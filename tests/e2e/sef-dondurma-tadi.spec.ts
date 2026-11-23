@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 test.beforeEach(async({page})=>{await page.routeWebSocket(u=>u.port==='5173',()=>{});});
 
 test('Lokum çilek isterken çocuk çikolata seçebilir ve bitmiş külah kendi tadını korur',async({page})=>{

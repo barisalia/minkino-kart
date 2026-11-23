@@ -1,0 +1,2 @@
+import {defineConfig} from '@playwright/test';
+export default defineConfig({testDir:'tests/e2e',workers:1,timeout:90000,use:{baseURL:'http://127.0.0.1:43871',launchOptions:{channel:'msedge'},viewport:{width:900,height:520},hasTouch:true},webServer:{command:'python -m http.server 43871 --bind 127.0.0.1 --directory output/matematik-ui/uygulama',url:'http://127.0.0.1:43871',stdout:'ignore',stderr:'ignore'}, reporter:'list'});

@@ -1,6 +1,9 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
-test('Son üç sofra yeniden açılan albümde çocukların gerçek tabaklarıyla saklanır',async({page})=>{
+// Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; son üç sofra ekranı yok ama kaydı (tepsiler.anilar) restorandan çıkınca da korunur.
+test('Son üç sofra çocukların gerçek tabaklarıyla kayıtta saklanır',async({page})=>{
   test.setTimeout(105_000);
   await page.goto('./sef/?test=1');
   await page.evaluate(()=>localStorage.setItem('minkino-sef-v1',JSON.stringify({sessiz:true,
@@ -31,18 +34,10 @@ test('Son üç sofra yeniden açılan albümde çocukların gerçek tabaklarıyl
     k.tepsiler.masalar['makarna-kurabiye']={tabaklar:{},sunuldu:false};
     localStorage.setItem('minkino-sef-v1',JSON.stringify(k));
   });
-  await page.reload();await page.getByRole('button',{name:'Hazırladığım tabaklar'}).click();
-  await page.getByRole('button',{name:'Müşteri sofraları'}).click();
-  await expect(page.locator('.ani-karti')).toHaveCount(3);
-  await expect(page.locator('.ani-karti .tost-yigin')).toHaveAttribute('data-kizartma','citir');
-  await expect(page.locator('.ani-karti .tost-kat')).toHaveAttribute('data-tur','zeytin');
-  await expect(page.locator('.ani-karti .sm-bardak')).toHaveAttribute('data-meyveler','kivi,muz');
-  await expect(page.locator('.ani-karti .sm-bardak')).toHaveAttribute('data-buz','evet');
-  await page.locator('.ani-karti').first().click();
-  await expect(page.locator('.ani-buyuk .pastane-porsiyonu')).toHaveAttribute('data-tabak','sari');
-  if(process.env.SEF_ANI_KARE)await page.getByRole('dialog').screenshot({path:process.env.SEF_ANI_KARE});
-  await page.evaluate(()=>window.dispatchEvent(new Event('minkino:geri',{cancelable:true})));
-  await expect(page.locator('.ani-karti')).toHaveCount(3);
-  await page.getByRole('dialog').getByRole('button',{name:'Hazırladığım tabaklar',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Bahçe Salatası',exact:true})).toBeVisible();
+  await page.reload();
+  const sakli=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.anilar);
+  expect(sakli.map((a:{menuId:string})=>a.menuId)).toEqual(['peynirli-tost','meyveli-mola','makarna-kurabiye']);
+  expect(sakli[0].masa.tostServisi).toMatchObject({kizartma:'citir',katlar:[{tur:'zeytin'}]});
+  expect(sakli[1].masa.smoothie).toMatchObject({meyveler:['kivi','muz'],buzlu:true});
+  expect(sakli[2].masa).toMatchObject({tatliTabagi:'sari',tabaklar:{makarna:{tarifId:'makarna'},kurabiye:true}});
 });

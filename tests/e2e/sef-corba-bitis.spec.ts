@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 for(const [genislik,istenen] of [[568,'sade'],[844,'nane']] as const)test('Çorba bitişi '+istenen+' gerçek kâseye, fişe ve düzeltmeye taşınır',async({page})=>{
   await page.setViewportSize({width:genislik,height:genislik===568?320:390});
   await page.routeWebSocket(url=>url.searchParams.has('token'),()=>{});

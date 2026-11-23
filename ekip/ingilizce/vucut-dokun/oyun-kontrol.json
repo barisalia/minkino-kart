@@ -1,0 +1,40 @@
+[
+  {
+    "name": "telefon",
+    "answers": [
+      "hair",
+      "teeth",
+      "shoulders",
+      "shoulders",
+      "arms",
+      "arms",
+      "fingers",
+      "fingers",
+      "tummy",
+      "knees",
+      "knees",
+      "toes",
+      "toes"
+    ],
+    "errors": []
+  },
+  {
+    "name": "tablet",
+    "answers": [
+      "hair",
+      "teeth",
+      "shoulders",
+      "shoulders",
+      "arms",
+      "arms",
+      "fingers",
+      "fingers",
+      "tummy",
+      "knees",
+      "knees",
+      "toes",
+      "toes"
+    ],
+    "errors": []
+  }
+]

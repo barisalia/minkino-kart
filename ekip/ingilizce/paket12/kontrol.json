@@ -1,0 +1,23 @@
+{
+  "faceBox": [
+    280,
+    255,
+    720,
+    635
+  ],
+  "outsideFaceDifferentPixels": 0,
+  "clothes": [
+    "hat",
+    "scarf",
+    "t-shirt",
+    "jacket",
+    "pants",
+    "dress",
+    "socks",
+    "shoes"
+  ],
+  "canvas": [
+    1000,
+    1400
+  ]
+}

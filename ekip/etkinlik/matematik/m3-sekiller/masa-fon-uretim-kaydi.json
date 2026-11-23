@@ -1,0 +1,28 @@
+{
+  "request": "cb3e485220a3e67a4c6a420dd2c41ed85bc74170b639770239e1645d9a330216",
+  "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-4a049f1e-c2a8-4743-a5bd-8a56d7deac67.png",
+  "tool": "builtin ImageGen",
+  "prompt": "Edit this EXACT classroom background, keep the camera, window, plant, shelf, pennants, framed picture, palette and clean thin BLACK outlines unchanged. Add ONLY ONE small low simple golden wooden child table in the empty area immediately LEFT of the shelf on the right. Image is 1920x1080. Required geometry: table top horizontal surface at y=640, with an unobstructed usable span from x=1180 to x=1560; table outer left approximately x=1150 and outer right x=1590. The tabletop is empty. Show a modest narrow top plane extending backward about 35 pixels, its front horizontal support surface edge exactly at y=640, apron below, two or four sturdy simple legs reaching the floor at y=850. Feet really contact the floor. No chair. Preserve blank center wall x380..1540 y160..560 and blank left floor x600..1100. Keep the existing room intact everywhere else. Do not put a book, pizza, teacher, labels or any loose objects on the table. Immaculate 2D vector-like flat solid uniform colors, no grain, no textures, no soft shadows, no gradients. Same room, same proportions, landscape 16:9.",
+  "output": "assets/matematik/ders/sekiller/sinif-sekiller-2.webp",
+  "size": [
+    1920,
+    1080
+  ],
+  "table": {
+    "placementY": 640,
+    "topPlaneApproxY": [
+      620,
+      654
+    ],
+    "feetApproxY": 850
+  },
+  "qa": [
+    "Empty wall and left floor visually checked",
+    "Book and pizza mock placement at baseline y640",
+    "844x390 phone and 960x540 composition preview"
+  ],
+  "notChecked": [
+    "Live game interaction / physical device"
+  ],
+  "notes": "The deliverable background contains an empty table. Book and pizza exist only in QA previews."
+}

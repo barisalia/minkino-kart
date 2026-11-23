@@ -1,12 +1,13 @@
 import {expect,test} from '@playwright/test';
 import {mantiDuzeltme,mantiPuan,type Manti} from '../../sef/src/manti-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 for(const dogru of [true,false])test('Mantı hamuru katlanır ve '+(dogru?'peynirli yoğurtlu mantı tam puan kazanır':'erken süzülen farklı içli mantı masada aynen kalır'),async({page})=>{
   await page.setViewportSize(dogru?{width:667,height:375}:{width:844,height:390});
   await page.goto('./sef/?test=1');await page.getByRole('button',{name:'Sesi kapat'}).tap();
-  await page.getByRole('button',{name:'Resimli tarif kitabı'}).tap();
-  await page.getByRole('button',{name:'Mantı tarifini incele'}).tap();
-  for(let i=0;i<3;i++)await page.getByRole('button',{name:'Sonraki adım'}).press('Enter');
-  await page.getByRole('button',{name:'Bu yemeği hazırla'}).tap();
+  // Resimli tarif kitabı 16 Kasım'da (c3d9d09a) kaldırıldı; Mantı ikinci tarif rafından açılır.
+  await page.getByRole('button',{name:'Sonraki tarif rafı'}).tap();
+  await page.getByRole('button',{name:'Mantı tezgâhını aç'}).tap();
   const hamur=page.locator('.manti-hamur').first();
   await page.getByRole('button',{name:dogru?'Peynir içi seç':'Havuç içi seç'}).tap();
   const r=(await hamur.boundingBox())!;
@@ -37,7 +38,8 @@ for(const dogru of [true,false])test('Mantı hamuru katlanır ve '+(dogru?'peyni
   await page.getByRole('button',{name:'Mantıyı bitir'}).tap();
   if(dogru&&process.env.SEF_MANTI_KARE)await page.screenshot({path:process.env.SEF_MANTI_KARE});
   await page.getByRole('button',{name:'Mantıyı tepsiye koy'}).tap();await page.reload();
-  const yiyecek=page.locator('.tepsi-yuva .manti-lokma');
+  // Son tabak konunca masa sahnesi açılır; mantı müşteriye sunulacak tepside durur.
+  const yiyecek=page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.manti-lokma');
   await expect(yiyecek).toHaveCount(3);
   await expect(yiyecek.locator('.manti-ust-sos')).toHaveCount(dogru?3:1);
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
@@ -73,6 +75,9 @@ test('Mantı fişi üç sos izini gösterir; çocuk tek soslu tabağın iki eksi
   await page.reload();
   await page.getByRole('button',{name:'Mantıyı bitir'}).tap();
   await page.getByRole('button',{name:'Mantıyı tepsiye koy'}).tap();
+  // Karşılaştırma ve "tekrar pişir" servisten sonra masada: ilk servis iki yıldız, iki jeton.
+  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  await expect(page.getByRole('button',{name:/^2 jeton kazanıldı/})).toBeVisible();
   const fis=page.getByRole('button',{name:'Mantı siparişi ile tabağı karşılaştır'});
   await fis.tap();
   const karsilastir=page.getByRole('dialog');
@@ -91,12 +96,14 @@ test('Mantı fişi üç sos izini gösterir; çocuk tek soslu tabağın iki eksi
   await expect(page.locator('.manti-alan .manti-ust-sos')).toHaveCount(2);
   await page.getByRole('button',{name:'3. mantıya sos koy'}).tap();
   await page.getByRole('button',{name:'Mantıyı bitir'}).tap();await page.getByRole('button',{name:'Mantıyı tepsiye koy'}).tap();
+  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  // Düzeltilen tabak üç yıldız alır; aradaki fark (1 jeton) ödenir, toplam 3.
+  await expect(page.getByRole('button',{name:/^1 jeton kazanıldı/})).toBeVisible();
   await fis.tap();
   await expect(karsilastir.getByRole('img',{name:'3 mantı soslu'})).toHaveCount(2);
   await expect(karsilastir.locator('.sef-yildizlar')).toHaveAttribute('data-puan','3');
   await karsilastir.getByRole('button',{name:'Tepsiye dön'}).tap();
-  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
-  await expect(page.getByRole('button',{name:'3 jeton kazanıldı'})).toBeVisible();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.jeton)).toBe(3);
 });
 
 test('Dolu kaşık seçilen mantıya iner ve başka sos alınca öteki iki lokma korunur',async({page})=>{
@@ -123,6 +130,9 @@ test('Dolu kaşık seçilen mantıya iner ve başka sos alınca öteki iki lokma
   await expect(lokmalar.nth(2)).toHaveAttribute('data-sos','domates');
   await expect(page.locator('.manti-alan [data-sos=yogurt]')).toHaveCount(2);
   await page.getByRole('button',{name:'Mantıyı bitir'}).tap();await page.getByRole('button',{name:'Mantıyı tepsiye koy'}).tap();
+  // Karşılaştırma ve "tekrar pişir" servisten sonra masada.
+  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  await expect(page.getByRole('button',{name:/^2 jeton kazanıldı/})).toBeVisible();
   const fis=page.getByRole('button',{name:'Mantı siparişi ile tabağı karşılaştır'});
   await fis.tap();const dialog=page.getByRole('dialog');
   await expect(dialog.locator('.sef-yildizlar')).toHaveAttribute('data-puan','2');
@@ -132,5 +142,6 @@ test('Dolu kaşık seçilen mantıya iner ve başka sos alınca öteki iki lokma
   await expect(page.locator('.manti-alan [data-sos=yogurt]')).toHaveCount(3);
   await page.getByRole('button',{name:'Mantıyı bitir'}).tap();await page.getByRole('button',{name:'Mantıyı tepsiye koy'}).tap();
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
-  await expect(page.getByRole('button',{name:'3 jeton kazanıldı'})).toBeVisible();
+  await expect(page.getByRole('button',{name:/^1 jeton kazanıldı/})).toBeVisible();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.jeton)).toBe(3);
 });

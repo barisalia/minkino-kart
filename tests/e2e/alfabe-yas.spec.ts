@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 for (const [yas, grup, basamak, ilkAdim] of [
-  [2,'2-3',2,'6'], [3,'2-3',2,'6'], [4,'4',5,'5'], [5,'5+',7,'5'], [6,'5+',7,'5'],
+  // 18 Kasım 2026: ders kısaldı (2–3 yaş 2, 4 yaş 4, 5+ yaş 6 adım; alfabe/src/main.ts → dersAdimlari)
+  [2,'2-3',2,'6'], [3,'2-3',2,'6'], [4,'4',4,'5'], [5,'5+',6,'5'], [6,'5+',6,'5'],
 ] as const) {
   test('menüde seçilen '+yas+' yaşın harf dersi açılır', async ({page})=>{
     await page.goto('./?test=1');

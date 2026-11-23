@@ -1,0 +1,934 @@
+[
+ {
+  "id": "oyku-1",
+  "grup": 1,
+  "baslik": "Anne ile bahçe",
+  "sayfalar": [
+   {
+    "id": "oyku-1-1",
+    "metin": "Anne ile lale.",
+    "zamanlar": [
+     0,
+     480,
+     960
+    ]
+   },
+   {
+    "id": "oyku-1-2",
+    "metin": "Elli lale!",
+    "zamanlar": [
+     0,
+     400
+    ]
+   },
+   {
+    "id": "oyku-1-3",
+    "metin": "Anne nane al.",
+    "zamanlar": [
+     0,
+     880,
+     1280
+    ]
+   },
+   {
+    "id": "oyku-1-4",
+    "metin": "Anne, lale al!",
+    "yaptir": {
+     "hedef": "lale",
+     "points": "55,45 76,45 76,82 55,82"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1200
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-2",
+  "grup": 2,
+  "baslik": "Kino, Mino ve Lokum oyunu",
+  "sayfalar": [
+   {
+    "id": "oyku-2-1",
+    "metin": "Kino, Mino ile Lokum.",
+    "zamanlar": [
+     0,
+     880,
+     1360,
+     1680
+    ]
+   },
+   {
+    "id": "oyku-2-2",
+    "metin": "Kino kutu atar.",
+    "zamanlar": [
+     0,
+     360,
+     640
+    ]
+   },
+   {
+    "id": "oyku-2-3",
+    "metin": "Mino tutar, Lokum atlar.",
+    "zamanlar": [
+     0,
+     400,
+     1280,
+     1720
+    ]
+   },
+   {
+    "id": "oyku-2-4",
+    "metin": "Kino, kutu al!",
+    "yaptir": {
+     "hedef": "kutu",
+     "points": "52,57 83,57 83,88 52,88"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1040
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-3",
+  "grup": 3,
+  "baslik": "Dede ile köy",
+  "sayfalar": [
+   {
+    "id": "oyku-3-1",
+    "metin": "Dede köyde.",
+    "zamanlar": [
+     0,
+     560
+    ]
+   },
+   {
+    "id": "oyku-3-2",
+    "metin": "Kuzu meledi.",
+    "zamanlar": [
+     0,
+     400
+    ]
+   },
+   {
+    "id": "oyku-3-3",
+    "metin": "Dede kuzuya süt uzattı.",
+    "zamanlar": [
+     0,
+     480,
+     1000,
+     1280
+    ]
+   },
+   {
+    "id": "oyku-3-4",
+    "metin": "Dede, otu al!",
+    "yaptir": {
+     "hedef": "ot",
+     "points": "50,72 75,72 75,96 50,96"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1040
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-4",
+  "grup": 4,
+  "baslik": "Bulut ile şenlik",
+  "sayfalar": [
+   {
+    "id": "oyku-4-1",
+    "metin": "Bugün şenlik!",
+    "zamanlar": [
+     0,
+     480
+    ]
+   },
+   {
+    "id": "oyku-4-2",
+    "metin": "Bulut balon getirdi.",
+    "zamanlar": [
+     0,
+     560,
+     1000
+    ]
+   },
+   {
+    "id": "oyku-4-3",
+    "metin": "Ceren çiçek taktı.",
+    "zamanlar": [
+     0,
+     640,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-4-4",
+    "metin": "Bulut, balonu bırak!",
+    "yaptir": {
+     "hedef": "balon",
+     "points": "64,2 88,2 88,62 64,62"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1200
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-5",
+  "grup": 5,
+  "baslik": "Zıpzıp ile fener gecesi",
+  "sayfalar": [
+   {
+    "id": "oyku-5-1",
+    "metin": "Gece oldu.",
+    "zamanlar": [
+     0,
+     480
+    ]
+   },
+   {
+    "id": "oyku-5-2",
+    "metin": "Zıpzıp feneri yaktı.",
+    "zamanlar": [
+     0,
+     640,
+     1147
+    ]
+   },
+   {
+    "id": "oyku-5-3",
+    "metin": "Ağaçta baykuş öttü.",
+    "zamanlar": [
+     0,
+     640,
+     1120
+    ]
+   },
+   {
+    "id": "oyku-5-4",
+    "metin": "Zıpzıp, feneri as!",
+    "yaptir": {
+     "hedef": "fener",
+     "points": "68,56 84,56 84,80 68,80"
+    },
+    "zamanlar": [
+     0,
+     880,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-6",
+  "grup": 1,
+  "baslik": "Anne ile tatil",
+  "sayfalar": [
+   {
+    "id": "oyku-6-1",
+    "metin": "Anne ile tatil!",
+    "zamanlar": [
+     0,
+     520,
+     720
+    ]
+   },
+   {
+    "id": "oyku-6-2",
+    "metin": "El ele, atla!",
+    "zamanlar": [
+     0,
+     400,
+     960
+    ]
+   },
+   {
+    "id": "oyku-6-3",
+    "metin": "Anne, anlat!",
+    "zamanlar": [
+     0,
+     840
+    ]
+   },
+   {
+    "id": "oyku-6-4",
+    "metin": "Anne, atla!",
+    "yaptir": {
+     "hedef": "ip",
+     "points": "25,64 76,64 76,84 25,84"
+    },
+    "zamanlar": [
+     0,
+     720
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-7",
+  "grup": 2,
+  "baslik": "Lokum okulda",
+  "sayfalar": [
+   {
+    "id": "oyku-7-1",
+    "metin": "Kino ile Lokum okula!",
+    "zamanlar": [
+     0,
+     440,
+     600,
+     1120
+    ]
+   },
+   {
+    "id": "oyku-7-2",
+    "metin": "Lokum koltukta oturur.",
+    "zamanlar": [
+     0,
+     560,
+     1120
+    ]
+   },
+   {
+    "id": "oyku-7-3",
+    "metin": "Mino kalem tutar.",
+    "zamanlar": [
+     0,
+     560,
+     920
+    ]
+   },
+   {
+    "id": "oyku-7-4",
+    "metin": "Lokum, elma al!",
+    "yaptir": {
+     "hedef": "elma",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1360
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-8",
+  "grup": 3,
+  "baslik": "Mino ile deniz",
+  "sayfalar": [
+   {
+    "id": "oyku-8-1",
+    "metin": "Mino denize indi.",
+    "zamanlar": [
+     0,
+     560,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-8-2",
+    "metin": "Suda ördek yüzdü.",
+    "zamanlar": [
+     0,
+     560,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-8-3",
+    "metin": "Kino muz yedi.",
+    "zamanlar": [
+     0,
+     560,
+     880
+    ]
+   },
+   {
+    "id": "oyku-8-4",
+    "metin": "Mino, muzu al!",
+    "yaptir": {
+     "hedef": "muz",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1040
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-9",
+  "grup": 4,
+  "baslik": "Baba ile gemi",
+  "sayfalar": [
+   {
+    "id": "oyku-9-1",
+    "metin": "Baba gemi çizdi.",
+    "zamanlar": [
+     0,
+     640,
+     960
+    ]
+   },
+   {
+    "id": "oyku-9-2",
+    "metin": "Kino sarı güneş çizdi.",
+    "zamanlar": [
+     0,
+     560,
+     880,
+     1280
+    ]
+   },
+   {
+    "id": "oyku-9-3",
+    "metin": "Bulut büyük balık çizdi.",
+    "zamanlar": [
+     0,
+     560,
+     960,
+     1280
+    ]
+   },
+   {
+    "id": "oyku-9-4",
+    "metin": "Baba, çantayı aç!",
+    "yaptir": {
+     "hedef": "çanta",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-10",
+  "grup": 5,
+  "baslik": "Zıpzıp'ın vapuru",
+  "sayfalar": [
+   {
+    "id": "oyku-10-1",
+    "metin": "Zıpzıp vapura bindi.",
+    "zamanlar": [
+     0,
+     640,
+     1200
+    ]
+   },
+   {
+    "id": "oyku-10-2",
+    "metin": "Havada martı uçtu.",
+    "zamanlar": [
+     0,
+     640,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-10-3",
+    "metin": "Zıpzıp havuç yedi.",
+    "zamanlar": [
+     0,
+     720,
+     1160
+    ]
+   },
+   {
+    "id": "oyku-10-4",
+    "metin": "Zıpzıp, bayrak salla!",
+    "yaptir": {
+     "hedef": "bayrak",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     880,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-11",
+  "grup": 2,
+  "baslik": "Limon",
+  "sayfalar": [
+   {
+    "id": "oyku-11-1",
+    "metin": "Kino limon alır.",
+    "zamanlar": [
+     0,
+     480,
+     880
+    ]
+   },
+   {
+    "id": "oyku-11-2",
+    "metin": "Limon kokulu!",
+    "zamanlar": [
+     0,
+     480
+    ]
+   },
+   {
+    "id": "oyku-11-3",
+    "metin": "Mino limonu koklar.",
+    "zamanlar": [
+     0,
+     560,
+     960
+    ]
+   },
+   {
+    "id": "oyku-11-4",
+    "metin": "Lokum, limonu tut!",
+    "yaptir": {
+     "hedef": "limon",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-12",
+  "grup": 2,
+  "baslik": "Kum kale",
+  "sayfalar": [
+   {
+    "id": "oyku-12-1",
+    "metin": "Kino kale kurar.",
+    "zamanlar": [
+     0,
+     480,
+     840
+    ]
+   },
+   {
+    "id": "oyku-12-2",
+    "metin": "Mino kum atar.",
+    "zamanlar": [
+     0,
+     560,
+     960
+    ]
+   },
+   {
+    "id": "oyku-12-3",
+    "metin": "Kale tamam!",
+    "zamanlar": [
+     0,
+     560
+    ]
+   },
+   {
+    "id": "oyku-12-4",
+    "metin": "Lokum, kuleni kur!",
+    "yaptir": {
+     "hedef": "kule",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-13",
+  "grup": 2,
+  "baslik": "Tırtıl",
+  "sayfalar": [
+   {
+    "id": "oyku-13-1",
+    "metin": "Tırtıl elma kemirir.",
+    "zamanlar": [
+     0,
+     720,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-13-2",
+    "metin": "Mino tırtılı korur.",
+    "zamanlar": [
+     0,
+     560,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-13-3",
+    "metin": "Tırtıl tırmanır.",
+    "zamanlar": [
+     0,
+     560
+    ]
+   },
+   {
+    "id": "oyku-13-4",
+    "metin": "Tırtıl, elmanı al!",
+    "yaptir": {
+     "hedef": "elma",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-14",
+  "grup": 3,
+  "baslik": "Dede ile kedi",
+  "sayfalar": [
+   {
+    "id": "oyku-14-1",
+    "metin": "Dede kedi ile oturur.",
+    "zamanlar": [
+     0,
+     560,
+     1000,
+     1200
+    ]
+   },
+   {
+    "id": "oyku-14-2",
+    "metin": "Kedi süt ister.",
+    "zamanlar": [
+     0,
+     400,
+     920
+    ]
+   },
+   {
+    "id": "oyku-14-3",
+    "metin": "Dede süt doldurur.",
+    "zamanlar": [
+     0,
+     560,
+     840
+    ]
+   },
+   {
+    "id": "oyku-14-4",
+    "metin": "Dede, sütü koy!",
+    "yaptir": {
+     "hedef": "süt",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1080
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-15",
+  "grup": 3,
+  "baslik": "Dondurma",
+  "sayfalar": [
+   {
+    "id": "oyku-15-1",
+    "metin": "Yaz oldu!",
+    "zamanlar": [
+     0,
+     400
+    ]
+   },
+   {
+    "id": "oyku-15-2",
+    "metin": "Mino dondurma ister.",
+    "zamanlar": [
+     0,
+     560,
+     1280
+    ]
+   },
+   {
+    "id": "oyku-15-3",
+    "metin": "Dede iki dondurma alır.",
+    "zamanlar": [
+     0,
+     560,
+     800,
+     1360
+    ]
+   },
+   {
+    "id": "oyku-15-4",
+    "metin": "Mino, dondurmanı tut!",
+    "yaptir": {
+     "hedef": "dondurma",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-16",
+  "grup": 4,
+  "baslik": "Çay saati",
+  "sayfalar": [
+   {
+    "id": "oyku-16-1",
+    "metin": "Babaanne çay demler.",
+    "zamanlar": [
+     0,
+     800,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-16-2",
+    "metin": "Baba çiçek getirir.",
+    "zamanlar": [
+     0,
+     560,
+     960
+    ]
+   },
+   {
+    "id": "oyku-16-3",
+    "metin": "Bulut bardak taşır.",
+    "zamanlar": [
+     0,
+     640,
+     1160
+    ]
+   },
+   {
+    "id": "oyku-16-4",
+    "metin": "Bulut, çayı koy!",
+    "yaptir": {
+     "hedef": "çay",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1120
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-17",
+  "grup": 4,
+  "baslik": "Gök gürler",
+  "sayfalar": [
+   {
+    "id": "oyku-17-1",
+    "metin": "Gök gürler!",
+    "zamanlar": [
+     0,
+     400
+    ]
+   },
+   {
+    "id": "oyku-17-2",
+    "metin": "Kino şemsiye açar.",
+    "zamanlar": [
+     0,
+     560,
+     1120
+    ]
+   },
+   {
+    "id": "oyku-17-3",
+    "metin": "Mino çizme giyer.",
+    "zamanlar": [
+     0,
+     640,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-17-4",
+    "metin": "Lokum, şemsiyeni aç!",
+    "yaptir": {
+     "hedef": "şemsiye",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     800,
+     1440
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-18",
+  "grup": 5,
+  "baslik": "Doğum günü",
+  "sayfalar": [
+   {
+    "id": "oyku-18-1",
+    "metin": "Doğum günü!",
+    "zamanlar": [
+     0,
+     440
+    ]
+   },
+   {
+    "id": "oyku-18-2",
+    "metin": "Kino pasta getirir.",
+    "zamanlar": [
+     0,
+     360,
+     720
+    ]
+   },
+   {
+    "id": "oyku-18-3",
+    "metin": "Mino hediye verir.",
+    "zamanlar": [
+     0,
+     640,
+     1040
+    ]
+   },
+   {
+    "id": "oyku-18-4",
+    "metin": "Zıpzıp, mumu üfle!",
+    "yaptir": {
+     "hedef": "mum",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     880,
+     1200
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-19",
+  "grup": 5,
+  "baslik": "Horoz öttü",
+  "sayfalar": [
+   {
+    "id": "oyku-19-1",
+    "metin": "Sabah oldu.",
+    "zamanlar": [
+     0,
+     480
+    ]
+   },
+   {
+    "id": "oyku-19-2",
+    "metin": "Horoz öttü.",
+    "zamanlar": [
+     0,
+     560
+    ]
+   },
+   {
+    "id": "oyku-19-3",
+    "metin": "Lokum hemen uyandı.",
+    "zamanlar": [
+     0,
+     560,
+     960
+    ]
+   },
+   {
+    "id": "oyku-19-4",
+    "metin": "Lokum, perdeyi aç!",
+    "yaptir": {
+     "hedef": "perde",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     720,
+     1280
+    ]
+   }
+  ]
+ },
+ {
+  "id": "oyku-20",
+  "grup": 5,
+  "baslik": "Piknik",
+  "sayfalar": [
+   {
+    "id": "oyku-20-1",
+    "metin": "Piknik günü!",
+    "zamanlar": [
+     0,
+     560
+    ]
+   },
+   {
+    "id": "oyku-20-2",
+    "metin": "Baba hamak kurdu.",
+    "zamanlar": [
+     0,
+     480,
+     880
+    ]
+   },
+   {
+    "id": "oyku-20-3",
+    "metin": "Mino topu fırlattı.",
+    "zamanlar": [
+     0,
+     480,
+     800
+    ]
+   },
+   {
+    "id": "oyku-20-4",
+    "metin": "Kino, topu yakala!",
+    "yaptir": {
+     "hedef": "top",
+     "points": "55,25 90,25 90,80 55,80"
+    },
+    "zamanlar": [
+     0,
+     640,
+     960
+    ]
+   }
+  ]
+ }
+]

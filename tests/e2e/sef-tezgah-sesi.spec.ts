@@ -1,4 +1,6 @@
 import {expect,test,type Page} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 // Listen on the effects bus independently from the speech and music buses.
 // This measures the samples that reached the speaker mix, including mute.
@@ -68,8 +70,8 @@ test('Çorbanın iki parmakta tek ezmesi, sessiz modu ve geri çıkınca motorun
   expect(await tepe(page)).toBeLessThan(.00015);
 });
 test('Limon sıkma ve iki döküm ayrı duyulur, döküm yarıda terk edilip aynı bardakta sürer',async({page})=>{
-  await page.getByRole('button',{name:'Müşteri masası',exact:true}).tap();
-  await page.locator('[data-menu=corba-sofrasi]').tap();await page.locator('.tepsi-yuva[data-parca=icecek]').tap();
+  // "Müşteri masası" fiş arşivi panoda yok (15 Kasım ilk sürümde de); müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+  await page.goto('./sef/?giris=tepsiler&siparis=corba-sofrasi');await page.locator('.tepsi-yuva[data-parca=icecek]').tap();
   await page.locator('.ps-meyve-sec[data-meyve=limon]').tap();
   await page.locator('.ps-ham').tap();await page.locator('.ps-dene').tap();
   await olcmeyeBasla(page);await page.locator('.ps-cevir').tap();

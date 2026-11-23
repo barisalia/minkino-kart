@@ -1,0 +1,46 @@
+/* Harf rafında "Ceren'le oku" kartı (alfabe/src/cumle-karti.ts). Hece kartlarıyla aynı dil (stil.css → .at-oyun-karti). */
+.at-cumle-karti{margin-top:0}
+.at-cumle-ornek>span{display:flex;gap:4px}
+/* Boş durum: en yakın cümlenin açılması için kalan harfler, rafın harf taşları gibi sade taşlar. */
+.at-cumle-karti[data-durum=bos] .at-oyun-karti{background:#ece9dc}
+.at-cumle-karti[data-durum=bos] .at-hece-ornek{opacity:.7}
+.at-cumle-karti small{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.at-cumle-once{margin-right:2px}
+.at-cumle-harf{display:inline-grid;place-items:center;min-width:1.7em;height:1.7em;padding:0 3px;font-style:normal;font-weight:700;color:#214a3b;background:#fff8e8;border:1.5px solid #4c4e38;border-bottom-width:3px;border-radius:7px;line-height:1}
+/* Geniş ekranda (iPad, tablet) üç oyun kartı tek sırada; Hece Evleri yoksa iki. */
+@media(min-width:900px){
+  .at-raf.at-raf:has(.at-cumle-karti){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(10px,1.4vw,20px)}
+  .at-raf.at-raf:has(.at-cumle-karti):has(.at-evler-karti){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .at-raf.at-raf:has(.at-cumle-karti)>*{grid-column:1/-1;margin-inline:0}
+  .at-raf.at-raf:has(.at-cumle-karti)>.at-hece-karti{grid-column:auto;margin-top:clamp(12px,2.2vh,26px);margin-bottom:12px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-oyun-karti{height:100%;min-height:0;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:clamp(8px,1vw,14px);row-gap:4px;
+    padding:clamp(8px,1vw,12px) clamp(48px,4.4vw,58px) clamp(8px,1vw,12px) clamp(9px,1vw,13px);border-radius:18px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-ornek{grid-row:1/3;display:flex;flex-direction:column;gap:2px;padding:4px 6px 6px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-ornek img{width:clamp(32px,3.1vw,44px);height:clamp(30px,2.9vw,40px)}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-ornek b{font-size:clamp(12px,1.15vw,16px);min-width:1.4em;height:1.4em;padding:1px 4px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-cumle-ornek>span{flex-direction:column;gap:3px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-evler-ornek .he-kart-evi{--ev:clamp(30px,2.9vw,40px)}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-yazi{min-width:0}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-yazi strong{font-size:clamp(19px,2vw,29px);white-space:nowrap}
+  /* Üç kart tek sırada: açıklama gizlenir (Ceren dinle düğmesiyle anlatır); Ceren’le oku boşsa kalan harfler görünür. */
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-yazi small{display:none;font-size:clamp(12px,1.15vw,15px)}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-cumle-karti[data-durum=bos] .at-hece-yazi small{display:flex}
+  /* Oyna düğmesi başlığın altında, dinle düğmesi sağda: başlık düğmelere değmez. */
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-oyna{grid-column:2;grid-row:2;justify-self:start;width:clamp(30px,2.8vw,38px)}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-yazi{grid-column:2;grid-row:1}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-hece-dinle{right:clamp(6px,.7vw,10px);width:clamp(38px,3.4vw,44px);min-height:clamp(38px,3.4vw,44px)}
+}
+/* Yatay tablette (1024×768 … 1280×800) üç kartlı raf da kaydırmadan sığar: kart aralıkları ekran yüksekliğine bağlanır. */
+@media(min-width:900px) and (orientation:landscape) and (min-height:551px) and (max-height:980px){
+  .at-raf.at-raf:has(.at-cumle-karti)>.at-hece-karti{margin-top:clamp(8px,1.2svh,12px);margin-bottom:6px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-oyun-karti{padding-top:clamp(6px,1svh,10px);padding-bottom:clamp(6px,1svh,10px)}
+}
+/* Astra'nın kart resmi: Ceren üç sözcük kutusunu gösteriyor. Hece kartlarının resim kutusuyla aynı ölçü. */
+.at-cumle-resimli{padding:4px 8px}
+.at-cumle-resimli img{width:clamp(56px,6.4vw,84px);height:clamp(56px,6.4vw,84px);object-fit:contain}
+.at-cumle-karti[data-durum=bos] .at-cumle-resimli{opacity:.85}
+@media(min-width:900px){
+  .at-raf.at-raf:has(.at-cumle-karti) .at-cumle-resimli{padding:3px 5px}
+  .at-raf.at-raf:has(.at-cumle-karti) .at-cumle-resimli img{width:clamp(44px,4.4vw,62px);height:clamp(44px,4.4vw,62px)}
+}
+@media(max-width:580px){.at-cumle-resimli img{width:52px;height:52px}}

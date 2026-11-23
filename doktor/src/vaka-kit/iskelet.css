@@ -1,0 +1,12 @@
+/* Minik Doktor · vaka iskeleti (vaka-kit). Ortak sahne kuralları vaka.css içinde; buradakiler iskeletin eklediği katmanlar. */
+.vk-etki-kati { inset: 0; pointer-events: none; will-change: transform; z-index: 2; }
+.vk-dizi { pointer-events: none; will-change: transform, opacity; }
+/* eldeki aletin içindeki poz yığını kutuyu doldurur; küçük iç katmanlar (ışıltı, uçtaki iz) kendi yerinde */
+.vk-tutulan > .vk-alet-yigin { position: absolute; inset: 0; }
+.vk-tutulan img.vk-ic { position: absolute; opacity: .001; pointer-events: none; }
+.vk-tutulan img.vk-ic.vk-gorunur { opacity: 1; }
+/* sahnedeki poz yığınları (tam sahne katmanları) */
+.vk-tam > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vk-soluk { animation: vk-tam-soluk 3.2s ease-in-out infinite; }
+@keyframes vk-tam-soluk { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@media (prefers-reduced-motion: reduce) { .vk-soluk { animation: none; } }

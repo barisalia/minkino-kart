@@ -1,0 +1,38 @@
+/* Hide & Seek with Mino (saklambac.ts). Oda 1600 × 900; dokunma bölgeleri ve katmanlar odanın yüzdesiyle. */
+.ing-sk-sahne{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(4px,1.2vh,12px);width:100%;height:100%;min-height:0;align-items:center;justify-items:center}
+.ing-sk-ilerleme{justify-self:end}
+.ing-sk-oda{position:relative;aspect-ratio:16/9;height:100%;max-width:100%;max-height:100%;min-height:0;border-radius:clamp(12px,2vw,24px);overflow:hidden;
+  background:linear-gradient(#fdf1dc 0 72%,#e8c99c 72%);box-shadow:0 0 0 3px #2c2433}
+.ing-sk-fon{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* dokunma bölgeleri görünmez; ipucunda parlar */
+.ing-sk-bolge{position:absolute;min-width:44px;min-height:44px;padding:0;border:0;border-radius:14px;background:transparent;cursor:pointer;z-index:3}
+.ing-sk-bolge:focus-visible{outline:4px solid #f2a516;outline-offset:2px}
+.ing-sk-bolge.ing-parla{box-shadow:0 0 0 4px #ffd25a,0 0 24px 6px #ffd25a99;animation:ing-sk-nabiz 1.1s ease-in-out infinite}
+.ing-sk-katman{position:absolute;inset:0;pointer-events:none;z-index:2}
+img.ing-sk-mino{position:absolute;inset:0;width:100%;height:100%}
+.ing-sk-buldum,.ing-sk-konan{position:absolute;height:auto;animation:ing-sk-cik .5s cubic-bezier(.3,1.6,.5,1) both}
+.ing-sk-alt{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,40px);min-height:clamp(52px,14vh,110px)}
+.ing-sk-tepsi{display:grid;place-items:center;min-width:clamp(52px,14vh,110px)}
+.ing-sk-oyuncak{display:grid;place-items:center;width:clamp(52px,14vh,110px);aspect-ratio:1;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #2c2433;animation:ing-sk-zipla 1.4s ease-in-out infinite}
+.ing-sk-oyuncak img,.ing-sk-oyuncak-resim{width:78%;height:78%;object-fit:contain}
+.ing-sk-tas{min-width:2em;padding:.15em .6em;border-radius:.4em;font-weight:800;font-size:clamp(24px,6vh,52px);line-height:1.1;color:#2c2433;text-align:center}
+.ing-sk-tas:empty{visibility:hidden}
+.ing-sk-tas.ing-sk-yanik{background:#ffe39c;box-shadow:inset 0 -.12em 0 #f2a516,0 0 0 3px #2c2433;animation:ing-sk-cik .45s cubic-bezier(.3,1.6,.5,1)}
+/* yer tutucu (taslak / test kipi): eşyalar ve Mino sade kutular */
+.ing-sk-yer-esya{position:absolute;display:grid;place-items:center;border:3px dashed #8a6d4a;border-radius:10px;color:#6b5236;font:700 clamp(11px,1.6vw,18px) system-ui,sans-serif;background:#fff8}
+.ing-sk-chair{left:4%;top:29%;width:12%;height:61%}
+.ing-sk-table{left:30%;top:52%;width:24%;height:38%}
+.ing-sk-box{left:58%;top:67%;width:12%;height:23%}
+.ing-sk-bed{left:74%;top:62%;width:25%;height:28%}
+.ing-sk-mino-yer{position:absolute;display:grid;place-items:center;aspect-ratio:1;border-radius:50%;background:#f39a3d;color:#fff;font:800 clamp(10px,1.4vw,16px) system-ui,sans-serif;box-shadow:0 0 0 3px #2c2433}
+@keyframes ing-sk-cik{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes ing-sk-zipla{50%{transform:translateY(-8%)}}
+@keyframes ing-sk-nabiz{50%{box-shadow:0 0 0 6px #ffd25a,0 0 32px 10px #ffd25aaa}}
+@media (prefers-reduced-motion:reduce){.ing-sk-oyuncak,.ing-sk-buldum,.ing-sk-konan,.ing-sk-tas,.ing-sk-bolge{animation:none!important}}
+/* Oyunlar ekranı: Hide & Seek kartı varken Fener Avı ve Günün Tekrarı tam en, Hayvanat Bahçesi ile Hide & Seek yan yana */
+.ing-oyunlar-sag:has(> .ing-saklambac-karti){grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1.15fr) minmax(0,1fr) auto}
+.ing-oyunlar-sag:has(> .ing-saklambac-karti) > .ing-fener-karti,.ing-oyunlar-sag:has(> .ing-saklambac-karti) > .ing-gunluk{grid-column:1/3}
+.ing-saklambac-karti{background:#ffe6cc!important}
+.ing-saklambac-karti .ing-bahce-kart-resim{grid-template-columns:1fr}
+.ing-saklambac-karti .ing-bahce-kart-resim>*{max-height:100%;height:100%;width:auto;aspect-ratio:1;object-fit:contain}
+.ing-saklambac-karti .ing-fener-kart-yazi strong,.ing-saklambac-karti .ing-ok{color:#c2571a}

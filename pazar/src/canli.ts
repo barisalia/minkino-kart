@@ -115,7 +115,7 @@ export function canliSahne(secenek: { senlik?: boolean } = {}): Canli {
     sonra(12000, () => suru.remove());
     sonra(ras(14000, 26000), kusSurusu);
   };
-  const yolcular = YOLCULAR.map((y) => ({ ...y, url: adres(`hayvanlar/${y.ad}`) })).filter((y) => y.url);
+  const yolcular = YOLCULAR.map((y) => ({ ...y, url: adres(`hayvanlar/${y.ad}`) }));
   let sonYolcu = '';
   const yaya = () => {
     sonra(ras(9000, 16000), yaya);

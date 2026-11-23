@@ -1,6 +1,7 @@
 import { guzergah, yon, type Parca, type Nokta } from './misket-geometri';
 import { calgiSesi } from '../../src/audio/bando';
 import { oyunSesi } from '../../alfabe/src/oyun-sesi';
+import { KAYMA, TOP_R } from './misket-cizim';
 export type Yer = { kat: number; goz: number };
 
 export function misketiYuvarla(
@@ -18,7 +19,10 @@ export function misketiYuvarla(
     once = performance.now(),
     hiz = 135,
     aci = 0,
-    anim = 0;
+    anim = 0,
+    // Rayın üst yanı (yürüyüş yönünün solu ya da sağı; çemberde içe döner): bir önceki normale yakın olan seçilir.
+    nx = 0,
+    ny = -1;
   const gecikmeler: number[] = [];
   const yakinIzle = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   let kameraX = 0,
@@ -83,7 +87,7 @@ export function misketiYuvarla(
     const baslangic = performance.now();
     function dus(simdi: number) {
       const t = Math.min(1, (simdi - baslangic) / 390);
-      topuKoy({ x: bas.x + dx * t, y: bas.y + dy * t * t }, aci + dx * t * 2);
+      topuKoy({ x: bas.x + dx * t, y: bas.y + dy * t * t - KAYMA }, aci + dx * t * 2);
       if (t < 1) anim = requestAnimationFrame(dus);
       else {
         if (bos) oyunSesi('kutu');
@@ -107,9 +111,17 @@ export function misketiYuvarla(
     const bas = hat[indis - 1],
       son = hat[indis],
       oran = (mesafe - bas.mesafe) / (son.mesafe - bas.mesafe);
-    aci += (((adim / 13.5) * 180) / Math.PI) * Math.sign(son.n.x - bas.n.x);
+    aci += (((adim / TOP_R) * 180) / Math.PI) * Math.sign(son.n.x - bas.n.x);
     const n = { x: bas.n.x + (son.n.x - bas.n.x) * oran, y: bas.n.y + (son.n.y - bas.n.y) * oran };
-    topuKoy(n, aci);
+    const ddx = son.n.x - bas.n.x, ddy = son.n.y - bas.n.y, uz = Math.hypot(ddx, ddy) || 1;
+    let ax = ddy / uz, ay = -ddx / uz;
+    if (ax * nx + ay * ny < 0) { ax = -ax; ay = -ay; }
+    nx += (ax - nx) * 0.5;
+    ny += (ay - ny) * 0.5;
+    const nu = Math.hypot(nx, ny) || 1;
+    nx /= nu;
+    ny /= nu;
+    topuKoy({ x: n.x + nx * KAYMA, y: n.y + ny * KAYMA }, aci);
     izle(n, dt);
     while (siradaki < rota.isaretler.length && rota.isaretler[siradaki].mesafe <= mesafe) vurus(siradaki++);
     if (mesafe < rota.mesafe) anim = requestAnimationFrame(kare);

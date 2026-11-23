@@ -33,13 +33,29 @@ export const ERISIM: Record<string, Erisim> = {
   'kino-ile-sen-sec': 'ucretsiz',
   'kino-ile-sen-sec/bir-gun': 'ucretsiz',
   'kino-ile-sen-sec/*': 'abonelik',
-  // Harf Atölyesi: A, B, C, Ç ücretsiz; hece oyunlarından Trambolin ücretsiz, Manyetik Pano premium
+  // Harf Atölyesi: dersler okuldaki ses grubu sırasıyla gelir (A N E T İ L · O K U R I M · …); ilk dört harf ücretsiz:
+  // A (01), N (17), E (06), T (24). Barış 20 Kasım 2026 (önceden A, B, C, Ç). Bu dört harfle "anne, at, et, nane, tane" okunur.
+  // Hece oyunlarından Trambolin ücretsiz, Manyetik Pano premium.
   alfabe: 'ucretsiz',
+  // Minik Doktor (Minkino Kliniği): bütünüyle premium, ücretsiz vakası yok (Barış 23 Kasım 2026: "tamamen kilitli premium").
+  // Menü kartı kilitli; sayfaya doğrudan gelinirse giriş de sorar (doktor/src/giris.ts).
+  doktor: 'abonelik',
+  'doktor/*': 'abonelik',
+  // Deneyler (Zincirleme Top Parkuru): bütünüyle premium, ücretsiz bölümü yok (Barış 23 Kasım 2026: "tamamlayın, kilitli
+  // bir şekilde açın"). Menü kartı kilitli; sayfaya doğrudan gelinirse giriş de sorar (deney/src/giris.ts).
+  deney: 'abonelik',
+  'deney/*': 'abonelik',
   'alfabe/harf-01': 'ucretsiz',
-  'alfabe/harf-02': 'ucretsiz',
-  'alfabe/harf-03': 'ucretsiz',
-  'alfabe/harf-04': 'ucretsiz',
+  'alfabe/harf-17': 'ucretsiz',
+  'alfabe/harf-06': 'ucretsiz',
+  'alfabe/harf-24': 'ucretsiz',
   'alfabe/hece-trambolin': 'ucretsiz',
+  // Hece Evleri: ses grubu sırasındaki ilk dört ünsüz (N, T, L, K) ücretsiz, diğer 16 harf premium.
+  // Barış 20 Kasım 2026 (önceden L, K, N, M). M'ye bu cihazda başlamış çocukta M açık kalır (alfabe/src/hece-evleri.ts).
+  'alfabe/hece-evleri-n': 'ucretsiz',
+  'alfabe/hece-evleri-t': 'ucretsiz',
+  'alfabe/hece-evleri-l': 'ucretsiz',
+  'alfabe/hece-evleri-k': 'ucretsiz',
   'alfabe/*': 'abonelik',
   // Matematik Atölyesi: Sayı masası ücretsiz; Şekil, Ölçü, Fener premium
   matematik: 'ucretsiz',
@@ -50,8 +66,11 @@ export const ERISIM: Record<string, Erisim> = {
   'hazirlik/gun-1': 'ucretsiz',
   'hazirlik/gun-2': 'ucretsiz',
   'hazirlik/*': 'abonelik',
-  // İngilizceye Merhaba: bütünüyle premium (içerik gelişiyor)
-  ingilizce: 'abonelik',
+  // Ceren Öğretmen ile İngilizceye Merhaba: 1. ünite (Çiftlik: 3 ders, oyunlar, albüm) ücretsiz; diğer üniteler premium
+  // (kilit ada haritasında sorulur: ingilizce/src/ekranlar/adalar.ts → erisimKimligi)
+  ingilizce: 'ucretsiz',
+  'ingilizce/unite-01': 'ucretsiz',
+  'ingilizce/*': 'abonelik',
   // Kitaplar: Okula Başlıyor, Doktora Gidiyor, Kurabiye Yapıyor ücretsiz; diğerleri premium
   kitap: 'ucretsiz',
   'kitap/okul': 'ucretsiz',

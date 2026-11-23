@@ -121,6 +121,23 @@ export const efekt = {
     hisirti(0, 0.55, 500, 3200, 0.2, 0.9);
     ton(500, 0.05, 0.45, 'sine', 0.08, 1400);
   },
+  /** Kabarcık patlaması: kısa, yukarı kayan "pop" (İngilizce masal, gölde kabarcıklar) */
+  baloncuk() {
+    ton(420, 0, 0.07, 'sine', 0.26, 1300);
+    ton(900, 0.05, 0.05, 'sine', 0.12, 1700);
+    hisirti(0, 0.04, 3200, 2200, 0.06, 3);
+  },
+  /** Kaçış: hızlı, yukarı kıvrılan "fırt" (yakalanmayan şapka) */
+  firt() {
+    hisirti(0, 0.22, 900, 4200, 0.18, 1.1);
+    ton(600, 0, 0.18, 'triangle', 0.08, 1600);
+  },
+  /** Suya düşüş: "şıp" (alçalan su sesi ve küçük sıçrama) */
+  sip() {
+    ton(700, 0, 0.16, 'sine', 0.24, 180);
+    hisirti(0.02, 0.32, 1800, 500, 0.2, 0.8);
+    ton(1200, 0.12, 0.08, 'sine', 0.06, 2000);
+  },
   yapis() {
     ton(220, 0, 0.12, 'sine', 0.3, 90);
     hisirti(0, 0.08, 2500, 1200, 0.12, 2);

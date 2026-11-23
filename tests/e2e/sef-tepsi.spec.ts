@@ -1,12 +1,12 @@
 import { expect,test } from '@playwright/test';
 import { hataTopla } from './yardimci';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 test('Makarnayla tavuğu aynı tepside, ayrı ayrı pişirip bir kez sun',async({page})=>{
   const hatalar=hataTopla(page);
   await page.goto('./sef/?test=1');await page.getByRole('button',{name:'Sesi kapat'}).click();
-  await page.getByRole('button',{name:'Müşteri masası',exact:true}).click();
-  for(const menu of ['fiyonk-tavuk','fiyonk-sis','corba-sofrasi','pizza-molasi','kahvalti','bahce-tabagi'])
-    await expect(page.locator('.tepsi-fis[data-menu="'+menu+'"]')).toBeVisible();
-  await page.locator('[data-menu=fiyonk-tavuk]').click();
+  // "Müşteri masası" fiş arşivi panoda yok (15 Kasım ilk sürümde de); müşterinin masası ?giris=tepsiler&siparis= ile açılır.
+  await page.goto('./sef/?test=1&giris=tepsiler&siparis=fiyonk-tavuk');
   await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'})).toHaveCount(0);
   const enter=async(sel:string)=>{const b=page.locator(sel).first();await expect(b).toBeEnabled();await b.press('Enter');};
   await page.locator('[data-parca=tavuk]').click();
@@ -32,17 +32,22 @@ test('Makarnayla tavuğu aynı tepside, ayrı ayrı pişirip bir kez sun',async(
   for(let yaprak=0;yaprak<3;yaprak++)await enter('.mp-havan-dokunus');
   await enter('.mp-havan-aktar');await enter('[data-sos-yeri="1"]');await enter('.mp-sos-bitti');
   await enter('[data-mp-sus=peynir]');await enter('.mp-sus-hedef');
-  await enter('[data-mp-zil]');await enter('.mp-sonraki');
-  await expect(page.locator('[data-parca=makarna] img.defter-fotograf')).toHaveAttribute('src',/^data:image/);
+  // Servis zilinden sonra atölye kapanır; tepsi tamam olduğu için masa sahnesi açılır.
+  await enter('[data-mp-zil]');
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await expect(sunum.locator('img.defter-fotograf')).toHaveAttribute('src',/^data:image/);
   await page.reload();
-  await expect(page.locator('.tepsi-yuva[data-hazir=true]')).toHaveCount(2);
-  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
-  await expect(page.locator('.tepsi-ust h2')).toHaveText('6 / 6');
+  await expect(sunum.getByRole('img',{name:'Fiyonk Makarna'})).toBeVisible();
+  await expect(sunum.getByRole('img',{name:'Pişirdiğin iki fileto'})).toBeVisible();
+  await sunum.click();
+  // İki tabak da üç yıldız: 6 jeton.
+  await expect(page.getByRole('button',{name:/^6 jeton kazanıldı/})).toBeVisible();
   if(process.env.SEF_SUNUM_ONIZLEME && test.info().project.name==='dar-yatay')
     await page.locator('.tepsi-sahnesi').screenshot({path:process.env.SEF_SUNUM_ONIZLEME});
   await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'})).toHaveCount(0);
+  // Fiş arşivi panoda yok; "Başka bir müşteri seç" restoranın sıradaki müşterisini (Lokum, çorba sofrası) getirir.
   await page.getByRole('button',{name:'Başka bir müşteri seç'}).click();
-  await page.locator('[data-menu=corba-sofrasi]').click();
+  await page.getByRole('button',{name:'Siparişi al ve mutfağa geç'}).click();
   await expect(page.locator('[data-parca]')).toHaveCount(3);
   await page.locator('[data-parca=icecek]').click();await enter('.ps-ham');await enter('.ps-dene');await enter('.ps-cevir');
   await page.getByRole('button',{name:'Geri',exact:true}).click();

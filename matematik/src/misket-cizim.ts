@@ -14,6 +14,17 @@ import {
 } from './misket-geometri';
 
 const m = (v: number) => Number(v.toFixed(2));
+/**
+ * İri top (yönetici 23 Kasım gecesi: bilye yasak, KALITE-KURALLARI 14; Top Parkuru'ndaki gibi iri top). Yarıçap 22 (eski
+ * misket 13,5): rayın üstünde yuvarlanır (misket-hareket.ts → rayın normali boyunca KAYMA kadar yukarıda). Astra'nın çizimi
+ * (Paket Matematik-A1 → assets/matematik/top-selalesi/top.webp, 200 × 200, top 170 px çapında ortada) gelene dek eski
+ * topun çizgisi büyütülerek kullanılır.
+ */
+const topCizimleri = import.meta.glob<string>('../../assets/matematik/top-selalesi/*.webp', { eager: true, query: '?url', import: 'default' });
+export const topCizimi = (ad: string) => topCizimleri['../../assets/matematik/top-selalesi/' + ad + '.webp'];
+export const TOP_R = 22;
+export const KAYMA = TOP_R - 13.5;
+const TOP_TUVAL = (TOP_R * 2 * 200) / 170;
 export const yol = (pts: Nokta[]) => pts.map((p, i) => (i ? 'L' : 'M') + m(p.x) + ',' + m(p.y)).join('');
 const rayAdi = (tip: Tip) => 'mk-ray-' + tip;
 export const rayKullan = (tip: Tip) => `<use href="#${rayAdi(tip)}"/>`;
@@ -114,9 +125,12 @@ export function parkurCiz() {
     .join('');
   return `<defs>
     ${tipler.map(baslik).join('')}
-    <g id="mk-misket"><circle r="13.5" fill="#316cd4" stroke="#251f29" stroke-width="2.7"/>
+    <g id="mk-misket">${topCizimi('top')
+      ? `<image href="${topCizimi('top')}" x="${m(-TOP_TUVAL / 2)}" y="${m(-TOP_TUVAL / 2)}" width="${m(TOP_TUVAL)}" height="${m(TOP_TUVAL)}"/>`
+      : `<g transform="scale(${m(TOP_R / 13.5)})"><circle r="13.5" fill="#316cd4" stroke="#251f29" stroke-width="2.7"/>
       <path d="M-9 7C-2 4 2 2 6 -10C12 -7 13 2 9 7C4 6 0 10 -4 11Z" fill="#88dfee"/>
-      <path d="M-8 -3Q-7 -9 -2 -9" fill="none" stroke="#fff9e3" stroke-width="3.2" stroke-linecap="round"/></g>
+      <path d="M-8 -3Q-7 -9 -2 -9" fill="none" stroke="#fff9e3" stroke-width="3.2" stroke-linecap="round"/></g>`}</g>
+    ${topCizimi('top-ez') ? `<g id="mk-top-ez"><image href="${topCizimi('top-ez')}" x="${m(-TOP_TUVAL / 2)}" y="${m(-TOP_TUVAL / 2)}" width="${m(TOP_TUVAL)}" height="${m(TOP_TUVAL)}"/></g>` : ''}
   </defs>
   <g aria-hidden="true">${direkler}
     <rect x="55" y="464" width="1008" height="13" rx="6" fill="#9d6266" stroke="#32272a" stroke-width="2.8"/>
@@ -147,13 +161,13 @@ export function parkurCiz() {
     </g>
   </g>
   <g class="mk-yol"></g><g class="mk-hedefler"></g>
-  <g class="mk-hazne mk-kumanda" data-is="yukle" role="button" tabindex="0" aria-label="Misketi başlangıç çanağına koy">
-    <rect x="72" y="59" width="78" height="55" rx="14" fill="transparent"/>
+  <g class="mk-hazne mk-kumanda" data-is="yukle" role="button" tabindex="0" aria-label="Topu başlangıç çanağına koy">
+    <rect x="40" y="46" width="60" height="90" rx="14" fill="transparent"/>
     <path d="M76 76q0 -5 5 -5h3q5 1 5 7v9h47v11H86q-10 0 -10 -10Z" fill="#ef877b" stroke="#2e2630" stroke-width="3"/>
     <ellipse class="mk-yukleme-yeri" cx="105" cy="81" rx="15" ry="15" fill="#fff4c2" stroke="#98683f" stroke-width="2" stroke-dasharray="4 4"/>
   </g>
-  <g class="mk-kol mk-kumanda" role="button" tabindex="0" data-is="gonder" aria-label="Kırmızı kolu çek ve misketi gönder">
-    <rect x="116" y="32" width="66" height="78" rx="14" fill="transparent"/>
+  <g class="mk-kol mk-kumanda" role="button" tabindex="0" data-is="gonder" aria-label="Kırmızı kolu çek ve topu gönder">
+    <rect x="100" y="18" width="82" height="94" rx="14" fill="transparent"/>
     <g class="mk-kol-sap"><path d="M130 97l22 -47" stroke="#30212b" stroke-width="13" stroke-linecap="round"/>
     <path d="M130 97l22 -47" stroke="#ffbc89" stroke-width="7" stroke-linecap="round"/>
     <circle cx="153" cy="49" r="14" stroke="#30212b" stroke-width="3" fill="#fe766a"/>
@@ -164,13 +178,14 @@ export function parkurCiz() {
     <rect x="35" y="493" width="1050" height="114" rx="25" fill="#ffdb99" stroke="#30252b" stroke-width="3.5"/>
     <rect x="48" y="504" width="1024" height="91" rx="18" fill="#fbebc5" stroke="#ac7954" stroke-width="2"/>
   </g>${rack}
-  <g class="mk-top-yuvasi mk-kumanda" role="button" tabindex="0" data-is="top" aria-label="Mavi misketi al">
+  <g class="mk-top-yuvasi mk-kumanda" role="button" tabindex="0" data-is="top" aria-label="Mavi topu al">
     <rect x="52" y="511" width="102" height="80" rx="17" fill="transparent"/>
     <ellipse cx="100" cy="559" rx="29" ry="10" fill="#d2aa80" stroke="#694c44" stroke-width="2.3"/>
     <ellipse cx="100" cy="555" rx="24" ry="8" fill="#9a7478"/>
-    <g class="mk-stok-top" transform="translate(100 541) scale(1.65)"><use href="#mk-misket"/></g>
+    <g class="mk-stok-top" transform="translate(100 541)"><use href="#mk-misket"/></g>
   </g>
   <g class="mk-kumanda mk-geri" role="button" tabindex="0" data-is="geri" aria-label="Son ray değişikliğini geri al">
+    <rect x="962" y="503" width="107" height="93" fill="transparent"/>
     <rect x="974" y="515" width="83" height="69" rx="21" fill="#fff5d7" stroke="#765646" stroke-width="2.5"/>
     <path d="M997 543l13 -12v8h9c15 0 21 15 11 24q1 -12 -12 -12h-8v7z" fill="#61bcb4" stroke="#352834" stroke-width="2.8" stroke-linejoin="round"/>
   </g>

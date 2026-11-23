@@ -36,27 +36,19 @@
 @media(max-width:550px){.yz-kontrol{align-items:flex-start;flex-direction:column-reverse;gap:6px}.yz-kagit{height:clamp(134px,43vw,224px)}}
 @media(orientation:landscape) and (max-height:470px){.yz-kontrol{margin-top:5px}.yz-kagit{height:36svh}.yz-atolye h1{font-size:19px;margin:0}.yz-yine{padding:4px 10px}}
 .yz-yine{width:44px;height:44px;display:grid;place-items:center;padding:8px}.yz-yine svg{width:100%;height:100%}
-.yz-oyuncu{position:absolute;left:55%;top:63%;width:min(28%,32cqh);height:29%;pointer-events:none;display:grid;place-items:center;animation-duration:1.5s;animation-fill-mode:both;animation-timing-function:ease-in-out}
-.yz-oyuncu img{object-fit:contain;width:100%;height:100%;display:block;transform-origin:50% 92%}
-.yz-oyuncu.yz-yuz{left:34%;top:45%;width:25%;height:25%}
-.yz-yuz{animation-name:yz-yuz}.yz-seyir{animation-name:yz-seyir}.yz-sur{animation-name:yz-sur}.yz-uc{animation-name:yz-uc}.yz-suzul{animation-name:yz-suzul}.yz-dus{animation-name:yz-dus}.yz-yuvarlan{animation-name:yz-yuvarlan}.yz-sallan,.yz-selam{animation-name:yz-sallan;transform-origin:50% 95%}.yz-filiz{animation-name:yz-filiz;transform-origin:50% 95%}.yz-kon{animation-name:yz-kon}.yz-davul{animation-name:yz-davul;transform-origin:50% 95%}.yz-raket{animation-name:yz-raket;transform-origin:30% 92%}
-@keyframes yz-yuz{0%{opacity:0;transform:translate(90%,-55%) rotate(-8deg)}14%{opacity:1}37%{transform:translate(64%,-30%) rotate(-16deg)}68%{transform:translate(45%,23%) rotate(-9deg)}100%{transform:translate(9%,48%) rotate(6deg)}}
-@keyframes yz-seyir{0%{opacity:0;transform:translate(-110%,8%)}20%{opacity:1}40%{transform:translate(-70%,-3%) rotate(-3deg)}75%{transform:translate(-22%,5%) rotate(2deg)}100%{transform:translate(0,0)}}
-@keyframes yz-sur{0%{opacity:0;transform:translateX(-150%)}15%{opacity:1}100%{transform:translateX(0)}}
-@keyframes yz-uc{0%{opacity:0;transform:translate(-140%,30%) rotate(-9deg)}16%{opacity:1}100%{transform:translate(10%,-48%) rotate(-8deg)}}
-@keyframes yz-suzul{0%{opacity:0;transform:translate(-30%,-115%) rotate(-12deg)}16%{opacity:1}38%,46%{transform:translate(12%,-70%) rotate(8deg)}72%{transform:translate(-10%,-24%) rotate(-6deg)}100%{transform:none}}
-@keyframes yz-dus{0%{opacity:0;transform:translateY(-100%)}15%{opacity:1}55%{transform:translateY(0) rotate(5deg)}70%{transform:translateY(-9%) rotate(-3deg)}100%{transform:none}}
-@keyframes yz-yuvarlan{0%{opacity:0;transform:translateX(-85%) rotate(-65deg)}16%{opacity:1}75%{transform:translateX(2%) rotate(4deg)}100%{transform:none}}
-@keyframes yz-sallan{0%{opacity:0;transform:rotate(-4deg)}20%{opacity:1}44%{transform:rotate(5deg)}75%{transform:rotate(-3deg)}100%{transform:none}}
-@keyframes yz-filiz{0%{opacity:0;transform:scale(.72) translateY(20%)}22%{opacity:1}100%{transform:none}}
-@keyframes yz-kon{0%{opacity:0;transform:translate(0,-34%)}15%{opacity:1}72%{transform:translateY(1%)}100%{transform:none}}
-@keyframes yz-davul{0%,24%,60%,100%{transform:translateY(0)}34%,70%{transform:translateY(4%)}}
-@keyframes yz-raket{0%,100%{transform:rotate(0)}34%{transform:rotate(-16deg)}56%{transform:rotate(13deg)}}
-.yz-etki{position:absolute;display:block;pointer-events:none}.yz-davul .yz-etki{right:2%;top:0;color:#256759;font:bold clamp(16px,4vh,38px) system-ui;animation:yz-nota .65s ease-out .18s 2 both}
-@keyframes yz-nota{0%{opacity:0;transform:translateY(20%)}25%{opacity:1}100%{opacity:0;transform:translateY(-85%)}}
-.yz-raket .yz-etki,.yz-dogus .yz-etki{aspect-ratio:1;width:18%;border:1.5px solid #292a22;background:#efc342;border-radius:50%}.yz-raket .yz-etki{top:0;left:40%;animation:yz-top 1.45s ease-out both}
-@keyframes yz-top{0%{transform:translate(-220%,10%)}45%{transform:translate(0,105%)}100%{transform:translate(230%,-150%)}}
-.yz-dogus,.yz-saat{isolation:isolate}.yz-dogus .yz-etki{z-index:-1;left:48%;top:3%;width:26%;animation:yz-gunes 1.4s ease-out both}
-@keyframes yz-gunes{from{transform:translateY(95%)}to{transform:translateY(-60%)}}
-.yz-saat{animation:yz-sallan .75s ease-in-out 2;transform-origin:50% 78%}
-@media(prefers-reduced-motion:reduce){.yz-oyuncu,.yz-oyuncu .yz-etki{animation:none}}
+.yz-maskot{cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* Harf canlanır (19 Kasım 2026): iz sürerken ışık izi, biten vuruşun parlaması, harfin alttan yukarı renkle dolması
+   ve sözcüğün resminin harfin içinden zıplayarak çıkması (yazma.ts → harfCanlanir). Yeni çizim yok. */
+.yz-isik{--b:clamp(13px,2.6vmin,22px);position:absolute;width:var(--b);height:var(--b);margin:calc(var(--b) / -2) 0 0 calc(var(--b) / -2);color:#ffc93c;pointer-events:none;z-index:2;filter:drop-shadow(0 0 3px #fff2a8);animation:yz-isik .6s ease-out forwards}
+.yz-isik svg,.yz-isik img{display:block;width:100%;height:100%;object-fit:contain}
+/* Astra çizimleri (H1, H2): resimli harf ve sihirli kalem */
+.yz-resimli{position:absolute;object-fit:contain;pointer-events:none;z-index:2;opacity:0}
+.yz-sihirli-kalem{position:absolute;object-fit:contain;pointer-events:none;z-index:4;transition:opacity .25s;filter:drop-shadow(0 3px 4px rgba(45,40,20,.2))}
+.yz-sihirli-kalem.yz-kalem-gitti{opacity:0}
+@keyframes yz-isik{0%{opacity:1;transform:rotate(var(--donus,0deg)) scale(.35)}30%{opacity:1;transform:rotate(var(--donus,0deg)) scale(1.12)}100%{opacity:0;transform:rotate(var(--donus,0deg)) translateY(-9px) scale(.45)}}
+.yz-iz .murekkep.yz-parla{animation:yz-parla .45s ease-out}
+@keyframes yz-parla{0%{stroke-width:7}35%{stroke-width:11;filter:drop-shadow(0 0 2.5px #ffd75a)}100%{stroke-width:7}}
+/* Dolgu, koyu mürekkebin altında kalem renginin açık tonuyla geniş bir gövde: çocuğun çizgisi ortada net kalır. */
+.yz-dolgu-yol{fill:none;stroke:#f7d77c;stroke:color-mix(in srgb,var(--dolgu,#087466) 38%,#fff4c4);stroke-width:16;stroke-linecap:round;stroke-linejoin:round}
+.yz-cikan{position:absolute;object-fit:contain;pointer-events:none;z-index:3;transform:translate(-50%,-50%);opacity:0;filter:drop-shadow(0 5px 6px rgba(45,40,20,.22))}
+@media(prefers-reduced-motion:reduce){.yz-isik,.yz-sihirli-kalem{display:none}.yz-iz .murekkep.yz-parla{animation:none}}

@@ -1,0 +1,20 @@
+/* Minik Doktor · "Polly'nin Karışık Kanadı". Ortak kurallar vaka.css ve vaka-kit/iskelet.css içinde; buradakiler bu vakaya özgü (kn-…). */
+#doktor[data-oyun="kanat"] { position: fixed; inset: 0; overflow: hidden; background: #fbc4a6; touch-action: none; user-select: none; -webkit-user-select: none; }
+#doktor[data-oyun="kanat"]:not([data-asama="giris"]):not([data-asama="canta"]):not([data-asama="son"]) { background: #dccbfb; }
+.kn-kanat { pointer-events: none; }
+.kn-karisik { pointer-events: none; }
+.kn-karisik[hidden] { display: none; }
+.kn-parlak { opacity: .001; transition: opacity .5s ease-out; pointer-events: none; }
+.kn-parlak.kn-gorunur { opacity: 1; }
+.kn-yok { opacity: .001; }
+.kn-tuy { transform-origin: 0 50%; pointer-events: none; }
+.kn-tuy-dugmesi[hidden], .kn-pitrak[hidden], .kn-aski-ucu[hidden], .kn-sapka[hidden] { display: none; }
+.kn-uc { border-radius: 50%; }
+.kn-pitrak > img { width: 160px; height: 160px; margin: 20px; transition: none; }
+.kn-sapka > img, .kn-aski-ucu > img { width: 100%; height: 100%; }
+.kn-sapka.vk-kalkti > img, .kn-aski-ucu.vk-kalkti > img { opacity: .001; }
+.kn-tepsi-kati { inset: 0; pointer-events: none; }
+.kn-uc.vk-sirada, .kn-pitrak.vk-sirada, .kn-tuy-dugmesi.vk-sirada, .kn-sapka.vk-sirada, .kn-aski-ucu.vk-sirada { animation: vk-sirada 1s ease-in-out infinite; }
+.kn-uc.vk-sirada { box-shadow: 0 0 0 10px rgba(255, 255, 255, .55), 0 0 40px 18px rgba(255, 244, 190, .7); }
+@media (prefers-reduced-motion: reduce) { .kn-uc.vk-sirada, .kn-pitrak.vk-sirada, .kn-tuy-dugmesi.vk-sirada, .kn-sapka.vk-sirada, .kn-aski-ucu.vk-sirada { animation: none; } }
+@media (orientation: portrait) and (width < 600px) { #doktor[data-oyun="kanat"] { visibility: hidden; } }

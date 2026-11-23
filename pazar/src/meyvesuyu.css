@@ -590,12 +590,6 @@
   from { transform: scale(0.4); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
-.pz-kok .ms-mersin svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 /* ---------- Müşterinin tepkileri: yüz buruşturma çizgileri, kalpler ---------- */
 .pz-kok .pz-m-brr {
   position: absolute;

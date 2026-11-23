@@ -1,0 +1,28 @@
+/* Polly'nin Ağaç Evi (agac-evi.ts). Önek: ing-ae-. Sahne 1920 × 1080 fonun oranında; eşyalar fon pikselinin yüzdesiyle. */
+.ing-ae{position:absolute;inset:calc(11*var(--u)) 0 0;display:flex;flex-direction:column;align-items:center;gap:calc(.8*var(--u));padding:0 calc(2*var(--u)) calc(1.6*var(--u))}
+.ing-ae-sahne{position:relative;flex:1;min-height:0;max-width:100%;aspect-ratio:16/9;overflow:hidden;border:var(--cizgi) solid var(--murekkep);border-radius:calc(2.4*var(--u));background:#f3d9a8}
+.ing-ae-fonsuz{background:linear-gradient(#f6e3bd 0 93.5%,#c99a62 93.5%)}
+.ing-ae-fon{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ing-ae-polly,.ing-ae-esya{position:absolute;padding:0!important;border:0!important;background:none!important;cursor:pointer}
+/* küçük eşyalarda da parmak payı en az 44 px */
+.ing-ae-polly::before,.ing-ae-esya::before{content:'';position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);translate:-50% -50%}
+.ing-ae-polly-poz,.ing-ae-esya-resim{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.ing-ae-polly-poz[data-poz="1"],.ing-ae-polly[data-konusuyor="true"] .ing-ae-polly-poz:not([data-poz]){display:none}
+.ing-ae-polly[data-konusuyor="true"] .ing-ae-polly-poz[data-poz="1"]{display:block}
+.ing-ae-polly-yedek{position:absolute;inset:0}
+.ing-ae-esya .ing-ae-esya-resim{display:none}
+.ing-ae-esya[data-durum="0"] [data-hal="0"],.ing-ae-esya[data-durum="1"] [data-hal="1"]{display:block}
+.ing-ae-esya[data-durum="0"] span[data-hal="0"],.ing-ae-esya[data-durum="1"] span[data-hal="1"]{display:grid}
+.ing-ae-yer{place-items:center;text-align:center;border:1px dashed #8a6d4a;border-radius:8px;background:#fff9;color:#5a4128;font:700 clamp(8px,.9vw,13px)/1.1 system-ui,sans-serif}
+.ing-ae-esya[data-durum="1"] .ing-ae-yer{background:#ffe9a6}
+.ing-ae-esya.ing-ae-oynadi{animation:ing-ae-oyna .45s cubic-bezier(.3,1.6,.5,1)}
+.ing-ae-esya.ing-ae-yeni{filter:drop-shadow(0 0 6px #ffd25a) drop-shadow(0 0 14px #ffd25a);animation:ing-ae-parla 1.2s ease-in-out infinite}
+.ing-ae-yazi{flex:none;min-height:calc(3.6*var(--u));margin:0!important;font-size:calc(2.8*var(--u));font-weight:900;color:#0f5a4e;text-align:center}
+.ing-ae-yazi:empty{visibility:hidden}
+.ing-ae-bos{position:absolute;left:50%;bottom:calc(6*var(--u));translate:-50% 0;margin:0!important;padding:calc(.8*var(--u)) calc(2*var(--u));background:var(--krem);border:var(--cizgi) solid var(--murekkep);border-radius:calc(2*var(--u));font-size:calc(2*var(--u));font-weight:700;text-align:center}
+@keyframes ing-ae-oyna{0%{scale:1}40%{scale:1.12}100%{scale:1}}
+@keyframes ing-ae-parla{50%{scale:1.05}}
+@media(prefers-reduced-motion:reduce){.ing-ae-esya.ing-ae-oynadi,.ing-ae-esya.ing-ae-yeni{animation:none}}
+/* ana ekran düğmesi */
+.ing-ae-giris{display:flex;align-items:center;gap:calc(.6*var(--u));padding:calc(.3*var(--u)) calc(1.4*var(--u)) calc(.3*var(--u)) calc(.3*var(--u))!important;background:#ffe9a6!important;border:var(--cizgi) solid var(--murekkep)!important;border-radius:calc(4*var(--u))!important;font-size:calc(1.7*var(--u));font-weight:800;min-height:44px}
+.ing-ae-giris img,.ing-ae-giris .ing-kisi{width:calc(5.4*var(--u));height:calc(5.4*var(--u));min-width:36px;min-height:36px;object-fit:contain}

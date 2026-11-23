@@ -1,0 +1,20 @@
+const {chromium}=require('playwright');
+const path=require('node:path');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+ const p=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ await p.addInitScript(()=>localStorage.setItem('minkino-kartlar-v1',JSON.stringify({yas:5,ayarlar:{muzik:false}})));
+ await p.goto('http://localhost:5173/matematik/?test=1&tahterevalli=1&hizli=1');await p.waitForLoadState('load');
+ await p.evaluate(async()=>{const m=await import('/matematik/src/tahterevalli.ts');if(!m.tahterevalliHazir)throw Error('Görseller veya ses eksik');const kok=document.querySelector('#sahne');kok.replaceChildren();kok.dataset.ekran='ceren';kok.style.backgroundImage='none';m.tahterevalliTuru({kok,sesiAc(){},tekrarDinle(){},bitir(){},tekrar:0});});
+ const d=p.locator('.tv-dunya');await d.waitFor();
+ await p.locator('.tv-yigin-kup').first().waitFor();await p.evaluate(async()=>Promise.all([...document.querySelectorAll('.tv-dunya img')].map(i=>i.decode())));
+ const shot=async name=>p.screenshot({path:path.join(__dirname,name+'.png')});
+ await shot('m13-agir');
+ for(let i=0;i<4;i++)await p.locator('.tv-yigin-kup').first().click();
+ await shot('m13-denge');
+ await p.locator('.tv-yigin-kup').first().click();
+ if(await d.getAttribute('data-durum')!=='fazla')throw Error('Fazla durumu gelmedi');
+ await shot('m13-fazla');
+ await p.locator('.tv-kup').last().click();
+ await p.waitForFunction(()=>document.querySelector('.tv-dunya')?.dataset.hedef==='6');
+ await shot('m13-sulama');console.log('Dört durum gerçek turda görüldü.');
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

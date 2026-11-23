@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 test('Tavada kalan ikinci fileto kızarırken tabağa alınan ilk fileto aynı kalır',async({page},info)=>{
   await page.routeWebSocket(url=>url.port==='5173',()=>{});
   await page.setViewportSize({width:740,height:360});

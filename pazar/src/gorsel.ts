@@ -1,4 +1,7 @@
-/** Pazar görselleri: mevcut setler (hayvanlar, meyveler) + tasarımcının pazar seti (gelene kadar CSS yer tutucu). Mino canlı çizim (src/mino). */
+/**
+ * Pazar görselleri: mevcut setler (hayvanlar, meyveler) + pazar seti (assets/pazar). Mino canlı çizim (src/mino).
+ * Pazar'ın kullandığı her çizimin var olduğunu birim testi denetler (tests/unit/pazar.test.ts): yer tutucu yok.
+ */
 import { h } from '../../src/ui/dom';
 
 const RESIMLER = import.meta.glob<string>(
@@ -6,15 +9,13 @@ const RESIMLER = import.meta.glob<string>(
   { eager: true, query: '?url', import: 'default' },
 );
 
-/** 'meyveler/elma', 'pazar/sepet' … → adres (yoksa '') */
+/** 'meyveler/elma', 'pazar/sepet' … → adres */
 export const adres = (yol: string) => RESIMLER[`../../assets/${yol}.webp`] ?? '';
 
-/** Çizim (yoksa yedek renkli daire + harf) */
+/** Çizim */
 export function resim(yol: string, sinif = '', alt = ''): HTMLElement {
-  const url = adres(yol);
   const s = sinif ? '.' + sinif.split(' ').join('.') : '';
-  if (url) return h(`img.pz-resim${s}`, { src: url, alt, draggable: 'false' });
-  return h(`div.pz-resim.pz-yedek${s}`, { role: 'img', 'aria-label': alt }, alt.charAt(0));
+  return h(`img.pz-resim${s}`, { src: adres(yol), alt, draggable: 'false' });
 }
 
 const AZ = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;

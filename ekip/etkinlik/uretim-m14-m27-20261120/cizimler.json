@@ -1,0 +1,898 @@
+{
+  "packages": {
+    "M14": "elma-sandik",
+    "M17": "balonlar",
+    "M16": "sayi-treni",
+    "M15": "kurabiye",
+    "M18": "kek-firini",
+    "M19": "asansor",
+    "M20": "yeni-sekiller",
+    "M21": "resim-yap",
+    "M22": "buyuyen-fener",
+    "M23": "senlik-bayraklari",
+    "M24": "kino-calgi",
+    "M25": "surahi",
+    "M26": "butun-yarim",
+    "M27": "kino-gunu",
+    "H9": "hece-koprusu"
+  },
+  "specs": {
+    "M14": [
+      [
+        "elma-bahcesi",
+        1672,
+        941,
+        "bg",
+        "Wide 16:9 illustration of sunny orchard. Place one big apple tree at far left with a single contiguous flat apple-green canopy occupying x3.5–36%, y6–47%; no apples, blossoms or leaves drawn inside canopy. A smooth low honey-colored wooden workbench extends across center-right from x38–79%, broad empty tabletop between y60–89%. Empty grass area on far right for grandfather. Peaceful sky, distant fence at horizon, deliberate charming graphic silhouette. No people or fruit."
+      ],
+      [
+        "onluk-sandik",
+        600,
+        320,
+        "obj",
+        "One rectangular honey-colored wooden orchard sorting tray as seen almost straight from above, long landscape ratio 1.875:1. Exact ten EMPTY wells, FIVE columns times TWO rows; precisely four vertical thin separators and one horizontal separator. Equal-width orthogonal rectangles, almost no perspective taper, tray aligned horizontally. Usable interior within x6.7–93.3%, y16–87.5%, allowance for generous wooden lips. No handles extending outward, no number or logos."
+      ],
+      [
+        "besli-sepet",
+        400,
+        180,
+        "obj",
+        "One oblong shallow honey wicker basket organizer, very slightly elevated front view, practically plan view. Exactly FIVE contiguous EMPTY light peach cells in ONE horizontal row, four thin vertical dividers. A few simple woven rim marks away from compartments. Integer count critically exactly five; orthogonal consistent cell centers 16%,33%,50%,67%,84%. Wide 2.22:1."
+      ],
+      [
+        "elma",
+        120,
+        120,
+        "obj",
+        "One delicious small red apple, strong friendly asymmetric round silhouette, single short brown stem and one fresh green leaf; big uninterrupted carmine shape, only one small darker red hard edge at side. Slight central stem cleft. No face, no highlight, no lines inside flesh. Square."
+      ],
+      [
+        "dede-elma",
+        600,
+        700,
+        "sheet",
+        "One fullbody animation model sheet, four sequential equal-size Grandpa Hasan figures in exactly four equal cells in one horizontal row of four, ample gutters. Face and costume identical to supplied official three-quarter model; gray beret, mustache, green buttoned vest over pale yellow shirt, dark brown trousers, brown shoes. He stands on RIGHT side of scene angled LEFT, at same scale. Frame 1 his near hand rests at waist height at his left as if on a nearby low crate, the crate is invisible; gaze down-left. Frame 2 gathers hands. Frame 3 arms lift. Frame 4 joyful both open hands raised in a broad V above shoulders. Keep two ears and legs and arms per pose, same head size, same shoe baseline, no ground line or props."
+      ]
+    ],
+    "M17": [
+      [
+        "cayir",
+        1672,
+        941,
+        "bg",
+        "Sunny wide 16:9 meadow. A contiguous empty pure light blue sky x18–84%, y3–56% for balloons. Hills and grass low at 63% height. A few little daisies near extreme side only. Horizon and outlines crisp. Broad open meadow for two characters. No trees, balloons, people or props in sky."
+      ],
+      [
+        "balon-kirmizi",
+        160,
+        520,
+        "obj",
+        "Single party balloon, poppy red, classic plump drop silhouette with tiny tied neck; long slender continuous black thread extends from knot to x80, y515. Balloon body occupies y0–200 on the 160 × 520 canvas. Front view on transparent. One outlined flat color. No white shine, no face."
+      ],
+      [
+        "balon-mavi",
+        160,
+        520,
+        "obj",
+        "Single party balloon, cornflower blue, classic plump drop silhouette with tiny tied neck; long slender continuous black thread extends from knot to x80, y515. Balloon body occupies y0–200 on the 160 × 520 canvas. Front view on transparent. One outlined flat color. No white shine, no face."
+      ],
+      [
+        "balon-sari",
+        160,
+        520,
+        "obj",
+        "Single party balloon, sunshine yellow, classic plump drop silhouette with tiny tied neck; long slender continuous black thread extends from knot to x80, y515. Balloon body occupies y0–200 on the 160 × 520 canvas. Front view on transparent. One outlined flat color. No white shine, no face."
+      ],
+      [
+        "bulut-balon",
+        500,
+        600,
+        "sheet",
+        "Four successive full body poses in one horizontal row of four equal cells, consistent head size aligned feet. ONLY Bulut from the reference: little apricot goat, tiny dark horns, floppy long ears, purple short sleeve tee turquoise shorts. 1 standby, looking toward raised closed fist holding unseen balloon strings. His fist in upper right at x66%, y18% of his own box; other hand down. 2 starts to open fingers. 3 fingers spread looking up. 4 surprise, open mouth and both hands raised, pupils pointing up at same target. No balloons, strings or other characters."
+      ],
+      [
+        "lokum-balon",
+        500,
+        600,
+        "sheet",
+        "Four key successive poses in ONE row of four equal cells, little toddler Lokum from reference identically white dog, orange patch, pink dress white collar and buttons, two central front teeth. Same head size throughout. 1 steps in with a raised closed paw to her upper right above own shoulder holding one invisible balloon string; 2 lowers arm, 3 hands approach to clap, 4 happy two palms touch and toothy smile, looking up left. Body kept small, feet clear, no balloon, no string."
+      ]
+    ],
+    "M16": [
+      [
+        "istasyon",
+        1672,
+        941,
+        "bg",
+        "Landscape 16:9 quiet little station platform, track in strict flat side elevation horizontally across entire canvas at 76.5% height, no foreshortened perspective. Entire area immediately above track from x6–96%, y40–76% an open light-green grassy embankment supporting the platform, with three small tufts and room for the locomotive and wagons. A small bench and station clock without numerals placed far back/upper left only, pastel blue sky and charming low building. Absolutely no train, signage numbers or people."
+      ],
+      [
+        "lokomotif-mino",
+        600,
+        500,
+        "sheet",
+        "Animation sheet four equal cells in one horizontal row: identical little orange tabby cat Mino, red scarf and teal dungarees with blue engineer cap aboard one small right-facing coral steam locomotive per cell. Strict flat side view same wheel size and same wheel baseline. Little cab at left with cat visible, chimney at right. Frame 1 happy open paw waves at window. Frame 2 raises paw to whistle cord, frame 3 grasps cord, frame 4 pulls cord with one puff of smoke coming from chimney. Keep locomotives absolutely identical in every frame, only Mino acting and puff changes. No people other than Mino, no wagons, no tracks."
+      ],
+      [
+        "vagon-kirmizi",
+        380,
+        260,
+        "obj",
+        "Single preschool toy train wagon in exact flat side view, centered, horizontal rigid chassis, two wheels centered at x25 and 75% with ground contact y96%; couplers at both ends y77%, facing outward. Body coral red, front-facing central blank rounded white sign x29–71%, y23–65%, completely empty. Single simple rail car. No tracks, no digits, no number. Match the source silhouette and scale when reference provided."
+      ],
+      [
+        "vagon-mavi",
+        380,
+        260,
+        "obj",
+        "Single preschool toy train wagon in exact flat side view, centered, horizontal rigid chassis, two wheels centered at x25 and 75% with ground contact y96%; couplers at both ends y77%, facing outward. Body clear medium blue, front-facing central blank rounded white sign x29–71%, y23–65%, completely empty. Single simple rail car. No tracks, no digits, no number. Match the source silhouette and scale when reference provided."
+      ],
+      [
+        "vagon-sari",
+        380,
+        260,
+        "obj",
+        "Single preschool toy train wagon in exact flat side view, centered, horizontal rigid chassis, two wheels centered at x25 and 75% with ground contact y96%; couplers at both ends y77%, facing outward. Body golden yellow, front-facing central blank rounded white sign x29–71%, y23–65%, completely empty. Single simple rail car. No tracks, no digits, no number. Match the source silhouette and scale when reference provided."
+      ]
+    ],
+    "M15": [
+      [
+        "babaanne-mutfagi",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. A homely grandmothers kitchen with a soft lilac wall, round corner sunny window and short shelf in upper left. Warm honey worktop spans x10–90%, y50–89%, broad flat empty horizontal tabletop. Right edge empty in front of light blue cupboards for grandmother. No people, props in interaction area, or labels."
+      ],
+      [
+        "tepsi",
+        520,
+        300,
+        "obj",
+        "One empty bakery metal tray, straight-on nearly overhead view, EXACTLY ten shallow empty cookie wells aligned in TWO rows of FIVE. Inner rectangle x6–94%, y13–90%. Evenly spaced, uncluttered and always countable; no cookies."
+      ],
+      [
+        "kurabiye",
+        110,
+        110,
+        "obj",
+        "Single round golden handmade chocolate chip cookie, simple outline, five distinct irregular dark chocolate chips, no stippling."
+      ],
+      [
+        "kucuk-tabak",
+        300,
+        140,
+        "obj",
+        "Single little empty white porcelain plate, one cornflower blue rim stripe, perspective shallow ellipse."
+      ],
+      [
+        "rakam-bayragi",
+        180,
+        260,
+        "obj",
+        "One blank white flag on thin wooden toothpick, flag on the right x22–95% y8–50%, toothpick tip y98%. Thin ink contour and no print."
+      ],
+      [
+        "babaanne-kurabiye",
+        600,
+        700,
+        "sheet",
+        "One horizontal row of precisely FOUR equal cells. The same full-body character from the attached official model, same head size, outfit, camera angle and foot baseline in all four. Sequential animation going from resting through two intermediate anticipations to the fourth pose. Frame 1 grandmother left-facing wearing oven gloves and offering a cookie baking tray, frame 2 relaxes arms, frame 3 joyful hands approach, frame 4 smiles and claps hands together. No kitchen in sheet."
+      ]
+    ],
+    "M18": [
+      [
+        "mutfak-firin",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. Inviting pink and turquoise kitchen. One big straight-on oven at center. Oven window spans x33–66%,y45–74%, completely plain warm light orange empty space inside. Broad rectangle pantry board above at x23–77%,y8–35% solid flat mint. Space for cook to right. No people, props in interaction area, or labels."
+      ],
+      [
+        "kek",
+        130,
+        130,
+        "obj",
+        "Single small butter cupcake in turquoise fluted cup, ivory cream swirl and only five colorful flat sugar sprinkles, no fruit."
+      ],
+      [
+        "arti",
+        512,
+        512,
+        "obj",
+        "A single preschool wooden math tile exactly matching the attached numeral block in border, size, square front face, pastel wood and depth. Instead of a numeral use one clear centered plus sign +. No other markings."
+      ],
+      [
+        "eksi",
+        512,
+        512,
+        "obj",
+        "A single preschool wooden math tile exactly matching the attached numeral block in border, size, square front face, pastel wood and depth. Instead of a numeral use one clear centered minus sign −. No other markings."
+      ],
+      [
+        "esittir",
+        512,
+        512,
+        "obj",
+        "A single preschool wooden math tile exactly matching the attached numeral block in border, size, square front face, pastel wood and depth. Instead of a numeral use one clear centered equals sign =. No other markings."
+      ],
+      [
+        "anne-firin",
+        600,
+        700,
+        "sheet",
+        "One horizontal row of precisely FOUR equal cells. The same full-body character from the attached official model, same head size, outfit, camera angle and foot baseline in all four. Sequential animation going from resting through two intermediate anticipations to the fourth pose. Anne in reference outfit with two oven mitts poses on the RIGHT facing LEFT. Frame 1 holding an empty metal tray; short action proceeds to frame 4 smiling offers a plate with cupcakes to left. No oven."
+      ]
+    ],
+    "M19": [
+      [
+        "apartman",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. Front architectural cutaway of FIVE-story friendly apartment building, broad simple exterior with a few windows and potted plants on outer edges. Elevator shaft a continuous unbroken blank pale gray vertical strip x43–57.4%, y4–96%. Five EMPTY white floor signs in a straight vertical line to its right: x59.2–65.8%, each 6.6% wide ×9.6% tall, centered y13.8%,31.9%,49.9%,68%,86.1%. Absolutely no numbers. No people, props in interaction area, or labels."
+      ],
+      [
+        "asansor-lokum",
+        240,
+        170,
+        "sheet",
+        "One horizontal row of precisely FOUR equal cells. The same full-body character from the attached official model, same head size, outfit, camera angle and foot baseline in all four. Sequential animation going from resting through two intermediate anticipations to the fourth pose. Four wide open-door FRONT VIEW elevator cabin cells, identical small light turquoise elevator cabin, full view of Lokum in pink dress standing inside. Frame 1 waves one paw, 2–3 transitions, 4 happily raises both paws. Include entire rigid cabin, rectangular sides and floor; identical cabin shape and camera across frames. No numbers."
+      ]
+    ],
+    "M20": [
+      [
+        "sekil-bahcesi",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. A sunny garden with a large bright unpatterned plain mint picnic cloth occupying x11–89%, y48–92%, an empty flat playing surface. Left margin open for child. Low greenery and restrained flower at top corner. No people, props in interaction area, or labels."
+      ],
+      [
+        "yumurta",
+        260,
+        260,
+        "obj",
+        "one creamy white egg with classic EGG OVAL outline, upright centered, clear solid silhouette, no floor."
+      ],
+      [
+        "oval-ayna",
+        260,
+        260,
+        "obj",
+        "one small portrait oval mirror with coral oval rim, no handle overhanging centered, clear solid silhouette, no floor."
+      ],
+      [
+        "deniz-yildizi",
+        260,
+        260,
+        "obj",
+        "one simple orange five-armed starfish, crisp five-arm contour centered, clear solid silhouette, no floor."
+      ],
+      [
+        "yildiz-kurabiye",
+        260,
+        260,
+        "obj",
+        "one golden sugar cookie cut into an unmistakable FIVE pointed star, yellow icing centered, clear solid silhouette, no floor."
+      ],
+      [
+        "kalp-yastik",
+        260,
+        260,
+        "obj",
+        "one plump simple red heart pillow with little seam centered, clear solid silhouette, no floor."
+      ],
+      [
+        "kalp-balon",
+        260,
+        260,
+        "obj",
+        "one pink heart-shaped balloon with a tiny short string centered, clear solid silhouette, no floor."
+      ],
+      [
+        "bal-petegi",
+        260,
+        260,
+        "obj",
+        "one isolated gold honeycomb cell like a single regular hexagon, filled with honey centered, clear solid silhouette, no floor."
+      ],
+      [
+        "altigen-fayans",
+        260,
+        260,
+        "obj",
+        "one flat turquoise regular hexagonal ceramic tile with six straight edges centered, clear solid silhouette, no floor."
+      ],
+      [
+        "oval",
+        500,
+        500,
+        "obj",
+        "One classroom wooden puzzle shape in exactly the style of the attached square example, plain face with fine black outline and small beveled edge. purple upright oval. Centered and square framing."
+      ],
+      [
+        "yildiz",
+        500,
+        500,
+        "obj",
+        "One classroom wooden puzzle shape in exactly the style of the attached square example, plain face with fine black outline and small beveled edge. yellow five-pointed star. Centered and square framing."
+      ],
+      [
+        "kalp",
+        500,
+        500,
+        "obj",
+        "One classroom wooden puzzle shape in exactly the style of the attached square example, plain face with fine black outline and small beveled edge. red heart. Centered and square framing."
+      ],
+      [
+        "altigen",
+        500,
+        500,
+        "obj",
+        "One classroom wooden puzzle shape in exactly the style of the attached square example, plain face with fine black outline and small beveled edge. turquoise REGULAR hexagon. Centered and square framing."
+      ],
+      [
+        "kino-sekil",
+        500,
+        600,
+        "sheet",
+        "One horizontal row of precisely FOUR equal cells. The same full-body character from the attached official model, same head size, outfit, camera angle and foot baseline in all four. Sequential animation going from resting through two intermediate anticipations to the fourth pose. Frame 1 Kino facing right looks down with one eye through real round magnifying glass toward imaginary picnic rug, happy pupils. Frames 2,3 lifts gaze; frame 4 reaches one paw up in delighted discovery."
+      ]
+    ],
+    "M21": [
+      [
+        "resim-masasi",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. Direct overhead view of a sunny plain wooden table. Single bright white portrait sheet exactly x30–70%, y6–94%. The entire paper BLANK. Empty tabletop surfaces to left and right x2–29% and 71–98%; just two short colorful pencils at an extreme upper corner. No people, props in interaction area, or labels."
+      ],
+      [
+        "ev-taslak",
+        600,
+        640,
+        "obj",
+        "Only pale gray short even DASHED outlines, transparent everywhere, no paint. Simple orthographic preschool puzzle house target: roof triangle (40,240),(300,20),(560,240); square body x100–500 y240–640; door x250–350 y470–640, two windows x140–220 and 380–460 y300–380 on 600x640. No chimney or additions."
+      ],
+      [
+        "ev-cati",
+        520,
+        220,
+        "obj",
+        "One low broad bright coral red triangular wooden cutout roof, symmetric horizontal base."
+      ],
+      [
+        "ev-govde",
+        400,
+        400,
+        "obj",
+        "One square yellow wooden puzzle block, straight-on flat square, unmarked, no cutouts."
+      ],
+      [
+        "ev-kapi",
+        100,
+        170,
+        "obj",
+        "One upright small blue rectangular wooden toy-house door, solid paint, classic rectangle."
+      ],
+      [
+        "ev-pencere",
+        80,
+        80,
+        "obj",
+        "One single pale blue square puzzle window, straight-on, no perspective."
+      ],
+      [
+        "ev-canli",
+        600,
+        640,
+        "obj",
+        "Single completed front elevation of toy house, roof triangle x40–560 y20–240, yellow square body x100–500 y240–640, blue door centered bottom, two square sky-blue windows x140–220 and 380–460 y300–380. Kino from reference waves from left window, short chimney smoke, 2 little flowers by door. Transparent exterior."
+      ],
+      [
+        "roket-taslak",
+        400,
+        700,
+        "obj",
+        "Only pale gray DASHED outlines; transparent background and interior, front-facing vertical symmetrical toy rocket target. On 400x700 canvas cone x120–280 y20–180, narrow rectangle body x120–280 y180–560, window circle x160–240 y260–340, two swept triangular fins x30–120 and 280–370, y420–620. No flames."
+      ],
+      [
+        "roket-burun",
+        160,
+        160,
+        "obj",
+        "Single solid bright red upward pointing isosceles triangular rocket nose."
+      ],
+      [
+        "roket-govde",
+        160,
+        380,
+        "obj",
+        "Pure white tall narrow rectangular rocket body, fine black outline, no window."
+      ],
+      [
+        "roket-pencere",
+        80,
+        80,
+        "obj",
+        "One flat blue circular window, front orthographic round porthole."
+      ],
+      [
+        "roket-kanat-sol",
+        90,
+        200,
+        "obj",
+        "One orange RIGHT TRIANGLE fin, vertical side at RIGHT, sloped side from upper RIGHT toward lower LEFT."
+      ],
+      [
+        "roket-kanat-sag",
+        90,
+        200,
+        "obj",
+        "One orange RIGHT TRIANGLE fin, vertical side at LEFT, sloped side from upper LEFT toward lower RIGHT."
+      ],
+      [
+        "roket-canli",
+        400,
+        900,
+        "obj",
+        "One complete upright toy rocket: red cone x120–280 y20–180, white rectangular body x120–280 y180–560, blue round window x160–240 y260–340 showing Zıpzıp the fox from reference smiling in astronaut helmet, two orange swept fins x30–120 and 280–370 y420–620. Long golden orange flame points downward in last 200px of 900px high image. No space background."
+      ]
+    ],
+    "M22": [
+      [
+        "fener-sahnesi",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. A cozy toy theater, curtains opened fully on both extreme sides. Broad uninterrupted pale blue stage playing surface in x12–88%, y32–92% for stacks of paper lanterns. One low warm stage lip outside this area. Empty space on right for cat. No people, props in interaction area, or labels."
+      ],
+      [
+        "kagit-fener-sari",
+        140,
+        160,
+        "obj",
+        "One yellow short plump paper lantern with a very short handle, flat upper and lower caps to allow stacking. A few simple drawn pleats and nothing else."
+      ],
+      [
+        "kagit-fener-mavi",
+        140,
+        160,
+        "obj",
+        "One blue short plump paper lantern with a very short handle, flat upper and lower caps to allow stacking. A few simple drawn pleats and nothing else."
+      ],
+      [
+        "mino-fener",
+        500,
+        600,
+        "sheet",
+        "One horizontal row of precisely FOUR equal cells. The same full-body character from the attached official model, same head size, outfit, camera angle and foot baseline in all four. Sequential animation going from resting through two intermediate anticipations to the fourth pose. Frame 1 Mino the little orange tabby in reference costume, on right looking left, points left at lantern columns. Frames 2,3 hands gather; frame 4 happily claps."
+      ]
+    ],
+    "M23": [
+      [
+        "bayrak-direkleri",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. Two garden poles near x7% and 93%, joined by a perfectly taut HORIZONTAL bare string at y21.25%. Below string x7–93%, y22–55% uninterrupted blue sky to hang flags. Grassy meadow low, open right for fox. No flags or bunting yet. No people, props in interaction area, or labels."
+      ],
+      [
+        "bayrak-kirmizi-ucgen",
+        160,
+        220,
+        "obj",
+        "One hanging party flag: red triangle point downward. Top middle attachment point nearly touches canvas top at 50%,4%, no pole."
+      ],
+      [
+        "bayrak-mavi-kare",
+        160,
+        220,
+        "obj",
+        "One hanging party flag: blue square. Top middle attachment point nearly touches canvas top at 50%,4%, no pole."
+      ],
+      [
+        "bayrak-sari-daire",
+        160,
+        220,
+        "obj",
+        "One hanging party flag: yellow semicircle, flat straight top edge and curved lower half. Top middle attachment point nearly touches canvas top at 50%,4%, no pole."
+      ],
+      [
+        "bayrak-yesil-ucgen",
+        160,
+        220,
+        "obj",
+        "One hanging party flag: green triangle point down. Top middle attachment point nearly touches canvas top at 50%,4%, no pole."
+      ],
+      [
+        "zipzip-bayrak",
+        500,
+        600,
+        "sheet",
+        "One horizontal row of precisely FOUR equal cells. The same full-body character from the attached official model, same head size, outfit, camera angle and foot baseline in all four. Sequential animation going from resting through two intermediate anticipations to the fourth pose. Zıpzıp, the schoolboy fox from reference. Frame 1 holds a small single flag up playfully, 2 crouches, 3 pushes off, 4 jumps in happy celebration with both arms raised."
+      ]
+    ],
+    "M24": [
+      [
+        "muzik-kosesi",
+        1672,
+        941,
+        "bg",
+        "Wide horizontal 16:9. A soft lilac music corner beside little theater with low empty honey wooden shelf x10–90% y74–94%. Entire wall between x10–90% y13–38% blank. Open center for one character. Small single musical prop at very side only. No people, props in interaction area, or labels."
+      ],
+      [
+        "kart-davul",
+        240,
+        240,
+        "obj",
+        "One single centered rounded-square ivory picture card, thin ink outline. On it a red toy drum with one drumstick. No lettering."
+      ],
+      [
+        "kart-cingirak",
+        240,
+        240,
+        "obj",
+        "One single centered rounded-square ivory picture card, thin ink outline. On it a green and coral baby rattle with short safe handle. No lettering."
+      ],
+      [
+        "kart-alkis",
+        240,
+        240,
+        "obj",
+        "One single centered rounded-square ivory picture card, thin ink outline. On it two simple paws coming together to clap, no body. No lettering."
+      ],
+      [
+        "kino-davul",
+        500,
+        600,
+        "singlechar",
+        "One single full-body on-model Kino pose, 3/4, identical camera foot position. playing a small red drum in front of his waist with a little drumstick in his paw."
+      ],
+      [
+        "kino-cingirak",
+        500,
+        600,
+        "singlechar",
+        "One single full-body on-model Kino pose, 3/4, identical camera foot position. shaking a green and coral baby rattle in one paw, looking at the rattle."
+      ],
+      [
+        "kino-alkis",
+        500,
+        600,
+        "singlechar",
+        "One single full-body on-model Kino pose, 3/4, identical camera foot position. clapping both paws together with a smile."
+      ]
+    ],
+    "M25": [
+      [
+        "mutfak-tezgahi",
+        1672,
+        941,
+        "bg",
+        "Wide 16:9 clean landscape. A bright clear lilac and cornflower blue kitchen window scene, worktop area x12–90%, y50–87% flat warm honey color and empty, right side open for cook. No pitchers or cups. No characters."
+      ],
+      [
+        "bardak-bos",
+        200,
+        260,
+        "obj",
+        "One front view transparent cylindrical glass tumbler with subtly tapered body, base at y98%, oval top. Fine charcoal outline and pale flat cyan edge for glass. Empty cup. Keep geometry identical to reference when supplied, same water color."
+      ],
+      [
+        "bardak-yarim",
+        200,
+        260,
+        "obj",
+        "One front view transparent cylindrical glass tumbler with subtly tapered body, base at y98%, oval top. Fine charcoal outline and pale flat cyan edge for glass. EXACTLY half FULL with flat light blue water, readable horizontal meniscus at halfway height. Keep geometry identical to reference when supplied, same water color."
+      ],
+      [
+        "bardak-dolu",
+        200,
+        260,
+        "obj",
+        "One front view transparent cylindrical glass tumbler with subtly tapered body, base at y98%, oval top. Fine charcoal outline and pale flat cyan edge for glass. Almost completely FULL with light blue water one finger below the rim. Keep geometry identical to reference when supplied, same water color."
+      ],
+      [
+        "surahi-dolu",
+        320,
+        420,
+        "obj",
+        "One simple glass water pitcher, open spout left, handle right, fine black edge with pale flat cyan glass. Stand upright almost full of clear light blue water, bottom at y99%."
+      ],
+      [
+        "surahi-yarim",
+        320,
+        420,
+        "obj",
+        "One simple glass water pitcher, open spout left, handle right, fine black edge with pale flat cyan glass. Same upright pitcher half full, water line halfway up vessel."
+      ],
+      [
+        "surahi-bos",
+        320,
+        420,
+        "obj",
+        "One simple glass water pitcher, open spout left, handle right, fine black edge with pale flat cyan glass. Same upright pitcher with completely EMPTY inside."
+      ],
+      [
+        "surahi-egik",
+        420,
+        420,
+        "obj",
+        "One simple glass water pitcher, open spout left, handle right, fine black edge with pale flat cyan glass. Tilt this same full pitcher 45 degrees to left; it pours one narrow flowing stream from spout ending at x17%, y98%."
+      ],
+      [
+        "anne-surahi",
+        600,
+        700,
+        "sheet",
+        "Animation sheet, four distinct equal cells in ONE horizontal strip. Four fullbody poses of single character with fixed camera and outfit, same head size, scale and shoe baseline. 1 Anne standing right looking left one hand resting on invisible counter at waist, 2 lifts hands, 3 brings hands toward chest, 4 clasps hands together at her chest, delighted. No pitcher or table."
+      ]
+    ],
+    "M26": [
+      [
+        "kesme-tahtasi",
+        1672,
+        941,
+        "bg",
+        "Wide 16:9 clean landscape. Warm family kitchen with centered large blank honey cutting board x25–75%, y38–85% sitting horizontally on worktable, no handles or grooves inside playing surface. Far right open for grandmother. No characters."
+      ],
+      [
+        "elma-butun",
+        360,
+        360,
+        "obj",
+        "One bright red apple with tiny brown stem and one leaf. Front view whole food, centered in square canvas with 10% outer margins."
+      ],
+      [
+        "elma-sol",
+        360,
+        360,
+        "obj",
+        "One bright red apple with tiny brown stem and one leaf. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its left half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of cream fruit pulp and seed pocket is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "elma-sag",
+        360,
+        360,
+        "obj",
+        "One bright red apple with tiny brown stem and one leaf. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its right half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of cream fruit pulp and seed pocket is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "armut-butun",
+        360,
+        360,
+        "obj",
+        "One golden green pear with pronounced narrow neck and short brown stem. Front view whole food, centered in square canvas with 10% outer margins."
+      ],
+      [
+        "armut-sol",
+        360,
+        360,
+        "obj",
+        "One golden green pear with pronounced narrow neck and short brown stem. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its left half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of pale pear flesh and seed pocket is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "armut-sag",
+        360,
+        360,
+        "obj",
+        "One golden green pear with pronounced narrow neck and short brown stem. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its right half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of pale pear flesh and seed pocket is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "ekmek-butun",
+        360,
+        360,
+        "obj",
+        "One round golden bread loaf, one graphic scoring cut. Front view whole food, centered in square canvas with 10% outer margins."
+      ],
+      [
+        "ekmek-sol",
+        360,
+        360,
+        "obj",
+        "One round golden bread loaf, one graphic scoring cut. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its left half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of soft pale bread crumb is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "ekmek-sag",
+        360,
+        360,
+        "obj",
+        "One round golden bread loaf, one graphic scoring cut. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its right half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of soft pale bread crumb is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "simit-butun",
+        360,
+        360,
+        "obj",
+        "One round Turkish simit bagel ring, scattered intentional sesame shapes, clear center hole. Front view whole food, centered in square canvas with 10% outer margins."
+      ],
+      [
+        "simit-sol",
+        360,
+        360,
+        "obj",
+        "One round Turkish simit bagel ring, scattered intentional sesame shapes, clear center hole. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its left half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of soft dough beneath sesame crust is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "simit-sag",
+        360,
+        360,
+        "obj",
+        "One round Turkish simit bagel ring, scattered intentional sesame shapes, clear center hole. Use supplied whole drawing as exact reference of OUTLINE, position, colors and scale. Show ONLY its right half after vertical center cut, on the SAME square virtual canvas in the half where it belongs. Opposite half is entirely transparent. The flat CUT surface faces inward and a narrow sliver of soft dough beneath sesame crust is visible at the seam without expanding outer silhouette. No independent shadow."
+      ],
+      [
+        "tahta-bicak",
+        300,
+        90,
+        "obj",
+        "One child-safe wooden pretend kitchen cutter, sideways with rounded blunt cutting end to LEFT and handle toward RIGHT. No edge highlight. Brown wood, simple shape."
+      ],
+      [
+        "babaanne-yarim",
+        600,
+        700,
+        "sheet",
+        "Animation sheet, four distinct equal cells in ONE horizontal strip. Four fullbody poses of single character with fixed camera and outfit, same head size, scale and shoe baseline. 1 grandmother indicates the imaginary cutting board to her left, 2 raises arms, 3 hands approaching, 4 claps with happy smile. No board or food."
+      ]
+    ],
+    "M27": [
+      [
+        "zaman-duvari",
+        1672,
+        941,
+        "bg",
+        "Wide 16:9 clean landscape. Straight-on interior wall with exactly three EMPTY frames, identical each, inner sizes on 1672×941 composition 380×300 at x180,646,1112 and y150. A single small symbol above each: rising sun above left, midday sun over center, crescent moon above right. Open honey shelf spans x160 through 1510 and y600 through 880, flat blank. Keep all three frame interiors cream and flat. No characters."
+      ],
+      [
+        "kart-uyanma",
+        360,
+        280,
+        "storycard",
+        "A single landscape rounded rectangle picture card, occupying canvas, opaque illustration edge to edge INSIDE, transparent only outside round corners. Kino the cartoon puppy strictly on reference: stretching on bed, early sunrise through window. Strong simple action and no text."
+      ],
+      [
+        "kart-oyun",
+        360,
+        280,
+        "storycard",
+        "A single landscape rounded rectangle picture card, occupying canvas, opaque illustration edge to edge INSIDE, transparent only outside round corners. Kino the cartoon puppy strictly on reference: playing with a ball in green park under high noon sun. Strong simple action and no text."
+      ],
+      [
+        "kart-uyku",
+        360,
+        280,
+        "storycard",
+        "A single landscape rounded rectangle picture card, occupying canvas, opaque illustration edge to edge INSIDE, transparent only outside round corners. Kino the cartoon puppy strictly on reference: tucked asleep under quilt, moon and stars outside window. Strong simple action and no text."
+      ],
+      [
+        "kart-kar-yagiyor",
+        360,
+        280,
+        "storycard",
+        "A single landscape rounded rectangle picture card, occupying canvas, opaque illustration edge to edge INSIDE, transparent only outside round corners. Kino the cartoon puppy strictly on reference: standing in lightly falling large snowflakes in a snowy garden. Strong simple action and no text."
+      ],
+      [
+        "kart-kardan-adam",
+        360,
+        280,
+        "storycard",
+        "A single landscape rounded rectangle picture card, occupying canvas, opaque illustration edge to edge INSIDE, transparent only outside round corners. Kino the cartoon puppy strictly on reference: standing next to newly built snowman with carrot nose and scarf in same garden. Strong simple action and no text."
+      ],
+      [
+        "kart-eriyor",
+        360,
+        280,
+        "storycard",
+        "A single landscape rounded rectangle picture card, occupying canvas, opaque illustration edge to edge INSIDE, transparent only outside round corners. Kino the cartoon puppy strictly on reference: smiling by melted snowman, a little puddle with carrot and scarf, sun shining in the same garden. Strong simple action and no text."
+      ],
+      [
+        "kino-gun",
+        500,
+        600,
+        "sheet",
+        "Animation sheet, four distinct equal cells in ONE horizontal strip. Four fullbody poses of single character with fixed camera and outfit, same head size, scale and shoe baseline. 1 Kino indicates wall to left, 2 gathers his feet and bends knees, 3 lifts, 4 hops joyfully with arms raised. No external props."
+      ]
+    ],
+    "H9": [
+      [
+        "dere",
+        1672,
+        941,
+        "bg",
+        "16:9 wide scene in a school garden looking gently downward across a river. Near field is in three sections, clearly grass at left x0–31%, shallow turquoise WATER in central band x31–75%, right grassy bank at x75–100%. At y60–75% every point between x33–72% is uninterrupted flat turquoise water for three separately positioned stepping stones. Left lower lawn x0–27%, y67–100% completely empty. Grass on right at x86%,y75% for easel. Far in background a low garden fence and rounded tree crowns, blue sky. No bridges, rocks, islands, stepping stones, reflections, characters or easel. Shore lines are oriented mostly vertically in foreground."
+      ],
+      [
+        "tas-bos",
+        300,
+        200,
+        "obj",
+        "A single empty stepping-stone socket, a pale grey-blue semi-transparent oval ring for showing where a river stone goes. Flat horizontal ellipse seen slightly from above, airy thin rounded light blue-gray ring, open transparent center, no rock, no symbols."
+      ],
+      [
+        "tas",
+        300,
+        200,
+        "obj",
+        "One gently flattened oval river stepping stone, top is a wide calm pale sage gray flat surface, slightly raised, inviting round silhouette with warm grey low sidewall and small moss patches only at far edges. Huge uninterrupted unmarked writing surface for syllables in center. Black outline. Three-quarter aerial view, broad horizontal oval, low sidewall."
+      ],
+      [
+        "halka-0",
+        400,
+        200,
+        "obj",
+        "A single transparent animated cel of a small water ripple on a calm turquoise river, top-down foreshortened oval, minimal light aqua rim and small inner blue edge. Same central registration, landscape 2:1. Small closed oval, concentric ripple, only the central 40% of the canvas. No water fill or shadow, canvas fully transparent around and INSIDE the ring."
+      ],
+      [
+        "halka-1",
+        400,
+        200,
+        "obj",
+        "A single transparent animated cel of a small water ripple on a calm turquoise river, top-down foreshortened oval, minimal light aqua rim and small inner blue edge. Same central registration, landscape 2:1. Wider clean continuous oval rippling outward, at 70% canvas width. No water fill or shadow, canvas fully transparent around and INSIDE the ring."
+      ],
+      [
+        "halka-2",
+        400,
+        200,
+        "obj",
+        "A single transparent animated cel of a small water ripple on a calm turquoise river, top-down foreshortened oval, minimal light aqua rim and small inner blue edge. Same central registration, landscape 2:1. Widely spreading near-edge oval broken into four soft tapered arcs, dissipating. No water fill or shadow, canvas fully transparent around and INSIDE the ring."
+      ],
+      [
+        "sehpa",
+        360,
+        420,
+        "obj",
+        "One little wooden easel with a square EMPTY ivory framed panel on it, flat front view. Panel continuous pale paper, inner blank area x16.67–83.33% and y9.5–66.67%; A-frame wooden feet reach bottom, peach wood, brown side color and thin black contour. No pencil, no postcard, no markings; centered tall transparent element."
+      ],
+      [
+        "lokum",
+        500,
+        600,
+        "sheet",
+        "One single precisely arranged 4 columns × 2 rows animation character sheet, eight distinct successive full body poses in row-major order. Lokum toddler puppy in approved picture, wear identical pink dress and collar. Faces camera-right in each frame. Hop across river in unobstructed side three-quarter view. 1 stand waiting; 2 start knee flex; 3 deep squash crouch; 4 push off toes; 5 both feet lifted tuck; 6 clear happy peak arms out legs separated; 7 both feet touch down with knees soft; 8 settle standing. Full silhouette in each cell, equal head size, constant camera, no graphic demarcations or ground, no stones or scenery."
+      ],
+      [
+        "kart",
+        840,
+        560,
+        "card",
+        "Landscape 3:2 game menu illustration on solid pale peach. Match reference menu card framing and puppy model. A turquoise stream crosses center with TWO inviting stepping stones; on first stone exact black lower-case Turkish syllable \"el\"; on second \"ma\". Lokum in pink dress leaps on first stone, destination on the right a little wooden easel with drawing of a bright red apple. No other letters, no title, no GUI. Large graphic silhouettes, tidy composition."
+      ]
+    ]
+  },
+  "characterRefs": {
+    "dede-elma": "dede",
+    "bulut-balon": "bulut",
+    "lokum-balon": "lokum",
+    "lokomotif-mino": "mino",
+    "lokum": "lokum",
+    "babaanne-kurabiye": "babaanne",
+    "anne-firin": "anne",
+    "asansor-lokum": "lokum",
+    "kino-sekil": "kino",
+    "mino-fener": "mino",
+    "zipzip-bayrak": "zipzip",
+    "anne-surahi": "anne",
+    "babaanne-yarim": "babaanne",
+    "kino-gun": "kino"
+  },
+  "dependencies": {
+    "kagit-fener-mavi": "kagit-fener-sari",
+    "bayrak-yesil-ucgen": "bayrak-kirmizi-ucgen",
+    "bardak-yarim": "bardak-bos",
+    "bardak-dolu": "bardak-bos",
+    "surahi-yarim": "surahi-dolu",
+    "surahi-bos": "surahi-dolu",
+    "surahi-egik": "surahi-dolu",
+    "kart-kardan-adam": "kart-kar-yagiyor",
+    "kart-eriyor": "kart-kardan-adam",
+    "elma-sol": "elma-butun",
+    "elma-sag": "elma-butun",
+    "armut-sol": "armut-butun",
+    "armut-sag": "armut-butun",
+    "ekmek-sol": "ekmek-butun",
+    "ekmek-sag": "ekmek-butun",
+    "simit-sol": "simit-butun",
+    "simit-sag": "simit-butun"
+  }
+}

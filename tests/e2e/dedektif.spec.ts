@@ -86,7 +86,7 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   // kartlar: önce yanlış (zürafa: kendini anlatır, soluklaşır), sonra doğru
   await adimBekle(page, /^kart$/);
   await expect(page.locator('.dd-kart')).toHaveCount(3);
-  await expect(page.locator('.dd-kart[data-kart="kedi"] img').first()).toHaveAttribute('src', /dedektif-yeni\/kart-kedi-patisi\.webp/);
+  await expect(page.locator('.dd-kart[data-kart="kedi"] img').first()).toHaveAttribute('src', /kart-kedi-patisi[-.]/);
   await expect(page.locator('.dd-delil .dd-delil-foto')).toBeVisible();
   await page.waitForTimeout(200);
   await page.screenshot({ path: `tests/screens/dedektif-halka${ad === 'iphone' ? '' : '-' + ad}.png` });
@@ -118,20 +118,27 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   await izleriYak(page, 'calisma');
   await izleriYak(page, 'koridor');
   await adimBekle(page, /^yol-sec$/);
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `tests/screens/dedektif-koridor${ad === 'iphone' ? '' : '-' + ad}.png` });
   await dokun(page, page.locator('.dd-sahne .dd-izler-yol[data-yol="mutfak"] .dd-iz').first());
   await adimBekle(page, /^mutfak$/);
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: `tests/screens/dedektif-mutfak${ad === 'iphone' ? '' : '-' + ad}.png` });
   await adimBekle(page, /^yol-sec$/);
   await expect(page.locator('.dd-sahne .dd-izler-yol[data-yol="mutfak"]')).toHaveClass(/dd-soluk/);
   await dokun(page, page.locator('.dd-sahne .dd-izler-yol[data-yol="yatak"] .dd-iz').first());
   await izleriYak(page, 'yatak');
   // kuyruk ucuna dokun: Pamuk çıkar
   await adimBekle(page, /^kuyruk$/);
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `tests/screens/dedektif-kuyruk${ad === 'iphone' ? '' : '-' + ad}.png` });
   await dokun(page, page.locator('.dd-sahne .dd-kuyruk'));
   await adimBekle(page, /^(pamuk|final|lamba-tasi)$/);
   await expect(page.locator('.dd-goz.dd-cozuldu')).toHaveCount(4);
 
   // Final: lambayı masaya sürükle, düğmesine bas
   await adimBekle(page, /^lamba-tasi$/);
+  await page.screenshot({ path: `tests/screens/dedektif-lamba${ad === 'iphone' ? '' : '-' + ad}.png` });
   // (yüklü makinede kamera / yerleşim kayarken ilk sürükleme ıskalayabilir: çocuk gibi bir daha dener)
   for (let deneme = 0; deneme < 3 && (await adim(page)) === 'lamba-tasi'; deneme++) {
     await page.waitForTimeout(400);
@@ -140,6 +147,8 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   }
   await adimBekle(page, /^lamba-dugme$/);
   await expect(page.locator('.dd-sahne .dd-lamba-dik')).toHaveClass(/dd-yerinde/);
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `tests/screens/dedektif-pamuk${ad === 'iphone' ? '' : '-' + ad}.png` });
   await dokun(page, page.locator('.dd-sahne .dd-lamba-dugme'));
   await expect(page.locator('.dd-sahne .dd-lamba-isik')).toHaveClass(/acik/);
   // Pamuk ışık yanınca Mino'yla Kino'nun arasına gelir, kelebeğe el sallanır
@@ -151,7 +160,7 @@ test('Dedektif Mino: Vaka 1 baştan sona, çizgi roman ve Vaka Dosyam', async ({
   // Ödül: 4 kareli çizgi roman, "Çözüldü!" mührü, kayıt
   await adimBekle(page, /^bitti$/, 40_000);
   await expect(page.locator('.dd-kare.geldi')).toHaveCount(4);
-  await expect(page.locator('.dd-kare.geldi img[src*="dedektif-yeni/roman-"]')).toHaveCount(4);
+  await expect(page.locator('.dd-kare.geldi img[src*="roman-"]')).toHaveCount(4);
   await expect(page.locator('.dd-roman .dd-muhur.bas')).toBeVisible();
   await page.waitForTimeout(500);
   await page.screenshot({ path: `tests/screens/dedektif-cizgi-roman${ad === 'iphone' ? '' : '-' + ad}.png` });

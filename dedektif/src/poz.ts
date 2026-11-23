@@ -26,8 +26,43 @@ export type PozAd =
   | 'kino-uzgun'
   | 'kino-sarilma'
   | 'ordek-kulucka'
-  | 'ordek-atki';
-export const POZLAR: PozAd[] = ['kino-kayma', 'kino-utanc', 'mino-rahat', 'pamuk-surunme', 'pamuk-ozur', 'pamuk-el-salla', 'kino-uzgun', 'kino-sarilma', 'ordek-kulucka', 'ordek-atki'];
+  | 'ordek-atki'
+  // yeni çizgi (assets/dedektif-yeni, Astra 2026-11-16): karakterlerin duruşları; iskelet yerine hep bunlar görünür
+  | 'mino-dedektif'
+  | 'mino-saskin'
+  | 'mino-fisilti'
+  | 'mino-dusunuyor'
+  | 'mino-el-salla'
+  | 'kino-merakli'
+  | 'kino-tahmin'
+  | 'kino-koklama'
+  // sola dönük eşleri (Astra; Kino ekranın sağındayken baktığı / gösterdiği şey solunda)
+  | 'kino-tahmin-sol'
+  | 'kino-koklama-sol'
+  | 'kino-sevinc'
+  | 'pamuk-onden';
+export const POZLAR: PozAd[] = [
+  'kino-kayma',
+  'kino-utanc',
+  'mino-rahat',
+  'pamuk-surunme',
+  'pamuk-ozur',
+  'pamuk-el-salla',
+  'kino-uzgun',
+  'kino-sarilma',
+  'ordek-kulucka',
+  'ordek-atki',
+  'mino-dedektif',
+  'mino-saskin',
+  'mino-fisilti',
+  'mino-dusunuyor',
+  'mino-el-salla',
+  'kino-merakli',
+  'kino-tahmin',
+  'kino-koklama',
+  'kino-sevinc',
+  'pamuk-onden',
+];
 
 export interface PozOlcu {
   /** resmin görünen yüksekliği / karakterin normal görünen boyu (baş aynı büyüklükte kalsın) */
@@ -54,6 +89,19 @@ export const POZ_OLCU: Record<PozAd, PozOlcu> = {
   // yuvadaki ördek: resim yuvayla birlikte; ördek oturduğu için baş ayaktakinden alçakta
   'ordek-kulucka': { boy: 1.0 },
   'ordek-atki': { boy: 1.0 },
+  // yeni çizgi: resim kenardan kenara karakter; boy karakterin normal boyu (şapka dahil)
+  'mino-dedektif': { boy: 1.04 },
+  'mino-saskin': { boy: 1.04 },
+  'mino-fisilti': { boy: 1.04 },
+  'mino-dusunuyor': { boy: 1.04 },
+  'mino-el-salla': { boy: 1.04 },
+  'kino-merakli': { boy: 1.0 },
+  'kino-tahmin': { boy: 1.0 },
+  'kino-koklama': { boy: 0.62, x: 0.05 },
+  'kino-tahmin-sol': { boy: 1.0 },
+  'kino-koklama-sol': { boy: 0.62, x: -0.05 },
+  'kino-sevinc': { boy: 1.02 },
+  'pamuk-onden': { boy: 1.0 },
 };
 
 /** resimlerin çevresindeki şeffaf pay (gemini-esya.cjs: 6 px) */
@@ -125,6 +173,13 @@ export function pozlariYukle(): void {
  */
 export class PozYuvasi {
   private aktif: { ad: PozAd; el: HTMLElement } | null = null;
+  /**
+   * Resmi henüz çizilmeye hazır olmayan (çözülüyor) poz ve onun yerine geçeceği önceki görünüm (poz ya da null: iskelet).
+   * Hazır olana dek önceki görünüm ekranda kalır: yavaş cihazda karakter bir an kaybolmaz.
+   */
+  private bekleyen: { el: HTMLElement; eski: { ad: PozAd; el: HTMLElement } | null } | null = null;
+  /** Duruş: poz bırakılınca iskelete değil buna dönülür (yeni çizgide iskelet hiç görünmez) */
+  private taban: PozAd | null = null;
   /** poz resminin üstüne binen ek (Mino'nun dedektif şapkası): ad → eleman */
   ekler: Partial<Record<PozAd, () => HTMLElement | null>> = {};
 
@@ -180,7 +235,8 @@ export class PozYuvasi {
   goster(ad: PozAd): Promise<void> {
     const url = resim(`poz-${ad}`);
     if (!url || this.aktif?.ad === ad) return Promise.resolve();
-    const eski = this.aktif;
+    // önceki poz daha ekrana gelmeden yenisi istendi: o hiç görünmeden kalkar, ekrandaki görünüm yerinde kalır
+    const eski = this.bekleyeniBirak() ?? this.aktif;
     const el = this.kur(ad, url);
     this.aktif = { ad, el };
     this.kutu.append(el);
@@ -190,18 +246,55 @@ export class PozYuvasi {
       this.rigGizle(true);
       return Promise.resolve();
     }
-    if (eski) cik(eski.el, true);
-    else {
-      this.rig.style.transformOrigin = ayak;
-      this.rig.getAnimations().forEach((x) => x.cancel());
-      cik(this.rig, false);
-    }
-    return gir(el, 'both');
+    const gecis = () => {
+      if (eski) cik(eski.el, true);
+      else {
+        this.rig.style.transformOrigin = ayak;
+        this.rig.getAnimations().forEach((x) => x.cancel());
+        cik(this.rig, false);
+      }
+      return gir(el, 'both');
+    };
+    const img = el.querySelector('img');
+    if (!img) return gecis();
+    // resim çizilmeye hazır olana dek (önceden yüklendiyse hemen; en çok 500 ms) önceki görünüm kalır, yeni poz görünmez bekler
+    el.style.opacity = '0';
+    this.bekleyen = { el, eski };
+    const bekle = new Promise<void>((tamam) => window.setTimeout(tamam, 500));
+    return Promise.race([img.decode(), bekle])
+      .catch(() => undefined)
+      .then(() => {
+        if (this.bekleyen?.el !== el) return;
+        this.bekleyen = null;
+        el.style.opacity = '';
+        return gecis();
+      });
   }
 
-  /** Pozu kaldırır, iskelet esneyerek geri gelir */
+  /** Bekleyen (henüz görünmemiş) pozu kaldırır; ekranda kalan önceki görünümü döndürür (iskeletse null) */
+  private bekleyeniBirak(): { ad: PozAd; el: HTMLElement } | null | undefined {
+    const b = this.bekleyen;
+    if (!b || this.aktif?.el !== b.el) return undefined;
+    this.bekleyen = null;
+    b.el.remove();
+    this.aktif = b.eski;
+    return b.eski;
+  }
+
+  /** Duruşu kurar: karakter iskelet yerine hep bu resimle görünür (resim yoksa iskelet kalır) */
+  durus(ad: PozAd): Promise<void> {
+    if (!resim(`poz-${ad}`)) return Promise.resolve();
+    this.taban = ad;
+    return this.goster(ad);
+  }
+
+  /** Pozu kaldırır: duruş varsa ona, yoksa iskelete esneyerek döner */
   birak(): Promise<void> {
+    const onceki = this.bekleyeniBirak();
+    // bekleyen poz hiç görünmedi: iskelet zaten ekranda (taban yoksa yapacak bir şey yok)
+    if (onceki === null && !this.taban) return Promise.resolve();
     const a = this.aktif;
+    if (this.taban) return a?.ad === this.taban ? Promise.resolve() : this.goster(this.taban);
     if (!a) return Promise.resolve();
     this.aktif = null;
     if (AZ_HAREKET) {
@@ -216,11 +309,24 @@ export class PozYuvasi {
     });
   }
 
-  /** Hemen kaldırır (ekran kapanırken) */
+  /** Hemen kaldırır (ekran kapanırken); duruş varsa hemen ona döner */
   temizle() {
+    if (this.bekleyen) {
+      this.bekleyen.eski?.el.remove();
+      this.bekleyen = null;
+    }
     this.aktif?.el.remove();
     this.aktif = null;
     this.rigGizle(false);
+    if (this.taban) {
+      const url = resim(`poz-${this.taban}`);
+      if (url) {
+        const el = this.kur(this.taban, url);
+        this.aktif = { ad: this.taban, el };
+        this.kutu.append(el);
+        this.rigGizle(true);
+      }
+    }
   }
 
   private rigGizle(gizle: boolean) {

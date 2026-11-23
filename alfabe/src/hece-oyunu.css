@@ -13,7 +13,7 @@
 .ho-tepsi{height:clamp(62px,13vmin,110px);min-width:0;width:100%;display:grid;place-items:center;align-self:end}
 .ho-alkis{display:grid;place-items:center;width:clamp(90px,15vmin,140px);height:100%;max-height:95px;padding:3px 15px;border-radius:24px;border:2px solid var(--ho-murekkep);background:#ffe2a2;box-shadow:0 3px 0 #b5884a}.ho-alkis img{height:100%;width:100%;min-height:0;object-fit:contain;pointer-events:none}.ho-alkis:active{transform:translateY(2px);box-shadow:none}
 .ho-taslar{flex-wrap:wrap}.ho-tas{min-width:clamp(52px,10vmin,110px);height:clamp(46px,9vmin,83px);padding:0 .32em;border:2px solid #3e594d;border-bottom-width:4px;border-radius:clamp(11px,1.8vmin,18px);background:#dbebda;font-size:clamp(26px,5.3vmin,50px)!important;font-weight:600!important;line-height:1}
-.ho-tas:disabled{visibility:hidden}.ho-ileri:enabled{background:#ffdb95}.ho-tam strong{font-size:clamp(37px,7.6vmin,75px);line-height:1;letter-spacing:-.02em;color:#225f4b}.ho-yeniden{animation:ho-don .3s ease-out}
+.ho-tas[data-alindi=evet]{visibility:hidden}.ho-ileri:enabled{background:#ffdb95}.ho-tam strong{font-size:clamp(37px,7.6vmin,75px);line-height:1;letter-spacing:-.02em;color:#225f4b}.ho-yeniden{animation:ho-don .3s ease-out}
 .ho-durum{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .ho-yuva.ho-ipucu{color:#365d4d;border-bottom-style:dashed;font-weight:500}
 .ho-tas.ho-beklenen{border-style:dashed}
@@ -54,3 +54,6 @@
  .ho[data-asama=sirala] .ho-ders{overflow-y:auto;overscroll-behavior:contain;scroll-padding:10px;align-content:start}
  .ho .ho-ogretmen img{object-position:center 68%}
 }
+/* Sonuçta çocuk beklerse ileri düğmesi hafifçe sallanır. */
+@keyframes ho-durt{0%,100%{transform:none}20%{transform:translateY(-5px) rotate(-3deg)}45%{transform:translateY(0) rotate(3deg)}70%{transform:translateY(-2px) rotate(-1.5deg)}}
+.ho .ho-durt{animation:ho-durt .7s ease-in-out 2}

@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test.beforeEach(async({page})=>{
   await page.routeWebSocket(url=>url.port==='5173',()=>{});
@@ -27,9 +29,18 @@ for(const [kim,menu,ad,meyve] of [
     await page.getByRole('button',{name:'Restoran salonuna dön'}).tap();
     await expect(oyuncu).toHaveAttribute('data-poz','otur');
     await page.getByRole('button',{name:'Siparişi al ve mutfağa geç'}).tap();
+    // Müşterinin ağzı yudum sırasında kısa bir an açılır; yüklü makinede bu anı kaçırmamak için açıldığı an kayda geçer.
+    await page.evaluate(kim=>{
+      const w=window as unknown as {agizAcildi?:boolean};w.agizAcildi=false;
+      const bak=(e:Element)=>{if(e instanceof HTMLElement&&e.matches('.salon-figur[data-karakter="'+kim+'"]')&&e.dataset.yuz==='acik')w.agizAcildi=true;};
+      new MutationObserver(liste=>{for(const m of liste){
+        if(m.type==='attributes')bak(m.target as Element);
+        else m.addedNodes.forEach(n=>{if(n instanceof Element){bak(n);n.querySelectorAll('.salon-figur').forEach(bak);}});
+      }}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-yuz']});
+    },kim);
     await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
     await page.getByRole('button',{name:'Eksik tepsiyi şimdi sun'}).tap();
-    await expect(oyuncu).toHaveAttribute('data-yuz','acik');
+    await expect.poll(()=>page.evaluate(()=>(window as unknown as {agizAcildi?:boolean}).agizAcildi)).toBe(true);
     await expect(page.locator('.restoran-lokma')).toHaveCount(0);
     await expect(page.locator('.tepsi-yuva[data-parca=icecek]')).toHaveAttribute('data-lokma-adedi','1');
     await expect(page.locator('.servis-jetonu')).toHaveAccessibleName(/3 jeton/);

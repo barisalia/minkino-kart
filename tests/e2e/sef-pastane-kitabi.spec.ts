@@ -1,7 +1,11 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
+// Resimli tarif kitabının pastane bölümü 16 Kasım'da (c3d9d09a) kaldırıldı. Tatlı tarifleri Tatlı Atölyesi vitrininde:
+// kilitli tarif kapalı kartta bekler, açılmış tarif "Hazırla" ile kendi tezgâhında pişer. İkisi de jeton harcamaz.
 for(const acik of [false,true]){
-  test('Resimli pastane tarifleri ve '+(acik?'açılmış tarifte pişirme':'kilitli tarifte vitrin'),async({page})=>{
+  test('Tatlı Atölyesi vitrininde '+(acik?'açılmış tarif pişirilir':'kilitli tarif bekler'),async({page})=>{
     await page.setViewportSize(acik?{width:844,height:390}:{width:568,height:320});
     await page.goto('./sef/?test=1');
     await page.getByRole('button',{name:'Sesi kapat'}).tap();
@@ -13,19 +17,18 @@ for(const acik of [false,true]){
       });
       await page.reload();
     }
-    await page.getByRole('button',{name:'Resimli tarif kitabı'}).tap();
-    await page.getByRole('button',{name:'Pastane tariflerini aç'}).press('Enter');
-    await expect(page.getByRole('button',{name:'Pastane tariflerini aç'})).toBeFocused();
-    await page.getByRole('button',{name:'Çilekli Dondurma tarifini incele'}).tap();
-    for(let i=0;i<3;i++){
-      const r=page.locator('.kitap-resim>img');
-      await r.evaluate(async el=>{await (el as HTMLImageElement).decode();});
-      await expect(r).toHaveAttribute('src',new RegExp('dondurma-'+(i+1)));
-      if(i<2)await page.getByRole('button',{name:'Sonraki adım'}).tap();
+    await page.getByRole('button',{name:/^Tatlı atölyesini aç/}).tap();
+    const kart=page.getByRole('button',{name:/^Çilekli Dondurma ·/});
+    if(acik){
+      await expect(page.locator('.tatli-dukkan')).toHaveAttribute('data-pastane','acik');
+      await expect(kart).toHaveAccessibleName(/Hazırla/);
+      await kart.tap();
+      await expect(page.locator('.tatli-tezgahi')).toHaveAttribute('data-tatli','dondurma');
+    }else{
+      await expect(page.locator('.tatli-dukkan')).toHaveAttribute('data-pastane','kapali');
+      await expect(kart).toBeDisabled();
+      await expect(kart).toHaveAccessibleName(/Önce Kalıplı Kurabiye açılmalı/);
     }
-    await page.getByRole('button',{name:acik?'Bu yemeği hazırla':'Pastanede tarif kilidini gör'}).tap();
-    if(acik)await expect(page.locator('.tatli-tezgahi')).toHaveAttribute('data-tatli','dondurma');
-    else await expect(page.locator('.tatli-dukkan')).toHaveAttribute('data-pastane','kapali');
     expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.jeton)).toBe(acik?12:0);
   });
 }

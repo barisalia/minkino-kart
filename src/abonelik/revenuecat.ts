@@ -111,5 +111,17 @@ export async function revenueCatSaglayici(p: Platform, anahtar: string): Promise
       const { customerInfo } = await Purchases.getCustomerInfo();
       return premiumVar(customerInfo);
     },
+    ...(p === 'ios'
+      ? {
+          async kodKullan(): Promise<'acildi' | 'hata'> {
+            try {
+              await Purchases.presentCodeRedemptionSheet();
+              return 'acildi';
+            } catch {
+              return 'hata';
+            }
+          },
+        }
+      : {}),
   };
 }

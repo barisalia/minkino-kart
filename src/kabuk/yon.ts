@@ -77,7 +77,7 @@ export function telefonMu(en: number, boy: number): boolean {
 }
 
 /** Telefon oyunları ve yatay oynatıcılar. */
-export const YATAY_SAYFALAR: readonly string[] = ['matematik', 'alfabe', 'ingilizce', 'kartlar', 'canlan', 'kino-ile-sen-sec', 'hazirlik', 'pati', 'pati-yeni', 'sef', 'izle', 'otobus', 'pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus', 'restoran'];
+export const YATAY_SAYFALAR: readonly string[] = ['matematik', 'alfabe', 'ingilizce', 'deney', 'kartlar', 'canlan', 'kino-ile-sen-sec', 'hazirlik', 'pati', 'pati-yeni', 'sef', 'izle', 'otobus', 'pasta', 'pazar', 'macera', 'dedektif', 'film', 'giysin', 'kino-otobus', 'restoran'];
 
 /** Adres yolundan telefon yönünü seçer. */
 export function sayfaYonu(yol: string): Yon {

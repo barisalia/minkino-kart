@@ -13,21 +13,23 @@ export type Rnd = () => number;
 export type Tur = 'tek' | 'renk' | 'sayi' | 'iki' | 'ayir' | 'toplama' | 'ode' | 'terazi';
 export type Grup = 'meyve' | 'sebze';
 
-export const MUSTERI_SAYISI = 5;
 /** Bozuk paralar tezgâhta ürün gibi durur: 'para-1', 'para-5' */
 export const PARA = { 'para-1': 1, 'para-5': 5 } as const;
 export const paraMi = (id: string): id is keyof typeof PARA => id in PARA;
 
 /**
- * Yaşa göre 5 müşterinin istek türleri: 3 yaş tek ürün, 4 renk + sayma, 5 iki ürün + ayırma + terazi,
- * 6 toplama + para + terazi (ortadaki müşteri teraziyle gelir).
+ * Yaşa göre müşterilerin istek türleri. Barış'ın ölçüsü (19 Kasım 2026: "aşırı tekrar fena sıkar"): bir oyun 3–4
+ * soru, aynı tür en çok iki kez ve arka arkaya gelmez. 2–3 yaş üç müşteri, adıyla bir ürün; 4 yaş renk + sayma;
+ * 5 iki ürün + ayırma + terazi; 6 toplama + para + terazi (üçüncü müşteri teraziyle gelir). Eskiden beş müşteriydi.
  */
 export const PLAN: Record<Yas, Tur[]> = {
-  3: ['tek', 'tek', 'tek', 'tek', 'tek'],
-  4: ['sayi', 'renk', 'sayi', 'renk', 'sayi'],
-  5: ['iki', 'ayir', 'terazi', 'ayir', 'iki'],
-  6: ['toplama', 'ode', 'terazi', 'ode', 'toplama'],
+  3: ['tek', 'tek', 'tek'],
+  4: ['sayi', 'renk', 'sayi', 'renk'],
+  5: ['iki', 'ayir', 'terazi', 'iki'],
+  6: ['toplama', 'ode', 'terazi', 'ode'],
 };
+/** Bir turda kaç müşteri gelir (2–3 yaş 3, büyükler 4) */
+export const musteriSayisi = (yas: Yas) => PLAN[yas].length;
 
 /**
  * Terazi ağırlıkları (birim). Küçük meyve/sebze 1; ananas 2, karpuz 3. Çocuk sayıyı değil dengeyi arar:
@@ -110,22 +112,37 @@ function tuzak(u: string, havuz: readonly string[], rnd: Rnd, haric: string[] = 
 const tekrarla = (id: string, n: number) => Array.from({ length: n }, () => id);
 /** İkinci cümle parçası küçük harfle başlasın (yazıda) */
 const kucukBas = (s: string) => s.charAt(0).toLocaleLowerCase('tr') + s.slice(1);
+/** Ürünü adıyla isteyen türler ("Bir elma ver.", "Üç muz ver." …): bir turda aynı ürün yinelenmez */
+const ADLI: readonly Tur[] = ['tek', 'sayi', 'iki', 'toplama'];
 
-/** zorla: test ve gösterim için belli bir istek türü */
-export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?: Tur): Istek {
-  const tur = zorla ?? PLAN[yas][sira % MUSTERI_SAYISI];
+/**
+ * zorla: test ve gösterim için belli bir istek türü. once: bu turda önceki müşterilerin istekleri; istenen ürün,
+ * renk, sayı ve tutar yinelenmez (seçenek kaldıkça), ikinci ayırma öteki grubu ister (çeşit; aynı cümle iki kez
+ * söylenmesin).
+ */
+export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?: Tur, once: readonly Istek[] = []): Istek {
+  const tur = zorla ?? PLAN[yas][sira % PLAN[yas].length];
   const tum = [...new Set([...URUN.meyve, ...URUN.sebze])];
+  // adıyla istenen ürünler (ayırmadaki grup ve renkteki örnek sayılmaz: onlar ürünü adıyla istemez)
+  const istenmis = new Set(once.filter((o) => ADLI.includes(o.tur)).flatMap((o) => Object.keys(o.istenen)));
+  /** havuzun bu turda istenmemiş olanları (hepsi istendiyse havuzun tamamı) */
+  const yeni = <T>(havuz: readonly T[], eski: (x: T) => boolean = (x) => istenmis.has(String(x))): T[] => {
+    const k = havuz.filter((x) => !eski(x));
+    return k.length ? k : havuz.slice();
+  };
+  const oncekiler = (t: Tur) => once.filter((o) => o.tur === t);
   switch (tur) {
     case 'tek': {
-      const u = sec(URUN.say, rnd);
+      const u = sec(yeni(URUN.say), rnd);
       const s = doldur(I.tek, { urun: u });
       // biri istenenle aynı renkte tuzak (resme dikkatle bakmak gerekir)
       const t = tuzak(u, tum, rnd);
       return { tur, istenen: { [u]: 1 }, tezgah: karistir([u, t, ...farkli(tum, 1, rnd, [u, t])], rnd), soz: [s], yazi: s, dugmeli: false };
     }
     case 'renk': {
-      const renk = sec(Object.keys(RENKLER), rnd);
-      const u = sec(RENKLER[renk], rnd);
+      const eskiRenk = new Set(oncekiler('renk').map((o) => o.renk));
+      const renk = sec(yeni(Object.keys(RENKLER), (r) => eskiRenk.has(r)), rnd);
+      const u = sec(yeni(RENKLER[renk]), rnd);
       // çeldiriciler: renkleri hem istenenden hem birbirinden farklı
       const digerRenk = farkli(Object.keys(RENKLER), 2, rnd, [renk]);
       const celdirici = digerRenk.map((r) => sec(RENKLER[r], rnd));
@@ -133,14 +150,16 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?
       return { tur, istenen: { [u]: 1 }, renk, tezgah: karistir([u, ...celdirici], rnd), soz: [s], yazi: s, dugmeli: false };
     }
     case 'sayi': {
-      const u = sec(URUN.say, rnd);
-      const n = arasi(1, 5, rnd);
+      const u = sec(yeni(URUN.say), rnd);
+      const eskiN = new Set(oncekiler('sayi').map((o) => Object.values(o.istenen)[0]));
+      const n = sec(yeni([1, 2, 3, 4, 5], (x) => eskiN.has(x)), rnd);
       const s = doldur(I.sayi, { urun: u, sayi: n });
       const tezgah = [...tekrarla(u, Math.min(n + 2, 7)), ...farkli(tum, 2, rnd, [u])];
       return { tur, istenen: { [u]: n }, tezgah: karistir(tezgah, rnd), soz: [s], yazi: s, dugmeli: true };
     }
     case 'iki': {
-      const [a, b] = farkli(URUN.say, 2, rnd);
+      const havuz = yeni(URUN.say);
+      const [a, b] = farkli(havuz.length >= 2 ? havuz : URUN.say, 2, rnd);
       const na = arasi(1, 3, rnd);
       const nb = arasi(1, 2, rnd);
       const s1 = doldur(I.iki, { urun: a, sayi: na });
@@ -149,14 +168,16 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?
       return { tur, istenen: { [a]: na, [b]: nb }, tezgah: karistir(tezgah, rnd), soz: [s1, s2], yazi: `${s1} ${kucukBas(s2)}`, dugmeli: true, resimsiz: yas >= 5 };
     }
     case 'ayir': {
-      const grup: Grup = rnd() < 0.5 ? 'meyve' : 'sebze';
+      // ikinci ayırma öteki grubu ister ("Meyveleri…" ardından "Sebzeleri…")
+      const eskiGrup = oncekiler('ayir').at(-1)?.grup;
+      const grup: Grup = eskiGrup ? (eskiGrup === 'meyve' ? 'sebze' : 'meyve') : rnd() < 0.5 ? 'meyve' : 'sebze';
       const istenen = farkli(URUN[grup], 3, rnd);
       const diger = farkli(URUN[grup === 'meyve' ? 'sebze' : 'meyve'], 3, rnd);
       const s = I[grup];
       return { tur, istenen: Object.fromEntries(istenen.map((u) => [u, 1])), grup, tezgah: karistir([...istenen, ...diger], rnd), soz: [s], yazi: s, dugmeli: false };
     }
     case 'toplama': {
-      const u = sec(URUN.say, rnd);
+      const u = sec(yeni(URUN.say), rnd);
       const bende = arasi(1, 3, rnd);
       const daha = arasi(1, Math.min(3, 5 - bende), rnd);
       const s1 = doldur(I.bende, { urun: u, sayi: bende });
@@ -180,7 +201,8 @@ export function istekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, zorla?
       return { tur, istenen: {}, sol, tezgah: karistir(tezgah, rnd), soz: [s], yazi: s, dugmeli: false };
     }
     case 'ode': {
-      const lira = arasi(2, 9, rnd);
+      const eskiLira = new Set(oncekiler('ode').map((o) => o.lira));
+      const lira = sec(yeni([2, 3, 4, 5, 6, 7, 8, 9], (x) => eskiLira.has(x)), rnd);
       const s = doldur(I.ode, { sayi: lira });
       // 5 tane 1 lira + 2 tane 5 lira: 2..9 arası her tutar yapılabilir
       return { tur, istenen: {}, lira, tezgah: [...tekrarla('para-5', 2), ...tekrarla('para-1', 5)], soz: [s], yazi: s, dugmeli: true };
@@ -235,7 +257,7 @@ export function pazarCumleleri(): string[] {
   for (let n = 1; n <= 3; n++) c.push(doldur(I.daha, { sayi: n }));
   for (let n = 2; n <= 9; n++) c.push(doldur(I.ode, { sayi: n }));
   c.push(I.meyve, I.sebze, I.terazi);
-  c.push(P.hosgeldin, P.basla, ...P.dogru, ...P.yanlis, P.az, P.fazla, P.meyve_degil, P.sebze_degil, P.yardim, P.sayalim, P.surukle, P.senlik, P.senlik_dokun);
+  c.push(P.hosgeldin, P.basla, ...P.dogru, ...P.yanlis, P.az, P.fazla, P.meyve_degil, P.sebze_degil, P.sayalim, P.surukle, P.senlik, P.senlik_dokun);
   // Meyve Suyu Köşesi (yan dal)
   c.push(...meyveSuyuCumleleri());
   // Tart Bakalım (yan dal)

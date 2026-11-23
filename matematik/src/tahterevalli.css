@@ -1,0 +1,48 @@
+/* Ölçü tezgâhı · Bulut'un Tahterevalli Dengesi (tahterevalli.ts). Dünya 1920 × 1080 (ceren-ders.css → .cd-dunya). Astra M13:
+   yer çizgisi y = 930; mesnet 360 × 300, tepesi (dönme noktası) dünyada (960, 660); tahta 1500 × 120, ortası dönme noktasında,
+   üst yüzü tahtanın y = 30'u. Tahtadaki her şey tahtanın içinde döner. Ölçek: nesneler ve karakterler çizim tuvalinin 0,6'sı,
+   küp 0,75'i (112 px; telefonda en az 44 px). Dokunulan her şey dünyada x %51–%85, y %8–%84 (dikey iPad ve telefon). */
+
+.tv-dunya .cd-iskelet { display: grid; place-items: center; border: 2px dashed #5a3d1e; border-radius: 12px; background: #fff8e6cc;
+  font: 700 max(9px, 1.1cqw)/1.1 system-ui; color: #3a2614; text-align: center; }
+
+.tv-mesnet { position: absolute; left: 40.625%; top: 58.333%; width: 18.75%; height: 27.778%; object-fit: contain; z-index: 2; }
+
+/* Tahta: dönme noktası kutunun ortası. */
+.tv-kol { position: absolute; left: 10.938%; top: 55.556%; width: 78.125%; height: 11.111%; z-index: 3; transform-origin: 50% 50%; will-change: transform; }
+.tv-govde { position: absolute; inset: 0; }
+.tv-govde-resim { width: 100%; height: 100%; object-fit: fill; display: block; }
+.tv-govde > .cd-iskelet { width: 100%; height: 100%; background: #c98b4f; }
+/* Mil: test kipinde tahtanın ortası görünsün. */
+.tv-govde > .cd-iskelet::after { content: ''; position: absolute; left: 50%; top: 50%; width: 1.4cqw; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: #5a3d1e; }
+
+/* Sol uç: balkabağı (380 × 330 → 228 × 198), yanında sulama kabı (260 × 230 → 156 × 138), balkabağının üstünde Bulut. */
+.tv-nesne { position: absolute; z-index: 1; }
+.tv-nesne[data-ad='balkabagi'] { left: 14.4%; top: -140%; width: 15.2%; height: 165%; }
+.tv-nesne[data-ad='sulama-kabi'] { left: 32.133%; top: -90%; width: 10.4%; height: 115%; }
+.tv-nesne-resim { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; }
+.tv-nesne > .cd-iskelet { width: 100%; height: 100%; background: #ffb46a; border-radius: 45% 45% 30% 30%; }
+.tv-nesne[data-ad='sulama-kabi'] > .cd-iskelet { background: #9fd3e8; border-radius: 14px; }
+/* Bulut 420 × 460 → 252 × 276; oturma çizgisi (y 430) balkabağının tepesinin 20 px altında. */
+.tv-bulut { position: absolute; left: 13.6%; top: -338.333%; width: 16.8%; height: 230%; z-index: 2; pointer-events: none; transform-origin: 50% 93%; }
+.tv-poz { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: none; }
+.tv-bulut[data-poz='otur'] > [data-poz='otur'], .tv-bulut[data-poz='kikirda'] > [data-poz='kikirda'],
+.tv-lokum[data-poz='izle'] > [data-poz='izle'], .tv-lokum[data-poz='alkis'] > [data-poz='alkis'] { display: block; }
+.tv-dunya .tv-poz.cd-iskelet { display: none; position: absolute; inset: 0; background: #ffc58f; }
+.tv-bulut[data-poz='otur'] > .cd-iskelet[data-poz='otur'], .tv-bulut[data-poz='kikirda'] > .cd-iskelet[data-poz='kikirda'],
+.tv-lokum[data-poz='izle'] > .cd-iskelet[data-poz='izle'], .tv-lokum[data-poz='alkis'] > .cd-iskelet[data-poz='alkis'] { display: grid; }
+@media (prefers-reduced-motion: no-preference) {
+  .tv-bulut[data-poz='kikirda'] { animation: tv-kikirda .5s ease-in-out infinite alternate; }
+  @keyframes tv-kikirda { from { rotate: -4deg; } to { rotate: 4deg; } }
+}
+
+/* Lokum 420 × 520 → 210 × 260 (0,5); ayak tabanı (y 510) yer çizgisinde, en solda: yatan tahtanın ucu (x ≥ 210) ona değmez. */
+.tv-lokum { position: absolute; left: 0.4%; top: 62.5%; width: 10.9%; height: 24.1%; z-index: 2; pointer-events: none; }
+
+/* Küpler: tahtanın sağ ucunda üçlü sıralar (yerleri kod verir). */
+.tv-yuvalar { position: absolute; inset: 0; z-index: 2; }
+.tv-kup { position: absolute; width: 7.467%; height: 93.333%; padding: 0; border: 0; background: none; cursor: pointer; }
+.tv-yigin { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.tv-yigin-kup { position: absolute; width: 5.833%; height: 10.37%; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; }
+.tv-kup-resim { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+.tv-kup > .cd-iskelet, .tv-yigin-kup > .cd-iskelet { width: 100%; height: 100%; background: #e9c48a; border: 2px solid #5a3d1e; border-radius: 10%; }

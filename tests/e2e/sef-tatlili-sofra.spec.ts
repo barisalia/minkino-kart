@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Tatlılı sofralar kendi tarif kilidini ve bağımsız tatlı ziyaretini korur',async({page})=>{
   test.setTimeout(105_000);
@@ -42,7 +44,9 @@ test('Mino makarna ve kurabiyeyi tek masada teslim alır, yeni günde ödeme ve 
   await page.reload();
   await expect(page.getByRole('button',{name:'Sarı servis tabağı'})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Tatlıyı tepsiye koy'}).click();
-  await expect(page.locator('.tepsi-yuva[data-hazir=true]')).toHaveCount(2);
+  // Tepsi tamamlanınca masa sahnesi açılır: makarna ve kurabiye müşteriye sunulacak tepside.
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.pastane-porsiyonu')).toHaveAttribute('data-tabak','sari');
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).getByRole('img',{name:'Fiyonk Makarna'})).toBeVisible();
   if(process.env.SEF_IKILI_KARE)await page.locator('.tepsi-sahnesi').screenshot({path:process.env.SEF_IKILI_KARE});
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
   const servis=page.locator('.sirali-servis');
@@ -87,7 +91,8 @@ test('Lokum pizzanın yanında vitrinden alınan dondurmayı görür ve aynı po
   await page.reload();
   await page.getByRole('button',{name:'Çilekli Dondurma vitrinden tepsiye al'}).click();
   await page.reload();
-  await expect(page.locator('.tepsi-yuva .pastane-porsiyonu')).toHaveAttribute('data-tabak','beyaz');
+  // Tepsi tamamlanınca masa sahnesi açılır; dondurma müşteriye sunulacak tepside.
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.pastane-porsiyonu')).toHaveAttribute('data-tabak','beyaz');
   await expect(page.locator('.vitrinden-sun')).toHaveCount(0);
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
   const servis=page.locator('.sirali-servis');

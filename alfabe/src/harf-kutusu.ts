@@ -1,8 +1,10 @@
-import { yasGrubu } from './yas-grubu';
 import { dersKaydiniOku, dersKaydiniYaz } from './ders-kaydi';
 import { cerenSustur } from './konusma-dersi';
 import { oyunSesi } from './oyun-sesi';
+import { bosBekleyici } from './bos-bekle';
+import { gunlukYanlis } from './gunluk';
 import { IKON } from '../../src/ui/ikonlar';
+import albumResmi from '../../assets/alfabe/album-dugmesi.webp';
 import { resimTabaklari, type Ders, type Lokma } from './obur-tabaklari';
 import './harf-kutusu.css';
 
@@ -10,8 +12,9 @@ const pozlar=import.meta.glob<string>('../../assets/alfabe/obur/*.webp',{eager:t
 type Ses=(id:string,bitince?:()=>void)=>void;
 type Nokta={x:number;y:number};
 type Asama='oyun'|'son';
-export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>void) {
-  const kayitAnahtari='minkino-obur-resim-v2-'+ders.id;
+/** `sonDugme`: devam yazısı (dersin akışındaki sonraki adım, main.ts → dersGoster); `albumMu`: son adımsa albüm resmi. */
+export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>void,sonDugme='Albüm kartımı gör',albumMu=true) {
+  const kayitAnahtari='minkino-obur-resim-v3-'+ders.id;
   let onceki;
   try{onceki=JSON.parse(dersKaydiniOku(kayitAnahtari)||'null');}catch{/* Eski kayıt okunamazsa yeni tabak açılır. */}
   const tohum=Number.isInteger(onceki?.tohum)?onceki.tohum:Math.floor(Math.random()*4294967296);
@@ -20,7 +23,7 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     durumSayisi=(Math.imul(1664525,durumSayisi)+1013904223)>>>0;
     return durumSayisi/4294967296;
   }
-  const tabaklar=resimTabaklari(ders,yasGrubu,rastgele);
+  const tabaklar=resimTabaklari(ders,rastgele);
   const calisma={sira:0,yenen:new Set<string>()};
   const sakin=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let asama:Asama='oyun', kapali=false, kilit=false, yanlis=0, nesil=0;
@@ -46,9 +49,11 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
   const durum=kok.querySelector<HTMLElement>('.hk-durum')!, devam=kok.querySelector<HTMLButtonElement>('.hk-devam')!, dinle=kok.querySelector<HTMLButtonElement>('.hk-dinle')!;
   const mevcut=()=>tabaklar[calisma.sira];
   const simdi=(n:number)=>!kapali && n===nesil;
-  function konus(ids:string[],bitince?:()=>void) {
+  function konus(ids:string[],bitince?:()=>void,duyuldu?:(id:string)=>void) {
     const token=++sesSirasi;cerenSustur();
-    function cal(i:number){if(kapali||token!==sesSirasi)return;if(i===ids.length){bitince?.();return;}oku(ids[i],()=>cal(i+1));} cal(0);
+    function cal(i:number){if(kapali||token!==sesSirasi)return;if(i===ids.length){bitince?.();return;}
+      oku(ids[i],()=>{if(kapali||token!==sesSirasi)return;duyuldu?.(ids[i]);cal(i+1);});}
+    cal(0);
   }
   function yuz(ad:string){obur.dataset.poz=ad;}
   function goz(x?:number,y?:number) {
@@ -75,9 +80,37 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     if(t.etiket){etiket.textContent=t.etiket;return;}
     etiket.replaceChildren(gosterKart(t.kartlar.find(k=>k.id===t.hedefler[0])!));
   }
-  function tarif(){
-    if(!kilit)konus(asama==='son'?['obur-tur-tamam']:mevcut().sesler);
+  // Genel yönerge ("Dinle. Hangi resmi istiyorum?" / "Göbeğimdeki harfe bak…") bir oyunda bir kez söylenir;
+  // sonraki tabaklarda ve yanlış kartta yalnız istenen sözcük (18 Kasım 2026, Barış: "aynı yönerge bir kez").
+  // Boşta hatırlatma ve dinle düğmesi isteğin tamamını söyler. Yönerge sonuna dek çalınca duyulmuş sayılır:
+  // çocuk ilk tabakta hemen dokunup yönergeyi keserse sonraki tabakta yeniden söylenir.
+  const GENEL_YONERGE=new Set(['obur-kucuk']);
+  let yonergeDuyuldu=false;
+  const yonergeyiSay=(id:string)=>{if(GENEL_YONERGE.has(id))yonergeDuyuldu=true;};
+  const istek=(sesler:string[])=>yonergeDuyuldu?sesler.filter(id=>!GENEL_YONERGE.has(id)):sesler;
+  function tarif(kisa=false){
+    if(kilit)return;
+    bos.dur();
+    if(asama==='son'){konus(['obur-tur-tamam'],bosKur);return;}
+    const sesler=mevcut().sesler;
+    konus(kisa?istek(sesler):sesler,bosKur,yonergeyiSay);
   }
+  // Çocuk bir süre hiçbir kartı vermezse Ceren isteği yineler; ikincisinde doğru kart çerçevelenip
+  // Obur'a doğru uçarak gösterilir. Tur bittiyse "devam" düğmesi hafifçe sallanır.
+  const bos=bosBekleyici(kacinci=>{
+    if(kapali||kilit||surukleme)return;
+    if(asama==='son'){
+      if(!sakin){devam.classList.remove('hk-durt');void devam.offsetWidth;devam.classList.add('hk-durt');}
+      bosKur();return;
+    }
+    if(kacinci===2){
+      const beklenen=mevcut().hedefler.find(h=>!calisma.yenen.has(h));
+      const kart=[...kartlar.children].find(el=>(el as HTMLElement).dataset.kart===beklenen) as HTMLButtonElement|undefined;
+      if(kart&&!kart.disabled){kart.classList.add('hk-ipucu');yoluGoster(kart);}
+    }
+    tarif();
+  });
+  function bosKur(){if(!kapali&&!kilit&&!surukleme)bos.kur();}
   function birak(){
     const eski=surukleme;surukleme=undefined;
     if(eski?.b.hasPointerCapture(eski.id))eski.b.releasePointerCapture(eski.id);
@@ -107,7 +140,9 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
       }
       anlatim.replaceChildren(tepsi);
       durum.textContent='Resim tabağını bitirdin!';
-      ileriDugmesi('Derse devam et');tarif();return;
+      ileriDugmesi(sonDugme);
+      if(albumMu){const album = new Image();album.src=albumResmi;album.alt='';album.height=38;devam.prepend(album);}
+      tarif();return;
     }
     kartlar.dataset.adet=String(t.kartlar.length);
     for(const k of t.kartlar){
@@ -115,7 +150,7 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
       b.append(gosterKart(k));if(calisma.yenen.has(k.id)){b.classList.add('hk-alindi');b.disabled=true;}
       kartlar.append(b);kartKur(b,k);
     }
-    durum.textContent=t.soru;tarif();
+    durum.textContent=t.soru;tarif(true);
   }
   let ornekHareket:Animation|undefined;
   function yoluGoster(kart:HTMLButtonElement){
@@ -144,7 +179,7 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     const t=mevcut(),yenmis=calisma.yenen;
     const beklenen=t.hedefler.find(h=>!yenmis.has(h))!;
     const dogru=t.siraIle?k.id===beklenen:t.hedefler.includes(k.id);
-    kilit=true;sesSirasi++;cerenSustur();birak();const tok=++nesil;
+    kilit=true;bos.dur();if(dogru)bos.sifirla();sesSirasi++;cerenSustur();birak();const tok=++nesil;
     const r=b.getBoundingClientRect(), yuzAlan=obur.getBoundingClientRect(), orta={x:r.left+r.width*.5,y:r.top+r.height*.5};
     const agiz={x:yuzAlan.left+yuzAlan.width*.5,y:yuzAlan.top+yuzAlan.height*.46};
     const ilk=bas??orta, imge=gosterKart(k);imge.classList.add('hk-ucan');
@@ -163,9 +198,12 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
         durum.textContent=k.ad+'!';
         konus([k.ses],sesBitti);
       }else{
-        yanlis++;durum.textContent=k.ad+'. '+t.soru;
-        konus([k.ses,...(yanlis===1?['obur-bir-daha']:[]),...t.sesler],sesBitti);
-        if(yanlis>=(yasGrubu==='2-3'?1:2)) [...kartlar.children].find(el=>(el as HTMLElement).dataset.kart===beklenen)?.classList.add('hk-ipucu');
+        // Yanlış kart: ceza yok, komik "boyoyoy", kart sallanır, Ceren düşünür (cila.ts → cilaVurus('geri')).
+        oyunSesi('geri');
+        yanlis++;gunlukYanlis(ders.id);durum.textContent=k.ad+'. '+t.soru;
+        const ipucu = istek(t.sesler);
+        konus([k.ses,...(yanlis===1?['obur-bir-daha']:[]),...ipucu],sesBitti,yonergeyiSay);
+        if(yanlis>=1) [...kartlar.children].find(el=>(el as HTMLElement).dataset.kart===beklenen)?.classList.add('hk-ipucu');
       }
       function kartiBitir(){
         if(!simdi(tok)||kartBitti)return;
@@ -179,6 +217,7 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
           const ipucu=kartlar.querySelector<HTMLButtonElement>('.hk-ipucu');
           if(!dogru&&ipucu)yoluGoster(ipucu);
           if(dogru){durum.textContent=t.soru; kartlar.querySelector<HTMLButtonElement>('.hk-kart:not(:disabled)')?.focus({preventScroll:true});}
+          bosKur();
         }
       }
       bekleyen=window.setTimeout(()=>{
@@ -199,7 +238,7 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     b.onclick=e=>{if(e.detail&&tikIptal)return;ver(b,k);};
     b.onpointerdown=e=>{
       if(kilit||surukleme||e.button!==0||!e.isPrimary)return;
-      ornekHareket?.cancel();tikIptal=false;surukleme={b,id:e.pointerId,bas:{x:e.clientX,y:e.clientY},hareket:false};b.setPointerCapture(e.pointerId);yuz('ac');goz(e.clientX,e.clientY);
+      ornekHareket?.cancel();bos.dur();tikIptal=false;surukleme={b,id:e.pointerId,bas:{x:e.clientX,y:e.clientY},hareket:false};b.setPointerCapture(e.pointerId);yuz('ac');goz(e.clientX,e.clientY);
     };
     b.onpointermove=e=>{
       if(surukleme?.b!==b||surukleme.id!==e.pointerId)return;
@@ -211,10 +250,10 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
     b.onpointerup=e=>{
       if(surukleme?.id!==e.pointerId)return;
       const tasindi=surukleme.hareket;
-      const r=obur.getBoundingClientRect(), pay=yasGrubu==='2-3'?22:10;
+      const r=obur.getBoundingClientRect(), pay=22;
       const hedef=e.clientX>=r.left-pay&&e.clientX<=r.right+pay&&e.clientY>=r.top-pay&&e.clientY<=r.bottom+pay;
       birak();if(tasindi&&hedef)ver(b,k,{x:e.clientX,y:e.clientY});
-      else if(tasindi){durum.textContent='Kartı Obur’un ağzına bırak.';konus(['obur-birak']);}
+      else if(tasindi){durum.textContent='Kartı Obur’un ağzına bırak.';konus(['obur-birak'],bosKur);}
     };
     b.onlostpointercapture=b.onpointercancel=e=>{if(surukleme?.id===e.pointerId){tikIptal=true;birak();}};
   }
@@ -227,10 +266,10 @@ export function harfKutusuKur(alan:HTMLElement,ders:Ders,oku:Ses,sonraki:()=>voi
   }
   document.addEventListener('visibilitychange',gorunurlukDegisti);
   window.addEventListener('resize',yonDegisti);
-  obur.onclick=dinle.onclick=tarif;
+  obur.onclick=dinle.onclick=()=>tarif();
   devam.onclick=()=>{
     if(asama==='son'){temizle();dersKaydiniYaz(kayitAnahtari,null);sonraki();}
   };
   ciz();
-  return ()=>{kapali=true;temizle();document.removeEventListener('visibilitychange',gorunurlukDegisti);window.removeEventListener('resize',yonDegisti);kok.remove();};
+  return ()=>{kapali=true;bos.kapat();temizle();document.removeEventListener('visibilitychange',gorunurlukDegisti);window.removeEventListener('resize',yonDegisti);kok.remove();};
 }

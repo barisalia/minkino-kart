@@ -73,6 +73,20 @@ export function gezginOyna(bulunan: number[], s: Sahne) {
     return el;
   });
 
+  // Kalite denetimi (23 Kasım): ince parçalar (anten direği, şasi) da rahat seçilsin. Parçanın yanına yapılan dokunuş 36 px
+  // içindeki en yakın açık parçaya gider; parçalar birbirinin üstüne halka koymadığı için yanlış parça seçilmez.
+  arac.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('.tg-parca')) return;
+    let en: HTMLButtonElement | null = null, enUzak = 36;
+    for (const d of dugmeler) {
+      if (d.disabled) continue;
+      const r = d.getBoundingClientRect();
+      const u = Math.hypot(Math.max(r.left - e.clientX, 0, e.clientX - r.right), Math.max(r.top - e.clientY, 0, e.clientY - r.bottom));
+      if (u < enUzak) { enUzak = u; en = d; }
+    }
+    en?.click();
+  });
+
   function guncelle() {
     const tur = turlar.find(t => gezgin.some((p, i) => p.bicim === t.bicim && !bulunan.includes(i)));
     dugmeler.forEach((el, i) => {

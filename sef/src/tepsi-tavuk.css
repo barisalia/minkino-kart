@@ -23,7 +23,7 @@
 @keyframes tv-buhar {0%{opacity:.1;translate:0 8%;}40%{opacity:.9;}100%{opacity:.1;translate:5% -20%;}}
 @media(prefers-reduced-motion:reduce){.tv-buhar{animation:none;}}
 .tv-sicaklik-secimleri {position:absolute;left:5%;bottom:3%;display:flex;align-items:center;gap:1.4cqw;z-index:2;}
-.tv-sicaklik-secimleri .tv-sicak-sec {position:relative;display:grid;place-items:center;width:clamp(50px,11cqh,81px);height:clamp(38px,9cqh,64px);border-radius:1.7cqh;border:.35cqh solid #54412f;background:var(--sef-kumanda-fonu, #fff5d9);box-shadow:0 .5cqh #956942;}
+.tv-sicaklik-secimleri .tv-sicak-sec {position:relative;display:grid;place-items:center;width:clamp(50px,11cqh,81px);height:clamp(44px,9cqh,64px);border-radius:1.7cqh;border:.35cqh solid #54412f;background:var(--sef-kumanda-fonu, #fff5d9);box-shadow:0 .5cqh #956942;}
 .tv-sicak-sec>img {height:79%;width:78%;object-fit:contain;}
 .tv-sicak-sec>.ikon {position:absolute;right:1%;bottom:2%;width:35%;height:44%;padding:.4cqh;border-radius:45%;background:var(--sef-kumanda-fonu, #fff5ce);}
 .tv-sicak-sec .tv-tabak-ikon {position:absolute;inset:24% 30%;width:42%;height:48%;}

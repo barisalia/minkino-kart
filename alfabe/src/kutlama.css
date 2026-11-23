@@ -1,0 +1,20 @@
+/* Tamamlama kutlaması (alfabe/src/kutlama.ts, Astra Harf-H5). Fon 1672 × 941; pano alanı x 420…1250, y 160…620;
+   sertifikanın yazı alanı x 200…1400, y 220…880 (1600 × 1100). */
+.ku-sahne{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#fdf3e3;overflow:hidden}
+.ku-oda{position:relative;aspect-ratio:1672/941;width:min(98vw,calc((100svh - 16px) * 1.7768))}
+.ku-fon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.ku-pano{position:absolute;left:25.12%;top:17%;width:49.64%;height:48.88%;box-sizing:border-box;padding:1.6% 2%;display:grid;grid-template-columns:repeat(var(--sutun,6),minmax(0,1fr));gap:3.2% 1.6%;align-content:center}
+.ku-parca{display:grid;place-items:center;aspect-ratio:191/132;background:#fffaf0;border:2px solid #3a3226;border-radius:12%;box-shadow:0 2px 0 rgba(58,50,38,.25);min-width:0}
+.ku-parca svg{width:92%;height:auto;display:block}
+.ku-anahtarlar .ku-parca{aspect-ratio:1.15;font-weight:700;font-size:clamp(18px,5.6vmin,58px);line-height:1;color:#135950;background:#fbe7a6}
+.ku-kupa{position:absolute;right:4%;bottom:5%;width:15%;pointer-events:none}
+.ku-konfeti{position:absolute;width:22%;aspect-ratio:1;object-fit:contain;pointer-events:none;z-index:5}
+.ku-belge{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2svh,20px);z-index:8;padding:12px}
+.ku-belge[hidden]{display:none}
+.ku-kagit{position:relative;aspect-ratio:1600/1100;width:min(80vw,calc((100svh - 120px) * 1.4545))}
+.ku-kagit img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ku-yazi{position:absolute;left:12.5%;right:12.5%;top:20%;bottom:20%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%;text-align:center;color:#204b42}
+.ku-yazi small{font-size:clamp(12px,2.4vmin,24px);font-weight:500;color:#5b4a2e}
+.ku-yazi strong{font-size:clamp(22px,6vmin,62px);font-weight:700;line-height:1.1;letter-spacing:-.01em}
+.ku-yazi span{font-size:clamp(12px,2.2vmin,22px);color:#5b4a2e}
+@media(prefers-reduced-motion:reduce){.ku-konfeti{display:none}}

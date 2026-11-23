@@ -236,36 +236,18 @@
   position: absolute;
   inset: 0;
 }
-.pz-kok .tb-meyve-ic > img,
-.pz-kok .tb-meyve-ic > .tb-yedek {
+.pz-kok .tb-meyve-ic > img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   -webkit-user-drag: none;
 }
-.pz-kok .tb-meyve-ic > .tb-yedek {
-  border-radius: 50%;
-  background: #e8352f;
-  border: 3px solid #5a3617;
-}
 .pz-kok .tb-govde .tb-meyve-ic {
   filter: drop-shadow(0 2px 0 rgba(90, 54, 23, 0.25));
 }
 
-/* ---------- Çürük (yer tutucu: domates çizimi + kahve lekeler + sinek) ---------- */
-.pz-kok .tb-curuk > img {
-  filter: saturate(0.78) sepia(0.28) brightness(0.97);
-}
-.pz-kok .tb-leke-yer {
-  position: absolute;
-  inset: 8% 8% 6%;
-  pointer-events: none;
-}
-.pz-kok .tb-leke {
-  width: 100%;
-  height: 100%;
-}
+/* ---------- Çürük domates (kendi çizimi) ve çevresinde dönen sinek ---------- */
 .pz-kok .tb-sinek {
   position: absolute;
   z-index: 3;
@@ -345,18 +327,26 @@
   display: none;
 }
 
-/* ---------- Kompost kutusu (yer tutucu çizim) ---------- */
+/*
+ * ---------- Kompost kutusu (Gemini çizimi: assets/pazar/kompost + kompost-kapak; ekip/illustrator/tart-isle.cjs) ----------
+ * Kapak gövdenin ağzına oturur. Ölçüler çizimin pikselinden (gövde 937 × 1024, kapak 1024 × 676 → 0.95 ölçekle 973 × 642;
+ * kapağın alt bandı gövdenin kenarını 200 px örter): kutu 973 × 1466. Menteşe kapağın sol kenarında, flanşın altında
+ * (çizimde %78).
+ */
 .pz-kok .tb-kompost {
   position: relative;
   z-index: 4;
-  width: calc(var(--tb-s) * 1.25);
-  aspect-ratio: 1;
+  width: calc(var(--tb-s) * 1.5);
+  aspect-ratio: 973 / 1466;
   margin-bottom: 2px;
   transition: transform 0.15s;
 }
 .pz-kok .tb-k-govde {
   position: absolute;
-  inset: 0;
+  left: 1.85%;
+  width: 96.3%;
+  top: 30.15%;
+  height: 69.85%;
 }
 .pz-kok .tb-k-govde img,
 .pz-kok .tb-k-kapak img {
@@ -365,25 +355,17 @@
   height: 100%;
   object-fit: contain;
 }
-.pz-kok .tb-k-govde svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.25));
+.pz-kok .tb-kompost:not(.pz-parla) .tb-k-govde img {
+  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.22));
 }
 .pz-kok .tb-k-kapak {
   position: absolute;
   left: 0;
   right: 0;
-  top: 6%;
-  height: 33%;
-  transform-origin: 8% 80%;
+  top: 0;
+  height: 43.8%;
+  transform-origin: 3% 78%;
   transition: transform 0.22s cubic-bezier(0.3, 1.5, 0.5, 1);
-}
-.pz-kok .tb-k-kapak svg {
-  width: 100%;
-  height: 100%;
-  display: block;
 }
 .pz-kok .tb-k-golge {
   position: absolute;
@@ -399,65 +381,28 @@
 }
 .pz-kok .tb-kompost.pz-uzerinde .tb-k-kapak,
 .pz-kok .tb-kompost.tb-acik .tb-k-kapak {
-  transform: rotate(-38deg) translateY(-6%);
+  transform: rotate(-34deg) translate(-4%, -10%);
 }
 .pz-kok .tb-kompost.pz-parla {
   animation: tb-kompost-cag 1.1s ease-in-out infinite;
 }
-.pz-kok .tb-kompost.pz-parla .tb-k-govde svg,
 .pz-kok .tb-kompost.pz-parla .tb-k-govde img,
 .pz-kok .tb-kompost.pz-parla .tb-k-kapak img {
   filter: drop-shadow(0 0 8px rgba(255, 230, 100, 0.95)) drop-shadow(0 4px 0 rgba(90, 54, 23, 0.25));
-}
-/*
- * Gemini çizimi (assets/pazar/kompost + kompost-kapak; ekip/illustrator/tart-isle.cjs): kapak gövdenin ağzına oturur.
- * Ölçüler çizimin pikselinden (gövde 937 × 1024, kapak 1024 × 676 → 0.95 ölçekle 973 × 642; kapağın alt bandı
- * gövdenin kenarını 200 px örter): kutu 973 × 1466. Menteşe kapağın sol kenarında, flanşın altında (çizimde %78).
- */
-.pz-kok .tb-kompost.tb-resimli {
-  width: calc(var(--tb-s) * 1.5);
-  aspect-ratio: 973 / 1466;
-}
-.pz-kok .tb-kompost.tb-resimli .tb-k-govde {
-  inset: auto;
-  left: 1.85%;
-  width: 96.3%;
-  top: 30.15%;
-  height: 69.85%;
-}
-.pz-kok .tb-kompost.tb-resimli:not(.pz-parla) .tb-k-govde img {
-  filter: drop-shadow(0 4px 0 rgba(90, 54, 23, 0.22));
-}
-.pz-kok .tb-kompost.tb-resimli .tb-k-kapak {
-  top: 0;
-  height: 43.8%;
-  transform-origin: 3% 78%;
-}
-.pz-kok .tb-kompost.tb-resimli.pz-uzerinde .tb-k-kapak,
-.pz-kok .tb-kompost.tb-resimli.tb-acik .tb-k-kapak {
-  transform: rotate(-34deg) translate(-4%, -10%);
 }
 @keyframes tb-kompost-cag {
   0%, 100% { transform: none; }
   50% { transform: translateY(-5px) rotate(-3deg); }
 }
-/* çürüğü yuttu: zıplar, gözleri sevinçle kısılır */
+/* çürüğü yuttu: sevinçle zıplar */
 .pz-kok .tb-kompost.tb-yedi {
   animation: tb-yedi 0.7s cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.pz-kok .tb-kompost.tb-yedi .tb-k-goz {
-  animation: tb-goz 0.9s ease-in-out;
-  transform-box: fill-box;
-  transform-origin: center;
 }
 @keyframes tb-yedi {
   0% { transform: scale(1); }
   25% { transform: scale(1.18, 0.82); }
   55% { transform: scale(0.92, 1.12) translateY(-10px); }
   80% { transform: scale(1.04, 0.96); }
-}
-@keyframes tb-goz {
-  10%, 80% { transform: scaleY(0.25); }
 }
 .pz-kok .tb-kompost.tb-hayir {
   animation: pz-hayir 0.45s ease-in-out;

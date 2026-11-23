@@ -1,12 +1,14 @@
 
-import { heceler, parcaSesi, panoAdi, panoResmi } from './pano-sozcukleri';
+import { adSesi, heceler, panoSesiMi, parcaSesi, panoAdi, panoResmi } from './pano-sozcukleri';
 import { yeniPano, turuGetir, turuSakla, panoyuTamamla, panoyuBirak, type PanoTuru } from './hece-pano-kaydi';
 import { heceKulakKur } from './hece-kulak';
 import { resim } from './resimler';
 import { oyunSesi } from './oyun-sesi';
+import { bosBekleyici } from './bos-bekle';
 import { cerenSustur, cerenYuzu } from './konusma-dersi';
 import { tamDers } from './yas-grubu';
 import { IKON } from '../../src/ui/ikonlar';
+import { bitisKutla } from './cila';
 import './hece-pano.css';
 
 type Oku=(id:string,sonra?:()=>void,oynarken?:(sn:number)=>void)=>void;
@@ -67,16 +69,25 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
       if(!basladi&&nesil===sozSirasi&&!kapali){basladi=true;soz.basla?.();}
     });
   }
+  // Ceren susunca süre başlar. Çocuk bir şey yapmazsa önce yönerge yinelenir, sonra Ceren bir
+  // mıknatısı yerine uçurarak örnek gösterir. Pano bitince hatırlatma yok (birkaç seçenek var).
+  const bos=bosBekleyici(kacinci=>{
+    if(kapali||tur.bitti||tasinma)return;
+    if(kacinci===1)anlat([{id:'hece-pano'}]);else ornekGoster();
+  });
+  function bosKur(){if(!kapali&&!tur.bitti&&!tasinma)bos.kur();}
   function anlat(sozler:Soz[],sonra?:()=>void){
-    if(duyulan.startsWith('pano-hece-')||duyulan.startsWith('pano-ad-')){
+    bos.dur();
+    const son=()=>{sonra?.();bosKur();};
+    if(panoSesiMi(duyulan)){
       // Parmağın mıknatıstan yuvaya geçişi sözcüğü ortadan kesmesin.
       bekleyen=[...sozler];
       if(bekleyen[0]?.id===duyulan)bekleyen.shift()?.basla?.();
-      bittiginde=sonra;
+      bittiginde=son;
       return;
     }
     konusmayiKes();
-    bekleyen=[...sozler];bittiginde=sonra;siradakiSes();
+    bekleyen=[...sozler];bittiginde=son;siradakiSes();
   }
   function vurgu(el?:Element){
     pano.querySelector('.hp-heceliyor')?.classList.remove('hp-heceliyor');
@@ -85,7 +96,7 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
   function diziyiOku(id:string,onceSozcuk:boolean){
     const yerler=kart(id).querySelectorAll('.hp-yuva');
     const sesler=heceler[id].map((h,i)=>({id:parcaSesi(h),basla:()=>vurgu(yerler[i])}));
-    const butun={id:'pano-ad-'+id,basla:()=>vurgu(kart(id).querySelector('.hp-resim')!)};
+    const butun={id:adSesi(id),basla:()=>vurgu(kart(id).querySelector('.hp-resim')!)};
     anlat(onceSozcuk?[butun,...sesler]:[...sesler,butun],()=>vurgu());
   }
   function hareket(el:HTMLElement,kareler:Keyframe[],sure:number,bitti?:()=>void){
@@ -151,6 +162,8 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
       if(!bos)biten++;
     }
     sayac.textContent=biten+' / 3 sözcük';
+    // Üç sözcük de tamamlandığı an (yeniden yansıtmada değil): oyun sonu kutlaması.
+    if(biten===3&&son.hidden)requestAnimationFrame(()=>bitisKutla(pano));
     son.hidden=biten!==3;kulak.hidden=!tamDers;bul<HTMLButtonElement>('.hp-ileri').hidden=!!tur.ileri;yardim.disabled=biten===3;
     bul('.hp-raf').hidden=biten===3;
   }
@@ -164,7 +177,7 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
     const id=yer.dataset.nesne!,h=yer.dataset.hece!,tas=eslesen(h)!;
     yardimKaydet(id);
     durum.textContent=kart(id).dataset.ad+' için “'+h+'” hecesini dinle.';
-    anlat([{id:'pano-ornek'},{id:'pano-ad-'+id,basla:()=>vurgu(kart(id).querySelector('.hp-resim')!)},
+    anlat([{id:'pano-ornek'},{id:adSesi(id),basla:()=>vurgu(kart(id).querySelector('.hp-resim')!)},
       {id:parcaSesi(h),basla:()=>{vurgu(yer);tas.classList.add('hp-ornek');ucur(tas,merkez(tas),merkez(yer),false);}},
       {id:'pano-sende'}],()=>{vurgu();durum.textContent='Şimdi “'+h+'” mıknatısını yerine sen koy.';});
   }
@@ -178,10 +191,11 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
       oyunSesi('geri');ucur(tas,merkez(yer),merkez(tas),true);
       hareket(yer,[{transform:'translateX(0)'},{transform:'translateX(-3px)'},{transform:'translateX(3px)'},{transform:'translateX(0)'}],240);
       durum.textContent='Bu yeri birlikte dinleyelim.';
-      anlat([{id:'pano-ad-'+id},...(kez>=2||!tamDers?[{id:parcaSesi(h),basla:()=>{vurgu(yer);eslesen(h)?.classList.add('hp-ipucu');}}]:[])],()=>vurgu());
+      anlat([{id:adSesi(id)},...(kez>=2||!tamDers?[{id:parcaSesi(h),basla:()=>{vurgu(yer);eslesen(h)?.classList.add('hp-ipucu');}}]:[])],()=>vurgu());
       return;
     }
     ucur(tas,bas,merkez(yer),false);
+    bos.sifirla();
     secili?.setAttribute('aria-pressed','false');secili=undefined;
     tas.disabled=true;yer.disabled=true;yer.textContent=h;yer.setAttribute('aria-label',kart(id).dataset.ad+', '+h);
     yer.dataset.renk=String(tur.taslar.indexOf(h)%4);
@@ -193,7 +207,9 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
     durum.textContent=tur.bitti?'Üç sözcüğü de kurdun!':tam?kart(id).dataset.ad+' tamamlandı!':'Sıradaki heceyi seç.';
     const geriBildirim:Soz[]=[];
     if(okunanSecim!==secimSayisi)geriBildirim.push({id:parcaSesi(h),basla:()=>vurgu(yer)});
-    if(tam)geriBildirim.push({id:'pano-ad-'+id,basla:()=>vurgu(kart(id).querySelector('.hp-resim')!)});
+    if(tam)geriBildirim.push({id:adSesi(id),basla:()=>vurgu(kart(id).querySelector('.hp-resim')!)});
+    // Pano bitince öteki oyunlardaki gibi kısa bir övgü: "Üç sözcüğü de kurdun!" (ekrandaki yazıyla aynı).
+    if(tur.bitti)geriBildirim.push({id:'pano-buldu'});
     vurgu(yer);anlat(geriBildirim,()=>vurgu());
     (tur.bitti?(tamDers?kulak:bul<HTMLButtonElement>('.hp-tekrar')):tuslar().find(b=>!b.disabled))?.focus({preventScroll:true});
   }
@@ -204,7 +220,7 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
     b.onclick=e=>{if(!suruklendi||e.detail===0)sec(b);suruklendi=false;};
     b.onpointerdown=e=>{
       if(e.button!==0||tasinma||b.disabled)return;
-      suruklendi=false;tasinma={tas:b,id:e.pointerId,bas:{x:e.clientX,y:e.clientY}};b.setPointerCapture(e.pointerId);
+      suruklendi=false;tasinma={tas:b,id:e.pointerId,bas:{x:e.clientX,y:e.clientY}};b.setPointerCapture(e.pointerId);bos.dur();
     };
     b.onpointermove=e=>{
       const t=tasinma,p={x:e.clientX,y:e.clientY};
@@ -222,7 +238,7 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
       if(tasinma?.id!==e.pointerId||tasinma.tas!==b)return;
       const p={x:e.clientX,y:e.clientY},hedef=bosHedef(p);
       suruklemeyiBirak();
-      if(suruklendi){if(hedef)yerlestir(hedef,b,p);else ucur(b,p,merkez(b),true);}
+      if(suruklendi){if(hedef)yerlestir(hedef,b,p);else{ucur(b,p,merkez(b),true);bosKur();}}
     };
     b.onlostpointercapture=b.onpointercancel=e=>{if(tasinma?.id===e.pointerId)suruklemeyiBirak();};
     return b;
@@ -279,7 +295,7 @@ export function hecePanoKur(alan:HTMLElement,oku:Oku,bitir:()=>void):()=>void{
   window.addEventListener('resize',iptal);window.addEventListener('blur',iptal);
   panoGoster(turuGetir());
   return ()=>{
-    kapali=true;kulakBirak?.();suruklemeyiBirak();konusmayiKes();
+    kapali=true;bos.kapat();kulakBirak?.();suruklemeyiBirak();konusmayiKes();
     window.removeEventListener('resize',iptal);window.removeEventListener('blur',iptal);
     for(const anim of hareketler)anim.cancel();
     alan.replaceChildren();

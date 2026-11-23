@@ -87,16 +87,6 @@ const IBRE = `<svg class="tb-ibre-svg" viewBox="0 0 691 380" aria-hidden="true">
   <ellipse cx="${KX - 22}" cy="${KY - 38}" rx="16" ry="9" fill="#fff" opacity=".75" transform="rotate(-30 ${KX - 22} ${KY - 38})"/>
 </svg>`;
 
-/** Çürük meyvenin lekeleri (yer tutucu; Gemini çizimi gelene kadar: ekip/gemini/IS-LISTESI-YENI.md) */
-export const CURUK_LEKE = `<svg class="tb-leke" viewBox="0 0 100 100" aria-hidden="true">
-  <g fill="#7a4a1c" stroke="#4a2a0c" stroke-width="2.5" stroke-linejoin="round">
-    <path d="M30 40 q8 -10 18 -3 q9 6 1 15 q-7 8 -16 3 q-9 -6 -3 -15z" opacity=".92"/>
-    <path d="M60 58 q7 -4 11 2 q4 7 -3 11 q-7 3 -10 -3 q-2 -6 2 -10z" opacity=".9"/>
-    <path d="M36 66 q4 -3 7 0 q3 4 -1 6 q-4 2 -6 -2z" opacity=".85"/>
-  </g>
-  <g fill="#a8743a" opacity=".55"><ellipse cx="37" cy="44" rx="5" ry="3"/><ellipse cx="64" cy="61" rx="3" ry="2"/></g>
-  <path d="M55 30 q6 3 9 9" fill="none" stroke="#4a2a0c" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
-</svg>`;
 /** Çürüğün çevresinde dönen sinek (kanatları çırpar) */
 export const SINEK = `<svg class="tb-sinek-svg" viewBox="0 0 40 30" aria-hidden="true">
   <g class="tb-kanat"><ellipse cx="15" cy="9" rx="8" ry="6" fill="#e8f6ff" stroke="${K}" stroke-width="2" opacity=".9"/><ellipse cx="25" cy="9" rx="8" ry="6" fill="#e8f6ff" stroke="${K}" stroke-width="2" opacity=".9"/></g>
@@ -104,14 +94,10 @@ export const SINEK = `<svg class="tb-sinek-svg" viewBox="0 0 40 30" aria-hidden=
   <circle cx="27" cy="16" r="3.2" fill="#fff"/><circle cx="27.6" cy="16" r="1.6" fill="#222"/>
 </svg>`;
 
-/** Meyvenin çizimi (çürükse lekeler ve sinek) */
+/** Meyvenin çizimi; çürük: kendi çizimi (assets/pazar/domates-curuk, Gemini; çürük hep domates) ve dönen sinek */
 export function meyveCizimi(km: KasaMeyve, sinek = true): HTMLElement {
-  // çürüğün kendi çizimi geldiyse o (assets/pazar/domates-curuk.webp, Gemini); yoksa sağlam çizim + lekeler
-  const curukUrl = km.curuk ? adres(`pazar/${km.meyve}-curuk`) : '';
-  const url = curukUrl || adres(`meyveler/${km.meyve}`);
-  const ic = h(`div.tb-meyve-ic${km.curuk && !curukUrl ? '.tb-curuk' : ''}`, {}, url ? h('img', { src: url, alt: '', draggable: 'false' }) : h('i.tb-yedek'));
-  if (km.curuk && !curukUrl) ic.append(h('div.tb-leke-yer', { html: CURUK_LEKE }));
-  const el = h('div.tb-meyve-cizim', {}, ic);
+  const url = adres(km.curuk ? `pazar/${km.meyve}-curuk` : `meyveler/${km.meyve}`);
+  const el = h('div.tb-meyve-cizim', {}, h('div.tb-meyve-ic', {}, h('img', { src: url, alt: '', draggable: 'false' })));
   if (km.curuk && sinek) el.append(h('i.tb-sinek', { html: SINEK, style: `--g:${ras(-2, 0).toFixed(2)}s` }));
   return el;
 }

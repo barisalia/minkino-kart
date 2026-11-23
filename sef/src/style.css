@@ -26,12 +26,12 @@ img { display: block; object-fit: contain; }
 .ust {
   position: absolute; z-index: 8; top: max(env(safe-area-inset-top), 2.7cqh);
   left: max(env(safe-area-inset-left), 1.8cqw); right: max(env(safe-area-inset-right), 1.8cqw);
-  height: clamp(38px, 9.5cqh, 68px); display: flex; align-items: center; justify-content: space-between;
+  height: clamp(44px, 9.5cqh, 68px); display: flex; align-items: center; justify-content: space-between;
   pointer-events: none;
 }
 .ust > * { pointer-events: auto; }
 .dugme {
-  display: grid; place-items: center; flex: none; width: clamp(40px, 8.9cqh, 67px);
+  display: grid; place-items: center; flex: none; width: clamp(44px, 8.9cqh, 67px);
   aspect-ratio: 1; border-radius: 50%; border: clamp(1.5px, .35cqh, 3px) solid var(--murekkep);
   background: var(--sef-kumanda-fonu, var(--krem)); box-shadow: 0 .55cqh 0 #754d35; transition: transform .12s, box-shadow .12s;
 }
@@ -91,7 +91,7 @@ img { display: block; object-fit: contain; }
   border-radius: 50%; padding: 7%; background: #ffef8b; border: .34cqh solid var(--murekkep); }
 .istasyon[data-oneri="true"] .istasyon-belirt { display: grid; place-items: center; animation: ipucu 1.8s ease-in-out infinite; }
 .ileri { position: absolute; z-index: 5; right: max(env(safe-area-inset-right), 2.7%); bottom: max(env(safe-area-inset-bottom), 3.8%);
-  width: auto; height: clamp(41px, 10.1cqh, 76px); min-width: 12cqw; padding: 0 2cqw; aspect-ratio: auto;
+  width: auto; height: clamp(44px, 10.1cqh, 76px); min-width: 12cqw; padding: 0 2cqw; aspect-ratio: auto;
   border-radius: 5cqh; display: flex; align-items: center; justify-content: center; gap: .7cqw; background: #92e3ab; }
 .ileri > .ikon { width: auto; height: 64%; aspect-ratio: 1; }
 .ileri > .ikon:last-child { height: 42%; }

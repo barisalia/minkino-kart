@@ -1,3 +1,4 @@
+import { resim, yeniOdalar } from './resimler';
 import { adimOynat } from './adim';
 /**
  * Dedektif Mino'nun oyuncuları (ekranın önünde duran sunucular): Mino (dedektif şapkalı, src/mino), Kino (iskelet) ve
@@ -7,7 +8,7 @@ import { adimOynat } from './adim';
  * Konuşma sırayla: Mino = anlatıcı sesi; Kino = kendi sesi (dudak senkronu); kart hayvanları ve Pamuk anlatıcının
  * tonlu sesi. Söz, konuşanın başının üstünde kısa bir balonda yazar.
  */
-import { KINO_SESI } from '../../src/audio/ses';
+import { KINO_SESI, konus, konusuyorMu } from '../../src/audio/ses';
 import type { KonusmaSecenegi, Soylenecek } from '../../src/audio/konusma';
 import { altPayi, boyGenislik, CIZIM } from '../../src/karakter/boy';
 import { Karakter, type HareketAdi, type Poz } from '../../src/karakter/karakter';
@@ -15,7 +16,8 @@ import { Mino, minoDedektifYukle, type Tepki } from '../../src/mino/mino';
 import { YuruyenMino } from '../../src/mino/mino-profil';
 import { h, sure, TEST_MODU } from '../../src/ui/dom';
 import { AZ_HAREKET } from './dunya';
-import { BalonNobeti, tekTekrar } from './konusma-sira';
+import { tekTekrar } from './konusma-sira';
+import { AGIZ_VAR, CizgiAgiz, KINO_SOL, kinoTemel, kinoYonuKoy, minoTemel } from './cizgi-agiz';
 import { PozYuvasi } from './poz';
 
 /** Kino'nun kutusu Mino'nun kutu genişliğine göre (Mino kutusu 1360 × 1790; Kino 0.74 boy) */
@@ -28,7 +30,8 @@ export const PAMUK_ALT = altPayi(CIZIM.pamuk);
 export type Kim = 'mino' | 'kino' | 'pamuk' | 'kart' | 'ordek' | 'kopek' | 'tavsan' | 'ada' | 'findik' | 'balon';
 /** Konuşanın sesi: kart hayvanları, Pamuk ve konuklar anlatıcı kaydının tonlu çalınışı */
 export const SES: Record<Kim, KonusmaSecenegi> = {
-  mino: {},
+  // Mino'nun kendi sesi (Seri 2): kaydı olan cümle onunla, olmayan anlatıcı sesiyle çalar
+  mino: { karakter: 'mino' },
   kino: KINO_SESI,
   pamuk: { ton: 1.22 },
   kart: {},
@@ -41,17 +44,13 @@ export const SES: Record<Kim, KonusmaSecenegi> = {
   findik: { ton: 1.36 },
   balon: { cihazSesi: false },
 };
-/** balonu olan konuşan: Mino, Kino ya da konuk (Pamuk'un balonu) */
+/** ağzı oynayan konuşan: Mino, Kino ya da konuk (Pamuk'un yeri; kart hayvanı yok) */
 const balonSahibi = (kim: Kim): 'mino' | 'kino' | 'pamuk' | null => (kim === 'kart' ? null : kim === 'mino' || kim === 'kino' ? kim : 'pamuk');
 /** Kart hayvanlarının tonu (zürafa kalın, ördek ince) */
 export const KART_TON: Record<string, number> = { zurafa: 0.8, ordek: 1.32, siyah: 0.9 };
 
 export type KinoPoz = 'dusun' | 'kalk' | 'isaret' | 'otur' | null;
 
-/** Balon: konuşanın başının üstünde, kısa süre */
-function balon(): HTMLElement {
-  return h('div.dd-balon', { 'aria-hidden': 'true' }, h('span'));
-}
 
 /** Oyuncuların ekrandaki dizilişi (Oyuncular.yerlesim) */
 type Yerlesim = 'iki' | 'sol' | 'sag' | 'kenar';
@@ -71,13 +70,9 @@ export class Oyuncular {
   private minoHareket: HTMLElement;
   private kinoHareket: HTMLElement;
   private pamukHareket: HTMLElement | null = null;
-  private balonlar: Record<'mino' | 'kino' | 'pamuk', HTMLElement> = { mino: balon(), kino: balon(), pamuk: balon() };
-  /** balonlar her şeyin üstünde ayrı bir katmanda (kartların, fotoğrafın üstünde); konuşanın başına göre konur */
-  readonly balonKatman: HTMLElement;
   private pamukKaynak: HTMLElement | null = null;
   private sapkaSvg: string | null = null;
   private sira: Promise<void> = Promise.resolve();
-  private balonNobeti = new BalonNobeti<'mino' | 'kino' | 'pamuk'>();
   private kapali = false;
   private yukSol = 0;
   private yukSag = 0;
@@ -90,6 +85,14 @@ export class Oyuncular {
   readonly kinoPozu: PozYuvasi;
   pamukPoz: PozYuvasi | null = null;
 
+  /** Yeni çizgi: konuşan ağız ve Kino'nun yönü (cizgi-agiz.ts; çizimler yoksa döngü kurulmaz) */
+  private agizlar: { mino: CizgiAgiz; kino: CizgiAgiz } | null = null;
+  private konusan: 'mino' | 'kino' | null = null;
+  /** Kino sola mı bakıyor (sola dönük çizimler varsa); hedef: baktığı / gösterdiği şeyin ekrandaki x'i */
+  kinoSol = false;
+  private kinoHedefX: number | null = null;
+  private cizgiRaf = 0;
+
   constructor() {
     window.addEventListener('resize', this.yonDegisti);
     this.minoHareket = h('div.dd-hareket', {}, h('i.dd-golge'), this.yuruyen.el);
@@ -101,13 +104,16 @@ export class Oyuncular {
     // rahatlayan Mino da dedektif şapkasını çıkarmaz: şapka (iskeletteki çizim) pozun başına konur
     void minoDedektifYukle().then((e) => (this.sapkaSvg = e?.sapka ?? null));
     this.minoPoz.ekler['mino-rahat'] = () => {
+      // yeni çizgide şapka resmin içinde
+      if (yeniOdalar) return null;
       if (!this.sapkaSvg || !this.mino.dedektifSu.sapka) return null;
       // şapkanın iskeletteki sınırı (mino-dedektif-svg.ts: translate(985 560) scale(0.7) translate(-1545 -822), resim 942×708)
       return h('div.dd-poz-sapka', { html: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="649 68.6 659.4 495.6">${this.sapkaSvg}</svg>` });
     };
     this.kinoYer = h('div.dd-oyuncu.dd-kino-yer', { 'data-oyuncu': 'kino', style: `--ko:${KINO_ORAN.toFixed(3)};--ka:${KINO_ALT.toFixed(3)}` }, this.kinoHareket);
     this.el = h('div.dd-oyuncular', { style: `--ko:${KINO_ORAN.toFixed(3)}` }, this.minoYer, this.kinoYer);
-    this.balonKatman = h('div.dd-balonlar', { 'aria-hidden': 'true' }, this.balonlar.mino, this.balonlar.kino, this.balonlar.pamuk);
+    if (AGIZ_VAR) this.agizlar = { mino: new CizgiAgiz(this.mino.el, () => minoTemel(this.mino.el)), kino: new CizgiAgiz(this.kino.el, () => kinoTemel(this.kino.el, this.kinoSol), this.kino.hazir) };
+    if (AGIZ_VAR || KINO_SOL) this.cizgiRaf = requestAnimationFrame(this.cizgiKare);
     this.kino.ekHareket = (p, t) => {
       p.yukSol = this.yukSol;
       p.yukSag = this.yukSag;
@@ -145,8 +151,44 @@ export class Oyuncular {
   }
   private konukTepe = 0.1;
 
+  /** Her kare: Kino baktığı yere dönük (sola dönük çizim varsa), konuşanın ağzı sese göre */
+  private cizgiKare = () => {
+    if (this.kapali) return;
+    if (KINO_SOL) {
+      const r = this.kino.el.getBoundingClientRect();
+      if (r.width) {
+        const hedef = this.kinoHedefX ?? window.innerWidth / 2;
+        const orta = r.left + r.width / 2;
+        // küçük oynamalarda yön titremesin: hedefin 12 px yakınında eski yön kalır
+        const sol = Math.abs(orta - hedef) < 12 ? this.kinoSol : orta > hedef;
+        if (sol !== this.kinoSol || this.kino.el.dataset.yon === undefined) {
+          this.kinoSol = sol;
+          kinoYonuKoy(this.kino.el, sol);
+        }
+      }
+    }
+    if (this.agizlar) {
+      const simdi = performance.now();
+      const ses = konusuyorMu();
+      this.agizlar.mino.kare(simdi, ses && this.konusan === 'mino');
+      this.agizlar.kino.kare(simdi, ses && this.konusan === 'kino');
+    }
+    this.cizgiRaf = requestAnimationFrame(this.cizgiKare);
+  };
+  /** Kino'nun pozu, hedef (ekran x'i; yoksa ekranın ortası) solundaysa ve sola dönük eşi çizildiyse o */
+  kinoYonlu<A extends 'kino-tahmin' | 'kino-koklama'>(ad: A, hedefX?: number): A | `${A}-sol` {
+    const r = this.kino.el.getBoundingClientRect();
+    const sol = r.width > 0 && r.left + r.width / 2 > (hedefX ?? window.innerWidth / 2) + 12;
+    return sol && resim(`poz-${ad}-sol`) ? `${ad}-sol` : ad;
+  }
+  /** Kino şu ekran noktasına bakar / onu gösterir (null: ekranın ortası) */
+  kinoBak(x: number | null) {
+    this.kinoHedefX = x;
+  }
+
   kapat() {
     this.kapali = true;
+    cancelAnimationFrame(this.cizgiRaf);
     this.minoPoz.temizle();
     this.kinoPozu.temizle();
     this.pamukPoz?.temizle();
@@ -162,97 +204,28 @@ export class Oyuncular {
   soyle(soz: Soylenecek, kim: Kim = 'mino', ton?: number): Promise<void> {
     const is = this.sira.then(async () => {
       if (this.kapali) return;
-      const metin = (Array.isArray(soz) ? soz : [soz]).filter(Boolean).join(' ');
       this.son = { soz, kim, ton };
+      // konuşma balonu yok (Barış 18 Kasım: "gerek yok konuşma balonlarına"): ses ve ağız yeter
       const bs = balonSahibi(kim);
-      const b = bs ? this.balonlar[bs] : null;
-      // bu sözün balon açılışı: aynı konuşanın önceki sözünün kapanışı bu sözü kapatmaz
-      const nesil = bs ? this.balonNobeti.ac(bs) : 0;
-      if (b && bs) {
-        b.querySelector('span')!.textContent = metin;
-        b.classList.remove('acik');
-        this.balonKonumla(b, bs);
-        void b.offsetWidth;
-        b.classList.add('acik');
-        // konuşan yürür / kenara çekilirse balon başını izler (açık kaldıkça; yeni söz kendi izlemesini kurar)
-        const bk = bs;
-        const takip = () => {
-          if (this.kapali || !this.balonNobeti.gecerli(bk, nesil) || !b.classList.contains('acik')) return;
-          this.balonKonumla(b, bk);
-          requestAnimationFrame(takip);
-        };
-        requestAnimationFrame(takip);
-      }
       if (kim === 'kino') this.kino.konus(true);
       if (bs === 'pamuk') this.pamuk?.konus(true);
       this.mino.agizSus = kim !== 'mino';
+      this.konusan = kim === 'mino' || kim === 'kino' ? kim : null;
+      if (this.konusan) this.agizlar?.[this.konusan].hazirla((Array.isArray(soz) ? soz : [soz]).filter(Boolean).join(' '));
       try {
-        await new Promise<void>(tamam => window.setTimeout(tamam, sure(Math.max(1000, metin.length * 63))));
+        const secenek: KonusmaSecenegi = ton ? { ...SES[kim], ton } : SES[kim];
+        await konus(soz, secenek);
         if (TEST_MODU) await new Promise((r) => setTimeout(r, 10));
       } finally {
+        this.konusan = null;
         this.mino.agizSus = false;
         if (kim === 'kino') this.kino.konus(false);
         if (bs === 'pamuk') this.pamuk?.konus(false);
-        if (b && bs) setTimeout(() => this.balonNobeti.gecerli(bs, nesil) && b.classList.remove('acik'), sure(700));
       }
     });
     this.sira = is.catch(() => undefined);
     return is;
   }
-  /** Balonu konuşanın başının üstüne koyar; ekranın kenarından taşmaz (kuyruğu yine başı gösterir) */
-  private balonKonumla(b: HTMLElement, kim: 'mino' | 'kino' | 'pamuk') {
-    const kap = this.balonKatman.getBoundingClientRect();
-    const kaynak = kim === 'mino' ? this.mino.el : kim === 'kino' ? this.kino.el : (this.pamukKaynak ?? this.pamuk?.el);
-    if (!kaynak) return;
-    const r = kaynak.getBoundingClientRect();
-    // başın tepesi: Mino'nun kutusu kulaklardan başlar (şapka biraz üstte); Kino ve Pamuk'un kare tuvalinde üstte boşluk var
-    const ust = kim === 'mino' ? r.top - r.height * 0.02 : r.top + r.height * (kim === 'pamuk' && this.pamukKaynak ? this.konukTepe : 0.1);
-    const x = r.left - kap.left + r.width / 2;
-    const yUst = ust - kap.top - 4;
-    const pay = 8;
-    b.style.left = `${x.toFixed(1)}px`;
-    b.style.removeProperty('max-width');
-    /** balonu [sol, sag] aralığına sığdırır (kuyruk yine başı gösterir); balonun ekrandaki kutusunu döner */
-    const yerlestir = (sol: number, sag: number) => {
-      const y = Math.max(b.offsetHeight + 70, yUst);
-      b.style.top = `${y.toFixed(1)}px`;
-      const bw = b.offsetWidth;
-      let kay = 0;
-      if (x - bw / 2 < sol) kay = sol - (x - bw / 2);
-      if (x + bw / 2 > sag) kay = sag - (x + bw / 2);
-      // kuyruk balonun içinde kalsın
-      kay = Math.max(-bw / 2 + 22, Math.min(bw / 2 - 22, kay));
-      b.style.setProperty('--kay', `${kay.toFixed(1)}px`);
-      return { l: x + kay - bw / 2, r: x + kay + bw / 2, t: y - b.offsetHeight, b: y };
-    };
-    let k = yerlestir(pay, kap.width - pay);
-    // sorgu kartları, delil fotoğrafı: balon onların üstüne binmez. Konuşanın yanındaki boş şeride daralır (yazı
-    // alt alta iner, balon yukarı uzar), kuyruk başı göstermeye devam eder.
-    const kok = this.balonKatman.parentElement;
-    const engeller = kok
-      ? [...kok.querySelectorAll('.dd-sorgu:not(.kapaniyor) .dd-kart:not(.dd-cekil), .dd-sorgu:not(.kapaniyor) .dd-delil, .dd-sorgu:not(.kapaniyor) .dd-cali-foto')]
-          .map((e) => e.getBoundingClientRect())
-          .filter((e) => e.width && e.height)
-          .map((e) => ({ l: e.left - kap.left - 6, r: e.right - kap.left + 6, t: e.top - kap.top - 6, b: e.bottom - kap.top + 6 }))
-      : [];
-    const carpar = (a: typeof k) => engeller.filter((e) => a.l < e.r && a.r > e.l && a.t < e.b && a.b > e.t);
-    for (let deneme = 0; deneme < 3; deneme++) {
-      const c = carpar(k);
-      if (!c.length) break;
-      // dikeyde balonla çakışan engellerin, konuşanın iki yanındaki en yakın kenarları: boş şerit
-      let sol = pay;
-      let sag = kap.width - pay;
-      for (const e of engeller) {
-        if (!(k.t < e.b && k.b > e.t)) continue;
-        if ((e.l + e.r) / 2 < x) sol = Math.max(sol, e.r);
-        else sag = Math.min(sag, e.l);
-      }
-      if (sag - sol < 84) break;
-      b.style.maxWidth = `${Math.floor(sag - sol)}px`;
-      k = yerlestir(sol, sag);
-    }
-  }
-
   /** Son cümleyi tekrar söyler (art arda dokunuşlar birikmez: sırada ya da çalmakta en çok bir tekrar) */
   tekrar() {
     const s = this.son;
@@ -273,7 +246,14 @@ export class Oyuncular {
     if (!ad || this.kino.ifadeVar(ad)) this.kino.ifade(ad, ms);
   }
   /** Kino'nun duruşu (Kino iskeletinin katmanları): düşünür, kalk, işaret, otur */
-  kinoPoz(p: KinoPoz) {
+  kinoPoz(p: KinoPoz, hedefX?: number) {
+    // gösterdiği şeye dönük (sola dönük çizimler geldiyse); gösterme bitince ekranın ortasına
+    this.kinoBak(p === 'isaret' && hedefX !== undefined ? hedefX : null);
+    // yeni çizgi: Kino bir kartı gösterirken Astra'nın "tahmin" pozu (iskelet hareketli kalır, poz kısa süre)
+    if (yeniOdalar) {
+      if (p === 'isaret') void this.kinoPozu.goster(this.kinoYonlu('kino-tahmin', hedefX));
+      else if (this.kinoPozu.su === 'kino-tahmin' || this.kinoPozu.su === 'kino-tahmin-sol') void this.kinoPozu.birak();
+    }
     const k = this.kino;
     k.el.dataset.poz = p ?? 'dur';
     const var_ = (id: string) => !!k.parcaG(id);
@@ -354,6 +334,28 @@ export class Oyuncular {
     );
     await a.finished.catch(() => undefined);
     dur?.();
+  }
+  /**
+   * Pamuk ekranda bir eşyanın (ör. masadaki lamba) önüne düştüyse sola çekilir; Mino'ya değmez. Dar ekranda kamera
+   * yaklaşınca masa ortaya gelir: Pamuk'un başı lambanın üstüne binmesin. Çakışma yoksa hiçbir şey olmaz.
+   */
+  async pamukKenaraCek(engel: Element | null | undefined, ms = 700) {
+    const yer = this.pamukYer;
+    if (!yer || !engel) return;
+    const l = engel.getBoundingClientRect();
+    if (!l.width || !l.height) return;
+    const p = yer.getBoundingClientRect();
+    const m = this.minoYer.getBoundingClientRect();
+    // çizimlerin kutusu saydam kenarlı: gövde kutunun ortasındaki ~%60'ı
+    const pSol = p.left + p.width * 0.2;
+    const pSag = p.right - p.width * 0.2;
+    if (pSag <= l.left || pSol >= l.right || p.bottom <= l.top || p.top >= l.bottom) return;
+    const [x0, y0] = this.konumlar.get(yer) ?? [0, 0];
+    const lambadan = l.left - 12 - pSag;
+    const minodan = m.right - m.width * 0.2 + 8 - pSol;
+    const dx = Math.max(lambadan, minodan);
+    if (dx > -2) return;
+    await this.kaydir('pamuk', x0 + dx, y0, ms, 12);
   }
   /**
    * Mino yandan yürüyerek gelir: ekranda dx px uzaktan (eksi: soldan) yerine; adımlar yola göre (pati kaymaz).

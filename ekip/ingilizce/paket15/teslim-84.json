@@ -1,0 +1,903 @@
+[
+  {
+    "name": "rabbit",
+    "file": "assets\\ingilizce\\kelime\\rabbit.webp",
+    "sha256": "33ddbd9d955ed2f13063c94469ebd64d6e83042403f7496f769dfa69d791bc4c",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "goat",
+    "file": "assets\\ingilizce\\kelime\\goat.webp",
+    "sha256": "f7b4bde30c2a8f5ea89f0e5b77d3c2b99c8b9150fcefdc53cde032702175c4ec",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "mouse",
+    "file": "assets\\ingilizce\\kelime\\mouse.webp",
+    "sha256": "e01af58a6e7972da0852464401f33df93fdae1e9664932416ff4c1c3499dc9f4",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "donkey",
+    "file": "assets\\ingilizce\\kelime\\donkey.webp",
+    "sha256": "86a81dc2e67fe6c17d054e85aefbdee5909933272a2f63ad574dfad2758fad2f",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "tiger",
+    "file": "assets\\ingilizce\\kelime\\tiger.webp",
+    "sha256": "bae1c7699618784bc2b38d643c7a05725a88014c436255a57e7f489b5a5afd16",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "bear",
+    "file": "assets\\ingilizce\\kelime\\bear.webp",
+    "sha256": "d87abe63cd725e660422fed28f9cab3f50f4717432cd849a4a913179bf471dd1",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "zebra",
+    "file": "assets\\ingilizce\\kelime\\zebra.webp",
+    "sha256": "7ac14885438ce0630c586b2a3a489b163fed830d8e706fba4eff3b4484fd85c6",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "panda",
+    "file": "assets\\ingilizce\\kelime\\panda.webp",
+    "sha256": "279343408b2c8d856e27179a5845fccd2a82ba89d8c93b01d6a5947fc03f2abf",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "penguin",
+    "file": "assets\\ingilizce\\kelime\\penguin.webp",
+    "sha256": "4e2b2fdc85e7b257d0b77de43df10b65f72f776a98e6ffbefeaff8a7c4542cfd",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "turtle",
+    "file": "assets\\ingilizce\\kelime\\turtle.webp",
+    "sha256": "49ed654eb88367d9e499d32b4bdcb2e4c810e39f145a45a5bd3f18d2cdd605db",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "crocodile",
+    "file": "assets\\ingilizce\\kelime\\crocodile.webp",
+    "sha256": "83b9f443152e1e6437072e01630ee226b09abf896f5b734fcd6560b479389e94",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "kangaroo",
+    "file": "assets\\ingilizce\\kelime\\kangaroo.webp",
+    "sha256": "88321caf2781b5cfd0c35aab3939f0197df518e580ff94c7df45274953b02f2d",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": [
+      [
+        299,
+        601,
+        74,
+        66,
+        3333
+      ]
+    ]
+  },
+  {
+    "name": "hippo",
+    "file": "assets\\ingilizce\\kelime\\hippo.webp",
+    "sha256": "8a6ffb6c4948e0c9db66179748f75f622e8117e052db32dcc7d41e1a0b6dad50",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "butterfly",
+    "file": "assets\\ingilizce\\kelime\\butterfly.webp",
+    "sha256": "665534bd0a0f566712007a142817b415c4b4da934b0744e191874a7cb6c651b1",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "dolphin",
+    "file": "assets\\ingilizce\\kelime\\dolphin.webp",
+    "sha256": "54c81510930f5423c5699ea1f4b97ce49319e1dc2617396ddde4af1f09dfbbd3",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "whale",
+    "file": "assets\\ingilizce\\kelime\\whale.webp",
+    "sha256": "53ec78e3c0a2109c4032eff63da4fbf6a371926ea1f70a70af620840d50d8744",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "shark",
+    "file": "assets\\ingilizce\\kelime\\shark.webp",
+    "sha256": "c102f8ce99751ff0481fa34018c93647e270a1780c6373182c4931817a6f9d56",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "octopus",
+    "file": "assets\\ingilizce\\kelime\\octopus.webp",
+    "sha256": "b106544d6e089fdf382315c866dd0f83d413e753eb3d18cdf8e16ea026690e6f",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "crab",
+    "file": "assets\\ingilizce\\kelime\\crab.webp",
+    "sha256": "8a61a8573a166b3fe293817f5ea08f8204d8ee65879141a5bad35ce28bb140cb",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "starfish",
+    "file": "assets\\ingilizce\\kelime\\starfish.webp",
+    "sha256": "fb9ff0484cdc6fe72a13067a1a5a4214795c8545e6a3cad1748841ae648e63a7",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "seal",
+    "file": "assets\\ingilizce\\kelime\\seal.webp",
+    "sha256": "6aec98a773867b71a714b2c14180c41ca6f5dd47f0fa40c145d88222833597ae",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "jellyfish",
+    "file": "assets\\ingilizce\\kelime\\jellyfish.webp",
+    "sha256": "cb1112ca98b38182d176c61ebbd04883233ea8227438c2b77f78f05373d09dd9",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "seahorse",
+    "file": "assets\\ingilizce\\kelime\\seahorse.webp",
+    "sha256": "28d7b6804cd58bae08cee2f136d86ddf86f9bd86b97ad6a7216d3361bce3d7da",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "walrus",
+    "file": "assets\\ingilizce\\kelime\\walrus.webp",
+    "sha256": "8e253cdaff35eef1b7c951da8a76df3be8eb7ac7883a855a902ce9d4d58900bf",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "owl",
+    "file": "assets\\ingilizce\\kelime\\owl.webp",
+    "sha256": "58e6b57678816dd6397b2c06bcc7799844e09c20fb1d64abc95000bc6e5dbe52",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "parrot",
+    "file": "assets\\ingilizce\\kelime\\parrot.webp",
+    "sha256": "babcc4e4666547f99cabde8f126d1f0c0b8fe763eb8f3b53b9b2b04a8bb25097",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "eagle",
+    "file": "assets\\ingilizce\\kelime\\eagle.webp",
+    "sha256": "37da424297bab09caff947fabfa47bce7ab2dedff205942badfaa43ef785f3f2",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "flamingo",
+    "file": "assets\\ingilizce\\kelime\\flamingo.webp",
+    "sha256": "f686bab3a6cfa05ef3add739bfd75b6790f26188daf82f7921555156cd7d71f5",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "peacock",
+    "file": "assets\\ingilizce\\kelime\\peacock.webp",
+    "sha256": "925c78dc9f54b552d585e7b7c66a34b3872ba1a5c31295789242528231f1cdd3",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": [
+      [
+        186,
+        177,
+        19,
+        47,
+        475
+      ],
+      [
+        165,
+        182,
+        18,
+        42,
+        420
+      ],
+      [
+        210,
+        412,
+        21,
+        24,
+        211
+      ]
+    ]
+  },
+  {
+    "name": "swan",
+    "file": "assets\\ingilizce\\kelime\\swan.webp",
+    "sha256": "43a8f4488d215b7d4a7ebbc28cee9c70b93cabb64b86aee9c2a07298a98f8f0f",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "ostrich",
+    "file": "assets\\ingilizce\\kelime\\ostrich.webp",
+    "sha256": "08eff96af9725a77a9498f24ade9e05613786feb8a7587cb271e1eaa47980164",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "pigeon",
+    "file": "assets\\ingilizce\\kelime\\pigeon.webp",
+    "sha256": "a33935dff6dd3b6dfe1ea4921d190821a77de6a8064c467579f3967ced9a6b2f",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "rooster",
+    "file": "assets\\ingilizce\\kelime\\rooster.webp",
+    "sha256": "e6fa2dad57cef95ac11111b073e6fe5a2c99b5fd49381baa873cbb106284fb82",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "turkey",
+    "file": "assets\\ingilizce\\kelime\\turkey.webp",
+    "sha256": "3ed07331589ead4fa2678ebd6787dcfcb79b77c157438ad555bbd945251414c1",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "goose",
+    "file": "assets\\ingilizce\\kelime\\goose.webp",
+    "sha256": "b362bf9c3fd9a6d7fa3f24b171d092ea3b698503da726c495571e3d3b71c034a",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "toucan",
+    "file": "assets\\ingilizce\\kelime\\toucan.webp",
+    "sha256": "92a867b1701db2c12034a6ba011c6b41ac803bda4fafea7bb0cb78ab38f7202c",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "crow",
+    "file": "assets\\ingilizce\\kelime\\crow.webp",
+    "sha256": "9f3f0c83adef7e19372d46738ef614fddd83787439158d3d56b91298bcb1cb8e",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "woodpecker",
+    "file": "assets\\ingilizce\\kelime\\woodpecker.webp",
+    "sha256": "b98edee8507217535bcf66962a65a156ab5c45a4be44a8e7ea377147b5974ad9",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "bee",
+    "file": "assets\\ingilizce\\kelime\\bee.webp",
+    "sha256": "113e2de246696f0ffe41f27855a96401313fa67a765f01e3a774c7ebd2ff8cf1",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "ant",
+    "file": "assets\\ingilizce\\kelime\\ant.webp",
+    "sha256": "74b53cdc31d5887551112a1ffac1f074d56b65979c9f2fba78afd15067e2048c",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "ladybug",
+    "file": "assets\\ingilizce\\kelime\\ladybug.webp",
+    "sha256": "bb30a09985f6b951c3c2d4999a0e3589f7ca3b33fc0430b05459a8ded183fd5a",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "spider",
+    "file": "assets\\ingilizce\\kelime\\spider.webp",
+    "sha256": "7fd743a71ad1aae31424f3fff34b372d5ff5d7afd76fc1bcfd75f9eaeb7eeacc",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "snail",
+    "file": "assets\\ingilizce\\kelime\\snail.webp",
+    "sha256": "7b4f60aa1125e3e38876c78b3986d5debce7b7c7c9e0e8d6fc789031b18ed809",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "worm",
+    "file": "assets\\ingilizce\\kelime\\worm.webp",
+    "sha256": "4a97c6d5bc24117d1453eaad950f427f7e80da184369b6b8a8f4e9382d047d80",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "caterpillar",
+    "file": "assets\\ingilizce\\kelime\\caterpillar.webp",
+    "sha256": "f9df37832426482578878c2eb491852f0e1ef027157920bec8c141e7215caced",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "dragonfly",
+    "file": "assets\\ingilizce\\kelime\\dragonfly.webp",
+    "sha256": "41a8a666f378159dc1dbd7922220056df6471ed2baba5f377aa78b614822af29",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "grasshopper",
+    "file": "assets\\ingilizce\\kelime\\grasshopper.webp",
+    "sha256": "ca8f7c73e5613213a27d2530dae40ebe4fa0117bc97e6f277dc87ac5735d1d63",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": [
+      [
+        504,
+        395,
+        37,
+        72,
+        545
+      ],
+      [
+        564,
+        411,
+        38,
+        67,
+        967
+      ]
+    ]
+  },
+  {
+    "name": "beetle",
+    "file": "assets\\ingilizce\\kelime\\beetle.webp",
+    "sha256": "9a33a1852bddabf2dd04cf2a97da4ca833b15cb25e8e645a6c20aea322b90548",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "fox",
+    "file": "assets\\ingilizce\\kelime\\fox.webp",
+    "sha256": "42ab43ca28f85b59d3e16e8e56ec3c67cebe2362be60cf6730eeba69d28771cc",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "wolf",
+    "file": "assets\\ingilizce\\kelime\\wolf.webp",
+    "sha256": "79cf2543aaa43c82caf348de6b1e1e04629f4538fdc7e520b5770af7722c7d48",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "deer",
+    "file": "assets\\ingilizce\\kelime\\deer.webp",
+    "sha256": "38ab643301c20a89d7ee392168b986b440c34a795af8b1a105484814284a4755",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "squirrel",
+    "file": "assets\\ingilizce\\kelime\\squirrel.webp",
+    "sha256": "016b81e77807754a253a9ccd989a3afc61feefe6355e86bc43165fd17b527c69",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "hedgehog",
+    "file": "assets\\ingilizce\\kelime\\hedgehog.webp",
+    "sha256": "da2e27848bef88adffcc73dba23ac89945b910ec6ee61d7d542317e1838058d9",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "raccoon",
+    "file": "assets\\ingilizce\\kelime\\raccoon.webp",
+    "sha256": "d5f24e596940810da68041b3e09cb682b54f17c7524c1bc2e378004125caf49b",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "bat",
+    "file": "assets\\ingilizce\\kelime\\bat.webp",
+    "sha256": "5b3c458ce6f07715cb4ae48f4872858d7df63a4712eb6986ffed5c3468e701aa",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "beaver",
+    "file": "assets\\ingilizce\\kelime\\beaver.webp",
+    "sha256": "ff23f5488fb9d2204f30185ddfc25fb2bacd3471ad4b5ae4c89b6b138e36ce96",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "skunk",
+    "file": "assets\\ingilizce\\kelime\\skunk.webp",
+    "sha256": "4aeadb340b886f90f3e86cfad945ea6c66b916bd9ea7016c541cd658b6b7bc75",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "otter",
+    "file": "assets\\ingilizce\\kelime\\otter.webp",
+    "sha256": "605526d2b053bbdff2d1f295c16312ef17f669c937542f1dee5530a351e3ce33",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "rhino",
+    "file": "assets\\ingilizce\\kelime\\rhino.webp",
+    "sha256": "958b2f20055fab5f18eb5d94d2917bd990d141e2c2e0d0b3c213f41a9c4aca02",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "camel",
+    "file": "assets\\ingilizce\\kelime\\camel.webp",
+    "sha256": "6daadc2766e120130504c068d26a7da1c14af766fd655b4a3c3a95363e8ffb90",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "cheetah",
+    "file": "assets\\ingilizce\\kelime\\cheetah.webp",
+    "sha256": "b819c269525d58bae952c2256082250c553ed14683580d62d321eeb5419fdce8",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "leopard",
+    "file": "assets\\ingilizce\\kelime\\leopard.webp",
+    "sha256": "0c86496c9c6faa70325656ab5a487ec29fd078841023b9143aab73d61e87bfe8",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "gorilla",
+    "file": "assets\\ingilizce\\kelime\\gorilla.webp",
+    "sha256": "dacda064aab3f3510a280314720457abb9f7273330763703336736052983d1fe",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "koala",
+    "file": "assets\\ingilizce\\kelime\\koala.webp",
+    "sha256": "79a81708f879d26080d049fa1a9fad084e9a34df06baa0eaada5d28487d0a30e",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "polar-bear",
+    "file": "assets\\ingilizce\\kelime\\polar-bear.webp",
+    "sha256": "c8176ced7a510b493c41a4d2422d966024e0deab03dd5a2c15f3d07a2308fbd9",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "sloth",
+    "file": "assets\\ingilizce\\kelime\\sloth.webp",
+    "sha256": "a52bc545e54dd0f99c0b70355e864c0b75336171c8595c293a7bbbd4a67e10a0",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "lizard",
+    "file": "assets\\ingilizce\\kelime\\lizard.webp",
+    "sha256": "ee1d0b8fbfea097097ddb67506659371464e190320cd339b6e6e0cd50fec4cb2",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "chameleon",
+    "file": "assets\\ingilizce\\kelime\\chameleon.webp",
+    "sha256": "7529b63c570d124634c1d6d3d5ea9112147537fd34965b173c738b7d64e63a84",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "meerkat",
+    "file": "assets\\ingilizce\\kelime\\meerkat.webp",
+    "sha256": "779d8770176ef44c09d6310c4483a97be0356657480a5624011f0d1b62b6a31e",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "llama",
+    "file": "assets\\ingilizce\\kelime\\llama.webp",
+    "sha256": "f074ff199a813ca8b61367f28530e1fed6228a83ee36968361dc38ea228d90b2",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "ox",
+    "file": "assets\\ingilizce\\kelime\\ox.webp",
+    "sha256": "e776401a04470f69ecb68b6b6c11cae34c19415c6ccebd9a00f0ef3542feae0e",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "moose",
+    "file": "assets\\ingilizce\\kelime\\moose.webp",
+    "sha256": "08f3f5e657fc999fe7562d99e3d6c22ae691fb8f02e38ea60b9039da94422149",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": [
+      [
+        218,
+        203,
+        28,
+        3,
+        29
+      ]
+    ]
+  },
+  {
+    "name": "lamb",
+    "file": "assets\\ingilizce\\kelime\\lamb.webp",
+    "sha256": "4f01fc6b4d406e2d5fd1da883a4e46253073a0b93b21e1e57c45c6cd40f9d361",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "puppy",
+    "file": "assets\\ingilizce\\kelime\\puppy.webp",
+    "sha256": "002be581cdc90e8866d25fc85773cebfd15c5fe7cef45ac749f3f4a782844aa1",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "kitten",
+    "file": "assets\\ingilizce\\kelime\\kitten.webp",
+    "sha256": "e91a60bf2b21a923c324bb5c732aaa38b4bfc335f5a16c399a9e8ef19ef63195",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "chick",
+    "file": "assets\\ingilizce\\kelime\\chick.webp",
+    "sha256": "3fb9b5db1a7bea03ff60118fc1167c119f2369a10b322e21f2927f3234469acb",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "pony",
+    "file": "assets\\ingilizce\\kelime\\pony.webp",
+    "sha256": "12f47b4d0e83e0ea68599a75507f05c685b6a7a004d2eaf8759d0efb9fa048d2",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "bull",
+    "file": "assets\\ingilizce\\kelime\\bull.webp",
+    "sha256": "a6df166e94c3b87c947d3e754fa691bdb64a2ade41017ce48ea27a2d1a8ff836",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": [
+      [
+        339,
+        301,
+        15,
+        8,
+        55
+      ]
+    ]
+  },
+  {
+    "name": "hamster",
+    "file": "assets\\ingilizce\\kelime\\hamster.webp",
+    "sha256": "480b5bbcdf9f4a389683e2abebb2ca54a3a0031d5c5d89d0c60dc0f97f5b95c0",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "goldfish",
+    "file": "assets\\ingilizce\\kelime\\goldfish.webp",
+    "sha256": "0fb7763018b76911a3f1b6ac80e6e75aba4ece976dcbb72a69a383e83b80a239",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "duckling",
+    "file": "assets\\ingilizce\\kelime\\duckling.webp",
+    "sha256": "b1cca5af157393d103843d7ec6e1aede53b5f9a1ed80bb7c80d9ba73a3485c47",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "calf",
+    "file": "assets\\ingilizce\\kelime\\calf.webp",
+    "sha256": "3c194502d1beefb4ad04711f82ca32b5294fc9cbc7bff72f4b262770e9bf95be",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "tadpole",
+    "file": "assets\\ingilizce\\kelime\\tadpole.webp",
+    "sha256": "24ccf7031addb853573e328715f60b10910d2cb9ccdff50a2f59a16dab329323",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  },
+  {
+    "name": "foal",
+    "file": "assets\\ingilizce\\kelime\\foal.webp",
+    "sha256": "684e1e31709b06cf6c1f057583335111688314f7f9e22aabf7104d65a1ab1a6a",
+    "size": [
+      800,
+      800
+    ],
+    "holesForReview": []
+  }
+]

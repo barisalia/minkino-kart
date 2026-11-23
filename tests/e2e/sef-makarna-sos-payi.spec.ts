@@ -1,4 +1,6 @@
 import {test,expect} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 for(const [masa,hedef,yapilan,puan] of [
   ['fiyonk-tavuk',1,[2],3],['fiyonk-sis',3,[1],2],['fiyonk-tavuk',1,[0,1],2],
@@ -39,7 +41,9 @@ for(const [masa,hedef,yapilan,puan] of [
   if(process.env.SEF_MAKARNA_PAY&&puan===3)await page.screenshot({path:process.env.SEF_MAKARNA_PAY});
   await oyun.locator('.mp-sos-bitti').tap();
   await oyun.locator('[data-mp-sus=peynir]').tap();await oyun.locator('.mp-sus-hedef').tap();
-  await oyun.locator('[data-mp-zil]').tap();await oyun.locator('.mp-sonraki').tap();
+  // Zilden sonra tabağın fotoğrafı çekilip atölye kapanır, masanın tepsisine dönülür (eski özet ve "sonraki" düğmesi yok).
+  await oyun.locator('[data-mp-zil]').tap();
+  await expect(oyun).toHaveCount(0);
   await page.reload();
   const k=await page.evaluate(id=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.masalar[id].tabaklar.makarna,masa);
   expect(k).toMatchObject({puan,makarna:{istenenSosAdedi:hedef,soslanan:maske}});

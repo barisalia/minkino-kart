@@ -4,7 +4,6 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { Kukla, type KuklaIskelet } from '../../src/karakter/kukla';
 import boy from '../../assets/karakter/aile-boy.json';
-import kino from '../../assets/karakter/kino-yeni/kino-yeni.json';
 import anne from '../../assets/karakter/anne/anne.json';
 import baba from '../../assets/karakter/baba/baba.json';
 import lokum from '../../assets/karakter/lokum/lokum.json';
@@ -12,8 +11,9 @@ import babaanne from '../../assets/karakter/babaanne/babaanne.json';
 import dede from '../../assets/karakter/dede/dede.json';
 
 type Kit = KuklaIskelet & { tepe?: number; cizgi: { kalinlik: number } };
+/** Eski Kino C kiti 2026-11-16'da silindi; aile kitleri onun birimiyle kuruldugu icin iki olcusu burada sabit */
+const kino = { zemin: 2290, cizgi: { kalinlik: 8.5 } };
 const KITLER: Record<string, { j: Kit; klasor: string }> = {
-  kino: { j: kino as unknown as Kit, klasor: 'kino-yeni' },
   anne: { j: anne as unknown as Kit, klasor: 'anne' },
   baba: { j: baba as unknown as Kit, klasor: 'baba' },
   lokum: { j: lokum as unknown as Kit, klasor: 'lokum' },
@@ -48,7 +48,7 @@ describe('aile kukla kitleri', () => {
       }
     });
     it(`${ad}: çizgi kalınlığı Kino ile aynı`, () => {
-      expect(j.cizgi.kalinlik).toBe(KITLER.kino.j.cizgi.kalinlik);
+      expect(j.cizgi.kalinlik).toBe(kino.cizgi.kalinlik);
     });
   }
 

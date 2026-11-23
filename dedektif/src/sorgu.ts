@@ -135,7 +135,7 @@ export async function sorgu(o: SorguSecenek): Promise<void> {
     // 3) Kino atılır: yanlış bir kartı gösterir, patisiyle damgalar
     const kinoKart = kartlar.find((k) => k.dataset.kart === halka.kinoKart);
     if (halka.kino && kinoKart && !kinoKart.classList.contains('dd-soluk')) {
-      oy.kinoPoz('isaret');
+      { const r = kinoKart.getBoundingClientRect(); oy.kinoPoz('isaret', r.left + r.width / 2); }
       oy.kinoIfade('heyecan', 1600);
       oy.kinoOynat('sevin', 700);
       void oy.zipla('kino', 22, 560);

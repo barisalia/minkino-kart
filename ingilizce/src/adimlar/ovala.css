@@ -1,0 +1,19 @@
+/* Ovala, Bul (22 Kasım 2026; ovala.ts). Önek: ing-ov-. Sahne 1600 × 1000, üstünde silinen örtü tuvali. */
+.ing-ov .ing-masa{justify-content:center}
+.ing-ov-duzen{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:0}
+.ing-ov-sahne{position:relative;flex:1 1 0;min-width:0;max-height:100%;aspect-ratio:16/10;border-radius:calc(3*var(--u));border:var(--cizgi) solid var(--murekkep);overflow:hidden;background:#fff;touch-action:none}
+.ing-ov-fon{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.ing-ov-ortu{position:absolute;inset:0;width:100%;height:100%;z-index:2;cursor:pointer;touch-action:none;transition:opacity .6s}
+.ing-ov-ortu.ing-ov-kapandi{animation:ing-ov-kapan .45s ease-out}
+@keyframes ing-ov-kapan{0%{opacity:0}100%{opacity:1}}
+.ing-ov-ortu.ing-ov-kalkti{opacity:0;pointer-events:none}
+.ing-ov-yer{position:absolute;z-index:3;padding:0;border:0;background:none;opacity:0;pointer-events:none}
+.ing-ov-yer:focus-visible{opacity:1;outline:calc(.5*var(--u)) solid #ffd34d;border-radius:calc(1*var(--u))}
+/* ortaya çıkan şeyin çevresinde kısa bir parıltı */
+.ing-ov-cikti{position:absolute;z-index:3;pointer-events:none;border-radius:50%;box-shadow:0 0 calc(3*var(--u)) calc(1*var(--u)) rgb(255 226 122 / .8);animation:ing-ov-cikti 1.2s ease-out forwards}
+@keyframes ing-ov-cikti{0%{opacity:0;scale:.7}25%{opacity:1;scale:1.05}100%{opacity:0;scale:1.15}}
+.ing-ov-tamam .ing-ov-fon{animation:ing-ov-tamam .8s cubic-bezier(.3,1.3,.6,1)}
+@keyframes ing-ov-tamam{0%{scale:1}40%{scale:1.03}100%{scale:1}}
+/* taslak yer tutucuları (örtünün altında) */
+.ing-ov-yer-tutucu{position:absolute;box-sizing:border-box;display:grid;place-items:center;border:max(1px,calc(.25*var(--u))) dashed #6f8f88;border-radius:calc(1*var(--u));background:rgb(255 255 255 / .7);color:#2f5d55;font:800 calc(1.8*var(--u))/1.1 system-ui,sans-serif}
+@media (prefers-reduced-motion:reduce){.ing-ov-ortu,.ing-ov-cikti,.ing-ov-tamam .ing-ov-fon{animation:none!important}}

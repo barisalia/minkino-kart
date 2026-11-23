@@ -1,5 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {tostKalitesi,tostFisleri,tostPisme,yeniTost,type TostFisi} from '../../sef/src/tost-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 async function rezervasyon(page:Page,fis:TostFisi){
   await page.goto('./sef/?test=1');
@@ -59,8 +61,10 @@ test('Mino seçilen yerdeki katları yer, doğru kızarmış tostu bir kez öder
   await expect(page.getByRole('meter')).toHaveAttribute('aria-valuetext','Altın renginde');
   await page.getByRole('button',{name:'Tost presini aç'}).click();
   await page.getByRole('button',{name:'Tostu tepsiye koy'}).click();
-  await expect(page.locator('.tepsi-yuva .tost-kat')).toHaveCount(2);
-  await page.locator('.tepsi-yuva').evaluate(async e=>{await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
+  // Tepsi tamamlanınca masa sahnesi açılır; seçilen yerdeki iki kat müşteriye sunulacak tepside.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  await expect(sunum.locator('.tost-kat')).toHaveCount(2);
+  await sunum.evaluate(async e=>{await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
   await tezgahResmi(page,'tost-servis');
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
   await expect(page.locator('.restoran-tost-lokmasi .tost-kat')).toHaveCount(2);

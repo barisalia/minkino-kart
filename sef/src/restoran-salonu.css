@@ -86,6 +86,10 @@
 }
 .salonda-servis-et{position:absolute;bottom:2%;left:50%;translate:-50% 0;z-index:4;display:flex;align-items:center;justify-content:center;gap:.5em;height:20%;max-width:64%;padding:.3em .8em;border:3px solid #343044;border-radius:1.4em;background:#a5ead2;box-shadow:0 3px #417469}
 .salonda-servis-et>*{width:clamp(46px,15cqh,108px);height:100%;object-fit:contain}
+/* Çorba ve salata tabağı (style.css'teki genel .yemek-cizimi width/height:auto) tepside 0×0'a düşüyordu: yüksekliği tepsi verir, en oranla gelir. */
+.salonda-servis-et>.yemek-cizimi{width:auto;height:100%;max-width:none}
+/* Pizza (firin.css: .pz-pizza mutlak konumlu, inset:0) tepsiyi 32 px'lik şeride indiriyordu: tepside kare ve akışta dursun. */
+.salonda-servis-et>.pz-pizza{position:relative;inset:auto;width:auto;height:100%;aspect-ratio:1}
 .salonda-servis-et>.ustalik-pecete{height:36%;width:18%;left:1%;bottom:5%;z-index:-1}
 .yan-servis-tabaklari{position:absolute;left:10%;right:10%;bottom:20%;height:17%;display:flex;align-items:center;justify-content:center;gap:2%}
 .yan-servis-tabaklari>*{max-width:90%;max-height:100%;min-width:0;flex:0 1 auto;object-fit:contain}

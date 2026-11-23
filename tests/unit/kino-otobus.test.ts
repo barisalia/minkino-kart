@@ -360,9 +360,11 @@ describe('Kino’nun Otobüsü V3: sözler, erişim, görseller, boylar', () => 
       const idler = menuOyunlari(u).map((k) => k.id);
       expect(idler.includes('kino-otobus')).toBe(false);
       expect(idler.includes('pasta')).toBe(false);
-      expect(idler.at(-1)).toBe('otobus');
+      // Lezzet Otobüsü arşivde (eski oyun): menüde görünmez, adresi ve kart verisi korunur
+      expect(idler.includes('otobus')).toBe(false);
     }
     const kart = OYUNLAR.find((k) => k.id === 'otobus')!;
+    expect(kart.arsiv).toBe(true);
     expect(kart.adres).toBe('./otobus/');
     expect(kart.zemin).toBe('kino-otobus/kapak');
     expect(fs.existsSync(path.resolve(__dirname, '../../assets/kino-otobus/kapak.webp'))).toBe(true);

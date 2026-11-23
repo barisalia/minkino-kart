@@ -1,8 +1,0 @@
-.sef-onerisi{position:absolute;left:5%;bottom:4%;width:40%;height:43%;display:grid;place-content:center}
-.sef-oneri-tahta{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
-.sef-oneri-fisleri{position:absolute;inset:30% 12% 22%;display:flex;align-items:center;justify-content:space-evenly;gap:.6cqw}
-.sef-oneri-fisi{position:relative;display:grid;place-items:center;min-width:0;width:31%;height:90%;padding:2%;border:2px solid #342e2a;border-radius:20%;background:var(--sef-kumanda-fonu, #fff3d4);box-shadow:0 .55cqh #302f2a;color:#205339;touch-action:manipulation}
-.sef-oneri-fisi>.tepsi-gida{position:relative;inset:auto;width:100%;height:100%;object-fit:contain}
-.sef-oneri-fisi>.ikon{display:none;position:absolute;right:-10%;bottom:-7%;width:34%;height:34%;padding:3%;border:1.5px solid #2e4a36;border-radius:50%;background:#a6e5b8}
-.sef-oneri-fisi[aria-pressed=true]{background:#b8eac5;transform:translateY(-4%)}.sef-oneri-fisi[aria-pressed=true]>.ikon{display:block;width:34%;height:34%}
-.kutlama-daveti{top:24%;left:17%}

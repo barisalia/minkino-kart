@@ -1,5 +1,7 @@
 import { expect,test } from '@playwright/test';
 import { hataTopla } from './yardimci';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test.beforeEach(async({page})=>{
   // Birlikte geliştirme sırasında Vite HMR başka bir istasyonun turunu sıfırlamasın.
@@ -71,8 +73,9 @@ test('Fiyonk porsiyonu, misafirin sos isteği ve tek servis kaydı korunur',asyn
     expect(tabaklar[tur]).toMatchObject({pisirmePuani:3,istekPuani:tur?2:3,makarna:{istenenSos:tur?'kirmizi':'yesil',sos:'yesil'}});
     expect(tabaklar[tur].resim).toMatch(/^data:image\/webp;base64,/);
   }
-  await page.getByRole('button',{name:'Hazırladığım tabaklar'}).click();
-  await expect(page.locator('.defter-fotograf')).toHaveCount(2);
+  // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; iki tabak da fotoğrafıyla defter kaydında (gecmis) duruyor.
+  const defter=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis);
+  expect(defter.map((k:{resim:string})=>k.resim.slice(0,23))).toEqual(['data:image/webp;base64,','data:image/webp;base64,']);
   expect(hatalar).toEqual([]);
 });
 test('Aynı tenceredeki üç fiyonk ayrı kıvamda süzülür, arka planda pişmez ve tabak defterine geçer',async({page,context})=>{
@@ -119,8 +122,10 @@ test('Aynı tenceredeki üç fiyonk ayrı kıvamda süzülür, arka planda pişm
   await page.screenshot({path:test.info().outputPath('servis.png')});
   const foto=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis[0]);
   expect(foto).toMatchObject({istekPuani:3,pisirmePuani:2,puan:2});
-  await page.getByRole('button',{name:'Geri',exact:true}).first().tap();await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-  await expect(page.locator('.defter-fotograf')).toHaveAttribute('src',foto.resim);
+  // Tabak albümü 16 Kasım'da kaldırıldı; tabak fotoğrafı defter kaydında kalır.
+  expect(foto.resim).toMatch(/^data:image\/webp;base64,/);
+  await page.getByRole('button',{name:'Geri',exact:true}).first().tap();
+  await expect(page.locator('[data-tarif=makarna] .kart-yildiz')).toBeVisible();
 });
 test('Eski kayıttan açılan süzgeçteki fiyonklar önceki normal kıvamını korur',async({page})=>{
   await page.goto('./sef/?test=1');

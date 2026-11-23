@@ -1,4 +1,6 @@
 import {expect,test,type Page} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test.use({hasTouch:true,isMobile:true,viewport:{width:740,height:360}});
 test.beforeEach(async({page})=>{await page.routeWebSocket(u=>u.port==='5173',()=>{});});
@@ -52,9 +54,13 @@ test('Atölyeden yapılan minik kekin farklı büyüklükte krema çiçekleri ve
     localStorage.setItem('minkino-sef-v1',JSON.stringify(d));
   });
   await page.reload();await page.getByRole('button',{name:'Orman Meyveli Minik Kek vitrinden tepsiye al'}).tap();
+  // Tepsi tamamlanınca masa sahnesi açılır: kek müşteriye sunulacak tepside, servisten sonra masadaki yuvada.
+  const sunum=page.getByRole('button',{name:'Tepsiyi müşteriye sun'});
+  const sunulacak=sunum.locator('.pastane-porsiyonu');
+  await expect(sunulacak).toHaveAttribute('data-tabak','sari');await expect(sunulacak.locator('.mk-meyve')).toHaveAttribute('data-meyve','yaban');
+  await sunum.tap();
   const tabak=page.locator('.tepsi-yuva .pastane-porsiyonu');
-  await expect(tabak).toHaveAttribute('data-tabak','sari');await expect(tabak.locator('.mk-meyve')).toHaveAttribute('data-meyve','yaban');
-  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  await expect(tabak).toHaveAttribute('data-tabak','sari');
   await expect(page.getByRole('button',{name:/15 jeton kazanıldı/})).toBeVisible();
   const d=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler);
   expect(d.masalar['minik-kek'].tatliPuani).toBe(3);
@@ -84,6 +90,9 @@ test('Müşterinin kekini yanlış süslemek puanı düşürür; kremayı ve mey
   await page.getByRole('button',{name:'Tatlıyı tepsiye koy'}).tap();
   const puan=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler.masalar['minik-kek'].tatliPuani);
   expect(await puan()).toBe(1);
+  // Karşılaştırma ve düzeltme servisten sonra masada.
+  await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
+  await expect(page.getByRole('button',{name:/jeton kazanıldı/})).toBeVisible();
   await page.getByRole('button',{name:/Minik Kek siparişi ile tabağı karşılaştır/}).tap();
   await page.getByRole('button',{name:'Kekin kremasını ve meyvelerini değiştir'}).tap();
   await page.getByRole('button',{name:'Vanilya kreması'}).tap();

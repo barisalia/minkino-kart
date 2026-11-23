@@ -1,6 +1,6 @@
 .restoran-girisleri .tatli-giris{background:#ffe0e5;gap:.6cqw;padding-inline:1cqw}
 .restoran-girisleri .tatli-giris>img{width:6.2cqh}
-.servis-jetonu{position:absolute;left:50%;top:15%;translate:-50% 0;display:flex;align-items:center;gap:.55em;padding:.25em .7em;border:2px solid #50382e;border-radius:2em;background:var(--sef-kumanda-fonu, #fff0b4);color:#4a3026;font-size:clamp(14px,3.6cqh,26px);line-height:1}
+.servis-jetonu{position:absolute;left:50%;top:15%;translate:-50% 0;display:flex;align-items:center;gap:.55em;padding:.25em .7em;border:2px solid #50382e;border-radius:2em;background:var(--sef-kumanda-fonu, #fff0b4);color:#4a3026;font-size:clamp(14px,3.6cqh,26px);line-height:1;min-height:44px}
 .restoran-ilk-tadim .servis-jetonu{visibility:hidden}
 .servis-jetonu>.ikon{width:1em;height:1em}
 .masa-gunu{position:absolute;top:3.5%;left:12%;z-index:6;pointer-events:none}

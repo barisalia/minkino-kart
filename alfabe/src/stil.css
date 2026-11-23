@@ -39,7 +39,7 @@ button:focus-visible,a:focus-visible{outline:4px solid #05695e;outline-offset:4p
 .at-harf:active,.at-basla:active,.at-sec:active{transform:translateY(2px)}
 .at-harf b{font-weight:600}.at-harf span{font-weight:500;font-size:.58em}
 .at-harf i{position:absolute;right:3px;top:2px;color:#195b42;font:700 clamp(12px,1vw,18px)/1 system-ui}
-.at-sahne{position:relative;height:min(720px,calc(100svh - 100px));min-height:330px;overflow:hidden;border:2px solid var(--murekkep);border-radius:clamp(16px,2vw,30px);background:#ffd0a6}
+.at-sahne{position:relative;height:min(940px,calc(100svh - 96px));min-height:330px;overflow:hidden;border:2px solid var(--murekkep);border-radius:clamp(16px,2vw,30px);background:#ffd0a6}
 .at-oyun{height:100%;width:100%;display:grid;align-items:center}
 .at-sahne-1,.at-sahne-2{padding:clamp(8px,3vw,38px)}
 .at-sahne .yz-atolye{position:relative;align-self:center}
@@ -119,3 +119,101 @@ button:focus-visible,a:focus-visible{outline:4px solid #05695e;outline-offset:4p
 [data-yas="2-3"] .hk-kart:last-child{grid-column:auto;width:100%}
 
 @media(max-width:580px){.at-ust:has(.at-yas-sec){grid-template-columns:auto 1fr auto}}
+
+@media (max-width:600px), (orientation:landscape) and (max-height:550px){
+  .at-sahne:has(.yz-atolye){background:#e4f4f0;border:0;padding:6px 12px;height:auto;min-height:calc(100svh - 66px)}
+  .at-sahne .yz-masalar{grid-template-columns:minmax(0,1fr)}
+  .yz-masalar[data-sira=ceren] section:last-child,.yz-masalar[data-sira=sen] section:first-child,.at-sahne .yz-maskot,.at-sahne .yz-ogretmen{display:none}
+  .at-sahne .yz-masalar .yz-kagit{height:clamp(190px,65svh,560px);background:#fff;border:1px solid #87aa9f;box-shadow:none}
+  .at-sahne .yz-atolye .yz-kontrol{width:100%;margin-top:4px;flex-direction:row;justify-content:space-between}
+  .at-sahne .yz-palet{margin:0}
+  .at-sahne-7 .hy-defter{height:clamp(220px,50svh,460px);background-color:white}
+}
+
+/* iPad ve büyük ekran: ders sahnesi ekranı doldurduğu için Mıknatıslar ve Obur da büyür (17 Kasım denetimi). */
+@media (min-width:1000px) and (min-height:760px){
+  .at-sahne-4 .mik-ders{gap:clamp(1rem,3vh,2.2rem)}
+  .at-sahne-4 .mik-levha{width:min(88%,980px);min-height:clamp(150px,20vh,230px);padding:2% 5%}
+  .at-sahne-4 .mik-yuva,.at-sahne-4 .mik-tas,.at-sahne-4 .mik-hayalet{min-width:clamp(82px,9vh,120px);height:clamp(90px,10vh,128px);font-size:clamp(3.3rem,6.4vh,4.8rem)}
+  .at-sahne-4 .mik-ders .mik-sozcuk{font-size:clamp(1.9rem,3.6vh,2.7rem)}
+  .at-sahne-4 .mik-ipucu-resim{width:clamp(46px,12vh,132px);height:clamp(46px,12vh,132px)}
+  .at-sahne-3 .hk{width:min(100%,1120px)}
+  .at-sahne-3 .hk-masa{width:min(100%,1060px)}
+  .at-sahne-3 .hk-kartlar{max-width:min(680px,70vh)}
+  .at-sahne-3 .hk-istasyon{width:min(100%,560px,62vh)}
+  .at-sahne-3 .hk .hk-kart{aspect-ratio:1.02}
+  /* defter, Ceren satırı (17svh) ve sahne boşluğu (2×3vw) düşülerek kalan yere sığar: 60vh ile 1024×768, 1180×820,
+     1194×834 ve 1280×800 iPad'lerde renk kalemleri ve göz düğmesi sahnenin altında yarıya kesiliyordu (18 Kasım) */
+  .at-sahne-1 .yz-kagit,.at-sahne-2 .yz-kagit{height:clamp(300px,calc(100svh - min(17svh,145px) - min(6vw,76px) - 170px),660px)}
+  /* Yaz ve hayvanı çağır ekrana sığar (öteki adımların sahnesiyle aynı boy): sabit 1.12 oranla 1280×800 tablette sahne
+     ekrandan uzuyor, "B harfini yaz" yazısı ve defter düğmeleri aşağıda kalıyordu (18 Kasım) */
+  .at-sahne-7 .hy-oyun{height:min(940px,calc(100svh - 96px))}
+  .at-sahne-7 .hy-sahne,.at-sahne-7 .hy-kagit{min-height:0;height:100%;overflow:hidden}
+  .at-sahne-7 .hy-man{aspect-ratio:auto;flex:1 1 0;min-height:0}
+  .at-sahne-7 .hy-defter{flex:1 1 0;height:auto;min-height:0}
+  .hm-menu{width:min(1240px,94%);min-height:calc(100svh - 110px)}
+}
+
+/* Yatay telefon: yazma defterleri ve "Yaz ve hayvanı çağır" kaydırmadan ekrana sığar (17 Kasım denetimi). */
+@media (orientation:landscape) and (max-height:550px){
+  .at-sahne .yz-masalar .yz-kagit{height:calc(100svh - 176px)}
+  .at-sahne-7 .hy-oyun{height:calc(100svh - 58px);align-items:stretch}
+  .at-sahne-7 .hy-sahne,.at-sahne-7 .hy-kagit{min-height:0;height:100%;overflow:hidden}
+  .at-sahne-7 .hy-sahne{display:flex;flex-direction:column}
+  .at-sahne-7 .hy-man{aspect-ratio:auto;flex:1 1 0;min-height:0}
+  .at-sahne-7 .hy-kagit{display:flex;flex-direction:column}
+  .at-sahne-7 .hy-defter{flex:1 1 0;height:auto;min-height:0}
+  .at-sahne-3 .hk-istasyon{max-width:min(52svh,240px)}
+  .at-sahne-3 .hk-kartlar{max-width:min(64svh,330px)}
+  .at-sahne-4 .mik-ipucu-resim{width:min(15svh,64px);height:min(15svh,64px)}
+}
+/* Adım geçişi (18 Kasım 2026): yeni adım yumuşakça belirir, o anki nokta dolarken bir kez zıplar.
+   Yalnız opaklık: transform kullanılmaz (adımların sabit konumlu uçan parçaları ve dokunma ölçümleri bozulmasın). */
+.at-sahne>.at-oyun{animation:at-gel .3s ease-out}
+@keyframes at-gel{from{opacity:0}}
+.at-adim i.at-simdi{animation:at-nokta .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes at-nokta{0%{transform:scale(.4);background:#ffc137}60%{transform:scale(1.35);background:#ffc137}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.at-sahne>.at-oyun,.at-adim i.at-simdi{animation:none}}
+/* Harf rafı yatay iPad / tablette kaydırmadan sığar (18 Kasım): 1024×768'den 1280×800'e Hece Oyunu ve Hece Evleri
+   kartları alttan 55–151 px kesik kalıyordu, çünkü karolar ekran genişliğiyle büyüyor, yüksekliğe bakmıyordu.
+   Burada raf yüksekliğe göre daralır (tahta resmi oranını korur), harf karoları ve Hece kartları ekran boyuna göre ölçülür.
+   12,9" iPad (1366×1024), telefon ve dikey ekranlar değişmez. */
+@media (orientation:landscape) and (min-height:551px) and (max-height:980px){
+  .at-raf{width:min(1176px,calc(100% - 40px),calc((100svh - 92px) * 1.34));margin-bottom:10px}
+  .at-raf .at-album-sira{margin:8px 0 6px}
+  .at-raf .at-album-sira h2{font-size:clamp(21px,3.3svh,30px)}
+  .at-raf .at-harf{font-size:clamp(25px,5.4svh,51px)}
+  /* hece-evleri.css iki kartı yan yana koyar (.at-raf:has(.at-evler-karti)); burada boyları ekran yüksekliğine bağlanır */
+  .at-raf.at-raf .at-hece-karti{margin:clamp(10px,1.8svh,18px) 0 0}
+  .at-raf.at-raf .at-oyun-karti{min-height:0;padding:clamp(8px,1.3svh,12px) clamp(60px,7svh,76px) clamp(8px,1.3svh,12px) 14px;gap:clamp(10px,1.8svh,18px)}
+  .at-raf.at-raf .at-hece-ornek{flex-direction:row;gap:6px;padding:5px 9px}
+  .at-raf.at-raf .at-hece-ornek img{width:clamp(40px,6svh,58px);height:clamp(40px,6svh,58px)}
+  .at-raf.at-raf .at-hece-ornek b{font-size:clamp(16px,2.5svh,22px)}
+  .at-raf.at-raf .at-hece-yazi strong{font-size:clamp(22px,3.4svh,32px);white-space:nowrap}
+  .at-raf.at-raf .at-hece-yazi small{font-size:clamp(13px,1.8svh,16px)}
+  .at-raf.at-raf .at-hece-oyna{width:clamp(44px,6.2svh,54px)}
+  .at-raf.at-raf .at-evler-ornek .he-kart-evi{--ev:clamp(38px,5.4svh,52px)}
+}
+/* ---------- Kalite denetimi 22 Kasım gecesi (ekip/KALITE-KURALLARI.md 8) ----------
+   "A ile başla" ve harf karoları en az 64 px. Telefon yatayda (≤ 450 px yükseklik) harflerin üç sırası da ilk ekranda:
+   karşılama tahtası Ceren solda, yazı ve düğme yan yana ince bir tahta şeridine iner (tahta resmi bu boyda yayvanlaşıyordu;
+   şerit düz tahta yeşili, ince koyu kontur), alt yazı gizlenir. Hece kartları kaydırınca görünür. */
+.at-karsila-metin .at-basla{min-height:64px;padding-inline:20px}
+.at-raf .at-harf{min-height:64px}
+@media (orientation:landscape) and (max-height:450px){
+  .at-ust{min-height:42px;padding-block:2px}
+  .at-raf .at-karsila{aspect-ratio:auto;height:72px;min-height:0;max-height:none;background:#2f5546;border:2px solid var(--murekkep);border-radius:18px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
+  .at-raf .at-portre{left:8px;bottom:0;width:72px;height:100%}
+  .at-raf .at-portre .alf-ceren{height:118%}
+  .at-raf .at-karsila-metin{inset:0 60px 0 92px;flex-direction:row;align-items:center;justify-content:space-between;gap:14px}
+  .at-raf .at-karsila-metin h1{font-size:26px;white-space:nowrap}
+  .at-raf .at-karsila-metin p{display:none}
+  .at-raf .at-karsila-metin .at-basla{min-height:64px;height:64px;padding:2px 18px;font-size:18px;flex-shrink:0}
+  .at-raf .at-karsila .at-tanitim{top:50%;right:8px;transform:translateY(-50%)}
+  .at-raf .at-album-sira{margin:4px 0 3px}
+  .at-raf .at-album-sira h2{font-size:20px}
+  .at-raf .at-album-ac{min-height:36px;padding-block:0}
+  .at-raf .at-album-ac img{width:66px}
+  .at-raf .at-harfler{gap:5px}
+  .at-raf .at-harf{height:64px;font-size:28px;align-items:center}
+}

@@ -1,0 +1,32 @@
+/* Alphabet Train (abc-tren.ts). Önek ing-tren-. Tren yatay kayar; vagonlar uç uca, lokomotif önde (sağda). */
+.ing-tren-alan{position:absolute;inset:calc(11*var(--u)) 0 0;display:grid;grid-template-rows:minmax(0,1fr) auto;align-items:end;background:linear-gradient(#cdeffd 0 70%,#f4e2b8 70%)}
+.ing-tren-kaydir{position:relative;overflow-x:auto;overflow-y:hidden;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:calc(4*var(--u));-webkit-overflow-scrolling:touch}
+.ing-tren{display:flex;flex-direction:row;justify-content:flex-start;align-items:flex-end;gap:calc(.6*var(--u));width:max-content;padding:0 calc(4*var(--u))}
+.ing-tren-yol{height:calc(4*var(--u));min-width:100%;background:#8a6d4a repeat-x left center/auto 100%;border-top:calc(.5*var(--u)) solid #555}
+.ing-tren-dugme{padding:0!important;border:0!important;background:none!important;box-shadow:none!important}
+.ing-tren-vagon{position:relative;display:block;width:calc(22*var(--u));aspect-ratio:420/380}
+.ing-tren-vagon-resim{position:absolute;inset:0;width:100%;height:100%}
+.ing-tren-vagon[data-yer-tutucu=true]{border:calc(.5*var(--u)) solid #7a5530;border-radius:calc(1.6*var(--u));background:#d9a25f}
+.ing-tren-tabela{position:absolute;left:16.7%;top:10.5%;width:66.7%;height:63.2%;display:grid;place-items:center;border-radius:calc(1*var(--u));background:#fff8e8}
+.ing-tren-harf{width:92%;height:92%;object-fit:contain}
+.ing-tren-harf-yazi{font-weight:900;font-size:calc(9*var(--u));color:#e8573f}
+.ing-tren-bos{font-weight:900;font-size:calc(8*var(--u));color:#c2a77d}
+.ing-tren-lokomotif{display:block;width:calc(30*var(--u));aspect-ratio:640/480}
+.ing-tren-lokomotif img{width:100%;height:100%;object-fit:contain}
+.ing-tren-loko-yer{display:grid;place-items:center;width:100%;height:100%;border:calc(.5*var(--u)) dashed #c2571a;border-radius:calc(2*var(--u));font-weight:900;font-size:calc(4*var(--u));color:#c2571a;background:#fff8}
+.ing-tren-dokunuldu .ing-tren-tabela{box-shadow:0 0 0 calc(.5*var(--u)) #7cc45a}
+.ing-tren-zipla{animation:ing-tren-zipla .5s cubic-bezier(.3,1.6,.5,1)}
+.ing-tren-gidiyor{transition:transform 2.4s ease-in;transform:translateX(120vw)}
+.ing-tren-kisa{justify-content:center;width:100%;box-sizing:border-box}
+.ing-tren-kisa .ing-tren-vagon{width:calc(15*var(--u))}
+.ing-tren-kisa .ing-tren-lokomotif{width:calc(20*var(--u))}
+.ing-tren-eksik .ing-tren-tabela{animation:ing-tren-nabiz 1.2s ease-in-out infinite}
+.ing-tren-secimler{display:flex;justify-content:center;gap:calc(3*var(--u));padding:calc(2*var(--u))}
+.ing-tren-secim{display:grid;place-items:center;width:calc(16*var(--u));aspect-ratio:1;padding:calc(1*var(--u))!important;background:#fff!important;border-radius:calc(3*var(--u))!important}
+.ing-tren-secim-resim{width:100%;height:100%;object-fit:contain}
+.ing-tren-secim b{font-size:calc(10*var(--u));font-weight:900;color:#e8573f}
+.ing-tren-son{grid-row:1/3;align-self:center;justify-self:center;display:grid;justify-items:center;gap:calc(2*var(--u));padding:calc(3*var(--u));border-radius:calc(3*var(--u));background:#fffdf6ee}
+.ing-tren-son h2{margin:0;font-size:calc(5*var(--u))}
+@keyframes ing-tren-zipla{40%{transform:translateY(-18%)}}
+@keyframes ing-tren-nabiz{50%{box-shadow:0 0 0 calc(.8*var(--u)) #ffd25a}}
+@media (prefers-reduced-motion:reduce){.ing-tren-zipla,.ing-tren-eksik .ing-tren-tabela{animation:none}.ing-tren-gidiyor{transition:none}}

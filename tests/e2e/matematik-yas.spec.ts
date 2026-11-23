@@ -1,14 +1,21 @@
 import { expect, test } from '@playwright/test';
+// Tezgâhtaki oyuncaklar sürekli "nefes alır" (yalnız hareket azaltılmamışken); Playwright kımıldayan öğeye tıklamaz.
+// Oyun, hareket azaltılınca nefesi durdurur (stil.css · prefers-reduced-motion): testler bu ayarla koşar.
+test.use({ reducedMotion: 'reduce' });
 test.beforeEach(async ({page}) => {
   const ekran = page.viewportSize();
   if (ekran && ekran.width < 600 && ekran.height > ekran.width) await page.setViewportSize({width: ekran.height, height: ekran.width});
+  // Ceren Öğretmen'in Sayılar dersi bitmiş say: bu testler Sayı masasının sonraki oyunlarını dener (ders: matematik-ceren.spec.ts).
+  await page.addInitScript(()=>{if(!localStorage.getItem('minkino-matematik-ceren-sayilar-v1')) localStorage.setItem('minkino-matematik-ceren-sayilar-v1',JSON.stringify({ biten: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], simdi: 10, tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-sekiller-v1')) localStorage.setItem('minkino-matematik-ceren-sekiller-v1', JSON.stringify({ biten: ['daire', 'kare', 'ucgen', 'dikdortgen'], simdi: 'dikdortgen', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-olcu-v1')) localStorage.setItem('minkino-matematik-ceren-olcu-v1', JSON.stringify({ biten: ['buyuk-kucuk', 'uzun-kisa', 'cok-az', 'agir-hafif'], simdi: 'agir-hafif', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-oruntu-v1')) localStorage.setItem('minkino-matematik-ceren-oruntu-v1', JSON.stringify({ biten: ['renk', 'sekil', 'ses', 'kendi'], simdi: 'kendi', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-onluk-v1')) localStorage.setItem('minkino-matematik-ceren-onluk-v1', JSON.stringify({ biten: ['onluk', 'on-uc', 'abakus', 'yirmi'], simdi: 'yirmi', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-topla-v1')) localStorage.setItem('minkino-matematik-ceren-topla-v1', JSON.stringify({ biten: ['fazla', 'doldur', 'eksik', 'on'], simdi: 'on', tanitildi: true, bitti: true }));});
 });
 
 test('İlk açılışta seçilen beş yaş üç matematik yoluna bağlanır ve kaldığı turu korur', async ({ page }) => {
-  test.setTimeout(120000);
+  // Dokuz tam sayfa açılışı: geliştirme sunucusunda tek başına ~1,7 dk sürer; paralel koşuda 2 dk yetmiyordu.
+  test.setTimeout(240000);
   await page.goto('/?test=1&yassor=1');
   for (const [yas, baslangic, sonraki, anahtar] of [
-    [2, 1, 2, 'minik-'], [4, 2, 2, 'dort-'], [5, 1, 2, ''],
+    // İlk boncuk turu: 2–3 yaşta bir, 4 yaşta iki, 5 yaşta beş meyve; ardından paylaştırma (tur-sirasi.ts).
+    [2, 1, 2, 'minik-'], [4, 2, 2, 'dort-'], [5, 5, 2, ''],
   ] as const) {
     if (yas !== 2) await page.getByLabel('Yaş aralığını seç').click();
     await expect(page.locator('.ym-yas-kart')).toHaveCount(5);
@@ -17,17 +24,18 @@ test('İlk açılışta seçilen beş yaş üç matematik yoluna bağlanır ve k
     await page.locator('[data-oyun="matematik"]').click();
     await page.getByLabel('Sayı masası', {exact: true}).click();
     for(let i=1;i<=10;i++){await page.getByLabel(i+' numaralı kutu',{exact:true}).click();await page.locator('.kule-hedef').click();}
-    await expect(page.locator('.say-kumesi img')).toHaveCount(baslangic);
+    // Kule bitince Ceren "On kat oldu! Dinle, kulen şarkı söylüyor." der, ardından kule şarkısı çalar; sonra ilk tur.
+    await expect(page.locator('.say-kumesi img')).toHaveCount(baslangic, { timeout: 15_000 });
     await page.locator('.boncuk').nth(baslangic - 1).click();
     await page.locator('.onay').click();
     await expect.poll(() => page.evaluate(key => JSON.parse(localStorage[key]).adim, 'minkino-matematik-1-' + anahtar + 'sayi')).toBe(1);
+    await expect(page.locator('.pano .tabak')).toHaveCount(sonraki);
     if (yas < 5) {
-      await expect(page.locator('.pano .tabak')).toHaveCount(sonraki);
-      await page.getByLabel('Çilekli piknik').click();
+      await page.getByLabel('Mandalinalı piknik').click();
       await page.locator('.tabak').first().click();
       await page.reload();
       await page.getByLabel('Sayı masası', {exact: true}).click();
-      await expect(page.locator('.tabak img').first()).toHaveAttribute('src', /cilek/);
+      await expect(page.locator('.tabak img').first()).toHaveAttribute('src', /mandalina/);
     }
     await page.goto('/?test=1');
   }
@@ -38,22 +46,23 @@ test('İlk açılışta seçilen beş yaş üç matematik yoluna bağlanır ve k
     await page.goto('/matematik/');
     await page.getByLabel('Sayı masası', {exact: true}).click();
     if (yas === 3) await expect(page.locator('.tabak img')).toHaveCount(1);
-    else await expect(page.locator('.say-kumesi img')).toHaveCount(2);
+    else await expect(page.locator('.sofra .tabak')).toHaveCount(2);
     await page.goto('/?test=1');
   }
 });
 
-for (const [yas, onek, araba, kopru, fener, tuslar] of [
-  [3, 'minik-', 1, 11, 15, 2],
-  [4, 'dort-', 2, 7, 15, 3],
-  [6, '', 1, 8, 14, 4],
+// Adımlar yaşın tur sırasındaki yerlerdir (tur-sirasi.ts): araba (tur 1), kurdele köprüsü, kendi fener gösterisi.
+for (const [yas, onek, araba, kopru, fener, tuslar, taslar] of [
+  [3, 'minik-', 2, 3, 2, 2, 3],
+  [4, 'dort-', 2, 3, 2, 3, 4],
+  [6, '', 2, 0, 5, 4, 3],
 ] as const) {
   test(yas + ' yaşta araba, ölçü köprüsü ve kendi fener gösterisi tamamlanır', async ({ page }) => {
     await page.addInitScript(y => localStorage.setItem('minkino-kartlar-v1', JSON.stringify({ yas: y })), yas);
     await page.goto('/matematik/');
     await page.evaluate(([grup, a, k, f]) => {
       for (const [oyun, adim] of [['sekil', a], ['olcu', k], ['fener', f]]) {
-        localStorage.setItem('minkino-matematik-1-' + grup + oyun, JSON.stringify({ adim, yer: 0, secimler: [] }));
+        localStorage.setItem('minkino-matematik-1-' + grup + oyun, JSON.stringify({ adim, yer: 0, secimler: [], misketiGecti: true, surum: 2 }));
       }
     }, [onek, araba, kopru, fener] as const);
     await page.reload();
@@ -75,7 +84,7 @@ for (const [yas, onek, araba, kopru, fener, tuslar] of [
     await page.locator('.k2').click();
     const tas = page.getByLabel('Bir ölçü taşı yerleştir');
     const adet = await page.locator('.taslar i').count();
-    expect(adet).toBe(yas === 3 ? 3 : 4);
+    expect(adet).toBe(taslar);
     for (let i = 0; i < adet; i++) await tas.click();
     await expect(page.locator('.kopru-tamam')).toBeVisible();
     await page.locator('.ev').click();

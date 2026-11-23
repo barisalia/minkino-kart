@@ -2,6 +2,7 @@
   "acilis": "Merhaba! Hadi oynayalım!",
   "yas_sor": "Kaç yaşındasın?",
   "yas_secildi": "{yas} yaş! Harika!",
+  "menu_bolumleri": ["Dersler", "Etkinlikler", "Kitaplar", "Oyunlar", "Çizgi Filmler"],
   "tema_sor": "Bir paket seç!",
   "tema_kilitli": "{kalan} kart daha topla!",
   "tema_abonelik": "Bu paket Premium'da.",

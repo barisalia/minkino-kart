@@ -31,7 +31,7 @@
 }
 .sm-fis-dilimler{display:flex;align-items:center;justify-content:center;gap:1cqh;height:61%;padding-left:1.3cqh;border-left:2px dashed #c69767}
 .restoran-siparis>.sm-fis-dilimler img{width:8cqh;height:100%;object-fit:contain}
-.sm-dinle{position:absolute;z-index:2;right:2%;top:32%;width:max(40px,9cqh);height:max(40px,9cqh);padding:1.6cqh;border-radius:50%;border:.4cqh solid #363b34;background:var(--sef-kumanda-fonu, #fff1cc);color:#35352d}.sm-dinle .ikon{width:100%;height:100%}
+.sm-dinle{position:absolute;z-index:2;right:2%;top:32%;width:max(44px,9cqh);height:max(44px,9cqh);padding:1.6cqh;border-radius:50%;border:.4cqh solid #363b34;background:var(--sef-kumanda-fonu, #fff1cc);color:#35352d}.sm-dinle .ikon{width:100%;height:100%}
 .tepsi-sahnesi:has(>.tepsi-ust button[aria-label="Sesi aç"]) .sm-dinle{display:none}
 .sm-makina{position:absolute;left:49%;bottom:8%;width:49cqh;height:68cqh}
 .sm-motor{position:absolute!important;left:6%;bottom:0;width:77%!important;height:43%!important}
@@ -98,14 +98,14 @@
 .sm-renk-damgasi{display:inline-block;flex:none;width:6.2cqh;height:7.6cqh;background:var(--sm-renk);border:max(1px,.36cqh) solid #302832;border-radius:65% 35% 55% 45% / 69% 37% 63% 31%;rotate:-22deg;box-sizing:border-box}
 .tepsi-tadim-parcalar .sm-renk-damgasi{width:23px;height:29px}
 .sm-denemeler{position:absolute;left:7%;top:34%;width:35%;display:grid;grid-auto-flow:column;grid-auto-columns:max(50px,31%);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;gap:.8cqh;padding:0 0 .8cqh;scrollbar-width:thin}
-.sm-alan .sm-deneme{width:100%;min-height:26px;display:flex;align-items:center;justify-content:center;gap:.4cqh;padding:.65cqh .2cqh;border:.3cqh solid #805d46;border-radius:1.4cqh;background:var(--sef-kumanda-fonu, #fff8e3)}
+.sm-alan .sm-deneme{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:.4cqh;padding:.65cqh .2cqh;border:.3cqh solid #805d46;border-radius:1.4cqh;background:var(--sef-kumanda-fonu, #fff8e3)}
 .sm-deneme img{width:29%;height:3.8cqh;object-fit:contain}
 .sm-deneme .sm-renk-damgasi{width:2.8cqh;height:3.7cqh;border-width:1px}
 .sm-yeniden{position:absolute;left:7%;bottom:13%;display:grid;place-items:center;width:max(44px,11cqh);height:max(44px,11cqh);border:.45cqh solid #39322f;border-radius:50%;background:var(--sef-kumanda-fonu, #ffedc8);box-shadow:0 .6cqh #976c49}
 .sm-yeniden .ikon{width:58%;height:58%}
 .sm-tezgah:has(.sm-buz-rafi) .sm-yeniden{left:auto;right:8%;bottom:34%}
 
-.sm-hedef-rengi{display:flex;align-items:center;justify-content:center;gap:.8cqh;min-width:44px;min-height:36px;padding:0;border:0;background:transparent;color:#473835;cursor:pointer}
+.sm-hedef-rengi{display:flex;align-items:center;justify-content:center;gap:.8cqh;min-width:44px;min-height:44px;padding:0;border:0;background:transparent;color:#473835;cursor:pointer}
 .sm-hedef-rengi .ikon{width:2.8cqh;height:2.8cqh}
 .sm-deneme:active,.sm-hedef-rengi:active{transform:scale(.94)}
 
@@ -160,7 +160,7 @@
 
 /* The order and the child's mixture share the same scale for side-by-side comparison. */
 .sm-fis{background:#d8f4ff;border-color:#31374a;gap:.6cqh;box-shadow:0 .65cqh #487082}
-.sm-karsilastir{display:flex;align-items:center;justify-content:center;gap:.4cqh;background:#fff;border:0;border-left:2px dashed #72949c;padding:0 .8cqh;border-radius:0 1.4cqh 1.4cqh 0;min-height:40px}
+.sm-karsilastir{display:flex;align-items:center;justify-content:center;gap:.4cqh;background:#fff;border:0;border-left:2px dashed #72949c;padding:0 .8cqh;border-radius:0 1.4cqh 1.4cqh 0;min-height:44px}
 .sm-karsilastir[data-eslesti=true]{background:#bbefcf}
 .sm-karsilastir>.sm-bardak.tepsi-gida{height:max(32px,9.5cqh);width:auto;aspect-ratio:370/500}
 .sm-karsilastir>.sm-bardak>img{width:100%;height:100%}

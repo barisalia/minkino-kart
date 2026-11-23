@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 // Artwork is published to the shared running Vite server while this suite plays.
 // Keep the running game on the same page until the player explicitly reloads it.
@@ -48,10 +50,13 @@ test('Çocuğun süsü vitrinden tadıma taşınır ve eşleşen sipariş yalnı
   await page.getByRole('button',{name:'Yıldız Kurabiye vitrinden tepsiye al'}).click();
   const vitrin=page.getByRole('dialog',{name:'Vitrinden bir porsiyon seç'});
   await vitrin.locator('button.vitrin-tabagi').filter({has:page.locator('[data-sus="sus-005"]')}).click();
-  await expect(page.locator('.tepsi-istek .sus-istek-rozeti')).toHaveAttribute('data-uydu','true');
+  // Tepsi tamamlanınca masa sahnesi açılır; süslü kurabiye müşteriye sunulacak tepside.
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.tatli-susu')).toHaveAttribute('data-sus','sus-005');
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).click();
   await expect(page.locator('.restoran-tatli-lokmasi')).toHaveAttribute('data-sus','sus-005');
   await expect(page.getByRole('button',{name:/7 jeton kazanıldı/})).toBeVisible();
+  // Sipariş satırı masada servisten sonra görünür: eşleşen süs rozeti onaylı.
+  await expect(page.locator('.tepsi-istek .sus-istek-rozeti')).toHaveAttribute('data-uydu','true');
   await page.reload();
   const t=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler);
   expect(t.masalar.kurabiye.odenen).toBe(7);

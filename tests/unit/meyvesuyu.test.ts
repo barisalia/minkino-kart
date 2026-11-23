@@ -5,7 +5,7 @@ import maymun from '../../assets/karakter-iskelet/maymun.json';
 import { normal, tumCumleler } from '../../src/audio/cumleler';
 import { kisilik } from '../../src/karakter/kisilik';
 import { YASLAR } from '../../src/engine/types';
-import { BILESEN, dogruSecim, KAPASITE, karisim, meyveSuyuCumleleri, MEYVE_RENGI, msDenetle, msIstekUret, renkKaristir, SU_KODU, tarif, type SuRengi } from '../../pazar/src/meyvesuyu';
+import { BILESEN, dogruSecim, KAPASITE, karisim, meyveSuyuCumleleri, MEYVE_RENGI, msDenetle, msIstekUret, msMusteriSayisi, renkKaristir, SU_KODU, tarif, type SuRengi } from '../../pazar/src/meyvesuyu';
 
 /** Tekrarlanabilir rastgele sayı (mulberry32) */
 function tohumlu(t: number) {
@@ -53,9 +53,9 @@ describe('meyve suyu: renk karışımı', () => {
     }
     expect(tarif('turuncu')).toEqual(['kırmızı', 'sarı']);
   });
-  it('bütün meyve görselleri var (yaban mersini kodla çizilir)', () => {
-    const gorseller = import.meta.glob('../../assets/meyveler/*.webp');
-    for (const m of Object.keys(MEYVE_RENGI)) if (m !== 'yabanmersini') expect(`../../assets/meyveler/${m}.webp` in gorseller).toBe(true);
+  it('bütün meyve görselleri var (yaban mersini pazar setinde)', () => {
+    const gorseller = import.meta.glob(['../../assets/meyveler/*.webp', '../../assets/pazar/yabanmersini.webp']);
+    for (const m of Object.keys(MEYVE_RENGI)) expect(`../../assets/${m === 'yabanmersini' ? 'pazar' : 'meyveler'}/${m}.webp` in gorseller, m).toBe(true);
   });
 });
 
@@ -93,6 +93,24 @@ describe('meyve suyu: istekler', () => {
       expect(dogruSecim(ist)).not.toBeNull();
     }
   });
+  it('turda 2–3 yaşta 3, 4 yaşta 4, 5–6 yaşta 3 müşteri (her ara renk bir kez); bir turda renk yinelenmez', () => {
+    expect(msMusteriSayisi(3)).toBe(3);
+    expect(msMusteriSayisi(4)).toBe(4);
+    expect(msMusteriSayisi(5)).toBe(3);
+    expect(msMusteriSayisi(6)).toBe(3);
+    for (const y of YASLAR) {
+      for (let t = 1; t <= 100; t++) {
+        const rnd = tohumlu(t * 17 + y);
+        const renkler: SuRengi[] = [];
+        for (let i = 0; i < msMusteriSayisi(y); i++) renkler.push(msIstekUret(y, i, rnd, renkler).hedef);
+        expect(new Set(renkler).size, renkler.join()).toBe(renkler.length);
+        if (y >= 5) expect(new Set(renkler)).toEqual(new Set(['turuncu', 'yeşil', 'mor']));
+      }
+    }
+    // dördüncü müşteri gelse bile (hepsi istendiyse) bir öncekiyle aynı renk istemez
+    const uc: SuRengi[] = ['turuncu', 'yeşil', 'mor'];
+    for (let t = 1; t <= 50; t++) expect(msIstekUret(5, 3, tohumlu(t), uc).hedef).not.toBe('mor');
+  });
   it('art arda aynı renk istenmez', () => {
     for (const y of YASLAR) {
       for (let t = 1; t <= 50; t++) {
@@ -124,7 +142,7 @@ describe('meyve suyu: cümleler', () => {
     expect(meyveSuyuCumleleri()).toContain('Kırmızı meyve suyu lütfen!');
   });
   it('düğme ve balon yazıları seslendirilmez', () => {
-    for (const k of ['meyvesuyu', 'karistir', 'blender', 'bardak', 'yabanmersini', 'pazar'] as const) expect(hepsi.has(P.arayuz[k])).toBe(false);
+    for (const k of ['meyvesuyu', 'karistir', 'yabanmersini', 'pazar'] as const) expect(hepsi.has(P.arayuz[k])).toBe(false);
   });
 });
 

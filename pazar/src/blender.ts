@@ -61,20 +61,6 @@ const PIPET = `<svg class="ms-bd-pipet" viewBox="0 0 40 110" aria-hidden="true">
   <path d="M8 104 L20 22 Q22 10 34 6" fill="none" stroke="#f0413f" stroke-width="6" stroke-dasharray="7 7" stroke-linecap="butt"/>
 </svg>`;
 
-/** Kodla çizilmiş yaban mersini (assets/meyveler'de yok): üç parlak mavi tane, taç, kalın kahve kontur */
-export const YABANMERSINI = `<svg class="pz-resim" viewBox="0 0 120 120" role="img" aria-hidden="true">
-  <defs><radialGradient id="ms-mersin" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8fc3ff"/><stop offset=".5" stop-color="#3e6fd8"/><stop offset="1" stop-color="#28389a"/></radialGradient></defs>
-  <g stroke="${K}" stroke-width="6">
-    <circle cx="40" cy="74" r="28" fill="url(#ms-mersin)"/>
-    <circle cx="82" cy="78" r="26" fill="url(#ms-mersin)"/>
-    <circle cx="62" cy="42" r="27" fill="url(#ms-mersin)"/>
-  </g>
-  <g fill="#28389a" stroke="${K}" stroke-width="3" stroke-linejoin="round">
-    <path d="M62 30 l5 7 8 -1 -5 6 3 8 -8 -3 -6 5 -1 -8 -7 -4 8 -3z" transform="translate(-3 0) scale(.9) translate(6 3)"/>
-  </g>
-  <g fill="#fff" opacity=".7"><ellipse cx="30" cy="62" rx="7" ry="4" transform="rotate(-30 30 62)"/><ellipse cx="74" cy="68" rx="6" ry="3.5" transform="rotate(-30 74 68)"/><ellipse cx="52" cy="30" rx="7" ry="4" transform="rotate(-30 52 30)"/></g>
-</svg>`;
-
 /** Düğme ikonu: pipetli portakal suyu bardağı */
 export const BARDAK_IKON = `<svg viewBox="0 0 48 48" aria-hidden="true">
   <path d="M30 14 L34 3 L40 5" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>

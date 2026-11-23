@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test('Havanda ayrı yapraklar ezilir, yarım pesto kaydı ve tabağın gerçek dokusu korunur',async({page})=>{
   test.setTimeout(110000);
@@ -27,7 +29,8 @@ test('Havanda ayrı yapraklar ezilir, yarım pesto kaydı ve tabağın gerçek d
   await expect(page.locator('.mp-tabak-iri-yaprak')).toHaveCount(2);
   await page.locator('[data-mp-sus=peynir]').click();await page.locator('.mp-sus-hedef').click();
   await page.locator('[data-mp-zil]').click();
-  await expect(page.locator('.mp-oyun .sef-yildizlar')).toHaveAttribute('data-puan','2');
+  // Zilden sonra atölye kapanır, tabak rafın müşterisinin (Zıpzıp) masasına gider; puan kayıtta (eski özet ekranı yok).
+  await expect(page.getByRole('button',{name:'Zıpzıp masasına götür'})).toBeVisible();
   await page.reload();
   const foto=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis[0]);
   expect(foto).toMatchObject({puan:2,istekPuani:3,pisirmePuani:3,makarna:{istenenSos:'yesil',sos:'yesil',pestoMaskesi:2}});

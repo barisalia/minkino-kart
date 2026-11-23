@@ -26,7 +26,7 @@ import {
   YARDIM,
   yakinlikSiniri,
 } from '../../dedektif/src/mantik';
-import { eksikler, EKSIK_LISTESI, resim, surumTablosu, YUVA } from '../../dedektif/src/resimler';
+import { eksikler, EKSIK_LISTESI, resim, surumTablosu, YUVA, yeniOdalar } from '../../dedektif/src/resimler';
 import { kayit, sifirla, vakaCozuldu } from '../../dedektif/src/kayit';
 
 /** Basit tohumlu rastgele */
@@ -123,7 +123,8 @@ describe('Dedektif Mino: vaka zinciri (ipucu → kart → demek ki)', () => {
     const a = yollariDiz(() => 0.1);
     const b = yollariDiz(() => 0.9);
     expect(a).toEqual({ sol: 'mutfak', sag: 'yatak' });
-    expect(b).toEqual({ sol: 'yatak', sag: 'mutfak' });
+    // yeni çizgide kapılar sabit (koridor çiziminde solda mutfak, sağda yatak odası)
+    expect(b).toEqual(yeniOdalar ? { sol: 'mutfak', sag: 'yatak' } : { sol: 'yatak', sag: 'mutfak' });
     // perspektif: kapıya doğru izler küçülür
     for (const yan of ['sol', 'sag'] as const) {
       const iz = yolIzleri(yan);

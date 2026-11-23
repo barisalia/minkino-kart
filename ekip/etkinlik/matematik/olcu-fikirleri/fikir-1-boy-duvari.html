@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fikir 1 · Boy Duvarı (taslak)</title>
+<!--
+  Ölçü tezgâhı · kurdele turunun yerine "Boy Duvarı" taslağı (19 Kasım 2026).
+  Yalnız var olan çizimler + CSS hareketi; kodla çizim yok. Hayvanlar yer tutucudur (Astra Matematik çizgisinde yeniden çizecek).
+  ?kare=a  ölçüyor (3 tahta yerinde, 4. iniyor) · ?kare=b  5+ yaş: iki hayvanı karşılaştır · ?oynat=1  canlı akış
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #f7d29c; overflow: hidden; font-family: ui-rounded, 'Nunito', system-ui, sans-serif; }
+  #sahne {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+    width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; container-type: size;
+    background: url('../../../../assets/matematik/kule-masasi.webp') center / 100% 100%;
+    overflow: hidden;
+  }
+  .nav { position: absolute; top: 2.5%; width: max(44px, 6%); aspect-ratio: 1; display: grid; place-items: center;
+    border: 2px solid #34241d; background: #fff1bd; border-radius: 36%; box-shadow: 0 .4cqw #a86a35; }
+  .nav img { width: 72%; height: 72%; object-fit: contain; }
+  .ev { left: 1.2%; } .ses { right: 1.2%; }
+  .pullar { position: absolute; top: 3.2%; left: 50%; translate: -50% 0; display: flex; gap: .8cqw; }
+  .pullar i { width: 1.4cqw; aspect-ratio: 1; border-radius: 50%; background: #fff3cf; border: 2px solid #b88452; }
+  .pullar i.dolu { background: #79cba8; } .pullar i.simdi { background: #ff9a6b; }
+
+  /* Hayvan ve tahtaları masanın üstünde, aynı taban çizgisinde */
+  .hayvan { position: absolute; bottom: 11%; transform-origin: 50% 100%; filter: drop-shadow(0 .5cqh 0 #c98a4a55); }
+  .hayvan img { display: block; height: 100%; }
+  .yigin { position: absolute; bottom: 11%; display: flex; flex-direction: column-reverse; align-items: center; }
+  .tahta { position: relative; width: 12.5cqw; aspect-ratio: 480 / 208; margin-top: -.25cqw; display: grid; place-items: center; }
+  .tahta img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .tahta b { position: relative; font: 900 3.4cqh/1 ui-rounded, 'Nunito', system-ui; color: #7a4a22; opacity: .9; }
+  .tahta.yeni b { color: #c0391b; }
+  .kaynak { position: absolute; right: 7%; bottom: 11%; display: flex; flex-direction: column-reverse; align-items: center; }
+  .kaynak .tahta { width: 11cqw; margin-top: -1.6cqw; rotate: -4deg; }
+  .kaynak .tahta:nth-child(2) { rotate: 3deg; } .kaynak .tahta:nth-child(3) { rotate: -2deg; }
+  .kaynak .tahta b { display: none; }
+  .inen { position: absolute; }
+
+  /* Ölçü çizgisi değil: hayvanın başının hizası tahtaya değince ikisi birlikte parlar */
+  .parla { animation: parla .9s ease-out both; }
+  @keyframes parla { 0% { filter: brightness(1); } 40% { filter: brightness(1.25) drop-shadow(0 0 1.2cqw #fff6b0); } 100% { filter: brightness(1); } }
+  .zipla { animation: zipla .75s cubic-bezier(.3,.7,.3,1) 2; }
+  @keyframes zipla { 0%,100% { translate: 0 0; scale: 1; } 30% { translate: 0 -9%; scale: 1.02 .97; } 60% { translate: 0 0; scale: 1.04 .95; } }
+  .sec { outline: .55cqw solid #ffd23f; outline-offset: .6cqw; border-radius: 3cqw; }
+  .sonuc { position: absolute; display: grid; place-items: center; min-width: 7cqw; height: 7cqw; padding: 0 1.6cqw;
+    border: .35cqw solid #28201b; border-radius: 3.5cqw; background: #ffd23f; font: 900 4.6cqh/1 ui-rounded, 'Nunito', system-ui; color: #2b201b; }
+  .yildiz { background: #fff; }
+</style>
+</head>
+<body>
+<div id="sahne">
+  <div class="nav ev"><img src="../../../../assets/hazirlik/dugmeler/ev.webp" alt=""></div>
+  <div class="nav ses"><img src="../../../../assets/hazirlik/dugmeler/dinle.webp" alt=""></div>
+  <div class="pullar"><i class="dolu"></i><i class="simdi"></i><i></i><i></i></div>
+</div>
+<script>
+  const A = '../../../../assets/';
+  const s = document.getElementById('sahne');
+  const q = new URLSearchParams(location.search);
+  const kare = q.get('kare') || 'a';
+  const el = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
+  const tahta = (n, cls = '') => '<div class="tahta ' + cls + '"><img src="' + A + 'matematik/kule-kutusu.webp" alt=""><b>' + (n || '') + '</b></div>';
+
+  function hayvan(ad, sol, boy) {
+    const h = el('<div class="hayvan" style="left:' + sol + '%;height:' + boy + '%"><img src="' + A + 'hayvanlar/' + ad + '.webp" alt=""></div>');
+    s.append(h); return h;
+  }
+  function yigin(sol, adet, cls = '') {
+    const y = el('<div class="yigin" style="left:' + sol + '%"></div>');
+    for (let i = 1; i <= adet; i++) y.insertAdjacentHTML('beforeend', tahta(i, i === adet ? cls : ''));
+    s.append(y); return y;
+  }
+  function kaynak(adet) {
+    const k = el('<div class="kaynak"></div>');
+    for (let i = 0; i < adet; i++) k.insertAdjacentHTML('beforeend', tahta(0));
+    s.append(k); return k;
+  }
+
+  if (kare === 'a') {
+    // 4 yaş: zürafa kaç tahta boyunda? Üç tahta yerinde, dördüncüsü yığının üstüne iniyor.
+    hayvan('zurafa', 22, 51);
+    const y = yigin(47, 3);
+    kaynak(2);
+    const inen = el(tahta(4, 'yeni inen'));
+    inen.style.cssText = 'left:47%;bottom:56%;rotate:-6deg;filter:drop-shadow(0 1.6cqh 0 #a86a3540)';
+    s.append(inen);
+  } else if (kare === 'b') {
+    // 5+ yaş: iki dostu da ölçtü; daha uzun olanı seçer. Zürafa 5, tavşan 2 tahta.
+    const z = hayvan('zurafa', 12, 51); yigin(33, 5);
+    const t = hayvan('tavsan', 57, 21); yigin(76, 2);
+    z.classList.add('sec');
+    s.append(el('<div class="sonuc" style="left:33.4%;top:26%">5</div>'));
+    s.append(el('<div class="sonuc" style="left:76.4%;top:52%">2</div>'));
+  }
+
+  if (q.get('oynat')) {
+    // Canlı akış (video): tahtalar tek tek iner, her biri sayılır; beşinci başa değince zürafa sevinir.
+    s.querySelectorAll('.hayvan,.yigin,.kaynak,.inen,.sonuc').forEach((e) => e.remove());
+    const z = hayvan('zurafa', 22, 51);
+    const y = el('<div class="yigin" style="left:47%"></div>'); s.append(y);
+    const k = kaynak(5);
+    let n = 0;
+    const in_ = () => {
+      n++;
+      k.lastElementChild?.remove();
+      const t = el(tahta(n, 'yeni'));
+      y.append(t);
+      t.animate([{ transform: 'translate(22cqw,-30cqh) rotate(-12deg)', opacity: .9 }, { transform: 'translate(0,-3cqh) rotate(2deg)', offset: .8 }, { transform: 'none' }], { duration: 620, easing: 'cubic-bezier(.3,.7,.3,1)' });
+      t.querySelector('b').animate([{ scale: .2, opacity: 0 }, { scale: 1.4, opacity: 1, offset: .6 }, { scale: 1 }], { duration: 420, delay: 380, fill: 'backwards' });
+      y.querySelectorAll('.tahta').forEach((x, i) => { if (i < n - 1) x.classList.remove('yeni'); });
+      if (n < 5) setTimeout(in_, 1000);
+      else setTimeout(() => {
+        z.classList.add('zipla'); t.classList.add('parla');
+        s.append(el('<div class="sonuc" style="left:47.4%;top:26%">5</div>'));
+      }, 800);
+    };
+    setTimeout(in_, 900);
+  }
+</script>
+</body>
+</html>

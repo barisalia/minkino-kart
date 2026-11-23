@@ -1,6 +1,8 @@
 import {expect,test,type Locator,type Page} from '@playwright/test';
-import {bardakUyuyor,bosSmoothie,meyveler,renkAdi,smoothieOku,smoothiePuani,type Meyve} from '../../sef/src/smoothie/tarif';
+import {bardakUyuyor,bosSmoothie,meyveler,renkAdi,smoothieOku,smoothiePuani,tezgahRenkleri,type Meyve} from '../../sef/src/smoothie/tarif';
 import {tostKalitesi,yeniTost} from '../../sef/src/tost-tarifi';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const boy={width:667,height:375};
 test.beforeEach(async({page})=>{
@@ -39,7 +41,8 @@ test('Lokum kırmızı, fazla dolu ve pürüzsüz bardağı alır; şef aynı si
   expect(await masa(page,'sade-simit')).toMatchObject({icecekPuani:1,smoothie:{meyveler:['cilek','cilek'],bardak:100}});
   await page.reload({waitUntil:'domcontentloaded'});
   await page.getByRole('button',{name:'Meyve karışımı yeniden hazırla'}).tap();
-  await karistir(page,['cilek','muz'],true);
+  // Lokum'un siparişi yarım bardak, taneli pembe: kırmızı (çilek) ile beyaz (süt).
+  await karistir(page,['cilek','sut'],true);
   await page.getByRole('button',{name:'Biraz daha doldur'}).tap();
   for(let i=0;i<2;i++)await page.locator('.sm-dok-tusu').evaluate(b=>(b as HTMLButtonElement).click());
   const geriDok=page.getByRole('button',{name:'Bardaktan sürahiye biraz geri dök'});
@@ -126,28 +129,34 @@ test('Karışık simitte sıra korunsun; iki yarıyı ters sırada kaplamak da t
   await page.getByRole('button',{name:'Simidi pişirmeye başla'}).tap();
   await expect(page.getByRole('meter')).toHaveAttribute('aria-valuetext','Altın renginde');
   await page.getByRole('button',{name:'Simidi fırından çıkar'}).tap();await page.getByRole('button',{name:'Simidi tepsiye koy'}).tap();
-  await expect(page.locator('.tepsi-yuva .simit-halkasi')).toHaveAttribute('data-ters','true');
+  // Tepsi tamamlanınca masa sahnesi açılır; ters kaplanan simit müşteriye sunulacak tepside aynen durur.
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.simit-halkasi')).toHaveAttribute('data-ters','true');
   await page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).tap();
   await expect(page.getByRole('button',{name:'3 jeton kazanıldı',exact:false})).toBeVisible();
 });
 
-test('Altı meyvede yirmi bir karışım; eş renkli tarifler aynı puanı kazanır, kıvam ve doluluk ayrıca ölçülür',()=>{
-  expect(meyveler).toHaveLength(6);
+// Barış, 14 Kasım (KULLANICI-KURALLARI · Minik Şef): tezgâhta seçilebilen dört renk kırmızı, sarı, mavi ve beyaz;
+// sarı ile mavi yeşil, kırmızı ile beyaz pembe olur. Eski kayıtlar için veri 8 meyveyi tanımaya devam eder.
+test('Tezgâhın dört renginde on karışım ve on ayrı renk; renk, kıvam ve doluluk ayrı ayrı ölçülür',()=>{
+  expect([...tezgahRenkleri]).toEqual(['cilek','muz','yabanmersini','sut']);
+  expect(meyveler).toEqual(expect.arrayContaining([...tezgahRenkleri]));
   let ciftSayisi=0;
   const renkler=new Set<string>();
-  for(const [i,a] of meyveler.entries())for(const b of meyveler.slice(i)){
+  for(const [i,a] of tezgahRenkleri.entries())for(const b of tezgahRenkleri.slice(i)){
     ciftSayisi++;expect(renkAdi([a,b])).toBeTruthy();renkler.add(renkAdi([a,b]));expect(renkAdi([a,b])).toBe(renkAdi([b,a]));
   }
-  expect(ciftSayisi).toBe(21);expect(renkler.size).toBe(12);
-  expect(renkAdi(['yabanmersini','yabanmersini'])).toBe(renkAdi(['kivi','yabanmersini']));
-  const t={...bosSmoothie(),evre:'servis' as const,meyveler:['cilek','muz'] as Meyve[],bardak:50,karisim:55};
+  expect(ciftSayisi).toBe(10);expect(renkler.size).toBe(10);
+  expect(renkAdi(['muz','yabanmersini'])).toBe('Açık yeşil');
+  expect(renkAdi(['cilek','sut'])).toBe('Pembe');
+  const t={...bosSmoothie(),evre:'servis' as const,meyveler:['cilek','sut'] as Meyve[],bardak:50,karisim:55};
   const hedef={yarim:true,kivam:'taneli' as const};
-  expect(smoothiePuani(t,['cilek','muz'],undefined,hedef)).toBe(3);
+  expect(smoothiePuani(t,['cilek','sut'],undefined,hedef)).toBe(3);
   for(const s of [{...t,bardak:90},{...t,karisim:100}]){
-    expect(smoothiePuani(s,['cilek','muz'],undefined,hedef)).toBe(2);
+    expect(smoothiePuani(s,['cilek','sut'],undefined,hedef)).toBe(2);
   }
-  expect(smoothiePuani({...t,meyveler:['seftali','cilek']},['cilek','muz'],undefined,hedef)).toBe(3);
-  expect(smoothiePuani({...t,meyveler:['kivi','kivi']},['cilek','muz'],undefined,hedef)).toBe(1);
+  // Yakın renk (krem) yarım puan alır, bambaşka renk (açık yeşil) en düşük puanı.
+  expect(smoothiePuani({...t,meyveler:['muz','sut']},['cilek','sut'],undefined,hedef)).toBe(2);
+  expect(smoothiePuani({...t,meyveler:['muz','yabanmersini']},['cilek','sut'],undefined,hedef)).toBe(1);
   expect(smoothieOku(t)).toMatchObject({karisim:55,bardak:50,evre:'servis'});
   expect([39,40,65,66].map(d=>bardakUyuyor(d,hedef))).toEqual([false,true,true,false]);
   const tost=yeniTost();tost.kizartma='citir';tost.katlar=[{tur:'kasar',x:30,y:50},{tur:'kasar',x:60,y:50},{tur:'domates',x:50,y:60}];
@@ -177,7 +186,8 @@ test('Dede’nin siparişindeki porsiyon, kıvam ve dilimler dar ekranda ayrı a
   }
   if(process.env.SEF_SECIM_KARE)await page.screenshot({path:process.env.SEF_SECIM_KARE+'/dede-fis.png',animations:'disabled'});
   await fis.tap();await page.locator('.tepsi-yuva[data-parca=icecek]').tap();
-  await karistir(page,['kivi','muz'],true);
+  // Doğru renk (sarı + mavi = açık yeşil) ama taneli: Dede pürüzsüz istemişti, iki yıldız.
+  await karistir(page,['muz','yabanmersini'],true);
   await page.getByRole('button',{name:'Bardağa buz küpü ekle'}).tap();
   await page.getByRole('button',{name:'Meyve karışımını tepsiye koy'}).tap();
   expect(await masa(page,'cift-domates')).toMatchObject({icecekPuani:2});
@@ -200,7 +210,8 @@ test('Dede’nin siparişindeki porsiyon, kıvam ve dilimler dar ekranda ayrı a
 test('Parmak bırakılınca blender ve sürahi durur; yarım bardak ve iri parçalar korunur',async({page})=>{
   await page.setViewportSize({width:844,height:390});
   await ac(page,'sade-simit');await page.locator('.tepsi-yuva[data-parca=icecek]').tap();
-  await page.locator('[data-meyve=muz]').tap();await page.locator('[data-meyve=cilek]').tap();
+  // Lokum'un pembesi: beyaz (süt) ile kırmızı (çilek).
+  await page.locator('[data-meyve=sut]').tap();await page.locator('[data-meyve=cilek]').tap();
   await page.locator('.sm-kapak').tap();
   const cdp=await page.context().newCDPSession(page);
   async function tutuldu(tus:Locator,hedef:()=>Promise<void>){

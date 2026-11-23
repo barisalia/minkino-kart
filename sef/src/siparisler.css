@@ -51,7 +51,7 @@
 .siparisler .siparis-karti[data-tezgah] .kart-ad{display:grid;align-content:center;max-width:none;padding:0 2px;background:var(--sef-kumanda-fonu, #fff9e8);border-top:1px solid #b69977;font-size:clamp(10px,3.13cqh,23px);line-height:1.03}
 .raf-gorseli{display:block;position:relative;min-height:0;min-width:0;overflow:hidden}
 .raf-gorseli>img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
-.tarif-raf-oku{position:absolute;right:9.7%;bottom:.8%;width:clamp(58px,10cqw,96px);min-height:36px;height:8%;padding:0;display:flex;align-items:center;justify-content:center;gap:7px;border:2px solid #44332f;border-radius:24px;background:var(--sef-kumanda-fonu, #fff1c2);color:#44332f;box-shadow:0 2px #ad7651;touch-action:manipulation}
+.tarif-raf-oku{position:absolute;right:9.7%;bottom:.8%;width:clamp(58px,10cqw,96px);min-height:44px;height:8%;padding:0;display:flex;align-items:center;justify-content:center;gap:7px;border:2px solid #44332f;border-radius:24px;background:var(--sef-kumanda-fonu, #fff1c2);color:#44332f;box-shadow:0 2px #ad7651;touch-action:manipulation}
 .tarif-raf-oku .ikon{width:18px;height:18px}
 .raf-noktalari{display:flex;gap:4px}.raf-noktalari i{width:6px;height:6px;border-radius:50%;background:#ccb389}.tarif-raf-oku[data-raf="1"] i:first-child,.tarif-raf-oku[data-raf="2"] i:last-child{background:#487e68}
 .tarif-raf-oku[data-raf="2"] .ikon{order:-1}

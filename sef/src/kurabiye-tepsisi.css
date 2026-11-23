@@ -27,7 +27,7 @@
 .kb-sec[aria-pressed=true],.kb-torba[aria-pressed=true]{background:#b5e5c9;border-color:#3e634e;box-shadow:0 .65cqh #679878}
 .kb-editor{display:block;position:relative;aspect-ratio:1;width:min(43cqh,55%);padding:0;background:none;border:0;touch-action:none;cursor:crosshair}
 .kb-editor>.kb-tane{width:100%;height:100%}
-.kb-geri{position:absolute;right:0;bottom:3%;width:clamp(40px,10cqh,66px);aspect-ratio:1;border-radius:50%;padding:1.8cqh}
+.kb-geri{position:absolute;right:0;bottom:3%;width:clamp(44px,10cqh,66px);aspect-ratio:1;border-radius:50%;padding:1.8cqh}
 .kb-geri .ikon{width:100%;height:100%}.kb-geri:disabled{opacity:.45}
 .kb-torbalar{display:flex;gap:1.5cqh}
 .kb-torba{width:clamp(48px,16cqh,100px);height:clamp(44px,14cqh,86px)}

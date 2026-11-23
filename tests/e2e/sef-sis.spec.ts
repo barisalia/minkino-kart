@@ -1,5 +1,7 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
 import { hataTopla } from './yardimci';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const sayfa = (p: Page) => p.locator('.sis-oyunu');
 const kart = (p: Page) => p.getByRole('button', { name: 'Renkli Şişler siparişi', exact: true });
@@ -9,6 +11,17 @@ async function asama(p: Page, durak: string) {
   await expect(sayfa(p)).toHaveAttribute('data-sis-asama', durak);
   await expect.poll(() => sayfa(p).locator('img:visible').evaluateAll(imgs =>
     imgs.every(i => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
+}
+// Servis edilince şiş atölyesi kapanır, tabak rafın müşterisinin masasına gider (eski "son" özet ekranı açılmaz).
+// Puan servisten sonra masada (sahnedeki genel yıldız) ve defter kaydında (gecmis) okunur.
+const sunum = (p: Page) => p.getByRole('button', { name: 'Tepsiyi müşteriye sun' });
+async function masayaGitti(p: Page) {
+  await expect(sunum(p)).toBeVisible();
+  await expect(sayfa(p)).toHaveCount(0);
+}
+async function masadaPuan(p: Page, puan: number, klavye = false) {
+  if (klavye) await sunum(p).press('Enter'); else await sunum(p).tap();
+  await expect(p.locator('.tepsi-sahnesi>.sef-yildizlar')).toHaveAttribute('data-puan', String(puan));
 }
 type Nokta = {x:number;y:number};
 async function yer(el: Locator, x=.5, y=.5) {
@@ -79,18 +92,17 @@ test('Şişler gerçek menüden hazırlanır, çevrilir, soslanır ve çocuğun 
   await asama(page,'servis');
   await buton(page,'Nane tabak seç').tap();
   await buton(page,'Siparişi sun').tap();
-  await asama(page,'son');
+  await masayaGitti(page);
   expect((await kayit(page)).servis).toBe(1);
-  await expect(sayfa(page).locator('.sk-odul')).toHaveAttribute('data-puan','3');
-  await page.reload();await asama(page,'son');
+  await page.reload();await masayaGitti(page);
   expect((await kayit(page)).servis).toBe(1);
-  await buton(page,'Yeni sipariş seç').tap();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar',exact:true}).tap();
-  const yemek=page.getByRole('dialog').getByRole('button',{name:'Renkli Şişler',exact:true});
-  await expect(yemek).toHaveCount(1);
-  await expect(yemek.locator('img')).toHaveAttribute('src',/^data:image\/webp;base64,/);
-  await expect.poll(()=>yemek.locator('img').evaluate(el=>(el as HTMLImageElement).naturalWidth)).toBe(420);
-  await page.getByRole('button',{name:'Tabak defterini kapat',exact:true}).tap();
+  // Tabak albümü 16 Kasım'da (c3d9d09a) kaldırıldı; çocuğun şiş fotoğrafı masadaki tepside.
+  const foto=sunum(page).locator('img.defter-fotograf');
+  await expect(foto).toHaveCount(1);
+  await expect(foto).toHaveAttribute('src',/^data:image\/webp;base64,/);
+  await expect.poll(()=>foto.evaluate(el=>(el as HTMLImageElement).naturalWidth)).toBe(420);
+  await masadaPuan(page,3);
+  await page.getByRole('button',{name:'Geri',exact:true}).tap();
   await kart(page).tap();await asama(page,'islat');
   expect((await kayit(page)).tur).toBe(1);
   await page.keyboard.press('Escape');
@@ -125,9 +137,9 @@ test('Şişler klavye ile pişer; seçimi değiştirmek yalnız sosu sıfırlar'
   await buton(page,'Servis tabağı seç').press('Space');
   await buton(page,'Sarı tabak seç').press('Space');
   await buton(page,'Renkli şişi servis et').press('Enter');
-  await asama(page,'son');
+  await masayaGitti(page);
   expect((await kayit(page)).tabak).toBe('tabak-sari');
-  await expect(sayfa(page).locator('.sk-odul')).toHaveAttribute('data-puan','2');
+  await masadaPuan(page,2,true);
 });
 test('Eksik ve farklı şişi çocuğun kendi tabağı olarak saklar',async({page})=>{
   await page.setViewportSize({width:844,height:390});
@@ -162,9 +174,9 @@ test('Eksik ve farklı şişi çocuğun kendi tabağı olarak saklar',async({pag
   await expect(sayfa(page).locator('.sk-dilim')).toHaveCount(1);
   await expect(sayfa(page).locator('.sk-dilim')).toHaveAttribute('src',/ananas-pismis-feslegen/);
   await buton(page,'Krem tabak seç').tap();
-  await buton(page,'Siparişi sun').tap();await asama(page,'son');
-  await expect(sayfa(page).locator('.sk-odul')).toHaveAttribute('data-puan','1');
-  await expect(sayfa(page).locator('.sk-odul i[data-dolu=false]')).toHaveCount(2);
+  await buton(page,'Siparişi sun').tap();await masayaGitti(page);
+  await masadaPuan(page,1);
+  await expect(page.locator('.tepsi-sahnesi>.sef-yildizlar>i[data-dolu=false]')).toHaveCount(2);
   expect((await kayit(page)).lokmalar).toEqual(['ananas']);
   const sonuc=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
   expect(sonuc.puan).toBe(1);
@@ -217,7 +229,7 @@ test('İki yüzde etkin süre, erken dönüp geri pişirme ve kapalı sekmede be
   await buton(page,'Fesleğen sosunu seç').tap();const hedef=buton(page,'Sosu şişin üzerine sür');
   await kaydir(page,await yer(hedef,.21,.5),await yer(hedef,.74,.5));
   await buton(page,'Servis tabağı seç').tap();await buton(page,'Nane tabak seç').tap();
-  await buton(page,'Renkli şişi servis et').tap();await asama(page,'son');
+  await buton(page,'Renkli şişi servis et').tap();await masayaGitti(page);
   const servis=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
   expect(servis).toMatchObject({puan:2,istekPuani:3,pisirmePuani:2,tercih:{yuzler:['kavruk','tam']}});
 });

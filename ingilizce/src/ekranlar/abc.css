@@ -1,0 +1,44 @@
+/* Polly's ABC (abc.ts). Ölçüler İngilizce uygulamasının birimiyle (--u); sınıflar ing-abc- önekli. */
+.ing-abc{position:absolute;inset:calc(11*var(--u)) 0 0;display:grid;grid-template-columns:24% minmax(0,1fr);align-items:center;padding:0 calc(3*var(--u)) calc(3*var(--u)) calc(1*var(--u));
+  background:#fff6e6 center/cover no-repeat}
+.ing-abc-polly{align-self:end;justify-self:center;width:100%;max-height:100%;padding:0!important;border:0!important;background:none!important;box-shadow:none!important}
+.ing-abc-polly img,.ing-abc-polly .ing-kisi{width:100%;height:auto;max-height:calc(60*var(--u));object-fit:contain}
+.ing-abc-pano{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(2*var(--u));height:100%;min-height:0;padding:calc(2*var(--u));
+  border:var(--cizgi,3px) solid var(--murekkep,#2c2433);border-radius:calc(4*var(--u));background:#fffdf6ee}
+.ing-abc-pano[data-evre=tanit]{flex-direction:row;gap:calc(4*var(--u))}
+.ing-abc-harf-dugme{display:grid;justify-items:center;gap:calc(1*var(--u));padding:0!important;border:0!important;background:none!important;box-shadow:none!important}
+.ing-abc-harf{display:grid;place-items:center;width:calc(36*var(--u));aspect-ratio:1}
+.ing-abc-harf-resim{width:100%;height:100%;object-fit:contain}
+.ing-abc-harf-yazi{font-weight:900;font-size:calc(30*var(--u));line-height:1;color:#e8573f;-webkit-text-stroke:calc(.5*var(--u)) var(--murekkep,#2c2433)}
+.ing-abc-ikili{display:flex;gap:calc(2*var(--u));font-size:calc(9*var(--u));font-weight:900;color:var(--murekkep,#2c2433)}
+.ing-abc-ikili b:last-child{color:#2f7fd1}
+.ing-abc-soz,.ing-abc-secenek{display:grid;justify-items:center;gap:calc(.6*var(--u));width:calc(30*var(--u));padding:calc(1.2*var(--u))!important;border-radius:calc(3*var(--u))!important;background:#fff!important}
+.ing-abc-soz{animation:ing-abc-gel .5s cubic-bezier(.3,1.6,.5,1)}
+.ing-abc-soz-resim{width:100%;aspect-ratio:1;object-fit:contain}
+.ing-abc-soz-yazi{font-weight:800;font-size:calc(4.4*var(--u));color:var(--murekkep,#2c2433)}
+.ing-abc-yer{display:grid;place-items:center;border:calc(.4*var(--u)) dashed #c2a77d;border-radius:calc(2*var(--u));font-weight:800;color:#8a6d4a}
+.ing-abc-ses-tasi .ing-abc-kucuk-harf{display:grid;place-items:center;width:calc(16*var(--u));aspect-ratio:1}
+.ing-abc-ses-tasi .ing-abc-harf-yazi{font-size:calc(14*var(--u))}
+.ing-abc-secenekler{display:flex;gap:calc(2.4*var(--u));justify-content:center;max-width:100%}
+.ing-abc-secenek{width:calc(19*var(--u))}
+.ing-abc-secenek .ing-abc-soz-yazi{font-size:calc(3.6*var(--u))}
+.ing-abc-pano[data-evre=bul]{gap:calc(1.2*var(--u))}
+/* giriş: panoda büyük ABC */
+.ing-abc-acilis{display:flex;gap:calc(3*var(--u))}
+.ing-abc-acilis b{font-weight:900;font-size:calc(18*var(--u));line-height:1;-webkit-text-stroke:calc(.4*var(--u)) var(--murekkep,#2c2433)}
+.ing-abc-acilis b:nth-child(1){color:#e8573f}.ing-abc-acilis b:nth-child(2){color:#f2a516}.ing-abc-acilis b:nth-child(3){color:#2f7fd1}
+.ing-abc-buyuk b{font-weight:900;font-size:calc(20*var(--u));line-height:1;color:#e8573f;-webkit-text-stroke:calc(.4*var(--u)) var(--murekkep,#2c2433)}
+.ing-abc-kucuk{display:grid;place-items:center;width:calc(18*var(--u));aspect-ratio:1;border-radius:calc(3*var(--u))!important;background:#fff!important}
+.ing-abc-kucuk b{font-size:calc(12*var(--u));font-weight:900;color:#2f7fd1}
+.ing-abc-dogru{background:#e6f6d6!important;box-shadow:0 0 0 calc(.8*var(--u)) #7cc45a!important}
+.ing-abc-bitti{margin:0;font-size:calc(4.6*var(--u));text-align:center;color:var(--murekkep,#2c2433)}
+.ing-abc-ozet{display:flex;gap:calc(3*var(--u))}
+.ing-abc-ozet-harf{display:grid;justify-items:center;padding:calc(1*var(--u))!important;background:#fff!important}
+.ing-abc-mini{display:grid;place-items:center;width:calc(16*var(--u));aspect-ratio:1}
+.ing-abc-mini .ing-abc-harf-yazi{font-size:calc(12*var(--u))}
+.ing-abc-dugmeler{display:flex;gap:calc(2*var(--u))}
+@keyframes ing-abc-gel{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+/* Ana ekran başlığındaki giriş düğmesi */
+.ing-abc-giris{display:flex;align-items:center;gap:calc(.6*var(--u));padding:calc(.3*var(--u)) calc(1.4*var(--u)) calc(.3*var(--u)) calc(.3*var(--u))!important;background:#d8ecff!important;border:var(--cizgi) solid var(--murekkep)!important;border-radius:calc(4*var(--u))!important;font-size:calc(1.7*var(--u));font-weight:800;min-height:44px;color:var(--murekkep)}
+.ing-abc-giris-simge{display:flex;align-items:center;justify-content:center;width:calc(5.4*var(--u));height:calc(5.4*var(--u));min-width:36px;min-height:36px;border-radius:50%;background:#fff;font-weight:900;font-size:calc(2.2*var(--u));line-height:1;letter-spacing:-.02em}
+.ing-abc-giris-simge b:nth-child(1){color:#e8573f}.ing-abc-giris-simge b:nth-child(2){color:#f2a516}.ing-abc-giris-simge b:nth-child(3){color:#2f7fd1}

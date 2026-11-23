@@ -9,6 +9,8 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Uygulamanin kendi eklentileri (npm paketi degil), kopru kurulmadan once: soz tanima, yalniz cihazda
+        registerPlugin(SozTanimaPlugin.class);
         super.onCreate(savedInstanceState);
         // Mikrofon: Capacitor'in BridgeWebChromeClient'i WebView'in getUserMedia istegini (AUDIO_CAPTURE)
         // RECORD_AUDIO + MODIFY_AUDIO_SETTINGS calisma ani iznine baglar (izinler AndroidManifest.xml'de).

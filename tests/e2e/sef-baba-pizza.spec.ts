@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 for(const dogru of [true,false]){
   test('Baba Murat iki yarılı pizzasını kendi sesiyle ister ve '+(dogru?'doğru pizzayı sever':'ters yarıları ayırt eder'),async({page})=>{
@@ -44,8 +46,8 @@ for(const dogru of [true,false]){
     await expect(page.locator('.firin-oyunu')).toHaveAttribute('data-asama','hazir');
     await page.getByRole('button',{name:'Pizzayı fırından çıkar'}).tap();
     await page.getByRole('button',{name:'Pizzayı servis tabağına koy'}).tap();
-    await expect(page.getByLabel('Sipariş uyumu '+(dogru?'3':'1')+' / 3')).toBeVisible();
-    await page.getByRole('button',{name:'Yeni sipariş seç'}).tap();
+    // Fırın kapanır, masa sahnesi açılır (eski "Sipariş uyumu / Yeni sipariş seç" özeti yok); uyum puanı kayıtta, tepki masada.
+    expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1))).istekPuani).toBe(dogru?3:1);
     await page.getByRole('button',{name:'Servis arabasıyla götür'}).tap();
     await page.getByRole('button',{name:'Tepsiyi arabaya koy'}).tap();
     await page.getByRole('button',{name:'Baba Murat masasına götür'}).tap();

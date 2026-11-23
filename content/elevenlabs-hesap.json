@@ -1,0 +1,26 @@
+{
+  "aciklama": "18 Kasım 2026: eski hesabın kredisi bitti, anahtar (masaüstü 'api key elevenlabs.txt') takım arkadaşının kredili workspace'ine geçti. O workspace'te eski sesler yok; Ceren (Nehir abla) ve Kino uygulamadaki kayıtlarından ses klonlamayla kuruldu, Barış dinleyip onayladı ('bunla yap şimdilik'). Seslendirme betikleri istek anında eski kimliği buradaki yenisiyle değiştirir (scripts/ses-hesabi.ts); içerik dosyalarındaki ve manifestlerdeki kimlikler değişmez, böylece eski kayıtlar yeniden üretilmez. Eski hesaba dönülürse 'esleme' boşaltılır.",
+  "esleme": {
+    "IXH6rJkyynxn3lD5O7yQ": "zTvNO0vkTf8t29oY6LlN",
+    "mnd0d7jTJaLJl0qbeAyG": "6mhMoM3NBayFenTB48Qg",
+    "zCieqqNJvrBIGmXON5an": "XgNSPC3OF5UvN6rQjHQG",
+    "12iZbH1fuWoWnJWOJZ1W": "nrhLTaumJtcXKmqM5fmE",
+    "k4FgffsVVBqLkYX9lS2v": "Cx3xb73UzNj63MyVAu7e",
+    "ZyHU3tm4hc4VPnxh6jni": "UUKKpPjIrL8Bn9F7WLsP",
+    "srpMpX0gd4MeawzKMJwC": "4vu2KMXTo16szlobxqGx"
+  },
+  "adlar": {
+    "IXH6rJkyynxn3lD5O7yQ": "Nehir abla → Ceren Öğretmen (kayıtlardan)",
+    "mnd0d7jTJaLJl0qbeAyG": "Kino 5 yaş → Kino (çizgi film sesinden: İtfaiye filmi + Kino Ben Önce; ilk denemede oyun kayıtlarından kurulan kopya yanlıştı, silindi). Onay bekliyor.",
+    "zCieqqNJvrBIGmXON5an": "Zıpzıp (zipzip-erkek) → Zıpzıp (film sesinden: Kırmızı Kapının Arkası, Yola Kaçan Top, Kino Ben Önce; 10 kayıt, ~26 sn). 22 Kasım 2026, Minik Doktor örneği için. Onay bekliyor.",
+    "12iZbH1fuWoWnJWOJZ1W": "Mino (Seri 2) → Mino (klon, uygulamadaki 22 kaydından ~90 sn: ana manifest + kitaplar). 23 Kasım 2026, Minik Doktor için (Barış: \"ses klonu kur tabi\").",
+    "k4FgffsVVBqLkYX9lS2v": "Lokum (Seri 2) → Lokum (klon, uygulamadaki 25 kaydından ~71 sn). 23 Kasım 2026, Minik Doktor için (Barış: \"ses klonu kur tabi\").",
+    "ZyHU3tm4hc4VPnxh6jni": "Bulut (Seri 2) → Bulut (klon, uygulamadaki 22 kaydından ~84 sn; Minik Doktor sözlerinde Lokum'dan ayrılsın diye perde -1,5 yarım ses, formant korunur). 23 Kasım 2026, Minik Doktor için (Barış: \"ses klonu kur tabi\").",
+    "srpMpX0gd4MeawzKMJwC": "Lokum'un arkadaşı / Bıdıcık / Şeftali Patisi (Seri 2, aynı ses) → Mila (klon, film ve uygulamadaki kendi sesinden 9 kayıt ~16 sn; az kaynak). 23 Kasım 2026, Minik Doktor için (Barış: \"ses klonu kur tabi\")."
+  },
+  "yeni_hesapta_hazir": [
+    "b8gbDO0ybjX1VA89pBdX (Polly, Ruby Roo)",
+    "rkQPjgvei3JUQzhxFN6F (Pamuk, Voice Design: meraklı, tatlı kedi kız sesi; 23 Kasım 2026, Minik Doktor; eski hesapta Pamuk sesi yoktu)"
+  ],
+  "yeni_hesapta_yok": "Anlatıcı (U5Yg9Cl0WUYCovjolhzm), Kino'nun ailesi, kitap anlatıcısı ve öbür film sesleri: gerekirse aynı yolla kayıtlarından kurulur. Kurulmadan istenirse ElevenLabs 400 (ses bulunamadı) verir."
+}

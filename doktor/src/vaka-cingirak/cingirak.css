@@ -1,0 +1,21 @@
+/* Minik Doktor · "Mino'nun Kayıp Çıngırağı". Ortak kurallar vaka.css ve vaka-kit/iskelet.css içinde; buradakiler bu vakaya özgü (cn-…). */
+#doktor[data-oyun="cingirak"] { position: fixed; inset: 0; overflow: hidden; background: #fbc4a6; touch-action: none; user-select: none; -webkit-user-select: none; }
+#doktor[data-oyun="cingirak"]:not([data-asama="giris"]):not([data-asama="canta"]):not([data-asama="son"]) { background: #ffe3a3; }
+.cn-govde { pointer-events: none; transform-origin: 50% 92%; will-change: transform; }
+.cn-govde > .cn-top-cep { pointer-events: auto; }
+.cn-cep > img, .cn-dolu { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cn-top-cep > img { transform-origin: 50% 100%; }
+.cn-tasma, .cn-cep, .cn-golge, .cn-dalga, .cn-sikisti, .cn-top-boyun, .cn-ucan-top { pointer-events: none; }
+.cn-dalga, .cn-ucan-top { left: 0; top: 0; width: 300px; height: 300px; }
+.cn-ucan-top { will-change: transform; }
+.cn-top, .cn-top-cep, .cn-tutamak, .cn-toka { border-radius: 50%; }
+/* tokanın dolan halkası */
+.cn-halka { position: absolute; inset: -8px; border-radius: 50%; pointer-events: none; --dolu: 0;
+  background: conic-gradient(rgba(255, 214, 90, .85) calc(var(--dolu) * 360deg), rgba(255, 255, 255, 0) 0); -webkit-mask: radial-gradient(circle, transparent 62%, #000 64%); mask: radial-gradient(circle, transparent 62%, #000 64%); }
+.cn-top[hidden], .cn-top-cep[hidden], .cn-tutamak[hidden], .cn-toka[hidden], .cn-golge[hidden], .cn-dalga[hidden], .cn-sikisti[hidden], .cn-top-boyun[hidden] { display: none; }
+.cn-mino.vk-sirada, .cn-top.vk-sirada, .cn-top-cep.vk-sirada, .cn-tutamak.vk-sirada, .cn-toka.vk-sirada { animation: vk-sirada 1s ease-in-out infinite; }
+.cn-mino.vk-sirada { animation: cn-bastir 1.1s ease-in-out infinite; }
+@keyframes cn-bastir { 0%, 100% { box-shadow: inset 0 0 0 0 rgba(255, 240, 160, 0); } 50% { box-shadow: inset 0 -30px 60px rgba(255, 240, 160, .35); } }
+@media (prefers-reduced-motion: reduce) { .cn-mino.vk-sirada, .cn-top.vk-sirada, .cn-top-cep.vk-sirada, .cn-tutamak.vk-sirada, .cn-toka.vk-sirada { animation: none; } }
+@media (orientation: portrait) and (width < 600px) { #doktor[data-oyun="cingirak"] { visibility: hidden; } }
+.cn-top.vk-kalkti > .cn-dolu { opacity: .001; }

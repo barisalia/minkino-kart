@@ -1,0 +1,20 @@
+{
+  "giris": "Bugün şekilleri tanıyacağız. Hadi başlayalım!",
+  "devam": "Tekrar hoş geldin! Şekillerle devam edelim.",
+  "tanit_daire": "Bu bir daire. Yuvarlak, hiç köşesi yok.",
+  "tanit_kare": "Bu bir kare. Dört köşesi, dört eşit kenarı var.",
+  "tanit_ucgen": "Bu bir üçgen. Üç köşesi, üç kenarı var.",
+  "tanit_dikdortgen": "Bu bir dikdörtgen. Dört köşesi var; iki kenarı uzun, iki kenarı kısa.",
+  "ciz": "Parmağını yeşil noktaya koy, şeklin kenarından çiz.",
+  "cizdin_daire": "Harika! Bir daire çizdin.",
+  "cizdin_ucgen": "Harika! Bir üçgen çizdin.",
+  "bul_kare": "Sınıfta hangisi kare? Ona dokun.",
+  "bul_dikdortgen": "Hangisi dikdörtgen? Ona dokun.",
+  "ipucu_kare": "Bir daha bak. Karenin dört köşesi var.",
+  "ipucu_dikdortgen": "Bir daha bak. Dikdörtgen uzun ve köşeli.",
+  "buldun_kare": "Evet! Pencere kare.",
+  "buldun_dikdortgen": "Evet! Kitap dikdörtgen.",
+  "bitis_3": "Bugün üç şekil öğrendin: daire, kare ve üçgen!",
+  "bitis_4": "Bugün dört şekil öğrendin: daire, kare, üçgen ve dikdörtgen!",
+  "hatira": "Bu şekil kutusu senin hatıran!"
+}

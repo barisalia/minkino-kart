@@ -1,0 +1,20 @@
+[
+  {
+    "device": "telefon",
+    "width": 844,
+    "height": 390,
+    "count": 24,
+    "taps": 48,
+    "errors": [],
+    "images": 51
+  },
+  {
+    "device": "tablet",
+    "width": 1024,
+    "height": 768,
+    "count": 24,
+    "taps": 48,
+    "errors": [],
+    "images": 51
+  }
+]

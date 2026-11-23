@@ -26,6 +26,10 @@ async function istek(page: Page): Promise<IstekVerisi> {
   return JSON.parse((await page.locator('.pz-pazar').getAttribute('data-istek'))!) as IstekVerisi;
 }
 
+/** Oyunun o ana kadar söylediği cümleler, sırayla (test modunda window.__pazar.soz) */
+const sozler = (page: Page) => page.evaluate(() => [...((window as unknown as { __pazar: { soz: string[] } }).__pazar.soz ?? [])]);
+const kacKez = async (page: Page, soz: string) => (await sozler(page)).filter((s) => s === soz).length;
+
 test('Mino’nun Pazarı: açılış → pazar, sürükleyerek 1 müşteri (3 yaş)', async ({ page }, info) => {
   const hatalar = hataTopla(page);
   await page.goto('./pazar/?test=1&yas=3');
@@ -166,9 +170,72 @@ test('Mino’nun Pazarı: 6 yaş toplama ve para, 5 yaş ayırma, şenlik ekran�
   await page.screenshot({ path: 'tests/screens/iphone-a5-pazar-5yas.png' });
 
   await page.goto('./pazar/?test=1&yas=5&ekran=senlik');
-  await expect(page.locator('.pz-senlik-hayvan')).toHaveCount(5);
+  await expect(page.locator('.pz-senlik-hayvan')).toHaveCount(4);
   await page.waitForTimeout(400);
   await page.screenshot({ path: 'tests/screens/iphone-a6-pazar-senlik.png' });
+  expect(hatalar).toEqual([]);
+});
+
+// Barış'ın ölçüsü (19 Kasım 2026): oyunlar 3–4 soru, aynı yönerge en çok iki kez, aynı iş bir turda iki kez olmaz
+test('Mino’nun Pazarı: 2–3 yaşta üç müşteri, istenen ürün yinelenmez, teşekkür sözü üst üste gelmez; şenlikte üç yıldız', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=3&ekran=pazar');
+  const istenen: string[] = [];
+  for (let i = 0; i < 3; i++) {
+    const ist = await istek(page);
+    const [urun] = Object.keys(ist.istenen);
+    istenen.push(urun);
+    await page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`).first().tap();
+    await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(i + 1);
+  }
+  expect(new Set(istenen).size, istenen.join()).toBe(3);
+  await expect(page.locator('.pz-senlik')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('.pz-senlik .pz-yildiz.dolu')).toHaveCount(3);
+  await expect(page.locator('.pz-senlik-hayvan')).toHaveCount(3);
+  // teşekkürler sırayla değişir (Teşekkürler! · Çok sağ ol! · Tam istediğim!): üçü de bir kez
+  for (const s of ['Teşekkürler!', 'Çok sağ ol!', 'Tam istediğim!']) expect(await kacKez(page, s), s).toBe(1);
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino’nun Pazarı: 4 yaşta dört müşteri: sayma · renk · sayma · renk; şenlikte dört yıldız', async ({ page }) => {
+  test.setTimeout(60_000);
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=4&ekran=pazar');
+  const turler: string[] = [];
+  for (let i = 0; i < 4; i++) {
+    const ist = await istek(page);
+    turler.push((await page.locator('.pz-pazar').getAttribute('data-tur'))!);
+    for (const [urun, n] of Object.entries(ist.istenen))
+      for (let k = 0; k < n; k++) await sepeteSurukle(page, page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`).first());
+    if (await page.locator('.pz-ver:not([hidden])').count()) await page.locator('.pz-ver').click();
+    await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(i + 1);
+  }
+  expect(turler).toEqual(['sayi', 'renk', 'sayi', 'renk']);
+  await expect(page.locator('.pz-senlik .pz-yildiz.dolu')).toHaveCount(4, { timeout: 15000 });
+  expect(hatalar).toEqual([]);
+});
+
+test('Mino’nun Pazarı: sepet tamamken ipucu "Ver"i gösterir, kalan ürünleri parlatmaz (süreler 1/50)', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&merdiven=1&yas=4&ekran=pazar&tur=sayi');
+  const ist = await istek(page);
+  const [urun] = Object.keys(ist.istenen);
+  const n = ist.istenen[urun];
+  for (let i = 0; i < n; i++) await sepeteSurukle(page, page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`).first());
+  await expect(page.locator('.pz-sepet-ic .pz-urun')).toHaveCount(n);
+  // çocuk sayıp bekliyor: Ver nabız gibi atar, "Oldu! Ver'e bas!" söylenir, tezgâhta kalan aynı ürünler parlamaz
+  await expect(page.locator('.pz-ver.pz-ver-hazir')).toBeVisible({ timeout: 5000 });
+  await expect.poll(() => kacKez(page, "Oldu! Ver'e bas!")).toBeGreaterThanOrEqual(1);
+  await expect(page.locator('.pz-urunler .pz-urun.pz-parla-hafif, .pz-urunler .pz-urun.pz-parla')).toHaveCount(0);
+  // fazlası konunca Ver parlamayı bırakır
+  await sepeteSurukle(page, page.locator(`.pz-urunler .pz-urun[data-urun="${urun}"]`).first());
+  await expect(page.locator('.pz-ver.pz-ver-hazir')).toHaveCount(0);
+  // fazlası geri alınınca (bırakmanın hemen ardından gelen tıklama sayılmaz): Ver'e basınca müşteri sevinir
+  await page.waitForTimeout(450);
+  await page.locator('.pz-sepet-ic .pz-urun').last().dispatchEvent('click');
+  await expect(page.locator('.pz-sepet-ic .pz-urun')).toHaveCount(n);
+  await page.locator('.pz-ver').click({ force: true });
+  await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(1);
   expect(hatalar).toEqual([]);
 });
 
@@ -232,9 +299,10 @@ test('Mino’nun Pazarı: terazi — telefon dönünce kefeler kol uçlarında k
       await page.goto('./pazar/?test=1&yas=6&ekran=pazar&tur=terazi');
       await istek(page);
     }
-    await page.waitForTimeout(400);
+    // ekran dönünce kefe kolun ucuna yeniden asılır (yeniden ölçüm ResizeObserver'la; yüklü makinede ~0,9 sn
+    // sürebiliyor: sabit 400 ms bekleme yetmiyordu). Kalıcı kopma yine yakalanır.
     const genislik = await page.locator('.pz-terazi').evaluate((e) => (e as HTMLElement).offsetWidth);
-    expect(await kayma(), `${w}x${h}, terazi ${genislik}px`).toBeLessThan(6);
+    await expect.poll(kayma, { message: `${w}x${h}, terazi ${genislik}px`, timeout: 5000 }).toBeLessThan(6);
   }
   expect(hatalar).toEqual([]);
 });
@@ -337,6 +405,22 @@ for (const yas of [5, 6] as const) {
     expect(hatalar).toEqual([]);
   });
 }
+
+test('Meyve Suyu: "Şimdi düğmeye bas!" bir turda bir kez söylenir; renkler yinelenmez', async ({ page }) => {
+  const hatalar = hataTopla(page);
+  await page.goto('./pazar/?test=1&yas=4&ekran=meyvesuyu');
+  const renkler: string[] = [];
+  for (let i = 0; i < 3; i++) {
+    const ist = await msIstek(page);
+    renkler.push(ist.hedef);
+    await blendereAt(page, ist.dogru);
+    await page.locator('.ms-karistir').click();
+    await expect(page.locator('.pz-yildiz.dolu')).toHaveCount(i + 1, { timeout: 10000 });
+  }
+  expect(new Set(renkler).size, renkler.join()).toBe(3);
+  expect(await kacKez(page, 'Şimdi düğmeye bas!')).toBe(1);
+  expect(hatalar).toEqual([]);
+});
 
 test('Meyve Suyu: pazar şenliğinden ikinci oyun olarak açılır', async ({ page }) => {
   const hatalar = hataTopla(page);

@@ -101,3 +101,50 @@
 .mik-yuva.mik-duyulan{text-decoration:underline;text-decoration-color:#19584a;text-decoration-thickness:.09em;text-underline-offset:.09em}
 
 .mik-tepsi .mik-tas.mik-ipucu{box-shadow:inset 0 0 0 3px #276852;background-color:#e4f2d9}
+
+/* Kenetlenme ve birleşme anları (H7): miknatis.ts → kenetlen, birlesmeHalkasi */
+.mik-halka{position:absolute;z-index:3;pointer-events:none;opacity:0;border-radius:50%;box-sizing:border-box;border:clamp(3px,.6vmin,6px) solid #ffd257;box-shadow:0 0 18px 6px rgba(255,214,90,.55),inset 0 0 14px 4px rgba(255,236,160,.6)}
+.mik-halka-astra{border:0;border-radius:0;box-shadow:none;object-fit:contain}
+
+/* ---------- Paket Harf-H14 · Mıknatıslı Olta (yalnız .mik-olta; çizimler gelmeden bu sınıf hiç eklenmez) ----------
+   Parçalar gölde yüzen balıkların üstünde; olta (400 × 700, mıknatıs ucu 200, 640) dokunulan balığın üstüne iner. */
+.mik-olta { position: relative; }
+.mik-olta .mik-tepsi { position: relative; isolation: isolate; flex-wrap: wrap; align-content: center; gap: clamp(.4rem, 2.4vmin, 1.6rem) clamp(.6rem, 3vmin, 2rem);
+  width: min(100%, 46rem, calc(42vh * 16 / 7)); aspect-ratio: 16 / 7; padding: 7% 6% 3%; box-sizing: border-box; }
+.mik-olta .mik-gol-resmi { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: -1; pointer-events: none; }
+.mik-olta .mik-tepsi .mik-tas { position: relative; display: grid; place-items: center; width: clamp(84px, 17vmin, 160px); min-width: 0; height: auto; aspect-ratio: 3 / 2; padding: 0;
+  background: none; border: 0; box-shadow: none; animation: mik-yuz 3.4s ease-in-out var(--yuz-gecikme, 0s) infinite alternate; }
+.mik-olta .mik-balik { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform: scaleX(var(--yuz-yon, 1)); }
+.mik-olta .mik-balik-harf { position: relative; z-index: 1; min-width: 1.15em; padding: .04em .16em .08em; border: 2px solid #273c37; border-radius: .3em; background: #fffaf0; color: #213e39;
+  font-size: clamp(1.35rem, 4.6vmin, 2.7rem); line-height: 1; pointer-events: none; }
+@keyframes mik-yuz { from { transform: translateX(calc(var(--yuz-yon, 1) * -9px)) rotate(-2deg); } to { transform: translateX(calc(var(--yuz-yon, 1) * 9px)) translateY(-5px) rotate(2deg); } }
+.mik-olta .mik-tepsi .mik-tas.mik-ipucu { background: none; box-shadow: none; filter: drop-shadow(0 0 7px #ffe27a) drop-shadow(0 0 3px #ffd257); }
+/* tutulan balık oltayla kalkar (önce görünür kalır, sonra kaybolur) */
+.mik-olta .mik-tepsi .mik-tas.mik-tutuldu { visibility: visible; pointer-events: none; animation: mik-balik-kalk .62s ease-in .3s forwards; }
+@keyframes mik-balik-kalk { 0% { transform: none; opacity: 1; } 30% { transform: translateY(-12%) rotate(-8deg); opacity: 1; } 100% { transform: translateY(-130%) rotate(6deg); opacity: 0; } }
+.mik-olta-resmi { position: absolute; left: 0; top: 0; height: min(64vh, 540px); width: auto; aspect-ratio: 400 / 700; z-index: 50; pointer-events: none; opacity: 0; }
+.mik-sicrama { position: absolute; left: 50%; top: 46%; width: 42%; transform: translate(-50%, -50%); z-index: 2; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mik-olta .mik-tepsi .mik-tas { animation: none; }
+  .mik-olta .mik-tepsi .mik-tas.mik-tutuldu { animation: none; visibility: hidden; }
+}
+/* Olta kipinde levha alçalır (göl ekrana sığsın); olta ipi levhanın arkasından iner, mıknatıs balıkların önünde kalır */
+.mik-olta .mik-levha { z-index: 3; min-height: clamp(70px, 13vmin, 120px); }
+.mik-olta .mik-tepsi { z-index: 1; width: min(100%, 46rem, calc(33vh * 16 / 7)); }
+.mik-olta .mik-olta-resmi { z-index: 2; }
+.mik-olta .mik-ornek { position: relative; z-index: 3; }
+/* sözcüğün resmi sudan çıkar */
+.mik-gol-odul { position: absolute; left: 50%; bottom: 22%; height: 78%; width: auto; max-width: 40%; object-fit: contain; z-index: 3; pointer-events: none; transform: translate(-50%, 60%) scale(.5); opacity: 0; }
+.mik-gol-odul.mik-cikti { animation: mik-sudan-cik .7s cubic-bezier(.22,.82,.32,1) .12s forwards; }
+@keyframes mik-sudan-cik { 0% { transform: translate(-50%, 60%) scale(.5); opacity: 0; } 50% { transform: translate(-50%, -18%) scale(1.08) rotate(-4deg); opacity: 1; } 100% { transform: translate(-50%, 0) scale(1); opacity: 1; } }
+.mik-olta .mik-odul { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .mik-gol-odul { opacity: 1; transform: translate(-50%, 0); } .mik-gol-odul.mik-cikti { animation: none; } }
+/* Alçak yatay ekran (telefon): sözcük ve levha solda, göl sağda (üst üste sığmıyor) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mik-olta { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-areas: "ornek gol" "levha gol" "bitir bitir"; align-items: center; column-gap: 3%; }
+  .mik-olta .mik-ornek { grid-area: ornek; }
+  .mik-olta .mik-levha { grid-area: levha; width: 100%; }
+  .mik-olta .mik-tepsi { grid-area: gol; width: 100%; }
+  .mik-olta .mik-bitir { grid-area: bitir; }
+  .mik-olta-resmi { height: 78vh; }
+}

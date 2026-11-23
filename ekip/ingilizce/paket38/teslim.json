@@ -1,0 +1,4666 @@
+{
+  "frame_ms": 120,
+  "order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "facing": "as in source",
+  "scale": "source sprite canvas and head proportions",
+  "animals": [
+    {
+      "source": "assets/ingilizce/kelime/cow.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/cow.png",
+      "canvas": [
+        1000,
+        788
+      ],
+      "ground_y": 788,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/cow-z0.webp",
+          "bounds": [
+            0,
+            0,
+            1000,
+            788
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cow-z1.webp",
+          "bounds": [
+            65,
+            22,
+            935,
+            788
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cow-z2.webp",
+          "bounds": [
+            117,
+            8,
+            883,
+            750
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cow-z3.webp",
+          "bounds": [
+            70,
+            2,
+            931,
+            788
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/duck.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/duck.png",
+      "canvas": [
+        724,
+        1000
+      ],
+      "ground_y": 1000,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/duck-z0.webp",
+          "bounds": [
+            0,
+            0,
+            724,
+            1000
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/duck-z1.webp",
+          "bounds": [
+            2,
+            214,
+            722,
+            1000
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/duck-z2.webp",
+          "bounds": [
+            11,
+            2,
+            713,
+            962
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/duck-z3.webp",
+          "bounds": [
+            2,
+            63,
+            722,
+            1000
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/sheep.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/sheep.png",
+      "canvas": [
+        1000,
+        910
+      ],
+      "ground_y": 910,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/sheep-z0.webp",
+          "bounds": [
+            0,
+            0,
+            1000,
+            910
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/sheep-z1.webp",
+          "bounds": [
+            25,
+            106,
+            975,
+            910
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/sheep-z2.webp",
+          "bounds": [
+            26,
+            2,
+            974,
+            872
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/sheep-z3.webp",
+          "bounds": [
+            30,
+            42,
+            971,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/cat.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/cat.png",
+      "canvas": [
+        757,
+        1000
+      ],
+      "ground_y": 1000,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/cat-z0.webp",
+          "bounds": [
+            0,
+            0,
+            757,
+            1000
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cat-z1.webp",
+          "bounds": [
+            20,
+            65,
+            737,
+            1000
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cat-z2.webp",
+          "bounds": [
+            56,
+            35,
+            700,
+            962
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cat-z3.webp",
+          "bounds": [
+            40,
+            2,
+            716,
+            1000
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/dog.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/dog.png",
+      "canvas": [
+        842,
+        1000
+      ],
+      "ground_y": 1000,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/dog-z0.webp",
+          "bounds": [
+            0,
+            0,
+            842,
+            1000
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dog-z1.webp",
+          "bounds": [
+            16,
+            41,
+            827,
+            1000
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dog-z2.webp",
+          "bounds": [
+            72,
+            2,
+            770,
+            962
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dog-z3.webp",
+          "bounds": [
+            20,
+            2,
+            823,
+            1000
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/horse.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/horse.png",
+      "canvas": [
+        951,
+        999
+      ],
+      "ground_y": 999,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/horse-z0.webp",
+          "bounds": [
+            0,
+            0,
+            951,
+            999
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/horse-z1.webp",
+          "bounds": [
+            20,
+            30,
+            932,
+            999
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/horse-z2.webp",
+          "bounds": [
+            68,
+            24,
+            883,
+            961
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/horse-z3.webp",
+          "bounds": [
+            26,
+            2,
+            925,
+            999
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/chicken.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/chicken.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 760,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/chicken-z0.webp",
+          "bounds": [
+            85,
+            40,
+            714,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chicken-z1.webp",
+          "bounds": [
+            88,
+            131,
+            712,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chicken-z2.webp",
+          "bounds": [
+            113,
+            40,
+            686,
+            722
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chicken-z3.webp",
+          "bounds": [
+            72,
+            118,
+            726,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/bird.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/bird.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 760,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/bird-z0.webp",
+          "bounds": [
+            102,
+            40,
+            698,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bird-z1.webp",
+          "bounds": [
+            100,
+            101,
+            699,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bird-z2.webp",
+          "bounds": [
+            66,
+            89,
+            734,
+            722
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bird-z3.webp",
+          "bounds": [
+            60,
+            75,
+            741,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/goat.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/goat.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/goat-z0.webp",
+          "bounds": [
+            82,
+            80,
+            718,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goat-z1.webp",
+          "bounds": [
+            98,
+            176,
+            702,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goat-z2.webp",
+          "bounds": [
+            113,
+            37,
+            687,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goat-z3.webp",
+          "bounds": [
+            90,
+            133,
+            710,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/mouse.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/mouse.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/mouse-z0.webp",
+          "bounds": [
+            80,
+            185,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/mouse-z1.webp",
+          "bounds": [
+            90,
+            235,
+            709,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/mouse-z2.webp",
+          "bounds": [
+            77,
+            129,
+            723,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/mouse-z3.webp",
+          "bounds": [
+            66,
+            215,
+            733,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/donkey.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/donkey.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/donkey-z0.webp",
+          "bounds": [
+            114,
+            80,
+            686,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/donkey-z1.webp",
+          "bounds": [
+            70,
+            233,
+            730,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/donkey-z2.webp",
+          "bounds": [
+            124,
+            64,
+            675,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/donkey-z3.webp",
+          "bounds": [
+            97,
+            124,
+            703,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/rabbit.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/rabbit.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/rabbit-z0.webp",
+          "bounds": [
+            191,
+            80,
+            608,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rabbit-z1.webp",
+          "bounds": [
+            156,
+            217,
+            644,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rabbit-z2.webp",
+          "bounds": [
+            150,
+            54,
+            649,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rabbit-z3.webp",
+          "bounds": [
+            166,
+            161,
+            634,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/lion.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/lion.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 740,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/lion-z0.webp",
+          "bounds": [
+            40,
+            60,
+            760,
+            740
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lion-z1.webp",
+          "bounds": [
+            50,
+            162,
+            751,
+            740
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lion-z2.webp",
+          "bounds": [
+            50,
+            2,
+            750,
+            685
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lion-z3.webp",
+          "bounds": [
+            16,
+            99,
+            785,
+            740
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/monkey.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/monkey.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 760,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/monkey-z0.webp",
+          "bounds": [
+            79,
+            40,
+            721,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/monkey-z1.webp",
+          "bounds": [
+            57,
+            157,
+            743,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/monkey-z2.webp",
+          "bounds": [
+            106,
+            2,
+            694,
+            722
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/monkey-z3.webp",
+          "bounds": [
+            69,
+            85,
+            731,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/elephant.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/elephant.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 721,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/elephant-z0.webp",
+          "bounds": [
+            40,
+            79,
+            760,
+            721
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/elephant-z1.webp",
+          "bounds": [
+            44,
+            98,
+            757,
+            721
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/elephant-z2.webp",
+          "bounds": [
+            94,
+            40,
+            705,
+            666
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/elephant-z3.webp",
+          "bounds": [
+            44,
+            49,
+            756,
+            721
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/fish.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/fish.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 667,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/fish-z0.webp",
+          "bounds": [
+            40,
+            132,
+            760,
+            667
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/fish-z1.webp",
+          "bounds": [
+            63,
+            121,
+            737,
+            667
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/fish-z2.webp",
+          "bounds": [
+            80,
+            2,
+            721,
+            612
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/fish-z3.webp",
+          "bounds": [
+            56,
+            116,
+            743,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/frog.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/frog.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 760,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/frog-z0.webp",
+          "bounds": [
+            89,
+            40,
+            710,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/frog-z1.webp",
+          "bounds": [
+            79,
+            187,
+            720,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/frog-z2.webp",
+          "bounds": [
+            69,
+            2,
+            730,
+            722
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/frog-z3.webp",
+          "bounds": [
+            83,
+            105,
+            716,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/giraffe.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/giraffe.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 760,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/giraffe-z0.webp",
+          "bounds": [
+            165,
+            40,
+            635,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/giraffe-z1.webp",
+          "bounds": [
+            108,
+            166,
+            693,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/giraffe-z2.webp",
+          "bounds": [
+            129,
+            10,
+            671,
+            722
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/giraffe-z3.webp",
+          "bounds": [
+            101,
+            131,
+            699,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/snake.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/snake.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 760,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/snake-z0.webp",
+          "bounds": [
+            143,
+            40,
+            657,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/snake-z1.webp",
+          "bounds": [
+            108,
+            136,
+            691,
+            760
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/snake-z2.webp",
+          "bounds": [
+            200,
+            2,
+            600,
+            722
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/snake-z3.webp",
+          "bounds": [
+            123,
+            114,
+            677,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/tiger.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/tiger.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/tiger-z0.webp",
+          "bounds": [
+            80,
+            168,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/tiger-z1.webp",
+          "bounds": [
+            108,
+            303,
+            692,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/tiger-z2.webp",
+          "bounds": [
+            98,
+            143,
+            702,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/tiger-z3.webp",
+          "bounds": [
+            110,
+            250,
+            690,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/bear.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/bear.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/bear-z0.webp",
+          "bounds": [
+            80,
+            132,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bear-z1.webp",
+          "bounds": [
+            94,
+            249,
+            705,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bear-z2.webp",
+          "bounds": [
+            78,
+            70,
+            722,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bear-z3.webp",
+          "bounds": [
+            94,
+            190,
+            707,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/zebra.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/zebra.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/zebra-z0.webp",
+          "bounds": [
+            96,
+            80,
+            704,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/zebra-z1.webp",
+          "bounds": [
+            110,
+            178,
+            689,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/zebra-z2.webp",
+          "bounds": [
+            98,
+            77,
+            703,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/zebra-z3.webp",
+          "bounds": [
+            91,
+            140,
+            709,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/panda.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/panda.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/panda-z0.webp",
+          "bounds": [
+            80,
+            122,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/panda-z1.webp",
+          "bounds": [
+            110,
+            233,
+            690,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/panda-z2.webp",
+          "bounds": [
+            98,
+            54,
+            703,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/panda-z3.webp",
+          "bounds": [
+            108,
+            203,
+            692,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/penguin.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/penguin.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/penguin-z0.webp",
+          "bounds": [
+            193,
+            80,
+            607,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/penguin-z1.webp",
+          "bounds": [
+            152,
+            200,
+            647,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/penguin-z2.webp",
+          "bounds": [
+            153,
+            39,
+            647,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/penguin-z3.webp",
+          "bounds": [
+            176,
+            158,
+            624,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/turtle.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/turtle.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/turtle-z0.webp",
+          "bounds": [
+            80,
+            306,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/turtle-z1.webp",
+          "bounds": [
+            109,
+            419,
+            691,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/turtle-z2.webp",
+          "bounds": [
+            86,
+            112,
+            713,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/turtle-z3.webp",
+          "bounds": [
+            94,
+            364,
+            706,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/crocodile.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/crocodile.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/crocodile-z0.webp",
+          "bounds": [
+            80,
+            423,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crocodile-z1.webp",
+          "bounds": [
+            104,
+            483,
+            697,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crocodile-z2.webp",
+          "bounds": [
+            122,
+            307,
+            679,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crocodile-z3.webp",
+          "bounds": [
+            111,
+            432,
+            689,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/kangaroo.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/kangaroo.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/kangaroo-z0.webp",
+          "bounds": [
+            164,
+            80,
+            636,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/kangaroo-z1.webp",
+          "bounds": [
+            138,
+            180,
+            662,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/kangaroo-z2.webp",
+          "bounds": [
+            186,
+            37,
+            613,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/kangaroo-z3.webp",
+          "bounds": [
+            160,
+            162,
+            640,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/hippo.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/hippo.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/hippo-z0.webp",
+          "bounds": [
+            80,
+            173,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hippo-z1.webp",
+          "bounds": [
+            88,
+            255,
+            713,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hippo-z2.webp",
+          "bounds": [
+            112,
+            117,
+            687,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hippo-z3.webp",
+          "bounds": [
+            78,
+            191,
+            722,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/butterfly.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/butterfly.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/butterfly-z0.webp",
+          "bounds": [
+            80,
+            169,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/butterfly-z1.webp",
+          "bounds": [
+            174,
+            249,
+            626,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/butterfly-z2.webp",
+          "bounds": [
+            78,
+            162,
+            723,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/butterfly-z3.webp",
+          "bounds": [
+            86,
+            213,
+            714,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/dolphin.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/dolphin.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/dolphin-z0.webp",
+          "bounds": [
+            80,
+            285,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dolphin-z1.webp",
+          "bounds": [
+            91,
+            343,
+            709,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dolphin-z2.webp",
+          "bounds": [
+            130,
+            81,
+            671,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dolphin-z3.webp",
+          "bounds": [
+            96,
+            234,
+            705,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/whale.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/whale.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/whale-z0.webp",
+          "bounds": [
+            80,
+            346,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/whale-z1.webp",
+          "bounds": [
+            134,
+            252,
+            665,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/whale-z2.webp",
+          "bounds": [
+            112,
+            212,
+            688,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/whale-z3.webp",
+          "bounds": [
+            76,
+            338,
+            725,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/shark.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/shark.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/shark-z0.webp",
+          "bounds": [
+            80,
+            349,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/shark-z1.webp",
+          "bounds": [
+            116,
+            255,
+            683,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/shark-z2.webp",
+          "bounds": [
+            122,
+            130,
+            678,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/shark-z3.webp",
+          "bounds": [
+            95,
+            239,
+            705,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/octopus.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/octopus.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/octopus-z0.webp",
+          "bounds": [
+            80,
+            144,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/octopus-z1.webp",
+          "bounds": [
+            143,
+            159,
+            657,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/octopus-z2.webp",
+          "bounds": [
+            62,
+            46,
+            738,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/octopus-z3.webp",
+          "bounds": [
+            86,
+            121,
+            713,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/crab.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/crab.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/crab-z0.webp",
+          "bounds": [
+            80,
+            217,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crab-z1.webp",
+          "bounds": [
+            106,
+            311,
+            694,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crab-z2.webp",
+          "bounds": [
+            108,
+            31,
+            692,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crab-z3.webp",
+          "bounds": [
+            90,
+            255,
+            711,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/starfish.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/starfish.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/starfish-z0.webp",
+          "bounds": [
+            80,
+            115,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/starfish-z1.webp",
+          "bounds": [
+            92,
+            275,
+            708,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/starfish-z2.webp",
+          "bounds": [
+            138,
+            2,
+            661,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/starfish-z3.webp",
+          "bounds": [
+            86,
+            247,
+            715,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/seal.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/seal.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/seal-z0.webp",
+          "bounds": [
+            80,
+            315,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/seal-z1.webp",
+          "bounds": [
+            137,
+            332,
+            663,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/seal-z2.webp",
+          "bounds": [
+            106,
+            105,
+            695,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/seal-z3.webp",
+          "bounds": [
+            106,
+            238,
+            694,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/jellyfish.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/jellyfish.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/jellyfish-z0.webp",
+          "bounds": [
+            123,
+            80,
+            677,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/jellyfish-z1.webp",
+          "bounds": [
+            130,
+            213,
+            669,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/jellyfish-z2.webp",
+          "bounds": [
+            79,
+            36,
+            721,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/jellyfish-z3.webp",
+          "bounds": [
+            140,
+            84,
+            661,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/seahorse.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/seahorse.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/seahorse-z0.webp",
+          "bounds": [
+            224,
+            80,
+            575,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/seahorse-z1.webp",
+          "bounds": [
+            224,
+            166,
+            576,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/seahorse-z2.webp",
+          "bounds": [
+            246,
+            2,
+            554,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/seahorse-z3.webp",
+          "bounds": [
+            222,
+            56,
+            578,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/walrus.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/walrus.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/walrus-z0.webp",
+          "bounds": [
+            80,
+            253,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/walrus-z1.webp",
+          "bounds": [
+            104,
+            295,
+            696,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/walrus-z2.webp",
+          "bounds": [
+            90,
+            73,
+            709,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/walrus-z3.webp",
+          "bounds": [
+            82,
+            262,
+            718,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/owl.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/owl.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/owl-z0.webp",
+          "bounds": [
+            164,
+            80,
+            635,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/owl-z1.webp",
+          "bounds": [
+            147,
+            154,
+            652,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/owl-z2.webp",
+          "bounds": [
+            40,
+            42,
+            758,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/owl-z3.webp",
+          "bounds": [
+            31,
+            80,
+            768,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/parrot.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/parrot.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/parrot-z0.webp",
+          "bounds": [
+            80,
+            133,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/parrot-z1.webp",
+          "bounds": [
+            66,
+            237,
+            733,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/parrot-z2.webp",
+          "bounds": [
+            58,
+            2,
+            741,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/parrot-z3.webp",
+          "bounds": [
+            49,
+            143,
+            751,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/eagle.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/eagle.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/eagle-z0.webp",
+          "bounds": [
+            130,
+            80,
+            670,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/eagle-z1.webp",
+          "bounds": [
+            114,
+            178,
+            685,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/eagle-z2.webp",
+          "bounds": [
+            54,
+            46,
+            747,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/eagle-z3.webp",
+          "bounds": [
+            36,
+            157,
+            763,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/flamingo.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/flamingo.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/flamingo-z0.webp",
+          "bounds": [
+            200,
+            80,
+            600,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/flamingo-z1.webp",
+          "bounds": [
+            180,
+            196,
+            619,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/flamingo-z2.webp",
+          "bounds": [
+            190,
+            84,
+            610,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/flamingo-z3.webp",
+          "bounds": [
+            189,
+            152,
+            611,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/peacock.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/peacock.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/peacock-z0.webp",
+          "bounds": [
+            89,
+            80,
+            710,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/peacock-z1.webp",
+          "bounds": [
+            85,
+            144,
+            714,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/peacock-z2.webp",
+          "bounds": [
+            106,
+            84,
+            692,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/peacock-z3.webp",
+          "bounds": [
+            86,
+            165,
+            713,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/swan.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/swan.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/swan-z0.webp",
+          "bounds": [
+            143,
+            80,
+            656,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/swan-z1.webp",
+          "bounds": [
+            124,
+            206,
+            674,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/swan-z2.webp",
+          "bounds": [
+            168,
+            45,
+            630,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/swan-z3.webp",
+          "bounds": [
+            134,
+            128,
+            665,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/ostrich.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/ostrich.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/ostrich-z0.webp",
+          "bounds": [
+            183,
+            80,
+            616,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ostrich-z1.webp",
+          "bounds": [
+            171,
+            183,
+            628,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ostrich-z2.webp",
+          "bounds": [
+            186,
+            112,
+            614,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ostrich-z3.webp",
+          "bounds": [
+            176,
+            165,
+            624,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/pigeon.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/pigeon.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/pigeon-z0.webp",
+          "bounds": [
+            92,
+            80,
+            708,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/pigeon-z1.webp",
+          "bounds": [
+            89,
+            151,
+            711,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/pigeon-z2.webp",
+          "bounds": [
+            47,
+            64,
+            753,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/pigeon-z3.webp",
+          "bounds": [
+            14,
+            81,
+            786,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/rooster.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/rooster.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/rooster-z0.webp",
+          "bounds": [
+            139,
+            80,
+            660,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rooster-z1.webp",
+          "bounds": [
+            124,
+            186,
+            675,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rooster-z2.webp",
+          "bounds": [
+            136,
+            66,
+            662,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rooster-z3.webp",
+          "bounds": [
+            142,
+            115,
+            657,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/turkey.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/turkey.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/turkey-z0.webp",
+          "bounds": [
+            81,
+            80,
+            719,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/turkey-z1.webp",
+          "bounds": [
+            80,
+            155,
+            721,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/turkey-z2.webp",
+          "bounds": [
+            99,
+            65,
+            701,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/turkey-z3.webp",
+          "bounds": [
+            80,
+            139,
+            721,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/goose.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/goose.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/goose-z0.webp",
+          "bounds": [
+            150,
+            80,
+            650,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goose-z1.webp",
+          "bounds": [
+            117,
+            202,
+            683,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goose-z2.webp",
+          "bounds": [
+            171,
+            21,
+            629,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goose-z3.webp",
+          "bounds": [
+            140,
+            122,
+            660,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/toucan.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/toucan.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/toucan-z0.webp",
+          "bounds": [
+            80,
+            149,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/toucan-z1.webp",
+          "bounds": [
+            84,
+            219,
+            715,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/toucan-z2.webp",
+          "bounds": [
+            63,
+            122,
+            737,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/toucan-z3.webp",
+          "bounds": [
+            69,
+            125,
+            731,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/crow.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/crow.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/crow-z0.webp",
+          "bounds": [
+            80,
+            105,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crow-z1.webp",
+          "bounds": [
+            94,
+            192,
+            705,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crow-z2.webp",
+          "bounds": [
+            68,
+            113,
+            732,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/crow-z3.webp",
+          "bounds": [
+            60,
+            142,
+            741,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/woodpecker.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/woodpecker.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/woodpecker-z0.webp",
+          "bounds": [
+            129,
+            80,
+            671,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/woodpecker-z1.webp",
+          "bounds": [
+            82,
+            171,
+            717,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/woodpecker-z2.webp",
+          "bounds": [
+            87,
+            62,
+            713,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/woodpecker-z3.webp",
+          "bounds": [
+            78,
+            98,
+            722,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/bee.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/bee.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/bee-z0.webp",
+          "bounds": [
+            80,
+            92,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bee-z1.webp",
+          "bounds": [
+            107,
+            135,
+            693,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bee-z2.webp",
+          "bounds": [
+            89,
+            31,
+            711,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bee-z3.webp",
+          "bounds": [
+            94,
+            91,
+            707,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/ant.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/ant.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/ant-z0.webp",
+          "bounds": [
+            80,
+            189,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ant-z1.webp",
+          "bounds": [
+            108,
+            329,
+            692,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ant-z2.webp",
+          "bounds": [
+            126,
+            125,
+            674,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ant-z3.webp",
+          "bounds": [
+            121,
+            234,
+            679,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/ladybug.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/ladybug.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/ladybug-z0.webp",
+          "bounds": [
+            80,
+            179,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ladybug-z1.webp",
+          "bounds": [
+            88,
+            233,
+            712,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ladybug-z2.webp",
+          "bounds": [
+            62,
+            134,
+            739,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ladybug-z3.webp",
+          "bounds": [
+            64,
+            201,
+            736,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/spider.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/spider.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/spider-z0.webp",
+          "bounds": [
+            80,
+            234,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/spider-z1.webp",
+          "bounds": [
+            128,
+            363,
+            672,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/spider-z2.webp",
+          "bounds": [
+            85,
+            212,
+            715,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/spider-z3.webp",
+          "bounds": [
+            112,
+            302,
+            688,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/snail.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/snail.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/snail-z0.webp",
+          "bounds": [
+            80,
+            163,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/snail-z1.webp",
+          "bounds": [
+            106,
+            296,
+            694,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/snail-z2.webp",
+          "bounds": [
+            106,
+            2,
+            693,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/snail-z3.webp",
+          "bounds": [
+            82,
+            282,
+            718,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/worm.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/worm.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/worm-z0.webp",
+          "bounds": [
+            80,
+            356,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/worm-z1.webp",
+          "bounds": [
+            140,
+            432,
+            660,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/worm-z2.webp",
+          "bounds": [
+            118,
+            166,
+            681,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/worm-z3.webp",
+          "bounds": [
+            119,
+            383,
+            681,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/caterpillar.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/caterpillar.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/caterpillar-z0.webp",
+          "bounds": [
+            80,
+            303,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/caterpillar-z1.webp",
+          "bounds": [
+            122,
+            355,
+            679,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/caterpillar-z2.webp",
+          "bounds": [
+            122,
+            164,
+            679,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/caterpillar-z3.webp",
+          "bounds": [
+            104,
+            333,
+            697,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/dragonfly.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/dragonfly.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/dragonfly-z0.webp",
+          "bounds": [
+            80,
+            331,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dragonfly-z1.webp",
+          "bounds": [
+            122,
+            424,
+            679,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dragonfly-z2.webp",
+          "bounds": [
+            84,
+            232,
+            716,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/dragonfly-z3.webp",
+          "bounds": [
+            84,
+            341,
+            715,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/grasshopper.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/grasshopper.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/grasshopper-z0.webp",
+          "bounds": [
+            80,
+            167,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/grasshopper-z1.webp",
+          "bounds": [
+            73,
+            288,
+            727,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/grasshopper-z2.webp",
+          "bounds": [
+            77,
+            141,
+            723,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/grasshopper-z3.webp",
+          "bounds": [
+            77,
+            263,
+            723,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/beetle.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/beetle.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/beetle-z0.webp",
+          "bounds": [
+            80,
+            202,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/beetle-z1.webp",
+          "bounds": [
+            102,
+            364,
+            699,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/beetle-z2.webp",
+          "bounds": [
+            111,
+            145,
+            689,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/beetle-z3.webp",
+          "bounds": [
+            104,
+            262,
+            696,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/fox.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/fox.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/fox-z0.webp",
+          "bounds": [
+            80,
+            122,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/fox-z1.webp",
+          "bounds": [
+            88,
+            229,
+            713,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/fox-z2.webp",
+          "bounds": [
+            97,
+            88,
+            703,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/fox-z3.webp",
+          "bounds": [
+            82,
+            186,
+            719,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/wolf.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/wolf.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/wolf-z0.webp",
+          "bounds": [
+            80,
+            142,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/wolf-z1.webp",
+          "bounds": [
+            92,
+            255,
+            708,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/wolf-z2.webp",
+          "bounds": [
+            104,
+            117,
+            695,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/wolf-z3.webp",
+          "bounds": [
+            74,
+            211,
+            726,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/deer.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/deer.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/deer-z0.webp",
+          "bounds": [
+            170,
+            80,
+            630,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/deer-z1.webp",
+          "bounds": [
+            176,
+            171,
+            624,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/deer-z2.webp",
+          "bounds": [
+            200,
+            83,
+            601,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/deer-z3.webp",
+          "bounds": [
+            174,
+            153,
+            627,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/squirrel.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/squirrel.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/squirrel-z0.webp",
+          "bounds": [
+            98,
+            80,
+            702,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/squirrel-z1.webp",
+          "bounds": [
+            81,
+            154,
+            719,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/squirrel-z2.webp",
+          "bounds": [
+            111,
+            49,
+            689,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/squirrel-z3.webp",
+          "bounds": [
+            80,
+            104,
+            719,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/hedgehog.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/hedgehog.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/hedgehog-z0.webp",
+          "bounds": [
+            80,
+            215,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hedgehog-z1.webp",
+          "bounds": [
+            113,
+            279,
+            687,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hedgehog-z2.webp",
+          "bounds": [
+            116,
+            173,
+            685,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hedgehog-z3.webp",
+          "bounds": [
+            114,
+            245,
+            686,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/raccoon.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/raccoon.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/raccoon-z0.webp",
+          "bounds": [
+            80,
+            217,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/raccoon-z1.webp",
+          "bounds": [
+            84,
+            269,
+            717,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/raccoon-z2.webp",
+          "bounds": [
+            94,
+            165,
+            706,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/raccoon-z3.webp",
+          "bounds": [
+            76,
+            260,
+            725,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/bat.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/bat.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/bat-z0.webp",
+          "bounds": [
+            80,
+            328,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bat-z1.webp",
+          "bounds": [
+            248,
+            318,
+            551,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bat-z2.webp",
+          "bounds": [
+            107,
+            262,
+            693,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bat-z3.webp",
+          "bounds": [
+            114,
+            322,
+            685,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/beaver.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/beaver.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/beaver-z0.webp",
+          "bounds": [
+            80,
+            186,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/beaver-z1.webp",
+          "bounds": [
+            67,
+            289,
+            733,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/beaver-z2.webp",
+          "bounds": [
+            110,
+            84,
+            689,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/beaver-z3.webp",
+          "bounds": [
+            62,
+            218,
+            737,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/skunk.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/skunk.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/skunk-z0.webp",
+          "bounds": [
+            80,
+            105,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/skunk-z1.webp",
+          "bounds": [
+            87,
+            164,
+            713,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/skunk-z2.webp",
+          "bounds": [
+            90,
+            82,
+            711,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/skunk-z3.webp",
+          "bounds": [
+            93,
+            166,
+            707,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/otter.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/otter.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/otter-z0.webp",
+          "bounds": [
+            80,
+            337,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/otter-z1.webp",
+          "bounds": [
+            96,
+            411,
+            705,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/otter-z2.webp",
+          "bounds": [
+            114,
+            234,
+            687,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/otter-z3.webp",
+          "bounds": [
+            93,
+            366,
+            707,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/rhino.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/rhino.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/rhino-z0.webp",
+          "bounds": [
+            80,
+            213,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rhino-z1.webp",
+          "bounds": [
+            114,
+            265,
+            685,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rhino-z2.webp",
+          "bounds": [
+            128,
+            178,
+            672,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/rhino-z3.webp",
+          "bounds": [
+            106,
+            257,
+            694,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/camel.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/camel.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/camel-z0.webp",
+          "bounds": [
+            84,
+            80,
+            715,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/camel-z1.webp",
+          "bounds": [
+            82,
+            190,
+            716,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/camel-z2.webp",
+          "bounds": [
+            114,
+            53,
+            685,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/camel-z3.webp",
+          "bounds": [
+            79,
+            149,
+            720,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/cheetah.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/cheetah.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/cheetah-z0.webp",
+          "bounds": [
+            80,
+            117,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cheetah-z1.webp",
+          "bounds": [
+            78,
+            209,
+            721,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cheetah-z2.webp",
+          "bounds": [
+            86,
+            121,
+            715,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/cheetah-z3.webp",
+          "bounds": [
+            52,
+            211,
+            747,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/leopard.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/leopard.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/leopard-z0.webp",
+          "bounds": [
+            80,
+            151,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/leopard-z1.webp",
+          "bounds": [
+            84,
+            243,
+            715,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/leopard-z2.webp",
+          "bounds": [
+            102,
+            114,
+            697,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/leopard-z3.webp",
+          "bounds": [
+            80,
+            192,
+            721,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/gorilla.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/gorilla.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/gorilla-z0.webp",
+          "bounds": [
+            114,
+            80,
+            685,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/gorilla-z1.webp",
+          "bounds": [
+            100,
+            153,
+            699,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/gorilla-z2.webp",
+          "bounds": [
+            101,
+            70,
+            698,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/gorilla-z3.webp",
+          "bounds": [
+            97,
+            123,
+            702,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/koala.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/koala.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/koala-z0.webp",
+          "bounds": [
+            114,
+            80,
+            686,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/koala-z1.webp",
+          "bounds": [
+            100,
+            142,
+            699,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/koala-z2.webp",
+          "bounds": [
+            136,
+            17,
+            664,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/koala-z3.webp",
+          "bounds": [
+            116,
+            116,
+            683,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/polar-bear.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/polar-bear.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/polar-bear-z0.webp",
+          "bounds": [
+            80,
+            127,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/polar-bear-z1.webp",
+          "bounds": [
+            90,
+            247,
+            711,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/polar-bear-z2.webp",
+          "bounds": [
+            100,
+            77,
+            701,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/polar-bear-z3.webp",
+          "bounds": [
+            84,
+            155,
+            717,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/sloth.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/sloth.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/sloth-z0.webp",
+          "bounds": [
+            115,
+            80,
+            685,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/sloth-z1.webp",
+          "bounds": [
+            118,
+            177,
+            683,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/sloth-z2.webp",
+          "bounds": [
+            152,
+            2,
+            648,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/sloth-z3.webp",
+          "bounds": [
+            101,
+            140,
+            699,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/lizard.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/lizard.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/lizard-z0.webp",
+          "bounds": [
+            80,
+            404,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lizard-z1.webp",
+          "bounds": [
+            93,
+            473,
+            707,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lizard-z2.webp",
+          "bounds": [
+            103,
+            236,
+            697,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lizard-z3.webp",
+          "bounds": [
+            87,
+            439,
+            713,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/chameleon.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/chameleon.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/chameleon-z0.webp",
+          "bounds": [
+            80,
+            167,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chameleon-z1.webp",
+          "bounds": [
+            82,
+            259,
+            717,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chameleon-z2.webp",
+          "bounds": [
+            96,
+            8,
+            705,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chameleon-z3.webp",
+          "bounds": [
+            81,
+            240,
+            719,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/meerkat.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/meerkat.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/meerkat-z0.webp",
+          "bounds": [
+            203,
+            80,
+            596,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/meerkat-z1.webp",
+          "bounds": [
+            198,
+            214,
+            600,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/meerkat-z2.webp",
+          "bounds": [
+            228,
+            96,
+            571,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/meerkat-z3.webp",
+          "bounds": [
+            195,
+            159,
+            604,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/llama.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/llama.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/llama-z0.webp",
+          "bounds": [
+            179,
+            80,
+            621,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/llama-z1.webp",
+          "bounds": [
+            170,
+            140,
+            629,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/llama-z2.webp",
+          "bounds": [
+            179,
+            46,
+            621,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/llama-z3.webp",
+          "bounds": [
+            155,
+            134,
+            645,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/ox.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/ox.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/ox-z0.webp",
+          "bounds": [
+            80,
+            202,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ox-z1.webp",
+          "bounds": [
+            105,
+            277,
+            695,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ox-z2.webp",
+          "bounds": [
+            123,
+            167,
+            677,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/ox-z3.webp",
+          "bounds": [
+            95,
+            235,
+            705,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/moose.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/moose.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/moose-z0.webp",
+          "bounds": [
+            105,
+            80,
+            694,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/moose-z1.webp",
+          "bounds": [
+            102,
+            154,
+            696,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/moose-z2.webp",
+          "bounds": [
+            133,
+            48,
+            666,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/moose-z3.webp",
+          "bounds": [
+            113,
+            105,
+            686,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/lamb.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/lamb.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/lamb-z0.webp",
+          "bounds": [
+            151,
+            200,
+            648,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lamb-z1.webp",
+          "bounds": [
+            158,
+            251,
+            642,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lamb-z2.webp",
+          "bounds": [
+            168,
+            174,
+            631,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/lamb-z3.webp",
+          "bounds": [
+            150,
+            242,
+            648,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/puppy.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/puppy.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/puppy-z0.webp",
+          "bounds": [
+            148,
+            200,
+            652,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/puppy-z1.webp",
+          "bounds": [
+            138,
+            294,
+            662,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/puppy-z2.webp",
+          "bounds": [
+            156,
+            125,
+            645,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/puppy-z3.webp",
+          "bounds": [
+            140,
+            248,
+            660,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/kitten.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/kitten.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/kitten-z0.webp",
+          "bounds": [
+            191,
+            200,
+            608,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/kitten-z1.webp",
+          "bounds": [
+            157,
+            306,
+            642,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/kitten-z2.webp",
+          "bounds": [
+            184,
+            141,
+            615,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/kitten-z3.webp",
+          "bounds": [
+            162,
+            246,
+            636,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/chick.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/chick.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/chick-z0.webp",
+          "bounds": [
+            199,
+            200,
+            600,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chick-z1.webp",
+          "bounds": [
+            202,
+            271,
+            598,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chick-z2.webp",
+          "bounds": [
+            204,
+            163,
+            595,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/chick-z3.webp",
+          "bounds": [
+            196,
+            246,
+            604,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/pony.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/pony.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/pony-z0.webp",
+          "bounds": [
+            80,
+            112,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/pony-z1.webp",
+          "bounds": [
+            78,
+            185,
+            723,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/pony-z2.webp",
+          "bounds": [
+            88,
+            86,
+            712,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/pony-z3.webp",
+          "bounds": [
+            68,
+            165,
+            731,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/bull.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/bull.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/bull-z0.webp",
+          "bounds": [
+            80,
+            150,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bull-z1.webp",
+          "bounds": [
+            90,
+            223,
+            709,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bull-z2.webp",
+          "bounds": [
+            136,
+            116,
+            663,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/bull-z3.webp",
+          "bounds": [
+            86,
+            192,
+            715,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/hamster.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/hamster.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/hamster-z0.webp",
+          "bounds": [
+            80,
+            193,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hamster-z1.webp",
+          "bounds": [
+            106,
+            288,
+            693,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hamster-z2.webp",
+          "bounds": [
+            124,
+            135,
+            675,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/hamster-z3.webp",
+          "bounds": [
+            104,
+            251,
+            697,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/goldfish.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/goldfish.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/goldfish-z0.webp",
+          "bounds": [
+            80,
+            261,
+            720,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goldfish-z1.webp",
+          "bounds": [
+            90,
+            202,
+            709,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goldfish-z2.webp",
+          "bounds": [
+            68,
+            182,
+            731,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/goldfish-z3.webp",
+          "bounds": [
+            72,
+            199,
+            728,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/duckling.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/duckling.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/duckling-z0.webp",
+          "bounds": [
+            226,
+            200,
+            573,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/duckling-z1.webp",
+          "bounds": [
+            200,
+            255,
+            598,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/duckling-z2.webp",
+          "bounds": [
+            226,
+            152,
+            574,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/duckling-z3.webp",
+          "bounds": [
+            212,
+            222,
+            587,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/calf.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/calf.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/calf-z0.webp",
+          "bounds": [
+            140,
+            293,
+            660,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/calf-z1.webp",
+          "bounds": [
+            162,
+            352,
+            639,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/calf-z2.webp",
+          "bounds": [
+            184,
+            256,
+            617,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/calf-z3.webp",
+          "bounds": [
+            155,
+            331,
+            645,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/tadpole.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/tadpole.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/tadpole-z0.webp",
+          "bounds": [
+            140,
+            510,
+            660,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/tadpole-z1.webp",
+          "bounds": [
+            188,
+            462,
+            612,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/tadpole-z2.webp",
+          "bounds": [
+            156,
+            414,
+            644,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/tadpole-z3.webp",
+          "bounds": [
+            160,
+            508,
+            640,
+            720
+          ]
+        }
+      ]
+    },
+    {
+      "source": "assets/ingilizce/kelime/foal.webp",
+      "sheet": "ekip/ingilizce/paket38/sheet/foal.png",
+      "canvas": [
+        800,
+        800
+      ],
+      "ground_y": 720,
+      "frames": [
+        {
+          "file": "assets/ingilizce/kelime/foal-z0.webp",
+          "bounds": [
+            219,
+            200,
+            580,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/foal-z1.webp",
+          "bounds": [
+            202,
+            298,
+            597,
+            720
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/foal-z2.webp",
+          "bounds": [
+            220,
+            218,
+            578,
+            665
+          ]
+        },
+        {
+          "file": "assets/ingilizce/kelime/foal-z3.webp",
+          "bounds": [
+            200,
+            272,
+            599,
+            720
+          ]
+        }
+      ]
+    }
+  ]
+}

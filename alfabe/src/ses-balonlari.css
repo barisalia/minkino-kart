@@ -1,0 +1,50 @@
+/* Ses Balonları (Paket Harf-H15, ses-balonlari.ts). Balon çizimi 600 × 900: balon üstte, ipin ucunda sepet;
+   resim sepetin içinde x 170…430, y 520…760 alanına oturur (sepetin ağzı y 700). */
+.sb-sahne{width:100%;height:100%;min-height:0;display:grid;grid-template-columns:minmax(140px,27%) minmax(0,1fr);isolation:isolate;background:#ffdab7;color:#253f35;box-sizing:border-box;position:relative}
+.sb-hoca{position:relative;min-width:0;overflow:hidden}
+.sb-hoca .alf-ceren{position:absolute;bottom:-3%;left:0;width:103%;height:79%;max-height:500px}
+.sb-gok{position:relative;isolation:isolate;overflow:hidden;border:2px solid #343b31;border-radius:21px;margin:clamp(8px,2.5svh,24px) clamp(8px,2vw,25px) clamp(8px,2.5svh,24px) 0;display:flex;flex-direction:column;min-height:0}
+.sb-gok-resmi{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;pointer-events:none}
+.sb-ust{position:relative;display:flex;align-items:center;justify-content:center;flex:none;min-height:44px;padding:clamp(6px,1.3vw,14px) clamp(6px,1.3vw,14px) 0}
+.sb-harf{color:#135950;background:#fff7e6;border:2px solid #2d4c40;border-radius:.34em;padding:0 .29em;font-size:clamp(28px,5.6vmin,56px);font-weight:600;line-height:1.24}
+.sb-harf span{margin-left:.15em;color:#344c3e}
+.sb-harf.sb-rozet-parla{background:#fff1b8;box-shadow:0 0 0 4px #ffe27a}
+.sb-ses{position:absolute;right:clamp(6px,1.3vw,14px);top:50%;transform:translateY(-35%);display:grid;place-items:center;border:2px solid #344b40;border-radius:13px;background:#fff7e6;min-width:44px;min-height:44px}
+.sb-ses svg{width:24px;height:24px}
+.sb-yon{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.sb-balonlar{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;justify-items:center;padding:0 2% 1%}
+.sb-balon{position:relative;display:block;width:min(100%,calc((100svh - 150px) * .5));aspect-ratio:600/980;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  animation:sb-gel .9s cubic-bezier(.2,.8,.3,1) var(--sb-gecikme,0s) both,sb-salin 3.2s ease-in-out calc(var(--sb-gecikme,0s) + .9s) infinite alternate;transform-origin:50% 92%}
+.sb-balon:disabled{cursor:default}
+.sb-balon-resmi{position:absolute;left:0;top:0;width:100%;height:auto;aspect-ratio:600/900;pointer-events:none}
+.sb-sepet-resim{position:absolute;left:28%;width:44%;top:53.1%;height:24.5%;object-fit:contain;pointer-events:none}
+.sb-ad{position:absolute;left:50%;bottom:0;transform:translateX(-50%);white-space:nowrap;padding:.05em .45em .12em;border:2px solid #2d4c40;border-radius:.5em;background:#fffaf0;font-size:clamp(16px,3vmin,28px);font-weight:600;line-height:1.2}
+.sb-ilk{font-weight:800;border-radius:.2em}
+.sb-ilk.sb-parla{background:#ffe27a;box-shadow:0 0 0 3px #ffe27a}
+.sb-ucan-harf{position:absolute;z-index:20;font-weight:800;color:#135950;pointer-events:none}
+@keyframes sb-gel{from{transform:translateY(70%);opacity:0}to{transform:none;opacity:1}}
+@keyframes sb-salin{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-3%) rotate(1.5deg)}}
+.sb-balon.sb-okunuyor .sb-balon-resmi{animation:sb-zipla .45s ease-out}
+@keyframes sb-zipla{40%{transform:translateY(-4%) scale(1.04)}}
+.sb-yardim .sb-balon[data-farkli] .sb-balon-resmi{filter:drop-shadow(0 0 10px #ffe27a) drop-shadow(0 0 4px #ffd257)}
+/* patlayan balon: balon kaybolur, sepet ve resim yavaşça düşüp kaybolur */
+.sb-balon.sb-patladi{animation:none;pointer-events:none}
+.sb-balon.sb-patladi .sb-balon-resmi{visibility:hidden}
+.sb-balon.sb-patladi .sb-sepet-resim,.sb-balon.sb-patladi .sb-ad{animation:sb-dus .9s ease-in .2s forwards}
+@keyframes sb-dus{to{transform:translateY(140%) rotate(14deg);opacity:0}}
+.sb-patlama{position:absolute;z-index:5;transform:translate(-50%,-50%);pointer-events:none}
+/* kalan iki balon ortada yan yana */
+.sb-sahne[data-adim=bulundu] .sb-balon:not(.sb-patladi){animation:sb-salin 3.2s ease-in-out infinite alternate}
+.sb-sahne[data-adim=bulundu] .sb-balonlar{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sb-sahne[data-adim=bulundu] .sb-balon.sb-patladi{position:absolute;left:0;top:0;width:30%;opacity:0}
+@media(orientation:landscape) and (max-height:485px){
+  .sb-sahne{grid-template-columns:minmax(85px,20%) minmax(0,1fr)}
+  .sb-gok{margin:5px 8px 5px 0}
+  .sb-balon{width:min(100%,calc((100svh - 70px) * .5))}
+}
+@media(orientation:portrait){
+  .sb-sahne{grid-template-columns:1fr}
+  .sb-hoca{position:absolute;z-index:1;left:20px;top:8px;width:60px;height:58px;pointer-events:none}
+  .sb-balon{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.sb-balon,.sb-balon *{animation:none!important}}

@@ -39,10 +39,17 @@ function karistir<T>(liste: T[], rastgele:()=>number) {
   return liste;
 }
 
-export function kutuTurlari(ders: Ders, secenekSayisi=3, rastgele=Math.random) {
+/** Bugünün gün numarası (yerel saat): ikinci sözcük gün içinde aynı kalır, günden güne sırayla değişir. */
+export const bugunNo = (t = new Date()) => Math.floor(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) / 864e5);
+
+/** havuz: sözcük havuzunun bu harfe ait, resmi gelmiş ders sözcükleri (sozcuk-havuzu.ts → havuzDersKartlari).
+ *  Varsa ikinci sözcük, eski ikinci sözcük ile havuz sözcükleri arasında her gün sırayla değişir; yoksa hep eskisi. */
+export function kutuTurlari(ders: Ders, secenekSayisi=3, rastgele=Math.random, havuz: KutuKarti[]=[], gun=bugunNo()) {
   const ilk = dersKarti(ders);
-  const ikinci = [...baskaOrnekler, ...ekKutuKartlari, ...kartlar].find(k =>
+  const eski = [...baskaOrnekler, ...ekKutuKartlari, ...kartlar].find(k =>
     k.id !== ilk.id && (k.id !== 'yogurt' || ders.lower === 'ğ') && eslesir(k.ad, ders));
+  const adaylar = [...(eski ? [eski] : []), ...havuz.filter(k => k.ad !== ilk.ad && k.ad !== eski?.ad)];
+  const ikinci = adaylar.length ? adaylar[((gun % adaylar.length) + adaylar.length) % adaylar.length] : undefined;
   const hedefler = ikinci ? [ilk, ikinci] : [ilk];
   const uygun = kartlar.filter(k => !eslesir(k.ad, ders));
   const ortam = karistir(ortamlar.filter(grup => grup.includes(ders.id)), rastgele)[0] ?? [];

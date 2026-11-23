@@ -1,0 +1,12 @@
+/* Harf rafının canlanma anı (alfabe/src/raf-ani.ts) */
+.at-harfler{position:relative}
+/* Sıradaki harf: kenarında nefes alır gibi parlayan sıcak bir ışık. */
+.at-harf.at-siradaki{box-shadow:0 0 0 3px #fff4cf,0 0 0 6px #f2b544;animation:at-siradaki 2.6s ease-in-out infinite}
+@keyframes at-siradaki{0%,100%{box-shadow:0 0 0 3px #fff4cf,0 0 0 6px #f2b544,0 0 0 6px rgba(242,181,68,0)}50%{box-shadow:0 0 0 3px #fff4cf,0 0 0 6px #f2b544,0 0 16px 10px rgba(242,181,68,.45)}}
+@media(prefers-reduced-motion:reduce){.at-harf.at-siradaki{animation:none}}
+/* Işık halesi kutuların arkasında kalır (harf okunur); az önce biten harfin kutusunda bir an altın halka parlar. */
+.at-harfler{isolation:isolate}
+.at-harfler>.cn-hale{z-index:-1}
+.at-harf.at-yeni-bitti{animation:at-yeni-bitti 1.4s ease-out .3s both}
+@keyframes at-yeni-bitti{0%{box-shadow:0 0 0 0 rgba(242,181,68,0)}25%{box-shadow:0 0 0 5px #f6c445,0 0 18px 8px rgba(246,196,69,.55)}100%{box-shadow:0 0 0 0 rgba(242,181,68,0)}}
+@media(prefers-reduced-motion:reduce){.at-harf.at-yeni-bitti{animation:none}}

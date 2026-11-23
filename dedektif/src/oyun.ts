@@ -9,6 +9,7 @@
  * Vaka 3 (mantik3.ts → VAKA3_YAYINDA; Vaka 2 çözülünce açılır): ?vaka=3 doğrudan vaka; ?vaka3=1 bayrak kapalıyken üçüncü dosya;
  * test: ?test=1&ekran=vaka3&adim=kim.
  */
+import { yeniOdalar } from './resimler';
 import { ekranKaydet, Uygulama, type BaslatSecenekleri } from '../../src/uygulama';
 import { acilisEkrani, dosyaEkrani } from './ekranlar';
 import { kayit, kaydet, sifirla } from './kayit';
@@ -30,6 +31,8 @@ export function oyunuBaslat(kok: HTMLElement, secenekler: BaslatSecenekleri = {}
 
   const app = new Uygulama(kok, secenekler);
   kok.classList.add('dd-kok');
+  // yeni çizgi (assets/dedektif-yeni): CSS eski çizgiye özel süzgeçleri kapatır
+  if (yeniOdalar) kok.dataset.yeni = '1';
   const q = new URLSearchParams(location.search);
   const kisayol = q.has('test') || q.has('onizleme');
   let ekran = 'acilis';

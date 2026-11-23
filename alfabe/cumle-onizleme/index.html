@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffecd0">
+  <title>Ceren'le oku · önizleme · Minkino</title>
+  <link rel="icon" href="../../favicon.svg">
+  <style>
+    /* Oyundaki Harf Atölyesi düzeni: üst çubuk (stil.css .at-ust) ve altında sahne. */
+    html,body{margin:0;height:100%;overflow:hidden}
+    body{display:flex;flex-direction:column}
+    #alan{position:relative;flex:1;min-height:0}
+    #kapali{font:600 20px system-ui;padding:24px}
+  </style>
+</head>
+<body>
+  <header class="at-ust"><div class="at-yon"><button id="geri" class="at-geri" type="button" aria-label="Harflere dön"><span>Harfler</span></button></div><strong id="baslik" class="at-ust-baslik" tabindex="-1"></strong><div id="ilerleme" class="at-ilerleme"></div></header>
+  <main id="alan"></main>
+  <script type="module" src="./onizleme.ts"></script>
+</body>
+</html>

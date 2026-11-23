@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fikir 2 · Kurbağanın Yaprak Yolu (taslak)</title>
+<!--
+  Ölçü tezgâhı · kurdele turunun yerine "Kurbağanın Yaprak Yolu" taslağı (19 Kasım 2026).
+  Yalnız var olan çizimler + CSS hareketi; kodla çizim yok. Kurbağa, yaprak ve çiçek yer tutucudur (Astra Matematik çizgisinde çizecek).
+  ?kare=a  yol kuruluyor (2 yaprak yerinde, 3. yüzerek geliyor) · ?kare=b  yol tamam, kurbağa yaprak yaprak zıplıyor · ?oynat=1  canlı akış
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #f7c33c; overflow: hidden; font-family: ui-rounded, 'Nunito', system-ui, sans-serif; }
+  #sahne {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+    width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; container-type: size;
+    background: url('../../../../assets/hazirlik/kres/oyuncak-ordek-havuz.webp') center / 100% 100%;
+    overflow: hidden;
+  }
+  .nav { position: absolute; top: 2.5%; width: max(44px, 6%); aspect-ratio: 1; display: grid; place-items: center; z-index: 5;
+    border: 2px solid #34241d; background: #fff1bd; border-radius: 36%; box-shadow: 0 .4cqw #a86a35; }
+  .nav img { width: 72%; height: 72%; object-fit: contain; }
+  .ev { left: 1.2%; } .ses { right: 1.2%; }
+  .pullar { position: absolute; top: 3.2%; left: 50%; translate: -50% 0; display: flex; gap: .8cqw; z-index: 5; }
+  .pullar i { width: 1.4cqw; aspect-ratio: 1; border-radius: 50%; background: #fff3cf; border: 2px solid #b88452; }
+  .pullar i.dolu { background: #79cba8; } .pullar i.simdi { background: #ff9a6b; }
+
+  /* Kıyıdan çiçeğe düz bir su yolu: iki ada arasındaki boşluk tam dört yaprak */
+  .ada { position: absolute; top: 47%; width: 24%; }
+  .ada img { display: block; width: 100%; }
+  .ada.bas { left: 4%; } .ada.son { right: 4%; } .ada.son img { transform: scaleX(-1); }
+  .kurbaga { position: absolute; left: 9%; top: 26%; height: 25%; transform-origin: 50% 100%; z-index: 3; }
+  .kurbaga img { height: 100%; display: block; }
+  .cicek { position: absolute; right: 8.5%; top: 24%; height: 26%; transform-origin: 50% 100%; z-index: 2; }
+  .cicek img { height: 100%; display: block; }
+  .yol { position: absolute; left: 26%; top: 53%; width: 48%; height: 11%; display: flex; }
+  .yaprak { position: relative; flex: 1 1 0; display: grid; place-items: center; }
+  .yaprak img { position: absolute; width: 104%; height: 100%; object-fit: contain; }
+  .yaprak b { position: relative; font: 900 4.2cqh/1 ui-rounded, 'Nunito', system-ui; color: #1f5a12; }
+  .yaprak.bos { visibility: hidden; }
+  @media (prefers-reduced-motion: no-preference) {
+    .yaprak:not(.bos) img { animation: yuz 2.6s ease-in-out infinite; }
+    .yaprak:nth-child(2) img { animation-delay: -.7s; } .yaprak:nth-child(3) img { animation-delay: -1.4s; } .yaprak:nth-child(4) img { animation-delay: -2s; }
+  }
+  @keyframes yuz { 0%, 100% { translate: 0 0; rotate: -1deg; } 50% { translate: 0 6%; rotate: 1.5deg; } }
+  .sepet { position: absolute; left: 50%; bottom: 3%; translate: -50% 0; width: 15%; z-index: 4; }
+  .sepet > img { width: 100%; display: block; }
+  .sepet .yedek { position: absolute; width: 58%; top: 2%; left: 21%; rotate: -10deg; }
+  .sepet .yedek + .yedek { left: 28%; top: -6%; rotate: 8deg; }
+  .sepet .yedek img { width: 100%; display: block; }
+  .gelen { position: absolute; width: 12.6%; z-index: 4; filter: drop-shadow(0 1.4cqh 0 #0b6f7f40); }
+  .gelen img { width: 100%; display: block; }
+  .sonuc { position: absolute; display: grid; place-items: center; min-width: 7cqw; height: 7cqw; padding: 0 1.6cqw; z-index: 5;
+    border: .35cqw solid #28201b; border-radius: 3.5cqw; background: #ffd23f; font: 900 4.6cqh/1 ui-rounded, 'Nunito', system-ui; color: #2b201b; }
+  .yaprak.basildi img { filter: brightness(1.18) drop-shadow(0 0 1cqw #fff6b0); }
+  .sevin { animation: sevin .7s cubic-bezier(.3,.7,.3,1) 2; }
+  @keyframes sevin { 0%,100% { scale: 1; } 40% { scale: 1.12 .92; } 70% { scale: .96 1.06; } }
+</style>
+</head>
+<body>
+<div id="sahne">
+  <div class="nav ev"><img src="../../../../assets/hazirlik/dugmeler/ev.webp" alt=""></div>
+  <div class="nav ses"><img src="../../../../assets/hazirlik/dugmeler/dinle.webp" alt=""></div>
+  <div class="pullar"><i class="dolu"></i><i class="dolu"></i><i class="simdi"></i><i></i></div>
+  <div class="ada bas"><img src="../../../../assets/hazirlik/kres/golet-ada.webp" alt=""></div>
+  <div class="ada son"><img src="../../../../assets/hazirlik/kres/golet-ada.webp" alt=""></div>
+  <div class="cicek"><img src="../../../../assets/orman-esya/cicek.webp" alt=""></div>
+  <div class="kurbaga"><img src="../../../../assets/hayvanlar/kurbaga.webp" alt=""></div>
+  <div class="yol"></div>
+</div>
+<script>
+  const A = '../../../../assets/';
+  const s = document.getElementById('sahne');
+  const yol = s.querySelector('.yol');
+  const kurbaga = s.querySelector('.kurbaga');
+  const q = new URLSearchParams(location.search);
+  const kare = q.get('kare') || 'a';
+  const el = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
+  const YAPRAK = '<img src="' + A + 'hazirlik/kres/deney-yaprak.webp" alt="">';
+  for (let i = 1; i <= 4; i++) yol.insertAdjacentHTML('beforeend', '<div class="yaprak bos">' + YAPRAK + '<b>' + i + '</b></div>');
+  const yapraklar = [...yol.children];
+  const sepet = el('<div class="sepet"><img src="' + A + 'sef/piknik/sepet.webp" alt="">' + '<div class="yedek">' + YAPRAK + '</div>'.repeat(1) + '<div class="yedek">' + YAPRAK + '</div></div>');
+  s.append(sepet);
+  const koy = (n) => yapraklar.slice(0, n).forEach((y) => y.classList.remove('bos'));
+  // Kurbağanın yaprağın üstündeki yeri (sahne yüzdesi): yolun i. yaprağının ortası.
+  const yer = (i) => ({ left: 26 + 48 * (i + .5) / 4 - 6.5, top: 33 });
+
+  if (kare === 'a') {
+    // 4 yaş: iki yaprak yerinde, üçüncüsü sepetten süzülüp sıradaki yere geliyor.
+    koy(2);
+    const g = el('<div class="gelen">' + YAPRAK + '</div>');
+    g.style.cssText = 'left:44%;top:66%;rotate:-14deg';
+    s.append(g);
+  } else if (kare === 'b') {
+    // Yol tamam: kurbağa 3. yaprağın üstünde havada; geçtiği yapraklar parlıyor.
+    koy(4);
+    sepet.remove();
+    yapraklar.slice(0, 3).forEach((y) => y.classList.add('basildi'));
+    const p = yer(2);
+    kurbaga.style.left = p.left + '%'; kurbaga.style.top = (p.top - 9) + '%'; kurbaga.style.rotate = '8deg';
+    s.append(el('<div class="sonuc" style="left:46%;top:13%">3</div>'));
+  }
+
+  if (q.get('oynat')) {
+    // Canlı akış: yapraklar tek tek gelir (her biri sayılır), sonra kurbağa dört zıplayışla çiçeğe varır.
+    s.querySelectorAll('.gelen,.sonuc').forEach((e) => e.remove());
+    yapraklar.forEach((y) => y.classList.add('bos', 'x'));
+    yapraklar.forEach((y) => y.classList.remove('basildi'));
+    kurbaga.style.cssText = '';
+    let n = 0;
+    const gel = () => {
+      const y = yapraklar[n++];
+      y.classList.remove('bos');
+      // Sepet de yaprak yaprak boşalır (son iki yaprak sepetteki yedeklerdir).
+      if (n > 2) sepet.querySelector('.yedek')?.remove();
+      const r = y.getBoundingClientRect(), sp = sepet.getBoundingClientRect();
+      y.animate([{ transform: 'translate(' + (sp.left + sp.width / 2 - r.left - r.width / 2) + 'px,' + (sp.top - r.top) + 'px) rotate(-18deg) scale(.8)' }, { transform: 'translate(0,-12%) rotate(3deg)', offset: .75 }, { transform: 'none' }], { duration: 650, easing: 'cubic-bezier(.3,.7,.3,1)' });
+      y.querySelector('b').animate([{ scale: .2, opacity: 0 }, { scale: 1.4, opacity: 1, offset: .6 }, { scale: 1 }], { duration: 420, delay: 420, fill: 'backwards' });
+      if (n < 4) setTimeout(gel, 900); else setTimeout(zipla, 1100);
+    };
+    let i = -1;
+    const zipla = () => {
+      const bas = kurbaga.getBoundingClientRect();
+      i++;
+      const hedef = i < 4 ? yer(i) : { left: 75.5, top: 26.5 }; // çiçeğin yanına, adanın üstüne
+      kurbaga.style.left = hedef.left + '%'; kurbaga.style.top = hedef.top + '%';
+      const son = kurbaga.getBoundingClientRect();
+      const dx = bas.left - son.left, dy = bas.top - son.top;
+      kurbaga.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'translate(' + dx / 2 + 'px,' + (dy / 2 - son.height * .55) + 'px) rotate(8deg)', offset: .5 }, { transform: 'none' }], { duration: 520, easing: 'ease-in-out' });
+      if (i < 4) { setTimeout(() => yapraklar[i].classList.add('basildi'), 480); setTimeout(zipla, 760); }
+      else setTimeout(() => { s.querySelector('.cicek').classList.add('sevin'); kurbaga.classList.add('sevin'); s.append(el('<div class="sonuc" style="left:46%;top:13%">4</div>')); }, 560);
+    };
+    setTimeout(gel, 900);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minik Şef · Ekran tasarımları</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fffaec;color:#182d45;font:500 17px/1.4 system-ui,sans-serif}main{max-width:1440px;margin:auto;padding:clamp(16px,4vw,52px)}h1{font-size:clamp(36px,5vw,72px);letter-spacing:-.05em;margin:0}h2{margin:1.8em 0 .5em}section>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}figure{margin:0}figure img{width:100%;display:block;border-radius:14px;border:2px solid #22364a;aspect-ratio:16/9;object-fit:cover}a:focus-visible{outline:4px solid #005fbd;outline-offset:4px}figcaption{margin-top:6px}nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}nav a{color:inherit;border:1px solid #79908a;border-radius:30px;padding:6px 14px;text-decoration:none;background:#ebf6ed}figure a{display:block;border-radius:14px}@media(max-width:690px){section>div{grid-template-columns:1fr}}
+</style>
+<main><h1>Minik Şef</h1><nav aria-label="Ekranlar"></nav></main>
+<script>
+const stations={siparis:'Sipariş seçimi',mutfak:'Mutfak',dolap:'Buzdolabı',tahta:'Kesme tahtası',tencere:'Çorba ocağı',kase:'Salata kasesi',kepce:'Çorbayı kâseye alma',masa:'Salatayı paylaştırma',hamur:'Hamur açma',sos:'Sos sürme',pizza:'Pizza hazırlama',firin:'Fırın',servis:'Servis',defter:'Tabak defteri'};
+const styles=['Kayısı mutfak','Mavi lokanta','Bahçe mutfağı'];
+for(const [id,title] of Object.entries(stations)){
+ const section=document.createElement('section');section.id=id;
+ section.innerHTML='<h2>'+title+'</h2><div>'+styles.map((label,i)=>{
+   const src=id+'-'+(i+1)+'.webp';
+   return '<figure><a href="'+src+'"><img loading="lazy" src="'+src+'" alt="'+title+' · '+label+'"></a><figcaption>'+label+'</figcaption></figure>';
+ }).join('')+'</div>';
+ document.querySelector('main').append(section);
+ const link=document.createElement('a');link.href='#'+id;link.textContent=title;document.querySelector('nav').append(link);
+}
+</script>
+</html>

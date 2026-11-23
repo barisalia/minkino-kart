@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-20",
+  "request": "4b59a8657386f17f607f4a0a1a0f4aa02d9d8a2dca275a8281b17c5861c4b9f9",
+  "tool": "builtin ImageGen; each asset generated independently",
+  "files": [
+    {
+      "name": "kare",
+      "w": 400,
+      "h": 400,
+      "size": 500,
+      "description": "a perfectly square tile with tiny rounded corners, soft clear sky blue fill #58B8E6",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-88417841-11e5-4063-8b28-2536258194fe.png",
+      "prompt": "ONE independent Minkino preschool game illustration: a perfectly square tile with tiny rounded corners, soft clear sky blue fill #58B8E6. Match the clean cheerful simplicity and delicate black outline weight of attached palette references, but use the requested softer color. Pure flat vector artwork: every bounded region is one uniform solid color. NO texture, grain, mottling, gradient, highlights, painted surface, drop shadow or extrusion. Absolutely opaque fill inside the shape, fully transparent outside. Thin even BLACK outer outline, about 3 pixels when exported at 500px. Entire object centered in a square canvas with generous transparent padding. No face, no lettering, no extra decorations. This is a standalone cutout, not a sheet. Shape must remain geometrically exact and front facing."
+    },
+    {
+      "name": "ucgen",
+      "w": 400,
+      "h": 346,
+      "size": 500,
+      "description": "a perfect equilateral triangle apex up, horizontal base, warm golden yellow fill #FFD34D",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-6755e2ba-df58-4987-8411-222b28525b3d.png",
+      "prompt": "ONE independent Minkino preschool game illustration: a perfect equilateral triangle apex up, horizontal base, warm golden yellow fill #FFD34D. Match the clean cheerful simplicity and delicate black outline weight of attached palette references, but use the requested softer color. Pure flat vector artwork: every bounded region is one uniform solid color. NO texture, grain, mottling, gradient, highlights, painted surface, drop shadow or extrusion. Absolutely opaque fill inside the shape, fully transparent outside. Thin even BLACK outer outline, about 3 pixels when exported at 500px. Entire object centered in a square canvas with generous transparent padding. No face, no lettering, no extra decorations. This is a standalone cutout, not a sheet. Shape must remain geometrically exact and front facing."
+    },
+    {
+      "name": "daire",
+      "w": 400,
+      "h": 400,
+      "size": 500,
+      "description": "a perfect circle, warm watermelon coral fill #F87972",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-bf187db0-cccf-4b44-908f-ba22e7cd0369.png",
+      "prompt": "ONE independent Minkino preschool game illustration: a perfect circle, warm watermelon coral fill #F87972. Match the clean cheerful simplicity and delicate black outline weight of attached palette references, but use the requested softer color. Pure flat vector artwork: every bounded region is one uniform solid color. NO texture, grain, mottling, gradient, highlights, painted surface, drop shadow or extrusion. Absolutely opaque fill inside the shape, fully transparent outside. Thin even BLACK outer outline, about 3 pixels when exported at 500px. Entire object centered in a square canvas with generous transparent padding. No face, no lettering, no extra decorations. This is a standalone cutout, not a sheet. Shape must remain geometrically exact and front facing."
+    },
+    {
+      "name": "dikdortgen",
+      "w": 460,
+      "h": 280,
+      "size": 500,
+      "description": "light apple green #92CF65 horizontal rectangle",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-153f9bd6-4217-4b0b-8d4e-0ad7ed98f7e9.png",
+      "prompt": "ONE independent Minkino preschool game illustration: a horizontal rectangle of width to height ratio 460:280, tiny rounded corners, fresh mint green fill #74C99A. Match the clean cheerful simplicity and delicate black outline weight of attached palette references, but use the requested softer color. Pure flat vector artwork: every bounded region is one uniform solid color. NO texture, grain, mottling, gradient, highlights, painted surface, drop shadow or extrusion. Absolutely opaque fill inside the shape, fully transparent outside. Thin even BLACK outer outline, about 3 pixels when exported at 500px. Entire object centered in a square canvas with generous transparent padding. No face, no lettering, no extra decorations. This is a standalone cutout, not a sheet. Shape must remain geometrically exact and front facing."
+    },
+    {
+      "name": "kitap",
+      "size": 400,
+      "description": "a CLOSED charming children's picture book seen almost exactly from front, upright rectangular cover. Warm turquoise cover with a narrow golden spine clearly visible at left and a slim cream page block visible along right and bottom. On the cover a small simple illustration of a yellow sun above a green hill, no text. Small coral bookmark. Recognizably a real closed picture book, yet outer silhouette remains a clear upright rectangle. Subtle single solid darker turquoise strip only for the spine, no other shading.",
+      "source": "C:\\Users\\Minkex\\.codex\\generated_images\\01a1b6c2-1cda-7c12-aa4a-44b6477dba2d\\exec-5775d915-3011-487a-8bf1-bda4ed32ed06.png",
+      "prompt": "ONE independent Minkino preschool game illustration: a CLOSED charming children's picture book seen almost exactly from front, upright rectangular cover. Warm turquoise cover with a narrow golden spine clearly visible at left and a slim cream page block visible along right and bottom. On the cover a small simple illustration of a yellow sun above a green hill, no text. Small coral bookmark. Recognizably a real closed picture book, yet outer silhouette remains a clear upright rectangle. Subtle single solid darker turquoise strip only for the spine, no other shading.. Match the clean cheerful simplicity and delicate black outline weight of attached palette references, but use the requested softer color. Pure flat vector artwork: every bounded region is one uniform solid color. NO texture, grain, mottling, gradient, highlights, painted surface, drop shadow or extrusion. Absolutely opaque fill inside the shape, fully transparent outside. Thin even BLACK outer outline, about 3 pixels when exported at 500px. Entire object centered in a square canvas with generous transparent padding. No face, no lettering, no extra decorations. This is a standalone cutout, not a sheet. Shape must remain geometrically exact and front facing."
+    }
+  ],
+  "checks": [
+    "500x500 RGBA shapes, 400x400 RGBA book",
+    "Normalized content: square/circle 400x400; triangle 400x346; rectangle 460x280; centered",
+    "Shape center alpha min >=253/255",
+    "844x390 light/dark preview inspected"
+  ],
+  "notChecked": [
+    "Actual game interaction, physical device rendering; Claude to recheck"
+  ]
+}

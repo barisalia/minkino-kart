@@ -57,15 +57,36 @@ if (kok) {
   const oynat = h('button.iz-oynat', { type: 'button', 'aria-label': 'Oynat' }, svg(IKON.oyna));
   const bulut = h('div.iz-bulut', { 'aria-hidden': 'true', hidden: true, html: BULUT });
   let oynatici: YTOynatici | null = null;
+  let filmCercevesi: HTMLIFrameElement | null = null;
+  let hazirlikSuresi: number | undefined;
 
   const kapakGoster = (goster: boolean) => {
     kapak.hidden = !goster;
     oynat.hidden = !goster;
   };
   const cevrimdisi = () => {
+    window.clearTimeout(hazirlikSuresi);
+    filmCercevesi = null;
+    oynatici = null;
+    sahne.replaceChildren();
     bulut.hidden = false;
     kapakGoster(true);
+    oynat.disabled = false;
   };
+
+  window.addEventListener('message', (e) => {
+    if (!filmCercevesi || e.source !== filmCercevesi.contentWindow || e.origin !== SITE) return;
+    switch (e.data?.minkino) {
+      case 'hazir':
+        window.clearTimeout(hazirlikSuresi);
+        kapakGoster(false);
+        oynat.disabled = false;
+        if (document.hidden) oynatici?.pauseVideo();
+        break;
+      case 'bitti': kapakGoster(true); break;
+      case 'hata': cevrimdisi(); break;
+    }
+  });
 
   const baslat = async () => {
     efekt.dokunma();
@@ -81,18 +102,13 @@ if (kok) {
     // https sayfada (public/yt.html) kurulur, burada çerçeve içinde açılır ve mesajla yönetilir.
     if (!/^https?:$/.test(location.protocol)) {
       const cerceve = h('iframe', { src: `${SITE}/yt?v=${encodeURIComponent(v.youtube)}`, allow: 'autoplay; encrypted-media', title: v.baslik });
-      Object.assign(cerceve.style, { width: '100%', height: '100%', border: '0', display: 'block' });
+      filmCercevesi = cerceve;
+      oynat.disabled = true;
       const ilet = (ne: string) => cerceve.contentWindow?.postMessage({ minkino: ne }, SITE);
-      oynatici = { playVideo: () => ilet('oynat'), pauseVideo: () => ilet('dur'), seekTo: () => ilet('bastan') } as unknown as YTOynatici;
-      window.addEventListener('message', (e) => {
-        if (e.origin !== SITE) return;
-        const m = (e.data as { minkino?: string } | null)?.minkino;
-        if (m === 'bitti') kapakGoster(true);
-        else if (m === 'hata') cevrimdisi();
-      });
+      oynatici = { playVideo: () => ilet('oynat'), pauseVideo: () => ilet('dur'), seekTo: () => ilet('bastan') };
+      hazirlikSuresi = window.setTimeout(cevrimdisi, 15000);
       cerceve.addEventListener('error', () => cevrimdisi());
       sahne.append(cerceve);
-      kapakGoster(false);
       return;
     }
     oynat.disabled = true;

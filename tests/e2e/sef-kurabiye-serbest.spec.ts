@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 test.use({viewport:{width:740,height:360},hasTouch:true,video:{mode:'on',size:{width:740,height:360}}});
 test('Çocuk yıldızı seçtiği yerde keser, açık kenarda ve önceki kesiğin üzerinde kalıp geri döner',async({page},testInfo)=>{

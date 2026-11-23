@@ -1,9 +1,14 @@
 import {test,expect} from '@playwright/test';
+// Tezgâhtaki oyuncaklar sürekli "nefes alır" (yalnız hareket azaltılmamışken); Playwright kımıldayan öğeye tıklamaz.
+// Oyun, hareket azaltılınca nefesi durdurur (stil.css · prefers-reduced-motion): testler bu ayarla koşar.
+test.use({ reducedMotion: 'reduce' });
 
 test.beforeEach(async ({ page })=>{
   const ekran = page.viewportSize();
   if (ekran && ekran.width < 600 && ekran.height > ekran.width) await page.setViewportSize({width: ekran.height, height: ekran.width});
   await page.addInitScript(()=>{if(!localStorage.getItem('minkino-kartlar-v1')) localStorage.setItem('minkino-kartlar-v1',JSON.stringify({yas:5,ayarlar:{muzik:false}}));});
+  // Ceren Öğretmen'in Sayılar dersi bitmiş say: bu testler Sayı masasının sonraki oyunlarını dener (ders: matematik-ceren.spec.ts).
+  await page.addInitScript(()=>{if(!localStorage.getItem('minkino-matematik-ceren-sayilar-v1')) localStorage.setItem('minkino-matematik-ceren-sayilar-v1',JSON.stringify({ biten: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], simdi: 10, tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-sekiller-v1')) localStorage.setItem('minkino-matematik-ceren-sekiller-v1', JSON.stringify({ biten: ['daire', 'kare', 'ucgen', 'dikdortgen'], simdi: 'dikdortgen', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-olcu-v1')) localStorage.setItem('minkino-matematik-ceren-olcu-v1', JSON.stringify({ biten: ['buyuk-kucuk', 'uzun-kisa', 'cok-az', 'agir-hafif'], simdi: 'agir-hafif', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-oruntu-v1')) localStorage.setItem('minkino-matematik-ceren-oruntu-v1', JSON.stringify({ biten: ['renk', 'sekil', 'ses', 'kendi'], simdi: 'kendi', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-onluk-v1')) localStorage.setItem('minkino-matematik-ceren-onluk-v1', JSON.stringify({ biten: ['onluk', 'on-uc', 'abakus', 'yirmi'], simdi: 'yirmi', tanitildi: true, bitti: true })); if (!localStorage.getItem('minkino-matematik-ceren-topla-v1')) localStorage.setItem('minkino-matematik-ceren-topla-v1', JSON.stringify({ biten: ['fazla', 'doldur', 'eksik', 'on'], simdi: 'on', tanitildi: true, bitti: true }));});
   await page.goto('/matematik/'); await page.locator('.k0').click();
 });
 test('Kule gerçek bırakış yerinde devrilir, sağlam katlar kalır ve on kat tamamlanır',async({page:p})=>{
@@ -21,13 +26,16 @@ test('Kule gerçek bırakış yerinde devrilir, sağlam katlar kalır ve on kat 
   await expect(p.locator('.devrildi')).toHaveCount(1);await expect(p.locator('.kule-kutu')).toHaveCount(2);
   await p.reload();await p.locator('.k0').click();
   for(let n=3;n<=10;n++) await koy(n);
-  await expect(p.locator('.boncuk').first()).toBeVisible();
+  // Kule bitince önce Ceren'in sözü, sonra kule şarkısı; ardından boncuklar (söz yarıda kesilmez).
+  await expect(p.locator('.kule-parla')).toHaveCount(0);
+  await expect(p.locator('.boncuk').first()).toBeVisible({ timeout: 15_000 });
   await p.reload(); await p.locator('.k0').click();
   await expect(p.locator('.boncuk').first()).toBeVisible();
 });
 test('Beş boncuk sürüklenirken beş ayrı tahta sesi çıkar ve geri dönüşte sıra tersine döner',async({page:p})=>{
-  await p.evaluate(()=>localStorage.setItem('minkino-matematik-1-sayi',JSON.stringify({kuleTamam:true,adim:9,yer:0,secimler:[0,0,0],boncukHazir:false})));
-  await p.reload(); await p.locator('.k0').click();
+  await p.evaluate(()=>localStorage.setItem('minkino-matematik-1-sayi',JSON.stringify({kuleTamam:true,adim:8,yer:0,secimler:[0,0,0],boncukHazir:false,surum:3})));
+  // Sürüm 3 kaydı: boncuk turunun ortası (sürüm 2'de bu yer Zıpzıp'ındı; taşıma oradaki yarım hareketleri siler).
+  await p.goto('/matematik/?test=1'); await p.locator('.k0').click();
   await p.evaluate(()=>{
     const sesler:number[]=[];
     Object.assign(window,{boncukTestSesleri:sesler});

@@ -1,0 +1,21 @@
+{
+  "giris": "Bugün otobüsle toplama ve çıkarma öğreneceğiz! Otobüsün beş penceresi var.",
+  "devam": "Tekrar hoş geldin! Otobüs durakta, yolcular bekliyor.",
+  "fazla_bin": "Otobüste iki yolcu var. Bir yolcu daha binsin! Durakta bekleyene dokun.",
+  "fazla_sor": "İkinin bir fazlası kaç? Doğru sayıya dokun.",
+  "fazla_dogru": "Evet! İkinin bir fazlası üç.",
+  "doldur_bin": "Otobüste üç yolcu var. Hadi otobüsü doldur! Bekleyenlere dokun.",
+  "doldur_sor": "Kaç yolcu daha bindi? Doğru sayıya dokun.",
+  "doldur_dogru": "Evet! Üç ve iki, beş eder. Otobüs doldu!",
+  "eksik_in": "Şimdi iki yolcu insin. İnecek yolculara dokun.",
+  "gule": "Güle güle!",
+  "eksik_sor": "Beş yolcudan ikisi indi. Kaç yolcu kaldı?",
+  "eksik_dogru": "Evet! Beşten iki çıkınca üç kalır.",
+  "on_gel": "Bir otobüs daha geldi! İki otobüste on pencere var.",
+  "on_sor": "Kaç yolcu daha binerse on olur? Doğru sayıya dokun.",
+  "on_dogru": "Evet! Sekiz ve iki, on eder.",
+  "ipucu": "Yolculara bak, tek tek sayalım.",
+  "ipucu_bos": "Boş pencerelere bak, tek tek sayalım.",
+  "bitis": "Bugün toplamayı ve çıkarmayı öğrendin! Binen yolcu ekler, inen yolcu eksiltir.",
+  "hatira": "Bu otobüs bileti senin hatıran!"
+}

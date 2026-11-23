@@ -57,10 +57,8 @@ export interface OyunKarti {
 }
 
 export const OYUNLAR: OyunKarti[] = [
-  { id: 'matematik', ad: 'Matematik Atölyesi', adres: './matematik/', renk: '#f9bc76', katmanlar: [] },
-  { id: 'alfabe', ad: 'Ceren Öğretmen ile Harf Atölyesi', adres: './alfabe/', renk: '#f7c785', katmanlar: [] },
-  // İngilizceye Merhaba: bütünüyle premium (src/engine/erisim.ts)
-  { id: 'ingilizce', ad: 'İngilizceye Merhaba', adres: './ingilizce/', renk: '#78cce3', rozet: 'Yeni', katmanlar: [] },
+  { id: 'matematik', ad: 'Matematik', adres: './matematik/', renk: '#f9bc76', katmanlar: [] },
+  { id: 'alfabe', ad: 'Türkçe', adres: './alfabe/', renk: '#f7c785', katmanlar: [] },
   { id: 'sef', ad: 'Minik Şef', adres: './sef/', renk: '#6CC9AE', katmanlar: [] },
   { id: 'kino-ile-sen-sec', ad: 'Kino’yla Sen Seç', adres: './kino-ile-sen-sec/', renk: '#FFCE56', zemin: 'kino-ile-sen-sec/kapak', katmanlar: [] },
   { id: 'hazirlik', ad: 'Okula Hazırlanalım', adres: './hazirlik/', renk: '#70BDAF', zemin: 'hazirlik/kapak', katmanlar: [] },
@@ -163,6 +161,11 @@ export function menuOyunlari(uygulama: boolean): OyunKarti[] {
   // Kitaplar: geniş Pasta kartından önce (bayrak açılınca)
   if (KITAP_MENUDE) hepsi = [...hepsi.filter((k) => !k.genis), KITAP_KARTI, ...hepsi.filter((k) => k.genis)];
   if (PATI_MENUDE) hepsi = [{ id: 'pati', ad: 'Minik Dostlarım', adres: './pati/', renk: '#83D6BF', zemin: 'pati-yeni/kapak', katmanlar: [] }, ...hepsi];
+  // İngilizceye Merhaba: Harf Atölyesi'nin hemen ardından (bayrak açılınca)
+  if (INGILIZCE_MENUDE) {
+    const sira = hepsi.findIndex((k) => k.id === 'alfabe') + 1;
+    hepsi = [...hepsi.slice(0, sira), INGILIZCE_KARTI, ...hepsi.slice(sira)];
+  }
   if (!uygulama) return hepsi;
   return hepsi.filter((k) => !k.uygulamadaYok);
 }
@@ -180,6 +183,21 @@ export const PATI_MENUDE = true;
  * zemin: kitap kapağı). Şimdilik kart düz renk.
  */
 export const KITAP_MENUDE = true;
+/**
+ * Ceren Öğretmen ile İngilizceye Merhaba (ingilizce/; plan: ekip/ingilizce/PLAN.html). Baştan yapılıyor (17 Kasım 2026).
+ * false: menüde yok, sayfa uygulama derlemesine girmez (vite.config.ts → UYGULAMADA_YOK); web'de yalnız /ingilizce/
+ * adresinden açılır. 22 Kasım 2026: Barış "oyunu aç, İngilizce kısmını" dedi; kapak (oyun-kapaklari/ingilizce.webp) hazır.
+ * Kilit: kart ve ilk ada ücretsiz, öbür adalar abonelikle (src/engine/erisim.ts → ingilizce/*).
+ */
+export const INGILIZCE_MENUDE = true;
+export const INGILIZCE_KARTI: OyunKarti = {
+  id: 'ingilizce',
+  ad: 'Ceren Öğretmen ile İngilizceye Merhaba',
+  adres: './ingilizce/',
+  renk: '#bfe4f7',
+  rozet: 'Yeni',
+  katmanlar: [],
+};
 export const KITAP_KARTI: OyunKarti = {
   id: 'kitap',
   ad: 'Kitaplar',

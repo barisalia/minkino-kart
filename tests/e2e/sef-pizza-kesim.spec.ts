@@ -1,4 +1,6 @@
 import {expect,test,type Page,type Locator} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 async function kes(page:Page,el:Locator,yol:number[][]){
   const b=(await el.boundingBox())!,c=await page.context().newCDPSession(page);
   try{
@@ -33,9 +35,9 @@ test('Paylaşılan pizza parmakla dört dilime kesilir, her lokma kendi çeyreğ
   await kes(page,rulet,[[.89,.49],[.66,.50],[.36,.47],[.08,.53]]);
   await expect(onay).toBeEnabled();
   if(process.env.SEF_PIZZA_KESIM)await page.screenshot({path:process.env.SEF_PIZZA_KESIM+'-'+info.project.name+'.png'});
+  // Servis tabağına konunca fırın kapanır, tepsi tamam olduğu için masa sahnesi açılır (eski "Yeni sipariş seç" özeti yok).
   await onay.tap();await page.getByRole('button',{name:'Pizzayı servis tabağına koy'}).tap();
-  await page.getByRole('button',{name:'Yeni sipariş seç'}).tap();
-  await expect(page.locator('.tepsi-yuva[data-parca=pizza] .pz-pizza')).toHaveAttribute('data-dilim','4');
+  await expect(page.getByRole('button',{name:'Tepsiyi müşteriye sun'}).locator('.pz-pizza')).toHaveAttribute('data-dilim','4');
   await page.getByRole('button',{name:'Servis arabasıyla götür'}).tap();
   await page.getByRole('button',{name:'Tepsiyi arabaya koy'}).tap();
   await page.getByRole('button',{name:'Mino masasına götür'}).tap();

@@ -4,7 +4,7 @@ import { aynaDepo, aynala, geriYukle, type KaliciDepo } from '../../src/kabuk/ka
 import { ayaBol, denemeGunu } from '../../src/abonelik/satin';
 import { KAPI_BASAMAK, KAPI_HAK, kapiBeklemesi, kapiSorusu, sayiYazi } from '../../src/ui/ebeveyn-kapisi';
 import { geriKarari, menuSayfasiMi } from '../../src/kabuk/yon';
-import { KITAP_MENUDE, menuOyunlari, OYUNLAR, PATI_MENUDE } from '../../uygulama/src/oyunlar';
+import { INGILIZCE_MENUDE, KITAP_MENUDE, menuOyunlari, OYUNLAR, PATI_MENUDE } from '../../uygulama/src/oyunlar';
 import { VIDEOLAR } from '../../src/video/videolar';
 
 describe('erişim tablosu', () => {
@@ -13,9 +13,9 @@ describe('erişim tablosu', () => {
     // Barış 2026-11-16: eski oyunlar bütünüyle premium; ana oyun ve etkinliklerde başı ücretsiz
     for (const id of ['kartlar', 'pazar', 'canlan', 'macera', 'giysin', 'otobus', 'pasta', 'dedektif', 'macera/elektrik', 'giysin/kis'])
       expect(kilitliMi(id, ac), id).toBe(true);
-    for (const id of ['pati', 'pati/gun-3', 'sef', 'restoran/gun-3', 'kino-ile-sen-sec/bir-gun', 'alfabe/harf-04', 'alfabe/hece-trambolin', 'matematik/sayi', 'hazirlik/gun-2', 'kitap/okul', 'kitap/doktor', 'kitap/kurabiye', 'film/mino-karpuz'])
+    for (const id of ['pati', 'pati/gun-3', 'sef', 'restoran/gun-3', 'kino-ile-sen-sec/bir-gun', 'alfabe/harf-01', 'alfabe/harf-17', 'alfabe/harf-06', 'alfabe/harf-24', 'alfabe/hece-trambolin', 'matematik/sayi', 'hazirlik/gun-2', 'kitap/okul', 'kitap/doktor', 'kitap/kurabiye', 'film/mino-karpuz'])
       expect(kilitliMi(id, ac), id).toBe(false);
-    for (const id of ['pati/gun-4', 'restoran/gun-4', 'kino-ile-sen-sec/firtina', 'alfabe/harf-05', 'alfabe/hece-pano', 'matematik/sekil', 'hazirlik/gun-3', 'kitap/cadir'])
+    for (const id of ['pati/gun-4', 'restoran/gun-4', 'kino-ile-sen-sec/firtina', 'alfabe/harf-02', 'alfabe/harf-03', 'alfabe/harf-04', 'alfabe/harf-05', 'alfabe/hece-pano', 'matematik/sekil', 'hazirlik/gun-3', 'kitap/cadir'])
       expect(kilitliMi(id, ac), id).toBe(true);
   });
   it('bilinmeyen içerik abonelikle', () => {
@@ -39,12 +39,14 @@ describe('erişim tablosu', () => {
 });
 
 describe('uygulama menüsü', () => {
-  it('web ve uygulama: aynı kartlar, sıra korunur; iki otobüs tek kart (Otobüs, geniş, sonda), Mino Ne Giysin? yok', () => {
-    const beklenen = [...(PATI_MENUDE ? ['pati'] : []), 'sef', 'kino-ile-sen-sec', 'hazirlik', 'kartlar', 'pazar', 'canlan', 'macera', 'dedektif', 'giysin', ...(KITAP_MENUDE ? ['kitap'] : []), 'otobus'];
+  it('web ve uygulama: aynı kartlar, sıra korunur; Matematik ve Harf başta, İngilizce bayrakla Harf’in ardında; arşivdekiler (Dedektif, Otobüs) yok', () => {
+    const beklenen = [
+      ...(PATI_MENUDE ? ['pati'] : []), 'matematik', 'alfabe', ...(INGILIZCE_MENUDE ? ['ingilizce'] : []),
+      'sef', 'kino-ile-sen-sec', 'hazirlik', 'kartlar', 'pazar', 'canlan', 'macera', 'giysin', ...(KITAP_MENUDE ? ['kitap'] : []),
+    ];
     for (const u of [menuOyunlari(false), menuOyunlari(true)]) {
       expect(u.map((k) => k.id)).toEqual(beklenen);
-      expect(u.filter((k) => k.genis).map((k) => k.id)).toEqual(['otobus']);
-      for (const yok of ['okul', 'mino-giysin', 'kino-otobus', 'pasta', 'film', 'restoran', 'orman']) expect(u.some((k) => k.id === yok), yok).toBe(false);
+      for (const yok of ['okul', 'mino-giysin', 'kino-otobus', 'pasta', 'film', 'restoran', 'orman', 'dedektif', 'otobus']) expect(u.some((k) => k.id === yok), yok).toBe(false);
     }
   });
   it('Otobüs (eski oyun) bütünüyle premium', () => {
@@ -114,7 +116,9 @@ describe('abonelik planları', () => {
     expect(denemeGunu('DAY', 0)).toBeNull();
   });
   it('yıllık fiyatın aylığı', () => {
-    expect(ayaBol(499, 'TRY')).toMatch(/74,92/);
+    // yıllık 1.799,99 TL → ayda 149,99 TL (aşağı yuvarlanır: aylık bedel hiçbir zaman fazla gösterilmez)
+    expect(ayaBol(1799.99, 'TRY')).toMatch(/149,99/);
+    expect(ayaBol(499, 'TRY')).toMatch(/41,58/);
     expect(ayaBol(0, 'TRY')).toBeNull();
   });
 });

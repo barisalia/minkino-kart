@@ -128,3 +128,123 @@
 @media (max-width: 740px) {
   .ym-ekran .ym-panel[aria-label="Etkinlikler"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* iPad yatay (4:3 … 3:2): Oyunlar ve Etkinlikler panelinde altı ya da daha az kart varken iki sütun, kartlar panelin
+   yüksekliğine göre büyür ve panel dolar (üç sütunda kartlar üst yarıda kalıp alt yarı bomboş görünüyordu).
+   Yedi ve üstü kartta eski üç sütun kalır. :has desteklemeyen eski tarayıcıda da eski düzen sürer. */
+@media (orientation: landscape) and (max-aspect-ratio: 3 / 2) and (min-height: 600px) {
+  .ym-ekran .ym-panel:is([aria-label="Oyunlar"],[aria-label="Etkinlikler"]):not(:has(> :nth-child(7))) {
+    grid-template-columns: repeat(2, minmax(0, calc((100dvh - 176px) / 3 * 1.66)));
+    justify-content: center;
+    align-content: center;
+  }
+  .ym-ekran .ym-panel:is([aria-label="Oyunlar"],[aria-label="Etkinlikler"]):not(:has(> :nth-child(7))) > .ym-icerik-kap:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 9px);
+  }
+}
+/* 7–9 kart (ör. İngilizce menüye girince): üç sütun kalır, ızgara panelde dikey ortalanır, son satırda tek kalan kart
+   ortaya geçer. 10 ve üstünde (panel kayar) hiçbir şey değişmez. */
+@media (orientation: landscape) and (max-aspect-ratio: 3 / 2) and (min-height: 600px) {
+  .ym-ekran .ym-panel:is([aria-label="Oyunlar"],[aria-label="Etkinlikler"]):has(> :nth-child(7)):not(:has(> :nth-child(10))) {
+    align-content: center;
+  }
+  .ym-ekran .ym-panel:is([aria-label="Oyunlar"],[aria-label="Etkinlikler"]):has(> :nth-child(7)):not(:has(> :nth-child(10))) > .ym-icerik-kap:last-child:nth-child(3n+1) {
+    grid-column: 2;
+  }
+}
+/* Kitaplar ve Çizgi Filmler: ses düğmesi kartın sağ üstünde kalır, kilit rozeti onun soluna, aynı hizaya geçer
+   (rozet ses düğmesinin üstüne biniyordu; telefonda düğme rozetin arkasında hiç görünmüyordu). */
+.ym-ekran .ym-panel:is([aria-label="Kitaplar"],[aria-label="Çizgi Filmler"]) .ym-kilit { right: 48px; top: 6px; }
+/* iPad yatay: Kitaplar ve Çizgi Filmler'de kartlar paneli doldurmuyorsa (≤ 9 kart) ızgara dikey ortalanır;
+   altı filmlik panelin alt yarısı boş kalmaz. */
+@media (orientation: landscape) and (max-aspect-ratio: 3 / 2) and (min-height: 600px) {
+  .ym-ekran .ym-panel:is([aria-label="Kitaplar"],[aria-label="Çizgi Filmler"]):not(:has(> :nth-child(10))) { align-content: center; }
+}
+
+/* ---------- Sürüm 6: beşinci bölüm "Dersler" (bayrak DERSLER_MENUDE, uygulama/src/menu-bolumleri.ts) ----------
+   Yalnız .ym-bes varken (beş bölüm) geçerli; dört bölümlü düzen hiç değişmez.
+   Ana ekran: üst sırada iki geniş kart (Dersler, Etkinlikler: öğrenme), alt sırada üç kart (Kitaplar, Oyunlar,
+   Çizgi Filmler); ekran boydan boya dolar. Dikeyde Dersler tek başına üstte, altında 2×2. Yatay telefonda (alçak ekran)
+   beşi tek sırada, uzun kartlar (dört bölümdeki gibi). */
+.ym-ekran .ym-ana.ym-bes { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: 1fr 1fr; }
+.ym-ekran .ym-ana.ym-bes > :nth-child(-n + 2) { grid-column: span 3; }
+.ym-ekran .ym-ana.ym-bes > :nth-child(n + 3) { grid-column: span 2; }
+@media (orientation: landscape) and (min-aspect-ratio: 16 / 10) {
+  .ym-ekran .ym-ana.ym-bes .ym-simge { padding: 3%; }
+}
+@media (orientation: landscape) and (min-aspect-ratio: 16 / 10) and (max-height: 500px) {
+  .ym-ekran .ym-ana.ym-bes { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: 1fr; gap: 12px clamp(10px, 1.8vw, 24px); }
+  .ym-ekran .ym-ana.ym-bes > :nth-child(n) { grid-column: auto; }
+  .ym-ekran .ym-ana.ym-bes .ym-simge { padding: 8%; }
+  .ym-ekran .ym-ana.ym-bes .ym-etiket { font-size: clamp(15px, 4.6vh, 26px); }
+}
+@media (orientation: portrait) {
+  .ym-ekran .ym-ana.ym-bes { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
+  .ym-ekran .ym-ana.ym-bes > :first-child { grid-column: 1 / -1; }
+  .ym-ekran .ym-ana.ym-bes > :nth-child(n + 2) { grid-column: auto; }
+  .ym-ekran .ym-ana.ym-bes .ym-etiket { font-size: min(clamp(18px, 5vh, 34px), 7.4vw); }
+}
+/* Yan şerit: beş simge alt alta (iPad'de satırlar yine 120 px'in üstünde). Dikeyde satırlar 75 px kalır. */
+.ym-ekran .ym-yan.ym-bes { grid-template-rows: repeat(5, 1fr); }
+@media (orientation: portrait) {
+  .ym-ekran .ym-yan.ym-bes { grid-template-rows: repeat(5, 75px); }
+}
+/* Alçak yatay ekran (telefon): beş satır sığmaz, dokunma hedefi küçülürdü → iki sütun, üç sıra; her hücre dört
+   bölümdeki satır kadar yüksek (simge aynı boyda görünür), beşinci simge ortada. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ym-ekran .ym-yan.ym-bes { width: auto; grid-template-columns: repeat(2, var(--ym-hucre)); grid-template-rows: repeat(3, var(--ym-hucre)); align-content: start; gap: 8px; --ym-hucre: clamp(72px, calc((100dvh - 92px) / 3), 80px); }
+  .ym-ekran .ym-yan.ym-bes > :last-child { grid-column: 1 / -1; justify-self: center; width: var(--ym-hucre); }
+}
+/* Dersler paneli Etkinlikler'le aynı kart görünüşünde */
+.ym-ekran .ym-panel[aria-label="Dersler"] .ym-baslik { color: #302338; text-shadow: none; font-weight: 800; }
+.ym-ekran .ym-panel[aria-label="Dersler"] .ym-icerik img { object-fit: contain; background: #fff9e9; height: auto; aspect-ratio: 16 / 9; }
+/* Ses düğmesi kartın sağ üst köşesinde, kapaktaki ad şeridinin üstünde (uzun adların sonunu örtmesin);
+   kilit rozeti onun soluna, aynı hizaya geçer (Kitaplar ve Çizgi Filmler'deki gibi). */
+.ym-ekran .ym-panel[aria-label="Dersler"] .ym-ses { top: 6px; right: 6px; bottom: auto; }
+.ym-ekran .ym-panel[aria-label="Dersler"] .ym-kilit { right: 48px; top: 6px; }
+@media (orientation: landscape) and (max-height: 500px) and (min-width: 650px) {
+  .ym-ekran .ym-panel[aria-label="Dersler"] .ym-icerik img { height: clamp(62px, 24vh, 116px); aspect-ratio: auto; }
+}
+@media (max-width: 740px) {
+  .ym-ekran .ym-panel[aria-label="Dersler"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (orientation: landscape) and (max-aspect-ratio: 3 / 2) and (min-height: 600px) {
+  .ym-ekran .ym-panel[aria-label="Dersler"] {
+    grid-template-columns: repeat(2, minmax(0, calc((100dvh - 176px) / 3 * 1.66)));
+    justify-content: center;
+    align-content: center;
+  }
+  .ym-ekran .ym-panel[aria-label="Dersler"] > .ym-icerik-kap:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 9px);
+  }
+}
+/* Telefon yatay: üç ya da daha az ders varken kartlar büyür ve panelin ortasında durur (alt yarı boş kalmasın) */
+@media (orientation: landscape) and (max-height: 500px) and (min-width: 650px) {
+  .ym-ekran .ym-panel[aria-label="Dersler"]:not(:has(> :nth-child(4))) { grid-template-columns: repeat(3, minmax(0, 1fr)); align-content: center; }
+  .ym-ekran .ym-panel[aria-label="Dersler"]:not(:has(> :nth-child(4))) .ym-icerik img { height: auto; aspect-ratio: 16 / 9; }
+}
+
+/* ---------- Kalite denetimi 22 Kasım gecesi (ekip/KALITE-KURALLARI.md 5, 7, 8) ----------
+   Küçük yuvarlak düğmelerin (ad hoparlörü, ebeveyn, Ana menü, Kapat) dokunma alanı 64 px: çizim aynı, görünmez halka. */
+.ym-ekran .ym-yuvarlak { position: relative; }
+.ym-ekran .ym-ses::after, .ym-ekran .ym-yuvarlak::after { content: ''; position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; }
+/* Kartlar boşta hafifçe soluk alır; ayrı "scale" özelliği basılma dönüşümüyle çakışmaz, kartlar aynı anda değil sırayla. */
+@keyframes ym-nefes { 0%, 100% { scale: 1; } 50% { scale: 1.014; } }
+.ym-ekran :is(.ym-ana .ym-kategori-kap, .ym-icerik-kap) { animation: ym-nefes 3.8s ease-in-out infinite; }
+.ym-ekran :is(.ym-ana .ym-kategori-kap, .ym-icerik-kap):nth-child(3n+2) { animation-delay: -1.3s; }
+.ym-ekran :is(.ym-ana .ym-kategori-kap, .ym-icerik-kap):nth-child(3n) { animation-delay: -2.5s; }
+/* Boş yere dokunuş: parmağın altında küçük bir parıltı (yatay-menu.ts → bosDokunus). */
+.ym-pirilti { position: fixed; z-index: 50; width: 0; height: 0; pointer-events: none; }
+.ym-pirilti i { position: absolute; left: 0; top: 0; font-style: normal; font-size: 22px; line-height: 1; color: #ffd24a; text-shadow: 0 0 6px #fff3a0, 0 1px 0 #c4861a; translate: -50% -50%; animation: ym-pirilti .6s cubic-bezier(.2, .7, .3, 1) forwards; }
+.ym-pirilti i:nth-child(1) { --x: -34px; --y: -26px; }
+.ym-pirilti i:nth-child(2) { --x: 32px; --y: -30px; }
+.ym-pirilti i:nth-child(3) { --x: 4px; --y: 36px; font-size: 16px; }
+@keyframes ym-pirilti { 0% { transform: translate(0, 0) scale(.3) rotate(0deg); opacity: 1; } 60% { opacity: 1; } 100% { transform: translate(var(--x), var(--y)) scale(.6) rotate(60deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .ym-ekran :is(.ym-ana .ym-kategori-kap, .ym-icerik-kap) { animation: none; }
+  .ym-pirilti { display: none; }
+}

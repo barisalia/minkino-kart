@@ -1,0 +1,64 @@
+{
+  "file": "el-telefon.png",
+  "size": [
+    900,
+    1400
+  ],
+  "coordinateOrigin": "top-left",
+  "order": [
+    "top-left",
+    "top-right",
+    "bottom-right",
+    "bottom-left"
+  ],
+  "screenCorners": [
+    [
+      210,
+      449
+    ],
+    [
+      543,
+      414
+    ],
+    [
+      613,
+      1068
+    ],
+    [
+      285,
+      1102
+    ]
+  ],
+  "safeInsetCorners": [
+    [
+      213,
+      451
+    ],
+    [
+      540,
+      417
+    ],
+    [
+      610,
+      1066
+    ],
+    [
+      288,
+      1099
+    ]
+  ],
+  "mouthRegionsXYXY": {
+    "cocuk-kitap": [
+      460,
+      580,
+      560,
+      657
+    ],
+    "oglan-kitap": [
+      453,
+      572,
+      571,
+      654
+    ]
+  }
+}

@@ -1,0 +1,937 @@
+{
+  "mode": "Isolated actual component and CSS; each group mounted separately. No complete lesson or real audio verification.",
+  "report": [
+    {
+      "name": "telefon",
+      "group": "deniz",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-deniz.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/dolphin.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/whale.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/shark.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/octopus.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/crab.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/starfish.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/seal.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/jellyfish.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/seahorse.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/walrus.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "telefon",
+      "group": "kus",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-kus.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/owl.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/parrot.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/eagle.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/flamingo.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/peacock.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/swan.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ostrich.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/pigeon.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/rooster.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/turkey.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/goose.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/toucan.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/crow.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/woodpecker.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "telefon",
+      "group": "bocek",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-bocek.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/bee.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ant.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ladybug.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/spider.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/snail.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/worm.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/caterpillar.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/dragonfly.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/grasshopper.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/beetle.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "telefon",
+      "group": "orman",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-orman.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/fox.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/wolf.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/deer.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/squirrel.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/hedgehog.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/raccoon.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/bat.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/beaver.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/skunk.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/otter.webp",
+          "ok": true,
+          "width": 119.84375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "telefon",
+      "group": "vahsi",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-vahsi.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/rhino.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/camel.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/cheetah.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/leopard.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/gorilla.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/koala.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/polar-bear.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/sloth.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/lizard.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/chameleon.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/meerkat.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/llama.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ox.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/moose.webp",
+          "ok": true,
+          "width": 82.984375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "telefon",
+      "group": "yavru",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-yavru.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/lamb.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/puppy.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/kitten.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/chick.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/pony.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/bull.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/hamster.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/goldfish.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/duckling.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/calf.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/tadpole.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/foal.webp",
+          "ok": true,
+          "width": 98.34375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "telefon",
+      "errors": []
+    },
+    {
+      "name": "tablet",
+      "group": "deniz",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-deniz.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/dolphin.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/whale.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/shark.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/octopus.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/crab.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/starfish.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/seal.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/jellyfish.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/seahorse.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/walrus.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "group": "kus",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-kus.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/owl.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/parrot.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/eagle.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/flamingo.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/peacock.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/swan.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ostrich.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/pigeon.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/rooster.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/turkey.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/goose.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/toucan.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/crow.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/woodpecker.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "group": "bocek",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-bocek.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/bee.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ant.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ladybug.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/spider.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/snail.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/worm.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/caterpillar.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/dragonfly.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/grasshopper.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/beetle.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "group": "orman",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-orman.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/fox.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/wolf.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/deer.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/squirrel.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/hedgehog.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/raccoon.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/bat.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/beaver.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/skunk.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/otter.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "group": "vahsi",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-vahsi.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/rhino.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/camel.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/cheetah.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/leopard.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/gorilla.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/koala.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/polar-bear.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/sloth.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/lizard.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/chameleon.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/meerkat.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/llama.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/ox.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/moose.webp",
+          "ok": true,
+          "width": 180.21875,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "group": "yavru",
+      "background": "url(\"/assets/ingilizce/sahne/bahce-yavru.webp\")",
+      "images": [
+        {
+          "src": "/assets/ingilizce/kelime/lamb.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/puppy.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/kitten.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/chick.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/pony.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/bull.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/hamster.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/goldfish.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": false
+        },
+        {
+          "src": "/assets/ingilizce/kelime/duckling.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/calf.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/tadpole.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        },
+        {
+          "src": "/assets/ingilizce/kelime/foal.webp",
+          "ok": true,
+          "width": 229.359375,
+          "clipped": true
+        }
+      ]
+    },
+    {
+      "name": "tablet",
+      "errors": []
+    }
+  ]
+}

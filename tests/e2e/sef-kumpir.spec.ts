@@ -1,4 +1,6 @@
 import {expect,test} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 test.use({hasTouch:true,isMobile:true});
 test.beforeEach(async({page})=>{
   await page.routeWebSocket(url=>url.hostname==='localhost',s=>s.connectToServer().onMessage(m=>{if(typeof m==='string'&&m.includes('full-reload'))return;s.send(m);}));
@@ -77,16 +79,16 @@ for(const width of [568,960]){
     }
   });
 }
-test('Tarif kitabındaki Kumpir sayfası oynanabilir hazırlığı açar',async({page})=>{
+// Resimli tarif kitabı 16 Kasım'da (c3d9d09a) kaldırıldı; Kumpir panodaki ikinci tarif rafından açılıyor.
+test('İkinci raftaki Kumpir kartı oynanabilir hazırlığı açar',async({page})=>{
   await page.setViewportSize({width:740,height:360});await page.goto('./sef/?test=1');
-  await page.getByRole('button',{name:'Resimli tarif kitabı'}).tap();
-  await page.getByRole('button',{name:'Kumpir tarifini incele'}).tap();
-  await page.getByRole('button',{name:'Sonraki adım'}).tap();await page.getByRole('button',{name:'Sonraki adım'}).tap();
-  const sayfa=page.locator('.kitap-resim img:not([alt=""])');
-  await expect(sayfa).toHaveAttribute('src',/kumpir-kitap\/sayfa3/);
-  expect(await sayfa.evaluate(async el=>{const im=el as HTMLImageElement;await im.decode();return im.naturalWidth;})).toBeGreaterThan(900);
-  await page.getByRole('button',{name:'Bu yemeği hazırla'}).tap();
+  await page.getByRole('button',{name:'Sonraki tarif rafı'}).tap();
+  const kart=page.getByRole('button',{name:'Kumpir tezgâhını aç',exact:true});
+  expect(await kart.locator('img').evaluate(async el=>{const im=el as HTMLImageElement;await im.decode();return im.naturalWidth;})).toBeGreaterThan(100);
+  await kart.tap();
+  await expect(page.getByRole('region',{name:'Kumpir tezgâhı'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Patatesi çizgiden aç'})).toBeVisible();
+  await expect(page.locator('.kp-fis img')).toHaveCount(2);
 });
 
 test('Çocuk gerçek kumpir lokmalarını kaşıkla taşır, tabağın en son konan iç malzemesi önce yenir',async({page})=>{
@@ -214,15 +216,12 @@ for(const [width,id,istenen,konan,puan] of [
     expect(t.masalar[id].kumpirFisi).toBe(id);expect(t.jeton).toBe(puan);
   });
 }
-test('Kitaptaki görselli sipariş seçimi aynı garnitürleri tezgâha taşır',async({page})=>{
-  await page.setViewportSize({width:844,height:390});await page.goto('./sef/?test=1');
-  await page.getByRole('button',{name:'Resimli tarif kitabı'}).tap();
-  await page.getByRole('button',{name:'Kumpir tarifini incele'}).tap();
-  await page.getByRole('button',{name:'Sonraki adım'}).tap();await page.getByRole('button',{name:'Sonraki adım'}).tap();
-  const fis=page.getByRole('button',{name:'Kaşar, Bezelye, Köz biber siparişini seç'});
-  await fis.tap();await expect(fis).toHaveAttribute('aria-pressed','true');
+// Kitaptaki fiş seçimi kaldırıldı; üç renkli kumpir siparişi kendi masasından açılır ve aynı garnitürleri tezgâha taşır.
+test('Üç renkli kumpir siparişi aynı garnitürleri tezgâha taşır',async({page})=>{
+  await page.setViewportSize({width:844,height:390});await page.goto('./sef/?test=1&giris=tepsiler&siparis=kumpir-uc-renk');
+  await page.locator('.tepsi-yuva[data-parca=kumpir]').tap();
   if(process.env.TOST_ONIZLEME)await page.screenshot({path:process.env.TOST_ONIZLEME+'/kitap-kumpir.png'});
-  await page.getByRole('button',{name:'Bu yemeği hazırla'}).tap();
+  await expect(page.getByRole('button',{name:'Patatesi çizgiden aç'})).toBeVisible();
   await expect(page.locator('.kp-fis img')).toHaveCount(3);
   await expect(page.locator('.kp-fis img').last()).toHaveAttribute('src',/koz-biber/);
 });

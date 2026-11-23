@@ -1,3 +1,4 @@
+import { erisimVarMi } from '../../src/abonelik/kilit';
 import './stil.css';
 import evSesi from './ev-konusma-ritmi.json';
 import {fonuBeklet} from '../../src/audio/muzik';
@@ -231,13 +232,15 @@ function kutuyuAskiyaKaldir() {
 function stopHint(){clearTimeout(hintTimer)}
 function sinifaDon(){stopVoice();enter(odaYolu(s.sahne));sakla(s);render()}
 function koseDon(){const b=document.createElement('button');b.className='koseye-don';b.type='button';b.setAttribute('aria-label','Sınıf köşelerine dön');b.innerHTML=simge('ileri');b.onclick=sinifaDon;stage.append(b)}
+/** İlk 2 okul günü ücretsiz; sonraki gün premium (src/engine/erisim.ts → hazirlik/gun-N) */
+function gunAcik(){return erisimVarMi('hazirlik/gun-'+((s.kres?.gun??1)+1),document.body)}
 function render(){
  fonuBeklet(s.sahne==='muzik'||s.sahne==='gosteri'||(s.sahne==='etkinlik'&&etkinlikler[s.ders.tur]?.tur==='ritim'));
  odaKesfiniKapat?.();odaKesfiniKapat=undefined;
  suyuDurdur?.();
  suyuDurdur=undefined;
  clearTimeout(hareketSonu);
- actions.clear();stage.replaceChildren();stage.dataset.sahne=s.sahne;const name=backgrounds[s.sahne];if(name==='kres'){stopHint();bg.dataset.name=name;bg.style.backgroundImage='none';odaKesfiniKapat=kresAc(stage,s,{yeniGun:()=>{s=ertesiSabah(s);enter('oda');sakla(s);render()},gir:n=>{enter(n);sakla(s);render()},soyle:speak,sus:stopVoice,kaydet:()=>sakla(s)});return}if(bg.dataset.name!==name){bg.dataset.name=name;bg.style.backgroundImage='url("'+(name==='derslik'?dersFonu:name==='okul'?okulFonu:url(name))+'")';if(!reduced.matches)stage.parentElement!.animate([{opacity:.75},{opacity:1}],{duration:320})}
+ actions.clear();stage.replaceChildren();stage.dataset.sahne=s.sahne;const name=backgrounds[s.sahne];if(name==='kres'){stopHint();bg.dataset.name=name;bg.style.backgroundImage='none';odaKesfiniKapat=kresAc(stage,s,{yeniGun:()=>{if(!gunAcik())return;s=ertesiSabah(s);enter('oda');sakla(s);render()},gir:n=>{enter(n);sakla(s);render()},soyle:speak,sus:stopVoice,kaydet:()=>sakla(s)});return}if(bg.dataset.name!==name){bg.dataset.name=name;bg.style.backgroundImage='url("'+(name==='derslik'?dersFonu:name==='okul'?okulFonu:url(name))+'")';if(!reduced.matches)stage.parentElement!.animate([{opacity:.75},{opacity:1}],{duration:320})}
  if(name==='derslik'){
    clearTimeout(hintTimer);
    dersGoster(stage,s,{ilerle:n=>{efekt.sayfa();enter(n);sakla(s);render()},ses:speak,sesiDurdur:stopVoice,kaydet:()=>sakla(s),dokun:sesiAc,okulaDon:dersKisayolu?undefined:()=>{tamamla(s.kres,s.ders.tur===panoBaslangici?'pano':'harf');sinifaDon()},
@@ -246,7 +249,7 @@ function render(){
    return;
  }
  if(name==='okul')okulGunu({s,kaydet:()=>sakla(s),parca:(id,art,pos,dik,eylem,cls)=>piece(id,art,pos,dik,eylem as Action|undefined,cls),eylem:action,
-   ileri:(e,ikon)=>nextIcon(e as Action,ikon),gir:enter,soyle:speak,kino:img(s.renk||'yesil'),bastan:()=>{s=ertesiSabah(s);enter('oda')},yenile:()=>{sakla(s);render()}});
+   ileri:(e,ikon)=>nextIcon(e as Action,ikon),gir:enter,soyle:speak,kino:img(s.renk||'yesil'),bastan:()=>{if(!gunAcik())return;s=ertesiSabah(s);enter('oda')},yenile:()=>{sakla(s);render()}});
  if(name==='okul'&&['ek','muzik','kolye','toplan'].includes(s.sahne))koseDon();
  if(s.sahne==='sofra'||s.sahne==='tat'||s.sahne==='topla')okulArkadaslari(stage);
  if(s.sahne==='basla'){nextIcon(action('basla','Sabaha başla',()=>enter('oda')),'ileri')}

@@ -1,9 +1,17 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { hataTopla } from './yardimci';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
 const oyun = (page: Page) => page.locator('.mucver-oyunu');
 const kart = (page: Page) => page.getByRole('button', { name: 'Fırın Mücver siparişi', exact: true });
 const kayit = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('minkino-sef-mucver-v1') ?? 'null'));
+// Teslim edilince atölye kapanır; tabak rafın müşterisinin (Lokum) masasına gider. Eski "son" özeti ve tabak albümü yok.
+const sunum = (page: Page) => page.getByRole('button', { name: 'Tepsiyi müşteriye sun' });
+async function masayaGitti(page: Page) {
+  await expect(sunum(page)).toBeVisible();
+  await expect(oyun(page)).toHaveCount(0);
+}
 type Konum = { x: number; y: number };
 
 async function asama(page: Page, ad: string) {
@@ -72,13 +80,11 @@ test('Mücverin seçilen kızarma derecesi fırından tabağa, puana ve albüme 
       await o.locator('[data-tabaga]').press('Enter');
       await expect.poll(async()=>(await kayit(page)).sunulan.length).toBe(i+1);
     }
-    await o.locator('[data-sus="dereotu"]').tap();await o.locator('[data-teslim]').tap();await asama(page,'son');
+    await o.locator('[data-sus="dereotu"]').tap();await o.locator('[data-teslim]').tap();await masayaGitti(page);
     const servis=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
     expect(servis).toMatchObject({puan:derece===1?3:1,istekPuani:3,pisirmePuani:derece===1?3:1,tercih:{tarifId:'mucver',tur:1,kizarma:derece,garnitur:'dereotu'}});
-    await o.locator('.mv-ileri').tap();await page.getByRole('button',{name:'Hazırladığım tabaklar'}).tap();
-    const album=page.getByRole('dialog');await album.getByRole('button',{name:'Fırın Mücver',exact:true}).tap();
-    await expect(album.getByLabel('Kullandığım malzemeler').locator('img').first()).toHaveAttribute('src',new RegExp(renk));
-    await page.keyboard.press('Escape');await page.keyboard.press('Escape');
+    // Kızarma derecesi tabağın fotoğrafıyla masaya gelir (albüm 16 Kasım'da kaldırıldı).
+    await expect(sunum(page).locator('img.defter-fotograf')).toHaveAttribute('src',servis.resim);
   }
 });
 
@@ -157,20 +163,20 @@ test('Fırın Mücver gerçek dokunuşla hazırlanır ve süslenmiş tabak defte
   await o.locator('[data-sus="yogurt"]').tap();
   await tasi(page,o.locator('[data-sus="limon"]'),o.locator('.mv-son-tabak'));
   await o.locator('[data-teslim]').tap();
-  await asama(page,'son');
+  await masayaGitti(page);
   await kare('09-sunum');
   const kaydedilen=await kayit(page);
   expect(kaydedilen).toMatchObject({sus:'limon',servis:1,sunulan:[2,0,1]});
   expect(kaydedilen.damga).toMatch(/^data:image\/webp;base64,/);
   await page.reload();
-  await asama(page,'son');
-  await o.locator('.mv-ileri').tap();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar',exact:true}).tap();
-  const sonTabak=page.getByRole('dialog').getByRole('button',{name:'Fırın Mücver',exact:true});
+  await masayaGitti(page);
+  // Süslenmiş tabağın fotoğrafı masadaki tepside; deftere bir kez girer.
+  const sonTabak=sunum(page).locator('img.defter-fotograf');
   await expect(sonTabak).toHaveCount(1);
-  await expect(sonTabak.locator('img')).toHaveAttribute('src',kaydedilen.damga);
-  await kare('10-album');
-  await page.getByRole('button',{name:'Tabak defterini kapat',exact:true}).tap();
+  await expect(sonTabak).toHaveAttribute('src',kaydedilen.damga);
+  expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis)).filter((k:{tarifId:string})=>k.tarifId==='mucver')).toHaveLength(1);
+  await kare('10-masa');
+  await page.getByRole('button',{name:'Geri',exact:true}).tap();
   await basla(page);
   expect((await kayit(page)).servis).toBe(1);
   expect(hatalar).toEqual([]);
@@ -202,7 +208,7 @@ test('Fırın Mücver klavyeyle tamamlanır, geri dönüşte kalan rende hareket
   }
   await o.locator('[data-sus="dereotu"]').press('Enter');
   await o.locator('[data-teslim]').press('Enter');
-  await asama(page,'son');
+  await masayaGitti(page);
   expect((await kayit(page)).sus).toBe('dereotu');
 });
 
@@ -235,9 +241,11 @@ test('Kabak bezinden çıkan su tutulur ve erken aktarılan sulu harç çıtır 
       const k=JSON.parse(localStorage.getItem('minkino-sef-mucver-v1')!);
       Object.assign(k,{aktif:true,harc:6,tur:3,siparis:1,sikma,yerler:[{x:25,y:50},{x:50,y:50},{x:75,y:50}],bitis:1,cikti:true,kizarma:1,sunulan:[0,1,2],sus:'dereotu',damga:undefined});
       localStorage.setItem('minkino-sef-mucver-v1',JSON.stringify(k));localStorage.setItem('minkino-sef-acik-atolye','mucver');
+      // Bir önceki tur teslimde masaya geçti; açık masa atölyenin yeniden açılmasını engellemesin diye panodan başla.
+      localStorage.setItem('minkino-sef-v1',JSON.stringify({sessiz:true}));
     },su);
     await page.reload();await asama(page,'susle');
-    await oyun(page).locator('[data-teslim]').tap();await asama(page,'son');
+    await oyun(page).locator('[data-teslim]').tap();await masayaGitti(page);
     const son=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).gecmis.at(-1));
     expect(son).toMatchObject({puan:su===0?2:3,tercih:{sikma:su}});
   }

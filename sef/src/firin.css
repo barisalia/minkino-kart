@@ -67,7 +67,7 @@
 .pz-pizza[data-kivam]:not([data-kivam="erken"]) .pz-parca[data-cesit="peynir"] { --pz-boy:21%; }
 .pz-serpme-onizleme { position:absolute; inset:0; opacity:.58; pointer-events:none; }
 .pz-porsiyon { position:absolute; left:34%; top:18%; transform:translateX(-50%); display:flex; gap:3px; padding:3px; border:2px solid #604337; border-radius:99px; background:var(--sef-kumanda-fonu, #fff5d9); box-shadow:0 2px #a78262; }
-.pz-olcu { width:max(44px,9cqh); height:max(36px,7.4cqh); display:grid; place-items:center; border:1.5px solid transparent; border-radius:99px; }
+.pz-olcu { width:max(44px,9cqh); height:max(44px,7.4cqh); display:grid; place-items:center; border:1.5px solid transparent; border-radius:99px; }
 .pz-olcu[aria-pressed=true] { border-color:#37745b; background:#b3e8c9; }
 .pz-olcu:active,.pz-sos-kasesi:active{transform:translateY(1px)}
 .pz-porsiyon-simge { display:block; position:relative; width:80%; height:85%; }
@@ -152,10 +152,11 @@
 .pz-kivam-puani>.pz-bos-yildiz {color:#c2b395;}
 .pz-pizza[data-kivam="fazla"] .pz-parca {filter:brightness(.86) saturate(.92);}
 .pz-pizza[data-kivam="yanik"] .pz-parca {filter:brightness(.54) saturate(.8);}
-.pz-raf-hucre{position:relative;min-width:0;padding-bottom:max(24px,4.6cqh)}
+/* Kaldır düğmesinin dokunma alanı telefonda da 44 px; görünen hap küçük kalır. */
+.pz-raf-hucre{position:relative;min-width:0;padding-bottom:max(44px,4.6cqh)}
 .pz-malzeme{width:100%}
-.pz-geri-al{position:absolute;inset:auto 0 0;width:100%;height:max(24px,4.6cqh);border:0;background:transparent;display:grid;place-items:center;touch-action:manipulation}
-.pz-geri-al span{display:grid;place-items:center;width:65%;height:85%;border-radius:3cqh;background:#ffdfbb;border:1px solid #68442e;color:#654227;font:bold max(16px,3.2cqh)/1 sans-serif}
+.pz-geri-al{position:absolute;inset:auto 0 0;width:100%;height:max(44px,4.6cqh);border:0;background:transparent;display:grid;place-items:center;touch-action:manipulation}
+.pz-geri-al span{display:grid;place-items:center;width:65%;height:max(20px,3.9cqh);border-radius:3cqh;background:#ffdfbb;border:1px solid #68442e;color:#654227;font:bold max(16px,3.2cqh)/1 sans-serif}
 .pz-son-ozeti{position:absolute;top:20%;right:3%;display:grid;gap:.8cqh}
 .pz-son-ozeti .pz-kivam-puani{position:static}
 .pz-son-ozeti .pz-kivam-puani>:first-child{width:6cqh;height:6cqh;color:#466853}
@@ -216,6 +217,8 @@
 .pz-son-ozeti .pz-bos-yildiz{filter:grayscale(1);opacity:.38}
 .pz-ileri:has(>img){min-width:72px;width:clamp(72px,12cqw,128px);height:clamp(46px,12cqh,84px);aspect-ratio:auto;background:#a4ecc6;border-radius:26%}
 .pz-ileri>img{width:80%;height:85%;object-fit:contain}
+/* Izgaranın kendiliğinden satırı resmin boyuna uzuyordu; telefonda fırın resmi düğmenin ve ekranın altından taşıyordu. */
+.pz-ileri:has(>img){grid-template-rows:minmax(0,1fr)}
 .pz-ileri:has(>img)::after{content:"";position:absolute;inset:-4px;border:2px solid #176b55;border-radius:inherit;pointer-events:none}
 @media(prefers-reduced-motion:no-preference){.pz-ileri:has(>img)::after{animation:pz-hazir-isigi 1.8s ease-out infinite}}
 @keyframes pz-hazir-isigi{0%,15%{opacity:.85;scale:1}85%,100%{opacity:0;scale:1.12}}

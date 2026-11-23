@@ -1,6 +1,8 @@
 import {test,expect} from '@playwright/test';
+// Kayıp bir düğme 120 sn beklemesin: Şef'te her eylem en çok 15 sn, her sayfa açılışı en çok 30 sn bekler.
+test.use({actionTimeout:15_000,navigationTimeout:30_000});
 
-test('Çocuk bir sofra fotoğrafını salona asar, Mino onun sütlacını sipariş eder',async({page})=>{
+test('Panoya asılı sofra fotoğrafındaki sütlacı Mino spesiyal olarak sipariş eder',async({page})=>{
   await page.routeWebSocket(url=>url.port==='5173',()=>{});
   await page.setViewportSize({width:740,height:360});await page.goto('./sef/');
   await page.getByRole('button',{name:'Sesi kapat'}).tap();
@@ -10,16 +12,10 @@ test('Çocuk bir sofra fotoğrafını salona asar, Mino onun sütlacını sipari
     Object.assign(k.tepsiler,{tatliSeviye:5,anilar:[{gun:2,sira:2,menuId:'dondurma',masa:{sunuldu:true,tabaklar:{dondurma:true},tatliPuani:3}},{gun:2,sira:3,menuId:'sutlac',masa}],
       gun:{no:3,ziyaret:1,kapandi:false,kazanc:5},restoran:{sira:5,menuId:'corba-sofrasi',evre:'mutfak',sayildi:true},
       masalar:{...Object.fromEntries(['kurabiye','dondurma','minik-kek','meyveli-tart'].map(id=>[id,{sunuldu:true,tabaklar:{[id]:true},tatliPuani:3}])),sutlac:masa,'corba-sofrasi':{sunuldu:true,tabaklar:{icecek:true},icecekPuani:3}},rekorlar:{sutlac:3,kurabiye:3,dondurma:3,'minik-kek':3,'meyveli-tart':3},
-      ekran:'kapali',restoranda:false,secili:'corba-sofrasi'});localStorage.setItem('minkino-sef-v1',JSON.stringify(k));
+      ekran:'kapali',restoranda:false,secili:'corba-sofrasi',spesiyal:{gun:2,sira:3,menuId:'sutlac',masa}});localStorage.setItem('minkino-sef-v1',JSON.stringify(k));
   });await page.reload();
-  await page.getByRole('button',{name:'Hazırladığım tabaklar',exact:true}).tap();
-  await page.getByRole('button',{name:/Lokum, 2. gün, sofra fotoğrafı/}).tap();
-  await page.getByRole('button',{name:'Restoran panosuna as'}).tap();
-  await page.getByRole('button',{name:'Sofra fotoğraflarına dön'}).tap();
-  await page.getByRole('button',{name:/Mino, 2. gün, sofra fotoğrafı/}).tap();
-  await page.getByRole('button',{name:'Restoran panosuna as'}).tap();
-  await expect(page.getByRole('button',{name:'Restoran panosunda asılı'})).toHaveAttribute('aria-pressed','true');
-  await page.reload();await page.getByRole('button',{name:'Restoranı aç'}).tap();
+  // Fotoğrafı panoya asan düğme albümle birlikte kalktı (aşağıdaki test); burada panoda Mino'nun sütlaç fotoğrafı asılı.
+  await page.getByRole('button',{name:'Restoranı aç'}).tap();
   await page.getByRole('button',{name:'Sıradaki müşteriyi karşıla'}).tap();
   const b=page.getByRole('button',{name:'Şefin spesiyalini büyüt'});
   await expect(b).toBeVisible({timeout:18000});await b.tap();
@@ -35,6 +31,23 @@ test('Çocuk bir sofra fotoğrafını salona asar, Mino onun sütlacını sipari
   await siparis.tap();await expect(page.locator('.tepsi-istek .spesiyal-rozeti')).toBeVisible();
   const t=await page.evaluate(()=>JSON.parse(localStorage.getItem('minkino-sef-v1')!).tepsiler);
   expect(t.restoran.menuId).toBe('sutlac');expect(t.spesiyalGunu).toBe(3);
+});
+
+// OLASI GERÇEK KUSUR (19 Kasım, Barış'ın kararı bekleniyor): sofra fotoğrafını restoran panosuna asan "Restoran panosuna as"
+// yalnız tabak albümündeydi; albüm 16 Kasım'da (c3d9d09a) kaldırıldı ve spesiyali başlatan bir giriş kalmadı.
+// Karar gelene kadar bu test 3 sn içinde, sebebini yazarak kalır.
+test('Çocuk bir sofra fotoğrafını restoran panosuna asabilir',async({page})=>{
+  await page.routeWebSocket(url=>url.port==='5173',()=>{});
+  await page.setViewportSize({width:740,height:360});await page.goto('./sef/?test=1');
+  await page.getByRole('button',{name:'Sesi kapat'}).tap();
+  await page.evaluate(()=>{
+    const k=JSON.parse(localStorage.getItem('minkino-sef-v1')!);
+    const masa={tabaklar:{sutlac:true},sunuldu:true,sutlacIstegi:'kalp',sutlacServisi:{desen:'kalp',toz:.95,doluluk:.9,kivam:'ipeksi'},tatliPuani:3};
+    Object.assign(k.tepsiler,{tatliSeviye:5,anilar:[{gun:2,sira:3,menuId:'sutlac',masa}],gun:{no:3,ziyaret:1,kapandi:false,kazanc:5},ekran:'kapali',restoranda:false});
+    localStorage.setItem('minkino-sef-v1',JSON.stringify(k));
+  });await page.reload();
+  await expect(page.getByRole('button',{name:'Restoran panosuna as'}),
+    'Şefin spesiyalini başlatan giriş yok: "Restoran panosuna as" yalnız 16 Kasım’da kaldırılan tabak albümündeydi. Barış kararı bekleniyor.').toBeVisible({timeout:3000});
 });
 
 test('Fotoğraf albümden çıktığında spesiyal kalır; 1 yıldız, kapalı tatlı ve art arda aynı müşteri uygun değildir',async({page})=>{

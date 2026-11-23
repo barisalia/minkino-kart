@@ -32,7 +32,8 @@ const CUMLE: Record<Adim, string> = {
   yay: 'Tavayı tut. Hamuru üç yana yay.',
   cevir: 'Spatulayı krebin altına kaydır, yukarı kaldır ve çevir.',
   meyve: 'Hangi meyveyi seversin? Üç parça alıp krebin üzerine yerleştir.',
-  katla: 'Yemeğin hazır!',
+  // Katlama adımı: çocuk henüz katlamadı, "Yemeğin hazır!" erkendi. Kaydı var (atolye-replikler: krep-asci-5).
+  katla: 'Krebin kenarından tut. Önce ikiye, sonra bir daha katla.',
   servis: 'Krep hazır! Tabağı servis ziline götür.',
   son: 'Afiyet olsun!',
 };

@@ -1,0 +1,28 @@
+/* Polly's Riddles ve Odd One Out (bilmece.ts, farkli-olan.ts). Önekler: ing-ao-bm-, ing-ao-fo-, ing-kucuk-oyun. */
+.ing-ao-bm-ipuclari{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(.6*var(--u));padding:calc(1.2*var(--u));background:var(--krem);border:var(--cizgi) solid var(--murekkep);border-radius:calc(3*var(--u));font-size:calc(3*var(--u));font-weight:800;color:#24524b;text-align:center}
+.ing-ao-bm-ipuclari strong{color:#0f5a4e;font-size:1.15em}
+.ing-ao-bm-kartlar,.ing-ao-fo-kartlar{flex:none;height:calc(24*var(--u))}
+.ing-ao-bm-kartlar .ing-secim,.ing-ao-fo-kartlar .ing-secim{max-width:calc(24*var(--u))}
+.ing-ao-fo-kartlar{flex:1;height:auto;min-height:0}
+.ing-ao-farkli .ing-ao-yazi{font-size:calc(3.2*var(--u))}
+.ing-ao-kart.ing-ao-sondu{opacity:.3;filter:grayscale(1);pointer-events:none}
+.ing-ao-kart.ing-ao-fo-es{opacity:.55;scale:.92;transition:opacity .3s,scale .3s}
+/* Oyunlar ekranı: küçük oyun kartları üç sütunlu ızgarada; Fener Avı ve Günün Tekrarı tam satır */
+.ing-oyunlar-sag:has(> .ing-kucuk-oyun){grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1.1fr) repeat(2,minmax(0,1fr)) auto}
+.ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-fener-karti,.ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-gunluk{grid-column:1/-1}
+.ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti{grid-column:auto}
+.ing-bilmece-karti{background:#fff2c2!important}
+.ing-farkli-karti{background:#e8dcff!important}
+.ing-kucuk-oyun .ing-bahce-kart-resim{grid-template-columns:1fr}
+.ing-kucuk-oyun .ing-bahce-kart-resim>*{max-height:100%;height:100%;width:auto;aspect-ratio:1;object-fit:contain}
+/* altı kart birlikteyken küçük kartlar resimsiz: başlık ve ok (alt yazı sığmıyor); yatay telefonda Fener Avı'nın alt yazısı da gizli */
+@supports selector(:has(a)){
+  .ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti{grid-template:minmax(0,1fr)/minmax(0,1fr) auto;column-gap:calc(.8*var(--u))}
+  .ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti .ing-bahce-kart-resim,.ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti small{display:none}
+  .ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti .ing-fener-kart-yazi{grid-row:1;grid-column:1;align-self:center;min-width:0}
+  .ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti strong{font-size:calc(2.6*var(--u));line-height:1.1}
+  .ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti > .ing-ok,.ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-bahce-karti > .ing-oyun-kilit{grid-row:1;grid-column:2;align-self:center;padding:0}
+}
+@media (max-height:600px){.ing-oyunlar-sag:has(> .ing-kucuk-oyun) > .ing-fener-karti small{display:none}}
+.ing-ao-bm-baslik{font-size:1.6em!important}
+.ing-ao-yazi.ing-ao-fo-baslik{flex:1;display:grid;place-items:center;font-size:calc(5*var(--u))}

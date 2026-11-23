@@ -1,6 +1,6 @@
 .sebze-lavabosu{position:absolute;inset:0;z-index:15;isolation:isolate;container-type:size;background:#a2e2cd url('../../assets/sef/yikama/lavabo.webp') center/100% 100% no-repeat;touch-action:none;user-select:none}
 .sebze-lavabosu [hidden]{display:none!important}
-.lavabo-geri,.lavabo-cevir,.lavabo-onay,.lavaboya-git{border-radius:50%;border:2px solid #4b3431;box-shadow:0 .65cqh #a48163;display:grid;place-items:center;background:var(--sef-kumanda-fonu, #fff3d8);color:#493330;width:max(42px,10cqh);height:max(42px,10cqh);padding:1.9cqh}
+.lavabo-geri,.lavabo-cevir,.lavabo-onay,.lavaboya-git{border-radius:50%;border:2px solid #4b3431;box-shadow:0 .65cqh #a48163;display:grid;place-items:center;background:var(--sef-kumanda-fonu, #fff3d8);color:#493330;width:max(44px,10cqh);height:max(44px,10cqh);padding:1.9cqh}
 .lavaboya-git{position:absolute;right:5%;top:22%;z-index:3;background:#c5f0ec;touch-action:manipulation}
 .lavaboya-git[data-temiz=true]:after{content:'✓';position:absolute;right:-8%;bottom:-7%;color:#31754c;background:#bbebbd;border-radius:50%;padding:.35cqh}
 .lavabo-geri{position:absolute;left:2.5%;top:4%}.lavabo-cevir,.lavabo-onay{position:absolute;right:5%;bottom:7%}.lavabo-onay{background:#b9e8b2}

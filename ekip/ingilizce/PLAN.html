@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İngilizceye Merhaba · Plan</title>
+<style>
+  :root{--murekkep:#2a2c24;--yesil:#176858;--seftali:#ffd2ab;--krem:#fff8e9;--mavi:#cfeaf8;--sari:#ffd75e}
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff6e6;color:var(--murekkep);font:17px/1.5 "Nunito","Trebuchet MS",system-ui,sans-serif}
+  main{max-width:1060px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:34px;line-height:1.1;margin:0 0 6px}
+  h2{font-size:24px;margin:44px 0 6px}
+  h3{font-size:18px;margin:0 0 4px}
+  p{margin:6px 0}
+  .alt{color:#5b6257;margin:0 0 4px}
+  .ozet{background:var(--seftali);border:2px solid var(--murekkep);border-radius:22px;padding:16px 20px;margin-top:16px;display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
+  .ozet img{width:120px;height:120px;object-fit:contain}
+  .ozet p{font-size:19px;margin:0}
+
+  /* ekran taslağı */
+  .ekran{position:relative;aspect-ratio:16/9;border:3px solid var(--murekkep);border-radius:22px;overflow:hidden;background:
+    radial-gradient(circle,#a9d6ee 0 2.5px,transparent 3px) 0 0/34px 34px,var(--mavi);margin-top:12px}
+  .ekran .ceren{position:absolute;left:1%;bottom:-6%;width:36%;height:96%;object-fit:contain;object-position:left bottom}
+  .ekran .balon{position:absolute;left:29%;top:9%;max-width:24%;line-height:1.2;background:var(--krem);border:2px solid var(--murekkep);border-radius:18px;padding:8px 14px;font-weight:700;font-size:clamp(11px,1.7vw,18px)}
+  .ekran .devam{position:absolute;left:30%;bottom:9%;background:var(--yesil);color:#fff8e8;border:2px solid var(--murekkep);border-radius:16px;padding:8px 16px;font-weight:800;font-size:clamp(11px,1.8vw,19px)}
+  .bolumler{position:absolute;right:3%;top:10%;bottom:8%;width:42%;display:grid;grid-template-rows:1.25fr 1fr;grid-template-columns:1fr 1fr;gap:4%}
+  .bolum{background:var(--krem);border:2px solid var(--murekkep);border-radius:18px;display:grid;place-items:center;text-align:center;padding:6px;font-weight:800;font-size:clamp(11px,1.8vw,20px);line-height:1.15}
+  .bolum small{display:block;font-weight:600;font-size:.68em;color:#5b6257}
+  .bolum.buyuk{grid-column:1 / 3;background:#ffe9a6}
+  .bolum img{height:clamp(26px,5.4vw,62px);display:block;margin:0 auto 2px}
+  .koseler{position:absolute;right:3%;top:2.5%;font-size:clamp(9px,1.2vw,13px);background:#d6ead4;border:2px solid var(--murekkep);border-radius:12px;padding:2px 9px;font-weight:700}
+
+  .adimlar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+  .adim{background:var(--krem);border:2px solid var(--murekkep);border-radius:18px;padding:12px 12px 14px;position:relative}
+  .adim b.no{position:absolute;top:-13px;left:12px;background:var(--sari);border:2px solid var(--murekkep);border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:15px}
+  .adim img{height:58px;display:block;margin:4px 0 6px}
+  .adim p{font-size:14.5px;line-height:1.35;margin:0}
+  .sure{font-size:13px;color:#5b6257;font-weight:700}
+
+  .izgara{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .kutu{background:var(--krem);border:2px solid var(--murekkep);border-radius:16px;padding:12px 14px}
+  .kutu p{font-size:14.5px;line-height:1.35;margin:0}
+  table{border-collapse:collapse;width:100%;margin-top:12px;background:var(--krem);border:2px solid var(--murekkep);border-radius:16px;overflow:hidden;font-size:15px}
+  th,td{padding:7px 10px;text-align:left;border-bottom:1px solid #e3d8c2;vertical-align:top}
+  th{background:#ffe9a6;font-size:14px}
+  tr:last-child td{border-bottom:0}
+  td.no{font-weight:800;width:34px}
+  ul{margin:8px 0 0;padding-left:22px}
+  li{margin:5px 0}
+  .ikili{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  a{color:#0b5d6b}
+  .kaynak{font-size:13.5px;color:#5b6257}
+  @media(max-width:760px){.adimlar{grid-template-columns:1fr 1fr}.izgara{grid-template-columns:1fr 1fr}.ikili{grid-template-columns:1fr}.ozet{grid-template-columns:80px 1fr}.ozet img{width:80px;height:80px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Ceren Öğretmen ile İngilizceye Merhaba</h1>
+  <p class="alt">3–6 yaş için ilk İngilizce uygulaması · plan · 17 Kasım 2026 (akşam güncellendi: derste 4 kelime, üç seviye)</p>
+
+  <div class="ozet">
+    <img src="../../assets/alfabe/ceren-konus/1.webp" alt="">
+    <p><b>Tek cümleyle:</b> Ceren Öğretmen dersi Türkçe anlatır, sınıfın papağanı Polly yalnız İngilizce konuşur, çocuk dinler, söyler ve oynar. Her gün 5 dakikalık bir ders, sonra istediği kadar oyun.</p>
+  </div>
+
+  <h2>1. Uygulamanın haritası</h2>
+  <p class="alt">Açılınca tek ekran. Solda Ceren Öğretmen karşılar; küçük çocuk tek düğmeyle derse girer. Sağda bölümler durur.</p>
+  <div class="ekran">
+    <img class="ceren" src="../../assets/alfabe/ceren-konus/2.webp" alt="">
+    <div class="balon">Hello! Bugün çiftliğe gidiyoruz.</div>
+    <div class="devam">▶ Derse devam et</div>
+    <div class="koseler">Büyükler için</div>
+    <div class="bolumler">
+      <div class="bolum buyuk"><span><img src="../../assets/ada-arkaplan/kasaba-ada.webp" alt="">DERSLER<small>Ceren Öğretmen'in sınıfı · adım adım öğretir</small></span></div>
+      <div class="bolum"><span><img src="eski-cizimler/top.webp" alt="">OYUNLAR<small>öğrendiğini oynayarak pekiştirir</small></span></div>
+      <div class="bolum"><span><img src="eski-cizimler/kitap.webp" alt="">KELİMELERİM<small>çıkartma albümü, resimli sözlük</small></span></div>
+    </div>
+  </div>
+  <ul>
+    <li><b>Dersler:</b> eğitici bölüm. Üniteler deniz üstünde adalar olarak durur; çocuk öğrendikçe adaya o ünitenin karakterleri gelir, ada canlanır.</li>
+    <li><b>Oyunlar:</b> pratik bölümü. Derste öğrendiği kelimelerle oynanan altı oyun ve her gün değişen kısa bir "Günün Tekrarı".</li>
+    <li><b>Kelimelerim:</b> her öğrenilen kelime bir çıkartma olur. Dokununca kelimeyi yeniden söyler. Senin kitabının uygulamadaki karşılığı.</li>
+    <li><b>Büyükler için:</b> ebeveyn kapısının arkasında. Çocuk hangi kelimeleri öğrendi, evde nasıl tekrar edilir.</li>
+  </ul>
+
+  <h2>2. Bir ders nasıl geçer</h2>
+  <p class="alt">Her kelime dersi 4 yeni kelime, 5 kısa adım, toplam 5 dakika kadar. Açılış ve kapanış hep aynı; aradaki oyunlar her derste değişir (1. ders Bul + Kino'ya Öğret, 2. ders Balon + Ne Eksik, 3. ders şenlik). Bir kelime derste art arda yinelenmez: tanışmada iki kez duyulur, çocuk söyler, sonra oyunlarda geri gelir.</p>
+  <div class="adimlar">
+    <div class="adim"><b class="no">1</b><img src="eski-cizimler/papagan-el-salla.webp" alt=""><h3>Hello!</h3><p>Polly "Hello!" der, çocuk karşılık verir. Sonra önceki derslerden iki hızlı soru: unutulmasın diye.</p><p class="sure">30 saniye</p></div>
+    <div class="adim"><b class="no">2</b><img src="eski-cizimler/hayvan-sheep-dur.webp" alt=""><h3>Tanış</h3><p>Önce ses gelir ("meee"), çocuk merak eder, dokunur, resim çıkar. Polly "Sheep!" der, bir de yavaş söyler. Ceren Türkçesini söyler. Çocuk da söyler; Polly överken cümle içinde kullanır ("Great job! It's a sheep.").</p><p class="sure">4 kelime · 1,5 dakika</p></div>
+    <div class="adim"><b class="no">3</b><img src="eski-cizimler/hayvan-cow-dur.webp" alt=""><h3>Bul</h3><p>"Where is the cow?" Çocuk resimlerden bulur. Yanlışa dokunursa o resmin adını duyar; ceza yok. Kelimeler karışık sırayla geri sorulur. 2. derste bu adımın yerini Balon Patlat alır.</p><p class="sure">4–6 soru · 1 dakika</p></div>
+    <div class="adim"><b class="no">4</b><img src="eski-cizimler/kino-tam.webp" alt=""><h3>Oyun</h3><p>Her derste başka oyun: Kino'ya öğret, balon patlat, ne eksik, Obur'u besle. Aynı kelimeler, yeni eğlence.</p><p class="sure">1,5 dakika</p></div>
+    <div class="adim"><b class="no">5</b><img src="eski-cizimler/progress-star.webp" alt=""><h3>Söyle ve kazan</h3><p>Çocuk her kelimeyi kendi sesiyle söyler, çıkartması albüme uçar. Yıldızlar, "Goodbye!"</p><p class="sure">1 dakika</p></div>
+  </div>
+  <p>Her ünitenin üçüncü dersi bir şenliktir: ünitenin kelimeleri tek bir canlı sahnede (çiftlik, oda, dükkân) buluşur, çocuk her şeye dokunur, sonra ada canlanır.</p>
+
+  <h2>3. Oyunlar bölümü</h2>
+  <div class="izgara">
+    <div class="kutu"><h3>Günün Tekrarı</h3><p>Her gün 8 soru. Uygulama hangi kelimenin unutulmak üzere olduğunu takip eder, onu sorar.</p></div>
+    <div class="kutu"><h3>Kino'ya Öğret</h3><p>Kino yanlış resmi kaldırır: "Is it a duck?" Çocuk evet ya da hayır der, doğrusunu Kino'ya verir. Öğreten çocuk daha iyi öğrenir.</p></div>
+    <div class="kutu"><h3>Balon Patlat</h3><p>Resimli balonlar yükselir, Polly bir kelime söyler, çocuk doğru balonu patlatır.</p></div>
+    <div class="kutu"><h3>Ne Eksik?</h3><p>Üç resim görünür, perde kapanır, biri kaybolur. "What's missing?"</p></div>
+    <div class="kutu"><h3>Obur'u Besle</h3><p>Harf Atölyesi'ndeki Obur burada da aç: "Apple, please!" Yanlışı geri verir.</p></div>
+    <div class="kutu"><h3>Konuşan Resim</h3><p>Dolu bir sahne. Dokunulan her şey canlanır ve adını söyler. Sonra Polly sorar, çocuk gösterir.</p></div>
+  </div>
+  <p class="alt">İleriki ünitelerde iki büyük oyun daha açılır: Kelime Makinesi (sayı + renk + nesne: "Three red apples!") ve Merhaba Dükkânı (ilk konuşmalar: "Two apples, please." "Thank you!").</p>
+
+  <h2>4. Ne öğretiyoruz</h2>
+  <p class="alt">12 ada. Her adada üç seviye, her seviyede üç ders: toplam 108 ders. Çocuk bir adanın kelimelerini öğrenir, iki ada sonra cümleler için, beş ada sonra konuşma için o adaya geri döner (sarmal yol: kelime, cümle ve hikâye dersleri art arda değil sırayla gelir, eski kelimeler unutulmadan yeniden kullanılır).</p>
+  <div class="izgara">
+    <div class="kutu"><h3>1. seviye · Kelimeler</h3><p>Her adada 8 kelime (ders başına 4): toplam 96 kelime. Dinle, gör, bul, söyle. Üçüncü ders şenliktir: kelimeler tek sahnede yaşar.</p></div>
+    <div class="kutu"><h3>2. seviye · Cümleler</h3><p>Her adada iki yeni kalıp, sekiz cümle: büyük–küçük, ve, renk + nesne, sayı + çoğul, severim–sevmem, bende var, üstünde–altında–içinde, şimdi ne yapıyor, yapabilir. Üç dersin oyunları ayrı: 4. derste resmini seçer (Hangisi?) ve taşlarla kurar; 5. derste cümle resme uyuyor mu diye karar verir (Doğru mu?); 6. derste cümle hafızası, Polly'nin Dürbünü (resimler mercekten geçer, söyleneni yakalar) ya da Say ve Koy (söylenen kadarını tepsiye koyar) ve Sen Söyle.</p></div>
+    <div class="kutu"><h3>3. seviye · Konuşma</h3><p>Soru–cevap (What is it? How many? Where is the cat? Do you like apples?): önce Polly sorar, sonra roller değişir ve çocuk sorar, Polly cevaplar (Sen Sor). Dört taşlı uzun cümle kurma. Dört resimlik kısa bir hikâye: dinle, sıraya diz, sonra hikâyeyi kendi sesinle anlat.</p></div>
+    <div class="kutu"><h3>Günlük sözler</h3><p>Üst seviye derslerinde selamdan sonra kısa bir konuşma: "How are you?" – "I'm fine, thank you!", "What's your name?", "How old are you?". Üç söz dersten derse döner; Ceren ilk derslerde Türkçe açıklar, sonra Polly sorar ve çocuk kendisi cevaplar.</p></div>
+  </div>
+  <table>
+    <tr><th></th><th>Ada</th><th>1 · Kelimeler (8)</th><th>2 · Cümleler</th><th>3 · Soru ve hikâye</th></tr>
+    <tr><td class="no">1</td><td>Çiftlik</td><td>sheep, cow, duck, cat, dog, horse, chicken, pig</td><td>A big cow. · A cat and a dog.</td><td>What is it? · Kino at the Farm</td></tr>
+    <tr><td class="no">2</td><td>Renkler</td><td>red, blue, yellow, green, orange, pink, purple, black</td><td>A red ball. · A yellow kite.</td><td>What color is it? · Two Balloons</td></tr>
+    <tr><td class="no">3</td><td>Sayılar</td><td>one … eight</td><td>One apple, two apples. · Five ducks.</td><td>How many? · One, Two, Three!</td></tr>
+    <tr><td class="no">4</td><td>Yiyecekler</td><td>apple, banana, pear, milk, bread, cheese, egg, water</td><td>I like / I don't like milk. · I like apples and pears.</td><td>Do you like apples? · Kino is Hungry</td></tr>
+    <tr><td class="no">5</td><td>Oyuncaklar</td><td>ball, teddy bear, doll, kite, robot, drum, balloon, puzzle</td><td>I have a ball. · I have two balls.</td><td>What do you have? · The Toy Box</td></tr>
+    <tr><td class="no">6</td><td>Ailem</td><td>mom, dad, sister, grandma, grandpa, friend, family, teacher</td><td>She is my mom. He is my dad. · I love my mom.</td><td>Who is it? · My Family</td></tr>
+    <tr><td class="no">7</td><td>Yüzüm</td><td>eyes, ears, nose, mouth, hands, feet, head, legs</td><td>I have two eyes. · Close your eyes.</td><td>What is it? · Good Morning, Kino</td></tr>
+    <tr><td class="no">8</td><td>Kıyafetler</td><td>hat, shoes, socks, T-shirt, pants, jacket, dress, scarf</td><td>A red hat. · Big shoes.</td><td>What color is it? · It's Cold!</td></tr>
+    <tr><td class="no">9</td><td>Odam</td><td>bed, chair, table, lamp, door, window, box, clock</td><td>The cat is on / under the bed. · The ball is in the box.</td><td>Where is the cat? · Where is the Cat?</td></tr>
+    <tr><td class="no">10</td><td>Taşıtlar</td><td>car, bus, train, plane, boat, bike, truck, rocket</td><td>I see two cars. · I go by bus.</td><td>What do you see? · Kino's Trip</td></tr>
+    <tr><td class="no">11</td><td>Hareketler</td><td>jump, run, clap, sleep, eat, drink, dance, swim</td><td>Kino is jumping. · The cat is sleeping.</td><td>What is Kino doing? · Kino's Day</td></tr>
+    <tr><td class="no">12</td><td>Vahşi hayvanlar</td><td>lion, monkey, elephant, bird, fish, frog, giraffe, snake</td><td>The elephant is big. · The fish can swim.</td><td>Is the elephant big? · In the Jungle</td></tr>
+  </table>
+  <p class="alt">Bir ders ancak bütün çizimleri ve sesleri tamamsa açılır; yarım ders çocuğa hiç görünmez. Her üniteye sonradan eklenen iki kelime de çizimi gelince derse girer. Selamlaşma ve sınıf sözleri (Hello, Goodbye, Yes, No, Thank you, Listen, Your turn, Great job) her derste yinelenerek öğrenilir.</p>
+
+  <h2>5. Neden böyle</h2>
+  <div class="ikili">
+    <div class="kutu"><h3>Araştırmadan çıkanlar</h3>
+      <ul>
+        <li>Okul öncesinde kelimeyi kalıcı yapan şey, araya başka kelimeler girdikten sonra <b>hatırlatıp sordurmaktır</b>; yalnız tekrar dinletmek daha zayıf kalır. Bu yüzden her derste "Bul" adımı ve her gün "Günün Tekrarı" var.</li>
+        <li>Çocuk kelimeyi önce tanır, söylemesi daha geç gelir ve daha çok tekrar ister. Bu yüzden sıra: dinle, gör, bul, en son söyle.</li>
+        <li>Bir uygulamayı eğitici yapan dört şey: çocuğun aklının çalışması, dikkatinin dağılmaması, öğrendiğinin anlamlı olması ve biriyle etkileşim. Ceren, Polly ve Kino bu yüzden hep sahnede.</li>
+        <li>Düz kart göstermek yerine kelimeyi sahnenin içinde yaşatan uygulamalar beyinde daha güçlü iz bırakıyor. Bu yüzden her ünite canlı bir sahneyle biter.</li>
+        <li>Okul öncesi çocuk için en kolay hareket dokunmaktır; okuyamaz, yönergeyi sesle ister; her dokunuşa anında ses ve hareketle cevap bekler.</li>
+      </ul>
+    </div>
+    <div class="kutu"><h3>Rakiplerde eksik, bizde var</h3>
+      <ul>
+        <li><b>Türkçe anlatan öğretmen.</b> Yabancı uygulamalarda oyunun ne istediğini çocuk anlamıyor; öğretmenler ve veliler en çok bundan şikâyet ediyor. Bizde Ceren her oyunu bir cümleyle anlatır.</li>
+        <li><b>Gerçek ders sırası.</b> Rakiplerde kelimeler bir kez duyuluyor, sonraki ünitelerde geri gelmiyor. Bizde her kelime en az 8 kez, günlere yayılarak döner.</li>
+        <li><b>Çocuğu konuşturur.</b> Her kelimeyi çocuk kendi sesiyle söyler; ses kaydedilmez, hiçbir yere gönderilmez.</li>
+        <li><b>Tanıdık karakterler.</b> Ceren Öğretmen, Kino, Mino ve Obur; Harf Atölyesi ve Matematik ile aynı dünya.</li>
+        <li><b>Veli köşesi.</b> Öğrenilen kelimeler ve evde yapılacak küçük tekrar önerileri.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>6. Sesler</h2>
+  <ul>
+    <li><b>Ceren Öğretmen (Türkçe):</b> Harf Atölyesi ve Matematik'teki kendi sesi.</li>
+    <li><b>Polly (İngilizce):</b> 17 Kasım'da seçtiğin "Ruby Roo" sesi. Her kelime, her yavaş söyleyiş ve her cümle ayrı istekle üretilir; her kaydın süresi ve söylenen sözü tek tek denetlenir (bozuk çıkan kayıt yeniden üretilir).</li>
+    <li><b>Kino (Türkçe):</b> onayladığın "Kino 5 yaş" sesi.</li>
+    <li>Ben sesi duyamıyorum. Bu yüzden her ünitenin sesleri sana kısa bir dinleme sayfasıyla gelecek; sen onaylamadan o ünite yayına girmeyecek.</li>
+  </ul>
+
+  <h2>7. Yapım sırası</h2>
+  <ul>
+    <li><b>Şimdi:</b> sistemin tamamı (dersler, oyunlar, albüm, tekrar takibi, veli köşesi) ve 1. ünitenin baştan sona bitmiş hâli.</li>
+    <li><b>Sonra:</b> sen 1. üniteyi oynayıp sesleri dinlersin. Beğendiğin kalıp diğer 11 üniteye uygulanır; her ünite çizimi ve sesi tamamlanınca açılır, yarım ünite hiç görünmez.</li>
+    <li><b>Çizimler:</b> Astra'ya sayfa sayfa iş veriyorum (sayfa başına en çok 6 çizim). Gelen her çizim yerine kendiliğinden oturur.</li>
+  </ul>
+
+  <p class="kaynak" style="margin-top:36px"><b>Kaynaklar:</b>
+    <a href="https://www.psychologicalscience.org/publications/educational-apps.html">Eğitici uygulamaların dört direği (Hirsh-Pasek ve ark.)</a> ·
+    <a href="https://learninglab.psych.purdue.edu/downloads/2019/2019_Leonard_et_al_JSLHR_Part_1.pdf">Okul öncesinde aralıklı geri çağırma (Leonard ve ark.)</a> ·
+    <a href="https://www.tandfonline.com/doi/full/10.1080/09588221.2025.2507181">Okul öncesinde teknolojiyle kelime öğrenimi, meta-analiz (2025)</a> ·
+    <a href="https://www.authorea.com/doi/full/10.22541/au.169332449.93988862/v1">Sahne içinde öğrenme ile kart gösterme karşılaştırması</a> ·
+    <a href="https://joanganzcooneycenter.org/?p=19607">Sesame Workshop: okul öncesi için dokunmatik tasarım</a> ·
+    <a href="https://eltplanning.com/2020/03/31/app-review-studycat-language-learning/">Bir İngilizce öğretmeninin Studycat incelemesi</a> ·
+    <a href="https://www.fluentin3months.com/reviews/studycat-review/">Bir velinin Studycat incelemesi</a> ·
+    <a href="https://www.cambridgeenglish.org/Images/starters-word-list-picture-book.pdf">Cambridge Pre A1 Starters kelime listesi</a>
+  </p>
+</main>
+</body>
+</html>

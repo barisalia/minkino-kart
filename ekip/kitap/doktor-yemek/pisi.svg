@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2048" height="1152" viewBox="0 0 840 472.5">
+<defs>
+ <g id="yastik" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M-21 3 C-23 -2 -18 -5 -15 -10 Q-12 -16 -5 -15 C1 -13 4 -16 11 -13 Q20 -10 20 -4 C19 1 24 4 18 9 Q9 16 -1 13 C-8 11 -17 15 -21 8Z" fill="#e9a451" stroke="#4a2c20" stroke-width="2"/>
+   <path d="M-19 5 Q-12 10 -5 8 C4 8 8 12 17 5 Q20 3 20 0 Q23 8 15 11 C8 15 3 14 -2 12 Q-17 13 -19 8Z" fill="#c87a38"/>
+   <path d="M-14 -6 C-11 -10 -10 -11 -6 -11 M1 4 Q5 1 10 2" stroke="#c57d3b" stroke-width="1.45" fill="none"/>
+ </g>
+ <g id="kopuk" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M-21 -3 Q-18 -13 -5 -12 Q6 -15 15 -8 Q22 -5 20 3 L15 3 L15 7 L9 6 L7 11 L3 10 L0 14 Q-8 15 -15 11 Q-23 7 -21 -3Z" fill="#eeb468" stroke="#4a2c20" stroke-width="2"/>
+   <path d="M-20 2 Q-14 10 -4 10 L1 10 L0 13 Q-7 15 -14 10 Q-20 8 -20 2Z" fill="#c9823c"/>
+   <path d="M0 12 L4 5 L7 5 L8 1 L12 2 L13 -2 L18 -2 L20 3 L15 3 L15 7 L9 6 L7 11 L3 10Z" fill="#ffe0a2" stroke="#a97242" stroke-width="1"/>
+   <path d="M-15 -4 Q-11 -8 -6 -7" stroke="#cf8c45" stroke-width="1.4" fill="none"/>
+ </g>
+ <g id="uzun" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M-26 1 C-23 -6 -14 -7 -9 -11 C-3 -15 6 -10 11 -10 C18 -10 26 -5 26 1 C26 8 19 9 12 10 C2 11 -6 14 -14 12 Q-27 11 -26 1Z" fill="#f1bc71" stroke="#4a2c20" stroke-width="2"/>
+   <path d="M-24 3 Q-18 9 -8 8 C2 8 8 5 14 6 Q21 6 24 3 Q23 8 12 9 C0 10 -7 14 -16 11 Q-23 9 -24 3Z" fill="#d68d44"/>
+   <path d="M-11 -5 Q-8 -8 -3 -7 M3 -1 Q7 -3 10 -2" fill="none" stroke="#cb8a47" stroke-width="1.4"/>
+ </g>
+ <clipPath id="kutu"><path d="M396 279 L515 276 L516 307 Q510 316 499 316 L401 316 Q393 312 394 302Z"/></clipPath>
+</defs>
+<use xlink:href="#yastik" transform="translate(143 281) rotate(-16) scale(.89)"/>
+<use xlink:href="#kopuk" transform="translate(262 266) rotate(-12) scale(.83)"/>
+<use xlink:href="#uzun" transform="translate(518 205) rotate(-19) scale(.99 1.05)"/>
+<g clip-path="url(#kutu)">
+ <use xlink:href="#yastik" transform="translate(425 307) rotate(-14) scale(.82 .85)"/>
+ <use xlink:href="#uzun" transform="translate(467 304) rotate(7) scale(.89 .85)"/>
+ <use xlink:href="#kopuk" transform="translate(492 311) rotate(-9) scale(.83)"/>
+ <use xlink:href="#uzun" transform="translate(446 313) rotate(-10) scale(.9 .8)"/>
+</g>
+</svg>

@@ -1,0 +1,171 @@
+/* Harf Atölyesi · "Ceren'le oku" (bağlantı noktası A). Görünüş Harf Atölyesi'nin dilinde (alfabe/src/stil.css): aynı yazı yüzü,
+   mürekkep, sarı hece taşı, yeşil oynat düğmesi ve ilerleme noktaları (.at-adim). Ayrı bir tema yok. */
+.co-sahne{--co-murekkep:var(--murekkep,#292c24);--co-yesil:var(--yesil,#176858);position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:minmax(0,1fr) auto;gap:2.5cqh 3cqw;width:100%;height:100%;padding:3cqh 4cqw;box-sizing:border-box;container-type:size;
+  font-family:"Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:#203e35;
+  background:radial-gradient(ellipse at 50% 30%,#fff8ea 0%,#ffeed6 70%,#fde2bf 100%)}
+.co-kart{position:relative;grid-column:1;grid-row:1;justify-self:center;align-self:center;height:100%;aspect-ratio:800/560;max-width:100%;box-sizing:border-box;
+  border:2px solid var(--co-murekkep);border-radius:4cqh;background:#fff;overflow:hidden;display:grid;place-items:center;
+  transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+/* Astra'nın sahnesi kendi yuvarlak kartıyla gelir: çerçeve ve zemin yok (köşede beyaz boşluk kalmasın). */
+.co-kart:not([data-gecici=true]){border:0;border-radius:3.2%/4.6%;background:transparent}
+.co-kart[data-gecici=true]{background:#fffdf7}
+.co-resim{width:100%;height:100%;object-fit:contain}
+.co-kart[data-gecici=true] .co-resim{width:70%;height:80%}
+.co-ceren{grid-column:2;grid-row:1;align-self:end;justify-self:center;width:min(30cqh,22cqw);height:auto;aspect-ratio:1}
+/* Cümle şeridi: kartların krem paneli (.at-hece-ornek) */
+/* Tek satır: yazı boyu sözcük (--n) ve harf (--h) sayısına göre küçülür, en çok 9,5cqh; sütun 64cqw'ye sığar. */
+.co-cumle{--co-yazi:min(9.5cqh,calc((62cqw - var(--n,3) * 4.4cqw) / (var(--h,10) * .62)));grid-column:1;grid-row:2;justify-self:center;display:flex;flex-wrap:nowrap;align-items:baseline;justify-content:center;gap:1.2cqw;margin:0;white-space:nowrap;
+  padding:1.4cqh 2.6cqw;border:2px solid #385447;border-radius:3cqh;background:#fff6df}
+.co-soz{min-width:44px;min-height:max(44px,13cqh);padding:0 1.5cqw;border:1.5px solid transparent;border-bottom-width:3px;border-radius:1.6cqh;background:transparent;
+  font:700 max(22px,var(--co-yazi,9.5cqh))/1 "Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:var(--co-murekkep);cursor:pointer;
+  transition:background .2s,border-color .2s,transform .2s,color .2s}
+.co-soz:disabled{cursor:default;opacity:1}
+/* Okunan sözcük: sarı hece taşı (.at-hece-ornek b) */
+.co-soz.co-yanik{background:#ffe39c;border-color:#4c4e38;color:var(--co-murekkep);transform:translateY(-.5cqh)}
+.co-soz[data-okundu=true]:not(.co-yanik){color:var(--co-yesil)}
+.co-dilim{display:inline-flex;align-items:baseline}
+.co-son{font:700 max(22px,var(--co-yazi))/1 "Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:var(--co-murekkep);margin-left:.05em}
+/* Davet yer değiştirmez (hedef kıpırdamasın, küçükler kolay dokunsun): yalnız parıltı. */
+.co-sahne[data-evre=cocuk] .co-soz:not([data-okundu=true]){animation:co-parilti 1.6s ease-in-out infinite}
+/* Oynat düğmesi: Harf kartlarının yeşil yuvarlağı (.at-hece-oyna). Izgarada kendi hücresi, sözcüklerin üstüne binmez. */
+.co-tumu,.co-cikis{display:grid;place-items:center;width:max(44px,14cqh);height:max(44px,14cqh);padding:0;border:2px solid #254b40;border-radius:50%;
+  background:var(--co-yesil);color:#fff8e8;cursor:pointer;transition:background .3s,opacity .3s}
+.co-tumu span,.co-cikis span{display:grid;place-items:center;width:58%;height:58%}
+.co-tumu svg,.co-cikis svg{width:100%;height:100%}
+.co-tumu{grid-column:2;grid-row:2;justify-self:center;align-self:center}
+.co-tumu:disabled{background:#d6ead4;border-color:#9fb8a6;color:#fff8e8;cursor:default}
+.co-tumu:enabled{animation:co-halka 1.2s ease-in-out infinite}
+.co-sahne[data-evre=canli] .co-kart{animation:co-canlan 1.4s cubic-bezier(.3,1.6,.5,1)}
+.co-sahne[data-evre=canli] .co-resim{animation:co-zipla .7s ease-in-out 2}
+.co-bos,.co-bitti{grid-column:1;grid-row:1/3;align-self:center;justify-self:center;margin:0;padding:3cqh 4cqw;border:2px solid #385447;border-radius:3cqh;background:#fff6df;
+  font:700 max(22px,8cqh)/1.25 "Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:var(--co-murekkep);text-align:center}
+/* Tur sonu: Ceren'in Hikâye Defteri'nden açık öyküler, kitap düğmeleri (Harf kartlarının krem paneli ve mürekkep kenarı). */
+.co-bitti p{margin:0}
+.co-kitaplar{display:flex;flex-wrap:wrap;justify-content:center;gap:2cqw;margin-top:3cqh}
+.co-kitap{display:grid;justify-items:center;gap:1cqh;width:max(96px,24cqh);min-height:44px;padding:1.2cqh;border:2px solid #385447;border-bottom-width:4px;border-radius:2.4cqh;
+  background:#fff;color:var(--co-murekkep);font:700 max(13px,4cqh)/1.15 "Atolye Nunito","Trebuchet MS",system-ui,sans-serif;cursor:pointer}
+.co-kitap img{width:100%;aspect-ratio:800/560;object-fit:cover;border-radius:1.4cqh}
+.co-kitap[data-yeni=true]{background:#ffe39c;animation:co-cagri 1.8s ease-in-out infinite}
+.co-bos p{margin:0}.co-bos .co-eksik{display:flex;justify-content:center;gap:2cqw;margin-top:3cqh}
+.co-eksik b{display:grid;place-items:center;min-width:1.5em;height:1.5em;padding:0 .2em;border:1.5px solid #4c4e38;border-bottom-width:3px;border-radius:.3em;background:#ffe39c;color:var(--co-murekkep)}
+.co-cikis{position:absolute;left:50%;bottom:8cqh;translate:-50% 0;width:max(44px,16cqh);height:max(44px,16cqh)}
+/* Okuduğunu yaptır (5+): kart dokunulabilir; hedef düğmesi görünmez, ipucunda ve test yer tutucusunda çokgen belirir. */
+.co-sahne[data-evre=yaptir] .co-kart{cursor:pointer;animation:co-cagri 1.8s ease-in-out infinite}
+.co-bolge{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.co-bolge polygon{fill:transparent;stroke:transparent;stroke-width:.8;vector-effect:non-scaling-stroke}
+.co-ipucu .co-bolge polygon{fill:#ffe39c55;stroke:#f2a516;stroke-width:4;animation:co-ipucu-nabiz 1.2s ease-in-out infinite}
+.co-kart[data-yer-tutucu=true] .co-bolge polygon{stroke:var(--co-yesil);stroke-width:3;stroke-dasharray:8 6}
+.co-hedef{position:absolute;min-width:44px;min-height:44px;padding:0;border:0;border-radius:2cqh;background:transparent;cursor:pointer}
+.co-hedef:focus-visible{outline:4px solid var(--co-yesil);outline-offset:2px}
+/* Önce → sonra geçişi kısa: karakter yer değiştiren çiftlerde iki gövde üst üste uzun görünmesin. */
+.co-sonra{position:absolute;inset:0;animation:co-belir .28s ease-out both}
+.co-sahne[data-evre=yapildi] .co-kart{animation:co-canlan 1.4s cubic-bezier(.3,1.6,.5,1)}
+.co-sahne[data-evre=yapildi] .co-kart[data-yer-tutucu=true]::after{content:'✓';position:absolute;right:4%;top:4%;display:grid;place-items:center;
+  width:16cqh;height:16cqh;border-radius:50%;background:var(--co-yesil);color:#fff8e8;font:700 10cqh/1 system-ui,sans-serif;animation:co-belir .4s ease-out both}
+/* Öykü sonu anlama: Hangi sayfa? (iki resim) ve Sıraya diz (dört yuva, karışık sayfalar) */
+.co-anlama{grid-column:1/-1;grid-row:1/3;z-index:1;align-self:center;justify-self:center;display:grid;justify-items:center;gap:2.4cqh;width:100%}
+.co-anlama-baslik{margin:0;font:800 max(20px,6cqh)/1.1 "Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:var(--co-murekkep)}
+.co-sayfalar{display:flex;justify-content:center;gap:2.4cqw;max-width:100%}
+.co-sayfa{width:min(42cqw,95cqh);aspect-ratio:800/560;padding:0;border:2px solid #385447;border-radius:2.4cqh;background:#fff;overflow:hidden;cursor:pointer}
+.co-sayfa img{width:100%;height:100%;object-fit:cover;display:block}
+.co-sayfa-yer{display:grid;place-items:center;height:100%;padding:1cqh;font:700 max(14px,3.6cqh)/1.2 "Atolye Nunito",system-ui,sans-serif;color:var(--co-murekkep)}
+.co-karisik .co-sayfa{width:min(23.2cqw,54cqh)}
+.co-sahne:is([data-evre=hangi],[data-evre=sirala],[data-evre=sirali]){padding-left:1.5cqw;padding-right:1.5cqw}
+.co-sahne:is([data-evre=sirala],[data-evre=sirali]) .co-sayfalar,.co-yuvalar{gap:1.2cqw}
+/* anlama ekranında Ceren köşede küçük (kartlar ekranın enini kullanır) */
+.co-sahne:is([data-evre=hangi],[data-evre=sirala],[data-evre=sirali]) .co-ceren{position:absolute;right:1.5cqw;bottom:1cqh;width:min(16cqh,12cqw);z-index:2}
+.co-sahne[data-evre=sirala] .co-anlama,.co-sahne[data-evre=sirali] .co-anlama{gap:4cqh}
+.co-sayfa.co-dogru{box-shadow:0 0 0 1.2cqh #7cc45a}
+.co-sayfa.co-parla{animation:co-cagri 1.2s ease-in-out infinite}
+.co-sayfa.co-yerlesti{opacity:.25;cursor:default}
+.co-salla{animation:co-salla .4s}
+.co-yuvalar{display:flex;gap:1.6cqw}
+.co-karisik{gap:1.6cqw}
+.co-yuva{display:grid;place-items:center;width:min(23.2cqw,54cqh);aspect-ratio:800/560;border:2px dashed #9fb8a6;border-radius:2.4cqh;background:#fff6df;overflow:hidden}
+.co-yuva b{font:800 max(18px,6cqh)/1 "Atolye Nunito",system-ui,sans-serif;color:#9fb8a6}
+.co-yuva img{width:100%;height:100%;object-fit:cover}
+.co-yuva.co-okunan{box-shadow:0 0 0 1cqh #ffc137}
+@keyframes co-salla{25%{translate:-1cqw 0}75%{translate:1cqw 0}}
+/* Oku ve bul (oku-bul.ts): üstte büyük sözcük taşı (heceler sırayla yanar), altta iki ya da üç resim; ekranın enini kullanır */
+.co-okubul{grid-column:1/-1;grid-row:1/3;z-index:1;align-self:center;display:grid;justify-items:center;gap:3.5cqh;width:100%}
+.co-sahne[data-evre=okubul]{padding-left:1.5cqw;padding-right:1.5cqw}
+.co-sahne[data-evre=okubul] .co-ceren{position:absolute;right:1.5cqw;bottom:1cqh;width:min(16cqh,12cqw);z-index:2}
+.co-okubul-soz{margin:0;padding:2cqh 2.4cqw;border:2px solid #385447;border-radius:3cqh;background:#fff6df;font:800 max(30px,min(15cqh,9cqw))/1.15 "Atolye Nunito","Trebuchet MS",system-ui,sans-serif;color:var(--co-murekkep);white-space:nowrap}
+.co-okubul-hece{border-radius:.12em;transition:background .2s,color .2s}
+.co-okubul-hece.co-yanik{background:#ffe39c;box-shadow:inset 0 -.08em 0 #f2a516}
+.co-okubul-resimler{display:flex;justify-content:center;gap:2.4cqw;width:100%}
+.co-okubul-resim{width:min(28cqw,48cqh);aspect-ratio:1;padding:1.2cqh;border:2px solid #385447;border-radius:3cqh;background:#fff;cursor:pointer;transition:opacity .3s,transform .2s}
+.co-okubul-resimler[data-adet="2"] .co-okubul-resim{width:min(34cqw,48cqh)}
+.co-okubul-resim img{width:100%;height:100%;object-fit:contain;display:block}
+.co-okubul-dogru{box-shadow:0 0 0 1.2cqh #7cc45a}
+.co-okubul-yanlis{animation:co-salla .4s}
+.co-okubul-soluk{opacity:.3}
+@keyframes co-cagri{0%,100%{box-shadow:0 0 0 0 #ffc13700}50%{box-shadow:0 0 0 1.4cqh #ffc13766}}
+@keyframes co-ipucu-nabiz{50%{fill:#ffe39caa}}
+@keyframes co-belir{from{opacity:0}to{opacity:1}}
+@keyframes co-parilti{50%{background:#fff3cc;border-color:#e9d58f}}
+@keyframes co-halka{0%,100%{box-shadow:0 0 0 .5cqh #17685833}50%{box-shadow:0 0 0 1.8cqh #17685822}}
+@keyframes co-canlan{0%{transform:scale(1)}30%{transform:scale(1.06) rotate(-1.2deg)}60%{transform:scale(.99) rotate(.8deg)}100%{transform:scale(1)}}
+@keyframes co-zipla{50%{transform:translateY(-4%) scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.co-sahne *{animation:none!important;transition:none!important}}
+/* İlerleme noktaları: .at-ilerleme span kuralı (ders-sonu-ani.css) .at-adim düzenini ezmesin. */
+.at-ilerleme .at-adim.co-adim{display:flex;align-items:center}
+/* ---------- Kalite denetimi 22 Kasım gecesi (ekip/KALITE-KURALLARI.md 8, 10) ----------
+   Sözcük düğmeleri en az 64 px. Telefon yatayda (≤ 450 px yükseklik) cümle sayfası slayt gibi durmasın: resim bütün
+   yüksekliği kaplar, cümle şeridi resmin alt kısmının üstünde durur, Ceren ve "bütün cümle" düğmesi resmin iki yanında;
+   yanlardaki zemin aynı sahnenin bulanık hâlidir (--co-arka, cumle-okuma.ts; yalnız CSS süzgeci, yeni çizim yok).
+   Mutlak konumlu Ceren ve düğme 1. ızgara alanına bağlanır: grid-column:2 kalırsa kutuları ekran dışındaki 2. sütuna göre hesaplanır. */
+.co-soz{min-width:64px;min-height:max(64px,13cqh)}
+.co-tumu{width:max(64px,14cqh);height:max(64px,14cqh)}
+@media (orientation:landscape){
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);padding:1.2cqh 1.5cqw;overflow:hidden;isolation:isolate}
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi])::before{content:'';position:absolute;inset:-24px;z-index:-1;background:var(--co-arka,none) center/cover no-repeat;filter:blur(22px) saturate(1.05);opacity:.5}
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-kart{grid-column:1;grid-row:1;height:100%;z-index:1;box-shadow:0 6px 18px rgba(60,40,20,.18);border-radius:3.2%/4.6%}
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-cumle{grid-column:1;grid-row:1;align-self:end;z-index:3;margin-bottom:2.5cqh;padding:1cqh 2cqw;box-shadow:0 4px 0 rgba(56,84,71,.25)}
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-ceren{grid-column:1;grid-row:1;position:absolute;right:1cqw;bottom:0;width:min(38cqh,19cqw);z-index:2}
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-tumu{grid-column:1;grid-row:1;position:absolute;left:3cqw;bottom:4cqh;z-index:3}
+}
+/* ---------- Kitap (yönetici, 23 Kasım: "Hikâye Defteri slayt gibi olmasın") ----------
+   Yatay ekranların hepsinde (iPad de) cümle sayfası kitap düzeninde: resim bütün yüksekliği kaplar, arkasında üst üste kâğıt
+   sayfa kenarları (yalnız gölge katmanları). iPad'de Ceren biraz küçülür, resmin köşesine yaslanır. */
+@media (orientation:landscape){
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-kart:not([data-gecici=true]){
+    box-shadow:0 0 0 .7cqh #fffaf0,0 0 0 calc(.7cqh + 2px) rgba(80,60,30,.38),.6cqh .8cqh 0 calc(.7cqh + 2px) #f3e8cf,
+      1.2cqh 1.6cqh 0 calc(.7cqh + 2px) rgba(80,60,30,.22),1.6cqh 2.2cqh 0 calc(.7cqh + 2px) #efe1c2,0 3cqh 5cqh rgba(60,40,20,.22)}
+}
+@media (orientation:landscape) and (min-height:451px){
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-ceren{width:min(30cqh,13cqw);right:.5cqw}
+  .co-sahne:is([data-evre=ceren],[data-evre=cocuk],[data-evre=tumu],[data-evre=canli],[data-evre=yaptir],[data-evre=yapildi]) .co-kart{height:94%;align-self:start;margin-top:1cqh}
+}
+/* Sayfa çevirme (cumle-okuma.ts → sayfaCevir): eski sayfa sol kenarından kıvrılıp kalkar (2B), yenisi hafifçe öne gelir.
+   Kalkan sayfa yeni kartın üstünde ama cümle şeridinin ve düğmenin altında (z 2 < 3): çocuk cümleyi hep görür, dokunuşu kesilmez. */
+.co-cevrilen{position:absolute;z-index:2;pointer-events:none;transform-origin:0% 50%;display:grid;place-items:center;overflow:hidden;box-sizing:border-box;border-radius:3.2%/4.6%;background:#fffaf0;box-shadow:0 0 0 .7cqh #fffaf0,0 0 0 calc(.7cqh + 2px) rgba(80,60,30,.38),0 2cqh 4cqh rgba(60,40,20,.25)}
+.co-cevrilen .co-resim{width:100%;height:100%;object-fit:contain}
+/* Jöle dokunuşu (cumle-okuma.ts → jole): dokunulan yerin çevresi büyüyüp yaylanır. */
+.co-jole{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;z-index:2;will-change:transform}
+/* Bitiş: okunan öykü kapağı iri kitap, yanında başlık ve sıradaki öyküler. */
+.co-bitti.co-bitti-kitapli{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:3cqw;width:min(76cqw,190cqh);max-width:none;padding:3cqh 3cqw;box-sizing:border-box}
+.co-bitti-kitapli .co-bitti-kitap{width:min(40cqw,calc(58cqh * 1.43))}
+.co-bitti-kitap{position:relative;border-radius:2.4cqh;animation:co-kitap-gel .8s cubic-bezier(.3,1.5,.5,1) both;
+  box-shadow:0 0 0 .8cqh #fffaf0,0 0 0 calc(.8cqh + 2px) #385447,1cqh 1.2cqh 0 calc(.8cqh + 2px) #f3e8cf,0 3cqh 5cqh rgba(60,40,20,.25)}
+.co-bitti-kitap img{display:block;width:100%;aspect-ratio:800/560;object-fit:cover;border-radius:2.4cqh}
+.co-bitti-rozet{position:absolute;right:-3cqh;top:-3cqh;display:grid;place-items:center;width:max(56px,15cqh);aspect-ratio:1;border-radius:50%;background:#ffd24a;border:2px solid #7a5410;
+  color:#fff8e0;font-size:max(28px,8cqh);text-shadow:0 2px 0 #b07a14;animation:co-rozet 1s .45s cubic-bezier(.3,1.8,.5,1) both}
+.co-bitti-yan{display:grid;gap:2cqh;justify-items:center}
+.co-bitti-kitapli .co-kitaplar{margin-top:0}
+.co-kitap.co-kitap-sonraki{width:max(150px,40cqh);font-size:max(16px,5.4cqh);border-bottom-width:6px}
+@keyframes co-kitap-gel{0%{opacity:0;transform:scale(.6) rotate(-8deg)}60%{opacity:1;transform:scale(1.04) rotate(1.5deg)}100%{opacity:1;transform:none}}
+@keyframes co-rozet{0%{opacity:0;transform:scale(0) rotate(-90deg)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.co-bitti-kitap,.co-bitti-rozet{animation:none}}
+/* Paket Harf-A1 kitap parçaları ve öykü katmanları (gelince). */
+.co-nesne{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:3;pointer-events:none}
+.co-nesne[hidden]{display:none}
+.co-kose{position:absolute;right:0;bottom:0;width:13%;z-index:4;pointer-events:none;animation:co-kose 2.6s ease-in-out infinite}
+.co-ayrac{position:absolute;right:7%;top:-2%;height:34%;z-index:4;pointer-events:none;transform-origin:50% 0;animation:co-ayrac 4s ease-in-out infinite}
+@keyframes co-kose{0%,100%{transform:none}50%{transform:translate(-2%,-2%) rotate(-3deg)}}
+@keyframes co-ayrac{0%,100%{transform:rotate(0)}50%{transform:rotate(2.5deg)}}
+.co-bitti-kitap.co-kapakli{padding:9% 11%;background:var(--kapak) center/100% 100% no-repeat;box-shadow:0 3cqh 5cqh rgba(60,40,20,.25)}
+.co-bitti-kitap.co-kapakli img:not(.co-bitti-rozet){border-radius:1.2cqh;box-shadow:0 0 0 3px #fffaf0}
+.co-bitti-rozet.co-rozet-resim{background:none;border:0;width:max(70px,20cqh);height:auto}
+@media (prefers-reduced-motion:reduce){.co-kose,.co-ayrac{animation:none}}

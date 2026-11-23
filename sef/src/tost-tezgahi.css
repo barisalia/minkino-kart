@@ -4,7 +4,7 @@
 .tost-tezgahi img,.tost-yigin img{pointer-events:none;user-select:none;-webkit-user-drag:none;object-fit:contain}
 .tost-tezgahi button:disabled{opacity:.46;cursor:default}
 .tost-geri,.tost-tus,.tost-el,.tost-fis,.tost-raf{border:2px solid #50332e;background:var(--sef-kumanda-fonu, #fff4df);box-shadow:0 .6cqh #927452}
-.tost-geri,.tost-tus{position:relative;width:max(42px,11cqh);height:max(42px,11cqh);border-radius:50%;padding:2cqh;display:grid;place-items:center}
+.tost-geri,.tost-tus{position:relative;width:max(44px,11cqh);height:max(44px,11cqh);border-radius:50%;padding:2cqh;display:grid;place-items:center}
 .tost-geri{position:absolute;left:2%;top:4%;z-index:2}
 .tost-tezgahi .ikon{display:grid;place-items:center;width:100%;height:100%;pointer-events:none}
 .tost-tezgahi .ikon svg{width:100%;height:100%}

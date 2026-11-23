@@ -52,4 +52,11 @@
     <!-- Google Play Aileler politikası: çocuklara yönelik uygulama reklam kimliği (AAID) kullanmaz. Bir kütüphane
          eklemeye çalışsa da birleştirmede kaldırılır. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <!-- Söz tanıma (SozTanimaPlugin): yalnız cihaz içi tanıyıcı kullanılır; ses kaydedilmez, gönderilmez.
+         Android 11+ paket görünürlüğü: sistemin tanıma hizmeti görülebilsin. -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
 </manifest>

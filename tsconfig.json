@@ -12,5 +12,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "tests/unit", "canlan/src", "ses-testi/src", "macera/src", "pazar/src", "pasta/src", "uygulama/src", "kino-ile-sen-sec/giris.ts", "kino-otobus/src", "otobus/src", "izle/src", "kitap/src", "hazirlik/src", "alfabe/src", "sef/src"]
+  "include": ["src", "tests/unit", "canlan/src", "ses-testi/src", "macera/src", "pazar/src", "pasta/src", "uygulama/src", "kino-ile-sen-sec/giris.ts", "kino-otobus/src", "otobus/src", "izle/src", "kitap/src", "hazirlik/src", "alfabe/src", "ingilizce/src", "deney/src", "sef/src"]
 }

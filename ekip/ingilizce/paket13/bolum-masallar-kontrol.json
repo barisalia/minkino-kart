@@ -1,0 +1,47 @@
+{
+  "file": "assets\\ingilizce\\ui\\bolum-masallar.webp",
+  "size": [
+    900,
+    600
+  ],
+  "opaqueComponents": [
+    [
+      395,
+      16,
+      109,
+      103,
+      6654
+    ],
+    [
+      273,
+      60,
+      84,
+      84,
+      4284
+    ],
+    [
+      543,
+      62,
+      84,
+      82,
+      4126
+    ],
+    [
+      122,
+      150,
+      647,
+      447,
+      247673
+    ]
+  ],
+  "internalTransparentHoles": [],
+  "phoneImageBox": [
+    113,
+    75
+  ],
+  "tabletImageBox": [
+    183,
+    265
+  ],
+  "runtime": "Ana ekran ve Masallar kutusuna dokunma, tablet1366x1024 ve telefon874x402; pageerror yok."
+}

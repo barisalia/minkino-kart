@@ -19,8 +19,8 @@ export type TartMeyve = 'domates' | 'elma' | 'portakal' | 'patates';
 export type TartMod = 'say' | 'tart';
 export type TartSonuc = 'tamam' | 'az' | 'fazla' | 'curuk';
 
-/** Bir turda kaç müşteri */
-export const TART_MUSTERI = 5;
+/** Bir turda kaç müşteri: 2–3 yaş 3, büyükler 4 (Barış'ın ölçüsü, 19 Kasım 2026: oyunlar 3–4 soru; eskiden 5) */
+export const tartMusteriSayisi = (yas: Yas) => (yas <= 3 ? 3 : 4);
 /** Leğene en çok kaç meyve sığar (fizik: en çok ~15 cisim; kasa da sayılınca rahat) */
 export const LEGEN_KAPASITE = 10;
 
@@ -80,8 +80,8 @@ export function agirlikUret(m: TartMeyve, rnd: Rnd): number {
   return Math.round((a + rnd() * (b - a)) * 1000) / 1000;
 }
 
-/** Bu sıradaki müşteride kasada çürük var mı (ikinci ve dördüncü müşteri: domates ve bir çürük) */
-export const curukluMu = (sira: number) => sira === 1 || sira === 3;
+/** Bu sıradaki müşteride kasada çürük var mı: yalnız ikinci müşteri (domates ve bir çürük; aynı iş bir turda bir kez) */
+export const curukluMu = (sira: number) => sira === 1;
 
 /** Kalıbı doldurur: {Sayi} {urun} */
 export function tartDoldur(kalip: string, d: { meyve?: TartMeyve; sayi?: number }): string {
@@ -91,19 +91,26 @@ export function tartDoldur(kalip: string, d: { meyve?: TartMeyve; sayi?: number 
   return s;
 }
 
-/** Turdaki 5 müşterinin meyveleri: çürüklü sıralarda domates, ötekiler elma / portakal / patates (karışık) */
-export function turMeyveleri(rnd: Rnd = Math.random): TartMeyve[] {
-  const diger = karistir<TartMeyve>(['elma', 'portakal', 'patates'], rnd);
-  return Array.from({ length: TART_MUSTERI }, (_, i) => (curukluMu(i) ? 'domates' : diger.shift() ?? 'elma'));
+/**
+ * Turdaki n müşterinin meyveleri: çürüklü sırada domates, ötekiler elma / portakal / patates (karışık, yinelenmez).
+ * ilk: gösterim / test için ilk müşterinin meyvesi (ötekilerde yinelenmez).
+ */
+export function turMeyveleri(rnd: Rnd = Math.random, n = 4, ilk?: TartMeyve): TartMeyve[] {
+  const diger = karistir<TartMeyve>((['elma', 'portakal', 'patates'] as TartMeyve[]).filter((m) => m !== ilk), rnd);
+  if (ilk && !curukluMu(0)) diger.unshift(ilk);
+  return Array.from({ length: n }, (_, i) => (curukluMu(i) ? 'domates' : diger.shift() ?? 'elma'));
 }
 
 /**
- * İstek üretir. meyve: turMeyveleri()'nden (verilmezse sıraya göre). zorlaCuruk: test / gösterim.
- * 3 yaş 2-3 tane, 4 yaş 3-5 tane sayar. 5 yaş ilk müşteride yarım kilo, sonra bir kilo; 6 yaş bir kilo, arada yarım.
+ * İstek üretir. meyve: turMeyveleri()'nden (verilmezse sıraya göre). zorlaCuruk: test / gösterim. onceki: bir önceki
+ * müşterinin isteği (sayı art arda yinelenmez).
+ * 3 yaş 2-3 tane, 4 yaş 3-5 tane sayar. Tartmada yarım ve bir kilo sırayla gelir (aynı istek en çok iki kez):
+ * 5 yaş yarım kiloyla başlar (kolay), 6 yaş bir kiloyla.
  */
-export function tartIstekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, meyve?: TartMeyve, zorlaCuruk?: boolean): TartIstek {
-  const m = meyve ?? (curukluMu(sira) ? 'domates' : sec<TartMeyve>(['elma', 'portakal', 'patates'], rnd));
+export function tartIstekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, meyve?: TartMeyve, zorlaCuruk?: boolean, onceki?: TartIstek): TartIstek {
   const curuk = zorlaCuruk ?? curukluMu(sira);
+  // çürük olan hep domates: çürük çizimi yalnız domatesin var (assets/pazar/domates-curuk)
+  const m: TartMeyve = curuk ? 'domates' : meyve ?? sec<TartMeyve>(['elma', 'portakal', 'patates'], rnd);
   const kasaYap = (iyi: number): KasaMeyve[] => {
     const k: KasaMeyve[] = Array.from({ length: iyi }, () => ({ meyve: m, agirlik: agirlikUret(m, rnd), curuk: false }));
     // çürük piramidin alt iki sırasından birinde (çocuğun elinin altında, gözden kaçmaz)
@@ -111,11 +118,13 @@ export function tartIstekUret(yas: Yas, sira: number, rnd: Rnd = Math.random, me
     return k;
   };
   if (yas <= 4) {
-    const adet = yas === 3 ? arasi(2, 3, rnd) : arasi(3, 5, rnd);
+    const aralik = yas === 3 ? [2, 3] : [3, 4, 5];
+    const adet = sec(aralik.filter((x) => x !== onceki?.adet), rnd);
     const s = tartDoldur(T.istek_say, { meyve: m, sayi: adet });
     return { mod: 'say', meyve: m, adet, kasa: kasaYap(adet + 2), soz: [s], yazi: s };
   }
-  const miktar: 'yarim' | 'kilo' = yas === 5 ? (sira === 0 ? 'yarim' : 'kilo') : sira === 2 ? 'yarim' : 'kilo';
+  const ilkYarim = yas === 5;
+  const miktar: 'yarim' | 'kilo' = (sira % 2 === 0) === ilkYarim ? 'yarim' : 'kilo';
   const { bolge } = BOLGE[miktar];
   // en hafif meyvelerle bile yeşile ulaşılsın: alt sınır / en hafif + bir yedek (en çok 7; çürükle 8: yığın 4+3+1)
   const iyi = Math.min(7, Math.ceil(bolge[0] / AGIRLIK_ARALIGI[m][0]) + 1);

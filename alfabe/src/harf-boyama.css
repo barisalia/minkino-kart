@@ -17,3 +17,22 @@
  .boy-kagit{z-index:2}
 }
 
+/* Boşta hatırlatma: sıradaki yer belirir ve üç kez büyüyüp küçülür, çocuk dokunana kadar görünür kalır. */
+.boy-hatirlat .boy-konum{visibility:visible;stroke:#9a5621;stroke-width:1.6;transform-box:fill-box;transform-origin:center;transform:scale(1.8);animation:boy-hatirlat .9s ease-in-out 3}
+@keyframes boy-hatirlat{0%,100%{transform:scale(1.8)}50%{transform:scale(2.8);stroke-width:2.2}}
+@media(prefers-reduced-motion:reduce){.boy-hatirlat .boy-konum{animation:none}}
+
+/* Bitiş anı ve fırça (H7): harf-boyama.ts → bitisAni, fircayiTasi */
+.boy-damla{position:absolute;z-index:5;pointer-events:none;opacity:0;background:var(--damla,#f2736b);border:2px solid rgba(37,40,35,.55);border-radius:50% 50% 50% 50% / 62% 62% 38% 38%;box-sizing:border-box}
+.boy-sicrama{border-width:1.5px;border-radius:50%}
+.boy-gokkusagi,.boy-firca{position:absolute;z-index:5;pointer-events:none;object-fit:contain}
+.boy-firca{z-index:6;transition:opacity .25s;filter:drop-shadow(0 3px 4px rgba(45,40,20,.2))}
+.boy-firca.boy-firca-gitti{opacity:0}
+@media(prefers-reduced-motion:reduce){.boy-damla,.boy-firca{display:none}}
+
+/* Paket Harf-H15 · Harf uyanır (harf-boyama.ts → harfiUyandir): yüz parçaları boyanan harfin üstünde belirir */
+.boy-yuz{position:absolute;z-index:4;pointer-events:none;object-fit:contain;animation:boy-yuz-gel .38s cubic-bezier(.2,.8,.3,1) both}
+.boy-agiz{animation-delay:.12s}
+@keyframes boy-yuz-gel{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.boy-uyandi .boy-kagit{cursor:pointer}
+@media(prefers-reduced-motion:reduce){.boy-yuz{animation:none}}

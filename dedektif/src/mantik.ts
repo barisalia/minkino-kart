@@ -6,6 +6,7 @@
  *
  * Koordinatlar: oda resminin oranı (x: en, y: boy; 0..1, sol üstten). Boylar oda yüksekliğinin oranı.
  */
+import { yeniOdalar } from './resimler';
 import D from '../../content/dedektif.json';
 
 export const M = D.mino;
@@ -19,10 +20,11 @@ export const K = D.kino;
 export type OdaId = 'calisma' | 'koridor' | 'yatak' | 'mutfak' | 'bahce-ip' | 'bahce-yol' | 'bahce-golet' | 'otobus-ic' | 'otobus-yani' | 'agac' | 'kiler';
 /** Odanın en / boy oranı (resimlerin kendi oranı: film/ev 2752×1536, koridor ve yatak odası 1920×1080, bahçe 4096×2286) */
 export const ODA_ORAN: Record<OdaId, number> = {
-  calisma: 2752 / 1536,
+  // yeni çizgi (assets/dedektif-yeni, 1920×1080): bütün Vaka 1 odaları 16:9
+  calisma: yeniOdalar ? 16 / 9 : 2752 / 1536,
   koridor: 16 / 9,
   yatak: 16 / 9,
-  mutfak: 2752 / 1536,
+  mutfak: yeniOdalar ? 16 / 9 : 2752 / 1536,
   'bahce-ip': 4096 / 2286,
   'bahce-yol': 4096 / 2286,
   'bahce-golet': 4096 / 2286,
@@ -40,16 +42,32 @@ export const odaW = (o: OdaId) => Math.round(ODA_H * ODA_ORAN[o]);
 export type Kadraj = [number, number, number, number];
 export const KADRAJ = {
   genel: [0, 0, 1, 1],
-  giris: [0.1, 0.32, 0.9, 1],
-  hali: [0.26, 0.62, 0.78, 1],
-  masa: [0.42, 0.42, 0.82, 0.92],
-  pencere: [0.3, 0.12, 0.76, 0.74],
-  sahne3: [0.3, 0.2, 0.82, 0.98],
-  izler: [0.4, 0.6, 1, 1],
-  final: [0.18, 0.3, 0.92, 1],
-  koridor: [0.15, 0.35, 0.85, 1],
-  yatak: [0, 0.4, 0.62, 1],
-  mutfak: [0, 0.3, 0.6, 1],
+  ...(yeniOdalar
+    ? {
+        // yeni çalışma odası: solda pencere, ortada masa, önde halı; sağda kapı
+        giris: [0.04, 0.22, 0.96, 1],
+        hali: [0.08, 0.6, 0.66, 1],
+        masa: [0.26, 0.3, 0.74, 0.8],
+        pencere: [0.02, 0.02, 0.46, 0.56],
+        sahne3: [0.04, 0.08, 0.7, 0.98],
+        izler: [0.38, 0.55, 1, 1],
+        final: [0.1, 0.22, 0.86, 1],
+        koridor: [0.22, 0.3, 1, 1],
+        yatak: [0.04, 0.42, 0.92, 1],
+        mutfak: [0.3, 0.32, 0.96, 1],
+      }
+    : {
+        giris: [0.1, 0.32, 0.9, 1],
+        hali: [0.26, 0.62, 0.78, 1],
+        masa: [0.42, 0.42, 0.82, 0.92],
+        pencere: [0.3, 0.12, 0.76, 0.74],
+        sahne3: [0.3, 0.2, 0.82, 0.98],
+        izler: [0.4, 0.6, 1, 1],
+        final: [0.18, 0.3, 0.92, 1],
+        koridor: [0.15, 0.35, 0.85, 1],
+        yatak: [0, 0.4, 0.62, 1],
+        mutfak: [0, 0.3, 0.6, 1],
+      }),
 } satisfies Record<string, Kadraj>;
 export type KadrajAdi = keyof typeof KADRAJ;
 
@@ -137,7 +155,7 @@ export const HALKALAR: Halka[] = [
   {
     id: 'iz',
     kadraj: 'hali',
-    ipuclari: [{ id: 'pati-hali', oda: 'calisma', resim: 'kart-kedi-pati-izi', foto: 'ipucu-kedi-pati-hali', x: 0.555, y: 0.85, h: 0.075, don: -18, gizli: true }],
+    ipuclari: [{ id: 'pati-hali', oda: 'calisma', resim: 'kart-kedi-pati-izi', foto: 'ipucu-kedi-pati-hali', ...(yeniOdalar ? { x: 0.3, y: 0.875 } : { x: 0.555, y: 0.85 }), h: 0.075, don: -18, gizli: true }],
     soru: M.iz_kimin,
     kino: K.zurafa,
     kinoKart: 'zurafa',
@@ -150,7 +168,7 @@ export const HALKALAR: Halka[] = [
     id: 'tuy',
     kadraj: 'masa',
     ara: M.masaya,
-    ipuclari: [{ id: 'tuy', oda: 'calisma', resim: 'ipucu-beyaz-tuy', x: 0.672, y: 0.664, h: 0.085, don: 58, gizli: true }],
+    ipuclari: [{ id: 'tuy', oda: 'calisma', resim: 'ipucu-beyaz-tuy', ...(yeniOdalar ? { x: 0.6, y: 0.5 } : { x: 0.672, y: 0.664 }), h: 0.075, don: 58, gizli: true }],
     soru: M.tuy_kimin,
     kino: K.minonun,
     kinoKart: 'kedi-turuncu',
@@ -164,8 +182,8 @@ export const HALKALAR: Halka[] = [
     kadraj: 'pencere',
     ara: M.pencere,
     ipuclari: [
-      { id: 'toz', oda: 'calisma', resim: 'ipucu-sari-kanat-tozu', x: 0.61, y: 0.646, h: 0.06, gizli: true },
-      { id: 'kelebek', oda: 'calisma', resim: 'kart-sari-kelebek', x: 0.47, y: 0.36, h: 0.09, gizli: false },
+      { id: 'toz', oda: 'calisma', resim: 'ipucu-sari-kanat-tozu', ...(yeniOdalar ? { x: 0.205, y: 0.4 } : { x: 0.61, y: 0.646 }), h: 0.05, gizli: true },
+      { id: 'kelebek', oda: 'calisma', resim: 'kart-sari-kelebek', ...(yeniOdalar ? { x: 0.2, y: 0.22 } : { x: 0.47, y: 0.36 }), h: 0.09, gizli: false },
     ],
     soru: M.neden,
     kino: K.sut,
@@ -189,7 +207,18 @@ export const halka = (id: HalkaId) => HALKALAR.find((h) => h.id === id)!;
 
 // ---------------------------------------------------------------- sahne yerleşimi (oda oranı)
 /** Çalışma odası: masa pencerenin önünde, devrik lamba halının sol üstünde */
-export const CALISMA = {
+export const CALISMA = yeniOdalar
+  ? {
+      // masa arka planın içinde (assets/dedektif-yeni/calisma-odasi.webp): ayrı masa resmi yok
+      masa: { x: 0.5, y: 0.77, h: 0.27 },
+      masaUst: { x: 0.5, y: 0.515 },
+      lambaDevrik: { x: 0.44, y: 0.87, h: 0.13 },
+      lambaDik: { x: 0.42, y: 0.52, h: 0.2 },
+      kalem: { x: 0.585, y: 0.52, h: 0.05, don: -3 },
+      cam: { x0: 0.11, y0: 0.09, x1: 0.29, y1: 0.36 },
+      pervaz: { x: 0.205, y: 0.405 },
+    }
+  : {
   masa: { x: 0.6, y: 0.865, h: 0.23 },
   /** masanın üst yüzü (dik lambanın oturduğu çizgi) */
   masaUst: { x: 0.6, y: 0.675 },
@@ -209,7 +238,19 @@ export const CALISMA = {
  */
 export const IZ_ALT_SINIR = 0.955;
 /** Lambadan sağa giden izler: halının alt kenarından, trenle terliklerin arasındaki boşluğa (terliklere basmaz) */
-export const CALISMA_IZLERI: IzNoktasi[] = [
+export const CALISMA_IZLERI: IzNoktasi[] = yeniOdalar
+  ? [
+      // devrik lambanın yanından sağdaki kapıya
+      { x: 0.5, y: 0.9, don: 78, h: 0.05 },
+      { x: 0.545, y: 0.884, don: 96, h: 0.05 },
+      { x: 0.59, y: 0.872, don: 80, h: 0.05 },
+      { x: 0.635, y: 0.858, don: 98, h: 0.049 },
+      { x: 0.68, y: 0.846, don: 82, h: 0.049 },
+      { x: 0.725, y: 0.832, don: 92, h: 0.048 },
+      { x: 0.77, y: 0.818, don: 78, h: 0.047 },
+      { x: 0.812, y: 0.804, don: 84, h: 0.046 },
+    ]
+  : [
   { x: 0.54, y: 0.912, don: 78, h: 0.058 },
   { x: 0.579, y: 0.89, don: 96, h: 0.058 },
   { x: 0.617, y: 0.906, don: 80, h: 0.058 },
@@ -220,14 +261,20 @@ export const CALISMA_IZLERI: IzNoktasi[] = [
   { x: 0.808, y: 0.864, don: 84, h: 0.056 },
 ];
 /** Koridor: önden ortaya kadar ortak iz, sonra ikiye ayrılır (perspektif: uzaktaki izler küçük) */
-export const KORIDOR_IZLERI: IzNoktasi[] = [
+export const KORIDOR_IZLERI: IzNoktasi[] = yeniOdalar
+  ? [
+      { x: 0.615, y: 0.94, don: -4, h: 0.055 },
+      { x: 0.6, y: 0.885, don: -8, h: 0.05 },
+      { x: 0.612, y: 0.83, don: 2, h: 0.046 },
+    ]
+  : [
   { x: 0.508, y: 0.925, don: -4, h: 0.058 },
   { x: 0.486, y: 0.882, don: -8, h: 0.052 },
   { x: 0.5, y: 0.845, don: 2, h: 0.046 },
 ];
 export type Yol = 'mutfak' | 'yatak';
 /** Kapılar: sol kemerli kapı ve sağ kapı (eşikleri) */
-export const KAPI = { sol: { x: 0.315, y: 0.745 }, sag: { x: 0.725, y: 0.805 } };
+export const KAPI = yeniOdalar ? { sol: { x: 0.455, y: 0.7 }, sag: { x: 0.78, y: 0.7 } } : { sol: { x: 0.315, y: 0.745 }, sag: { x: 0.725, y: 0.805 } };
 /**
  * Ayrılan izler: kapıya doğru küçülür. Mutfağa gidenler büyük ve tırnaklı (Kino), yatak odasına gidenler küçük, yuvarlak.
  * dar (dikey telefon): kamera koridorun ortasından dar bir dilim görür, Mino ile Kino alt köşelerde durur; iki yol
@@ -246,6 +293,18 @@ export function yolIzleri(yan: 'sol' | 'sag', dar = false): IzNoktasi[] {
           { x: 0.538, y: 0.715, don: 30, h: 0.04 },
           { x: 0.552, y: 0.655, don: 28, h: 0.036 },
         ];
+  if (yeniOdalar)
+    return yan === 'sol'
+      ? [
+          { x: 0.565, y: 0.79, don: -52, h: 0.044 },
+          { x: 0.525, y: 0.762, don: -58, h: 0.04 },
+          { x: 0.488, y: 0.736, don: -56, h: 0.036 },
+        ]
+      : [
+          { x: 0.66, y: 0.79, don: 52, h: 0.044 },
+          { x: 0.7, y: 0.762, don: 58, h: 0.04 },
+          { x: 0.74, y: 0.736, don: 56, h: 0.036 },
+        ];
   return yan === 'sol'
     ? [
         { x: 0.455, y: 0.83, don: -58, h: 0.044 },
@@ -259,13 +318,32 @@ export function yolIzleri(yan: 'sol' | 'sag', dar = false): IzNoktasi[] {
       ];
 }
 /** Yatak odası: izler halıdan yatağın ayak ucuna; kuyruk yatağın altından (ayak ucu bacağının yanında) sallanır */
-export const YATAK_IZLERI: IzNoktasi[] = [
+export const YATAK_IZLERI: IzNoktasi[] = yeniOdalar
+  ? [
+      // halıdan yatağın altındaki karanlığa (kuyruğa doğru)
+      { x: 0.2, y: 0.95, don: 62, h: 0.055 },
+      { x: 0.26, y: 0.92, don: 68, h: 0.053 },
+      { x: 0.32, y: 0.89, don: 60, h: 0.052 },
+      { x: 0.38, y: 0.86, don: 66, h: 0.05 },
+    ]
+  : [
   { x: 0.6, y: 0.91, don: -64, h: 0.06 },
   { x: 0.545, y: 0.888, don: -70, h: 0.058 },
   { x: 0.49, y: 0.868, don: -62, h: 0.057 },
   { x: 0.437, y: 0.85, don: -70, h: 0.055 },
 ];
-export const YATAK = {
+export const YATAK = yeniOdalar
+  ? {
+      // yeni yatak odası (assets/dedektif-yeni/yatak-odasi.webp): yatağın altı geniş karanlık aralık; ön katman yok,
+      // Pamuk saklanırken bütünüyle görünmez (kenar sağda: hepsi kırpılır), dışarıda yalnız kuyruk ucu sallanır
+      on: { x0: 0, y0: 0, x1: 0, y1: 0 },
+      alt: { x0: 0.16, y0: 0.67, x1: 0.83, y1: 0.78 },
+      kuyruk: { x: 0.46, y: 0.8, h: 0.16 },
+      saklan: { x: 0.4, y: 0.78 },
+      kenar: 0.52,
+      cik: { x: 0.45, y: 0.97 },
+    }
+  : {
   /** yatağın ön katmanının odadaki kutusu (assets/dedektif/yatak-on.webp: yatak-odasi resminden yatağın çizgisiyle kesilmiş; 1920×1080 resimde 0,470 822×470 px) */
   on: { x0: 0, y0: 470 / 1080, x1: 822 / 1920, y1: 1 - 140 / 1080 },
   /** yatağın altındaki karanlık aralık */
@@ -281,7 +359,15 @@ export const YATAK = {
   cik: { x: 0.53, y: 0.94 },
 };
 /** Mutfak: Kino'nun izleri buzdolabının önünde biter */
-export const MUTFAK_IZLERI: IzNoktasi[] = [
+export const MUTFAK_IZLERI: IzNoktasi[] = yeniOdalar
+  ? [
+      // önden buzdolabına (assets/dedektif-yeni/mutfak-ucu.webp)
+      { x: 0.42, y: 0.96, don: 62, h: 0.066 },
+      { x: 0.5, y: 0.94, don: 68, h: 0.065 },
+      { x: 0.58, y: 0.92, don: 62, h: 0.064 },
+      { x: 0.66, y: 0.9, don: 68, h: 0.062 },
+    ]
+  : [
   { x: 0.5, y: 0.905, don: -70, h: 0.072 },
   { x: 0.41, y: 0.893, don: -76, h: 0.071 },
   { x: 0.32, y: 0.88, don: -70, h: 0.07 },
@@ -290,6 +376,8 @@ export const MUTFAK_IZLERI: IzNoktasi[] = [
 
 /** Yolların kapılara dağılımı: test modunda (ya da tohum 0) mutfak solda; değilse rastgele (tekrar oynayınca değişsin) */
 export function yollariDiz(rnd: () => number = Math.random): Record<'sol' | 'sag', Yol> {
+  // yeni koridorda kapılar çizimde sabit: solda mutfak (buzdolabı görünür), sağda yatak odası
+  if (yeniOdalar) return { sol: 'mutfak', sag: 'yatak' };
   return rnd() < 0.5 ? { sol: 'mutfak', sag: 'yatak' } : { sol: 'yatak', sag: 'mutfak' };
 }
 
@@ -498,6 +586,10 @@ export function dedektifCumleleri(): string[] {
   const v2 = D.vaka2;
   const v3 = D.vaka3;
   return [...new Set([...topla(D.mino), ...topla(D.kart), ...topla(D.pamuk), ...topla(v2.mino), ...topla(v2.ordek), ...topla(v2.konuk), ...topla(v3.mino), ...topla(v3.findik)])];
+}
+/** Mino'nun kendi sesiyle seslendirilecek cümleler (Vaka 1 ve Vaka 2; Vaka 3 şimdilik anlatıcı sesinde) */
+export function dedektifMinoCumleleri(): string[] {
+  return [...new Set([...topla(D.mino), ...topla(D.vaka2.mino)])];
 }
 /** Kino'nun kendi sesiyle seslendirilecek cümleler (üç vaka) */
 export function dedektifKinoCumleleri(): string[] {
