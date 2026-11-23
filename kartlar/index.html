@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#FFF4DD" />
+    <meta name="description" content="Minkino Kartlar — 3-6 yaş için sesli, eğitici kart oyunu." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Minkino" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="../ikon-180.png" />
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <title>Minkino Kartlar</title>
+    <style>/* geçiş perdesi: oyun çizilene kadar beyaz değil menünün kremi; ilk ekran gelince açılır (src/ui/gecis.ts) */ html, body { background: #fff4dd; } #gecis-perde { position: fixed; inset: 0; z-index: 9999; background: #fff4dd; pointer-events: none; animation: gecis-emniyet 0.3s 4s forwards; } @keyframes gecis-emniyet { to { opacity: 0; visibility: hidden; } }</style>
+    <script type="module" crossorigin src="../assets/kartlar-Cl4dPmXv.js"></script>
+    <link rel="modulepreload" crossorigin href="../assets/dom-BCSyB_Tx.js">
+    <link rel="modulepreload" crossorigin href="../assets/preload-helper-Ct5FWWRu.js">
+    <link rel="modulepreload" crossorigin href="../assets/yon-rkejxmpk.js">
+    <link rel="modulepreload" crossorigin href="../assets/mino-CBmc5F28.js">
+    <link rel="modulepreload" crossorigin href="../assets/ikonlar-DzqljMQ_.js">
+    <link rel="modulepreload" crossorigin href="../assets/ortak-Mt0BsTh0.js">
+    <link rel="modulepreload" crossorigin href="../assets/logo-rmNQz597.js">
+    <link rel="modulepreload" crossorigin href="../assets/tavuk-CQIrwR12.js">
+    <link rel="modulepreload" crossorigin href="../assets/tavsan-B26DqL7c.js">
+    <link rel="modulepreload" crossorigin href="../assets/uzum-BZGtUkxU.js">
+    <link rel="modulepreload" crossorigin href="../assets/portakal-BtuNV_1g.js">
+    <link rel="modulepreload" crossorigin href="../assets/yelkenli-BOvbsFDd.js">
+    <link rel="modulepreload" crossorigin href="../assets/menu-yas-DCjZ3R_E.js">
+    <link rel="modulepreload" crossorigin href="../assets/ebeveyn-kapisi-UZvGu6-T.js">
+    <link rel="modulepreload" crossorigin href="../assets/konfeti-DM5-hCU5.js">
+    <link rel="modulepreload" crossorigin href="../assets/ipucu-merdiveni-Dmv06Z2K.js">
+    <link rel="modulepreload" crossorigin href="../assets/yas-DBLka5-F.js">
+    <link rel="modulepreload" crossorigin href="../assets/sayfa-DQrfUW2M.js">
+    <link rel="modulepreload" crossorigin href="../assets/uygulama-04pWR-Zd.js">
+    <link rel="stylesheet" crossorigin href="../assets/ana-D6iEyRMi.css">
+    <link rel="stylesheet" crossorigin href="../assets/mino-BfZWYSS6.css">
+    <link rel="stylesheet" crossorigin href="../assets/kartlar-LuXQkwK1.css">
+    <link rel="stylesheet" crossorigin href="../assets/latin-ext-500-C8_TYooE.css">
+    <link rel="stylesheet" crossorigin href="../assets/latin-ext-600-C0uST5Sf.css">
+    <link rel="stylesheet" crossorigin href="../assets/latin-ext-700-CPgaGfRI.css">
+  </head>
+  <body>
+    <div id="gecis-perde" aria-hidden="true"></div>
+    <div id="minkino-kartlar" class="mk-kok"></div>
+  </body>
+</html>

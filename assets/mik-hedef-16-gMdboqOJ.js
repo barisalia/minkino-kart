@@ -1,0 +1,1 @@
+const e=""+new URL("mik-hedef-16-OFgpJGwH.mp3",import.meta.url).href;export{e as default};
